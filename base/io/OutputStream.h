@@ -15,7 +15,7 @@
 
 #include <base/io/Stream.h>
 
-_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+_COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 /**
   Class representing an output stream of bytes.
@@ -25,7 +25,7 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
   @version 1.0
 */
 
-class _DK_SDU_MIP__BASE__API OutputStream : public virtual Stream {
+class _COM_AZURE_DEV__BASE__API OutputStream : public virtual Stream {
 public:
 
   /**
@@ -53,4 +53,4 @@ public:
   }
 };
 
-_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
+_COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

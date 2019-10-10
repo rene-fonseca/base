@@ -14,18 +14,18 @@
 #include <base/platforms/features.h>
 #include <base/ui/Menu.h>
 
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
 #  include <base/platforms/win32/Helpers.h>
 #  include <windows.h>
 #else // unix
 #endif // flavor
 
-_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+_COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 // TAG: check out menu flag MNS_MODELESS
 Menu::MenuHandle::~MenuHandle() {
   if (isValid()) { // dont try to close if handle is invalidated
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
     // TAG: only if unassigned to window
     if (!::DestroyMenu((HMENU)getHandle())) {
       throw MenuException("Unable to destroy menu", this);
@@ -38,7 +38,7 @@ Menu::MenuHandle::~MenuHandle() {
 
 Menu::Menu() throw(MenuException)
   : handle(new MenuHandle()) {
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   HMENU handle = ::CreatePopupMenu();
   bassert(handle != 0, MenuException("Unable to create menu", this));
   this->handle = new MenuHandle((OperatingSystem::Handle)handle); // TAG: could raise exception
@@ -52,7 +52,7 @@ unsigned int Menu::getNumberOfItems() const throw(MenuException) {
   if (!handle.isValid()) {
     return 0;
   }
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   HMENU menu = (HMENU)handle->getHandle();
   int result = ::GetMenuItemCount(menu);
   bassert(result >= 0, MenuException(this));
@@ -64,7 +64,7 @@ unsigned int Menu::getNumberOfItems() const throw(MenuException) {
 }
 
 unsigned int Menu::getIdentifier(unsigned int index) const throw(MenuException) {
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   bassert(index <= PrimitiveTraits<int>::MAXIMUM, MenuException(this));
   HMENU menu = (HMENU)handle->getHandle();
   MENUITEMINFO info;
@@ -79,7 +79,7 @@ unsigned int Menu::getIdentifier(unsigned int index) const throw(MenuException) 
 }
 
 int Menu::getIndex(unsigned int identifier) const throw(MenuException) {
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   HMENU menu = (HMENU)handle->getHandle();
 //   MENUITEMINFO info;
 //   info.cbSize = sizeof(info);
@@ -94,7 +94,7 @@ int Menu::getIndex(unsigned int identifier) const throw(MenuException) {
 }
 
 unsigned int Menu::getFlags(unsigned int index) const throw(MenuException) {
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   HMENU menu = (HMENU)handle->getHandle();
   MENUITEMINFO info;
   info.cbSize = sizeof(info);
@@ -115,7 +115,7 @@ unsigned int Menu::getFlags(unsigned int index) const throw(MenuException) {
 }
 
 Menu Menu::getMenu(unsigned int index) throw(MenuException) {
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   HMENU menu = (HMENU)handle->getHandle();
   MENUITEMINFO info;
   info.cbSize = sizeof(info);
@@ -132,7 +132,7 @@ Menu Menu::getMenu(unsigned int index) throw(MenuException) {
 }
 
 void Menu::setEnabled(unsigned int index, bool enabled) throw(MenuException) {
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   HMENU menu = (HMENU)handle->getHandle();
   MENUITEMINFO info;
   info.cbSize = sizeof(info);
@@ -145,7 +145,7 @@ void Menu::setEnabled(unsigned int index, bool enabled) throw(MenuException) {
 }
 
 void Menu::setChecked(unsigned int index, bool checked) throw(MenuException) {
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   HMENU menu = (HMENU)handle->getHandle();
   MENUITEMINFO info;
   info.cbSize = sizeof(info);
@@ -158,7 +158,7 @@ void Menu::setChecked(unsigned int index, bool checked) throw(MenuException) {
 }
 
 void Menu::setHighlighted(unsigned int index, bool highlighted) throw(MenuException) {
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   HMENU menu = (HMENU)handle->getHandle();
   MENUITEMINFO info;
   info.cbSize = sizeof(info);
@@ -170,14 +170,14 @@ void Menu::setHighlighted(unsigned int index, bool highlighted) throw(MenuExcept
 #endif // flavor
 }
 
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
 
 // TAG: put in windows mapping header
 
 #endif
 
 void Menu::setName(unsigned int index, const String& name) throw(MenuException) {
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   HMENU menu = (HMENU)handle->getHandle();
   MENUITEMINFO info;
   info.cbSize = sizeof(info);
@@ -192,7 +192,7 @@ void Menu::setName(unsigned int index, const String& name) throw(MenuException) 
 }
 
 void Menu::setSubmenu(unsigned int identifier, const Menu& menu) throw(MenuException) {
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   HMENU nativeMenu = (HMENU)handle->getHandle();
   MENUITEMINFO info;
   info.cbSize = sizeof(info);
@@ -205,7 +205,7 @@ void Menu::setSubmenu(unsigned int identifier, const Menu& menu) throw(MenuExcep
 }
 
 void Menu::insertSeparator(unsigned int index) throw(MenuException) {
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   HMENU menu = (HMENU)handle->getHandle();
   MENUITEMINFO info;
   info.cbSize = sizeof(info);
@@ -218,7 +218,7 @@ void Menu::insertSeparator(unsigned int index) throw(MenuException) {
 }
 
 void Menu::appendSeparator() throw(MenuException) {
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   HMENU menu = (HMENU)handle->getHandle();
   int index = ::GetMenuItemCount(menu);
   bassert(index >= 0, MenuException(this));
@@ -233,7 +233,7 @@ void Menu::appendSeparator() throw(MenuException) {
 }
 
 void Menu::insert(unsigned int index, const String& name, unsigned int identifier, unsigned int flags) throw(MenuException) {
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   bassert(identifier <= PrimitiveTraits<uint16>::MAXIMUM, MenuException(this));
   HMENU menu = (HMENU)handle->getHandle();
   MENUITEMINFO info;
@@ -254,7 +254,7 @@ void Menu::insert(unsigned int index, const String& name, unsigned int identifie
 }
 
 void Menu::append(const String& name, unsigned int identifier, unsigned int flags) throw(MenuException) {
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   bassert(identifier <= PrimitiveTraits<uint16>::MAXIMUM, MenuException(this));
   HMENU menu = (HMENU)handle->getHandle();
   int index = ::GetMenuItemCount(menu);
@@ -278,7 +278,7 @@ void Menu::append(const String& name, unsigned int identifier, unsigned int flag
 
 void Menu::appendMenu(const String& name, const Menu& menu, unsigned int flags) throw(MenuException) {
   // TAG: get lock on menu
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   HMENU nativeMenu = (HMENU)handle->getHandle();
   int index = ::GetMenuItemCount(nativeMenu);
   bassert(index >= 0, MenuException(this));
@@ -300,7 +300,7 @@ void Menu::appendMenu(const String& name, const Menu& menu, unsigned int flags) 
 }
 
 void Menu::remove(unsigned int index) throw(MenuException) {
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   HMENU menu = (HMENU)handle->getHandle();
   bassert(::DeleteMenu(menu, index, MF_BYPOSITION), MenuException(this));
 #else // unix
@@ -308,4 +308,4 @@ void Menu::remove(unsigned int index) throw(MenuException) {
 #endif // flavor
 }
 
-_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
+_COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

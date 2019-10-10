@@ -15,7 +15,7 @@
 
 #include <base/AutomationObject.h>
 
-_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+_COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 /**
   A property is an attribute which may be exposed using any appropriate access.
@@ -37,8 +37,8 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
   @version 1.0
 */
 
-class _DK_SDU_MIP__BASE__API Property : public AutomationObject {
+class _COM_AZURE_DEV__BASE__API Property : public AutomationObject {
 public:
 };
 
-_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
+_COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

@@ -18,7 +18,7 @@
 #include <base/SingletonException.h>
 #include <base/concurrency/Thread.h>
 
-_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+_COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 /**
   Class used for daemonizing a process.
@@ -27,7 +27,7 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
   @version 1.0
 */
 
-class _DK_SDU_MIP__BASE__API Daemon : public Object {
+class _COM_AZURE_DEV__BASE__API Daemon : public Object {
 public:
 
   /**
@@ -37,9 +37,9 @@ public:
   */
   Daemon(Runnable* runnable) throw(SingletonException, ResourceException);
 
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   static void install();
 #endif
 };
 
-_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
+_COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

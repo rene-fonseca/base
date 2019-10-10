@@ -17,7 +17,7 @@
 #include <base/opengl/OpenGLContextImpl.h>
 #include <base/collection/Array.h>
 
-_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+_COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 /**
   OpenGL rendering context.
@@ -26,7 +26,7 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
   @version 1.0
 */
 
-class _DK_SDU_MIP__BASE__API OpenGLContext : public WindowImpl, public OpenGLContextImpl {
+class _COM_AZURE_DEV__BASE__API OpenGLContext : public WindowImpl, public OpenGLContextImpl {
 private:
 
   nothing prefixInitialization;
@@ -68,4 +68,4 @@ public:
   void onResize(const Dimension& dimension) throw();
 };
 
-_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
+_COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

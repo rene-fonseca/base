@@ -15,7 +15,7 @@
 
 #include <base/features.h>
 
-_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+_COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 namespace internal {
   class ProcessInitialization;
@@ -30,7 +30,7 @@ namespace internal {
   @version 1.0
 */
 
-class _DK_SDU_MIP__BASE__API ProcessPreinitialization {
+class _COM_AZURE_DEV__BASE__API ProcessPreinitialization {
   friend class internal::ProcessInitialization;
 private:
 
@@ -46,4 +46,4 @@ private:
   ~ProcessPreinitialization() throw();
 };
 
-_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
+_COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

@@ -18,7 +18,7 @@
 #include <base/rmi/OrbException.h>
 #include <base/rmi/OrbChannel.h>
 
-_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+_COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 /**
   Object Request Broker stub.
@@ -28,7 +28,7 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
   @version 1.0
 */
 
-class _DK_SDU_MIP__BASE__API OrbStub : public Object, public virtual ReferenceCountedObject {
+class _COM_AZURE_DEV__BASE__API OrbStub : public Object, public virtual ReferenceCountedObject {
 protected:
   
   /** The ORB channel. */
@@ -76,4 +76,4 @@ public:
   virtual ~OrbStub() throw();
 };
 
-_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
+_COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

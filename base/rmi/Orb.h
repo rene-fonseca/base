@@ -31,7 +31,7 @@
 #include <base/string/InvalidFormat.h>
 #include <base/AutomationObject.h>
 
-_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+_COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 class OrbScheme;
 class OrbStub;
@@ -49,7 +49,7 @@ class OrbEncoding;
   @version 1.0
 */
 
-class _DK_SDU_MIP__BASE__API Orb : public Object {
+class _COM_AZURE_DEV__BASE__API Orb : public Object {
   friend class TCPIPConnection; // TAG: remove
   friend class OrbDecoder;
   friend class OrbEncoder;
@@ -138,7 +138,7 @@ private:
 //     // write(reference);
 //   }
 
-  class _DK_SDU_MIP__BASE__API OrbConnectionReference : public AutomationObject {
+  class _COM_AZURE_DEV__BASE__API OrbConnectionReference : public AutomationObject {
   private:
 
     Reference<OrbConnection> connection;
@@ -361,4 +361,4 @@ public:
   ~Orb() throw();
 };
 
-_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
+_COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

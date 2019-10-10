@@ -17,7 +17,7 @@
 #include <base/io/InputStream.h>
 #include <base/io/BindException.h>
 
-_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+_COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 /**
   A FilterInputStream redirects requests to an ordinary InputStream possibly
@@ -30,7 +30,7 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
   @version 1.0
 */
 
-class _DK_SDU_MIP__BASE__API FilterInputStream : public virtual Object, public virtual InputStream {
+class _COM_AZURE_DEV__BASE__API FilterInputStream : public virtual Object, public virtual InputStream {
 protected:
 
   /** Input stream to be filtered. */
@@ -97,4 +97,4 @@ public:
   bool wait(unsigned int timeout) const throw(IOException);
 };
 
-_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
+_COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

@@ -13,7 +13,7 @@
 
 #include <base/rmi/idl/IDLNamedType.h>
 
-_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+_COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 IDLNamedType::IDLNamedType(const String& _name) throw() : name(_name) {
 }
@@ -21,4 +21,4 @@ IDLNamedType::IDLNamedType(const String& _name) throw() : name(_name) {
 IDLNamedType::~IDLNamedType() throw() {
 }
 
-_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
+_COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

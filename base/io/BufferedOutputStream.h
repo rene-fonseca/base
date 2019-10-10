@@ -17,7 +17,7 @@
 #include <base/mem/Allocator.h>
 #include <base/Primitives.h>
 
-_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+_COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 /**
   A FilterOutputStream that adds buffer functionality to an OutputStream for
@@ -28,7 +28,7 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
   @version 1.0
 */
 
-class _DK_SDU_MIP__BASE__API BufferedOutputStream : public FilterOutputStream {
+class _COM_AZURE_DEV__BASE__API BufferedOutputStream : public FilterOutputStream {
 public:
 
   /** The default size of the buffer. */
@@ -90,4 +90,4 @@ public:
   ~BufferedOutputStream();
 };
 
-_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
+_COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

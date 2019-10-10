@@ -21,7 +21,7 @@
 #include <base/Literal.h>
 #include <stdlib.h>
 
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
 #  include <windows.h>
 #else
 #  define __thread // TAG: temp. fix for s390-ibm-linux-gnu
@@ -29,13 +29,13 @@
 #  include <pthread.h> // pthread_t
 #endif
 
-_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+_COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 namespace internal {
   
   namespace specific {
     
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
 
     extern "C" int main();
     
@@ -47,7 +47,7 @@ public:
   // TAG: should not be inlined - get parent of current frame
   static void* getStackFrame() throw() {
     void** frame = 0;
-#if (_DK_SDU_MIP__BASE__ARCH == _DK_SDU_MIP__BASE__X86)
+#if (_COM_AZURE_DEV__BASE__ARCH == _COM_AZURE_DEV__BASE__X86)
     asm (
       "movl %%ebp,%0;\n"
       : "=m" (frame) // output
@@ -206,7 +206,7 @@ public:
       // TAG: use system log (for errorMessage only)
       
       const CONTEXT* context = exception->ContextRecord;
-#if (_DK_SDU_MIP__BASE__ARCH == _DK_SDU_MIP__BASE__X86)
+#if (_COM_AZURE_DEV__BASE__ARCH == _COM_AZURE_DEV__BASE__X86)
       // TAG: move context dump to Architecture class?
       // TAG: reimplement without dependency on FormatOutputStream?
       ferr << NativeString(errorMessage) << EOL << ENDL;
@@ -323,7 +323,7 @@ public:
   }; // end of namespace - specific
 }; // end of namespace - internal
 
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
 
 ProcessPreinitialization::ProcessPreinitialization() throw() {
   // OS version compatibility check
@@ -332,10 +332,10 @@ ProcessPreinitialization::ProcessPreinitialization() throw() {
   ::GetVersionEx(&versionInfo); // never fails
   // only Windows NT 4.0 or later
   // TAG: check w2k and
-#if (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__WXP)
+#if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__WXP)
   bool compatible = (versionInfo.dwPlatformId == VER_PLATFORM_WIN32_NT) &&
     (versionInfo.dwMajorVersion >= 5) && (versionInfo.dwMinorVersion >= 1);
-#elif (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__W2K)
+#elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__W2K)
   bool compatible = (versionInfo.dwPlatformId == VER_PLATFORM_WIN32_NT) &&
     (versionInfo.dwMajorVersion >= 5);
 #else
@@ -407,4 +407,4 @@ ProcessPreinitialization::~ProcessPreinitialization() throw() {
 
 #endif // flavor
 
-_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
+_COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

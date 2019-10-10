@@ -17,7 +17,7 @@
 #include <base/io/async/AsynchronousReadContext.h>
 #include <base/mem/Reference.h>
 
-_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+_COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 class AsynchronousReadContext;
 
@@ -27,7 +27,7 @@ class AsynchronousReadContext;
   @short Asynchronous read operation.
   @version 1.0
 */
-class _DK_SDU_MIP__BASE__API AsynchronousReadOperation : public AsynchronousOperation {
+class _COM_AZURE_DEV__BASE__API AsynchronousReadOperation : public AsynchronousOperation {
 private:
 
   /** Context of operation. */
@@ -79,4 +79,4 @@ public:
   AsynchronousReadCompletion getCompletion() const throw(NullPointer);
 };
 
-_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
+_COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

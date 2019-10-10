@@ -15,7 +15,7 @@
 
 #include <base/ui/Widget.h>
 
-_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+_COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 /**
   Progress bar widget.
@@ -25,7 +25,7 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
   @version 1.0
 */
 
-class _DK_SDU_MIP__BASE__API ProgressBar : public Widget {
+class _COM_AZURE_DEV__BASE__API ProgressBar : public Widget {
 public:
 
   enum TextMode {
@@ -97,4 +97,4 @@ public:
   }
 };
 
-_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
+_COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

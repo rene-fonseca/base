@@ -15,7 +15,7 @@
 
 #include <base/string/FormatOutputStream.h>
 
-_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+_COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 /**
   Dimension represented by width and height.
@@ -24,7 +24,7 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
   @version 1.2
 */
 
-class _DK_SDU_MIP__BASE__API Dimension {
+class _COM_AZURE_DEV__BASE__API Dimension {
 protected:
 
   /** The width. */
@@ -189,4 +189,4 @@ public:
   static const bool IS_UNINITIALIZEABLE = Uninitializeable<unsigned int>::IS_UNINITIALIZEABLE;
 };
 
-_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
+_COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

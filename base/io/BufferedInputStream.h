@@ -18,7 +18,7 @@
 #include <base/OutOfDomain.h>
 #include <base/Primitives.h>
 
-_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+_COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 /**
   A FilterInputStream that adds buffer functionality to an InputStream for
@@ -29,7 +29,7 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
   @version 1.0
 */
 
-class _DK_SDU_MIP__BASE__API BufferedInputStream : public FilterInputStream {
+class _COM_AZURE_DEV__BASE__API BufferedInputStream : public FilterInputStream {
 public:
 
   /** The default size of the buffer. */
@@ -141,4 +141,4 @@ public:
   ~BufferedInputStream();
 };
 
-_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
+_COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

@@ -16,7 +16,7 @@
 #include <base/concurrency/Thread.h>
 #include <base/concurrency/SpinLock.h>
 
-_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+_COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 /**
   This class implements a read-write lock for optimal reader performance on
@@ -29,7 +29,7 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
   @version 1.0
 */
 
-class _DK_SDU_MIP__BASE__API ReadWriteSpinLock {
+class _COM_AZURE_DEV__BASE__API ReadWriteSpinLock {
 private:
   
   typedef SpinLock Guard;
@@ -79,4 +79,4 @@ public:
   void releaseLock() const throw();
 };
 
-_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
+_COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

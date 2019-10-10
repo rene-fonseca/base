@@ -15,7 +15,7 @@
 
 #include <base/Trace.h>
 
-_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+_COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 template<class TYPE> class ConstPointerHelper {
 public:
@@ -202,4 +202,4 @@ inline void deleteCompleteArray(const volatile TYPE* value) {
   delete[] value;
 }
 
-_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
+_COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

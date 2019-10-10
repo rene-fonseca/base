@@ -16,7 +16,7 @@
 #include <base/security/Base64.h>
 #include <base/string/ASCIITraits.h>
 
-_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+_COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 const uint64 SHA512::K[MESSAGE_SCHEDULE] = {
   0x428a2f98d728ae22, 0x7137449123ef65cd, 0xb5c0fbcfec4d3b2f, 0xe9b5dba58189dbbc,
@@ -181,4 +181,4 @@ String SHA512::getBase64() const throw() {
   return Base64::encode(temp, sizeof(temp));
 }
 
-_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
+_COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

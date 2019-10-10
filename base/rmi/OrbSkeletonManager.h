@@ -20,7 +20,7 @@
 #include <base/rmi/OrbReference.h>
 #include <base/rmi/OrbSkeleton.h>
 
-_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+_COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 /**
   Object Request Broker skeleton manager responsible for maintaining the
@@ -32,7 +32,7 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
   @version 1.0
 */
 
-class _DK_SDU_MIP__BASE__API OrbSkeletonManager : public Object {
+class _COM_AZURE_DEV__BASE__API OrbSkeletonManager : public Object {
 private:
 
   /** Mapping of fully qualified names to skeleton objects. */
@@ -108,4 +108,4 @@ public:
   ~OrbSkeletonManager() throw();
 };
 
-_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
+_COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

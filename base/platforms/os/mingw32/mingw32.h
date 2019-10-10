@@ -15,4 +15,4 @@
 
 #include <base/features.h>
 
-#define _DK_SDU_MIP__BASE__REDIR_ISOC_FLOORL isoc::floor
+#define _COM_AZURE_DEV__BASE__REDIR_ISOC_FLOORL isoc::floor

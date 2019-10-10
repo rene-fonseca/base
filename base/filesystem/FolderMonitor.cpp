@@ -14,15 +14,15 @@
 #include <base/platforms/features.h>
 #include <base/filesystem/FolderMonitor.h>
 
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
 #  include <windows.h>
 #else // unix
 #endif // flavor
 
-_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+_COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 FolderMonitor::FolderMonitor(const String& path) throw(ResourceException) {
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   handle = ::FindFirstChangeNotification(
     toWide(path).c_str(),
     FALSE, // do not watch subfolders
@@ -38,7 +38,7 @@ FolderMonitor::FolderMonitor(const String& path) throw(ResourceException) {
 }
 
 bool FolderMonitor::isSignaled() const throw() {
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   DWORD result = ::WaitForSingleObject(handle, 0);
   if (result == WAIT_OBJECT_0) {
     ::FindNextChangeNotification(handle); // should never fail
@@ -50,7 +50,7 @@ bool FolderMonitor::isSignaled() const throw() {
 }
 
 void FolderMonitor::wait() const throw() {
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   ::WaitForSingleObject(handle, INFINITE);
   ::FindNextChangeNotification(handle); // should never fail
 #else // unix
@@ -58,7 +58,7 @@ void FolderMonitor::wait() const throw() {
 }
 
 bool FolderMonitor::wait(unsigned int milliseconds) const throw() {
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   DWORD result = ::WaitForSingleObject(handle, minimum(milliseconds, 999999999U));
   ::FindNextChangeNotification(handle); // should never fail
   return result == WAIT_OBJECT_0;
@@ -68,10 +68,10 @@ bool FolderMonitor::wait(unsigned int milliseconds) const throw() {
 }
 
 FolderMonitor::~FolderMonitor() throw() {
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   ::FindCloseChangeNotification(handle); // should never fail
 #else // unix
 #endif // flavor
 }
 
-_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
+_COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

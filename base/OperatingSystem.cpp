@@ -13,7 +13,7 @@
 
 #include <base/OperatingSystem.h>
 
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
 // #  include <windows.h>
 #  include <Ws2tcpip.h>
 #  include <lmaccess.h>
@@ -23,7 +23,7 @@
 #  include <errno.h>
 #  include <sys/resource.h>
 
-#  if (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__IRIX65)
+#  if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__IRIX65)
 #    define _SC_NPROCESSORS_CONF _SC_NPROC_CONF
 #    define _SC_NPROCESSORS_ONLN _SC_NPROC_ONLN
 #  endif
@@ -149,16 +149,16 @@
 
 #endif // flavor
 
-_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+_COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
 const OperatingSystem::Handle OperatingSystem::INVALID_HANDLE = static_cast<char*>(nullptr) - 1;
 #endif
 
 long OperatingSystem::getVariable(Variable variable) throw(NotSupported) {
   // TAG: need to cache all cacheable variables
   
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   switch (variable) {
   case MAX_NUM_OF_ASYNC_IO_OPRS_PER_LIST:
     return PrimitiveTraits<unsigned long>::MAXIMUM; // unknown
@@ -352,11 +352,11 @@ long OperatingSystem::getVariable(Variable variable) throw(NotSupported) {
 
 int64 OperatingSystem::getResourceLimit(
   Resource resource, LimitType type) throw() {
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   return 0;
   // throw NotSupported(Type::getType<OperatingSystem>());
 #else // unix
-#if (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__GNULINUX)
+#if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__GNULINUX)
   static const __rlimit_resource_t RESOURCES[] =
 #else
   static const int RESOURCES[] =
@@ -370,7 +370,7 @@ int64 OperatingSystem::getResourceLimit(
     RLIMIT_STACK,
     RLIMIT_AS
   };
-#if defined(_DK_SDU_MIP__BASE__LARGE_FILE_SYSTEM)
+#if defined(_COM_AZURE_DEV__BASE__LARGE_FILE_SYSTEM)
   struct rlimit64 limit;
   ::getrlimit64(RESOURCES[resource], &limit); // must not fail
 #else
@@ -391,10 +391,10 @@ int64 OperatingSystem::getResourceLimit(
 }
 
 void OperatingSystem::setResourceLimit(Resource resource, int64 limit, LimitType type) throw(OutOfRange) {
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   throw NotSupported(Type::getType<OperatingSystem>());
 #else // unix
-#if (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__GNULINUX)
+#if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__GNULINUX)
   static const __rlimit_resource_t RESOURCES[] =
 #else
   static const int RESOURCES[] =
@@ -408,7 +408,7 @@ void OperatingSystem::setResourceLimit(Resource resource, int64 limit, LimitType
     RLIMIT_STACK,
     RLIMIT_AS
   };
-#  if defined(_DK_SDU_MIP__BASE__LARGE_FILE_SYSTEM)
+#  if defined(_COM_AZURE_DEV__BASE__LARGE_FILE_SYSTEM)
   bassert(
     (limit >= -1) &&
     (limit != RLIM_INFINITY) &&
@@ -499,7 +499,7 @@ Literal OperatingSystem::getErrorMessage(unsigned int error) throw() {
 }
 
 unsigned int OperatingSystem::getErrorCode(unsigned int error) throw() {
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   switch (error) {
   case ERROR_SUCCESS:
     return OperatingSystem::OK;
@@ -644,4 +644,4 @@ unsigned int OperatingSystem::getErrorCode(unsigned int error) throw() {
 #endif
 }
 
-_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
+_COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

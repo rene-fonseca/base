@@ -15,7 +15,7 @@
 
 #include <base/io/FilterInputStream.h>
 
-_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+_COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 /**
   A FilterOutputStream that allows you to read primitive data types from an
@@ -27,7 +27,7 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
   @version 1.0
 */
 
-class _DK_SDU_MIP__BASE__API PrimitiveInputStream : public FilterInputStream {
+class _COM_AZURE_DEV__BASE__API PrimitiveInputStream : public FilterInputStream {
 public:
 
   /**
@@ -93,4 +93,4 @@ public:
   long double readLongDouble() throw(IOException);
 };
 
-_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
+_COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

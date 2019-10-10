@@ -14,14 +14,14 @@
 #include <base/platforms/features.h>
 #include <base/xml/Notation.h>
 
-#if defined(_DK_SDU_MIP__BASE__XML_XMLSOFT_ORG)
+#if defined(_COM_AZURE_DEV__BASE__XML_XMLSOFT_ORG)
 #  include <libxml2/libxml/tree.h>
 #endif
 
-_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+_COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 String Notation::getPublicId() const throw() {
-#if defined(_DK_SDU_MIP__BASE__XML_XMLSOFT_ORG)
+#if defined(_COM_AZURE_DEV__BASE__XML_XMLSOFT_ORG)
   const xmlNode* node = (const xmlNode*)getContext();
   const xmlNotation* notation = (const xmlNotation*)node->name;
   return NativeString((const char*)notation->PublicID);
@@ -31,7 +31,7 @@ String Notation::getPublicId() const throw() {
 }
   
 String Notation::getSystemId() const throw() {
-#if defined(_DK_SDU_MIP__BASE__XML_XMLSOFT_ORG)
+#if defined(_COM_AZURE_DEV__BASE__XML_XMLSOFT_ORG)
   const xmlNode* node = (const xmlNode*)getContext();
   const xmlNotation* notation = (const xmlNotation*)node->name;
   return NativeString((const char*)notation->SystemID);
@@ -40,4 +40,4 @@ String Notation::getSystemId() const throw() {
 #endif
 }
 
-_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
+_COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

@@ -21,7 +21,7 @@
 #include <base/SingletonException.h>
 #include <base/concurrency/SpinLock.h>
 
-_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+_COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 /**
   This is a singleton object for the context of the application. User-defined
@@ -48,7 +48,7 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
   @version 1.3
 */
 
-class _DK_SDU_MIP__BASE__API Application : public Object {
+class _COM_AZURE_DEV__BASE__API Application : public Object {
   friend class ApplicationImpl;
 public:
 
@@ -229,13 +229,13 @@ public:
   virtual ~Application() throw();
 };
 
-#define _DK_SDU_MIP__BASE__STUB(APPLICATION) \
+#define _COM_AZURE_DEV__BASE__STUB(APPLICATION) \
 int main(int argc, const char* argv[], const char* env[]) throw() { \
   return com::azure::dev::base::Application::stub<APPLICATION>(argc, argv, env); \
 }
 
 #if (!defined(STUB))
-#  define STUB _DK_SDU_MIP__BASE__STUB
+#  define STUB _COM_AZURE_DEV__BASE__STUB
 #endif
 
-_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
+_COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

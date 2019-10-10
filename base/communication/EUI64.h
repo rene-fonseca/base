@@ -18,7 +18,7 @@
 #include <base/string/InvalidFormat.h>
 #include <base/Primitives.h>
 
-_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+_COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 /**
   A 64 bit globally unique identifier (GUID) composed of a 24 bit company id
@@ -30,7 +30,7 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
   @version 1.0
 */
 
-class _DK_SDU_MIP__BASE__API EUI64 {
+class _COM_AZURE_DEV__BASE__API EUI64 {
 private:
   
   /** Unique 64 bit identifier. */
@@ -181,4 +181,4 @@ public:
 */
 FormatOutputStream& operator<<(FormatOutputStream& stream, const EUI64& value) throw(IOException);
 
-_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
+_COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

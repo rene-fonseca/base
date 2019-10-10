@@ -19,7 +19,7 @@
 #include <base/string/InvalidFormat.h>
 #include <base/string/String.h>
 
-_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+_COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 /**
   Format input stream. This class is not MT-safe.
@@ -29,7 +29,7 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
   @version 1.0
 */
 
-class _DK_SDU_MIP__BASE__API FormatInputStream : public FilterInputStream {
+class _COM_AZURE_DEV__BASE__API FormatInputStream : public FilterInputStream {
 public:
 
   /** Specifies the default line granularity. */
@@ -123,7 +123,7 @@ public:
   Format input stream linked to the standard input stream. This variable
   corresponds to 'cin' from the Standard Template Library.
 */
-extern _DK_SDU_MIP__BASE__API FormatInputStream fin;
+extern _COM_AZURE_DEV__BASE__API FormatInputStream fin;
 
 /**
   Reads one character from the format input stream.
@@ -153,4 +153,4 @@ FormatInputStream& operator>>(
 //FormatInputStream& operator>>(FormatInputStream& stream, double& value);
 //FormatInputStream& operator>>(FormatInputStream& stream, long double& value);
 
-_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
+_COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

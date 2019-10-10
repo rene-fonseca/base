@@ -18,7 +18,7 @@
 #include <base/concurrency/ExclusiveSynchronize.h>
 #include <base/rmi/OrbBufferPool.h>
 
-_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+_COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 /**
   Object Request Broker buffer queue. The implementation is MT-safe.
@@ -28,7 +28,7 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
   @version 1.0
 */
 
-class _DK_SDU_MIP__BASE__API BufferQueue : public Object {
+class _COM_AZURE_DEV__BASE__API BufferQueue : public Object {
 private:
 
   typedef SpinLock Guard;
@@ -94,4 +94,4 @@ public:
   }
 };
 
-_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
+_COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

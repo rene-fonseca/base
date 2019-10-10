@@ -17,7 +17,7 @@
 #include <base/concurrency/Lock.h>
 #include <base/concurrency/MutualExclusionException.h>
 
-_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+_COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 /**
   This class implements a mutual exclusion object used to protect shared
@@ -31,7 +31,7 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
   @version 1.1
 */
 
-class _DK_SDU_MIP__BASE__API MutualExclusion : public Lock {
+class _COM_AZURE_DEV__BASE__API MutualExclusion : public Lock {
 protected:
 
   /** Internal representation of mutex. */
@@ -98,4 +98,4 @@ public:
   ~MutualExclusion();
 };
 
-_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
+_COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

@@ -13,25 +13,25 @@
 
 #include <base/communication/IEEE1394Impl.h>
 
-#if (!defined(_DK_SDU_MIP__BASE__IEEE_1394_IMPL))
-#  if 0 && (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__GNULINUX)
-#    define _DK_SDU_MIP__BASE__IEEE_1394_IMPL LinuxRawIEEE1394
-#    define _DK_SDU_MIP__BASE__IEEE_1394_IMPL_HEADER "base/communication/LinuxRawIEEE1394.cpp"
+#if (!defined(_COM_AZURE_DEV__BASE__IEEE_1394_IMPL))
+#  if 0 && (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__GNULINUX)
+#    define _COM_AZURE_DEV__BASE__IEEE_1394_IMPL LinuxRawIEEE1394
+#    define _COM_AZURE_DEV__BASE__IEEE_1394_IMPL_HEADER "base/communication/LinuxRawIEEE1394.cpp"
 #  else
-#    define _DK_SDU_MIP__BASE__IEEE_1394_IMPL DummyIEEE1394
-#    define _DK_SDU_MIP__BASE__IEEE_1394_IMPL_HEADER "base/communication/DummyIEEE1394.h"
+#    define _COM_AZURE_DEV__BASE__IEEE_1394_IMPL DummyIEEE1394
+#    define _COM_AZURE_DEV__BASE__IEEE_1394_IMPL_HEADER "base/communication/DummyIEEE1394.h"
 #  endif
 #endif
 
-#include _DK_SDU_MIP__BASE__IEEE_1394_IMPL_HEADER
+#include _COM_AZURE_DEV__BASE__IEEE_1394_IMPL_HEADER
 
-_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+_COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 IEEE1394Impl* IEEE1394Impl::getDefault() throw() {
-  return new _DK_SDU_MIP__BASE__IEEE_1394_IMPL();
+  return new _COM_AZURE_DEV__BASE__IEEE_1394_IMPL();
 }
 
 IEEE1394Impl::~IEEE1394Impl() {
 }
 
-_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
+_COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

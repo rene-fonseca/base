@@ -15,9 +15,9 @@
 
 #include <base/rmi/OrbDecoder.h>
 
-_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+_COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
-class _DK_SDU_MIP__BASE__API BarnieDecoder : public OrbDecoder {
+class _COM_AZURE_DEV__BASE__API BarnieDecoder : public OrbDecoder {
 public:
   
   /**
@@ -26,4 +26,4 @@ public:
   void read(unsigned int* buffer, unsigned int size) throw(IOException);
 };
 
-_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
+_COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

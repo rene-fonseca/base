@@ -15,7 +15,7 @@
 
 #include <base/features.h>
 
-_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+_COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 /**
   This class is a wrapper for the 7-bit ASCII octet manipulators and more. This
@@ -24,7 +24,7 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
   @short ASCII character traits.
   @version 1.2
 */
-class _DK_SDU_MIP__BASE__API ASCIITraits {
+class _COM_AZURE_DEV__BASE__API ASCIITraits {
 public:
   
   /** Character characteristics. */
@@ -324,4 +324,4 @@ public:
   };
 };
 
-_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
+_COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

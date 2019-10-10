@@ -17,7 +17,7 @@
 #include <base/compression/Deflater.h>
 #include <base/mem/Allocator.h>
 
-_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+_COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 /**
   ZLIB deflater push stream.
@@ -27,7 +27,7 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
   @version 1.0
 */
 
-class _DK_SDU_MIP__BASE__API ZLibDeflater : public Object, public virtual Deflater {
+class _COM_AZURE_DEV__BASE__API ZLibDeflater : public Object, public virtual Deflater {
 public:
   
   /** The size of the compression buffer. */
@@ -117,4 +117,4 @@ public:
   virtual ~ZLibDeflater() throw();
 };
 
-_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
+_COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

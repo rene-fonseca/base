@@ -17,7 +17,7 @@
 #include <base/io/File.h>
 #include <base/string/InvalidFormat.h>
 
-_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+_COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 /**
   Huffman compression.
@@ -27,7 +27,7 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
   @version 1.0
 */
 
-class _DK_SDU_MIP__BASE__API Huffman : public Object {
+class _COM_AZURE_DEV__BASE__API Huffman : public Object {
 private:
 
   enum {
@@ -74,4 +74,4 @@ public:
   void decode(OutputStream& stream, const uint8* buffer, unsigned int size) throw(InvalidFormat);
 };
 
-_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
+_COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

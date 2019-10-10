@@ -18,7 +18,7 @@
 #include <base/string/WideString.h>
 #include <base/NotImplemented.h>
 
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
 #  include <windows.h>
 #  include <lm.h>
 #else // unix
@@ -28,15 +28,15 @@
 #  include <unistd.h>
 #endif // flavor
 
-#if (_DK_SDU_MIP__BASE__OS != _DK_SDU_MIP__BASE__CYGWIN)
-#  define _DK_SDU_MIP__BASE__HAVE_GETGRNAM_R
-#  define _DK_SDU_MIP__BASE__HAVE_GETGRGID_R
+#if (_COM_AZURE_DEV__BASE__OS != _COM_AZURE_DEV__BASE__CYGWIN)
+#  define _COM_AZURE_DEV__BASE__HAVE_GETGRNAM_R
+#  define _COM_AZURE_DEV__BASE__HAVE_GETGRGID_R
 #endif
 
-_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+_COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 Group::Group(unsigned long _id) throw(OutOfDomain) : integralId(_id) {
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   throw OutOfDomain("Invalid user id", this);
 #else // unix
 //   bassert(
@@ -47,7 +47,7 @@ Group::Group(unsigned long _id) throw(OutOfDomain) : integralId(_id) {
 }
 
 Group::Group(const void* _id) throw(OutOfDomain) {
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   if (_id == 0) {
     integralId = INVALID;
     return;
@@ -73,7 +73,7 @@ Group& Group::operator=(const Group& eq) throw() {
 }
 
 bool Group::operator==(const Group& eq) const throw() {
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   if (!isValid() || (!eq.isValid())) {
     return !isValid() && !eq.isValid();
   }
@@ -85,10 +85,10 @@ bool Group::operator==(const Group& eq) const throw() {
 }
 
 Group::Group(const String& name) throw(GroupException) {
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   throw NotImplemented(this);
 #else // unix
-  #if defined(_DK_SDU_MIP__BASE__HAVE_GETGRNAM_R)
+  #if defined(_COM_AZURE_DEV__BASE__HAVE_GETGRNAM_R)
     //long sysconf(_SC_GETGR_R_SIZE_MAX);
     Allocator<uint8>* buffer = Thread::getLocalStorage();
     struct group grp;
@@ -113,7 +113,7 @@ Group::Group(const String& name) throw(GroupException) {
 }
 
 Group::Group(const User& user) throw(GroupException) {
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   throw NotImplemented(this);
 #else // unix
   Allocator<uint8>* buffer = Thread::getLocalStorage();
@@ -135,7 +135,7 @@ String Group::getName() const throw(GroupException) {
   if (!isValid()) {
     return Literal("<unknown>");
   }
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   SID_NAME_USE sidType;
   wchar name[UNLEN+1]; // TAG: what is the maximum size
   DWORD nameSize = getArraySize(name);
@@ -159,7 +159,7 @@ String Group::getName() const throw(GroupException) {
     return toUTF8(static_cast<const wchar*>(name)); // TAG: does nameSize hold length of name
   }
 #else // unix
-  #if defined(_DK_SDU_MIP__BASE__HAVE_GETGRNAM_R)
+  #if defined(_COM_AZURE_DEV__BASE__HAVE_GETGRNAM_R)
     //long sysconf(_SC_GETGR_R_SIZE_MAX);
     Allocator<uint8>* buffer = Thread::getLocalStorage();
     struct group grp;
@@ -183,7 +183,7 @@ String Group::getName() const throw(GroupException) {
 }
 
 Array<String> Group::getMembers() const throw(GroupException) {
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   Array<String> result;
 
   SID_NAME_USE sidType;
@@ -232,7 +232,7 @@ Array<String> Group::getMembers() const throw(GroupException) {
   }
   return result;
 #else // unix
-  #if defined(_DK_SDU_MIP__BASE__HAVE_GETGRGID_R)
+  #if defined(_COM_AZURE_DEV__BASE__HAVE_GETGRGID_R)
     //long sysconf(_SC_GETGR_R_SIZE_MAX);
     Allocator<uint8>* buffer = Thread::getLocalStorage();
     struct group grp;
@@ -270,7 +270,7 @@ FormatOutputStream& operator<<(
   if (!value.isValid()) {
     return stream << "<unknown>";
   }
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   StringOutputStream s;
   PSID sid = (PSID)value.getId(); // must be valid
   
@@ -312,7 +312,7 @@ FormatOutputStream& operator<<(
 }
 
 unsigned long Hash<Group>::operator()(const Group& value) throw() {
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   if (!value.id.isValid()) {
     return 0;
   }
@@ -328,4 +328,4 @@ unsigned long Hash<Group>::operator()(const Group& value) throw() {
 #endif // flavor
 }
 
-_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
+_COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

@@ -41,7 +41,7 @@
 
 int _DUMMY_SYMBOL = 0;
 
-_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+_COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 /*
   The order of initialization is very significant. fin, fout, and ferr are the
@@ -222,17 +222,17 @@ const Locale Locale::POSIX;
 FileDescriptorInputStream standardInputStream(
   FileDescriptor::getStandardInput()
 );
-FormatInputStream _DK_SDU_MIP__BASE__API fin(standardInputStream);
+FormatInputStream _COM_AZURE_DEV__BASE__API fin(standardInputStream);
 
 FileDescriptorOutputStream standardOutputStream(
   FileDescriptor::getStandardOutput()
 );
-_DK_SDU_MIP__BASE__API FormatOutputStream fout(standardOutputStream);
+_COM_AZURE_DEV__BASE__API FormatOutputStream fout(standardOutputStream);
 
 FileDescriptorOutputStream standardErrorStream(
   FileDescriptor::getStandardError()
 );
-FormatOutputStream _DK_SDU_MIP__BASE__API ferr(standardErrorStream);
+FormatOutputStream _COM_AZURE_DEV__BASE__API ferr(standardErrorStream);
 
 SoundDevice SoundDevice::soundDevice;
 
@@ -242,4 +242,4 @@ void moduleEntry() {
 void moduleCleanUp() {
 }
 
-_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
+_COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

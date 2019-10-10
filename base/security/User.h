@@ -19,7 +19,7 @@
 #include <base/mem/ReferenceCountedAllocator.h>
 #include <base/collection/Hash.h>
 
-_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+_COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 class Group;
 
@@ -31,7 +31,7 @@ class Group;
   @version 1.2
 */
 
-class _DK_SDU_MIP__BASE__API User : public Object {
+class _COM_AZURE_DEV__BASE__API User : public Object {
   friend class Hash<User>;
   friend class Trustee;
 private:
@@ -51,7 +51,7 @@ public:
     @version 1.1
   */
 
-  class _DK_SDU_MIP__BASE__API UserException : public Exception {
+  class _COM_AZURE_DEV__BASE__API UserException : public Exception {
   public:
 
     /**
@@ -210,4 +210,4 @@ public:
   unsigned long operator()(const User& value) throw();
 };
 
-_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
+_COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

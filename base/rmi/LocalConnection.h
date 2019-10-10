@@ -17,7 +17,7 @@
 #include <base/rmi/Orb.h>
 #include <base/mem/ProtectedPointer.h>
 
-_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+_COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 class LocalScheme;
 
@@ -30,7 +30,7 @@ class LocalScheme;
   @version 1.0
 */
 
-class _DK_SDU_MIP__BASE__API LocalConnection : public OrbConnection {
+class _COM_AZURE_DEV__BASE__API LocalConnection : public OrbConnection {
   friend class LocalScheme;
 private:
   
@@ -104,4 +104,4 @@ public:
   ~LocalConnection() throw();
 };
 
-_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
+_COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

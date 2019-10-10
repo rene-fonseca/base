@@ -17,16 +17,16 @@
 #include <base/concurrency/SingleExclusiveSynchronize.h>
 #include <base/NotImplemented.h>
 
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__UNIX)
-#  define _DK_SDU_MIP__BASE__HAVE_POLL2 // TAG: fixme
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__UNIX)
+#  define _COM_AZURE_DEV__BASE__HAVE_POLL2 // TAG: fixme
 #endif
 
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
 #  include <winsock2.h>
 #  undef ERROR
 #else // unix
 #  include <errno.h>
-#if (defined(_DK_SDU_MIP__BASE__HAVE_POLL))
+#if (defined(_COM_AZURE_DEV__BASE__HAVE_POLL))
 #  include <sys/poll.h>
 #else
 #  include <sys/select.h>
@@ -35,14 +35,14 @@
 #endif
 #endif // flavor
 
-_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+_COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 namespace internal {
   
   class MultipleSockets {
   public:
 
-#if (!defined(_DK_SDU_MIP__BASE__HAVE_POLL))
+#if (!defined(_COM_AZURE_DEV__BASE__HAVE_POLL))
     struct pollfd {
       OperatingSystem::Handle fd;
       unsigned int events;
@@ -60,7 +60,7 @@ void MultipleSockets::add(
   StreamSocket socket,
   unsigned int events)
   throw(ConcurrencyException, AlreadyKeyException, MemoryException) {
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   typedef internal::MultipleSockets::pollfd pollfd;
 
   pollfd entry;
@@ -89,7 +89,7 @@ void MultipleSockets::add(
     pollfd* fds = Cast::pointer<pollfd*>(context.getElements());
     fds[streamSockets.getSize() - 1] = entry;
   }
-#elif (defined(_DK_SDU_MIP__BASE__HAVE_POLL))
+#elif (defined(_COM_AZURE_DEV__BASE__HAVE_POLL))
   struct pollfd fd;
   clear(fd);
   fd.fd = socket.getHandle();
@@ -156,7 +156,7 @@ void MultipleSockets::add(
 
 void MultipleSockets::remove(
   StreamSocket socket) throw(ConcurrencyException, InvalidKey) {
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   typedef internal::MultipleSockets::pollfd pollfd;
   
   SingleExclusiveSynchronize<Guard> _guard(guard);
@@ -177,7 +177,7 @@ void MultipleSockets::remove(
     }
   };
   throw InvalidKey(this);
-#elif (defined(_DK_SDU_MIP__BASE__HAVE_POLL)) // unix (poll)
+#elif (defined(_COM_AZURE_DEV__BASE__HAVE_POLL)) // unix (poll)
   SingleExclusiveSynchronize<Guard> _guard(guard);
   struct pollfd* fds = Cast::pointer<struct pollfd*>(context.getElements());
   for (unsigned int i = 0; i < streamSockets.getSize(); ++i) {
@@ -222,7 +222,7 @@ void MultipleSockets::remove(
 
 unsigned int MultipleSockets::getEvents(
   StreamSocket socket) throw(ConcurrencyException, InvalidKey) {
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   typedef internal::MultipleSockets::pollfd pollfd;
   
   bassert(socket.isValid(), InvalidKey(this));
@@ -240,7 +240,7 @@ unsigned int MultipleSockets::getEvents(
     ++fd;
   }
   throw InvalidKey(this);
-#elif (defined(_DK_SDU_MIP__BASE__HAVE_POLL)) // unix (poll)
+#elif (defined(_COM_AZURE_DEV__BASE__HAVE_POLL)) // unix (poll)
   bassert(socket.isValid(), InvalidKey(this));
   SingleExclusiveSynchronize<Guard> _guard(guard);
   struct pollfd* fd = Cast::pointer<struct pollfd*>(context.getElements());
@@ -293,7 +293,7 @@ unsigned int MultipleSockets::getEvents(
 
 unsigned int MultipleSockets::getFilter(
   StreamSocket socket) const throw(ConcurrencyException, InvalidKey) {
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   typedef internal::MultipleSockets::pollfd pollfd;
   
   ExclusiveSynchronize<Guard> _guard(guard);
@@ -305,7 +305,7 @@ unsigned int MultipleSockets::getFilter(
     ++fd;
   }
   throw InvalidKey(this);
-#elif (defined(_DK_SDU_MIP__BASE__HAVE_POLL)) // unix (poll)
+#elif (defined(_COM_AZURE_DEV__BASE__HAVE_POLL)) // unix (poll)
   ExclusiveSynchronize<Guard> _guard(guard);
   struct pollfd* fd = Cast::pointer<struct pollfd*>(context.getElements());
   for (unsigned int i = 0; i < streamSockets.getSize(); ++i) {
@@ -344,7 +344,7 @@ unsigned int MultipleSockets::getFilter(
 void MultipleSockets::setFilter(
   StreamSocket socket,
   unsigned int events) throw(ConcurrencyException, InvalidKey) {
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   typedef internal::MultipleSockets::pollfd pollfd;
   
   SingleExclusiveSynchronize<Guard> _guard(guard);
@@ -357,7 +357,7 @@ void MultipleSockets::setFilter(
     ++fd;
   }
   throw InvalidKey(this);
-#elif (defined(_DK_SDU_MIP__BASE__HAVE_POLL)) // unix (poll)
+#elif (defined(_COM_AZURE_DEV__BASE__HAVE_POLL)) // unix (poll)
   SingleExclusiveSynchronize<Guard> _guard(guard);
   struct pollfd* fd = Cast::pointer<struct pollfd*>(context.getElements());
   for (unsigned int i = 0; i < streamSockets.getSize(); ++i) {
@@ -395,7 +395,7 @@ void MultipleSockets::setFilter(
 }
 
 unsigned int MultipleSockets::poll() throw(ConcurrencyException, IOException) {
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   typedef internal::MultipleSockets::pollfd pollfd;
   
   SingleExclusiveSynchronize<Guard> _guard(guard);
@@ -447,7 +447,7 @@ unsigned int MultipleSockets::poll() throw(ConcurrencyException, IOException) {
     ++fd;
   }
   return result;
-#elif (defined(_DK_SDU_MIP__BASE__HAVE_POLL)) // unix (poll)
+#elif (defined(_COM_AZURE_DEV__BASE__HAVE_POLL)) // unix (poll)
   SingleExclusiveSynchronize<Guard> _guard(guard);
   struct pollfd* fds = Cast::pointer<struct pollfd*>(context.getElements());
   int result = ::poll(fds, streamSockets.getSize(), -1);
@@ -518,7 +518,7 @@ unsigned int MultipleSockets::poll() throw(ConcurrencyException, IOException) {
 unsigned int MultipleSockets::poll(
   unsigned int milliseconds) throw(ConcurrencyException, IOException) {
   milliseconds = minimum(milliseconds, 999999999U);
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   typedef internal::MultipleSockets::pollfd pollfd;
   
   SingleExclusiveSynchronize<Guard> _guard(guard);
@@ -574,7 +574,7 @@ unsigned int MultipleSockets::poll(
     ++fd;
   }
   return result;
-#elif (defined(_DK_SDU_MIP__BASE__HAVE_POLL)) // unix (poll)
+#elif (defined(_COM_AZURE_DEV__BASE__HAVE_POLL)) // unix (poll)
   SingleExclusiveSynchronize<Guard> _guard(guard);
   pollfd* fds = Cast::pointer<pollfd*>(context.getElements());
   int result = ::poll(fds, streamSockets.getSize(), milliseconds);
@@ -651,7 +651,7 @@ void MultipleSockets::signal(
   if (!listener) {
     return;
   }
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   typedef internal::MultipleSockets::pollfd pollfd;
   
   SingleExclusiveSynchronize<Guard> _guard(guard);
@@ -665,7 +665,7 @@ void MultipleSockets::signal(
     }
     ++fd;
   }
-#elif (defined(_DK_SDU_MIP__BASE__HAVE_POLL)) // unix (poll)
+#elif (defined(_COM_AZURE_DEV__BASE__HAVE_POLL)) // unix (poll)
   SingleExclusiveSynchronize<Guard> _guard(guard);
   struct pollfd* fd =
     Cast::pointer<struct pollfd*>(context.getElements());
@@ -714,4 +714,4 @@ void MultipleSockets::signal(
 MultipleSockets::~MultipleSockets() throw() {
 }
 
-_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
+_COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

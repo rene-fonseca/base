@@ -17,7 +17,7 @@
 #include <base/ByteOrder.h>
 #include <base/filesystem/FileSystem.h>
 
-_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+_COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 CharacterSet CharacterSet::load(
   const String& path) throw(FileException, InvalidFormat) {
@@ -168,4 +168,4 @@ void CharacterSet::save(const String& path, Architecture::ByteOrder byteOrder) c
   }
 }
 
-_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
+_COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

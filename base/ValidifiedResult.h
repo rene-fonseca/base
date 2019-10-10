@@ -17,7 +17,7 @@
 #include <base/InvalidException.h>
 #include <base/Base.h>
 
-_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+_COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 /**
   Automation object used to specify the validity of a result if the type of the
@@ -89,4 +89,4 @@ public:
   }
 };
 
-_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
+_COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

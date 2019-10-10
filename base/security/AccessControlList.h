@@ -20,7 +20,7 @@
 #include <base/collection/Array.h>
 #include <base/collection/InvalidKey.h>
 
-_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+_COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 /**
   Access Control List (ACL).
@@ -31,7 +31,7 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
   @version 1.0
 */
 
-class _DK_SDU_MIP__BASE__API AccessControlList : public Object {
+class _COM_AZURE_DEV__BASE__API AccessControlList : public Object {
 private:
   
   /** The ACL entries. */
@@ -158,4 +158,4 @@ public:
 */
 FormatOutputStream& operator<<(FormatOutputStream& stream, const AccessControlList& acl) throw(IOException);
 
-_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
+_COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

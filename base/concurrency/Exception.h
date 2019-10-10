@@ -15,7 +15,7 @@
 
 #include <base/concurrency/LockException.h>
 
-_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+_COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 /**
   Exception raised by the Barrier class.
@@ -25,7 +25,7 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
   @see Barrier
   @version 1.0
 */
-class _DK_SDU_MIP__BASE__API BarrierException : public LockException {
+class _COM_AZURE_DEV__BASE__API BarrierException : public LockException {
 public:
   
   /**
@@ -63,4 +63,4 @@ public:
   }
 };
 
-_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
+_COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

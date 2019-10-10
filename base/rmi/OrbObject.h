@@ -17,7 +17,7 @@
 #include <base/rmi/OrbException.h>
 #include <base/string/String.h>
 
-_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+_COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 /**
   Object Request Broker object.
@@ -27,7 +27,7 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
   @version 1.0
 */
 
-class _DK_SDU_MIP__BASE__API OrbObject : public Object {
+class _COM_AZURE_DEV__BASE__API OrbObject : public Object {
 public:
   
   /**
@@ -46,4 +46,4 @@ public:
   virtual ~OrbObject() throw();
 };
 
-_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
+_COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

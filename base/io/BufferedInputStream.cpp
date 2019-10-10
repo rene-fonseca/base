@@ -15,7 +15,7 @@
 #include <base/string/FormatOutputStream.h>
 #include <base/Base.h>
 
-_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+_COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 BufferedInputStream::BufferedInputStream(
   InputStream& in, unsigned int size) throw(BindException, MemoryException)
@@ -127,4 +127,4 @@ bool BufferedInputStream::wait(unsigned int timeout) const throw(IOException) {
 BufferedInputStream::~BufferedInputStream() {
 }
 
-_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
+_COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

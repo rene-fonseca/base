@@ -13,11 +13,11 @@
 
 #include <base/ui/Position.h>
 
-_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+_COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 FormatOutputStream& operator<<(FormatOutputStream& stream, const Position& value) throw(IOException) {
   FormatOutputStream::PushContext push(stream);
   return stream << '(' << value.getX() << ',' << value.getY() << ')';
 }
 
-_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
+_COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

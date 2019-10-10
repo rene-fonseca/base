@@ -17,7 +17,7 @@
 #include <base/MemoryException.h>
 #include <base/OutOfRange.h>
 
-_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+_COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 /**
   This class implements a resizeable buffer and provides some low-level
@@ -28,7 +28,7 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
   @version 1.0
 */
 
-class _DK_SDU_MIP__BASE__API Buffer : public Object {
+class _COM_AZURE_DEV__BASE__API Buffer : public Object {
 public:
 
   /** Specifies the granularity of the buffer size. Guaranteed to be greater than 16 bytes. */
@@ -101,4 +101,4 @@ public:
   ~Buffer() throw();
 };
 
-_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
+_COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

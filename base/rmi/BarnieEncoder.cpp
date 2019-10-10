@@ -13,7 +13,7 @@
 
 #include <base/rmi/BarnieEncoder.h>
 
-_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+_COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 #if 0
 
@@ -131,4 +131,4 @@ void BarnieEncoder::write(long double value) throw(IOException) {
 
 #endif
 
-_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
+_COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

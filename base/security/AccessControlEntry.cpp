@@ -14,7 +14,7 @@
 #include <base/security/AccessControlEntry.h>
 #include <base/string/StringOutputStream.h>
 
-_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+_COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 AccessControlEntry::AccessControlEntry() throw()
   : trustee(Trustee::EVERYONE, 0) {
@@ -159,4 +159,4 @@ FormatOutputStream& operator<<(
   return stream << s.getString();
 }
 
-_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
+_COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

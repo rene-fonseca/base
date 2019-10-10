@@ -107,7 +107,7 @@ namespace base {
         EXCEPTION_PRECISION = 0x0020
       };
       
-#define _DK_SDU_MIP__BASE__BUILTIN_ATANL builtin::atanl
+#define _COM_AZURE_DEV__BASE__BUILTIN_ATANL builtin::atanl
       inline long double atanl(long double value) throw() {
         long double result;
         asm (
@@ -119,7 +119,7 @@ namespace base {
         return result;
       }
 
-#define _DK_SDU_MIP__BASE__BUILTIN_ATAN2L builtin::atan2l
+#define _COM_AZURE_DEV__BASE__BUILTIN_ATAN2L builtin::atan2l
       inline long double atan2l(long double y, long double x) throw() {
         long double result;
         asm (
@@ -131,7 +131,7 @@ namespace base {
         return result;
       }
 
-#define _DK_SDU_MIP__BASE__BUILTIN_COTANL builtin::cotanl
+#define _COM_AZURE_DEV__BASE__BUILTIN_COTANL builtin::cotanl
       inline long double cotanl(long double value) throw() {
         long double result;
         asm (
@@ -146,7 +146,7 @@ namespace base {
         return result; // we return original value on error
       }
 
-#define _DK_SDU_MIP__BASE__BUILTIN_FREXPL builtin::frexpl
+#define _COM_AZURE_DEV__BASE__BUILTIN_FREXPL builtin::frexpl
       inline long double frexp(long double value, int* exponent) throw() {
         long double mantissa;
         if (exponent) {
@@ -180,7 +180,7 @@ namespace base {
         return mantissa;
       }
   
-#define _DK_SDU_MIP__BASE__BUILTIN_FABSF builtin::fabsf
+#define _COM_AZURE_DEV__BASE__BUILTIN_FABSF builtin::fabsf
       inline float fabsf(float value) throw() {
         float result;
         asm (
@@ -191,7 +191,7 @@ namespace base {
         return result;
       }
 
-#define _DK_SDU_MIP__BASE__BUILTIN_FABS builtin::fabs
+#define _COM_AZURE_DEV__BASE__BUILTIN_FABS builtin::fabs
       inline double fabs(double value) throw() {
         double result;
         asm (
@@ -202,7 +202,7 @@ namespace base {
         return result;
       }
 
-#define _DK_SDU_MIP__BASE__BUILTIN_FABSL builtin::fabsl
+#define _COM_AZURE_DEV__BASE__BUILTIN_FABSL builtin::fabsl
       inline long double fabsl(long double value) throw() {
         long double result;
         asm (
@@ -213,7 +213,7 @@ namespace base {
         return result;
       }
 
-#define _DK_SDU_MIP__BASE__BUILTIN_LOGL builtin::logl
+#define _COM_AZURE_DEV__BASE__BUILTIN_LOGL builtin::logl
       inline long double logl(long double value) throw() {
         long double result; // log2(x)/log2(e)
         asm (
@@ -229,7 +229,7 @@ namespace base {
       }      
       
       // y = ln(1 + x) = log2(1 + x)/log2(e) - "log epsilon"
-#define _DK_SDU_MIP__BASE__BUILTIN_LOG1PL builtin::log1pl
+#define _COM_AZURE_DEV__BASE__BUILTIN_LOG1PL builtin::log1pl
       inline long double log1pl(long double value) throw() {
         long double result;
         asm (
@@ -245,7 +245,7 @@ namespace base {
       }
 
       // y = log2(x)
-#define _DK_SDU_MIP__BASE__BUILTIN_LOG2L builtin::log2l
+#define _COM_AZURE_DEV__BASE__BUILTIN_LOG2L builtin::log2l
       inline long double log2l(long double value) throw() {
         long double result;
         asm (
@@ -258,7 +258,7 @@ namespace base {
         return result;
       }
 
-#define _DK_SDU_MIP__BASE__BUILTIN_LOG10L builtin::log10l
+#define _COM_AZURE_DEV__BASE__BUILTIN_LOG10L builtin::log10l
       inline long double log10l(long double value) throw() {
         long double result; // log2(x)/log2(10)
         asm (
@@ -273,7 +273,7 @@ namespace base {
         return result;
       }
 
-#define _DK_SDU_MIP__BASE__BUILTIN_LOGBL builtin::lognl
+#define _COM_AZURE_DEV__BASE__BUILTIN_LOGBL builtin::lognl
       inline long double lognl(long double value, long double base) throw() {
         long double result; // log2(value)/(log2(e) * base)
         asm (
@@ -289,7 +289,7 @@ namespace base {
       }
 
       // z = x^y = 2^log2(x)^y = 2^(log2(x) * y)
-#define _DK_SDU_MIP__BASE__BUILTIN_POWL builtin::powl
+#define _COM_AZURE_DEV__BASE__BUILTIN_POWL builtin::powl
       inline long double powl(long double x, long double y) throw() {
         long double result;
         asm (
@@ -337,7 +337,7 @@ namespace base {
       // y = exp(x) = 2^log2(e)^x = 2^(log2(e) * x)
       // y = 2^(trunc(log2(e) * x) + frac(log2(e) * x))
       // y = 2^(trunc(log2(e) * x)) * 2^(frac(log2(e) * x))
-#define _DK_SDU_MIP__BASE__BUILTIN_EXPL builtin::expl
+#define _COM_AZURE_DEV__BASE__BUILTIN_EXPL builtin::expl
       inline long double expl(long double value) throw() {
         long double result;
         asm (
@@ -360,7 +360,7 @@ namespace base {
         return result;
       }
 
-#define _DK_SDU_MIP__BASE__BUILTIN_LDEXPL builtin::ldexpl
+#define _COM_AZURE_DEV__BASE__BUILTIN_LDEXPL builtin::ldexpl
       inline long double ldexpl(long double value, int exponent) throw() {
         long double result;
         asm (
@@ -375,7 +375,7 @@ namespace base {
         return result;
       }
 
-#define _DK_SDU_MIP__BASE__BUILTIN_SQRTL builtin::sqrtl
+#define _COM_AZURE_DEV__BASE__BUILTIN_SQRTL builtin::sqrtl
       inline long double sqrtl(long double value) throw() {
         long double result;
         asm (
@@ -386,7 +386,7 @@ namespace base {
         return result;
       }
 
-#define _DK_SDU_MIP__BASE__BUILTIN_COSL builtin::cosl
+#define _COM_AZURE_DEV__BASE__BUILTIN_COSL builtin::cosl
       inline long double cosl(long double value) throw() {
         long double result;
         asm (
@@ -397,7 +397,7 @@ namespace base {
         return result;
       }
   
-#define _DK_SDU_MIP__BASE__BUILTIN_SINL builtin::sinl
+#define _COM_AZURE_DEV__BASE__BUILTIN_SINL builtin::sinl
       inline long double sinl(long double value) throw() {
         long double result;
         asm (
@@ -408,7 +408,7 @@ namespace base {
         return result;
       }
 
-#define _DK_SDU_MIP__BASE__BUILTIN_SINCOSL builtin::sincosl
+#define _COM_AZURE_DEV__BASE__BUILTIN_SINCOSL builtin::sincosl
       inline long double sincosl(long double value) throw() {
         long double cosine;
         long double sine;
@@ -420,7 +420,7 @@ namespace base {
         return cosine; // TAG: FIXME
       }
 
-#define _DK_SDU_MIP__BASE__BUILTIN_TANL builtin::tanl
+#define _COM_AZURE_DEV__BASE__BUILTIN_TANL builtin::tanl
       inline long double tanl(long double value) throw() {
         long double result;
         asm (

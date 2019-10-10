@@ -21,7 +21,7 @@
 #include <base/io/async/AsynchronousStream.h>
 #include <base/OperatingSystem.h>
 
-_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+_COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 typedef AsynchronousWriteOperation A;
 
@@ -29,7 +29,7 @@ typedef AsynchronousWriteOperation A;
   Asynchronous IO stream.
 
 */
-class _DK_SDU_MIP__BASE__API AsynchronousIOStream : public virtual AsynchronousStream {
+class _COM_AZURE_DEV__BASE__API AsynchronousIOStream : public virtual AsynchronousStream {
   friend class AsynchronousReadOperation;
   friend class AsynchronousReadContext;
   friend class AsynchronousWriteOperation;
@@ -71,4 +71,4 @@ public:
     AsynchronousWriteEventListener* listener) throw(AsynchronousException) = 0;
 };
 
-_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
+_COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

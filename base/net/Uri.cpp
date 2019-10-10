@@ -15,7 +15,7 @@
 #include <base/net/Uri.h>
 #include <base/string/ASCIITraits.h>
 
-_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+_COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 // global reserved chars: ; / ? : @ & = + $ , (must be encode if present in URI components)
 // all global reserved chars may not be reserved for all components
@@ -494,4 +494,4 @@ FormatOutputStream& operator<<(FormatOutputStream& stream, const Uri& value) thr
   return stream << value.getUri();
 }
 
-_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
+_COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

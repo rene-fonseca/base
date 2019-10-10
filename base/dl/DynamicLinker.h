@@ -16,7 +16,7 @@
 #include <base/dl/LinkerException.h>
 #include <base/string/String.h>
 
-_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+_COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 /**
   This class provides on-demand loading of (shared) objects.
@@ -25,7 +25,7 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
   @version 1.2
 */
 
-class _DK_SDU_MIP__BASE__API DynamicLinker {
+class _COM_AZURE_DEV__BASE__API DynamicLinker {
 private:
 
   /** Opaque handle to the module. */
@@ -127,4 +127,4 @@ public:
   ~DynamicLinker();
 };
 
-_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
+_COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

@@ -18,7 +18,7 @@
 #include <base/io/FilterOutputStream.h>
 #include <base/UnexpectedFailure.h>
 
-_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+_COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 Huffman::Huffman() throw() {
 }
@@ -653,4 +653,4 @@ void Huffman::decode(OutputStream& stream, const uint8* buffer, unsigned int siz
   Decoder decoder(stream, buffer, size);
 }
 
-_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
+_COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

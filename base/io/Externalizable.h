@@ -16,7 +16,7 @@
 #include <base/io/InputStream.h>
 #include <base/io/OutputStream.h>
 
-_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+_COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 /**
   Interface implemented by classes that can be externalized (i.e. instances can
@@ -62,4 +62,4 @@ public:
   virtual void writeExternal(OutputStream* out) throw(IOException) = 0;
 };
 
-_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
+_COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

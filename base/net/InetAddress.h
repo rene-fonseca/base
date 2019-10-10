@@ -21,7 +21,7 @@
 #include <base/net/NetworkException.h>
 #include <base/Primitives.h>
 
-_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+_COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 /**
   This class represents an Internet Protocol (IP) address (supports both IPv4
@@ -35,7 +35,7 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
   @version 1.2
 */
 
-class _DK_SDU_MIP__BASE__API InetAddress : public virtual Object {
+class _COM_AZURE_DEV__BASE__API InetAddress : public virtual Object {
 public:
 
   /** Family of internet addresses. */
@@ -91,13 +91,13 @@ private:
   /** The family of the address. */
   Family family = IP_VERSION_4;
   /** Internal structure holding the IP address in network byte order. */
-_DK_SDU_MIP__BASE__PACKED__BEGIN
+_COM_AZURE_DEV__BASE__PACKED__BEGIN
   union {
     uint32 words[4]; // enough for IPv6 and IPv4 addresses
     uint16 halfWords[8];
     uint8 octets[16];
-  } _DK_SDU_MIP__BASE__PACKED address;
-_DK_SDU_MIP__BASE__PACKED__END
+  } _COM_AZURE_DEV__BASE__PACKED address;
+_COM_AZURE_DEV__BASE__PACKED__END
 
   /**
     Parses the specified string as an Internet address (both IPv4 and IPv6).
@@ -359,4 +359,4 @@ public:
   }
 };
 
-_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
+_COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

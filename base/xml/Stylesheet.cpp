@@ -14,7 +14,7 @@
 #include <base/platforms/features.h>
 #include <base/xml/Stylesheet.h>
 
-#if defined(_DK_SDU_MIP__BASE__XSLT_XMLSOFT_ORG)
+#if defined(_COM_AZURE_DEV__BASE__XSLT_XMLSOFT_ORG)
 //#  include <libxml2/libxml/xmlmemory.h>
 //#  include <libxml2/libxml/xmlIO.h>
 //#  include <libxml2/libxml/xinclude.h>
@@ -26,14 +26,14 @@
 //#  include <libxslt/xsltutils.h>
 #endif
 
-_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+_COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 Stylesheet::StylesheetImpl::StylesheetImpl(void* context) throw() {
   this->context = context;
 }
 
 Stylesheet::StylesheetImpl::~StylesheetImpl() throw() {
-#if defined(_DK_SDU_MIP__BASE__XSLT_XMLSOFT_ORG)
+#if defined(_COM_AZURE_DEV__BASE__XSLT_XMLSOFT_ORG)
   if (context) {
     fout << __func__ << ENDL;
     ::xsltFreeStylesheet((xsltStylesheetPtr)context);
@@ -43,7 +43,7 @@ Stylesheet::StylesheetImpl::~StylesheetImpl() throw() {
 }
 
 Stylesheet::Stylesheet() throw() {
-#if defined(_DK_SDU_MIP__BASE__XSLT_XMLSOFT_ORG)
+#if defined(_COM_AZURE_DEV__BASE__XSLT_XMLSOFT_ORG)
   xsltStylesheetPtr temp = ::xsltNewStylesheet();
   bassert(temp, Exception(this)); // FIXME
   try {
@@ -56,7 +56,7 @@ Stylesheet::Stylesheet() throw() {
 }
 
 Stylesheet::Stylesheet(const String& filename) throw() {
-#if defined(_DK_SDU_MIP__BASE__XSLT_XMLSOFT_ORG)
+#if defined(_COM_AZURE_DEV__BASE__XSLT_XMLSOFT_ORG)
   ::xmlSubstituteEntitiesDefault(1); // FIXME
   xmlLoadExtDtdDefaultValue = 1; // FIXME
   
@@ -74,7 +74,7 @@ Stylesheet::Stylesheet(const String& filename) throw() {
 }
 
 Stylesheet::Stylesheet(const Document& document) throw() {
-#if defined(_DK_SDU_MIP__BASE__XSLT_XMLSOFT_ORG)
+#if defined(_COM_AZURE_DEV__BASE__XSLT_XMLSOFT_ORG)
   ::xmlSubstituteEntitiesDefault(1); // FIXME
   xmlLoadExtDtdDefaultValue = 1; // FIXME
 
@@ -94,7 +94,7 @@ Stylesheet::Stylesheet(const Document& document) throw() {
 }
 
 String Stylesheet::getOutputMethod() const throw() {
-#if defined(_DK_SDU_MIP__BASE__XSLT_XMLSOFT_ORG)
+#if defined(_COM_AZURE_DEV__BASE__XSLT_XMLSOFT_ORG)
   xsltStylesheetPtr temp =
     Cast::pointer<xsltStylesheetPtr>(stylesheet->getContext());
   bassert(temp, Exception(this));
@@ -105,7 +105,7 @@ String Stylesheet::getOutputMethod() const throw() {
 }
 
 String Stylesheet::getNamespace() const throw() {
-#if defined(_DK_SDU_MIP__BASE__XSLT_XMLSOFT_ORG)
+#if defined(_COM_AZURE_DEV__BASE__XSLT_XMLSOFT_ORG)
   xsltStylesheetPtr temp =
     Cast::pointer<xsltStylesheetPtr>(stylesheet->getContext());
   bassert(temp, Exception(this));
@@ -116,7 +116,7 @@ String Stylesheet::getNamespace() const throw() {
 }
 
 String Stylesheet::getVersion() const throw() {
-#if defined(_DK_SDU_MIP__BASE__XSLT_XMLSOFT_ORG)
+#if defined(_COM_AZURE_DEV__BASE__XSLT_XMLSOFT_ORG)
   xsltStylesheetPtr temp =
     Cast::pointer<xsltStylesheetPtr>(stylesheet->getContext());
   bassert(temp, Exception(this));
@@ -127,7 +127,7 @@ String Stylesheet::getVersion() const throw() {
 }
 
 String Stylesheet::getEncoding() const throw() {
-#if defined(_DK_SDU_MIP__BASE__XSLT_XMLSOFT_ORG)
+#if defined(_COM_AZURE_DEV__BASE__XSLT_XMLSOFT_ORG)
   xsltStylesheetPtr temp =
     Cast::pointer<xsltStylesheetPtr>(stylesheet->getContext());
   bassert(temp, Exception(this));
@@ -138,7 +138,7 @@ String Stylesheet::getEncoding() const throw() {
 }
 
 bool Stylesheet::omitXmlDeclaration() const throw() {
-#if defined(_DK_SDU_MIP__BASE__XSLT_XMLSOFT_ORG)
+#if defined(_COM_AZURE_DEV__BASE__XSLT_XMLSOFT_ORG)
   xsltStylesheetPtr temp =
     Cast::pointer<xsltStylesheetPtr>(stylesheet->getContext());
   bassert(temp, Exception(this));
@@ -149,7 +149,7 @@ bool Stylesheet::omitXmlDeclaration() const throw() {
 }
 
 String Stylesheet::getPublicId() const throw() {
-#if defined(_DK_SDU_MIP__BASE__XSLT_XMLSOFT_ORG)
+#if defined(_COM_AZURE_DEV__BASE__XSLT_XMLSOFT_ORG)
   xsltStylesheetPtr temp =
     Cast::pointer<xsltStylesheetPtr>(stylesheet->getContext());
   bassert(temp, Exception(this));
@@ -160,7 +160,7 @@ String Stylesheet::getPublicId() const throw() {
 }
 
 String Stylesheet::getSystemId() const throw() {
-#if defined(_DK_SDU_MIP__BASE__XSLT_XMLSOFT_ORG)
+#if defined(_COM_AZURE_DEV__BASE__XSLT_XMLSOFT_ORG)
   xsltStylesheetPtr temp =
     Cast::pointer<xsltStylesheetPtr>(stylesheet->getContext());
   bassert(temp, Exception(this));
@@ -171,7 +171,7 @@ String Stylesheet::getSystemId() const throw() {
 }
 
 String Stylesheet::getMediaType() const throw() {
-#if defined(_DK_SDU_MIP__BASE__XSLT_XMLSOFT_ORG)
+#if defined(_COM_AZURE_DEV__BASE__XSLT_XMLSOFT_ORG)
   xsltStylesheetPtr temp =
     Cast::pointer<xsltStylesheetPtr>(stylesheet->getContext());
   bassert(temp, Exception(this));
@@ -182,7 +182,7 @@ String Stylesheet::getMediaType() const throw() {
 }
 
 bool Stylesheet::isStandalone() const throw() {
-#if defined(_DK_SDU_MIP__BASE__XSLT_XMLSOFT_ORG)
+#if defined(_COM_AZURE_DEV__BASE__XSLT_XMLSOFT_ORG)
   xsltStylesheetPtr temp =
     Cast::pointer<xsltStylesheetPtr>(stylesheet->getContext());
   bassert(temp, Exception(this));
@@ -193,7 +193,7 @@ bool Stylesheet::isStandalone() const throw() {
 }
 
 // bool Stylesheet::stripAllSpaces() const throw() {
-// #if defined(_DK_SDU_MIP__BASE__XSLT_XMLSOFT_ORG)
+// #if defined(_COM_AZURE_DEV__BASE__XSLT_XMLSOFT_ORG)
 //   xsltStylesheetPtr temp =
 //     Cast::pointer<xsltStylesheetPtr>(stylesheet->getContext());
 //   bassert(temp, Exception(this));
@@ -204,7 +204,7 @@ bool Stylesheet::isStandalone() const throw() {
 // }
 
 bool Stylesheet::indent() const throw() {
-#if defined(_DK_SDU_MIP__BASE__XSLT_XMLSOFT_ORG)
+#if defined(_COM_AZURE_DEV__BASE__XSLT_XMLSOFT_ORG)
   xsltStylesheetPtr temp =
     Cast::pointer<xsltStylesheetPtr>(stylesheet->getContext());
   bassert(temp, Exception(this));
@@ -215,7 +215,7 @@ bool Stylesheet::indent() const throw() {
 }
 
 Array<String> Stylesheet::getExcludedPrefixes() const throw() {
-#if defined(_DK_SDU_MIP__BASE__XSLT_XMLSOFT_ORG)
+#if defined(_COM_AZURE_DEV__BASE__XSLT_XMLSOFT_ORG)
   xsltStylesheetPtr temp =
     Cast::pointer<xsltStylesheetPtr>(stylesheet->getContext());
   bassert(temp, Exception(this));
@@ -238,4 +238,4 @@ Array<String> Stylesheet::getExtensions() const throw() {
 }
 #endif
 
-_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
+_COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

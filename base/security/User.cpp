@@ -18,7 +18,7 @@
 #include <base/string/WideString.h>
 #include <base/NotImplemented.h>
 
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
 #  include <windows.h>
 #  include <aclapi.h>
 #  include <lm.h>
@@ -35,10 +35,10 @@
 #  include <unistd.h>
 #endif // flavor
 
-_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+_COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 User User::getCurrentUser() throw(UserException) {
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   PSECURITY_DESCRIPTOR securityDescriptor = nullptr;
   PSID ownerSID = nullptr;
   bassert(::GetSecurityInfo(
@@ -62,7 +62,7 @@ User User::getCurrentUser() throw(UserException) {
 }
 
 User::User(unsigned long _id) throw(OutOfDomain) : integralId(_id) {
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   throw OutOfDomain("Invalid user id", this);
 #else
 //   bassert(
@@ -73,7 +73,7 @@ User::User(unsigned long _id) throw(OutOfDomain) : integralId(_id) {
 }
 
 User::User(const void* _id) throw(OutOfDomain) {
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   if (_id == 0) {
     integralId = INVALID;
     return;
@@ -99,7 +99,7 @@ User& User::operator=(const User& eq) throw() {
 }
 
 bool User::operator==(const User& eq) const throw() {
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   if (!isValid() || (!eq.isValid())) {
     return !isValid() && !eq.isValid();
   }
@@ -111,7 +111,7 @@ bool User::operator==(const User& eq) const throw() {
 }
 
 User::User(const String& name) throw(UserException) {
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   SID_NAME_USE sidType;
   uint8 sid[SECURITY_MAX_SID_SIZE];
   DWORD size = sizeof(sid);
@@ -150,7 +150,7 @@ String User::getName(bool fallback) const throw(UserException) {
   if (!isValid()) {
     return Literal("<unknown>");
   }
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   SID_NAME_USE sidType;
   wchar name[UNLEN+1];
   DWORD nameSize = getArraySize(name);
@@ -198,7 +198,7 @@ String User::getName(bool fallback) const throw(UserException) {
 
 String User::getHomeFolder() const throw(UserException) {
   bassert(isValid(), UserException(this));
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   // TAG: fixme
 //   BOOL GetUserProfileDirectory(
 //     HANDLE hToken,
@@ -223,7 +223,7 @@ String User::getHomeFolder() const throw(UserException) {
 }
 
 bool User::isAdmin() const throw(UserException) {
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   return false;
 //   BOOL isMember = FALSE;
 //   if (id != User::INVALID) {
@@ -243,7 +243,7 @@ bool User::isAdmin() const throw(UserException) {
 }
 
 bool User::isMemberOf(const Group& group) throw(UserException) {
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   throw NotImplemented(this);
 #else // unix
   throw NotImplemented(this);
@@ -252,7 +252,7 @@ bool User::isMemberOf(const Group& group) throw(UserException) {
 
 Array<String> User::getGroups() throw(UserException) {
   Array<String> result;
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   bassert(isValid(), UserException(this));
   SID_NAME_USE sidType;
   WCHAR name[UNLEN+1];
@@ -301,7 +301,7 @@ FormatOutputStream& operator<<(
   if (!value.isValid()) {
     return stream << "<unknown>";
   }
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   StringOutputStream s;
   PSID sid = (PSID)value.getId(); // must be valid
   
@@ -337,7 +337,7 @@ FormatOutputStream& operator<<(
 }
 
 unsigned long Hash<User>::operator()(const User& value) throw() {
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   if (!value.id.isValid()) {
     return 0;
   }
@@ -353,4 +353,4 @@ unsigned long Hash<User>::operator()(const User& value) throw() {
 #endif // flavor
 }
 
-_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
+_COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

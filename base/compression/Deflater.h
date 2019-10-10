@@ -16,7 +16,7 @@
 #include <base/io/PushInterface.h>
 #include <base/io/PullInterface.h>
 
-_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+_COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 /**
   Interface implemented by compression classes. The uncompressed and compressed
@@ -27,7 +27,7 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
   @ingroup compression
   @version 1.0
 */
-class _DK_SDU_MIP__BASE__API Deflater : public virtual PushInterface, public virtual PullInterface {
+class _COM_AZURE_DEV__BASE__API Deflater : public virtual PushInterface, public virtual PullInterface {
 public:
   
   /**
@@ -48,4 +48,4 @@ public:
   }
 };
 
-_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
+_COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

@@ -19,7 +19,7 @@
 #include <base/xml/DOMEvent.h>
 #include <base/string/String.h>
 
-_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+_COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 /**
   Document Object Model (DOM) implementation.
@@ -29,7 +29,7 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
   @version 1.0
 */
 
-class _DK_SDU_MIP__BASE__API DOMImplementation : public Object {
+class _COM_AZURE_DEV__BASE__API DOMImplementation : public Object {
 public:
 
   enum Flag {
@@ -46,14 +46,14 @@ public:
     RECOVERING /**< Recovering mode. */
   };
 
-  class _DK_SDU_MIP__BASE__API Interface {
+  class _COM_AZURE_DEV__BASE__API Interface {
   };
 
-  class _DK_SDU_MIP__BASE__API EventListener : public Interface {
+  class _COM_AZURE_DEV__BASE__API EventListener : public Interface {
   public:
   };
   
-  class _DK_SDU_MIP__BASE__API DocumentEvent : public Interface {
+  class _COM_AZURE_DEV__BASE__API DocumentEvent : public Interface {
   public:
 
     /**
@@ -62,11 +62,11 @@ public:
     virtual DOMEvent createEvent(const String& type) throw(DOMException) = 0;
   };
 
-  class _DK_SDU_MIP__BASE__API EventException : public Exception {
+  class _COM_AZURE_DEV__BASE__API EventException : public Exception {
   public:
   };
   
-  class _DK_SDU_MIP__BASE__API EventTarget : public Interface {
+  class _COM_AZURE_DEV__BASE__API EventTarget : public Interface {
   public:
     
     virtual void addEventListener(const String& type,
@@ -218,4 +218,4 @@ public:
     bool spaces = false) throw(DOMException);
 };
 
-_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
+_COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

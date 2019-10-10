@@ -13,7 +13,7 @@
 
 #include <base/string/ASCIITraits.h>
 
-_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+_COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 const char ASCIITraits::LOWER_DIGITS[] = "0123456789abcdef";
 const char ASCIITraits::UPPER_DIGITS[] = "0123456789ABCDEF";
@@ -210,4 +210,4 @@ namespace ASCIITraitsImpl {
 
 const ASCIITraits::CharacterDescriptor* ASCIITraits::lookup = ASCIITraitsImpl::lookup;
 
-_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
+_COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

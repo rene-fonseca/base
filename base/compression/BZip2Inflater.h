@@ -17,7 +17,7 @@
 #include <base/compression/Inflater.h>
 #include <base/mem/Allocator.h>
 
-_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+_COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 /**
   BZip2 inflater push stream.
@@ -27,7 +27,7 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
   @version 1.0
 */
 
-class _DK_SDU_MIP__BASE__API BZip2Inflater : public Object, public virtual Inflater {
+class _COM_AZURE_DEV__BASE__API BZip2Inflater : public Object, public virtual Inflater {
 public:
   
   /** The size of the decompression buffer. */
@@ -102,4 +102,4 @@ public:
   virtual ~BZip2Inflater() throw();
 };
 
-_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
+_COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

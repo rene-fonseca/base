@@ -15,11 +15,11 @@
 
 #include <base/rmi/Encoder.h>
 
-_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+_COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 // TAG: need low-level push pull interface
 
-class _DK_SDU_MIP__BASE__API LittleEndianEncoder : public Encoder {
+class _COM_AZURE_DEV__BASE__API LittleEndianEncoder : public Encoder {
 private:
   
   // output stream
@@ -135,4 +135,4 @@ public:
   }
 };
 
-_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
+_COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

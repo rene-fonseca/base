@@ -17,9 +17,9 @@
 #include <base/platforms/backend/WindowImpl.h>
 
 // TAG: put in static description
-#define _DK_SDU_MIP__BASE__GLX_LIBRARY "libGL.so"
+#define _COM_AZURE_DEV__BASE__GLX_LIBRARY "libGL.so"
 
-_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+_COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 namespace native {
   
@@ -135,7 +135,7 @@ namespace native {
     if (!dynamicLinker) {
       // never release
       dynamicLinker = new DynamicLinker(
-        MESSAGE(_DK_SDU_MIP__BASE__GLX_LIBRARY)
+        MESSAGE(_COM_AZURE_DEV__BASE__GLX_LIBRARY)
       );
       if (!dynamicLinker) {
         return false;
@@ -199,4 +199,4 @@ namespace native {
 
 }; // end of native namespace
 
-_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
+_COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

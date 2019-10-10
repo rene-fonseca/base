@@ -20,11 +20,11 @@
 #include <base/NotImplemented.h>
 #include <base/security/User.h>
 
-#if defined(_DK_SDU_MIP__BASE__LARGE_FILE_SYSTEM)
+#if defined(_COM_AZURE_DEV__BASE__LARGE_FILE_SYSTEM)
 #  define _LARGEFILE64_SOURCE 1
 #endif
 
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
 #  include <base/platforms/win32/AsyncReadFileContext.h> // platform specific
 #  include <base/platforms/win32/AsyncWriteFileContext.h> // platform specific
 #  if !defined(_WIN32_WINNT)
@@ -84,7 +84,7 @@ typedef struct _REPARSE_DATA_BUFFER {
 #  include <string.h> // required by FD_SET on solaris
 #  include <sys/mman.h>
 
-#  if (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__SOLARIS)
+#  if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__SOLARIS)
 #    include <sys/acl.h> // solaris and irix
 enum {
   _COM_SUN__ACL_USER = USER,
@@ -92,16 +92,16 @@ enum {
 };
 #    undef USER
 #    undef GROUP
-#  elif (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__IRIX65)
+#  elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__IRIX65)
 #    include <sys/acl.h> // irix
 #  endif
 
 #  undef assert
 #endif // flavor
 
-_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+_COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   inline Date FileTimeToDate(const FILETIME& time) {
     return Date((Cast::impersonate<int64>(time) - 116444736000000000LL)/10000000);
   }
@@ -110,7 +110,7 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 File::FileHandle::~FileHandle() {
   // TAG: throw exception if region of file is still locked
   if (isValid()) { // dont try to close if handle is invalidated
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
     if (!::CloseHandle(getHandle())) {
       throw FileException("Unable to close file", this);
     }
@@ -127,7 +127,7 @@ File::File() throw() : fd(File::FileHandle::invalid) {
 
 File::File(const String& path, Access access, unsigned int options) throw(AccessDenied, FileNotFound)
   : fd(File::FileHandle::invalid) {
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   DWORD creationFlags;
   switch (options & (CREATE | TRUNCATE)) {
   case 0:
@@ -225,7 +225,7 @@ File::File(const String& path, Access access, unsigned int options) throw(Access
   fd = new FileHandle(handle);
 #else // unix
   // TAG: exclusive file locking problem for NFS
-#if defined(_DK_SDU_MIP__BASE__LARGE_FILE_SYSTEM)
+#if defined(_COM_AZURE_DEV__BASE__LARGE_FILE_SYSTEM)
   int flags = O_LARGEFILE;
 #else
   int flags = 0;
@@ -284,7 +284,7 @@ bool File::isClosed() const throw() {
 // TAG: need methods get owner, get group...
 
 unsigned int File::getMode() const throw(FileException) {
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   PSECURITY_DESCRIPTOR securityDescriptor = nullptr;
   PSID ownerSID = nullptr;
   PSID groupSID = nullptr;
@@ -405,7 +405,7 @@ unsigned int File::getMode() const throw(FileException) {
   }
   return mode;
 #else // unix
-  #if defined(_DK_SDU_MIP__BASE__LARGE_FILE_SYSTEM)
+  #if defined(_COM_AZURE_DEV__BASE__LARGE_FILE_SYSTEM)
     struct stat64 status;
     int error = ::fstat64(fd->getHandle(), &status);
   #else
@@ -474,7 +474,7 @@ unsigned int File::getMode() const throw(FileException) {
 
 AccessControlList File::getACL() const throw(FileException) {
   AccessControlList result;
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   PSECURITY_DESCRIPTOR securityDescriptor = nullptr;
   PACL acl = nullptr;
   bassert(::GetSecurityInfo(fd->getHandle(), SE_FILE_OBJECT, DACL_SECURITY_INFORMATION,
@@ -622,7 +622,7 @@ AccessControlList File::getACL() const throw(FileException) {
     result.add(AccessControlEntry(Trustee(Trustee::UNSPECIFIED, (const void*)sid), permissions));
   }
   ::LocalFree(securityDescriptor);
-#elif (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__SOLARIS)
+#elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__SOLARIS)
   aclent_t entries[MAX_ACL_ENTRIES];
   int numberOfEntries = ::facl(fd->getHandle(), GETACL, MAX_ACL_ENTRIES, entries);
   bassert(numberOfEntries >= 0, FileException("Unable to get ACL", this));
@@ -646,10 +646,10 @@ AccessControlList File::getACL() const throw(FileException) {
       result.add(AccessControlEntry(Trustee(Trustee::EVERYONE, 0), ((mode & S_IROTH) ? AccessControlEntry::READ : 0) | ((mode & S_IWOTH) ? AccessControlEntry::WRITE : 0) | ((mode & S_IXOTH) ? AccessControlEntry::EXECUTE : 0)));
     }
   }
-#elif (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__IRIX65)
+#elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__IRIX65)
   throw NotImplemented(this);
 #else // unix
-  #if defined(_DK_SDU_MIP__BASE__LARGE_FILE_SYSTEM)
+  #if defined(_COM_AZURE_DEV__BASE__LARGE_FILE_SYSTEM)
     struct stat64 status;
     bassert(::fstat64(fd->getHandle(), &status) == 0, FileException(this));
   #else
@@ -680,7 +680,7 @@ AccessControlList File::getACL() const throw(FileException) {
 }
 
 Trustee File::getOwner() const throw(FileException) {
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   PSECURITY_DESCRIPTOR securityDescriptor = nullptr;
   PSID ownerSID = nullptr;
   bassert(::GetSecurityInfo(fd->getHandle(), SE_FILE_OBJECT,
@@ -692,7 +692,7 @@ Trustee File::getOwner() const throw(FileException) {
   ::LocalFree(securityDescriptor);
   return owner;
 #else // unix
-  #if defined(_DK_SDU_MIP__BASE__LARGE_FILE_SYSTEM)
+  #if defined(_COM_AZURE_DEV__BASE__LARGE_FILE_SYSTEM)
     struct stat64 status;
     if (::fstat64(fd->getHandle(), &status) || (!S_ISREG(status.st_mode))) {
       throw FileException("Not a file", this);
@@ -708,7 +708,7 @@ Trustee File::getOwner() const throw(FileException) {
 }
 
 void File::changeOwner(const String& path, const Trustee& owner, const Trustee& group, bool followLink) throw(FileException) {
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   throw NotImplemented(Type::getType<File>()); // TAG: fixme
 
   //Privilege::askFor(Privilege::CHANGE_OWNER|Privilege::RESTORE|Privilege::BACKUP|Privilege::CHANGE_NOTIFY);
@@ -740,7 +740,7 @@ void File::changeOwner(const String& path, const Trustee& owner, const Trustee& 
 }
 
 Trustee File::getGroup() const throw(FileException) {
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   PSECURITY_DESCRIPTOR securityDescriptor = nullptr;
   PSID groupSID = nullptr;
   bassert(::GetSecurityInfo(fd->getHandle(), SE_FILE_OBJECT,
@@ -752,7 +752,7 @@ Trustee File::getGroup() const throw(FileException) {
   ::LocalFree(securityDescriptor);
   return group;
 #else // unix
-  #if defined(_DK_SDU_MIP__BASE__LARGE_FILE_SYSTEM)
+  #if defined(_COM_AZURE_DEV__BASE__LARGE_FILE_SYSTEM)
     struct stat64 status;
     if (::fstat64(fd->getHandle(), &status) || (!S_ISREG(status.st_mode))) {
       throw FileException("Not a file", this);
@@ -768,8 +768,8 @@ Trustee File::getGroup() const throw(FileException) {
 }
 
 long long File::getSize() const throw(FileException) {
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
-  #if (_DK_SDU_MIP__BASE__OS >= _DK_SDU_MIP__BASE__W2K)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
+  #if (_COM_AZURE_DEV__BASE__OS >= _COM_AZURE_DEV__BASE__W2K)
     LARGE_INTEGER size; // TAG: unresolved possible byte order problem for big endian architectures
     bassert(::GetFileSizeEx(fd->getHandle(), &size), FileException("Unable to get file size", this));
   #else
@@ -781,7 +781,7 @@ long long File::getSize() const throw(FileException) {
   #endif
   return size.QuadPart;
 #else // unix
-  #if defined(_DK_SDU_MIP__BASE__LARGE_FILE_SYSTEM)
+  #if defined(_COM_AZURE_DEV__BASE__LARGE_FILE_SYSTEM)
     struct stat64 status;
     int result = ::fstat64(fd->getHandle(), &status);
   #else
@@ -794,7 +794,7 @@ long long File::getSize() const throw(FileException) {
 }
 
 long long File::getPosition() const throw(FileException) {
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   LARGE_INTEGER position;
   position.QuadPart = 0;
   position.LowPart = ::SetFilePointer(fd->getHandle(), 0, &position.HighPart, FILE_CURRENT);
@@ -806,7 +806,7 @@ long long File::getPosition() const throw(FileException) {
 //  }
   return position.QuadPart;
 #else // unix
-  #if defined(_DK_SDU_MIP__BASE__LARGE_FILE_SYSTEM)
+  #if defined(_COM_AZURE_DEV__BASE__LARGE_FILE_SYSTEM)
     return ::lseek64(fd->getHandle(), 0, SEEK_CUR); // should never fail
   #else
     return ::lseek(fd->getHandle(), 0, SEEK_CUR); // should never fail
@@ -815,7 +815,7 @@ long long File::getPosition() const throw(FileException) {
 }
 
 void File::setPosition(long long position, Whence whence) throw(FileException) {
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   static DWORD relativeTo[] = {FILE_BEGIN, FILE_CURRENT, FILE_END};
   LARGE_INTEGER temp;
   temp.QuadPart = position;
@@ -828,7 +828,7 @@ void File::setPosition(long long position, Whence whence) throw(FileException) {
 //  }
 #else // unix
   static int relativeTo[] = {SEEK_SET, SEEK_CUR, SEEK_END};
-  #if defined(_DK_SDU_MIP__BASE__LARGE_FILE_SYSTEM)
+  #if defined(_COM_AZURE_DEV__BASE__LARGE_FILE_SYSTEM)
     ::lseek64(fd->getHandle(), position, relativeTo[whence]); // should never fail
   #else
     bassert(position <= PrimitiveTraits<int>::MAXIMUM, FileException("Unable to set position", this));
@@ -839,13 +839,13 @@ void File::setPosition(long long position, Whence whence) throw(FileException) {
 
 void File::truncate(long long size) throw(FileException) {
   long long oldSize = File::getSize();
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   setPosition(size);
   if (!::SetEndOfFile(fd->getHandle())) {
     throw FileException("Unable to truncate", this);
   }
 #else // unix
-  #if defined(_DK_SDU_MIP__BASE__LARGE_FILE_SYSTEM)
+  #if defined(_COM_AZURE_DEV__BASE__LARGE_FILE_SYSTEM)
     if (::ftruncate64(fd->getHandle(), size)) {
       throw FileException("Unable to truncate", this);
     }
@@ -874,7 +874,7 @@ void File::truncate(long long size) throw(FileException) {
 }
 
 void File::flush() throw(FileException) {
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   if (!::FlushFileBuffers(fd->getHandle())) {
     throw FileException("Unable to flush", this);
   }
@@ -887,7 +887,7 @@ void File::flush() throw(FileException) {
 
 void File::lock(
   const FileRegion& region, bool exclusive) throw(FileException) {
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   bassert(
     (region.getOffset() >= 0) && (region.getSize() >= 0),
     FileException("Unable to lock region", this)
@@ -918,7 +918,7 @@ void File::lock(
   ::WaitForSingleObject(overlapped.hEvent, INFINITE); // blocking wait for lock
   ::CloseHandle(overlapped.hEvent);
 #else // unix
-  #if defined(_DK_SDU_MIP__BASE__LARGE_FILE_SYSTEM)
+  #if defined(_COM_AZURE_DEV__BASE__LARGE_FILE_SYSTEM)
     struct flock64 lock;
     lock.l_type = exclusive ? F_WRLCK : F_RDLCK; // request exclusive or shared lock
     lock.l_whence = SEEK_SET; // offset from beginning of file
@@ -963,7 +963,7 @@ void File::lock(
 
 bool File::tryLock(
   const FileRegion& region, bool exclusive) throw(FileException) {
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   bassert((region.getOffset() >= 0) && (region.getSize() >= 0), FileException("Unable to lock region", this));
   LARGE_INTEGER offset;
   offset.QuadPart = region.getOffset();
@@ -991,7 +991,7 @@ bool File::tryLock(
   ::CloseHandle(overlapped.hEvent);
   return result == WAIT_OBJECT_0; // was the region locked
 #else // unix
-  #if defined(_DK_SDU_MIP__BASE__LARGE_FILE_SYSTEM)
+  #if defined(_COM_AZURE_DEV__BASE__LARGE_FILE_SYSTEM)
     struct flock64 lock;
     lock.l_type = exclusive ? F_WRLCK : F_RDLCK; // request exclusive or shared lock
     lock.l_whence = SEEK_SET; // offset from beginning of file
@@ -1030,7 +1030,7 @@ bool File::tryLock(
 }
 
 void File::unlock(const FileRegion& region) throw(FileException) {
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   bassert((region.getOffset() >= 0) && (region.getSize() >= 0), FileException("Unable to unlock region", this));
   LARGE_INTEGER offset;
   offset.QuadPart = region.getOffset();
@@ -1052,7 +1052,7 @@ void File::unlock(const FileRegion& region) throw(FileException) {
   ::WaitForSingleObject(overlapped.hEvent, INFINITE); // blocking wait for unlock
   ::CloseHandle(overlapped.hEvent);
 #else // unix
-  #if defined(_DK_SDU_MIP__BASE__LARGE_FILE_SYSTEM)
+  #if defined(_COM_AZURE_DEV__BASE__LARGE_FILE_SYSTEM)
     bassert((region.getOffset() >= 0) && (region.getSize() >= 0), FileException("Unable to unlock region", this));
     struct flock64 lock;
     lock.l_type = F_UNLCK;
@@ -1094,14 +1094,14 @@ void File::unlock(const FileRegion& region) throw(FileException) {
 }
 
 Date File::getLastModification() throw(FileException) {
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   FILETIME time;
   if (::GetFileTime(fd->getHandle(), 0, 0, &time)) {
     throw FileException("Unable to get file time", this);
   }
   return FileTimeToDate(time);
 #else // unix
-  #if defined(_DK_SDU_MIP__BASE__LARGE_FILE_SYSTEM)
+  #if defined(_COM_AZURE_DEV__BASE__LARGE_FILE_SYSTEM)
     struct stat64 status;
     int result = ::fstat64(fd->getHandle(), &status);
   #else
@@ -1114,14 +1114,14 @@ Date File::getLastModification() throw(FileException) {
 }
 
 Date File::getLastAccess() throw(FileException) {
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   FILETIME time;
   if (::GetFileTime(fd->getHandle(), 0, &time, 0)) {
     throw FileException("Unable to get file time", this);
   }
   return FileTimeToDate(time);
 #else // unix
-  #if defined(_DK_SDU_MIP__BASE__LARGE_FILE_SYSTEM)
+  #if defined(_COM_AZURE_DEV__BASE__LARGE_FILE_SYSTEM)
     struct stat64 status;
     int result = fstat64(fd->getHandle(), &status);
   #else
@@ -1134,14 +1134,14 @@ Date File::getLastAccess() throw(FileException) {
 }
 
 Date File::getLastChange() throw(FileException) {
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   FILETIME time;
   if (::GetFileTime(fd->getHandle(), &time, 0, 0)) {
     throw FileException("Unable to get file time", this);
   }
   return FileTimeToDate(time);
 #else // unix
-  #if defined(_DK_SDU_MIP__BASE__LARGE_FILE_SYSTEM)
+  #if defined(_COM_AZURE_DEV__BASE__LARGE_FILE_SYSTEM)
     struct stat64 status;
     int result = fstat64(fd->getHandle(), &status);
   #else
@@ -1154,7 +1154,7 @@ Date File::getLastChange() throw(FileException) {
 }
 
 unsigned long File::getVariable(Variable variable) throw(FileException, NotSupported) {
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   throw NotSupported(this);
 #else // unix
 #  if (!(defined(_PC_FILESIZEBITS)))
@@ -1207,7 +1207,7 @@ unsigned int File::read(
   bool nonblocking) throw(FileException) {
   unsigned int bytesRead = 0;
   while (bytesToRead > 0) {
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
     DWORD result;
     BOOL success = ::ReadFile(fd->getHandle(), buffer, bytesToRead, &result, 0);
     if (!success) { // has error occured
@@ -1281,7 +1281,7 @@ unsigned int File::write(
   bool nonblocking) throw(FileException) {
   unsigned int bytesWritten = 0;
   while (bytesToWrite > 0) {
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
     DWORD result;
     BOOL success = ::WriteFile(fd->getHandle(), buffer, bytesToWrite, &result, 0);
     if (!success) {
@@ -1351,7 +1351,7 @@ unsigned int File::write(
 }
 
 void File::asyncCancel() throw(AsynchronousException) {
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   ::CancelIo(getHandle());
 #else // unix
   // TAG: fixme
@@ -1363,7 +1363,7 @@ AsynchronousReadOperation File::read(
   unsigned int bytesToRead,
   unsigned long long offset,
   AsynchronousReadEventListener* listener) throw(AsynchronousException) {
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   bassert(listener, AsynchronousException(this)); // TAG: fixme
   return new win32::AsyncReadFileContext(getHandle(), buffer, bytesToRead, offset, listener);
 #else // unix
@@ -1376,7 +1376,7 @@ AsynchronousWriteOperation File::write(
   unsigned int bytesToWrite,
   unsigned long long offset,
   AsynchronousWriteEventListener* listener) throw(AsynchronousException) {
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   bassert(listener, AsynchronousException(this)); // TAG: fixme
   return new win32::AsyncWriteFileContext(getHandle(), buffer, bytesToWrite, offset, listener);
 #else // unix
@@ -1387,4 +1387,4 @@ AsynchronousWriteOperation File::write(
 File::~File() {
 }
 
-_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
+_COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

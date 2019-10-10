@@ -26,7 +26,7 @@
 #include <base/WideLiteral.h>
 #include <string>
 
-_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+_COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 class FormatOutputStream;
 
@@ -37,7 +37,7 @@ class FormatOutputStream;
   @ingroup string
   @version 1.0
 */
-class _DK_SDU_MIP__BASE__API WideTraits {
+class _COM_AZURE_DEV__BASE__API WideTraits {
 public:
   
   /** Specifies the terminator for NULL-terminated strings. */
@@ -158,7 +158,7 @@ public:
   */
   int digitToValue(ucs4 character) throw();
   
-  class _DK_SDU_MIP__BASE__API ToLowerCase {
+  class _COM_AZURE_DEV__BASE__API ToLowerCase {
   public:
     
     inline ucs4 operator()(ucs4 character) const throw() {
@@ -166,7 +166,7 @@ public:
     }
   };
 
-  class _DK_SDU_MIP__BASE__API ToUpperCase {
+  class _COM_AZURE_DEV__BASE__API ToUpperCase {
   public:
     
     inline ucs4 operator()(ucs4 character) const throw() {
@@ -174,7 +174,7 @@ public:
     }
   };
 
-  class _DK_SDU_MIP__BASE__API ToTitleCase {
+  class _COM_AZURE_DEV__BASE__API ToTitleCase {
   public:
     
     inline ucs4 operator()(ucs4 character) const throw() {
@@ -198,7 +198,7 @@ public:
   @version 1.0
 */
 
-class _DK_SDU_MIP__BASE__API WideString : public virtual Object {
+class _COM_AZURE_DEV__BASE__API WideString : public virtual Object {
 public:
 
   /** Character specific properties and manipulators. */
@@ -284,7 +284,7 @@ private:
   /*
     Reference to an element within a wide string.
   */
-  class _DK_SDU_MIP__BASE__API Element {
+  class _COM_AZURE_DEV__BASE__API Element {
     friend class WideString;
   private:
     
@@ -385,7 +385,7 @@ public:
     STYLE_PERL
   };
 
-  class _DK_SDU_MIP__BASE__API UnicodeCharacter {
+  class _COM_AZURE_DEV__BASE__API UnicodeCharacter {
   private:
     
     static const Style DEFAULT_STYLE = STYLE_CPP;
@@ -1490,4 +1490,4 @@ FormatOutputStream& operator<<(FormatOutputStream& stream, WideString::UnicodeCh
 /** Converts WideString to String. */
 std::string toUTF8(const WideString& s);
 
-_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
+_COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

@@ -16,7 +16,7 @@
 #include <base/iterator/InterleavedIterator.h>
 #include <base/iterator/SequenceIterator.h>
 
-_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+_COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 /**
   Row iterator for matrix.
@@ -147,4 +147,4 @@ inline MatrixRowIterator<TRAITS> operator-(const MatrixRowIterator<TRAITS>& left
   return result -= right;
 }
 
-_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
+_COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

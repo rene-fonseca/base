@@ -22,7 +22,7 @@
 #include <base/string/InvalidFormat.h>
 #include <base/io/FileException.h>
 
-_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+_COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 /**
   8 bit character set.
@@ -31,7 +31,7 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
   @version 1.0
 */
 
-class _DK_SDU_MIP__BASE__API CharacterSet : public Object {
+class _COM_AZURE_DEV__BASE__API CharacterSet : public Object {
 private:
   
   /** Container type for the character set. */
@@ -115,4 +115,4 @@ public:
   void save(const String& path, Architecture::ByteOrder byteOrder = Architecture::NATIVE) const throw(FileException);
 };
 
-_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
+_COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

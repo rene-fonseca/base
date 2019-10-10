@@ -14,7 +14,7 @@
 #include <base/ui/ProgressBar.h>
 #include <base/string/StringOutputStream.h>
 
-_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+_COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 ProgressBar::ProgressBar(Window& owner) throw(UserInterfaceException)
   : Widget(owner),
@@ -115,4 +115,4 @@ void ProgressBar::onDisplay() throw() {
   }
 }
 
-_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
+_COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

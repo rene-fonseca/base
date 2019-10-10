@@ -17,7 +17,7 @@
 #include <base/string/String.h>
 #include <base/string/InvalidFormat.h>
 
-_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+_COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 /**
   Object Request Broker object identifier (URI).
@@ -27,7 +27,7 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
   @version 1.0
 */
 
-class _DK_SDU_MIP__BASE__API OrbIdentifier : public Object {
+class _COM_AZURE_DEV__BASE__API OrbIdentifier : public Object {
 private:
 
   /** The scheme. */
@@ -113,4 +113,4 @@ public:
 //   }
 };
 
-_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
+_COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

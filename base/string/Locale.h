@@ -17,9 +17,9 @@
 #include <base/string/String.h>
 #include <base/OutOfDomain.h>
 
-_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+_COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
-class _DK_SDU_MIP__BASE__API NumericFormatSet : public Object {
+class _COM_AZURE_DEV__BASE__API NumericFormatSet : public Object {
 private:
 
   /** The number of digits in a group (0 ~ disables grouping). */
@@ -38,7 +38,7 @@ public:
   
 };
 
-class _DK_SDU_MIP__BASE__API MonetaryFormatSet : public Object {
+class _COM_AZURE_DEV__BASE__API MonetaryFormatSet : public Object {
 public:
 
   /** Relative currency positions. */
@@ -110,7 +110,7 @@ public:
   }
 };
 
-class _DK_SDU_MIP__BASE__API DateFormatSet : public Object {
+class _COM_AZURE_DEV__BASE__API DateFormatSet : public Object {
 private:
 
   /** The abbreviated name of weekdays. */
@@ -256,7 +256,7 @@ public:
   @version 1.1
 */
 
-class _DK_SDU_MIP__BASE__API Locale : public DateFormatSet {
+class _COM_AZURE_DEV__BASE__API Locale : public DateFormatSet {
 public:
 
   static const Locale POSIX;
@@ -316,4 +316,4 @@ public:
   }
 };
 
-_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
+_COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

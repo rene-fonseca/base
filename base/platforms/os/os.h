@@ -13,10 +13,10 @@
 
 #pragma once
 
-#if (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__CYGWIN)
+#if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__CYGWIN)
   #include <base/platforms/os/cygwin/cygwin.h>
-#elif (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__WINNT4)
+#elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__WINNT4)
   #include <base/platforms/os/winnt4/winnt4.h>
-#elif (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__SOLARIS)
+#elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__SOLARIS)
   #include <base/platforms/os/solaris/solaris.h>
 #endif

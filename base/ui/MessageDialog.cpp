@@ -16,14 +16,14 @@
 #include <base/UnexpectedFailure.h>
 #include <base/NotImplemented.h>
 
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
 #  define WINVER 0x0500
 #  include <windows.h>
 #  undef IGNORE
 #else // unix
 #endif // flavor
 
-_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+_COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 MessageDialog::MessageDialog() throw()
   : category(MessageDialog::INFORMATION), answer(MessageDialog::CANCEL) {
@@ -38,7 +38,7 @@ MessageDialog::MessageDialog(
 }
 
 bool MessageDialog::execute() throw(UserInterfaceException) {
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   static const unsigned int NATIVE_TYPES[] = {
     MB_OK | MB_ICONWARNING, // WARNING
     MB_YESNO | MB_ICONQUESTION, // QUESTION
@@ -87,4 +87,4 @@ bool MessageDialog::execute() throw(UserInterfaceException) {
 MessageDialog::~MessageDialog() throw() {
 }
 
-_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
+_COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

@@ -23,31 +23,31 @@
 // TAG: on win32: functions are context-dependent (must be non-static)
 
 // TAG: put in static description
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
-#  define _DK_SDU_MIP__BASE__OPENGL_LIBRARY "OPENGL32.DLL"
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
+#  define _COM_AZURE_DEV__BASE__OPENGL_LIBRARY "OPENGL32.DLL"
 #else // win32
-#  define _DK_SDU_MIP__BASE__OPENGL_LIBRARY "libGL.so"
+#  define _COM_AZURE_DEV__BASE__OPENGL_LIBRARY "libGL.so"
 #endif // flavor
 
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
 #  define CALL_OPENGL __stdcall
 #else
 #  define CALL_OPENGL
 #endif
 
-_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+_COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 // TAG: how should we cast to functions and methods
 template<class RESULT>
 inline RESULT method_cast(void* value) throw() {
   // sizeof(RESULT) == sizeof(void*)
   // static_cast<bool>(static_cast<RESULT>(0))
-_DK_SDU_MIP__BASE__PACKED__BEGIN
+_COM_AZURE_DEV__BASE__PACKED__BEGIN
   union {
     void* value;
     RESULT method;
-  } _DK_SDU_MIP__BASE__PACKED temp;
-_DK_SDU_MIP__BASE__PACKED__END
+  } _COM_AZURE_DEV__BASE__PACKED temp;
+_COM_AZURE_DEV__BASE__PACKED__END
   temp.method = 0;
   temp.value = value;
   return temp.method;
@@ -639,13 +639,13 @@ OpenGL::OpenGL(unsigned int latest) throw(OpenGLException) {
   specification = 0x000000;
   // library is never released
   opengl::dynamicLinker = new DynamicLinker(
-    Literal(_DK_SDU_MIP__BASE__OPENGL_LIBRARY)
+    Literal(_COM_AZURE_DEV__BASE__OPENGL_LIBRARY)
   );
   bassert(
     opengl::dynamicLinker,
     OpenGLException("Unable to load OpenGL module", this)
   );
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   opengl::getFunction =
     method_cast<opengl::GetFunction>(
       opengl::dynamicLinker->getUncertainSymbol(MESSAGE("wglGetProcAddress"))
@@ -1133,4 +1133,4 @@ void OpenGL::box(
   }
 }
 
-_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
+_COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

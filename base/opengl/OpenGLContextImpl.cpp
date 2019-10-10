@@ -17,13 +17,13 @@
 #include <base/platforms/backend/WindowImpl.h>
 #include <base/concurrency/SpinLock.h>
 
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
 #  include <base/platforms/win32/GDI.cpp>
 #else // unix
 #  include <base/platforms/os/unix/GLX.cpp>
 #endif // flavor
 
-_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+_COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 void OpenGLContextImpl::loadModule() throw(OpenGLException) {
   // TAG: never release ui component?
@@ -36,7 +36,7 @@ void OpenGLContextImpl::loadModule() throw(OpenGLException) {
   );
   static SpinLock spinLock;
   spinLock.exclusiveLock();
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   bool success = native::GDI::import();
 #else // unix
   bool success = native::GLX::import();
@@ -55,7 +55,7 @@ OpenGLContextImpl::OpenGLContextImpl() throw(OpenGLException) {
 }
 
 String OpenGLContextImpl::getGLClientVendor() const throw(OpenGLException) {
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   return String(); // TAG: fixme
 #else // unix
   return NativeString(
@@ -68,7 +68,7 @@ String OpenGLContextImpl::getGLClientVendor() const throw(OpenGLException) {
 }
 
 String OpenGLContextImpl::getGLClientRelease() const throw(OpenGLException) {
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   return String(); // TAG: fixme
 #else // unix
   return NativeString(
@@ -81,7 +81,7 @@ String OpenGLContextImpl::getGLClientRelease() const throw(OpenGLException) {
 }
 
 String OpenGLContextImpl::getGLClientExtensions() const throw(OpenGLException) {
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   return String(); // TAG: fixme
 #else // unix
   return NativeString(
@@ -94,7 +94,7 @@ String OpenGLContextImpl::getGLClientExtensions() const throw(OpenGLException) {
 }
 
 String OpenGLContextImpl::getGLServerVendor() const throw(OpenGLException) {
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   return String(); // TAG: fixme
 #else // unix
   void* screenHandle = 0; // TAG: fixme move method to OpenGLWindowContext?
@@ -109,7 +109,7 @@ String OpenGLContextImpl::getGLServerVendor() const throw(OpenGLException) {
 }
 
 String OpenGLContextImpl::getGLServerRelease() const throw(OpenGLException) {
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   return String(); // TAG: fixme
 #else // unix
   void* screenHandle = 0; // TAG: fixme move method to OpenGLWindowContext?
@@ -124,7 +124,7 @@ String OpenGLContextImpl::getGLServerRelease() const throw(OpenGLException) {
 }
 
 String OpenGLContextImpl::getGLServerExtensions() const throw(OpenGLException) {
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   return String(); // TAG: fixme
 #else // unix
   void* screenHandle = 0; // TAG: fixme move method to OpenGLWindowContext?
@@ -139,7 +139,7 @@ String OpenGLContextImpl::getGLServerExtensions() const throw(OpenGLException) {
 }
 
 // bool OpenGLContextImpl::isDirect() const throw(OpenGLException) {
-// #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+// #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
 //   return true; // TAG: unless pixmap
 // #else // unix
 //   return native::GLX::glXIsDirect(
@@ -150,7 +150,7 @@ String OpenGLContextImpl::getGLServerExtensions() const throw(OpenGLException) {
 // }
 
 bool OpenGLContextImpl::hasCurrent() const throw(OpenGLException) {
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   return native::GDI::wglGetCurrentContext() != 0;
 #else // unix
   return native::GLX::glXGetCurrentContext() != 0;
@@ -158,7 +158,7 @@ bool OpenGLContextImpl::hasCurrent() const throw(OpenGLException) {
 }
 
 bool OpenGLContextImpl::isCurrent() const throw(OpenGLException) {
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   return native::GDI::wglGetCurrentContext() == (HGLRC)renderingContextHandle;
 #else // unix
   return native::GLX::glXGetCurrentContext() ==
@@ -167,7 +167,7 @@ bool OpenGLContextImpl::isCurrent() const throw(OpenGLException) {
 }
 
 void OpenGLContextImpl::makeCurrent() throw(OpenGLException) {
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   native::GDI::wglMakeCurrent(
     (HDC)graphicsContextHandle,
     (HGLRC)renderingContextHandle
@@ -199,7 +199,7 @@ void OpenGLContextImpl::makeCurrent() throw(OpenGLException) {
 }
 
 void OpenGLContextImpl::deselect() throw() {
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)  
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)  
   native::GDI::wglMakeCurrent(0, 0);
 #else // unix
   bassert(
@@ -221,7 +221,7 @@ void OpenGLContextImpl::deselect() throw() {
 }
 
 void OpenGLContextImpl::swap() throw(OpenGLException) {
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   native::GDI::wglSwapBuffers((HDC)graphicsContextHandle); // ignore errors
 //   bassert(
 //     native::GDI::wglSwapBuffers((HDC)graphicsContextHandle),
@@ -241,7 +241,7 @@ void OpenGLContextImpl::swap(int plane) throw(OutOfRange, OpenGLException) {
     (plane <= static_cast<int>(numberOfOverlayPlanes)),
     OutOfRange(this)
   );
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)  
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)  
   static const UINT NATIVE_PLANES[15 - (-15) + 1] = {
     WGL_SWAP_UNDERLAY15,
     WGL_SWAP_UNDERLAY14,
@@ -288,4 +288,4 @@ void OpenGLContextImpl::swap(int plane) throw(OutOfRange, OpenGLException) {
 #endif // flavor
 }
 
-_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
+_COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

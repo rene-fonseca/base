@@ -21,7 +21,7 @@
 #include <base/communication/EUI64.h>
 #include <base/collection/HashTable.h>
 
-_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+_COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 /**
   This class represents an Internet Protocol network interface.
@@ -31,7 +31,7 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
   @version 1.0
 */
 
-class _DK_SDU_MIP__BASE__API InetInterface : public virtual Object {
+class _COM_AZURE_DEV__BASE__API InetInterface : public virtual Object {
 private:
 
   /** Specifies the index of the network interface. */
@@ -177,4 +177,4 @@ public:
   }
 };
 
-_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
+_COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

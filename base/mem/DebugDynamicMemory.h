@@ -17,7 +17,7 @@
 #include <base/mem/MemoryCorruption.h>
 #include <base/concurrency/SpinLock.h>
 
-_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+_COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 /**
   This class provides support for dynamic memory allocation/deallocation with
@@ -30,7 +30,7 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
   @version 1.0
 */
 
-class _DK_SDU_MIP__BASE__API DebugDynamicMemory {
+class _COM_AZURE_DEV__BASE__API DebugDynamicMemory {
 //   friend void* operator new(MemorySize) throw(MemoryException);
 //   friend void operator delete(void*) throw(MemoryException);
 //   friend void* operator new[](MemorySize) throw(MemoryException);
@@ -119,4 +119,4 @@ public:
 //   bassert(memory && DebugDynamicMemory::release(memory), MemoryException());
 // }
 
-_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
+_COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

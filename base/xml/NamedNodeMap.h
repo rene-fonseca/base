@@ -17,12 +17,12 @@
 #include <base/xml/Node.h>
 #include <base/xml/DOMException.h>
 
-_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+_COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 class Node;
 class DocumentType;
 
-class _DK_SDU_MIP__BASE__API ShadowNode {
+class _COM_AZURE_DEV__BASE__API ShadowNode {
   friend class Node;
 private:
 
@@ -41,7 +41,7 @@ public:
   @version 1.0
 */
 
-class _DK_SDU_MIP__BASE__API NamedNodeMap : public Object {
+class _COM_AZURE_DEV__BASE__API NamedNodeMap : public Object {
   friend class DocumentType;
 private:
   
@@ -94,4 +94,4 @@ public:
     const String& namespaceURI, const String& localName) throw(DOMException);
 };
 
-_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
+_COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

@@ -20,7 +20,7 @@
 #include <base/io/Handle.h>
 #include <base/mem/Reference.h>
 
-_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+_COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 /**
   Process manipulation class.
@@ -30,7 +30,7 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
   @version 1.2
 */
 
-class _DK_SDU_MIP__BASE__API Process : public Object {
+class _COM_AZURE_DEV__BASE__API Process : public Object {
 public:
 
   /** Value which specifies an invalid process id. */
@@ -51,7 +51,7 @@ public:
     @ingroup exceptions concurrency
     @version 1.1
   */
-  class _DK_SDU_MIP__BASE__API ProcessException : public Exception {
+  class _COM_AZURE_DEV__BASE__API ProcessException : public Exception {
   public:
     
     inline ProcessException() throw() {
@@ -269,4 +269,4 @@ inline Process::Process(unsigned long _id) throw()
 FormatOutputStream& operator<<(
   FormatOutputStream& stream, const Process::Layout& value) throw(IOException);
 
-_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
+_COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

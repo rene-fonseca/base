@@ -15,15 +15,15 @@
 #include <base/mem/Heap.h>
 #include <base/OperatingSystem.h>
 
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   #include <windows.h>
 #else // unix
   #include <stdlib.h>
 #endif // flavor
 
-_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+_COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
 namespace internal {
   namespace specific {
     extern OperatingSystem::Handle processHeap;
@@ -33,7 +33,7 @@ namespace internal {
 
 void* HeapImpl::allocate(unsigned int size) throw(MemoryException) {
   void* result;
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   result = static_cast<void*>(::HeapAlloc(internal::specific::processHeap, 0, size));
   if ((!result) && (size != 0)) { // was memory allocated
     throw bindCause(MemoryException("Unable to allocate heap", Type::getType<HeapImpl>()), ::GetLastError());
@@ -49,7 +49,7 @@ void* HeapImpl::allocate(unsigned int size) throw(MemoryException) {
 
 void* HeapImpl::resize(void* heap, unsigned int size) throw(MemoryException) {
   void* result;
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   // is serialization enabled for the heap object returned by GetProcessHeap
   if (heap) {
     if (size) {
@@ -76,7 +76,7 @@ void* HeapImpl::resize(void* heap, unsigned int size) throw(MemoryException) {
 }
 
 void* HeapImpl::tryResize(void* heap, unsigned int size) throw(MemoryException) {
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   if (heap) {
     if (size) {
       return static_cast<void*>(::HeapReAlloc(internal::specific::processHeap, HEAP_REALLOC_IN_PLACE_ONLY, heap, size));
@@ -95,7 +95,7 @@ void* HeapImpl::tryResize(void* heap, unsigned int size) throw(MemoryException) 
 }
 
 void HeapImpl::release(void* heap) throw(MemoryException) {
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   if (!::HeapFree(internal::specific::processHeap, 0, heap)) {
     throw bindCause(MemoryException("Unable to release heap", Type::getType<HeapImpl>()), ::GetLastError());
   }
@@ -104,4 +104,4 @@ void HeapImpl::release(void* heap) throw(MemoryException) {
 #endif // flavor
 }
 
-_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
+_COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

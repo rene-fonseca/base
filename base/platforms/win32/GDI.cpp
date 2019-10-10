@@ -15,9 +15,9 @@
 #include <base/dl/DynamicLinker.h>
 
 // TAG: put in static description
-#define _DK_SDU_MIP__BASE__GDI_LIBRARY "OPENGL32.dll"
+#define _COM_AZURE_DEV__BASE__GDI_LIBRARY "OPENGL32.dll"
 
-_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+_COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 namespace native {
 
@@ -83,7 +83,7 @@ namespace native {
       static DynamicLinker* dynamicLinker = 0;
       if (!dynamicLinker) {
         // never release
-        dynamicLinker = new DynamicLinker(MESSAGE(_DK_SDU_MIP__BASE__GDI_LIBRARY));
+        dynamicLinker = new DynamicLinker(MESSAGE(_COM_AZURE_DEV__BASE__GDI_LIBRARY));
         if (!dynamicLinker) {
           return false;
         }
@@ -104,4 +104,4 @@ namespace native {
   
 }; // end of native namespace
 
-_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
+_COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

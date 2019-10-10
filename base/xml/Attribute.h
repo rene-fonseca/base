@@ -16,7 +16,7 @@
 #include <base/xml/DOMException.h>
 #include <base/xml/Node.h>
 
-_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+_COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 class Document;
 class Element;
@@ -27,7 +27,7 @@ class Element;
   @version 1.0
 */
 
-class _DK_SDU_MIP__BASE__API Attribute : public Node {
+class _COM_AZURE_DEV__BASE__API Attribute : public Node {
   friend class Document;
   friend class Element;
 protected:
@@ -73,4 +73,4 @@ public:
   Node::ShadowElement getOwnerElement() throw();
 };
 
-_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
+_COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

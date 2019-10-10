@@ -15,7 +15,7 @@
 
 #include <base/Dimension.h>
 
-_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+_COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
   /**
     A two-dimensional discrete coordinate.
@@ -24,7 +24,7 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
     @version 1.1
   */
   
-class _DK_SDU_MIP__BASE__API Position : public Object {
+class _COM_AZURE_DEV__BASE__API Position : public Object {
 private:
   
   /** The x coordinate. */
@@ -318,4 +318,4 @@ public:
   static const bool IS_UNINITIALIZEABLE = Uninitializeable<int>::IS_UNINITIALIZEABLE;
 };
 
-_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
+_COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

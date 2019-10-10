@@ -14,7 +14,7 @@
 #include <base/mathematics/MarsagliaRandomNumberGenerator.h>
 #include <base/Timer.h>
 
-_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+_COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 MarsagliaRandomNumberGenerator::MarsagliaRandomNumberGenerator() throw() {
   randomize();
@@ -77,4 +77,4 @@ uint32 MarsagliaRandomNumberGenerator::getInteger() throw() {
   return (x1[0] << 16) + (x2[0] & 0xffff);
 }
 
-_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
+_COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

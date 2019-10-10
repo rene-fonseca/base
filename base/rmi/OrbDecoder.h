@@ -20,7 +20,7 @@
 #include <base/string/WideString.h>
 #include <base/rmi/OrbReference.h>
 
-_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+_COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 /**
   Object Request Broker decoder.
@@ -30,7 +30,7 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
   @version 1.0
 */
 
-class _DK_SDU_MIP__BASE__API OrbDecoder : public Object, public virtual ReferenceCountedObject {
+class _COM_AZURE_DEV__BASE__API OrbDecoder : public Object, public virtual ReferenceCountedObject {
 private:
   
   // OrbInputStream stream;
@@ -175,4 +175,4 @@ public:
   virtual void read(long double& value) throw(IOException) = 0;
 };
 
-_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
+_COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

@@ -15,7 +15,7 @@
 
 #include <base/communication/IEEE1394Impl.h>
 
-_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+_COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 /**
   Dummy IEEE 1394 implementation.
@@ -25,7 +25,7 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
   @version 1.0
 */
 
-class _DK_SDU_MIP__BASE__API DummyIEEE1394 : public IEEE1394Impl {
+class _COM_AZURE_DEV__BASE__API DummyIEEE1394 : public IEEE1394Impl {
 public:
 
   /**
@@ -180,4 +180,4 @@ public:
   void unregisterFCPListener() throw(IEEE1394Exception);
 };
 
-_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
+_COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

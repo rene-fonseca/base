@@ -13,7 +13,7 @@
 
 #include <base/string/ANSIEscapeSequence.h>
 
-_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+_COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 void ANSIEscapeSequence::setCursor(unsigned int line, unsigned int column) throw(IOException) {
   stream << '\033' << '[' << line << 'L' << ';' << column << 'c' << 'H'; // TAG: use buffer
@@ -94,4 +94,4 @@ void ANSIEscapeSequence::setBackground(Color color) throw(IOException) {
   stream << buffer;
 }
 
-_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
+_COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

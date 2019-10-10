@@ -19,7 +19,7 @@
 
 // TAG: what about rounding
 
-_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+_COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 /**
   This class provides support for floating point types.
@@ -28,7 +28,7 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
   @version 1.0
 */
 
-class _DK_SDU_MIP__BASE__API FloatingPoint {
+class _COM_AZURE_DEV__BASE__API FloatingPoint {
 public:
 
   /**
@@ -91,153 +91,153 @@ public:
       Representation of single precision (32-bit) floating point type as
       specified by IEEE 754.
     */
-_DK_SDU_MIP__BASE__PACKED__BEGIN
+_COM_AZURE_DEV__BASE__PACKED__BEGIN
     struct IEEE754SinglePrecision {
       static const bool HAS_IMPLIED_ONE = true;
       static const int MINIMUM_EXPONENT = -125;
       static const int MAXIMUM_EXPONENT = 128;
       static const int BIAS = 0x7f;
       static const unsigned int SIGNIFICANT = 24;
-#if ((_DK_SDU_MIP__BASE__BYTE_ORDER == _DK_SDU_MIP__BASE__BIG_ENDIAN) && \
-     (_DK_SDU_MIP__BASE__FLOAT_WORD_ORDER == _DK_SDU_MIP__BASE__BIG_ENDIAN))
+#if ((_COM_AZURE_DEV__BASE__BYTE_ORDER == _COM_AZURE_DEV__BASE__BIG_ENDIAN) && \
+     (_COM_AZURE_DEV__BASE__FLOAT_WORD_ORDER == _COM_AZURE_DEV__BASE__BIG_ENDIAN))
       uint32 negative : 1;
       uint32 exponent : 8;
       uint32 mantissa0 : 23;
-#elif ((_DK_SDU_MIP__BASE__BYTE_ORDER == _DK_SDU_MIP__BASE__BIG_ENDIAN) && \
-       (_DK_SDU_MIP__BASE__FLOAT_WORD_ORDER == _DK_SDU_MIP__BASE__LITTLE_ENDIAN))
+#elif ((_COM_AZURE_DEV__BASE__BYTE_ORDER == _COM_AZURE_DEV__BASE__BIG_ENDIAN) && \
+       (_COM_AZURE_DEV__BASE__FLOAT_WORD_ORDER == _COM_AZURE_DEV__BASE__LITTLE_ENDIAN))
       uint32 negative : 1;
       uint32 exponent : 8;
       uint32 mantissa0 : 23;
-#elif ((_DK_SDU_MIP__BASE__BYTE_ORDER == _DK_SDU_MIP__BASE__LITTLE_ENDIAN) && \
-       (_DK_SDU_MIP__BASE__FLOAT_WORD_ORDER == _DK_SDU_MIP__BASE__LITTLE_ENDIAN))
+#elif ((_COM_AZURE_DEV__BASE__BYTE_ORDER == _COM_AZURE_DEV__BASE__LITTLE_ENDIAN) && \
+       (_COM_AZURE_DEV__BASE__FLOAT_WORD_ORDER == _COM_AZURE_DEV__BASE__LITTLE_ENDIAN))
       uint32 mantissa0 : 23;
       uint32 exponent : 8;
       uint32 negative : 1;
-#elif ((_DK_SDU_MIP__BASE__BYTE_ORDER == _DK_SDU_MIP__BASE__LITTLE_ENDIAN) && \
-       (_DK_SDU_MIP__BASE__FLOAT_WORD_ORDER == _DK_SDU_MIP__BASE__BIG_ENDIAN))
+#elif ((_COM_AZURE_DEV__BASE__BYTE_ORDER == _COM_AZURE_DEV__BASE__LITTLE_ENDIAN) && \
+       (_COM_AZURE_DEV__BASE__FLOAT_WORD_ORDER == _COM_AZURE_DEV__BASE__BIG_ENDIAN))
       uint32 mantissa0 : 23;
       uint32 exponent : 8;
       uint32 negative : 1;
 #endif // bit allocation
-    } _DK_SDU_MIP__BASE__PACKED;
-_DK_SDU_MIP__BASE__PACKED__END
+    } _COM_AZURE_DEV__BASE__PACKED;
+_COM_AZURE_DEV__BASE__PACKED__END
 
     /*
       Representation of double precision (64-bit) floating point type as
       specified by IEEE 754.
     */
-_DK_SDU_MIP__BASE__PACKED__BEGIN
+_COM_AZURE_DEV__BASE__PACKED__BEGIN
     struct IEEE754DoublePrecision {
       static const bool HAS_IMPLIED_ONE = true;
       static const int MINIMUM_EXPONENT = -1021;
       static const int MAXIMUM_EXPONENT = 1024;
       static const int BIAS = 0x3ff;
       static const unsigned int SIGNIFICANT = 53;
-#if ((_DK_SDU_MIP__BASE__BYTE_ORDER == _DK_SDU_MIP__BASE__BIG_ENDIAN) && \
-     (_DK_SDU_MIP__BASE__FLOAT_WORD_ORDER == _DK_SDU_MIP__BASE__BIG_ENDIAN))
+#if ((_COM_AZURE_DEV__BASE__BYTE_ORDER == _COM_AZURE_DEV__BASE__BIG_ENDIAN) && \
+     (_COM_AZURE_DEV__BASE__FLOAT_WORD_ORDER == _COM_AZURE_DEV__BASE__BIG_ENDIAN))
       uint32 negative : 1;
       uint32 exponent : 11;
       uint32 mantissa1 : 20;
       uint32 mantissa0 : 32;
-#elif ((_DK_SDU_MIP__BASE__BYTE_ORDER == _DK_SDU_MIP__BASE__BIG_ENDIAN) && \
-       (_DK_SDU_MIP__BASE__FLOAT_WORD_ORDER == _DK_SDU_MIP__BASE__LITTLE_ENDIAN))
+#elif ((_COM_AZURE_DEV__BASE__BYTE_ORDER == _COM_AZURE_DEV__BASE__BIG_ENDIAN) && \
+       (_COM_AZURE_DEV__BASE__FLOAT_WORD_ORDER == _COM_AZURE_DEV__BASE__LITTLE_ENDIAN))
       uint32 mantissa0 : 32;
       uint32 negative : 1;
       uint32 exponent : 11;
       uint32 mantissa1 : 20;
-#elif ((_DK_SDU_MIP__BASE__BYTE_ORDER == _DK_SDU_MIP__BASE__LITTLE_ENDIAN) && \
-       (_DK_SDU_MIP__BASE__FLOAT_WORD_ORDER == _DK_SDU_MIP__BASE__LITTLE_ENDIAN))
+#elif ((_COM_AZURE_DEV__BASE__BYTE_ORDER == _COM_AZURE_DEV__BASE__LITTLE_ENDIAN) && \
+       (_COM_AZURE_DEV__BASE__FLOAT_WORD_ORDER == _COM_AZURE_DEV__BASE__LITTLE_ENDIAN))
       uint32 mantissa0 : 32;
       uint32 mantissa1 : 20;
       uint32 exponent : 11;
       uint32 negative : 1;
-#elif ((_DK_SDU_MIP__BASE__BYTE_ORDER == _DK_SDU_MIP__BASE__LITTLE_ENDIAN) && \
-       (_DK_SDU_MIP__BASE__FLOAT_WORD_ORDER == _DK_SDU_MIP__BASE__BIG_ENDIAN))
+#elif ((_COM_AZURE_DEV__BASE__BYTE_ORDER == _COM_AZURE_DEV__BASE__LITTLE_ENDIAN) && \
+       (_COM_AZURE_DEV__BASE__FLOAT_WORD_ORDER == _COM_AZURE_DEV__BASE__BIG_ENDIAN))
       uint32 mantissa1 : 20;
       uint32 exponent : 11;
       uint32 negative : 1;
       uint32 mantissa0 : 32;
 #endif // bit allocation
-    } _DK_SDU_MIP__BASE__PACKED;
-_DK_SDU_MIP__BASE__PACKED__END
+    } _COM_AZURE_DEV__BASE__PACKED;
+_COM_AZURE_DEV__BASE__PACKED__END
 
     /*
       Representation of double-extended precision (96-bit) floating point type.
     */
-_DK_SDU_MIP__BASE__PACKED__BEGIN
+_COM_AZURE_DEV__BASE__PACKED__BEGIN
     struct IEEEExtendedDoublePrecision96 {
       static const bool HAS_IMPLIED_ONE = false;
       static const int MINIMUM_EXPONENT = -16381;
       static const int MAXIMUM_EXPONENT = 16384;
       static const int BIAS = 0x3fff;
       static const unsigned int SIGNIFICANT = 64;
-#if ((_DK_SDU_MIP__BASE__BYTE_ORDER == _DK_SDU_MIP__BASE__BIG_ENDIAN) && \
-     (_DK_SDU_MIP__BASE__FLOAT_WORD_ORDER == _DK_SDU_MIP__BASE__BIG_ENDIAN))
+#if ((_COM_AZURE_DEV__BASE__BYTE_ORDER == _COM_AZURE_DEV__BASE__BIG_ENDIAN) && \
+     (_COM_AZURE_DEV__BASE__FLOAT_WORD_ORDER == _COM_AZURE_DEV__BASE__BIG_ENDIAN))
       uint32 negative : 1;
       uint32 exponent : 15;
       uint32 empty : 16;
       uint32 mantissa1 : 32;
       uint32 mantissa0 : 32;
-#elif ((_DK_SDU_MIP__BASE__BYTE_ORDER == _DK_SDU_MIP__BASE__BIG_ENDIAN) && \
-       (_DK_SDU_MIP__BASE__FLOAT_WORD_ORDER == _DK_SDU_MIP__BASE__LITTLE_ENDIAN))
+#elif ((_COM_AZURE_DEV__BASE__BYTE_ORDER == _COM_AZURE_DEV__BASE__BIG_ENDIAN) && \
+       (_COM_AZURE_DEV__BASE__FLOAT_WORD_ORDER == _COM_AZURE_DEV__BASE__LITTLE_ENDIAN))
       uint32 mantissa0 : 32;
       uint32 mantissa1 : 32;
       uint32 negative : 1;
       uint32 exponent : 15;
       uint32 empty : 16;
-#elif ((_DK_SDU_MIP__BASE__BYTE_ORDER == _DK_SDU_MIP__BASE__LITTLE_ENDIAN) && \
-       (_DK_SDU_MIP__BASE__FLOAT_WORD_ORDER == _DK_SDU_MIP__BASE__LITTLE_ENDIAN))
+#elif ((_COM_AZURE_DEV__BASE__BYTE_ORDER == _COM_AZURE_DEV__BASE__LITTLE_ENDIAN) && \
+       (_COM_AZURE_DEV__BASE__FLOAT_WORD_ORDER == _COM_AZURE_DEV__BASE__LITTLE_ENDIAN))
       uint32 mantissa0 : 32;
       uint32 mantissa1 : 32;
       uint32 exponent : 15;
       uint32 negative : 1;
       uint32 empty : 16;
-#elif ((_DK_SDU_MIP__BASE__BYTE_ORDER == _DK_SDU_MIP__BASE__LITTLE_ENDIAN) && \
-       (_DK_SDU_MIP__BASE__FLOAT_WORD_ORDER == _DK_SDU_MIP__BASE__BIG_ENDIAN))
+#elif ((_COM_AZURE_DEV__BASE__BYTE_ORDER == _COM_AZURE_DEV__BASE__LITTLE_ENDIAN) && \
+       (_COM_AZURE_DEV__BASE__FLOAT_WORD_ORDER == _COM_AZURE_DEV__BASE__BIG_ENDIAN))
       uint32 exponent : 15;
       uint32 negative : 1;
       uint32 empty : 16;
       uint32 mantissa1 : 32;
       uint32 mantissa0 : 32;
 #endif // bit allocation
-    } _DK_SDU_MIP__BASE__PACKED;
-_DK_SDU_MIP__BASE__PACKED__END
+    } _COM_AZURE_DEV__BASE__PACKED;
+_COM_AZURE_DEV__BASE__PACKED__END
 
     /*
       Representation of double-extended precision (128-bit) floating point
       type.
     */
-_DK_SDU_MIP__BASE__PACKED__BEGIN
+_COM_AZURE_DEV__BASE__PACKED__BEGIN
     struct IEEEExtendedDoublePrecision128 {
       static const bool HAS_IMPLIED_ONE = false;
       static const int BIAS = 0x3fff;
       static const unsigned int SIGNIFICANT = 64;
-#if ((_DK_SDU_MIP__BASE__BYTE_ORDER == _DK_SDU_MIP__BASE__BIG_ENDIAN) && \
-     (_DK_SDU_MIP__BASE__FLOAT_WORD_ORDER == _DK_SDU_MIP__BASE__BIG_ENDIAN))
+#if ((_COM_AZURE_DEV__BASE__BYTE_ORDER == _COM_AZURE_DEV__BASE__BIG_ENDIAN) && \
+     (_COM_AZURE_DEV__BASE__FLOAT_WORD_ORDER == _COM_AZURE_DEV__BASE__BIG_ENDIAN))
       uint32 empty1 : 32;
       uint32 negative : 1;
       uint32 exponent : 15;
       uint32 empty0 : 16;
       uint32 mantissa1 : 32;
       uint32 mantissa0 : 32;
-#elif ((_DK_SDU_MIP__BASE__BYTE_ORDER == _DK_SDU_MIP__BASE__BIG_ENDIAN) && \
-       (_DK_SDU_MIP__BASE__FLOAT_WORD_ORDER == _DK_SDU_MIP__BASE__LITTLE_ENDIAN))
+#elif ((_COM_AZURE_DEV__BASE__BYTE_ORDER == _COM_AZURE_DEV__BASE__BIG_ENDIAN) && \
+       (_COM_AZURE_DEV__BASE__FLOAT_WORD_ORDER == _COM_AZURE_DEV__BASE__LITTLE_ENDIAN))
       uint32 mantissa0 : 32;
       uint32 mantissa1 : 32;
       uint32 negative : 1;
       uint32 exponent : 15;
       uint32 empty0 : 16;
       uint32 empty1 : 32;
-#elif ((_DK_SDU_MIP__BASE__BYTE_ORDER == _DK_SDU_MIP__BASE__LITTLE_ENDIAN) && \
-       (_DK_SDU_MIP__BASE__FLOAT_WORD_ORDER == _DK_SDU_MIP__BASE__LITTLE_ENDIAN))
+#elif ((_COM_AZURE_DEV__BASE__BYTE_ORDER == _COM_AZURE_DEV__BASE__LITTLE_ENDIAN) && \
+       (_COM_AZURE_DEV__BASE__FLOAT_WORD_ORDER == _COM_AZURE_DEV__BASE__LITTLE_ENDIAN))
       uint32 mantissa0 : 32;
       uint32 mantissa1 : 32;
       uint32 exponent : 15;
       uint32 negative : 1;
       uint32 empty0 : 16;
       uint32 empty1 : 32;
-#elif ((_DK_SDU_MIP__BASE__BYTE_ORDER == _DK_SDU_MIP__BASE__LITTLE_ENDIAN) && \
-       (_DK_SDU_MIP__BASE__FLOAT_WORD_ORDER == _DK_SDU_MIP__BASE__BIG_ENDIAN))
+#elif ((_COM_AZURE_DEV__BASE__BYTE_ORDER == _COM_AZURE_DEV__BASE__LITTLE_ENDIAN) && \
+       (_COM_AZURE_DEV__BASE__FLOAT_WORD_ORDER == _COM_AZURE_DEV__BASE__BIG_ENDIAN))
       uint32 empty1 : 32;
       uint32 exponent : 15;
       uint32 negative : 1;
@@ -245,43 +245,43 @@ _DK_SDU_MIP__BASE__PACKED__BEGIN
       uint32 mantissa1 : 32;
       uint32 mantissa0 : 32;
 #endif // bit allocation
-    } _DK_SDU_MIP__BASE__PACKED;
-_DK_SDU_MIP__BASE__PACKED__END
+    } _COM_AZURE_DEV__BASE__PACKED;
+_COM_AZURE_DEV__BASE__PACKED__END
 
     /* Representation of quadruple precision (128-bit) floating point type. */
-_DK_SDU_MIP__BASE__PACKED__BEGIN
+_COM_AZURE_DEV__BASE__PACKED__BEGIN
     struct IEEEQuadruplePrecision {
       static const bool HAS_IMPLIED_ONE = true;
       static const int MINIMUM_EXPONENT = -16381;
       static const int MAXIMUM_EXPONENT = 16384;
       static const int BIAS = 0x3fff;
       static const unsigned int SIGNIFICANT = 113;
-#if ((_DK_SDU_MIP__BASE__BYTE_ORDER == _DK_SDU_MIP__BASE__BIG_ENDIAN) && \
-     (_DK_SDU_MIP__BASE__FLOAT_WORD_ORDER == _DK_SDU_MIP__BASE__BIG_ENDIAN))
+#if ((_COM_AZURE_DEV__BASE__BYTE_ORDER == _COM_AZURE_DEV__BASE__BIG_ENDIAN) && \
+     (_COM_AZURE_DEV__BASE__FLOAT_WORD_ORDER == _COM_AZURE_DEV__BASE__BIG_ENDIAN))
       uint32 negative : 1;
       uint32 exponent : 15;
       uint32 mantissa3 : 16;
       uint32 mantissa2 : 32;
       uint32 mantissa1 : 32;
       uint32 mantissa0 : 32;
-#elif ((_DK_SDU_MIP__BASE__BYTE_ORDER == _DK_SDU_MIP__BASE__BIG_ENDIAN) && \
-       (_DK_SDU_MIP__BASE__FLOAT_WORD_ORDER == _DK_SDU_MIP__BASE__LITTLE_ENDIAN))
+#elif ((_COM_AZURE_DEV__BASE__BYTE_ORDER == _COM_AZURE_DEV__BASE__BIG_ENDIAN) && \
+       (_COM_AZURE_DEV__BASE__FLOAT_WORD_ORDER == _COM_AZURE_DEV__BASE__LITTLE_ENDIAN))
       uint32 mantissa0 : 32;
       uint32 mantissa1 : 32;
       uint32 mantissa2 : 32;
       uint32 negative : 1;
       uint32 exponent : 15;
       uint32 mantissa3 : 16;
-#elif ((_DK_SDU_MIP__BASE__BYTE_ORDER == _DK_SDU_MIP__BASE__LITTLE_ENDIAN) && \
-       (_DK_SDU_MIP__BASE__FLOAT_WORD_ORDER == _DK_SDU_MIP__BASE__LITTLE_ENDIAN))
+#elif ((_COM_AZURE_DEV__BASE__BYTE_ORDER == _COM_AZURE_DEV__BASE__LITTLE_ENDIAN) && \
+       (_COM_AZURE_DEV__BASE__FLOAT_WORD_ORDER == _COM_AZURE_DEV__BASE__LITTLE_ENDIAN))
       uint32 mantissa0 : 32;
       uint32 mantissa1 : 32;
       uint32 mantissa2 : 32;
       uint32 mantissa3 : 16;
       uint32 exponent : 15;
       uint32 negative : 1;
-#elif ((_DK_SDU_MIP__BASE__BYTE_ORDER == _DK_SDU_MIP__BASE__LITTLE_ENDIAN) && \
-       (_DK_SDU_MIP__BASE__FLOAT_WORD_ORDER == _DK_SDU_MIP__BASE__BIG_ENDIAN))
+#elif ((_COM_AZURE_DEV__BASE__BYTE_ORDER == _COM_AZURE_DEV__BASE__LITTLE_ENDIAN) && \
+       (_COM_AZURE_DEV__BASE__FLOAT_WORD_ORDER == _COM_AZURE_DEV__BASE__BIG_ENDIAN))
       uint32 mantissa3 : 16;
       uint32 exponent : 15;
       uint32 negative : 1;
@@ -289,54 +289,54 @@ _DK_SDU_MIP__BASE__PACKED__BEGIN
       uint32 mantissa1 : 32;
       uint32 mantissa0 : 32;
 #endif // bit allocation
-    } _DK_SDU_MIP__BASE__PACKED;
-_DK_SDU_MIP__BASE__PACKED__END
+    } _COM_AZURE_DEV__BASE__PACKED;
+_COM_AZURE_DEV__BASE__PACKED__END
   };
 
-#if (_DK_SDU_MIP__BASE__FLOAT == _DK_SDU_MIP__BASE__IEEE_754_SINGLE_PRECISION)
+#if (_COM_AZURE_DEV__BASE__FLOAT == _COM_AZURE_DEV__BASE__IEEE_754_SINGLE_PRECISION)
   typedef Representation::IEEE754SinglePrecision FloatRepresentation;
-#elif (_DK_SDU_MIP__BASE__FLOAT == _DK_SDU_MIP__BASE__IEEE_754_DOUBLE_PRECISION)
+#elif (_COM_AZURE_DEV__BASE__FLOAT == _COM_AZURE_DEV__BASE__IEEE_754_DOUBLE_PRECISION)
   typedef Representation::IEEE754DoublePrecision FloatRepresentation;
-#elif (_DK_SDU_MIP__BASE__FLOAT == _DK_SDU_MIP__BASE__IEEE_EXTENDED_DOUBLE_PRECISION_96)
+#elif (_COM_AZURE_DEV__BASE__FLOAT == _COM_AZURE_DEV__BASE__IEEE_EXTENDED_DOUBLE_PRECISION_96)
   typedef Representation::IEEEExtendedDoublePrecision96 FloatRepresentation;
-#elif (_DK_SDU_MIP__BASE__FLOAT == _DK_SDU_MIP__BASE__IEEE_EXTENDED_DOUBLE_PRECISION_128)
+#elif (_COM_AZURE_DEV__BASE__FLOAT == _COM_AZURE_DEV__BASE__IEEE_EXTENDED_DOUBLE_PRECISION_128)
   typedef Representation::IEEEExtendedDoublePrecision128 FloatRepresentation;
-#elif (_DK_SDU_MIP__BASE__FLOAT == _DK_SDU_MIP__BASE__IEEE_QUADRUPLE_PRECISION)
+#elif (_COM_AZURE_DEV__BASE__FLOAT == _COM_AZURE_DEV__BASE__IEEE_QUADRUPLE_PRECISION)
   typedef Representation::IEEEQuadruplePrecision FloatRepresentation;
 #else
 #  error Invalid floating-point representation of type float
 #endif
 
-#if (_DK_SDU_MIP__BASE__DOUBLE == _DK_SDU_MIP__BASE__IEEE_754_SINGLE_PRECISION)
+#if (_COM_AZURE_DEV__BASE__DOUBLE == _COM_AZURE_DEV__BASE__IEEE_754_SINGLE_PRECISION)
   typedef Representation::IEEE754SinglePrecision DoubleRepresentation;
-#elif (_DK_SDU_MIP__BASE__DOUBLE == _DK_SDU_MIP__BASE__IEEE_754_DOUBLE_PRECISION)
+#elif (_COM_AZURE_DEV__BASE__DOUBLE == _COM_AZURE_DEV__BASE__IEEE_754_DOUBLE_PRECISION)
   typedef Representation::IEEE754DoublePrecision DoubleRepresentation;
-#elif (_DK_SDU_MIP__BASE__DOUBLE == _DK_SDU_MIP__BASE__IEEE_EXTENDED_DOUBLE_PRECISION_96)
+#elif (_COM_AZURE_DEV__BASE__DOUBLE == _COM_AZURE_DEV__BASE__IEEE_EXTENDED_DOUBLE_PRECISION_96)
   typedef Representation::IEEEExtendedDoublePrecision96 DoubleRepresentation;
-#elif (_DK_SDU_MIP__BASE__DOUBLE == _DK_SDU_MIP__BASE__IEEE_EXTENDED_DOUBLE_PRECISION_128)
+#elif (_COM_AZURE_DEV__BASE__DOUBLE == _COM_AZURE_DEV__BASE__IEEE_EXTENDED_DOUBLE_PRECISION_128)
   typedef Representation::IEEEExtendedDoublePrecision128 DoubleRepresentation;
-#elif (_DK_SDU_MIP__BASE__DOUBLE == _DK_SDU_MIP__BASE__IEEE_QUADRUPLE_PRECISION)
+#elif (_COM_AZURE_DEV__BASE__DOUBLE == _COM_AZURE_DEV__BASE__IEEE_QUADRUPLE_PRECISION)
   typedef Representation::IEEEQuadruplePrecision DoubleRepresentation;
 #else
 #  error Invalid floating-point representation of type double
 #endif
 
-#if (_DK_SDU_MIP__BASE__LONG_DOUBLE == _DK_SDU_MIP__BASE__IEEE_754_SINGLE_PRECISION)
+#if (_COM_AZURE_DEV__BASE__LONG_DOUBLE == _COM_AZURE_DEV__BASE__IEEE_754_SINGLE_PRECISION)
   typedef Representation::IEEE754SinglePrecision LongDoubleRepresentation;
-#elif (_DK_SDU_MIP__BASE__LONG_DOUBLE == _DK_SDU_MIP__BASE__IEEE_754_DOUBLE_PRECISION)
+#elif (_COM_AZURE_DEV__BASE__LONG_DOUBLE == _COM_AZURE_DEV__BASE__IEEE_754_DOUBLE_PRECISION)
   typedef Representation::IEEE754DoublePrecision LongDoubleRepresentation;
-#elif (_DK_SDU_MIP__BASE__LONG_DOUBLE == _DK_SDU_MIP__BASE__IEEE_EXTENDED_DOUBLE_PRECISION_96)
+#elif (_COM_AZURE_DEV__BASE__LONG_DOUBLE == _COM_AZURE_DEV__BASE__IEEE_EXTENDED_DOUBLE_PRECISION_96)
   typedef Representation::IEEEExtendedDoublePrecision96 LongDoubleRepresentation;
-#elif (_DK_SDU_MIP__BASE__LONG_DOUBLE == _DK_SDU_MIP__BASE__IEEE_EXTENDED_DOUBLE_PRECISION_128)
+#elif (_COM_AZURE_DEV__BASE__LONG_DOUBLE == _COM_AZURE_DEV__BASE__IEEE_EXTENDED_DOUBLE_PRECISION_128)
   typedef Representation::IEEEExtendedDoublePrecision128 LongDoubleRepresentation;
-#elif (_DK_SDU_MIP__BASE__LONG_DOUBLE == _DK_SDU_MIP__BASE__IEEE_QUADRUPLE_PRECISION)
+#elif (_COM_AZURE_DEV__BASE__LONG_DOUBLE == _COM_AZURE_DEV__BASE__IEEE_QUADRUPLE_PRECISION)
   typedef Representation::IEEEQuadruplePrecision LongDoubleRepresentation;
 #else
 #  error Invalid floating-point representation of type long double
 #endif
   
   /** @short IEEE 754 single precision conversion support. */
-_DK_SDU_MIP__BASE__PACKED__BEGIN
+_COM_AZURE_DEV__BASE__PACKED__BEGIN
   struct IEEE754SinglePrecision {
     Representation::IEEE754SinglePrecision value;
 
@@ -497,11 +497,11 @@ _DK_SDU_MIP__BASE__PACKED__BEGIN
     operator double() const throw();
     
     operator long double() const throw();
-  } _DK_SDU_MIP__BASE__PACKED;
-_DK_SDU_MIP__BASE__PACKED__END
+  } _COM_AZURE_DEV__BASE__PACKED;
+_COM_AZURE_DEV__BASE__PACKED__END
 
   /** @short IEEE 754 double precision conversion support. */
-_DK_SDU_MIP__BASE__PACKED__BEGIN
+_COM_AZURE_DEV__BASE__PACKED__BEGIN
   struct IEEE754DoublePrecision {
     Representation::IEEE754DoublePrecision value;
 
@@ -657,11 +657,11 @@ _DK_SDU_MIP__BASE__PACKED__BEGIN
     operator double() const throw();
     
     operator long double() const throw();
-  } _DK_SDU_MIP__BASE__PACKED;
-_DK_SDU_MIP__BASE__PACKED__END
+  } _COM_AZURE_DEV__BASE__PACKED;
+_COM_AZURE_DEV__BASE__PACKED__END
 
   /** @short IEEE extended double precision (96 bit) conversion support. */
-_DK_SDU_MIP__BASE__PACKED__BEGIN
+_COM_AZURE_DEV__BASE__PACKED__BEGIN
   struct IEEEExtendedDoublePrecision96 {
     Representation::IEEEExtendedDoublePrecision96 value;
 
@@ -828,11 +828,11 @@ _DK_SDU_MIP__BASE__PACKED__BEGIN
     operator double() const throw();
     
     operator long double() const throw();
-  } _DK_SDU_MIP__BASE__PACKED;
-_DK_SDU_MIP__BASE__PACKED__END
+  } _COM_AZURE_DEV__BASE__PACKED;
+_COM_AZURE_DEV__BASE__PACKED__END
 
   /** @short IEEE extended double precision (128 bit) conversion support. */
-_DK_SDU_MIP__BASE__PACKED__BEGIN
+_COM_AZURE_DEV__BASE__PACKED__BEGIN
   struct IEEEExtendedDoublePrecision128 {
     Representation::IEEEExtendedDoublePrecision128 value;
 
@@ -999,11 +999,11 @@ _DK_SDU_MIP__BASE__PACKED__BEGIN
     operator double() const throw();
     
     operator long double() const throw();
-  } _DK_SDU_MIP__BASE__PACKED;
-_DK_SDU_MIP__BASE__PACKED__END
+  } _COM_AZURE_DEV__BASE__PACKED;
+_COM_AZURE_DEV__BASE__PACKED__END
 
   /** @short IEEE quadruple precision conversion support. */
-_DK_SDU_MIP__BASE__PACKED__BEGIN
+_COM_AZURE_DEV__BASE__PACKED__BEGIN
   struct IEEEQuadruplePrecision {
     Representation::IEEEQuadruplePrecision value;
 
@@ -1165,46 +1165,46 @@ _DK_SDU_MIP__BASE__PACKED__BEGIN
     operator double() const throw();
     
     operator long double() const throw();
-  } _DK_SDU_MIP__BASE__PACKED;
-_DK_SDU_MIP__BASE__PACKED__END
+  } _COM_AZURE_DEV__BASE__PACKED;
+_COM_AZURE_DEV__BASE__PACKED__END
 
-#if (_DK_SDU_MIP__BASE__FLOAT == _DK_SDU_MIP__BASE__IEEE_754_SINGLE_PRECISION)
+#if (_COM_AZURE_DEV__BASE__FLOAT == _COM_AZURE_DEV__BASE__IEEE_754_SINGLE_PRECISION)
   typedef IEEE754SinglePrecision ToFloat;
-#elif (_DK_SDU_MIP__BASE__FLOAT == _DK_SDU_MIP__BASE__IEEE_754_DOUBLE_PRECISION)
+#elif (_COM_AZURE_DEV__BASE__FLOAT == _COM_AZURE_DEV__BASE__IEEE_754_DOUBLE_PRECISION)
   typedef IEEE754DoublePrecision ToFloat;
-#elif (_DK_SDU_MIP__BASE__FLOAT == _DK_SDU_MIP__BASE__IEEE_EXTENDED_DOUBLE_PRECISION_96)
+#elif (_COM_AZURE_DEV__BASE__FLOAT == _COM_AZURE_DEV__BASE__IEEE_EXTENDED_DOUBLE_PRECISION_96)
   typedef IEEEExtendedDoublePrecision96 ToFloat;
-#elif (_DK_SDU_MIP__BASE__FLOAT == _DK_SDU_MIP__BASE__IEEE_EXTENDED_DOUBLE_PRECISION_128)
+#elif (_COM_AZURE_DEV__BASE__FLOAT == _COM_AZURE_DEV__BASE__IEEE_EXTENDED_DOUBLE_PRECISION_128)
   typedef IEEEExtendedDoublePrecision128 ToFloat;
-#elif (_DK_SDU_MIP__BASE__FLOAT == _DK_SDU_MIP__BASE__IEEE_QUADRUPLE_PRECISION)
+#elif (_COM_AZURE_DEV__BASE__FLOAT == _COM_AZURE_DEV__BASE__IEEE_QUADRUPLE_PRECISION)
   typedef IEEEQuadruplePrecision ToFloat;
 #else
 #  error Invalid floating-point representation of type float
 #endif
 
-#if (_DK_SDU_MIP__BASE__DOUBLE == _DK_SDU_MIP__BASE__IEEE_754_SINGLE_PRECISION)
+#if (_COM_AZURE_DEV__BASE__DOUBLE == _COM_AZURE_DEV__BASE__IEEE_754_SINGLE_PRECISION)
   typedef IEEE754SinglePrecision ToDouble;
-#elif (_DK_SDU_MIP__BASE__DOUBLE == _DK_SDU_MIP__BASE__IEEE_754_DOUBLE_PRECISION)
+#elif (_COM_AZURE_DEV__BASE__DOUBLE == _COM_AZURE_DEV__BASE__IEEE_754_DOUBLE_PRECISION)
   typedef IEEE754DoublePrecision ToDouble;
-#elif (_DK_SDU_MIP__BASE__DOUBLE == _DK_SDU_MIP__BASE__IEEE_EXTENDED_DOUBLE_PRECISION_96)
+#elif (_COM_AZURE_DEV__BASE__DOUBLE == _COM_AZURE_DEV__BASE__IEEE_EXTENDED_DOUBLE_PRECISION_96)
   typedef IEEEExtendedDoublePrecision96 ToDouble;
-#elif (_DK_SDU_MIP__BASE__DOUBLE == _DK_SDU_MIP__BASE__IEEE_EXTENDED_DOUBLE_PRECISION_128)
+#elif (_COM_AZURE_DEV__BASE__DOUBLE == _COM_AZURE_DEV__BASE__IEEE_EXTENDED_DOUBLE_PRECISION_128)
   typedef IEEEExtendedDoublePrecision128 ToDouble;
-#elif (_DK_SDU_MIP__BASE__DOUBLE == _DK_SDU_MIP__BASE__IEEE_QUADRUPLE_PRECISION)
+#elif (_COM_AZURE_DEV__BASE__DOUBLE == _COM_AZURE_DEV__BASE__IEEE_QUADRUPLE_PRECISION)
   typedef IEEEQuadruplePrecision ToDouble;
 #else
 #  error Invalid floating-point representation of type double
 #endif
 
-#if (_DK_SDU_MIP__BASE__LONG_DOUBLE == _DK_SDU_MIP__BASE__IEEE_754_SINGLE_PRECISION)
+#if (_COM_AZURE_DEV__BASE__LONG_DOUBLE == _COM_AZURE_DEV__BASE__IEEE_754_SINGLE_PRECISION)
   typedef IEEE754SinglePrecision ToLongDouble;
-#elif (_DK_SDU_MIP__BASE__LONG_DOUBLE == _DK_SDU_MIP__BASE__IEEE_754_DOUBLE_PRECISION)
+#elif (_COM_AZURE_DEV__BASE__LONG_DOUBLE == _COM_AZURE_DEV__BASE__IEEE_754_DOUBLE_PRECISION)
   typedef IEEE754DoublePrecision ToLongDouble;
-#elif (_DK_SDU_MIP__BASE__LONG_DOUBLE == _DK_SDU_MIP__BASE__IEEE_EXTENDED_DOUBLE_PRECISION_96)
+#elif (_COM_AZURE_DEV__BASE__LONG_DOUBLE == _COM_AZURE_DEV__BASE__IEEE_EXTENDED_DOUBLE_PRECISION_96)
   typedef IEEEExtendedDoublePrecision96 ToLongDouble;
-#elif (_DK_SDU_MIP__BASE__LONG_DOUBLE == _DK_SDU_MIP__BASE__IEEE_EXTENDED_DOUBLE_PRECISION_128)
+#elif (_COM_AZURE_DEV__BASE__LONG_DOUBLE == _COM_AZURE_DEV__BASE__IEEE_EXTENDED_DOUBLE_PRECISION_128)
   typedef IEEEExtendedDoublePrecision128 ToLongDouble;
-#elif (_DK_SDU_MIP__BASE__LONG_DOUBLE == _DK_SDU_MIP__BASE__IEEE_QUADRUPLE_PRECISION)
+#elif (_COM_AZURE_DEV__BASE__LONG_DOUBLE == _COM_AZURE_DEV__BASE__IEEE_QUADRUPLE_PRECISION)
   typedef IEEEQuadruplePrecision ToLongDouble;
 #else
 #  error Invalid floating-point representation of type long double
@@ -1212,7 +1212,7 @@ _DK_SDU_MIP__BASE__PACKED__END
 };
 
 inline FloatingPoint::IEEE754SinglePrecision::operator float() const throw() {
-#if (_DK_SDU_MIP__BASE__FLOAT == _DK_SDU_MIP__BASE__IEEE_754_SINGLE_PRECISION)
+#if (_COM_AZURE_DEV__BASE__FLOAT == _COM_AZURE_DEV__BASE__IEEE_754_SINGLE_PRECISION)
   return *reinterpret_cast<const float*>(&value);
 #else
   return ToFloat(value);
@@ -1220,7 +1220,7 @@ inline FloatingPoint::IEEE754SinglePrecision::operator float() const throw() {
 }
 
 inline FloatingPoint::IEEE754SinglePrecision::operator double() const throw() {
-#if (_DK_SDU_MIP__BASE__DOUBLE == _DK_SDU_MIP__BASE__IEEE_754_SINGLE_PRECISION)
+#if (_COM_AZURE_DEV__BASE__DOUBLE == _COM_AZURE_DEV__BASE__IEEE_754_SINGLE_PRECISION)
   return *reinterpret_cast<const double*>(&value);
 #else
   return ToDouble(value);
@@ -1228,7 +1228,7 @@ inline FloatingPoint::IEEE754SinglePrecision::operator double() const throw() {
 }
 
 inline FloatingPoint::IEEE754SinglePrecision::operator long double() const throw() {
-#if (_DK_SDU_MIP__BASE__LONG_DOUBLE == _DK_SDU_MIP__BASE__IEEE_754_SINGLE_PRECISION)
+#if (_COM_AZURE_DEV__BASE__LONG_DOUBLE == _COM_AZURE_DEV__BASE__IEEE_754_SINGLE_PRECISION)
   return *reinterpret_cast<const long double*>(&value);
 #else
   return ToLongDouble(value);
@@ -1236,7 +1236,7 @@ inline FloatingPoint::IEEE754SinglePrecision::operator long double() const throw
 }
 
 inline FloatingPoint::IEEE754DoublePrecision::operator float() const throw() {
-#if (_DK_SDU_MIP__BASE__FLOAT == _DK_SDU_MIP__BASE__IEEE_754_DOUBLE_PRECISION)
+#if (_COM_AZURE_DEV__BASE__FLOAT == _COM_AZURE_DEV__BASE__IEEE_754_DOUBLE_PRECISION)
   return *reinterpret_cast<const float*>(&value);
 #else
   return ToFloat(value);
@@ -1244,7 +1244,7 @@ inline FloatingPoint::IEEE754DoublePrecision::operator float() const throw() {
 }
 
 inline FloatingPoint::IEEE754DoublePrecision::operator double() const throw() {
-#if (_DK_SDU_MIP__BASE__DOUBLE == _DK_SDU_MIP__BASE__IEEE_754_DOUBLE_PRECISION)
+#if (_COM_AZURE_DEV__BASE__DOUBLE == _COM_AZURE_DEV__BASE__IEEE_754_DOUBLE_PRECISION)
   return *reinterpret_cast<const double*>(&value);
 #else
   return ToDouble(value);
@@ -1252,7 +1252,7 @@ inline FloatingPoint::IEEE754DoublePrecision::operator double() const throw() {
 }
 
 inline FloatingPoint::IEEE754DoublePrecision::operator long double() const throw() {
-#if (_DK_SDU_MIP__BASE__LONG_DOUBLE == _DK_SDU_MIP__BASE__IEEE_754_DOUBLE_PRECISION)
+#if (_COM_AZURE_DEV__BASE__LONG_DOUBLE == _COM_AZURE_DEV__BASE__IEEE_754_DOUBLE_PRECISION)
   return *reinterpret_cast<const long double*>(&value);
 #else
   return ToLongDouble(value);
@@ -1260,7 +1260,7 @@ inline FloatingPoint::IEEE754DoublePrecision::operator long double() const throw
 }
 
 inline FloatingPoint::IEEEExtendedDoublePrecision96::operator float() const throw() {
-#if (_DK_SDU_MIP__BASE__FLOAT == _DK_SDU_MIP__BASE__IEEE_EXTENDED_DOUBLE_PRECISION_96)
+#if (_COM_AZURE_DEV__BASE__FLOAT == _COM_AZURE_DEV__BASE__IEEE_EXTENDED_DOUBLE_PRECISION_96)
   return *reinterpret_cast<const float*>(&value);
 #else
   return ToFloat(value);
@@ -1268,7 +1268,7 @@ inline FloatingPoint::IEEEExtendedDoublePrecision96::operator float() const thro
 }
 
 inline FloatingPoint::IEEEExtendedDoublePrecision96::operator double() const throw() {
-#if (_DK_SDU_MIP__BASE__DOUBLE == _DK_SDU_MIP__BASE__IEEE_EXTENDED_DOUBLE_PRECISION_96)
+#if (_COM_AZURE_DEV__BASE__DOUBLE == _COM_AZURE_DEV__BASE__IEEE_EXTENDED_DOUBLE_PRECISION_96)
   return *reinterpret_cast<const double*>(&value);
 #else
   return ToDouble(value);
@@ -1276,7 +1276,7 @@ inline FloatingPoint::IEEEExtendedDoublePrecision96::operator double() const thr
 }
   
 inline FloatingPoint::IEEEExtendedDoublePrecision96::operator long double() const throw() {
-#if (_DK_SDU_MIP__BASE__LONG_DOUBLE == _DK_SDU_MIP__BASE__IEEE_EXTENDED_DOUBLE_PRECISION_96)
+#if (_COM_AZURE_DEV__BASE__LONG_DOUBLE == _COM_AZURE_DEV__BASE__IEEE_EXTENDED_DOUBLE_PRECISION_96)
   return *reinterpret_cast<const long double*>(&value);
 #else
   return ToLongDouble(value);
@@ -1284,7 +1284,7 @@ inline FloatingPoint::IEEEExtendedDoublePrecision96::operator long double() cons
 }
 
 inline FloatingPoint::IEEEExtendedDoublePrecision128::operator float() const throw() {
-#if (_DK_SDU_MIP__BASE__FLOAT == _DK_SDU_MIP__BASE__IEEE_EXTENDED_DOUBLE_PRECISION_128)
+#if (_COM_AZURE_DEV__BASE__FLOAT == _COM_AZURE_DEV__BASE__IEEE_EXTENDED_DOUBLE_PRECISION_128)
   return *reinterpret_cast<const float*>(&value);
 #else
   return ToFloat(value);
@@ -1292,7 +1292,7 @@ inline FloatingPoint::IEEEExtendedDoublePrecision128::operator float() const thr
 }
 
 inline FloatingPoint::IEEEExtendedDoublePrecision128::operator double() const throw() {
-#if (_DK_SDU_MIP__BASE__DOUBLE == _DK_SDU_MIP__BASE__IEEE_EXTENDED_DOUBLE_PRECISION_128)
+#if (_COM_AZURE_DEV__BASE__DOUBLE == _COM_AZURE_DEV__BASE__IEEE_EXTENDED_DOUBLE_PRECISION_128)
   return *reinterpret_cast<const double*>(&value);
 #else
   return ToDouble(value);
@@ -1300,7 +1300,7 @@ inline FloatingPoint::IEEEExtendedDoublePrecision128::operator double() const th
 }
 
 inline FloatingPoint::IEEEExtendedDoublePrecision128::operator long double() const throw() {
-#if (_DK_SDU_MIP__BASE__LONG_DOUBLE == _DK_SDU_MIP__BASE__IEEE_EXTENDED_DOUBLE_PRECISION_128)
+#if (_COM_AZURE_DEV__BASE__LONG_DOUBLE == _COM_AZURE_DEV__BASE__IEEE_EXTENDED_DOUBLE_PRECISION_128)
   return *reinterpret_cast<const long double*>(&value);
 #else
   return ToLongDouble(value);
@@ -1308,7 +1308,7 @@ inline FloatingPoint::IEEEExtendedDoublePrecision128::operator long double() con
 }
 
 inline FloatingPoint::IEEEQuadruplePrecision::operator float() const throw() {
-#if (_DK_SDU_MIP__BASE__FLOAT == _DK_SDU_MIP__BASE__IEEE_QUADRUPLE_PRECISION)
+#if (_COM_AZURE_DEV__BASE__FLOAT == _COM_AZURE_DEV__BASE__IEEE_QUADRUPLE_PRECISION)
   return *reinterpret_cast<const float*>(&value);
 #else
   return ToFloat(value);
@@ -1316,7 +1316,7 @@ inline FloatingPoint::IEEEQuadruplePrecision::operator float() const throw() {
 }
 
 inline FloatingPoint::IEEEQuadruplePrecision::operator double() const throw() {
-#if (_DK_SDU_MIP__BASE__DOUBLE == _DK_SDU_MIP__BASE__IEEE_QUADRUPLE_PRECISION)
+#if (_COM_AZURE_DEV__BASE__DOUBLE == _COM_AZURE_DEV__BASE__IEEE_QUADRUPLE_PRECISION)
   return *reinterpret_cast<const double*>(&value);
 #else
   return ToDouble(value);
@@ -1324,7 +1324,7 @@ inline FloatingPoint::IEEEQuadruplePrecision::operator double() const throw() {
 }
   
 inline FloatingPoint::IEEEQuadruplePrecision::operator long double() const throw() {
-#if (_DK_SDU_MIP__BASE__LONG_DOUBLE == _DK_SDU_MIP__BASE__IEEE_QUADRUPLE_PRECISION)
+#if (_COM_AZURE_DEV__BASE__LONG_DOUBLE == _COM_AZURE_DEV__BASE__IEEE_QUADRUPLE_PRECISION)
   return *reinterpret_cast<const long double*>(&value);
 #else
   return ToLongDouble(value);
@@ -1390,4 +1390,4 @@ void analyseFloatingPoint<FloatingPoint::Representation::IEEEQuadruplePrecision>
   int& exponent,
   unsigned int& flags) throw();
 
-_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
+_COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

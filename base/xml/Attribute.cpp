@@ -14,14 +14,14 @@
 #include <base/platforms/features.h>
 #include <base/xml/Attribute.h>
 
-#if defined(_DK_SDU_MIP__BASE__XML_XMLSOFT_ORG)
+#if defined(_COM_AZURE_DEV__BASE__XML_XMLSOFT_ORG)
 #  include <libxml2/libxml/tree.h>
 #endif
 
-_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+_COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 String Attribute::getName() const throw() {
-#if defined(_DK_SDU_MIP__BASE__XML_XMLSOFT_ORG)
+#if defined(_COM_AZURE_DEV__BASE__XML_XMLSOFT_ORG)
   xmlAttr* attribute = (xmlAttr*)getContext();
   if (attribute->ns && attribute->ns->prefix) {
     return String(NativeString((const char*)attribute->ns->prefix)) +
@@ -36,7 +36,7 @@ String Attribute::getName() const throw() {
 }
 
 String Attribute::getValue() const throw() {
-#if defined(_DK_SDU_MIP__BASE__XML_XMLSOFT_ORG)
+#if defined(_COM_AZURE_DEV__BASE__XML_XMLSOFT_ORG)
   xmlAttr* attribute = (xmlAttr*)getContext();
   xmlChar* content = xmlNodeGetContent((xmlNode*)attribute);
   String result((const char*)content);
@@ -48,7 +48,7 @@ String Attribute::getValue() const throw() {
 }
 
 void Attribute::setValue(const String& value) throw(DOMException) {
-#if defined(_DK_SDU_MIP__BASE__XML_XMLSOFT_ORG)
+#if defined(_COM_AZURE_DEV__BASE__XML_XMLSOFT_ORG)
   xmlAttr* attribute = (xmlAttr*)getContext();
   if (attribute->children) {
     xmlFreeNodeList(attribute->children);
@@ -77,7 +77,7 @@ void Attribute::setValue(const String& value) throw(DOMException) {
 }
 
 bool Attribute::isSpecified() const throw() {
-#if defined(_DK_SDU_MIP__BASE__XML_XMLSOFT_ORG)
+#if defined(_COM_AZURE_DEV__BASE__XML_XMLSOFT_ORG)
   xmlAttr* attribute = (xmlAttr*)getContext();
   return true; // TAG: fixme
 #else
@@ -86,7 +86,7 @@ bool Attribute::isSpecified() const throw() {
 }
 
 Node::ShadowElement Attribute::getOwnerElement() throw() {
-#if defined(_DK_SDU_MIP__BASE__XML_XMLSOFT_ORG)
+#if defined(_COM_AZURE_DEV__BASE__XML_XMLSOFT_ORG)
   xmlAttr* attribute = (xmlAttr*)getContext();
   return Node::ShadowElement(attribute->parent);
 #else
@@ -94,4 +94,4 @@ Node::ShadowElement Attribute::getOwnerElement() throw() {
 #endif
 }
 
-_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
+_COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

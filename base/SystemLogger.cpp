@@ -15,14 +15,14 @@
 #include <base/SystemLogger.h>
 #include <base/Application.h>
 
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
 #  include <windows.h>
 #  undef ERROR // protect against the evil programmers
 #else // unix
 #  include <syslog.h>
 #endif // flavor
 
-_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+_COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 // TAG: add support for \0 in strings!
 
@@ -31,7 +31,7 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 // TAG: need to figure out String and WideString API - use string and wstring instead?
 
 void SystemLogger::write(MessageType type, const String& message) throw() {
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   static WORD messageType[] = {
     EVENTLOG_INFORMATION_TYPE,
     EVENTLOG_WARNING_TYPE,
@@ -61,14 +61,14 @@ void SystemLogger::write(MessageType type, const String& message) throw() {
   if (application) {
     String formalName = application->getFormalName();
     openlog(formalName.getElements(), LOG_PID, 0);
-#if (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__MACOS)
+#if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__MACOS)
     syslog(LOG_USER | messageType[type], message.getElements(), "");
 #else
     syslog(LOG_USER | messageType[type], message.getElements());
 #endif
   } else {
     openlog("Unspecified", LOG_PID, 0);
-#if (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__MACOS)
+#if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__MACOS)
     syslog(LOG_USER | messageType[type], message.getElements(), "");
 #else
     syslog(LOG_USER | messageType[type], message.getElements());
@@ -78,4 +78,4 @@ void SystemLogger::write(MessageType type, const String& message) throw() {
 #endif // flavor
 }
 
-_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
+_COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

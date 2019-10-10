@@ -14,7 +14,7 @@
 #include <base/string/StringInputStream.h>
 #include <base/Functor.h>
 
-_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+_COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 StringInputStream::StringInputStream(String& _string) throw(BindException)
   : string(_string) {
@@ -66,4 +66,4 @@ unsigned int StringInputStream::skip(unsigned int count) throw(IOException) {
 StringInputStream::~StringInputStream() {
 }
 
-_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
+_COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

@@ -15,7 +15,7 @@
 
 #include <base/rmi/RMIException.h>
 
-_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+_COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 /**
   Object Request Broker (ORB) exception.
@@ -25,7 +25,7 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
   @version 1.0
 */
 
-class _DK_SDU_MIP__BASE__API OrbException : public RMIException {
+class _COM_AZURE_DEV__BASE__API OrbException : public RMIException {
 public:
 
   /** Exception causes. */
@@ -78,4 +78,4 @@ public:
   }
 };
 
-_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
+_COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

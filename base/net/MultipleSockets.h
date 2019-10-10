@@ -23,9 +23,9 @@
 #include <base/net/StreamSocket.h>
 #include <base/Listener.h>
 
-_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+_COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
-class _DK_SDU_MIP__BASE__API SocketListener : public Listener {
+class _COM_AZURE_DEV__BASE__API SocketListener : public Listener {
 public:
   
   virtual void onSocketEvent(
@@ -40,7 +40,7 @@ public:
   @version 1.0
 */
 
-class _DK_SDU_MIP__BASE__API MultipleSockets : public Object {
+class _COM_AZURE_DEV__BASE__API MultipleSockets : public Object {
 private:
   
   typedef SpinLock Guard;
@@ -160,4 +160,4 @@ public:
   ~MultipleSockets() throw();
 };
 
-_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
+_COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

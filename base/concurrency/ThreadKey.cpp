@@ -14,17 +14,17 @@
 #include <base/platforms/features.h>
 #include <base/concurrency/ThreadKey.h>
 
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
 #  include <windows.h>
 #else // unix
 #  define __thread // TAG: temp. fix for s390-ibm-linux-gnu
 #  include <pthread.h>
 #endif // flavor
 
-_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+_COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 ThreadKeyImpl::ThreadKeyImpl() throw(ResourceException) {
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   DWORD key = 0;
   if ((key = ::TlsAlloc()) == TLS_OUT_OF_INDEXES) {
     throw ResourceException(this);
@@ -48,7 +48,7 @@ ThreadKeyImpl::ThreadKeyImpl() throw(ResourceException) {
 }
 
 void* ThreadKeyImpl::getKey() const throw(ThreadKeyException) {
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   void* result = ::TlsGetValue(Cast::extract<DWORD>(key));
   if (!result && (::GetLastError() != NO_ERROR)) {
     throw ThreadKeyException(this);
@@ -66,7 +66,7 @@ void* ThreadKeyImpl::getKey() const throw(ThreadKeyException) {
 }
 
 void ThreadKeyImpl::setKey(void* value) throw(ThreadKeyException) {
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   if (!::TlsSetValue(Cast::extract<DWORD>(key), value)) {
     throw ThreadKeyException(this);
   }
@@ -84,7 +84,7 @@ void ThreadKeyImpl::setKey(void* value) throw(ThreadKeyException) {
 }
 
 ThreadKeyImpl::~ThreadKeyImpl() {
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   if (!::TlsFree(Cast::extract<DWORD>(key))) {
     throw ThreadKeyException(this);
   }
@@ -104,4 +104,4 @@ ThreadKeyImpl::~ThreadKeyImpl() {
 #endif // flavor
 }
 
-_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
+_COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

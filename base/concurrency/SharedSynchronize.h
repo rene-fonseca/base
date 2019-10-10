@@ -15,7 +15,7 @@
 
 #include <base/concurrency/Synchronizeable.h>
 
-_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+_COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 /**
   This class is used to synchronize executing contexts (shared) with a guard
@@ -115,4 +115,4 @@ public:
   }
 };
 
-_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
+_COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

@@ -14,7 +14,7 @@
 #include <base/rmi/BarnieDecoder.h>
 #include <base/ByteOrder.h>
 
-_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+_COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 void BarnieDecoder::read(unsigned int* buffer, unsigned int size) throw(IOException) {
   LittleEndian<uint32> encodedBuffer[BUFFER_SIZE];
@@ -26,4 +26,4 @@ void BarnieDecoder::read(unsigned int* buffer, unsigned int size) throw(IOExcept
   }
 }
 
-_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
+_COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

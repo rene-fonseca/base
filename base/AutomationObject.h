@@ -15,7 +15,7 @@
 
 #include <base/Primitives.h>
 
-_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+_COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 /**
   The base class of pure automation objects. Automation objects are neither
@@ -26,7 +26,7 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
   @version 1.0
 */
 
-class _DK_SDU_MIP__BASE__API AutomationObject {
+class _COM_AZURE_DEV__BASE__API AutomationObject {
 private:
 
   /** Prevent dynamic construction. */
@@ -48,4 +48,4 @@ protected:
   }
 };
 
-_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
+_COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

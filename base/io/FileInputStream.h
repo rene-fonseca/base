@@ -17,7 +17,7 @@
 #include <base/io/InputStream.h>
 #include <base/io/File.h>
 
-_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+_COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 /**
   File input stream.
@@ -27,7 +27,7 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
   @version 1.0
 */
 
-class _DK_SDU_MIP__BASE__API FileInputStream : public virtual Object, public InputStream {
+class _COM_AZURE_DEV__BASE__API FileInputStream : public virtual Object, public InputStream {
 protected:
 
   /** The file providing the stream. */
@@ -85,4 +85,4 @@ public:
   bool wait(unsigned int timeout) const throw(FileException);
 };
 
-_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
+_COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

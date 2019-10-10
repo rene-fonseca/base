@@ -16,7 +16,7 @@
 #include <base/DynamicObject.h>
 #include <base/string/String.h>
 
-_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+_COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 /**
   This class returns information concerning some component (default is this
@@ -67,4 +67,4 @@ public:
   virtual String getBanner() const throw();
 };
 
-_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
+_COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

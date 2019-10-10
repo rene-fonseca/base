@@ -19,19 +19,19 @@
 #include <base/platforms/compiler/compiler.h>
 #include <base/platforms/os/os.h>
 
-#define _DK_SDU_MIP__BASE__MAJOR_VERSION 0
-#define _DK_SDU_MIP__BASE__MINOR_VERSION 9
-#define _DK_SDU_MIP__BASE__MICRO_VERSION 1
-#define _DK_SDU_MIP__BASE__VERSION "0.9.1"
+#define _COM_AZURE_DEV__BASE__MAJOR_VERSION 0
+#define _COM_AZURE_DEV__BASE__MINOR_VERSION 9
+#define _COM_AZURE_DEV__BASE__MICRO_VERSION 1
+#define _COM_AZURE_DEV__BASE__VERSION "0.9.1"
 
-#define _DK_SDU_MIP__BASE__REQUIRE(major, minor, micro) \
-  ((major <= _DK_SDU_MIP__BASE__MAJOR_VERSION) && \
-  (minor <= _DK_SDU_MIP__BASE__MINOR_VERSION) && \
-  (micro <= _DK_SDU_MIP__BASE__MICRO_VERSION))
+#define _COM_AZURE_DEV__BASE__REQUIRE(major, minor, micro) \
+  ((major <= _COM_AZURE_DEV__BASE__MAJOR_VERSION) && \
+  (minor <= _COM_AZURE_DEV__BASE__MINOR_VERSION) && \
+  (micro <= _COM_AZURE_DEV__BASE__MICRO_VERSION))
 
-#if (defined(_DK_SDU_MIP__BASE__NAMESPACE))
-#  define _DK_SDU_MIP__BASE__ENTER_NAMESPACE namespace base {
-#  define _DK_SDU_MIP__BASE__LEAVE_NAMESPACE }
+#if (defined(_COM_AZURE_DEV__BASE__NAMESPACE))
+#  define _COM_AZURE_DEV__BASE__ENTER_NAMESPACE namespace base {
+#  define _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE }
 
 /**
   This is the root namespace of <strong>The Base Framework</strong>. All the
@@ -60,20 +60,20 @@ namespace com {
 }
 
 #else
-#  define _DK_SDU_MIP__BASE__ENTER_NAMESPACE
-#  define _DK_SDU_MIP__BASE__LEAVE_NAMESPACE
+#  define _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
+#  define _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE
 #endif
 
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
-#  define _DK_SDU_MIP__BASE__DUMMY_SYMBOL
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
+#  define _COM_AZURE_DEV__BASE__DUMMY_SYMBOL
 #else
-#  define _DK_SDU_MIP__BASE__DUMMY_SYMBOL extern int _DUMMY_SYMBOL;
+#  define _COM_AZURE_DEV__BASE__DUMMY_SYMBOL extern int _DUMMY_SYMBOL;
 #endif
 
-#define _DK_SDU_MIP__BASE__ID_PREFIX L"https://www.fonseca.dk/base"
+#define _COM_AZURE_DEV__BASE__ID_PREFIX L"https://www.fonseca.dk/base"
 
-#define _DK_SDU_MIP__BASE__STRINGIFY(value) #value
-#define _DK_SDU_MIP__BASE__INDIRECT_STRINGIFY(value) _DK_SDU_MIP__BASE__STRINGIFY(value)
+#define _COM_AZURE_DEV__BASE__STRINGIFY(value) #value
+#define _COM_AZURE_DEV__BASE__INDIRECT_STRINGIFY(value) _COM_AZURE_DEV__BASE__STRINGIFY(value)
 
 #if (!defined(STRINGIFY))
 #  define STRINGIFY(value) #value
@@ -83,10 +83,10 @@ namespace com {
 #if (defined(DEBUG))
 #  include <base/Trace.h>
 #  if (!defined(ASSERT))
-#    define ASSERT(expression) {if (!(expression)) {Trace::message("Assertion failure of (" #expression ") at " __FILE__ ":" _DK_SDU_MIP__BASE__INDIRECT_STRINGIFY(__LINE__));}}
+#    define ASSERT(expression) {if (!(expression)) {Trace::message("Assertion failure of (" #expression ") at " __FILE__ ":" _COM_AZURE_DEV__BASE__INDIRECT_STRINGIFY(__LINE__));}}
 #  endif
 #  if (!defined(ASSERTION))
-#    define ASSERTION(expression) namespace {Assertion assertion(expression, "Assertion failure of (" #expression ") at " __FILE__ ":" _DK_SDU_MIP__BASE__INDIRECT_STRINGIFY(__LINE__));}
+#    define ASSERTION(expression) namespace {Assertion assertion(expression, "Assertion failure of (" #expression ") at " __FILE__ ":" _COM_AZURE_DEV__BASE__INDIRECT_STRINGIFY(__LINE__));}
 #  endif
 #else
 #  if (!defined(ASSERT))
@@ -100,7 +100,7 @@ namespace com {
 #if (!defined(GET_SOURCE_LOCATION))
 #  define GET_SOURCE_LOCATION() \
   FormatOutputStream::Debug( \
-    MESSAGE(__FILE__ ":" _DK_SDU_MIP__BASE__INDIRECT_STRINGIFY(__LINE__)) \
+    MESSAGE(__FILE__ ":" _COM_AZURE_DEV__BASE__INDIRECT_STRINGIFY(__LINE__)) \
   )
 #endif
 

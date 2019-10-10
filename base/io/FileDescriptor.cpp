@@ -15,7 +15,7 @@
 #include <base/io/FileDescriptor.h>
 #include <base/io/EndOfFile.h>
 
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
 #  include <windows.h>
 #else // unix
 #  include <sys/types.h>
@@ -29,13 +29,13 @@
 #  endif
 #endif // flavor
 
-_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+_COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 // Handle* FileDescriptor::Descriptor::invalid = nullptr;
 
 FileDescriptor::Descriptor::~Descriptor() {
   if (isValid()) {
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
     if (!::CloseHandle(getHandle())) {
       throw IOException("Unable to close file descriptor", this);
     }
@@ -68,7 +68,7 @@ void FileDescriptor::close() throw(IOException) {
 }
 
 int FileDescriptor::getFlags() const throw(IOException) {
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   return 0;
 #else // unix
   int result = 0;
@@ -80,7 +80,7 @@ int FileDescriptor::getFlags() const throw(IOException) {
 }
 
 void FileDescriptor::setFlags(int flags) throw(IOException) {
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
 #else // unix
   if (::fcntl(fd->getHandle(), F_SETFL, flags) != 0) {
     throw IOException("Unable to set flags of file descriptor", this);
@@ -103,7 +103,7 @@ void FileDescriptor::setHandle(OperatingSystem::Handle handle) throw() {
 }
 
 void FileDescriptor::setNonBlocking(bool value) throw(IOException) {
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
 #else // unix
   int flags = getFlags();
   if (value) {
@@ -119,7 +119,7 @@ void FileDescriptor::setNonBlocking(bool value) throw(IOException) {
 }
 
 FileDescriptor FileDescriptor::getStandardInput() throw() {
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   OperatingSystem::Handle handle = ::GetStdHandle(STD_INPUT_HANDLE); // should never fail
 
   DWORD dontCare = 0;
@@ -137,7 +137,7 @@ FileDescriptor FileDescriptor::getStandardInput() throw() {
 }
 
 FileDescriptor FileDescriptor::getStandardOutput() throw() {
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   OperatingSystem::Handle handle = ::GetStdHandle(STD_OUTPUT_HANDLE); // should never fail
   
   DWORD dontCare = 0;
@@ -155,7 +155,7 @@ FileDescriptor FileDescriptor::getStandardOutput() throw() {
 }
 
 FileDescriptor FileDescriptor::getStandardError() throw() {
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   OperatingSystem::Handle handle = ::GetStdHandle(STD_ERROR_HANDLE); // should never fail
 
 /*
@@ -184,4 +184,4 @@ FileDescriptor FileDescriptor::getStandardError() throw() {
 FileDescriptor::~FileDescriptor() {
 }
 
-_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
+_COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

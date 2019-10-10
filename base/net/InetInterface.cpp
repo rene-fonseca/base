@@ -18,13 +18,13 @@
 
 // TAG: remove index attribute/support only rely on name of interface
 
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
 #  include <winsock2.h>
 #  include <ws2tcpip.h>
 #  include <nb30.h>
 #  undef interface
 #else // unix
-#  if (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__SOLARIS)
+#  if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__SOLARIS)
 #    define BSD_COMP
 #    include <sys/sockio.h>
 #  endif
@@ -36,14 +36,14 @@
 #  include <unistd.h>
 #endif // flavor
 
-_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+_COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 namespace internal {
   
   class InetInterface {
   public:
 
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
     struct ASTAT {
       ADAPTER_STATUS status;
       NAME_BUFFER nameBuffer[NCBNAMSZ];
@@ -52,7 +52,7 @@ namespace internal {
     
     static inline InetAddress getAddress(const struct sockaddr& address) throw() {
       switch (address.sa_family) {
-#if (defined(_DK_SDU_MIP__BASE__INET_IPV6))
+#if (defined(_COM_AZURE_DEV__BASE__INET_IPV6))
       case AF_INET6:
         return InetAddress(
           Cast::getAddress(
@@ -77,7 +77,7 @@ namespace internal {
 
 HashTable<String, unsigned int> InetInterface::getInterfaceNames() throw() {
   HashTable<String, unsigned int> interfaces;
-#if (defined(_DK_SDU_MIP__BASE__INET_IPV6))
+#if (defined(_COM_AZURE_DEV__BASE__INET_IPV6))
   struct if_nameindex* ni;
   if ((ni = if_nameindex()) == 0) { // MT-safe
     throw NetworkException(
@@ -96,7 +96,7 @@ HashTable<String, unsigned int> InetInterface::getInterfaceNames() throw() {
     throw;
   }
   if_freenameindex(ni); // MT-safe
-#elif (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#elif (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   int handle = socket(PF_INET, SOCK_STREAM, 0);
   DWORD bytesReturned;
   if (::WSAIoctl(
@@ -130,8 +130,8 @@ HashTable<String, unsigned int> InetInterface::getInterfaceNames() throw() {
     interfaces.add(stream.getString(), index);
     ++current;
   }
-#elif ((_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__GNULINUX) || \
-       (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__CYGWIN))
+#elif ((_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__GNULINUX) || \
+       (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__CYGWIN))
   int handle = socket(PF_INET, SOCK_STREAM, 0);
   try {
     PrimitiveArray<char> buffer(1024);
@@ -152,7 +152,7 @@ HashTable<String, unsigned int> InetInterface::getInterfaceNames() throw() {
       if (ioctl(handle, SIOCGIFINDEX, current) == 0) {
         interfaces.add(
           String(current->ifr_name, IFNAMSIZ),
-#    if (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__GNULINUX)
+#    if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__GNULINUX)
           current->ifr_ifindex
 #    else
           current->ifr_index
@@ -185,7 +185,7 @@ HashTable<String, unsigned int> InetInterface::getInterfaceNames() throw() {
 
 List<InetInterface> InetInterface::getInterfaces() throw(NetworkException) {
   List<InetInterface> interfaces;
-#if (0 && defined(_DK_SDU_MIP__BASE__INET_IPV6)) // currently disabled
+#if (0 && defined(_COM_AZURE_DEV__BASE__INET_IPV6)) // currently disabled
   struct if_nameindex* ni;
   if ((ni = if_nameindex()) == 0) { // MT-safe
     throw NetworkException(
@@ -207,7 +207,7 @@ List<InetInterface> InetInterface::getInterfaces() throw(NetworkException) {
     throw;
   }
   if_freenameindex(ni); // MT-safe
-#elif (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#elif (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   int handle = socket(PF_INET, SOCK_STREAM, 0);
   DWORD bytesReturned;
   if (::WSAIoctl(
@@ -261,9 +261,9 @@ List<InetInterface> InetInterface::getInterfaces() throw(NetworkException) {
     interfaces.append(interface);
     ++current;
   }
-#elif ((_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__GNULINUX) || \
-       (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__IRIX65) || \
-       (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__SOLARIS))
+#elif ((_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__GNULINUX) || \
+       (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__IRIX65) || \
+       (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__SOLARIS))
   int handle = socket(PF_INET, SOCK_STREAM, 0);
   try {
     struct ifconf ifc;
@@ -298,7 +298,7 @@ List<InetInterface> InetInterface::getInterfaces() throw(NetworkException) {
       }
 #if (defined(SIOCGIFINDEX))
       if (ioctl(handle, SIOCGIFINDEX, current) == 0) {
-#  if (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__GNULINUX)
+#  if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__GNULINUX)
         interface.index = current->ifr_ifindex;
 #  else
         interface.index = current->ifr_index;
@@ -309,7 +309,7 @@ List<InetInterface> InetInterface::getInterfaces() throw(NetworkException) {
         interface.address =
           internal::InetInterface::getAddress(current->ifr_addr);
       }
-#if (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__GNULINUX)
+#if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__GNULINUX)
       if (ioctl(handle, SIOCGIFNETMASK, current) == 0) {
         interface.netmask =
           internal::InetInterface::getAddress(current->ifr_netmask);
@@ -330,8 +330,8 @@ List<InetInterface> InetInterface::getInterfaces() throw(NetworkException) {
       if (ioctl(handle, SIOCGIFMETRIC, current) == 0) {
         interface.metric = current->ifr_metric;
       }
-#if ((_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__GNULINUX) || \
-     (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__CYGWIN))
+#if ((_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__GNULINUX) || \
+     (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__CYGWIN))
       if (ioctl(handle, SIOCGIFHWADDR, current) == 0) {
         interface.ethernet.setMAC48(
           Cast::getAddress(current->ifr_hwaddr.sa_data[0])
@@ -360,20 +360,20 @@ List<InetInterface> InetInterface::getInterfaces() throw(NetworkException) {
 }
 
 unsigned int InetInterface::getIndexByName(const String& name) throw(NetworkException) {
-#if (defined(_DK_SDU_MIP__BASE__INET_IPV6))
+#if (defined(_COM_AZURE_DEV__BASE__INET_IPV6))
   unsigned int index = if_nametoindex(name.getElements());
   bassert(
     index > 0,
     NetworkException("Unable to resolve interface", Type::getType<InetInterface>())
   );
   return index;
-#elif (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#elif (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   // TAG: fixme
   throw NetworkException(Type::getType<InetInterface>());
 #else
   int handle = socket(PF_INET, SOCK_STREAM, 0);
 //   int numberOfInterfaces;
-// #if (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__GNULINUX)
+// #if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__GNULINUX)
 //   const int command = SIOCGIFCOUNT;
 // #else
 //   const int command = SIOCGIFNUM;
@@ -402,7 +402,7 @@ unsigned int InetInterface::getIndexByName(const String& name) throw(NetworkExce
     if (String(current->ifr_name, IFNAMSIZ) == name) {
       if (ioctl(handle, SIOCGIFINDEX, current) == 0) {
         close(handle);
-#  if (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__GNULINUX)
+#  if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__GNULINUX)
         return current->ifr_ifindex;
 #  else
         return current->ifr_index;
@@ -436,7 +436,7 @@ unsigned int InetInterface::getIndexByName(const String& name) throw(NetworkExce
 }
 
 unsigned int InetInterface::getIndexByAddress(const InetAddress& address) throw(NetworkException) {
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   int handle = socket(PF_INET, SOCK_STREAM, 0);
   DWORD bytesReturned;
   if (::WSAIoctl(
@@ -471,7 +471,7 @@ unsigned int InetInterface::getIndexByAddress(const InetAddress& address) throw(
 #else
   int handle = socket(PF_INET, SOCK_STREAM, 0);
 //   int numberOfInterfaces;
-// #if (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__GNULINUX)
+// #if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__GNULINUX)
 //   const int command = SIOCGIFCOUNT;
 // #else
 //   const int command = SIOCGIFNUM;
@@ -501,7 +501,7 @@ unsigned int InetInterface::getIndexByAddress(const InetAddress& address) throw(
       if (internal::InetInterface::getAddress(current->ifr_addr) == address) {
         if (ioctl(handle, SIOCGIFINDEX, current) == 0) {
           close(handle);
-#  if (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__GNULINUX)
+#  if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__GNULINUX)
           return current->ifr_ifindex;
 #  else
           return current->ifr_index;
@@ -535,7 +535,7 @@ unsigned int InetInterface::getIndexByAddress(const InetAddress& address) throw(
 }
 
 String InetInterface::getName(unsigned int index) throw(NetworkException) {
-#if (defined(_DK_SDU_MIP__BASE__INET_IPV6))
+#if (defined(_COM_AZURE_DEV__BASE__INET_IPV6))
   char name[IFNAMSIZ];
   bassert(
     if_indextoname(index, name) != 0,
@@ -545,7 +545,7 @@ String InetInterface::getName(unsigned int index) throw(NetworkException) {
     )
   );
   return String(name, IFNAMSIZ);
-#elif (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#elif (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   int handle = socket(PF_INET, SOCK_STREAM, 0);
   DWORD bytesReturned;
   if (::WSAIoctl(
@@ -580,7 +580,7 @@ String InetInterface::getName(unsigned int index) throw(NetworkException) {
 #else
   int handle = socket(PF_INET, SOCK_STREAM, 0);
 //   int numberOfInterfaces;
-// #if (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__GNULINUX)
+// #if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__GNULINUX)
 //   const int command = SIOCGIFCOUNT;
 // #else
 //   const int command = SIOCGIFNUM;
@@ -607,7 +607,7 @@ String InetInterface::getName(unsigned int index) throw(NetworkException) {
 #if (defined(SIOCGIFINDEX))
   while (offset < ifc.ifc_len) {
     if (ioctl(handle, SIOCGIFINDEX, current) == 0) {
-#  if (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__GNULINUX)
+#  if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__GNULINUX)
       if (current->ifr_ifindex == index)
 #  else
       if (current->ifr_index == index)
@@ -641,7 +641,7 @@ String InetInterface::getName(unsigned int index) throw(NetworkException) {
 }
 
 InetAddress InetInterface::getAddress(unsigned int index) throw(NetworkException) {
-#if (defined(_DK_SDU_MIP__BASE__INET_IPV6))
+#if (defined(_COM_AZURE_DEV__BASE__INET_IPV6))
   struct ifreq req;
   bassert(
     if_indextoname(index, req.ifr_name) != 0,
@@ -660,7 +660,7 @@ InetAddress InetInterface::getAddress(unsigned int index) throw(NetworkException
   }
   close(handle);
   return internal::InetInterface::getAddress(req.ifr_addr);
-#elif (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#elif (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   int handle = socket(PF_INET, SOCK_STREAM, 0);
   DWORD bytesReturned;
   if (::WSAIoctl(
@@ -694,7 +694,7 @@ InetAddress InetInterface::getAddress(unsigned int index) throw(NetworkException
   struct ifreq req;
   int handle = socket(PF_INET, SOCK_STREAM, 0);
 //   int numberOfInterfaces;
-// #if (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__GNULINUX)
+// #if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__GNULINUX)
 //   const int command = SIOCGIFCOUNT;
 // #else
 //   const int command = SIOCGIFNUM;
@@ -722,7 +722,7 @@ InetAddress InetInterface::getAddress(unsigned int index) throw(NetworkException
   while (offset < ifc.ifc_len) {
     // TAG: fixme - invoke SIOCGIFINDEX first
     if (ioctl(handle, SIOCGIFADDR, current) == 0) {
-#  if (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__GNULINUX)
+#  if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__GNULINUX)
       if (current->ifr_ifindex == index) {
 #  else
       if (current->ifr_index == index) {
@@ -762,7 +762,7 @@ InetInterface::InetInterface() throw()
 
 InetInterface::InetInterface(const String& name) throw(NetworkException)
   : index(0), flags(0), metric(0) {
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   int handle = socket(PF_INET, SOCK_STREAM, 0);
   DWORD bytesReturned;
   if (::WSAIoctl(
@@ -856,7 +856,7 @@ InetInterface::InetInterface(const String& name) throw(NetworkException)
   }
 #if (defined(SIOCGIFINDEX))
   if (ioctl(handle, SIOCGIFINDEX, &req) == 0) {
-#  if (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__GNULINUX)
+#  if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__GNULINUX)
     index = req.ifr_ifindex;
 #  else
     index = req.ifr_index;
@@ -866,7 +866,7 @@ InetInterface::InetInterface(const String& name) throw(NetworkException)
   if (ioctl(handle, SIOCGIFADDR, &req) == 0) {
     address = internal::InetInterface::getAddress(req.ifr_addr);
   }
-#if (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__GNULINUX)
+#if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__GNULINUX)
   if (ioctl(handle, SIOCGIFNETMASK, &req) == 0) {
     netmask = internal::InetInterface::getAddress(req.ifr_netmask);
   }
@@ -884,10 +884,10 @@ InetInterface::InetInterface(const String& name) throw(NetworkException)
   if (ioctl(handle, SIOCGIFMETRIC, &req) == 0) {
     metric = req.ifr_metric;
   }
-#if (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__MACOS)
+#if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__MACOS)
   // TAG: FIXMD
-#elif ((_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__GNULINUX) || \
-       (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__CYGWIN))
+#elif ((_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__GNULINUX) || \
+       (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__CYGWIN))
   if (ioctl(handle, SIOCGIFHWADDR, &req) == 0) {
     ethernet.setMAC48(Cast::getAddress(req.ifr_hwaddr));
   }
@@ -912,4 +912,4 @@ InetInterface::InetInterface(const InetInterface& copy) throw()
     ethernet(copy.ethernet) {
 }
 
-_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
+_COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

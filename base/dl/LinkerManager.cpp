@@ -16,7 +16,7 @@
 #include <base/Application.h>
 #include <stdlib.h>
 
-_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+_COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 // Used by LinkerModules to locate the LinkerManager
 LinkerManager* LinkerManager::linkerManager = 0; // TAG: need support for any number of managers?
@@ -71,4 +71,4 @@ LinkerManager::ReadEnumerator LinkerManager::getModules() const throw() {
   return modules.getReadEnumerator();
 }
 
-_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
+_COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

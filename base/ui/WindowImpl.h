@@ -18,7 +18,7 @@
 #include <base/ui/Position.h>
 #include <base/ui/Drawable.h>
 
-_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+_COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 // TAG: need reference counting
 // TAG: full screen support
@@ -31,7 +31,7 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
   @version 1.0
 */
 
-class _DK_SDU_MIP__BASE__API WindowImpl : public Object, virtual public Drawable {
+class _COM_AZURE_DEV__BASE__API WindowImpl : public Object, virtual public Drawable {
   friend class Backend<WindowImpl>;
 public:
 
@@ -155,7 +155,7 @@ public:
     ACQUIRED_FOCUS
   };
   
-  class _DK_SDU_MIP__BASE__API Mouse {
+  class _COM_AZURE_DEV__BASE__API Mouse {
   public:
 
     /** Mouse button. */
@@ -177,7 +177,7 @@ public:
     };
   };
 
-  class _DK_SDU_MIP__BASE__API Key {
+  class _COM_AZURE_DEV__BASE__API Key {
   public:
 
     /** Key code. */
@@ -350,7 +350,7 @@ public:
   /**
     Flushes the window requests to the server.
   */
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   inline void flush() throw(UserInterfaceException) {
   }
 #else // unix
@@ -845,4 +845,4 @@ public:
   virtual ~WindowImpl() throw();
 };
 
-_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
+_COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

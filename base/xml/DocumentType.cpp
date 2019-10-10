@@ -14,14 +14,14 @@
 #include <base/platforms/features.h>
 #include <base/xml/DocumentType.h>
 
-#if defined(_DK_SDU_MIP__BASE__XML_XMLSOFT_ORG)
+#if defined(_COM_AZURE_DEV__BASE__XML_XMLSOFT_ORG)
 #  include <libxml2/libxml/tree.h>
 #endif
 
-_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+_COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 String DocumentType::getName() const throw() {
-#if defined(_DK_SDU_MIP__BASE__XML_XMLSOFT_ORG)
+#if defined(_COM_AZURE_DEV__BASE__XML_XMLSOFT_ORG)
   xmlDtd* documentType = (xmlDtd*)getContext();
   return NativeString((const char*)documentType->name);
 #else
@@ -30,7 +30,7 @@ String DocumentType::getName() const throw() {
 }
 
 NamedNodeMap DocumentType::getEntities() const throw() {
-#if defined(_DK_SDU_MIP__BASE__XML_XMLSOFT_ORG)
+#if defined(_COM_AZURE_DEV__BASE__XML_XMLSOFT_ORG)
   xmlDtd* documentType = (xmlDtd*)getContext();
   return documentType->entities;
 #else
@@ -39,7 +39,7 @@ NamedNodeMap DocumentType::getEntities() const throw() {
 }
 
 NamedNodeMap DocumentType::getNotations() const throw() {
-#if defined(_DK_SDU_MIP__BASE__XML_XMLSOFT_ORG)
+#if defined(_COM_AZURE_DEV__BASE__XML_XMLSOFT_ORG)
   xmlDtd* documentType = (xmlDtd*)getContext();
   return documentType->notations;
 #else
@@ -48,7 +48,7 @@ NamedNodeMap DocumentType::getNotations() const throw() {
 }
 
 String DocumentType::getPublicId() const throw() {
-#if defined(_DK_SDU_MIP__BASE__XML_XMLSOFT_ORG)
+#if defined(_COM_AZURE_DEV__BASE__XML_XMLSOFT_ORG)
   xmlDtd* documentType = (xmlDtd*)getContext();
   return NativeString((const char*)documentType->ExternalID);
 #else
@@ -57,7 +57,7 @@ String DocumentType::getPublicId() const throw() {
 }
 
 String DocumentType::getSystemId() const throw() {
-#if defined(_DK_SDU_MIP__BASE__XML_XMLSOFT_ORG)
+#if defined(_COM_AZURE_DEV__BASE__XML_XMLSOFT_ORG)
   xmlDtd* documentType = (xmlDtd*)getContext();
   return NativeString((const char*)documentType->SystemID);
 #else
@@ -66,7 +66,7 @@ String DocumentType::getSystemId() const throw() {
 }
 
 String DocumentType::getInternalSubset() const throw() {
-#if defined(_DK_SDU_MIP__BASE__XML_XMLSOFT_ORG)
+#if defined(_COM_AZURE_DEV__BASE__XML_XMLSOFT_ORG)
   xmlDtd* documentType = (xmlDtd*)getContext();
   documentType = documentType->doc->intSubset;
   xmlOutputBuffer* buffer = xmlAllocOutputBuffer(0);
@@ -81,4 +81,4 @@ String DocumentType::getInternalSubset() const throw() {
 #endif
 }
 
-_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
+_COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

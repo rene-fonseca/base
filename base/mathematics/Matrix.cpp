@@ -15,11 +15,11 @@
 #include <base/mathematics/Math.h>
 #include <base/Functor.h>
 
-_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+_COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
-template _DK_SDU_MIP__BASE__API class Matrix<float>;
-template _DK_SDU_MIP__BASE__API class Matrix<double>;
-template _DK_SDU_MIP__BASE__API class Matrix<long double>;
+template _COM_AZURE_DEV__BASE__API class Matrix<float>;
+template _COM_AZURE_DEV__BASE__API class Matrix<double>;
+template _COM_AZURE_DEV__BASE__API class Matrix<long double>;
 
 template<class TYPE>
 class MultiplySubtract : public BinaryOperation<TYPE, TYPE, TYPE> {
@@ -788,4 +788,4 @@ FormatOutputStream& operator<<(FormatOutputStream& stream, const Matrix<TYPE>& v
   return stream;
 }
 
-_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
+_COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

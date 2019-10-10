@@ -16,7 +16,7 @@
 #include <base/xml/Node.h>
 #include <base/xml/NamedNodeMap.h>
 
-_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+_COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 class Declaration;
 class Document;
@@ -34,7 +34,7 @@ class DOMImplementation;
   @version 1.0
 */
 
-class _DK_SDU_MIP__BASE__API DocumentType : public Node {
+class _COM_AZURE_DEV__BASE__API DocumentType : public Node {
   friend class Declaration;
   friend class Document;
   friend class DOMImplementation;
@@ -88,4 +88,4 @@ public:
   String getInternalSubset() const throw();
 };
 
-_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
+_COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

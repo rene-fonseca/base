@@ -13,7 +13,7 @@
 
 #include <base/rmi/idl/IDLMethod.h>
 
-_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+_COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 IDLMethod::IDLMethod(const String& name) throw() {
 }
@@ -60,4 +60,4 @@ bool IDLMethod::isCompatible(const IDLMethod& method) const throw() {
 IDLMethod::~IDLMethod() throw() {
 }
 
-_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
+_COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

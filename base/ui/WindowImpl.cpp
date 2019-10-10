@@ -16,13 +16,13 @@
 #include <base/NotImplemented.h>
 #include <base/platforms/backend/WindowImpl.h>
 
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
 #if !defined(_WIN32_WINNT)
 #  define _WIN32_WINNT _WIN32_WINNT_WINXP
 #endif
 #  include <windows.h>
 #  undef DELETE // yikes
-#elif (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__MACOS)
+#elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__MACOS)
 #else // unix (X11)
 #  include <X11/Xlib.h>
 #  include <X11/Xutil.h>
@@ -31,7 +31,7 @@
 #  include <X11/keysym.h>
 #endif // flavor
 
-_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+_COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 SpinLock WindowImpl::spinLock;
 // TAG: should be separate reference counted class
@@ -55,7 +55,7 @@ namespace windowImpl {
     void* handle;
   };
   
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   // hash table with linked lists
   // TAG: use knowledge about handles to select an optimal prime
   // TAG: remember last window object (better when messages come in bursts)
@@ -127,8 +127,8 @@ namespace windowImpl {
     delete entry;
   }
 
-#if (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__MACOS)
-#elif (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__UNIX)
+#if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__MACOS)
+#elif (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__UNIX)
 
   void (*XBlackPixel)();
   void (*XBlackPixelOfScreen)();
@@ -252,7 +252,7 @@ namespace windowImpl {
   
 }; // end of windowImpl namespace
 
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
 LRESULT CALLBACK Backend<WindowImpl>::messageHandler(HWND handle, UINT message, WPARAM wParam, LPARAM lParam) noexcept {
   WindowImpl* window = windowImpl::getWindow(handle); // should be atomic
   if (window == 0) {
@@ -761,14 +761,14 @@ LRESULT CALLBACK Backend<WindowImpl>::messageHandler(HWND handle, UINT message, 
 
 void WindowImpl::construct() throw() {
   windowImpl::addWindow(this, drawableHandle);
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   TRACKMOUSEEVENT mouseEvent;
   mouseEvent.cbSize = sizeof(mouseEvent);
   mouseEvent.dwFlags = TME_LEAVE;
   mouseEvent.hwndTrack = (HWND)drawableHandle;
   mouseEvent.dwHoverTime = 0;
   ::TrackMouseEvent(&mouseEvent);
-#elif (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__MACOS)
+#elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__MACOS)
 #else // unix
   ::XSetWMProtocols(
     (Display*)displayHandle,
@@ -793,7 +793,7 @@ bool WindowImpl::loadModule(bool load) throw() {
   spinLock.exclusiveLock();
   if (load) {
     if (numberOfLocks++ == 0) { // overflow not possible due to limited resources
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
       // only register class if not already registered
       ATOM windowClass = 0;
       WNDCLASSEX temp = {
@@ -807,12 +807,12 @@ bool WindowImpl::loadModule(bool load) throw() {
         (HCURSOR)::LoadImage(0, MAKEINTRESOURCE(OCR_NORMAL), IMAGE_CURSOR, 0, 0, LR_DEFAULTCOLOR|LR_SHARED), // cursor
         0, // background
         0, // menu
-        _DK_SDU_MIP__BASE__ID_PREFIX L"/ui/WindowImpl", // class name
+        _COM_AZURE_DEV__BASE__ID_PREFIX L"/ui/WindowImpl", // class name
         0 // small icon
       };
       windowClass = ::RegisterClassEx(&temp); // zero if fails
       success = windowClass != 0;
-#elif (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__MACOS)
+#elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__MACOS)
 #else // unix
       // TAG: fix display handle support (DISPLAY variable could have been changed)
       // TAG: need support for connection to any server (e.g. "localhost:0.0")
@@ -849,13 +849,13 @@ bool WindowImpl::loadModule(bool load) throw() {
         windowImpl::atoms[PING_MESSAGE] =
           ::XInternAtom(
             display,
-            toUTF8(_DK_SDU_MIP__BASE__ID_PREFIX L"/ui/WindowImpl/PING_MESSAGE").c_str(),
+            toUTF8(_COM_AZURE_DEV__BASE__ID_PREFIX L"/ui/WindowImpl/PING_MESSAGE").c_str(),
             False
           );
         windowImpl::atoms[QUIT_MESSAGE] =
           ::XInternAtom(
             display,
-            toUTF8(_DK_SDU_MIP__BASE__ID_PREFIX L"/ui/WindowImpl/QUIT_MESSAGE").c_str(),
+            toUTF8(_COM_AZURE_DEV__BASE__ID_PREFIX L"/ui/WindowImpl/QUIT_MESSAGE").c_str(),
             False
           );
       }
@@ -868,12 +868,12 @@ bool WindowImpl::loadModule(bool load) throw() {
     }
   } else { // unload
     if (--numberOfLocks == 0) {
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
       ::UnregisterClass(
-        _DK_SDU_MIP__BASE__ID_PREFIX L"/ui/WindowImpl",
+        _COM_AZURE_DEV__BASE__ID_PREFIX L"/ui/WindowImpl",
         ::GetModuleHandle(NULL)
       );
-#elif (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__MACOS)
+#elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__MACOS)
 #else // unix
       ::XCloseDisplay((Display*)displayHandle);
       displayHandle = 0;
@@ -982,10 +982,10 @@ Position WindowImpl::getBindingOffset(Binding binding) const throw() {
   return Position(x, y);
 }
 
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__UNIX)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__UNIX)
 void WindowImpl::flush() throw(UserInterfaceException) {
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
-#elif (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__MACOS)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
+#elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__MACOS)
 #else // unix
   ::XFlush((Display*)displayHandle);
 #endif // flavor
@@ -994,9 +994,9 @@ void WindowImpl::flush() throw(UserInterfaceException) {
 
 // TAG: need glx version method, ...
 String WindowImpl::getServerVendor() const throw(UserInterfaceException) {
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   return Literal("UNSPECIFIED");
-#elif (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__MACOS)
+#elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__MACOS)
   return String();
 #else // unix
   return NativeString(::XServerVendor((Display*)displayHandle));
@@ -1005,9 +1005,9 @@ String WindowImpl::getServerVendor() const throw(UserInterfaceException) {
 
 unsigned int WindowImpl::getServerRelease() const
   throw(UserInterfaceException) {
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   return 0;
-#elif (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__MACOS)
+#elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__MACOS)
   return 0;
 #else // unix
   return ::XVendorRelease((Display*)displayHandle);
@@ -1016,7 +1016,7 @@ unsigned int WindowImpl::getServerRelease() const
 
 void WindowImpl::displayMenu(
   const Position& position, const Menu& menu) throw(UserInterfaceException) {
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   ::SetForegroundWindow((HWND)drawableHandle);
   POINT point;
   point.x = position.getX();
@@ -1043,9 +1043,9 @@ String WindowImpl::getTitle() const throw(UserInterfaceException) {
 }
 
 void WindowImpl::setTitle(const String& title) throw(UserInterfaceException) {
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   ::SetWindowText((HWND)drawableHandle, toWide(title).c_str());
-#elif (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__MACOS)
+#elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__MACOS)
 #else // unix
   ::XChangeProperty(
     (Display*)displayHandle,
@@ -1067,9 +1067,9 @@ String WindowImpl::getIconTitle() const throw(UserInterfaceException) {
 void WindowImpl::setIconTitle(
   const String& iconTitle) throw(UserInterfaceException) {
   this->iconTitle = iconTitle;
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   // TAG: fixme
-#elif (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__MACOS)
+#elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__MACOS)
 #else // unix
   ::XChangeProperty(
     (Display*)displayHandle,
@@ -1086,7 +1086,7 @@ void WindowImpl::setIconTitle(
 
 void WindowImpl::setPosition(
   const Position& position) throw(UserInterfaceException) {
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   if (position != this->position) {
     // TAG: take into account difference between upper left corner of window and client area
     bassert(
@@ -1101,7 +1101,7 @@ void WindowImpl::setPosition(
       UserInterfaceException(this)
     );
   }
-#elif (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__MACOS)
+#elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__MACOS)
 #else // unix
   XWindowChanges changes;
   changes.x = position.getX();
@@ -1117,7 +1117,7 @@ void WindowImpl::setPosition(
 
 void WindowImpl::setDimension(
   const Dimension& dimension) throw(UserInterfaceException) {
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   if (dimension != this->dimension) {
     bassert(
       ::MoveWindow(
@@ -1131,7 +1131,7 @@ void WindowImpl::setDimension(
       UserInterfaceException(this)
     );
   }
-#elif (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__MACOS)
+#elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__MACOS)
 #else // unix
   XWindowChanges changes;
   changes.width = dimension.getWidth();
@@ -1146,7 +1146,7 @@ void WindowImpl::setDimension(
 }
 
 // Region WindowImpl::getRegion() const throw(UserInterfaceException) {
-// #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+// #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
 // #else // unix
 // #endif // flavor
 // }
@@ -1154,7 +1154,7 @@ void WindowImpl::setDimension(
 void WindowImpl::setRegion(
   const Position& position,
   const Dimension& dimension) throw(UserInterfaceException) {
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   bassert(
     ::MoveWindow(
       (HWND)drawableHandle,
@@ -1166,7 +1166,7 @@ void WindowImpl::setRegion(
     ),
     UserInterfaceException(this)
   );
-#elif (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__MACOS)
+#elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__MACOS)
 #else // unix
   XWindowChanges changes;
   changes.x = position.getX();
@@ -1183,7 +1183,7 @@ void WindowImpl::setRegion(
 }
 
 void WindowImpl::setCursor(Cursor cursor) throw(UserInterfaceException) {
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
 // LEFT_ARROW, RIGHT_ARROW, INFO, DESTROY, HELP,
 // CYCLE, SPRAY, TEXT, UP_DOWN, LEFT_RIGHT,
 // TOP_SIDE, BOTTOM_SIDE, LEFT_SIDE,
@@ -1240,7 +1240,7 @@ void WindowImpl::setCursor(Cursor cursor) throw(UserInterfaceException) {
     ::SetCursorPos(point.x, point.y);
     this->cursor = cursor;
   }
-#elif (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__MACOS)
+#elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__MACOS)
 #else // unix
   if (cursor != this->cursor) {
     static const int NATIVE_GLYPH[] = {
@@ -1287,9 +1287,9 @@ void WindowImpl::setCursor(Cursor cursor) throw(UserInterfaceException) {
 // TAG: display, screen, or other window?
 Position WindowImpl::toGlobalPosition(
   const Position& position) const throw(UserInterfaceException) {
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   return this->position + position;
-#elif (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__MACOS)
+#elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__MACOS)
   return Position();
 #else // unix
   int x = 0;
@@ -1311,11 +1311,11 @@ Position WindowImpl::toGlobalPosition(
 
 // TAG: global or window position
 Position WindowImpl::getCursorPosition() const throw(UserInterfaceException) {
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   POINT point;
   ::GetCursorPos(&point);
   return Position(point.x, point.y);
-#elif (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__MACOS)
+#elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__MACOS)
   return Position();
 #else // unix
   int rootX = 0;
@@ -1343,9 +1343,9 @@ Position WindowImpl::getCursorPosition() const throw(UserInterfaceException) {
 // TAG: relative to: display, screen, window, or current position
 // TAG: clip region support?
 void WindowImpl::setCursorPosition(const Position& position) throw(UserInterfaceException) {
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   ::SetCursorPos(position.getX(), position.getY()); // screen coordinates
-#elif (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__MACOS)
+#elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__MACOS)
 #else // unix
   ::XWarpPointer(
     (Display*)displayHandle,
@@ -1362,9 +1362,9 @@ void WindowImpl::setCursorPosition(const Position& position) throw(UserInterface
 }
 
 void WindowImpl::releaseCursorConfinement() throw(UserInterfaceException) {
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   bassert(::ClipCursor(0), UserInterfaceException(this));
-#elif (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__MACOS)
+#elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__MACOS)
 #else // unix
   ::XUngrabPointer((Display*)displayHandle, CurrentTime);
 #endif // flavor
@@ -1377,7 +1377,7 @@ void WindowImpl::releaseCursorConfinement() throw(UserInterfaceException) {
 // }
 
 void WindowImpl::setCursorConfinement() throw(UserInterfaceException) {
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   POINT offset;
   offset.x = 0;
   offset.y = 0;
@@ -1392,7 +1392,7 @@ void WindowImpl::setCursorConfinement() throw(UserInterfaceException) {
   rect.right += offset.x;
   rect.bottom += offset.y;
   bassert(::ClipCursor(&rect), UserInterfaceException(this));
-#elif (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__MACOS)
+#elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__MACOS)
 #else // unix
   int result = ::XGrabPointer(
     (Display*)displayHandle,
@@ -1411,7 +1411,7 @@ void WindowImpl::setCursorConfinement() throw(UserInterfaceException) {
 void WindowImpl::setCursorConfinement(
   const Position& position,
   const Dimension& dimension) throw(UserInterfaceException) {
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   RECT rect;
   rect.left = position.getX();
   rect.top = position.getY();
@@ -1424,7 +1424,7 @@ void WindowImpl::setCursorConfinement(
 }
 
 void WindowImpl::disableClipping() throw(UserInterfaceException) {
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   bassert(
     ::SelectClipRgn((HDC)graphicsContextHandle, 0) != ERROR,
     UserInterfaceException(this)
@@ -1435,7 +1435,7 @@ void WindowImpl::disableClipping() throw(UserInterfaceException) {
 
 WindowImpl::Region WindowImpl::getClipping() const
   throw(UserInterfaceException) {
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   return Region(); // TAG: fixme
 #else // unix
   return Region(); // TAG: fixme
@@ -1445,7 +1445,7 @@ WindowImpl::Region WindowImpl::getClipping() const
 void WindowImpl::setClipping(
   const Position& position,
   const Dimension& dimension) throw(UserInterfaceException) {
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   RECT rect;
   rect.left = position.getX();
   rect.top = position.getY();
@@ -1458,14 +1458,14 @@ void WindowImpl::setClipping(
 }
 
 void WindowImpl::close() throw(UserInterfaceException) {
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   if (drawableHandle) {
     bassert(
       ::DestroyWindow((HWND)drawableHandle),
       UserInterfaceException(this)
     );
   }
-#elif (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__MACOS)
+#elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__MACOS)
 #else // unix
   if (drawableHandle) {
     XClientMessageEvent event;
@@ -1499,7 +1499,7 @@ bool WindowImpl::isParentOf(
 }
 
 bool WindowImpl::isMaximized() throw(UserInterfaceException) {
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   return ::IsZoomed((HWND)drawableHandle) == TRUE;
 #else // unix
   // TAG: if dimension == screen dimension && position = (0, 0) relative to screen
@@ -1508,7 +1508,7 @@ bool WindowImpl::isMaximized() throw(UserInterfaceException) {
 }
 
 bool WindowImpl::isMinimized() throw(UserInterfaceException) {
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   return ::IsIconic((HWND)drawableHandle) == TRUE;
 #else // unix
   throw NotImplemented(this);
@@ -1516,9 +1516,9 @@ bool WindowImpl::isMinimized() throw(UserInterfaceException) {
 }
 
 void WindowImpl::maximize() throw(UserInterfaceException) {
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   ::ShowWindow((HWND)drawableHandle, SW_MAXIMIZE);
-#elif (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__MACOS)
+#elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__MACOS)
 #else // unix
   // store current position and dimension
   // what is the decoration frame size?
@@ -1552,9 +1552,9 @@ void WindowImpl::maximize() throw(UserInterfaceException) {
 }
 
 void WindowImpl::minimize() throw(UserInterfaceException) {
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   ::ShowWindow((HWND)drawableHandle, SW_MINIMIZE);
-#elif (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__MACOS)
+#elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__MACOS)
 #else // unix
   // WM_CHANGE_STATE ClientMessage event with a format of 32 and a first data element of IconicSlate
   ::XIconifyWindow(
@@ -1566,9 +1566,9 @@ void WindowImpl::minimize() throw(UserInterfaceException) {
 }
 
 void WindowImpl::normalize() throw(UserInterfaceException) {
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   ::ShowWindow((HWND)drawableHandle, SW_RESTORE);
-#elif (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__MACOS)
+#elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__MACOS)
 #else // unix
   Position originalPosition = position; // TAG: fixme - must be attribute
   Dimension originalDimension = dimension; // TAG: fixme - must be attribute
@@ -1587,30 +1587,30 @@ void WindowImpl::normalize() throw(UserInterfaceException) {
 }
 
 void WindowImpl::show() throw(UserInterfaceException) {
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   ::ShowWindow((HWND)drawableHandle, SW_SHOW);
-#elif (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__MACOS)
+#elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__MACOS)
 #else // unix
   ::XMapWindow((Display*)displayHandle, (::Window)drawableHandle);
 #endif // flavor
 }
 
 void WindowImpl::hide() throw(UserInterfaceException) {
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   ::ShowWindow((HWND)drawableHandle, SW_HIDE);
-#elif (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__MACOS)
+#elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__MACOS)
 #else // unix
   ::XUnmapWindow((Display*)displayHandle, (::Window)drawableHandle);
 #endif // flavor
 }
 
 void WindowImpl::enable() throw(UserInterfaceException) {
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   bassert(
     ::EnableWindow((HWND)drawableHandle, TRUE),
     UserInterfaceException(this)
   );
-#elif (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__MACOS)
+#elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__MACOS)
 #else // unix
   // TAG: is there a better alternative
   ::XMapWindow((Display*)displayHandle, (::Window)drawableHandle);
@@ -1618,12 +1618,12 @@ void WindowImpl::enable() throw(UserInterfaceException) {
 }
 
 void WindowImpl::disable() throw(UserInterfaceException) {
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   bassert(
     ::EnableWindow((HWND)drawableHandle, FALSE),
     UserInterfaceException(this)
   );
-#elif (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__MACOS)
+#elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__MACOS)
 #else // unix
   // TAG: is there a better alternative
   ::XUnmapWindow((Display*)displayHandle, (::Window)drawableHandle);
@@ -1631,12 +1631,12 @@ void WindowImpl::disable() throw(UserInterfaceException) {
 }
 
 void WindowImpl::raise() throw(UserInterfaceException) {
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   bassert(
     ::SetForegroundWindow((HWND)drawableHandle),
     UserInterfaceException(this)
   );
-#elif (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__MACOS)
+#elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__MACOS)
 #else // unix
   ::XMapRaised((Display*)displayHandle, (::Window)drawableHandle);
   // TAG: what about focus
@@ -1644,9 +1644,9 @@ void WindowImpl::raise() throw(UserInterfaceException) {
 }
 
 void WindowImpl::acquireFocus() throw(UserInterfaceException) {
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   bassert(::SetFocus((HWND)drawableHandle), UserInterfaceException(this));
-#elif (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__MACOS)
+#elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__MACOS)
 #else // unix
   // TAG: fixme
   return;
@@ -1661,7 +1661,7 @@ void WindowImpl::acquireFocus() throw(UserInterfaceException) {
 
 // TAG: wrong name; use hasCapture or isCapturing
 bool WindowImpl::getCapture() const throw(UserInterfaceException) {
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   return ::GetCapture() == (HWND)drawableHandle;
 #else // unix
   throw NotImplemented(this);
@@ -1669,13 +1669,13 @@ bool WindowImpl::getCapture() const throw(UserInterfaceException) {
 }
 
 void WindowImpl::setCapture(bool state) throw(UserInterfaceException) {
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   if (state) {
     ::SetCapture((HWND)drawableHandle);
   } else {
     ::ReleaseCapture();
   }
-#elif (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__MACOS)
+#elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__MACOS)
 #else // unix
   if (state) {
     int result = ::XGrabPointer(
@@ -1697,7 +1697,7 @@ void WindowImpl::setCapture(bool state) throw(UserInterfaceException) {
 }
 
 void WindowImpl::setDisplayMode(DisplayMode displayMode) throw(UserInterfaceException) {
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   if (displayMode != this->displayMode) {
     switch (displayMode) {
     case MODE_WINDOW:
@@ -1728,7 +1728,7 @@ void WindowImpl::setDisplayMode(DisplayMode displayMode) throw(UserInterfaceExce
 }
 
 unsigned int WindowImpl::getKeyState(unsigned int code) const throw(UserInterfaceException) {
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   static const uint8 KEYS[] = {
     VK_INSERT,
     VK_DELETE,
@@ -1848,12 +1848,12 @@ void WindowImpl::onCommand(unsigned int identifier) throw() {
 }
 
 void WindowImpl::invalidate() throw(UserInterfaceException) {
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   bassert(
     ::InvalidateRect((HWND)drawableHandle, 0, FALSE) != FALSE,
     UserInterfaceException(this)
   );
-#elif (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__MACOS)
+#elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__MACOS)
 #else // unix
   XExposeEvent event;
   event.type = Expose;
@@ -1873,7 +1873,7 @@ void WindowImpl::invalidate() throw(UserInterfaceException) {
 }
 
 void WindowImpl::update() throw(UserInterfaceException) {
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   // TAG: time this implementation and select faster choice (send WM_PAINT directly)
   bassert(
     ::UpdateWindow((HWND)drawableHandle),
@@ -1886,9 +1886,9 @@ void WindowImpl::update() throw(UserInterfaceException) {
 }
 
 void WindowImpl::exit() throw() {
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   ::PostQuitMessage(0);
-#elif (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__MACOS)
+#elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__MACOS)
 #else // unix
   XClientMessageEvent event;
   event.type = ClientMessage;
@@ -1906,9 +1906,9 @@ void WindowImpl::exit() throw() {
 }
 
 void WindowImpl::wait() throw(UserInterfaceException) {
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   ::WaitMessage();
-#elif (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__MACOS)
+#elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__MACOS)
 #else // unix
   XEvent event;
   ::XPeekEvent((Display*)displayHandle, &event);
@@ -1916,7 +1916,7 @@ void WindowImpl::wait() throw(UserInterfaceException) {
 }
 
 bool WindowImpl::wait(unsigned int milliseconds) throw(UserInterfaceException) {
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   if (milliseconds > 999999999) { // TAG: fixme
     milliseconds = 999999999;
   }
@@ -1928,7 +1928,7 @@ bool WindowImpl::wait(unsigned int milliseconds) throw(UserInterfaceException) {
 }
 
 bool WindowImpl::openDispatch() throw(UserInterfaceException) {
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   MSG msg;
   while (::PeekMessage(&msg, 0, 0, 0, PM_REMOVE)) {
     if (msg.message == WM_QUIT) {
@@ -1947,7 +1947,7 @@ bool WindowImpl::openDispatch() throw(UserInterfaceException) {
 }
 
 void WindowImpl::dispatch() throw(UserInterfaceException) {
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   MSG msg;
   while (true) {
     if (::PeekMessage(&msg, 0, 0, 0, PM_REMOVE)) {
@@ -1965,7 +1965,7 @@ void WindowImpl::dispatch() throw(UserInterfaceException) {
       ::WaitMessage(); // TAG: fixme
     }
   }
-#elif (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__MACOS)
+#elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__MACOS)
 #else // unix
   while (true) {
 //     while (!::XPending((Display*)displayHandle)) {
@@ -2540,7 +2540,7 @@ void WindowImpl::dispatch() throw(UserInterfaceException) {
 }
 
 bool WindowImpl::hasMouse() throw() {
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   return ::GetSystemMetrics(SM_MOUSEPRESENT) == TRUE;
 #else // unix
   return true; // TAG: fixme
@@ -2548,7 +2548,7 @@ bool WindowImpl::hasMouse() throw() {
 }
 
 unsigned int WindowImpl::getMouseButtons() throw() {
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   unsigned int result = 0;
   unsigned int temp = ::GetSystemMetrics(SM_CMOUSEBUTTONS);
   result |= (temp >= 1) ? Mouse::LEFT : 0;
@@ -2560,7 +2560,7 @@ unsigned int WindowImpl::getMouseButtons() throw() {
     result |= Mouse::WHEEL;
   }
   return result;
-#elif (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__MACOS)
+#elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__MACOS)
   return 0;
 #else // unix
   return Mouse::LEFT|Mouse::MIDDLE|Mouse::RIGHT|Mouse::EXTRA|Mouse::EXTRA2; // TAG: fixme
@@ -2568,7 +2568,7 @@ unsigned int WindowImpl::getMouseButtons() throw() {
 }
 
 unsigned int WindowImpl::getNumberOfMonitors() throw() {
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   return ::GetSystemMetrics(SM_CMONITORS);
 #else // unix
   return 1; // TAG: fixme
@@ -2576,11 +2576,11 @@ unsigned int WindowImpl::getNumberOfMonitors() throw() {
 }
 
 Dimension WindowImpl::getDisplayDimension() throw() {
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   unsigned int width = ::GetSystemMetrics(SM_CXVIRTUALSCREEN);
   unsigned int height = ::GetSystemMetrics(SM_CYVIRTUALSCREEN);
   return Dimension(width, height);
-#elif (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__MACOS)
+#elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__MACOS)
   return Dimension();
 #else // unix
   unsigned int width = ::XWidthOfScreen((Screen*)screenHandle);
@@ -2629,7 +2629,7 @@ Literal WindowImpl::getMouseButtonName(Mouse::Button button) throw() {
 
 bool WindowImpl::isResponding(
   unsigned int milliseconds) throw(UserInterfaceException) {
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   DWORD_PTR result;
   LRESULT temp = ::SendMessageTimeout(
     (HWND)drawableHandle,
@@ -2645,7 +2645,7 @@ bool WindowImpl::isResponding(
   }
   bassert(::GetLastError() == 0, UserInterfaceException(this));
   return false;
-#elif (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__MACOS)
+#elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__MACOS)
   return false;
 #else // unix
   // TAG: use timeout period
@@ -2669,11 +2669,11 @@ bool WindowImpl::isResponding(
 }
 
 WindowImpl::~WindowImpl() throw() {
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   if (drawableHandle) {
     ::DestroyWindow((HWND)drawableHandle);
   }
-#elif (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__MACOS)
+#elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__MACOS)
 #else // unix
   if (drawableHandle) {
     XClientMessageEvent event;
@@ -2698,4 +2698,4 @@ WindowImpl::~WindowImpl() throw() {
   loadModule(false); // never fails
 }
 
-_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
+_COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

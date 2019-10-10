@@ -13,7 +13,7 @@
 
 #include <base/rmi/idl/IDLAttribute.h>
 
-_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+_COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 IDLAttribute::IDLAttribute(const IDLEnumeration& _type) throw()
   : type(_type) {
@@ -22,4 +22,4 @@ IDLAttribute::IDLAttribute(const IDLEnumeration& _type) throw()
 IDLAttribute::~IDLAttribute() throw() {
 }
 
-_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
+_COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

@@ -16,7 +16,7 @@
 #include <base/security/Base64.h>
 #include <base/string/ASCIITraits.h>
 
-_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+_COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 SHA1::SHA1() throw() {
   messageDigest[0] = 0x67452301; // H0
@@ -212,4 +212,4 @@ String SHA1::getBase64() const throw() {
   return Base64::encode(temp, sizeof(temp));
 }
 
-_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
+_COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

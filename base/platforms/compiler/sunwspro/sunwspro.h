@@ -15,8 +15,8 @@
 
 namespace base {
 
-#define _DK_SDU_MIP__BASE__COMPILER_VERSION __SUNPRO_CC
-#define _DK_SDU_MIP__BASE__COMPILER_NAMESPACE com::sun2::sunwspro
+#define _COM_AZURE_DEV__BASE__COMPILER_VERSION __SUNPRO_CC
+#define _COM_AZURE_DEV__BASE__COMPILER_NAMESPACE com::sun2::sunwspro
 
   namespace com {
     

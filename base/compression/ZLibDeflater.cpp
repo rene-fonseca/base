@@ -17,7 +17,7 @@
 #include <base/string/FormatOutputStream.h>
 #include <base/NotSupported.h>
 
-_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+_COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 namespace internal {
   
@@ -80,7 +80,7 @@ namespace internal {
 
 ZLibDeflater::ZLibDeflater() throw(MemoryException)
   : buffer(BUFFER_SIZE), availableBytes(0), state(RUNNING) {
-#if (defined(_DK_SDU_MIP__BASE__ZLIB))
+#if (defined(_COM_AZURE_DEV__BASE__ZLIB))
   internal::ZLibDeflater::Context* context = new internal::ZLibDeflater::Context;
   this->context = context;
   clear(*context);
@@ -103,7 +103,7 @@ ZLibDeflater::ZLibDeflater() throw(MemoryException)
 
 ZLibDeflater::ZLibDeflater(unsigned int compressionLevel) throw(MemoryException)
   : buffer(BUFFER_SIZE), availableBytes(0), state(RUNNING) {
-#if (defined(_DK_SDU_MIP__BASE__ZLIB))
+#if (defined(_COM_AZURE_DEV__BASE__ZLIB))
   internal::ZLibDeflater::Context* context = new internal::ZLibDeflater::Context;
   this->context = context;
   clear(*context);
@@ -125,7 +125,7 @@ ZLibDeflater::ZLibDeflater(unsigned int compressionLevel) throw(MemoryException)
 }
 
 void ZLibDeflater::flush() throw(IOException) {
-#if (defined(_DK_SDU_MIP__BASE__ZLIB))
+#if (defined(_COM_AZURE_DEV__BASE__ZLIB))
   bassert(state != ENDED, EndOfFile());
   bassert(state == RUNNING, IOException(this)); // TAG: should we accept FLUSHING
   state = FLUSHING;
@@ -135,7 +135,7 @@ void ZLibDeflater::flush() throw(IOException) {
 }
 
 unsigned int ZLibDeflater::push(const uint8* buffer, unsigned int size) throw(IOException) {
-#if (defined(_DK_SDU_MIP__BASE__ZLIB))
+#if (defined(_COM_AZURE_DEV__BASE__ZLIB))
   bassert(state != ENDED, EndOfFile());
   bassert(state == RUNNING, IOException(this));
   if (availableBytes == this->buffer.getSize()) {
@@ -158,7 +158,7 @@ unsigned int ZLibDeflater::push(const uint8* buffer, unsigned int size) throw(IO
 }
 
 void ZLibDeflater::pushEnd() throw(IOException) {
-#if (defined(_DK_SDU_MIP__BASE__ZLIB))
+#if (defined(_COM_AZURE_DEV__BASE__ZLIB))
   bassert(state != ENDED, EndOfFile());
   bassert(state == RUNNING, IOException(this));
   state = FINISHING;
@@ -168,7 +168,7 @@ void ZLibDeflater::pushEnd() throw(IOException) {
 }
 
 unsigned int ZLibDeflater::pull(uint8* buffer, unsigned int size) throw(IOException) {
-#if (defined(_DK_SDU_MIP__BASE__ZLIB))
+#if (defined(_COM_AZURE_DEV__BASE__ZLIB))
   bassert(state != ENDED, EndOfFile());
   
   if ((state == RUNNING) &&
@@ -246,7 +246,7 @@ unsigned int ZLibDeflater::pull(uint8* buffer, unsigned int size) throw(IOExcept
 }
 
 ZLibDeflater::~ZLibDeflater() throw() {
-#if (defined(_DK_SDU_MIP__BASE__ZLIB))
+#if (defined(_COM_AZURE_DEV__BASE__ZLIB))
   internal::ZLibDeflater::Context* context =
     Cast::pointer<internal::ZLibDeflater::Context*>(this->context);
   internal::deflateEnd(context);
@@ -254,4 +254,4 @@ ZLibDeflater::~ZLibDeflater() throw() {
 #endif
 }
 
-_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
+_COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

@@ -26,7 +26,7 @@
 #include <base/io/AccessDenied.h>
 #include <base/security/AccessControlList.h>
 
-_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+_COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 class MappedFile;
 class SharedMemory;
@@ -39,7 +39,7 @@ class SharedMemory;
   @version 1.0
 */
 
-class _DK_SDU_MIP__BASE__API File : public Object, public AsynchronousIOStream {
+class _COM_AZURE_DEV__BASE__API File : public Object, public AsynchronousIOStream {
   friend class MappedFile;
   friend class SharedMemory;
 public:
@@ -361,4 +361,4 @@ public:
   ~File();
 };
 
-_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
+_COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

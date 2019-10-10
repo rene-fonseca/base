@@ -16,7 +16,7 @@
 #include <base/Object.h>
 #include <base/communication/CommunicationsException.h>
 
-_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+_COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 /**
   @defgroup communications Communications
@@ -30,8 +30,8 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
   @version 1.0
 */
 
-class _DK_SDU_MIP__BASE__API CommunicationsPort : public Object {
+class _COM_AZURE_DEV__BASE__API CommunicationsPort : public Object {
 public:
 };
 
-_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
+_COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

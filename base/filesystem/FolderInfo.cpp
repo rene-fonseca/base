@@ -15,7 +15,7 @@
 #include <base/filesystem/FolderInfo.h>
 #include <base/concurrency/Thread.h>
 
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
 #  define _WIN32_WINNT _WIN32_WINNT_WINXP
 #  include <windows.h>
 #  include <aclapi.h>
@@ -60,11 +60,11 @@ typedef struct _REPARSE_DATA_BUFFER {
 #  include <errno.h>
 #endif // flavor
 
-_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+_COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 FolderInfo::FolderInfo(const String& _path) throw(FileSystemException)
   : path(_path), mode(0), links(0) {
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   bool error = false;
   HANDLE folder = ::CreateFile(toWide(path).c_str(), // file name
                                0 | READ_CONTROL, // access mode
@@ -279,7 +279,7 @@ FolderInfo::FolderInfo(const String& _path) throw(FileSystemException)
   change = (Cast::impersonate<int64>(information.ftCreationTime) - fileTimeOffset)/10;
   links = information.nNumberOfLinks;
 #else // unix
-  #if defined(_DK_SDU_MIP__BASE__LARGE_FILE_SYSTEM)
+  #if defined(_COM_AZURE_DEV__BASE__LARGE_FILE_SYSTEM)
     struct stat64 status;
     if (::stat64(path.getElements(), &status) || (!S_ISDIR(status.st_mode))) {
       throw FileSystemException("Not a folder", this);
@@ -360,7 +360,7 @@ FolderInfo FolderInfo::getParent() const throw(FileSystemException) {
 
 Array<String> FolderInfo::getEntries() const throw(FileSystemException) {
   Array<String> result;
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   HANDLE handle;
   WIN32_FIND_DATA entry;
 
@@ -393,7 +393,7 @@ Array<String> FolderInfo::getEntries() const throw(FileSystemException) {
 #else // unix
   Allocator<uint8>* buffer = Thread::getLocalStorage();
 
-  #if defined(_DK_SDU_MIP__BASE__LARGE_FILE_SYSTEM)
+  #if defined(_COM_AZURE_DEV__BASE__LARGE_FILE_SYSTEM)
     DIR* directory;
 
     if ((directory = ::opendir(path.getElements())) == 0) {
@@ -421,8 +421,8 @@ Array<String> FolderInfo::getEntries() const throw(FileSystemException) {
     if (::closedir(directory) != 0) {
       throw FileSystemException("Unable to close folder", this);
     }
-  #elif (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__CYGWIN)
-    // TAG: should detect is readdir_r is available (_DK_SDU_MIP__BASE__READDIR_R)
+  #elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__CYGWIN)
+    // TAG: should detect is readdir_r is available (_COM_AZURE_DEV__BASE__READDIR_R)
     #warning using non-reentrant api - readdir
     DIR* directory;
     if ((directory = ::opendir(path.getElements())) == 0) {
@@ -481,4 +481,4 @@ String FolderInfo::getPath() const throw() {
   return path;
 }
 
-_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
+_COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

@@ -14,14 +14,14 @@
 #include <base/platforms/features.h>
 #include <base/xml/Element.h>
 
-#if defined(_DK_SDU_MIP__BASE__XML_XMLSOFT_ORG)
+#if defined(_COM_AZURE_DEV__BASE__XML_XMLSOFT_ORG)
 #  include <libxml2/libxml/tree.h>
 #endif
 
-_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+_COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 String Element::getTagName() const throw() {
-#if defined(_DK_SDU_MIP__BASE__XML_XMLSOFT_ORG)
+#if defined(_COM_AZURE_DEV__BASE__XML_XMLSOFT_ORG)
   xmlNode* node = (xmlNode*)getContext();
   if (node->ns && node->ns->prefix) {
     return String((const char*)node->ns->prefix) + MESSAGE(":") +
@@ -35,7 +35,7 @@ String Element::getTagName() const throw() {
 }
 
 bool Element::hasAttributes() const throw() {
-#if defined(_DK_SDU_MIP__BASE__XML_XMLSOFT_ORG)
+#if defined(_COM_AZURE_DEV__BASE__XML_XMLSOFT_ORG)
   xmlNode* node = (xmlNode*)getContext();
   return node->properties;
 #else
@@ -44,7 +44,7 @@ bool Element::hasAttributes() const throw() {
 }
 
 Attribute Element::getFirstAttribute() throw() {
-#if defined(_DK_SDU_MIP__BASE__XML_XMLSOFT_ORG)
+#if defined(_COM_AZURE_DEV__BASE__XML_XMLSOFT_ORG)
   xmlNode* node = (xmlNode*)getContext();
   return node->properties;
 #else
@@ -53,7 +53,7 @@ Attribute Element::getFirstAttribute() throw() {
 }
 
 bool Element::hasAttribute(const char* name) const throw() {
-#if defined(_DK_SDU_MIP__BASE__XML_XMLSOFT_ORG)
+#if defined(_COM_AZURE_DEV__BASE__XML_XMLSOFT_ORG)
   xmlNode* node = (xmlNode*)getContext();
   xmlAttr* attribute = xmlHasProp(
     node,
@@ -66,7 +66,7 @@ bool Element::hasAttribute(const char* name) const throw() {
 }
 
 String Element::getAttribute(const char* name) const throw(DOMException) {
-#if defined(_DK_SDU_MIP__BASE__XML_XMLSOFT_ORG)
+#if defined(_COM_AZURE_DEV__BASE__XML_XMLSOFT_ORG)
   xmlNode* node = (xmlNode*)getContext();
   char* value = (char*)xmlGetProp(node, (const xmlChar*)name.getElements());
   bassert(value, DOMException(this));
@@ -80,7 +80,7 @@ String Element::getAttribute(const char* name) const throw(DOMException) {
 
 void Element::setAttribute(
   const char* name, const char* value) throw(DOMException) {
-#if defined(_DK_SDU_MIP__BASE__XML_XMLSOFT_ORG)
+#if defined(_COM_AZURE_DEV__BASE__XML_XMLSOFT_ORG)
   xmlNode* node = (xmlNode*)getContext();
   xmlAttr* attribute = xmlSetProp(
     node,
@@ -94,7 +94,7 @@ void Element::setAttribute(
 }
 
 void Element::removeAttribute(const char* name) throw(DOMException) {
-#if defined(_DK_SDU_MIP__BASE__XML_XMLSOFT_ORG)
+#if defined(_COM_AZURE_DEV__BASE__XML_XMLSOFT_ORG)
   xmlNode* node = (xmlNode*)getContext();
   int result = xmlUnsetProp(
     node,
@@ -121,7 +121,7 @@ Attribute Element::removeAttributeNode(Attribute attribute) throw(DOMException) 
 Attribute Element::getAttributeNodeNS(
   const char* namespaceURI,
   const char* localName) throw(DOMException) {
-#if defined(_DK_SDU_MIP__BASE__XML_XMLSOFT_ORG)
+#if defined(_COM_AZURE_DEV__BASE__XML_XMLSOFT_ORG)
   throw DOMException(this);
 //   xmlNode* node = (xmlNode*)getContext();
 //   char* value = (char*)xmlGetNsProp(
@@ -140,7 +140,7 @@ Attribute Element::getAttributeNodeNS(
 
 String Element::getAttributeNS(
   const char* namespaceURI, const char* localName) throw(DOMException) {
-#if defined(_DK_SDU_MIP__BASE__XML_XMLSOFT_ORG)
+#if defined(_COM_AZURE_DEV__BASE__XML_XMLSOFT_ORG)
   xmlNode* node = (xmlNode*)getContext();
   return NativeString(
     (const char*)xmlGetNsProp(
@@ -163,7 +163,7 @@ void Element::setAttributeNS(
 void Element::removeAttributeNS(
   const char* namespaceURI,
   const char* localName) throw(DOMException) {
-#if defined(_DK_SDU_MIP__BASE__XML_XMLSOFT_ORG)
+#if defined(_COM_AZURE_DEV__BASE__XML_XMLSOFT_ORG)
   xmlNode* node = (xmlNode*)getContext();
   int result = xmlUnsetNsProp(
     node,
@@ -183,7 +183,7 @@ Attribute Element::setAttributeNodeNS(
 
 bool Element::hasAttributeNS(
   const char* namespaceURI, const char* localName) const throw() {
-#if defined(_DK_SDU_MIP__BASE__XML_XMLSOFT_ORG)
+#if defined(_COM_AZURE_DEV__BASE__XML_XMLSOFT_ORG)
   xmlNode* node = (xmlNode*)getContext();
   xmlAttr* attribute = xmlHasNsProp(
     node,
@@ -196,4 +196,4 @@ bool Element::hasAttributeNS(
 #endif
 }
 
-_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
+_COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

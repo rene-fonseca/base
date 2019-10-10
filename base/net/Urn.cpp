@@ -14,7 +14,7 @@
 #include <base/net/Urn.h>
 #include <base/string/ASCIITraits.h>
 
-_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+_COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 bool Urn::isUrn(const String& urn) throw() {
   String::ReadIterator i = urn.getBeginReadIterator();
@@ -314,4 +314,4 @@ String Urn::getUrn() const throw(MemoryException) {
   return Literal("urn:") + nid + Literal(":") + nss;
 }
 
-_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
+_COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

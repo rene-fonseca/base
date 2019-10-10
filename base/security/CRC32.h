@@ -17,7 +17,7 @@
 #include <base/Primitives.h>
 #include <base/io/PushInterface.h>
 
-_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+_COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 /**
   Implementation of the 32 bit Cyclic Redundancy Check (CRC-32) algorithm as
@@ -29,7 +29,7 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
   @version 1.0
 */
 
-class _DK_SDU_MIP__BASE__API CRC32 : public Object, public PushInterface {
+class _COM_AZURE_DEV__BASE__API CRC32 : public Object, public PushInterface {
 private:
 
   /** The current checksum. */
@@ -77,4 +77,4 @@ public:
   }
 };
 
-_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
+_COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

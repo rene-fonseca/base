@@ -16,7 +16,7 @@
 #include <base/Object.h>
 #include <base/concurrency/ReadWriteLock.h>
 
-_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+_COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 /**
   This class is used to specify that a synchronize able class should not be
@@ -137,4 +137,4 @@ protected:
   }
 };
 
-_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
+_COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

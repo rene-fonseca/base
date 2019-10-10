@@ -26,7 +26,7 @@
 #include <base/mem/Reference.h>
 #include <base/OperatingSystem.h>
 
-_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+_COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 class MultipleSockets;
 
@@ -44,7 +44,7 @@ class MultipleSockets;
   @version 1.2
 */
 
-class _DK_SDU_MIP__BASE__API Socket : public virtual Object,
+class _COM_AZURE_DEV__BASE__API Socket : public virtual Object,
                                       public virtual AsynchronousInputStream,
                                       public virtual AsynchronousOutputStream {
   friend class Initialization;
@@ -67,7 +67,7 @@ public:
   };
 private:
   
-  class _DK_SDU_MIP__BASE__API SocketImpl : public Handle {
+  class _COM_AZURE_DEV__BASE__API SocketImpl : public Handle {
   private:
 
     /** The socket domain. */
@@ -626,4 +626,4 @@ public:
   ~Socket();
 };
 
-_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
+_COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

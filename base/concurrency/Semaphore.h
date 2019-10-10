@@ -20,7 +20,7 @@
 #include <base/Primitives.h>
 #include <base/OperatingSystem.h>
 
-_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+_COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 /**
   Semaphore synchronization object. Semaphores are useful when resources need
@@ -31,7 +31,7 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
   @version 1.1
 */
 
-class _DK_SDU_MIP__BASE__API Semaphore : public virtual Object {
+class _COM_AZURE_DEV__BASE__API Semaphore : public virtual Object {
 private:
 
   /** Internal semaphore state. */
@@ -86,4 +86,4 @@ public:
   ~Semaphore();
 };
 
-_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
+_COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

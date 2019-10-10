@@ -15,7 +15,7 @@
 
 #include <base/Exception.h>
 
-_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+_COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 /**
   Raised on object deconstruction errors. This exception is used to detect
@@ -26,7 +26,7 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
   @version 1.0
 */
 
-class _DK_SDU_MIP__BASE__API Destruct : public Exception {
+class _COM_AZURE_DEV__BASE__API Destruct : public Exception {
 public:
 
   /**
@@ -42,4 +42,4 @@ public:
   Destruct(const char* message) throw();
 };
 
-_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
+_COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

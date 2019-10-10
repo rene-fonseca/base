@@ -16,7 +16,7 @@
 #include <base/concurrency/Lock.h>
 #include <atomic>
 
-_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+_COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 /**
   Spin lock is a synchronization object just like MutualExclusion. SpinLock
@@ -29,7 +29,7 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
   @version 1.0
 */
 
-class _DK_SDU_MIP__BASE__API NISpinLock : public Lock {
+class _COM_AZURE_DEV__BASE__API NISpinLock : public Lock {
 private:
   
   /** Lock. */
@@ -76,4 +76,4 @@ public:
   void releaseLock() const throw();
 };
 
-_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
+_COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

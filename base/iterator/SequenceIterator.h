@@ -16,7 +16,7 @@
 #include <base/Iterator.h>
 #include <base/Primitives.h>
 
-_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+_COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 /**
   Iterator used to traverse elements of a sequence (not to be confused with the
@@ -215,4 +215,4 @@ inline SequenceIterator<TYPE> operator+(
   return temp += right;
 }
 
-_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
+_COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

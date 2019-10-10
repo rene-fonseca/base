@@ -19,7 +19,7 @@
 #include <base/string/InvalidFormat.h>
 #include <base/string/FormatInputStream.h>
 
-_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+_COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 /**
   Unsigned long integer (64 bits or more). This class maps onto the
@@ -30,7 +30,7 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
   @version 1.0
 */
 
-class _DK_SDU_MIP__BASE__API UnsignedLongInteger : public Object {
+class _COM_AZURE_DEV__BASE__API UnsignedLongInteger : public Object {
 public:
 
   /** True if the integer type is signed. */
@@ -140,4 +140,4 @@ inline UnsignedLongInteger::UnsignedLongInteger(unsigned long long _value) throw
 */
 FormatInputStream& operator>>(FormatInputStream& stream, unsigned long long& value) throw(InvalidFormat, IOException);
 
-_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
+_COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

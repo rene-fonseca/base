@@ -19,7 +19,7 @@
 #include <base/collection/Map.h>
 #include <base/SingletonException.h>
 
-_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+_COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 class LinkerManager : public Object {
 private:
@@ -75,4 +75,4 @@ public:
   ReadEnumerator getModules() const throw();
 };
 
-_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
+_COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

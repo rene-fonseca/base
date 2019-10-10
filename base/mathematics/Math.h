@@ -16,15 +16,15 @@
 #include <base/Primitives.h>
 #include <base/mathematics/Constants.h>
 
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
-#  define _DK_SDU_MIP__BASE__REDIR_ISOC_HYPOTF(x, y) _hypotf(x, y)
-#  define _DK_SDU_MIP__BASE__REDIR_ISOC_FABSF(x) (float)fabs(x)
-#  define _DK_SDU_MIP__BASE__REDIR_ISOC_FABSL(x) fabs((double)x)
-#  define _DK_SDU_MIP__BASE__REDIR_ISOC_CEILL(x) ceil((double)x)
-#  define _DK_SDU_MIP__BASE__REDIR_ISOC_FLOORL(x) floor((double)x)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
+#  define _COM_AZURE_DEV__BASE__REDIR_ISOC_HYPOTF(x, y) _hypotf(x, y)
+#  define _COM_AZURE_DEV__BASE__REDIR_ISOC_FABSF(x) (float)fabs(x)
+#  define _COM_AZURE_DEV__BASE__REDIR_ISOC_FABSL(x) fabs((double)x)
+#  define _COM_AZURE_DEV__BASE__REDIR_ISOC_CEILL(x) ceil((double)x)
+#  define _COM_AZURE_DEV__BASE__REDIR_ISOC_FLOORL(x) floor((double)x)
 #endif
 
-_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+_COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 /**
   @defgroup mathematics Mathematics
@@ -232,7 +232,7 @@ namespace isoc {
   @version 1.0
 */
 
-class _DK_SDU_MIP__BASE__API Math {
+class _COM_AZURE_DEV__BASE__API Math {
 private:
 
   /** Bit reversal lookup table (8 bit). */
@@ -243,8 +243,8 @@ public:
     Returns the absolute value.
   */
   static inline float abs(float value) throw() {
-    #if defined(_DK_SDU_MIP__BASE__REDIR_ISOC_FABSF)
-      return _DK_SDU_MIP__BASE__REDIR_ISOC_FABSF(value);
+    #if defined(_COM_AZURE_DEV__BASE__REDIR_ISOC_FABSF)
+      return _COM_AZURE_DEV__BASE__REDIR_ISOC_FABSF(value);
     #else
       return isoc::fabsf(value);
     #endif
@@ -254,8 +254,8 @@ public:
     Returns the absolute value.
   */
   static inline double abs(double value) throw() {
-    #if defined(_DK_SDU_MIP__BASE__REDIR_ISOC_FABS)
-      return _DK_SDU_MIP__BASE__REDIR_ISOC_FABS(value);
+    #if defined(_COM_AZURE_DEV__BASE__REDIR_ISOC_FABS)
+      return _COM_AZURE_DEV__BASE__REDIR_ISOC_FABS(value);
     #else
       return isoc::fabs(value);
     #endif
@@ -265,8 +265,8 @@ public:
     Returns the absolute value.
   */
   static inline long double abs(long double value) throw() {
-    #if defined(_DK_SDU_MIP__BASE__REDIR_ISOC_FABSL)
-      return _DK_SDU_MIP__BASE__REDIR_ISOC_FABSL(value);
+    #if defined(_COM_AZURE_DEV__BASE__REDIR_ISOC_FABSL)
+      return _COM_AZURE_DEV__BASE__REDIR_ISOC_FABSL(value);
     #else
       return isoc::fabsl(value);
     #endif
@@ -276,8 +276,8 @@ public:
     Rounds (towards +infinity) the value to the nearest integer.
   */
   static inline float ceil(float value) throw() {
-    #if defined(_DK_SDU_MIP__BASE__REDIR_ISOC_CEILF)
-      return _DK_SDU_MIP__BASE__REDIR_ISOC_CEILF(value);
+    #if defined(_COM_AZURE_DEV__BASE__REDIR_ISOC_CEILF)
+      return _COM_AZURE_DEV__BASE__REDIR_ISOC_CEILF(value);
     #else
       return isoc::ceilf(value);
     #endif
@@ -294,8 +294,8 @@ public:
     Rounds (towards +infinity) the value to the nearest integer.
   */
   static inline long double ceil(long double value) throw() {
-    #if defined(_DK_SDU_MIP__BASE__REDIR_ISOC_CEILL)
-      return _DK_SDU_MIP__BASE__REDIR_ISOC_CEILL(value);
+    #if defined(_COM_AZURE_DEV__BASE__REDIR_ISOC_CEILL)
+      return _COM_AZURE_DEV__BASE__REDIR_ISOC_CEILL(value);
     #else
       return isoc::ceill(value);
     #endif
@@ -305,8 +305,8 @@ public:
     Rounds (towards -infinity) the value to the nearest integer.
   */
   static inline float floor(float value) throw() {
-    #if defined(_DK_SDU_MIP__BASE__REDIR_ISOC_FLOORF)
-      return _DK_SDU_MIP__BASE__REDIR_ISOC_FLOORF(value);
+    #if defined(_COM_AZURE_DEV__BASE__REDIR_ISOC_FLOORF)
+      return _COM_AZURE_DEV__BASE__REDIR_ISOC_FLOORF(value);
     #else
       return isoc::floorf(value);
     #endif
@@ -323,8 +323,8 @@ public:
     Rounds (towards -infinity) the value to the nearest integer.
   */
   static inline long double floor(long double value) throw() {
-    #if defined(_DK_SDU_MIP__BASE__REDIR_ISOC_FLOORL)
-      return _DK_SDU_MIP__BASE__REDIR_ISOC_FLOORL(value);
+    #if defined(_COM_AZURE_DEV__BASE__REDIR_ISOC_FLOORL)
+      return _COM_AZURE_DEV__BASE__REDIR_ISOC_FLOORL(value);
     #else
       return isoc::floorl(value);
     #endif
@@ -334,11 +334,11 @@ public:
     Rounds the value to the nearest integer (away from 0).
   */
   static inline float round(float value) throw() {
-    #if defined(_DK_SDU_MIP__BASE__HAVE_ISOC_ROUNDF)
+    #if defined(_COM_AZURE_DEV__BASE__HAVE_ISOC_ROUNDF)
       return isoc::roundf(value);
-    #elif defined(_DK_SDU_MIP__BASE__HAVE_ISOC_ROUNDL)
+    #elif defined(_COM_AZURE_DEV__BASE__HAVE_ISOC_ROUNDL)
       return isoc::roundl(value);
-    #elif defined(_DK_SDU_MIP__BASE__HAVE_ISOC_ROUND)
+    #elif defined(_COM_AZURE_DEV__BASE__HAVE_ISOC_ROUND)
       return isoc::round(value);
     #else
       return (value >= 0) ? Math::ceil(value) : Math::floor(value);
@@ -349,11 +349,11 @@ public:
     Rounds the value to the nearest integer.
   */
   static inline double round(double value) throw() {
-    #if defined(_DK_SDU_MIP__BASE__HAVE_ISOC_ROUND)
+    #if defined(_COM_AZURE_DEV__BASE__HAVE_ISOC_ROUND)
       return isoc::round(value);
-    #elif defined(_DK_SDU_MIP__BASE__HAVE_ISOC_ROUNDL)
+    #elif defined(_COM_AZURE_DEV__BASE__HAVE_ISOC_ROUNDL)
       return isoc::roundl(value);
-    #elif defined(_DK_SDU_MIP__BASE__HAVE_ISOC_ROUNDF)
+    #elif defined(_COM_AZURE_DEV__BASE__HAVE_ISOC_ROUNDF)
       return isoc::roundf(value);
     #else
       return 0; // TAG: fixme
@@ -364,11 +364,11 @@ public:
     Rounds the value to the nearest integer.
   */
   static inline long double round(long double value) throw() {
-    #if defined(_DK_SDU_MIP__BASE__HAVE_ISOC_ROUNDL)
+    #if defined(_COM_AZURE_DEV__BASE__HAVE_ISOC_ROUNDL)
       return isoc::roundl(value);
-    #elif defined(_DK_SDU_MIP__BASE__HAVE_ISOC_ROUND)
+    #elif defined(_COM_AZURE_DEV__BASE__HAVE_ISOC_ROUND)
       return isoc::round(value);
-    #elif defined(_DK_SDU_MIP__BASE__HAVE_ISOC_ROUNDF)
+    #elif defined(_COM_AZURE_DEV__BASE__HAVE_ISOC_ROUNDF)
       return isoc::roundf(value);
     #else
       return 0; // TAG: fixme
@@ -379,8 +379,8 @@ public:
     Rounds (towards zero) the value to the nearest integer.
   */
   static inline float trunc(float value) throw() {
-    #if defined(_DK_SDU_MIP__BASE__REDIR_ISOC_TRUNCF)
-      return _DK_SDU_MIP__BASE__REDIR_ISOC_TRUNCF(value);
+    #if defined(_COM_AZURE_DEV__BASE__REDIR_ISOC_TRUNCF)
+      return _COM_AZURE_DEV__BASE__REDIR_ISOC_TRUNCF(value);
     #else
       return isoc::truncf(value);
     #endif
@@ -397,8 +397,8 @@ public:
     Rounds (towards zero) the value to the nearest integer.
   */
   static inline long double trunc(long double value) throw() {
-    #if defined(_DK_SDU_MIP__BASE__REDIR_ISOC_TRUNCL)
-      return _DK_SDU_MIP__BASE__REDIR_ISOC_TRUNCL(value);
+    #if defined(_COM_AZURE_DEV__BASE__REDIR_ISOC_TRUNCL)
+      return _COM_AZURE_DEV__BASE__REDIR_ISOC_TRUNCL(value);
     #else
       return isoc::truncl(value);
     #endif
@@ -410,8 +410,8 @@ public:
     Returns the square root of the value.
   */
   static inline float sqrt(float value) throw() {
-    #if defined(_DK_SDU_MIP__BASE__REDIR_ISOC_SQRTF)
-      return _DK_SDU_MIP__BASE__REDIR_ISOC_SQRTF(value);
+    #if defined(_COM_AZURE_DEV__BASE__REDIR_ISOC_SQRTF)
+      return _COM_AZURE_DEV__BASE__REDIR_ISOC_SQRTF(value);
     #else
       return isoc::sqrtf(value);
     #endif
@@ -421,8 +421,8 @@ public:
     Returns the square root of the value.
   */
   static inline double sqrt(double value) throw() {
-    #if defined(_DK_SDU_MIP__BASE__REDIR_ISOC_SQRT)
-      return _DK_SDU_MIP__BASE__REDIR_ISOC_SQRT(value);
+    #if defined(_COM_AZURE_DEV__BASE__REDIR_ISOC_SQRT)
+      return _COM_AZURE_DEV__BASE__REDIR_ISOC_SQRT(value);
     #else
       return isoc::sqrt(value);
     #endif
@@ -432,8 +432,8 @@ public:
     Returns the square root of the value.
   */
   static inline long double sqrt(long double value) throw() {
-    #if defined(_DK_SDU_MIP__BASE__REDIR_ISOC_SQRTL)
-      return _DK_SDU_MIP__BASE__REDIR_ISOC_SQRTL(value);
+    #if defined(_COM_AZURE_DEV__BASE__REDIR_ISOC_SQRTL)
+      return _COM_AZURE_DEV__BASE__REDIR_ISOC_SQRTL(value);
     #else
       return isoc::sqrtl(value);
     #endif
@@ -443,8 +443,8 @@ public:
     Returns the cube root of the value.
   */
   static inline float cbrt(float value) throw() {
-    #if defined(_DK_SDU_MIP__BASE__REDIR_ISOC_CBRTF)
-      return _DK_SDU_MIP__BASE__REDIR_ISOC_CBRTF(value);
+    #if defined(_COM_AZURE_DEV__BASE__REDIR_ISOC_CBRTF)
+      return _COM_AZURE_DEV__BASE__REDIR_ISOC_CBRTF(value);
     #else
       return isoc::cbrtf(value);
     #endif
@@ -461,8 +461,8 @@ public:
     Returns the cube root of the value.
   */
   static inline long double cbrt(long double value) throw() {
-    #if defined(_DK_SDU_MIP__BASE__REDIR_ISOC_CBRTL)
-      return _DK_SDU_MIP__BASE__REDIR_ISOC_CBRTL(value);
+    #if defined(_COM_AZURE_DEV__BASE__REDIR_ISOC_CBRTL)
+      return _COM_AZURE_DEV__BASE__REDIR_ISOC_CBRTL(value);
     #else
       return isoc::cbrtl(value);
     #endif
@@ -472,8 +472,8 @@ public:
     Returns the Euclidian distance - sqrt(x^2 + y^2).
   */
   static inline float hypot(float x, float y) throw() {
-    #if defined(_DK_SDU_MIP__BASE__REDIR_ISOC_HYPOTF)
-      return _DK_SDU_MIP__BASE__REDIR_ISOC_HYPOTF(x, y);
+    #if defined(_COM_AZURE_DEV__BASE__REDIR_ISOC_HYPOTF)
+      return _COM_AZURE_DEV__BASE__REDIR_ISOC_HYPOTF(x, y);
     #else
       return isoc::hypotf(x, y);
     #endif
@@ -490,8 +490,8 @@ public:
     Returns the Euclidian distance - sqrt(x^2 + y^2).
   */
   static inline long double hypot(long double x, long double y) throw() {
-    #if defined(_DK_SDU_MIP__BASE__REDIR_ISOC_HYPOTL)
-      return _DK_SDU_MIP__BASE__REDIR_ISOC_HYPOTL(x, y);
+    #if defined(_COM_AZURE_DEV__BASE__REDIR_ISOC_HYPOTL)
+      return _COM_AZURE_DEV__BASE__REDIR_ISOC_HYPOTL(x, y);
     #else
       return isoc::hypotl(x, y);
     #endif
@@ -501,8 +501,8 @@ public:
     Returns the exponential of the value.
   */
   static inline float exp(float value) throw() {
-    #if defined(_DK_SDU_MIP__BASE__REDIR_ISOC_EXPF)
-      return _DK_SDU_MIP__BASE__REDIR_ISOC_EXPF(value);
+    #if defined(_COM_AZURE_DEV__BASE__REDIR_ISOC_EXPF)
+      return _COM_AZURE_DEV__BASE__REDIR_ISOC_EXPF(value);
     #else
       return isoc::expf(value);
     #endif
@@ -519,8 +519,8 @@ public:
     Returns the exponential of the value.
   */
   static inline long double exp(long double value) throw() {
-    #if defined(_DK_SDU_MIP__BASE__REDIR_ISOC_EXPL)
-      return _DK_SDU_MIP__BASE__REDIR_ISOC_EXPL(value);
+    #if defined(_COM_AZURE_DEV__BASE__REDIR_ISOC_EXPL)
+      return _COM_AZURE_DEV__BASE__REDIR_ISOC_EXPL(value);
     #else
       return isoc::expl(value);
     #endif
@@ -530,8 +530,8 @@ public:
     Returns the natural logarithm of the value.
   */
   static inline float ln(float value) throw() {
-    #if defined(_DK_SDU_MIP__BASE__REDIR_ISOC_LOGF)
-      return _DK_SDU_MIP__BASE__REDIR_ISOC_LOGF(value);
+    #if defined(_COM_AZURE_DEV__BASE__REDIR_ISOC_LOGF)
+      return _COM_AZURE_DEV__BASE__REDIR_ISOC_LOGF(value);
     #else
       return isoc::logf(value);
     #endif
@@ -548,8 +548,8 @@ public:
     Returns the natural logarithm of the value.
   */
   static inline long double ln(long double value) throw() {
-    #if defined(_DK_SDU_MIP__BASE__REDIR_ISOC_LOGL)
-      return _DK_SDU_MIP__BASE__REDIR_ISOC_LOGL(value);
+    #if defined(_COM_AZURE_DEV__BASE__REDIR_ISOC_LOGL)
+      return _COM_AZURE_DEV__BASE__REDIR_ISOC_LOGL(value);
     #else
       return isoc::logl(value);
     #endif
@@ -559,11 +559,11 @@ public:
     Returns the logarithm with base 2 of the value.
   */
   static inline float log2(float value) throw() {
-    #if defined(_DK_SDU_MIP__BASE__HAVE_ISOC_LOG2F)
+    #if defined(_COM_AZURE_DEV__BASE__HAVE_ISOC_LOG2F)
       return isoc::log2f(value);
-    #elif defined(_DK_SDU_MIP__BASE__HAVE_ISOC_LOG2L)
+    #elif defined(_COM_AZURE_DEV__BASE__HAVE_ISOC_LOG2L)
       return isoc::log2l(value);
-    #elif defined(_DK_SDU_MIP__BASE__HAVE_ISOC_LOG2)
+    #elif defined(_COM_AZURE_DEV__BASE__HAVE_ISOC_LOG2)
       return isoc::log2(value);
     #else
       return Math::ln(value) * constant::LOG2E;
@@ -574,11 +574,11 @@ public:
     Returns the logarithm with base 2 of the value.
   */
   static inline double log2(double value) throw() {
-    #if defined(_DK_SDU_MIP__BASE__HAVE_ISOC_LOG2)
+    #if defined(_COM_AZURE_DEV__BASE__HAVE_ISOC_LOG2)
       return isoc::log2(value);
-    #elif defined(_DK_SDU_MIP__BASE__HAVE_ISOC_LOG2L)
+    #elif defined(_COM_AZURE_DEV__BASE__HAVE_ISOC_LOG2L)
       return isoc::log2l(value);
-    #elif defined(_DK_SDU_MIP__BASE__HAVE_ISOC_LOG2F)
+    #elif defined(_COM_AZURE_DEV__BASE__HAVE_ISOC_LOG2F)
       return isoc::log2f(value);
     #else
       return Math::ln(value) * constant::LOG2E;
@@ -589,11 +589,11 @@ public:
     Returns the logarithm with base 2 of the value.
   */
   static inline long double log2(long double value) throw() {
-    #if defined(_DK_SDU_MIP__BASE__HAVE_ISOC_LOG2L)
+    #if defined(_COM_AZURE_DEV__BASE__HAVE_ISOC_LOG2L)
       return isoc::log2l(value);
-    #elif defined(_DK_SDU_MIP__BASE__HAVE_ISOC_LOG2)
+    #elif defined(_COM_AZURE_DEV__BASE__HAVE_ISOC_LOG2)
       return isoc::log2(value);
-    #elif defined(_DK_SDU_MIP__BASE__HAVE_ISOC_LOG2F)
+    #elif defined(_COM_AZURE_DEV__BASE__HAVE_ISOC_LOG2F)
       return isoc::log2f(value);
     #else
       return Math::ln(value) * constant::LOG2E;
@@ -604,14 +604,14 @@ public:
     Returns the logarithm with base 10 of the value.
   */
   static inline float log10(float value) throw() {
-    #if defined(_DK_SDU_MIP__BASE__REDIR_ISOC_LOG10F)
-      return _DK_SDU_MIP__BASE__REDIR_ISOC_LOG10F(value);
+    #if defined(_COM_AZURE_DEV__BASE__REDIR_ISOC_LOG10F)
+      return _COM_AZURE_DEV__BASE__REDIR_ISOC_LOG10F(value);
     #else
-      #if defined(_DK_SDU_MIP__BASE__HAVE_ISOC_LOG10F)
+      #if defined(_COM_AZURE_DEV__BASE__HAVE_ISOC_LOG10F)
         return isoc::log10f(value);
       #else
-        #if defined(_DK_SDU_MIP__BASE__REDIR_ISOC_LOGF)
-          return _DK_SDU_MIP__BASE__REDIR_ISOC_LOGF(value) * constant::LOG10E;
+        #if defined(_COM_AZURE_DEV__BASE__REDIR_ISOC_LOGF)
+          return _COM_AZURE_DEV__BASE__REDIR_ISOC_LOGF(value) * constant::LOG10E;
         #else
           return isoc::logf(value) * constant::LOG10E;
         #endif
@@ -630,14 +630,14 @@ public:
     Returns the logarithm with base 10 of the value.
   */
   static inline long double log10(long double value) throw() {
-    #if defined(_DK_SDU_MIP__BASE__REDIR_ISOC_LOG10L)
-      return _DK_SDU_MIP__BASE__REDIR_ISOC_LOG10L(value);
+    #if defined(_COM_AZURE_DEV__BASE__REDIR_ISOC_LOG10L)
+      return _COM_AZURE_DEV__BASE__REDIR_ISOC_LOG10L(value);
     #else
-      #if defined(_DK_SDU_MIP__BASE__HAVE_ISOC_LOG10L)
+      #if defined(_COM_AZURE_DEV__BASE__HAVE_ISOC_LOG10L)
         return isoc::log10l(value);
       #else
-        #if defined(_DK_SDU_MIP__BASE__REDIR_ISOC_LOGL)
-          return _DK_SDU_MIP__BASE__REDIR_ISOC_LOGL(value) * constant::LOG10E;
+        #if defined(_COM_AZURE_DEV__BASE__REDIR_ISOC_LOGL)
+          return _COM_AZURE_DEV__BASE__REDIR_ISOC_LOGL(value) * constant::LOG10E;
         #else
           return isoc::logl(value) * constant::LOG10E;
         #endif
@@ -656,8 +656,8 @@ public:
     Returns the power a^b.
   */
   static inline float power(float a, float b) throw() {
-    #if defined(_DK_SDU_MIP__BASE__REDIR_ISOC_POWF)
-      return _DK_SDU_MIP__BASE__REDIR_ISOC_POWF(a, b);
+    #if defined(_COM_AZURE_DEV__BASE__REDIR_ISOC_POWF)
+      return _COM_AZURE_DEV__BASE__REDIR_ISOC_POWF(a, b);
     #else
       return isoc::powf(a, b);
     #endif
@@ -674,8 +674,8 @@ public:
     Returns the power a^b.
   */
   static inline long double power(long double a, long double b) throw() {
-    #if defined(_DK_SDU_MIP__BASE__REDIR_ISOC_POWL)
-      return _DK_SDU_MIP__BASE__REDIR_ISOC_POWL(a, b);
+    #if defined(_COM_AZURE_DEV__BASE__REDIR_ISOC_POWL)
+      return _COM_AZURE_DEV__BASE__REDIR_ISOC_POWL(a, b);
     #else
       return isoc::powl(a, b);
     #endif
@@ -706,8 +706,8 @@ public:
     Returns the sine.
   */
   static inline float sin(float value) throw() {
-    #if defined(_DK_SDU_MIP__BASE__REDIR_ISOC_SINF)
-      return _DK_SDU_MIP__BASE__REDIR_ISOC_SINF(value);
+    #if defined(_COM_AZURE_DEV__BASE__REDIR_ISOC_SINF)
+      return _COM_AZURE_DEV__BASE__REDIR_ISOC_SINF(value);
     #else
       return isoc::sinf(value);
     #endif
@@ -717,8 +717,8 @@ public:
     Returns the sine.
   */
   static inline double sin(double value) throw() {
-    #if defined(_DK_SDU_MIP__BASE__REDIR_ISOC_SIN)
-      return _DK_SDU_MIP__BASE__REDIR_ISOC_SIN(value);
+    #if defined(_COM_AZURE_DEV__BASE__REDIR_ISOC_SIN)
+      return _COM_AZURE_DEV__BASE__REDIR_ISOC_SIN(value);
     #else
       return isoc::sin(value);
     #endif
@@ -728,8 +728,8 @@ public:
     Returns the sine.
   */
   static inline long double sin(long double value) throw() {
-    #if defined(_DK_SDU_MIP__BASE__REDIR_ISOC_SINL)
-      return _DK_SDU_MIP__BASE__REDIR_ISOC_SINL(value);
+    #if defined(_COM_AZURE_DEV__BASE__REDIR_ISOC_SINL)
+      return _COM_AZURE_DEV__BASE__REDIR_ISOC_SINL(value);
     #else
       return isoc::sinl(value);
     #endif
@@ -739,8 +739,8 @@ public:
     Returns the inverse sine.
   */
   static inline float asin(float value) throw() {
-    #if defined(_DK_SDU_MIP__BASE__REDIR_ISOC_ASINF)
-      return _DK_SDU_MIP__BASE__REDIR_ISOC_ASINF(value);
+    #if defined(_COM_AZURE_DEV__BASE__REDIR_ISOC_ASINF)
+      return _COM_AZURE_DEV__BASE__REDIR_ISOC_ASINF(value);
     #else
       return isoc::asinf(value);
     #endif
@@ -757,10 +757,10 @@ public:
     Returns the inverse sine.
   */
   static inline long double asin(long double value) throw() {
-    #if defined(_DK_SDU_MIP__BASE__HAVE_ISOC_ASINL)
+    #if defined(_COM_AZURE_DEV__BASE__HAVE_ISOC_ASINL)
       return isoc::asinl(value);
-    #elif defined(_DK_SDU_MIP__BASE__REDIR_ISOC_ASINL)
-      return _DK_SDU_MIP__BASE__REDIR_ISOC_ASINL(value);
+    #elif defined(_COM_AZURE_DEV__BASE__REDIR_ISOC_ASINL)
+      return _COM_AZURE_DEV__BASE__REDIR_ISOC_ASINL(value);
     #else
       return Math::atan2(value, Math::sqrt(1 - value * value));
       // return Math::atan(value/Math::sqrt((1 - value * value)));
@@ -771,8 +771,8 @@ public:
     Returns the cosine.
   */
   static inline float cos(float value) throw() {
-    #if defined(_DK_SDU_MIP__BASE__REDIR_ISOC_COSF)
-      return _DK_SDU_MIP__BASE__REDIR_ISOC_COSF(value);
+    #if defined(_COM_AZURE_DEV__BASE__REDIR_ISOC_COSF)
+      return _COM_AZURE_DEV__BASE__REDIR_ISOC_COSF(value);
     #else
       return isoc::cosf(value);
     #endif
@@ -782,8 +782,8 @@ public:
     Returns the cosine.
   */
   static inline double cos(double value) throw() {
-    #if defined(_DK_SDU_MIP__BASE__REDIR_ISOC_COS)
-      return _DK_SDU_MIP__BASE__REDIR_ISOC_COS(value);
+    #if defined(_COM_AZURE_DEV__BASE__REDIR_ISOC_COS)
+      return _COM_AZURE_DEV__BASE__REDIR_ISOC_COS(value);
     #else
       return isoc::cos(value);
     #endif
@@ -793,8 +793,8 @@ public:
     Returns the cosine.
   */
   static inline long double cos(long double value) throw() {
-    #if defined(_DK_SDU_MIP__BASE__REDIR_ISOC_COSL)
-      return _DK_SDU_MIP__BASE__REDIR_ISOC_COSL(value);
+    #if defined(_COM_AZURE_DEV__BASE__REDIR_ISOC_COSL)
+      return _COM_AZURE_DEV__BASE__REDIR_ISOC_COSL(value);
     #else
       return isoc::cosl(value);
     #endif
@@ -804,8 +804,8 @@ public:
     Returns the inverse cosine.
   */
   static inline float acos(float value) throw() {
-    #if defined(_DK_SDU_MIP__BASE__REDIR_ISOC_ACOSF)
-      return _DK_SDU_MIP__BASE__REDIR_ISOC_ACOSF(value);
+    #if defined(_COM_AZURE_DEV__BASE__REDIR_ISOC_ACOSF)
+      return _COM_AZURE_DEV__BASE__REDIR_ISOC_ACOSF(value);
     #else
       return isoc::acosf(value);
     #endif
@@ -822,10 +822,10 @@ public:
     Returns the inverse cosine.
   */
   static inline long double acos(long double value) throw() {
-    #if defined(_DK_SDU_MIP__BASE__HAVE_ISOC_ACOSL)
+    #if defined(_COM_AZURE_DEV__BASE__HAVE_ISOC_ACOSL)
       return isoc::acosl(value);
-    #elif defined(_DK_SDU_MIP__BASE__REDIR_ISOC_ACOSL)
-      return _DK_SDU_MIP__BASE__REDIR_ISOC_ACOSL(value);
+    #elif defined(_COM_AZURE_DEV__BASE__REDIR_ISOC_ACOSL)
+      return _COM_AZURE_DEV__BASE__REDIR_ISOC_ACOSL(value);
     #else
       return Math::atan2(Math::sqrt(1 - value * value), value);
       // return constant::PI_2 - Math::atan(value/Math::sqrt((1 - value * value)));
@@ -836,8 +836,8 @@ public:
     Returns the tangent.
   */
   static inline float tan(float value) throw() {
-    #if defined(_DK_SDU_MIP__BASE__REDIR_ISOC_TANF)
-      return _DK_SDU_MIP__BASE__REDIR_ISOC_TANF(value);
+    #if defined(_COM_AZURE_DEV__BASE__REDIR_ISOC_TANF)
+      return _COM_AZURE_DEV__BASE__REDIR_ISOC_TANF(value);
     #else
       return isoc::tanf(value);
     #endif
@@ -854,8 +854,8 @@ public:
     Returns the tangent.
   */
   static inline long double tan(long double value) throw() {
-    #if defined(_DK_SDU_MIP__BASE__REDIR_ISOC_TANL)
-      return _DK_SDU_MIP__BASE__REDIR_ISOC_TANL(value);
+    #if defined(_COM_AZURE_DEV__BASE__REDIR_ISOC_TANL)
+      return _COM_AZURE_DEV__BASE__REDIR_ISOC_TANL(value);
     #else
       return isoc::tanl(value);
     #endif
@@ -866,10 +866,10 @@ public:
     Returns the inverse tangent.
   */
   static inline float atan(float value) throw() {
-    #if defined(_DK_SDU_MIP__BASE__HAVE_ISOC_ATANF)
+    #if defined(_COM_AZURE_DEV__BASE__HAVE_ISOC_ATANF)
       return isoc::atanf(value);
-    #elif defined(_DK_SDU_MIP__BASE__REDIR_ISOC_ATANF)
-      return _DK_SDU_MIP__BASE__REDIR_ISOC_ATANF(value);
+    #elif defined(_COM_AZURE_DEV__BASE__REDIR_ISOC_ATANF)
+      return _COM_AZURE_DEV__BASE__REDIR_ISOC_ATANF(value);
     #else
       return isoc::atan(value);
     #endif
@@ -886,10 +886,10 @@ public:
     Returns the inverse tangent.
   */
   static inline long double atan(long double value) throw() {
-    #if defined(_DK_SDU_MIP__BASE__HAVE_ISOC_ATANL)
+    #if defined(_COM_AZURE_DEV__BASE__HAVE_ISOC_ATANL)
       return isoc::atanl(value);
-    #elif defined(_DK_SDU_MIP__BASE__REDIR_ISOC_ATANL)
-      return _DK_SDU_MIP__BASE__REDIR_ISOC_ATANL(value);
+    #elif defined(_COM_AZURE_DEV__BASE__REDIR_ISOC_ATANL)
+      return _COM_AZURE_DEV__BASE__REDIR_ISOC_ATANL(value);
     #else
       return isoc::atan(value);
     #endif
@@ -998,8 +998,8 @@ public:
     determine the proper quadrant.
   */
   static inline float atan2(float y, float x) throw() {
-    #if defined(_DK_SDU_MIP__BASE__REDIR_ISOC_ATAN2F)
-      return _DK_SDU_MIP__BASE__REDIR_ISOC_ATAN2F(y, x);
+    #if defined(_COM_AZURE_DEV__BASE__REDIR_ISOC_ATAN2F)
+      return _COM_AZURE_DEV__BASE__REDIR_ISOC_ATAN2F(y, x);
     #else
       return isoc::atan2f(y, x);
     #endif
@@ -1018,8 +1018,8 @@ public:
     determine the proper quadrant.
   */
   static inline long double atan2(long double y, long double x) throw() {
-    #if defined(_DK_SDU_MIP__BASE__REDIR_ISOC_ATAN2L)
-      return _DK_SDU_MIP__BASE__REDIR_ISOC_ATAN2L(y, x);
+    #if defined(_COM_AZURE_DEV__BASE__REDIR_ISOC_ATAN2L)
+      return _COM_AZURE_DEV__BASE__REDIR_ISOC_ATAN2L(y, x);
     #else
       return isoc::atan2l(y, x);
     #endif
@@ -1031,10 +1031,10 @@ public:
     Returns the hyperbolic sine.
   */
   static inline float sinh(float value) throw() {
-    #if defined(_DK_SDU_MIP__BASE__HAVE_ISOC_SINHF)
+    #if defined(_COM_AZURE_DEV__BASE__HAVE_ISOC_SINHF)
       return isoc::sinhf(value);
-    #elif defined(_DK_SDU_MIP__BASE__REDIR_ISOC_SINHF)
-      return _DK_SDU_MIP__BASE__REDIR_ISOC_SINHF(value);
+    #elif defined(_COM_AZURE_DEV__BASE__REDIR_ISOC_SINHF)
+      return _COM_AZURE_DEV__BASE__REDIR_ISOC_SINHF(value);
     #else
       return (Math::exp(value) - Math::exp(-value))/2;
     #endif
@@ -1044,10 +1044,10 @@ public:
     Returns the hyperbolic sine.
   */
   static inline double sinh(double value) throw() {
-    #if defined(_DK_SDU_MIP__BASE__HAVE_ISOC_SINH)
+    #if defined(_COM_AZURE_DEV__BASE__HAVE_ISOC_SINH)
       return isoc::sinh(value);
-    #elif defined(_DK_SDU_MIP__BASE__REDIR_ISOC_SINH)
-      return _DK_SDU_MIP__BASE__REDIR_ISOC_SINH(value);
+    #elif defined(_COM_AZURE_DEV__BASE__REDIR_ISOC_SINH)
+      return _COM_AZURE_DEV__BASE__REDIR_ISOC_SINH(value);
     #else
       return (Math::exp(value) - Math::exp(-value))/2;
     #endif
@@ -1057,10 +1057,10 @@ public:
     Returns the hyperbolic sine.
   */
   static inline long double sinh(long double value) throw() {
-    #if defined(_DK_SDU_MIP__BASE__HAVE_ISOC_SINH)
+    #if defined(_COM_AZURE_DEV__BASE__HAVE_ISOC_SINH)
       return isoc::sinhl(value);
-    #elif defined(_DK_SDU_MIP__BASE__REDIR_ISOC_SINHL)
-      return _DK_SDU_MIP__BASE__REDIR_ISOC_SINHL(value);
+    #elif defined(_COM_AZURE_DEV__BASE__REDIR_ISOC_SINHL)
+      return _COM_AZURE_DEV__BASE__REDIR_ISOC_SINHL(value);
     #else
       return (Math::exp(value) - Math::exp(-value))/2;
     #endif
@@ -1070,10 +1070,10 @@ public:
     Returns the inverse hyperbolic sine.
   */
   static inline float asinh(float value) throw() {
-    #if defined(_DK_SDU_MIP__BASE__HAVE_ISOC_ASINHF)
+    #if defined(_COM_AZURE_DEV__BASE__HAVE_ISOC_ASINHF)
       return isoc::asinhf(value);
-    #elif defined(_DK_SDU_MIP__BASE__REDIR_ISOC_ASINHF)
-      return _DK_SDU_MIP__BASE__REDIR_ISOC_ASINHF(value);
+    #elif defined(_COM_AZURE_DEV__BASE__REDIR_ISOC_ASINHF)
+      return _COM_AZURE_DEV__BASE__REDIR_ISOC_ASINHF(value);
     #else
       return Math::ln(value + Math::sqrt(1 + value * value));
     #endif
@@ -1083,10 +1083,10 @@ public:
     Returns the inverse hyperbolic sine.
   */
   static inline double asinh(double value) throw() {
-    #if defined(_DK_SDU_MIP__BASE__HAVE_ISOC_ASINH)
+    #if defined(_COM_AZURE_DEV__BASE__HAVE_ISOC_ASINH)
       return isoc::asinh(value);
-    #elif defined(_DK_SDU_MIP__BASE__REDIR_ISOC_ASINH)
-      return _DK_SDU_MIP__BASE__REDIR_ISOC_ASINH(value);
+    #elif defined(_COM_AZURE_DEV__BASE__REDIR_ISOC_ASINH)
+      return _COM_AZURE_DEV__BASE__REDIR_ISOC_ASINH(value);
     #else
       return Math::ln(value + Math::sqrt(1 + value * value));
     #endif
@@ -1096,10 +1096,10 @@ public:
     Returns the inverse hyperbolic sine.
   */
   static inline long double asinh(long double value) throw() {
-    #if defined(_DK_SDU_MIP__BASE__HAVE_ISOC_ASINHL)
+    #if defined(_COM_AZURE_DEV__BASE__HAVE_ISOC_ASINHL)
       return isoc::asinhl(value);
-    #elif defined(_DK_SDU_MIP__BASE__REDIR_ISOC_ASINHL)
-      return _DK_SDU_MIP__BASE__REDIR_ISOC_ASINHL(value);
+    #elif defined(_COM_AZURE_DEV__BASE__REDIR_ISOC_ASINHL)
+      return _COM_AZURE_DEV__BASE__REDIR_ISOC_ASINHL(value);
     #else
       return Math::ln(value + Math::sqrt(1 + value * value));
     #endif
@@ -1109,10 +1109,10 @@ public:
     Returns the hyperbolic cosine.
   */
   static inline float cosh(float value) throw() {
-    #if defined(_DK_SDU_MIP__BASE__HAVE_ISOC_COSHF)
+    #if defined(_COM_AZURE_DEV__BASE__HAVE_ISOC_COSHF)
       return isoc::coshf(value);
-    #elif defined(_DK_SDU_MIP__BASE__REDIR_ISOC_COSHF)
-      return _DK_SDU_MIP__BASE__REDIR_ISOC_COSHF(value);
+    #elif defined(_COM_AZURE_DEV__BASE__REDIR_ISOC_COSHF)
+      return _COM_AZURE_DEV__BASE__REDIR_ISOC_COSHF(value);
     #else
       return (Math::exp(value) + Math::exp(-value))/2;
     #endif
@@ -1122,10 +1122,10 @@ public:
     Returns the hyperbolic cosine.
   */
   static inline double cosh(double value) throw() {
-    #if defined(_DK_SDU_MIP__BASE__HAVE_ISOC_COSH)
+    #if defined(_COM_AZURE_DEV__BASE__HAVE_ISOC_COSH)
       return isoc::cosh(value);
-    #elif defined(_DK_SDU_MIP__BASE__REDIR_ISOC_COSH)
-      return _DK_SDU_MIP__BASE__REDIR_ISOC_COSH(value);
+    #elif defined(_COM_AZURE_DEV__BASE__REDIR_ISOC_COSH)
+      return _COM_AZURE_DEV__BASE__REDIR_ISOC_COSH(value);
     #else
       return (Math::exp(value) + Math::exp(-value))/2;
     #endif
@@ -1135,10 +1135,10 @@ public:
     Returns the hyperbolic cosine.
   */
   static inline long double cosh(long double value) throw() {
-    #if defined(_DK_SDU_MIP__BASE__HAVE_ISOC_COSHL)
+    #if defined(_COM_AZURE_DEV__BASE__HAVE_ISOC_COSHL)
       return isoc::coshl(value);
-    #elif defined(_DK_SDU_MIP__BASE__REDIR_ISOC_COSHL)
-      return _DK_SDU_MIP__BASE__REDIR_ISOC_COSHL(value);
+    #elif defined(_COM_AZURE_DEV__BASE__REDIR_ISOC_COSHL)
+      return _COM_AZURE_DEV__BASE__REDIR_ISOC_COSHL(value);
     #else
       return (Math::exp(value) + Math::exp(-value))/2;
     #endif
@@ -1148,10 +1148,10 @@ public:
     Returns the inverse hyperbolic cosine.
   */
   static inline float acosh(float value) throw() {
-    #if defined(_DK_SDU_MIP__BASE__HAVE_ISOC_ACOSHF)
+    #if defined(_COM_AZURE_DEV__BASE__HAVE_ISOC_ACOSHF)
       return isoc::acoshf(value);
-    #elif defined(_DK_SDU_MIP__BASE__REDIR_ISOC_ACOSHF)
-      return _DK_SDU_MIP__BASE__REDIR_ISOC_ACOSHF(value);
+    #elif defined(_COM_AZURE_DEV__BASE__REDIR_ISOC_ACOSHF)
+      return _COM_AZURE_DEV__BASE__REDIR_ISOC_ACOSHF(value);
     #else
       return Math::ln(value + Math::sqrt(value * value - 1));
     #endif
@@ -1161,10 +1161,10 @@ public:
     Returns the inverse hyperbolic cosine.
   */
   static inline double acosh(double value) throw() {
-    #if defined(_DK_SDU_MIP__BASE__HAVE_ISOC_ACOSH)
+    #if defined(_COM_AZURE_DEV__BASE__HAVE_ISOC_ACOSH)
       return isoc::acosh(value);
-    #elif defined(_DK_SDU_MIP__BASE__REDIR_ISOC_ACOSH)
-      return _DK_SDU_MIP__BASE__REDIR_ISOC_ACOSH(value);
+    #elif defined(_COM_AZURE_DEV__BASE__REDIR_ISOC_ACOSH)
+      return _COM_AZURE_DEV__BASE__REDIR_ISOC_ACOSH(value);
     #else
       return Math::ln(value + Math::sqrt(value * value - 1));
     #endif
@@ -1174,10 +1174,10 @@ public:
     Returns the inverse hyperbolic cosine.
   */
   static inline long double acosh(long double value) throw() {
-    #if defined(_DK_SDU_MIP__BASE__HAVE_ISOC_ACOSHL)
+    #if defined(_COM_AZURE_DEV__BASE__HAVE_ISOC_ACOSHL)
       return isoc::acoshl(value);
-    #elif defined(_DK_SDU_MIP__BASE__REDIR_ISOC_ACOSHL)
-      return _DK_SDU_MIP__BASE__REDIR_ISOC_ACOSHL(value);
+    #elif defined(_COM_AZURE_DEV__BASE__REDIR_ISOC_ACOSHL)
+      return _COM_AZURE_DEV__BASE__REDIR_ISOC_ACOSHL(value);
     #else
       return Math::ln(value + Math::sqrt(value * value - 1));
     #endif
@@ -1187,10 +1187,10 @@ public:
     Returns the hyperbolic tangent.
   */
   static inline float tanh(float value) throw() {
-    #if defined(_DK_SDU_MIP__BASE__HAVE_ISOC_TANHF)
+    #if defined(_COM_AZURE_DEV__BASE__HAVE_ISOC_TANHF)
       return isoc::tanhf(value);
-    #elif defined(_DK_SDU_MIP__BASE__REDIR_ISOC_TANHF)
-      return _DK_SDU_MIP__BASE__REDIR_ISOC_TANHF(value);
+    #elif defined(_COM_AZURE_DEV__BASE__REDIR_ISOC_TANHF)
+      return _COM_AZURE_DEV__BASE__REDIR_ISOC_TANHF(value);
     #else
       const float temp = Math::exp(2 * value);
       return (temp - 1)/(temp + 1);
@@ -1201,10 +1201,10 @@ public:
     Returns the hyperbolic tangent.
   */
   static inline double tanh(double value) throw() {
-    #if defined(_DK_SDU_MIP__BASE__HAVE_ISOC_TANH)
+    #if defined(_COM_AZURE_DEV__BASE__HAVE_ISOC_TANH)
       return isoc::tanh(value);
-    #elif defined(_DK_SDU_MIP__BASE__REDIR_ISOC_TANH)
-      return _DK_SDU_MIP__BASE__REDIR_ISOC_TANH(value);
+    #elif defined(_COM_AZURE_DEV__BASE__REDIR_ISOC_TANH)
+      return _COM_AZURE_DEV__BASE__REDIR_ISOC_TANH(value);
     #else
       const double temp = Math::exp(2 * value);
       return (temp - 1)/(temp + 1);
@@ -1215,10 +1215,10 @@ public:
     Returns the hyperbolic tangent.
   */
   static inline long double tanh(long double value) throw() {
-    #if defined(_DK_SDU_MIP__BASE__HAVE_ISOC_TANHL)
+    #if defined(_COM_AZURE_DEV__BASE__HAVE_ISOC_TANHL)
       return isoc::tanhl(value);
-    #elif defined(_DK_SDU_MIP__BASE__REDIR_ISOC_TANHL)
-      return _DK_SDU_MIP__BASE__REDIR_ISOC_TANHL(value);
+    #elif defined(_COM_AZURE_DEV__BASE__REDIR_ISOC_TANHL)
+      return _COM_AZURE_DEV__BASE__REDIR_ISOC_TANHL(value);
     #else
       const long double temp = Math::exp(2 * value);
       return (temp - 1)/(temp + 1);
@@ -1229,10 +1229,10 @@ public:
     Returns the inverse hyperbolic tangent.
   */
   static inline float atanh(float value) throw() {
-    #if defined(_DK_SDU_MIP__BASE__HAVE_ISOC_ATANHF)
+    #if defined(_COM_AZURE_DEV__BASE__HAVE_ISOC_ATANHF)
       return isoc::atanhf(value);
-    #elif defined(_DK_SDU_MIP__BASE__REDIR_ISOC_ATANHF)
-      return _DK_SDU_MIP__BASE__REDIR_ISOC_ATANHF(value);
+    #elif defined(_COM_AZURE_DEV__BASE__REDIR_ISOC_ATANHF)
+      return _COM_AZURE_DEV__BASE__REDIR_ISOC_ATANHF(value);
     #else
       return Math::ln((1 + value)/(1 - value))/2;
     #endif
@@ -1242,10 +1242,10 @@ public:
     Returns the inverse hyperbolic tangent.
   */
   static inline double atanh(double value) throw() {
-    #if defined(_DK_SDU_MIP__BASE__HAVE_ISOC_ATANH)
+    #if defined(_COM_AZURE_DEV__BASE__HAVE_ISOC_ATANH)
       return isoc::atanh(value);
-    #elif defined(_DK_SDU_MIP__BASE__REDIR_ISOC_ATANH)
-      return _DK_SDU_MIP__BASE__REDIR_ISOC_ATANH(value);
+    #elif defined(_COM_AZURE_DEV__BASE__REDIR_ISOC_ATANH)
+      return _COM_AZURE_DEV__BASE__REDIR_ISOC_ATANH(value);
     #else
       return Math::ln((1 + value)/(1 - value))/2;
     #endif
@@ -1255,10 +1255,10 @@ public:
     Returns the inverse hyperbolic tangent.
   */
   static inline long double atanh(long double value) throw() {
-    #if defined(_DK_SDU_MIP__BASE__HAVE_ISOC_ATANHL)
+    #if defined(_COM_AZURE_DEV__BASE__HAVE_ISOC_ATANHL)
       return isoc::atanhl(value);
-    #elif defined(_DK_SDU_MIP__BASE__REDIR_ISOC_ATANHL)
-      return _DK_SDU_MIP__BASE__REDIR_ISOC_ATANHL(value);
+    #elif defined(_COM_AZURE_DEV__BASE__REDIR_ISOC_ATANHL)
+      return _COM_AZURE_DEV__BASE__REDIR_ISOC_ATANHL(value);
     #else
       return Math::ln((1 + value)/(1 - value))/2;
     #endif
@@ -1739,4 +1739,4 @@ public:
   }
 };
 
-_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
+_COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

@@ -16,7 +16,7 @@
 #include <base/Object.h>
 #include <base/OutOfDomain.h>
 
-_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+_COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 /**
   Description of a file region represented by an offset (64 bit) and a size
@@ -27,7 +27,7 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
   @version 1.1
 */
 
-class _DK_SDU_MIP__BASE__API FileRegion : public Object {
+class _COM_AZURE_DEV__BASE__API FileRegion : public Object {
 private:
 
   /**
@@ -118,4 +118,4 @@ inline FileRegion::FileRegion(
   bassert(offset < (LIMIT - size), OutOfDomain(this));
 }
 
-_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
+_COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

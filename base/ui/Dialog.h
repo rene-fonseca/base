@@ -16,7 +16,7 @@
 #include <base/Object.h>
 #include <base/ui/UserInterfaceException.h>
 
-_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+_COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 /**
   @defgroup ui User interface
@@ -30,7 +30,7 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
   @version 1.0
 */
 
-class _DK_SDU_MIP__BASE__API Dialog : public Object {
+class _COM_AZURE_DEV__BASE__API Dialog : public Object {
 public:
   
   /**
@@ -44,4 +44,4 @@ public:
   virtual ~Dialog() throw();
 };
 
-_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
+_COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

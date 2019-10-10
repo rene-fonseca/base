@@ -13,17 +13,17 @@
 
 #include <base/mem/SharedMemory.h>
 
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
 #  include <windows.h>
 #else // unix
-#  if defined(_DK_SDU_MIP__BASE__LARGE_FILE_SYSTEM)
+#  if defined(_COM_AZURE_DEV__BASE__LARGE_FILE_SYSTEM)
 #    define _LARGEFILE64_SOURCE 1
 #  endif
 #  include <sys/mman.h>
 #  include <unistd.h>
 #endif // flavor
 
-_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+_COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 SharedMemory::SharedMemoryImpl::SharedMemoryImpl(
   const File& _file,
@@ -31,7 +31,7 @@ SharedMemory::SharedMemoryImpl::SharedMemoryImpl(
   unsigned int _access) throw(MemoryException)
   : file(_file), region(_region), access(_access) {
 
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   DWORD protection =
     (access & SharedMemory::WRITE) ? PAGE_READWRITE : PAGE_READONLY;
   handle = ::CreateFileMapping(
@@ -78,7 +78,7 @@ SharedMemory::SharedMemoryImpl::SharedMemoryImpl(
 #endif
   }
   
-  #if defined(_DK_SDU_MIP__BASE__LARGE_FILE_SYSTEM)
+  #if defined(_COM_AZURE_DEV__BASE__LARGE_FILE_SYSTEM)
     address = (uint8*)::mmap64(
       0,
       region.getSize(),
@@ -110,13 +110,13 @@ SharedMemory::SharedMemoryImpl::SharedMemoryImpl(
 }
 
 void SharedMemory::SharedMemoryImpl::lock() throw(MemoryException) {
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   bassert(
     ::VirtualLock(address, region.getSize()),
     MemoryException("Unable to lock process memory", this)
   );
 #else // unix
-  #if (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__CYGWIN)
+  #if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__CYGWIN)
     throw NotSupported(this);
   #else
     bassert(
@@ -128,13 +128,13 @@ void SharedMemory::SharedMemoryImpl::lock() throw(MemoryException) {
 }
 
 void SharedMemory::SharedMemoryImpl::unlock() throw(MemoryException) {
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   bassert(
     ::VirtualUnlock(address, region.getSize()),
     MemoryException("Unable to unlock process memory", this)
   );
 #else // unix
-  #if (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__CYGWIN)
+  #if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__CYGWIN)
     throw NotSupported(this);
   #else  
     bassert(
@@ -147,7 +147,7 @@ void SharedMemory::SharedMemoryImpl::unlock() throw(MemoryException) {
 
 void SharedMemory::SharedMemoryImpl::setProtection(
   unsigned int access) throw(MemoryException) {
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   DWORD protection = 0;
   if (access == 0) {
     protection = PAGE_NOACCESS;
@@ -201,7 +201,7 @@ void SharedMemory::SharedMemoryImpl::setProtection(
 
 void SharedMemory::SharedMemoryImpl::synchronize(
   bool asynchronous) throw(MemoryException) {
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   BOOL status = ::FlushViewOfFile(address, getSize());
   bassert(
     status != 0,
@@ -222,7 +222,7 @@ void SharedMemory::SharedMemoryImpl::synchronize(
 }
 
 SharedMemory::SharedMemoryImpl::~SharedMemoryImpl() throw() {
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   BOOL status = ::UnmapViewOfFile(address);
   ASSERT(status != 0);
   ::CloseHandle(handle);
@@ -235,12 +235,12 @@ SharedMemory::SharedMemoryImpl::~SharedMemoryImpl() throw() {
 // see http://www.engelschall.com/sw/mm
 
 unsigned int SharedMemory::getGranularity() throw() {
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   SYSTEM_INFO info;
   ::GetSystemInfo(&info);
   return info.dwAllocationGranularity;
 #else // unix
-  #if (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__CYGWIN)
+  #if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__CYGWIN)
     return 4096 * 2; // TAG: fixme
   #else
     long size = ::sysconf(_SC_PAGE_SIZE);
@@ -312,4 +312,4 @@ void SharedMemory::clear() throw() {
   fill<uint8>(sharedMemory->getBytes(), sharedMemory->getSize(), 0);
 }
 
-_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
+_COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

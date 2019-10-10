@@ -109,7 +109,7 @@ include_directories(${CMAKE_BINARY_DIR}/generated)
 
 add_library(base SHARED ${base_SRC} ${CMAKE_CURRENT_BINARY_DIR}/generated/base/config.h)
 if (MSVC)
-target_compile_definitions(base PUBLIC _DK_SDU_MIP__BASE__SHARED_LIBRARY_BUILD)
+target_compile_definitions(base PUBLIC _COM_AZURE_DEV__BASE__SHARED_LIBRARY_BUILD)
 # set_target_properties(base PROPERTIES WINDOWS_EXPORT_ALL_SYMBOLS true)
 target_link_libraries(base Ws2_32 Netapi32 Winmm)
 elseif (UNIX AND NOT APPLE)

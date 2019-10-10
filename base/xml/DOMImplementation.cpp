@@ -15,14 +15,14 @@
 #include <base/xml/DOMImplementation.h>
 #include <base/xml/XMLReader.h>
 
-#if defined(_DK_SDU_MIP__BASE__XML_XMLSOFT_ORG)
+#if defined(_COM_AZURE_DEV__BASE__XML_XMLSOFT_ORG)
 #  include <libxml2/libxml/tree.h>
 #  include <stdarg.h>
 #endif
 
-_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+_COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
-#if defined(_DK_SDU_MIP__BASE__XML_XMLSOFT_ORG)
+#if defined(_COM_AZURE_DEV__BASE__XML_XMLSOFT_ORG)
 class DOMImplementationImpl {
 public:
   
@@ -79,7 +79,7 @@ bool DOMImplementation::hasFeature(
 
 Document DOMImplementation::createDocument(
   const String& version) throw(DOMException) {
-#if defined(_DK_SDU_MIP__BASE__XML_XMLSOFT_ORG)
+#if defined(_COM_AZURE_DEV__BASE__XML_XMLSOFT_ORG)
   xmlDoc* doc = xmlNewDoc(
     Cast::pointer<const xmlChar*>(version.getElements())
   );
@@ -93,7 +93,7 @@ Document DOMImplementation::createDocument(
 Document DOMImplementation::createDocument(
   DocumentType doctype,
   const String& version) throw(DOMException) {
-#if defined(_DK_SDU_MIP__BASE__XML_XMLSOFT_ORG)
+#if defined(_COM_AZURE_DEV__BASE__XML_XMLSOFT_ORG)
   bassert(
     Document(doctype.getOwnerDocument()).isInvalid(),
     bindCause(DOMException(this), DOMException::WRONG_DOCUMENT)
@@ -125,7 +125,7 @@ Document DOMImplementation::createDocument(
   const String& qualifiedName,
   DocumentType doctype,
   const String& version) throw(DOMException) {
-#if defined(_DK_SDU_MIP__BASE__XML_XMLSOFT_ORG)
+#if defined(_COM_AZURE_DEV__BASE__XML_XMLSOFT_ORG)
   bassert(
     Document(doctype.getOwnerDocument()).isInvalid(),
     bindCause(DOMException(this), DOMException::WRONG_DOCUMENT)
@@ -162,7 +162,7 @@ Document DOMImplementation::createDocument(
   
 Document DOMImplementation::createFromURI(
   const String& systemId, Mode mode, unsigned int flags) throw(DOMException) {
-#if defined(_DK_SDU_MIP__BASE__XML_XMLSOFT_ORG)
+#if defined(_COM_AZURE_DEV__BASE__XML_XMLSOFT_ORG)
   
   xmlDoValidityCheckingDefaultValue =
     (mode == DOMImplementation::VALIDATING) ? 1 : 0;
@@ -197,7 +197,7 @@ Document DOMImplementation::createFromURI(
 
 Document DOMImplementation::createDocumentFromString(
   const String& value, Mode mode, unsigned int flags) throw(DOMException) {
-#if defined(_DK_SDU_MIP__BASE__XML_XMLSOFT_ORG)
+#if defined(_COM_AZURE_DEV__BASE__XML_XMLSOFT_ORG)
   xmlSubstituteEntitiesDefault(
     (flags & DOMImplementation::SUBSTITUTE_ENTITIES) ? 1 : 0
   );
@@ -236,7 +236,7 @@ DocumentType DOMImplementation::createDocumentType(
   const String& qualifiedName,
   const String& publicId,
   const String& systemId) throw(DOMException) {
-#if defined(_DK_SDU_MIP__BASE__XML_XMLSOFT_ORG)
+#if defined(_COM_AZURE_DEV__BASE__XML_XMLSOFT_ORG)
   xmlDtd* node = xmlCreateIntSubset(
     0,
     Cast::pointer<const xmlChar*>(qualifiedName.getElements()),
@@ -252,7 +252,7 @@ DocumentType DOMImplementation::createDocumentType(
 
 void DOMImplementation::saveDocument(
   Document document, const String& filename, bool indent) throw(DOMException) {
-#if defined(_DK_SDU_MIP__BASE__XML_XMLSOFT_ORG)
+#if defined(_COM_AZURE_DEV__BASE__XML_XMLSOFT_ORG)
   xmlDoc* doc = (xmlDoc*)document.getContext();
 	int bytesWritten =
     xmlSaveFormatFile(filename.getElements(), doc, indent ? 1 : 0);
@@ -267,7 +267,7 @@ void DOMImplementation::saveDocument(
   const String& filename,
   const String& encoding,
   bool indent) throw(DOMException) {
-#if defined(_DK_SDU_MIP__BASE__XML_XMLSOFT_ORG)
+#if defined(_COM_AZURE_DEV__BASE__XML_XMLSOFT_ORG)
   xmlDoc* doc = (xmlDoc*)document.getContext();
 	int bytesWritten = xmlSaveFormatFileEnc(
     filename.getElements(),
@@ -283,7 +283,7 @@ void DOMImplementation::saveDocument(
 
 String DOMImplementation::saveDocumentToMemory(
   Document document, bool spaces) throw(DOMException) {
-#if defined(_DK_SDU_MIP__BASE__XML_XMLSOFT_ORG)
+#if defined(_COM_AZURE_DEV__BASE__XML_XMLSOFT_ORG)
   // TAG: fixme - xmlIndentTreeOutput = 1 or xmlKeepBlanksDefault(0)
   xmlDoc* doc = (xmlDoc*)document.getContext();
 	int size = 0;
@@ -300,7 +300,7 @@ String DOMImplementation::saveDocumentToMemory(
 
 String DOMImplementation::saveDocumentToMemory(
   Document document, const String& encoding, bool spaces) throw(DOMException) {
-#if defined(_DK_SDU_MIP__BASE__XML_XMLSOFT_ORG)
+#if defined(_COM_AZURE_DEV__BASE__XML_XMLSOFT_ORG)
   // TAG: fixme - xmlIndentTreeOutput = 1 or xmlKeepBlanksDefault(0)
   xmlDoc* doc = (xmlDoc*)document.getContext();
 	int size = 0;
@@ -321,4 +321,4 @@ String DOMImplementation::saveDocumentToMemory(
 #endif
 }
 
-_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
+_COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

@@ -24,7 +24,7 @@
 #include <base/OutOfRange.h>
 #include <base/Literal.h>
 
-_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+_COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 class Date;
 class String;
@@ -102,13 +102,13 @@ enum Action {
   @version 1.4
 */
 
-class _DK_SDU_MIP__BASE__API FormatOutputStream : public BufferedOutputStream {
+class _COM_AZURE_DEV__BASE__API FormatOutputStream : public BufferedOutputStream {
 public:
   
   /** The type of the guard. */
   typedef SpinLock Guard;
   
-  class _DK_SDU_MIP__BASE__API Symbols {
+  class _COM_AZURE_DEV__BASE__API Symbols {
   public:
     
     enum Base {BINARY, OCTAL, DECIMAL, HEXADECIMAL};
@@ -186,7 +186,7 @@ public:
     String dateFormat;
   };
   
-  class _DK_SDU_MIP__BASE__API Manipulator {
+  class _COM_AZURE_DEV__BASE__API Manipulator {
   public:
 
     typedef FormatOutputStream& (FormatOutputStream::*Method)(unsigned int);
@@ -206,7 +206,7 @@ public:
     }
   };
   
-  class _DK_SDU_MIP__BASE__API StringManipulator {
+  class _COM_AZURE_DEV__BASE__API StringManipulator {
   public:
 
     typedef FormatOutputStream& (FormatOutputStream::*Method)(const String&);
@@ -225,7 +225,7 @@ public:
     }
   };
 
-  class _DK_SDU_MIP__BASE__API GetContext {
+  class _COM_AZURE_DEV__BASE__API GetContext {
   private:
 
     Context& context;
@@ -239,7 +239,7 @@ public:
     }
   };
   
-  class _DK_SDU_MIP__BASE__API SetContext {
+  class _COM_AZURE_DEV__BASE__API SetContext {
   private:
 
     const Context& context;
@@ -282,7 +282,7 @@ public:
     @version 1.0
   */
   
-  class _DK_SDU_MIP__BASE__API PushContext : public Object {
+  class _COM_AZURE_DEV__BASE__API PushContext : public Object {
   private:
 
     /** Format output stream. */
@@ -310,7 +310,7 @@ public:
     }
   };
 
-  class _DK_SDU_MIP__BASE__API Debug {
+  class _COM_AZURE_DEV__BASE__API Debug {
   private:
     
     static std::atomic<unsigned int> counter;
@@ -449,7 +449,7 @@ public:
   */
   FormatOutputStream& operator<<(Action action) throw(IOException);
 
-  class _DK_SDU_MIP__BASE__API Indent {
+  class _COM_AZURE_DEV__BASE__API Indent {
   private:
     
     unsigned int length = 0;
@@ -596,13 +596,13 @@ public:
   Format output stream linked to the standard output stream. This variable
   corresponds to 'cout' from the Standard Template Library.
 */
-extern _DK_SDU_MIP__BASE__API FormatOutputStream fout;
+extern _COM_AZURE_DEV__BASE__API FormatOutputStream fout;
 
 /**
   Format output stream linked to the standard error stream. This variable
   corresponds to 'cerr' from the Standard Template Library.
 */
-extern _DK_SDU_MIP__BASE__API FormatOutputStream ferr;
+extern _COM_AZURE_DEV__BASE__API FormatOutputStream ferr;
 
 /**
   Indent.
@@ -790,4 +790,4 @@ inline FormatOutputStream& operator<<(
   return getContext(stream);
 }
 
-_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
+_COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

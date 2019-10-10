@@ -15,14 +15,14 @@
 
 #include <base/Object.h>
 
-_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+_COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 /**
   @short Character.
   @version 1.0
 */
 
-class _DK_SDU_MIP__BASE__API Character : public virtual Object {
+class _COM_AZURE_DEV__BASE__API Character : public virtual Object {
 protected:
 
   /** The value. */
@@ -89,4 +89,4 @@ public:
   }
 };
 
-_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
+_COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

@@ -13,22 +13,22 @@
 
 #include <base/ui/Pixmap.h>
 
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
 #  include <windows.h>
 #  undef DELETE // yikes
-#elif (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__MACOS)
+#elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__MACOS)
 #else // unix (X11)
 #  include <X11/Xlib.h>
 #  include <X11/Xutil.h>
 #  include <X11/Xatom.h>
 #endif // flavor
 
-_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+_COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 // TAG: support for capturing screen/window/...
 
 void Pixmap::destroy() throw() {
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)  
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)  
   if (graphicsContextHandle) {
     HGDIOBJ bitmap = ::SelectObject((HDC)graphicsContextHandle, (HGDIOBJ)0); // TAG: is this required
     ::DeleteObject(bitmap); // TAG: is this required
@@ -37,7 +37,7 @@ void Pixmap::destroy() throw() {
   if (drawableHandle) {
     // nothing to destroy
   }
-#elif (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__MACOS)
+#elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__MACOS)
 #else // unix
   if (graphicsContextHandle) {
     // nothing to destroy
@@ -53,7 +53,7 @@ void Pixmap::destroy() throw() {
 }
 
 Pixmap::Pixmap(const Dimension& dimension, unsigned int flags) throw(UserInterfaceException) {
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   HDC pixmap = ::CreateCompatibleDC(0 /*::GetDCEx(0, 0, 0)*/);
   bassert(pixmap, UserInterfaceException("Unable to create pixmap", this));
   HBITMAP bitmap = ::CreateCompatibleBitmap((HDC)pixmap, dimension.getWidth(), dimension.getHeight());
@@ -76,7 +76,7 @@ Pixmap::Pixmap(const Dimension& dimension, unsigned int flags) throw(UserInterfa
 }
 
 // Dimension Pixmap::getDimension() {
-// #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+// #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
 //   HGDIOBJ bitmap = ::GetCurrentObject((HDC)drawableHandle, OBJ_BITMAP);
 //   // bitmap
 //   return Dimension(0, 0);
@@ -87,7 +87,7 @@ Pixmap::Pixmap(const Dimension& dimension, unsigned int flags) throw(UserInterfa
 // }
 
 void Pixmap::encode(Format format, Encoding encoding, void* data) throw(UserInterfaceException) {
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   if ((format == Pixmap::RGB) && (encoding == Pixmap::RGB_32)) {
 //     BITMAPINFOHEADER info;
 //     info.biSize = sizeof(info);
@@ -116,9 +116,9 @@ void Pixmap::encode(Format format, Encoding encoding, void* data) throw(UserInte
 // }
 
 Pixmap::~Pixmap() throw() {
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
 #else // unix
 #endif // flavor
 }
 
-_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
+_COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

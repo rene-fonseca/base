@@ -16,7 +16,7 @@
 #include <base/Object.h>
 #include <base/string/FormatOutputStream.h>
 
-_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+_COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 /**
   A 2D range object is a span from a minimum to a maximum.
@@ -25,7 +25,7 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
   @version 1.0
 */
 
-class _DK_SDU_MIP__BASE__API Range2D : public virtual Object {
+class _COM_AZURE_DEV__BASE__API Range2D : public virtual Object {
 protected:
 
   /** The minimum value. */
@@ -127,4 +127,4 @@ public:
 */
 FormatOutputStream& operator<<(FormatOutputStream& stream, const Range2D& value) throw(IOException);
 
-_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
+_COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

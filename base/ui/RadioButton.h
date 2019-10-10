@@ -15,9 +15,9 @@
 
 #include <base/ui/Widget.h>
 
-_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+_COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
-class _DK_SDU_MIP__BASE__API Button : public Widget {
+class _COM_AZURE_DEV__BASE__API Button : public Widget {
 private:
 
   // 0: enabled, disabled (ignore all other)
@@ -123,4 +123,4 @@ public:
   void onDisplay() throw();
 };
 
-_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
+_COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

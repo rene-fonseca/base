@@ -19,12 +19,12 @@
 #include <base/ByteOrder.h>
 #include <base/Type.h>
 
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32) // temporary solution until arch independant types have been defined
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32) // temporary solution until arch independant types have been defined
 #  include <winsock2.h>
 #  include <ws2tcpip.h>
-#  if (!defined(_DK_SDU_MIP__BASE__INET_IPV6) && \
-       (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__WXP))
-#    define _DK_SDU_MIP__BASE__INET_IPV6
+#  if (!defined(_COM_AZURE_DEV__BASE__INET_IPV6) && \
+       (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__WXP))
+#    define _COM_AZURE_DEV__BASE__INET_IPV6
 #  endif
 #else // unix
 #  include <sys/types.h>
@@ -36,18 +36,18 @@
 #  include <unistd.h> // defines gethostname
 #endif // flavor
 
-_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+_COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 #if 0
 String InetAddress::getLocalDomainName() throw(NetworkException) {
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
 #else // unix
 #endif
 }
 #endif
 
 String InetAddress::getLocalHost() throw(NetworkException) {
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   // I use thread local storage 'cause I don't know what the maximum length is
   // the microsoft example code that I have seen assumes that the name cannot exceed 200 chars
   Allocator<uint8>* buffer = Thread::getLocalStorage();
@@ -71,7 +71,7 @@ String InetAddress::getLocalHost() throw(NetworkException) {
 List<InetAddress> InetAddress::getAddressesByName(const String& name) throw(HostNotFound) {
   List<InetAddress> result;
   
-#if (defined(_DK_SDU_MIP__BASE__INET_IPV6))
+#if (defined(_COM_AZURE_DEV__BASE__INET_IPV6))
   struct addrinfo hint;
   fill<uint8>(Cast::getAddress(hint), sizeof(hint), 0);
   hint.ai_family = PF_UNSPEC;
@@ -110,15 +110,15 @@ List<InetAddress> InetAddress::getAddressesByName(const String& name) throw(Host
 #else // use ordinary BSD sockets - IPv4
   struct hostent* hp;
 
-#  if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#  if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
     if (!(hp = gethostbyname(name.getElements()))) { // MT-safe
       throw HostNotFound(
         "Unable to lookup host by name",
         Type::getType<InetAddress>()
       );
     }
-#  elif ((_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__IRIX65) || \
-         (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__SOLARIS))
+#  elif ((_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__IRIX65) || \
+         (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__SOLARIS))
     struct hostent h;
     char buffer[1024]; // how big should this buffer be
     int error;
@@ -128,7 +128,7 @@ List<InetAddress> InetAddress::getAddressesByName(const String& name) throw(Host
         Type::getType<InetAddress>()
       );
     }
-#  elif (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__GNULINUX)
+#  elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__GNULINUX)
     struct hostent h;
     char buffer[1024]; // how big should this buffer be
     int error;
@@ -145,12 +145,12 @@ List<InetAddress> InetAddress::getAddressesByName(const String& name) throw(Host
   for (char** p = hp->h_addr_list; *p != 0; p++) {
     result.append(InetAddress(Cast::pointer<const uint8*>(*p), IP_VERSION_4));
   }
-#endif // _DK_SDU_MIP__BASE__INET_IPV6
+#endif // _COM_AZURE_DEV__BASE__INET_IPV6
   return result;
 }
 
 InetAddress InetAddress::getAddressByName(const String& name) throw(HostNotFound) {
-#if (defined(_DK_SDU_MIP__BASE__INET_IPV6))
+#if (defined(_COM_AZURE_DEV__BASE__INET_IPV6))
   struct addrinfo hint;
   fill<uint8>(Cast::getAddress(hint), sizeof(hint), 0);
   hint.ai_family = PF_UNSPEC;
@@ -178,19 +178,19 @@ InetAddress InetAddress::getAddressByName(const String& name) throw(HostNotFound
 #else // use ordinary BSD sockets - IPv4
   struct hostent* hp;
 
-#  if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#  if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
     if (!(hp = gethostbyname(name.getElements()))) { // MT-safe
       throw HostNotFound("Unable to lookup host by name", Type::getType<InetAddress>());
     }
-#  elif ((_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__IRIX65) || \
-         (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__SOLARIS))
+#  elif ((_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__IRIX65) || \
+         (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__SOLARIS))
     struct hostent h;
     char buffer[1024]; // how big should this buffer be
     int error;
     if (!(hp = gethostbyname_r(name.getElements(), &h, buffer, sizeof(buffer), &error))) {
       throw HostNotFound("Unable to lookup host by name", Type::getType<InetAddress>());
     }
-#  elif (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__GNULINUX)
+#  elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__GNULINUX)
     struct hostent h;
     char buffer[1024]; // how big should this buffer be
     int error;
@@ -207,7 +207,7 @@ InetAddress InetAddress::getAddressByName(const String& name) throw(HostNotFound
   for (char** p = hp->h_addr_list; *p != 0; p++) {
     return InetAddress(Cast::pointer<const uint8*>(*p), IP_VERSION_4);
   }
-#endif // _DK_SDU_MIP__BASE__INET_IPV6
+#endif // _COM_AZURE_DEV__BASE__INET_IPV6
   throw HostNotFound("Unable to lookup host by name", Type::getType<InetAddress>());
 }
 
@@ -427,7 +427,7 @@ bool InetAddress::parse(const String& address) throw() {
 }
 
 InetAddress::InetAddress() throw() {
-#if (defined(_DK_SDU_MIP__BASE__INET_IPV6))
+#if (defined(_COM_AZURE_DEV__BASE__INET_IPV6))
   family = IP_VERSION_6;
 #else
   family = IP_VERSION_4;
@@ -465,7 +465,7 @@ InetAddress& InetAddress::operator=(const InetAddress& eq) throw() {
 }
 
 String InetAddress::getHostName(bool fullyQualified) const throw(HostNotFound) {
-#if (defined(_DK_SDU_MIP__BASE__INET_IPV6))
+#if (defined(_COM_AZURE_DEV__BASE__INET_IPV6))
   struct sockaddr_in6 addr;
   clear(addr);
 #if (defined(SIN6_LEN))
@@ -503,15 +503,15 @@ String InetAddress::getHostName(bool fullyQualified) const throw(HostNotFound) {
     throw HostNotFound("Unable to resolve IP address", this);
   }
   
-#  if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#  if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
     hp = gethostbyaddr(
       Cast::getCharAddress(address.words[3]),
       sizeof(address.words[3]),
       AF_INET
     ); // MT-safe
     bassert(hp, HostNotFound("Unable to resolve IP address", this));
-#  elif ((_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__IRIX65) || \
-         (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__SOLARIS))
+#  elif ((_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__IRIX65) || \
+         (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__SOLARIS))
     struct hostent result;
     char buffer[1024]; // how big should this buffer be
     int error;
@@ -525,7 +525,7 @@ String InetAddress::getHostName(bool fullyQualified) const throw(HostNotFound) {
       &error
     );
     bassert(hp, HostNotFound("Unable to resolve IP address", this));
-#  elif (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__GNULINUX)
+#  elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__GNULINUX)
     struct hostent result;
     char buffer[1024]; // how big should this buffer be
     int error = 0;
@@ -548,7 +548,7 @@ String InetAddress::getHostName(bool fullyQualified) const throw(HostNotFound) {
 #  endif
 
   return NativeString(hp->h_name);
-#endif // _DK_SDU_MIP__BASE__INET_IPV6
+#endif // _COM_AZURE_DEV__BASE__INET_IPV6
 }
 
 bool InetAddress::operator==(const InetAddress& eq) const throw() {
@@ -790,4 +790,4 @@ FormatOutputStream& operator<<(FormatOutputStream& stream, const InetAddress& va
                 << DEC << addr[3];
 }
 
-_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
+_COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

@@ -13,7 +13,7 @@
 
 #include <base/string/StringOutputStream.h>
 
-_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+_COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 void StringOutputStreamWrapper::close() throw(IOException) {
   bassert(!closed, IOException("Output stream is closed", this));
@@ -58,4 +58,4 @@ String StringOutputStream::getString() const throw() {
   return stream.getString();
 }
 
-_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
+_COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

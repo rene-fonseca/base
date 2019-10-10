@@ -18,7 +18,7 @@
 #include <base/OutOfRange.h>
 #include <base/Literal.h>
 
-_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+_COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 /**
   Operating system.
@@ -27,10 +27,10 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
   @version 1.2
 */
 
-class _DK_SDU_MIP__BASE__API OperatingSystem : public Object {
+class _COM_AZURE_DEV__BASE__API OperatingSystem : public Object {
 public:
 
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   /**
     The type of an ordinary resource handle (do NOT assume anything about this
     type).
@@ -178,4 +178,4 @@ public:
     LimitType type = SOFT_LIMIT) throw(OutOfRange);
 };
 
-_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
+_COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

@@ -16,7 +16,7 @@
 #include <base/io/IOException.h>
 #include <base/Primitives.h>
 
-_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+_COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 /**
   Low-level push interface for in-memory IO.
@@ -26,7 +26,7 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
   @version 1.0
 */
 
-class _DK_SDU_MIP__BASE__API PushInterface {
+class _COM_AZURE_DEV__BASE__API PushInterface {
 public:
 
   /**
@@ -51,4 +51,4 @@ public:
   virtual void pushEnd();
 };
 
-_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
+_COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

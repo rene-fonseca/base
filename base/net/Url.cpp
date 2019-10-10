@@ -15,7 +15,7 @@
 #include <base/net/InetAddress.h>
 #include <base/string/ASCIITraits.h>
 
-_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+_COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 class UrlImpl {
 public:
@@ -451,4 +451,4 @@ FormatOutputStream& operator<<(FormatOutputStream& stream, const Url& value) thr
   return stream << value.getUrl();
 }
 
-_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
+_COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

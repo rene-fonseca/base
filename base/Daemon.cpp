@@ -19,7 +19,7 @@
 #include <base/concurrency/Thread.h>
 #include <base/Trace.h>
 
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
 #  include <windows.h>
 #  undef ERROR // protect against the evil programmers
 #else // unix
@@ -27,9 +27,9 @@
 #  include <unistd.h>
 #endif
 
-_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+_COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
 
 class DaemonImpl {
 public:
@@ -309,4 +309,4 @@ Daemon::Daemon(Runnable* runnable) throw(SingletonException, ResourceException) 
 
 #endif
 
-_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
+_COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

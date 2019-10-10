@@ -13,17 +13,17 @@
 
 #pragma once
 
-#define _DK_SDU_MIP__BASE__ALIGNED(alignment) __attribute__ ((aligned (alignment)))
-#define _DK_SDU_MIP__BASE__DEPRECATED __attribute__ ((deprecated))
-#define _DK_SDU_MIP__BASE__NORETURN __attribute__ ((noreturn))
-#define _DK_SDU_MIP__BASE__PACKED __attribute__ ((packed))
-#define _DK_SDU_MIP__BASE__SECTION(name) __attribute__ ((section (name)))
-#define _DK_SDU_MIP__BASE__UNUSED __attribute__ ((unused))
-#define _DK_SDU_MIP__BASE__WEAK __attribute__ ((weak))
-#define _DK_SDU_MIP__BASE__FORCE_INLINE __attribute__ ((always_inline))
+#define _COM_AZURE_DEV__BASE__ALIGNED(alignment) __attribute__ ((aligned (alignment)))
+#define _COM_AZURE_DEV__BASE__DEPRECATED __attribute__ ((deprecated))
+#define _COM_AZURE_DEV__BASE__NORETURN __attribute__ ((noreturn))
+#define _COM_AZURE_DEV__BASE__PACKED __attribute__ ((packed))
+#define _COM_AZURE_DEV__BASE__SECTION(name) __attribute__ ((section (name)))
+#define _COM_AZURE_DEV__BASE__UNUSED __attribute__ ((unused))
+#define _COM_AZURE_DEV__BASE__WEAK __attribute__ ((weak))
+#define _COM_AZURE_DEV__BASE__FORCE_INLINE __attribute__ ((always_inline))
 
-#define _DK_SDU_MIP__BASE__COMPILER_VERSION __INTEL_COMPILER
-#define _DK_SDU_MIP__BASE__COMPILER_NAMESPACE com::intel::compiler
+#define _COM_AZURE_DEV__BASE__COMPILER_VERSION __INTEL_COMPILER
+#define _COM_AZURE_DEV__BASE__COMPILER_NAMESPACE com::intel::compiler
 
   namespace com {
     

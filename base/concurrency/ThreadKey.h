@@ -17,7 +17,7 @@
 #include <base/Exception.h>
 #include <base/ResourceException.h>
 
-_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+_COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 /*
   @short Implementation used by the ThreadKey class.
@@ -122,4 +122,4 @@ public:
   }
 };
 
-_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
+_COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

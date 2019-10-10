@@ -17,13 +17,13 @@
 #include <base/io/async/AsynchronousException.h>
 #include <base/mem/Reference.h>
 
-_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+_COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 /**
   Asynchronous write context.
 
 */
-class _DK_SDU_MIP__BASE__API AsynchronousWriteContext : public Object, public ReferenceCountedObject {
+class _COM_AZURE_DEV__BASE__API AsynchronousWriteContext : public Object, public ReferenceCountedObject {
 protected:
   
   /** Self-reference used to protect the object from premature destruction. */
@@ -38,4 +38,4 @@ public:
   virtual ~AsynchronousWriteContext();
 };
 
-_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
+_COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

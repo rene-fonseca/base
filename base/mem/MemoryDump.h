@@ -17,7 +17,7 @@
 #include <base/OutOfDomain.h>
 #include <base/Cast.h>
 
-_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+_COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 /**
   This class describes a block of memory to be dumped to a format output
@@ -28,7 +28,7 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
   @version 1.0
 */
 
-class _DK_SDU_MIP__BASE__API MemoryDump : public Object {
+class _COM_AZURE_DEV__BASE__API MemoryDump : public Object {
 private:
 
   /** The address of the memory block. */
@@ -103,4 +103,4 @@ inline MemoryDump::MemoryDump(const uint8* _memory, unsigned int _size, unsigned
 */
 FormatOutputStream& operator<<(FormatOutputStream& stream, const MemoryDump& value) throw(IOException);
 
-_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
+_COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

@@ -15,7 +15,7 @@
 
 #include <base/io/FilterOutputStream.h>
 
-_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+_COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 /**
   A FilterOutputStream that allows you to write primitive data types to an
@@ -27,7 +27,7 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
   @version 1.0
 */
 
-class _DK_SDU_MIP__BASE__API PrimitiveOutputStream : public FilterOutputStream {
+class _COM_AZURE_DEV__BASE__API PrimitiveOutputStream : public FilterOutputStream {
 public:
 
   /**
@@ -93,4 +93,4 @@ public:
   void writeLongDouble(long double value) throw(IOException);
 };
 
-_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
+_COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

@@ -19,7 +19,7 @@
 #include <base/collection/Enumeration.h>
 #include <base/mem/Reference.h>
 
-_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+_COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 /**
   Enumeration of all the elements of a binary tree traversed in prefix order.
@@ -669,4 +669,4 @@ public:
   }
 };
 
-_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
+_COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

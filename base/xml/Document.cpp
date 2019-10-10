@@ -15,7 +15,7 @@
 #include <base/xml/Document.h>
 #include <base/Cast.h>
 
-#if defined(_DK_SDU_MIP__BASE__XML_XMLSOFT_ORG)
+#if defined(_COM_AZURE_DEV__BASE__XML_XMLSOFT_ORG)
 #  include <libxml2/libxml/xmlmemory.h>
 #  include <libxml2/libxml/xmlIO.h>
 #  include <libxml2/libxml/xinclude.h>
@@ -23,13 +23,13 @@
 #  include <libxml2/libxml/hash.h>
 #endif
 
-_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+_COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 Document::Document() throw(DOMException) {
 }
 
 DocumentType Document::getDocumentType() throw() {
-#if defined(_DK_SDU_MIP__BASE__XML_XMLSOFT_ORG)
+#if defined(_COM_AZURE_DEV__BASE__XML_XMLSOFT_ORG)
   xmlDoc* doc = (xmlDoc*)getContext();
   xmlDtd* documentType = doc->intSubset;
   return documentType;
@@ -43,7 +43,7 @@ DOMImplementation Document::getImplementation() throw() {
 }
 
 Element Document::getDocumentElement() throw() {
-#if defined(_DK_SDU_MIP__BASE__XML_XMLSOFT_ORG)
+#if defined(_COM_AZURE_DEV__BASE__XML_XMLSOFT_ORG)
   xmlDoc* doc = (xmlDoc*)getContext();
   xmlNode* node = xmlDocGetRootElement(doc);
   return node;
@@ -56,7 +56,7 @@ DocumentType Document::createAndSetDocumentType(
   const String& qualifiedName,
   const String& publicId,
   const String& systemId) throw(DOMException) {
-#if defined(_DK_SDU_MIP__BASE__XML_XMLSOFT_ORG)
+#if defined(_COM_AZURE_DEV__BASE__XML_XMLSOFT_ORG)
   xmlDoc* doc = (xmlDoc*)getContext();
   
   bassert(
@@ -78,7 +78,7 @@ DocumentType Document::createAndSetDocumentType(
 }
 
 Attribute Document::createAttribute(const String& name) throw(DOMException) {
-#if defined(_DK_SDU_MIP__BASE__XML_XMLSOFT_ORG)
+#if defined(_COM_AZURE_DEV__BASE__XML_XMLSOFT_ORG)
   xmlDoc* doc = (xmlDoc*)getContext();
   xmlAttr* node = xmlNewDocProp(
     doc,
@@ -94,7 +94,7 @@ Attribute Document::createAttribute(const String& name) throw(DOMException) {
 
 Attribute Document::createAttribute(
   const String& name, const String& value) throw(DOMException) {
-#if defined(_DK_SDU_MIP__BASE__XML_XMLSOFT_ORG)
+#if defined(_COM_AZURE_DEV__BASE__XML_XMLSOFT_ORG)
   xmlDoc* doc = (xmlDoc*)getContext();
   bassert(doc, DOMException(this));
   xmlAttr* node = xmlNewDocProp(
@@ -112,7 +112,7 @@ Attribute Document::createAttribute(
 Attribute Document::createAttributeNS(
   const String& namespaceURI,
   const String& qualifiedName) throw(DOMException) {
-#if defined(_DK_SDU_MIP__BASE__XML_XMLSOFT_ORG)
+#if defined(_COM_AZURE_DEV__BASE__XML_XMLSOFT_ORG)
   xmlDoc* doc = (xmlDoc*)getContext();
   
   String prefix;
@@ -176,7 +176,7 @@ AttributeDecl Document::createAttributeDecl(
   const String& name,
   const String& element,
   AttributeDecl::ValueType valueType) throw(DOMException) {
-#if defined(_DK_SDU_MIP__BASE__XML_XMLSOFT_ORG)
+#if defined(_COM_AZURE_DEV__BASE__XML_XMLSOFT_ORG)
   xmlDoc* doc = (xmlDoc*)getContext();
   xmlNode* node = xmlNewDocNode(
     doc,
@@ -195,7 +195,7 @@ ElementDecl Document::createElementDecl(
   const String& name,
   const String& element,
   ElementDecl::ValueType valueType) throw(DOMException) {
-#if defined(_DK_SDU_MIP__BASE__XML_XMLSOFT_ORG)
+#if defined(_COM_AZURE_DEV__BASE__XML_XMLSOFT_ORG)
   static const xmlElementTypeVal
     VALUE_TYPES[ElementDecl::ELEMENT - ElementDecl::EMPTY + 1] = {
       XML_ELEMENT_TYPE_EMPTY, // ElementDecl::EMPTY
@@ -222,7 +222,7 @@ Notation Document::createNotation(
   const String& name,
   const String& publicId,
   const String& systemId) throw(DOMException) {
-#if defined(_DK_SDU_MIP__BASE__XML_XMLSOFT_ORG)
+#if defined(_COM_AZURE_DEV__BASE__XML_XMLSOFT_ORG)
   xmlDoc* doc = (xmlDoc*)getContext();
   xmlNotation* notation = xmlAddNotationDecl(
     0, // xmlValidCtxt* context
@@ -240,7 +240,7 @@ Notation Document::createNotation(
 #endif
 
 Element Document::createElement(const String& name) throw(DOMException) {
-#if defined(_DK_SDU_MIP__BASE__XML_XMLSOFT_ORG)
+#if defined(_COM_AZURE_DEV__BASE__XML_XMLSOFT_ORG)
   xmlDoc* doc = (xmlDoc*)getContext();
   xmlNode* node = xmlNewDocNode(
     doc,
@@ -258,7 +258,7 @@ Element Document::createElement(const String& name) throw(DOMException) {
 Element Document::createElementNS(
   const String& namespaceURI,
   const String& qualifiedName) throw(DOMException) {
-#if defined(_DK_SDU_MIP__BASE__XML_XMLSOFT_ORG)
+#if defined(_COM_AZURE_DEV__BASE__XML_XMLSOFT_ORG)
   xmlDoc* doc = (xmlDoc*)getContext();
 
   String prefix;
@@ -313,7 +313,7 @@ Element Document::createElementNS(
 }
 
 DocumentFragment Document::createDocumentFragment() throw(DOMException) {
-#if defined(_DK_SDU_MIP__BASE__XML_XMLSOFT_ORG)
+#if defined(_COM_AZURE_DEV__BASE__XML_XMLSOFT_ORG)
   xmlDoc* doc = (xmlDoc*)getContext();
   xmlNode* node = xmlNewDocFragment(doc);
   bassert(node, DOMException(this));
@@ -324,7 +324,7 @@ DocumentFragment Document::createDocumentFragment() throw(DOMException) {
 }
 
 Text Document::createText(const String& data) throw(DOMException) {
-#if defined(_DK_SDU_MIP__BASE__XML_XMLSOFT_ORG)
+#if defined(_COM_AZURE_DEV__BASE__XML_XMLSOFT_ORG)
   xmlDoc* doc = (xmlDoc*)getContext();
   xmlNode* node = xmlNewDocText(
     doc,
@@ -338,7 +338,7 @@ Text Document::createText(const String& data) throw(DOMException) {
 }
 
 Comment Document::createComment(const String& data) throw(DOMException) {
-#if defined(_DK_SDU_MIP__BASE__XML_XMLSOFT_ORG)
+#if defined(_COM_AZURE_DEV__BASE__XML_XMLSOFT_ORG)
   xmlDoc* doc = (xmlDoc*)getContext();
   xmlNode* node = xmlNewComment(
     Cast::pointer<const xmlChar*>(data.getElements())
@@ -353,7 +353,7 @@ Comment Document::createComment(const String& data) throw(DOMException) {
 
 CDATASection Document::createCDATASection(
   const String& data) throw(DOMException) {
-#if defined(_DK_SDU_MIP__BASE__XML_XMLSOFT_ORG)
+#if defined(_COM_AZURE_DEV__BASE__XML_XMLSOFT_ORG)
   xmlDoc* doc = (xmlDoc*)getContext();
   bassert(doc, DOMException(this));
   xmlNode* node = xmlNewCDataBlock(
@@ -372,7 +372,7 @@ CDATASection Document::createCDATASection(
 ProcessingInstruction Document::createProcessingInstruction(
   const String& target,
   const String& data) throw(DOMException) {
-#if defined(_DK_SDU_MIP__BASE__XML_XMLSOFT_ORG)
+#if defined(_COM_AZURE_DEV__BASE__XML_XMLSOFT_ORG)
   xmlDoc* doc = (xmlDoc*)getContext();
   xmlNode* node = xmlNewPI(
     Cast::pointer<const xmlChar*>(target.getElements()),
@@ -388,7 +388,7 @@ ProcessingInstruction Document::createProcessingInstruction(
 
 EntityReference Document::createEntityReference(
   const String& name) throw(DOMException) {
-#if defined(_DK_SDU_MIP__BASE__XML_XMLSOFT_ORG)
+#if defined(_COM_AZURE_DEV__BASE__XML_XMLSOFT_ORG)
   xmlDoc* doc = (xmlDoc*)getContext();
   xmlNode* node = xmlNewReference(
     doc,
@@ -402,7 +402,7 @@ EntityReference Document::createEntityReference(
 }
 
 Element Document::getElementById(const String& elementId) throw() {
-#if defined(_DK_SDU_MIP__BASE__XML_XMLSOFT_ORG)
+#if defined(_COM_AZURE_DEV__BASE__XML_XMLSOFT_ORG)
   xmlDoc* doc = (xmlDoc*)getContext();
   bassert(doc, DOMException(this));
   void* node = xmlHashLookup(
@@ -416,7 +416,7 @@ Element Document::getElementById(const String& elementId) throw() {
 }
 
 Node Document::importNode(Node importedNode, bool deep) throw(DOMException) {
-#if defined(_DK_SDU_MIP__BASE__XML_XMLSOFT_ORG)
+#if defined(_COM_AZURE_DEV__BASE__XML_XMLSOFT_ORG)
   xmlDoc* doc = (xmlDoc*)getContext();
   bassert(doc, DOMException(this));
   xmlNode* node = (xmlNode*)importedNode.context;
@@ -453,7 +453,7 @@ Node Document::importNode(Node importedNode, bool deep) throw(DOMException) {
 }
 
 void Document::doXIncludeSubstitution() throw(DOMException) {
-#if defined(_DK_SDU_MIP__BASE__XML_XMLSOFT_ORG)
+#if defined(_COM_AZURE_DEV__BASE__XML_XMLSOFT_ORG)
   int code = xmlXIncludeProcess(
     Cast::pointer<xmlDoc*>(getContext())
   );
@@ -464,7 +464,7 @@ void Document::doXIncludeSubstitution() throw(DOMException) {
 }
 
 void Document::save(const String& filename) throw(IOException) {
-#if defined(_DK_SDU_MIP__BASE__XML_XMLSOFT_ORG)
+#if defined(_COM_AZURE_DEV__BASE__XML_XMLSOFT_ORG)
   int bytesWritten = xmlSaveFile(
     filename.getElements(),
     Cast::pointer<xmlDocPtr>(getContext())
@@ -476,7 +476,7 @@ void Document::save(const String& filename) throw(IOException) {
 }
 
 bool Document::validate() const throw(DOMException) {
-#if defined(_DK_SDU_MIP__BASE__XML_XMLSOFT_ORG)
+#if defined(_COM_AZURE_DEV__BASE__XML_XMLSOFT_ORG)
   xmlValidCtxt validateContext;
 	validateContext.userData = 0;
 	validateContext.error = 0;
@@ -491,7 +491,7 @@ bool Document::validate() const throw(DOMException) {
 }
 
 bool Document::validate(Node node) const throw(DOMException) {
-#if defined(_DK_SDU_MIP__BASE__XML_XMLSOFT_ORG)
+#if defined(_COM_AZURE_DEV__BASE__XML_XMLSOFT_ORG)
   xmlValidCtxt validateContext;
 	validateContext.userData = 0;
 	validateContext.error = 0;
@@ -507,7 +507,7 @@ bool Document::validate(Node node) const throw(DOMException) {
 }
 
 void Document::destroy() throw(DOMException) {
-#if defined(_DK_SDU_MIP__BASE__XML_XMLSOFT_ORG)
+#if defined(_COM_AZURE_DEV__BASE__XML_XMLSOFT_ORG)
   xmlDoc* document = (xmlDoc*)getContext();
   if (document) {
     xmlFreeDoc(document);
@@ -518,4 +518,4 @@ void Document::destroy() throw(DOMException) {
 #endif
 }
 
-_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
+_COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

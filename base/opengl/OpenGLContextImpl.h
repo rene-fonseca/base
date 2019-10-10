@@ -16,7 +16,7 @@
 #include <base/ui/Drawable.h>
 #include <base/opengl/OpenGL.h>
 
-_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+_COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 /**
   Base class of all OpenGL rendering contexts.
@@ -25,7 +25,7 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
   @version 1.0
 */
 
-class _DK_SDU_MIP__BASE__API OpenGLContextImpl : virtual public Drawable {
+class _COM_AZURE_DEV__BASE__API OpenGLContextImpl : virtual public Drawable {
 protected:
 
   void* graphicsContextHandle = nullptr;
@@ -81,7 +81,7 @@ public:
   };
 
   /* Format descriptor. */
-  class _DK_SDU_MIP__BASE__API Format {
+  class _COM_AZURE_DEV__BASE__API Format {
   public:
 
     unsigned int id = 0;
@@ -358,4 +358,4 @@ public:
   void swap(int plane) throw(OutOfRange, OpenGLException);
 };
 
-_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
+_COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

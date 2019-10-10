@@ -17,7 +17,7 @@
 #include <base/xml/Declaration.h>
 #include <base/xml/AttributeDecl.h>
 
-_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+_COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 class Document;
 
@@ -27,7 +27,7 @@ class Document;
   @version 1.0
 */
 
-class _DK_SDU_MIP__BASE__API ElementDecl : public Declaration {
+class _COM_AZURE_DEV__BASE__API ElementDecl : public Declaration {
   friend class Document;
 protected:
   
@@ -93,4 +93,4 @@ public:
   AttributeDecl getFirstAttribute() throw();
 };
 
-_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
+_COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

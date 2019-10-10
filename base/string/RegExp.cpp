@@ -14,20 +14,20 @@
 #include <base/platforms/features.h>
 #include <base/string/RegExp.h>
 
-#if defined(_DK_SDU_MIP__BASE__REGEXP_POSIX)
+#if defined(_COM_AZURE_DEV__BASE__REGEXP_POSIX)
 #  include <regex.h>
-#elif defined(_DK_SDU_MIP__BASE__REGEXP_PCRE)
-#  if (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__CYGWIN)
+#elif defined(_COM_AZURE_DEV__BASE__REGEXP_PCRE)
+#  if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__CYGWIN)
 #    include <pcre.h>
 #  else
 #    include <pcre/pcre.h>
 #  endif
 #endif
 
-_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+_COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 void RegExp::compile() throw(MemoryException) {
-  #if defined(_DK_SDU_MIP__BASE__REGEXP_POSIX)
+  #if defined(_COM_AZURE_DEV__BASE__REGEXP_POSIX)
     int options = 0;
     if (!caseSensitive) {
       options |= REG_ICASE;
@@ -42,7 +42,7 @@ void RegExp::compile() throw(MemoryException) {
         sizeof(regex_t)
       );
     }
-  #elif defined(_DK_SDU_MIP__BASE__REGEXP_PCRE)
+  #elif defined(_COM_AZURE_DEV__BASE__REGEXP_PCRE)
     int errorOffset;
     int options = 0;
     if (!caseSensitive) {
@@ -55,10 +55,10 @@ void RegExp::compile() throw(MemoryException) {
 
 void RegExp::release() throw() {
   if (compiled) {
-  #if defined(_DK_SDU_MIP__BASE__REGEXP_POSIX)
+  #if defined(_COM_AZURE_DEV__BASE__REGEXP_POSIX)
     regfree(static_cast<regex_t*>(compiled));
     delete[] Cast::pointer<char*>(compiled);
-  #elif defined(_DK_SDU_MIP__BASE__REGEXP_PCRE)
+  #elif defined(_COM_AZURE_DEV__BASE__REGEXP_PCRE)
     pcre_free(compiled);
   #endif
     compiled = 0;
@@ -84,7 +84,7 @@ RegExp::Substring RegExp::match(
   unsigned int start) const throw(RegExpException, OutOfRange) {
   bassert(compiled, RegExpException("Regular expression is invalid", this));
   bassert(start < value.getLength(), OutOfRange(this));
-  #if defined(_DK_SDU_MIP__BASE__REGEXP_POSIX)
+  #if defined(_COM_AZURE_DEV__BASE__REGEXP_POSIX)
     regmatch_t pmatch[1];
     int code = regexec(
       static_cast<regex_t*>(compiled),
@@ -100,7 +100,7 @@ RegExp::Substring RegExp::match(
     } else {
       throw RegExpException(this); // should never happen
     }
-  #elif defined(_DK_SDU_MIP__BASE__REGEXP_PCRE)
+  #elif defined(_COM_AZURE_DEV__BASE__REGEXP_PCRE)
     int offsets[3]; // yes 3 is correct - pcre_exec uses offsets[2] for temp. storage
     int code = pcre_exec((const pcre*)compiled, 0, value.getElements(), value.getLength(), start, 0, offsets, 3);
     if (code < 0) { // error
@@ -124,7 +124,7 @@ RegExp::Substring RegExp::match(
   unsigned int start) const throw(RegExpException, OutOfRange) {
   bassert(compiled, RegExpException("Regular expression is invalid", this));
   bassert(start < value.getLength(), OutOfRange(this));
-  #if defined(_DK_SDU_MIP__BASE__REGEXP_POSIX)
+  #if defined(_COM_AZURE_DEV__BASE__REGEXP_POSIX)
     regmatch_t pmatch[result.getSize()];
     int code = regexec(
       static_cast<regex_t*>(compiled),
@@ -143,7 +143,7 @@ RegExp::Substring RegExp::match(
     } else {
       throw RegExpException(this); // should never happen
     }
-  #elif defined(_DK_SDU_MIP__BASE__REGEXP_PCRE)
+  #elif defined(_COM_AZURE_DEV__BASE__REGEXP_PCRE)
     unsigned int size = result.getSize() * 3;
     int offsets[size];
     int code = pcre_exec(
@@ -174,4 +174,4 @@ RegExp::Substring RegExp::match(
   #endif
 }
 
-_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
+_COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

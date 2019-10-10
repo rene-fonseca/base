@@ -16,7 +16,7 @@
 #include <base/xml/Node.h>
 #include <base/xml/Attribute.h>
 
-_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+_COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 class Document;
 
@@ -28,7 +28,7 @@ class Document;
   @version 1.0
 */
 
-class _DK_SDU_MIP__BASE__API Element : public Node {
+class _COM_AZURE_DEV__BASE__API Element : public Node {
   friend class Document;
 protected:
   
@@ -199,4 +199,4 @@ public:
   }
 };
 
-_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
+_COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

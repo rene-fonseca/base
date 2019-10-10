@@ -15,7 +15,7 @@
 
 #include <base/features.h>
 
-_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+_COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 /**
   This namespace holds some offen used mathematical constants. Please note that
@@ -69,4 +69,4 @@ namespace constant {
   const long double EULER = 0.5772156649015328606065120900824024310421593359399235988057672348848677267776646709369470632917467495L;
 };
 
-_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
+_COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

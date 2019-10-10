@@ -16,7 +16,7 @@
 #include <base/MemoryException.h>
 #include <base/collection/Array.h>
 
-_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+_COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 /**
   Virtual memory.
@@ -27,7 +27,7 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
   @version 1.0
 */
 
-class _DK_SDU_MIP__BASE__API VirtualMemory {
+class _COM_AZURE_DEV__BASE__API VirtualMemory {
 public:
 
   enum State {
@@ -55,7 +55,7 @@ public:
     MemorySize size;
   };
 
-  class _DK_SDU_MIP__BASE__API Module {
+  class _COM_AZURE_DEV__BASE__API Module {
   private:
     
     const void* context = nullptr;
@@ -97,4 +97,4 @@ public:
 
 // TAG: Module is relocateable
 
-_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
+_COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

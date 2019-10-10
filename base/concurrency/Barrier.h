@@ -19,7 +19,7 @@
 #include <base/concurrency/MutualExclusion.h>
 #include <base/concurrency/SpinLock.h>
 
-_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+_COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 /**
   Implementation of a barrier.
@@ -30,7 +30,7 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
   @version 1.0
 */
 
-class _DK_SDU_MIP__BASE__API Barrier : public Object {
+class _COM_AZURE_DEV__BASE__API Barrier : public Object {
 protected:
   
   typedef SpinLock Guard;
@@ -91,4 +91,4 @@ public:
   ~Barrier();
 };
 
-_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
+_COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

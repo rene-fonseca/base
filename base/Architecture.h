@@ -15,7 +15,7 @@
 
 #include <base/features.h>
 
-_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+_COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 /**
   Architecture information.
@@ -24,16 +24,16 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
   @version 1.0
 */
 
-class _DK_SDU_MIP__BASE__API Architecture {
+class _COM_AZURE_DEV__BASE__API Architecture {
 public:
 
   /** Supported byte orders. */
   enum ByteOrder {
     BE = 0, /**< Big endian. */
     LE = 1, /**< Little endian. */
-#if (_DK_SDU_MIP__BASE__BYTE_ORDER == _DK_SDU_MIP__BASE__BIG_ENDIAN)
+#if (_COM_AZURE_DEV__BASE__BYTE_ORDER == _COM_AZURE_DEV__BASE__BIG_ENDIAN)
     NATIVE = BE /**< Native byte order. */
-#elif (_DK_SDU_MIP__BASE__BYTE_ORDER == _DK_SDU_MIP__BASE__LITTLE_ENDIAN)
+#elif (_COM_AZURE_DEV__BASE__BYTE_ORDER == _COM_AZURE_DEV__BASE__LITTLE_ENDIAN)
     NATIVE = LE /**< Native byte order. */
 #else
     NATIVE = 0 /**< Native byte order. */
@@ -108,4 +108,4 @@ public:
   static Minor getMinorArchitecture() throw();
 };
 
-_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
+_COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

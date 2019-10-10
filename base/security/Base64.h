@@ -17,7 +17,7 @@
 #include <base/string/String.h>
 #include <base/string/FormatOutputStream.h>
 
-_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+_COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 /**
   Base64 encoding (see RFC 2045 section 6.8).
@@ -27,7 +27,7 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
   @version 1.1
 */
 
-class _DK_SDU_MIP__BASE__API Base64 : public Object {
+class _COM_AZURE_DEV__BASE__API Base64 : public Object {
 public:
 
   /**
@@ -36,7 +36,7 @@ public:
     @short Base64 encode descriptor.
     @version 1.0
   */
-  class _DK_SDU_MIP__BASE__API Descriptor : public Object {
+  class _COM_AZURE_DEV__BASE__API Descriptor : public Object {
   private:
 
     /** The bytes to be encoded. */
@@ -111,4 +111,4 @@ inline Base64::Descriptor::Descriptor(const char* _buffer, unsigned int _size) t
 */
 FormatOutputStream& operator<<(FormatOutputStream& stream, const Base64::Descriptor& value) throw(IOException);
 
-_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
+_COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

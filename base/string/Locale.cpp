@@ -15,7 +15,7 @@
 #include <base/string/Locale.h>
 #include <locale.h>
 
-_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+_COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 String Locale::getLocale() throw() {
   return String(setlocale(LC_ALL, 0));
@@ -137,4 +137,4 @@ Locale::Locale() throw() {
   vectorSeparator = ',';
 }
 
-_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
+_COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

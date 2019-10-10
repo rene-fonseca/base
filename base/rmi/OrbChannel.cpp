@@ -13,7 +13,7 @@
 
 #include <base/rmi/Connection.h>
 
-_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+_COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 OrbChannel::OrbChannel(Reference<OrbEncoder> _encoder, Reference<OrbDecoder> _decoder) throw()
   : encoder(_encoder), decoder(_decoder) {
@@ -30,4 +30,4 @@ String OrbChannel::getOrbInterfaceIdentifier(const OrbStub& object) const throw(
 OrbChannel::~OrbChannel() throw() {
 }
 
-_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
+_COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

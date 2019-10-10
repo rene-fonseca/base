@@ -19,7 +19,7 @@
 #include <base/mem/AllocatorEnumeration.h>
 #include <base/iterator/SequenceIterator.h>
 
-_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+_COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 /**
   Allocator of resizeable memory block. The implementation is not MT-safe.
@@ -308,4 +308,4 @@ public:
   }
 };
 
-_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
+_COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

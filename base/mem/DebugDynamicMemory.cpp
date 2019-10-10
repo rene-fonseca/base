@@ -17,15 +17,15 @@
 #include <base/OperatingSystem.h>
 #include <base/Base.h>
 
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
 #  include <windows.h>
 #else // unix
 #  include <stdlib.h>
 #endif // flavor
 
-_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+_COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
 namespace internal {
   namespace specific {
     extern OperatingSystem::Handle processHeap;
@@ -40,7 +40,7 @@ void* DebugDynamicMemory::allocate(unsigned int size) throw() {
   }
 
   unsigned int* result = nullptr;
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   result = static_cast<unsigned int*>(::HeapAlloc(internal::specific::processHeap, 0, newSize));
 #else // unix
   result = static_cast<unsigned int*>(malloc(newSize)); // unspecified behavior if size is 0
@@ -149,7 +149,7 @@ bool DebugDynamicMemory::release(void* memory) throw(MemoryCorruption) {
   --currentAllocations;
   spinLock.releaseLock();
 
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   return ::HeapFree(internal::specific::processHeap, 0, memory);
 #else // unix
   ::free(memory); // works with 0 pointer
@@ -157,4 +157,4 @@ bool DebugDynamicMemory::release(void* memory) throw(MemoryCorruption) {
 #endif // flavor
 }
 
-_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
+_COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

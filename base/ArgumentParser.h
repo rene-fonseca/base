@@ -27,7 +27,7 @@
 #include <base/ArgumentException.h>
 #include <base/string/RegExp.h>
 
-_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+_COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 /**
   Argument parser.
@@ -36,14 +36,14 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
   @version 1.0
 */
 
-class _DK_SDU_MIP__BASE__API ArgumentParser : public Object {
+class _COM_AZURE_DEV__BASE__API ArgumentParser : public Object {
 public:
 
   enum Flag {
     ORPHANS = 1 /**< Allow orphans. */
   };
   
-  class _DK_SDU_MIP__BASE__API Option : public ReferenceCountedObject {
+  class _COM_AZURE_DEV__BASE__API Option : public ReferenceCountedObject {
   public:
     
     enum Flag {
@@ -102,7 +102,7 @@ public:
     };
   };
   
-  class _DK_SDU_MIP__BASE__API FlagOption : public Option {
+  class _COM_AZURE_DEV__BASE__API FlagOption : public Option {
   public:
     
     FlagOption(const String& name, unsigned int flags = 0) throw(OutOfDomain);
@@ -113,7 +113,7 @@ public:
       unsigned int flags = 0) throw(OutOfDomain);
   };
   
-  class _DK_SDU_MIP__BASE__API StringOption : public Option {
+  class _COM_AZURE_DEV__BASE__API StringOption : public Option {
   private:
 
     ValidifiedResult<String> defaultValue;
@@ -143,7 +143,7 @@ public:
     }
   };
   
-  class _DK_SDU_MIP__BASE__API RegExpOption : public Option {
+  class _COM_AZURE_DEV__BASE__API RegExpOption : public Option {
   private:
 
     RegExp expression;
@@ -170,7 +170,7 @@ public:
     }
   };
   
-  class _DK_SDU_MIP__BASE__API BooleanOption : public Option {
+  class _COM_AZURE_DEV__BASE__API BooleanOption : public Option {
   private:
     
     ValidifiedResult<bool> defaultValue;
@@ -204,7 +204,7 @@ public:
     }
   };
 
-  class _DK_SDU_MIP__BASE__API CardinalOption : public Option {
+  class _COM_AZURE_DEV__BASE__API CardinalOption : public Option {
   private:
     
     ValidifiedResult<int> defaultValue;
@@ -255,7 +255,7 @@ public:
     }
   };
 
-  class _DK_SDU_MIP__BASE__API RealOption : public Option {
+  class _COM_AZURE_DEV__BASE__API RealOption : public Option {
   private:
 
     ValidifiedResult<double> defaultValue;
@@ -295,7 +295,7 @@ public:
     bool isValid(const String& value) const throw();
   };
   
-  class _DK_SDU_MIP__BASE__API EnumOption : public Option {
+  class _COM_AZURE_DEV__BASE__API EnumOption : public Option {
   private:
 
     /** The valid values. */
@@ -325,7 +325,7 @@ public:
     }
   };
   
-  class _DK_SDU_MIP__BASE__API Argument : public Polymorphic {
+  class _COM_AZURE_DEV__BASE__API Argument : public Polymorphic {
   public:
 
     /** Argument flags. */
@@ -387,7 +387,7 @@ public:
     }
   };
 
-  class _DK_SDU_MIP__BASE__API OrphanArgument : public Argument {
+  class _COM_AZURE_DEV__BASE__API OrphanArgument : public Argument {
   private:
     
     /** The name of the option. */
@@ -407,7 +407,7 @@ public:
     }
   };
 
-  class _DK_SDU_MIP__BASE__API NamedArgument : public Argument {
+  class _COM_AZURE_DEV__BASE__API NamedArgument : public Argument {
   private:
     
     /** The name of the option. */
@@ -429,7 +429,7 @@ public:
     }
   };
   
-  class _DK_SDU_MIP__BASE__API StringArgument : public NamedArgument {
+  class _COM_AZURE_DEV__BASE__API StringArgument : public NamedArgument {
   private:
     
     String value;
@@ -501,7 +501,7 @@ public:
 
 // TAG: need AP for use with parse()?
 // TAG: OPHAN for Group
-// class _DK_SDU_MIP__BASE__API Group : public Option {
+// class _COM_AZURE_DEV__BASE__API Group : public Option {
 // public:
 //   // TAG: ordered group
 //   enum Type {
@@ -527,4 +527,4 @@ public:
 //   }
 // }
 
-_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
+_COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

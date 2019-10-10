@@ -18,7 +18,7 @@
 #include <base/collection/Array.h>
 #include <base/collection/HashTable.h>
 
-_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+_COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 /**
   @short List of XML attributes.
@@ -212,4 +212,4 @@ public:
   //String getValue(const String& uri, const String& localName) throw();
 };
 
-_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
+_COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

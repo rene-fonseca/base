@@ -21,13 +21,13 @@
 
 #undef DOMAIN
 
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
 #  define CALL_OPENGL __stdcall
 #else
 #  define CALL_OPENGL
 #endif
 
-_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+_COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
   // differences
   // no GL_ prefix
@@ -68,7 +68,7 @@ namespace opengl {
   
   // OpenGL 1.1 specification
 
-#if (defined(_DK_SDU_MIP__BASE__EXPORT_OPEN_GL_1_1))
+#if (defined(_COM_AZURE_DEV__BASE__EXPORT_OPEN_GL_1_1))
   extern "C" void CALL_OPENGL glAccum(GLenum op, GLfloat value);
   extern "C" void CALL_OPENGL glAlphaFunc(GLenum func, GLclampf ref);
   extern "C" GLboolean CALL_OPENGL glAreTexturesResident(GLsizei n, const GLuint* textures, GLboolean* residences);
@@ -405,19 +405,19 @@ namespace opengl {
   extern "C" void CALL_OPENGL glVertex4sv(const GLshort* v);
   extern "C" void CALL_OPENGL glVertexPointer(GLint size, GLenum type, GLsizei stride, const void* pointer);
   extern "C" void CALL_OPENGL glViewport(GLint x, GLint y, GLsizei width, GLsizei height);
-#endif // _DK_SDU_MIP__BASE__EXPORT_OPEN_GL_1_1
+#endif // _COM_AZURE_DEV__BASE__EXPORT_OPEN_GL_1_1
 
-#if (defined(_DK_SDU_MIP__BASE__EXPORT_OPEN_GL_1_2))
+#if (defined(_COM_AZURE_DEV__BASE__EXPORT_OPEN_GL_1_2))
   // TAG: fixme
-#endif // _DK_SDU_MIP__BASE__EXPORT_OPEN_GL_1_2
+#endif // _COM_AZURE_DEV__BASE__EXPORT_OPEN_GL_1_2
 
-#if (defined(_DK_SDU_MIP__BASE__EXPORT_OPEN_GL_1_3))
+#if (defined(_COM_AZURE_DEV__BASE__EXPORT_OPEN_GL_1_3))
   // TAG: fixme
-#endif // _DK_SDU_MIP__BASE__EXPORT_OPEN_GL_1_3
+#endif // _COM_AZURE_DEV__BASE__EXPORT_OPEN_GL_1_3
 
-#if (defined(_DK_SDU_MIP__BASE__EXPORT_OPEN_GL_1_4))
+#if (defined(_COM_AZURE_DEV__BASE__EXPORT_OPEN_GL_1_4))
   // TAG: fixme
-#endif // _DK_SDU_MIP__BASE__EXPORT_OPEN_GL_1_4
+#endif // _COM_AZURE_DEV__BASE__EXPORT_OPEN_GL_1_4
 
 }; // end of opengl namespace
 
@@ -429,7 +429,7 @@ namespace opengl {
   @version 1.0
 */
 
-class _DK_SDU_MIP__BASE__API OpenGLException : public Exception {
+class _COM_AZURE_DEV__BASE__API OpenGLException : public Exception {
 public:
 
   /**
@@ -472,7 +472,7 @@ public:
   @version 1.0
 */
 
-class _DK_SDU_MIP__BASE__API OpenGL {
+class _COM_AZURE_DEV__BASE__API OpenGL {
 public:
 
   typedef void (*Function)();
@@ -3301,7 +3301,7 @@ public:
   };
 };
 
-_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
+_COM_AZURE_DEV__BASE__LEAVE_NAMESPACE
 
 #undef CALL_OPENGL
 

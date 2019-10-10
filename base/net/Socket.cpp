@@ -20,7 +20,7 @@
 #include <base/concurrency/Thread.h>
 #include <base/NotImplemented.h>
 
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
 #  include <base/platforms/win32/AsyncReadStreamContext.h> // platform specific
 #  include <base/platforms/win32/AsyncWriteStreamContext.h> // platform specific
 #  include <windows.h>
@@ -40,8 +40,8 @@
 #  include <errno.h>
 #  include <sys/time.h> // defines timeval on Linux systems
 
-#  if (_DK_SDU_MIP__BASE__OS != _DK_SDU_MIP__BASE__CYGWIN) && \
-      (_DK_SDU_MIP__BASE__OS != _DK_SDU_MIP__BASE__MACOS)
+#  if (_COM_AZURE_DEV__BASE__OS != _COM_AZURE_DEV__BASE__CYGWIN) && \
+      (_COM_AZURE_DEV__BASE__OS != _COM_AZURE_DEV__BASE__MACOS)
 #    include <stropts.h> // defines FLUSH macros
 #  endif
 
@@ -49,24 +49,24 @@
 #  include <limits.h> // defines SSIZE_MAX
 #  include <arpa/inet.h>
 
-#  if (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__SOLARIS)
+#  if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__SOLARIS)
 #    define BSD_COMP 1 // request BSD flags - don't known if this is ok to do
 #  endif
 #  include <sys/ioctl.h> // defines FIONREAD
 #endif // flavor
 
-#if (_DK_SDU_MIP__BASE__FLAVOR != _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR != _COM_AZURE_DEV__BASE__WIN32)
 typedef int SOCKET;
 #endif
 
 // do we need to repair bad header file
-#if ((_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__SOLARIS) && defined(bind))
-#  define _DK_SDU_MIP__BASE__SOCKET_BIND __xnet_bind
-#  define _DK_SDU_MIP__BASE__SOCKET_CONNECT __xnet_connect
-#  define _DK_SDU_MIP__BASE__SOCKET_RECVMSG __xnet_recvmsg
-#  define _DK_SDU_MIP__BASE__SOCKET_SENDMSG __xnet_sendmsg
-#  define _DK_SDU_MIP__BASE__SOCKET_SENDTO __xnet_sendto
-#  define _DK_SDU_MIP__BASE__SOCKET_SOCKET __xnet_socket
+#if ((_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__SOLARIS) && defined(bind))
+#  define _COM_AZURE_DEV__BASE__SOCKET_BIND __xnet_bind
+#  define _COM_AZURE_DEV__BASE__SOCKET_CONNECT __xnet_connect
+#  define _COM_AZURE_DEV__BASE__SOCKET_RECVMSG __xnet_recvmsg
+#  define _COM_AZURE_DEV__BASE__SOCKET_SENDMSG __xnet_sendmsg
+#  define _COM_AZURE_DEV__BASE__SOCKET_SENDTO __xnet_sendto
+#  define _COM_AZURE_DEV__BASE__SOCKET_SOCKET __xnet_socket
 
 #  undef bind
 #  undef connect
@@ -76,38 +76,38 @@ typedef int SOCKET;
 #  undef socket
 
   inline int bind(int s, const struct sockaddr* name, int namelen) {
-    return _DK_SDU_MIP__BASE__SOCKET_BIND(s, name, namelen);
+    return _COM_AZURE_DEV__BASE__SOCKET_BIND(s, name, namelen);
   }
 
   inline int connect(int s, const struct sockaddr* name, int namelen) {
-    return _DK_SDU_MIP__BASE__SOCKET_CONNECT(s, name, namelen);
+    return _COM_AZURE_DEV__BASE__SOCKET_CONNECT(s, name, namelen);
   }
 
   inline ssize_t recvmsg(int s, struct msghdr* msg, int flags) {
-    return _DK_SDU_MIP__BASE__SOCKET_RECVMSG(s, msg, flags);
+    return _COM_AZURE_DEV__BASE__SOCKET_RECVMSG(s, msg, flags);
   }
 
   inline ssize_t sendmsg(int s, const struct msghdr* msg, int flags) {
-    return _DK_SDU_MIP__BASE__SOCKET_SENDMSG(s, msg, flags);
+    return _COM_AZURE_DEV__BASE__SOCKET_SENDMSG(s, msg, flags);
   }
 
   inline ssize_t sendto(int s, const void* msg, size_t len, int flags, const struct sockaddr* to, int tolen) {
-    return _DK_SDU_MIP__BASE__SOCKET_SENDTO(s, msg, len, flags, to, tolen);
+    return _COM_AZURE_DEV__BASE__SOCKET_SENDTO(s, msg, len, flags, to, tolen);
   }
 
   inline int socket(int domain, int type, int protocol) {
-    return _DK_SDU_MIP__BASE__SOCKET_SOCKET(domain, type, protocol);
+    return _COM_AZURE_DEV__BASE__SOCKET_SOCKET(domain, type, protocol);
   }
 #endif
 
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32) || \
-    (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__IRIX65)    
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32) || \
+    (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__IRIX65)    
   typedef int socklen;
 #else
   typedef socklen_t socklen;
 #endif
 
-_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+_COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 class SocketAddress { // Internet end point
 private:
@@ -115,7 +115,7 @@ private:
   union {
     struct sockaddr sa;
     struct sockaddr_in ipv4;
-#if (defined(_DK_SDU_MIP__BASE__INET_IPV6))
+#if (defined(_COM_AZURE_DEV__BASE__INET_IPV6))
     struct sockaddr_in6 ipv6;
     struct sockaddr_storage storage;
 #else
@@ -133,7 +133,7 @@ public:
     unsigned short port,
     Socket::Domain domain) throw(NetworkException) {
     clear(sa);
-#  if (defined(_DK_SDU_MIP__BASE__INET_IPV6))
+#  if (defined(_COM_AZURE_DEV__BASE__INET_IPV6))
     if (domain == Socket::IPV6) {
 #    if (defined(SIN6_LEN))
       ipv6.sin6_len = sizeof(ipv6);
@@ -189,7 +189,7 @@ public:
       address.getIPv4Address(),
       sizeof(struct in_addr)
     );
-#  endif // _DK_SDU_MIP__BASE__INET_IPV6
+#  endif // _COM_AZURE_DEV__BASE__INET_IPV6
   }
 
   /** Returns pointer to socket address. */
@@ -204,7 +204,7 @@ public:
   
   /** Returns the size of the socket address structure. */
   inline unsigned int getSize() const throw() {
-#  if (defined(_DK_SDU_MIP__BASE__INET_IPV6))
+#  if (defined(_COM_AZURE_DEV__BASE__INET_IPV6))
     return (sa.sa_family == AF_INET6) ? sizeof(ipv6) : sizeof(ipv4);
 #else
     return sizeof(ipv4);
@@ -212,7 +212,7 @@ public:
   }
   
   inline Socket::Domain getDomain() const throw() {
-#  if (defined(_DK_SDU_MIP__BASE__INET_IPV6))
+#  if (defined(_COM_AZURE_DEV__BASE__INET_IPV6))
     return (sa.sa_family == AF_INET6) ? Socket::IPV6 : Socket::IPV4;
 #else
     return Socket::IPV4;
@@ -232,7 +232,7 @@ public:
         Cast::getAddress(ipv4.sin_addr),
         InetAddress::IP_VERSION_4
       );
-#  if (defined(_DK_SDU_MIP__BASE__INET_IPV6))
+#  if (defined(_COM_AZURE_DEV__BASE__INET_IPV6))
     case AF_INET6:
       return InetAddress(
         Cast::getAddress(ipv6.sin6_addr),
@@ -249,7 +249,7 @@ public:
     switch (sa.sa_family) {
     case AF_INET:
       return ByteOrder::fromBigEndian<unsigned short>(ipv4.sin_port);
-#  if (defined(_DK_SDU_MIP__BASE__INET_IPV6))
+#  if (defined(_COM_AZURE_DEV__BASE__INET_IPV6))
     case AF_INET6:
       return ByteOrder::fromBigEndian<unsigned short>(ipv6.sin6_port);
 #  endif
@@ -271,7 +271,7 @@ namespace internal {
   public:
 
     static inline int getNativeError() throw() {
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
       return ::WSAGetLastError();
 #else // unix
       return errno;
@@ -280,7 +280,7 @@ namespace internal {
 
     static unsigned int getCause(unsigned int error) throw() {
       switch (error) {
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
       case WSAEISCONN:
         return NetworkException::ALREADY_CONNECTED;
       case WSAENOTCONN:
@@ -439,7 +439,7 @@ Socket::SocketImpl::SocketImpl(
 
 Socket::SocketImpl::~SocketImpl() {
   if (isValid()) {
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
     if (::closesocket((SOCKET)getHandle())) {
 #else // unix
     if (::close((int)getHandle())) {
@@ -473,7 +473,7 @@ bool Socket::accept(Socket& socket) throw(NetworkException) {
   socklen sl = sa.getAnySize();
   OperatingSystem::Handle handle =
     (OperatingSystem::Handle)::accept((SOCKET)socket.socket->getHandle(), sa.getValue(), &sl);
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   if (handle == OperatingSystem::INVALID_HANDLE) {
     switch (::WSAGetLastError()) {
     case WSAEWOULDBLOCK:
@@ -521,7 +521,7 @@ void Socket::close() throw(NetworkException) {
 void Socket::connect(const InetAddress& address, unsigned short port) throw(NetworkException) {
   SocketAddress sa(address, port, socket->getDomain());
   if (::connect((SOCKET)socket->getHandle(), sa.getValue(), sa.getSize())) {
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
     switch (::WSAGetLastError()) {
     case WSAECONNREFUSED:
       throw AccessDenied(this);
@@ -555,7 +555,7 @@ void Socket::create(Kind kind, Domain domain) throw(NetworkException) {
     !socket->isValid(),
     NetworkException("Unable to create socket", this)
   );
-#if (defined(_DK_SDU_MIP__BASE__INET_IPV6))
+#if (defined(_COM_AZURE_DEV__BASE__INET_IPV6))
   OperatingSystem::Handle handle = (OperatingSystem::Handle)::socket(
     (domain != Socket::IPV4) ? PF_INET6 : PF_INET,
     SOCKET_KINDS[kind],
@@ -620,7 +620,7 @@ unsigned short Socket::getLocalPort() const throw() {
 }
 
 void Socket::shutdownInputStream() throw(NetworkException) {
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   if (::shutdown((SOCKET)socket->getHandle(), 0 /*SD_RECEIVE*/)) { // disallow further receives
     internal::SocketImpl::raiseNetwork("Unable to shutdown socket for reading");
   }
@@ -632,7 +632,7 @@ void Socket::shutdownInputStream() throw(NetworkException) {
 }
 
 void Socket::shutdownOutputStream() throw(NetworkException) {
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   if (::shutdown((SOCKET)socket->getHandle(), 1 /*SD_SEND*/)) { // disallow further sends
     internal::SocketImpl::raiseNetwork("Unable to shutdown socket for writing");
   }
@@ -944,7 +944,7 @@ void Socket::setTimeToLive(unsigned int value) throw(NetworkException) {
 }
 
 uint8 Socket::getMulticastHops() const throw(NetworkException) {
-#if (defined(_DK_SDU_MIP__BASE__INET_IPV6))
+#if (defined(_COM_AZURE_DEV__BASE__INET_IPV6))
   if (socket->getDomain() == Socket::IPV6) {
     unsigned int buffer;
     unsigned int length = sizeof(buffer);
@@ -968,13 +968,13 @@ uint8 Socket::getMulticastHops() const throw(NetworkException) {
       &length
     );
     return buffer;
-#if (defined(_DK_SDU_MIP__BASE__INET_IPV6))
+#if (defined(_COM_AZURE_DEV__BASE__INET_IPV6))
   }
 #endif
 }
 
 void Socket::setMulticastHops(uint8 value) throw(NetworkException) {
-#if (defined(_DK_SDU_MIP__BASE__INET_IPV6))
+#if (defined(_COM_AZURE_DEV__BASE__INET_IPV6))
   if (socket->getDomain() == Socket::IPV6) {
     unsigned int buffer = value;
     internal::SocketImpl::setOption(
@@ -994,13 +994,13 @@ void Socket::setMulticastHops(uint8 value) throw(NetworkException) {
       &buffer,
       sizeof(buffer)
     );
-#if (defined(_DK_SDU_MIP__BASE__INET_IPV6))
+#if (defined(_COM_AZURE_DEV__BASE__INET_IPV6))
   }
 #endif
 }
 
 bool Socket::getMulticastLoopback() const throw(NetworkException) {
-#if (defined(_DK_SDU_MIP__BASE__INET_IPV6))
+#if (defined(_COM_AZURE_DEV__BASE__INET_IPV6))
   if (socket->getDomain() == Socket::IPV6) {
     u_char buffer;
     unsigned int length = sizeof(buffer);
@@ -1024,13 +1024,13 @@ bool Socket::getMulticastLoopback() const throw(NetworkException) {
       &length
     );
     return buffer != 0;
-#if (defined(_DK_SDU_MIP__BASE__INET_IPV6))
+#if (defined(_COM_AZURE_DEV__BASE__INET_IPV6))
   }
 #endif
 }
 
 void Socket::setMulticastLoopback(bool value) throw(NetworkException) {
-#if (defined(_DK_SDU_MIP__BASE__INET_IPV6))
+#if (defined(_COM_AZURE_DEV__BASE__INET_IPV6))
   if (socket->getDomain() == Socket::IPV6) {
     unsigned int buffer = value;
     internal::SocketImpl::setOption(
@@ -1050,13 +1050,13 @@ void Socket::setMulticastLoopback(bool value) throw(NetworkException) {
       &buffer,
       sizeof(buffer)
     );
-#if (defined(_DK_SDU_MIP__BASE__INET_IPV6))
+#if (defined(_COM_AZURE_DEV__BASE__INET_IPV6))
   }
 #endif
 }
 
 InetAddress Socket::getMulticastInterface() const throw(NetworkException) {
-#if (defined(_DK_SDU_MIP__BASE__INET_IPV6))
+#if (defined(_COM_AZURE_DEV__BASE__INET_IPV6))
   if (socket->getDomain() == Socket::IPV6) {
     unsigned int buffer;
     unsigned int length = sizeof(buffer);
@@ -1096,7 +1096,7 @@ InetAddress Socket::getMulticastInterface() const throw(NetworkException) {
 }
 
 void Socket::setMulticastInterface(const InetAddress& interface) throw(NetworkException) {
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
 #else // unix
   InetAddress i = interface;
   struct in_addr buffer;
@@ -1114,7 +1114,7 @@ void Socket::setMulticastInterface(const InetAddress& interface) throw(NetworkEx
 }
 
 uint8 Socket::getUnicastHops() const throw(NetworkException) {
-#if (defined(_DK_SDU_MIP__BASE__INET_IPV6))
+#if (defined(_COM_AZURE_DEV__BASE__INET_IPV6))
   if (socket->getDomain() == Socket::IPV6) {
     int buffer;
     unsigned int length = sizeof(buffer);
@@ -1132,13 +1132,13 @@ uint8 Socket::getUnicastHops() const throw(NetworkException) {
       NetworkException(this),
       NetworkException::OPERATION_NOT_SUPPORTED
     );
-#if (defined(_DK_SDU_MIP__BASE__INET_IPV6))
+#if (defined(_COM_AZURE_DEV__BASE__INET_IPV6))
   }
 #endif
 }
 
 void Socket::setUnicastHops(uint8 value) throw(NetworkException) {
-#if (defined(_DK_SDU_MIP__BASE__INET_IPV6))
+#if (defined(_COM_AZURE_DEV__BASE__INET_IPV6))
   if (socket->getDomain() == Socket::IPV6) {
     int buffer;
     internal::SocketImpl::setOption(
@@ -1154,13 +1154,13 @@ void Socket::setUnicastHops(uint8 value) throw(NetworkException) {
       NetworkException(this),
       NetworkException::OPERATION_NOT_SUPPORTED
     );
-#if (defined(_DK_SDU_MIP__BASE__INET_IPV6))
+#if (defined(_COM_AZURE_DEV__BASE__INET_IPV6))
   }
 #endif
 }
 
 void Socket::joinGroup(const InetAddress& group) throw(NetworkException) {
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   InetAddress g = group;
   bassert(g.convertToIPv4(), NetworkException(this));
   struct ip_mreq mreq;
@@ -1178,7 +1178,7 @@ void Socket::joinGroup(const InetAddress& group) throw(NetworkException) {
     sizeof(mreq)
   );
 #else // unix
-#  if (defined(_DK_SDU_MIP__BASE__INET_IPV6))
+#  if (defined(_COM_AZURE_DEV__BASE__INET_IPV6))
   if (socket->getDomain() == Socket::IPV6) {
     struct ipv6_mreq mreq;
     mreq.ipv6mr_interface = 0; // use default interface
@@ -1234,7 +1234,7 @@ void Socket::joinGroup(const InetAddress& group) throw(NetworkException) {
 }
 
 void Socket::joinGroup(const InetAddress& interface, const InetAddress& group) throw(NetworkException) {
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   InetAddress i = interface;
   InetAddress g = group;
   bassert(i.convertToIPv4() && g.convertToIPv4(), NetworkException(this));
@@ -1257,7 +1257,7 @@ void Socket::joinGroup(const InetAddress& interface, const InetAddress& group) t
     sizeof(mreq)
   );
 #else // unix
-#  if (defined(_DK_SDU_MIP__BASE__INET_IPV6))
+#  if (defined(_COM_AZURE_DEV__BASE__INET_IPV6))
   if (socket->getDomain() == Socket::IPV6) {
     struct ipv6_mreq mreq;
     mreq.ipv6mr_interface = 0;
@@ -1369,7 +1369,7 @@ void Socket::joinGroup(const InetAddress& interface, const InetAddress& group) t
 }
 
 void Socket::leaveGroup(const InetAddress& interface, const InetAddress& group) throw(NetworkException) {
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   InetAddress i = interface;
   InetAddress g = group;
   bassert(i.convertToIPv4() && g.convertToIPv4(), NetworkException(this));
@@ -1392,7 +1392,7 @@ void Socket::leaveGroup(const InetAddress& interface, const InetAddress& group) 
     sizeof(mreq)
   );
 #else // unix
-#  if (defined(_DK_SDU_MIP__BASE__INET_IPV6))
+#  if (defined(_COM_AZURE_DEV__BASE__INET_IPV6))
   if (socket->getDomain() == Socket::IPV6) {
     InetAddress i = interface;
     InetAddress g = group;
@@ -1463,7 +1463,7 @@ void Socket::leaveGroup(const InetAddress& interface, const InetAddress& group) 
 }
 
 bool Socket::getIPv6Restriction() const throw(NetworkException) {
-#if (defined(_DK_SDU_MIP__BASE__INET_IPV6) && defined(IPV6_V6ONLY))
+#if (defined(_COM_AZURE_DEV__BASE__INET_IPV6) && defined(IPV6_V6ONLY))
   if (socket->getDomain() == Socket::IPV6) {
     int buffer;
     unsigned int length = sizeof(buffer);
@@ -1479,13 +1479,13 @@ bool Socket::getIPv6Restriction() const throw(NetworkException) {
 #endif
     // IPv6 restriction is not possible if only IPv4 is supported
     return false;
-#if (defined(_DK_SDU_MIP__BASE__INET_IPV6) && defined(IPV6_V6ONLY))
+#if (defined(_COM_AZURE_DEV__BASE__INET_IPV6) && defined(IPV6_V6ONLY))
   }
 #endif
 }
 
 void Socket::setIPv6Restriction(bool value) throw(NetworkException) {
-#if (defined(_DK_SDU_MIP__BASE__INET_IPV6) && defined(IPV6_V6ONLY))
+#if (defined(_COM_AZURE_DEV__BASE__INET_IPV6) && defined(IPV6_V6ONLY))
   if (socket->getDomain() == Socket::IPV6) {
     int buffer;
     internal::SocketImpl::setOption(
@@ -1501,13 +1501,13 @@ void Socket::setIPv6Restriction(bool value) throw(NetworkException) {
       NetworkException(this),
       NetworkException::OPERATION_NOT_SUPPORTED
     );
-#if (defined(_DK_SDU_MIP__BASE__INET_IPV6) && defined(IPV6_V6ONLY))
+#if (defined(_COM_AZURE_DEV__BASE__INET_IPV6) && defined(IPV6_V6ONLY))
   }
 #endif
 }
 
 void Socket::setNonBlocking(bool value) throw(NetworkException) {
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   unsigned int buffer = value; // set to zero to disable nonblocking
   if (ioctlsocket((SOCKET)socket->getHandle(), FIONBIO, Cast::pointer<u_long*>(&buffer))) {
     internal::SocketImpl::raiseNetwork("Unable to set blocking mode");
@@ -1537,7 +1537,7 @@ void Socket::setNonBlocking(bool value) throw(NetworkException) {
 
 #if 0
 bool Socket::getAsynchronous() throw(NetworkException) {
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
 //   unsigned int buffer = value; // set to zero to disable nonblocking
 //   if (ioctlsocket((SOCKET)socket->getHandle(), FIONBIO, Cast::pointer<u_long*>(&buffer))) {
 //     internal::SocketImpl::raiseNetwork("Unable to set blocking mode");
@@ -1552,7 +1552,7 @@ bool Socket::getAsynchronous() throw(NetworkException) {
 }
 
 void Socket::setAsynchronous(bool value) throw(NetworkException) {
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
 //   unsigned int buffer = value; // set to zero to disable nonblocking
 //   if (ioctlsocket((SOCKET)socket->getHandle(), FIONBIO, Cast::pointer<u_long*>(&buffer))) {
 //     internal::SocketImpl::raiseNetwork("Unable to set blocking mode");
@@ -1582,7 +1582,7 @@ void Socket::setAsynchronous(bool value) throw(NetworkException) {
 #endif
 
 unsigned int Socket::available() const throw(NetworkException) {
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   unsigned int result;
   if (ioctlsocket((SOCKET)socket->getHandle(), FIONREAD, Cast::pointer<u_long*>(&result))) {
     internal::SocketImpl::raiseNetwork("Unable to determine the amount of data pending in the input buffer");
@@ -1600,7 +1600,7 @@ unsigned int Socket::available() const throw(NetworkException) {
 
 #if 0
 unsigned int Socket::pending() const throw(NetworkException) {
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   unsigned int result = 0;
 //   if (ioctlsocket((SOCKET)socket->getHandle(), FIONREAD, Cast::pointer<u_long*>(&result))) {
 //     internal::SocketImpl::raiseNetwork("Unable to determine the amount of data pending in the input buffer");
@@ -1626,7 +1626,7 @@ unsigned int Socket::read(
   bool nonblocking) throw(NetworkException) {
   unsigned int bytesRead = 0;
   while (bytesToRead > 0) {
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
     int result = ::recv(
       (SOCKET)socket->getHandle(),
       (char*)buffer,
@@ -1683,7 +1683,7 @@ unsigned int Socket::write(
   bool nonblocking) throw(NetworkException) {
   unsigned int bytesWritten = 0;
   while (bytesToWrite > 0) {
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
     int result = ::send(
       (SOCKET)socket->getHandle(),
       (const char*)buffer,
@@ -1778,7 +1778,7 @@ unsigned int Socket::sendTo(
 }
 
 void Socket::asyncCancel() throw(AsynchronousException) {
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   ::CancelIo(socket->getHandle());
 #else // unix
 #endif // flavor
@@ -1788,7 +1788,7 @@ AsynchronousReadOperation Socket::read(
   uint8* buffer,
   unsigned int bytesToRead,
   AsynchronousReadEventListener* listener) throw(AsynchronousException) {
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   bassert(listener, AsynchronousException()); // FIXME
   return new win32::AsyncReadStreamContext(
     socket->getHandle(),
@@ -1805,7 +1805,7 @@ AsynchronousWriteOperation Socket::write(
   const uint8* buffer,
   unsigned int bytesToWrite,
   AsynchronousWriteEventListener* listener) throw(AsynchronousException) {
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   bassert(listener, AsynchronousException()); // FIXME
   return new win32::AsyncWriteStreamContext(
     socket->getHandle(),
@@ -1819,7 +1819,7 @@ AsynchronousWriteOperation Socket::write(
 }
 
 void Socket::wait() const throw(NetworkException) {
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   fd_set rfds;
   FD_ZERO(&rfds);
   FD_SET((SOCKET)socket->getHandle(), &rfds);
@@ -1841,7 +1841,7 @@ void Socket::wait() const throw(NetworkException) {
 }
 
 bool Socket::wait(unsigned int microseconds) const throw(NetworkException) {
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   fd_set rfds;
   FD_ZERO(&rfds);
   FD_SET((SOCKET)socket->getHandle(), &rfds);
@@ -1875,4 +1875,4 @@ bool Socket::wait(unsigned int microseconds) const throw(NetworkException) {
 Socket::~Socket() {
 }
 
-_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
+_COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

@@ -17,11 +17,11 @@
 #include <base/UnexpectedFailure.h>
 #include <base/string/FormatOutputStream.h>
 
-#if defined(_DK_SDU_MIP__BASE__XML_XMLSOFT_ORG)
+#if defined(_COM_AZURE_DEV__BASE__XML_XMLSOFT_ORG)
 #  include <libxml2/libxml/tree.h>
 #endif
 
-_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+_COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 bool Node::isSupported(
     const String& feature,
@@ -31,7 +31,7 @@ bool Node::isSupported(
 }
 
 String Node::getName() const throw() {
-#if defined(_DK_SDU_MIP__BASE__XML_XMLSOFT_ORG)
+#if defined(_COM_AZURE_DEV__BASE__XML_XMLSOFT_ORG)
   xmlNode* node = (xmlNode*)context;
   switch (node->type) {
   case XML_ATTRIBUTE_NODE: // name of attribute
@@ -78,7 +78,7 @@ String Node::getName() const throw() {
 }
 
 String Node::getValue() const throw(DOMException) {
-#if defined(_DK_SDU_MIP__BASE__XML_XMLSOFT_ORG)
+#if defined(_COM_AZURE_DEV__BASE__XML_XMLSOFT_ORG)
   xmlNode* node = (xmlNode*)context;
   switch (node->type) {
   case XML_ATTRIBUTE_NODE:
@@ -107,7 +107,7 @@ String Node::getValue() const throw(DOMException) {
 }
 
 void Node::setValue(const String& value) throw(DOMException) {
-#if defined(_DK_SDU_MIP__BASE__XML_XMLSOFT_ORG)
+#if defined(_COM_AZURE_DEV__BASE__XML_XMLSOFT_ORG)
   xmlNode* node = (xmlNode*)context;
   switch (node->type) {
   case XML_ATTRIBUTE_NODE:
@@ -162,7 +162,7 @@ void Node::setValue(const String& value) throw(DOMException) {
 }
 
 Node::NodeType Node::getType() const throw() {
-#if defined(_DK_SDU_MIP__BASE__XML_XMLSOFT_ORG)
+#if defined(_COM_AZURE_DEV__BASE__XML_XMLSOFT_ORG)
   xmlNode* node = (xmlNode*)context;
   switch (node->type) {
   case XML_ELEMENT_NODE:
@@ -204,7 +204,7 @@ Node::NodeType Node::getType() const throw() {
 }
 
 Node Node::getParent() const throw() {
-#if defined(_DK_SDU_MIP__BASE__XML_XMLSOFT_ORG)
+#if defined(_COM_AZURE_DEV__BASE__XML_XMLSOFT_ORG)
   xmlNode* node = (xmlNode*)context;
   
   switch (node->type) {
@@ -225,7 +225,7 @@ Node Node::getParent() const throw() {
 }
 
 Node Node::getPreviousSibling() const throw() {
-#if defined(_DK_SDU_MIP__BASE__XML_XMLSOFT_ORG)
+#if defined(_COM_AZURE_DEV__BASE__XML_XMLSOFT_ORG)
   xmlNode* node = (xmlNode*)context;
   switch (node->type) {
   case XML_ATTRIBUTE_NODE:
@@ -239,7 +239,7 @@ Node Node::getPreviousSibling() const throw() {
 }
 
 Node Node::getNextSibling() const throw() {
-#if defined(_DK_SDU_MIP__BASE__XML_XMLSOFT_ORG)
+#if defined(_COM_AZURE_DEV__BASE__XML_XMLSOFT_ORG)
   xmlNode* node = (xmlNode*)context;
   switch (node->type) {
   case XML_ATTRIBUTE_NODE:
@@ -253,7 +253,7 @@ Node Node::getNextSibling() const throw() {
 }
 
 Node Node::getFirstChild() const throw() {
-#if defined(_DK_SDU_MIP__BASE__XML_XMLSOFT_ORG)
+#if defined(_COM_AZURE_DEV__BASE__XML_XMLSOFT_ORG)
   xmlNode* node = (xmlNode*)context;
   
   switch (node->type) {
@@ -280,7 +280,7 @@ Node Node::getFirstChild() const throw() {
 }
 
 Node Node::getLastChild() const throw() {
-#if defined(_DK_SDU_MIP__BASE__XML_XMLSOFT_ORG)
+#if defined(_COM_AZURE_DEV__BASE__XML_XMLSOFT_ORG)
   xmlNode* node = (xmlNode*)context;
   
   switch (node->type) {
@@ -307,7 +307,7 @@ Node Node::getLastChild() const throw() {
 }
 
 Node::ShadowDocument Node::getOwnerDocument() throw() {
-#if defined(_DK_SDU_MIP__BASE__XML_XMLSOFT_ORG)
+#if defined(_COM_AZURE_DEV__BASE__XML_XMLSOFT_ORG)
   xmlNode* node = (xmlNode*)context;
   if (node->type == XML_DOCUMENT_NODE) {
     return 0;
@@ -319,7 +319,7 @@ Node::ShadowDocument Node::getOwnerDocument() throw() {
 #endif
 }
 
-#if defined(_DK_SDU_MIP__BASE__XML_XMLSOFT_ORG)
+#if defined(_COM_AZURE_DEV__BASE__XML_XMLSOFT_ORG)
 class NodeImpl {
 public:
 
@@ -499,7 +499,7 @@ public:
 #endif
 
 Node Node::appendChild(Node _child) throw(DOMException) {
-#if defined(_DK_SDU_MIP__BASE__XML_XMLSOFT_ORG)
+#if defined(_COM_AZURE_DEV__BASE__XML_XMLSOFT_ORG)
   xmlNode* node = (xmlNode*)context;
   xmlNode* child = (xmlNode*)_child.context;
   
@@ -554,7 +554,7 @@ Node Node::appendChild(Node _child) throw(DOMException) {
 }
 
 Node Node::insertBefore(Node _newChild, Node _refChild) throw(DOMException) {
-#if defined(_DK_SDU_MIP__BASE__XML_XMLSOFT_ORG)
+#if defined(_COM_AZURE_DEV__BASE__XML_XMLSOFT_ORG)
 	xmlNode* node = (xmlNode*)context;
 	xmlNode* newChild = (xmlNode*)_newChild.context;
 	xmlNode* refChild = (xmlNode*)_refChild.context;
@@ -617,7 +617,7 @@ Node Node::insertBefore(Node _newChild, Node _refChild) throw(DOMException) {
 }
 
 Node Node::removeChild(Node _oldChild) throw(DOMException) {
-#if defined(_DK_SDU_MIP__BASE__XML_XMLSOFT_ORG)
+#if defined(_COM_AZURE_DEV__BASE__XML_XMLSOFT_ORG)
   xmlNode* node = (xmlNode*)context;
   xmlNode* oldChild = (xmlNode*)_oldChild.context;
   bassert(oldChild->parent == node, DOMException(this));
@@ -635,7 +635,7 @@ Node Node::replaceChild(Node newChild, Node oldChild) throw(DOMException) {
 }
 
 bool Node::hasChildNodes() const throw() {
-#if defined(_DK_SDU_MIP__BASE__XML_XMLSOFT_ORG)
+#if defined(_COM_AZURE_DEV__BASE__XML_XMLSOFT_ORG)
   const xmlNode* node = (const xmlNode*)context;
   
   switch (node->type) {
@@ -662,7 +662,7 @@ bool Node::hasChildNodes() const throw() {
 }
 
 String Node::getNamespaceURI() const throw() {
-#if defined(_DK_SDU_MIP__BASE__XML_XMLSOFT_ORG)
+#if defined(_COM_AZURE_DEV__BASE__XML_XMLSOFT_ORG)
   xmlNode* node = (xmlNode*)context;
   if (node->ns &&
       ((node->type == XML_ELEMENT_NODE) ||
@@ -677,7 +677,7 @@ String Node::getNamespaceURI() const throw() {
 }
 
 String Node::getPrefix() const throw(DOMException) {
-#if defined(_DK_SDU_MIP__BASE__XML_XMLSOFT_ORG)
+#if defined(_COM_AZURE_DEV__BASE__XML_XMLSOFT_ORG)
   xmlNode* node = (xmlNode*)context;
   return NativeString((const char*)node->ns->prefix);
   if (node->ns &&
@@ -693,7 +693,7 @@ String Node::getPrefix() const throw(DOMException) {
 }
 
 void Node::setPrefix(const String& prefix) throw(DOMException) {
-#if defined(_DK_SDU_MIP__BASE__XML_XMLSOFT_ORG)
+#if defined(_COM_AZURE_DEV__BASE__XML_XMLSOFT_ORG)
   xmlNode* node = (xmlNode*)context;
 
   if (node->ns &&
@@ -721,7 +721,7 @@ void Node::setPrefix(const String& prefix) throw(DOMException) {
 }
 
 String Node::getLocalName() const throw() {
-#if defined(_DK_SDU_MIP__BASE__XML_XMLSOFT_ORG)
+#if defined(_COM_AZURE_DEV__BASE__XML_XMLSOFT_ORG)
   xmlNode* node = (xmlNode*)context;
   if (/*node->ns &&*/ // TAG: should ns be ignored
       ((node->type == XML_ELEMENT_NODE) ||
@@ -736,7 +736,7 @@ String Node::getLocalName() const throw() {
 }
 
 bool Node::hasAttributes() const throw() {
-#if defined(_DK_SDU_MIP__BASE__XML_XMLSOFT_ORG)
+#if defined(_COM_AZURE_DEV__BASE__XML_XMLSOFT_ORG)
   xmlNode* node = (xmlNode*)context;
   return (node->type == XML_ELEMENT_NODE) && (node->properties != 0);
 #else
@@ -748,7 +748,7 @@ bool Node::hasAttributes() const throw() {
 // unlink()???
 
 bool Node::isUnlinked() const throw() {
-#if defined(_DK_SDU_MIP__BASE__XML_XMLSOFT_ORG)
+#if defined(_COM_AZURE_DEV__BASE__XML_XMLSOFT_ORG)
   return NodeImpl::isUnlinked(*this);
 #else
   throw DOMException(this);
@@ -756,7 +756,7 @@ bool Node::isUnlinked() const throw() {
 }
 
 bool Node::hasSameOwner(const Node& _node) const throw() {
-#if defined(_DK_SDU_MIP__BASE__XML_XMLSOFT_ORG)
+#if defined(_COM_AZURE_DEV__BASE__XML_XMLSOFT_ORG)
   const xmlNode* a = (const xmlNode*)getContext();
   const xmlNode* b = (const xmlNode*)_node.getContext();
   return a->doc == b->doc;
@@ -766,7 +766,7 @@ bool Node::hasSameOwner(const Node& _node) const throw() {
 }
 
 bool Node::isAncestor(const Node& _child) const throw() {
-#if defined(_DK_SDU_MIP__BASE__XML_XMLSOFT_ORG)
+#if defined(_COM_AZURE_DEV__BASE__XML_XMLSOFT_ORG)
   const xmlNode* node = (const xmlNode*)getContext();
   const xmlNode* child  = (const xmlNode*)_child.getContext();
   
@@ -784,7 +784,7 @@ bool Node::isAncestor(const Node& _child) const throw() {
 
 // TAG: should cloneNode() be const?
 Node Node::cloneNode(bool deep) throw(DOMException) {
-#if defined(_DK_SDU_MIP__BASE__XML_XMLSOFT_ORG)
+#if defined(_COM_AZURE_DEV__BASE__XML_XMLSOFT_ORG)
   xmlNode* node = (xmlNode*)getContext();
   
   switch (node->type) {
@@ -815,7 +815,7 @@ Node Node::cloneNode(bool deep) throw(DOMException) {
 }
 
 Node::~Node() throw() {
-#if defined(_DK_SDU_MIP__BASE__XML_XMLSOFT_ORG)
+#if defined(_COM_AZURE_DEV__BASE__XML_XMLSOFT_ORG)
   // TAG: need reference counting!
 #if 0
   xmlNode* node = (xmlNode*)getContext();
@@ -875,4 +875,4 @@ Node::~Node() throw() {
 #endif
 }
 
-_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
+_COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

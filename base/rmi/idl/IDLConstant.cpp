@@ -13,7 +13,7 @@
 
 #include <base/rmi/idl/IDLConstant.h>
 
-_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+_COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 IDLConstant::IDLConstant(const String& _name) throw() : name(_name) {
 }
@@ -21,4 +21,4 @@ IDLConstant::IDLConstant(const String& _name) throw() : name(_name) {
 IDLConstant::~IDLConstant() throw() {
 }
 
-_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
+_COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

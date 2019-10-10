@@ -17,7 +17,7 @@
 #include <base/net/InetAddress.h>
 #include <base/net/InetService.h>
 
-_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+_COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 /**
   Internet end point (i.e. both internet address and port number).
@@ -27,7 +27,7 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
   @version 1.0
 */
 
-class _DK_SDU_MIP__BASE__API InetEndPoint : public virtual Object {
+class _COM_AZURE_DEV__BASE__API InetEndPoint : public virtual Object {
 private:
 
   /** Host. */
@@ -145,4 +145,4 @@ public:
   }
 };
 
-_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
+_COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

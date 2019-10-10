@@ -28,7 +28,7 @@
 #include <base/rmi/OrbDecoder.h>
 #include <base/rmi/OrbEncoder.h>
 
-_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+_COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 class Orb;
 
@@ -40,7 +40,7 @@ class Orb;
   @version 1.0
 */
 
-class _DK_SDU_MIP__BASE__API OrbConnection : public Polymorphic,
+class _COM_AZURE_DEV__BASE__API OrbConnection : public Polymorphic,
                                              public ReferenceCountedObject,
                                              public PushInterface,
                                              public PullInterface {
@@ -103,4 +103,4 @@ public:
   virtual ~OrbConnection() throw();
 };
 
-_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
+_COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

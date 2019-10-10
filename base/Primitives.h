@@ -16,29 +16,29 @@
 #include <base/features.h>
 #include <vector>
 
-_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+_COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
-#if (!defined(_DK_SDU_MIP__BASE__COMPILER_PRIMITIVES))
-#if (_DK_SDU_MIP__BASE__CHAR_SIZE == 1)
+#if (!defined(_COM_AZURE_DEV__BASE__COMPILER_PRIMITIVES))
+#if (_COM_AZURE_DEV__BASE__CHAR_SIZE == 1)
   /** 8 bit signed integer. */
   typedef signed char int8;
   /** 8 bit unsigned integer (a.k.a. octet). */
   typedef unsigned char uint8;
 #endif
 
-#if (_DK_SDU_MIP__BASE__SHORT_SIZE == 2)
+#if (_COM_AZURE_DEV__BASE__SHORT_SIZE == 2)
   /** 16 bit signed integer. */
   typedef short int16;
   /** 16 bit unsigned integer (a.k.a. doublet). */
   typedef unsigned short uint16;
 #endif
 
-#if (_DK_SDU_MIP__BASE__INT_SIZE == 4)
+#if (_COM_AZURE_DEV__BASE__INT_SIZE == 4)
   /** 32 bit signed integer. */
   typedef int int32;
   /** 32 bit unsigned integer (a.k.a. quadlet). */
   typedef unsigned int uint32;
-#elif (_DK_SDU_MIP__BASE__LONG_SIZE == 4)
+#elif (_COM_AZURE_DEV__BASE__LONG_SIZE == 4)
   /** 32 bit signed integer. */
   typedef long int32;
   /** 32 bit unsigned integer (a.k.a. quadlet). */
@@ -50,7 +50,7 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
   typedef unsigned long long uint32;
 #endif
 
-#if (_DK_SDU_MIP__BASE__LONG_LONG_SIZE == 8)
+#if (_COM_AZURE_DEV__BASE__LONG_LONG_SIZE == 8)
   /** 64 bit signed integer. */
   typedef long long int64;
   /** 64 bit unsigned integer. */
@@ -121,7 +121,7 @@ typedef MemorySize ULargestInt; // TAG: could be different
 /**
   Native string.
 */
-class _DK_SDU_MIP__BASE__API NativeString {
+class _COM_AZURE_DEV__BASE__API NativeString {
 private:
 
   const char* value = nullptr;
@@ -145,7 +145,7 @@ public:
 /**
   Native wide string.
 */
-class _DK_SDU_MIP__BASE__API NativeWideString {
+class _COM_AZURE_DEV__BASE__API NativeWideString {
 private:
 
   const wchar* value = nullptr;
@@ -585,7 +585,7 @@ public:
   typedef signed char Signed;
   typedef unsigned char Unsigned;
   
-#if (_DK_SDU_MIP__BASE__CHAR_SIZE == 1)
+#if (_COM_AZURE_DEV__BASE__CHAR_SIZE == 1)
   static constexpr signed char MAXIMUM = 127;
   static constexpr signed char MINIMUM = -MAXIMUM - 1;
 #endif
@@ -598,7 +598,7 @@ public:
   typedef signed char Signed;
   typedef unsigned char Unsigned;
   
-#if (_DK_SDU_MIP__BASE__CHAR_SIZE == 1)
+#if (_COM_AZURE_DEV__BASE__CHAR_SIZE == 1)
   static constexpr unsigned char MAXIMUM = 255;
   static constexpr unsigned char MINIMUM = 0;
 #endif
@@ -611,9 +611,9 @@ public:
   typedef short Signed;
   typedef unsigned short Unsigned;
   
-#if (_DK_SDU_MIP__BASE__SHORT_SIZE == 2)
+#if (_COM_AZURE_DEV__BASE__SHORT_SIZE == 2)
   static constexpr short MAXIMUM = 32767;
-#elif (_DK_SDU_MIP__BASE__SHORT_SIZE = 4)
+#elif (_COM_AZURE_DEV__BASE__SHORT_SIZE = 4)
   static constexpr short MAXIMUM = 2147483647;
 #endif
   static constexpr short MINIMUM = -MAXIMUM - 1;
@@ -626,9 +626,9 @@ public:
   typedef short Signed;
   typedef unsigned short Unsigned;
   
-#if (_DK_SDU_MIP__BASE__SHORT_SIZE == 2)
+#if (_COM_AZURE_DEV__BASE__SHORT_SIZE == 2)
   static constexpr unsigned short MAXIMUM = 65535U;
-#elif (_DK_SDU_MIP__BASE__SHORT_SIZE = 4)
+#elif (_COM_AZURE_DEV__BASE__SHORT_SIZE = 4)
   static constexpr unsigned short MAXIMUM = 4294967295U;
 #endif
   static constexpr unsigned short MINIMUM = 0;
@@ -641,9 +641,9 @@ public:
   typedef int Signed;
   typedef unsigned int Unsigned;
   
-#if (_DK_SDU_MIP__BASE__INT_SIZE == 4)
+#if (_COM_AZURE_DEV__BASE__INT_SIZE == 4)
   static constexpr int MAXIMUM = 2147483647;
-#elif (_DK_SDU_MIP__BASE__INT_SIZE == 8)
+#elif (_COM_AZURE_DEV__BASE__INT_SIZE == 8)
   static constexpr int MAXIMUM = 9223372036854775807;
 #endif
   static constexpr int MINIMUM = -MAXIMUM - 1L;
@@ -656,9 +656,9 @@ public:
   typedef int Signed;
   typedef unsigned int Unsigned;
   
-#if (_DK_SDU_MIP__BASE__INT_SIZE == 4)
+#if (_COM_AZURE_DEV__BASE__INT_SIZE == 4)
   static constexpr unsigned int MAXIMUM = 4294967295U;
-#elif (_DK_SDU_MIP__BASE__INT_SIZE == 8)
+#elif (_COM_AZURE_DEV__BASE__INT_SIZE == 8)
   static constexpr unsigned int MAXIMUM = 18446744073709551615U;
 #endif
   static constexpr unsigned int MINIMUM = 0;
@@ -671,9 +671,9 @@ public:
   typedef long Signed;
   typedef unsigned long Unsigned;
   
-#if (_DK_SDU_MIP__BASE__LONG_SIZE == 4)
+#if (_COM_AZURE_DEV__BASE__LONG_SIZE == 4)
   static constexpr long MAXIMUM = 2147483647L;
-#elif (_DK_SDU_MIP__BASE__LONG_SIZE == 8)
+#elif (_COM_AZURE_DEV__BASE__LONG_SIZE == 8)
   static constexpr long MAXIMUM = 9223372036854775807L;
 #endif
   static constexpr long MINIMUM = -MAXIMUM - 1L;
@@ -686,9 +686,9 @@ public:
   typedef long Signed;
   typedef unsigned long Unsigned;
   
-#if (_DK_SDU_MIP__BASE__LONG_SIZE == 4)
+#if (_COM_AZURE_DEV__BASE__LONG_SIZE == 4)
   static constexpr unsigned long MAXIMUM = 4294967295UL;
-#elif (_DK_SDU_MIP__BASE__LONG_SIZE == 8)
+#elif (_COM_AZURE_DEV__BASE__LONG_SIZE == 8)
   static constexpr unsigned long MAXIMUM = 18446744073709551615UL;
 #endif
   static constexpr unsigned long MINIMUM = 0;
@@ -701,7 +701,7 @@ public:
   typedef long long Signed;
   typedef unsigned long long Unsigned;
   
-#if (_DK_SDU_MIP__BASE__LONG_LONG_SIZE == 8)
+#if (_COM_AZURE_DEV__BASE__LONG_LONG_SIZE == 8)
   static constexpr long long MAXIMUM = 9223372036854775807LL;
 #endif
   static constexpr long long MINIMUM = -MAXIMUM - 1LL;
@@ -714,7 +714,7 @@ public:
   typedef long long Signed;
   typedef unsigned long long Unsigned;
   
-#if (_DK_SDU_MIP__BASE__LONG_LONG_SIZE == 8)
+#if (_COM_AZURE_DEV__BASE__LONG_LONG_SIZE == 8)
   static constexpr unsigned long long MAXIMUM = 18446744073709551615ULL;
 #endif
   static constexpr unsigned long long MINIMUM = 0;
@@ -799,4 +799,4 @@ public:
   }
 };
 
-_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
+_COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

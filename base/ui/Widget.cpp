@@ -13,10 +13,10 @@
 
 #include <base/ui/Widget.h>
 
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
 #  include <windows.h>
 #  undef DELETE // yikes
-#elif (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__MACOS)
+#elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__MACOS)
 #else // unix (X11)
 #  include <X11/Xlib.h>
 #  include <X11/Xutil.h>
@@ -25,17 +25,17 @@
 #  include <X11/keysym.h>
 #endif // flavor
 
-_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+_COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 void Widget::destroy() throw() {
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)  
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)  
   if (graphicsContextHandle) {
     ::DeleteDC((HDC)graphicsContextHandle);
   }
   if (drawableHandle) {
     // nothing to destroy
   }
-#elif (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__MACOS)
+#elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__MACOS)
 #else // unix
   if (graphicsContextHandle) {
     // nothing to destroy
@@ -51,10 +51,10 @@ void Widget::destroy() throw() {
 }
 
 Widget::Widget(Window& owner) throw(UserInterfaceException) {
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   drawableHandle = ::CreateWindowEx(
     0, // extended style
-    _DK_SDU_MIP__BASE__ID_PREFIX L"/ui/WindowImpl", // class name
+    _COM_AZURE_DEV__BASE__ID_PREFIX L"/ui/WindowImpl", // class name
     L"", // window title
     WS_CHILD | WS_VISIBLE, // window style // TAG: what should this be
     0, // x
@@ -74,7 +74,7 @@ Widget::Widget(Window& owner) throw(UserInterfaceException) {
     drawableHandle = 0;
     throw UserInterfaceException("Unable to connect to device context", this);
   }
-#elif (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__MACOS)
+#elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__MACOS)
 #else // unix
   int screenId = ::XDefaultScreen((Display*)displayHandle);
   screenHandle = ::XScreenOfDisplay((Display*)displayHandle, screenId);
@@ -133,4 +133,4 @@ Widget::Widget(Window& owner) throw(UserInterfaceException) {
 Widget::~Widget() throw() {
 }
 
-_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
+_COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

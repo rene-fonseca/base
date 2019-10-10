@@ -17,7 +17,7 @@
 #include <base/string/FormatOutputStream.h>
 #include <base/NotSupported.h>
 
-_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+_COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 namespace internal {
   
@@ -74,7 +74,7 @@ namespace internal {
 
 BZip2Inflater::BZip2Inflater() throw(MemoryException)
   : buffer(BUFFER_SIZE), availableBytes(0), state(RUNNING) {
-#if (defined(_DK_SDU_MIP__BASE__BZ2))
+#if (defined(_COM_AZURE_DEV__BASE__BZ2))
   internal::BZip2Inflater::Context* context = new internal::BZip2Inflater::Context;
   this->context = context;
   clear(*context);
@@ -90,7 +90,7 @@ BZip2Inflater::BZip2Inflater() throw(MemoryException)
 }
 
 unsigned int BZip2Inflater::push(const uint8* buffer, unsigned int size) throw(IOException) {
-#if (defined(_DK_SDU_MIP__BASE__BZ2))
+#if (defined(_COM_AZURE_DEV__BASE__BZ2))
   bassert(state != ENDED, EndOfFile());
   bassert(state == RUNNING, IOException(this));
   if (availableBytes == this->buffer.getSize()) {
@@ -120,7 +120,7 @@ unsigned int BZip2Inflater::push(const uint8* buffer, unsigned int size) throw(I
 }
 
 void BZip2Inflater::pushEnd() throw(IOException) {
-#if (defined(_DK_SDU_MIP__BASE__BZ2))
+#if (defined(_COM_AZURE_DEV__BASE__BZ2))
   if (state != ENDED) {
     bassert(state == RUNNING, IOException(this));
     state = FINISHING;
@@ -131,7 +131,7 @@ void BZip2Inflater::pushEnd() throw(IOException) {
 }
 
 unsigned int BZip2Inflater::pull(uint8* buffer, unsigned int size) throw(IOException) {
-#if (defined(_DK_SDU_MIP__BASE__BZ2))
+#if (defined(_COM_AZURE_DEV__BASE__BZ2))
   bassert(state != ENDED, EndOfFile());
   
   if ((state == RUNNING) &&
@@ -193,7 +193,7 @@ unsigned int BZip2Inflater::pull(uint8* buffer, unsigned int size) throw(IOExcep
 }
 
 BZip2Inflater::~BZip2Inflater() throw() {
-#if (defined(_DK_SDU_MIP__BASE__BZ2))
+#if (defined(_COM_AZURE_DEV__BASE__BZ2))
   internal::BZip2Inflater::Context* context =
     Cast::pointer<internal::BZip2Inflater::Context*>(this->context);
   internal::BZ2_bzDecompressEnd(context);
@@ -201,4 +201,4 @@ BZip2Inflater::~BZip2Inflater() throw() {
 #endif
 }
 
-_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
+_COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

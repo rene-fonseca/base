@@ -16,7 +16,7 @@
 #include <base/io/OutputStream.h>
 #include <base/io/File.h>
 
-_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+_COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 /**
   Output stream with a file as the destination.
@@ -26,7 +26,7 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
   @version 1.0
 */
 
-class _DK_SDU_MIP__BASE__API FileOutputStream : public virtual Object, public OutputStream {
+class _COM_AZURE_DEV__BASE__API FileOutputStream : public virtual Object, public OutputStream {
 public:
 
   /** File initialization flags. */
@@ -98,4 +98,4 @@ public:
   }
 };
 
-_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
+_COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

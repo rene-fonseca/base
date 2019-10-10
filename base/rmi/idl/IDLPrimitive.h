@@ -15,7 +15,7 @@
 
 #include <base/rmi/idl/IDLType.h>
 
-_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+_COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 /**
   Interface Definition Language (IDL) primitive type.
@@ -25,7 +25,7 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
   @version 1.0
 */
 
-class _DK_SDU_MIP__BASE__API IDLPrimitive : public IDLType {
+class _COM_AZURE_DEV__BASE__API IDLPrimitive : public IDLType {
 public:
   
   /** The primitive type. */
@@ -68,4 +68,4 @@ public:
   ~IDLPrimitive() throw();
 };
 
-_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
+_COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

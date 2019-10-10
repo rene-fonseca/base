@@ -18,7 +18,7 @@
 #include <base/string/String.h>
 #include <base/string/InvalidFormat.h>
 
-_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+_COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 /**
   Signed and long integer (64 bits or more).
@@ -27,7 +27,7 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
   @version 1.1
 */
 
-class _DK_SDU_MIP__BASE__API LongInteger : public virtual Object {
+class _COM_AZURE_DEV__BASE__API LongInteger : public virtual Object {
 public:
 
   /** True if the integer type is signed. */
@@ -113,4 +113,4 @@ public:
 inline LongInteger::LongInteger(long long _value) throw() : value(_value) {
 }
 
-_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
+_COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

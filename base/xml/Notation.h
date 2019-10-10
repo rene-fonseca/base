@@ -15,7 +15,7 @@
 
 #include <base/xml/Node.h>
 
-_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+_COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 class Document;
 
@@ -34,7 +34,7 @@ class Document;
   @version 1.0
 */
 
-class _DK_SDU_MIP__BASE__API Notation : public Node { // TAG: should be Declaration
+class _COM_AZURE_DEV__BASE__API Notation : public Node { // TAG: should be Declaration
   friend class Document;
 protected:
   
@@ -60,4 +60,4 @@ public:
   String getSystemId() const throw();
 };
 
-_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
+_COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

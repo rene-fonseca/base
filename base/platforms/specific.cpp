@@ -13,17 +13,17 @@
 
 #include <base/platforms/features.h>
 
-_DK_SDU_MIP__BASE__DUMMY_SYMBOL
+_COM_AZURE_DEV__BASE__DUMMY_SYMBOL
 
 // include platform specific source files
 
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
 #  include <base/platforms/win32/AsyncReadFileContext.cpp>
 #  include <base/platforms/win32/AsyncReadStreamContext.cpp>
 #  include <base/platforms/win32/AsyncWriteFileContext.cpp>
 #  include <base/platforms/win32/AsyncWriteStreamContext.cpp>
 #endif // flavor
 
-_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+_COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
-_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
+_COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

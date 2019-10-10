@@ -13,10 +13,10 @@
 
 #include <base/io/async/AsynchronousWriteOperation.h>
 
-_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+_COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 AsynchronousWriteCompletion AsynchronousWriteOperation::getCompletion() const throw(NullPointer) {
   return context->getCompletion();
 }
 
-_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
+_COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

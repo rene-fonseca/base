@@ -81,7 +81,7 @@ bool FileSystem::optimizePath(const String& name) throw() {
 }
 
 bool FileSystem::isName(const String& name) throw() {
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   return (name.indexOf(SEPARATOR) < 0) && (name.indexOf('\\') < 0); // TAG: "C:" drive path
 #else
   return name.indexOf(SEPARATOR) < 0;
@@ -103,7 +103,7 @@ bool FileSystem::isSubPathOf(const String& root, const String& path) throw() {
 
 
 
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
 #  define _WIN32_WINNT _WIN32_WINNT_WINXP
 #  include <windows.h>
 #  include <winioctl.h>
@@ -150,29 +150,29 @@ typedef struct _REPARSE_DATA_BUFFER {
 #  include <limits.h> // defines PATH_MAX
 #  include <errno.h>
 
-#if (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__GNULINUX)
+#if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__GNULINUX)
 #  include <sys/quota.h>
-#elif (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__SOLARIS)
+#elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__SOLARIS)
 #  include <sys/fs/ufs_quota.h>
-#elif (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__IRIX65)
+#elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__IRIX65)
 #  include <sys/quota.h>
 #endif
 
 #endif // flavor
 
-_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+_COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 unsigned int FileSystem::counter = 0;
 int FileSystem::cachedSupportsLinks = -1; // -1 not cached, 0 false, and 1 true
 
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
 const unsigned int FileSystem::MAXIMUM_PATH_LENGTH = MAX_PATH;
 #else // unix
 const unsigned int FileSystem::MAXIMUM_PATH_LENGTH = PATH_MAX;
 #endif // flavor
 
 String FileSystem::getPath(const String& base, const String& relative) throw() {
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   String result(base.getLength() + sizeof("\\") + relative.getLength());
   result.append(base).append("\\").append(relative);
 #else // unix
@@ -183,7 +183,7 @@ String FileSystem::getPath(const String& base, const String& relative) throw() {
 }
 
 String FileSystem::getComponent(const String& path, Component component) throw(FileSystemException) {
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   int forward = path.lastIndexOf('/');
   int backward = path.lastIndexOf('\\');
   int separator = maximum(forward, backward);
@@ -226,7 +226,7 @@ String FileSystem::getComponent(const String& path, Component component) throw(F
 bool FileSystem::isAbsolutePath(const String& path) throw() {
   String::ReadIterator i = path.getBeginReadIterator();
   String::ReadIterator end = path.getEndReadIterator();
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   return ((i < end) && ASCIITraits::isAlpha(*i++) && (i < end) && (*i++ == ':') && (i < end) && (*i == SEPARATOR));
 #else // unix
   return (i < end) && (*i == SEPARATOR);
@@ -234,7 +234,7 @@ bool FileSystem::isAbsolutePath(const String& path) throw() {
 }
 
 bool FileSystem::isFolderPath(const String& path) throw() {
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   unsigned int length = path.getLength();
   if (length == 0) {
     return false;
@@ -297,7 +297,7 @@ String FileSystem::findFile(const Array<String>& searchPaths, const String& rela
 }
 
 String FileSystem::toUrl(const String& path) throw(FileSystemException) {
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   static const Literal PREFIX = "file:///";
 #else // unix
   static const Literal PREFIX = "file://";
@@ -310,7 +310,7 @@ String FileSystem::toUrl(const String& path) throw(FileSystemException) {
     // replace all separators with "/" and replace duplicate separators (but leave prefix)
     String::Iterator i = result.getBeginIterator();
     i += PREFIX.getLength(); // skip prefix
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
     *i++ = ASCIITraits::toUpper(*i); // make device uppercase
     ++i; // skip semicolon
 #endif // flavor
@@ -334,7 +334,7 @@ String FileSystem::toUrl(const String& path) throw(FileSystemException) {
 }
 
 String FileSystem::getCurrentFolder() throw(FileSystemException) {
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   DWORD length = ::GetCurrentDirectory(0, NULL);
   if (length == 0) {
     throw FileSystemException("Unable to get current folder", Type::getType<FileSystem>());
@@ -359,7 +359,7 @@ String FileSystem::getCurrentFolder() throw(FileSystemException) {
 }
 
 void FileSystem::setCurrentFolder(const String& path) throw(FileSystemException) {
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   if (!::SetCurrentDirectory(toWide(path).c_str())) {
    throw FileSystemException("Unable to set current folder", Type::getType<FileSystem>());
   }
@@ -371,7 +371,7 @@ void FileSystem::setCurrentFolder(const String& path) throw(FileSystemException)
 }
 
 unsigned int FileSystem::getType(const String& path) throw(FileSystemException) {
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   // TAG: follow link
   unsigned int flags = 0;
   HANDLE file = ::CreateFile(
@@ -456,7 +456,7 @@ unsigned int FileSystem::getType(const String& path) throw(FileSystemException) 
   ::CloseHandle(file);
   return flags;
 #else // unix
-#if defined(_DK_SDU_MIP__BASE__LARGE_FILE_SYSTEM)
+#if defined(_COM_AZURE_DEV__BASE__LARGE_FILE_SYSTEM)
   struct stat64 status;
   int result = stat64(path.getElements(), &status);
 #else
@@ -507,7 +507,7 @@ unsigned int FileSystem::getType(const String& path) throw(FileSystemException) 
 }
 
 uint64 FileSystem::getSize(const String& path) throw(FileSystemException) {
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   WIN32_FIND_DATA information;
   HANDLE handle = ::FindFirstFile(toWide(path).c_str(), &information);
   bassert(
@@ -517,7 +517,7 @@ uint64 FileSystem::getSize(const String& path) throw(FileSystemException) {
   ::FindClose(handle);
   return static_cast<uint64>(information.nFileSizeHigh) | information.nFileSizeLow;
 #else // unix
-#if defined(_DK_SDU_MIP__BASE__LARGE_FILE_SYSTEM)
+#if defined(_COM_AZURE_DEV__BASE__LARGE_FILE_SYSTEM)
   struct stat64 status;
   int result = stat64(path.getElements(), &status);
 #else
@@ -530,7 +530,7 @@ uint64 FileSystem::getSize(const String& path) throw(FileSystemException) {
 }
 
 bool FileSystem::entryExists(const String& path) throw(FileSystemException) {
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   WIN32_FIND_DATA information;
   HANDLE handle = ::FindFirstFile(toWide(path).c_str(), &information);
   if (handle == INVALID_HANDLE_VALUE) {
@@ -543,7 +543,7 @@ bool FileSystem::entryExists(const String& path) throw(FileSystemException) {
   ::FindClose(handle);
   return true;
 #else // unix
-#  if defined(_DK_SDU_MIP__BASE__LARGE_FILE_SYSTEM)
+#  if defined(_COM_AZURE_DEV__BASE__LARGE_FILE_SYSTEM)
   struct stat64 status;
   int result = stat64(path.getElements(), &status);
   if (result == 0) {
@@ -574,7 +574,7 @@ bool FileSystem::entryExists(const String& path) throw(FileSystemException) {
 }
 
 bool FileSystem::fileExists(const String& path) throw(FileSystemException) {
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   DWORD result = ::GetFileAttributes(toWide(path).c_str());
   if (result == INVALID_FILE_ATTRIBUTES) {
     // TAG: need support for no access
@@ -584,7 +584,7 @@ bool FileSystem::fileExists(const String& path) throw(FileSystemException) {
   return ((result & FILE_ATTRIBUTE_DIRECTORY) == 0) && ((result & FILE_ATTRIBUTE_DEVICE) == 0);
   // we ignore FILE_ATTRIBUTE_REPARSE_POINT
 #else // unix
-#  if defined(_DK_SDU_MIP__BASE__LARGE_FILE_SYSTEM)
+#  if defined(_COM_AZURE_DEV__BASE__LARGE_FILE_SYSTEM)
   struct stat64 status;
   int result = stat64(path.getElements(), &status);
   if (result == 0) {
@@ -615,7 +615,7 @@ bool FileSystem::fileExists(const String& path) throw(FileSystemException) {
 }
 
 bool FileSystem::folderExists(const String& path) throw(FileSystemException) {
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   DWORD result = ::GetFileAttributes(toWide(path).c_str());
   if (result == INVALID_FILE_ATTRIBUTES) {
     // TAG: need support for no access
@@ -624,7 +624,7 @@ bool FileSystem::folderExists(const String& path) throw(FileSystemException) {
   // TAG: could check if (GetLastError() == ERROR_FILE_NOT_FOUND)
   return ((result & FILE_ATTRIBUTE_DIRECTORY) != 0); // we ignore FILE_ATTRIBUTE_REPARSE_POINT
 #else // unix
-#  if defined(_DK_SDU_MIP__BASE__LARGE_FILE_SYSTEM)
+#  if defined(_COM_AZURE_DEV__BASE__LARGE_FILE_SYSTEM)
   struct stat64 status;
   int result = stat64(path.getElements(), &status);
   if (result == 0) {
@@ -655,7 +655,7 @@ bool FileSystem::folderExists(const String& path) throw(FileSystemException) {
 }
 
 void FileSystem::removeFile(const String& path) throw(FileSystemException) {
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
 //  ::SetFileAttributes(file, FILE_ATTRIBUTE_NORMAL);
   if (!::DeleteFile(toWide(path).c_str())) {
     throw FileSystemException("Unable to remove file", Type::getType<FileSystem>());
@@ -668,7 +668,7 @@ void FileSystem::removeFile(const String& path) throw(FileSystemException) {
 }
 
 void FileSystem::removeFolder(const String& path) throw(FileSystemException) {
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   DWORD attributes = ::GetFileAttributes(toWide(path).c_str());
   if ((attributes != INVALID_FILE_ATTRIBUTES) && (attributes & FILE_ATTRIBUTE_REPARSE_POINT)) {
     HANDLE link = ::CreateFile(
@@ -741,7 +741,7 @@ void FileSystem::removeFolder(const String& path) throw(FileSystemException) {
 }
 
 void FileSystem::makeFolder(const String& path) throw(FileSystemException) {
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   if (!::CreateDirectory(toWide(path).c_str(), NULL)) { // use default security descriptor
     throw FileSystemException("Unable to make folder", Type::getType<FileSystem>());
   }
@@ -753,7 +753,7 @@ void FileSystem::makeFolder(const String& path) throw(FileSystemException) {
 }
 
 bool FileSystem::supportsLinks() throw() {
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   if (cachedSupportsLinks == -1) {
     OSVERSIONINFO versionInfo;
     versionInfo.dwOSVersionInfoSize = sizeof(versionInfo);
@@ -770,7 +770,7 @@ bool FileSystem::supportsLinks() throw() {
 // String getFileSystem(const String& path) throw() {...}
 // return infomation about the file system capabilities
 // unsigned int FileSystem::getCapabilities(const String& path) throw() {
-// #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+// #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
 //   DWORD flags;
 //   BOOL result = ::GetVolumeInformation("C:\\", // root directory
 //                                        0, // volume name buffer
@@ -792,7 +792,7 @@ bool FileSystem::supportsLinks() throw() {
 // }
 
 bool FileSystem::isLink(const String& path) throw(NotSupported, FileSystemException) {
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   if (cachedSupportsLinks == -1) {
     supportsLinks();
   }
@@ -872,7 +872,7 @@ bool FileSystem::isLink(const String& path) throw(NotSupported, FileSystemExcept
       0x01, 0x14, 0x02, 0x00, 0x00, 0x00, 0x00, 0x00, 0xc0, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x46
     };
 
-_DK_SDU_MIP__BASE__PACKED__BEGIN
+_COM_AZURE_DEV__BASE__PACKED__BEGIN
     struct ShortcutHeader {
       LittleEndian<uint32> identifier; // 'L'
       unsigned char guid[16];
@@ -886,8 +886,8 @@ _DK_SDU_MIP__BASE__PACKED__BEGIN
       LittleEndian<uint32> windowMode;
       LittleEndian<uint32> hotKey;
       LittleEndian<uint32> reserved[2];
-    } _DK_SDU_MIP__BASE__PACKED;
-_DK_SDU_MIP__BASE__PACKED__END
+    } _COM_AZURE_DEV__BASE__PACKED;
+_COM_AZURE_DEV__BASE__PACKED__END
 
     enum Flags {
       SHELL_ITEM_ID_PRESENT = 1 << 0,
@@ -939,7 +939,7 @@ _DK_SDU_MIP__BASE__PACKED__END
 #endif
 }
 
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
 class FileSystemImpl {
 public:
 
@@ -1134,8 +1134,8 @@ public:
 #endif // flavor
 
 void FileSystem::makeHardLink(const String& target, const String& path) throw(NotSupported, FileSystemException) {
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
-#if (_DK_SDU_MIP__BASE__OS >= _DK_SDU_MIP__BASE__W2K)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__OS >= _COM_AZURE_DEV__BASE__W2K)
   bassert(::CreateHardLink(toWide(path).c_str(), toWide(target).c_str(), NULL) != 0,
          FileSystemException("Unable to make hard link", Type::getType<FileSystem>()));
 #else
@@ -1161,7 +1161,7 @@ void FileSystem::makeHardLink(const String& target, const String& path) throw(No
 
 void FileSystem::makeLink(const String& target, const String& path)
   throw(NotSupported, FileSystemException) {
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   if (cachedSupportsLinks == -1) {
     supportsLinks();
   }
@@ -1294,7 +1294,7 @@ void FileSystem::makeLink(const String& target, const String& path)
 
 // TAG: need option disallow transparent link/strict transparency
 String FileSystem::getLink(const String& path) throw(NotSupported, FileSystemException) {
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   if (cachedSupportsLinks == -1) {
     supportsLinks();
   }
@@ -1378,7 +1378,7 @@ String FileSystem::getLink(const String& path) throw(NotSupported, FileSystemExc
   // check if shell symbolic link
   static const unsigned char GUID[16] = {0x01, 0x14, 0x02, 0x00, 0x00, 0x00, 0x00, 0x00, 0xc0, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x46};
   
-  _DK_SDU_MIP__BASE__PACKED__BEGIN
+  _COM_AZURE_DEV__BASE__PACKED__BEGIN
   struct ShortcutHeader {
     LittleEndian<uint32> identifier; // 'L'
     unsigned char guid[16];
@@ -1392,10 +1392,10 @@ String FileSystem::getLink(const String& path) throw(NotSupported, FileSystemExc
     LittleEndian<uint32> windowMode;
     LittleEndian<uint32> hotKey;
     LittleEndian<uint32> reserved[2];
-  } _DK_SDU_MIP__BASE__PACKED;
-_DK_SDU_MIP__BASE__PACKED__END
+  } _COM_AZURE_DEV__BASE__PACKED;
+_COM_AZURE_DEV__BASE__PACKED__END
 
-_DK_SDU_MIP__BASE__PACKED__BEGIN
+_COM_AZURE_DEV__BASE__PACKED__BEGIN
   struct FileLocationInfo {
     LittleEndian<uint32> size; // size of structure and data
     LittleEndian<uint32> offset; // 0x1c
@@ -1404,20 +1404,20 @@ _DK_SDU_MIP__BASE__PACKED__BEGIN
     LittleEndian<uint32> pathOffset;
     LittleEndian<uint32> networkVolumeOffset;
     LittleEndian<uint32> remainingPathOffset;
-  } _DK_SDU_MIP__BASE__PACKED;
-_DK_SDU_MIP__BASE__PACKED__END
+  } _COM_AZURE_DEV__BASE__PACKED;
+_COM_AZURE_DEV__BASE__PACKED__END
 
-_DK_SDU_MIP__BASE__PACKED__BEGIN
+_COM_AZURE_DEV__BASE__PACKED__BEGIN
   struct LocalVolume {
     LittleEndian<uint32> size; // size of structure
     LittleEndian<uint32> type;
     LittleEndian<uint32> serialNumber;
     LittleEndian<uint32> labelOffset;
     char label;
-  } _DK_SDU_MIP__BASE__PACKED;
-_DK_SDU_MIP__BASE__PACKED__END
+  } _COM_AZURE_DEV__BASE__PACKED;
+_COM_AZURE_DEV__BASE__PACKED__END
 
-_DK_SDU_MIP__BASE__PACKED__BEGIN
+_COM_AZURE_DEV__BASE__PACKED__BEGIN
   struct NetworkVolume {
     LittleEndian<uint32> size; // size of structure
     LittleEndian<uint32> reserved0;
@@ -1425,8 +1425,8 @@ _DK_SDU_MIP__BASE__PACKED__BEGIN
     LittleEndian<uint32> reserved1;
     LittleEndian<uint32> reserved2;
     char share;
-  } _DK_SDU_MIP__BASE__PACKED;
-_DK_SDU_MIP__BASE__PACKED__END
+  } _COM_AZURE_DEV__BASE__PACKED;
+_COM_AZURE_DEV__BASE__PACKED__END
 
   enum Flags {
     SHELL_ITEM_ID_PRESENT = 1 << 0,
@@ -1609,14 +1609,14 @@ String FileSystem::getTempFolder(TemporaryFolder folder) throw() {
       }
     }
   case FileSystem::MACHINE_NONPERSISTENT:
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
     return Literal("C:\\temp"); // TAG: fixme - use same drive as windows directory
 #else // unix
     return Literal("/tmp");
 #endif // flavor
   case FileSystem::MACHINE_PERSISTENT:
   default:
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
     return Literal("C:\\temp"); // TAG: fixme - use same drive as windows directory
 #else // unix
     return Literal("/var/tmp");
@@ -1705,7 +1705,7 @@ File FileSystem::getTempFile(unsigned int options) throw(IOException) {
 }
 
 unsigned long FileSystem::getVariable(const String& path, Variable variable) throw(NotSupported) {
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   throw NotSupported(Type::getType<FileSystem>());
 #else // unix
 #  if (!(defined(_PC_FILESIZEBITS)))
@@ -1770,7 +1770,7 @@ unsigned long FileSystem::getVariable(const String& path, Variable variable) thr
 */
 
 String FileSystem::getFolder(Folder folder) throw() {
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   switch (folder) {
   case FileSystem::ROOT:
     {
@@ -1804,12 +1804,12 @@ String FileSystem::getFolder(Folder folder) throw() {
 FileSystem::Quota FileSystem::getQuota(
   const String& path, Trustee trustee) throw(FileSystemException) {
   Quota result;
-#if ((_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__GNULINUX) || \
-     (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__IRIX65))
+#if ((_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__GNULINUX) || \
+     (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__IRIX65))
   int id;
   switch (trustee.getType()) {
   case Trustee::USER:
-#if (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__GNULINUX)
+#if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__GNULINUX)
   case Trustee::GROUP:
 #endif
     id = trustee.getIntegralId();
@@ -1819,7 +1819,7 @@ FileSystem::Quota FileSystem::getQuota(
   }
   
   struct dqblk temp;
-#if (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__IRIX65)
+#if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__IRIX65)
   // TAG: casting away const (temporary fix)
   int res = ::quotactl(
     Q_GETQUOTA,
@@ -1844,7 +1844,7 @@ FileSystem::Quota FileSystem::getQuota(
     }
     throw FileSystemException(Type::getType<FileSystem>());
   }
-#if (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__IRIX65)
+#if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__IRIX65)
   result.hardLimit = temp.dqb_bhardlimit;
   result.softLimit = temp.dqb_bsoftlimit;
   result.currentUsage = temp.dqb_curblocks;
@@ -1854,7 +1854,7 @@ FileSystem::Quota FileSystem::getQuota(
   result.currentUsage = temp.dqb_curinodes;
 #endif
   return result;
-#elif (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__SOLARIS)
+#elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__SOLARIS)
   struct dqblk temp;
   struct quotctl operation;
   operation.op = Q_GETQUOTA;
@@ -1888,4 +1888,4 @@ FileSystem::Quota FileSystem::getQuota(
 #endif
 }
 
-_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
+_COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

@@ -19,7 +19,7 @@
 
 #include <base/rmi/LisaEncoding.h> // TAG: remove when done
 
-_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+_COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 class AmbiguousRegistration : public Exception {
 public:
@@ -382,4 +382,4 @@ void Orb::terminate() throw() {
 Orb::~Orb() throw() {
 }
 
-_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
+_COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

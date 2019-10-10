@@ -17,7 +17,7 @@
 #include <base/DynamicObject.h>
 #include <atomic>
 
-_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+_COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 /**
   A reference counted object is used to count the number of references from
@@ -47,7 +47,7 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
   @version 1.2
 */
 
-class _DK_SDU_MIP__BASE__API ReferenceCountedObject : public DynamicObject {
+class _COM_AZURE_DEV__BASE__API ReferenceCountedObject : public DynamicObject {
   friend class ReferenceImpl;
 private:
 
@@ -134,4 +134,4 @@ public:
   }
 };
 
-_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
+_COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

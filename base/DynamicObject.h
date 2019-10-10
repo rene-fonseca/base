@@ -15,7 +15,7 @@
 
 #include <base/Object.h>
 
-_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+_COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 /**
   The base class of all dynamically allocated classes.
@@ -24,7 +24,7 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
   @version 1.0
 */
 
-class _DK_SDU_MIP__BASE__API DynamicObject {
+class _COM_AZURE_DEV__BASE__API DynamicObject {
 private:
 
 #if defined(DEBUG)
@@ -61,4 +61,4 @@ public:
   static const bool IS_UNINITIALIZEABLE = Uninitializeable<bool>::IS_UNINITIALIZEABLE;
 };
 
-_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
+_COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

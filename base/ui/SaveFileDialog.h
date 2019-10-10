@@ -18,7 +18,7 @@
 #include <base/collection/Map.h>
 #include <base/ui/Dialog.h>
 
-_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+_COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 /**
   Save file dialog.
@@ -28,7 +28,7 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
   @version 1.0
 */
 
-class _DK_SDU_MIP__BASE__API SaveFileDialog : public Dialog {
+class _COM_AZURE_DEV__BASE__API SaveFileDialog : public Dialog {
 private:
 
   /** Flags. */
@@ -139,4 +139,4 @@ public:
   ~SaveFileDialog() throw();
 };
 
-_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
+_COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

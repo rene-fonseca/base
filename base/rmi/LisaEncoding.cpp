@@ -14,7 +14,7 @@
 #include <base/rmi/LisaEncoding.h>
 #include <base/FloatingPoint.h>
 
-_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+_COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 void LisaEncoding::LisaDecoder::read(OrbReference& value) throw(IOException) {
 }
@@ -293,4 +293,4 @@ String LisaEncoding::getUrn() const throw() {
   return Literal("urn:rmi:orb:encoding-scheme:Lisa");
 }
 
-_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
+_COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

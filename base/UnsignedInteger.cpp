@@ -14,7 +14,7 @@
 #include <base/UnsignedInteger.h>
 #include <base/string/ASCIITraits.h>
 
-_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+_COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 unsigned int UnsignedInteger::parse(
   const String& string, unsigned int accept) throw(InvalidFormat) {
@@ -113,4 +113,4 @@ unsigned int UnsignedInteger::parse(
   return temp;
 }
 
-_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
+_COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

@@ -15,7 +15,7 @@
 #include <base/ByteOrder.h>
 #include <base/NotImplemented.h>
 
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
 #  include <windows.h>
 #  include <aclapi.h>
 #  undef VOID
@@ -23,7 +23,7 @@
 #  error Extension not supported for this flavor
 #endif // flavor
 
-_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+_COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 namespace extension {
 
@@ -881,4 +881,4 @@ namespace extension {
   
 }; // end of namespace extension
 
-_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
+_COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

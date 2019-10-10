@@ -18,13 +18,13 @@
 #include <base/sound/SoundDevice.h>
 #include <base/concurrency/ExclusiveSynchronize.h>
 
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
 #  define NO_STRICT
   // I don't get it: in STRICT mode handles are of type int but in NO_STRICT
   // mode the handles are of size void*. This is a problem on 64 bit platforms
   // where int and void* may be of different sizes.
 #  include <windows.h>
-#elif (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__UNIX)
+#elif (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__UNIX)
 #  include <sys/types.h> // open
 #  include <sys/stat.h> // open
 #  include <fcntl.h> // open
@@ -32,10 +32,10 @@
 #  include <errno.h> // errno
 #  include <limits.h> // SSIZE_MAX
 
-#  if (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__GNULINUX)
+#  if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__GNULINUX)
 #    include <sys/ioctl.h> // ioctl
 #    include <sys/soundcard.h> // ioctl
-#  elif (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__SOLARIS)
+#  elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__SOLARIS)
 #    include <stropts.h> // ioctl
 #    include <sys/conf.h> // ioctl
 #    include <sys/audio.h>
@@ -43,7 +43,7 @@
 #  endif // os
 #endif // flavor
 
-_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+_COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 SoundDevice::SoundDevice() throw() : access(0) {
 }
@@ -52,8 +52,8 @@ void SoundDevice::reacquireAccess(unsigned int access) throw(NotSupported) {
   // guarded externally
   if (this->access != access) {
     this->access = access;
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__UNIX)
-  #if ((_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__GNULINUX) || (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__SOLARIS))
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__UNIX)
+  #if ((_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__GNULINUX) || (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__SOLARIS))
     deviceDescriptor.close(); // must close before reopening
     if (access != 0) { // only open if required
       int flags;
@@ -105,4 +105,4 @@ void SoundDevice::relinquishWriteAccess() throw(IOException) {
   }
 }
 
-_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
+_COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

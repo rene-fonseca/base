@@ -17,7 +17,7 @@
 #include <base/concurrency/Thread.h>
 #include <base/string/StringOutputStream.h>
 
-_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+_COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 LocalConnectionFactory::LocalConnectionFactory(
   const String& endPoint) throw(InvalidFormat, OrbException) {
@@ -59,4 +59,4 @@ Reference<OrbStub> LocalConnectionFactory::getObject(
 LocalConnectionFactory::~LocalConnectionFactory() throw() {
 }
 
-_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
+_COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

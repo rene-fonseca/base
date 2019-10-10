@@ -26,7 +26,7 @@
 #include <string>
 #include <ctype.h> // TAG: alien header
 
-_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+_COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 template<class TYPE> class Array;
 class FormatOutputStream;
@@ -37,7 +37,7 @@ class FormatOutputStream;
   @short ASCII character characteristics
   @version 1.0
 */
-class _DK_SDU_MIP__BASE__API CharTraits {
+class _COM_AZURE_DEV__BASE__API CharTraits {
 public:
   
   /** Specifies the terminator for NULL-terminated strings. */
@@ -113,7 +113,7 @@ public:
     return toupper(character);
   }
 
-  class _DK_SDU_MIP__BASE__API ToLowerCase {
+  class _COM_AZURE_DEV__BASE__API ToLowerCase {
   public:
     
     inline char operator()(char value) const throw() {
@@ -121,7 +121,7 @@ public:
     }
   };
 
-  class _DK_SDU_MIP__BASE__API ToUpperCase {
+  class _COM_AZURE_DEV__BASE__API ToUpperCase {
   public:
     
     inline char operator()(char value) const throw() {
@@ -138,7 +138,7 @@ public:
   @version 1.0
 */
 
-class _DK_SDU_MIP__BASE__API String : public virtual Object {
+class _COM_AZURE_DEV__BASE__API String : public virtual Object {
 public:
 
   /** Character specific properties and manipulators. */
@@ -172,7 +172,7 @@ private:
   /*
     Reference to an element within a string.
   */
-  class _DK_SDU_MIP__BASE__API Element {
+  class _COM_AZURE_DEV__BASE__API Element {
     friend class String;
   private:
     
@@ -1217,4 +1217,4 @@ std::wstring toWide(const String& s);
 /** Converts UTF-8 (const char*) to wstring. */
 std::wstring toWide(const char* s);
 
-_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
+_COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

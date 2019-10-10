@@ -19,7 +19,7 @@
 #include <base/xml/NamedNodeMap.h>
 #include <base/CastException.h>
 
-_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+_COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 /**
   @defgroup xml XML
@@ -36,7 +36,7 @@ class NodeImpl;
   @version 1.0
 */
 
-class _DK_SDU_MIP__BASE__API Node : public AutomationObject {
+class _COM_AZURE_DEV__BASE__API Node : public AutomationObject {
   friend class Document;
   friend class NodeImpl;
 public:
@@ -66,7 +66,7 @@ public:
   struct Context {
   };
   
-  class _DK_SDU_MIP__BASE__API ShadowDocument : public AutomationObject {
+  class _COM_AZURE_DEV__BASE__API ShadowDocument : public AutomationObject {
   private:
     
     void* context = nullptr;
@@ -89,7 +89,7 @@ public:
     }
   };
   
-  class _DK_SDU_MIP__BASE__API ShadowElement : public AutomationObject {
+  class _COM_AZURE_DEV__BASE__API ShadowElement : public AutomationObject {
   private:
     
     void* context = nullptr;
@@ -347,4 +347,4 @@ public:
   ~Node() throw();
 };
 
-_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
+_COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

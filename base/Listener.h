@@ -15,7 +15,7 @@
 
 #include <base/collection/Functor.h>
 
-_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+_COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 /**
   Base class for listeners.
@@ -24,7 +24,7 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
   @version 1.0
 */
 
-class _DK_SDU_MIP__BASE__API Listener {
+class _COM_AZURE_DEV__BASE__API Listener {
 public:
 };
 
@@ -92,4 +92,4 @@ inline Signal<SENDER, LISTENER> signal(
   return Signal<SENDER, LISTENER>(sender, member);
 }
 
-_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
+_COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

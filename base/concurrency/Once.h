@@ -17,7 +17,7 @@
 #include <base/concurrency/Event.h>
 #include <base/concurrency/SpinLock.h>
 
-_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+_COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 /**
   Once implementation with delayed resource allocation.
@@ -38,7 +38,7 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
   @version 1.0
 */
 
-class _DK_SDU_MIP__BASE__API Once : public AutomationObject {
+class _COM_AZURE_DEV__BASE__API Once : public AutomationObject {
 private:
   
   typedef SpinLock Guard;
@@ -79,4 +79,4 @@ public:
   void relinquishToken() throw();
 };
 
-_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
+_COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

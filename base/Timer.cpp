@@ -15,13 +15,13 @@
 #include <base/Timer.h>
 #include <base/string/String.h>
 
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
 #  include <windows.h>
 #else // unix
 #  include <sys/time.h>
 #endif // flavor
 
-_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+_COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 /*
   // if optimized for PENTIUM (may not be allowed by system)
@@ -40,7 +40,7 @@ Timer::Timer() throw() : stopTime(0) {
 }
 
 void Timer::start() throw() {
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   ::QueryPerformanceCounter(Cast::pointer<LARGE_INTEGER*>(&startTime));
 #else // unix
   struct timeval temp;
@@ -50,7 +50,7 @@ void Timer::start() throw() {
 }
 
 void Timer::stop() throw() {
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   ::QueryPerformanceCounter(Cast::pointer<LARGE_INTEGER*>(&stopTime));
 #else // unix
   struct timeval temp;
@@ -60,7 +60,7 @@ void Timer::stop() throw() {
 }
 
 uint64 Timer::getStartTime() const throw() {
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   LARGE_INTEGER frequency; // ticks per second
   ::QueryPerformanceFrequency(&frequency); // ignore any error
   return static_cast<uint64>(startTime * 1000000./frequency.QuadPart);
@@ -70,7 +70,7 @@ uint64 Timer::getStartTime() const throw() {
 }
 
 uint64 Timer::getStopTime() const throw() {
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   LARGE_INTEGER frequency; // ticks per second
   ::QueryPerformanceFrequency(&frequency); // ignore any error
   return static_cast<uint64>(stopTime * 1000000./frequency.QuadPart);
@@ -80,7 +80,7 @@ uint64 Timer::getStopTime() const throw() {
 }
 
 uint64 Timer::getMicroseconds() const throw() {
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   LARGE_INTEGER frequency; // ticks per second
   ::QueryPerformanceFrequency(&frequency); // ignore any error
   return static_cast<uint64>((stopTime - startTime) * 1000000./frequency.QuadPart);
@@ -90,7 +90,7 @@ uint64 Timer::getMicroseconds() const throw() {
 }
 
 uint64 Timer::getLiveMicroseconds() const throw() {
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   LARGE_INTEGER now;
   ::QueryPerformanceCounter(&now);
   LARGE_INTEGER frequency; // ticks per second
@@ -118,4 +118,4 @@ void TimeScope::dump() const throw(IOException) {
   fout << "Elapsed time (H:M:S.microseconds): " << timer << ENDL;
 }
 
-_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
+_COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

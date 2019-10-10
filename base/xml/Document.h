@@ -28,7 +28,7 @@
 #include <base/mem/Reference.h>
 #include <base/string/String.h>
 
-_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+_COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 class Stylesheet;
 class Transformer;
@@ -42,7 +42,7 @@ class DOMImplementation;
   @version 1.0
 */
 
-class _DK_SDU_MIP__BASE__API Document : public Node {
+class _COM_AZURE_DEV__BASE__API Document : public Node {
   friend class Stylesheet;
   friend class Transformer;
   friend class DOMImplementation;
@@ -201,4 +201,4 @@ public:
   void destroy() throw(DOMException);
 };
 
-_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
+_COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

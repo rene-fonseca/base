@@ -17,7 +17,7 @@
 #include <base/Primitives.h>
 #include <base/FloatingPoint.h>
 
-_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+_COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 /**
   This class is a wrapper for the float primitive.
@@ -26,7 +26,7 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
   @version 1.0
 */
 
-class _DK_SDU_MIP__BASE__API Float : public Object {
+class _COM_AZURE_DEV__BASE__API Float : public Object {
 public:
 
   /** Minimum normalized positive floating-point number (2^(e_min-1)). */
@@ -151,4 +151,4 @@ public:
   }
 };
 
-_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
+_COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

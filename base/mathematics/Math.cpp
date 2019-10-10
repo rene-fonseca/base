@@ -13,7 +13,7 @@
 
 #include <base/mathematics/Math.h>
 
-_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+_COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 const uint8 Math::BIT_REVERSAL[] = {
   0x00, 0x80, 0x40, 0xc0, 0x20, 0xa0, 0x60, 0xe0,
@@ -117,4 +117,4 @@ int Math::gcd(int m, int n) throw() {
   return negative ? -N : N;
 }
 
-_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
+_COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

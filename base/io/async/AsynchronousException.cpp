@@ -13,7 +13,7 @@
 
 #include <base/io/async/AsynchronousException.h>
 
-_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+_COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 AsynchronousException::AsynchronousException() throw() : IOException() {
 }
@@ -22,4 +22,4 @@ AsynchronousException::AsynchronousException(const char* message) throw()
   : IOException(message) {
 }
 
-_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
+_COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

@@ -13,7 +13,7 @@
 
 #include <base/ui/Split.h>
 
-_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+_COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 // TAG: need grow to owner client area flag
 // owner class children resize and position and dimension
@@ -161,4 +161,4 @@ void Split::onDisplay() throw() {
   );
 }
 
-_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
+_COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

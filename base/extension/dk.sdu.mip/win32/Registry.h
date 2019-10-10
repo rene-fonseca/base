@@ -23,7 +23,7 @@
 #include <base/Date.h>
 #include <base/AnyValue.h>
 
-_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+_COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 namespace extension {
 
@@ -35,7 +35,7 @@ namespace extension {
     @version 1.0
   */
 
-  class _DK_SDU_MIP__BASE__API RegistryException : public Exception {
+  class _COM_AZURE_DEV__BASE__API RegistryException : public Exception {
   public:
     
     /**
@@ -390,6 +390,6 @@ namespace extension {
   
 }; // end of namespace extension
 
-_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
+_COM_AZURE_DEV__BASE__LEAVE_NAMESPACE
 
 #endif

@@ -13,7 +13,7 @@
 
 #include <base/net/StreamSocket.h>
 
-_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+_COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 StreamSocket::StreamSocket() throw(NetworkException) {
   create(STREAM);
@@ -39,4 +39,4 @@ StreamSocket::StreamSocket(ServerSocket& socket) throw(NetworkException) {
   accept(*Cast::pointer<Socket*>(&socket));
 }
 
-_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
+_COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

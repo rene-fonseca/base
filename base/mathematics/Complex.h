@@ -19,13 +19,13 @@
 
 // see std::complex instead
 
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
-#  define _DK_SDU_MIP__BASE__COMPLEX_ISOC
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
+#  define _COM_AZURE_DEV__BASE__COMPLEX_ISOC
 #endif
 
-_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+_COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
-#if defined(_DK_SDU_MIP__BASE__COMPLEX_ISOC)
+#if defined(_COM_AZURE_DEV__BASE__COMPLEX_ISOC)
 namespace isoc {
 
   extern "C" float crealf(_Fcomplex);
@@ -130,14 +130,14 @@ private:
   /** The imaginary part the complex number. */
   double imaginary = 0;
 
-#if defined(_DK_SDU_MIP__BASE__COMPLEX_ISOC)
+#if defined(_COM_AZURE_DEV__BASE__COMPLEX_ISOC)
   inline _Dcomplex getNative() const throw() {
     return _DCOMPLEX_(real, imaginary);
     // return real + imaginary * 1i;
   }
 #endif
 
-#if defined(_DK_SDU_MIP__BASE__COMPLEX_ISOC)
+#if defined(_COM_AZURE_DEV__BASE__COMPLEX_ISOC)
   static inline Complex getComplex(const _Dcomplex value) throw() {
     return Complex(isoc::creal(value), isoc::cimag(value));
   }
@@ -192,7 +192,7 @@ public:
   }
 
   inline Complex sqrt() const throw() {
-#if defined(_DK_SDU_MIP__BASE__COMPLEX_ISOC)
+#if defined(_COM_AZURE_DEV__BASE__COMPLEX_ISOC)
     return getComplex(isoc::csqrt(getNative()));
 #else
     return Complex();
@@ -200,7 +200,7 @@ public:
   }
 
   inline Complex exp() const throw() {
-#if defined(_DK_SDU_MIP__BASE__COMPLEX_ISOC)
+#if defined(_COM_AZURE_DEV__BASE__COMPLEX_ISOC)
     return getComplex(isoc::cexp(getNative()));
 #else
     return Complex();
@@ -208,7 +208,7 @@ public:
   }
 
   inline Complex log() const throw() {
-#if defined(_DK_SDU_MIP__BASE__COMPLEX_ISOC)
+#if defined(_COM_AZURE_DEV__BASE__COMPLEX_ISOC)
     return getComplex(isoc::clog(getNative()));
 #else
     return Complex();
@@ -216,7 +216,7 @@ public:
   }
 
   inline Complex pow(const double x, const Complex& y) const throw() {
-#if defined(_DK_SDU_MIP__BASE__COMPLEX_ISOC)
+#if defined(_COM_AZURE_DEV__BASE__COMPLEX_ISOC)
     return getComplex(isoc::cpow(x, y.getNative()));
 #else
     return Complex();
@@ -225,7 +225,7 @@ public:
 
 
   inline Complex sin() const throw() {
-#if defined(_DK_SDU_MIP__BASE__COMPLEX_ISOC)
+#if defined(_COM_AZURE_DEV__BASE__COMPLEX_ISOC)
     return getComplex(isoc::csin(getNative()));
 #else
     return Complex();
@@ -233,7 +233,7 @@ public:
   }
 
   inline Complex asin() const throw() {
-#if defined(_DK_SDU_MIP__BASE__COMPLEX_ISOC)
+#if defined(_COM_AZURE_DEV__BASE__COMPLEX_ISOC)
     return getComplex(isoc::casin(getNative()));
 #else
     return Complex();
@@ -241,7 +241,7 @@ public:
   }
 
   inline Complex cos() const throw() {
-#if defined(_DK_SDU_MIP__BASE__COMPLEX_ISOC)
+#if defined(_COM_AZURE_DEV__BASE__COMPLEX_ISOC)
     return getComplex(isoc::ccos(getNative()));
 #else
     return Complex();
@@ -249,7 +249,7 @@ public:
   }
 
   inline Complex acos() const throw() {
-#if defined(_DK_SDU_MIP__BASE__COMPLEX_ISOC)
+#if defined(_COM_AZURE_DEV__BASE__COMPLEX_ISOC)
     return getComplex(isoc::cacos(getNative()));
 #else
     return Complex();
@@ -257,7 +257,7 @@ public:
   }
 
   inline Complex tan() const throw() {
-#if defined(_DK_SDU_MIP__BASE__COMPLEX_ISOC)
+#if defined(_COM_AZURE_DEV__BASE__COMPLEX_ISOC)
     return getComplex(isoc::ctan(getNative()));
 #else
     return Complex();
@@ -265,7 +265,7 @@ public:
   }
 
   inline Complex atan() const throw() {
-#if defined(_DK_SDU_MIP__BASE__COMPLEX_ISOC)
+#if defined(_COM_AZURE_DEV__BASE__COMPLEX_ISOC)
     return getComplex(isoc::catan(getNative()));
 #else
     return Complex();
@@ -274,7 +274,7 @@ public:
 
 
   inline Complex sinh() const throw() {
-#if defined(_DK_SDU_MIP__BASE__COMPLEX_ISOC)
+#if defined(_COM_AZURE_DEV__BASE__COMPLEX_ISOC)
     return getComplex(isoc::csinh(getNative()));
 #else
     return Complex();
@@ -282,7 +282,7 @@ public:
   }
 
   inline Complex asinh() const throw() {
-#if defined(_DK_SDU_MIP__BASE__COMPLEX_ISOC)
+#if defined(_COM_AZURE_DEV__BASE__COMPLEX_ISOC)
     return getComplex(isoc::casinh(getNative()));
 #else
     return Complex();
@@ -290,7 +290,7 @@ public:
   }
 
   inline Complex cosh() const throw() {
-#if defined(_DK_SDU_MIP__BASE__COMPLEX_ISOC)
+#if defined(_COM_AZURE_DEV__BASE__COMPLEX_ISOC)
     return getComplex(isoc::ccosh(getNative()));
 #else
     return Complex();
@@ -298,7 +298,7 @@ public:
   }
 
   inline Complex acosh() const throw() {
-#if defined(_DK_SDU_MIP__BASE__COMPLEX_ISOC)
+#if defined(_COM_AZURE_DEV__BASE__COMPLEX_ISOC)
     return getComplex(isoc::cacosh(getNative()));
 #else
     return Complex();
@@ -306,7 +306,7 @@ public:
   }
 
   inline Complex tanh() const throw() {
-#if defined(_DK_SDU_MIP__BASE__COMPLEX_ISOC)
+#if defined(_COM_AZURE_DEV__BASE__COMPLEX_ISOC)
     return getComplex(isoc::ctanh(getNative()));
 #else
     return Complex();
@@ -314,7 +314,7 @@ public:
   }
 
   inline Complex atanh() const throw() {
-#if defined(_DK_SDU_MIP__BASE__COMPLEX_ISOC)
+#if defined(_COM_AZURE_DEV__BASE__COMPLEX_ISOC)
     return getComplex(isoc::catanh(getNative()));
 #else
     return Complex();
@@ -630,4 +630,4 @@ public:
   static const bool IS_UNINITIALIZEABLE = Uninitializeable<double>::IS_UNINITIALIZEABLE;
 };
 
-_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
+_COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

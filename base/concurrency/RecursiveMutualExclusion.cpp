@@ -14,7 +14,7 @@
 #include <base/concurrency/RecursiveMutualExclusion.h>
 #include <base/concurrency/ExclusiveSynchronize.h>
 
-_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+_COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 RecursiveMutualExclusion::RecursiveMutualExclusion() throw(ResourceException)
   : owner(0), numberOfLocks(0) {
@@ -69,4 +69,4 @@ RecursiveMutualExclusion::~RecursiveMutualExclusion() {
   );
 }
 
-_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
+_COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

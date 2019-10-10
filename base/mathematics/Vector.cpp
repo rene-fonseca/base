@@ -16,12 +16,12 @@
 #include <base/mathematics/Math.h>
 #include <base/Functor.h>
 
-_DK_SDU_MIP__BASE__DUMMY_SYMBOL
+_COM_AZURE_DEV__BASE__DUMMY_SYMBOL
 
-_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+_COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 // float, long double
-// template _DK_SDU_MIP__BASE__API class Vector<double>;
+// template _COM_AZURE_DEV__BASE__API class Vector<double>;
 
 template<class TYPE>
 Vector<TYPE>::Vector(unsigned int size) throw(OutOfDomain) {
@@ -184,4 +184,4 @@ FormatOutputStream& operator<<(FormatOutputStream& stream, const Vector<TYPE>& v
   return stream;
 }
 
-_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
+_COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

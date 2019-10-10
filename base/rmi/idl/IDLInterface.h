@@ -15,7 +15,7 @@
 
 #include <base/rmi/idl/IDLNamedType.h>
 
-_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+_COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 /**
   Interface Definition Language (IDL) interface.
@@ -25,7 +25,7 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
   @version 1.0
 */
 
-class _DK_SDU_MIP__BASE__API IDLInterface : public IDLNamedType {
+class _COM_AZURE_DEV__BASE__API IDLInterface : public IDLNamedType {
 private:
 
   /** The methods of the interface. */
@@ -70,4 +70,4 @@ public:
   ~IDLInterface() throw();
 };
 
-_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
+_COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

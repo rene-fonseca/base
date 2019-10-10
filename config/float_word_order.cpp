@@ -12,9 +12,9 @@
  ***************************************************************************/
 
 /*
-  This program returns _DK_SDU_MIP__BASE__BIG_ENDIAN if the word order of the
-  architecture is big endian, _DK_SDU_MIP__BASE__LITTLE_ENDIAN if the word order
-  is little endian, and _DK_SDU_MIP__BASE__UNSPECIFIED if neither.
+  This program returns _COM_AZURE_DEV__BASE__BIG_ENDIAN if the word order of the
+  architecture is big endian, _COM_AZURE_DEV__BASE__LITTLE_ENDIAN if the word order
+  is little endian, and _COM_AZURE_DEV__BASE__UNSPECIFIED if neither.
 */
 
 #include "floating.h"

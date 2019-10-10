@@ -16,7 +16,7 @@
 #include <base/io/EndOfFile.h>
 #include <base/Trace.h>
 
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
 #  include <windows.h>
 #else // unix
 #  include <sys/types.h>
@@ -30,7 +30,7 @@
 #  endif
 #endif // flavor
 
-_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+_COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 FileDescriptorOutputStream::FileDescriptorOutputStream() throw() :
   FileDescriptor() {
@@ -52,7 +52,7 @@ FileDescriptorOutputStream& FileDescriptorOutputStream::operator=(const FileDesc
 }
 
 void FileDescriptorOutputStream::flush() throw(IOException) {
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   // TAG: handle may or may not be flushable
   // handle to a console output cannot be flushed 'cause it isn't buffered, aarrgh
 //  if (!isValid()) {
@@ -74,7 +74,7 @@ unsigned int FileDescriptorOutputStream::write(
   // TAG: currently always blocks
   unsigned int bytesWritten = 0;
   while (bytesToWrite) {
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
     DWORD result;
     BOOL success = ::WriteFile(
       fd->getHandle(),
@@ -109,4 +109,4 @@ unsigned int FileDescriptorOutputStream::write(
 FileDescriptorOutputStream::~FileDescriptorOutputStream() {
 }
 
-_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
+_COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

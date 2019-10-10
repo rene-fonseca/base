@@ -13,7 +13,7 @@
 
 #include <base/platforms/features.h>
 
-#if (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__CYGWIN)
+#if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__CYGWIN)
 #undef __STRICT_ANSI__ // need tzset
 #endif
 
@@ -22,7 +22,7 @@
 #include <base/string/StringOutputStream.h>
 #include <base/string/Locale.h>
 
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
 #  include <windows.h>
 #  include <time.h>
 #else // unix
@@ -32,10 +32,10 @@
 #  include <unistd.h>
 #endif
 
-_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+_COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 namespace internal {
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   inline int64 nativeToDate(const FILETIME& time) throw() {
     return (*(uint64*)(&time) - 116444736000000000LL)/10;
   }
@@ -46,8 +46,8 @@ namespace internal {
   }
 #endif
 
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__UNIX)
-#if (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__CYGWIN)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__UNIX)
+#if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__CYGWIN)
   extern "C" long _timezone;
 
   inline int64 getTimezone() throw() {
@@ -296,7 +296,7 @@ int Date::getDayOfYear(int day, int month, int year) throw() {
 }
 
 Date Date::getNow() throw(DateException) {
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   FILETIME nativeTime;
   ::GetSystemTimeAsFileTime(&nativeTime);
   return internal::nativeToDate(nativeTime);
@@ -306,7 +306,7 @@ Date Date::getNow() throw(DateException) {
 }
 
 int64 Date::getBias() throw() {
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   TIME_ZONE_INFORMATION information;
   DWORD status = ::GetTimeZoneInformation(&information);
   ASSERT(status != TIME_ZONE_ID_INVALID);
@@ -319,10 +319,10 @@ int64 Date::getBias() throw() {
 
 Date Date::getTime(
   int second, int minute, int hour, bool local) throw(DateException) {
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   FILETIME nativeTime;
   SYSTEMTIME time = {0, 0, 0, 0, hour, minute, second, 0};
-#if (_DK_SDU_MIP__BASE__OS >= _DK_SDU_MIP__BASE__WXP)
+#if (_COM_AZURE_DEV__BASE__OS >= _COM_AZURE_DEV__BASE__WXP)
   if (local) {
     bassert(
       ::TzSpecificLocalTimeToSystemTime(0, &time, &time) != 0,
@@ -334,7 +334,7 @@ Date Date::getTime(
     ::SystemTimeToFileTime(&time, &nativeTime),
     DateException(Type::getType<Date>())
   );
-#if (_DK_SDU_MIP__BASE__OS < _DK_SDU_MIP__BASE__WXP)
+#if (_COM_AZURE_DEV__BASE__OS < _COM_AZURE_DEV__BASE__WXP)
   if (local) {
     bassert(
       ::LocalFileTimeToFileTime(&nativeTime, &nativeTime) != 0,
@@ -359,10 +359,10 @@ Date Date::getTime(
 
 Date Date::getDate(
   int day, int month, int year, bool local) throw(DateException) {
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   FILETIME nativeTime;
   SYSTEMTIME time = {year, month, 0, day, 0, 0, 0, 0};
-#if (_DK_SDU_MIP__BASE__OS >= _DK_SDU_MIP__BASE__WXP)
+#if (_COM_AZURE_DEV__BASE__OS >= _COM_AZURE_DEV__BASE__WXP)
   if (local) {
     bassert(
       ::TzSpecificLocalTimeToSystemTime(0, &time, &time) != 0,
@@ -374,7 +374,7 @@ Date Date::getDate(
     ::SystemTimeToFileTime(&time, &nativeTime),
     DateException(Type::getType<Date>())
   );
-#if (_DK_SDU_MIP__BASE__OS < _DK_SDU_MIP__BASE__WXP)
+#if (_COM_AZURE_DEV__BASE__OS < _COM_AZURE_DEV__BASE__WXP)
   if (local) {
     ::LocalFileTimeToFileTime(&nativeTime, &nativeTime);
   }
@@ -402,10 +402,10 @@ Date Date::getDate(
   int month,
   int year,
   bool local) throw(DateException) {
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   FILETIME nativeTime;
   SYSTEMTIME time = {year, month, 0, day, hour, minute, second, 0};
-#if (_DK_SDU_MIP__BASE__OS >= _DK_SDU_MIP__BASE__WXP)
+#if (_COM_AZURE_DEV__BASE__OS >= _COM_AZURE_DEV__BASE__WXP)
   if (local) {
     bassert(
       ::TzSpecificLocalTimeToSystemTime(0, &time, &time) != 0,
@@ -417,7 +417,7 @@ Date Date::getDate(
     ::SystemTimeToFileTime(&time, &nativeTime),
     DateException(Type::getType<Date>())
   );
-#if (_DK_SDU_MIP__BASE__OS < _DK_SDU_MIP__BASE__WXP)
+#if (_COM_AZURE_DEV__BASE__OS < _COM_AZURE_DEV__BASE__WXP)
   if (local) {
     bassert(
       ::LocalFileTimeToFileTime(&nativeTime, &nativeTime) != 0,
@@ -483,7 +483,7 @@ int Date::getMillisecond() const throw() {
 }
 
 int Date::getSecond() const throw() {
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   SYSTEMTIME time;
   FILETIME nativeTime = internal::dateToNative(date);
   bassert(
@@ -501,7 +501,7 @@ int Date::getSecond() const throw() {
 }
 
 int Date::getMinute() const throw() {
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   SYSTEMTIME time;
   FILETIME nativeTime = internal::dateToNative(date);
   bassert(
@@ -519,7 +519,7 @@ int Date::getMinute() const throw() {
 }
 
 int Date::getHour() const throw() {
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   SYSTEMTIME time;
   FILETIME nativeTime = internal::dateToNative(date);
   bassert(
@@ -537,7 +537,7 @@ int Date::getHour() const throw() {
 }
 
 int Date::getDay() const throw() {
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   SYSTEMTIME time;
   FILETIME nativeTime = internal::dateToNative(date);
   bassert(
@@ -555,7 +555,7 @@ int Date::getDay() const throw() {
 }
 
 int Date::getDayOfWeek() const throw() {
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   SYSTEMTIME time;
   FILETIME nativeTime = internal::dateToNative(date);
   bassert(
@@ -573,7 +573,7 @@ int Date::getDayOfWeek() const throw() {
 }
 
 int Date::getDayOfYear() const throw() {
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   SYSTEMTIME time;
   FILETIME nativeTime = internal::dateToNative(date);
   bassert(
@@ -591,7 +591,7 @@ int Date::getDayOfYear() const throw() {
 }
 
 int Date::getMonth() const throw() {
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   SYSTEMTIME time;
   FILETIME nativeTime = internal::dateToNative(date);
   bassert(
@@ -609,7 +609,7 @@ int Date::getMonth() const throw() {
 }
 
 int Date::getYear() const throw() {
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   SYSTEMTIME time;
   FILETIME nativeTime = internal::dateToNative(date);
   bassert(
@@ -627,7 +627,7 @@ int Date::getYear() const throw() {
 }
 
 int Date::getUTCSecond() const throw() {
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   SYSTEMTIME time;
   FILETIME nativeTime = internal::dateToNative(date);
   bassert(
@@ -644,7 +644,7 @@ int Date::getUTCSecond() const throw() {
 }
 
 int Date::getUTCMinute() const throw() {
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   SYSTEMTIME time;
   FILETIME nativeTime = internal::dateToNative(date);
   bassert(
@@ -661,7 +661,7 @@ int Date::getUTCMinute() const throw() {
 }
 
 int Date::getUTCHour() const throw() {
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   SYSTEMTIME time;
   FILETIME nativeTime = internal::dateToNative(date);
   bassert(
@@ -678,7 +678,7 @@ int Date::getUTCHour() const throw() {
 }
 
 int Date::getUTCDay() const throw() {
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   SYSTEMTIME time;
   FILETIME nativeTime = internal::dateToNative(date);
   bassert(
@@ -695,7 +695,7 @@ int Date::getUTCDay() const throw() {
 }
 
 int Date::getUTCDayOfWeek() const throw() {
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   SYSTEMTIME time;
   FILETIME nativeTime = internal::dateToNative(date);
   bassert(
@@ -712,7 +712,7 @@ int Date::getUTCDayOfWeek() const throw() {
 }
 
 int Date::getUTCDayOfYear() const throw() {
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   SYSTEMTIME time;
   FILETIME nativeTime = internal::dateToNative(date);
   bassert(
@@ -730,7 +730,7 @@ int Date::getUTCDayOfYear() const throw() {
 }
 
 int Date::getUTCMonth() const throw() {
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   SYSTEMTIME time;
   FILETIME nativeTime = internal::dateToNative(date);
   bassert(
@@ -747,7 +747,7 @@ int Date::getUTCMonth() const throw() {
 }
 
 int Date::getUTCYear() const throw() {
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   SYSTEMTIME time;
   FILETIME nativeTime = internal::dateToNative(date);
   bassert(
@@ -867,7 +867,7 @@ void Date::split(DateTime& result, bool local) const throw() {
 //   result.day = days;
 
   // TAG: need Daylight Saving Time (DST) support + local time support
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   SYSTEMTIME time;
   FILETIME nativeTime = internal::dateToNative(date);
   // TAG: convert to local time when required
@@ -1161,8 +1161,8 @@ String Date::format(
 WideString Date::format(
   const WideString& format,
   bool local) const throw(InvalidFormat, MemoryException) {
-#if defined(_DK_SDU_MIP__BASE__HAVE_WCSFTIME)
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if defined(_COM_AZURE_DEV__BASE__HAVE_WCSFTIME)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   Allocator<uint8>* buffer = Thread::getLocalStorage();
   time_t nativeTime = (date + 500)/1000; // internal::dateToNative(date);
   struct tm time;
@@ -1214,4 +1214,4 @@ FormatOutputStream& operator<<(
   return stream;
 }
 
-_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
+_COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

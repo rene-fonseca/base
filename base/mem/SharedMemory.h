@@ -19,7 +19,7 @@
 #include <base/mem/Reference.h>
 #include <base/NotSupported.h>
 
-_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+_COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 /**
   Shared memory support.
@@ -29,14 +29,14 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
   @version 1.0
 */
 
-class _DK_SDU_MIP__BASE__API SharedMemory : public Object {
+class _COM_AZURE_DEV__BASE__API SharedMemory : public Object {
 public:
   
   static inline OperatingSystem::Handle getHandle(const File& file) throw() {
     return file.getHandle();
   }
   
-  class _DK_SDU_MIP__BASE__API SharedMemoryImpl : public ReferenceCountedObject {
+  class _COM_AZURE_DEV__BASE__API SharedMemoryImpl : public ReferenceCountedObject {
   private:
 
     /** The file object. */
@@ -203,4 +203,4 @@ public:
   void clear() throw();
 };
 
-_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
+_COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

@@ -15,7 +15,7 @@
 
 #include <base/MemoryException.h>
 
-_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+_COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 /**
   @defgroup memory Memory
@@ -31,7 +31,7 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
   @version 1.0
 */
 
-class _DK_SDU_MIP__BASE__API HeapImpl {
+class _COM_AZURE_DEV__BASE__API HeapImpl {
 protected:
 
   /**
@@ -78,7 +78,7 @@ protected:
   @version 1.0
 */
 
-class _DK_SDU_MIP__BASE__API Heap : private HeapImpl {
+class _COM_AZURE_DEV__BASE__API Heap : private HeapImpl {
 public:
 
   /**
@@ -114,7 +114,7 @@ public:
   */
   template<class TYPE>
   inline static TYPE* tryResize(void* heap, unsigned int size) throw(MemoryException) {
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
     return static_cast<TYPE*>(HeapImpl::tryResize(heap, size * sizeof(TYPE)));
 #else // Unix
     return 0; // not implemented
@@ -133,4 +133,4 @@ public:
   }
 };
 
-_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
+_COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

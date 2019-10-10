@@ -15,7 +15,7 @@
 #include <base/filesystem/FileInfo.h>
 #include <base/security/Trustee.h>
 
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
 #  define _WIN32_WINNT _WIN32_WINNT_WINXP
 #  include <windows.h>
 #  include <aclapi.h>
@@ -58,11 +58,11 @@ typedef struct _REPARSE_DATA_BUFFER {
 #  include <unistd.h>
 #endif // flavor
 
-_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+_COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 FileInfo::FileInfo(const String& _path) throw(FileSystemException)
   : path(_path), mode(0), links(0) {
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   bool error = false;
   HANDLE file = ::CreateFile(toWide(path).c_str(), // file name
                              0 | READ_CONTROL, // access mode
@@ -289,7 +289,7 @@ FileInfo::FileInfo(const String& _path) throw(FileSystemException)
   links = information.nNumberOfLinks;
   
 #else // unix
-  #if defined(_DK_SDU_MIP__BASE__LARGE_FILE_SYSTEM)
+  #if defined(_COM_AZURE_DEV__BASE__LARGE_FILE_SYSTEM)
     struct stat64 status;
     if (::stat64(path.getElements(), &status) || (!S_ISREG(status.st_mode))) {
       throw FileSystemException("Not a file", this);
@@ -370,4 +370,4 @@ String FileInfo::getPath() const throw() {
   return path;
 }
 
-_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
+_COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

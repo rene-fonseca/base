@@ -14,7 +14,7 @@
 #include <base/communication/EUI64.h>
 #include <base/string/StringOutputStream.h>
 
-_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+_COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 EUI64::EUI64() throw() {
   id[0] = 0xff;
@@ -151,4 +151,4 @@ FormatOutputStream& operator<<(FormatOutputStream& stream, const EUI64& value) t
   return stream << s.getString();
 }
 
-_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
+_COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

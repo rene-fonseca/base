@@ -17,7 +17,7 @@
 #include <base/collection/Enumeration.h>
 #include <base/collection/EndOfEnumeration.h>
 
-_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+_COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 /**
   Enumerator used to traverse elements of a sequence (not to be confused with
@@ -88,4 +88,4 @@ public:
   }
 };
 
-_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
+_COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

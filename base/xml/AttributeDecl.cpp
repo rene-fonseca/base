@@ -14,14 +14,14 @@
 #include <base/platforms/features.h>
 #include <base/xml/AttributeDecl.h>
 
-#if defined(_DK_SDU_MIP__BASE__XML_XMLSOFT_ORG)
+#if defined(_COM_AZURE_DEV__BASE__XML_XMLSOFT_ORG)
 #  include <libxml2/libxml/tree.h>
 #endif
 
-_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+_COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 AttributeDecl::ValueType AttributeDecl::getValueType() const throw() {
-#if defined(_DK_SDU_MIP__BASE__XML_XMLSOFT_ORG)
+#if defined(_COM_AZURE_DEV__BASE__XML_XMLSOFT_ORG)
   xmlAttribute* attribute = (xmlAttribute*)getContext();
   switch (attribute->atype) {
   case XML_ATTRIBUTE_CDATA:
@@ -53,7 +53,7 @@ AttributeDecl::ValueType AttributeDecl::getValueType() const throw() {
 }
 
 AttributeDecl::DefaultType AttributeDecl::getDefaultValueType() const throw() {
-#if defined(_DK_SDU_MIP__BASE__XML_XMLSOFT_ORG)
+#if defined(_COM_AZURE_DEV__BASE__XML_XMLSOFT_ORG)
   xmlAttribute* attribute = (xmlAttribute*)getContext();
   switch (attribute->atype) {
   case XML_ATTRIBUTE_NONE:
@@ -73,7 +73,7 @@ AttributeDecl::DefaultType AttributeDecl::getDefaultValueType() const throw() {
 }
 
 String AttributeDecl::getDefaultValue() const throw() {
-#if defined(_DK_SDU_MIP__BASE__XML_XMLSOFT_ORG)
+#if defined(_COM_AZURE_DEV__BASE__XML_XMLSOFT_ORG)
   xmlAttribute* attribute = (xmlAttribute*)getContext();
   return NativeString((const char*)attribute->defaultValue);
 #else
@@ -82,7 +82,7 @@ String AttributeDecl::getDefaultValue() const throw() {
 }
 
 Array<String> AttributeDecl::getEnumerationValues() const throw(DOMException) {
-#if defined(_DK_SDU_MIP__BASE__XML_XMLSOFT_ORG)
+#if defined(_COM_AZURE_DEV__BASE__XML_XMLSOFT_ORG)
   xmlAttribute* attribute = (xmlAttribute*)getContext();
   bassert(
     attribute->atype == XML_ATTRIBUTE_ENUMERATION,
@@ -103,4 +103,4 @@ Array<String> AttributeDecl::getEnumerationValues() const throw(DOMException) {
 // TAG: namespace prefix
 // TAG: element holding the attribute
 
-_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
+_COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

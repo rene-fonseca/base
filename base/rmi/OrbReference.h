@@ -17,7 +17,7 @@
 #include <base/Primitives.h>
 #include <base/rmi/OrbException.h>
 
-_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+_COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 /**
   Direct reference to a skeleton object within a local address space.
@@ -27,7 +27,7 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
   @version 1.0
 */
 
-class _DK_SDU_MIP__BASE__API OrbReference : public Object {
+class _COM_AZURE_DEV__BASE__API OrbReference : public Object {
 private:
   
   /** The id of the object. */
@@ -88,4 +88,4 @@ public:
   }
 };
 
-_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
+_COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

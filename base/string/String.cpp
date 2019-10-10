@@ -20,7 +20,7 @@
 #include <codecvt>
 #include <string.h>
 
-_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+_COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 void String::initialize(
   const char* string, unsigned int length) throw(MemoryException) {
@@ -870,4 +870,4 @@ std::wstring toWide(const char* s) {
   return convert.from_bytes(s);
 }
 
-_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
+_COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

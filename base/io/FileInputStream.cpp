@@ -14,7 +14,7 @@
 #include <base/io/FileInputStream.h>
 #include <base/io/EndOfFile.h>
 
-_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+_COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 FileInputStream::FileInputStream(
   const String& path, bool exclusive) throw(FileNotFound)
@@ -51,4 +51,4 @@ bool FileInputStream::wait(unsigned int timeout) const throw(FileException) {
   return true;
 }
 
-_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
+_COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

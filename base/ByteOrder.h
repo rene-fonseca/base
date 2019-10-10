@@ -15,7 +15,7 @@
 
 #include <base/Primitives.h>
 
-_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+_COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 /**
   This namespace contains functions used for explicit conversion between the
@@ -27,7 +27,7 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 
 namespace ByteOrder {
 
-#if (_DK_SDU_MIP__BASE__BYTE_ORDER == _DK_SDU_MIP__BASE__BIG_ENDIAN)
+#if (_COM_AZURE_DEV__BASE__BYTE_ORDER == _COM_AZURE_DEV__BASE__BIG_ENDIAN)
 
   template<class TYPE>
   inline TYPE fromBigEndian(TYPE value) throw() {
@@ -39,7 +39,7 @@ namespace ByteOrder {
     return value;
   }
 
-#elif (_DK_SDU_MIP__BASE__BYTE_ORDER == _DK_SDU_MIP__BASE__LITTLE_ENDIAN)
+#elif (_COM_AZURE_DEV__BASE__BYTE_ORDER == _COM_AZURE_DEV__BASE__LITTLE_ENDIAN)
 
   template<class TYPE>
   inline TYPE fromBigEndian(TYPE value) throw() {
@@ -87,7 +87,7 @@ namespace ByteOrder {
 
 
 
-#if (_DK_SDU_MIP__BASE__BYTE_ORDER == _DK_SDU_MIP__BASE__BIG_ENDIAN)
+#if (_COM_AZURE_DEV__BASE__BYTE_ORDER == _COM_AZURE_DEV__BASE__BIG_ENDIAN)
 
   /**
     This class is used to store primitives in little endian byte order
@@ -101,7 +101,7 @@ namespace ByteOrder {
   struct LittleEndian {
   };
 
-_DK_SDU_MIP__BASE__PACKED__BEGIN
+_COM_AZURE_DEV__BASE__PACKED__BEGIN
   /* 16 bit signed integer represented in little endian byte order. */
   template<>
   struct LittleEndian<int16> {
@@ -124,10 +124,10 @@ _DK_SDU_MIP__BASE__PACKED__BEGIN
     inline operator int16() const throw() {
       return (static_cast<uint16>(b) << 8) + a;
     }
-  } _DK_SDU_MIP__BASE__PACKED;
-_DK_SDU_MIP__BASE__PACKED__END
+  } _COM_AZURE_DEV__BASE__PACKED;
+_COM_AZURE_DEV__BASE__PACKED__END
   
-_DK_SDU_MIP__BASE__PACKED__BEGIN
+_COM_AZURE_DEV__BASE__PACKED__BEGIN
   /* 16 bit unsigned integer represented in little endian byte order. */
   template<>
   struct LittleEndian<uint16> {
@@ -150,10 +150,10 @@ _DK_SDU_MIP__BASE__PACKED__BEGIN
     inline operator uint16() const throw() {
       return (static_cast<uint16>(b) << 8) + a;
     }
-  } _DK_SDU_MIP__BASE__PACKED;
-_DK_SDU_MIP__BASE__PACKED__END
+  } _COM_AZURE_DEV__BASE__PACKED;
+_COM_AZURE_DEV__BASE__PACKED__END
 
-_DK_SDU_MIP__BASE__PACKED__BEGIN
+_COM_AZURE_DEV__BASE__PACKED__BEGIN
   /* 32 bit signed integer represented in little endian byte order. */
   template<>
   struct LittleEndian<int32> {
@@ -180,10 +180,10 @@ _DK_SDU_MIP__BASE__PACKED__BEGIN
     inline operator int32() const throw() {
       return (((static_cast<uint32>(d) << 8) + c << 8) + b << 8) + a;
     }
-  } _DK_SDU_MIP__BASE__PACKED;
-_DK_SDU_MIP__BASE__PACKED__END
+  } _COM_AZURE_DEV__BASE__PACKED;
+_COM_AZURE_DEV__BASE__PACKED__END
   
-_DK_SDU_MIP__BASE__PACKED__BEGIN
+_COM_AZURE_DEV__BASE__PACKED__BEGIN
   /* 32 bit unsigned integer represented in little endian byte order. */
   template<>
   struct LittleEndian<uint32> {
@@ -210,10 +210,10 @@ _DK_SDU_MIP__BASE__PACKED__BEGIN
     inline operator uint32() const throw() {
       return (((static_cast<uint32>(d) << 8) + c << 8) + b << 8) + a;
     }
-  } _DK_SDU_MIP__BASE__PACKED;
-_DK_SDU_MIP__BASE__PACKED__END
+  } _COM_AZURE_DEV__BASE__PACKED;
+_COM_AZURE_DEV__BASE__PACKED__END
   
-_DK_SDU_MIP__BASE__PACKED__BEGIN
+_COM_AZURE_DEV__BASE__PACKED__BEGIN
   /* 64 bit signed integer represented in little endian byte order. */
   template<>
   struct LittleEndian<int64> {
@@ -236,10 +236,10 @@ _DK_SDU_MIP__BASE__PACKED__BEGIN
     inline operator int64() const throw() {
       return (static_cast<uint64>(b) << 8) + a;
     }
-  } _DK_SDU_MIP__BASE__PACKED;
-_DK_SDU_MIP__BASE__PACKED__END
+  } _COM_AZURE_DEV__BASE__PACKED;
+_COM_AZURE_DEV__BASE__PACKED__END
 
-_DK_SDU_MIP__BASE__PACKED__BEGIN
+_COM_AZURE_DEV__BASE__PACKED__BEGIN
   /* 64 bit unsigned integer represented in little endian byte order. */
   template<>
   struct LittleEndian<uint64> {
@@ -262,8 +262,8 @@ _DK_SDU_MIP__BASE__PACKED__BEGIN
     inline operator uint64() const throw() {
       return (static_cast<uint64>(b) << 32) + a;
     }
-  } _DK_SDU_MIP__BASE__PACKED;
-_DK_SDU_MIP__BASE__PACKED__END
+  } _COM_AZURE_DEV__BASE__PACKED;
+_COM_AZURE_DEV__BASE__PACKED__END
 
   /**
     This class is used to store primitives in big endian byte order
@@ -273,7 +273,7 @@ _DK_SDU_MIP__BASE__PACKED__END
     @version 2.0
   */
 
-_DK_SDU_MIP__BASE__PACKED__BEGIN
+_COM_AZURE_DEV__BASE__PACKED__BEGIN
   template<class TYPE>
   struct BigEndian {
     TYPE value;
@@ -293,12 +293,12 @@ _DK_SDU_MIP__BASE__PACKED__BEGIN
     inline operator TYPE() const throw() {
       return value;
     }
-  } _DK_SDU_MIP__BASE__PACKED;
-_DK_SDU_MIP__BASE__PACKED__END
+  } _COM_AZURE_DEV__BASE__PACKED;
+_COM_AZURE_DEV__BASE__PACKED__END
   
 #endif
 
-#if (_DK_SDU_MIP__BASE__BYTE_ORDER == _DK_SDU_MIP__BASE__LITTLE_ENDIAN)
+#if (_COM_AZURE_DEV__BASE__BYTE_ORDER == _COM_AZURE_DEV__BASE__LITTLE_ENDIAN)
 
   /**
     This class is used to store primitives in little endian byte order
@@ -308,7 +308,7 @@ _DK_SDU_MIP__BASE__PACKED__END
     @version 2.0
   */
   
-_DK_SDU_MIP__BASE__PACKED__BEGIN
+_COM_AZURE_DEV__BASE__PACKED__BEGIN
   template<class TYPE>
   struct LittleEndian {
     TYPE value;
@@ -328,8 +328,8 @@ _DK_SDU_MIP__BASE__PACKED__BEGIN
     inline operator TYPE() const throw() {
       return value;
     }
-  } _DK_SDU_MIP__BASE__PACKED;
-_DK_SDU_MIP__BASE__PACKED__END
+  } _COM_AZURE_DEV__BASE__PACKED;
+_COM_AZURE_DEV__BASE__PACKED__END
   
   /**
     This class is used to store primitives in big endian byte order
@@ -343,7 +343,7 @@ _DK_SDU_MIP__BASE__PACKED__END
   struct BigEndian {
   };
 
-_DK_SDU_MIP__BASE__PACKED__BEGIN
+_COM_AZURE_DEV__BASE__PACKED__BEGIN
   /* 16 bit signed integer represented in big endian byte order. */
   template<>
   struct BigEndian<int16> {
@@ -366,10 +366,10 @@ _DK_SDU_MIP__BASE__PACKED__BEGIN
     inline operator int16() const throw() {
       return (static_cast<uint16>(b) << 8) + a;
     }
-  } _DK_SDU_MIP__BASE__PACKED;
-_DK_SDU_MIP__BASE__PACKED__END
+  } _COM_AZURE_DEV__BASE__PACKED;
+_COM_AZURE_DEV__BASE__PACKED__END
   
-_DK_SDU_MIP__BASE__PACKED__BEGIN
+_COM_AZURE_DEV__BASE__PACKED__BEGIN
   /* 16 bit unsigned integer represented in big endian byte order. */
   template<>
   struct BigEndian<uint16> {
@@ -392,10 +392,10 @@ _DK_SDU_MIP__BASE__PACKED__BEGIN
     inline operator uint16() const throw() {
       return (static_cast<uint16>(b) << 8) + a;
     }
-  } _DK_SDU_MIP__BASE__PACKED;
-_DK_SDU_MIP__BASE__PACKED__END
+  } _COM_AZURE_DEV__BASE__PACKED;
+_COM_AZURE_DEV__BASE__PACKED__END
 
-_DK_SDU_MIP__BASE__PACKED__BEGIN
+_COM_AZURE_DEV__BASE__PACKED__BEGIN
   /* 32 bit signed integer represented in big endian byte order. */
   template<>
   struct BigEndian<int32> {
@@ -422,10 +422,10 @@ _DK_SDU_MIP__BASE__PACKED__BEGIN
     inline operator int32() const throw() {
       return (((((static_cast<uint32>(d) << 8) + c) << 8) + b) << 8) + a;
     }
-  } _DK_SDU_MIP__BASE__PACKED;
-_DK_SDU_MIP__BASE__PACKED__END
+  } _COM_AZURE_DEV__BASE__PACKED;
+_COM_AZURE_DEV__BASE__PACKED__END
   
-_DK_SDU_MIP__BASE__PACKED__BEGIN
+_COM_AZURE_DEV__BASE__PACKED__BEGIN
   /* 32 bit unsigned integer represented in big endian byte order. */
   template<>
   struct BigEndian<uint32> {
@@ -452,10 +452,10 @@ _DK_SDU_MIP__BASE__PACKED__BEGIN
     inline operator uint32() const throw() {
       return (((((static_cast<uint32>(d) << 8) + c) << 8) + b) << 8) + a;
     }
-  } _DK_SDU_MIP__BASE__PACKED;
-_DK_SDU_MIP__BASE__PACKED__END
+  } _COM_AZURE_DEV__BASE__PACKED;
+_COM_AZURE_DEV__BASE__PACKED__END
   
-_DK_SDU_MIP__BASE__PACKED__BEGIN
+_COM_AZURE_DEV__BASE__PACKED__BEGIN
   /* 64 bit signed integer represented in big endian byte order. */
   template<>
   struct BigEndian<int64> {
@@ -478,10 +478,10 @@ _DK_SDU_MIP__BASE__PACKED__BEGIN
     inline operator int64() const throw() {
       return (static_cast<uint64>(b) << 8) + a;
     }
-  } _DK_SDU_MIP__BASE__PACKED;
-_DK_SDU_MIP__BASE__PACKED__END
+  } _COM_AZURE_DEV__BASE__PACKED;
+_COM_AZURE_DEV__BASE__PACKED__END
   
-_DK_SDU_MIP__BASE__PACKED__BEGIN
+_COM_AZURE_DEV__BASE__PACKED__BEGIN
   /* 64 bit unsigned integer represented in big endian byte order. */
   template<>
   struct BigEndian<uint64> {
@@ -504,9 +504,9 @@ _DK_SDU_MIP__BASE__PACKED__BEGIN
     inline operator uint64() const throw() {
       return (static_cast<uint64>(b) << 32) + a;
     }
-  } _DK_SDU_MIP__BASE__PACKED;
-_DK_SDU_MIP__BASE__PACKED__END
+  } _COM_AZURE_DEV__BASE__PACKED;
+_COM_AZURE_DEV__BASE__PACKED__END
   
 #endif // little endian
 
-_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
+_COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

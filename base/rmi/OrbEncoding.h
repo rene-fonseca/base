@@ -18,7 +18,7 @@
 #include <base/rmi/OrbDecoder.h>
 #include <base/rmi/OrbEncoder.h>
 
-_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+_COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 /**
   Object Request Broker encoding scheme.
@@ -28,7 +28,7 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
   @version 1.0
 */
 
-class _DK_SDU_MIP__BASE__API OrbEncoding : public Object, public virtual ReferenceCountedObject {
+class _COM_AZURE_DEV__BASE__API OrbEncoding : public Object, public virtual ReferenceCountedObject {
 public:
   
   /**
@@ -60,4 +60,4 @@ public:
   virtual ~OrbEncoding() throw();
 };
 
-_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
+_COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

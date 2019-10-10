@@ -13,7 +13,7 @@
 
 #include <base/security/CRC32.h>
 
-_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+_COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 // the lookup table is generated used this algorithm
 // for (unsigned int i = 0; i < 256; ++i) {
@@ -77,4 +77,4 @@ unsigned int CRC32::push(const uint8* buffer, unsigned int size) throw() {
   return size;
 }
 
-_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
+_COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

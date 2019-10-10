@@ -13,7 +13,7 @@
 
 #include <base/io/BufferedOutputStream.h>
 
-_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+_COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 BufferedOutputStream::BufferedOutputStream(
   OutputStream& out, unsigned int size) throw(BindException, MemoryException)
@@ -95,4 +95,4 @@ BufferedOutputStream::~BufferedOutputStream() {
   flush();
 }
 
-_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
+_COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

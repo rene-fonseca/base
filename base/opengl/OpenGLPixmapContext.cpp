@@ -15,13 +15,13 @@
 #include <base/opengl/OpenGLPixmapContext.h>
 #include <base/platforms/backend/WindowImpl.h>
 
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
 #  include <base/platforms/win32/GDI.h>
 #else // unix
 #  include <base/platforms/os/unix/GLX.h>
 #endif // flavor
 
-_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+_COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 nothing OpenGLPixmapContext::initialize(const Dimension& dimension, unsigned int flags) throw(OpenGLException) {
   screenHandle = nullptr;
@@ -31,10 +31,10 @@ nothing OpenGLPixmapContext::initialize(const Dimension& dimension, unsigned int
   
   OpenGLContextImpl::loadModule();  
   
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)  
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)  
   drawableHandle = ::CreateWindowEx(
     0, // extended style
-    _DK_SDU_MIP__BASE__ID_PREFIX L"/ui/WindowImpl", // class name
+    _COM_AZURE_DEV__BASE__ID_PREFIX L"/ui/WindowImpl", // class name
     L"", // window title
     WS_CLIPCHILDREN | WS_CLIPSIBLINGS, // required for OpenGL - style
     0, // x position
@@ -303,7 +303,7 @@ OpenGLPixmapContext::OpenGLPixmapContext(const Dimension& dimension, unsigned in
 }
 
 OpenGLPixmapContext::~OpenGLPixmapContext() throw() {
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)  
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)  
   native::GDI::wglMakeCurrent(0, 0); // deselect current rendering context
   if (renderingContextHandle) {
     native::GDI::wglDeleteContext((HGLRC)renderingContextHandle);
@@ -339,4 +339,4 @@ OpenGLPixmapContext::~OpenGLPixmapContext() throw() {
 #endif
 }
 
-_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
+_COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

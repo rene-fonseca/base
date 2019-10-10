@@ -19,7 +19,7 @@
 #include <base/NotSupported.h>
 #include <base/concurrency/Event.h>
 
-_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+_COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 /**
   Sound input stream.
@@ -30,7 +30,7 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
   @version 1.0
 */
 
-class _DK_SDU_MIP__BASE__API SoundInputStream : public Object {
+class _COM_AZURE_DEV__BASE__API SoundInputStream : public Object {
 private:
 
   /** Handle to the sound input device. */
@@ -38,7 +38,7 @@ private:
   /** Event. */
   Event event;
 
-  class _DK_SDU_MIP__BASE__API SoundInputStreamHelper;
+  class _COM_AZURE_DEV__BASE__API SoundInputStreamHelper;
 public:
 
   /**
@@ -104,4 +104,4 @@ public:
   ~SoundInputStream() throw();
 };
 
-_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
+_COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

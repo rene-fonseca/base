@@ -20,7 +20,7 @@
 #include <base/mem/ProtectedPointer.h>
 #include <base/rmi/Orb.h>
 
-_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+_COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 /**
   Object Request Broker encoding scheme. Integral types are encoded in little
@@ -33,7 +33,7 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
   @version 1.0
 */
 
-class _DK_SDU_MIP__BASE__API LisaEncoding : public OrbEncoding {
+class _COM_AZURE_DEV__BASE__API LisaEncoding : public OrbEncoding {
 public:
   
   class LisaDecoder : public OrbDecoder {
@@ -371,4 +371,4 @@ public:
   String getUrn() const throw();
 };
 
-_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
+_COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

@@ -13,7 +13,7 @@
 
 #include <base/rmi/OrbSkeleton.h>
 
-_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+_COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 OrbSkeleton::OrbSkeleton(const String& _name, unsigned int _version) throw(OrbException)
   : name(_name), version(_version) {
@@ -22,4 +22,4 @@ OrbSkeleton::OrbSkeleton(const String& _name, unsigned int _version) throw(OrbEx
 OrbSkeleton::~OrbSkeleton() throw() {
 }
 
-_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
+_COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

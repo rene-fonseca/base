@@ -15,7 +15,7 @@
 
 #include <base/string/FormatOutputStream.h>
 
-_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+_COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 /**
   RGB color.
@@ -25,8 +25,8 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
   @version 1.0
 */
 
-_DK_SDU_MIP__BASE__PACKED__BEGIN
-class _DK_SDU_MIP__BASE__API Color {
+_COM_AZURE_DEV__BASE__PACKED__BEGIN
+class _COM_AZURE_DEV__BASE__API Color {
 private:
 
   /** The color value (red, green, and blue). */
@@ -183,8 +183,8 @@ public:
   inline operator uint32() const throw() {
     return value;
   }
-} _DK_SDU_MIP__BASE__PACKED;
-_DK_SDU_MIP__BASE__PACKED__END
+} _COM_AZURE_DEV__BASE__PACKED;
+_COM_AZURE_DEV__BASE__PACKED__END
 
 /**
   Writes a string representation of the color object to the specified format stream.
@@ -198,4 +198,4 @@ public:
   static const bool IS_UNINITIALIZEABLE = Uninitializeable<uint32>::IS_UNINITIALIZEABLE;
 };
 
-_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
+_COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

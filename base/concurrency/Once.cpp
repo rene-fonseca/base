@@ -14,7 +14,7 @@
 #include <base/concurrency/Once.h>
 #include <base/concurrency/ExclusiveSynchronize.h>
 
-_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+_COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 bool Once::getTokenImpl() throw(ResourceException) {
   {
@@ -50,4 +50,4 @@ void Once::relinquishToken() throw() {
   }
 }
 
-_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
+_COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

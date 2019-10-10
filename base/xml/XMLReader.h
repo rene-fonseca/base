@@ -21,7 +21,7 @@
 #include <base/xml/AttributeDecl.h>
 #include <base/xml/ElementDecl.h>
 
-_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+_COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 /**
   @short Support for reading an XML document using callbacks.
@@ -29,7 +29,7 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
   @version 1.0
 */
 
-class _DK_SDU_MIP__BASE__API XMLReader : public Polymorphic {
+class _COM_AZURE_DEV__BASE__API XMLReader : public Polymorphic {
   friend class XMLReaderImpl;
 public:
   
@@ -185,7 +185,7 @@ public:
       const String& notationName) throw();
   };
 
-  class _DK_SDU_MIP__BASE__API InputSource {
+  class _COM_AZURE_DEV__BASE__API InputSource {
   private:
 
     void* context = nullptr;
@@ -239,7 +239,7 @@ public:
       const SAXParseException& exception) throw(SAXException);
   };
 
-  class _DK_SDU_MIP__BASE__API Locator {
+  class _COM_AZURE_DEV__BASE__API Locator {
   public:
   };
   
@@ -248,7 +248,7 @@ public:
     @ingroup xml
     @version 1.0
   */
-  class _DK_SDU_MIP__BASE__API ContentHandler {
+  class _COM_AZURE_DEV__BASE__API ContentHandler {
   public:
 
     /**
@@ -414,4 +414,4 @@ public:
   virtual void terminate() throw() = 0;
 };
 
-_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
+_COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

@@ -18,7 +18,7 @@
 #include <base/mathematics/Vector3D.h>
 #include <base/mathematics/Quaternion.h>
 
-_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+_COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 /**
   A 4 by 4 matrix with elements storage organized in row major and column
@@ -750,4 +750,4 @@ public:
   static const bool IS_UNINITIALIZEABLE = Uninitializeable<TYPE>::IS_UNINITIALIZEABLE;
 };
 
-_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
+_COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

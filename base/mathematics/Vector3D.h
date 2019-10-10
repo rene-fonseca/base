@@ -17,7 +17,7 @@
 #include <base/mathematics/Math.h>
 #include <base/mathematics/Vector2D.h>
 
-_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+_COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 /**
   A three-dimensional vector represented by X, Y, and Z coordinates.
@@ -454,4 +454,4 @@ public:
   static const bool IS_UNINITIALIZEABLE = Uninitializeable<TYPE>::IS_UNINITIALIZEABLE;
 };
 
-_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
+_COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

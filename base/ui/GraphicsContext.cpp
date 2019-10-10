@@ -13,20 +13,20 @@
 
 #include <base/ui/GraphicsContext.h>
 
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
 #  include <base/platforms/win32/Helpers.h>
 #  include <windows.h>
-#elif (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__MACOS)
+#elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__MACOS)
 #else // unix (X11)
 #  include <X11/Xlib.h>
 #  include <X11/Xutil.h>
 #  include <X11/Xatom.h>
 #endif // flavor
 
-_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+_COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 GraphicsContext::GraphicsContextObjectHandle::~GraphicsContextObjectHandle() throw() {
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   if (handle) {
     ::DeleteObject((HGDIOBJ)handle);
     handle = 0;
@@ -36,7 +36,7 @@ GraphicsContext::GraphicsContextObjectHandle::~GraphicsContextObjectHandle() thr
 }
 
 GraphicsContext::Pen::Pen(Color color) throw(UserInterfaceException) {
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   HPEN pen = ::CreatePen(PS_SOLID, 1, color.getValue());
   bassert(pen, UserInterfaceException(this));
   setHandle(pen);
@@ -48,7 +48,7 @@ GraphicsContext::Pen::Pen(
   PenStyle style,
   Color color,
   unsigned int width) throw(UserInterfaceException) {
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   static const int NATIVE_STYLES[] = { // keep in sync with GraphicsContext::PenStyle
     PS_NULL, // NONE
     PS_SOLID, // SOLID
@@ -73,7 +73,7 @@ GraphicsContext::Pen::Pen(
 
 GraphicsContext::Brush::Brush(
   SystemColor color) throw(UserInterfaceException) {
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   static const int NATIVE_COLORS[] = {
     COLOR_WINDOW, // WINDOW_BACKGROUND
     COLOR_WINDOWFRAME, // WINDOW_FRAME
@@ -95,7 +95,7 @@ GraphicsContext::Brush::Brush(
 }
 
 GraphicsContext::Brush::Brush(Color color) throw(UserInterfaceException) {
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   HBRUSH brush = ::CreateSolidBrush(color.getValue());
   bassert(brush, UserInterfaceException(this));
   setHandle(brush);
@@ -105,7 +105,7 @@ GraphicsContext::Brush::Brush(Color color) throw(UserInterfaceException) {
 
 GraphicsContext::Brush::Brush(
   unsigned int color) throw(UserInterfaceException) {
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   HBRUSH brush = ::CreateSolidBrush(color & 0xffffff);
   bassert(brush, UserInterfaceException(this));
   setHandle(brush);
@@ -125,7 +125,7 @@ int CALLBACK EnumFontFamExProc(
 
 Array<String> GraphicsContext::Font::getFonts() throw(UserInterfaceException) {
   Array<String> result;
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
 //  LOGFONT logFont;
 //   logFont.lfHeight = 0;
 //   logFont.lfWidth = 0;
@@ -158,7 +158,7 @@ GraphicsContext::Font::Font(
   unsigned short height,
   FontWeight weight,
   unsigned int flags) throw(UserInterfaceException) {
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   static int NATIVE_WEIGHTS[] = {
     FW_THIN, // THIN
     FW_LIGHT, // LIGHT
@@ -197,7 +197,7 @@ GraphicsContext::Font::Font(
 }
 
 void GraphicsContext::setPen(Pen pen) throw(UserInterfaceException) {
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   this->pen = pen; // put lock on pen
   ::SelectObject(
     (HDC)graphicsContextHandle,
@@ -208,7 +208,7 @@ void GraphicsContext::setPen(Pen pen) throw(UserInterfaceException) {
 }
 
 void GraphicsContext::setBrush(Brush brush) throw(UserInterfaceException) {
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   this->brush = brush; // put lock on brush
   ::SelectObject(
     (HDC)graphicsContextHandle,
@@ -219,7 +219,7 @@ void GraphicsContext::setBrush(Brush brush) throw(UserInterfaceException) {
 }
 
 void GraphicsContext::setFont(Font font) throw(UserInterfaceException) {
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   ::SelectObject(
     (HDC)graphicsContextHandle,
     (HGDIOBJ)font.getHandle()
@@ -230,7 +230,7 @@ void GraphicsContext::setFont(Font font) throw(UserInterfaceException) {
 
 void GraphicsContext::setBackgroundMode(
   bool transparent) throw(UserInterfaceException) {
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   ::SetBkMode(
     (HDC)graphicsContextHandle,
     transparent ? TRANSPARENT : OPAQUE
@@ -241,7 +241,7 @@ void GraphicsContext::setBackgroundMode(
 
 void GraphicsContext::setBackgroundColor(
   Color color) throw(UserInterfaceException) {
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   ::SetBkColor(
     (HDC)graphicsContextHandle,
     color.getValue()
@@ -251,7 +251,7 @@ void GraphicsContext::setBackgroundColor(
 };
 
 void GraphicsContext::setTextColor(Color color) throw(UserInterfaceException) {
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   ::SetTextColor(
     (HDC)graphicsContextHandle,
     color.getValue()
@@ -262,7 +262,7 @@ void GraphicsContext::setTextColor(Color color) throw(UserInterfaceException) {
 
 void GraphicsContext::setTextAlignment(
   unsigned int alignment) throw(UserInterfaceException) {
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   unsigned int nativeAlignment = 0;
   if (alignment & Alignment::LEFT) {
     nativeAlignment |= TA_LEFT;
@@ -287,7 +287,7 @@ void GraphicsContext::setTextAlignment(
 }
 
 void GraphicsContext::clear() throw(UserInterfaceException) {
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   RECT rect;
   rect.left = 0;
   rect.top = 0;
@@ -301,7 +301,7 @@ void GraphicsContext::clear() throw(UserInterfaceException) {
     ),
     UserInterfaceException(this)
   );
-#elif (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__MACOS)
+#elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__MACOS)
 #else // unix
   ::XClearWindow(
     (Display*)displayHandle,
@@ -313,7 +313,7 @@ void GraphicsContext::clear() throw(UserInterfaceException) {
 void GraphicsContext::clear(
   const Position& position,
   const Dimension& dimension) throw(UserInterfaceException) {
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   RECT rect = {0, 0, 0, 0};
   rect.left = position.getX();
   rect.top = position.getY();
@@ -327,7 +327,7 @@ void GraphicsContext::clear(
     ),
     UserInterfaceException(this)
   );
-#elif (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__MACOS)
+#elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__MACOS)
 #else // unix
   ::XClearArea(
     (Display*)displayHandle,
@@ -345,7 +345,7 @@ void GraphicsContext::setPixel(
   const Position& position,
   Color color,
   unsigned int flags) throw(UserInterfaceException) {
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   bassert(
     ::SetPixel(
       (HDC)graphicsContextHandle,
@@ -355,7 +355,7 @@ void GraphicsContext::setPixel(
     ) != (COLORREF)(-1),
     UserInterfaceException(this)
   );
-#elif (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__MACOS)
+#elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__MACOS)
 #else // unix
   bassert(
     ::XDrawPoint(
@@ -372,7 +372,7 @@ void GraphicsContext::setPixel(
 
 Color GraphicsContext::getPixel(
   const Position& position) throw(UserInterfaceException) {
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   COLORREF result = ::GetPixel(
     (HDC)graphicsContextHandle,
     position.getX(),
@@ -390,7 +390,7 @@ void GraphicsContext::setPixels(
   const Array<Position>& positions,
   Color color,
   unsigned int flags) throw(UserInterfaceException) {
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   Array<Position>::ReadIterator i = positions.getBeginReadIterator();
   const Array<Position>::ReadIterator end = positions.getEndReadIterator();
   while (i != end) {
@@ -404,7 +404,7 @@ void GraphicsContext::setPixels(
       UserInterfaceException(this)
     );
   }
-#elif (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__MACOS)
+#elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__MACOS)
 #else // unix
   Array<Position>::ReadIterator i = positions.getBeginReadIterator();
   const Array<Position>::ReadIterator end = positions.getEndReadIterator();
@@ -434,7 +434,7 @@ void GraphicsContext::setPixels(
 
 void GraphicsContext::moveTo(
   const Position& position) throw(UserInterfaceException) {
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   bassert(
     ::MoveToEx(
       (HDC)graphicsContextHandle,
@@ -452,7 +452,7 @@ void GraphicsContext::moveTo(
 void GraphicsContext::lineTo(
   const Position& position,
   unsigned int flags) throw(UserInterfaceException) {
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   bassert(
     ::LineTo(
       (HDC)graphicsContextHandle,
@@ -470,7 +470,7 @@ void GraphicsContext::line(
   const Position& upperLeft,
   const Position& lowerRight,
   unsigned int flags) throw(UserInterfaceException) {
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   POINT points[3];
   points[0].x = upperLeft.getX();
   points[0].y = upperLeft.getY();
@@ -485,7 +485,7 @@ void GraphicsContext::line(
     ),
     UserInterfaceException(this)
   );
-#elif (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__MACOS)
+#elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__MACOS)
 #else // unix
   bassert(
     ::XDrawLine(
@@ -503,7 +503,7 @@ void GraphicsContext::line(
 }
 
 // void GraphicsContext::polyline(const Array<Position>& points, unsigned int flags) throw(UserInterfaceException) {
-// #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+// #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
 //   ASSERT(sizeof(POINTS) == (2 * sizeof(int)));
 //   ::Polyline(
 //     (HDC)graphicsContextHandle,
@@ -532,7 +532,7 @@ void GraphicsContext::arc(
   int start,
   int stop,
   unsigned int flags) throw(UserInterfaceException) {
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
 //   BOOL ::Arc(
 //     (HDC)graphicsContextHandle, // handle to device context
 //     int nLeftRect,   // x-coord of rectangle's upper-left corner
@@ -544,7 +544,7 @@ void GraphicsContext::arc(
 //     int nXEndArc,    // x-coord of second radial ending point
 //     int nYEndArc     // y-coord of second radial ending point
 //   );
-#elif (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__MACOS)
+#elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__MACOS)
 #else // unix
   if (flags & GraphicsContext::FILLED) {
     ::XFillArc(
@@ -575,7 +575,7 @@ void GraphicsContext::arc(
 }
 
 // void GraphicsContext::arc(const Position& position, const Dimension& dimension, int start, int stop, unsigned int flags) throw(UserInterfaceException) {
-// #if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+// #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
 // bassert(::AngleArc(
 //   H(HDC)graphicsContextHandle,
 //   position.getX(),
@@ -591,7 +591,7 @@ void GraphicsContext::rectangle(
   const Position& upperLeft,
   const Position& lowerRight,
   unsigned int flags) throw(UserInterfaceException) {
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   bassert(
     ::Rectangle(
       (HDC)graphicsContextHandle,
@@ -602,7 +602,7 @@ void GraphicsContext::rectangle(
     ),
     UserInterfaceException(this)
   );
-#elif (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__MACOS)
+#elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__MACOS)
 #else // unix
   // TAG: use current pen and brush
   bassert(
@@ -624,7 +624,7 @@ void GraphicsContext::rectangle(
   const Position& position,
   const Dimension& dimension,
   unsigned int flags) throw(UserInterfaceException) {
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   bassert(
     ::Rectangle(
       (HDC)graphicsContextHandle,
@@ -635,7 +635,7 @@ void GraphicsContext::rectangle(
     ),
     UserInterfaceException(this)
   );
-#elif (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__MACOS)
+#elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__MACOS)
 #else // unix
   if (flags & GraphicsContext::FILLED) {
     ::XFillRectangle(
@@ -666,7 +666,7 @@ void GraphicsContext::rectangle(
   const Position& lowerRight,
   Brush brush,
   unsigned int flags) throw(UserInterfaceException) {
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   RECT rect;
   rect.left = upperLeft.getX();
   rect.top = upperLeft.getY();
@@ -689,7 +689,7 @@ void GraphicsContext::rectangle(
   const Dimension& dimension,
   Brush brush,
   unsigned int flags) throw(UserInterfaceException) {
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   RECT rect;
   rect.left = position.getX();
   rect.top = position.getY();
@@ -731,7 +731,7 @@ void GraphicsContext::rectangle(
 void GraphicsContext::rectangle(
   const Array<Region>& rectangles,
   unsigned int flags) throw(UserInterfaceException) {
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
 #else // unix
   ::XFillRectangles(
     (Display*)displayHandle,
@@ -748,7 +748,7 @@ void GraphicsContext::ellipse(
   const Position& upperLeft,
   const Position& lowerRight,
   unsigned int flags) throw(UserInterfaceException) {
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   bassert(
     ::Ellipse(
       (HDC)graphicsContextHandle,
@@ -770,7 +770,7 @@ void GraphicsContext::ellipse(
   if (!dimension.isProper()) {
     return;
   }
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   bassert(
     ::Ellipse(
       (HDC)graphicsContextHandle,
@@ -791,7 +791,7 @@ void GraphicsContext::pie(
   const Position& radialA,
   const Position& radialB,
   unsigned int flags) throw(UserInterfaceException) {
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   bassert(
     ::Pie(
       (HDC)graphicsContextHandle,
@@ -812,7 +812,7 @@ void GraphicsContext::pie(
 
 unsigned int GraphicsContext::getWidthOf(
   char ch) const throw(UserInterfaceException) {
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   INT width;
   bassert(
     ::GetCharWidth32(
@@ -831,7 +831,7 @@ unsigned int GraphicsContext::getWidthOf(
 
 Dimension GraphicsContext::getDimensionOf(
   const String& text) const throw(UserInterfaceException) {
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   SIZE size = {0, 0};
   OSString _text(text);
   bassert(
@@ -866,7 +866,7 @@ void GraphicsContext::text(
   const Dimension& dimension,
   const String& text,
   unsigned int flags) throw(UserInterfaceException) {
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   UINT nativeTextFormat = 0;
   if (flags & TextFormat::LEFT) {
     nativeTextFormat |= DT_LEFT;
@@ -903,7 +903,7 @@ void GraphicsContext::text(
     ),
     UserInterfaceException(this)
   );
-#elif (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__MACOS)
+#elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__MACOS)
 #else // unix
 	::XDrawString(
     (Display*)displayHandle,
@@ -922,7 +922,7 @@ void GraphicsContext::putBitmap(
   const Dimension& dimension,
   const Bitmap& bitmap) throw(UserInterfaceException) {
   // TAG: COPY, AND, OR, XOR, INVERT
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   if (bitmap.handle.isValid()) {
     bassert(
       ::BitBlt(
@@ -939,7 +939,7 @@ void GraphicsContext::putBitmap(
       UserInterfaceException(this)
     );
   }
-#elif (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__MACOS)
+#elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__MACOS)
 #else // unix
   if (bitmap.handle.isValid()) {
     bassert(
@@ -964,7 +964,7 @@ void GraphicsContext::putBitmap(
 Bitmap GraphicsContext::getBitmap(
   const Position& position,
   const Dimension& dimension) throw(UserInterfaceException) {
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   HDC deviceContext = ::CreateCompatibleDC((HDC)graphicsContextHandle);
   bassert(deviceContext, UserInterfaceException(this));
   HBITMAP bitmap = ::CreateCompatibleBitmap(
@@ -987,7 +987,7 @@ Bitmap GraphicsContext::getBitmap(
   Bitmap result;
   result.handle = new Bitmap::Handle(deviceContext);
   return result;
-#elif (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__MACOS)
+#elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__MACOS)
   return Bitmap();
 #else // unix
   XImage* image = ::XGetImage(
@@ -1010,4 +1010,4 @@ Bitmap GraphicsContext::getBitmap(
 GraphicsContext::~GraphicsContext() throw() {
 }
 
-_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
+_COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

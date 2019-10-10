@@ -16,7 +16,7 @@
 #include <base/Date.h>
 #include <base/xml/Node.h>
 
-_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+_COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 class EventTarget;
 
@@ -26,7 +26,7 @@ class EventTarget;
   @version 1.0
 */
 
-class _DK_SDU_MIP__BASE__API DOMEvent : public Object {
+class _COM_AZURE_DEV__BASE__API DOMEvent : public Object {
 public:
 
   /** The phase of the event flow which is being processed. */
@@ -116,4 +116,4 @@ public:
     bool cancelableArg) throw();
 };
 
-_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
+_COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

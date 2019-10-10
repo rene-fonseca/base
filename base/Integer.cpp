@@ -14,7 +14,7 @@
 #include <base/Integer.h>
 #include <base/string/ASCIITraits.h>
 
-_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+_COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 int Integer::parse(const String& str, bool withoutSign) throw(InvalidFormat) {
   String::ReadIterator i = str.getBeginReadIterator();
@@ -78,4 +78,4 @@ int Integer::parse(const String& str, bool withoutSign) throw(InvalidFormat) {
   return value;
 }
 
-_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
+_COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

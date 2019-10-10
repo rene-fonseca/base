@@ -14,7 +14,7 @@
 #include <base/io/FileReader.h>
 #include <base/Base.h>
 
-_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+_COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 void FileReader::requestRegion(const FileRegion& region) throw(IOException) {
   mapping.remap(fixRegion(region));
@@ -80,4 +80,4 @@ void FileReader::read(uint8* buffer, unsigned int size) throw(IOException) {
 //  return ReadIterator(begin + index); // no overflow 'cause granularity is small
 //}
 
-_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
+_COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

@@ -13,7 +13,7 @@
 
 #include <base/io/FileOutputStream.h>
 
-_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+_COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 FileOutputStream::FileOutputStream(
   const String& path,
@@ -36,4 +36,4 @@ void FileOutputStream::close() throw(IOException) {
   file.close();
 }
 
-_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
+_COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

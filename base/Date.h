@@ -19,7 +19,7 @@
 #include <base/string/WideString.h>
 #include <base/string/InvalidFormat.h>
 
-_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+_COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 class FormatOutputStream;
 
@@ -30,7 +30,7 @@ class FormatOutputStream;
   @version 1.3
 */
 
-class _DK_SDU_MIP__BASE__API Date {
+class _COM_AZURE_DEV__BASE__API Date {
 private:
 
   /**
@@ -429,4 +429,4 @@ public:
     Uninitializeable<int64>::IS_UNINITIALIZEABLE;
 };
 
-_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
+_COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

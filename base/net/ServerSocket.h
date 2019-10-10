@@ -16,7 +16,7 @@
 #include <base/net/Socket.h>
 #include <base/net/StreamSocket.h>
 
-_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+_COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 /**
   This class implements a stream server socket. A socket is an endpoint for
@@ -131,4 +131,4 @@ public:
   }
 };
 
-_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
+_COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

@@ -13,7 +13,7 @@
 
 #include <base/dl/LinkerModule.h>
 
-_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+_COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 LinkerModule* LinkerModule::linkerModule = 0; // initialize linker module as uninitialized
 
@@ -42,4 +42,4 @@ String LinkerModule::getVersion() const throw() {
 LinkerModule::~LinkerModule() {
 }
 
-_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
+_COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

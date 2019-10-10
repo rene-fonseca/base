@@ -13,7 +13,7 @@
 
 #include <base/rmi/OrbBufferPool.h>
 
-_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+_COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 OrbBufferPool::OrbBufferPool() throw() {
   numberOfBuffers = 0;
@@ -64,4 +64,4 @@ OrbBuffer* OrbBufferPool::acquire(unsigned int holding) throw(OrbException) {
   }
 }
 
-_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
+_COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

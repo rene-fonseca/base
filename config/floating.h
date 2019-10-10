@@ -19,7 +19,7 @@ int getByteOrder() {
     int i;
   } u;
   u.i = 1;
-  return u.c[0] ? _DK_SDU_MIP__BASE__LITTLE_ENDIAN : _DK_SDU_MIP__BASE__BIG_ENDIAN;
+  return u.c[0] ? _COM_AZURE_DEV__BASE__LITTLE_ENDIAN : _COM_AZURE_DEV__BASE__BIG_ENDIAN;
 }
 
 struct IEEE_754_SinglePrecision {
@@ -475,52 +475,52 @@ bool isIEEE_QuadruplePrecision() {
 
 template<typename PRIMITIVE>
 int checkFloat(int& floatWordOrder) {
-  if (getByteOrder() == _DK_SDU_MIP__BASE__LITTLE_ENDIAN) {
+  if (getByteOrder() == _COM_AZURE_DEV__BASE__LITTLE_ENDIAN) {
     if (isIEEE_754_SinglePrecision<PRIMITIVE, IEEE_754_SinglePrecision>()) {
-      return _DK_SDU_MIP__BASE__IEEE_754_SINGLE_PRECISION;
+      return _COM_AZURE_DEV__BASE__IEEE_754_SINGLE_PRECISION;
     } else if (isIEEE_754_DoublePrecision<PRIMITIVE, IEEE_754_DoublePrecision>()) {
-      floatWordOrder = _DK_SDU_MIP__BASE__LITTLE_ENDIAN;
-      return _DK_SDU_MIP__BASE__IEEE_754_DOUBLE_PRECISION;
+      floatWordOrder = _COM_AZURE_DEV__BASE__LITTLE_ENDIAN;
+      return _COM_AZURE_DEV__BASE__IEEE_754_DOUBLE_PRECISION;
     } else if (isIEEE_754_DoublePrecision<PRIMITIVE, IEEE_754_DoublePrecision_FWOBE>()) {
-      floatWordOrder = _DK_SDU_MIP__BASE__BIG_ENDIAN;
-      return _DK_SDU_MIP__BASE__IEEE_754_DOUBLE_PRECISION;
+      floatWordOrder = _COM_AZURE_DEV__BASE__BIG_ENDIAN;
+      return _COM_AZURE_DEV__BASE__IEEE_754_DOUBLE_PRECISION;
     } else if (isIEEE_ExtendedDoublePrecision96<PRIMITIVE, IEEE_ExtendedDoublePrecision96>()) {
-      floatWordOrder = _DK_SDU_MIP__BASE__LITTLE_ENDIAN;
-      return _DK_SDU_MIP__BASE__IEEE_EXTENDED_DOUBLE_PRECISION_96;
+      floatWordOrder = _COM_AZURE_DEV__BASE__LITTLE_ENDIAN;
+      return _COM_AZURE_DEV__BASE__IEEE_EXTENDED_DOUBLE_PRECISION_96;
     } else if (isIEEE_ExtendedDoublePrecision96<PRIMITIVE, IEEE_ExtendedDoublePrecision96_FWOBE>()) {
-      floatWordOrder = _DK_SDU_MIP__BASE__BIG_ENDIAN;
-      return _DK_SDU_MIP__BASE__IEEE_EXTENDED_DOUBLE_PRECISION_96;
+      floatWordOrder = _COM_AZURE_DEV__BASE__BIG_ENDIAN;
+      return _COM_AZURE_DEV__BASE__IEEE_EXTENDED_DOUBLE_PRECISION_96;
     } else if (isIEEE_ExtendedDoublePrecision128<PRIMITIVE, IEEE_ExtendedDoublePrecision128>()) {
-      floatWordOrder = _DK_SDU_MIP__BASE__LITTLE_ENDIAN;
-      return _DK_SDU_MIP__BASE__IEEE_EXTENDED_DOUBLE_PRECISION_128;
+      floatWordOrder = _COM_AZURE_DEV__BASE__LITTLE_ENDIAN;
+      return _COM_AZURE_DEV__BASE__IEEE_EXTENDED_DOUBLE_PRECISION_128;
     } else if (isIEEE_ExtendedDoublePrecision128<PRIMITIVE, IEEE_ExtendedDoublePrecision128_FWOBE>()) {
-      floatWordOrder = _DK_SDU_MIP__BASE__BIG_ENDIAN;
-      return _DK_SDU_MIP__BASE__IEEE_EXTENDED_DOUBLE_PRECISION_128;
+      floatWordOrder = _COM_AZURE_DEV__BASE__BIG_ENDIAN;
+      return _COM_AZURE_DEV__BASE__IEEE_EXTENDED_DOUBLE_PRECISION_128;
     } else if (isIEEE_QuadruplePrecision<PRIMITIVE, IEEE_QuadruplePrecision>()) {
-      floatWordOrder = _DK_SDU_MIP__BASE__LITTLE_ENDIAN;
-      return _DK_SDU_MIP__BASE__IEEE_QUADRUPLE_PRECISION;
+      floatWordOrder = _COM_AZURE_DEV__BASE__LITTLE_ENDIAN;
+      return _COM_AZURE_DEV__BASE__IEEE_QUADRUPLE_PRECISION;
     } else if (isIEEE_QuadruplePrecision<PRIMITIVE, IEEE_QuadruplePrecision_FWOBE>()) {
-      floatWordOrder = _DK_SDU_MIP__BASE__BIG_ENDIAN;
-      return _DK_SDU_MIP__BASE__IEEE_QUADRUPLE_PRECISION;
+      floatWordOrder = _COM_AZURE_DEV__BASE__BIG_ENDIAN;
+      return _COM_AZURE_DEV__BASE__IEEE_QUADRUPLE_PRECISION;
     } else {
-      floatWordOrder = _DK_SDU_MIP__BASE__UNSPECIFIED;
-      return _DK_SDU_MIP__BASE__UNSPECIFIED;
+      floatWordOrder = _COM_AZURE_DEV__BASE__UNSPECIFIED;
+      return _COM_AZURE_DEV__BASE__UNSPECIFIED;
     }
   } else { // big endian
-    floatWordOrder = _DK_SDU_MIP__BASE__BIG_ENDIAN;
+    floatWordOrder = _COM_AZURE_DEV__BASE__BIG_ENDIAN;
     if (isIEEE_754_SinglePrecision<PRIMITIVE, IEEE_754_SinglePrecision_BE>()) {
-      return _DK_SDU_MIP__BASE__IEEE_754_SINGLE_PRECISION;
+      return _COM_AZURE_DEV__BASE__IEEE_754_SINGLE_PRECISION;
     } else if (isIEEE_754_DoublePrecision<PRIMITIVE, IEEE_754_DoublePrecision_BE>()) {
-      return _DK_SDU_MIP__BASE__IEEE_754_DOUBLE_PRECISION;
+      return _COM_AZURE_DEV__BASE__IEEE_754_DOUBLE_PRECISION;
     } else if (isIEEE_ExtendedDoublePrecision96<PRIMITIVE, IEEE_ExtendedDoublePrecision96_BE>()) {
-      return _DK_SDU_MIP__BASE__IEEE_EXTENDED_DOUBLE_PRECISION_96;
+      return _COM_AZURE_DEV__BASE__IEEE_EXTENDED_DOUBLE_PRECISION_96;
     } else if (isIEEE_ExtendedDoublePrecision128<PRIMITIVE, IEEE_ExtendedDoublePrecision128_BE>()) {
-      return _DK_SDU_MIP__BASE__IEEE_EXTENDED_DOUBLE_PRECISION_128;
+      return _COM_AZURE_DEV__BASE__IEEE_EXTENDED_DOUBLE_PRECISION_128;
     } else if (isIEEE_QuadruplePrecision<PRIMITIVE, IEEE_QuadruplePrecision_BE>()) {
-      return _DK_SDU_MIP__BASE__IEEE_QUADRUPLE_PRECISION;
+      return _COM_AZURE_DEV__BASE__IEEE_QUADRUPLE_PRECISION;
     } else {
-      floatWordOrder = _DK_SDU_MIP__BASE__UNSPECIFIED;
-      return _DK_SDU_MIP__BASE__UNSPECIFIED;
+      floatWordOrder = _COM_AZURE_DEV__BASE__UNSPECIFIED;
+      return _COM_AZURE_DEV__BASE__UNSPECIFIED;
     }
   }
 }

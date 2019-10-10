@@ -14,13 +14,13 @@
 #include <base/platforms/features.h>
 #include <base/io/async/WaitForObjects.h>
 
-_DK_SDU_MIP__BASE__DUMMY_SYMBOL
+_COM_AZURE_DEV__BASE__DUMMY_SYMBOL
 
 #if 0
 
 #include <windows.h>
 
-_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+_COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 WaitForObjects::WaitForObjects() throw() {
 }
@@ -84,6 +84,6 @@ bool WaitForObjects::waitForAll(unsigned int timeout) const throw() {
   
 };
 
-_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
+_COM_AZURE_DEV__BASE__LEAVE_NAMESPACE
 
 #endif

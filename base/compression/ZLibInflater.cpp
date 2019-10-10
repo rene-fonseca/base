@@ -17,7 +17,7 @@
 #include <base/string/FormatOutputStream.h>
 #include <base/NotSupported.h>
 
-_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+_COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 namespace internal {
   
@@ -80,7 +80,7 @@ namespace internal {
 
 ZLibInflater::ZLibInflater() throw(MemoryException)
   : buffer(BUFFER_SIZE), availableBytes(0), state(RUNNING) {
-#if (defined(_DK_SDU_MIP__BASE__ZLIB))
+#if (defined(_COM_AZURE_DEV__BASE__ZLIB))
   internal::ZLibInflater::Context* context = new internal::ZLibInflater::Context;
   this->context = context;
   clear(*context);
@@ -101,7 +101,7 @@ ZLibInflater::ZLibInflater() throw(MemoryException)
 }
 
 unsigned int ZLibInflater::push(const uint8* buffer, unsigned int size) throw(IOException) {
-#if (defined(_DK_SDU_MIP__BASE__ZLIB))
+#if (defined(_COM_AZURE_DEV__BASE__ZLIB))
   bassert(state != ENDED, EndOfFile());
   bassert(state == RUNNING, IOException(this));
   if (availableBytes == this->buffer.getSize()) {
@@ -130,7 +130,7 @@ unsigned int ZLibInflater::push(const uint8* buffer, unsigned int size) throw(IO
 }
 
 void ZLibInflater::pushEnd() throw(IOException) {
-#if (defined(_DK_SDU_MIP__BASE__ZLIB))
+#if (defined(_COM_AZURE_DEV__BASE__ZLIB))
   if (state != ENDED) {
     bassert(state == RUNNING, IOException(this));
     state = FINISHING;
@@ -141,7 +141,7 @@ void ZLibInflater::pushEnd() throw(IOException) {
 }
 
 unsigned int ZLibInflater::pull(uint8* buffer, unsigned int size) throw(IOException) {
-#if (defined(_DK_SDU_MIP__BASE__ZLIB))
+#if (defined(_COM_AZURE_DEV__BASE__ZLIB))
   bassert(state != ENDED, EndOfFile());
   
   if ((state == RUNNING) &&
@@ -222,7 +222,7 @@ unsigned int ZLibInflater::pull(uint8* buffer, unsigned int size) throw(IOExcept
 }
 
 ZLibInflater::~ZLibInflater() throw() {
-#if (defined(_DK_SDU_MIP__BASE__ZLIB))
+#if (defined(_COM_AZURE_DEV__BASE__ZLIB))
   internal::ZLibInflater::Context* context =
     Cast::pointer<internal::ZLibInflater::Context*>(this->context);
   internal::inflateEnd(context);
@@ -230,4 +230,4 @@ ZLibInflater::~ZLibInflater() throw() {
 #endif
 }
 
-_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
+_COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

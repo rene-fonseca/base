@@ -16,7 +16,7 @@
 #include <base/io/OutputStream.h>
 #include <base/io/FileDescriptor.h>
 
-_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+_COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 /**
   The FileDescriptorOutputStream class serves as a general handle to a sink of
@@ -86,4 +86,4 @@ public:
   ~FileDescriptorOutputStream();
 };
 
-_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
+_COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

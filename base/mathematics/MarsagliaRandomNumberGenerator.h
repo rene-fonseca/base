@@ -15,7 +15,7 @@
 
 #include <base/Primitives.h>
 
-_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+_COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 /**
   Implementation of the pseudorandom number generator by George Marsaglia: The
@@ -26,7 +26,7 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
   @version 1.0
 */
 
-class _DK_SDU_MIP__BASE__API MarsagliaRandomNumberGenerator {
+class _COM_AZURE_DEV__BASE__API MarsagliaRandomNumberGenerator {
 private:
 
   /** State size. */
@@ -85,4 +85,4 @@ public:
   }
 };
 
-_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
+_COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

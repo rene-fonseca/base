@@ -16,7 +16,7 @@
 #include <base/ui/Position.h>
 #include <base/Dimension.h>
 
-_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+_COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 /**
   A region of an image.
@@ -25,7 +25,7 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
   @version 1.0
 */
 
-class _DK_SDU_MIP__BASE__API Region {
+class _COM_AZURE_DEV__BASE__API Region {
 private:
   
   /** The offset of the region. */
@@ -112,4 +112,4 @@ public:
     Uninitializeable<Dimension>::IS_UNINITIALIZEABLE;
 };
 
-_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
+_COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

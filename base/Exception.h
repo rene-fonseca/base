@@ -15,7 +15,7 @@
 
 #include <base/Type.h>
 
-_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+_COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 /**
   @defgroup exceptions Exceptions
@@ -35,7 +35,7 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
   @version 1.2
 */
 
-class _DK_SDU_MIP__BASE__API Exception {
+class _COM_AZURE_DEV__BASE__API Exception {
 private:
 
   /** The message associated with the exception (ASCII format). This may not be available. */
@@ -211,4 +211,4 @@ inline void raise(EXCEPTION e) throw(EXCEPTION) {
   throw e;
 }
 
-_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
+_COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

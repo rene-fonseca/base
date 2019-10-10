@@ -17,7 +17,7 @@
 #include <base/OutOfRange.h>
 #include <base/io/PushInterface.h>
 
-_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+_COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 /**
   Implementation of the SHA-256 message-digest algorithm (see FIPS PUB 180-2).
@@ -46,7 +46,7 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
   @version 1.0
 */
 
-class _DK_SDU_MIP__BASE__API SHA256 : public Object, public PushInterface {
+class _COM_AZURE_DEV__BASE__API SHA256 : public Object, public PushInterface {
 public:
 
   /** Internal block size in bytes. */
@@ -145,4 +145,4 @@ public:
   String getBase64() const throw();
 };
 
-_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
+_COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

@@ -15,8 +15,8 @@
 
 namespace base {
 
-#define _DK_SDU_MIP__BASE__COMPILER_VERSION __BORLANDC__
-#define _DK_SDU_MIP__BASE__COMPILER_NAMESPACE com::borland::compiler
+#define _COM_AZURE_DEV__BASE__COMPILER_VERSION __BORLANDC__
+#define _COM_AZURE_DEV__BASE__COMPILER_NAMESPACE com::borland::compiler
 
   namespace com {
     

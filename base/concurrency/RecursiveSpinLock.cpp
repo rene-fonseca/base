@@ -14,7 +14,7 @@
 #include <base/concurrency/RecursiveSpinLock.h>
 #include <base/concurrency/ExclusiveSynchronize.h>
 
-_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+_COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 RecursiveSpinLock::RecursiveSpinLock() throw()
   : owner(0), numberOfLocks(0) {
@@ -62,4 +62,4 @@ void RecursiveSpinLock::releaseLock() const throw() {
   }
 }
 
-_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
+_COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

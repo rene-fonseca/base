@@ -14,7 +14,7 @@
 #include <base/concurrency/ReadWriteSpinLock.h>
 #include <base/concurrency/ExclusiveSynchronize.h>
 
-_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+_COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 ReadWriteSpinLock::ReadWriteSpinLock() throw() {
 }
@@ -90,4 +90,4 @@ void ReadWriteSpinLock::releaseLock() const throw() {
   }
 }
 
-_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
+_COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

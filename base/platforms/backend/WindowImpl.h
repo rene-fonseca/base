@@ -15,7 +15,7 @@
 
 #include <base/ui/WindowImpl.h>
 
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
 #if !defined(_WIN32_WINNT)
 #  define _WIN32_WINNT _WIN32_WINNT_WINXP
 #endif
@@ -24,13 +24,13 @@
 #  undef DELETE // yikes
 #endif
 
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
 #  define CALL_UI __stdcall
 #else
 #  define CALL_UI
 #endif
 
-_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+_COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 template<>
 class Backend<WindowImpl> {
@@ -48,10 +48,10 @@ public:
     return WindowImpl::loadModule(load);
   }
 
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   static LRESULT CALLBACK messageHandler(HWND handle, UINT message, WPARAM wParam, LPARAM lParam) throw();
 #endif // flavor
   
 };
 
-_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
+_COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

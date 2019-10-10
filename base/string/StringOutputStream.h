@@ -18,9 +18,9 @@
 #include <base/io/OutputStream.h>
 #include <base/string/FormatOutputStream.h>
 
-_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+_COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
-class _DK_SDU_MIP__BASE__API StringOutputStreamWrapper : public virtual Object,
+class _COM_AZURE_DEV__BASE__API StringOutputStreamWrapper : public virtual Object,
                                                          public virtual OutputStream {
 private:
 
@@ -61,7 +61,7 @@ public:
 
 
 // Helper class used by StringOutputStream.
-class _DK_SDU_MIP__BASE__API StringOutputStreamImpl {
+class _COM_AZURE_DEV__BASE__API StringOutputStreamImpl {
 protected:
 
   StringOutputStreamWrapper stream;
@@ -81,7 +81,7 @@ public:
   @version 1.0
 */
 
-class _DK_SDU_MIP__BASE__API StringOutputStream : protected StringOutputStreamImpl, public FormatOutputStream {
+class _COM_AZURE_DEV__BASE__API StringOutputStream : protected StringOutputStreamImpl, public FormatOutputStream {
 public:
 
   /** Specifies the default amount of memory by which the capacity is increased. */
@@ -122,4 +122,4 @@ public:
   }
 };
 
-_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
+_COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

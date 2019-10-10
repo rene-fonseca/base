@@ -19,7 +19,7 @@
 #include <base/collection/Array.h>
 #include <base/mem/Reference.h>
 
-_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+_COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 /**
   Graphics context.
@@ -29,7 +29,7 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
   @version 1.0
 */
 
-class _DK_SDU_MIP__BASE__API GraphicsContext : public WindowImpl {
+class _COM_AZURE_DEV__BASE__API GraphicsContext : public WindowImpl {
 public:
 
   /** System color. */
@@ -54,7 +54,7 @@ public:
     DASH_DOT_DOT /**< Dash dot dot. */
   };
 
-  class _DK_SDU_MIP__BASE__API GraphicsContextObjectHandle : public ReferenceCountedObject {
+  class _COM_AZURE_DEV__BASE__API GraphicsContextObjectHandle : public ReferenceCountedObject {
   private:
     
     /** Opaque handle to the graphics context object. */
@@ -75,7 +75,7 @@ public:
   /**
     @short Handle to a graphics context object (e.g. pen, brush, and font).
   */
-  class _DK_SDU_MIP__BASE__API GraphicsContextObject {
+  class _COM_AZURE_DEV__BASE__API GraphicsContextObject {
   protected:
     
     Reference<GraphicsContextObjectHandle> handle;
@@ -101,7 +101,7 @@ public:
   /**
     @short Handle to a pen.
   */
-  class _DK_SDU_MIP__BASE__API Pen : GraphicsContextObject {
+  class _COM_AZURE_DEV__BASE__API Pen : GraphicsContextObject {
     friend class GraphicsContext;
   private:
     
@@ -138,7 +138,7 @@ public:
   /**
     @short Handle to a brush.
   */
-  class _DK_SDU_MIP__BASE__API Brush : GraphicsContextObject {
+  class _COM_AZURE_DEV__BASE__API Brush : GraphicsContextObject {
     friend class GraphicsContext;
   private:
     
@@ -184,7 +184,7 @@ public:
   /**
     @short Handle to a font.
   */
-  class _DK_SDU_MIP__BASE__API Font : GraphicsContextObject {
+  class _COM_AZURE_DEV__BASE__API Font : GraphicsContextObject {
     friend class GraphicsContext;
   private:
     
@@ -221,7 +221,7 @@ public:
   };
 
   /* Alignment. */
-  class _DK_SDU_MIP__BASE__API Alignment {
+  class _COM_AZURE_DEV__BASE__API Alignment {
   public:
     
     /** Align to the left. */
@@ -239,7 +239,7 @@ public:
   };
 
   /* Text format. */
-  class _DK_SDU_MIP__BASE__API TextFormat {
+  class _COM_AZURE_DEV__BASE__API TextFormat {
   public:
 
     /** Align to the left. */
@@ -588,4 +588,4 @@ public:
   ~GraphicsContext() throw();
 };
 
-_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
+_COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

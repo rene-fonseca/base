@@ -20,7 +20,7 @@
 #include <base/string/String.h>
 #include <base/ui/UserInterfaceException.h>
 
-_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+_COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
   /**
     Indicates a menu exception.
@@ -30,7 +30,7 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
     @version 1.0
   */
   
-  class _DK_SDU_MIP__BASE__API MenuException : public UserInterfaceException {
+  class _COM_AZURE_DEV__BASE__API MenuException : public UserInterfaceException {
   public:
     
     /**
@@ -73,10 +73,10 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
   @version 1.0
 */
 
-class _DK_SDU_MIP__BASE__API Menu : public Object {
+class _COM_AZURE_DEV__BASE__API Menu : public Object {
 private:
 
-  class _DK_SDU_MIP__BASE__API MenuHandle : public ReferenceCountedObject {
+  class _COM_AZURE_DEV__BASE__API MenuHandle : public ReferenceCountedObject {
   private:
 
     /** Handle to resource. */
@@ -387,4 +387,4 @@ public:
   void remove(unsigned int index) throw(MenuException);
 };
 
-_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
+_COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

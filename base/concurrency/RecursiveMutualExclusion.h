@@ -16,7 +16,7 @@
 #include <base/concurrency/MutualExclusion.h>
 #include <base/concurrency/Thread.h>
 
-_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+_COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 /**
   This class implements a recursive mutual exclusion object.
@@ -27,7 +27,7 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
   @version 1.0
 */
 
-class _DK_SDU_MIP__BASE__API RecursiveMutualExclusion : public Lock {
+class _COM_AZURE_DEV__BASE__API RecursiveMutualExclusion : public Lock {
 private:
   
   typedef SpinLock Guard;
@@ -102,4 +102,4 @@ public:
   ~RecursiveMutualExclusion();
 };
 
-_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
+_COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

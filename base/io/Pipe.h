@@ -23,7 +23,7 @@
 #include <base/collection/Pair.h>
 #include <base/io/Handle.h>
 
-_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+_COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 /**
   This class implements an anonymous pipe. MT-level is safe.
@@ -33,7 +33,7 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
   @version 1.2
 */
 
-class _DK_SDU_MIP__BASE__API Pipe : public virtual Object, public virtual InputStream, public virtual OutputStream {
+class _COM_AZURE_DEV__BASE__API Pipe : public virtual Object, public virtual InputStream, public virtual OutputStream {
 public:
 
   class PipeHandle : public Handle {
@@ -151,4 +151,4 @@ public:
   ~Pipe();
 };
 
-_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
+_COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

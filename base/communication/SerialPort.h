@@ -22,7 +22,7 @@
 #include <base/mem/Reference.h>
 #include <base/string/String.h>
 
-_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+_COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 /**
   An RS-232 serial communications port. SerialPort describes the low-level
@@ -36,7 +36,7 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
   @version 1.0
 */
 
-class _DK_SDU_MIP__BASE__API SerialPort : public CommunicationsPort,
+class _COM_AZURE_DEV__BASE__API SerialPort : public CommunicationsPort,
                                           public virtual AsynchronousIOStream {
 private:
 
@@ -290,4 +290,4 @@ public:
   virtual ~SerialPort();
 };
 
-_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
+_COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

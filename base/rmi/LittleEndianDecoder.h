@@ -15,9 +15,9 @@
 
 #include <base/rmi/Decoder.h>
 
-_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+_COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
-class _DK_SDU_MIP__BASE__API LittleEndianDecoder : public Decoder {
+class _COM_AZURE_DEV__BASE__API LittleEndianDecoder : public Decoder {
 private:
 
   // input stream
@@ -127,4 +127,4 @@ public:
   }
 };
 
-_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
+_COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

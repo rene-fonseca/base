@@ -14,7 +14,7 @@
 #include <base/platforms/features.h>
 #include <base/xml/Transformer.h>
 
-#if defined(_DK_SDU_MIP__BASE__XSLT_XMLSOFT_ORG)
+#if defined(_COM_AZURE_DEV__BASE__XSLT_XMLSOFT_ORG)
 #  include <libxml2/libxml/xmlmemory.h>
 #  include <libxml2/libxml/xmlIO.h>
 #  include <libxml2/libxml/DOCBparser.h>
@@ -28,7 +28,7 @@
 #  include <libxslt/xsltutils.h>
 #endif
 
-_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+_COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 Transformer::Transformer() throw() {
 }
@@ -47,20 +47,20 @@ void Transformer::setParameter(
 }
 
 // bool Transformer::getXInclude() const throw() {
-// #if defined(_DK_SDU_MIP__BASE__XSLT_XMLSOFT_ORG)
+// #if defined(_COM_AZURE_DEV__BASE__XSLT_XMLSOFT_ORG)
 //   return xsltGetXIncludeDefault() != 0;
 // #endif
 // }
 
 // void Transformer::setXInclude(bool value) throw() {
-// #if defined(_DK_SDU_MIP__BASE__XSLT_XMLSOFT_ORG)
+// #if defined(_COM_AZURE_DEV__BASE__XSLT_XMLSOFT_ORG)
 //   return xsltSetXIncludeDefault(value ? 1 : 0);
 // #endif
 // }
 
 Document Transformer::transform(
   const Document& document) throw(TransformerException) {
-#if defined(_DK_SDU_MIP__BASE__XSLT_XMLSOFT_ORG)
+#if defined(_COM_AZURE_DEV__BASE__XSLT_XMLSOFT_ORG)
   Allocator<const char*> temp(parameters.getSize() * 2 + 1);
   Allocator<const char*>::Iterator i = temp.getBeginIterator();
   
@@ -86,7 +86,7 @@ Document Transformer::transform(
 }
 
 void Transformer::save(const String& filename, const Document& document) throw(DOMException, IOException) {
-#if 0 && defined(_DK_SDU_MIP__BASE__XML_XMLSOFT_ORG)
+#if 0 && defined(_COM_AZURE_DEV__BASE__XML_XMLSOFT_ORG)
   xmlDoc* doc = (xmlDoc*)document.getContext();
   int bytesWritten = xsltSaveResultToFilename(
     filename.getElements(),
@@ -108,7 +108,7 @@ void Transformer::setStylesheet(Stylesheet stylesheet) throw() {
 
 bool Transformer::functionAvailable(
   const String& ns, const String& name) throw(TransformerException) {
-#if defined(_DK_SDU_MIP__BASE__XSLT_XMLSOFT_ORG)
+#if defined(_COM_AZURE_DEV__BASE__XSLT_XMLSOFT_ORG)
 //   return xsltXPathFunctionLookup(
 //     0,
 //     name.getElements(),
@@ -121,8 +121,8 @@ bool Transformer::functionAvailable(
 }
 
 Transformer::~Transformer() throw() {
-#if defined(_DK_SDU_MIP__BASE__XSLT_XMLSOFT_ORG)
+#if defined(_COM_AZURE_DEV__BASE__XSLT_XMLSOFT_ORG)
 #endif
 }
 
-_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
+_COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

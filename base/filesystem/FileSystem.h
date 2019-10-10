@@ -20,7 +20,7 @@
 #include <base/io/File.h>
 #include <base/security/Trustee.h>
 
-_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+_COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 /**
   @defgroup filesystem File system
@@ -34,7 +34,7 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
   @version 1.1
 */
 
-class _DK_SDU_MIP__BASE__API FileSystem : public Object {
+class _COM_AZURE_DEV__BASE__API FileSystem : public Object {
 private:
 
   /** Internal attribute specifying whether or not file system links are supported by the platform. */
@@ -356,4 +356,4 @@ public:
   static Quota getQuota(const String& path, Trustee trustee) throw(FileSystemException);
 };
 
-_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
+_COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

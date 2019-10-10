@@ -15,11 +15,11 @@
 #include <base/string/String.h>
 #include <base/Cast.h>
 
-#if defined(_DK_SDU_MIP__BASE__EXCEPTION_V3MV)
+#if defined(_COM_AZURE_DEV__BASE__EXCEPTION_V3MV)
 #  include <base/platforms/compiler/v3mv/exception.h> // includes private features
 #endif
 
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
 // #define _WIN32_WINNT _WIN32_WINNT_WINXP
 #  include <windows.h>
 #else // pthread
@@ -30,14 +30,14 @@
 #  include <sys/time.h>
 #  include <unistd.h>
 #  include <errno.h>
-#  if defined(_DK_SDU_MIP__BASE__HAVE_NANOSLEEP)
+#  if defined(_COM_AZURE_DEV__BASE__HAVE_NANOSLEEP)
 #    include <time.h> // get nanosleep prototype
 #  else // fall back on pselect and finally select
 #    include <sys/select.h>
 #  endif
 #endif
 
-_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+_COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 ThreadKey<Thread> Thread::ThreadLocal::thread; // thread object
 ThreadKey<Allocator<uint8> > Thread::ThreadLocal::storage; // thread local storage
@@ -54,7 +54,7 @@ Thread::ThreadLocal::~ThreadLocal() throw() {
 
 
 void* Thread::entry(Thread* thread) throw() {
-#if defined(_DK_SDU_MIP__BASE__EXCEPTION_V3MV) && !defined(_DK_SDU_MIP__BASE__EXCEPTION_V3MV_TRANSPARENT)
+#if defined(_COM_AZURE_DEV__BASE__EXCEPTION_V3MV) && !defined(_COM_AZURE_DEV__BASE__EXCEPTION_V3MV_TRANSPARENT)
   const abi::__cxa_eh_globals* abi::__cxa_get_globals(); // this allows us to use __cxa_get_globals_fast
 #endif
   try {
@@ -81,7 +81,7 @@ void* Thread::entry(Thread* thread) throw() {
 void Thread::exit() throw() {
   ASSERT(getThread()->state == ALIVE);
   getThread()->state = EXIT;
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   ::ExitThread(0); // will properly create resource leaks
 #else // pthread
   pthread_exit(0); // will properly create resource leaks
@@ -98,7 +98,7 @@ Allocator<uint8>* Thread::getLocalStorage() throw() {
 
 void Thread::nanosleep(unsigned int nanoseconds) throw(OutOfDomain) {
   bassert(nanoseconds < 1000000000, OutOfDomain(Type::getType<Thread>()));
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   // TAG: use select (but test if better)
   HANDLE timer = ::CreateWaitableTimer(0, TRUE, 0);
   if (timer) {
@@ -111,7 +111,7 @@ void Thread::nanosleep(unsigned int nanoseconds) throw(OutOfDomain) {
     ::Sleep((nanoseconds+999999)/1000000); // round up
   }
 #else // unix
-  #if defined(_DK_SDU_MIP__BASE__HAVE_NANOSLEEP)
+  #if defined(_COM_AZURE_DEV__BASE__HAVE_NANOSLEEP)
     struct timespec interval;
     interval.tv_sec = nanoseconds/1000000000;
     interval.tv_nsec = nanoseconds % 1000000000;
@@ -119,7 +119,7 @@ void Thread::nanosleep(unsigned int nanoseconds) throw(OutOfDomain) {
       ASSERT(errno == EINTR); // interrupted by signal
 //      return interval.tv_nsec;
     }
-  #elif defined(_DK_SDU_MIP__BASE__HAVE_PSELECT)
+  #elif defined(_COM_AZURE_DEV__BASE__HAVE_PSELECT)
     struct timespec interval;
     interval.tv_sec = nanoseconds/1000000000;
     interval.tv_nsec = nanoseconds % 1000000000;
@@ -146,10 +146,10 @@ void Thread::nanosleep(unsigned int nanoseconds) throw(OutOfDomain) {
 
 void Thread::microsleep(unsigned int microseconds) throw(OutOfDomain) {
   bassert(microseconds < 1000000000, OutOfDomain(Type::getType<Thread>()));
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   ::Sleep((microseconds+999)/1000); // round up
 #else // unix
-  #if defined(_DK_SDU_MIP__BASE__HAVE_NANOSLEEP)
+  #if defined(_COM_AZURE_DEV__BASE__HAVE_NANOSLEEP)
     struct timespec interval;
     interval.tv_sec = microseconds/1000000;
     interval.tv_nsec = (microseconds % 1000000) * 1000;
@@ -157,7 +157,7 @@ void Thread::microsleep(unsigned int microseconds) throw(OutOfDomain) {
       ASSERT(errno == EINTR); // interrupted by signal
 //      return interval.tv_nsec;
     }
-  #elif defined(_DK_SDU_MIP__BASE__HAVE_PSELECT)
+  #elif defined(_COM_AZURE_DEV__BASE__HAVE_PSELECT)
     struct timespec interval;
     interval.tv_sec = microseconds/1000000;
     interval.tv_nsec = (microseconds % 1000000) * 1000;
@@ -184,10 +184,10 @@ void Thread::microsleep(unsigned int microseconds) throw(OutOfDomain) {
 
 void Thread::millisleep(unsigned int milliseconds) throw(OutOfDomain) {
   bassert(milliseconds < 1000000000, OutOfDomain(Type::getType<Thread>()));
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   ::Sleep(milliseconds);
 #else // unix
-  #if defined(_DK_SDU_MIP__BASE__HAVE_NANOSLEEP)
+  #if defined(_COM_AZURE_DEV__BASE__HAVE_NANOSLEEP)
     struct timespec interval;
     interval.tv_sec = milliseconds/1000;
     interval.tv_nsec = (milliseconds % 1000) * 1000000;
@@ -195,7 +195,7 @@ void Thread::millisleep(unsigned int milliseconds) throw(OutOfDomain) {
       ASSERT(errno == EINTR); // interrupted by signal
 //      return interval.tv_sec * 1000 + interval.tv_nsec/1000000;
     }
-  #elif defined(_DK_SDU_MIP__BASE__HAVE_PSELECT)
+  #elif defined(_COM_AZURE_DEV__BASE__HAVE_PSELECT)
     struct timespec interval;
     interval.tv_sec = milliseconds/1000;
     interval.tv_nsec = (milliseconds % 1000) * 1000000;
@@ -222,10 +222,10 @@ void Thread::millisleep(unsigned int milliseconds) throw(OutOfDomain) {
 
 void Thread::sleep(unsigned int seconds) throw(OutOfDomain) {
   bassert(seconds < 1000000, OutOfDomain(Type::getType<Thread>()));
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   ::Sleep(seconds * 1000);
 #else // unix
-  #if defined(_DK_SDU_MIP__BASE__HAVE_NANOSLEEP)
+  #if defined(_COM_AZURE_DEV__BASE__HAVE_NANOSLEEP)
     struct timespec interval;
     interval.tv_sec = seconds;
     interval.tv_nsec = 0;
@@ -233,7 +233,7 @@ void Thread::sleep(unsigned int seconds) throw(OutOfDomain) {
       ASSERT(errno == EINTR); // interrupted by signal
 //      return interval.tv_sec;
     }
-  #elif defined(_DK_SDU_MIP__BASE__HAVE_PSELECT)
+  #elif defined(_COM_AZURE_DEV__BASE__HAVE_PSELECT)
     struct timespec interval;
     interval.tv_sec = seconds;
     interval.tv_nsec = 0;
@@ -259,9 +259,9 @@ void Thread::sleep(unsigned int seconds) throw(OutOfDomain) {
 }
 
 void Thread::yield() throw() {
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   ::SwitchToThread(); // no errors
-#elif defined(_DK_SDU_MIP__BASE__PTHREAD_YIELD)
+#elif defined(_COM_AZURE_DEV__BASE__PTHREAD_YIELD)
   pthread_yield(); // ignore errors
 #else // unix
   sched_yield(); // ignore errors
@@ -283,10 +283,10 @@ Thread::Thread(Thread* _parent) throw()
     runnable(0),
     terminated(false),
     state(ALIVE) {
-#if defined(_DK_SDU_MIP__BASE__EXCEPTION_V3MV) && !defined(_DK_SDU_MIP__BASE__EXCEPTION_V3MV_TRANSPARENT)
+#if defined(_COM_AZURE_DEV__BASE__EXCEPTION_V3MV) && !defined(_COM_AZURE_DEV__BASE__EXCEPTION_V3MV_TRANSPARENT)
   const abi::__cxa_eh_globals* abi::__cxa_get_globals(); // this allows us to use __cxa_get_globals_fast
 #endif
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   identifier = Cast::container<Identifier>(::GetCurrentThreadId());
 #else // pthread
   identifier = Cast::container<Identifier>(::pthread_self());
@@ -356,7 +356,7 @@ bool Thread::isParent() const throw() {
 }
 
 bool Thread::isSelf() const throw() {
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   return ::GetCurrentThreadId() == getAddressOf(identifier);
 #else // pthread
   return ::pthread_self() == Cast::extract<pthread_t>(identifier);
@@ -364,7 +364,7 @@ bool Thread::isSelf() const throw() {
 }
 
 bool Thread::isStandalone() throw() {
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   // THREAD_AM_I_LAST_THREAD info;
 //  status = ntapi::NtQueryInformationThread(::GetCurrentThread(), ntapi::ThreadAmILastThread, &info, sizeof(info), 0);
   return false;
@@ -399,7 +399,7 @@ inline bool isWithin(TYPE minimum, TYPE value, TYPE maximum) throw() {
 }
 
 int Thread::getNamedPriority(Priority priority) throw() {
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   static const int PRIORITY[] = {7 - 31, 7 - 15, 7 - 7, 7 - 1};
 #else // unix
   static const int PRIORITY[] = {-20, -20, 0, 19};
@@ -409,7 +409,7 @@ int Thread::getNamedPriority(Priority priority) throw() {
 }
 
 Thread::Identifier Thread::getIdentifier() throw() {
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   return Cast::container<Identifier>(::GetCurrentThreadId());
 
   // add optimized method for windows nt and intel platform
@@ -434,7 +434,7 @@ Thread::Identifier Thread::getIdentifier() throw() {
 #endif
 
 int Thread::getPriority() throw(ThreadException) {
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   // see http://msdn.microsoft.com/library/en-us/dllproc/prothred_75ir.asp
   DWORD priorityClass = ::GetPriorityClass(::GetCurrentProcess());
   int priority = ::GetThreadPriority(::GetCurrentThread());
@@ -539,7 +539,7 @@ int Thread::getPriority() throw(ThreadException) {
 }
 
 Thread::Times Thread::getTimes() throw() {
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   Thread::Times result;
   FILETIME system;
   FILETIME user;
@@ -580,7 +580,7 @@ void Thread::start() throw(ThreadException) {
   // TAG: don't forget the thread priority
   bassert(state == NOTSTARTED, ThreadException(this));
   state = STARTING;
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   DWORD id = 0;
   HANDLE handle = ::CreateThread(
     0,
@@ -627,4 +627,4 @@ Thread::~Thread() {
   }
 }
 
-_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
+_COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

@@ -23,7 +23,7 @@
 // TAG: Trustee Trustee::getDomain() throw();
 // TAG: at init call Trustee::setDomain(User::getCurrentUser());
 
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
 #  include <windows.h>
 #  include <aclapi.h>
 #  include <aclapi.h>
@@ -42,7 +42,7 @@
 #  include <unistd.h>
 #endif // flavor
 
-_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+_COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 Trustee::Trustee() throw()
   : type(UNSPECIFIED),
@@ -50,7 +50,7 @@ Trustee::Trustee() throw()
 }
 
 Trustee::Trustee(User user) throw() : type(USER) {
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   integralId = 0;
   if (!user.isValid()) {
     type = UNSPECIFIED;
@@ -63,7 +63,7 @@ Trustee::Trustee(User user) throw() : type(USER) {
 }
 
 Trustee::Trustee(Group group) throw() : type(GROUP) {
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   integralId = 0;
   if (!group.isValid()) {
     type = UNSPECIFIED;
@@ -81,7 +81,7 @@ Trustee::Trustee(TrusteeType type, const void* _id) throw(OutOfDomain) {
     integralId = PrimitiveTraits<unsigned long>::MAXIMUM;
     return;
   }
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   bassert(::IsValidSid((PSID)_id) != 0, OutOfDomain("Invalid trustee", this));
   unsigned int size = ::GetLengthSid((PSID)_id);
   integralId = 0;
@@ -111,7 +111,7 @@ Trustee::Trustee(const Trustee& copy) throw()
 
 Trustee& Trustee::operator=(const Trustee& eq) throw() {
   type = eq.type;
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   id = eq.id; // dont care about integralId
 #else // unix
   integralId = eq.integralId; // dont care about id
@@ -120,7 +120,7 @@ Trustee& Trustee::operator=(const Trustee& eq) throw() {
 }
 
 bool Trustee::operator==(const Trustee& eq) const throw() {
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   if (!((id.isValid()) && (eq.id.isValid()))) {
     return !id.isValid() && !eq.id.isValid();
   }
@@ -135,7 +135,7 @@ bool Trustee::operator==(const Trustee& eq) const throw() {
 }
 
 Trustee::Trustee(const String& name) throw(TrusteeException) {
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   SID_NAME_USE sidType;
   uint8 sid[SECURITY_MAX_SID_SIZE];
   DWORD size = getArraySize(sid);
@@ -171,7 +171,7 @@ Trustee::Trustee(const String& name) throw(TrusteeException) {
     type = Trustee::USER;
     integralId = entry->pw_uid;
   } else {
-  #if defined(_DK_SDU_MIP__BASE__HAVE_GETGRNAM_R)
+  #if defined(_COM_AZURE_DEV__BASE__HAVE_GETGRNAM_R)
     struct group grp;
     struct group* entry;
     int result = ::getgrnam_r(
@@ -202,7 +202,7 @@ Trustee::Trustee(const String& name) throw(TrusteeException) {
 }
 
 bool Trustee::isInitialized() const throw() {
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   return id.isValid();
 #else // unix
   return integralId == PrimitiveTraits<unsigned long>::MAXIMUM;
@@ -210,7 +210,7 @@ bool Trustee::isInitialized() const throw() {
 }
 
 Trustee::TrusteeType Trustee::getType() const throw(TrusteeException) {
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   bassert(id.isValid(), TrusteeException("Invalid", this));
   if (type == UNSPECIFIED) {
     DWORD nameSize = 0;
@@ -235,7 +235,7 @@ Trustee::TrusteeType Trustee::getType() const throw(TrusteeException) {
 }
 
 bool Trustee::isMemberOf(const Trustee& trustee) const throw(TrusteeException) {
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   if (!id.isValid()) {
     return false;
   }
@@ -270,7 +270,7 @@ bool Trustee::isMemberOf(const Trustee& trustee) const throw(TrusteeException) {
 
 // TAG: select full name domain/user with option: LOCAL prefix?, BUILTIN prefix (no)?
 String Trustee::getName() const throw(TrusteeException) {
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   if (!id.isValid()) {
     return Literal("<unknown>");
   }
@@ -295,7 +295,7 @@ String Trustee::getName() const throw(TrusteeException) {
   switch (type) {
   case Trustee::GROUP:
     {
-#if defined(_DK_SDU_MIP__BASE__HAVE_GETGRNAM_R)
+#if defined(_COM_AZURE_DEV__BASE__HAVE_GETGRNAM_R)
       //long sysconf(_SC_GETGR_R_SIZE_MAX);
       Allocator<uint8>* buffer = Thread::getLocalStorage();
       struct group grp;
@@ -340,7 +340,7 @@ String Trustee::getName() const throw(TrusteeException) {
 
 FormatOutputStream& operator<<(
   FormatOutputStream& stream, const Trustee& value) throw(IOException) {
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   if (!value.id.isValid()) {
     return stream << "<unknown>";
   }
@@ -396,7 +396,7 @@ FormatOutputStream& operator<<(
 }
 
 unsigned long Hash<Trustee>::operator()(const Trustee& value) throw() {
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   if (!value.id.isValid()) {
     return 0;
   }
@@ -412,4 +412,4 @@ unsigned long Hash<Trustee>::operator()(const Trustee& value) throw() {
 #endif // flavor
 }
 
-_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
+_COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

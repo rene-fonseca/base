@@ -16,7 +16,7 @@
 #include <base/concurrency/SpinLock.h>
 #include <base/Base.h>
 
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
 #  include <windows.h>
 #else // unix
 #  define __thread // TAG: temp. fix for s390-ibm-linux-gnu
@@ -24,9 +24,9 @@
 #  include <errno.h>
 #endif // flavor
 
-_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+_COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
 
 class ReadWriteLockImpl {
 private:
@@ -132,9 +132,9 @@ public:
 #endif // flavor
 
 ReadWriteLock::ReadWriteLock() throw(ResourceException) {
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   representation = new ReadWriteLockImpl();
-#elif defined(_DK_SDU_MIP__BASE__PTHREAD_RWLOCK)
+#elif defined(_COM_AZURE_DEV__BASE__PTHREAD_RWLOCK)
   representation = new pthread_rwlock_t[1]; // TAG: needs automatic deletion on exception
   pthread_rwlockattr_t attributes;
   if (pthread_rwlockattr_init(&attributes) != 0) {
@@ -160,7 +160,7 @@ ReadWriteLock::ReadWriteLock() throw(ResourceException) {
     delete[] static_cast<pthread_mutex_t*>(representation);
     throw ResourceException(this);
   }
-#if (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__CYGWIN)
+#if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__CYGWIN)
    #warning disabled selection of mutex type due to CYGWIN bug
 #else
   if (pthread_mutexattr_settype(&attributes, PTHREAD_MUTEX_ERRORCHECK) != 0) {
@@ -179,9 +179,9 @@ ReadWriteLock::ReadWriteLock() throw(ResourceException) {
 }
 
 void ReadWriteLock::exclusiveLock() const throw(ReadWriteLockException) {
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   static_cast<ReadWriteLockImpl*>(representation)->exclusiveLock();
-#elif defined(_DK_SDU_MIP__BASE__PTHREAD_RWLOCK)
+#elif defined(_COM_AZURE_DEV__BASE__PTHREAD_RWLOCK)
   if (pthread_rwlock_wrlock(static_cast<pthread_rwlock_t*>(representation))) {
     throw ReadWriteLockException(this);
   }
@@ -198,9 +198,9 @@ void ReadWriteLock::exclusiveLock() const throw(ReadWriteLockException) {
 }
 
 bool ReadWriteLock::tryExclusiveLock() const throw(ReadWriteLockException) {
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   return static_cast<ReadWriteLockImpl*>(representation)->tryExclusiveLock();
-#elif defined(_DK_SDU_MIP__BASE__PTHREAD_RWLOCK)
+#elif defined(_COM_AZURE_DEV__BASE__PTHREAD_RWLOCK)
   int result = pthread_rwlock_trywrlock(static_cast<pthread_rwlock_t*>(representation));
   if (result == 0) {
     return true;
@@ -222,9 +222,9 @@ bool ReadWriteLock::tryExclusiveLock() const throw(ReadWriteLockException) {
 }
 
 void ReadWriteLock::sharedLock() const throw(ReadWriteLockException) {
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   static_cast<ReadWriteLockImpl*>(representation)->sharedLock();
-#elif defined(_DK_SDU_MIP__BASE__PTHREAD_RWLOCK)
+#elif defined(_COM_AZURE_DEV__BASE__PTHREAD_RWLOCK)
   if (pthread_rwlock_rdlock(static_cast<pthread_rwlock_t*>(representation))) {
     throw ReadWriteLockException(this);
   }
@@ -241,9 +241,9 @@ void ReadWriteLock::sharedLock() const throw(ReadWriteLockException) {
 }
 
 bool ReadWriteLock::trySharedLock() const throw(ReadWriteLockException) {
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   return static_cast<ReadWriteLockImpl*>(representation)->trySharedLock();
-#elif defined(_DK_SDU_MIP__BASE__PTHREAD_RWLOCK)
+#elif defined(_COM_AZURE_DEV__BASE__PTHREAD_RWLOCK)
   int result = pthread_rwlock_tryrdlock(static_cast<pthread_rwlock_t*>(representation));
   if (result == 0) {
     return true;
@@ -266,9 +266,9 @@ bool ReadWriteLock::trySharedLock() const throw(ReadWriteLockException) {
 
 void ReadWriteLock::releaseLock() const throw(ReadWriteLockException) {
   // must be invoked by a thread which has already has a acquired an exclusive or shared lock!
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   static_cast<ReadWriteLockImpl*>(representation)->releaseLock();
-#elif defined(_DK_SDU_MIP__BASE__PTHREAD_RWLOCK)
+#elif defined(_COM_AZURE_DEV__BASE__PTHREAD_RWLOCK)
   if (pthread_rwlock_unlock(static_cast<pthread_rwlock_t*>(representation))) {
     throw ReadWriteLockException(this);
   }
@@ -280,9 +280,9 @@ void ReadWriteLock::releaseLock() const throw(ReadWriteLockException) {
 }
 
 ReadWriteLock::~ReadWriteLock() {
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   delete static_cast<ReadWriteLockImpl*>(representation);
-#elif defined(_DK_SDU_MIP__BASE__PTHREAD_RWLOCK)
+#elif defined(_COM_AZURE_DEV__BASE__PTHREAD_RWLOCK)
   if (pthread_rwlock_destroy(static_cast<pthread_rwlock_t*>(representation))) {
     throw ReadWriteLockException(this);
   }
@@ -295,4 +295,4 @@ ReadWriteLock::~ReadWriteLock() {
 #endif
 }
 
-_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
+_COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

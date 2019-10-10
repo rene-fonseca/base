@@ -15,7 +15,7 @@
 
 #include <base/xml/Text.h>
 
-_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+_COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 class Document;
 
@@ -41,7 +41,7 @@ class Document;
   @version 1.0
 */
 
-class _DK_SDU_MIP__BASE__API CDATASection : public Text {
+class _COM_AZURE_DEV__BASE__API CDATASection : public Text {
   friend class Document;
 protected:
 
@@ -66,4 +66,4 @@ public:
   }
 };
 
-_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
+_COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

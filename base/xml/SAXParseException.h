@@ -16,7 +16,7 @@
 #include <base/xml/SAXException.h>
 #include <base/string/String.h>
 
-_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+_COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 /**
   This exception will include information for locating the error in the
@@ -31,7 +31,7 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
   @version 1.0
 */
 
-class _DK_SDU_MIP__BASE__API SAXParseException : public SAXException {
+class _COM_AZURE_DEV__BASE__API SAXParseException : public SAXException {
 private:
 
   /**
@@ -143,4 +143,4 @@ public:
   }
 };
 
-_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
+_COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

@@ -18,7 +18,7 @@
 #include <base/concurrency/Thread.h>
 #include <base/string/String.h>
 
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
 #  include <windows.h>
 #else // unix
 #  include <sys/types.h>
@@ -29,17 +29,17 @@
 #  include <unistd.h>
 #  include <errno.h>
 #  include <string.h> // required on solaris 'cause FD_ZERO uses memset
-#  if (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__CYGWIN)
+#  if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__CYGWIN)
 #    warning ioctl is not supported (CYGWIN)
-#  elif (_DK_SDU_MIP__BASE__OS != _DK_SDU_MIP__BASE__MACOS)
+#  elif (_COM_AZURE_DEV__BASE__OS != _COM_AZURE_DEV__BASE__MACOS)
 #    include <stropts.h> // defines FLUSH macros
 #  endif
 #endif
 
-_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+_COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 Pair<Pipe, Pipe> Pipe::make() throw(PipeException) {
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   // create two named pipes with unique names (one for input and one for output - may be the same handle)
   HANDLE ihandle = ::CreateFile(
     L"\\\\.\\pipe\\???i", // file name
@@ -83,7 +83,7 @@ Pair<Pipe, Pipe> Pipe::make() throw(PipeException) {
 
 
 Pipe::PipeHandle::~PipeHandle() {
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   if (isValid()) {
     if (::CloseHandle(getHandle())) {
       throw PipeException("Unable to close pipe", this);
@@ -109,7 +109,7 @@ void Pipe::close() throw(PipeException) {
 }
 
 unsigned int Pipe::getBufferSize() const throw() {
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   DWORD result;
   GetNamedPipeInfo(fd->getHandle(), 0, &result, 0, 0); // TAG: separate input and output buffer sizes
   return result;
@@ -123,14 +123,14 @@ bool Pipe::atEnd() const throw(PipeException) {
 }
 
 unsigned int Pipe::available() const throw(PipeException) {
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   DWORD bytesAvailable;
   if (!::PeekNamedPipe(fd->getHandle(), 0, 0, 0, &bytesAvailable, 0)) {
     throw PipeException("Unable to get available bytes", this);
   }
   return bytesAvailable;
 #else // unix
-  #if defined(_DK_SDU_MIP__BASE__LARGE_FILE_SYSTEM)
+  #if defined(_COM_AZURE_DEV__BASE__LARGE_FILE_SYSTEM)
     struct stat64 status;
     int result = fstat64(fd->getHandle(), &status);
   #else
@@ -154,12 +154,12 @@ unsigned int Pipe::skip(unsigned int count) throw(PipeException) {
 }
 
 void Pipe::flush() throw(PipeException) {
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   if (!::FlushFileBuffers(fd->getHandle())) {
     throw PipeException("Unable to flush pipe", this);
   }
 #else // unix
-  #if (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__MACOS) || (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__CYGWIN)
+  #if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__MACOS) || (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__CYGWIN)
 //    #warning Pipe::flush() not supported (CYGWIN)
   #else
     int command = FLUSHW;
@@ -179,7 +179,7 @@ unsigned int Pipe::read(
   bassert(!end, EndOfFile(this));
   unsigned int bytesRead = 0;
   while (bytesToRead > 0) {
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
     DWORD result;
     BOOL success = ::ReadFile(
       fd->getHandle(),
@@ -235,7 +235,7 @@ unsigned int Pipe::write(
   // TAG: currently always blocks
   unsigned int bytesWritten = 0;
   while (bytesToWrite) {
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
     DWORD result;
     BOOL success = ::WriteFile(
       fd->getHandle(),
@@ -270,7 +270,7 @@ unsigned int Pipe::write(
 }
 
 void Pipe::wait() const throw(PipeException) {
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   DWORD result = ::WaitForSingleObject(fd->getHandle(), INFINITE);
   ASSERT(result == WAIT_OBJECT_0);
 #else // unix
@@ -286,7 +286,7 @@ void Pipe::wait() const throw(PipeException) {
 }
 
 bool Pipe::wait(unsigned int timeout) const throw(PipeException) {
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   DWORD result = ::WaitForSingleObject(fd->getHandle(), timeout); // FIXME:
   return result == WAIT_OBJECT_0;
 #else // unix
@@ -310,4 +310,4 @@ Pipe::~Pipe() {
   flush();
 }
 
-_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
+_COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

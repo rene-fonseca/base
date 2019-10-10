@@ -15,7 +15,7 @@
 
 #include <base/rmi/idl/IDLObject.h>
 
-_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+_COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 /**
   Interface Definition Language (IDL) field of structure.
@@ -25,7 +25,7 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
   @version 1.0
 */
 
-class _DK_SDU_MIP__BASE__API IDLField : public IDLObject {
+class _COM_AZURE_DEV__BASE__API IDLField : public IDLObject {
 private:
 
   /** Type of the field. */
@@ -55,4 +55,4 @@ public:
   ~IDLField() throw();
 };
 
-_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
+_COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

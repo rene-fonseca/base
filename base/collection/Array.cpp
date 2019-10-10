@@ -13,4 +13,4 @@
 
 #include <base/collection/Array.h>
 
-_DK_SDU_MIP__BASE__DUMMY_SYMBOL
+_COM_AZURE_DEV__BASE__DUMMY_SYMBOL

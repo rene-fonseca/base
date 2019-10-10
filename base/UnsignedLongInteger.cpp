@@ -14,7 +14,7 @@
 #include <base/UnsignedLongInteger.h>
 #include <base/string/ASCIITraits.h>
 
-_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+_COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 unsigned long long UnsignedLongInteger::parse(
   const String& string, unsigned int accept) throw(InvalidFormat) {
@@ -118,4 +118,4 @@ FormatInputStream& operator>>(FormatInputStream& stream, unsigned long long& val
   return stream;
 }
 
-_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
+_COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

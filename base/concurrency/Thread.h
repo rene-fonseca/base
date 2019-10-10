@@ -23,7 +23,7 @@
 #include <base/mem/NullPointer.h>
 #include <base/string/FormatOutputStream.h>
 
-_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+_COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 /**
   @defgroup concurrency Concurrency
@@ -69,7 +69,7 @@ class Runnable;
   @version 1.3
 */
 
-class _DK_SDU_MIP__BASE__API Thread : public Runnable {
+class _COM_AZURE_DEV__BASE__API Thread : public Runnable {
   friend class ThreadImpl;
   friend class DaemonImpl;
 public:
@@ -460,4 +460,4 @@ public:
   ~Thread();
 };
 
-_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
+_COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

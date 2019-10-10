@@ -13,7 +13,7 @@
 
 #include <base/rmi/OrbResponse.h>
 
-_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+_COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 OrbResponse::OrbResponse() throw() {
 }
@@ -30,4 +30,4 @@ OrbResponse::~OrbResponse() throw() {
     stream exception
 */
 
-_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
+_COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

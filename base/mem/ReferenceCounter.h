@@ -17,7 +17,7 @@
 #include <base/Base.h>
 #include <atomic>
 
-_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+_COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 /**
   Automation pointer for reference counted objects. This class is responsible
@@ -243,4 +243,4 @@ public:
   }
 };
 
-_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
+_COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

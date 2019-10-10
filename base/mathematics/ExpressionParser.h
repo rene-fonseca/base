@@ -21,7 +21,7 @@
 #include <base/collection/HashTable.h>
 #include <base/mathematics/ExpressionException.h>
 
-_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+_COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 /**
   Arithmetic expression evaluator.
@@ -32,7 +32,7 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
   @version 1.0
 */
 
-class _DK_SDU_MIP__BASE__API ExpressionEvaluator : public Object {
+class _COM_AZURE_DEV__BASE__API ExpressionEvaluator : public Object {
 public:
 
   /** The valid types of a node in an expression. */
@@ -528,4 +528,4 @@ public:
   ~ExpressionParser() throw();
 };
 
-_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
+_COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

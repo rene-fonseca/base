@@ -16,7 +16,7 @@
 #include <base/features.h>
 #include <typeinfo>
 
-_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+_COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 /**
   This class is used to identify any type within the application.
@@ -26,13 +26,13 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
   @version 1.0.2
 */
 
-class _DK_SDU_MIP__BASE__API Type {
+class _COM_AZURE_DEV__BASE__API Type {
   friend class Exception;
 private:
 
   const std::type_info* type = nullptr;
 
-  class _DK_SDU_MIP__BASE__API Uninitialized {
+  class _COM_AZURE_DEV__BASE__API Uninitialized {
   };
 
   inline Type(const std::type_info* _type) throw() : type(_type) {
@@ -149,4 +149,4 @@ public:
   }
 };
 
-_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
+_COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

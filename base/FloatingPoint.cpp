@@ -14,7 +14,7 @@
 #include <base/FloatingPoint.h>
 #include <base/string/ASCIITraits.h>
 
-_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+_COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 // TAG: locale specific
 // TAG: support hex format
@@ -926,4 +926,4 @@ void analyseFloatingPoint<FloatingPoint::Representation::IEEEQuadruplePrecision>
   }
 }
 
-_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
+_COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

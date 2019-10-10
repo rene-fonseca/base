@@ -15,7 +15,7 @@
 
 #include <base/xml/DocumentType.h>
 
-_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+_COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 class Document;
 
@@ -25,7 +25,7 @@ class Document;
   @version 1.0
 */
 
-class _DK_SDU_MIP__BASE__API Declaration : public Node {
+class _COM_AZURE_DEV__BASE__API Declaration : public Node {
   friend class Document;
 protected:
   
@@ -54,4 +54,4 @@ public:
   DocumentType getDocumentType() throw();
 };
 
-_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
+_COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

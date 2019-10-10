@@ -17,7 +17,7 @@
 #include <base/mem/NullPointer.h>
 #include <base/Functor.h>
 
-_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+_COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 /**
   Automation pointer which protects the pointer value from direct access. The
@@ -127,4 +127,4 @@ public:
   }
 };
 
-_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
+_COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

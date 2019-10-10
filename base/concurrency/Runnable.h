@@ -16,7 +16,7 @@
 #include <base/Object.h>
 #include <base/concurrency/Thread.h>
 
-_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+_COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 class Thread;
 
@@ -29,7 +29,7 @@ class Thread;
   @version 1.0
 */
 
-class _DK_SDU_MIP__BASE__API Runnable : public virtual Object {
+class _COM_AZURE_DEV__BASE__API Runnable : public virtual Object {
 protected:
 
   /** Specifies that the active object should be terminated. */
@@ -76,4 +76,4 @@ public:
   }
 };
 
-_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
+_COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

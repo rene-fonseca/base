@@ -19,11 +19,11 @@
 #include <base/string/ANSIEscapeSequence.h>
 #include <base/filesystem/FileSystem.h>
 
-_DK_SDU_MIP__BASE__DUMMY_SYMBOL
+_COM_AZURE_DEV__BASE__DUMMY_SYMBOL
 
 #if 0
 
-#if (_DK_SDU_MIP__BASE__FLAVOR != _DK_SDU_MIP__BASE__UNIX)
+#if (_COM_AZURE_DEV__BASE__FLAVOR != _COM_AZURE_DEV__BASE__UNIX)
 #  error LinuxRawIEEE1394Impl not supported by flavor
 #endif
 
@@ -33,13 +33,13 @@ _DK_SDU_MIP__BASE__DUMMY_SYMBOL
 #include <unistd.h>
 #include <poll.h>
 
-_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+_COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 namespace LinuxRawIEEE1394Impl {
   
   const Literal DEVICE_NAME = Literal("raw1394");
   
-_DK_SDU_MIP__BASE__PACKED__BEGIN
+_COM_AZURE_DEV__BASE__PACKED__BEGIN
   struct Request {
     uint32 type;
     int32 error;
@@ -50,8 +50,8 @@ _DK_SDU_MIP__BASE__PACKED__BEGIN
     uint64 tag;
     uint64 sendBuffer;
     uint64 receiveBuffer;
-  } _DK_SDU_MIP__BASE__PACKED;
-_DK_SDU_MIP__BASE__PACKED__END
+  } _COM_AZURE_DEV__BASE__PACKED;
+_COM_AZURE_DEV__BASE__PACKED__END
 
   enum Error {
     ERROR_NONE = 0,
@@ -827,6 +827,6 @@ void LinuxRawIEEE1394::writeIsochronous(const uint8* buffer, unsigned int size, 
   status = requestContext.status;
 }
 
-_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
+_COM_AZURE_DEV__BASE__LEAVE_NAMESPACE
 
 #endif

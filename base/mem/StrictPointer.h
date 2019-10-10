@@ -16,7 +16,7 @@
 #include <base/mem/NullPointer.h>
 #include <base/NotCopyable.h>
 
-_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+_COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 /**
   Automation pointer which cannot be copied and which is protected from direct
@@ -74,4 +74,4 @@ public:
   }
 };
 
-_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
+_COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

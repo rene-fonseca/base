@@ -15,7 +15,7 @@
 
 #include <base/concurrency/LockException.h>
 
-_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+_COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 /**
   Exception raised by mutual exclusion synchronization objects.
@@ -25,7 +25,7 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
   @version 1.0
 */
 
-class _DK_SDU_MIP__BASE__API MutualExclusionException : public LockException {
+class _COM_AZURE_DEV__BASE__API MutualExclusionException : public LockException {
 public:
 
   /**
@@ -62,4 +62,4 @@ public:
   }
 };
 
-_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
+_COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

@@ -20,7 +20,7 @@
 #include <base/security/User.h>
 #include <base/security/Group.h>
 
-_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+_COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 /**
   File information wrapper class.
@@ -30,7 +30,7 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
   @version 1.2
 */
 
-class _DK_SDU_MIP__BASE__API FileInfo : public Object {
+class _COM_AZURE_DEV__BASE__API FileInfo : public Object {
 public:
 
   /** Sticky bit. */
@@ -161,4 +161,4 @@ public:
   String getPath() const throw();
 };
 
-_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
+_COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

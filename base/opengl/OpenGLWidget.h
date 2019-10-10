@@ -16,7 +16,7 @@
 #include <base/ui/Widget.h>
 #include <base/opengl/OpenGLContextImpl.h>
 
-_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+_COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 /**
   OpenGL widget.
@@ -26,7 +26,7 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
   @version 1.0
 */
 
-class _DK_SDU_MIP__BASE__API OpenGLWidget : public Widget, public OpenGLContextImpl {
+class _COM_AZURE_DEV__BASE__API OpenGLWidget : public Widget, public OpenGLContextImpl {
 private:
 
   nothing prefixInitialization;
@@ -62,4 +62,4 @@ public:
   }
 };
 
-_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
+_COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

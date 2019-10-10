@@ -19,7 +19,7 @@
 #include <base/security/User.h>
 #include <base/collection/Hash.h>
 
-_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+_COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 /**
   A trustee (e.g. user or group).
@@ -29,7 +29,7 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
   @version 1.2
 */
 
-class _DK_SDU_MIP__BASE__API Trustee : public Object {
+class _COM_AZURE_DEV__BASE__API Trustee : public Object {
   friend class Hash<Trustee>;
 public:
 
@@ -61,7 +61,7 @@ public:
     @version 1.0
   */
   
-  class _DK_SDU_MIP__BASE__API TrusteeException : public Exception {
+  class _COM_AZURE_DEV__BASE__API TrusteeException : public Exception {
   public:
     
     /**
@@ -197,4 +197,4 @@ public:
   unsigned long operator()(const Trustee& value) throw();
 };
 
-_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
+_COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

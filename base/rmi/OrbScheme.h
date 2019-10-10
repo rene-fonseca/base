@@ -23,7 +23,7 @@
 #include <base/CastException.h>
 #include <base/mem/ProtectedPointer.h>
 
-_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+_COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 class Orb;
 class OrbConnectionFactory;
@@ -37,7 +37,7 @@ class OrbConnectionFactory;
   @version 1.0
 */
 
-class _DK_SDU_MIP__BASE__API OrbScheme : public Polymorphic, public ReferenceCountedObject {
+class _COM_AZURE_DEV__BASE__API OrbScheme : public Polymorphic, public ReferenceCountedObject {
 public:
   
   /**
@@ -95,4 +95,4 @@ public:
   virtual void run(ProtectedPointer<Orb> orb) throw(OrbException) = 0;
 };
 
-_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
+_COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

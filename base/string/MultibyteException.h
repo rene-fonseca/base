@@ -16,7 +16,7 @@
 #include <base/Exception.h>
 #include <base/Primitives.h>
 
-_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+_COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 /**
   This exception is raised on convertion errors from or to multibyte
@@ -27,7 +27,7 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
   @version 1.0
 */
 
-class _DK_SDU_MIP__BASE__API MultibyteException : public Exception {
+class _COM_AZURE_DEV__BASE__API MultibyteException : public Exception {
 private:
   
   /** Index of first invalid character. */
@@ -122,4 +122,4 @@ public:
   }
 };
 
-_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
+_COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

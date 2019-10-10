@@ -15,7 +15,7 @@
 
 #include <base/rmi/idl/IDLObject.h>
 
-_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+_COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 /**
   Interface Definition Language (IDL) constant.
@@ -25,7 +25,7 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
   @version 1.0
 */
 
-class _DK_SDU_MIP__BASE__API IDLConstant : public IDLObject {
+class _COM_AZURE_DEV__BASE__API IDLConstant : public IDLObject {
 private:
 
   /** The fully qualified name of the constant. */
@@ -50,4 +50,4 @@ public:
   ~IDLConstant() throw();
 };
 
-_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
+_COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

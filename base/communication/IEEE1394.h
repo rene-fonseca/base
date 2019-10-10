@@ -23,7 +23,7 @@
 #include <base/collection/Array.h>
 #include <base/Cast.h>
 
-_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+_COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 /**
   IEEE-1394 (also known as FireWire (Apple Computer) and i.LINK (Sony Corp.))
@@ -35,7 +35,7 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
   @version 1.1
 */
 
-class _DK_SDU_MIP__BASE__API IEEE1394 : public CommunicationsPort, public IEEE1394Common {
+class _COM_AZURE_DEV__BASE__API IEEE1394 : public CommunicationsPort, public IEEE1394Common {
 public:
 
   /** The CSR base address. */
@@ -261,20 +261,20 @@ public:
     unsigned int sy : 4; /** Synchronization code. */
   };
 
-_DK_SDU_MIP__BASE__PACKED__BEGIN
+_COM_AZURE_DEV__BASE__PACKED__BEGIN
   struct BusInfo {
     BigEndian<uint32> name; // "1394"
     BigEndian<uint32> flags;
     uint8 guid[8];
-  } _DK_SDU_MIP__BASE__PACKED;
-_DK_SDU_MIP__BASE__PACKED__END
+  } _COM_AZURE_DEV__BASE__PACKED;
+_COM_AZURE_DEV__BASE__PACKED__END
 
-_DK_SDU_MIP__BASE__PACKED__BEGIN
+_COM_AZURE_DEV__BASE__PACKED__BEGIN
   struct ConfigurationIntro {
     BigEndian<uint32> crc;
     BusInfo busInfo;
-  } _DK_SDU_MIP__BASE__PACKED;
-_DK_SDU_MIP__BASE__PACKED__END
+  } _COM_AZURE_DEV__BASE__PACKED;
+_COM_AZURE_DEV__BASE__PACKED__END
 private:
 
   /** The IEEE 1394 implementation. */
@@ -940,4 +940,4 @@ public:
   }
 };
 
-_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
+_COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

@@ -20,7 +20,7 @@
 #include <base/mem/Reference.h>
 #include <base/string/FormatOutputStream.h>
 
-_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+_COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 /**
   A stack is a last-in-first-out data structure. This class is implemented as a
@@ -159,7 +159,7 @@ protected:
 
     @version 1.0
   */
-  class _DK_SDU_MIP__BASE__API StackImpl : public ReferenceCountedObject {
+  class _COM_AZURE_DEV__BASE__API StackImpl : public ReferenceCountedObject {
   protected:
 
     /** The node on the top of the stack. */
@@ -440,4 +440,4 @@ FormatOutputStream& operator<<(
   return stream;
 }
 
-_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
+_COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

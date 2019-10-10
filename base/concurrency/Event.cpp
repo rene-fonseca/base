@@ -14,7 +14,7 @@
 #include <base/platforms/features.h>
 #include <base/concurrency/Event.h>
 
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
 #  include <windows.h>
 #else // pthread
 #  define __thread // TAG: temp. fix for s390-ibm-linux-gnu
@@ -24,12 +24,12 @@
 #  include <errno.h>
 #endif
 
-_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+_COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 class EventImpl {
 public:
   
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__UNIX)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__UNIX)
   struct Context {
     bool signaled;
     pthread_cond_t condition;
@@ -40,7 +40,7 @@ public:
 
 // TAG: why "throw(Event::EventException)" and not just "throw(EventException)"
 Event::Event() throw(ResourceException) {
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   if ((context = Cast::pointer<void*>(::CreateEvent(0, TRUE, FALSE, 0))) == 0) {
     throw ResourceException("Unable to initialize event", this);
   }
@@ -53,7 +53,7 @@ Event::Event() throw(ResourceException) {
     delete[] context;
     throw ResourceException(this);
   }
-#if (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__CYGWIN)
+#if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__CYGWIN)
 #  warning disabled selection of mutex type due to CYGWIN bug
 #else
   if (pthread_mutexattr_settype(&attributes, PTHREAD_MUTEX_ERRORCHECK)) {
@@ -79,7 +79,7 @@ Event::Event() throw(ResourceException) {
 }
 
 bool Event::isSignaled() const throw(EventException) {
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   return ::WaitForSingleObject(context, 0) == WAIT_OBJECT_0; // should never fail
 #else // pthread
   bool result;
@@ -95,7 +95,7 @@ bool Event::isSignaled() const throw(EventException) {
 }
 
 void Event::reset() throw(EventException) {
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   if (!::ResetEvent(context)) {
     throw EventException("Unable to reset event", this);
   }
@@ -111,7 +111,7 @@ void Event::reset() throw(EventException) {
 }
 
 void Event::signal() throw(EventException) {
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   if (!::SetEvent(context)) {
     throw EventException("Unable to signal event", this);
   }
@@ -130,7 +130,7 @@ void Event::signal() throw(EventException) {
 }
 
 void Event::wait() const throw(EventException) {
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   if (::WaitForSingleObject(context, INFINITE) != WAIT_OBJECT_0) {
     throw EventException("Unable to wait for event", this);
   }
@@ -156,7 +156,7 @@ bool Event::wait(unsigned int microseconds) const throw(OutOfDomain, EventExcept
   if (microseconds >= 1000000) {
     throw OutOfDomain(this);
   }
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   switch (::WaitForSingleObject(context, microseconds/1000)) {
   case WAIT_OBJECT_0:
     return true;
@@ -199,7 +199,7 @@ bool Event::wait(unsigned int microseconds) const throw(OutOfDomain, EventExcept
 }
 
 Event::~Event() {
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   if (::CloseHandle(context) == 0) {
     throw EventException("Unable to destroy event", this);
   }
@@ -211,4 +211,4 @@ Event::~Event() {
 #endif
 }
 
-_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
+_COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

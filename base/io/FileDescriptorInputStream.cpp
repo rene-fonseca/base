@@ -17,7 +17,7 @@
 #include <base/concurrency/Thread.h>
 #include <base/Trace.h>
 
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
 #  include <windows.h>
 #else // unix
 #  include <sys/types.h>
@@ -33,7 +33,7 @@
 #  endif
 #endif // flavor
 
-_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+_COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 FileDescriptorInputStream::FileDescriptorInputStream() throw() :
   FileDescriptor(), end(false) {
@@ -59,7 +59,7 @@ FileDescriptorInputStream& FileDescriptorInputStream::operator=(
 }
 
 unsigned int FileDescriptorInputStream::available() const throw(IOException) {
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   DWORD bytesAvailable;
   switch (::GetFileType(fd->getHandle())) {
   case FILE_TYPE_PIPE:
@@ -88,7 +88,7 @@ unsigned int FileDescriptorInputStream::available() const throw(IOException) {
   }
   return bytesAvailable;
 #else // unix
-  #if defined(_DK_SDU_MIP__BASE__LARGE_FILE_SYSTEM)
+  #if defined(_COM_AZURE_DEV__BASE__LARGE_FILE_SYSTEM)
     struct stat64 status;
     int result = fstat64(fd->getHandle(), &status);
   #else
@@ -108,7 +108,7 @@ unsigned int FileDescriptorInputStream::read(
   bassert(!end, EndOfFile(this));
   unsigned int bytesRead = 0;
   while (bytesToRead > 0) {
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
     DWORD result;
     BOOL success = ::ReadFile(
       fd->getHandle(),
@@ -166,7 +166,7 @@ unsigned int FileDescriptorInputStream::skip(
 }
 
 void FileDescriptorInputStream::setNonBlocking(bool value) throw(IOException) {
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
 #else // unix
   int flags = getFlags();
   if (value) {
@@ -182,7 +182,7 @@ void FileDescriptorInputStream::setNonBlocking(bool value) throw(IOException) {
 }
 
 void FileDescriptorInputStream::wait() const throw(IOException) {
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   DWORD result = ::WaitForSingleObject(fd->getHandle(), INFINITE);
   ASSERT(result == WAIT_OBJECT_0);
 #else // unix
@@ -199,7 +199,7 @@ void FileDescriptorInputStream::wait() const throw(IOException) {
 
 bool FileDescriptorInputStream::wait(
   unsigned int timeout) const throw(IOException) {
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   DWORD result = ::WaitForSingleObject(
     fd->getHandle(),
     minimum(timeout, 999999999U)
@@ -225,4 +225,4 @@ bool FileDescriptorInputStream::wait(
 FileDescriptorInputStream::~FileDescriptorInputStream() {
 }
 
-_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
+_COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

@@ -16,7 +16,7 @@
 #include <base/Primitives.h>
 #include <base/FloatingPoint.h>
 
-_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+_COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 PrimitiveOutputStream::PrimitiveOutputStream(
   OutputStream& out) throw(BindException)
@@ -89,4 +89,4 @@ void PrimitiveOutputStream::writeLongDouble(
   write(Cast::getAddress(temp), sizeof(temp));
 }
 
-_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
+_COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

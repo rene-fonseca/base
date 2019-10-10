@@ -13,20 +13,20 @@
 
 #include <base/ui/Window.h>
 
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
 #  include <windows.h>
 #  undef DELETE // yikes
-#elif (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__MACOS)
+#elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__MACOS)
 #else // unix (X11)
 #  include <X11/Xlib.h>
 #  include <X11/Xutil.h>
 #  include <X11/Xatom.h>
 #endif // flavor
 
-_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+_COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 void Window::destroy() throw() {
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)  
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)  
   if (graphicsContextHandle) {
     ::DeleteDC((HDC)graphicsContextHandle);
   }
@@ -34,7 +34,7 @@ void Window::destroy() throw() {
     // nothing to destroy
   }
   ASSERT(screenHandle == 0);
-#elif (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__MACOS)
+#elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__MACOS)
 #else // unix
   if (graphicsContextHandle) {
     // nothing to destroy
@@ -51,10 +51,10 @@ void Window::destroy() throw() {
 
 Window::Window(unsigned int flags) throw(UserInterfaceException)
   : GraphicsContext() {
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   drawableHandle = ::CreateWindowEx(
     WS_EX_APPWINDOW | WS_EX_WINDOWEDGE, // extended style
-    _DK_SDU_MIP__BASE__ID_PREFIX L"/ui/WindowImpl", // class name
+    _COM_AZURE_DEV__BASE__ID_PREFIX L"/ui/WindowImpl", // class name
     L"", // window title
     WS_CLIPCHILDREN | WS_CLIPSIBLINGS, // window style - required for OpenGL // TAG: what should this be
     CW_USEDEFAULT, // x position
@@ -75,7 +75,7 @@ Window::Window(unsigned int flags) throw(UserInterfaceException)
     drawableHandle = 0;
     throw UserInterfaceException("Unable to connect to device context", this);
   }
-#elif (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__MACOS)
+#elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__MACOS)
 #else // unix
   int screenId = ::XDefaultScreen((Display*)displayHandle);
   screenHandle = ::XScreenOfDisplay((Display*)displayHandle, screenId);
@@ -135,7 +135,7 @@ Window::Window(
   const Dimension& dimension,
   unsigned int flags) throw(UserInterfaceException)
   : GraphicsContext(position, dimension, flags) {
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   RECT rect;
   rect.left = position.getX();
   rect.right = position.getX() + dimension.getWidth();
@@ -159,7 +159,7 @@ Window::Window(
   
   drawableHandle = ::CreateWindowEx(
     extendedStyle, // extended style
-    _DK_SDU_MIP__BASE__ID_PREFIX L"ui/WindowImpl", // class name
+    _COM_AZURE_DEV__BASE__ID_PREFIX L"ui/WindowImpl", // class name
     L"", // window title
     style | // window style
     WS_CLIPCHILDREN | WS_CLIPSIBLINGS, // required for OpenGL // TAG: what should this be
@@ -181,7 +181,7 @@ Window::Window(
     drawableHandle = 0;
     throw UserInterfaceException("Unable to connect to device context", this);
   }
-#elif (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__MACOS)
+#elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__MACOS)
 #else // unix
   int screenId = ::XDefaultScreen((Display*)displayHandle);
   screenHandle = ::XScreenOfDisplay((Display*)displayHandle, screenId);
@@ -235,4 +235,4 @@ Window::Window(
   update();
 }
 
-_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
+_COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

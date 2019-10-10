@@ -14,17 +14,17 @@
 #include <base/platforms/features.h>
 #include <base/Exception.h>
 
-#if defined(_DK_SDU_MIP__BASE__EXCEPTION_V3MV)
+#if defined(_COM_AZURE_DEV__BASE__EXCEPTION_V3MV)
   #include <base/platforms/compiler/v3mv/exception.h> // includes private features
 #endif
 
 #include <base/string/String.h>
 
-_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+_COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 bool Exception::isUnwinding() throw() {
-#if defined(_DK_SDU_MIP__BASE__EXCEPTION_V3MV)
-#  if defined(_DK_SDU_MIP__BASE__EXCEPTION_V3MV_TRANSPARENT)
+#if defined(_COM_AZURE_DEV__BASE__EXCEPTION_V3MV)
+#  if defined(_COM_AZURE_DEV__BASE__EXCEPTION_V3MV_TRANSPARENT)
     const abi::__cxa_eh_globals* abi::__cxa_get_globals();
 #  else
     // TAG: exception handling does not have to be "fast"
@@ -41,8 +41,8 @@ bool Exception::isUnwinding() throw() {
 }
 
 Type Exception::getExceptionType() throw() {
-#if defined(_DK_SDU_MIP__BASE__EXCEPTION_V3MV)
-#  if defined(_DK_SDU_MIP__BASE__EXCEPTION_V3MV_TRANSPARENT)
+#if defined(_COM_AZURE_DEV__BASE__EXCEPTION_V3MV)
+#  if defined(_COM_AZURE_DEV__BASE__EXCEPTION_V3MV_TRANSPARENT)
     const abi::__cxa_eh_globals* abi::__cxa_get_globals();
 #  else
     // TAG: exception handling does not have to be "fast"
@@ -96,4 +96,4 @@ Exception::Exception(const Exception& copy) throw()
 Exception::~Exception() throw() {
 }
 
-_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
+_COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

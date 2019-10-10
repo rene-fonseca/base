@@ -16,7 +16,7 @@
 #include <base/string/String.h>
 #include <base/ui/Dialog.h>
 
-_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+_COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 /**
   Message dialog.
@@ -26,7 +26,7 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
   @version 1.0
 */
 
-class _DK_SDU_MIP__BASE__API MessageDialog : public Dialog {
+class _COM_AZURE_DEV__BASE__API MessageDialog : public Dialog {
 public:
 
   /** The message type. */
@@ -128,4 +128,4 @@ public:
   ~MessageDialog() throw();
 };
 
-_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
+_COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

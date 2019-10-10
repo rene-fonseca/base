@@ -18,7 +18,7 @@
 #include <base/mem/Reference.h>
 #include <base/io/Handle.h>
 
-_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+_COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 /**
   The FileDescriptor class serves as a general handle to a source or sink of
@@ -30,7 +30,7 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
   @version 1.0
 */
 
-class _DK_SDU_MIP__BASE__API FileDescriptor : public virtual Object, public virtual Stream {
+class _COM_AZURE_DEV__BASE__API FileDescriptor : public virtual Object, public virtual Stream {
 public:
 
   /** Returns the standard input file descriptor. */
@@ -46,7 +46,7 @@ public:
     @short File descriptor
     @version 1.0
   */
-  class _DK_SDU_MIP__BASE__API Descriptor : public Handle {
+  class _COM_AZURE_DEV__BASE__API Descriptor : public Handle {
     friend class Initialization;
     friend class FileDescriptor;
   private:
@@ -131,4 +131,4 @@ public:
   ~FileDescriptor();
 };
 
-_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
+_COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

@@ -16,7 +16,7 @@
 #include <base/Object.h>
 #include <base/string/String.h>
 
-_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+_COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 /**
   Privilege.
@@ -26,7 +26,7 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
   @version 1.0
 */
 
-class _DK_SDU_MIP__BASE__API Privilege : public Object {
+class _COM_AZURE_DEV__BASE__API Privilege : public Object {
 public:
 
   enum PrivilegeType {
@@ -44,4 +44,4 @@ public:
   static PrivilegeType getValue(const String& name) throw();
 };
 
-_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
+_COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

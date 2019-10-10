@@ -17,7 +17,7 @@
 #include <base/mem/ProtectedPointer.h>
 #include <base/mem/ReferenceCountedObject.h>
 
-_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+_COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 class Orb;
 
@@ -30,7 +30,7 @@ class Orb;
   @version 1.0
 */
 
-class _DK_SDU_MIP__BASE__API OrbConnectionFactory : public Object, public virtual ReferenceCountedObject {
+class _COM_AZURE_DEV__BASE__API OrbConnectionFactory : public Object, public virtual ReferenceCountedObject {
 public:
   
   /**
@@ -60,4 +60,4 @@ public:
   virtual ~OrbConnectionFactory() throw();
 };
 
-_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
+_COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

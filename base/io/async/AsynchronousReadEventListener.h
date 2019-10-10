@@ -16,7 +16,7 @@
 #include <base/io/async/AsynchronousReadCompletion.h>
 #include <base/DynamicObject.h>
 
-_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+_COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 /**
   @short Event listener for asynchronous read operations.
@@ -24,11 +24,11 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
   @version 1.0
 */
 
-class _DK_SDU_MIP__BASE__API AsynchronousReadEventListener : public virtual DynamicObject {
+class _COM_AZURE_DEV__BASE__API AsynchronousReadEventListener : public virtual DynamicObject {
 public:
 
   virtual void asynchronousCompletion(
     const AsynchronousReadCompletion& completion) throw() = 0;
 };
 
-_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
+_COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

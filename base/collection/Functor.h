@@ -16,7 +16,7 @@
 #include <base/Base.h>
 #include <base/Functor.h>
 
-_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+_COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 
 
@@ -55,4 +55,4 @@ inline void transform(COLLECTION& collection, UNOPR function) throw() {
   }
 }
 
-_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
+_COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

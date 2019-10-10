@@ -13,7 +13,7 @@
 
 #include <base/io/async/AsynchronousReadCompletion.h>
 
-_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+_COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 AsynchronousReadCompletion::AsynchronousReadCompletion(
   const AsynchronousReadCompletion& copy) throw() 
@@ -35,4 +35,4 @@ AsynchronousReadCompletion& AsynchronousReadCompletion::operator=(
   return *this;
 }
 
-_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
+_COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

@@ -13,7 +13,7 @@
 
 #include <base/rmi/OrbIdentifier.h>
 
-_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+_COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 OrbIdentifier::OrbIdentifier(const String& identifier) throw(InvalidFormat) {
   String::ReadIterator i = identifier.getBeginReadIterator();
@@ -46,4 +46,4 @@ OrbIdentifier::OrbIdentifier(const String& identifier) throw(InvalidFormat) {
   }
 }
 
-_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
+_COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

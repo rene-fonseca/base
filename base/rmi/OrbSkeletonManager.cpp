@@ -13,7 +13,7 @@
 
 #include <base/rmi/OrbSkeletonManager.h>
 
-_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+_COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 OrbSkeletonManager::OrbSkeletonManager() throw(MemoryException) {
 }
@@ -47,4 +47,4 @@ void OrbSkeletonManager::remove(const String& name) throw(InvalidKey) {
 OrbSkeletonManager::~OrbSkeletonManager() throw() {
 }
 
-_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
+_COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

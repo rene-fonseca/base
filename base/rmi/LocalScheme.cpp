@@ -15,7 +15,7 @@
 #include <base/rmi/LocalConnection.h>
 #include <base/rmi/LocalConnectionFactory.h>
 
-_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+_COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 LocalScheme::LocalScheme() throw() {
 }
@@ -100,4 +100,4 @@ LocalScheme::~LocalScheme() throw() {
   fout << "DEBUG: " << "LocalScheme destroyed" << ENDL;
 }
 
-_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
+_COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

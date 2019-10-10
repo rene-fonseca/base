@@ -18,7 +18,7 @@
 #include <base/ui/UserInterfaceException.h>
 #include <base/ui/Position.h>
 
-_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+_COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 /**
   A bitmap stored in native format.
@@ -28,11 +28,11 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
   @version 1.0
 */
 
-class _DK_SDU_MIP__BASE__API Bitmap : public Object {
+class _COM_AZURE_DEV__BASE__API Bitmap : public Object {
   friend class GraphicsContext;
 private:
 
-  class _DK_SDU_MIP__BASE__API Handle : public ReferenceCountedObject {
+  class _COM_AZURE_DEV__BASE__API Handle : public ReferenceCountedObject {
   private:
     
     void* handle = nullptr;
@@ -138,4 +138,4 @@ public:
     uint32 value) const throw(UserInterfaceException);
 };
 
-_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
+_COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

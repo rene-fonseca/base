@@ -15,7 +15,7 @@
 
 #include <base/ui/Widget.h>
 
-_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+_COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 /**
   Layout widget.
@@ -25,7 +25,7 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
   @version 1.0
 */
 
-class _DK_SDU_MIP__BASE__API Layout : public Widget {
+class _COM_AZURE_DEV__BASE__API Layout : public Widget {
 public:
   
   Layout(Window& owner) throw(UserInterfaceException);
@@ -35,4 +35,4 @@ public:
   Dimension getPreferredSize() const throw();
 };
 
-_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
+_COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

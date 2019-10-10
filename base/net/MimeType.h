@@ -17,7 +17,7 @@
 #include <base/string/InvalidFormat.h>
 #include <base/OutOfDomain.h>
 
-_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+_COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 /**
   Multipurpose Internet Mail Extensions (MIME) (see RFC 2046).
@@ -27,7 +27,7 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
   @version 1.0
 */
 
-class _DK_SDU_MIP__BASE__API MimeType : public Object {
+class _COM_AZURE_DEV__BASE__API MimeType : public Object {
 public:
   
   /** Top-level media types. */
@@ -143,4 +143,4 @@ public:
 */
 FormatOutputStream& operator<<(FormatOutputStream& stream, const MimeType& value) throw(IOException);
 
-_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
+_COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

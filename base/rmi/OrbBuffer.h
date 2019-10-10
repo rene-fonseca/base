@@ -16,7 +16,7 @@
 #include <base/Object.h>
 #include <base/mem/Allocator.h>
 
-_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+_COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 /**
   Fast buffer implementation intended for linked lists.
@@ -26,7 +26,7 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
   @version 1.0
 */
 
-class _DK_SDU_MIP__BASE__API OrbBuffer : public Object {
+class _COM_AZURE_DEV__BASE__API OrbBuffer : public Object {
 private:
 
   /** The next buffer in the linked list. */
@@ -136,4 +136,4 @@ public:
   }
 };
 
-_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
+_COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

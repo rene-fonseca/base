@@ -21,7 +21,7 @@
 #include <locale>
 #include <codecvt>
 
-_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+_COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 // TAG: add reference to RFC 2781
 // TAG: RFC 2044
@@ -2779,4 +2779,4 @@ std::string toUTF8(const WideString& s) {
 return std::string();
 }
 
-_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
+_COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

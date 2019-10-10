@@ -14,14 +14,14 @@
 #include <base/platforms/features.h>
 #include <base/xml/ElementDecl.h>
 
-#if defined(_DK_SDU_MIP__BASE__XML_XMLSOFT_ORG)
+#if defined(_COM_AZURE_DEV__BASE__XML_XMLSOFT_ORG)
 #  include <libxml2/libxml/tree.h>
 #endif
 
-_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+_COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 ElementDecl::ValueType ElementDecl::getValueType() const throw() {
-#if defined(_DK_SDU_MIP__BASE__XML_XMLSOFT_ORG)
+#if defined(_COM_AZURE_DEV__BASE__XML_XMLSOFT_ORG)
   xmlElement* element = (xmlElement*)getContext();
   switch (element->etype) {
   case XML_ELEMENT_TYPE_EMPTY:
@@ -41,7 +41,7 @@ ElementDecl::ValueType ElementDecl::getValueType() const throw() {
 }
 
 bool ElementDecl::hasAttributes() const throw() {
-#if defined(_DK_SDU_MIP__BASE__XML_XMLSOFT_ORG)
+#if defined(_COM_AZURE_DEV__BASE__XML_XMLSOFT_ORG)
   xmlElement* element = (xmlElement*)getContext();
   return element->attributes;
 #else
@@ -50,7 +50,7 @@ bool ElementDecl::hasAttributes() const throw() {
 }
 
 AttributeDecl ElementDecl::getFirstAttribute() throw() {
-#if defined(_DK_SDU_MIP__BASE__XML_XMLSOFT_ORG)
+#if defined(_COM_AZURE_DEV__BASE__XML_XMLSOFT_ORG)
   xmlElement* element = (xmlElement*)getContext();
   return element->attributes;
 #else
@@ -58,4 +58,4 @@ AttributeDecl ElementDecl::getFirstAttribute() throw() {
 #endif
 }
 
-_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
+_COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

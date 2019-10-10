@@ -30,7 +30,7 @@
 //   function of maximum speed between nodes
 //   function of max_ROM field (assume quadlet by default)
 
-_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+_COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 String IEEE1394::getAsString(unsigned short nodeId) throw() {
   StringOutputStream stream;
@@ -1063,4 +1063,4 @@ bool IEEE1394::IsochronousWriteChannelImpl::wait(
   throw IEEE1394Exception("Channel is closed", this);
 }
 
-_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
+_COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

@@ -15,7 +15,7 @@
 
 #include <base/Exception.h>
 
-_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+_COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 /**
   This exception indicates that a resulting value is greater than the maximum
@@ -29,7 +29,7 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
   @version 1.0
 */
 
-class _DK_SDU_MIP__BASE__API Overflow : public Exception {
+class _COM_AZURE_DEV__BASE__API Overflow : public Exception {
 public:
   
   /**
@@ -65,4 +65,4 @@ public:
   }
 };
 
-_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
+_COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

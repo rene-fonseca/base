@@ -19,21 +19,21 @@
 #include <base/string/StringOutputStream.h>
 #include <stdlib.h>
 
-#if (_DK_SDU_MIP__BASE__DEMANGLE == _DK_SDU_MIP__BASE__DEMANGLE_GCCV3)
+#if (_COM_AZURE_DEV__BASE__DEMANGLE == _COM_AZURE_DEV__BASE__DEMANGLE_GCCV3)
   extern "C" char* cplus_demangle_v3(const char* mangled);
-#elif (_DK_SDU_MIP__BASE__DEMANGLE == _DK_SDU_MIP__BASE__DEMANGLE_GCCV23)
+#elif (_COM_AZURE_DEV__BASE__DEMANGLE == _COM_AZURE_DEV__BASE__DEMANGLE_GCCV23)
   extern "C" char* cplus_demangle_new_abi(const char* mangled);
-#elif (_DK_SDU_MIP__BASE__DEMANGLE == _DK_SDU_MIP__BASE__DEMANGLE_GCCV2)
+#elif (_COM_AZURE_DEV__BASE__DEMANGLE == _COM_AZURE_DEV__BASE__DEMANGLE_GCCV2)
   extern "C" char* cplus_demangle(const char* mangled, int options);
-#elif (_DK_SDU_MIP__BASE__DEMANGLE == _DK_SDU_MIP__BASE__DEMANGLE_SUNWSPRO)
+#elif (_COM_AZURE_DEV__BASE__DEMANGLE == _COM_AZURE_DEV__BASE__DEMANGLE_SUNWSPRO)
   #include <demangle.h>
-#elif (_DK_SDU_MIP__BASE__DEMANGLE == _DK_SDU_MIP__BASE__DEMANGLE_MIPSPRO)
+#elif (_COM_AZURE_DEV__BASE__DEMANGLE == _COM_AZURE_DEV__BASE__DEMANGLE_MIPSPRO)
   #include <dem.h>
 #endif
 
-_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+_COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
-#if (_DK_SDU_MIP__BASE__DEMANGLE == _DK_SDU_MIP__BASE__DEMANGLE_V3MV)
+#if (_COM_AZURE_DEV__BASE__DEMANGLE == _COM_AZURE_DEV__BASE__DEMANGLE_V3MV)
 
 class V3MultiVendorABIDemangler {
 private:
@@ -947,7 +947,7 @@ String TypeInfo::demangleName(const char* mangled) throw(InvalidFormat) {
   return V3MultiVendorABIDemangler(mangled).getDemangled();
 }
 
-#elif (_DK_SDU_MIP__BASE__DEMANGLE == _DK_SDU_MIP__BASE__DEMANGLE_GCCV3)
+#elif (_COM_AZURE_DEV__BASE__DEMANGLE == _COM_AZURE_DEV__BASE__DEMANGLE_GCCV3)
 
 String TypeInfo::demangleName(const char* mangled) throw(InvalidFormat) {
   static const String prefix(MESSAGE("_Z"));
@@ -962,7 +962,7 @@ String TypeInfo::demangleName(const char* mangled) throw(InvalidFormat) {
   return result;
 }
 
-#elif (_DK_SDU_MIP__BASE__DEMANGLE == _DK_SDU_MIP__BASE__DEMANGLE_GCCV23)
+#elif (_COM_AZURE_DEV__BASE__DEMANGLE == _COM_AZURE_DEV__BASE__DEMANGLE_GCCV23)
 
 String TypeInfo::demangleName(const char* mangled) throw(InvalidFormat) {
   static const String prefix(MESSAGE("_Z"));
@@ -977,7 +977,7 @@ String TypeInfo::demangleName(const char* mangled) throw(InvalidFormat) {
   return result;
 }
 
-#elif (_DK_SDU_MIP__BASE__DEMANGLE == _DK_SDU_MIP__BASE__DEMANGLE_GCCV2)
+#elif (_COM_AZURE_DEV__BASE__DEMANGLE == _COM_AZURE_DEV__BASE__DEMANGLE_GCCV2)
 
 String TypeInfo::demangleName(const char* mangled) throw(InvalidFormat) {
   static const String prefix(MESSAGE("a__"));
@@ -997,7 +997,7 @@ String TypeInfo::demangleName(const char* mangled) throw(InvalidFormat) {
   return result;
 }
 
-#elif (_DK_SDU_MIP__BASE__DEMANGLE == _DK_SDU_MIP__BASE__DEMANGLE_SUNWSPRO)
+#elif (_COM_AZURE_DEV__BASE__DEMANGLE == _COM_AZURE_DEV__BASE__DEMANGLE_SUNWSPRO)
 
 String TypeInfo::demangleName(const char* mangled) throw(InvalidFormat) {
   Allocator<uint8>* buffer = Thread::getLocalStorage();
@@ -1007,7 +1007,7 @@ String TypeInfo::demangleName(const char* mangled) throw(InvalidFormat) {
   return String(buffer->getElements());
 }
 
-#elif (_DK_SDU_MIP__BASE__DEMANGLE == _DK_SDU_MIP__BASE__DEMANGLE_MIPSPRO)
+#elif (_COM_AZURE_DEV__BASE__DEMANGLE == _COM_AZURE_DEV__BASE__DEMANGLE_MIPSPRO)
 
 String TypeInfo::demangleName(const char* mangled) throw(InvalidFormat) {
   char buffer[MAXDBUF];
@@ -1024,4 +1024,4 @@ String TypeInfo::demangleName(const char* mangled) throw(InvalidFormat) {
 
 #endif
 
-_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
+_COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

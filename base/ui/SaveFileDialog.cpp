@@ -17,13 +17,13 @@
 #include <base/NotImplemented.h>
 #include <base/dl/DynamicLinker.h>
 
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
 #  include <base/platforms/win32/Helpers.h>
 #  include <windows.h>
 #else // unix
 #endif // flavor
 
-_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+_COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 SaveFileDialog::SaveFileDialog() throw()
   : flags(SaveFileDialog::ASK_TO_OVERWRITE), defaultFilter(0) {
@@ -41,7 +41,7 @@ void SaveFileDialog::setFilters(const Map<String, String>& filters) throw() {
 }
 
 bool SaveFileDialog::execute() throw(UserInterfaceException) {
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   typedef BOOL (WINAPI *FGetSaveFileNameW)(LPOPENFILENAME);
   static FGetSaveFileNameW GetSaveFileNameW = 0;
   if (!GetSaveFileNameW) { // TAG: need to be atomic
@@ -116,6 +116,6 @@ bool SaveFileDialog::execute() throw(UserInterfaceException) {
 SaveFileDialog::~SaveFileDialog() throw() {
 }
 
-_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
+_COM_AZURE_DEV__BASE__LEAVE_NAMESPACE
 
 // TAG: remove folder attribute if not required

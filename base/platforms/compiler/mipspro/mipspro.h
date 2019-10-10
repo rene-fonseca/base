@@ -15,8 +15,8 @@
 
 namespace base {
 
-#define _DK_SDU_MIP__BASE__COMPILER_VERSION __COMPILER_VERSION
-#define _DK_SDU_MIP__BASE__COMPILER_NAMESPACE com::sgi2::mipspro
+#define _COM_AZURE_DEV__BASE__COMPILER_VERSION __COMPILER_VERSION
+#define _COM_AZURE_DEV__BASE__COMPILER_NAMESPACE com::sgi2::mipspro
 
   namespace com {
     

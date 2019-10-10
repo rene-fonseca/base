@@ -16,14 +16,14 @@
 #include <base/Object.h>
 #include <base/string/String.h>
 
-_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+_COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 /**
   @short System logger.
   @version 1.0
 */
 
-class _DK_SDU_MIP__BASE__API SystemLogger : public Object {
+class _COM_AZURE_DEV__BASE__API SystemLogger : public Object {
 public:
 
   /** Specifies the type of the message. */
@@ -39,4 +39,4 @@ public:
   static void write(MessageType type, const String& message) throw();
 };
 
-_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
+_COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

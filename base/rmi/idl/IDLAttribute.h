@@ -17,7 +17,7 @@
 #include <base/rmi/idl/IDLPrimitive.h>
 #include <base/rmi/idl/IDLEnumeration.h>
 
-_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+_COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 /**
   Interface Definition Language (IDL) attribute of an exception.
@@ -27,7 +27,7 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
   @version 1.0
 */
 
-class _DK_SDU_MIP__BASE__API IDLAttribute : public IDLObject {
+class _COM_AZURE_DEV__BASE__API IDLAttribute : public IDLObject {
 private:
 
   /** Type of the field. */
@@ -56,4 +56,4 @@ public:
   ~IDLAttribute() throw();
 };
 
-_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
+_COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

@@ -21,25 +21,25 @@
 #include <base/string/WideString.h>
 #include <stdlib.h>
 
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
 #  include <windows.h>
 #  undef ERROR // protect against the evil programmers
 #else // unix
-#  if (_DK_SDU_MIP__BASE__ARCH == _DK_SDU_MIP__BASE__S390)
+#  if (_COM_AZURE_DEV__BASE__ARCH == _COM_AZURE_DEV__BASE__S390)
 #    define __thread // TAG: temp. fix for s390-ibm-linux-gnu
 #  endif
 #  include <sys/signal.h> // defines SIG_ERR on IRIX65
 #  include <signal.h>
 
-#  if (defined(_DK_SDU_MIP__BASE__HAVE_SIGACTION))
+#  if (defined(_COM_AZURE_DEV__BASE__HAVE_SIGACTION))
 #    include <ucontext.h> // TAG: is this required
-#    if (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__SOLARIS)
+#    if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__SOLARIS)
 #      include <sys/frame.h>
 #    endif
 #  endif
 #endif
 
-_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+_COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 class ApplicationImpl {
 public:
@@ -87,7 +87,7 @@ public:
       stream << "Internal error: explicit termination." << FLUSH;
     }
     ferr << stream.getString() << ENDL; // TAG: use appropriate error stream
-#if defined(_DK_SDU_MIP__BASE__DEBUG)
+#if defined(_COM_AZURE_DEV__BASE__DEBUG)
     // TAG: need runtime debug mode support (e.g. bool Trace::debug or with level support)
     Trace::message(stream.getString().getElements());
 #endif
@@ -138,7 +138,7 @@ public:
     } else {
       stream << "Internal error: explicit invocation of unexpected." << FLUSH;
     }
-#if defined(_DK_SDU_MIP__BASE__DEBUG)
+#if defined(_COM_AZURE_DEV__BASE__DEBUG)
     Trace::message(stream.getString().getElements());
 #endif
     // TAG: either use SystemLogger or ferr but not both
@@ -149,7 +149,7 @@ public:
   }
 
   /* The application signal handler. */
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
 #if 0 // disabled
   // TAG: we should destroy window in destructor
   StringOutputStream stream;
@@ -244,7 +244,7 @@ public:
   
 #else // unix
 
-#  if (defined(_DK_SDU_MIP__BASE__HAVE_SIGACTION))
+#  if (defined(_COM_AZURE_DEV__BASE__HAVE_SIGACTION))
   static void actionHandler(
     int signal, siginfo_t* info, void* opaque) throw() {
     const char* error = 0;
@@ -253,8 +253,8 @@ public:
     const mcontext_t* m = &context->uc_mcontext;
 
     const void* instructionAddress = 0;
-#if ((_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__SOLARIS) && \
-     (_DK_SDU_MIP__BASE__ARCH == _DK_SDU_MIP__BASE__SPARC))
+#if ((_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__SOLARIS) && \
+     (_COM_AZURE_DEV__BASE__ARCH == _COM_AZURE_DEV__BASE__SPARC))
     instructionAddress = (void*)(m->gregs[REG_PC]);
 #endif
     
@@ -377,8 +377,8 @@ public:
       exit(Application::EXIT_CODE_INTERNAL_ERROR); // TAG: need other function?
     }
     
-#if ((_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__SOLARIS) && \
-     (_DK_SDU_MIP__BASE__ARCH == _DK_SDU_MIP__BASE__SPARC))
+#if ((_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__SOLARIS) && \
+     (_COM_AZURE_DEV__BASE__ARCH == _COM_AZURE_DEV__BASE__SPARC))
     
     static const Literal REG_NAMES[8 + 8 + 8 + 8 + 8 + 32] = {
       Literal("g0"), Literal("g1"), Literal("g2"), Literal("g3"),
@@ -498,7 +498,7 @@ public:
       }
     }
     
-#if (_DK_SDU_MIP__BASE__ARCH_MINOR == _DK_SDU_MIP__BASE__SPARCV9)
+#if (_COM_AZURE_DEV__BASE__ARCH_MINOR == _COM_AZURE_DEV__BASE__SPARCV9)
 #endif // SPARCV9
     
     ferr << EOL << "stack frames:" << EOL;
@@ -605,7 +605,7 @@ void Application::initialize() throw() {
   ++singleton;
 
   // install signal handler
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   if (!::SetConsoleCtrlHandler((PHANDLER_ROUTINE)ApplicationImpl::signalHandler, TRUE)) {
     throw UnexpectedFailure("Unable to install signal handler", this);
   }
@@ -641,7 +641,7 @@ void Application::initialize() throw() {
   );
   
 #else // unix
-#  if (defined(_DK_SDU_MIP__BASE__HAVE_SIGACTION))
+#  if (defined(_COM_AZURE_DEV__BASE__HAVE_SIGACTION))
   static const int SIGNALS[] = {
     SIGHUP, SIGPIPE, SIGTERM, SIGCHLD, SIGQUIT, SIGINT, SIGABRT, SIGSEGV,
     SIGILL, SIGFPE, SIGBUS
@@ -657,7 +657,7 @@ void Application::initialize() throw() {
       UnexpectedFailure("Unable to register signal handler", this)
     );
   }
-#  elif (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__IRIX65)
+#  elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__IRIX65)
     if (!((bsd_signal(SIGHUP, ApplicationImpl::signalHandler) != SIG_ERR) &&
           (bsd_signal(SIGPIPE, ApplicationImpl::signalHandler) != SIG_ERR) &&
           (bsd_signal(SIGTERM, ApplicationImpl::signalHandler) != SIG_ERR) &&
@@ -712,7 +712,7 @@ Application::Application(
   initialize();
   
   bassert((numberOfArguments > 0) && (arguments), OutOfDomain(this));
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   wchar buffer[MAX_PATH + 1]; // what if path starts with "\\?\"
   DWORD length = ::GetModuleFileName(0, buffer, MAX_PATH /*lengthOf(buffer)*/);
   ASSERT(length > 0);
@@ -784,7 +784,7 @@ namespace internal {
 };
 
 Application::~Application() throw() {
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
 //   if (::DestroyWindow(windowHandle) == 0) {
 //     // failed but we do not care
 //   }
@@ -798,4 +798,4 @@ Application::~Application() throw() {
   application = 0;
 }
 
-_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
+_COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

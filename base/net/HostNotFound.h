@@ -15,7 +15,7 @@
 
 #include <base/net/NetworkException.h>
 
-_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+_COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 /**
   Specifies that the host doesn't exist or couldn't be resolved.
@@ -25,7 +25,7 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
   @version 1.0
 */
 
-class _DK_SDU_MIP__BASE__API HostNotFound : public NetworkException {
+class _COM_AZURE_DEV__BASE__API HostNotFound : public NetworkException {
 public:
 
   /**
@@ -61,4 +61,4 @@ public:
   }
 };
 
-_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
+_COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

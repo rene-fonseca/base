@@ -21,7 +21,7 @@
 #include <base/string/StringOutputStream.h>
 #include <base/TypeInfo.h>
 
-_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+_COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 std::atomic<unsigned int> FormatOutputStream::Debug::counter(0);
 
@@ -1905,4 +1905,4 @@ void FormatOutputStream::writeFloatingPointType(
   }
 }
 
-_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
+_COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

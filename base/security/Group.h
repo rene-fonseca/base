@@ -19,7 +19,7 @@
 #include <base/collection/Array.h>
 #include <base/collection/Hash.h>
 
-_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+_COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 /**
   A group trustee.
@@ -29,7 +29,7 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
   @version 1.2
 */
 
-class _DK_SDU_MIP__BASE__API Group : public Object {
+class _COM_AZURE_DEV__BASE__API Group : public Object {
   friend class Hash<Group>;
   friend class Trustee;
 private:
@@ -49,7 +49,7 @@ public:
     @version 1.1
   */
 
-  class _DK_SDU_MIP__BASE__API GroupException : public Exception {
+  class _COM_AZURE_DEV__BASE__API GroupException : public Exception {
   public:
 
     /**
@@ -186,4 +186,4 @@ public:
   unsigned long operator()(const Group& value) throw();
 };
 
-_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
+_COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

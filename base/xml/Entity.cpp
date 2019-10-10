@@ -14,14 +14,14 @@
 #include <base/platforms/features.h>
 #include <base/xml/Entity.h>
 
-#if defined(_DK_SDU_MIP__BASE__XML_XMLSOFT_ORG)
+#if defined(_COM_AZURE_DEV__BASE__XML_XMLSOFT_ORG)
 #  include <libxml2/libxml/tree.h>
 #endif
 
-_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+_COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 String Entity::getPublicId() const throw() {
-#if defined(_DK_SDU_MIP__BASE__XML_XMLSOFT_ORG)
+#if defined(_COM_AZURE_DEV__BASE__XML_XMLSOFT_ORG)
   xmlNodePtr node = (xmlNodePtr)getContext();
   xmlEntity* entity = (xmlEntity*)node->name;
   if (entity->etype != XML_EXTERNAL_GENERAL_UNPARSED_ENTITY) {
@@ -35,7 +35,7 @@ String Entity::getPublicId() const throw() {
 }
   
 String Entity::getSystemId() const throw() {
-#if defined(_DK_SDU_MIP__BASE__XML_XMLSOFT_ORG)
+#if defined(_COM_AZURE_DEV__BASE__XML_XMLSOFT_ORG)
   xmlNodePtr node = (xmlNodePtr)getContext();
   xmlEntity* entity = (xmlEntity*)node->name;
   if (entity->etype != XML_EXTERNAL_GENERAL_UNPARSED_ENTITY) {
@@ -49,7 +49,7 @@ String Entity::getSystemId() const throw() {
 }
   
 String Entity::getNotationName() const throw() {
-#if defined(_DK_SDU_MIP__BASE__XML_XMLSOFT_ORG)
+#if defined(_COM_AZURE_DEV__BASE__XML_XMLSOFT_ORG)
   xmlNodePtr node = (xmlNodePtr)getContext();
   xmlEntity* entity = (xmlEntity*)node->name;
   if (entity->etype != XML_EXTERNAL_GENERAL_UNPARSED_ENTITY) { // TAG: check
@@ -62,4 +62,4 @@ String Entity::getNotationName() const throw() {
 #endif
 }
 
-_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
+_COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

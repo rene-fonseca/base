@@ -18,7 +18,7 @@
 #include <base/collection/Queue.h>
 #include <base/concurrency/Synchronize.h>
 
-_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+_COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 /**
   Priority queue. As for the Queue collection the first value pushed onto the
@@ -112,4 +112,4 @@ public:
   }
 };
 
-_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
+_COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

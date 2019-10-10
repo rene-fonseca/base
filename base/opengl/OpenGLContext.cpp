@@ -15,19 +15,19 @@
 #include <base/opengl/OpenGLContext.h>
 #include <base/platforms/backend/WindowImpl.h>
 
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
 #  include <base/platforms/win32/GDI.h>
 #else // unix
-#if 0 && (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__MACOS)
+#if 0 && (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__MACOS)
 #else
 #  include <base/platforms/os/unix/GLX.h>
 #endif
 #endif // flavor
 
-_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+_COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 void OpenGLContext::destroy() throw() {
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)  
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)  
   native::GDI::wglMakeCurrent(0, 0); // deselect current rendering context
   if (renderingContextHandle) {
     native::GDI::wglDeleteContext((HGLRC)renderingContextHandle);
@@ -67,7 +67,7 @@ void OpenGLContext::destroy() throw() {
   WindowImpl::destroy();
 }
 
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
 struct MonitorEnumeratorData {
   Array<OpenGLContext::Format> formats;
   unsigned int flags;
@@ -156,7 +156,7 @@ BOOL CALLBACK enumerateMonitor(HMONITOR monitor, HDC hdc, LPRECT rect, LPARAM co
 #endif // flavor
 
 Array<OpenGLContext::Format> OpenGLContext::getFormats(unsigned int flags) throw(OpenGLException, UserInterfaceException) {
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   MonitorEnumeratorData temp;
   temp.flags = flags;
   temp.id = 0;
@@ -173,7 +173,7 @@ Array<OpenGLContext::Format> OpenGLContext::getFormats(unsigned int flags) throw
 nothing OpenGLContext::initialize(const Format& format) throw(OpenGLException, UserInterfaceException) {
   OpenGLContextImpl::loadModule();
   
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   RECT rect;
   rect.left = position.getX();
   rect.right = position.getX() + dimension.getWidth();
@@ -194,7 +194,7 @@ nothing OpenGLContext::initialize(const Format& format) throw(OpenGLException, U
   
   drawableHandle = ::CreateWindowEx(
     extendedStyle, // extended style
-    _DK_SDU_MIP__BASE__ID_PREFIX L"/ui/WindowImpl", // class name
+    _COM_AZURE_DEV__BASE__ID_PREFIX L"/ui/WindowImpl", // class name
     L"", // window title
     style | // window style
     WS_CLIPCHILDREN | WS_CLIPSIBLINGS, // required for OpenGL
@@ -539,4 +539,4 @@ void OpenGLContext::onResize(const Dimension& dimension) throw() {
   onDisplay();
 }
 
-_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
+_COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

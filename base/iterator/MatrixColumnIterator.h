@@ -17,7 +17,7 @@
 #include <base/iterator/SequenceIterator.h>
 #include <base/Dimension.h>
 
-_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+_COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 /**
   Column iterator for matrix.
@@ -119,4 +119,4 @@ inline MatrixColumnIterator<TRAITS> operator-(const MatrixColumnIterator<TRAITS>
   return result -= right;
 }
 
-_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
+_COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

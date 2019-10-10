@@ -16,7 +16,7 @@
 #include <base/xml/Declaration.h>
 #include <base/collection/Array.h>
 
-_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+_COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 class Document;
 class ElementDecl;
@@ -27,7 +27,7 @@ class ElementDecl;
   @version 1.0
 */
 
-class _DK_SDU_MIP__BASE__API AttributeDecl : public Declaration {
+class _COM_AZURE_DEV__BASE__API AttributeDecl : public Declaration {
   friend class Document;
   friend class ElementDecl;
 protected:
@@ -96,4 +96,4 @@ public:
   Array<String> getEnumerationValues() const throw(DOMException);
 };
 
-_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
+_COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

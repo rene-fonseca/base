@@ -15,26 +15,26 @@
 #include <base/net/InetService.h>
 #include <base/ByteOrder.h>
 
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
 #  include <winsock2.h>
 #else // unix
 #  include <netdb.h>
 #  include <netinet/in.h>
 #endif // flavor
 
-_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+_COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 unsigned short InetService::getByName(
   const String& name, const String& protocol) throw() {
   struct servent* sp = nullptr;
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   sp = getservbyname(name.getElements(), protocol.getElements()); // MT-safe
-#elif ((_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__IRIX65) || \
-       (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__SOLARIS))
+#elif ((_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__IRIX65) || \
+       (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__SOLARIS))
   struct servent result;
   char buffer[1024]; // how big should this buffer be
   sp = getservbyname_r(name.getElements(), protocol.getElements(), &result, buffer, sizeof(buffer));
-#elif (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__GNULINUX)
+#elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__GNULINUX)
   struct servent result;
   char buffer[1024]; // how big should this buffer be
   getservbyname_r(name.getElements(), protocol.getElements(), &result, buffer, sizeof(buffer), &sp);
@@ -48,14 +48,14 @@ unsigned short InetService::getByName(
 String InetService::getByPort(
   unsigned short port, const String& protocol) throw() {
   struct servent* sp = nullptr;
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   sp = getservbyport(ByteOrder::toBigEndian<unsigned short>(port), protocol.getElements()); // MT-safe
-#elif ((_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__IRIX65) || \
-       (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__SOLARIS))
+#elif ((_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__IRIX65) || \
+       (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__SOLARIS))
   struct servent result;
   char buffer[1024]; // how big should this buffer be
   sp = getservbyport_r(ByteOrder::toBigEndian<unsigned short>(port), protocol.getElements(), &result, buffer, sizeof(buffer));
-#elif (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__GNULINUX)
+#elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__GNULINUX)
   struct servent result;
   char buffer[1024]; // how big should this buffer be
   getservbyport_r(ByteOrder::toBigEndian<unsigned short>(port), protocol.getElements(), &result, buffer, sizeof(buffer), &sp);
@@ -119,4 +119,4 @@ FormatOutputStream& operator<<(
   return stream << value.name << ' ' << value.port << '/' << value.protocol;
 }
 
-_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
+_COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

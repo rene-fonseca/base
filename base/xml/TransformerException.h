@@ -15,7 +15,7 @@
 
 #include <base/Exception.h>
 
-_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+_COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 /**
   This class specifies an exceptional condition that occured during the
@@ -26,7 +26,7 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
   @version 1.0
 */
 
-class _DK_SDU_MIP__BASE__API TransformerException : public Exception {
+class _COM_AZURE_DEV__BASE__API TransformerException : public Exception {
 public:
 
   /**
@@ -61,4 +61,4 @@ public:
   }
 };
 
-_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
+_COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

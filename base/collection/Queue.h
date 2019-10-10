@@ -21,7 +21,7 @@
 #include <base/concurrency/ExclusiveSynchronize.h>
 #include <base/concurrency/SharedSynchronize.h>
 
-_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+_COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 /**
   Queue implemented using a unidirectional linked list. The first value pushed
@@ -192,4 +192,4 @@ public:
   }
 };
 
-_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
+_COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

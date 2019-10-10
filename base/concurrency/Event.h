@@ -20,7 +20,7 @@
 #include <base/OperatingSystem.h>
 #include <base/concurrency/EventException.h>
 
-_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+_COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 /**
   This class provides support for threads to wait for signals.
@@ -30,7 +30,7 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
   @version 1.2
 */
 
-class _DK_SDU_MIP__BASE__API Event : public virtual Object {
+class _COM_AZURE_DEV__BASE__API Event : public virtual Object {
 private:
 
   /** Internal data. */
@@ -79,7 +79,7 @@ public:
   */
   bool wait(unsigned int microseconds) const throw(OutOfDomain, EventException);
 
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   /** Returns the event handle. */
   inline OperatingSystem::Handle getHandle() const throw() { // TAG: fixme
     return Cast::pointer<OperatingSystem::Handle>(context);
@@ -92,4 +92,4 @@ public:
   ~Event();
 };
 
-_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
+_COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

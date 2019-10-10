@@ -17,7 +17,7 @@
 #include <base/concurrency/Lock.h>
 #include <base/concurrency/ReadWriteLockException.h>
 
-_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+_COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 /**
   The ReadWriteLock class implements a read-write lock for optimal reader
@@ -31,7 +31,7 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
   @version 1.4
 */
 
-class _DK_SDU_MIP__BASE__API ReadWriteLock : public Lock {
+class _COM_AZURE_DEV__BASE__API ReadWriteLock : public Lock {
 protected:
 
   /** Internal representation of object. */
@@ -91,4 +91,4 @@ public:
   ~ReadWriteLock();
 };
 
-_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
+_COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

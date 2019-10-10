@@ -14,7 +14,7 @@
 #include <base/Primitives.h>
 #include <float.h>
 
-_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+_COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 const float PrimitiveTraits<float>::MINIMUM = FLT_MIN;
 const float PrimitiveTraits<float>::MAXIMUM = FLT_MAX;
@@ -49,4 +49,4 @@ MemorySize NativeWideString::getLength() const throw() {
   return length;
 }
 
-_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
+_COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

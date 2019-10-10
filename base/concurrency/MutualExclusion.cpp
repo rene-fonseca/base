@@ -14,7 +14,7 @@
 #include <base/platforms/features.h>
 #include <base/concurrency/MutualExclusion.h>
 
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
 #  include <windows.h>
 #else // unix
 #  define __thread // TAG: temp. fix for s390-ibm-linux-gnu
@@ -22,10 +22,10 @@
 #  include <errno.h>
 #endif // flavor
 
-_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+_COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 MutualExclusion::MutualExclusion() throw(ResourceException) {
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   mutex = new CRITICAL_SECTION[1];
   ::InitializeCriticalSection((CRITICAL_SECTION*)mutex);
   // TAG: could raise STATUS_INVALID_HANDLE
@@ -37,7 +37,7 @@ MutualExclusion::MutualExclusion() throw(ResourceException) {
   if (pthread_mutexattr_init(&attributes) != 0) {
     throw ResourceException(this);
   }
-#if (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__CYGWIN)
+#if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__CYGWIN)
    #warning disabled selection of mutex type due to CYGWIN bug
 #else
   if (pthread_mutexattr_settype(&attributes, PTHREAD_MUTEX_ERRORCHECK) != 0) {
@@ -54,7 +54,7 @@ MutualExclusion::MutualExclusion() throw(ResourceException) {
 }
 
 void MutualExclusion::exclusiveLock() const throw(MutualExclusionException) {
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   ::EnterCriticalSection((CRITICAL_SECTION*)mutex);
 #else // pthread
   int result = pthread_mutex_lock((pthread_mutex_t*)mutex);
@@ -69,7 +69,7 @@ void MutualExclusion::exclusiveLock() const throw(MutualExclusionException) {
 }
 
 bool MutualExclusion::tryExclusiveLock() const throw(MutualExclusionException) {
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   BOOL result;
   result = ::TryEnterCriticalSection((CRITICAL_SECTION*)mutex);
   return result;
@@ -86,7 +86,7 @@ bool MutualExclusion::tryExclusiveLock() const throw(MutualExclusionException) {
 }
 
 void MutualExclusion::releaseLock() const throw(MutualExclusionException) {
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   ::LeaveCriticalSection((CRITICAL_SECTION*)mutex);
 #else // pthread
   if (pthread_mutex_unlock((pthread_mutex_t*)mutex)) {
@@ -96,7 +96,7 @@ void MutualExclusion::releaseLock() const throw(MutualExclusionException) {
 }
 
 MutualExclusion::~MutualExclusion() {
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   ::DeleteCriticalSection((CRITICAL_SECTION*)mutex);
   delete[] (CRITICAL_SECTION*)mutex;
 #else // pthread
@@ -107,4 +107,4 @@ MutualExclusion::~MutualExclusion() {
 #endif
 }
 
-_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
+_COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

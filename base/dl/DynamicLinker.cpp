@@ -14,7 +14,7 @@
 #include <base/platforms/features.h>
 #include <base/dl/DynamicLinker.h>
 
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
 #  include <windows.h>
 #else // unix
 #  include <dlfcn.h>
@@ -25,11 +25,11 @@
 #endif
 #endif // flavor
 
-_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+_COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 void* DynamicLinker::getGlobalSymbolImpl(
   const String& symbol) throw(LinkerException) {
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   // GetModuleHandle does not increment reference count
   void* result = (void*)(::GetProcAddress(::GetModuleHandle(0), symbol.getElements()));
   bassert(result != 0, LinkerException("Unable to resolve symbol"));
@@ -54,7 +54,7 @@ void* DynamicLinker::getGlobalSymbolImpl(
 // TAG: enumerate modules support
 
 //String DynamicLinker::getPath() throw() {
-//#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+//#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
 //  String path(MAX_PATH); // maximum path length in ANSI mode
 //  DWORD length = ::GetModuleFileNameEx(
 //                   ::GetCurrentProcess(), // get pseudo handle
@@ -74,7 +74,7 @@ void* DynamicLinker::getGlobalSymbolImpl(
 
 DynamicLinker::DynamicLinker(
   const String& path, unsigned int options) throw(LinkerException) {
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   if ((handle = ::LoadLibraryEx(toWide(path).c_str(), 0, 0)) == nullptr) {
     throw LinkerException("Unable to open module", this);
   }
@@ -97,7 +97,7 @@ DynamicLinker::DynamicLinker(
 
 void* DynamicLinker::getSymbol(
   const Literal& symbol) const throw(LinkerException) {
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   void* result = (void*)(::GetProcAddress((HMODULE)handle, symbol.getValue()));
   bassert(result != nullptr, LinkerException("Unable to resolve symbol", this));
   return result;
@@ -110,7 +110,7 @@ void* DynamicLinker::getSymbol(
 
 void* DynamicLinker::getSymbol(
   const String& symbol) const throw(LinkerException) {
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   void* result = (void*)(::GetProcAddress((HMODULE)handle, symbol.getElements()));
   bassert(result != 0, LinkerException("Unable to resolve symbol", this));
   return result;
@@ -123,7 +123,7 @@ void* DynamicLinker::getSymbol(
 
 void* DynamicLinker::getUncertainSymbol(
   const Literal& symbol) const throw() {
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   return (void*)(::GetProcAddress((HMODULE)handle, symbol.getValue()));
 #else // unix
   return ::dlsym(handle, symbol.getValue());
@@ -131,7 +131,7 @@ void* DynamicLinker::getUncertainSymbol(
 }
 
 void* DynamicLinker::getUncertainSymbol(const String& symbol) const throw() {
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   return (void*)(::GetProcAddress((HMODULE)handle, symbol.getElements()));
 #else // unix
   return ::dlsym(handle, symbol.getElements());
@@ -157,7 +157,7 @@ bool DynamicLinker::import(
 }
 
 DynamicLinker::~DynamicLinker() {
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   bassert(
     ::FreeLibrary((HMODULE)handle),
     LinkerException("Unable to close module", this)
@@ -170,4 +170,4 @@ DynamicLinker::~DynamicLinker() {
 #endif // flavor
 }
 
-_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
+_COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

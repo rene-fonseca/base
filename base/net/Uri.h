@@ -17,7 +17,7 @@
 #include <base/string/String.h>
 #include <base/string/InvalidFormat.h>
 
-_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+_COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 /**
   This exception is thrown by the Uri class on violations of the RFC 2396
@@ -27,7 +27,7 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
   @version 1.0
 */
 
-class _DK_SDU_MIP__BASE__API UriException : public InvalidFormat {
+class _COM_AZURE_DEV__BASE__API UriException : public InvalidFormat {
 public:
 
   /**
@@ -59,7 +59,7 @@ public:
   @version 1.0
 */
 
-class _DK_SDU_MIP__BASE__API Uri : public Object {
+class _COM_AZURE_DEV__BASE__API Uri : public Object {
 private:
 
   /** The protocol part. */
@@ -226,4 +226,4 @@ public:
 */
 FormatOutputStream& operator<<(FormatOutputStream& stream, const Uri& value) throw(MemoryException, IOException);
 
-_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
+_COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

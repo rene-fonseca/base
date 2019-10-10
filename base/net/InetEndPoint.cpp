@@ -14,7 +14,7 @@
 #include <base/net/InetEndPoint.h>
 #include <base/Integer.h>
 
-_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+_COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 InetEndPoint::InetEndPoint() throw() {
 }
@@ -96,4 +96,4 @@ FormatOutputStream& operator<<(
   return stream;
 }
 
-_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
+_COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

@@ -18,7 +18,7 @@
 #include <base/Cast.h>
 #include <base/string/WideString.h>
 
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
 #  include <windows.h>
 #  include <psapi.h>
 #else // unix
@@ -32,18 +32,18 @@
 #  include <errno.h>
 #  include <stdlib.h>
 
-#  define _DK_SDU_MIP__BASE__HAVE_GETRUSAGE
+#  define _COM_AZURE_DEV__BASE__HAVE_GETRUSAGE
 #endif
 
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__UNIX)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__UNIX)
   extern "C" char** environ;
 #endif
 
-// TAG: need to symbol to enable use of undocumented API (e.g. _DK_SDU_MIP__BASE__UNDOCUMENTED)
+// TAG: need to symbol to enable use of undocumented API (e.g. _COM_AZURE_DEV__BASE__UNDOCUMENTED)
 
-_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+_COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
-#if (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__WINNT4) || (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__W2K)
+#if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__WINNT4) || (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__W2K)
 namespace ntapi {
   
   typedef long NTSTATUS;
@@ -63,7 +63,7 @@ namespace ntapi {
 #endif
 
 Process::ProcessHandle::~ProcessHandle() throw() {
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   if (isValid()) { // dont try to close if handle is invalidated
     ::CloseHandle(getHandle()); // should never fail
   }
@@ -79,7 +79,7 @@ Process::Process(const Process& copy) throw() : id(copy.id), handle(copy.handle)
 }
 
 Process Process::getProcess() throw() {
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   return Process(::GetCurrentProcessId());
 #else // unix
   return Process(::getpid());
@@ -87,8 +87,8 @@ Process Process::getProcess() throw() {
 }
 
 Process Process::getParentProcess() throw() {
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
-  #if (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__WINNT4) || (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__W2K)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
+  #if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__WINNT4) || (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__W2K)
     // MT-safe 'cause DWORD is written atomically
     static bool isPIDCached = false;
     static unsigned long cachedPID = Process::INVALID;
@@ -118,7 +118,7 @@ Process Process::getParentProcess() throw() {
 }
 
 Process Process::fork() throw(NotSupported, ProcessException) {
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   throw NotSupported(Type::getType<Process>());
 #else // unix
   pid_t result = ::fork(); // should we use fork1 on solaris
@@ -138,7 +138,7 @@ Process Process::fork() throw(NotSupported, ProcessException) {
 #endif
 
 int Process::getPriority() throw(ProcessException) {
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   DWORD priority = ::GetPriorityClass(::GetCurrentProcess());
   switch (priority) {
   case 0:
@@ -159,7 +159,7 @@ int Process::getPriority() throw(ProcessException) {
     return 0; // unknown
   }
 #else // unix
-  #if (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__CYGWIN)
+  #if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__CYGWIN)
     #warning Process::getPriority() is not supported
     return 0; // TAG: api cygwin
   #else
@@ -174,7 +174,7 @@ int Process::getPriority() throw(ProcessException) {
 }
 
 void Process::setPriority(int priority) throw(ProcessException) {
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   DWORD priorityClass;
   if (priority <= -20) {
     priorityClass = REALTIME_PRIORITY_CLASS;
@@ -193,7 +193,7 @@ void Process::setPriority(int priority) throw(ProcessException) {
     throw ProcessException("Unable to set priority of process", Type::getType<Process>());
   }
 #else // unix
-  #if (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__CYGWIN)
+  #if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__CYGWIN)
     #warning Process::setPriority() is not supported
   #else
     if (::setpriority(PRIO_PROCESS, ::getpid(), priority)) {
@@ -227,7 +227,7 @@ HANDLE CreateRemoteThread(
 
 Process Process::execute(const String& command) throw(ProcessException) {
   // inherit handles, environment, use current working directory, and allow this app to wait for process to terminate
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   String commandLine = command;
   STARTUPINFO startInfo;
   PROCESS_INFORMATION processInformation;
@@ -288,7 +288,7 @@ Process& Process::operator=(const Process& eq) throw() {
 }
 
 bool Process::isAlive() const throw(ProcessException) {
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
 //   HANDLE newHandle;
 //   BOOL res = ::DuplicateHandle(
 //     ::GetCurrentProcess(), // handle to source process
@@ -350,7 +350,7 @@ bool Process::isAlive() const throw(ProcessException) {
 }
 
 String Process::getName() const throw(NotSupported, ProcessException) {
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   HANDLE process = ::OpenProcess(PROCESS_QUERY_INFORMATION, FALSE, id);
   bassert(process, ProcessException(this));
   wchar buffer[MAX_PATH + 1];
@@ -364,7 +364,7 @@ String Process::getName() const throw(NotSupported, ProcessException) {
 }
 
 void Process::lock() throw(ProcessException) {
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   if (!handle->isValid()) {
     HANDLE result = ::OpenProcess(SYNCHRONIZE, FALSE, static_cast<DWORD>(id));
     bassert(result != 0, ProcessException("Unable to acquire lock", this));
@@ -375,7 +375,7 @@ void Process::lock() throw(ProcessException) {
 }
 
 int Process::wait(unsigned int microseconds) throw() {
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   if (!handle->isValid()) {
     lock();
   }
@@ -392,7 +392,7 @@ int Process::wait(unsigned int microseconds) throw() {
 }
 
 int Process::wait() throw(ProcessException) {
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   if (!handle->isValid()) {
     lock();
   }
@@ -418,7 +418,7 @@ int Process::wait() throw(ProcessException) {
 #endif // flavor
 }
 
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
 class KillImpl {
 public:
   
@@ -455,7 +455,7 @@ public:
     /*DWORD threadId =*/ ::GetWindowThreadProcessId(window, &processId);
     
     if (processId == kill->getProcess().getId()) {
-      static const wchar messageHandlerIdentity[] = _DK_SDU_MIP__BASE__ID_PREFIX L"?message handler";
+      static const wchar messageHandlerIdentity[] = _COM_AZURE_DEV__BASE__ID_PREFIX L"?message handler";
       wchar className[sizeof(messageHandlerIdentity) + 1];
       int length = ::GetClassName(window, className, getArraySize(className)); // excludes terminator
 //      if ((length == (sizeof(messageHandlerIdentity) - 1)) &&
@@ -494,7 +494,7 @@ public:
 
 // TAG: need process group support
 bool Process::terminate(bool force) throw(ProcessException) {
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   if (force) {
     // TAG: ask nicely first
     HANDLE handle = ::OpenProcess(PROCESS_TERMINATE, FALSE, static_cast<DWORD>(id));
@@ -534,7 +534,7 @@ bool Process::terminate(bool force) throw(ProcessException) {
 }
 
 Process::Times Process::getTimes() throw() {
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   if (!handle->isValid()) {
     lock();
   }
@@ -549,7 +549,7 @@ Process::Times Process::getTimes() throw() {
   return result;
 #else // unix
   // TAG: fixme
-  #if defined(_DK_SDU_MIP__BASE__HAVE_GETRUSAGE)
+  #if defined(_COM_AZURE_DEV__BASE__HAVE_GETRUSAGE)
     struct rusage usage;
     ::getrusage(RUSAGE_SELF, &usage); // does not fail
     Process::Times result;
@@ -576,7 +576,7 @@ extern "C" int main();
 // TAG: need method to dump stack trace and registers of context
 // class Context (architure)
 
-#if (0 && (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32))
+#if (0 && (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32))
 void dumpDebugInfo(const BYTE* caller, void* instance) throw() {
   const char* name = ::GetModuleFilename(module) ;
   
@@ -648,7 +648,7 @@ FormatOutputStream& operator<<(
   FormatOutputStream& stream,
   const Process::Layout& value) throw(IOException) {
   
-#if (0 && (_DK_SDU_MIP__BASE__ARCH == _DK_SDU_MIP__BASE__X86))
+#if (0 && (_COM_AZURE_DEV__BASE__ARCH == _COM_AZURE_DEV__BASE__X86))
   void** frame = 0;
   asm (
     "movl %%ebp,%0;\n"
@@ -679,7 +679,7 @@ FormatOutputStream& operator<<(
   // ...
   stream << "Process layout of " << Process::getProcess().getId() << EOL;
 
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   MEMORY_BASIC_INFORMATION information;
   ::VirtualQuery(::GetModuleHandle(0), &information, sizeof(information));
   
@@ -713,7 +713,7 @@ FormatOutputStream& operator<<(
          << "  stack protection: " << HEX << information.AllocationProtect << EOL
          << "  stack type: " << HEX << information.Type << EOL;
   
-#elif ((_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__GNULINUX) && (_DK_SDU_MIP__BASE__ARCH == _DK_SDU_MIP__BASE__X86))
+#elif ((_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__GNULINUX) && (_COM_AZURE_DEV__BASE__ARCH == _COM_AZURE_DEV__BASE__X86))
   // text, data, bss begin at 0x08048000 for IA-32
   // last address is 0xbfffffff for IA-32
   
@@ -726,4 +726,4 @@ FormatOutputStream& operator<<(
   return stream;
 }
 
-_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
+_COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

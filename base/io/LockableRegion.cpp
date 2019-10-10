@@ -13,7 +13,7 @@
 
 #include <base/io/LockableRegion.h>
 
-_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+_COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 LockableRegion::LockableRegion(
   const File& _file,
@@ -34,4 +34,4 @@ LockableRegion::~LockableRegion() {
   file.unlock(region);
 }
 
-_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
+_COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

@@ -13,7 +13,7 @@
 
 #include <base/rmi/idl/IDLPrimitive.h>
 
-_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+_COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 IDLPrimitive::IDLPrimitive(Type _type) throw() : type(_type) {
 }
@@ -21,4 +21,4 @@ IDLPrimitive::IDLPrimitive(Type _type) throw() : type(_type) {
 IDLPrimitive::~IDLPrimitive() throw() {
 }
 
-_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
+_COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

@@ -15,7 +15,7 @@
 
 #include <base/BidirectionalIterator.h>
 
-_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+_COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 /**
   @short Random iterator interface.
@@ -31,4 +31,4 @@ template<class TYPE>
 class ReadRandomIterator : public RandomIterator<TYPE, ReadIteratorTraits<TYPE> > {
 };
 
-_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
+_COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

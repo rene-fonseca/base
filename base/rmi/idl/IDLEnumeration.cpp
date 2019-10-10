@@ -13,7 +13,7 @@
 
 #include <base/rmi/idl/IDLEnumeration.h>
 
-_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+_COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 IDLEnumeration::IDLEnumeration(const String& name) throw()
   : IDLNamedType(name) {
@@ -22,4 +22,4 @@ IDLEnumeration::IDLEnumeration(const String& name) throw()
 IDLEnumeration::~IDLEnumeration() throw() {
 }
 
-_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
+_COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

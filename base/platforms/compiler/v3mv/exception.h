@@ -18,7 +18,7 @@
 #include <exception>
 #include <typeinfo>
 
-_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+_COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 // this file is based on the information available at http://www.codesourcery.com/cxx-abi/abi-eh.html
 
@@ -70,7 +70,7 @@ namespace abi {
   
 }; // end of namespace abi
 
-_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
+_COM_AZURE_DEV__BASE__LEAVE_NAMESPACE
 
 #else
 #  error Multiple inclusion of base/platforms/compiler/v3mv/exception.h

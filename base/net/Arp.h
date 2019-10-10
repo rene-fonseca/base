@@ -32,7 +32,7 @@ DWORD SendARP(
 );
 #endif
 
-_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+_COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 /**
   This class represents an Internet Protocol network interface.
@@ -42,7 +42,7 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
   @version 1.0
 */
 
-class _DK_SDU_MIP__BASE__API Arp : public Object {
+class _COM_AZURE_DEV__BASE__API Arp : public Object {
 private:
   
   /** Specifies the index of the network interface. */
@@ -181,4 +181,4 @@ public:
   }
 };
 
-_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
+_COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

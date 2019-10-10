@@ -16,11 +16,11 @@
 #include <base/Base.h>
 #include <base/Functor.h>
 
-#if defined(_DK_SDU_MIP__BASE__LARGE_FILE_SYSTEM)
+#if defined(_COM_AZURE_DEV__BASE__LARGE_FILE_SYSTEM)
 #  define _LARGEFILE64_SOURCE 1
 #endif
 
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
 #  include <windows.h>
 #else // unix
 #  include <sys/types.h>
@@ -36,12 +36,12 @@
 #  undef assert
 #endif // flavor
 
-_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+_COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 MappedFile::MappedFileImpl::MappedFileImpl(const File& _file, const FileRegion& _region, bool _writeable) throw(FileException) :
   file(_file), region(_region), writeable(_writeable) {
   bassert(region.getOffset() >= 0, FileException("Unable to map file region", this));
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   HANDLE handle = ::CreateFileMapping((HANDLE)getHandle(file), 0, writeable ? PAGE_READWRITE : PAGE_READONLY, 0, 0, 0);
   bassert(handle, FileException("Unable to map file region", this));
   LARGE_INTEGER offset;
@@ -58,7 +58,7 @@ MappedFile::MappedFileImpl::MappedFileImpl(const File& _file, const FileRegion& 
   ::CloseHandle(handle); // this should not fail
 #else // unix
   void* address;
-  #if defined(_DK_SDU_MIP__BASE__LARGE_FILE_SYSTEM)
+  #if defined(_COM_AZURE_DEV__BASE__LARGE_FILE_SYSTEM)
     address = ::mmap64(0, region.getSize(), writeable ? (PROT_READ | PROT_WRITE) : PROT_READ, MAP_SHARED, getHandle(file), region.getOffset());
   #else
     bassert((region.getOffset() >= 0) && (region.getOffset() <= PrimitiveTraits<int>::MAXIMUM), FileException("Unable to map file region", this));
@@ -70,12 +70,12 @@ MappedFile::MappedFileImpl::MappedFileImpl(const File& _file, const FileRegion& 
 }
 
 void MappedFile::MappedFileImpl::synchronize() throw(FileException) {
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   if (!::FlushViewOfFile(bytes, 0)) {
     throw FileException("Unable to flush", this);
   }
 #else // unix
-  #if (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__CYGWIN)
+  #if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__CYGWIN)
     if (::msync((caddr_t)bytes, region.getSize(), MS_SYNC)) {
       throw FileException("Unable to flush", this);
     }
@@ -88,12 +88,12 @@ void MappedFile::MappedFileImpl::synchronize() throw(FileException) {
 }
 
 MappedFile::MappedFileImpl::~MappedFileImpl() {
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   if (!::UnmapViewOfFile(bytes)) {
     throw FileException("Unable to unmap file", this);
   }
 #else // unix
-  #if (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__CYGWIN)
+  #if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__CYGWIN)
     if (::munmap((caddr_t)bytes, region.getSize())) {
       throw FileException("Unable to unmap file", this);
     }
@@ -106,12 +106,12 @@ MappedFile::MappedFileImpl::~MappedFileImpl() {
 }
 
 unsigned int MappedFile::getGranularity() throw() {
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   SYSTEM_INFO info;
   ::GetSystemInfo(&info);
   return info.dwAllocationGranularity;
 #else // unix
-  #if (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__CYGWIN)
+  #if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__CYGWIN)
     return 4096 * 2; // TAG: fixme
   #else
     long size = ::sysconf(_SC_PAGE_SIZE);
@@ -124,7 +124,7 @@ unsigned int MappedFile::getGranularity() throw() {
 MappedFile::MappedFile(const File& file, const FileRegion& region, bool writeable) throw(FileException) : map(0) {
   map = new MappedFileImpl(file, region, writeable);
 //  bassert(r.getOffset() >= 0, FileException("Unable to map file", this));
-//#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+//#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
 //  HANDLE handle = ::CreateFileMapping((HANDLE)f.fd->getHandle(), 0, writeable ? PAGE_READWRITE : PAGE_READONLY, 0, 0, 0);
 //  if (handle) {
 //    throw FileException("Unable to map file", this);
@@ -143,7 +143,7 @@ MappedFile::MappedFile(const File& file, const FileRegion& region, bool writeabl
 //  map = new MappedFileImpl(f, address, size);
 //#else
 //  void* address;
-//#if defined(_DK_SDU_MIP__BASE__LARGE_FILE_SYSTEM)
+//#if defined(_COM_AZURE_DEV__BASE__LARGE_FILE_SYSTEM)
 //  address = mmap64(0, r.getSize(), writeable ? (PROT_READ | PROT_WRITE) : PROT_READ, MAP_SHARED, f.fd->getHandle(), r.getOffset());
 //#else
 //  bassert((r.getOffset() >= 0) && (r.getOffset() <= PrimitiveTraits<int>::MAXIMUM), FileException("Unable to map file", this));
@@ -163,4 +163,4 @@ MappedFile& MappedFile::operator=(const MappedFile& eq) throw() {
   return *this;
 }
 
-_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
+_COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

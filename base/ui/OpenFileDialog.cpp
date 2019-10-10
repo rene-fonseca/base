@@ -17,13 +17,13 @@
 #include <base/NotImplemented.h>
 #include <base/dl/DynamicLinker.h>
 
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
 #  include <base/platforms/win32/Helpers.h>
 #  include <windows.h>
 #else // unix
 #endif // flavor
 
-_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+_COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 OpenFileDialog::OpenFileDialog() throw()
   : flags(OpenFileDialog::MUST_EXIST), defaultFilter(0) {
@@ -35,7 +35,7 @@ void OpenFileDialog::setFilter(
 }
 
 bool OpenFileDialog::execute() throw(UserInterfaceException) {
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   typedef BOOL (WINAPI *FGetOpenFileNameW)(LPOPENFILENAME);
   static FGetOpenFileNameW GetOpenFileNameW = nullptr;
   if (!GetOpenFileNameW) { // TAG: need to be atomic
@@ -114,6 +114,6 @@ bool OpenFileDialog::execute() throw(UserInterfaceException) {
 OpenFileDialog::~OpenFileDialog() throw() {
 }
 
-_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
+_COM_AZURE_DEV__BASE__LEAVE_NAMESPACE
 
 // TAG: remove folder attribute if not required

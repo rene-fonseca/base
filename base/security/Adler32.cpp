@@ -13,7 +13,7 @@
 
 #include <base/security/Adler32.h>
 
-_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+_COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 Adler32::Adler32() throw() {
 }
@@ -31,4 +31,4 @@ unsigned int Adler32::push(const uint8* buffer, unsigned int size) throw() {
   return size;
 }
 
-_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
+_COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

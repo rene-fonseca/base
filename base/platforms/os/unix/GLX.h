@@ -15,11 +15,11 @@
 
 #include <base/platforms/features.h>
 
-#if (_DK_SDU_MIP__BASE__FLAVOR != _DK_SDU_MIP__BASE__UNIX)
+#if (_COM_AZURE_DEV__BASE__FLAVOR != _COM_AZURE_DEV__BASE__UNIX)
 #  error native GLX interface requires unix flavor
 #endif
 
-#if (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__MACOS)
+#if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__MACOS)
 
 // fake types
 
@@ -75,18 +75,18 @@ inline int XScreenNumberOfScreen(Screen*) {return 0;}
 inline void* XCreatePixmap(Display*, void*, int, int, int) {return 0;}
 inline void XFreePixmap(Display*, Pixmap) {}
 
-#elif (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__UNIX)
+#elif (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__UNIX)
 #  include <X11/Xlib.h>
 #  include <X11/Xutil.h>
 #endif // flavor
 
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
-#  define CALL_GLX _DK_SDU_MIP__BASE__CALL_PASCAL
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
+#  define CALL_GLX _COM_AZURE_DEV__BASE__CALL_PASCAL
 #else
 #  define CALL_GLX
 #endif
 
-_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+_COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 namespace native {
 
@@ -285,4 +285,4 @@ namespace native {
   
 }; // end of native namespace
 
-_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
+_COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

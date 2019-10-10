@@ -15,7 +15,7 @@
 
 #include <base/xml/SAXException.h>
 
-_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+_COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 /**
   An XMLReader will raise this exception when it recognizes a feature or
@@ -28,7 +28,7 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
   @version 1.0
 */
 
-class _DK_SDU_MIP__BASE__API SAXNotSupportedException : public SAXException {
+class _COM_AZURE_DEV__BASE__API SAXNotSupportedException : public SAXException {
 public:
 
   /**
@@ -64,4 +64,4 @@ public:
   }
 };
 
-_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
+_COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

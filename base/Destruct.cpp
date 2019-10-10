@@ -13,7 +13,7 @@
 
 #include <base/Destruct.h>
 
-_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+_COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 Destruct::Destruct() throw() {
 }
@@ -21,4 +21,4 @@ Destruct::Destruct() throw() {
 Destruct::Destruct(const char* message) throw() : Exception(message) {
 }
 
-_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
+_COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

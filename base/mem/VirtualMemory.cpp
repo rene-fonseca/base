@@ -17,16 +17,16 @@
 #include <base/NotImplemented.h>
 #include <base/string/WideString.h>
 
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
 #  include <windows.h>
 #else // unix
 #  include <stdlib.h>
 #endif // flavor
 
-_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+_COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 String VirtualMemory::Module::getPath() const throw() {
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   wchar buffer[4096]; // TAG: limit
   unsigned int length = ::GetModuleFileName((HMODULE)context, buffer, sizeof(buffer));
   buffer[length] = 0;
@@ -37,7 +37,7 @@ String VirtualMemory::Module::getPath() const throw() {
 }
 
 VirtualMemory::Module VirtualMemory::Module::getProcessModule() throw() {
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   return Module((HMODULE)::GetModuleHandle(nullptr));
 #else // unix
   throw NotImplemented(Type::getType<VirtualMemory>());
@@ -45,7 +45,7 @@ VirtualMemory::Module VirtualMemory::Module::getProcessModule() throw() {
 }
 
 bool VirtualMemory::Module::isModule() const throw() {
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   wchar buffer[1];
   unsigned int length = ::GetModuleFileName((HMODULE)context, buffer, sizeof(buffer));
   return length > 0;
@@ -55,7 +55,7 @@ bool VirtualMemory::Module::isModule() const throw() {
 }
 
 MemorySize VirtualMemory::Module::getSize() const throw() {
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   SYSTEM_INFO systemInformation;
   ::GetSystemInfo(&systemInformation);
   const unsigned int pageSize = systemInformation.dwPageSize;
@@ -79,7 +79,7 @@ MemorySize VirtualMemory::Module::getSize() const throw() {
 }
 
 Array<VirtualMemory::Module> VirtualMemory::getModules() throw() {
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   Array<Module> result;
   SYSTEM_INFO systemInformation;
   ::GetSystemInfo(&systemInformation);
@@ -107,7 +107,7 @@ Array<VirtualMemory::Module> VirtualMemory::getModules() throw() {
 }
 
 void VirtualMemory::query(const void* address) throw() {
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   throw NotImplemented(Type::getType<VirtualMemory>());
   // DWORD result = ::VirtualQuery(address, &info, sizeof(info));
 #else // unix
@@ -116,7 +116,7 @@ void VirtualMemory::query(const void* address) throw() {
 }
 
 void VirtualMemory::dump() throw() {
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   // get page size
   SYSTEM_INFO info;
   ::GetSystemInfo(&info);
@@ -163,4 +163,4 @@ void VirtualMemory::dump() throw() {
 #endif // flavor
 }
 
-_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
+_COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

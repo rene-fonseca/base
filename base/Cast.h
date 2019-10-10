@@ -16,7 +16,7 @@
 #include <base/Primitives.h>
 #include <base/Base.h>
 
-_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+_COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 /**
   This class provides common casting methods.
@@ -25,7 +25,7 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
   @version 1.0
 */
 
-class _DK_SDU_MIP__BASE__API Cast {
+class _COM_AZURE_DEV__BASE__API Cast {
 private:
   
   /** Casting error codes. */
@@ -126,12 +126,12 @@ private:
   public:
     
     static inline RESULT* cast(ORIGINAL* value) throw() {
-_DK_SDU_MIP__BASE__PACKED__BEGIN
+_COM_AZURE_DEV__BASE__PACKED__BEGIN
       union {
         ORIGINAL* original;
         RESULT* result;
-      } _DK_SDU_MIP__BASE__PACKED temp;
-_DK_SDU_MIP__BASE__PACKED__END
+      } _COM_AZURE_DEV__BASE__PACKED temp;
+_COM_AZURE_DEV__BASE__PACKED__END
       temp.original = value;
       return temp.result;
     }
@@ -142,12 +142,12 @@ _DK_SDU_MIP__BASE__PACKED__END
   public:
     
     static inline const RESULT* cast(const ORIGINAL* value) throw() {
-_DK_SDU_MIP__BASE__PACKED__BEGIN
+_COM_AZURE_DEV__BASE__PACKED__BEGIN
       union {
         const ORIGINAL* original;
         const RESULT* result;
-      } _DK_SDU_MIP__BASE__PACKED temp;
-_DK_SDU_MIP__BASE__PACKED__END
+      } _COM_AZURE_DEV__BASE__PACKED temp;
+_COM_AZURE_DEV__BASE__PACKED__END
       temp.original = value;
       return temp.result;
     }
@@ -158,12 +158,12 @@ _DK_SDU_MIP__BASE__PACKED__END
   public:
     
     static inline volatile RESULT* cast(volatile ORIGINAL* value) throw() {
-_DK_SDU_MIP__BASE__PACKED__BEGIN
+_COM_AZURE_DEV__BASE__PACKED__BEGIN
       union {
         volatile ORIGINAL* original;
         volatile RESULT* result;
-      } _DK_SDU_MIP__BASE__PACKED temp;
-_DK_SDU_MIP__BASE__PACKED__END
+      } _COM_AZURE_DEV__BASE__PACKED temp;
+_COM_AZURE_DEV__BASE__PACKED__END
       temp.original = value;
       return temp.result;
     }
@@ -175,12 +175,12 @@ _DK_SDU_MIP__BASE__PACKED__END
     
     static inline volatile const RESULT* cast(
       volatile const ORIGINAL* value) throw() {
-_DK_SDU_MIP__BASE__PACKED__BEGIN
+_COM_AZURE_DEV__BASE__PACKED__BEGIN
       union {
         volatile const ORIGINAL* original;
         volatile const RESULT* result;
-      } _DK_SDU_MIP__BASE__PACKED temp;
-_DK_SDU_MIP__BASE__PACKED__END
+      } _COM_AZURE_DEV__BASE__PACKED temp;
+_COM_AZURE_DEV__BASE__PACKED__END
       temp.original = value;
       return temp.result;
     }
@@ -200,12 +200,12 @@ _DK_SDU_MIP__BASE__PACKED__END
   public:
     
     static inline RESULT* cast(ORIGINAL* value) throw() {
-_DK_SDU_MIP__BASE__PACKED__BEGIN
+_COM_AZURE_DEV__BASE__PACKED__BEGIN
       union {
         ORIGINAL* original;
         RESULT* result;
-      } _DK_SDU_MIP__BASE__PACKED temp;
-_DK_SDU_MIP__BASE__PACKED__END
+      } _COM_AZURE_DEV__BASE__PACKED temp;
+_COM_AZURE_DEV__BASE__PACKED__END
       temp.original = value;
       return temp.result;
     }
@@ -220,12 +220,12 @@ _DK_SDU_MIP__BASE__PACKED__END
   public:
     
     inline RESULT* operator()(ORIGINAL* value) const throw() {
-_DK_SDU_MIP__BASE__PACKED__BEGIN
+_COM_AZURE_DEV__BASE__PACKED__BEGIN
       union {
         ORIGINAL* original;
         RESULT* result;
-      } _DK_SDU_MIP__BASE__PACKED temp;
-_DK_SDU_MIP__BASE__PACKED__END
+      } _COM_AZURE_DEV__BASE__PACKED temp;
+_COM_AZURE_DEV__BASE__PACKED__END
       temp.original = value;
       return temp.result;
     }
@@ -236,12 +236,12 @@ _DK_SDU_MIP__BASE__PACKED__END
   public:
     
     inline const RESULT* operator()(const ORIGINAL* value) const throw() {
-_DK_SDU_MIP__BASE__PACKED__BEGIN
+_COM_AZURE_DEV__BASE__PACKED__BEGIN
       union {
         const ORIGINAL* original;
         const RESULT* result;
-      } _DK_SDU_MIP__BASE__PACKED temp;
-_DK_SDU_MIP__BASE__PACKED__END
+      } _COM_AZURE_DEV__BASE__PACKED temp;
+_COM_AZURE_DEV__BASE__PACKED__END
       temp.original = value;
       return temp.result;
     }
@@ -498,12 +498,12 @@ public:
     template<class ARGUMENT>
     static inline RESULT cast(ARGUMENT& value) throw() {
       if (Constraint<sizeof(RESULT) >= sizeof(ARGUMENT), Cast>::CONTAINER_FOOTPRINT_TOO_SMALL) {}
-// _DK_SDU_MIP__BASE__PACKED__BEGIN
+// _COM_AZURE_DEV__BASE__PACKED__BEGIN
       union {
         ARGUMENT argument;
         RESULT result; // make sure we do not get an access violation in the cast
-      } /*_DK_SDU_MIP__BASE__PACKED*/ temp;
-// _DK_SDU_MIP__BASE__PACKED__END
+      } /*_COM_AZURE_DEV__BASE__PACKED*/ temp;
+// _COM_AZURE_DEV__BASE__PACKED__END
       temp.argument = value;
       return *reinterpret_cast<RESULT*>(&temp.argument); // partial garbage
     }
@@ -511,12 +511,12 @@ public:
     template<class ARGUMENT>
     static inline const RESULT cast(const ARGUMENT& value) throw() {
       if (Constraint<sizeof(RESULT) >= sizeof(ARGUMENT), Cast>::CONTAINER_FOOTPRINT_TOO_SMALL) {}
-// _DK_SDU_MIP__BASE__PACKED__BEGIN
+// _COM_AZURE_DEV__BASE__PACKED__BEGIN
       union {
         const ARGUMENT argument;
         const RESULT result; // make sure we do not get an access violation in the cast
-      } /*_DK_SDU_MIP__BASE__PACKED*/ temp;
-// _DK_SDU_MIP__BASE__PACKED__END
+      } /*_COM_AZURE_DEV__BASE__PACKED*/ temp;
+// _COM_AZURE_DEV__BASE__PACKED__END
       temp.argument = value;
       return *reinterpret_cast<const RESULT*>(&temp.argument); // partial garbage
     }
@@ -562,4 +562,4 @@ public:
   }
 };
 
-_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
+_COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

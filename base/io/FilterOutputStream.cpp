@@ -13,7 +13,7 @@
 
 #include <base/io/FilterOutputStream.h>
 
-_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+_COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 FilterOutputStream::FilterOutputStream(
   OutputStream& o) throw(BindException) : out(o) {
@@ -34,4 +34,4 @@ unsigned int FilterOutputStream::write(
   return out.write(buffer, size, nonblocking);
 }
 
-_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
+_COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

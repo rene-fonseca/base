@@ -13,7 +13,7 @@
 
 #include <base/rmi/idl/IDLException.h>
 
-_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+_COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 IDLException::IDLException(const String& name, unsigned int version) throw() {
 }
@@ -38,4 +38,4 @@ bool IDLException::isCompatible(const IDLException& exception) const throw() {
 IDLException::~IDLException() throw() {
 }
 
-_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
+_COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

@@ -16,7 +16,7 @@
 #include <base/communication/IEEE1394Impl.h>
 #include <base/OperatingSystem.h>
 
-_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+_COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 /**
   Linux (RAW) IEEE 1394 implementation.
@@ -280,4 +280,4 @@ public:
     Speed speed) throw(OutOfDomain, IEEE1394Exception);
 };
 
-_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
+_COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

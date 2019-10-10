@@ -17,27 +17,27 @@
 #include <base/Primitives.h>
 #include <base/Cast.h>
 
-_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+_COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 namespace isoc {
 
-#if defined(_DK_SDU_MIP__BASE__HAVE_MEMCPY)
+#if defined(_COM_AZURE_DEV__BASE__HAVE_MEMCPY)
   extern "C" void* memcpy(void* restrict, const void* restrict, MemorySize);
 #endif
 
-#if defined(_DK_SDU_MIP__BASE__HAVE_MEMCMP)
+#if defined(_COM_AZURE_DEV__BASE__HAVE_MEMCMP)
   extern "C" int memcmp(const void*, const void*, MemorySize);
 #endif
 
-#if defined(_DK_SDU_MIP__BASE__HAVE_MEMMOVE)
+#if defined(_COM_AZURE_DEV__BASE__HAVE_MEMMOVE)
   extern "C" void* memmove(void*, const void*, MemorySize);
 #endif
 
-#if defined(_DK_SDU_MIP__BASE__HAVE_MEMCHR)
+#if defined(_COM_AZURE_DEV__BASE__HAVE_MEMCHR)
   extern "C" void* memchr(const void*, int, MemorySize);
 #endif
 
-#if defined(_DK_SDU_MIP__BASE__HAVE_MEMSET)
+#if defined(_COM_AZURE_DEV__BASE__HAVE_MEMSET)
   extern "C" void* memset(void*, int, MemorySize);
 #endif
 }; // end of namespace isoc
@@ -89,7 +89,7 @@ public:
 template<class TYPE>
 inline bool equal(
   const TYPE* left, const TYPE* right, unsigned int count) throw() {
-#if defined(_DK_SDU_MIP__BASE__HAVE_MEMCMP)
+#if defined(_COM_AZURE_DEV__BASE__HAVE_MEMCMP)
   if (primitives::Arithmetic<TYPE>::IS_ARITHMETIC) {
     return isoc::memcmp(left, right, count * sizeof(TYPE)) == 0;
   } else {
@@ -103,7 +103,7 @@ inline bool equal(
       ++right;
     }
     return true;
-#if defined(_DK_SDU_MIP__BASE__HAVE_MEMCMP)
+#if defined(_COM_AZURE_DEV__BASE__HAVE_MEMCMP)
   }
 #endif
 }
@@ -150,7 +150,7 @@ inline int compare(
   return 0; // equal
 }
 
-#if defined(_DK_SDU_MIP__BASE__HAVE_MEMCMP)
+#if defined(_COM_AZURE_DEV__BASE__HAVE_MEMCMP)
 template<>
 inline int compare<char>(
   const char* left, const char* right, unsigned int count) throw() {
@@ -241,7 +241,7 @@ inline const TYPE* find(const TYPE* element, unsigned int count, TYPE value) {
   return 0; // not found
 }
 
-#if defined(_DK_SDU_MIP__BASE__HAVE_MEMCHR)
+#if defined(_COM_AZURE_DEV__BASE__HAVE_MEMCHR)
 template<>
 inline const char* find(const char* element, unsigned int count, char value) {
   return Cast::pointer<const char*>(isoc::memchr(element, value, count));
@@ -347,7 +347,7 @@ inline void transformByBinary(TYPE* restrict result, const TYPE* restrict left, 
 template<class TYPE>
 inline void copy(TYPE* restrict dest, const TYPE* restrict src, unsigned int count) {
   if (Relocateable<TYPE>::IS_RELOCATEABLE) {
-#if defined(_DK_SDU_MIP__BASE__HAVE_MEMCPY)
+#if defined(_COM_AZURE_DEV__BASE__HAVE_MEMCPY)
     isoc::memcpy(dest, src, count * sizeof(TYPE));
 #else
     // TAG: should I align the first long word
@@ -385,7 +385,7 @@ template<class TYPE>
 inline void move(TYPE* dest, const TYPE* src, unsigned int count) {
   if (Relocateable<TYPE>::IS_RELOCATEABLE) {
     uint64 bytesToMove = static_cast<uint64>(count) * sizeof(TYPE);
-#if defined(_DK_SDU_MIP__BASE__HAVE_MEMMOVE)
+#if defined(_COM_AZURE_DEV__BASE__HAVE_MEMMOVE)
     isoc::memmove(dest, src, bytesToMove);
 #else
     // TAG: should I align the first long word
@@ -436,7 +436,7 @@ inline void fill(TYPE* dest, unsigned int count, TYPE value) {
   }
 }
 
-#if defined(_DK_SDU_MIP__BASE__HAVE_MEMSET)
+#if defined(_COM_AZURE_DEV__BASE__HAVE_MEMSET)
 template<>
 inline void fill<char>(char* dest, unsigned int count, char value) {
   isoc::memset(dest, value, count);
@@ -1216,4 +1216,4 @@ inline InvokeOutfix<TYPE, PREFIX, SUFFIX> invokeOutfix(
   return InvokeOutfix<TYPE, PREFIX, SUFFIX>(object, prefix, suffix);
 }
 
-_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
+_COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

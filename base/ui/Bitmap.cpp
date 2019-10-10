@@ -15,11 +15,11 @@
 #include <base/ui/Bitmap.h>
 #include <base/ui/WindowImpl.h>
 
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
 #  include <windows.h>
 #  undef DELETE // yikes
 #else // unix (X11)
-#if (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__MACOS)
+#if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__MACOS)
 #else
 #  include <X11/Xlib.h>
 #  include <X11/Xutil.h>
@@ -28,9 +28,9 @@
 #endif
 #endif // flavor
 
-_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+_COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__UNIX)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__UNIX)
 template<>
 class Backend<WindowImpl> {
 public:
@@ -42,11 +42,11 @@ public:
 #endif
 
 Bitmap::Handle::~Handle() throw() {
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   if (handle) {
     ::DeleteObject((HGDIOBJ)handle);
   }
-#elif (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__MACOS)
+#elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__MACOS)
 #else // unix
   if (handle) {
     XDestroyImage((XImage*)handle);
@@ -63,7 +63,7 @@ Bitmap::Bitmap(
   if (!dimension.isProper()) {
     return;
   }
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   HDC h = ::GetDCEx(0, 0, 0); // TAG: destroy this?
   HDC deviceContextHandle = ::CreateCompatibleDC(h);
   bassert(
@@ -122,7 +122,7 @@ Bitmap::Bitmap(
     UserInterfaceException(this)
   );
   handle = new Handle(deviceContextHandle);
-#elif (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__MACOS)
+#elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__MACOS)
 #else // unix
   bassert( // TAG: what is the dimension limit
     (dimension.getWidth() < 65536) && (dimension.getHeight() < 65536),
@@ -175,9 +175,9 @@ void Bitmap::encode(Format format, Encoding encoding, void* data) throw() {
 uint32 Bitmap::getPixel(
   const Position& position) const throw(UserInterfaceException) {
   bassert(handle.isValid(), NullPointer(this));
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   return 0; // TAG: fixme
-#elif (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__MACOS)
+#elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__MACOS)
   return 0;
 #else // unix
   unsigned long pixel = XGetPixel(
@@ -194,9 +194,9 @@ void Bitmap::setPixel(
   const Position& position,
   uint32 value) const throw(UserInterfaceException) {
   bassert(handle.isValid(), NullPointer(this));
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   // TAG: fixme
-#elif (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__MACOS)
+#elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__MACOS)
 #else // unix
   XPutPixel(
     (XImage*)handle->getHandle(),
@@ -211,7 +211,7 @@ Dimension Bitmap::getDimension() const throw(UserInterfaceException) {
   if (!handle.isValid()) {
     return Dimension(0, 0);
   }
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   HGDIOBJ bitmapHandle = ::GetCurrentObject(
     (HDC)handle->getHandle(),
     OBJ_BITMAP
@@ -223,7 +223,7 @@ Dimension Bitmap::getDimension() const throw(UserInterfaceException) {
     &info
   );
   return Dimension(info.bmWidth, info.bmHeight);
-#elif (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__MACOS)
+#elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__MACOS)
   return Dimension();
 #else // unix
   XImage* image = (XImage*)handle->getHandle();
@@ -231,4 +231,4 @@ Dimension Bitmap::getDimension() const throw(UserInterfaceException) {
 #endif // flavor
 }
 
-_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
+_COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

@@ -17,7 +17,7 @@
 #include <base/NotImplemented.h>
 #include <base/dl/DynamicLinker.h>
 
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
 #  include <base/platforms/win32/Helpers.h>
 #  include <windows.h>
 #  include <objbase.h>
@@ -25,13 +25,13 @@
 #else // unix
 #endif // flavor
 
-_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+_COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 SelectFolderDialog::SelectFolderDialog() throw() {
 }
 
 bool SelectFolderDialog::execute() throw(UserInterfaceException) {
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   typedef LPITEMIDLIST (WINAPI *FSHBrowseForFolderW)(LPBROWSEINFO);
   static FSHBrowseForFolderW SHBrowseForFolderW = nullptr;
   if (!SHBrowseForFolderW) { // TAG: need to be atomic
@@ -68,4 +68,4 @@ bool SelectFolderDialog::execute() throw(UserInterfaceException) {
 SelectFolderDialog::~SelectFolderDialog() throw() {
 }
 
-_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
+_COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

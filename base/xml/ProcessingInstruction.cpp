@@ -14,14 +14,14 @@
 #include <base/platforms/features.h>
 #include <base/xml/ProcessingInstruction.h>
 
-#if defined(_DK_SDU_MIP__BASE__XML_XMLSOFT_ORG)
+#if defined(_COM_AZURE_DEV__BASE__XML_XMLSOFT_ORG)
 #  include <libxml2/libxml/tree.h>
 #endif
 
-_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+_COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 String ProcessingInstruction::getTarget() const throw() {
-#if defined(_DK_SDU_MIP__BASE__XML_XMLSOFT_ORG)
+#if defined(_COM_AZURE_DEV__BASE__XML_XMLSOFT_ORG)
   const xmlNode* node = (const xmlNode*)getContext();
   return NativeString((const char*)node->name);
 #else
@@ -30,7 +30,7 @@ String ProcessingInstruction::getTarget() const throw() {
 }
 
 String ProcessingInstruction::getData() const throw() {
-#if defined(_DK_SDU_MIP__BASE__XML_XMLSOFT_ORG)
+#if defined(_COM_AZURE_DEV__BASE__XML_XMLSOFT_ORG)
   const xmlNode* node = (const xmlNode*)getContext();
   return NativeString((const char*)node->content);
 #else
@@ -39,7 +39,7 @@ String ProcessingInstruction::getData() const throw() {
 }
 
 void ProcessingInstruction::setData(const String& value) throw(DOMException) {
-#if defined(_DK_SDU_MIP__BASE__XML_XMLSOFT_ORG)
+#if defined(_COM_AZURE_DEV__BASE__XML_XMLSOFT_ORG)
   xmlNode* node = (xmlNode*)getContext();
   xmlNodeSetContent(node, (const xmlChar*)value.getElements());
 #else
@@ -47,4 +47,4 @@ void ProcessingInstruction::setData(const String& value) throw(DOMException) {
 #endif
 }
 
-_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
+_COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

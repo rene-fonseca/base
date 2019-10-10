@@ -16,7 +16,7 @@
 #include <base/communication/IEEE1394Common.h>
 #include <base/collection/Array.h>
 
-_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+_COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 /**
   IEEE 1394 implementation.
@@ -26,7 +26,7 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
   @version 1.0
 */
 
-class _DK_SDU_MIP__BASE__API IEEE1394Impl : public ReferenceCountedObject, public IEEE1394Common {
+class _COM_AZURE_DEV__BASE__API IEEE1394Impl : public ReferenceCountedObject, public IEEE1394Common {
 public:
 
   /**
@@ -194,4 +194,4 @@ public:
   virtual ~IEEE1394Impl();
 };
 
-_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
+_COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

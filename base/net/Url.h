@@ -17,7 +17,7 @@
 #include <base/string/String.h>
 #include <base/string/InvalidFormat.h>
 
-_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+_COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 /**
   Implementation of Uniform Resource Locator (URL) as specified by RFC 1738 and
@@ -35,7 +35,7 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
   @version 1.0
 */
 
-class _DK_SDU_MIP__BASE__API Url : public Object {
+class _COM_AZURE_DEV__BASE__API Url : public Object {
 private:
 
   /** The protocol. */
@@ -247,4 +247,4 @@ public:
 */
 FormatOutputStream& operator<<(FormatOutputStream& stream, const Url& value) throw(MemoryException, IOException);
 
-_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
+_COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

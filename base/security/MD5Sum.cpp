@@ -16,7 +16,7 @@
 #include <base/security/Base64.h>
 #include <base/string/ASCIITraits.h>
 
-_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+_COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 class MD5SumImpl {
 public:
@@ -232,4 +232,4 @@ String MD5Sum::getBase64() const throw() {
   return Base64::encode(&temp[0], 16);
 }
 
-_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
+_COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

@@ -17,7 +17,7 @@
 #include <base/collection/Array.h>
 #include <base/xml/Document.h>
 
-_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+_COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 /**
   Stylesheet.
@@ -27,11 +27,11 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
   @version 1.0
 */
 
-class _DK_SDU_MIP__BASE__API Stylesheet : public Object {
+class _COM_AZURE_DEV__BASE__API Stylesheet : public Object {
   friend class Transformer;
 private:
 
-  class _DK_SDU_MIP__BASE__API StylesheetImpl : public ReferenceCountedObject {
+  class _COM_AZURE_DEV__BASE__API StylesheetImpl : public ReferenceCountedObject {
   private:
 
     /** The context. */
@@ -125,4 +125,4 @@ public:
   // Array<?> getStylesheetPIs(const Document& document) throw();
 };
 
-_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
+_COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

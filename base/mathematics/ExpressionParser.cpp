@@ -18,7 +18,7 @@
 #include <stdlib.h> // TAG: remove when done
 #include <errno.h> // TAG: remove when done
 
-_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+_COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 ExpressionEvaluator::ExpressionEvaluator() throw() {
 }
@@ -813,4 +813,4 @@ String ExpressionParser::getString() const throw(ExpressionException) {
 ExpressionParser::~ExpressionParser() throw() {
 }
 
-_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
+_COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

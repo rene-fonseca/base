@@ -17,7 +17,7 @@
 #include <base/string/String.h>
 #include <base/string/InvalidFormat.h>
 
-_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+_COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 /**
   Implementation of Uniform Resource Name (URN) as specified by RFC 2141.
@@ -34,7 +34,7 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
   @version 1.0
 */
 
-class _DK_SDU_MIP__BASE__API Urn : public Object {
+class _COM_AZURE_DEV__BASE__API Urn : public Object {
 private:
 
   /** The namespace identifier. */
@@ -127,4 +127,4 @@ inline FormatOutputStream& operator<<(
   return stream << value.getUrn();
 }
 
-_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
+_COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

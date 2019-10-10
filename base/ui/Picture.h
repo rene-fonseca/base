@@ -16,7 +16,7 @@
 #include <base/ui/Widget.h>
 #include <base/ui/Bitmap.h>
 
-_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+_COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 /**
   Picture widget.
@@ -26,7 +26,7 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
   @version 1.0
 */
 
-class _DK_SDU_MIP__BASE__API Picture : public Widget {
+class _COM_AZURE_DEV__BASE__API Picture : public Widget {
 private:
 
   /** The bitmap. */
@@ -101,4 +101,4 @@ public:
   }
 };
 
-_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
+_COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

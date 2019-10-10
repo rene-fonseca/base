@@ -17,7 +17,7 @@
 #include <base/Base.h>
 #include <base/MemoryException.h>
 
-_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+_COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 /*
 namespace alloc {
@@ -37,7 +37,7 @@ namespace alloc {
   @version 1.0
 */
 
-class _DK_SDU_MIP__BASE__API DynamicMemory {
+class _COM_AZURE_DEV__BASE__API DynamicMemory {
 /*
   friend void* alloc::operator new(MemorySize) throw(MemoryException);
   friend void alloc::operator delete(void*) throw(MemoryException);
@@ -124,10 +124,10 @@ namespace alloc {
 }; // end of namespace - alloc
 #endif
 
-_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
+_COM_AZURE_DEV__BASE__LEAVE_NAMESPACE
 
-#if (!defined(_DK_SDU_MIP__BASE__DEFAULT_MEMORY) && \
-      defined(_DK_SDU_MIP__BASE__NAMESPACE))
+#if (!defined(_COM_AZURE_DEV__BASE__DEFAULT_MEMORY) && \
+      defined(_COM_AZURE_DEV__BASE__NAMESPACE))
 inline void* operator new(base::MemorySize, void* place) throw() {
   return place;
 }

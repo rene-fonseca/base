@@ -13,7 +13,7 @@
 
 #include <base/mathematics/ExpressionException.h>
 
-_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+_COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 ExpressionException::ExpressionException() throw() : index(0) {
 }
@@ -28,4 +28,4 @@ ExpressionException::ExpressionException(
   : Exception(message), index(_index) {
 }
 
-_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
+_COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

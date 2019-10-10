@@ -14,7 +14,7 @@
 #include <base/ShortInteger.h>
 #include <base/string/ASCIITraits.h>
 
-_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+_COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 short ShortInteger::parse(
   const String& str, bool withoutSign) throw(InvalidFormat) {
@@ -79,4 +79,4 @@ short ShortInteger::parse(
   return value;
 }
 
-_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
+_COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

@@ -18,7 +18,7 @@
 #include <base/string/String.h>
 #include <base/io/BindException.h>
 
-_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+_COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 /**
   A string input stream is a input stream which receives its data from a
@@ -28,7 +28,7 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
   @version 1.0
 */
 
-class _DK_SDU_MIP__BASE__API StringInputStream : public InputStream, protected String {
+class _COM_AZURE_DEV__BASE__API StringInputStream : public InputStream, protected String {
 protected:
 
   /** String providing the data stream. */
@@ -85,4 +85,4 @@ public:
   ~StringInputStream();
 };
 
-_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
+_COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

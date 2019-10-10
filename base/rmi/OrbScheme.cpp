@@ -13,7 +13,7 @@
 
 #include <base/rmi/OrbScheme.h>
 
-_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+_COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 Reference<OrbConnectionFactory> OrbScheme::openFactory(
   const String& identifier) throw(InvalidFormat, OrbException) {
@@ -21,4 +21,4 @@ Reference<OrbConnectionFactory> OrbScheme::openFactory(
   throw bindCause(OrbException(this), OrbException::NOT_SUPPORTED);
 }
 
-_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
+_COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

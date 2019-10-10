@@ -17,7 +17,7 @@
 #include <base/string/FormatOutputStream.h>
 #include <base/NotSupported.h>
 
-_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+_COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 namespace internal {
   
@@ -80,7 +80,7 @@ namespace internal {
 
 BZip2Deflater::BZip2Deflater() throw(MemoryException)
   : buffer(BUFFER_SIZE), availableBytes(0), state(RUNNING) {
-#if (defined(_DK_SDU_MIP__BASE__BZ2))
+#if (defined(_COM_AZURE_DEV__BASE__BZ2))
   internal::BZip2Deflater::Context* context = new internal::BZip2Deflater::Context;
   this->context = context;
   clear(*context);
@@ -99,7 +99,7 @@ BZip2Deflater::BZip2Deflater() throw(MemoryException)
 
 BZip2Deflater::BZip2Deflater(unsigned int compressionLevel) throw(MemoryException)
   : buffer(BUFFER_SIZE), availableBytes(0), state(RUNNING) {
-#if (defined(_DK_SDU_MIP__BASE__BZ2))
+#if (defined(_COM_AZURE_DEV__BASE__BZ2))
   internal::BZip2Deflater::Context* context = new internal::BZip2Deflater::Context;
   this->context = context;
   clear(*context);
@@ -117,7 +117,7 @@ BZip2Deflater::BZip2Deflater(unsigned int compressionLevel) throw(MemoryExceptio
 }
 
 void BZip2Deflater::flush() throw(IOException) {
-#if (defined(_DK_SDU_MIP__BASE__BZ2))
+#if (defined(_COM_AZURE_DEV__BASE__BZ2))
   bassert(state != ENDED, EndOfFile());
   bassert(state == RUNNING, IOException(this));
   state = FLUSHING;
@@ -127,7 +127,7 @@ void BZip2Deflater::flush() throw(IOException) {
 }
 
 unsigned int BZip2Deflater::push(const uint8* buffer, unsigned int size) throw(IOException) {
-#if (defined(_DK_SDU_MIP__BASE__BZ2))
+#if (defined(_COM_AZURE_DEV__BASE__BZ2))
   bassert(state != ENDED, EndOfFile());
   bassert(state == RUNNING, IOException(this));
   if (availableBytes == this->buffer.getSize()) {
@@ -151,7 +151,7 @@ unsigned int BZip2Deflater::push(const uint8* buffer, unsigned int size) throw(I
 }
 
 void BZip2Deflater::pushEnd() throw(IOException) {
-#if (defined(_DK_SDU_MIP__BASE__BZ2))
+#if (defined(_COM_AZURE_DEV__BASE__BZ2))
   bassert(state != ENDED, EndOfFile());
   bassert(state == RUNNING, IOException(this));
   state = FINISHING;
@@ -161,7 +161,7 @@ void BZip2Deflater::pushEnd() throw(IOException) {
 }
 
 unsigned int BZip2Deflater::pull(uint8* buffer, unsigned int size) throw(IOException) {
-#if (defined(_DK_SDU_MIP__BASE__BZ2))
+#if (defined(_COM_AZURE_DEV__BASE__BZ2))
   bassert(state != ENDED, EndOfFile());
   
   if ((state == RUNNING) &&
@@ -241,7 +241,7 @@ unsigned int BZip2Deflater::pull(uint8* buffer, unsigned int size) throw(IOExcep
 }
 
 BZip2Deflater::~BZip2Deflater() throw() {
-#if (defined(_DK_SDU_MIP__BASE__BZ2))
+#if (defined(_COM_AZURE_DEV__BASE__BZ2))
   internal::BZip2Deflater::Context* context =
     Cast::pointer<internal::BZip2Deflater::Context*>(this->context);
   internal::BZ2_bzCompressEnd(context);
@@ -249,4 +249,4 @@ BZip2Deflater::~BZip2Deflater() throw() {
 #endif
 }
 
-_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
+_COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

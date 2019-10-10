@@ -13,7 +13,7 @@
 
 #include <base/concurrency/NISpinLock.h>
 
-_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+_COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 NISpinLock::NISpinLock() throw() : value(0) {
 }
@@ -34,4 +34,4 @@ void NISpinLock::releaseLock() const throw() {
   value = 0;
 }
 
-_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
+_COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

@@ -15,7 +15,7 @@
 
 #include <base/Iterator.h>
 
-_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+_COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 /**
   Forward iterator interface.
@@ -32,4 +32,4 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
 //class ReadForwardIterator : public ForwardIterator<ReadIteratorTraits<TYPE> > {
 //};
 
-_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
+_COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

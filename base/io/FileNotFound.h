@@ -15,7 +15,7 @@
 
 #include <base/io/FileException.h>
 
-_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+_COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 /**
   Specifies that the file doesn't exist or couldn't be opened.
@@ -25,7 +25,7 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
   @version 1.0
 */
 
-class _DK_SDU_MIP__BASE__API FileNotFound : public FileException {
+class _COM_AZURE_DEV__BASE__API FileNotFound : public FileException {
 public:
 
   /**
@@ -61,4 +61,4 @@ public:
   }
 };
 
-_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
+_COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

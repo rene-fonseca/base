@@ -21,7 +21,7 @@
 #include <base/mem/ReferenceCountedAllocator.h>
 #include <base/mem/AllocatorEnumeration.h>
 
-_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+_COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 /**
   Vector implementation.
@@ -424,4 +424,4 @@ template<class TYPE>
 FormatOutputStream& operator<<(
   FormatOutputStream& stream, const Vector<TYPE>& value) throw(IOException);
 
-_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
+_COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

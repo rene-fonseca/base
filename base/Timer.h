@@ -16,7 +16,7 @@
 #include <base/Object.h>
 #include <base/string/FormatOutputStream.h>
 
-_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+_COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 /**
   Timer wrapper class.
@@ -25,7 +25,7 @@ _DK_SDU_MIP__BASE__ENTER_NAMESPACE
   @version 1.0
 */
 
-class _DK_SDU_MIP__BASE__API Timer : public Object {
+class _COM_AZURE_DEV__BASE__API Timer : public Object {
 private:
 
   /** The start time in platform specific resolution. */
@@ -41,7 +41,7 @@ public:
     @short Elapsed time conversion.
     @version 1.0
   */
-  class _DK_SDU_MIP__BASE__API ElapsedTime {
+  class _COM_AZURE_DEV__BASE__API ElapsedTime {
   private:
 
     /** The elapsed time in nanoseconds. */
@@ -271,10 +271,10 @@ public:
 /**
   Times the current scope. Writes the elapsed time to fout when the scope is exited.
 */
-#define timeScope() TimeScope _dk_sdu_mip__base__timer
+#define timeScope() TimeScope _COM_AZURE_DEV__BASE__timer
 
-#define startScopeTimer() _dk_sdu_mip__base__timer.start()
+#define startScopeTimer() _COM_AZURE_DEV__BASE__timer.start()
 
-#define stopScopeTimer() _dk_sdu_mip__base__timer.stop()
+#define stopScopeTimer() _COM_AZURE_DEV__BASE__timer.stop()
 
-_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
+_COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

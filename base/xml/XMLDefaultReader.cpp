@@ -16,13 +16,13 @@
 #include <base/xml/DOMImplementation.h>
 #include <base/io/FileReader.h>
 
-#if defined(_DK_SDU_MIP__BASE__XML_XMLSOFT_ORG)
+#if defined(_COM_AZURE_DEV__BASE__XML_XMLSOFT_ORG)
 #  include <libxml2/libxml/parser.h>
 #  include <libxml2/libxml/parserInternals.h>
 #  include <stdarg.h>
 #endif
 
-_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+_COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 /** Wrapper class for the callback interface. */
 class XMLDefaultReaderImpl {
@@ -33,7 +33,7 @@ public:
     void* context;
   };
   
-#if defined(_DK_SDU_MIP__BASE__XML_XMLSOFT_ORG)
+#if defined(_COM_AZURE_DEV__BASE__XML_XMLSOFT_ORG)
   static xmlEntityPtr getEntity(void* parser, const xmlChar* name) {
     return xmlGetPredefinedEntity(name);
   }
@@ -483,7 +483,7 @@ public:
 #endif
 };
 
-#if defined(_DK_SDU_MIP__BASE__XML_XMLSOFT_ORG)
+#if defined(_COM_AZURE_DEV__BASE__XML_XMLSOFT_ORG)
 xmlSAXHandler XMLDefaultReaderImpl::SAX_HANDLER = {
   XMLDefaultReaderImpl::internalSubset, // internalSubset
   0, // isStandalone
@@ -527,7 +527,7 @@ XMLDefaultReader::XMLDefaultReader() throw()
     terminated(false),
     parsing(false),
     standalone(false) {
-#if defined(_DK_SDU_MIP__BASE__XML_XMLSOFT_ORG)
+#if defined(_COM_AZURE_DEV__BASE__XML_XMLSOFT_ORG)
 #else // no xml support
   throw SAXNotSupportedException(this); // prevent construction
 #endif
@@ -535,7 +535,7 @@ XMLDefaultReader::XMLDefaultReader() throw()
 
 bool XMLDefaultReader::getFeature(const String& name) const
   throw(SAXNotRecognizedException, SAXNotSupportedException) {
-#if defined(_DK_SDU_MIP__BASE__XML_XMLSOFT_ORG)
+#if defined(_COM_AZURE_DEV__BASE__XML_XMLSOFT_ORG)
   if (name == "http://xml.org/sax/features/validation") {
     return validate;
   } else if (name == "http://xml.org/sax/features/namespaces") {
@@ -558,7 +558,7 @@ bool XMLDefaultReader::getFeature(const String& name) const
 
 void XMLDefaultReader::setFeature(const String& name, bool value)
   throw(SAXNotRecognizedException, SAXNotSupportedException) {
-#if defined(_DK_SDU_MIP__BASE__XML_XMLSOFT_ORG)
+#if defined(_COM_AZURE_DEV__BASE__XML_XMLSOFT_ORG)
   
   // TAG: what about recovering
   if (name == "http://xml.org/sax/features/validation") {
@@ -577,7 +577,7 @@ void XMLDefaultReader::setFeature(const String& name, bool value)
 
 void XMLDefaultReader::parse(
   File file, const String& uri) throw(IOException, SAXException) {
-#if defined(_DK_SDU_MIP__BASE__XML_XMLSOFT_ORG)
+#if defined(_COM_AZURE_DEV__BASE__XML_XMLSOFT_ORG)
   bassert(!parsing, SAXException(this));
   parsing = true;
   
@@ -659,7 +659,7 @@ void XMLDefaultReader::parse(
   const char* buffer,
   unsigned int size,
   const String& uri) throw(SAXException) {
-#if defined(_DK_SDU_MIP__BASE__XML_XMLSOFT_ORG)
+#if defined(_COM_AZURE_DEV__BASE__XML_XMLSOFT_ORG)
   bassert(!parsing, SAXException(this));
   parsing = true;
   
@@ -721,7 +721,7 @@ public:
 };
 
 void XMLDefaultReader::parse(const String& systemId) throw(SAXException) {
-#if defined(_DK_SDU_MIP__BASE__XML_XMLSOFT_ORG)
+#if defined(_COM_AZURE_DEV__BASE__XML_XMLSOFT_ORG)
   bassert(!parsing, SAXException(this));
   parsing = true;
   FinalValue<bool> finalValue(parsing, false);
@@ -780,7 +780,7 @@ void XMLDefaultReader::parse(const String& systemId) throw(SAXException) {
 }
 
 void XMLDefaultReader::terminate() throw() {
-#if defined(_DK_SDU_MIP__BASE__XML_XMLSOFT_ORG)
+#if defined(_COM_AZURE_DEV__BASE__XML_XMLSOFT_ORG)
 // int result = xmlParseChunk(static_cast<xmlParserCtxtPtr>(context), 0, 0, 1);
 // bassert(result == 0, SAXException("Unable to terminate parsing"));
 #else // no xml support
@@ -791,4 +791,4 @@ void XMLDefaultReader::terminate() throw() {
 XMLDefaultReader::~XMLDefaultReader() throw() {
 }
 
-_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
+_COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

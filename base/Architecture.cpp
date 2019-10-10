@@ -13,11 +13,11 @@
 
 #include <base/Architecture.h>
 
-_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+_COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 unsigned int Architecture::getTechonologies() throw() {
   unsigned int result = 0;
-#if (_DK_SDU_MIP__BASE__ARCH == _DK_SDU_MIP__BASE__X86)
+#if (_COM_AZURE_DEV__BASE__ARCH == _COM_AZURE_DEV__BASE__X86)
   unsigned int eflags;
   
   enum Flag {
@@ -78,23 +78,23 @@ unsigned int Architecture::getTechonologies() throw() {
 }
 
 Architecture::Major Architecture::getArchitecture() throw() {
-#if (_DK_SDU_MIP__BASE__ARCH == _DK_SDU_MIP__BASE__X86)
+#if (_COM_AZURE_DEV__BASE__ARCH == _COM_AZURE_DEV__BASE__X86)
   return X86;
-#elif (_DK_SDU_MIP__BASE__ARCH == _DK_SDU_MIP__BASE__SPARC)
+#elif (_COM_AZURE_DEV__BASE__ARCH == _COM_AZURE_DEV__BASE__SPARC)
   return SPARC;
-#elif (_DK_SDU_MIP__BASE__ARCH == _DK_SDU_MIP__BASE__MIPS)
+#elif (_COM_AZURE_DEV__BASE__ARCH == _COM_AZURE_DEV__BASE__MIPS)
   return MIPS;
-#elif (_DK_SDU_MIP__BASE__ARCH == _DK_SDU_MIP__BASE__ITANIUM)
+#elif (_COM_AZURE_DEV__BASE__ARCH == _COM_AZURE_DEV__BASE__ITANIUM)
   return ITANIUM;
-#elif (_DK_SDU_MIP__BASE__ARCH == _DK_SDU_MIP__BASE__ALPHA)
+#elif (_COM_AZURE_DEV__BASE__ARCH == _COM_AZURE_DEV__BASE__ALPHA)
   return ALPHA;
-#elif (_DK_SDU_MIP__BASE__ARCH == _DK_SDU_MIP__BASE__PPC)
+#elif (_COM_AZURE_DEV__BASE__ARCH == _COM_AZURE_DEV__BASE__PPC)
   return POWER_PC;
-#elif (_DK_SDU_MIP__BASE__ARCH == _DK_SDU_MIP__BASE__RS)
+#elif (_COM_AZURE_DEV__BASE__ARCH == _COM_AZURE_DEV__BASE__RS)
   return RS;
-#elif (_DK_SDU_MIP__BASE__ARCH == _DK_SDU_MIP__BASE__X86_64)
+#elif (_COM_AZURE_DEV__BASE__ARCH == _COM_AZURE_DEV__BASE__X86_64)
   return X86_64;
-#elif (_DK_SDU_MIP__BASE__ARCH == _DK_SDU_MIP__BASE__S390)
+#elif (_COM_AZURE_DEV__BASE__ARCH == _COM_AZURE_DEV__BASE__S390)
   return S390;
 #else
 #  error Unsupported architecture
@@ -103,7 +103,7 @@ Architecture::Major Architecture::getArchitecture() throw() {
   
 Architecture::Minor Architecture::getMinorArchitecture() throw() {
   Architecture::Minor result = GENERIC;
-#if (_DK_SDU_MIP__BASE__ARCH == _DK_SDU_MIP__BASE__X86)
+#if (_COM_AZURE_DEV__BASE__ARCH == _COM_AZURE_DEV__BASE__X86)
   result = X86_386;
   // TAG: add check for X86_486
   
@@ -207,4 +207,4 @@ Architecture::Minor Architecture::getMinorArchitecture() throw() {
 //   return result;
 // }
 
-_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
+_COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

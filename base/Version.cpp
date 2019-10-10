@@ -14,44 +14,44 @@
 #include <base/platforms/features.h>
 #include <base/Version.h>
 
-_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+_COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 const char Version::banner[] =
-"The Base Framework release " _DK_SDU_MIP__BASE__VERSION "\n"
+"The Base Framework release " _COM_AZURE_DEV__BASE__VERSION "\n"
 "A framework for developing platform independent applications\n"
 "Copyright (C) 2000-2003 by Rene Moeller Fonseca\n\n"
 "This framework is distributed in the hope that it will be useful,\n"
 "but WITHOUT ANY WARRANTY; without even the implied warranty of\n"
 "MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.\n"
 "Please report bugs to https://dev.azure.com/renefonseca/base.\n\n"
-"build data: " _DK_SDU_MIP__BASE__BUILD_DATE "\n";
+"build data: " _COM_AZURE_DEV__BASE__BUILD_DATE "\n";
 
 unsigned int Version::getMajorVersion() const throw() {
-  return _DK_SDU_MIP__BASE__MAJOR_VERSION;
+  return _COM_AZURE_DEV__BASE__MAJOR_VERSION;
 }
 
 unsigned int Version::getMinorVersion() const throw() {
-  return _DK_SDU_MIP__BASE__MINOR_VERSION;
+  return _COM_AZURE_DEV__BASE__MINOR_VERSION;
 }
 
 unsigned int Version::getMicroVersion() const throw() {
-  return _DK_SDU_MIP__BASE__MICRO_VERSION;
+  return _COM_AZURE_DEV__BASE__MICRO_VERSION;
 }
 
 String Version::getRelease() const throw() {
-  return Literal(_DK_SDU_MIP__BASE__VERSION);
+  return Literal(_COM_AZURE_DEV__BASE__VERSION);
 }
 
 String Version::getVersion() const throw() {
-  return Literal(_DK_SDU_MIP__BASE__VERSION);
+  return Literal(_COM_AZURE_DEV__BASE__VERSION);
 }
 
 String Version::getBanner() const throw() {
   return Literal(banner);
 }
 
-#if (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__GNULINUX) && \
-    (_DK_SDU_MIP__BASE__ARCH == _DK_SDU_MIP__BASE__X86)
+#if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__GNULINUX) && \
+    (_COM_AZURE_DEV__BASE__ARCH == _COM_AZURE_DEV__BASE__X86)
 // TAG: platform specific - and only shared library
 // entry point of library when run as an ordinary application
 extern "C" void libbase_entry() {
@@ -64,4 +64,4 @@ extern "C" void libbase_entry() {
 }
 #endif
 
-_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
+_COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

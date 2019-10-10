@@ -18,11 +18,11 @@
 #include <base/collection/Array.h>
 #include <base/net/Socket.h>
 
-_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+_COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 // TAG: must support sockets and events
 
-class _DK_SDU_MIP__BASE__API WaitForObjects : public Object {
+class _COM_AZURE_DEV__BASE__API WaitForObjects : public Object {
 private:
   
   List<Object*> objects;
@@ -75,4 +75,4 @@ public:
   bool waitForAll(unsigned int timeout) const throw();
 };
 
-_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
+_COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

@@ -19,13 +19,13 @@
 #include <base/sound/SoundDevice.h>
 #include <base/concurrency/SharedSynchronize.h>
 
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
 #  define NO_STRICT
   // I don't get it: in STRICT mode handles are of type int but in NO_STRICT
   // mode the handles are of size void*. This is a problem on 64 bit platforms
   // where int and void* may be of different sizes.
 #  include <windows.h>
-#elif (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__UNIX)
+#elif (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__UNIX)
 #  include <sys/types.h> // open
 #  include <sys/stat.h> // open
 #  include <fcntl.h> // open
@@ -33,10 +33,10 @@
 #  include <errno.h> // errno
 #  include <limits.h> // SSIZE_MAX
 
-#  if (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__GNULINUX)
+#  if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__GNULINUX)
 #    include <sys/ioctl.h> // ioctl
 #    include <sys/soundcard.h> // ioctl
-#  elif (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__SOLARIS)
+#  elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__SOLARIS)
 #    include <stropts.h> // ioctl
 #    include <sys/conf.h> // ioctl
 #    include <sys/audio.h>
@@ -44,9 +44,9 @@
 #  endif // os
 #endif // flavor
 
-_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+_COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
 class SoundInputStream::SoundInputStreamHelper {
 public:
 
@@ -58,7 +58,7 @@ public:
 
 SoundInputStream::SoundInputStream(unsigned int samplingRate, unsigned int channels) throw(OutOfDomain, NotSupported) {
   bassert(channels > 0, OutOfDomain());
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   WAVEFORMATEX format;
   clear(format);
   format.wFormatTag = WAVE_FORMAT_PCM;
@@ -76,7 +76,7 @@ SoundInputStream::SoundInputStream(unsigned int samplingRate, unsigned int chann
   SharedSynchronize<ReadWriteLock> sharedSynchronize(SoundDevice::soundDevice.guard);
   OperatingSystem::Handle handle = SoundDevice::soundDevice.getReadHandle();
 
-  #if (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__GNULINUX)
+  #if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__GNULINUX)
     int format = AFMT_S16_LE;
     bassert(::ioctl(handle, SNDCTL_DSP_SETFMT, &format) == 0, UnexpectedFailure());
     bassert(format == AFMT_S16_LE, NotSupported());
@@ -89,7 +89,7 @@ SoundInputStream::SoundInputStream(unsigned int samplingRate, unsigned int chann
     bassert(::ioctl(handle, SNDCTL_DSP_SPEED, &desiredRate) == 0, UnexpectedFailure());
     bassert(desiredRate == samplingRate, NotSupported());
 
-  #elif (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__SOLARIS)
+  #elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__SOLARIS)
     audio_info_t info;
     AUDIO_INITINFO(&info);
     info.record.pause = 1;
@@ -114,14 +114,14 @@ SoundInputStream::SoundInputStream(unsigned int samplingRate, unsigned int chann
 }
 
 unsigned int SoundInputStream::available() const throw() {
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   return 0;
 #else
   SharedSynchronize<ReadWriteLock> sharedSynchronize(SoundDevice::soundDevice.guard);
   OperatingSystem::Handle handle = SoundDevice::soundDevice.getReadHandle();
-  #if (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__GNULINUX)
+  #if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__GNULINUX)
     return 0;
-  #elif (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__SOLARIS)
+  #elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__SOLARIS)
     unsigned int available;
     bassert(::ioctl(handle, I_NREAD, &available) == 0, UnexpectedFailure()); // should not fail
     return available;
@@ -133,16 +133,16 @@ unsigned int SoundInputStream::available() const throw() {
 }
 
 unsigned int SoundInputStream::getChannels() const throw() {
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   return 0;
 #else
   SharedSynchronize<ReadWriteLock> sharedSynchronize(SoundDevice::soundDevice.guard);
   OperatingSystem::Handle handle = SoundDevice::soundDevice.getReadHandle();
-  #if (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__GNULINUX)
+  #if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__GNULINUX)
     int channels;
     bassert(::ioctl(handle, SOUND_PCM_READ_CHANNELS, &channels) == 0, UnexpectedFailure());
     return channels;
-  #elif (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__SOLARIS)
+  #elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__SOLARIS)
     audio_info_t info;
     bassert(::ioctl(handle, AUDIO_GETINFO, &info) == 0, UnexpectedFailure()); // should never fail
     return info.record.channels;
@@ -153,16 +153,16 @@ unsigned int SoundInputStream::getChannels() const throw() {
 }
 
 unsigned int SoundInputStream::getRate() const throw() {
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   return 0;
 #else
   SharedSynchronize<ReadWriteLock> sharedSynchronize(SoundDevice::soundDevice.guard);
   OperatingSystem::Handle handle = SoundDevice::soundDevice.getReadHandle();
-  #if (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__GNULINUX)
+  #if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__GNULINUX)
     int rate;
     bassert(::ioctl(handle, SOUND_PCM_READ_RATE, &rate) == 0, UnexpectedFailure());
     return rate;
-  #elif (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__SOLARIS)
+  #elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__SOLARIS)
     audio_info_t info;
     bassert(::ioctl(handle, AUDIO_GETINFO, &info) == 0, UnexpectedFailure()); // should never fail
     return info.record.sample_rate;
@@ -173,7 +173,7 @@ unsigned int SoundInputStream::getRate() const throw() {
 }
 
 unsigned int SoundInputStream::getPosition() const throw() {
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   MMTIME time;
   clear(time);
   time.wType = TIME_SAMPLES;
@@ -183,9 +183,9 @@ unsigned int SoundInputStream::getPosition() const throw() {
 #else
   SharedSynchronize<ReadWriteLock> sharedSynchronize(SoundDevice::soundDevice.guard);
   OperatingSystem::Handle handle = SoundDevice::soundDevice.getReadHandle();
-  #if (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__GNULINUX)
+  #if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__GNULINUX)
     return 0;
-  #elif (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__SOLARIS)
+  #elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__SOLARIS)
     audio_info_t info;
     bassert(::ioctl(handle, AUDIO_GETINFO, &info) == 0, UnexpectedFailure()); // should never fail
     return info.record.samples;
@@ -196,15 +196,15 @@ unsigned int SoundInputStream::getPosition() const throw() {
 }
 
 void SoundInputStream::resume() throw() {
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   ::waveInStart((HWAVEIN)handle);
   event.reset();
 #else
   SharedSynchronize<ReadWriteLock> sharedSynchronize(SoundDevice::soundDevice.guard);
   OperatingSystem::Handle handle = SoundDevice::soundDevice.getReadHandle();
-  #if (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__GNULINUX)
+  #if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__GNULINUX)
     reset();
-  #elif (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__SOLARIS)
+  #elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__SOLARIS)
     audio_info_t info;
     AUDIO_INITINFO(&info);
     info.record.pause = 0;
@@ -215,14 +215,14 @@ void SoundInputStream::resume() throw() {
 }
 
 void SoundInputStream::pause() throw() {
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   ::waveInStop((HWAVEIN)handle);
   event.reset();
 #else
   SharedSynchronize<ReadWriteLock> sharedSynchronize(SoundDevice::soundDevice.guard);
   OperatingSystem::Handle handle = SoundDevice::soundDevice.getReadHandle();
-  #if (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__GNULINUX)
-  #elif (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__SOLARIS)
+  #if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__GNULINUX)
+  #elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__SOLARIS)
     audio_info_t info;
     AUDIO_INITINFO(&info);
     info.record.pause = 1;
@@ -233,14 +233,14 @@ void SoundInputStream::pause() throw() {
 }
 
 void SoundInputStream::reset() throw() {
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   ::waveInReset((HWAVEIN)handle);
 #else
   SharedSynchronize<ReadWriteLock> sharedSynchronize(SoundDevice::soundDevice.guard);
   OperatingSystem::Handle handle = SoundDevice::soundDevice.getReadHandle();
-  #if (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__GNULINUX)
+  #if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__GNULINUX)
     bassert(::ioctl(handle, SNDCTL_DSP_RESET, 0) == 0, UnexpectedFailure());
-  #elif (_DK_SDU_MIP__BASE__OS == _DK_SDU_MIP__BASE__SOLARIS)
+  #elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__SOLARIS)
     audio_info_t info;
     AUDIO_INITINFO(&info);
     info.record.pause = 1;
@@ -251,7 +251,7 @@ void SoundInputStream::reset() throw() {
 }
 
 unsigned int SoundInputStream::read(void* buffer, unsigned int size) throw() {
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   WAVEHDR header;
   clear(header);
   header.lpData = Cast::pointer<LPSTR>(buffer);
@@ -292,11 +292,11 @@ unsigned int SoundInputStream::read(void* buffer, unsigned int size) throw() {
 
 SoundInputStream::~SoundInputStream() throw() {
   reset();
-#if (_DK_SDU_MIP__BASE__FLAVOR == _DK_SDU_MIP__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   ::waveInClose((HWAVEIN)handle);
 #else
   SoundDevice::soundDevice.relinquishReadAccess();
 #endif
 }
 
-_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
+_COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

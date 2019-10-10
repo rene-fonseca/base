@@ -16,8 +16,8 @@
 // TAG: watch out for accuracy
 // FAST/APPROX must be enabled explicitly
 
-#if !defined(_DK_SDU_MIP__BASE__BUILTIN_SQRTF)
-#  define _DK_SDU_MIP__BASE__BUILTIN_SQRTF builtin::sse2::invsqrtf
+#if !defined(_COM_AZURE_DEV__BASE__BUILTIN_SQRTF)
+#  define _COM_AZURE_DEV__BASE__BUILTIN_SQRTF builtin::sse2::invsqrtf
 #endif
 
 namespace base {

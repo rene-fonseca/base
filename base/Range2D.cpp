@@ -13,7 +13,7 @@
 
 #include <base/Range2D.h>
 
-_DK_SDU_MIP__BASE__ENTER_NAMESPACE
+_COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 Range2D::Range2D() throw() {
   assign(0, 0);
@@ -73,4 +73,4 @@ FormatOutputStream& operator<<(FormatOutputStream& stream, const Range2D& value)
   return stream << '(' << value.getMinimum() << ',' << value.getMaximum() << ')';
 }
 
-_DK_SDU_MIP__BASE__LEAVE_NAMESPACE
+_COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

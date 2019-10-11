@@ -142,10 +142,18 @@ endif ()
 set(PRODUCT_MAJOR "0") # TAG: FIXME
 set(PRODUCT_MINOR "9") # TAG: FIXME
 
+if (APPLE)
+# macOS requires all values to be less than 1024
+set_target_properties(base
+  PROPERTIES
+  VERSION ${PRODUCT_MAJOR}.${PRODUCT_MINOR}
+  SOVERSION ${PRODUCT_MAJOR})
+else ()
 set_target_properties(base
   PROPERTIES
   VERSION ${PRODUCT_MAJOR}.${PRODUCT_MINOR}.${GIT_REVISION}
   SOVERSION ${PRODUCT_MAJOR})
+endif ()
 
 add_library(base_STATIC STATIC ${base_SRC} ${CMAKE_CURRENT_BINARY_DIR}/generated/base/config.h)
 set_target_properties(base_STATIC PROPERTIES OUTPUT_NAME base_static)

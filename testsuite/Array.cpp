@@ -43,7 +43,7 @@ public:
     fout << "Initializing array" << ENDL;
     
     Array<int> ai;
-    
+    fout << DEC;
     fout << "Appending values (1, 2, 3, 4, and 5)" << ENDL;
     ai.append(1);
     ai.append(2);

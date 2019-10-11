@@ -776,7 +776,7 @@ FormatOutputStream& FormatOutputStream::operator<<(
   unsigned int value) throw(IOException) {
   char buffer[sizeof(unsigned int) * 8];
   char* dest =
-    &buffer[sizeof(buffer) - 1]; // point to least significant digit position
+    &buffer[getArraySize(buffer) - 1]; // point to least significant digit position
 
   switch (getBase()) {
   case FormatOutputStream::Symbols::BINARY:
@@ -826,7 +826,7 @@ FormatOutputStream& FormatOutputStream::operator<<(
     return *this; // do not do anything if base is unknown
   }
 
-  addIntegerField(dest, sizeof(buffer) - (dest - buffer), false);
+  addIntegerField(dest, getArraySize(buffer) - (dest - buffer), false);
   return *this;
 }
 
@@ -1556,10 +1556,10 @@ FormatOutputStream& FormatOutputStream::operator<<(
   } representation;
   representation.primitive = value;
 
-  unsigned int precision;
+  unsigned int precision = 0;
   unsigned int mantissa[(FloatingPoint::FloatRepresentation::SIGNIFICANT + (sizeof(unsigned int) * 8) - 1)/(sizeof(unsigned int) * 8)];
-  int exponent;
-  unsigned int flags;
+  int exponent = 0;
+  unsigned int flags = 0;
   analyseFloatingPoint(representation.fields, precision, mantissa, exponent, flags);
   writeFloatingPointType(
     precision,
@@ -1579,10 +1579,10 @@ FormatOutputStream& FormatOutputStream::operator<<(
   } representation;
   representation.primitive = value;
   
-  unsigned int precision;
+  unsigned int precision = 0;
   unsigned int mantissa[(FloatingPoint::DoubleRepresentation::SIGNIFICANT + (sizeof(unsigned int) * 8) - 1)/(sizeof(unsigned int) * 8)];
-  int exponent;
-  unsigned int flags;
+  int exponent = 0;
+  unsigned int flags = 0;
   analyseFloatingPoint(representation.fields, precision, mantissa, exponent, flags);
   writeFloatingPointType(
     precision,
@@ -1602,10 +1602,10 @@ FormatOutputStream& FormatOutputStream::operator<<(
   } representation;
   representation.primitive = value;
 
-  unsigned int precision;
+  unsigned int precision = 0;
   unsigned int mantissa[(FloatingPoint::LongDoubleRepresentation::SIGNIFICANT + (sizeof(unsigned int) * 8) - 1)/(sizeof(unsigned int) * 8)];
-  int exponent;
-  unsigned int flags;
+  int exponent = 0;
+  unsigned int flags = 0;
   analyseFloatingPoint(representation.fields, precision, mantissa, exponent, flags);
   writeFloatingPointType(
     precision,

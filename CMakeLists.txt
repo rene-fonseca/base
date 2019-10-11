@@ -1,15 +1,15 @@
-cmake_minimum_required (VERSION 3.1)
+cmake_minimum_required(VERSION 3.1)
 
 # see https://cmake.org/cmake-tutorial/
 
 # set(CMAKE_VERBOSE_MAKEFILE 1)
 
-project (base)
+project(base)
 
-set (base_VERSION_MAJOR 0)
-set (base_VERSION_MINOR 9)
+set(base_VERSION_MAJOR 0)
+set(base_VERSION_MINOR 9)
 
-#configure_file (
+#configure_file(
 #  "${PROJECT_SOURCE_DIR}/configure.h.in"
 #  "${PROJECT_BINARY_DIR}/configure.h"
 #)
@@ -36,7 +36,7 @@ endif ()
 
 endif ()
 
-include_directories ("${PROJECT_SOURCE_DIR}")
+include_directories("${PROJECT_SOURCE_DIR}")
 
 # GLOB_RECURSE
 file(GLOB base_SRC
@@ -93,7 +93,7 @@ foreach(source IN ITEMS ${base_SRC})
   file(RELATIVE_PATH source_path_rel "${PROJECT_SOURCE_DIR}/base" "${source_path}")
   string(REPLACE "/" "\\" group_path "${source_path_rel}")
   source_group("${group_path}" FILES "${source}")
-  #message ("${group_path} -> ${source}")
+  #message("${group_path} -> ${source}")
 endforeach()
 
 execute_process(OUTPUT_VARIABLE GIT_BRANCH COMMAND git symbolic-ref --short HEAD)
@@ -126,16 +126,12 @@ message("Revision: ${GIT_REVISION}")
 configure_file(${CMAKE_SOURCE_DIR}/config.h.in ${CMAKE_BINARY_DIR}/generated/base/config.h)
 include_directories(${CMAKE_BINARY_DIR}/generated)
 
-#add_custom_command(OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/base_config.h
-#  COMMAND ${CMAKE_COMMAND} -E touch ${CMAKE_CURRENT_BINARY_DIR}/base_config.h)
-
 add_library(base SHARED ${base_SRC} ${CMAKE_CURRENT_BINARY_DIR}/generated/base/config.h)
 if (MSVC)
-target_compile_definitions(base PUBLIC _COM_AZURE_DEV__BASE__SHARED_LIBRARY_BUILD)
-# set_target_properties(base PROPERTIES WINDOWS_EXPORT_ALL_SYMBOLS true)
-target_link_libraries(base Ws2_32 Netapi32 Winmm)
+  target_compile_definitions(base PRIVATE _COM_AZURE_DEV__BASE__SHARED_LIBRARY_BUILD)
+  target_link_libraries(base Ws2_32 Netapi32 Winmm)
 elseif (UNIX AND NOT APPLE)
-target_link_libraries(base pthread X11)
+  target_link_libraries(base pthread X11)
 endif ()
 
 add_library(base_STATIC STATIC ${base_SRC} ${CMAKE_CURRENT_BINARY_DIR}/generated/base/config.h)
@@ -143,8 +139,8 @@ set_target_properties(base_STATIC PROPERTIES OUTPUT_NAME base_static)
 
 # avoid no symbols warnings
 if (APPLE)
-set(CMAKE_CXX_ARCHIVE_CREATE "<CMAKE_AR> Scr <TARGET> <LINK_FLAGS> <OBJECTS>")
-set(CMAKE_CXX_ARCHIVE_FINISH "<CMAKE_RANLIB> -no_warning_for_no_symbols -c <TARGET>")
+  set(CMAKE_CXX_ARCHIVE_CREATE "<CMAKE_AR> Scr <TARGET> <LINK_FLAGS> <OBJECTS>")
+  set(CMAKE_CXX_ARCHIVE_FINISH "<CMAKE_RANLIB> -no_warning_for_no_symbols -c <TARGET>")
 endif ()
 
 add_subdirectory("testsuite")

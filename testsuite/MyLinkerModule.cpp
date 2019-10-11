@@ -15,6 +15,10 @@
 #include <base/string/FormatOutputStream.h>
 #include <base/concurrency/Thread.h>
 
+#if defined(_COM_AZURE_DEV__BASE__SHARED_LIBRARY_BUILD) // catch CMake config mistake
+#error _COM_AZURE_DEV__BASE__SHARED_LIBRARY_BUILD is enabled for test
+#endif
+
 using namespace com::azure::dev::base;
 
 MyLinkerModule::MyLinkerModule(

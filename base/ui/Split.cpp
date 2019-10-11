@@ -40,7 +40,7 @@ Split::Split(Window& owner) throw(UserInterfaceException)
 
 void Split::setOffset(int offset, Field field) throw() {
   const Dimension dimension = getDimension();
-  int total;
+  int total = 0;
   if (flags & VERTICAL_SPLIT) {
     total = dimension.getWidth();
   } else {

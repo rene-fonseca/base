@@ -38,7 +38,7 @@ void DateSkeleton::dispatch(OrbChannel* channel, unsigned int method) throw(IOEx
   case DateSkeleton::METHOD_GET_DATE:
     {
       // read arguments
-      long long result;
+      long long result = 0;
       try {
         result = getDate();
         // catch any exceptions specified in the idl document for the method

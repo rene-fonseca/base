@@ -43,7 +43,7 @@ void RegExp::compile() throw(MemoryException) {
       );
     }
   #elif defined(_COM_AZURE_DEV__BASE__REGEXP_PCRE)
-    int errorOffset;
+    int errorOffset = 0;
     int options = 0;
     if (!caseSensitive) {
       options |= PCRE_CASELESS;

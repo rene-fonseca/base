@@ -56,7 +56,7 @@ void SoundDevice::reacquireAccess(unsigned int access) throw(NotSupported) {
   #if ((_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__GNULINUX) || (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__SOLARIS))
     deviceDescriptor.close(); // must close before reopening
     if (access != 0) { // only open if required
-      int flags;
+      int flags = 0;
       switch (access) {
       case READ:
         flags = O_RDONLY;

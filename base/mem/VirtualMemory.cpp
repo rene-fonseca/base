@@ -152,10 +152,6 @@ void VirtualMemory::dump() throw() {
     fout << EOL;
     address += (info.RegionSize+pageSize-1)/pageSize*pageSize;
   }
-
-//   PVOID AllocationBase; 
-//   DWORD AllocationProtect;
-//   DWORD Protect;
  
   fout << FLUSH;
 #else // unix

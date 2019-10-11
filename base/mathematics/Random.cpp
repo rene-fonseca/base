@@ -120,7 +120,7 @@ void Random::randomize(unsigned int seed) throw() {
 
 unsigned int Random::getInteger() throw() {
   ASSERT((Traits::w == 32) && (sizeof(unsigned int) == 4));
-  unsigned int bits;
+  unsigned int bits = 0;
   Random::spinLock.exclusiveLock();
     unsigned int i = (nextWord + Traits::m < Traits::n) ? (nextWord + Traits::m) : (nextWord + Traits::m - Traits::n);
     unsigned int y = (state[i] & ~((1 << Traits::r) - 1)) | (state[i + 1] & ((1 << Traits::r) - 1));

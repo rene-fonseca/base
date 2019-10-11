@@ -60,7 +60,7 @@ SharedMemory::SharedMemoryImpl::SharedMemoryImpl(
   }
 #else // unix
   handle = OperatingSystem::INVALID_HANDLE;
-  int protection;
+  int protection = 0;
   if (access == 0) {
     protection = PROT_NONE;
   } else {
@@ -173,7 +173,7 @@ void SharedMemory::SharedMemoryImpl::setProtection(
     MemoryException(this)
   );
 #else // unix
-  int protection;
+  int protection = 0;
   if (access == 0) {
     protection = PROT_NONE;
   } else {

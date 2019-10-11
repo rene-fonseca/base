@@ -26,7 +26,7 @@ int Integer::parse(const String& str, bool withoutSign) throw(InvalidFormat) {
   
   bassert(i < end, InvalidFormat(Type::getType<Integer>()));
   
-  long long value;
+  long long value = 0;
   if (withoutSign) {
     unsigned long long temp = 0;
     while (i < end) {

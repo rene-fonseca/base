@@ -31,7 +31,7 @@ long long LongInteger::parse(
     InvalidFormat("Not an integer", Type::getType<LongInteger>())
   ); // do not accept empty strings
   
-  long long value;
+  long long value = 0;
   if (withoutSign) {
     unsigned long long temp = 0;
     while (i < end) {

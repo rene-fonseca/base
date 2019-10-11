@@ -48,12 +48,16 @@ public:
     PRIVATE = 128
   };
 
-  struct Descriptor {
-    const void* address;
-    unsigned int flags;
+#if 0
+  class Descriptor {
+  public:
+  
+    const void* address = nullptr;
+    unsigned int flags = 0;
     // Permissions Access access;
-    MemorySize size;
+    MemorySize size = 0;
   };
+#endif
 
   class _COM_AZURE_DEV__BASE__API Module {
   private:
@@ -94,7 +98,5 @@ public:
   
   static void dump() throw();
 };
-
-// TAG: Module is relocateable
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

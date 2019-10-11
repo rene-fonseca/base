@@ -75,7 +75,7 @@ unsigned int FileDescriptorOutputStream::write(
   unsigned int bytesWritten = 0;
   while (bytesToWrite) {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
-    DWORD result;
+    DWORD result = 0;
     BOOL success = ::WriteFile(
       fd->getHandle(),
       buffer,

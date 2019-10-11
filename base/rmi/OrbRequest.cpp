@@ -24,7 +24,7 @@ OrbRequest::OrbRequest(
   // channel.write(method);
   // flush
   
-  unsigned int methodId;
+  unsigned int methodId = 0;
   // channel->read(methodId);
   // bassert(methodId != 0, OrbException("Invalid method", this));
   

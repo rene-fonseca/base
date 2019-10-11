@@ -106,7 +106,7 @@ bool DebugDynamicMemory::release(void* memory) throw(MemoryCorruption) {
     }
   }
 
-  unsigned int size; // size of user block
+  unsigned int size = 0; // size of user block
   Descriptor* descriptor = Cast::pointer<Descriptor*>(Cast::pointer<char*>(prefix) - sizeof(Descriptor));
   
   // check descriptor

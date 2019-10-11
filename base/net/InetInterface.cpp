@@ -98,7 +98,7 @@ HashTable<String, unsigned int> InetInterface::getInterfaceNames() throw() {
   if_freenameindex(ni); // MT-safe
 #elif (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   int handle = socket(PF_INET, SOCK_STREAM, 0);
-  DWORD bytesReturned;
+  DWORD bytesReturned = 0;
   if (::WSAIoctl(
         handle,
         SIO_GET_INTERFACE_LIST,
@@ -209,7 +209,7 @@ List<InetInterface> InetInterface::getInterfaces() throw(NetworkException) {
   if_freenameindex(ni); // MT-safe
 #elif (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   int handle = socket(PF_INET, SOCK_STREAM, 0);
-  DWORD bytesReturned;
+  DWORD bytesReturned = 0;
   if (::WSAIoctl(
         handle,
         SIO_GET_INTERFACE_LIST,
@@ -372,7 +372,7 @@ unsigned int InetInterface::getIndexByName(const String& name) throw(NetworkExce
   throw NetworkException(Type::getType<InetInterface>());
 #else
   int handle = socket(PF_INET, SOCK_STREAM, 0);
-//   int numberOfInterfaces;
+//   int numberOfInterfaces = 0;
 // #if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__GNULINUX)
 //   const int command = SIOCGIFCOUNT;
 // #else
@@ -470,7 +470,7 @@ unsigned int InetInterface::getIndexByAddress(const InetAddress& address) throw(
   throw NetworkException("Unable to resolve interface", Type::getType<InetInterface>());
 #else
   int handle = socket(PF_INET, SOCK_STREAM, 0);
-//   int numberOfInterfaces;
+//   int numberOfInterfaces = 0;
 // #if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__GNULINUX)
 //   const int command = SIOCGIFCOUNT;
 // #else
@@ -547,7 +547,7 @@ String InetInterface::getName(unsigned int index) throw(NetworkException) {
   return String(name, IFNAMSIZ);
 #elif (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   int handle = socket(PF_INET, SOCK_STREAM, 0);
-  DWORD bytesReturned;
+  DWORD bytesReturned = 0;
   if (::WSAIoctl(
         handle,
         SIO_GET_INTERFACE_LIST,
@@ -579,7 +579,7 @@ String InetInterface::getName(unsigned int index) throw(NetworkException) {
   return stream.getString();
 #else
   int handle = socket(PF_INET, SOCK_STREAM, 0);
-//   int numberOfInterfaces;
+//   int numberOfInterfaces = 0;
 // #if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__GNULINUX)
 //   const int command = SIOCGIFCOUNT;
 // #else
@@ -662,7 +662,7 @@ InetAddress InetInterface::getAddress(unsigned int index) throw(NetworkException
   return internal::InetInterface::getAddress(req.ifr_addr);
 #elif (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   int handle = socket(PF_INET, SOCK_STREAM, 0);
-  DWORD bytesReturned;
+  DWORD bytesReturned = 0;
   if (::WSAIoctl(
         handle,
         SIO_GET_INTERFACE_LIST,
@@ -693,7 +693,7 @@ InetAddress InetInterface::getAddress(unsigned int index) throw(NetworkException
 #else
   struct ifreq req;
   int handle = socket(PF_INET, SOCK_STREAM, 0);
-//   int numberOfInterfaces;
+//   int numberOfInterfaces = 0;
 // #if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__GNULINUX)
 //   const int command = SIOCGIFCOUNT;
 // #else
@@ -764,7 +764,7 @@ InetInterface::InetInterface(const String& name) throw(NetworkException)
   : index(0), flags(0), metric(0) {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   int handle = socket(PF_INET, SOCK_STREAM, 0);
-  DWORD bytesReturned;
+  DWORD bytesReturned = 0;
   if (::WSAIoctl(
         handle,
         SIO_GET_INTERFACE_LIST,

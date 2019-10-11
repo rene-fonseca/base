@@ -28,8 +28,6 @@ namespace base {
   
     namespace sse2 {
 
-      //typedef double float64;
-
       static inline sse128 myfunc(sse128 a, sse128 b) throw() {
         sse128 result;
         asm (

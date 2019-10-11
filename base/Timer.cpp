@@ -26,8 +26,8 @@ _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 /*
   // if optimized for PENTIUM (may not be allowed by system)
 
-  unsigned int low;
-  unsigned int high;
+  unsigned int low = 0;
+  unsigned int high = 0;
   asm (
     "        rdtsc\n"
     : "=a" (low), "=d" (high) // output

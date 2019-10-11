@@ -97,7 +97,7 @@ nothing OpenGLPixmapContext::initialize(const Dimension& dimension, unsigned int
   }
   pfd.iPixelType = (flags & OpenGLContextImpl::COLOR_INDEXED) ? PFD_TYPE_COLORINDEX : PFD_TYPE_RGBA;    
   
-  int index;
+  int index = 0;
   if (!(index = ::ChoosePixelFormat((HDC)graphicsContextHandle, &pfd))) {
     throw OpenGLException("Format not supported", this);
   }

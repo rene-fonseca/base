@@ -70,7 +70,7 @@ void MutualExclusion::exclusiveLock() const throw(MutualExclusionException) {
 
 bool MutualExclusion::tryExclusiveLock() const throw(MutualExclusionException) {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
-  BOOL result;
+  BOOL result = TRUE;
   result = ::TryEnterCriticalSection((CRITICAL_SECTION*)mutex);
   return result;
 #else // pthread

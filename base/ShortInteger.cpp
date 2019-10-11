@@ -27,7 +27,7 @@ short ShortInteger::parse(
   
   bassert(i < end, InvalidFormat(Type::getType<ShortInteger>()));
   
-  int value;
+  int value = 0;
   if (withoutSign) {
     unsigned int temp = 0;
     while (i < end) {

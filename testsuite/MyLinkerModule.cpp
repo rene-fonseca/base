@@ -11,7 +11,9 @@
     For the licensing terms refer to the file 'LICENSE'.
  ***************************************************************************/
 
-#define _COM_AZURE_DEV__BASE__SHARED_LIBRARY // could be set in CMakeLists.txt
+// could be set in CMakeLists.txt
+#define _COM_AZURE_DEV__BASE__SHARED_LIBRARY
+#define _COM_AZURE_DEV__MY_LINKER_MODULE__SHARED_LIBRARY_BUILD
 
 #include "MyLinkerModule.h"
 #include <base/string/FormatOutputStream.h>

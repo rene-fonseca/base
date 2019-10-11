@@ -11,6 +11,8 @@
     For the licensing terms refer to the file 'LICENSE'.
  ***************************************************************************/
 
+#define _COM_AZURE_DEV__MY_LINKER_MODULE__SHARED_LIBRARY
+
 #include "MyLinkerModule.h"
 #include <base/dl/LinkerManager.h>
 #include <base/string/FormatOutputStream.h> // debug only

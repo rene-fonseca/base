@@ -18,7 +18,19 @@
 
 using namespace com::azure::dev::base;
 
-class MyLinkerModule : public LinkerModule {
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
+#if defined(_COM_AZURE_DEV__MY_LINKER_MODULE__SHARED_LIBRARY_BUILD)
+#  define _COM_AZURE_DEV__MY_LINKER_MODULE__API __declspec(dllexport)
+#elif defined(_COM_AZURE_DEV__MY_LINKER_MODULE__SHARED_LIBRARY)
+#  define _COM_AZURE_DEV__MY_LINKER_MODULE__API __declspec(dllimport)
+#else
+#  define _COM_AZURE_DEV__MY_LINKER_MODULE__API
+#endif
+#else
+#  define _COM_AZURE_DEV__MY_LINKER_MODULE__API
+#endif
+
+class _COM_AZURE_DEV__MY_LINKER_MODULE__API MyLinkerModule : public LinkerModule {
 public:
 
   MyLinkerModule(

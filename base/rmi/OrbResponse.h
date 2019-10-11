@@ -26,7 +26,7 @@ _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
   @version 1.0
 */
 
-class OrbResponse : public Object {
+class _COM_AZURE_DEV__BASE__API OrbResponse : public Object {
 public:
 
   /** Response type. */

@@ -122,7 +122,7 @@ inline void bassert(bool assertion, const EXCEPTION& exception) throw(EXCEPTION)
   @ingroup debugging
   @see assert
 */
-class Assertion {
+class _COM_AZURE_DEV__BASE__API Assertion {
 public:
   
   /**
@@ -138,7 +138,7 @@ public:
 
 
 
-class Unspecified {
+class _COM_AZURE_DEV__BASE__API Unspecified {
 public:
   
   /** Constraint error codes. */

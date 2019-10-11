@@ -26,7 +26,7 @@ _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
   @version 1.0
 */
 
-class LinuxRawIEEE1394 : public IEEE1394Impl {
+class _COM_AZURE_DEV__BASE__API LinuxRawIEEE1394 : public IEEE1394Impl {
 private:
   
   enum RequestType {

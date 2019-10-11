@@ -30,7 +30,7 @@ _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
   @version 1.0
 */
 
-class Trace {
+class _COM_AZURE_DEV__BASE__API Trace {
 private:
 
   /** The message to be written. */

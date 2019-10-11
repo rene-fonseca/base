@@ -21,7 +21,7 @@
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
-class LinkerManager : public Object {
+class _COM_AZURE_DEV__BASE__API LinkerManager : public Object {
 private:
 
   /** All the modules of the manager. */

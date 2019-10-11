@@ -25,7 +25,7 @@ _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
   @version 1.0
 */
 
-class SystemInformation : public Object {
+class _COM_AZURE_DEV__BASE__API SystemInformation : public Object {
 public:
   
   /**

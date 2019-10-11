@@ -30,9 +30,9 @@ class ServerSocket;
   @version 1.0
 */
 
-class StreamSocket : public Socket,
-                     public virtual InputStream,
-                     public virtual OutputStream {
+class _COM_AZURE_DEV__BASE__API StreamSocket : public Socket,
+                                               public virtual InputStream,
+                                               public virtual OutputStream {
 public:
 
   /**

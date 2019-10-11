@@ -26,7 +26,7 @@ _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
   @version 1.1
 */
 
-class ThreadKeyImpl : public Object {
+class _COM_AZURE_DEV__BASE__API ThreadKeyImpl : public Object {
 private:
 
   union Key {

@@ -42,7 +42,7 @@ public:
   virtual void onDisplay() throw();
 };
 
-class SeparatorMenuItem : public MenuItem {
+class _COM_AZURE_DEV__BASE__API SeparatorMenuItem : public MenuItem {
 public:
 
   /** The vertical margin. */
@@ -65,7 +65,7 @@ public:
   }
 };
 
-class BitmapMenuItem : public MenuItem {
+class _COM_AZURE_DEV__BASE__API BitmapMenuItem : public MenuItem {
 private:
   
   bool grayed = false;
@@ -115,7 +115,7 @@ public:
 
 // do not add ScrollMenuItem
 
-class CommandMenuItem : public BitmapMenuItem {
+class _COM_AZURE_DEV__BASE__API CommandMenuItem : public BitmapMenuItem {
 private:
 
   unsigned int command = 0;
@@ -137,7 +137,7 @@ public:
   }
 };
 
-class TextMenuItem : public CommandMenuItem {
+class _COM_AZURE_DEV__BASE__API TextMenuItem : public CommandMenuItem {
 public:
 
   enum Alignment {
@@ -204,7 +204,7 @@ public:
   }
 };
 
-class CheckableMenuItem : public TextMenuItem {
+class _COM_AZURE_DEV__BASE__API CheckableMenuItem : public TextMenuItem {
 private:
 
   bool checked = false;
@@ -230,7 +230,7 @@ public:
   }
 };
 
-class RadioMenuItem : public TextMenuItem {
+class _COM_AZURE_DEV__BASE__API RadioMenuItem : public TextMenuItem {
 private:
 
   bool selected = false;
@@ -256,21 +256,21 @@ public:
   }
 };
 
-class SelectionMenuItem : public MenuItem {
+class _COM_AZURE_DEV__BASE__API SelectionMenuItem : public MenuItem {
 public:
   
   // Array<Bitmap>
   // set maximum number of columns
 };
 
-class IndependentMenuItem : public MenuItem {
+class _COM_AZURE_DEV__BASE__API IndependentMenuItem : public MenuItem {
 public:
 
   void onDisplay() throw() {
   }
 };
 
-class EditMenuItem : public IndependentMenuItem {
+class _COM_AZURE_DEV__BASE__API EditMenuItem : public IndependentMenuItem {
 private:
   
   String text;
@@ -302,7 +302,7 @@ public:
   @version 1.0
 */
 
-class PopUpMenu : public GraphicsContext {
+class _COM_AZURE_DEV__BASE__API PopUpMenu : public GraphicsContext {
 private:
   
   /** The menu items. */
@@ -424,7 +424,7 @@ public:
   }
 };
 
-class UserInterfaceStyle : public Object {
+class _COM_AZURE_DEV__BASE__API UserInterfaceStyle : public Object {
 public:
   
   virtual Color getMenuBackground() const throw();

@@ -116,7 +116,7 @@ namespace isoc {
   @version 1.0
 */
 
-class Complex {
+class _COM_AZURE_DEV__BASE__API Complex {
 public:
 
   typedef double Type;

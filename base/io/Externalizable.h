@@ -27,7 +27,7 @@ _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
   @version 1.0
 */
 
-class Externalizable {
+class _COM_AZURE_DEV__BASE__API Externalizable {
 public:
 
 //  static TYPE readType(InputStream* in) throw(IOException) {

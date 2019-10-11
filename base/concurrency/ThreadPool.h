@@ -22,7 +22,7 @@
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
-class JobProvider {
+class _COM_AZURE_DEV__BASE__API JobProvider {
 public:
 
   virtual bool isEmpty() const = 0;
@@ -41,7 +41,7 @@ public:
   @version 1.0
 */
 
-class ThreadPool {
+class _COM_AZURE_DEV__BASE__API ThreadPool {
 private:
   
   /** The type of the guard. */

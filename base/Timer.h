@@ -243,7 +243,7 @@ FormatOutputStream& operator<<(
 
 
 
-class TimeScope : public Object {
+class _COM_AZURE_DEV__BASE__API TimeScope : public Object {
 private:
 
   Timer timer;

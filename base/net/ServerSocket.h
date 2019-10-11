@@ -27,7 +27,7 @@ _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
   @version 1.0
 */
 
-class ServerSocket : protected Socket {
+class _COM_AZURE_DEV__BASE__API ServerSocket : protected Socket {
 public:
 
   /**

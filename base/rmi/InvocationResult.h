@@ -25,7 +25,7 @@ _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
   @version 1.0
 */
 
-class InvocationResult : public Object {
+class _COM_AZURE_DEV__BASE__API InvocationResult : public Object {
 public:
   
   /** Invocation result flag. */

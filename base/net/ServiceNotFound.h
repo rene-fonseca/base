@@ -25,7 +25,7 @@ _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
   @version 1.0
 */
 
-class ServiceNotFound : public NetworkException {
+class _COM_AZURE_DEV__BASE__API ServiceNotFound : public NetworkException {
 public:
 
   /**

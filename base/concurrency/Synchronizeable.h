@@ -32,7 +32,7 @@ _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
   @see Synchronizeable, Synchronize
 */
 
-class Unsafe {
+class _COM_AZURE_DEV__BASE__API Unsafe {
 };
 
 /**

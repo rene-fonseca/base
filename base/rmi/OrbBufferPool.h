@@ -108,7 +108,7 @@ public:
 };
 
 #if 0
-class BufferQueue : public Object {
+class _COM_AZURE_DEV__BASE__API BufferQueue : public Object {
 private:
   
   /** The buffer pool. */

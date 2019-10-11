@@ -29,7 +29,7 @@ class Connection;
   @version 1.0
 */
 
-class OrbConnectionListener {
+class _COM_AZURE_DEV__BASE__API OrbConnectionListener {
 public:
 
   /**

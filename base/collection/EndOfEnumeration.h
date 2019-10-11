@@ -26,7 +26,7 @@ _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
   @version 1.0
 */
 
-class EndOfEnumeration : public Exception {
+class _COM_AZURE_DEV__BASE__API EndOfEnumeration : public Exception {
 public:
 
   /**

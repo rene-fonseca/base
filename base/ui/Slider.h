@@ -25,7 +25,7 @@ _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
   @version 1.0
 */
 
-class Slider : public Widget {
+class _COM_AZURE_DEV__BASE__API Slider : public Widget {
 private:
 
   /** Offset of the left or top of the splitting field. */

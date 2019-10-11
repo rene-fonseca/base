@@ -26,7 +26,7 @@ _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
   @version 1.0
 */
 
-class Version : public DynamicObject {
+class _COM_AZURE_DEV__BASE__API Version : public DynamicObject {
 private:
 
   /** Banner. */

@@ -767,7 +767,7 @@ public:
 };
 
 /** Byte IO. */
-class ByteIO {
+class _COM_AZURE_DEV__BASE__API ByteIO {
 public:
 
 // TAG: need separate methods for byte order

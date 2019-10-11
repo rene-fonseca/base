@@ -31,7 +31,7 @@ class OrbStub;
   @version 1.0
 */
 
-class OrbChannel : public Object, public ReferenceCountedObject {
+class _COM_AZURE_DEV__BASE__API OrbChannel : public Object, public ReferenceCountedObject {
 private:
 
   /** Encoder. */

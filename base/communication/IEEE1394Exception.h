@@ -25,7 +25,7 @@ _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
   @version 1.0
 */
 
-class IEEE1394Exception : public CommunicationsException {
+class _COM_AZURE_DEV__BASE__API IEEE1394Exception : public CommunicationsException {
 public:
 
   /**

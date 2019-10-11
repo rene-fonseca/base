@@ -25,7 +25,7 @@ _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
   @version 1.0
 */
 
-class IDLType : public IDLObject {
+class _COM_AZURE_DEV__BASE__API IDLType : public IDLObject {
 public:
   
   /**

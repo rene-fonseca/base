@@ -44,7 +44,7 @@ public:
     @ingroup xml
     @version 1.0
   */
-  class DTDHandler {
+  class _COM_AZURE_DEV__BASE__API DTDHandler {
   public:
 
     /**

@@ -26,7 +26,7 @@ _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
   @version 1.0
 */
 
-class Attributes : public Object {
+class _COM_AZURE_DEV__BASE__API Attributes : public Object {
 public:
 
   /**
@@ -34,7 +34,7 @@ public:
     @ingroup xml
     @version 1.0
   */
-  class Attribute : public Object {
+  class _COM_AZURE_DEV__BASE__API Attribute : public Object {
   private:
     
     /** The name. */

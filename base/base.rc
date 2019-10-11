@@ -11,19 +11,23 @@
     For the licensing terms refer to the file 'LICENSE'.
  ***************************************************************************/
 
-#include <base/platforms/features.h>
+// #include <base/platforms/features.h>
 #include <winver.h>
 
-#define _COM_AZURE_DEV__BASE__MAKE_PRIVATE_BUILD(DATE,USER,HOST,SYSTEM,TARGET) "This application was built at " DATE " by " USER " on host " HOST " a " SYSTEM " system. The application is intended for the target systems " TARGET ".\0"
+// TAG: FIXME
+#define _MAJOR_VERSION 0
+#define _MINOR_VERSION 9
+#define _MICRO_VERSION 0
+#define _REVISION 1234
+#define _VERSION "0.9.0.1234"
 
 1 VERSIONINFO
-  FILEVERSION _COM_AZURE_DEV__BASE__MAJOR_VERSION,_COM_AZURE_DEV__BASE__MINOR_VERSION,0,0
-  PRODUCTVERSION _COM_AZURE_DEV__BASE__MAJOR_VERSION,_COM_AZURE_DEV__BASE__MINOR_VERSION,0,0
+  FILEVERSION _MAJOR_VERSION, _MINOR_VERSION, _MICRO_VERSION, _REVISION
+  PRODUCTVERSION _MAJOR_VERSION, _MINOR_VERSION, _MINOR_VERSION, _REVISION
   FILEFLAGSMASK 0x3fL
 
   // FILEFLAGS: VS_FF_DEBUG, VS_FF_PATCHED, VS_FF_PRERELEASE, VS_FF_PRIVATEBUILD, and VS_FF_SPECIALBUILD
-
-#if defined(_COM_AZURE_DEV__BASE__DEBUG)
+#if defined(DEBUG)
   FILEFLAGS (VS_FF_DEBUG)
 #else
   FILEFLAGS 0x00
@@ -37,19 +41,15 @@
     BEGIN
       BLOCK "040904e4"
       BEGIN
-        VALUE "Comments", "This framework is distributed under the GNU General Public License Version 2, June 1991.\0"
-        VALUE "CompanyName", "Ren� M�ller Fonseca <https://dev.azure.com/renefonseca>\0"
-        VALUE "FileDescription", "A framework for developing platform independent applications\0"
-        VALUE "FileVersion",  _COM_AZURE_DEV__BASE__VERSION "\0"
+        VALUE "CompanyName", "Rene Fonseca <https://dev.azure.com/renefonseca>\0"
+        VALUE "FileDescription", "C++ framework for developing platform independent applications\0"
+        VALUE "FileVersion",  _VERSION "\0"
         VALUE "InternalName", "base\0"
-        VALUE "LegalCopyright", "Copyright � 2000-2019 by Ren� M�ller Fonseca\0"
+        VALUE "LegalCopyright", "Copyright (C) 2000-2019 by Rene Fonseca\0"
         VALUE "LegalTrademarks", "Currently not available\0"
         VALUE "OriginalFilename", "base.dll\0"
-#if defined(_COM_AZURE_DEV__BASE__DEBUG)
-        VALUE "PrivateBuild", _COM_AZURE_DEV__BASE__MAKE_PRIVATE_BUILD(_COM_AZURE_DEV__BASE__BUILD_DATE, "", "", "", "")
-#endif
         VALUE "ProductName", "The Base Framework\0"
-        VALUE "ProductVersion", _COM_AZURE_DEV__BASE__VERSION "\0"
+        VALUE "ProductVersion", _VERSION "\0"
       END
     END
     BLOCK "VarFileInfo"

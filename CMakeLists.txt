@@ -126,13 +126,26 @@ message("Revision: ${GIT_REVISION}")
 configure_file(${CMAKE_SOURCE_DIR}/config.h.in ${CMAKE_BINARY_DIR}/generated/base/config.h)
 include_directories(${CMAKE_BINARY_DIR}/generated)
 
-add_library(base SHARED ${base_SRC} ${CMAKE_CURRENT_BINARY_DIR}/generated/base/config.h)
+set(base_ADDITIONAL "")
+if (MSVC)
+  set(base_ADDITIONAL ${CMAKE_SOURCE_DIR}/base/base.rc)
+endif ()
+
+add_library(base SHARED ${base_SRC} ${base_ADDITIONAL} ${CMAKE_CURRENT_BINARY_DIR}/generated/base/config.h)
 if (MSVC)
   target_compile_definitions(base PRIVATE _COM_AZURE_DEV__BASE__SHARED_LIBRARY_BUILD)
   target_link_libraries(base Ws2_32 Netapi32 Winmm)
 elseif (UNIX AND NOT APPLE)
   target_link_libraries(base pthread X11)
 endif ()
+
+set(PRODUCT_MAJOR "0") # TAG: FIXME
+set(PRODUCT_MINOR "9") # TAG: FIXME
+
+set_target_properties(base
+  PROPERTIES
+  VERSION ${PRODUCT_MAJOR}.${PRODUCT_MINOR}.${GIT_REVISION}
+  SOVERSION ${PRODUCT_MAJOR})
 
 add_library(base_STATIC STATIC ${base_SRC} ${CMAKE_CURRENT_BINARY_DIR}/generated/base/config.h)
 set_target_properties(base_STATIC PROPERTIES OUTPUT_NAME base_static)

@@ -3,9 +3,8 @@ cmake_minimum_required (VERSION 3.1)
 project(testsuite)
 
 file(GLOB TEST_SOURCES RELATIVE "${PROJECT_SOURCE_DIR}" *.cpp)
-# TAG: add recursive
-# TAG: fix all builds
-list(REMOVE_ITEM TEST_SOURCES "MyLinkerModule.cpp" "Function.cpp" "dlmodule.cpp2")
+list(REMOVE_ITEM TEST_SOURCES "MyLinkerModule.cpp" "Function.cpp" "dlapp.cpp")
+# typeinfo issue for dlapp
 
 # message("${CMAKE_CURRENT_BINARY_DIR}/../base" )
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)

@@ -37,7 +37,7 @@ public:
     fout << "Loading module..." << ENDL;
     LinkerModule* temp = manager.load(modulePath);
     if (temp) {
-      MyLinkerModule* module = dynamic_cast<MyLinkerModule*>(temp);
+      MyLinkerModule* module = dynamic_cast<MyLinkerModule*>(temp); // requires typeinfo
       if (module) {
         fout << "Module has been loaded" << EOL
              << "  identity: " << module->getIdentity() << EOL

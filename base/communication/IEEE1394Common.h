@@ -29,7 +29,7 @@ _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
   @version 1.0
 */
 
-class IEEE1394Common {
+class _COM_AZURE_DEV__BASE__API IEEE1394Common {
 public:
   
   /** IEEE 1394 standard. */
@@ -214,7 +214,7 @@ public:
     @short Isochronous request descriptor.
     @version 1.0
   */
-  class IsochronousRequestImpl : public ReferenceCountedObject {
+  class _COM_AZURE_DEV__BASE__API IsochronousRequestImpl : public ReferenceCountedObject {
   private:
 
     /** Options. */
@@ -281,7 +281,7 @@ public:
     @short Isochronous read request context.
     @version 1.0
   */
-  class IsochronousReadRequestImpl : public IsochronousRequestImpl {
+  class _COM_AZURE_DEV__BASE__API IsochronousReadRequestImpl : public IsochronousRequestImpl {
   private:
 
     /** The subchannel. */
@@ -358,7 +358,7 @@ public:
     @short Isochronous read packets request context.
     @version 1.0
   */
-  class IsochronousReadPacketsRequestImpl : public IsochronousReadRequestImpl {
+  class _COM_AZURE_DEV__BASE__API IsochronousReadPacketsRequestImpl : public IsochronousReadRequestImpl {
   };
 
   /**
@@ -368,7 +368,7 @@ public:
     @short Isochronous read packets request context.
     @version 1.0
   */
-  class IsochronousReadFixedPacketsRequestImpl : public IsochronousReadRequestImpl {
+  class _COM_AZURE_DEV__BASE__API IsochronousReadFixedPacketsRequestImpl : public IsochronousReadRequestImpl {
   private:
 
     /** The maximum payload in bytes per packet. */
@@ -396,7 +396,7 @@ public:
     @short Isochronous read fixed data request context.
     @version 1.0
   */
-  class IsochronousReadFixedDataRequestImpl : public IsochronousReadRequestImpl {
+  class _COM_AZURE_DEV__BASE__API IsochronousReadFixedDataRequestImpl : public IsochronousReadRequestImpl {
   private:
 
     /** The desired number of packets to be received. */
@@ -477,7 +477,7 @@ public:
     @short Isochronous write request.
     @version 1.0
   */
-  class IsochronousWriteRequestImpl : public IsochronousRequestImpl {
+  class _COM_AZURE_DEV__BASE__API IsochronousWriteRequestImpl : public IsochronousRequestImpl {
   private:
 
     /** The buffer. */
@@ -563,7 +563,7 @@ public:
     @short Isochronous write packets request context.
     @version 1.0
   */
-  class IsochronousWritePacketsRequestImpl : public IsochronousWriteRequestImpl {
+  class _COM_AZURE_DEV__BASE__API IsochronousWritePacketsRequestImpl : public IsochronousWriteRequestImpl {
   };
 
   /**
@@ -573,7 +573,7 @@ public:
     @short Isochronous write fixed packets request context.
     @version 1.0
   */
-  class IsochronousWriteFixedPacketsRequestImpl : public IsochronousWriteRequestImpl {
+  class _COM_AZURE_DEV__BASE__API IsochronousWriteFixedPacketsRequestImpl : public IsochronousWriteRequestImpl {
   };
   
   /**
@@ -583,7 +583,7 @@ public:
     @short Isochronous write data request context.
     @version 1.0
   */
-  class IsochronousWriteDataRequestImpl : public IsochronousWriteRequestImpl {
+  class _COM_AZURE_DEV__BASE__API IsochronousWriteDataRequestImpl : public IsochronousWriteRequestImpl {
   private:
 
     /** The secondary buffer for header data. */
@@ -623,7 +623,7 @@ public:
     @short Isochronous read packets request.
     @version 1.0
   */
-  class IsochronousReadPacketsRequest : public Object {
+  class _COM_AZURE_DEV__BASE__API IsochronousReadPacketsRequest : public Object {
     friend class IEEE1394Common;
     friend class IsochronousReadRequest;
   private:
@@ -747,7 +747,7 @@ public:
     @short Isochronous read fixed packets request.
     @version 1.0
   */
-  class IsochronousReadFixedPacketsRequest : public Object {
+  class _COM_AZURE_DEV__BASE__API IsochronousReadFixedPacketsRequest : public Object {
     friend class IEEE1394Common;
     friend class IsochronousReadRequest;
   private:
@@ -886,7 +886,7 @@ public:
     @short Isochronous read fixed data request.
     @version 1.0
   */
-  class IsochronousReadFixedDataRequest : public Object {
+  class _COM_AZURE_DEV__BASE__API IsochronousReadFixedDataRequest : public Object {
     friend class IEEE1394Common;
     friend class IsochronousReadRequest;
   private:
@@ -1073,7 +1073,7 @@ public:
     @short Isochronous read request.
     @version 1.0
   */
-  class IsochronousReadRequest : public Object {
+  class _COM_AZURE_DEV__BASE__API IsochronousReadRequest : public Object {
     friend class IEEE1394Common;
   private:
 
@@ -1228,7 +1228,7 @@ public:
     @short Isochronous write packets request.
     @version 1.0
   */
-  class IsochronousWritePacketsRequest : public Object {
+  class _COM_AZURE_DEV__BASE__API IsochronousWritePacketsRequest : public Object {
     friend class IEEE1394Common;
     friend class IsochronousWriteRequest;
   private:
@@ -1342,7 +1342,7 @@ public:
     @short Isochronous write fixed packets request.
     @version 1.0
   */
-  class IsochronousWriteFixedPacketsRequest : public Object {
+  class _COM_AZURE_DEV__BASE__API IsochronousWriteFixedPacketsRequest : public Object {
     friend class IEEE1394Common;
     friend class IsochronousWriteRequest;
   private:
@@ -1456,7 +1456,7 @@ public:
     @short Isochronous write data request.
     @version 1.0
   */
-  class IsochronousWriteDataRequest : public Object {
+  class _COM_AZURE_DEV__BASE__API IsochronousWriteDataRequest : public Object {
     friend class IEEE1394Common;
     friend class IsochronousWriteRequest;
   private:
@@ -1570,7 +1570,7 @@ public:
     @short Isochronous write request.
     @version 1.0
   */
-  class IsochronousWriteRequest : public Object {
+  class _COM_AZURE_DEV__BASE__API IsochronousWriteRequest : public Object {
     friend class IEEE1394Common;
   private:
 
@@ -1720,7 +1720,7 @@ public:
     @short Isochronous read channel.
     @version 1.0
   */
-  class IsochronousReadChannelImpl : public ReferenceCountedObject {
+  class _COM_AZURE_DEV__BASE__API IsochronousReadChannelImpl : public ReferenceCountedObject {
   public:
     
     /**
@@ -1819,7 +1819,7 @@ public:
     @short Isochronous write channel.
     @version 1.0
   */
-  class IsochronousWriteChannelImpl : public ReferenceCountedObject {
+  class _COM_AZURE_DEV__BASE__API IsochronousWriteChannelImpl : public ReferenceCountedObject {
   public:
 
     /**
@@ -1966,7 +1966,7 @@ protected:
   }
 public:
   
-  class IsochronousReadChannel {
+  class _COM_AZURE_DEV__BASE__API IsochronousReadChannel {
   private:
     
     /** Isochronous read channel implementation. */
@@ -2126,7 +2126,7 @@ public:
     }
   };
   
-  class IsochronousWriteChannel {
+  class _COM_AZURE_DEV__BASE__API IsochronousWriteChannel {
   private:
     
     /** Isochronous write channel implementation. */
@@ -2275,7 +2275,7 @@ public:
   /**
     @short Isochronous channel listener.
   */
-  class IsochronousChannelListener {
+  class _COM_AZURE_DEV__BASE__API IsochronousChannelListener {
   public:
     
     /**
@@ -2294,7 +2294,7 @@ public:
   /**
     @short Function Control Protocol (FCP) listener.
   */
-  class FunctionControlProtocolListener {
+  class _COM_AZURE_DEV__BASE__API FunctionControlProtocolListener {
   public:
     
     /**

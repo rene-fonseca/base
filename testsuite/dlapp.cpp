@@ -63,8 +63,16 @@ public:
     Array<String> arguments = getArguments();
 
     // TAG: need method to translate into filename of module
-    String module = "/home/fonseca/src/base/base/test/MyLinkerModule.so.0.1"; // the module to load
-    
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
+    String module = "MyLinkerModule.dll"; // the module to load
+#else
+#if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__MACOS)
+    String module = "MyLinkerModule.dylib"; // the module to load
+#else
+    String module = "MyLinkerModule.so"; // the module to load
+#endif
+#endif
+
     switch (arguments.getSize()) {
     case 0: // use default
       break;

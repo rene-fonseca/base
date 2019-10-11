@@ -30,7 +30,7 @@ _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 */
 
 class _COM_AZURE_DEV__BASE__API Trustee : public Object {
-  friend class Hash<Trustee>;
+  friend class _COM_AZURE_DEV__BASE__API Hash<Trustee>;
 public:
 
   /** The type of trustee. */
@@ -191,7 +191,7 @@ public:
 _COM_AZURE_DEV__BASE__API FormatOutputStream& operator<<(FormatOutputStream& stream, const Trustee& value) throw(IOException);
 
 template<>
-class Hash<Trustee> {
+class _COM_AZURE_DEV__BASE__API Hash<Trustee> {
 public:
   
   unsigned long operator()(const Trustee& value) throw();

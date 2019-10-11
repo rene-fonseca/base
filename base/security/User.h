@@ -32,7 +32,7 @@ class Group;
 */
 
 class _COM_AZURE_DEV__BASE__API User : public Object {
-  friend class Hash<User>;
+  friend class _COM_AZURE_DEV__BASE__API Hash<User>;
   friend class Trustee;
 private:
   
@@ -204,7 +204,7 @@ public:
 _COM_AZURE_DEV__BASE__API FormatOutputStream& operator<<(FormatOutputStream& stream, const User& value) throw(IOException);
 
 template<>
-class Hash<User> {
+class _COM_AZURE_DEV__BASE__API Hash<User> {
 public:
   
   unsigned long operator()(const User& value) throw();

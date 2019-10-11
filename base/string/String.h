@@ -1160,7 +1160,7 @@ template<>
 int compare<String>(const String& left, const String& right) throw();
 
 template<>
-class Hash<String> {
+class _COM_AZURE_DEV__BASE__API Hash<String> {
 public:
 
   unsigned long operator()(const String& value) throw();

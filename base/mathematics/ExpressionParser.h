@@ -79,7 +79,7 @@ public:
     PARENTHESIS = 7 /**< Parenthesis. */
   };
   
-  class Operation {
+  class _COM_AZURE_DEV__BASE__API Operation {
   private:
     
     unsigned int id = 0;
@@ -138,7 +138,7 @@ public:
   };
   
   /* Built-in unary operator. */
-  class UnaryOperator : public Operation {
+  class _COM_AZURE_DEV__BASE__API UnaryOperator : public Operation {
   public:
     
     inline UnaryOperator(
@@ -151,7 +151,7 @@ public:
   };
   
   /* Built-in binary operator. */
-  class BinaryOperator : public Operation {
+  class _COM_AZURE_DEV__BASE__API BinaryOperator : public Operation {
   public:
     
     inline BinaryOperator(
@@ -164,7 +164,7 @@ public:
   };
   
   /* Function. */
-  class Function : public Operation {
+  class _COM_AZURE_DEV__BASE__API Function : public Operation {
   public:
     
     inline Function(unsigned int id, unsigned int arguments) throw()
@@ -314,7 +314,7 @@ public:
   @version 1.0
 */
 
-class ExpressionProvider : public Object {
+class _COM_AZURE_DEV__BASE__API ExpressionProvider : public Object {
 protected:
   
   /** Collection holding the registered identifiers. */
@@ -418,7 +418,7 @@ public:
   @version 1.0
 */
 
-class ExpressionParser : public Object {
+class _COM_AZURE_DEV__BASE__API ExpressionParser : public Object {
 protected:
   
   typedef ExpressionEvaluator::Node Node;

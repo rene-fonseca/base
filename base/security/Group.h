@@ -180,7 +180,7 @@ public:
 _COM_AZURE_DEV__BASE__API FormatOutputStream& operator<<(FormatOutputStream& stream, const Group& value) throw(IOException);
 
 template<>
-class Hash<Group> {
+class _COM_AZURE_DEV__BASE__API Hash<Group> {
 public:
   
   unsigned long operator()(const Group& value) throw();

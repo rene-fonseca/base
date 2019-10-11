@@ -238,7 +238,7 @@ public:
 
   @relates Timer
 */
-FormatOutputStream& operator<<(
+_COM_AZURE_DEV__BASE__API FormatOutputStream& operator<<(
   FormatOutputStream& stream, const Timer& value) throw(IOException);
 
 

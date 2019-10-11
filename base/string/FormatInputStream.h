@@ -128,29 +128,29 @@ extern _COM_AZURE_DEV__BASE__API FormatInputStream fin;
 /**
   Reads one character from the format input stream.
 */
-FormatInputStream& operator>>(
+_COM_AZURE_DEV__BASE__API FormatInputStream& operator>>(
   FormatInputStream& stream, char& value) throw(IOException);
 
 /**
   Reads one line from the format input stream.
 */
-FormatInputStream& operator>>(
+_COM_AZURE_DEV__BASE__API FormatInputStream& operator>>(
   FormatInputStream& stream, String& value) throw(IOException);
 
 /**
   Reads unsigned int from the format input stream.
 */
-FormatInputStream& operator>>(
+_COM_AZURE_DEV__BASE__API FormatInputStream& operator>>(
   FormatInputStream& stream,
   unsigned int& value) throw(InvalidFormat, IOException);
 
-//FormatInputStream& operator>>(FormatInputStream& stream, short int& value);
-//FormatInputStream& operator>>(FormatInputStream& stream, unsigned short int& value);
-//FormatInputStream& operator>>(FormatInputStream& stream, int& value);
-//FormatInputStream& operator>>(FormatInputStream& stream, long long int& value);
-//FormatInputStream& operator>>(FormatInputStream& stream, unsigned long long int& value);
-//FormatInputStream& operator>>(FormatInputStream& stream, float& value);
-//FormatInputStream& operator>>(FormatInputStream& stream, double& value);
-//FormatInputStream& operator>>(FormatInputStream& stream, long double& value);
+//_COM_AZURE_DEV__BASE__API FormatInputStream& operator>>(FormatInputStream& stream, short int& value);
+//_COM_AZURE_DEV__BASE__API FormatInputStream& operator>>(FormatInputStream& stream, unsigned short int& value);
+//_COM_AZURE_DEV__BASE__API FormatInputStream& operator>>(FormatInputStream& stream, int& value);
+//_COM_AZURE_DEV__BASE__API FormatInputStream& operator>>(FormatInputStream& stream, long long int& value);
+//_COM_AZURE_DEV__BASE__API FormatInputStream& operator>>(FormatInputStream& stream, unsigned long long int& value);
+//_COM_AZURE_DEV__BASE__API FormatInputStream& operator>>(FormatInputStream& stream, float& value);
+//_COM_AZURE_DEV__BASE__API FormatInputStream& operator>>(FormatInputStream& stream, double& value);
+//_COM_AZURE_DEV__BASE__API FormatInputStream& operator>>(FormatInputStream& stream, long double& value);
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

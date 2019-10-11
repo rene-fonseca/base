@@ -159,7 +159,7 @@ protected:
 
     @version 1.0
   */
-  class _COM_AZURE_DEV__BASE__API StackImpl : public ReferenceCountedObject {
+  class StackImpl : public ReferenceCountedObject {
   protected:
 
     /** The node on the top of the stack. */

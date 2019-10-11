@@ -203,7 +203,7 @@ public:
     @ingroup xml
     @version 1.0
   */
-  class EntityResolver {
+  class _COM_AZURE_DEV__BASE__API EntityResolver {
   public:
 
     /**
@@ -218,7 +218,7 @@ public:
     @ingroup xml
     @version 1.0
   */
-  class ErrorHandler {
+  class _COM_AZURE_DEV__BASE__API ErrorHandler {
   public:
 
     /**

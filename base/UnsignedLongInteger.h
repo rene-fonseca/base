@@ -138,6 +138,6 @@ inline UnsignedLongInteger::UnsignedLongInteger(unsigned long long _value) throw
 /**
   Reads an unsigned long long from the specified format input stream.
 */
-FormatInputStream& operator>>(FormatInputStream& stream, unsigned long long& value) throw(InvalidFormat, IOException);
+_COM_AZURE_DEV__BASE__API FormatInputStream& operator>>(FormatInputStream& stream, unsigned long long& value) throw(InvalidFormat, IOException);
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

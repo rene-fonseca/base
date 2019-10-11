@@ -19,7 +19,7 @@
 #include <base/string/ANSIEscapeSequence.h>
 #include <base/filesystem/FileSystem.h>
 
-_COM_AZURE_DEV__BASE__DUMMY_SYMBOL
+_COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 #if 0
 
@@ -32,8 +32,6 @@ _COM_AZURE_DEV__BASE__DUMMY_SYMBOL
 #include <fcntl.h>
 #include <unistd.h>
 #include <poll.h>
-
-_COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 namespace LinuxRawIEEE1394Impl {
   
@@ -827,6 +825,133 @@ void LinuxRawIEEE1394::writeIsochronous(const uint8* buffer, unsigned int size, 
   status = requestContext.status;
 }
 
-_COM_AZURE_DEV__BASE__LEAVE_NAMESPACE
+#else
+
+void LinuxRawIEEE1394::resetBus() throw(IEEE1394Exception) {
+  throw NotSupported();
+}
+
+LinuxRawIEEE1394::LinuxRawIEEE1394() throw(IEEE1394Exception) {
+  throw NotSupported();
+}
+
+bool LinuxRawIEEE1394::hasBeenReset() const throw() {
+  throw NotSupported();
+}
+
+void LinuxRawIEEE1394::acknowledgeReset() throw() {
+  throw NotSupported();
+}
+
+Array<EUI64> LinuxRawIEEE1394::getAdapters() throw(IEEE1394Exception) {
+  throw NotSupported();
+}
+
+void LinuxRawIEEE1394::open() throw(IEEE1394Exception) {
+  throw NotSupported();
+}
+
+void LinuxRawIEEE1394::open(const EUI64& adapter) throw(IEEE1394Exception) {
+  throw NotSupported();
+}
+
+void LinuxRawIEEE1394::close() throw(IEEE1394Exception) {
+  throw NotSupported();
+}
+
+unsigned int LinuxRawIEEE1394::getLocalId() const throw() {
+  throw NotSupported();
+}
+
+unsigned int LinuxRawIEEE1394::getNumberOfNodes() const throw() {
+  throw NotSupported();
+}
+
+unsigned int LinuxRawIEEE1394::getStatus() const throw(IEEE1394Exception) {
+  throw NotSupported();
+}
+
+unsigned int LinuxRawIEEE1394::getFIFOSize() const throw(IEEE1394Exception) {
+  throw NotSupported();
+}
+
+void LinuxRawIEEE1394::read(
+  unsigned short node,
+  uint64 address,
+  uint8* buffer,
+  unsigned int size) throw(IEEE1394Exception) {
+  throw NotSupported();
+}
+
+void LinuxRawIEEE1394::write(
+  unsigned short node,
+  uint64 address,
+  const uint8* buffer,
+  unsigned int size) throw(IEEE1394Exception) {
+  throw NotSupported();
+}
+
+unsigned int LinuxRawIEEE1394::read(
+  unsigned short node,
+  uint64 address,
+  uint32* buffer,
+  unsigned int size,
+  uint32 value) throw(IEEE1394Exception) {
+  throw NotSupported();
+}
+
+uint32 LinuxRawIEEE1394::lock(
+  unsigned short node,
+  uint64 address,
+  LockInstruction instruction,
+  uint32 argument,
+  uint32 data) throw(IEEE1394Exception) {
+  throw NotSupported();
+}
+
+LinuxRawIEEE1394::IsochronousReadChannel LinuxRawIEEE1394::getReadChannel(
+  unsigned int maxPacketsPerRequest,
+  uint64 subchannels) throw(IEEE1394Exception) {
+  throw NotSupported();
+}
+
+LinuxRawIEEE1394::IsochronousWriteChannel LinuxRawIEEE1394::getWriteChannel(
+  unsigned int maxPacketsPerRequest,
+  uint64 subchannels) throw(IEEE1394Exception) {
+  throw NotSupported();
+}
+
+LinuxRawIEEE1394::~LinuxRawIEEE1394() {
+}
+
+bool LinuxRawIEEE1394::wait(unsigned int milliseconds) throw(OutOfDomain, IEEE1394Exception) {
+  throw NotSupported();
+}
+
+void LinuxRawIEEE1394::dequeueResponse() throw(IEEE1394Exception) {
+  throw NotSupported();
+}
+
+void LinuxRawIEEE1394::dequeue() throw(IEEE1394Exception) {
+  throw NotSupported();
+}
+
+void LinuxRawIEEE1394::registerFCPListener(FunctionControlProtocolListener* listener) throw(IEEE1394Exception) {
+  throw NotSupported();
+}
+
+void LinuxRawIEEE1394::unregisterFCPListener() throw(IEEE1394Exception) {
+  throw NotSupported();
+}
+
+void LinuxRawIEEE1394::readIsochronous(unsigned int channel, unsigned int maximumPayload, IsochronousChannelListener* listener) throw(OutOfDomain, IEEE1394Exception) {
+  throw NotSupported();
+}
+
+void LinuxRawIEEE1394::writeIsochronous(const uint8* buffer, unsigned int size, unsigned int channel, unsigned int tag, unsigned int sy, Speed speed) throw(OutOfDomain, IEEE1394Exception) {
+  throw NotSupported();
+}
 
 #endif
+
+_COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

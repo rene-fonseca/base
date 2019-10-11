@@ -216,7 +216,7 @@ public:
 /**
   Writes an Access Control Entry (ACE) to a format output stream.
 */
-FormatOutputStream& operator<<(
+_COM_AZURE_DEV__BASE__API FormatOutputStream& operator<<(
   FormatOutputStream& stream,
   const AccessControlEntry& ace) throw(IOException);
 

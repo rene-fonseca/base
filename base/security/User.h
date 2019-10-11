@@ -201,7 +201,7 @@ public:
 /**
   Writes the user id to the format output stream.
 */
-FormatOutputStream& operator<<(FormatOutputStream& stream, const User& value) throw(IOException);
+_COM_AZURE_DEV__BASE__API FormatOutputStream& operator<<(FormatOutputStream& stream, const User& value) throw(IOException);
 
 template<>
 class Hash<User> {

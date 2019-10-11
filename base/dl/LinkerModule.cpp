@@ -17,6 +17,10 @@ _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 LinkerModule* LinkerModule::linkerModule = 0; // initialize linker module as uninitialized
 
+const LinkerModule* LinkerModule::getLinkerModule() throw() {
+  return linkerModule;
+}
+
 LinkerModule::LinkerModule(const String& i, const String& n, const String& v) throw(SingletonException) :
   identity(i),
   name(n),

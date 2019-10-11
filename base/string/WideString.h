@@ -1453,7 +1453,7 @@ public:
   /**
     Writes string to format stream.
   */
-  friend FormatOutputStream& operator<<(FormatOutputStream& stream, const WideString& value) throw(MultibyteException, IOException);
+  _COM_AZURE_DEV__BASE__API friend FormatOutputStream& operator<<(FormatOutputStream& stream, const WideString& value) throw(MultibyteException, IOException);
 };
 
 template<>
@@ -1462,7 +1462,7 @@ int compare<WideString>(const WideString& left, const WideString& right) throw()
 /**
   Writes wide string to format stream.
 */
-FormatOutputStream& operator<<(FormatOutputStream& stream, const WideString& value) throw(MultibyteException, IOException);
+_COM_AZURE_DEV__BASE__API FormatOutputStream& operator<<(FormatOutputStream& stream, const WideString& value) throw(MultibyteException, IOException);
 
 /**
   Returns a new string that is the concatenation of the two specified strings.

@@ -266,7 +266,7 @@ inline Process::Process(unsigned long _id) throw()
   : id(_id), handle(ProcessHandle::invalid) {
 }
 
-FormatOutputStream& operator<<(
+_COM_AZURE_DEV__BASE__API FormatOutputStream& operator<<(
   FormatOutputStream& stream, const Process::Layout& value) throw(IOException);
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

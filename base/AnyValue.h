@@ -32,7 +32,7 @@ _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 */
 
 class _COM_AZURE_DEV__BASE__API AnyValue : public Object {
-  friend FormatOutputStream& operator<<(
+  friend _COM_AZURE_DEV__BASE__API FormatOutputStream& operator<<(
     FormatOutputStream& stream, const AnyValue& value) throw(IOException);
 public:
 
@@ -419,7 +419,6 @@ public:
 /**
   Writes any-value object to format output stream.
 */
-FormatOutputStream& operator<<(
-  FormatOutputStream& stream, const AnyValue& value) throw(IOException);
+_COM_AZURE_DEV__BASE__API FormatOutputStream& operator<<(FormatOutputStream& stream, const AnyValue& value) throw(IOException);
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

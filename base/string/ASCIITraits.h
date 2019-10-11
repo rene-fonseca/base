@@ -62,6 +62,9 @@ private:
 
   /** Internal lookup table describing all characters (octet). */
   static const CharacterDescriptor* lookup;
+
+  /** Internal lookup table describing all characters (octet). */
+  static const CharacterDescriptor* getLookup();
 public:
 
   /** Array of all digits (lower case) in ascending order of corresponding value. */
@@ -106,32 +109,32 @@ public:
   
   /** Returns true if the character an alphabetic character. */
   static inline bool isAlpha(char value) throw() {
-    return lookup[static_cast<unsigned char>(value)].flags & ALPHA;
+    return getLookup()[static_cast<unsigned char>(value)].flags & ALPHA;
   }
   
   /** Returns true if the character an alphabetic character or a digit. */
   static inline bool isAlphaNum(char value) throw() {
-    return lookup[static_cast<unsigned char>(value)].flags & ALPHANUM;
+    return getLookup()[static_cast<unsigned char>(value)].flags & ALPHANUM;
   }
   
   /** Returns true if the character is lowercase. */
   static inline bool isLower(char value) throw() {
-    return lookup[static_cast<unsigned char>(value)].flags & LOWER;
+    return getLookup()[static_cast<unsigned char>(value)].flags & LOWER;
   }
   
   /** Returns true if the character is uppercase. */
   static inline bool isUpper(char value) throw() {
-    return lookup[static_cast<unsigned char>(value)].flags & UPPER;
+    return getLookup()[static_cast<unsigned char>(value)].flags & UPPER;
   }
   
   /** Returns true if the character is a digit. */
   static inline bool isDigit(char value) throw() {
-    return lookup[static_cast<unsigned char>(value)].flags & DIGIT;
+    return getLookup()[static_cast<unsigned char>(value)].flags & DIGIT;
   }
   
   /** Returns true if the character is an octal digit. */
   static inline bool isOctal(char value) throw() {
-    return lookup[static_cast<unsigned char>(value)].flags & OCTAL;
+    return getLookup()[static_cast<unsigned char>(value)].flags & OCTAL;
   }
   
   /**
@@ -139,7 +142,7 @@ public:
     "0123456789abcdef").
   */
   static inline bool isLowerHex(char value) throw() {
-    return lookup[static_cast<unsigned char>(value)].flags & LOWERHEX;
+    return getLookup()[static_cast<unsigned char>(value)].flags & LOWERHEX;
   }
   
   /**
@@ -147,7 +150,7 @@ public:
     "0123456789ABCDEF").
   */
   static inline bool isUpperHex(char value) throw() {
-    return lookup[static_cast<unsigned char>(value)].flags & UPPERHEX;
+    return getLookup()[static_cast<unsigned char>(value)].flags & UPPERHEX;
   }
   
   /**
@@ -155,7 +158,7 @@ public:
     digit).
   */
   static inline bool isHexDigit(char value) throw() {
-    return lookup[static_cast<unsigned char>(value)].flags & HEX;
+    return getLookup()[static_cast<unsigned char>(value)].flags & HEX;
   }
   
   /**
@@ -163,22 +166,22 @@ public:
     vertical-tab '\\v', form-feed '\\f', carriage-return '\\r', and space ' ').
   */
   static inline bool isSpace(char value) throw() {
-    return lookup[static_cast<unsigned char>(value)].flags & SPACE;
+    return getLookup()[static_cast<unsigned char>(value)].flags & SPACE;
   }
   
   /** Returns true if the character is a punctuation mark. */
   static inline bool isPunctuation(char value) throw() {
-    return lookup[static_cast<unsigned char>(value)].flags & PUNCTUATION;
+    return getLookup()[static_cast<unsigned char>(value)].flags & PUNCTUATION;
   }
   
   /** Returns true if the character is printable. */
   static inline bool isPrintable(char value) throw() {
-    return lookup[static_cast<unsigned char>(value)].flags & PRINTABLE;
+    return getLookup()[static_cast<unsigned char>(value)].flags & PRINTABLE;
   }
   
   /** Returns true if the character is a visible character. */
   static inline bool isGraph(char value) throw() {
-    return lookup[static_cast<unsigned char>(value)].flags & GRAPH;
+    return getLookup()[static_cast<unsigned char>(value)].flags & GRAPH;
   }
   
   /**
@@ -186,7 +189,7 @@ public:
     to 0x1f).
   */
   static inline bool isControl(char value) throw() {
-    return lookup[static_cast<unsigned char>(value)].flags & CONTROL;
+    return getLookup()[static_cast<unsigned char>(value)].flags & CONTROL;
   }
   
   /**
@@ -204,7 +207,7 @@ public:
     returned.
   */
   static inline unsigned char digitToValue(char value) throw() {
-    return lookup[static_cast<unsigned char>(value)].value;
+    return getLookup()[static_cast<unsigned char>(value)].value;
   }
 
   /**
@@ -244,12 +247,12 @@ public:
 
   /** Returns the lower case representation of the character. */
   static inline char toLower(char value) throw() {
-    return lookup[static_cast<unsigned char>(value)].lower;
+    return getLookup()[static_cast<unsigned char>(value)].lower;
   }
   
   /** Returns the upper case representation of the character. */
   static inline char toUpper(char value) throw() {
-    return lookup[static_cast<unsigned char>(value)].upper;
+    return getLookup()[static_cast<unsigned char>(value)].upper;
   }
   
   /**
@@ -265,8 +268,8 @@ public:
     equal (0), and greater than (positive).
   */
   static inline int compareCaseless(char left, char right) throw() {
-    return static_cast<int>(lookup[static_cast<unsigned char>(left)].lower) -
-      static_cast<int>(lookup[static_cast<unsigned char>(right)].lower);
+    return static_cast<int>(getLookup()[static_cast<unsigned char>(left)].lower) -
+      static_cast<int>(getLookup()[static_cast<unsigned char>(right)].lower);
   }
 
   /**
@@ -279,7 +282,7 @@ public:
   public:
     
     inline char operator()(char value) const throw() {
-      return lookup[static_cast<unsigned char>(value)].lower;
+      return getLookup()[static_cast<unsigned char>(value)].lower;
     }
   };
 
@@ -293,7 +296,7 @@ public:
   public:
     
     inline char operator()(char value) const throw() {
-      return lookup[static_cast<unsigned char>(value)].upper;
+      return getLookup()[static_cast<unsigned char>(value)].upper;
     }
   };
 

@@ -227,7 +227,7 @@ FormatInputStream _COM_AZURE_DEV__BASE__API fin(standardInputStream);
 FileDescriptorOutputStream standardOutputStream(
   FileDescriptor::getStandardOutput()
 );
-_COM_AZURE_DEV__BASE__API FormatOutputStream fout(standardOutputStream);
+FormatOutputStream _COM_AZURE_DEV__BASE__API fout(standardOutputStream);
 
 FileDescriptorOutputStream standardErrorStream(
   FileDescriptor::getStandardError()

@@ -182,13 +182,13 @@ public:
   */
   String getFullName() const throw(TrusteeException);
   
-  friend FormatOutputStream& operator<<(FormatOutputStream& stream, const Trustee& value) throw(IOException);
+  _COM_AZURE_DEV__BASE__API friend FormatOutputStream& operator<<(FormatOutputStream& stream, const Trustee& value) throw(IOException);
 };
 
 /**
   Writes the trustee id to the format output stream.
 */
-FormatOutputStream& operator<<(FormatOutputStream& stream, const Trustee& value) throw(IOException);
+_COM_AZURE_DEV__BASE__API FormatOutputStream& operator<<(FormatOutputStream& stream, const Trustee& value) throw(IOException);
 
 template<>
 class Hash<Trustee> {

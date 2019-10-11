@@ -109,6 +109,6 @@ inline Base64::Descriptor::Descriptor(const char* _buffer, unsigned int _size) t
 /**
   Writes the buffer to the format output stream as described in RFC 2045.
 */
-FormatOutputStream& operator<<(FormatOutputStream& stream, const Base64::Descriptor& value) throw(IOException);
+_COM_AZURE_DEV__BASE__API FormatOutputStream& operator<<(FormatOutputStream& stream, const Base64::Descriptor& value) throw(IOException);
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

@@ -245,6 +245,6 @@ public:
 /**
   Writes the specified url to the format output stream.
 */
-FormatOutputStream& operator<<(FormatOutputStream& stream, const Url& value) throw(MemoryException, IOException);
+_COM_AZURE_DEV__BASE__API FormatOutputStream& operator<<(FormatOutputStream& stream, const Url& value) throw(MemoryException, IOException);
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

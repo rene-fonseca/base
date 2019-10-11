@@ -15,8 +15,8 @@
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
-const char ASCIITraits::LOWER_DIGITS[] = "0123456789abcdef";
-const char ASCIITraits::UPPER_DIGITS[] = "0123456789ABCDEF";
+_COM_AZURE_DEV__BASE__API const char ASCIITraits::LOWER_DIGITS[] = "0123456789abcdef";
+_COM_AZURE_DEV__BASE__API const char ASCIITraits::UPPER_DIGITS[] = "0123456789ABCDEF";
 
 namespace ASCIITraitsImpl {
   
@@ -208,6 +208,10 @@ namespace ASCIITraitsImpl {
   
 };
 
-const ASCIITraits::CharacterDescriptor* ASCIITraits::lookup = ASCIITraitsImpl::lookup;
+_COM_AZURE_DEV__BASE__API const ASCIITraits::CharacterDescriptor* ASCIITraits::lookup = ASCIITraitsImpl::lookup;
+
+const ASCIITraits::CharacterDescriptor* ASCIITraits::getLookup() {
+  return lookup;
+}
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

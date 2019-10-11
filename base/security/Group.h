@@ -177,7 +177,7 @@ public:
 /**
   Writes the group id to the format output stream.
 */
-FormatOutputStream& operator<<(FormatOutputStream& stream, const Group& value) throw(IOException);
+_COM_AZURE_DEV__BASE__API FormatOutputStream& operator<<(FormatOutputStream& stream, const Group& value) throw(IOException);
 
 template<>
 class Hash<Group> {

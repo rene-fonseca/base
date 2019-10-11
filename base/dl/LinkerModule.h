@@ -23,7 +23,7 @@ _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
   @version 1.0
 */
 
-class LinkerModule : public Object {
+class _COM_AZURE_DEV__BASE__API LinkerModule : public Object {
 private:
 
   /** The module object. */
@@ -39,9 +39,7 @@ public:
   /**
     Returns the linker module object.
   */
-  inline static const LinkerModule* getLinkerModule() throw() {
-    return linkerModule;
-  }
+  static const LinkerModule* getLinkerModule() throw();
 
   /**
     Initializes module.

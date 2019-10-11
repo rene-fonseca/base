@@ -198,7 +198,7 @@ public:
   /**
     Writes a string representation of a vector object to a format stream.
   */
-  friend FormatOutputStream& operator<<(
+  _COM_AZURE_DEV__BASE__API friend FormatOutputStream& operator<<(
     FormatOutputStream& stream, const LargeInteger& value) throw(IOException);
 };
 
@@ -225,7 +225,7 @@ LargeInteger operator/(
   
   @relates LargeInteger
 */
-FormatOutputStream& operator<<(
+_COM_AZURE_DEV__BASE__API FormatOutputStream& operator<<(
   FormatOutputStream& stream, const LargeInteger& value) throw(IOException);
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

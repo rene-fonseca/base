@@ -157,7 +157,7 @@ public:
   static const int DEFAULT_PRECISION = 6;
   
   /** @short Context of format output stream object. */
-  class Context { // TAG: need to compress structure using bit-fields
+  class _COM_AZURE_DEV__BASE__API Context { // TAG: need to compress structure using bit-fields
   public:
 
     /** The format flags. */
@@ -316,10 +316,12 @@ public:
     static std::atomic<unsigned int> counter;
     unsigned int count = 0;
     Literal location;
+
+    static unsigned int allocateCounter() noexcept;
   public:
     
     inline Debug(const Literal& _location) throw()
-      : count(counter++), location(_location) {
+      : count(allocateCounter()), location(_location) {
     }
     
     inline const Literal& getLocation() const throw() {

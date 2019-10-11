@@ -25,6 +25,10 @@ _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 std::atomic<unsigned int> FormatOutputStream::Debug::counter(0);
 
+unsigned int FormatOutputStream::Debug::allocateCounter() noexcept {
+  return ++counter;
+}
+
 FormatOutputStream& FormatOutputStream::operator<<(
   const Debug& debug) throw(IOException) {
   return *this << debug.getLocation() << ' '

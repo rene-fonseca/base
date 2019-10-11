@@ -1169,7 +1169,7 @@ public:
 /**
   Writes string to format stream.
 */
-FormatOutputStream& operator<<(
+_COM_AZURE_DEV__BASE__API FormatOutputStream& operator<<(
   FormatOutputStream& stream, const String& value) throw(IOException);
 
 /**

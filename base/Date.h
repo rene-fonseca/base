@@ -417,7 +417,7 @@ public:
     bool local = true) const throw(InvalidFormat, MemoryException);
 };
 
-FormatOutputStream& operator<<(
+_COM_AZURE_DEV__BASE__API FormatOutputStream& operator<<(
   FormatOutputStream& stream,
   const Date& date) throw(InvalidFormat, IOException);
 

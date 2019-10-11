@@ -97,7 +97,7 @@ String OpenGLContextImpl::getGLServerVendor() const throw(OpenGLException) {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   return String(); // TAG: fixme
 #else // unix
-  void* screenHandle = 0; // TAG: fixme move method to OpenGLWindowContext?
+  void* screenHandle = nullptr; // TAG: fixme move method to OpenGLWindowContext?
   return NativeString(
     native::GLX::glXQueryServerString(
       (Display*)Backend<WindowImpl>::getDisplay(),
@@ -112,7 +112,7 @@ String OpenGLContextImpl::getGLServerRelease() const throw(OpenGLException) {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   return String(); // TAG: fixme
 #else // unix
-  void* screenHandle = 0; // TAG: fixme move method to OpenGLWindowContext?
+  void* screenHandle = nullptr; // TAG: fixme move method to OpenGLWindowContext?
   return NativeString(
     native::GLX::glXQueryServerString(
       (Display*)Backend<WindowImpl>::getDisplay(),
@@ -127,7 +127,7 @@ String OpenGLContextImpl::getGLServerExtensions() const throw(OpenGLException) {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   return String(); // TAG: fixme
 #else // unix
-  void* screenHandle = 0; // TAG: fixme move method to OpenGLWindowContext?
+  void* screenHandle = nullptr; // TAG: fixme move method to OpenGLWindowContext?
   return NativeString(
     native::GLX::glXQueryServerString(
       (Display*)Backend<WindowImpl>::getDisplay(),

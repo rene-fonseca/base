@@ -357,7 +357,7 @@ public:
       const unsigned long hash = getHash(key);
       Node** bucket = getBuckets() + (hash & mask);
       
-      Node* parent = 0;
+      Node* parent = nullptr;
       Node* child = *bucket;
       if (child) {
         if ((child->getHash() == hash) && (*child->getKey() == key)) {
@@ -402,7 +402,7 @@ public:
       const unsigned long hash = getHash(value);
       Node** buckets = getBuckets() + (hash & mask);
       if (*buckets) {
-        Node* parent = 0;
+        Node* parent = nullptr;
         Node* child = *buckets;
         while (child && ((child->getHash() != hash) || (child->getValue() != value))) {
           parent = child;

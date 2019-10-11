@@ -420,7 +420,7 @@ void GraphicsContext::setPixels(
       UserInterfaceException(this)
     );
   }
-//   XPoint* points = 0;
+//   XPoint* points = nullptr;
 //   ::XDrawPoints(
 //     (Display*)displayHandle,
 //     (::Window)drawableHandle,

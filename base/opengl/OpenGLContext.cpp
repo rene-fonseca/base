@@ -350,7 +350,7 @@ nothing OpenGLContext::initialize(const Format& format) throw(OpenGLException, U
 //     ::XFree(configs);
 //   }
 
-  XVisualInfo* visualInfo = 0;
+  XVisualInfo* visualInfo = nullptr;
   {
     int attributes[33]; // make sure buffer is big enough
     int* dest = attributes;

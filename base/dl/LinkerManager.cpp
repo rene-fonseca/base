@@ -19,7 +19,7 @@
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 // Used by LinkerModules to locate the LinkerManager
-LinkerManager* LinkerManager::linkerManager = 0; // TAG: need support for any number of managers?
+LinkerManager* LinkerManager::linkerManager = nullptr; // TAG: need support for any number of managers?
 
 LinkerManager* LinkerManager::getManager() throw() {
   if (!linkerManager) {

@@ -15,7 +15,7 @@
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
-LinkerModule* LinkerModule::linkerModule = 0; // initialize linker module as uninitialized
+LinkerModule* LinkerModule::linkerModule = nullptr; // initialize linker module as uninitialized
 
 const LinkerModule* LinkerModule::getLinkerModule() throw() {
   return linkerModule;

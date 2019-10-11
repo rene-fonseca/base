@@ -39,7 +39,7 @@ public:
     volatile double zero = 0.0;
     double doubleResult = 1.0/zero;
     
-    unsigned int* invalid = 0;
+    unsigned int* invalid = nullptr;
     unsigned int temp = *invalid; // read
     *invalid = 0; // write
   }

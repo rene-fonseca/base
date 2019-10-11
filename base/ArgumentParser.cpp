@@ -173,7 +173,7 @@ void ArgumentParser::addOption(
 ArgumentParser::Argument* ArgumentParser::getArgument(
   const Reference<Option>& option,
   bool occured) const throw(ArgumentException) {
-  Argument* argument = 0;
+  Argument* argument = nullptr;
   if (option.isType<FlagOption>()) {
     argument =
       new NamedArgument(option->getName(), occured ? Argument::EARLIER : 0);
@@ -219,7 +219,7 @@ ArgumentParser::Argument* ArgumentParser::getArgument(
   const Reference<Option>& option,
   const String& value,
   bool occured) const throw(ArgumentException) {
-  Argument* argument = 0;
+  Argument* argument = nullptr;
   if (option.isType<FlagOption>()) {
     throw bindCause(ArgumentException(this), ArgumentException::VALUE_PRESENT);
   } else { // options which take a value
@@ -352,7 +352,7 @@ Array<ArgumentParser::Argument*> ArgumentParser::operator()(
           occured.add(name);
         }
         
-        Argument* argument = 0;
+        Argument* argument = nullptr;
         if (assignIndex >= 0) {
           argument = getArgument(option, value, o);
         } else {
@@ -410,7 +410,7 @@ Array<ArgumentParser::Argument*> ArgumentParser::operator()(
             occured.add(option->getName());
           }
           
-          Argument* argument = 0;
+          Argument* argument = nullptr;
           if (argument) {
             result.append(argument);
           }

@@ -210,7 +210,7 @@ Document DOMImplementation::createDocumentFromString(
     xmlLoadExtDtdDefaultValue |= XML_COMPLETE_ATTRS;
   }
   
-  xmlDoc* result = 0;
+  xmlDoc* result = nullptr;
 	switch (mode) {
 	case DOMImplementation::PARSING:
 		xmlDoValidityCheckingDefaultValue = 0;

@@ -60,9 +60,9 @@ public:
 bool DaemonImpl::dispatched = false; // specifies whether the service entry function has been called
 SERVICE_STATUS DaemonImpl::serviceStatus; // the current status of the service
 SERVICE_STATUS_HANDLE DaemonImpl::serviceStatusHandle; // handle to the service status
-Thread* DaemonImpl::daemonThread = 0; // the daemon context
-Thread* DaemonImpl::parentThread = 0; // the daemon context
-Runnable* DaemonImpl::runnable = 0; // the active object
+Thread* DaemonImpl::daemonThread = nullptr; // the daemon context
+Thread* DaemonImpl::parentThread = nullptr; // the daemon context
+Runnable* DaemonImpl::runnable = nullptr; // the active object
 
 namespace win32 {
   

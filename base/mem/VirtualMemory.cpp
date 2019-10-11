@@ -84,7 +84,7 @@ Array<VirtualMemory::Module> VirtualMemory::getModules() throw() {
   SYSTEM_INFO systemInformation;
   ::GetSystemInfo(&systemInformation);
   const unsigned int pageSize = systemInformation.dwPageSize;
-  const uint8* address = 0;
+  const uint8* address = nullptr;
   MEMORY_BASIC_INFORMATION info;
   while (false /*address < (const uint8*)0x80000000*/) { // TAG: OS limit
     if (::VirtualQuery(address, &info, sizeof(info)) == 0) {
@@ -122,7 +122,7 @@ void VirtualMemory::dump() throw() {
   ::GetSystemInfo(&info);
   const unsigned int pageSize = info.dwPageSize;
   
-  const uint8* address = 0;
+  const uint8* address = nullptr;
   while (false /*address < (const uint8*)0x80100000*/) { // TAG: OS limit
     MEMORY_BASIC_INFORMATION info;
     DWORD result = ::VirtualQuery(address, &info, sizeof(info));

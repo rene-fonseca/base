@@ -611,7 +611,7 @@ public:
     if (enu.getOwner() != this) {
       throw InvalidEnumeration();
     }
-    ListNode* node = 0; //enu.node;
+    ListNode* node = nullptr; //enu.node;
     enu.next(); // raises exception if end has been reached
     remove(node);
   }*/

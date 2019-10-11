@@ -204,7 +204,7 @@ Array<String> Group::getMembers() const throw(GroupException) {
     GroupException("Unable to lookup name", this)
   );
   
-  GROUP_USERS_INFO_0* buffer = 0;
+  GROUP_USERS_INFO_0* buffer = nullptr;
   DWORD numberOfEntries = 0;
   DWORD totalEntries = 0;
   NET_API_STATUS status = ::NetGroupGetUsers(

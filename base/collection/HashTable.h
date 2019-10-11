@@ -413,7 +413,7 @@ public:
       const unsigned long hash = getHash(key);
       Node** bucket = getBuckets() + (hash & mask);
       
-      Node* parent = 0;
+      Node* parent = nullptr;
       Node* child = *bucket;
       if (child) {
         if ((child->getHash() == hash) && (child->getKey() == key)) {
@@ -457,8 +457,8 @@ public:
     inline Value& getValue(const Key& key) throw(InvalidKey) {
       const unsigned long hash = getHash(key);
       Node** bucket = getBuckets() + (hash & mask);
-      Node* grandparent = 0;
-      Node* parent = 0;
+      Node* grandparent = nullptr;
+      Node* parent = nullptr;
       Node* child = *bucket;
       while (child && ((child->getHash() != hash) || (child->getKey() != key))) {
         grandparent = parent;
@@ -505,7 +505,7 @@ public:
       const unsigned long hash = getHash(key);
       Node** buckets = getBuckets() + (hash & mask);
       if (*buckets) {
-        Node* parent = 0;
+        Node* parent = nullptr;
         Node* child = *buckets;
         while (child && ((child->getHash() != hash) || (child->getKey() != key))) {
           parent = child;

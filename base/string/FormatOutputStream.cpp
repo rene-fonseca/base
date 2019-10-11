@@ -1687,7 +1687,7 @@ void FormatOutputStream::writeFloatingPointType(
   unsigned int valueFlags) throw(IOException) {
   PrimitiveArray<char> buffer(128 + 2 + significant/3); // N = 2 + floor[n/log2(10)] => N < 2 + n/3 // TAG: 128 should be calculated
   char* output = buffer;
-  const char* radix = 0;
+  const char* radix = nullptr;
   unsigned int flags = context.flags;
 
   if ((valueFlags & FloatingPoint::FP_ANY_NAN) != 0) {

@@ -1098,7 +1098,7 @@ public:
     
     bool success = false;
     DWORD bytesWritten;
-    void* context = 0;
+    void* context = nullptr;
     if (::BackupWrite(
           handle,
           (BYTE*)&stream,

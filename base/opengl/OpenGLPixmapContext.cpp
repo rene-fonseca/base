@@ -160,7 +160,7 @@ nothing OpenGLPixmapContext::initialize(const Dimension& dimension, unsigned int
   screenHandle = ::XScreenOfDisplay((Display*)Backend<WindowImpl>::getDisplay(), screenId);
   bassert(screenHandle, UserInterfaceException("Unable to open screen", this));
 
-  XVisualInfo* visualInfo = 0;
+  XVisualInfo* visualInfo = nullptr;
   {
     int attributes[33]; // make sure buffer is big enough
     int* dest = attributes;

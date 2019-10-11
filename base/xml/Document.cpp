@@ -117,7 +117,7 @@ Attribute Document::createAttributeNS(
   
   String prefix;
   String localName;
-  xmlNs* ns = 0;
+  xmlNs* ns = nullptr;
   
   int colon = qualifiedName.indexOf(":");
   if (colon) {
@@ -290,7 +290,7 @@ Element Document::createElementNS(
     );
   }
   
-  xmlNs* ns = 0;
+  xmlNs* ns = nullptr;
   if (prefix.isProper()) {
     ns = xmlNewNs(
       0,

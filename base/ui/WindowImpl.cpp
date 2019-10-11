@@ -113,7 +113,7 @@ namespace windowImpl {
     const unsigned int hash = getHash(handle);
     Entry* entry = windows[hash];
     ASSERT((entry->window != 0) && (entry->handle != 0));
-    Entry* previous = 0;
+    Entry* previous = nullptr;
     while (entry->handle != handle) {
       previous = entry;
       entry = entry->next;

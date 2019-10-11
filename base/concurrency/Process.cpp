@@ -649,7 +649,7 @@ FormatOutputStream& operator<<(
   const Process::Layout& value) throw(IOException) {
   
 #if (0 && (_COM_AZURE_DEV__BASE__ARCH == _COM_AZURE_DEV__BASE__X86))
-  void** frame = 0;
+  void** frame = nullptr;
   asm (
     "movl %%ebp,%0;\n"
     : "=m" (frame) // output
@@ -658,7 +658,7 @@ FormatOutputStream& operator<<(
   // TAG: save entry method in thread local storage
   void* entry = (void*)&main; // should be init with current frame in entry
   fout << "entry: " << entry << ENDL;
-  void* invoker = 0;
+  void* invoker = nullptr;
   unsigned int i = 0;
   while (invoker != entry) {
     invoker = *((void**)frame + 1);

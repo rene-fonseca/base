@@ -247,12 +247,12 @@ public:
 #  if (defined(_COM_AZURE_DEV__BASE__HAVE_SIGACTION))
   static void actionHandler(
     int signal, siginfo_t* info, void* opaque) throw() {
-    const char* error = 0;
+    const char* error = nullptr;
 
     const ucontext_t* context = Cast::pointer<const ucontext_t*>(opaque);
     const mcontext_t* m = &context->uc_mcontext;
 
-    const void* instructionAddress = 0;
+    const void* instructionAddress = nullptr;
 #if ((_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__SOLARIS) && \
      (_COM_AZURE_DEV__BASE__ARCH == _COM_AZURE_DEV__BASE__SPARC))
     instructionAddress = (void*)(m->gregs[REG_PC]);
@@ -465,7 +465,7 @@ public:
          << m->gregs[REG_O7] << EOL
          << EOL;
     
-    void* framePointer = 0;
+    void* framePointer = nullptr;
     // TAG: check if valid pointer - what constraints
     if (framePointer) {
       const uint32* window = Cast::pointer<const uint32*>(framePointer);

@@ -77,7 +77,7 @@ public:
     if (buffers == 0) {
       return;
     }
-    OrbBuffer* excess = 0;
+    OrbBuffer* excess = nullptr;
     unsigned int numberOfExcess = 0;
     {
       ExclusiveSynchronize<Guard> _guard(guard);

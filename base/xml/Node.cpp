@@ -406,7 +406,7 @@ public:
         parent->last,
         DOMException("Link to last child of parent not set")
       );
-      const xmlNode* temp = 0;
+      const xmlNode* temp = nullptr;
       for (xmlNode* child = parent->children; child; child = child->next) {
         if (child == node) {
           temp = child;

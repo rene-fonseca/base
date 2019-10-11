@@ -173,7 +173,7 @@ public:
   */
   Node* getFirst() throw() {
     Node* node = BinaryTree<Value>::getRoot();
-    Node* previous = 0; // not found
+    Node* previous = nullptr; // not found
 
     while (node) {
       previous = node;
@@ -189,7 +189,7 @@ public:
   */
   Node* getLast() throw() {
     Node* node = BinaryTree<Value>::getRoot();
-    Node* previous = 0; // not found
+    Node* previous = nullptr; // not found
 
     while (node) {
       previous = node;

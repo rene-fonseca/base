@@ -38,6 +38,7 @@ endif ()
 
 include_directories ("${PROJECT_SOURCE_DIR}")
 
+# GLOB_RECURSE
 file(GLOB base_SRC
   "base/*.h"
   "base/*.cpp"
@@ -86,6 +87,14 @@ file(GLOB base_SRC
   "base/xml/*.h"
   "base/xml/*.cpp"
 )
+
+foreach(source IN ITEMS ${base_SRC})
+  get_filename_component(source_path "${source}" PATH)
+  file(RELATIVE_PATH source_path_rel "${PROJECT_SOURCE_DIR}/base" "${source_path}")
+  string(REPLACE "/" "\\" group_path "${source_path_rel}")
+  source_group("${group_path}" FILES "${source}")
+  #message ("${group_path} -> ${source}")
+endforeach()
 
 execute_process(OUTPUT_VARIABLE GIT_BRANCH COMMAND git symbolic-ref --short HEAD)
 string(REGEX REPLACE "\n$" "" GIT_BRANCH "${GIT_BRANCH}")

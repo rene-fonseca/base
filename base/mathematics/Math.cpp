@@ -50,6 +50,10 @@ const uint8 Math::BIT_REVERSAL[] = {
   0x1f, 0x9f, 0x5f, 0xdf, 0x3f, 0xbf, 0x7f, 0xff
 };
 
+const uint8* Math::getBitReversalData() noexcept {
+  return BIT_REVERSAL;
+}
+
 double Math::lngamma(double value) throw() {
   // TAG: need better approximation
   // B_2n/(2n * (2n-1) x^(2n-1))

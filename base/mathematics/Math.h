@@ -237,6 +237,8 @@ private:
 
   /** Bit reversal lookup table (8 bit). */
   static const uint8 BIT_REVERSAL[256];
+
+  static const uint8* getBitReversalData() noexcept;
 public:
   
   /**
@@ -1657,7 +1659,7 @@ public:
     Returns the bit reversal of the specified 8 bit unsigned integer.
   */
   static inline uint8 getBitReversal(uint8 value) throw() {
-    return BIT_REVERSAL[value];
+    return getBitReversalData()[value];
   }
 
   /**

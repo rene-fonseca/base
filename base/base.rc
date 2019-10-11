@@ -41,12 +41,10 @@
     BEGIN
       BLOCK "040904e4"
       BEGIN
-        VALUE "CompanyName", "Rene Fonseca <https://dev.azure.com/renefonseca>\0"
+        VALUE "CompanyName", "Rene Fonseca <https://dev.azure.com/renefonseca/base>\0"
         VALUE "FileDescription", "C++ framework for developing platform independent applications\0"
         VALUE "FileVersion",  _VERSION "\0"
-        VALUE "InternalName", "base\0"
         VALUE "LegalCopyright", "Copyright (C) 2000-2019 by Rene Fonseca\0"
-        VALUE "LegalTrademarks", "Currently not available\0"
         VALUE "OriginalFilename", "base.dll\0"
         VALUE "ProductName", "The Base Framework\0"
         VALUE "ProductVersion", _VERSION "\0"

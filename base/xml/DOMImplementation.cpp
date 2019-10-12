@@ -287,7 +287,7 @@ String DOMImplementation::saveDocumentToMemory(
   // TAG: fixme - xmlIndentTreeOutput = 1 or xmlKeepBlanksDefault(0)
   xmlDoc* doc = (xmlDoc*)document.getContext();
 	int size = 0;
-  xmlChar* buffer;
+  xmlChar* buffer = nullptr;
 	xmlDocDumpFormatMemory(doc, &buffer, &size, spaces ? 1 : 0);
   bassert(buffer && (size > 0), DOMException(this));
   String result((const char*)buffer);
@@ -304,7 +304,7 @@ String DOMImplementation::saveDocumentToMemory(
   // TAG: fixme - xmlIndentTreeOutput = 1 or xmlKeepBlanksDefault(0)
   xmlDoc* doc = (xmlDoc*)document.getContext();
 	int size = 0;
-  xmlChar* buffer;
+  xmlChar* buffer = nullptr;
 	xmlDocDumpFormatMemoryEnc(
     doc,
     &buffer,

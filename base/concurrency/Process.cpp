@@ -260,7 +260,7 @@ Process Process::execute(const String& command) throw(ProcessException) {
   // TAG: use spawn if available
   
   pid_t pid;
-  int status;
+  int status = 0;
 
   pid = ::fork();
   if (pid == -1) {
@@ -312,7 +312,7 @@ bool Process::isAlive() const throw(ProcessException) {
   }
 #else // unix
   
-  int status;
+  int status = 0;
   pid_t result = ::waitpid(id, &status, WNOHANG);
   bassert(result >= 0, ProcessException("Unable to query process", this));
 

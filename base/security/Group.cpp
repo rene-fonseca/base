@@ -118,7 +118,7 @@ Group::Group(const User& user) throw(GroupException) {
 #else // unix
   Allocator<uint8>* buffer = Thread::getLocalStorage();
   struct passwd pw;
-  struct passwd* entry;
+  struct passwd* entry = nullptr;
   int result = ::getpwuid_r(
     Cast::extract<uid_t>(user.getIntegralId()),
     &pw,
@@ -163,7 +163,7 @@ String Group::getName() const throw(GroupException) {
     //long sysconf(_SC_GETGR_R_SIZE_MAX);
     Allocator<uint8>* buffer = Thread::getLocalStorage();
     struct group grp;
-    struct group* entry;
+    struct group* entry = nullptr;
     int result = ::getgrgid_r(
       Cast::extract<gid_t>(integralId),
       &grp,
@@ -236,7 +236,7 @@ Array<String> Group::getMembers() const throw(GroupException) {
     //long sysconf(_SC_GETGR_R_SIZE_MAX);
     Allocator<uint8>* buffer = Thread::getLocalStorage();
     struct group grp;
-    struct group* entry;
+    struct group* entry = nullptr;
     int result = ::getgrgid_r(
       Cast::extract<gid_t>(integralId),
       &grp,

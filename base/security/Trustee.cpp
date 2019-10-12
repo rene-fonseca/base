@@ -159,7 +159,7 @@ Trustee::Trustee(const String& name) throw(TrusteeException) {
   //long sysconf(_SC_GETGR_R_SIZE_MAX);
   char buffer[4096];
   struct passwd pw;
-  struct passwd* entry;
+  struct passwd* entry = nullptr;
   int result = ::getpwnam_r(
     name.getElements(),
     &pw,
@@ -173,7 +173,7 @@ Trustee::Trustee(const String& name) throw(TrusteeException) {
   } else {
   #if defined(_COM_AZURE_DEV__BASE__HAVE_GETGRNAM_R)
     struct group grp;
-    struct group* entry;
+    struct group* entry = nullptr;
     int result = ::getgrnam_r(
       name.getElements(),
       &grp,
@@ -299,7 +299,7 @@ String Trustee::getName() const throw(TrusteeException) {
       //long sysconf(_SC_GETGR_R_SIZE_MAX);
       Allocator<uint8>* buffer = Thread::getLocalStorage();
       struct group grp;
-      struct group* entry;
+      struct group* entry = nullptr;
       int result = ::getgrgid_r(
         (gid_t)integralId,
         &grp,
@@ -320,7 +320,7 @@ String Trustee::getName() const throw(TrusteeException) {
     {
       Allocator<uint8>* buffer = Thread::getLocalStorage();
       struct passwd pw;
-      struct passwd* entry;
+      struct passwd* entry = nullptr;
       int result = ::getpwuid_r(
         (uid_t)integralId,
         &pw,

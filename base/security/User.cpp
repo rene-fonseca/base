@@ -132,7 +132,7 @@ User::User(const String& name) throw(UserException) {
   // long sysconf(_SC_GETPW_R_SIZE_MAX);
   Allocator<uint8>* buffer = Thread::getLocalStorage();
   struct passwd pw;
-  struct passwd* entry;
+  struct passwd* entry = nullptr;
   int result = ::getpwnam_r(
     name.getElements(),
     &pw,
@@ -178,7 +178,7 @@ String User::getName(bool fallback) const throw(UserException) {
 #else // unix
   Allocator<uint8>* buffer = Thread::getLocalStorage();
   struct passwd pw;
-  struct passwd* entry;
+  struct passwd* entry = nullptr;
   int result = ::getpwuid_r(
     Cast::extract<uid_t>(integralId),
     &pw,
@@ -209,7 +209,7 @@ String User::getHomeFolder() const throw(UserException) {
 #else // unix  
   Allocator<uint8>* buffer = Thread::getLocalStorage();
   struct passwd pw;
-  struct passwd* entry;
+  struct passwd* entry = nullptr;
   int result = ::getpwuid_r(
     Cast::extract<uid_t>(integralId),
     &pw,

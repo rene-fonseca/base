@@ -238,9 +238,9 @@ public:
 class View {
 public:
     
-  Vector3D<long double> translation;
-  Vector3D<long double> rotation;
-  long double scale;
+  Vector3D<double> translation;
+  Vector3D<double> rotation;
+  double scale = 1;
 public:
     
   inline View() throw() {
@@ -248,32 +248,32 @@ public:
   }
       
   inline void resetParameters() throw() {
-    setTranslation(Vector3D<long double>(0, 0, 0));
-    setRotation(Vector3D<long double>(0, 0, 0));
+    setTranslation(Vector3D<double>(0, 0, 0));
+    setRotation(Vector3D<double>(0, 0, 0));
     setScale(1);
   }
     
-  inline Vector3D<long double> getTranslation() const throw() {
+  inline const Vector3D<double>& getTranslation() const throw() {
     return translation;
   }
     
-  inline void setTranslation(const Vector3D<long double>& translation) throw() {
+  inline void setTranslation(const Vector3D<double>& translation) throw() {
     this->translation = translation;
   }
     
-  inline Vector3D<long double> getRotation() const throw() {
+  inline const Vector3D<double>& getRotation() const throw() {
     return rotation;
   }
     
-  inline void setRotation(const Vector3D<long double>& rotation) throw() {
+  inline void setRotation(const Vector3D<double>& rotation) throw() {
     this->rotation = rotation;
   }
     
-  inline long double getScale() const throw() {
+  inline double getScale() const throw() {
     return scale;
   }
       
-  inline void setScale(long double scale) throw() {
+  inline void setScale(double scale) throw() {
     this->scale = scale;
   }
 };
@@ -292,46 +292,46 @@ public:
   class MyOpenGLContext : public OpenGLContext {
   private:
 
-    //MyApplication* application;
+    //MyApplication* application = nullptr;
     Verbosity::Value verbosity;
     MyMenu menu;
-    //ColorImage* frame;
-    //Renderable* renderable;
+    //ColorImage* frame = nullptr;
+    //Renderable* renderable = nullptr;
     Mode mode;
     
     View view;
     
-    unsigned int displayMode;
-    ShadingModel::Model shadingModel;
-    PolygonMode::Mode polygonMode;
-    bool blending;
-    bool lighting;
+    unsigned int displayMode = 0;
+    ShadingModel::Model shadingModel = ShadingModel::DEFAULT;
+    PolygonMode::Mode polygonMode = PolygonMode::DEFAULT;
+    bool blending = false;
+    bool lighting = false;
     
-    Vector3D<long double> translationBegin;
-    Vector3D<long double> rotationBegin;
-    long double scaleBegin;
+    Vector3D<double> translationBegin;
+    Vector3D<double> rotationBegin;
+    double scaleBegin = 0;
     
-    long double xTranslation;
-    long double yTranslation;
-    long double zTranslation;
-    long double xAngle;
-    long double yAngle;
-    long double zAngle;
-    long double scale;
+    double xTranslation = 0;
+    double yTranslation = 0;
+    double zTranslation = 0;
+    double xAngle = 0;
+    double yAngle = 0;
+    double zAngle = 0;
+    double scale = 0;
     
-    long double orthoLeft;
-    long double orthoRight;
-    long double orthoBottom;
-    long double orthoTop;
-    long double orthoNear;
-    long double orthoFar;
+    double orthoLeft = 0;
+    double orthoRight = 0;
+    double orthoBottom = 0;
+    double orthoTop = 0;
+    double orthoNear = 0;
+    double orthoFar = 0;
     
     Position mouseButtonPosition;
-    bool mouseLeftButtonPressed;
-    bool mouseMiddleButtonPressed;
-    bool mouseRightButtonPressed;
+    bool mouseLeftButtonPressed = false;
+    bool mouseMiddleButtonPressed = false;
+    bool mouseRightButtonPressed = false;
     
-    Vector3D<long double> drag;
+    Vector3D<double> drag;
   public:
 
     enum Object {
@@ -405,7 +405,7 @@ public:
       yAngle = 0;
       zAngle = 0;
         
-      drag = Vector3D<long double>(0, 0, 0);
+      drag = Vector3D<double>(0, 0, 0);
         
       mouseLeftButtonPressed = false;
       mouseMiddleButtonPressed = false;
@@ -452,21 +452,21 @@ public:
       this->verbosity = verbosity;
     }
       
-    void setTranslation(const Vector3D<long double>& translation) throw() {
+    void setTranslation(const Vector3D<double>& translation) throw() {
       view.setTranslation(translation);
     }
       
-    void setRotation(const Vector3D<long double>& rotation) throw() {
+    void setRotation(const Vector3D<double>& rotation) throw() {
       view.setRotation(rotation);
     }
       
-    void setScale(long double scale) throw() {
+    void setScale(double scale) throw() {
       view.setScale(scale);
     }
       
     void resetViewParameters() throw() {
-      setTranslation(Vector3D<long double>(0, 0, 0));
-      setRotation(Vector3D<long double>(0, 0, 0));
+      setTranslation(Vector3D<double>(0, 0, 0));
+      setRotation(Vector3D<double>(0, 0, 0));
       setScale(1);
     }
       
@@ -548,10 +548,10 @@ public:
     }
 
     /** Maps the (x,y)-position into world coordinates. */
-    Vector3D<long double> getPosition(const Position& position, const int viewPort[4]) const throw() {
-      long double tempX = static_cast<long double>(position.getX() - viewPort[0])/static_cast<long double>(viewPort[2]);
-      long double tempY = static_cast<long double>(position.getY() - viewPort[1])/static_cast<long double>(viewPort[3]);
-      return Vector3D<long double>(
+    Vector3D<double> getPosition(const Position& position, const int viewPort[4]) const throw() {
+      double tempX = static_cast<double>(position.getX() - viewPort[0])/static_cast<double>(viewPort[2]);
+      double tempY = static_cast<double>(position.getY() - viewPort[1])/static_cast<double>(viewPort[3]);
+      return Vector3D<double>(
         orthoLeft + tempX * (orthoRight - orthoLeft),
         orthoTop + tempY * (orthoBottom - orthoTop),
         orthoNear
@@ -646,9 +646,9 @@ public:
       
       openGL.glMatrixMode(OpenGL::MODELVIEW);
       openGL.glLoadIdentity();
-      Vector3D<long double> translation = view.getTranslation();
+      Vector3D<double> translation = view.getTranslation();
       openGL.glTranslatef(translation.getX(), translation.getY(), translation.getZ());
-      Vector3D<long double> rotation = view.getRotation();
+      Vector3D<double> rotation = view.getRotation();
       openGL.glRotatef(rotation.getX(), 0.0, 1.0, 0.0);
       openGL.glRotatef(rotation.getY(), 1.0, 0.0, 0.0);
       openGL.glRotatef(rotation.getZ(), 0.0, 0.0, 1.0);
@@ -704,11 +704,11 @@ public:
         if (modifiers & Key::CONTROL) {
           int viewPort[4];
           openGL.glGetIntegerv(OpenGL::VIEWPORT, viewPort);
-          Vector3D<long double> position3D = getPosition(position, viewPort);
+          Vector3D<double> position3D = getPosition(position, viewPort);
           view.translation.setX(translationBegin.getX() + position3D.getX() - drag.getX());
           view.translation.setY(translationBegin.getY() + position3D.getY() - drag.getY());
         } else {
-          long double scale = scaleBegin * Math::exp(static_cast<long double>(difference.getY() * 0.01));
+          double scale = scaleBegin * Math::exp(static_cast<double>(difference.getY() * 0.01));
           if (scale < 0.00001) {
             scale = 0.0001;
           } else if (scale >= 10.0) {
@@ -723,18 +723,18 @@ public:
           view.rotation.setX(rotationBegin.getX() + difference.getX()/(256/*dimension.getHeight()*//180.0));
           view.rotation.setY(rotationBegin.getY() + difference.getY()/(256/*dimension.getWidth()*//180.0));
           
-          /*long double ax = difference.getY();
-              long double ay = difference.getX();
-              long double az = 0;
-              long double angle = 180.0 * sqrt(ax*ax + ay*ay + az*az)/static_cast<long double>(dimension.getWidth());
+          /*double ax = difference.getY();
+              double ay = difference.getX();
+              double az = 0;
+              double angle = 180.0 * sqrt(ax*ax + ay*ay + az*az)/static_cast<double>(dimension.getWidth());
           */
             // use inverse matrix to determine local axis of rotation
             //openGL.glGetDoublev(OpenGL::MODELVIEW_MATRIX, modelViewMatrix);
             //invertMatrix(modelViewMatrix, invertedModelViewMatrix);
             
-            //long double axisX = invertedModelViewMatrix[0] * ax + invertedModelViewMatrix[4] * ay + invertedModelViewMatrix[7] * az;
-            //long double axisY = invertedModelViewMatrix[1] * ax + invertedModelViewMatrix[5] * ay + invertedModelViewMatrix[8] * az;
-            //long double axisZ = invertedModelViewMatrix[2] * ax + invertedModelViewMatrix[6] * ay + invertedModelViewMatrix[9] * az;
+            //double axisX = invertedModelViewMatrix[0] * ax + invertedModelViewMatrix[4] * ay + invertedModelViewMatrix[7] * az;
+            //double axisY = invertedModelViewMatrix[1] * ax + invertedModelViewMatrix[5] * ay + invertedModelViewMatrix[8] * az;
+            //double axisZ = invertedModelViewMatrix[2] * ax + invertedModelViewMatrix[6] * ay + invertedModelViewMatrix[9] * az;
             //openGL.glRotatef(angle, axisX, axisY, axisZ);
           }
         }
@@ -845,7 +845,7 @@ public:
       
       int viewPort[4];
       openGL.glGetIntegerv(OpenGL::VIEWPORT, viewPort);
-      Vector3D<long double> drag = getPosition(position, viewPort);    
+      Vector3D<double> drag = getPosition(position, viewPort);    
       drag.setZ(0);      
     }
     
@@ -854,7 +854,7 @@ public:
       if (verbosity >= Verbosity::ACTIVE_MOUSE_EVENTS) {
         fout << "Mouse wheel" << ENDL;
       }
-      setTranslation(view.getTranslation() + Vector3D<long double>(0, 0, 0.1 * delta/120));
+      setTranslation(view.getTranslation() + Vector3D<double>(0, 0, 0.1 * delta/120));
     }
     
     void onKey(
@@ -1113,51 +1113,51 @@ public:
         break;
       case Command::ROTATE_AROUND_X_AXIS_NEG:
         dumpCommand(MESSAGE("Rotate around X axis (neg)"));
-        view.setRotation(view.getRotation() + Vector3D<long double>(-1.0, 0, 0));
+        view.setRotation(view.getRotation() + Vector3D<double>(-1.0, 0, 0));
         break;
       case Command::ROTATE_AROUND_X_AXIS_POS:
         dumpCommand(MESSAGE("Rotate around X axis (pos)"));
-        view.setRotation(view.getRotation() + Vector3D<long double>(1.0, 0, 0));
+        view.setRotation(view.getRotation() + Vector3D<double>(1.0, 0, 0));
         break;
       case Command::ROTATE_AROUND_Y_AXIS_NEG:
         dumpCommand(MESSAGE("Rotate around Y axis (neg)"));
-        view.setRotation(view.getRotation() + Vector3D<long double>(0, -1.0, 0));
+        view.setRotation(view.getRotation() + Vector3D<double>(0, -1.0, 0));
         break;
       case Command::ROTATE_AROUND_Y_AXIS_POS:
         dumpCommand(MESSAGE("Rotate around Y axis (pos)"));
-        view.setRotation(view.getRotation() + Vector3D<long double>(0, 1.0, 0));
+        view.setRotation(view.getRotation() + Vector3D<double>(0, 1.0, 0));
         break;
       case Command::ROTATE_AROUND_Z_AXIS_NEG:
         dumpCommand(MESSAGE("Rotate around Z axis (neg)"));
-        view.setRotation(view.getRotation() + Vector3D<long double>(0, 0, -1.0));
+        view.setRotation(view.getRotation() + Vector3D<double>(0, 0, -1.0));
         break;
       case Command::ROTATE_AROUND_Z_AXIS_POS:
         dumpCommand(MESSAGE("Rotate around Z axis (pos)"));
-        view.setRotation(view.getRotation() + Vector3D<long double>(0, 0, 1.0));
+        view.setRotation(view.getRotation() + Vector3D<double>(0, 0, 1.0));
         break;
       case Command::TRANSLATE_ALONG_X_NEG:
         dumpCommand(MESSAGE("Translate along X axis (neg)"));
-        view.setTranslation(view.getTranslation() + Vector3D<long double>(-0.1, 0, 0));
+        view.setTranslation(view.getTranslation() + Vector3D<double>(-0.1, 0, 0));
         break;
       case Command::TRANSLATE_ALONG_X_POS:
         dumpCommand(MESSAGE("Translate along X axis (pos)"));
-        view.setTranslation(view.getTranslation() + Vector3D<long double>(0.1, 0, 0));
+        view.setTranslation(view.getTranslation() + Vector3D<double>(0.1, 0, 0));
         break;
       case Command::TRANSLATE_ALONG_Y_NEG:
         dumpCommand(MESSAGE("Translate along Y axis (neg)"));
-        view.setTranslation(view.getTranslation() + Vector3D<long double>(0, -0.1, 0));
+        view.setTranslation(view.getTranslation() + Vector3D<double>(0, -0.1, 0));
         break;
       case Command::TRANSLATE_ALONG_Y_POS:
         dumpCommand(MESSAGE("Translate along Y axis (pos)"));
-        view.setTranslation(view.getTranslation() + Vector3D<long double>(0, 0.1, 0));
+        view.setTranslation(view.getTranslation() + Vector3D<double>(0, 0.1, 0));
         break;
       case Command::TRANSLATE_ALONG_Z_NEG:
         dumpCommand(MESSAGE("Translate along Z axis (neg)"));
-        view.setTranslation(view.getTranslation() + Vector3D<long double>(0, 0, -0.1));
+        view.setTranslation(view.getTranslation() + Vector3D<double>(0, 0, -0.1));
         break;
       case Command::TRANSLATE_ALONG_Z_POS:
         dumpCommand(MESSAGE("Translate along Z axis (pos)"));
-        setTranslation(view.getTranslation() + Vector3D<long double>(0, 0, 0.1));
+        setTranslation(view.getTranslation() + Vector3D<double>(0, 0, 0.1));
         break;
       case Command::SELECT_MODE_IMAGE:
         dumpCommand(MESSAGE("Select view mode: image"));

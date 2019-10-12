@@ -150,10 +150,10 @@ String FormatInputStream::getLine() throw(IOException) {
   }
 }
 
-unsigned int FormatInputStream::read(
-  uint8* buffer,
-  unsigned int size,
-  bool nonblocking) throw(IOException) {
+unsigned int FormatInputStream::read(uint8* buffer,
+                                     unsigned int size,
+                                     bool nonblocking) throw(IOException)
+{
   unsigned int bytesRead = 0; // number of bytes that have been copied into external buffer
   while (true) {
     // copy from internal to external buffer - no overlap
@@ -172,7 +172,8 @@ unsigned int FormatInputStream::read(
   return bytesRead;
 }
 
-FormatInputStream::~FormatInputStream() {
+FormatInputStream::~FormatInputStream()
+{
 }
 
 
@@ -183,15 +184,14 @@ FormatInputStream& operator>>(
   return stream;
 }
 
-FormatInputStream& operator>>(
-  FormatInputStream& stream, String& value) throw(IOException) {
+FormatInputStream& operator>>(FormatInputStream& stream, String& value) throw(IOException)
+{
   value = stream.getLine();
   return stream;
 }
 
-FormatInputStream& operator>>(
-  FormatInputStream& stream,
-  unsigned int& value) throw(InvalidFormat, IOException) {
+FormatInputStream& operator>>(FormatInputStream& stream, unsigned int& value) throw(InvalidFormat, IOException)
+{
   value = 0;
   char ch;
   do {

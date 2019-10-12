@@ -219,6 +219,8 @@ public:
 Initialization initialization;
 const Locale Locale::POSIX;
 
+const FormatOutputStream::Context FormatOutputStream::DEFAULT_CONTEXT = FormatOutputStream::Context();
+
 FileDescriptorInputStream standardInputStream(
   FileDescriptor::getStandardInput()
 );

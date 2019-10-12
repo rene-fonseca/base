@@ -49,7 +49,7 @@ void Trace::message(const char* message) throw() {
 #if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__MACOS)
   syslog(LOG_USER | LOG_INFO/* | LOG_DEBUG*/, message, "");
 #else
-  syslog(LOG_USER | LOG_INFO/* | LOG_DEBUG*/, message);
+  syslog(LOG_USER | LOG_INFO/* | LOG_DEBUG*/, message, "");
 #endif
   closelog();
 #endif // flavor
@@ -77,7 +77,7 @@ void Trace::member(const void* pointer, const char* message) throw() {
 #if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__MACOS)
   syslog(LOG_USER | LOG_INFO/* | LOG_DEBUG*/, buffer, "");
 #else
-  syslog(LOG_USER | LOG_INFO/* | LOG_DEBUG*/, buffer);
+  syslog(LOG_USER | LOG_INFO/* | LOG_DEBUG*/, buffer, ""); // TAG: use vsyslog() instead
 #endif
   closelog();
 #endif // flavor

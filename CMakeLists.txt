@@ -34,7 +34,10 @@ elseif ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-deprecated") # exception specifications
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-overflow") # FIXME
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wdeprecated-declarations") # FIXME
-  # set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Werror") # no warnings allowed
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-error=terminate") # FIXME
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-terminate") # TAG: critical to be fixed
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-error=deprecated-declarations")
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Werror") # no warnings allowed
 endif ()
 
 endif ()
@@ -143,18 +146,11 @@ elseif (UNIX AND NOT APPLE)
   target_link_libraries(base pthread X11)
 endif ()
 
-if (APPLE)
 # macOS requires all values to be less than 1024
 set_target_properties(base
   PROPERTIES
   VERSION ${base_VERSION_MAJOR}.${base_VERSION_MINOR}
   SOVERSION ${base_VERSION_MAJOR})
-else ()
-set_target_properties(base
-  PROPERTIES
-  VERSION ${base_VERSION_MAJOR}.${base_VERSION_MINOR}.${GIT_REVISION}
-  SOVERSION ${base_VERSION_MAJOR})
-endif ()
 
 add_library(base_STATIC STATIC ${base_SRC} ${CMAKE_CURRENT_BINARY_DIR}/generated/base/config.h)
 set_target_properties(base_STATIC PROPERTIES OUTPUT_NAME base_static)

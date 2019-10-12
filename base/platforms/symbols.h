@@ -94,6 +94,7 @@
 #define _COM_AZURE_DEV__BASE__ABI_INTEL 5 // Intel Compiler
 #define _COM_AZURE_DEV__BASE__ABI_BORLAND 6 // Borland Compiler
 #define _COM_AZURE_DEV__BASE__ABI_MSC 7 // Microsoft Compiler
+#define _COM_AZURE_DEV__BASE__ABI_CLANG 8 // Clang/LLVM Compiler
 
 // Supported ABI flavors
 #define _COM_AZURE_DEV__BASE__ABI_32 1 // 32 bit pointer...
@@ -109,6 +110,7 @@
 #define _COM_AZURE_DEV__BASE__DEMANGLE_INTEL 7 // Intel Compiler
 #define _COM_AZURE_DEV__BASE__DEMANGLE_BORLAND 8 // Borland Compiler
 #define _COM_AZURE_DEV__BASE__DEMANGLE_MSC 9 // Microsoft Compiler
+#define _COM_AZURE_DEV__BASE__DEMANGLE_CLANG 10 // Clang/LLVM Compiler
 
 // Specific operating systems APIs
 #define _COM_AZURE_DEV__BASE__GNULINUX 1 // only Unix

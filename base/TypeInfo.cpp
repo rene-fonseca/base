@@ -29,6 +29,8 @@
   #include <demangle.h>
 #elif (_COM_AZURE_DEV__BASE__DEMANGLE == _COM_AZURE_DEV__BASE__DEMANGLE_MIPSPRO)
   #include <dem.h>
+#elif (_COM_AZURE_DEV__BASE__DEMANGLE == _COM_AZURE_DEV__BASE__DEMANGLE_CLANG)
+#  include <cxxabi.h>
 #endif
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
@@ -945,6 +947,22 @@ public:
 
 String TypeInfo::demangleName(const char* mangled) throw(InvalidFormat) {
   return V3MultiVendorABIDemangler(mangled).getDemangled();
+}
+
+#elif (_COM_AZURE_DEV__BASE__DEMANGLE == _COM_AZURE_DEV__BASE__DEMANGLE_CLANG)
+
+String TypeInfo::demangleName(const char* mangled) throw(InvalidFormat) {
+  if (!mangled) {
+    return String();
+  }
+  int status = 0;
+  char* demangled = abi::__cxa_demangle(mangled, nullptr, nullptr, &status);
+  if (!demangled) { // failed?
+    return String(mangled); // return mangled type name
+  }
+  String result(demangled);
+  free(demangled);
+  return result;
 }
 
 #elif (_COM_AZURE_DEV__BASE__DEMANGLE == _COM_AZURE_DEV__BASE__DEMANGLE_GCCV3)

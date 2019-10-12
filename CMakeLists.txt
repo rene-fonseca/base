@@ -8,6 +8,7 @@ project(base)
 
 set(base_VERSION_MAJOR 0)
 set(base_VERSION_MINOR 9)
+set(base_VERSION_MICRO 0)
 
 #configure_file(
 #  "${PROJECT_SOURCE_DIR}/configure.h.in"
@@ -126,12 +127,13 @@ message("Revision: ${GIT_REVISION}")
 
 # generate configuration header
 configure_file(${CMAKE_SOURCE_DIR}/config.h.in ${CMAKE_BINARY_DIR}/generated/base/config.h)
-include_directories(${CMAKE_BINARY_DIR}/generated)
-
 set(base_ADDITIONAL "")
 if (MSVC)
-  set(base_ADDITIONAL ${CMAKE_SOURCE_DIR}/base/base.rc)
+  configure_file(${CMAKE_SOURCE_DIR}/base.rc.in ${CMAKE_BINARY_DIR}/generated/base/base.rc)
+  set(base_ADDITIONAL ${CMAKE_BINARY_DIR}/generated/base/base.rc)
 endif ()
+
+include_directories(${CMAKE_BINARY_DIR}/generated)
 
 add_library(base SHARED ${base_SRC} ${base_ADDITIONAL} ${CMAKE_CURRENT_BINARY_DIR}/generated/base/config.h)
 if (MSVC)
@@ -141,20 +143,17 @@ elseif (UNIX AND NOT APPLE)
   target_link_libraries(base pthread X11)
 endif ()
 
-set(PRODUCT_MAJOR "0") # TAG: FIXME
-set(PRODUCT_MINOR "9") # TAG: FIXME
-
 if (APPLE)
 # macOS requires all values to be less than 1024
 set_target_properties(base
   PROPERTIES
-  VERSION ${PRODUCT_MAJOR}.${PRODUCT_MINOR}
-  SOVERSION ${PRODUCT_MAJOR})
+  VERSION ${base_VERSION_MAJOR}.${base_VERSION_MINOR}
+  SOVERSION ${base_VERSION_MAJOR})
 else ()
 set_target_properties(base
   PROPERTIES
-  VERSION ${PRODUCT_MAJOR}.${PRODUCT_MINOR}.${GIT_REVISION}
-  SOVERSION ${PRODUCT_MAJOR})
+  VERSION ${base_VERSION_MAJOR}.${base_VERSION_MINOR}.${GIT_REVISION}
+  SOVERSION ${base_VERSION_MAJOR})
 endif ()
 
 add_library(base_STATIC STATIC ${base_SRC} ${CMAKE_CURRENT_BINARY_DIR}/generated/base/config.h)

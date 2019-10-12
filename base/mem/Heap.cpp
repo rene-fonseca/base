@@ -32,7 +32,7 @@ namespace internal {
 #endif // flavor
 
 void* HeapImpl::allocate(unsigned int size) throw(MemoryException) {
-  void* result;
+  void* result = nullptr;
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   result = static_cast<void*>(::HeapAlloc(internal::specific::processHeap, 0, size));
   if ((!result) && (size != 0)) { // was memory allocated
@@ -48,7 +48,7 @@ void* HeapImpl::allocate(unsigned int size) throw(MemoryException) {
 }
 
 void* HeapImpl::resize(void* heap, unsigned int size) throw(MemoryException) {
-  void* result;
+  void* result = nullptr;
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   // is serialization enabled for the heap object returned by GetProcessHeap
   if (heap) {

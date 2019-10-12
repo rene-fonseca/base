@@ -57,7 +57,7 @@ MappedFile::MappedFileImpl::MappedFileImpl(const File& _file, const FileRegion& 
 
   ::CloseHandle(handle); // this should not fail
 #else // unix
-  void* address;
+  void* address = nullptr;
   #if defined(_COM_AZURE_DEV__BASE__LARGE_FILE_SYSTEM)
     address = ::mmap64(0, region.getSize(), writeable ? (PROT_READ | PROT_WRITE) : PROT_READ, MAP_SHARED, getHandle(file), region.getOffset());
   #else
@@ -142,7 +142,7 @@ MappedFile::MappedFile(const File& file, const FileRegion& region, bool writeabl
 //
 //  map = new MappedFileImpl(f, address, size);
 //#else
-//  void* address;
+//  void* address = nullptr;
 //#if defined(_COM_AZURE_DEV__BASE__LARGE_FILE_SYSTEM)
 //  address = mmap64(0, r.getSize(), writeable ? (PROT_READ | PROT_WRITE) : PROT_READ, MAP_SHARED, f.fd->getHandle(), r.getOffset());
 //#else

@@ -16,11 +16,11 @@
 */
 
 int main() {
-  int myInteger;
-  void* myPointer;
+  int myInteger = 0;
+  void* myPointer = 0;
 
   // is type bool available
-  bool myVariable;
+  bool myVariable = false;
 
   // are false and true defined
   myVariable = false;

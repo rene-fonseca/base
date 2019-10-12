@@ -32,7 +32,7 @@ namespace internal {
 #endif // flavor
 
 void* DynamicMemory::allocate(MemorySize size) throw() {
-  void* result;
+  void* result = nullptr;
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   result = static_cast<void*>(::HeapAlloc(internal::specific::processHeap, 0, size));
 #else // unix

@@ -287,40 +287,40 @@ public:
   class MyOpenGLContext : public OpenGLContext {
   private:
 
-    Verbosity::Value verbosity = Verbosity::NORMAL;
+    Verbosity::Value verbosity = Verbosity::DEFAULT;
     MyMenu menu;
-    Mode mode;
+    Mode mode = MODE_TORUS;
     View view;
     
-    unsigned int displayMode = 0;
-    ShadingModel::Model shadingModel = ShadingModel::Model::SMOOTH;
-    PolygonMode::Mode polygonMode = PolygonMode::Mode::FILL;
+    unsigned int displayMode = MODE_WINDOW;
+    ShadingModel::Model shadingModel = ShadingModel::FLAT;
+    PolygonMode::Mode polygonMode = PolygonMode::FILL;
     bool blending = false;
-    bool lighting = false;
+    bool lighting = true;
     
     Vector3D<double> translationBegin;
     Vector3D<double> rotationBegin;
-    long double scaleBegin = 0;
+    double scaleBegin = 0;
     
-    long double xTranslation = 0;
-    long double yTranslation = 0;
-    long double zTranslation = 0;
-    long double xAngle = 0;
-    long double yAngle = 0;
-    long double zAngle = 0;
-    long double scale = 0;
+    double xTranslation = 0;
+    double yTranslation = 0;
+    double zTranslation = 0;
+    double xAngle = 0;
+    double yAngle = 0;
+    double zAngle = 0;
+    double scale = 20;
     
-    long double orthoLeft = 0;
-    long double orthoRight = 0;
-    long double orthoBottom = 0;
-    long double orthoTop = 0;
-    long double orthoNear = 0;
-    long double orthoFar = 0;
+    double orthoLeft = 0;
+    double orthoRight = 0;
+    double orthoBottom = 0;
+    double orthoTop = 0;
+    double orthoNear = 0;
+    double orthoFar = 0;
     
     Position mouseButtonPosition;
-    bool mouseLeftButtonPressed;
-    bool mouseMiddleButtonPressed;
-    bool mouseRightButtonPressed;
+    bool mouseLeftButtonPressed = false;
+    bool mouseMiddleButtonPressed = false;
+    bool mouseRightButtonPressed = false;
     
     Vector3D<double> drag;
   public:
@@ -338,10 +338,10 @@ public:
       const Position& position,
       const Dimension& dimension,
       const Format& format) throw(UserInterfaceException)
-      : OpenGLContext(position, dimension, format) {
+      : OpenGLContext(position, dimension, format)
+    {
       setTitle(title);
       setIconTitle(title);
-      verbosity = Verbosity::DEFAULT;
       
       openGL.glPolygonMode(OpenGL::FRONT_AND_BACK, OpenGL::FILL);
       
@@ -382,17 +382,10 @@ public:
       openGL.glDisable(OpenGL::BLEND);
       lighting = true;
       openGL.glEnable(OpenGL::LIGHTING);
-      
-      scale = 20;
-      xAngle = 0;
-      yAngle = 0;
-      zAngle = 0;
         
-      drag = Vector3D<double>(0, 0, 0);
-        
-      mouseLeftButtonPressed = false;
-      mouseMiddleButtonPressed = false;
-      mouseRightButtonPressed = false;
+      const uint8* vendor = openGL.glGetString(OpenGL::VENDOR);
+      const uint8* renderer = openGL.glGetString(OpenGL::RENDERER);
+      const uint8* extensions = openGL.glGetString(OpenGL::EXTENSIONS);
 
       makeSystem();
       makeFloor();
@@ -701,7 +694,7 @@ public:
           view.translation.setX(translationBegin.getX() + position3D.getX() - drag.getX());
           view.translation.setY(translationBegin.getY() + position3D.getY() - drag.getY());
         } else {
-          long double scale = scaleBegin * Math::exp(static_cast<long double>(difference.getY() * 0.01));
+          double scale = scaleBegin * Math::exp(static_cast<double>(difference.getY() * 0.01));
           if (scale < 0.00001) {
             scale = 0.0001;
           } else if (scale >= 10.0) {
@@ -717,18 +710,18 @@ public:
           view.rotation.setX(rotationBegin.getX() + difference.getX()/(256/*dimension.getHeight()*//180.0));
           view.rotation.setY(rotationBegin.getY() + difference.getY()/(256/*dimension.getWidth()*//180.0));
           
-          /*long double ax = difference.getY();
-              long double ay = difference.getX();
-              long double az = 0;
-              long double angle = 180.0 * sqrt(ax*ax + ay*ay + az*az)/static_cast<long double>(dimension.getWidth());
+          /*double ax = difference.getY();
+              double ay = difference.getX();
+              double az = 0;
+              double angle = 180.0 * sqrt(ax*ax + ay*ay + az*az)/static_cast<double>(dimension.getWidth());
           */
             // use inverse matrix to determine local axis of rotation
             //openGL.glGetDoublev(OpenGL::MODELVIEW_MATRIX, modelViewMatrix);
             //invertMatrix(modelViewMatrix, invertedModelViewMatrix);
             
-            //long double axisX = invertedModelViewMatrix[0] * ax + invertedModelViewMatrix[4] * ay + invertedModelViewMatrix[7] * az;
-            //long double axisY = invertedModelViewMatrix[1] * ax + invertedModelViewMatrix[5] * ay + invertedModelViewMatrix[8] * az;
-            //long double axisZ = invertedModelViewMatrix[2] * ax + invertedModelViewMatrix[6] * ay + invertedModelViewMatrix[9] * az;
+            //double axisX = invertedModelViewMatrix[0] * ax + invertedModelViewMatrix[4] * ay + invertedModelViewMatrix[7] * az;
+            //double axisY = invertedModelViewMatrix[1] * ax + invertedModelViewMatrix[5] * ay + invertedModelViewMatrix[8] * az;
+            //double axisZ = invertedModelViewMatrix[2] * ax + invertedModelViewMatrix[6] * ay + invertedModelViewMatrix[9] * az;
             //openGL.glRotatef(angle, axisX, axisY, axisZ);
         }
         invalidate();
@@ -1264,8 +1257,8 @@ public:
     
     MyOpenGLContext myOpenGLContext(
       MESSAGE("OpenGL rules"),
-      Position(123, 312),
-      Dimension(256, 128),
+      Position(128, 128),
+      Dimension(512, 512),
       desiredFormat
     );
 

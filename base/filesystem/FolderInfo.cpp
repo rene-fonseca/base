@@ -394,15 +394,15 @@ Array<String> FolderInfo::getEntries() const throw(FileSystemException) {
   Allocator<uint8>* buffer = Thread::getLocalStorage();
 
   #if defined(_COM_AZURE_DEV__BASE__LARGE_FILE_SYSTEM)
-    DIR* directory;
+    DIR* directory = nullptr;
 
     if ((directory = ::opendir(path.getElements())) == 0) {
       throw FileSystemException("Unable to read entries of folder", this);
     }
 
     while (true) {
-      int status;
-      struct dirent64* entry;
+      int status = 0;
+      struct dirent64* entry = nullptr;
 
       errno = 0;
       if ((status = ::readdir64_r(directory, Cast::pointer<struct dirent64*>(buffer->getElements()), &entry)) != 0) {
@@ -424,13 +424,13 @@ Array<String> FolderInfo::getEntries() const throw(FileSystemException) {
   #elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__CYGWIN)
     // TAG: should detect is readdir_r is available (_COM_AZURE_DEV__BASE__READDIR_R)
     #warning using non-reentrant api - readdir
-    DIR* directory;
+    DIR* directory = nullptr;
     if ((directory = ::opendir(path.getElements())) == 0) {
       throw FileSystemException("Unable to read entries of folder", this);
     }
 
     while (true) {
-      int status;
+      int status = 0;
       errno = 0;
       struct dirent* entry = ::readdir(directory);
       if (entry == 0) {
@@ -446,14 +446,14 @@ Array<String> FolderInfo::getEntries() const throw(FileSystemException) {
       throw FileSystemException("Unable to close folder", this);
     }
   #else
-    DIR* directory;
+    DIR* directory = nullptr;
     if ((directory = ::opendir(path.getElements())) == 0) {
       throw FileSystemException("Unable to read entries of folder", this);
     }
 
     while (true) {
-      int status;
-      struct dirent* entry;
+      int status = 0;
+      struct dirent* entry = nullptr;
 
       errno = 0;
       if ((status = ::readdir_r(directory, Cast::pointer<struct dirent*>(buffer->getElements()), &entry)) != 0) {

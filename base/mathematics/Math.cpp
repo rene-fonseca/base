@@ -57,7 +57,7 @@ const uint8* Math::getBitReversalData() noexcept {
 double Math::lngamma(double value) throw() {
   // TAG: need better approximation
   // B_2n/(2n * (2n-1) x^(2n-1))
-  double coefficients[] = {
+  const double coefficients[7] = {
     1./6 * 1./2,
     -1./30 * 1./12,
     1./42 * 1./30,
@@ -73,7 +73,7 @@ double Math::lngamma(double value) throw() {
 
   double factor = 1/value;
   double square = factor * factor;
-  for (unsigned int i = 0; i <= getArraySize(coefficients); i++) {
+  for (unsigned int i = 0; i < getArraySize(coefficients); ++i) {
     result += coefficients[i] * factor;
     factor *= square;
   }

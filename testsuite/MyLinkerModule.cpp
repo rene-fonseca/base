@@ -12,8 +12,12 @@
  ***************************************************************************/
 
 // could be set in CMakeLists.txt
-#define _COM_AZURE_DEV__BASE__SHARED_LIBRARY
-#define _COM_AZURE_DEV__MY_LINKER_MODULE__SHARED_LIBRARY_BUILD
+#if !defined(_COM_AZURE_DEV__BASE__SHARED_LIBRARY)
+#  define _COM_AZURE_DEV__BASE__SHARED_LIBRARY
+#endif
+#if !defined(_COM_AZURE_DEV__MY_LINKER_MODULE__SHARED_LIBRARY_BUILD)
+#  define _COM_AZURE_DEV__MY_LINKER_MODULE__SHARED_LIBRARY_BUILD
+#endif
 
 #include "MyLinkerModule.h"
 #include <base/string/FormatOutputStream.h>

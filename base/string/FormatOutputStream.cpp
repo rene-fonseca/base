@@ -29,8 +29,7 @@ unsigned int FormatOutputStream::Debug::allocateCounter() noexcept {
   return ++counter;
 }
 
-FormatOutputStream& FormatOutputStream::operator<<(
-  const Debug& debug) throw(IOException) {
+FormatOutputStream& FormatOutputStream::operator<<(const Debug& debug) throw(IOException) {
   return *this << debug.getLocation() << ' '
                << '[' << DEC << debug.getCount() << ']';
 }
@@ -82,8 +81,7 @@ FormatOutputStream& FormatOutputStream::setDateFormat(
   return *this;
 }
 
-FormatOutputStream& FormatOutputStream::operator<<(
-  Action action) throw(IOException) {
+FormatOutputStream& FormatOutputStream::operator<<(Action action) throw(IOException) {
   static const Literal SP_STR = " ";
   static const Literal CR_STR = "\r";
   static const Literal LF_STR = "\n";
@@ -584,14 +582,12 @@ void FormatOutputStream::addDateField(const Date& date) throw(IOException) {
 FormatOutputStream::~FormatOutputStream() {
 }
 
-FormatOutputStream& FormatOutputStream::operator<<(
-  bool value) throw(IOException) {
+FormatOutputStream& FormatOutputStream::operator<<(bool value) throw(IOException) {
   // TAG: need locale support
   return *this << (value ? Literal("true") : Literal("false"));
 }
 
-FormatOutputStream& FormatOutputStream::operator<<(
-  short value) throw(IOException) {
+FormatOutputStream& FormatOutputStream::operator<<(short value) throw(IOException) {
   char buffer[sizeof(short) * 8];
   char* dest = &buffer[sizeof(buffer) - 1]; // point to least significant digit position
 
@@ -652,11 +648,9 @@ FormatOutputStream& FormatOutputStream::operator<<(
   return *this;
 }
 
-FormatOutputStream& FormatOutputStream::operator<<(
-  unsigned short value) throw(IOException) {
+FormatOutputStream& FormatOutputStream::operator<<(unsigned short value) throw(IOException) {
   char buffer[sizeof(unsigned short) * 8];
-  char* dest =
-    &buffer[sizeof(buffer) - 1]; // point to least significant digit position
+  char* dest = &buffer[sizeof(buffer) - 1]; // point to least significant digit position
 
   switch (getBase()) {
   case FormatOutputStream::Symbols::BINARY:
@@ -710,11 +704,9 @@ FormatOutputStream& FormatOutputStream::operator<<(
   return *this;
 }
 
-FormatOutputStream& FormatOutputStream::operator<<(
-  int value) throw(IOException) {
+FormatOutputStream& FormatOutputStream::operator<<(int value) throw(IOException) {
   char buffer[sizeof(int) * 8];
-  char* dest =
-    &buffer[sizeof(buffer) - 1]; // point to least significant digit position
+  char* dest = &buffer[sizeof(buffer) - 1]; // point to least significant digit position
 
   switch (getBase()) {
   case FormatOutputStream::Symbols::BINARY:
@@ -772,8 +764,7 @@ FormatOutputStream& FormatOutputStream::operator<<(
   return *this;
 }
 
-FormatOutputStream& FormatOutputStream::operator<<(
-  unsigned int value) throw(IOException) {
+FormatOutputStream& FormatOutputStream::operator<<(unsigned int value) throw(IOException) {
   char buffer[sizeof(unsigned int) * 8];
   char* dest =
     &buffer[getArraySize(buffer) - 1]; // point to least significant digit position
@@ -830,11 +821,9 @@ FormatOutputStream& FormatOutputStream::operator<<(
   return *this;
 }
 
-FormatOutputStream& FormatOutputStream::operator<<(
-  long value) throw(IOException) {
+FormatOutputStream& FormatOutputStream::operator<<(long value) throw(IOException) {
   char buffer[sizeof(long) * 8];
-  char* dest =
-    &buffer[sizeof(buffer) - 1]; // point to least significant digit position
+  char* dest = &buffer[sizeof(buffer) - 1]; // point to least significant digit position
 
   switch (getBase()) {
   case FormatOutputStream::Symbols::BINARY:
@@ -892,11 +881,9 @@ FormatOutputStream& FormatOutputStream::operator<<(
   return *this;
 }
 
-FormatOutputStream& FormatOutputStream::operator<<(
-  unsigned long value) throw(IOException) {
+FormatOutputStream& FormatOutputStream::operator<<(unsigned long value) throw(IOException) {
   char buffer[sizeof(unsigned long) * 8];
-  char* dest =
-    &buffer[sizeof(buffer) - 1]; // point to least significant digit position
+  char* dest = &buffer[sizeof(buffer) - 1]; // point to least significant digit position
 
   switch (getBase()) {
   case FormatOutputStream::Symbols::BINARY:
@@ -950,11 +937,9 @@ FormatOutputStream& FormatOutputStream::operator<<(
   return *this;
 }
 
-FormatOutputStream& FormatOutputStream::operator<<(
-  long long value) throw(IOException) {
+FormatOutputStream& FormatOutputStream::operator<<(long long value) throw(IOException) {
   char buffer[sizeof(long long) * 8];
-  char* dest =
-    &buffer[sizeof(buffer) - 1]; // point to least significant digit position
+  char* dest = &buffer[sizeof(buffer) - 1]; // point to least significant digit position
 
   switch (getBase()) {
   case FormatOutputStream::Symbols::BINARY:
@@ -1012,11 +997,9 @@ FormatOutputStream& FormatOutputStream::operator<<(
   return *this;
 }
 
-FormatOutputStream& FormatOutputStream::operator<<(
-  unsigned long long value) throw(IOException) {
+FormatOutputStream& FormatOutputStream::operator<<(unsigned long long value) throw(IOException) {
   char buffer[sizeof(unsigned long long) * 8];
-  char* dest =
-    &buffer[sizeof(buffer) - 1]; // point to least significant digit position
+  char* dest = &buffer[sizeof(buffer) - 1]; // point to least significant digit position
 
   switch (getBase()) {
   case FormatOutputStream::Symbols::BINARY:
@@ -1548,8 +1531,7 @@ void convertFloatingPoint(
   }
 }
 
-FormatOutputStream& FormatOutputStream::operator<<(
-  float value) throw(IOException) {
+FormatOutputStream& FormatOutputStream::operator<<(float value) throw(IOException) {
   union {
     float primitive;
     FloatingPoint::FloatRepresentation fields;
@@ -1571,8 +1553,7 @@ FormatOutputStream& FormatOutputStream::operator<<(
   return *this;
 }
 
-FormatOutputStream& FormatOutputStream::operator<<(
-  double value) throw(IOException) {
+FormatOutputStream& FormatOutputStream::operator<<(double value) throw(IOException) {
   union {
     double primitive;
     FloatingPoint::DoubleRepresentation fields;
@@ -1594,8 +1575,7 @@ FormatOutputStream& FormatOutputStream::operator<<(
   return *this;
 }
 
-FormatOutputStream& FormatOutputStream::operator<<(
-  long double value) throw(IOException) {
+FormatOutputStream& FormatOutputStream::operator<<(long double value) throw(IOException) {
   union {
     long double primitive;
     FloatingPoint::LongDoubleRepresentation fields;
@@ -1617,13 +1597,11 @@ FormatOutputStream& FormatOutputStream::operator<<(
   return *this;
 }
 
-FormatOutputStream& FormatOutputStream::operator<<(
-  const void* value) throw(IOException) {
+FormatOutputStream& FormatOutputStream::operator<<(const void* value) throw(IOException) {
   return *this << HEX << PREFIX << ZEROPAD << Cast::getOffset(value);
 }
 
-FormatOutputStream& FormatOutputStream::operator<<(
-  const Exception& e) throw(IOException) {
+FormatOutputStream& FormatOutputStream::operator<<(const Exception& e) throw(IOException) {
   StringOutputStream s;
   s << "Exception '"
     << TypeInfo::getTypename(e) << "' was raised";

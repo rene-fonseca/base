@@ -12,6 +12,9 @@
  ***************************************************************************/
 
 #define _COM_AZURE_DEV__MY_LINKER_MODULE__SHARED_LIBRARY
+#if !defined(_COM_AZURE_DEV__BASE__SHARED_LIBRARY) // avoid compiler warning for static build
+#  define _COM_AZURE_DEV__BASE__SHARED_LIBRARY
+#endif
 
 #include "MyLinkerModule.h"
 #include <base/dl/LinkerManager.h>

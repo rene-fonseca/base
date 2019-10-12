@@ -224,7 +224,7 @@ public:
     WPARAM primaryParameter,
     LPARAM secondaryParameter) throw() {
     // TAG: we should destroy window in destructor
-    StringOutputStream stream;
+    //StringOutputStream stream;
     //stream << "messageHandler: message=" << message << " primary="
     //       << primaryParameter << " second=" << secondaryParameter << FLUSH;
     //Trace::message(stream.getString().getElements());

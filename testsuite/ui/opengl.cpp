@@ -383,9 +383,15 @@ public:
       lighting = true;
       openGL.glEnable(OpenGL::LIGHTING);
         
-      const uint8* vendor = openGL.glGetString(OpenGL::VENDOR);
-      const uint8* renderer = openGL.glGetString(OpenGL::RENDERER);
-      const uint8* extensions = openGL.glGetString(OpenGL::EXTENSIONS);
+      const String vendor = reinterpret_cast<const char*>(openGL.glGetString(OpenGL::VENDOR));
+      const String version = reinterpret_cast<const char*>(openGL.glGetString(OpenGL::VERSION));
+      const String renderer = reinterpret_cast<const char*>(openGL.glGetString(OpenGL::RENDERER));
+      const String extensions = reinterpret_cast<const char*>(openGL.glGetString(OpenGL::EXTENSIONS));
+      fout << "OpenGL context information: " << EOL
+        << indent(2) << "Vendor: " << vendor << EOL
+        << indent(2) << "Version: " << version << EOL
+        << indent(2) << "Renderer: " << renderer << EOL
+        << indent(2) << "Extensions: " << extensions << ENDL;
 
       makeSystem();
       makeFloor();
@@ -1217,11 +1223,16 @@ public:
       OpenGLContext::DIRECT
     );
     Array<MyOpenGLContext::Format>::ReadEnumerator enu = formats.getReadEnumerator();
-    
-    fout << "Available formats:" << ENDL;
+
+    const bool dumpFormats = false;
+    if (dumpFormats) {
+      fout << "Available formats:" << ENDL;
+    }
+    bool gotFormat = false;
     for (unsigned int i = 0; enu.hasNext(); ++i) {
+      gotFormat = true;
       const MyOpenGLContext::Format* format = enu.next();
-      if (false) {
+      if (dumpFormats) {
         fout << indent(2) << "Format: " << i << EOL
              << indent(4) << "color indexed: " << ((format->flags & MyOpenGLContext::COLOR_INDEXED) != 0) << EOL
              << indent(4) << "rgb: " << ((format->flags & MyOpenGLContext::RGB) != 0) << EOL
@@ -1248,7 +1259,10 @@ public:
         desiredFormat = *format;
       }
     }
-    
+    if (dumpFormats && !gotFormat) {
+      fout << indent(2) << "No formats found" << ENDL;
+    }
+
     if (formatId == -1) {
       ferr << "Format not available" << ENDL;
       setExitCode(EXIT_CODE_ERROR);

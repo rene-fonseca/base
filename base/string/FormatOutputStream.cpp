@@ -1534,7 +1534,9 @@ void convertFloatingPoint(
   }
 }
 
-FormatOutputStream& FormatOutputStream::operator<<(float value) throw(IOException) {
+FormatOutputStream& FormatOutputStream::operator<<(float value) throw(IOException)
+{
+  ASSERT(sizeof(float) == sizeof(FloatingPoint::FloatRepresentation));
   union {
     float primitive;
     FloatingPoint::FloatRepresentation fields;
@@ -1556,7 +1558,9 @@ FormatOutputStream& FormatOutputStream::operator<<(float value) throw(IOExceptio
   return *this;
 }
 
-FormatOutputStream& FormatOutputStream::operator<<(double value) throw(IOException) {
+FormatOutputStream& FormatOutputStream::operator<<(double value) throw(IOException)
+{
+  ASSERT(sizeof(double) == sizeof(FloatingPoint::DoubleRepresentation));
   union {
     double primitive;
     FloatingPoint::DoubleRepresentation fields;
@@ -1578,7 +1582,10 @@ FormatOutputStream& FormatOutputStream::operator<<(double value) throw(IOExcepti
   return *this;
 }
 
-FormatOutputStream& FormatOutputStream::operator<<(long double value) throw(IOException) {
+FormatOutputStream& FormatOutputStream::operator<<(long double value) throw(IOException)
+{
+  // return operator<<(static_cast<double>(value));
+  ASSERT(sizeof(long double) == sizeof(FloatingPoint::LongDoubleRepresentation));
   union {
     long double primitive;
     FloatingPoint::LongDoubleRepresentation fields;
@@ -1590,6 +1597,7 @@ FormatOutputStream& FormatOutputStream::operator<<(long double value) throw(IOEx
   int exponent = 0;
   unsigned int flags = 0;
   analyseFloatingPoint(representation.fields, precision, mantissa, exponent, flags);
+
   writeFloatingPointType(
     precision,
     mantissa,
@@ -1600,11 +1608,13 @@ FormatOutputStream& FormatOutputStream::operator<<(long double value) throw(IOEx
   return *this;
 }
 
-FormatOutputStream& FormatOutputStream::operator<<(const void* value) throw(IOException) {
+FormatOutputStream& FormatOutputStream::operator<<(const void* value) throw(IOException)
+{
   return *this << HEX << PREFIX << ZEROPAD << Cast::getOffset(value);
 }
 
-FormatOutputStream& FormatOutputStream::operator<<(const Exception& e) throw(IOException) {
+FormatOutputStream& FormatOutputStream::operator<<(const Exception& e) throw(IOException)
+{
   StringOutputStream s;
   s << "Exception '"
     << TypeInfo::getTypename(e) << "' was raised";
@@ -1853,7 +1863,7 @@ void FormatOutputStream::writeFloatingPointType(
     ExclusiveSynchronize<Guard> _guard(guard);
     unsigned int length = (output - buffer);
     if (static_cast<unsigned int>(context.width) <= length) {
-      write(Cast::pointer<const uint8*>(buffer), length); // write characters
+      write(Cast::pointer<const uint8*>(static_cast<const char*>(buffer)), length); // write characters
     } else {
       unsigned int invertedLength = context.width - length;
 
@@ -1864,13 +1874,13 @@ void FormatOutputStream::writeFloatingPointType(
 
       switch (justification) {
       case Symbols::LEFT:
-        write(Cast::pointer<const uint8*>(buffer), length); // write characters
+        write(Cast::pointer<const uint8*>(static_cast<const char*>(buffer)), length); // write characters
         unfoldValue(' ', invertedLength);
         break;
       case Symbols::DEPENDENT:
       case Symbols::RIGHT:
         unfoldValue(' ', invertedLength);
-        write(Cast::pointer<const uint8*>(buffer), length); // write characters
+        write(Cast::pointer<const uint8*>(static_cast<const char*>(buffer)), length); // write characters
         break;
       case Symbols::RADIX:
         ASSERT(radix);
@@ -1881,7 +1891,7 @@ void FormatOutputStream::writeFloatingPointType(
           prefixLength = minimum(context.radixPosition - beforeRadix, invertedLength);
           unfoldValue(' ', prefixLength);
         }
-        write(Cast::pointer<const uint8*>(buffer), length); // write characters
+        write(Cast::pointer<const uint8*>(static_cast<const char*>(buffer)), length); // write characters
         unfoldValue(' ', invertedLength - prefixLength);
         break;
       }

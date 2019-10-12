@@ -114,11 +114,18 @@ private:
   template<class RESULT, class ORIGINAL>
   class PointerCast {
   public:
-    
-    static inline RESULT cast(ORIGINAL value) throw() {
-      // Constraint<false, Cast>::NOT_A_POINTER;
-      return RESULT();
+
+#if 0 // best to disallow non pointers for now
+    static inline RESULT cast(const ORIGINAL& value) throw() { // force input to pointer
+      const void* _dummy = value;
+      return reinterpret_cast<RESULT>(value);
     }
+
+    static inline RESULT cast(ORIGINAL& value) throw() { // force input to pointer
+      const void* _dummy = value;
+      return reinterpret_cast<RESULT>(value);
+    }
+#endif
   };
   
   template<class RESULT, class ORIGINAL>
@@ -450,7 +457,7 @@ public:
   */
   template<class RESULT, class ORIGINAL>
   static inline RESULT pointer(ORIGINAL value) throw() {
-    return PointerCast<RESULT, ORIGINAL>::cast(value);
+    return PointerCast<RESULT, ORIGINAL>::cast(value); // TAG: how to handle PrimitiveArray<char> and similar when operator needs to be called?
   }
   
   template<class RESULT, class ORIGINAL>

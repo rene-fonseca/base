@@ -43,7 +43,6 @@ public:
     fout << "Initializing array" << ENDL;
     
     Array<int> ai;
-    fout << DEC;
     fout << "Appending values (1, 2, 3, 4, and 5)" << ENDL;
     ai.append(1);
     ai.append(2);
@@ -89,6 +88,13 @@ public:
     fout << "Removing all the elements" << ENDL;
     ai.removeAll();
     fout << "Size: " << ai.getSize() << ENDL;
+
+    Array<float> af = {1.1f, 2.2f, 3.3f, 4.4f, 5.5f, 6.6f, 7.7f, 8.8f, 9.9f};
+    fout << "af: " << af << ENDL;
+
+    Array<double> ad = {1., 2., 3., 4., 5., 6., 7., 8., 9.};
+    transform(ad, bind2First(Multiply<double>(), -0.42));
+    fout << "ad: " << ad << ENDL;
   }
 };
 

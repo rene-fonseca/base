@@ -98,7 +98,7 @@ protected:
       if (elements.isValid()) {
         elements->setSize(size);
       } else {
-        elements = new ReferenceCountedCapacityAllocator<Value>(size);
+        elements = new ReferenceCountedCapacityAllocator<Value>(size, ReferenceCountedCapacityAllocator<Value>::DEFAULT_GRANULARITY);
       }
     }
   }
@@ -149,6 +149,14 @@ public:
     : elements(new ReferenceCountedCapacityAllocator<Value>(_size, granularity)),
       size(_size) {
     fill(getElements(), size, value);
+  }
+
+  /**
+    Initializes array from initializer list.
+  */
+  inline Array(std::initializer_list<Value> l) throw()
+  {
+    append(l);
   }
 
   /**
@@ -237,6 +245,17 @@ public:
   }
 
   /**
+    Append from initializer list.
+  */
+  inline void append(std::initializer_list<Value> l)
+  {
+    // optimize this
+    for (auto i = l.begin(); i != l.end(); ++i) {
+      append(*i);
+    }
+  }
+
+  /**
     Prepends the value to this array.
 
     @param value The value to be prepended.
@@ -246,6 +265,18 @@ public:
     Value* elements = getElements(); // size must be set before
     move(elements + 1, elements, getSize());
     elements[0] = value;
+  }
+
+  /**
+    Prepends from initializer list.
+  */
+  inline void prepend(std::initializer_list<Value> l)
+  {
+    // optimize this
+    auto i = l.end();
+    while (i != l.begin()) {
+      prepend(*--i);
+    }
   }
 
   /**

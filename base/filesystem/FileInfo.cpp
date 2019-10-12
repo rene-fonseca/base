@@ -366,7 +366,7 @@ FileInfo::FileInfo(const String& _path) throw(FileSystemException)
 #endif // flavor
 }
 
-String FileInfo::getPath() const throw() {
+const String& FileInfo::getPath() const throw() {
   return path;
 }
 

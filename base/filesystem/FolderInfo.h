@@ -170,7 +170,7 @@ public:
   /**
     Returns the path of the folder.
   */
-  String getPath() const throw();
+  const String& getPath() const throw();
 };
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

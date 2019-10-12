@@ -244,7 +244,7 @@ public:
   /**
     Returns the expression.
   */
-  inline List<Node> getExpression() const throw() {
+  inline const List<Node>& getExpression() const throw() {
     return nodes;
   }
 
@@ -259,7 +259,7 @@ public:
     Returns the names of variables of the formula in the order expected by the
     evaluate methods.
   */
-  inline List<String> getVariables() const throw() {
+  inline const List<String>& getVariables() const throw() {
     return variables;
   }
   

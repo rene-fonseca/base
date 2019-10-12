@@ -151,7 +151,7 @@ public:
     Returns the id of the user.
   */
   inline const void* getId() const throw() {
-    return id.isValid() ? id->getElements() : 0;
+    return id.isValid() ? id->getElements() : nullptr;
   }
 
   /**

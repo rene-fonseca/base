@@ -153,7 +153,7 @@ public:
     Returns the id of the group.
   */
   inline const void* getId() const throw() {
-    return id.isValid() ? id->getElements() : 0;
+    return id.isValid() ? id->getElements() : nullptr;
   }
 
   /**

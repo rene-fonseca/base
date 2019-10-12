@@ -477,7 +477,7 @@ Array<String> FolderInfo::getEntries() const throw(FileSystemException) {
   return result;
 }
 
-String FolderInfo::getPath() const throw() {
+const String& FolderInfo::getPath() const throw() {
   return path;
 }
 

@@ -22,7 +22,7 @@ void IDLStructure::addField(const IDLField& field) throw() {
   fields.add(field);
 }
 
-Array<IDLField> IDLStructure::getFields() const throw() {
+const Array<IDLField>& IDLStructure::getFields() const throw() {
   return fields;
 }
 

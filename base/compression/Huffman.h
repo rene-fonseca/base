@@ -47,7 +47,7 @@ private:
   };
   
   /** The symbols. */
-  Node nodes[ALPHABET_SIZE];
+  // Node nodes[ALPHABET_SIZE];
 public:
 
   /**

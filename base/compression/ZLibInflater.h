@@ -49,7 +49,7 @@ private:
   /** Opaque context. */
   void* context = nullptr;
   /** The current state. */
-  State state = ENDED;
+  State state = RUNNING;
 public:
   
   /**

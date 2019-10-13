@@ -23,8 +23,6 @@
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
-typedef AsynchronousWriteOperation A;
-
 /**
   Asynchronous IO stream.
 

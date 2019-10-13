@@ -31,7 +31,7 @@ class _COM_AZURE_DEV__BASE__API BZip2Inflater : public Object, public virtual In
 public:
   
   /** The size of the decompression buffer. */
-  static const unsigned int BUFFER_SIZE = 64 * 1024;
+  static constexpr unsigned int BUFFER_SIZE = 64 * 1024;
 private:
   
   enum State {
@@ -49,9 +49,9 @@ private:
   /** Opaque context. */
   void* context = nullptr;
   /** The current state. */
-  State state = ENDED;
+  State state = RUNNING;
 public:
-  
+
   /**
     Initializes the inflater.
   */

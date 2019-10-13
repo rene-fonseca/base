@@ -17,25 +17,28 @@
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 StringInputStream::StringInputStream(String& _string) throw(BindException)
-  : string(_string) {
+  : string(_string)
+{
   index = 0;
   eof = false;
   closed = false;
 }
 
-unsigned int StringInputStream::available() throw(IOException) {
+unsigned int StringInputStream::available() const throw(IOException)
+{
   bassert(!closed, IOException(this));
   return string.getLength() - index;
 }
 
-void StringInputStream::close() throw(IOException) {
+void StringInputStream::close() throw(IOException)
+{
   bassert(!closed, IOException(this));
   string = String();
   closed = true;
 }
 
-unsigned int StringInputStream::read(
-  uint8* buffer, unsigned int size) throw(IOException) {
+unsigned int StringInputStream::read(uint8* buffer, unsigned int size, bool nonblocking) throw(IOException)
+{
   bassert(!closed, IOException(this));
   if (index >= string.getLength()) {
     bassert(!eof, EndOfFile(this));
@@ -49,7 +52,8 @@ unsigned int StringInputStream::read(
   return size;
 }
 
-unsigned int StringInputStream::skip(unsigned int count) throw(IOException) {
+unsigned int StringInputStream::skip(unsigned int count) throw(IOException)
+{
   bassert(!closed, IOException(this));
   if (index >= string.getLength()) {
     bassert(!eof, EndOfFile(this));
@@ -63,7 +67,8 @@ unsigned int StringInputStream::skip(unsigned int count) throw(IOException) {
   return count;
 }
 
-StringInputStream::~StringInputStream() {
+StringInputStream::~StringInputStream()
+{
 }
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

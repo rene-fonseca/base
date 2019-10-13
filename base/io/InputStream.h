@@ -39,6 +39,22 @@ public:
   */
   virtual unsigned int available() const throw(IOException) = 0;
 
+#if 0 // TAG: annoying to deal with nonblocking argument
+  /**
+    Fills the specified buffer with bytes from the stream. Read is non-blocking and
+    the total bytes read may be any number below or equal to the requested
+    number of bytes. Attempting to read beyond the end of a stream results in an
+    EndOfFile exception.
+
+    @param buffer The buffer to receive the bytes.
+    @param size The size of the buffer.
+    @return The actual number of bytes read from the stream.
+  */
+  virtual unsigned int read(
+    uint8* buffer,
+    unsigned int size) throw(IOException) = 0;
+#endif
+  
   /**
     Fills the specified buffer with bytes from the stream. In blocking mode the
     method does not return until all bytes have been read. In non-blocking mode

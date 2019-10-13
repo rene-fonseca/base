@@ -78,7 +78,7 @@ private:
   /** Request identification. */
   uint32 generation = 0;
   /** FCP listener. */
-  FunctionControlProtocolListener* fcpListener;
+  FunctionControlProtocolListener* fcpListener = nullptr;
   /** FCP transaction buffer. */
   uint8 fcpBuffer[512];
   /** Isochronous channel descriptors. */

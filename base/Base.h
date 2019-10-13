@@ -37,7 +37,7 @@ template<class TYPE> inline bool isConstPointer() throw() {
   Returns the minimum value.
 */
 template<class TYPE>
-inline TYPE minimum(TYPE a, TYPE b) throw() {
+inline TYPE minimum(const TYPE& a, const TYPE& b) throw() {
   return (a <= b) ? a : b;
 }
 
@@ -45,7 +45,7 @@ inline TYPE minimum(TYPE a, TYPE b) throw() {
   Returns the minimum value among the 3 values.
 */
 template<class TYPE>
-inline TYPE minimum(TYPE a, TYPE b, TYPE c) throw() {
+inline TYPE minimum(const TYPE& a, const TYPE& b, const TYPE& c) throw() {
   return minimum<TYPE>(minimum<TYPE>(a, b), c);
 }
 
@@ -53,7 +53,7 @@ inline TYPE minimum(TYPE a, TYPE b, TYPE c) throw() {
   Returns the maximum value.
 */
 template<class TYPE>
-inline TYPE maximum(TYPE a, TYPE b) throw() {
+inline TYPE maximum(const TYPE& a, const TYPE& b) throw() {
   return (a >= b) ? a : b;
 }
 
@@ -61,7 +61,7 @@ inline TYPE maximum(TYPE a, TYPE b) throw() {
   Returns the maximum value among the 3 values.
 */
 template<class TYPE>
-inline TYPE maximum(TYPE a, TYPE b, TYPE c) throw() {
+inline TYPE maximum(const TYPE& a, const TYPE& b, const TYPE& c) throw() {
   return maximum<TYPE>(maximum<TYPE>(a, b), c);
 }
 

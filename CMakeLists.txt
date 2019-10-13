@@ -69,6 +69,8 @@ file(GLOB base_SRC
   "base/mem/*.cpp"
   "base/net/*.h"
   "base/net/*.cpp"
+#  "base/opencl/*.h"
+#  "base/opencl/*.cpp"
   "base/opengl/*.h"
   "base/opengl/*.cpp"
   "base/platforms/*.h"
@@ -124,11 +126,16 @@ endif ()
 include_directories(${CMAKE_BINARY_DIR}/generated)
 
 add_library(base SHARED ${base_SRC} ${base_ADDITIONAL} ${CMAKE_CURRENT_BINARY_DIR}/generated/base/config.h)
+
+# find_package(OpenCL REQUIRED)
+
 if (MSVC)
   target_compile_definitions(base PRIVATE _COM_AZURE_DEV__BASE__SHARED_LIBRARY_BUILD)
   target_link_libraries(base Ws2_32 Netapi32 Winmm)
 elseif (UNIX AND NOT APPLE)
   target_link_libraries(base pthread X11)
+# elseif (APPLE)
+#  target_link_libraries(base pthread ${OpenCL_LIBRARY})
 endif ()
 
 # macOS requires all values to be less than 1024

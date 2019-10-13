@@ -43,12 +43,12 @@ private:
     COMMAND_LIST
   };
   
-  int currentYear;
+  int currentYear = 0;
   String thisYearFormat;
   String otherYearFormat;
-  bool limitTrustees;
-  bool colorize;
-  Command command;
+  bool limitTrustees = false;
+  bool colorize = false;
+  Command command = COMMAND_HELP;
   String path;
 public:
   

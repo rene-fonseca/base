@@ -58,6 +58,9 @@ String SystemInformation::getSystem() throw() {
 #else
   struct utsname name;
   int result = ::uname(&name);
+  if (result != 0) {
+    return String();
+  }
   return String(name.sysname);
 #endif // flavor
 }
@@ -68,6 +71,9 @@ String SystemInformation::getRelease() throw() {
 #else
   struct utsname name;
   int result = ::uname(&name);
+  if (result != 0) {
+    return String();
+  }
   return String(name.release);
 #endif
 }
@@ -78,6 +84,9 @@ String SystemInformation::getVersion() throw() {
 #else
   struct utsname name;
   int result = ::uname(&name);
+  if (result != 0) {
+    return String();
+  }
   return String(name.version);
 #endif
 }
@@ -88,6 +97,9 @@ String SystemInformation::getMachine() throw() {
 #else
   struct utsname name;
   int result = ::uname(&name);
+  if (result != 0) {
+    return String();
+  }
   return String(name.machine);
 #endif
 }

@@ -44,7 +44,7 @@ void Trace::message(const char* message) throw() {
 #elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__CYGWIN) // special case
   win32::OutputDebugString(message);
 #else // unix
-  const char* ident;
+  // const char* ident = nullptr;
   openlog("TRACE", LOG_PID, 0); // TAG: fixme - do not reopen
 #if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__MACOS)
   syslog(LOG_USER | LOG_INFO/* | LOG_DEBUG*/, message, "");

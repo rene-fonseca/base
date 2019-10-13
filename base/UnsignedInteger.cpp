@@ -50,7 +50,7 @@ unsigned int UnsignedInteger::parse(
 
   if (accept & PREFIX) {
     // determine base by looking at prefix (0b: binary, 0x: hex, 0: octal, other: decimal)
-    char first = *i;
+    // char first = *i;
     if (*i == '0') { // is binary, octal, or hex
       ++i;
       if (i < end) { // has second char

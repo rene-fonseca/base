@@ -102,7 +102,7 @@ public:
   /**
     Returns the file names.
   */
-  inline Array<String> getFilenames() const throw() {
+  inline const Array<String>& getFilenames() const throw() {
     return filenames;
   }
   
@@ -131,7 +131,7 @@ public:
   /**
     Returns the filters.
   */
-  inline Map<String, String> getFilters() const throw() {
+  inline const Map<String, String>& getFilters() const throw() {
     return filters;
   }
   

@@ -485,7 +485,7 @@ public:
   /**
     Returns the result of the parser.
   */
-  inline List<Node> getExpression() const throw() {
+  inline const List<Node>& getExpression() const throw() {
     return nodes;
   }
   

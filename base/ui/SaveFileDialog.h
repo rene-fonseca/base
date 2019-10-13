@@ -114,7 +114,7 @@ public:
   /**
     Returns the filters.
   */
-  inline Map<String, String> getFilters() const throw() {
+  inline const Map<String, String>& getFilters() const throw() {
     return filters;
   }
 

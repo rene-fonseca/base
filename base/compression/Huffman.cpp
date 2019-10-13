@@ -37,11 +37,11 @@ protected:
   /** The buffer. */
   Allocator<uint8> buffer;
   /** Beginning of buffer. */
-  uint8* begin;
+  uint8* begin = nullptr;
   /** End of buffer. */
-  const uint8* end;
+  const uint8* end = nullptr;
   /** The write head. */
-  uint8* writeHead;
+  uint8* writeHead = nullptr;
 public:
 
   FixedBlockOutputStream(

@@ -3,7 +3,7 @@ cmake_minimum_required (VERSION 3.1)
 project(testsuite)
 
 file(GLOB TEST_SOURCES RELATIVE "${PROJECT_SOURCE_DIR}" *.cpp)
-list(REMOVE_ITEM TEST_SOURCES "MyLinkerModule.cpp" "Function.cpp" "dlapp.cpp")
+list(REMOVE_ITEM TEST_SOURCES "MyLinkerModule.cpp" "Function.cpp" "dlapp.cpp" "OpenCL.cpp")
 # typeinfo issue for dlapp
 
 # message("${CMAKE_CURRENT_BINARY_DIR}/../base" )

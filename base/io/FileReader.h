@@ -35,7 +35,7 @@ public:
   */
   typedef SequenceIterator<ReadIteratorTraits<uint8> > ReadIterator;
   /** The default preferred window size. */
-  static const unsigned int DEFAULT_WINDOW_SIZE = 0x10000;
+  static constexpr unsigned int DEFAULT_WINDOW_SIZE = 0x10000;
 private:
 
   /** The size of the file. */

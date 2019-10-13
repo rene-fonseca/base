@@ -39,11 +39,11 @@ public:
   typedef TYPE Value;
   
   /** The minimum capacity. */
-  static const unsigned int MINIMUM_CAPACITY = 16;
+  static constexpr unsigned int MINIMUM_CAPACITY = 16;
   /** The maximum capacity. */
-  static const unsigned int MAXIMUM_CAPACITY = PrimitiveTraits<unsigned int>::MAXIMUM/2;
+  static constexpr unsigned int MAXIMUM_CAPACITY = PrimitiveTraits<unsigned int>::MAXIMUM/2;
   /** The default capacity. */
-  static const unsigned int DEFAULT_CAPACITY = 16;
+  static constexpr unsigned int DEFAULT_CAPACITY = 16;
   
   /*
     Node in the single linked list of a bucket.

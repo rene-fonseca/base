@@ -33,9 +33,9 @@ class _COM_AZURE_DEV__BASE__API FormatInputStream : public FilterInputStream {
 public:
 
   /** Specifies the default line granularity. */
-  static const unsigned int LINE_GRANULARITY = 1024;
+  static constexpr unsigned int LINE_GRANULARITY = 1024;
   /** Specifies the window size. */
-  static const unsigned int WINDOW_SIZE = 4096;
+  static constexpr unsigned int WINDOW_SIZE = 4096;
 protected:
 
   typedef Allocator<uint8>::Iterator Iterator;

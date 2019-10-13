@@ -86,7 +86,7 @@ List<InetAddress> InetAddress::getAddressesByName(const String& name) throw(Host
 
   struct addrinfo* i = ai;
   while (i) {
-    uint8* address;
+    uint8* address = nullptr;
     switch (i->ai_family) {
     case PF_INET:
       address = Cast::getAddress(
@@ -162,7 +162,7 @@ InetAddress InetAddress::getAddressByName(const String& name) throw(HostNotFound
   
   struct addrinfo* i = ai;
   while (i) {
-    uint8* address;
+    uint8* address = nullptr;
     switch (i->ai_family) {
     case PF_INET:
       address = Cast::getAddress(Cast::pointer<struct sockaddr_in*>(i->ai_addr)->sin_addr);

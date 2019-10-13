@@ -20,7 +20,7 @@
 #include <stdlib.h>
 
 #if (_COM_AZURE_DEV__BASE__DEMANGLE == _COM_AZURE_DEV__BASE__DEMANGLE_GCCV3)
-  extern "C" char* cplus_demangle_v3(const char* mangled);
+#  include <cxxabi.h>
 #elif (_COM_AZURE_DEV__BASE__DEMANGLE == _COM_AZURE_DEV__BASE__DEMANGLE_GCCV23)
   extern "C" char* cplus_demangle_new_abi(const char* mangled);
 #elif (_COM_AZURE_DEV__BASE__DEMANGLE == _COM_AZURE_DEV__BASE__DEMANGLE_GCCV2)
@@ -949,7 +949,8 @@ String TypeInfo::demangleName(const char* mangled) throw(InvalidFormat) {
   return V3MultiVendorABIDemangler(mangled).getDemangled();
 }
 
-#elif (_COM_AZURE_DEV__BASE__DEMANGLE == _COM_AZURE_DEV__BASE__DEMANGLE_CLANG)
+#elif ((_COM_AZURE_DEV__BASE__DEMANGLE == _COM_AZURE_DEV__BASE__DEMANGLE_CLANG) || \
+       (_COM_AZURE_DEV__BASE__DEMANGLE == _COM_AZURE_DEV__BASE__DEMANGLE_GCCV3))
 
 String TypeInfo::demangleName(const char* mangled) throw(InvalidFormat) {
   if (!mangled) {
@@ -970,7 +971,7 @@ String TypeInfo::demangleName(const char* mangled) throw(InvalidFormat) {
 String TypeInfo::demangleName(const char* mangled) throw(InvalidFormat) {
   static const String prefix(MESSAGE("_Z"));
   String temp = prefix;
-  temp.append(mangled);
+  temp.append(NativeString(mangled));
   char* demangled = cplus_demangle_v3(temp.getElements());
   if (!demangled) { // failed?
     return String(mangled); // return mangled type name

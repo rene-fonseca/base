@@ -43,11 +43,11 @@ public:
   typedef Association<Key, Value> HashTableAssociation;
   
   /** The minimum capacity. */
-  static const unsigned int MINIMUM_CAPACITY = 16;
+  static constexpr unsigned int MINIMUM_CAPACITY = 16;
   /** The maximum capacity. */
-  static const unsigned int MAXIMUM_CAPACITY = PrimitiveTraits<unsigned int>::MAXIMUM/2;
+  static constexpr unsigned int MAXIMUM_CAPACITY = PrimitiveTraits<unsigned int>::MAXIMUM/2;
   /** The default capacity. */
-  static const unsigned int DEFAULT_CAPACITY = 16;
+  static constexpr unsigned int DEFAULT_CAPACITY = 16;
   
   /*
     Reference to an element within a hash table.

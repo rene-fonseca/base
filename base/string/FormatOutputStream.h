@@ -346,11 +346,11 @@ protected:
 public:
   
   /** Specifies the maximum field width. */
-  static const unsigned int MAXIMUM_WIDTH = 128;
+  static constexpr unsigned int MAXIMUM_WIDTH = 128;
   /** Specifies the maximum precision. */
-  static const unsigned int MAXIMUM_PRECISION = 64;
+  static constexpr unsigned int MAXIMUM_PRECISION = 64;
   /** Specifies the maximum number of characters for real numbers. */
-  static const unsigned int MAXIMUM_SIZE = 256;
+  static constexpr unsigned int MAXIMUM_SIZE = 256;
   
   /**
     Initializes the format output stream.

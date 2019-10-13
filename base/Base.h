@@ -33,11 +33,12 @@ template<class TYPE> inline bool isConstPointer() throw() {
   return ConstPointerHelper<TYPE>::IS_CONSTANT;
 }
 
+#if 1
 /**
   Returns the minimum value.
 */
 template<class TYPE>
-inline TYPE minimum(const TYPE& a, const TYPE& b) throw() {
+inline TYPE minimum(TYPE a, TYPE b) throw() {
   return (a <= b) ? a : b;
 }
 
@@ -45,7 +46,7 @@ inline TYPE minimum(const TYPE& a, const TYPE& b) throw() {
   Returns the minimum value among the 3 values.
 */
 template<class TYPE>
-inline TYPE minimum(const TYPE& a, const TYPE& b, const TYPE& c) throw() {
+inline TYPE minimum(TYPE a, TYPE b, TYPE c) throw() {
   return minimum<TYPE>(minimum<TYPE>(a, b), c);
 }
 
@@ -53,7 +54,7 @@ inline TYPE minimum(const TYPE& a, const TYPE& b, const TYPE& c) throw() {
   Returns the maximum value.
 */
 template<class TYPE>
-inline TYPE maximum(const TYPE& a, const TYPE& b) throw() {
+inline TYPE maximum(TYPE a, TYPE b) {
   return (a >= b) ? a : b;
 }
 
@@ -61,9 +62,62 @@ inline TYPE maximum(const TYPE& a, const TYPE& b) throw() {
   Returns the maximum value among the 3 values.
 */
 template<class TYPE>
-inline TYPE maximum(const TYPE& a, const TYPE& b, const TYPE& c) throw() {
+inline TYPE maximum(TYPE a, TYPE b, TYPE c) {
   return maximum<TYPE>(maximum<TYPE>(a, b), c);
 }
+#else // TAG: need to avoid copy contruction
+/**
+  Returns the minimum value.
+*/
+template<class TYPE>
+inline const TYPE& minimum(const TYPE& a, const TYPE& b) throw() {
+  return (a <= b) ? a : b;
+}
+
+/**
+  Returns the minimum value among the 3 values.
+*/
+template<class TYPE>
+inline const TYPE& minimum(const TYPE& a, const TYPE& b, const TYPE& c) throw() {
+  return minimum<TYPE>(minimum<TYPE>(a, b), c);
+}
+
+/**
+  Returns the maximum value.
+*/
+template<class TYPE>
+inline const TYPE& maximum(const TYPE& a, const TYPE& b) {
+  return (a >= b) ? a : b;
+}
+
+/**
+  Returns the maximum value among the 3 values.
+*/
+template<class TYPE>
+inline const TYPE& maximum(const TYPE& a, const TYPE& b, const TYPE& c) {
+  return maximum<TYPE>(maximum<TYPE>(a, b), c);
+}
+#endif
+
+/**
+  Returns the maximum value among the given values.
+*/
+#if 0
+template<class TYPE>
+inline TYPE maximum(initializer_list<TYPE> l) {
+  ASSERT(!l.empty());
+  auto src = l.begin();
+  auto end = l.end();
+  TYPE result = *src++;
+  while (begin != end) {
+    if (*src > result) {
+      result = *src;
+    }
+    ++src;
+  }
+  return result;
+}
+#endif
 
 /**
   Returns -1, 0, and 1 if a is less than b, a is equal to b, and a is greater

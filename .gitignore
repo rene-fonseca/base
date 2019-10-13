@@ -1,6 +1,9 @@
 generated/
 build/
+base.build/
+base.xcodeproj/
 CMakeFiles/
+CMakeScripts/
 CMakeCache.txt
 cmake_install.cmake
 Makefile

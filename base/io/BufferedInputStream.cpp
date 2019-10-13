@@ -55,7 +55,7 @@ unsigned int BufferedInputStream::read(
     if (available > 0) {
       count = FilterInputStream::read(
         this->buffer.getElements(),
-        minimum(this->buffer.getSize(), available)
+        minimum<MemorySize>(this->buffer.getSize(), available)
       ); // refill of internal buffer without blocking
       ASSERT(count == available);
     } else if (nonblocking) {
@@ -65,7 +65,7 @@ unsigned int BufferedInputStream::read(
       unsigned int available = FilterInputStream::available();
       count = FilterInputStream::read(
         this->buffer.getElements(),
-        minimum(this->buffer.getSize(), available)
+        minimum<MemorySize>(this->buffer.getSize(), available)
       ); // refill of internal buffer without blocking
       ASSERT((count > 0) && (count == available));
     }

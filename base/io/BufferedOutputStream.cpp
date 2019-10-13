@@ -40,7 +40,7 @@ unsigned int BufferedOutputStream::write(const uint8* buffer,
   unsigned int bytesWritten = 0; // number of bytes that have been written
   while (true) {
     // copy from external to internal buffer - no overlap
-    unsigned int bytesToCopy = minimum(size - bytesWritten, this->buffer.getSize() - writeHead);
+    unsigned int bytesToCopy = minimum<MemorySize>(size - bytesWritten, this->buffer.getSize() - writeHead);
     copy<uint8>(this->buffer.getElements() + writeHead, buffer, bytesToCopy);
     bytesWritten += bytesToCopy;
     writeHead += bytesToCopy;
@@ -72,7 +72,7 @@ void BufferedOutputStream::unfoldValue(
   unsigned int size) throw(IOException) {
   while (true) {
     unsigned int bytesAvailable =
-      minimum(size, this->buffer.getSize() - writeHead);
+      minimum<MemorySize>(size, this->buffer.getSize() - writeHead);
     fill<uint8>(this->buffer.getElements() + writeHead, bytesAvailable, value);
     size -= bytesAvailable;
     writeHead += bytesAvailable;

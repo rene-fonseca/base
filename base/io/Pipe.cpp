@@ -147,7 +147,7 @@ unsigned int Pipe::skip(unsigned int count) throw(PipeException) {
   unsigned int bytesSkipped = 0;
   while (bytesSkipped < count) {
     unsigned int bytesToRead =
-      minimum(count - bytesSkipped, buffer->getSize());
+      minimum<MemorySize>(count - bytesSkipped, buffer->getSize());
     bytesSkipped += read(buffer->getElements(), bytesToRead);
   }
   return bytesSkipped;

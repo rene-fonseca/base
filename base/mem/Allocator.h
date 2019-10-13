@@ -37,7 +37,7 @@ private:
   /** The allocated memory block. */
   TYPE* elements = nullptr;
   /** The number of elements in the block. */
-  unsigned int size = 0;
+  MemorySize size = 0;
 public:
 
   typedef SequenceIterator<IteratorTraits<TYPE> > Iterator;
@@ -50,12 +50,12 @@ public:
     Initializes the elements of the sequence using the default constructor.
     Uninitializeable objects are not initialized.
   */
-  static inline void initialize(TYPE* dest, unsigned int count) {
+  static inline void initialize(TYPE* dest, const TYPE* end)
+  {
+    ASSERT(dest <= end);
     if (!Uninitializeable<TYPE>::IS_UNINITIALIZEABLE) {
-      const TYPE* end = dest + count;
       while (dest != end) {
-        *dest = TYPE();
-        // TAG: new(dest) TYPE();
+        new(dest) TYPE(); // inplace initialization
         ++dest;
       }
     }
@@ -65,18 +65,15 @@ public:
     Initializes the elements of the sequence by copying elements from other
     sequence. The memory image is copied directly for relocatable objects.
   */
-  static inline void initializeByCopy(
-    TYPE* restrict dest,
-    const TYPE* restrict src,
-    unsigned int count) {
+  static inline void initializeByCopy(TYPE* restrict dest, const TYPE* restrict src, MemorySize count)
+  {
     if (Uninitializeable<TYPE>::IS_UNINITIALIZEABLE ||
         Relocateable<TYPE>::IS_RELOCATEABLE) {
       copy<TYPE>(dest, src, count); // blocks do not overlap
     } else {
       const TYPE* end = dest + count;
       while (dest != end) {
-        *dest = *src;
-// TAG: ::operator new (dest) TYPE(*src); // copy object
+        new(dest) TYPE(*src); // copy object
         ++dest;
         ++src;
       }
@@ -87,16 +84,13 @@ public:
     Initializes the elements of the sequence by moving elements from other
     sequence. This does nothing for relocateable object.
   */
-  static inline void initializeByMove(
-    TYPE* dest,
-    const TYPE* src,
-    unsigned int count) {
+  static inline void initializeByMove(TYPE* dest, const TYPE* src, const TYPE* end)
+  {
+    ASSERT(src <= end);
     if (!Uninitializeable<TYPE>::IS_UNINITIALIZEABLE &&
         !Relocateable<TYPE>::IS_RELOCATEABLE) {
-      const TYPE* end = dest + count;
-      while (dest != end) {
-        *dest = *src;
-        // TAG: new(dest) TYPE(*src); // copy object
+      while (src != end) {
+        new(dest) TYPE(*src); // copy object
         src->~TYPE(); // destroy old object
         ++dest;
         ++src;
@@ -108,9 +102,10 @@ public:
     Destroys the elements of the sequence. Does nothing for uninitializeable
     objects.
   */
-  static inline void destroy(TYPE* dest, unsigned int count) {
+  static inline void destroy(TYPE* dest, const TYPE* end)
+  {
+    ASSERT(dest <= end);
     if (!Uninitializeable<TYPE>::IS_UNINITIALIZEABLE) {
-      const TYPE* end = dest + count;
       while (dest != end) {
         dest->~TYPE();
         ++dest;
@@ -129,8 +124,9 @@ public:
 //
 //      @param allocator The Allocator being enumerated.
 //    */
-//    Enumerator(Allocator& allocator) throw()
-//      : AllocatorEnumerator<Traits>(allocator.getElements(), allocator.getElements() + allocator.getSize()) {
+//    Enumerator(Allocator& allocator) noexcept
+//      : AllocatorEnumerator<Traits>(allocator.getElements(), allocator.getElements() + allocator.getSize())
+//    {
 //    }
 //  };
 //
@@ -145,8 +141,9 @@ public:
 //
 //      @param allocator The Allocator being enumerated.
 //    */
-//    ReadEnumerator(const Allocator& allocator) throw()
-//      : AllocatorEnumerator<Traits>(allocator.getElements(), allocator.getElements() + allocator.getSize()) {
+//    ReadEnumerator(const Allocator& allocator) noexcept
+//      : AllocatorEnumerator<Traits>(allocator.getElements(), allocator.getElements() + allocator.getSize())
+//    {
 //    }
 //  };
 public:
@@ -154,7 +151,8 @@ public:
   /**
     Initializes an empty allocator.
   */
-  inline explicit Allocator() throw() {
+  inline explicit Allocator() noexcept
+  {
   }
 
   /**
@@ -164,16 +162,18 @@ public:
 
     @param size Specifies the initial size of the allocator.
   */
-  explicit Allocator(unsigned int _size) throw(MemoryException)
-    : elements(Heap::allocate<TYPE>(_size)), size(_size) {
-    initialize(elements, size); // default initialization of elements
+  explicit Allocator(MemorySize _size) throw(MemoryException)
+    : elements(Heap::allocate<TYPE>(_size)), size(_size)
+  {
+    initialize(elements, elements + size); // default initialization of elements
   }
 
   /**
     Initializes allocator from other allocator.
   */
   Allocator(const Allocator& copy) throw(MemoryException)
-    : elements(Heap::allocate<TYPE>(copy.size)), size(copy.size) {
+    : elements(Heap::allocate<TYPE>(copy.size)), size(copy.size)
+  {
     // initialization of elements by copying
     initializeByCopy(elements, copy.elements, size);
   }
@@ -181,9 +181,10 @@ public:
   /**
     Assignment of allocator by allocator.
   */
-  Allocator& operator=(const Allocator& eq) throw(MemoryException) {
+  Allocator& operator=(const Allocator& eq) throw(MemoryException)
+  {
     if (&eq != this) { // protect against self assignment
-      destroy(elements, size);
+      destroy(elements, elements + size);
       size = eq.size;
       elements = Heap::resize(elements, size);
       initializeByCopy(elements, eq.elements, size); // initialization of elements by copying
@@ -194,77 +195,88 @@ public:
   /**
     Returns the elements of the allocator for modifying access.
   */
-  inline TYPE* getElements() throw() {
+  inline TYPE* getElements() noexcept
+  {
     return elements;
   }
 
   /**
     Returns the elements of the allocator for non-modifying access.
   */
-  inline const TYPE* getElements() const throw() {
+  inline const TYPE* getElements() const noexcept
+  {
     return elements;
   }
 
   /**
     Returns the first element of the allocator as a modifying iterator.
   */
-  inline Iterator getBeginIterator() throw() {
+  inline Iterator getBeginIterator() noexcept
+  {
     return Iterator(getElements());
   }
 
   /**
     Returns the end of the allocator as a modifying iterator.
   */
-  inline Iterator getEndIterator() throw() {
+  inline Iterator getEndIterator() noexcept
+  {
     return Iterator(getElements() + getSize());
   }
 
   /**
     Returns the first element of the allocator as a non-modifying iterator.
   */
-  inline ReadIterator getBeginReadIterator() const throw() {
+  inline ReadIterator getBeginReadIterator() const noexcept
+  {
     return ReadIterator(getElements());
   }
 
   /**
     Returns the end of the allocator as a non-modifying iterator.
   */
-  inline ReadIterator getEndReadIterator() const throw() {
+  inline ReadIterator getEndReadIterator() const noexcept
+  {
     return ReadIterator(getElements() + getSize());
   }
 
   /**
     Returns a modifying enumerator of the allocator.
   */
-  inline Enumerator getEnumerator() throw() {
+  inline Enumerator getEnumerator() noexcept
+  {
     return Enumerator(getElements(), getElements() + getSize());
   }
 
   /**
     Returns a non-modifying enumerator of the allocator.
   */
-  inline ReadEnumerator getReadEnumerator() const throw() {
+  inline ReadEnumerator getReadEnumerator() const noexcept
+  {
     return ReadEnumerator(getElements(), getElements() + getSize());
   }
 
   /**
     Returns the number of elements of the allocator.
   */
-  inline unsigned int getSize() const throw() {
+  inline MemorySize getSize() const noexcept
+  {
     return size;
   }
 
   /**
     Returns the number of allocated bytes.
   */
-  inline unsigned int getByteSize() const throw() {
+  inline MemorySize getByteSize() const noexcept
+  {
     return size * sizeof(TYPE);
   }
 
   /**
     Returns true if no elements are allocated.
   */
-  inline bool isEmpty() const throw() {
+  inline bool isEmpty() const noexcept
+  {
     return size == 0;
   }
 
@@ -278,32 +290,32 @@ public:
 
     @param size The desired size.
   */
-  void setSize(unsigned int size) {
+  void setSize(MemorySize size)
+  {
     if (size != this->size) {
       if (Uninitializeable<TYPE>::IS_UNINITIALIZEABLE) {
         // no need to destroy or initialize elements
         elements = Heap::resize(elements, size);
       } else {
         if (size < this->size) { // are we about to reduce the array
-          destroy(elements + size, this->size - size);
+          destroy(elements + size, elements + this->size);
           elements = Heap::resize(elements, size);
         } else { // array is to be expanded
           TYPE* temp = Heap::allocate<TYPE>(size); // new array
-          initializeByMove(temp, elements, this->size);
+          initializeByMove(temp, elements, elements + this->size);
           Heap::release(elements); // free previous array
           elements = temp;
           // default initialization of new objects
-          initialize(elements + this->size, size - this->size);
-          // could be optimized if we use Heap::tryResize
-          // but currently only supported for win32
+          initialize(elements + this->size, elements + size);
         }
       }
       this->size = size;
     }
   }
 
-  ~Allocator() {
-    destroy(elements, size);
+  ~Allocator()
+  {
+    destroy(elements, elements + size);
     Heap::release(elements);
   }
 };

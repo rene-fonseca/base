@@ -259,8 +259,8 @@ Process Process::execute(const String& command) throw(ProcessException) {
 #else // unix
   // TAG: use spawn if available
   
-  pid_t pid;
-  int status = 0;
+  pid_t pid = 0;
+  // int status = 0;
 
   pid = ::fork();
   if (pid == -1) {

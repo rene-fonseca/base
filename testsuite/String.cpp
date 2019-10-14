@@ -105,7 +105,7 @@ public:
       ++countb;
     }
     fout << "Counted number of elements in (b): " << countb << ENDL;
-    b.optimizeCapacity();
+    b.garbageCollect();
     fout << "CapacityAllocator<char>::getCapacity(): " << b.getCapacity() << ENDL;
     fout << ENDL;
 
@@ -124,7 +124,7 @@ public:
       ++countrb;
     }
     fout << "Counted number of elements in (rb): " << countrb << ENDL;
-    rb.optimizeCapacity();
+    rb.garbageCollect();
     fout << "ReferenceCountedCapacityAllocator<char>::getCapacity(): "
          << rb.getCapacity() << ENDL;
     fout << ENDL;

@@ -353,7 +353,7 @@ public:
       *dest++ = garbageBits;
     }
 
-    ASSERT((dest - header) <= getArraySize(header));
+    ASSERT(static_cast<MemorySize>(dest - header) <= getArraySize(header));
     
     os.write2(Cast::getAddress(header), dest - header);
   }

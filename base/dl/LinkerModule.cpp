@@ -21,10 +21,11 @@ const LinkerModule* LinkerModule::getLinkerModule() throw() {
   return linkerModule;
 }
 
-LinkerModule::LinkerModule(const String& i, const String& n, const String& v) throw(SingletonException) :
-  identity(i),
-  name(n),
-  version(v) {
+LinkerModule::LinkerModule(const String& i, const String& n, const String& v) throw(SingletonException)
+  : identity(i),
+    name(n),
+    version(v)
+{
   static unsigned int singleton = 0;
   bassert(singleton == 0, SingletonException("LinkerModule has been instantiated", this));
   ++singleton;

@@ -72,20 +72,22 @@ void ThreadPool::run() throw() {
   }
 }
 
-ThreadPool::ThreadPool(JobProvider* _provider) throw() :
-  runnable(this),
-  provider(_provider),
-  desiredThreads(0),
-  terminated(false),
-  terminateOne(false) {
+ThreadPool::ThreadPool(JobProvider* _provider) throw()
+  : runnable(this),
+    provider(_provider),
+    desiredThreads(0),
+    terminated(false),
+    terminateOne(false)
+{
 }
 
-ThreadPool::ThreadPool(JobProvider* _provider, unsigned int threads) throw() :
-  runnable(this),
-  provider(_provider),
-  desiredThreads(0),
-  terminated(false),
-  terminateOne(false) {
+ThreadPool::ThreadPool(JobProvider* _provider, unsigned int threads) throw()
+  : runnable(this),
+    provider(_provider),
+    desiredThreads(0),
+    terminated(false),
+    terminateOne(false)
+{
   setThreads(threads);
 }
 

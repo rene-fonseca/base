@@ -51,8 +51,9 @@ public:
     BinaryNode* _parent,
     BinaryNode* _left,
     BinaryNode* _right,
-    const TYPE& _value) :
-    parent(_parent), left(_left), right(_right), value(_value) {
+    const TYPE& _value)
+    : parent(_parent), left(_left), right(_right), value(_value)
+  {
   }
 
   /**

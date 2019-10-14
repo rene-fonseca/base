@@ -42,10 +42,11 @@ void FileReader::read(uint8* buffer, unsigned int size) throw(IOException) {
 }
 
 
-//FileReader::FileReader(File& f) throw() :
-//  granularity(MappedFile::getGranularity()),
-//  file(f),
-//  mapping(f, FileRegion(0, 0)) {
+//FileReader::FileReader(File& f) throw()
+//  : granularity(MappedFile::getGranularity()),
+//    file(f),
+//    mapping(f, FileRegion(0, 0))
+//{
 //
 //  unsigned int temp = 1; // make granularity a power of two
 //  while (temp < granularity) {

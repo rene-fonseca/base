@@ -35,22 +35,26 @@
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
-FileDescriptorInputStream::FileDescriptorInputStream() throw() :
-  FileDescriptor(), end(false) {
+FileDescriptorInputStream::FileDescriptorInputStream() throw()
+  : FileDescriptor(), end(false)
+{
 }
 
 FileDescriptorInputStream::FileDescriptorInputStream(
   const FileDescriptor& fd) throw()
-  : FileDescriptor(fd), end(false) {
+  : FileDescriptor(fd), end(false)
+{
 }
 
 FileDescriptorInputStream::FileDescriptorInputStream(
-  const FileDescriptorInputStream& copy) throw() :
-  FileDescriptor(copy), end(copy.end) {
+  const FileDescriptorInputStream& copy) throw()
+  : FileDescriptor(copy), end(copy.end)
+{
 }
 
 FileDescriptorInputStream& FileDescriptorInputStream::operator=(
-  const FileDescriptorInputStream& eq) throw() {
+  const FileDescriptorInputStream& eq) throw()
+{
   if (&eq != this) { // protect against self assignment
     fd = eq.fd;
     end = eq.end;
@@ -58,7 +62,8 @@ FileDescriptorInputStream& FileDescriptorInputStream::operator=(
   return *this;
 }
 
-unsigned int FileDescriptorInputStream::available() const throw(IOException) {
+unsigned int FileDescriptorInputStream::available() const throw(IOException)
+{
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   DWORD bytesAvailable;
   switch (::GetFileType(fd->getHandle())) {

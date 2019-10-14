@@ -88,11 +88,13 @@ InetService::InetService(
   this->protocol = protocol;
 }
 
-InetService::InetService(const InetService& copy) throw() :
-  name(copy.name), port(copy.port), protocol(copy.protocol) {
+InetService::InetService(const InetService& copy) throw()
+  : name(copy.name), port(copy.port), protocol(copy.protocol)
+{
 }
 
-InetService& InetService::operator=(const InetService& eq) throw() {
+InetService& InetService::operator=(const InetService& eq) throw()
+{
   if (&eq != this) { // protect against self assignment
     name = eq.name;
     port = eq.port;

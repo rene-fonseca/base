@@ -32,26 +32,31 @@
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
-FileDescriptorOutputStream::FileDescriptorOutputStream() throw() :
-  FileDescriptor() {
+FileDescriptorOutputStream::FileDescriptorOutputStream() throw()
+  : FileDescriptor()
+{
 }
 
-FileDescriptorOutputStream::FileDescriptorOutputStream(const FileDescriptor& fd) throw() :
-  FileDescriptor(fd) {
+FileDescriptorOutputStream::FileDescriptorOutputStream(const FileDescriptor& fd) throw()
+  : FileDescriptor(fd)
+{
 }
 
-FileDescriptorOutputStream::FileDescriptorOutputStream(const FileDescriptorOutputStream& copy) throw() :
-  FileDescriptor(copy) {
+FileDescriptorOutputStream::FileDescriptorOutputStream(const FileDescriptorOutputStream& copy) throw()
+  : FileDescriptor(copy)
+{
 }
 
-FileDescriptorOutputStream& FileDescriptorOutputStream::operator=(const FileDescriptorOutputStream& eq) throw() {
+FileDescriptorOutputStream& FileDescriptorOutputStream::operator=(const FileDescriptorOutputStream& eq) throw()
+{
   if (&eq != this) { // protect against self assignment
     fd = eq.fd;
   }
   return *this;
 }
 
-void FileDescriptorOutputStream::flush() throw(IOException) {
+void FileDescriptorOutputStream::flush() throw(IOException)
+{
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   // TAG: handle may or may not be flushable
   // handle to a console output cannot be flushed 'cause it isn't buffered, aarrgh

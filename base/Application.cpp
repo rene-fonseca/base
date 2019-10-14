@@ -691,11 +691,12 @@ void Application::initialize() throw() {
   std::set_unexpected(ApplicationImpl::unexpectedExceptionHandler);
 }
 
-Application::Application(const String& _formalName) throw(SingletonException) :
-  formalName(_formalName),
-  exitCode(EXIT_CODE_NORMAL),
-  terminated(false),
-  hangingup(false) {
+Application::Application(const String& _formalName) throw(SingletonException)
+  : formalName(_formalName),
+    exitCode(EXIT_CODE_NORMAL),
+    terminated(false),
+    hangingup(false)
+{
   initialize();
   application = this;
 }

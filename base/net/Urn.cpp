@@ -174,14 +174,16 @@ Urn::Urn(const String& urn) throw(InvalidFormat, MemoryException) {
   bassert(i != j, InvalidFormat(this));
 }
 
-Urn::Urn(const String& nid, const String& nss) throw(InvalidFormat) {
+Urn::Urn(const String& nid, const String& nss) throw(InvalidFormat)
+{
   setNID(nid);
   setNSS(nss);
 }
 
-Urn::Urn(const Urn& copy) throw() :
-  nid(copy.nid),
-  nss(copy.nss) {
+Urn::Urn(const Urn& copy) throw()
+  : nid(copy.nid),
+    nss(copy.nss)
+{
 }
 
 Urn& Urn::operator=(const Urn& eq) throw() {

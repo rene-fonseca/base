@@ -38,8 +38,9 @@
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
-MappedFile::MappedFileImpl::MappedFileImpl(const File& _file, const FileRegion& _region, bool _writeable) throw(FileException) :
-  file(_file), region(_region), writeable(_writeable) {
+MappedFile::MappedFileImpl::MappedFileImpl(const File& _file, const FileRegion& _region, bool _writeable) throw(FileException)
+  : file(_file), region(_region), writeable(_writeable)
+{
   bassert(region.getOffset() >= 0, FileException("Unable to map file region", this));
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   HANDLE handle = ::CreateFileMapping((HANDLE)getHandle(file), 0, writeable ? PAGE_READWRITE : PAGE_READONLY, 0, 0, 0);

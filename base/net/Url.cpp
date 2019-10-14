@@ -147,16 +147,18 @@ Url::Url(
   }
 }
 
-Url::Url(const Url& copy) throw() :
-  scheme(copy.scheme),
-  user(copy.user),
-  password(copy.password),
-  host(copy.host),
-  port(copy.port),
-  path(copy.path) {
+Url::Url(const Url& copy) throw()
+  : scheme(copy.scheme),
+    user(copy.user),
+    password(copy.password),
+    host(copy.host),
+    port(copy.port),
+    path(copy.path)
+{
 }
 
-Url& Url::operator=(const Url& eq) throw() {
+Url& Url::operator=(const Url& eq) throw()
+{
   scheme = eq.scheme;
   user = eq.user;
   password = eq.password;

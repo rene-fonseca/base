@@ -59,8 +59,9 @@ public:
 //
 //      @param tree The ordered binary tree being enumerated.
 //    */
-//    inline Enumeration(OrderedBinaryTree& tree) throw() :
-//      InfixOrderEnumeration<Value, Value&, Value*, Node*>(tree.getRoot()) {
+//    inline Enumeration(OrderedBinaryTree& tree) throw()
+//      : InfixOrderEnumeration<Value, Value&, Value*, Node*>(tree.getRoot())
+//    {
 //    }
 //  };
 //
@@ -78,8 +79,9 @@ public:
 //
 //      @param tree The ordered binary tree being enumerated.
 //    */
-//    inline ReadOnlyEnumeration(const OrderedBinaryTree& tree) throw() :
-//      InfixOrderEnumeration<Value, const Value&, const Value*, const Node*>(tree.getRoot()) {
+//    inline ReadOnlyEnumeration(const OrderedBinaryTree& tree) throw()
+//      : InfixOrderEnumeration<Value, const Value&, const Value*, const Node*>(tree.getRoot())
+//    {
 //    }
 //  };
 

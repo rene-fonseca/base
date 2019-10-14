@@ -453,9 +453,10 @@ InetAddress::InetAddress(const String& address, Family family) throw(InvalidForm
   );
 }
 
-InetAddress::InetAddress(const InetAddress& copy) throw() :
-  family(copy.family),
-  address(copy.address) {
+InetAddress::InetAddress(const InetAddress& copy) throw()
+  : family(copy.family),
+    address(copy.address)
+{
 }
 
 InetAddress& InetAddress::operator=(const InetAddress& eq) throw() {

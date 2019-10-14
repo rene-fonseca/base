@@ -184,14 +184,17 @@ public:
 
 
 
-Uri::Uri() throw(MemoryException) {
+Uri::Uri() throw(MemoryException)
+{
 }
 
-Uri::Uri(const String& uri, bool strict) throw(UriException, MemoryException) {
+Uri::Uri(const String& uri, bool strict) throw(UriException, MemoryException)
+{
   parse(uri, strict);
 }
 
-Uri::Uri(const String& baseUri, const String& relativeUri, bool strict) throw(UriException, MemoryException) {
+Uri::Uri(const String& baseUri, const String& relativeUri, bool strict) throw(UriException, MemoryException)
+{
   Uri uri(relativeUri);
   if (uri.isRelative()) {
     parse(baseUri + relativeUri, strict);
@@ -200,16 +203,18 @@ Uri::Uri(const String& baseUri, const String& relativeUri, bool strict) throw(Ur
   }
 }
 
-Uri::Uri(const Uri& copy) throw() :
-  scheme(copy.scheme),
-  user(copy.user),
-  password(copy.password),
-  host(copy.host),
-  port(copy.port),
-  path(copy.path) {
+Uri::Uri(const Uri& copy) throw()
+  : scheme(copy.scheme),
+    user(copy.user),
+    password(copy.password),
+    host(copy.host),
+    port(copy.port),
+    path(copy.path)
+{
 }
 
-Uri& Uri::operator=(const Uri& eq) throw() {
+Uri& Uri::operator=(const Uri& eq) throw()
+{
   scheme = eq.scheme;
   user = eq.user;
   password = eq.password;

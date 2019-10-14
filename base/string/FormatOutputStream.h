@@ -584,6 +584,11 @@ public:
   }
   
   /**
+    Writes a nice description of the type to the format output stream.
+  */
+  FormatOutputStream& operator<<(const Type& type) throw(IOException);
+
+  /**
     Writes a nice description of the exception to the format output stream.
   */
   FormatOutputStream& operator<<(const Exception& e) throw(IOException);

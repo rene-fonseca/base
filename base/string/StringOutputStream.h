@@ -30,7 +30,7 @@ private:
   bool closed = false;
 public:
 
-  inline explicit StringOutputStreamWrapper() throw() : closed(false) {
+  inline explicit StringOutputStreamWrapper() throw() {
   }
 
   void close() throw(IOException);

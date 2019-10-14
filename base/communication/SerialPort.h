@@ -18,6 +18,8 @@
 #include <base/NotSupported.h>
 #include <base/collection/List.h>
 #include <base/io/Handle.h>
+#include <base/io/async/AsynchronousInputStream.h>
+#include <base/io/async/AsynchronousOutputStream.h>
 #include <base/io/async/AsynchronousIOStream.h>
 #include <base/mem/Reference.h>
 #include <base/string/String.h>
@@ -37,7 +39,8 @@ _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 */
 
 class _COM_AZURE_DEV__BASE__API SerialPort : public CommunicationsPort,
-                                          public virtual AsynchronousIOStream {
+                                             public virtual AsynchronousInputStream
+                                             /*public virtual AsynchronousIOStream*/ {
 private:
 
   Reference<Handle> handle;

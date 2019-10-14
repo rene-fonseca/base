@@ -88,7 +88,7 @@ public:
 */
 template<class TYPE>
 inline bool equal(
-  const TYPE* left, const TYPE* right, unsigned int count) throw() {
+  const TYPE* left, const TYPE* right, MemorySize count) throw() {
 #if defined(_COM_AZURE_DEV__BASE__HAVE_MEMCMP)
   if (primitives::Arithmetic<TYPE>::IS_ARITHMETIC) {
     return isoc::memcmp(left, right, count * sizeof(TYPE)) == 0;
@@ -137,7 +137,7 @@ inline unsigned int mismatch(
 */
 template<class TYPE>
 inline int compare(
-  const TYPE* left, const TYPE* right, unsigned int size) throw() {
+  const TYPE* left, const TYPE* right, MemorySize size) throw() {
   const TYPE* const end = left + size;
   while (left != end) {
     int temp = compare(*left, *right);
@@ -153,13 +153,13 @@ inline int compare(
 #if defined(_COM_AZURE_DEV__BASE__HAVE_MEMCMP)
 template<>
 inline int compare<char>(
-  const char* left, const char* right, unsigned int count) throw() {
+  const char* left, const char* right, MemorySize count) throw() {
   return isoc::memcmp(left, right, count);
 }
 
 template<>
 inline int compare<uint8>(
-  const uint8* left, const uint8* right, unsigned int count) throw() {
+  const uint8* left, const uint8* right, MemorySize count) throw() {
   return isoc::memcmp(left, right, count);
 }
 #endif
@@ -187,7 +187,7 @@ inline unsigned int count(const TYPE* left, unsigned int c, UNOPR& predicate) {
 */
 template<class TYPE, class UNOPR>
 inline void forEach(
-  const TYPE* element, unsigned int count, UNOPR& function) {
+  const TYPE* element, MemorySize count, UNOPR& function) {
   const TYPE* const end = element + count;
   --element;
   while (++element != end) {
@@ -201,7 +201,7 @@ inline void forEach(
 */
 template<class TYPE, class BINOPR>
 inline void forEach(
-  const TYPE* left, const TYPE* right, unsigned int count, BINOPR& function) {
+  const TYPE* left, const TYPE* right, MemorySize count, BINOPR& function) {
   while (count) {
     function(*left, *right);
     ++left;
@@ -216,7 +216,7 @@ inline void forEach(
 */
 template<class TYPE, class BINOPR>
 inline void forEachDoBinary(
-  const TYPE* left, unsigned int count, BINOPR& function) {
+  const TYPE* left, MemorySize count, BINOPR& function) {
   while (count) {
     function(*left, *left);
     ++left;
@@ -230,7 +230,7 @@ inline void forEachDoBinary(
   @return A pointer to the value if it is present in the sequence otherwise 0.
 */
 template<class TYPE>
-inline const TYPE* find(const TYPE* element, unsigned int count, TYPE value) {
+inline const TYPE* find(const TYPE* element, MemorySize count, TYPE value) {
   const TYPE* const end = element + count;
   while (element != end) {
     if (*element == value) { // do we have a match
@@ -243,7 +243,7 @@ inline const TYPE* find(const TYPE* element, unsigned int count, TYPE value) {
 
 #if defined(_COM_AZURE_DEV__BASE__HAVE_MEMCHR)
 template<>
-inline const char* find(const char* element, unsigned int count, char value) {
+inline const char* find(const char* element, MemorySize count, char value) {
   return Cast::pointer<const char*>(isoc::memchr(element, value, count));
 }
 #endif
@@ -254,7 +254,7 @@ inline const char* find(const char* element, unsigned int count, char value) {
   @return Pointer to the value if found else 0.
 */
 template<class TYPE, class UNOPR>
-inline const TYPE* findPredicate(const TYPE* left, unsigned int count, const UNOPR& predicate) {
+inline const TYPE* findPredicate(const TYPE* left, MemorySize count, const UNOPR& predicate) {
   while (count) {
     if (predicate(*left)) { // do we have a match
       return left;
@@ -272,7 +272,7 @@ inline const TYPE* findPredicate(const TYPE* left, unsigned int count, const UNO
   @return -1 is not found.
 */
 template<class TYPE>
-inline int indexOf(const TYPE* element, unsigned int count, TYPE value) {
+inline int indexOf(const TYPE* element, MemorySize count, TYPE value) {
   const TYPE* current = element;
   const TYPE* const end = element + count;
   while (current != end) {
@@ -292,7 +292,7 @@ inline int indexOf(const TYPE* element, unsigned int count, TYPE value) {
 
 /** Apply an operation to every element in the sequence. */
 template<class TYPE, class UNOPR>
-inline void transform(TYPE* element, unsigned int count, const UNOPR& function) {
+inline void transform(TYPE* element, MemorySize count, const UNOPR& function) {
   const TYPE* const end = element + count;
   while (element != end) {
     *element = function(*element);
@@ -302,7 +302,7 @@ inline void transform(TYPE* element, unsigned int count, const UNOPR& function) 
 
 /** The sequences are expected not to overlap. */
 template<class TYPE, class UNOPR>
-inline void transformByUnary(TYPE* restrict result, const TYPE* restrict left, unsigned int count, const UNOPR& function) throw() {
+inline void transformByUnary(TYPE* restrict result, const TYPE* restrict left, MemorySize count, const UNOPR& function) throw() {
   while (count) {
     *result = function(*left);
     ++result;
@@ -313,7 +313,7 @@ inline void transformByUnary(TYPE* restrict result, const TYPE* restrict left, u
 
 /** The sequences are expected not to overlap. */
 template<class TYPE, class BINOPR>
-inline void transformByBinary(TYPE* restrict left, const TYPE* restrict right, unsigned int count, const BINOPR& function) {
+inline void transformByBinary(TYPE* restrict left, const TYPE* restrict right, MemorySize count, const BINOPR& function) {
   while (count) {
     *left = function(*left, *right);
     ++left;
@@ -324,7 +324,7 @@ inline void transformByBinary(TYPE* restrict left, const TYPE* restrict right, u
 
 /** The sequences are expected not to overlap. */
 template<class TYPE, class BINOPR>
-inline void transformByBinary(TYPE* restrict result, const TYPE* restrict left, const TYPE* restrict right, unsigned int count, const BINOPR& function) {
+inline void transformByBinary(TYPE* restrict result, const TYPE* restrict left, const TYPE* restrict right, MemorySize count, const BINOPR& function) {
   while (count) {
     *result = function(*left, *right);
     ++result;
@@ -345,7 +345,7 @@ inline void transformByBinary(TYPE* restrict result, const TYPE* restrict left, 
   @see move
 */
 template<class TYPE>
-inline void copy(TYPE* restrict dest, const TYPE* restrict src, unsigned int count) {
+inline void copy(TYPE* restrict dest, const TYPE* restrict src, MemorySize count) {
   if (Relocateable<TYPE>::IS_RELOCATEABLE) {
 #if defined(_COM_AZURE_DEV__BASE__HAVE_MEMCPY)
     isoc::memcpy(dest, src, count * sizeof(TYPE));
@@ -382,7 +382,7 @@ inline void copy(TYPE* restrict dest, const TYPE* restrict src, unsigned int cou
   the sequences may overlap).
 */
 template<class TYPE>
-inline void move(TYPE* dest, const TYPE* src, unsigned int count) {
+inline void move(TYPE* dest, const TYPE* src, MemorySize count) {
   if (Relocateable<TYPE>::IS_RELOCATEABLE) {
     uint64 bytesToMove = static_cast<uint64>(count) * sizeof(TYPE);
 #if defined(_COM_AZURE_DEV__BASE__HAVE_MEMMOVE)
@@ -420,7 +420,7 @@ inline void move(TYPE* dest, const TYPE* src, unsigned int count) {
   overlap.
 */
 template<class TYPE>
-inline void swap(TYPE* restrict left, TYPE* restrict right, unsigned int count) {
+inline void swap(TYPE* restrict left, TYPE* restrict right, MemorySize count) {
   const TYPE* const end = left + count;
   while (left != end) {
     swapper(*left++, *right++);
@@ -429,7 +429,7 @@ inline void swap(TYPE* restrict left, TYPE* restrict right, unsigned int count) 
 
 /** Sets every element in the sequence to a specified value. */
 template<class TYPE>
-inline void fill(TYPE* dest, unsigned int count, TYPE value) {
+inline void fill(TYPE* dest, MemorySize count, TYPE value) {
   const TYPE* const end = dest + count;
   while (dest != end) {
     *dest++ = value;
@@ -438,12 +438,12 @@ inline void fill(TYPE* dest, unsigned int count, TYPE value) {
 
 #if defined(_COM_AZURE_DEV__BASE__HAVE_MEMSET)
 template<>
-inline void fill<char>(char* dest, unsigned int count, char value) {
+inline void fill<char>(char* dest, MemorySize count, char value) {
   isoc::memset(dest, value, count);
 }
 
 template<>
-inline void fill<uint8>(uint8* dest, unsigned int count, uint8 value) {
+inline void fill<uint8>(uint8* dest, MemorySize count, uint8 value) {
   isoc::memset(dest, value, count);
 }
 #endif

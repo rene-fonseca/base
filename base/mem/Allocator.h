@@ -92,6 +92,9 @@ public:
       while (src != end) {
         new(dest) TYPE(*src); // copy object
         src->~TYPE(); // destroy old object
+#if defined(DEBUG) || defined(_COM_AZURE_DEV__BASE__DEBUG)
+        fill<uint8>(reinterpret_cast<uint8*>(&src), sizeof(*src), 0xaa);
+#endif
         ++dest;
         ++src;
       }
@@ -108,6 +111,9 @@ public:
     if (!Uninitializeable<TYPE>::IS_UNINITIALIZEABLE) {
       while (dest != end) {
         dest->~TYPE();
+#if defined(DEBUG) || defined(_COM_AZURE_DEV__BASE__DEBUG)
+        fill<uint8>(reinterpret_cast<uint8*>(&src), sizeof(*src), 0xaa);
+#endif
         ++dest;
       }
     }

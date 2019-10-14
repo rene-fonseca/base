@@ -764,7 +764,7 @@ void Application::terminate() throw() {
 }
 
 bool Application::isHangingup() throw() {
-  bool result;
+  bool result = false;
   lock.exclusiveLock();
   result = hangingup;
   hangingup = false;

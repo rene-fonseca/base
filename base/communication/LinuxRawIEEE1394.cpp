@@ -788,7 +788,7 @@ bool LinuxRawIEEE1394::wait(unsigned int milliseconds) throw(OutOfDomain, IEEE13
   fd.fd = handle;
   fd.events = POLLIN;
   fd.revents = 0;
-  int result;
+  int result = 0;
   do {
     result = ::poll(&fd, 1, milliseconds);
   } while (result < 0);

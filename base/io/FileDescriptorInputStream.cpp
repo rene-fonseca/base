@@ -109,7 +109,7 @@ unsigned int FileDescriptorInputStream::read(
   unsigned int bytesRead = 0;
   while (bytesToRead > 0) {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
-    DWORD result;
+    DWORD result = 0;
     BOOL success = ::ReadFile(
       fd->getHandle(),
       buffer,

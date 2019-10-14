@@ -178,7 +178,7 @@ int Semaphore::getValue() const throw(SemaphoreException) {
   return value;
 #else // mutual exclusion
   SemaphoreImpl::Semaphore* sem = (SemaphoreImpl::Semaphore*)semaphore;
-  unsigned int result;
+  unsigned int result = 0;
   if (pthread_mutex_lock(&(sem->mutex))) {
     throw SemaphoreException(this);
   }

@@ -110,7 +110,7 @@ void Pipe::close() throw(PipeException) {
 
 unsigned int Pipe::getBufferSize() const throw() {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
-  DWORD result;
+  DWORD result = 0;
   GetNamedPipeInfo(fd->getHandle(), 0, &result, 0, 0); // TAG: separate input and output buffer sizes
   return result;
 #else // unix
@@ -180,7 +180,7 @@ unsigned int Pipe::read(
   unsigned int bytesRead = 0;
   while (bytesToRead > 0) {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
-    DWORD result;
+    DWORD result = 0;
     BOOL success = ::ReadFile(
       fd->getHandle(),
       buffer,
@@ -236,7 +236,7 @@ unsigned int Pipe::write(
   unsigned int bytesWritten = 0;
   while (bytesToWrite) {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
-    DWORD result;
+    DWORD result = 0;
     BOOL success = ::WriteFile(
       fd->getHandle(),
       buffer,

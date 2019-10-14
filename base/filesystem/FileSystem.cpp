@@ -911,7 +911,7 @@ _COM_AZURE_DEV__BASE__PACKED__END
       return false; // we may not have read permission
     }
     ShortcutHeader header;
-    DWORD result;
+    DWORD result = 0;
     bool error = ::ReadFile(link, &header, sizeof(header), &result, 0) == 0;
     ::CloseHandle(link);
     

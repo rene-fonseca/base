@@ -410,7 +410,7 @@ unsigned int SerialPort::read(
   unsigned int bytesRead = 0;
   while (bytesToRead > 0) {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
-    DWORD result;
+    DWORD result = 0;
     BOOL success = ::ReadFile(handle->getHandle(), buffer, bytesToRead, &result, 0);
     if (!success) { // has error occured
       if (::GetLastError() == ERROR_BROKEN_PIPE) {
@@ -452,7 +452,7 @@ unsigned int SerialPort::write(
   unsigned int bytesWritten = 0;
   while (bytesToWrite) {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
-    DWORD result;
+    DWORD result = 0;
     BOOL success = ::WriteFile(handle->getHandle(), buffer, bytesToWrite, &result, 0);
     if (!success) {
       throw IOException("Unable to write to object", this);

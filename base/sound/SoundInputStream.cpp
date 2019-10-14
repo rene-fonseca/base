@@ -277,7 +277,7 @@ unsigned int SoundInputStream::read(void* buffer, unsigned int size) throw() {
   OperatingSystem::Handle handle = SoundDevice::soundDevice.getReadHandle();
   unsigned int bytesRead = 0;
   while (bytesRead < size) {
-    int result;
+    int result = 0;
     do {
       result = ::read(handle, buffer, (static_cast<size_t>(size) <= SSIZE_MAX) ? size : SSIZE_MAX);
       if (result < 0) { // has an error occured

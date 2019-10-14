@@ -1583,14 +1583,14 @@ void Socket::setAsynchronous(bool value) throw(NetworkException) {
 
 unsigned int Socket::available() const throw(NetworkException) {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
-  unsigned int result;
+  unsigned int result = 0;
   if (ioctlsocket((SOCKET)socket->getHandle(), FIONREAD, Cast::pointer<u_long*>(&result))) {
     internal::SocketImpl::raiseNetwork("Unable to determine the amount of data pending in the input buffer");
   }
   return result;
 #else // unix
   // this implementation is not very portable?
-  int result;
+  int result = 0;
   if (ioctl((SOCKET)socket->getHandle(), FIONREAD, &result)) {
     internal::SocketImpl::raiseNetwork("Unable to determine the amount of data pending in the incoming queue");
   }
@@ -1608,7 +1608,7 @@ unsigned int Socket::pending() const throw(NetworkException) {
   return result;
 #else // unix
   // this implementation is not very portable?
-  int result;
+  int result = 0;
   if (ioctl((SOCKET)socket->getHandle(), TIOCOUTQ, &result)) {
     internal::SocketImpl::raiseNetwork("Unable to determine the amount of data pending in the outgoing queue");
   }

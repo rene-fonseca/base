@@ -82,7 +82,7 @@ bool Event::isSignaled() const throw(EventException) {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   return ::WaitForSingleObject(context, 0) == WAIT_OBJECT_0; // should never fail
 #else // pthread
-  bool result;
+  bool result = false;
   if (pthread_mutex_lock(&Cast::pointer<EventImpl::Context*>(context)->mutex)) {
     throw EventException(this);
   }

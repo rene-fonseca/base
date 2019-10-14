@@ -1208,7 +1208,7 @@ unsigned int File::read(
   unsigned int bytesRead = 0;
   while (bytesToRead > 0) {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
-    DWORD result;
+    DWORD result = 0;
     BOOL success = ::ReadFile(fd->getHandle(), buffer, bytesToRead, &result, 0);
     if (!success) { // has error occured
       if (::GetLastError() == ERROR_LOCK_VIOLATION) { // TAG: I'm guessing this error code - please confirm
@@ -1246,7 +1246,7 @@ unsigned int File::read(
       throw FileException("Unable to read from file", this);
     }
 #else // unix
-    int result;
+    int result = 0;
     do {
       result = ::read(fd->getHandle(), buffer, minimum<size_t>(bytesToRead, SSIZE_MAX));
       if (result < 0) { // has an error occured
@@ -1282,7 +1282,7 @@ unsigned int File::write(
   unsigned int bytesWritten = 0;
   while (bytesToWrite > 0) {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
-    DWORD result;
+    DWORD result = 0;
     BOOL success = ::WriteFile(fd->getHandle(), buffer, bytesToWrite, &result, 0);
     if (!success) {
       if (::GetLastError() == ERROR_LOCK_VIOLATION) { // TAG: I'm guessing this error code - please confirm
@@ -1320,7 +1320,7 @@ unsigned int File::write(
       throw FileException("Unable to write to file", this);
     }
 #else // unix
-    int result;
+    int result = 0;
     do {
       result = ::write(fd->getHandle(), buffer, minimum<size_t>(bytesToWrite, SSIZE_MAX));
       if (result < 0) { // has an error occured

@@ -2583,7 +2583,7 @@ int WideString::lastIndexOf(
 }
 
 unsigned int WideString::count(ucs4 character, unsigned int start) const throw() {
-  int result;
+  int result = 0;
   unsigned int count = 0;
   while ((result = indexOf(character, start)) >= 0) { // until not found
     ++count;
@@ -2594,7 +2594,7 @@ unsigned int WideString::count(ucs4 character, unsigned int start) const throw()
 
 unsigned int WideString::count(
   const WideString& string, unsigned int start) const throw() {
-  int result;
+  int result = 0;
   unsigned int count = 0;
   while ((result = indexOf(string, start)) >= 0) { // until not found - works for empty string
     ++count;

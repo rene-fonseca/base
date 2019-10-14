@@ -11,6 +11,10 @@
     For the licensing terms refer to the file 'LICENSE'.
  ***************************************************************************/
 
+#pragma once
+
+#include <base/platforms/symbols.h>
+
 #if defined(__clang__)
 #  define _COM_AZURE_DEV__BASE__COMPILER _COM_AZURE_DEV__BASE__COMPILER_CLANG
 #  define _COM_AZURE_DEV__BASE__DEMANGLE _COM_AZURE_DEV__BASE__DEMANGLE_CLANG

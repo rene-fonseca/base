@@ -54,7 +54,7 @@ public:
   /**
     Initializes an empty allocator with the default granularity.
   */
-  inline explicit CapacityAllocator() throw() {
+  inline explicit CapacityAllocator() noexcept {
   }
 
   /**
@@ -89,20 +89,20 @@ public:
   inline CapacityAllocator(const CapacityAllocator& copy) throw(MemoryException)
     : Allocator<TYPE>(copy),
       capacity(copy.capacity),
-      granularity(copy.granularity) {
-    // TAG: we only want to copy the first 'capacity' number of elements!
+      granularity(copy.granularity)
+  {
   }
   
   /**
     Assignment of allocator by allocator.
   */
   inline CapacityAllocator& operator=(
-    const CapacityAllocator& eq) throw(MemoryException) {
+    const CapacityAllocator& eq) throw(MemoryException)
+  {
     if (&eq != this) { // protect against self assignment
       capacity = eq.capacity;
       granularity = eq.granularity;
       Allocator<TYPE>::operator=(eq);
-      // TAG: we only want to copy the first 'capacity' number of elements!
     }
     return *this;
   }
@@ -110,63 +110,63 @@ public:
   /**
     Returns the number of elements of the allocator.
   */
-  inline MemorySize getSize() const throw() {
+  inline MemorySize getSize() const noexcept {
     return capacity;
   }
 
   /**
     Returns the granularity.
   */
-  inline MemorySize getGranularity() const throw() {
+  inline MemorySize getGranularity() const noexcept {
     return granularity;
   }
 
   /**
     Returns true if no elements are allocated.
   */
-  inline bool isEmpty() const throw() {
+  inline bool isEmpty() const noexcept {
     return capacity == 0;
   }
 
   /**
     Returns the first element of the allocator as a modifying iterator.
   */
-  inline Iterator getBeginIterator() throw() {
+  inline Iterator getBeginIterator() noexcept {
     return Iterator(Allocator<TYPE>::getElements());
   }
 
   /**
     Returns the end of the allocator as a modifying iterator.
   */
-  inline Iterator getEndIterator() throw() {
+  inline Iterator getEndIterator() noexcept {
     return Iterator(Allocator<TYPE>::getElements() + getSize());
   }
 
   /**
     Returns the first element of the allocator as a non-modifying iterator.
   */
-  inline ReadIterator getBeginReadIterator() const throw() {
+  inline ReadIterator getBeginReadIterator() const noexcept {
     return ReadIterator(Allocator<TYPE>::getElements());
   }
 
   /**
     Returns the end of the allocator as a non-modifying iterator.
   */
-  inline ReadIterator getEndReadIterator() const throw() {
+  inline ReadIterator getEndReadIterator() const noexcept {
     return ReadIterator(Allocator<TYPE>::getElements() + getSize());
   }
 
   /**
     Returns a modifying enumerator of the allocator.
   */
-  inline Enumerator getEnumerator() throw() {
+  inline Enumerator getEnumerator() noexcept {
     return Enumerator(Allocator<TYPE>::getElements(), Allocator<TYPE>::getElements() + getSize());
   }
 
   /**
     Returns a non-modifying enumerator of the allocator.
   */
-  inline ReadEnumerator getReadEnumerator() const throw() {
+  inline ReadEnumerator getReadEnumerator() const noexcept {
     return ReadEnumerator(Allocator<TYPE>::getElements(), Allocator<TYPE>::getElements() + getSize());
   }
 
@@ -178,7 +178,8 @@ public:
     unchanged). If the size is reduced the elements up to the new size are
     unchanged.
   */
-  inline void setSize(MemorySize size) throw(MemoryException) {
+  void setSize(MemorySize size) throw(MemoryException)
+  {
     if (size != capacity) {
       capacity = size;
       Allocator<TYPE>::setSize(
@@ -192,7 +193,8 @@ public:
     of memory until the 'size' is adjusted. Raises OutOfRange if granularity
     is less than MINIMUM_GRANULARITY.
   */
-  inline void setGranularity(MemorySize granularity) throw(OutOfRange) {
+  inline void setGranularity(MemorySize granularity) throw(OutOfRange)
+  {
     if (granularity != this->granularity) {
       bassert(granularity >= MINIMUM_GRANULARITY, OutOfRange(this));
       this->granularity = granularity;
@@ -202,7 +204,8 @@ public:
   /**
     Returns the capacity of the allocator.
   */
-  inline MemorySize getCapacity() const throw() {
+  inline MemorySize getCapacity() const noexcept
+  {
     return Allocator<TYPE>::getSize();
   }
 
@@ -212,10 +215,21 @@ public:
 
     @param capacity Specifies the minimum capacity of the allocator.
   */
-  inline void ensureCapacity(MemorySize capacity) throw(MemoryException) {
+  void ensureCapacity(MemorySize capacity) throw(MemoryException)
+  {
     if (capacity > Allocator<TYPE>::getSize()) {
-      Allocator<TYPE>::setSize(capacity);
+      Allocator<TYPE>::setSize(
+        (capacity + granularity - 1)/granularity * granularity
+      );
     }
+  }
+
+  /**
+    Returns the garbage collectable size.
+  */
+  inline MemorySize getGarbageCollectableSize() const noexcept
+  {
+    return Allocator<TYPE>::getSize() - getSize();
   }
 
   /**
@@ -223,7 +237,8 @@ public:
     granularity is ignored). This member function is normally used when we know
     that the allocated memory is not going to be resized for a "long time".
   */
-  inline void optimizeCapacity() throw() {
+  void garbageCollect()
+  {
     // knowledge: does not raise an exception 'cause we do not expand the buffer
     Allocator<TYPE>::setSize(capacity);
   }

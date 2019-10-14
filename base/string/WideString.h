@@ -909,7 +909,7 @@ public:
     Releases any unused capacity of the string. This applies to all shared
     strings.
   */
-  void optimizeCapacity() throw();
+  void garbageCollect() throw();
 
   /**
     Returns the granularity.

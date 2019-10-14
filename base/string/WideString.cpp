@@ -1883,8 +1883,8 @@ void WideString::ensureCapacity(MemorySize capacity) throw(MemoryException) {
   elements->ensureCapacity(capacity); // no need to do copyOnWrite
 }
 
-void WideString::optimizeCapacity() throw() {
-  elements->optimizeCapacity(); // no need to do copyOnWrite
+void WideString::garbageCollect() throw() {
+  elements->garbageCollect(); // no need to do copyOnWrite
 }
 
 MemorySize WideString::getGranularity() const throw() {

@@ -39,9 +39,10 @@
 #include <base/Literal.h>
 #include <stdlib.h>
 
-int _DUMMY_SYMBOL = 0;
-
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
+
+ThreadKey<Thread> Thread::ThreadLocal::thread; // thread object
+ThreadKey<Allocator<uint8> > Thread::ThreadLocal::storage; // thread local storage
 
 /*
   The order of initialization is very significant. fin, fout, and ferr are the
@@ -63,6 +64,38 @@ public:
       threadLocal(&thread) { // no parent for main thread
   }
 };
+
+#if 0
+class TrackProgress {
+private:
+    
+  static unsigned int count;
+  const char* text = nullptr;
+  unsigned int level = 0;
+public:
+    
+  TrackProgress(const char* _text = "Progress") throw() : text(_text)
+  {
+    ++count;
+    level = count;
+    printf("TRACK: %s [%d]\n", text, level);
+  }
+
+  ~TrackProgress() throw()
+  {
+    printf("TRACK: %s [%d]\n", text, level);
+  }
+};
+
+unsigned int TrackProgress::count = 0;
+
+#define _CONCATENATE_IMPL(a, b) a ## b
+#define _CONCATENATE(a, b) _CONCATENATE_IMPL(a, b)
+
+#define TRACK_PROGRESS(message) \
+  TrackProgress _CONCATENATE(_tp_, __LINE__)(message)
+
+#endif
 
 namespace internal {
 

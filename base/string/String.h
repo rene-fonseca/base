@@ -228,8 +228,8 @@ protected:
   /**
     Sets the length of the string.
   */
-  inline void setLength(
-    unsigned int length) throw(StringException, MemoryException) {
+  inline void setLength(unsigned int length) throw(StringException, MemoryException)
+  {
     bassert(
       length <= MAXIMUM_LENGTH,
       StringException(Type::getType<String>())
@@ -427,7 +427,7 @@ public:
     Releases any unused capacity of the string. This applies to all shared
     strings.
   */
-  void optimizeCapacity() throw();
+  void garbageCollect() throw();
 
   /**
     Returns the granularity.
@@ -561,7 +561,8 @@ public:
 
     @param ch The character to be appended.
   */
-  inline String& append(char ch) throw(StringException, MemoryException) {
+  inline String& append(char ch) throw(StringException, MemoryException)
+  {
     return insert(getLength(), ch);
   }
 
@@ -570,8 +571,8 @@ public:
 
     @param string The string to be appended.
   */
-  inline String& append(
-    const String& string) throw(StringException, MemoryException) {
+  inline String& append(const String& string) throw(StringException, MemoryException)
+  {
     return insert(getLength(), string);
   }
 
@@ -580,18 +581,27 @@ public:
 
     @param string The string to be appended.
   */
-  inline String& append(
-    const NativeString& string) throw(StringException, MemoryException) {
+  inline String& append(const NativeString& string) throw(StringException, MemoryException)
+  {
     return insert(getLength(), string);
   }
-  
+
+  /**
+    Appends the native string to this string.
+
+    @param string The native string to be appended.
+  */
+  inline String& append(const char* string) throw(StringException, MemoryException)
+  {
+    return append(NativeString(string));
+  }
+
   /**
     Appends the string literal to this string.
 
     @param string The string to be appended.
   */
-  String& append(
-    const Literal& string) throw(StringException, MemoryException);
+  String& append(const Literal& string) throw(StringException, MemoryException);
 
   template<MemorySize SIZE>
   inline String& append(const char (&literal)[SIZE])
@@ -741,6 +751,24 @@ public:
   */
   inline String& operator+=(const String& suffix) throw(MemoryException) {
     return append(suffix);
+  }
+
+  /**
+    Appends the literal to this string.
+
+    @param suffix The character to be appended.
+  */
+  inline String& operator+=(const Literal& suffix) throw(MemoryException) {
+    return append(suffix);
+  }
+
+  /**
+    Appends the string to this string.
+
+    @param suffix The character to be appended.
+  */
+  inline String& operator+=(const char* suffix) throw(MemoryException) {
+    return append(NativeString(suffix));
   }
 
   /**

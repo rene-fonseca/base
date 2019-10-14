@@ -352,6 +352,16 @@ _COM_AZURE_DEV__BASE__PACKED__END
   
 };
 
+FormatOutputStream& operator<<(FormatOutputStream& stream, const LittleEndian<uint16>& value) throw(IOException)
+{
+  return stream << static_cast<uint16>(value);
+}
+
+FormatOutputStream& operator<<(FormatOutputStream& stream, const LittleEndian<uint32>& value) throw(IOException)
+{
+  return stream << static_cast<uint32>(value);
+}
+
 FormatOutputStream& operator<<(
   FormatOutputStream& stream,
   const CommonObjectFileFormat::DirectoryEntry& entry) throw(IOException) {

@@ -18,6 +18,7 @@
 #include <base/mem/ReferenceCountedCapacityAllocator.h>
 #include <base/string/String.h>
 #include <base/collection/Functor.h>
+#include <base/ValidifiedResult.h>
 
 using namespace com::azure::dev::base;
 
@@ -35,10 +36,21 @@ public:
     }
   }
 
-  inline operator TYPE() const throw() {
+  inline operator const TYPE&() const throw() {
     return value;
   }
+
+  inline FormatOutputStream& operator<<(FormatOutputStream& stream) throw(IOException)
+  {
+    return stream << static_cast<const TYPE&>(value);
+  }
 };
+
+template<class TYPE>
+inline FormatOutputStream& operator<<(FormatOutputStream& stream, const TYPE& value) throw(IOException)
+{
+  return stream << value;;
+}
 
 /** Invert case of character. */
 class InvertCase : public UnaryOperation<char, char> {
@@ -93,6 +105,9 @@ public:
     }
     fout << "Counted number of elements in (ra): " << countra << ENDL;
     fout << ENDL;
+
+    ValidifiedResult<uint64> test1(12345678);
+    fout << "ValidifiedResult<uint64> " << test1 << ENDL;
 
     CapacityAllocator<char> b(1234, 256);
     fout << "CapacityAllocator<char>::getSize(): " << b.getSize() << ENDL;

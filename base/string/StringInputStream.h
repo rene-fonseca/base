@@ -54,7 +54,7 @@ public:
 
     @return Available number of bytes in stream.
   */
-  unsigned int available() throw(IOException);
+  unsigned int available() const throw(IOException);
   
   /**
     Closes the input stream and releases any system resources associated with
@@ -69,7 +69,7 @@ public:
     @param buffer The buffer.
     @param size The size of the buffer.
   */
-  unsigned int read(uint8* buffer, unsigned int size) throw(IOException);
+  unsigned int read(uint8* buffer, unsigned int size, bool nonblocking) throw(IOException);
   
   /**
     Skips a specified number of bytes. Blocks if asked to skip more bytes than

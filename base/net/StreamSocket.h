@@ -35,6 +35,9 @@ class _COM_AZURE_DEV__BASE__API StreamSocket : public Socket,
                                                public virtual OutputStream {
 public:
 
+  using Socket::read;
+  using Socket::write;
+
   /**
     Creates an unconnected stream socket.
   */

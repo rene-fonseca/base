@@ -77,6 +77,13 @@ public:
   }
   
   /**
+    Returns the value if valid and otherwise the given defaultValue.
+  */
+  inline const TYPE& getValue(const TYPE& defaultValue) const noexcept {
+    return valid ? value : defaultValue;
+  }
+    
+  /**
     Returns true if the result is valid.
   */
   inline bool isValid() const throw() {

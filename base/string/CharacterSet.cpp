@@ -60,8 +60,7 @@ CharacterSet CharacterSet::load(
     
     if (byteOrder == Architecture::LE) {
       // load data lot (little endian)
-      const LittleEndian<uint32>* src =
-        Cast::pointer<const LittleEndian<uint32>*>(data);
+      const LittleEndian<uint32>* src = Cast::pointer<const LittleEndian<uint32>*>(data);
       for (unsigned int i = 0; i < 256; ++i) {
         *dest++ = *src++;
       }

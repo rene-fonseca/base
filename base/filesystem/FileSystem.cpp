@@ -135,6 +135,10 @@ typedef struct _REPARSE_DATA_BUFFER {
   } DUMMYUNIONNAME;
 } REPARSE_DATA_BUFFER, * PREPARSE_DATA_BUFFER;
 
+#if !defined(REPARSE_DATA_BUFFER_HEADER_SIZE)
+#  define REPARSE_DATA_BUFFER_HEADER_SIZE FIELD_OFFSET(REPARSE_DATA_BUFFER, GenericReparseBuffer)
+#endif
+
 #if !defined(IO_REPARSE_TAG_SYMBOLIC_LINK)
 #  define IO_REPARSE_TAG_SYMBOLIC_LINK 0
 #endif
@@ -1260,7 +1264,6 @@ void FileSystem::makeLink(const String& target, const String& path)
   
 	// set the link
   DWORD returnedLength = 0;
-#if 0 // TAG: FIXME
   bool error = ::DeviceIoControl(
     link,
     FSCTL_SET_REPARSE_POINT,
@@ -1270,9 +1273,6 @@ void FileSystem::makeLink(const String& target, const String& path)
     0,
     &returnedLength,
     0) == 0;
-#else
-  bool error = true;
-#endif
   ::CloseHandle(link);
   if (error) {
     if (isDirectory) {

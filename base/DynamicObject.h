@@ -27,7 +27,7 @@ _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 class _COM_AZURE_DEV__BASE__API DynamicObject {
 private:
 
-#if defined(DEBUG)
+#if defined(DEBUG) /*|| defined(_COM_AZURE_DEV__BASE__DEBUG)*/
   bool valid = true;
 #endif
 public:
@@ -47,7 +47,7 @@ public:
     Destroys the object.
   */
   virtual inline ~DynamicObject() noexcept(false) {
-#if defined(DEBUG)
+#if defined(DEBUG) /*|| defined(_COM_AZURE_DEV__BASE__DEBUG)*/
     ASSERT(valid);
     valid = false;
 #endif

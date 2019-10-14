@@ -15,8 +15,9 @@
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
-bool DynamicObject::isValidObject() const throw() {
-#if defined(DEBUG)
+bool DynamicObject::isValidObject() const throw()
+{
+#if defined(DEBUG) /*|| defined(_COM_AZURE_DEV__BASE__DEBUG)*/
   const void* _this = this;
   return (_this != nullptr) && valid;
 #else

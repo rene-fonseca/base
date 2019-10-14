@@ -11,7 +11,7 @@
             "request": "launch",
             "program": "${workspaceFolder}/testsuite/Array",
             "args": [],
-            "stopAtEntry": true,
+            "stopAtEntry": false,
             "cwd": "${workspaceFolder}",
             "environment": [],
             "externalConsole": false,

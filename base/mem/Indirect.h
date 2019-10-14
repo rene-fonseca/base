@@ -122,10 +122,12 @@ public:
     Assignment of automation pointer by automation pointer.
   */
   inline Indirect& operator=(const Indirect& eq) {
-    TYPE* temp = value;
-    value = new TYPE(*eq.value);
-    if (temp) {
-      delete temp;
+    if (&eq != this) {
+      TYPE* temp = value;
+      value = new TYPE(*eq.value);
+      if (temp) {
+        delete temp;
+      }
     }
     return *this;
   }

@@ -171,8 +171,10 @@ public:
     Assignment of array to array.
   */
   inline Array& operator=(const Array& eq) throw() {
-    elements = eq.elements;
-    size = eq.size;
+    if (&eq != this) {
+      elements = eq.elements;
+      size = eq.size;
+    }
     return *this;
   }
 

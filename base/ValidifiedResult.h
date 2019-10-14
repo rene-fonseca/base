@@ -61,8 +61,10 @@ public:
     Initializes object by other object.
   */
   inline ValidifiedResult& operator=(const ValidifiedResult& eq) throw() {
-    value = eq.value;
-    valid = eq.valid;
+    if (&eq != this) {
+      value = eq.value;
+      valid = eq.valid;
+    }
     return *this;
   }
   

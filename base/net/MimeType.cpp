@@ -107,9 +107,11 @@ MimeType::MimeType(const String& value) throw(InvalidFormat) : mediaType(UNINITI
 }
 
 MimeType& MimeType::operator=(const MimeType& eq) throw() {
-  type = eq.type;
-  subtype = eq.subtype;
-  mediaType = eq.mediaType;
+  if (&eq != this) {
+    type = eq.type;
+    subtype = eq.subtype;
+    mediaType = eq.mediaType;
+  }
   return *this;
 }
 

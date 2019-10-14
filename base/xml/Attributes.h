@@ -67,8 +67,10 @@ public:
       Assignment of attribute by attribute.
     */
     inline Attribute& operator=(const Attribute& eq) throw() {
-      name = eq.name;
-      value = eq.value;
+      if (&eq != this) {
+        name = eq.name;
+        value = eq.value;
+      }
       return *this;
     }
     
@@ -117,7 +119,9 @@ public:
     Assignemnt of attributes by attributes.
   */
   inline Attributes& operator=(const Attributes& eq) throw() {
-    attributes = eq.attributes;
+    if (&eq != this) {
+      attributes = eq.attributes;
+    }
     return *this;
   }
 

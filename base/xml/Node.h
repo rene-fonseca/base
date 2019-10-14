@@ -156,7 +156,10 @@ public:
     Assignment of node by node.
   */
   inline Node& operator=(const Node& eq) throw() {
-    context = eq.context;
+    if (&eq != this) {
+      context = eq.context;
+      readonly = eq.readonly;
+    }
     return *this;
   }
 

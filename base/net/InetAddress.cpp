@@ -460,8 +460,10 @@ InetAddress::InetAddress(const InetAddress& copy) throw()
 }
 
 InetAddress& InetAddress::operator=(const InetAddress& eq) throw() {
-  family = eq.family; // no need to protect against self-assignment
-  address = eq.address;
+  if (&eq != this) {
+    family = eq.family;
+    address = eq.address;
+  }
   return *this;
 }
 

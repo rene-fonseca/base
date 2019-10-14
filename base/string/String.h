@@ -149,12 +149,12 @@ public:
   /**
     Specifies the granularity of the capacity. Guaranteed to be greater than 0.
   */
-  static const unsigned int GRANULARITY = 16;
+  static const MemorySize GRANULARITY = 16;
   /**
     Specifies the maximum length of any string. Guarantees that an int can hold
     the length of the string.
   */
-  static const unsigned int MAXIMUM_LENGTH =
+  static const MemorySize MAXIMUM_LENGTH =
     ((PrimitiveTraits<int>::MAXIMUM - sizeof(TERMINATOR))/GRANULARITY)*GRANULARITY;
 
   typedef ReferenceCountedCapacityAllocator<char>::Iterator Iterator;
@@ -177,12 +177,12 @@ private:
   private:
     
     String& string;
-    unsigned int index = 0;
+    MemorySize index = 0;
     
     Element(const Element& copy) throw();
     Element& operator=(const Element& eq) throw();
     
-    inline Element(String& _string, unsigned int _index) throw()
+    inline Element(String& _string, MemorySize _index) throw()
       : string(_string), index(_index) {
     }
   public:
@@ -207,7 +207,7 @@ protected:
   /**
     Initializes string.
   */
-  void initialize(const char* string, unsigned int length) throw(MemoryException);
+  void initialize(const char* string, MemorySize length) throw(MemoryException);
   
   /**
     Returns a modifiable buffer. Forces copy of internal buffer if shared by
@@ -228,7 +228,7 @@ protected:
   /**
     Sets the length of the string.
   */
-  inline void setLength(unsigned int length) throw(StringException, MemoryException)
+  inline void setLength(MemorySize length) throw(StringException, MemoryException)
   {
     bassert(
       length <= MAXIMUM_LENGTH,
@@ -251,13 +251,14 @@ public:
     @param maximum The maximum length of the string. The default is
     MAXIMUM_LENGTH.
   */
-  static inline unsigned int getLengthOfMustBeTerminated(
+  static inline MemorySize getLengthOfMustBeTerminated(
     const char* string,
-    unsigned int maximum = MAXIMUM_LENGTH) throw(StringException) {
+    MemorySize maximum = MAXIMUM_LENGTH) throw(StringException)
+  {
     bassert(string, StringException(Type::getType<String>()));
     const char* terminator = find(string, maximum, Traits::TERMINATOR);
     bassert(terminator, StringException(Type::getType<String>()));
-    return static_cast<unsigned int>(terminator - string);
+    return static_cast<MemorySize>(terminator - string);
   }
 
   /**
@@ -270,13 +271,13 @@ public:
     @return maximum if terminator is not found. 0 if string is invalid
     (i.e. 0).
   */
-  static inline unsigned int getLengthOfTerminated(
-    const char* string, unsigned int maximum = MAXIMUM_LENGTH) throw() {
+  static inline MemorySize getLengthOfTerminated(
+    const char* string, MemorySize maximum = MAXIMUM_LENGTH) throw() {
     if (!string) {
       return 0;
     }
     const char* terminator = find(string, maximum, Traits::TERMINATOR);
-    return terminator ? static_cast<unsigned int>(terminator - string) : maximum;
+    return terminator ? static_cast<MemorySize>(terminator - string) : maximum;
   }
   
   /**
@@ -344,7 +345,7 @@ public:
   */
   String(
     const NativeString& string,
-    unsigned int maximum) throw(StringException, MemoryException);
+    MemorySize maximum) throw(StringException, MemoryException);
   
   /**
     Initializes string from other string.
@@ -385,7 +386,7 @@ public:
   /**
     Returns the number of characters in the string.
   */
-  inline unsigned int getLength() const throw() {
+  inline MemorySize getLength() const throw() {
     return elements->getSize() - 1;
   }
 
@@ -432,18 +433,17 @@ public:
   /**
     Returns the granularity.
   */
-  unsigned int getGranularity() const throw();
+  MemorySize getGranularity() const throw();
 
   /**
     Sets the granularity.
   */
-  void setGranularity(unsigned int granularity) throw();
+  void setGranularity(MemorySize granularity) throw();
 
   /**
     Sets the length of the string without initializing the elements.
   */
-  void forceToLength(
-    unsigned int length) throw(StringException, MemoryException);
+  void forceToLength(MemorySize length) throw(StringException, MemoryException);
 
 // *************************************************************************
 //   TRAVERSE SECTION
@@ -499,7 +499,7 @@ public:
     Returns the character at the specified index in this string. Raises
     OutOfRange if index exceeds the length of the string.
   */
-  char getAt(unsigned int index) const throw(OutOfRange);
+  char getAt(MemorySize index) const throw(OutOfRange);
 
   /**
     Sets the character at the specified index of this string. If the new
@@ -510,13 +510,13 @@ public:
     @param index The index of the character to set.
     @param value The new character value.
   */
-  void setAt(unsigned int index, char value) throw(OutOfRange);
+  void setAt(MemorySize index, char value) throw(OutOfRange);
 
   /**
     Returns a reference to character at the specified index. Raises
     OutOfRange if index exceeds the length of the string.
   */
-  Element operator[](unsigned int index) throw(OutOfRange) {
+  Element operator[](MemorySize index) throw(OutOfRange) {
     return Element(*this, index);
   }
 
@@ -524,7 +524,7 @@ public:
     Returns the character at the specified index. Raises OutOfRange if index
     exceeds the length of the string.
   */
-  inline char operator[](unsigned int index) const throw(OutOfRange) {
+  inline char operator[](MemorySize index) const throw(OutOfRange) {
     return getAt(index);
   }
 
@@ -538,21 +538,21 @@ public:
     @param start Specifies the start of the substring.
     @param end Specifies the end of the substring.
   */
-  String& remove(unsigned int start, unsigned int end) throw(MemoryException);
+  String& remove(MemorySize start, MemorySize end) throw(MemoryException);
 
   /**
     Removes the characters from the specified index to the end of the string.
 
     @param start Specifies the start of the string.
   */
-  String& removeFrom(unsigned int start) throw(MemoryException);
+  String& removeFrom(MemorySize start) throw(MemoryException);
 
   /**
     Removes the character at the specified position in this string.
 
     @param index Specifies the character to be removed.
   */
-  inline String& removeAt(unsigned int index) throw(MemoryException) {
+  inline String& removeAt(MemorySize index) throw(MemoryException) {
     return remove(index, index);
   }
 
@@ -617,7 +617,7 @@ public:
   */
   String& append(
     const Literal& string,
-    unsigned int maximum) throw(StringException, MemoryException);
+    MemorySize maximum) throw(StringException, MemoryException);
 
   /**
     Appends the NULL-terminated string to this string.
@@ -627,7 +627,7 @@ public:
   */
   String& append(
     const NativeString& string,
-    unsigned int maximum) throw(StringException, MemoryException);
+    MemorySize maximum) throw(StringException, MemoryException);
 
   /**
     Prepends the character to this string.
@@ -655,8 +655,7 @@ public:
     exceeds the end of this string the character is inserted at the end.
     @param ch The character to be inserted.
   */
-  String& insert(
-    unsigned int index, char ch) throw(StringException, MemoryException);
+  String& insert(MemorySize index, char ch) throw(StringException, MemoryException);
 
   /**
     Inserts the string into this string.
@@ -666,7 +665,7 @@ public:
     @param string The string to be inserted.
   */
   String& insert(
-    unsigned int index,
+    MemorySize index,
     const String& string) throw(StringException, MemoryException);
 
   /**
@@ -677,11 +676,11 @@ public:
     @param string The string literal to be inserted.
   */
   String& insert(
-    unsigned int index,
+    MemorySize index,
     const Literal& string) throw(StringException, MemoryException);
 
   template<MemorySize SIZE>
-  inline String& insert(unsigned int index, const char (&literal)[SIZE])
+  inline String& insert(MemorySize index, const char (&literal)[SIZE])
     throw(StringException, MemoryException) {
     return insert(index, Literal(literal));
   }
@@ -694,7 +693,7 @@ public:
     @param string The NULL-terminated string to be inserted.
   */
   String& insert(
-    unsigned int index,
+    MemorySize index,
     const NativeString& string) throw(StringException, MemoryException);
 
   /**
@@ -706,8 +705,8 @@ public:
     @param string The string to replace with.
   */
   String& replace(
-    unsigned int start,
-    unsigned int end,
+    MemorySize start,
+    MemorySize end,
     const String& string) throw(StringException, MemoryException);
 
   /**
@@ -718,7 +717,7 @@ public:
     @param toStr The new string.
     @return The number of substrings that was replaced.
   */
-  unsigned int replaceAll(
+  MemorySize replaceAll(
     const String& fromStr,
     const String& toStr) throw(StringException, MemoryException);
 
@@ -731,7 +730,7 @@ public:
     @param end Specifies the end of the substring.
   */
   String substring(
-    unsigned int start, unsigned int end) const throw(MemoryException);
+    MemorySize start, MemorySize end) const throw(MemoryException);
 
   /**
     Returns a new string that contains a subsequence of characters currently
@@ -740,7 +739,7 @@ public:
 
     @param start Specifies the start of the substring.
   */
-  inline String substring(unsigned int start) const throw(MemoryException) {
+  inline String substring(MemorySize start) const throw(MemoryException) {
     return substring(start, getLength());
   }
 
@@ -1053,7 +1052,7 @@ public:
     @param start Specifies the start position of the search. Default is 0.
     @return Index of the first match if any otherwise -1.
   */
-  int indexOf(char ch, unsigned int start = 0) const throw();
+  MemoryDiff indexOf(char ch, MemorySize start = 0) const throw();
 
   /**
     Returns the index of the first substring that matches the specified string
@@ -1064,7 +1063,7 @@ public:
     @return Index of the first match if any otherwise -1. Also returns -1 if
     substring is empty.
   */
-  int indexOf(const String& string, unsigned int start = 0) const throw();
+  MemoryDiff indexOf(const String& string, MemorySize start = 0) const throw();
   
   /**
     Returns the index of the last character that matches the specified
@@ -1075,9 +1074,9 @@ public:
     string.
     @return Index of the last match if any otherwise -1.
   */
-  int lastIndexOf(char ch, unsigned int start) const throw();
+  MemoryDiff lastIndexOf(char ch, MemorySize start) const throw();
   
-  inline int lastIndexOf(char ch) const throw() {
+  inline MemoryDiff lastIndexOf(char ch) const throw() {
     return lastIndexOf(ch, getLength());
   }
 
@@ -1091,9 +1090,9 @@ public:
     @return Index of the last match if any otherwise -1. Also returns -1 if
     substring is empty.
   */
-  int lastIndexOf(const String& string, unsigned int start) const throw();
+  MemoryDiff lastIndexOf(const String& string, MemorySize start) const throw();
   
-  inline int lastIndexOf(const String& string) const throw() {
+  inline MemoryDiff lastIndexOf(const String& string) const throw() {
     return lastIndexOf(string, getLength());
   }
 
@@ -1104,7 +1103,7 @@ public:
     @param start The start position. Default is 0.
     @return The number of occurances of the character.
   */
-  unsigned int count(char ch, unsigned int start = 0) const throw();
+  MemorySize count(char ch, MemorySize start = 0) const throw();
 
   /**
     Counts the number of occurances of the specified substring in this string.
@@ -1113,8 +1112,7 @@ public:
     @param start The start position. Default is 0.
     @return The number of occurances of the substring.
   */
-  unsigned int count(
-    const String& string, unsigned int start = 0) const throw();
+  MemorySize count(const String& string, MemorySize start = 0) const throw();
 
   /**
     Trims the string.
@@ -1134,7 +1132,7 @@ public:
     @return Index of the first match if any otherwise -1. Also returns -1 if
     substring is empty.
   */
-  int search(const String& substring, unsigned int start = 0) const throw();
+  MemoryDiff search(const String& substring, MemorySize start = 0) const throw();
   
   /**
     Returns the substrings between the specified separator.
@@ -1142,8 +1140,7 @@ public:
     @param separator Separator.
     @param group Group separators. Default is false.
   */
-  Array<String> split(
-    char separator, bool group = false) throw(MemoryException);
+  Array<String> split(char separator, bool group = false) throw(MemoryException);
   
 // *************************************************************************
 //   END SECTION
@@ -1158,6 +1155,8 @@ public:
     Returns NULL-terminated string.
   */
   inline const char* getElements() const throw() {
+    ASSERT(elements->getElements()[getLength()] == Traits::TERMINATOR);
+    // TAG: get rid of the following
     // special case: no need to copy on write 'cause we only add terminator
     char* result = const_cast<char*>(elements->getElements()); // TAG: fix cast
     result[getLength()] = Traits::TERMINATOR;
@@ -1177,6 +1176,8 @@ public:
     may not be NULL-terminated. Avoid this method if you can.
   */
   inline const char* native() const throw() {
+    ASSERT(elements->getElements()[getLength()] == Traits::TERMINATOR);
+    // TAG: get rid of the following
     // special case: no need to copy on write 'cause we only add terminator
     char* result = const_cast<char*>(elements->getElements()); // TAG: fix cast
     result[getLength()] = Traits::TERMINATOR;

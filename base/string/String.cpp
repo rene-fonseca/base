@@ -22,10 +22,9 @@
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
-void String::initialize(const char* string, unsigned int length) throw(MemoryException)
+void String::initialize(const char* string, MemorySize length) throw(MemoryException)
 {
-  auto x = new ReferenceCountedCapacityAllocator<char>(length + 1, GRANULARITY);
-  elements = x;
+  elements = new ReferenceCountedCapacityAllocator<char>(length + 1, GRANULARITY);
   auto dest = elements->getElements();
   copy<char>(dest, string, length); // no overlap
   dest[length] = Traits::TERMINATOR;
@@ -63,7 +62,7 @@ String::String(const std::wstring& string) throw(StringException, MemoryExceptio
 
 String& String::operator=(const char* string) throw(StringException, MemoryException)
 {
-  const unsigned int length = string ? strlen(string) : 0;
+  const MemorySize length = string ? strlen(string) : 0;
   elements = new ReferenceCountedCapacityAllocator<char>(length + 1, GRANULARITY);
   auto dest = elements->getElements();
   copy<char>(dest, string, length); // no overlap
@@ -73,11 +72,8 @@ String& String::operator=(const char* string) throw(StringException, MemoryExcep
 
 String::String(const Literal& literal) throw(StringException, MemoryException)
 {
-  const unsigned int length = literal.getLength();
+  const MemorySize length = literal.getLength();
   // bassert(length <= MAXIMUM_LENGTH, StringException(this)); // not required
-  
-  ReferenceCountedCapacityAllocator<char>        qwerty(length + 1, GRANULARITY); // TAG: ref counter test
-
   elements = new ReferenceCountedCapacityAllocator<char>(length + 1, GRANULARITY);
   auto dest = elements->getElements();
   copy<char>(dest, literal.getValue(), length); // no overlap
@@ -101,7 +97,7 @@ String::String(const NativeString& string) throw(MemoryException)
   }
 }
 
-String::String(const NativeString& string, unsigned int maximum) throw(StringException, MemoryException)
+String::String(const NativeString& string, MemorySize maximum) throw(StringException, MemoryException)
 {
   if (string.getValue()) {
     bassert(maximum <= MAXIMUM_LENGTH, StringException(this));
@@ -121,7 +117,7 @@ String::String(const NativeString& string, unsigned int maximum) throw(StringExc
 
 String& String::operator=(const Literal& literal) throw(StringException, MemoryException) 
 {
-  const unsigned int length = literal.getLength();
+  const MemorySize length = literal.getLength();
   // bassert(length <= MAXIMUM_LENGTH, StringException(this)); // not required
   elements = new ReferenceCountedCapacityAllocator<char>(length + 1, GRANULARITY);
   auto dest = elements->getElements();
@@ -169,28 +165,28 @@ void String::garbageCollect() throw()
   elements->garbageCollect(); // no need to do copyOnWrite
 }
 
-unsigned int String::getGranularity() const throw()
+MemorySize String::getGranularity() const throw()
 {
   return elements->getGranularity();
 }
 
-void String::setGranularity(unsigned int granularity) throw()
+void String::setGranularity(MemorySize granularity) throw()
 {
   elements->setGranularity(granularity);
 }
 
-void String::forceToLength(unsigned int length) throw(StringException, MemoryException)
+void String::forceToLength(MemorySize length) throw(StringException, MemoryException)
 {
   setLength(length);
 }
 
-char String::getAt(unsigned int index) const throw(OutOfRange)
+char String::getAt(MemorySize index) const throw(OutOfRange)
 {
   bassert(index < getLength(), OutOfRange(this));
   return getBuffer()[index];
 }
 
-void String::setAt(unsigned int index, char value) throw(OutOfRange)
+void String::setAt(MemorySize index, char value) throw(OutOfRange)
 {
   bassert(index < getLength(), OutOfRange(this));
   if (value != TERMINATOR) {
@@ -200,10 +196,9 @@ void String::setAt(unsigned int index, char value) throw(OutOfRange)
   }
 }
 
-String& String::remove(
-  unsigned int start, unsigned int end) throw(MemoryException)
+String& String::remove(MemorySize start, MemorySize end) throw(MemoryException)
 {
-  const unsigned int length = getLength();
+  const MemorySize length = getLength();
   if ((start < end) && (start < length)) { // protect against some cases
     if (end >= length) {
       elements.copyOnWrite(); // we are about to modify the buffer
@@ -219,7 +214,7 @@ String& String::remove(
   return *this;
 }
 
-String& String::removeFrom(unsigned int start) throw(MemoryException) {
+String& String::removeFrom(MemorySize start) throw(MemoryException) {
   if (start < getLength()) { // protect against some cases
     elements.copyOnWrite(); // we are about to modify the buffer
     elements->setSize(start + 1); // remove section from end of string
@@ -228,8 +223,8 @@ String& String::removeFrom(unsigned int start) throw(MemoryException) {
 }
 
 String& String::insert(
-  unsigned int index, char ch) throw(StringException, MemoryException) {
-  unsigned int length = getLength();
+  MemorySize index, char ch) throw(StringException, MemoryException) {
+  MemorySize length = getLength();
   setLength(length + 1);
   auto buffer = elements->getElements();
   if (index >= length) {
@@ -243,9 +238,9 @@ String& String::insert(
 }
 
 String& String::insert(
-  unsigned int index,
+  MemorySize index,
   const String& string) throw(StringException, MemoryException) {
-  unsigned int length = getLength();
+  MemorySize length = getLength();
   if (length == 0) {
     elements = string.elements;
   } else {
@@ -265,10 +260,10 @@ String& String::insert(
 }
 
 String& String::insert(
-  unsigned int index,
+  MemorySize index,
   const Literal& literal) throw(StringException, MemoryException)
 {
-  const unsigned int length = getLength();
+  const MemorySize length = getLength();
   setLength(length + literal.getLength());
   auto buffer = elements->getElements();
   if (index >= length) {
@@ -288,7 +283,7 @@ String& String::insert(
 }
 
 String& String::insert(
-  unsigned int index,
+  MemorySize index,
   const NativeString& string) throw(StringException, MemoryException)
 {
   int strlength = 0;
@@ -301,7 +296,7 @@ String& String::insert(
     bassert(terminator, StringException(this));
     strlength = terminator - string.getValue();
   }
-  unsigned int length = getLength();
+  MemorySize length = getLength();
   setLength(length + strlength);
   auto buffer = elements->getElements();
   if (index >= length) {
@@ -319,7 +314,7 @@ String& String::insert(
 String& String::append(
   const Literal& literal) throw(StringException, MemoryException)
 {
-  const unsigned int length = getLength();
+  const MemorySize length = getLength();
   setLength(length + literal.getLength());
   auto buffer = elements->getElements();
   copy<char>(buffer + length, literal.getValue(), literal.getLength());
@@ -329,10 +324,10 @@ String& String::append(
 
 String& String::append(
   const Literal& literal,
-  unsigned int maximum) throw(StringException, MemoryException)
+  MemorySize maximum) throw(StringException, MemoryException)
 {
   bassert(maximum <= MAXIMUM_LENGTH, StringException(this));
-  const unsigned int length = getLength();
+  const MemorySize length = getLength();
   setLength(length + minimum<MemorySize>(literal.getLength(), maximum));
   auto buffer = elements->getElements();
   copy<char>(
@@ -346,12 +341,12 @@ String& String::append(
 
 String& String::append(
   const NativeString& string,
-  unsigned int maximum) throw(StringException, MemoryException)
+  MemorySize maximum) throw(StringException, MemoryException)
 {
   bassert(maximum <= MAXIMUM_LENGTH, StringException(this));
-  const unsigned int suffixLength =
+  const MemorySize suffixLength =
     getLengthOfTerminated(string.getValue(), maximum);
-  const unsigned int length = getLength();
+  const MemorySize length = getLength();
   setLength(length + suffixLength);
   auto buffer = elements->getElements();
   copy(buffer + length, string.getValue(), suffixLength);
@@ -360,13 +355,13 @@ String& String::append(
 }
 
 String& String::replace(
-  unsigned int start,
-  unsigned int end,
+  MemorySize start,
+  MemorySize end,
   const String& string) throw(StringException, MemoryException)
 {
-  unsigned int length = getLength();
-  unsigned int strlength = string.getLength();
-  unsigned int lengthAfterRemove = length;
+  MemorySize length = getLength();
+  MemorySize strlength = string.getLength();
+  MemorySize lengthAfterRemove = length;
   bool moveEnd = false;
   if ((start < end) && (start < length)) { // protect against some cases
     if (end >= length) {
@@ -376,7 +371,7 @@ String& String::replace(
       moveEnd = true;
     }
   }
-  unsigned int finalLength = lengthAfterRemove + strlength;
+  MemorySize finalLength = lengthAfterRemove + strlength;
 
   if (length < finalLength) { // is resulting string longer
     setLength(finalLength);
@@ -397,11 +392,11 @@ String& String::replace(
   return *this;
 }
 
-unsigned int String::replaceAll(
+MemorySize String::replaceAll(
   const String& fromStr,
   const String& toStr) throw(StringException, MemoryException) {
-  unsigned int count = 0;
-  unsigned int start = 0;
+  MemorySize count = 0;
+  MemorySize start = 0;
   int found;
   while ((found = indexOf(fromStr, start)) >= 0) { // continue until no more fromStr's
     replace(found, found + fromStr.getLength(), toStr); // fromStr.getLength() > 0
@@ -411,14 +406,14 @@ unsigned int String::replaceAll(
 }
 
 String String::substring(
-  unsigned int start, unsigned int end) const throw(MemoryException) {
-  unsigned int length = getLength();
+  MemorySize start, MemorySize end) const throw(MemoryException) {
+  MemorySize length = getLength();
   if ((start < end) && (start < length)) {
     if (end > length) {
       end = length; // force to end of string
     }
     // 0 <= start < end <= getLength()
-    unsigned int lengthOfSubstring = end - start;
+    MemorySize lengthOfSubstring = end - start;
     String result(lengthOfSubstring);
     result.setLength(lengthOfSubstring);
     copy(result.getBuffer(), getBuffer() + start, lengthOfSubstring); // buffers do not overlap
@@ -465,8 +460,8 @@ String& String::toUpperCase() throw()
 int String::compareTo(const String& string) const throw()
 {
   // both strings may contain multiple zeros
-  unsigned int leftLength = getLength();
-  unsigned int rightLength = string.getLength();
+  MemorySize leftLength = getLength();
+  MemorySize rightLength = string.getLength();
   const char* left = getBuffer();
   const char* right = string.getBuffer();
   const char* end = left + minimum(leftLength, rightLength);
@@ -549,43 +544,43 @@ int String::compareToIgnoreCase(const NativeString& string) const throw(StringEx
 
 bool String::startsWith(const String& prefix) const throw()
 {
-  const unsigned int prefixLength = prefix.getLength();
+  const MemorySize prefixLength = prefix.getLength();
   return (prefixLength > 0) && (prefixLength <= getLength()) &&
     (compare(getBuffer(), prefix.getBuffer(), prefixLength) == 0);
 }
 
 bool String::startsWith(const Literal& prefix) const throw()
 {
-  const unsigned int prefixLength = prefix.getLength();
+  const MemorySize prefixLength = prefix.getLength();
   return (prefixLength > 0) && (prefixLength <= getLength()) &&
     (compare<char>(getBuffer(), prefix.getValue(), prefixLength) == 0);
 }
 
 bool String::endsWith(const String& suffix) const throw()
 {
-  const unsigned int length = getLength();
-  const unsigned int suffixLength = suffix.getLength();
+  const MemorySize length = getLength();
+  const MemorySize suffixLength = suffix.getLength();
   return (suffixLength > 0) && (suffixLength <= length) &&
     (compare(getBuffer() + length - suffixLength, suffix.getBuffer(), suffixLength) == 0);
 }
 
 bool String::endsWith(const Literal& suffix) const throw()
 {
-  const unsigned int length = getLength();
-  const unsigned int suffixLength = suffix.getLength();
+  const MemorySize length = getLength();
+  const MemorySize suffixLength = suffix.getLength();
   return (suffixLength > 0) && (suffixLength <= length) &&
     (compare<char>(getBuffer() + length - suffixLength, suffix.getValue(), suffixLength) == 0);
 }
 
-int String::indexOf(char ch, unsigned int start) const throw()
+MemoryDiff String::indexOf(char ch, MemorySize start) const throw()
 {
-  unsigned int length = getLength();
+  MemorySize length = getLength();
   if (start >= length) {
     return -1; // not found
   }
 
   const auto buffer = getBuffer();
-  unsigned int count = length - start;
+  MemorySize count = length - start;
 
   const char* result = find(buffer + start, count, ch);
   if (result) { // did we find the value
@@ -595,10 +590,10 @@ int String::indexOf(char ch, unsigned int start) const throw()
   }
 }
 
-int String::indexOf(const String& string, unsigned int start) const throw()
+MemoryDiff String::indexOf(const String& string, MemorySize start) const throw()
 {
-  unsigned int length = getLength();
-  unsigned int sublength = string.getLength();
+  MemorySize length = getLength();
+  MemorySize sublength = string.getLength();
 
   if ((start >= length) || (sublength == 0) || (sublength > length)) {
     return -1; // not found
@@ -624,7 +619,7 @@ int String::indexOf(const String& string, unsigned int start) const throw()
   }
 
   // look for substring
-  unsigned int count = length - sublength + 1; // number of characters left - minimum is 1
+  MemorySize count = length - sublength + 1; // number of characters left - minimum is 1
   while (true) {
     if (match == hash) { // possible substring found
       if (compare(begin, substring, sublength) == 0) {
@@ -642,7 +637,7 @@ int String::indexOf(const String& string, unsigned int start) const throw()
   return -1; // not found
 }
 
-int String::lastIndexOf(char ch, unsigned int start) const throw()
+MemoryDiff String::lastIndexOf(char ch, MemorySize start) const throw()
 {
   // examined cases: getLength() = 0, getLength() = 1, getLength() > 1
   const char* buffer = getBuffer();
@@ -656,8 +651,8 @@ int String::lastIndexOf(char ch, unsigned int start) const throw()
   return -1; // not found
 }
 
-int String::lastIndexOf(
-  const String& string, unsigned int start) const throw()
+MemoryDiff String::lastIndexOf(
+  const String& string, MemorySize start) const throw()
 {
   if ((string.isEmpty()) || (string.getLength() > getLength())) { // eliminate some cases
     return -1; // not found
@@ -677,7 +672,7 @@ int String::lastIndexOf(
   unsigned int match = 0;
   const char* p = substring;
   const char* q = begin;
-  unsigned int count = string.getLength();
+  MemorySize count = string.getLength();
   while (count--) {
     hash = (128 * hash + *p++) % 16647143;
     match = (128 * match + *q++) % 16647143;
@@ -706,10 +701,10 @@ int String::lastIndexOf(
   return -1; // not found
 }
 
-unsigned int String::count(char ch, unsigned int start) const throw()
+MemorySize String::count(char ch, MemorySize start) const throw()
 {
   int result = 0;
-  unsigned int count = 0;
+  MemorySize count = 0;
   while ((result = indexOf(ch, start)) >= 0) { // until not found
     ++count;
     start = result + 1;
@@ -717,10 +712,10 @@ unsigned int String::count(char ch, unsigned int start) const throw()
   return count;
 }
 
-unsigned int String::count(const String& string, unsigned int start) const throw()
+MemorySize String::count(const String& string, MemorySize start) const throw()
 {
   int result = 0;
-  unsigned int count = 0;
+  MemorySize count = 0;
   while ((result = indexOf(string, start)) >= 0) { // until not found - works for empty string
     ++count;
     start = result + string.getLength();
@@ -740,7 +735,7 @@ String& String::trim(char character) throw()
 {
   ReadIterator begin = getBeginReadIterator();
   ReadIterator end = getEndReadIterator();
-  unsigned int length = getLength();
+  MemorySize length = getLength();
   bool modified = false;
   
   ReadIterator last = end;
@@ -773,20 +768,20 @@ String& String::trim(char character) throw()
 }
 
 // http://www.cs.utexas.edu/users/moore/best-ideas/string-searching/index.html
-int String::search(const String& substring, unsigned int start) const throw()
+MemoryDiff String::search(const String& substring, MemorySize start) const throw()
 {
-  const int length = substring.getLength();
+  const MemorySize length = substring.getLength();
   if ((length == 0) || (getLength() < (start + length))) {
     return -1; // not found
   }
   
-  unsigned int skip[256];
+  MemorySize skip[256];
   {
     for (unsigned int i = 0; i < getArraySize(skip); ++i) {
       skip[i] = length; // maximum single code skip
     }
     String::ReadIterator i = substring.getBeginReadIterator();
-    unsigned int current = length;
+    MemorySize current = length;
     while (current) {
       --current;
       skip[static_cast<uint8>(*i++)] = current;

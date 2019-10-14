@@ -915,13 +915,9 @@ String AnyValue::getString() const throw() {
   case CHARACTER:
     return String(&character, 1);
   case WIDE_CHARACTER:
-    return String(); // String(&wideCharacter, 1); // multi-byte character string
+    return toUTF8(&wideCharacter, 1); // multi-byte character string
   case BOOLEAN:
-    {
-      StringOutputStream stream;
-      stream << boolean << FLUSH;
-      return stream.getString();
-    }
+    return String(boolean ? MESSAGE("true") : MESSAGE("false"));
   case STRING:
     return string;
   case WIDE_STRING:
@@ -971,7 +967,7 @@ WideString AnyValue::getWideString() const throw() {
   case WIDE_CHARACTER:
     return WideString(&wideCharacter, 1);
   case BOOLEAN:
-    return boolean ? WideString(WIDEMESSAGE("false")) : WideString(WIDEMESSAGE("false")); // TAG: locale support
+    return WideString(boolean ? WIDEMESSAGE("true") : WIDEMESSAGE("false"));
   case STRING:
     return string;
   case WIDE_STRING:

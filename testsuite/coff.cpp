@@ -1148,7 +1148,7 @@ _COM_AZURE_DEV__BASE__PACKED__END
             (static_cast<uint32>(static_cast<uint8>(entry.name[6])) << 16) +
             (static_cast<uint32>(static_cast<uint8>(entry.name[5])) << 8) +
             (static_cast<uint32>(static_cast<uint8>(entry.name[4])) << 0);
-          ASSERT(offset < stringTableSize);
+          ASSERT(offset < stringTable.getSize());
           name = String(
             NativeString(
               Cast::pointer<const char*>(stringTable.getElements() + offset)

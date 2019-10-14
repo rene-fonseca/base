@@ -313,7 +313,7 @@ public:
   }
   
   unsigned int push(const uint8* buffer, unsigned int size) throw() {
-    file.write(buffer, size);
+    unsigned int result = file.write(buffer, size);
     ASSERT(result == size);
     bytesWritten += size;
     if (totalSize > 0) {

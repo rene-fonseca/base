@@ -82,8 +82,14 @@ public:
          << "Copyright (C) 2001-2019 by Rene Moeller Fonseca" << EOL
          << ENDL;
     
+    Base baseStack;
+    fout << "Unreferenced object (expecting 0 references): " << baseStack.getNumberOfReferences_INTERNAL() << ENDL;
+
     fout << "Initializing reference counted object pointers" << ENDL;
     Reference<Base> base; // ok
+    fout << "Single referenced object (expecting 1 reference): " << base->getNumberOfReferences_INTERNAL() << ENDL;
+    // TAG: add TEST support
+
     Reference<Child> child; // ok
     Reference<OtherChild> otherChild; // ok
 

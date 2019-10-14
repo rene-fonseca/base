@@ -95,7 +95,14 @@ public:
     inline bool removeReference() const throw() {
       return --object.references == 0;
     }
-    
+
+    /**
+      Returns the number of references. Avoid this.
+    */
+    inline MemorySize getNumberOfReferences() const throw() {
+      return object.references;
+    }
+
     /**
       Returns true if the object has multiple references.
     */
@@ -128,6 +135,13 @@ public:
   */
   inline ReferenceCountedObject& operator=(const ReferenceCountedObject& copy) throw() {
     return *this;
+  }
+
+  /**
+    Returns the number of references. Avoid this.
+  */
+  inline MemorySize getNumberOfReferences_INTERNAL() const throw() {
+    return references;
   }
 
   inline ~ReferenceCountedObject() {

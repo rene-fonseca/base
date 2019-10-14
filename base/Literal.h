@@ -55,6 +55,13 @@ public:
   inline MemorySize getLength() const noexcept {
     return length;
   }
+
+  /**
+    Returns true if not empty.
+  */
+  inline operator bool() const noexcept {
+    return length != 0;
+  }
 };
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

@@ -112,7 +112,7 @@ public:
       while (dest != end) {
         dest->~TYPE();
 #if defined(DEBUG) || defined(_COM_AZURE_DEV__BASE__DEBUG)
-        fill<uint8>(reinterpret_cast<uint8*>(&src), sizeof(*src), 0xaa);
+        fill<uint8>(reinterpret_cast<uint8*>(&dest), sizeof(*dest), 0xaa);
 #endif
         ++dest;
       }

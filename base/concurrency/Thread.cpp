@@ -39,21 +39,46 @@
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
-ThreadKey<Thread> Thread::ThreadLocal::thread; // thread object
-ThreadKey<Allocator<uint8> > Thread::ThreadLocal::storage; // thread local storage
-
-Thread::ThreadLocal::ThreadLocal(Thread* _thread) throw(MemoryException) {
+Thread::ThreadLocal::ThreadLocal(Thread* _thread) throw(MemoryException)
+{
+  ASSERT(_thread);
   thread.setKey(_thread);
   storage.setKey(new Allocator<uint8>(Thread::THREAD_LOCAL_STORAGE));
 }
 
-Thread::ThreadLocal::~ThreadLocal() throw() {
-  delete getStorage(); // free thread local storage
+Thread::ThreadLocal::~ThreadLocal() throw()
+{
+  auto s = storage.getKey();
+  storage.setKey(nullptr);
+  thread.setKey(nullptr); // before delete
+  delete s; // free thread local storage
+}
+
+uint8* Thread::ThreadLocal::getStorage(MemorySize size) throw()
+{
+  auto s = storage.getKey();
+  if (!s) {
+    s = new Allocator<uint8>(maximum(size, Thread::THREAD_LOCAL_STORAGE));
+    storage.setKey(s);
+  }
+  if (size > s->getSize()) {
+    s->setSize(size);
+  }
+  return s->getElements();
+}
+
+void Thread::ThreadLocal::garbageCollect() throw()
+{
+  auto s = storage.getKey();
+  if (s) {
+    s->setSize(Thread::THREAD_LOCAL_STORAGE);
+  }
 }
 
 
 
-void* Thread::entry(Thread* thread) throw() {
+void* Thread::entry(Thread* thread) throw()
+{
 #if defined(_COM_AZURE_DEV__BASE__EXCEPTION_V3MV) && !defined(_COM_AZURE_DEV__BASE__EXCEPTION_V3MV_TRANSPARENT)
   const abi::__cxa_eh_globals* abi::__cxa_get_globals(); // this allows us to use __cxa_get_globals_fast
 #endif

@@ -113,7 +113,7 @@ public:
   };
   
   /** Specifies the size of the thread local storage. */
-  static const unsigned int THREAD_LOCAL_STORAGE = 4096;
+  static const MemorySize THREAD_LOCAL_STORAGE = 4096;
   
   /**
     Group of exceptions raised directly by the Thread class.
@@ -238,6 +238,16 @@ private:
     static inline Allocator<uint8>* getStorage() throw() {
       return storage.getKey();
     }
+
+    /**
+      Returns the thread local storage with the minimum given size.
+    */
+    static uint8* getStorage(MemorySize size) throw();
+
+    /**
+      Releases excessive thread local memory.
+    */
+    static void garbageCollect() throw();
 
     /**
       Release thread local storage.

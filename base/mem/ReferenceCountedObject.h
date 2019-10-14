@@ -114,7 +114,9 @@ public:
   /**
     Initializes reference counted object with zero references.
   */
-  inline ReferenceCountedObject() throw() : references(0) {
+  inline ReferenceCountedObject() throw()
+    : references(0)
+  {
   }
 
   /**
@@ -123,7 +125,8 @@ public:
     copy constructor but makes sense since a new object cannot have any
     references.
   */
-  inline ReferenceCountedObject(const ReferenceCountedObject& copy) throw() {
+  inline ReferenceCountedObject(const ReferenceCountedObject& copy) throw()
+    : references(0) {
     // do not copy state
   }
 
@@ -133,18 +136,22 @@ public:
     the assignment doesn't influence the number of Reference objects that point
     to this object.
   */
-  inline ReferenceCountedObject& operator=(const ReferenceCountedObject& copy) throw() {
+  inline ReferenceCountedObject& operator=(const ReferenceCountedObject& copy) throw()
+  {
+    // do not copy state
     return *this;
   }
 
   /**
     Returns the number of references. Avoid this.
   */
-  inline MemorySize getNumberOfReferences_INTERNAL() const throw() {
+  inline MemorySize getNumberOfReferences_INTERNAL() const throw()
+  {
     return references;
   }
 
-  inline ~ReferenceCountedObject() {
+  inline ~ReferenceCountedObject()
+  {
   }
 };
 

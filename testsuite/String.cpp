@@ -40,16 +40,16 @@ public:
     return value;
   }
 
-  inline FormatOutputStream& operator<<(FormatOutputStream& stream) throw(IOException)
+  inline FormatOutputStream& operator<<(FormatOutputStream& stream) const throw(IOException)
   {
     return stream << static_cast<const TYPE&>(value);
   }
 };
 
 template<class TYPE>
-inline FormatOutputStream& operator<<(FormatOutputStream& stream, const TYPE& value) throw(IOException)
+inline FormatOutputStream& operator<<(FormatOutputStream& stream, const Validate<TYPE>& value) throw(IOException)
 {
-  return stream << value;;
+  return value.operator<<(stream);
 }
 
 /** Invert case of character. */

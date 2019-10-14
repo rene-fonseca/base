@@ -16,6 +16,7 @@
 #include <base/AutomationObject.h>
 #include <base/InvalidException.h>
 #include <base/Base.h>
+#include <base/string/FormatOutputStream.h>
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
@@ -96,6 +97,25 @@ public:
   inline bool isInvalid() const throw() {
     return !valid;
   }
+
+  inline FormatOutputStream& operator<<(FormatOutputStream& stream) const throw(IOException)
+  {
+    if (valid) {
+      return stream << static_cast<const TYPE&>(value);
+    } else {
+      return stream << "BAD";
+    }
+  }
 };
+
+/**
+  Writes the specified ValidifiedResult to the format output stream.
+*/
+template<class TYPE>
+inline FormatOutputStream& operator<<(
+  FormatOutputStream& stream,
+  const ValidifiedResult<TYPE>& value) throw(IOException) {
+  return value.operator<<(stream);
+}
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

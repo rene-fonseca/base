@@ -13,12 +13,12 @@
             "stopAtEntry": false,
             "cwd": "${workspaceFolder}",
             "environment": [],
-            "externalConsole": true,
+            "externalConsole": false,
             "MIMode": "lldb",
             "logging": {
-              "trace": true,
-              "traceResponse": true,
-              "engineLogging": true
+              "trace": false,
+              "traceResponse": false,
+              "engineLogging": false
             }
         },
         {

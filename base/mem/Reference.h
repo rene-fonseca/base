@@ -44,7 +44,7 @@ private:
 public:
 
   /**
-    Initializes an automation pointer as invalid (i.e. 0).
+    Initializes an automation pointer as invalid (i.e. nullptr).
   */
   inline Reference() throw() {
   }
@@ -206,7 +206,7 @@ public:
         delete value;
       }
     }
-    value = 0;
+    value = nullptr;
   }
   
   /**
@@ -214,7 +214,7 @@ public:
     object).
   */
   inline bool isValid() const throw() {
-    return value != 0;
+    return value != nullptr;
   }
 
   /**

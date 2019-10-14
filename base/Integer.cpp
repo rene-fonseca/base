@@ -16,7 +16,18 @@
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
-int Integer::parse(const String& str, bool withoutSign) throw(InvalidFormat) {
+// TAG: add support for wchar for parsing
+// TAG: use iterator instead
+
+#if 0
+int Integer::parse(const char* src, const char* end, bool withoutSign) throw(InvalidFormat)
+{
+  return -1;
+}
+#endif
+
+int Integer::parse(const String& str, bool withoutSign) throw(InvalidFormat)
+{
   String::ReadIterator i = str.getBeginReadIterator();
   const String::ReadIterator end = str.getEndReadIterator();
   

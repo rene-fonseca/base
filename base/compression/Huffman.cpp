@@ -26,6 +26,8 @@ Huffman::Huffman() throw() {
 class FixedBlockOutputStream : public FilterOutputStream {
 public:
 
+  using FilterOutputStream::write;
+    
   /** The default size of the buffer. */
   static const unsigned int DEFAULT_BUFFER_SIZE = 4096;
   /** The minimum buffer size. */
@@ -112,7 +114,7 @@ public:
     }
   }
   
-  void write(const uint8* buffer, unsigned int size) throw(IOException) {
+  void write2(const uint8* buffer, unsigned int size) throw(IOException) {
     // fill internal buffer if possible
     unsigned int bytesToCopy = minimum(size, getAvailable()); // could be 0
     copy(writeHead, buffer, bytesToCopy);
@@ -353,7 +355,7 @@ public:
 
     ASSERT((dest - header) <= getArraySize(header));
     
-    os.write(Cast::getAddress(header), dest - header);
+    os.write2(Cast::getAddress(header), dest - header);
   }
 
   Encoder(OutputStream& stream, const uint8* buffer, unsigned int size) throw(IOException)

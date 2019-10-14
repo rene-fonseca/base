@@ -429,7 +429,7 @@ int Thread::getNamedPriority(Priority priority) throw() {
 #else // unix
   static const int PRIORITY[] = {-20, -20, 0, 19};
 #endif // flavor
-  ASSERT(isWithin(0, priority, 3));
+  ASSERT(isWithin<int>(0, priority, 3));
   return PRIORITY[priority];
 }
 
@@ -476,7 +476,7 @@ int Thread::getPriority() throw(ThreadException) {
   //   THREAD_PRIORITY_ABOVE_NORMAL
   //   THREAD_PRIORITY_HIGHEST
 
-  int basePriority;
+  int basePriority = 0;
   switch (priorityClass) {
   case IDLE_PRIORITY_CLASS:
     switch (priority) {
@@ -553,9 +553,9 @@ int Thread::getPriority() throw(ThreadException) {
   }
   
   if (priorityClass == REALTIME_PRIORITY_CLASS) {
-    clamp(16, basePriority, 31);
+    basePriority = clamp(16, basePriority, 31);
   } else {
-    clamp(1, basePriority, 15);
+    basePriority = clamp(1, basePriority, 15);
   }
   return 7 - basePriority;
 #else // unix

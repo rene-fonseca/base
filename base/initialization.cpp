@@ -89,9 +89,6 @@ public:
 
 unsigned int TrackProgress::count = 0;
 
-#define _CONCATENATE_IMPL(a, b) a ## b
-#define _CONCATENATE(a, b) _CONCATENATE_IMPL(a, b)
-
 #define TRACK_PROGRESS(message) \
   TrackProgress _CONCATENATE(_tp_, __LINE__)(message)
 

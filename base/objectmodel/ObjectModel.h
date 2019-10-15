@@ -252,18 +252,6 @@ public:
 
     template<class TYPE>
     std::vector<TYPE> getAs() const;      
-
-    template<>
-    std::vector<bool> getAs<bool>() const;
-
-    template<>
-    std::vector<int> getAs<int>() const;
-
-    template<>
-    std::vector<double> getAs<double>() const;
-    
-    template<>
-    std::vector<base::String> getAs<base::String>() const;
   };
 
   /** Object. */
@@ -540,8 +528,17 @@ inline Reference<ObjectModel::Value> set(const Reference<ObjectModel::Value>& v,
   return v;
 }
 
-// TAG: add support for casting array to common primitives
-// vector<int>
+template<>
+_COM_AZURE_DEV__BASE__API std::vector<bool> ObjectModel::Array::getAs<bool>() const;
+
+template<>
+_COM_AZURE_DEV__BASE__API std::vector<int> ObjectModel::Array::getAs<int>() const;
+
+template<>
+_COM_AZURE_DEV__BASE__API std::vector<double> ObjectModel::Array::getAs<double>() const;
+
+template<>
+_COM_AZURE_DEV__BASE__API std::vector<base::String> ObjectModel::Array::getAs<base::String>() const;
 
 _COM_AZURE_DEV__BASE__API FormatOutputStream& operator<<(FormatOutputStream& stream, const Reference<ObjectModel::Value>& value);
 _COM_AZURE_DEV__BASE__API FormatOutputStream& operator<<(FormatOutputStream& stream, const Reference<ObjectModel::Void>& value);

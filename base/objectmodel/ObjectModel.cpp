@@ -187,7 +187,7 @@ ObjectModel::Array& ObjectModel::Array::operator=(const std::vector<base::String
 }
 
 template<>
-inline std::vector<bool> ObjectModel::Array::getAs<bool>() const {
+std::vector<bool> ObjectModel::Array::getAs<bool>() const {
   std::vector<bool> result;
   result.reserve(values.getSize());
   for (const auto& v : values) {
@@ -201,7 +201,7 @@ inline std::vector<bool> ObjectModel::Array::getAs<bool>() const {
 }
 
 template<>
-inline std::vector<int> ObjectModel::Array::getAs<int>() const {
+std::vector<int> ObjectModel::Array::getAs<int>() const {
   std::vector<int> result;
   result.reserve(values.getSize());
   for (const auto& v : values) {
@@ -215,7 +215,7 @@ inline std::vector<int> ObjectModel::Array::getAs<int>() const {
 }
 
 template<>
-inline std::vector<double> ObjectModel::Array::getAs<double>() const {
+std::vector<double> ObjectModel::Array::getAs<double>() const {
   std::vector<double> result;
   result.reserve(values.getSize());
   for (const auto& v : values) {
@@ -229,7 +229,7 @@ inline std::vector<double> ObjectModel::Array::getAs<double>() const {
 }
 
 template<>
-inline std::vector<base::String> ObjectModel::Array::getAs<base::String>() const {
+std::vector<base::String> ObjectModel::Array::getAs<base::String>() const {
   std::vector<base::String> result;
   result.reserve(values.getSize());
   for (const auto& v : values) {

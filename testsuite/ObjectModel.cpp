@@ -95,6 +95,7 @@ public:
     fout << "Get description by path: " << o->getString("meta/description", "") << ENDL;
     fout << "Get age by path: " << o->getInteger("age", 0) << ENDL;
     fout << "Get non-existing height by path: " << o->getInteger("height", -1) << ENDL;
+    fout << "Get array item by path: " << o->getString("animals[1]", "UNKNOWN") << ENDL;
 
     fout << ENDL;
 

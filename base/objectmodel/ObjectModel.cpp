@@ -12,6 +12,7 @@
  ***************************************************************************/
 
 #include <base/objectmodel/ObjectModel.h>
+#include <base/LongInteger.h>
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
@@ -302,15 +303,45 @@ Reference<ObjectModel::Value> ObjectModel::Object::getPath(const char* path, boo
   Reference<Object> current = this;
   while (*path) {
     const char* begin = path;
-    while (*path && (*path != '/')) { // find separator
+    while (*path && (*path != '/') && (*path != '[')) { // find separator
       ++path;
     }
+
     const base::String key(begin, path - begin);
-    if (*path) { // skip separator
-      ++path;
-    }
     if (key.isEmpty()) { // do not allow empty keys for now
       throw ObjectModelException("Invalid path.");
+    }
+
+    // handle index for Array array[0]
+    bool arrayExpected = false;
+    long long arrayIndex = -1;
+    if (*path == '[') {
+      arrayExpected = true;
+      ++path;
+      const char* ibegin = path;
+      while ((*path >= '0') && (*path <= '9')) {
+        ++path;
+      }
+      arrayIndex = LongInteger::parse(base::String(ibegin, path - ibegin), true); // TAG: add support for parsing from const char*
+      if (arrayIndex < 0) {
+        throw ObjectModelException("Invalid array index.");
+      }
+      if (arrayIndex > PrimitiveTraits<MemorySize>::MAXIMUM) {
+        throw ObjectModelException("Invalid array index.");
+      }
+      if (*path != ']') {
+        throw ObjectModelException("Invalid path.");
+      }
+      ++path; // skip ]
+    }
+
+    if (*path) {
+      if (*path != '/') {
+        throw ObjectModelException("Invalid path.");
+      }
+    }
+    if (*path) { // skip separator
+      ++path;
     }
 
     // find value
@@ -328,6 +359,18 @@ Reference<ObjectModel::Value> ObjectModel::Object::getPath(const char* path, boo
       }
       throw ObjectModelException("Path not found.");
     }
+
+    if (arrayExpected) {
+      auto a = result.cast<Array>();
+      if (!a) {
+        throw ObjectModelException("Array expected.");
+      }
+      if (!((arrayIndex >= 0) && (arrayIndex < a->values.getSize()))) {
+        throw ObjectModelException("Array index out of range.");
+      }
+      result = a->values[arrayIndex];
+    }
+
     if (!*path) {
       return result;
     }

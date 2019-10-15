@@ -16,7 +16,13 @@
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
-ObjectModel::ObjectModel()
+namespace {
+
+  ObjectModel globalObjectModel(false); // can be used across threads so we turn of reuse for lookup
+}
+
+ObjectModel::ObjectModel(bool _allowReuse)
+  : allowReuse(_allowReuse)
 {
   commonVoid = new Void();
   commonBooleanFalse = new Boolean(false);
@@ -151,7 +157,7 @@ ObjectModel::Array& ObjectModel::Array::operator=(const std::vector<bool>& _valu
   values.setSize(_values.size());
   MemorySize i = 0;
   for (const auto& v : _values) {
-    values[i++] = new Boolean(v); // TAG: add reuse
+    values[i++] = globalObjectModel.createBoolean(v); // always reusing
   }
   return *this;
 }
@@ -160,8 +166,14 @@ ObjectModel::Array& ObjectModel::Array::operator=(const std::vector<int>& _value
 {
   values.setSize(_values.size());
   MemorySize i = 0;
+  Reference<Integer> previous; // catch easy reuse case
   for (const auto& v : _values) {
-    values[i++] = new Integer(v); // TAG: add reuse
+    if (previous && (v == *previous)) {
+      values[i++] == previous;
+    } else {
+      previous = globalObjectModel.createInteger(v);
+      values[i++] = previous;
+    }
   }
   return *this;
 }
@@ -170,8 +182,14 @@ ObjectModel::Array& ObjectModel::Array::operator=(const std::vector<double>& _va
 {
   values.setSize(_values.size());
   MemorySize i = 0;
+  Reference<Float> previous; // catch easy reuse case
   for (const auto& v : _values) {
-    values[i++] = new Float(v); // TAG: add reuse
+    if (previous && (v == *previous)) {
+      values[i++] == previous;
+    } else {
+      previous = globalObjectModel.createFloat(v);
+      values[i++] = previous;
+    }
   }
   return *this;
 }
@@ -180,8 +198,14 @@ ObjectModel::Array& ObjectModel::Array::operator=(const std::vector<base::String
 {
   values.setSize(_values.size());
   MemorySize i = 0;
+  Reference<String> previous; // catch easy reuse case
   for (const auto& v : _values) {
-    values[i++] = new String(v); // TAG: add reuse
+    if (previous && (v == *previous)) {
+      values[i++] == previous;
+    } else {
+      previous = globalObjectModel.createString(v);
+      values[i++] = previous;
+    }
   }
   return *this;
 }

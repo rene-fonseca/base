@@ -98,6 +98,10 @@ public:
     virtual inline Type getType() const noexcept override {
       return TYPE_BOOLEAN;
     }
+
+    inline operator bool() const noexcept {
+      return value;
+    }
   };
 
   /** Integer. */
@@ -113,6 +117,10 @@ public:
     virtual inline Type getType() const noexcept override {
       return TYPE_INTEGER;
     }
+
+    inline operator int() const noexcept {
+      return value;
+    }
   };
 
   /** Float. */
@@ -127,6 +135,10 @@ public:
     /** Retuns the type. */
     virtual inline Type getType() const noexcept override {
       return TYPE_FLOAT;
+    }
+
+    inline operator double() const noexcept {
+      return value;
     }
   };
 
@@ -156,6 +168,10 @@ public:
     /** Retuns the type. */
     virtual inline Type getType() const noexcept override {
       return TYPE_STRING;
+    }
+
+    inline operator const base::String&() const noexcept {
+      return value;
     }
   };
 
@@ -450,15 +466,15 @@ private:
   Reference<Float> commonFloatMinus1;
   Reference<String> commonStringEmpty;
 
+  bool allowReuse = false; // only applies to dynamic strings since we could get race conditions otherwise
   /** Used to avoid reallocated of the same strings. */
   std::map<base::String, Reference<String> > lookup;
-  // TAG: add support for reusing strings
 public:
   
   /**
     Initializes the exception object with no message.
   */
-  ObjectModel();
+  ObjectModel(bool _allowReuse = true);
 
   /** Creates a void. May be reused. */
   Reference<Void> createVoid();

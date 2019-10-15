@@ -213,7 +213,7 @@ ObjectModel::Array& ObjectModel::Array::operator=(const std::vector<int>& _value
   Reference<Integer> previous; // catch easy reuse case
   for (const auto& v : _values) {
     if (previous && (v == *previous)) {
-      values[i++] == previous;
+      values[i++] = previous;
     } else {
       previous = globalObjectModel.createInteger(v);
       values[i++] = previous;
@@ -229,7 +229,7 @@ ObjectModel::Array& ObjectModel::Array::operator=(const std::vector<double>& _va
   Reference<Float> previous; // catch easy reuse case
   for (const auto& v : _values) {
     if (previous && (v == *previous)) {
-      values[i++] == previous;
+      values[i++] = previous;
     } else {
       previous = globalObjectModel.createFloat(v);
       values[i++] = previous;
@@ -245,7 +245,7 @@ ObjectModel::Array& ObjectModel::Array::operator=(const std::vector<base::String
   Reference<String> previous; // catch easy reuse case
   for (const auto& v : _values) {
     if (previous && (v == *previous)) {
-      values[i++] == previous;
+      values[i++] = previous;
     } else {
       previous = globalObjectModel.createString(v);
       values[i++] = previous;

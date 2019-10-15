@@ -11,5 +11,4 @@ Makefile
 *.so
 *.so.*
 *.dylib
-testsuite/
 .DS_Store

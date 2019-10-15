@@ -289,40 +289,57 @@ void ObjectModel::Object::setValue(const Reference<String>& key, const Reference
   values.append(std::pair<Reference<String>, Reference<Value> >(key, value));
 }
 
-// traverse
-// getPath() a/b/c
-
-// TAG: add support for default value
-Reference<ObjectModel::Value> ObjectModel::Object::getPath(const char* path) throw(ObjectModelException) {
+Reference<ObjectModel::Value> ObjectModel::Object::getPath(const char* path, bool forceNull) throw(ObjectModelException)
+{
   if (!path) {
     return nullptr;
   }
-#if 0
+#if 0 // best to only add this if required later
+  if (*path == '/') { // root is the default
+    ++path;
+  }
+#endif
+  Reference<Object> current = this;
   while (*path) {
-    
-  }
-#endif
-#if 0
-  const char* src = path;
-  while (*src && (*src != '/')) {
-    ++src;
-  }
-  base::String name;
-  Reference<Value> v = o->getValue(name);
-  Reference<Object> o = v.cast<Object>();
-  if (o) {
-    if (*src == '/') {
-      ++src;
+    const char* begin = path;
+    while (*path && (*path != '/')) { // find separator
+      ++path;
     }
-    return o->getPath(src); // TAG: avoid recursion - use loop
+    const base::String key(begin, path - begin);
+    if (*path) { // skip separator
+      ++path;
+    }
+    if (key.isEmpty()) { // do not allow empty keys for now
+      throw ObjectModelException("Invalid path.");
+    }
+
+    // find value
+    Reference<Value> result;
+    for (const auto& v : current->values) {
+      bassert(v.first, NullPointer("Key is null."));
+      if (v.first->value == key) {
+        result = v.second; // found
+        break;
+      }
+    }
+    if (!result) {
+      if (forceNull) {
+        return nullptr;
+      }
+      throw ObjectModelException("Path not found.");
+    }
+    if (!*path) {
+      return result;
+    }
+    current = result.cast<Object>();
   }
-#endif
+  ASSERT(!*path);
   return nullptr;
 }
 
 bool ObjectModel::Object::getBoolean(const char* path, bool defaultValue) throw(ObjectModelException)
 {
-  Reference<Value> v = getPath(path);
+  Reference<Value> v = getPath(path, true);
   if (!v) {
     return defaultValue;
   }
@@ -334,7 +351,7 @@ bool ObjectModel::Object::getBoolean(const char* path, bool defaultValue) throw(
 }
 
 int ObjectModel::Object::getInteger(const char* path, int defaultValue) throw(ObjectModelException) {
-  Reference<Value> v = getPath(path);
+  Reference<Value> v = getPath(path, true);
   if (!v) {
     return defaultValue;
   }
@@ -346,7 +363,7 @@ int ObjectModel::Object::getInteger(const char* path, int defaultValue) throw(Ob
 }
 
 double ObjectModel::Object::getFloat(const char* path, double defaultValue) throw(ObjectModelException) {
-  Reference<Value> v = getPath(path);
+  Reference<Value> v = getPath(path, true);
   if (!v) {
     return defaultValue;
   }
@@ -359,7 +376,7 @@ double ObjectModel::Object::getFloat(const char* path, double defaultValue) thro
 
 base::String ObjectModel::Object::getString(const char* path, const base::String& defaultValue) throw(ObjectModelException)
 {
-  Reference<Value> v = getPath(path);
+  Reference<Value> v = getPath(path, true);
   if (!v) {
     return defaultValue;
   }
@@ -372,28 +389,28 @@ base::String ObjectModel::Object::getString(const char* path, const base::String
 
 Reference<ObjectModel::Array> ObjectModel::Object::getArray(const char* path) throw(ObjectModelException)
 {
-  Reference<Value> v = getPath(path);
+  Reference<Value> v = getPath(path, true);
   if (!v) {
     return nullptr;
   }
-  Reference<Array> s = v.cast<Array>();
-  if (!s) {
+  Reference<Array> a = v.cast<Array>();
+  if (!a) {
     throw ObjectModelException("Not an array.");
   }
-  return s;
+  return a;
 }
 
 Reference<ObjectModel::Object> ObjectModel::Object::getObject(const char* path) throw(ObjectModelException)
 {
-  Reference<Value> v = getPath(path);
+  Reference<Value> v = getPath(path, true);
   if (!v) {
     return nullptr;
   }
-  Reference<Object> s = v.cast<Object>();
-  if (!s) {
+  Reference<Object> o = v.cast<Object>();
+  if (!o) {
     throw ObjectModelException("Not an object.");
   }
-  return s;
+  return o;
 }
 
 FormatOutputStream& operator<<(FormatOutputStream& stream, const Reference<ObjectModel::Value>& value)

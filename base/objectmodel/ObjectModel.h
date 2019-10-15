@@ -420,8 +420,13 @@ public:
     }
 #endif
 
-    /** Returns the value at the given path. */
-    Reference<Value> getPath(const char* path) throw(ObjectModelException);
+    /**
+      Returns the value at the given path.
+
+      @param path The path of the desired value.
+      @param forceNull Avoid exception if value doesn't exist. Returns nullptr otherwise.
+    */
+    Reference<Value> getPath(const char* path, bool forceNull = false) throw(ObjectModelException);
 
     /** Returns the boolean for the given path. Returns the default value if doesn't exist. Raises exception if value isn't a boolean. */
     bool getBoolean(const char* path, bool defaultValue) throw(ObjectModelException);

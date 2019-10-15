@@ -17,6 +17,7 @@
 #include <base/mem/Reference.h>
 #include <base/collection/Array.h>
 #include <base/string/FormatOutputStream.h>
+#include <base/string/StringOutputStream.h>
 #include <map>
 #include <vector>
 #include <utility>
@@ -50,6 +51,34 @@ public:
 /** Generic object model. */
 class _COM_AZURE_DEV__BASE__API ObjectModel : public ReferenceCountedObject {
 public:
+
+  /** Use this like StringOutputStream to get nice formatted output. */
+  class _COM_AZURE_DEV__BASE__API NiceFormat : public StringOutputStream {
+  private:
+
+    unsigned int level = 0;
+    unsigned int maximumLineLength = 80;
+  public:
+
+    inline NiceFormat() : StringOutputStream() {
+    }
+
+    inline unsigned int getMaximumLineLength() const noexcept {
+      return maximumLineLength;
+    }
+
+    inline void setMaximumLineLength(unsigned int maximumLineLength) noexcept {
+      this->maximumLineLength = maximumLineLength;
+    }
+
+    inline unsigned int enter() noexcept {
+      return ++level;
+    }
+
+    inline void exit() noexcept {
+      --level;
+    }
+  };
 
   /** Value. */
   class _COM_AZURE_DEV__BASE__API Value : public ReferenceCountedObject {
@@ -319,6 +348,11 @@ public:
         return *this;
       }
 
+      inline Element& operator=(const Reference<Void>& value)
+      {
+        return operator=(Reference<Value>(value));
+      }
+
       inline Element& operator=(const Reference<Boolean>& value)
       {
         return operator=(Reference<Value>(value));
@@ -505,7 +539,19 @@ public:
 
   /** Creates an array. */
   Reference<Array> createArray();
-  
+
+  /** Creates an array. */
+  Reference<Array> createArray(std::initializer_list<bool> l);
+
+  /** Creates an array. */
+  Reference<Array> createArray(std::initializer_list<int> l);
+
+  /** Creates an array. */
+  Reference<Array> createArray(std::initializer_list<double> l);
+
+  /** Creates an array. */
+  Reference<Array> createArray(std::initializer_list<const char*> l);
+
   /** Creates an object. */
   Reference<Object> createObject();
 };

@@ -116,6 +116,50 @@ Reference<ObjectModel::Array> ObjectModel::createArray()
   return new Array();
 }
 
+Reference<ObjectModel::Array> ObjectModel::createArray(std::initializer_list<bool> l)
+{
+  auto a = new Array();
+  a->values.setSize(l.size());
+  MemorySize i = 0;
+  for (const auto v : l) {
+    a->setAt(i++, globalObjectModel.createBoolean(v));
+  }
+  return a;
+}
+
+Reference<ObjectModel::Array> ObjectModel::createArray(std::initializer_list<int> l)
+{
+  auto a = new Array();
+  a->values.setSize(l.size());
+  MemorySize i = 0;
+  for (const auto v : l) {
+    a->setAt(i++, globalObjectModel.createInteger(v));
+  }
+  return a;
+}
+
+Reference<ObjectModel::Array> ObjectModel::createArray(std::initializer_list<double> l)
+{
+  auto a = new Array();
+  a->values.setSize(l.size());
+  MemorySize i = 0;
+  for (const auto v : l) {
+    a->setAt(i++, globalObjectModel.createFloat(v));
+  }
+  return a;
+}
+
+Reference<ObjectModel::Array> ObjectModel::createArray(std::initializer_list<const char*> l)
+{
+  auto a = new Array();
+  a->values.setSize(l.size());
+  MemorySize i = 0;
+  for (const auto v : l) {
+    a->setAt(i++, globalObjectModel.createString(v));
+  }
+  return a;
+}
+
 Reference<ObjectModel::Object> ObjectModel::createObject()
 {
   return new Object();
@@ -550,16 +594,48 @@ FormatOutputStream& operator<<(FormatOutputStream& stream, const Reference<Objec
   if (!value) {
     return stream << MESSAGE("null");
   }
+
+  // TAG: can we do this in a more general manner?
+  unsigned int level = 0;
+  ObjectModel::NiceFormat* niceFormat = nullptr;
+  if (!value->isEmpty() && (value->getSize() > 4)) { // TAG: make option for line length? - need to try to convert entire
+    niceFormat = dynamic_cast<ObjectModel::NiceFormat*>(&stream);
+    if (niceFormat) {
+      level = niceFormat->enter();
+      // TAG: also add support for compact mode
+    }
+  }
+
   stream << '[';
+  if (niceFormat) {
+    stream << EOL;
+  }
   bool first = true;
   for (const auto& v : value->values) {
     if (!first) {
-      stream << MESSAGE(", ");
+      if (niceFormat) {
+        stream << MESSAGE(",") << EOL;
+      } else {
+        stream << MESSAGE(", ");
+      }
     }
     first = false;
+    if (niceFormat) {
+      stream << indent(level * 2);
+    }
     stream << v;
   }
-  return stream << ']';
+  if (!first && niceFormat) {
+    stream << EOL;
+  }
+  if (niceFormat) {
+    niceFormat->exit();
+    stream << indent((level - 1) * 2) << ']';
+  } else {
+    stream << ']';
+  }
+
+  return stream;
 }
 
 FormatOutputStream& operator<<(FormatOutputStream& stream, const Reference<ObjectModel::Object>& value)
@@ -567,16 +643,48 @@ FormatOutputStream& operator<<(FormatOutputStream& stream, const Reference<Objec
   if (!value) {
     return stream << MESSAGE("null");
   }
+
+  // TAG: can we do this in a more general manner?
+  unsigned int level = 0;
+  ObjectModel::NiceFormat* niceFormat = nullptr;
+  if (!value->isEmpty()) {
+    niceFormat = dynamic_cast<ObjectModel::NiceFormat*>(&stream);
+    if (niceFormat) {
+      level = niceFormat->enter();
+      // TAG: also add support for compact mode
+    }
+  }
+
   stream << '{';
+  if (niceFormat) {
+    stream << EOL;
+  }
   bool first = true;
   for (const auto& v : value->values) {
     if (!first) {
-      stream << MESSAGE(", ");
+      if (niceFormat) {
+        stream << MESSAGE(",") << EOL;
+      } else {
+        stream << MESSAGE(", ");
+      }
     }
     first = false;
+    if (niceFormat) {
+      stream << indent(level * 2);
+    }
     stream << v.first << MESSAGE(": ") << v.second; // "key": value
   }
-  return stream << '}';
+  if (!first && niceFormat) {
+    stream << EOL;
+  }
+  if (niceFormat) {
+    niceFormat->exit();
+    stream << indent((level - 1) * 2) << '}';
+  } else {
+    stream << '}';
+  }
+
+  return stream;
 }
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

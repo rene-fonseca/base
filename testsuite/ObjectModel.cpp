@@ -84,10 +84,17 @@ public:
     auto o2 = objectModel.createObject();
     (*o2)["description"] = "This is a long description.";
     (*o2)["color"] = 0xfff0f0;
+    (*o2)["emptyArray"] = objectModel.createArray();
+    (*o2)["emptyObject"] = objectModel.createObject();
+    (*o2)["dummy"] = objectModel.createVoid();
+    (*o2)["shortArray"] = objectModel.createArray({1,2,3});
+    auto a4 = objectModel.createArray({ "Hello","World","from","Base","Framework" });
+    (*o2)["words"] = a4;
+    a4->setAt(2, nullptr);
     (*o)["meta"] = o2;
 
-    auto a4 = a3->getAs<String>();
-    fout << ((a4 == animals) ? MESSAGE("animals has expected value.") : MESSAGE("animals doesn't have expected value.")) << ENDL;
+    auto a5 = a3->getAs<String>();
+    fout << ((a5 == animals) ? MESSAGE("animals has expected value.") : MESSAGE("animals doesn't have expected value.")) << ENDL;
 
     fout << "Get firstName by path: " << o->getPath("firstName") << ENDL;
     fout << "Get lastName by path: " << o->getPath("lastName") << ENDL;
@@ -100,6 +107,11 @@ public:
     fout << ENDL;
 
     fout << o << ENDL;
+
+    fout << ENDL;
+    ObjectModel::NiceFormat niceFormat;
+    niceFormat << o << FLUSH;
+    fout << niceFormat.getString() << ENDL;
   }
 };
 

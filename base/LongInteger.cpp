@@ -16,14 +16,14 @@
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
-long long LongInteger::parse(
-  const String& string,
-  bool withoutSign) throw(InvalidFormat) {
-  String::ReadIterator i = string.getBeginReadIterator();
-  const String::ReadIterator end = string.getEndReadIterator();
+long long LongInteger::parse(const char* src, const char* end, unsigned int flags) throw(InvalidFormat)
+{
+  const char* i = src;
 
-  while ((i < end) && (*i == ' ')) {
-    ++i; // eat space
+  if (flags & FLAG_ALLOW_SPACES) {
+    while ((i < end) && (*i == ' ')) {
+      ++i; // eat spaces
+    }
   }
   
   bassert(
@@ -32,7 +32,7 @@ long long LongInteger::parse(
   ); // do not accept empty strings
   
   long long value = 0;
-  if (withoutSign) {
+  if ((flags & FLAG_ALLOW_SIGN) == 0) {
     unsigned long long temp = 0;
     while (i < end) {
       char ch = *i++;
@@ -90,6 +90,11 @@ long long LongInteger::parse(
 
   bassert(i == end, InvalidFormat(Type::getType<LongInteger>()));
   return value;
+}
+
+long long LongInteger::parse(const String& string, unsigned int flags) throw(InvalidFormat)
+{
+  return parse(string.getElements(), string.getElements() + string.getLength(), flags);
 }
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

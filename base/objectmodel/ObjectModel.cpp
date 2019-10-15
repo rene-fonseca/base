@@ -322,7 +322,7 @@ Reference<ObjectModel::Value> ObjectModel::Object::getPath(const char* path, boo
       while ((*path >= '0') && (*path <= '9')) {
         ++path;
       }
-      arrayIndex = LongInteger::parse(base::String(ibegin, path - ibegin), true); // TAG: add support for parsing from const char*
+      arrayIndex = LongInteger::parse(ibegin, path, 0);
       if (arrayIndex < 0) {
         throw ObjectModelException("Invalid array index.");
       }

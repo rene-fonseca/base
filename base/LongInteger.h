@@ -41,14 +41,28 @@ protected:
   /** The value. */
   long long value = 0;
 public:
-  
+
+  enum {
+    FLAG_ALLOW_SPACES = 1 << 0,
+    FLAG_ALLOW_SIGN = 1 << 1,
+    FLAG_DEFAULT = FLAG_ALLOW_SPACES | FLAG_ALLOW_SIGN
+  };
+
   /**
     Returns the value of the integer string representation.
 
     @param string The string representation.
-    @param withoutSign Effectively prevents signs from being parsed. Default is to allow a single sign.
+    @param flags The parsing flags.
   */
-  static long long parse(const String& string, bool withoutSign = false) throw(InvalidFormat);
+  static long long parse(const char* src, const char* end, unsigned int flags = FLAG_DEFAULT) throw(InvalidFormat);
+
+  /**
+    Returns the value of the integer string representation.
+
+    @param string The string representation.
+    @param flags The parsing flags.
+  */
+  static long long parse(const String& string, unsigned int flags = FLAG_DEFAULT) throw(InvalidFormat);
   
   /**
     Initializes the long integer as zero.

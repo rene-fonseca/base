@@ -13,8 +13,13 @@
 
 #pragma once
 
-#include <base/features.h>
-#include <atomic>
+#include <base/Primitives.h>
+
+#if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__MACOS)
+#  include <stdatomic.h>
+#else
+#  include <atomic>
+#endif
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
@@ -32,66 +37,156 @@ class AtomicCounter {
 private:
 
   /** The value of the counter. */
-  std::atomic<TYPE> value;
+#if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__MACOS)
+  volatile _Atomic(TYPE) value; // initialized in constructors
+#else
+  volatile std::atomic<TYPE> value;
+#endif
+  
+  AtomicCounter(const AtomicCounter& _value);
+  AtomicCounter& operator=(const AtomicCounter& _value);
 public:
 
   /**
     Initializes counter with zero.
   */
-  inline AtomicCounter() throw() : value(0) {
+#if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__MACOS)
+  inline AtomicCounter() noexcept {
+    ASSERT(atomic_is_lock_free(&value));
+    atomic_init(&value, 0);
   }
+#else
+  inline AtomicCounter() noexcept : value(0) {
+  }
+#endif
 
   /**
     Initializes the counter.
 
     @param value The initial value.
   */
-  inline AtomicCounter(TYPE _value) throw() : value(_value) {
+#if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__MACOS)
+  inline AtomicCounter(TYPE _value) noexcept {
+    atomic_init(&value, _value);
   }
+#else
+  inline AtomicCounter(TYPE _value) noexcept : value(_value) {
+  }
+#endif
 
   /**
     Returns the value of the counter.
   */
-  inline operator TYPE() const throw() {
+  inline operator TYPE() const noexcept {
+#if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__MACOS)
+    return atomic_load(&value);
+#else
     return value;
+#endif
   }
 
   /**
     Increments the counter.
   */
-  inline TYPE operator++() throw() {
+  inline TYPE operator++(int) noexcept {
+#if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__MACOS)
+    return atomic_fetch_add(&value, 1);
+#else
+    return value++;
+#endif
+   }
+
+  /**
+    Increments the counter.
+  */
+  inline TYPE operator++() noexcept {
+#if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__MACOS)
+    return atomic_fetch_add(&value, 1) + 1;
+#else
     return ++value;
+#endif
   }
 
   /**
     Decrements the counter.
   */
-  inline TYPE operator--() throw() {
+  inline TYPE operator--(int) noexcept {
+#if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__MACOS)
+    return atomic_fetch_sub(&value, 1);
+#else
+    return value--;
+#endif
+  }
+
+  /**
+    Decrements the counter.
+  */
+  inline TYPE operator--() noexcept {
+#if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__MACOS)
+    return atomic_fetch_sub(&value, 1) - 1;
+#else
     return --value;
+#endif
   }
 
   /**
     Increment counter by value.
   */
-  inline TYPE operator+=(TYPE _value) throw() {
+  inline TYPE operator+=(TYPE _value) noexcept {
+#if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__MACOS)
+    return atomic_fetch_add(&value, _value) + _value;
+#else
     value += _value;
     return value;
+#endif
   }
 
   /**
     Decrement counter by value.
   */
-  inline TYPE operator-=(TYPE _value) throw() {
+  inline TYPE operator-=(TYPE _value) noexcept {
+#if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__MACOS)
+    return atomic_fetch_sub(&value, _value) - _value;
+#else
     value -= _value;
     return value;
+#endif
   }
 
   /**
     Assign value to counter.
   */
-  inline AtomicCounter& operator=(TYPE _value) throw() {
+  inline AtomicCounter& operator=(TYPE _value) noexcept {
+#if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__MACOS)
+    atomic_store(&value, _value);
+#else
     value = _value;
+#endif
     return *this;
+  }
+
+  /**
+    Strong compare and exchange.
+  */
+  inline bool compareAndExchange(TYPE& expected, const TYPE desired) noexcept
+  {
+#if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__MACOS)
+    return atomic_compare_exchange_strong(&value, &expected, desired);
+#else
+    return value.compare_exchange_strong(expected, desired);
+#endif
+  }
+
+  /**
+    Weak compare and exchange.
+  */
+  inline bool compareAndExchangeWeak(TYPE& expected, const TYPE desired) noexcept
+  {
+#if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__MACOS)
+    return atomic_compare_exchange_weak(&value, &expected, desired);
+#else
+    return value.compare_exchange_weak(expected, desired);
+#endif
   }
 };
 

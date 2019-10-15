@@ -15,7 +15,7 @@
 
 #include <base/Primitives.h>
 #include <base/DynamicObject.h>
-#include <atomic>
+#include <base/concurrency/AtomicCounter.h>
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
@@ -51,9 +51,8 @@ class _COM_AZURE_DEV__BASE__API ReferenceCountedObject : public DynamicObject {
   friend class ReferenceImpl;
 private:
 
-  // TAG: avoid to allow DLL export
   /** The current number of references to the object. */
-  mutable std::atomic<MemorySize> references; // out of memory before overflow
+  mutable AtomicCounter<MemorySize> references; // out of memory before overflow
 public:
 
   /*

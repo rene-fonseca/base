@@ -313,7 +313,6 @@ public:
   class _COM_AZURE_DEV__BASE__API Debug {
   private:
     
-    static std::atomic<unsigned int> counter;
     unsigned int count = 0;
     Literal location;
 

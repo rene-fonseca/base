@@ -15,19 +15,19 @@
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
-SpinLock::SpinLock() throw() : value(0) {
+SpinLock::SpinLock() throw() {
 }
 
 void SpinLock::exclusiveLock() const throw() {
-  unsigned long expected = 0;
-  while (!value.compare_exchange_strong(expected, 1)) {
+  MemorySize expected = 0;
+  while (!value.compareAndExchangeWeak(expected, 1)) {
     // yield
   }
 }
 
 bool SpinLock::tryExclusiveLock() const throw() {
-  unsigned long expected = 0;
-  return value.compare_exchange_strong(expected, 1);
+  MemorySize expected = 0;
+  return value.compareAndExchangeWeak(expected, 1);
 }
 
 void SpinLock::releaseLock() const throw() {

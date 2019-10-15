@@ -14,7 +14,7 @@
 #pragma once
 
 #include <base/concurrency/Lock.h>
-#include <atomic>
+#include <base/concurrency/AtomicCounter.h>
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
@@ -32,7 +32,7 @@ _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 class _COM_AZURE_DEV__BASE__API SpinLock : public Lock {
 private:
 
-  mutable std::atomic<unsigned long> value;
+  mutable AtomicCounter<MemorySize> value;
 public:
   
   /**

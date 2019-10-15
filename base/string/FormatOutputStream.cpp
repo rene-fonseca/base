@@ -20,10 +20,14 @@
 #include <base/Date.h>
 #include <base/string/StringOutputStream.h>
 #include <base/TypeInfo.h>
+#include <base/concurrency/AtomicCounter.h>
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
-std::atomic<unsigned int> FormatOutputStream::Debug::counter(0);
+namespace {
+
+  AtomicCounter<MemorySize> counter;
+}
 
 unsigned int FormatOutputStream::Debug::allocateCounter() noexcept {
   return ++counter;

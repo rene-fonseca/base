@@ -15,7 +15,7 @@
 
 #include <base/mem/NullPointer.h>
 #include <base/Base.h>
-#include <atomic>
+#include <base/concurrency/AtomicCounter.h>
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
@@ -44,7 +44,7 @@ class ReferenceCounter {
 public:
 
   /** The type of the reference counter. */
-  typedef std::atomic<MemorySize> Counter; // out of memory before counter overflow
+  typedef AtomicCounter<MemorySize> Counter; // out of memory before counter overflow
 private:
 
   /** Pointer to shared reference counted object. */

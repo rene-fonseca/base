@@ -74,6 +74,8 @@ file(GLOB base_SRC
   "base/mem/*.cpp"
   "base/net/*.h"
   "base/net/*.cpp"
+  "base/objectmodel/*.h"
+  "base/objectmodel/*.cpp"
 #  "base/opencl/*.h"
 #  "base/opencl/*.cpp"
   "base/opengl/*.h"

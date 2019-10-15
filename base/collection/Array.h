@@ -235,6 +235,20 @@ public:
   }
 
   /**
+    Returns the first element of the allocator as a modifying array.
+  */
+  inline Iterator begin() throw() {
+    return getBeginIterator();
+  }
+
+  /**
+    Returns the end of the allocator as a modifying array.
+  */
+  inline Iterator end() throw() {
+    return getEndIterator();
+  }
+
+  /**
     Returns a modifying enumerator of the array.
   */
   inline Enumerator getEnumerator() throw() {

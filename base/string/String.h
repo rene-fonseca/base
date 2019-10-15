@@ -40,6 +40,8 @@ class FormatOutputStream;
 class _COM_AZURE_DEV__BASE__API CharTraits {
 public:
   
+  typedef char Char;
+
   /** Specifies the terminator for NULL-terminated strings. */
   static const char TERMINATOR = '\0';
 
@@ -518,6 +520,11 @@ public:
   */
   Element operator[](MemorySize index) throw(OutOfRange) {
     return Element(*this, index);
+  }
+
+  /** Returns true if non-empty. */
+  inline operator bool() const noexcept {
+    return getLength() != 0;
   }
 
   /**
@@ -1198,17 +1205,30 @@ public:
 /**
   Writes string to format stream.
 */
-_COM_AZURE_DEV__BASE__API FormatOutputStream& operator<<(
-  FormatOutputStream& stream, const String& value) throw(IOException);
+_COM_AZURE_DEV__BASE__API FormatOutputStream& operator<<(FormatOutputStream& stream, const String& value) throw(IOException);
 
 /**
   Returns a new string that is the concatenation of the two specified strings.
 */
-inline String operator+(
-  const String& left,
-  const String& right) throw(StringException, MemoryException) {
-  return
-    String(left.getLength() + right.getLength()).append(left).append(right);
+inline String operator+(const String& left, const String& right)
+{
+  return String(left.getLength() + right.getLength()).append(left).append(right);
+}
+
+/**
+  Returns a new string that is the concatenation of the two specified strings.
+*/
+inline String operator+(const String& left, const char* right)
+{
+  return left + String(right);
+}
+
+/**
+  Returns a new string that is the concatenation of the two specified strings.
+*/
+inline String operator+(const char* left, const String& right)
+{
+  return String(left) + right;
 }
 
 /**
@@ -1216,8 +1236,8 @@ inline String operator+(
   suffix (e.g. ("presuf"-"suf") results in a new string "pre" whereas
   ("pre"-"suf") results in "pre").
 */
-inline String operator-(
-  const String& left, const String& right) throw(MemoryException) {
+inline String operator-(const String& left, const String& right)
+{
   if (left.endsWith(right)) {
     return left.substring(0, left.getLength() - right.getLength()); // return copy of left without suffix
   } else {

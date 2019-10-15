@@ -51,6 +51,7 @@ class _COM_AZURE_DEV__BASE__API ReferenceCountedObject : public DynamicObject {
   friend class ReferenceImpl;
 private:
 
+  // TAG: avoid to allow DLL export
   /** The current number of references to the object. */
   mutable std::atomic<MemorySize> references; // out of memory before overflow
 public:

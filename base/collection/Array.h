@@ -87,7 +87,7 @@ private:
   Reference<ReferenceCountedCapacityAllocator<Value> > elements;
   /** The number of elements in the array. */
   unsigned int size = 0;
-protected:
+public:
 
   /**
     Sets the size of the array.
@@ -102,7 +102,6 @@ protected:
       }
     }
   }
-public:
 
   /**
     Returns the elements of the array for modifying access.

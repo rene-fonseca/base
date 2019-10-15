@@ -531,7 +531,7 @@ _COM_AZURE_DEV__BASE__PACKED__END
     const unsigned int base = directory->ordinalBase;
     for (unsigned int i = 0; i < directory->namePointers; ++i) {
       const int o = *ordinalTable;
-      ASSERT(o >= base);
+      ASSERT(static_cast<unsigned int>(o) >= base);
       const uint32 address = exportTable[o - base];
 
       String name = String(

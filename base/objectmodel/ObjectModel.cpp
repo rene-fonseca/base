@@ -36,6 +36,19 @@ ObjectModel::ObjectModel(bool _allowReuse)
   commonStringEmpty = new String();
 }
 
+base::String ObjectModel::Value::toString(bool niceFormat) const noexcept
+{
+  if (niceFormat) {
+    ObjectModel::NiceFormat s;
+    s << *this << FLUSH;
+    return s.getString();
+  } else {
+    StringOutputStream s;
+    s << *this << FLUSH;
+    return s.getString();
+  }
+}
+
 Reference<ObjectModel::Void> ObjectModel::createVoid()
 {
   return commonVoid;

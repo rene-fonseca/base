@@ -94,11 +94,11 @@ public:
       TYPE_OBJECT
     };
     
-    /** Retuns the type. */
+    /** Returns the type. */
     virtual Type getType() const noexcept = 0;
 
-    /** Retuns string representation. */
-    // virtual base::String toString() const noexcept = 0;
+    /** Returns string representation. */
+    base::String toString(bool niceFormat) const noexcept;
   };
 
   /** Void. */
@@ -108,7 +108,7 @@ public:
     inline Void() {
     }
 
-    /** Retuns the type. */
+    /** Returns the type. */
     virtual inline Type getType() const noexcept override {
       return TYPE_VOID;
     }
@@ -123,7 +123,7 @@ public:
     inline Boolean(bool _value) : value(_value) {
     }
 
-    /** Retuns the type. */
+    /** Returns the type. */
     virtual inline Type getType() const noexcept override {
       return TYPE_BOOLEAN;
     }
@@ -142,7 +142,7 @@ public:
     inline Integer(int _value) : value(_value) {
     }
 
-    /** Retuns the type. */
+    /** Returns the type. */
     virtual inline Type getType() const noexcept override {
       return TYPE_INTEGER;
     }
@@ -161,7 +161,7 @@ public:
     inline Float(double _value) : value(_value) {
     }
     
-    /** Retuns the type. */
+    /** Returns the type. */
     virtual inline Type getType() const noexcept override {
       return TYPE_FLOAT;
     }
@@ -194,7 +194,7 @@ public:
       return getSize() == 0;
     }
     
-    /** Retuns the type. */
+    /** Returns the type. */
     virtual inline Type getType() const noexcept override {
       return TYPE_STRING;
     }
@@ -262,7 +262,7 @@ public:
       }
     };
 
-    /** Retuns the type. */
+    /** Returns the type. */
     virtual inline Type getType() const noexcept override {
       return TYPE_ARRAY;
     }
@@ -305,12 +305,12 @@ public:
     
     base::Array<std::pair<Reference<String>, Reference<Value> > > values;
 
-    /** Retuns the type. */
+    /** Returns the type. */
     virtual inline Type getType() const noexcept override {
       return TYPE_OBJECT;
     }
 
-    /** Retuns the number of keys in the object. */
+    /** Returns the number of keys in the object. */
     MemorySize getSize() const noexcept;
 
     /** Returns the size of the array. */

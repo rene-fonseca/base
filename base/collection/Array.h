@@ -221,6 +221,20 @@ public:
   }
 
   /**
+    Returns the first element of the allocator as a non-modifying array.
+  */
+  inline ReadIterator begin() const throw() {
+    return getBeginReadIterator();
+  }
+
+  /**
+    Returns the end of the allocator as a non-modifying array.
+  */
+  inline ReadIterator end() const throw() {
+    return getEndReadIterator();
+  }
+
+  /**
     Returns a modifying enumerator of the array.
   */
   inline Enumerator getEnumerator() throw() {

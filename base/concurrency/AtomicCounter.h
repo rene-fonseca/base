@@ -218,8 +218,7 @@ public:
 
   enum {
     DEFAULT_VALUE = 0,
-    DESTRUCT_VALUE = -1,
-    ALIGNMENT = 16
+    DESTRUCT_VALUE = -1
   };
 
   /**
@@ -229,7 +228,7 @@ public:
   */
   inline AtomicCounter(const TYPE _value = DEFAULT_VALUE) noexcept
   {
-    ASSERT((getAddressOf(&value) & (ALIGNMENT - 1)) == 0);
+    ASSERT((getAddressOf(&value) & (sizeof(TYPE) - 1)) == 0);
 #if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__MACOS)
     ASSERT(atomic_is_lock_free(&value));
     atomic_init(&value, _value);
@@ -243,7 +242,7 @@ public:
   */
   inline AtomicCounter(const AtomicCounter& _value) noexcept
   {
-    ASSERT((getAddressOf(&value) & (ALIGNMENT - 1)) == 0);
+    ASSERT((getAddressOf(&value) & (sizeof(TYPE) - 1)) == 0);
 #if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__MACOS)
     ASSERT(atomic_is_lock_free(&value));
     atomic_init(&value, _value.load());

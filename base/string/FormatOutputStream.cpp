@@ -26,7 +26,7 @@ _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 namespace {
 
-  AtomicCounter<MemorySize> counter;
+  PreferredAtomicCounter counter;
 }
 
 unsigned int FormatOutputStream::Debug::allocateCounter() noexcept {

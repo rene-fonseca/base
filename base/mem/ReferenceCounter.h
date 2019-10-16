@@ -44,7 +44,7 @@ class ReferenceCounter {
 public:
 
   /** The type of the reference counter. */
-  typedef AtomicCounter<MemorySize> Counter; // out of memory before counter overflow
+  typedef PreferredAtomicCounter Counter; // out of memory before counter overflow
 private:
 
   /** Pointer to shared reference counted object. */

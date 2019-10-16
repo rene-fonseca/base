@@ -33,31 +33,36 @@ class _COM_AZURE_DEV__BASE__API NISpinLock : public Lock {
 private:
   
   /** Lock. */
-  mutable AtomicCounter<MemorySize> value;
+  mutable PreferredAtomicCounter value;
+
+  enum {
+    LOCK_FREE = 0,
+    LOCK_TAKEN = 1
+  };
 public:
   
   /**
     Initializes spin lock to unlocked state.
   */
-  NISpinLock() throw();
+  NISpinLock() noexcept;
   
   /**
     Acquires an exclusive lock.
   */
-  void exclusiveLock() const throw();
+  void exclusiveLock() const noexcept;
   
   /**
     Tries to acquire an exclusive lock.
     
     @return True on success.
   */
-  bool tryExclusiveLock() const throw();
+  bool tryExclusiveLock() const noexcept;
   
   /**
     Acquires a shared lock. For some lock implementations this will acquire an
     exclusive lock.
   */
-  inline void sharedLock() const throw() {
+  inline void sharedLock() const noexcept {
     exclusiveLock();
   }
   
@@ -66,14 +71,14 @@ public:
 
     @return True on success.
   */
-  inline bool trySharedLock() const throw() {
+  inline bool trySharedLock() const noexcept {
     return tryExclusiveLock();
   }
   
   /**
     Releases the spin lock.
   */
-  void releaseLock() const throw();
+  void releaseLock() const noexcept;
 };
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

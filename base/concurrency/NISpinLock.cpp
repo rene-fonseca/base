@@ -15,23 +15,34 @@
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
-NISpinLock::NISpinLock() throw() {
+NISpinLock::NISpinLock() noexcept
+  : value(LOCK_FREE)
+{
 }
 
-void NISpinLock::exclusiveLock() const throw() {
-  MemorySize expected = 0;
-  while (!value.compareAndExchangeWeak(expected, 1)) {
+void NISpinLock::exclusiveLock() const noexcept
+{
+  MemoryDiff expected = LOCK_FREE;
+  while (!value.compareAndExchangeWeak(expected, LOCK_TAKEN)) {
+
+#if defined(_DEBUG)
+    MemoryDiff current = value;
+    ASSERT((current == LOCK_FREE) || (current == LOCK_TAKEN));
+#endif
+
     // yield
   }
 }
 
-bool NISpinLock::tryExclusiveLock() const throw() {
-  MemorySize expected = 0;
-  return value.compareAndExchangeWeak(expected, 1);
+bool NISpinLock::tryExclusiveLock() const noexcept
+{
+  MemoryDiff expected = LOCK_FREE;
+  return value.compareAndExchangeWeak(expected, LOCK_TAKEN);
 }
 
-void NISpinLock::releaseLock() const throw() {
-  value = 0;
+void NISpinLock::releaseLock() const noexcept
+{
+  value = LOCK_FREE;
 }
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

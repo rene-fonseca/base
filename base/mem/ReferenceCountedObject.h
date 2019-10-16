@@ -52,7 +52,7 @@ class _COM_AZURE_DEV__BASE__API ReferenceCountedObject : public DynamicObject {
 private:
 
   /** The current number of references to the object. */
-  mutable AtomicCounter<MemorySize> references; // out of memory before overflow
+  mutable PreferredAtomicCounter references; // out of memory before overflow
 public:
 
   /*

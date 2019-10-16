@@ -389,7 +389,7 @@ public:
     Returns the number of characters in the string.
   */
   inline MemorySize getLength() const throw() {
-    return elements->getSize() - 1;
+    return elements->getSize() - 1; // exclude null terminator
   }
 
   /**
@@ -1161,18 +1161,38 @@ public:
   */
   char* getElements() throw();
 
+  /** Returns true if state is valid. */
+  inline bool invariant() const {
+    const MemorySize length = getLength();
+    return (elements->getElements()[length] == Traits::TERMINATOR);
+  }
+  
   /**
     Returns NULL-terminated string.
   */
   inline const char* getElements() const throw() {
-    ASSERT(elements->getElements()[getLength()] == Traits::TERMINATOR);
-    // TAG: get rid of the following
-    // special case: no need to copy on write 'cause we only add terminator
-    char* result = const_cast<char*>(elements->getElements()); // TAG: fix cast
-    result[getLength()] = Traits::TERMINATOR;
+    const MemorySize length = getLength();
+    const char* result = elements->getElements();
+    if (result[length] != Traits::TERMINATOR) { // TAG: remove when ready
+      const MemorySize likelyLength = strlen(result);
+      const MemorySize lengthAgain = getLength();
+      ASSERT(false);
+      const_cast<char*>(result)[length] = Traits::TERMINATOR;
+    }
     return result;
   }
 
+  /**
+    Returns the end of string.
+  */
+  inline const char* getEnd() const throw() {
+    const MemorySize length = getLength();
+    const char* result = elements->getElements();
+    return result + length;
+  }
+
+  // TAG: we can return both being and end with one method MemorySpan<char> getMemorySpan() const;
+  
   /**
     Returns the characters of the string for non-modifying access. The elements
     may not be NULL-terminated. Avoid this method if you can.

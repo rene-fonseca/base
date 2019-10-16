@@ -448,7 +448,7 @@ Reference<ObjectModel::Value> ObjectModel::Object::getPath(const char* path, boo
       if (!a) {
         throw ObjectModelException("Array expected.");
       }
-      if (!((arrayIndex >= 0) && (arrayIndex < a->values.getSize()))) {
+      if (!((arrayIndex >= 0) && (static_cast<MemorySize>(arrayIndex) < a->values.getSize()))) {
         throw ObjectModelException("Array index out of range.");
       }
       result = a->values[arrayIndex];

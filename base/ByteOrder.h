@@ -14,6 +14,7 @@
 #pragma once
 
 #include <base/Primitives.h>
+#include <base/string/FormatOutputStream.h>
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
@@ -331,6 +332,12 @@ _COM_AZURE_DEV__BASE__PACKED__BEGIN
   } _COM_AZURE_DEV__BASE__PACKED;
 _COM_AZURE_DEV__BASE__PACKED__END
   
+  template<class TYPE>
+  inline FormatOutputStream& operator<<(FormatOutputStream& stream, const LittleEndian<TYPE>& value)
+  {
+    return stream << static_cast<TYPE>(value);
+  }
+
   /**
     This class is used to store primitives in big endian byte order
     independently of the native byte order of the platform.
@@ -368,7 +375,7 @@ _COM_AZURE_DEV__BASE__PACKED__BEGIN
     }
   } _COM_AZURE_DEV__BASE__PACKED;
 _COM_AZURE_DEV__BASE__PACKED__END
-  
+    
 _COM_AZURE_DEV__BASE__PACKED__BEGIN
   /* 16 bit unsigned integer represented in big endian byte order. */
   template<>
@@ -507,6 +514,12 @@ _COM_AZURE_DEV__BASE__PACKED__BEGIN
   } _COM_AZURE_DEV__BASE__PACKED;
 _COM_AZURE_DEV__BASE__PACKED__END
   
+  template<class TYPE>
+  inline FormatOutputStream& operator<<(FormatOutputStream& stream, const BigEndian<TYPE>& value)
+  {
+    return stream << static_cast<TYPE>(value);
+  }
+
 #endif // little endian
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

@@ -79,7 +79,7 @@ Matrix<TYPE>::Matrix(Enumerator<ReadEnumeratorTraits<TYPE> >& diagonal, const Di
 
 
 template<class TYPE>
-TYPE Matrix<TYPE>::getAt(unsigned int row, unsigned int column) const throw(OutOfRange) {
+const TYPE& Matrix<TYPE>::getAt(unsigned int row, unsigned int column) const throw(OutOfRange) {
   validateElement(row, column);
   return getReadOnlyElements()[row * getColumns() + column];
 }

@@ -50,7 +50,7 @@ Vector<TYPE>& Vector<TYPE>::operator=(const Vector& eq) throw(MemoryException) {
 }
 
 template<class TYPE>
-TYPE Vector<TYPE>::getAt(unsigned int index) const throw(OutOfRange) {
+const TYPE& Vector<TYPE>::getAt(unsigned int index) const throw(OutOfRange) {
   if (index >= getSize()) {
     throw OutOfRange(this);
   }

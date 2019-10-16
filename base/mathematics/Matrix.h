@@ -513,7 +513,7 @@ public:
     @param row The row of the element.
     @param column The column of the element.
   */
-  TYPE getAt(unsigned int row, unsigned int colum) const throw(OutOfRange);
+  const TYPE& getAt(unsigned int row, unsigned int colum) const throw(OutOfRange);
   
   /**
     Sets the element at the specified position.
@@ -529,7 +529,7 @@ public:
   /**
     Returns the element at the specified position.
   */
-  inline TYPE operator()(
+  inline const TYPE& operator()(
     unsigned int row,
     unsigned int column) const throw(OutOfRange) {
     return getAt(row, column);

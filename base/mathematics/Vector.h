@@ -61,7 +61,7 @@ public:
       return *this;
     }
     
-    inline operator TYPE() const throw(OutOfRange) {
+    inline operator const TYPE&() const throw(OutOfRange) {
       return vector.getAt(index);
     }
   };
@@ -210,7 +210,7 @@ public:
 
     @param index The index of the desired element.
   */
-  TYPE getAt(unsigned int index) const throw(OutOfRange);
+  const TYPE& getAt(unsigned int index) const throw(OutOfRange);
 
   /**
     Sets the element at the specified index.

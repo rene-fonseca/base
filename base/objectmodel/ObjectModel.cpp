@@ -34,6 +34,8 @@ ObjectModel::ObjectModel(bool _allowReuse)
   commonFloat1 = new Float(1);
   commonFloatMinus1 = new Float(-1);
   commonStringEmpty = new String();
+  // commonArrayEmpty = new Array();
+  // commonObjectEmpty = new Object();
 }
 
 base::String ObjectModel::Value::toString(bool niceFormat) const noexcept

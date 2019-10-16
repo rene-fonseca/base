@@ -493,12 +493,12 @@ private:
   Reference<Integer> commonInteger0;
   Reference<Integer> commonInteger1;
   Reference<Integer> commonIntegerMinus1;
-  // std::vector<Reference<Float> > commonIntegers;
-  // std::vector<Reference<Float> > commonFloats;
   Reference<Float> commonFloat0;
   Reference<Float> commonFloat1;
   Reference<Float> commonFloatMinus1;
   Reference<String> commonStringEmpty;
+  // Reference<Array> commonArrayEmpty;
+  // Reference<Object> commonObjectEmpty;
 
   bool allowReuse = false; // only applies to dynamic strings since we could get race conditions otherwise
   /** Used to avoid reallocated of the same strings. */

@@ -160,6 +160,11 @@ void String::ensureCapacity(MemorySize capacity) throw(MemoryException)
   elements->ensureCapacity(capacity); // no need to do copyOnWrite
 }
 
+void String::clear()
+{
+  setLength(0);
+}
+
 void String::garbageCollect() throw()
 {
   elements->garbageCollect(); // no need to do copyOnWrite

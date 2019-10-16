@@ -426,6 +426,9 @@ public:
   */
   void ensureCapacity(MemorySize capacity) throw(MemoryException);
 
+  /** Clears the string. */
+  void clear();
+  
   /**
     Releases any unused capacity of the string. This applies to all shared
     strings.

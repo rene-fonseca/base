@@ -88,8 +88,14 @@ public:
     a4->setAt(2, nullptr);
     (*o)["meta"] = o2;
 
-    String text = JSON::getJSON(o, true);
+    const String text = JSON::getJSON(o, true);
     fout << text << ENDL;
+
+    fout << ENDL;
+
+    Reference<ObjectModel::Value> o3 = JSON().parse(text);
+    fout << o3 << ENDL;
+
   }
 };
 

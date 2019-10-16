@@ -13,6 +13,8 @@
 
 #include <base/objectmodel/JSON.h>
 #include <base/io/File.h>
+#include <locale>
+#include <codecvt>
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
@@ -22,12 +24,14 @@ JSON::JSON()
 
 Reference<ObjectModel::Void> JSON::parseNull(Parser& parser)
 {
+  skipSpaces(parser);
   parser.read("null");
   return objectModel.createVoid();
 }
 
 Reference<ObjectModel::Boolean> JSON::parseBoolean(Parser& parser)
 {
+  skipSpaces(parser);
   switch (parser.peek()) {
   case 'f':
     parser.read("false");
@@ -39,21 +43,106 @@ Reference<ObjectModel::Boolean> JSON::parseBoolean(Parser& parser)
   throw JSONException("Expected boolean.");
 }
 
+bool JSON::parseIntegerImpl(Parser& parser, int& i)
+{
+  skipSpaces(parser);
+  i = 0;
+  int sign = 1;
+  if (parser.peek() == '-') {
+    parser.read();
+    sign = -1;
+  }
+  while (true) {
+    const char ch = parser.read();
+    if (!((ch >= '0') && (ch <= 9))) {
+      return false;
+    }
+    uint8 digit = static_cast<uint8>(ch - '0');
+    i = i * 10 + digit;
+    if (i * sign < PrimitiveTraits<int>::MINIMUM) {
+      return false;
+    } else if (i * sign > PrimitiveTraits<int>::MAXIMUM) {
+      return false;
+    }
+  }
+  i = static_cast<int>(i * sign);
+  return true;
+}
+
 Reference<ObjectModel::Integer> JSON::parseInteger(Parser& parser)
 {
-  return nullptr;
+  skipSpaces(parser);
+  int i = 0;
+  if (!parseIntegerImpl(parser, i)) {
+    throw JSONException("Expected integer.");
+  }
+  return objectModel.createInteger(i);
 }
 
 Reference<ObjectModel::Float> JSON::parseFloat(Parser& parser)
 {
-  return nullptr;
+  skipSpaces(parser);
+
+  const Parser p = parser;
+
+  if (parser.peek() == '-') {
+    parser.skip();
+  }
+
+  if (parser.peek() == '0') {
+    parser.skip();
+  } else {
+    if ((parser.peek() >= '1') || (parser.peek() <= '9')) {
+      parser.skip();
+    }
+    while ((parser.peek() >= '0') || (parser.peek() <= '9')) {
+      parser.skip();
+    }
+  }
+  
+  // fraction
+  if (parser.peek() == '.') {
+    parser.skip();
+    // skip digits
+    while ((parser.peek() >= '0') || (parser.peek() <= '9')) {
+      parser.skip();
+    }
+  }
+  
+  // exponent
+  if ((parser.peek() == 'E') || (parser.peek() == 'e')) {
+    parser.skip();
+    if ((parser.peek() == '-') || (parser.peek() == '+')) {
+      parser.skip();
+    }
+    while ((parser.peek() >= '0') || (parser.peek() <= '9')) {
+      parser.skip();
+    }
+  }
+
+  const char* b = reinterpret_cast<const char*>(p.getCurrent());
+  const char* e = reinterpret_cast<const char*>(parser.getCurrent());
+
+  text.clear();
+  text.reserve(1024);
+  text.append(b, e - b);
+  
+  size_t idx = 0;
+  double d = stod(text, &idx);
+  if (idx != (e - b)) { // TAG: check this
+    throw JSONException("Malformed float.");
+  }
+  return objectModel.createFloat(d);
 }
 
 Reference<ObjectModel::Value> JSON::parseNumber(Parser& parser)
 {
-  return parseInteger(parser);
+  skipSpaces(parser);
+  int i = 0;
+  if (parseIntegerImpl(parser, i)) {
+    return objectModel.createInteger(i);
+  }
   return parseFloat(parser);
-  return nullptr;
 }
 
 Reference<ObjectModel::String> JSON::parseString(Parser& parser)
@@ -62,14 +151,69 @@ Reference<ObjectModel::String> JSON::parseString(Parser& parser)
   if (!parser.peek('"')) {
     throw JSONException("Expected string.");
   }
+  text.clear();
+  text.reserve(1024);
   parser.read('"');
-  const Parser begin = parser;
   while (parser.peek() != '"') {
-    // TAG: handle escapes
-    parser.skip();
+    const char ch = parser.read();
+    if (ch == '\\') { // escape
+      const char ch2 = parser.read();
+      switch (ch2) {
+      case '"':
+        text.push_back('"');
+        break;
+      case '\\':
+        text.push_back('\\');
+        break;
+      case '/':
+        text.push_back('/');
+        break;
+      case 'b':
+        text.push_back('\b');
+        break;
+      case 'f':
+        text.push_back('\f');
+        break;
+      case 'n':
+        text.push_back('\n');
+        break;
+      case 'r':
+        text.push_back('\r');
+        break;
+      case 't':
+        text.push_back('\t');
+        break;
+      case 'u':
+        { // TAG: make sure a-f and A-F works
+          const char h0 = parser.read();
+          const char h1 = parser.read();
+          const char h2 = parser.read();
+          const char h3 = parser.read();
+          if (ASCIITraits::isHexDigit(h0) || ASCIITraits::isHexDigit(h1) ||
+              ASCIITraits::isHexDigit(h2) || ASCIITraits::isHexDigit(h3)) {
+            const uint16 d0 = ASCIITraits::digitToValue(h0);
+            const uint16 d1 = ASCIITraits::digitToValue(h1);
+            const uint16 d2 = ASCIITraits::digitToValue(h2);
+            const uint16 d3 = ASCIITraits::digitToValue(h3);
+            const uint16 value = (d0 << 12) | (d1 << 8) | (d2 << 4) | (d3 << 0);
+            const wchar* src = reinterpret_cast<const wchar*>(&value);
+            std::wstring_convert<std::codecvt_utf8<wchar_t>, wchar_t> convert;
+            std::string s = convert.to_bytes(src, src + 1);
+            text += s;
+          } else {
+            throw JSONException("Malformed string.");
+          }
+        }
+        break;
+      default:
+        throw JSONException("Malformed string.");
+      }
+    } else {
+      text.push_back(ch);
+    }
   }
   parser.read('"');
-  return nullptr;
+  return objectModel.createString(String(text));
 }
 
 Reference<ObjectModel::Array> JSON::parseArray(Parser& parser)
@@ -113,7 +257,7 @@ Reference<ObjectModel::Object> JSON::parseObject(Parser& parser)
   skipSpaces(parser);
   if (parser.peek() == '}') {
     parser.skip();
-    return result; // TAG: reuse empty object
+    return result;
   }
   while (true) {
     skipSpaces(parser);
@@ -121,7 +265,7 @@ Reference<ObjectModel::Object> JSON::parseObject(Parser& parser)
     skipSpaces(parser);
     parser.read(':');
     skipSpaces(parser);
-    Reference<ObjectModel::String> value = parseValue(parser);
+    Reference<ObjectModel::Value> value = parseValue(parser);
     result->setValue(key, value);
     skipSpaces(parser);
     switch (parser.peek()) {
@@ -161,11 +305,25 @@ Reference<ObjectModel::Value> JSON::parseValue(Parser& parser)
 Reference<ObjectModel::Value> JSON::parse(const uint8* src, const uint8* end)
 {
   Parser parser(src, end);
-  return parseObject(parser);
+  auto result = parseObject(parser);
+  skipSpaces(parser);
+  if (parser.hasMore()) {
+    throw JSONException("Unexpected content after object.");
+  }
+  return result;
+}
+
+Reference<ObjectModel::Value> JSON::parse(const String& text)
+{
+  return parse(
+    reinterpret_cast<const uint8*>(text.getElements()),
+    reinterpret_cast<const uint8*>(text.getElements()) + text.getLength()
+  );
 }
 
 Reference<ObjectModel::Value> JSON::parseFile(const String& path)
 {
+  // TAG: need support for streaming
   PrimitiveArray<uint8> buffer(0);
   try {
     File file(path, File::READ, 0);

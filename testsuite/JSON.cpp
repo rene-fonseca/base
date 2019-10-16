@@ -16,6 +16,13 @@
 
 using namespace com::azure::dev::base;
 
+const char* JSON_EXAMPLE = "{"
+"  \"hello\": \"This is a test.\","
+"  \"count\": 123456,"
+"  \"house\": {\"area\": 90, \"floors\": 2, \"description\": \"Great place.\"},"
+"  \"list\": [false, 997, true, \"JSON is nice and simple\"]"
+"}";
+
 class JSONApplication : public Application {
 private:
 
@@ -36,8 +43,11 @@ public:
          << "The Base Framework (Test Suite)" << EOL
          << "Copyright (C) 2019 by Rene Moeller Fonseca" << EOL
          << ENDL;
-    
-    JSON json;
+
+    Reference<ObjectModel::Value> example1 = JSON().parse(JSON_EXAMPLE);
+    // fout << "Example1:" << EOL << example1 << ENDL;
+    fout << "Example1:" << EOL << JSON::getJSON(example1) << ENDL;
+
     ObjectModel objectModel;
     auto o = objectModel.createObject();
     // TAG add support for *o[key] = value;
@@ -83,7 +93,7 @@ public:
     (*o2)["emptyObject"] = objectModel.createObject();
     (*o2)["dummy"] = objectModel.createVoid();
     (*o2)["shortArray"] = objectModel.createArray({1,2,3});
-    auto a4 = objectModel.createArray({ "Hello","World","from","Base","Framework" });
+    auto a4 = objectModel.createArray({"Hello", "World", "from", "Base", "Framework"});
     (*o2)["words"] = a4;
     a4->setAt(2, nullptr);
     (*o)["meta"] = o2;
@@ -92,10 +102,9 @@ public:
     fout << text << ENDL;
 
     fout << ENDL;
-
+   
     Reference<ObjectModel::Value> o3 = JSON().parse(text);
     fout << o3 << ENDL;
-
   }
 };
 

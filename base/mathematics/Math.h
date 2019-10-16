@@ -568,7 +568,7 @@ public:
     #elif defined(_COM_AZURE_DEV__BASE__HAVE_ISOC_LOG2)
       return isoc::log2(value);
     #else
-      return Math::ln(value) * constant::LOG2E;
+      return Math::ln(value) * constant::LOG2E_F;
     #endif
   }
 
@@ -598,7 +598,7 @@ public:
     #elif defined(_COM_AZURE_DEV__BASE__HAVE_ISOC_LOG2F)
       return isoc::log2f(value);
     #else
-      return Math::ln(value) * constant::LOG2E;
+      return Math::ln(value) * constant::LOG2E_L;
     #endif
   }
   
@@ -613,9 +613,9 @@ public:
         return isoc::log10f(value);
       #else
         #if defined(_COM_AZURE_DEV__BASE__REDIR_ISOC_LOGF)
-          return _COM_AZURE_DEV__BASE__REDIR_ISOC_LOGF(value) * constant::LOG10E;
+          return _COM_AZURE_DEV__BASE__REDIR_ISOC_LOGF(value) * constant::LOG10E_F;
         #else
-          return isoc::logf(value) * constant::LOG10E;
+          return isoc::logf(value) * constant::LOG10E_F;
         #endif
       #endif
     #endif
@@ -639,9 +639,9 @@ public:
         return isoc::log10l(value);
       #else
         #if defined(_COM_AZURE_DEV__BASE__REDIR_ISOC_LOGL)
-          return _COM_AZURE_DEV__BASE__REDIR_ISOC_LOGL(value) * constant::LOG10E;
+          return _COM_AZURE_DEV__BASE__REDIR_ISOC_LOGL(value) * constant::LOG10E_L;
         #else
-          return isoc::logl(value) * constant::LOG10E;
+          return isoc::logl(value) * constant::LOG10E_L;
         #endif
       #endif
     #endif
@@ -830,7 +830,7 @@ public:
       return _COM_AZURE_DEV__BASE__REDIR_ISOC_ACOSL(value);
     #else
       return Math::atan2(Math::sqrt(1 - value * value), value);
-      // return constant::PI_2 - Math::atan(value/Math::sqrt((1 - value * value)));
+      // return constant::PI_2_L - Math::atan(value/Math::sqrt((1 - value * value)));
     #endif
   }
 
@@ -873,7 +873,7 @@ public:
     #elif defined(_COM_AZURE_DEV__BASE__REDIR_ISOC_ATANF)
       return _COM_AZURE_DEV__BASE__REDIR_ISOC_ATANF(value);
     #else
-      return isoc::atan(value);
+      return isoc::atanf(value);
     #endif
   }
 
@@ -1429,7 +1429,7 @@ public:
   */
   static inline float sincPi(float value) throw() {
     return (value == 0) ? 1 :
-      Math::sin(constant::PI * value)/(constant::PI * value);
+      Math::sin(constant::PI_F * value)/(constant::PI_F * value);
   }
   
   /**
@@ -1445,7 +1445,7 @@ public:
   */
   static inline long double sincPi(long double value) throw() {
     return (value == 0) ? 1 :
-      Math::sin(constant::PI * value)/(constant::PI * value);
+      Math::sin(constant::PI_L * value)/(constant::PI_L * value);
   }
   
   /**

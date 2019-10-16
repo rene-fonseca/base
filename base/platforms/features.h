@@ -16,8 +16,14 @@
 #include <base/platforms/symbols.h> // must be first
 #include <base/configuration.h>
 
+// _COM_AZURE_DEV__BASE__DEBUG influences state!
+
 #if defined(_COM_AZURE_DEV__BASE__DEBUG)
 #  define DEBUG // enable ASSERT and ASSERTION
+#endif
+
+#if defined(DEBUG) || defined(_DEBUG) || defined(_COM_AZURE_DEV__BASE__DEBUG)
+#  define _COM_AZURE_DEV__BASE__ANY_DEBUG
 #endif
 
 #include <base/features.h>

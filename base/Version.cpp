@@ -79,4 +79,26 @@ extern "C" void libbase_entry() {
 }
 #endif
 
+MemorySize Version::getDynamicObjectSize() noexcept
+{
+  return sizeof(DynamicObject);
+}
+
+bool Version::getDefine_COM_AZURE_DEV__BASE__DEBUG() noexcept
+{
+#if defined(_COM_AZURE_DEV__BASE__DEBUG)
+  return true;
+#else
+  return false;
+#endif
+}
+
+bool Version::getDefine_DEBUG() noexcept {
+#if defined(DEBUG) || defined(_DEBUG) || defined(_COM_AZURE_DEV__BASE__DEBUG)
+  return true;
+#else
+  return false;
+#endif
+}
+
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

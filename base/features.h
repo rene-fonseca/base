@@ -83,7 +83,7 @@ namespace com {
 #define _COM_AZURE_DEV__BASE__CONCATENATE(a, b) _COM_AZURE_DEV__BASE__CONCATENATE_IMPL(a, b)
 
 // allow macros to be overridden
-#if (defined(DEBUG) || defined(_COM_AZURE_DEV__BASE__DEBUG))
+#if defined(_COM_AZURE_DEV__BASE__ANY_DEBUG)
 #  include <base/Trace.h>
 #  if (!defined(ASSERT))
 #    define ASSERT(expression) {if (!(expression)) {Trace::message("Assertion failure of (" #expression ") at " __FILE__ ":" _COM_AZURE_DEV__BASE__INDIRECT_STRINGIFY(__LINE__));}}

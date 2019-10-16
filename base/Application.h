@@ -13,13 +13,13 @@
 
 #pragma once
 
-#include <base/Object.h>
 #include <base/string/String.h>
 #include <base/collection/Array.h>
 #include <base/collection/Map.h>
 #include <base/OutOfDomain.h>
 #include <base/SingletonException.h>
 #include <base/concurrency/SpinLock.h>
+#include <base/Version.h>
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
@@ -106,6 +106,8 @@ public:
   template<class APPLICATION>
   static inline int stub(int numberOfArguments, const char* arguments[], const char* environment[]) throw() {
     try {
+      Version::isBuildCompatible();
+
       APPLICATION application(numberOfArguments, arguments, environment);
       try {
         application.main();

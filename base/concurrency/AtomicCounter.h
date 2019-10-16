@@ -211,7 +211,7 @@ private:
 #elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__MACOS)
     atomic_exchange(&value, desired);
 #else
-    value.atomic_store(desired);
+    value.store(desired);
 #endif
   }
 public:
@@ -409,7 +409,7 @@ public:
   typedef typename MapToSignedType<TYPE>::SignedType SignedType;
   typedef AtomicCounter<SignedType> BASE;
 
-  inline AtomicCounterU(const TYPE _value = DEFAULT_VALUE) noexcept
+  inline AtomicCounterU(const TYPE _value = static_cast<TYPE>(BASE::DEFAULT_VALUE)) noexcept
     : BASE(static_cast<SignedType>(_value))
   {
   }
@@ -449,7 +449,7 @@ public:
     return BASE::operator-=(static_cast<SignedType>(_value));
   }
 
-  inline AtomicCounter& operator=(const TYPE _value) noexcept
+  inline AtomicCounterU& operator=(const TYPE _value) noexcept
   {
     BASE::operator=(static_cast<SignedType>(_value));
     return *this;

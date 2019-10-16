@@ -31,11 +31,11 @@ class _COM_AZURE_DEV__BASE__API MultibyteException : public Exception {
 private:
   
   /** Index of first invalid character. */
-  int index = -1;
+  MemoryDiff index = -1;
   /** Index of first invalid octet. */
-  int octetIndex = -1;
+  MemoryDiff octetIndex = -1;
   /** Index of first invalid octet within first invalid character. */
-  int suboctetIndex = -1;
+  MemoryDiff suboctetIndex = -1;
 public:
 
   enum Cause {
@@ -71,37 +71,35 @@ public:
     @param message An NULL-terminated string (ASCII).
     @param type The identity of the type.
   */
-  inline MultibyteException(
-    const char* message,
-    Type type) throw()
+  inline MultibyteException(const char* message, Type type) throw()
     : Exception(message, type) {
   }
   
   /**
     Returns the index of the first invalid character.
   */
-  inline int getIndex() const throw() {
+  inline MemoryDiff getIndex() const throw() {
     return index;
   }
   
   /**
     Sets the index of the first invalid character.
   */
-  inline void setIndex(unsigned int index) throw() {
+  inline void setIndex(MemoryDiff index) throw() {
     this->index = index;
   }
   
   /**
     Returns the octet index.
   */
-  inline int getOctetIndex() const throw() {
+  inline MemoryDiff getOctetIndex() const throw() {
     return octetIndex;
   }
   
   /**
     Sets the index of the first invalid octet.
   */
-  inline void setOctetIndex(unsigned int _octetIndex) throw() {
+  inline void setOctetIndex(MemoryDiff _octetIndex) throw() {
     octetIndex = _octetIndex;
   }
   
@@ -109,7 +107,7 @@ public:
     Returns the index of the first invalid octet within the first invalid
     character.
   */
-  inline int getSuboctetIndex() const throw() {
+  inline MemoryDiff getSuboctetIndex() const throw() {
     return suboctetIndex;
   }
   

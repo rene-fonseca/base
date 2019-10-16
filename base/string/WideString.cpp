@@ -282,9 +282,8 @@ bool isUCS4(unsigned int value) throw() {
 }
 #endif
 
-void WideString::initialize(
-  const wchar* string, unsigned int nativeLength) throw(MemoryException) {
-  
+void WideString::initialize(const wchar* string, MemorySize nativeLength) throw(MemoryException)
+{
   if (sizeof(wchar) == sizeof(ucs2)) {
     MemorySize length = UCS2ToUCS4(
       0,
@@ -318,11 +317,9 @@ void WideString::initialize(
   }
 }
 
-void WideString::initialize(
-  const char* string, unsigned int length) throw(MemoryException) {
-  
-  const unsigned int numberOfCharacters =
-    UTF8ToUCS4(0, Cast::pointer<const uint8*>(string), length);
+void WideString::initialize(const char* string, MemorySize length) throw(MemoryException)
+{  
+  const MemorySize numberOfCharacters = UTF8ToUCS4(0, Cast::pointer<const uint8*>(string), length);
   bassert(numberOfCharacters <= MAXIMUM_LENGTH, MemoryException(this));
   elements = new ReferenceCountedCapacityAllocator<ucs4>(
     numberOfCharacters + 1,
@@ -359,11 +356,8 @@ Literal WideString::toString(MultibyteEncoding encoding) throw() {
   }
 }
 
-unsigned int WideString::UCS2ToUTF8(
-  uint8* dest,
-  const ucs2* src,
-  unsigned int size,
-  unsigned int flags) throw(WideStringException) {
+MemorySize WideString::UCS2ToUTF8(uint8* dest, const ucs2* src, MemorySize size, unsigned int flags) throw(WideStringException)
+{
   if (src == 0) {
     return 0;
   }
@@ -378,7 +372,7 @@ unsigned int WideString::UCS2ToUTF8(
     while (src < end) {
       const ucs2 code = *src++;
       if (code <= 0x0000007fU) {
-        *dest++ = code;
+        *dest++ = static_cast<uint8>(code);
       } else if (code <= 0x000007ffU) {
         *dest++ = 0xc0 | (code >> 6); // 5 bit - most significant
         *dest++ = 0x80 | ((code >> 0) & ((1 << 6) - 1)); // 6 bit
@@ -442,11 +436,8 @@ unsigned int WideString::UCS2ToUTF8(
   }
 }
 
-unsigned int WideString::UCS4ToUTF8(
-  uint8* dest,
-  const ucs4* src,
-  unsigned int size,
-  unsigned int flags) throw(WideStringException) {
+MemorySize WideString::UCS4ToUTF8(uint8* dest, const ucs4* src, MemorySize size, unsigned int flags) throw(WideStringException)
+{
   if (src == 0) {
     return 0;
   }
@@ -522,11 +513,8 @@ unsigned int WideString::UCS4ToUTF8(
   }
 }
 
-unsigned int WideString::UTF8ToUCS2(
-  ucs2* dest,
-  const uint8* src,
-  unsigned int size,
-  unsigned int flags) throw(MultibyteException) {
+MemorySize WideString::UTF8ToUCS2(ucs2* dest, const uint8* src, MemorySize size, unsigned int flags) throw(MultibyteException)
+{
   if (src == 0) {
     return 0;
   }
@@ -641,7 +629,8 @@ unsigned int WideString::UTF8ToUCS2(
 #if 0 // TAG: fixme
 inline /*???*/
 void WideString::invalidCode(
-  int octetIndex, int suboctetIndex) throw(MultibyteException) {
+  int octetIndex, int suboctetIndex) throw(MultibyteException)
+{
   MultibyteException e(
     "Invalid character code",
     Type::getType<WideString>()
@@ -654,7 +643,8 @@ void WideString::invalidCode(
 
 inline /*???*/
 void WideString::incompleteCode(
-  int octetIndex, int suboctetIndex) throw(MultibyteException) {
+  int octetIndex, int suboctetIndex) throw(MultibyteException)
+{
   MultibyteException e(
     "Incomplete character code",
     Type::getType<WideString>()
@@ -666,11 +656,8 @@ void WideString::incompleteCode(
 }
 #endif
 
-unsigned int WideString::UTF8ToUCS4(
-  ucs4* dest,
-  const uint8* src,
-  unsigned int size,
-  unsigned int flags) throw(MultibyteException) {
+MemorySize WideString::UTF8ToUCS4(ucs4* dest, const uint8* src, MemorySize size, unsigned int flags) throw(MultibyteException)
+{
   if (src == 0) {
     return 0;
   }
@@ -769,7 +756,7 @@ unsigned int WideString::UTF8ToUCS4(
   } else { // calculate length and validate
     MemorySize length = 0;
     while (src < end) {
-      unsigned int numberOfOctets;
+      unsigned int numberOfOctets = 0;
       uint8 value = *src++;
       if ((value & 0x80) == 0x00) {
         numberOfOctets = 0;
@@ -818,11 +805,8 @@ unsigned int WideString::UTF8ToUCS4(
   }
 }
 
-unsigned int WideString::UCS2ToUTF16BE(
-  uint8* dest,
-  const ucs2* src,
-  unsigned int size,
-  unsigned int flags) throw(WideStringException) {
+MemorySize WideString::UCS2ToUTF16BE(uint8* dest, const ucs2* src, MemorySize size, unsigned int flags) throw(WideStringException)
+{
   if (src == 0) {
     return 0;
   }
@@ -830,11 +814,8 @@ unsigned int WideString::UCS2ToUTF16BE(
   return 0;
 }
 
-unsigned int WideString::UCS2ToUTF16LE(
-  uint8* dest,
-  const ucs2* src,
-  unsigned int size,
-  unsigned int flags) throw(WideStringException) {
+MemorySize WideString::UCS2ToUTF16LE(uint8* dest, const ucs2* src, MemorySize size, unsigned int flags) throw(WideStringException)
+{
   if (src == 0) {
     return 0;
   }
@@ -842,7 +823,8 @@ unsigned int WideString::UCS2ToUTF16LE(
   return 0;
 }
 
-unsigned int WideString::UCS4ToUTF16BE(uint8* dest, const ucs4* src, unsigned int size, unsigned int flags) throw(WideStringException) {
+MemorySize WideString::UCS4ToUTF16BE(uint8* dest, const ucs4* src, MemorySize size, unsigned int flags) throw(WideStringException)
+{
   if (src == 0) {
     return 0;
   }
@@ -895,7 +877,8 @@ unsigned int WideString::UCS4ToUTF16BE(uint8* dest, const ucs4* src, unsigned in
   }
 }
 
-unsigned int WideString::UCS4ToUTF16LE(uint8* dest, const ucs4* src, unsigned int size, unsigned int flags) throw(WideStringException) {
+MemorySize WideString::UCS4ToUTF16LE(uint8* dest, const ucs4* src, MemorySize size, unsigned int flags) throw(WideStringException)
+{
   if (src == 0) {
     return 0;
   }
@@ -957,7 +940,8 @@ unsigned int WideString::UCS4ToUTF16LE(uint8* dest, const ucs4* src, unsigned in
   }
 }
 
-unsigned int WideString::UCS2ToUCS4(ucs4* dest, const ucs2* src, unsigned int size, unsigned int flags) throw(WideStringException) {
+MemorySize WideString::UCS2ToUCS4(ucs4* dest, const ucs2* src, MemorySize size, unsigned int flags) throw(WideStringException)
+{
   if (src == 0) {
     return 0;
   }
@@ -1007,7 +991,8 @@ unsigned int WideString::UCS2ToUCS4(ucs4* dest, const ucs2* src, unsigned int si
   }
 }
 
-unsigned int WideString::UCS4ToUCS2(ucs2* dest, const ucs4* src, unsigned int size, unsigned int flags) throw(WideStringException) {
+MemorySize WideString::UCS4ToUCS2(ucs2* dest, const ucs4* src, MemorySize size, unsigned int flags) throw(WideStringException)
+{
   if (src == 0) {
     return 0;
   }
@@ -1057,7 +1042,8 @@ unsigned int WideString::UCS4ToUCS2(ucs2* dest, const ucs4* src, unsigned int si
   }
 }
 
-unsigned int WideString::UTF16ToUCS4(ucs4* dest, const uint8* src, unsigned int size, unsigned int flags) throw(MultibyteException) {
+MemorySize WideString::UTF16ToUCS4(ucs4* dest, const uint8* src, MemorySize size, unsigned int flags) throw(MultibyteException)
+{
   if (src == 0) {
     return 0;
   }
@@ -1276,12 +1262,8 @@ unsigned int WideString::UTF16ToUCS4(ucs4* dest, const uint8* src, unsigned int 
   }
 }
 
-unsigned int WideString::UCS4ToUTF32BE(
-  uint8* dest,
-  const ucs4* src,
-  unsigned int size,
-  unsigned int flags) throw(WideStringException) {
-  
+MemorySize WideString::UCS4ToUTF32BE(uint8* dest, const ucs4* src, MemorySize size, unsigned int flags) throw(WideStringException)
+{
   if (src == 0) {
     return 0;
   }
@@ -1318,12 +1300,8 @@ unsigned int WideString::UCS4ToUTF32BE(
   return dest - begin;
 }
 
-unsigned int WideString::UCS4ToUTF32LE(
-  uint8* dest,
-  const ucs4* src,
-  unsigned int size,
-  unsigned int flags) throw(WideStringException) {
-  
+MemorySize WideString::UCS4ToUTF32LE(uint8* dest, const ucs4* src, MemorySize size, unsigned int flags) throw(WideStringException)
+{
   if (src == 0) {
     return 0;
   }
@@ -1358,7 +1336,8 @@ unsigned int WideString::UCS4ToUTF32LE(
   }
 }
 
-WideString::MultibyteEncoding WideString::getMultibyteEncoding(const uint8* src, unsigned int size) throw() {
+WideString::MultibyteEncoding WideString::getMultibyteEncoding(const uint8* src, MemorySize size) throw()
+{
   if (size % 4 == 0) {
     if ((src[0] == 0x00) && (src[1] == 0x00) && (src[2] == 0xfe) && (src[3] == 0xff)) {
       return UTF32BE;
@@ -1401,7 +1380,8 @@ WideString::MultibyteEncoding WideString::getMultibyteEncoding(const uint8* src,
   return UTF8;
 }
 
-unsigned int WideString::UTF32ToUCS4(ucs4* dest, const uint8* src, unsigned int size, unsigned int flags) throw(MultibyteException) {
+MemorySize WideString::UTF32ToUCS4(ucs4* dest, const uint8* src, MemorySize size, unsigned int flags) throw(MultibyteException)
+{
   if (src == 0) {
     return 0;
   }
@@ -1546,12 +1526,13 @@ unsigned int WideString::UTF32ToUCS4(ucs4* dest, const uint8* src, unsigned int 
 }
 
 String WideString::getMultibyteString(const wchar* string)
-  throw(NullPointer, MultibyteException, WideStringException) {
+  throw(NullPointer, MultibyteException, WideStringException)
+{
   // TAG: should accept string == 0
   bassert(string, NullPointer(Type::getType<WideString>()));
   const wchar* terminator = find<wchar>(string, MAXIMUM_LENGTH, 0); // find terminator
   bassert(terminator, WideStringException(Type::getType<WideString>())); // maximum length exceeded
-  const int nativeLength = terminator - string;
+  const MemorySize nativeLength = terminator - string;
   
   String result;
   if (sizeof(wchar) == sizeof(ucs2)) {
@@ -1592,28 +1573,33 @@ String WideString::getMultibyteString(const wchar* string)
 WideString::WideString() throw() : elements(DEFAULT_STRING.elements) {
 }
 
-WideString::WideString(MemorySize capacity) throw(MemoryException) {
+WideString::WideString(MemorySize capacity) throw(MemoryException)
+{
   elements = new ReferenceCountedCapacityAllocator<ucs4>(1, GRANULARITY);
   elements->ensureCapacity(capacity + 1);
 }
 
-WideString::WideString(const wchar* string) throw(MemoryException) {
+WideString::WideString(const wchar* string) throw(MemoryException)
+{
   if (string) {
     const size_t size = wcslen(string);
     initialize(string, size);
   }
 }
 
-WideString::WideString(const std::string& string) throw(WideStringException, MemoryException) {
+WideString::WideString(const std::string& string) throw(WideStringException, MemoryException)
+{
   const std::wstring wide = toWide(string);
   initialize(wide.c_str(), wide.size());
 }
 
-WideString::WideString(const std::wstring& string) throw(WideStringException, MemoryException) {
+WideString::WideString(const std::wstring& string) throw(WideStringException, MemoryException)
+{
   initialize(string.c_str(), string.size());
 }
 
-WideString::WideString(const WideLiteral& literal) throw(WideStringException, MemoryException) {
+WideString::WideString(const WideLiteral& literal) throw(WideStringException, MemoryException)
+{
   MemorySize nativeLength = literal.getLength();
   if (sizeof(wchar) == sizeof(ucs2)) {
     MemorySize length = UCS2ToUCS4(
@@ -1650,7 +1636,8 @@ WideString::WideString(const WideLiteral& literal) throw(WideStringException, Me
   }
 }
 
-WideString::WideString(const NativeWideString& string) throw(WideStringException, MemoryException) {
+WideString::WideString(const NativeWideString& string) throw(WideStringException, MemoryException)
+{
   
   if (!string.getValue()) {
     elements = DEFAULT_STRING.elements;
@@ -1659,7 +1646,7 @@ WideString::WideString(const NativeWideString& string) throw(WideStringException
   
   const wchar* terminator = find<wchar>(string.getValue(), MAXIMUM_LENGTH, 0);
   bassert(terminator, WideStringException(this)); // maximum length exceeded
-  unsigned int nativeLength = terminator - string.getValue();
+  MemorySize nativeLength = terminator - string.getValue();
   
   if (sizeof(wchar) == sizeof(ucs2)) {
     MemorySize length = UCS2ToUCS4(
@@ -1694,7 +1681,8 @@ WideString::WideString(const NativeWideString& string) throw(WideStringException
   }
 }
 
-WideString::WideString(const NativeWideString& string, unsigned int maximum) throw(OutOfDomain, WideStringException, MemoryException) {
+WideString::WideString(const NativeWideString& string, MemorySize maximum) throw(OutOfDomain, WideStringException, MemoryException)
+{
   bassert(maximum <= MAXIMUM_LENGTH, OutOfDomain(this));
 
   if (!string.getValue()) {
@@ -1703,8 +1691,7 @@ WideString::WideString(const NativeWideString& string, unsigned int maximum) thr
   }
   
   const wchar* terminator = find<wchar>(string.getValue(), maximum, 0);
-  const unsigned int nativeLength =
-    terminator ? (terminator - string.getValue()) : maximum;
+  const MemorySize nativeLength = terminator ? (terminator - string.getValue()) : maximum;
   
   if (sizeof(wchar) == sizeof(ucs2)) {
     MemorySize length = UCS2ToUCS4(
@@ -1740,14 +1727,14 @@ WideString::WideString(const NativeWideString& string, unsigned int maximum) thr
 }
 
 WideString::WideString(
-  const String& string) throw(MultibyteException, MemoryException) {
-  unsigned int multibyteLength = string.getLength();
-  unsigned int numberOfCharacters =
-    UTF8ToUCS4(
-      0,
-      Cast::pointer<const uint8*>(string.getElements()),
-      multibyteLength
-    );
+  const String& string) throw(MultibyteException, MemoryException)
+{
+  MemorySize multibyteLength = string.getLength();
+  MemorySize numberOfCharacters = UTF8ToUCS4(
+    0,
+    Cast::pointer<const uint8*>(string.getElements()),
+    multibyteLength
+  );
   bassert(numberOfCharacters <= MAXIMUM_LENGTH, MemoryException(this));
   elements = new ReferenceCountedCapacityAllocator<ucs4>(
     numberOfCharacters + 1,
@@ -1762,7 +1749,8 @@ WideString::WideString(
   }
 }
 
-WideString::WideString(const NativeString& string) throw(MultibyteException, MemoryException) {
+WideString::WideString(const NativeString& string) throw(MultibyteException, MemoryException)
+{
   if (!string.getValue()) { // is string null
     elements = DEFAULT_STRING.elements;
     return;
@@ -1773,9 +1761,9 @@ WideString::WideString(const NativeString& string) throw(MultibyteException, Mem
     terminator,
     WideStringException(Type::getType<WideString>())
   ); // maximum length exceeded
-  const unsigned int multibyteLength = terminator - string.getValue();
+  const MemorySize multibyteLength = terminator - string.getValue();
 
-  unsigned int numberOfCharacters = UTF8ToUCS4(
+  MemorySize numberOfCharacters = UTF8ToUCS4(
       0,
       Cast::pointer<const uint8*>(string.getValue()),
       multibyteLength
@@ -1794,8 +1782,8 @@ WideString::WideString(const NativeString& string) throw(MultibyteException, Mem
   }
 }
 
-WideString::WideString(
-  const NativeString& string, unsigned int maximum) throw(OutOfDomain, MultibyteException, MemoryException) {
+WideString::WideString(const NativeString& string, MemorySize maximum) throw(OutOfDomain, MultibyteException, MemoryException)
+{
   bassert(maximum <= MAXIMUM_LENGTH, OutOfDomain(this));
   
   if (!string.getValue()) { // is string null
@@ -1804,10 +1792,9 @@ WideString::WideString(
   }
   
   const char* terminator = find<char>(string.getValue(), maximum, 0);
-  const unsigned int multibyteLength =
-    (terminator) ? (terminator - string.getValue()) : maximum;
+  const MemorySize multibyteLength = (terminator) ? (terminator - string.getValue()) : maximum;
   
-  unsigned int numberOfCharacters = UTF8ToUCS4(
+  MemorySize numberOfCharacters = UTF8ToUCS4(
     0,
     Cast::pointer<const uint8*>(string.getValue()),
     multibyteLength
@@ -1826,8 +1813,8 @@ WideString::WideString(
   }
 }
 
-WideString& WideString::operator=(const WideLiteral& literal)
-  throw(WideStringException, MemoryException) {
+WideString& WideString::operator=(const WideLiteral& literal) throw(WideStringException, MemoryException)
+{
   MemorySize nativeLength = literal.getLength();
   bassert(
     nativeLength <= MAXIMUM_LENGTH,
@@ -1879,7 +1866,8 @@ bool WideString::isASCII() const throw() {
   return true;
 }
 
-void WideString::ensureCapacity(MemorySize capacity) throw(MemoryException) {
+void WideString::ensureCapacity(MemorySize capacity) throw(MemoryException)
+{
   elements->ensureCapacity(capacity); // no need to do copyOnWrite
 }
 
@@ -1895,12 +1883,12 @@ void WideString::setGranularity(MemorySize granularity) throw() {
   elements->setGranularity(granularity);
 }
 
-ucs4 WideString::getAt(unsigned int index) const throw(OutOfRange) {
+ucs4 WideString::getAt(MemorySize index) const throw(OutOfRange) {
   bassert(index < getLength(), OutOfRange(this));
   return getBuffer()[index];
 }
 
-void WideString::setAt(unsigned int index, ucs4 value) throw(OutOfRange) {
+void WideString::setAt(MemorySize index, ucs4 value) throw(OutOfRange) {
   bassert(index < getLength(), OutOfRange(this));
   if (value != Traits::TERMINATOR) {
     getBuffer()[index] = value;
@@ -1909,9 +1897,9 @@ void WideString::setAt(unsigned int index, ucs4 value) throw(OutOfRange) {
   }
 }
 
-WideString& WideString::remove(
-  unsigned int start, unsigned int end) throw(MemoryException) {
-  unsigned int length = getLength();
+WideString& WideString::remove(MemorySize start, MemorySize end) throw(MemoryException)
+{
+  MemorySize length = getLength();
   if ((start < end) && (start < length)) { // protect against some cases
     if (end >= length) {
       elements.copyOnWrite(); // we are about to modify the buffer
@@ -1926,7 +1914,8 @@ WideString& WideString::remove(
   return *this;
 }
 
-WideString& WideString::removeFrom(unsigned int start) throw(MemoryException) {
+WideString& WideString::removeFrom(MemorySize start) throw(MemoryException)
+{
   if (start < getLength()) { // protect against some cases
     elements.copyOnWrite(); // we are about to modify the buffer
     elements->setSize(start + 1); // remove section from end of string
@@ -1934,8 +1923,9 @@ WideString& WideString::removeFrom(unsigned int start) throw(MemoryException) {
   return *this;
 }
 
-WideString& WideString::insert(unsigned int index, ucs4 ch) throw(WideStringException, MemoryException) {
-  unsigned int length = getLength();
+WideString& WideString::insert(MemorySize index, ucs4 ch) throw(WideStringException, MemoryException)
+{
+  MemorySize length = getLength();
   setLength(length + 1);
   ucs4* buffer = elements->getElements();
   if (index >= length) {
@@ -1948,12 +1938,10 @@ WideString& WideString::insert(unsigned int index, ucs4 ch) throw(WideStringExce
   return *this;
 }
 
-WideString& WideString::insert(
-  unsigned int index,
-  const WideString& str) throw(WideStringException, MemoryException) {
-  
-  unsigned int length = getLength();
-  unsigned int strlength = str.getLength();
+WideString& WideString::insert(MemorySize index, const WideString& str) throw(WideStringException, MemoryException)
+{
+  MemorySize length = getLength();
+  MemorySize strlength = str.getLength();
   setLength(length + strlength); // TAG: also protects against self insertion - but can this be circumvented
   ucs4* buffer = elements->getElements();
   if (index >= length) {
@@ -1967,10 +1955,9 @@ WideString& WideString::insert(
   return *this;
 }
 
-WideString& WideString::insert(
-  unsigned int index,
-  const WideLiteral& literal) throw(WideStringException, MemoryException) {
-  unsigned int length = getLength();
+WideString& WideString::insert(MemorySize index, const WideLiteral& literal) throw(WideStringException, MemoryException)
+{
+  MemorySize length = getLength();
   ucs4* buffer = elements->getElements();
   if (index >= length) {
     // insert section at end of string
@@ -2036,9 +2023,9 @@ WideString& WideString::insert(
   return *this;
 }
 
-WideString& WideString::append(
-  const WideLiteral& literal) throw(WideStringException, MemoryException) {
-  unsigned int length = getLength();
+WideString& WideString::append(const WideLiteral& literal) throw(WideStringException, MemoryException)
+{
+  MemorySize length = getLength();
   MemorySize nativeLength = literal.getLength();
   ucs4* buffer = elements->getElements();
   if (sizeof(wchar) == sizeof(ucs2)) {
@@ -2070,12 +2057,9 @@ WideString& WideString::append(
   return *this;
 }
 
-WideString& WideString::append(
-  const WideLiteral& literal,
-  unsigned int maximum)
-  throw(OutOfDomain, WideStringException, MemoryException) {
-  
-  unsigned int length = getLength();
+WideString& WideString::append(const WideLiteral& literal, MemorySize maximum) throw(OutOfDomain, WideStringException, MemoryException)
+{
+  MemorySize length = getLength();
   MemorySize nativeLength = literal.getLength();
   ucs4* buffer = elements->getElements();
   if (sizeof(wchar) == sizeof(ucs2)) {
@@ -2109,11 +2093,8 @@ WideString& WideString::append(
   return *this;
 }
 
-WideString& WideString::append(
-  const wchar* string,
-  unsigned int maximum)
-  throw(OutOfDomain, WideStringException, MemoryException) {
-  
+WideString& WideString::append(const wchar* string, MemorySize maximum) throw(OutOfDomain, WideStringException, MemoryException)
+{
   bassert(
     maximum <= MAXIMUM_LENGTH,
     OutOfDomain(this)
@@ -2123,8 +2104,8 @@ WideString& WideString::append(
     WideStringException(this)
   ); // make sure string is proper (not empty)
   const wchar* terminator = find<wchar>(string, maximum, 0); // find terminator
-  unsigned int nativeLength = terminator ? (terminator - string) : maximum;
-  unsigned int length = getLength();
+  MemorySize nativeLength = terminator ? (terminator - string) : maximum;
+  MemorySize length = getLength();
   ucs4* buffer = elements->getElements();
   if (sizeof(wchar) == sizeof(ucs2)) {
     MemorySize stringLength = UCS2ToUCS4(
@@ -2156,9 +2137,10 @@ WideString& WideString::append(
 }
 
 WideString& WideString::replace(
-  unsigned int start,
-  unsigned int end,
-  const WideString& str) throw(WideStringException, MemoryException) {
+  MemorySize start,
+  MemorySize end,
+  const WideString& str) throw(WideStringException, MemoryException)
+{
   // need better implementation
   if (start <= end) {
     ensureCapacity(getLength() - (end - start + 1) + str.getLength());
@@ -2168,10 +2150,11 @@ WideString& WideString::replace(
   return *this;
 }
 
-unsigned int WideString::replaceAll(const WideString& fromStr, const WideString& toStr) throw(WideStringException, MemoryException) {
-  unsigned int count = 0;
-  unsigned int start = 0;
-  int found;
+MemorySize WideString::replaceAll(const WideString& fromStr, const WideString& toStr) throw(WideStringException, MemoryException)
+{
+  MemorySize count = 0;
+  MemorySize start = 0;
+  MemoryDiff found = 0;
   while ((found = indexOf(fromStr, start)) >= 0) { // continue until no more fromStr's
     replace(found, found + fromStr.getLength() - 1, toStr); // fromStr.getLength() > 0
     start = found + toStr.getLength(); // skip toStr
@@ -2179,15 +2162,15 @@ unsigned int WideString::replaceAll(const WideString& fromStr, const WideString&
   return count;
 }
 
-WideString WideString::substring(
-  unsigned int start, unsigned int end) const throw(MemoryException) {
-  unsigned int length = getLength();
+WideString WideString::substring(MemorySize start, MemorySize end) const throw(MemoryException)
+{
+  MemorySize length = getLength();
   if ((start < end) && (start < length)) {
     if (end > length) {
       end = length; // force to end of string
     }
     // 0 <= start < end <= getLength()
-    unsigned int lengthOfSubstring = end - start;
+    MemorySize lengthOfSubstring = end - start;
     WideString result(lengthOfSubstring);
     result.setLength(lengthOfSubstring);
     copy(result.getBuffer(), getBuffer() + start, lengthOfSubstring); // buffers do not overlap
@@ -2197,8 +2180,8 @@ WideString WideString::substring(
   }
 }
 
-WideString& WideString::operator-=(
-  const WideString& suffix) throw(MemoryException) {
+WideString& WideString::operator-=(const WideString& suffix) throw(MemoryException)
+{
   if (endsWith(suffix)) {
     setLength(suffix.getLength());
   }
@@ -2229,10 +2212,11 @@ WideString& WideString::toUpperCase() throw() {
   return *this;
 }
 
-int WideString::compareTo(const WideString& string) const throw() {
+int WideString::compareTo(const WideString& string) const throw()
+{
   // both strings may contain multiple zeros
-  unsigned int leftLength = getLength();
-  unsigned int rightLength = string.getLength();
+  MemorySize leftLength = getLength();
+  MemorySize rightLength = string.getLength();
   const ucs4* left = getBuffer();
   const ucs4* right = string.getBuffer();
   const ucs4* end = left + minimum(leftLength, rightLength);
@@ -2397,8 +2381,9 @@ int WideString::compareToIgnoreCase(const WideString& string) const throw() {
 // TAG: need support for WideLiteral
 // int WideString::compareToIgnoreCase(const WideLiteral& literal) const throw();
 
-bool WideString::startsWith(const WideString& prefix) const throw() {
-  unsigned int prefixLength = prefix.getLength();
+bool WideString::startsWith(const WideString& prefix) const throw()
+{
+  MemorySize prefixLength = prefix.getLength();
   return (prefixLength > 0) && (prefixLength <= getLength()) &&
     (compare(getBuffer(), prefix.getBuffer(), prefixLength) == 0);
 }
@@ -2431,7 +2416,7 @@ bool WideString::startsWith(const WideLiteral& prefix) const throw() {
     }
     return *right == 0;
   } else if (sizeof(wchar) == sizeof(ucs4)) {
-    unsigned int prefixLength = prefix.getLength();
+    MemorySize prefixLength = prefix.getLength();
     return (prefixLength > 0) && (prefixLength <= getLength()) &&
       (
         compare<ucs4>(
@@ -2449,14 +2434,14 @@ bool WideString::startsWith(const WideLiteral& prefix) const throw() {
 }
 
 bool WideString::endsWith(const WideString& suffix) const throw() {
-  unsigned int length = getLength();
-  unsigned int suffixLength = suffix.getLength();
+  MemorySize length = getLength();
+  MemorySize suffixLength = suffix.getLength();
   return (suffixLength > 0) && (suffixLength <= length) &&
     (compare(getBuffer() + length - suffixLength, suffix.getBuffer(), suffixLength) == 0);
 }
 
 bool WideString::endsWith(const WideLiteral& suffix) const throw() {
-  unsigned int suffixLength = suffix.getLength();
+  MemorySize suffixLength = suffix.getLength();
   if (sizeof(wchar) == sizeof(ucs2)) {
     if (suffixLength > getLength()) {
       return false;
@@ -2505,8 +2490,8 @@ bool WideString::endsWith(const WideLiteral& suffix) const throw() {
   }
 }
 
-int WideString::indexOf(ucs4 character, unsigned int start) const throw() {
-  const unsigned int length = getLength();
+MemoryDiff WideString::indexOf(ucs4 character, MemorySize start) const throw() {
+  const MemorySize length = getLength();
   if (start >= length) {
     return -1; // not found
   }
@@ -2520,8 +2505,8 @@ int WideString::indexOf(ucs4 character, unsigned int start) const throw() {
   }
 }
 
-int WideString::indexOf(
-  const WideString& string, unsigned int start) const throw() {
+MemoryDiff WideString::indexOf(
+  const WideString& string, MemorySize start) const throw() {
   if ((start >= getLength()) || (string.getLength() > getLength())) {
     return -1; // not found
   }
@@ -2555,7 +2540,8 @@ int WideString::indexOf(
   return -1; // not found
 }
 
-int WideString::lastIndexOf(ucs4 character, unsigned int start) const throw() {
+MemoryDiff WideString::lastIndexOf(ucs4 character, MemorySize start) const throw()
+{
   // examined cases: getLength() = 0, getLength() = 1, getLength() > 1
   const ucs4* buffer = getBuffer();
   const ucs4* p = &buffer[(start < getLength()) ? start : getLength() - 1]; // validate start
@@ -2568,8 +2554,8 @@ int WideString::lastIndexOf(ucs4 character, unsigned int start) const throw() {
   return -1; // not found
 }
 
-int WideString::lastIndexOf(
-  const WideString& string, unsigned int start) const throw() {
+MemoryDiff WideString::lastIndexOf(const WideString& string, MemorySize start) const throw()
+{
   if ((string.isEmpty()) || (string.getLength() > getLength())) { // eliminate some cases
     return -1; // not found
   }
@@ -2582,9 +2568,10 @@ int WideString::lastIndexOf(
   return -1; // not found
 }
 
-unsigned int WideString::count(ucs4 character, unsigned int start) const throw() {
-  int result = 0;
-  unsigned int count = 0;
+MemorySize WideString::count(ucs4 character, MemorySize start) const throw()
+{
+  MemoryDiff result = 0;
+  MemorySize count = 0;
   while ((result = indexOf(character, start)) >= 0) { // until not found
     ++count;
     start = result + 1;
@@ -2592,10 +2579,10 @@ unsigned int WideString::count(ucs4 character, unsigned int start) const throw()
   return count;
 }
 
-unsigned int WideString::count(
-  const WideString& string, unsigned int start) const throw() {
-  int result = 0;
-  unsigned int count = 0;
+MemorySize WideString::count(const WideString& string, MemorySize start) const throw()
+{
+  MemoryDiff result = 0;
+  MemorySize count = 0;
   while ((result = indexOf(string, start)) >= 0) { // until not found - works for empty string
     ++count;
     start = result + string.getLength();
@@ -2603,8 +2590,8 @@ unsigned int WideString::count(
   return count;
 }
 
-String WideString::getMultibyteString() const
-  throw(MultibyteException, MemoryException) {
+String WideString::getMultibyteString() const throw(MultibyteException, MemoryException)
+{
   ASSERT((sizeof(wchar) == sizeof(ucs2)) || (sizeof(wchar) == sizeof(ucs4)));
   String result;
   const int numberOfCharacters = getLength(); // TAG: one character per element - could be 2
@@ -2680,7 +2667,8 @@ int compare<WideString>(
 
 FormatOutputStream& operator<<(
   FormatOutputStream& stream,
-  const WideString& value) throw(MultibyteException, IOException) {
+  const WideString& value) throw(MultibyteException, IOException)
+{
   // TAG: need support for selected style (e.g. \uXXXXX)
   // TAG: FormatOutputStream - select between \uXXXXX and UTF8, UTF8LE, and UTF8BE, or other UTF
   return stream << value.getMultibyteString();
@@ -2688,8 +2676,8 @@ FormatOutputStream& operator<<(
 
 FormatOutputStream& operator<<(
   FormatOutputStream& stream,
-  WideString::UnicodeCharacter character) throw(IOException) {
-  
+  WideString::UnicodeCharacter character) throw(IOException)
+{
   char buffer[sizeof("&#4294967295;")]; // worst case length
   char* dest = buffer;
   unsigned int numberOfDigits = 1;

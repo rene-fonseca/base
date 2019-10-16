@@ -210,9 +210,9 @@ public:
   };
 
   /** Specifies the granularity of the capacity. Guaranteed to be greater than 0. */
-  static const unsigned int GRANULARITY = 16;
+  static const MemorySize GRANULARITY = 16;
   /** Specifies the maximum length of any string. Guarantees that an int can hold the length of the string. */
-  static const unsigned int MAXIMUM_LENGTH = ((PrimitiveTraits<int>::MAXIMUM/sizeof(ucs4) - 1)/GRANULARITY)*GRANULARITY;
+  static const MemorySize MAXIMUM_LENGTH = ((PrimitiveTraits<int>::MAXIMUM/sizeof(ucs4) - 1)/GRANULARITY)*GRANULARITY;
   /** Hash modulus. */
   static const unsigned int HASH_MODULUS = 1455;
   /** Character folding hash table. */
@@ -289,12 +289,12 @@ private:
   private:
     
     WideString& string;
-    unsigned int index = 0;
+    MemorySize index = 0;
     
     Element(const Element& copy) throw();
     Element& operator=(const Element& eq) throw();
     
-    inline Element(WideString& _string, unsigned int _index) throw()
+    inline Element(WideString& _string, MemorySize _index) throw()
       : string(_string), index(_index) {
     }
   public:
@@ -325,14 +325,12 @@ protected:
   /**
     Initializes string.
   */
-  void initialize(
-    const wchar* string, unsigned int length) throw(MemoryException);
+  void initialize(const wchar* string, MemorySize length) throw(MemoryException);
   
   /**
     Initializes string.
   */
-  void initialize(
-    const char* string, unsigned int length) throw(MemoryException);
+  void initialize(const char* string, MemorySize length) throw(MemoryException);
   
   /**
     Returns a modifiable buffer. Forces the internal buffer to be copied if
@@ -354,7 +352,8 @@ protected:
     Sets the length of the string.
   */
   inline void setLength(
-    unsigned int length) throw(WideStringException, MemoryException) {
+    MemorySize length) throw(WideStringException, MemoryException)
+  {
     bassert(length <= MAXIMUM_LENGTH, WideStringException(this));
     elements.copyOnWrite(); // we are about to modify the buffer
     elements->setSize(length + 1);
@@ -438,8 +437,7 @@ public:
     @param src The multibyte encoded string.
     @param size The number of bytes in the multibyte encoded string.
   */
-  MultibyteEncoding getMultibyteEncoding(
-    const uint8* src, unsigned int size) throw();
+  MultibyteEncoding getMultibyteEncoding(const uint8* src, MemorySize size) throw();
 
   /**
     Returns a MIME charsets for the specified encoding.
@@ -461,10 +459,10 @@ public:
 
     @return The number of bytes occupied by the UTF-8 encoded string.
   */
-  static unsigned int UCS2ToUTF8(
+  static MemorySize UCS2ToUTF8(
     uint8* dest,
     const ucs2* src,
-    unsigned int size,
+    MemorySize size,
     unsigned int flags = 0) throw(WideStringException);
   
   /**
@@ -480,10 +478,10 @@ public:
 
     @return The number of bytes occupied by the UTF-8 encoded string.
   */
-  static unsigned int UCS4ToUTF8(
+  static MemorySize UCS4ToUTF8(
     uint8* dest,
     const ucs4* src,
-    unsigned int size,
+    MemorySize size,
     unsigned int flags = 0) throw(WideStringException);
 
   // TAG: UTF-16 see RFC 2781  Unicode Standard, version 3.0
@@ -500,10 +498,10 @@ public:
     
     @return The number of characters in the UCS-2 encoded string.
   */
-  static unsigned int UTF8ToUCS2(
+  static MemorySize UTF8ToUCS2(
     ucs2* dest,
     const uint8* src,
-    unsigned int size,
+    MemorySize size,
     unsigned int flags = EAT_BOM) throw(MultibyteException);
 
   /**
@@ -518,10 +516,10 @@ public:
     
     @return The number of characters in the UCS-4 encoded string.
   */
-  static unsigned int UTF8ToUCS4(
+  static MemorySize UTF8ToUCS4(
     ucs4* dest,
     const uint8* src,
-    unsigned int size,
+    MemorySize size,
     unsigned int flags = EAT_BOM) throw(MultibyteException);
 
   /**
@@ -537,10 +535,10 @@ public:
     
     @return The number of characters in the UCS-4 encoded string.
   */
-  static unsigned int UTF16ToUCS4(
+  static MemorySize UTF16ToUCS4(
     ucs4* dest,
     const uint8* src,
-    unsigned int size,
+    MemorySize size,
     unsigned int flags = EAT_BOM|EXPECT_BOM) throw(MultibyteException);
 
   /**
@@ -556,10 +554,10 @@ public:
     
     @return The number of characters in the UCS-4 encoded string.
   */
-  static unsigned int UCS2ToUCS4(
+  static MemorySize UCS2ToUCS4(
     ucs4* dest,
     const ucs2* src,
-    unsigned int size,
+    MemorySize size,
     unsigned int flags = 0) throw(WideStringException);
 
   /**
@@ -574,10 +572,10 @@ public:
     
     @return The number of characters in the UCS-2 encoded string.
   */
-  static unsigned int UCS4ToUCS2(
+  static MemorySize UCS4ToUCS2(
     ucs2* dest,
     const ucs4* src,
-    unsigned int size,
+    MemorySize size,
     unsigned int flags = 0) throw(WideStringException);
   
   /**
@@ -593,10 +591,10 @@ public:
 
     @return The number of bytes occupied by the UTF-16BE encoded string.
   */
-  static unsigned int UCS2ToUTF16BE(
+  static MemorySize UCS2ToUTF16BE(
     uint8* dest,
     const ucs2* src,
-    unsigned int size,
+    MemorySize size,
     unsigned int flags = ADD_BOM) throw(WideStringException);
 
   /**
@@ -612,10 +610,10 @@ public:
 
     @return The number of bytes occupied by the UTF-16LE encoded string.
   */
-  static unsigned int UCS2ToUTF16LE(
+  static MemorySize UCS2ToUTF16LE(
     uint8* dest,
     const ucs2* src,
-    unsigned int size,
+    MemorySize size,
     unsigned int flags = ADD_BOM) throw(WideStringException);
 
   /**
@@ -631,10 +629,10 @@ public:
 
     @return The number of bytes occupied by the UTF-16BE encoded string.
   */
-  static unsigned int UCS4ToUTF16BE(
+  static MemorySize UCS4ToUTF16BE(
     uint8* dest,
     const ucs4* src,
-    unsigned int size,
+    MemorySize size,
     unsigned int flags = ADD_BOM) throw(WideStringException);
 
   /**
@@ -650,10 +648,10 @@ public:
 
     @return The number of bytes occupied by the UTF-16LE encoded string.
   */
-  static unsigned int UCS4ToUTF16LE(
+  static MemorySize UCS4ToUTF16LE(
     uint8* dest,
     const ucs4* src,
-    unsigned int size,
+    MemorySize size,
     unsigned int flags = ADD_BOM) throw(WideStringException);
 
   /**
@@ -669,10 +667,10 @@ public:
 
     @return The number of bytes occupied by the UTF-32BE encoded string.
   */
-  static unsigned int UCS4ToUTF32BE(
+  static MemorySize UCS4ToUTF32BE(
     uint8* dest,
     const ucs4* src,
-    unsigned int size,
+    MemorySize size,
     unsigned int flags = ADD_BOM) throw(WideStringException);
   
   /**
@@ -688,10 +686,10 @@ public:
 
     @return The number of bytes occupied by the UTF-32LE encoded string.
   */
-  static unsigned int UCS4ToUTF32LE(
+  static MemorySize UCS4ToUTF32LE(
     uint8* dest,
     const ucs4* src,
-    unsigned int size,
+    MemorySize size,
     unsigned int flags = ADD_BOM) throw(WideStringException);
 
   /**
@@ -708,10 +706,10 @@ public:
     
     @return The number of characters in the UCS-4 encoded string.
   */
-  static unsigned int UTF32ToUCS4(
+  static MemorySize UTF32ToUCS4(
     ucs4* dest,
     const uint8* src,
-    unsigned int size,
+    MemorySize size,
     unsigned int flags = EAT_BOM|EXPECT_BOM) throw(MultibyteException);
 
   /**
@@ -726,13 +724,14 @@ public:
     @param string The NULL-terminated string.
     @param maximum The maximum length of the string. The default is MAXIMUM_LENGTH.
   */
-  static inline unsigned int getLengthOfMustBeTerminated(
+  static inline MemorySize getLengthOfMustBeTerminated(
     const wchar* string,
-    unsigned int maximum = MAXIMUM_LENGTH) throw(StringException) {
+    MemorySize maximum = MAXIMUM_LENGTH) throw(StringException)
+  {
     bassert(string, StringException(Type::getType<String>()));
     const wchar* terminator = find<wchar>(string, maximum, 0);
     bassert(terminator, StringException(Type::getType<String>()));
-    return static_cast<unsigned int>(terminator - string);
+    return terminator - string;
   }
 
   /**
@@ -743,8 +742,9 @@ public:
 
     @return maximum if terminator is not found. 0 if string is invalid (i.e. 0).
   */
-  static inline unsigned int getLengthOfTerminated(
-    const wchar* string, unsigned int maximum = MAXIMUM_LENGTH) throw() {
+  static inline MemorySize getLengthOfTerminated(
+    const wchar* string, unsigned int maximum = MAXIMUM_LENGTH) throw()
+{
     if (!string) {
       return 0;
     }
@@ -808,7 +808,7 @@ public:
     with no characters in it.
     @param maximum Specifies the maximum length.
   */
-  WideString(const NativeWideString& string, unsigned int maximum)
+  WideString(const NativeWideString& string, MemorySize maximum)
     throw(OutOfDomain, WideStringException, MemoryException);
 
   /**
@@ -836,7 +836,7 @@ public:
     @param string The NULL-terminated string.
     @param maxmimum The maximum length of the string.
   */
-  WideString(const NativeString& string, unsigned int maximum)
+  WideString(const NativeString& string, MemorySize maximum)
     throw(OutOfDomain, MultibyteException, MemoryException);
   
   /**
@@ -867,7 +867,7 @@ public:
   /**
     Returns the number of characters in the string.
   */
-  inline unsigned int getLength() const throw() {
+  inline MemorySize getLength() const throw() {
     return elements->getSize() - 1;
   }
 
@@ -975,7 +975,7 @@ public:
     Returns the character at the specified index in this string. Raises
     OutOfRange if index exceeds the length of the string.
   */
-  ucs4 getAt(unsigned int index) const throw(OutOfRange);
+  ucs4 getAt(MemorySize index) const throw(OutOfRange);
 
   /**
     Sets the character at the specified index of this string. If the new
@@ -986,13 +986,13 @@ public:
     @param index The index of the character to set.
     @param value The new character value.
   */
-  void setAt(unsigned int index, ucs4 value) throw(OutOfRange);
+  void setAt(MemorySize index, ucs4 value) throw(OutOfRange);
 
   /**
     Returns a reference to character at the specified index. Raises
     OutOfRange if index exceeds the length of the string.
   */
-  inline Element operator[](unsigned int index) throw(OutOfRange) {
+  inline Element operator[](MemorySize index) throw(OutOfRange) {
     return Element(*this, index);
   }
 
@@ -1000,7 +1000,7 @@ public:
     Returns the character at the specified index. Raises OutOfRange if index
     exceeds the length of the string.
   */
-  inline char operator[](unsigned int index) const throw(OutOfRange) {
+  inline char operator[](MemorySize index) const throw(OutOfRange) {
     return getAt(index);
   }
 
@@ -1014,21 +1014,21 @@ public:
     @param start Specifies the start of the substring.
     @param end Specifies the end of the substring.
   */
-  WideString& remove(unsigned int start, unsigned int end) throw(MemoryException);
+  WideString& remove(MemorySize start, MemorySize end) throw(MemoryException);
 
   /**
     Removes the characters from the specified index to the end of the string.
 
     @param start Specifies the start of the string.
   */
-  WideString& removeFrom(unsigned int start) throw(MemoryException);
+  WideString& removeFrom(MemorySize start) throw(MemoryException);
 
   /**
     Removes the character at the specified position in this string.
 
     @param index Specifies the character to be removed.
   */
-  inline WideString& removeAt(unsigned int index) throw(MemoryException) {
+  inline WideString& removeAt(MemorySize index) throw(MemoryException) {
     return remove(index, index);
   }
 
@@ -1066,7 +1066,7 @@ public:
   */
   WideString& append(
     const WideLiteral& string,
-    unsigned int maximum)
+    MemorySize maximum)
     throw(OutOfDomain, WideStringException, MemoryException);
 
   /**
@@ -1075,7 +1075,7 @@ public:
     @param string The string to be appended.
     @param maximum The maximum length of the to be appended string.
   */
-  WideString& append(const wchar* string, unsigned int maximum) throw(OutOfDomain, WideStringException, MemoryException);
+  WideString& append(const wchar* string, MemorySize maximum) throw(OutOfDomain, WideStringException, MemoryException);
 
   /**
     Prepends the character to this string.
@@ -1103,7 +1103,7 @@ public:
 
     @param ch The character to be inserted.
   */
-  WideString& insert(unsigned int index, ucs4 ch) throw(WideStringException, MemoryException);
+  WideString& insert(MemorySize index, ucs4 ch) throw(WideStringException, MemoryException);
 
   /**
     Inserts the string into this string.
@@ -1113,7 +1113,7 @@ public:
 
     @param string The string to be inserted.
   */
-  WideString& insert(unsigned int index, const WideString& string) throw(WideStringException, MemoryException);
+  WideString& insert(MemorySize index, const WideString& string) throw(WideStringException, MemoryException);
 
   /**
     Inserts NULL-terminated string into this string.
@@ -1124,7 +1124,7 @@ public:
     @param string The NULL-terminated string to be inserted.
   */
   WideString& insert(
-    unsigned int index,
+    MemorySize index,
     const WideLiteral& string) throw(WideStringException, MemoryException);
 
   /**
@@ -1135,7 +1135,7 @@ public:
     @param end The end of the substring.
     @param string The string to replace with.
   */
-  WideString& replace(unsigned int start, unsigned int end, const WideString& string) throw(WideStringException, MemoryException);
+  WideString& replace(MemorySize start, MemorySize end, const WideString& string) throw(WideStringException, MemoryException);
 
   /**
     Replaces all occurances of the specified substring with another string in
@@ -1145,7 +1145,7 @@ public:
     @param toStr The new string.
     @return The number of substrings that was replaced.
   */
-  unsigned int replaceAll(const WideString& fromStr, const WideString& toStr) throw(WideStringException, MemoryException);
+  MemorySize replaceAll(const WideString& fromStr, const WideString& toStr) throw(WideStringException, MemoryException);
 
   /**
     Returns a new string that contains a subsequence of characters currently
@@ -1155,7 +1155,7 @@ public:
     @param start Specifies the start of the substring.
     @param end Specifies the end of the substring.
   */
-  WideString substring(unsigned int start, unsigned int end) const throw(MemoryException);
+  WideString substring(MemorySize start, MemorySize end) const throw(MemoryException);
 
   /**
     Returns a new string that contains a subsequence of characters currently
@@ -1164,7 +1164,7 @@ public:
 
     @param start Specifies the start of the substring.
   */
-  inline WideString substring(unsigned int start) const throw(MemoryException) {
+  inline WideString substring(MemorySize start) const throw(MemoryException) {
     return substring(start, getLength());
   }
 
@@ -1342,7 +1342,7 @@ public:
     @param start Specifies the start position of the search. Default is 0.
     @return Index of the first match if any otherwise -1.
   */
-  int indexOf(ucs4 ch, unsigned int start = 0) const throw();
+  MemoryDiff indexOf(ucs4 ch, MemorySize start = 0) const throw();
 
   /**
     Returns the index of the first substring that matches the specified string
@@ -1352,7 +1352,7 @@ public:
     @param start Specifies the start position of the search. Default is 0.
     @return Index of the first match if any otherwise -1. Also returns -1 if substring is empty.
   */
-  int indexOf(const WideString& string, unsigned int start = 0) const throw();
+  MemoryDiff indexOf(const WideString& string, MemorySize start = 0) const throw();
 
   /**
     Returns the index of the last character that matches the specified character
@@ -1362,13 +1362,13 @@ public:
     @param start Specifies the start position of the search. Default is end of string.
     @return Index of the last match if any otherwise -1.
   */
-  int lastIndexOf(ucs4 ch, unsigned int start) const throw();
+  MemoryDiff lastIndexOf(ucs4 ch, MemorySize start) const throw();
 
   /**
     Returns the index of the last character that matches the specified character
     starting from the end of the string.
   */
-  inline int lastIndexOf(ucs4 ch) const throw() {
+  inline MemoryDiff lastIndexOf(ucs4 ch) const throw() {
     return lastIndexOf(ch, getLength());
   }
 
@@ -1380,7 +1380,7 @@ public:
     @param start Specifies the start position of the search. Default is end of string.
     @return Index of the last match if any otherwise -1. Also returns -1 if the substring is empty.
   */
-  int lastIndexOf(const WideString& string, unsigned int start) const throw();
+  MemoryDiff lastIndexOf(const WideString& string, MemorySize start) const throw();
 
   /**
     Returns the index of the last string that matches the specified string
@@ -1390,7 +1390,7 @@ public:
 
     @return Index of the last match if any otherwide -1. Also returns -1 if the substring is empty.
   */
-  inline int lastIndexOf(const WideString& string) const throw() {
+  inline MemoryDiff lastIndexOf(const WideString& string) const throw() {
     return lastIndexOf(string, getLength());
   }
 
@@ -1401,7 +1401,7 @@ public:
     @param start The start position. Default is 0.
     @return The number of occurances of the character.
   */
-  unsigned int count(ucs4 ch, unsigned int start = 0) const throw();
+  MemorySize count(ucs4 ch, MemorySize start = 0) const throw();
 
   /**
     Counts the number of occurances of the specified substring in this string.
@@ -1410,7 +1410,7 @@ public:
     @param start The start position. Default is 0.
     @return The number of occurances of the substring.
   */
-  unsigned int count(const WideString& string, unsigned int start = 0) const throw();
+  MemorySize count(const WideString& string, MemorySize start = 0) const throw();
 
 // *************************************************************************
 //   END SECTION

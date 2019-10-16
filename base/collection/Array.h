@@ -56,12 +56,12 @@ public:
   private:
     
     Array& array;
-    unsigned int index = 0;
+    MemorySize index = 0;
 
     Element(const Element& copy) throw();
     Element& operator=(const Element& eq) throw();
     
-    inline Element(Array& _array, unsigned int _index) throw()
+    inline Element(Array& _array, MemorySize _index) throw()
       : array(_array), index(_index) {
     }
   public:
@@ -86,13 +86,13 @@ private:
   /** The elements of the array. */
   Reference<ReferenceCountedCapacityAllocator<Value> > elements;
   /** The number of elements in the array. */
-  unsigned int size = 0;
+  MemorySize size = 0;
 public:
 
   /**
     Sets the size of the array.
   */
-  inline void setSize(unsigned int size) throw(MemoryException) {
+  inline void setSize(MemorySize size) throw(MemoryException) {
     if (size != this->size) {
       this->size = size;
       if (elements.isValid()) {
@@ -129,7 +129,7 @@ public:
 
     @param granularity The desired granularity.
   */
-  explicit Array(unsigned int granularity) throw()
+  explicit Array(MemorySize granularity) throw()
     : elements(new ReferenceCountedCapacityAllocator<Value>(granularity)) {
   }
 
@@ -142,9 +142,9 @@ public:
     ReferenceCountedCapacityAllocator<Value>::DEFAULT_GRANULARITY.
   */
   Array(
-    unsigned int _size,
+    MemorySize _size,
     Value value,
-    unsigned int granularity = ReferenceCountedCapacityAllocator<Value>::DEFAULT_GRANULARITY) throw(MemoryException)
+    MemorySize granularity = ReferenceCountedCapacityAllocator<Value>::DEFAULT_GRANULARITY) throw(MemoryException)
     : elements(new ReferenceCountedCapacityAllocator<Value>(_size, granularity)),
       size(_size) {
     fill(getElements(), size, value);
@@ -180,7 +180,7 @@ public:
   /**
     Returns the number fo elements in the array.
   */
-  inline unsigned int getSize() const throw() {
+  inline MemorySize getSize() const throw() {
     return size;
   }
 
@@ -267,7 +267,7 @@ public:
     @param value The value to be appended.
   */
   void append(const Value& value) throw(MemoryException) {
-    unsigned int size = getSize();
+    MemorySize size = getSize();
     setSize(size + 1);
     Value* elements = getElements(); // size must be set before
     elements[size] = value;
@@ -315,7 +315,7 @@ public:
     @param index Specifies the insert position.
     @param value The value to be inserted.
   */
-  void insert(unsigned int index, const Value& value) throw(OutOfRange, MemoryException) {
+  void insert(MemorySize index, const Value& value) throw(OutOfRange, MemoryException) {
     bassert(index <= getSize(), OutOfRange(this));
     setSize(getSize() + 1);
     Value* elements = getElements(); // size must be set before
@@ -329,7 +329,7 @@ public:
 
     @param index The index of the element to be removed.
   */
-  void remove(unsigned int index) throw(OutOfRange) {
+  void remove(MemorySize index) throw(OutOfRange) {
     bassert(index < getSize(), OutOfRange(this));
     Value* elements = getElements(); // size must be set after
     move(elements + index, elements + index + 1, getSize() - index - 1);
@@ -350,7 +350,7 @@ public:
 
     @param index The index of the element.
   */
-  const Value& getAt(unsigned int index) const throw(OutOfRange) {
+  const Value& getAt(MemorySize index) const throw(OutOfRange) {
     bassert(index < getSize(), OutOfRange(this));
     return getElements()[index];
   }
@@ -362,7 +362,7 @@ public:
     @param index The index of the element.
     @param value The desired value.
   */
-  void setAt(unsigned int index, const Value& value) throw(OutOfRange) {
+  void setAt(MemorySize index, const Value& value) throw(OutOfRange) {
     bassert(index < getSize(), OutOfRange(this));
     getElements()[index] = value;
   }
@@ -373,7 +373,7 @@ public:
 
     @param index The index of the element.
   */
-  inline Element operator[](unsigned int index) throw(OutOfRange) {
+  inline Element operator[](MemorySize index) throw(OutOfRange) {
     return Element(*this, index);
   }
 
@@ -383,7 +383,7 @@ public:
 
     @param index The index of the element.
   */
-  inline const Value& operator[](unsigned int index) const throw(OutOfRange) {
+  inline const Value& operator[](MemorySize index) const throw(OutOfRange) {
     return getAt(index);
   }
 };

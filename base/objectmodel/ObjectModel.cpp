@@ -38,6 +38,12 @@ ObjectModel::ObjectModel(bool _allowReuse)
   // commonObjectEmpty = new Object();
 }
 
+// internal format wrapper
+inline FormatOutputStream& operator<<(FormatOutputStream& stream, const ObjectModel::Value& value)
+{
+  return operator<<(stream, Reference<ObjectModel::Value>(const_cast<ObjectModel::Value*>(&value)));
+}
+
 base::String ObjectModel::Value::toString(bool niceFormat) const noexcept
 {
   if (niceFormat) {

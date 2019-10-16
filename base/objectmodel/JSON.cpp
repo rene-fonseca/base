@@ -15,6 +15,7 @@
 #include <base/io/File.h>
 #include <locale>
 #include <codecvt>
+#include <sstream>
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
@@ -96,6 +97,24 @@ Reference<ObjectModel::Integer> JSON::parseInteger(Parser& parser)
   return objectModel.createInteger(i);
 }
 
+class Posix {
+public:
+
+  static bool parseDoublePosix(const std::string& text, double& _d)
+  {
+    // TAG: put in format method
+    double d = 0; // TAG: NAN
+    std::stringstream ss(text); // TAG: can we reuse
+    ss.imbue(std::locale::classic()); // posix
+    ss >> d;
+    if (!ss.eof()) {
+      return false;
+    }
+    _d = d;
+    return true;
+  }
+};
+
 Reference<ObjectModel::Float> JSON::parseFloat(Parser& parser)
 {
   skipSpaces(parser);
@@ -144,11 +163,11 @@ Reference<ObjectModel::Float> JSON::parseFloat(Parser& parser)
   text.reserve(1024);
   text.append(b, e - b);
   
-  size_t idx = 0;
-  double d = stod(text, &idx);
-  if (idx != (e - b)) { // TAG: check this
+  double d = 0;
+  if (!Posix::parseDoublePosix(text, d)) {
     throw JSONException("Malformed float.");
   }
+
   return objectModel.createFloat(d);
 }
 

@@ -235,8 +235,8 @@ public:
     atomic_init(&value, _value);
 #else
     store(_value);
-  }
 #endif
+  }
 
   /**
     Copy constructor. Avoid this.
@@ -409,14 +409,14 @@ public:
   typedef typename MapToSignedType<TYPE>::SignedType SignedType;
   typedef AtomicCounter<SignedType> BASE;
 
-  inline AtomicCounterU(const TYPE _value = DEFAULT_VALUE) noexcept
+  inline AtomicCounterU(const TYPE _value = BASE::DEFAULT_VALUE) noexcept
     : BASE(static_cast<SignedType>(_value))
   {
   }
 
   inline operator TYPE() const noexcept
   {
-    return static_cast<SignedType>(BASE::operator SignedType());
+    return BASE::operator SignedType();
   }
 
   inline TYPE operator++(int) noexcept
@@ -449,7 +449,7 @@ public:
     return BASE::operator-=(static_cast<SignedType>(_value));
   }
 
-  inline AtomicCounter& operator=(const TYPE _value) noexcept
+  inline AtomicCounterU& operator=(const TYPE _value) noexcept
   {
     BASE::operator=(static_cast<SignedType>(_value));
     return *this;

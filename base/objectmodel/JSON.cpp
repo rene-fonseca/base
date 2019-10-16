@@ -97,14 +97,65 @@ Reference<ObjectModel::Integer> JSON::parseInteger(Parser& parser)
   return objectModel.createInteger(i);
 }
 
-class Posix {
+class membuf : public std::streambuf {
 public:
 
-  static bool parseDoublePosix(const std::string& text, double& _d)
+  membuf(const char* src, const char* end)
   {
-    // TAG: put in format method
+    char* _src(const_cast<char*>(src));
+    this->setg(_src, _src, _src + (end - src));
+  }
+};
+
+class imemstream : virtual public membuf, public std::istream {
+public:
+
+  imemstream(const char* src = nullptr, const char* end = nullptr)
+    : membuf(src, end), std::istream(static_cast<std::streambuf*>(this))
+  {
+  }
+
+  void imbueNoRecurse(const std::locale& _Loc) {
+    std::locale _Oldlocale = ios_base::imbue(_Loc);
+    const auto _Rdbuf = rdbuf();
+    if (_Rdbuf) {
+      _Rdbuf->pubimbue(_Loc);
+    }
+  }
+};
+
+// TAG: move when ready
+class Posix {
+private:
+
+  std::stringstream ss;
+  // TAG: imemstream ms;
+public:
+
+  Posix()
+  {
+    ss.imbue(std::locale::classic()); // posix
+    // ss.rdbuf()->str()
+  }
+
+  bool parseDoublePosix(const char* src, const char* end, double& _d)
+  {
     double d = 0; // TAG: NAN
-    std::stringstream ss(text); // TAG: can we reuse
+    imemstream ms(src, end);
+    ms.imbueNoRecurse(std::locale::classic()); // posix // TAG: reuse!!!
+    ms >> d;
+    if (!ms.eof()) {
+      return false;
+    }
+    _d = d;
+    return true;
+  }
+
+  bool parseDoublePosix(const std::string& text, double& _d)
+  {
+    double d = 0; // TAG: NAN
+    std::stringstream ss; // TAG: reuse doesnt work - need to reset state also
+    ss.str(text); // TAG: avoid copy
     ss.imbue(std::locale::classic()); // posix
     ss >> d;
     if (!ss.eof()) {
@@ -162,9 +213,16 @@ Reference<ObjectModel::Float> JSON::parseFloat(Parser& parser)
   text.clear();
   text.reserve(1024);
   text.append(b, e - b);
-  
+
+  static Posix posix; // TAG: make member
   double d = 0;
-  if (!Posix::parseDoublePosix(text, d)) {
+#if 1
+  if (!posix.parseDoublePosix(b, e, d)) {
+    // throw JSONException("Malformed float.");
+    d = 0;
+  }
+#endif
+  if (!posix.parseDoublePosix(text, d)) {
     throw JSONException("Malformed float.");
   }
 

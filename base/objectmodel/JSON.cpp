@@ -43,10 +43,10 @@ Reference<ObjectModel::Boolean> JSON::parseBoolean(Parser& parser)
   throw JSONException("Expected boolean.");
 }
 
-bool JSON::parseIntegerImpl(Parser& parser, int& i)
+bool JSON::parseIntegerImpl(Parser& parser, int& j)
 {
   skipSpaces(parser);
-  i = 0;
+  int i = 0;
   int sign = 1;
   if (parser.peek() == '-') {
     parser.read();
@@ -74,7 +74,15 @@ bool JSON::parseIntegerImpl(Parser& parser, int& i)
       }
     }
   }
-  i = static_cast<int>(i * sign);
+
+  switch (parser.peek()) {
+  case '.':
+  case 'e':
+  case 'E':
+    return false; // float chars
+  }
+
+  j = static_cast<int>(i * sign);
   return true;
 }
 
@@ -101,10 +109,10 @@ Reference<ObjectModel::Float> JSON::parseFloat(Parser& parser)
   if (parser.peek() == '0') {
     parser.skip();
   } else {
-    if ((parser.peek() >= '1') || (parser.peek() <= '9')) {
+    if ((parser.peek() >= '1') && (parser.peek() <= '9')) {
       parser.skip();
     }
-    while ((parser.peek() >= '0') || (parser.peek() <= '9')) {
+    while ((parser.peek() >= '0') && (parser.peek() <= '9')) {
       parser.skip();
     }
   }
@@ -113,7 +121,7 @@ Reference<ObjectModel::Float> JSON::parseFloat(Parser& parser)
   if (parser.peek() == '.') {
     parser.skip();
     // skip digits
-    while ((parser.peek() >= '0') || (parser.peek() <= '9')) {
+    while ((parser.peek() >= '0') && (parser.peek() <= '9')) {
       parser.skip();
     }
   }
@@ -124,7 +132,7 @@ Reference<ObjectModel::Float> JSON::parseFloat(Parser& parser)
     if ((parser.peek() == '-') || (parser.peek() == '+')) {
       parser.skip();
     }
-    while ((parser.peek() >= '0') || (parser.peek() <= '9')) {
+    while ((parser.peek() >= '0') && (parser.peek() <= '9')) {
       parser.skip();
     }
   }
@@ -164,7 +172,7 @@ Reference<ObjectModel::String> JSON::parseString(Parser& parser)
   }
   text.clear();
   text.reserve(1024);
-  parser.read('"');
+  parser.skip();
   while (parser.peek() != '"') {
     const char ch = parser.read();
     if (ch == '\\') { // escape
@@ -233,7 +241,7 @@ Reference<ObjectModel::Array> JSON::parseArray(Parser& parser)
   if (!parser.peek('[')) {
     throw JSONException("Expected array.");
   }
-  parser.read('[');
+  parser.skip();
   Reference<ObjectModel::Array> result = objectModel.createArray();
   skipSpaces(parser);
   if (parser.peek() == ']') {
@@ -246,9 +254,10 @@ Reference<ObjectModel::Array> JSON::parseArray(Parser& parser)
     skipSpaces(parser);
     switch (parser.peek()) {
     case ',':
-      parser.read(',');
+      parser.skip();
+      break;
     case ']':
-      parser.read(']');
+      parser.skip();
       return result;
     default:
       throw JSONException("Malformed array.");
@@ -263,7 +272,7 @@ Reference<ObjectModel::Object> JSON::parseObject(Parser& parser)
   if (!parser.peek('{')) {
     throw JSONException("Expected object.");
   }
-  parser.read('{');
+  parser.skip();
   Reference<ObjectModel::Object> result = objectModel.createObject();
   skipSpaces(parser);
   if (parser.peek() == '}') {
@@ -281,10 +290,10 @@ Reference<ObjectModel::Object> JSON::parseObject(Parser& parser)
     skipSpaces(parser);
     switch (parser.peek()) {
     case ',':
-      parser.read(',');
+      parser.skip();
       break;
     case '}':
-      parser.read('}');
+      parser.skip();
       return result;
     default:
       throw JSONException("Malformed object.");

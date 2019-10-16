@@ -317,11 +317,12 @@ int64 Date::getBias() throw() {
 #endif // flavor
 }
 
-Date Date::getTime(
-  int second, int minute, int hour, bool local) throw(DateException) {
+Date Date::getTime(int second, int minute, int hour, bool local) throw(DateException)
+{
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
+  // TAG: normalize input
   FILETIME nativeTime;
-  SYSTEMTIME time = {0, 0, 0, 0, hour, minute, second, 0};
+  SYSTEMTIME time = {0, 0, 0, 0, static_cast<WORD>(hour), static_cast<WORD>(minute), static_cast<WORD>(second), 0};
 #if (_COM_AZURE_DEV__BASE__OS >= _COM_AZURE_DEV__BASE__WXP)
   if (local) {
     bassert(
@@ -360,8 +361,9 @@ Date Date::getTime(
 Date Date::getDate(
   int day, int month, int year, bool local) throw(DateException) {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
+  // TAG: normalize
   FILETIME nativeTime;
-  SYSTEMTIME time = {year, month, 0, day, 0, 0, 0, 0};
+  SYSTEMTIME time = {static_cast<WORD>(year), static_cast<WORD>(month), 0, static_cast<WORD>(day), 0, 0, 0, 0};
 #if (_COM_AZURE_DEV__BASE__OS >= _COM_AZURE_DEV__BASE__WXP)
   if (local) {
     bassert(
@@ -401,10 +403,12 @@ Date Date::getDate(
   int day,
   int month,
   int year,
-  bool local) throw(DateException) {
+  bool local) throw(DateException)
+{
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
+  // TAG: normalize input
   FILETIME nativeTime;
-  SYSTEMTIME time = {year, month, 0, day, hour, minute, second, 0};
+  SYSTEMTIME time = {static_cast<WORD>(year), static_cast<WORD>(month), 0, static_cast<WORD>(day), static_cast<WORD>(hour), static_cast<WORD>(minute), static_cast<WORD>(second), 0};
 #if (_COM_AZURE_DEV__BASE__OS >= _COM_AZURE_DEV__BASE__WXP)
   if (local) {
     bassert(

@@ -256,4 +256,7 @@ inline void deleteCompleteArray(const volatile TYPE* value) {
   delete[] value;
 }
 
+/** Breakpoint. */
+_COM_AZURE_DEV__BASE__API void breakpoint() noexcept;
+
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

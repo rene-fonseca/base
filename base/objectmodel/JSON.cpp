@@ -52,17 +52,26 @@ bool JSON::parseIntegerImpl(Parser& parser, int& i)
     parser.read();
     sign = -1;
   }
-  while (true) {
-    const char ch = parser.read();
-    if (!((ch >= '0') && (ch <= 9))) {
+
+  // TAG: add support info on position of failure for exceptions - line and column
+
+  if (parser.peek() == '0') {
+    parser.skip(); // done
+  } else {
+    if (!((parser.peek() >= '1') && (parser.peek() <= '9'))) {
       return false;
     }
-    uint8 digit = static_cast<uint8>(ch - '0');
-    i = i * 10 + digit;
-    if (i * sign < PrimitiveTraits<int>::MINIMUM) {
-      return false;
-    } else if (i * sign > PrimitiveTraits<int>::MAXIMUM) {
-      return false;
+    const char ch = parser.read();
+    i = static_cast<uint8>(ch - '0'); // first digit
+    while ((parser.peek() >= '0') && (parser.peek() <= '9')) {
+      const char ch = parser.read();
+      uint8 digit = static_cast<uint8>(ch - '0');
+      i = i * 10 + digit;
+      if (i * sign < PrimitiveTraits<int>::MINIMUM) {
+        return false;
+      } else if (i * sign > PrimitiveTraits<int>::MAXIMUM) {
+        return false;
+      }
     }
   }
   i = static_cast<int>(i * sign);
@@ -139,7 +148,9 @@ Reference<ObjectModel::Value> JSON::parseNumber(Parser& parser)
 {
   skipSpaces(parser);
   int i = 0;
-  if (parseIntegerImpl(parser, i)) {
+  Parser integerParser = parser;
+  if (parseIntegerImpl(integerParser, i)) {
+    parser = integerParser;
     return objectModel.createInteger(i);
   }
   return parseFloat(parser);

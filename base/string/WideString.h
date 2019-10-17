@@ -1485,7 +1485,7 @@ inline WideString operator-(const WideString& left, const WideString& right) thr
 /**
   Writes a wide character to the format output stream.
 */
-FormatOutputStream& operator<<(FormatOutputStream& stream, WideString::UnicodeCharacter character) throw(IOException);
+_COM_AZURE_DEV__BASE__API FormatOutputStream& operator<<(FormatOutputStream& stream, WideString::UnicodeCharacter character) throw(IOException);
 
 /** Converts WideString to String. */
 std::string toUTF8(const WideString& s);

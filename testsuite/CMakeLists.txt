@@ -18,6 +18,7 @@ else ()
   target_link_libraries(MyLinkerModule base)
   target_compile_definitions(MyLinkerModule PRIVATE _COM_AZURE_DEV__BASE__SHARED_LIBRARY)
 endif ()
+set_target_properties(MyLinkerModule PROPERTIES FOLDER testsuite)
 
 foreach(sourcefile ${TEST_SOURCES})
   

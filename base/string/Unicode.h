@@ -24,6 +24,17 @@ _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 class _COM_AZURE_DEV__BASE__API Unicode {
 public:
 
+  /** Returns true if the code is a valid UCS4 code. */
+  static inline bool isUCS4(unsigned int value) throw() {
+    if (value < 0xd800) {
+      return true;
+    } else if (value < 0x10000) {
+      return (value >= 0xe000) && (value < 0xffff); // TAG: 0xfffe is special
+    } else {
+      return true;
+    }
+  }
+
   enum {
     UTF8_ERROR_EMPTY = 0,
     UTF8_ERROR_INCOMPLETE = -1,

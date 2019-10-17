@@ -36,7 +36,7 @@ _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
       : Application("MyApplication", numberOfArguments, arguments, environment) {
     }
 
-    void main() throw() {
+    void main() {
       // ...
     }
   };

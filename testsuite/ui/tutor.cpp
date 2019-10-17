@@ -158,7 +158,7 @@ public:
     }
   };
   
-  void main() throw() {
+  void main() {
     MyOpenGLContext::Format desiredFormat;
     int formatId = -1;
     

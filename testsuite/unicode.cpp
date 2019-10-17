@@ -885,7 +885,7 @@ public:
          << EOL;
   }
   
-  void main() throw() {
+  void main() {
     Array<String> arguments = getArguments();
     
     switch (arguments.getSize()) {

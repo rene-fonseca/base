@@ -212,7 +212,7 @@ public:
          << " [--help] [--port PORT] [--data SIZE] [--time MS] host" << ENDL;
   }
   
-  void main() throw() {
+  void main() {
     Command command = COMMAND_PING;
     String host;
     

@@ -393,7 +393,7 @@ public:
          << ENDL;
   }
   
-  void main() throw() {
+  void main() {
     Command command = COMMAND_EVALUATE;
     bool expressionSpecified = false;
     String expression;

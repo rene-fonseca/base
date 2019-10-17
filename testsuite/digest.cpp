@@ -220,7 +220,7 @@ public:
          << " [ADLER32|CRC32|MD5SUM|SHA1|SHA256|SHA384|SHA512] file" << ENDL;
   }
   
-  void main() throw() {
+  void main() {
     fout << getFormalName() << " version "
          << MAJOR_VERSION << '.' << MINOR_VERSION << EOL
          << "The Base Framework (Test Suite)" << EOL

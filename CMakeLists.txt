@@ -163,6 +163,9 @@ set_target_properties(base_STATIC PROPERTIES OUTPUT_NAME base_static)
 if (APPLE)
   set(CMAKE_CXX_ARCHIVE_CREATE "<CMAKE_AR> Scr <TARGET> <LINK_FLAGS> <OBJECTS>")
   set(CMAKE_CXX_ARCHIVE_FINISH "<CMAKE_RANLIB> -no_warning_for_no_symbols -c <TARGET>")
+  # TAG: cannot get rid of no symbols during install
+  #set(CMAKE_C_ARCHIVE_CREATE "<CMAKE_AR> Scr <TARGET> <LINK_FLAGS> <OBJECTS>")
+  #set(CMAKE_C_ARCHIVE_FINISH "<CMAKE_RANLIB> -no_warning_for_no_symbols -c <TARGET>")
 endif ()
 
 #set_target_properties(base base_STATIC
@@ -188,6 +191,13 @@ install(
   DIRECTORY "${CMAKE_BINARY_DIR}/generated/base" # source directory
   DESTINATION "${CMAKE_BINARY_DIR}/include" # target directory
   FILES_MATCHING PATTERN "*.h" # select header files
+)
+
+install(TARGETS base base_STATIC
+  CONFIGURATIONS Debug
+  ARCHIVE DESTINATION "${CMAKE_BINARY_DIR}/lib/debug"
+  LIBRARY DESTINATION "${CMAKE_BINARY_DIR}/lib/debug"
+  RUNTIME DESTINATION "${CMAKE_BINARY_DIR}/bin/debug"
 )
 
 install(TARGETS base base_STATIC

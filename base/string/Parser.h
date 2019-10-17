@@ -94,7 +94,7 @@ public:
   }
 
   /** Rewinds 1 byte. */
-  inline void rewind()
+  inline void unwind()
   {
 #if 0
     if (src == begin) {
@@ -114,8 +114,11 @@ public:
     ++src;
   }
 
-  /** Returns the number of bytes in the next UTF-8 encoded char. */
-  MemorySize getNumberOfUTF8Bytes() const noexcept;
+  /** Returns the number of bytes in the next UTF-8 encoded char. Returns 0 for invalid encoding. */
+  unsigned int getUCS4Bytes() const noexcept;
+
+  /** Peeks the next UCS4 character. */
+  ucs4 peekUCS4() const;
 
   /** Returns the next UCS4 char assuming UTF8 encoding. */
   ucs4 readUCS4();

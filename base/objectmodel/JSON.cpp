@@ -239,20 +239,17 @@ Reference<ObjectModel::String> JSON::parseString(JSONParser& parser)
         text.push_back(ch);
         continue;
       }
-  
-      // TAG: need read of 1 char
-      ucs4 wch = 0;
-      MemorySize bytesRead = WideString::UTF8ToUCS4(&wch, parser.getCurrent() - 1, parser.getAvailable(), 0);
-      if (wch > 0x10ffff) {
+
+      // ACCEPTING: '0020' . '10FFFF' - '"' - '\'
+      parser.unwind();
+      const auto begin = parser.getCurrent();
+      const ucs4 uch = parser.readUCS4();
+      if (uch > 0x10ffff) {
         throw JSONException("Bad UTF8 string literal.", parser.getPosition());
       }
-      --bytesRead;
-      text.push_back(ch);
-
-      // '0020' . '10FFFF' - '"' - '\'
-      while (bytesRead) {
-        text.push_back(parser.read());
-        --bytesRead;
+      MemoryDiff bytesRead = parser.getCurrent() - begin;
+      for (MemoryDiff i = 0; i < bytesRead; ++i) {
+        text.push_back(begin[i]);
       }
     }
   }

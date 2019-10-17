@@ -48,7 +48,7 @@ const char* JSON_EXAMPLE_BAD_STRING2 = u8"{\n"
 "  \"hello\": \"This is a test\\u0021\",\n"
 "  \"count\": 123456,\n"
 "  \"house\": {\"area\": 90, \"floors\": 2, \"description\": \"Great place.\"},\n"
-"  \"list\": [false, 997, true, \"ÆØÅ\", \"JSON is nice and simple\"]\n"
+"  \"list\": [false, 997, true, \"\xc6#Æ#Ø#Å#\", \"JSON is nice and simple\"]\n"
 "}\n";
 
 // TAG: can we change a setting and auto pop upon return for FormatOutputStream - e.g. change a flag and similar

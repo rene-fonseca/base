@@ -899,8 +899,7 @@ public:
         if (argument == "--version") {
           fout << getFormalName() << " version " << MAJOR_VERSION << '.' << MINOR_VERSION << EOL
                << "The Base Framework (Test Suite)" << EOL
-               << "http://www.mip.sdu.dk/~fonseca/base" << EOL
-               << "Copyright (C) 2002-2003 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>" << EOL
+               << "Copyright (C) 2002-2019 by Rene Moeller Fonseca" << EOL
                << ENDL;
           return;
         }

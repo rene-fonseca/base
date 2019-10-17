@@ -335,7 +335,7 @@ void FormatOutputStream::indent(unsigned int size) throw(IOException)
   // context is not reset to default
 }
 
-void FormatOutputStream::addCharacterField(const char* buffer, unsigned int size) throw(IOException)
+void FormatOutputStream::addCharacterField(const char* buffer, MemorySize size) throw(IOException)
 {
   ExclusiveSynchronize<Guard> _guard(guard);
 

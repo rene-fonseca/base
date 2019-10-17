@@ -490,8 +490,7 @@ public:
   /**
     Writes the specifies number of characters to the stream.
   */
-  void addCharacterField(
-    const char* buffer, unsigned int size) throw(IOException);
+  void addCharacterField(const char* buffer, MemorySize size) throw(IOException);
 
   /**
     Writes a preformated integer to the stream.
@@ -560,12 +559,17 @@ public:
   FormatOutputStream& operator<<(float value) throw(IOException);
   FormatOutputStream& operator<<(double value) throw(IOException);
   FormatOutputStream& operator<<(long double value) throw(IOException);
-  
+
   inline FormatOutputStream& operator<<(
     const NativeString& value) throw(IOException) {
-    return *this << String(value);
+    addCharacterField(value.getValue(), value.getLength());
+    return *this;
   }
-  
+
+  inline FormatOutputStream& operator<<(const char* value) throw(IOException) {
+    return *this << NativeString(value);
+  }
+
   /**
     Writes a pointer to a format output stream.
   */
@@ -585,7 +589,7 @@ public:
   */
   inline FormatOutputStream& operator<<(
     const Literal& literal) throw(IOException) {
-    addCharacterField(literal.getValue(), static_cast<unsigned int>(literal.getLength()));
+    addCharacterField(literal.getValue(), literal.getLength());
     return *this;
   }
   

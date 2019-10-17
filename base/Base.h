@@ -260,7 +260,7 @@ inline void deleteCompleteArray(const volatile TYPE* value) {
 _COM_AZURE_DEV__BASE__API void breakpoint() noexcept;
 
 // Consume symbols to cause linker failure on mismatching shared/static builds
-inline void _COM_AZURE_DEV__BASE__CONSUME_SYMBOL(void* p) noexcept
+inline void _COM_AZURE_DEV__BASE__CONSUME_SYMBOL(void (*p)()) noexcept
 {
   // do not call
   if (!p) {

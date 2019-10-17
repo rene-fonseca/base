@@ -189,7 +189,7 @@ _COM_AZURE_DEV__BASE__PACKED__END
 /**
   Writes a string representation of the color object to the specified format stream.
 */
-FormatOutputStream& operator<<(FormatOutputStream& stream, const Color& value) throw(IOException);
+_COM_AZURE_DEV__BASE__API FormatOutputStream& operator<<(FormatOutputStream& stream, const Color& value) throw(IOException);
 
 template<>
 class Uninitializeable<Color> {

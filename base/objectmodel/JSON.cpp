@@ -175,7 +175,7 @@ Reference<ObjectModel::String> JSON::parseString(JSONParser& parser)
     throw JSONException("Expected string.", parser.getPosition());
   }
   text.clear();
-  text.reserve(1024);
+  text.reserve(1024 * 8);
   parser.skip();
   while (parser.peek() != '"') {
     const char ch = parser.read();
@@ -207,7 +207,7 @@ Reference<ObjectModel::String> JSON::parseString(JSONParser& parser)
         text.push_back('\t');
         break;
       case 'u':
-        { // TAG: make sure a-f and A-F works
+        {
           const char h0 = parser.read();
           const char h1 = parser.read();
           const char h2 = parser.read();
@@ -224,15 +224,36 @@ Reference<ObjectModel::String> JSON::parseString(JSONParser& parser)
             std::string s = convert.to_bytes(src, src + 1);
             text += s;
           } else {
-            throw JSONException("Malformed string.", parser.getPosition());
+            throw JSONException("Malformed string literal.", parser.getPosition());
           }
         }
         break;
       default:
-        throw JSONException("Malformed string.", parser.getPosition());
+        throw JSONException("Malformed string literal.", parser.getPosition());
       }
     } else {
+      if (static_cast<uint8>(ch) < 0x20) {
+        throw JSONException("Malformed string literal.", parser.getPosition());
+      }
+      if (static_cast<uint8>(ch) < 0x80) {
+        text.push_back(ch);
+        continue;
+      }
+  
+      // TAG: need read of 1 char
+      ucs4 wch = 0;
+      MemorySize bytesRead = WideString::UTF8ToUCS4(&wch, parser.getCurrent() - 1, parser.getAvailable(), 0);
+      if (wch > 0x10ffff) {
+        throw JSONException("Bad UTF8 string literal.", parser.getPosition());
+      }
+      --bytesRead;
       text.push_back(ch);
+
+      // '0020' . '10FFFF' - '"' - '\'
+      while (bytesRead) {
+        text.push_back(parser.read());
+        --bytesRead;
+      }
     }
   }
   parser.read('"');

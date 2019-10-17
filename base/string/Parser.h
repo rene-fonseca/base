@@ -56,7 +56,13 @@ public:
   {
     return src;
   }
-  
+
+  /** Returns the available bytes. */
+  inline MemorySize getAvailable() const noexcept
+  {
+    return end - src;
+  }
+
   /** Returns true if more chars available. */
   inline bool hasMore() const noexcept
   {
@@ -88,6 +94,8 @@ public:
     ++src;
   }
 
+  // TAG uint32 readUCS4();
+  
   /** Returns the next char. */
   inline char read()
   {

@@ -115,9 +115,9 @@ private:
           column += tabSize;
           break;
         case '\n':
-        case '\r':
           column = 0;
           break;
+        // case '\r':
         default:
           ++column;
         }

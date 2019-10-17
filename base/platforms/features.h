@@ -26,6 +26,10 @@
 #  define _COM_AZURE_DEV__BASE__ANY_DEBUG
 #endif
 
+#if defined(NDEBUG) && defined(_COM_AZURE_DEV__BASE__ANY_DEBUG)
+#  error NDEBUG and _COM_AZURE_DEV__BASE__ANY_DEBUG are both defined
+#endif
+
 #include <base/features.h>
 
 // grants access to internal headers

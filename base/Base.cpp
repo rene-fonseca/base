@@ -33,4 +33,17 @@ void breakpoint() noexcept
   }
 }
 
+// Generate symbols to cause linker failure on mismatching shared/static builds
+#if defined(_COM_AZURE_DEV__BASE__SHARED_LIBRARY_BUILD)
+void _COM_AZURE_DEV__BASE__BUILD_SHARED() noexcept
+{
+  breakpoint(); // do not call
+}
+#else
+void _COM_AZURE_DEV__BASE__BUILD_STATIC() noexcept
+{
+  breakpoint(); // do not call
+}
+#endif
+
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

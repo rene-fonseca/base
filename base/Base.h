@@ -259,4 +259,30 @@ inline void deleteCompleteArray(const volatile TYPE* value) {
 /** Breakpoint. */
 _COM_AZURE_DEV__BASE__API void breakpoint() noexcept;
 
+// Consume symbols to cause linker failure on mismatching shared/static builds
+inline void _COM_AZURE_DEV__BASE__CONSUME_SYMBOL(void* p) noexcept
+{
+  // do not call
+  if (!p) {
+    breakpoint();
+  }
+}
+
+#if defined(_COM_AZURE_DEV__BASE__SHARED_LIBRARY_BUILD) || defined(_COM_AZURE_DEV__BASE__SHARED_LIBRARY)
+_COM_AZURE_DEV__BASE__API void _COM_AZURE_DEV__BASE__BUILD_SHARED() noexcept;
+#else
+_COM_AZURE_DEV__BASE__API void _COM_AZURE_DEV__BASE__BUILD_STATIC() noexcept;
+#endif
+
+inline void _COM_AZURE_DEV__BASE__BUILD_SHARED_STATIC_CONSUME() noexcept
+{
+#if !defined(_COM_AZURE_DEV__BASE__SHARED_LIBRARY_BUILD)
+#  if defined(_COM_AZURE_DEV__BASE__SHARED_LIBRARY)
+  _COM_AZURE_DEV__BASE__CONSUME_SYMBOL(&_COM_AZURE_DEV__BASE__BUILD_SHARED);
+#  else
+  _COM_AZURE_DEV__BASE__CONSUME_SYMBOL(&_COM_AZURE_DEV__BASE__BUILD_STATIC);
+#  endif
+#endif
+}
+
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

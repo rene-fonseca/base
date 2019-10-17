@@ -34,7 +34,7 @@ void breakpoint() noexcept
 }
 
 // update symbol for major releases
-void _COM_AZURE_DEV__BASE__VERSION_0() noexcept
+void _COM_AZURE_DEV__BASE__CONCATENATE(_COM_AZURE_DEV__BASE__VERSION_, _COM_AZURE_DEV__BASE__MAJOR_VERSION)() noexcept
 {
   breakpoint(); // do not call
 }

@@ -114,7 +114,7 @@ public:
   static const unsigned int DEFAULT_RETRY_ATTEMPTS = 5;
 
   /** Verbosity levels. */
-  enum Verbosity {SILENT, SHORT, ALL, DEBUG, DEBUG_EXTENDED};
+  enum Verbosity {SILENT, SHORT, ALL, DEBUG_NORMAL, DEBUG_EXTENDED};
 
   enum Reply {POSITIVE_PRELIMINARY, POSITIVE, POSITIVE_INTERMEDIATE, NEGATIVE, PERMANENT_NEGATIVE};
   enum ReplyGroup {SYNTAX, INFORMATION, CONNECTIONS, AUTHENTICATION, UNSPECIFIED, FILESYSTEM};
@@ -355,7 +355,7 @@ public:
   }
 
   void connect() throw(IOException) {
-    if (verbosity >= DEBUG) {
+    if (verbosity >= DEBUG_NORMAL) {
       fout << "DEBUG: Establishing control connection to: "
            << endPoint << ENDL;
     }
@@ -401,7 +401,7 @@ public:
   }
 
   void getSystemType() throw(FTPException) {
-    if (verbosity >= DEBUG) {
+    if (verbosity >= DEBUG_NORMAL) {
       fout << "DEBUG: Getting system type..." << ENDL;
     }
     request(CMD_SYSTEM);
@@ -409,7 +409,7 @@ public:
   }
 
   void getStatus() throw(FTPException) {
-    if (verbosity >= DEBUG) {
+    if (verbosity >= DEBUG_NORMAL) {
       fout << "DEBUG: Getting status..." << ENDL;
     }
     request(CMD_STATUS);
@@ -417,7 +417,7 @@ public:
   }
 
   void setType(Representation representation) throw(FTPException) {
-    if (verbosity >= DEBUG) {
+    if (verbosity >= DEBUG_NORMAL) {
       fout << "DEBUG: Setting type..." << ENDL;
     }
     switch (representation) {
@@ -436,7 +436,7 @@ public:
   }
 
   void setStructure(Structure structure) throw(FTPException) {
-    if (verbosity >= DEBUG) {
+    if (verbosity >= DEBUG_NORMAL) {
       fout << "DEBUG: Setting file structure..." << ENDL;
     }
     switch (structure) {
@@ -454,7 +454,7 @@ public:
   }
 
   void setMode(Mode mode) throw(FTPException) {
-    if (verbosity >= DEBUG) {
+    if (verbosity >= DEBUG_NORMAL) {
       fout << "DEBUG: Setting mode..." << ENDL;
     }
     switch (mode) {
@@ -472,7 +472,7 @@ public:
   }
 
   void getList() throw(FTPException) {
-    if (verbosity >= DEBUG) {
+    if (verbosity >= DEBUG_NORMAL) {
       fout << "DEBUG: List..." << ENDL;
     }
     request(CMD_LIST);
@@ -511,7 +511,7 @@ public:
           }
         }
 
-        if (verbosity >= DEBUG) {
+        if (verbosity >= DEBUG_NORMAL) {
           fout << "-> " << line << ENDL;
         }
       }
@@ -544,7 +544,7 @@ public:
   }
 
   void restart(const String& marker) throw(InvalidFormat, FTPException) {
-    if (verbosity >= DEBUG) {
+    if (verbosity >= DEBUG_NORMAL) {
       fout << "DEBUG: Restarting..." << ENDL;
     }
     bassert(isValidPrintableString(marker), InvalidFormat("Invalid marker"));
@@ -555,7 +555,7 @@ public:
   // File commands
 
   void renameFile(const String& from, const String& to) throw(InvalidFormat, FTPException) {
-    if (verbosity >= DEBUG) {
+    if (verbosity >= DEBUG_NORMAL) {
       fout << "DEBUG: Renaming file system object..." << ENDL;
     }
     bassert(isValidString(from) && isValidString(to), InvalidFormat("Invalid path"));
@@ -565,7 +565,7 @@ public:
   }
 
   void deleteFile(const String& path) throw(InvalidFormat, FTPException) {
-    if (verbosity >= DEBUG) {
+    if (verbosity >= DEBUG_NORMAL) {
       fout << "DEBUG: Deleting file system object..." << ENDL;
     }
     bassert(isValidString(path), InvalidFormat("Invalid path"));
@@ -576,7 +576,7 @@ public:
   // Directory commands
 
   void getCurrentDirectory() throw(FTPException) {
-    if (verbosity >= DEBUG) {
+    if (verbosity >= DEBUG_NORMAL) {
       fout << "DEBUG: Getting current directory..." << ENDL;
     }
     request(CMD_PWD);
@@ -584,7 +584,7 @@ public:
   }
 
   void changeDirectory(const String& path) throw(InvalidFormat, FTPException) {
-    if (verbosity >= DEBUG) {
+    if (verbosity >= DEBUG_NORMAL) {
       fout << "DEBUG: Changing working directory..." << ENDL;
     }
     if (path == "..") {
@@ -598,7 +598,7 @@ public:
   }
 
   void makeDirectory(const String& path) throw(InvalidFormat, FTPException) {
-    if (verbosity >= DEBUG) {
+    if (verbosity >= DEBUG_NORMAL) {
       fout << "DEBUG: Creating new directory..." << ENDL;
     }
     bassert(isValidString(path), InvalidFormat("Invalid path"));
@@ -607,7 +607,7 @@ public:
   }
 
   void removeDirectory(const String& path) throw(InvalidFormat, FTPException) {
-    if (verbosity >= DEBUG) {
+    if (verbosity >= DEBUG_NORMAL) {
       fout << "DEBUG: Removing directory..." << ENDL;
     }
     bassert(isValidString(path), InvalidFormat("Invalid path"));
@@ -627,7 +627,7 @@ private:
 public:
 
   void login(const String& username, const String& password) throw(InvalidFormat, FTPException) {
-    if (verbosity >= DEBUG) {
+    if (verbosity >= DEBUG_NORMAL) {
       fout << "DEBUG: Sending user and password..." << ENDL;
     }
     switch (sendUser(username)) {
@@ -647,7 +647,7 @@ public:
   }
 
   void logout() throw(FTPException) {
-    if (verbosity >= DEBUG) {
+    if (verbosity >= DEBUG_NORMAL) {
       fout << "DEBUG: Requesting logout..." << ENDL;
     }
     request(CMD_LOGOUT);
@@ -655,7 +655,7 @@ public:
   }
 
   void getDirectoryList() throw(FTPException) {
-    if (verbosity >= DEBUG) {
+    if (verbosity >= DEBUG_NORMAL) {
       fout << "DEBUG: Retrieving directory list..." << ENDL;
     }
     request(CMD_LIST);
@@ -665,7 +665,7 @@ public:
   }
 
   void retrieveFile(const String& filename) throw(FTPException) {
-    if (verbosity >= DEBUG) {
+    if (verbosity >= DEBUG_NORMAL) {
       fout << "DEBUG: Retrieving file..." << ENDL;
     }
     request(CMD_RETRIEVE, filename);
@@ -702,7 +702,7 @@ public:
 //const Literal CMD_SITE = MESSAGE("SITE"); // site specific
 
   void abort() throw(FTPException) {
-    if (verbosity >= DEBUG) {
+    if (verbosity >= DEBUG_NORMAL) {
       fout << "DEBUG: Aborting..." << ENDL;
     }
     request(CMD_ABORT);
@@ -710,7 +710,7 @@ public:
   }
 
   void requestActiveTransfer() throw(FTPException) {
-    if (verbosity >= DEBUG) {
+    if (verbosity >= DEBUG_NORMAL) {
       fout << "DEBUG: Requesting active transfer mode..." << ENDL;
     }
     serverDataConnection = ServerSocket(controlConnection.getLocalAddress(), 0, 1); // address must be IPv4
@@ -738,7 +738,7 @@ public:
   }
 
   void requestPassiveTransfer() throw(FTPException) {
-    if (verbosity >= DEBUG) {
+    if (verbosity >= DEBUG_NORMAL) {
       fout << "DEBUG: Requesting passive transfer mode..." << ENDL;
     }
     request(CMD_PASSIVE);
@@ -763,7 +763,7 @@ public:
     String portLow = clipPassiveResponse(response, i);
     unsigned short port = UnsignedInteger(portHigh).getValue() * 256 + UnsignedInteger(portLow).getValue(); // TAG: make UnsignedInteger class and use this here
 
-    if (verbosity >= DEBUG) {
+    if (verbosity >= DEBUG_NORMAL) {
       fout << "DEBUG: Establishing data connection to: "
            << InetEndPoint(address, port) << ENDL;
     }
@@ -774,7 +774,7 @@ public:
   }
 
   ~FileTransferProtocolClient() {
-    if (verbosity >= DEBUG) {
+    if (verbosity >= DEBUG_NORMAL) {
       fout << "DEBUG: Closing sockets..." << ENDL;
     }
     dataConnection.close();

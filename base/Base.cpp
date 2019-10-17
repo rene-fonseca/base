@@ -33,6 +33,12 @@ void breakpoint() noexcept
   }
 }
 
+// update symbol for major releases
+void _COM_AZURE_DEV__BASE__VERSION_0() noexcept
+{
+  breakpoint(); // do not call
+}
+
 // Generate symbols to cause linker failure on mismatching shared/static builds
 #if defined(_COM_AZURE_DEV__BASE__SHARED_LIBRARY_BUILD)
 void _COM_AZURE_DEV__BASE__BUILD_SHARED() noexcept

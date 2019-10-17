@@ -259,6 +259,9 @@ inline void deleteCompleteArray(const volatile TYPE* value) {
 /** Breakpoint. */
 _COM_AZURE_DEV__BASE__API void breakpoint() noexcept;
 
+// TAG: generate identifier automatically
+_COM_AZURE_DEV__BASE__API void _COM_AZURE_DEV__BASE__VERSION_0() noexcept;
+
 // Consume symbols to cause linker failure on mismatching shared/static builds
 inline void _COM_AZURE_DEV__BASE__CONSUME_SYMBOL(void (*p)()) noexcept
 {
@@ -283,6 +286,11 @@ inline void _COM_AZURE_DEV__BASE__BUILD_SHARED_STATIC_CONSUME() noexcept
   _COM_AZURE_DEV__BASE__CONSUME_SYMBOL(&_COM_AZURE_DEV__BASE__BUILD_STATIC);
 #  endif
 #endif
+}
+
+inline void _COM_AZURE_DEV__BASE__CHECK_VERSION() noexcept
+{
+  _COM_AZURE_DEV__BASE__CONSUME_SYMBOL(&_COM_AZURE_DEV__BASE__VERSION_0);
 }
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

@@ -63,8 +63,6 @@ public:
 
   void testPerformance()
   {
-    _COM_AZURE_DEV__BASE__BUILD_SHARED_STATIC_CONSUME();
-
     const Literal text = MESSAGE("12345.98765e12");
     Posix posix;
     unsigned int count = 1000000;
@@ -100,7 +98,7 @@ public:
     : Application("JSON", numberOfArguments, arguments, environment) {
   }
   
-  void main() throw() {
+  void main() {
     fout << getFormalName() << " version "
          << MAJOR_VERSION << '.' << MINOR_VERSION << EOL
          << "The Base Framework (Test Suite)" << EOL

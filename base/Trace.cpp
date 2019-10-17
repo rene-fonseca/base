@@ -39,6 +39,12 @@ namespace win32 {
 
 void Trace::message(const char* message) throw() {
   bassert(message, NullPointer(Type::getType<Trace>()));
+  
+  static bool useBreakpoint = true;
+  if (useBreakpoint) {
+    breakpoint();
+  }
+  
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   ::OutputDebugString(toWide(message).c_str());
 #elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__CYGWIN) // special case

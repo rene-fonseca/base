@@ -11,18 +11,26 @@
     For the licensing terms refer to the file 'LICENSE'.
  ***************************************************************************/
 
-#include <base/DynamicObject.h>
+#include <base/Base.h>
+
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
+#  include <windows.h>
+#else // unix
+#  include <csignal>
+#endif // flavor
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
-bool DynamicObject::isValidObject() const throw()
+void breakpoint() noexcept
 {
-  const void* _this = this;
-#if defined(_COM_AZURE_DEV__BASE__DEBUG)
-  return (_this != nullptr) && (valid == STATE_VALID);
+  static bool useBreakpoint = true;
+  if (useBreakpoint) {
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
+    DebugBreak();
 #else
-  return (_this != nullptr);
+    std::raise(SIGINT);
 #endif
+  }
 }
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

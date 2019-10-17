@@ -27,8 +27,13 @@ _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 class _COM_AZURE_DEV__BASE__API DynamicObject {
 private:
 
-#if defined(DEBUG) /*|| defined(_COM_AZURE_DEV__BASE__DEBUG)*/
-  bool valid = true;
+  enum {
+    STATE_VALID = 0x8f7d6b59, // less likely to happen
+    STATE_INVALID = 0x91a3b5c7 // less likely to happen
+  };
+  
+#if defined(_COM_AZURE_DEV__BASE__DEBUG)
+  uint32 valid = STATE_VALID;
 #endif
 public:
 
@@ -47,9 +52,9 @@ public:
     Destroys the object.
   */
   virtual inline ~DynamicObject() noexcept(false) {
-#if defined(DEBUG) /*|| defined(_COM_AZURE_DEV__BASE__DEBUG)*/
-    ASSERT(valid);
-    valid = false;
+#if defined(_COM_AZURE_DEV__BASE__DEBUG)
+    ASSERT(valid == STATE_VALID);
+    valid = STATE_INVALID;
 #endif
   }
 };

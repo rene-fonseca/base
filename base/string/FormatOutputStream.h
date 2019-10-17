@@ -292,7 +292,7 @@ public:
   public:
 
     /**
-      Stores the current default context onto the and makes the current context
+      Stores the current default context onto the stack and makes the current context
       the new default context of the stream object.
     */
     PushContext(FormatOutputStream& _stream) throw()
@@ -413,35 +413,42 @@ public:
   /**
     Returns the flags for the next field.
   */
-  inline unsigned int getFlags() const throw() {
+  inline unsigned int getFlags() const noexcept {
     return context.flags;
   }
-  
+
+  /**
+    Sets the flags for the next field.
+  */
+  inline void setFlags(unsigned int flags) noexcept {
+    context.flags = flags;
+  }
+
   /**
     Returns the current integer base.
   */
-  inline Symbols::Base getBase() const throw() {
+  inline Symbols::Base getBase() const noexcept {
     return context.integerBase;
   }
   
   /**
     Returns the current floating-point base.
   */
-  inline Symbols::Base getRealBase() const throw() {
+  inline Symbols::Base getRealBase() const noexcept {
     return context.realBase;
   }
   
   /**
     Returns the current field width.
   */
-  inline unsigned int getWidth() const throw() {
+  inline unsigned int getWidth() const noexcept {
     return context.width;
   }
   
   /**
     Returns the current precision.
   */
-  inline unsigned int getPrecision() const throw() {
+  inline unsigned int getPrecision() const noexcept {
     return context.precision;
   }
   
@@ -483,8 +490,7 @@ public:
   /**
     Writes the specifies number of characters to the stream.
   */
-  void addCharacterField(
-    const char* buffer, unsigned int size) throw(IOException);
+  void addCharacterField(const char* buffer, MemorySize size) throw(IOException);
 
   /**
     Writes a preformated integer to the stream.
@@ -553,12 +559,17 @@ public:
   FormatOutputStream& operator<<(float value) throw(IOException);
   FormatOutputStream& operator<<(double value) throw(IOException);
   FormatOutputStream& operator<<(long double value) throw(IOException);
-  
+
   inline FormatOutputStream& operator<<(
     const NativeString& value) throw(IOException) {
-    return *this << String(value);
+    addCharacterField(value.getValue(), value.getLength());
+    return *this;
   }
-  
+
+  inline FormatOutputStream& operator<<(const char* value) throw(IOException) {
+    return *this << NativeString(value);
+  }
+
   /**
     Writes a pointer to a format output stream.
   */
@@ -578,7 +589,7 @@ public:
   */
   inline FormatOutputStream& operator<<(
     const Literal& literal) throw(IOException) {
-    addCharacterField(literal.getValue(), static_cast<unsigned int>(literal.getLength()));
+    addCharacterField(literal.getValue(), literal.getLength());
     return *this;
   }
   

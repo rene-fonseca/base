@@ -1046,8 +1046,8 @@ public:
   /**
     Registers an entity resolver.
   */
-  inline void setEntityResolver(EntityResolver* entityResolver) throw() {
-    entityResolver = entityResolver;
+  inline void setEntityResolver(EntityResolver* _entityResolver) throw() {
+    entityResolver = _entityResolver;
   }
   
   /**

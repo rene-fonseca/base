@@ -32,7 +32,6 @@ MemorySize NativeString::getLength() const throw() {
     while (*src++) {
       ++length;
     }
-    return 0;
   }
   return length;
 }

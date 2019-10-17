@@ -80,6 +80,43 @@ public:
     Returns a short banner (multiple lines) describing the framework.
   */
   virtual String getBanner() const throw();
+
+  /** Returns the size of DynamicObject. */
+  static MemorySize getDynamicObjectSize() noexcept;
+
+  /** Returns true if _COM_AZURE_DEV__BASE__DEBUG was defined for the Base Framework. _COM_AZURE_DEV__BASE__DEBUG influences class state and must be set identical for dependent projects. */
+  static bool getDefine_COM_AZURE_DEV__BASE__DEBUG() noexcept;
+
+  /** Returns true if DEBUG, _DEBUG, or _COM_AZURE_DEV__BASE__DEBUG were defined for the Base Framework. */
+  static bool getDefine_DEBUG() noexcept;
+
+  /** Returns true if the project is built with the correct defines as the Base Framework. Raises exception on conflict. */
+  static inline bool isBuildCompatible()
+  {
+#if defined(_COM_AZURE_DEV__BASE__DEBUG)
+    const bool define_COM_AZURE_DEV__BASE__DEBUG = true;
+#else
+    const bool define_COM_AZURE_DEV__BASE__DEBUG = false;
+#endif
+    
+#if defined(DEBUG) || defined(_DEBUG) || defined(_COM_AZURE_DEV__BASE__DEBUG)
+    const bool define_DEBUG = true;
+#else
+    const bool define_DEBUG = false;
+#endif
+    
+    if (getDefine_COM_AZURE_DEV__BASE__DEBUG() != define_COM_AZURE_DEV__BASE__DEBUG) {
+      throw Exception("_COM_AZURE_DEV__BASE__DEBUG symbol mismatch detected for Base Framework.");
+    }
+    if (getDefine_DEBUG() != define_DEBUG) {
+      throw Exception("DEBUG, _DEBUG, or _COM_AZURE_DEV__BASE__DEBUG symbol mismatch detected for Base Framework.");
+    }
+    if (getDynamicObjectSize() != sizeof(DynamicObject)) {
+      throw Exception("DynamicObject mismatch detected for Base Framework.");
+    }
+
+    return true;
+  }
 };
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

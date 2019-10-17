@@ -218,8 +218,7 @@ public:
 
   enum {
     DEFAULT_VALUE = 0,
-    DESTRUCT_VALUE = -1,
-    ALIGNMENT = 16
+    DESTRUCT_VALUE = -1
   };
 
   /**
@@ -229,21 +228,21 @@ public:
   */
   inline AtomicCounter(const TYPE _value = DEFAULT_VALUE) noexcept
   {
-    ASSERT((getAddressOf(&value) & (ALIGNMENT - 1)) == 0);
+    ASSERT((getAddressOf(&value) & (sizeof(TYPE) - 1)) == 0);
 #if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__MACOS)
     ASSERT(atomic_is_lock_free(&value));
     atomic_init(&value, _value);
 #else
     store(_value);
-  }
 #endif
+  }
 
   /**
     Copy constructor. Avoid this.
   */
   inline AtomicCounter(const AtomicCounter& _value) noexcept
   {
-    ASSERT((getAddressOf(&value) & (ALIGNMENT - 1)) == 0);
+    ASSERT((getAddressOf(&value) & (sizeof(TYPE) - 1)) == 0);
 #if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__MACOS)
     ASSERT(atomic_is_lock_free(&value));
     atomic_init(&value, _value.load());
@@ -409,14 +408,18 @@ public:
   typedef typename MapToSignedType<TYPE>::SignedType SignedType;
   typedef AtomicCounter<SignedType> BASE;
 
+<<<<<<< HEAD
   inline AtomicCounterU(const TYPE _value = static_cast<TYPE>(BASE::DEFAULT_VALUE)) noexcept
+=======
+  inline AtomicCounterU(const TYPE _value = BASE::DEFAULT_VALUE) noexcept
+>>>>>>> 3964e6b7ad351d2ecb1a93f92d361eb315d3694d
     : BASE(static_cast<SignedType>(_value))
   {
   }
 
   inline operator TYPE() const noexcept
   {
-    return static_cast<SignedType>(BASE::operator SignedType());
+    return BASE::operator SignedType();
   }
 
   inline TYPE operator++(int) noexcept

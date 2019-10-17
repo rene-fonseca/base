@@ -869,7 +869,7 @@ int compare<String>(const String& left, const String& right) throw()
 
 unsigned long Hash<String>::operator()(const String& value) throw()
 {
-  const char* src = value.getBytes();
+  const char* src = value.getElements();
   const char* end = src + value.getLength();
   unsigned long result = 5381;
   while (src < end) {
@@ -880,13 +880,13 @@ unsigned long Hash<String>::operator()(const String& value) throw()
 
 FormatOutputStream& operator<<(
   FormatOutputStream& stream, const String& value) throw(IOException) {
-  stream.addCharacterField(value.getBytes(), value.getLength());
+  stream.addCharacterField(value.getElements(), value.getLength());
   return stream;
 }
 
 /** Converts wstring to UTF-8 string. */
 std::string toUTF8(const String& s) {
-  return std::string(s.getBytes(), s.getLength());
+  return std::string(s.getElements(), s.getLength());
 }
 
 /** Converts wstring to UTF-8 string. */
@@ -915,7 +915,7 @@ std::wstring toWide(const std::string& s) {
 /** Converts String to wstring. */
 std::wstring toWide(const String& s) {
   std::wstring_convert<std::codecvt_utf8<wchar_t>, wchar_t> convert;
-  return convert.from_bytes(s.getBytes(), s.getBytes() + s.getLength());
+  return convert.from_bytes(s.getElements(), s.getElements() + s.getLength());
 }
 
 /** Converts UTF-8 (const char*) to wstring. */

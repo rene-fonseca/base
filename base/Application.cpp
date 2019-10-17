@@ -87,7 +87,7 @@ public:
       stream << "Internal error: explicit termination." << FLUSH;
     }
     ferr << stream.getString() << ENDL; // TAG: use appropriate error stream
-#if defined(_COM_AZURE_DEV__BASE__DEBUG)
+#if defined(_COM_AZURE_DEV__BASE__ANY_DEBUG)
     // TAG: need runtime debug mode support (e.g. bool Trace::debug or with level support)
     Trace::message(stream.getString().getElements());
 #endif
@@ -138,7 +138,7 @@ public:
     } else {
       stream << "Internal error: explicit invocation of unexpected." << FLUSH;
     }
-#if defined(_COM_AZURE_DEV__BASE__DEBUG)
+#if defined(_COM_AZURE_DEV__BASE__ANY_DEBUG)
     Trace::message(stream.getString().getElements());
 #endif
     // TAG: either use SystemLogger or ferr but not both

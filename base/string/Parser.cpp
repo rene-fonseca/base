@@ -13,8 +13,21 @@
 
 #include <base/string/Parser.h>
 
-_COM_AZURE_DEV__BASE__DUMMY_SYMBOL
-
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
+
+MemorySize Parser::getNumberOfUTF8Bytes() const noexcept
+{
+  return 0;
+}
+
+ucs4 Parser::readUCS4() {
+  if (src == end) {
+    throw ParseException("Unexpected end reached.");
+  }
+  const char result = *src;
+  // TAG: impl
+  ++src;
+  return result;
+}
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

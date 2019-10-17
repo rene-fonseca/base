@@ -68,7 +68,16 @@ public:
   {
     return src != end;
   }
-  
+
+  /** Returns the next byte without reading it. */
+  inline uint8 peekByte() const
+  {
+    if (src == end) {
+      throw ParseException("Unexpected end reached.");
+    }
+    return *src;
+  }
+
   /** Returns the next char without reading it. */
   inline char peek() const
   {
@@ -84,6 +93,17 @@ public:
     return peek() == ch;
   }
 
+  /** Rewinds 1 byte. */
+  inline void rewind()
+  {
+#if 0
+    if (src == begin) {
+      throw ParseException("Unexpected beginning reached.");
+    }
+#endif
+    --src;
+  }
+
   /** Skip next char. */
   inline void skip()
   {
@@ -94,8 +114,12 @@ public:
     ++src;
   }
 
-  // TAG uint32 readUCS4();
-  
+  /** Returns the number of bytes in the next UTF-8 encoded char. */
+  MemorySize getNumberOfUTF8Bytes() const noexcept;
+
+  /** Returns the next UCS4 char assuming UTF8 encoding. */
+  ucs4 readUCS4();
+
   /** Returns the next char. */
   inline char read()
   {

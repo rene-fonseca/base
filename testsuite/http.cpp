@@ -833,7 +833,7 @@ public:
     
     Array<String> arguments = getArguments();
 
-    String url = MESSAGE("www.fonseca.dk/index.html"); // default url
+    String url = MESSAGE("www.google.com/"); // default url
     String file; // default file
 
     switch (arguments.getSize()) {

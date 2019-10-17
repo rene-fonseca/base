@@ -46,7 +46,7 @@ public:
 
     The version must match the regular expression /[1-9]*[0-9](.[1-9]*[0-9]){1,2}/.
 
-    @param identity Unique and fully qualified name (e.g. "fonseca.dk/GIP/Modules/Flip").
+    @param identity Unique and fully qualified name (e.g. "{17B00396-00E1-4C1C-BCA0-89EAD65FA71B}/GIP/Modules/Flip").
     @param name A nice name (e.g. "Flip").
     @param version Version (e.g. "1.12.1").
   */

@@ -15,6 +15,7 @@
 
 #include <base/objectmodel/ObjectModel.h>
 #include <base/string/Parser.h>
+#include <base/string/Posix.h>
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
@@ -41,6 +42,7 @@ private:
 
   ObjectModel objectModel;
   std::string text; // reused
+  Posix posix; // get series of floats
 
   /** Skip space. */
   inline void skipSpaces(Parser& parser) noexcept {

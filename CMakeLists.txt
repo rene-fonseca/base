@@ -165,4 +165,43 @@ if (APPLE)
   set(CMAKE_CXX_ARCHIVE_FINISH "<CMAKE_RANLIB> -no_warning_for_no_symbols -c <TARGET>")
 endif ()
 
+#set_target_properties(base base_STATIC
+#  PROPERTIES
+#  ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/lib"
+#  LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/lib"
+#  RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin"
+#)
+
+file(GLOB_RECURSE base_HEADERS
+  "base/*.h"
+)
+
+#set_target_properties(base PROPERTIES PUBLIC_HEADER "${base_HEADERS}")
+
+# preserve folder structure
+# TAG: include generated headers
+install(
+  DIRECTORY "${CMAKE_SOURCE_DIR}/base" # source directory
+  DESTINATION "${CMAKE_BINARY_DIR}/include" # target directory
+  FILES_MATCHING PATTERN "*.h" # select header files
+)
+
+install(TARGETS base base_STATIC
+  CONFIGURATIONS Release
+  ARCHIVE DESTINATION "${CMAKE_BINARY_DIR}/lib/release"
+  LIBRARY DESTINATION "${CMAKE_BINARY_DIR}/lib/release"
+  RUNTIME DESTINATION "${CMAKE_BINARY_DIR}/bin/release"
+)
+# PUBLIC_HEADER DESTINATION "${CMAKE_BINARY_DIR}/inc"
+
+#install(
+#  DIRECTORY "${CMAKE_BINARY_DIR}/Release"
+#  CONFIGURATIONS Release
+#  DESTINATION "${CMAKE_BINARY_DIR}/bin/release"
+#  FILES_MATCHING
+#  PATTERN *.pdb
+#)
+
+# TAG: install tests also in bin/tests
+
 add_subdirectory("testsuite")

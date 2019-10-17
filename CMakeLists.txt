@@ -216,6 +216,4 @@ install(TARGETS base base_STATIC
 #  PATTERN *.pdb
 #)
 
-# TAG: install tests also in bin/tests
-
 add_subdirectory("testsuite")

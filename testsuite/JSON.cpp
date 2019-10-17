@@ -23,19 +23,21 @@ const char* JSON_EXAMPLE1 = "{"
 "  \"list\": [false, 997, true, \"JSON is nice and simple\"]"
 "}";
 
-const char* JSON_EXAMPLE2 = "{"
-"  \"hello\": \"This is a test.\","
-"  \"count\": 1234BAD56,"
-"  \"house\": {\"area\": 90, \"floors\": 2, \"description\": \"Great place.\"},"
-"  \"list\": [false, 997, true, \"JSON is nice and simple\"]"
-"}";
+const char* JSON_EXAMPLE2 = "{\n"
+"  \"hello\": \"This is a test.\",\n"
+"  \"count\": 1234BAD56,\n"
+"  \"house\": {\"area\": 90, \"floors\": 2, \"description\": \"Great place.\"},\n"
+"  \"list\": [false, 997, true, \"JSON is nice and simple\"]\n"
+"}\n";
 
-const char* JSON_EXAMPLE3 = "{"
-"  \"hello\": \"This is a test.\","
-"  \"count\": 1234BAD56,"
-"  \"house\": {\"area\": 90, \"floors\": 2, \"description\": \"Great place.\"},"
-"  \"list\": [false 997, true, \"JSON is nice and simple\"]"
-"}";
+const char* JSON_EXAMPLE3 = "{\n"
+"  \"hello\": \"This is a test.\",\n"
+"  \"count\": 123456,\n"
+"  \"house\": {\"area\": 90, \"floors\": 2, \"description\": \"Great place.\"},\n"
+"  \"list\": [false 997, true, \"JSON is nice and simple\"]\n"
+"}\n";
+
+// TAG: can we change a setting and auto pop upon return for FormatOutputStream - e.g. change a flag and similar
 
 class JSONApplication : public Application {
 private:

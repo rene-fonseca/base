@@ -19,18 +19,30 @@
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
+/** Line and column position with text file. Line and column are 1 based. */
 class _COM_AZURE_DEV__BASE__API LineColumn {
 public:
   
   MemorySize line = 0;
   MemorySize column = 0;
   
-  void nextLine() noexcept {
+  inline LineColumn() noexcept {
+  }
+
+  inline LineColumn(MemorySize _line, MemorySize _column) noexcept
+    : line(_line), column(_column) {
+  }
+  
+  inline bool isProper() const noexcept {
+    return line > 0;
+  }
+
+  inline void nextLine() noexcept {
     ++line;
     column = 0;
   }
 
-  void nextColumn() noexcept {
+  inline void nextColumn() noexcept {
     ++column;
   }
 };
@@ -76,9 +88,13 @@ private:
   class JSONParser : public Parser {
   private:
     
-    LineColumn position;
+    unsigned int line = 0;
+    const uint8* lastLine = nullptr;
+    unsigned int tabSize = 2;
   public:
 
+    // TAG: handle UTF8/non ASCII?
+    
     JSONParser() noexcept
     {
     }
@@ -86,10 +102,39 @@ private:
     JSONParser(const uint8* src, const uint8* end) noexcept
       : Parser(src, end)
     {
+      lastLine = src;
     }
     
-    inline const LineColumn& getPosition() const noexcept {
-      return position;
+    /** Finds the column. */
+    static MemorySize getColumn(const uint8* src, const uint8* end, unsigned int tabSize = 2)
+    {
+      MemorySize column = 0;
+      while (src != end) {
+        switch (*src) {
+        case '\t':
+          column += tabSize;
+          break;
+        case '\n':
+        case '\r':
+          column = 0;
+          break;
+        default:
+          ++column;
+        }
+        ++src;
+      }
+      return column;
+    }
+
+    // TAG: only return line and offset within line - and let caller handle tab size
+    
+    inline LineColumn getPosition() const noexcept
+    {
+      MemorySize column = 0;
+      if (lastLine) {
+        column = getColumn(lastLine, src, tabSize);
+      }
+      return LineColumn(line + 1, column + 1);
     }
     
     /** Skips JSON space. */
@@ -98,10 +143,12 @@ private:
       while (src != end) {
         switch (peek()) {
         case ' ':
+          break;
         case '\n':
-          position.nextLine();
+          ++line;
           break;
         case '\r':
+          break;
         case '\t':
           break;
         default:

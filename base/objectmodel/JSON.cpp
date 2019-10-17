@@ -17,6 +17,8 @@
 #include <locale>
 #include <codecvt>
 
+// TAG: handle chars in JSON strings!
+
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 FormatOutputStream& operator<<(FormatOutputStream& stream, const LineColumn& position)

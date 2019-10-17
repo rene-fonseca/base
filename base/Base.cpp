@@ -33,7 +33,18 @@ void breakpoint() noexcept
   }
 }
 
-// update symbol for major releases
+#if defined(_COM_AZURE_DEV__BASE__DEBUG)
+void _COM_AZURE_DEV__BASE__BUILD_DEBUG() noexcept
+{
+  breakpoint(); // do not call
+}
+#else
+void _COM_AZURE_DEV__BASE__BUILD_RELEASE() noexcept
+{
+  breakpoint(); // do not call
+}
+#endif
+
 void _COM_AZURE_DEV__BASE__CONCATENATE(_COM_AZURE_DEV__BASE__VERSION_, _COM_AZURE_DEV__BASE__MAJOR_VERSION)() noexcept
 {
   breakpoint(); // do not call

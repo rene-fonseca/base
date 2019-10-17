@@ -106,6 +106,12 @@ public:
   template<class APPLICATION>
   static inline int stub(int numberOfArguments, const char* arguments[], const char* environment[]) throw() {
     try {
+      // ensure required linker symbols are available
+      _COM_AZURE_DEV__BASE__BUILD_SHARED_STATIC_CONSUME();
+      _COM_AZURE_DEV__BASE__CHECK_VERSION();
+      _COM_AZURE_DEV__BASE__CHECK_DEBUG_RELEASE();
+      
+      // check runtime
       Version::isBuildCompatible();
 
       APPLICATION application(numberOfArguments, arguments, environment);
@@ -233,8 +239,6 @@ public:
 
 #define _COM_AZURE_DEV__BASE__STUB(APPLICATION) \
 int main(int argc, const char* argv[], const char* env[]) throw() { \
-  _COM_AZURE_DEV__BASE__BUILD_SHARED_STATIC_CONSUME(); \
-  _COM_AZURE_DEV__BASE__CHECK_VERSION(); \
   return com::azure::dev::base::Application::stub<APPLICATION>(argc, argv, env); \
 }
 

@@ -16,11 +16,25 @@
 
 using namespace com::azure::dev::base;
 
-const char* JSON_EXAMPLE = "{"
+const char* JSON_EXAMPLE1 = "{"
 "  \"hello\": \"This is a test.\","
 "  \"count\": 123456,"
 "  \"house\": {\"area\": 90, \"floors\": 2, \"description\": \"Great place.\"},"
 "  \"list\": [false, 997, true, \"JSON is nice and simple\"]"
+"}";
+
+const char* JSON_EXAMPLE2 = "{"
+"  \"hello\": \"This is a test.\","
+"  \"count\": 1234BAD56,"
+"  \"house\": {\"area\": 90, \"floors\": 2, \"description\": \"Great place.\"},"
+"  \"list\": [false, 997, true, \"JSON is nice and simple\"]"
+"}";
+
+const char* JSON_EXAMPLE3 = "{"
+"  \"hello\": \"This is a test.\","
+"  \"count\": 1234BAD56,"
+"  \"house\": {\"area\": 90, \"floors\": 2, \"description\": \"Great place.\"},"
+"  \"list\": [false 997, true, \"JSON is nice and simple\"]"
 "}";
 
 class JSONApplication : public Application {
@@ -44,9 +58,21 @@ public:
          << "Copyright (C) 2019 by Rene Moeller Fonseca" << EOL
          << ENDL;
 
-    Reference<ObjectModel::Value> example1 = JSON().parse(JSON_EXAMPLE);
-    // fout << "Example1:" << EOL << example1 << ENDL;
+    Reference<ObjectModel::Value> example1 = JSON().parse(JSON_EXAMPLE1);
+    // fout << "Example1:" << EOL << example1 << EOL << ENDL;
     fout << "Example1:" << EOL << JSON::getJSON(example1) << ENDL;
+
+    try {
+      Reference<ObjectModel::Value> example2 = JSON().parse(JSON_EXAMPLE2);
+    } catch (JSONException& e) {
+      fout << "Example2: " << e.getMessage() << " at line " << e.getPosition() << ENDL;
+    }
+
+    try {
+      Reference<ObjectModel::Value> example3 = JSON().parse(JSON_EXAMPLE3);
+    } catch (JSONException& e) {
+      fout << "Example3: " << e.getMessage() << " at line " << e.getPosition() << ENDL;
+    }
 
     ObjectModel objectModel;
     auto o = objectModel.createObject();

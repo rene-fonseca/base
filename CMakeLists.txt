@@ -179,9 +179,13 @@ file(GLOB_RECURSE base_HEADERS
 #set_target_properties(base PROPERTIES PUBLIC_HEADER "${base_HEADERS}")
 
 # preserve folder structure
-# TAG: include generated headers
 install(
   DIRECTORY "${CMAKE_SOURCE_DIR}/base" # source directory
+  DESTINATION "${CMAKE_BINARY_DIR}/include" # target directory
+  FILES_MATCHING PATTERN "*.h" # select header files
+)
+install(
+  DIRECTORY "${CMAKE_BINARY_DIR}/generated/base" # source directory
   DESTINATION "${CMAKE_BINARY_DIR}/include" # target directory
   FILES_MATCHING PATTERN "*.h" # select header files
 )

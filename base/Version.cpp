@@ -94,7 +94,7 @@ bool Version::getDefine_COM_AZURE_DEV__BASE__DEBUG() noexcept
 }
 
 bool Version::getDefine_DEBUG() noexcept {
-#if defined(DEBUG) || defined(_DEBUG) || defined(_COM_AZURE_DEV__BASE__DEBUG)
+#if defined(_COM_AZURE_DEV__BASE__ANY_DEBUG)
   return true;
 #else
   return false;

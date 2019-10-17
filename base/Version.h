@@ -99,7 +99,7 @@ public:
     const bool define_COM_AZURE_DEV__BASE__DEBUG = false;
 #endif
     
-#if defined(DEBUG) || defined(_DEBUG) || defined(_COM_AZURE_DEV__BASE__DEBUG)
+#if defined(_COM_AZURE_DEV__BASE__ANY_DEBUG)
     const bool define_DEBUG = true;
 #else
     const bool define_DEBUG = false;

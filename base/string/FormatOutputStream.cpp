@@ -1730,11 +1730,11 @@ void FormatOutputStream::writeFloatingPointType(
       }
     } else {
 
-      PrimitiveArray<uint8> digitBuffer((significant + 1)/3); // N = 2 + floor[n/log2(10)] => N < 3 + n/3 // TAG: check if stack is aligned
+      PrimitiveArray<uint8> digitBuffer((significant + 1)/3); // N = 2 + floor[n/log2(10)] => N < 3 + n/3
       unsigned int numberOfDigits = 0;
       int exponent = 0;
       CutMode cutMode = CUT_MODE_NOGARBAGE;
-;
+
       if ((flags & Symbols::NECESSARY) != 0) {
         cutMode = CUT_MODE_NOGARBAGE;
       } else {

@@ -48,10 +48,12 @@ base::String ObjectModel::Value::toString(bool niceFormat) const noexcept
 {
   if (niceFormat) {
     ObjectModel::NiceFormat s;
+    s.setFlags(s.getFlags() | FormatOutputStream::Symbols::POSIX); // for floats
     s << *this << FLUSH;
     return s.getString();
   } else {
     StringOutputStream s;
+    s.setFlags(s.getFlags() | FormatOutputStream::Symbols::POSIX); // for floats
     s << *this << FLUSH;
     return s.getString();
   }
@@ -599,7 +601,7 @@ FormatOutputStream& operator<<(FormatOutputStream& stream, const Reference<Objec
   if (!value) {
     return stream << MESSAGE("null");
   }
-  return stream << value->value;
+  return stream << value->value; // POSIX from higher level
 }
 
 FormatOutputStream& operator<<(FormatOutputStream& stream, const Reference<ObjectModel::String>& value)
@@ -616,7 +618,6 @@ FormatOutputStream& operator<<(FormatOutputStream& stream, const Reference<Objec
     return stream << MESSAGE("null");
   }
 
-  // TAG: can we do this in a more general manner?
   unsigned int level = 0;
   ObjectModel::NiceFormat* niceFormat = nullptr;
   if (!value->isEmpty() && (value->getSize() > 4)) { // TAG: make option for line length? - need to try to convert entire
@@ -665,7 +666,6 @@ FormatOutputStream& operator<<(FormatOutputStream& stream, const Reference<Objec
     return stream << MESSAGE("null");
   }
 
-  // TAG: can we do this in a more general manner?
   unsigned int level = 0;
   ObjectModel::NiceFormat* niceFormat = nullptr;
   if (!value->isEmpty()) {

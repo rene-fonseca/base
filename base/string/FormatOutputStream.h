@@ -413,35 +413,42 @@ public:
   /**
     Returns the flags for the next field.
   */
-  inline unsigned int getFlags() const throw() {
+  inline unsigned int getFlags() const noexcept {
     return context.flags;
   }
-  
+
+  /**
+    Sets the flags for the next field.
+  */
+  inline void setFlags(unsigned int flags) noexcept {
+    context.flags = flags;
+  }
+
   /**
     Returns the current integer base.
   */
-  inline Symbols::Base getBase() const throw() {
+  inline Symbols::Base getBase() const noexcept {
     return context.integerBase;
   }
   
   /**
     Returns the current floating-point base.
   */
-  inline Symbols::Base getRealBase() const throw() {
+  inline Symbols::Base getRealBase() const noexcept {
     return context.realBase;
   }
   
   /**
     Returns the current field width.
   */
-  inline unsigned int getWidth() const throw() {
+  inline unsigned int getWidth() const noexcept {
     return context.width;
   }
   
   /**
     Returns the current precision.
   */
-  inline unsigned int getPrecision() const throw() {
+  inline unsigned int getPrecision() const noexcept {
     return context.precision;
   }
   

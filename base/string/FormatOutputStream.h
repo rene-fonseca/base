@@ -292,7 +292,7 @@ public:
   public:
 
     /**
-      Stores the current default context onto the and makes the current context
+      Stores the current default context onto the stack and makes the current context
       the new default context of the stream object.
     */
     PushContext(FormatOutputStream& _stream) throw()

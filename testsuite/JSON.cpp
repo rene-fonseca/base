@@ -37,6 +37,20 @@ const char* JSON_EXAMPLE3 = "{\n"
 "  \"list\": [false 997, true, \"JSON is nice and simple\"]\n"
 "}\n";
 
+const char* JSON_EXAMPLE_BAD_STRING = "{\n"
+"  \"hello\": \"This is a test.\",\n"
+"  \"count\": 123456,\n"
+"  \"house\": {\"area\": 90, \"floors\": 2, \"description\": \"Great place.\"},\n"
+"  \"list\": [false, 997, true, \"JSON is \rnice and simple\"]\n"
+"}\n";
+
+const char* JSON_EXAMPLE_BAD_STRING2 = u8"{\n"
+"  \"hello\": \"This is a test\\u0021\",\n"
+"  \"count\": 123456,\n"
+"  \"house\": {\"area\": 90, \"floors\": 2, \"description\": \"Great place.\"},\n"
+"  \"list\": [false, 997, true, \"ÆØÅ\", \"JSON is nice and simple\"]\n"
+"}\n";
+
 // TAG: can we change a setting and auto pop upon return for FormatOutputStream - e.g. change a flag and similar
 
 class JSONApplication : public Application {
@@ -74,6 +88,18 @@ public:
       Reference<ObjectModel::Value> example3 = JSON().parse(JSON_EXAMPLE3);
     } catch (JSONException& e) {
       fout << "Example3: " << e.getMessage() << " at line " << e.getPosition() << ENDL;
+    }
+
+    try {
+      Reference<ObjectModel::Value> example4 = JSON().parse(JSON_EXAMPLE_BAD_STRING);
+    } catch (JSONException& e) {
+      fout << "Example bad string: " << e.getMessage() << " at line " << e.getPosition() << ENDL;
+    }
+
+    try {
+      Reference<ObjectModel::Value> example5 = JSON().parse(JSON_EXAMPLE_BAD_STRING2);
+    } catch (JSONException& e) {
+      fout << "Example bad string2: " << e.getMessage() << " at line " << e.getPosition() << ENDL;
     }
 
     ObjectModel objectModel;

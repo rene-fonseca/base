@@ -19,18 +19,23 @@
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
+FormatOutputStream& operator<<(FormatOutputStream& stream, const LineColumn& position)
+{
+  return stream << position.line << ":" << position.column;
+}
+
 JSON::JSON()
 {
 }
 
-Reference<ObjectModel::Void> JSON::parseNull(Parser& parser)
+Reference<ObjectModel::Void> JSON::parseNull(JSONParser& parser)
 {
   skipSpaces(parser);
   parser.read("null");
   return objectModel.createVoid();
 }
 
-Reference<ObjectModel::Boolean> JSON::parseBoolean(Parser& parser)
+Reference<ObjectModel::Boolean> JSON::parseBoolean(JSONParser& parser)
 {
   skipSpaces(parser);
   switch (parser.peek()) {
@@ -41,10 +46,10 @@ Reference<ObjectModel::Boolean> JSON::parseBoolean(Parser& parser)
     parser.read("true");
     return objectModel.createBoolean(true);
   }
-  throw JSONException("Expected boolean.");
+  throw JSONException("Expected boolean.", parser.getPosition());
 }
 
-bool JSON::parseIntegerImpl(Parser& parser, int& j)
+bool JSON::parseIntegerImpl(JSONParser& parser, int& j)
 {
   skipSpaces(parser);
   int i = 0;
@@ -87,17 +92,17 @@ bool JSON::parseIntegerImpl(Parser& parser, int& j)
   return true;
 }
 
-Reference<ObjectModel::Integer> JSON::parseInteger(Parser& parser)
+Reference<ObjectModel::Integer> JSON::parseInteger(JSONParser& parser)
 {
   skipSpaces(parser);
   int i = 0;
   if (!parseIntegerImpl(parser, i)) {
-    throw JSONException("Expected integer.");
+    throw JSONException("Expected integer.", parser.getPosition());
   }
   return objectModel.createInteger(i);
 }
 
-Reference<ObjectModel::Float> JSON::parseFloat(Parser& parser)
+Reference<ObjectModel::Float> JSON::parseFloat(JSONParser& parser)
 {
   skipSpaces(parser);
 
@@ -143,17 +148,17 @@ Reference<ObjectModel::Float> JSON::parseFloat(Parser& parser)
 
   double d = 0;
   if (!posix.getSeries(b, e, d)) {
-    throw JSONException("Malformed float.");
+    throw JSONException("Malformed float.", parser.getPosition());
   }
   
   return objectModel.createFloat(d);
 }
 
-Reference<ObjectModel::Value> JSON::parseNumber(Parser& parser)
+Reference<ObjectModel::Value> JSON::parseNumber(JSONParser& parser)
 {
   skipSpaces(parser);
   int i = 0;
-  Parser integerParser = parser;
+  JSONParser integerParser = parser;
   if (parseIntegerImpl(integerParser, i)) {
     parser = integerParser;
     return objectModel.createInteger(i);
@@ -161,11 +166,11 @@ Reference<ObjectModel::Value> JSON::parseNumber(Parser& parser)
   return parseFloat(parser);
 }
 
-Reference<ObjectModel::String> JSON::parseString(Parser& parser)
+Reference<ObjectModel::String> JSON::parseString(JSONParser& parser)
 {
   skipSpaces(parser);
   if (!parser.peek('"')) {
-    throw JSONException("Expected string.");
+    throw JSONException("Expected string.", parser.getPosition());
   }
   text.clear();
   text.reserve(1024);
@@ -217,12 +222,12 @@ Reference<ObjectModel::String> JSON::parseString(Parser& parser)
             std::string s = convert.to_bytes(src, src + 1);
             text += s;
           } else {
-            throw JSONException("Malformed string.");
+            throw JSONException("Malformed string.", parser.getPosition());
           }
         }
         break;
       default:
-        throw JSONException("Malformed string.");
+        throw JSONException("Malformed string.", parser.getPosition());
       }
     } else {
       text.push_back(ch);
@@ -232,11 +237,11 @@ Reference<ObjectModel::String> JSON::parseString(Parser& parser)
   return objectModel.createString(String(text));
 }
 
-Reference<ObjectModel::Array> JSON::parseArray(Parser& parser)
+Reference<ObjectModel::Array> JSON::parseArray(JSONParser& parser)
 {
   skipSpaces(parser);
   if (!parser.peek('[')) {
-    throw JSONException("Expected array.");
+    throw JSONException("Expected array.", parser.getPosition());
   }
   parser.skip();
   Reference<ObjectModel::Array> result = objectModel.createArray();
@@ -257,17 +262,17 @@ Reference<ObjectModel::Array> JSON::parseArray(Parser& parser)
       parser.skip();
       return result;
     default:
-      throw JSONException("Malformed array.");
+      throw JSONException("Malformed array.", parser.getPosition());
     }
   }
   return nullptr;
 }
 
-Reference<ObjectModel::Object> JSON::parseObject(Parser& parser)
+Reference<ObjectModel::Object> JSON::parseObject(JSONParser& parser)
 {
   skipSpaces(parser);
   if (!parser.peek('{')) {
-    throw JSONException("Expected object.");
+    throw JSONException("Expected object.", parser.getPosition());
   }
   parser.skip();
   Reference<ObjectModel::Object> result = objectModel.createObject();
@@ -293,13 +298,13 @@ Reference<ObjectModel::Object> JSON::parseObject(Parser& parser)
       parser.skip();
       return result;
     default:
-      throw JSONException("Malformed object.");
+      throw JSONException("Malformed object.", parser.getPosition());
     }
   }
   return nullptr;
 }
 
-Reference<ObjectModel::Value> JSON::parseValue(Parser& parser)
+Reference<ObjectModel::Value> JSON::parseValue(JSONParser& parser)
 {
   skipSpaces(parser);
   switch (parser.peek()) {
@@ -321,11 +326,11 @@ Reference<ObjectModel::Value> JSON::parseValue(Parser& parser)
 
 Reference<ObjectModel::Value> JSON::parse(const uint8* src, const uint8* end)
 {
-  Parser parser(src, end);
+  JSONParser parser(src, end);
   auto result = parseObject(parser);
   skipSpaces(parser);
   if (parser.hasMore()) {
-    throw JSONException("Unexpected content after object.");
+    throw JSONException("Unexpected content after object.", parser.getPosition());
   }
   return result;
 }

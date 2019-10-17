@@ -32,7 +32,7 @@ public:
 
 /** Parser. */
 class _COM_AZURE_DEV__BASE__API Parser /*: public Object*/ {
-private:
+protected:
   
   // TAG: add support for skipping UTF-8 chars
   const uint8* src = nullptr;

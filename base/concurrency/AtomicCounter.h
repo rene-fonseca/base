@@ -408,11 +408,7 @@ public:
   typedef typename MapToSignedType<TYPE>::SignedType SignedType;
   typedef AtomicCounter<SignedType> BASE;
 
-<<<<<<< HEAD
   inline AtomicCounterU(const TYPE _value = static_cast<TYPE>(BASE::DEFAULT_VALUE)) noexcept
-=======
-  inline AtomicCounterU(const TYPE _value = BASE::DEFAULT_VALUE) noexcept
->>>>>>> 3964e6b7ad351d2ecb1a93f92d361eb315d3694d
     : BASE(static_cast<SignedType>(_value))
   {
   }

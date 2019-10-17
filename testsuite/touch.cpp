@@ -20,6 +20,7 @@ using namespace com::azure::dev::base;
 class TouchApplication : public Application {
 public:
 
+  // TAG: add support for setting version
   static const unsigned int MAJOR_VERSION = 1;
   static const unsigned int MINOR_VERSION = 0;
   

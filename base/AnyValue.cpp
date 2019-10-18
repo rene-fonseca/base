@@ -18,15 +18,17 @@
 #include <base/LongInteger.h>
 #include <base/TypeInfo.h>
 
-// TAG: need floating point support: float, double, and long double
-
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
-AnyValue::AnyValue() throw() : representation(VOID) {
+AnyValue::AnyValue() noexcept : representation(VOID) {
 }
 
 AnyValue::AnyValue(const Type& value) throw()
   : representation(TYPE), type(value) {
+}
+
+AnyValue::AnyValue(void* value) throw()
+  : representation(POINTER), p(value) {
 }
 
 AnyValue::AnyValue(char value) throw()
@@ -74,6 +76,18 @@ AnyValue::AnyValue(unsigned long long value) throw()
     unsignedLongLongInteger(value) {
 }
 
+AnyValue::AnyValue(float value) throw()
+  : representation(FLOAT), f(value) {
+}
+
+AnyValue::AnyValue(double value) throw()
+  : representation(DOUBLE), d(value) {
+}
+
+AnyValue::AnyValue(long double value) throw()
+  : representation(LONG_DOUBLE), ld(value) {
+}
+
 AnyValue::AnyValue(const String& value) throw()
   : representation(STRING), string(value) {
 }
@@ -98,6 +112,9 @@ AnyValue::AnyValue(const AnyValue& copy) throw()
     break;
   case TYPE:
     type = copy.type;
+    break;
+  case POINTER:
+    p = copy.p;
     break;
   case CHARACTER:
     character = copy.character;
@@ -132,6 +149,15 @@ AnyValue::AnyValue(const AnyValue& copy) throw()
   case UNSIGNED_LONG_LONG_INTEGER:
     unsignedLongLongInteger = copy.unsignedLongLongInteger;
     break;
+  case FLOAT:
+    f = copy.f;
+    break;
+  case DOUBLE:
+    d = copy.d;
+    break;
+  case LONG_DOUBLE:
+    ld = copy.ld;
+    break;
   case STRING:
     string = copy.string;
     break;
@@ -141,28 +167,18 @@ AnyValue::AnyValue(const AnyValue& copy) throw()
   }
 }
 
-AnyValue& AnyValue::operator=(const AnyValue& eq) throw() {
+AnyValue& AnyValue::operator=(const AnyValue& eq) noexcept {
   if (&eq != this) { // only if not self-assignment
-    switch (representation) {
-    case STRING:
-      if (eq.representation != STRING) {
-        string = String();
-      }
-      break;
-    case WIDE_STRING:
-      if (eq.representation != WIDE_STRING) {
-        wideString = WideString();
-      }
-      break;
-    default:
-      break;
-    }
+    reset();
     representation = eq.representation;
     switch (representation) {
     case VOID:
       break;
     case TYPE:
       type = eq.type;
+      break;
+    case POINTER:
+      p = eq.p;
       break;
     case CHARACTER:
       character = eq.character;
@@ -197,6 +213,15 @@ AnyValue& AnyValue::operator=(const AnyValue& eq) throw() {
     case UNSIGNED_LONG_LONG_INTEGER:
       unsignedLongLongInteger = eq.unsignedLongLongInteger;
       break;
+    case FLOAT:
+      f = eq.f;
+      break;
+    case DOUBLE:
+      d = eq.d;
+      break;
+    case LONG_DOUBLE:
+      ld = eq.ld;
+      break;
     case STRING:
       string = eq.string;
       break;
@@ -208,12 +233,15 @@ AnyValue& AnyValue::operator=(const AnyValue& eq) throw() {
   return *this;
 }
 
-Type AnyValue::getRepresentationType() const throw() {
+Type AnyValue::getRepresentationType() const noexcept
+{
   switch (representation) {
   case VOID:
     return Type(); // uninitialized
   case TYPE:
     return Type::getType<Type>();
+  case POINTER:
+    return Type::makeType(&typeid(void*)); // Type::getType<void*>();
   case CHARACTER:
     return Type::getType<char>();
   case WIDE_CHARACTER:
@@ -236,6 +264,12 @@ Type AnyValue::getRepresentationType() const throw() {
     return Type::getType<long long>();
   case UNSIGNED_LONG_LONG_INTEGER:
     return Type::getType<unsigned long long>();
+  case FLOAT:
+    return Type::getType<float>();
+  case DOUBLE:
+    return Type::getType<double>();
+  case LONG_DOUBLE:
+    return Type::getType<long double>();
   case STRING:
     return Type::getType<String>();
   case WIDE_STRING:
@@ -245,7 +279,7 @@ Type AnyValue::getRepresentationType() const throw() {
   }
 }
 
-bool AnyValue::isInteger() const throw() {
+bool AnyValue::isInteger() const noexcept {
   switch (representation) {
   case SHORT_INTEGER:
   case UNSIGNED_SHORT_INTEGER:
@@ -261,7 +295,7 @@ bool AnyValue::isInteger() const throw() {
   }
 }
 
-bool AnyValue::isUnsigned() const throw() {
+bool AnyValue::isUnsigned() const noexcept {
   switch (representation) {
   case VOID:
   case CHARACTER:
@@ -279,7 +313,18 @@ bool AnyValue::isUnsigned() const throw() {
   }
 }
 
-bool AnyValue::isText() const throw() {
+bool AnyValue::isFloatingPoint() const noexcept {
+  switch (representation) {
+  case FLOAT:
+  case DOUBLE:
+  case LONG_DOUBLE:
+    return true;
+  default:
+    return false;
+  }
+}
+
+bool AnyValue::isText() const noexcept {
   switch (representation) {
   case CHARACTER:
   case WIDE_CHARACTER:
@@ -294,194 +339,114 @@ bool AnyValue::isText() const throw() {
 
 
 AnyValue& AnyValue::operator=(const Type& value) throw() {
-  switch (representation) {
-  case STRING:
-    string = String();
-    break;
-  case WIDE_STRING:
-    wideString = WideString();
-    break;
-  default:
-    break;
-  }
+  reset();
   type = value;
   representation = TYPE;
   return *this;
 }
 
+AnyValue& AnyValue::operator=(void* value) throw() {
+  reset();
+  p = value;
+  representation = POINTER;
+  return *this;
+}
+
 AnyValue& AnyValue::operator=(char value) throw() {
-  switch (representation) {
-  case STRING:
-    string = String();
-    break;
-  case WIDE_STRING:
-    wideString = WideString();
-    break;
-  default:
-    break;
-  }
+  reset();
   character = value;
   representation = CHARACTER;
   return *this;
 }
 
 AnyValue& AnyValue::operator=(wchar value) throw() {
-  switch (representation) {
-  case STRING:
-    string = String();
-    break;
-  case WIDE_STRING:
-    wideString = WideString();
-    break;
-  default:
-    break;
-  }
+  reset();
   wideCharacter = value;
   representation = WIDE_CHARACTER;
   return *this;
 }
 
 AnyValue& AnyValue::operator=(bool value) throw() {
-  switch (representation) {
-  case STRING:
-    string = String();
-    break;
-  case WIDE_STRING:
-    wideString = WideString();
-    break;
-  default:
-    break;
-  }
+  reset();
   boolean = value;
   representation = BOOLEAN;
   return *this;
 }
 
 AnyValue& AnyValue::operator=(short value) throw() {
-  switch (representation) {
-  case STRING:
-    string = String();
-    break;
-  case WIDE_STRING:
-    wideString = WideString();
-    break;
-  default:
-    break;
-  }
+  reset();
   shortInteger = value;
   representation = SHORT_INTEGER;
   return *this;
 }
 
 AnyValue& AnyValue::operator=(unsigned short value) throw() {
-  switch (representation) {
-  case STRING:
-    string = String();
-    break;
-  case WIDE_STRING:
-    wideString = WideString();
-    break;
-  default:
-    break;
-  }
+  reset();
   unsignedShortInteger = value;
   representation = UNSIGNED_SHORT_INTEGER;
   return *this;
 }
 
 AnyValue& AnyValue::operator=(int value) throw() {
-  switch (representation) {
-  case STRING:
-    string = String();
-    break;
-  case WIDE_STRING:
-    wideString = WideString();
-    break;
-  default:
-    break;
-  }
+  reset();
   integer = value;
   representation = INTEGER;
   return *this;
 }
 
 AnyValue& AnyValue::operator=(unsigned int value) throw() {
-  switch (representation) {
-  case STRING:
-    string = String();
-    break;
-  case WIDE_STRING:
-    wideString = WideString();
-    break;
-  default:
-    break;
-  }
+  reset();
   unsignedInteger = value;
   representation = UNSIGNED_INTEGER;
   return *this;
 }
 
 AnyValue& AnyValue::operator=(long value) throw() {
-  switch (representation) {
-  case STRING:
-    string = String();
-    break;
-  case WIDE_STRING:
-    wideString = WideString();
-    break;
-  default:
-    break;
-  }
+  reset();
   longInteger = value;
   representation = LONG_INTEGER;
   return *this;
 }
 
 AnyValue& AnyValue::operator=(unsigned long value) throw() {
-  switch (representation) {
-  case STRING:
-    string = String();
-    break;
-  case WIDE_STRING:
-    wideString = WideString();
-    break;
-  default:
-    break;
-  }
+  reset();
   unsignedLongInteger = value;
   representation = UNSIGNED_LONG_INTEGER;
   return *this;
 }
 
 AnyValue& AnyValue::operator=(long long value) throw() {
-  switch (representation) {
-  case STRING:
-    string = String();
-    break;
-  case WIDE_STRING:
-    wideString = WideString();
-    break;
-  default:
-    break;
-  }
+  reset();
   longLongInteger = value;
   representation = LONG_LONG_INTEGER;
   return *this;
 }
 
 AnyValue& AnyValue::operator=(unsigned long long value) throw() {
-  switch (representation) {
-  case STRING:
-    string = String();
-    break;
-  case WIDE_STRING:
-    wideString = WideString();
-    break;
-  default:
-    break;
-  }
+  reset();
   unsignedLongLongInteger = value;
   representation = UNSIGNED_LONG_LONG_INTEGER;
+  return *this;
+}
+
+AnyValue& AnyValue::operator=(float value) throw() {
+  reset();
+  f = value;
+  representation = FLOAT;
+  return *this;
+}
+
+AnyValue& AnyValue::operator=(double value) throw() {
+  reset();
+  d = value;
+  representation = DOUBLE;
+  return *this;
+}
+
+AnyValue& AnyValue::operator=(long double value) throw() {
+  reset();
+  ld = value;
+  representation = LONG_DOUBLE;
   return *this;
 }
 
@@ -911,7 +876,7 @@ String AnyValue::getString() const throw() {
   case VOID:
     return String();
   case TYPE:
-    return TypeInfo::getTypename(type);
+    return TypeInfo::getTypename(Type::makeType(type));
   case CHARACTER:
     return String(&character, 1);
   case WIDE_CHARACTER:
@@ -928,6 +893,9 @@ String AnyValue::getString() const throw() {
 
   StringOutputStream stream;
   switch (representation) {
+  case POINTER:
+    stream << p;
+    break;
   case SHORT_INTEGER:
     stream << integer;
     break;
@@ -949,6 +917,15 @@ String AnyValue::getString() const throw() {
   case UNSIGNED_LONG_LONG_INTEGER:
     stream << unsignedLongLongInteger;
     break;
+  case FLOAT:
+    stream << f;
+    break;
+  case DOUBLE:
+    stream << d;
+    break;
+  case LONG_DOUBLE:
+    stream << ld;
+    break;
   default:
     break;
   }
@@ -961,7 +938,7 @@ WideString AnyValue::getWideString() const throw() {
   case VOID:
     return WideString();
   case TYPE:
-    return TypeInfo::getTypename(type);
+    return TypeInfo::getTypename(Type::makeType(type));
   case CHARACTER:
     return WideString(&character, 1);
   case WIDE_CHARACTER:
@@ -978,6 +955,9 @@ WideString AnyValue::getWideString() const throw() {
   
   StringOutputStream stream;
   switch (representation) {
+  case POINTER:
+    stream << p;
+    break;
   case SHORT_INTEGER:
     stream << integer;
     break;
@@ -999,6 +979,15 @@ WideString AnyValue::getWideString() const throw() {
   case UNSIGNED_LONG_LONG_INTEGER:
     stream << unsignedLongLongInteger;
     break;
+  case FLOAT:
+    stream << f;
+    break;
+  case DOUBLE:
+    stream << d;
+    break;
+  case LONG_DOUBLE:
+    stream << ld;
+    break;
   default:
     break;
   }
@@ -1009,209 +998,111 @@ WideString AnyValue::getWideString() const throw() {
 
 
 void AnyValue::setType(const Type& value) throw() {
-  switch (representation) {
-  case STRING:
-    string = String();
-    break;
-  case WIDE_STRING:
-    wideString = WideString();
-    break;
-  default:
-    break;
-  }
+  reset();
   type = value;
   representation = TYPE;
 }
 
+void AnyValue::setPointer(void* value) throw() {
+  reset();
+  p = value;
+  representation = POINTER;
+}
+
 void AnyValue::setChar(char value) throw() {
-  switch (representation) {
-  case STRING:
-    string = String();
-    break;
-  case WIDE_STRING:
-    wideString = WideString();
-    break;
-  default:
-    break;
-  }
+  reset();
   character = value;
   representation = CHARACTER;
 }
 
 void AnyValue::setWideChar(wchar value) throw() {
-  switch (representation) {
-  case STRING:
-    string = String();
-    break;
-  case WIDE_STRING:
-    wideString = WideString();
-    break;
-  default:
-    break;
-  }
+  reset();
   wideCharacter = value;
   representation = WIDE_CHARACTER;
 }
 
 void AnyValue::setBoolean(bool value) throw() {
-  switch (representation) {
-  case STRING:
-    string = String();
-    break;
-  case WIDE_STRING:
-    wideString = WideString();
-    break;
-  default:
-    break;
-  }
+  reset();
   boolean = value;
   representation = BOOLEAN;
 }
 
 void AnyValue::setShortInteger(short value) throw() {
-  switch (representation) {
-  case STRING:
-    string = String();
-    break;
-  case WIDE_STRING:
-    wideString = WideString();
-    break;
-  default:
-    break;
-  }
+  reset();
   shortInteger = value;
   representation = SHORT_INTEGER;
 }
 
 void AnyValue::setUnsignedShortInteger(unsigned short value) throw() {
-  switch (representation) {
-  case STRING:
-    string = String();
-    break;
-  case WIDE_STRING:
-    wideString = WideString();
-    break;
-  default:
-    break;
-  }
+  reset();
   unsignedShortInteger = value;
   representation = UNSIGNED_SHORT_INTEGER;
 }
 
 void AnyValue::setInteger(int value) throw() {
-  switch (representation) {
-  case STRING:
-    string = String();
-    break;
-  case WIDE_STRING:
-    wideString = WideString();
-    break;
-  default:
-    break;
-  }
+  reset();
   integer = value;
   representation = INTEGER;
 }
 
 void AnyValue::setUnsignedInteger(unsigned int value) throw() {
-  switch (representation) {
-  case STRING:
-    string = String();
-    break;
-  case WIDE_STRING:
-    wideString = WideString();
-    break;
-  default:
-    break;
-  }
+  reset();
   unsignedInteger = value;
   representation = UNSIGNED_INTEGER;
 }
 
 void AnyValue::setLongInteger(long value) throw() {
-  switch (representation) {
-  case STRING:
-    string = String();
-    break;
-  case WIDE_STRING:
-    wideString = WideString();
-    break;
-  default:
-    break;
-  }
+  reset();
   longInteger = value;
   representation = LONG_INTEGER;
 }
 
 void AnyValue::setUnsignedLongInteger(unsigned long value) throw() {
-  switch (representation) {
-  case STRING:
-    string = String();
-    break;
-  case WIDE_STRING:
-    wideString = WideString();
-    break;
-  default:
-    break;
-  }
+  reset();
   unsignedLongInteger = value;
   representation = UNSIGNED_LONG_INTEGER;
 }
 
 void AnyValue::setLongLongInteger(long long value) throw() {
-  switch (representation) {
-  case STRING:
-    string = String();
-    break;
-  case WIDE_STRING:
-    wideString = WideString();
-    break;
-  default:
-    break;
-  }
+  reset();
   longLongInteger = value;
   representation = LONG_LONG_INTEGER;
 }
 
 void AnyValue::setUnsignedLongLongInteger(unsigned long long value) throw() {
-  switch (representation) {
-  case STRING:
-    string = String();
-    break;
-  case WIDE_STRING:
-    wideString = WideString();
-    break;
-  default:
-    break;
-  }
+  reset();
   unsignedLongLongInteger = value;
   representation = UNSIGNED_LONG_LONG_INTEGER;
 }
 
 void AnyValue::setString(const String& value) throw() {
-  switch (representation) {
-  case WIDE_STRING:
-    wideString = String();
-  default:
+  if (representation == STRING) {
     string = value;
+    return;
   }
+  reset();
+  string = value;
   representation = STRING;
 }
 
 void AnyValue::setWideString(const WideString& value) throw() {
-  switch (representation) {
-  case STRING:
-    string = String();
-  default:
+  if (representation == WIDE_STRING) {
     wideString = value;
+    return;
   }
+  reset();
+  wideString = value;
   representation = WIDE_STRING;
 }
 
-FormatOutputStream& operator<<(FormatOutputStream& stream, const AnyValue& value) throw(IOException) {
+FormatOutputStream& operator<<(FormatOutputStream& stream, const AnyValue& value) throw(IOException)
+{
   switch (value.representation) {
   case AnyValue::TYPE:
-    stream << TypeInfo::getTypename(value.type);
+    stream << TypeInfo::getTypename(Type::makeType(value.type));
+    break;
+  case AnyValue::POINTER:
+    stream << value.p;
     break;
   case AnyValue::CHARACTER:
     stream << value.character;
@@ -1245,6 +1136,15 @@ FormatOutputStream& operator<<(FormatOutputStream& stream, const AnyValue& value
     break;
   case AnyValue::UNSIGNED_LONG_LONG_INTEGER:
     stream << value.unsignedLongLongInteger;
+    break;
+  case AnyValue::FLOAT:
+    stream << value.f;
+    break;
+  case AnyValue::DOUBLE:
+    stream << value.d;
+    break;
+  case AnyValue::LONG_DOUBLE:
+    stream << value.ld;
     break;
   case AnyValue::STRING:
     stream << value.string;

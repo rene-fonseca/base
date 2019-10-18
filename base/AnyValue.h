@@ -25,7 +25,7 @@
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 /**
-  Any value.
+  Any value. Containers to commonly used types.
   
   @short Any value
   @version 1.0
@@ -40,6 +40,7 @@ public:
   enum Representation {
     VOID, /**< Void. */
     TYPE, /**< Type. */
+    POINTER, /** Pointer. */
     CHARACTER, /**< Character primitive. */
     WIDE_CHARACTER, /**< Wide character primitive. */
     BOOLEAN, /**< Boolean primitive. */
@@ -51,8 +52,12 @@ public:
     UNSIGNED_LONG_INTEGER, /**< Unsigned long integer primitive. */
     LONG_LONG_INTEGER, /**< Long long integer primitive. */
     UNSIGNED_LONG_LONG_INTEGER, /**< Unsigned long long integer primitive. */
+    FLOAT, /** Float primitive. */
+    DOUBLE, /** Double primitive. */
+    LONG_DOUBLE, /** Long double primitive. */
     STRING, /**< Sting. */
-    WIDE_STRING /**< Wide string. */
+    WIDE_STRING, /**< Wide string. */
+    REFERENCE /** Reference counted object. */
   };
 private:
 
@@ -61,6 +66,7 @@ private:
   
   /** Container for primitives. */
   union {
+    void* p;
     char character;
     wchar wideCharacter;
     bool boolean;
@@ -72,13 +78,35 @@ private:
     unsigned long unsignedLongInteger;
     long long longLongInteger;
     unsigned long long unsignedLongLongInteger;
+    float f;
+    double d;
+    long double ld;
+    const std::type_info* type;
   };
-  /** Container for type object. */
-  Type type;
   /** Container for normal string. */
   String string;
   /** Container for wide string. */
   WideString wideString;
+  /** Reference counted object. */
+  Reference<ReferenceCountedObject> reference; // could be shared with string types potentially
+
+  /** Release all non-primitive types. */
+  inline void reset() {
+    switch (representation) {
+    case STRING:
+      string = String();
+      break;
+    case WIDE_STRING:
+      wideString = WideString();
+      break;
+    case REFERENCE:
+      reference = nullptr;
+      break;
+    default:
+      break;
+    }
+    representation = VOID;
+  }
 public:
   
   /**
@@ -99,7 +127,7 @@ public:
   /**
     Returns the internal representation of the value.
   */
-  inline Representation getRepresentation() const throw() {
+  inline Representation getRepresentation() const noexcept {
     return representation;
   }
   
@@ -108,28 +136,38 @@ public:
 
     @return An uninitialized type object is returned if the representation is VOID.
   */
-  Type getRepresentationType() const throw();
+  Type getRepresentationType() const noexcept;
   
   /**
     Returns true if the representation is an integer type.
   */
-  bool isInteger() const throw();
+  bool isInteger() const noexcept;
 
   /**
     Returns true if the representation is an unsigned type.
   */
-  bool isUnsigned() const throw();
+  bool isUnsigned() const noexcept;
+  
+  /**
+    Returns true if the representation is a floating point type.
+  */
+  bool isFloatingPoint() const noexcept;
 
   /**
     Returns true if the value represented by character(s).
   */
-  bool isText() const throw();
+  bool isText() const noexcept;
   
   /**
     Initializes value as type.
   */
   AnyValue(const Type& value) throw();
-  
+
+  /**
+    Initializes value as character.
+  */
+  AnyValue(void* value) throw();
+
   /**
     Initializes value as character.
   */
@@ -186,6 +224,21 @@ public:
   AnyValue(unsigned long long value) throw();
 
   /**
+    Initializes value as float.
+  */
+  AnyValue(float value) throw();
+
+  /**
+    Initializes value as double.
+  */
+  AnyValue(double value) throw();
+
+  /**
+    Initializes value as long double.
+  */
+  AnyValue(long double value) throw();
+
+  /**
     Initializes value as string.
   */
   AnyValue(const String& value) throw();
@@ -209,7 +262,12 @@ public:
     Sets the value as a type.
   */
   AnyValue& operator=(const Type& value) throw();
-  
+
+  /**
+    Sets the value as a character.
+  */
+  AnyValue& operator=(void* value) throw();
+
   /**
     Sets the value as a character.
   */
@@ -266,6 +324,21 @@ public:
   AnyValue& operator=(unsigned long long value) throw();
 
   /**
+    Sets the value as a float.
+  */
+  AnyValue& operator=(float value) throw();
+
+  /**
+    Sets the value as a double.
+  */
+  AnyValue& operator=(double value) throw();
+
+  /**
+    Sets the value as a long double.
+  */
+  AnyValue& operator=(long double value) throw();
+
+  /**
     Sets the value as a string.
   */
   AnyValue& operator=(const String& value) throw();
@@ -278,7 +351,12 @@ public:
   /**
     Returns value as a type.
   */
-  Type getType() const throw();
+  const Type& getType() const throw();
+
+  /**
+    Returns value as a pointer.
+  */
+  void* getPointer() const throw();
 
   /**
     Returns value as a character.
@@ -336,6 +414,21 @@ public:
   unsigned long long getUnsignedLongLongInteger() const throw();
 
   /**
+    Returns value as a float.
+  */
+  float getFloat() const throw();
+
+  /**
+    Returns value as a double.
+  */
+  double getDouble() const throw();
+
+  /**
+    Returns value as a float.
+  */
+  long double getLongDouble() const throw();
+
+  /**
     Returns value as a string.
   */
   String getString() const throw();
@@ -349,7 +442,12 @@ public:
     Sets the value as a type.
   */
   void setType(const Type& value) throw();
-  
+
+  /**
+    Sets the value as a pointer.
+  */
+  void setPointer(void* value) throw();
+
   /**
     Sets the value as a character.
   */

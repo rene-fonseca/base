@@ -13,7 +13,7 @@
 
 #include <base/objectmodel/ObjectModel.h>
 #include <base/LongInteger.h>
-#include <math.h> // TAG: put in Math - inf/nan
+#include <base/mathematics/Math.h>
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
@@ -605,12 +605,12 @@ FormatOutputStream& operator<<(FormatOutputStream& stream, const Reference<Objec
     return stream << MESSAGE("null");
   }
 
-  if (isfinite(value->value)) { // not inf or nan
+  if (Math::isFinite(value->value)) { // not inf or nan
     stream << value->value; // POSIX from higher level
-  } else if (isnan(value->value)) {
+  } else if (Math::isNaN(value->value)) {
     stream << MESSAGE("\"NaN\""); // should we use null instead of string
-  } else if (isinf(value->value)) {
-    stream << ((value->value < 0) ? MESSAGE("infinity") : MESSAGE("infinity")); // should we use null instead of string
+  } else if (Math::isInfinity(value->value)) {
+    stream << ((value->value < 0) ? MESSAGE("-infinity") : MESSAGE("infinity")); // should we use null instead of string
   } else {
     ASSERT(!"Unsupported float.");
     stream << value->value;

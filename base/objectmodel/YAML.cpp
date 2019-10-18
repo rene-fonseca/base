@@ -14,9 +14,9 @@
 #include <base/objectmodel/YAML.h>
 #include <base/io/File.h>
 #include <base/string/Posix.h>
+#include <base/mathematics/Math.h>
 #include <locale>
 #include <codecvt>
-#include <math.h> // TAG: put in Math - inf/nan
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
@@ -414,14 +414,14 @@ void toStringYAML(YAMLOutputStream& stream, Reference<ObjectModel::Float> value)
     return;
   }
   
-  if (isfinite(value->value)) { // not inf or nan
-    stream << value->value;
-  } else if (isnan(value->value)) {
-    stream << MESSAGE(".NaN");
-  } else if (isinf(value->value)) {
-    stream << ((value->value < 0) ? MESSAGE("-.inf") : MESSAGE(".inf"));
+  if (Math::isFinite(value->value)) { // not inf or nan
+    stream << value->value; // POSIX from higher level
+  } else if (Math::isNaN(value->value)) {
+    stream << MESSAGE(".NaN"); // should we use null instead of string
+  } else if (Math::isInfinity(value->value)) {
+    stream << ((value->value < 0) ? MESSAGE("-.inf") : MESSAGE(".inf")); // should we use null instead of string
   } else {
-    ASSERT(!"Unsupported float.");    
+    ASSERT(!"Unsupported float.");
     stream << value->value;
   }
 }

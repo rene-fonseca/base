@@ -12,6 +12,7 @@
  ***************************************************************************/
 
 #include <base/mathematics/Math.h>
+#include <math.h>
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
@@ -49,6 +50,42 @@ const uint8 Math::BIT_REVERSAL[] = {
   0x0f, 0x8f, 0x4f, 0xcf, 0x2f, 0xaf, 0x6f, 0xef,
   0x1f, 0x9f, 0x5f, 0xdf, 0x3f, 0xbf, 0x7f, 0xff
 };
+
+bool Math::isFinite(float value) noexcept {
+  return isfinite(value);
+}
+
+bool Math::isFinite(double value) noexcept {
+  return isfinite(value);
+}
+
+bool Math::isFinite(long double value) noexcept {
+  return isfinite(value);
+}
+
+bool Math::isInfinity(float value) noexcept {
+  return isinf(value);
+}
+
+bool Math::isInfinity(double value) noexcept {
+  return isinf(value);
+}
+
+bool Math::isInfinity(long double value) noexcept {
+  return isinf(value);
+}
+
+bool Math::isNaN(float value) noexcept {
+  return isnan(value);
+}
+
+bool Math::isNaN(double value) noexcept {
+  return isnan(value);
+}
+
+bool Math::isNaN(long double value) noexcept {
+  return isnan(value);
+}
 
 const uint8* Math::getBitReversalData() noexcept {
   return BIT_REVERSAL;

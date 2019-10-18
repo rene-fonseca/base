@@ -241,6 +241,27 @@ private:
   static const uint8* getBitReversalData() noexcept;
 public:
   
+  /** Returns true if value is finite. */
+  static bool isFinite(float value) noexcept;
+  /** Returns true if value is finite. */
+  static bool isFinite(double value) noexcept;
+  /** Returns true if value is finite. */
+  static bool isFinite(long double value) noexcept;
+
+  /** Returns true if value is infinity. */
+  static bool isInfinity(float value) noexcept;
+  /** Returns true if value is infinity. */
+  static bool isInfinity(double value) noexcept;
+  /** Returns true if value is infinity. */
+  static bool isInfinity(long double value) noexcept;
+
+  /** Returns true if value is NaN. */
+  static bool isNaN(float value) noexcept;
+  /** Returns true if value is NaN. */
+  static bool isNaN(double value) noexcept;
+  /** Returns true if value is NaN. */
+  static bool isNaN(long double value) noexcept;
+
   /**
     Returns the absolute value.
   */

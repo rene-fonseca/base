@@ -57,8 +57,8 @@ public:
 };
 #endif
 
-ThreadKey<Thread> Thread::ThreadLocal::thread; // thread object
-ThreadKey<Allocator<uint8> > Thread::ThreadLocal::storage; // thread local storage
+/** The thread object associated with context. */
+ThreadKey<ThreadLocalContext> Thread::threadLocalContext; // thread object
 
 /*
   The order of initialization is very significant. fin, fout, and ferr are the

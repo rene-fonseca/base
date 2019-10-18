@@ -13,6 +13,9 @@
 
 #include <base/Guid.h>
 #include <base/string/StringOutputStream.h>
+#include <base/Random.h>
+
+// see https://tools.ietf.org/html/rfc4122
 
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
 #  include <windows.h>
@@ -56,6 +59,11 @@ Guid Guid::getGuid(const char* text)
   for (unsigned int i = 0; i < SIZE; ++i) {
     guid.guid[i] = getGuidByte(reinterpret_cast<const uint8*>(text) + OFFSETS[i]);
   }
+  std::swap(guid.guid[0], guid.guid[3]); // uint32 a
+  std::swap(guid.guid[1], guid.guid[2]); // uint32 b
+  std::swap(guid.guid[4], guid.guid[5]); // uint16
+  std::swap(guid.guid[6], guid.guid[7]); // uint16
+  std::swap(guid.guid[8], guid.guid[9]); // uint16
 
   return guid;
 }
@@ -111,7 +119,8 @@ Guid Guid::createGuid() noexcept
   ASSERT(sizeof(_guid) == sizeof(result.guid)); // for C++17 static_assert();
   copy<uint8>(result.guid, reinterpret_cast<const uint8*>(&_guid), sizeof(result.guid));
 #else
-  ASSERT(!"Not implemented.");
+  Random::fill(result.guid);
+  // TAG: do we need to set some bits to indicate random uuid
 #endif
   return result;
 }
@@ -120,35 +129,35 @@ String Guid::toString() const
 {
   // {B429A864-CDFC-4044-BCC1-BDDE18EAF8DE}
 
-  char result[38];
+  char result[38 + 1];
   char* dest = result;
 
   *dest++ = '{';
-  *dest++ = ASCIITraits::valueToUpperDigit(guid[0] >> 4);
-  *dest++ = ASCIITraits::valueToUpperDigit(guid[0] >> 0);
-  *dest++ = ASCIITraits::valueToUpperDigit(guid[1] >> 4);
-  *dest++ = ASCIITraits::valueToUpperDigit(guid[1] >> 0);
+  *dest++ = ASCIITraits::valueToUpperDigit(guid[3] >> 4); // uint32
+  *dest++ = ASCIITraits::valueToUpperDigit(guid[3] >> 0);
   *dest++ = ASCIITraits::valueToUpperDigit(guid[2] >> 4);
   *dest++ = ASCIITraits::valueToUpperDigit(guid[2] >> 0);
-  *dest++ = ASCIITraits::valueToUpperDigit(guid[3] >> 4);
-  *dest++ = ASCIITraits::valueToUpperDigit(guid[3] >> 0);
+  *dest++ = ASCIITraits::valueToUpperDigit(guid[1] >> 4);
+  *dest++ = ASCIITraits::valueToUpperDigit(guid[1] >> 0);
+  *dest++ = ASCIITraits::valueToUpperDigit(guid[0] >> 4);
+  *dest++ = ASCIITraits::valueToUpperDigit(guid[0] >> 0);
   *dest++ = '-';
+  *dest++ = ASCIITraits::valueToUpperDigit(guid[5] >> 4); // uint16
+  *dest++ = ASCIITraits::valueToUpperDigit(guid[5] >> 0);
   *dest++ = ASCIITraits::valueToUpperDigit(guid[4] >> 4);
   *dest++ = ASCIITraits::valueToUpperDigit(guid[4] >> 0);
-  *dest++ = ASCIITraits::valueToUpperDigit(guid[5] >> 4);
-  *dest++ = ASCIITraits::valueToUpperDigit(guid[5] >> 0);
   *dest++ = '-';
+  *dest++ = ASCIITraits::valueToUpperDigit(guid[7] >> 4); // uint16
+  *dest++ = ASCIITraits::valueToUpperDigit(guid[7] >> 0);
   *dest++ = ASCIITraits::valueToUpperDigit(guid[6] >> 4);
   *dest++ = ASCIITraits::valueToUpperDigit(guid[6] >> 0);
-  *dest++ = ASCIITraits::valueToUpperDigit(guid[7] >> 4);
-  *dest++ = ASCIITraits::valueToUpperDigit(guid[7] >> 0);
   *dest++ = '-';
-  *dest++ = ASCIITraits::valueToUpperDigit(guid[8] >> 4);
+  *dest++ = ASCIITraits::valueToUpperDigit(guid[8] >> 4); // uint16
   *dest++ = ASCIITraits::valueToUpperDigit(guid[8] >> 0);
   *dest++ = ASCIITraits::valueToUpperDigit(guid[9] >> 4);
   *dest++ = ASCIITraits::valueToUpperDigit(guid[9] >> 0);
   *dest++ = '-';
-  *dest++ = ASCIITraits::valueToUpperDigit(guid[10] >> 4);
+  *dest++ = ASCIITraits::valueToUpperDigit(guid[10] >> 4); // uint8's
   *dest++ = ASCIITraits::valueToUpperDigit(guid[10] >> 0);
   *dest++ = ASCIITraits::valueToUpperDigit(guid[11] >> 4);
   *dest++ = ASCIITraits::valueToUpperDigit(guid[11] >> 0);
@@ -161,8 +170,9 @@ String Guid::toString() const
   *dest++ = ASCIITraits::valueToUpperDigit(guid[15] >> 4);
   *dest++ = ASCIITraits::valueToUpperDigit(guid[15] >> 0);
   *dest++ = '}';
-  ASSERT((dest - result) == SIZE);
-  return String(result, SIZE);
+  *dest = '\0';
+  ASSERT((dest - result) == (sizeof(result) - 1));
+  return String(result, (sizeof(result) - 1));
 
 #if 0
   StringOutputStream s;

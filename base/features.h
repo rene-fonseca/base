@@ -118,7 +118,7 @@ namespace com {
 
 #if (!defined(GET_SOURCE_LOCATION))
 #  define GET_SOURCE_LOCATION() \
-  FormatOutputStream::Debug( \
+  FormatOutputStream::SourceCodeLocation( \
     MESSAGE(__FILE__ ":" _COM_AZURE_DEV__BASE__INDIRECT_STRINGIFY(__LINE__)) \
   )
 #endif

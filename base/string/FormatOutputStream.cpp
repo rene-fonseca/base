@@ -19,23 +19,24 @@
 #include <base/string/Locale.h>
 #include <base/Date.h>
 #include <base/string/StringOutputStream.h>
-#include <base/TypeInfo.h>
 #include <base/concurrency/AtomicCounter.h>
+#include <base/TypeInfo.h>
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 namespace {
 
-  PreferredAtomicCounter counter;
+  PreferredAtomicCounter sourceCodeLocationCounter;
 }
 
-unsigned int FormatOutputStream::Debug::allocateCounter() noexcept {
-  return ++counter;
-}
-
-FormatOutputStream& FormatOutputStream::operator<<(const Debug& debug) throw(IOException)
+unsigned int FormatOutputStream::SourceCodeLocation::allocateCount() noexcept
 {
-  return *this << debug.getLocation() << ' ' << '[' << DEC << debug.getCount() << ']';
+  return ++sourceCodeLocationCounter;
+}
+
+FormatOutputStream& FormatOutputStream::operator<<(const FormatOutputStream::SourceCodeLocation& location)
+{
+  return *this << location.getLocation() << ' ' << '[' << DEC << location.getCount() << ']';
 }
 
 FormatOutputStream::FormatOutputStream(OutputStream& out, unsigned int size) throw(BindException)

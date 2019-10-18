@@ -28,6 +28,10 @@ _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 class _COM_AZURE_DEV__BASE__API Object {
 private:
 
+#if defined(_COM_AZURE_DEV__BASE__DEBUG)
+  unsigned int objectId = 0;
+#endif
+
   /* Disable the default copy constructor. */
   Object(const Object& copy) throw();
   /* Disable the default assignment operator. */
@@ -37,8 +41,13 @@ public:
   /**
     Initializes object.
   */
+#if defined(_COM_AZURE_DEV__BASE__DEBUG)
+  inline Object() throw() : objectId(Debug::allocateUniqueId()) {
+  }
+#else
   inline Object() throw() {
   }
+#endif
 };
 
 template<>

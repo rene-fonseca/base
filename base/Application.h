@@ -18,7 +18,7 @@
 #include <base/collection/Map.h>
 #include <base/OutOfDomain.h>
 #include <base/SingletonException.h>
-#include <base/concurrency/SpinLock.h>
+#include <base/concurrency/MutualExclusion.h>
 #include <base/Version.h>
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
@@ -90,7 +90,7 @@ private:
   /** Specifies whether the application should reload its configuration. */
   bool hangingup = false;
   /** Synchronization object. */
-  SpinLock lock;
+  MutualExclusion lock;
 
   /** Common initialization method used by constructors. */
   void initialize() throw();
@@ -99,8 +99,11 @@ public:
   /**
     Returns the application object.
   */
-  static inline Application* getApplication() throw() {
-    return application;
+  static Application* getApplication() throw();
+
+  /** Returns the application lock. Do NOT abuse. */
+  inline MutualExclusion& getLock() {
+    return lock;
   }
   
   template<class APPLICATION>

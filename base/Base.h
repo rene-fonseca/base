@@ -259,4 +259,52 @@ inline void deleteCompleteArray(const volatile TYPE* value) {
 /** Breakpoint. */
 _COM_AZURE_DEV__BASE__API void breakpoint() noexcept;
 
+_COM_AZURE_DEV__BASE__API void _COM_AZURE_DEV__BASE__CONCATENATE(_COM_AZURE_DEV__BASE__VERSION_, _COM_AZURE_DEV__BASE__MAJOR_VERSION)() noexcept;
+
+// Consume symbols to cause linker failure on mismatching shared/static builds
+inline void _COM_AZURE_DEV__BASE__CONSUME_SYMBOL(void (*p)()) noexcept
+{
+  // do not call
+  if (!p) {
+    breakpoint();
+  }
+}
+
+#if defined(_COM_AZURE_DEV__BASE__SHARED_LIBRARY_BUILD) || defined(_COM_AZURE_DEV__BASE__SHARED_LIBRARY)
+_COM_AZURE_DEV__BASE__API void _COM_AZURE_DEV__BASE__BUILD_SHARED() noexcept;
+#else
+_COM_AZURE_DEV__BASE__API void _COM_AZURE_DEV__BASE__BUILD_STATIC() noexcept;
+#endif
+
+inline void _COM_AZURE_DEV__BASE__BUILD_SHARED_STATIC_CONSUME() noexcept
+{
+#if !defined(_COM_AZURE_DEV__BASE__SHARED_LIBRARY_BUILD)
+#  if defined(_COM_AZURE_DEV__BASE__SHARED_LIBRARY)
+  _COM_AZURE_DEV__BASE__CONSUME_SYMBOL(&_COM_AZURE_DEV__BASE__BUILD_SHARED);
+#  else
+  _COM_AZURE_DEV__BASE__CONSUME_SYMBOL(&_COM_AZURE_DEV__BASE__BUILD_STATIC);
+#  endif
+#endif
+}
+
+inline void _COM_AZURE_DEV__BASE__CHECK_VERSION() noexcept
+{
+  _COM_AZURE_DEV__BASE__CONSUME_SYMBOL(&_COM_AZURE_DEV__BASE__CONCATENATE(_COM_AZURE_DEV__BASE__VERSION_, _COM_AZURE_DEV__BASE__MAJOR_VERSION));
+}
+
+#if defined(_COM_AZURE_DEV__BASE__DEBUG)
+_COM_AZURE_DEV__BASE__API void _COM_AZURE_DEV__BASE__BUILD_DEBUG() noexcept;
+#else
+_COM_AZURE_DEV__BASE__API void _COM_AZURE_DEV__BASE__BUILD_RELEASE() noexcept;
+#endif
+
+inline void _COM_AZURE_DEV__BASE__CHECK_DEBUG_RELEASE() noexcept
+{
+#if defined(_COM_AZURE_DEV__BASE__DEBUG)
+  _COM_AZURE_DEV__BASE__CONSUME_SYMBOL(&_COM_AZURE_DEV__BASE__BUILD_DEBUG);
+#else
+  _COM_AZURE_DEV__BASE__CONSUME_SYMBOL(&_COM_AZURE_DEV__BASE__BUILD_RELEASE);
+#endif
+}
+
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

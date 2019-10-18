@@ -54,7 +54,7 @@ class Runnable;
   class MyApplication : public Application {
   public:
   
-    void main() throw() {
+    void main() {
       MyActiveObject myActiveObject(100);
       Thread myThread(myActiveObject);
       myThread.start(); // start thread

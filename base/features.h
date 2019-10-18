@@ -33,6 +33,22 @@
 #  define _COM_AZURE_DEV__BASE__ENTER_NAMESPACE namespace base {
 #  define _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE }
 
+// _COM_AZURE_DEV__BASE__DEBUG influences state!
+
+#if 0 // could be dangerous
+#if defined(_COM_AZURE_DEV__BASE__DEBUG)
+#  define DEBUG // enable ASSERT and ASSERTION
+#endif
+#endif
+
+#if defined(DEBUG) || defined(_DEBUG) || defined(_COM_AZURE_DEV__BASE__DEBUG)
+#  define _COM_AZURE_DEV__BASE__ANY_DEBUG
+#endif
+
+#if defined(NDEBUG) && defined(_COM_AZURE_DEV__BASE__ANY_DEBUG)
+#  error NDEBUG and _COM_AZURE_DEV__BASE__ANY_DEBUG are both defined
+#endif
+
 /**
   This is the root namespace of <strong>The Base Framework</strong>. All the
   symbols defined by the framework are contained within this particular

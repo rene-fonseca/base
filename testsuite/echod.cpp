@@ -186,7 +186,7 @@ public:
     }
   }
   
-  void main() throw() {
+  void main() {
     String service;
     Command command = ECHO_SERVICE;
     

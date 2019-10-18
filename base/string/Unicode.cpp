@@ -11,13 +11,10 @@
     For the licensing terms refer to the file 'LICENSE'.
  ***************************************************************************/
 
-// THIS IS A GENERATED HEADER - DO NOT EDIT
+#include <base/string/Unicode.h>
 
-#pragma once
+_COM_AZURE_DEV__BASE__DUMMY_SYMBOL
 
-#define _COM_AZURE_DEV__BASE__GIT_BRANCH "@GIT_BRANCH@"
-#define _COM_AZURE_DEV__BASE__GIT_COMMIT "@GIT_COMMIT@"
-#define _COM_AZURE_DEV__BASE__GIT_COMMIT_SHORT "@GIT_COMMIT_SHORT@"
-#define _COM_AZURE_DEV__BASE__GIT_REVISION @GIT_REVISION@
-#define _COM_AZURE_DEV__BASE__BUILD_DATE "@BUILD_DATE@"
-#define _COM_AZURE_DEV__BASE__BUILD_DATE_SECONDS @BUILD_DATE_SECONDS@
+_COM_AZURE_DEV__BASE__ENTER_NAMESPACE
+
+_COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

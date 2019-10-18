@@ -31,7 +31,7 @@ public:
     : Application("dump", numberOfArguments, arguments, environment) {
   }
 
-  void main() throw() {
+  void main() {
     const Array<String> arguments = getArguments();
     
     if (arguments.getSize() == 1) {

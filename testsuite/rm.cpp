@@ -188,7 +188,7 @@ public:
     }
   }
   
-  void main() throw() {
+  void main() {
     parseArguments();
     
     switch (command) {

@@ -15,9 +15,12 @@ if (MSVC)
   add_definitions(-D_UNICODE)
 endif ()
 
-set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -D_COM_AZURE_DEV__BASE__DEBUG")
+set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -D_COM_AZURE_DEV__BASE__DEBUG") # TAG: gets set for release MSC release build!
+# set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} xxx")
 
 if (MSVC)
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /utf-8") # force UTF-8 encoding for compiler
+
   # TAG: need to fix all exception specifications
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /WX") # no warnings allowed
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /wd4290 /wd4244 /wd4267 /wd4297")
@@ -135,11 +138,11 @@ endif ()
 include_directories(${CMAKE_BINARY_DIR}/generated)
 
 add_library(base SHARED ${base_SRC} ${base_ADDITIONAL} ${CMAKE_CURRENT_BINARY_DIR}/generated/base/config.h)
+target_compile_definitions(base PRIVATE _COM_AZURE_DEV__BASE__SHARED_LIBRARY_BUILD)
 
 # find_package(OpenCL REQUIRED)
 
 if (MSVC)
-  target_compile_definitions(base PRIVATE _COM_AZURE_DEV__BASE__SHARED_LIBRARY_BUILD)
   target_link_libraries(base Ws2_32 Netapi32 Winmm)
 elseif (UNIX AND NOT APPLE)
   target_link_libraries(base pthread X11)
@@ -160,6 +163,57 @@ set_target_properties(base_STATIC PROPERTIES OUTPUT_NAME base_static)
 if (APPLE)
   set(CMAKE_CXX_ARCHIVE_CREATE "<CMAKE_AR> Scr <TARGET> <LINK_FLAGS> <OBJECTS>")
   set(CMAKE_CXX_ARCHIVE_FINISH "<CMAKE_RANLIB> -no_warning_for_no_symbols -c <TARGET>")
+  # TAG: cannot get rid of no symbols during install
+  #set(CMAKE_C_ARCHIVE_CREATE "<CMAKE_AR> Scr <TARGET> <LINK_FLAGS> <OBJECTS>")
+  #set(CMAKE_C_ARCHIVE_FINISH "<CMAKE_RANLIB> -no_warning_for_no_symbols -c <TARGET>")
 endif ()
+
+#set_target_properties(base base_STATIC
+#  PROPERTIES
+#  ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/lib"
+#  LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/lib"
+#  RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin"
+#)
+
+file(GLOB_RECURSE base_HEADERS
+  "base/*.h"
+)
+
+#set_target_properties(base PROPERTIES PUBLIC_HEADER "${base_HEADERS}")
+
+# preserve folder structure
+install(
+  DIRECTORY "${CMAKE_SOURCE_DIR}/base" # source directory
+  DESTINATION "${CMAKE_BINARY_DIR}/include" # target directory
+  FILES_MATCHING PATTERN "*.h" # select header files
+)
+install(
+  DIRECTORY "${CMAKE_BINARY_DIR}/generated/base" # source directory
+  DESTINATION "${CMAKE_BINARY_DIR}/include" # target directory
+  FILES_MATCHING PATTERN "*.h" # select header files
+)
+
+install(TARGETS base base_STATIC
+  CONFIGURATIONS Debug
+  ARCHIVE DESTINATION "${CMAKE_BINARY_DIR}/lib/debug"
+  LIBRARY DESTINATION "${CMAKE_BINARY_DIR}/lib/debug"
+  RUNTIME DESTINATION "${CMAKE_BINARY_DIR}/bin/debug"
+)
+
+install(TARGETS base base_STATIC
+  CONFIGURATIONS Release
+  ARCHIVE DESTINATION "${CMAKE_BINARY_DIR}/lib/release"
+  LIBRARY DESTINATION "${CMAKE_BINARY_DIR}/lib/release"
+  RUNTIME DESTINATION "${CMAKE_BINARY_DIR}/bin/release"
+)
+# PUBLIC_HEADER DESTINATION "${CMAKE_BINARY_DIR}/inc"
+
+#install(
+#  DIRECTORY "${CMAKE_BINARY_DIR}/Release"
+#  CONFIGURATIONS Release
+#  DESTINATION "${CMAKE_BINARY_DIR}/bin/release"
+#  FILES_MATCHING
+#  PATTERN *.pdb
+#)
 
 add_subdirectory("testsuite")

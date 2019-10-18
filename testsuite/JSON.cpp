@@ -13,6 +13,7 @@
 
 #include <base/Application.h>
 #include <base/objectmodel/JSON.h>
+#include <base/Timer.h>
 
 using namespace com::azure::dev::base;
 
@@ -60,6 +61,36 @@ private:
   static const unsigned int MINOR_VERSION = 0;
 public:
 
+  void testPerformance()
+  {
+    const Literal text = MESSAGE("12345.98765e12");
+    Posix posix;
+    unsigned int count = 1000000;
+    Timer timer;
+    timer.start();
+    while (count--) {
+      double d = -1; // PrimitiveTraits<double>::MAXIMUM; // TAG: need infinity and NaN
+      bool result = posix.getSeries(text.getValue(), text.getValue() + text.getLength(), d);
+      if (d == 0) {
+        throw Exception();
+      }
+    }
+    timer.stop();
+    fout << "LOOP 1: " << timer.getMicroseconds() << ENDL;
+
+    count = 1000000;
+    timer.start();
+    while (count--) {
+      double d = -1; // PrimitiveTraits<double>::MAXIMUM; // TAG: need infinity and NaN
+      bool result = Posix::toDouble(text.getValue(), text.getValue() + text.getLength(), d);
+      if (d == 0) {
+        throw Exception();
+      }
+    }
+    timer.stop();
+    fout << "LOOP 2: " << timer.getMicroseconds() << ENDL;
+  }
+
   JSONApplication(
     int numberOfArguments,
     const char* arguments[],
@@ -67,13 +98,15 @@ public:
     : Application("JSON", numberOfArguments, arguments, environment) {
   }
   
-  void main() throw() {
+  void main() {
     fout << getFormalName() << " version "
          << MAJOR_VERSION << '.' << MINOR_VERSION << EOL
          << "The Base Framework (Test Suite)" << EOL
          << "Copyright (C) 2019 by Rene Moeller Fonseca" << EOL
          << ENDL;
 
+    testPerformance();
+    
     Reference<ObjectModel::Value> example1 = JSON().parse(JSON_EXAMPLE1);
     // fout << "Example1:" << EOL << example1 << EOL << ENDL;
     fout << "Example1:" << EOL << JSON::getJSON(example1) << ENDL;

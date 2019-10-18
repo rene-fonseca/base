@@ -53,7 +53,7 @@ public:
     : Application(MESSAGE("daemon"), argc, argv, env) {
   }
   
-  void main() throw() {
+  void main() {
     if (getArguments().getSize() > 0) {
     } else {
       SystemLogger::write(SystemLogger::INFORMATION, "Attempting to start daemon...");

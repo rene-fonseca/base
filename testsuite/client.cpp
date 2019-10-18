@@ -103,7 +103,7 @@ public:
     socket.close();
   }
 
-  void main() throw() {
+  void main() {
     fout << getFormalName() << " version "
          << MAJOR_VERSION << '.' << MINOR_VERSION << EOL
          << "The Base Framework (Test Suite)" << EOL

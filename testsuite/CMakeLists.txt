@@ -18,6 +18,7 @@ else ()
   target_link_libraries(MyLinkerModule base)
   target_compile_definitions(MyLinkerModule PRIVATE _COM_AZURE_DEV__BASE__SHARED_LIBRARY)
 endif ()
+set_target_properties(MyLinkerModule PROPERTIES FOLDER testsuite)
 
 foreach(sourcefile ${TEST_SOURCES})
   
@@ -41,6 +42,21 @@ else () # use shared
 endif ()
 
   set_target_properties(${name} PROPERTIES FOLDER testsuite)
+
+  install(TARGETS ${name}
+    CONFIGURATIONS Debug
+    ARCHIVE DESTINATION "${CMAKE_BINARY_DIR}/bin/debug"
+    LIBRARY DESTINATION "${CMAKE_BINARY_DIR}/bin/debug"
+    RUNTIME DESTINATION "${CMAKE_BINARY_DIR}/bin/debug"
+  )
+
+  install(TARGETS ${name}
+    CONFIGURATIONS Release
+    ARCHIVE DESTINATION "${CMAKE_BINARY_DIR}/bin/release"
+    LIBRARY DESTINATION "${CMAKE_BINARY_DIR}/bin/release"
+    RUNTIME DESTINATION "${CMAKE_BINARY_DIR}/bin/release"
+  )
+
 endforeach()
 
 # add_subdirectory(orb)

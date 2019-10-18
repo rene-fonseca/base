@@ -17,6 +17,7 @@
 #include <base/Architecture.h>
 #include <base/string/unicode/UnicodeLookup.cpp>
 #include <base/string/unicode/UnicodeFolding.cpp>
+#include <base/string/Unicode.h>
 #include <base/UnexpectedFailure.h>
 #include <locale>
 #include <codecvt>
@@ -269,18 +270,6 @@ int WideTraits::digitToValue(ucs4 character) throw() {
 #endif
   return -1;
 }
-
-#if 0
-bool isUCS4(unsigned int value) throw() {
-  if (value < 0xd800) {
-    return true;
-  } else if (value < 0x10000) {
-    return (value >= 0xe000) && (value < 0xffff); // TAG: 0xfffe is special
-  } else {
-    return true;
-  }
-}
-#endif
 
 void WideString::initialize(const wchar* string, MemorySize nativeLength) throw(MemoryException)
 {
@@ -661,7 +650,7 @@ MemorySize WideString::UTF8ToUCS4(ucs4* dest, const uint8* src, MemorySize size,
   if (src == 0) {
     return 0;
   }
-  if ((size >= 3) && (src[0] == 0xef) && (src[0] == 0xbb) && (src[0] == 0xbf)) {
+  if ((size >= 3) && (src[0] == 0xef) && (src[0] == 0xbb) && (src[0] == 0xbf)) { // TAG: FIXME
     if (flags & EAT_BOM) {
       src += 3;
     }
@@ -673,134 +662,65 @@ MemorySize WideString::UTF8ToUCS4(ucs4* dest, const uint8* src, MemorySize size,
   }
   
   const uint8* const srcBegin = src;
-  const ucs4* const begin = dest;
   const uint8* const end = src + size;
   
   if (dest) {
+    const ucs4* const begin = dest;
     while (src < end) {
-      uint8 value = *src++;
-      if ((value & 0x80) == 0x00) {
-        *dest++ = value;
-      } else if ((value & 0xe0) == 0xc0) {
-        ucs4 code = value & ~0xe0;
-        bassert(
-          src < end,
-          MultibyteException(
-            "Incomplete character code",
-            Type::getType<WideString>()
-          )
-        );
-        uint8 temp = *src++;
-        bassert(
-          (temp & 0xc0) == 0x80,
-          MultibyteException(
-            "Invalid character code",
-            Type::getType<WideString>()
-          )
-        );
-        code = (code << 6) | temp;
-        *dest++ = code;
-      } else if ((value & 0xf0) == 0xe0) {
-        ucs4 code = value & ~0xf0;
-        for (int i = 0; i < 2; ++i) {
-          bassert(src < end, MultibyteException("Incomplete character code"));
-          uint8 temp = *src++;
-          bassert(
-            (temp & 0xc0) == 0x80,
-            MultibyteException("Invalid character code")
-          );
-          code = (code << 6) | temp;
+      ucs4 ch = 0;
+      int status = Unicode::readUCS4(src, end, ch);
+      if (status <= 0) {
+        switch (status) {
+        case Unicode::UTF8_ERROR_EMPTY:
+          throw MultibyteException("Unexpected end reached.", Type::getType<WideString>());
+        case Unicode::UTF8_ERROR_INCOMPLETE:
+        {
+          MultibyteException e("Incomplete character code.", Type::getType<WideString>());
+          e.setCause(MultibyteException::INCOMPLETE_CHARACTER_CODE);
+          e.setOctetIndex(src - srcBegin);
+          e.setSuboctetIndex(0);
+          throw e;
         }
-        *dest++ = code;
-      } else if ((value & 0xf8) == 0xf0) {
-        ucs4 code = value & ~0xf8;
-        for (int i = 0; i < 3; ++i) {
-          bassert(src < end, MultibyteException("Incomplete character code"));
-          uint8 temp = *src++;
-          bassert(
-            (temp & 0xc0) == 0x80,
-            MultibyteException("Invalid character code")
-          );
-          code = (code << 6) | temp;
+        case Unicode::UTF8_ERROR_BAD_ENCODING:
+        default:
+          MultibyteException e("Bad UTF-8 character encoding.", Type::getType<WideString>());
+          e.setCause(MultibyteException::INVALID_CHARACTER_CODE);
+          e.setOctetIndex(src - srcBegin);
+          e.setSuboctetIndex(0);
+          throw e;
         }
-        *dest++ = code;
-      } else if ((value & 0xfc) == 0xf8) {
-        ucs4 code = value & ~0xfc;
-        for (int i = 0; i < 4; ++i) {
-          bassert(src < end, MultibyteException("Incomplete character code"));
-          uint8 temp = *src++;
-          bassert(
-            (temp & 0xc0) == 0x80,
-            MultibyteException("Invalid character code")
-          );
-          code = (code << 6) | temp;
-        }
-        *dest++ = code;
-      } else if ((value & 0xfe) == 0xfc) {
-        ucs4 code = value & ~0xfe;
-        for (int i = 0; i < 5; ++i) {
-          bassert(src < end, MultibyteException("Incomplete character code"));
-          uint8 temp = *src++;
-          bassert(
-            (temp & 0xc0) == 0x80,
-            MultibyteException("Invalid character code")
-          );
-          code = (code << 6) | temp;
-        }
-        *dest++ = code;
-      } else {
-        throw MultibyteException();
       }
+      src += status; // bytes read
+      *dest++ = ch;
     }
     return dest - begin;
   } else { // calculate length and validate
     MemorySize length = 0;
-    while (src < end) {
-      unsigned int numberOfOctets = 0;
-      uint8 value = *src++;
-      if ((value & 0x80) == 0x00) {
-        numberOfOctets = 0;
-      } else if ((value & 0xe0) == 0xc0) {
-        numberOfOctets = 1;
-      } else if ((value & 0xf0) == 0xe0) {
-        numberOfOctets = 2;
-      } else if ((value & 0xf8) == 0xf0) {
-        numberOfOctets = 3;
-      } else if ((value & 0xfc) == 0xf8) {
-        numberOfOctets = 4;
-      } else if ((value & 0xfe) == 0xfc) {
-        numberOfOctets = 5;
-      } else {
-        MultibyteException e(
-          "Invalid character code",
-          Type::getType<WideString>()
-        );
+    ucs4 ch = 0;
+    int status = Unicode::readUCS4(src, end, ch);
+    if (status <= 0) {
+      switch (status) {
+      case Unicode::UTF8_ERROR_EMPTY:
+        throw MultibyteException("Unexpected end reached.", Type::getType<WideString>()); // not expected
+      case Unicode::UTF8_ERROR_INCOMPLETE:
+      {
+        MultibyteException e("Incomplete character code.", Type::getType<WideString>());
+        e.setCause(MultibyteException::INCOMPLETE_CHARACTER_CODE);
+        e.setOctetIndex(src - srcBegin);
+        e.setSuboctetIndex(0);
+        throw e;
+      }
+      case Unicode::UTF8_ERROR_BAD_ENCODING:
+      default:
+        MultibyteException e("Bad UTF-8 character encoding.", Type::getType<WideString>());
         e.setCause(MultibyteException::INVALID_CHARACTER_CODE);
         e.setOctetIndex(src - srcBegin);
         e.setSuboctetIndex(0);
         throw e;
       }
-      bassert(
-        src + numberOfOctets <= end,
-        bindCause(
-          MultibyteException(
-            "Incomplete character code",
-            Type::getType<WideString>()
-          ),
-          MultibyteException::INCOMPLETE_CHARACTER_CODE
-        )
-      );
-      for (unsigned int i = 0; i < numberOfOctets; ++i) {
-        bassert(
-          (*src++ & 0xc0) == 0x80,
-          MultibyteException(
-            "Invalid character code",
-            Type::getType<WideString>()
-          )
-        );
-      }
-      ++length;
     }
+    src += status; // bytes read
+    ++length;
     return length;
   }
 }

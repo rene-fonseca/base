@@ -721,7 +721,7 @@ public:
 };
 
 template<>
-class PrimitiveTraits<float> {
+class _COM_AZURE_DEV__BASE__API PrimitiveTraits<float> {
 public:  
   
   static const float MAXIMUM;
@@ -729,7 +729,7 @@ public:
 };
 
 template<>
-class PrimitiveTraits<double> {
+class _COM_AZURE_DEV__BASE__API PrimitiveTraits<double> {
 public:
   
   static const double MAXIMUM;
@@ -737,7 +737,7 @@ public:
 };
 
 template<>
-class PrimitiveTraits<long double> {
+class _COM_AZURE_DEV__BASE__API PrimitiveTraits<long double> {
 public:
   
   static const long double MAXIMUM;
@@ -796,6 +796,31 @@ public:
       (static_cast<uint64>(src[6]) << 8) |
       (static_cast<uint64>(src[7]) << 0);
     return result;
+  }
+};
+
+/** Memory span. */
+class MemorySpan {
+public:
+
+  const uint8* begin = nullptr;
+  const uint8* end = nullptr;
+
+  inline MemorySpan() noexcept {
+  }
+
+  inline MemorySpan(const uint8* _begin, const uint8* _end) noexcept : begin(_begin), end(_end) {
+  }
+
+  inline MemorySpan(const uint8* _begin, const MemorySize size) noexcept : begin(_begin), end(_begin + size) {
+  }
+
+  inline bool isProper() const noexcept {
+    return end && begin;
+  }
+
+  inline MemoryDiff getSize() const noexcept {
+    return end - begin;
   }
 };
 

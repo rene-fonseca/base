@@ -6,7 +6,11 @@ CMakeFiles/
 CMakeScripts/
 CMakeCache.txt
 cmake_install.cmake
+install_manifest.txt
 Makefile
+bin/
+lib/
+include/
 *.a
 *.so
 *.so.*

@@ -309,7 +309,7 @@ inline Position operator+(const Position& left, const Position& right) throw() {
 /**
   Writes a string representation of a Position object to a format stream. The format is "(x, y)".
 */
-FormatOutputStream& operator<<(FormatOutputStream& stream, const Position& value) throw(IOException);
+_COM_AZURE_DEV__BASE__API FormatOutputStream& operator<<(FormatOutputStream& stream, const Position& value) throw(IOException);
 
 template<>
 class Uninitializeable<Position> {

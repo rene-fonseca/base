@@ -111,7 +111,7 @@ public:
     fout << getFormalName() << " [--help]" << ENDL;
   }
   
-  void main() throw() {
+  void main() {
     Command command = INET;
     
     const Array<String> arguments = getArguments();

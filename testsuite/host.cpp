@@ -90,7 +90,7 @@ public:
     }
   }
   
-  void main() throw() {
+  void main() {
     Command command = COMMAND_HOST;
     
     const Array<String> arguments = getArguments();

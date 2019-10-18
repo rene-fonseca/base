@@ -379,7 +379,7 @@ public:
   typedef HTTPTraits Traits;
 
   /** Verbosity levels. */
-  enum Verbosity {SILENT, SHORT, ALL, DEBUG, DEBUG_EXTENDED};
+  enum Verbosity {SILENT, SHORT, ALL, DEBUG_NORMAL, DEBUG_EXTENDED};
   /** Status code classes. */
   enum StatusClass {INFORMATION, SUCCESS, REDIRECTION, CLIENT_ERROR, SERVER_ERROR};
   /** Methods. */
@@ -499,7 +499,7 @@ protected:
            << "Host: " << host << CRLF // Section 14.23 (required)
            << "User-Agent: " << AGENT << CRLF // Section 14.43
            << CRLF << FLUSH;
-    if (verbosity >= DEBUG) {
+    if (verbosity >= DEBUG_NORMAL) {
       fout << "Request: " << stream.getString() << ENDL;
     }
     return stream.getString();
@@ -511,7 +511,7 @@ protected:
     
     FormatInputStream instream(controlConnection);
 
-    if (verbosity >= DEBUG) {
+    if (verbosity >= DEBUG_NORMAL) {
       fout << "DEBUG: bytes available: " << instream.available() << ENDL;
     }
     ASSERT(instream.available() == controlConnection.available());
@@ -522,7 +522,7 @@ protected:
     String statusLine;
     instream >> statusLine;
     
-    if (verbosity >= DEBUG) {
+    if (verbosity >= DEBUG_NORMAL) {
       fout << "Status-Line: " << statusLine << ENDL;
     }
     translateStatus(statusLine);
@@ -622,7 +622,7 @@ protected:
         }
       }
     } else if (hasContentLength) { // message-body - See section 7.2 in RFC
-      if (verbosity >= DEBUG) {
+      if (verbosity >=  DEBUG_NORMAL) {
         fout << "Reading content: " << contentLength << " byte(s)" << ENDL;
       }
 
@@ -638,7 +638,7 @@ protected:
           push->pushEnd();
         }
       } else {
-        if (verbosity >= DEBUG) {
+        if (verbosity >= DEBUG_NORMAL) {
           fout << "DEBUG: skipping " << contentLength << " byte(s)" << ENDL;
         }
         instream.skip(contentLength);
@@ -702,7 +702,7 @@ public:
   }
 
   void connect() throw(HTTPException) {
-    if (verbosity >= DEBUG) {
+    if (verbosity >= DEBUG_NORMAL) {
       fout << "DEBUG: Establishing control connection to: "
            << "address=" << endPoint.getAddress() << ' '
            << "port=" << endPoint.getPort() << ENDL;
@@ -733,7 +733,7 @@ public:
   }
 
   ~HypertextTransferProtocolClient() {
-    if (verbosity >= DEBUG) {
+    if (verbosity >= DEBUG_NORMAL) {
       fout << "DEBUG: Closing sockets..." << ENDL;
     }
     controlConnection.shutdownOutputStream();
@@ -824,7 +824,7 @@ public:
     : Application("http", numberOfArguments, arguments, environment) {
   }
   
-  void main() throw() {
+  void main() {
     fout << getFormalName() << " version "
          << MAJOR_VERSION << '.' << MINOR_VERSION << EOL
          << "The Base Framework (Test Suite)" << EOL
@@ -833,7 +833,7 @@ public:
     
     Array<String> arguments = getArguments();
 
-    String url = MESSAGE("www.fonseca.dk/index.html"); // default url
+    String url = MESSAGE("www.google.com/"); // default url
     String file; // default file
 
     switch (arguments.getSize()) {

@@ -450,11 +450,13 @@ Array<String> FolderInfo::getEntries() const throw(FileSystemException) {
     if ((directory = ::opendir(path.getElements())) == 0) {
       throw FileSystemException("Unable to read entries of folder", this);
     }
+  
+    buffer->setSize(maximum(buffer->getSize(), sizeof(struct dirent) + 1));
 
     while (true) {
       int status = 0;
       struct dirent* entry = nullptr;
-
+      
       errno = 0;
       if ((status = ::readdir_r(directory, Cast::pointer<struct dirent*>(buffer->getElements()), &entry)) != 0) {
         if (errno == 0) { // stop if last entry has been read

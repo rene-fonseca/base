@@ -308,6 +308,7 @@ public:
 
   String(const std::wstring& string) throw(StringException, MemoryException);
 
+#if 0 // TAG: bad for now due to match with structs also - or static_cast<const char*>() is required
   /**
     Initializes the string from a string literal. Implicit initialization is
     allowed.
@@ -319,6 +320,7 @@ public:
     if (Constraint<(SIZE > 0)>::UNSPECIFIED) {}
     initialize(literal, SIZE - 1);
   }
+#endif
   
   /**
     Initializes the string from a NULL-terminated string.

@@ -84,7 +84,7 @@ public:
     Initializes the elements of the sequence by moving elements from other
     sequence. This does nothing for relocateable object.
   */
-  static inline void initializeByMove(TYPE* dest, const TYPE* src, const TYPE* end)
+  static inline void initializeByMove(TYPE* dest, TYPE* src, const TYPE* end)
   {
     ASSERT(src <= end);
     if (!Uninitializeable<TYPE>::IS_UNINITIALIZEABLE &&
@@ -93,7 +93,7 @@ public:
         new(dest) TYPE(*src); // copy object
         src->~TYPE(); // destroy old object
 #if defined(_COM_AZURE_DEV__BASE__ANY_DEBUG)
-        fill<uint8>(reinterpret_cast<uint8*>(&src), sizeof(*src), 0xaa);
+        fill<uint8>(reinterpret_cast<uint8*>(src), sizeof(TYPE), 0xaa);
 #endif
         ++dest;
         ++src;
@@ -112,7 +112,7 @@ public:
       while (dest != end) {
         dest->~TYPE();
 #if defined(_COM_AZURE_DEV__BASE__ANY_DEBUG)
-        fill<uint8>(reinterpret_cast<uint8*>(&dest), sizeof(*dest), 0xaa);
+        fill<uint8>(reinterpret_cast<uint8*>(dest), sizeof(TYPE), 0xaa);
 #endif
         ++dest;
       }

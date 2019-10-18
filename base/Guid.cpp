@@ -119,7 +119,52 @@ Guid Guid::createGuid() noexcept
 String Guid::toString() const
 {
   // {B429A864-CDFC-4044-BCC1-BDDE18EAF8DE}
-  // TAG: optimize
+
+  char result[38];
+  char* dest = result;
+
+  *dest++ = '{';
+  *dest++ = ASCIITraits::valueToUpperDigit(guid[0] >> 4);
+  *dest++ = ASCIITraits::valueToUpperDigit(guid[0] >> 0);
+  *dest++ = ASCIITraits::valueToUpperDigit(guid[1] >> 4);
+  *dest++ = ASCIITraits::valueToUpperDigit(guid[1] >> 0);
+  *dest++ = ASCIITraits::valueToUpperDigit(guid[2] >> 4);
+  *dest++ = ASCIITraits::valueToUpperDigit(guid[2] >> 0);
+  *dest++ = ASCIITraits::valueToUpperDigit(guid[3] >> 4);
+  *dest++ = ASCIITraits::valueToUpperDigit(guid[3] >> 0);
+  *dest++ = '-';
+  *dest++ = ASCIITraits::valueToUpperDigit(guid[4] >> 4);
+  *dest++ = ASCIITraits::valueToUpperDigit(guid[4] >> 0);
+  *dest++ = ASCIITraits::valueToUpperDigit(guid[5] >> 4);
+  *dest++ = ASCIITraits::valueToUpperDigit(guid[5] >> 0);
+  *dest++ = '-';
+  *dest++ = ASCIITraits::valueToUpperDigit(guid[6] >> 4);
+  *dest++ = ASCIITraits::valueToUpperDigit(guid[6] >> 0);
+  *dest++ = ASCIITraits::valueToUpperDigit(guid[7] >> 4);
+  *dest++ = ASCIITraits::valueToUpperDigit(guid[7] >> 0);
+  *dest++ = '-';
+  *dest++ = ASCIITraits::valueToUpperDigit(guid[8] >> 4);
+  *dest++ = ASCIITraits::valueToUpperDigit(guid[8] >> 0);
+  *dest++ = ASCIITraits::valueToUpperDigit(guid[9] >> 4);
+  *dest++ = ASCIITraits::valueToUpperDigit(guid[9] >> 0);
+  *dest++ = '-';
+  *dest++ = ASCIITraits::valueToUpperDigit(guid[10] >> 4);
+  *dest++ = ASCIITraits::valueToUpperDigit(guid[10] >> 0);
+  *dest++ = ASCIITraits::valueToUpperDigit(guid[11] >> 4);
+  *dest++ = ASCIITraits::valueToUpperDigit(guid[11] >> 0);
+  *dest++ = ASCIITraits::valueToUpperDigit(guid[12] >> 4);
+  *dest++ = ASCIITraits::valueToUpperDigit(guid[12] >> 0);
+  *dest++ = ASCIITraits::valueToUpperDigit(guid[13] >> 4);
+  *dest++ = ASCIITraits::valueToUpperDigit(guid[13] >> 0);
+  *dest++ = ASCIITraits::valueToUpperDigit(guid[14] >> 4);
+  *dest++ = ASCIITraits::valueToUpperDigit(guid[14] >> 0);
+  *dest++ = ASCIITraits::valueToUpperDigit(guid[15] >> 4);
+  *dest++ = ASCIITraits::valueToUpperDigit(guid[15] >> 0);
+  *dest++ = '}';
+  ASSERT((dest - result) == SIZE);
+  return String(result, SIZE);
+
+#if 0
   StringOutputStream s;
   s << HEX << setWidth(2) << ZEROPAD << NOPREFIX
     << '{'
@@ -141,6 +186,7 @@ String Guid::toString() const
     << guid[15]
     << '}' << FLUSH;
   return s.getString();
+#endif
 }
 
 FormatOutputStream& operator<<(FormatOutputStream& stream, const Guid& guid)

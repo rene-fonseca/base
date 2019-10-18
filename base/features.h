@@ -35,8 +35,10 @@
 
 // _COM_AZURE_DEV__BASE__DEBUG influences state!
 
+#if 0 // could be dangerous
 #if defined(_COM_AZURE_DEV__BASE__DEBUG)
 #  define DEBUG // enable ASSERT and ASSERTION
+#endif
 #endif
 
 #if defined(DEBUG) || defined(_DEBUG) || defined(_COM_AZURE_DEV__BASE__DEBUG)

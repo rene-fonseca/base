@@ -42,6 +42,9 @@ public:
   /** Returns a random number for the given primitive of type int8, int16, int32, int64, int128, uint8, uint16, uint32, uint64, uint128. */
   template<typename TYPE>
   static TYPE random() noexcept;
+
+  /** Returns a random number without using Mersenne Twister for the given primitive of type int8, int16, int32, int64, int128, uint8, uint16, uint32, uint64, uint128. */
+  static unsigned int randomDirect() noexcept;
 };
 
 template<>

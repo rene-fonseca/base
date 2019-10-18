@@ -13,22 +13,12 @@
 
 #include <base/io/RandomInputStream.h>
 #include <base/string/FormatOutputStream.h>
-#include <base/concurrency/ApplicationSynchronize.h>
+#include <base/Random.h>
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
-namespace {
-
-  std::random_device randomDevice;
-
-  inline unsigned int getSeed() noexcept {
-    ApplicationSynchronize _guard;
-    return randomDevice();
-  }
-}
-
 RandomInputStream::RandomInputStream(uint32 seed) noexcept
-  : engine(seed ? seed : getSeed())
+  : engine(seed ? seed : Random::randomDirect())
 {
 }
 

@@ -36,6 +36,7 @@ namespace RandomImpl {
   @version 1.0
 */
 
+// TAG: rename
 class _COM_AZURE_DEV__BASE__API Random {
   friend class Initialization;
 public:

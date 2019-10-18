@@ -13,6 +13,7 @@
 
 #include <base/Random.h>
 #include <base/concurrency/Thread.h>
+#include <base/concurrency/ApplicationSynchronize.h>
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
@@ -68,5 +69,22 @@ uint128 Random::random<uint128>() noexcept {
   auto size = _impl::getRandomInputStream().read(reinterpret_cast<uint8*>(&result), sizeof(result), false);
   return result;
 }
+
+namespace _impl {
+
+  std::random_device randomDevice;
+
+  inline unsigned int randomDirect() noexcept {
+    ApplicationSynchronize _guard;
+    return randomDevice();
+  }
+}
+
+unsigned int Random::randomDirect() noexcept
+{
+  return _impl::randomDirect();
+}
+
+// TAG: add buffer support also
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

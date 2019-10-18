@@ -13,8 +13,8 @@
 
 #pragma once
 
-#include <base/Object.h>
 #include <base/string/FormatOutputStream.h>
+#include <base/io/RandomInputStream.h>
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
@@ -26,6 +26,9 @@ _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 class _COM_AZURE_DEV__BASE__API Random {
 public:
+
+  /** Returns thread local random input stream. Do not preserve source outside of execution scope. */
+  static RandomInputStream& getRandomInputStream() noexcept;
 
   /** Fills given buffer. */
   static void fill(uint8* dest, const uint8* end) noexcept;

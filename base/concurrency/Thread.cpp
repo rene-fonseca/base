@@ -39,20 +39,6 @@
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
-/** State for all threads. */
-class ThreadLocalContext : public DynamicObject {
-public:
-
-  /** The thread object associated with context. */
-  Thread* thread = nullptr;
-  /** The thread local storage. */
-  Allocator<uint8> storage;
-  // TAG: add description?
-
-  ThreadLocalContext() : storage(Thread::THREAD_LOCAL_STORAGE) {
-  }
-};
-
 Thread::ThreadLocal::ThreadLocal(Thread* _thread)
 {
   ASSERT(_thread);
@@ -132,14 +118,24 @@ void Thread::exit() throw() {
 #endif // flavor
 }
 
-Thread* Thread::getThread() throw() {
+ThreadLocalContext* Thread::getLocalContext() noexcept
+{
+  auto tlc = threadLocalContext.getKey();
+  // INLINE_ASSERT();
+  ASSERT(tlc);
+  return tlc;
+}
+
+Thread* Thread::getThread() noexcept
+{
   auto tlc = threadLocalContext.getKey();
   // INLINE_ASSERT();
   ASSERT(tlc);
   return tlc ? tlc->thread : nullptr;
 }
 
-Allocator<uint8>* Thread::getLocalStorage() throw() {
+Allocator<uint8>* Thread::getLocalStorage() noexcept
+{
   auto tlc = threadLocalContext.getKey();
   // INLINE_ASSERT();
   ASSERT(tlc);

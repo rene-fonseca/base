@@ -22,6 +22,7 @@
 #include <base/mem/Allocator.h>
 #include <base/mem/NullPointer.h>
 #include <base/string/FormatOutputStream.h>
+#include <base/io/RandomInputStream.h>
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
@@ -31,7 +32,6 @@ _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 class Runnable;
 
-/** Hidden class. */
 class ThreadLocalContext;
 
 /**
@@ -240,7 +240,7 @@ protected:
   /**
     Returns the active object.
   */
-  inline Runnable* getRunnable() throw() {
+  inline Runnable* getRunnable() noexcept {
     return runnable;
   }
 public:
@@ -255,17 +255,17 @@ public:
   /**
     Returns the thread object associated with the executing thread.
   */
-  static ThreadLocalContext* getLocalContext() throw();
+  static ThreadLocalContext* getLocalContext() noexcept;
 
   /**
     Returns the thread object associated with the executing thread.
   */
-  static Thread* getThread() throw();
+  static Thread* getThread() noexcept;
 
   /**
     Returns the thread object associated with the executing thread.
   */
-  static Allocator<uint8>* getLocalStorage() throw();
+  static Allocator<uint8>* getLocalStorage() noexcept;
 
   /**
     Makes the executing thread sleep for at least the specified time.
@@ -449,6 +449,25 @@ public:
     the operating system desides its time to release them.
   */
   ~Thread();
+};
+
+// TAG: we should hide this
+/** State for all threads. */
+class ThreadLocalContext : public DynamicObject {
+public:
+
+  /** The thread object associated with context. */
+  Thread* thread = nullptr;
+  /** The thread local storage. */
+  Allocator<uint8> storage;
+  /** Random generator. */
+  RandomInputStream randomInputStream;
+  // TAG: add description?
+
+  ThreadLocalContext()
+    : storage(Thread::THREAD_LOCAL_STORAGE)
+  {
+  }
 };
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

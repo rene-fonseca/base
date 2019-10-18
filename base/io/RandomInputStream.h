@@ -27,11 +27,15 @@ _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 class _COM_AZURE_DEV__BASE__API RandomInputStream : public InputStream {
 private:
 
-  std::random_device rd;
   std::mt19937 engine;
 public:
 
-  RandomInputStream(uint32 seed = 3362523414);
+  enum {
+    USE_RANDOM_SEED = 0
+  };
+
+  /** Initializes random input stream. If seed is set to USE_RANDOM_SEED (0) a random seed will be used. */
+  RandomInputStream(uint32 seed = USE_RANDOM_SEED);
 
   unsigned int available() const override;
 

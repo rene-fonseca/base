@@ -12,26 +12,34 @@
  ***************************************************************************/
 
 #include <base/Random.h>
-#include <base/io/RandomInputStream.h>
+#include <base/concurrency/Thread.h>
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
-namespace {
+namespace _impl {
 
-  // TAG: we need MT-safety for random
-  RandomInputStream randomInputStream;
+  inline RandomInputStream& getRandomInputStream() noexcept
+  {
+    auto tls = Thread::getLocalContext();
+    return tls->randomInputStream; // nullptr not expected
+  }
+}
+
+RandomInputStream& Random::getRandomInputStream() noexcept
+{
+  return _impl::getRandomInputStream();
 }
 
 void Random::fill(uint8* dest, const uint8* end) noexcept
 {
-  auto size = randomInputStream.read(dest, end - dest, false);
+  auto size = _impl::getRandomInputStream().read(dest, end - dest, false);
 }
 
 #define RANDOM_IMPL(TYPE) \
   template<> \
   TYPE Random::random<TYPE>() noexcept { \
     TYPE result = 0; \
-    auto size = randomInputStream.read(reinterpret_cast<uint8*>(&result), sizeof(result), false); \
+    auto size = _impl::getRandomInputStream().read(reinterpret_cast<uint8*>(&result), sizeof(result), false); \
     return result; \
   }
 
@@ -44,7 +52,7 @@ RANDOM_IMPL(int64);
 template<>
 int128 Random::random<int128>() noexcept {
   int128 result;
-  auto size = randomInputStream.read(reinterpret_cast<uint8*>(&result), sizeof(result), false);
+  auto size = _impl::getRandomInputStream().read(reinterpret_cast<uint8*>(&result), sizeof(result), false);
   return result;
 }
 
@@ -57,7 +65,7 @@ RANDOM_IMPL(uint64);
 template<>
 uint128 Random::random<uint128>() noexcept {
   uint128 result;
-  auto size = randomInputStream.read(reinterpret_cast<uint8*>(&result), sizeof(result), false);
+  auto size = _impl::getRandomInputStream().read(reinterpret_cast<uint8*>(&result), sizeof(result), false);
   return result;
 }
 

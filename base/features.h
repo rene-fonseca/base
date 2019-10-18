@@ -116,6 +116,13 @@ namespace com {
 #  endif
 #endif
 
+/** Use INVALID_CONTROL_FLOW() to indicate invalid control flow. */
+#if defined(_COM_AZURE_DEV__BASE__ANY_DEBUG)
+#  define INVALID_CONTROL_FLOW() ASSERT(!"Invalid control flow.")
+#else
+#  define INVALID_CONTROL_FLOW() if (true)
+#endif
+
 #if (!defined(GET_SOURCE_LOCATION))
 #  define GET_SOURCE_LOCATION() \
   FormatOutputStream::SourceCodeLocation( \

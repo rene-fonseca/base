@@ -256,8 +256,16 @@ inline void deleteCompleteArray(const volatile TYPE* value) {
   delete[] value;
 }
 
-/** Breakpoint. */
-_COM_AZURE_DEV__BASE__API void breakpoint() noexcept;
+/** Debug helper functions. */
+class _COM_AZURE_DEV__BASE__API Debug {
+public:
+  
+  /** Breakpoint. */
+  static void breakpoint() noexcept;
+
+  /** Returns a unique ID for the runtime session. */
+  static unsigned int allocateUniqueId() noexcept;
+};
 
 _COM_AZURE_DEV__BASE__API void _COM_AZURE_DEV__BASE__CONCATENATE(_COM_AZURE_DEV__BASE__VERSION_, _COM_AZURE_DEV__BASE__MAJOR_VERSION)() noexcept;
 
@@ -266,7 +274,7 @@ inline void _COM_AZURE_DEV__BASE__CONSUME_SYMBOL(void (*p)()) noexcept
 {
   // do not call
   if (!p) {
-    breakpoint();
+    Debug::breakpoint();
   }
 }
 

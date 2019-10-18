@@ -42,7 +42,7 @@ void Trace::message(const char* message) throw() {
   
   static bool useBreakpoint = true;
   if (useBreakpoint) {
-    breakpoint();
+    Debug::breakpoint();
   }
   
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)

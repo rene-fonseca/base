@@ -310,24 +310,25 @@ public:
     }
   };
 
-  class _COM_AZURE_DEV__BASE__API Debug {
+  /** Location within source code for debugging. */
+  class _COM_AZURE_DEV__BASE__API SourceCodeLocation {
   private:
     
     unsigned int count = 0;
     Literal location;
 
-    static unsigned int allocateCounter() noexcept;
+    static unsigned int allocateCount() noexcept;
   public:
     
-    inline Debug(const Literal& _location) throw()
-      : count(allocateCounter()), location(_location) {
+    inline SourceCodeLocation(const Literal& _location) noexcept
+      : count(allocateCount()), location(_location) {
     }
     
-    inline const Literal& getLocation() const throw() {
+    inline const Literal& getLocation() const noexcept {
       return location;
     }
     
-    inline unsigned int getCount() const throw() {
+    inline unsigned int getCount() const noexcept {
       return count;
     }
   };
@@ -526,7 +527,7 @@ public:
   /**
     Writes the debug information to the stream.
   */
-  FormatOutputStream& operator<<(const Debug& debug) throw(IOException);
+  FormatOutputStream& operator<<(const SourceCodeLocation& location);
 
   /**
     Writes the given string literal to the stream.

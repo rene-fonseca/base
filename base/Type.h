@@ -35,8 +35,9 @@ private:
   class _COM_AZURE_DEV__BASE__API Uninitialized {
   };
 
-  inline Type(const std::type_info* _type) throw() : type(_type) {
+  inline Type(const std::type_info* _type) throw() {
     ASSERT(_type);
+    type = _type ? _type : &typeid(Uninitialized); // prevent nullptr
   }
   
   template<class TYPE>
@@ -61,6 +62,11 @@ private:
     }
   };
 public:
+
+  /** Convert native type to Type. */
+  static inline Type makeType(const std::type_info* _type) throw() {
+    return Type(_type);
+  }
 
   /**
     Returns the type object for the specified type.
@@ -146,6 +152,11 @@ public:
   */
   inline const char* getLocalName() const throw() {
     return type->name();
+  }
+
+  /** Returns the native type_info. */
+  inline operator const std::type_info*() const noexcept {
+    return type;
   }
 };
 

@@ -275,6 +275,9 @@ public:
   }
 };
 
+/** Type that supports all references. */
+typedef Reference<ReferenceCountedObject> AnyReference;
+
 template<class TYPE>
 class Relocateable<Reference<TYPE> > {
 public:

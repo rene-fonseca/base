@@ -691,6 +691,10 @@ void Application::initialize() throw() {
   std::set_unexpected(ApplicationImpl::unexpectedExceptionHandler);
 }
 
+Application* Application::getApplication() throw() {
+  return application;
+}
+
 Application::Application(const String& _formalName) throw(SingletonException)
   : formalName(_formalName),
     exitCode(EXIT_CODE_NORMAL),
@@ -753,9 +757,8 @@ int Application::exceptionHandler() throw() {
 }
 
 void Application::hangup() throw() {
-  lock.exclusiveLock();
+  MutualExclusion::Sync _guard(lock);
   hangingup = true;
-  lock.releaseLock();
 }
 
 void Application::terminate() throw() {
@@ -765,10 +768,9 @@ void Application::terminate() throw() {
 
 bool Application::isHangingup() throw() {
   bool result = false;
-  lock.exclusiveLock();
+  MutualExclusion::Sync _guard(lock);
   result = hangingup;
   hangingup = false;
-  lock.releaseLock();
   return result;
 }
 

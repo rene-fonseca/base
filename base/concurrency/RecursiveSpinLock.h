@@ -43,7 +43,9 @@ private:
   /** The number of locks held by the owner. */
   mutable unsigned int numberOfLocks = 0;
 public:
-  
+
+  typedef ExclusiveSynchronize<RecursiveSpinLock> Sync;
+
   /**
     Initializes the spin lock in unlocked state.
   */

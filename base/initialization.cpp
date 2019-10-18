@@ -41,6 +41,22 @@
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
+#if 0
+// used for runtime behavior control via Application
+/** Simple key/value registry. */
+class KeyValueRegistry {
+public:
+
+  KeyValueRegistry();
+
+  bool hasKey(const String& key);
+
+  String getValue();
+
+  void setValue(const String& key, const String& value);
+};
+#endif
+
 ThreadKey<Thread> Thread::ThreadLocal::thread; // thread object
 ThreadKey<Allocator<uint8> > Thread::ThreadLocal::storage; // thread local storage
 

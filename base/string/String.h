@@ -25,6 +25,7 @@
 #include <base/Literal.h>
 #include <string>
 #include <ctype.h> // TAG: alien header
+#include <string.h>
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 

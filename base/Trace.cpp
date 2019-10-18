@@ -97,4 +97,37 @@ Trace::~Trace() throw() {
   Trace::member(this, msg);
 }
 
+#if 0
+class Event {
+public:
+
+  enum Type {
+    TYPE_ERROR,
+    TYPE_WARNING,
+    TYPE_INFO
+  };
+
+  int64 timestamp = 0;
+  Type type = TYPE_ERROR;
+  unsigned int processId = 0;
+  unsigned int threadId = 0;
+  String description;
+  SourceLocation location;
+  void* caller = nullptr;
+};
+
+void pushEvent(const Event& _e)
+{
+  Event e;
+  e.timestamp = NOW;
+  e.processId = Process::getProcessId();
+  e.threadId = Thread::getId();
+  // e.caller = get caller;
+
+  // TAG: write via Trace
+  // TAG: dump in file
+  // TAG: write to a connected listener pipe/socket
+}
+#endif
+
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

@@ -13,6 +13,7 @@
 
 #include <base/Application.h>
 #include <base/objectmodel/JSON.h>
+#include <base/objectmodel/YAML.h>
 #include <base/Timer.h>
 #include <base/Random.h>
 #include <base/Guid.h>
@@ -133,18 +134,24 @@ public:
       Reference<ObjectModel::Value> example3 = JSON().parse(JSON_EXAMPLE3);
     } catch (JSONException& e) {
       fout << "Example3: " << e.getMessage() << " at line " << e.getPosition() << ENDL;
+    } catch (ParseException& e) {
+      fout << "Example bad string: " << e.getMessage() << ENDL;
     }
 
     try {
       Reference<ObjectModel::Value> example4 = JSON().parse(JSON_EXAMPLE_BAD_STRING);
     } catch (JSONException& e) {
       fout << "Example bad string: " << e.getMessage() << " at line " << e.getPosition() << ENDL;
+    } catch (ParseException& e) {
+      fout << "Example bad string: " << e.getMessage() << ENDL;
     }
 
     try {
       Reference<ObjectModel::Value> example5 = JSON().parse(JSON_EXAMPLE_BAD_STRING2);
     } catch (JSONException& e) {
       fout << "Example bad string2: " << e.getMessage() << " at line " << e.getPosition() << ENDL;
+    } catch (ParseException& e) {
+      fout << "Example bad string: " << e.getMessage() << ENDL;
     }
 
     ObjectModel objectModel;
@@ -204,6 +211,13 @@ public:
    
     Reference<ObjectModel::Value> o3 = JSON().parse(text);
     fout << o3 << ENDL;
+
+#if 0
+    const String yaml = YAML::getYAML(o);
+    fout << EOL
+         << yaml << ENDL;
+#endif
+    
   }
 };
 

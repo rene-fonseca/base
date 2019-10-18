@@ -39,21 +39,39 @@
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
-Thread::ThreadLocal::ThreadLocal(Thread* _thread) throw(MemoryException)
+/** State for all threads. */
+class ThreadLocalContext : public DynamicObject {
+public:
+
+  /** The thread object associated with context. */
+  Thread* thread = nullptr;
+  /** The thread local storage. */
+  Allocator<uint8> storage;
+  // TAG: add description?
+
+  ThreadLocalContext() : storage(Thread::THREAD_LOCAL_STORAGE) {
+  }
+};
+
+Thread::ThreadLocal::ThreadLocal(Thread* _thread)
 {
   ASSERT(_thread);
-  thread.setKey(_thread);
-  storage.setKey(new Allocator<uint8>(Thread::THREAD_LOCAL_STORAGE));
+  if (!_thread) {
+    return;
+  }
+  auto tlc = new ThreadLocalContext();
+  tlc->thread = _thread;
+  threadLocalContext.setKey(tlc);
 }
 
-Thread::ThreadLocal::~ThreadLocal() throw()
+Thread::ThreadLocal::~ThreadLocal()
 {
-  auto s = storage.getKey();
-  storage.setKey(nullptr);
-  thread.setKey(nullptr); // before delete
-  delete s; // free thread local storage
+  auto tlc = threadLocalContext.getKey();
+  threadLocalContext.setKey(nullptr);
+  delete tlc; // free thread local storage
 }
 
+#if 0
 uint8* Thread::ThreadLocal::getStorage(MemorySize size) throw()
 {
   auto s = storage.getKey();
@@ -74,6 +92,7 @@ void Thread::ThreadLocal::garbageCollect() throw()
     s->setSize(Thread::THREAD_LOCAL_STORAGE);
   }
 }
+#endif
 
 
 
@@ -114,12 +133,24 @@ void Thread::exit() throw() {
 }
 
 Thread* Thread::getThread() throw() {
-  return ThreadLocal::getThread();
+  auto tlc = threadLocalContext.getKey();
+  // INLINE_ASSERT();
+  ASSERT(tlc);
+  return tlc ? tlc->thread : nullptr;
 }
 
 Allocator<uint8>* Thread::getLocalStorage() throw() {
-  return ThreadLocal::getStorage();
+  auto tlc = threadLocalContext.getKey();
+  // INLINE_ASSERT();
+  ASSERT(tlc);
+  return tlc ? &tlc->storage : nullptr;
 }
+
+#if 0
+// TAG: add helper function for ensuring thread local buffer of the right size and automatic clear big buffers?
+static uint8* getStorage(MemorySize size) throw();
+static void garbageCollect() throw();
+#endif
 
 void Thread::nanosleep(unsigned int nanoseconds) throw(OutOfDomain) {
   bassert(nanoseconds < 1000000000, OutOfDomain(Type::getType<Thread>()));

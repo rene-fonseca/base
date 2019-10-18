@@ -31,6 +31,9 @@ _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 class Runnable;
 
+/** Hidden class. */
+class ThreadLocalContext;
+
 /**
   Thread (a single flow of control).
 
@@ -207,52 +210,25 @@ private:
   Identifier identifier = nullptr;
   /** Termination synchronization object. */
   Event terminationEvent;
-  
+
+  /** The thread object associated with context. */
+  static ThreadKey<ThreadLocalContext> threadLocalContext;
+
   /*
     This class is used to initialize and destroy the thread local resources.
   */
   class ThreadLocal {
-  private:
-
-    /** The thread object associated with context. */
-    static ThreadKey<Thread> thread;
-    /** The thread local storage. */
-    static ThreadKey<Allocator<uint8> > storage;
   public:
 
     /**
-      Initializes thread local storage.
+      Initializes thread local context.
     */
-    ThreadLocal(Thread* thread) throw(MemoryException);
-    
-    /**
-      Returns the thread object.
-    */
-    static inline Thread* getThread() throw() {
-      return thread.getKey();
-    }
+    ThreadLocal(Thread* thread);
 
     /**
-      Returns the thread local storage.
+      Release thread local context.
     */
-    static inline Allocator<uint8>* getStorage() throw() {
-      return storage.getKey();
-    }
-
-    /**
-      Returns the thread local storage with the minimum given size.
-    */
-    static uint8* getStorage(MemorySize size) throw();
-
-    /**
-      Releases excessive thread local memory.
-    */
-    static void garbageCollect() throw();
-
-    /**
-      Release thread local storage.
-    */
-    ~ThreadLocal() throw();
+    ~ThreadLocal();
   };
 
   /**
@@ -275,6 +251,11 @@ public:
     method.
   */
   static void exit() throw();
+
+  /**
+    Returns the thread object associated with the executing thread.
+  */
+  static ThreadLocalContext* getLocalContext() throw();
 
   /**
     Returns the thread object associated with the executing thread.

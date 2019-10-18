@@ -31,7 +31,7 @@ _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
   @version 1.0
 */
 
-class _COM_AZURE_DEV__BASE__API AnyValue : public Object {
+class _COM_AZURE_DEV__BASE__API AnyValue : public ReferenceCountedObject {
   friend _COM_AZURE_DEV__BASE__API FormatOutputStream& operator<<(
     FormatOutputStream& stream, const AnyValue& value) throw(IOException);
 public:
@@ -88,7 +88,7 @@ private:
   /** Container for wide string. */
   WideString wideString;
   /** Reference counted object. */
-  Reference<ReferenceCountedObject> reference; // could be shared with string types potentially
+  AnyReference reference; // it would be ok to use native pointer in this case - could be shared with string types potentially
 
   /** Release all non-primitive types. */
   inline void reset() {
@@ -252,12 +252,17 @@ public:
     Initializes value as wide string.
   */
   AnyValue(const WideString& value) throw();
-  
+
   /**
     Initializes value as wide string.
   */
   AnyValue(const WideLiteral& value) throw();
-  
+
+  /**
+    Initializes value as reference.
+  */
+  AnyValue(const AnyReference& value) throw();
+
   /**
     Sets the value as a type.
   */
@@ -349,6 +354,11 @@ public:
   AnyValue& operator=(const WideString& value) throw();
   
   /**
+    Sets the value as a reference.
+  */
+  AnyValue& operator=(const AnyReference& value) throw();
+
+  /**
     Returns value as a type.
   */
   const Type& getType() const throw();
@@ -439,6 +449,11 @@ public:
   WideString getWideString() const throw();
 
   /**
+    Returns the reference.
+  */
+  AnyReference getReference() noexcept;
+
+  /**
     Sets the value as a type.
   */
   void setType(const Type& value) throw();
@@ -512,6 +527,11 @@ public:
     Sets the value as a wide string.
   */
   void setWideString(const WideString& value) throw();
+
+  /**
+    Sets the value as a reference.
+  */
+  void setReference(const AnyReference& value) throw();
 };
 
 /**

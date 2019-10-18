@@ -104,6 +104,10 @@ AnyValue::AnyValue(const WideLiteral& value) throw()
   : representation(WIDE_STRING), wideString(value) {
 }
 
+AnyValue::AnyValue(const AnyReference& value) throw()
+  : representation(REFERENCE), reference(value) {
+}
+
 AnyValue::AnyValue(const AnyValue& copy) throw()
   : representation(copy.representation) {
   
@@ -164,6 +168,11 @@ AnyValue::AnyValue(const AnyValue& copy) throw()
   case WIDE_STRING:
     wideString = copy.wideString;
     break;
+  case REFERENCE:
+    reference = copy.reference;
+    break;
+  default:
+    INVALID_CONTROL_FLOW();
   }
 }
 
@@ -228,6 +237,8 @@ AnyValue& AnyValue::operator=(const AnyValue& eq) noexcept {
     case WIDE_STRING:
       wideString = eq.wideString;      
       break;
+    default:
+      INVALID_CONTROL_FLOW();
     }
   }
   return *this;
@@ -275,6 +286,7 @@ Type AnyValue::getRepresentationType() const noexcept
   case WIDE_STRING:
     return Type::getType<WideString>();
   default:
+    INVALID_CONTROL_FLOW();
     return Type(); // uninitialized    
   }
 }
@@ -469,6 +481,13 @@ AnyValue& AnyValue::operator=(const WideString& value) throw() {
     wideString = value;
   }
   representation = WIDE_STRING;
+  return *this;
+}
+
+AnyValue& AnyValue::operator=(const AnyReference& value) throw() {
+  reset();
+  reference = value;
+  representation = REFERENCE;
   return *this;
 }
 
@@ -926,8 +945,11 @@ String AnyValue::getString() const throw() {
   case LONG_DOUBLE:
     stream << ld;
     break;
-  default:
+  case REFERENCE:
+    stream << reference;
     break;
+  default:
+    INVALID_CONTROL_FLOW();
   }
   stream << FLUSH;
   return stream.getString();
@@ -988,11 +1010,19 @@ WideString AnyValue::getWideString() const throw() {
   case LONG_DOUBLE:
     stream << ld;
     break;
-  default:
+  case REFERENCE:
+    stream << reference;
     break;
+  default:
+    INVALID_CONTROL_FLOW();
   }
   stream << FLUSH;
   return stream.getString();
+}
+
+AnyReference AnyValue::getReference() noexcept
+{
+  return (representation == REFERENCE) ? reference : nullptr;
 }
 
 
@@ -1095,6 +1125,16 @@ void AnyValue::setWideString(const WideString& value) throw() {
   representation = WIDE_STRING;
 }
 
+void AnyValue::setReference(const AnyReference& value) throw() {
+  if (representation == REFERENCE) {
+    reference = value;
+    return;
+  }
+  reset();
+  reference = value;
+  representation = REFERENCE;
+}
+
 FormatOutputStream& operator<<(FormatOutputStream& stream, const AnyValue& value) throw(IOException)
 {
   switch (value.representation) {
@@ -1152,8 +1192,11 @@ FormatOutputStream& operator<<(FormatOutputStream& stream, const AnyValue& value
   case AnyValue::WIDE_STRING:
     stream << value.wideString;
     break;
-  default:
+  case AnyValue::REFERENCE:
+    stream << value.reference;
     break;
+  default:
+    INVALID_CONTROL_FLOW();
   }
   return stream;
 }

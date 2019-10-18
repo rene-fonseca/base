@@ -14,6 +14,8 @@
 #include <base/Application.h>
 #include <base/objectmodel/JSON.h>
 #include <base/Timer.h>
+#include <base/Random.h>
+#include <base/Guid.h>
 
 using namespace com::azure::dev::base;
 
@@ -105,8 +107,18 @@ public:
          << "Copyright (C) 2019 by Rene Moeller Fonseca" << EOL
          << ENDL;
 
-    testPerformance();
-    
+    // testPerformance();
+
+#if 0
+    for (unsigned int i = 0; i < 10; ++i) {
+      fout << ZEROPAD << HEX << Random::random<uint32>() << " " << EOL;
+    }
+    for (unsigned int i = 0; i < 10; ++i) {
+      fout << ZEROPAD << HEX << Guid::createGuid() << " " << EOL;
+    }
+    fout << DEC << ENDL;
+#endif
+
     Reference<ObjectModel::Value> example1 = JSON().parse(JSON_EXAMPLE1);
     // fout << "Example1:" << EOL << example1 << EOL << ENDL;
     fout << "Example1:" << EOL << JSON::getJSON(example1) << ENDL;

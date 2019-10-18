@@ -14,6 +14,7 @@
 #pragma once
 
 #include <base/concurrency/LockException.h>
+#include <base/concurrency/ExclusiveSynchronize.h>
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
@@ -34,7 +35,9 @@ private:
   /* Disable the default assignment operator. */
   Lock& operator=(const Lock& eq) throw();
 public:
-  
+
+  typedef ExclusiveSynchronize<Lock> Sync;
+
   /**
     Initializes lock.
   */

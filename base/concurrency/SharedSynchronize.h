@@ -64,8 +64,8 @@ private:
   /** The synchronize able object to be synchronized. */
   const Guard& guard;
 
-  SharedSynchronize(const SharedSynchronize& copy) throw();
-  SharedSynchronize& operator=(const SharedSynchronize& eq) throw();
+  SharedSynchronize(const SharedSynchronize& copy);
+  SharedSynchronize& operator=(const SharedSynchronize& eq);
 public:
 
   /**
@@ -73,7 +73,7 @@ public:
 
     @param guard The synchronize able object to be synchronized.
   */
-  inline explicit SharedSynchronize(const Guard& _guard) throw()
+  inline explicit SharedSynchronize(const Guard& _guard)
     : guard(_guard) {
     guard.sharedLock();
   }
@@ -82,7 +82,7 @@ public:
     Releases the lock if not already released and destroys the synchronization
     object.
   */
-  inline ~SharedSynchronize() throw() {
+  inline ~SharedSynchronize() {
     guard.releaseLock();
   }
 };
@@ -101,8 +101,8 @@ template<>
 class SharedSynchronize<Unsafe> {
 private:
   
-  SharedSynchronize(const SharedSynchronize& copy) throw();
-  SharedSynchronize& operator=(const SharedSynchronize& eq) throw();
+  SharedSynchronize(const SharedSynchronize& copy);
+  SharedSynchronize& operator=(const SharedSynchronize& eq);
 public:
   
   /**
@@ -111,7 +111,7 @@ public:
     @param guard The synchronize able object to be synchronized.
   */
   template<class POLY>
-  inline explicit SharedSynchronize(const POLY& guard) throw() {
+  inline explicit SharedSynchronize(const POLY& guard) noexcept {
   }
 };
 

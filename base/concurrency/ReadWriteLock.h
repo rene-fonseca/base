@@ -38,6 +38,8 @@ protected:
   void* representation = nullptr;
 public:
   
+  typedef ExclusiveSynchronize<ReadWriteLock> Sync;
+
   /**
     Initializes a read-write lock in the unlocked state. Raises
     ResourceException if unable to initialize the object.

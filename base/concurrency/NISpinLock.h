@@ -41,6 +41,8 @@ private:
   };
 public:
   
+  typedef ExclusiveSynchronize<NISpinLock> Sync;
+
   /**
     Initializes spin lock to unlocked state.
   */

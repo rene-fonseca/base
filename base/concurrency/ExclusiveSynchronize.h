@@ -63,8 +63,8 @@ private:
   /** The synchronize able object to be synchronized. */
   const Guard& guard;
   
-  ExclusiveSynchronize(const ExclusiveSynchronize& copy) throw();
-  ExclusiveSynchronize& operator=(const ExclusiveSynchronize& eq) throw();
+  ExclusiveSynchronize(const ExclusiveSynchronize& copy);
+  ExclusiveSynchronize& operator=(const ExclusiveSynchronize& eq);
 public:
   
   /**
@@ -72,7 +72,7 @@ public:
 
     @param guard The synchronize able object to be synchronized.
   */
-  inline explicit ExclusiveSynchronize(const Guard& _guard) throw() 
+  inline explicit ExclusiveSynchronize(const Guard& _guard) 
     : guard(_guard) {
     guard.exclusiveLock();
   }
@@ -81,7 +81,7 @@ public:
     Releases the lock if not already released and destroys the synchronization
     object.
   */
-  inline ~ExclusiveSynchronize() throw() {
+  inline ~ExclusiveSynchronize() {
     guard.releaseLock();
   }
 };
@@ -100,8 +100,8 @@ template<>
 class ExclusiveSynchronize<Unsafe> {
 private:
 
-  ExclusiveSynchronize(const ExclusiveSynchronize& copy) throw();
-  ExclusiveSynchronize& operator=(const ExclusiveSynchronize& eq) throw();
+  ExclusiveSynchronize(const ExclusiveSynchronize& copy);
+  ExclusiveSynchronize& operator=(const ExclusiveSynchronize& eq);
 public:
 
   /**
@@ -110,7 +110,7 @@ public:
     @param guard The synchronize able object to be synchronized.
   */
   template<class POLY>
-  inline explicit ExclusiveSynchronize(const POLY& guard) throw() {
+  inline explicit ExclusiveSynchronize(const POLY& guard) noexcept {
   }
 };
 

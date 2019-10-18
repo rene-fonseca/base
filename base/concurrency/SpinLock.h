@@ -40,6 +40,8 @@ private:
   };
 public:
   
+  typedef ExclusiveSynchronize<SpinLock> Sync;
+
   // TAG: add sleep / yield option
   // TAG: add support for counter before sleep
   // uint64 sleep = 0;

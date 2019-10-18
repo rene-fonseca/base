@@ -14,7 +14,7 @@
 #pragma once
 
 #include <base/Object.h>
-#include <base/concurrency/ReadWriteLock.h>
+#include <base/concurrency/LockException.h>
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
@@ -121,19 +121,19 @@ protected:
   /**
     Acquires an exclusive lock on this object.
   */
-  inline void exclusiveLock() const throw() {
+  inline void exclusiveLock() const noexcept {
   }
 
   /**
     Acquires a shared lock on this object.
   */
-  inline void sharedLock() const throw() {
+  inline void sharedLock() const noexcept {
   }
 
   /**
     Releases the lock on this object.
   */
-  inline void releaseLock() const throw() {
+  inline void releaseLock() const noexcept {
   }
 };
 

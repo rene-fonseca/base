@@ -38,6 +38,8 @@ protected:
   void* mutex = nullptr;
 public:
   
+  typedef ExclusiveSynchronize<MutualExclusion> Sync;
+
   /**
     Initializes a mutual exclusion object in the unlocked state. Raises
     ResourceException if unable to initialize the object.

@@ -12,6 +12,7 @@
  ***************************************************************************/
 
 #include <base/concurrency/SpinLock.h>
+#include <base/concurrency/ExclusiveSynchronize.h>
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
@@ -22,6 +23,8 @@ SpinLock::SpinLock() noexcept
 
 bool SpinLock::invariant() const noexcept
 {
+  ExclusiveSynchronize<SpinLock> _guard(*this);
+
   MemoryDiff current = value;
   return (current == LOCK_FREE) || (current == LOCK_TAKEN);
 }

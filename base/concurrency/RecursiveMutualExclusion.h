@@ -42,6 +42,8 @@ private:
   mutable unsigned int numberOfLocks = 0;
 public:
   
+  typedef ExclusiveSynchronize<RecursiveMutualExclusion> Sync;
+
   /**
     Initializes a mutual exclusion object in the unlocked state. Raises
     ResourceException if unable to initialize the object.

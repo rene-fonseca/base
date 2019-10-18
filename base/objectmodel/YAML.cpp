@@ -16,6 +16,7 @@
 #include <base/string/Posix.h>
 #include <locale>
 #include <codecvt>
+#include <math.h> // TAG: put in Math - inf/nan
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
@@ -412,9 +413,17 @@ void toStringYAML(YAMLOutputStream& stream, Reference<ObjectModel::Float> value)
     stream << MESSAGE("null");
     return;
   }
-  // TAG: also [ .inf, -.inf, .NaN ]
-  // stream << MESSAGE(".inf") << MESSAGE("-.inf") << MESSAGE(".NAN");
-  stream << value->value;
+  
+  if (isfinite(value->value)) { // not inf or nan
+    stream << value->value;
+  } else if (isnan(value->value)) {
+    stream << MESSAGE(".NaN");
+  } else if (isinf(value->value)) {
+    stream << ((value->value < 0) ? MESSAGE("-.inf") : MESSAGE(".inf"));
+  } else {
+    ASSERT(!"Unsupported float.");    
+    stream << value->value;
+  }
 }
 
 // TAG: add support for comment type

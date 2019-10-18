@@ -35,19 +35,19 @@ public:
   };
 
   /** Initializes random input stream. If seed is set to USE_RANDOM_SEED (0) a random seed will be used. */
-  RandomInputStream(uint32 seed = USE_RANDOM_SEED);
+  RandomInputStream(uint32 seed = USE_RANDOM_SEED) noexcept;
 
-  unsigned int available() const override;
+  unsigned int available() const noexcept override;
 
-  unsigned int read(uint8* buffer, const unsigned int _size, bool nonblocking) override;
+  unsigned int read(uint8* buffer, const unsigned int _size, bool nonblocking) noexcept override;
 
-  unsigned int skip(unsigned int count) override;
+  unsigned int skip(unsigned int count) noexcept override;
 
-  void close() override;
+  void close() noexcept override;
 
-  void wait() const override;
+  void wait() const noexcept override;
 
-  bool wait(unsigned int timeout) const override;
+  bool wait(unsigned int timeout) const noexcept override;
 };
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

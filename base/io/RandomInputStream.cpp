@@ -21,23 +21,23 @@ namespace {
 
   std::random_device randomDevice;
 
-  inline unsigned int getSeed() {
+  inline unsigned int getSeed() noexcept {
     ApplicationSynchronize _guard;
     return randomDevice();
   }
 }
 
-RandomInputStream::RandomInputStream(uint32 seed)
+RandomInputStream::RandomInputStream(uint32 seed) noexcept
   : engine(seed ? seed : getSeed())
 {
 }
 
-unsigned int RandomInputStream::available() const
+unsigned int RandomInputStream::available() const noexcept
 {
   return PrimitiveTraits<unsigned int>::MAXIMUM;
 }
 
-unsigned int RandomInputStream::read(uint8* buffer, const unsigned int _size, bool nonblocking)
+unsigned int RandomInputStream::read(uint8* buffer, const unsigned int _size, bool nonblocking) noexcept
 {
   const uint8* end = buffer + _size;
 
@@ -94,21 +94,21 @@ unsigned int RandomInputStream::read(uint8* buffer, const unsigned int _size, bo
   return _size; // always fills up buffer
 }
 
-unsigned int RandomInputStream::skip(unsigned int count)
+unsigned int RandomInputStream::skip(unsigned int count) noexcept
 {
   return count; // do nothing
 }
 
-void RandomInputStream::close()
+void RandomInputStream::close() noexcept
 {
   // do nothing
 }
 
-void RandomInputStream::wait() const
+void RandomInputStream::wait() const noexcept
 {
 }
 
-bool RandomInputStream::wait(unsigned int timeout) const
+bool RandomInputStream::wait(unsigned int timeout) const noexcept
 {
   return true;
 }

@@ -90,6 +90,7 @@ public:
       TYPE_INTEGER,
       TYPE_FLOAT,
       TYPE_STRING,
+      TYPE_BINARY,
       TYPE_ARRAY,
       TYPE_OBJECT
     };
@@ -200,6 +201,38 @@ public:
     }
 
     inline operator const base::String&() const noexcept {
+      return value;
+    }
+  };
+
+  /** Binary blob. */
+  class _COM_AZURE_DEV__BASE__API Binary : public Value {
+  public:
+    
+    std::vector<uint8> value;
+
+    inline Binary() {
+    }
+
+    inline Binary(const std::vector<uint8>& _value) : value(_value) {
+    }
+
+    /** Returns the size. */
+    MemorySize getSize() const noexcept {
+      return value.size();
+    }
+
+    /** Returns true if string is empty. */
+    inline bool isEmpty() const noexcept {
+      return getSize() == 0;
+    }
+    
+    /** Returns the type. */
+    virtual inline Type getType() const noexcept override {
+      return TYPE_BINARY;
+    }
+
+    inline operator const std::vector<uint8>&() const noexcept {
       return value;
     }
   };

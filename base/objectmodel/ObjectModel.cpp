@@ -563,6 +563,8 @@ FormatOutputStream& operator<<(FormatOutputStream& stream, const Reference<Objec
     return stream << value.cast<ObjectModel::Float>();
   case ObjectModel::Value::TYPE_STRING:
     return stream << value.cast<ObjectModel::String>();
+  case ObjectModel::Value::TYPE_BINARY:
+    return stream << value.cast<ObjectModel::Binary>();
   case ObjectModel::Value::TYPE_ARRAY:
     return stream << value.cast<ObjectModel::Array>();
   case ObjectModel::Value::TYPE_OBJECT:
@@ -609,7 +611,60 @@ FormatOutputStream& operator<<(FormatOutputStream& stream, const Reference<Objec
   if (!value) {
     return stream << MESSAGE("null");
   }
-  return stream << '"' << value->value << '"';
+
+  stream << '"';
+  const MemorySize length = value->value.getLength();
+  // for (char ch : value->value) { // TAG: need to read as UTF-8?
+  for (MemorySize i = 0; i < length; ++i) {
+    char ch = value->value[i];
+    // TAG: read ucs4
+    ASSERT(ch <= 0x7f); // TAG: add support
+    if (ch < ' ') {
+      stream << '\\';
+      switch (ch) {
+      case '\b':
+        stream << 'b';
+        break;
+      case '\f':
+        stream << 'f';
+        break;
+      case '\n':
+        stream << 'n';
+        break;
+      case '\r':
+        stream << 'r';
+        break;
+      case '\t':
+        stream << 't';
+        break;
+      default:
+        stream << 'u';
+        stream << ASCIITraits::valueToDigit(0);
+        stream << ASCIITraits::valueToDigit(0);
+        stream << ASCIITraits::valueToDigit((ch >> 4) & 0xf);
+        stream << ASCIITraits::valueToDigit((ch >> 0) & 0xf);
+      }
+    } else if (ch == '\\') {
+      stream << '\\';
+      stream << '\\';
+    } else if (ch == '"') {
+      stream << '\\';
+      stream << '"';
+    } else {
+      stream << ch;
+    }
+  }
+  return stream << '"';
+}
+
+FormatOutputStream& operator<<(FormatOutputStream& stream, const Reference<ObjectModel::Binary>& value)
+{
+  if (!value) {
+    return stream << MESSAGE("null");
+  }
+  ASSERT(!"Binary block not supported.");
+  // TAG: write as string
+  return stream;
 }
 
 FormatOutputStream& operator<<(FormatOutputStream& stream, const Reference<ObjectModel::Array>& value)

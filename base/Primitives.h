@@ -861,6 +861,12 @@ public:
   {
     return end - begin;
   }
+
+  /** Copy data to given destination. */
+  uint8* copyTo(uint8* dest, const uint8* end) const noexcept;
+
+  /** Copy data to given destination which must have room for entire memory span. */
+  uint8* copyTo(uint8* dest) const noexcept;
 };
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

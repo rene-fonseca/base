@@ -40,4 +40,30 @@ MemorySpan::MemorySpan(const uint8* src) noexcept
 {
 }
 
+uint8* MemorySpan::copyTo(uint8* dest, const uint8* destEnd) const noexcept
+{
+  auto src = begin;
+  const MemorySize ds = destEnd - dest;
+  const MemorySize ss = end - begin;
+  if (ds < ss) {
+    while (dest != destEnd) { // dest buffer is smaller
+      *dest++ = *src++;
+    }
+  } else {
+    while (src != end) { // src buffer is smaller
+      *dest++ = *src++;
+    }
+  }
+  return dest;
+}
+
+uint8* MemorySpan::copyTo(uint8* dest) const noexcept
+{
+  auto src = begin;
+  while (src != end) { // src buffer is smaller
+    *dest++ = *src++;
+  }
+  return dest;
+}
+
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

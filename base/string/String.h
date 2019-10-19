@@ -643,6 +643,11 @@ public:
     MemorySize maximum) throw(StringException, MemoryException);
 
   /**
+    Appens memory span. Does nothing is buffer is not proper.
+  */
+  String& append(const MemorySpan& buffer) throw(StringException, MemoryException);
+
+  /**
     Prepends the character to this string.
 
     @param ch The character to be prepended.

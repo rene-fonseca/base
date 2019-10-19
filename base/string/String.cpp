@@ -344,18 +344,23 @@ String& String::append(
   return *this;
 }
 
-String& String::append(
-  const NativeString& string,
-  MemorySize maximum) throw(StringException, MemoryException)
+String& String::append(const NativeString& string, MemorySize maximum) throw(StringException, MemoryException)
 {
   bassert(maximum <= MAXIMUM_LENGTH, StringException(this));
-  const MemorySize suffixLength =
-    getLengthOfTerminated(string.getValue(), maximum);
-  const MemorySize length = getLength();
-  setLength(length + suffixLength);
-  auto buffer = elements->getElements();
-  copy(buffer + length, string.getValue(), suffixLength);
-  elements->getElements()[getLength()] = Traits::TERMINATOR;
+  return append(MemorySpan(reinterpret_cast<const uint8*>(string.getValue()), getLengthOfTerminated(string.getValue(), maximum)));
+}
+
+String& String::append(const MemorySpan& src) throw(StringException, MemoryException)
+{
+  if (src.isProper()) {
+    const MemorySize suffixLength = src.getSize();
+    const MemorySize length = getLength();
+    const MemorySize newLength = length + suffixLength;
+    setLength(newLength);
+    auto buffer = elements->getElements();
+    src.copyTo(reinterpret_cast<uint8*>(buffer) + length);
+    buffer[newLength] = Traits::TERMINATOR;
+  }
   return *this;
 }
 

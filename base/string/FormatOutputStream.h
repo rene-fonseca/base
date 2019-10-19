@@ -561,14 +561,28 @@ public:
   FormatOutputStream& operator<<(double value) throw(IOException);
   FormatOutputStream& operator<<(long double value) throw(IOException);
 
-  inline FormatOutputStream& operator<<(
-    const NativeString& value) throw(IOException) {
+  inline FormatOutputStream& operator<<(const NativeString& value) throw(IOException)
+  {
     addCharacterField(value.getValue(), value.getLength());
     return *this;
   }
 
-  inline FormatOutputStream& operator<<(const char* value) throw(IOException) {
+  inline FormatOutputStream& operator<<(const char* value) throw(IOException)
+  {
     return *this << NativeString(value);
+  }
+
+  /**
+    Writes the memory span to the stream.
+  */
+  inline FormatOutputStream& operator<<(const MemorySpan& span)
+  {
+    if (span.isProper()) {
+      addCharacterField(reinterpret_cast<const char*>(span.begin), span.getSize());
+    } else {
+      operator<<(MESSAGE("NULL"));
+    }
+    return *this;
   }
 
   /**

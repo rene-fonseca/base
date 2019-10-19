@@ -316,32 +316,15 @@ String& String::insert(
   return *this;
 }
 
-String& String::append(
-  const Literal& literal) throw(StringException, MemoryException)
+String& String::append(const Literal& literal) throw(StringException, MemoryException)
 {
-  const MemorySize length = getLength();
-  setLength(length + literal.getLength());
-  auto buffer = elements->getElements();
-  copy<char>(buffer + length, literal.getValue(), literal.getLength());
-  buffer[length + literal.getLength()] = Traits::TERMINATOR;
-  return *this;
+  return append(MemorySpan(literal.getValue(), literal.getLength()));
 }
 
-String& String::append(
-  const Literal& literal,
-  MemorySize maximum) throw(StringException, MemoryException)
+String& String::append(const Literal& literal, MemorySize maximum) throw(StringException, MemoryException)
 {
   bassert(maximum <= MAXIMUM_LENGTH, StringException(this));
-  const MemorySize length = getLength();
-  setLength(length + minimum<MemorySize>(literal.getLength(), maximum));
-  auto buffer = elements->getElements();
-  copy<char>(
-    buffer + length,
-    literal.getValue(),
-    minimum<MemorySize>(literal.getLength(), maximum)
-  );
-  elements->getElements()[getLength()] = Traits::TERMINATOR;
-  return *this;
+  return append(MemorySpan(literal.getValue(), minimum(literal.getLength(), maximum)));
 }
 
 String& String::append(const NativeString& string, MemorySize maximum) throw(StringException, MemoryException)
@@ -354,12 +337,14 @@ String& String::append(const MemorySpan& src) throw(StringException, MemoryExcep
 {
   if (src.isProper()) {
     const MemorySize suffixLength = src.getSize();
-    const MemorySize length = getLength();
-    const MemorySize newLength = length + suffixLength;
-    setLength(newLength);
-    auto buffer = elements->getElements();
-    src.copyTo(reinterpret_cast<uint8*>(buffer) + length);
-    buffer[newLength] = Traits::TERMINATOR;
+    if (suffixLength > 0) {
+      const MemorySize length = getLength();
+      const MemorySize newLength = length + suffixLength;
+      setLength(newLength);
+      auto buffer = elements->getElements();
+      src.copyTo(reinterpret_cast<uint8*>(buffer) + length);
+      buffer[newLength] = Traits::TERMINATOR;
+    }
   }
   return *this;
 }

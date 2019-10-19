@@ -37,7 +37,9 @@ unsigned int StringOutputStreamWrapper::write(
   bool nonblocking) throw(IOException)
 {
   bassert(!closed, IOException("Output stream is closed", this));
-  string.append(NativeString(Cast::pointer<const char*>(buffer)), size);
+  if (size > 0) {
+    string.append(MemorySpan(buffer, size));
+  }
   return size;
 }
 

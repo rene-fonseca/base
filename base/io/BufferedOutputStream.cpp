@@ -24,10 +24,10 @@ BufferedOutputStream::BufferedOutputStream(
 }
 
 void BufferedOutputStream::flush() throw(IOException) {
-  FilterOutputStream::write(
-    buffer.getElements() + readHead,
-    writeHead - readHead
-  );
+  auto size = writeHead - readHead;
+  if (size > 0) {
+    FilterOutputStream::write(buffer.getElements() + readHead, size);
+  }
   readHead = 0;
   writeHead = 0;
   FilterOutputStream::flush();
@@ -81,10 +81,7 @@ void BufferedOutputStream::unfoldValue(
       break;
     }
 
-    FilterOutputStream::write(
-      this->buffer.getElements() + readHead,
-      writeHead - readHead
-    );
+    FilterOutputStream::write(this->buffer.getElements() + readHead, writeHead - readHead);
     readHead = 0;
     writeHead = 0;
   }

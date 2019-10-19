@@ -65,7 +65,7 @@
 namespace base {
 
   /** Assert helpers. */
-  class Assert {
+  class _COM_AZURE_DEV__BASE__API Assert {
   public:
 
     /** Handle assertion. */
@@ -116,11 +116,12 @@ namespace com {
 #endif
 
 /** Assert. */
-#define _COM_AZURE_DEV__BASE__ASSERT(expression) {if (!(expression)) {Assert::handle("Assertion for expression (" #expression ") failed at " _COM_AZURE_DEV__BASE__SOURCE_FILE ":" _COM_AZURE_DEV__BASE__INDIRECT_STRINGIFY(__LINE__));}}
+#define _COM_AZURE_DEV__BASE__ASSERT(expression) \
+  {if (!(expression)) {Assert::handle("Assertion for expression (" #expression ") failed at " _COM_AZURE_DEV__BASE__SOURCE_FILE ":" _COM_AZURE_DEV__BASE__INDIRECT_STRINGIFY(__LINE__));}}
 
 /** Assert within an expression. */
 #define _COM_AZURE_DEV__BASE__INLINE_ASSERT(expression) \
-!(expression) ? Assert::handle("Assertion for expression (" #expression ") failed at " _COM_AZURE_DEV__BASE__SOURCE_FILE ":" _COM_AZURE_DEV__BASE__INDIRECT_STRINGIFY(__LINE__)) : false, (expression)
+  !(expression) ? Assert::handle("Assertion for expression (" #expression ") failed at " _COM_AZURE_DEV__BASE__SOURCE_FILE ":" _COM_AZURE_DEV__BASE__INDIRECT_STRINGIFY(__LINE__)) : false, (expression)
 
 /** Assert during initialization. */
 #define _COM_AZURE_DEV__BASE__ASSERTION(expression) namespace {Assertion assertion(expression, "Assert for expression (" #expression ") failed at " _COM_AZURE_DEV__BASE__SOURCE_FILE ":" _COM_AZURE_DEV__BASE__INDIRECT_STRINGIFY(__LINE__));}

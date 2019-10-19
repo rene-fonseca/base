@@ -256,6 +256,14 @@ inline void deleteCompleteArray(const volatile TYPE* value) {
   delete[] value;
 }
 
+/** Runtime helper functions. */
+class _COM_AZURE_DEV__BASE__API Runtime {
+public:
+
+  /** Returns true if global initialization is in progress. */
+  static bool isGlobalInitialization() noexcept;
+};
+
 /** Debug helper functions. */
 class _COM_AZURE_DEV__BASE__API Debug {
 public:
@@ -284,7 +292,7 @@ _COM_AZURE_DEV__BASE__API void _COM_AZURE_DEV__BASE__BUILD_SHARED() noexcept;
 _COM_AZURE_DEV__BASE__API void _COM_AZURE_DEV__BASE__BUILD_STATIC() noexcept;
 #endif
 
-inline void _COM_AZURE_DEV__BASE__BUILD_SHARED_STATIC_CONSUME() noexcept
+inline void _COM_AZURE_DEV__BASE__CHECK_SHARED_STATIC() noexcept
 {
 #if !defined(_COM_AZURE_DEV__BASE__SHARED_LIBRARY_BUILD)
 #  if defined(_COM_AZURE_DEV__BASE__SHARED_LIBRARY)

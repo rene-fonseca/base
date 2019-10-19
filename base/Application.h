@@ -107,15 +107,18 @@ public:
   }
   
   template<class APPLICATION>
-  static inline int stub(int numberOfArguments, const char* arguments[], const char* environment[]) throw() {
+  static inline int stub(int numberOfArguments, const char* arguments[], const char* environment[]) throw()
+  {
     try {
       // ensure required linker symbols are available
-      _COM_AZURE_DEV__BASE__BUILD_SHARED_STATIC_CONSUME();
-      _COM_AZURE_DEV__BASE__CHECK_VERSION();
-      _COM_AZURE_DEV__BASE__CHECK_DEBUG_RELEASE();
+      _COM_AZURE_DEV__BASE__CHECK_SHARED_STATIC(); // ensure linking against correct shared vs static library
+      _COM_AZURE_DEV__BASE__CHECK_VERSION(); // ensure compatible version
+      _COM_AZURE_DEV__BASE__CHECK_DEBUG_RELEASE(); // ensure using expected debug vs release library
       
       // check runtime
       Version::isBuildCompatible();
+
+      ASSERT(!Runtime::isGlobalInitialization() && !"Global initialization not allowed for Application.");
 
       APPLICATION application(numberOfArguments, arguments, environment);
       try {
@@ -240,13 +243,24 @@ public:
   virtual ~Application() throw();
 };
 
-#define _COM_AZURE_DEV__BASE__STUB(APPLICATION) \
+/** Make stub for exe entry point. */
+#define _COM_AZURE_DEV__BASE__APPLICATION_STUB(APPLICATION) \
 int main(int argc, const char* argv[], const char* env[]) throw() { \
   return com::azure::dev::base::Application::stub<APPLICATION>(argc, argv, env); \
 }
 
-#if (!defined(STUB))
-#  define STUB _COM_AZURE_DEV__BASE__STUB
+#if (!defined(APPLICATION_STUB))
+/** Make stub for exe entry point. */
+#  define APPLICATION_STUB(APPLICATION) _COM_AZURE_DEV__BASE__APPLICATION_STUB(APPLICATION)
+#endif
+
+#define _COM_AZURE_DEV__BASE__ALLOW_DEPRECATED // TAG: move to config
+
+#if defined(_COM_AZURE_DEV__BASE__ALLOW_DEPRECATED)
+#if (!defined(STUB)) // legacy - remove when ready
+/** Make stub for exe entry point. */
+#  define STUB(APPLICATION) _COM_AZURE_DEV__BASE__APPLICATION_STUB(APPLICATION)
+#endif
 #endif
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

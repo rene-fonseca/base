@@ -63,6 +63,17 @@
 */
 
 namespace base {
+
+  /** Assert helpers. */
+  class Assert {
+  public:
+
+    /** Handle assertion. */
+    static bool handle(const char* message);
+
+    /** Handle assertion. */
+    static bool handle(const char* expression, const char* filename, const char* line);
+  };
 }
 
 namespace com {
@@ -98,18 +109,47 @@ namespace com {
 #define _COM_AZURE_DEV__BASE__CONCATENATE_IMPL(a, b) a ## b
 #define _COM_AZURE_DEV__BASE__CONCATENATE(a, b) _COM_AZURE_DEV__BASE__CONCATENATE_IMPL(a, b)
 
-// allow macros to be overridden
+#define  _COM_AZURE_DEV__BASE__SOURCE_FILE __FILE_NAME__
+
+/** Assert. */
+#define _COM_AZURE_DEV__BASE__ASSERT(expression) {if (!(expression)) {Assert::handle("Assertion for expression (" #expression ") failed at " _COM_AZURE_DEV__BASE__SOURCE_FILE ":" _COM_AZURE_DEV__BASE__INDIRECT_STRINGIFY(__LINE__));}}
+
+/** Assert within an expression. */
+#define _COM_AZURE_DEV__BASE__INLINE_ASSERT(expression) \
+!(expression) ? Assert::handle("Assertion for expression (" #expression ") failed at " _COM_AZURE_DEV__BASE__SOURCE_FILE ":" _COM_AZURE_DEV__BASE__INDIRECT_STRINGIFY(__LINE__)) : false, (expression)
+
+/** Assert during initialization. */
+#define _COM_AZURE_DEV__BASE__ASSERTION(expression) namespace {Assertion assertion(expression, "Assert for expression (" #expression ") failed at " _COM_AZURE_DEV__BASE__SOURCE_FILE ":" _COM_AZURE_DEV__BASE__INDIRECT_STRINGIFY(__LINE__));}
+
+// allow shorthand macros to be overridden
 #if defined(_COM_AZURE_DEV__BASE__ANY_DEBUG)
-#  include <base/Trace.h>
-#  if (!defined(ASSERT))
-#    define ASSERT(expression) {if (!(expression)) {Trace::message("Assertion failure of (" #expression ") at " __FILE__ ":" _COM_AZURE_DEV__BASE__INDIRECT_STRINGIFY(__LINE__));}}
+#  if (!defined(BASSERT)) // BASE specific ASSERT
+#    define BASSERT(expression) _COM_AZURE_DEV__BASE__ASSERT(expression)
+#  endif
+#  if (!defined(ASSERT)) // could conflict with other ASSERT
+#    define ASSERT(expression) _COM_AZURE_DEV__BASE__ASSERT(expression)
+#  endif
+#  if (!defined(INLINE_ASSERT))
+#    define INLINE_ASSERT(expression) _COM_AZURE_DEV__BASE__INLINE_ASSERT(expression)
+#  endif
+#  if (!defined(BASSERTION)) // BASE specific ASSERTION
+#    define BASSERTION(expression) _COM_AZURE_DEV__BASE__ASSERTION(expression)
 #  endif
 #  if (!defined(ASSERTION))
-#    define ASSERTION(expression) namespace {Assertion assertion(expression, "Assertion failure of (" #expression ") at " __FILE__ ":" _COM_AZURE_DEV__BASE__INDIRECT_STRINGIFY(__LINE__));}
+#    define ASSERTION(expression) _COM_AZURE_DEV__BASE__ASSERTION(expression)
 #  endif
 #else
+#  if (!defined(BASSERT))
+#    define BASSERT(expression)
+#  endif
 #  if (!defined(ASSERT))
 #    define ASSERT(expression)
+#  endif
+#  if (!defined(INLINE_ASSERT))
+#    define INLINE_ASSERT(expression)
+#  endif
+#  if (!defined(BASSERTION))
+#    define BASSERTION(expression)
 #  endif
 #  if (!defined(ASSERTION))
 #    define ASSERTION(expression)
@@ -118,7 +158,7 @@ namespace com {
 
 /** Use INVALID_CONTROL_FLOW() to indicate invalid control flow. */
 #if defined(_COM_AZURE_DEV__BASE__ANY_DEBUG)
-#  define INVALID_CONTROL_FLOW() ASSERT(!"Invalid control flow.")
+#  define INVALID_CONTROL_FLOW() _COM_AZURE_DEV__BASE__ASSERT(!"Invalid control flow.")
 #else
 #  define INVALID_CONTROL_FLOW() if (true) {}
 #endif
@@ -126,7 +166,7 @@ namespace com {
 #if (!defined(GET_SOURCE_LOCATION))
 #  define GET_SOURCE_LOCATION() \
   FormatOutputStream::SourceCodeLocation( \
-    MESSAGE(__FILE__ ":" _COM_AZURE_DEV__BASE__INDIRECT_STRINGIFY(__LINE__)) \
+    MESSAGE(_COM_AZURE_DEV__BASE__SOURCE_FILE ":" _COM_AZURE_DEV__BASE__INDIRECT_STRINGIFY(__LINE__)) \
   )
 #endif
 

@@ -25,7 +25,8 @@ const double PrimitiveTraits<double>::MAXIMUM = DBL_MAX;
 const long double PrimitiveTraits<long double>::MINIMUM = DBL_MIN;
 const long double PrimitiveTraits<long double>::MAXIMUM = DBL_MAX;
 
-MemorySize NativeString::getLength() const throw() {
+MemorySize NativeString::getLength() const noexcept
+{
   MemorySize length = 0;
   if (value) {
     const char* src = value;
@@ -36,16 +37,28 @@ MemorySize NativeString::getLength() const throw() {
   return length;
 }
 
-MemorySize NativeWideString::getLength() const throw() {
+MemorySize NativeWideString::getLength() const noexcept
+{
   MemorySize length = 0;
   if (value) {
     const wchar* src = value;
     while (*src++) {
       ++length;
     }
-    return 0;
   }
   return length;
+}
+
+MemorySpan::MemorySpan(const uint8* src) noexcept
+  : begin(src)
+{
+  MemorySize size = 0;
+  if (src) {
+    while (*src++) {
+      ++size;
+    }
+  }
+  end = begin + size;
 }
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

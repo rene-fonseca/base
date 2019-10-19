@@ -221,7 +221,7 @@ inline unsigned int getFieldOffset(const FIELD STRUCT::* field) noexcept {
     };
   };
   
-  void MyClass::myMethod() throw() {
+  void MyClass::myMethod() noexcept {
     MemorySize offset = OFFSETOF(myNamespace::MyStructure, field.subfield);
     ...
   }
@@ -237,7 +237,7 @@ inline unsigned int getFieldOffset(const FIELD STRUCT::* field) noexcept {
   @param lowWord The low bits.
   @param highWord The high bits.
 */
-inline uint16 merge(uint8 lowWord, uint8 highWord) throw() {
+inline uint16 merge(uint8 lowWord, uint8 highWord) noexcept {
   return (static_cast<uint16>(highWord) << (sizeof(lowWord) * 8)) | lowWord;
 }
 
@@ -247,7 +247,7 @@ inline uint16 merge(uint8 lowWord, uint8 highWord) throw() {
   @param lowWord The low bits.
   @param highWord The high bits.
 */
-inline uint32 merge(uint16 lowWord, uint16 highWord) throw() {
+inline uint32 merge(uint16 lowWord, uint16 highWord) noexcept {
   return (static_cast<uint32>(highWord) << (sizeof(lowWord) * 8)) | lowWord;
 }
 
@@ -257,7 +257,7 @@ inline uint32 merge(uint16 lowWord, uint16 highWord) throw() {
   @param lowWord The low bits.
   @param highWord The high bits.
 */
-inline uint64 merge(uint32 lowWord, uint32 highWord) throw() {
+inline uint64 merge(uint32 lowWord, uint32 highWord) noexcept {
   return (static_cast<uint64>(highWord) << (sizeof(lowWord) * 8)) | lowWord;
 }
 
@@ -266,42 +266,42 @@ inline uint64 merge(uint32 lowWord, uint32 highWord) throw() {
 /**
   Returns the higher half-word of the specified value.
 */
-inline uint8 getHighWordOf16(uint16 value) throw() {
+inline uint8 getHighWordOf16(uint16 value) noexcept {
   return value >> (sizeof(value) * 8/2);
 }
 
 /**
   Returns the lower half-word of the specified value.
 */
-inline uint8 getLowWordOf16(uint16 value) throw() {
+inline uint8 getLowWordOf16(uint16 value) noexcept {
   return static_cast<uint8>(value & 0xff);
 }
 
 /**
   Returns the higher half-word of the specified value.
 */
-inline uint16 getHighWordOf32(uint32 value) throw() {
+inline uint16 getHighWordOf32(uint32 value) noexcept {
   return value >> (sizeof(value) * 8/2);
 }
 
 /**
   Returns the lower half-word of the specified value.
 */
-inline uint16 getLowWordOf32(uint32 value) throw() {
+inline uint16 getLowWordOf32(uint32 value) noexcept {
   return value;
 }
 
 /**
   Returns the higher half-word of the specified value.
 */
-inline uint32 getHighWordOf64(uint64 value) throw() {
+inline uint32 getHighWordOf64(uint64 value) noexcept {
   return value >> (sizeof(value) * 8/2);
 }
 
 /**
   Returns the lower half-word of the specified value.
 */
-inline uint32 getLowWordOf64(uint64 value) throw() {
+inline uint32 getLowWordOf64(uint64 value) noexcept {
   return static_cast<uint32>(value & 0xfffffff);
 }
 
@@ -309,7 +309,7 @@ inline uint32 getLowWordOf64(uint64 value) throw() {
   Returns true if the primitive variable is aligned properly.
 */
 template<class TYPE>
-inline bool isAligned(const TYPE& value) throw() {
+inline bool isAligned(const TYPE& value) noexcept {
   unsigned int alignment = 0;
   if (sizeof(value) <= sizeof(long)) {
     alignment = sizeof(long);
@@ -330,7 +330,7 @@ inline bool isAligned(const TYPE& value) throw() {
   @param buffer The buffer.
 */
 template<class TYPE>
-inline TYPE& getAligned(char* buffer) throw() {
+inline TYPE& getAligned(char* buffer) noexcept {
   unsigned int alignment = 0;
   if (sizeof(buffer) <= sizeof(long)) {
     alignment = sizeof(long);
@@ -378,7 +378,7 @@ namespace primitives {
     
     @code
     template<class TYPE>
-    void myFunction(const TYPE& value) throw() {
+    void myFunction(const TYPE& value) noexcept {
       if (Primitives::Cardinal<TYPE>::IS_CARDINAL) {
         // do something
       } else {
@@ -806,20 +806,30 @@ public:
   const uint8* begin = nullptr;
   const uint8* end = nullptr;
 
-  inline MemorySpan() noexcept {
+  inline MemorySpan() noexcept
+  {
   }
 
-  inline MemorySpan(const uint8* _begin, const uint8* _end) noexcept : begin(_begin), end(_end) {
+  /** Null-terminated span. */
+  MemorySpan(const uint8* begin) noexcept;
+
+  inline MemorySpan(const uint8* _begin, const uint8* _end) noexcept
+    : begin(_begin), end(_end)
+  {
   }
 
-  inline MemorySpan(const uint8* _begin, const MemorySize size) noexcept : begin(_begin), end(_begin + size) {
+  inline MemorySpan(const uint8* _begin, const MemorySize size) noexcept
+    : begin(_begin), end(_begin + size)
+  {
   }
 
-  inline bool isProper() const noexcept {
-    return end && begin;
+  inline bool isProper() const noexcept
+  {
+    return begin && (begin <= end);
   }
 
-  inline MemoryDiff getSize() const noexcept {
+  inline MemoryDiff getSize() const noexcept
+  {
     return end - begin;
   }
 };

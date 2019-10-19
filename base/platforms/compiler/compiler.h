@@ -20,6 +20,10 @@
 #if !defined(_COM_AZURE_DEV__BASE__COMPILER) || \
     (_COM_AZURE_DEV__BASE__COMPILER == _COM_AZURE_DEV__BASE__COMPILER_GCC)
 #  include <base/platforms/compiler/gcc/gcc.h>
+#elif (_COM_AZURE_DEV__BASE__COMPILER == _COM_AZURE_DEV__BASE__COMPILER_MSC)
+#  include <base/platforms/compiler/msc/msc.h>
+#elif (_COM_AZURE_DEV__BASE__COMPILER == _COM_AZURE_DEV__BASE__COMPILER_LLVM)
+#  include <base/platforms/compiler/llvm.h>
 #elif (_COM_AZURE_DEV__BASE__COMPILER == _COM_AZURE_DEV__BASE__COMPILER_SUNWSPRO)
 #  include <base/platforms/compiler/sunwspro/sunwspro.h>
 #elif (_COM_AZURE_DEV__BASE__COMPILER == _COM_AZURE_DEV__BASE__COMPILER_MIPSPRO)
@@ -28,10 +32,18 @@
 #  include <base/platforms/compiler/intel/intel.h>
 #elif (_COM_AZURE_DEV__BASE__COMPILER == _COM_AZURE_DEV__BASE__COMPILER_BORLAND)
 #  include <base/platforms/compiler/borland/borland.h>
-#elif (_COM_AZURE_DEV__BASE__COMPILER == _COM_AZURE_DEV__BASE__COMPILER_MSC)
-#  include <base/platforms/compiler/msc/msc.h>
 #elif (_COM_AZURE_DEV__BASE__COMPILER == _COM_AZURE_DEV__BASE__COMPILER_DOXYGEN)
 #  include <base/platforms/compiler/doxygen/doxygen.h>
+#endif
+
+#if !defined(_COM_AZURE_DEV__BASE__PACKED)
+#  define _COM_AZURE_DEV__BASE__PACKED
+#endif
+#if !defined(_COM_AZURE_DEV__BASE__PACKED__BEGIN)
+#  define _COM_AZURE_DEV__BASE__PACKED__BEGIN
+#endif
+#if !defined(_COM_AZURE_DEV__BASE__PACKED__END)
+#  define _COM_AZURE_DEV__BASE__PACKED__END
 #endif
 
 #if !defined(_COM_AZURE_DEV__BASE__CPP_INLINE) && !defined(inline)

@@ -25,8 +25,10 @@ template _COM_AZURE_DEV__BASE__API class Map<int, int>;
 template _COM_AZURE_DEV__BASE__API class Map<unsigned int, unsigned int>;
 template _COM_AZURE_DEV__BASE__API class Map<long, long>;
 template _COM_AZURE_DEV__BASE__API class Map<unsigned long, unsigned long>;
+#if (_COM_AZURE_DEV__BASE__COMPILER != _COM_AZURE_DEV__BASE__COMPILER_GCC)
 template _COM_AZURE_DEV__BASE__API class Map<int64, int64>;
 template _COM_AZURE_DEV__BASE__API class Map<uint64, uint64>;
+#endif
 template _COM_AZURE_DEV__BASE__API class Map<char, char>;
 template _COM_AZURE_DEV__BASE__API class Map<unsigned char, unsigned char>;
 template _COM_AZURE_DEV__BASE__API class Map<wchar, wchar>;

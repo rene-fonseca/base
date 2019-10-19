@@ -20,6 +20,9 @@
 
 #define _COM_AZURE_DEV__BASE__COMPILER_ABI _COM_AZURE_DEV__BASE__ABI_MSC
 
+#define _COM_AZURE_DEV__BASE__PACKED__BEGIN __pragma(pack(push, 1))
+#define _COM_AZURE_DEV__BASE__PACKED__END __pragma(pack(pop))
+
 namespace com {
   
   namespace microsoft {

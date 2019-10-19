@@ -29,7 +29,7 @@
   #include <demangle.h>
 #elif (_COM_AZURE_DEV__BASE__DEMANGLE == _COM_AZURE_DEV__BASE__DEMANGLE_MIPSPRO)
   #include <dem.h>
-#elif (_COM_AZURE_DEV__BASE__DEMANGLE == _COM_AZURE_DEV__BASE__DEMANGLE_CLANG)
+#elif (_COM_AZURE_DEV__BASE__DEMANGLE == _COM_AZURE_DEV__BASE__DEMANGLE_LLVM)
 #  include <cxxabi.h>
 #endif
 
@@ -949,7 +949,7 @@ String TypeInfo::demangleName(const char* mangled) throw(InvalidFormat) {
   return V3MultiVendorABIDemangler(mangled).getDemangled();
 }
 
-#elif ((_COM_AZURE_DEV__BASE__DEMANGLE == _COM_AZURE_DEV__BASE__DEMANGLE_CLANG) || \
+#elif ((_COM_AZURE_DEV__BASE__DEMANGLE == _COM_AZURE_DEV__BASE__DEMANGLE_LLVM) || \
        (_COM_AZURE_DEV__BASE__DEMANGLE == _COM_AZURE_DEV__BASE__DEMANGLE_GCCV3))
 
 String TypeInfo::demangleName(const char* mangled) throw(InvalidFormat) {

@@ -16,13 +16,13 @@
 #include <base/platforms/symbols.h>
 
 #if defined(__clang__)
-#  define _COM_AZURE_DEV__BASE__COMPILER _COM_AZURE_DEV__BASE__COMPILER_CLANG
-#  define _COM_AZURE_DEV__BASE__DEMANGLE _COM_AZURE_DEV__BASE__DEMANGLE_CLANG
+#  define _COM_AZURE_DEV__BASE__COMPILER _COM_AZURE_DEV__BASE__COMPILER_LLVM
+#  define _COM_AZURE_DEV__BASE__DEMANGLE _COM_AZURE_DEV__BASE__DEMANGLE_LLVM
 #elif defined(_MSC_VER)
 #  define _COM_AZURE_DEV__BASE__COMPILER _COM_AZURE_DEV__BASE__COMPILER_MSC
 #  define _COM_AZURE_DEV__BASE__DEMANGLE _COM_AZURE_DEV__BASE__DEMANGLE_MSC
 #elif defined(__GNUG__)
-#  define _COM_AZURE_DEV__BASE__COMPILER _COM_AZURE_DEV__BASE__GCC
+#  define _COM_AZURE_DEV__BASE__COMPILER _COM_AZURE_DEV__BASE__COMPILER_GCC
 #  define _COM_AZURE_DEV__BASE__DEMANGLE _COM_AZURE_DEV__BASE__DEMANGLE_GCCV3
 #else
 #  error Unsupported compiler.
@@ -87,24 +87,6 @@
 #  define _COM_AZURE_DEV__BASE__LARGE_FILE_SYSTEM
 #endif
 
-// defines for packing
-#if (_COM_AZURE_DEV__BASE__COMPILER == _COM_AZURE_DEV__BASE__COMPILER_MSC)
-#  define _COM_AZURE_DEV__BASE__PACKED__BEGIN __pragma(pack(push, 1))
-#  define _COM_AZURE_DEV__BASE__PACKED__END __pragma(pack(pop))
-#else
-#  define _COM_AZURE_DEV__BASE__PACKED __attribute__((packed))
-#endif
-
-#if !defined(_COM_AZURE_DEV__BASE__PACKED)
-#  define _COM_AZURE_DEV__BASE__PACKED
-#endif
-#if !defined(_COM_AZURE_DEV__BASE__PACKED__BEGIN)
-#  define _COM_AZURE_DEV__BASE__PACKED__BEGIN
-#endif
-#if !defined(_COM_AZURE_DEV__BASE__PACKED__END)
-#  define _COM_AZURE_DEV__BASE__PACKED__END
-#endif
-
 
 
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
@@ -115,6 +97,7 @@
 #endif
 #else
 // TAG: add other platform
+// TAG: add __attribute__((visibility("default")))
 #endif
 
 #if !defined(_COM_AZURE_DEV__BASE__API)

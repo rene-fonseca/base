@@ -55,12 +55,9 @@ public:
   private:
 
     const String& text;
-    const String** args = nullptr; // TAG: use MemorySpan for args
-    const MemorySpan* args2 = nullptr;
+    const MemorySpan* args = nullptr;
     unsigned int numberOfArgs = 0;
   public:
-
-    Subst(const String& text, const String** args, unsigned int numberOfArgs);
 
     Subst(const String& text, const MemorySpan* args, unsigned int numberOfArgs);
 
@@ -69,17 +66,12 @@ public:
       return numberOfArgs;
     }
 
-    inline MemorySpan getArg(unsigned int i) const
+    inline const MemorySpan& getArg(unsigned int i) const
     {
       if (!INLINE_ASSERT(i < numberOfArgs)) {
         throw OutOfRange();
       }
-      if (args2) {
-        return args2[i];
-      } else {
-        const String& text = *args[i];
-        return MemorySpan(text.getElements(), text.getEnd());
-      }
+      return args[i];
     }
 
     /** Returns the substituted string. */

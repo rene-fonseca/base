@@ -18,69 +18,116 @@ _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 // TAG: add method for validating UTF-8 encoding in String - getUTF8Length()
 
+namespace {
+
+  inline MemorySpan toMemorySpan(const String& s) noexcept
+  {
+    return MemorySpan(s.getElements(), s.getLength());
+  }
+}
+
 String Format::subst(const String& text)
 {
-  return Subst(text, reinterpret_cast<const String**>(nullptr), 0).format();
+  return Subst(text, nullptr, 0).format();
 }
 
 String Format::subst(const String& text, const String& a)
 {
-  const String* args[] = {&a};
-  return Subst(text, args, getArraySize(args)).format();
+  MemorySpan spans[1];
+  unsigned int i = 0;
+  spans[i++] = toMemorySpan(a);
+  return Subst(text, spans, i).format();
 }
 
 String Format::subst(const String& text, const String& a, const String& b)
 {
-  const String* args[] = {&a, &b};
-  return Subst(text, args, getArraySize(args)).format();
+  MemorySpan spans[2];
+  unsigned int i = 0;
+  spans[i++] = toMemorySpan(a);
+  spans[i++] = toMemorySpan(b);
+  return Subst(text, spans, i).format();
 }
 
 String Format::subst(const String& text, const String& a, const String& b, const String& c)
 {
-  const String* args[] = {&a, &b, &c};
-  return Subst(text, args, getArraySize(args)).format();
+  MemorySpan spans[3];
+  unsigned int i = 0;
+  spans[i++] = toMemorySpan(a);
+  spans[i++] = toMemorySpan(b);
+  spans[i++] = toMemorySpan(c);
+  return Subst(text, spans, i).format();
 }
 
 String Format::subst(const String& text, const String& a, const String& b, const String& c, const String& d)
 {
-  const String* args[] = {&a, &b, &c, &d};
-  return Subst(text, args, getArraySize(args)).format();
+  MemorySpan spans[4];
+  unsigned int i = 0;
+  spans[i++] = toMemorySpan(a);
+  spans[i++] = toMemorySpan(b);
+  spans[i++] = toMemorySpan(c);
+  spans[i++] = toMemorySpan(d);
+  return Subst(text, spans, i).format();
 }
 
 String Format::subst(const String& text, const String& a, const String& b, const String& c, const String& d, const String& e)
 {
-  const String* args[] = {&a, &b, &c, &d, &e};
-  return Subst(text, args, getArraySize(args)).format();
+  MemorySpan spans[5];
+  unsigned int i = 0;
+  spans[i++] = toMemorySpan(a);
+  spans[i++] = toMemorySpan(b);
+  spans[i++] = toMemorySpan(c);
+  spans[i++] = toMemorySpan(d);
+  spans[i++] = toMemorySpan(e);
+  return Subst(text, spans, i).format();
 }
 
 String Format::subst(const String& text, const String& a, const String& b, const String& c, const String& d, const String& e, const String& f)
 {
-  const String* args[] = {&a, &b, &c, &d, &e, &f};
-  return Subst(text, args, getArraySize(args)).format();
+  MemorySpan spans[6];
+  unsigned int i = 0;
+  spans[i++] = toMemorySpan(a);
+  spans[i++] = toMemorySpan(b);
+  spans[i++] = toMemorySpan(c);
+  spans[i++] = toMemorySpan(d);
+  spans[i++] = toMemorySpan(e);
+  spans[i++] = toMemorySpan(f);
+  return Subst(text, spans, i).format();
 }
 
 String Format::subst(const String& text, const String& a, const String& b, const String& c, const String& d, const String& e, const String& f, const String& g)
 {
-  const String* args[] = {&a, &b, &c, &d, &e, &f, &g};
-  return Subst(text, args, getArraySize(args)).format();
+  MemorySpan spans[7];
+  unsigned int i = 0;
+  spans[i++] = toMemorySpan(a);
+  spans[i++] = toMemorySpan(b);
+  spans[i++] = toMemorySpan(c);
+  spans[i++] = toMemorySpan(d);
+  spans[i++] = toMemorySpan(e);
+  spans[i++] = toMemorySpan(f);
+  spans[i++] = toMemorySpan(g);
+  return Subst(text, spans, i).format();
 }
 
 String Format::subst(const String& text, const String& a, const String& b, const String& c, const String& d, const String& e, const String& f, const String& g, const String& h)
 {
-  const String* args[] = {&a, &b, &c, &d, &e, &f, &g, &h};
-  return Subst(text, args, getArraySize(args)).format();
-}
-
-Format::Subst::Subst(const String& _text, const String** _args, unsigned int _numberOfArgs)
-  : text(_text),
-    args(_args),
-    numberOfArgs(_numberOfArgs)
-{
+  // TAG: std::initializer_list<const String*> args = {&a, &b, &c, &d, &e, &f, &g, &h};
+  
+  MemorySpan spans[8];
+  unsigned int i = 0;
+  spans[i++] = toMemorySpan(a);
+  spans[i++] = toMemorySpan(b);
+  spans[i++] = toMemorySpan(c);
+  spans[i++] = toMemorySpan(d);
+  spans[i++] = toMemorySpan(e);
+  spans[i++] = toMemorySpan(f);
+  spans[i++] = toMemorySpan(g);
+  spans[i++] = toMemorySpan(h);
+  return Subst(text, spans, i).format();
 }
 
 Format::Subst::Subst(const String& _text, const MemorySpan* _args, unsigned int _numberOfArgs)
   : text(_text),
-    args2(_args),
+    args(_args),
     numberOfArgs(_numberOfArgs)
 {
 }
@@ -127,7 +174,7 @@ String Format::subst(const String& text, const AnyValue& a, const AnyValue& b, c
 
 String Format::subst(const String& text, std::initializer_list<const char*> list)
 {
-  MemorySpan spans[32];
+  MemorySpan spans[16];
   if (!INLINE_ASSERT(list.size() <= getArraySize(spans))) {
     throw OutOfRange();
   }
@@ -140,7 +187,7 @@ String Format::subst(const String& text, std::initializer_list<const char*> list
 
 String Format::subst(const String& text, std::initializer_list<Literal> list)
 {
-  MemorySpan spans[32];
+  MemorySpan spans[16];
   if (!INLINE_ASSERT(list.size() <= getArraySize(spans))) {
     throw OutOfRange();
   }

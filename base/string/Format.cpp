@@ -138,6 +138,19 @@ String Format::subst(const String& text, std::initializer_list<const char*> list
   return Subst(text, spans, j).format();
 }
 
+String Format::subst(const String& text, std::initializer_list<Literal> list)
+{
+  MemorySpan spans[32];
+  if (!INLINE_ASSERT(list.size() <= getArraySize(spans))) {
+    throw OutOfRange();
+  }
+  unsigned int j = 0;
+  for (auto i = list.begin(); i != list.end(); ++i) {
+    spans[j++] = MemorySpan(i->getValue(), i->getLength());
+  }
+  return Subst(text, spans, j).format();
+}
+
 // TAG: we can add support for fast substitution by splitting text into array with indices to the arg
 // TAG: Format::subst("My name is %1. I'm %2 years old.", Format::String() << DEC << myAge);
 
@@ -148,7 +161,7 @@ String Format::Subst::format() const
 
   MemorySize capacity = text.getLength();
   for (unsigned int i = 0; i < numberOfArgs; ++i) {
-    capacity += getArg(i).getLength();
+    capacity += getArg(i).getSize();
   }
   buffer.ensureCapacity(capacity);
 

@@ -48,6 +48,7 @@ public:
   static String subst(const String& text, const AnyValue& a, const AnyValue& b, const AnyValue& c, const AnyValue& d, const AnyValue& e, const AnyValue& f, const AnyValue& g);
   static String subst(const String& text, const AnyValue& a, const AnyValue& b, const AnyValue& c, const AnyValue& d, const AnyValue& e, const AnyValue& f, const AnyValue& g, const AnyValue& h);
   static String subst(const String& text, std::initializer_list<const char*> list);
+  static String subst(const String& text, std::initializer_list<Literal> list);
 
   /** String substitution implementation. */
   class _COM_AZURE_DEV__BASE__API Subst {
@@ -68,22 +69,17 @@ public:
       return numberOfArgs;
     }
 
-    inline const String& getArg(unsigned int i) const
+    inline MemorySpan getArg(unsigned int i) const
     {
       if (!INLINE_ASSERT(i < numberOfArgs)) {
         throw OutOfRange();
       }
-      return *args[i];
-    }
-
-    // TAG: use MemorySpan for args
-    inline MemorySpan getArgBytes(unsigned int i) const
-    {
-      if (!INLINE_ASSERT(i < numberOfArgs)) {
-        throw OutOfRange();
+      if (args2) {
+        return args2[i];
+      } else {
+        const String& text = *args[i];
+        return MemorySpan(text.getElements(), text.getEnd());
       }
-      const String& text = *args[i];
-      return MemorySpan(text.getElements(), text.getEnd());
     }
 
     /** Returns the substituted string. */

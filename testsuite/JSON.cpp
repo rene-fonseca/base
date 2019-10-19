@@ -20,6 +20,13 @@
 
 using namespace com::azure::dev::base;
 
+// TAG: add format substitution support
+// String subst(const String& text, args);
+
+// TAG: add test macros - see std for test output
+
+// TAG: fix unique id to ASSERTION(4 > 434.5);
+
 const char* JSON_EXAMPLE1 = "{"
 "  \"hello\": \"This is a test.\","
 "  \"count\": 123456,"
@@ -217,7 +224,6 @@ public:
     fout << EOL
          << yaml << ENDL;
 #endif
-    
   }
 };
 

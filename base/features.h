@@ -127,7 +127,7 @@ namespace com {
 
 /** Assert within an expression. */
 #define _COM_AZURE_DEV__BASE__INLINE_ASSERT(expression) \
-  !(expression) ? Assert::handle("Assertion for expression (" #expression ") failed at " _COM_AZURE_DEV__BASE__SOURCE_FILE ":" _COM_AZURE_DEV__BASE__INDIRECT_STRINGIFY(__LINE__)) : false, (expression)
+  ((!(expression) ? Assert::handle("Assertion for expression (" #expression ") failed at " _COM_AZURE_DEV__BASE__SOURCE_FILE ":" _COM_AZURE_DEV__BASE__INDIRECT_STRINGIFY(__LINE__)) : false), (expression))
 
 /** Assert during initialization. */
 #define _COM_AZURE_DEV__BASE__ASSERTION(expression) \

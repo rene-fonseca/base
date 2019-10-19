@@ -15,19 +15,27 @@
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
-void StringOutputStreamWrapper::close() throw(IOException) {
+void StringOutputStreamWrapper::ensureCapacity(MemorySize capacity)
+{
+  string.ensureCapacity(capacity);
+}
+
+void StringOutputStreamWrapper::close() throw(IOException)
+{
   bassert(!closed, IOException("Output stream is closed", this));
   closed = true;
 }
 
-void StringOutputStreamWrapper::flush() throw(IOException) {
+void StringOutputStreamWrapper::flush() throw(IOException)
+{
   bassert(!closed, IOException("Output stream is closed", this));
 }
 
 unsigned int StringOutputStreamWrapper::write(
   const uint8* buffer,
   unsigned int size,
-  bool nonblocking) throw(IOException) {
+  bool nonblocking) throw(IOException)
+{
   bassert(!closed, IOException("Output stream is closed", this));
   string.append(NativeString(Cast::pointer<const char*>(buffer)), size);
   return size;
@@ -36,25 +44,35 @@ unsigned int StringOutputStreamWrapper::write(
 
 
 StringOutputStream::StringOutputStream() throw(BindException) :
-  FormatOutputStream(stream) {
+  FormatOutputStream(stream)
+{
   stream.setGranularity(DEFAULT_GRANULARITY);
 }
 
 StringOutputStream::StringOutputStream(
   unsigned int granularity) throw(BindException)
-  : FormatOutputStream(stream) {
+  : FormatOutputStream(stream)
+{
   stream.setGranularity(granularity);
 }
 
-unsigned int StringOutputStream::getGranularity() const throw() {
+void StringOutputStream::ensureCapacity(MemorySize capacity)
+{
+  stream.ensureCapacity(capacity);
+}
+
+unsigned int StringOutputStream::getGranularity() const noexcept
+{
   return stream.getGranularity();
 }
 
-void StringOutputStream::setGranularity(unsigned int granularity) throw() {
+void StringOutputStream::setGranularity(unsigned int granularity) throw()
+{
   stream.setGranularity(granularity);
 }
 
-String StringOutputStream::getString() const throw() {
+const String& StringOutputStream::getString() const noexcept
+{
   return stream.getString();
 }
 

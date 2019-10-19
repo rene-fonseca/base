@@ -33,6 +33,11 @@ public:
   inline explicit StringOutputStreamWrapper() throw() {
   }
 
+  /**
+    Reserves capacity in the internal buffer.
+  */
+  void ensureCapacity(MemorySize capacity);
+
   void close() throw(IOException);
 
   void flush() throw(IOException);
@@ -42,7 +47,7 @@ public:
     unsigned int size,
     bool nonblocking = false) throw(IOException);
 
-  inline unsigned int getGranularity() const throw() {
+  inline unsigned int getGranularity() const noexcept {
     return string.getGranularity();
   }
 
@@ -50,7 +55,7 @@ public:
     string.setGranularity(granularity);
   }
 
-  inline const String& getString() const throw() {
+  inline const String& getString() const noexcept {
     return string;
   }
   
@@ -101,9 +106,14 @@ public:
   explicit StringOutputStream(unsigned int granularity) throw(BindException);
 
   /**
+    Reserves capacity in the internal buffer.
+  */
+  void ensureCapacity(MemorySize capacity);
+
+  /**
     Returns the granularity.
   */
-  unsigned int getGranularity() const throw();
+  unsigned int getGranularity() const noexcept;
 
   /**
     Sets the granularity.
@@ -113,7 +123,7 @@ public:
   /**
     Returns the string associated with the stream.
   */
-  String getString() const throw();
+  const String& getString() const noexcept;
 
   /**
     Destroy stream object.

@@ -53,7 +53,7 @@ public:
 class _COM_AZURE_DEV__BASE__API YAML : public DynamicObject {
 private:
 
-  class YAMLParser : public Parser {
+  class _COM_AZURE_DEV__BASE__API YAMLParser : public Parser {
   private:
     
     unsigned int line = 0;

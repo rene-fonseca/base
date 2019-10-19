@@ -321,7 +321,7 @@ private:
 public:
   
   // TAG: need MenuItemCollection class
-  class MenuItemCollection : public Array {
+  class _COM_AZURE_DEV__BASE__API MenuItemCollection : public Array {
   public:
   };
   

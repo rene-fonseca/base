@@ -70,7 +70,7 @@ public:
   };
 
   // TAG: do we need a base class for this kind of class
-  class Layout {
+  class _COM_AZURE_DEV__BASE__API Layout {
   public:
   };
   
@@ -151,7 +151,7 @@ public:
   static Process execute(const String& app) throw(ProcessException);
 public:
 
-  class ProcessHandle : public Handle {
+  class _COM_AZURE_DEV__BASE__API ProcessHandle : public Handle {
     friend class Initialization;
     friend class Process;
   private:

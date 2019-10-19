@@ -3196,7 +3196,7 @@ public:
   */
   bool isSupported(const String& name) throw(OpenGLException);
 
-  class Block {
+  class _COM_AZURE_DEV__BASE__API Block {
   private:
     
     OpenGL& openGL;
@@ -3211,7 +3211,7 @@ public:
     }
   };
   
-  class PushPop {
+  class _COM_AZURE_DEV__BASE__API PushPop {
   private:
     
     OpenGL& openGL;
@@ -3226,7 +3226,7 @@ public:
     }
   };
 
-  class DisplayList {
+  class _COM_AZURE_DEV__BASE__API DisplayList {
   private:
     
     OpenGL& openGL;
@@ -3242,7 +3242,7 @@ public:
     }
   };
 
-  class ReserveDisplayLists : public Object {
+  class _COM_AZURE_DEV__BASE__API ReserveDisplayLists : public Object {
   private:
     
     OpenGL& openGL;
@@ -3278,7 +3278,7 @@ public:
     }
   };
   
-  class ReserveTexture : public Object {
+  class _COM_AZURE_DEV__BASE__API ReserveTexture : public Object {
   private:
     
     OpenGL& openGL;

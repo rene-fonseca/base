@@ -125,7 +125,7 @@ public:
     @ingroup concurrency exceptions
     @version 1.0
   */
-  class ThreadException : public Exception {
+  class _COM_AZURE_DEV__BASE__API ThreadException : public Exception {
   public:
     
     /**
@@ -168,7 +168,7 @@ public:
     @ingroup concurrency exceptions
     @version 1.0
   */
-  class Self : public ThreadException {
+  class _COM_AZURE_DEV__BASE__API Self : public ThreadException {
   public:
 
     inline Self() throw() {
@@ -217,7 +217,7 @@ private:
   /*
     This class is used to initialize and destroy the thread local resources.
   */
-  class ThreadLocal {
+  class _COM_AZURE_DEV__BASE__API ThreadLocal {
   public:
 
     /**
@@ -453,7 +453,7 @@ public:
 
 // TAG: we should hide this
 /** State for all threads. */
-class ThreadLocalContext : public DynamicObject {
+class _COM_AZURE_DEV__BASE__API ThreadLocalContext : public DynamicObject {
 public:
 
   /** The thread object associated with context. */

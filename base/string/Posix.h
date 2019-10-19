@@ -27,7 +27,7 @@ _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 class _COM_AZURE_DEV__BASE__API Posix {
 private:
   
-  class MemoryBuffer : public std::streambuf {
+  class _COM_AZURE_DEV__BASE__API MemoryBuffer : public std::streambuf {
   public:
 
     MemoryBuffer(const char* src, const char* end);
@@ -35,7 +35,7 @@ private:
     void reset(const char* src, const char* end);
   };
 
-  class MemoryStream : virtual public MemoryBuffer, public std::istream {
+  class _COM_AZURE_DEV__BASE__API MemoryStream : virtual public MemoryBuffer, public std::istream {
   public:
 
     MemoryStream(const char* src = nullptr, const char* end = nullptr);

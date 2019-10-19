@@ -56,7 +56,7 @@ public:
     @short Thread pool exception.
     @ingroup concurrency exceptions
   */
-  class ThreadPoolException : public Exception {
+  class _COM_AZURE_DEV__BASE__API ThreadPoolException : public Exception {
   public:
     
     inline ThreadPoolException() throw() {

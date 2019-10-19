@@ -25,7 +25,7 @@ _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
   @version 1.0
 */
 
-class Construct : public Exception {
+class _COM_AZURE_DEV__BASE__API Construct : public Exception {
 public:
 
   /**

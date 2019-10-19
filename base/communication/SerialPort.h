@@ -46,7 +46,7 @@ private:
   Reference<Handle> handle;
   const String name;
 
-  class SerialPortHandle : public Handle {
+  class _COM_AZURE_DEV__BASE__API SerialPortHandle : public Handle {
   public:
 
     /** Initializes file handle. */

@@ -85,7 +85,7 @@ public:
 class _COM_AZURE_DEV__BASE__API JSON : public DynamicObject {
 private:
 
-  class JSONParser : public Parser {
+  class _COM_AZURE_DEV__BASE__API JSONParser : public Parser {
   private:
     
     unsigned int line = 0;

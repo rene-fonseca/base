@@ -25,7 +25,7 @@ _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
   @version 1.0
 */
 
-class ReadWriteLockException : public LockException {
+class _COM_AZURE_DEV__BASE__API ReadWriteLockException : public LockException {
 public:
 
   /**

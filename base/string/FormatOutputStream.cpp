@@ -85,6 +85,10 @@ FormatOutputStream& FormatOutputStream::setDateFormat(const String& format)
   return *this;
 }
 
+// FYI - destruct order is ok to push witin a list of pipes:
+// e.g. fout << Push(justification) << 123 << Push(HEX) << 456 << Push(width) << 123 << ENDL;
+// e.g. fout << Push(HEX) << 123 << Pop(HEX) << 456 << ENDL; // Pop here would restore - but this needs to know last item on stack - that could be stored via FormatOutputStream::Push* topPush; - push registers in constructor - Pop is less useful though - Pop would throw if stack is empty - and Pop would tell Push to do a NOOP in its destructor
+
 // if Context was reference we could swap it fast
 FormatOutputStream::PushContext::PushContext(FormatOutputStream& _stream) noexcept
   : stream(_stream),

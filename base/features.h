@@ -115,6 +115,10 @@ namespace com {
 #  define  _COM_AZURE_DEV__BASE__SOURCE_FILE __FILE_NAME__
 #endif
 
+/** Makes an identifier unique with a cpp. Avoid in header. */
+#define _COM_AZURE_DEV__BASE__MAKE_IDENTIFIER(prefix) \
+  _COM_AZURE_DEV__BASE__CONCATENATE(prefix, __LINE__) // we can consider __COUNTER__ but it has some implications too
+
 /** Assert. */
 #define _COM_AZURE_DEV__BASE__ASSERT(expression) \
   {if (!(expression)) {Assert::handle("Assertion for expression (" #expression ") failed at " _COM_AZURE_DEV__BASE__SOURCE_FILE ":" _COM_AZURE_DEV__BASE__INDIRECT_STRINGIFY(__LINE__));}}
@@ -124,7 +128,8 @@ namespace com {
   !(expression) ? Assert::handle("Assertion for expression (" #expression ") failed at " _COM_AZURE_DEV__BASE__SOURCE_FILE ":" _COM_AZURE_DEV__BASE__INDIRECT_STRINGIFY(__LINE__)) : false, (expression)
 
 /** Assert during initialization. */
-#define _COM_AZURE_DEV__BASE__ASSERTION(expression) namespace {Assertion assertion(expression, "Assert for expression (" #expression ") failed at " _COM_AZURE_DEV__BASE__SOURCE_FILE ":" _COM_AZURE_DEV__BASE__INDIRECT_STRINGIFY(__LINE__));}
+#define _COM_AZURE_DEV__BASE__ASSERTION(expression) \
+  namespace {Assertion _COM_AZURE_DEV__BASE__MAKE_IDENTIFIER(assertion)(expression, "Assert for expression (" #expression ") failed at " _COM_AZURE_DEV__BASE__SOURCE_FILE ":" _COM_AZURE_DEV__BASE__INDIRECT_STRINGIFY(__LINE__));}
 
 // allow shorthand macros to be overridden
 #if defined(_COM_AZURE_DEV__BASE__ANY_DEBUG)

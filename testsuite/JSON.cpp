@@ -25,8 +25,6 @@ using namespace com::azure::dev::base;
 
 // TAG: add test macros - see std for test output
 
-// TAG: fix unique id to ASSERTION(4 > 434.5);
-
 const char* JSON_EXAMPLE1 = "{"
 "  \"hello\": \"This is a test.\","
 "  \"count\": 123456,"

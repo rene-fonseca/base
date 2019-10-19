@@ -61,13 +61,10 @@ void Trace::message(const char* message) throw() {
 #endif // flavor
 }
 
-void Trace::member(const void* pointer, const char* message) throw() {
+void Trace::member(const void* pointer, const char* message) throw()
+{
   bassert(message, NullPointer(Type::getType<Trace>()));
-  const char* src = message;
-  while (*src) {
-    ++src;
-  }
-  unsigned int length = src - message;
+  const MemorySize length = getNullTerminatedLength(message);
   PrimitiveArray<char> buffer(22 + length + 1);
   // TAG: remove sprintf dependency
   sprintf(buffer, "%p >> %s", pointer, message); // sprintf must be MT-safe

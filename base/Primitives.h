@@ -799,6 +799,35 @@ public:
   }
 };
 
+/** Returns the length of the null-terminated array (excluding terminator). */
+template<class TYPE>
+inline MemorySize getNullTerminatedLength(const TYPE* _src) noexcept
+{
+  if (!_src) {
+    return 0;
+  }
+  const auto* src = _src;
+  while (*src) { // just find end
+    ++src;
+  }
+  return src - _src;
+}
+
+/** Returns the length of the null-terminated array (excluding terminator). */
+template<class TYPE>
+inline MemorySize getNullTerminatedLength(const TYPE* _src, const MemorySize maximumLength) noexcept
+{
+  if (!_src) {
+    return 0;
+  }
+  const auto* src = _src;
+  const auto* end = _src + maximumLength;
+  while ((src != end) && *src) { // just find end
+    ++src;
+  }
+  return src - _src;
+}
+
 /** Memory span. */
 class MemorySpan {
 public:

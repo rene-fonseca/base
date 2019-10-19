@@ -27,38 +27,17 @@ const long double PrimitiveTraits<long double>::MAXIMUM = DBL_MAX;
 
 MemorySize NativeString::getLength() const noexcept
 {
-  MemorySize length = 0;
-  if (value) {
-    const char* src = value;
-    while (*src++) {
-      ++length;
-    }
-  }
-  return length;
+  return getNullTerminatedLength(value);
 }
 
 MemorySize NativeWideString::getLength() const noexcept
 {
-  MemorySize length = 0;
-  if (value) {
-    const wchar* src = value;
-    while (*src++) {
-      ++length;
-    }
-  }
-  return length;
+  return getNullTerminatedLength(value);
 }
 
 MemorySpan::MemorySpan(const uint8* src) noexcept
-  : begin(src)
+  : begin(src), end(begin + getNullTerminatedLength(src))
 {
-  MemorySize size = 0;
-  if (src) {
-    while (*src++) {
-      ++size;
-    }
-  }
-  end = begin + size;
 }
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

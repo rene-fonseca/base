@@ -70,7 +70,7 @@ public:
 
     inline const String& getArg(unsigned int i) const
     {
-      if (!INLINE_ASSERT(i <= numberOfArgs)) {
+      if (!INLINE_ASSERT(i < numberOfArgs)) {
         throw OutOfRange();
       }
       return *args[i];
@@ -79,7 +79,7 @@ public:
     // TAG: use MemorySpan for args
     inline MemorySpan getArgBytes(unsigned int i) const
     {
-      if (!INLINE_ASSERT(i <= numberOfArgs)) {
+      if (!INLINE_ASSERT(i < numberOfArgs)) {
         throw OutOfRange();
       }
       const String& text = *args[i];
@@ -88,6 +88,9 @@ public:
 
     /** Returns the substituted string. */
     String format() const;
+
+    /** Write to stream. */
+    FormatOutputStream& operator<<(FormatOutputStream& stream) const;
   };
 };
 

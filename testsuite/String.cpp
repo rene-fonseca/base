@@ -16,7 +16,7 @@
 #include <base/mem/ReferenceCountedAllocator.h>
 #include <base/mem/CapacityAllocator.h>
 #include <base/mem/ReferenceCountedCapacityAllocator.h>
-#include <base/string/String.h>
+#include <base/string/Format.h>
 #include <base/collection/Functor.h>
 #include <base/ValidifiedResult.h>
 
@@ -185,7 +185,14 @@ public:
     fout << String("String literal") << ENDL;
     
     fout << "String literal" << ENDL;
+
+    fout << "Substitution OK: " << Format::subst(MESSAGE("My name is %1 and I'm %2 years old."), "John", 18) << ENDL;
+    fout << "Substitution OK: " << Format::subst(MESSAGE("Current percent is %1%%."), 45) << ENDL;
+    fout << "Substitution BAD: " << Format::subst(MESSAGE("Get invalid argument %111."), "John", 18) << ENDL;
+    fout << "Substitution BAD: " << Format::subst(MESSAGE("Bad substitution string %.")) << ENDL;
+    fout << "Substitution BAD: " << Format::subst(MESSAGE("Bad substitution string %")) << ENDL;
+    fout << "Substitution BAD: " << Format::subst(MESSAGE("My full name is %1 %2 and I'm %3 years old."), String("John"), String("Doe")) << ENDL;
   }
 };
 
-STUB(StringApplication);
+APPLICATION_STUB(StringApplication);

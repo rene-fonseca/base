@@ -163,7 +163,7 @@ String Format::Subst::format() const
     buffer.append(MemorySpan(segmentBegin, src));
     ++src; // skip %
     if (src == end) {
-      ASSERT(!"Unexpected end after % for substitution string.");
+      // ASSERT(!"Unexpected end after % for substitution string.");
       buffer.append('%'); // better to allow bad string format since this could comes from easy mistakes
       segmentBegin = src; // restart segment
       break;
@@ -180,14 +180,14 @@ String Format::Subst::format() const
       ++src;
     }
     if (src == digitsBegin) { // no digits
-      ASSERT(!"Expected digits after % for substitution string.");
+      // ASSERT(!"Expected digits after % for substitution string.");
       buffer.append('%'); // better to allow bad string format since this could comes from easy mistakes
       segmentBegin = src; // restart segment
       continue;
     }
 
     if ((src - digitsBegin) > 2) { // we expect max 2 digits
-      ASSERT(!"Too many digits after % for substitution string.");
+      // ASSERT(!"Too many digits after % for substitution string.");
       buffer.append(MESSAGE("<NULL>")); // behave like missing argument
       segmentBegin = src; // restart segment
       continue;
@@ -199,21 +199,36 @@ String Format::Subst::format() const
       index = static_cast<unsigned int>(ASCIITraits::digitToValue(digitsBegin[i]));
     }
 
-    if (INLINE_ASSERT(index < getNumberOfArgs())) { // assert may be too annoying
+    if (index == 0) {
+      // ASSERT(!"Expected 1-based index for substitution string.");
+      buffer.append(MESSAGE("<NULL>")); // behave like missing argument
+      segmentBegin = src; // restart segment
+      continue;
+    }
+
+    --index;
+    if (index < getNumberOfArgs()) { // assert may be too annoying
       buffer.append(getArg(index));
     } else {
       buffer.append(MESSAGE("<NULL>")); // missing argument
     }
+    segmentBegin = src;
   }
 
   buffer.append(MemorySpan(segmentBegin, src));
   return buffer;
 }
 
+FormatOutputStream& Format::Subst::operator<<(FormatOutputStream& stream) const
+{
+  // TAG: write directly without buffer?
+  stream << format();
+  return stream;
+}
+
 FormatOutputStream& operator<<(FormatOutputStream& stream, const Format::Subst& subst)
 {
-  // TAG: output directly to stream
-  return stream << subst.format();
+  return subst.operator<<(stream);
 }
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

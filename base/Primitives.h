@@ -842,6 +842,9 @@ public:
   /** Null-terminated span. */
   MemorySpan(const uint8* begin) noexcept;
 
+  /** Null-terminated span. */
+  MemorySpan(const char* begin) noexcept;
+
   inline MemorySpan(const uint8* _begin, const uint8* _end) noexcept
     : begin(_begin), end(_end)
   {
@@ -849,6 +852,16 @@ public:
 
   inline MemorySpan(const uint8* _begin, const MemorySize size) noexcept
     : begin(_begin), end(_begin + size)
+  {
+  }
+
+  inline MemorySpan(const char* _begin, const char* _end) noexcept
+    : begin(reinterpret_cast<const uint8*>(_begin)), end(reinterpret_cast<const uint8*>(_end))
+  {
+  }
+
+  inline MemorySpan(const char* _begin, const MemorySize size) noexcept
+    : begin(reinterpret_cast<const uint8*>(_begin)), end(reinterpret_cast<const uint8*>(_begin + size))
   {
   }
 

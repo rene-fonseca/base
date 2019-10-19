@@ -347,7 +347,7 @@ String& String::append(
 String& String::append(const NativeString& string, MemorySize maximum) throw(StringException, MemoryException)
 {
   bassert(maximum <= MAXIMUM_LENGTH, StringException(this));
-  return append(MemorySpan(reinterpret_cast<const uint8*>(string.getValue()), getLengthOfTerminated(string.getValue(), maximum)));
+  return append(MemorySpan(string.getValue(), getLengthOfTerminated(string.getValue(), maximum)));
 }
 
 String& String::append(const MemorySpan& src) throw(StringException, MemoryException)

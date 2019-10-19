@@ -40,6 +40,11 @@ MemorySpan::MemorySpan(const uint8* src) noexcept
 {
 }
 
+MemorySpan::MemorySpan(const char* src) noexcept
+  : begin(reinterpret_cast<const uint8*>(src)), end(reinterpret_cast<const uint8*>(src + getNullTerminatedLength(src)))
+{
+}
+
 uint8* MemorySpan::copyTo(uint8* dest, const uint8* destEnd) const noexcept
 {
   auto src = begin;

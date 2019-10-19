@@ -76,13 +76,27 @@ FormatOutputStream& FormatOutputStream::setPrecision(unsigned int precision) thr
   return *this;
 }
 
-FormatOutputStream& FormatOutputStream::setDateFormat(const String& format) throw()
+FormatOutputStream& FormatOutputStream::setDateFormat(const String& format)
 {
   ExclusiveSynchronize<Guard> _guard(guard);
   context.majorDateFormat = Symbols::EXPLICIT_DATE_FORMAT;
   // namedDateFormat is ignored (but unchanged)
   context.dateFormat = format;
   return *this;
+}
+
+// if Context was reference we could swap it fast
+FormatOutputStream::PushContext::PushContext(FormatOutputStream& _stream) noexcept
+  : stream(_stream),
+    context(_stream.defaultContext)
+{
+  _stream.defaultContext = _stream.context;
+}
+
+FormatOutputStream::PushContext::~PushContext() noexcept
+{
+  stream.defaultContext = context;
+  stream.context = context;
 }
 
 FormatOutputStream& FormatOutputStream::operator<<(Action action) throw(IOException)
@@ -1790,7 +1804,7 @@ void FormatOutputStream::writeFloatingPointType(
       const uint8* digit = digitBuffer;
       const uint8* endDigit = digit + numberOfDigits;
       int digitsBeforeRadix = ((valueFlags & FloatingPoint::FP_ANY_ZERO) == 0) ? maximum(exponent - adjustedExponent, 0) : 1;
-      int denormalizingZeros = minimum(maximum(adjustedExponent - exponent, 0), context.precision);
+      int denormalizingZeros = minimum(maximum(adjustedExponent - exponent, 0), static_cast<int>(context.precision));
 
       if (digitsBeforeRadix > 0) {
         if ((flags & Symbols::POSIX) != 0) { // use posix (no grouping char specified)

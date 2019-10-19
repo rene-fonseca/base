@@ -160,30 +160,30 @@ public:
   class _COM_AZURE_DEV__BASE__API Context { // TAG: need to compress structure using bit-fields
   public:
 
-    /** The format flags. */
-    unsigned int flags = DEFAULT_FLAGS;
-    /** The eol. */
-    Symbols::EndOfLine endOfLine = DEFAULT_EOL;
-    /** The integer base. */
-    Symbols::Base integerBase = DEFAULT_INTEGER_BASE;
-    /** The floating-point base. */
-    Symbols::Base realBase = DEFAULT_REAL_BASE;
-    /** The floating-point style. */
-    Symbols::RealStyle realStyle = DEFAULT_REAL_STYLE;
-    /** The desired radix position. */
-    int radixPosition = DEFAULT_RADIX_POSITION;
-    /** The major date/time format. */
-    Symbols::MajorDateFormat majorDateFormat = DEFAULT_MAJOR_DATE_FORMAT;
-    /** Selects named subformat. */
-    Symbols::NamedDateFormat namedDateFormat = DEFAULT_NAMED_DATE_FORMAT;
-    /** Justification within field. */
-    Symbols::Justification justification = DEFAULT_JUSTIFICATION;
-    /** Specifies the field width. */
-    int width = DEFAULT_WIDTH;
-    /** Specifies the number of digits to be written after the radix character. */
-    int precision = DEFAULT_PRECISION;
     /** The date format. */
     String dateFormat;
+    /** The format flags. */
+    unsigned int flags = DEFAULT_FLAGS;
+    /** The desired radix position. */
+    int16 radixPosition = DEFAULT_RADIX_POSITION;
+    /** Specifies the field width. */
+    uint8 width = DEFAULT_WIDTH; // keep in sync with MAXIMUM_WIDTH
+    /** Specifies the number of digits to be written after the radix character. */
+    uint8 precision = DEFAULT_PRECISION; // keep in sync with MAXIMUM_PRECISION
+    /** The eol. */
+    Symbols::EndOfLine endOfLine = DEFAULT_EOL; // 2 bits is enough
+    /** The integer base. */
+    Symbols::Base integerBase = DEFAULT_INTEGER_BASE; // 2 bits is enough
+    /** The floating-point base. */
+    Symbols::Base realBase = DEFAULT_REAL_BASE; // 2 bits is enough
+    /** The floating-point style. */
+    Symbols::RealStyle realStyle = DEFAULT_REAL_STYLE; // 2 bits is enough
+    /** The major date/time format. */
+    Symbols::MajorDateFormat majorDateFormat = DEFAULT_MAJOR_DATE_FORMAT; // 2 bits is enough
+    /** Selects named subformat. */
+    Symbols::NamedDateFormat namedDateFormat = DEFAULT_NAMED_DATE_FORMAT; // 3 bits is enough
+    /** Justification within field. */
+    Symbols::Justification justification = DEFAULT_JUSTIFICATION; // 2 bits is enough
   };
   
   class _COM_AZURE_DEV__BASE__API Manipulator {
@@ -282,6 +282,8 @@ public:
     @version 1.0
   */
   
+  // TAG: we could add a separate Push class which only stores/copies the simple state if it becomes relevant - easy if Context inherits from a BasicContext class
+
   class _COM_AZURE_DEV__BASE__API PushContext : public Object {
   private:
 
@@ -295,19 +297,17 @@ public:
       Stores the current default context onto the stack and makes the current context
       the new default context of the stream object.
     */
-    PushContext(FormatOutputStream& _stream) throw()
-      : stream(_stream), context(_stream.defaultContext) {
-      _stream.defaultContext = _stream.context;
+    PushContext(FormatOutputStream& _stream) noexcept;
+    
+    inline const Context& getContext() const noexcept {
+      return context;
     }
     
     /**
       Restores the default context of the format output stream. The current
       context of the stream object is reset to the default context.
     */
-    ~PushContext() throw() {
-      stream.defaultContext = context;
-      stream.context = context;
-    }
+    ~PushContext() noexcept;
   };
 
   /** Location within source code for debugging. */
@@ -364,7 +364,7 @@ public:
   
   /**
     Sets the desired position of the decimal-point within the field. Please
-    note that the position is only advisory. Please not that this methods sets
+    note that the position is only advisory. Please note that this method sets
     the justification state to Symbols::RADIX as a side effect.
 
     @param position The desired position.
@@ -399,7 +399,7 @@ public:
 
     @param format The desired date format.
   */
-  FormatOutputStream& setDateFormat(const String& format) throw();
+  FormatOutputStream& setDateFormat(const String& format);
   
   /**
     Sets the locale of the stream. The locale is global for the stream. The

@@ -169,6 +169,16 @@ public:
   AnyValue(void* value) throw();
 
   /**
+    Initializes value as string.
+  */
+  AnyValue(const char* value) throw();
+
+  /**
+    Initializes value as wide string.
+  */
+  AnyValue(const wchar* value) throw();
+
+  /**
     Initializes value as character.
   */
   AnyValue(char value) throw();

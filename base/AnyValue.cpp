@@ -20,11 +20,21 @@
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
-AnyValue::AnyValue() noexcept : representation(VOID) {
+AnyValue::AnyValue() noexcept
+  : representation(VOID)
+{
 }
 
 AnyValue::AnyValue(const Type& value) throw()
   : representation(TYPE), type(value) {
+}
+
+AnyValue::AnyValue(const char* value) throw()
+  : representation(STRING), string(value) {
+}
+
+AnyValue::AnyValue(const wchar* value) throw()
+  : representation(WIDE_STRING), wideString(value) {
 }
 
 AnyValue::AnyValue(void* value) throw()

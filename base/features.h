@@ -109,7 +109,11 @@ namespace com {
 #define _COM_AZURE_DEV__BASE__CONCATENATE_IMPL(a, b) a ## b
 #define _COM_AZURE_DEV__BASE__CONCATENATE(a, b) _COM_AZURE_DEV__BASE__CONCATENATE_IMPL(a, b)
 
-#define  _COM_AZURE_DEV__BASE__SOURCE_FILE __FILE_NAME__
+#if (_COM_AZURE_DEV__BASE__COMPILER == _COM_AZURE_DEV__BASE__COMPILER_MSC)
+#  define  _COM_AZURE_DEV__BASE__SOURCE_FILE __FILE__
+#else
+#  define  _COM_AZURE_DEV__BASE__SOURCE_FILE __FILE_NAME__
+#endif
 
 /** Assert. */
 #define _COM_AZURE_DEV__BASE__ASSERT(expression) {if (!(expression)) {Assert::handle("Assertion for expression (" #expression ") failed at " _COM_AZURE_DEV__BASE__SOURCE_FILE ":" _COM_AZURE_DEV__BASE__INDIRECT_STRINGIFY(__LINE__));}}

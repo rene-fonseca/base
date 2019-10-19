@@ -262,6 +262,12 @@ public:
 
   /** Returns true if global initialization is in progress. */
   static bool isGlobalInitialization() noexcept;
+
+  /** Returns true if global destruction is in progress. */
+  static bool isGlobalDestruction() noexcept;
+
+  /** Returns true if global initialization or destruction is in progress. */
+  static bool isGlobalStateInGoodCondition() noexcept;
 };
 
 /** Debug helper functions. */

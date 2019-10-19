@@ -57,6 +57,26 @@ public:
 };
 #endif
 
+namespace _impl {
+
+  bool initializing = true;
+  bool destructing = false;
+
+  class RuntimeState {
+  public:
+
+    RuntimeState()
+    {
+      _impl::initializing = false;
+    }
+
+    ~RuntimeState()
+    {
+      _impl::destructing = true;
+    }
+  };
+};
+
 /** The thread object associated with context. */
 ThreadKey<ThreadLocalContext> Thread::threadLocalContext; // thread object
 
@@ -283,6 +303,35 @@ FileDescriptorOutputStream standardErrorStream(
 FormatOutputStream _COM_AZURE_DEV__BASE__API ferr(standardErrorStream);
 
 SoundDevice SoundDevice::soundDevice;
+
+// _impl::RuntimeState runtimeState; // limited to state in this cpp
+
+Application::Stub::Stub()
+{
+  ASSERT(_impl::initializing && !_impl::destructing);
+  _impl::initializing = false;
+}
+
+Application::Stub::~Stub()
+{
+  ASSERT(!_impl::initializing && !_impl::destructing);
+  _impl::destructing = true;
+}
+
+bool Runtime::isGlobalInitialization() noexcept
+{
+  return _impl::initializing; // TAG: better to ask compiler ABI
+}
+
+bool Runtime::isGlobalDestruction() noexcept
+{
+  return _impl::destructing; // TAG: better to ask compiler ABI
+}
+
+bool Runtime::isGlobalStateInGoodCondition() noexcept
+{
+  return !Runtime::isGlobalInitialization() && !Runtime::isGlobalDestruction();
+}
 
 void moduleEntry() {
 }

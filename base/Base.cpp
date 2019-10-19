@@ -79,7 +79,7 @@ bool Assert::handle(const char* message)
   }
 
   static bool writeToStdout = false; // TAG: look up application option
-  if (writeToStdout && !Runtime::isGlobalInitialization()) {
+  if (writeToStdout && Runtime::isGlobalStateInGoodCondition()) {
     // TAG: we should suppress recursive assert
     try {
       fout << buffer << ENDL;
@@ -164,11 +164,5 @@ void _COM_AZURE_DEV__BASE__BUILD_STATIC() noexcept
   Debug::breakpoint(); // do not call
 }
 #endif
-
-bool Runtime::isGlobalInitialization() noexcept
-{
-  // TAG: implement - detect when main is called
-  return false;
-}
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

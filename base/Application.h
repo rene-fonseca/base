@@ -71,6 +71,14 @@ public:
     /** The exit code used when the application exit code is determined externally. */
     EXIT_CODE_EXTERNAL = 127
   };
+
+  class _COM_AZURE_DEV__BASE__API Stub {
+  public:
+
+    Stub();
+
+    ~Stub();
+  };
 private:
   
   /** The application object. */
@@ -118,7 +126,7 @@ public:
       // check runtime
       Version::isBuildCompatible();
 
-      ASSERT(!Runtime::isGlobalInitialization() && !"Global initialization not allowed for Application.");
+      ASSERT(!Runtime::isGlobalInitialization() || !"Global initialization not allowed for Application.");
 
       APPLICATION application(numberOfArguments, arguments, environment);
       try {
@@ -246,6 +254,7 @@ public:
 /** Make stub for exe entry point. */
 #define _COM_AZURE_DEV__BASE__APPLICATION_STUB(APPLICATION) \
 int main(int argc, const char* argv[], const char* env[]) throw() { \
+  Application::Stub stub; \
   return com::azure::dev::base::Application::stub<APPLICATION>(argc, argv, env); \
 }
 

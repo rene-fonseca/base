@@ -34,7 +34,7 @@ public:
 
   void dumpLimit(
     const Literal& literal,
-    OperatingSystem::Resource resource) throw() {
+    OperatingSystem::Resource resource) {
     int64 softLimit = OperatingSystem::getResourceLimit(
       resource,
       OperatingSystem::SOFT_LIMIT

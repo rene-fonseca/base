@@ -55,7 +55,7 @@ public:
   DigestApplication(
     int numberOfArguments,
     const char* arguments[],
-    const char* environment[]) throw()
+    const char* environment[])
     : Application("digest", numberOfArguments, arguments, environment) {
     job = Job::SHA1;
   }  
@@ -215,7 +215,7 @@ public:
     }
   }
 
-  void usage() throw() {
+  void usage() {
     fout << "Usage: " << getFormalName()
          << " [ADLER32|CRC32|MD5SUM|SHA1|SHA256|SHA384|SHA512] file" << ENDL;
   }

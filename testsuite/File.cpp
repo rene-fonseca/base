@@ -67,7 +67,7 @@ public:
     }
   }
   
-  AsyncTransfer(const String& path) throw()
+  AsyncTransfer(const String& path)
     : stop(false),
       eof(false),
       bufferSize(4096 * 64 * 8),
@@ -102,7 +102,7 @@ public:
     }
   }
 
-  AsyncTransfer(const String& sourcePath, const String& destPath) throw()
+  AsyncTransfer(const String& sourcePath, const String& destPath)
     : stop(false),
       eof(false),
       bufferSize(4096 * 64 * 8),
@@ -190,7 +190,7 @@ public:
   FileApplication(
     int numberOfArguments,
     const char* arguments[],
-    const char* environment[]) throw() 
+    const char* environment[]) 
     : Application("File", numberOfArguments, arguments, environment) {
   }
   

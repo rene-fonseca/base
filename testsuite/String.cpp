@@ -29,14 +29,14 @@ private:
   TYPE value;
 public:
   
-  inline Validate(const TYPE& _value, const TYPE& expected) throw()
+  inline Validate(const TYPE& _value, const TYPE& expected)
     : value(_value) {
     if (_value != expected) {
       ferr << "Error: expected " << expected << " but got " << value << ENDL;
     }
   }
 
-  inline operator const TYPE&() const throw() {
+  inline operator const TYPE&() const {
     return value;
   }
 
@@ -55,7 +55,7 @@ inline FormatOutputStream& operator<<(FormatOutputStream& stream, const Validate
 /** Invert case of character. */
 class InvertCase : public UnaryOperation<char, char> {
 public:
-  inline char operator()(char value) const throw() {
+  inline char operator()(char value) const {
     if ((value >= 'A') && (value <= 'Z')) {
       return value - 'A' + 'a';
     } else if ((value >= 'a') && (value <= 'z')) {

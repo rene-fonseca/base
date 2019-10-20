@@ -37,7 +37,7 @@ public:
   FileInputApplication(
     int numberOfArguments,
     const char* arguments[],
-    const char* environment[]) throw()
+    const char* environment[])
     : Application("fileInput", numberOfArguments, arguments, environment) {
   }
 
@@ -270,7 +270,7 @@ public:
     }
   }
 
-  void usage() throw() {
+  void usage() {
     fout << "Usage: " << getFormalName()
          << " MD5SUM|SHA1|SHA256|SHA384|SHA512|DUMP file" << ENDL;
   }

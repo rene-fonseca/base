@@ -33,11 +33,11 @@ public:
   DOMApplication(
     int numberOfArguments,
     const char* arguments[],
-    const char* environment[]) throw()
+    const char* environment[])
     : Application("dom", numberOfArguments, arguments, environment) {
   }
   
-  void dumpTree(const Node& node) throw() {
+  void dumpTree(const Node& node) {
     switch (node.getType()) {
     case Node::ELEMENT_NODE:
       {

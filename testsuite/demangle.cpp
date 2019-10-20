@@ -76,12 +76,12 @@ public:
   DemangleApplication(
     int numberOfArguments,
     const char* arguments[],
-    const char* environment[]) throw()
+    const char* environment[])
     : Application("demangle", numberOfArguments, arguments, environment) {
   }
 
   void testDemangling(
-    const Literal& mangled, const String& expected) throw() {
+    const Literal& mangled, const String& expected) {
     String demangled = TypeInfo::demangleName(mangled.getValue());
     if (demangled == expected) {
       fout << "Demangling " << mangled << ": " << demangled << " <OK>" << ENDL;
@@ -90,7 +90,7 @@ public:
     }
   }
 
-  void testDemangling() throw() {
+  void testDemangling() {
     foo::bar<int, unsigned int>::myFunction<long long>(foo(), foo::bar<int, unsigned int>(), Hello(), World(), World(), Hello(), 0);
 
     testDemangling(

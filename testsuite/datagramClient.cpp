@@ -33,7 +33,7 @@ public:
   DatagramClientApplication(
     int numberOfArguments,
     const char* arguments[],
-    const char* environment[]) throw()
+    const char* environment[])
     : Application(
         "datagramClient",
         numberOfArguments,

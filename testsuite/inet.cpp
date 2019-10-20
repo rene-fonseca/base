@@ -40,14 +40,14 @@ public:
   InetApplication(
     int numberOfArguments,
     const char* arguments[],
-    const char* environment[]) throw()
+    const char* environment[])
     : Application("inet", numberOfArguments, arguments, environment) {
   }
   
   void onTermination() throw() {
   }
   
-  void inet() throw() {
+  void inet() {
     try {
       if (false) {
         HashTable<String, unsigned int> names =
@@ -102,7 +102,7 @@ public:
     }
   }
   
-  void help() throw() {
+  void help() {
     fout << getFormalName() << " version "
          << MAJOR_VERSION << '.' << MINOR_VERSION << EOL
          << "The Base Framework (Test Suite)" << EOL

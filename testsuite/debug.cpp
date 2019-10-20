@@ -26,11 +26,11 @@ public:
   DebugApplication(
     int numberOfArguments,
     const char* arguments[],
-    const char* environment[]) throw()
+    const char* environment[])
     : Application("debug", numberOfArguments, arguments, environment) {
   }
 
-  void level3(unsigned int value) throw() {
+  void level3(unsigned int value) {
     volatile long double floating = 1.0;
     if (floating > 100.0) {
       return;
@@ -52,7 +52,7 @@ public:
     }
   }
   
-  void level1(unsigned int value) throw() {
+  void level1(unsigned int value) {
     if (value) {
       level1(--value);
     } else {
@@ -71,7 +71,7 @@ public:
     level1(value);
   }
 
-  ~DebugApplication() throw() {
+  ~DebugApplication() {
   }
 };
 

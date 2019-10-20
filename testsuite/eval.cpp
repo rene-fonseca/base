@@ -116,7 +116,7 @@ private:
   class MyExpressionEvaluator : public ExpressionEvaluator {
   public:
 
-    MyExpressionEvaluator() throw() {
+    MyExpressionEvaluator() {
     }
 
     double onConstant(unsigned int id) const throw(ExpressionException) {
@@ -260,13 +260,13 @@ public:
   EvaluateApplication(
     int numberOfArguments,
     const char* arguments[],
-    const char* environment[]) throw()
+    const char* environment[])
     : Application("eval", numberOfArguments, arguments, environment) {
     simple = false;
     parsed = false;
   }
   
-  void dumpConstants() throw() {
+  void dumpConstants() {
     if (simple) {
       fout << "Constants:";
       for (unsigned int i = 0; i < getArraySize(CONSTANTS); ++i) {
@@ -281,7 +281,7 @@ public:
     fout << ENDL;
   }
   
-  void dumpFunctions() throw() {
+  void dumpFunctions() {
     if (simple) {
       fout << "Functions:";
       for (unsigned int i = 0; i < getArraySize(NO_ARGUMENT_FUNCTIONS); ++i) {
@@ -308,7 +308,7 @@ public:
     fout << ENDL;
   }
   
-  void evaluate(const String& expression) throw() {
+  void evaluate(const String& expression) {
     ExpressionProvider provider;
 
     for (unsigned int i = 0; i < getArraySize(CONSTANTS); ++i) {
@@ -370,7 +370,7 @@ public:
     }
   }
 
-  void version() throw() {
+  void version() {
     fout << getFormalName() << " version "
          << MAJOR_VERSION << '.' << MINOR_VERSION << EOL
          << "The Base Framework (Test Suite)" << EOL
@@ -378,7 +378,7 @@ public:
          << ENDL;
   }
   
-  void help() throw() {
+  void help() {
     version();
     fout << "Usage: " << getFormalName() << " [OPTIONS] expression" << EOL
          << EOL

@@ -35,7 +35,7 @@ public:
   MulticastServerApplication(
     int numberOfArguments,
     const char* arguments[],
-    const char* environment[]) throw()
+    const char* environment[])
     : Application(
       "multicastServer",
       numberOfArguments,
@@ -43,7 +43,7 @@ public:
       environment) {
   }
 
-  void server(const String& servicename) throw() {
+  void server(const String& servicename) {
     fout << "Hostname: " << InetAddress::getLocalHost() << ENDL;
 
     unsigned short port; // the port to bind the server socket to

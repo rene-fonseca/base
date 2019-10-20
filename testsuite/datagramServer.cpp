@@ -32,7 +32,7 @@ public:
   DatagramServerApplication(
     int numberOfArguments,
     const char* arguments[],
-    const char* environment[]) throw()
+    const char* environment[])
     : Application(
         "datagramServer",
         numberOfArguments,
@@ -41,7 +41,7 @@ public:
     ) {
   }
 
-  void server(const String& servicename) throw() {
+  void server(const String& servicename) {
     fout << "Hostname: " << InetAddress::getLocalHost() << ENDL;
 
     InetAddress address("0.0.0.0");

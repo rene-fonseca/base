@@ -411,7 +411,7 @@ public:
     }
   }
   
-  ~ListApplication() throw() {
+  ~ListApplication() {
   }
 };
 

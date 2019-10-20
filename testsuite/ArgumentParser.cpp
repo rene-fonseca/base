@@ -26,7 +26,7 @@ public:
   ArgumentApplication(
     int numberOfArguments,
     const char* arguments[],
-    const char* environment[]) throw()
+    const char* environment[])
     : Application("Argument", numberOfArguments, arguments, environment) {
   }
   

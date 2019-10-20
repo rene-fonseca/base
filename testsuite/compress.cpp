@@ -62,7 +62,7 @@ public:
   CompressApplication(
     int numberOfArguments,
     const char* arguments[],
-    const char* environment[]) throw()
+    const char* environment[])
     : Application("compress", numberOfArguments, arguments, environment) {
     debug = false;
     command = COMMAND_ERROR;
@@ -76,13 +76,13 @@ public:
     fout << ENDL;
   }
   
-  void error(const String& message) throw() {
+  void error(const String& message) {
     ferr << "Error: " << message << ENDL;
     setExitCode(EXIT_CODE_ERROR);
     command = COMMAND_ERROR;
   }
   
-  void parseArguments() throw() {
+  void parseArguments() {
     bool sourceSpecified = false;
     bool destinationSpecified = false;
     
@@ -164,7 +164,7 @@ public:
     }
   }
   
-  void version() throw() {
+  void version() {
     fout << getFormalName() << " version "
          << MAJOR_VERSION << '.' << MINOR_VERSION << EOL
          << "The Base Framework (Test Suite)" << EOL
@@ -172,7 +172,7 @@ public:
          << ENDL;
   }
   
-  void help() throw() {
+  void help() {
     version();
     fout << "Usage: " << getFormalName() << " [options] source destination" << EOL
          << EOL
@@ -188,7 +188,7 @@ public:
          << ENDL;
   }
 
-  String getProgress(long long position, long long size, long long compressedSize, long long elapsedTime) throw() {
+  String getProgress(long long position, long long size, long long compressedSize, long long elapsedTime) {
     unsigned int percent = position * 100/size;
     long long rate = (position * 1000000)/elapsedTime;
     long long remainingBytes = size - position;
@@ -227,7 +227,7 @@ public:
     return stream.getString();
   }
 
-  void compress(const String& source, const String& destination) throw() {
+  void compress(const String& source, const String& destination) {
     Allocator<uint8> inputBuffer(BUFFER_SIZE);
     Allocator<uint8> outputBuffer(BUFFER_SIZE);
 
@@ -380,7 +380,7 @@ public:
     }
   }
   
-  void decompress(const String& source, const String& destination) throw() {
+  void decompress(const String& source, const String& destination) {
     Allocator<uint8> inputBuffer(BUFFER_SIZE);
     Allocator<uint8> outputBuffer(BUFFER_SIZE);
 
@@ -572,7 +572,7 @@ public:
     }
   }
 
-  ~CompressApplication() throw() {
+  ~CompressApplication() {
   }
 };
 

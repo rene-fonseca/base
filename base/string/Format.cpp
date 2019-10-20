@@ -79,6 +79,30 @@ String Format::subst(const String& text, const String& a, const String& b, const
   return Subst(text, spans, getArraySize(spans)).format();
 }
 
+String Format::subst(const String& text, const String& a, const String& b, const String& c, const String& d, const String& e, const String& f, const String& g, const String& h, const String& i)
+{
+  MemorySpan spans[] = {toSpan(a), toSpan(b), toSpan(c), toSpan(d), toSpan(e), toSpan(f), toSpan(g), toSpan(h), toSpan(i)};
+  return Subst(text, spans, getArraySize(spans)).format();
+}
+
+String Format::subst(const String& text, const String& a, const String& b, const String& c, const String& d, const String& e, const String& f, const String& g, const String& h, const String& i, const String& j)
+{
+  MemorySpan spans[] = {toSpan(a), toSpan(b), toSpan(c), toSpan(d), toSpan(e), toSpan(f), toSpan(g), toSpan(h), toSpan(i), toSpan(j)};
+  return Subst(text, spans, getArraySize(spans)).format();
+}
+
+String Format::subst(const String& text, const String& a, const String& b, const String& c, const String& d, const String& e, const String& f, const String& g, const String& h, const String& i, const String& j, const String& k)
+{
+  MemorySpan spans[] = {toSpan(a), toSpan(b), toSpan(c), toSpan(d), toSpan(e), toSpan(f), toSpan(g), toSpan(h), toSpan(i), toSpan(j), toSpan(k)};
+  return Subst(text, spans, getArraySize(spans)).format();
+}
+
+String Format::subst(const String& text, const String& a, const String& b, const String& c, const String& d, const String& e, const String& f, const String& g, const String& h, const String& i, const String& j, const String& k, const String& l)
+{
+  MemorySpan spans[] = {toSpan(a), toSpan(b), toSpan(c), toSpan(d), toSpan(e), toSpan(f), toSpan(g), toSpan(h), toSpan(i), toSpan(j), toSpan(k), toSpan(l)};
+  return Subst(text, spans, getArraySize(spans)).format();
+}
+
 Format::Subst::Subst(const String& _text, const MemorySpan* _args, MemorySize _numberOfArgs)
   : text(_text),
     args(_args),
@@ -126,9 +150,29 @@ String Format::subst(const String& text, const AnyValue& a, const AnyValue& b, c
   return subst(text, a.getString(), b.getString(), c.getString(), d.getString(), e.getString(), f.getString(), g.getString(), h.getString());
 }
 
+String Format::subst(const String& text, const AnyValue& a, const AnyValue& b, const AnyValue& c, const AnyValue& d, const AnyValue& e, const AnyValue& f, const AnyValue& g, const AnyValue& h, const AnyValue& i, const AnyValue& j, const AnyValue& k, const AnyValue& l)
+{
+  return subst(text, a.getString(), b.getString(), c.getString(), d.getString(), e.getString(), f.getString(), g.getString(), h.getString(), h.getString(), i.getString(), j.getString(), k.getString());
+}
+
+String Format::subst(const String& text, const AnyValue& a, const AnyValue& b, const AnyValue& c, const AnyValue& d, const AnyValue& e, const AnyValue& f, const AnyValue& g, const AnyValue& h, const AnyValue& i)
+{
+  return subst(text, a.getString(), b.getString(), c.getString(), d.getString(), e.getString(), f.getString(), g.getString(), h.getString(), h.getString(), i.getString());
+}
+
+String Format::subst(const String& text, const AnyValue& a, const AnyValue& b, const AnyValue& c, const AnyValue& d, const AnyValue& e, const AnyValue& f, const AnyValue& g, const AnyValue& h, const AnyValue& i, const AnyValue& j)
+{
+  return subst(text, a.getString(), b.getString(), c.getString(), d.getString(), e.getString(), f.getString(), g.getString(), h.getString(), h.getString(), i.getString(), j.getString());
+}
+
+String Format::subst(const String& text, const AnyValue& a, const AnyValue& b, const AnyValue& c, const AnyValue& d, const AnyValue& e, const AnyValue& f, const AnyValue& g, const AnyValue& h, const AnyValue& i, const AnyValue& j, const AnyValue& k)
+{
+  return subst(text, a.getString(), b.getString(), c.getString(), d.getString(), e.getString(), f.getString(), g.getString(), h.getString(), h.getString(), i.getString(), j.getString(), k.getString());
+}
+
 String Format::subst(const String& text, std::initializer_list<const char*> list)
 {
-  MemorySpan spans[16];
+  MemorySpan spans[MAX_ARGS];
   if (!INLINE_ASSERT(list.size() <= getArraySize(spans))) {
     throw OutOfRange();
   }
@@ -141,7 +185,7 @@ String Format::subst(const String& text, std::initializer_list<const char*> list
 
 String Format::subst(const String& text, std::initializer_list<Literal> list)
 {
-  MemorySpan spans[16];
+  MemorySpan spans[MAX_ARGS];
   if (!INLINE_ASSERT(list.size() <= getArraySize(spans))) {
     throw OutOfRange();
   }

@@ -28,7 +28,7 @@ public:
   /**
     Simple string substitution.
 
-    String text = Format::subst(MESSAGE("My name is %1 and my last name is %2."), "John", "Doe");
+    String text = Format::subst(MESSAGE("My name is %1 and my last name is %2."), {"John", "Doe"});
   */
   static String subst(const String& text);
   static String subst(const String& text, const String& a);
@@ -56,17 +56,17 @@ public:
 
     const String& text;
     const MemorySpan* args = nullptr;
-    unsigned int numberOfArgs = 0;
+    MemorySize numberOfArgs = 0;
   public:
 
-    Subst(const String& text, const MemorySpan* args, unsigned int numberOfArgs);
+    Subst(const String& text, const MemorySpan* args, MemorySize numberOfArgs);
 
-    inline unsigned int getNumberOfArgs() const noexcept
+    inline MemorySize getNumberOfArgs() const noexcept
     {
       return numberOfArgs;
     }
 
-    inline const MemorySpan& getArg(unsigned int i) const
+    inline const MemorySpan& getArg(MemorySize i) const
     {
       if (!INLINE_ASSERT(i < numberOfArgs)) {
         throw OutOfRange();

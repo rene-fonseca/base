@@ -20,7 +20,7 @@ _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 namespace {
 
-  inline MemorySpan toMemorySpan(const String& s) noexcept
+  inline MemorySpan toSpan(const String& s) noexcept
   {
     return MemorySpan(s.getElements(), s.getLength());
   }
@@ -33,99 +33,53 @@ String Format::subst(const String& text)
 
 String Format::subst(const String& text, const String& a)
 {
-  MemorySpan spans[1];
-  unsigned int i = 0;
-  spans[i++] = toMemorySpan(a);
-  return Subst(text, spans, i).format();
+  MemorySpan spans[] = {toSpan(a)};
+  return Subst(text, spans, getArraySize(spans)).format();
 }
 
 String Format::subst(const String& text, const String& a, const String& b)
 {
-  MemorySpan spans[2];
-  unsigned int i = 0;
-  spans[i++] = toMemorySpan(a);
-  spans[i++] = toMemorySpan(b);
-  return Subst(text, spans, i).format();
+  MemorySpan spans[] = {toSpan(a), toSpan(b)};
+  return Subst(text, spans, getArraySize(spans)).format();
 }
 
 String Format::subst(const String& text, const String& a, const String& b, const String& c)
 {
-  MemorySpan spans[3];
-  unsigned int i = 0;
-  spans[i++] = toMemorySpan(a);
-  spans[i++] = toMemorySpan(b);
-  spans[i++] = toMemorySpan(c);
-  return Subst(text, spans, i).format();
+  MemorySpan spans[] = {toSpan(a), toSpan(b), toSpan(c)};
+  return Subst(text, spans, getArraySize(spans)).format();
 }
 
 String Format::subst(const String& text, const String& a, const String& b, const String& c, const String& d)
 {
-  MemorySpan spans[4];
-  unsigned int i = 0;
-  spans[i++] = toMemorySpan(a);
-  spans[i++] = toMemorySpan(b);
-  spans[i++] = toMemorySpan(c);
-  spans[i++] = toMemorySpan(d);
-  return Subst(text, spans, i).format();
+  MemorySpan spans[] = {toSpan(a), toSpan(b), toSpan(c), toSpan(d)};
+  return Subst(text, spans, getArraySize(spans)).format();
 }
 
 String Format::subst(const String& text, const String& a, const String& b, const String& c, const String& d, const String& e)
 {
-  MemorySpan spans[5];
-  unsigned int i = 0;
-  spans[i++] = toMemorySpan(a);
-  spans[i++] = toMemorySpan(b);
-  spans[i++] = toMemorySpan(c);
-  spans[i++] = toMemorySpan(d);
-  spans[i++] = toMemorySpan(e);
-  return Subst(text, spans, i).format();
+  MemorySpan spans[] = {toSpan(a), toSpan(b), toSpan(c), toSpan(d), toSpan(e)};
+  return Subst(text, spans, getArraySize(spans)).format();
 }
 
 String Format::subst(const String& text, const String& a, const String& b, const String& c, const String& d, const String& e, const String& f)
 {
-  MemorySpan spans[6];
-  unsigned int i = 0;
-  spans[i++] = toMemorySpan(a);
-  spans[i++] = toMemorySpan(b);
-  spans[i++] = toMemorySpan(c);
-  spans[i++] = toMemorySpan(d);
-  spans[i++] = toMemorySpan(e);
-  spans[i++] = toMemorySpan(f);
-  return Subst(text, spans, i).format();
+  MemorySpan spans[] = {toSpan(a), toSpan(b), toSpan(c), toSpan(d), toSpan(e), toSpan(f)};
+  return Subst(text, spans, getArraySize(spans)).format();
 }
 
 String Format::subst(const String& text, const String& a, const String& b, const String& c, const String& d, const String& e, const String& f, const String& g)
 {
-  MemorySpan spans[7];
-  unsigned int i = 0;
-  spans[i++] = toMemorySpan(a);
-  spans[i++] = toMemorySpan(b);
-  spans[i++] = toMemorySpan(c);
-  spans[i++] = toMemorySpan(d);
-  spans[i++] = toMemorySpan(e);
-  spans[i++] = toMemorySpan(f);
-  spans[i++] = toMemorySpan(g);
-  return Subst(text, spans, i).format();
+  MemorySpan spans[] = {toSpan(a), toSpan(b), toSpan(c), toSpan(d), toSpan(e), toSpan(f), toSpan(g)};
+  return Subst(text, spans, getArraySize(spans)).format();
 }
 
 String Format::subst(const String& text, const String& a, const String& b, const String& c, const String& d, const String& e, const String& f, const String& g, const String& h)
 {
-  // TAG: std::initializer_list<const String*> args = {&a, &b, &c, &d, &e, &f, &g, &h};
-  
-  MemorySpan spans[8];
-  unsigned int i = 0;
-  spans[i++] = toMemorySpan(a);
-  spans[i++] = toMemorySpan(b);
-  spans[i++] = toMemorySpan(c);
-  spans[i++] = toMemorySpan(d);
-  spans[i++] = toMemorySpan(e);
-  spans[i++] = toMemorySpan(f);
-  spans[i++] = toMemorySpan(g);
-  spans[i++] = toMemorySpan(h);
-  return Subst(text, spans, i).format();
+  MemorySpan spans[] = {toSpan(a), toSpan(b), toSpan(c), toSpan(d), toSpan(e), toSpan(f), toSpan(g), toSpan(h)};
+  return Subst(text, spans, getArraySize(spans)).format();
 }
 
-Format::Subst::Subst(const String& _text, const MemorySpan* _args, unsigned int _numberOfArgs)
+Format::Subst::Subst(const String& _text, const MemorySpan* _args, MemorySize _numberOfArgs)
   : text(_text),
     args(_args),
     numberOfArgs(_numberOfArgs)
@@ -178,7 +132,7 @@ String Format::subst(const String& text, std::initializer_list<const char*> list
   if (!INLINE_ASSERT(list.size() <= getArraySize(spans))) {
     throw OutOfRange();
   }
-  unsigned int j = 0;
+  MemorySize j = 0;
   for (auto i = list.begin(); i != list.end(); ++i) {
     spans[j++] = MemorySpan(*i);
   }
@@ -191,23 +145,19 @@ String Format::subst(const String& text, std::initializer_list<Literal> list)
   if (!INLINE_ASSERT(list.size() <= getArraySize(spans))) {
     throw OutOfRange();
   }
-  unsigned int j = 0;
+  MemorySize j = 0;
   for (auto i = list.begin(); i != list.end(); ++i) {
     spans[j++] = MemorySpan(i->getValue(), i->getLength());
   }
   return Subst(text, spans, j).format();
 }
 
-// TAG: we can add support for fast substitution by splitting text into array with indices to the arg
-// TAG: Format::subst("My name is %1. I'm %2 years old.", Format::String() << DEC << myAge);
-
 String Format::Subst::format() const
 {
   String buffer; // we could reuse buffer for thread but may be too weird if copy() is forgotten
-  // TAG: add String::operator<<()?
 
   MemorySize capacity = text.getLength();
-  for (unsigned int i = 0; i < numberOfArgs; ++i) {
+  for (MemorySize i = 0; i < numberOfArgs; ++i) {
     capacity += getArg(i).getSize();
   }
   buffer.ensureCapacity(capacity);
@@ -253,10 +203,10 @@ String Format::Subst::format() const
       continue;
     }
 
-    unsigned int index = 0;
+    MemorySize index = 0;
     for (MemoryDiff i = 0; i < (src - digitsBegin); ++i) { // we expect max 2 digits
       index *= 10;
-      index = static_cast<unsigned int>(ASCIITraits::digitToValue(digitsBegin[i]));
+      index = static_cast<MemorySize>(ASCIITraits::digitToValue(digitsBegin[i]));
     }
 
     if (index == 0) {

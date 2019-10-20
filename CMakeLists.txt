@@ -71,9 +71,7 @@ file(GLOB_RECURSE base_platforms_SRC
   "base/platforms/*.cpp"
 )
 
-if (NOT MSVC)
 list(FILTER base_platforms_SRC EXCLUDE REGEX "^.*\/base\/platforms\/win32\/.+")
-endif ()
 
 # GLOB_RECURSE
 file(GLOB base_SRC

@@ -28,7 +28,14 @@ _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
   references reaches zero. This pointer can only be used to reference count
   objects of type ReferenceCountedObject but is faster than ReferenceCounter.
   The Reference class is relocateable.
-  
+ 
+  Note that is it safe to convert this pointer back to a Reference pointer.
+ 
+  void MyClass::doit() {
+   Reference<MyClass> myObject = this;
+   useIt(myObject);
+  }
+ 
   @short Automation pointer that counts the number of references to an object.
   @ingroup memory
   @see ReferenceCountedObject ReferenceCounter

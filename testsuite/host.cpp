@@ -35,11 +35,11 @@ public:
   HostApplication(
     int numberOfArguments,
     const char* arguments[],
-    const char* environment[]) throw()
+    const char* environment[])
     : Application("host", numberOfArguments, arguments, environment) {
   }
   
-  void version() throw() {
+  void version() {
     fout << getFormalName() << " version "
          << MAJOR_VERSION << '.' << MINOR_VERSION << EOL
          << "The Base Framework (Test Suite)" << EOL
@@ -47,13 +47,13 @@ public:
          << ENDL;
   }
 
-  void help() throw() {
+  void help() {
     version();
     fout << "Usage: " << getFormalName()
          << " [--help] [--version] host(s)" << ENDL;
   }
   
-  void host() throw() {
+  void host() {
     Array<String>::ReadEnumerator enu = hosts.getReadEnumerator();
     
     while (enu.hasNext()) {
@@ -124,7 +124,7 @@ public:
     }
   }
 
-  ~HostApplication() throw() {
+  ~HostApplication() {
   }    
 };
 

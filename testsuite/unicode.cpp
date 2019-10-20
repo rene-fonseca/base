@@ -114,11 +114,11 @@ public:
   UnicodeApplication(
     int numberOfArguments,
     const char* arguments[],
-    const char* environment[]) throw() 
+    const char* environment[])
     : Application("Unicode", numberOfArguments, arguments, environment) {
   }
 
-  void doit(const String& path) throw() {
+  void doit(const String& path) {
     unsigned int totalNumberOfCodes = 0;
     unsigned int totalNumberOfUpper = 0;
     unsigned int totalNumberOfLower = 0;
@@ -913,7 +913,7 @@ public:
     }
   }
   
-  ~UnicodeApplication() throw() {
+  ~UnicodeApplication() {
   }
 };
 

@@ -36,14 +36,14 @@ public:
   FileSystemApplication(
     int numberOfArguments,
     const char* arguments[],
-    const char* environment[]) throw()
+    const char* environment[])
     : Application("filesystem", numberOfArguments, arguments, environment) {
     currentYear = Date::getNow().getYear();
     thisYearFormat = "%b %#d %H:%M";
     otherYearFormat = "%b %#d  %Y";
   }
 
-  inline String getTime(const Date& date) const throw() {
+  inline String getTime(const Date& date) const {
     return date.format((date.getYear() == currentYear) ? thisYearFormat : otherYearFormat, false);
   }
   
@@ -281,7 +281,7 @@ public:
     }
   }
 
-  ~FileSystemApplication() throw() {
+  ~FileSystemApplication() {
   }
 };
 

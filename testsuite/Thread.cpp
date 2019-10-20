@@ -28,11 +28,11 @@ private:
   unsigned int count;
 public:
 
-  MyThread(char _value, unsigned int _count) throw()
+  MyThread(char _value, unsigned int _count)
     : value(_value), count(_count) {
   }
 
-  void run() throw() {
+  void run() {
     {
       ExclusiveSynchronize<SpinLock> exclusiveSyncrhonize(lock);
       fout << "Written by MyThread object" << ENDL;
@@ -56,7 +56,7 @@ private:
   static const unsigned int MINOR_VERSION = 0;
 public:
 
-  ThreadApplication(int numberOfArguments, const char* arguments[], const char* environment[]) throw()
+  ThreadApplication(int numberOfArguments, const char* arguments[], const char* environment[])
     : Application(MESSAGE("Thread"), numberOfArguments, arguments, environment) {
   }
 

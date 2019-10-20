@@ -27,7 +27,7 @@ public:
   FloatingPointApplication(
     int numberOfArguments,
     const char* arguments[],
-    const char* environment[]) throw()
+    const char* environment[])
     : Application("floatingPoint", numberOfArguments, arguments, environment) {
   }
 
@@ -41,7 +41,7 @@ public:
   };
 
   template<class TYPE>
-  static FloatingPointRepresentation getRepresentation() throw() {
+  static FloatingPointRepresentation getRepresentation() {
     if (typeid(TYPE) == typeid(FloatingPoint::IEEE754SinglePrecision)) {
       return IEEE_754_SINGLE_PRECISION;
     } else
@@ -62,7 +62,7 @@ public:
   }
 
   template<class TYPE>
-  static String getRepresentationAsString() throw() {
+  static String getRepresentationAsString() {
     static const Literal REPRESENTATION[] = {
       MESSAGE("IEEE 754 single precision"),
       MESSAGE("IEEE 754 double precision"),

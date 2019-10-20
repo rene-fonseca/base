@@ -35,11 +35,11 @@ private:
   Allocator<uint8> buffer;
 public:
   
-  EchoThread() throw()
+  EchoThread()
     : buffer(BUFFER_SIZE) {
   }
   
-  void run() throw() {
+  void run() {
     Thread* thread = Thread::getThread();
     while (!thread->isTerminated()) {
       semaphore.wait(); // wait for job
@@ -78,7 +78,7 @@ public:
     }
   }
 
-  virtual ~EchoThread() throw() {
+  virtual ~EchoThread() {
   }
 };
 
@@ -89,7 +89,7 @@ private:
   Thread context;
 public:
   
-  ContextBinder() throw()
+  ContextBinder()
     : runnable(),
       context(&runnable) {
   }
@@ -98,7 +98,7 @@ public:
     context.start();
   }
   
-  ~ContextBinder() throw() {
+  ~ContextBinder() {
     context.terminate(); // ask context to terminate
     context.join(); // wait for context to complete
   }
@@ -121,11 +121,11 @@ private:
   };
 public:
   
-  EchoServiceApplication(int numberOfArguments, const char* arguments[], const char* environment[]) throw()
+  EchoServiceApplication(int numberOfArguments, const char* arguments[], const char* environment[])
     : Application("echod", numberOfArguments, arguments, environment) {
   }
   
-  void help() throw() {
+  void help() {
     fout << getFormalName() << " version "
          << MAJOR_VERSION << '.' << MINOR_VERSION << EOL
          << "The Base Framework (Test Suite)" << EOL
@@ -134,12 +134,12 @@ public:
     fout << getFormalName() << " [--help] [--port PORT]" << ENDL;
   }
   
-  bool accept(const InetEndPoint& endPoint) throw() {
+  bool accept(const InetEndPoint& endPoint) {
     // fout << "Incoming connection: " << endPoint << ENDL;
     return true;
   }
   
-  void echod() throw() {
+  void echod() {
     List<ContextBinder*> threadPool;
     for (unsigned int i = 0; i < CONCURRENCY; ++i) {
       ContextBinder* temp = new ContextBinder();
@@ -235,7 +235,7 @@ public:
     }
   }
 
-  ~EchoServiceApplication() throw() {
+  ~EchoServiceApplication() {
   }
 };
 

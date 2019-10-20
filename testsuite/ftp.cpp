@@ -157,7 +157,7 @@ private:
 protected:
 
   static bool translateReplyCode(
-    char a, char b, char c, ReplyCode& result) throw() {
+    char a, char b, char c, ReplyCode& result) {
     result.valid = false;
 
     switch (a) {
@@ -305,7 +305,7 @@ protected:
   }
 public:
 
-  static bool isValidString(const String& str) throw() {
+  static bool isValidString(const String& str) {
     if (str.isEmpty()) {
       return false;
     }
@@ -318,7 +318,7 @@ public:
     return true;
   }
 
-  static bool isValidPrintableString(const String& str) throw() {
+  static bool isValidPrintableString(const String& str) {
     if (str.isEmpty()) {
       return false;
     }
@@ -331,26 +331,26 @@ public:
     return true;
   }
 
-  FileTransferProtocolClient(InetEndPoint ep, Verbosity v = DEBUG_EXTENDED) throw()
+  FileTransferProtocolClient(InetEndPoint ep, Verbosity v = DEBUG_EXTENDED)
     : endPoint(ep),
       verbosity(v),
       retryDelay(DEFAULT_RETRY_DELAY),
       retryAttempts(DEFAULT_RETRY_ATTEMPTS) {
   }
 
-  unsigned int getRetryDelay() const throw() {
+  unsigned int getRetryDelay() const {
     return retryDelay;
   }
 
-  void setRetryDelay(unsigned int value) throw() {
+  void setRetryDelay(unsigned int value) {
     retryDelay = value;
   }
 
-  unsigned int getRetryAttempts() const throw() {
+  unsigned int getRetryAttempts() const {
     return retryAttempts;
   }
 
-  void setRetryAttempts(unsigned int value) throw() {
+  void setRetryAttempts(unsigned int value) {
     retryAttempts = value;
   }
 
@@ -884,7 +884,7 @@ public:
   FTPApplication(
     int numberOfArguments,
     const char* arguments[],
-    const char* environment[]) throw()
+    const char* environment[])
     : Application("ftp", numberOfArguments, arguments, environment) {
   }
 

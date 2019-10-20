@@ -220,7 +220,7 @@ public:
       : method(_method), value(_value) {
     }
     
-    inline FormatOutputStream& operator()(FormatOutputStream& stream) {
+    inline FormatOutputStream& operator()(FormatOutputStream& stream) const {
       return (stream.*method)(value);
     }
   };
@@ -234,7 +234,7 @@ public:
     inline GetContext(Context& _context) throw() : context(_context) {
     }
     
-    inline FormatOutputStream& operator()(FormatOutputStream& stream) throw() {
+    inline FormatOutputStream& operator()(FormatOutputStream& stream) const throw() {
       return stream.getContext(context);
     }
   };
@@ -248,7 +248,7 @@ public:
     inline SetContext(const Context& _context) throw() : context(_context) {
     }
     
-    inline FormatOutputStream& operator()(FormatOutputStream& stream) throw() {
+    inline FormatOutputStream& operator()(FormatOutputStream& stream) const throw() {
       return stream.setContext(context);
     }
   };
@@ -609,15 +609,17 @@ public:
   }
   
   /**
-    Writes a nice description of the type to the format output stream.
-  */
-  FormatOutputStream& operator<<(const Type& type) throw(IOException);
-
-  /**
     Writes a nice description of the exception to the format output stream.
   */
   FormatOutputStream& operator<<(const Exception& e) throw(IOException);
-  
+
+  /**
+    Returns the associated buffer as a String if supported by stream. E.g.
+    StringOutputStream. Returns empty String otherwise. Stream is restarted
+    for new content.
+  */
+  virtual String toString();
+
   /**
     Destroy format output stream.
   */
@@ -747,6 +749,11 @@ FormatOutputStream& operator<<(
 
 
 
+/**
+  Writes a nice description of the type to the format output stream.
+*/
+_COM_AZURE_DEV__BASE__API FormatOutputStream& operator<<(FormatOutputStream& stream, const Type& type) throw(IOException);
+
 /** Sets the desired width of the field. */
 inline FormatOutputStream::Manipulator setWidth(unsigned int width) noexcept
 {
@@ -780,14 +787,14 @@ inline FormatOutputStream::StringManipulator setDateFormat(const String& format)
 
 inline FormatOutputStream& operator<<(
   FormatOutputStream& stream,
-  FormatOutputStream::Manipulator manipulator) throw(IOException)
+  const FormatOutputStream::Manipulator& manipulator) throw(IOException)
 {
   return manipulator(stream);
 }
 
 inline FormatOutputStream& operator<<(
   FormatOutputStream& stream,
-  FormatOutputStream::StringManipulator manipulator) throw(IOException)
+  const FormatOutputStream::StringManipulator& manipulator) throw(IOException)
 {
   return manipulator(stream);
 }
@@ -804,14 +811,26 @@ inline FormatOutputStream::GetContext getContext(FormatOutputStream::Context& co
   return FormatOutputStream::GetContext(context);
 }
 
-inline FormatOutputStream& operator<<(FormatOutputStream& stream, FormatOutputStream::SetContext setContext) noexcept
+inline FormatOutputStream& operator<<(FormatOutputStream& stream, const FormatOutputStream::SetContext& setContext) noexcept
 {
   return setContext(stream);
 }
 
-inline FormatOutputStream& operator<<(FormatOutputStream& stream, FormatOutputStream::GetContext getContext) noexcept
+inline FormatOutputStream& operator<<(FormatOutputStream& stream, const FormatOutputStream::GetContext& getContext) noexcept
 {
   return getContext(stream);
 }
+
+/** Used to explicitly request String from FormatOutputStream&. */
+class _COM_AZURE_DEV__BASE__API GetString {
+};
+
+/** Used to explicitly request String from FormatOutputStream&. */
+inline GetString getString() noexcept {
+  return GetString();
+}
+
+/** Converts FormatOutputStream to String. Stream is flushed automatically. */
+_COM_AZURE_DEV__BASE__API String operator<<(FormatOutputStream& stream, const GetString& getString);
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

@@ -13,6 +13,7 @@
 
 #include <base/string/String.h>
 #include <base/string/FormatOutputStream.h>
+#include <base/string/StringOutputStream.h>
 #include <base/Functor.h>
 #include <base/mem/DynamicMemory.h>
 #include <base/collection/Array.h>
@@ -32,7 +33,7 @@ void String::initialize(const char* src, MemorySize length) throw(MemoryExceptio
   }
   auto e = new ReferenceCountedCapacityAllocator<char>(length + 1, GRANULARITY);
   auto dest = e->getElements();
-  copy<char>(dest, src, length); // no overlap
+  base::copy<char>(dest, src, length); // no overlap
   dest[length] = Traits::TERMINATOR;
   elements = e;
 }
@@ -76,6 +77,16 @@ String::String(const std::wstring& string) throw(StringException, MemoryExceptio
 {
   const std::string utf8 = toUTF8(string);
   initialize(utf8.c_str(), utf8.size());
+}
+
+String::String(StringOutputStream& stream)
+{
+  operator=(stream.toString());
+}
+
+String::String(FormatOutputStream& stream)
+{
+  operator=(stream.toString());
 }
 
 String& String::operator=(const char* src) throw(StringException, MemoryException)
@@ -133,7 +144,7 @@ void String::ensureCapacity(MemorySize capacity) throw(MemoryException)
   
   MemorySize length = getLength();
   auto e = new ReferenceCountedCapacityAllocator<char>(length + 1, capacity, GRANULARITY);
-  copy<char>(e->getElements(), elements->getElements(), length + 1); // no overlap
+  base::copy<char>(e->getElements(), elements->getElements(), length + 1); // no overlap
   elements = e;
 }
 
@@ -170,9 +181,9 @@ char* String::getBuffer(MemorySize length) throw(StringException, MemoryExceptio
   auto e = new ReferenceCountedCapacityAllocator<char>(length + 1, GRANULARITY); // reset capacity
   auto dest = e->getElements();
   if (length < originalLength) {
-    copy<char>(dest, elements->getElements(), length); // no overlap
+    base::copy<char>(dest, elements->getElements(), length); // no overlap
   } else {
-    copy<char>(dest, elements->getElements(), originalLength); // no overlap
+    base::copy<char>(dest, elements->getElements(), originalLength); // no overlap
   }
   dest[length] = Traits::TERMINATOR;
   elements = e;
@@ -183,6 +194,13 @@ char* String::getBuffer(MemorySize length) throw(StringException, MemoryExceptio
 void String::clear()
 {
   elements = DEFAULT_STRING.elements;
+}
+
+String String::copy() const
+{
+  String result = *this;
+  result.getBuffer();
+  return result;
 }
 
 void String::garbageCollect() throw()
@@ -359,7 +377,7 @@ String& String::replace(
     move(buffer + start + strlength, buffer + end, length - end); // move end of string
   }
 
-  copy(buffer + ((start < length) ? start : length), string.getBuffer(), strlength);
+  base::copy(buffer + ((start < length) ? start : length), string.getBuffer(), strlength);
 
   if (length > finalLength) { // is resulting string shorter
     setLength(finalLength);
@@ -391,7 +409,7 @@ String String::substring(MemorySize start, MemorySize end) const throw(MemoryExc
     const MemorySize lengthOfSubstring = end - start;
     String result(lengthOfSubstring);
     result.setLength(lengthOfSubstring);
-    copy(result.getBuffer(), getBuffer() + start, lengthOfSubstring); // buffers do not overlap
+    base::copy(result.getBuffer(), getBuffer() + start, lengthOfSubstring); // buffers do not overlap
     return result;
   } else {
     return String(); // return empty string

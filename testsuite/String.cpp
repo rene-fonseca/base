@@ -66,6 +66,8 @@ public:
   }
 };
 
+
+
 class StringApplication : public Application {
 private:
 
@@ -77,7 +79,8 @@ public:
     : Application("String", argc, argv, env) {
   }
   
-  void main() {
+  void main()
+  {
     fout << getFormalName() << " version "
          << MAJOR_VERSION << '.' << MINOR_VERSION << EOL
          << "The Base Framework (Test Suite)" << EOL
@@ -196,6 +199,20 @@ public:
     fout << "Substitution BAD: " << Format::subst(MESSAGE("Bad substitution string %")) << ENDL;
     fout << "Substitution BAD: " << Format::subst(MESSAGE("My full name is %1 %2 and I'm %3 years old."), String("John"), String("Doe")) << ENDL;
     fout << "Substitution OK: " << Format::subst(MESSAGE("My full name is %1 %2 and I like %3 but not %4."), {MESSAGE("John"), MESSAGE("Doe"), MESSAGE("football"), MESSAGE("tennis")}) << ENDL;
+
+
+
+    fout << "Formatting 1: " << Format::subst(
+      "The value is %1 = %2 = %3.",
+      format() << 12354, format() << HEX << 12354, format() << ZEROPAD << setWidth(10) << 12354
+    ) << ENDL;
+
+    format f;
+    fout << "Formatting 2: " << Format::subst(
+      "The value is %1 = %2 = %3.",
+      f << 12354, f << HEX << 12354, f << ZEROPAD << setWidth(10) << 12354
+    ) << ENDL;
+
   }
 };
 

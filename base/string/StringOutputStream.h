@@ -21,7 +21,7 @@
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 class _COM_AZURE_DEV__BASE__API StringOutputStreamWrapper : public virtual Object,
-                                                         public virtual OutputStream {
+                                                            public virtual OutputStream {
 private:
 
   /** The string holding the stream data. */
@@ -41,6 +41,8 @@ public:
   void close() throw(IOException);
 
   void flush() throw(IOException);
+
+  void restart();
 
   unsigned int write(
     const uint8* buffer,
@@ -124,6 +126,11 @@ public:
     Returns the string associated with the stream.
   */
   const String& getString() const noexcept;
+
+  /**
+    Returns the string associated with the stream and restarts the stream.
+  */
+  String toString() noexcept;
 
   /**
     Destroy stream object.

@@ -1643,11 +1643,6 @@ FormatOutputStream& FormatOutputStream::operator<<(const void* value) throw(IOEx
   return *this << HEX << PREFIX << ZEROPAD << Cast::getOffset(value);
 }
 
-FormatOutputStream& FormatOutputStream::operator<<(const Type& type) throw(IOException)
-{
-  return *this << "Type<" << TypeInfo::getTypename(type) << ">";
-}
-
 FormatOutputStream& FormatOutputStream::operator<<(const Exception& e) throw(IOException)
 {
   StringOutputStream s;
@@ -1934,6 +1929,22 @@ void FormatOutputStream::writeFloatingPointType(
     }
     context = defaultContext;
   }
+}
+
+FormatOutputStream& operator<<(FormatOutputStream& stream, const Type& type) throw(IOException)
+{
+  return stream << "Type<" << TypeInfo::getTypename(type) << ">";
+}
+
+String FormatOutputStream::toString()
+{
+  return String();
+}
+
+String operator<<(FormatOutputStream& stream, const GetString& getString)
+{
+  stream.flush();
+  return stream.toString();
 }
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

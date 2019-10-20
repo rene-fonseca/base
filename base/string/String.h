@@ -31,6 +31,7 @@ _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 template<class TYPE> class Array;
 class FormatOutputStream;
+class StringOutputStream;
 
 /**
   Default character manipulators.
@@ -357,7 +358,17 @@ public:
   */
   inline String(const String& copy) throw() : elements(copy.elements) {
   }
-  
+
+  /**
+    Initializes string from string output stream. Forces flush().
+  */
+  String(StringOutputStream& stream);
+
+  /**
+    Initializes string from string output stream via FormatOutputStream. Forces flush(). Throws exception is not a StringOutputStream.
+  */
+  String(FormatOutputStream& stream);
+
   /**
     Assignment of string to string.
   */
@@ -431,7 +442,10 @@ public:
 
   /** Clears the string. */
   void clear();
-  
+
+  /** Returns a forced copy of the string. */
+  String copy() const;
+
   /**
     Releases any unused capacity of the string. This applies to all shared
     strings.

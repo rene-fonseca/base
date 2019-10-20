@@ -14,12 +14,32 @@
 #pragma once
 
 #include <base/AnyValue.h>
-#include <base/string/FormatOutputStream.h>
+#include <base/string/StringOutputStream.h>
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
+/** Alias for StringOutputStream for shorthand formatting. */
+typedef StringOutputStream format;
+
 /**
-  Format.
+  String formatting support.
+
+  String result = Format::subst(MESSAGE("My name is %1 %2."), "John", "Doe");
+
+  You can do inline value formatting like this (hint format() is a StringOutputStream):
+
+  String result = Format::subst(
+    MESSAGE("My value is %1."),
+    format() << HEX << myValue, format() << ZEROPAD << setWidth(8) << 5432
+  );
+
+  You can also reuse to format object as a shorthand because each argument triggers automatic restart of the stream.
+  format f;
+  String result = Format::subst(
+    MESSAGE("My value is %1 and %2."),
+    f << HEX << myValue,
+    f << ZEROPAD << setWidth(8) << 5432
+  );
 */
 
 class _COM_AZURE_DEV__BASE__API Format {

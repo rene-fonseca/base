@@ -31,6 +31,12 @@ void StringOutputStreamWrapper::flush() throw(IOException)
   bassert(!closed, IOException("Output stream is closed", this));
 }
 
+void StringOutputStreamWrapper::restart()
+{
+  closed = false;
+  string.clear();
+}
+
 unsigned int StringOutputStreamWrapper::write(
   const uint8* buffer,
   unsigned int size,
@@ -48,6 +54,7 @@ unsigned int StringOutputStreamWrapper::write(
 StringOutputStream::StringOutputStream() throw(BindException) :
   FormatOutputStream(stream)
 {
+  stream.ensureCapacity(1024);
   stream.setGranularity(DEFAULT_GRANULARITY);
 }
 
@@ -55,6 +62,7 @@ StringOutputStream::StringOutputStream(
   unsigned int granularity) throw(BindException)
   : FormatOutputStream(stream)
 {
+  stream.ensureCapacity(1024);
   stream.setGranularity(granularity);
 }
 
@@ -76,6 +84,14 @@ void StringOutputStream::setGranularity(unsigned int granularity) throw()
 const String& StringOutputStream::getString() const noexcept
 {
   return stream.getString();
+}
+
+String StringOutputStream::toString() noexcept
+{
+  flush();
+  String result = stream.getString().copy(); // we want to preserve ownership in stream
+  stream.restart();
+  return result;
 }
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

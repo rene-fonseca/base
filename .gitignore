@@ -1,5 +1,7 @@
 generated/
 build/
+Debug/
+Release/
 base.build/
 *.xcodeproj/
 CMakeFiles/

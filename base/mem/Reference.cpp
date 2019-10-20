@@ -13,8 +13,8 @@
 
 #include <base/mem/Reference.h>
 
-_COM_AZURE_DEV__BASE__DUMMY_SYMBOL
-
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
+
+template class Reference<ReferenceCountedObject>;
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

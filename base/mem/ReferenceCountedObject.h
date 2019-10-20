@@ -68,21 +68,23 @@ public:
     
     /** The reference counted object. */
     const ReferenceCountedObject& object;
-    ReferenceImpl(const ReferenceImpl&) throw();
-    ReferenceImpl& operator=(const ReferenceImpl& eq) throw();
+    ReferenceImpl(const ReferenceImpl&) noexcept;
+    ReferenceImpl& operator=(const ReferenceImpl& eq) noexcept;
   public:
     
     /**
       Initializes reference to object.
     */
-    inline ReferenceImpl(const ReferenceCountedObject& _object) throw()
-      : object(_object) {
+    inline ReferenceImpl(const ReferenceCountedObject& _object) noexcept
+      : object(_object)
+    {
     }
     
     /**
       Adds one reference to the object.
     */
-    inline void addReference() const throw() {
+    inline void addReference() const noexcept
+    {
       ++object.references;
     }
     
@@ -92,21 +94,24 @@ public:
       
       @return True if all references have been released.
     */
-    inline bool removeReference() const throw() {
+    inline bool removeReference() const noexcept
+    {
       return --object.references == 0;
     }
 
     /**
       Returns the number of references. Avoid this.
     */
-    inline MemorySize getNumberOfReferences() const throw() {
+    inline MemorySize getNumberOfReferences() const noexcept
+    {
       return object.references;
     }
 
     /**
       Returns true if the object has multiple references.
     */
-    inline bool isMultiReferenced() const throw() {
+    inline bool isMultiReferenced() const noexcept
+    {
       return object.references > 1;
     }
   };
@@ -114,7 +119,7 @@ public:
   /**
     Initializes reference counted object with zero references.
   */
-  inline ReferenceCountedObject() throw()
+  inline ReferenceCountedObject() noexcept
     : references(0)
   {
   }
@@ -125,7 +130,7 @@ public:
     copy constructor but makes sense since a new object cannot have any
     references.
   */
-  inline ReferenceCountedObject(const ReferenceCountedObject& copy) throw()
+  inline ReferenceCountedObject(const ReferenceCountedObject& copy) noexcept
     : references(0) {
     // do not copy state
   }
@@ -136,7 +141,7 @@ public:
     the assignment doesn't influence the number of Reference objects that point
     to this object.
   */
-  inline ReferenceCountedObject& operator=(const ReferenceCountedObject& copy) throw()
+  inline ReferenceCountedObject& operator=(const ReferenceCountedObject& copy) noexcept
   {
     // do not copy state
     return *this;
@@ -145,7 +150,7 @@ public:
   /**
     Returns the number of references. Avoid this.
   */
-  inline MemorySize getNumberOfReferences_INTERNAL() const throw()
+  inline MemorySize getNumberOfReferences_INTERNAL() const noexcept
   {
     return references;
   }

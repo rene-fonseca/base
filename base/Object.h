@@ -33,19 +33,22 @@ private:
 #endif
 
   /* Disable the default copy constructor. */
-  Object(const Object& copy) throw();
+  Object(const Object& copy) noexcept;
   /* Disable the default assignment operator. */
-  Object& operator=(const Object& eq) throw();
+  Object& operator=(const Object& eq) noexcept;
 public:
 
   /**
     Initializes object.
   */
 #if defined(_COM_AZURE_DEV__BASE__DEBUG)
-  inline Object() throw() : objectId(Debug::allocateUniqueId()) {
+  inline Object() noexcept
+    : objectId(Debug::allocateUniqueId())
+  {
   }
 #else
-  inline Object() throw() {
+  inline Object() noexcept
+  {
   }
 #endif
 };

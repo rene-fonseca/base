@@ -46,7 +46,8 @@ public:
   /**
     Initializes an automation pointer as invalid (i.e. nullptr).
   */
-  inline Reference() throw() {
+  inline Reference() noexcept
+  {
   }
 
   /**
@@ -59,7 +60,9 @@ public:
     
     @param value The desired pointer value.
   */
-  inline Reference(TYPE* _value) throw() : value(_value) {
+  inline Reference(TYPE* _value) noexcept
+    : value(_value)
+  {
     if (value) {
       ReferenceCountedObject::ReferenceImpl(*value).addReference();
     }
@@ -68,7 +71,9 @@ public:
   /**
     Initialization of automation pointer from other automation pointer.
   */
-  inline Reference(const Reference& copy) throw() : value(copy.value) {
+  inline Reference(const Reference& copy) noexcept
+    : value(copy.value)
+  {
     if (value) {
       ReferenceCountedObject::ReferenceImpl(*value).addReference();
     }
@@ -79,7 +84,7 @@ public:
     compile time polymorphism.
   */
   template<class POLY>
-  inline Reference(const Reference<POLY>& copy) throw()
+  inline Reference(const Reference<POLY>& copy) noexcept
     : value(copy.getValue()) {
     if (value) {
       ReferenceCountedObject::ReferenceImpl(*value).addReference();
@@ -90,25 +95,37 @@ public:
     Returns true if the object may be cast to the specified type.
   */
   template<class POLY>
-  inline bool isType() const throw() {
+  inline bool isType() const noexcept
+  {
     return dynamic_cast<const POLY*>(value);
   }
-  
+
   /**
     Dynamic cast to the specified type. Raises CastException if the reference
     is invalid or the reference cannot be cast to the specified type.
   */
   template<class POLY>
-  inline Reference<POLY> cast() const throw(CastException) {
+  inline Reference<POLY> castChecked() const throw(CastException)
+  {
     POLY* temp = dynamic_cast<POLY*>(value);
     bassert(temp, CastException(this));
     return temp;
   }
 
   /**
+    Dynamic cast to the specified type.
+  */
+  template<class POLY>
+  inline Reference<POLY> cast() const noexcept
+  {
+    return dynamic_cast<POLY*>(value);
+  }
+
+  /**
     Assignment of automation pointer to this automation pointer.
   */
-  inline Reference& operator=(const Reference& eq) {
+  inline Reference& operator=(const Reference& eq)
+  {
     setValue(eq.value); // no need to protect against self assignment
     return *this;
   }
@@ -118,7 +135,8 @@ public:
     time polymorphism.
   */
   template<class POLY>
-  inline Reference& operator=(const Reference<POLY>& eq) {
+  inline Reference& operator=(const Reference<POLY>& eq)
+  {
     setValue(eq.getValue()); // no need to protect against self assignment
     return *this;
   }
@@ -126,7 +144,8 @@ public:
   /**
     Assignment of normal pointer to this automation pointer.
   */
-  inline Reference& operator=(TYPE* eq) throw() {
+  inline Reference& operator=(TYPE* eq)
+  {
     setValue(eq);
     return *this;
   }
@@ -134,14 +153,16 @@ public:
   /**
     Returns true if the references are equal.
   */
-  inline bool operator==(const Reference& eq) const throw() {
+  inline bool operator==(const Reference& eq) const noexcept
+  {
     return value == eq.value;
   }
 
   /**
     Returns true if the references are non-equal.
   */
-  inline bool operator!=(const Reference& eq) const throw() {
+  inline bool operator!=(const Reference& eq) const noexcept
+  {
     return value != eq.value;
   }
   
@@ -151,23 +172,26 @@ public:
     the reference counting rules aren't violated. Invocation of this method
     should be avoided.
   */
-  inline TYPE* getValue() const throw() {
+  inline TYPE* getValue() const noexcept
+  {
     return value;
   }
   
   /**
     Sets the pointer value of this automation pointer.
   */
-  inline void setValue(TYPE* _value) {
+  inline void setValue(TYPE* _value)
+  {
     if (_value) { // skip if pointer is invalid
       ReferenceCountedObject::ReferenceImpl(*_value).addReference();
     }
-    if (value) { // skip if pointer is invalid
-      if (ReferenceCountedObject::ReferenceImpl(*value).removeReference()) {
-        delete value;
+    TYPE* oldValue = value;
+    value = _value;
+    if (oldValue) { // skip if pointer is invalid
+      if (ReferenceCountedObject::ReferenceImpl(*oldValue).removeReference()) {
+        delete oldValue; // could throw
       }
     }
-    value = _value;
   }
 
   /**
@@ -176,9 +200,16 @@ public:
 
     @return False if the pointer is invalid (i.e. not pointing to an object).
   */
-  inline bool isMultiReferenced() const throw() {
+  inline bool isMultiReferenced() const noexcept
+  {
     return value &&
       ReferenceCountedObject::ReferenceImpl(*value).isMultiReferenced();
+  }
+
+  /** Returns the number of references. Returns 0 if pointer is nullptr. */
+  inline MemorySize getNumberOfReferences() const noexcept
+  {
+    return value ? ReferenceCountedObject::ReferenceImpl(*value).getNumberOfReferences() : 0;
   }
 
   /**
@@ -187,33 +218,27 @@ public:
     before a object is modified. The reference counted object must implement
     the default copy constructor for this to work.
   */
-  inline void copyOnWrite() {
+  inline void copyOnWrite()
+  {
     if (isMultiReferenced()) { // do we have the object for our self
-      // remove one reference (no need to delete object since multi-referenced)
-      TYPE* temp = new TYPE(*value);
-      ReferenceCountedObject::ReferenceImpl(*temp).addReference();
-      ReferenceCountedObject::ReferenceImpl(*value).removeReference();
-      value = temp;
+      setValue(new TYPE(*value)); // may throw
     }
   }
 
   /**
     Invalidates the reference.
   */
-  inline void invalidate() {
-    if (value) { // skip if pointer is invalid
-      if (ReferenceCountedObject::ReferenceImpl(*value).removeReference()) {
-        delete value;
-      }
-    }
-    value = nullptr;
+  inline void invalidate()
+  {
+    setValue(nullptr);
   }
   
   /**
     Returns true if the automation pointer is valid (i.e. it is pointing to an
     object).
   */
-  inline bool isValid() const throw() {
+  inline bool isValid() const noexcept
+  {
     return value != nullptr;
   }
 
@@ -222,7 +247,8 @@ public:
     
     @deprecated
   */
-  inline TYPE& operator*() throw(NullPointer) {
+  inline TYPE& operator*() throw(NullPointer)
+  {
     if (!value) {
       throw NullPointer(this);
     }
@@ -234,7 +260,8 @@ public:
 
     @deprecated
   */
-  inline const TYPE& operator*() const throw(NullPointer) {
+  inline const TYPE& operator*() const throw(NullPointer)
+  {
     if (!value) {
       throw NullPointer(this);
     }
@@ -244,14 +271,16 @@ public:
   /**
     Returns the reference counted object.
   */
-  inline TYPE* operator->() throw() {
+  inline TYPE* operator->() noexcept
+  {
     return value;
   }
   
   /**
     Returns the reference counted object.
   */
-  inline const TYPE* operator->() const throw() {
+  inline const TYPE* operator->() const noexcept
+  {
     return value;
   }
 
@@ -259,19 +288,17 @@ public:
     Returns true if the automation pointer is valid (i.e. it is pointing to an
     object).
   */
-  inline operator bool() const throw() {
-    return value;
+  inline operator bool() const noexcept
+  {
+    return value != nullptr;
   }
   
   /**
     Destroys the automation pointer.
   */
-  inline ~Reference() {
-    if (value) { // skip if pointer is invalid
-      if (ReferenceCountedObject::ReferenceImpl(*value).removeReference()) {
-        delete value;
-      }
-    }
+  inline ~Reference()
+  {
+    setValue(nullptr);
   }
 };
 
@@ -289,7 +316,8 @@ template<class TYPE>
 class Hash<Reference<TYPE> > {
 public:
 
-  inline unsigned long operator()(const Reference<TYPE>& value) throw() {
+  inline unsigned long operator()(const Reference<TYPE>& value) noexcept
+  {
     Hash<void*> hash;
     return hash(value.getValue());
   }

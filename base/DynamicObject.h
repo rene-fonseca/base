@@ -40,13 +40,13 @@ public:
   /**
     Initializes the object.
   */
-  inline DynamicObject() throw() {
+  inline DynamicObject() noexcept {
   }
 
   /**
     Returns true if the object is valid.
   */
-  bool isValidObject() const throw();
+  bool isValidObject() const noexcept;
 
   /**
     Destroys the object.

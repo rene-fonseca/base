@@ -15,7 +15,7 @@
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
-bool DynamicObject::isValidObject() const throw()
+bool DynamicObject::isValidObject() const noexcept
 {
   const void* _this = this;
 #if defined(_COM_AZURE_DEV__BASE__DEBUG)

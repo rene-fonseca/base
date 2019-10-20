@@ -200,8 +200,8 @@ public:
       : method(_method), value(_value) {
     }
     
-    inline FormatOutputStream& operator()(
-      FormatOutputStream& stream) {
+    inline FormatOutputStream& operator()(FormatOutputStream& stream) const
+    {
       return (stream.*method)(value);
     }
   };
@@ -748,77 +748,69 @@ FormatOutputStream& operator<<(
 
 
 /** Sets the desired width of the field. */
-inline FormatOutputStream::Manipulator setWidth(unsigned int width) throw() {
+inline FormatOutputStream::Manipulator setWidth(unsigned int width) noexcept
+{
   return FormatOutputStream::Manipulator(&FormatOutputStream::setWidth, width);
 }
 
 /**
   Sets the desired number of digits after the decimal-point for real numbers.
 */
-inline FormatOutputStream::Manipulator setPrecision(
-  unsigned int precision) throw() {
-  return FormatOutputStream::Manipulator(
-    &FormatOutputStream::setPrecision,
-    precision
-  );
+inline FormatOutputStream::Manipulator setPrecision(unsigned int precision) noexcept
+{
+  return FormatOutputStream::Manipulator(&FormatOutputStream::setPrecision, precision);
 }
 
 /**
   Sets the desired position of the radix (and sets the justification to
   Symbols::RADIX).
 */
-inline FormatOutputStream::Manipulator setRadixPosition(
-  unsigned int position) throw() {
-  return FormatOutputStream::Manipulator(
-    &FormatOutputStream::setRadixPosition,
-    position
-  );
+inline FormatOutputStream::Manipulator setRadixPosition(unsigned int position) noexcept
+{
+  return FormatOutputStream::Manipulator(&FormatOutputStream::setRadixPosition, position);
 }
 
 /** Sets the desired date format. */
-inline FormatOutputStream::StringManipulator setDateFormat(
-  const String& format) throw() {
-  return FormatOutputStream::StringManipulator(
-    &FormatOutputStream::setDateFormat,
-    format
-  );
+inline FormatOutputStream::StringManipulator setDateFormat(const String& format) noexcept
+{
+  return FormatOutputStream::StringManipulator(&FormatOutputStream::setDateFormat, format);
 }
 
 
 
 inline FormatOutputStream& operator<<(
   FormatOutputStream& stream,
-  FormatOutputStream::Manipulator manipulator) throw(IOException) {
+  FormatOutputStream::Manipulator manipulator) throw(IOException)
+{
   return manipulator(stream);
 }
 
 inline FormatOutputStream& operator<<(
   FormatOutputStream& stream,
-  FormatOutputStream::StringManipulator manipulator) throw(IOException) {
+  FormatOutputStream::StringManipulator manipulator) throw(IOException)
+{
   return manipulator(stream);
 }
 
 /** Restores the context of the stream. */
-inline FormatOutputStream::SetContext setContext(
-  const FormatOutputStream::Context& context) throw() {
+inline FormatOutputStream::SetContext setContext(const FormatOutputStream::Context& context) noexcept
+{
   return FormatOutputStream::SetContext(context);
 }
 
 /** Stores the context of the stream. */
-inline FormatOutputStream::GetContext getContext(
-  FormatOutputStream::Context& context) throw() {
+inline FormatOutputStream::GetContext getContext(FormatOutputStream::Context& context) noexcept
+{
   return FormatOutputStream::GetContext(context);
 }
 
-inline FormatOutputStream& operator<<(
-  FormatOutputStream& stream,
-  FormatOutputStream::SetContext setContext) throw() {
+inline FormatOutputStream& operator<<(FormatOutputStream& stream, FormatOutputStream::SetContext setContext) noexcept
+{
   return setContext(stream);
 }
 
-inline FormatOutputStream& operator<<(
-  FormatOutputStream& stream,
-  FormatOutputStream::GetContext getContext) throw() {
+inline FormatOutputStream& operator<<(FormatOutputStream& stream, FormatOutputStream::GetContext getContext) noexcept
+{
   return getContext(stream);
 }
 

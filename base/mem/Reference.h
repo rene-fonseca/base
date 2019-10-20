@@ -92,7 +92,8 @@ public:
   */
   template<class POLY>
   inline Reference(const Reference<POLY>& copy) noexcept
-    : value(copy.getValue()) {
+    : value(copy.getValue())
+  {
     if (value) {
       ReferenceCountedObject::ReferenceImpl(*value).addReference();
     }

@@ -880,6 +880,18 @@ public:
 
   /** Copy data to given destination which must have room for entire memory span. */
   uint8* copyTo(uint8* dest) const noexcept;
+
+  /** Copy data to given destination. */
+  inline char* copyTo(char* dest, const uint8* end) const noexcept
+  {
+    return reinterpret_cast<char*>(copyTo(reinterpret_cast<uint8*>(dest), reinterpret_cast<const uint8*>(end)));
+  }
+
+  /** Copy data to given destination which must have room for entire memory span. */
+  inline char* copyTo(char* dest) const noexcept
+  {
+    return reinterpret_cast<char*>(copyTo(reinterpret_cast<uint8*>(dest)));
+  }
 };
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

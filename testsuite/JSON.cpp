@@ -225,4 +225,4 @@ public:
   }
 };
 
-STUB(JSONApplication);
+APPLICATION_STUB(JSONApplication);

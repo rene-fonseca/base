@@ -75,4 +75,4 @@ public:
   }
 };
 
-STUB(DebugApplication);
+APPLICATION_STUB(DebugApplication);

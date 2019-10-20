@@ -576,4 +576,4 @@ public:
   }
 };
 
-STUB(CompressApplication);
+APPLICATION_STUB(CompressApplication);

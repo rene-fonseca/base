@@ -92,4 +92,4 @@ public:
 
 };
 
-STUB(DumpApplication);
+APPLICATION_STUB(DumpApplication);

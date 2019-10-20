@@ -856,4 +856,4 @@ public:
   }
 };
 
-STUB(HTTPApplication);
+APPLICATION_STUB(HTTPApplication);

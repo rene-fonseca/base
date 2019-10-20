@@ -273,4 +273,4 @@ public:
   }
 };
 
-STUB(PingApplication);
+APPLICATION_STUB(PingApplication);

@@ -107,4 +107,4 @@ public:
   
 };
 
-STUB(TimeApplication);
+APPLICATION_STUB(TimeApplication);

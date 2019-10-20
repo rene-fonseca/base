@@ -52,4 +52,4 @@ public:
   }
 };
 
-STUB(PixmapApplication);
+APPLICATION_STUB(PixmapApplication);

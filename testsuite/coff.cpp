@@ -1196,4 +1196,4 @@ _COM_AZURE_DEV__BASE__PACKED__END
   }
 };
 
-STUB(COFFApplication);
+APPLICATION_STUB(COFFApplication);

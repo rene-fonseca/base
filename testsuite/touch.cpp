@@ -70,4 +70,4 @@ public:
   }
 };
 
-STUB(TouchApplication);
+APPLICATION_STUB(TouchApplication);

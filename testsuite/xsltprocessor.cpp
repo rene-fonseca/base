@@ -105,4 +105,4 @@ public:
   }
 };
 
-STUB(XSLTProcessorApplication);
+APPLICATION_STUB(XSLTProcessorApplication);

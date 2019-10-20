@@ -238,4 +238,4 @@ public:
   }
 };
 
-STUB(FileTypeApplication);
+APPLICATION_STUB(FileTypeApplication);

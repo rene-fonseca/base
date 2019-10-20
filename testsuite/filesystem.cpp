@@ -285,4 +285,4 @@ public:
   }
 };
 
-STUB(FileSystemApplication);
+APPLICATION_STUB(FileSystemApplication);

@@ -93,4 +93,4 @@ public:
   }
 };
 
-STUB(AesApplication);
+APPLICATION_STUB(AesApplication);

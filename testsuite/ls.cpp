@@ -415,4 +415,4 @@ public:
   }
 };
 
-STUB(ListApplication);
+APPLICATION_STUB(ListApplication);

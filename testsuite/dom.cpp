@@ -279,4 +279,4 @@ public:
   }
 };
 
-STUB(DOMApplication);
+APPLICATION_STUB(DOMApplication);

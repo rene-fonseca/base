@@ -107,4 +107,4 @@ public:
   }
 };
 
-STUB(HashSetApplication);
+APPLICATION_STUB(HashSetApplication);

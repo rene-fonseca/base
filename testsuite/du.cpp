@@ -217,4 +217,4 @@ public:
   }
 };
 
-STUB(SpaceApplication);
+APPLICATION_STUB(SpaceApplication);

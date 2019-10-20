@@ -63,4 +63,4 @@ public:
   }
 };
 
-STUB(DaemonApplication);
+APPLICATION_STUB(DaemonApplication);

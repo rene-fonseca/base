@@ -80,4 +80,4 @@ public:
   }
 };
 
-STUB(BitSetApplication);
+APPLICATION_STUB(BitSetApplication);

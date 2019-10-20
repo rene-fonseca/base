@@ -41,4 +41,4 @@ public:
   }
 };
 
-STUB(VersionApplication);
+APPLICATION_STUB(VersionApplication);

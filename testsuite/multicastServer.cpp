@@ -185,4 +185,4 @@ public:
   }
 };
 
-STUB(MulticastServerApplication);
+APPLICATION_STUB(MulticastServerApplication);

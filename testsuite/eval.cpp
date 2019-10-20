@@ -523,4 +523,4 @@ EvaluateApplication::DOUBLE_ARGUMENT_FUNCTIONS[FUNCTION_ATAN2 - FUNCTION_HYPOT +
   {MESSAGE("atan2"), FUNCTION_ATAN2}
 };
 
-STUB(EvaluateApplication);
+APPLICATION_STUB(EvaluateApplication);

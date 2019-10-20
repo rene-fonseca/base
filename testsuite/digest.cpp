@@ -267,4 +267,4 @@ public:
   }
 };
 
-STUB(DigestApplication);
+APPLICATION_STUB(DigestApplication);

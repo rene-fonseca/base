@@ -115,4 +115,4 @@ public:
   }
 };
 
-STUB(ObjectModelApplication);
+APPLICATION_STUB(ObjectModelApplication);

@@ -239,4 +239,4 @@ public:
   }
 };
 
-STUB(EchoServiceApplication);
+APPLICATION_STUB(EchoServiceApplication);

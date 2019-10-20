@@ -71,4 +71,4 @@ public:
   }
 };
 
-STUB(StackApplication);
+APPLICATION_STUB(StackApplication);

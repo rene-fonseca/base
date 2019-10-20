@@ -83,4 +83,4 @@ public:
   }
 };
 
-STUB(MapApplication);
+APPLICATION_STUB(MapApplication);

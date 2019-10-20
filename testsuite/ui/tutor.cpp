@@ -199,4 +199,4 @@ public:
   }
 };
 
-STUB(TorusApplication);
+APPLICATION_STUB(TorusApplication);

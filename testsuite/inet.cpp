@@ -136,4 +136,4 @@ public:
   }
 };
 
-STUB(InetApplication);
+APPLICATION_STUB(InetApplication);

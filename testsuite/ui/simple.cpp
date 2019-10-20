@@ -256,4 +256,4 @@ public:
   }
 };
 
-STUB(WindowApplication);
+APPLICATION_STUB(WindowApplication);

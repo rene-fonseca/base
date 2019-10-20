@@ -1226,4 +1226,4 @@ public:
   }
 };
 
-STUB(OpenGLApplication);
+APPLICATION_STUB(OpenGLApplication);

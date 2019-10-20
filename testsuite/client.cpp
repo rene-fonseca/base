@@ -134,4 +134,4 @@ public:
   }
 };
 
-STUB(ClientApplication);
+APPLICATION_STUB(ClientApplication);

@@ -68,4 +68,4 @@ public:
   }
 };
 
-STUB(SetApplication);
+APPLICATION_STUB(SetApplication);

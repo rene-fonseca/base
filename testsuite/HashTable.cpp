@@ -118,4 +118,4 @@ public:
   }
 };
 
-STUB(HashTableApplication);
+APPLICATION_STUB(HashTableApplication);

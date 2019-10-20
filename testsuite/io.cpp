@@ -163,4 +163,4 @@ public:
   }
 };
 
-STUB(IOApplication);
+APPLICATION_STUB(IOApplication);

@@ -323,4 +323,4 @@ public:
   }
 };
 
-STUB(FileInputApplication);
+APPLICATION_STUB(FileInputApplication);

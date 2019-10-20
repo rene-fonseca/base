@@ -251,4 +251,4 @@ public:
   }
 };
 
-STUB(ElfInfoApplication);
+APPLICATION_STUB(ElfInfoApplication);

@@ -154,4 +154,4 @@ public:
   }
 };
 
-STUB(CalendarApplication);
+APPLICATION_STUB(CalendarApplication);

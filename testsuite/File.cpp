@@ -228,4 +228,4 @@ public:
   }
 };
 
-STUB(FileApplication);
+APPLICATION_STUB(FileApplication);

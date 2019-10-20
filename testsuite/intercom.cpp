@@ -510,4 +510,4 @@ public:
   }
 };
 
-STUB(IntercomApplication);
+APPLICATION_STUB(IntercomApplication);

@@ -54,4 +54,4 @@ public:
   
 };
 
-STUB(SerialPortApplication);
+APPLICATION_STUB(SerialPortApplication);

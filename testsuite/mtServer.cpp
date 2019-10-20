@@ -257,4 +257,4 @@ public:
   }
 };
 
-STUB(MTServerApplication);
+APPLICATION_STUB(MTServerApplication);

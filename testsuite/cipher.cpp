@@ -469,4 +469,4 @@ public:
   }
 };
 
-STUB(CipherApplication);
+APPLICATION_STUB(CipherApplication);

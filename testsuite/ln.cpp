@@ -86,4 +86,4 @@ public:
   }
 };
 
-STUB(LinkApplication);
+APPLICATION_STUB(LinkApplication);

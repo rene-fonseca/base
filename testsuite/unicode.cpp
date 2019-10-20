@@ -917,4 +917,4 @@ public:
   }
 };
 
-STUB(UnicodeApplication);
+APPLICATION_STUB(UnicodeApplication);

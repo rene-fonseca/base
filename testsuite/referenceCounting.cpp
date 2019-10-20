@@ -177,4 +177,4 @@ initialization - should not compile
   }
 };
 
-STUB(ReferenceCountingApplication);
+APPLICATION_STUB(ReferenceCountingApplication);

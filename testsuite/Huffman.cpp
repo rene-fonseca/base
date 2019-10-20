@@ -192,4 +192,4 @@ public:
   
 };
 
-STUB(HuffmanApplication);
+APPLICATION_STUB(HuffmanApplication);

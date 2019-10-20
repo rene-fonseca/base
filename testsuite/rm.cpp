@@ -208,4 +208,4 @@ public:
   }
 };
 
-STUB(RemoveApplication);
+APPLICATION_STUB(RemoveApplication);

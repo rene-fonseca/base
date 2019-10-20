@@ -676,4 +676,4 @@ public:
   }
 };
 
-STUB(IEEE1394Application);
+APPLICATION_STUB(IEEE1394Application);

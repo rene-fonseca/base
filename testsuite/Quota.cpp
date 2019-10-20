@@ -59,4 +59,4 @@ public:
   }
 };
 
-STUB(QuotaApplication);
+APPLICATION_STUB(QuotaApplication);

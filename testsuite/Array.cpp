@@ -98,4 +98,4 @@ public:
   }
 };
 
-STUB(ArrayApplication);
+APPLICATION_STUB(ArrayApplication);

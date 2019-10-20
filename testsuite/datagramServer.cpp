@@ -145,4 +145,4 @@ public:
   }
 };
 
-STUB(DatagramServerApplication);
+APPLICATION_STUB(DatagramServerApplication);

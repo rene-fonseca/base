@@ -289,4 +289,4 @@ public:
   }
 };
 
-STUB(CopyApplication);
+APPLICATION_STUB(CopyApplication);

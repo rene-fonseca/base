@@ -115,4 +115,4 @@ public:
   }
 };
 
-STUB(ProcessApplication);
+APPLICATION_STUB(ProcessApplication);

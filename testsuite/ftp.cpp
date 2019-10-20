@@ -925,4 +925,4 @@ public:
   }
 };
 
-STUB(FTPApplication);
+APPLICATION_STUB(FTPApplication);

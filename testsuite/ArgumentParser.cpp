@@ -94,4 +94,4 @@ public:
   }
 };
 
-STUB(ArgumentApplication);
+APPLICATION_STUB(ArgumentApplication);

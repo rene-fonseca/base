@@ -171,4 +171,4 @@ public:
   }
 };
 
-STUB(ExceptionApplication);
+APPLICATION_STUB(ExceptionApplication);

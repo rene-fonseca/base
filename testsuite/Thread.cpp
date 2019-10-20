@@ -84,4 +84,4 @@ public:
 
 };
 
-STUB(ThreadApplication);
+APPLICATION_STUB(ThreadApplication);

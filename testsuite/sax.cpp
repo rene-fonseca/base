@@ -1367,4 +1367,4 @@ public:
   }
 };
 
-STUB(SAXApplication);
+APPLICATION_STUB(SAXApplication);

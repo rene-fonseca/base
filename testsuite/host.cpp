@@ -128,4 +128,4 @@ public:
   }    
 };
 
-STUB(HostApplication);
+APPLICATION_STUB(HostApplication);

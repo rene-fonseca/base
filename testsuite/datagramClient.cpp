@@ -155,4 +155,4 @@ public:
   }
 };
 
-STUB(DatagramClientApplication);
+APPLICATION_STUB(DatagramClientApplication);

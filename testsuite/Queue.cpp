@@ -67,4 +67,4 @@ public:
   }
 };
 
-STUB(QueueApplication);
+APPLICATION_STUB(QueueApplication);

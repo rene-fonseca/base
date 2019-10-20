@@ -176,4 +176,4 @@ public:
   }
 };
 
-STUB(DemangleApplication);
+APPLICATION_STUB(DemangleApplication);

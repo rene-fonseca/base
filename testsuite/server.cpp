@@ -186,4 +186,4 @@ public:
   }
 };
 
-STUB(ServerApplication);
+APPLICATION_STUB(ServerApplication);

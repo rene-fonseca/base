@@ -114,4 +114,4 @@ public:
   }
 };
 
-STUB(FloatingPointApplication);
+APPLICATION_STUB(FloatingPointApplication);

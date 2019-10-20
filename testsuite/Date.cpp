@@ -121,4 +121,4 @@ public:
   }
 };
 
-STUB(DateApplication);
+APPLICATION_STUB(DateApplication);

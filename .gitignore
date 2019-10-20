@@ -1,7 +1,7 @@
 generated/
 build/
 base.build/
-base.xcodeproj/
+*.xcodeproj/
 CMakeFiles/
 CMakeScripts/
 CMakeCache.txt

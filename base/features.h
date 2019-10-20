@@ -158,7 +158,7 @@ namespace com {
 #    define ASSERT(expression)
 #  endif
 #  if (!defined(INLINE_ASSERT))
-#    define INLINE_ASSERT(expression)
+#    define INLINE_ASSERT(expression) (expression)
 #  endif
 #  if (!defined(BASSERTION))
 #    define BASSERTION(expression)

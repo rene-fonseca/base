@@ -36,7 +36,7 @@ private:
   unsigned int id;
 public:
 
-  CommunicationThread(unsigned int _id) throw() : id(_id) {
+  CommunicationThread(unsigned int _id) : id(_id) {
   }
 
   void run() throw(IOException) {
@@ -108,7 +108,7 @@ private:
   Thread context;
 public:
 
-  ContextBinder(unsigned int id) throw()
+  ContextBinder(unsigned int id)
     : runnable(id), context(&runnable) {
   }
 
@@ -116,7 +116,7 @@ public:
     context.start();
   }
 
-  ~ContextBinder() throw() {
+  ~ContextBinder() {
     context.terminate(); // ask context to terminate
     context.join(); // wait for context to complete
   }
@@ -131,7 +131,7 @@ private:
   static const unsigned int MINOR_VERSION = 0;
 public:
 
-  MTServerApplication(int argc, const char* argv[], const char* env[]) throw()
+  MTServerApplication(int argc, const char* argv[], const char* env[])
     : Application("mtServer", argc, argv, env) {
   }
   

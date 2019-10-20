@@ -55,7 +55,7 @@ public:
   ListApplication(
     int numberOfArguments,
     const char* arguments[],
-    const char* environment[]) throw()
+    const char* environment[])
     : Application("ls", numberOfArguments, arguments, environment) {
     
     currentYear = Date::getNow().getYear();
@@ -67,14 +67,14 @@ public:
     path = MESSAGE(".");
   }
   
-  inline String getTime(const Date& date) const throw() {
+  inline String getTime(const Date& date) const {
     return date.format(
       (date.getYear() == currentYear) ? thisYearFormat : otherYearFormat,
       true
     );
   }
   
-  void parseArguments() throw() {
+  void parseArguments() {
     bool pathSpecified = false;
     
     Array<String> arguments = getArguments();
@@ -107,7 +107,7 @@ public:
     }
   }
 
-  void version() throw() {
+  void version() {
     fout << getFormalName() << " version "
          << MAJOR_VERSION << '.' << MINOR_VERSION << EOL
          << "The Base Framework (Test Suite)" << EOL
@@ -115,7 +115,7 @@ public:
          << ENDL;
   }
   
-  void help() throw() {
+  void help() {
     version();
     fout << "Usage: " << getFormalName() << " [options] [path]" << EOL
          << EOL
@@ -129,7 +129,7 @@ public:
          << ENDL;
   }
 
-  void list() throw() {
+  void list() {
     if (!FileSystem::folderExists(path)) {
       ferr << "Error: " << "Path does not exist" << ENDL;
       setExitCode(EXIT_CODE_ERROR);

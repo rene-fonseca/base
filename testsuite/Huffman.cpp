@@ -40,7 +40,7 @@ public:
   HuffmanApplication(
     int numberOfArguments,
     const char* arguments[],
-    const char* environment[]) throw()
+    const char* environment[])
     : Application("Huffman", numberOfArguments, arguments, environment) {
   }
 

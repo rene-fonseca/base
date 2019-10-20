@@ -102,7 +102,7 @@ public:
   JSONApplication(
     int numberOfArguments,
     const char* arguments[],
-    const char* environment[]) throw()
+    const char* environment[])
     : Application("JSON", numberOfArguments, arguments, environment) {
   }
   

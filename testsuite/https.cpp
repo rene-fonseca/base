@@ -89,7 +89,7 @@ public:
   inline HTTPException(const char* message) : IOException(message) {
   }
   
-  inline bool isPermanent() throw() {
+  inline bool isPermanent() {
     return permanent;
   }
 };
@@ -102,17 +102,17 @@ public:
 
   static const char SP = ' ';
   
-  static inline bool isLWS(char value) throw() {
+  static inline bool isLWS(char value) {
     return (value == ' ') || (value == '\t');
   }
 
-  static inline bool isText(char value) throw() {
+  static inline bool isText(char value) {
     // TAG: RFC states that non-ASCII chars should be accepted! - I ignore this for now
     return ASCIITraits::isASCII(value) &&
       ((value == ' ') || (value == '\t') || !ASCIITraits::isControl(value));
   }
 
-  static inline bool isSeparator(char value) throw() {
+  static inline bool isSeparator(char value) {
     switch (value) {
     case '\t': case ' ':
     case '(': case ')': case '<': case '>': case '@': case ',': case ';': case ':':
@@ -122,7 +122,7 @@ public:
     return false;
   }
 
-  static inline bool isToken(char value) throw() {
+  static inline bool isToken(char value) {
     return ASCIITraits::isASCII(value) &&
       (!ASCIITraits::isControl(value) && !isSeparator(value));
   }
@@ -209,11 +209,11 @@ public:
     this->value = line.substring(value - begin, endValue - begin);
   }
 
-  String getName() const throw() {
+  String getName() const {
     return name;
   }
 
-  String getValue() const throw() {
+  String getValue() const {
     return value;
   }
 };
@@ -221,44 +221,44 @@ public:
 class PushInterface {
 public:
 
-  virtual bool pushBegin(long long totalSize) throw() = 0;
-  virtual unsigned int push(const uint8* buffer, unsigned int size) throw() = 0;
-  virtual void pushEnd() throw() = 0;
+  virtual bool pushBegin(long long totalSize) = 0;
+  virtual unsigned int push(const uint8* buffer, unsigned int size) = 0;
+  virtual void pushEnd() = 0;
 };
 
 class PullInterface {
 public:
 
-  virtual long long pullBegin() const throw() = 0;
-  virtual unsigned int pull(uint8* buffer, unsigned int size) throw() = 0;
+  virtual long long pullBegin() const = 0;
+  virtual unsigned int pull(uint8* buffer, unsigned int size) = 0;
 };
 
 class PushToNothing {
 public:
 
-  bool pushBegin(long long totalSize) throw() {
+  bool pushBegin(long long totalSize) {
     return true;
   }
 
-  unsigned int push(const uint8* buffer, unsigned int size) throw() {
+  unsigned int push(const uint8* buffer, unsigned int size) {
     return size;
   }
 
-  void pushEnd() throw() {
+  void pushEnd() {
   }
 };
 
 class PushToStandardOutput : public virtual Object, public PushInterface {
 public:
 
-  PushToStandardOutput() throw() {
+  PushToStandardOutput() {
   }
 
-  bool pushBegin(long long totalSize) throw() {
+  bool pushBegin(long long totalSize) {
     return true;
   }
 
-  unsigned int push(const uint8* buffer, unsigned int size) throw() {
+  unsigned int push(const uint8* buffer, unsigned int size) {
     for (unsigned int i = 0; i < size;) {
       char ch = *buffer++;
       ++i;
@@ -285,11 +285,11 @@ public:
     return size;
   }
 
-  void pushEnd() throw() {
+  void pushEnd() {
     fout << ENDL;
   }
 
-  virtual ~PushToStandardOutput() throw() {
+  virtual ~PushToStandardOutput() {
   }
 };
 
@@ -303,16 +303,16 @@ private:
   long long totalSize = 0;
 public:
 
-  PushToFile(File _file) throw() : file(_file) {
+  PushToFile(File _file) : file(_file) {
   }
 
-  bool pushBegin(long long totalSize) throw() {
+  bool pushBegin(long long totalSize) {
     this->totalSize = totalSize;
     timer.start();
     return true;
   }
   
-  unsigned int push(const uint8* buffer, unsigned int size) throw() {
+  unsigned int push(const uint8* buffer, unsigned int size) {
     unsigned int result = file.write(buffer, size);
     ASSERT(result == size);
     bytesWritten += size;
@@ -334,12 +334,12 @@ public:
     return size;
   }
   
-  void pushEnd() throw() {
+  void pushEnd() {
     fout << ENDL;
     file.close();
   }
   
-  virtual ~PushToFile() throw() {
+  virtual ~PushToFile() {
   }
 };
 
@@ -647,7 +647,7 @@ protected:
   }
 public:
 
-  static bool isValidString(const String& str) throw() {
+  static bool isValidString(const String& str) {
     if (str.isEmpty()) {
       return false;
     }
@@ -660,7 +660,7 @@ public:
     return true;
   }
 
-  static bool isValidPrintableString(const String& str) throw() {
+  static bool isValidPrintableString(const String& str) {
     if (str.isEmpty()) {
       return false;
     }
@@ -676,7 +676,7 @@ public:
   HypertextTransferProtocolClient(
     const String& _host,
     InetEndPoint _endPoint,
-    Verbosity _verbosity = DEBUG_EXTENDED) throw()
+    Verbosity _verbosity = DEBUG_EXTENDED)
     : host(_host),
       endPoint(_endPoint),
       verbosity(_verbosity),
@@ -685,19 +685,19 @@ public:
       buffer(4096 * 64) {
   }
 
-  unsigned int getRetryDelay() const throw() {
+  unsigned int getRetryDelay() const {
     return retryDelay;
   }
 
-  void setRetryDelay(unsigned int value) throw() {
+  void setRetryDelay(unsigned int value) {
     retryDelay = value;
   }
 
-  unsigned int getRetryAttempts() const throw() {
+  unsigned int getRetryAttempts() const {
     return retryAttempts;
   }
 
-  void setRetryAttempts(unsigned int value) throw() {
+  void setRetryAttempts(unsigned int value) {
     retryAttempts = value;
   }
 
@@ -744,7 +744,7 @@ public:
 class HTTPClient : public Object {
 public:
 
-  HTTPClient(const String& resource, const String& filename) throw() {
+  HTTPClient(const String& resource, const String& filename) {
     Url url(resource, false);
 
     if (url.getScheme().isEmpty()) {
@@ -820,7 +820,7 @@ public:
   HTTPApplication(
     int numberOfArguments,
     const char* arguments[],
-    const char* environment[]) throw()
+    const char* environment[])
     : Application("http", numberOfArguments, arguments, environment) {
   }
   

@@ -23,7 +23,7 @@ private:
   static const unsigned int MINOR_VERSION = 0;
 public:
 
-  MapApplication(int argc, const char* argv[], const char* env[]) throw()
+  MapApplication(int argc, const char* argv[], const char* env[])
     : Application("Map", argc, argv, env) {
   }
   

@@ -48,7 +48,7 @@ public:
   CopyApplication(
     int numberOfArguments,
     const char* arguments[],
-    const char* environment[]) throw()
+    const char* environment[])
     : Application("cp", numberOfArguments, arguments, environment) {
     command = COMMAND_ERROR;
     force = false;
@@ -57,7 +57,7 @@ public:
     statistics = false;
   }
   
-  void parseArguments() throw() {
+  void parseArguments() {
     bool sourceSpecified = false;
     bool destinationSpecified = false;
     
@@ -123,7 +123,7 @@ public:
          << ENDL;
   }
   
-  void help() throw() {
+  void help() {
     version();
     fout << "Usage: " << getFormalName() << " [options] source destination" << EOL
          << EOL

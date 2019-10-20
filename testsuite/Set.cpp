@@ -25,7 +25,7 @@ private:
   static const unsigned int MINOR_VERSION = 0;
 public:
 
-  SetApplication(int argc, const char* argv[], const char* env[]) throw()
+  SetApplication(int argc, const char* argv[], const char* env[])
     : Application("Set", argc, argv, env) {
   }
   

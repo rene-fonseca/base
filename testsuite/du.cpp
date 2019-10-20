@@ -42,7 +42,7 @@ public:
   SpaceApplication(
     int numberOfArguments,
     const char* arguments[],
-    const char* environment[]) throw()
+    const char* environment[])
     : Application("du", numberOfArguments, arguments, environment) {
     showFiles = false;
     showFolders = false;
@@ -51,7 +51,7 @@ public:
     command = COMMAND_SUM;
   }
   
-  void parseArguments() throw() {
+  void parseArguments() {
     Array<String> arguments = getArguments();
     Array<String>::ReadEnumerator enu = arguments.getReadEnumerator();
     while (enu.hasNext()) {
@@ -80,7 +80,7 @@ public:
     }
   }
   
-  void version() throw() {
+  void version() {
     fout << getFormalName() << " version "
          << MAJOR_VERSION << '.' << MINOR_VERSION << EOL
          << "The Base Framework (Test Suite)" << EOL
@@ -88,7 +88,7 @@ public:
          << ENDL;
   }
   
-  void help() throw() {
+  void help() {
     version();
     fout << "Usage: " << getFormalName() << " [options] path(s)" << EOL
          << EOL
@@ -112,7 +112,7 @@ public:
     unsigned int totalNumberOfFolders;
   };
 
-  void summary(Sum sum, const String& path) throw() {
+  void summary(Sum sum, const String& path) {
     StringOutputStream streamFiles;
     streamFiles << sum.numberOfFiles << '/' << sum.totalNumberOfFiles << FLUSH;
     StringOutputStream streamFolders;
@@ -173,7 +173,7 @@ public:
     return result;
   }
   
-  void sum() throw() {
+  void sum() {
     if (paths.getSize() == 0) {
       paths.append(".");
     }
@@ -213,7 +213,7 @@ public:
     }
   }
   
-  ~SpaceApplication() throw() {
+  ~SpaceApplication() {
   }
 };
 

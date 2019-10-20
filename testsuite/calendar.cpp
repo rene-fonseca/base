@@ -30,7 +30,7 @@ public:
   CalendarApplication(
     int numberOfArguments,
     const char* arguments[],
-    const char* environment[]) throw()
+    const char* environment[])
     : Application(
         "calendar",
         numberOfArguments,
@@ -38,7 +38,7 @@ public:
         environment) {
   }
   
-  inline int getSucceedingDayOfWeek(int day) throw() {
+  inline int getSucceedingDayOfWeek(int day) {
     int temp = day + 1;
     return (temp > Date::SATURDAY) ? Date::SUNDAY : temp;
   }

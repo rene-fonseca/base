@@ -78,7 +78,7 @@ public:
   ExceptionApplication(
     int numberOfArguments,
     const char* arguments[],
-    const char* environment[]) throw()
+    const char* environment[])
     : Application("Exception", numberOfArguments, arguments, environment) {
   }
 
@@ -86,7 +86,7 @@ public:
     throw OutOfRange("This is a message", this);
   }
 
-  void myOuterFunction() throw() {
+  void myOuterFunction() {
 //    throw 4;
     if (true) {
       myInnerFunction();
@@ -101,7 +101,7 @@ public:
   }
 
   void testDemangling(
-    const Literal& mangled, const String& expected) throw() {
+    const Literal& mangled, const String& expected) {
     String demangled = TypeInfo::demangleName(mangled.getValue());
     if (demangled == expected) {
       fout << "Demangling " << mangled << ": " << demangled << " <OK>" << ENDL;
@@ -110,7 +110,7 @@ public:
     }
   }
 
-  void testDemangling() throw() {
+  void testDemangling() {
     foo::bar<int, unsigned int>::myFunction<long long>(foo(), foo::bar<int, unsigned int>(), Hello(), World(), World(), Hello(), 0);
 
     testDemangling("N3gip7ConvertINS_10ArrayImageIfEENS1_INS_8RGBPixelIhEEEENS_10RGBToFloatEEE", "gip::Convert<gip::ArrayImage<float>, gip::ArrayImage<gip::RGBPixel<unsigned char> >, gip::RGBToFloat>");

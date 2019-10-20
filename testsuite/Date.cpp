@@ -30,7 +30,7 @@ public:
   DateApplication(
     int numberOfArguments,
     const char* arguments[],
-    const char* environment[]) throw()
+    const char* environment[])
     : Application("Date", numberOfArguments, arguments, environment) {
   }
   
@@ -117,7 +117,7 @@ public:
          << DAY_NAMES[Date::getDayOfWeek(20-1, Date::NOVEMBER, 2055)] << ENDL;
   }
 
-  ~DateApplication() throw() {
+  ~DateApplication() {
   }
 };
 

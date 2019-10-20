@@ -41,27 +41,31 @@ public:
   /**
     Initializes object as invalid.
   */
-  inline ValidifiedResult() throw() : valid(false) {
+  inline ValidifiedResult() : valid(false)
+  {
   }
   
   /**
     Initializes object as valid.
   */
-  inline ValidifiedResult(const TYPE& _value, bool _valid = true) throw()
-    : value(_value), valid(_valid) {
+  inline ValidifiedResult(const TYPE& _value, bool _valid = true)
+    : value(_value), valid(_valid)
+  {
   }
 
   /**
     Initializes object by other object.
   */
-  inline ValidifiedResult(const ValidifiedResult& copy) throw()
-    : value(copy.value), valid(copy.valid) {
+  inline ValidifiedResult(const ValidifiedResult& copy)
+    : value(copy.value), valid(copy.valid)
+  {
   }
   
   /**
     Initializes object by other object.
   */
-  inline ValidifiedResult& operator=(const ValidifiedResult& eq) throw() {
+  inline ValidifiedResult& operator=(const ValidifiedResult& eq)
+  {
     if (&eq != this) {
       value = eq.value;
       valid = eq.valid;
@@ -72,7 +76,8 @@ public:
   /**
     Returns the value. Raises InvalidException if result is invalid.
   */
-  inline const TYPE& getValue() const throw(InvalidException) {
+  inline const TYPE& getValue() const throw(InvalidException)
+  {
     bassert(valid, InvalidException(this));
     return value;
   }
@@ -80,21 +85,24 @@ public:
   /**
     Returns the value if valid and otherwise the given defaultValue.
   */
-  inline const TYPE& getValue(const TYPE& defaultValue) const noexcept {
+  inline const TYPE& getValue(const TYPE& defaultValue) const noexcept
+  {
     return valid ? value : defaultValue;
   }
     
   /**
     Returns true if the result is valid.
   */
-  inline bool isValid() const throw() {
+  inline bool isValid() const noexcept
+  {
     return valid;
   }
 
   /**
     Returns true if the result is invalid.
   */
-  inline bool isInvalid() const throw() {
+  inline bool isInvalid() const noexcept
+  {
     return !valid;
   }
 
@@ -114,7 +122,8 @@ public:
 template<class TYPE>
 inline FormatOutputStream& operator<<(
   FormatOutputStream& stream,
-  const ValidifiedResult<TYPE>& value) throw(IOException) {
+  const ValidifiedResult<TYPE>& value) throw(IOException)
+{
   return value.operator<<(stream);
 }
 

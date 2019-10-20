@@ -37,9 +37,10 @@ private:
 public:
   
   /**
-    Initializes the automation pointer as 0.
+    Initializes the automation pointer as nullptr.
   */
-  inline CheckedPointer() throw() {
+  inline CheckedPointer() noexcept
+  {
   }
   
   /**
@@ -47,14 +48,16 @@ public:
     
     @param value The object pointer to be automated.
   */
-  inline CheckedPointer(TYPE* _value) throw() : value(_value) {
+  inline CheckedPointer(TYPE* _value) noexcept : value(_value)
+  {
   }
 
   /**
     Initialization of automation pointer from other automation pointer.
   */
-  inline CheckedPointer(const CheckedPointer& copy) throw()
-    : value(copy.value) {
+  inline CheckedPointer(const CheckedPointer& copy) noexcept
+    : value(copy.value)
+  {
   }
 
   /**
@@ -62,14 +65,16 @@ public:
     compile time polymorphism.
   */
   template<class POLY>
-  inline CheckedPointer(const CheckedPointer<POLY>& copy) throw()
-    : value(copy.getValue()) {
+  inline CheckedPointer(const CheckedPointer<POLY>& copy) noexcept
+    : value(copy.getValue())
+  {
   }
   
   /**
     Assignment of automation pointer to this automation pointer.
   */
-  inline CheckedPointer& operator=(const CheckedPointer& eq) throw() {
+  inline CheckedPointer& operator=(const CheckedPointer& eq) noexcept
+  {
     value = eq.value;
     return *this;
   }
@@ -79,7 +84,8 @@ public:
     time polymorphism.
   */
   template<class POLY>
-  inline CheckedPointer& operator=(const CheckedPointer<POLY>& eq) throw() {
+  inline CheckedPointer& operator=(const CheckedPointer<POLY>& eq) noexcept
+  {
     value = eq.value;
     return *this;
   }
@@ -87,29 +93,33 @@ public:
   /**
     Invalidates the pointer.
   */
-  inline void invalidate() throw() {
-    value = 0;
+  inline void invalidate() noexcept
+  {
+    value = nullptr;
   }
 
   /**
     Returns true if the automation pointer is valid (i.e. it is pointing to an
     object).
   */
-  inline bool isValid() const throw() {
-    return value != 0;
+  inline bool isValid() const noexcept
+  {
+    return value != nullptr;
   }
   
   /**
     Returns true if the pointers are equal.
   */
-  inline bool operator==(const CheckedPointer& eq) const throw() {
+  inline bool operator==(const CheckedPointer& eq) const noexcept
+  {
     return value == eq.value;
   }
   
   /**
     Returns true if the pointers are non-equal.
   */
-  inline bool operator!=(const CheckedPointer& eq) const throw() {
+  inline bool operator!=(const CheckedPointer& eq) const noexcept
+  {
     return value != eq.value;
   }
 
@@ -117,7 +127,8 @@ public:
     Returns true if the object may be cast to the specified type.
   */
   template<class POLY>
-  inline bool isType() const throw() {
+  inline bool isType() const noexcept
+  {
     return dynamic_cast<const POLY*>(value);
   }
   
@@ -126,7 +137,8 @@ public:
     is invalid or the reference cannot be cast to the specified type.
   */
   template<class POLY>
-  inline CheckedPointer<POLY> cast() throw(CastException) {
+  inline CheckedPointer<POLY> cast() throw(CastException)
+  {
     POLY* temp = dynamic_cast<POLY*>(value);
     bassert(temp, CastException(this));
     return temp;
@@ -135,7 +147,8 @@ public:
   /**
     Returns mutable object.
   */
-  inline TYPE& operator*() throw(NullPointer) {
+  inline TYPE& operator*() throw(NullPointer)
+  {
     bassert(value, NullPointer(this));
     return *value;
   }
@@ -143,7 +156,8 @@ public:
   /**
     Returns constant object.
   */
-  inline const TYPE& operator*() const throw(NullPointer) {
+  inline const TYPE& operator*() const throw(NullPointer)
+  {
     bassert(value, NullPointer(this));
     return *value;
   }
@@ -151,7 +165,8 @@ public:
   /**
     Returns object for modifying access.
   */
-  inline TYPE* operator->() throw(NullPointer) {
+  inline TYPE* operator->() throw(NullPointer)
+  {
     bassert(value, NullPointer(this));
     return value;
   }
@@ -159,15 +174,17 @@ public:
   /**
     Returns object for non-modifying access.
   */
-  inline const TYPE* operator->() const throw(NullPointer) {
+  inline const TYPE* operator->() const throw(NullPointer)
+  {
     bassert(value, NullPointer(this));
     return value;
   }
   
   /**
-    Returns true if the pointer is valid (i.e. not 0).
+    Returns true if the pointer is valid (i.e. not nullptr).
   */
-  inline operator bool() const throw() {
+  inline operator bool() const noexcept
+  {
     return value;
   }
 };
@@ -183,7 +200,7 @@ template<class TYPE>
 class Hash<CheckedPointer<TYPE> > {
 public:
 
-  inline unsigned long operator()(const CheckedPointer<TYPE>& value) throw() {
+  inline unsigned long operator()(const CheckedPointer<TYPE>& value) noexcept {
     Hash<void*> hash;
     return hash(value.getValue());
   }

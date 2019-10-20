@@ -56,27 +56,33 @@ public:
       const FileRegion& region,
       unsigned int access) throw(MemoryException);
     
-    inline uint8* getBytes() const throw() {
+    inline uint8* getBytes() const noexcept
+    {
       return address;
     }
     
-    inline const File& getFile() const throw() {
+    inline const File& getFile() const noexcept
+    {
       return file;
     }
     
-    inline long long getOffset() const throw() {
+    inline long long getOffset() const noexcept
+    {
       return region.getOffset();
     }
     
-    inline unsigned int getSize() const throw() {
+    inline unsigned int getSize() const noexcept
+    {
       return region.getSize();
     }
     
-    inline const FileRegion& getRegion() const throw() {
+    inline const FileRegion& getRegion() const noexcept
+    {
       return region;
     }
     
-    inline unsigned int getAccess() throw() {
+    inline unsigned int getAccess() noexcept
+    {
       return access;
     }
     

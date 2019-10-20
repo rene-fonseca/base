@@ -21,7 +21,7 @@ _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 /**
   Automation pointer which protects the pointer value from direct access. The
-  automation pointer may only be used with valid pointers (i.e. not 0).
+  automation pointer may only be used with valid pointers (i.e. not nullptr).
   
   @short Protected pointer.
   @ingroup memory
@@ -41,15 +41,17 @@ public:
     
     @param value The object pointer to be automated.
   */
-  inline ProtectedPointer(TYPE* _value) throw(NullPointer) : value(_value) {
+  inline ProtectedPointer(TYPE* _value) throw(NullPointer) : value(_value)
+  {
     bassert(value, NullPointer(this));
   }
   
   /**
     Initialization of automation pointer from other automation pointer.
   */
-  inline ProtectedPointer(const ProtectedPointer& copy) throw()
-    : value(copy.value) {
+  inline ProtectedPointer(const ProtectedPointer& copy) noexcept
+    : value(copy.value)
+  {
   }
 
   /**
@@ -57,14 +59,16 @@ public:
     compile time polymorphism.
   */
   template<class POLY>
-  inline ProtectedPointer(const ProtectedPointer<POLY>& copy) throw()
-    : value(copy.getValue()) {
+  inline ProtectedPointer(const ProtectedPointer<POLY>& copy) noexcept
+    : value(copy.getValue())
+  {
   }
   
   /**
     Assignment of automation pointer to this automation pointer.
   */
-  inline ProtectedPointer& operator=(const ProtectedPointer& eq) throw() {
+  inline ProtectedPointer& operator=(const ProtectedPointer& eq) noexcept
+  {
     value = eq.value;
     return *this;
   }
@@ -75,7 +79,8 @@ public:
   */
   template<class POLY>
   inline ProtectedPointer& operator=(
-    const ProtectedPointer<POLY>& eq) throw() {
+    const ProtectedPointer<POLY>& eq) noexcept
+  {
     value = eq.value;
     return *this;
   }
@@ -83,28 +88,32 @@ public:
   /**
     Returns true if the pointers are equal.
   */
-  inline bool operator==(const ProtectedPointer& eq) const throw() {
+  inline bool operator==(const ProtectedPointer& eq) const noexcept
+  {
     return value == eq.value;
   }
   
   /**
     Returns true if the pointers are non-equal.
   */
-  inline bool operator!=(const ProtectedPointer& eq) const throw() {
+  inline bool operator!=(const ProtectedPointer& eq) const noexcept
+  {
     return value != eq.value;
   }
   
   /**
     Returns object for modifying access.
   */
-  inline TYPE* operator->() throw() {
+  inline TYPE* operator->() noexcept
+  {
     return value;
   }
   
   /**
     Returns object for non-modifying access.
   */
-  inline const TYPE* operator->() const throw() {
+  inline const TYPE* operator->() const noexcept
+  {
     return value;
   }
 };
@@ -120,8 +129,8 @@ template<class TYPE>
 class Hash<ProtectedPointer<TYPE> > {
 public:
 
-  inline unsigned long operator()(
-    const ProtectedPointer<TYPE>& value) throw() {
+  inline unsigned long operator()(const ProtectedPointer<TYPE>& value) noexcept
+  {
     Hash<void*> hash;
     return hash(value.getValue());
   }

@@ -40,42 +40,48 @@ public:
     
     @param object The object pointer to be automated.
   */
-  inline Lifetime(TYPE* _object) throw(NullPointer) : object(_object) {
+  inline Lifetime(TYPE* _object) throw(NullPointer) : object(_object)
+  {
     bassert(object, NullPointer(this));
   }
   
   /**
     Returns mutable object.
   */
-  inline TYPE& operator*() throw() {
+  inline TYPE& operator*() noexcept
+  {
     return *object;
   }
   
   /**
     Returns constant object.
   */
-  inline const TYPE& operator*() const throw() {
+  inline const TYPE& operator*() const noexcept
+  {
     return *object;
   }
   
   /**
     Returns object for modifying access.
   */
-  inline TYPE* operator->() throw() {
+  inline TYPE* operator->() noexcept
+  {
     return object;
   }
   
   /**
     Returns object for non-modifying access.
   */
-  inline const TYPE* operator->() const throw() {
+  inline const TYPE* operator->() const noexcept
+  {
     return object;
   }
   
   /**
     Destroys the automation pointer (and the object).
   */
-  inline ~Lifetime() {
+  inline ~Lifetime()
+  {
     delete object;
   }
 };

@@ -85,14 +85,16 @@ public:
     @param value The desired pointer value.
   */
   inline Indirect(const TYPE& _value)
-    : value(new TYPE(_value)) {
+    : value(new TYPE(_value))
+  {
   }
   
   /**
     Initialization of automation pointer by automation pointer.
   */
   inline Indirect(const Indirect& copy)
-    : value(new TYPE(*copy.value)) {
+    : value(new TYPE(*copy.value))
+  {
   }
   
   /**
@@ -101,7 +103,8 @@ public:
     @return nullptr if cast is not possible.
   */
   template<class POLY>
-  inline Indirect<POLY> cast() throw(CastException) {
+  inline Indirect<POLY> cast() throw(CastException)
+  {
     POLY* temp = dynamic_cast<POLY*>(value);
     bassert(temp, CastException(this));
     return *temp;
@@ -114,14 +117,16 @@ public:
 #if 0 // TAG: fixme
   template<class POLY>
   inline Indirect(const Indirect<POLY>& copy)
-    : value(new TYPE(*copy.cast<TYPE>().value)) {
+    : value(new TYPE(*copy.cast<TYPE>().value))
+  {
   }
 #endif
   
   /**
     Assignment of automation pointer by automation pointer.
   */
-  inline Indirect& operator=(const Indirect& eq) {
+  inline Indirect& operator=(const Indirect& eq)
+  {
     if (&eq != this) {
       TYPE* temp = value;
       value = new TYPE(*eq.value);
@@ -137,7 +142,8 @@ public:
     polymorphism.
   */
   template<class POLY>
-  inline Indirect& operator=(const Indirect<POLY>& eq) throw() {
+  inline Indirect& operator=(const Indirect<POLY>& eq) noexcept
+  {
     // make sure CastException is not possible
     TYPE* unused = static_cast<POLY*>(nullptr);
     if (unused) { // avoid compiler warning
@@ -159,21 +165,24 @@ public:
     Returns true if the automation pointer is valid (i.e. it is pointing to an
     object).
   */
-  inline bool isValid() const throw() {
+  inline bool isValid() const noexcept
+  {
     return value;
   }
   
   /**
     Returns true if the references are equal.
   */
-  inline bool operator==(const Indirect& eq) const throw() {
+  inline bool operator==(const Indirect& eq) const noexcept
+  {
     return false;
   }
   
   /**
     Returns true if the references are non-equal.
   */
-  inline bool operator!=(const Indirect& eq) const throw() {
+  inline bool operator!=(const Indirect& eq) const noexcept
+  {
     return true;
   }
   
@@ -181,14 +190,16 @@ public:
     Returns true if the object may be cast to the specified type.
   */
   template<class POLY>
-  inline bool isType() const throw() {
+  inline bool isType() const noexcept
+  {
     return dynamic_cast<const POLY*>(value);
   }
     
   /**
     Returns the value.
   */
-  inline const TYPE& getValue() const throw(NullPointer) {
+  inline const TYPE& getValue() const throw(NullPointer)
+  {
     bassert(value, NullPointer(this));
     return *value;
   }
@@ -198,7 +209,8 @@ public:
     cast failed.
   */
   template<class POLY>
-  inline POLY getValue() const throw(CastException) {
+  inline POLY getValue() const throw(CastException)
+  {
     const POLY* result = dynamic_cast<POLY*>(value);
     bassert(result, CastException(this));
     return *result;
@@ -207,28 +219,32 @@ public:
   /**
     Dereferences the automation pointer.
   */
-  inline TYPE* operator->() throw() {
+  inline TYPE* operator->() noexcept
+  {
     return value;
   }
   
   /**
     Dereferences the automation pointer.
   */
-  inline const TYPE* operator->() const throw() {
+  inline const TYPE* operator->() const noexcept
+  {
     return value;
   }
   
   /**
     Returns true if the automation pointer is valid.
   */
-  inline operator bool() const throw() {
+  inline operator bool() const noexcept
+  {
     return value;
   }
   
   /**
     Returns the hash value of the pointer.
   */
-  inline unsigned long getHash() const throw() {
+  inline unsigned long getHash() const noexcept
+  {
     Hash<TYPE> hash;
     return value ? hash(*value) : 0;
   }
@@ -236,7 +252,8 @@ public:
   /**
     Destroys the automation pointer.
   */
-  inline ~Indirect() {
+  inline ~Indirect()
+  {
     if (value) {
       delete value;
     }
@@ -258,7 +275,8 @@ template<class TYPE>
 class Hash<Indirect<TYPE> > {
 public:
 
-  inline unsigned long operator()(const Indirect<TYPE>& value) throw() {
+  inline unsigned long operator()(const Indirect<TYPE>& value) noexcept
+  {
     return value.getHash();
   }
 };

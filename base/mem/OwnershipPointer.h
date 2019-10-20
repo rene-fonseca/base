@@ -56,7 +56,8 @@ public:
   /**
     Initializes the ownership pointer as nullptr.
   */
-  inline OwnershipPointer() throw() {
+  inline OwnershipPointer() noexcept
+  {
   }
   
   /**
@@ -64,21 +65,24 @@ public:
     
     @param object The object pointer to be automated.
   */
-  inline OwnershipPointer(TYPE* _object) throw() : object(_object) {
+  inline OwnershipPointer(TYPE* _object) noexcept : object(_object)
+  {
   }
   
   /**
     Copy constructor. Transfers ownership from copy to this object. The
     original owner loses the ownership.
   */
-  inline OwnershipPointer(OwnershipPointer& copy) throw()
-    : object(copy.relinquishOwnership()) {
+  inline OwnershipPointer(OwnershipPointer& copy) noexcept
+    : object(copy.relinquishOwnership())
+  {
   }
   
   /**
     Assignment operator.
   */
-  inline OwnershipPointer& operator=(OwnershipPointer& eq) {
+  inline OwnershipPointer& operator=(OwnershipPointer& eq)
+  {
     if (&eq != this) { // protect against self assignment
       if (object) {
         delete object;
@@ -92,8 +96,8 @@ public:
     Assignment operator.
   */
   template<class POLY>
-  inline OwnershipPointer& operator=(
-    OwnershipPointer<POLY>& eq) {
+  inline OwnershipPointer& operator=(OwnershipPointer<POLY>& eq)
+  {
     if (eq.object != object) { // protect against self assignment
       if (object) {
         delete object;
@@ -106,7 +110,8 @@ public:
   /**
     Assignment operator.
   */
-  inline OwnershipPointer& operator=(TYPE* object) {
+  inline OwnershipPointer& operator=(TYPE* object)
+  {
     if (this->object) {
       delete this->object;
     }
@@ -120,30 +125,34 @@ public:
     
     @return Pointer to object.
   */
-  inline TYPE* relinquishOwnership() throw() {
+  inline TYPE* relinquishOwnership() noexcept
+  {
     TYPE* temp = object;
-    object = 0;
+    object = nullptr;
     return temp;
   }
   
   /**
     Returns the pointer to mutable object.
   */
-  inline TYPE* getValue() throw() {
+  inline TYPE* getValue() noexcept
+  {
     return object;
   }
 
   /**
     Returns the pointer to constant object.
   */
-  inline const TYPE* getValue() const throw() {
+  inline const TYPE* getValue() const noexcept
+  {
     return object;
   }
   
   /**
     Returns mutable object.
   */
-  inline TYPE& operator*() throw(NullPointer) {
+  inline TYPE& operator*() throw(NullPointer)
+  {
     if (!object) {
       throw NullPointer(this);
     }
@@ -153,7 +162,8 @@ public:
   /**
     Returns constant object.
   */
-  inline const TYPE& operator*() const throw(NullPointer) {
+  inline const TYPE& operator*() const throw(NullPointer)
+  {
     if (!object) {
       throw NullPointer(this);
     }
@@ -163,23 +173,27 @@ public:
   /**
     Returns object for modifying access.
   */
-  inline TYPE* operator->() throw() {
+  inline TYPE* operator->() noexcept
+  {
     return object;
   }
   
   /**
     Returns object for non-modifying access.
   */
-  inline const TYPE* operator->() const throw() {
+  inline const TYPE* operator->() const noexcept
+  {
     return object;
   }
   
   /**
     Destroys the ownership pointer (and the object).
   */
-  inline ~OwnershipPointer() {
+  inline ~OwnershipPointer()
+  {
     if (object) {
       delete object;
+      object = nullptr;
     }
   }
 };

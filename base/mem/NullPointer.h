@@ -31,7 +31,7 @@ public:
   /**
     Initializes the exception object with no message.
   */
-  inline NullPointer() throw() {
+  inline NullPointer() noexcept {
   }
 
   /**
@@ -39,7 +39,7 @@ public:
 
     @param message The message.
   */
-  inline NullPointer(const char* message) throw() : MemoryException(message) {
+  inline NullPointer(const char* message) noexcept : MemoryException(message) {
   }
 
   /**
@@ -47,7 +47,7 @@ public:
     
     @param type The identity of the type.
   */
-  inline NullPointer(Type type) throw() : MemoryException(type) {
+  inline NullPointer(Type type) noexcept : MemoryException(type) {
   }
 
   /**
@@ -56,7 +56,7 @@ public:
     @param message An NULL-terminated string (ASCII).
     @param type The identity of the type.
   */
-  inline NullPointer(const char* message, Type type) throw()
+  inline NullPointer(const char* message, Type type) noexcept
     : MemoryException(message, type) {
   }
 };

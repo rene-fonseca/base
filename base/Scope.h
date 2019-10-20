@@ -32,13 +32,16 @@ private:
   TYPE* object = nullptr;
 public:
 
-  inline Scope() throw() {
+  inline Scope() noexcept
+  {
   }
 
-  inline Scope(TYPE* _object) throw() : object(_object) {
+  inline Scope(TYPE* _object) noexcept : object(_object)
+  {
   }
 
-  inline Scope& operator=(TYPE* object) throw() {
+  inline Scope& operator=(TYPE* object) noexcept
+  {
     this->object = object;
     return *this;
   }
@@ -46,38 +49,46 @@ public:
   /**
     Returns true if the object is valid.
   */
-  inline bool isValid() const throw() {
+  inline bool isValid() const noexcept
+  {
     return object;
   }
 
-  inline TYPE& operator*() throw(NullPointer) {
+  inline TYPE& operator*() throw(NullPointer)
+  {
     bassert(object, NullPointer(this));
     return *object;
   }
 
-  inline const TYPE& operator*() const throw(NullPointer) {
+  inline const TYPE& operator*() const throw(NullPointer)
+  {
     bassert(object, NullPointer(this));
     return *object;
   }
 
-  inline TYPE* operator->() throw(NullPointer) {
+  inline TYPE* operator->() throw(NullPointer)
+  {
     bassert(object, NullPointer(this));
     return object;
   }
 
-  inline const TYPE* operator->() const throw(NullPointer) {
+  inline const TYPE* operator->() const throw(NullPointer)
+  {
     bassert(object, NullPointer(this));
     return object;
   }
 
-  inline void destroy() {
+  inline void destroy()
+  {
     if (object) {
-      delete object;
+      TYPE* oldObject = object;
       object = nullptr;
+      delete oldObject;
     }
   }
 
-  inline ~Scope() {
+  inline ~Scope()
+  {
     destroy();
   }
 };

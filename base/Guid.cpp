@@ -23,11 +23,11 @@
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
-Guid::Guid() throw() {
+Guid::Guid() noexcept {
   clear(guid);
 }
 
-Guid::Guid(const uint8 (&value)[16]) throw()
+Guid::Guid(const uint8 (&value)[16]) noexcept
 {
   copy<uint8>(guid, value, sizeof(guid));
 }

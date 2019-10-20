@@ -21,7 +21,7 @@ _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 /**
   Automation pointer which cannot be copied and which is protected from direct
   access. The automation pointer may only be used with valid pointers (i.e. not
-  0).
+  nullptr).
   
   @short Strict pointer.
   @ingroup memory
@@ -41,35 +41,40 @@ public:
     
     @param value The object pointer to be automated.
   */
-  inline StrictPointer(TYPE* _value) throw(NullPointer) : value(_value) {
+  inline StrictPointer(TYPE* _value) throw(NullPointer) : value(_value)
+  {
     bassert(value, NullPointer(this));
   }
   
   /**
     Returns true if the pointers are equal.
   */
-  inline bool operator==(const StrictPointer& eq) const throw() {
+  inline bool operator==(const StrictPointer& eq) const noexcept
+  {
     return value == eq.value;
   }
   
   /**
     Returns true if the pointers are non-equal.
   */
-  inline bool operator!=(const StrictPointer& eq) const throw() {
+  inline bool operator!=(const StrictPointer& eq) const noexcept
+  {
     return value != eq.value;
   }
   
   /**
     Returns object for modifying access.
   */
-  inline TYPE* operator->() throw() {
+  inline TYPE* operator->() noexcept
+  {
     return value;
   }
   
   /**
     Returns object for non-modifying access.
   */
-  inline const TYPE* operator->() const throw() {
+  inline const TYPE* operator->() const noexcept
+  {
     return value;
   }
 };

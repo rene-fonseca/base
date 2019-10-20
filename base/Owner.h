@@ -31,30 +31,36 @@ private:
 
   mutable TYPE* object = nullptr;
 
-  inline TYPE* detach() const throw() {
+  inline TYPE* detach() const noexcept
+  {
     TYPE* object = this->object;
     this->object = nullptr;
     return object;
   }
 public:
 
-  inline Owner() throw() {
+  inline Owner() noexcept
+  {
   }
 
-  inline Owner(const Owner& value) throw() : object(value.detach()) {
+  inline Owner(const Owner& value) noexcept : object(value.detach())
+  {
   }
 
-  inline Owner(TYPE* _object) throw() : object(_object) {
+  inline Owner(TYPE* _object) noexcept : object(_object)
+  {
   }
 
-  inline Owner& operator=(const Owner& value) throw() {
+  inline Owner& operator=(const Owner& value) noexcept
+  {
     if (&value != this) {
       object = value.detach();
     }
     return *this;
   }
 
-  inline Owner& operator=(TYPE* object) throw() {
+  inline Owner& operator=(TYPE* object) noexcept
+  {
     this->object = object;
     return *this;
   }
@@ -62,7 +68,8 @@ public:
   /**
     Detaches the object.
   */
-  inline TYPE* detach() throw() {
+  inline TYPE* detach() noexcept
+  {
     TYPE* object = this->object;
     this->object = nullptr;
     return object;
@@ -71,7 +78,8 @@ public:
   /**
     Returns true if the object is valid.
   */
-  inline bool isValid() const throw() {
+  inline bool isValid() const noexcept
+  {
     return object != nullptr;
   }
 
@@ -85,12 +93,14 @@ public:
     return *object;
   }
 
-  inline TYPE* operator->() throw(NullPointer) {
+  inline TYPE* operator->() throw(NullPointer)
+  {
     bassert(object, NullPointer(this));
     return object;
   }
 
-  inline const TYPE* operator->() const throw(NullPointer) {
+  inline const TYPE* operator->() const throw(NullPointer)
+  {
     bassert(object, NullPointer(this));
     return object;
   }
@@ -98,17 +108,20 @@ public:
   /**
     Destroys the object.
   */
-  inline void destroy() {
+  inline void destroy()
+  {
     if (object) {
-      delete object;
+      TYPE* oldObject = object;
       object = nullptr;
+      delete oldObject;
     }
   }
 
   /**
     Destroys the object.
   */
-  inline ~Owner() {
+  inline ~Owner()
+  {
     destroy();
   }
 };

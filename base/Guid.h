@@ -55,12 +55,12 @@ public:
   /**
     Returns true if the identifiers are identical.
   */
-  bool operator==(const Guid& eq) const throw();
+  bool operator==(const Guid& eq) const noexcept;
 
   /**
     Returns true if the identifiers are different.
   */
-  bool operator!=(const Guid& eq) const throw();
+  bool operator!=(const Guid& eq) const noexcept;
 
   /** Returns true if the guid is null. */
   bool isNull() const noexcept;
@@ -71,7 +71,7 @@ public:
   /**
     Returns the identifier.
   */
-  inline const uint8* getBytes() const throw() {
+  inline const uint8* getBytes() const noexcept {
     return guid;
   }
 };

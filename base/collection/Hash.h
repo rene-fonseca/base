@@ -33,7 +33,8 @@ public:
   /**
     Returns the hash value of the specified object.
   */
-  inline unsigned long operator()(const TYPE& value) throw() {
+  inline unsigned long operator()(const TYPE& value) noexcept
+  {
     return value;
   }
 };
@@ -42,7 +43,8 @@ template<>
 class Hash<void*> {
 public:
 
-  inline unsigned long operator()(void* value) throw() {
+  inline unsigned long operator()(void* value) noexcept
+  {
     MemorySize offset =
       static_cast<const uint8*>(value) - static_cast<const uint8*>(nullptr);
     // TAG: least significant bits are likely to be 0

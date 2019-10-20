@@ -49,6 +49,32 @@ endif ()
 
 include_directories("${PROJECT_SOURCE_DIR}")
 
+if (0)
+find_package(OpenGL REQUIRED)
+
+if (OPENGL_FOUND)
+  message("Found OpenGL for Mac OS")
+  message("OpenGL for Mac OS, include dir: ${OPENGL_INCLUDE_DIR}")
+  message("OpenGL for Mac OS, link libraries: ${OPENGL_gl_LIBRARY}")
+else (OPENGL_FOUND)
+  message(FATAL_ERROR "OpenGL for Mac OS not found")
+endif()
+
+#target_link_libraries(targets
+#  ${OPENGL_gl_LIBRARY}
+#  ${OPENGL_glu_LIBRARY}
+#)
+endif ()
+
+file(GLOB_RECURSE base_platforms_SRC
+  "base/platforms/*.h"
+  "base/platforms/*.cpp"
+)
+
+if (NOT MSVC)
+list(FILTER base_platforms_SRC EXCLUDE REGEX "^.*\/base\/platforms\/win32\/.+")
+endif ()
+
 # GLOB_RECURSE
 file(GLOB base_SRC
   "base/*.h"
@@ -85,8 +111,6 @@ file(GLOB base_SRC
 #  "base/opencl/*.cpp"
   "base/opengl/*.h"
   "base/opengl/*.cpp"
-  "base/platforms/*.h"
-  "base/platforms/*.cpp"
   "base/rmi/*.h"
 #  "base/rmi/*.cpp"
   "base/rmi/idl/*.h"
@@ -102,6 +126,7 @@ file(GLOB base_SRC
   "base/xml/*.h"
   "base/xml/*.cpp"
 )
+list(APPEND base_SRC ${base_platforms_SRC})
 
 foreach(source IN ITEMS ${base_SRC})
   get_filename_component(source_path "${source}" PATH)

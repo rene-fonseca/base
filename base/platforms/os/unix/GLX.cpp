@@ -11,6 +11,8 @@
     For the licensing terms refer to the file 'LICENSE'.
  ***************************************************************************/
 
+#if defined(_COM_AZURE_DEV__BASE__ALLOW_GLX)
+
 #include <base/platforms/features.h>
 #include <base/platforms/os/unix/GLX.h>
 #include <base/dl/DynamicLinker.h>
@@ -200,3 +202,5 @@ namespace native {
 }; // end of native namespace
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE
+
+#endif // _COM_AZURE_DEV__BASE__ALLOW_GLX

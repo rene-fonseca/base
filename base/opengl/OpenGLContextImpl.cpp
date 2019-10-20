@@ -20,6 +20,7 @@
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
 #  include <base/platforms/win32/GDI.cpp>
 #else // unix
+#  define _COM_AZURE_DEV__BASE__ALLOW_GLX
 #  include <base/platforms/os/unix/GLX.cpp>
 #endif // flavor
 

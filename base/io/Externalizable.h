@@ -42,7 +42,7 @@ public:
 //  static void writeType(OutputStream* out, TYPE object) throw(IOException) {
 //    PrimitiveOutputStream stream(out);
 //    const char* id = typeid(object).name();
-//    unsigned int length = strlen(id);
+//    unsigned int length = getNullTerminatedLength(id);
 //    out->writeUnsignedInteger(length);
 //    out->write(id, length);
 //  }

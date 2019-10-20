@@ -264,7 +264,7 @@ public:
   /** Returns the number of references. Returns 0 if pointer is nullptr. */
   inline MemorySize getNumberOfReferences() const noexcept
   {
-    return value ? *references : 0;
+    return value ? static_cast<MemorySize>(*references) : 0;
   }
 
   /**

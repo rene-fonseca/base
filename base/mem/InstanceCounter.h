@@ -172,7 +172,7 @@ inline MemorySize getInstanceDestructionCountFor(const TYPE&) noexcept
 template<class TYPE>
 inline bool isInstanceCounted(const TYPE* v) noexcept
 {
-  return dynamic_cast<const InstanceCounter*>(v);
+  return dynamic_cast<const InstanceCounter<TYPE>*>(v);
 }
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

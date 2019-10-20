@@ -184,8 +184,9 @@ namespace internal {
   DebugDynamicMemoryImpl debugDynamicMemoryImpl;
 };
 
-Application* Application::application(0); // initialize application as uninitialized
-const String String::DEFAULT_STRING(MESSAGE(""));
+Application* Application::application(nullptr); // initialize application as uninitialized
+String::Default forceDefaultString;
+const String String::DEFAULT_STRING(forceDefaultString);
 const WideString WideString::DEFAULT_STRING(WIDEMESSAGE(""));
 
 namespace internal {

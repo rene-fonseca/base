@@ -216,15 +216,15 @@ protected:
     Returns a modifiable buffer. Forces copy of internal buffer if shared by
     multiple strings.
   */
-  inline char* getBuffer() throw(MemoryException) {
-    elements.copyOnWrite();
-    return elements->getElements();
-  }
+  char* getBuffer() throw(MemoryException);
   
+  /** Returns buffer for modification and resizes at the same time. */
+  char* getBuffer(MemorySize length) throw(StringException, MemoryException);
+
   /**
     Returns a non-modifiable buffer.
   */
-  inline const char* getBuffer() const throw() {
+  inline const char* getBuffer() const noexcept {
     return elements->getElements();
   }
   
@@ -233,14 +233,9 @@ protected:
   */
   inline void setLength(MemorySize length) throw(StringException, MemoryException)
   {
-    bassert(
-      length <= MAXIMUM_LENGTH,
-      StringException(Type::getType<String>())
-    );
-    elements.copyOnWrite(); // we are about to modify the buffer
-    elements->setSize(length + 1);
+    getBuffer(length);
   }
-
+  
   /**
     Compare two NULL-terminated strings.
   */
@@ -286,7 +281,7 @@ public:
   /**
     Initializes an empty string.
   */
-  String() throw();
+  String() noexcept;
 
   /**
     Initializes a string with no characters in it, initial capacity and
@@ -295,6 +290,11 @@ public:
     @param capacity The initial capacity.
   */
   explicit String(MemorySize capacity) throw(MemoryException);
+
+  class _COM_AZURE_DEV__BASE__API Default {};
+  
+  /** Forces a non-null empty string. Avoid this. */
+  String(Default d) throw(MemoryException);
 
   /**
     Initializes the string from a string literal. The string literal is not
@@ -667,6 +667,15 @@ public:
   }
 
   /**
+    Inserts the memory span into this string.
+
+    @param index Specifies the position to insert the character. If the index
+    exceeds the end of this string the character is inserted at the end.
+    @param span The characters to be inserted.
+  */
+  String& insert(MemorySize index, const MemorySpan& span) throw(StringException, MemoryException);
+
+  /**
     Inserts the character into this string.
 
     @param index Specifies the position to insert the character. If the index
@@ -747,8 +756,7 @@ public:
     @param start Specifies the start of the substring.
     @param end Specifies the end of the substring.
   */
-  String substring(
-    MemorySize start, MemorySize end) const throw(MemoryException);
+  String substring(MemorySize start, MemorySize end) const throw(MemoryException);
 
   /**
     Returns a new string that contains a subsequence of characters currently
@@ -814,17 +822,17 @@ public:
     The character sequence contained in this string is replaced by the reverse
     sequence.
   */
-  String& reverse() throw();
+  String& reverse() noexcept;
 
   /**
     Converts the characters of this string into the lower case equivalents.
   */
-  String& toLowerCase() throw();
+  String& toLowerCase() noexcept;
 
   /**
     Converts the characters of this string into the upper case equivalents.
   */
-  String& toUpperCase() throw();
+  String& toUpperCase() noexcept;
 
 // *************************************************************************
 //   COMPARE SECTION
@@ -838,7 +846,7 @@ public:
     found, respectively, to be less than, equal to, or greater than the
     specified string.
   */
-  int compareTo(const String& string) const throw();
+  int compareTo(const String& string) const noexcept;
   
   /**
     Compares this string to with string literal.
@@ -848,7 +856,7 @@ public:
     found, respectively, to be less than, equal to, or greater than the
     specified string.
   */
-  int compareTo(const Literal& string) const throw();
+  int compareTo(const Literal& string) const noexcept;
   
   /**
     Compares this string to a NULL-terminated string.
@@ -858,7 +866,7 @@ public:
     found, respectively, to be less than, equal to, or greater than the
     specified string. False, if string is 0.
   */
-  int compareTo(const NativeString& string) const throw();
+  int compareTo(const NativeString& string) const noexcept;
   
   /**
     Compares this string with other string ignoring the case of the characters.
@@ -879,11 +887,10 @@ public:
     found, respectively, to be less than, equal to, or greater than the
     specified string.
   */
-  int compareToIgnoreCase(
-    const NativeString& string) const throw(StringException);
+  int compareToIgnoreCase(const NativeString& string) const throw(StringException);
   
   template<MemorySize SIZE>
-  inline int compareToIgnoreCase(const char (&literal)[SIZE]) const throw() {
+  inline int compareToIgnoreCase(const char (&literal)[SIZE]) const noexcept {
     return compareToIgnoreCase(NativeString(literal));
   }
   
@@ -892,17 +899,17 @@ public:
 
     @param prefix The string to compare start of this string with.
   */
-  bool startsWith(const String& prefix) const throw();
+  bool startsWith(const String& prefix) const noexcept;
 
   /**
     Returns true if this string starts with prefix.
 
     @param prefix The string to compare start of this string with.
   */
-  bool startsWith(const Literal& prefix) const throw();
+  bool startsWith(const Literal& prefix) const noexcept;
 
   template<MemorySize SIZE>
-  inline bool startsWith(const char (&literal)[SIZE]) const throw() {
+  inline bool startsWith(const char (&literal)[SIZE]) const noexcept {
     return startsWith(Literal(literal));
   }
   
@@ -911,36 +918,36 @@ public:
 
     @param suffix The string to compare end of this string with.
   */
-  bool endsWith(const String& suffix) const throw();
+  bool endsWith(const String& suffix) const noexcept;
 
   /**
     Returns true if this string ends with suffix.
 
     @param suffix The string to compare end of this string with.
   */
-  bool endsWith(const Literal& suffix) const throw();
+  bool endsWith(const Literal& suffix) const noexcept;
 
   template<MemorySize SIZE>
-  inline bool endsWith(const char (&literal)[SIZE]) const throw() {
+  inline bool endsWith(const char (&literal)[SIZE]) const noexcept {
     return endsWith(Literal(literal));
   }
   
   /**
     Equality operator.
   */
-  inline bool operator==(const String& string) const throw() {
+  inline bool operator==(const String& string) const noexcept {
     return compareTo(string) == 0;
   }
   
   /**
     Equality operator.
   */
-  inline bool operator==(const Literal& string) const throw() {
+  inline bool operator==(const Literal& string) const noexcept {
     return compareTo(string) == 0;
   }
   
   template<MemorySize SIZE>
-  inline bool operator==(const char (&literal)[SIZE]) const throw() {
+  inline bool operator==(const char (&literal)[SIZE]) const noexcept {
     if (Constraint<(SIZE > 0)>::UNSPECIFIED) {}
     return compareTo(Literal(literal)) == 0;
   }
@@ -948,19 +955,19 @@ public:
   /**
     Inequality operator.
   */
-  inline bool operator!=(const String& string) const throw() {
+  inline bool operator!=(const String& string) const noexcept {
     return compareTo(string) != 0;
   }
 
   /**
     Equality operator.
   */
-  inline bool operator!=(const Literal& string) const throw() {
+  inline bool operator!=(const Literal& string) const noexcept {
     return compareTo(string) != 0;
   }
   
   template<MemorySize SIZE>
-  inline bool operator!=(const char (&literal)[SIZE]) const throw() {
+  inline bool operator!=(const char (&literal)[SIZE]) const noexcept {
     if (Constraint<(SIZE > 0)>::UNSPECIFIED) {}
     return compareTo(Literal(literal)) != 0;
   }
@@ -968,12 +975,12 @@ public:
   /**
     Less than operator.
   */
-  inline bool operator<(const String& string) const throw() {
+  inline bool operator<(const String& string) const noexcept {
     return compareTo(string) < 0;
   }
 
   template<MemorySize SIZE>
-  inline bool operator<(const char (&literal)[SIZE]) const throw() {
+  inline bool operator<(const char (&literal)[SIZE]) const noexcept {
     if (Constraint<(SIZE > 0)>::UNSPECIFIED) {}
     return compareTo(Literal(literal)) < 0;
   }
@@ -981,12 +988,12 @@ public:
   /**
     Less than or equal operator.
   */
-  inline bool operator<=(const String& string) const throw() {
+  inline bool operator<=(const String& string) const noexcept {
     return compareTo(string) <= 0;
   }
 
   template<MemorySize SIZE>
-  inline bool operator<=(const char (&literal)[SIZE]) const throw() {
+  inline bool operator<=(const char (&literal)[SIZE]) const noexcept {
     if (Constraint<(SIZE > 0)>::UNSPECIFIED) {}
     return compareTo(Literal(literal)) <= 0;
   }
@@ -994,24 +1001,24 @@ public:
   /**
     Greater than or equal operator.
   */
-  inline bool operator>=(const String& string) const throw() {
+  inline bool operator>=(const String& string) const noexcept {
     return compareTo(string) >= 0;
   }
 
   template<MemorySize SIZE>
-  inline bool operator>=(const char (&literal)[SIZE]) const throw() {
+  inline bool operator>=(const char (&literal)[SIZE]) const noexcept {
     return compareTo(Literal(literal)) >= 0;
   }
   
   /**
     Greater than operator.
   */
-  inline bool operator>(const String& string) const throw() {
+  inline bool operator>(const String& string) const noexcept {
     return compareTo(string) > 0;
   }
 
   template<MemorySize SIZE>
-  inline bool operator>(const char (&literal)[SIZE]) const throw() {
+  inline bool operator>(const char (&literal)[SIZE]) const noexcept {
     if (Constraint<(SIZE > 0)>::UNSPECIFIED) {}
     return compareTo(Literal(literal)) > 0;
   }
@@ -1019,42 +1026,42 @@ public:
   /**
     Equality operator.
   */
-  inline bool operator==(const NativeString& string) const throw() {
+  inline bool operator==(const NativeString& string) const noexcept {
     return compareTo(string) == 0;
   }
 
   /**
     Inequality operator.
   */
-  inline bool operator!=(const NativeString& string) const throw() {
+  inline bool operator!=(const NativeString& string) const noexcept {
     return compareTo(string) != 0;
   }
 
   /**
     Less than operator.
   */
-  inline bool operator<(const NativeString& string) const throw() {
+  inline bool operator<(const NativeString& string) const noexcept {
     return compareTo(string) < 0;
   }
 
   /**
     Less than or equal operator.
   */
-  inline bool operator<=(const NativeString& string) const throw() {
+  inline bool operator<=(const NativeString& string) const noexcept {
     return compareTo(string) <= 0;
   }
 
   /**
     Greater than or equal operator.
   */
-  inline bool operator>=(const NativeString& string) const throw() {
+  inline bool operator>=(const NativeString& string) const noexcept {
     return compareTo(string) >= 0;
   }
 
   /**
     Greater than operator.
   */
-  inline bool operator>(const NativeString& string) const throw() {
+  inline bool operator>(const NativeString& string) const noexcept {
     return compareTo(string) > 0;
   }
 
@@ -1070,7 +1077,7 @@ public:
     @param start Specifies the start position of the search. Default is 0.
     @return Index of the first match if any otherwise -1.
   */
-  MemoryDiff indexOf(char ch, MemorySize start = 0) const throw();
+  MemoryDiff indexOf(char ch, MemorySize start = 0) const noexcept;
 
   /**
     Returns the index of the first substring that matches the specified string
@@ -1081,7 +1088,7 @@ public:
     @return Index of the first match if any otherwise -1. Also returns -1 if
     substring is empty.
   */
-  MemoryDiff indexOf(const String& string, MemorySize start = 0) const throw();
+  MemoryDiff indexOf(const String& string, MemorySize start = 0) const noexcept;
   
   /**
     Returns the index of the last character that matches the specified
@@ -1092,9 +1099,10 @@ public:
     string.
     @return Index of the last match if any otherwise -1.
   */
-  MemoryDiff lastIndexOf(char ch, MemorySize start) const throw();
+  MemoryDiff lastIndexOf(char ch, MemorySize start) const noexcept;
   
-  inline MemoryDiff lastIndexOf(char ch) const throw() {
+  inline MemoryDiff lastIndexOf(char ch) const noexcept
+  {
     return lastIndexOf(ch, getLength());
   }
 
@@ -1108,9 +1116,10 @@ public:
     @return Index of the last match if any otherwise -1. Also returns -1 if
     substring is empty.
   */
-  MemoryDiff lastIndexOf(const String& string, MemorySize start) const throw();
+  MemoryDiff lastIndexOf(const String& string, MemorySize start) const noexcept;
   
-  inline MemoryDiff lastIndexOf(const String& string) const throw() {
+  inline MemoryDiff lastIndexOf(const String& string) const noexcept
+  {
     return lastIndexOf(string, getLength());
   }
 
@@ -1121,7 +1130,7 @@ public:
     @param start The start position. Default is 0.
     @return The number of occurances of the character.
   */
-  MemorySize count(char ch, MemorySize start = 0) const throw();
+  MemorySize count(char ch, MemorySize start = 0) const noexcept;
 
   /**
     Counts the number of occurances of the specified substring in this string.
@@ -1130,7 +1139,7 @@ public:
     @param start The start position. Default is 0.
     @return The number of occurances of the substring.
   */
-  MemorySize count(const String& string, MemorySize start = 0) const throw();
+  MemorySize count(const String& string, MemorySize start = 0) const noexcept;
 
   /**
     Trims the string.
@@ -1158,7 +1167,7 @@ public:
     @param separator Separator.
     @param group Group separators. Default is false.
   */
-  Array<String> split(char separator, bool group = false) throw(MemoryException);
+  Array<String> split(char separator, bool group = false) const throw(MemoryException);
   
 // *************************************************************************
 //   END SECTION
@@ -1167,24 +1176,27 @@ public:
   /**
     Returns NULL-terminated string for modifying access.
   */
-  char* getElements() throw();
+  char* getElements() noexcept;
 
   /** Returns true if state is valid. */
-  inline bool invariant() const {
+  inline bool invariant() const noexcept
+  {
     const MemorySize length = getLength();
-    return (elements->getElements()[length] == Traits::TERMINATOR);
+    const char* buffer = elements->getElements();
+    return (buffer[length] == Traits::TERMINATOR);
   }
   
   /**
     Returns NULL-terminated string.
   */
-  inline const char* getElements() const throw() {
+  inline const char* getElements() const noexcept
+  {
     const MemorySize length = getLength();
     const char* result = elements->getElements();
+    ASSERT(result[length] == Traits::TERMINATOR);
     if (result[length] != Traits::TERMINATOR) { // TAG: remove when ready
-      const MemorySize likelyLength = strlen(result);
+      const MemorySize likelyLength = getNullTerminatedLength(result);
       const MemorySize lengthAgain = getLength();
-      ASSERT(false);
       const_cast<char*>(result)[length] = Traits::TERMINATOR;
     }
     return result;
@@ -1193,32 +1205,34 @@ public:
   /**
     Returns the end of string.
   */
-  inline const char* getEnd() const throw() {
+  inline const char* getEnd() const noexcept
+  {
     const MemorySize length = getLength();
     const char* result = elements->getElements();
+    ASSERT(result[length] == Traits::TERMINATOR);
     return result + length;
   }
 
   // TAG: we can return both being and end with one method MemorySpan<char> getMemorySpan() const;
   
+  // TAG: remove getBytes()
   /**
-    Returns the characters of the string for non-modifying access. The elements
-    may not be NULL-terminated. Avoid this method if you can.
+    Returns the characters of the string for non-modifying access.
   */
-  inline const char* getBytes() const throw() {
-    return elements->getElements();
+  inline const char* getBytes() const noexcept
+  {
+    const char* result = elements->getElements();
+    ASSERT(result[getLength()] == Traits::TERMINATOR);
+    return result;
   }
 
   /**
-    Returns the characters of the string for non-modifying access. The elements
-    may not be NULL-terminated. Avoid this method if you can.
+    Returns the characters of the string for non-modifying access.
   */
-  inline const char* native() const throw() {
-    ASSERT(elements->getElements()[getLength()] == Traits::TERMINATOR);
-    // TAG: get rid of the following
-    // special case: no need to copy on write 'cause we only add terminator
-    char* result = const_cast<char*>(elements->getElements()); // TAG: fix cast
-    result[getLength()] = Traits::TERMINATOR;
+  inline const char* native() const noexcept
+  {
+    const char* result = elements->getElements();
+    ASSERT(result[getLength()] == Traits::TERMINATOR);
     return result;
   }
 };

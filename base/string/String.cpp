@@ -22,31 +22,49 @@
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
-void String::initialize(const char* string, MemorySize length) throw(MemoryException)
+// TAG: make sure to force copy on any change
+
+void String::initialize(const char* src, MemorySize length) throw(MemoryException)
 {
-  elements = new ReferenceCountedCapacityAllocator<char>(length + 1, GRANULARITY);
-  auto dest = elements->getElements();
-  copy<char>(dest, string, length); // no overlap
+  if (length == 0) {
+    elements = DEFAULT_STRING.elements;
+    return;
+  }
+  auto e = new ReferenceCountedCapacityAllocator<char>(length + 1, GRANULARITY);
+  auto dest = e->getElements();
+  copy<char>(dest, src, length); // no overlap
   dest[length] = Traits::TERMINATOR;
+  elements = e;
 }
 
-String::String() throw() : elements(DEFAULT_STRING.elements)
+String::String() noexcept
+  : elements(DEFAULT_STRING.elements)
 {
+  ASSERT(elements); // we never want a nullptr
+}
+
+String::String(Default d) throw(MemoryException)
+{
+  // force non-nullptr elements
+  auto e = new ReferenceCountedCapacityAllocator<char>(1, GRANULARITY);
+  e->getElements()[0] = Traits::TERMINATOR;
+  elements = e;
 }
 
 String::String(MemorySize capacity) throw(MemoryException)
 {
-  elements = new ReferenceCountedCapacityAllocator<char>(1, GRANULARITY);
-  elements->ensureCapacity(capacity + 1);
-  elements->getElements()[0] = Traits::TERMINATOR;
+  if (capacity == 0) {
+    elements = DEFAULT_STRING.elements;
+    return;
+  }
+  auto e = new ReferenceCountedCapacityAllocator<char>(1, capacity, GRANULARITY);
+  e->getElements()[0] = Traits::TERMINATOR;
+  elements = e;
 }
 
-String::String(const char* string) throw(MemoryException)
+String::String(const char* src) throw(MemoryException)
 {
-  if (string) {
-    const size_t size = strlen(string);
-    initialize(string, size);
-  }
+  initialize(src, getNullTerminatedLength(src));
 }
 
 String::String(const std::string& string) throw(StringException, MemoryException)
@@ -60,90 +78,41 @@ String::String(const std::wstring& string) throw(StringException, MemoryExceptio
   initialize(utf8.c_str(), utf8.size());
 }
 
-String& String::operator=(const char* string) throw(StringException, MemoryException)
+String& String::operator=(const char* src) throw(StringException, MemoryException)
 {
-  const MemorySize length = string ? strlen(string) : 0;
-  elements = new ReferenceCountedCapacityAllocator<char>(length + 1, GRANULARITY);
-  auto dest = elements->getElements();
-  copy<char>(dest, string, length); // no overlap
-  dest[length] = Traits::TERMINATOR;
+  initialize(src, getNullTerminatedLength(src));
   return *this;
 }
 
 String::String(const Literal& literal) throw(StringException, MemoryException)
 {
-  const MemorySize length = literal.getLength();
-  // bassert(length <= MAXIMUM_LENGTH, StringException(this)); // not required
-  elements = new ReferenceCountedCapacityAllocator<char>(length + 1, GRANULARITY);
-  auto dest = elements->getElements();
-  copy<char>(dest, literal.getValue(), length); // no overlap
-  dest[length] = Traits::TERMINATOR;
+  initialize(literal.getValue(), literal.getLength());
 }
 
-String::String(const NativeString& string) throw(MemoryException)
+String::String(const NativeString& src) throw(MemoryException)
 {
-  if (string.getValue()) {
-    int numberOfCharacters = getLengthOfMustBeTerminated(string.getValue());
-    elements = new ReferenceCountedCapacityAllocator<char>(
-      numberOfCharacters + 1,
-      GRANULARITY
-    );
-    // no overlap
-    auto dest = elements->getElements();
-    copy(dest, string.getValue(), numberOfCharacters);
-    dest[numberOfCharacters] = Traits::TERMINATOR;
-  } else {
-    elements = DEFAULT_STRING.elements;
-  }
+  initialize(src.getValue(), src.getLength());
 }
 
-String::String(const NativeString& string, MemorySize maximum) throw(StringException, MemoryException)
+String::String(const NativeString& src, MemorySize maximum) throw(StringException, MemoryException)
 {
-  if (string.getValue()) {
-    bassert(maximum <= MAXIMUM_LENGTH, StringException(this));
-    const char* terminator = find(string.getValue(), maximum, Traits::TERMINATOR);
-    int numberOfCharacters = terminator ? (terminator - string.getValue()) : maximum;
-    elements = new ReferenceCountedCapacityAllocator<char>(
-      numberOfCharacters + 1,
-      GRANULARITY
-    );
-    auto dest = elements->getElements();
-    copy(dest, string.getValue(), numberOfCharacters);
-    dest[numberOfCharacters] = Traits::TERMINATOR;
-  } else {
-    elements = DEFAULT_STRING.elements;
-  }
+  bassert(maximum <= MAXIMUM_LENGTH, StringException(this));
+  initialize(src.getValue(), getNullTerminatedLength(src.getValue(), maximum));
 }
 
 String& String::operator=(const Literal& literal) throw(StringException, MemoryException) 
 {
-  const MemorySize length = literal.getLength();
-  // bassert(length <= MAXIMUM_LENGTH, StringException(this)); // not required
-  elements = new ReferenceCountedCapacityAllocator<char>(length + 1, GRANULARITY);
-  auto dest = elements->getElements();
-  copy<char>(dest, literal.getValue(), length); // no overlap
-  dest[length] = Traits::TERMINATOR;
+  initialize(literal.getValue(), literal.getLength());
   return *this;
 }
 
-String& String::operator=(const NativeString& string) throw(StringException, MemoryException)
+String& String::operator=(const NativeString& src) throw(StringException, MemoryException)
 {
-  if (string.getValue()) {
-    const int numberOfCharacters = getLengthOfMustBeTerminated(string.getValue());
-    elements = new ReferenceCountedCapacityAllocator<char>(
-      numberOfCharacters + 1,
-      GRANULARITY
-    );
-    auto dest = elements->getElements();
-    copy(dest, string.getValue(), numberOfCharacters); // no overlap
-    dest[numberOfCharacters] = Traits::TERMINATOR;
-  } else {
-    elements = DEFAULT_STRING.elements;
-  }
+  initialize(src.getValue(), src.getLength());
   return *this;
 }
 
-bool String::isASCII() const throw()
+bool String::isASCII() const noexcept
 {
   const char* i = getBuffer();
   const char* end = i + getLength();
@@ -157,12 +126,63 @@ bool String::isASCII() const throw()
 
 void String::ensureCapacity(MemorySize capacity) throw(MemoryException)
 {
-  elements->ensureCapacity(capacity); // no need to do copyOnWrite
+  if (!elements.isMultiReferenced()) {
+    elements->ensureCapacity(capacity);
+    return;
+  }
+  
+  MemorySize length = getLength();
+  auto e = new ReferenceCountedCapacityAllocator<char>(length + 1, capacity, GRANULARITY);
+  copy<char>(e->getElements(), elements->getElements(), length + 1); // no overlap
+  elements = e;
+}
+
+char* String::getBuffer() throw(MemoryException) {
+  elements.copyOnWrite();
+  return elements->getElements();
+}
+
+char* String::getBuffer(MemorySize length) throw(StringException, MemoryException)
+{
+  bassert(
+    length <= MAXIMUM_LENGTH,
+    StringException(Type::getType<String>())
+  );
+
+  const MemorySize originalLength = getLength();
+
+  if (!elements.isMultiReferenced()) { // just resize
+    if (length == originalLength) { // nothing to do
+      return elements->getElements();
+    }
+    elements->setSize(length + 1);
+    auto dest = elements->getElements();
+    dest[length] = Traits::TERMINATOR;
+    return dest;
+  }
+  
+  if (length == originalLength) { // just copy
+    elements.copyOnWrite(); // we are about to modify the buffer
+    return elements->getElements();
+  }
+
+  // resize and copy
+  auto e = new ReferenceCountedCapacityAllocator<char>(length + 1, GRANULARITY); // reset capacity
+  auto dest = e->getElements();
+  if (length < originalLength) {
+    copy<char>(dest, elements->getElements(), length); // no overlap
+  } else {
+    copy<char>(dest, elements->getElements(), originalLength); // no overlap
+  }
+  dest[length] = Traits::TERMINATOR;
+  elements = e;
+
+  return dest;
 }
 
 void String::clear()
 {
-  setLength(0);
+  elements = DEFAULT_STRING.elements;
 }
 
 void String::garbageCollect() throw()
@@ -170,7 +190,7 @@ void String::garbageCollect() throw()
   elements->garbageCollect(); // no need to do copyOnWrite
 }
 
-MemorySize String::getGranularity() const throw()
+MemorySize String::getGranularity() const noexcept
 {
   return elements->getGranularity();
 }
@@ -182,7 +202,11 @@ void String::setGranularity(MemorySize granularity) throw()
 
 void String::forceToLength(MemorySize length) throw(StringException, MemoryException)
 {
+  const MemorySize originalLength = getLength();
   setLength(length);
+  if (originalLength < length) {
+    fill(getBuffer() + originalLength, length - originalLength, Traits::TERMINATOR);
+  }
 }
 
 char String::getAt(MemorySize index) const throw(OutOfRange)
@@ -194,11 +218,7 @@ char String::getAt(MemorySize index) const throw(OutOfRange)
 void String::setAt(MemorySize index, char value) throw(OutOfRange)
 {
   bassert(index < getLength(), OutOfRange(this));
-  if (value != TERMINATOR) {
-    getBuffer()[index] = value;
-  } else {
-    setLength(index);
-  }
+  getBuffer()[index] = value; // allow terminated within string
 }
 
 String& String::remove(MemorySize start, MemorySize end) throw(MemoryException)
@@ -219,101 +239,62 @@ String& String::remove(MemorySize start, MemorySize end) throw(MemoryException)
   return *this;
 }
 
-String& String::removeFrom(MemorySize start) throw(MemoryException) {
+String& String::removeFrom(MemorySize start) throw(MemoryException)
+{
   if (start < getLength()) { // protect against some cases
-    elements.copyOnWrite(); // we are about to modify the buffer
-    elements->setSize(start + 1); // remove section from end of string
+    getBuffer(start); // just resize
   }
   return *this;
 }
 
 String& String::insert(
-  MemorySize index, char ch) throw(StringException, MemoryException) {
-  MemorySize length = getLength();
-  setLength(length + 1);
-  auto buffer = elements->getElements();
-  if (index >= length) {
-    buffer[length] = ch; // insert section at end of string
-  } else {
-    // insert section in middle or beginning of string
-    move(buffer + index + 1, buffer + index, length - index);
-    buffer[index] = ch;
-  }
-  return *this;
+  MemorySize index, char ch) throw(StringException, MemoryException)
+{
+  return insert(index, MemorySpan(&ch, 1));
 }
 
 String& String::insert(
   MemorySize index,
-  const String& string) throw(StringException, MemoryException) {
-  MemorySize length = getLength();
-  if (length == 0) {
-    elements = string.elements;
-  } else {
-    int strlength = string.getLength();
-    setLength(length + strlength); // TAG: also protects against self insertion - but can this be circumvented
-    auto buffer = elements->getElements();
-    if (index >= length) {
-      // insert section at end of string
-      copy(buffer + length, string.getBuffer(), strlength);
-    } else {
-      // insert section in middle or beginning of string
-      move(buffer + index + strlength, buffer + index, length - index); // move end of string
-      copy(buffer + index, string.getBuffer(), strlength);
-    }
+  const String& src) throw(StringException, MemoryException)
+{
+  if (getLength() == 0) {
+    elements = src.elements; // copy string
+    return *this;
   }
-  return *this;
+  return insert(index, MemorySpan(src.getElements(), src.getLength()));
 }
 
-String& String::insert(
-  MemorySize index,
-  const Literal& literal) throw(StringException, MemoryException)
+String& String::insert(MemorySize index, const MemorySpan& span) throw(StringException, MemoryException)
 {
   const MemorySize length = getLength();
-  setLength(length + literal.getLength());
-  auto buffer = elements->getElements();
+  const MemorySize newLength = length + span.getSize();
+  auto buffer = getBuffer(newLength);
   if (index >= length) {
     // insert section at end of string
-    copy<char>(buffer + length, literal.getValue(), literal.getLength());
+    span.copyTo(buffer + length);
   } else {
     // insert section in middle or beginning of string
     move<char>(
-      buffer + index + literal.getLength(),
+      buffer + index + span.getSize(),
       buffer + index,
       length - index
     );
-    copy<char>(buffer + index, literal.getValue(), literal.getLength());
+    span.copyTo(buffer + index);
   }
-  buffer[length + literal.getLength()] = Traits::TERMINATOR;
+  buffer[newLength] = Traits::TERMINATOR;
   return *this;
+}
+
+String& String::insert(MemorySize index, const Literal& literal) throw(StringException, MemoryException)
+{
+  return insert(index, MemorySpan(literal.getValue(), literal.getLength()));
 }
 
 String& String::insert(
   MemorySize index,
-  const NativeString& string) throw(StringException, MemoryException)
+  const NativeString& src) throw(StringException, MemoryException)
 {
-  int strlength = 0;
-  if (string.getValue()) { // is string proper (not empty)
-    const char* terminator = find(
-      string.getValue(),
-      MAXIMUM_LENGTH,
-      Traits::TERMINATOR
-    );
-    bassert(terminator, StringException(this));
-    strlength = terminator - string.getValue();
-  }
-  MemorySize length = getLength();
-  setLength(length + strlength);
-  auto buffer = elements->getElements();
-  if (index >= length) {
-    // insert section at end of string
-    copy(buffer + length, string.getValue(), strlength);
-  } else {
-    // insert section in middle or beginning of string
-    move(buffer + index + strlength, buffer + index, length - index);
-    copy(buffer + index, string.getValue(), strlength);
-  }
-  elements->getElements()[length + strlength] = Traits::TERMINATOR;
-  return *this;
+  return insert(index, MemorySpan(src.getValue(), src.getLength()));
 }
 
 String& String::append(const Literal& literal) throw(StringException, MemoryException)
@@ -340,8 +321,7 @@ String& String::append(const MemorySpan& src) throw(StringException, MemoryExcep
     if (suffixLength > 0) {
       const MemorySize length = getLength();
       const MemorySize newLength = length + suffixLength;
-      setLength(newLength);
-      auto buffer = elements->getElements();
+      auto buffer = getBuffer(newLength);
       src.copyTo(reinterpret_cast<uint8*>(buffer) + length);
       buffer[newLength] = Traits::TERMINATOR;
     }
@@ -392,7 +372,7 @@ MemorySize String::replaceAll(
   const String& toStr) throw(StringException, MemoryException) {
   MemorySize count = 0;
   MemorySize start = 0;
-  int found;
+  MemoryDiff found = -1;
   while ((found = indexOf(fromStr, start)) >= 0) { // continue until no more fromStr's
     replace(found, found + fromStr.getLength(), toStr); // fromStr.getLength() > 0
     start = found + toStr.getLength(); // skip toStr
@@ -400,15 +380,15 @@ MemorySize String::replaceAll(
   return count;
 }
 
-String String::substring(
-  MemorySize start, MemorySize end) const throw(MemoryException) {
-  MemorySize length = getLength();
+String String::substring(MemorySize start, MemorySize end) const throw(MemoryException)
+{
+  const MemorySize length = getLength();
   if ((start < end) && (start < length)) {
     if (end > length) {
       end = length; // force to end of string
     }
-    // 0 <= start < end <= getLength()
-    MemorySize lengthOfSubstring = end - start;
+    ASSERT((0 <= start) && (start < end) && (end <= getLength()));
+    const MemorySize lengthOfSubstring = end - start;
     String result(lengthOfSubstring);
     result.setLength(lengthOfSubstring);
     copy(result.getBuffer(), getBuffer() + start, lengthOfSubstring); // buffers do not overlap
@@ -418,7 +398,8 @@ String String::substring(
   }
 }
 
-String& String::operator-=(const String& suffix) throw(MemoryException) {
+String& String::operator-=(const String& suffix) throw(MemoryException)
+{
   if (endsWith(suffix)) {
     setLength(suffix.getLength());
   }
@@ -429,7 +410,7 @@ String& String::reverse() throw()
 {
   auto p = getBuffer();
   auto q = &p[getLength() - 1]; // last char - empty string => q < p
-  char temp;
+  char temp = 0;
   while (p < q) { // until middle of string has been reached
     temp = *p;
     *p = *q;
@@ -452,7 +433,7 @@ String& String::toUpperCase() throw()
   return *this;
 }
 
-int String::compareTo(const String& string) const throw()
+int String::compareTo(const String& string) const noexcept
 {
   // both strings may contain multiple zeros
   MemorySize leftLength = getLength();
@@ -477,7 +458,7 @@ int String::compareTo(const String& string) const throw()
   }
 }
 
-int String::compareTo(const Literal& literal) const throw()
+int String::compareTo(const Literal& literal) const noexcept
 {
   const char* left = getElements();
   const char* right = literal.getValue();
@@ -492,7 +473,7 @@ int String::compareTo(const Literal& literal) const throw()
   return static_cast<int>(*left) - static_cast<int>(*right);
 }
 
-int String::compareTo(const NativeString& string) const throw()
+int String::compareTo(const NativeString& string) const noexcept
 {
   if (!string.getValue()) {
     return false;
@@ -526,7 +507,7 @@ int String::compareToIgnoreCase(const char* left, const char* right) throw()
   return (Traits::toLower(*left) - Traits::toLower(*right));
 }
 
-int String::compareToIgnoreCase(const String& string) const throw()
+int String::compareToIgnoreCase(const String& string) const noexcept
 {
   return compareToIgnoreCase(getElements(), string.getElements());
 }
@@ -537,21 +518,21 @@ int String::compareToIgnoreCase(const NativeString& string) const throw(StringEx
   return compareToIgnoreCase(getElements(), string.getValue());
 }
 
-bool String::startsWith(const String& prefix) const throw()
+bool String::startsWith(const String& prefix) const noexcept
 {
   const MemorySize prefixLength = prefix.getLength();
   return (prefixLength > 0) && (prefixLength <= getLength()) &&
     (compare(getBuffer(), prefix.getBuffer(), prefixLength) == 0);
 }
 
-bool String::startsWith(const Literal& prefix) const throw()
+bool String::startsWith(const Literal& prefix) const noexcept
 {
   const MemorySize prefixLength = prefix.getLength();
   return (prefixLength > 0) && (prefixLength <= getLength()) &&
     (compare<char>(getBuffer(), prefix.getValue(), prefixLength) == 0);
 }
 
-bool String::endsWith(const String& suffix) const throw()
+bool String::endsWith(const String& suffix) const noexcept
 {
   const MemorySize length = getLength();
   const MemorySize suffixLength = suffix.getLength();
@@ -559,7 +540,7 @@ bool String::endsWith(const String& suffix) const throw()
     (compare(getBuffer() + length - suffixLength, suffix.getBuffer(), suffixLength) == 0);
 }
 
-bool String::endsWith(const Literal& suffix) const throw()
+bool String::endsWith(const Literal& suffix) const noexcept
 {
   const MemorySize length = getLength();
   const MemorySize suffixLength = suffix.getLength();
@@ -567,7 +548,7 @@ bool String::endsWith(const Literal& suffix) const throw()
     (compare<char>(getBuffer() + length - suffixLength, suffix.getValue(), suffixLength) == 0);
 }
 
-MemoryDiff String::indexOf(char ch, MemorySize start) const throw()
+MemoryDiff String::indexOf(char ch, MemorySize start) const noexcept
 {
   MemorySize length = getLength();
   if (start >= length) {
@@ -585,7 +566,7 @@ MemoryDiff String::indexOf(char ch, MemorySize start) const throw()
   }
 }
 
-MemoryDiff String::indexOf(const String& string, MemorySize start) const throw()
+MemoryDiff String::indexOf(const String& string, MemorySize start) const noexcept
 {
   MemorySize length = getLength();
   MemorySize sublength = string.getLength();
@@ -632,7 +613,7 @@ MemoryDiff String::indexOf(const String& string, MemorySize start) const throw()
   return -1; // not found
 }
 
-MemoryDiff String::lastIndexOf(char ch, MemorySize start) const throw()
+MemoryDiff String::lastIndexOf(char ch, MemorySize start) const noexcept
 {
   // examined cases: getLength() = 0, getLength() = 1, getLength() > 1
   const char* buffer = getBuffer();
@@ -646,8 +627,7 @@ MemoryDiff String::lastIndexOf(char ch, MemorySize start) const throw()
   return -1; // not found
 }
 
-MemoryDiff String::lastIndexOf(
-  const String& string, MemorySize start) const throw()
+MemoryDiff String::lastIndexOf(const String& string, MemorySize start) const noexcept
 {
   if ((string.isEmpty()) || (string.getLength() > getLength())) { // eliminate some cases
     return -1; // not found
@@ -696,9 +676,9 @@ MemoryDiff String::lastIndexOf(
   return -1; // not found
 }
 
-MemorySize String::count(char ch, MemorySize start) const throw()
+MemorySize String::count(char ch, MemorySize start) const noexcept
 {
-  int result = 0;
+  MemorySize result = 0;
   MemorySize count = 0;
   while ((result = indexOf(ch, start)) >= 0) { // until not found
     ++count;
@@ -707,9 +687,9 @@ MemorySize String::count(char ch, MemorySize start) const throw()
   return count;
 }
 
-MemorySize String::count(const String& string, MemorySize start) const throw()
+MemorySize String::count(const String& string, MemorySize start) const noexcept
 {
-  int result = 0;
+  MemorySize result = 0;
   MemorySize count = 0;
   while ((result = indexOf(string, start)) >= 0) { // until not found - works for empty string
     ++count;
@@ -730,40 +710,40 @@ String& String::trim(char character) throw()
 {
   ReadIterator begin = getBeginReadIterator();
   ReadIterator end = getEndReadIterator();
-  MemorySize length = getLength();
-  bool modified = false;
-  
-  ReadIterator last = end;
-  --last;
-  if (*last == character) {
-    modified = true;
-    while ((begin != last) && (*last == character)) {
-      --last;
-    }
-    elements.copyOnWrite(); // we are about to modify the buffer
-    length = last - begin + 1;
+  if (begin == end) {
+    return *this; // empty
   }
-  end = last + 1;
-  
-  ReadIterator i = begin;
-  if (*i == character) {
-    modified = true;
-    while ((i < end) && (*i == character)) {
-      ++i;
-    }
-    char* buffer = getBuffer(); // we are about to modify the buffer
-    move(buffer, buffer + (i - begin), length - (i - begin)); // move end of string
-    length -= (i - begin);
+
+  while ((begin != end) && (*begin == character)) {
+    ++begin;
   }
-  if (modified) {
-    elements->setSize(length + 1); // remember space for terminator
-    elements->getElements()[getLength()] = Traits::TERMINATOR;
+  if (begin == end) {
+    clear();
+    return *this;
+  }
+  
+  --end;
+  while ((end != begin) && (*end == character)) {
+    --end;
+  }
+  ++end; // end of trimmed string
+  
+  const MemoryDiff newLength = end - begin;
+  if (newLength == getLength()) {
+    return *this; // nothing to do
+  }
+  
+  if (begin == getBeginReadIterator()) { // nothing trimmed from start
+    getBuffer(newLength); // just discard
+  } else {
+    // TAG: if only one reference then we can avoid new buffer
+    *this = substring(begin - getBeginReadIterator(), end - getBeginReadIterator());
   }
   return *this;
 }
 
 // http://www.cs.utexas.edu/users/moore/best-ideas/string-searching/index.html
-MemoryDiff String::search(const String& substring, MemorySize start) const throw()
+MemoryDiff String::search(const String& substring, MemorySize start) const noexcept
 {
   const MemorySize length = substring.getLength();
   if ((length == 0) || (getLength() < (start + length))) {
@@ -810,8 +790,8 @@ MemoryDiff String::search(const String& substring, MemorySize start) const throw
   return -1; // not found
 }
 
-Array<String> String::split(
-  char separator, bool group) throw(MemoryException) {
+Array<String> String::split(char separator, bool group) const throw(MemoryException)
+{
   Array<String> result;
   
   const ReadIterator begin = getBeginReadIterator();
@@ -868,48 +848,55 @@ unsigned long Hash<String>::operator()(const String& value) throw()
   return result;
 }
 
-FormatOutputStream& operator<<(
-  FormatOutputStream& stream, const String& value) throw(IOException) {
+FormatOutputStream& operator<<(FormatOutputStream& stream, const String& value) throw(IOException)
+{
   stream.addCharacterField(value.getElements(), value.getLength());
   return stream;
 }
 
 /** Converts wstring to UTF-8 string. */
-std::string toUTF8(const String& s) {
+std::string toUTF8(const String& s)
+{
   return std::string(s.getElements(), s.getLength());
 }
 
 /** Converts wstring to UTF-8 string. */
-std::string toUTF8(const std::wstring& s) {
+std::string toUTF8(const std::wstring& s)
+{
   std::wstring_convert<std::codecvt_utf8<wchar_t>, wchar_t> convert;
   return convert.to_bytes(s.c_str(), s.c_str() + s.size());
 }
 
 /** Converts wstring to UTF-8 string. */
-std::string toUTF8(const wchar* s) {
+std::string toUTF8(const wchar* s)
+{
   std::wstring_convert<std::codecvt_utf8<wchar_t>, wchar_t> convert;
   return convert.to_bytes(s);
 }
 
-std::string toUTF8(const wchar* s, MemorySize length) {
+std::string toUTF8(const wchar* s, MemorySize length)
+{
   std::wstring_convert<std::codecvt_utf8<wchar_t>, wchar_t> convert;
   return convert.to_bytes(s, s + length);
 }
 
 /** Converts UTF-8 string to wstring. */
-std::wstring toWide(const std::string& s) {
+std::wstring toWide(const std::string& s)
+{
   std::wstring_convert<std::codecvt_utf8<wchar_t>, wchar_t> convert;
   return convert.from_bytes(s.c_str(), s.c_str() + s.size());
 }
 
 /** Converts String to wstring. */
-std::wstring toWide(const String& s) {
+std::wstring toWide(const String& s)
+{
   std::wstring_convert<std::codecvt_utf8<wchar_t>, wchar_t> convert;
   return convert.from_bytes(s.getElements(), s.getElements() + s.getLength());
 }
 
 /** Converts UTF-8 (const char*) to wstring. */
-std::wstring toWide(const char* s) {
+std::wstring toWide(const char* s)
+{
   std::wstring_convert<std::codecvt_utf8<wchar_t>, wchar_t> convert;
   return convert.from_bytes(s);
 }

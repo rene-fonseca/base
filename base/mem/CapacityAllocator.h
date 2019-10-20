@@ -16,6 +16,9 @@
 #include <base/mem/Allocator.h>
 #include <base/OutOfRange.h>
 
+// TAG: capacity should apply to underlaying heap - before object init/destruct
+// TAG: add Allocator<TYPE> that doesn't initialize but reserves the memory elements
+
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 /**
@@ -40,6 +43,8 @@ public:
 private:
   
   /** The number of elements in the block. */
+  MemorySize size = 0;
+  /** The minimum capacity. */
   MemorySize capacity = 0;
   /** The granularity of the allocated block memory. */
   MemorySize granularity = DEFAULT_GRANULARITY;
@@ -54,7 +59,8 @@ public:
   /**
     Initializes an empty allocator with the default granularity.
   */
-  inline explicit CapacityAllocator() noexcept {
+  inline explicit CapacityAllocator() noexcept
+  {
   }
 
   /**
@@ -78,7 +84,16 @@ public:
     @param granularity Specifies the number of elements to allocate at a time.
   */
   inline CapacityAllocator(MemorySize size, MemorySize _granularity) throw(OutOfRange, MemoryException)
-    : granularity(_granularity) {
+    : granularity(_granularity)
+  {
+    bassert(granularity >= MINIMUM_GRANULARITY, OutOfRange(this));
+    setSize(size);
+  }
+
+  inline CapacityAllocator(MemorySize size, MemorySize _capacity, MemorySize _granularity) throw(OutOfRange, MemoryException)
+    : capacity(_capacity),
+      granularity(_granularity)
+  {
     bassert(granularity >= MINIMUM_GRANULARITY, OutOfRange(this));
     setSize(size);
   }
@@ -88,6 +103,7 @@ public:
   */
   inline CapacityAllocator(const CapacityAllocator& copy) throw(MemoryException)
     : Allocator<TYPE>(copy),
+      size(copy.size),
       capacity(copy.capacity),
       granularity(copy.granularity)
   {
@@ -96,10 +112,10 @@ public:
   /**
     Assignment of allocator by allocator.
   */
-  inline CapacityAllocator& operator=(
-    const CapacityAllocator& eq) throw(MemoryException)
+  inline CapacityAllocator& operator=(const CapacityAllocator& eq) throw(MemoryException)
   {
     if (&eq != this) { // protect against self assignment
+      size = eq.size;
       capacity = eq.capacity;
       granularity = eq.granularity;
       Allocator<TYPE>::operator=(eq);
@@ -110,64 +126,73 @@ public:
   /**
     Returns the number of elements of the allocator.
   */
-  inline MemorySize getSize() const noexcept {
-    return capacity;
+  inline MemorySize getSize() const noexcept
+  {
+    return size;
   }
 
   /**
     Returns the granularity.
   */
-  inline MemorySize getGranularity() const noexcept {
+  inline MemorySize getGranularity() const noexcept
+  {
     return granularity;
   }
 
   /**
     Returns true if no elements are allocated.
   */
-  inline bool isEmpty() const noexcept {
-    return capacity == 0;
+  inline bool isEmpty() const noexcept
+  {
+    return size == 0;
   }
 
   /**
     Returns the first element of the allocator as a modifying iterator.
   */
-  inline Iterator getBeginIterator() noexcept {
+  inline Iterator getBeginIterator() noexcept
+  {
     return Iterator(Allocator<TYPE>::getElements());
   }
 
   /**
     Returns the end of the allocator as a modifying iterator.
   */
-  inline Iterator getEndIterator() noexcept {
-    return Iterator(Allocator<TYPE>::getElements() + getSize());
+  inline Iterator getEndIterator() noexcept
+  {
+    return Iterator(Allocator<TYPE>::getElements() + size);
   }
 
   /**
     Returns the first element of the allocator as a non-modifying iterator.
   */
-  inline ReadIterator getBeginReadIterator() const noexcept {
+  inline ReadIterator getBeginReadIterator() const noexcept
+  {
     return ReadIterator(Allocator<TYPE>::getElements());
   }
 
   /**
     Returns the end of the allocator as a non-modifying iterator.
   */
-  inline ReadIterator getEndReadIterator() const noexcept {
-    return ReadIterator(Allocator<TYPE>::getElements() + getSize());
+  inline ReadIterator getEndReadIterator() const noexcept
+  {
+    return ReadIterator(Allocator<TYPE>::getElements() + size);
   }
 
   /**
     Returns a modifying enumerator of the allocator.
   */
-  inline Enumerator getEnumerator() noexcept {
-    return Enumerator(Allocator<TYPE>::getElements(), Allocator<TYPE>::getElements() + getSize());
+  inline Enumerator getEnumerator() noexcept
+  {
+    return Enumerator(Allocator<TYPE>::getElements(), Allocator<TYPE>::getElements() + size);
   }
 
   /**
     Returns a non-modifying enumerator of the allocator.
   */
-  inline ReadEnumerator getReadEnumerator() const noexcept {
-    return ReadEnumerator(Allocator<TYPE>::getElements(), Allocator<TYPE>::getElements() + getSize());
+  inline ReadEnumerator getReadEnumerator() const noexcept
+  {
+    return ReadEnumerator(Allocator<TYPE>::getElements(), Allocator<TYPE>::getElements() + size);
   }
 
   /**
@@ -178,12 +203,12 @@ public:
     unchanged). If the size is reduced the elements up to the new size are
     unchanged.
   */
-  void setSize(MemorySize size) throw(MemoryException)
+  void setSize(MemorySize _size) throw(MemoryException)
   {
-    if (size != capacity) {
-      capacity = size;
+    if (_size != size) {
+      size = _size;
       Allocator<TYPE>::setSize(
-        (capacity + granularity - 1)/granularity * granularity
+        (maximum(size, capacity) + granularity - 1)/granularity * granularity
       );
     }
   }
@@ -206,7 +231,7 @@ public:
   */
   inline MemorySize getCapacity() const noexcept
   {
-    return Allocator<TYPE>::getSize();
+    return Allocator<TYPE>::getSize(); // the actual capacity
   }
 
   /**
@@ -215,12 +240,15 @@ public:
 
     @param capacity Specifies the minimum capacity of the allocator.
   */
-  void ensureCapacity(MemorySize capacity) throw(MemoryException)
+  void ensureCapacity(MemorySize _capacity) throw(MemoryException)
   {
-    if (capacity > Allocator<TYPE>::getSize()) {
-      Allocator<TYPE>::setSize(
-        (capacity + granularity - 1)/granularity * granularity
-      );
+    if (_capacity != capacity) {
+      capacity = _capacity;
+      if (capacity > Allocator<TYPE>::getSize()) {
+        Allocator<TYPE>::setSize(
+          (capacity + granularity - 1)/granularity * granularity
+        );
+      }
     }
   }
 
@@ -240,7 +268,8 @@ public:
   void garbageCollect()
   {
     // knowledge: does not raise an exception 'cause we do not expand the buffer
-    Allocator<TYPE>::setSize(capacity);
+    capacity = 0;
+    Allocator<TYPE>::setSize(size); // ignore capacity here
   }
 };
 

@@ -39,14 +39,15 @@ private:
     Default assignment is prohibited.
   */
   ReferenceCountedCapacityAllocator& operator=(
-    const ReferenceCountedCapacityAllocator& eq) throw();
+    const ReferenceCountedCapacityAllocator& eq) noexcept;
 public:
 
   /**
     Initializes an empty allocator with the default granularity.
   */
-  inline explicit ReferenceCountedCapacityAllocator() throw()
-    : CapacityAllocator<TYPE>() {
+  inline explicit ReferenceCountedCapacityAllocator() noexcept
+    : CapacityAllocator<TYPE>()
+  {
   }
 
   /**
@@ -54,9 +55,9 @@ public:
 
     @param granularity Specifies the number of elements to allocate at a time.
   */
-  inline explicit ReferenceCountedCapacityAllocator(
-    MemorySize granularity) throw(OutOfRange)
-    : CapacityAllocator<TYPE>(granularity) {
+  inline explicit ReferenceCountedCapacityAllocator(MemorySize granularity) throw(OutOfRange)
+    : CapacityAllocator<TYPE>(granularity)
+  {
   }
   
   /**
@@ -71,7 +72,16 @@ public:
   inline ReferenceCountedCapacityAllocator(
     MemorySize size,
     MemorySize granularity) throw(OutOfRange, MemoryException)
-    : CapacityAllocator<TYPE>(size, granularity) {
+    : CapacityAllocator<TYPE>(size, granularity)
+  {
+  }
+
+  inline ReferenceCountedCapacityAllocator(
+    MemorySize size,
+    MemorySize capacity,
+    MemorySize granularity) throw(OutOfRange, MemoryException)
+    : CapacityAllocator<TYPE>(size, capacity, granularity)
+  {
   }
 
   /**
@@ -79,7 +89,8 @@ public:
     MemoryException if unable to allocate the required memory.
   */
   ReferenceCountedCapacityAllocator(const ReferenceCountedCapacityAllocator& copy) throw(MemoryException)
-    : CapacityAllocator<TYPE>(copy) {
+    : CapacityAllocator<TYPE>(copy)
+  {
   }
 };
 

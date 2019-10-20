@@ -57,7 +57,7 @@ protected:
 
     @param heap The memory block.
     @param size The desired size of the memory block in number of bytes.
-    @return 0 if unable to resize memory block or size was 0.
+    @return nullptr if unable to resize memory block or size was 0.
   */
   static void* tryResize(void* heap, unsigned int size) throw(MemoryException);
 
@@ -88,7 +88,8 @@ public:
     @param size The desired size of the memory block in number of elements.
   */
   template<class TYPE>
-  inline static TYPE* allocate(unsigned int size) throw(MemoryException) {
+  inline static TYPE* allocate(unsigned int size) throw(MemoryException)
+  {
     return static_cast<TYPE*>(HeapImpl::allocate(size * sizeof(TYPE)));
   }
 
@@ -100,7 +101,8 @@ public:
     @param size The desired size of the memory block in number of elements.
   */
   template<class TYPE>
-  inline static TYPE* resize(TYPE* heap, unsigned int size) throw(MemoryException) {
+  inline static TYPE* resize(TYPE* heap, unsigned int size) throw(MemoryException)
+  {
     return static_cast<TYPE*>(HeapImpl::resize(heap, size * sizeof(TYPE)));
   }
 
@@ -110,14 +112,15 @@ public:
 
     @param heap The memory block.
     @param size The desired size of the memory block in number of elements.
-    @return 0 if unable to resize memory block or size was 0.
+    @return nullptr if unable to resize memory block or size was 0.
   */
   template<class TYPE>
-  inline static TYPE* tryResize(void* heap, unsigned int size) throw(MemoryException) {
+  inline static TYPE* tryResize(void* heap, unsigned int size) throw(MemoryException)
+  {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
     return static_cast<TYPE*>(HeapImpl::tryResize(heap, size * sizeof(TYPE)));
 #else // Unix
-    return 0; // not implemented
+    return nullptr; // not implemented
 #endif
   }
 
@@ -128,7 +131,8 @@ public:
     @param heap The memory block.
   */
   template<class TYPE>
-  inline static void release(TYPE* heap) throw(MemoryException) {
+  inline static void release(TYPE* heap) throw(MemoryException)
+  {
     HeapImpl::release(heap);
   }
 };

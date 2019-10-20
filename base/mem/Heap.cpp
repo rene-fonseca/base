@@ -31,7 +31,8 @@ namespace internal {
 };
 #endif // flavor
 
-void* HeapImpl::allocate(unsigned int size) throw(MemoryException) {
+void* HeapImpl::allocate(unsigned int size) throw(MemoryException)
+{
   void* result = nullptr;
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   result = static_cast<void*>(::HeapAlloc(internal::specific::processHeap, 0, size));
@@ -47,7 +48,8 @@ void* HeapImpl::allocate(unsigned int size) throw(MemoryException) {
   return result;
 }
 
-void* HeapImpl::resize(void* heap, unsigned int size) throw(MemoryException) {
+void* HeapImpl::resize(void* heap, unsigned int size) throw(MemoryException)
+{
   void* result = nullptr;
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   // is serialization enabled for the heap object returned by GetProcessHeap
@@ -58,7 +60,7 @@ void* HeapImpl::resize(void* heap, unsigned int size) throw(MemoryException) {
       if (!::HeapFree(internal::specific::processHeap, 0, heap)) {
         throw bindCause(MemoryException("Unable to resize heap", Type::getType<HeapImpl>()), ::GetLastError());
       }
-      result = 0;
+      result = nullptr;
     }
   } else {
     result = static_cast<void*>(::HeapAlloc(internal::specific::processHeap, 0, size));
@@ -75,7 +77,8 @@ void* HeapImpl::resize(void* heap, unsigned int size) throw(MemoryException) {
   return result;
 }
 
-void* HeapImpl::tryResize(void* heap, unsigned int size) throw(MemoryException) {
+void* HeapImpl::tryResize(void* heap, unsigned int size) throw(MemoryException)
+{
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   if (heap) {
     if (size) {
@@ -84,17 +87,18 @@ void* HeapImpl::tryResize(void* heap, unsigned int size) throw(MemoryException) 
       if (!::HeapFree(internal::specific::processHeap, 0, heap)) {
         throw bindCause(MemoryException("Unable to resize heap", Type::getType<HeapImpl>()), ::GetLastError());
       }
-      return 0;
+      return nullptr;
     }
   } else {
-    return 0;
+    return nullptr;
   }
 #else // unix
-  return 0;
+  return nullptr;
 #endif // flavor
 }
 
-void HeapImpl::release(void* heap) throw(MemoryException) {
+void HeapImpl::release(void* heap) throw(MemoryException)
+{
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   if (!::HeapFree(internal::specific::processHeap, 0, heap)) {
     throw bindCause(MemoryException("Unable to release heap", Type::getType<HeapImpl>()), ::GetLastError());

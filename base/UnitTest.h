@@ -131,10 +131,6 @@ private:
   /** Class type. */
   Type type;
 
-  // TAG: record timing and allow comparison of runs
-  // TAG: add timing constraints
-  // TAG: add IO constraints
-
   /** All recorded runs. */
   Array<Reference<Run> > runs;
   /** The current run. */
@@ -263,6 +259,24 @@ public:
     return 1;
   }
   
+  /** Use TEST_LIMIT_IO to set IO limit. */
+  virtual uint64 getLimitIO() const noexcept
+  {
+    return 0;
+  }
+
+  /** Use TEST_LIMIT_TIME_MS to set processing time limit. */
+  virtual uint64 getLimitProcessingTime() const noexcept
+  {
+    return 0;
+  }
+
+  /** Use TEST_LIMIT_MEMORY to set processing time limit. */
+  virtual uint64 getLimitMemory() const noexcept
+  {
+    return 0;
+  }
+
   /** Runs the test. */
   virtual void run();
 
@@ -438,6 +452,15 @@ public:
 
 /** Sets the number of repeats for the test. */
 #define TEST_REPEATS(count) unsigned int getRepeats() const noexcept override {return static_cast<unsigned int>(repeats);}
+
+/** Sets the timeout for the test in milliseconds. */
+#define TEST_LIMIT_IO(kbytes) uint64 getLimitIO() const noexcept override {return static_cast<uint64>(kbytes);}
+
+/** Sets the timeout for the test in milliseconds. */
+#define TEST_LIMIT_TIME_MS(time) uint64 getLimitProcessingTime() const noexcept override {return static_cast<uint64>(time);}
+
+/** Sets the timeout for the test in milliseconds. */
+#define TEST_LIMIT_MEMORY(kbytes) uint64 getLimitMemory() const noexcept override {return static_cast<uint64>(kbytes);}
 
 /**
   Declares a test for a given type.

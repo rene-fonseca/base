@@ -30,10 +30,10 @@ private:
     COMMAND_REMOVE
   };
   
-  Command command;
-  bool silent;
-  bool recursive;
-  bool force;
+  Command command = COMMAND_REMOVE;
+  bool silent = false;
+  bool recursive = false;
+  bool force = false;
   Array<String> paths;
 public:
   
@@ -41,11 +41,8 @@ public:
     int numberOfArguments,
     const char* arguments[],
     const char* environment[])
-    : Application("rm", numberOfArguments, arguments, environment) {
-    silent = false;
-    recursive = false;
-    force = false;
-    command = COMMAND_REMOVE;
+    : Application("rm", numberOfArguments, arguments, environment)
+  {
   }
   
   void parseArguments() {

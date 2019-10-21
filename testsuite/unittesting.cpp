@@ -42,31 +42,34 @@ public:
     : Application("unittesting", numberOfArguments, arguments, environment) {
   }
   
-  void parseArguments() {
+  bool parseArguments()
+  {
     Array<String> arguments = getArguments();
     Array<String>::ReadEnumerator enu = arguments.getReadEnumerator();
     while (enu.hasNext()) {
       String argument = *enu.next();
       if (argument == "--help") {
         command = COMMAND_HELP;
-        return;
       } else if (argument == "--version") {
         command = COMMAND_VERSION;
-        return;
       } else if (argument == "--list") {
         command = COMMAND_LIST;
-        return;
       } else if (argument == "--run") {
         command = COMMAND_RUN;
-        return;
       } else {
+        if (argument.startsWith("-")) {
+          ferr << "Unsupported argument." << ENDL;
+          return false;
+        }
         // TAG: handle priority
         pattern = argument;
       }
     }
+    return true;
   }
   
-  void version() {
+  void version()
+  {
     fout << getFormalName() << " version "
       << MAJOR_VERSION << '.' << MINOR_VERSION << EOL
       << "The Base Framework (Test Suite)" << EOL
@@ -74,7 +77,8 @@ public:
       << ENDL;
   }
 
-  void help() {
+  void help()
+  {
     version();
     fout << "Usage: " << getFormalName() << " [options] [pattern]" << EOL
       << EOL
@@ -86,23 +90,20 @@ public:
       << ENDL;
   }
 
-  void main() {
-    fout << getFormalName() << " version "
-         << MAJOR_VERSION << '.' << MINOR_VERSION << EOL
-         << "The Base Framework (Test Suite)" << EOL
-         << "Copyright (C) 2019 by Rene Moeller Fonseca" << EOL
-         << ENDL;
-
+  void main()
+  {
     // TAG: get pattern and priority from args
+    if (!parseArguments()) {
+      return;
+    }
 
-    auto& manager = UnitTestManager::getManager();
-    manager.loadTests();
-    
     if (command == COMMAND_VERSION) {
       version();
     } else if (command == COMMAND_HELP) {
       help();
     } else if (command == COMMAND_LIST) {
+      auto& manager = UnitTestManager::getManager();
+      manager.loadTests();
       const auto& tests = manager.getTests();
 
       for (auto test : tests) {
@@ -117,9 +118,13 @@ public:
         // TAG: show all limits
       }
     } else if (command == COMMAND_RUN) {
+      auto& manager = UnitTestManager::getManager();
       manager.runTests(pattern);
 
+      // TAG: add support for loading baseline for comparison
       // TAG: dump to JSON
+    } else {
+      help();
     }
   }
 };

@@ -48,7 +48,7 @@ void UnitTest::Run::onPassed(const String& what)
   TestResult result;
   result.passed = true;
   result.what = what;
-  fout << "TEST: PASSED: " << what << ENDL;
+  fout << "  PASSED: " << what << ENDL;
   results.append(result);
 }
 
@@ -58,7 +58,8 @@ void UnitTest::Run::onFailed(const String& what)
   TestResult result;
   result.passed = false;
   result.what = what;
-  fout << "TEST: FAILED: " << what << ENDL;
+  // TAG: add support for silent
+  fout << "  FAILED: " << what << ENDL;
   results.append(result);
 }
 
@@ -135,18 +136,19 @@ Reference<UnitTest::Run> UnitTest::runImpl()
 {
   auto& manager = UnitTestManager::getManager();
 
-  fout << "TEST " << name << " / type " << type.getLocalName() << ENDL;
+  fout << "===============================================================================" << EOL
+       << "TEST " << name << ENDL;
   if (!source.isEmpty()) {
-    fout << "  source " << source << ENDL;
+    fout << "  Source: " << source << ENDL;
   }
   if (!description.isEmpty()) {
-    fout << "  description " << description << ENDL;
+    fout << "  Description: " << description << ENDL;
   }
 
   Reference<Run> r = new Run();
   currentRun = r;
   r->startTime = manager.timer.getLiveMicroseconds();
-  fout << Format::subst("START TEST '%1' at %2.", getName(), r->startTime/1000000.0) << ENDL;
+  fout << Format::subst("  START at %1s.", r->startTime/1000000.0) << ENDL;
   try {
     run();
   } catch (Exception& e) {
@@ -167,7 +169,7 @@ Reference<UnitTest::Run> UnitTest::runImpl()
     onFailed("Test failed with unknown exception.");
   }
   r->endTime = manager.timer.getLiveMicroseconds();
-  fout << Format::subst("END TEST '%1' at %2 (%3).", getName(), r->endTime / 1000000.0, (r->endTime - r->startTime)/1000000.0) << ENDL;
+  fout << Format::subst("  ELAPSED TIME %1s", (r->endTime - r->startTime)/1000000.0) << ENDL; // r->endTime/1000000.0
 
   unsigned int pointsReached = 0;
   unsigned int pointsReach = 0;
@@ -192,7 +194,8 @@ Reference<UnitTest::Run> UnitTest::runImpl()
     }
   }
 
-  fout << Format::subst("TEST '%1' PASSED:%2 FAILED:%3 HERE:%4/%5 NOTHERE:%6/%7.", getName(), r->passed, r->failed, pointsReached, pointsReach, pointsNotReach, pointsNotReached) << ENDL;
+  fout << Format::subst("  PASSED:%1 FAILED:%2 HERE:%3/%4 NOT_HERE:%5/%6", r->passed, r->failed, pointsReached, pointsReach, pointsNotReach, pointsNotReached)
+       << ENDL;
 
   if ((pointsReached < pointsReach) || (pointsNotReached < pointsNotReach)) {
     auto e = r->heres.getReadEnumerator();
@@ -201,11 +204,11 @@ Reference<UnitTest::Run> UnitTest::runImpl()
       auto meta = n->getValue();
       if (meta.reach) {
         if (meta.count == 0) {
-          fout << Format::subst("TEST UNREACHED HERE '%1'.", String(meta.description)) << ENDL;
+          fout << Format::subst("  UNREACHED HERE '%1'.", String(meta.description)) << ENDL;
         }
       } else {
         if (meta.count != 0) {
-          fout << Format::subst("TEST REACHED NOTHERE '%1' %2 times.", String(meta.description), meta.count) << ENDL;
+          fout << Format::subst("  REACHED NOT_HERE '%1' %2 times.", String(meta.description), meta.count) << ENDL;
         }
       }
     }

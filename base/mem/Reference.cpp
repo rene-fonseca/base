@@ -53,12 +53,12 @@ public:
   // TAG: TEST_LIMIT_MEMORY(1024);
   // TAG: TEST_LIMIT_LEAK_MEMORY(1024);
 
-  void run()
+  void run() override
   {
     TEST_DECLARE_HERE(A);
 
     Reference<MyOtherObject> myOtherObject = new MyOtherObject();
-    myOtherObject = myOtherObject; // self assignment
+    // myOtherObject = myOtherObject; // self assignment
     TEST_ASSERT(myOtherObject.getNumberOfReferences() == 1);
     Reference<MyObject> myObject = myOtherObject;
     TEST_ASSERT(myOtherObject.getNumberOfReferences() == 2);

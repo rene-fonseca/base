@@ -321,10 +321,10 @@ public:
     typedef void (*Entry)();
 
     struct EntryNode {
-      const char* key = nullptr; // used to make it easier to debug
-      Entry entry = nullptr; // entry function for test registration
-      EntryNode* next = nullptr; // next entry function node
-      bool loaded = false; // indicates that test has been registered
+      const char* key; // used to make it easier to debug
+      Entry entry; // entry function for test registration
+      EntryNode* next; // next entry function node
+      bool loaded; // indicates that test has been registered
     };
 
     /** The last test registered. This is a pointer so it is always ready for use during global initialization. */
@@ -339,7 +339,7 @@ public:
 #define REGISTER_TEST_IMPL(ID, TYPE) \
   namespace tests { \
     void _COM_AZURE_DEV__BASE__CONCATENATE(ID, _entry)() { base::UnitTestManager::getManager().registerTest<TEST_CLASS(TYPE)>(#TYPE, __FILE__, String()); } \
-    base::UnitTestManager::RegisterEntry::EntryNode _COM_AZURE_DEV__BASE__CONCATENATE(ID, _storage) = {#TYPE, _COM_AZURE_DEV__BASE__CONCATENATE(ID, _entry)}; \
+    base::UnitTestManager::RegisterEntry::EntryNode _COM_AZURE_DEV__BASE__CONCATENATE(ID, _storage) = {#TYPE, _COM_AZURE_DEV__BASE__CONCATENATE(ID, _entry), nullptr, false}; \
     base::UnitTestManager::RegisterEntry _COM_AZURE_DEV__BASE__CONCATENATE(ID, _register)(&_COM_AZURE_DEV__BASE__CONCATENATE(ID, _storage)); \
   }
 

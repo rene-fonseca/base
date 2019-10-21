@@ -18,9 +18,7 @@ _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 template class Reference<ReferenceCountedObject>;
 
-// TAG: add define for getting tests in release also
-
-#if defined(_COM_AZURE_DEV__BASE__ANY_DEBUG)
+#if defined(_COM_AZURE_DEV__BASE__TESTS)
 
 class MyObject;
 
@@ -46,41 +44,50 @@ class MyOtherObject : public MyObject {
 public:
 };
 
-
-
-// TAG: record source file also
 class TEST_CLASS(Reference) : public UnitTest {
 public:
-  
-  ReferenceTest(const String& name) : UnitTest(name) {
-    // setSource(__FILE__);
-  }
-  
+
+  TEST_PRIORITY(0);
+  TEST_TIMEOUT_MS(30 * 1000);
+  // TAG: TEST_LIMIT_PROCESSING_TIME(1000);
+  // TAG: TEST_LIMIT_MEMORY(1024);
+  // TAG: TEST_LIMIT_LEAK_MEMORY(1024);
+
   void run()
   {
     Reference<MyOtherObject> myOtherObject = new MyOtherObject();
-    // myOtherObject2 refs == 1;
-    Reference<MyObject> myObject = new MyObject();
-    myObject.isValid();
-    myObject.getNumberOfReferences();
-    myObject.isMultiReferenced();
+    myOtherObject = myOtherObject; // self assignment
+    TEST_ASSERT(myOtherObject.getNumberOfReferences() == 1);
+    Reference<MyObject> myObject = myOtherObject;
+    TEST_ASSERT(myOtherObject.getNumberOfReferences() == 2);
+
+    myObject = new MyObject();
+    TEST_ASSERT(myOtherObject.getNumberOfReferences() == 1);
+    TEST_ASSERT(myObject.isValid());
+    TEST_ASSERT(myObject.getNumberOfReferences() == 1);
+    TEST_ASSERT(!myObject.isMultiReferenced());
     myObject->doit();
     {
-      auto& _COM_AZURE_DEV__BASE__MAKE_IDENTIFIER(id) = *myObject;
+      auto& TEST_UNIQUE_ID(id) = *myObject;
     }
+
     Reference<MyOtherObject> myOtherObject2 = myObject.cast<MyOtherObject>();
-    if (myOtherObject2 == nullptr) {};
+    TEST_ASSERT(myOtherObject2 == nullptr);
+    
     Reference<MyObject> myObject3 = myOtherObject;
+    TEST_ASSERT(myObject3 != nullptr);
     myObject3 = nullptr;
 
     Reference<MyOtherObject> myOtherObject3 = myObject3.cast<MyOtherObject>();
+    Reference<MyOtherObject> myOtherObject4 = myOtherObject3;
+    TEST_ASSERT(myOtherObject3.getNumberOfReferences() > 1);
     myOtherObject3.copyOnWrite();
+    TEST_ASSERT(myOtherObject3.getNumberOfReferences() == 1);
     myOtherObject3.invalidate();
-    // myOtherObject3.cast<>()
-    // myObject.invalidate();
-    if (myOtherObject3 != nullptr) {};
+    TEST_ASSERT(myOtherObject3 == nullptr);
+
     {
-      auto& _COM_AZURE_DEV__BASE__MAKE_IDENTIFIER(id) = *myOtherObject3;
+      auto& TEST_UNIQUE_ID(id) = *myOtherObject3;
     }
     myObject = nullptr;
   }
@@ -89,7 +96,5 @@ public:
 REGISTER_TEST(Reference);
 
 #endif
-
-// TAG: add new for ref class? Reference<MyObject>::make();
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

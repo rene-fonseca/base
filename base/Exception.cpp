@@ -13,6 +13,7 @@
 
 #include <base/platforms/features.h>
 #include <base/Exception.h>
+#include <base/UnitTest.h>
 
 #if defined(_COM_AZURE_DEV__BASE__EXCEPTION_V3MV)
   #include <base/platforms/compiler/v3mv/exception.h> // includes private features
@@ -95,5 +96,39 @@ Exception::Exception(const Exception& copy) throw()
 
 Exception::~Exception() throw() {
 }
+
+#if defined(_COM_AZURE_DEV__BASE__TESTS)
+
+class TEST_CLASS(Exception) : public UnitTest {
+public:
+
+  void run()
+  {
+    TEST_DECLARE_HERE(A);
+    TEST_DECLARE_HERE(B);
+    TEST_DECLARE_HERE(C);
+
+    try {
+      Exception e;
+      throw e;
+      TEST_NOT_HERE(B);
+    } catch (Exception& e) {
+      e.getMessage();
+      TEST_HERE(A);
+    }
+
+    try {
+      throw Exception("Message");
+    } catch (const Exception& e) {
+      TEST_HERE(C);
+      TEST_ASSERT(String(e.getMessage()) == String("Message"));
+      TEST_ASSERT(e.getType() == Type::getType<Exception>());
+    }
+  }
+};
+
+REGISTER_TEST(Exception);
+
+#endif
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

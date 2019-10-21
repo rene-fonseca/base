@@ -63,17 +63,27 @@ void UnitTest::Run::onFailed(const String& what)
   results.append(result);
 }
 
-void UnitTest::Run::registerHere(Here here, bool reach, const char* description)
+void UnitTest::Run::registerHere(const Here* here, const char* description)
 {
   HereMeta meta;
   meta.description = description;
-  meta.reach = reach;
-  heres[here] = meta;
+  meta.reach = true;
+  heres[static_cast<const void*>(here)] = meta;
 }
 
-void UnitTest::Run::onHere(Here here)
+void UnitTest::Run::registerNotHere(const NotHere* here, const char* description)
 {
-  if (!here || (*here != HERE_MARKER)) {
+  HereMeta meta;
+  meta.description = description;
+  meta.reach = false;
+  heres[static_cast<const void*>(here)] = meta;
+}
+
+void UnitTest::Run::onHere(const Here* _here)
+{
+  const void* here = static_cast<const void*>(_here);
+
+  if (!here) {
     onFailed("Test failed due to bad here marker.");
     return;
   }
@@ -87,9 +97,11 @@ void UnitTest::Run::onHere(Here here)
   heres[here] = meta; // TAG: improve map so we can use heres[here] directly
 }
 
-void UnitTest::Run::onNotHere(Here here)
+void UnitTest::Run::onNotHere(const NotHere* _here)
 {
-  if (!here || (*here != HERE_MARKER)) {
+  const void* here = static_cast<const void*>(_here);
+
+  if (!here) {
     onFailed("Test failed due to bad here marker.");
     return;
   }
@@ -169,6 +181,7 @@ Reference<UnitTest::Run> UnitTest::runImpl()
     onFailed("Test failed with unknown exception.");
   }
   r->endTime = manager.timer.getLiveMicroseconds();
+  currentRun = nullptr;
   fout << Format::subst("  ELAPSED TIME %1s", (r->endTime - r->startTime)/1000000.0) << ENDL; // r->endTime/1000000.0
 
   unsigned int pointsReached = 0;

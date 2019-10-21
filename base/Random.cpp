@@ -14,6 +14,7 @@
 #include <base/Random.h>
 #include <base/concurrency/Thread.h>
 #include <base/concurrency/ApplicationSynchronize.h>
+#include <base/UnitTest.h>
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
@@ -86,5 +87,36 @@ unsigned int Random::randomDirect() noexcept
 }
 
 // TAG: add buffer support also
+
+#if defined(_COM_AZURE_DEV__BASE__TESTS)
+
+class TEST_CLASS(Random) : public UnitTest {
+public:
+
+  TEST_PRIORITY(100);
+
+  void run()
+  {
+    unsigned int random1 = Random::randomDirect();
+    unsigned int random2 = Random::randomDirect();
+    unsigned int random3 = Random::randomDirect();
+    unsigned int random4 = Random::randomDirect();
+    TEST_ASSERT((random1 != random2) && (random3 != random4));
+
+    uint8 buffer1[4096];
+    fill<uint8>(buffer1, sizeof(buffer1), 0);
+    uint8 buffer2[sizeof(buffer1)];
+    fill<uint8>(buffer2, sizeof(buffer2), 0);
+    RandomInputStream& ris = Random::getRandomInputStream();
+    TEST_ASSERT(ris.read(buffer1, sizeof(buffer1), false) == sizeof(buffer1));
+    TEST_ASSERT(ris.read(buffer2, sizeof(buffer2), false) == sizeof(buffer2));
+
+    TEST_ASSERT(compare<uint8>(buffer1, buffer2, sizeof(buffer1)) == 0);
+  }
+};
+
+REGISTER_TEST(Random);
+
+#endif
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

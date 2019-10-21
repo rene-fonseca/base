@@ -108,12 +108,20 @@ public:
 
       for (auto test : tests) {
         fout << Format::subst("TEST %1:", test->getName()) << EOL;
-        fout << "  DESCRIPTION=" << test->getDescription() << EOL;
-        fout << "  SOURCE=" << test->getSource() << EOL;
+        if (!test->getDescription().isEmpty()) {
+          fout << "  DESCRIPTION=" << test->getDescription() << EOL;
+        }
+        if (!test->getSource().isEmpty()) {
+          fout << "  SOURCE=" << test->getSource() << EOL;
+        }
         fout << "  PRIORITY=" << test->getPriority() << EOL;
-        fout << "  CONCURRENT=" << test->getAllowConcurrentRun() << EOL;
+        if (test->getAllowConcurrentRun()) {
+          fout << "  CONCURRENT=" << test->getAllowConcurrentRun() << EOL;
+        }
         fout << "  TIMEOUT=" << test->getTimeout() << EOL;
-        fout << "  REPEATS=" << test->getRepeats() << EOL;
+        if (test->getRepeats() > 1) {
+          fout << "  REPEATS=" << test->getRepeats() << EOL;
+        }
         fout << FLUSH;
         // TAG: show all limits
       }

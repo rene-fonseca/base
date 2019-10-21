@@ -43,8 +43,12 @@ _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 class _COM_AZURE_DEV__BASE__API UnitTest : public ReferenceCountedObject {
 public:
 
-  typedef unsigned int _Here;
+  class Marker {};
+  class _Here : public Marker {};
+  class _NotHere : public Marker {};
+
   typedef const _Here* Here;
+  typedef const _NotHere* NotHere;
 
   enum {
     HERE_MARKER = 0x21564836,
@@ -78,7 +82,7 @@ public:
     unsigned int passed = 0;
     unsigned int failed = 0;
     unsigned int asserts = 0;
-    Map<Here, HereMeta> heres;
+    Map<const void*, HereMeta> heres;
     Array<TestResult> results;
 
     /** Called when subtest passed. */
@@ -88,13 +92,16 @@ public:
     void onFailed(const String& what);
 
     /** Called when here point is declared. */
-    void registerHere(Here here, bool reach, const char* description);
+    void registerHere(const Here* here, const char* description);
+
+    /** Called when here point is declared. */
+    void registerNotHere(const NotHere* here, const char* description);
 
     /** Called when here point is reached. */
-    void onHere(Here here);
+    void onHere(const Here* here);
 
     /** Called when here point is reached but shouldn't be reached. */
-    void onNotHere(Here here);
+    void onNotHere(const NotHere* here);
 
     /** Compares 2 runs. */
     static bool compare(const Run& a, const Run& b);
@@ -133,19 +140,25 @@ protected:
   }
 
   /** Called when here point is declared. */
-  inline void registerHere(Here here, bool reach, const char* description)
+  inline void registerHere(const Here* here, const char* description)
   {
-    currentRun->registerHere(here, reach, description);
+    currentRun->registerHere(here, description);
+  }
+
+  /** Called when not-here point is declared. */
+  inline void registerNotHere(const NotHere* here, const char* description)
+  {
+    currentRun->registerNotHere(here, description);
   }
 
   /** Called when here point is reached. */
-  inline void onHere(Here here)
+  inline void onHere(const Here* here)
   {
     currentRun->onHere(here);
   }
 
   /** Called when nothere point is reached but shouldn't be reached. */
-  inline void onNotHere(Here here)
+  inline void onNotHere(const NotHere* here)
   {
     currentRun->onNotHere(here);
   }
@@ -312,17 +325,21 @@ public:
 /** An assert/subtest within the test. */
 #define TEST_ASSERT(EXPRESSION) if (EXPRESSION) { base::UnitTest::onPassed(#EXPRESSION); } else { base::UnitTest::onFailed(#EXPRESSION); }
 
-#define TEST_DECLARE_HERE_IMPL(IDENTIFIER, TYPE, DESCRIPTION) \
-  static const base::UnitTest::_Here IDENTIFIER = HERE_MARKER; \
-  base::UnitTest::registerHere(&IDENTIFIER, TYPE, DESCRIPTION)
+#define TEST_DECLARE_HERE_IMPL(IDENTIFIER, DESCRIPTION) \
+  static const base::UnitTest::Here IDENTIFIER = nullptr; \
+  base::UnitTest::registerHere(&IDENTIFIER, DESCRIPTION)
 
 /** Declare here point that must be reached during execution. */
 #define TEST_DECLARE_HERE(IDENTIFIER) \
-  TEST_DECLARE_HERE_IMPL(_COM_AZURE_DEV__BASE__CONCATENATE(_TEST_HERE__, IDENTIFIER), true, #IDENTIFIER)
+  TEST_DECLARE_HERE_IMPL(_COM_AZURE_DEV__BASE__CONCATENATE(_TEST_HERE__, IDENTIFIER), #IDENTIFIER)
+
+#define TEST_DECLARE_NOT_HERE_IMPL(IDENTIFIER, DESCRIPTION) \
+  static const base::UnitTest::NotHere IDENTIFIER = nullptr; \
+  base::UnitTest::registerNotHere(&IDENTIFIER, DESCRIPTION)
 
 /** Declare here point that must NOT be reached during execution. */
 #define TEST_DECLARE_NOT_HERE(IDENTIFIER) \
-  TEST_DECLARE_HERE_IMPL(_COM_AZURE_DEV__BASE__CONCATENATE(_TEST_HERE__, IDENTIFIER), false, #IDENTIFIER)
+  TEST_DECLARE_NOT_HERE_IMPL(_COM_AZURE_DEV__BASE__CONCATENATE(_TEST_HERE__, IDENTIFIER), #IDENTIFIER)
 
 /** Make a unique identifier. Must be on a separate source line. */
 #define TEST_UNIQUE_ID(PREFIX) _COM_AZURE_DEV__BASE__MAKE_IDENTIFIER(PREFIX)

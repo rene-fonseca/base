@@ -102,10 +102,12 @@ Exception::~Exception() throw() {
 class TEST_CLASS(Exception) : public UnitTest {
 public:
 
+  TEST_PRIORITY(10);
+
   void run()
   {
     TEST_DECLARE_HERE(A);
-    TEST_DECLARE_HERE(B);
+    TEST_DECLARE_NOT_HERE(B);
     TEST_DECLARE_HERE(C);
 
     try {

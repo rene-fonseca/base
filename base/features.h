@@ -45,6 +45,10 @@
 #  define _COM_AZURE_DEV__BASE__ANY_DEBUG
 #endif
 
+#if !defined(_COM_AZURE_DEV__BASE__TESTS) // for now we include tests in release builds
+#  define _COM_AZURE_DEV__BASE__TESTS
+#endif
+
 #if defined(NDEBUG) && defined(_COM_AZURE_DEV__BASE__ANY_DEBUG)
 #  error NDEBUG and _COM_AZURE_DEV__BASE__ANY_DEBUG are both defined
 #endif

@@ -16,87 +16,224 @@
 #include <base/string/String.h>
 #include <base/collection/Array.h>
 #include <base/collection/Map.h>
+#include <base/Type.h>
+#include <base/Timer.h>
+
+#if defined(REGISTER_TEST)
+#  error REGISTER_TEST already defined
+#endif
+#if defined(TEST_CLASS)
+#  error TEST_CLASS already defined
+#endif
+#if defined(TEST_ASSERT)
+#  error TEST_ASSERT already defined
+#endif
+#if defined(TEST_HERE)
+#  error TEST_HERE already defined
+#endif
+#if defined(TEST_NOT_HERE)
+#  error TEST_NOT_HERE already defined
+#endif
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
-
-class TestResult {
-public:
-
-  // record passed / failed
-  unsigned int passed = 0;
-  unsigned int failed = 0;
-};
 
 /**
   Unit test.
 */
-
 class _COM_AZURE_DEV__BASE__API UnitTest : public ReferenceCountedObject {
+public:
+
+  typedef unsigned int _Here;
+  typedef const _Here* Here;
+
+  enum {
+    HERE_MARKER = 0x21564836,
+    DEFAULT_PRIORITY = 0,
+    DEFAULT_TIMEOUT = 15 * 60 * 1000
+  };
+
+  /** A single subtest result. */
+  class TestResult {
+  public:
+
+    bool passed = false;
+    String what;
+  };
+
+  /** Info on here point. */
+  class HereMeta {
+  public:
+
+    const char* description; // description of point
+    bool reach = true; // point must be reached
+    unsigned int count = 0; // number of times point was reached
+  };
+
+  /* Recording of test run. */
+  class Run : public ReferenceCountedObject {
+  public:
+
+    uint64 startTime = 0;
+    uint64 endTime = 0;
+    unsigned int passed = 0;
+    unsigned int failed = 0;
+    unsigned int asserts = 0;
+    Map<Here, HereMeta> heres;
+    Array<TestResult> results;
+
+    /** Called when subtest passed. */
+    void onPassed(const String& what);
+
+    /** Called when subtest failed. */
+    void onFailed(const String& what);
+
+    /** Called when here point is declared. */
+    void registerHere(Here here, bool reach, const char* description);
+
+    /** Called when here point is reached. */
+    void onHere(Here here);
+
+    /** Called when here point is reached but shouldn't be reached. */
+    void onNotHere(Here here);
+
+    /** Compares 2 runs. */
+    static bool compare(const Run& a, const Run& b);
+  };
 private:
 
+  /** Name/id. */
   String name;
+  /** Description. */
   String description;
+  /** Source file. */
   String source;
+  /** Class type. */
+  Type type;
 
-  unsigned int passed = 0;
-  unsigned int failed = 0;
-  unsigned int asserts = 0;
-  Map<String, bool> heres;
-  
-  void onPass(const String& d)
+  // TAG: record timing and allow comparison of runs
+  // TAG: add timing constraints
+  // TAG: add IO constraints
+
+  /** All recorded runs. */
+  Array<Reference<Run> > runs;
+  /** The current run. */
+  Reference<Run> currentRun;
+protected:
+
+  /** Called when subtest passed. */
+  inline void onPassed(const String& what)
   {
-    ++passed;
+    currentRun->onPassed(what);
   }
 
-  void onFailure(const String& d)
+  /** Called when subtest failed. */
+  inline void onFailed(const String& what)
   {
-    ++failed;
+    currentRun->onFailed(what);
   }
-  
-  void here(const String& id)
+
+  /** Called when here point is declared. */
+  inline void registerHere(Here here, bool reach, const char* description)
   {
-    if (!heres.isKey(id)) {
-      // here not mentioned
-    }
-    heres[id] = true;
+    currentRun->registerHere(here, reach, description);
+  }
+
+  /** Called when here point is reached. */
+  inline void onHere(Here here)
+  {
+    currentRun->onHere(here);
+  }
+
+  /** Called when nothere point is reached but shouldn't be reached. */
+  inline void onNotHere(Here here)
+  {
+    currentRun->onNotHere(here);
   }
 public:
 
+  /** Initializes the test. */
   UnitTest();
 
-  UnitTest(const String& name);
-
+  /** Sets the name/id of the test. */
   void setName(const String& name);
   
+  /** Sets the description of the test. */
   void setDescription(const String& description);
   
+  /** Sets the source file of the test. */
   void setSource(const String& source);
-  
+
+  /** Sets the type (from class) of the test. */
+  void setType(const Type& type);
+
+  /** Returns the name/id of the test. */
   inline const String& getName() const noexcept
   {
     return name;
   }
-  
+
+  /** Returns the description of the test. */
   inline const String& getDescription() const noexcept
   {
     return description;
   }
+
+  /** Returns the source of the test. */
+  inline const String& getSource() const noexcept
+  {
+    return source;
+  }
+
+  /** Returns the type (from class) of the test. */
+  inline const Type& getType() const noexcept
+  {
+    return type;
+  }
+
+  /** Use TEST_ALLOW_CONCURRENT to allow concurrent test runs. */
+  virtual bool getAllowConcurrentRun() const noexcept
+  {
+    return false;
+  }
   
+  /** Use TEST_PRIORITY to set priority for test. */
+  virtual int getPriority() const noexcept
+  {
+    return DEFAULT_PRIORITY;
+  }
+
+  /** Use TEST_TIMEOUT_MS to set priority for test. */
+  virtual unsigned int getTimeout() const noexcept
+  {
+    return DEFAULT_TIMEOUT;
+  }
+
+  /** Use TEST_REPEATS to set number of repeats. */
+  virtual unsigned int getRepeats() const noexcept
+  {
+    return 1;
+  }
+  
+  /** Runs the test. */
   virtual void run();
+
+  /** Internal run. */
+  Reference<Run> runImpl();
 
   // TAG: get result in test format XML/JSON
   
   ~UnitTest();
 };
 
-// class TestResult {};
-
+/** Unit test manager. */
 class _COM_AZURE_DEV__BASE__API UnitTestManager {
+  friend class UnitTest;
 private:
   
   unsigned int passed = 0;
   unsigned int failed = 0;
-  
+  Timer timer;
+
   Array<Reference<UnitTest> > tests;
 
   static UnitTestManager unitTestManager;
@@ -105,73 +242,130 @@ public:
   UnitTestManager();
   
   static UnitTestManager& getManager();
-  
+
+  /** Adds the given test. */
   void addTest(Reference<UnitTest> test);
   
-  // TAG: use this and then call method to set test meta info like source - get data from entry struct
+  /** Create test instance and adds it. */
   template<class TYPE>
-  void registerTest()
+  inline void registerTest(const String& name, const String& source = String(), const String& description = String())
   {
     auto test = new TYPE();
-    addTest(test);
-    // test->setSource(entry->source);
-  }
-  
-  template<class TYPE>
-  void registerTest(const String& name)
-  {
-    auto test = new TYPE(name);
+    test->setName(name);
+    test->setType(Type::getType<TYPE>()); // we cannot get type of original type since it may be a template
+    test->setDescription(description);
+    test->setSource(source);
     addTest(test);
   }
-  
+
+  /** Runs the test. A test must be able to run multiple times. */
   bool runTest(Reference<UnitTest> test);
 
-  // void loadTests();
-  
-  bool runTests(const String& pattern = String());
+  /** Loads the registered tests. */
+  void loadTests();
 
+  /** Runs the tests matching the given pattern. */
+  bool runTests(const String& pattern = "*");
+
+  /** Returns all the registered tests. */
   inline const Array<Reference<UnitTest> >& getTests() const
   {
     return tests;
   }
-  
-  // Array<String> getTestNames();
-};
 
-// TAG: make test class from test method also
+  /** Internal test registration helper. */
+  class _COM_AZURE_DEV__BASE__API RegisterEntry {
+  public:
 
-class _COM_AZURE_DEV__BASE__API RegisterTestInit {
-public:
+    typedef void (*Entry)();
 
-  typedef void (*Entry)();
+    struct EntryNode {
+      const char* key = nullptr; // used to make it easier to debug
+      Entry entry = nullptr; // entry function for test registration
+      EntryNode* next = nullptr; // next entry function node
+      bool loaded = false; // indicates that test has been registered
+    };
 
-  struct EntryNode {
-    const char* name;
-    const char* source;
-    Entry entry;
-    EntryNode* next;
+    /** The last test registered. This is a pointer so it is always ready for use during global initialization. */
+    static EntryNode* nodes;
+
+    /** Records test for delayed registration. */
+    RegisterEntry(EntryNode* entry);
   };
-  
-  /** The last test registered. This is a pointer so it is always ready for use during global initialization. */
-  static EntryNode* nodes;
-
-  RegisterTestInit(EntryNode* entry);
 };
 
-// TAG: record source file also __FILE__
 
 #define REGISTER_TEST_IMPL(ID, TYPE) \
-  namespace { \
-    void _COM_AZURE_DEV__BASE__CONCATENATE(ID, _entry)() { UnitTestManager::getManager().registerTest<TYPE ## Test>(#TYPE); } \
-    RegisterTestInit::EntryNode _COM_AZURE_DEV__BASE__CONCATENATE(ID, _storage) = {#TYPE, __FILE__, _COM_AZURE_DEV__BASE__CONCATENATE(ID, _entry), nullptr}; \
-    RegisterTestInit _COM_AZURE_DEV__BASE__CONCATENATE(ID, _register)(&_COM_AZURE_DEV__BASE__CONCATENATE(ID, _storage)); \
+  namespace tests { \
+    void _COM_AZURE_DEV__BASE__CONCATENATE(ID, _entry)() { base::UnitTestManager::getManager().registerTest<TEST_CLASS(TYPE)>(#TYPE, __FILE__, String()); } \
+    base::UnitTestManager::RegisterEntry::EntryNode _COM_AZURE_DEV__BASE__CONCATENATE(ID, _storage) = {#TYPE, _COM_AZURE_DEV__BASE__CONCATENATE(ID, _entry)}; \
+    base::UnitTestManager::RegisterEntry _COM_AZURE_DEV__BASE__CONCATENATE(ID, _register)(&_COM_AZURE_DEV__BASE__CONCATENATE(ID, _storage)); \
   }
 
-// TAG: add support for custom name of test
-
+/** Fast registration of test for later run. Test will be put in the "tests" subnamespace. */
 #define REGISTER_TEST(TYPE) \
   REGISTER_TEST_IMPL(_COM_AZURE_DEV__BASE__MAKE_IDENTIFIER(test), TYPE)
 
-#define TEST_CLASS(CLASS) CLASS ## Test
+/** Tag all references to the Test class using this define. */
+#define TEST_CLASS(CLASS) TEST_ ## Test
+
+/** An assert/subtest within the test. */
+#define TEST_ASSERT(EXPRESSION) if (EXPRESSION) { base::UnitTest::onPassed(#EXPRESSION); } else { base::UnitTest::onFailed(#EXPRESSION); }
+
+#define TEST_DECLARE_HERE_IMPL(IDENTIFIER, TYPE, DESCRIPTION) \
+  static const base::UnitTest::_Here IDENTIFIER = HERE_MARKER; \
+  base::UnitTest::registerHere(&IDENTIFIER, TYPE, DESCRIPTION)
+
+/** Declare here point that must be reached during execution. */
+#define TEST_DECLARE_HERE(IDENTIFIER) \
+  TEST_DECLARE_HERE_IMPL(_COM_AZURE_DEV__BASE__CONCATENATE(_TEST_HERE__, IDENTIFIER), true, #IDENTIFIER)
+
+/** Declare here point that must NOT be reached during execution. */
+#define TEST_DECLARE_NOT_HERE(IDENTIFIER) \
+  TEST_DECLARE_HERE_IMPL(_COM_AZURE_DEV__BASE__CONCATENATE(_TEST_HERE__, IDENTIFIER), false, #IDENTIFIER)
+
+/** Make a unique identifier. Must be on a separate source line. */
+#define TEST_UNIQUE_ID(PREFIX) _COM_AZURE_DEV__BASE__MAKE_IDENTIFIER(PREFIX)
+
+/** Here point. */
+#define TEST_HERE(IDENTIFIER) base::UnitTest::onHere(&_COM_AZURE_DEV__BASE__CONCATENATE(_TEST_HERE__, IDENTIFIER));
+
+/** Here point which must not be reached. */
+#define TEST_NOT_HERE(IDENTIFIER) base::UnitTest::onNotHere(&_COM_AZURE_DEV__BASE__CONCATENATE(_TEST_HERE__, IDENTIFIER));
+
+/** Tells system that test may be run concurrent with other tests. */
+#define TEST_ALLOW_CONCURRENT() bool getAllowConcurrentRun() const noexcept override {return true;}
+
+/** Sets the priority the test. Lower priorty gets run first. */
+#define TEST_PRIORITY(priority) int getPriority() const noexcept override {return static_cast<int>(priority);}
+
+/** Sets the timeout for the test in milliseconds. */
+#define TEST_TIMEOUT_MS(timeout) unsigned int getTimeout() const noexcept override {return static_cast<unsigned int>(timeout);}
+
+/** Sets the number of repeats for the test. */
+#define TEST_REPEATS(count) unsigned int getRepeats() const noexcept override {return static_cast<unsigned int>(repeats);}
+
+/**
+  Declares a test for a given type.
+
+  TEST_DECLARE(LinkerException);
+
+  void TEST_CLASS(LinkerException)::run()
+  {
+    // my test
+  }
+*/
+#define TEST_DECLARE(TYPE) \
+  class TEST_CLASS(Reference) : public UnitTest { \
+  public: \
+    \
+    void run() override; \
+  }
+
+/** Prototype for run method for test of type. */
+#define TEST_RUN_IMPL(TYPE) TEST_CLASS(TYPE)::run
+
+// TAG: include namespace in test id - so we can filter easily
+// TAG: add TEST_INLINE_ASSERT()
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

@@ -81,7 +81,9 @@ public:
   typedef void* Identifier;
 
   /* Structure holding the user and system times. */
-  struct Times {
+  class Times {
+  public:
+    
     /** The user mode time in nanoseconds. */
     unsigned long long user = 0;
     /** The system mode time in nanoseconds. */

@@ -48,6 +48,8 @@ void UnitTest::setType(const Type& _type)
 
 void UnitTest::Run::onPrint(const String& what, unsigned int line)
 {
+  ExclusiveSynchronize<MutualExclusion> _guard(UnitTestManager::getManager().getLock());
+
   /*
   TestResult result;
   result.passed = xxx;
@@ -67,6 +69,8 @@ void UnitTest::Run::onPrint(const String& what, unsigned int line)
 
 void UnitTest::Run::onPassed(const String& what, unsigned int line)
 {
+  ExclusiveSynchronize<MutualExclusion> _guard(UnitTestManager::getManager().getLock());
+
   ++passed;
   TestResult result;
   result.passed = true;
@@ -90,6 +94,8 @@ void UnitTest::Run::onPassed(const String& what, unsigned int line)
 
 void UnitTest::Run::onFailed(const String& what, unsigned int line)
 {
+  ExclusiveSynchronize<MutualExclusion> _guard(UnitTestManager::getManager().getLock());
+
   ++failed;
   TestResult result;
   result.passed = false;
@@ -112,6 +118,8 @@ void UnitTest::Run::onFailed(const String& what, unsigned int line)
 
 void UnitTest::Run::registerHere(const Here* here, const char* description)
 {
+  ExclusiveSynchronize<MutualExclusion> _guard(UnitTestManager::getManager().getLock());
+
   HereMeta meta;
   meta.description = description;
   meta.reach = true;
@@ -120,6 +128,8 @@ void UnitTest::Run::registerHere(const Here* here, const char* description)
 
 void UnitTest::Run::registerNotHere(const NotHere* here, const char* description)
 {
+  ExclusiveSynchronize<MutualExclusion> _guard(UnitTestManager::getManager().getLock());
+
   HereMeta meta;
   meta.description = description;
   meta.reach = false;
@@ -128,6 +138,8 @@ void UnitTest::Run::registerNotHere(const NotHere* here, const char* description
 
 void UnitTest::Run::onHere(const Here* _here)
 {
+  ExclusiveSynchronize<MutualExclusion> _guard(UnitTestManager::getManager().getLock());
+
   const void* here = static_cast<const void*>(_here);
 
   if (!here) {
@@ -146,6 +158,8 @@ void UnitTest::Run::onHere(const Here* _here)
 
 void UnitTest::Run::onNotHere(const NotHere* _here)
 {
+  ExclusiveSynchronize<MutualExclusion> _guard(UnitTestManager::getManager().getLock());
+
   const void* here = static_cast<const void*>(_here);
 
   if (!here) {
@@ -381,6 +395,7 @@ private:
 public:
   
   bool success = false;
+  Thread::Times times;
   
   TestingThread(Reference<UnitTest> _test) : test(_test)
   {
@@ -390,6 +405,7 @@ public:
   {
     auto& manager = UnitTestManager::getManager();
     success = manager.runTest(test);
+    times = Thread::getThread()->getTimes();
   }
 };
 
@@ -414,10 +430,11 @@ bool UnitTestManager::runTests(const String& pattern)
     ++count;
     fout << "===============================================================================" << EOL;
     if (UnitTestManager::getManager().getUseANSIColors()) {
-      fout << bold();
+      fout << "TEST " << bold() << test->getName() << normal();
+    } else {
+      fout << "TEST " << test->getName();
     }
-    fout << "TEST " << test->getName()
-         << " [" << count << "/" << tests.getSize() << "] (" << static_cast<int>(count * 1000.0/tests.getSize())/10.0 << "%)" << ENDL;
+    fout << " [" << count << "/" << tests.getSize() << "] (" << static_cast<int>(count * 1000.0/tests.getSize())/10.0 << "%)" << ENDL;
     if (UnitTestManager::getManager().getUseANSIColors()) {
       fout << normal();
     }
@@ -434,14 +451,14 @@ bool UnitTestManager::runTests(const String& pattern)
     // TAG: record processing time for thread
     // TAG: we could sample processing time also
     // TAG: need viewer for test results
-    // TAG: add MT-safety
 
-#if 0
+#if 01
     TestingThread thread(test);
     thread.run();
     thread.join();
-    auto times = thread.getTimes();
     result &= thread.success;
+    
+    // fout << "  PROCESSING TIME: " << (thread.times.user + thread.times.system)/1000000000.0 << " s" << ENDL;
 #else
     result &= runTest(test);
 #endif

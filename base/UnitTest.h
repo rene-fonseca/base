@@ -18,6 +18,7 @@
 #include <base/collection/Map.h>
 #include <base/Type.h>
 #include <base/Timer.h>
+#include <base/concurrency/MutualExclusion.h>
 
 #if defined(REGISTER_TEST)
 #  error REGISTER_TEST already defined
@@ -306,6 +307,7 @@ private:
   unsigned int passed = 0;
   unsigned int failed = 0;
   Timer timer;
+  MutualExclusion lock;
 
   Array<Reference<UnitTest> > tests;
 
@@ -331,6 +333,11 @@ public:
     addTest(test);
   }
 
+  inline decltype(lock)& getLock() noexcept
+  {
+    return lock;
+  }
+  
   inline Verbosity getVerbosity() const noexcept
   {
     return verbosity;

@@ -711,7 +711,7 @@ public:
   {
     TEST_ASSERT(!Thread::getThread()->isMainThread());
     lock.exclusiveLock();
-    Thread::nanosleep(100 * 1000);
+    Thread::nanosleep(1000 * 1000);
     lock.releaseLock();
   }
   
@@ -721,11 +721,9 @@ public:
 
     MyThread thread1(this);
     thread1.start();
-    Thread::nanosleep(100 * 1000);
+    Thread::nanosleep(1000 * 1000);
     lock.releaseLock();
     thread1.join();
-        
-    // TAG: need MT-safety for UnitTest class TEST_HERE(A);
   }
 };
 

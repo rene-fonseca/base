@@ -261,6 +261,7 @@ public:
 private:
   
   Verbosity verbosity = VERBOSE;
+  bool useANSIColors = false;
   unsigned int passed = 0;
   unsigned int failed = 0;
   Timer timer;
@@ -297,6 +298,16 @@ public:
   inline void setVerbosity(Verbosity _verbosity) noexcept
   {
     verbosity = _verbosity;
+  }
+
+  inline bool getUseANSIColors() const noexcept
+  {
+    return useANSIColors;
+  }
+
+  inline void setUseANSIColors(bool _useANSIColors) noexcept
+  {
+    useANSIColors = _useANSIColors;
   }
 
   /** Runs the test. A test must be able to run multiple times. */

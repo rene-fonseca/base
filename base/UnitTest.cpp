@@ -14,6 +14,7 @@
 #include <base/UnitTest.h>
 #include <base/string/Format.h>
 #include <base/concurrency/Process.h>
+#include <base/string/ANSIEscapeSequence.h>
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
@@ -70,10 +71,16 @@ void UnitTest::Run::onPassed(const String& what, unsigned int line)
   result.what = what;
 
   if (UnitTestManager::getManager().getVerbosity() > UnitTestManager::NORMAL) {
+    if (UnitTestManager::getManager().getUseANSIColors()) {
+      fout << setForeground(ANSIEscapeSequence::GREEN);
+    }
     if (line > 0) {
       fout << "  PASSED: '" << what << "' at line " << line << ENDL;
     } else {
       fout << "  PASSED: '" << what << "'" << ENDL;
+    }
+    if (UnitTestManager::getManager().getUseANSIColors()) {
+      fout << normal();
     }
   }
   results.append(result);
@@ -86,10 +93,16 @@ void UnitTest::Run::onFailed(const String& what, unsigned int line)
   result.passed = false;
   result.what = what;
   if (UnitTestManager::getManager().getVerbosity() >= UnitTestManager::NORMAL) {
+    if (UnitTestManager::getManager().getUseANSIColors()) {
+      fout << setForeground(ANSIEscapeSequence::RED);
+    }
     if (line > 0) {
       fout << "  FAILED: '" << what << "' at line " << line << ENDL;
     } else {
       fout << "  FAILED: '" << what << "'" << ENDL;
+    }
+    if (UnitTestManager::getManager().getUseANSIColors()) {
+      fout << normal();
     }
   }
   results.append(result);

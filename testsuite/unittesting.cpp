@@ -39,6 +39,7 @@ private:
 
   Command command = COMMAND_RUN;
   Verbosity verbosity = NORMAL;
+  bool useANSIColor = false;
   String pattern = "*";
 public:
 
@@ -68,6 +69,8 @@ public:
         verbosity = COMPACT;
       } else if (argument == "--verbose") {
         verbosity = VERBOSE;
+      } else if (argument == "--color") {
+        useANSIColor = true;
       } else {
         if (argument.startsWith("-")) {
           ferr << "Unsupported argument." << ENDL;
@@ -151,6 +154,8 @@ public:
         manager.setVerbosity(UnitTestManager::VERBOSE);
         break;
       }
+      
+      manager.setUseANSIColors(useANSIColor);
 
       manager.runTests(pattern);
 

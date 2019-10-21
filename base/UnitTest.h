@@ -66,11 +66,17 @@ public:
     IGNORE
   };
   
+  enum ResultEvent {
+    FAILED,
+    PASSED,
+    PRINT
+  };
+  
   /** A single subtest result. */
   class TestResult {
   public:
 
-    bool passed = false;
+    ResultEvent event = FAILED;
     String what;
   };
 
@@ -304,6 +310,7 @@ public:
 private:
   
   Verbosity verbosity = VERBOSE;
+  bool useJSON = false;
   bool useANSIColors = false;
   unsigned int passed = 0;
   unsigned int failed = 0;
@@ -347,6 +354,11 @@ public:
   inline void setVerbosity(Verbosity _verbosity) noexcept
   {
     verbosity = _verbosity;
+  }
+
+  inline void setUseJSON(bool _useJSON) noexcept
+  {
+    useJSON = _useJSON;
   }
 
   inline bool getUseANSIColors() const noexcept

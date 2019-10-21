@@ -174,7 +174,7 @@ public:
       manager.setUseANSIColors(useANSIColor);
 
       if (reportJSON) {
-        // TAG: manager.setJSON(true);
+        manager.setUseJSON(true);
       }
       
       if (!manager.runTests(pattern)) {

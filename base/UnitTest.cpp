@@ -73,7 +73,7 @@ void UnitTest::Run::onPassed(const String& what, unsigned int line)
 
   ++passed;
   TestResult result;
-  result.passed = true;
+  result.event = PASSED;
   result.what = what;
 
   if (UnitTestManager::getManager().getVerbosity() > UnitTestManager::NORMAL) {
@@ -98,7 +98,7 @@ void UnitTest::Run::onFailed(const String& what, unsigned int line)
 
   ++failed;
   TestResult result;
-  result.passed = false;
+  result.event = FAILED;
   result.what = what;
   if (UnitTestManager::getManager().getVerbosity() >= UnitTestManager::NORMAL) {
     if (UnitTestManager::getManager().getUseANSIColors()) {
@@ -189,11 +189,21 @@ Reference<ObjectModel::Object> UnitTest::Run::getReport() const
   for (auto result : results) {
     auto item = o.createObject();
     item->setValue(o.createString("what"), o.createString(result.what));
-    item->setValue(o.createString("which"), o.createString(result.passed ? "passed" : "failed"));
+    switch (result.event) {
+    case FAILED:
+      item->setValue(o.createString("event"), o.createString("failed"));
+      break;
+    case PASSED:
+      item->setValue(o.createString("event"), o.createString("passed"));
+      break;
+    case PRINT:
+      item->setValue(o.createString("event"), o.createString("print"));
+      break;
+    }
     a->append(item);
   }
   
-  return report; // JSON::getJSON(report, false);
+  return report;
 }
 
 bool UnitTest::Run::compare(const Run& a, const Run& b)
@@ -332,6 +342,26 @@ Reference<UnitTest::Run> UnitTest::runImpl()
     }
   }
 
+  if (manager.useJSON) {
+    // TAG: add heres
+    ObjectModel o;
+    auto report = r->getReport();
+    report->setValue(o.createString("test"), o.createString(getName()));
+    report->setValue(o.createString("description"), o.createString(getDescription()));
+    report->setValue(o.createString("source"), o.createString(getSource()));
+    
+    double time = (processTimes2.user - processTimes.user) / 1000.0 + (processTimes2.system - processTimes.system) / 1000.0;
+    report->setValue(o.createString("processingTime"), o.createFloat(time));
+
+    report->setValue(o.createString("pointsReached"), o.createInteger(pointsReached));
+    report->setValue(o.createString("pointsReach"), o.createInteger(pointsReach));
+    report->setValue(o.createString("pointsNotReached"), o.createInteger(pointsNotReached));
+    report->setValue(o.createString("pointsNotReach"), o.createInteger(pointsNotReach));
+
+    String json = JSON::getJSON(report, false);
+    ferr << report << ENDL;
+  }
+
   return r;
 }
 
@@ -356,10 +386,6 @@ void UnitTestManager::addTest(Reference<UnitTest> test)
 bool UnitTestManager::runTest(Reference<UnitTest> test)
 {
   auto run = test->runImpl();
-#if 0
-  String report = run->getReport();
-  ferr << report << ENDL;
-#endif
   if (!run->failed) {
     ++passed;
     return true;

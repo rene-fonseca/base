@@ -196,16 +196,15 @@ Reference<UnitTest::Run> UnitTest::runImpl()
   Reference<Run> r = new Run();
   currentRun = r;
   runs.append(r);
-  if (manager.getVerbosity() >= UnitTestManager::COMPACT) {
-    fout << Format::subst("  RUN #%1", runs.getSize()) << ENDL;
-  }
 
   Process process = Process::getProcess();
   const Process::Times processTimes = process.getTimes();
   r->startTime = manager.timer.getLiveMicroseconds();
+  /*
   if (manager.getVerbosity() >= UnitTestManager::COMPACT) {
     fout << Format::subst("  START at %1s", r->startTime / 1000000.0) << ENDL;
   }
+  */
   try {
     run();
   } catch (Exception& e) {
@@ -228,14 +227,6 @@ Reference<UnitTest::Run> UnitTest::runImpl()
   r->endTime = manager.timer.getLiveMicroseconds();
   currentRun = nullptr;
   const Process::Times processTimes2 = process.getTimes();
-
-  if (manager.getVerbosity() >= UnitTestManager::COMPACT) {
-    fout << Format::subst("  ELAPSED TIME %1s", (r->endTime - r->startTime) / 1000000.0) << ENDL; // r->endTime/1000000.0
-  }
-
-  if (manager.getVerbosity() >= UnitTestManager::VERBOSE) {
-    fout << Format::subst("  USER TIME %1s - SYSTEM TIME %2s", (processTimes2.user - processTimes.user) / 1000000.0, (processTimes2.system - processTimes.system) / 1000000.0) << ENDL;
-  }
 
   unsigned int pointsReached = 0;
   unsigned int pointsReach = 0;
@@ -266,8 +257,19 @@ Reference<UnitTest::Run> UnitTest::runImpl()
         (r->failed || (pointsReached != pointsReach) || (pointsNotReached != pointsNotReach)) ? ANSIEscapeSequence::RED : ANSIEscapeSequence::BLUE
       );
     }
-    fout << Format::subst("  PASSED:%1 FAILED:%2 HERE:%3/%4 NOT_HERE:%5/%6", r->passed, r->failed, pointsReached, pointsReach, pointsNotReached, pointsNotReach)
-         << ENDL;
+    
+    String text = Format::subst("  PASSED:%1 FAILED:%2 HERE:%3/%4 NOT_HERE:%5/%6", r->passed, r->failed, pointsReached, pointsReach, pointsNotReached, pointsNotReach);
+    if (manager.getVerbosity() >= UnitTestManager::COMPACT) {
+      text += Format::subst(" ELAPSED:%1ms", (r->endTime - r->startTime) / 1000.0); // r->endTime/1000.0
+    }
+    if (manager.getVerbosity() >= UnitTestManager::COMPACT) {
+      text += Format::subst(" RUN:#%1", runs.getSize());
+    }
+    if (manager.getVerbosity() >= UnitTestManager::VERBOSE) {
+      text += Format::subst(" USER:%1ms SYSTEM:%2ms", (processTimes2.user - processTimes.user) / 1000.0, (processTimes2.system - processTimes.system) / 1000.0);
+    }
+
+    fout << text << ENDL;
     if (UnitTestManager::getManager().getUseANSIColors()) {
       fout << normal();
     }

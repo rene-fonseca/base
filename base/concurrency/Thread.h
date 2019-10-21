@@ -375,7 +375,7 @@ public:
     Returns true if the thread is the main thread.
   */
   inline bool isMainThread() const throw() {
-    return parent == 0;
+    return parent == nullptr;
   }
 
   /**

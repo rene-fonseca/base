@@ -12,8 +12,10 @@
  ***************************************************************************/
 
 #include <base/concurrency/Thread.h>
+#include <base/concurrency/MutualExclusion.h>
 #include <base/string/String.h>
 #include <base/Cast.h>
+#include <base/UnitTest.h>
 
 #if defined(_COM_AZURE_DEV__BASE__EXCEPTION_V3MV)
 #  include <base/platforms/compiler/v3mv/exception.h> // includes private features
@@ -678,5 +680,62 @@ Thread::~Thread() {
     }
   }
 }
+
+#if defined(_COM_AZURE_DEV__BASE__TESTS)
+
+class TEST_CLASS(Thread);
+
+class MyThread : public Thread {
+private:
+  
+  TEST_CLASS(Thread)* parent = nullptr;
+public:
+  
+  MyThread(TEST_CLASS(Thread)* _parent) : parent(_parent)
+  {
+  }
+  
+  void run() override;
+};
+
+class TEST_CLASS(Thread) : public UnitTest {
+private:
+
+  MutualExclusion lock;
+public:
+
+  TEST_PRIORITY(10);
+  TEST_TIMEOUT_MS(30 * 1000);
+
+  void runFromThread()
+  {
+    TEST_ASSERT(!Thread::getThread()->isMainThread());
+    lock.exclusiveLock();
+    Thread::nanosleep(100 * 1000);
+    lock.releaseLock();
+  }
+  
+  void run() override
+  {
+    lock.exclusiveLock();
+
+    MyThread thread1(this);
+    thread1.start();
+    Thread::nanosleep(100 * 1000);
+    lock.releaseLock();
+    thread1.join();
+        
+    // TAG: need MT-safety for UnitTest class TEST_HERE(A);
+  }
+};
+
+void MyThread::run()
+{
+  parent->runFromThread();
+}
+
+REGISTER_TEST(Thread);
+
+#endif
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

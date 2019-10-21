@@ -273,6 +273,9 @@ Reference<UnitTest::Run> UnitTest::runImpl()
     }
   }
 
+  r->failed += (pointsReach - pointsReached);
+  r->failed += (pointsNotReach - pointsNotReached);
+  
   if (manager.getVerbosity() > UnitTestManager::SILENT) {
     if (UnitTestManager::getManager().getUseANSIColors()) {
       fout << setForeground(
@@ -343,7 +346,7 @@ bool UnitTestManager::runTest(Reference<UnitTest> test)
   String report = run->getReport();
   ferr << report << ENDL;
 #endif
-  if (run->passed) {
+  if (!run->failed) {
     ++passed;
     return true;
   } else {

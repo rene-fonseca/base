@@ -40,6 +40,7 @@ private:
   Command command = COMMAND_RUN;
   Verbosity verbosity = NORMAL;
   bool useANSIColor = false;
+  bool randomize = false;
   String pattern = "*";
 public:
 
@@ -71,6 +72,9 @@ public:
         verbosity = VERBOSE;
       } else if (argument == "--color") {
         useANSIColor = true;
+      } else if (argument == "--randomize") {
+        randomize = true;
+        // TAG: reverse order support
       } else {
         if (argument.startsWith("-")) {
           ferr << "Unsupported argument." << ENDL;

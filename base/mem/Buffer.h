@@ -32,15 +32,15 @@ class _COM_AZURE_DEV__BASE__API Buffer : public Object {
 public:
 
   /** Specifies the granularity of the buffer size. Guaranteed to be greater than 16 bytes. */
-  static const unsigned int DEFAULT_GRANULARITY = 1024;
+  static const MemorySize DEFAULT_GRANULARITY = 1024;
 protected:
 
   /** The bytes of the buffer. */
   uint8* bytes = nullptr;
   /** The size of the buffer. */
-  unsigned int size = 0;
+  MemorySize size = 0;
   /** The granularity of the size. */
-  unsigned int granularity = 0;
+  MemorySize granularity = 0;
 private:
 
   Buffer& operator=(const Buffer& eq) throw();
@@ -55,8 +55,8 @@ public:
     by DEFAULT_GRANULARITY.
   */
   explicit Buffer(
-    unsigned int size = 0,
-    unsigned int granularity = DEFAULT_GRANULARITY) throw(MemoryException);
+    MemorySize size = 0,
+    MemorySize granularity = DEFAULT_GRANULARITY) throw(MemoryException);
   
   /**
     Copy constructor. Raises MemoryException if unable to allocate the required
@@ -81,7 +81,7 @@ public:
   /**
     Returns the size of the buffer.
   */
-  inline unsigned int getSize() const throw() {
+  inline MemorySize getSize() const throw() {
     return size;
   }
 
@@ -93,7 +93,47 @@ public:
     
     @param size The desired size.
   */
-  void setSize(unsigned int size) throw(MemoryException);
+  void setSize(MemorySize size) throw(MemoryException);
+
+  /**
+    Returns the byte at the given index.
+  */
+  inline uint8 operator[](MemorySize i) const throw(OutOfRange) {
+    if (i >= size) {
+      throw OutOfRange();
+    }
+    return bytes[i];
+  }
+
+  /**
+    Returns the byte at the given index.
+  */
+  inline uint8& operator[](MemorySize i) throw(OutOfRange) {
+    if (i >= size) {
+      throw OutOfRange();
+    }
+    return bytes[i];
+  }
+
+  inline uint8* begin() noexcept
+  {
+    return bytes;
+  }
+
+  inline uint8* end() noexcept
+  {
+    return bytes + size;
+  }
+
+  inline const uint8* begin() const noexcept
+  {
+    return bytes;
+  }
+
+  inline const uint8* end() const noexcept
+  {
+    return bytes + size;
+  }
 
   /**
     Destroys the buffer.

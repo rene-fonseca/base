@@ -261,8 +261,16 @@ Reference<UnitTest::Run> UnitTest::runImpl()
   }
 
   if (manager.getVerbosity() > UnitTestManager::SILENT) {
-    fout << Format::subst("  PASSED:%1 FAILED:%2 HERE:%3/%4 NOT_HERE:%5/%6", r->passed, r->failed, pointsReached, pointsReach, pointsNotReach, pointsNotReached)
+    if (UnitTestManager::getManager().getUseANSIColors()) {
+      fout << setForeground(
+        (r->failed || (pointsReached != pointsReach) || (pointsNotReached != pointsNotReach)) ? ANSIEscapeSequence::RED : ANSIEscapeSequence::BLUE
+      );
+    }
+    fout << Format::subst("  PASSED:%1 FAILED:%2 HERE:%3/%4 NOT_HERE:%5/%6", r->passed, r->failed, pointsReached, pointsReach, pointsNotReached, pointsNotReach)
          << ENDL;
+    if (UnitTestManager::getManager().getUseANSIColors()) {
+      fout << normal();
+    }
   }
 
   if (((pointsReached < pointsReach) || (pointsNotReached < pointsNotReach)) &&
@@ -301,7 +309,6 @@ UnitTestManager& UnitTestManager::getManager()
 
 void UnitTestManager::addTest(Reference<UnitTest> test)
 {
-  // fout << Format::subst("TESTS: Adding test '%1' from '%2'", test->getName(), test->getSource()) << ENDL;
   tests.append(test);
 }
 
@@ -354,9 +361,15 @@ bool UnitTestManager::runTests(const String& pattern)
     timer.getLiveMicroseconds();
 
     ++count;
-    fout << "===============================================================================" << EOL
-         << "TEST " << test->getName()
+    fout << "===============================================================================" << EOL;
+    if (UnitTestManager::getManager().getUseANSIColors()) {
+      fout << bold();
+    }
+    fout << "TEST " << test->getName()
          << " [" << count << "/" << tests.getSize() << "] (" << static_cast<int>(count * 1000.0/tests.getSize())/10.0 << "%)" << ENDL;
+    if (UnitTestManager::getManager().getUseANSIColors()) {
+      fout << normal();
+    }
     if (!test->getSource().isEmpty()) {
       fout << "  Source: " << test->getSource() << ENDL;
     }

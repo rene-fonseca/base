@@ -176,7 +176,7 @@ void UnitTest::Run::onNotHere(const NotHere* _here)
   heres[here] = meta; // TAG: improve map so we can use heres[here] directly
 }
 
-String UnitTest::Run::getReport() const
+Reference<ObjectModel::Object> UnitTest::Run::getReport() const
 {
   ObjectModel o;
   auto report = o.createObject();
@@ -193,7 +193,7 @@ String UnitTest::Run::getReport() const
     a->append(item);
   }
   
-  return JSON::getJSON(report, false);
+  return report; // JSON::getJSON(report, false);
 }
 
 bool UnitTest::Run::compare(const Run& a, const Run& b)

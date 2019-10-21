@@ -19,6 +19,7 @@
 #include <base/Type.h>
 #include <base/Timer.h>
 #include <base/concurrency/MutualExclusion.h>
+#include <base/objectmodel/ObjectModel.h>
 
 #if defined(REGISTER_TEST)
 #  error REGISTER_TEST already defined
@@ -115,8 +116,8 @@ public:
     /** Called when here point is reached but shouldn't be reached. */
     void onNotHere(const NotHere* here);
 
-    /** Returns the JSON report. */
-    String getReport() const;
+    /** Returns the report. */
+    Reference<ObjectModel::Object> getReport() const;
 
     /** Compares 2 runs. */
     static bool compare(const Run& a, const Run& b);

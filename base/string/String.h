@@ -500,6 +500,20 @@ public:
   }
 
   /**
+    Returns the first element of the string as a non-modifying iterator.
+  */
+  inline ReadIterator begin() const throw() {
+    return elements->getBeginReadIterator();
+  }
+
+  /**
+    Returns the end of the string as a non-modifying iterator.
+  */
+  inline ReadIterator end() const throw() {
+    return elements->getEndReadIterator() - 1; // remember terminator
+  }
+
+  /**
     Returns a modifying enumerator of the string.
   */
   inline Enumerator getEnumerator() throw() {

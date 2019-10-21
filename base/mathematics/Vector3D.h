@@ -454,4 +454,8 @@ public:
   static const bool IS_UNINITIALIZEABLE = Uninitializeable<TYPE>::IS_UNINITIALIZEABLE;
 };
 
+typedef Vector3D<float> fvector3;
+typedef Vector3D<double> dvector3;
+typedef Vector3D<long double> ldvector3;
+
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

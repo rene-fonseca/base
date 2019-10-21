@@ -56,6 +56,14 @@ public:
     DEFAULT_TIMEOUT = 15 * 60 * 1000
   };
 
+  enum Impact {
+    PRIVACY,
+    SECURITY,
+    CRITICAL,
+    NORMAL,
+    IGNORE
+  };
+  
   /** A single subtest result. */
   class TestResult {
   public:
@@ -150,6 +158,16 @@ protected:
   {
     currentRun->onFailed(what, line);
   }
+  
+  /** Called when subtest failed. */
+  inline void onAssert(bool passed, const String& what, unsigned int line = 0)
+  {
+    if (passed) {
+      currentRun->onPassed(what, line);
+    } else {
+      currentRun->onFailed(what, line);
+    }
+  }
 
   /** Called when here point is declared. */
   inline void registerHere(const Here* here, const char* description)
@@ -227,6 +245,12 @@ public:
     return DEFAULT_PRIORITY;
   }
 
+  /** Use TEST_IMPACT to set priority for test. */
+  virtual Impact getImpact() const noexcept
+  {
+    return NORMAL;
+  }
+  
   /** Use TEST_TIMEOUT_MS to set priority for test. */
   virtual unsigned int getTimeout() const noexcept
   {
@@ -365,7 +389,12 @@ public:
 #define TEST_CLASS(CLASS) _TEST_ ## CLASS
 
 /** An assert/subtest within the test. */
-#define TEST_ASSERT(EXPRESSION) if (EXPRESSION) { base::UnitTest::onPassed(#EXPRESSION, __LINE__); } else { base::UnitTest::onFailed(#EXPRESSION, __LINE__); }
+#define TEST_ASSERT(EXPRESSION) \
+  base::UnitTest::onAssert(EXPRESSION, #EXPRESSION, __LINE__)
+
+/** Assert within an expression. */
+#define TEST_INLINE_ASSERT(EXPRESSION) \
+  (base::UnitTest::onAssert(EXPRESSION, #EXPRESSION, __LINE__), (EXPRESSION))
 
 /** Print info. */
 #define TEST_PRINT(TEXT) base::UnitTest::onPrint(TEXT, __LINE__)
@@ -401,6 +430,9 @@ public:
 /** Sets the priority the test. Lower priorty gets run first. */
 #define TEST_PRIORITY(priority) int getPriority() const noexcept override {return static_cast<int>(priority);}
 
+/** Sets the priority the test. Lower priorty gets run first. */
+#define TEST_IMPACT(impact) Impact getImpact() const noexcept override {return static_cast<Impact>(impact);}
+
 /** Sets the timeout for the test in milliseconds. */
 #define TEST_TIMEOUT_MS(timeout) unsigned int getTimeout() const noexcept override {return static_cast<unsigned int>(timeout);}
 
@@ -426,10 +458,5 @@ public:
 
 /** Prototype for run method for test of type. */
 #define TEST_RUN_IMPL(TYPE) TEST_CLASS(TYPE)::run
-
-// TAG: include namespace in test id - so we can filter easily
-// TAG: add TEST_INLINE_ASSERT() - good for TEST_PRINT
-// TAG: add quick strigify of buffers and similar info
-// TAG: should we indicate severity/security impact TEST_IMPACT(xxx) enum Impact {CRITICAL, SECURITY, PRIVACY, ..., NORMAL, IGNORE}
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

@@ -82,9 +82,9 @@ public:
 
     Reference<MyOtherObject> myOtherObject3 = new MyOtherObject();
     Reference<MyOtherObject> myOtherObject4 = myOtherObject3;
-    TEST_ASSERT(myOtherObject3.getNumberOfReferences() > 1);
-    // TAG: inline assert
-    TEST_PRINT(Format::subst("REFERENCES=%1", myOtherObject3.getNumberOfReferences()));
+    if (!TEST_INLINE_ASSERT(myOtherObject3.getNumberOfReferences() > 1)) {
+      TEST_PRINT(Format::subst("REFERENCES=%1", myOtherObject3.getNumberOfReferences()));
+    }
     // TEST_PRINT_FORMAT("REFERENCES=%1", myOtherObject3.getNumberOfReferences());
     myOtherObject3.copyOnWrite();
     TEST_ASSERT(myOtherObject3.getNumberOfReferences() == 1);

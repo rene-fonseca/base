@@ -134,6 +134,7 @@ public:
           fout << "  SOURCE=" << test->getSource() << EOL;
         }
         fout << "  PRIORITY=" << test->getPriority() << EOL;
+        fout << "  IMPACT=" << test->getImpact() << EOL;
         if (test->getAllowConcurrentRun()) {
           fout << "  CONCURRENT=" << test->getAllowConcurrentRun() << EOL;
         }

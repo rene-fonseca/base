@@ -15,6 +15,7 @@
 #include <base/string/Format.h>
 #include <base/concurrency/Process.h>
 #include <base/string/ANSIEscapeSequence.h>
+#include <base/objectmodel/JSON.h>
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
@@ -158,6 +159,26 @@ void UnitTest::Run::onNotHere(const NotHere* _here)
   HereMeta meta = heres[here];
   ++meta.count;
   heres[here] = meta; // TAG: improve map so we can use heres[here] directly
+}
+
+String UnitTest::Run::getReport() const
+{
+  ObjectModel o;
+  auto report = o.createObject();
+  report->setValue(o.createString("elapsedTime"), o.createFloat(endTime - startTime));
+  report->setValue(o.createString("passed"), o.createInteger(passed));
+  report->setValue(o.createString("failed"), o.createInteger(failed));
+  auto a = o.createArray();
+  report->setValue(o.createString("results"), a);
+
+  for (auto result : results) {
+    auto item = o.createObject();
+    item->setValue(o.createString("what"), o.createString(result.what));
+    item->setValue(o.createString("which"), o.createString(result.passed ? "passed" : "failed"));
+    a->append(item);
+  }
+  
+  return JSON::getJSON(report, false);
 }
 
 bool UnitTest::Run::compare(const Run& a, const Run& b)
@@ -316,7 +337,12 @@ void UnitTestManager::addTest(Reference<UnitTest> test)
 
 bool UnitTestManager::runTest(Reference<UnitTest> test)
 {
-  if (test->runImpl()) {
+  auto run = test->runImpl();
+#if 0
+  String report = run->getReport();
+  ferr << report << ENDL;
+#endif
+  if (run->passed) {
     ++passed;
     return true;
   } else {

@@ -220,6 +220,12 @@ public:
     return value ? ReferenceCountedObject::ReferenceImpl(*value).getNumberOfReferences() : 0;
   }
 
+  /** Returns a new object by using default construction. */
+  static inline Reference make()
+  {
+    return new TYPE();
+  }
+
   /**
     Makes a new copy of the reference counted object if referenced by more than
     one automation pointer. This member function is invocated by some classes

@@ -14,6 +14,7 @@
 #include <base/UnitTest.h>
 #include <base/string/Format.h>
 #include <base/concurrency/Process.h>
+#include <base/concurrency/Thread.h>
 #include <base/string/ANSIEscapeSequence.h>
 #include <base/objectmodel/JSON.h>
 
@@ -370,6 +371,25 @@ void UnitTestManager::loadTests()
   }
 }
 
+class TestingThread : public Thread {
+private:
+  
+  Reference<UnitTest> test;
+public:
+  
+  bool success = false;
+  
+  TestingThread(Reference<UnitTest> _test) : test(_test)
+  {
+  }
+  
+  void run()
+  {
+    auto& manager = UnitTestManager::getManager();
+    success = manager.runTest(test);
+  }
+};
+
 bool UnitTestManager::runTests(const String& pattern)
 {
   // TAG: add support for pattern
@@ -411,8 +431,18 @@ bool UnitTestManager::runTests(const String& pattern)
     // TAG: record processing time for thread
     // TAG: we could sample processing time also
     // TAG: need viewer for test results
-    // Thread thread;
+    // TAG: add MT-safety
+
+#if 0
+    TestingThread thread(test);
+    thread.run();
+    thread.join();
+    auto times = thread.getTimes();
+    result &= thread.success;
+#else
     result &= runTest(test);
+#endif
+    ASSERT(result);
   }
   return result;
 }

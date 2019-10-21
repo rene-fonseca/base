@@ -37,6 +37,7 @@
 #include <base/string/FormatOutputStream.h>
 #include <base/sound/SoundDevice.h>
 #include <base/Literal.h>
+#include <base/UnitTest.h>
 #include <stdlib.h>
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
@@ -254,6 +255,7 @@ namespace internal {
 }; // end of namespace internal
 
 SpinLock Random::spinLock;
+UnitTestManager UnitTestManager::unitTestManager;
 
 Handle* FileDescriptor::Descriptor::invalid = nullptr; // uninitialized
 Handle* Process::ProcessHandle::invalid = nullptr; // uninitialized

@@ -154,8 +154,11 @@ public:
 
       manager.runTests(pattern);
 
+      // TAG: add randomize order support
+      // TAG: generate list of tests giving different results
       // TAG: add support for loading baseline for comparison
       // TAG: dump to JSON
+      // TAG: allow new run via http
     } else {
       help();
     }

@@ -43,7 +43,26 @@ void UnitTest::setType(const Type& _type)
   type = _type;
 }
 
-void UnitTest::Run::onPassed(const String& what)
+void UnitTest::Run::onPrint(const String& what, unsigned int line)
+{
+  /*
+  TestResult result;
+  result.passed = xxx;
+  result.what = what;
+  */
+
+  if (UnitTestManager::getManager().getVerbosity() > UnitTestManager::NORMAL) {
+    if (line > 0) {
+      fout << "  PRINT: '" << what << "' at line " << line << ENDL;
+    }
+    else {
+      fout << "  PRINT: '" << what << "'" << ENDL;
+    }
+  }
+  // results.append(result);
+}
+
+void UnitTest::Run::onPassed(const String& what, unsigned int line)
 {
   ++passed;
   TestResult result;
@@ -51,19 +70,27 @@ void UnitTest::Run::onPassed(const String& what)
   result.what = what;
 
   if (UnitTestManager::getManager().getVerbosity() > UnitTestManager::NORMAL) {
-    fout << "  PASSED: " << what << ENDL;
+    if (line > 0) {
+      fout << "  PASSED: '" << what << "' at line " << line << ENDL;
+    } else {
+      fout << "  PASSED: '" << what << "'" << ENDL;
+    }
   }
   results.append(result);
 }
 
-void UnitTest::Run::onFailed(const String& what)
+void UnitTest::Run::onFailed(const String& what, unsigned int line)
 {
   ++failed;
   TestResult result;
   result.passed = false;
   result.what = what;
   if (UnitTestManager::getManager().getVerbosity() >= UnitTestManager::NORMAL) {
-    fout << "  FAILED: " << what << ENDL;
+    if (line > 0) {
+      fout << "  FAILED: '" << what << "' at line " << line << ENDL;
+    } else {
+      fout << "  FAILED: '" << what << "'" << ENDL;
+    }
   }
   results.append(result);
 }

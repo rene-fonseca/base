@@ -13,7 +13,7 @@
 
 #pragma once
 
-#include <base/string/String.h>
+#include <base/string/Format.h>
 #include <base/collection/Array.h>
 #include <base/collection/Map.h>
 #include <base/Type.h>
@@ -85,11 +85,14 @@ public:
     Map<const void*, HereMeta> heres;
     Array<TestResult> results;
 
+    /** Called on explicit print request. */
+    void onPrint(const String& what, unsigned int line = 0);
+
     /** Called when subtest passed. */
-    void onPassed(const String& what);
+    void onPassed(const String& what, unsigned int line = 0);
 
     /** Called when subtest failed. */
-    void onFailed(const String& what);
+    void onFailed(const String& what, unsigned int line = 0);
 
     /** Called when here point is declared. */
     void registerHere(const Here* here, const char* description);
@@ -127,16 +130,22 @@ private:
   Reference<Run> currentRun;
 protected:
 
-  /** Called when subtest passed. */
-  inline void onPassed(const String& what)
+  /** Called on explicit print request. */
+  inline void onPrint(const String& what, unsigned int line = 0)
   {
-    currentRun->onPassed(what);
+    currentRun->onPrint(what, line);
+  }
+
+  /** Called when subtest passed. */
+  inline void onPassed(const String& what, unsigned int line = 0)
+  {
+    currentRun->onPassed(what, line);
   }
 
   /** Called when subtest failed. */
-  inline void onFailed(const String& what)
+  inline void onFailed(const String& what, unsigned int line = 0)
   {
-    currentRun->onFailed(what);
+    currentRun->onFailed(what, line);
   }
 
   /** Called when here point is declared. */
@@ -342,7 +351,10 @@ public:
 #define TEST_CLASS(CLASS) _TEST_ ## CLASS
 
 /** An assert/subtest within the test. */
-#define TEST_ASSERT(EXPRESSION) if (EXPRESSION) { base::UnitTest::onPassed(#EXPRESSION); } else { base::UnitTest::onFailed(#EXPRESSION); }
+#define TEST_ASSERT(EXPRESSION) if (EXPRESSION) { base::UnitTest::onPassed(#EXPRESSION, __LINE__); } else { base::UnitTest::onFailed(#EXPRESSION, __LINE__); }
+
+/** Print info. */
+#define TEST_PRINT(TEXT) base::UnitTest::onPrint(TEXT, __LINE__)
 
 #define TEST_DECLARE_HERE_IMPL(IDENTIFIER, DESCRIPTION) \
   static const base::UnitTest::Here IDENTIFIER = nullptr; \
@@ -402,6 +414,8 @@ public:
 #define TEST_RUN_IMPL(TYPE) TEST_CLASS(TYPE)::run
 
 // TAG: include namespace in test id - so we can filter easily
-// TAG: add TEST_INLINE_ASSERT()
+// TAG: add TEST_INLINE_ASSERT() - good for TEST_PRINT
+// TAG: add quick strigify of buffers and similar info
+// TAG: should we indicate severity/security impact TEST_IMPACT(xxx) enum Impact {CRITICAL, SECURITY, PRIVACY, ..., NORMAL, IGNORE}
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

@@ -55,6 +55,8 @@ public:
 
   void run()
   {
+    TEST_DECLARE_HERE(A);
+
     Reference<MyOtherObject> myOtherObject = new MyOtherObject();
     myOtherObject = myOtherObject; // self assignment
     TEST_ASSERT(myOtherObject.getNumberOfReferences() == 1);
@@ -78,17 +80,23 @@ public:
     TEST_ASSERT(myObject3 != nullptr);
     myObject3 = nullptr;
 
-    Reference<MyOtherObject> myOtherObject3 = myObject3.cast<MyOtherObject>();
+    Reference<MyOtherObject> myOtherObject3 = new MyOtherObject();
     Reference<MyOtherObject> myOtherObject4 = myOtherObject3;
     TEST_ASSERT(myOtherObject3.getNumberOfReferences() > 1);
+    // TAG: inline assert
+    TEST_PRINT(Format::subst("REFERENCES=%1", myOtherObject3.getNumberOfReferences()));
+    // TEST_PRINT_FORMAT("REFERENCES=%1", myOtherObject3.getNumberOfReferences());
     myOtherObject3.copyOnWrite();
     TEST_ASSERT(myOtherObject3.getNumberOfReferences() == 1);
     myOtherObject3.invalidate();
     TEST_ASSERT(myOtherObject3 == nullptr);
 
-    {
+    try {
       auto& TEST_UNIQUE_ID(id) = *myOtherObject3;
+    } catch (NullPointer) {
+      TEST_HERE(A);
     }
+
     myObject = nullptr;
   }
 };

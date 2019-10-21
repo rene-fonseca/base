@@ -111,7 +111,7 @@ public:
     TEST_ASSERT(ris.read(buffer1, sizeof(buffer1), false) == sizeof(buffer1));
     TEST_ASSERT(ris.read(buffer2, sizeof(buffer2), false) == sizeof(buffer2));
 
-    TEST_ASSERT(compare<uint8>(buffer1, buffer2, sizeof(buffer1)) == 0);
+    TEST_ASSERT(compare<uint8>(buffer1, buffer2, sizeof(buffer1)) != 0);
   }
 };
 

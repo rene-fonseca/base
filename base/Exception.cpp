@@ -99,6 +99,8 @@ Exception::~Exception() throw() {
 
 #if defined(_COM_AZURE_DEV__BASE__TESTS)
 
+class MyExceptionContext {};
+
 class TEST_CLASS(Exception) : public UnitTest {
 public:
 
@@ -112,10 +114,14 @@ public:
 
     try {
       Exception e;
+      e.setType(Type::getType<MyExceptionContext>());
+      e.setCause(1);
       throw e;
       TEST_NOT_HERE(B);
     } catch (Exception& e) {
-      e.getMessage();
+      TEST_ASSERT(e.getMessage() == nullptr);
+      TEST_ASSERT(e.getCause() == 1);
+      TEST_ASSERT(e.getType() == Type::getType<MyExceptionContext>());
       TEST_HERE(A);
     }
 
@@ -124,7 +130,6 @@ public:
     } catch (const Exception& e) {
       TEST_HERE(C);
       TEST_ASSERT(String(e.getMessage()) == String("Message"));
-      TEST_ASSERT(e.getType() == Type::getType<Exception>());
     }
   }
 };

@@ -81,7 +81,7 @@ public:
     uint64 endTime = 0;
     unsigned int passed = 0;
     unsigned int failed = 0;
-    unsigned int asserts = 0;
+    // unsigned int asserts = 0;
     Map<const void*, HereMeta> heres;
     Array<TestResult> results;
 
@@ -241,8 +241,17 @@ public:
 /** Unit test manager. */
 class _COM_AZURE_DEV__BASE__API UnitTestManager {
   friend class UnitTest;
+public:
+
+  enum Verbosity {
+    SILENT,
+    COMPACT,
+    NORMAL,
+    VERBOSE
+  };
 private:
   
+  Verbosity verbosity = VERBOSE;
   unsigned int passed = 0;
   unsigned int failed = 0;
   Timer timer;
@@ -269,6 +278,16 @@ public:
     test->setDescription(description);
     test->setSource(source);
     addTest(test);
+  }
+
+  inline Verbosity getVerbosity() const noexcept
+  {
+    return verbosity;
+  }
+
+  inline void setVerbosity(Verbosity _verbosity) noexcept
+  {
+    verbosity = _verbosity;
   }
 
   /** Runs the test. A test must be able to run multiple times. */
@@ -320,7 +339,7 @@ public:
   REGISTER_TEST_IMPL(_COM_AZURE_DEV__BASE__MAKE_IDENTIFIER(test), TYPE)
 
 /** Tag all references to the Test class using this define. */
-#define TEST_CLASS(CLASS) TEST_ ## Test
+#define TEST_CLASS(CLASS) _TEST_ ## CLASS
 
 /** An assert/subtest within the test. */
 #define TEST_ASSERT(EXPRESSION) if (EXPRESSION) { base::UnitTest::onPassed(#EXPRESSION); } else { base::UnitTest::onFailed(#EXPRESSION); }

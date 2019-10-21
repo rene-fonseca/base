@@ -13,6 +13,7 @@
 
 #include <base/UnitTest.h>
 #include <base/string/Format.h>
+#include <base/concurrency/Process.h>
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
@@ -48,7 +49,10 @@ void UnitTest::Run::onPassed(const String& what)
   TestResult result;
   result.passed = true;
   result.what = what;
-  fout << "  PASSED: " << what << ENDL;
+
+  if (UnitTestManager::getManager().getVerbosity() > UnitTestManager::NORMAL) {
+    fout << "  PASSED: " << what << ENDL;
+  }
   results.append(result);
 }
 
@@ -58,8 +62,9 @@ void UnitTest::Run::onFailed(const String& what)
   TestResult result;
   result.passed = false;
   result.what = what;
-  // TAG: add support for silent
-  fout << "  FAILED: " << what << ENDL;
+  if (UnitTestManager::getManager().getVerbosity() >= UnitTestManager::NORMAL) {
+    fout << "  FAILED: " << what << ENDL;
+  }
   results.append(result);
 }
 
@@ -84,11 +89,11 @@ void UnitTest::Run::onHere(const Here* _here)
   const void* here = static_cast<const void*>(_here);
 
   if (!here) {
-    onFailed("Test failed due to bad here marker.");
+    onFailed("Test failed due to bad here marker");
     return;
   }
   if (!heres.isKey(here)) {
-    onFailed("Test failed due to undeclared key.");
+    onFailed("Test failed due to undeclared key");
     return;
   }
 
@@ -102,11 +107,11 @@ void UnitTest::Run::onNotHere(const NotHere* _here)
   const void* here = static_cast<const void*>(_here);
 
   if (!here) {
-    onFailed("Test failed due to bad here marker.");
+    onFailed("Test failed due to bad here marker");
     return;
   }
   if (!heres.isKey(here)) {
-    onFailed("Test failed due to undeclared key.");
+    onFailed("Test failed due to undeclared key");
     return;
   }
 
@@ -147,42 +152,50 @@ inline Pointer operator*() throw(EndOfEnumeration) {
 Reference<UnitTest::Run> UnitTest::runImpl()
 {
   auto& manager = UnitTestManager::getManager();
-
-  fout << "===============================================================================" << EOL
-       << "TEST " << name << ENDL;
-  if (!source.isEmpty()) {
-    fout << "  Source: " << source << ENDL;
-  }
-  if (!description.isEmpty()) {
-    fout << "  Description: " << description << ENDL;
-  }
-
+  
   Reference<Run> r = new Run();
   currentRun = r;
+  runs.append(r);
+  if (manager.getVerbosity() >= UnitTestManager::COMPACT) {
+    fout << Format::subst("  RUN #%1", runs.getSize()) << ENDL;
+  }
+
+  Process process = Process::getProcess();
+  const Process::Times processTimes = process.getTimes();
   r->startTime = manager.timer.getLiveMicroseconds();
-  fout << Format::subst("  START at %1s.", r->startTime/1000000.0) << ENDL;
+  if (manager.getVerbosity() >= UnitTestManager::COMPACT) {
+    fout << Format::subst("  START at %1s", r->startTime / 1000000.0) << ENDL;
+  }
   try {
     run();
   } catch (Exception& e) {
     if (e.getMessage()) {
-      onFailed(Format::subst("Test failed with exception: '%1'.", e.getType())); // TAG: dump all info for exception
+      onFailed(Format::subst("Test failed with exception: '%1'", e.getType())); // TAG: dump all info for exception
     } else {
-      onFailed(Format::subst("Test failed with exception: '%1'.", e.getType(), e.getMessage())); // TAG: dump all info for exception
+      onFailed(Format::subst("Test failed with exception: '%1'", e.getType(), e.getMessage())); // TAG: dump all info for exception
     }
   } catch (std::exception& e) {
     // TAG: dump all info for exception
     String w = e.what();
     if (w.isEmpty()) {
-      onFailed("Test failed with std::exception.");
+      onFailed("Test failed with std::exception");
     } else {
-      onFailed(Format::subst("Test failed with std::exception: '%1'.", w));
+      onFailed(Format::subst("Test failed with std::exception: '%1'", w));
     }
   } catch (...) {
-    onFailed("Test failed with unknown exception.");
+    onFailed("Test failed with unknown exception");
   }
   r->endTime = manager.timer.getLiveMicroseconds();
   currentRun = nullptr;
-  fout << Format::subst("  ELAPSED TIME %1s", (r->endTime - r->startTime)/1000000.0) << ENDL; // r->endTime/1000000.0
+  const Process::Times processTimes2 = process.getTimes();
+
+  if (manager.getVerbosity() >= UnitTestManager::COMPACT) {
+    fout << Format::subst("  ELAPSED TIME %1s", (r->endTime - r->startTime) / 1000000.0) << ENDL; // r->endTime/1000000.0
+  }
+
+  if (manager.getVerbosity() >= UnitTestManager::VERBOSE) {
+    fout << Format::subst("  USER TIME %1s - SYSTEM TIME %2s", (processTimes2.user - processTimes.user) / 1000000.0, (processTimes2.system - processTimes.system) / 1000000.0) << ENDL;
+  }
 
   unsigned int pointsReached = 0;
   unsigned int pointsReach = 0;
@@ -207,21 +220,24 @@ Reference<UnitTest::Run> UnitTest::runImpl()
     }
   }
 
-  fout << Format::subst("  PASSED:%1 FAILED:%2 HERE:%3/%4 NOT_HERE:%5/%6", r->passed, r->failed, pointsReached, pointsReach, pointsNotReach, pointsNotReached)
-       << ENDL;
+  if (manager.getVerbosity() > UnitTestManager::SILENT) {
+    fout << Format::subst("  PASSED:%1 FAILED:%2 HERE:%3/%4 NOT_HERE:%5/%6", r->passed, r->failed, pointsReached, pointsReach, pointsNotReach, pointsNotReached)
+         << ENDL;
+  }
 
-  if ((pointsReached < pointsReach) || (pointsNotReached < pointsNotReach)) {
+  if (((pointsReached < pointsReach) || (pointsNotReached < pointsNotReach)) &&
+      (manager.getVerbosity() >= UnitTestManager::COMPACT)) {
     auto e = r->heres.getReadEnumerator();
     while (e.hasNext()) {
       auto n = e.next();
       auto meta = n->getValue();
       if (meta.reach) {
         if (meta.count == 0) {
-          fout << Format::subst("  UNREACHED HERE '%1'.", String(meta.description)) << ENDL;
+          fout << Format::subst("  UNREACHED HERE '%1'", String(meta.description)) << ENDL;
         }
       } else {
         if (meta.count != 0) {
-          fout << Format::subst("  REACHED NOT_HERE '%1' %2 times.", String(meta.description), meta.count) << ENDL;
+          fout << Format::subst("  REACHED NOT_HERE '%1' %2 times", String(meta.description), meta.count) << ENDL;
         }
       }
     }
@@ -245,7 +261,7 @@ UnitTestManager& UnitTestManager::getManager()
 
 void UnitTestManager::addTest(Reference<UnitTest> test)
 {
-  // fout << Format::subst("TESTS: Adding test '%1' from '%2'.", test->getName(), test->getSource()) << ENDL;
+  // fout << Format::subst("TESTS: Adding test '%1' from '%2'", test->getName(), test->getSource()) << ENDL;
   tests.append(test);
 }
 
@@ -270,8 +286,8 @@ void UnitTestManager::loadTests()
         try {
           entry->entry();
         } catch (...) {
-          Trace::message(Format::subst(MESSAGE("Failed to register test '%1'."), String(entry->key)).native());
-          ASSERT(!"Failed to register test.");
+          Trace::message(Format::subst(MESSAGE("Failed to register test '%1'"), String(entry->key)).native());
+          ASSERT(!"Failed to register test");
         }
       }
     }
@@ -289,16 +305,27 @@ bool UnitTestManager::runTests(const String& pattern)
   // TAG: allow tests to run concurrently
 
   loadTests();
-  // TAG: allow progress to be written - n out of m (p%) - and show name/type
 
   bool result = true;
   unsigned int count = 0;
   for (auto test : tests) {
-    // TAG: show time
+    // TAG: show progress - show time since last output - include processing time
     Timer timer;
     timer.getLiveMicroseconds();
-    fout << "                                                                               \r"
-         << Format::subst("TEST: %1 - %2/%3 (%4%%)\r", test->getName(), count, tests.getSize(), static_cast<int>(count*1*00.0/tests.getSize())/10.0);
+
+    ++count;
+    fout << "===============================================================================" << EOL
+         << "TEST " << test->getName()
+         << " [" << count << "/" << tests.getSize() << "] (" << static_cast<int>(count * 1000.0/tests.getSize())/10.0 << "%)" << ENDL;
+    if (!test->getSource().isEmpty()) {
+      fout << "  Source: " << test->getSource() << ENDL;
+    }
+    if (!test->getDescription().isEmpty()) {
+      fout << "  Description: " << test->getDescription() << ENDL;
+    }
+
+    // fout << "                                                                               \r"
+    //     << Format::subst("TEST: %1 - %2/%3 (%4%%)\r", test->getName(), count, tests.getSize(), static_cast<int>(count*1000.0/tests.getSize())/10.0) << FLUSH;
 
     // TAG: record processing time for thread
     // TAG: we could sample processing time also
@@ -319,5 +346,7 @@ UnitTestManager::RegisterEntry::RegisterEntry(EntryNode* node)
     ++numberOfTests;
   }
 }
+
+// TAG: add support for http server to view results live
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

@@ -31,7 +31,14 @@ private:
     COMMAND_RUN
   };
 
+  enum Verbosity {
+    COMPACT,
+    NORMAL,
+    VERBOSE
+  };
+
   Command command = COMMAND_RUN;
+  Verbosity verbosity = NORMAL;
   String pattern = "*";
 public:
 
@@ -39,7 +46,8 @@ public:
     int numberOfArguments,
     const char* arguments[],
     const char* environment[])
-    : Application("unittesting", numberOfArguments, arguments, environment) {
+    : Application("unittesting", numberOfArguments, arguments, environment)
+  {
   }
   
   bool parseArguments()
@@ -56,6 +64,10 @@ public:
         command = COMMAND_LIST;
       } else if (argument == "--run") {
         command = COMMAND_RUN;
+      } else if (argument == "--compact") {
+        verbosity = COMPACT;
+      } else if (argument == "--verbose") {
+        verbosity = VERBOSE;
       } else {
         if (argument.startsWith("-")) {
           ferr << "Unsupported argument." << ENDL;
@@ -127,6 +139,19 @@ public:
       }
     } else if (command == COMMAND_RUN) {
       auto& manager = UnitTestManager::getManager();
+
+      switch (verbosity) {
+      case COMPACT:
+        manager.setVerbosity(UnitTestManager::COMPACT);
+        break;
+      case NORMAL:
+        manager.setVerbosity(UnitTestManager::NORMAL);
+        break;
+      case VERBOSE:
+        manager.setVerbosity(UnitTestManager::VERBOSE);
+        break;
+      }
+
       manager.runTests(pattern);
 
       // TAG: add support for loading baseline for comparison

@@ -35,11 +35,11 @@ _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
   return (static_cast<uint64>(high) << 32) | low;
 */
 
-Timer::Timer() throw() : stopTime(0) {
+Timer::Timer() noexcept {
   start();
 }
 
-void Timer::start() throw() {
+void Timer::start() noexcept {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   ::QueryPerformanceCounter(Cast::pointer<LARGE_INTEGER*>(&startTime));
 #else // unix
@@ -49,7 +49,7 @@ void Timer::start() throw() {
 #endif // flavor
 }
 
-void Timer::stop() throw() {
+void Timer::stop() noexcept {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   ::QueryPerformanceCounter(Cast::pointer<LARGE_INTEGER*>(&stopTime));
 #else // unix
@@ -59,7 +59,7 @@ void Timer::stop() throw() {
 #endif // flavor
 }
 
-uint64 Timer::getStartTime() const throw() {
+uint64 Timer::getStartTime() const noexcept {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   LARGE_INTEGER frequency; // ticks per second
   ::QueryPerformanceFrequency(&frequency); // ignore any error
@@ -69,7 +69,7 @@ uint64 Timer::getStartTime() const throw() {
 #endif // flavor
 }
 
-uint64 Timer::getStopTime() const throw() {
+uint64 Timer::getStopTime() const noexcept {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   LARGE_INTEGER frequency; // ticks per second
   ::QueryPerformanceFrequency(&frequency); // ignore any error
@@ -79,7 +79,7 @@ uint64 Timer::getStopTime() const throw() {
 #endif // flavor
 }
 
-uint64 Timer::getMicroseconds() const throw() {
+uint64 Timer::getMicroseconds() const noexcept {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   LARGE_INTEGER frequency; // ticks per second
   ::QueryPerformanceFrequency(&frequency); // ignore any error
@@ -89,7 +89,7 @@ uint64 Timer::getMicroseconds() const throw() {
 #endif // flavor
 }
 
-uint64 Timer::getLiveMicroseconds() const throw() {
+uint64 Timer::getLiveMicroseconds() const noexcept {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   LARGE_INTEGER now;
   ::QueryPerformanceCounter(&now);

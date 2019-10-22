@@ -431,7 +431,7 @@ public:
   {
     auto& manager = UnitTestManager::getManager();
     success = manager.runTest(test);
-    times = Thread::getThread()->getTimes();
+    times = Thread::getTimes();
   }
 };
 
@@ -480,7 +480,7 @@ bool UnitTestManager::runTests(const String& pattern)
 
 #if 01
     TestingThread thread(test);
-    thread.run();
+    thread.start();
     thread.join();
     result &= thread.success;
     

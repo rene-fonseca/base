@@ -14,6 +14,7 @@
 #include <base/Application.h>
 #include <base/objectmodel/JSON.h>
 #include <base/string/Format.h>
+#include <base/string/ANSIEscapeSequence.h>
 #include <base/UnitTest.h>
 
 using namespace com::azure::dev::base;
@@ -127,9 +128,13 @@ public:
       auto& manager = UnitTestManager::getManager();
       manager.loadTests();
       const auto& tests = manager.getTests();
-
+// TAG: add ansi color - can we turn on/off colors globally
       for (auto test : tests) {
-        fout << Format::subst("TEST %1:", test->getName()) << EOL;
+        if (useANSIColor) {
+          fout << "TEST " << bold() << test->getName() << normal() << ":" << EOL;
+        } else {
+          fout << "TEST " << test->getName() << ":" << EOL;
+        }
         if (!test->getDescription().isEmpty()) {
           fout << "  DESCRIPTION=" << test->getDescription() << EOL;
         }

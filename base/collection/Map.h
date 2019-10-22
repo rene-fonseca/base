@@ -44,7 +44,7 @@ private:
   /** The associations of the map. */
   OrderedBinaryTree<Node> elements;
   /** The number of associations in the map. */
-  unsigned int size = 0;
+  MemorySize size = 0;
 public:
 
   /**
@@ -58,15 +58,18 @@ public:
   public:
 
     inline ReadEnumerator(
-      typename OrderedBinaryTree<Node>::ReadEnumerator _enu) throw()
-      : enu(_enu) {
+      typename OrderedBinaryTree<Node>::ReadEnumerator _enu) noexcept
+      : enu(_enu)
+    {
     }
 
-    inline bool hasNext() const throw() {
+    inline bool hasNext() const noexcept
+    {
       return enu.hasNext();
     }
 
-    inline Pointer next() throw(EndOfEnumeration) {
+    inline Pointer next() throw(EndOfEnumeration)
+    {
       return enu.next()->getValue();
     }
   };
@@ -83,15 +86,18 @@ public:
   public:
 
     inline ValueEnumerator(
-      typename OrderedBinaryTree<Node>::Enumerator _enu) throw()
-      : enu(_enu) {
+      typename OrderedBinaryTree<Node>::Enumerator _enu) noexcept
+      : enu(_enu)
+    {
     }
 
-    inline bool hasNext() const throw() {
+    inline bool hasNext() const noexcept
+    {
       return enu.hasNext();
     }
 
-    inline Pointer next() throw(EndOfEnumeration) {
+    inline Pointer next() throw(EndOfEnumeration)
+    {
       return &enu.next()->getValue()->getValue();
     }
   };
@@ -105,8 +111,8 @@ public:
     
     Map& map;
     const Key& key;
-    Element(const Element& copy) throw();
-    Element& operator=(const Element& eq) throw();
+    Element(const Element& copy) noexcept;
+    Element& operator=(const Element& eq) noexcept;
     
     inline Element(Map& _map, const Key& _key) noexcept
       : map(_map), key(_key) {
@@ -129,7 +135,8 @@ public:
   /**
     Initializes an empty map.
   */
-  Map() throw() {
+  Map() noexcept
+  {
   }
 
   /**
@@ -137,13 +144,15 @@ public:
   */
   Map(const Map& copy) throw(MemoryException)
     : elements(copy.elements),
-      size(copy.size) {
+      size(copy.size)
+  {
   }
 
   /**
     Assignment of map to map.
   */
-  Map& operator=(const Map& eq) throw(MemoryException) {
+  Map& operator=(const Map& eq)
+  {
     elements = eq.elements;
     size = eq.size;
     return *this;
@@ -152,28 +161,32 @@ public:
   /**
     Returns the number of associations in the map.
   */
-  inline unsigned int getSize() const throw() {
+  inline MemorySize getSize() const noexcept
+  {
     return size;
   }
 
   /**
     Returns true if the map is empty.
   */
-  inline bool isEmpty() const throw() {
+  inline bool isEmpty() const noexcept
+  {
     return size == 0;
   }
 
   /**
     Returns a modifying enumerator of the ordered binary tree.
   */
-  inline ValueEnumerator getValueEnumerator() throw() {
+  inline ValueEnumerator getValueEnumerator() noexcept
+  {
     return elements.getEnumerator();
   }
 
   /**
     Returns a non-modifying enumerator of the ordered binary tree.
   */
-  inline ReadEnumerator getReadEnumerator() const throw() {
+  inline ReadEnumerator getReadEnumerator() const noexcept
+  {
     return elements.getReadEnumerator();
   }
 
@@ -182,7 +195,8 @@ public:
 
     @param key The value to search for.
   */
-  bool isKey(const Key& key) const throw() {
+  bool isKey(const Key& key) const noexcept
+  {
     return elements.find(Association<Key, Value>(key));
   }
 
@@ -192,7 +206,8 @@ public:
 
     @param key The key of the value.
   */
-  const Value& getValue(const Key& key) const throw(InvalidKey) {
+  const Value& getValue(const Key& key) const throw(InvalidKey)
+  {
     const typename OrderedBinaryTree<Association<Key, Value> >::Node* node =
       elements.find(Association<Key, Value>(key));
     if (!node) {
@@ -208,7 +223,8 @@ public:
     @param key The key.
     @param value The value.
   */
-  void add(const Key& key, const Value& value) throw(MemoryException) {
+  void add(const Key& key, const Value& value)
+  {
     Node* result = elements.add(Association<Key, Value>(key, value));
     if (result) {
       // key already exists
@@ -223,7 +239,8 @@ public:
     Removes the specified key and its associated value from this map. Raises
     InvalidKey if the key doesn't exist in this map.
   */
-  void remove(const Key& key) throw(InvalidKey) {
+  void remove(const Key& key) throw(InvalidKey)
+  {
     elements.remove(elements.find(Association<Key, Value>(key)));
     --size; // never ends up here if the key doesn't exist
   }
@@ -231,7 +248,8 @@ public:
   /**
     Removes all the keys from this map.
   */
-  void removeAll() throw() {
+  void removeAll() noexcept
+  {
     elements.removeAll();
     size = 0;
   }
@@ -240,14 +258,16 @@ public:
     Returns the value associated with the specified key when used as 'rvalue'.
     When used as 'lvalue' the key is associated with the specified value.
   */
-  inline Element operator[](const Key& key) throw(InvalidKey, MemoryException) {
+  inline Element operator[](const Key& key) throw(InvalidKey)
+  {
     return Element(*this, key);
   }
 
   /**
     Returns the value associated with the specified key.
   */
-  inline Value operator[](const Key& key) const throw(InvalidKey) {
+  inline const Value& operator[](const Key& key) const throw(InvalidKey)
+  {
     return getValue(key);
   }
 };
@@ -259,7 +279,8 @@ public:
 */
 template<class KEY, class VALUE>
 FormatOutputStream& operator<<(
-  FormatOutputStream& stream, const Map<KEY, VALUE>& value) throw(IOException) {
+  FormatOutputStream& stream, const Map<KEY, VALUE>& value) throw(IOException)
+{
   typename Map<KEY, VALUE>::ReadEnumerator enu = value.getReadEnumerator();
   stream << '{';
   while (enu.hasNext()) {

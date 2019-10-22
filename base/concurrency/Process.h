@@ -45,6 +45,13 @@ public:
     /** The system mode time in nanoseconds. */
     uint64 system = 0;
 
+    inline Times() noexcept {
+    }
+
+    inline Times(uint64 _user, uint64 _system) noexcept
+      : user(_user), system(_system) {
+    }
+
     /** Returns the total processing time in nanoseconds. */
     inline uint64 getTotal() const noexcept
     {
@@ -288,13 +295,13 @@ _COM_AZURE_DEV__BASE__API FormatOutputStream& operator<<(
 /** Add resource times. */
 inline Process::Times operator+(const Process::Times& a, const Process::Times& b) noexcept
 {
-  return Process::Times{ a.user + b.user, a.system + b.system };
+  return Process::Times(a.user + b.user, a.system + b.system);
 }
 
 /** Subtract resource times. */
 inline Process::Times operator-(const Process::Times& a, const Process::Times& b) noexcept
 {
-  return Process::Times{ a.user - b.user, a.system - b.system };
+  return Process::Times(a.user - b.user, a.system - b.system);
 }
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

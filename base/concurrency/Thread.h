@@ -89,6 +89,13 @@ public:
     /** The system mode time in nanoseconds. */
     uint64 system = 0;
 
+    inline Times() noexcept {
+    }
+
+    inline Times(uint64 _user, uint64 _system) noexcept
+      : user(_user), system(_system) {
+    }
+
     /** Returns the total processing time in nanoseconds. */
     inline uint64 getTotal() const noexcept
     {

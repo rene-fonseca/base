@@ -29,7 +29,7 @@ ThreadKeyImpl::ThreadKeyImpl() throw(ResourceException) {
   if ((key = ::TlsAlloc()) == TLS_OUT_OF_INDEXES) {
     throw ResourceException(this);
   }
-  this->key = Cast::container<Key>(key);
+  this->key.pointer = reinterpret_cast<void*>(static_cast<MemorySize>(key));
 #else // unix
   if (sizeof(pthread_key_t) <= sizeof(Key)) {
     pthread_key_t* internalKey = Cast::pointer<pthread_key_t*>(&key);

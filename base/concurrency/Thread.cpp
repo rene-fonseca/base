@@ -43,8 +43,7 @@ _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 Thread::ThreadLocal::ThreadLocal(Thread* _thread)
 {
-  ASSERT(_thread);
-  if (!_thread) {
+  if (!INLINE_ASSERT(_thread)) {
     return;
   }
   auto tlc = new ThreadLocalContext();
@@ -55,8 +54,10 @@ Thread::ThreadLocal::ThreadLocal(Thread* _thread)
 Thread::ThreadLocal::~ThreadLocal()
 {
   auto tlc = threadLocalContext.getKey();
-  threadLocalContext.setKey(nullptr);
-  delete tlc; // free thread local storage
+  if (INLINE_ASSERT(tlc)) {
+    threadLocalContext.setKey(nullptr);
+    delete tlc; // free thread local storage
+  }
 }
 
 #if 0
@@ -123,7 +124,6 @@ void Thread::exit() throw() {
 ThreadLocalContext* Thread::getLocalContext() noexcept
 {
   auto tlc = threadLocalContext.getKey();
-  // INLINE_ASSERT();
   ASSERT(tlc);
   return tlc;
 }
@@ -131,17 +131,13 @@ ThreadLocalContext* Thread::getLocalContext() noexcept
 Thread* Thread::getThread() noexcept
 {
   auto tlc = threadLocalContext.getKey();
-  // INLINE_ASSERT();
-  ASSERT(tlc);
-  return tlc ? tlc->thread : nullptr;
+  return INLINE_ASSERT(tlc) ? tlc->thread : nullptr;
 }
 
 Allocator<uint8>* Thread::getLocalStorage() noexcept
 {
   auto tlc = threadLocalContext.getKey();
-  // INLINE_ASSERT();
-  ASSERT(tlc);
-  return tlc ? &tlc->storage : nullptr;
+  return INLINE_ASSERT(tlc) ? &tlc->storage : nullptr;
 }
 
 #if 0
@@ -330,20 +326,82 @@ void Thread::onChildTermination(Thread* thread) {
   }
 }
 
+inline const void* getAsPointer(const void* value) noexcept
+{
+  return value;
+}
+
+inline void* getAsPointer(void* value) noexcept
+{
+  return value;
+}
+
+inline void* getAsPointer(const int8 value) noexcept
+{
+  return reinterpret_cast<void*>(static_cast<MemoryDiff>(value));
+}
+
+inline void* getAsPointer(const int16 value) noexcept
+{
+  return reinterpret_cast<void*>(static_cast<MemoryDiff>(value));
+}
+
+inline void* getAsPointer(const int32 value) noexcept
+{
+  return reinterpret_cast<void*>(static_cast<MemoryDiff>(value));
+}
+
+inline void* getAsPointer(const long value) noexcept
+{
+  return reinterpret_cast<void*>(static_cast<MemoryDiff>(value));
+}
+
+inline void* getAsPointer(const int64 value) noexcept
+{
+  ASSERT(sizeof(void*) >= sizeof(value));
+  return reinterpret_cast<void*>(static_cast<MemoryDiff>(value));
+}
+
+inline void* getAsPointer(const uint8 value) noexcept
+{
+  return reinterpret_cast<void*>(static_cast<MemorySize>(value));
+}
+
+inline void* getAsPointer(const uint16 value) noexcept
+{
+  return reinterpret_cast<void*>(static_cast<MemorySize>(value));
+}
+
+inline void* getAsPointer(const uint32 value) noexcept
+{
+  return reinterpret_cast<void*>(static_cast<MemorySize>(value));
+}
+
+inline void* getAsPointer(const unsigned long value) noexcept
+{
+  return reinterpret_cast<void*>(static_cast<MemorySize>(value));
+}
+
+inline void* getAsPointer(const uint64 value) noexcept
+{
+  ASSERT(sizeof(void*) >= sizeof(value));
+  return reinterpret_cast<void*>(static_cast<MemorySize>(value));
+}
 
 
 Thread::Thread(Thread* _parent) throw()
   : parent(_parent),
-    runnable(0),
+    runnable(nullptr),
     terminated(false),
-    state(ALIVE) {
+    state(ALIVE)
+{
 #if defined(_COM_AZURE_DEV__BASE__EXCEPTION_V3MV) && !defined(_COM_AZURE_DEV__BASE__EXCEPTION_V3MV_TRANSPARENT)
   const abi::__cxa_eh_globals* abi::__cxa_get_globals(); // this allows us to use __cxa_get_globals_fast
 #endif
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
-  identifier = Cast::container<Identifier>(::GetCurrentThreadId());
+  identifier = getAsPointer(::GetCurrentThreadId());
 #else // pthread
-  identifier = Cast::container<Identifier>(::pthread_self());
+  identifier = getAsPointer(::pthread_self());
 #endif
 }
 
@@ -351,7 +409,8 @@ Thread::Thread() throw(ResourceException)
   : runnable(this),
     terminated(false),
     state(NOTSTARTED),
-    identifier(0) {
+    identifier(nullptr)
+{
   parent = Thread::getThread();
   ASSERT(parent); // a parent must always exist
 }
@@ -360,7 +419,8 @@ Thread::Thread(Runnable* _runnable) throw(NullPointer, ResourceException)
   : runnable(_runnable),
     terminated(false),
     state(NOTSTARTED),
-    identifier(0) {  
+    identifier(nullptr)
+{
   bassert(runnable, NullPointer(this));
   parent = Thread::getThread();
   ASSERT(parent); // a parent must always exist
@@ -452,7 +512,8 @@ inline bool isWithin(TYPE minimum, TYPE value, TYPE maximum) throw() {
   }
 }
 
-int Thread::getNamedPriority(Priority priority) throw() {
+int Thread::getNamedPriority(Priority priority) throw()
+{
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   static const int PRIORITY[] = {7 - 31, 7 - 15, 7 - 7, 7 - 1};
 #else // unix
@@ -462,9 +523,10 @@ int Thread::getNamedPriority(Priority priority) throw() {
   return PRIORITY[priority];
 }
 
-Thread::Identifier Thread::getIdentifier() throw() {
+Thread::Identifier Thread::getIdentifier() throw()
+{
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
-  return Cast::container<Identifier>(::GetCurrentThreadId());
+  return getAsPointer(::GetCurrentThreadId());
 
   // add optimized method for windows nt and intel platform
   // structured exception handling: fs:[0x00]
@@ -475,7 +537,7 @@ Thread::Identifier Thread::getIdentifier() throw() {
   // process id: fs:[0x20]
   // thread id: fs:[0x24]
 #else // pthread
-  return Cast::container<Identifier>(::pthread_self());
+  return getAsPointer(::pthread_self());
 #endif
 }
 
@@ -592,12 +654,16 @@ int Thread::getPriority() throw(ThreadException) {
 #endif
 }
 
-Thread::Times Thread::getTimes() throw() {
+Thread::Times Thread::getTimes() throw()
+{
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   Thread::Times result;
+  FILETIME creationTime;
+  FILETIME exitTime;
   FILETIME system;
   FILETIME user;
-  ::GetThreadTimes(::GetCurrentThread(), 0, 0, &system, &user);
+  BOOL status = ::GetThreadTimes(::GetCurrentThread(), &creationTime, &exitTime, &system, &user);
+  ASSERT(status);
   result.user = Cast::impersonate<unsigned long long>(user) * 100ULL;
   result.system = Cast::impersonate<unsigned long long>(system) * 100ULL;
   return result;
@@ -645,7 +711,7 @@ void Thread::start() throw(ThreadException) {
     &id
   );
   bassert(handle, ResourceException("Unable to create thread", this));
-  identifier = Cast::container<Identifier>(id);
+  identifier = getAsPointer(id);
   ::CloseHandle(handle); // detach
   // TAG: does this always work or must this be postponed until entry function
 #else // pthread
@@ -658,7 +724,7 @@ void Thread::start() throw(ThreadException) {
     pthread_attr_destroy(&attributes);
     throw ResourceException("Unable to create thread", this);
   }
-  identifier = Cast::container<Identifier>(id);
+  identifier = getAsPointer(id);
   pthread_attr_destroy(&attributes);
 #endif
 }

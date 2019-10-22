@@ -91,7 +91,7 @@ const uint8* Math::getBitReversalData() noexcept {
   return BIT_REVERSAL;
 }
 
-double Math::lngamma(double value) throw() {
+double Math::lngamma(double value) noexcept {
   // TAG: need better approximation
   // B_2n/(2n * (2n-1) x^(2n-1))
   const double coefficients[7] = {
@@ -117,7 +117,8 @@ double Math::lngamma(double value) throw() {
   return result;
 }
 
-unsigned int Math::gcd(unsigned int m, unsigned int n) throw() {
+unsigned int Math::gcd(unsigned int m, unsigned int n) noexcept
+{
   unsigned int M = (m > n) ? m : n;
   unsigned int N = (m > n) ? n : m;
   if (N == 0) {
@@ -134,7 +135,8 @@ unsigned int Math::gcd(unsigned int m, unsigned int n) throw() {
   return N;
 }
 
-int Math::gcd(int m, int n) throw() {
+int Math::gcd(int m, int n) noexcept
+{
   bool negative = (m < 0) && (n < 0);
   if (m < 0) {
     m = -m;

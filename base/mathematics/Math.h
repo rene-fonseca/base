@@ -265,7 +265,8 @@ public:
   /**
     Returns the absolute value.
   */
-  static inline float abs(float value) throw() {
+  static inline float abs(float value) noexcept
+  {
     #if defined(_COM_AZURE_DEV__BASE__REDIR_ISOC_FABSF)
       return _COM_AZURE_DEV__BASE__REDIR_ISOC_FABSF(value);
     #else
@@ -276,7 +277,8 @@ public:
   /**
     Returns the absolute value.
   */
-  static inline double abs(double value) throw() {
+  static inline double abs(double value) noexcept
+  {
     #if defined(_COM_AZURE_DEV__BASE__REDIR_ISOC_FABS)
       return _COM_AZURE_DEV__BASE__REDIR_ISOC_FABS(value);
     #else
@@ -287,7 +289,8 @@ public:
   /**
     Returns the absolute value.
   */
-  static inline long double abs(long double value) throw() {
+  static inline long double abs(long double value) noexcept
+  {
     #if defined(_COM_AZURE_DEV__BASE__REDIR_ISOC_FABSL)
       return _COM_AZURE_DEV__BASE__REDIR_ISOC_FABSL(value);
     #else
@@ -298,7 +301,8 @@ public:
   /**
     Rounds (towards +infinity) the value to the nearest integer.
   */
-  static inline float ceil(float value) throw() {
+  static inline float ceil(float value) noexcept
+  {
     #if defined(_COM_AZURE_DEV__BASE__REDIR_ISOC_CEILF)
       return _COM_AZURE_DEV__BASE__REDIR_ISOC_CEILF(value);
     #else
@@ -309,14 +313,16 @@ public:
   /**
     Rounds (towards +infinity) the value to the nearest integer.
   */
-  static inline double ceil(double value) throw() {
+  static inline double ceil(double value) noexcept
+  {
     return isoc::ceil(value);
   }
 
   /**
     Rounds (towards +infinity) the value to the nearest integer.
   */
-  static inline long double ceil(long double value) throw() {
+  static inline long double ceil(long double value) noexcept
+  {
     #if defined(_COM_AZURE_DEV__BASE__REDIR_ISOC_CEILL)
       return _COM_AZURE_DEV__BASE__REDIR_ISOC_CEILL(value);
     #else
@@ -327,7 +333,8 @@ public:
   /**
     Rounds (towards -infinity) the value to the nearest integer.
   */
-  static inline float floor(float value) throw() {
+  static inline float floor(float value) noexcept
+  {
     #if defined(_COM_AZURE_DEV__BASE__REDIR_ISOC_FLOORF)
       return _COM_AZURE_DEV__BASE__REDIR_ISOC_FLOORF(value);
     #else
@@ -338,14 +345,16 @@ public:
   /**
     Rounds (towards -infinity) the value to the nearest integer.
   */
-  static inline double floor(double value) throw() {
+  static inline double floor(double value) noexcept
+  {
     return isoc::floor(value);
   }
 
   /**
     Rounds (towards -infinity) the value to the nearest integer.
   */
-  static inline long double floor(long double value) throw() {
+  static inline long double floor(long double value) noexcept
+  {
     #if defined(_COM_AZURE_DEV__BASE__REDIR_ISOC_FLOORL)
       return _COM_AZURE_DEV__BASE__REDIR_ISOC_FLOORL(value);
     #else
@@ -356,7 +365,8 @@ public:
   /**
     Rounds the value to the nearest integer (away from 0).
   */
-  static inline float round(float value) throw() {
+  static inline float round(float value) noexcept
+  {
     #if defined(_COM_AZURE_DEV__BASE__HAVE_ISOC_ROUNDF)
       return isoc::roundf(value);
     #elif defined(_COM_AZURE_DEV__BASE__HAVE_ISOC_ROUNDL)
@@ -371,7 +381,8 @@ public:
   /**
     Rounds the value to the nearest integer.
   */
-  static inline double round(double value) throw() {
+  static inline double round(double value) noexcept
+  {
     #if defined(_COM_AZURE_DEV__BASE__HAVE_ISOC_ROUND)
       return isoc::round(value);
     #elif defined(_COM_AZURE_DEV__BASE__HAVE_ISOC_ROUNDL)
@@ -386,7 +397,8 @@ public:
   /**
     Rounds the value to the nearest integer.
   */
-  static inline long double round(long double value) throw() {
+  static inline long double round(long double value) noexcept
+  {
     #if defined(_COM_AZURE_DEV__BASE__HAVE_ISOC_ROUNDL)
       return isoc::roundl(value);
     #elif defined(_COM_AZURE_DEV__BASE__HAVE_ISOC_ROUND)
@@ -401,7 +413,8 @@ public:
   /**
     Rounds (towards zero) the value to the nearest integer.
   */
-  static inline float trunc(float value) throw() {
+  static inline float trunc(float value) noexcept
+  {
     #if defined(_COM_AZURE_DEV__BASE__REDIR_ISOC_TRUNCF)
       return _COM_AZURE_DEV__BASE__REDIR_ISOC_TRUNCF(value);
     #else
@@ -412,14 +425,16 @@ public:
   /**
     Rounds (towards zero) the value to the nearest integer.
   */
-  static inline double trunc(double value) throw() {
+  static inline double trunc(double value) noexcept
+  {
     return isoc::trunc(value);
   }
 
   /**
     Rounds (towards zero) the value to the nearest integer.
   */
-  static inline long double trunc(long double value) throw() {
+  static inline long double trunc(long double value) noexcept
+  {
     #if defined(_COM_AZURE_DEV__BASE__REDIR_ISOC_TRUNCL)
       return _COM_AZURE_DEV__BASE__REDIR_ISOC_TRUNCL(value);
     #else
@@ -432,7 +447,8 @@ public:
   /**
     Returns the square root of the value.
   */
-  static inline float sqrt(float value) throw() {
+  static inline float sqrt(float value) noexcept
+  {
     #if defined(_COM_AZURE_DEV__BASE__REDIR_ISOC_SQRTF)
       return _COM_AZURE_DEV__BASE__REDIR_ISOC_SQRTF(value);
     #else
@@ -443,7 +459,8 @@ public:
   /**
     Returns the square root of the value.
   */
-  static inline double sqrt(double value) throw() {
+  static inline double sqrt(double value) noexcept
+  {
     #if defined(_COM_AZURE_DEV__BASE__REDIR_ISOC_SQRT)
       return _COM_AZURE_DEV__BASE__REDIR_ISOC_SQRT(value);
     #else
@@ -454,7 +471,8 @@ public:
   /**
     Returns the square root of the value.
   */
-  static inline long double sqrt(long double value) throw() {
+  static inline long double sqrt(long double value) noexcept
+  {
     #if defined(_COM_AZURE_DEV__BASE__REDIR_ISOC_SQRTL)
       return _COM_AZURE_DEV__BASE__REDIR_ISOC_SQRTL(value);
     #else
@@ -465,7 +483,8 @@ public:
   /**
     Returns the cube root of the value.
   */
-  static inline float cbrt(float value) throw() {
+  static inline float cbrt(float value) noexcept
+  {
     #if defined(_COM_AZURE_DEV__BASE__REDIR_ISOC_CBRTF)
       return _COM_AZURE_DEV__BASE__REDIR_ISOC_CBRTF(value);
     #else
@@ -476,14 +495,16 @@ public:
   /**
     Returns the cube root of the value.
   */
-  static inline double cbrt(double value) throw() {
+  static inline double cbrt(double value) noexcept
+  {
     return isoc::cbrt(value);
   }
 
   /**
     Returns the cube root of the value.
   */
-  static inline long double cbrt(long double value) throw() {
+  static inline long double cbrt(long double value) noexcept
+  {
     #if defined(_COM_AZURE_DEV__BASE__REDIR_ISOC_CBRTL)
       return _COM_AZURE_DEV__BASE__REDIR_ISOC_CBRTL(value);
     #else
@@ -494,7 +515,8 @@ public:
   /**
     Returns the Euclidian distance - sqrt(x^2 + y^2).
   */
-  static inline float hypot(float x, float y) throw() {
+  static inline float hypot(float x, float y) noexcept
+  {
     #if defined(_COM_AZURE_DEV__BASE__REDIR_ISOC_HYPOTF)
       return _COM_AZURE_DEV__BASE__REDIR_ISOC_HYPOTF(x, y);
     #else
@@ -505,14 +527,16 @@ public:
   /**
     Returns the Euclidian distance - sqrt(x^2 + y^2).
   */
-  static inline double hypot(double x, double y) throw() {
+  static inline double hypot(double x, double y) noexcept
+  {
     return isoc::hypot(x, y);
   }
 
   /**
     Returns the Euclidian distance - sqrt(x^2 + y^2).
   */
-  static inline long double hypot(long double x, long double y) throw() {
+  static inline long double hypot(long double x, long double y) noexcept
+  {
     #if defined(_COM_AZURE_DEV__BASE__REDIR_ISOC_HYPOTL)
       return _COM_AZURE_DEV__BASE__REDIR_ISOC_HYPOTL(x, y);
     #else
@@ -523,7 +547,8 @@ public:
   /**
     Returns the exponential of the value.
   */
-  static inline float exp(float value) throw() {
+  static inline float exp(float value) noexcept
+  {
     #if defined(_COM_AZURE_DEV__BASE__REDIR_ISOC_EXPF)
       return _COM_AZURE_DEV__BASE__REDIR_ISOC_EXPF(value);
     #else
@@ -534,14 +559,16 @@ public:
   /**
     Returns the exponential of the value.
   */
-  static inline double exp(double value) throw() {
+  static inline double exp(double value) noexcept
+  {
     return isoc::exp(value);
   }
 
   /**
     Returns the exponential of the value.
   */
-  static inline long double exp(long double value) throw() {
+  static inline long double exp(long double value) noexcept
+  {
     #if defined(_COM_AZURE_DEV__BASE__REDIR_ISOC_EXPL)
       return _COM_AZURE_DEV__BASE__REDIR_ISOC_EXPL(value);
     #else
@@ -552,7 +579,8 @@ public:
   /**
     Returns the natural logarithm of the value.
   */
-  static inline float ln(float value) throw() {
+  static inline float ln(float value) noexcept
+  {
     #if defined(_COM_AZURE_DEV__BASE__REDIR_ISOC_LOGF)
       return _COM_AZURE_DEV__BASE__REDIR_ISOC_LOGF(value);
     #else
@@ -563,14 +591,16 @@ public:
   /**
     Returns the natural logarithm of the value.
   */
-  static inline double ln(double value) throw() {
+  static inline double ln(double value) noexcept
+  {
     return isoc::log(value);
   }
 
   /**
     Returns the natural logarithm of the value.
   */
-  static inline long double ln(long double value) throw() {
+  static inline long double ln(long double value) noexcept
+  {
     #if defined(_COM_AZURE_DEV__BASE__REDIR_ISOC_LOGL)
       return _COM_AZURE_DEV__BASE__REDIR_ISOC_LOGL(value);
     #else
@@ -581,7 +611,8 @@ public:
   /**
     Returns the logarithm with base 2 of the value.
   */
-  static inline float log2(float value) throw() {
+  static inline float log2(float value) noexcept
+  {
     #if defined(_COM_AZURE_DEV__BASE__HAVE_ISOC_LOG2F)
       return isoc::log2f(value);
     #elif defined(_COM_AZURE_DEV__BASE__HAVE_ISOC_LOG2L)
@@ -596,7 +627,8 @@ public:
   /**
     Returns the logarithm with base 2 of the value.
   */
-  static inline double log2(double value) throw() {
+  static inline double log2(double value) noexcept
+  {
     #if defined(_COM_AZURE_DEV__BASE__HAVE_ISOC_LOG2)
       return isoc::log2(value);
     #elif defined(_COM_AZURE_DEV__BASE__HAVE_ISOC_LOG2L)
@@ -611,7 +643,8 @@ public:
   /**
     Returns the logarithm with base 2 of the value.
   */
-  static inline long double log2(long double value) throw() {
+  static inline long double log2(long double value) noexcept
+  {
     #if defined(_COM_AZURE_DEV__BASE__HAVE_ISOC_LOG2L)
       return isoc::log2l(value);
     #elif defined(_COM_AZURE_DEV__BASE__HAVE_ISOC_LOG2)
@@ -626,7 +659,8 @@ public:
   /**
     Returns the logarithm with base 10 of the value.
   */
-  static inline float log10(float value) throw() {
+  static inline float log10(float value) noexcept
+  {
     #if defined(_COM_AZURE_DEV__BASE__REDIR_ISOC_LOG10F)
       return _COM_AZURE_DEV__BASE__REDIR_ISOC_LOG10F(value);
     #else
@@ -645,14 +679,16 @@ public:
   /**
     Returns the logarithm with base 10 of the value.
   */
-  static inline double log10(double value) throw() {
+  static inline double log10(double value) noexcept
+  {
     return isoc::log10(value);
   }
   
   /**
     Returns the logarithm with base 10 of the value.
   */
-  static inline long double log10(long double value) throw() {
+  static inline long double log10(long double value) noexcept
+  {
     #if defined(_COM_AZURE_DEV__BASE__REDIR_ISOC_LOG10L)
       return _COM_AZURE_DEV__BASE__REDIR_ISOC_LOG10L(value);
     #else
@@ -671,14 +707,16 @@ public:
   /**
     Returns the logarithm with base n of the value.
   */
-  static inline long double logn(long double value, long double base) throw() {
+  static inline long double logn(long double value, long double base) noexcept
+  {
     return Math::ln(value)/base;
   }
   
   /**
     Returns the power a^b.
   */
-  static inline float power(float a, float b) throw() {
+  static inline float power(float a, float b) noexcept
+  {
     #if defined(_COM_AZURE_DEV__BASE__REDIR_ISOC_POWF)
       return _COM_AZURE_DEV__BASE__REDIR_ISOC_POWF(a, b);
     #else
@@ -689,14 +727,16 @@ public:
   /**
     Returns the power a^b.
   */
-  static inline double power(double a, double b) throw() {
+  static inline double power(double a, double b) noexcept
+  {
     return isoc::pow(a, b);
   }
 
   /**
     Returns the power a^b.
   */
-  static inline long double power(long double a, long double b) throw() {
+  static inline long double power(long double a, long double b) noexcept
+  {
     #if defined(_COM_AZURE_DEV__BASE__REDIR_ISOC_POWL)
       return _COM_AZURE_DEV__BASE__REDIR_ISOC_POWL(a, b);
     #else
@@ -728,7 +768,8 @@ public:
   /**
     Returns the sine.
   */
-  static inline float sin(float value) throw() {
+  static inline float sin(float value) noexcept
+  {
     #if defined(_COM_AZURE_DEV__BASE__REDIR_ISOC_SINF)
       return _COM_AZURE_DEV__BASE__REDIR_ISOC_SINF(value);
     #else
@@ -739,7 +780,8 @@ public:
   /**
     Returns the sine.
   */
-  static inline double sin(double value) throw() {
+  static inline double sin(double value) noexcept
+  {
     #if defined(_COM_AZURE_DEV__BASE__REDIR_ISOC_SIN)
       return _COM_AZURE_DEV__BASE__REDIR_ISOC_SIN(value);
     #else
@@ -750,7 +792,8 @@ public:
   /**
     Returns the sine.
   */
-  static inline long double sin(long double value) throw() {
+  static inline long double sin(long double value) noexcept
+  {
     #if defined(_COM_AZURE_DEV__BASE__REDIR_ISOC_SINL)
       return _COM_AZURE_DEV__BASE__REDIR_ISOC_SINL(value);
     #else
@@ -761,7 +804,8 @@ public:
   /**
     Returns the inverse sine.
   */
-  static inline float asin(float value) throw() {
+  static inline float asin(float value) noexcept
+  {
     #if defined(_COM_AZURE_DEV__BASE__REDIR_ISOC_ASINF)
       return _COM_AZURE_DEV__BASE__REDIR_ISOC_ASINF(value);
     #else
@@ -772,14 +816,16 @@ public:
   /**
     Returns the inverse sine.
   */
-  static inline double asin(double value) throw() {
+  static inline double asin(double value) noexcept
+  {
     return isoc::asin(value);
   }
 
   /**
     Returns the inverse sine.
   */
-  static inline long double asin(long double value) throw() {
+  static inline long double asin(long double value) noexcept
+  {
     #if defined(_COM_AZURE_DEV__BASE__HAVE_ISOC_ASINL)
       return isoc::asinl(value);
     #elif defined(_COM_AZURE_DEV__BASE__REDIR_ISOC_ASINL)
@@ -793,7 +839,8 @@ public:
   /**
     Returns the cosine.
   */
-  static inline float cos(float value) throw() {
+  static inline float cos(float value) noexcept
+  {
     #if defined(_COM_AZURE_DEV__BASE__REDIR_ISOC_COSF)
       return _COM_AZURE_DEV__BASE__REDIR_ISOC_COSF(value);
     #else
@@ -804,7 +851,8 @@ public:
   /**
     Returns the cosine.
   */
-  static inline double cos(double value) throw() {
+  static inline double cos(double value) noexcept
+  {
     #if defined(_COM_AZURE_DEV__BASE__REDIR_ISOC_COS)
       return _COM_AZURE_DEV__BASE__REDIR_ISOC_COS(value);
     #else
@@ -815,7 +863,8 @@ public:
   /**
     Returns the cosine.
   */
-  static inline long double cos(long double value) throw() {
+  static inline long double cos(long double value) noexcept
+  {
     #if defined(_COM_AZURE_DEV__BASE__REDIR_ISOC_COSL)
       return _COM_AZURE_DEV__BASE__REDIR_ISOC_COSL(value);
     #else
@@ -826,7 +875,8 @@ public:
   /**
     Returns the inverse cosine.
   */
-  static inline float acos(float value) throw() {
+  static inline float acos(float value) noexcept
+  {
     #if defined(_COM_AZURE_DEV__BASE__REDIR_ISOC_ACOSF)
       return _COM_AZURE_DEV__BASE__REDIR_ISOC_ACOSF(value);
     #else
@@ -837,14 +887,16 @@ public:
   /**
     Returns the inverse cosine.
   */
-  static inline double acos(double value) throw() {
+  static inline double acos(double value) noexcept
+  {
     return isoc::acos(value);
   }
 
   /**
     Returns the inverse cosine.
   */
-  static inline long double acos(long double value) throw() {
+  static inline long double acos(long double value) noexcept
+  {
     #if defined(_COM_AZURE_DEV__BASE__HAVE_ISOC_ACOSL)
       return isoc::acosl(value);
     #elif defined(_COM_AZURE_DEV__BASE__REDIR_ISOC_ACOSL)
@@ -858,7 +910,8 @@ public:
   /**
     Returns the tangent.
   */
-  static inline float tan(float value) throw() {
+  static inline float tan(float value) noexcept
+  {
     #if defined(_COM_AZURE_DEV__BASE__REDIR_ISOC_TANF)
       return _COM_AZURE_DEV__BASE__REDIR_ISOC_TANF(value);
     #else
@@ -869,14 +922,15 @@ public:
   /**
     Returns the tangent.
   */
-  static inline double tan(double value) throw() {
+  static inline double tan(double value) noexcept {
     return isoc::tan(value);
   }
 
   /**
     Returns the tangent.
   */
-  static inline long double tan(long double value) throw() {
+  static inline long double tan(long double value) 
+  {
     #if defined(_COM_AZURE_DEV__BASE__REDIR_ISOC_TANL)
       return _COM_AZURE_DEV__BASE__REDIR_ISOC_TANL(value);
     #else
@@ -888,7 +942,8 @@ public:
   /**
     Returns the inverse tangent.
   */
-  static inline float atan(float value) throw() {
+  static inline float atan(float value) noexcept
+  {
     #if defined(_COM_AZURE_DEV__BASE__HAVE_ISOC_ATANF)
       return isoc::atanf(value);
     #elif defined(_COM_AZURE_DEV__BASE__REDIR_ISOC_ATANF)
@@ -901,14 +956,16 @@ public:
   /**
     Returns the inverse tangent.
   */
-  static inline double atan(double value) throw() {
+  static inline double atan(double value) noexcept
+  {
     return isoc::atan(value);
   }
   
   /**
     Returns the inverse tangent.
   */
-  static inline long double atan(long double value) throw() {
+  static inline long double atan(long double value) noexcept
+  {
     #if defined(_COM_AZURE_DEV__BASE__HAVE_ISOC_ATANL)
       return isoc::atanl(value);
     #elif defined(_COM_AZURE_DEV__BASE__REDIR_ISOC_ATANL)
@@ -921,98 +978,112 @@ public:
   /**
     Returns the cotangent of the value.
   */
-  static inline long double cotan(long double value) throw() {
+  static inline long double cotan(long double value) noexcept
+  {
     return 1/Math::tan(value);
   }
   
   /**
     Returns the inverse cotangent of the value.
   */
-  static inline long double acotan(long double value) throw() {
+  static inline long double acotan(long double value) noexcept
+  {
     return Math::atan2(1, value);
   }
   
   /**
     Returns the secant of the value.
   */
-  static inline long double sec(long double value) throw() {
+  static inline long double sec(long double value) noexcept
+  {
     return 1/Math::cos(value);
   }
   
   /**
     Returns the inverse secant of the value.
   */
-  static inline long double asec(long double value) throw() {
+  static inline long double asec(long double value) noexcept
+  {
     return Math::atan2(value, Math::sqrt(1 - value * value)); // acos(1/value)
   }
   
   /**
     Returns the cosecant of the value.
   */
-  static inline long double cosec(long double value) throw() {
+  static inline long double cosec(long double value) noexcept
+  {
     return 1/Math::sin(value);
   }
   
   /**
     Returns the inverse cosecant of the value.
   */
-  static inline long double acosec(long double value) throw() {
+  static inline long double acosec(long double value) noexcept
+  {
     return Math::atan2(Math::sqrt(1 - value * value), value); // asin(1/value)
   }
   
   /**
     Returns the exsecant of the value.
   */
-  static inline long double exsec(long double value) throw() {
+  static inline long double exsec(long double value) noexcept
+  {
     return 1/Math::cos(value) - 1;
   }
   
   /**
     Returns the inverse exsecant of the value.
   */
-  static inline long double aexsec(long double value) throw() {
+  static inline long double aexsec(long double value) noexcept
+  {
     return Math::atan(Math::sqrt(value * (value + 2)));
   }
   
   /**
     Returns versine of value.
   */
-  static inline long double vers(long double value) throw() {
+  static inline long double vers(long double value) noexcept
+  {
     return 1 - Math::cos(value);
   }
   
   /**
     Returns the inverse versine of the value.
   */
-  static inline long double avers(long double value) throw() {
+  static inline long double avers(long double value) noexcept
+  {
     return Math::atan(Math::sqrt((2 - value) * value/((value - 1)*(value - 1))));
   }
   
   /**
     Returns the haversine of value.
   */
-  static inline long double hav(long double value) throw() {
+  static inline long double hav(long double value) noexcept
+  {
     return (1 - Math::cos(value))/2;
   }
   
   /**
     Returns the inverse hav of the value.
   */
-  static inline long double ahav(long double value) throw() {
+  static inline long double ahav(long double value) noexcept
+  {
     return Math::atan(Math::sqrt(1/((1 - 2 * value) * (1 - 2 * value)) - 1));
   }
   
   /**
     Returns the coversine of value.
   */
-  static inline long double covers(long double value) throw() {
+  static inline long double covers(long double value) noexcept
+  {
     return 1 - Math::sin(value);
   }
   
   /**
     Returns the inverse coversine of the value.
   */
-  static inline long double acovers(long double value) throw() {
+  static inline long double acovers(long double value) noexcept
+  {
     return Math::atan(Math::sqrt(-1/(value * (value - 2)) - 1));
   }
   
@@ -1020,7 +1091,8 @@ public:
     Returns the arc tangent of y/x using the signs of both arguments to
     determine the proper quadrant.
   */
-  static inline float atan2(float y, float x) throw() {
+  static inline float atan2(float y, float x) noexcept
+  {
     #if defined(_COM_AZURE_DEV__BASE__REDIR_ISOC_ATAN2F)
       return _COM_AZURE_DEV__BASE__REDIR_ISOC_ATAN2F(y, x);
     #else
@@ -1032,7 +1104,8 @@ public:
     Returns the arc tangent of y/x using the signs of both arguments to
     determine the proper quadrant.
   */
-  static inline double atan2(double y, double x) throw() {
+  static inline double atan2(double y, double x) noexcept
+  {
     return isoc::atan2(y, x);
   }
 
@@ -1040,7 +1113,8 @@ public:
     Returns the arc tangent of y/x using the signs of both arguments to
     determine the proper quadrant.
   */
-  static inline long double atan2(long double y, long double x) throw() {
+  static inline long double atan2(long double y, long double x) noexcept
+  {
     #if defined(_COM_AZURE_DEV__BASE__REDIR_ISOC_ATAN2L)
       return _COM_AZURE_DEV__BASE__REDIR_ISOC_ATAN2L(y, x);
     #else
@@ -1053,7 +1127,8 @@ public:
   /**
     Returns the hyperbolic sine.
   */
-  static inline float sinh(float value) throw() {
+  static inline float sinh(float value) noexcept
+  {
     #if defined(_COM_AZURE_DEV__BASE__HAVE_ISOC_SINHF)
       return isoc::sinhf(value);
     #elif defined(_COM_AZURE_DEV__BASE__REDIR_ISOC_SINHF)
@@ -1066,7 +1141,8 @@ public:
   /**
     Returns the hyperbolic sine.
   */
-  static inline double sinh(double value) throw() {
+  static inline double sinh(double value) noexcept
+  {
     #if defined(_COM_AZURE_DEV__BASE__HAVE_ISOC_SINH)
       return isoc::sinh(value);
     #elif defined(_COM_AZURE_DEV__BASE__REDIR_ISOC_SINH)
@@ -1079,7 +1155,8 @@ public:
   /**
     Returns the hyperbolic sine.
   */
-  static inline long double sinh(long double value) throw() {
+  static inline long double sinh(long double value) noexcept
+  {
     #if defined(_COM_AZURE_DEV__BASE__HAVE_ISOC_SINH)
       return isoc::sinhl(value);
     #elif defined(_COM_AZURE_DEV__BASE__REDIR_ISOC_SINHL)
@@ -1092,7 +1169,8 @@ public:
   /**
     Returns the inverse hyperbolic sine.
   */
-  static inline float asinh(float value) throw() {
+  static inline float asinh(float value) noexcept
+  {
     #if defined(_COM_AZURE_DEV__BASE__HAVE_ISOC_ASINHF)
       return isoc::asinhf(value);
     #elif defined(_COM_AZURE_DEV__BASE__REDIR_ISOC_ASINHF)
@@ -1105,7 +1183,8 @@ public:
   /**
     Returns the inverse hyperbolic sine.
   */
-  static inline double asinh(double value) throw() {
+  static inline double asinh(double value) noexcept
+  {
     #if defined(_COM_AZURE_DEV__BASE__HAVE_ISOC_ASINH)
       return isoc::asinh(value);
     #elif defined(_COM_AZURE_DEV__BASE__REDIR_ISOC_ASINH)
@@ -1118,7 +1197,8 @@ public:
   /**
     Returns the inverse hyperbolic sine.
   */
-  static inline long double asinh(long double value) throw() {
+  static inline long double asinh(long double value) noexcept
+  {
     #if defined(_COM_AZURE_DEV__BASE__HAVE_ISOC_ASINHL)
       return isoc::asinhl(value);
     #elif defined(_COM_AZURE_DEV__BASE__REDIR_ISOC_ASINHL)
@@ -1131,7 +1211,8 @@ public:
   /**
     Returns the hyperbolic cosine.
   */
-  static inline float cosh(float value) throw() {
+  static inline float cosh(float value) noexcept
+  {
     #if defined(_COM_AZURE_DEV__BASE__HAVE_ISOC_COSHF)
       return isoc::coshf(value);
     #elif defined(_COM_AZURE_DEV__BASE__REDIR_ISOC_COSHF)
@@ -1144,7 +1225,8 @@ public:
   /**
     Returns the hyperbolic cosine.
   */
-  static inline double cosh(double value) throw() {
+  static inline double cosh(double value) noexcept
+  {
     #if defined(_COM_AZURE_DEV__BASE__HAVE_ISOC_COSH)
       return isoc::cosh(value);
     #elif defined(_COM_AZURE_DEV__BASE__REDIR_ISOC_COSH)
@@ -1157,7 +1239,8 @@ public:
   /**
     Returns the hyperbolic cosine.
   */
-  static inline long double cosh(long double value) throw() {
+  static inline long double cosh(long double value) noexcept
+  {
     #if defined(_COM_AZURE_DEV__BASE__HAVE_ISOC_COSHL)
       return isoc::coshl(value);
     #elif defined(_COM_AZURE_DEV__BASE__REDIR_ISOC_COSHL)
@@ -1170,7 +1253,8 @@ public:
   /**
     Returns the inverse hyperbolic cosine.
   */
-  static inline float acosh(float value) throw() {
+  static inline float acosh(float value) noexcept
+  {
     #if defined(_COM_AZURE_DEV__BASE__HAVE_ISOC_ACOSHF)
       return isoc::acoshf(value);
     #elif defined(_COM_AZURE_DEV__BASE__REDIR_ISOC_ACOSHF)
@@ -1183,7 +1267,8 @@ public:
   /**
     Returns the inverse hyperbolic cosine.
   */
-  static inline double acosh(double value) throw() {
+  static inline double acosh(double value) noexcept
+  {
     #if defined(_COM_AZURE_DEV__BASE__HAVE_ISOC_ACOSH)
       return isoc::acosh(value);
     #elif defined(_COM_AZURE_DEV__BASE__REDIR_ISOC_ACOSH)
@@ -1196,7 +1281,8 @@ public:
   /**
     Returns the inverse hyperbolic cosine.
   */
-  static inline long double acosh(long double value) throw() {
+  static inline long double acosh(long double value) noexcept
+  {
     #if defined(_COM_AZURE_DEV__BASE__HAVE_ISOC_ACOSHL)
       return isoc::acoshl(value);
     #elif defined(_COM_AZURE_DEV__BASE__REDIR_ISOC_ACOSHL)
@@ -1209,7 +1295,8 @@ public:
   /**
     Returns the hyperbolic tangent.
   */
-  static inline float tanh(float value) throw() {
+  static inline float tanh(float value) noexcept
+  {
     #if defined(_COM_AZURE_DEV__BASE__HAVE_ISOC_TANHF)
       return isoc::tanhf(value);
     #elif defined(_COM_AZURE_DEV__BASE__REDIR_ISOC_TANHF)
@@ -1223,7 +1310,8 @@ public:
   /**
     Returns the hyperbolic tangent.
   */
-  static inline double tanh(double value) throw() {
+  static inline double tanh(double value) noexcept
+  {
     #if defined(_COM_AZURE_DEV__BASE__HAVE_ISOC_TANH)
       return isoc::tanh(value);
     #elif defined(_COM_AZURE_DEV__BASE__REDIR_ISOC_TANH)
@@ -1237,7 +1325,8 @@ public:
   /**
     Returns the hyperbolic tangent.
   */
-  static inline long double tanh(long double value) throw() {
+  static inline long double tanh(long double value) noexcept
+  {
     #if defined(_COM_AZURE_DEV__BASE__HAVE_ISOC_TANHL)
       return isoc::tanhl(value);
     #elif defined(_COM_AZURE_DEV__BASE__REDIR_ISOC_TANHL)
@@ -1251,7 +1340,8 @@ public:
   /**
     Returns the inverse hyperbolic tangent.
   */
-  static inline float atanh(float value) throw() {
+  static inline float atanh(float value) noexcept
+  {
     #if defined(_COM_AZURE_DEV__BASE__HAVE_ISOC_ATANHF)
       return isoc::atanhf(value);
     #elif defined(_COM_AZURE_DEV__BASE__REDIR_ISOC_ATANHF)
@@ -1264,7 +1354,8 @@ public:
   /**
     Returns the inverse hyperbolic tangent.
   */
-  static inline double atanh(double value) throw() {
+  static inline double atanh(double value) noexcept
+  {
     #if defined(_COM_AZURE_DEV__BASE__HAVE_ISOC_ATANH)
       return isoc::atanh(value);
     #elif defined(_COM_AZURE_DEV__BASE__REDIR_ISOC_ATANH)
@@ -1277,7 +1368,8 @@ public:
   /**
     Returns the inverse hyperbolic tangent.
   */
-  static inline long double atanh(long double value) throw() {
+  static inline long double atanh(long double value) noexcept
+  {
     #if defined(_COM_AZURE_DEV__BASE__HAVE_ISOC_ATANHL)
       return isoc::atanhl(value);
     #elif defined(_COM_AZURE_DEV__BASE__REDIR_ISOC_ATANHL)
@@ -1290,7 +1382,8 @@ public:
   /**
     Returns the hyperbolic cotangent of the value (do not invoke for 0).
   */
-  static inline float cotanh(float value) throw() {
+  static inline float cotanh(float value) noexcept
+  {
     const float temp = Math::exp(2 * value);
     return (temp + 1)/(temp - 1);
   }
@@ -1298,7 +1391,8 @@ public:
   /**
     Returns the hyperbolic cotangent of the value (do not invoke for 0).
   */
-  static inline double cotanh(double value) throw() {
+  static inline double cotanh(double value) noexcept
+  {
     const double temp = Math::exp(2 * value);
     return (temp + 1)/(temp - 1);
   }
@@ -1306,7 +1400,8 @@ public:
   /**
     Returns the hyperbolic cotangent of the value (do not invoke for 0).
   */
-  static inline long double cotanh(long double value) throw() {
+  static inline long double cotanh(long double value) noexcept
+  {
     const long double temp = Math::exp(2 * value);
     return (temp + 1)/(temp - 1);
   }
@@ -1314,91 +1409,104 @@ public:
   /**
     Returns the inverse hyperbolic cotangent of the value.
   */
-  static inline float acotanh(float value) throw() {
+  static inline float acotanh(float value) noexcept
+  {
     return Math::ln((value + 1)/(value - 1))/2;
   }
   
   /**
     Returns the inverse hyperbolic cotangent of the value.
   */
-  static inline double acotanh(double value) throw() {
+  static inline double acotanh(double value) noexcept
+  {
     return Math::ln((value + 1)/(value - 1))/2;
   }
   
   /**
     Returns the inverse hyperbolic cotangent of the value.
   */
-  static inline long double acotanh(long double value) throw() {
+  static inline long double acotanh(long double value) noexcept
+  {
     return Math::ln((value + 1)/(value - 1))/2;
   }
   
   /**
     Returns the hyperbolic secant of the value.
   */
-  static inline float sech(float value) throw() {
+  static inline float sech(float value) noexcept
+  {
     return 2/(Math::exp(value) + Math::exp(-value));
   }
   
   /**
     Returns the hyperbolic secant of the value.
   */
-  static inline double sech(double value) throw() {
+  static inline double sech(double value) noexcept
+  {
     return 2/(Math::exp(value) + Math::exp(-value));
   }
   
   /**
     Returns the hyperbolic secant of the value.
   */
-  static inline long double sech(long double value) throw() {
+  static inline long double sech(long double value) noexcept
+  {
     return 2/(Math::exp(value) + Math::exp(-value));
   }
   
   /**
     Returns the inverse hyperbolic secant of the value.
   */
-  static inline float asech(float value) throw() {
+  static inline float asech(float value) noexcept
+  {
     return Math::ln((1 + Math::sqrt(1 - value * value))/value);
   }
   
   /**
     Returns the inverse hyperbolic secant of the value.
   */
-  static inline double asech(double value) throw() {
+  static inline double asech(double value) noexcept
+  {
     return Math::ln((1 + Math::sqrt(1 - value * value))/value);
   }
   
   /**
     Returns the inverse hyperbolic secant of the value.
   */
-  static inline long double asech(long double value) throw() {
+  static inline long double asech(long double value) noexcept
+  {
     return Math::ln((1 + Math::sqrt(1 - value * value))/value);
   }
   
   /**
     Returns the hyperbolic cosecant of the value (do not invoke for 0).
   */
-  static inline float cosech(float value) throw() {
+  static inline float cosech(float value) noexcept
+  {
     return 2/(Math::exp(value) - Math::exp(-value));
   }
   
   /**
     Returns the hyperbolic cosecant of the value (do not invoke for 0).
   */
-  static inline double cosech(double value) throw() {
+  static inline double cosech(double value) noexcept
+  {
     return 2/(Math::exp(value) - Math::exp(-value));
   }
   
   /**
     Returns the hyperbolic cosecant of the value (do not invoke for 0).
   */
-  static inline long double cosech(long double value) throw() {
+  static inline long double cosech(long double value) noexcept
+  {
     return 2/(Math::exp(value) - Math::exp(-value));
   }
   
   /**
     Returns the inverse hyperbolic cosecant of the value (do not invoke for 0).
   */
-  static inline float acosech(float value) throw() {
+  static inline float acosech(float value) noexcept
+  {
     return Math::ln(
       (1 + Math::sqrt(1 + value * value))/((value >= 0) ? value : -value)
     );
@@ -1407,7 +1515,8 @@ public:
   /**
     Returns the inverse hyperbolic cosecant of the value (do not invoke for 0).
   */
-  static inline double acosech(double value) throw() {
+  static inline double acosech(double value) noexcept
+  {
     return Math::ln(
       (1 + Math::sqrt(1 + value * value))/((value >= 0) ? value : -value)
     );
@@ -1416,7 +1525,8 @@ public:
   /**
     Returns the inverse hyperbolic cosecant of the value (do not invoke for 0).
   */
-  static inline long double acosech(long double value) throw() {
+  static inline long double acosech(long double value) noexcept
+  {
     return Math::ln(
       (1 + Math::sqrt(1 + value * value))/((value >= 0) ? value : -value)
     );
@@ -1427,28 +1537,32 @@ public:
   /**
     Returns the sinc (with normalization PI) of the value.
   */
-  static inline float sinc(float value) throw() {
+  static inline float sinc(float value) noexcept
+  {
     return (value == 0) ? 1 : Math::sin(value)/value;
   }
   
   /**
     Returns the sinc (with normalization PI) of the value.
   */
-  static inline double sinc(double value) throw() {
+  static inline double sinc(double value) noexcept
+  {
     return (value == 0) ? 1 : Math::sin(value)/value;
   }
   
   /**
     Returns the sinc (with normalization PI) of the value.
   */
-  static inline long double sinc(long double value) throw() {
+  static inline long double sinc(long double value) noexcept
+  {
     return (value == 0) ? 1 : Math::sin(value)/value;
   }
 
   /**
     Returns the sinc (with normalization 1) of the value.
   */
-  static inline float sincPi(float value) throw() {
+  static inline float sincPi(float value) noexcept
+  {
     return (value == 0) ? 1 :
       Math::sin(constant::PI_F * value)/(constant::PI_F * value);
   }
@@ -1456,7 +1570,8 @@ public:
   /**
     Returns the sinc (with normalization 1) of the value.
   */
-  static inline double sincPi(double value) throw() {
+  static inline double sincPi(double value) noexcept
+  {
     return (value == 0) ? 1 :
       Math::sin(constant::PI * value)/(constant::PI * value);
   }
@@ -1464,7 +1579,8 @@ public:
   /**
     Returns the sinc (with normalization 1) of the value.
   */
-  static inline long double sincPi(long double value) throw() {
+  static inline long double sincPi(long double value) noexcept
+  {
     return (value == 0) ? 1 :
       Math::sin(constant::PI_L * value)/(constant::PI_L * value);
   }
@@ -1472,21 +1588,24 @@ public:
   /**
     Returns the tanc of the value.
   */
-  static inline float tanc(float value) throw() {
+  static inline float tanc(float value) noexcept
+  {
     return (value == 0) ? 1 : Math::tan(value)/value;
   }
   
   /**
     Returns the tanc of the value.
   */
-  static inline double tanc(double value) throw() {
+  static inline double tanc(double value) noexcept
+  {
     return (value == 0) ? 1 : Math::tan(value)/value;
   }
   
   /**
     Returns the tanc of the value.
   */
-  static inline long double tanc(long double value) throw() {
+  static inline long double tanc(long double value) noexcept
+  {
     return (value == 0) ? 1 : Math::tan(value)/value;
   }
 
@@ -1494,14 +1613,15 @@ public:
     Returns the natural logarithm of the gamma of the specified value (i.e.
     ln(gamma(x))) where gamma is defined as (x - 1)!.
   */
-  static double lngamma(double value) throw();
+  static double lngamma(double value) noexcept;
   
   
   
   /**
     Returns the square root of the specified integer. The result is round down.
   */
-  static inline unsigned int iSqrt(unsigned int value) throw() {
+  static inline unsigned int iSqrt(unsigned int value) noexcept
+  {
     unsigned int accumulator = 0;
     unsigned int remainder = 0;
     for (unsigned int i = sizeof(unsigned int)*8/2; i > 0; --i) {
@@ -1521,7 +1641,8 @@ public:
     Returns the square root of the specified integer with 8 bit precision. The
     result is round down.
   */
-  static inline unsigned int iSqrt8(unsigned int value) throw() {
+  static inline unsigned int iSqrt8(unsigned int value) noexcept
+  {
     unsigned int accumulator = 0;
     unsigned int remainder = 0;
     for (unsigned int i = sizeof(unsigned int)*8/2 + 8; i > 0; --i) {
@@ -1541,7 +1662,8 @@ public:
     Returns the square root of the specified integer with 16 bit precision. The
     result is round down.
   */
-  static inline unsigned int iSqrt16(unsigned int value) throw() {
+  static inline unsigned int iSqrt16(unsigned int value) noexcept
+  {
     unsigned int accumulator = 0;
     unsigned int remainder = 0;
     for (unsigned int i = sizeof(unsigned int)*8/2 + 16; i > 0; --i) {
@@ -1561,7 +1683,8 @@ public:
     Returns the square root of the specified integer with 8 bit precision. The
     result is rounded to the nearest 256th of an integer.
   */
-  static inline unsigned int iSqrt8Round(unsigned int value) throw() {
+  static inline unsigned int iSqrt8Round(unsigned int value) noexcept
+  {
     unsigned int accumulator = 0;
     unsigned int remainder = 0;
     for (unsigned int i = sizeof(unsigned int)*8/2 + 8; i > 0; --i) {
@@ -1584,7 +1707,8 @@ public:
   /**
     Returns true if the specified integer is a power of 2.
   */
-  static inline bool isPowerOf2(unsigned char value) throw() {
+  static inline bool isPowerOf2(unsigned char value) noexcept
+  {
     // powers of 2 for 4 bit nibble
     // 1, 2, 4, and 8 => 0b0000000100010110 => 0x0116
     const unsigned int IS_POWER_OF_2 = 0x0116;
@@ -1595,7 +1719,8 @@ public:
   /**
     Returns true if the specified integer is a power of 2.
   */
-  static inline bool isPowerOf2(unsigned int value) throw() {
+  static inline bool isPowerOf2(unsigned int value) noexcept
+  {
     if (value != 0) {
       while ((value & 0xff) == 0) {
         value >>= 8;
@@ -1610,7 +1735,8 @@ public:
   /**
     Returns true if the specified integer is a power of 2.
   */
-  static inline bool isPowerOf2(unsigned long long value) throw() {
+  static inline bool isPowerOf2(unsigned long long value) noexcept
+  {
     if (value != 0) {
       while ((value & 0xff) == 0) {
         value >>= 8;
@@ -1628,7 +1754,8 @@ public:
 
     @return 0 if value is 0.
   */
-  static inline unsigned int iLog2(unsigned int value) throw() {
+  static inline unsigned int iLog2(unsigned int value) noexcept
+  {
     unsigned int result = sizeof(unsigned int) * 8;
     for (unsigned int i = sizeof(unsigned int) * 8/2; i > 0; i >>= 1) {
       if ((value >> (sizeof(unsigned int) * 8 - i)) == 0) {
@@ -1645,10 +1772,29 @@ public:
     
     @return 0 if value is 0.
   */
-  static inline unsigned int iLog2(unsigned long value) throw() {
+  static inline unsigned int iLog2(unsigned long value) noexcept
+  {
     unsigned int result = sizeof(unsigned long) * 8;
     for (unsigned int i = sizeof(unsigned long) * 8/2; i > 0; i >>= 1) {
       if ((value >> (sizeof(unsigned long) * 8 - i)) == 0) {
+        result -= i;
+        value <<= i;
+      }
+    }
+    return result ? result - 1 : result;
+  }
+
+  /**
+    Returns the base-2 logarithm of the specified integer. The result is
+    rounded down.
+
+    @return 0 if value is 0.
+  */
+  static inline unsigned int iLog2(unsigned long long value) noexcept
+  {
+    unsigned int result = sizeof(unsigned long long) * 8;
+    for (unsigned int i = sizeof(unsigned long long) * 8 / 2; i > 0; i >>= 1) {
+      if ((value >> (sizeof(unsigned long long) * 8 - i)) == 0) {
         result -= i;
         value <<= i;
       }
@@ -1661,8 +1807,9 @@ public:
     
     @return 0 if power of 2 exceeds limit.
   */
-  static inline unsigned int getPowerOf2(unsigned int value) throw() {
-    unsigned int result = 1 << iLog2(value);
+  static inline unsigned int getPowerOf2(unsigned int value) noexcept
+  {
+    unsigned int result = static_cast<unsigned int>(1) << iLog2(value);
     return (result >= value) ? result : (result << 1);
   }
 
@@ -1671,22 +1818,36 @@ public:
 
     @return 0 if power of 2 exceeds limit.
   */
-  static inline unsigned long getPowerOf2(unsigned long value) throw() {
-    unsigned long result = 1 << iLog2(value);
+  static inline unsigned long getPowerOf2(unsigned long value) noexcept
+  {
+    unsigned long result = static_cast<unsigned long>(1) << iLog2(value);
+    return (result >= value) ? result : (result << 1);
+  }
+
+  /**
+    Returns the power of 2 greater than or equal to the specified value.
+
+    @return 0 if power of 2 exceeds limit.
+  */
+  static inline unsigned long long getPowerOf2(unsigned long long value) noexcept
+  {
+    unsigned long long result = static_cast<unsigned long long>(1) << iLog2(value);
     return (result >= value) ? result : (result << 1);
   }
 
   /**
     Returns the bit reversal of the specified 8 bit unsigned integer.
   */
-  static inline uint8 getBitReversal(uint8 value) throw() {
+  static inline uint8 getBitReversal(uint8 value) noexcept
+  {
     return getBitReversalData()[value];
   }
 
   /**
     Returns the bit reversal of the specified 16 bit unsigned integer.
   */
-  static inline uint16 getBitReversal(uint16 value) throw() {
+  static inline uint16 getBitReversal(uint16 value) noexcept
+  {
     return merge(
       getBitReversal(getHighWordOf16(value)),
       getBitReversal(getLowWordOf16(value))
@@ -1696,7 +1857,8 @@ public:
   /**
     Returns the bit reversal of the specified 32 bit unsigned integer.
   */
-  static inline uint32 getBitReversal(uint32 value) throw() {
+  static inline uint32 getBitReversal(uint32 value) noexcept
+  {
     return merge(
       getBitReversal(getHighWordOf32(value)),
       getBitReversal(getLowWordOf32(value))
@@ -1706,7 +1868,8 @@ public:
   /**
     Returns the bit reversal of the specified 64 bit unsigned integer.
   */
-  static inline uint64 getBitReversal(uint64 value) throw() {
+  static inline uint64 getBitReversal(uint64 value) noexcept
+  {
     return merge(
       getBitReversal(getHighWordOf64(value)),
       getBitReversal(getLowWordOf64(value))
@@ -1720,7 +1883,8 @@ public:
     @param count The number of bit to rotate. The default is 1.
   */
   static inline unsigned int ror(
-    unsigned int value, unsigned int count = 1) throw() {
+    unsigned int value, unsigned int count = 1) noexcept
+  {
     count &= sizeof(unsigned int) * 8 - 1;
     return (value >> count) | (value << (sizeof(unsigned int) * 8 - count));
   }
@@ -1732,7 +1896,8 @@ public:
     @param count The number of bit to rotate. The default is 1.
   */
   static inline unsigned int rol(
-    unsigned int value, unsigned int count = 1) throw() {
+    unsigned int value, unsigned int count = 1) noexcept
+  {
     count &= sizeof(unsigned int) * 8 - 1;
     return (value << count) | (value >> (sizeof(unsigned int) * 8 - count));
   }
@@ -1740,24 +1905,25 @@ public:
   /**
     Returns the greatest common divisor.
   */
-  static int gcd(int m, int n) throw();
+  static int gcd(int m, int n) noexcept;
   
   /**
     Returns the greatest common divisor.
   */
-  static unsigned int gcd(unsigned int n, unsigned int m) throw();
+  static unsigned int gcd(unsigned int n, unsigned int m) noexcept;
 
   /**
     Returns the least common multiple.
   */
-  static inline int lcm(int m, int n) throw() {
+  static inline int lcm(int m, int n) noexcept {
     return m * (n/gcd(m, n));
   }
   
   /**
     Returns the least common multiple.
   */
-  static inline unsigned int lcm(unsigned int n, unsigned int m) throw() {
+  static inline unsigned int lcm(unsigned int n, unsigned int m) noexcept
+  {
     return m * (n/gcd(m, n));
   }
 };

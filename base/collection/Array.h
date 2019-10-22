@@ -20,7 +20,6 @@
 #include <base/mem/ReferenceCountedCapacityAllocator.h>
 #include <base/mem/Reference.h>
 #include <base/OutOfRange.h>
-#include <base/MemoryException.h>
 #include <base/string/FormatOutputStream.h>
 #include <base/Functor.h>
 
@@ -58,18 +57,21 @@ public:
     Array& array;
     MemorySize index = 0;
 
-    Element(const Element& copy) throw();
-    Element& operator=(const Element& eq) throw();
+    Element(const Element& copy) noexcept;
+    Element& operator=(const Element& eq) noexcept;
     
-    inline Element(Array& _array, MemorySize _index) throw()
-      : array(_array), index(_index) {
+    inline Element(Array& _array, MemorySize _index) noexcept
+      : array(_array),
+        index(_index)
+    {
     }
   public:
 
     /**
       Sets the value.
     */
-    inline Element& operator=(Value value) throw(OutOfRange) {
+    inline Element& operator=(const Value& value) throw(OutOfRange)
+    {
       array.setAt(index, value);
       return *this;
     }
@@ -77,7 +79,8 @@ public:
     /**
       Returns the value.
     */
-    inline operator Value() const throw(OutOfRange) {
+    inline operator const Value&() const throw(OutOfRange)
+    {
       return array.getAt(index);
     }
   };
@@ -92,7 +95,8 @@ public:
   /**
     Sets the size of the array.
   */
-  inline void setSize(MemorySize size) throw(MemoryException) {
+  inline void setSize(MemorySize size)
+  {
     if (size != this->size) {
       this->size = size;
       if (elements.isValid()) {
@@ -106,7 +110,8 @@ public:
   /**
     Returns the elements of the array for modifying access.
   */
-  inline Value* getElements() throw(MemoryException) {
+  inline Value* getElements()
+  {
     elements.copyOnWrite();
     return elements->getElements();
   }
@@ -114,14 +119,16 @@ public:
   /**
     Returns the elements of the array for non-modifying access.
   */
-  inline const Value* getElements() const throw() {
+  inline const Value* getElements() const noexcept
+  {
     return elements->getElements();
   }
 
   /**
     Initializes an empty array.
   */
-  Array() throw() : elements(new ReferenceCountedCapacityAllocator<Value>()) {
+  Array() : elements(new ReferenceCountedCapacityAllocator<Value>())
+  {
   }
 
   /**
@@ -129,8 +136,9 @@ public:
 
     @param granularity The desired granularity.
   */
-  explicit Array(MemorySize granularity) throw()
-    : elements(new ReferenceCountedCapacityAllocator<Value>(granularity)) {
+  explicit Array(MemorySize granularity)
+    : elements(new ReferenceCountedCapacityAllocator<Value>(granularity))
+  {
   }
 
   /**
@@ -144,16 +152,17 @@ public:
   Array(
     MemorySize _size,
     Value value,
-    MemorySize granularity = ReferenceCountedCapacityAllocator<Value>::DEFAULT_GRANULARITY) throw(MemoryException)
+    MemorySize granularity = ReferenceCountedCapacityAllocator<Value>::DEFAULT_GRANULARITY)
     : elements(new ReferenceCountedCapacityAllocator<Value>(_size, granularity)),
-      size(_size) {
+      size(_size)
+  {
     fill(getElements(), size, value);
   }
 
   /**
     Initializes array from initializer list.
   */
-  inline Array(std::initializer_list<Value> l) throw()
+  Array(std::initializer_list<Value> l)
   {
     append(l);
   }
@@ -161,15 +170,24 @@ public:
   /**
     Initializes array from other array.
   */
-  inline Array(const Array& copy) throw()
+  inline Array(const Array& copy) noexcept
     : elements(copy.elements),
       size(copy.size) {
+  }
+
+  Array(Array&& move) noexcept
+  {
+    elements = move.elements;
+    move.elements = nullptr;
+    size = move.size;
+    move.size = 0;
   }
 
   /**
     Assignment of array to array.
   */
-  inline Array& operator=(const Array& eq) throw() {
+  inline Array& operator=(const Array& eq) noexcept
+  {
     if (&eq != this) {
       elements = eq.elements;
       size = eq.size;
@@ -177,87 +195,110 @@ public:
     return *this;
   }
 
+  Array& operator=(Array&& move) noexcept
+  {
+    if (&move != this) {
+      elements = move.elements;
+      move.elements = nullptr;
+      size = move.size;
+      move.size = 0;
+    }
+    return *this;
+  }
+
   /**
     Returns the number fo elements in the array.
   */
-  inline MemorySize getSize() const throw() {
+  inline MemorySize getSize() const noexcept
+  {
     return size;
   }
 
   /**
     Returns true if the array is empty.
   */
-  inline bool isEmpty() const throw() {
+  inline bool isEmpty() const noexcept
+  {
     return size == 0;
   }
 
   /**
     Returns the first element of the allocator as a modifying array.
   */
-  inline Iterator getBeginIterator() throw() {
+  inline Iterator getBeginIterator() noexcept
+  {
     return elements->getBeginIterator();
   }
 
   /**
     Returns the end of the allocator as a modifying array.
   */
-  inline Iterator getEndIterator() throw() {
+  inline Iterator getEndIterator() noexcept
+  {
     return elements->getEndIterator();
   }
 
   /**
     Returns the first element of the allocator as a non-modifying array.
   */
-  inline ReadIterator getBeginReadIterator() const throw() {
+  inline ReadIterator getBeginReadIterator() const noexcept
+  {
     return elements->getBeginReadIterator();
   }
 
   /**
     Returns the end of the allocator as a non-modifying array.
   */
-  inline ReadIterator getEndReadIterator() const throw() {
+  inline ReadIterator getEndReadIterator() const noexcept
+  {
     return elements->getEndReadIterator();
   }
 
   /**
     Returns the first element of the allocator as a non-modifying array.
   */
-  inline ReadIterator begin() const throw() {
+  inline ReadIterator begin() const noexcept
+  {
     return getBeginReadIterator();
   }
 
   /**
     Returns the end of the allocator as a non-modifying array.
   */
-  inline ReadIterator end() const throw() {
+  inline ReadIterator end() const noexcept
+  {
     return getEndReadIterator();
   }
 
   /**
     Returns the first element of the allocator as a modifying array.
   */
-  inline Iterator begin() throw() {
+  inline Iterator begin() noexcept
+  {
     return getBeginIterator();
   }
 
   /**
     Returns the end of the allocator as a modifying array.
   */
-  inline Iterator end() throw() {
+  inline Iterator end() noexcept
+  {
     return getEndIterator();
   }
 
   /**
     Returns a modifying enumerator of the array.
   */
-  inline Enumerator getEnumerator() throw() {
+  inline Enumerator getEnumerator() noexcept
+  {
     return elements->getEnumerator();
   }
 
   /**
     Returns a non-modifying enumerator of the array.
   */
-  inline ReadEnumerator getReadEnumerator() const throw() {
+  inline ReadEnumerator getReadEnumerator() const noexcept
+  {
     return elements->getReadEnumerator();
   }
 
@@ -266,7 +307,8 @@ public:
 
     @param value The value to be appended.
   */
-  void append(const Value& value) throw(MemoryException) {
+  void append(const Value& value)
+  {
     MemorySize size = getSize();
     setSize(size + 1);
     Value* elements = getElements(); // size must be set before
@@ -289,7 +331,8 @@ public:
 
     @param value The value to be prepended.
   */
-  void prepend(const Value& value) throw(MemoryException) {
+  void prepend(const Value& value)
+  {
     setSize(getSize() + 1);
     Value* elements = getElements(); // size must be set before
     move(elements + 1, elements, getSize());
@@ -315,7 +358,8 @@ public:
     @param index Specifies the insert position.
     @param value The value to be inserted.
   */
-  void insert(MemorySize index, const Value& value) throw(OutOfRange, MemoryException) {
+  void insert(MemorySize index, const Value& value) throw(OutOfRange)
+  {
     bassert(index <= getSize(), OutOfRange(this));
     setSize(getSize() + 1);
     Value* elements = getElements(); // size must be set before
@@ -329,7 +373,8 @@ public:
 
     @param index The index of the element to be removed.
   */
-  void remove(MemorySize index) throw(OutOfRange) {
+  void remove(MemorySize index) throw(OutOfRange)
+  {
     bassert(index < getSize(), OutOfRange(this));
     Value* elements = getElements(); // size must be set after
     move(elements + index, elements + index + 1, getSize() - index - 1);
@@ -339,7 +384,8 @@ public:
   /**
     Removes all the elements from this array.
   */
-  void removeAll() throw() {
+  void removeAll()
+  {
     elements = new ReferenceCountedCapacityAllocator<Value>(); // no need to copy
     size = 0;
   }
@@ -350,7 +396,8 @@ public:
 
     @param index The index of the element.
   */
-  const Value& getAt(MemorySize index) const throw(OutOfRange) {
+  const Value& getAt(MemorySize index) const throw(OutOfRange)
+  {
     bassert(index < getSize(), OutOfRange(this));
     return getElements()[index];
   }
@@ -362,7 +409,8 @@ public:
     @param index The index of the element.
     @param value The desired value.
   */
-  void setAt(MemorySize index, const Value& value) throw(OutOfRange) {
+  void setAt(MemorySize index, const Value& value) throw(OutOfRange)
+  {
     bassert(index < getSize(), OutOfRange(this));
     getElements()[index] = value;
   }
@@ -373,7 +421,8 @@ public:
 
     @param index The index of the element.
   */
-  inline Element operator[](MemorySize index) throw(OutOfRange) {
+  inline Element operator[](MemorySize index) throw(OutOfRange)
+  {
     return Element(*this, index);
   }
 
@@ -383,7 +432,8 @@ public:
 
     @param index The index of the element.
   */
-  inline const Value& operator[](MemorySize index) const throw(OutOfRange) {
+  inline const Value& operator[](MemorySize index) const throw(OutOfRange)
+  {
     return getAt(index);
   }
 };
@@ -395,16 +445,17 @@ public:
 */
 template<class TYPE>
 FormatOutputStream& operator<<(
-  FormatOutputStream& stream, const Array<TYPE>& value) throw(IOException) {
+  FormatOutputStream& stream, const Array<TYPE>& value) throw(IOException)
+{
   typename Array<TYPE>::ReadEnumerator enu = value.getReadEnumerator();
-  stream << '{';
+  stream << '[';
   while (enu.hasNext()) {
     stream << *enu.next();
     if (enu.hasNext()) {
       stream << ';';
     }
   }
-  stream << '}';
+  stream << ']';
   return stream;
 }
 

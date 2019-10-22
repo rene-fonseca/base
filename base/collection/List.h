@@ -683,14 +683,14 @@ FormatOutputStream& operator<<(
   FormatOutputStream& stream, const List<TYPE>& value) throw(IOException)
 {
   typename List<TYPE>::ReadEnumerator enu = value.getReadEnumerator();
-  stream << '{';
+  stream << '[';
   while (enu.hasNext()) {
     stream << *enu.next();
     if (enu.hasNext()) {
       stream << ';';
     }
   }
-  stream << '}';
+  stream << ']';
   return stream;
 }
 

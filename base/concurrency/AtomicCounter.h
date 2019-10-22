@@ -362,7 +362,7 @@ public:
 #elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__MACOS)
     return atomic_exchange(&value, desired);
 #else
-    return value.atomic_exchange(desired);
+    return value.exchange(desired);
 #endif
   }
 

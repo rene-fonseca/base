@@ -31,7 +31,7 @@ class CacheProvider {
 public:
   
   /** Returns the value for the specified key. */
-  virtual VALUE getValue(KEY key) throw(CacheException) = 0;
+  virtual const VALUE& getValue(const KEY& key) throw(CacheException) = 0;
 };
 
 /**
@@ -58,26 +58,31 @@ public:
   /**
     Initializes the cache.
   */
-  Cache() throw(MemoryException) {
+  Cache() noexcept
+  {
   }
   
   /**
     Initializes the cache with the specified initial capacity.
   */
-  Cache(MemorySize capacity) throw(OutOfDomain, MemoryException)
-    : elements(capacity) {
+  Cache(MemorySize capacity) throw(OutOfDomain)
+    : elements(capacity)
+  {
   }
 
   /**
     Initializes cache from other cache.
   */
-  inline Cache(const Cache& copy) throw() : elements(copy.elements) {
+  inline Cache(const Cache& copy) noexcept
+    : elements(copy.elements)
+  {
   }
   
   /**
     Assignment of cache by cache.
   */
-  inline Cache& operator=(const Cache& eq) throw() {
+  inline Cache& operator=(const Cache& eq) noexcept
+  {
     elements = eq.elements;
     return *this;
   }
@@ -85,21 +90,24 @@ public:
   /**
     Returns the number of elements in the cache.
   */
-  inline unsigned int getSize() const throw() {
+  inline MemorySize getSize() const throw()
+  {
     return elements.getSize();
   }
   
   /**
     Returns true if the cache is empty.
   */
-  inline bool isEmpty() const throw() {
+  inline bool isEmpty() const throw()
+  {
     return elements.getSize() == 0;
   }
 
   /**
     Returns true if the specified object is in the cache.
   */
-  inline bool isCached(const Key& key) const throw() {
+  inline bool isCached(const Key& key) const throw()
+  {
     return elements.isKey(key);
   }
 
@@ -109,7 +117,8 @@ public:
     
     @param key The key of the value.
   */
-  inline const Value& getValue(const Key& key) const throw(CacheException) {
+  inline const Value& getValue(const Key& key) const throw(CacheException)
+  {
     if (!elements.isKey(key)) {
       // Value value = provider->getValue();
       // elements.add(key, value);
@@ -121,7 +130,8 @@ public:
   /**
     Adds the key and value to the cache.
   */
-  inline void add(const Key& key, const Value& value) throw(MemoryException) {
+  inline void add(const Key& key, const Value& value)
+  {
     elements.add(key, value);
   }
   
@@ -129,7 +139,8 @@ public:
     Removes the specified key and its associated value from this cache.
     Raises InvalidKey if the key doesn't exist in the cache.
   */
-  inline void remove(const Key& key) throw(InvalidKey, MemoryException) {
+  inline void remove(const Key& key) throw(InvalidKey)
+  {
     elements.remove(key);
   }
   
@@ -144,21 +155,24 @@ public:
   /**
     Returns a enumerator of the cache for non-modifying access.
   */
-  inline ReadEnumerator getReadEnumerator() const throw() {
+  inline ReadEnumerator getReadEnumerator() const throw()
+  {
     return elements.getReadEnumerator();
   }
   
   /**
     Returns a enumerator of the values of the cache for modifying access.
   */
-  inline ValueEnumerator getValueEnumerator() throw() {
+  inline ValueEnumerator getValueEnumerator() throw()
+  {
     return elements.getValueEnumerator();
   }
   
   /**
     Returns a enumerator of the values of the cache for non-modifying access.
   */
-  inline ReadValueEnumerator getReadValueEnumerator() const throw() {
+  inline ReadValueEnumerator getReadValueEnumerator() const throw()
+  {
     return elements.getReadValueEnumerator();
   }
 #endif
@@ -167,14 +181,16 @@ public:
     Returns the value associated with the specified key when used as 'rvalue'.
     When used as 'lvalue' the key is associated with the specified value.
   */
-  inline typename HashTable<KEY, VALUE>::Element operator[](const Key& key) throw(InvalidKey, MemoryException) {
+  inline typename HashTable<KEY, VALUE>::Element operator[](const Key& key) throw(InvalidKey)
+  {
     return elements[key];
   }
   
   /**
     Returns the value associated with the specified key.
   */
-  inline const Value& operator[](const Key& key) const throw(InvalidKey) {
+  inline const Value& operator[](const Key& key) const throw(InvalidKey)
+  {
     return elements.getValue(key);
   }
 };
@@ -186,7 +202,8 @@ public:
 */
 template<class KEY, class VALUE>
 FormatOutputStream& operator<<(
-  FormatOutputStream& stream, const Cache<KEY, VALUE>& value) throw(IOException) {
+  FormatOutputStream& stream, const Cache<KEY, VALUE>& value) throw(IOException)
+{
   return stream << value;
 }
 

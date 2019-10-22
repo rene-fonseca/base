@@ -104,20 +104,23 @@ public:
   private:
     
     Map& map;
-    const Key key;
+    const Key& key;
     Element(const Element& copy) throw();
     Element& operator=(const Element& eq) throw();
     
-    inline Element(Map& _map, const Key& _key) throw() : map(_map), key(_key) {
+    inline Element(Map& _map, const Key& _key) noexcept
+      : map(_map), key(_key) {
     }
   public:
     
-    inline Element& operator=(const Value& value) throw(MemoryException) {
+    inline Element& operator=(const Value& value)
+    {
       map.add(key, value);
       return *this;
     }
     
-    inline operator Value() const throw(InvalidKey) {
+    inline operator const Value&() const throw(InvalidKey)
+    {
       return map.getValue(key);
     }
   };

@@ -95,7 +95,7 @@ public:
 
   TEST_PRIORITY(100);
 
-  void run()
+  void run() override
   {
     unsigned int random1 = Random::randomDirect();
     unsigned int random2 = Random::randomDirect();

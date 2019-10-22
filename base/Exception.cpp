@@ -106,7 +106,7 @@ public:
 
   TEST_PRIORITY(10);
 
-  void run()
+  void run() override
   {
     TEST_DECLARE_HERE(A);
     TEST_DECLARE_NOT_HERE(B);

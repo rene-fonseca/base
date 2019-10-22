@@ -17,6 +17,7 @@
 #include <base/Functor.h>
 #include <base/mem/DynamicMemory.h>
 #include <base/collection/Array.h>
+#include <base/UnitTest.h>
 #include <locale>
 #include <codecvt>
 #include <string.h>
@@ -918,5 +919,54 @@ std::wstring toWide(const char* s)
   std::wstring_convert<std::codecvt_utf8<wchar_t>, wchar_t> convert;
   return convert.from_bytes(s);
 }
+
+#if defined(_COM_AZURE_DEV__BASE__TESTS)
+
+class TEST_CLASS(String) : public UnitTest {
+public:
+
+  TEST_PRIORITY(100);
+  TEST_TIMEOUT_MS(30 * 1000);
+
+  void run() override
+  {
+    String a;
+    TEST_ASSERT(a.isEmpty());
+    String b("literal");
+    a = "qwerty";
+    auto c = a + b;
+    TEST_ASSERT(c == "qwertyliteral");
+    
+    TEST_ASSERT(c.indexOf('l') == 6);
+    TEST_ASSERT(c.indexOf("literal") == 6);
+    TEST_ASSERT(c.lastIndexOf('y') == 5);
+    TEST_ASSERT(c.lastIndexOf("literal") == 6);
+
+    c.clear();
+    c.append(String("Hello"));
+    c.append(String(" "));
+    c.append(String("World!"));
+    TEST_ASSERT(c == "Hello World!");
+    TEST_PRINT(c);
+    c.reverse();
+    TEST_PRINT(c);
+    
+    // TEST_ASSERT(c[6] == 'W');
+
+    MemorySize count = 0;
+    for (auto ch : c) {
+      ++count;
+    }
+    TEST_ASSERT(count == c.getLength());
+    
+    c.garbageCollect();
+    
+    // TEST_ASSERT((String("=*-") * 10).getLength() == 30);
+  }
+};
+
+REGISTER_TEST(String);
+
+#endif
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

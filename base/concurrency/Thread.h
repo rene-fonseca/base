@@ -81,7 +81,9 @@ public:
   typedef void* Identifier;
 
   /* Structure holding the user and system times. */
-  struct Times {
+  class Times {
+  public:
+    
     /** The user mode time in nanoseconds. */
     unsigned long long user = 0;
     /** The system mode time in nanoseconds. */
@@ -375,7 +377,7 @@ public:
     Returns true if the thread is the main thread.
   */
   inline bool isMainThread() const throw() {
-    return parent == 0;
+    return parent == nullptr;
   }
 
   /**

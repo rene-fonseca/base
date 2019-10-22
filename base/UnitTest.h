@@ -18,6 +18,8 @@
 #include <base/collection/Map.h>
 #include <base/Type.h>
 #include <base/Timer.h>
+#include <base/concurrency/MutualExclusion.h>
+#include <base/objectmodel/ObjectModel.h>
 
 #if defined(REGISTER_TEST)
 #  error REGISTER_TEST already defined
@@ -56,11 +58,25 @@ public:
     DEFAULT_TIMEOUT = 15 * 60 * 1000
   };
 
+  enum Impact {
+    PRIVACY,
+    SECURITY,
+    CRITICAL,
+    NORMAL,
+    IGNORE
+  };
+  
+  enum ResultEvent {
+    FAILED,
+    PASSED,
+    PRINT
+  };
+  
   /** A single subtest result. */
   class TestResult {
   public:
 
-    bool passed = false;
+    ResultEvent event = FAILED;
     String what;
   };
 
@@ -106,6 +122,9 @@ public:
     /** Called when here point is reached but shouldn't be reached. */
     void onNotHere(const NotHere* here);
 
+    /** Returns the report. */
+    Reference<ObjectModel::Object> getReport() const;
+
     /** Compares 2 runs. */
     static bool compare(const Run& a, const Run& b);
   };
@@ -119,10 +138,6 @@ private:
   String source;
   /** Class type. */
   Type type;
-
-  // TAG: record timing and allow comparison of runs
-  // TAG: add timing constraints
-  // TAG: add IO constraints
 
   /** All recorded runs. */
   Array<Reference<Run> > runs;
@@ -146,6 +161,16 @@ protected:
   inline void onFailed(const String& what, unsigned int line = 0)
   {
     currentRun->onFailed(what, line);
+  }
+  
+  /** Called when subtest failed. */
+  inline void onAssert(bool passed, const String& what, unsigned int line = 0)
+  {
+    if (passed) {
+      currentRun->onPassed(what, line);
+    } else {
+      currentRun->onFailed(what, line);
+    }
   }
 
   /** Called when here point is declared. */
@@ -224,6 +249,12 @@ public:
     return DEFAULT_PRIORITY;
   }
 
+  /** Use TEST_IMPACT to set priority for test. */
+  virtual Impact getImpact() const noexcept
+  {
+    return NORMAL;
+  }
+  
   /** Use TEST_TIMEOUT_MS to set priority for test. */
   virtual unsigned int getTimeout() const noexcept
   {
@@ -236,6 +267,24 @@ public:
     return 1;
   }
   
+  /** Use TEST_LIMIT_IO to set IO limit. */
+  virtual uint64 getLimitIO() const noexcept
+  {
+    return 0;
+  }
+
+  /** Use TEST_LIMIT_TIME_MS to set processing time limit. */
+  virtual uint64 getLimitProcessingTime() const noexcept
+  {
+    return 0;
+  }
+
+  /** Use TEST_LIMIT_MEMORY to set processing time limit. */
+  virtual uint64 getLimitMemory() const noexcept
+  {
+    return 0;
+  }
+
   /** Runs the test. */
   virtual void run();
 
@@ -261,9 +310,12 @@ public:
 private:
   
   Verbosity verbosity = VERBOSE;
+  bool useJSON = false;
+  bool useANSIColors = false;
   unsigned int passed = 0;
   unsigned int failed = 0;
   Timer timer;
+  MutualExclusion lock;
 
   Array<Reference<UnitTest> > tests;
 
@@ -289,6 +341,11 @@ public:
     addTest(test);
   }
 
+  inline decltype(lock)& getLock() noexcept
+  {
+    return lock;
+  }
+  
   inline Verbosity getVerbosity() const noexcept
   {
     return verbosity;
@@ -297,6 +354,21 @@ public:
   inline void setVerbosity(Verbosity _verbosity) noexcept
   {
     verbosity = _verbosity;
+  }
+
+  inline void setUseJSON(bool _useJSON) noexcept
+  {
+    useJSON = _useJSON;
+  }
+
+  inline bool getUseANSIColors() const noexcept
+  {
+    return useANSIColors;
+  }
+
+  inline void setUseANSIColors(bool _useANSIColors) noexcept
+  {
+    useANSIColors = _useANSIColors;
   }
 
   /** Runs the test. A test must be able to run multiple times. */
@@ -351,7 +423,12 @@ public:
 #define TEST_CLASS(CLASS) _TEST_ ## CLASS
 
 /** An assert/subtest within the test. */
-#define TEST_ASSERT(EXPRESSION) if (EXPRESSION) { base::UnitTest::onPassed(#EXPRESSION, __LINE__); } else { base::UnitTest::onFailed(#EXPRESSION, __LINE__); }
+#define TEST_ASSERT(EXPRESSION) \
+  base::UnitTest::onAssert(EXPRESSION, #EXPRESSION, __LINE__)
+
+/** Assert within an expression. */
+#define TEST_INLINE_ASSERT(EXPRESSION) \
+  (base::UnitTest::onAssert(EXPRESSION, #EXPRESSION, __LINE__), (EXPRESSION))
 
 /** Print info. */
 #define TEST_PRINT(TEXT) base::UnitTest::onPrint(TEXT, __LINE__)
@@ -387,11 +464,23 @@ public:
 /** Sets the priority the test. Lower priorty gets run first. */
 #define TEST_PRIORITY(priority) int getPriority() const noexcept override {return static_cast<int>(priority);}
 
+/** Sets the priority the test. Lower priorty gets run first. */
+#define TEST_IMPACT(impact) Impact getImpact() const noexcept override {return static_cast<Impact>(impact);}
+
 /** Sets the timeout for the test in milliseconds. */
 #define TEST_TIMEOUT_MS(timeout) unsigned int getTimeout() const noexcept override {return static_cast<unsigned int>(timeout);}
 
 /** Sets the number of repeats for the test. */
 #define TEST_REPEATS(count) unsigned int getRepeats() const noexcept override {return static_cast<unsigned int>(repeats);}
+
+/** Sets the timeout for the test in milliseconds. */
+#define TEST_LIMIT_IO(kbytes) uint64 getLimitIO() const noexcept override {return static_cast<uint64>(kbytes);}
+
+/** Sets the timeout for the test in milliseconds. */
+#define TEST_LIMIT_TIME_MS(time) uint64 getLimitProcessingTime() const noexcept override {return static_cast<uint64>(time);}
+
+/** Sets the timeout for the test in milliseconds. */
+#define TEST_LIMIT_MEMORY(kbytes) uint64 getLimitMemory() const noexcept override {return static_cast<uint64>(kbytes);}
 
 /**
   Declares a test for a given type.
@@ -412,10 +501,5 @@ public:
 
 /** Prototype for run method for test of type. */
 #define TEST_RUN_IMPL(TYPE) TEST_CLASS(TYPE)::run
-
-// TAG: include namespace in test id - so we can filter easily
-// TAG: add TEST_INLINE_ASSERT() - good for TEST_PRINT
-// TAG: add quick strigify of buffers and similar info
-// TAG: should we indicate severity/security impact TEST_IMPACT(xxx) enum Impact {CRITICAL, SECURITY, PRIVACY, ..., NORMAL, IGNORE}
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

@@ -341,6 +341,16 @@ public:
     return *this;
   }
 
+  inline bool operator==(const TYPE _value) const noexcept
+  {
+    return load() == _value;
+  }
+
+  inline bool operator!=(const TYPE _value) const noexcept
+  {
+    return load() != _value;
+  }
+
   /**
     Exchange the value with the given value.
   */

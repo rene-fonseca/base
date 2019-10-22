@@ -39,6 +39,9 @@ private:
 
   Command command = COMMAND_RUN;
   Verbosity verbosity = NORMAL;
+  bool useANSIColor = false;
+  bool randomize = false;
+  bool reportJSON = false;
   String pattern = "*";
 public:
 
@@ -68,6 +71,13 @@ public:
         verbosity = COMPACT;
       } else if (argument == "--verbose") {
         verbosity = VERBOSE;
+      } else if (argument == "--color") {
+        useANSIColor = true;
+      } else if (argument == "--json") {
+        reportJSON = true;
+      } else if (argument == "--randomize") {
+        randomize = true;
+        // TAG: reverse order support
       } else {
         if (argument.startsWith("-")) {
           ferr << "Unsupported argument." << ENDL;
@@ -127,15 +137,24 @@ public:
           fout << "  SOURCE=" << test->getSource() << EOL;
         }
         fout << "  PRIORITY=" << test->getPriority() << EOL;
+        fout << "  IMPACT=" << test->getImpact() << EOL;
         if (test->getAllowConcurrentRun()) {
           fout << "  CONCURRENT=" << test->getAllowConcurrentRun() << EOL;
         }
-        fout << "  TIMEOUT=" << test->getTimeout() << EOL;
+        fout << "  TIMEOUT=" << test->getTimeout() << " ms" << EOL;
         if (test->getRepeats() > 1) {
           fout << "  REPEATS=" << test->getRepeats() << EOL;
         }
+        if (test->getLimitIO() > 0) {
+          fout << "  Limit IO=" << test->getLimitIO() << " kb" << EOL;
+        }
+        if (test->getLimitProcessingTime() > 0) {
+          fout << "  Processing time=" << test->getLimitProcessingTime() << " ms" << EOL;
+        }
+        if (test->getLimitMemory() > 0) {
+          fout << "  Limit memory=" << test->getLimitMemory() << " kb" << EOL;
+        }
         fout << FLUSH;
-        // TAG: show all limits
       }
     } else if (command == COMMAND_RUN) {
       auto& manager = UnitTestManager::getManager();
@@ -151,13 +170,20 @@ public:
         manager.setVerbosity(UnitTestManager::VERBOSE);
         break;
       }
+      
+      manager.setUseANSIColors(useANSIColor);
 
-      manager.runTests(pattern);
+      if (reportJSON) {
+        manager.setUseJSON(true);
+      }
+      
+      if (!manager.runTests(pattern)) {
+        setExitCode(1);
+      }
 
       // TAG: add randomize order support
       // TAG: generate list of tests giving different results
       // TAG: add support for loading baseline for comparison
-      // TAG: dump to JSON
       // TAG: allow new run via http
     } else {
       help();

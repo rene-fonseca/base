@@ -13,6 +13,7 @@
 
 #include <base/platforms/features.h>
 #include <base/concurrency/MutualExclusion.h>
+#include <base/UnitTest.h>
 
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
 #  include <windows.h>
@@ -106,5 +107,38 @@ MutualExclusion::~MutualExclusion() {
   delete[] (pthread_mutex_t*)mutex;
 #endif
 }
+
+#if defined(_COM_AZURE_DEV__BASE__TESTS)
+
+class TEST_CLASS(MutualExclusion) : public UnitTest {
+public:
+
+  TEST_PRIORITY(0);
+  TEST_TIMEOUT_MS(30 * 1000);
+
+  void run() override
+  {
+    // TAG: add Thread
+    
+    TEST_DECLARE_HERE(A);
+    TEST_DECLARE_HERE(B);
+
+    MutualExclusion lock;
+    if (lock.tryExclusiveLock()) {
+      TEST_HERE(A);
+      lock.releaseLock();
+    }
+    if (lock.tryExclusiveLock()) {
+      TEST_HERE(B);
+      lock.releaseLock();
+    }
+    lock.exclusiveLock();
+    lock.releaseLock();
+  }
+};
+
+REGISTER_TEST(MutualExclusion);
+
+#endif
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

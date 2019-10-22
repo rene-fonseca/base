@@ -14,6 +14,9 @@
 #include <base/UnitTest.h>
 #include <base/string/Format.h>
 #include <base/concurrency/Process.h>
+#include <base/concurrency/Thread.h>
+#include <base/string/ANSIEscapeSequence.h>
+#include <base/objectmodel/JSON.h>
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
@@ -45,6 +48,8 @@ void UnitTest::setType(const Type& _type)
 
 void UnitTest::Run::onPrint(const String& what, unsigned int line)
 {
+  ExclusiveSynchronize<MutualExclusion> _guard(UnitTestManager::getManager().getLock());
+
   /*
   TestResult result;
   result.passed = xxx;
@@ -64,16 +69,24 @@ void UnitTest::Run::onPrint(const String& what, unsigned int line)
 
 void UnitTest::Run::onPassed(const String& what, unsigned int line)
 {
+  ExclusiveSynchronize<MutualExclusion> _guard(UnitTestManager::getManager().getLock());
+
   ++passed;
   TestResult result;
-  result.passed = true;
+  result.event = PASSED;
   result.what = what;
 
   if (UnitTestManager::getManager().getVerbosity() > UnitTestManager::NORMAL) {
+    if (UnitTestManager::getManager().getUseANSIColors()) {
+      fout << setForeground(ANSIEscapeSequence::GREEN);
+    }
     if (line > 0) {
       fout << "  PASSED: '" << what << "' at line " << line << ENDL;
     } else {
       fout << "  PASSED: '" << what << "'" << ENDL;
+    }
+    if (UnitTestManager::getManager().getUseANSIColors()) {
+      fout << normal();
     }
   }
   results.append(result);
@@ -81,15 +94,23 @@ void UnitTest::Run::onPassed(const String& what, unsigned int line)
 
 void UnitTest::Run::onFailed(const String& what, unsigned int line)
 {
+  ExclusiveSynchronize<MutualExclusion> _guard(UnitTestManager::getManager().getLock());
+
   ++failed;
   TestResult result;
-  result.passed = false;
+  result.event = FAILED;
   result.what = what;
   if (UnitTestManager::getManager().getVerbosity() >= UnitTestManager::NORMAL) {
+    if (UnitTestManager::getManager().getUseANSIColors()) {
+      fout << setForeground(ANSIEscapeSequence::RED);
+    }
     if (line > 0) {
       fout << "  FAILED: '" << what << "' at line " << line << ENDL;
     } else {
       fout << "  FAILED: '" << what << "'" << ENDL;
+    }
+    if (UnitTestManager::getManager().getUseANSIColors()) {
+      fout << normal();
     }
   }
   results.append(result);
@@ -97,6 +118,8 @@ void UnitTest::Run::onFailed(const String& what, unsigned int line)
 
 void UnitTest::Run::registerHere(const Here* here, const char* description)
 {
+  ExclusiveSynchronize<MutualExclusion> _guard(UnitTestManager::getManager().getLock());
+
   HereMeta meta;
   meta.description = description;
   meta.reach = true;
@@ -105,6 +128,8 @@ void UnitTest::Run::registerHere(const Here* here, const char* description)
 
 void UnitTest::Run::registerNotHere(const NotHere* here, const char* description)
 {
+  ExclusiveSynchronize<MutualExclusion> _guard(UnitTestManager::getManager().getLock());
+
   HereMeta meta;
   meta.description = description;
   meta.reach = false;
@@ -113,6 +138,8 @@ void UnitTest::Run::registerNotHere(const NotHere* here, const char* description
 
 void UnitTest::Run::onHere(const Here* _here)
 {
+  ExclusiveSynchronize<MutualExclusion> _guard(UnitTestManager::getManager().getLock());
+
   const void* here = static_cast<const void*>(_here);
 
   if (!here) {
@@ -131,6 +158,8 @@ void UnitTest::Run::onHere(const Here* _here)
 
 void UnitTest::Run::onNotHere(const NotHere* _here)
 {
+  ExclusiveSynchronize<MutualExclusion> _guard(UnitTestManager::getManager().getLock());
+
   const void* here = static_cast<const void*>(_here);
 
   if (!here) {
@@ -145,6 +174,36 @@ void UnitTest::Run::onNotHere(const NotHere* _here)
   HereMeta meta = heres[here];
   ++meta.count;
   heres[here] = meta; // TAG: improve map so we can use heres[here] directly
+}
+
+Reference<ObjectModel::Object> UnitTest::Run::getReport() const
+{
+  ObjectModel o;
+  auto report = o.createObject();
+  report->setValue(o.createString("elapsedTime"), o.createFloat(endTime - startTime));
+  report->setValue(o.createString("passed"), o.createInteger(passed));
+  report->setValue(o.createString("failed"), o.createInteger(failed));
+  auto a = o.createArray();
+  report->setValue(o.createString("results"), a);
+
+  for (auto result : results) {
+    auto item = o.createObject();
+    item->setValue(o.createString("what"), o.createString(result.what));
+    switch (result.event) {
+    case FAILED:
+      item->setValue(o.createString("event"), o.createString("failed"));
+      break;
+    case PASSED:
+      item->setValue(o.createString("event"), o.createString("passed"));
+      break;
+    case PRINT:
+      item->setValue(o.createString("event"), o.createString("print"));
+      break;
+    }
+    a->append(item);
+  }
+  
+  return report;
 }
 
 bool UnitTest::Run::compare(const Run& a, const Run& b)
@@ -183,16 +242,15 @@ Reference<UnitTest::Run> UnitTest::runImpl()
   Reference<Run> r = new Run();
   currentRun = r;
   runs.append(r);
-  if (manager.getVerbosity() >= UnitTestManager::COMPACT) {
-    fout << Format::subst("  RUN #%1", runs.getSize()) << ENDL;
-  }
 
   Process process = Process::getProcess();
   const Process::Times processTimes = process.getTimes();
   r->startTime = manager.timer.getLiveMicroseconds();
+  /*
   if (manager.getVerbosity() >= UnitTestManager::COMPACT) {
     fout << Format::subst("  START at %1s", r->startTime / 1000000.0) << ENDL;
   }
+  */
   try {
     run();
   } catch (Exception& e) {
@@ -215,14 +273,6 @@ Reference<UnitTest::Run> UnitTest::runImpl()
   r->endTime = manager.timer.getLiveMicroseconds();
   currentRun = nullptr;
   const Process::Times processTimes2 = process.getTimes();
-
-  if (manager.getVerbosity() >= UnitTestManager::COMPACT) {
-    fout << Format::subst("  ELAPSED TIME %1s", (r->endTime - r->startTime) / 1000000.0) << ENDL; // r->endTime/1000000.0
-  }
-
-  if (manager.getVerbosity() >= UnitTestManager::VERBOSE) {
-    fout << Format::subst("  USER TIME %1s - SYSTEM TIME %2s", (processTimes2.user - processTimes.user) / 1000000.0, (processTimes2.system - processTimes.system) / 1000000.0) << ENDL;
-  }
 
   unsigned int pointsReached = 0;
   unsigned int pointsReach = 0;
@@ -247,9 +297,31 @@ Reference<UnitTest::Run> UnitTest::runImpl()
     }
   }
 
+  r->failed += (pointsReach - pointsReached);
+  r->failed += (pointsNotReach - pointsNotReached);
+  
   if (manager.getVerbosity() > UnitTestManager::SILENT) {
-    fout << Format::subst("  PASSED:%1 FAILED:%2 HERE:%3/%4 NOT_HERE:%5/%6", r->passed, r->failed, pointsReached, pointsReach, pointsNotReach, pointsNotReached)
-         << ENDL;
+    if (UnitTestManager::getManager().getUseANSIColors()) {
+      fout << setForeground(
+        (r->failed || (pointsReached != pointsReach) || (pointsNotReached != pointsNotReach)) ? ANSIEscapeSequence::RED : ANSIEscapeSequence::BLUE
+      );
+    }
+    
+    String text = Format::subst("  PASSED:%1 FAILED:%2 HERE:%3/%4 NOT_HERE:%5/%6", r->passed, r->failed, pointsReached, pointsReach, pointsNotReached, pointsNotReach);
+    if (manager.getVerbosity() >= UnitTestManager::COMPACT) {
+      text += Format::subst(" ELAPSED:%1ms", (r->endTime - r->startTime) / 1000.0); // r->endTime/1000.0
+    }
+    if (manager.getVerbosity() >= UnitTestManager::COMPACT) {
+      text += Format::subst(" RUN:#%1", runs.getSize());
+    }
+    if (manager.getVerbosity() >= UnitTestManager::VERBOSE) {
+      text += Format::subst(" USER:%1ms SYSTEM:%2ms", (processTimes2.user - processTimes.user) / 1000.0, (processTimes2.system - processTimes.system) / 1000.0);
+    }
+
+    fout << text << ENDL;
+    if (UnitTestManager::getManager().getUseANSIColors()) {
+      fout << normal();
+    }
   }
 
   if (((pointsReached < pointsReach) || (pointsNotReached < pointsNotReach)) &&
@@ -270,6 +342,26 @@ Reference<UnitTest::Run> UnitTest::runImpl()
     }
   }
 
+  if (manager.useJSON) {
+    // TAG: add heres
+    ObjectModel o;
+    auto report = r->getReport();
+    report->setValue(o.createString("test"), o.createString(getName()));
+    report->setValue(o.createString("description"), o.createString(getDescription()));
+    report->setValue(o.createString("source"), o.createString(getSource()));
+    
+    double time = (processTimes2.user - processTimes.user) / 1000.0 + (processTimes2.system - processTimes.system) / 1000.0;
+    report->setValue(o.createString("processingTime"), o.createFloat(time));
+
+    report->setValue(o.createString("pointsReached"), o.createInteger(pointsReached));
+    report->setValue(o.createString("pointsReach"), o.createInteger(pointsReach));
+    report->setValue(o.createString("pointsNotReached"), o.createInteger(pointsNotReached));
+    report->setValue(o.createString("pointsNotReach"), o.createInteger(pointsNotReach));
+
+    String json = JSON::getJSON(report, false);
+    ferr << report << ENDL;
+  }
+
   return r;
 }
 
@@ -288,13 +380,13 @@ UnitTestManager& UnitTestManager::getManager()
 
 void UnitTestManager::addTest(Reference<UnitTest> test)
 {
-  // fout << Format::subst("TESTS: Adding test '%1' from '%2'", test->getName(), test->getSource()) << ENDL;
   tests.append(test);
 }
 
 bool UnitTestManager::runTest(Reference<UnitTest> test)
 {
-  if (test->runImpl()) {
+  auto run = test->runImpl();
+  if (!run->failed) {
     ++passed;
     return true;
   } else {
@@ -322,6 +414,27 @@ void UnitTestManager::loadTests()
   }
 }
 
+class TestingThread : public Thread {
+private:
+  
+  Reference<UnitTest> test;
+public:
+  
+  bool success = false;
+  Thread::Times times;
+  
+  TestingThread(Reference<UnitTest> _test) : test(_test)
+  {
+  }
+  
+  void run()
+  {
+    auto& manager = UnitTestManager::getManager();
+    success = manager.runTest(test);
+    times = Thread::getThread()->getTimes();
+  }
+};
+
 bool UnitTestManager::runTests(const String& pattern)
 {
   // TAG: add support for pattern
@@ -341,9 +454,16 @@ bool UnitTestManager::runTests(const String& pattern)
     timer.getLiveMicroseconds();
 
     ++count;
-    fout << "===============================================================================" << EOL
-         << "TEST " << test->getName()
-         << " [" << count << "/" << tests.getSize() << "] (" << static_cast<int>(count * 1000.0/tests.getSize())/10.0 << "%)" << ENDL;
+    fout << "===============================================================================" << EOL;
+    if (UnitTestManager::getManager().getUseANSIColors()) {
+      fout << "TEST " << bold() << test->getName() << normal();
+    } else {
+      fout << "TEST " << test->getName();
+    }
+    fout << " [" << count << "/" << tests.getSize() << "] (" << static_cast<int>(count * 1000.0/tests.getSize())/10.0 << "%)" << ENDL;
+    if (UnitTestManager::getManager().getUseANSIColors()) {
+      fout << normal();
+    }
     if (!test->getSource().isEmpty()) {
       fout << "  Source: " << test->getSource() << ENDL;
     }
@@ -357,8 +477,18 @@ bool UnitTestManager::runTests(const String& pattern)
     // TAG: record processing time for thread
     // TAG: we could sample processing time also
     // TAG: need viewer for test results
-    // Thread thread;
+
+#if 01
+    TestingThread thread(test);
+    thread.run();
+    thread.join();
+    result &= thread.success;
+    
+    // fout << "  PROCESSING TIME: " << (thread.times.user + thread.times.system)/1000000000.0 << " s" << ENDL;
+#else
     result &= runTest(test);
+#endif
+    ASSERT(result);
   }
   return result;
 }

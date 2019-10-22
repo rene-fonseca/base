@@ -32,7 +32,7 @@ public:
   /**
     Initializes the exception object with no message.
   */
-  inline OutOfDomain() throw() {
+  inline OutOfDomain() noexcept {
   }
 
   /**
@@ -40,7 +40,7 @@ public:
 
     @param message The message.
   */
-  inline OutOfDomain(const char* message) throw() : Exception(message) {
+  inline OutOfDomain(const char* message) noexcept : Exception(message) {
   }
   
   /**
@@ -48,7 +48,7 @@ public:
     
     @param type The identity of the type.
   */
-  inline OutOfDomain(Type type) throw() : Exception(type) {
+  inline OutOfDomain(Type type) noexcept : Exception(type) {
   }
   
   /**
@@ -57,7 +57,7 @@ public:
     @param message An NULL-terminated string (ASCII).
     @param type The identity of the type.
   */
-  inline OutOfDomain(const char* message, Type type) throw()
+  inline OutOfDomain(const char* message, Type type) noexcept
     : Exception(message, type) {
   }
 };

@@ -35,7 +35,7 @@ public:
   /**
     Initializes the exception object with no message.
   */
-  inline Overflow() throw() {
+  inline Overflow() noexcept {
   }
   
   /**
@@ -43,7 +43,7 @@ public:
 
     @param message The message.
   */
-  inline Overflow(const char* message) throw() : Exception(message) {
+  inline Overflow(const char* message) noexcept : Exception(message) {
   }
   
   /**
@@ -51,7 +51,7 @@ public:
     
     @param type The identity of the type.
   */
-  inline Overflow(Type type) throw() : Exception(type) {
+  inline Overflow(Type type) noexcept : Exception(type) {
   }
   
   /**
@@ -60,7 +60,7 @@ public:
     @param message An NULL-terminated string (ASCII).
     @param type The identity of the type.
   */
-  inline Overflow(const char* message, Type type) throw()
+  inline Overflow(const char* message, Type type) noexcept
     : Exception(message, type) {
   }
 };

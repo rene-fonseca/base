@@ -159,6 +159,14 @@ public:
   }
 
   /**
+    Returns true if the reference is nullptr.
+  */
+  inline bool operator==(nullptr_t) const noexcept
+  {
+    return value == nullptr;
+  }
+
+  /**
     Returns true if the references are equal.
   */
   inline bool operator==(const Reference& eq) const noexcept

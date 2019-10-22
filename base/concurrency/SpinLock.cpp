@@ -13,6 +13,7 @@
 
 #include <base/concurrency/SpinLock.h>
 #include <base/concurrency/ExclusiveSynchronize.h>
+#include <base/UnitTest.h>
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
@@ -52,5 +53,38 @@ bool SpinLock::tryExclusiveLock() const noexcept
 void SpinLock::releaseLock() const noexcept {
   value = LOCK_FREE;
 }
+
+#if defined(_COM_AZURE_DEV__BASE__TESTS)
+
+class TEST_CLASS(SpinLock) : public UnitTest {
+public:
+
+  TEST_PRIORITY(0);
+  TEST_TIMEOUT_MS(30 * 1000);
+
+  void run() override
+  {
+    // TAG: add Thread
+    
+    TEST_DECLARE_HERE(A);
+    TEST_DECLARE_HERE(B);
+
+    SpinLock lock;
+    if (lock.tryExclusiveLock()) {
+      TEST_HERE(A);
+      lock.releaseLock();
+    }
+    if (lock.tryExclusiveLock()) {
+      TEST_HERE(B);
+      lock.releaseLock();
+    }
+    lock.exclusiveLock();
+    lock.releaseLock();
+  }
+};
+
+REGISTER_TEST(SpinLock);
+
+#endif
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

@@ -11,4 +11,12 @@ steps:
 
 - task: CMake@1
   inputs:
-    cmakeArgs: '--build . --config Debug'
+    cmakeArgs: '--build . --config Debug --target install'
+
+- task: PublishPipelineArtifact@1
+  inputs:
+    artifactName: 'base'
+    targetPath: '$(Pipeline.Workspace)'
+    path: ./bin
+    path: ./lib
+    path: ./include

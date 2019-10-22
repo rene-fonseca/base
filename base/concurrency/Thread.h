@@ -81,13 +81,25 @@ public:
   typedef void* Identifier;
 
   /* Structure holding the user and system times. */
-  class Times {
+  class _COM_AZURE_DEV__BASE__API Times {
   public:
     
     /** The user mode time in nanoseconds. */
-    unsigned long long user = 0;
+    uint64 user = 0;
     /** The system mode time in nanoseconds. */
-    unsigned long long system = 0;
+    uint64 system = 0;
+
+    /** Returns the total processing time in nanoseconds. */
+    inline uint64 getTotal() const noexcept
+    {
+      return user + system;
+    }
+
+    /** Returns the total processing time in microseconds. */
+    inline uint64 getTotal_US() const noexcept
+    {
+      return (user + system + 500)/1000;
+    }
   };
   
   /** Scheduling policy type. */
@@ -452,6 +464,18 @@ public:
   */
   ~Thread();
 };
+
+/** Add resource times. */
+inline Thread::Times operator+(const Thread::Times& a, const Thread::Times& b) noexcept
+{
+  return Thread::Times{a.user + b.user, a.system + b.system};
+}
+
+/** Subtract resource times. */
+inline Thread::Times operator-(const Thread::Times& a, const Thread::Times& b) noexcept
+{
+  return Thread::Times{a.user - b.user, a.system - b.system};
+}
 
 // TAG: we should hide this
 /** State for all threads. */

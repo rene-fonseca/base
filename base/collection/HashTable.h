@@ -43,11 +43,11 @@ public:
   typedef Association<Key, Value> HashTableAssociation;
   
   /** The minimum capacity. */
-  static constexpr unsigned int MINIMUM_CAPACITY = 16;
+  static constexpr MemorySize MINIMUM_CAPACITY = 16;
   /** The maximum capacity. */
-  static constexpr unsigned int MAXIMUM_CAPACITY = PrimitiveTraits<unsigned int>::MAXIMUM/2;
+  static constexpr MemorySize MAXIMUM_CAPACITY = PrimitiveTraits<unsigned int>::MAXIMUM/2;
   /** The default capacity. */
-  static constexpr unsigned int DEFAULT_CAPACITY = 16;
+  static constexpr MemorySize DEFAULT_CAPACITY = 16;
   
   /*
     Reference to an element within a hash table.
@@ -57,20 +57,22 @@ public:
   private:
     
     HashTable& hashTable;
-    const Key key;
-    Element(const Element& copy) throw();
-    Element& operator=(const Element& eq) throw();
+    const Key& key;
+    Element(const Element& copy) noexcept;
+    Element& operator=(const Element& eq) noexcept;
 
-    inline Element(HashTable& _hashTable, const Key& _key) throw()
+    inline Element(HashTable& _hashTable, const Key& _key) noexcept
       : hashTable(_hashTable),
-        key(_key) {
+        key(_key)
+    {
     }
   public:
 
     /**
       Sets the value of the element.
     */
-    inline Element& operator=(Value value) throw(MemoryException) {
+    inline Element& operator=(const Value& value)
+    {
       hashTable.add(key, value);
       return *this;
     }
@@ -78,7 +80,8 @@ public:
     /**
       Returns the value of the element.
     */
-    inline operator Value() const throw(InvalidKey) {
+    inline operator const Value&() const throw(InvalidKey)
+    {
       return hashTable.getValue(key);
     }
   };
@@ -101,7 +104,7 @@ public:
     /**
       Initializes a node.
     */
-    inline Node(unsigned long _hash, const Key& _key, const Value& _value) throw()
+    inline Node(unsigned long _hash, const Key& _key, const Value& _value) noexcept
       : hash(_hash),
         value(_key, _value) {
     }
@@ -109,7 +112,7 @@ public:
     /**
       Initializes a node.
     */
-    inline Node(unsigned long _hash, const Key& _key, const Value& _value, Node* _next) throw()
+    inline Node(unsigned long _hash, const Key& _key, const Value& _value, Node* _next) noexcept
       : hash(_hash),
         value(_key, _value),
         next(_next) {
@@ -118,56 +121,63 @@ public:
     /**
       Returns the hash value of the node.
     */
-    inline unsigned long getHash() const throw() {
+    inline unsigned long getHash() const noexcept {
       return hash;
     }
     
     /**
       Returns the key of the node.
     */
-    inline const Association<Key, Value>& getKeyValue() const throw() {
+    inline const Association<Key, Value>& getKeyValue() const noexcept
+    {
       return value;
     }
     
     /**
       Returns the key of the node.
     */
-    inline const Key& getKey() const throw() {
+    inline const Key& getKey() const noexcept
+    {
       return value.getKey();
     }
     
     /**
       Returns the value of the node.
     */
-    inline Value& getValue() throw() {
+    inline Value& getValue() noexcept
+    {
       return value.getValue();
     }
     
     /**
       Returns the value of the node.
     */
-    inline const Value& getValue() const throw() {
+    inline const Value& getValue() const noexcept
+    {
       return value.getValue();
     }
 
     /**
       Returns the next node.
     */
-    inline Node* getNext() throw() {
+    inline Node* getNext() noexcept
+    {
       return next;
     }
     
     /**
       Returns the next node.
     */
-    inline const Node* getNext() const throw() {
+    inline const Node* getNext() const noexcept
+    {
       return next;
     }
     
     /**
       Sets the next node.
     */
-    inline void setNext(Node* node) throw() {
+    inline void setNext(Node* node) noexcept
+    {
       next = node;
     }
   };
@@ -181,18 +191,19 @@ public:
     /** Lookup table. */
     Allocator<Node*> table;
     /** The current capacity of the table. */
-    unsigned int capacity = 0; // use size in table attribute
+    MemorySize capacity = 0; // use size in table attribute
     /** Cache for (capacity - 1). */
-    unsigned int mask = 0;
+    MemorySize mask = 0;
     /** Base 2 logarithm of the capacity. */
-    unsigned int log2OfCapacity = 0;
+    MemorySize log2OfCapacity = 0;
     /** The number of elements in the table. */
-    unsigned int size = 0;
+    MemorySize size = 0;
     
     /**
       Returns the hash value of the key.
     */
-    static inline unsigned long getHash(const Key& key) throw() {
+    static inline unsigned long getHash(const Key& key) noexcept
+    {
       Hash<Key> hash; // Hash is a functor
       return hash(key);
     }
@@ -201,25 +212,28 @@ public:
     /**
       Returns the buckets for modifying access.
     */
-    inline Node** getBuckets() throw() {
+    inline Node** getBuckets() noexcept
+    {
       return table.getElements();
     }
 
     /**
       Returns the buckets for non-modifying access.
     */
-    inline const Node* const* getBuckets() const throw() {
+    inline const Node* const* getBuckets() const noexcept
+    {
       return table.getElements();
     }
     
     /**
       Initializes the hash table with the specified capacity.
     */
-    inline HashTableImpl(unsigned int capacity) throw(MemoryException) {
+    HashTableImpl(MemorySize capacity)
+    {
       capacity = maximum(capacity, MINIMUM_CAPACITY);
       capacity = minimum(capacity, MAXIMUM_CAPACITY);
       log2OfCapacity = Math::iLog2(capacity);
-      if ((1U << log2OfCapacity) < capacity) {
+      if ((static_cast<MemorySize>(1) << log2OfCapacity) < capacity) {
         ++log2OfCapacity;
         capacity *= 2;
       }
@@ -233,12 +247,13 @@ public:
     /**
       Initializes the hash table from another hash table.
     */
-    inline HashTableImpl(const HashTableImpl& copy) throw(MemoryException)
+    HashTableImpl(const HashTableImpl& copy)
       : table(copy.capacity),
         capacity(copy.capacity),
         mask(copy.mask),
         log2OfCapacity(copy.log2OfCapacity),
-        size(copy.size) {
+        size(copy.size)
+    {
       table.setSize(capacity); // entries set below
       
       // copy all buckets
@@ -272,7 +287,8 @@ public:
     /**
       Increases the capacity of the hash table.
     */
-    inline void grow() throw(MemoryException) {
+    inline void grow()
+    {
       if (capacity < MAXIMUM_CAPACITY) {
         capacity *= 2;
         mask = capacity - 1;
@@ -283,7 +299,7 @@ public:
         Node** lowerBucket = getBuckets();
         Node** upperBucket = lowerBucket + capacity/2;
         const Node* const* endBucket = upperBucket;
-        const unsigned int bitMask = capacity/2; // the bit that desides the half
+        const MemorySize bitMask = capacity/2; // the bit that desides the half
         while (lowerBucket != endBucket) {
           Node* srcNode = *lowerBucket;
           if (srcNode) {
@@ -362,7 +378,8 @@ public:
     /**
       Reduces the capacity of the hash table.
     */
-    inline void shrink() throw() {
+    inline void shrink() noexcept
+    {
       if (capacity > MINIMUM_CAPACITY) {
         // fold upper half buckets into lower buckets
         Node** lowerBucket = getBuckets();
@@ -395,21 +412,24 @@ public:
     /**
       Returns the capacity of the hash table.
     */
-    inline unsigned int getCapacity() const throw() {
+    inline MemorySize getCapacity() const noexcept
+    {
       return capacity;
     }
     
     /**
       Returns the number of elements in the hash table.
     */
-    inline unsigned int getSize() const throw() {
+    inline MemorySize getSize() const noexcept
+    {
       return size;
     }
 
     /**
       Returns true if the specified value is a key in the hash table.
     */
-    inline bool isKey(const Key& key) throw() {
+    inline bool isKey(const Key& key) noexcept
+    {
       const unsigned long hash = getHash(key);
       Node** bucket = getBuckets() + (hash & mask);
       
@@ -440,7 +460,8 @@ public:
     /**
       Returns true if the specified value is a key in the hash table.
     */
-    inline bool isKey(const Key& key) const throw() {
+    inline bool isKey(const Key& key) const noexcept
+    {
       const unsigned long hash = getHash(key);
       const Node* const* bucket = getBuckets() + (hash & mask);
       const Node* child = *bucket;
@@ -454,7 +475,8 @@ public:
     /**
       Returns the value associated with the specified key.
     */
-    inline Value& getValue(const Key& key) throw(InvalidKey) {
+    inline Value& getValue(const Key& key) throw(InvalidKey)
+    {
       const unsigned long hash = getHash(key);
       Node** bucket = getBuckets() + (hash & mask);
       Node* grandparent = nullptr;
@@ -486,7 +508,8 @@ public:
     /**
       Returns the value associated with the specified key.
     */
-    inline const Value& getValue(const Key& key) const throw(InvalidKey) {
+    inline const Value& getValue(const Key& key) const throw(InvalidKey)
+    {
       const unsigned long hash = getHash(key);
       const Node* const* bucket = getBuckets() + (hash & mask);
       const Node* child = *bucket;
@@ -501,7 +524,8 @@ public:
     /**
       Adds the element to the table.
     */
-    inline void add(const Key& key, const Value& value) throw(MemoryException) {
+    inline void add(const Key& key, const Value& value)
+    {
       const unsigned long hash = getHash(key);
       Node** buckets = getBuckets() + (hash & mask);
       if (*buckets) {
@@ -527,10 +551,11 @@ public:
       }
     }
 
-    void dump() throw() {
+    void dump()
+    {
       Node** bucket = getBuckets();
       const Node* const* endBucket = bucket + capacity;
-      unsigned int index = 0;
+      MemorySize index = 0;
       fout << "Capacity: " << capacity << ENDL;
       while (bucket != endBucket) {
         Node* srcNode = *bucket;
@@ -552,7 +577,8 @@ public:
     /**
       Removes the element with the specified key from the table.
     */
-    inline void remove(const Key& key) throw(InvalidKey) {
+    inline void remove(const Key& key) throw(InvalidKey)
+    {
       const unsigned long hash = getHash(key);
       Node** bucket = getBuckets() + (hash & mask);
       Node* child = *bucket;
@@ -579,7 +605,8 @@ public:
     /**
       Destroys the hash table.
     */
-    inline ~HashTableImpl() throw() {
+    inline ~HashTableImpl()
+    {
       Node** bucket = getBuckets();
       const Node* const* endBucket = bucket + capacity;
       while (bucket != endBucket) {
@@ -617,7 +644,7 @@ public:
     /** The current position of the enumeration. */
     Node* node = nullptr;
     /** The number of elements. */
-    unsigned int numberOfElements = 0;
+    MemorySize numberOfElements = 0;
   public:
       
     /**
@@ -626,17 +653,19 @@ public:
       @param hashTable The hash table.
     */
     inline HashTableEnumerator(
-      Reference<HashTableImpl> _impl) throw()
+      Reference<HashTableImpl> _impl) noexcept
       : impl(_impl),
         bucket(impl->getBuckets()),
         node(*bucket),
-        numberOfElements(impl->getSize()) {
+        numberOfElements(impl->getSize())
+    {
     }
 
     /**
       Returns true if there is more elements in this enumeration.
     */
-    inline bool hasNext() const throw() {
+    inline bool hasNext() const noexcept
+    {
       return numberOfElements;
     }
 
@@ -644,7 +673,8 @@ public:
       Returns the current value and increments the position. Raises
       EndOfEnumeration if the end has been reached.
     */
-    Pointer next() throw(EndOfEnumeration) {
+    Pointer next() throw(EndOfEnumeration)
+    {
       bassert(numberOfElements, EndOfEnumeration(this));
       while (!node) {
         ++bucket;
@@ -656,7 +686,8 @@ public:
       return &result; // TAG: change type
     }
 
-    inline ~HashTableEnumerator() throw() {
+    inline ~HashTableEnumerator() noexcept
+    {
     }
   };
 
@@ -682,7 +713,7 @@ public:
     /** The current position of the enumeration. */
     Node* node = nullptr;
     /** The number of elements. */
-    unsigned int numberOfElements = 0;
+    MemorySize numberOfElements = 0;
   public:
 
     /**
@@ -690,18 +721,19 @@ public:
       
       @param hashTable The hash table.
     */
-    inline HashTableValueEnumerator(
-      Reference<HashTableImpl> _impl) throw()
+    inline HashTableValueEnumerator(Reference<HashTableImpl> _impl) noexcept
       : impl(_impl),
         bucket(impl->getBuckets()),
         node(*bucket),
-        numberOfElements(impl->getSize()) {
+        numberOfElements(impl->getSize())
+    {
     }
 
     /**
       Returns true if there is more elements in this enumeration.
     */
-    inline bool hasNext() const throw() {
+    inline bool hasNext() const noexcept
+    {
       return numberOfElements;
     }
 
@@ -709,7 +741,8 @@ public:
       Returns the current value and increments the position. Raises
       EndOfEnumeration if the end has been reached.
     */
-    Pointer next() throw(EndOfEnumeration) {
+    Pointer next() throw(EndOfEnumeration)
+    {
       bassert(numberOfElements, EndOfEnumeration(this));
       while (!node) {
         ++bucket;
@@ -721,7 +754,8 @@ public:
       return &result; // TAG: change result type
     }
     
-    inline ~HashTableValueEnumerator() throw() {
+    inline ~HashTableValueEnumerator() noexcept
+    {
     }
   };
   
@@ -742,7 +776,8 @@ public:
   /**
     Copies the hash set if referenced by multiple automation pointers.
   */
-  inline void copyOnWrite() throw(MemoryException) {
+  inline void copyOnWrite()
+  {
     impl.copyOnWrite();
   }
 public:
@@ -750,8 +785,9 @@ public:
   /**
     Initializes an hash table.
   */
-  HashTable() throw(MemoryException)
-    : impl(new HashTableImpl(DEFAULT_CAPACITY)) {
+  HashTable()
+    : impl(new HashTableImpl(DEFAULT_CAPACITY))
+  {
   }
   
   /**
@@ -764,47 +800,54 @@ public:
   /**
     Initializes hash table from other hash table.
   */
-  inline HashTable(const HashTable& copy) throw()
-    : impl(copy.impl) {
+  inline HashTable(const HashTable& copy) noexcept
+    : impl(copy.impl)
+  {
   }
   
   /**
     Assignment of hash table by hash table.
   */
-  inline HashTable& operator=(const HashTable& eq) throw() {
+  inline HashTable& operator=(const HashTable& eq) noexcept
+  {
     impl = eq.impl;
     return *this;
   }
 
-  void dump() throw() {
+  void dump() noexcept
+  {
     impl->dump();
   }
   
   /**
     Returns the capacity of the hash table.
   */
-  inline unsigned int getCapacity() const throw() {
+  inline MemorySize getCapacity() const noexcept
+  {
     return impl->getCapacity();
   }
   
   /**
     Returns the number of elements in the hash table.
   */
-  inline unsigned int getSize() const throw() {
+  inline MemorySize getSize() const noexcept
+  {
     return impl->getSize();
   }
   
   /**
     Returns true if the hash table is empty.
   */
-  inline bool isEmpty() const throw() {
+  inline bool isEmpty() const noexcept
+  {
     return impl->getSize() == 0;
   }
 
   /**
     Returns true if the specified value is a key in the table.
   */
-  inline bool isKey(const Key& key) const throw() {
+  inline bool isKey(const Key& key) const noexcept
+  {
     return impl->isKey(key);
   }
 
@@ -814,14 +857,16 @@ public:
     
     @param key The key of the value.
   */
-  inline Value getValue(const Key& key) const throw(InvalidKey) {
+  inline const Value& getValue(const Key& key) const throw(InvalidKey)
+  {
     return impl->getValue(key);
   }
   
   /**
     Adds the key and value to the table.
   */
-  inline void add(const Key& key, const Value& value) throw(MemoryException) {
+  inline void add(const Key& key, const Value& value)
+  {
     copyOnWrite();
     impl->add(key, value);
   }
@@ -838,28 +883,32 @@ public:
   /**
     Removes all the keys from this hash table.
   */
-  void removeAll() throw() {
+  void removeAll() noexcept
+  {
     impl = new HashTableImpl(DEFAULT_CAPACITY); // initial capacity is unknown
   }
   
   /**
     Returns a enumerator of the hash table for non-modifying access.
   */
-  ReadEnumerator getReadEnumerator() const throw() {
+  ReadEnumerator getReadEnumerator() const noexcept
+  {
     return ReadEnumerator(impl);
   }
   
   /**
     Returns a enumerator of the values of the hash table for modifying access.
   */
-  ValueEnumerator getValueEnumerator() throw() {
+  ValueEnumerator getValueEnumerator() noexcept
+  {
     return ValueEnumerator(impl);
   }
   
   /**
     Returns a enumerator of the values of the hash table for non-modifying access.
   */
-  ReadValueEnumerator getReadValueEnumerator() const throw() {
+  ReadValueEnumerator getReadValueEnumerator() const noexcept
+  {
     return ReadValueEnumerator(impl);
   }
   
@@ -874,7 +923,8 @@ public:
   /**
     Returns the value associated with the specified key.
   */
-  inline Value operator[](const Key& key) const throw(InvalidKey) {
+  inline const Value& operator[](const Key& key) const throw(InvalidKey)
+  {
     return getValue(key);
   }
 };

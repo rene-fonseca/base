@@ -356,11 +356,13 @@ inline void* getAsPointer(const long value) noexcept
   return reinterpret_cast<void*>(static_cast<MemoryDiff>(value));
 }
 
+#if (_COM_AZURE_DEV__BASE__COMPILER != _COM_AZURE_DEV__BASE__COMPILER_GCC)
 inline void* getAsPointer(const int64 value) noexcept
 {
   ASSERT(sizeof(void*) >= sizeof(value));
   return reinterpret_cast<void*>(static_cast<MemoryDiff>(value));
 }
+#endif
 
 inline void* getAsPointer(const uint8 value) noexcept
 {
@@ -382,12 +384,13 @@ inline void* getAsPointer(const unsigned long value) noexcept
   return reinterpret_cast<void*>(static_cast<MemorySize>(value));
 }
 
+#if (_COM_AZURE_DEV__BASE__COMPILER != _COM_AZURE_DEV__BASE__COMPILER_GCC)
 inline void* getAsPointer(const uint64 value) noexcept
 {
   ASSERT(sizeof(void*) >= sizeof(value));
   return reinterpret_cast<void*>(static_cast<MemorySize>(value));
 }
-
+#endif
 
 Thread::Thread(Thread* _parent) throw()
   : parent(_parent),

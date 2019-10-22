@@ -316,7 +316,8 @@ Reference<UnitTest::Run> UnitTest::runImpl()
       text += Format::subst(" RUN:#%1", runs.getSize());
     }
     if (manager.getVerbosity() >= UnitTestManager::VERBOSE) {
-      text += Format::subst(" USER:%1ms SYSTEM:%2ms", (processTimes2.user - processTimes.user) / 1000.0, (processTimes2.system - processTimes.system) / 1000.0);
+      const auto delta = processTimes2 - processTimes;
+      text += Format::subst(" USER:%1ms SYSTEM:%2ms", delta.user / 1000.0, delta.system / 1000.0);
     }
 
     fout << text << ENDL;
@@ -351,7 +352,8 @@ Reference<UnitTest::Run> UnitTest::runImpl()
     report->setValue(o.createString("description"), o.createString(getDescription()));
     report->setValue(o.createString("source"), o.createString(getSource()));
     
-    double time = (processTimes2.user - processTimes.user) / 1000.0 + (processTimes2.system - processTimes.system) / 1000.0;
+    const auto delta = processTimes2 - processTimes;
+    const double time = delta.getTotal()/1000.0;
     report->setValue(o.createString("processingTime"), o.createFloat(time));
 
     report->setValue(o.createString("pointsReached"), o.createInteger(pointsReached));
@@ -460,8 +462,11 @@ bool UnitTestManager::runTests(const String& pattern)
   loadTests();
   // std::sort(&tests[0], &tests[0], SortTests());
 
-  bool result = true;
+  unsigned int passed = 0;
+  unsigned int failed = 0;
   unsigned int count = 0;
+  Thread::Times totalTimes;
+
   for (auto test : tests) {
     // TAG: show progress - show time since last output - include processing time
     Timer timer;
@@ -474,7 +479,7 @@ bool UnitTestManager::runTests(const String& pattern)
     } else {
       fout << "TEST " << test->getName();
     }
-    fout << " [" << count << "/" << tests.getSize() << "] (" << static_cast<int>(count * 1000.0/tests.getSize())/10.0 << "%)" << ENDL;
+    fout << " [" << count << "/" << tests.getSize() << "] (" << static_cast<int>(count * 1000.0 / tests.getSize()) / 10.0 << "%)" << ENDL;
     if (UnitTestManager::getManager().getUseANSIColors()) {
       fout << normal();
     }
@@ -492,19 +497,38 @@ bool UnitTestManager::runTests(const String& pattern)
     // TAG: we could sample processing time also
     // TAG: need viewer for test results
 
-#if 01
     TestingThread thread(test);
     thread.start();
     thread.join();
-    result &= thread.success;
-    
-    // fout << "  PROCESSING TIME: " << (thread.times.user + thread.times.system)/1000000000.0 << " s" << ENDL;
-#else
-    result &= runTest(test);
+    if (thread.success) {
+      ++passed;
+    } else {
+      ++failed;
+    }
+
+#if 0
+    if (true) {
+      auto time = thread.times.getTotal();
+      if (time < 10000) {
+        fout << "  PROCESSING TIME: " << thread.times.getTotal() / 1.0 << " ns" << ENDL;
+      } else {
+        fout << "  PROCESSING TIME: " << thread.times.getTotal() / 1000000.0 << " ms" << ENDL;
+      }
+    }
 #endif
-    ASSERT(result);
+
+    totalTimes = totalTimes + thread.times;
   }
-  return result;
+
+  fout << EOL << "===============================================================================" << EOL;
+  if (UnitTestManager::getManager().getUseANSIColors()) {
+    fout << setForeground(ANSIEscapeSequence::GREEN) << Format::subst("TOTAL PASSED: %1/%2", passed, count) << normal() << ENDL;
+  } else {
+    fout << Format::subst("TOTAL PASSED: %1/%2", passed, count) << ENDL;
+  }
+  fout << "TOTAL PROCESSING TIME: " << totalTimes.getTotal()/1000000.0 << " ms" << ENDL;
+
+  return !failed;
 }
 
 UnitTestManager::RegisterEntry::RegisterEntry(EntryNode* node)

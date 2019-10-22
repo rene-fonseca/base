@@ -134,7 +134,7 @@ public:
   }
 };
 
-REGISTER_TEST(Exception);
+TEST_REGISTER(Exception);
 
 #endif
 

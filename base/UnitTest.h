@@ -21,8 +21,8 @@
 #include <base/concurrency/MutualExclusion.h>
 #include <base/objectmodel/ObjectModel.h>
 
-#if defined(REGISTER_TEST)
-#  error REGISTER_TEST already defined
+#if defined(TEST_REGISTER)
+#  error TEST_REGISTER already defined
 #endif
 #if defined(TEST_CLASS)
 #  error TEST_CLASS already defined
@@ -408,7 +408,7 @@ public:
 };
 
 
-#define REGISTER_TEST_IMPL(ID, TYPE) \
+#define TEST_REGISTER_IMPL(ID, TYPE) \
   namespace tests { \
     void _COM_AZURE_DEV__BASE__CONCATENATE(ID, _entry)() { base::UnitTestManager::getManager().registerTest<TEST_CLASS(TYPE)>(#TYPE, __FILE__, String()); } \
     base::UnitTestManager::RegisterEntry::EntryNode _COM_AZURE_DEV__BASE__CONCATENATE(ID, _storage) = {#TYPE, _COM_AZURE_DEV__BASE__CONCATENATE(ID, _entry), nullptr, false}; \
@@ -416,8 +416,11 @@ public:
   }
 
 /** Fast registration of test for later run. Test will be put in the "tests" subnamespace. */
-#define REGISTER_TEST(TYPE) \
-  REGISTER_TEST_IMPL(_COM_AZURE_DEV__BASE__MAKE_IDENTIFIER(test), TYPE)
+#define TEST_REGISTER(TYPE) \
+  TEST_REGISTER_IMPL(_COM_AZURE_DEV__BASE__MAKE_IDENTIFIER(test), TYPE)
+
+/** Sets the priority the test. Lower priorty gets run first. */
+#define TEST_DEPENDENCY(CLASS, DEPENDENCY) // TAG: how can we handle this - register combo of names
 
 /** Tag all references to the Test class using this define. */
 #define TEST_CLASS(CLASS) _TEST_ ## CLASS

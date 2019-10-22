@@ -46,7 +46,7 @@ public:
   }
 };
 
-REGISTER_TEST(Vector3D);
+TEST_REGISTER(Vector3D);
 
 #endif
 

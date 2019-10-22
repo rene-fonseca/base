@@ -115,7 +115,7 @@ public:
   }
 };
 
-REGISTER_TEST(Random);
+TEST_REGISTER(Random);
 
 #endif
 

@@ -68,7 +68,7 @@ public:
   }
 };
 
-REGISTER_TEST(AtomicCounter);
+TEST_REGISTER(AtomicCounter);
 
 #endif
 

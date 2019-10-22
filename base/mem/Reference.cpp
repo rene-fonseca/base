@@ -101,7 +101,7 @@ public:
   }
 };
 
-REGISTER_TEST(Reference);
+TEST_REGISTER(Reference);
 
 #endif
 

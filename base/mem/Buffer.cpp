@@ -120,7 +120,7 @@ public:
   }
 };
 
-REGISTER_TEST(Buffer);
+TEST_REGISTER(Buffer);
 
 #endif
 

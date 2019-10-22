@@ -17,7 +17,7 @@
 #include <base/collection/Enumeration.h>
 #include <base/collection/InvalidEnumeration.h>
 #include <base/collection/InvalidNode.h>
-#include <base/MemoryException.h>
+#include <base/collection/EmptyContainer.h>
 #include <base/mem/Reference.h>
 #include <base/string/FormatOutputStream.h>
 
@@ -28,7 +28,6 @@ _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
   @short A node in a list.
   @ingroup collections
-  @version 1.0
 */
 
 template<class TYPE>
@@ -46,34 +45,42 @@ public:
   inline ListNode(ListNode* _next, ListNode* _previous, const TYPE& _value)
     : next(_next),
       previous(_previous),
-      value(_value) {
+      value(_value)
+  {
   }
   
-  inline ListNode* getNext() const throw() {
+  inline ListNode* getNext() const noexcept
+  {
     return next;
   }
   
-  inline void setNext(ListNode* next) throw() {
+  inline void setNext(ListNode* next) noexcept
+  {
     this->next = next;
   }
   
-  inline ListNode* getPrevious() const throw() {
+  inline ListNode* getPrevious() const noexcept
+  {
     return previous;
   }
 
-  inline void setPrevious(ListNode* previous) throw() {
+  inline void setPrevious(ListNode* previous) noexcept
+  {
     this->previous = previous;
   }
 
-  inline TYPE* getValue() throw() {
+  inline TYPE* getValue() noexcept
+  {
     return &value;
   }
 
-  inline const TYPE* getValue() const throw() {
+  inline const TYPE* getValue() const noexcept
+  {
     return &value;
   }
 
-  inline void setValue(TYPE value) throw() {
+  inline void setValue(const TYPE& value) noexcept
+  {
     this->value = value;
   }
 };
@@ -85,7 +92,6 @@ public:
   
   @short Enumerator of list with modification access.
   @ingroup collections
-  @version 1.0
 */
 
 template<class TRAITS>
@@ -105,29 +111,33 @@ public:
 
     @param begin Specifies the beginning of the enumeration.
   */
-  explicit inline ListEnumerator(ListNode<Value>* begin) throw()
-    : current(begin) {
+  explicit inline ListEnumerator(ListNode<Value>* begin) noexcept
+    : current(begin)
+  {
   }
 
   /**
     Initializes enumeration from other enumeration.
   */
-  inline ListEnumerator(const ListEnumerator& copy) throw()
-    : current(copy.current) {
+  inline ListEnumerator(const ListEnumerator& copy) noexcept
+    : current(copy.current)
+  {
   }
 
   /**
     Returns true if the enumeration still contains elements.
   */
-  inline bool hasNext() const throw() {
-    return current != 0;
+  inline bool hasNext() const noexcept
+  {
+    return current != nullptr;
   }
 
   /**
     Returns the next element and advances the position of this enumeration.
   */
-  inline Pointer next() throw(EndOfEnumeration) {
-    bassert(current != 0, EndOfEnumeration());
+  inline Pointer next() throw(EndOfEnumeration)
+  {
+    bassert(current != nullptr, EndOfEnumeration());
     Pointer temp = current->getValue();
     current = current->getNext();
     return temp;
@@ -136,14 +146,16 @@ public:
   /**
     Returns true if the enumerations are pointing to the same position.
   */
-  inline bool operator==(const ListEnumerator& eq) const throw() {
+  inline bool operator==(const ListEnumerator& eq) const noexcept
+  {
     return current == eq.current;
   }
 
   /**
     Returns true if the enumerations aren't pointing to the same position.
   */
-  inline bool operator!=(const ListEnumerator& eq) const throw() {
+  inline bool operator!=(const ListEnumerator& eq) const noexcept
+  {
     return current != eq.current;
   }
 };
@@ -152,7 +164,6 @@ public:
   Enumeration of elements in a list.
 
   @short Non-modifying enumerator of list.
-  @version 1.0
 */
 
 template<class TRAITS>
@@ -171,29 +182,33 @@ public:
 
     @param begin Specifies the beginning of the enumeration.
   */
-  explicit inline ListReadEnumerator(const ListNode<Value>* begin) throw()
-    : current(begin) {
+  explicit inline ListReadEnumerator(const ListNode<Value>* begin) noexcept
+    : current(begin)
+  {
   }
 
   /**
     Initializes enumeration from other enumeration.
   */
-  inline ListReadEnumerator(const ListReadEnumerator& copy) throw()
-    : current(copy.current) {
+  inline ListReadEnumerator(const ListReadEnumerator& copy) noexcept
+    : current(copy.current)
+  {
   }
 
   /**
     Returns true if the enumeration still contains elements.
   */
-  inline bool hasNext() const throw() {
-    return current != 0;
+  inline bool hasNext() const noexcept
+  {
+    return current != nullptr;
   }
 
   /**
     Returns the next element and advances the position of this enumeration.
   */
-  inline Pointer next() throw(EndOfEnumeration) {
-    bassert(current != 0, EndOfEnumeration());
+  inline Pointer next() throw(EndOfEnumeration)
+  {
+    bassert(current != nullptr, EndOfEnumeration());
     Pointer temp = current->getValue();
     current = current->getNext();
     return temp;
@@ -202,14 +217,14 @@ public:
   /**
     Returns true if the enumerations are pointing to the same position.
   */
-  inline bool operator==(const ListReadEnumerator& eq) const throw() {
+  inline bool operator==(const ListReadEnumerator& eq) const noexcept {
     return current == eq.current;
   }
 
   /**
     Returns true if the enumerations aren't pointing to the same position.
   */
-  inline bool operator!=(const ListReadEnumerator& eq) const throw() {
+  inline bool operator!=(const ListReadEnumerator& eq) const noexcept {
     return current != eq.current;
   }
 };
@@ -231,7 +246,6 @@ public:
 
   @short List collection.
   @ingroup collections
-  @version 1.0
 */
 
 template<class TYPE>
@@ -249,8 +263,6 @@ protected:
 
   /*
     Internal list implementation.
-    
-    @version 1.0
   */
   class ListImpl : public ReferenceCountedObject {
   private:
@@ -260,16 +272,17 @@ protected:
     /** The last node in the list. */
     Node* last = nullptr;
     /** The number of elements in the list. */
-    unsigned int size = 0;
+    MemorySize size = 0;
   protected:
 
     /**
       Inserts the value at the specified node of this list.
 
-      @param node Node specifying the position. Must not be 0.
+      @param node Node specifying the position. Must not be nullptr.
       @param value The value to be inserted.
     */
-    inline void insert(Node* node, const TYPE& value) throw() {
+    inline void insert(Node* node, const TYPE& value) noexcept
+    {
       Node* previous = node->getPrevious();
       Node* temp = new Node(node, previous, value);
       node->setPrevious(temp);
@@ -284,7 +297,8 @@ protected:
 
       @param node The node to be removed. Must not be NULL.
     */
-    inline void remove(Node* node) throw() {
+    inline void remove(Node* node) noexcept
+    {
       Node* next = node->getNext();
       Node* previous = node->getPrevious();
       if (next) {
@@ -301,13 +315,15 @@ protected:
     /**
       Initializes an empty list.
     */
-    inline ListImpl() throw() {
+    inline ListImpl() noexcept
+    {
     }
     
     /**
       Initializes list from other list.
     */
-    ListImpl(const ListImpl& copy) throw() {
+    ListImpl(const ListImpl& copy) noexcept
+    {
       const Node* node = copy.getFirst();
       while (node) {
         append(*node->getValue());
@@ -315,52 +331,68 @@ protected:
       }
     }
 
+    ListImpl(ListImpl&& copy) noexcept
+    {
+      first = copy.first;
+      copy.first = nullptr;
+      last = copy.last;
+      copy.last = nullptr;
+      size = copy.size;
+      copy.size = 0;
+    }
+
     /**
       Returns the number of elements of the list.
     */
-    inline unsigned int getSize() const throw() {
+    inline MemorySize getSize() const noexcept
+    {
       return size;
     }
 
     /**
       Returns the first node of the list.
     */
-    inline Node* getFirst() throw() {
+    inline Node* getFirst() noexcept
+    {
       return first;
     }
 
     /**
       Returns the first node of the list.
     */
-    inline const Node* getFirst() const throw() {
+    inline const Node* getFirst() const noexcept
+    {
       return first;
     }
 
     /**
       Returns the last node of the list.
     */
-    inline Node* getLast() throw() {
+    inline Node* getLast() noexcept
+    {
       return last;
     }
 
     /**
       Returns the last node of the list.
     */
-    inline const Node* getLast() const throw() {
+    inline const Node* getLast() const noexcept
+    {
       return last;
     }
 
     /**
       Appends the value to the end of this list.
     */
-    void append(const TYPE& value) throw(MemoryException) {
+    void append(const TYPE& value)
+    {
       if (size) {
-        Node* node = new Node(0, last, value);
+        Node* node = new Node(nullptr, last, value);
         last->setNext(node);
         last = node;
         ++size;
       } else { // list is empty
-        Node* node = new Node(0, 0, value);
+        Node* node = new Node(nullptr, nullptr, value);
         first = node;
         last = node;
         ++size;
@@ -370,14 +402,15 @@ protected:
     /**
       Prepends the value to the beginning of this list.
     */
-    void prepend(const TYPE& value) throw(MemoryException) {
+    void prepend(const TYPE& value)
+    {
       if (size) {
-        Node* node = new Node(first, 0, value);
+        Node* node = new Node(first, nullptr, value);
         first->setPrevious(node);
         first = node;
         ++size;
       } else { // list is empty
-        Node* node = new Node(0, 0, value);
+        Node* node = new Node(nullptr, nullptr, value);
         first = node;
         last = node;
         ++size;
@@ -400,9 +433,10 @@ protected:
     /**
       Removes this first node of this list.
     */
-    void removeFirst() throw(InvalidNode) {
+    void removeFirst() throw(EmptyContainer)
+    {
       if (!first) {
-        throw InvalidNode();
+        throw EmptyContainer();
       }
       remove(first);
     }
@@ -410,9 +444,10 @@ protected:
     /**
       Removes the last node of this list.
     */
-    void removeLast() throw(InvalidNode) {
+    void removeLast() throw(EmptyContainer)
+    {
       if (!last) {
-        throw InvalidNode();
+        throw EmptyContainer();
       }
       remove(last);
     }
@@ -420,7 +455,8 @@ protected:
     /**
       Destroys the list.
     */
-    ~ListImpl() throw() {
+    ~ListImpl()
+    {
       while (first) {
         Node* node = first;
         first = first->getNext();
@@ -437,7 +473,8 @@ protected:
   /**
     Returns the first node of the list.
   */
-  inline Node* getFirst() throw(MemoryException) {
+  inline Node* getFirst()
+  {
     elements.copyOnWrite();
     return elements->getFirst();
   }
@@ -445,14 +482,16 @@ protected:
   /**
     Returns the first node of the list.
   */
-  inline const Node* getFirst() const throw() {
+  inline const Node* getFirst() const noexcept
+  {
     return elements->getFirst();
   }
 
   /**
     Returns the last node of the list.
   */
-  inline Node* getLast() throw(MemoryException) {
+  inline Node* getLast()
+  {
     elements.copyOnWrite();
     return elements->getLast();
   }
@@ -460,7 +499,8 @@ protected:
   /**
     Returns the last node of the list.
   */
-  inline const Node* getLast() const throw() {
+  inline const Node* getLast() const noexcept
+  {
     return elements->getLast();
   }
 public:
@@ -468,20 +508,23 @@ public:
   /**
     Initializes an empty list.
   */
-  List() throw(MemoryException) : elements(new ListImpl()) {
+  List()
+    : elements(new ListImpl())
+  {
   }
 
   /**
     Initializes list from other list.
   */
-  inline List(const List& copy) throw()
+  inline List(const List& copy) noexcept
     : elements(copy.elements) {
   }
   
   /**
     Assignment of list by list.
   */
-  inline List& operator=(const List& eq) throw() {
+  inline List& operator=(const List& eq) noexcept
+  {
     elements = eq.elements;
     return *this;
   }
@@ -491,28 +534,32 @@ public:
   /**
     Returns the number of elements in the list.
   */
-  inline unsigned int getSize() const throw() {
+  inline MemorySize getSize() const noexcept
+  {
     return elements->getSize();
   }
 
   /**
     Returns true if the list is empty.
   */
-  inline bool isEmpty() const throw() {
+  inline bool isEmpty() const noexcept
+  {
     return elements->getSize() == 0;
   }
 
   /**
     Returns a modifying enumerator of the list.
   */
-  inline Enumerator getEnumerator() throw() {
+  inline Enumerator getEnumerator() noexcept
+  {
     return Enumerator(getFirst());
   }
 
   /**
     Returns a non-modifying enumerator of the list.
   */
-  inline ReadEnumerator getReadEnumerator() const throw() {
+  inline ReadEnumerator getReadEnumerator() const noexcept
+  {
     return ReadEnumerator(getFirst());
   }
 
@@ -521,9 +568,10 @@ public:
 
     @return -1 if the node isn't in the list.
   */
-/*  int indexOf(const TYPE& value) const throw() {
+/*  MemoryDiff indexOf(const TYPE& value) const noexcept
+  {
     const ListNode* current = first;
-    int index = 0;
+    MemoryDiff index = 0;
     while (current) {
       if (current->getValue() == value) {
         return index;
@@ -540,7 +588,8 @@ public:
 
     @param value The value to be appended to the list.
   */
-  void append(const TYPE& value) throw(MemoryException) {
+  void append(const TYPE& value)
+  {
     elements.copyOnWrite();
     elements->append(value);
   }
@@ -550,7 +599,8 @@ public:
 
     @param value The value to be prepended to the list.
   */
-  void prepend(const TYPE& value) throw(MemoryException) {
+  void prepend(const TYPE& value)
+  {
     elements.copyOnWrite();
     elements->prepend(value);
   }
@@ -560,7 +610,8 @@ public:
 
     @param value The value to be appended to the list.
   */
-  void add(const TYPE& value) throw(MemoryException) {
+  void add(const TYPE& value)
+  {
     elements.copyOnWrite();
     elements->append(value);
   }
@@ -571,7 +622,8 @@ public:
     @param enu Enumeration of this list specifying the position.
     @param value The value to be inserted.
   */
-/*  void insert(Enumeration& enu, const TYPE& value) throw(InvalidEnumeration) {
+/*  void insert(Enumeration& enu, const TYPE& value) throw(InvalidEnumeration)
+  {
     elements.copyOnWrite();
     if (enu.getOwner() != this) {
       throw InvalidEnumeration();
@@ -582,7 +634,8 @@ public:
   /**
     Removes this first node of this list.
   */
-  void removeFirst() throw(InvalidNode, MemoryException) {
+  void removeFirst()
+  {
     elements.copyOnWrite();
     elements->removeFirst();
   }
@@ -590,7 +643,8 @@ public:
   /**
     Removes the last node of this list.
   */
-  void removeLast() throw(InvalidNode, MemoryException) {
+  void removeLast()
+  {
     elements.copyOnWrite();
     elements->removeLast();
   }
@@ -598,7 +652,8 @@ public:
   /**
     Removes all the elements from this list.
   */
-  void removeAll() throw(MemoryException) {
+  void removeAll()
+  {
     elements = new ListImpl(); // copyOnWrite is not required
   }
   
@@ -607,7 +662,8 @@ public:
 
     @param enu Enumeration specifying the element to be removed.
   */
-/*  void remove(ListEnumeration& enu) throw(InvalidEnumeration, EndOfEnumeration) {
+/*  void remove(ListEnumeration& enu) throw(InvalidEnumeration, EndOfEnumeration)
+  {
     if (enu.getOwner() != this) {
       throw InvalidEnumeration();
     }
@@ -624,7 +680,8 @@ public:
 */
 template<class TYPE>
 FormatOutputStream& operator<<(
-  FormatOutputStream& stream, const List<TYPE>& value) throw(IOException) {
+  FormatOutputStream& stream, const List<TYPE>& value) throw(IOException)
+{
   typename List<TYPE>::ReadEnumerator enu = value.getReadEnumerator();
   stream << '{';
   while (enu.hasNext()) {

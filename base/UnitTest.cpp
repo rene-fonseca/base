@@ -17,6 +17,7 @@
 #include <base/concurrency/Thread.h>
 #include <base/string/ANSIEscapeSequence.h>
 #include <base/objectmodel/JSON.h>
+#include <algorithm>
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
@@ -435,6 +436,18 @@ public:
   }
 };
 
+class SortTests {
+public:
+
+  bool operator()(Reference<UnitTest> a, Reference<UnitTest> b)
+  {
+    if (a->getPriority() < b->getPriority()) {
+      return true;
+    }
+    return false;
+  }
+};
+
 bool UnitTestManager::runTests(const String& pattern)
 {
   // TAG: add support for pattern
@@ -445,6 +458,7 @@ bool UnitTestManager::runTests(const String& pattern)
   // TAG: allow tests to run concurrently
 
   loadTests();
+  // std::sort(&tests[0], &tests[0], SortTests());
 
   bool result = true;
   unsigned int count = 0;

@@ -34,7 +34,7 @@ private:
   /** The elements of the set. */
   OrderedBinaryTree<KEY> elements;
   /** The number of elements in the set. */
-  unsigned int size = 0;
+  MemorySize size = 0;
 public:
 
   /* Enumerator of set. */
@@ -48,14 +48,18 @@ public:
     ENU enu;
   public:
 
-    inline SetEnumerator(const ENU& _enu) throw() : enu(_enu) {
+    inline SetEnumerator(const ENU& _enu) noexcept
+      : enu(_enu)
+    {
     }
     
-    inline bool hasNext() const throw() {
+    inline bool hasNext() const noexcept
+    {
       return enu.hasNext();
     }
     
-    inline Pointer next() throw(EndOfEnumeration) {
+    inline Pointer next() throw(EndOfEnumeration)
+    {
       return enu.next()->getValue();
     }
   };
@@ -69,40 +73,47 @@ public:
   /**
     Initializes an empty set.
   */
-  inline Set() throw() {
+  inline Set() noexcept
+  {
   }
 
   /**
     Initializes set from other set.
   */
-  inline  Set(const Set& copy) throw() : elements(copy.elements) {
+  inline  Set(const Set& copy) noexcept
+    : elements(copy.elements)
+  {
   }
   
   /**
     Returns the number of elements in the collection.
   */
-  inline unsigned int getSize() const throw() {
+  inline MemorySize getSize() const noexcept
+  {
     return size;
   }
 
   /**
     Returns true if the collection is empty.
   */
-  inline bool isEmpty() const throw() {
+  inline bool isEmpty() const noexcept
+  {
     return size != 0;
   }
 
   /**
     Returns a modifying enumerator of the ordered binary tree.
   */
-  inline Enumerator getEnumerator() throw() {
+  inline Enumerator getEnumerator() noexcept
+  {
     return Enumerator(elements.getEnumerator());
   }
 
   /**
     Returns a non-modifying enumerator of the ordered binary tree.
   */
-  inline ReadEnumerator getReadEnumerator() const throw() {
+  inline ReadEnumerator getReadEnumerator() const noexcept
+  {
     return ReadEnumerator(elements.getReadEnumerator());
   }
 
@@ -111,7 +122,8 @@ public:
 
     @param key The value to search for.
   */
-  bool isKey(const KEY& key) const throw() {
+  bool isKey(const KEY& key) const noexcept
+  {
     return elements.find(key);
   }
 
@@ -120,7 +132,8 @@ public:
 
     @param key The key to be added to the set.
   */
-  void add(const KEY& key) throw(MemoryException) {
+  void add(const KEY& key)
+  {
     KEY* result = elements.add(key);
     if (!result) {
       ++size; // key did not exist
@@ -133,7 +146,8 @@ public:
 
     @param key The value to be removed from the set.
   */
-  void remove(const KEY& key) throw(InvalidNode) {
+  void remove(const KEY& key) throw(InvalidNode)
+  {
     elements.remove(elements.find(key));
     --size;
   }
@@ -141,7 +155,8 @@ public:
   /**
     Removes all the keys from this set.
   */
-  void removeAll() throw() {
+  void removeAll() noexcept
+  {
     elements.removeAll();
     size = 0;
   }
@@ -154,7 +169,8 @@ public:
 */
 template<class TYPE>
 FormatOutputStream& operator<<(
-  FormatOutputStream& stream, const Set<TYPE>& value)  throw(IOException) {
+  FormatOutputStream& stream, const Set<TYPE>& value)  throw(IOException)
+{
   typename Set<TYPE>::ReadEnumerator enu = value.getReadEnumerator();
   stream << '{';
   while (enu.hasNext()) {

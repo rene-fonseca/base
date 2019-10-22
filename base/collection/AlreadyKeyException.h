@@ -33,7 +33,8 @@ public:
   /**
     Initializes the exception with no message.
   */
-  inline AlreadyKeyException() throw() {
+  inline AlreadyKeyException() noexcept
+  {
   }
 
   /**
@@ -41,7 +42,9 @@ public:
 
     @param message The message.
   */
-  inline AlreadyKeyException(const char* message) throw() : Exception(message) {
+  inline AlreadyKeyException(const char* message) noexcept
+    : Exception(message)
+  {
   }
 
   /**
@@ -49,7 +52,9 @@ public:
     
     @param type The identity of the type.
   */
-  inline AlreadyKeyException(Type type) throw() : Exception(type) {
+  inline AlreadyKeyException(Type type) noexcept
+    : Exception(type)
+  {
   }
   
   /**
@@ -58,8 +63,9 @@ public:
     @param message An NULL-terminated string (ASCII).
     @param type The identity of the type.
   */
-  inline AlreadyKeyException(const char* message, Type type) throw()
-    : Exception(message, type) {
+  inline AlreadyKeyException(const char* message, Type type) noexcept
+    : Exception(message, type)
+  {
   }
 };
 

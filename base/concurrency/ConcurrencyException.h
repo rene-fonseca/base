@@ -37,7 +37,8 @@ public:
   /**
     Initializes the exception object with no message.
   */
-  inline ConcurrencyException() throw() {
+  inline ConcurrencyException() noexcept
+  {
   }
 
   /**
@@ -45,8 +46,9 @@ public:
 
     @param message The message.
   */
-  inline ConcurrencyException(const char* message) throw()
-    : Exception(message) {
+  inline ConcurrencyException(const char* message) noexcept
+    : Exception(message)
+  {
   }
 
   /**
@@ -54,7 +56,9 @@ public:
     
     @param type The identity of the type.
   */
-  inline ConcurrencyException(Type type) throw() : Exception(type) {
+  inline ConcurrencyException(Type type) noexcept
+    : Exception(type)
+  {
   }
   
   /**
@@ -63,8 +67,9 @@ public:
     @param message An NULL-terminated string (ASCII).
     @param type The identity of the type.
   */
-  inline ConcurrencyException(const char* message, Type type) throw()
-    : Exception(message, type) {
+  inline ConcurrencyException(const char* message, Type type) noexcept
+    : Exception(message, type)
+  {
   }
 };
 

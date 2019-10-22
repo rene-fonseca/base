@@ -48,17 +48,23 @@ public:
   class ThreadKeyException : public Exception {
   public:
     
-    inline ThreadKeyException() throw() {
+    inline ThreadKeyException() noexcept
+    {
     }
     
-    inline ThreadKeyException(const char* message) throw() : Exception(message) {
+    inline ThreadKeyException(const char* message) noexcept
+      : Exception(message)
+    {
     }
     
-    inline ThreadKeyException(Type type) throw() : Exception(type) {
+    inline ThreadKeyException(Type type) noexcept
+      : Exception(type)
+    {
     }
     
-    inline ThreadKeyException(const char* message, Type type) throw()
-      : Exception(message, type) {
+    inline ThreadKeyException(const char* message, Type type) noexcept
+      : Exception(message, type)
+    {
     }
   };
 

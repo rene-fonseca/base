@@ -44,7 +44,7 @@ public:
     /**
       Initializes the exception object with no message.
     */
-    inline RegExpException() throw() {
+    inline RegExpException() noexcept {
     }
     
     /**
@@ -52,7 +52,7 @@ public:
       
       @param message The message.
     */
-    inline RegExpException(const char* message) throw() : Exception(message) {
+    inline RegExpException(const char* message) noexcept : Exception(message) {
     }
     
     /**
@@ -60,7 +60,7 @@ public:
       
       @param type The identity of the type.
     */
-    inline RegExpException(Type type) throw() : Exception(type) {
+    inline RegExpException(Type type) noexcept : Exception(type) {
     }
     
     /**
@@ -69,7 +69,7 @@ public:
       @param message An NULL-terminated string (ASCII).
       @param type The identity of the type.
     */
-    inline RegExpException(const char* message, Type type) throw()
+    inline RegExpException(const char* message, Type type) noexcept
       : Exception(message, type) {
     }
   };

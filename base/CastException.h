@@ -31,7 +31,7 @@ public:
   /**
     Initializes the exception object with no message.
   */
-  inline CastException() throw() {
+  inline CastException() noexcept {
   }
 
   /**
@@ -39,7 +39,7 @@ public:
 
     @param message The message.
   */
-  inline CastException(const char* message) throw() : Exception(message) {
+  inline CastException(const char* message) noexcept : Exception(message) {
   }
   
   /**
@@ -47,7 +47,7 @@ public:
     
     @param type The type.
   */
-  inline CastException(Type type) throw() : Exception(type) {
+  inline CastException(Type type) noexcept : Exception(type) {
   }
   
   /**
@@ -56,7 +56,7 @@ public:
     @param message The message.
     @param type The type.
   */
-  inline CastException(const char* message, Type type) throw()
+  inline CastException(const char* message, Type type) noexcept
     : Exception(message, type) {
   }
 };

@@ -31,7 +31,7 @@ public:
   /**
     Initializes the exception object with no message.
   */
-  inline ResourceException() throw() {
+  inline ResourceException() noexcept {
   }
 
   /**
@@ -39,7 +39,7 @@ public:
 
     @param message The message.
   */
-  inline ResourceException(const char* message) throw() : Exception(message) {
+  inline ResourceException(const char* message) noexcept : Exception(message) {
   }
 
   /**
@@ -47,7 +47,7 @@ public:
     
     @param type The identity of the type.
   */
-  inline ResourceException(Type type) throw() : Exception(type) {
+  inline ResourceException(Type type) noexcept : Exception(type) {
   }
   
   /**
@@ -56,7 +56,7 @@ public:
     @param message An NULL-terminated string (ASCII).
     @param type The identity of the type.
   */
-  inline ResourceException(const char* message, Type type) throw()
+  inline ResourceException(const char* message, Type type) noexcept
     : Exception(message, type) {
   }
 };

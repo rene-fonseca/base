@@ -32,13 +32,13 @@ public:
   /**
     Initializes the exception with no message.
   */
-  inline TransformerException() throw() {
+  inline TransformerException() noexcept {
   }
 
   /**
     Initializes the exception with the specified message.
   */
-  inline TransformerException(const char* message) throw()
+  inline TransformerException(const char* message) noexcept
     : Exception(message) {
   }
   
@@ -47,7 +47,7 @@ public:
     
     @param type The identity of the type.
   */
-  inline TransformerException(Type type) throw() : Exception(type) {
+  inline TransformerException(Type type) noexcept : Exception(type) {
   }
   
   /**
@@ -56,7 +56,7 @@ public:
     @param message An NULL-terminated string (ASCII).
     @param type The identity of the type.
   */
-  inline TransformerException(const char* message, Type type) throw()
+  inline TransformerException(const char* message, Type type) noexcept
     : Exception(message, type) {
   }
 };

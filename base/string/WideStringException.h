@@ -31,7 +31,7 @@ public:
   /**
     Initializes the exception object with no message.
   */
-  inline WideStringException() throw() {
+  inline WideStringException() noexcept {
   }
 
   /**
@@ -39,7 +39,7 @@ public:
 
     @param message The message.
   */
-  inline WideStringException(const char* message) throw() : Exception(message) {
+  inline WideStringException(const char* message) noexcept : Exception(message) {
   }
 
   /**
@@ -47,7 +47,7 @@ public:
     
     @param type The identity of the type.
   */
-  WideStringException(Type type) throw() : Exception(type) {
+  WideStringException(Type type) noexcept : Exception(type) {
   }
   
   /**
@@ -56,7 +56,7 @@ public:
     @param message An NULL-terminated string (ASCII).
     @param type The identity of the type.
   */
-  inline WideStringException(const char* message, Type type) throw()
+  inline WideStringException(const char* message, Type type) noexcept
     : Exception(message, type) {
   }
 };

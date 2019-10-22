@@ -31,7 +31,8 @@ public:
   /**
     Initializes the exception object with no message.
   */
-  inline LinkerException() throw() {
+  inline LinkerException() noexcept
+  {
   }
   
   /**
@@ -39,7 +40,9 @@ public:
 
     @param message The message.
   */
-  inline LinkerException(const char* message) throw() : Exception(message) {
+  inline LinkerException(const char* message) noexcept
+    : Exception(message)
+  {
   }
 
   /**
@@ -47,7 +50,9 @@ public:
     
     @param type The identity of the type.
   */
-  inline LinkerException(Type type) throw() : Exception(type) {
+  inline LinkerException(Type type) noexcept
+    : Exception(type)
+  {
   }
   
   /**
@@ -56,8 +61,9 @@ public:
     @param message An NULL-terminated string (ASCII).
     @param type The identity of the type.
   */
-  inline LinkerException(const char* message, Type type) throw()
-    : Exception(message, type) {
+  inline LinkerException(const char* message, Type type) noexcept
+    : Exception(message, type)
+  {
   }
 };
 

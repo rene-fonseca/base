@@ -29,7 +29,7 @@ public:
   /**
     Initializes the exception object with no message.
   */
-  inline EmptyContainer() throw()
+  inline EmptyContainer() noexcept
   {
   }
 

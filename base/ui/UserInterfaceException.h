@@ -31,7 +31,7 @@ public:
   /**
     Initializes the exception object with no message.
   */
-  inline UserInterfaceException() throw() {
+  inline UserInterfaceException() noexcept {
   }
 
   /**
@@ -39,7 +39,7 @@ public:
 
     @param message The message.
   */
-  inline UserInterfaceException(const char* message) throw() {
+  inline UserInterfaceException(const char* message) noexcept {
   }
 
   /**
@@ -47,7 +47,7 @@ public:
     
     @param type The identity of the type.
   */
-  inline UserInterfaceException(Type type) throw() : Exception(type) {
+  inline UserInterfaceException(Type type) noexcept : Exception(type) {
   }
   
   /**
@@ -56,7 +56,7 @@ public:
     @param message An NULL-terminated string (ASCII).
     @param type The identity of the type.
   */
-  inline UserInterfaceException(const char* message, Type type) throw() : Exception(message, type) {
+  inline UserInterfaceException(const char* message, Type type) noexcept : Exception(message, type) {
   }
 };
 

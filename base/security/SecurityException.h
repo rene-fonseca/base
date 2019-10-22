@@ -31,7 +31,7 @@ public:
   /**
     Initializes the exception object with no message.
   */
-  inline SecurityException() throw() {
+  inline SecurityException() noexcept {
   }
 
   /**
@@ -39,7 +39,7 @@ public:
 
     @param message The message.
   */
-  inline SecurityException(const char* message) throw()
+  inline SecurityException(const char* message) noexcept
     : Exception(message) {
   }
   
@@ -48,7 +48,7 @@ public:
     
     @param type The identity of the type.
   */
-  inline SecurityException(Type type) throw() : Exception(type) {
+  inline SecurityException(Type type) noexcept : Exception(type) {
   }
   
   /**
@@ -57,7 +57,7 @@ public:
     @param message An NULL-terminated string (ASCII).
     @param type The identity of the type.
   */
-  inline SecurityException(const char* message, Type type) throw()
+  inline SecurityException(const char* message, Type type) noexcept
     : Exception(message, type) {
   }
 };

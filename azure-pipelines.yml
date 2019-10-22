@@ -15,6 +15,6 @@ steps:
 
 - task: PublishPipelineArtifact@1
   inputs:
-    artifact: base
-    targetPath: '$(Pipeline.Workspace)'
+    artifact: 'base'
+    targetPath: 'artifacts'
     path: $(System.DefaultWorkingDirectory)/build/install

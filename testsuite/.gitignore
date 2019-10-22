@@ -62,6 +62,7 @@ sax
 server
 time
 touch
+unittesting
 ui/OpenGLPixmap
 ui/opengl
 ui/pixmap

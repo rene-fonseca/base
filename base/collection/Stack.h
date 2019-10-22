@@ -49,31 +49,38 @@ protected:
     inline StackNode(
       StackNode* _next,
       StackNode* _previous,
-      const TYPE& _value) throw()
-      : next(_next), previous(_previous), value(_value) {
+      const TYPE& _value) noexcept
+      : next(_next), previous(_previous), value(_value)
+    {
     }
     
-    inline StackNode* getNext() const throw() {
+    inline StackNode* getNext() const noexcept
+    {
       return next;
     }
     
-    inline void setNext(StackNode* value) throw() {
+    inline void setNext(StackNode* value) noexcept
+    {
       next = value;
     }
     
-    inline StackNode* getPrevious() const throw() {
+    inline StackNode* getPrevious() const noexcept
+    {
       return previous;
     }
     
-    inline void setPrevious(StackNode* value) throw() {
+    inline void setPrevious(StackNode* value) noexcept
+    {
       previous = value;
     }
     
-    inline TYPE* getValue() throw() {
+    inline TYPE* getValue() noexcept
+    {
       return &value;
     }
     
-    inline const TYPE* getValue() const throw() {
+    inline const TYPE* getValue() const noexcept
+    {
       return &value;
     }
   };
@@ -102,29 +109,33 @@ protected:
       
       @param begin Specifies the beginning of the enumeration.
     */
-    explicit inline StackReadEnumerator(const StackNode* begin) throw()
-      : current(begin) {
+    explicit inline StackReadEnumerator(const StackNode* begin) noexcept
+      : current(begin)
+    {
     }
     
     /**
       Initializes enumeration from other enumeration.
     */
-    inline StackReadEnumerator(const StackReadEnumerator& copy) throw()
-      : current(copy.current) {
+    inline StackReadEnumerator(const StackReadEnumerator& copy) noexcept
+      : current(copy.current)
+    {
     }
     
     /**
       Returns true if the enumeration still contains elements.
     */
-    inline bool hasNext() const throw() {
+    inline bool hasNext() const noexcept
+    {
       return current != nullptr;
     }
 
     /**
       Returns the next element and advances the position of this enumeration.
     */
-    inline Pointer next() throw(EndOfEnumeration) {
-      bassert(current != 0, EndOfEnumeration());
+    inline Pointer next() throw(EndOfEnumeration)
+    {
+      bassert(current != nullptr, EndOfEnumeration());
       Pointer temp = current->getValue();
       current = current->getNext();
       return temp;
@@ -133,14 +144,16 @@ protected:
     /**
       Returns true if the enumerations are pointing to the same position.
     */
-    inline bool operator==(const StackReadEnumerator& eq) const throw() {
+    inline bool operator==(const StackReadEnumerator& eq) const noexcept
+    {
       return current == eq.current;
     }
     
     /**
       Returns true if the enumerations aren't pointing to the same position.
     */
-    inline bool operator!=(const StackReadEnumerator& eq) const throw() {
+    inline bool operator!=(const StackReadEnumerator& eq) const noexcept
+    {
       return current != eq.current;
     }
   };
@@ -152,12 +165,8 @@ public:
 
 protected:
   
-  
-  
   /*
     Internal stack implementation.
-
-    @version 1.0
   */
   class StackImpl : public ReferenceCountedObject {
   protected:
@@ -167,19 +176,21 @@ protected:
     /** The node at the bottom of the stack. */
     StackNode* bottom = nullptr;
     /** The number of elements on the stack. */
-    unsigned int size = 0;
+    MemorySize size = 0;
   public:
 
     /**
       Initialize an empty stack.
     */
-    inline StackImpl() throw() {
+    inline StackImpl() noexcept
+    {
     }
     
     /**
       Initialize stack from other stack.
     */
-    inline StackImpl(const StackImpl& copy) throw(MemoryException) {
+    inline StackImpl(const StackImpl& copy)
+    {
       const StackNode* node = copy.bottom;
       while (node) {
         push(*node->getValue());
@@ -190,21 +201,24 @@ protected:
     /**
       Returns the number of elements on the stack.
     */
-    inline unsigned int getSize() const throw() {
+    inline MemorySize getSize() const noexcept
+    {
       return size;
     }
     
     /**
       Returns true if the stack is empty.
     */
-    inline bool isEmpty() const throw() {
+    inline bool isEmpty() const noexcept
+    {
       return size == 0;
     }
 
     /**
       Returns the top node of the stack.
     */
-    inline const StackNode* getTop() const throw() {
+    inline const StackNode* getTop() const noexcept
+    {
       return top;
     }
     
@@ -214,7 +228,8 @@ protected:
 
       @param index Index of the element. Default is 0 corresponding to the top.
     */
-    TYPE peek(unsigned int index = 0) const throw(OutOfRange) {
+    const TYPE& peek(MemorySize index = 0) const throw(OutOfRange)
+    {
       if (index >= getSize()) {
         throw OutOfRange(this);
       }
@@ -231,7 +246,8 @@ protected:
 
       @param value The value to be pushed.
     */
-    void push(const TYPE& value) throw(MemoryException) {
+    void push(const TYPE& value)
+    {
       if (!isEmpty()) {
         StackNode* node = new StackNode(top, nullptr, value);
         top->setPrevious(node); // top is not null
@@ -250,7 +266,8 @@ protected:
 
       @return The value of the top element.
     */
-    TYPE pop() throw(OutOfRange) {
+    TYPE pop() throw(OutOfRange)
+    {
       if (isEmpty()) {
         throw OutOfRange(this);
       }
@@ -273,7 +290,8 @@ protected:
 
       @param count The number of elements to pop of the stack.
     */
-    void pop(unsigned int count) throw(OutOfRange) {
+    void pop(MemorySize count) throw(OutOfRange)
+    {
       if (count > getSize()) {
         throw OutOfRange(this);
       }
@@ -294,7 +312,8 @@ protected:
     /**
       Removes all the elements from the stack.
     */
-    void removeAll() throw() {
+    void removeAll() noexcept
+    {
       while (size) {
         StackNode* temp = top;
         top = top->getNext();
@@ -307,7 +326,8 @@ protected:
     /**
       Destroys the stack.
     */
-    inline ~StackImpl() throw() {
+    inline ~StackImpl() noexcept
+    {
       removeAll();
     }
   };
@@ -320,7 +340,8 @@ protected:
     by several stacks. This member function must be called explicitly before
     most modifications to the stack.
   */
-  inline void copyOnWrite() throw(MemoryException) {
+  inline void copyOnWrite()
+  {
     if (elements.isMultiReferenced()) { // do we have the elements for our self
       elements = new StackImpl(*elements); // make a copy of the elements
     }
@@ -330,20 +351,24 @@ public:
   /**
     Initializes an empty stack.
   */
-  inline Stack() throw() : elements(new StackImpl()) {
+  inline Stack() noexcept
+    : elements(new StackImpl())
+  {
   }
   
   /**
     Initializes stack from other stack.
   */
-  inline Stack(const Stack& copy) throw()
-    : elements(copy.elements) {
+  inline Stack(const Stack& copy) noexcept
+    : elements(copy.elements)
+  {
   }
 
   /**
     Assignment of stack by stack.
   */
-  inline Stack& operator=(const Stack& eq) throw() {
+  inline Stack& operator=(const Stack& eq) noexcept
+  {
     elements = eq.elements;
     return *this;
   }
@@ -351,14 +376,16 @@ public:
   /**
     Returns the number of elements on the stack.
   */
-  inline unsigned int getSize() const throw() {
+  inline MemorySize getSize() const noexcept
+  {
     return elements->getSize();
   }
   
   /**
     Returns true if the stack is empty.
   */
-  inline bool isEmpty() const throw() {
+  inline bool isEmpty() const noexcept
+  {
     return elements->isEmpty();
   }
   
@@ -368,14 +395,16 @@ public:
 
     @param index Index of the element. Default is 0 corresponding to the top.
   */
-  inline TYPE peek(unsigned int index = 0) const throw(OutOfRange) {
+  inline TYPE peek(MemorySize index = 0) const throw(OutOfRange)
+  {
     return elements->peek(index);
   }
   
   /**
     Pushes an element onto the stack.
   */
-  inline void push(const TYPE& value) throw(MemoryException) {
+  inline void push(const TYPE& value)
+  {
     elements.copyOnWrite();
     elements->push(value);
   }
@@ -386,7 +415,8 @@ public:
 
     @return The value of the top element.
   */
-  inline TYPE pop() throw(OutOfRange) {
+  inline TYPE pop() throw(OutOfRange)
+  {
     elements.copyOnWrite();
     return elements->pop();
   }
@@ -397,7 +427,8 @@ public:
 
     @param count The number of elements to pop of the stack.
   */
-  inline void pop(unsigned int count) throw(OutOfRange) {
+  inline void pop(MemorySize count) throw(OutOfRange)
+  {
     elements.copyOnWrite();
     elements->pop(count);
   }
@@ -406,14 +437,16 @@ public:
     Returns a non-modifying enumerator of the stack. The elements are enumerated
     from top to bottom.
   */
-  inline ReadEnumerator getReadEnumerator() const throw() {
+  inline ReadEnumerator getReadEnumerator() const noexcept
+  {
     return ReadEnumerator(elements->getTop());
   }
   
   /**
     Removes all the elements from the stack.
   */
-  inline void removeAll() throw() {
+  inline void removeAll() noexcept
+  {
     elements = new StackImpl(); // no need to copy
   }
 };
@@ -426,7 +459,8 @@ public:
 template<class TYPE>
 FormatOutputStream& operator<<(
   FormatOutputStream& stream,
-  const Stack<TYPE>& value) throw(IOException) {
+  const Stack<TYPE>& value) throw(IOException)
+{
   
   typename Stack<TYPE>::ReadEnumerator enu = value.getReadEnumerator();
   stream << '{';

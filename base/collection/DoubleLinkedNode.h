@@ -45,55 +45,65 @@ public:
     @param value The value to be associated with the node.
   */
   inline DoubleLinkedNode(DoubleLinkedNode* _next, DoubleLinkedNode* _previous, const TYPE& _value)
-    : next(_next), previous(_previous), value(_value) {
+    : next(_next),
+      previous(_previous),
+      value(_value)
+  {
   }
 
   /**
     Returns the next node.
   */
-  inline DoubleLinkedNode* getNext() const throw() {
+  inline DoubleLinkedNode* getNext() const noexcept
+  {
     return next;
   }
 
   /**
     Sets the next node.
   */
-  inline void setNext(DoubleLinkedNode* next) throw() {
+  inline void setNext(DoubleLinkedNode* next) noexcept
+  {
     this->next = next;
   }
 
   /**
     Returns the previous node.
   */
-  inline DoubleLinkedNode* getPrevious() const throw() {
+  inline DoubleLinkedNode* getPrevious() const noexcept
+  {
     return previous;
   }
 
   /**
     Sets the previous node.
   */
-  inline void setPrevious(DoubleLinkedNode* previous) throw() {
+  inline void setPrevious(DoubleLinkedNode* previous) noexcept
+  {
     this->previous = previous;
   }
 
   /**
     Returns the value of the node.
   */
-  inline TYPE* getValue() throw() {
+  inline TYPE* getValue() noexcept
+  {
     return &value;
   }
 
   /**
     Returns the value of the node.
   */
-  inline const TYPE* getValue() const throw() {
+  inline const TYPE* getValue() const noexcept
+  {
     return &value;
   }
 
   /**
     Sets the value of the node.
   */
-  inline void setValue(TYPE value) throw() {
+  inline void setValue(const TYPE& value) noexcept
+  {
     this->value = value;
   }
 };

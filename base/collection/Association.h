@@ -37,7 +37,7 @@ private:
   VALUE value;
 
   /* Disable the default assignment operator. */
-  Association& operator=(const Association& eq) throw();
+  Association& operator=(const Association& eq) noexcept;
 public:
 
   /**
@@ -45,14 +45,18 @@ public:
 
     @param key The
   */
-  inline Association(const KEY& _key) throw() : key(_key) {
+  inline Association(const KEY& _key) noexcept
+    : key(_key)
+  {
   }
 
   /**
     Initializes association from other association.
   */
-  inline Association(const Association& copy) throw()
-    : key(copy.key), value(copy.value) {
+  inline Association(const Association& copy) noexcept
+    : key(copy.key),
+      value(copy.value)
+  {
   }
 
   /**
@@ -61,15 +65,18 @@ public:
     @param key The
     @param value The value of the association.
   */
-  inline Association(const KEY& _key, const VALUE& _value) throw()
-    : key(_key), value(_value) {
+  inline Association(const KEY& _key, const VALUE& _value) noexcept
+    : key(_key),
+      value(_value)
+  {
   }
 
 #if 0 // do not allow key to be changed in-place
   /**
     Returns the key value of the association.
   */
-  inline KEY& getKey() throw() {
+  inline KEY& getKey() noexcept
+  {
     return key;
   }
 #endif
@@ -77,21 +84,24 @@ public:
   /**
     Returns the key value of the association.
   */
-  inline const KEY& getKey() const throw() {
+  inline const KEY& getKey() const noexcept
+  {
     return key;
   }
 
   /**
     Returns the value of the association.
   */
-  inline VALUE& getValue() throw() {
+  inline VALUE& getValue() noexcept
+  {
     return value;
   }
 
   /**
     Returns the value of the association.
   */
-  inline const VALUE& getValue() const throw() {
+  inline const VALUE& getValue() const noexcept
+  {
     return value;
   }
 
@@ -100,34 +110,38 @@ public:
 
     @param value The new value.
   */
-  inline void setValue(const VALUE& value) throw() {
+  inline void setValue(const VALUE& value) noexcept
+  {
     this->value = value;
   }
 
   /**
     Returns true if the associations are equal.
   */
-  inline bool operator==(const Association& eq) const throw() {
+  inline bool operator==(const Association& eq) const noexcept
+  {
     return key == eq.key;
   }
 
   /**
     Returns true if this association is less than the specified association.
   */
-  inline bool operator<(const Association& eq) const throw() {
+  inline bool operator<(const Association& eq) const noexcept
+  {
     return key < eq.key;
   }
 
   /**
     Compares the specified associations with each other.
   */
-  friend int compare<>(const Association& left, const Association& right) throw();
+  friend int compare<>(const Association& left, const Association& right) noexcept;
 };
 
 template<class KEY, class VALUE>
 inline int compare(
   const Association<KEY, VALUE>& left,
-  const Association<KEY, VALUE>& right) throw() {
+  const Association<KEY, VALUE>& right) noexcept
+{
   return compare(left.getKey(), right.getKey());
 }
 
@@ -137,7 +151,8 @@ inline int compare(
 template<class KEY, class VALUE>
 FormatOutputStream& operator<<(
   FormatOutputStream& stream,
-  const Association<KEY, VALUE>& value) throw(IOException) {
+  const Association<KEY, VALUE>& value) throw(IOException)
+{
   return stream << '[' << value.getKey() << ']' << '=' << value.getValue();
 }
 

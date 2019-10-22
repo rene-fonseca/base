@@ -7,7 +7,7 @@ pool:
 steps:
 - task: CMake@1
   inputs:
-    cmakeArgs: '..'
+    cmakeArgs: '.. --config Debug'
 
 - task: CMake@1
   inputs:
@@ -17,4 +17,4 @@ steps:
   inputs:
     artifact: base
     targetPath: '$(Pipeline.Workspace)'
-    path: ./install
+    path: $(System.DefaultWorkingDirectory)/build/install

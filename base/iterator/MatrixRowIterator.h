@@ -44,38 +44,44 @@ public:
   private:
     
     ElementIterator iterator;
-    Element(const Element& copy) throw();
-    Element& operator=(const Element& eq) throw();
+    Element(const Element& copy) noexcept;
+    Element& operator=(const Element& eq) noexcept;
     
-    inline Element(const ElementIterator& _iterator) throw()
-      : iterator(_iterator) {
+    inline Element(const ElementIterator& _iterator) noexcept
+      : iterator(_iterator)
+    {
     }
   public:
     
-    inline Element& operator=(Value value) throw() {
+    inline Element& operator=(const Value& value) noexcept
+    {
       *iterator = value;
       return *this;
     }
     
-    inline operator ElementIterator() const throw() {
+    inline operator ElementIterator() const noexcept
+    {
       return iterator;
     }
     
-    inline operator Value() const throw() {
+    inline operator const Value&() const noexcept
+    {
       return *iterator;
     }
   };
   
   
   
-  inline MatrixRowIterator(Pointer element, unsigned int columns) throw()
-    : InterleavedIterator<TRAITS>(element, columns) {
+  inline MatrixRowIterator(Pointer element, unsigned int columns) noexcept
+    : InterleavedIterator<TRAITS>(element, columns)
+  {
   }
 
   /**
     Prefix increment.
   */
-  inline MatrixRowIterator& operator++() throw() {
+  inline MatrixRowIterator& operator++() noexcept
+  {
     InterleavedIterator<TRAITS>::element += InterleavedIterator<TRAITS>::step;
     return *this;
   }
@@ -83,7 +89,8 @@ public:
   /**
     Postfix decrement.
   */
-  inline MatrixRowIterator operator++(int) throw() {
+  inline MatrixRowIterator operator++(int) noexcept
+  {
     MatrixRowIterator result(*this);
     InterleavedIterator<TRAITS>::element += InterleavedIterator<TRAITS>::step;
     return result;
@@ -92,7 +99,8 @@ public:
   /**
     Prefix decrement.
   */
-  inline MatrixRowIterator& operator--() throw() {
+  inline MatrixRowIterator& operator--() noexcept
+  {
     InterleavedIterator<TRAITS>::element -= InterleavedIterator<TRAITS>::step;
     return *this;
   }
@@ -100,7 +108,8 @@ public:
   /**
     Postfix decrement.
   */
-  inline MatrixRowIterator operator--(int) throw() {
+  inline MatrixRowIterator operator--(int) noexcept
+  {
     MatrixRowIterator result(*this);
     InterleavedIterator<TRAITS>::element -= InterleavedIterator<TRAITS>::step;
     return result;
@@ -109,7 +118,8 @@ public:
   /**
     Move the specified distance forward.
   */
-  inline MatrixRowIterator& operator+=(Distance distance) throw() {
+  inline MatrixRowIterator& operator+=(Distance distance) noexcept
+  {
     InterleavedIterator<TRAITS>::element += InterleavedIterator<TRAITS>::step * distance;
     return *this;
   }
@@ -117,32 +127,38 @@ public:
   /**
     Move the specified distance backwards.
   */
-  inline MatrixRowIterator& operator-=(Distance distance) throw() {
+  inline MatrixRowIterator& operator-=(Distance distance) noexcept
+  {
     InterleavedIterator<TRAITS>::element -= InterleavedIterator<TRAITS>::step * distance;
     return *this;
   }
   
-  inline ElementIterator getFirst() const throw() {
+  inline ElementIterator getFirst() const noexcept
+  {
     return ElementIterator(InterleavedIterator<TRAITS>::element);
   }
 
-  inline ElementIterator getEnd() const throw() {
+  inline ElementIterator getEnd() const noexcept
+  {
     return ElementIterator(InterleavedIterator<TRAITS>::element + InterleavedIterator<TRAITS>::step);
   }
 
-  inline Element operator[](unsigned int index) const throw() {
+  inline Element operator[](unsigned int index) const noexcept
+  {
     return Element(ElementIterator(InterleavedIterator<TRAITS>::element + index));
   }
 };
 
 template<class TRAITS>
-inline MatrixRowIterator<TRAITS> operator+(const MatrixRowIterator<TRAITS>& left, int right) throw() {
+inline MatrixRowIterator<TRAITS> operator+(const MatrixRowIterator<TRAITS>& left, int right) noexcept
+{
   MatrixRowIterator<TRAITS> result(left);
   return result += right;
 }
 
 template<class TRAITS>
-inline MatrixRowIterator<TRAITS> operator-(const MatrixRowIterator<TRAITS>& left, int right) throw() {
+inline MatrixRowIterator<TRAITS> operator-(const MatrixRowIterator<TRAITS>& left, int right) noexcept
+{
   MatrixRowIterator<TRAITS> result(left);
   return result -= right;
 }

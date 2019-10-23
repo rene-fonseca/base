@@ -333,7 +333,7 @@ MODULE_REGISTER_EXPLICIT(THIS_MODULE, "com.microsoft", "C++Runtime", "16", "http
 
 // TAG: add service url for this module - which gets asked by default - before urls for individual modules
 
-#if defined(_COM_AZURE_DEV__BASE__TESTS)
+#if 0 && defined(_COM_AZURE_DEV__BASE__TESTS)
 
 class TEST_CLASS(ModuleManager) : public UnitTest {
 public:

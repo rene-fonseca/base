@@ -304,7 +304,7 @@ Reference<UnitTest::Run> UnitTest::runImpl()
   if (manager.getVerbosity() > UnitTestManager::SILENT) {
     if (UnitTestManager::getManager().getUseANSIColors()) {
       fout << setForeground(
-        (r->failed || (pointsReached != pointsReach) || (pointsNotReached != pointsNotReach)) ? ANSIEscapeSequence::RED : ANSIEscapeSequence::BLUE
+        (r->failed || (pointsReached != pointsReach) || (pointsNotReached != pointsNotReach)) ? ANSIEscapeSequence::RED : ANSIEscapeSequence::GREEN
       );
     }
     

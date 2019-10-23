@@ -4,6 +4,7 @@ Debug/
 Release/
 base.build/
 *.xcodeproj/
+*.code-workspace
 CMakeFiles/
 CMakeScripts/
 CMakeCache.txt

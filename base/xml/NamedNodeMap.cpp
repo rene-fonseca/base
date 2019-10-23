@@ -14,6 +14,8 @@
 #include <base/platforms/features.h>
 #include <base/xml/NamedNodeMap.h>
 
+_COM_AZURE_DEV__BASE__DUMMY_SYMBOL
+
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

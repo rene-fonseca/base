@@ -11,6 +11,10 @@
     For the licensing terms refer to the file 'LICENSE'.
  ***************************************************************************/
 
+#include <base/features.h>
+
+_COM_AZURE_DEV__BASE__DUMMY_SYMBOL
+
 #if defined(_COM_AZURE_DEV__BASE__ALLOW_GLX)
 
 #include <base/platforms/features.h>

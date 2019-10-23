@@ -522,7 +522,7 @@ bool UnitTestManager::runTests(const String& pattern)
 
   fout << EOL << "===============================================================================" << EOL;
   if (UnitTestManager::getManager().getUseANSIColors()) {
-    fout << setForeground(ANSIEscapeSequence::GREEN) << Format::subst("TOTAL PASSED: %1/%2", passed, count) << normal() << ENDL;
+    fout << setForeground((passed == count) ? ANSIEscapeSequence::GREEN : ANSIEscapeSequence::RED) << Format::subst("TOTAL PASSED: %1/%2", passed, count) << normal() << ENDL;
   } else {
     fout << Format::subst("TOTAL PASSED: %1/%2", passed, count) << ENDL;
   }

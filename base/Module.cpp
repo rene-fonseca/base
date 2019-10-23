@@ -291,7 +291,7 @@ ModuleManager::RegisterEntry::~RegisterEntry()
       node->entry();
     }
 #endif
-    node->entry = nullptr; // prevent access of string literal in unloaded memory
+    node->entry = nullptr; // prevent access of unloaded memory
   }
 }
 

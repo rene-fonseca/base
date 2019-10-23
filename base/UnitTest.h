@@ -388,6 +388,7 @@ public:
 
   /** Internal test registration helper. */
   class _COM_AZURE_DEV__BASE__API RegisterEntry {
+    friend class UnitTestManager;
   public:
 
     typedef void (*Entry)();
@@ -399,11 +400,17 @@ public:
       bool loaded; // indicates that test has been registered
     };
 
+    EntryNode* node = nullptr;
+  private:
+
     /** The last test registered. This is a pointer so it is always ready for use during global initialization. */
     static EntryNode* nodes;
+  public:
 
     /** Records test for delayed registration. */
     RegisterEntry(EntryNode* entry);
+
+    ~RegisterEntry();
   };
 };
 

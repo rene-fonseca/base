@@ -531,7 +531,8 @@ bool UnitTestManager::runTests(const String& pattern)
   return !failed;
 }
 
-UnitTestManager::RegisterEntry::RegisterEntry(EntryNode* node)
+UnitTestManager::RegisterEntry::RegisterEntry(EntryNode* _node)
+  : node(_node)
 {
   if (node) {
     static unsigned int numberOfTests = 0;
@@ -539,6 +540,16 @@ UnitTestManager::RegisterEntry::RegisterEntry(EntryNode* node)
     node->next = previous;
     nodes = node;
     ++numberOfTests;
+  }
+}
+
+UnitTestManager::RegisterEntry::~RegisterEntry()
+{
+  if (node) {
+    node->entry = nullptr; // prevent access of unloaded memory
+    // TAG: if already loaded we will have a problem
+    ASSERT(!node->loaded && !"Unloading module which has registered test");
+    // TAG: find module and disable
   }
 }
 

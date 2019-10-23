@@ -31,7 +31,7 @@ public:
   /**
     Initializes the exception object with no message.
   */
-  inline RMIException() throw() {
+  inline RMIException() noexcept {
   }
   
   /**
@@ -39,7 +39,7 @@ public:
 
     @param message The message.
   */
-  inline RMIException(const char* message) throw() : Exception(message) {
+  inline RMIException(const char* message) noexcept : Exception(message) {
   }
   
   /**
@@ -47,7 +47,7 @@ public:
     
     @param type The identity of the type.
   */
-  inline RMIException(Type type) throw() : Exception(type) {
+  inline RMIException(Type type) noexcept : Exception(type) {
   }
   
   /**
@@ -56,7 +56,7 @@ public:
     @param message An NULL-terminated string (ASCII).
     @param type The identity of the type.
   */
-  inline RMIException(const char* message, Type type) throw()
+  inline RMIException(const char* message, Type type) noexcept
     : Exception(message, type){
   }
 };

@@ -801,7 +801,9 @@ void MyThread::run()
   parent->runFromThread();
 }
 
-REGISTER_TEST(Thread);
+TEST_REGISTER(Thread);
+TEST_DEPENDENCY(Thread, AtomicCounter);
+TEST_DEPENDENCY(Thread, MutualExclusion);
 
 #endif
 

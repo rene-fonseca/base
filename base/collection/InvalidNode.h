@@ -31,7 +31,8 @@ public:
   /**
     Initializes the exception object with no message.
   */
-  inline InvalidNode() throw() {
+  inline InvalidNode() noexcept
+  {
   }
 
   /**
@@ -39,7 +40,8 @@ public:
 
     @param message The message.
   */
-  inline InvalidNode(const char* message) noexcept : Exception(message) {
+  inline InvalidNode(const char* message) noexcept
+    : Exception(message) {
   }
   
   /**
@@ -47,7 +49,9 @@ public:
     
     @param type The identity of the type.
   */
-  inline InvalidNode(Type type) noexcept : Exception(type) {
+  inline InvalidNode(Type type) noexcept
+    : Exception(type)
+  {
   }
   
   /**
@@ -57,7 +61,8 @@ public:
     @param type The identity of the type.
   */
   inline InvalidNode(const char* message, Type type) noexcept
-    : Exception(message, type) {
+    : Exception(message, type)
+  {
   }
 };
 

@@ -965,7 +965,7 @@ public:
   }
 };
 
-REGISTER_TEST(String);
+TEST_REGISTER(String);
 
 #endif
 

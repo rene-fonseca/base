@@ -31,7 +31,8 @@ public:
   /**
     Initializes the exception object with no message.
   */
-  inline LockException() throw() {
+  inline LockException() noexcept
+  {
   }
 
   /**
@@ -39,7 +40,9 @@ public:
 
     @param message The message.
   */
-  inline LockException(const char* message) throw() : Exception(message) {
+  inline LockException(const char* message) noexcept
+    : Exception(message)
+  {
   }
 
   /**
@@ -47,7 +50,9 @@ public:
     
     @param type The identity of the type.
   */
-  inline LockException(Type type) throw() : Exception(type) {
+  inline LockException(Type type) noexcept
+    : Exception(type)
+  {
   }
   
   /**
@@ -56,8 +61,9 @@ public:
     @param message An NULL-terminated string (ASCII).
     @param type The identity of the type.
   */
-  inline LockException(const char* message, Type type) throw()
-    : Exception(message, type) {
+  inline LockException(const char* message, Type type) noexcept
+    : Exception(message, type)
+  {
   }
 };
 

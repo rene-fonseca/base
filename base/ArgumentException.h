@@ -47,7 +47,7 @@ public:
   /**
     Initializes the exception object with no message.
   */
-  inline ArgumentException() throw() {
+  inline ArgumentException() noexcept {
   }
 
   /**
@@ -55,7 +55,7 @@ public:
 
     @param message The message.
   */
-  inline ArgumentException(const char* message) throw()
+  inline ArgumentException(const char* message) noexcept
     : Exception(message) {
   }
 
@@ -64,7 +64,7 @@ public:
     
     @param type The identity of the type.
   */
-  inline ArgumentException(Type type) throw()
+  inline ArgumentException(Type type) noexcept
     : Exception(type) {
   }
   
@@ -74,14 +74,14 @@ public:
     @param message An NULL-terminated string (ASCII).
     @param type The identity of the type.
   */
-  inline ArgumentException(const char* message, Type type) throw()
+  inline ArgumentException(const char* message, Type type) noexcept
     : Exception(message, type) {
   }
 
   /**
     Returns the argument number. Negative if invalid.
   */
-  inline int getArgumentNumber() const throw() {
+  inline int getArgumentNumber() const noexcept {
     return argumentNumber;
   }
 };

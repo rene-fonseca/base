@@ -83,7 +83,7 @@ public:
   }
 };
 
-REGISTER_TEST(SpinLock);
+TEST_REGISTER(SpinLock);
 
 #endif
 

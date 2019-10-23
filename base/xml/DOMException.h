@@ -50,13 +50,13 @@ public:
   /**
     Initializes the exception with no message.
   */
-  inline DOMException() throw() {
+  inline DOMException() noexcept {
   }
 
   /**
     Initializes the exception with the specified message.
   */
-  inline DOMException(const char* message) throw() : Exception(message) {
+  inline DOMException(const char* message) noexcept : Exception(message) {
   }
   
   /**
@@ -64,7 +64,7 @@ public:
     
     @param type The identity of the type.
   */
-  inline DOMException(Type type) throw() : Exception(type) {
+  inline DOMException(Type type) noexcept : Exception(type) {
   }
   
   /**
@@ -73,7 +73,7 @@ public:
     @param message An NULL-terminated string (ASCII).
     @param type The identity of the type.
   */
-  inline DOMException(const char* message, Type type) throw()
+  inline DOMException(const char* message, Type type) noexcept
     : Exception(message, type) {
   }
 };

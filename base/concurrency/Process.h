@@ -37,11 +37,32 @@ public:
   static const unsigned long INVALID = PrimitiveTraits<unsigned long>::MAXIMUM;
 
   /* Structure holding the user and system times. */
-  struct Times {
+  class _COM_AZURE_DEV__BASE__API Times {
+  public:
+
     /** The user mode time in nanoseconds. */
     uint64 user = 0;
     /** The system mode time in nanoseconds. */
     uint64 system = 0;
+
+    inline Times() noexcept {
+    }
+
+    inline Times(uint64 _user, uint64 _system) noexcept
+      : user(_user), system(_system) {
+    }
+
+    /** Returns the total processing time in nanoseconds. */
+    inline uint64 getTotal() const noexcept
+    {
+      return user + system;
+    }
+
+    /** Returns the total processing time in microseconds. */
+    inline uint64 getTotal_US() const noexcept
+    {
+      return (user + system + 500) / 1000;
+    }
   };
 
   /**
@@ -263,10 +284,24 @@ public:
 };
 
 inline Process::Process(unsigned long _id) throw()
-  : id(_id), handle(ProcessHandle::invalid) {
+  : id(_id),
+    handle(ProcessHandle::invalid)
+{
 }
 
 _COM_AZURE_DEV__BASE__API FormatOutputStream& operator<<(
   FormatOutputStream& stream, const Process::Layout& value) throw(IOException);
+
+/** Add resource times. */
+inline Process::Times operator+(const Process::Times& a, const Process::Times& b) noexcept
+{
+  return Process::Times(a.user + b.user, a.system + b.system);
+}
+
+/** Subtract resource times. */
+inline Process::Times operator-(const Process::Times& a, const Process::Times& b) noexcept
+{
+  return Process::Times(a.user - b.user, a.system - b.system);
+}
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

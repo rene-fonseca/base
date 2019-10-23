@@ -32,7 +32,7 @@ public:
   /**
     Initializes the exception object with no message.
   */
-  inline InvalidKey() throw() {
+  inline InvalidKey() noexcept {
   }
   
   /**
@@ -40,7 +40,9 @@ public:
     
     @param message The message.
   */
-  inline InvalidKey(const char* message) throw() : Exception(message) {
+  inline InvalidKey(const char* message) noexcept
+    : Exception(message)
+  {
   }
   
   /**
@@ -48,7 +50,8 @@ public:
     
     @param type The identity of the type.
   */
-  inline InvalidKey(Type type) throw() : Exception(type) {
+  inline InvalidKey(Type type) noexcept
+    : Exception(type) {
   }
   
   /**
@@ -57,8 +60,9 @@ public:
     @param message An NULL-terminated string (ASCII).
     @param type The identity of the type.
   */
-  inline InvalidKey(const char* message, Type type) throw()
-    : Exception(message, type) {
+  inline InvalidKey(const char* message, Type type) noexcept
+    : Exception(message, type)
+  {
   }
 };
 

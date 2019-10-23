@@ -11,4 +11,10 @@ steps:
 
 - task: CMake@1
   inputs:
-    cmakeArgs: '--build . --config Debug'
+    cmakeArgs: '--build . --config Debug --target install'
+
+- task: PublishPipelineArtifact@1
+  inputs:
+    artifactName: 'base'
+    targetPath: 'artifacts'
+    path: $(System.DefaultWorkingDirectory)/build/install

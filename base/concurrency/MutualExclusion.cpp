@@ -137,7 +137,7 @@ public:
   }
 };
 
-REGISTER_TEST(MutualExclusion);
+TEST_REGISTER(MutualExclusion);
 
 #endif
 

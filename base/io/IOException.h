@@ -42,7 +42,7 @@ public:
   /**
     Initializes the exception object with no message.
   */
-  inline IOException() throw() {
+  inline IOException() noexcept {
   }
 
   /**
@@ -50,7 +50,7 @@ public:
 
     @param message The message.
   */
-  inline IOException(const char* message) throw() : Exception(message) {
+  inline IOException(const char* message) noexcept : Exception(message) {
   }
   
   /**
@@ -58,7 +58,7 @@ public:
     
     @param type The identity of the type.
   */
-  inline IOException(Type type) throw() : Exception(type) {
+  inline IOException(Type type) noexcept : Exception(type) {
   }
   
   /**
@@ -67,7 +67,7 @@ public:
     @param message An NULL-terminated string (ASCII).
     @param type The identity of the type.
   */
-  inline IOException(const char* message, Type type) throw()
+  inline IOException(const char* message, Type type) noexcept
     : Exception(message, type) {
   }
 };

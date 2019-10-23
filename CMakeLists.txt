@@ -165,6 +165,13 @@ target_compile_definitions(base PRIVATE _COM_AZURE_DEV__BASE__SHARED_LIBRARY_BUI
 
 # find_package(OpenCL REQUIRED)
 
+if (0)
+target_include_directories(base PUBLIC  
+  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>  
+  $<INSTALL_INTERFACE:include> # <prefix>/include/base
+)
+endif ()
+
 if (MSVC)
   target_link_libraries(base Ws2_32 Netapi32 Winmm)
 elseif (UNIX AND NOT APPLE)
@@ -181,15 +188,6 @@ set_target_properties(base
 
 add_library(base_STATIC STATIC ${base_SRC} ${CMAKE_CURRENT_BINARY_DIR}/generated/base/config.h)
 set_target_properties(base_STATIC PROPERTIES OUTPUT_NAME base_static)
-
-# avoid no symbols warnings
-if (APPLE)
-  set(CMAKE_CXX_ARCHIVE_CREATE "<CMAKE_AR> Scr <TARGET> <LINK_FLAGS> <OBJECTS>")
-  set(CMAKE_CXX_ARCHIVE_FINISH "<CMAKE_RANLIB> -no_warning_for_no_symbols -c <TARGET>")
-  # TAG: cannot get rid of no symbols during install
-  #set(CMAKE_C_ARCHIVE_CREATE "<CMAKE_AR> Scr <TARGET> <LINK_FLAGS> <OBJECTS>")
-  #set(CMAKE_C_ARCHIVE_FINISH "<CMAKE_RANLIB> -no_warning_for_no_symbols -c <TARGET>")
-endif ()
 
 #set_target_properties(base base_STATIC
 #  PROPERTIES
@@ -217,6 +215,10 @@ install(
 )
 
 install(TARGETS base base_STATIC
+  EXPORT baseConfig
+)
+
+install(TARGETS base base_STATIC
   CONFIGURATIONS Debug
   ARCHIVE DESTINATION "${CMAKE_BINARY_DIR}/install/lib/debug"
   LIBRARY DESTINATION "${CMAKE_BINARY_DIR}/install/lib/debug"
@@ -229,6 +231,17 @@ install(TARGETS base base_STATIC
   LIBRARY DESTINATION "${CMAKE_BINARY_DIR}/install/lib/release"
   RUNTIME DESTINATION "${CMAKE_BINARY_DIR}/install/bin/release"
 )
+
+export(TARGETS base base_STATIC
+  NAMESPACE base::
+  FILE "${CMAKE_CURRENT_BINARY_DIR}/baseConfig.cmake"
+)
+
+install(EXPORT baseConfig
+  DESTINATION "${CMAKE_BINARY_DIR}/install/lib/cmake/base"
+  NAMESPACE base::
+)
+
 # PUBLIC_HEADER DESTINATION "${CMAKE_BINARY_DIR}/inc"
 
 #install(

@@ -546,6 +546,7 @@ UnitTestManager::RegisterEntry::RegisterEntry(EntryNode* _node)
 UnitTestManager::RegisterEntry::~RegisterEntry()
 {
   if (node) {
+    // TAG: we need to pull out from linked list also!
     node->entry = nullptr; // prevent access of unloaded memory
     // TAG: if already loaded we will have a problem
     ASSERT(!node->loaded && !"Unloading module which has registered test");

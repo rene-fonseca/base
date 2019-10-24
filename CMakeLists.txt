@@ -257,3 +257,6 @@ endif ()
 #)
 
 add_subdirectory("testsuite")
+
+enable_testing()
+

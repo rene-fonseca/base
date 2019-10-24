@@ -13,12 +13,19 @@ pool:
 
 steps:
 - task: CMake@1
+  displayName: 'Config'
   inputs:
     cmakeArgs: '..'
 
 - task: CMake@1
+  displayName: 'Build'
   inputs:
     cmakeArgs: '--build . --config Debug --target install'
+
+- task: CMake@1
+  displayName: 'Run tests'
+  inputs:
+    cmakeArgs: '--build . --config Debug --target test'
 
 - task: PublishPipelineArtifact@1
   inputs:

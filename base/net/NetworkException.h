@@ -56,7 +56,7 @@ public:
   /**
     Initializes the exception object with no message.
   */
-  inline NetworkException() throw() {
+  inline NetworkException() noexcept {
   }
 
   /**
@@ -64,7 +64,7 @@ public:
 
     @param message The message.
   */
-  inline NetworkException(const char* message) throw() : IOException(message) {
+  inline NetworkException(const char* message) noexcept : IOException(message) {
   }
   
   /**
@@ -72,7 +72,7 @@ public:
     
     @param type The identity of the type.
   */
-  inline NetworkException(Type type) throw() : IOException(type) {
+  inline NetworkException(Type type) noexcept : IOException(type) {
   }
   
   /**
@@ -81,7 +81,7 @@ public:
     @param message An NULL-terminated string (ASCII).
     @param type The identity of the type.
   */
-  inline NetworkException(const char* message, Type type) throw()
+  inline NetworkException(const char* message, Type type) noexcept
     : IOException(message, type) {
   }
 };

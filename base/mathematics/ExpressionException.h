@@ -37,14 +37,14 @@ public:
   /**
     Initializes the exception with no message.
   */
-  ExpressionException() throw();
+  ExpressionException() noexcept;
 
   /**
     Initializes the exception with the specified message.
 
     @param message The message.
   */
-  ExpressionException(const char* message) throw();
+  ExpressionException(const char* message) noexcept;
 
   /**
     Initializes the exception with the specified index and message.
@@ -52,14 +52,14 @@ public:
     @param index The index of the error.
     @param message The message.
   */
-  ExpressionException(unsigned int index, const char* message) throw();
+  ExpressionException(unsigned int index, const char* message) noexcept;
 
   /**
     Initializes the exception object without an associated message.
     
     @param type The identity of the type.
   */
-  inline ExpressionException(Type type) throw() : Exception(type) {
+  inline ExpressionException(Type type) noexcept : Exception(type) {
   }
   
   /**
@@ -68,14 +68,14 @@ public:
     @param message An NULL-terminated string (ASCII).
     @param type The identity of the type.
   */
-  inline ExpressionException(const char* message, Type type) throw()
+  inline ExpressionException(const char* message, Type type) noexcept
     : Exception(message, type) {
   }
   
   /**
     Returns the index of the error in the expression representation.
   */
-  inline unsigned int getIndex() const throw() {
+  inline unsigned int getIndex() const noexcept {
     return index;
   }
 };

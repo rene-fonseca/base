@@ -36,7 +36,7 @@ public:
   /**
     Initializes the exception object with no message.
   */
-  inline ObjectModelException() throw() {
+  inline ObjectModelException() noexcept {
   }
 
   /**
@@ -44,7 +44,7 @@ public:
 
     @param message The message.
   */
-  inline ObjectModelException(const char* message) throw() : Exception(message) {
+  inline ObjectModelException(const char* message) noexcept : Exception(message) {
   }
 };
 
@@ -250,8 +250,8 @@ public:
       Array& array;
       MemorySize index = 0;
 
-      Element(const Element& copy) throw();
-      Element& operator=(const Element& eq) throw();
+      Element(const Element& copy) noexcept;
+      Element& operator=(const Element& eq) noexcept;
     public:
 
       inline Element(Array& _array, MemorySize _index) : array(_array), index(_index)
@@ -367,8 +367,8 @@ public:
       Object& object;
       Reference<String> key;
 
-      Element(const Element& copy) throw();
-      Element& operator=(const Element& eq) throw();
+      Element(const Element& copy) noexcept;
+      Element& operator=(const Element& eq) noexcept;
     public:
 
       inline Element(Object& _object, const Reference<String>& _key) : object(_object), key(_key)

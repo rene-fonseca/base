@@ -31,7 +31,7 @@ public:
   /**
     Initializes the exception object with no message.
   */
-  inline MemoryCorruption() throw() {
+  inline MemoryCorruption() noexcept {
   }
   
   /**
@@ -39,7 +39,7 @@ public:
 
     @param message The message.
   */
-  inline MemoryCorruption(const char* message) throw()
+  inline MemoryCorruption(const char* message) noexcept
     : MemoryException(message) {
   }
   
@@ -48,7 +48,7 @@ public:
     
     @param type The identity of the type.
   */
-  inline MemoryCorruption(Type type) throw() : MemoryException(type) {
+  inline MemoryCorruption(Type type) noexcept : MemoryException(type) {
   }
   
   /**
@@ -57,7 +57,7 @@ public:
     @param message An NULL-terminated string (ASCII).
     @param type The identity of the type.
   */
-  inline MemoryCorruption(const char* message, Type type) throw()
+  inline MemoryCorruption(const char* message, Type type) noexcept
     : MemoryException(message, type) {
   }
 };

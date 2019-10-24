@@ -15,17 +15,19 @@
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
-ExpressionException::ExpressionException() throw() : index(0) {
+ExpressionException::ExpressionException() noexcept
+ : index(0) {
 }
 
-ExpressionException::ExpressionException(const char* message) throw()
+ExpressionException::ExpressionException(const char* message) noexcept
   : Exception(message), index(0) {
 }
 
 ExpressionException::ExpressionException(
   unsigned int _index,
-  const char* message) throw()
-  : Exception(message), index(_index) {
+  const char* message) noexcept
+  : Exception(message), index(_index)
+{
 }
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

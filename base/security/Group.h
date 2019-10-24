@@ -55,7 +55,7 @@ public:
     /**
       Initializes the exception object with no message.
     */
-    inline GroupException() throw() {
+    inline GroupException() noexcept {
     }
 
     /**
@@ -63,7 +63,7 @@ public:
 
       @param message The message.
     */
-    inline GroupException(const char* message) throw() : Exception(message) {
+    inline GroupException(const char* message) noexcept : Exception(message) {
     }
 
     /**
@@ -71,7 +71,7 @@ public:
 
       @param type The identity of the type.
     */
-    inline GroupException(Type type) throw() : Exception(type) {
+    inline GroupException(Type type) noexcept : Exception(type) {
     }
 
     /**
@@ -80,7 +80,7 @@ public:
       @param message An NULL-terminated string (ASCII).
       @param type The identity of the type.
     */
-    inline GroupException(const char* message, Type type) throw()
+    inline GroupException(const char* message, Type type) noexcept
       : Exception(message, type) {
     }
   };
@@ -88,7 +88,7 @@ public:
   /**
     Initializes group as invalid.
   */
-  inline Group() throw() {
+  inline Group() noexcept {
   }
   
   /**
@@ -108,12 +108,12 @@ public:
   /**
     Initializes group from other group.
   */
-  Group(const Group& copy) throw();
+  Group(const Group& copy) noexcept;
   
   /**
     Assignment of group by group.
   */
-  Group& operator=(const Group& eq) throw();
+  Group& operator=(const Group& eq) noexcept;
   
   /**
     Initializes the group by name.
@@ -126,13 +126,13 @@ public:
     Returns true if the groups are identical. The method returns true if both
     users are invalid.
   */
-  bool operator==(const Group& eq) const throw();
+  bool operator==(const Group& eq) const noexcept;
   
   /**
     Returns false if the groups are not identical. The method returns false if
     both groups are invalid.
   */
-  inline bool operator!=(const Group& eq) const throw() {
+  inline bool operator!=(const Group& eq) const noexcept {
     return !(*this == eq);
   }
 
@@ -145,21 +145,21 @@ public:
     Returns true if the group is initialized. This does not mean that the group
     exists.
   */
-  inline bool isValid() const throw() {
+  inline bool isValid() const noexcept {
     return integralId != INVALID;
   }
 
   /**
     Returns the id of the group.
   */
-  inline const void* getId() const throw() {
+  inline const void* getId() const noexcept {
     return id.isValid() ? id->getElements() : nullptr;
   }
 
   /**
     Returns the integral id of the group.
   */
-  inline unsigned long getIntegralId() const throw() {
+  inline unsigned long getIntegralId() const noexcept {
     return integralId;
   }
   
@@ -183,7 +183,7 @@ template<>
 class _COM_AZURE_DEV__BASE__API Hash<Group> {
 public:
   
-  unsigned long operator()(const Group& value) throw();
+  unsigned long operator()(const Group& value) noexcept;
 };
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

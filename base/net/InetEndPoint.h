@@ -39,7 +39,7 @@ public:
   /**
     Initializes default end point.
   */
-  InetEndPoint() throw();
+  InetEndPoint() noexcept;
 
   /**
     Initializes the end point from the specified address and port.
@@ -47,7 +47,7 @@ public:
     @param address The address.
     @param port The port.
   */
-  InetEndPoint(const InetAddress& address, unsigned short port) throw();
+  InetEndPoint(const InetAddress& address, unsigned short port) noexcept;
 
   /**
     Initializes the end point from the specified address and service.
@@ -55,7 +55,7 @@ public:
     @param address The address.
     @param service The service.
   */
-  InetEndPoint(const InetAddress& address, const InetService& service) throw();
+  InetEndPoint(const InetAddress& address, const InetService& service) noexcept;
 
   /**
     Initializes the end point from the specified address and service.
@@ -78,55 +78,55 @@ public:
   /**
     Initialize object from other object.
   */
-  InetEndPoint(const InetEndPoint& copy) throw();
+  InetEndPoint(const InetEndPoint& copy) noexcept;
 
   /**
     Default assignment.
   */
-  InetEndPoint& operator=(const InetEndPoint& eq) throw();
+  InetEndPoint& operator=(const InetEndPoint& eq) noexcept;
 
   /**
     Returns true if the end point are equal.
   */
-  inline bool operator==(const InetEndPoint& eq) const throw() {
+  inline bool operator==(const InetEndPoint& eq) const noexcept {
     return (port == eq.port) && (address == eq.address);
   }
   
   /**
     Returns true if the end point are non-equal.
   */
-  inline bool operator!=(const InetEndPoint& eq) const throw() {
+  inline bool operator!=(const InetEndPoint& eq) const noexcept {
     return (port != eq.port) || (address != eq.address);
   }
   
   /**
     Returns the address.
   */
-  inline const InetAddress& getAddress() const throw() {
+  inline const InetAddress& getAddress() const noexcept {
     return address;
   }
 
   /**
     Returns the port.
   */
-  inline unsigned short getPort() const throw() {
+  inline unsigned short getPort() const noexcept {
     return port;
   }
 
   /**
     Returns the port converted to service.
   */
-  InetService getService() const throw();
+  InetService getService() const noexcept;
 
   /**
     Sets the address.
   */
-  void setAddress(const InetAddress& value) throw();
+  void setAddress(const InetAddress& value) noexcept;
 
   /**
     Sets the port.
   */
-  void setPort(unsigned short value) throw();
+  void setPort(unsigned short value) noexcept;
 };
 
 /**
@@ -140,7 +140,7 @@ template<>
 class Hash<InetEndPoint> {
 public:
   
-  inline unsigned long operator()(const InetEndPoint& value) throw() {
+  inline unsigned long operator()(const InetEndPoint& value) noexcept {
     return Hash<InetAddress>()(value.getAddress()) * 31 + value.getPort();
   }
 };

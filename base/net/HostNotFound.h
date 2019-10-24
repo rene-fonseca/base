@@ -31,7 +31,7 @@ public:
   /**
     Initializes the exception object with no message.
   */
-  inline HostNotFound() throw() {
+  inline HostNotFound() noexcept {
   }
 
   /**
@@ -39,7 +39,7 @@ public:
 
     @param message The message.
   */
-  inline HostNotFound(const char* message) throw() : NetworkException(message) {
+  inline HostNotFound(const char* message) noexcept : NetworkException(message) {
   }
 
   /**
@@ -47,7 +47,7 @@ public:
     
     @param type The identity of the type.
   */
-  inline HostNotFound(Type type) throw() : NetworkException(type) {
+  inline HostNotFound(Type type) noexcept : NetworkException(type) {
   }
   
   /**
@@ -56,7 +56,7 @@ public:
     @param message An NULL-terminated string (ASCII).
     @param type The identity of the type.
   */
-  inline HostNotFound(const char* message, Type type) throw()
+  inline HostNotFound(const char* message, Type type) noexcept
     : NetworkException(message, type) {
   }
 };

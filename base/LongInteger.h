@@ -67,7 +67,7 @@ public:
   /**
     Initializes the long integer as zero.
   */
-  inline LongInteger() throw() {
+  inline LongInteger() noexcept {
   }
   
   /**
@@ -75,7 +75,7 @@ public:
 
     @param value The desired value.
   */
-  LongInteger(long long value) throw();
+  LongInteger(long long value) noexcept;
   
   /**
     Initializes long integer from string.
@@ -89,13 +89,13 @@ public:
   /**
     Initializes integer by copying from other integer.
   */
-  inline LongInteger(const LongInteger& copy) throw() : value(copy.value) {
+  inline LongInteger(const LongInteger& copy) noexcept : value(copy.value) {
   }
   
   /**
     Assignment of integer to this integer.
   */
-  inline LongInteger& operator=(const LongInteger& eq) throw() {
+  inline LongInteger& operator=(const LongInteger& eq) noexcept {
     value = eq.value;
     return *this;
   }
@@ -103,7 +103,7 @@ public:
   /**
     Gets the value of the integer.
   */
-  inline long long getValue() const throw() {
+  inline long long getValue() const noexcept {
     return value;
   }
 
@@ -112,19 +112,19 @@ public:
 
     @param value The desired value.
   */
-  inline void setValue(long long value) throw() {
+  inline void setValue(long long value) noexcept {
     this->value = value;
   }
 
   /**
     Casts integer to native type.
   */
-  inline operator long long() const throw() {
+  inline operator long long() const noexcept {
     return value;
   }
 };
 
-inline LongInteger::LongInteger(long long _value) throw() : value(_value) {
+inline LongInteger::LongInteger(long long _value) noexcept : value(_value) {
 }
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

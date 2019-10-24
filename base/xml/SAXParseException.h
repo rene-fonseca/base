@@ -56,13 +56,13 @@ public:
   /**
     Initializes the exception with no message.
   */
-  inline SAXParseException() throw() {
+  inline SAXParseException() noexcept {
   }
 
   /**
     Initializes the exception with the specified message.
   */
-  inline SAXParseException(const char* message) throw()
+  inline SAXParseException(const char* message) noexcept
     : SAXException(message) {
   }
   
@@ -71,7 +71,7 @@ public:
     
     @param type The identity of the type.
   */
-  inline SAXParseException(Type type) throw()
+  inline SAXParseException(Type type) noexcept
     : SAXException(type) {
   }
   
@@ -81,7 +81,7 @@ public:
     @param message An NULL-terminated string (ASCII).
     @param type The identity of the type.
   */
-  inline SAXParseException(const char* message, Type type) throw()
+  inline SAXParseException(const char* message, Type type) noexcept
     : SAXException(message, type) {
   }
   
@@ -103,7 +103,7 @@ public:
     String _publicId,
     String _systemId,
     unsigned int _line,
-    unsigned int _column) throw()
+    unsigned int _column) noexcept
     : SAXException(message, type),
       publicId(_publicId),
       systemId(_systemId),
@@ -114,32 +114,32 @@ public:
   /**
     Returns the line number.
   */
-  inline unsigned int getLine() const throw() {
+  inline unsigned int getLine() const noexcept {
     return line;
   }
 
   /**
     Returns the column number.
   */
-  inline unsigned int getColumn() const throw() {
+  inline unsigned int getColumn() const noexcept {
     return column;
   }
   
   /**
     Returns the public identifier of the entity where the exception occurred.
   */
-  inline const String& getPublicId() const throw() {
+  inline const String& getPublicId() const noexcept {
     return publicId;
   }
   
   /**
     Returns the system identifier of the entity where the exception occurred.
   */
-  inline const String& getSystemId() const throw() {
+  inline const String& getSystemId() const noexcept {
     return systemId;
   }
 
-  inline ~SAXParseException() throw() {
+  inline ~SAXParseException() noexcept {
   }
 };
 

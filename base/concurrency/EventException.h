@@ -32,7 +32,7 @@ public:
   /**
     Initializes the exception object with no message.
   */
-  inline EventException() throw() {
+  inline EventException() noexcept {
   }
 
   /**
@@ -40,7 +40,7 @@ public:
 
     @param message The message.
   */
-  inline EventException(const char* message) throw()
+  inline EventException(const char* message) noexcept
     : LockException(message) {
   }
 
@@ -49,7 +49,7 @@ public:
     
     @param type The identity of the type.
   */
-  inline EventException(Type type) throw() : LockException(type) {
+  inline EventException(Type type) noexcept : LockException(type) {
   }
   
   /**
@@ -58,7 +58,7 @@ public:
     @param message An NULL-terminated string (ASCII).
     @param type The identity of the type.
   */
-  inline EventException(const char* message, Type type) throw()
+  inline EventException(const char* message, Type type) noexcept
     : LockException(message, type) {
   }
 };

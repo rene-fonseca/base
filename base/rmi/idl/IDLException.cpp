@@ -15,18 +15,18 @@
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
-IDLException::IDLException(const String& name, unsigned int version) throw() {
+IDLException::IDLException(const String& name, unsigned int version) noexcept {
 }
 
-void IDLException::addAttribute(const IDLAttribute& attribute) throw() {
+void IDLException::addAttribute(const IDLAttribute& attribute) noexcept {
   attributes.add(attribute);
 }
   
-Array<IDLAttribute> IDLException::getAttributes() const throw() {
+Array<IDLAttribute> IDLException::getAttributes() const noexcept {
   return attributes;
 }
 
-bool IDLException::isCompatible(const IDLException& exception) const throw() {
+bool IDLException::isCompatible(const IDLException& exception) const noexcept {
   Array<IDLAttribute>::ReadEnumerator left = attributes.getReadEnumerator();
   Array<IDLAttribute>::ReadEnumerator right = exception.attributes.getReadEnumerator();
   while (left.hasNext() && right.hasNext()) {
@@ -35,7 +35,7 @@ bool IDLException::isCompatible(const IDLException& exception) const throw() {
   return !left.hasNext() && !right.hasNext();
 }
 
-IDLException::~IDLException() throw() {
+IDLException::~IDLException() noexcept {
 }
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

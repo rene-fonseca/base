@@ -54,29 +54,29 @@ public:
   /**
     Initialize ACL with no entries.
   */
-  AccessControlList() throw();
+  AccessControlList() noexcept;
   
   /**
     Initializes object from other object.
   */
-  AccessControlList(const AccessControlList& copy) throw();
+  AccessControlList(const AccessControlList& copy) noexcept;
 
   /**
     Assignment of object by object.
   */
-  AccessControlList& operator=(const AccessControlList& eq) throw();
+  AccessControlList& operator=(const AccessControlList& eq) noexcept;
 
   /**
     Returns true if the ACL is empty.
   */
-  inline bool isEmpty() const throw() {
+  inline bool isEmpty() const noexcept {
     return acl.isEmpty();
   }
 
   /**
     Returns the number of entries in the list.
   */
-  inline unsigned int getSize() const throw() {
+  inline unsigned int getSize() const noexcept {
     return acl.getSize();
   }
   
@@ -89,7 +89,7 @@ public:
 
     @return True, if the trustee already was contained within the ACL.
   */
-  bool add(const AccessControlEntry& entry, bool replace = false) throw();
+  bool add(const AccessControlEntry& entry, bool replace = false) noexcept;
   
   /**
     Removes the entry at the specified index.
@@ -101,12 +101,12 @@ public:
     
     @returns False, if the list has no entry for the specified trustee.
   */
-  bool remove(const Trustee& trustee) throw();
+  bool remove(const Trustee& trustee) noexcept;
   
   /**
     Returns true if an entry is available for the specified trustee.
   */
-  bool hasTrustee(const Trustee& trustee) const throw();
+  bool hasTrustee(const Trustee& trustee) const noexcept;
   
   /**
     Returns the access control entry for the specified trustee. Raises
@@ -117,40 +117,40 @@ public:
   /**
     Returns the associated owner.
   */
-  inline const Trustee& getOwner() throw() {
+  inline const Trustee& getOwner() noexcept {
     return owner;
   }
 
   /**
     Set the associated owner.
   */
-  inline void setOwner(const Trustee& owner) throw() {
+  inline void setOwner(const Trustee& owner) noexcept {
     this->owner = owner;
   }
 
   /**
     Returns the associated primary group.
   */
-  inline const Trustee& getGroup() throw() {
+  inline const Trustee& getGroup() noexcept {
     return group;
   }
   
   /**
     Set the associated primary group.
   */
-  inline void setGroup(const Trustee& group) throw() {
+  inline void setGroup(const Trustee& group) noexcept {
     this->group = group;
   }
   
   /**
     Returns the access of the trustee as specified by this ACL.
   */
-  Permissions getEffectiveAccess(const Trustee& trustee) const throw();
+  Permissions getEffectiveAccess(const Trustee& trustee) const noexcept;
   
   /**
     Returns an enumerator for non-modifying access.
   */
-  Array<AccessControlEntry>::ReadEnumerator getReadEnumerator() const throw();
+  Array<AccessControlEntry>::ReadEnumerator getReadEnumerator() const noexcept;
 };
 
 /**

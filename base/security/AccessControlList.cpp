@@ -16,21 +16,21 @@
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
-AccessControlList::AccessControlList() throw() {
+AccessControlList::AccessControlList() noexcept {
 }
 
-AccessControlList::AccessControlList(const AccessControlList& copy) throw()
+AccessControlList::AccessControlList(const AccessControlList& copy) noexcept
   : acl(copy.acl), owner(copy.owner), group(copy.group) {
 }
 
-AccessControlList& AccessControlList::operator=(const AccessControlList& eq) throw() {
+AccessControlList& AccessControlList::operator=(const AccessControlList& eq) noexcept {
   acl = eq.acl;
   owner = eq.owner;
   group = eq.group;
   return *this;
 }
 
-bool AccessControlList::add(const AccessControlEntry& ace, bool replace) throw() {
+bool AccessControlList::add(const AccessControlEntry& ace, bool replace) noexcept {
   Array<AccessControlEntry>::Iterator i = acl.getBeginIterator();
   const Array<AccessControlEntry>::Iterator end = acl.getEndIterator();
   const Trustee& trustee = ace.getTrustee();
@@ -53,7 +53,7 @@ void AccessControlList::remove(unsigned int index) throw(OutOfRange) {
   acl.remove(index);
 }
 
-bool AccessControlList::remove(const Trustee& trustee) throw() {
+bool AccessControlList::remove(const Trustee& trustee) noexcept {
   Array<AccessControlEntry>::ReadIterator i = acl.getBeginIterator();
   const Array<AccessControlEntry>::ReadIterator end = acl.getEndIterator();
   while (i < end) {
@@ -66,7 +66,7 @@ bool AccessControlList::remove(const Trustee& trustee) throw() {
   return false;
 }
 
-bool AccessControlList::hasTrustee(const Trustee& trustee) const throw() {
+bool AccessControlList::hasTrustee(const Trustee& trustee) const noexcept {
   Array<AccessControlEntry>::ReadIterator i = acl.getBeginReadIterator();
   const Array<AccessControlEntry>::ReadIterator end = acl.getEndReadIterator();
   while (i < end) {
@@ -90,7 +90,7 @@ const AccessControlEntry& AccessControlList::getACE(const Trustee& trustee) cons
 }
 
 // need exception to indicate that isMemberOf failed
-AccessControlList::Permissions AccessControlList::getEffectiveAccess(const Trustee& trustee) const throw() { // TAG: fix exception
+AccessControlList::Permissions AccessControlList::getEffectiveAccess(const Trustee& trustee) const noexcept { // TAG: fix exception
   Permissions effective;
   effective.allowed = 0;
   effective.denied = 0;
@@ -109,7 +109,7 @@ AccessControlList::Permissions AccessControlList::getEffectiveAccess(const Trust
   return effective;
 }
 
-Array<AccessControlEntry>::ReadEnumerator AccessControlList::getReadEnumerator() const throw() {
+Array<AccessControlEntry>::ReadEnumerator AccessControlList::getReadEnumerator() const noexcept {
   return acl.getReadEnumerator();
 }
 

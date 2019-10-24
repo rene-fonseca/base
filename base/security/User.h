@@ -57,7 +57,7 @@ public:
     /**
       Initializes the exception object with no message.
     */
-    inline UserException() throw() {
+    inline UserException() noexcept {
     }
 
     /**
@@ -65,7 +65,7 @@ public:
 
       @param message The message.
     */
-    inline UserException(const char* message) throw() : Exception(message) {
+    inline UserException(const char* message) noexcept : Exception(message) {
     }
 
     /**
@@ -73,7 +73,7 @@ public:
 
       @param type The identity of the type.
     */
-    inline UserException(Type type) throw() : Exception(type) {
+    inline UserException(Type type) noexcept : Exception(type) {
     }
 
     /**
@@ -82,7 +82,7 @@ public:
       @param message An NULL-terminated string (ASCII).
       @param type The identity of the type.
     */
-    inline UserException(const char* message, Type type) throw()
+    inline UserException(const char* message, Type type) noexcept
       : Exception(message, type) {
     }
   };
@@ -95,7 +95,7 @@ public:
   /**
     Initializes user as invalid.
   */
-  inline User() throw() {
+  inline User() noexcept {
   }
 
   /**
@@ -113,12 +113,12 @@ public:
   /**
     Initializes user from other user.
   */
-  User(const User& copy) throw();
+  User(const User& copy) noexcept;
   
   /**
     Assignment of user by user.
   */
-  User& operator=(const User& eq) throw();
+  User& operator=(const User& eq) noexcept;
   
   /**
     Initializes user by name.
@@ -129,13 +129,13 @@ public:
     Returns true if the users are identical. The method returns true if both
     users are invalid.
   */
-  bool operator==(const User& eq) const throw();
+  bool operator==(const User& eq) const noexcept;
   
   /**
     Returns false if the users are not identical. The method returns false if
     both users are invalid.
   */
-  inline bool operator!=(const User& eq) const throw() {
+  inline bool operator!=(const User& eq) const noexcept {
     return !(*this == eq);
   }
   
@@ -143,21 +143,21 @@ public:
     Returns true if the user is initialized. This does not mean that the user
     exists.
   */
-  inline bool isValid() const throw() {
+  inline bool isValid() const noexcept {
     return integralId != INVALID;
   }
   
   /**
     Returns the id of the user.
   */
-  inline const void* getId() const throw() {
+  inline const void* getId() const noexcept {
     return id.isValid() ? id->getElements() : nullptr;
   }
 
   /**
     Returns the integral id of the user.
   */
-  inline unsigned long getIntegralId() const throw() {
+  inline unsigned long getIntegralId() const noexcept {
     return integralId;
   }
   
@@ -207,7 +207,7 @@ template<>
 class _COM_AZURE_DEV__BASE__API Hash<User> {
 public:
   
-  unsigned long operator()(const User& value) throw();
+  unsigned long operator()(const User& value) noexcept;
 };
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

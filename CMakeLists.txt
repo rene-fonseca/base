@@ -228,6 +228,10 @@ install(TARGETS base base_STATIC
   RUNTIME DESTINATION "${CMAKE_BINARY_DIR}/install/bin/release"
 )
 
+if (NOT "${CMAKE_BUILD_TYPE}" STREQUAL "")
+  list(APPEND CMAKE_PROGRAM_PATH "${PROJECT_BINARY_DIR}/${CMAKE_BUILD_TYPE}")
+endif ()
+
 if (0) # TAG: not working yet
 export(TARGETS base base_STATIC
   NAMESPACE base::

@@ -61,8 +61,9 @@ endforeach()
 # add_subdirectory(orb)
 add_subdirectory(ui)
 
-if (NOT MSVC) # TAG: need to set PATH to find DLL and use Debug/Release subfolder
+if (1)
   enable_testing()
+  
   # TAG: need to export unittesting results
   add_test(NAME unittesting COMMAND ${CMAKE_CURRENT_BINARY_DIR}/unittesting)
   add_test(NAME Array COMMAND ${CMAKE_CURRENT_BINARY_DIR}/Array)
@@ -73,4 +74,9 @@ if (NOT MSVC) # TAG: need to set PATH to find DLL and use Debug/Release subfolde
   add_test(NAME Stack COMMAND ${CMAKE_CURRENT_BINARY_DIR}/Stack)
   add_test(NAME Date COMMAND ${CMAKE_CURRENT_BINARY_DIR}/Date)
   add_test(NAME String COMMAND ${CMAKE_CURRENT_BINARY_DIR}/String)
+  
+if (MSVC)
+  # TAG: need to set PATH to find DLL and use Debug/Release subfolder
+  # set_tests_properties(unittesting PROPERTIES ENVIRONMENT "PATH=${CMAKE_BINARY_DIR};$ENV{PATH}")
+endif ()
 endif ()

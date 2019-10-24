@@ -8,6 +8,7 @@ base.build/
 CMakeFiles/
 CMakeScripts/
 CMakeCache.txt
+Testing/
 *.cmake
 install_manifest.txt
 Makefile

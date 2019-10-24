@@ -56,6 +56,7 @@ mtServer
 multicastServer
 objinfo
 ping
+random
 referenceCounting
 rm
 sax
@@ -70,5 +71,6 @@ ui/simple
 ui/tutor
 ui/window
 unicode
+uuid
 validate
 xsltprocessor

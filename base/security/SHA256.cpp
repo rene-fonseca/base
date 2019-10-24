@@ -44,7 +44,7 @@ const uint32 SHA256::K[SHA256::MESSAGE_SCHEDULE] = {
   0x90befffa, 0xa4506ceb, 0xbef9a3f7, 0xc67178f2
 };
 
-SHA256::SHA256() throw() {
+SHA256::SHA256() noexcept {
   messageDigest[0] = 0x6a09e667; // H0
   messageDigest[1] = 0xbb67ae85; // H1
   messageDigest[2] = 0x3c6ef372; // H2
@@ -55,7 +55,7 @@ SHA256::SHA256() throw() {
   messageDigest[7] = 0x5be0cd19; // H7
 }
 
-void SHA256::pushBlock(const uint8* block) throw() {
+void SHA256::pushBlock(const uint8* block) noexcept {
   uint32 a = messageDigest[0]; // A = H0
   uint32 b = messageDigest[1]; // B = H1
   uint32 c = messageDigest[2]; // C = H2
@@ -121,7 +121,7 @@ unsigned int SHA256::push(const uint8* buffer, unsigned int size) throw(OutOfRan
   return result;
 }
 
-void SHA256::pushEnd() throw() {
+void SHA256::pushEnd() noexcept {
   ASSERT(bytesInBuffer < BLOCK_SIZE);
   buffer[bytesInBuffer++] = 0x80; // append 0b10000000
   
@@ -148,7 +148,7 @@ void SHA256::pushEnd() throw() {
   bytesInBuffer = 0;
 }
 
-String SHA256::getValue() const throw() {
+String SHA256::getValue() const noexcept {
   String result(sizeof(messageDigest) * 2);
   result.forceToLength(sizeof(messageDigest) * 2);
   String::Iterator i = result.getBeginIterator();
@@ -164,7 +164,7 @@ String SHA256::getValue() const throw() {
   return result;
 }
 
-String SHA256::getBase64() const throw() {
+String SHA256::getBase64() const noexcept {
   uint8 temp[sizeof(messageDigest)];
   uint8* p = temp;
   for (unsigned int j = 0; j < getArraySize(messageDigest); ++j) {

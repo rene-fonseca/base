@@ -22,29 +22,29 @@ class MD5SumImpl {
 public:
 
   static inline unsigned int F(
-    unsigned int X, unsigned int Y, unsigned int Z) throw() {
+    unsigned int X, unsigned int Y, unsigned int Z) noexcept {
     return (X & Y) | (~X & Z);
   }
 
   static inline unsigned int G(
-    unsigned int X, unsigned int Y, unsigned int Z) throw() {
+    unsigned int X, unsigned int Y, unsigned int Z) noexcept {
     return (X & Z) | (Y & ~Z);
   }
 
   static inline unsigned int H(
-    unsigned int X, unsigned int Y, unsigned int Z) throw() {
+    unsigned int X, unsigned int Y, unsigned int Z) noexcept {
     return X ^ Y ^ Z;
   }
 
   static inline unsigned int I(
-    unsigned int X, unsigned int Y, unsigned int Z) throw() {
+    unsigned int X, unsigned int Y, unsigned int Z) noexcept {
     return Y ^ (X | ~Z);
   }
 
   typedef unsigned int (*Operation)(unsigned int, unsigned int, unsigned int);
 
   static inline unsigned int rotate(
-    unsigned int value, unsigned int bits) throw() {
+    unsigned int value, unsigned int bits) noexcept {
     return (value << bits) | (value >> (32 - bits));
   }
 
@@ -56,19 +56,19 @@ public:
     unsigned int d,
     unsigned int k,
     unsigned int s,
-    unsigned int T) throw() {
+    unsigned int T) noexcept {
     a = b + rotate(a + opr(b, c, d) + k + T, s);
   }
 };
 
-MD5Sum::MD5Sum() throw() {
+MD5Sum::MD5Sum() noexcept {
   messageDigest[0] = 0x67452301;
   messageDigest[1] = 0xefcdab89;
   messageDigest[2] = 0x98badcfe;
   messageDigest[3] = 0x10325476;
 }
 
-void MD5Sum::pushBlock(const uint8* block) throw() {
+void MD5Sum::pushBlock(const uint8* block) noexcept {
   unsigned int a = messageDigest[0];
   unsigned int b = messageDigest[1];
   unsigned int c = messageDigest[2];
@@ -182,7 +182,7 @@ unsigned int MD5Sum::push(const uint8* buffer, unsigned int size) throw(OutOfRan
   return result;
 }
 
-void MD5Sum::pushEnd() throw() {
+void MD5Sum::pushEnd() noexcept {
   ASSERT(bytesInBuffer < BLOCK_SIZE);
   buffer[bytesInBuffer++] = 0x80; // append 0b10000000
 
@@ -206,7 +206,7 @@ void MD5Sum::pushEnd() throw() {
   bytesInBuffer = 0;
 }
 
-String MD5Sum::getValue() const throw() {
+String MD5Sum::getValue() const noexcept {
   String result(4 * 4 * 2);
   result.forceToLength(4 * 4 * 2);
   String::Iterator i = result.getBeginIterator();
@@ -220,7 +220,7 @@ String MD5Sum::getValue() const throw() {
   return result;
 }
 
-String MD5Sum::getBase64() const throw() {
+String MD5Sum::getBase64() const noexcept {
   uint8 temp[16];
   uint8* p = &temp[0];
   for (unsigned int j = 0; j < 4; ++j) {

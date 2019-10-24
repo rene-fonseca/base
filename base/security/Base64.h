@@ -51,12 +51,12 @@ public:
       @param buffer The bytes to be encoded.
       @param size The size of the buffer.
     */
-    Descriptor(const char* buffer, unsigned int size) throw();
+    Descriptor(const char* buffer, unsigned int size) noexcept;
     
     /**
       Returns the size of the buffer.
     */
-    inline unsigned int getSize() const throw() {
+    inline unsigned int getSize() const noexcept {
       return size;
     }
     
@@ -64,7 +64,7 @@ public:
     /**
       Returns the bytes to be encoded.
     */
-    inline const char* getBytes() const throw() {
+    inline const char* getBytes() const noexcept {
       return buffer;
     }
   };
@@ -80,7 +80,7 @@ public:
     Returns the digit for the specified value. The value returned is undefined
     if the value is not in the range [0;63].
   */
-  static inline char valueToDigit(unsigned int value) throw() {
+  static inline char valueToDigit(unsigned int value) noexcept {
     return DIGITS[value & 0x3f];
   }
   
@@ -89,7 +89,7 @@ public:
 
     @return -1 if not a valid Base64 digit.
   */
-  static inline int valueToDigit(char digit) throw() {
+  static inline int valueToDigit(char digit) noexcept {
     return VALUES[static_cast<unsigned char>(digit)];
   }
 
@@ -99,10 +99,10 @@ public:
     @param buffer Buffer holding the data.
     @param size The number of octets in the buffer.
   */
-  static String encode(const uint8* buffer, unsigned int size) throw();
+  static String encode(const uint8* buffer, unsigned int size) noexcept;
 };
 
-inline Base64::Descriptor::Descriptor(const char* _buffer, unsigned int _size) throw()
+inline Base64::Descriptor::Descriptor(const char* _buffer, unsigned int _size) noexcept
   : buffer(_buffer), size(_size) {
 }
 

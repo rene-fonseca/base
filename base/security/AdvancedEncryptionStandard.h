@@ -82,42 +82,42 @@ private:
   public:
     
     void operator()(
-      uint8* dest, const uint8* src, const uint8* schedule) throw();
+      uint8* dest, const uint8* src, const uint8* schedule) noexcept;
   };
   
   class _COM_AZURE_DEV__BASE__API InverseCipher128 : public Cipher128Traits {
   public:
     
     void operator()(
-      uint8* dest, const uint8* src, const uint8* schedule) throw();
+      uint8* dest, const uint8* src, const uint8* schedule) noexcept;
   };
 
   class _COM_AZURE_DEV__BASE__API Cipher192 : public Cipher192Traits {
   public:
     
     void operator()(
-      uint8* dest, const uint8* src, const uint8* schedule) throw();
+      uint8* dest, const uint8* src, const uint8* schedule) noexcept;
   };
 
   class _COM_AZURE_DEV__BASE__API InverseCipher192 : public Cipher192Traits {
   public:
     
     void operator()(
-      uint8* dest, const uint8* src, const uint8* schedule) throw();
+      uint8* dest, const uint8* src, const uint8* schedule) noexcept;
   };
 
   class _COM_AZURE_DEV__BASE__API Cipher256 : public Cipher256Traits {
   public:
     
     void operator()(
-      uint8* dest, const uint8* src, const uint8* schedule) throw();
+      uint8* dest, const uint8* src, const uint8* schedule) noexcept;
   };
 
   class _COM_AZURE_DEV__BASE__API InverseCipher256 : public Cipher256Traits {
   public:
     
     void operator()(
-      uint8* dest, const uint8* src, const uint8* schedule) throw();
+      uint8* dest, const uint8* src, const uint8* schedule) noexcept;
   };
   
   /** Cipher. */
@@ -133,7 +133,7 @@ private:
   
   template<class CIPHER>
   inline unsigned int cipherPush(
-    uint8* dest, const uint8* src, unsigned int size) throw() {
+    uint8* dest, const uint8* src, unsigned int size) noexcept {
     const unsigned int BLOCK_SIZE = CIPHER::BLOCK_SIZE;
     const uint8* first = dest;
     if ((size >= BLOCK_SIZE) ||
@@ -161,7 +161,7 @@ private:
 
   template<class CIPHER>
   inline unsigned int cipherPushEnd(
-    uint8* dest, unsigned int size) throw() {
+    uint8* dest, unsigned int size) noexcept {
     const unsigned int BLOCK_SIZE = CIPHER::BLOCK_SIZE;
     ASSERT(bytesInBuffer < BLOCK_SIZE);
     if (size <= BLOCK_SIZE) {
@@ -182,7 +182,7 @@ public:
   /**
     Returns the key length in bytes for the specified cipher.
   */
-  static inline unsigned int getKeyLenght(Cipher cipher) throw() {
+  static inline unsigned int getKeyLenght(Cipher cipher) noexcept {
     static const unsigned int LENGTHS[] = {
       128/8, 192/8, 256/8
     };
@@ -198,7 +198,7 @@ public:
     is false.
   */
   AdvancedEncryptionStandard(
-    const uint8* key, Cipher cipher, bool inverse = false) throw();
+    const uint8* key, Cipher cipher, bool inverse = false) noexcept;
   
   /**
     Encrypts the specified data. May be called multiple times.
@@ -208,7 +208,7 @@ public:
     @param size The number of octets in the buffer.
     @return The number of bytes written.
   */
-  unsigned int push(uint8* dest, const uint8* src, unsigned int size) throw();
+  unsigned int push(uint8* dest, const uint8* src, unsigned int size) noexcept;
   
   /**
     This function should be invoked when the entire message has been pushed.
@@ -218,7 +218,7 @@ public:
     @param size The number of octets in the buffer.
     @return The number of bytes written.
   */
-  unsigned int pushEnd(uint8* dest, unsigned int size) throw();
+  unsigned int pushEnd(uint8* dest, unsigned int size) noexcept;
 };
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

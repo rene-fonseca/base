@@ -65,38 +65,38 @@ public:
     const void* context = nullptr;
   public:
 
-    inline Module() throw() {
+    inline Module() noexcept {
     }
     
-    inline Module(const void* _context) throw() : context(_context) {
+    inline Module(const void* _context) noexcept : context(_context) {
     }
     
-    inline Module(const Module& copy) throw() : context(copy.context) {
+    inline Module(const Module& copy) noexcept : context(copy.context) {
     }
     
-    inline Module operator=(const Module& eq) throw() {
+    inline Module operator=(const Module& eq) noexcept {
       context = eq.context;
       return *this;
     }
 
-    bool isModule() const throw();
+    bool isModule() const noexcept;
 
-    static Module getProcessModule() throw();
+    static Module getProcessModule() noexcept;
 
-    String getPath() const throw();
+    String getPath() const noexcept;
 
-    MemorySize getSize() const throw();
+    MemorySize getSize() const noexcept;
   };
 
-  static Array<Module> getModules() throw();
+  static Array<Module> getModules() noexcept;
   
-  static void query(const void* address) throw();
+  static void query(const void* address) noexcept;
 
-  static void allocate() throw();
+  static void allocate() noexcept;
   
-  static void release() throw();
+  static void release() noexcept;
   
-  static void dump() throw();
+  static void dump() noexcept;
 };
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

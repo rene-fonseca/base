@@ -19,8 +19,8 @@
 
 // TAG: need static method to set id space
 // TAG: space is used for mapping id's into short/local integral id's
-// TAG: void Trustee::setDomain(const Trustee& trustee) throw();
-// TAG: Trustee Trustee::getDomain() throw();
+// TAG: void Trustee::setDomain(const Trustee& trustee) noexcept;
+// TAG: Trustee Trustee::getDomain() noexcept;
 // TAG: at init call Trustee::setDomain(User::getCurrentUser());
 
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
@@ -44,12 +44,12 @@
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
-Trustee::Trustee() throw()
+Trustee::Trustee() noexcept
   : type(UNSPECIFIED),
     integralId(PrimitiveTraits<unsigned long>::MAXIMUM) {
 }
 
-Trustee::Trustee(User user) throw() : type(USER) {
+Trustee::Trustee(User user) noexcept : type(USER) {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   integralId = 0;
   if (!user.isValid()) {
@@ -62,7 +62,7 @@ Trustee::Trustee(User user) throw() : type(USER) {
 #endif // flavor
 }
 
-Trustee::Trustee(Group group) throw() : type(GROUP) {
+Trustee::Trustee(Group group) noexcept : type(GROUP) {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   integralId = 0;
   if (!group.isValid()) {
@@ -105,11 +105,11 @@ Trustee::Trustee(TrusteeType type, const void* _id) throw(OutOfDomain) {
 #endif // flavor
 }
 
-Trustee::Trustee(const Trustee& copy) throw()
+Trustee::Trustee(const Trustee& copy) noexcept
   : type(copy.type), integralId(copy.integralId), id(copy.id) {
 }
 
-Trustee& Trustee::operator=(const Trustee& eq) throw() {
+Trustee& Trustee::operator=(const Trustee& eq) noexcept {
   type = eq.type;
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   id = eq.id; // dont care about integralId
@@ -119,7 +119,7 @@ Trustee& Trustee::operator=(const Trustee& eq) throw() {
   return *this;
 }
 
-bool Trustee::operator==(const Trustee& eq) const throw() {
+bool Trustee::operator==(const Trustee& eq) const noexcept {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   if (!((id.isValid()) && (eq.id.isValid()))) {
     return !id.isValid() && !eq.id.isValid();
@@ -201,7 +201,7 @@ Trustee::Trustee(const String& name) throw(TrusteeException) {
 #endif // flavor
 }
 
-bool Trustee::isInitialized() const throw() {
+bool Trustee::isInitialized() const noexcept {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   return id.isValid();
 #else // unix
@@ -395,7 +395,7 @@ FormatOutputStream& operator<<(
 #endif
 }
 
-unsigned long Hash<Trustee>::operator()(const Trustee& value) throw() {
+unsigned long Hash<Trustee>::operator()(const Trustee& value) noexcept {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   if (!value.id.isValid()) {
     return 0;

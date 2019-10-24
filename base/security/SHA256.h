@@ -67,39 +67,39 @@ private:
   unsigned int bytesInBuffer = 0;
 
   /** Push one block (16 words). */
-  void pushBlock(const uint8* block) throw();
+  void pushBlock(const uint8* block) noexcept;
   
   static const uint32 K[MESSAGE_SCHEDULE];
   
-  static inline uint32 rotateLeft(uint32 value, unsigned int bits) throw() {
+  static inline uint32 rotateLeft(uint32 value, unsigned int bits) noexcept {
     return (value << bits) | (value >> (32 - bits));
   }
   
-  static inline uint32 rotateRight(uint32 value, unsigned int bits) throw() {
+  static inline uint32 rotateRight(uint32 value, unsigned int bits) noexcept {
     return (value >> bits) | (value << (32 - bits));
   }
 
-  static inline uint32 ch(uint32 x, uint32 y, uint32 z) throw() {
+  static inline uint32 ch(uint32 x, uint32 y, uint32 z) noexcept {
     return (x & y) ^ (~x & z);
   }
   
-  static inline uint32 maj(uint32 x, uint32 y, uint32 z) throw() {
+  static inline uint32 maj(uint32 x, uint32 y, uint32 z) noexcept {
     return (x & y) ^ (x & z) ^ (y & z);
   }
   
-  static inline uint32 sum0(uint32 x) throw() {
+  static inline uint32 sum0(uint32 x) noexcept {
     return rotateRight(x, 2) ^ rotateRight(x, 13) ^ rotateRight(x, 22);
   }
   
-  static inline uint32 sum1(uint32 x) throw() {
+  static inline uint32 sum1(uint32 x) noexcept {
     return rotateRight(x, 6) ^ rotateRight(x, 11) ^ rotateRight(x, 25);
   }
   
-  static inline uint32 sigma0(uint32 x) throw() {
+  static inline uint32 sigma0(uint32 x) noexcept {
     return rotateRight(x, 7) ^ rotateRight(x, 18) ^ (x >> 3);
   }
   
-  static inline uint32 sigma1(uint32 x) throw() {
+  static inline uint32 sigma1(uint32 x) noexcept {
     return rotateRight(x, 17) ^ rotateRight(x, 19) ^ (x >> 10);
   }
 public:
@@ -107,7 +107,7 @@ public:
   /**
     Initializes object.
   */
-  SHA256() throw();
+  SHA256() noexcept;
   
   /**
     Updates the checksum corresponding to the specified data. May be called
@@ -123,12 +123,12 @@ public:
     This function should be invoked when the entire message has been pushed.
     Do NOT use push() after invoking this function.
   */
-  void pushEnd() throw();
+  void pushEnd() noexcept;
 
   /**
     Returns the total size of the original message.
   */
-  inline uint64 getTotalSize() const throw() {
+  inline uint64 getTotalSize() const noexcept {
     return totalSize;
   }
 
@@ -136,13 +136,13 @@ public:
     Returns the message digest encoded in hex. This is only valid after
     pushEnd() has been invoked.
   */
-  String getValue() const throw();
+  String getValue() const noexcept;
 
   /**
     Returns the message digest encoded in Base64. This is only valid after
     pushEnd() has been invoked.
   */
-  String getBase64() const throw();
+  String getBase64() const noexcept;
 };
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

@@ -88,17 +88,17 @@ User::User(const void* _id) throw(OutOfDomain) {
 #endif // flavor
 }
 
-User::User(const User& copy) throw()
+User::User(const User& copy) noexcept
   : integralId(copy.integralId), id(copy.id) {
 }
 
-User& User::operator=(const User& eq) throw() {
+User& User::operator=(const User& eq) noexcept {
   id = eq.id;
   integralId = eq.integralId;
   return *this;
 }
 
-bool User::operator==(const User& eq) const throw() {
+bool User::operator==(const User& eq) const noexcept {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   if (!isValid() || (!eq.isValid())) {
     return !isValid() && !eq.isValid();
@@ -336,7 +336,7 @@ FormatOutputStream& operator<<(
 #endif
 }
 
-unsigned long Hash<User>::operator()(const User& value) throw() {
+unsigned long Hash<User>::operator()(const User& value) noexcept {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   if (!value.id.isValid()) {
     return 0;

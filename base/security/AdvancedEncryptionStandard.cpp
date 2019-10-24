@@ -341,7 +341,7 @@ namespace AdvancedEncryptionStandardImpl {
   class Cipher128 : public Aes::Cipher128Traits {
   public:
 
-    static inline void fillSchedule(uint8* schedule, const uint8* key) throw() {
+    static inline void fillSchedule(uint8* schedule, const uint8* key) noexcept {
       // first value is not used - just offset by +1
       static const uint8 ROUND_CONSTANT[1 + (Nb * (Nr+1) - 1)/Nk] = {
         0x00, 0x01, 0x02, 0x04, 0x08, 0x10, 0x20, 0x40, 0x80, 0x1b, 0x36
@@ -377,7 +377,7 @@ namespace AdvancedEncryptionStandardImpl {
       }
     }
     
-    static inline void substitute(uint8 (&state)[4][Nb]) throw() {
+    static inline void substitute(uint8 (&state)[4][Nb]) noexcept {
       state[0][0] = S[state[0][0]];
       state[0][1] = S[state[0][1]];
       state[0][2] = S[state[0][2]];
@@ -399,7 +399,7 @@ namespace AdvancedEncryptionStandardImpl {
       state[3][3] = S[state[3][3]];
     }
     
-    static inline void shiftRows(uint8 (&state)[4][Nb]) throw() {
+    static inline void shiftRows(uint8 (&state)[4][Nb]) noexcept {
       {
         uint8 temp0 = state[1][0];
         state[1][0] = state[1][1];
@@ -426,7 +426,7 @@ namespace AdvancedEncryptionStandardImpl {
       }
     }
     
-    static inline void mixColumns(uint8 (&s)[4][Nb]) throw() {
+    static inline void mixColumns(uint8 (&s)[4][Nb]) noexcept {
       uint8 t[4][Nb];
       
       t[0][0] = DOT_2[s[0][0]] ^ DOT_3[s[1][0]] ^ s[2][0] ^ s[3][0];
@@ -473,7 +473,7 @@ namespace AdvancedEncryptionStandardImpl {
     static inline void addRoundKey(
       uint8 (&state)[4][Nb],
       unsigned int round,
-      const uint8* schedule) throw() {
+      const uint8* schedule) noexcept {
       for (unsigned int row = 0; row < 4; row++) {
         for (unsigned int column = 0; column < Nb; column++) {
           state[row][column] ^=
@@ -488,7 +488,7 @@ namespace AdvancedEncryptionStandardImpl {
   class InverseCipher128 : public Aes::Cipher128Traits {
   public:
     
-    static inline void substitute(uint8 (&state)[4][Nb]) throw() {
+    static inline void substitute(uint8 (&state)[4][Nb]) noexcept {
       state[0][0] = INVERSE_S[state[0][0]];
       state[0][1] = INVERSE_S[state[0][1]];
       state[0][2] = INVERSE_S[state[0][2]];
@@ -510,7 +510,7 @@ namespace AdvancedEncryptionStandardImpl {
       state[3][3] = INVERSE_S[state[3][3]];
     }
     
-    static inline void shiftRows(uint8 (&state)[4][Nb]) throw() {
+    static inline void shiftRows(uint8 (&state)[4][Nb]) noexcept {
       {
         uint8 temp0 = state[1][3];
         state[1][3] = state[1][2];
@@ -537,7 +537,7 @@ namespace AdvancedEncryptionStandardImpl {
       }
     }
     
-    static inline void mixColumns(uint8 (&s)[4][Nb]) throw() {
+    static inline void mixColumns(uint8 (&s)[4][Nb]) noexcept {
       uint8 t[4][Nb];
       
       t[0][0] = DOT_E[s[0][0]] ^ DOT_B[s[1][0]] ^ DOT_D[s[2][0]] ^ DOT_9[s[3][0]];
@@ -584,7 +584,7 @@ namespace AdvancedEncryptionStandardImpl {
     static inline void addRoundKey(
       uint8 (&state)[4][Nb],
       unsigned int round,
-      const uint8* schedule) throw() {
+      const uint8* schedule) noexcept {
       for (unsigned int row = 0; row < 4; row++) {
         for (unsigned int column = 0; column < Nb; column++) {
           state[row][column] ^=
@@ -599,7 +599,7 @@ namespace AdvancedEncryptionStandardImpl {
   class Cipher192 : public Aes::Cipher192Traits {
   public:
     
-    static inline void fillSchedule(uint8* schedule, const uint8* key) throw() {
+    static inline void fillSchedule(uint8* schedule, const uint8* key) noexcept {
       // first value is not used - just offset by +1
       static const uint8 ROUND_CONSTANT[1 + (Nb * (Nr+1) - 1)/Nk] = {
         0x00, 0x01, 0x02, 0x04, 0x08, 0x10, 0x20, 0x40, 0x80
@@ -635,7 +635,7 @@ namespace AdvancedEncryptionStandardImpl {
       }
     }
     
-    static inline void substitute(uint8 (&state)[4][Nb]) throw() {
+    static inline void substitute(uint8 (&state)[4][Nb]) noexcept {
       state[0][0] = S[state[0][0]];
       state[0][1] = S[state[0][1]];
       state[0][2] = S[state[0][2]];
@@ -657,7 +657,7 @@ namespace AdvancedEncryptionStandardImpl {
       state[3][3] = S[state[3][3]];
     }
     
-    static inline void shiftRows(uint8 (&state)[4][Nb]) throw() {
+    static inline void shiftRows(uint8 (&state)[4][Nb]) noexcept {
       {
         uint8 temp0 = state[1][0];
         state[1][0] = state[1][1];
@@ -684,7 +684,7 @@ namespace AdvancedEncryptionStandardImpl {
       }
     }
     
-    static inline void mixColumns(uint8 (&s)[4][Nb]) throw() {
+    static inline void mixColumns(uint8 (&s)[4][Nb]) noexcept {
       uint8 t[4][Nb];
       
       t[0][0] = DOT_2[s[0][0]] ^ DOT_3[s[1][0]] ^ s[2][0] ^ s[3][0];
@@ -731,7 +731,7 @@ namespace AdvancedEncryptionStandardImpl {
     static inline void addRoundKey(
       uint8 (&state)[4][Nb],
       unsigned int round,
-      const uint8* schedule) throw() {
+      const uint8* schedule) noexcept {
       for (unsigned int row = 0; row < 4; row++) {
         for (unsigned int column = 0; column < Nb; column++) {
           state[row][column] ^=
@@ -744,7 +744,7 @@ namespace AdvancedEncryptionStandardImpl {
   class InverseCipher192 : public Aes::Cipher192Traits {
   public:
     
-    static inline void substitute(uint8 (&state)[4][Nb]) throw() {
+    static inline void substitute(uint8 (&state)[4][Nb]) noexcept {
       state[0][0] = INVERSE_S[state[0][0]];
       state[0][1] = INVERSE_S[state[0][1]];
       state[0][2] = INVERSE_S[state[0][2]];
@@ -766,7 +766,7 @@ namespace AdvancedEncryptionStandardImpl {
       state[3][3] = INVERSE_S[state[3][3]];
     }
     
-    static inline void shiftRows(uint8 (&state)[4][Nb]) throw() {
+    static inline void shiftRows(uint8 (&state)[4][Nb]) noexcept {
       {
         uint8 temp0 = state[1][3];
         state[1][3] = state[1][2];
@@ -793,7 +793,7 @@ namespace AdvancedEncryptionStandardImpl {
       }
     }
     
-    static inline void mixColumns(uint8 (&s)[4][Nb]) throw() {
+    static inline void mixColumns(uint8 (&s)[4][Nb]) noexcept {
       uint8 t[4][Nb];
       
       t[0][0] = DOT_E[s[0][0]] ^ DOT_B[s[1][0]] ^ DOT_D[s[2][0]] ^ DOT_9[s[3][0]];
@@ -840,7 +840,7 @@ namespace AdvancedEncryptionStandardImpl {
     static inline void addRoundKey(
       uint8 (&state)[4][Nb],
       unsigned int round,
-      const uint8* schedule) throw() {
+      const uint8* schedule) noexcept {
       for (unsigned int row = 0; row < 4; row++) {
         for (unsigned int column = 0; column < Nb; column++) {
           state[row][column] ^=
@@ -853,7 +853,7 @@ namespace AdvancedEncryptionStandardImpl {
   class Cipher256 : public Aes::Cipher256Traits {
   public:
     
-    static inline void fillSchedule(uint8* schedule, const uint8* key) throw() {
+    static inline void fillSchedule(uint8* schedule, const uint8* key) noexcept {
       // first value is not used - just offset by +1
       static const uint8 ROUND_CONSTANT[1 + (Nb * (Nr+1) - 1)/Nk] = {
         0x00, 0x01, 0x02, 0x04, 0x08, 0x10, 0x20, 0x40
@@ -898,7 +898,7 @@ namespace AdvancedEncryptionStandardImpl {
       }
     }
     
-    static inline void substitute(uint8 (&state)[4][Nb]) throw() {
+    static inline void substitute(uint8 (&state)[4][Nb]) noexcept {
       state[0][0] = S[state[0][0]];
       state[0][1] = S[state[0][1]];
       state[0][2] = S[state[0][2]];
@@ -920,7 +920,7 @@ namespace AdvancedEncryptionStandardImpl {
       state[3][3] = S[state[3][3]];
     }
     
-    static inline void shiftRows(uint8 (&state)[4][Nb]) throw() {
+    static inline void shiftRows(uint8 (&state)[4][Nb]) noexcept {
       {
         uint8 temp0 = state[1][0];
         state[1][0] = state[1][1];
@@ -947,7 +947,7 @@ namespace AdvancedEncryptionStandardImpl {
       }
     }
     
-    static inline void mixColumns(uint8 (&s)[4][Nb]) throw() {
+    static inline void mixColumns(uint8 (&s)[4][Nb]) noexcept {
       uint8 t[4][Nb];
       
       t[0][0] = DOT_2[s[0][0]] ^ DOT_3[s[1][0]] ^ s[2][0] ^ s[3][0];
@@ -994,7 +994,7 @@ namespace AdvancedEncryptionStandardImpl {
     static inline void addRoundKey(
       uint8 (&state)[4][Nb],
       unsigned int round,
-      const uint8* schedule) throw() {
+      const uint8* schedule) noexcept {
       for (unsigned int row = 0; row < 4; row++) {
         for (unsigned int column = 0; column < Nb; column++) {
           state[row][column] ^=
@@ -1007,7 +1007,7 @@ namespace AdvancedEncryptionStandardImpl {
   class InverseCipher256 : public Aes::Cipher256Traits {
   public:
     
-    static inline void substitute(uint8 (&state)[4][Nb]) throw() {
+    static inline void substitute(uint8 (&state)[4][Nb]) noexcept {
       state[0][0] = INVERSE_S[state[0][0]];
       state[0][1] = INVERSE_S[state[0][1]];
       state[0][2] = INVERSE_S[state[0][2]];
@@ -1029,7 +1029,7 @@ namespace AdvancedEncryptionStandardImpl {
       state[3][3] = INVERSE_S[state[3][3]];
     }
     
-    static inline void shiftRows(uint8 (&state)[4][Nb]) throw() {
+    static inline void shiftRows(uint8 (&state)[4][Nb]) noexcept {
       {
         uint8 temp0 = state[1][3];
         state[1][3] = state[1][2];
@@ -1056,7 +1056,7 @@ namespace AdvancedEncryptionStandardImpl {
       }
     }
     
-    static inline void mixColumns(uint8 (&s)[4][Nb]) throw() {
+    static inline void mixColumns(uint8 (&s)[4][Nb]) noexcept {
       uint8 t[4][Nb];
       
       t[0][0] = DOT_E[s[0][0]] ^ DOT_B[s[1][0]] ^ DOT_D[s[2][0]] ^ DOT_9[s[3][0]];
@@ -1103,7 +1103,7 @@ namespace AdvancedEncryptionStandardImpl {
     static inline void addRoundKey(
       uint8 (&state)[4][Nb],
       unsigned int round,
-      const uint8* schedule) throw() {
+      const uint8* schedule) noexcept {
       for (unsigned int row = 0; row < 4; row++) {
         for (unsigned int column = 0; column < Nb; column++) {
           state[row][column] ^=
@@ -1117,7 +1117,7 @@ namespace AdvancedEncryptionStandardImpl {
 
 
 void AdvancedEncryptionStandard::Cipher128::operator()(
-  uint8* dest, const uint8* src, const uint8* schedule) throw() {
+  uint8* dest, const uint8* src, const uint8* schedule) noexcept {
   uint8 state[4][Nb];
   
   for (unsigned int r = 0; r < 4; r++) {
@@ -1157,7 +1157,7 @@ void AdvancedEncryptionStandard::Cipher128::operator()(
 }
 
 void AdvancedEncryptionStandard::InverseCipher128::operator()(
-  uint8* dest, const uint8* src, const uint8* schedule) throw() {
+  uint8* dest, const uint8* src, const uint8* schedule) noexcept {
   uint8 state[4][Nb];
   
   for (unsigned int r = 0; r < 4; r++) { // copy to state
@@ -1197,7 +1197,7 @@ void AdvancedEncryptionStandard::InverseCipher128::operator()(
 }
 
 void AdvancedEncryptionStandard::Cipher192::operator()(
-  uint8* dest, const uint8* src, const uint8* schedule) throw() {
+  uint8* dest, const uint8* src, const uint8* schedule) noexcept {
   uint8 state[4][Nb];
   
   for (unsigned int r = 0; r < 4; r++) {
@@ -1237,7 +1237,7 @@ void AdvancedEncryptionStandard::Cipher192::operator()(
 }
 
 void AdvancedEncryptionStandard::InverseCipher192::operator()(
-  uint8* dest, const uint8* src, const uint8* schedule) throw() {
+  uint8* dest, const uint8* src, const uint8* schedule) noexcept {
   uint8 state[4][Nb];
   
   for (unsigned int r = 0; r < 4; r++) { // copy to state
@@ -1277,7 +1277,7 @@ void AdvancedEncryptionStandard::InverseCipher192::operator()(
 }
 
 void AdvancedEncryptionStandard::Cipher256::operator()(
-  uint8* dest, const uint8* src, const uint8* schedule) throw() {
+  uint8* dest, const uint8* src, const uint8* schedule) noexcept {
   uint8 state[4][Nb];
   
   for (unsigned int r = 0; r < 4; r++) {
@@ -1317,7 +1317,7 @@ void AdvancedEncryptionStandard::Cipher256::operator()(
 }
 
 void AdvancedEncryptionStandard::InverseCipher256::operator()(
-  uint8* dest, const uint8* src, const uint8* schedule) throw() {
+  uint8* dest, const uint8* src, const uint8* schedule) noexcept {
   uint8 state[4][Nb];
   
   for (unsigned int r = 0; r < 4; r++) { // copy to state
@@ -1357,7 +1357,7 @@ void AdvancedEncryptionStandard::InverseCipher256::operator()(
 }
 
 AdvancedEncryptionStandard::AdvancedEncryptionStandard(
-  const uint8* key, Cipher _cipher, bool _inverse) throw()
+  const uint8* key, Cipher _cipher, bool _inverse) noexcept
   : cipher(_cipher),
     inverse(_inverse),
     bytesInBuffer(0) {
@@ -1375,7 +1375,7 @@ AdvancedEncryptionStandard::AdvancedEncryptionStandard(
 }
 
 unsigned int AdvancedEncryptionStandard::push(
-  uint8* dest, const uint8* src, unsigned int size) throw() {
+  uint8* dest, const uint8* src, unsigned int size) noexcept {
   switch (cipher) {
   case CIPHER_128:
     if (inverse) {
@@ -1401,7 +1401,7 @@ unsigned int AdvancedEncryptionStandard::push(
 }
 
 unsigned int AdvancedEncryptionStandard::pushEnd(
-  uint8* dest, unsigned int size) throw() {
+  uint8* dest, unsigned int size) noexcept {
   switch (cipher) {
   case CIPHER_128:
     if (inverse) {

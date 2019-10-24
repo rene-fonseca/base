@@ -41,7 +41,7 @@ const uint64 SHA384::K[MESSAGE_SCHEDULE] = {
   0x4cc5d4becb3e42b6, 0x597f299cfc657e2a, 0x5fcb6fab3ad6faec, 0x6c44198c4a475817
 };
 
-SHA384::SHA384() throw() {
+SHA384::SHA384() noexcept {
   messageDigest[0] = 0xcbbb9d5dc1059ed8; // H0
   messageDigest[1] = 0x629a292a367cd507; // H1
   messageDigest[2] = 0x9159015a3070dd17; // H2
@@ -52,7 +52,7 @@ SHA384::SHA384() throw() {
   messageDigest[7] = 0x47b5481dbefa4fa4; // H7
 }
 
-void SHA384::pushBlock(const uint8* block) throw() {
+void SHA384::pushBlock(const uint8* block) noexcept {
   uint64 a = messageDigest[0]; // A = H0
   uint64 b = messageDigest[1]; // B = H1
   uint64 c = messageDigest[2]; // C = H2
@@ -118,7 +118,7 @@ unsigned int SHA384::push(const uint8* buffer, unsigned int size) throw(OutOfRan
   return result;
 }
 
-void SHA384::pushEnd() throw() {
+void SHA384::pushEnd() noexcept {
   ASSERT(bytesInBuffer < BLOCK_SIZE);
   buffer[bytesInBuffer++] = 0x80; // append 0b10000000
 
@@ -153,7 +153,7 @@ void SHA384::pushEnd() throw() {
   bytesInBuffer = 0;
 }
 
-String SHA384::getValue() const throw() {
+String SHA384::getValue() const noexcept {
   String result(sizeof(uint64) * (getArraySize(messageDigest) - 2) * 2);
   result.forceToLength(sizeof(uint64) * (getArraySize(messageDigest) - 2) * 2);
   String::Iterator i = result.getBeginIterator();
@@ -169,7 +169,7 @@ String SHA384::getValue() const throw() {
   return result;
 }
 
-String SHA384::getBase64() const throw() {
+String SHA384::getBase64() const noexcept {
   uint8 temp[sizeof(uint64) * (8 /*getArraySize(messageDigest)*/ - 2)];
   uint8* p = temp;
   for (unsigned int j = 0; j < (getArraySize(messageDigest) - 2); ++j) {

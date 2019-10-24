@@ -57,7 +57,7 @@ const signed char Base64::VALUES[256] = {
   -1, -1
 };
 
-// int Base64::valueToDigit(char digit) throw() {
+// int Base64::valueToDigit(char digit) noexcept {
 //   if (ASCIITraits::isUpper(digit)) {
 //     return (digit - 'A') + 0;
 //   } else if (ASCIITraits::isLower(digit)) {
@@ -73,7 +73,7 @@ const signed char Base64::VALUES[256] = {
 //   }
 // }
 
-String Base64::encode(const uint8* buffer, unsigned int size) throw() {
+String Base64::encode(const uint8* buffer, unsigned int size) noexcept {
   unsigned int length = (size * 8 + 5) / 6;
   String result(length);
   result.forceToLength(length);

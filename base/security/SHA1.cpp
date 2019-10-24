@@ -18,7 +18,7 @@
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
-SHA1::SHA1() throw() {
+SHA1::SHA1() noexcept {
   messageDigest[0] = 0x67452301; // H0
   messageDigest[1] = 0xefcdab89; // H1
   messageDigest[2] = 0x98badcfe; // H2
@@ -26,7 +26,7 @@ SHA1::SHA1() throw() {
   messageDigest[4] = 0xc3d2e1f0; // H4
 }
 
-void SHA1::pushBlock(const uint8* block) throw() {
+void SHA1::pushBlock(const uint8* block) noexcept {
   uint32 a = messageDigest[0]; // A = H0
   uint32 b = messageDigest[1]; // B = H1
   uint32 c = messageDigest[2]; // C = H2
@@ -157,7 +157,7 @@ unsigned int SHA1::push(const uint8* buffer, unsigned int size) throw(OutOfRange
   return result;
 }
 
-void SHA1::pushEnd() throw() {
+void SHA1::pushEnd() noexcept {
   ASSERT(bytesInBuffer < BLOCK_SIZE);
   buffer[bytesInBuffer++] = 0x80; // append 0b10000000
   
@@ -184,7 +184,7 @@ void SHA1::pushEnd() throw() {
   bytesInBuffer = 0;
 }
 
-String SHA1::getValue() const throw() { 
+String SHA1::getValue() const noexcept { 
   String result(sizeof(messageDigest) * 2);
   result.forceToLength(sizeof(messageDigest) * 2);
   String::Iterator i = result.getBeginIterator();
@@ -200,7 +200,7 @@ String SHA1::getValue() const throw() {
   return result;
 }
 
-String SHA1::getBase64() const throw() {
+String SHA1::getBase64() const noexcept {
   uint8 temp[sizeof(messageDigest)];
   uint8* p = temp;
   for (unsigned int j = 0; j < getArraySize(messageDigest); ++j) {

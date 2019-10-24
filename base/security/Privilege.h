@@ -36,12 +36,12 @@ public:
   /**
     Returns the name of the specified privilege.
   */
-  static String getName(PrivilegeType privilege) throw();
+  static String getName(PrivilegeType privilege) noexcept;
 
   /**
     Returns the value of the specified privilege.
   */
-  static PrivilegeType getValue(const String& name) throw();
+  static PrivilegeType getValue(const String& name) noexcept;
 };
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

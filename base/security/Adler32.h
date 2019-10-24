@@ -43,7 +43,7 @@ public:
   /**
     Initializes object.
   */
-  Adler32() throw();
+  Adler32() noexcept;
   
   /**
     Updates the checksum corresponding to the specified data. May be called
@@ -52,26 +52,26 @@ public:
     @param buffer The buffer holding the data.
     @param size The number of octets in the buffer.
   */
-  unsigned int push(const uint8* buffer, unsigned int size) throw();
+  unsigned int push(const uint8* buffer, unsigned int size) noexcept;
   
   /**
     Returns the total size of the original message.
   */
-  inline uint64 getTotalSize() const throw() {
+  inline uint64 getTotalSize() const noexcept {
     return totalSize;
   }
   
   /**
     Returns the checksum.
   */
-  inline uint32 getValue() const throw() {
+  inline uint32 getValue() const noexcept {
     return checksum;
   }
   
   /**
     Sets the checksum.
   */
-  inline void setValue(uint32 value) throw() {
+  inline void setValue(uint32 value) noexcept {
     checksum = value;
   }
 };

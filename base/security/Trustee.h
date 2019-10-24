@@ -67,7 +67,7 @@ public:
     /**
       Initializes the exception object with no message.
     */
-    inline TrusteeException() throw() {
+    inline TrusteeException() noexcept {
     }
 
     /**
@@ -75,7 +75,7 @@ public:
 
       @param message The message.
     */
-    inline TrusteeException(const char* message) throw() : Exception(message) {
+    inline TrusteeException(const char* message) noexcept : Exception(message) {
     }
 
     /**
@@ -83,7 +83,7 @@ public:
 
       @param type The identity of the type.
     */
-    inline TrusteeException(Type type) throw() : Exception(type) {
+    inline TrusteeException(Type type) noexcept : Exception(type) {
     }
 
     /**
@@ -92,7 +92,7 @@ public:
       @param message An NULL-terminated string (ASCII).
       @param type The identity of the type.
     */
-    inline TrusteeException(const char* message, Type type) throw()
+    inline TrusteeException(const char* message, Type type) noexcept
       : Exception(message, type) {
     }
   };
@@ -100,17 +100,17 @@ public:
   /**
     Initializes trustee as invalid.
   */
-  Trustee() throw();
+  Trustee() noexcept;
 
   /**
     Initializes trustee from user.
   */
-  Trustee(User user) throw();
+  Trustee(User user) noexcept;
 
   /**
     Initializes trustee from group.
   */
-  Trustee(Group group) throw();
+  Trustee(Group group) noexcept;
   
   /**
     Initializes trustee by id. Raises OutOfDomain if the specified id is not
@@ -121,12 +121,12 @@ public:
   /**
     Initializes trustee from other trustee.
   */
-  Trustee(const Trustee& copy) throw();
+  Trustee(const Trustee& copy) noexcept;
   
   /**
     Assignment of trustee by trustee.
   */
-  Trustee& operator=(const Trustee& eq) throw();
+  Trustee& operator=(const Trustee& eq) noexcept;
   
   /**
     Initializes trustee by name.
@@ -137,13 +137,13 @@ public:
     Returns true if the trustees are identical. The method returns true if both
     trustees are invalid.
   */
-  bool operator==(const Trustee& eq) const throw();
+  bool operator==(const Trustee& eq) const noexcept;
   
   /**
     Returns false if the trustees are not identical. The method returns false
     if both trustees are invalid.
   */
-  inline bool operator!=(const Trustee& eq) const throw() {
+  inline bool operator!=(const Trustee& eq) const noexcept {
     return !(*this == eq);
   }
   
@@ -151,7 +151,7 @@ public:
     Returns true if the trustee is initialized. This does not mean that the
     trustee exists.
   */
-  bool isInitialized() const throw();
+  bool isInitialized() const noexcept;
   
   /**
     Returns type of the trustee.
@@ -168,7 +168,7 @@ public:
   /**
     Returns the integral id.
   */
-  inline unsigned long getIntegralId() const throw() {
+  inline unsigned long getIntegralId() const noexcept {
     return integralId;
   }
   
@@ -194,7 +194,7 @@ template<>
 class _COM_AZURE_DEV__BASE__API Hash<Trustee> {
 public:
   
-  unsigned long operator()(const Trustee& value) throw();
+  unsigned long operator()(const Trustee& value) noexcept;
 };
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

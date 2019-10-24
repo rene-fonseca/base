@@ -66,28 +66,28 @@ private:
   unsigned int bytesInBuffer = 0;
   
   /** Push one block (16 words). */
-  void pushBlock(const uint8* block) throw();
+  void pushBlock(const uint8* block) noexcept;
   
-  static inline uint32 rotate(uint32 value, unsigned int bits) throw() {
+  static inline uint32 rotate(uint32 value, unsigned int bits) noexcept {
     return (value << bits) | (value >> (32 - bits));
   }
   
-  static inline void translate1(uint32 a, uint32& b, uint32 c, uint32 d, uint32& e, uint32 word) throw() {
+  static inline void translate1(uint32 a, uint32& b, uint32 c, uint32 d, uint32& e, uint32 word) noexcept {
     e += rotate(a, 5) + ((b & c) | (~b & d)) + word + 0x5a827999;
     b = rotate(b, 30);
   }
 
-  static inline void translate2(uint32 a, uint32& b, uint32 c, uint32 d, uint32& e, uint32 word) throw() {
+  static inline void translate2(uint32 a, uint32& b, uint32 c, uint32 d, uint32& e, uint32 word) noexcept {
     e += rotate(a, 5) + (b ^ c ^ d) + word + 0x6ed9eba1;
     b = rotate(b, 30);
   }
 
-  static inline void translate3(uint32 a, uint32& b, uint32 c, uint32 d, uint32& e, uint32 word) throw() {
+  static inline void translate3(uint32 a, uint32& b, uint32 c, uint32 d, uint32& e, uint32 word) noexcept {
     e += rotate(a, 5) + ((b & c) | (b & d) | (c & d)) + word + 0x8f1bbcdc;
     b = rotate(b, 30);
   }
 
-  static inline void translate4(uint32 a, uint32& b, uint32 c, uint32 d, uint32& e, uint32 word) throw() {
+  static inline void translate4(uint32 a, uint32& b, uint32 c, uint32 d, uint32& e, uint32 word) noexcept {
     e += rotate(a, 5) + (b ^ c ^ d) + word + 0xca62c1d6;
     b = rotate(b, 30);
   }
@@ -96,7 +96,7 @@ public:
   /**
     Initializes object.
   */
-  SHA1() throw();
+  SHA1() noexcept;
 
   /**
     Updates the checksum corresponding to the specified data. May be called
@@ -112,12 +112,12 @@ public:
     This function should be invoked when the entire message has been pushed.
     Do NOT use push() after invoking this function.
   */
-  void pushEnd() throw();
+  void pushEnd() noexcept;
 
   /**
     Returns the total size of the original message.
   */
-  inline uint64 getTotalSize() const throw() {
+  inline uint64 getTotalSize() const noexcept {
     return totalSize;
   }
 
@@ -125,13 +125,13 @@ public:
     Returns the message digest encoded in hex. This is only valid after
     pushEnd() has been invoked.
   */
-  String getValue() const throw();
+  String getValue() const noexcept;
 
   /**
     Returns the message digest encoded in Base64. This is only valid after
     pushEnd() has been invoked.
   */
-  String getBase64() const throw();
+  String getBase64() const noexcept;
 };
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

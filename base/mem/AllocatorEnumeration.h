@@ -47,21 +47,21 @@ public:
     @param begin Specifies the beginning of the enumeration.
     @param end Specifies the end of the enumeration.
   */
-  inline AllocatorEnumerator(Pointer begin, Pointer _end) throw()
+  inline AllocatorEnumerator(Pointer begin, Pointer _end) noexcept
     : current(begin), end(_end) {
   }
 
   /**
     Initializes enumeration from other enumeration.
   */
-  inline AllocatorEnumerator(const AllocatorEnumerator& copy) throw()
+  inline AllocatorEnumerator(const AllocatorEnumerator& copy) noexcept
     : current(copy.current), end(copy.end) {
   }
 
   /**
     Returns true if the enumeration still contains elements.
   */
-  inline bool hasNext() const throw() {
+  inline bool hasNext() const noexcept {
     return current != end;
   }
 
@@ -76,14 +76,14 @@ public:
   /**
     Returns true if the enumerations are referencing the same element.
   */
-  inline bool operator==(const AllocatorEnumerator& eq) const throw() {
+  inline bool operator==(const AllocatorEnumerator& eq) const noexcept {
     return current == eq.current;
   }
 
   /**
     Returns true if the enumerations are not referencing the same element.
   */
-  inline bool operator!=(const AllocatorEnumerator& eq) const throw() {
+  inline bool operator!=(const AllocatorEnumerator& eq) const noexcept {
     return current != eq.current;
   }
 };

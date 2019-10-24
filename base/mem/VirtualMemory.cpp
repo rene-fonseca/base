@@ -25,7 +25,7 @@
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
-String VirtualMemory::Module::getPath() const throw() {
+String VirtualMemory::Module::getPath() const noexcept {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   wchar buffer[4096]; // TAG: limit
   unsigned int length = ::GetModuleFileName((HMODULE)context, buffer, sizeof(buffer));
@@ -36,7 +36,7 @@ String VirtualMemory::Module::getPath() const throw() {
 #endif // flavor
 }
 
-VirtualMemory::Module VirtualMemory::Module::getProcessModule() throw() {
+VirtualMemory::Module VirtualMemory::Module::getProcessModule() noexcept {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   return Module((HMODULE)::GetModuleHandle(nullptr));
 #else // unix
@@ -44,7 +44,7 @@ VirtualMemory::Module VirtualMemory::Module::getProcessModule() throw() {
 #endif // flavor
 }
 
-bool VirtualMemory::Module::isModule() const throw() {
+bool VirtualMemory::Module::isModule() const noexcept {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   wchar buffer[1];
   unsigned int length = ::GetModuleFileName((HMODULE)context, buffer, sizeof(buffer));
@@ -54,7 +54,7 @@ bool VirtualMemory::Module::isModule() const throw() {
 #endif // flavor
 }
 
-MemorySize VirtualMemory::Module::getSize() const throw() {
+MemorySize VirtualMemory::Module::getSize() const noexcept {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   SYSTEM_INFO systemInformation;
   ::GetSystemInfo(&systemInformation);
@@ -78,7 +78,7 @@ MemorySize VirtualMemory::Module::getSize() const throw() {
 #endif // flavor
 }
 
-Array<VirtualMemory::Module> VirtualMemory::getModules() throw() {
+Array<VirtualMemory::Module> VirtualMemory::getModules() noexcept {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   Array<Module> result;
   SYSTEM_INFO systemInformation;
@@ -106,7 +106,7 @@ Array<VirtualMemory::Module> VirtualMemory::getModules() throw() {
 #endif // flavor
 }
 
-void VirtualMemory::query(const void* address) throw() {
+void VirtualMemory::query(const void* address) noexcept {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   throw NotImplemented(Type::getType<VirtualMemory>());
   // DWORD result = ::VirtualQuery(address, &info, sizeof(info));
@@ -115,7 +115,7 @@ void VirtualMemory::query(const void* address) throw() {
 #endif // flavor
 }
 
-void VirtualMemory::dump() throw() {
+void VirtualMemory::dump() noexcept {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   // get page size
   SYSTEM_INFO info;

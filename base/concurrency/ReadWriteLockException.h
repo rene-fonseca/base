@@ -31,7 +31,7 @@ public:
   /**
     Initializes the exception object with no message.
   */
-  inline ReadWriteLockException() throw() {
+  inline ReadWriteLockException() noexcept {
   }
 
   /**
@@ -39,7 +39,7 @@ public:
 
     @param message The message.
   */
-  inline ReadWriteLockException(const char* message) throw()
+  inline ReadWriteLockException(const char* message) noexcept
     : LockException(message) {
   }
 
@@ -48,7 +48,7 @@ public:
     
     @param type The identity of the type.
   */
-  inline ReadWriteLockException(Type type) throw() : LockException(type) {
+  inline ReadWriteLockException(Type type) noexcept : LockException(type) {
   }
   
   /**
@@ -57,7 +57,7 @@ public:
     @param message An NULL-terminated string (ASCII).
     @param type The identity of the type.
   */
-  inline ReadWriteLockException(const char* message, Type type) throw()
+  inline ReadWriteLockException(const char* message, Type type) noexcept
     : LockException(message, type) {
   }
 };

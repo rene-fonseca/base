@@ -31,7 +31,7 @@ public:
   /**
     Initializes the exception object with no message.
   */
-  inline BarrierException() throw() {
+  inline BarrierException() noexcept {
   }
   
   /**
@@ -39,7 +39,7 @@ public:
     
     @param message The message.
   */
-  inline BarrierException(const char* message) throw()
+  inline BarrierException(const char* message) noexcept
     : LockException(message) {
   }
   
@@ -48,7 +48,7 @@ public:
     
     @param type The identity of the type.
   */
-  inline BarrierException(Type type) throw()
+  inline BarrierException(Type type) noexcept
     : LockException(type) {
   }
   
@@ -58,7 +58,7 @@ public:
     @param message An NULL-terminated string (ASCII).
     @param type The identity of the type.
   */
-  inline BarrierException(const char* message, Type type) throw()
+  inline BarrierException(const char* message, Type type) noexcept
     : LockException(message, type) {
   }
 };

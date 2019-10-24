@@ -15,10 +15,10 @@
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
-IEEE1394Exception::IEEE1394Exception() throw() : CommunicationsException() {
+IEEE1394Exception::IEEE1394Exception() noexcept : CommunicationsException() {
 }
 
-IEEE1394Exception::IEEE1394Exception(const char* message) throw()
+IEEE1394Exception::IEEE1394Exception(const char* message) noexcept
   : CommunicationsException(message) {
 }
 

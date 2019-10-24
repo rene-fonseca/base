@@ -75,17 +75,17 @@ public:
   class _COM_AZURE_DEV__BASE__API ProcessException : public Exception {
   public:
     
-    inline ProcessException() throw() {
+    inline ProcessException() noexcept {
     }
     
-    inline ProcessException(const char* message) throw()
+    inline ProcessException(const char* message) noexcept
       : Exception(message) {
     }
     
-    inline ProcessException(Type type) throw() : Exception(type) {
+    inline ProcessException(Type type) noexcept : Exception(type) {
     }
     
-    inline ProcessException(const char* message, Type type) throw()
+    inline ProcessException(const char* message, Type type) noexcept
       : Exception(message, type) {
     }
   };
@@ -98,14 +98,14 @@ public:
   /**
     Returns the layout of the process.
   */
-  static inline Layout getLayout() throw() {
+  static inline Layout getLayout() noexcept {
     return Layout();
   }
   
   /**
     Returns this process.
   */
-  static Process getProcess() throw();
+  static Process getProcess() noexcept;
   
   /**
     Returns parent process. A process object with id 0 is returned when no
@@ -113,7 +113,7 @@ public:
 
     @return Invalid process if not supported.
   */
-  static Process getParentProcess() throw();
+  static Process getParentProcess() noexcept;
   
   /**
     Returns the number of configured processors in the system. It is legal for
@@ -121,7 +121,7 @@ public:
     
     @return Returns 0 if the value cannot be determined.
   */
-  static inline unsigned long getNumberOfConfiguredProcessors() throw() {
+  static inline unsigned long getNumberOfConfiguredProcessors() noexcept {
     return OperatingSystem::getVariable(
       OperatingSystem::NUM_OF_CONFIGURED_PROCESSORS
     );
@@ -133,7 +133,7 @@ public:
     
     @return Returns 0 if the value cannot be determined.
   */
-  static inline unsigned long getNumberOfOnlineProcessors() throw() {
+  static inline unsigned long getNumberOfOnlineProcessors() noexcept {
     return OperatingSystem::getVariable(
       OperatingSystem::NUM_OF_ONLINE_PROCESSORS
     );
@@ -142,7 +142,7 @@ public:
   /**
     Returns true if the system supports job control.
   */
-  static inline bool supportsJobControl() throw() {
+  static inline bool supportsJobControl() noexcept {
     return OperatingSystem::getVariable(OperatingSystem::SUPPORTS_JOB_CONTROL) != 0;
   }
   
@@ -181,12 +181,12 @@ public:
     static Handle* invalid;
     
     /** Initializes process handle. */
-    inline ProcessHandle(OperatingSystem::Handle handle) throw()
+    inline ProcessHandle(OperatingSystem::Handle handle) noexcept
       : Handle(handle) {
     }
     
     /** Releases the resources used by the process. */
-    ~ProcessHandle() throw();
+    ~ProcessHandle() noexcept;
   };
 private:
 
@@ -199,36 +199,36 @@ public:
   /**
     Initializes process as invalid.
   */
-  Process() throw();
+  Process() noexcept;
   
   /**
     Initializes a process.
 
     @param id The id of the process.
   */
-  Process(unsigned long id) throw();
+  Process(unsigned long id) noexcept;
 
   /**
     Initializes process from other process.
   */
-  Process(const Process& copy) throw();
+  Process(const Process& copy) noexcept;
 
   /**
     Assignment of process with process.
   */
-  Process& operator=(const Process& eq) throw();
+  Process& operator=(const Process& eq) noexcept;
 
   /**
     Returns the id of the process.
   */
-  inline unsigned long getId() throw() {
+  inline unsigned long getId() noexcept {
     return id;
   }
 
   /**
     Returns true if the process id is invalid.
   */
-  inline bool isValid() const throw() {
+  inline bool isValid() const noexcept {
     return id != INVALID;
   }
   
@@ -258,7 +258,7 @@ public:
     @return The exit code (EXIT_CODE_INVALID if exit code is not available or
     the timeout period expired).
   */
-  int wait(unsigned int microseconds) throw();
+  int wait(unsigned int microseconds) noexcept;
   
   /**
     Waits for the process to terminate.
@@ -280,10 +280,10 @@ public:
   /**
     Returns the current processing times (both user and system times).
   */
-  Times getTimes() throw();
+  Times getTimes() noexcept;
 };
 
-inline Process::Process(unsigned long _id) throw()
+inline Process::Process(unsigned long _id) noexcept
   : id(_id),
     handle(ProcessHandle::invalid)
 {

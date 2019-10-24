@@ -15,10 +15,10 @@
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
-CommunicationsException::CommunicationsException() throw() : IOException() {
+CommunicationsException::CommunicationsException() noexcept : IOException() {
 }
 
-CommunicationsException::CommunicationsException(const char* message) throw() : IOException(message) {
+CommunicationsException::CommunicationsException(const char* message) noexcept : IOException(message) {
 }
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

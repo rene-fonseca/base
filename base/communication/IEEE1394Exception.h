@@ -31,21 +31,21 @@ public:
   /**
     Initializes the exception object with no message.
   */
-  IEEE1394Exception() throw();
+  IEEE1394Exception() noexcept;
 
   /**
     Initializes exception object as unspecified.
 
     @param message The message.
   */
-  IEEE1394Exception(const char* message) throw();
+  IEEE1394Exception(const char* message) noexcept;
 
   /**
     Initializes the exception object without an associated message.
     
     @param type The identity of the type.
   */
-  IEEE1394Exception(Type type) throw() : CommunicationsException(type) {
+  IEEE1394Exception(Type type) noexcept : CommunicationsException(type) {
   }
   
   /**
@@ -54,7 +54,7 @@ public:
     @param message An NULL-terminated string (ASCII).
     @param type The identity of the type.
   */
-  IEEE1394Exception(const char* message, Type type) throw() : CommunicationsException(message, type) {
+  IEEE1394Exception(const char* message, Type type) noexcept : CommunicationsException(message, type) {
   }
 };
 

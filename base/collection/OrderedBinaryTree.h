@@ -59,7 +59,7 @@ public:
 //
 //      @param tree The ordered binary tree being enumerated.
 //    */
-//    inline Enumeration(OrderedBinaryTree& tree) throw()
+//    inline Enumeration(OrderedBinaryTree& tree) noexcept
 //      : InfixOrderEnumeration<Value, Value&, Value*, Node*>(tree.getRoot())
 //    {
 //    }
@@ -79,7 +79,7 @@ public:
 //
 //      @param tree The ordered binary tree being enumerated.
 //    */
-//    inline ReadOnlyEnumeration(const OrderedBinaryTree& tree) throw()
+//    inline ReadOnlyEnumeration(const OrderedBinaryTree& tree) noexcept
 //      : InfixOrderEnumeration<Value, const Value&, const Value*, const Node*>(tree.getRoot())
 //    {
 //    }
@@ -90,20 +90,20 @@ public:
   /**
     Initializes an empty ordered binary tree.
   */
-  OrderedBinaryTree() throw() {
+  OrderedBinaryTree() noexcept {
   }
 
   /**
     Initializes binary tree from other binary tree.
   */
-  OrderedBinaryTree(const OrderedBinaryTree& copy) throw()
+  OrderedBinaryTree(const OrderedBinaryTree& copy) noexcept
     : BinaryTree<TYPE>(copy) {
   }
 
   /**
     Assignment of ordered binary tree to ordered binary tree.
   */
-  OrderedBinaryTree& operator=(const OrderedBinaryTree& eq) throw() {
+  OrderedBinaryTree& operator=(const OrderedBinaryTree& eq) noexcept {
     BinaryTree<TYPE>::operator=(eq);
     return *this;
   }
@@ -111,14 +111,14 @@ public:
   /**
     Returns a modifying enumerator of the ordered binary tree.
   */
-  inline Enumerator getEnumerator() throw() {
+  inline Enumerator getEnumerator() noexcept {
     return Enumerator(getRoot());
   }
 
   /**
     Returns a non-modifying enumerator of the ordered binary tree.
   */
-  inline ReadEnumerator getReadEnumerator() const throw() {
+  inline ReadEnumerator getReadEnumerator() const noexcept {
     return ReadEnumerator(getRoot());
   }
 
@@ -129,7 +129,7 @@ public:
 
     @return The node with the matching value. 0 if not found.
   */
-  Node* find(const Value& value) throw() {
+  Node* find(const Value& value) noexcept {
     Node* node = getRoot();
 
     while (node) {
@@ -142,7 +142,7 @@ public:
         return node;
       }
     }
-    return 0; // not found
+    return nullptr; // not found
   }
 
   /**
@@ -152,7 +152,7 @@ public:
 
     @return The node with the matching value. 0 if not found.
   */
-  const Node* find(const Value& value) const throw() {
+  const Node* find(const Value& value) const noexcept {
     const Node* node = BinaryTree<Value>::getRoot();
 
     while (node) {
@@ -165,7 +165,7 @@ public:
         return node;
       }
     }
-    return 0; // not found
+    return nullptr; // not found
   }
 
   /**
@@ -173,7 +173,7 @@ public:
 
     @return 0 if the tree is empty.
   */
-  Node* getFirst() throw() {
+  Node* getFirst() noexcept {
     Node* node = BinaryTree<Value>::getRoot();
     Node* previous = nullptr; // not found
 
@@ -189,7 +189,7 @@ public:
 
     @return 0 if the tree is empty.
   */
-  Node* getLast() throw() {
+  Node* getLast() noexcept {
     Node* node = BinaryTree<Value>::getRoot();
     Node* previous = nullptr; // not found
 
@@ -285,7 +285,7 @@ public:
   /**
     Removes all the nodes from the tree.
   */
-  void removeAll() throw() {
+  void removeAll() noexcept {
     BinaryTree<TYPE>::removeAll();
   }
 };

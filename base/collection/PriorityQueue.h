@@ -52,7 +52,7 @@ public:
   /**
     Initializes an empty priority queue.
   */
-  PriorityQueue() throw() {
+  PriorityQueue() noexcept {
   }
 
   /**
@@ -65,14 +65,14 @@ public:
   /**
     Returns the number of elements in the priority queue.
   */
-  inline unsigned int getSize() const throw() {
+  inline unsigned int getSize() const noexcept {
     return size;
   }
 
   /**
     Returns true if the priority queue is empty.
   */
-  inline bool isEmpty() const throw() {
+  inline bool isEmpty() const noexcept {
     return !size;
   }
 

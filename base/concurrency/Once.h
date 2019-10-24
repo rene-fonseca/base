@@ -23,7 +23,7 @@ _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
   Once implementation with delayed resource allocation.
   
   @code
-  void myMethod() throw() {
+  void myMethod() noexcept {
     static Once once;
     if (once.getToken()) {
       // ...
@@ -60,7 +60,7 @@ public:
   /**
     Initializes the synchronization object.
   */
-  inline Once() throw() {
+  inline Once() noexcept {
   }
   
   /**
@@ -76,7 +76,7 @@ public:
   /**
     Relinquishes the token.
   */
-  void relinquishToken() throw();
+  void relinquishToken() noexcept;
 };
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

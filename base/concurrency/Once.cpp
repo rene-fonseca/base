@@ -41,7 +41,7 @@ bool Once::getTokenImpl() throw(ResourceException) {
   return false;
 }
 
-void Once::relinquishToken() throw() {
+void Once::relinquishToken() noexcept {
   ExclusiveSynchronize<Guard> _guard(guard);
   waiting--;
   mask = false;

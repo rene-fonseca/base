@@ -22,11 +22,11 @@ steps:
   inputs:
     cmakeArgs: '--build . --config Debug --target install'
 
-- task: CMake@1
+- task: CmdLine@2
   displayName: 'Run tests'
-  enabled: false
+  enabled: true
   inputs:
-    cmakeArgs: '--build . --config Debug --target test'
+    cmakeArgs: 'ctest -T Test'
 
 - task: PublishPipelineArtifact@1
   inputs:

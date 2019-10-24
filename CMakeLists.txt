@@ -167,7 +167,7 @@ target_compile_definitions(base PRIVATE _COM_AZURE_DEV__BASE__SHARED_LIBRARY_BUI
 
 if (0)
 target_include_directories(base PUBLIC  
-  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>  
+  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
   $<INSTALL_INTERFACE:include> # <prefix>/include/base
 )
 endif ()
@@ -189,13 +189,6 @@ set_target_properties(base
 add_library(base_STATIC STATIC ${base_SRC} ${CMAKE_CURRENT_BINARY_DIR}/generated/base/config.h)
 set_target_properties(base_STATIC PROPERTIES OUTPUT_NAME base_static)
 
-#set_target_properties(base base_STATIC
-#  PROPERTIES
-#  ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/lib"
-#  LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/lib"
-#  RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin"
-#)
-
 file(GLOB_RECURSE base_HEADERS
   "base/*.h"
 )
@@ -214,12 +207,12 @@ install(
   FILES_MATCHING PATTERN "*.h" # select header files
 )
 
-install(TARGETS base base_STATIC
-  EXPORT baseConfig
-)
+# set(CMAKE_DEBUG_POSTFIX "-debug")
 
 install(TARGETS base base_STATIC
   CONFIGURATIONS Debug
+  EXPORT baseConfigDebug
+  PUBLIC_HEADER DESTINATION "${CMAKE_BINARY_DIR}/install/include/base"
   ARCHIVE DESTINATION "${CMAKE_BINARY_DIR}/install/lib/debug"
   LIBRARY DESTINATION "${CMAKE_BINARY_DIR}/install/lib/debug"
   RUNTIME DESTINATION "${CMAKE_BINARY_DIR}/install/bin/debug"
@@ -227,22 +220,28 @@ install(TARGETS base base_STATIC
 
 install(TARGETS base base_STATIC
   CONFIGURATIONS Release
+  EXPORT baseConfig
+  PUBLIC_HEADER DESTINATION "${CMAKE_BINARY_DIR}/install/include/base"
   ARCHIVE DESTINATION "${CMAKE_BINARY_DIR}/install/lib/release"
   LIBRARY DESTINATION "${CMAKE_BINARY_DIR}/install/lib/release"
   RUNTIME DESTINATION "${CMAKE_BINARY_DIR}/install/bin/release"
 )
 
+if (0) # TAG: not working yet
 export(TARGETS base base_STATIC
   NAMESPACE base::
   FILE "${CMAKE_CURRENT_BINARY_DIR}/baseConfig.cmake"
 )
 
+install(EXPORT baseConfigDebug
+  DESTINATION "${CMAKE_BINARY_DIR}/install/lib/cmake/base"
+  NAMESPACE base::
+)
 install(EXPORT baseConfig
   DESTINATION "${CMAKE_BINARY_DIR}/install/lib/cmake/base"
   NAMESPACE base::
 )
-
-# PUBLIC_HEADER DESTINATION "${CMAKE_BINARY_DIR}/inc"
+endif ()
 
 #install(
 #  DIRECTORY "${CMAKE_BINARY_DIR}/Release"

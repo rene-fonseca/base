@@ -28,6 +28,12 @@ steps:
   inputs:
     cmakeArgs: 'ctest -T Test'
 
+- task: PublishTestResults@2
+  enabled: true
+  inputs:
+    testResultsFiles: '**/Test.xml'
+    testRunTitle: 'Test results for CTest'
+
 - task: PublishPipelineArtifact@1
   inputs:
     artifactName: 'base'

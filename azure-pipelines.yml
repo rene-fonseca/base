@@ -1,41 +1,63 @@
 trigger:
 - master
 
-strategy:
-  matrix:
-    windows:
-      imageName: 'windows-latest'
-    linux:
-      imageName: 'ubuntu-18.04'
+jobs:
+- job: windows
+  pool:
+    vmImage: 'windows-latest'
+  steps:
+  - task: CMake@1
+    displayName: 'Config'
+    inputs:
+      cmakeArgs: '..'
 
-pool:
-  vmImage: $(imageName)
+  - task: CMake@1
+    displayName: 'Build'
+    inputs:
+      cmakeArgs: '--build . --config Debug --target install'
 
-steps:
-- task: CMake@1
-  displayName: 'Config'
-  inputs:
-    cmakeArgs: '..'
+  - task: CmdLine@2
+    displayName: 'Run tests'
+    inputs:
+      script: 'ctest -T Test'
 
-- task: CMake@1
-  displayName: 'Build'
-  inputs:
-    cmakeArgs: '--build . --config Debug --target install'
+  - task: PublishTestResults@2
+    inputs:
+      testResultsFiles: '**/Test.xml'
+      testRunTitle: 'Test results for CTest'
 
-- task: CmdLine@2
-  displayName: 'Run tests'
-  enabled: true
-  inputs:
-    script: 'ctest -T Test'
+  - task: PublishPipelineArtifact@1
+    inputs:
+      artifactName: 'base-windows'
+      targetPath: 'artifacts'
+      path: $(System.DefaultWorkingDirectory)/build/install
 
-- task: PublishTestResults@2
-  enabled: true
-  inputs:
-    testResultsFiles: '**/Test.xml'
-    testRunTitle: 'Test results for CTest'
+- job: linux
+  pool:
+    vmImage: 'ubuntu-18.04'
+  steps:
+  - task: CMake@1
+    displayName: 'Config'
+    inputs:
+      cmakeArgs: '..'
 
-- task: PublishPipelineArtifact@1
-  inputs:
-    artifactName: 'base'
-    targetPath: 'artifacts'
-    path: $(System.DefaultWorkingDirectory)/build/install
+  - task: CMake@1
+    displayName: 'Build'
+    inputs:
+      cmakeArgs: '--build . --config Debug --target install -- -j 4'
+
+  - task: CmdLine@2
+    displayName: 'Run tests'
+    inputs:
+      script: 'ctest -T Test'
+
+  - task: PublishTestResults@2
+    inputs:
+      testResultsFiles: '**/Test.xml'
+      testRunTitle: 'Test results for CTest'
+
+  - task: PublishPipelineArtifact@1
+    inputs:
+      artifactName: 'base-ubuntu18'
+      targetPath: 'artifacts'
+      path: $(System.DefaultWorkingDirectory)/build/install

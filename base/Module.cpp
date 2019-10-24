@@ -13,7 +13,10 @@
 
 #include <base/Module.h>
 #include <base/string/Format.h>
+#include <base/string/Parser.h>
+#include <base/Guid.h>
 #include <base/UnitTest.h>
+#include <base/UnsignedInteger.h>
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
@@ -23,9 +26,10 @@ Module::Module()
 {
 }
 
-void Module::setName(const String& _name)
+void Module::setId(const String& _id)
 {
-  name = _name;
+  ASSERT(isFullyQualifiedId(_id));
+  id = _id;
 }
 
 void Module::setUrl(const String& _url)
@@ -35,6 +39,7 @@ void Module::setUrl(const String& _url)
 
 void Module::setConsumer(const String& _consumer)
 {
+  ASSERT(isValidConsumer(_consumer));
   consumer = _consumer;
 }
 
@@ -81,11 +86,10 @@ void ModuleManager::registerModule(const std::initializer_list<const char*>& inf
   registerModule(prefix + ":" + name + ":" + version, consumer, url);
 }
 
-void ModuleManager::registerModule(const String& name, const String& consumer, const String& url)
+void ModuleManager::registerModule(const String& id, const String& consumer, const String& url)
 {
-  ASSERT(!name.isEmpty());
   auto _module = new Module();
-  _module->setName(name);
+  _module->setId(id);
   _module->setUrl(url);
   _module->setConsumer(consumer);
   addModule(_module);
@@ -109,24 +113,181 @@ void ModuleManager::loadModules()
   }
 }
 
-bool ModuleManager::isValidConsumer(const String& consumer) noexcept
+bool Module::isFullyQualifiedId(const String& id) noexcept
 {
+  const auto words = id.split(':');
+  if (words.getSize() != 3) {
+    return false;
+  }
+  if (!isValidPrefix(words[0])) {
+    return false;
+  }
+  if (!isValidName(words[1])) {
+    return false;
+  }
+  if (!isValidVersion(words[2])) {
+    return false;
+  }
+  return true;
+}
+
+bool Module::isValidConsumer(const String& consumer) noexcept
+{
+  const auto words = consumer.split(':');
+  if (words.getSize() != 2) {
+    return false;
+  }
+  if (!isValidPrefix(words[0])) {
+    return false;
+  }
+  if (!isValidName(words[1])) {
+    return false;
+  }
   return !consumer.isEmpty();
 }
 
-bool ModuleManager::isValidPrefix(const String& prefix) noexcept
+bool Module::isValidPrefix(const String& prefix) noexcept
 {
-  return !prefix.isEmpty();
+  if (Guid::isGuid(prefix)) {
+    return true;
+  }
+
+  // [a-zA-Z0-9_]+(.[a-zA-Z0-9_]+)
+
+  Parser parser(prefix);
+  if (!parser.hasMore()) {
+    return false;
+  }
+  while (true) {
+    if (!parser.hasMore()) {
+      return false; // done
+    }
+    auto previous = parser.getCurrent();
+    while (parser.hasMore()) {
+      char ch = parser.peek();
+      if (((ch >= 'a') && (ch <= 'z')) || ((ch >= 'A') && (ch <= 'Z')) || // TAG: accept any domain name?
+          ((ch >= '0') && (ch <= '9')) || (ch == '_')) {
+        parser.skip();
+      } else {
+        break;
+      }
+    }
+    if (previous == parser.getCurrent()) {
+      return false; // nothing read
+    }
+    if (!parser.hasMore()) {
+      return true; // done
+    }
+    if (parser.peek() != '.') {
+      return false;
+    }
+    parser.skip();
+  }
+  return true;
 }
 
-bool ModuleManager::isValidName(const String& name) noexcept
+bool Module::isValidName(const String& name) noexcept
 {
-  return !name.isEmpty();
+  // [a-zA-Z0-9_]+
+  Parser parser(name);
+  if (!parser.hasMore()) {
+    return false;
+  }
+  auto previous = parser.getCurrent();
+  while (parser.hasMore()) {
+    char ch = parser.peek();
+    if (((ch >= 'a') && (ch <= 'z')) || ((ch >= 'A') && (ch <= 'Z')) || // TAG: accept any domain name?
+        ((ch >= '0') && (ch <= '9')) || (ch == '_')) {
+      parser.skip();
+    } else {
+      break;
+    }
+  }
+  if (previous == parser.getCurrent()) {
+    return false; // nothing read
+  }
+  if (parser.hasMore()) {
+    return false;
+  }
+  return true;
 }
 
-bool ModuleManager::isValidVersion(const String& version) noexcept
+bool Module::isValidVersion(const String& version) noexcept
 {
-  return !version.isEmpty();
+  const unsigned int MAXIMUM_INT = 999999999;
+  Parser parser(version);
+  if (!parser.hasMore()) {
+    return false;
+  }
+  // TAG: handle letters also?
+  while (true) {
+    if (!parser.hasMore()) {
+      return false; // done
+    }
+    if (parser.peek() == '0') { // single 0 case
+      parser.skip();
+      if (!parser.hasMore()) {
+        return true; // done
+      }
+      if (parser.peek() == '.') {
+        parser.skip();
+        continue;
+      }
+      return false;
+    } else if (ASCIITraits::isDigit(parser.peek())) {
+      uint64 value = 0;
+      value = ASCIITraits::digitToValue(parser.peek());
+      parser.skip();
+      while (parser.hasMore() && ASCIITraits::isDigit(parser.peek())) {
+        value = value * 10 + ASCIITraits::digitToValue(parser.peek());
+        if (value > MAXIMUM_INT) {
+          return false;
+        }
+        parser.skip();
+      }
+      if (!parser.hasMore()) {
+        return true; // done
+      }
+      if (parser.peek() == '.') {
+        parser.skip();
+        continue;
+      }
+      return false;
+    } else {
+      return false;
+    }
+  }
+  return true;
+}
+
+int Module::compareVersions(const String& a, const String& b) noexcept
+{
+  if (INLINE_ASSERT(isValidVersion(a) && isValidVersion(b))) {
+    const auto aws = a.split('.');
+    const auto bws = b.split('.');
+    MemorySize i = 0;
+    while (true) {
+      const bool gotA = (i < aws.getSize());
+      const bool gotB = (i < bws.getSize());
+      if (gotA && gotB) {
+        unsigned int av = UnsignedInteger::parse(aws[i], UnsignedInteger::DEC);
+        unsigned int bv = UnsignedInteger::parse(bws[i], UnsignedInteger::DEC);
+        if (av < bv) {
+          return -1;
+        } else if (av > bv) {
+          return 1;
+        }
+      } else if (!gotA && !gotB) {
+        return 0; // done
+      } else if (!gotA) {
+        return 1;
+      } else {
+        return -1;
+      }
+      ++i;
+    }
+  }
+  return 0;
 }
 
 namespace {
@@ -214,7 +375,7 @@ bool ModuleManager::traverseModules(const String& pattern)
     fout << "===============================================================================" << EOL;
     
     // TAG: check version syntax - regex's
-    auto subs = _module->getName().split(':');
+    auto subs = _module->getId().split(':');
     auto prefix = (subs.getSize() >= 1) ? subs[0] : String();
     auto name = (subs.getSize() >= 2) ? subs[1] : String();
     auto version = (subs.getSize() >= 3) ? subs[2] : String();
@@ -223,22 +384,22 @@ bool ModuleManager::traverseModules(const String& pattern)
 
     fout << "MODULE: " << ENDL;
     fout << "  Prefix: " << presentString(prefix);
-    if (!isValidPrefix(prefix)) {
+    if (!Module::isValidPrefix(prefix)) {
       fout << " <BAD PREFIX>";
     }
     fout << EOL;
     fout << "  Name: " << presentString(name);
-    if (!isValidName(name)) {
+    if (!Module::isValidName(name)) {
       fout << " <BAD NAME>";
     }
     fout << EOL;
     fout << "  Version: " << presentString(version);
-    if (!isValidVersion(version)) {
+    if (!Module::isValidVersion(version)) {
       fout << " <BAD VERSION>";
     }
     fout << EOL;
     fout << "  Consumer: " << (!consumer.isEmpty() ? presentString(consumer) : String("<UNKNOWN>"));
-    if (!consumer.isEmpty() && !isValidConsumer(consumer)) {
+    if (!consumer.isEmpty() && !Module::isValidConsumer(consumer)) {
       fout << " <BAD CONSUMER>";
     }
     fout << EOL;
@@ -308,7 +469,7 @@ ModuleManager::RegisterEntry::~RegisterEntry()
   MODULE_REGISTER(THIS_MODULE, PREFIX_MODULE);
 */
 
-#define _ZLIB_MODULE_INFO {"PREFIX=net.zli", "NAME=zlib", "VERSION=1.2.11", "URL=https://zlib.net/"}
+#define _ZLIB_MODULE_INFO {"PREFIX=net.zlib", "NAME=zlib", "VERSION=1.2.11", "URL=https://zlib.net/"}
 
 // define a valid version [0-9][1-9]*(\.[0-9][1-9]*(\.[0-9][1-9]*[a-zA-Z]*)?)?
 #define MODULE_MAKE_VERSION(MAJOR, MINOR, MICRO, BUILD) "" MAJOR "." MINOR "." MICRO "/" BUILD // TAG: how should we handle extra version into like build
@@ -320,15 +481,27 @@ ModuleManager::RegisterEntry::~RegisterEntry()
 // TAG: check syntax for all given data
 // TAG: add build also for version
 // TAG: handle static/shared linking of modules - more if module is distributed with this module
+// TAG: how do we handle aliases for modules - prefix changes
 
 #define THIS_MODULE "com.azure.dev:base" // TAG: can we auto fill consumer module - use guid
+// #define THIS_MODULE "{47FA285A-3C7F-410C-9261-5E95202628DD}:base"
+
 MODULE_REGISTER(THIS_MODULE, _ZLIB_MODULE_INFO);
 MODULE_REGISTER_EXPLICIT(THIS_MODULE, "net.zlib", "zlib", "1.2.11", "https://zlib.net/");
 MODULE_REGISTER_EXPLICIT(THIS_MODULE, "org.openssl", "OpenSSL", "1.1.1", "https://www.openssl.org/");
 
 // TAG: detect c/c++ library - in particular if static build
 #if (_COM_AZURE_DEV__BASE__COMPILER == _COM_AZURE_DEV__BASE__COMPILER_MSC)
-MODULE_REGISTER_EXPLICIT(THIS_MODULE, "com.microsoft", "C++Runtime", "16", "https://www.microsoft.com/");
+#if (_COM_AZURE_DEV__BASE__COMPILER_VERSION >= 1920)
+#define CPP_RUNTIME_VERSION "16"
+#elif (_COM_AZURE_DEV__BASE__COMPILER_VERSION >= 1910)
+#define CPP_RUNTIME_VERSION "15"
+#elif (_COM_AZURE_DEV__BASE__COMPILER_VERSION >= 1900)
+#define CPP_RUNTIME_VERSION "14"
+#endif
+#if defined(CPP_RUNTIME_VERSION)
+  MODULE_REGISTER_EXPLICIT(THIS_MODULE, "com.microsoft.visualstudio", "CPPRuntime", CPP_RUNTIME_VERSION, "https://visualstudio.microsoft.com/");
+#endif
 #endif
 
 // TAG: add service url for this module - which gets asked by default - before urls for individual modules

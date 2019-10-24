@@ -36,19 +36,37 @@ public:
   };
 private:
 
-  /** Name/id. */
-  String name;
+  /** Fully qualified id. */
+  String id;
   /** Url. */
   String url;
   /** Consumer. */
   String consumer;
 public:
 
+  /** Returns true if the name is valid ID => (PREFIX:NAME:VERSION). */
+  static bool isFullyQualifiedId(const String& id) noexcept;
+
+  /** Returns true if the consumer is valid CONSUMER => (PREFIX:NAME). */
+  static bool isValidConsumer(const String& consumer) noexcept;
+
+  /** Returns true if the prefix is valid PREFIX => (Guid || ([a-zA-Z0-9_]+(.[a-zA-Z0-9_]+)*)). */
+  static bool isValidPrefix(const String& prefix) noexcept;
+
+  /** Returns true if the name is valid NAME => ([a-zA-Z0-9_]+). */
+  static bool isValidName(const String& name) noexcept;
+
+  /** Returns true if the version is valid. VERSION => ((0 || [1-9][0-9]*)(.(0 || [1-9][0-9]*))*). */
+  static bool isValidVersion(const String& version) noexcept;
+
+  /** Compares the given versions. */
+  static int compareVersions(const String& a, const String& b) noexcept;
+
   /** Initializes the module. */
   Module();
 
-  /** Sets the name/id of the module. */
-  void setName(const String& name);
+  /** Sets the id of the module. */
+  void setId(const String& id);
   
   /** Sets the url for the module. */
   void setUrl(const String& url);
@@ -56,10 +74,10 @@ public:
   /** Sets the consumer file of the module. */
   void setConsumer(const String& consumer);
 
-  /** Returns the name/id of the module. */
-  inline const String& getName() const noexcept
+  /** Returns the fully qualified id (PREFIX:NAME:VERSION) of the module. */
+  inline const String& getId() const noexcept
   {
-    return name;
+    return id;
   }
 
   /** Returns the url of the module. */
@@ -96,15 +114,7 @@ public:
   void registerModule(const std::initializer_list<const char*>& info, const String& consumer = String());
 
   /** Create module instance and adds it. */
-  void registerModule(const String& name, const String& consumer = String(), const String& url = String());
-
-  static bool isValidConsumer(const String& consumer) noexcept;
-
-  static bool isValidPrefix(const String& prefix) noexcept;
-  
-  static bool isValidName(const String& name) noexcept;
-
-  static bool isValidVersion(const String& version) noexcept;
+  void registerModule(const String& id, const String& consumer = String(), const String& url = String());
 
   /** Loads the registered modules. */
   void loadModules();
@@ -145,7 +155,7 @@ public:
   };
 };
 
-/** Returns initializer list for use with MODULE_REGISTER. */
+/** Returns initializer list for use with MODULE_REGISTER. Version is a list of integers separated by a dot of maximum value 999999999. */
 #define MODULE_MAKE_INITIALIZER(PREFIX, NAME, VERSION, URL) \
   {"PREFIX=" PREFIX, "NAME=" NAME, "VERSION=" VERSION, "URL=" URL}
 

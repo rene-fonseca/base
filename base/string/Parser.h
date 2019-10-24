@@ -14,6 +14,7 @@
 #pragma once
 
 #include <base/mem/NullPointer.h>
+#include <base/string/String.h>
 #include <base/Primitives.h>
 #include <base/Object.h>
 
@@ -23,10 +24,13 @@ _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 class _COM_AZURE_DEV__BASE__API ParseException : public Exception {
 public:
   
-  inline ParseException() {
+  inline ParseException() noexcept
+  {
   }
   
-  inline ParseException(const char* message) : Exception(message) {
+  inline ParseException(const char* message) noexcept
+    : Exception(message)
+  {
   }
 };
 
@@ -51,6 +55,13 @@ public:
     ASSERT(src <= end);
   }
   
+  /** Constructs parser. */
+  Parser(const String& text) noexcept
+    : src(reinterpret_cast<const uint8*>(text.native())), end(reinterpret_cast<const uint8*>(text.getEnd()))
+  {
+    ASSERT(src <= end);
+  }
+
   /** Returns the current marker. */
   inline const uint8* getCurrent() const noexcept
   {

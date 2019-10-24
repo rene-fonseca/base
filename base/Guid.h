@@ -39,9 +39,20 @@ public:
   /** Returns a likely unique guid. */
   static Guid createGuid() noexcept;
 
+  /** Returns a likely unique guid as a string. */
   static String createGuidAsString();
 
+  /** Converts string to guid. */
   static Guid getGuid(const char* _guid);
+
+  /** Converts string to guid. */
+  static Guid getGuid(const String& _guid);
+
+  /** Returns true if string is a guid. */
+  static bool isGuid(const char* _guid);
+
+  /** Returns true if string is a guid. */
+  static bool isGuid(const String& _guid);
 
   /** Initializes as null. */
   Guid() noexcept;

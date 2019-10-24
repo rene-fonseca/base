@@ -68,6 +68,37 @@ Guid Guid::getGuid(const char* text)
   return guid;
 }
 
+Guid Guid::getGuid(const String& text)
+{
+  return getGuid(text.native());
+}
+
+bool Guid::isGuid(const char* text)
+{
+  // {B429A864-CDFC-4044-BCC1-BDDE18EAF8DE}
+  if (NativeString(text).getLength() != 38) { // handles nullptr
+    return false;
+  }
+  if ((text[0] != '{') || (text[37] != '}') ||
+    (text[9] != '-') || (text[14] != '-') || (text[19] != '-') || (text[26] != '-')) {
+    return false;
+  }
+
+  static const uint8 OFFSETS[16] = { 1, 3, 5, 7, 10, 12, 15, 17, 20, 22, 25, 27, 29, 31, 33, 35 };
+  for (unsigned int i = 0; i < SIZE; ++i) {
+    auto src = reinterpret_cast<const uint8*>(text) + OFFSETS[i];
+    if (!ASCIITraits::isHexDigit(src[0]) || !ASCIITraits::isHexDigit(src[1])) {
+      return false;
+    }
+  }
+  return true;
+}
+
+bool Guid::isGuid(const String& text)
+{
+  return isGuid(text.native());
+}
+
 Guid::Guid(const Guid& _copy) noexcept
 {
   copy<uint8>(guid, _copy.guid, sizeof(guid));

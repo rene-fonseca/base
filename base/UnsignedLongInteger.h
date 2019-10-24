@@ -65,7 +65,7 @@ public:
   /**
     Initializes the integer as zero.
   */
-  inline UnsignedLongInteger() throw() {
+  inline UnsignedLongInteger() noexcept {
   }
 
   /**
@@ -73,7 +73,7 @@ public:
 
     @param value The desired value.
   */
-  UnsignedLongInteger(unsigned long long value) throw();
+  UnsignedLongInteger(unsigned long long value) noexcept;
 
   /**
     Initializes the integer from the specified string representation.
@@ -87,14 +87,14 @@ public:
   /**
     Copy constructor. Initializes a new Integer from other Integer object.
   */
-  inline UnsignedLongInteger(const UnsignedLongInteger& copy) throw()
+  inline UnsignedLongInteger(const UnsignedLongInteger& copy) noexcept
     : value(copy.value) {
   }
 
   /**
     Assignment of integer to this integer.
   */
-  inline UnsignedLongInteger& operator=(const UnsignedLongInteger& eq) throw() {
+  inline UnsignedLongInteger& operator=(const UnsignedLongInteger& eq) noexcept {
     value = eq.value;
     return *this;
   }
@@ -102,7 +102,7 @@ public:
   /**
     Assignment of native type to this integer.
   */
-  inline UnsignedLongInteger& operator=(unsigned long long value) throw() {
+  inline UnsignedLongInteger& operator=(unsigned long long value) noexcept {
     this->value = value;
     return *this;
   }
@@ -110,7 +110,7 @@ public:
   /**
     Gets the value of the integer.
   */
-  inline unsigned long long getValue() const throw() {
+  inline unsigned long long getValue() const noexcept {
     return value;
   }
 
@@ -119,19 +119,19 @@ public:
 
     @param value The desired value.
   */
-  inline void setValue(unsigned long long value) throw() {
+  inline void setValue(unsigned long long value) noexcept {
     this->value = value;
   }
 
   /**
     Casts integer to native type.
   */
-  inline operator unsigned long long() const throw() {
+  inline operator unsigned long long() const noexcept {
     return value;
   }
 };
 
-inline UnsignedLongInteger::UnsignedLongInteger(unsigned long long _value) throw()
+inline UnsignedLongInteger::UnsignedLongInteger(unsigned long long _value) noexcept
   : value(_value) {
 }
 

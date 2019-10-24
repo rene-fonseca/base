@@ -46,7 +46,7 @@ public:
   /**
     Initializes the value as zero.
   */
-  inline LongDouble() throw() {
+  inline LongDouble() noexcept {
   }
 
   /**
@@ -55,19 +55,19 @@ public:
     
     @param value The desired value.
   */
-  inline LongDouble(long double _value) throw() : value(_value) {
+  inline LongDouble(long double _value) noexcept : value(_value) {
   }
   
   /**
     Initializes the value by other value.
   */
-  inline LongDouble(const LongDouble& copy) throw() : value(copy.value) {
+  inline LongDouble(const LongDouble& copy) noexcept : value(copy.value) {
   }
 
   /**
     Assignment of value by value.
   */
-  inline LongDouble& operator=(const LongDouble& eq) throw() {
+  inline LongDouble& operator=(const LongDouble& eq) noexcept {
     value = eq.value;
     return *this;
   }
@@ -75,7 +75,7 @@ public:
   /**
     Assignment of this value by long double primitive.
   */
-  inline LongDouble& operator=(long double value) throw() {
+  inline LongDouble& operator=(long double value) noexcept {
     this->value = value;
     return *this;
   }
@@ -83,7 +83,7 @@ public:
   /**
     Returns the value of the long double.
   */
-  inline long double getValue() const throw() {
+  inline long double getValue() const noexcept {
     return value;
   }
 
@@ -92,7 +92,7 @@ public:
 
     @param value The desired value.
   */
-  inline void setValue(long double value) throw() {
+  inline void setValue(long double value) noexcept {
     this->value = value;
   }
 
@@ -145,7 +145,7 @@ public:
   /**
     Casts value to the long double primitive.
   */
-  inline operator long double() const throw() {
+  inline operator long double() const noexcept {
     return value;
   }
 };

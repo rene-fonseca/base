@@ -36,7 +36,7 @@ public:
   /**
     Initializes object with width and height set to zero.
   */
-  inline Dimension() throw() {
+  inline Dimension() noexcept {
   }
 
   /**
@@ -45,14 +45,14 @@ public:
     @param width The desired width.
     @param height The desired height.
   */
-  Dimension(unsigned int width, unsigned int height) throw();
+  Dimension(unsigned int width, unsigned int height) noexcept;
 
   /**
     Initializes object with the dimension copied from the specified dimension.
 
     @param dimension The desired dimension.
   */
-  inline Dimension(const Dimension& copy) throw()
+  inline Dimension(const Dimension& copy) noexcept
     : width(copy.width), height(copy.height) {
   }
 
@@ -61,7 +61,7 @@ public:
 
     @param dimension The desired dimension.
   */
-  inline Dimension& operator=(const Dimension& eq) throw() {
+  inline Dimension& operator=(const Dimension& eq) noexcept {
     width = eq.width; // no need to protect against self-assignment
     height = eq.height;
     return *this;
@@ -73,7 +73,7 @@ public:
     @param width The desired width.
     @param height The desired height.
   */
-  inline void assign(unsigned int width, unsigned int height) throw() {
+  inline void assign(unsigned int width, unsigned int height) noexcept {
     this->width = width;
     this->height = height;
   }
@@ -84,7 +84,7 @@ public:
     
     @param dimension The other dimension.
   */
-  inline void reduce(const Dimension& dimension) throw() {
+  inline void reduce(const Dimension& dimension) noexcept {
     if (dimension.getWidth() < width) {
       width = dimension.getWidth();
     }
@@ -99,7 +99,7 @@ public:
     
     @param dimension The other dimension.
   */
-  inline void expand(const Dimension& dimension) throw() {
+  inline void expand(const Dimension& dimension) noexcept {
     if (dimension.getWidth() > width) {
       width = dimension.getWidth();
     }
@@ -113,7 +113,7 @@ public:
 
     @param dimension The dimension to be compared.
   */
-  inline bool operator==(const Dimension& dimension) const throw() {
+  inline bool operator==(const Dimension& dimension) const noexcept {
     return (width == dimension.width) && (height == dimension.height);
   }
   
@@ -122,35 +122,35 @@ public:
 
     @param dimension The dimension to be compared.
   */
-  inline bool operator!=(const Dimension& dimension) const throw() {
+  inline bool operator!=(const Dimension& dimension) const noexcept {
     return (width != dimension.width) || (height != dimension.height);
   }
   
   /**
     Returns true if the dimension is proper (i.e. both the width and height are non-zero).
   */
-  inline bool isProper() const throw() {
+  inline bool isProper() const noexcept {
     return (width != 0) && (height != 0);
   }
 
   /**
     Returns the width.
   */
-  inline unsigned int getWidth() const throw() {
+  inline unsigned int getWidth() const noexcept {
     return width;
   }
 
   /**
     Returns the height.
   */
-  inline unsigned int getHeight() const throw() {
+  inline unsigned int getHeight() const noexcept {
     return height;
   }
 
   /**
     Returns the size (width * height).
   */
-  inline unsigned long long getSize() const throw() {
+  inline unsigned long long getSize() const noexcept {
     return static_cast<unsigned long long>(width) * height;
   }
 
@@ -159,7 +159,7 @@ public:
 
     @param width The desired width.
   */
-  inline void setWidth(unsigned int value) throw() {
+  inline void setWidth(unsigned int value) noexcept {
     width = value;
   }
 
@@ -168,12 +168,12 @@ public:
 
     @param value The desired height.
   */
-  inline void setHeight(unsigned int value) throw() {
+  inline void setHeight(unsigned int value) noexcept {
     height = value;
   }
 };
 
-inline Dimension::Dimension(unsigned int _width, unsigned int _height) throw()
+inline Dimension::Dimension(unsigned int _width, unsigned int _height) noexcept
   : width(_width), height(_height) {
 }
 

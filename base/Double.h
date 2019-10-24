@@ -46,7 +46,7 @@ public:
   /**
     Initializes the value as zero.
   */
-  inline Double() throw() {
+  inline Double() noexcept {
   }
 
   /**
@@ -55,19 +55,19 @@ public:
     
     @param value The desired value.
   */
-  inline Double(double _value) throw() : value(_value) {
+  inline Double(double _value) noexcept : value(_value) {
   }
   
   /**
     Initializes the value by other value.
   */
-  inline Double(const Double& copy) throw() : value(copy.value) {
+  inline Double(const Double& copy) noexcept : value(copy.value) {
   }
 
   /**
     Assignment of value by value.
   */
-  inline Double& operator=(const Double& eq) throw() {
+  inline Double& operator=(const Double& eq) noexcept {
     value = eq.value;
     return *this;
   }
@@ -75,7 +75,7 @@ public:
   /**
     Assignment of this value by double primitive.
   */
-  inline Double& operator=(double value) throw() {
+  inline Double& operator=(double value) noexcept {
     this->value = value;
     return *this;
   }
@@ -83,7 +83,7 @@ public:
   /**
     Returns the value of the double.
   */
-  inline double getValue() const throw() {
+  inline double getValue() const noexcept {
     return value;
   }
 
@@ -92,7 +92,7 @@ public:
 
     @param value The desired value.
   */
-  inline void setValue(double value) throw() {
+  inline void setValue(double value) noexcept {
     this->value = value;
   }
 
@@ -145,7 +145,7 @@ public:
   /**
     Casts value to the double primitive.
   */
-  inline operator double() const throw() {
+  inline operator double() const noexcept {
     return value;
   }
 };

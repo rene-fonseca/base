@@ -62,7 +62,7 @@ public:
   /**
     Initializes the integer as zero.
   */
-  inline UnsignedInteger() throw() {
+  inline UnsignedInteger() noexcept {
   }
 
   /**
@@ -70,7 +70,7 @@ public:
 
     @param value The desired value.
   */
-  UnsignedInteger(unsigned int value) throw();
+  UnsignedInteger(unsigned int value) noexcept;
 
   /**
     Initializes the integer from the specified string representation.
@@ -84,14 +84,14 @@ public:
   /**
     Copy constructor. Initializes a new Integer from other Integer object.
   */
-  inline UnsignedInteger(const UnsignedInteger& copy) throw()
+  inline UnsignedInteger(const UnsignedInteger& copy) noexcept
     : value(copy.value) {
   }
 
   /**
     Assignment of integer to this integer.
   */
-  inline UnsignedInteger& operator=(const UnsignedInteger& eq) throw() {
+  inline UnsignedInteger& operator=(const UnsignedInteger& eq) noexcept {
     value = eq.value;
     return *this;
   }
@@ -99,7 +99,7 @@ public:
   /**
     Assignment of native type to this integer.
   */
-  inline UnsignedInteger& operator=(unsigned int value) throw() {
+  inline UnsignedInteger& operator=(unsigned int value) noexcept {
     this->value = value;
     return *this;
   }
@@ -107,7 +107,7 @@ public:
   /**
     Gets the value of the integer.
   */
-  inline unsigned int getValue() const throw() {
+  inline unsigned int getValue() const noexcept {
     return value;
   }
 
@@ -116,19 +116,19 @@ public:
 
     @param value The desired value.
   */
-  inline void setValue(unsigned int value) throw() {
+  inline void setValue(unsigned int value) noexcept {
     this->value = value;
   }
 
   /**
     Casts integer to native type.
   */
-  inline operator unsigned int() const throw() {
+  inline operator unsigned int() const noexcept {
     return value;
   }
 };
 
-inline UnsignedInteger::UnsignedInteger(unsigned int _value) throw() : value(_value) {
+inline UnsignedInteger::UnsignedInteger(unsigned int _value) noexcept : value(_value) {
 }
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

@@ -53,7 +53,7 @@ private:
   Member member;
 
   /** Disable default assignment. */
-  Signal& operator=(const Signal& eq) throw();
+  Signal& operator=(const Signal& eq) noexcept;
 public:
 
   /**
@@ -62,14 +62,14 @@ public:
     @param sender The sender.
     @param member The end-point of the signal.
   */
-  inline Signal(const Sender* _sender, Member _member) throw()
+  inline Signal(const Sender* _sender, Member _member) noexcept
     : sender(_sender), member(_member) {
   }
   
   /**
     Initialize signal from other signal.
   */
-  inline Signal(const Signal& copy) throw()
+  inline Signal(const Signal& copy) noexcept
     : sender(copy.sender), member(copy.member) {
   }
 

@@ -112,17 +112,17 @@ public:
   /**
     Initializes type as void.
   */
-  AnyValue() throw();
+  AnyValue() noexcept;
   
   /**
     Initializes value as copy of other value.
   */
-  AnyValue(const AnyValue& copy) throw();
+  AnyValue(const AnyValue& copy) noexcept;
   
   /**
     Assignment of object to object.
   */
-  AnyValue& operator=(const AnyValue& eq) throw();
+  AnyValue& operator=(const AnyValue& eq) noexcept;
   
   /**
     Returns the internal representation of the value.
@@ -161,302 +161,302 @@ public:
   /**
     Initializes value as type.
   */
-  AnyValue(const Type& value) throw();
+  AnyValue(const Type& value) noexcept;
 
   /**
     Initializes value as character.
   */
-  AnyValue(void* value) throw();
+  AnyValue(void* value) noexcept;
 
   /**
     Initializes value as string.
   */
-  AnyValue(const char* value) throw();
+  AnyValue(const char* value) noexcept;
 
   /**
     Initializes value as wide string.
   */
-  AnyValue(const wchar* value) throw();
+  AnyValue(const wchar* value) noexcept;
 
   /**
     Initializes value as character.
   */
-  AnyValue(char value) throw();
+  AnyValue(char value) noexcept;
   
   /**
     Initializes value as wide character.
   */
-  AnyValue(wchar value) throw();
+  AnyValue(wchar value) noexcept;
 
   /**
     Initializes value as boolean.
   */
-  AnyValue(bool value) throw();
+  AnyValue(bool value) noexcept;
 
   /**
     Initializes value as short integer.
   */
-  AnyValue(short value) throw();
+  AnyValue(short value) noexcept;
 
   /**
     Initializes value as unsigned short integer.
   */
-  AnyValue(unsigned short value) throw();
+  AnyValue(unsigned short value) noexcept;
 
   /**
     Initializes value as integer.
   */
-  AnyValue(int value) throw();
+  AnyValue(int value) noexcept;
 
   /**
     Initializes value as unsigned integer.
   */
-  AnyValue(unsigned int value) throw();
+  AnyValue(unsigned int value) noexcept;
 
   /**
     Initializes value as long integer.
   */
-  AnyValue(long value) throw();
+  AnyValue(long value) noexcept;
 
   /**
     Initializes value as unsigned long integer.
   */
-  AnyValue(unsigned long value) throw();
+  AnyValue(unsigned long value) noexcept;
 
   /**
     Initializes value as long long integer.
   */
-  AnyValue(long long value) throw();
+  AnyValue(long long value) noexcept;
 
   /**
     Initializes value as unsigned long long integer.
   */
-  AnyValue(unsigned long long value) throw();
+  AnyValue(unsigned long long value) noexcept;
 
   /**
     Initializes value as float.
   */
-  AnyValue(float value) throw();
+  AnyValue(float value) noexcept;
 
   /**
     Initializes value as double.
   */
-  AnyValue(double value) throw();
+  AnyValue(double value) noexcept;
 
   /**
     Initializes value as long double.
   */
-  AnyValue(long double value) throw();
+  AnyValue(long double value) noexcept;
 
   /**
     Initializes value as string.
   */
-  AnyValue(const String& value) throw();
+  AnyValue(const String& value) noexcept;
 
   /**
     Initializes value as string.
   */
-  AnyValue(const Literal& value) throw();
+  AnyValue(const Literal& value) noexcept;
   
   /**
     Initializes value as wide string.
   */
-  AnyValue(const WideString& value) throw();
+  AnyValue(const WideString& value) noexcept;
 
   /**
     Initializes value as wide string.
   */
-  AnyValue(const WideLiteral& value) throw();
+  AnyValue(const WideLiteral& value) noexcept;
 
   /**
     Initializes value as reference.
   */
-  AnyValue(const AnyReference& value) throw();
+  AnyValue(const AnyReference& value) noexcept;
 
   /**
     Sets the value as a type.
   */
-  AnyValue& operator=(const Type& value) throw();
+  AnyValue& operator=(const Type& value) noexcept;
 
   /**
     Sets the value as a character.
   */
-  AnyValue& operator=(void* value) throw();
+  AnyValue& operator=(void* value) noexcept;
 
   /**
     Sets the value as a character.
   */
-  AnyValue& operator=(char value) throw();
+  AnyValue& operator=(char value) noexcept;
 
   /**
     Sets the value as a wide character.
   */
-  AnyValue& operator=(wchar value) throw();
+  AnyValue& operator=(wchar value) noexcept;
 
   /**
     Sets the value as a boolean.
   */
-  AnyValue& operator=(bool value) throw();
+  AnyValue& operator=(bool value) noexcept;
 
   /**
     Sets the value as a short integer.
   */
-  AnyValue& operator=(short value) throw();
+  AnyValue& operator=(short value) noexcept;
 
   /**
     Sets the value as an unsigned short integer.
   */
-  AnyValue& operator=(unsigned short value) throw();
+  AnyValue& operator=(unsigned short value) noexcept;
 
   /**
     Sets the value as a integer.
   */
-  AnyValue& operator=(int value) throw();
+  AnyValue& operator=(int value) noexcept;
 
   /**
     Sets the value as an unsigned integer.
   */
-  AnyValue& operator=(unsigned int value) throw();
+  AnyValue& operator=(unsigned int value) noexcept;
 
   /**
     Sets the value as a long integer.
   */
-  AnyValue& operator=(long value) throw();
+  AnyValue& operator=(long value) noexcept;
 
   /**
     Sets the value as an unsigned long integer.
   */
-  AnyValue& operator=(unsigned long value) throw();
+  AnyValue& operator=(unsigned long value) noexcept;
 
   /**
     Sets the value as a long long integer.
   */
-  AnyValue& operator=(long long value) throw();
+  AnyValue& operator=(long long value) noexcept;
 
   /**
     Sets the value as an unsigned long long integer.
   */
-  AnyValue& operator=(unsigned long long value) throw();
+  AnyValue& operator=(unsigned long long value) noexcept;
 
   /**
     Sets the value as a float.
   */
-  AnyValue& operator=(float value) throw();
+  AnyValue& operator=(float value) noexcept;
 
   /**
     Sets the value as a double.
   */
-  AnyValue& operator=(double value) throw();
+  AnyValue& operator=(double value) noexcept;
 
   /**
     Sets the value as a long double.
   */
-  AnyValue& operator=(long double value) throw();
+  AnyValue& operator=(long double value) noexcept;
 
   /**
     Sets the value as a string.
   */
-  AnyValue& operator=(const String& value) throw();
+  AnyValue& operator=(const String& value) noexcept;
 
   /**
     Sets the value as a wide string.
   */
-  AnyValue& operator=(const WideString& value) throw();
+  AnyValue& operator=(const WideString& value) noexcept;
   
   /**
     Sets the value as a reference.
   */
-  AnyValue& operator=(const AnyReference& value) throw();
+  AnyValue& operator=(const AnyReference& value) noexcept;
 
   /**
     Returns value as a type.
   */
-  const Type& getType() const throw();
+  const Type& getType() const noexcept;
 
   /**
     Returns value as a pointer.
   */
-  void* getPointer() const throw();
+  void* getPointer() const noexcept;
 
   /**
     Returns value as a character.
   */
-  char getChar() const throw();
+  char getChar() const noexcept;
 
   /**
     Returns value as a wide character.
   */
-  wchar getWideChar() const throw();
+  wchar getWideChar() const noexcept;
 
   /**
     Returns value as a boolean.
   */
-  bool getBoolean() const throw();
+  bool getBoolean() const noexcept;
 
   /**
     Returns value as a short integer.
   */
-  short getShortInteger() const throw();
+  short getShortInteger() const noexcept;
 
   /**
     Returns value as an unsigned short integer.
   */
-  unsigned short getUnsignedShortInteger() const throw();
+  unsigned short getUnsignedShortInteger() const noexcept;
 
   /**
     Returns value as a integer.
   */
-  int getInteger() const throw();
+  int getInteger() const noexcept;
 
   /**
     Returns value as an unsiged integer.
   */
-  unsigned int getUnsignedInteger() const throw();
+  unsigned int getUnsignedInteger() const noexcept;
 
   /**
     Returns value as a long integer.
   */
-  long getLongInteger() const throw();
+  long getLongInteger() const noexcept;
 
   /**
     Returns value as an unsigned long integer.
   */
-  unsigned long getUnsignedLongInteger() const throw();
+  unsigned long getUnsignedLongInteger() const noexcept;
 
   /**
     Returns value as a long long integer.
   */
-  long long getLongLongInteger() const throw();
+  long long getLongLongInteger() const noexcept;
 
   /**
     Returns value as an unsigned long long integer.
   */
-  unsigned long long getUnsignedLongLongInteger() const throw();
+  unsigned long long getUnsignedLongLongInteger() const noexcept;
 
   /**
     Returns value as a float.
   */
-  float getFloat() const throw();
+  float getFloat() const noexcept;
 
   /**
     Returns value as a double.
   */
-  double getDouble() const throw();
+  double getDouble() const noexcept;
 
   /**
     Returns value as a float.
   */
-  long double getLongDouble() const throw();
+  long double getLongDouble() const noexcept;
 
   /**
     Returns value as a string.
   */
-  String getString() const throw();
+  String getString() const noexcept;
 
   /**
     Returns the value as a wide string.
   */
-  WideString getWideString() const throw();
+  WideString getWideString() const noexcept;
 
   /**
     Returns the reference.
@@ -466,82 +466,82 @@ public:
   /**
     Sets the value as a type.
   */
-  void setType(const Type& value) throw();
+  void setType(const Type& value) noexcept;
 
   /**
     Sets the value as a pointer.
   */
-  void setPointer(void* value) throw();
+  void setPointer(void* value) noexcept;
 
   /**
     Sets the value as a character.
   */
-  void setChar(char value) throw();
+  void setChar(char value) noexcept;
 
   /**
     Sets the value as a wide character.
   */
-  void setWideChar(wchar value) throw();
+  void setWideChar(wchar value) noexcept;
 
   /**
     Sets the value as a boolean.
   */
-  void setBoolean(bool value) throw();
+  void setBoolean(bool value) noexcept;
 
   /**
     Sets the value as a short integer.
   */
-  void setShortInteger(short value) throw();
+  void setShortInteger(short value) noexcept;
 
   /**
     Sets the value as an unsigned short integer.
   */
-  void setUnsignedShortInteger(unsigned short value) throw();
+  void setUnsignedShortInteger(unsigned short value) noexcept;
 
   /**
     Sets the value as a integer.
   */
-  void setInteger(int value) throw();
+  void setInteger(int value) noexcept;
 
   /**
     Sets the value as an unsigned integer.
   */
-  void setUnsignedInteger(unsigned int value) throw();
+  void setUnsignedInteger(unsigned int value) noexcept;
 
   /**
     Sets the value as a long integer.
   */
-  void setLongInteger(long value) throw();
+  void setLongInteger(long value) noexcept;
 
   /**
     Sets the value as an unsigned long integer.
   */
-  void setUnsignedLongInteger(unsigned long value) throw();
+  void setUnsignedLongInteger(unsigned long value) noexcept;
 
   /**
     Sets the value as a long long integer.
   */
-  void setLongLongInteger(long long value) throw();
+  void setLongLongInteger(long long value) noexcept;
 
   /**
     Sets the value as an unsigned long long integer.
   */
-  void setUnsignedLongLongInteger(unsigned long long value) throw();
+  void setUnsignedLongLongInteger(unsigned long long value) noexcept;
 
   /**
     Sets the value as a string.
   */
-  void setString(const String& value) throw();
+  void setString(const String& value) noexcept;
 
   /**
     Sets the value as a wide string.
   */
-  void setWideString(const WideString& value) throw();
+  void setWideString(const WideString& value) noexcept;
 
   /**
     Sets the value as a reference.
   */
-  void setReference(const AnyReference& value) throw();
+  void setReference(const AnyReference& value) noexcept;
 };
 
 /**

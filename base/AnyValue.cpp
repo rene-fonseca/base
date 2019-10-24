@@ -25,100 +25,100 @@ AnyValue::AnyValue() noexcept
 {
 }
 
-AnyValue::AnyValue(const Type& value) throw()
+AnyValue::AnyValue(const Type& value) noexcept
   : representation(TYPE), type(value) {
 }
 
-AnyValue::AnyValue(const char* value) throw()
+AnyValue::AnyValue(const char* value) noexcept
   : representation(STRING), string(value) {
 }
 
-AnyValue::AnyValue(const wchar* value) throw()
+AnyValue::AnyValue(const wchar* value) noexcept
   : representation(WIDE_STRING), wideString(value) {
 }
 
-AnyValue::AnyValue(void* value) throw()
+AnyValue::AnyValue(void* value) noexcept
   : representation(POINTER), p(value) {
 }
 
-AnyValue::AnyValue(char value) throw()
+AnyValue::AnyValue(char value) noexcept
   : representation(CHARACTER), character(value) {
 }
 
-AnyValue::AnyValue(wchar value) throw()
+AnyValue::AnyValue(wchar value) noexcept
   : representation(WIDE_CHARACTER), wideCharacter(value) {
 }
 
-AnyValue::AnyValue(bool value) throw()
+AnyValue::AnyValue(bool value) noexcept
   : representation(BOOLEAN), boolean(value) {
 }
 
-AnyValue::AnyValue(short value) throw()
+AnyValue::AnyValue(short value) noexcept
   : representation(INTEGER), shortInteger(value) {
 }
 
-AnyValue::AnyValue(unsigned short value) throw()
+AnyValue::AnyValue(unsigned short value) noexcept
   : representation(UNSIGNED_SHORT_INTEGER), unsignedShortInteger(value) {
 }
 
-AnyValue::AnyValue(int value) throw()
+AnyValue::AnyValue(int value) noexcept
   : representation(INTEGER), integer(value) {
 }
 
-AnyValue::AnyValue(unsigned int value) throw()
+AnyValue::AnyValue(unsigned int value) noexcept
   : representation(UNSIGNED_INTEGER), unsignedInteger(value) {
 }
 
-AnyValue::AnyValue(long value) throw()
+AnyValue::AnyValue(long value) noexcept
   : representation(LONG_INTEGER), longInteger(value) {
 }
 
-AnyValue::AnyValue(unsigned long value) throw()
+AnyValue::AnyValue(unsigned long value) noexcept
   : representation(UNSIGNED_LONG_INTEGER), unsignedLongInteger(value) {
 }
 
-AnyValue::AnyValue(long long value) throw()
+AnyValue::AnyValue(long long value) noexcept
   : representation(LONG_LONG_INTEGER), longLongInteger(value) {
 }
 
-AnyValue::AnyValue(unsigned long long value) throw()
+AnyValue::AnyValue(unsigned long long value) noexcept
   : representation(UNSIGNED_LONG_LONG_INTEGER),
     unsignedLongLongInteger(value) {
 }
 
-AnyValue::AnyValue(float value) throw()
+AnyValue::AnyValue(float value) noexcept
   : representation(FLOAT), f(value) {
 }
 
-AnyValue::AnyValue(double value) throw()
+AnyValue::AnyValue(double value) noexcept
   : representation(DOUBLE), d(value) {
 }
 
-AnyValue::AnyValue(long double value) throw()
+AnyValue::AnyValue(long double value) noexcept
   : representation(LONG_DOUBLE), ld(value) {
 }
 
-AnyValue::AnyValue(const String& value) throw()
+AnyValue::AnyValue(const String& value) noexcept
   : representation(STRING), string(value) {
 }
 
-AnyValue::AnyValue(const Literal& value) throw()
+AnyValue::AnyValue(const Literal& value) noexcept
   : representation(STRING), string(value) {
 }
 
-AnyValue::AnyValue(const WideString& value) throw()
+AnyValue::AnyValue(const WideString& value) noexcept
   : representation(WIDE_STRING), wideString(value) {
 }
 
-AnyValue::AnyValue(const WideLiteral& value) throw()
+AnyValue::AnyValue(const WideLiteral& value) noexcept
   : representation(WIDE_STRING), wideString(value) {
 }
 
-AnyValue::AnyValue(const AnyReference& value) throw()
+AnyValue::AnyValue(const AnyReference& value) noexcept
   : representation(REFERENCE), reference(value) {
 }
 
-AnyValue::AnyValue(const AnyValue& copy) throw()
+AnyValue::AnyValue(const AnyValue& copy) noexcept
   : representation(copy.representation) {
   
   switch (representation) {
@@ -360,119 +360,119 @@ bool AnyValue::isText() const noexcept {
 
 
 
-AnyValue& AnyValue::operator=(const Type& value) throw() {
+AnyValue& AnyValue::operator=(const Type& value) noexcept {
   reset();
   type = value;
   representation = TYPE;
   return *this;
 }
 
-AnyValue& AnyValue::operator=(void* value) throw() {
+AnyValue& AnyValue::operator=(void* value) noexcept {
   reset();
   p = value;
   representation = POINTER;
   return *this;
 }
 
-AnyValue& AnyValue::operator=(char value) throw() {
+AnyValue& AnyValue::operator=(char value) noexcept {
   reset();
   character = value;
   representation = CHARACTER;
   return *this;
 }
 
-AnyValue& AnyValue::operator=(wchar value) throw() {
+AnyValue& AnyValue::operator=(wchar value) noexcept {
   reset();
   wideCharacter = value;
   representation = WIDE_CHARACTER;
   return *this;
 }
 
-AnyValue& AnyValue::operator=(bool value) throw() {
+AnyValue& AnyValue::operator=(bool value) noexcept {
   reset();
   boolean = value;
   representation = BOOLEAN;
   return *this;
 }
 
-AnyValue& AnyValue::operator=(short value) throw() {
+AnyValue& AnyValue::operator=(short value) noexcept {
   reset();
   shortInteger = value;
   representation = SHORT_INTEGER;
   return *this;
 }
 
-AnyValue& AnyValue::operator=(unsigned short value) throw() {
+AnyValue& AnyValue::operator=(unsigned short value) noexcept {
   reset();
   unsignedShortInteger = value;
   representation = UNSIGNED_SHORT_INTEGER;
   return *this;
 }
 
-AnyValue& AnyValue::operator=(int value) throw() {
+AnyValue& AnyValue::operator=(int value) noexcept {
   reset();
   integer = value;
   representation = INTEGER;
   return *this;
 }
 
-AnyValue& AnyValue::operator=(unsigned int value) throw() {
+AnyValue& AnyValue::operator=(unsigned int value) noexcept {
   reset();
   unsignedInteger = value;
   representation = UNSIGNED_INTEGER;
   return *this;
 }
 
-AnyValue& AnyValue::operator=(long value) throw() {
+AnyValue& AnyValue::operator=(long value) noexcept {
   reset();
   longInteger = value;
   representation = LONG_INTEGER;
   return *this;
 }
 
-AnyValue& AnyValue::operator=(unsigned long value) throw() {
+AnyValue& AnyValue::operator=(unsigned long value) noexcept {
   reset();
   unsignedLongInteger = value;
   representation = UNSIGNED_LONG_INTEGER;
   return *this;
 }
 
-AnyValue& AnyValue::operator=(long long value) throw() {
+AnyValue& AnyValue::operator=(long long value) noexcept {
   reset();
   longLongInteger = value;
   representation = LONG_LONG_INTEGER;
   return *this;
 }
 
-AnyValue& AnyValue::operator=(unsigned long long value) throw() {
+AnyValue& AnyValue::operator=(unsigned long long value) noexcept {
   reset();
   unsignedLongLongInteger = value;
   representation = UNSIGNED_LONG_LONG_INTEGER;
   return *this;
 }
 
-AnyValue& AnyValue::operator=(float value) throw() {
+AnyValue& AnyValue::operator=(float value) noexcept {
   reset();
   f = value;
   representation = FLOAT;
   return *this;
 }
 
-AnyValue& AnyValue::operator=(double value) throw() {
+AnyValue& AnyValue::operator=(double value) noexcept {
   reset();
   d = value;
   representation = DOUBLE;
   return *this;
 }
 
-AnyValue& AnyValue::operator=(long double value) throw() {
+AnyValue& AnyValue::operator=(long double value) noexcept {
   reset();
   ld = value;
   representation = LONG_DOUBLE;
   return *this;
 }
 
-AnyValue& AnyValue::operator=(const String& value) throw() {
+AnyValue& AnyValue::operator=(const String& value) noexcept {
   switch (representation) {
   case WIDE_STRING:
     wideString = WideString();
@@ -483,7 +483,7 @@ AnyValue& AnyValue::operator=(const String& value) throw() {
   return *this;
 }
 
-AnyValue& AnyValue::operator=(const WideString& value) throw() {
+AnyValue& AnyValue::operator=(const WideString& value) noexcept {
   switch (representation) {
   case STRING:
     string = String();
@@ -494,14 +494,14 @@ AnyValue& AnyValue::operator=(const WideString& value) throw() {
   return *this;
 }
 
-AnyValue& AnyValue::operator=(const AnyReference& value) throw() {
+AnyValue& AnyValue::operator=(const AnyReference& value) noexcept {
   reset();
   reference = value;
   representation = REFERENCE;
   return *this;
 }
 
-char AnyValue::getChar() const throw() {
+char AnyValue::getChar() const noexcept {
   switch (representation) {
   case VOID:
     return 0;
@@ -543,7 +543,7 @@ char AnyValue::getChar() const throw() {
   }
 }
 
-wchar AnyValue::getWideChar() const throw() {
+wchar AnyValue::getWideChar() const noexcept {
   switch (representation) {
   case VOID:
     return 0;
@@ -585,7 +585,7 @@ wchar AnyValue::getWideChar() const throw() {
   }
 }
 
-bool AnyValue::getBoolean() const throw() {
+bool AnyValue::getBoolean() const noexcept {
   switch (representation) {
   case VOID:
     return false;
@@ -620,7 +620,7 @@ bool AnyValue::getBoolean() const throw() {
   }
 }
 
-short AnyValue::getShortInteger() const throw() {
+short AnyValue::getShortInteger() const noexcept {
   switch (representation) {
   case VOID:
     return 0;
@@ -655,7 +655,7 @@ short AnyValue::getShortInteger() const throw() {
   }
 }
 
-unsigned short AnyValue::getUnsignedShortInteger() const throw() {
+unsigned short AnyValue::getUnsignedShortInteger() const noexcept {
   switch (representation) {
   case VOID:
     return 0;
@@ -690,7 +690,7 @@ unsigned short AnyValue::getUnsignedShortInteger() const throw() {
   }
 }
 
-int AnyValue::getInteger() const throw() {
+int AnyValue::getInteger() const noexcept {
   switch (representation) {
   case VOID:
     return 0;
@@ -725,7 +725,7 @@ int AnyValue::getInteger() const throw() {
   }
 }
 
-unsigned int AnyValue::getUnsignedInteger() const throw() {
+unsigned int AnyValue::getUnsignedInteger() const noexcept {
   switch (representation) {
   case VOID:
     return 0;
@@ -760,7 +760,7 @@ unsigned int AnyValue::getUnsignedInteger() const throw() {
   }
 }
 
-long AnyValue::getLongInteger() const throw() {
+long AnyValue::getLongInteger() const noexcept {
   switch (representation) {
   case VOID:
     return 0;
@@ -795,7 +795,7 @@ long AnyValue::getLongInteger() const throw() {
   }
 }
 
-unsigned long AnyValue::getUnsignedLongInteger() const throw() {
+unsigned long AnyValue::getUnsignedLongInteger() const noexcept {
   switch (representation) {
   case VOID:
     return 0;
@@ -830,7 +830,7 @@ unsigned long AnyValue::getUnsignedLongInteger() const throw() {
   }
 }
 
-long long AnyValue::getLongLongInteger() const throw() {
+long long AnyValue::getLongLongInteger() const noexcept {
   switch (representation) {
   case VOID:
     return 0;
@@ -865,7 +865,7 @@ long long AnyValue::getLongLongInteger() const throw() {
   }
 }
 
-unsigned long long AnyValue::getUnsignedLongLongInteger() const throw() {
+unsigned long long AnyValue::getUnsignedLongLongInteger() const noexcept {
   switch (representation) {
   case VOID:
     return 0;
@@ -900,7 +900,7 @@ unsigned long long AnyValue::getUnsignedLongLongInteger() const throw() {
   }
 }
 
-String AnyValue::getString() const throw() {
+String AnyValue::getString() const noexcept {
   switch (representation) {
   case VOID:
     return String();
@@ -965,7 +965,7 @@ String AnyValue::getString() const throw() {
   return stream.getString();
 }
 
-WideString AnyValue::getWideString() const throw() {
+WideString AnyValue::getWideString() const noexcept {
   switch (representation) {
   case VOID:
     return WideString();
@@ -1037,85 +1037,85 @@ AnyReference AnyValue::getReference() noexcept
 
 
 
-void AnyValue::setType(const Type& value) throw() {
+void AnyValue::setType(const Type& value) noexcept {
   reset();
   type = value;
   representation = TYPE;
 }
 
-void AnyValue::setPointer(void* value) throw() {
+void AnyValue::setPointer(void* value) noexcept {
   reset();
   p = value;
   representation = POINTER;
 }
 
-void AnyValue::setChar(char value) throw() {
+void AnyValue::setChar(char value) noexcept {
   reset();
   character = value;
   representation = CHARACTER;
 }
 
-void AnyValue::setWideChar(wchar value) throw() {
+void AnyValue::setWideChar(wchar value) noexcept {
   reset();
   wideCharacter = value;
   representation = WIDE_CHARACTER;
 }
 
-void AnyValue::setBoolean(bool value) throw() {
+void AnyValue::setBoolean(bool value) noexcept {
   reset();
   boolean = value;
   representation = BOOLEAN;
 }
 
-void AnyValue::setShortInteger(short value) throw() {
+void AnyValue::setShortInteger(short value) noexcept {
   reset();
   shortInteger = value;
   representation = SHORT_INTEGER;
 }
 
-void AnyValue::setUnsignedShortInteger(unsigned short value) throw() {
+void AnyValue::setUnsignedShortInteger(unsigned short value) noexcept {
   reset();
   unsignedShortInteger = value;
   representation = UNSIGNED_SHORT_INTEGER;
 }
 
-void AnyValue::setInteger(int value) throw() {
+void AnyValue::setInteger(int value) noexcept {
   reset();
   integer = value;
   representation = INTEGER;
 }
 
-void AnyValue::setUnsignedInteger(unsigned int value) throw() {
+void AnyValue::setUnsignedInteger(unsigned int value) noexcept {
   reset();
   unsignedInteger = value;
   representation = UNSIGNED_INTEGER;
 }
 
-void AnyValue::setLongInteger(long value) throw() {
+void AnyValue::setLongInteger(long value) noexcept {
   reset();
   longInteger = value;
   representation = LONG_INTEGER;
 }
 
-void AnyValue::setUnsignedLongInteger(unsigned long value) throw() {
+void AnyValue::setUnsignedLongInteger(unsigned long value) noexcept {
   reset();
   unsignedLongInteger = value;
   representation = UNSIGNED_LONG_INTEGER;
 }
 
-void AnyValue::setLongLongInteger(long long value) throw() {
+void AnyValue::setLongLongInteger(long long value) noexcept {
   reset();
   longLongInteger = value;
   representation = LONG_LONG_INTEGER;
 }
 
-void AnyValue::setUnsignedLongLongInteger(unsigned long long value) throw() {
+void AnyValue::setUnsignedLongLongInteger(unsigned long long value) noexcept {
   reset();
   unsignedLongLongInteger = value;
   representation = UNSIGNED_LONG_LONG_INTEGER;
 }
 
-void AnyValue::setString(const String& value) throw() {
+void AnyValue::setString(const String& value) noexcept {
   if (representation == STRING) {
     string = value;
     return;
@@ -1125,7 +1125,7 @@ void AnyValue::setString(const String& value) throw() {
   representation = STRING;
 }
 
-void AnyValue::setWideString(const WideString& value) throw() {
+void AnyValue::setWideString(const WideString& value) noexcept {
   if (representation == WIDE_STRING) {
     wideString = value;
     return;
@@ -1135,7 +1135,7 @@ void AnyValue::setWideString(const WideString& value) throw() {
   representation = WIDE_STRING;
 }
 
-void AnyValue::setReference(const AnyReference& value) throw() {
+void AnyValue::setReference(const AnyReference& value) noexcept {
   if (representation == REFERENCE) {
     reference = value;
     return;

@@ -31,21 +31,21 @@ public:
   /**
     Initializes the exception object with no message.
   */
-  MemoryException() throw();
+  MemoryException() noexcept;
 
   /**
     Initializes the exception object.
 
     @param message The message.
   */
-  MemoryException(const char* message) throw();
+  MemoryException(const char* message) noexcept;
 
   /**
     Initializes the exception object without an associated message.
     
     @param type The identity of the type.
   */
-  inline MemoryException(Type type) throw() : ResourceException(type) {
+  inline MemoryException(Type type) noexcept : ResourceException(type) {
   }
   
   /**
@@ -54,7 +54,7 @@ public:
     @param message An NULL-terminated string (ASCII).
     @param type The identity of the type.
   */
-  inline MemoryException(const char* message, Type type) throw()
+  inline MemoryException(const char* message, Type type) noexcept
     : ResourceException(message, type) {
   }
 };

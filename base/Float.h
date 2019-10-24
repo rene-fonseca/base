@@ -47,7 +47,7 @@ public:
   /**
     Initializes the value as zero.
   */
-  inline Float() throw() {
+  inline Float() noexcept {
   }
 
   /**
@@ -56,19 +56,19 @@ public:
 
     @param value The desired value.
   */
-  inline Float(float _value) throw() : value(_value) {
+  inline Float(float _value) noexcept : value(_value) {
   }
   
   /**
     Initializes the value by other value.
   */
-  inline Float(const Float& copy) throw() : value(copy.value) {
+  inline Float(const Float& copy) noexcept : value(copy.value) {
   }
 
   /**
     Assignment of value by value.
   */
-  inline Float& operator=(const Float& eq) throw() {
+  inline Float& operator=(const Float& eq) noexcept {
     value = eq.value;
     return *this;
   }
@@ -76,7 +76,7 @@ public:
   /**
     Assignment of this value by float primitive.
   */
-  inline Float& operator=(float value) throw() {
+  inline Float& operator=(float value) noexcept {
     this->value = value;
     return *this;
   }
@@ -84,7 +84,7 @@ public:
   /**
     Returns the value of the float.
   */
-  inline float getValue() const throw() {
+  inline float getValue() const noexcept {
     return value;
   }
 
@@ -93,7 +93,7 @@ public:
 
     @param value The desired value.
   */
-  inline void setValue(float value) throw() {
+  inline void setValue(float value) noexcept {
     this->value = value;
   }
 
@@ -146,7 +146,7 @@ public:
   /**
     Casts value to float primitive.
   */
-  inline operator float() const throw() {
+  inline operator float() const noexcept {
     return value;
   }
 };

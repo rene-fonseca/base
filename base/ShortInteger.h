@@ -53,7 +53,7 @@ public:
   /**
     Initializes the short integer as zero.
   */
-  inline ShortInteger() throw() {
+  inline ShortInteger() noexcept {
   }
   
   /**
@@ -61,7 +61,7 @@ public:
 
     @param value The desired value.
   */
-  ShortInteger(short value) throw();
+  ShortInteger(short value) noexcept;
   
   /**
     Initializes short integer from string.
@@ -75,13 +75,13 @@ public:
   /**
     Copy constructor. Initializes a new ShortInteger from other ShortInteger object.
   */
-  inline ShortInteger(const ShortInteger& copy) throw() : value(copy.value) {
+  inline ShortInteger(const ShortInteger& copy) noexcept : value(copy.value) {
   }
 
   /**
     Assignment operator.
   */
-  inline ShortInteger& operator=(const ShortInteger& eq) throw() {
+  inline ShortInteger& operator=(const ShortInteger& eq) noexcept {
     value = eq.value;
     return *this;
   }
@@ -89,7 +89,7 @@ public:
   /**
     Gets the value of the integer.
   */
-  inline short getValue() const throw() {
+  inline short getValue() const noexcept {
     return value;
   }
 
@@ -98,19 +98,19 @@ public:
 
     @param value The desired value.
   */
-  inline void setValue(short value) throw() {
+  inline void setValue(short value) noexcept {
     this->value = value;
   }
 
   /**
     Casts integer to native type.
   */
-  inline operator short () const throw() {
+  inline operator short () const noexcept {
     return value;
   }
 };
 
-inline ShortInteger::ShortInteger(short _value) throw() : value(_value) {
+inline ShortInteger::ShortInteger(short _value) noexcept : value(_value) {
 }
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

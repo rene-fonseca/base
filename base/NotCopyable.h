@@ -30,12 +30,12 @@ private:
   /**
     Default copy construction is not permitted.
   */
-  NotCopyable(const NotCopyable& copy) throw();
+  NotCopyable(const NotCopyable& copy) noexcept;
   
   /**
     Default assignment is not permitted.
   */
-  NotCopyable& operator=(const NotCopyable& eq) throw();
+  NotCopyable& operator=(const NotCopyable& eq) noexcept;
 };
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

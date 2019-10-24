@@ -32,7 +32,7 @@ public:
   /**
     Initializes the exception object with no message.
   */
-  inline NotImplemented() throw() {
+  inline NotImplemented() noexcept {
   }
 
   /**
@@ -40,7 +40,7 @@ public:
 
     @param message The message.
   */
-  inline NotImplemented(const char* message) throw() : Exception(this) {
+  inline NotImplemented(const char* message) noexcept : Exception(this) {
   }
 
   /**
@@ -48,7 +48,7 @@ public:
     
     @param type The identity of the type.
   */
-  inline NotImplemented(Type type) throw() : Exception(type) {
+  inline NotImplemented(Type type) noexcept : Exception(type) {
   }
   
   /**
@@ -57,7 +57,7 @@ public:
     @param message An NULL-terminated string (ASCII).
     @param type The identity of the type.
   */
-  inline NotImplemented(const char* message, Type type) throw()
+  inline NotImplemented(const char* message, Type type) noexcept
     : Exception(message, type) {
   }
 };

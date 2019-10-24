@@ -31,7 +31,7 @@ public:
   /**
     Initializes the exception object with no message.
   */
-  inline DeviceException() throw() {
+  inline DeviceException() noexcept {
   }
 
   /**
@@ -39,7 +39,7 @@ public:
 
     @param message The message.
   */
-  inline DeviceException(const char* message) throw()
+  inline DeviceException(const char* message) noexcept
     : ResourceException(message) {
   }
 
@@ -48,7 +48,7 @@ public:
     
     @param type The identity of the type.
   */
-  inline DeviceException(Type type) throw() : ResourceException(type) {
+  inline DeviceException(Type type) noexcept : ResourceException(type) {
   }
   
   /**
@@ -57,7 +57,7 @@ public:
     @param message An NULL-terminated string (ASCII).
     @param type The identity of the type.
   */
-  inline DeviceException(const char* message, Type type) throw()
+  inline DeviceException(const char* message, Type type) noexcept
     : ResourceException(message, type) {
   }
 };

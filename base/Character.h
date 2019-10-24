@@ -32,7 +32,7 @@ public:
   /**
     Initializes the character as '\0'.
   */
-  inline Character() throw() {
+  inline Character() noexcept {
   }
 
   /**
@@ -40,19 +40,19 @@ public:
 
     @param value The desired value.
   */
-  inline Character(char _value) throw() : value(_value) {
+  inline Character(char _value) noexcept : value(_value) {
   }
 
   /**
     Initializes character from other character object.
   */
-  inline Character(const Character& copy) throw() : value(copy.value) {
+  inline Character(const Character& copy) noexcept : value(copy.value) {
   }
 
   /**
     Assignment of character to this object.
   */
-  inline Character& operator=(const Character& eq) throw() {
+  inline Character& operator=(const Character& eq) noexcept {
     value = eq.value;
     return *this;
   }
@@ -60,7 +60,7 @@ public:
   /**
     Assignment of native type to this object.
   */
-  inline Character& operator=(char value) throw() {
+  inline Character& operator=(char value) noexcept {
     this->value = value;
     return *this;
   }
@@ -68,7 +68,7 @@ public:
   /**
     Gets the value of the character.
   */
-  inline char getValue() const throw() {
+  inline char getValue() const noexcept {
     return value;
   }
 
@@ -77,14 +77,14 @@ public:
 
     @param value The desired value.
   */
-  inline void setValue(char value) throw() {
+  inline void setValue(char value) noexcept {
     this->value = value;
   }
 
   /**
     Casts character to native type.
   */
-  inline operator char() const throw() {
+  inline operator char() const noexcept {
     return value;
   }
 };

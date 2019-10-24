@@ -30,21 +30,21 @@ class _COM_AZURE_DEV__BASE__API AutomationObject {
 private:
 
   /** Prevent dynamic construction. */
-  static void* operator new(MemorySize) throw() /*final*/;
+  static void* operator new(MemorySize) noexcept /*final*/;
   /** Prevent dynamic destruction. */
-  static void operator delete(void*, MemorySize) throw() /*final*/;
+  static void operator delete(void*, MemorySize) noexcept /*final*/;
   /** Prevent dynamic array construction. */
-  static void* operator new[](MemorySize) throw() /*final*/;
+  static void* operator new[](MemorySize) noexcept /*final*/;
   /** Prevent dynamic array destruction. */
-  static void operator delete[](void*, MemorySize) throw() /*final*/;
+  static void operator delete[](void*, MemorySize) noexcept /*final*/;
   /** Prevent default copy construction. */
-  AutomationObject(const AutomationObject& copy) throw() /*final*/;
+  AutomationObject(const AutomationObject& copy) noexcept /*final*/;
   /** Prevent default assignment. */
-  AutomationObject& operator=(const AutomationObject& eq) throw() /*final*/;
+  AutomationObject& operator=(const AutomationObject& eq) noexcept /*final*/;
 protected:
   
   /** Default initialization. */
-  inline AutomationObject() throw() {
+  inline AutomationObject() noexcept {
   }
 };
 

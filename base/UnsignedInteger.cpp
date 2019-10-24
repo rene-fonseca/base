@@ -16,8 +16,8 @@
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
-unsigned int UnsignedInteger::parse(
-  const String& string, unsigned int accept) throw(InvalidFormat) {
+unsigned int UnsignedInteger::parse(const String& string, unsigned int accept) throw(InvalidFormat)
+{
   unsigned int base = 10; // default integer base
   String::ReadIterator i = string.getBeginReadIterator();
   const String::ReadIterator end = string.getEndReadIterator();

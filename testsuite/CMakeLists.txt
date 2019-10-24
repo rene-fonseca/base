@@ -6,7 +6,6 @@ file(GLOB TEST_SOURCES RELATIVE "${PROJECT_SOURCE_DIR}" *.cpp)
 list(REMOVE_ITEM TEST_SOURCES "MyLinkerModule.cpp" "Function.cpp" "dlapp.cpp" "OpenCL.cpp")
 # typeinfo issue for dlapp
 
-# message("${CMAKE_CURRENT_BINARY_DIR}/../base" )
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 
 add_library(MyLinkerModule SHARED "MyLinkerModule.cpp")
@@ -61,3 +60,17 @@ endforeach()
 
 # add_subdirectory(orb)
 add_subdirectory(ui)
+
+if (NOT MSVC) # TAG: need to set PATH to find DLL and use Debug/Release subfolder
+  enable_testing()
+  # TAG: need to export unittesting results
+  add_test(NAME unittesting COMMAND ${CMAKE_CURRENT_BINARY_DIR}/unittesting)
+  add_test(NAME Array COMMAND ${CMAKE_CURRENT_BINARY_DIR}/Array)
+  add_test(NAME HashSet COMMAND ${CMAKE_CURRENT_BINARY_DIR}/HashSet)
+  add_test(NAME HashTable COMMAND ${CMAKE_CURRENT_BINARY_DIR}/HashTable)
+  add_test(NAME List COMMAND ${CMAKE_CURRENT_BINARY_DIR}/List)
+  add_test(NAME Map COMMAND ${CMAKE_CURRENT_BINARY_DIR}/Map)
+  add_test(NAME Stack COMMAND ${CMAKE_CURRENT_BINARY_DIR}/Stack)
+  add_test(NAME Date COMMAND ${CMAKE_CURRENT_BINARY_DIR}/Date)
+  add_test(NAME String COMMAND ${CMAKE_CURRENT_BINARY_DIR}/String)
+endif ()

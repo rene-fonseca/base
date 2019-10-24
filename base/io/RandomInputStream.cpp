@@ -68,12 +68,13 @@ unsigned int RandomInputStream::read(uint8* buffer, const unsigned int _size, bo
 
   // fill aligned
   uint32* dest = reinterpret_cast<uint32*>(buffer);
-  const uint32* endDest = dest + (size & (sizeof(uint32) - 1)); // round down!
+  const uint32* endDest = dest + size/sizeof(uint32); // round down!
   while (dest != endDest) {
     *dest++ = engine();
   }
   buffer = reinterpret_cast<uint8*>(dest);
 
+  ASSERT((end - buffer) < sizeof(uint32));
   bits = engine();
   while (buffer != end) { // only a few loops
     *buffer++ = ((bits >> 0) & 0xff);

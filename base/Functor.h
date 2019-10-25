@@ -420,7 +420,8 @@ inline void move(TYPE* dest, const TYPE* src, MemorySize count) {
   overlap.
 */
 template<class TYPE>
-inline void swap(TYPE* restrict left, TYPE* restrict right, MemorySize count) {
+inline void swap(TYPE* restrict left, TYPE* restrict right, MemorySize count)
+{
   const TYPE* const end = left + count;
   while (left != end) {
     swapper(*left++, *right++);
@@ -429,21 +430,25 @@ inline void swap(TYPE* restrict left, TYPE* restrict right, MemorySize count) {
 
 /** Sets every element in the sequence to a specified value. */
 template<class TYPE>
-inline void fill(TYPE* dest, MemorySize count, TYPE value) {
+inline void fill(TYPE* dest, MemorySize count, const TYPE value)
+{
   const TYPE* const end = dest + count;
   while (dest != end) {
-    *dest++ = value;
+    *dest = value;
+    ++dest;
   }
 }
 
 #if defined(_COM_AZURE_DEV__BASE__HAVE_MEMSET)
 template<>
-inline void fill<char>(char* dest, MemorySize count, char value) {
+inline void fill<char>(char* dest, MemorySize count, const char value)
+{
   isoc::memset(dest, value, count);
 }
 
 template<>
-inline void fill<uint8>(uint8* dest, MemorySize count, uint8 value) {
+inline void fill<uint8>(uint8* dest, MemorySize count, const uint8 value)
+{
   isoc::memset(dest, value, count);
 }
 #endif
@@ -455,8 +460,10 @@ inline void fill<uint8>(uint8* dest, MemorySize count, uint8 value) {
   with small memory footprints.
 */
 template<class TYPE>
-inline void clear(TYPE& value) throw() {
+inline void clear(TYPE& value)
+{
   // TAG: move to cpp?
+  // TAG: handle initial alignment
   long* p = Cast::pointer<long*>(&value);
   const long* end = p + sizeof(value)/sizeof(long);
   while (p != end) {
@@ -1118,32 +1125,33 @@ inline InvokeConstMember<TYPE, RESULT> invokeMember(RESULT (TYPE::*member)() con
   class MyPrefix {
   private:
   
-    MyLock lock;
+    MyLock& lock;
   public:
   
-    MySuffix(MyLock _lock) throw() : lock(_lock) {
+    MyPrefix(MyLock& _lock) noexcept : lock(_lock) {
     }
     
     inline operator()() throw(LockException) {
-      lock->lock();
+      lock.lock();
     }
   };
   
   class MySuffix {
   private:
   
-    MyLock lock;
+    MyLock& lock;
   public:
   
-    MySuffix(MyLock _lock) throw() : lock(_lock) {
+    MySuffix(MyLock& _lock) noexcept : lock(_lock) {
     }
     
     inline void operator()() throw(LockException) {
-      lock->unlock();
+      lock.unlock();
     }
   };
   
-  void myFunction() throw() {
+  void myFunction()
+  {
     MyLock myLock;
     InvokeOutfix outfix(object, MyPrefix(myLock), MySuffix(myLock));
     int result = outfix->myMethod(1234);
@@ -1160,7 +1168,7 @@ public:
   class Invoke {
   private:
 
-    TYPE* object;
+    TYPE* object = nullptr;
     PREFIX prefix;
     SUFFIX suffix;
 
@@ -1206,13 +1214,15 @@ public:
 */
 template<class TYPE, class PREFIX, class SUFFIX>
 inline InvokeOutfix<TYPE, PREFIX, SUFFIX> invokeOutfix(
-  TYPE& object, PREFIX prefix, SUFFIX suffix) {
+  TYPE& object, PREFIX prefix, SUFFIX suffix)
+{
   return InvokeOutfix<TYPE, PREFIX, SUFFIX>(&object, prefix, suffix);
 }
 
 template<class TYPE, class PREFIX, class SUFFIX>
 inline InvokeOutfix<TYPE, PREFIX, SUFFIX> invokeOutfix(
-  TYPE* object, PREFIX prefix, SUFFIX suffix) {
+  TYPE* object, PREFIX prefix, SUFFIX suffix)
+{
   return InvokeOutfix<TYPE, PREFIX, SUFFIX>(object, prefix, suffix);
 }
 

@@ -67,8 +67,7 @@ public:
   */
   static inline void initializeByCopy(TYPE* restrict dest, const TYPE* restrict src, MemorySize count)
   {
-    if (Uninitializeable<TYPE>::IS_UNINITIALIZEABLE ||
-        Relocateable<TYPE>::IS_RELOCATEABLE) {
+    if (Uninitializeable<TYPE>::IS_UNINITIALIZEABLE || Relocateable<TYPE>::IS_RELOCATEABLE) {
       copy<TYPE>(dest, src, count); // blocks do not overlap
     } else {
       const TYPE* end = dest + count;
@@ -87,8 +86,7 @@ public:
   static inline void initializeByMove(TYPE* dest, TYPE* src, const TYPE* end)
   {
     ASSERT(src <= end);
-    if (!Uninitializeable<TYPE>::IS_UNINITIALIZEABLE &&
-        !Relocateable<TYPE>::IS_RELOCATEABLE) {
+    if (!Uninitializeable<TYPE>::IS_UNINITIALIZEABLE && !Relocateable<TYPE>::IS_RELOCATEABLE) {
       while (src != end) {
         new(dest) TYPE(*src); // copy object
         src->~TYPE(); // destroy old object

@@ -801,7 +801,7 @@ public:
 
 /** Returns the length of the null-terminated array (excluding terminator). */
 template<class TYPE>
-inline MemorySize getNullTerminatedLength(const TYPE* _src) noexcept
+MemorySize getNullTerminatedLength(const TYPE* _src) noexcept
 {
   if (!_src) {
     return 0;
@@ -815,7 +815,7 @@ inline MemorySize getNullTerminatedLength(const TYPE* _src) noexcept
 
 /** Returns the length of the null-terminated array (excluding terminator). */
 template<class TYPE>
-inline MemorySize getNullTerminatedLength(const TYPE* _src, const MemorySize maximumLength) noexcept
+MemorySize getNullTerminatedLength(const TYPE* _src, const MemorySize maximumLength) noexcept
 {
   if (!_src) {
     return 0;

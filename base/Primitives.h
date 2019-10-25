@@ -83,9 +83,9 @@ struct nothing {
 
 
 
-// TAG: typeof is a GCC extension
 /** The resulting integral type of pointer subtraction. */
 typedef decltype(static_cast<char*>(nullptr) - static_cast<char*>(nullptr)) MemoryDiff;
+
 /**
   The integral type used to represent any memory offset and any size of memory
   block.
@@ -893,5 +893,123 @@ public:
     return reinterpret_cast<char*>(copyTo(reinterpret_cast<uint8*>(dest)));
   }
 };
+
+/** Range iterator. Not intended for floats due to drift. */
+template<class TYPE>
+class RangeIterator {
+private:
+
+  TYPE value = 0;
+  TYPE step = 0;
+public:
+
+  inline RangeIterator(const TYPE _value, const TYPE _step)
+    : value(_value), step(_step)
+  {
+  }
+
+  inline MemorySize getValue() const noexcept
+  {
+    return value;
+  }
+
+  inline RangeIterator& operator++() noexcept
+  {
+    // TAG: for float we would need to keep the steps so far and do value+steps*step - but then it is recommanded that you do this calculation inside the loop
+    value += step;
+    return *this;
+  }
+
+  inline RangeIterator operator++(int) noexcept
+  {
+    RangeIterator result = *this;
+    value += step;
+    return result;
+  }
+
+  inline bool operator==(const RangeIterator& i) const noexcept
+  {
+    if (step > 0) {
+      return value >= i.value; // make sure we dont exceed stop iterator due to step
+    } else {
+      return value <= i.value; // make sure we dont exceed stop iterator due to step
+    }
+  }
+
+  inline bool operator!=(const RangeIterator& i) const noexcept
+  {
+    if (step > 0) {
+      return value < i.value; // make sure we dont exceed stop iterator due to step
+    } else {
+      return value > i.value; // make sure we dont exceed stop iterator due to step
+    }
+  }
+
+  inline const TYPE& operator*() const
+  {
+    return value;
+  }
+};
+
+/** Producer for range of values. */
+template<class TYPE>
+class Range {
+private:
+
+  TYPE start = 0;
+  TYPE stop = 0;
+  TYPE step = 1;
+public:
+
+  /** Produces numbers [0; count - 1]. */
+  inline Range(const TYPE _count) noexcept
+    : stop(_count)
+  {
+  }
+
+  /** Produces numbers [first; first + count - 1]. */
+  inline Range(const TYPE _start, const TYPE _stop) noexcept
+    : start(_start), stop(_stop)
+  {
+  }
+
+  /** Produces numbers first, first + 1*step, first + 2*step as long as stop is not reached. */
+  inline Range(const TYPE _start, const TYPE _stop, const TYPE _step) noexcept
+    : start(_start), stop(_stop), step(_step)
+  {
+    ASSERT(step != 0);
+  }
+
+  inline RangeIterator<TYPE> begin() const noexcept
+  {
+    return RangeIterator<TYPE>((step != 0) ? start : 0, step);
+  }
+
+  inline RangeIterator<TYPE> end() const noexcept
+  {
+    return RangeIterator<TYPE>((step != 0) ? stop : 0, step);
+  }
+};
+
+/** Returns range. */
+template<typename TYPE>
+inline Range<TYPE> range(const TYPE stop) noexcept
+{
+  return Range<TYPE>(stop);
+}
+
+/** Returns range. */
+template<typename TYPE>
+inline Range<TYPE> range(const TYPE start, const TYPE stop) noexcept
+{
+  return Range<TYPE>(start, stop);
+}
+
+/** Returns range. */
+template<typename TYPE>
+inline Range<TYPE> range(const TYPE start, const TYPE stop, const TYPE step) noexcept
+{
+  return Range<TYPE>(start, stop, step);
+}
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

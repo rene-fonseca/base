@@ -1088,18 +1088,22 @@ FormatOutputStream& FormatOutputStream::operator<<(unsigned long long value) thr
 
 
 
+/** Large integer. */
 class LargeInteger {
 public:
 
-  static inline void clear(unsigned int* value, unsigned int size) throw() {
+  static inline void clear(unsigned int* value, unsigned int size) noexcept
+  {
     fill(value, size, 0U);
   }
 
-  static inline void assign(unsigned int* restrict dest, const unsigned int* restrict src, unsigned int size) throw() {
+  static inline void assign(unsigned int* restrict dest, const unsigned int* restrict src, unsigned int size)
+  {
     copy(dest, src, size);
   }
 
-  static inline unsigned int divide(unsigned int* value, unsigned int size, unsigned int divisor) throw() {
+  static inline unsigned int divide(unsigned int* value, unsigned int size, unsigned int divisor)
+  {
     unsigned int* word = value + size;
     unsigned int remainder = 0;
     while (--word >= value) {
@@ -1110,13 +1114,15 @@ public:
     return remainder;
   }
 
-  static inline void setBit(unsigned int* value, unsigned int size, unsigned int bit) throw() {
+  static inline void setBit(unsigned int* value, unsigned int size, unsigned int bit)
+  {
     ASSERT(bit < (size * sizeof(unsigned int) * 8));
     fill(value, size, 0U);
     value[bit/(sizeof(unsigned int) * 8)] = 1U << (bit % (sizeof(unsigned int) * 8));
   }
 
-  static inline bool addBit(unsigned int* value, unsigned int size, unsigned int bit) throw() {
+  static inline bool addBit(unsigned int* value, unsigned int size, unsigned int bit)
+  {
     ASSERT(bit < (size * sizeof(unsigned int) * 8));
     value += bit/(sizeof(unsigned int) * 8);
     unsigned int carrier = 1 << (bit % (sizeof(unsigned int) * 8));
@@ -1131,7 +1137,8 @@ public:
     return true;
   }
 
-  static inline void leftShift(unsigned int* value, unsigned int size, unsigned int shift) throw() {
+  static inline void leftShift(unsigned int* value, unsigned int size, unsigned int shift)
+  {
     unsigned int bitShift = shift % (sizeof(unsigned int) * 8);
     unsigned int wordShift = shift/(sizeof(unsigned int) * 8);
 
@@ -1156,7 +1163,8 @@ public:
   }
   
   // TAG: fix this - prevent overflow
-  static inline void rightShift(unsigned int* value, unsigned int size, unsigned int shift) throw() {
+  static inline void rightShift(unsigned int* value, unsigned int size, unsigned int shift)
+  {
     unsigned int bitShift = shift % (sizeof(unsigned int) * 8);
     unsigned int wordShift = shift/(sizeof(unsigned int) * 8);
     const unsigned int* src = value + wordShift;
@@ -1181,8 +1189,8 @@ public:
     }
   }
 
-  static inline bool add(
-    unsigned int* value, unsigned int size, unsigned int a) throw() {
+  static inline bool add(unsigned int* value, unsigned int size, unsigned int a)
+  {
     const unsigned int* end = value + size;
     unsigned int carrier = a;
     for (; value < end; ++value) {
@@ -1196,7 +1204,8 @@ public:
   static inline bool add(
     unsigned int* restrict value,
     const unsigned int* restrict right,
-    unsigned int size) throw() {
+    unsigned int size) noexcept
+  {
     const unsigned int* end = value + size;
     unsigned int carrier = 0;
     for (; value < end; ++value, ++right) {
@@ -1210,7 +1219,8 @@ public:
   static inline bool subtract(
     unsigned int* restrict value,
     const unsigned int* restrict right,
-    unsigned int size) throw() {
+    unsigned int size) noexcept
+  {
     const unsigned int* end = value + size;
     unsigned int borrow = 0;
     for (; value < end; ++value, ++right) {
@@ -1222,7 +1232,8 @@ public:
     return borrow > 0;
   }
 
-  static inline bool checkOverflow(const unsigned int* restrict left, const unsigned int* restrict right, unsigned int size) throw() {
+  static inline bool checkOverflow(const unsigned int* restrict left, const unsigned int* restrict right, unsigned int size) noexcept
+  {
     const unsigned int* end = left + size;
     unsigned int carrier = 0;
     for (; left < end; ++left, ++right) {
@@ -1233,7 +1244,8 @@ public:
   }
 
   static inline bool multiply(
-    unsigned int* value, unsigned int size, unsigned int m) throw() {
+    unsigned int* value, unsigned int size, unsigned int m) noexcept
+  {
     const unsigned int* end = value + size;
     unsigned int carrier = 0;
     for (; value < end; ++value) {
@@ -1244,8 +1256,8 @@ public:
     return carrier > 0;
   }
 
-  static inline unsigned int getSize(
-    const unsigned int* value, unsigned int size) throw() {
+  static inline unsigned int getSize(const unsigned int* value, unsigned int size) noexcept
+  {
     const unsigned int* src = value + size; // start at end of value
     while (src > value) {
       if (*--src != 0) {
@@ -1255,8 +1267,8 @@ public:
     return 0; // all words are zero
   }
 
-  static inline unsigned int getBitSize(
-    const unsigned int* value, unsigned int size) throw() {
+  static inline unsigned int getBitSize(const unsigned int* value, unsigned int size) noexcept
+  {
     const unsigned int* src = value + size; // start at end of value
     while (src > value) {
       if (*--src != 0) {
@@ -1271,8 +1283,8 @@ public:
     return 0; // all bits are zero
   }
 
-  static inline bool isZero(
-    const unsigned int* value, unsigned int size) throw() {
+  static inline bool isZero(const unsigned int* value, unsigned int size) noexcept
+  {
     for (const unsigned int* end = value + size; value < end; ++value) {
       if (*value != 0) {
         return false;
@@ -1284,7 +1296,8 @@ public:
   static inline bool lessThan(
     const unsigned int* restrict left,
     const unsigned int* restrict right,
-    unsigned int size) throw() {
+    unsigned int size) noexcept
+  {
     const unsigned int* end = left;
     left += size;
     right += size;
@@ -1303,7 +1316,8 @@ public:
   static inline bool equal(
     const unsigned int* restrict left,
     const unsigned int* restrict right,
-    unsigned int size) throw() {
+    unsigned int size) noexcept
+  {
     const unsigned int* end = left + size;
     while (left < end) {
       if (*left++ != *right++) {
@@ -1319,7 +1333,8 @@ public:
     unsigned int* remainder,
     const unsigned int* dividend,
     const unsigned int* restrict divisor,
-    unsigned int size) throw() {
+    unsigned int size) noexcept
+  {
 
     PrimitiveArray<unsigned int> temp(size);
     clear(quotient, size);
@@ -1372,7 +1387,8 @@ void convertFloatingPoint(
   int base2Exponent,
   uint8* restrict buffer,
   unsigned int& numberOfDigits,
-  int& exponent) throw() {
+  int& exponent) noexcept
+{
   // TAG: there is plenty room for optimization
   static const unsigned int power[] = {
     1, 10, 100, 1000, 10000, 100000, 1000000, 10000000, 100000000, 1000000000

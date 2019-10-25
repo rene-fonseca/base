@@ -37,7 +37,25 @@ private:
   BinaryNode* right = nullptr;
   /** The value associated with the node. */
   TYPE value;
+
+  BinaryNode(int, int, int, const TYPE& _value); // force nullptr
+  BinaryNode(BinaryNode* _parent, int, int, const TYPE& _value); // force nullptr
 public:
+
+  /**
+    Initializes a binary node.
+
+    @param parent The parent node of this node.
+    @param value The value to be associated with the node.
+  */
+  inline BinaryNode(
+    BinaryNode* _parent,
+    nullptr_t,
+    nullptr_t,
+    const TYPE& _value)
+    : parent(_parent), value(_value)
+  {
+  }
 
   /**
     Initializes a binary node.

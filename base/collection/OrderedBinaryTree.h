@@ -204,14 +204,15 @@ public:
     Adds a value to the binary tree.
 
     @param value The value to be added.
-    @return The value if it already exists. 0 if the value was not found in the tree.
+    @return The value if it already exists. nullptr if the value was not found in the tree.
   */
-  Value* add(const Value& value) throw(MemoryException) {
+  Value* add(const Value& value)
+  {
     Node* node = BinaryTree<Value>::getRoot();
 
     if (!node) {
-      this->elements = new typename BinaryTree<Value>::BinaryTreeImpl(new Node(0, 0, 0, value)); // attach root node
-      return 0;
+      this->elements = new typename BinaryTree<Value>::BinaryTreeImpl(new Node(nullptr, nullptr, nullptr, value)); // attach root node
+      return nullptr;
     }
 
     while (true) {
@@ -220,15 +221,15 @@ public:
         if (node->getLeft()) {
           node = node->getLeft();
         } else { // attach left child node
-          node->setLeft(new Node(node, 0, 0, value));
-          return 0;
+          node->setLeft(new Node(node, nullptr, nullptr, value));
+          return nullptr;
         }
       } else if (result > 0) {
         if (node->getRight()) {
           node = node->getRight();
         } else { // attach right child node
-          node->setRight(new Node(node, 0, 0, value));
-          return 0;
+          node->setRight(new Node(node, nullptr, nullptr, value));
+          return nullptr;
         }
       } else {
         return node->getValue(); // node with this value already exists

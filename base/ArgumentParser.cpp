@@ -152,7 +152,8 @@ ArgumentParser::ArgumentParser(unsigned int _flags) throw(MemoryException)
 }
 
 void ArgumentParser::addOption(
-  const Reference<Option>& option) throw(AlreadyKeyException) {
+  const Reference<Option>& option) throw(AlreadyKeyException)
+{
   bassert(
     !names.isKey(option->getName()),
     AlreadyKeyException("name already registered", this)
@@ -172,7 +173,8 @@ void ArgumentParser::addOption(
 
 ArgumentParser::Argument* ArgumentParser::getArgument(
   const Reference<Option>& option,
-  bool occured) const throw(ArgumentException) {
+  bool occured) const throw(ArgumentException)
+{
   Argument* argument = nullptr;
   if (option.isType<FlagOption>()) {
     argument =

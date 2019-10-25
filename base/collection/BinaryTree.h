@@ -48,14 +48,16 @@ public:
 
     @param node The root node of the binary tree.
   */
-  PrefixOrderEnumerator(Pointer _node) throw()
-    : root(_node), node(_node), more(_node != 0) {
+  PrefixOrderEnumerator(Pointer _node) noexcept
+    : root(_node), node(_node), more(_node != nullptr)
+  {
   }
 
   /**
     Returns true if there is more elements in this enumeration.
   */
-  inline bool hasNext() const throw() {
+  inline bool hasNext() const noexcept
+  {
     return more;
   }
 
@@ -123,17 +125,18 @@ public:
 
     @param node The root node of the binary tree.
   */
-  InfixOrderEnumerator(Pointer _node) throw()
+  InfixOrderEnumerator(Pointer _node) noexcept
     : root(_node),
       node(_node),
-      more(_node != 0),
+      more(_node != nullptr),
       traverse(TRAVERSE_SUBTREE) {
   }
 
   /**
     Returns true if there is more elements in this enumeration.
   */
-  inline bool hasNext() const throw() {
+  inline bool hasNext() const noexcept
+  {
     return more;
   }
 
@@ -255,14 +258,15 @@ public:
 
     @param node The root node of the binary tree.
   */
-  PostfixOrderEnumerator(Pointer _node) throw()
-    : root(_node), node(_node), more(_node != 0) {
+  PostfixOrderEnumerator(Pointer _node) noexcept
+    : root(_node), node(_node), more(_node != nullptr) {
   }
 
   /**
     Returns true if there is more elements in this enumeration.
   */
-  inline bool hasNext() const throw() {
+  inline bool hasNext() const noexcept
+  {
     return more;
   }
 
@@ -306,7 +310,7 @@ public:
 //    Invocates the specified unary operation for each element (non-modifying operation).
 //  */
 //  template<class TYPE, class UNOPR>
-//  void traversePrefixOrder(const BinaryNode* root, UNOPR& function) throw() {
+//  void traversePrefixOrder(const BinaryNode* root, UNOPR& function) noexcept {
 //    const BinaryNode* node = root;
 //    while (true) {
 //      function(node);
@@ -330,7 +334,7 @@ public:
 //  }
 //
 //  template<class TYPE, class UNOPR>
-//  void traverseInfixOrder(const BinaryNode* root, UNOPR& function) throw() {
+//  void traverseInfixOrder(const BinaryNode* root, UNOPR& function) noexcept {
 //    const BinaryNode* node = root;
 //    while (true) {
 //      if (node->getLeft()) { // traverse left subtree
@@ -354,7 +358,7 @@ public:
 //  }
 //
 //  template<class TYPE, class UNOPR>
-//  void traversePostfixOrder(const BinaryNode* root, UNOPR& function) throw() {
+//  void traversePostfixOrder(const BinaryNode* root, UNOPR& function) noexcept {
 //    const BinaryNode* node = root;
 //    while (true) {
 //      if (node->getLeft()) { // traverse left subtree
@@ -414,11 +418,12 @@ public:
       @param node The top node of the subtree to be copied.
       @return The top node of the new subtree.
     */
-    Node* copySubtree(const Node* node) throw() {
+    Node* copySubtree(const Node* node)
+    {
       if (node) {
         Node* left = copySubtree(node->getLeft());
         Node* right = copySubtree(node->getRight());
-        Node* result = new Node(0, left, right, *node->getValue());
+        Node* result = new Node(nullptr, left, right, *node->getValue());
         if (left) {
           left->setParent(result);
         }
@@ -437,7 +442,8 @@ public:
 
       @param node The root node of the subtree to be destroyed.
     */
-    void destroySubtree(Node* node) throw() {
+    void destroySubtree(Node* node)
+    {
       if (node) {
         destroySubtree(node->getLeft());
         destroySubtree(node->getRight());
@@ -449,7 +455,8 @@ public:
     /**
       Initialize an empty binary tree.
     */
-    explicit inline BinaryTreeImpl() throw() {
+    explicit inline BinaryTreeImpl() noexcept
+    {
     }
 
     /**
@@ -457,41 +464,48 @@ public:
 
       @param node The root node of the tree.
     */
-    explicit inline BinaryTreeImpl(Node* node) throw() : root(node) {
+    explicit inline BinaryTreeImpl(Node* node) noexcept
+      : root(node)
+    {
     }
 
     /**
       Initialize binary tree from other binary tree.
     */
-    BinaryTreeImpl(const BinaryTreeImpl& copy) throw(MemoryException)
-      : root(copySubtree(copy.root)) {
+    BinaryTreeImpl(const BinaryTreeImpl& copy)
+      : root(copySubtree(copy.root))
+    {
     }
 
     /**
       Returns true if the binary tree is empty.
     */
-    inline bool isEmpty() const throw() {
+    inline bool isEmpty() const noexcept
+    {
       return root == nullptr;
     }
 
     /**
       Returns the root node of the binary tree.
     */
-    inline Node* getRoot() throw() {
+    inline Node* getRoot() noexcept
+    {
       return root;
     }
     
     /**
       Returns the root node of the binary tree.
     */
-    inline const Node* getRoot() const throw() {
+    inline const Node* getRoot() const noexcept
+    {
       return root;
     }
 
     /**
       Sets the root of the binary tree.
     */
-    inline void setRoot(Node* node) throw() {
+    inline void setRoot(Node* node) noexcept
+    {
       root = node;
     }
 
@@ -584,7 +598,8 @@ public:
     /**
       Destroys the binary tree.
     */
-    ~BinaryTreeImpl() throw() {
+    ~BinaryTreeImpl()
+    {
       destroySubtree(root);
       root = 0;
     }
@@ -600,19 +615,24 @@ public:
   /**
     Initializes an empty binary tree.
   */
-  BinaryTree() throw() : elements(new BinaryTreeImpl()) {
+  BinaryTree()
+    : elements(new BinaryTreeImpl())
+  {
   }
 
   /**
     Initializes binary tree from other binary tree.
   */
-  inline BinaryTree(const BinaryTree& copy) throw() : elements(copy.elements) {
+  inline BinaryTree(const BinaryTree& copy) noexcept
+    : elements(copy.elements)
+  {
   }
 
   /**
     Assignment of binary tree to binary tree.
   */
-  inline BinaryTree& operator=(const BinaryTree& eq) throw() {
+  inline BinaryTree& operator=(const BinaryTree& eq) noexcept
+  {
     elements = eq.elements;
     return *this;
   }
@@ -620,14 +640,16 @@ public:
   /**
     Returns true if the tree has a root node.
   */
-  inline bool isEmpty() const throw() {
+  inline bool isEmpty() const noexcept
+  {
     return elements->isEmpty();
   }
 
   /**
     Returns the root node of the binary tree for modifying access.
   */
-  Node* getRoot() throw() {
+  Node* getRoot()
+  {
     elements.copyOnWrite();
     return elements->getRoot();
   }
@@ -635,21 +657,24 @@ public:
   /**
     Returns the root node of the binary tree for non-modifying access.
   */
-  inline const Node* getRoot() const throw() {
+  inline const Node* getRoot() const noexcept
+  {
     return elements->getRoot();
   }
 
   /**
     Returns a modifying enumerator of the binary tree.
   */
-  inline Enumerator getEnumerator() throw() {
+  inline Enumerator getEnumerator() noexcept
+  {
     return Enumerator(getRoot());
   }
 
   /**
     Returns a non-modifying enumerator of the binary tree.
   */
-  inline ReadEnumerator getReadEnumerator() const throw() {
+  inline ReadEnumerator getReadEnumerator() const noexcept
+  {
     return ReadEnumerator(getRoot());
   }
 
@@ -658,7 +683,8 @@ public:
 
     @param node The root of the tree.
   */
-  void setRoot(Node* node) throw() {
+  void setRoot(Node* node)
+  {
     elements.copyOnWrite();
     elements->setRoot(node);
   }
@@ -666,7 +692,8 @@ public:
   /**
     Removes all the nodes from the binary tree.
   */
-  void removeAll() throw() {
+  void removeAll()
+  {
     elements = new BinaryTreeImpl(); // no need to copy
   }
 };

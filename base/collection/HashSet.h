@@ -169,7 +169,7 @@ public:
       capacity = maximum(capacity, MINIMUM_CAPACITY);
       capacity = minimum(capacity, MAXIMUM_CAPACITY);
       log2OfCapacity = Math::iLog2(capacity);
-      if ((1U << log2OfCapacity) < capacity) {
+      if ((static_cast<MemorySize>(1U) << log2OfCapacity) < capacity) {
         ++log2OfCapacity;
         capacity *= 2;
       }

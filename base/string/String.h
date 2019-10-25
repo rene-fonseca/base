@@ -521,7 +521,8 @@ public:
     return elements->getReadEnumerator();
   }
 
-  // TAG: maybe better to explicitly have UTF8String class
+  /** Returns a valid UTF-8 string by discarding bad codes. */
+  String getValidUTF8() const;
 
   /**
     Returns the first element of the string as a non-modifying iterator.
@@ -545,6 +546,66 @@ public:
   inline UTF8Enumerator getUTF8ReadEnumerator() const noexcept
   {
     return UTF8Enumerator(getUTF8BeginReadIterator(), getUTF8EndReadIterator());
+  }
+
+  /** UTF-8 string. */
+  class UTF8String {
+  private:
+
+    const uint8* src = nullptr;
+    const MemorySize size = 0;
+  public:
+
+    inline UTF8String() noexcept
+    {
+    }
+
+    UTF8String(const uint8* _src) noexcept
+      : src(_src), size(getNullTerminatedLength(src))
+    {
+    }
+
+    inline UTF8String(const uint8* _src, MemorySize _size = 0) noexcept
+      : src(_src), size(_size)
+    {
+    }
+
+    inline UTF8String(const char* _src, MemorySize _size = 0) noexcept
+      : src(reinterpret_cast<const uint8*>(_src)), size(_size)
+    {
+    }
+
+    inline UTF8String(const uint8* _src, const uint8* _end) noexcept
+      : src(_src), size(_end - _src)
+    {
+    }
+
+    inline UTF8String(const char* _src, const char* _end) noexcept
+      : src(reinterpret_cast<const uint8*>(_src)), size(_end - _src)
+    {
+    }
+
+    /** Returns the number of UTF-8 encoded characters. Not the number of bytes! */
+    MemorySize getLength() const noexcept;
+
+    /** Returns true if the bytes are valid UTF-8 encoded characters. And if no disallowed UCS4 codes are used. */
+    bool isValidUTF8() const noexcept;
+
+    inline UTF8Iterator begin() const noexcept
+    {
+      return src;
+    }
+
+    inline UTF8Iterator end() const noexcept
+    {
+      return src + size;
+    }
+  };
+
+  /** Returns UTF-8 string. */
+  UTF8String getUTF8String() const noexcept
+  {
+    return UTF8String(getElements(), getLength());
   }
 
 // *************************************************************************

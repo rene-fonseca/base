@@ -874,6 +874,51 @@ FormatOutputStream& operator<<(FormatOutputStream& stream, const String& value) 
   return stream;
 }
 
+MemorySize String::UTF8String::getLength() const noexcept
+{
+  return Unicode::getUTF8StringLength(src);
+}
+
+bool String::UTF8String::isValidUTF8() const noexcept
+{
+  const uint8* src = this->src;
+  while (*src) {
+    ucs4 ch = 0;
+    auto bytes = Unicode::readUCS4(src, ch);
+    if (bytes <= 0) {
+      return false;
+    }
+    if (!Unicode::isUCS4(ch)) {
+      return false;
+    }
+    src += bytes; // skip valid bytes
+  }
+  return true;
+}
+
+String String::getValidUTF8() const
+{
+  String result(getLength());
+  const uint8* src = reinterpret_cast<const uint8*>(getElements());
+  while (*src) {
+    ucs4 ch = 0;
+    auto bytes = Unicode::readUCS4(src, ch);
+    if (bytes > 0) {
+      if (!Unicode::isUCS4(ch)) {
+        src += bytes;
+        continue; // skip disallowed ucs4
+      }
+      while (bytes > 0) {
+        result.append(*src++); // copy bytes
+        --bytes;
+      }
+    } else {
+      ++src; // skip bad byte
+    }
+  }
+  return result;
+}
+
 /** Converts wstring to UTF-8 string. */
 std::string toUTF8(const String& s)
 {

@@ -35,7 +35,17 @@ protected:
   DoubleLinkedNode* previous = nullptr;
   /** The value associated with the node. */
   TYPE value;
+
+  DoubleLinkedNode(int, int, const TYPE& _value); // force nullptr
 public:
+
+  /**
+    Initializes a linked node with no previous and next node.
+  */
+  inline DoubleLinkedNode(nullptr_t, nullptr_t, const TYPE& _value)
+    : value(_value)
+  {
+  }
 
   /**
     Initializes a linked node.

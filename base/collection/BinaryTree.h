@@ -500,8 +500,9 @@ public:
 
       @return The new left child node.
     */
-    Node* makeLeft(Node* node, const TYPE& value) throw(MemoryException) {
-      Node* child = new Node(node, 0, 0, value);
+    Node* makeLeft(Node* node, const TYPE& value)
+    {
+      Node* child = new Node(node, nullptr, nullptr, value);
       node->setLeft(child);
       return child;
     }
@@ -511,8 +512,9 @@ public:
 
       @return The new right child node.
     */
-    Node* makeRight(Node* node, const TYPE& value) throw(MemoryException) {
-      Node* child = new Node(node, 0, 0, value);
+    Node* makeRight(Node* node, const TYPE& value)
+    {
+      Node* child = new Node(node, nullptr, nullptr, value);
       node->setRight(child);
       return child;
     }

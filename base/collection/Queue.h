@@ -97,8 +97,9 @@ protected:
     /**
       Adds the value to the end of the queue.
     */
-    void push(const TYPE& value) throw(MemoryException) {
-      Node* node = new Node(0, value);
+    void push(const TYPE& value)
+    {
+      Node* node = new Node(nullptr, value);
       if (!size) { // is queue empty
         first = node;
       } else { // queue is not empty

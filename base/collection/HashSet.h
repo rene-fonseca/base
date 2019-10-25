@@ -165,7 +165,8 @@ public:
     /**
       Initializes the hash set with the specified capacity.
     */
-    inline HashSetImpl(MemorySize capacity) throw(MemoryException) {
+    HashSetImpl(MemorySize capacity)
+    {
       capacity = maximum(capacity, MINIMUM_CAPACITY);
       capacity = minimum(capacity, MAXIMUM_CAPACITY);
       log2OfCapacity = Math::iLog2(capacity);
@@ -216,7 +217,8 @@ public:
     /**
       Increases the capacity of the hash set.
     */
-    inline void grow() throw(MemoryException) {
+    void grow()
+    {
       if (capacity < MAXIMUM_CAPACITY) {
         capacity *= 2;
         mask = capacity - 1;
@@ -557,7 +559,8 @@ public:
   /**
     Copies the hash set if referenced by multiple automation pointers.
   */
-  inline void copyOnWrite() throw(MemoryException) {
+  void copyOnWrite()
+  {
     impl.copyOnWrite();
   }
 public:
@@ -620,7 +623,8 @@ public:
   /**
     Adds the value to the set.
   */
-  void add(const Value& value) throw(MemoryException) {
+  void add(const Value& value)
+  {
     copyOnWrite();
     impl->add(value);
   }

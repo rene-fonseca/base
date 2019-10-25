@@ -33,7 +33,20 @@ protected:
   SingleLinkedNode* next = nullptr;
   /** The value associated with the node. */
   TYPE value;
+
+  SingleLinkedNode(int, const TYPE& _value) noexcept; // force nullptr
 public:
+
+  /**
+    Initializes a linked node.
+
+    @param next The next node in the container.
+    @param value The value to be associated with the node.
+  */
+  inline SingleLinkedNode(nullptr_t, const TYPE& _value) noexcept
+    : value(_value)
+  {
+  }
 
   /**
     Initializes a linked node.

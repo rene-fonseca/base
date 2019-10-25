@@ -12,12 +12,43 @@
  ***************************************************************************/
 
 #include <base/collection/Array.h>
-#include <string>
+#include <base/UnitTest.h>
+#include <algorithm>
 
 _COM_AZURE_DEV__BASE__DUMMY_SYMBOL
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 _COM_AZURE_DEV__BASE__INSTANTIATE_CONTAINER_COMMON_TYPE_LIMITED(Array)
+
+#if defined(_COM_AZURE_DEV__BASE__TESTS)
+
+class TEST_CLASS(Array) : public UnitTest {
+public:
+
+  TEST_PRIORITY(10);
+
+  void run() override
+  {
+    Array<int> ai;
+    for (auto i : range(-10, 20)) {
+      ai.append(i);
+    }
+
+    Array<String> as;
+    as.append("abc");
+    as.append("123");
+    as.append("up");
+    as.append("down");
+
+    TEST_ASSERT(std::find(as.begin(), as.end(), "up") != as.end());
+    TEST_ASSERT((std::find(as.begin(), as.end(), "up") - as.begin()) == 2);
+    TEST_ASSERT(std::find(as.begin(), as.end(), "left") == as.end());
+  }
+};
+
+TEST_REGISTER(Array);
+
+#endif
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

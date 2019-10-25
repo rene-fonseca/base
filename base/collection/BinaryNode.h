@@ -50,8 +50,8 @@ public:
   */
   inline BinaryNode(
     BinaryNode* _parent,
-    nullptr_t,
-    nullptr_t,
+    std::nullptr_t left,
+    std::nullptr_t right,
     const TYPE& _value)
     : parent(_parent), value(_value)
   {

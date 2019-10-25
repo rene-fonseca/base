@@ -216,7 +216,7 @@ public:
 
   inline ucs4 next()
   {
-    *src++;
+    return *src++;
   }
 };
 

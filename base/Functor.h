@@ -87,26 +87,32 @@ public:
   Returns true if two sequences are pairwise equal (non-modifying operation).
 */
 template<class TYPE>
-inline bool equal(
-  const TYPE* left, const TYPE* right, MemorySize count) throw() {
-#if defined(_COM_AZURE_DEV__BASE__HAVE_MEMCMP)
-  if (primitives::Arithmetic<TYPE>::IS_ARITHMETIC) {
-    return isoc::memcmp(left, right, count * sizeof(TYPE)) == 0;
-  } else {
-#endif
-    const TYPE* const end = left + count;
-    while (left != end) {
-      if (!(*left == *right)) {
-        return false;
-      }
-      ++left;
-      ++right;
+inline bool equal(const TYPE* left, const TYPE* right, MemorySize count)
+{
+  const TYPE* const end = left + count;
+  while (left != end) {
+    if (!(*left == *right)) {
+      return false;
     }
-    return true;
-#if defined(_COM_AZURE_DEV__BASE__HAVE_MEMCMP)
+    ++left;
+    ++right;
   }
-#endif
+  return true;
 }
+
+#if defined(_COM_AZURE_DEV__BASE__HAVE_MEMCMP)
+template<>
+inline bool equal<char>(const char* left, const char* right, MemorySize count)
+{
+  return isoc::memcmp(left, right, count);
+}
+
+template<>
+inline bool equal<uint8>(const uint8* left, const uint8* right, MemorySize count)
+{
+  return isoc::memcmp(left, right, count);
+}
+#endif
 
 /**
   Returns the index of the first mismatch between two sequences (non-modifying
@@ -118,9 +124,9 @@ inline bool equal(
   @return size if no mismatch was found.
 */
 template<class TYPE>
-inline unsigned int mismatch(
-  const TYPE* left, const TYPE* right, unsigned int size) throw() {
-  unsigned int temp = size;
+inline MemorySize mismatch(const TYPE* left, const TYPE* right, MemorySize size)
+{
+  MemorySize temp = size;
   while (temp && (*left == *right)) {
     ++left;
     ++right;
@@ -136,8 +142,8 @@ inline unsigned int mismatch(
   @param right The right sequence.
 */
 template<class TYPE>
-inline int compare(
-  const TYPE* left, const TYPE* right, MemorySize size) throw() {
+inline int compare(const TYPE* left, const TYPE* right, MemorySize size)
+{
   const TYPE* const end = left + size;
   while (left != end) {
     int temp = compare(*left, *right);
@@ -152,14 +158,14 @@ inline int compare(
 
 #if defined(_COM_AZURE_DEV__BASE__HAVE_MEMCMP)
 template<>
-inline int compare<char>(
-  const char* left, const char* right, MemorySize count) throw() {
+inline int compare<char>(const char* left, const char* right, MemorySize count)
+{
   return isoc::memcmp(left, right, count);
 }
 
 template<>
-inline int compare<uint8>(
-  const uint8* left, const uint8* right, MemorySize count) throw() {
+inline int compare<uint8>(const uint8* left, const uint8* right, MemorySize count)
+{
   return isoc::memcmp(left, right, count);
 }
 #endif
@@ -227,42 +233,37 @@ inline void forEachDoBinary(
 /**
   Find the first occurance of a value in a sequence (non-modifying operation).
 
-  @return A pointer to the value if it is present in the sequence otherwise 0.
+  @return A pointer to the value if it is present in the sequence otherwise nullptr.
 */
 template<class TYPE>
-inline const TYPE* find(const TYPE* element, MemorySize count, TYPE value) {
-  const TYPE* const end = element + count;
-  while (element != end) {
-    if (*element == value) { // do we have a match
-      return element;
+inline const TYPE* find(const TYPE* src, MemorySize count, const TYPE& value)
+{
+  const TYPE* const end = src + count;
+  while (src != end) {
+    if (*src == value) { // do we have a match
+      return src;
     }
-    ++element;
+    ++src;
   }
-  return 0; // not found
+  return nullptr; // not found
 }
-
-#if defined(_COM_AZURE_DEV__BASE__HAVE_MEMCHR)
-template<>
-inline const char* find(const char* element, MemorySize count, char value) {
-  return Cast::pointer<const char*>(isoc::memchr(element, value, count));
-}
-#endif
 
 /**
   Finds the first match of a predicate in a sequence.
 
-  @return Pointer to the value if found else 0.
+  @return Pointer to the value if found else nullptr.
 */
 template<class TYPE, class UNOPR>
-inline const TYPE* findPredicate(const TYPE* left, MemorySize count, const UNOPR& predicate) {
+inline const TYPE* findPredicate(const TYPE* src, MemorySize count, const UNOPR& predicate)
+{
   while (count) {
-    if (predicate(*left)) { // do we have a match
-      return left;
+    if (predicate(*src)) { // do we have a match
+      return src;
     }
-    ++left;
+    ++src;
     --count;
   }
-  return 0; // not found
+  return nullptr; // not found
 }
 
 /**
@@ -272,12 +273,13 @@ inline const TYPE* findPredicate(const TYPE* left, MemorySize count, const UNOPR
   @return -1 is not found.
 */
 template<class TYPE>
-inline int indexOf(const TYPE* element, MemorySize count, TYPE value) {
-  const TYPE* current = element;
-  const TYPE* const end = element + count;
+inline MemoryDiff indexOf(const TYPE* src, MemorySize count, const TYPE& value)
+{
+  const TYPE* current = src;
+  const TYPE* const end = src + count;
   while (current != end) {
     if (*current == value) { // do we have a match
-      return current - element;
+      return current - src;
     }
     ++current;
   }
@@ -430,7 +432,7 @@ inline void swap(TYPE* restrict left, TYPE* restrict right, MemorySize count)
 
 /** Sets every element in the sequence to a specified value. */
 template<class TYPE>
-inline void fill(TYPE* dest, MemorySize count, const TYPE value)
+void fill(TYPE* dest, MemorySize count, const TYPE value) // TAG: we want & in the general case but not for primitives
 {
   const TYPE* const end = dest + count;
   while (dest != end) {

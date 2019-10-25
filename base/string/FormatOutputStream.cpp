@@ -1099,6 +1099,9 @@ public:
 
   static inline void assign(unsigned int* restrict dest, const unsigned int* restrict src, unsigned int size)
   {
+    if (dest == src) {
+      return; // TAG: self assignment - violates restrict
+    }
     copy(dest, src, size);
   }
 

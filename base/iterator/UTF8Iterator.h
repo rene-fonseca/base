@@ -156,6 +156,21 @@ public:
     return element > eq.element;
   }
   
+  /** Returns true if the UTF-8 encoding is valid at the current position. Does NOT check if code is an allowed UCS4 code as such should be skipped fully. */
+  bool hasValidCode() const
+  {
+    ucs4 ch = 0;
+    const int status = Unicode::readUCS4(element, ch);
+    return status > 0;
+  }
+
+  /** Skip a single byte - not encoded character. Used to skip bad codes only. */
+  void skipByte() noexcept
+  {
+    ASSERT(*element); // we do not want to skip past null terminator
+    ++element;
+  }
+
   /**
     Access the element.
   */

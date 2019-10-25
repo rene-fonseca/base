@@ -58,8 +58,9 @@ public:
   /**
     Initializes a priority queue from other priority queue.
   */
-  PriorityQueue(const PriorityQueue& copy) throw(MemoryException)
-    : elements(copy.elements) {
+  PriorityQueue(const PriorityQueue& copy) noexcept
+    : elements(copy.elements)
+  {
   }
 
   /**
@@ -82,7 +83,8 @@ public:
     @param priority The priority of the value.
     @param value The value to be added to the queue.
   */
-  void push(const Priority& priority, const Value& value) throw(MemoryException) {
+  void push(const Priority& priority, const Value& value)
+  {
     auto node = elements.find(Node(priority));
     if (node) { // does the priority already exist in the tree
       Queue<Value>& queue = node->getValue()->getValue();

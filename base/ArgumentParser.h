@@ -310,7 +310,8 @@ public:
       unsigned int flags = 0) throw(OutOfDomain);
 
     /** Registers a value. */
-    inline void addValue(const String& value) throw(MemoryException) {
+    inline void addValue(const String& value)
+    {
       enums.add(value);
     }
 
@@ -486,7 +487,7 @@ public:
 
     @param flags The flags. The default is 0.
   */
-  ArgumentParser(unsigned int flags = 0) throw(MemoryException);
+  ArgumentParser(unsigned int flags = 0);
 
   /**
     Registers the specified option.

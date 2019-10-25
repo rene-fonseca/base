@@ -141,9 +141,10 @@ ArgumentParser::EnumOption::EnumOption(
   : Option(name, shortName, flags) {
 }
 
-ArgumentParser::ArgumentParser(unsigned int _flags) throw(MemoryException)
+ArgumentParser::ArgumentParser(unsigned int _flags)
   : flags(_flags),
-    shortNames(25 + 25 + 10) {
+    shortNames(25 + 25 + 10)
+{
   fill(
     shortNames.getElements(),
     shortNames.getSize(),

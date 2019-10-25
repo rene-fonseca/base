@@ -184,12 +184,13 @@ public:
     /**
       Initializes the hash set from another hash set.
     */
-    inline HashSetImpl(const HashSetImpl& copy) throw(MemoryException)
+    inline HashSetImpl(const HashSetImpl& copy)
       : table(copy.capacity),
         capacity(copy.capacity),
         mask(copy.mask),
         log2OfCapacity(copy.log2OfCapacity),
-        size(copy.size) {
+        size(copy.size)
+    {
       table.setSize(capacity); // entries set below
       
       // copy all buckets
@@ -568,14 +569,17 @@ public:
   /**
     Initializes an hash set.
   */
-  HashSet() throw(MemoryException) : impl(new HashSetImpl(DEFAULT_CAPACITY)) {
+  HashSet()
+    : impl(new HashSetImpl(DEFAULT_CAPACITY))
+  {
   }
   
   /**
     Initializes the hash set with the specified initial capacity.
   */
-  HashSet(MemorySize capacity) throw(MemoryException)
-    : impl(new HashSetImpl(capacity)) {
+  HashSet(MemorySize capacity) 
+    : impl(new HashSetImpl(capacity))
+  {
   }
   
   /**

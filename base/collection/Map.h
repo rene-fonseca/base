@@ -142,7 +142,7 @@ public:
   /**
     Initializes map from other map.
   */
-  Map(const Map& copy) throw(MemoryException)
+  Map(const Map& copy) noexcept
     : elements(copy.elements),
       size(copy.size)
   {

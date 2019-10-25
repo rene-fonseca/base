@@ -14,6 +14,13 @@
 #include <base/mem/Reference.h>
 #include <base/UnitTest.h>
 
+#if 0 // for testing natvis
+#include <base/collection/Pair.h>
+#include <base/collection/Array.h>
+#include <base/collection/List.h>
+#include <base/AnyValue.h>
+#endif
+
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 template class Reference<ReferenceCountedObject>;
@@ -56,6 +63,40 @@ public:
   void run() override
   {
     TEST_DECLARE_HERE(A);
+
+#if 0 // for testing natvis
+    String s("Hi there!");
+    MemorySpan span(s.native());
+
+    Pair<String, const char*> pair("First", "Last");
+
+    Array<String> values;
+    values.append("hello");
+    values.append("world");
+    values.append("from");
+    values.append("us");
+
+    Array<AnyValue> values2;
+    values2.append('C');
+    values2.append(L"Hello");
+    values2.append(54ULL);
+    values2.append(true);
+    values2.append(-9);
+    // values2.append(Reference<MyObject>());
+    values2.append(String("My item"));
+    values2.append((void*)nullptr);
+    values2.append(-5.9);
+
+    List<String> list;
+    list.append("Hello");
+    list.append("World!");
+
+    Map<int, String> map;
+    map[4] = "Testing";
+    map[77] = "More testing";
+
+    Reference<MyOtherObject> nr;
+#endif
 
     Reference<MyOtherObject> myOtherObject = new MyOtherObject();
     // myOtherObject = myOtherObject; // self assignment

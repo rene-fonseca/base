@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="utf-8"?>
+<AutoVisualizer xmlns="http://schemas.microsoft.com/vstudio/debugger/natvis/2010">
+  <Type Name="base::MemorySpan">
+    <Expand>
+      <Item Name="[size]">end - begin</Item>
+	</Expand>
+  </Type>
+
+  <Type Name="base::DynamicObject">
+    <DisplayString Condition="valid == 2407361369">{{ VALID }}</DisplayString>
+    <DisplayString Condition="valid != 2407361369">{{ BAD }}</DisplayString>
+  </Type>
+
+  <Type Name="base::ReferenceCountedObject">
+  </Type>
+
+  <Type Name="base::Reference&lt;*&gt;">
+    <DisplayString Condition="value == 0">nullptr</DisplayString>
+    <DisplayString Condition="value != 0">{{ {*value} }}</DisplayString>
+    <Expand>
+      <Item Condition="value != 0" Name="[value]">value</Item>
+    </Expand>
+  </Type>
+
+  <Type Name="base::String">
+    <DisplayString>{{ text={elements.value->elements} length={elements.value->size} }}</DisplayString>
+  </Type>
+
+  <Type Name="base::WideString">
+    <DisplayString>{{ text={elements.value->elements} length={elements.value->size} }}</DisplayString>
+  </Type>
+
+  <Type Name="base::AnyValue">
+    <DisplayString Condition="representation == VOID">{{ VOID }}</DisplayString>
+    <DisplayString Condition="representation == TYPE">{type}</DisplayString>
+    <DisplayString Condition="representation == POINTER">{p}</DisplayString>
+    <DisplayString Condition="representation == CHARACTER">{character}</DisplayString>
+    <DisplayString Condition="representation == WIDE_CHARACTER">{wideCharacter}</DisplayString>
+    <DisplayString Condition="representation == BOOLEAN">{boolean}</DisplayString>
+    <DisplayString Condition="representation == SHORT_INTEGER">{shortInteger}</DisplayString>
+    <DisplayString Condition="representation == UNSIGNED_SHORT_INTEGER">{unsignedShortInteger}</DisplayString>
+    <DisplayString Condition="representation == INTEGER">{integer}</DisplayString>
+    <DisplayString Condition="representation == UNSIGNED_INTEGER">{unsignedInteger}</DisplayString>
+    <DisplayString Condition="representation == LONG_INTEGER">{longInteger}</DisplayString>
+    <DisplayString Condition="representation == UNSIGNED_LONG_INTEGER">{unsignedLongInteger}</DisplayString>
+    <DisplayString Condition="representation == LONG_LONG_INTEGER">{longLongInteger}</DisplayString>
+    <DisplayString Condition="representation == UNSIGNED_LONG_LONG_INTEGER">{unsignedLongLongInteger}</DisplayString>
+    <DisplayString Condition="representation == FLOAT">{f}</DisplayString>
+    <DisplayString Condition="representation == DOUBLE">{d}</DisplayString>
+    <DisplayString Condition="representation == LONG_DOUBLE">{ld}</DisplayString>
+    <DisplayString Condition="representation == STRING">{string}</DisplayString>
+    <DisplayString Condition="representation == WIDE_STRING">{wideString}</DisplayString>
+    <DisplayString Condition="representation == REFERENCE">{reference}</DisplayString>
+  </Type>
+
+  <Type Name="base::Pair&lt;*,*&gt;">
+    <Expand>
+      <Item Name="[first]">first</Item>
+      <Item Name="[second]">second</Item>
+    </Expand>
+  </Type>
+
+  <Type Name="base::Array&lt;*&gt;">
+    <DisplayString>{{ size={size} }}</DisplayString>
+    <Expand>
+      <ArrayItems>
+        <Size>size</Size>
+        <ValuePointer>elements.value->elements</ValuePointer>
+      </ArrayItems>
+    </Expand>
+  </Type>
+
+  <Type Name="base::List&lt;*&gt;">
+    <DisplayString>{{ size={elements.value->size} }}</DisplayString>
+    <Expand>
+      <LinkedListItems>
+        <Size>elements.value->size</Size>
+		<HeadPointer>elements.value->first</HeadPointer>
+        <NextPointer>next</NextPointer>
+        <ValueNode>value</ValueNode>
+      </LinkedListItems>
+    </Expand>
+  </Type>
+
+  <Type Name="base::Map&lt;*,*&gt;">
+    <DisplayString>{{ size={size} }}</DisplayString>
+	<!-- DEFINE -->
+  </Type>
+</AutoVisualizer>

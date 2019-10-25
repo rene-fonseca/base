@@ -48,8 +48,6 @@ endif ()
 
 endif ()
 
-include_directories("${PROJECT_SOURCE_DIR}")
-
 if (0)
 find_package(OpenGL REQUIRED)
 
@@ -159,17 +157,19 @@ if (MSVC)
   set(base_ADDITIONAL ${CMAKE_BINARY_DIR}/generated/base/base.rc)
 endif ()
 
-include_directories(${CMAKE_BINARY_DIR}/generated)
-
 add_library(base SHARED ${base_SRC} ${base_ADDITIONAL} ${CMAKE_CURRENT_BINARY_DIR}/generated/base/config.h)
 target_compile_definitions(base PRIVATE _COM_AZURE_DEV__BASE__SHARED_LIBRARY_BUILD)
 
 # find_package(OpenCL REQUIRED)
 
-if (0)
-target_include_directories(base PUBLIC  
-  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
-  $<INSTALL_INTERFACE:include> # <prefix>/include/base
+if (1)
+target_include_directories(base PUBLIC
+  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
+  $<INSTALL_INTERFACE:include/base> # <prefix>/include
+)
+target_include_directories(base PUBLIC
+  $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}/generated>
+  $<INSTALL_INTERFACE:include/base> # <prefix>/include
 )
 endif ()
 
@@ -190,12 +190,24 @@ set_target_properties(base
 add_library(base_STATIC STATIC ${base_SRC} ${CMAKE_CURRENT_BINARY_DIR}/generated/base/config.h)
 set_target_properties(base_STATIC PROPERTIES OUTPUT_NAME base_static)
 
+if (1)
+target_include_directories(base_STATIC PUBLIC
+  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
+  $<INSTALL_INTERFACE:include/base> # <prefix>/include
+)
+target_include_directories(base_STATIC PUBLIC
+  $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}/generated>
+  $<INSTALL_INTERFACE:include/base> # <prefix>/include
+)
+endif ()
+
 file(GLOB_RECURSE base_HEADERS
   "base/*.h"
 )
 
-#set_target_properties(base PROPERTIES PUBLIC_HEADER "${base_HEADERS}")
+set_target_properties(base PROPERTIES PUBLIC_HEADER "${base_HEADERS}")
 
+if (1)
 # preserve folder structure
 install(
   DIRECTORY "${CMAKE_SOURCE_DIR}/base" # source directory
@@ -207,8 +219,15 @@ install(
   DESTINATION "${CMAKE_BINARY_DIR}/install/include" # target directory
   FILES_MATCHING PATTERN "*.h" # select header files
 )
+endif ()
+
+# install(FILES ${base_HEADERS} DESTINATION include/base)
 
 # set(CMAKE_DEBUG_POSTFIX "-debug")
+install(TARGETS base base_STATIC
+  EXPORT baseConfig
+###  PUBLIC_HEADER DESTINATION "${CMAKE_BINARY_DIR}/install/include/base"
+)
 
 install(TARGETS base base_STATIC
   CONFIGURATIONS Debug

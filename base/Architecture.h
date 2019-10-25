@@ -81,31 +81,31 @@ public:
   /**
     Returns true if the native byte order is big endian.
   */
-  static bool isBigEndian() throw() {
+  static bool isBigEndian() noexcept {
     return NATIVE == BE;
   }
 
   /**
     Returns true if the native byte order is little endian.
   */
-  static bool isLittleEndian() throw() {
+  static bool isLittleEndian() noexcept {
     return NATIVE == LE;
   }
 
   /**
     Returns the supported technologies.
   */
-  static unsigned int getTechonologies() throw();
+  static unsigned int getTechonologies() noexcept;
   
   /**
     Returns the major architecture.
   */
-  static Major getArchitecture() throw();
+  static Major getArchitecture() noexcept;
   
   /**
     Returns the processor (lowest common denominator is multiple are present).
   */
-  static Minor getMinorArchitecture() throw();
+  static Minor getMinorArchitecture() noexcept;
 };
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

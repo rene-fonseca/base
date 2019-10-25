@@ -32,7 +32,7 @@ _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
   class MyApplication : public Application {
   public:
   
-    MyApplication(int numberOfArguments, const char* arguments[], const char* environment[]) throw()
+    MyApplication(int numberOfArguments, const char* arguments[], const char* environment[]) noexcept
       : Application("MyApplication", numberOfArguments, arguments, environment) {
     }
 
@@ -107,7 +107,7 @@ public:
   /**
     Returns the application object.
   */
-  static Application* getApplication() throw();
+  static Application* getApplication() noexcept;
 
   /** Returns the application lock. Do NOT abuse. */
   inline MutualExclusion& getLock() {
@@ -115,7 +115,7 @@ public:
   }
   
   template<class APPLICATION>
-  static inline int stub(int numberOfArguments, const char* arguments[], const char* environment[]) throw()
+  static inline int stub(int numberOfArguments, const char* arguments[], const char* environment[]) noexcept
   {
     try {
       // ensure required linker symbols are available
@@ -163,28 +163,28 @@ public:
   /**
     Returns the formal name of the application.
   */
-  inline const String& getFormalName() const throw() {
+  inline const String& getFormalName() const noexcept {
     return formalName;
   }
 
   /**
     Returns the name/path of the application (argument 0).
   */
-  inline const String& getName() const throw() {
+  inline const String& getName() const noexcept {
     return path;
   }
 
   /**
     Returns the arguments passed to the application.
   */
-  inline const Array<String>& getArguments() const throw() {
+  inline const Array<String>& getArguments() const noexcept {
     return arguments;
   }
 
   /**
     Returns the environment variables.
   */
-  inline const Map<String, String>& getEnvironment() const throw() {
+  inline const Map<String, String>& getEnvironment() const noexcept {
     return environment;
   }
 
@@ -219,7 +219,7 @@ public:
   /**
     Returns the exit code.
   */
-  inline int getExitCode() const throw() {
+  inline int getExitCode() const noexcept {
     return exitCode;
   }
   
@@ -228,14 +228,14 @@ public:
 
     @param value The desired exit code. The value should be in the range from 0 to 127.
   */
-  inline void setExitCode(int value) throw() {
+  inline void setExitCode(int value) noexcept {
     exitCode = value;
   }
   
   /**
     Returns true if the application has been signaled to terminate.
   */
-  inline bool isTerminated() const throw() {
+  inline bool isTerminated() const noexcept {
     return terminated;
   }
 
@@ -253,7 +253,7 @@ public:
 
 /** Make stub for exe entry point. */
 #define _COM_AZURE_DEV__BASE__APPLICATION_STUB(APPLICATION) \
-int main(int argc, const char* argv[], const char* env[]) throw() { \
+int main(int argc, const char* argv[], const char* env[]) noexcept { \
   Application::Stub stub; \
   return com::azure::dev::base::Application::stub<APPLICATION>(argc, argv, env); \
 }

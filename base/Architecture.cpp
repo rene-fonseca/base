@@ -15,7 +15,8 @@
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
-unsigned int Architecture::getTechonologies() throw() {
+unsigned int Architecture::getTechonologies() noexcept
+{
   unsigned int result = 0;
 #if (_COM_AZURE_DEV__BASE__ARCH == _COM_AZURE_DEV__BASE__X86)
   unsigned int eflags;
@@ -77,7 +78,8 @@ unsigned int Architecture::getTechonologies() throw() {
   return result;
 }
 
-Architecture::Major Architecture::getArchitecture() throw() {
+Architecture::Major Architecture::getArchitecture() noexcept
+{
 #if (_COM_AZURE_DEV__BASE__ARCH == _COM_AZURE_DEV__BASE__X86)
   return X86;
 #elif (_COM_AZURE_DEV__BASE__ARCH == _COM_AZURE_DEV__BASE__SPARC)
@@ -101,7 +103,8 @@ Architecture::Major Architecture::getArchitecture() throw() {
 #endif
 }
   
-Architecture::Minor Architecture::getMinorArchitecture() throw() {
+Architecture::Minor Architecture::getMinorArchitecture() noexcept
+{
   Architecture::Minor result = GENERIC;
 #if (_COM_AZURE_DEV__BASE__ARCH == _COM_AZURE_DEV__BASE__X86)
   result = X86_386;
@@ -202,7 +205,8 @@ Architecture::Minor Architecture::getMinorArchitecture() throw() {
 // struct ProcessorInformation {major, minor, #logical processors, technologies};
 
 // Array is no good in Architecture header
-// Array<Architecture::Minor> Architecture::getProcessors() throw() {
+// Array<Architecture::Minor> Architecture::getProcessors() noexcept
+// {
 //   Array<Minor> result;
 //   return result;
 // }

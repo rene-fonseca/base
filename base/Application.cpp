@@ -691,7 +691,8 @@ void Application::initialize() throw() {
   std::set_unexpected(ApplicationImpl::unexpectedExceptionHandler);
 }
 
-Application* Application::getApplication() throw() {
+Application* Application::getApplication() noexcept
+{
   return application;
 }
 

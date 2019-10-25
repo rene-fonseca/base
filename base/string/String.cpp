@@ -26,7 +26,7 @@ _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 // TAG: make sure to force copy on any change
 
-void String::initialize(const char* src, MemorySize length) throw(MemoryException)
+void String::initialize(const char* src, MemorySize length)
 {
   if (length == 0) {
     elements = DEFAULT_STRING.elements;
@@ -45,7 +45,7 @@ String::String() noexcept
   ASSERT(elements); // we never want a nullptr
 }
 
-String::String(Default d) throw(MemoryException)
+String::String(Default d)
 {
   // force non-nullptr elements
   auto e = new ReferenceCountedCapacityAllocator<char>(1, GRANULARITY);
@@ -53,7 +53,7 @@ String::String(Default d) throw(MemoryException)
   elements = e;
 }
 
-String::String(MemorySize capacity) throw(MemoryException)
+String::String(MemorySize capacity)
 {
   if (capacity == 0) {
     elements = DEFAULT_STRING.elements;
@@ -64,7 +64,7 @@ String::String(MemorySize capacity) throw(MemoryException)
   elements = e;
 }
 
-String::String(const char* src) throw(MemoryException)
+String::String(const char* src)
 {
   initialize(src, getNullTerminatedLength(src));
 }
@@ -101,7 +101,7 @@ String::String(const Literal& literal) throw(StringException, MemoryException)
   initialize(literal.getValue(), literal.getLength());
 }
 
-String::String(const NativeString& src) throw(MemoryException)
+String::String(const NativeString& src)
 {
   initialize(src.getValue(), src.getLength());
 }
@@ -136,7 +136,7 @@ bool String::isASCII() const noexcept
   return true;
 }
 
-void String::ensureCapacity(MemorySize capacity) throw(MemoryException)
+void String::ensureCapacity(MemorySize capacity)
 {
   if (!elements.isMultiReferenced()) {
     elements->ensureCapacity(capacity);
@@ -149,7 +149,8 @@ void String::ensureCapacity(MemorySize capacity) throw(MemoryException)
   elements = e;
 }
 
-char* String::getBuffer() throw(MemoryException) {
+char* String::getBuffer()
+{
   elements.copyOnWrite();
   return elements->getElements();
 }
@@ -240,7 +241,7 @@ void String::setAt(MemorySize index, char value) throw(OutOfRange)
   getBuffer()[index] = value; // allow terminated within string
 }
 
-String& String::remove(MemorySize start, MemorySize end) throw(MemoryException)
+String& String::remove(MemorySize start, MemorySize end)
 {
   const MemorySize length = getLength();
   if ((start < end) && (start < length)) { // protect against some cases
@@ -258,7 +259,7 @@ String& String::remove(MemorySize start, MemorySize end) throw(MemoryException)
   return *this;
 }
 
-String& String::removeFrom(MemorySize start) throw(MemoryException)
+String& String::removeFrom(MemorySize start)
 {
   if (start < getLength()) { // protect against some cases
     getBuffer(start); // just resize
@@ -330,7 +331,7 @@ String& String::append(const Literal& literal, MemorySize maximum) throw(StringE
 String& String::append(const NativeString& string, MemorySize maximum) throw(StringException, MemoryException)
 {
   bassert(maximum <= MAXIMUM_LENGTH, StringException(this));
-  return append(MemorySpan(string.getValue(), getLengthOfTerminated(string.getValue(), maximum)));
+  return append(MemorySpan(string.getValue(), getNullTerminatedLength(string.getValue(), maximum)));
 }
 
 String& String::append(const MemorySpan& src) throw(StringException, MemoryException)
@@ -399,7 +400,7 @@ MemorySize String::replaceAll(
   return count;
 }
 
-String String::substring(MemorySize start, MemorySize end) const throw(MemoryException)
+String String::substring(MemorySize start, MemorySize end) const
 {
   const MemorySize length = getLength();
   if ((start < end) && (start < length)) {
@@ -417,7 +418,7 @@ String String::substring(MemorySize start, MemorySize end) const throw(MemoryExc
   }
 }
 
-String& String::operator-=(const String& suffix) throw(MemoryException)
+String& String::operator-=(const String& suffix)
 {
   if (endsWith(suffix)) {
     setLength(suffix.getLength());
@@ -809,7 +810,7 @@ MemoryDiff String::search(const String& substring, MemorySize start) const noexc
   return -1; // not found
 }
 
-Array<String> String::split(char separator, bool group) const throw(MemoryException)
+Array<String> String::split(char separator, bool group) const
 {
   Array<String> result;
   

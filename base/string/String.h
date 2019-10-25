@@ -20,7 +20,7 @@
 #include <base/io/IOException.h>
 #include <base/string/StringException.h>
 #include <base/mem/AllocatorEnumeration.h>
-#include <base/Primitives.h>
+#include <base/iterator/UTF8Iterator.h>
 #include <base/collection/Hash.h>
 #include <base/Literal.h>
 #include <string>
@@ -48,79 +48,94 @@ public:
   static const char TERMINATOR = '\0';
 
   /** Returns true if the character an alphabetic character. */
-  static inline bool isAlpha(char character) throw() {
+  static inline bool isAlpha(char character) noexcept
+  {
     return isalpha(character);
   }
   
   /** Returns true if the character an alphabetic character or a digit. */
-  static inline bool isAlphaNum(char character) throw() {
+  static inline bool isAlphaNum(char character) noexcept
+  {
     return isalnum(character);
   }
 
   /** Returns true if the character is lowercase. */
-  static inline bool isLower(char character) throw() {
+  static inline bool isLower(char character) noexcept
+  {
     return islower(character);
   }
   
   /** Returns true if the character is uppercase. */
-  static inline bool isUpper(char character) throw() {
+  static inline bool isUpper(char character) noexcept
+  {
     return isupper(character);
   }
   
   /** Returns true if the character is a digit. */
-  static inline bool isDigit(char character) throw() {
+  static inline bool isDigit(char character) noexcept
+  {
     return isdigit(character);
   }
   
   /** Returns true if the character is a hex digit. */
-  static inline bool isHexDigit(char character) throw() {
+  static inline bool isHexDigit(char character) noexcept
+  {
     return isxdigit(character);
   }
   
   /** Returns true if the character is a white space. */
-  static inline bool isSpace(char character) throw() {
+  static inline bool isSpace(char character) noexcept
+  {
     return isspace(character);
   }
   
   /** Returns true if the character is a punctuation mark. */
-  static inline bool isPunctuation(char character) throw() {
+  static inline bool isPunctuation(char character) noexcept
+  {
     return ispunct(character);
   }
   
   /** Returns true if the character is printable. */
-  static inline bool isPrintable(char character) throw() {
+  static inline bool isPrintable(char character) noexcept
+  {
     return isprint(character);
   }
   
   /** Returns true if the character is a visible character. */
-  static inline bool isGraph(char character) throw() {
+  static inline bool isGraph(char character) noexcept
+  {
     return isgraph(character);
   }
   
   /** Returns true if the character is a control character. */
-  static inline bool isControl(char character) throw() {
+  static inline bool isControl(char character) noexcept
+  {
     return iscntrl(character);
   }
   
   /** Returns true if the character is an ASCII character. */
-  static inline bool isASCII(char character) throw() {
+  static inline bool isASCII(char character) noexcept
+  {
     return  !(character & ~0177U);
   }
 
   /** Converts the character to lowercase. */
-  static inline char toLower(char character) throw() {
+  static inline char toLower(char character) noexcept
+  {
     return tolower(character);
   }
   
   /** Converts the character to uppercase. */
-  static inline char toUpper(char character) throw() {
+  static inline char toUpper(char character) noexcept
+  {
     return toupper(character);
   }
 
   class _COM_AZURE_DEV__BASE__API ToLowerCase {
   public:
     
-    inline char operator()(char value) const throw() {
+    inline char operator()(char value) const noexcept
+    {
       return tolower(value);
     }
   };
@@ -128,7 +143,8 @@ public:
   class _COM_AZURE_DEV__BASE__API ToUpperCase {
   public:
     
-    inline char operator()(char value) const throw() {
+    inline char operator()(char value) const noexcept
+    {
       return toupper(value);
     }
   };
@@ -211,13 +227,13 @@ protected:
   /**
     Initializes string.
   */
-  void initialize(const char* string, MemorySize length) throw(MemoryException);
+  void initialize(const char* string, MemorySize length);
   
   /**
     Returns a modifiable buffer. Forces copy of internal buffer if shared by
     multiple strings.
   */
-  char* getBuffer() throw(MemoryException);
+  char* getBuffer();
   
   /** Returns buffer for modification and resizes at the same time. */
   char* getBuffer(MemorySize length) throw(StringException, MemoryException);
@@ -242,42 +258,6 @@ protected:
   */
   static int compareToIgnoreCase(const char* left, const char* right) throw();
 public:
-
-  /**
-    Returns the length of the NULL-terminated string.
-
-    @param string The NULL-terminated string.
-    @param maximum The maximum length of the string. The default is
-    MAXIMUM_LENGTH.
-  */
-  static inline MemorySize getLengthOfMustBeTerminated(
-    const char* string,
-    MemorySize maximum = MAXIMUM_LENGTH) throw(StringException)
-  {
-    bassert(string, StringException(Type::getType<String>()));
-    const char* terminator = find(string, maximum, Traits::TERMINATOR);
-    bassert(terminator, StringException(Type::getType<String>()));
-    return static_cast<MemorySize>(terminator - string);
-  }
-
-  /**
-    Returns the length of the NULL-terminated string.
-
-    @param string The NULL-terminated string.
-    @param maximum The maximum length of the string. The default is
-    MAXIMUM_LENGTH.
-
-    @return maximum if terminator is not found. 0 if string is invalid
-    (i.e. 0).
-  */
-  static inline MemorySize getLengthOfTerminated(
-    const char* string, MemorySize maximum = MAXIMUM_LENGTH) throw() {
-    if (!string) {
-      return 0;
-    }
-    const char* terminator = find(string, maximum, Traits::TERMINATOR);
-    return terminator ? static_cast<MemorySize>(terminator - string) : maximum;
-  }
   
   /**
     Initializes an empty string.
@@ -290,12 +270,12 @@ public:
     
     @param capacity The initial capacity.
   */
-  explicit String(MemorySize capacity) throw(MemoryException);
+  explicit String(MemorySize capacity);
 
   class _COM_AZURE_DEV__BASE__API Default {};
   
   /** Forces a non-null empty string. Avoid this. */
-  String(Default d) throw(MemoryException);
+  String(Default d);
 
   /**
     Initializes the string from a string literal. The string literal is not
@@ -317,7 +297,8 @@ public:
     @param literal String literal.
   */
   template<MemorySize SIZE>
-  inline String(const char (&literal)[SIZE]) throw(MemoryException) {
+  inline String(const char (&literal)[SIZE])
+  {
     if (Constraint<(SIZE > 0)>::UNSPECIFIED) {}
     initialize(literal, SIZE - 1);
   }
@@ -329,7 +310,7 @@ public:
     @param string NULL-terminated string. If NULL, the string is initialized
     with no characters in it.
   */
-  String(const NativeString& string) throw(MemoryException);
+  String(const NativeString& string);
 
   /**
     Initializes the string from a NULL-terminated string.
@@ -337,7 +318,7 @@ public:
     @param string NULL-terminated string. If NULL, the string is initialized
     with no characters in it.
   */
-  String(const char* string) throw(MemoryException);
+  String(const char* string);
 
   /**
     Initializes the string from a NULL-terminated string. If the length of the
@@ -372,7 +353,8 @@ public:
   /**
     Assignment of string to string.
   */
-  inline String& operator=(const String& eq) throw() {
+  inline String& operator=(const String& eq) noexcept
+  {
     elements = eq.elements; // self assignment handled by automation pointer
     return *this;
   }
@@ -384,7 +366,7 @@ public:
 
   template<MemorySize SIZE>
   inline String& operator=(const char (&literal)[SIZE])
-    throw(MemoryException) {
+  {
     if (Constraint<(SIZE < (MAXIMUM_LENGTH + 1))>::UNSPECIFIED) {}
     return operator=(Literal(literal));
   }
@@ -402,21 +384,24 @@ public:
   /**
     Returns the number of characters in the string.
   */
-  inline MemorySize getLength() const throw() {
+  inline MemorySize getLength() const noexcept
+  {
     return elements->getSize() - 1; // exclude null terminator
   }
 
   /**
     Returns true if the string does not contain characters.
   */
-  inline bool isEmpty() const throw() {
+  inline bool isEmpty() const noexcept
+  {
     return elements->getSize() == 1;
   }
 
   /**
     Returns true if the string contains characters.
   */
-  inline bool isProper() const throw() {
+  inline bool isProper() const noexcept
+  {
     return elements->getSize() > 1;
   }
 
@@ -428,7 +413,8 @@ public:
   /**
     Returns the capacity of the string.
   */
-  inline MemorySize getCapacity() const throw() {
+  inline MemorySize getCapacity() const noexcept
+  {
     return elements->getCapacity();
   }
 
@@ -438,7 +424,7 @@ public:
 
     @param capacity Specifies the minimum capacity of the string.
   */
-  void ensureCapacity(MemorySize capacity) throw(MemoryException);
+  void ensureCapacity(MemorySize capacity);
 
   /** Clears the string. */
   void clear();
@@ -474,57 +460,91 @@ public:
   /**
     Returns the first element of the string as a modifying iterator.
   */
-  inline Iterator getBeginIterator() throw() {
+  inline Iterator getBeginIterator() noexcept
+  {
     return elements->getBeginIterator();
   }
 
   /**
     Returns the end of the string as a modifying iterator.
   */
-  inline Iterator getEndIterator() throw() {
+  inline Iterator getEndIterator() noexcept
+  {
     return elements->getEndIterator() - 1; // remember terminator
   }
 
   /**
     Returns the first element of the string as a non-modifying iterator.
   */
-  inline ReadIterator getBeginReadIterator() const throw() {
+  inline ReadIterator getBeginReadIterator() const noexcept
+  {
     return elements->getBeginReadIterator();
   }
 
   /**
     Returns the end of the string as a non-modifying iterator.
   */
-  inline ReadIterator getEndReadIterator() const throw() {
+  inline ReadIterator getEndReadIterator() const noexcept
+  {
     return elements->getEndReadIterator() - 1; // remember terminator
   }
 
   /**
     Returns the first element of the string as a non-modifying iterator.
   */
-  inline ReadIterator begin() const throw() {
+  inline ReadIterator begin() const noexcept
+  {
     return elements->getBeginReadIterator();
   }
 
   /**
     Returns the end of the string as a non-modifying iterator.
   */
-  inline ReadIterator end() const throw() {
+  inline ReadIterator end() const noexcept
+  {
     return elements->getEndReadIterator() - 1; // remember terminator
   }
 
   /**
     Returns a modifying enumerator of the string.
   */
-  inline Enumerator getEnumerator() throw() {
+  inline Enumerator getEnumerator() noexcept
+  {
     return elements->getEnumerator();
   }
 
   /**
     Returns a non-modifying enumerator of the string.
   */
-  inline ReadEnumerator getReadEnumerator() const throw() {
+  inline ReadEnumerator getReadEnumerator() const noexcept
+  {
     return elements->getReadEnumerator();
+  }
+
+  // TAG: maybe better to explicitly have UTF8String class
+
+  /**
+    Returns the first element of the string as a non-modifying iterator.
+  */
+  inline UTF8Iterator getUTF8BeginReadIterator() const noexcept
+  {
+    return reinterpret_cast<const uint8*>(native());
+  }
+
+  /**
+    Returns the end of the string as a non-modifying iterator.
+  */
+  inline UTF8Iterator getUTF8EndReadIterator() const noexcept
+  {
+    return reinterpret_cast<const uint8*>(native()) + getLength();
+  }
+
+  /**
+    Returns UTF-8 non-modifying enumerator.
+  */
+  inline UTF8Enumerator getUTF8ReadEnumerator() const noexcept
+  {
+    return UTF8Enumerator(getUTF8BeginReadIterator(), getUTF8EndReadIterator());
   }
 
 // *************************************************************************
@@ -579,21 +599,22 @@ public:
     @param start Specifies the start of the substring.
     @param end Specifies the end of the substring.
   */
-  String& remove(MemorySize start, MemorySize end) throw(MemoryException);
+  String& remove(MemorySize start, MemorySize end);
 
   /**
     Removes the characters from the specified index to the end of the string.
 
     @param start Specifies the start of the string.
   */
-  String& removeFrom(MemorySize start) throw(MemoryException);
+  String& removeFrom(MemorySize start);
 
   /**
     Removes the character at the specified position in this string.
 
     @param index Specifies the character to be removed.
   */
-  inline String& removeAt(MemorySize index) throw(MemoryException) {
+  inline String& removeAt(MemorySize index)
+  {
     return remove(index, index);
   }
 
@@ -784,7 +805,7 @@ public:
     @param start Specifies the start of the substring.
     @param end Specifies the end of the substring.
   */
-  String substring(MemorySize start, MemorySize end) const throw(MemoryException);
+  String substring(MemorySize start, MemorySize end) const;
 
   /**
     Returns a new string that contains a subsequence of characters currently
@@ -793,7 +814,8 @@ public:
 
     @param start Specifies the start of the substring.
   */
-  inline String substring(MemorySize start) const throw(MemoryException) {
+  inline String substring(MemorySize start) const
+  {
     return substring(start, getLength());
   }
 
@@ -802,7 +824,8 @@ public:
 
     @param suffix The string to be appended.
   */
-  inline String& operator+=(const String& suffix) throw(MemoryException) {
+  inline String& operator+=(const String& suffix)
+  {
     return append(suffix);
   }
 
@@ -811,7 +834,8 @@ public:
 
     @param suffix The character to be appended.
   */
-  inline String& operator+=(const Literal& suffix) throw(MemoryException) {
+  inline String& operator+=(const Literal& suffix)
+  {
     return append(suffix);
   }
 
@@ -820,7 +844,8 @@ public:
 
     @param suffix The character to be appended.
   */
-  inline String& operator+=(const char* suffix) throw(MemoryException) {
+  inline String& operator+=(const char* suffix)
+  {
     return append(NativeString(suffix));
   }
 
@@ -829,7 +854,8 @@ public:
 
     @param suffix The character to be appended.
   */
-  inline String& operator+=(char suffix) throw(MemoryException) {
+  inline String& operator+=(char suffix)
+  {
     return append(suffix);
   }
 
@@ -840,7 +866,7 @@ public:
 
     @param suffix The suffix to be removed.
   */
-  String& operator-=(const String& suffix) throw(MemoryException);
+  String& operator-=(const String& suffix);
 
 // *************************************************************************
 //   UNARY SECTION
@@ -1195,7 +1221,7 @@ public:
     @param separator Separator.
     @param group Group separators. Default is false.
   */
-  Array<String> split(char separator, bool group = false) const throw(MemoryException);
+  Array<String> split(char separator, bool group = false) const;
   
 // *************************************************************************
 //   END SECTION

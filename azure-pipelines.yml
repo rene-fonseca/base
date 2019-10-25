@@ -61,3 +61,33 @@ jobs:
       artifactName: 'base-ubuntu18'
       targetPath: 'artifacts'
       path: $(System.DefaultWorkingDirectory)/build/install
+
+- job: macos
+  pool:
+    vmImage: 'macOS-latest'
+  steps:
+  - task: CMake@1
+    displayName: 'Config'
+    inputs:
+      cmakeArgs: '..'
+
+  - task: CMake@1
+    displayName: 'Build'
+    inputs:
+      cmakeArgs: '--build . --config Debug --target install -- -j 4'
+
+  - task: CmdLine@2
+    displayName: 'Run tests'
+    inputs:
+      script: 'ctest -T Test'
+
+  - task: PublishTestResults@2
+    inputs:
+      testResultsFiles: '**/Test.xml'
+      testRunTitle: 'Test results for CTest'
+
+  - task: PublishPipelineArtifact@1
+    inputs:
+      artifactName: 'base-macos'
+      targetPath: 'artifacts'
+      path: $(System.DefaultWorkingDirectory)/build/install

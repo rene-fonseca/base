@@ -554,6 +554,25 @@ UnitTestManager::RegisterEntry::~RegisterEntry()
   }
 }
 
+const char* UnitTestManager::trimPath(const char* src) noexcept
+{
+  // const char* PATH = _COM_AZURE_DEV__BASE__SOURCE_FILE; // trim UnitTest.cpp - this will give the base path - but we need to support any source
+  
+  if (!src) {
+    return nullptr;
+  }
+  const char* last = src;
+  while (*src) {
+    if ((*src == '/') || (*src == '\\')) {
+      ++src;
+      last = src;
+      continue;
+    }
+    ++src;
+  }
+  return last;
+}
+
 // TAG: add support for http server to view results live
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

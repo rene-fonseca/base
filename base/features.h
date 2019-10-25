@@ -123,13 +123,8 @@ namespace com {
 #define _COM_AZURE_DEV__BASE__CONCATENATE_IMPL(a, b) a ## b
 #define _COM_AZURE_DEV__BASE__CONCATENATE(a, b) _COM_AZURE_DEV__BASE__CONCATENATE_IMPL(a, b)
 
-#if (_COM_AZURE_DEV__BASE__COMPILER == _COM_AZURE_DEV__BASE__COMPILER_MSC)
-#  define  _COM_AZURE_DEV__BASE__SOURCE_FILE __FILE__
-#elif (_COM_AZURE_DEV__BASE__COMPILER == _COM_AZURE_DEV__BASE__COMPILER_GCC)
-#  define  _COM_AZURE_DEV__BASE__SOURCE_FILE __FILE__
-#else
-#  define  _COM_AZURE_DEV__BASE__SOURCE_FILE __FILE_NAME__
-#endif
+#define  _COM_AZURE_DEV__BASE__SOURCE_FILE __FILE__
+// #define  _COM_AZURE_DEV__BASE__SOURCE_FILE __FILE_NAME__ // new for LLVM
 
 /** Makes an identifier unique with a cpp. Avoid in header. */
 #define _COM_AZURE_DEV__BASE__MAKE_IDENTIFIER(prefix) \

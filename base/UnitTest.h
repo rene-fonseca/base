@@ -329,6 +329,9 @@ public:
   /** Adds the given test. */
   void addTest(Reference<UnitTest> test);
   
+  /** Only returns the filename after the last / or \. */
+  static const char* trimPath(const char*) noexcept;
+
   /** Create test instance and adds it. */
   template<class TYPE>
   inline void registerTest(const String& name, const String& source = String(), const String& description = String())
@@ -417,7 +420,7 @@ public:
 
 #define TEST_REGISTER_IMPL(ID, TYPE) \
   namespace tests { \
-    void _COM_AZURE_DEV__BASE__CONCATENATE(ID, _entry)() { base::UnitTestManager::getManager().registerTest<TEST_CLASS(TYPE)>(#TYPE, __FILE__, String()); } \
+    void _COM_AZURE_DEV__BASE__CONCATENATE(ID, _entry)() { base::UnitTestManager::getManager().registerTest<TEST_CLASS(TYPE)>(#TYPE, UnitTestManager::trimPath(_COM_AZURE_DEV__BASE__SOURCE_FILE), String()); } \
     base::UnitTestManager::RegisterEntry::EntryNode _COM_AZURE_DEV__BASE__CONCATENATE(ID, _storage) = {#TYPE, _COM_AZURE_DEV__BASE__CONCATENATE(ID, _entry), nullptr, false}; \
     base::UnitTestManager::RegisterEntry _COM_AZURE_DEV__BASE__CONCATENATE(ID, _register)(&_COM_AZURE_DEV__BASE__CONCATENATE(ID, _storage)); \
   }

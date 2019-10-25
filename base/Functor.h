@@ -347,64 +347,61 @@ inline void transformByBinary(TYPE* restrict result, const TYPE* restrict left, 
   @see move
 */
 template<class TYPE>
-inline void copy(TYPE* restrict dest, const TYPE* restrict src, MemorySize count) {
+void copy(TYPE* restrict dest, const TYPE* restrict src, MemorySize count)
+{
+  ASSERT((dest < src) && ((dest + count) < src) || (src < dest) && ((src + count) < dest)); // no overlap
   if (Relocateable<TYPE>::IS_RELOCATEABLE) {
-#if defined(_COM_AZURE_DEV__BASE__HAVE_MEMCPY)
-    isoc::memcpy(dest, src, count * sizeof(TYPE));
-#else
-    // TAG: should I align the first long word
-    uint64 bytesToCopy = static_cast<uint64>(count) * sizeof(TYPE);
-    long* d = Cast::pointer<long*>(dest);
-    const long* s = Cast::pointer<const long*>(src);
-    {
-      const TYPE* const end = d + bytesToCopy/sizeof(long);
-      while (d != end) {
-        *d++ = *s++;
-      }
-    }
-    {
-      long* dc = Cast::pointer<char*>(d);
-      const long* sc = Cast::pointer<char*>(s);
-      const TYPE* const end = dc + bytesToCopy % sizeof(long);
-      while (dc != end) {
-        *dc++ = *sc++;
-      }
-    }
-#endif
+    copy<uint8>(reinterpret_cast<uint8*>(dest), reinterpret_cast<const uint8*>(src), sizeof(TYPE) * count);
   } else {
     const TYPE* const end = dest + count;
     while (dest != end) {
-      *dest++ = *src++;
+      *dest = *src;
+      ++dest;
+      ++src;
     }
   }
 }
+
+#if defined(_COM_AZURE_DEV__BASE__HAVE_MEMCPY)
+template<>
+inline void copy<char>(char* restrict dest, const char* restrict src, MemorySize count)
+{
+  isoc::memcpy(dest, src, count * sizeof(char));
+}
+
+template<>
+inline void copy<uint8>(uint8* restrict dest, const uint8* restrict src, MemorySize count)
+{
+  isoc::memcpy(dest, src, count * sizeof(uint8));
+}
+#endif
 
 /**
   Moves element by element from one sequence to another sequence (use this if
   the sequences may overlap).
 */
 template<class TYPE>
-inline void move(TYPE* dest, const TYPE* src, MemorySize count) {
+void move(TYPE* dest, const TYPE* src, MemorySize count)
+{
+  if (((dest < src) && ((dest + count) < src)) || // technically <= is allowed
+      ((src < dest) && ((src + count) < dest))) {
+    copy<TYPE>(dest, src, count); // use normal copy when no overlap
+    return;
+  }
+
   if (Relocateable<TYPE>::IS_RELOCATEABLE) {
-    uint64 bytesToMove = static_cast<uint64>(count) * sizeof(TYPE);
-#if defined(_COM_AZURE_DEV__BASE__HAVE_MEMMOVE)
-    isoc::memmove(dest, src, bytesToMove);
-#else
-    // TAG: should I align the first long word
-    long* d = Cast::pointer<long*>(dest);
-    const long* s = Cast::pointer<long*>(src);
-    move<long>(d, s, bytesToMove/sizeof(long));
     move<uint8>(
-      Cast::pointer<uint8*>(d + bytesToMove/sizeof(long)),
-      Cast::pointer<const uint8*>(s + bytesToMove/sizeof(long)),
-      bytesToMove % sizeof(long)
+      reinterpret_cast<uint8*>(dest),
+      reinterpret_cast<const uint8*>(src),
+      sizeof(TYPE) * count
     );
-#endif
   } else {
     if (dest < src) {
       const TYPE* const end = dest + count;
       while (dest != end) {
-        *dest++ = *src++;
+        *dest = *src;
+        ++dest;
+        ++src;
       }
     } else {
       const TYPE* first = dest;
@@ -416,6 +413,20 @@ inline void move(TYPE* dest, const TYPE* src, MemorySize count) {
     }
   }
 }
+
+#if defined(_COM_AZURE_DEV__BASE__HAVE_MEMCPY)
+template<>
+inline void move<char>(char* dest, const char* src, MemorySize count)
+{
+  isoc::memmove(dest, src, count * sizeof(char));
+}
+
+template<>
+inline void move<uint8>(uint8* dest, const uint8* src, MemorySize count)
+{
+  isoc::memmove(dest, src, count * sizeof(uint8));
+}
+#endif
 
 /**
   Swaps the elements of of two sequences. The sequences are expected not to

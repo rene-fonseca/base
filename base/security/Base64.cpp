@@ -73,7 +73,8 @@ const signed char Base64::VALUES[256] = {
 //   }
 // }
 
-String Base64::encode(const uint8* buffer, unsigned int size) noexcept {
+String Base64::encode(const uint8* buffer, MemorySize size) noexcept
+{
   unsigned int length = (size * 8 + 5) / 6;
   String result(length);
   result.forceToLength(length);
@@ -85,7 +86,7 @@ String Base64::encode(const uint8* buffer, unsigned int size) noexcept {
 
   while (i < end) {
     if (bitsInBuffer < 6) {
-      switch (minimum(size, 3U)) { // read as many octets as possible
+      switch (minimum<MemorySize>(size, 3U)) { // read as many octets as possible
       case 3:
         bitBuffer |= *buffer++ << bitsInBuffer;
         bitsInBuffer += 8;
@@ -108,7 +109,8 @@ String Base64::encode(const uint8* buffer, unsigned int size) noexcept {
   return result;
 }
 
-FormatOutputStream& operator<<(FormatOutputStream& stream, const Base64::Descriptor& value) throw(IOException) {
+FormatOutputStream& operator<<(FormatOutputStream& stream, const Base64::Descriptor& value) throw(IOException)
+{
   const char* src = value.getBytes();
   const unsigned int size = value.getSize();
 

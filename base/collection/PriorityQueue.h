@@ -46,7 +46,7 @@ protected:
   /** The elements of the priority queue. */
   OrderedBinaryTree<Node> elements;
   /** The number of elements in the priority queue. */
-  unsigned int size = 0;
+  MemorySize size = 0;
 public:
 
   /**
@@ -65,7 +65,7 @@ public:
   /**
     Returns the number of elements in the priority queue.
   */
-  inline unsigned int getSize() const noexcept {
+  inline MemorySize getSize() const noexcept {
     return size;
   }
 

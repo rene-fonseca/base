@@ -16,7 +16,8 @@
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
-void BitSet::zeroExtend(unsigned int size) throw(MemoryException) {
+void BitSet::zeroExtend(MemorySize size)
+{
   if (size > this->size) {
     unsigned int count = getNumberOfElements(size);
     if (this->size == 0) {
@@ -34,18 +35,20 @@ void BitSet::zeroExtend(unsigned int size) throw(MemoryException) {
   }
 }
 
-BitSet::BitSet() throw(MemoryException)
-  : elements(new ReferenceCountedCapacityAllocator<unsigned long>()), size(0) {
+BitSet::BitSet()
+  : elements(new ReferenceCountedCapacityAllocator<unsigned long>()), size(0)
+{
 }
 
-BitSet::BitSet(unsigned int _size, bool value) throw(MemoryException)
+BitSet::BitSet(unsigned int _size, bool value)
   : elements(
       new ReferenceCountedCapacityAllocator<unsigned long>(
         getNumberOfElements(_size),
         ReferenceCountedCapacityAllocator<unsigned long>::DEFAULT_GRANULARITY
       )
     ),
-    size(_size) {
+    size(_size)
+{
   fill<unsigned long>(
     getElements(),
     getNumberOfElements(size),
@@ -54,12 +57,14 @@ BitSet::BitSet(unsigned int _size, bool value) throw(MemoryException)
   reinitialize();
 }
 
-bool BitSet::getAt(unsigned int index) const throw(OutOfRange) {
+bool BitSet::getAt(unsigned int index) const throw(OutOfRange)
+{
   bassert(index < size, OutOfRange(this));
   return getElements()[getElementIndex(index)] & getBitMask(index);
 }
 
-void BitSet::setAt(unsigned int index, bool value) throw(OutOfRange) {
+void BitSet::setAt(unsigned int index, bool value) throw(OutOfRange)
+{
   bassert(index < size, OutOfRange(this));
   if (value) {
     getElements()[getElementIndex(index)] |= getBitMask(index); // set
@@ -68,19 +73,22 @@ void BitSet::setAt(unsigned int index, bool value) throw(OutOfRange) {
   }
 }
 
-BitSet& BitSet::set() throw() {
+BitSet& BitSet::set() noexcept
+{
   fill<unsigned long>(getElements(), getNumberOfElements(size), ~0UL);
   reinitialize();
   return *this;
 }
 
-BitSet& BitSet::set(unsigned int index) throw(OutOfRange) {
+BitSet& BitSet::set(unsigned int index) throw(OutOfRange)
+{
   bassert(index < size, OutOfRange(this));
   getElements()[getElementIndex(index)] |= getBitMask(index);
   return *this;
 }
 
-BitSet& BitSet::reset() throw() {
+BitSet& BitSet::reset() noexcept
+{
   fill<unsigned long>(getElements(), getNumberOfElements(size), 0);
   // no need to reinitialize
   return *this;
@@ -92,7 +100,8 @@ BitSet& BitSet::reset(unsigned int index) throw(OutOfRange) {
   return *this;
 }
 
-BitSet& BitSet::flip() throw() {
+BitSet& BitSet::flip() noexcept
+{
   transform<unsigned long>( // TAG: check this
     getElements(),
     getNumberOfElements(size),
@@ -102,13 +111,15 @@ BitSet& BitSet::flip() throw() {
   return *this;
 }
 
-BitSet& BitSet::flip(unsigned int index) throw(OutOfRange) {
+BitSet& BitSet::flip(unsigned int index) throw(OutOfRange)
+{
   bassert(index < size, OutOfRange(this));
   getElements()[getElementIndex(index)] ^= getBitMask(index);
   return *this;
 }
 
-BitSet& BitSet::operator&=(const BitSet& value) throw() {
+BitSet& BitSet::operator&=(const BitSet& value) noexcept
+{
   // zeroExtend is not required
   transformByBinary(
     getElements(),
@@ -119,7 +130,8 @@ BitSet& BitSet::operator&=(const BitSet& value) throw() {
   return *this;
 }
 
-BitSet& BitSet::operator|=(const BitSet& value) throw() {
+BitSet& BitSet::operator|=(const BitSet& value) noexcept
+{
   zeroExtend(value.getSize());
   transformByBinary(
     getElements(),
@@ -130,7 +142,8 @@ BitSet& BitSet::operator|=(const BitSet& value) throw() {
   return *this;
 }
 
-BitSet& BitSet::operator^=(const BitSet& value) throw() {
+BitSet& BitSet::operator^=(const BitSet& value) noexcept
+{
   zeroExtend(value.getSize());
   transformByBinary(
     getElements(),
@@ -141,7 +154,8 @@ BitSet& BitSet::operator^=(const BitSet& value) throw() {
   return *this;
 }
 
-BitSet& BitSet::operator<<=(unsigned int shift) throw() {
+BitSet& BitSet::operator<<=(unsigned int shift) noexcept
+{
   if (shift == 0) {
     return *this;
   }
@@ -172,7 +186,7 @@ BitSet& BitSet::operator<<=(unsigned int shift) throw() {
   return *this;
 }
 
-BitSet& BitSet::operator>>=(unsigned int shift) throw() {
+BitSet& BitSet::operator>>=(unsigned int shift) noexcept {
   if (shift == 0) {
     return *this;
   }
@@ -201,7 +215,7 @@ BitSet& BitSet::operator>>=(unsigned int shift) throw() {
   return *this;
 }
 
-void BitSet::removeAll() throw() {
+void BitSet::removeAll() noexcept {
   elements = new ReferenceCountedCapacityAllocator<unsigned long>(); // no need to copy
   size = 0;
 }

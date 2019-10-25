@@ -42,7 +42,7 @@ public:
     /** The bytes to be encoded. */
     const char* buffer = nullptr;
     /** The size of the buffer. */
-    unsigned int size = 0;
+    MemorySize size = 0;
   public:
 
     /**
@@ -51,12 +51,12 @@ public:
       @param buffer The bytes to be encoded.
       @param size The size of the buffer.
     */
-    Descriptor(const char* buffer, unsigned int size) noexcept;
+    Descriptor(const char* buffer, MemorySize size) noexcept;
     
     /**
       Returns the size of the buffer.
     */
-    inline unsigned int getSize() const noexcept {
+    inline MemorySize getSize() const noexcept {
       return size;
     }
     
@@ -99,11 +99,12 @@ public:
     @param buffer Buffer holding the data.
     @param size The number of octets in the buffer.
   */
-  static String encode(const uint8* buffer, unsigned int size) noexcept;
+  static String encode(const uint8* buffer, MemorySize size) noexcept;
 };
 
-inline Base64::Descriptor::Descriptor(const char* _buffer, unsigned int _size) noexcept
-  : buffer(_buffer), size(_size) {
+inline Base64::Descriptor::Descriptor(const char* _buffer, MemorySize _size) noexcept
+  : buffer(_buffer), size(_size)
+{
 }
 
 /**

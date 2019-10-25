@@ -675,7 +675,7 @@ class Sequence {
 private:
 
   const TYPE* value = nullptr;
-  const unsigned int size = 0;
+  const MemorySize size = 0;
   const Literal separator;
 public:
 
@@ -685,7 +685,7 @@ public:
     @param value The beginning of the sequence.
     @param size The number of elements in the sequence.
   */
-  Sequence(const TYPE* _value, unsigned int _size) throw()
+  Sequence(const TYPE* _value, MemorySize _size) throw()
     : value(_value), size(_size), separator("") {
   }
   
@@ -698,23 +698,23 @@ public:
   */
   Sequence(
     const TYPE* _value,
-    unsigned int _size,
-    const Literal& _separator) throw()
+    MemorySize _size,
+    const Literal& _separator) noexcept
     : value(_value), size(_size), separator(_separator) {
   }
   
   /** Returns the beginning of the sequence. */
-  inline const TYPE* getValue() const throw() {
+  inline const TYPE* getValue() const noexcept {
     return value;
   }
 
   /** Returns the number of elements in the sequence. */
-  inline unsigned int getSize() const throw() {
+  inline MemorySize getSize() const noexcept {
     return size;
   }
 
   /** Returns the separator to be used between elements. */
-  inline const Literal& getSeparator() const throw() {
+  inline const Literal& getSeparator() const noexcept {
     return separator;
   }
 };

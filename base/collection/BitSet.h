@@ -51,19 +51,19 @@ public:
     /** The bit within the word. */
     unsigned long mask = 0;
     
-    inline BitReference(unsigned long* _word, unsigned long _mask) throw()
+    inline BitReference(unsigned long* _word, unsigned long _mask) noexcept
       : word(_word), mask(_mask) {
     }
   public:
     
-    inline BitReference(const BitReference& copy) throw()
+    inline BitReference(const BitReference& copy) noexcept
       : word(copy.word), mask(copy.mask) {
     }
     
     /**
       Assignment of bit.
     */
-    inline BitReference& operator=(const BitReference& eq) throw() {
+    inline BitReference& operator=(const BitReference& eq) noexcept {
       word = eq.word;
       mask = eq.mask;
       return *this;
@@ -72,7 +72,7 @@ public:
     /**
       Assignment of bit.
     */
-    inline BitReference& operator=(bool value) throw() {
+    inline BitReference& operator=(bool value) noexcept {
       if (value) {
         *word |= mask;
       } else {
@@ -84,7 +84,7 @@ public:
     /**
       Logic and operator.
     */
-    inline BitReference& operator&=(bool value) throw() {
+    inline BitReference& operator&=(bool value) noexcept {
       if (!value) {
         *word &= ~mask;
       }
@@ -94,7 +94,7 @@ public:
     /**
       Logic or operator.
     */
-    inline BitReference& operator|=(bool value) throw() {
+    inline BitReference& operator|=(bool value) noexcept {
       if (value) {
         *word |= mask;
       }
@@ -104,7 +104,7 @@ public:
     /**
       Logic xor operator.
     */
-    inline BitReference& operator^=(bool value) throw() {
+    inline BitReference& operator^=(bool value) noexcept {
       if (value) {
         *word ^= mask; // flip
       }
@@ -114,7 +114,7 @@ public:
     /**
       Returns the value of the referenced bit.
     */
-    inline operator bool() const throw() {
+    inline operator bool() const noexcept {
       return *word & mask;
     }
   };
@@ -132,19 +132,19 @@ public:
     unsigned long mask = 0;
     
     inline BitReadReference(
-      const unsigned long* _word, unsigned long _mask) throw()
+      const unsigned long* _word, unsigned long _mask) noexcept
       : word(_word), mask(_mask) {
     }
   public:
     
-    inline BitReadReference(const BitReadReference& copy) throw()
+    inline BitReadReference(const BitReadReference& copy) noexcept
       : word(copy.word), mask(copy.mask) {
     }
     
     /**
       Assignment of bit.
     */
-    inline BitReadReference& operator=(const BitReadReference& eq) throw() {
+    inline BitReadReference& operator=(const BitReadReference& eq) noexcept {
       word = eq.word;
       mask = eq.mask;
       return *this;
@@ -153,7 +153,7 @@ public:
     /**
       Returns the value of the referenced bit.
     */
-    inline operator bool() const throw() {
+    inline operator bool() const noexcept {
       return *word & mask;
     }
   };
@@ -168,14 +168,14 @@ public:
     /** The bit. */
     BitReference bit;
     
-    inline BitPointer(const BitReference& _bit) throw() : bit(_bit) {
+    inline BitPointer(const BitReference& _bit) noexcept : bit(_bit) {
     }
   public:
     
     /**
       Returns the reference to the bit.
     */
-    inline BitReference operator*() const throw() {
+    inline BitReference operator*() const noexcept {
       return bit;
     }
   };
@@ -190,14 +190,14 @@ public:
     /** The bit. */
     BitReadReference bit;
     
-    inline BitReadPointer(const BitReadReference& _bit) throw() : bit(_bit) {
+    inline BitReadPointer(const BitReadReference& _bit) noexcept : bit(_bit) {
     }
   public:
     
     /**
       Returns the reference to the bit.
     */
-    inline BitReadReference operator*() const throw() {
+    inline BitReadReference operator*() const noexcept {
       return bit;
     }
   };
@@ -238,22 +238,23 @@ public:
       @param count The number of bits in the set.
     */
     explicit inline BitSetEnumerator(
-      unsigned long* _word, unsigned int _count) throw()
-      : word(_word), count(_count) {
+      unsigned long* _word, unsigned int _count) noexcept
+      : word(_word), count(_count)
+    {
     }
   public:
     
     /**
       Initializes enumeration from other enumeration.
     */
-    inline BitSetEnumerator(const BitSetEnumerator& copy) throw()
+    inline BitSetEnumerator(const BitSetEnumerator& copy) noexcept
       : word(copy.word), count(copy.count) {
     }
     
     /**
       Returns true if the enumeration still contains elements.
     */
-    inline bool hasNext() const throw() {
+    inline bool hasNext() const noexcept {
       return count != 0;
     }
     
@@ -274,14 +275,14 @@ public:
     /**
       Returns true if the enumerations are pointing to the same position.
     */
-    inline bool operator==(const BitSetEnumerator& eq) const throw() {
+    inline bool operator==(const BitSetEnumerator& eq) const noexcept {
       return (word == eq.word) && (count == eq.count);
     }
     
     /**
       Returns true if the enumerations aren't pointing to the same position.
     */
-    inline bool operator!=(const BitSetEnumerator& eq) const throw() {
+    inline bool operator!=(const BitSetEnumerator& eq) const noexcept {
       return (word != eq.word) || (count != eq.count);
     }
   };
@@ -322,7 +323,7 @@ public:
       @param count The number of bits in the set.
     */
     explicit inline BitSetReadEnumerator(
-      const unsigned long* _word, unsigned int _count) throw()
+      const unsigned long* _word, unsigned int _count) noexcept
       : word(_word), count(_count) {
     }
   public:
@@ -330,14 +331,14 @@ public:
     /**
       Initializes enumeration from other enumeration.
     */
-    inline BitSetReadEnumerator(const BitSetReadEnumerator& copy) throw()
+    inline BitSetReadEnumerator(const BitSetReadEnumerator& copy) noexcept
       : word(copy.word), count(copy.count) {
     }
     
     /**
       Returns true if the enumeration still contains elements.
     */
-    inline bool hasNext() const throw() {
+    inline bool hasNext() const noexcept {
       return count != 0;
     }
     
@@ -358,14 +359,14 @@ public:
     /**
       Returns true if the enumerations are pointing to the same position.
     */
-    inline bool operator==(const BitSetReadEnumerator& eq) const throw() {
+    inline bool operator==(const BitSetReadEnumerator& eq) const noexcept {
       return (word == eq.word) && (count == eq.count);
     }
     
     /**
       Returns true if the enumerations aren't pointing to the same position.
     */
-    inline bool operator!=(const BitSetReadEnumerator& eq) const throw() {
+    inline bool operator!=(const BitSetReadEnumerator& eq) const noexcept {
       return (word != eq.word) || (count != eq.count);
     }
   };
@@ -383,8 +384,8 @@ public:
     BitSet& bitset; // use reference to avoid 'copy on write'
     unsigned int index = 0;
     
-    Element(const Element& copy) throw();
-    Element& operator=(const Element& eq) throw();
+    Element(const Element& copy) noexcept;
+    Element& operator=(const Element& eq) noexcept;
     
     inline Element(BitSet& _bitset, unsigned int _index)
       : bitset(_bitset),
@@ -406,14 +407,14 @@ private:
   /** The elements of the bit set. */
   Reference<ReferenceCountedCapacityAllocator<unsigned long> > elements;
   /** The number of bits in the bit set. */
-  unsigned int size = 0;
+  MemorySize size = 0;
 protected:
   
   /**
     Returns the number of required elements to hold the specified number of
     bits.
   */
-  static inline unsigned int getNumberOfElements(unsigned int size) throw() {
+  static inline unsigned int getNumberOfElements(MemorySize size) noexcept {
     return (size + sizeof(unsigned long) * 8 - 1)/(sizeof(unsigned long) * 8);
   }
   
@@ -421,21 +422,22 @@ protected:
     Returns the index of the internal element holding the bit at the specified
     index.
   */
-  static inline unsigned int getElementIndex(unsigned int index) throw() {
+  static inline unsigned int getElementIndex(unsigned int index) noexcept {
     return index/(sizeof(unsigned long) * 8);
   }
   
   /**
     Returns the bit mask for the specified index.
   */
-  static inline unsigned long getBitMask(unsigned int index) throw() {
+  static inline unsigned long getBitMask(unsigned int index) noexcept {
     return 1UL << (index % (sizeof(unsigned long) * 8));
   }
   
   /**
     Returns the elements of the internal array for modifying access.
   */
-  inline unsigned long* getElements() throw(MemoryException) {
+  inline unsigned long* getElements()
+  {
     elements.copyOnWrite();
     return elements->getElements();
   }
@@ -443,19 +445,19 @@ protected:
   /**
     Returns the elements of the internal array for non-modifying access.
   */
-  inline const unsigned long* getElements() const throw() {
+  inline const unsigned long* getElements() const noexcept {
     return elements->getElements();
   }
   
   /**
     Zero-extends the bit set to the specified size.
   */
-  void zeroExtend(unsigned int size) throw(MemoryException);
+  void zeroExtend(MemorySize size);
   
   /**
     Resets any unused bits.
   */
-  inline void reinitialize() throw() {
+  inline void reinitialize() noexcept {
     unsigned long mask = getBitMask(size) - 1; // TAG: big endian problem
     if ((size > 0) && (mask != 0)) { // are some of the bits unused
       getElements()[getNumberOfElements(size) - 1] &= mask; // reset unused bits
@@ -465,7 +467,8 @@ protected:
   /**
     Sets the number of bits in the bit set.
   */
-  inline void setSize(unsigned int size) throw(MemoryException) {
+  inline void setSize(MemorySize size)
+  {
     elements->setSize(getNumberOfElements(size));
     reinitialize();
   }
@@ -474,7 +477,7 @@ public:
   /**
     Initializes an empty bit set.
   */
-  BitSet() throw(MemoryException);
+  BitSet();
   
   /**
     Initializes array with the specified number of elements.
@@ -482,19 +485,21 @@ public:
     @param size The initial number of bits.
     @param value The initial state of the bits.
   */
-  BitSet(unsigned int size, bool value) throw(MemoryException);
+  BitSet(unsigned int size, bool value);
   
   /**
     Initializes bit set from other bit set.
   */
-  inline BitSet(const BitSet& copy) throw()
-    : elements(copy.elements), size(copy.size) {
+  inline BitSet(const BitSet& copy) noexcept
+    : elements(copy.elements), size(copy.size)
+  {
   }
 
   /**
     Assignment of bit set to bit set.
   */
-  inline BitSet& operator=(const BitSet& eq) throw() {
+  inline BitSet& operator=(const BitSet& eq) noexcept
+  {
     elements = eq.elements;
     size = eq.size;
     return *this;
@@ -503,14 +508,14 @@ public:
   /**
     Returns the number of bit in the bit set.
   */
-  inline unsigned int getSize() const throw() {
+  inline unsigned int getSize() const noexcept {
     return size;
   }
 
   /**
     Returns true if the bit set is empty.
   */
-  inline bool isEmpty() const throw() {
+  inline bool isEmpty() const noexcept {
     return size == 0;
   }
 
@@ -534,7 +539,7 @@ public:
   /**
     Sets (sets to true) all the states of the bit set.
   */
-  BitSet& set() throw();
+  BitSet& set() noexcept;
 
   /**
     Sets (sets to true) the state at the specified index. Raises OutOfRange if
@@ -545,7 +550,7 @@ public:
   /**
     Resets (set to false) all the states of the bit set.
   */
-  BitSet& reset() throw();
+  BitSet& reset() noexcept;
 
   /**
     Resets (sets to false) the state at the specified index. Raises OutOfRange
@@ -556,7 +561,7 @@ public:
   /**
     Inverts all the states of the bit set.
   */
-  BitSet& flip() throw();
+  BitSet& flip() noexcept;
 
   /**
     Inverts the state at the specified index. Raises OutOfRange if the index is
@@ -567,50 +572,50 @@ public:
   /**
     Binary AND of the bit sets.
   */
-  BitSet& operator&=(const BitSet& value) throw();
+  BitSet& operator&=(const BitSet& value) noexcept;
 
   /**
     Binary OR of the bit sets.
   */
-  BitSet& operator|=(const BitSet& value) throw();
+  BitSet& operator|=(const BitSet& value) noexcept;
 
   /**
     Binary EXCLUSIVE OR of the bit sets.
   */
-  BitSet& operator^=(const BitSet& value) throw();
+  BitSet& operator^=(const BitSet& value) noexcept;
 
   /**
     Binary left shift.
 
     @param count The number of bits to shift.
   */
-  BitSet& operator<<=(unsigned int count) throw();
+  BitSet& operator<<=(unsigned int count) noexcept;
 
   /**
     Binary right shift.
 
     @param count The number of bits to shift.
   */
-  BitSet& operator>>=(unsigned int count) throw();
+  BitSet& operator>>=(unsigned int count) noexcept;
 
   /**
     Returns an inverted bit set.
   */
-  inline BitSet operator~() const throw() {
+  inline BitSet operator~() const noexcept {
     return BitSet(*this).flip();
   }
 
   /**
     Returns a left-shifted bit set.
   */
-  inline BitSet operator<<(unsigned int count) const throw() {
+  inline BitSet operator<<(unsigned int count) const noexcept {
     return BitSet(*this) <<= count;
   }
 
   /**
     Returns a right-shifted bit set.
   */
-  inline BitSet operator>>(unsigned int count) const throw() {
+  inline BitSet operator>>(unsigned int count) const noexcept {
     return BitSet(*this) >>= count;
   }
 
@@ -638,7 +643,7 @@ public:
     Returns a modifying enumerator of the bit set. The elements are
     enumerated from most significant to the least significant.
   */
-  inline Enumerator getEnumerator() throw() {
+  inline Enumerator getEnumerator() noexcept {
     return Enumerator(
       elements->getElements() + size/(sizeof(unsigned long) * 8),
       size
@@ -649,7 +654,7 @@ public:
     Returns a non-modifying enumerator of the bit set. The elements are
     enumerated from most significant to the least significant.
   */
-  inline ReadEnumerator getReadEnumerator() const throw() {
+  inline ReadEnumerator getReadEnumerator() const noexcept {
     return ReadEnumerator(
       elements->getElements() + size/(sizeof(unsigned long) * 8),
       size
@@ -659,7 +664,7 @@ public:
   /**
     Removes all the bits.
   */
-  void removeAll() throw();
+  void removeAll() noexcept;
 
   friend FormatOutputStream& operator<<(
     FormatOutputStream& stream, const BitSet& value) throw(IOException);

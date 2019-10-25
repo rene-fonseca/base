@@ -58,19 +58,21 @@ protected:
     /** The last node in the queue. */
     Node* last = nullptr;
     /** The number of elements in the queue. */
-    unsigned int size = 0;
+    MemorySize size = 0;
   public:
 
     /**
       Initializes an empty queue.
     */
-    QueueImpl() throw() {
+    QueueImpl() noexcept
+    {
     }
 
     /**
       Initializes queue from other queue.
     */
-    QueueImpl(const QueueImpl& copy) throw() {
+    QueueImpl(const QueueImpl& copy)
+    {
       const Node* node = copy.first;
       while (node) {
         push(*node->getValue());
@@ -81,14 +83,14 @@ protected:
     /**
       Returns the number of elements of the queue.
     */
-    inline unsigned int getSize() const throw() {
+    inline MemorySize getSize() const noexcept {
       return size;
     }
 
     /**
       Returns true if the queue is empty.
     */
-    inline bool isEmpty() const throw() {
+    inline bool isEmpty() const noexcept {
       return !size;
     }
 
@@ -127,7 +129,8 @@ protected:
     /**
       Destroys the queue.
     */
-    ~QueueImpl() throw() {
+    ~QueueImpl()
+    {
       while (first) {
         Node* temp = first;
         first = first->getNext();
@@ -145,19 +148,20 @@ public:
   /**
     Initializes an empty queue.
   */
-  Queue() throw() : elements(new QueueImpl()) {
+  Queue()
+    : elements(new QueueImpl()) {
   }
 
   /**
     Initializes queue from other queue.
   */
-  inline Queue(const Queue& copy) throw() : elements(copy.elements) {
+  inline Queue(const Queue& copy) noexcept : elements(copy.elements) {
   }
 
   /**
     Returns the number of elements in the queue.
   */
-  inline unsigned int getSize() const throw() {
+  inline MemorySize getSize() const noexcept {
     SharedSynchronize<Guard>(*this);
     return elements->getSize();
   }
@@ -165,7 +169,7 @@ public:
   /**
     Returns true if the queue is empty.
   */
-  inline bool isEmpty() const throw() {
+  inline bool isEmpty() const noexcept {
     SharedSynchronize<Guard>(*this);
     return elements->isEmpty();
   }
@@ -175,7 +179,8 @@ public:
 
     @param value The value to be added to the queue.
   */
-  void push(const TYPE& value) throw(MemoryException) {
+  void push(const TYPE& value)
+  {
     ExclusiveSynchronize<Guard>(*this);
     elements.copyOnWrite();
     elements->push(value);
@@ -185,7 +190,8 @@ public:
     Removes the element at the front of the queue. Raises InvalidNode if the
     queue is empty.
   */
-  Value pop() throw(InvalidNode) {
+  Value pop() throw(InvalidNode)
+  {
     ExclusiveSynchronize<Guard>(*this);
     elements.copyOnWrite();
     return elements->pop();

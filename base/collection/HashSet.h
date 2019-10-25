@@ -39,11 +39,11 @@ public:
   typedef TYPE Value;
   
   /** The minimum capacity. */
-  static constexpr unsigned int MINIMUM_CAPACITY = 16;
+  static constexpr MemorySize MINIMUM_CAPACITY = 16;
   /** The maximum capacity. */
-  static constexpr unsigned int MAXIMUM_CAPACITY = PrimitiveTraits<unsigned int>::MAXIMUM/2;
+  static constexpr MemorySize MAXIMUM_CAPACITY = PrimitiveTraits<MemorySize>::MAXIMUM/2;
   /** The default capacity. */
-  static constexpr unsigned int DEFAULT_CAPACITY = 16;
+  static constexpr MemorySize DEFAULT_CAPACITY = 16;
   
   /*
     Node in the single linked list of a bucket.
@@ -64,7 +64,7 @@ public:
     /**
       Initializes a node.
     */
-    inline Node(unsigned long _hash, const Value& _value) throw()
+    inline Node(unsigned long _hash, const Value& _value) noexcept
       : hash(_hash),
         value(_value),
         next(nullptr) {
@@ -73,7 +73,7 @@ public:
     /**
       Initializes a node.
     */
-    inline Node(unsigned long _hash, const Value& _value, Node* _next) throw()
+    inline Node(unsigned long _hash, const Value& _value, Node* _next) noexcept
       : hash(_hash),
         value(_value),
         next(_next) {
@@ -82,42 +82,42 @@ public:
     /**
       Returns the hash value of the node.
     */
-    inline unsigned long getHash() const throw() {
+    inline unsigned long getHash() const noexcept {
       return hash;
     }
     
     /**
       Returns the value of the node.
     */
-    inline Value& getValue() throw() {
+    inline Value& getValue() noexcept {
       return value;
     }
     
     /**
       Returns the value of the node.
     */
-    inline const Value& getValue() const throw() {
+    inline const Value& getValue() const noexcept {
       return value;
     }
 
     /**
       Returns the next node.
     */
-    inline Node* getNext() throw() {
+    inline Node* getNext() noexcept {
       return next;
     }
     
     /**
       Returns the next node.
     */
-    inline const Node* getNext() const throw() {
+    inline const Node* getNext() const noexcept {
       return next;
     }
     
     /**
       Sets the next node.
     */
-    inline void setNext(Node* node) throw() {
+    inline void setNext(Node* node) noexcept {
       next = node;
     }
   };
@@ -131,18 +131,18 @@ public:
     /** Lookup table. */
     Allocator<Node*> table;
     /** The current capacity of the set. */
-    unsigned int capacity = 0;
+    MemorySize capacity = 0;
     /** Cache for (capacity - 1). */
-    unsigned int mask = 0;
+    MemorySize mask = 0;
     /** Base 2 logarithm of the capacity. */
-    unsigned int log2OfCapacity = 0;
+    MemorySize log2OfCapacity = 0;
     /** The number of elements in the set. */
-    unsigned int size = 0;
+    MemorySize size = 0;
     
     /**
       Returns the hash value of the value.
     */
-    static inline unsigned long getHash(const Value& value) throw() {
+    static inline unsigned long getHash(const Value& value) noexcept {
       Hash<Value> hash; // Hash is a functor
       return hash(value);
     }
@@ -151,21 +151,21 @@ public:
     /**
       Returns the buckets for modifying access.
     */
-    inline Node** getBuckets() throw() {
+    inline Node** getBuckets() noexcept {
       return table.getElements();
     }
 
     /**
       Returns the buckets for non-modifying access.
     */
-    inline const Node* const* getBuckets() const throw() {
+    inline const Node* const* getBuckets() const noexcept {
       return table.getElements();
     }
 
     /**
       Initializes the hash set with the specified capacity.
     */
-    inline HashSetImpl(unsigned int capacity) throw(MemoryException) {
+    inline HashSetImpl(MemorySize capacity) throw(MemoryException) {
       capacity = maximum(capacity, MINIMUM_CAPACITY);
       capacity = minimum(capacity, MAXIMUM_CAPACITY);
       log2OfCapacity = Math::iLog2(capacity);
@@ -227,7 +227,7 @@ public:
         Node** lowerBucket = getBuckets();
         Node** upperBucket = lowerBucket + capacity/2;
         const Node* const* endBucket = upperBucket;
-        const unsigned int bitMask = capacity/2; // the bit that desides the half
+        const MemorySize bitMask = capacity/2; // the bit that desides the half
         while (lowerBucket != endBucket) {
           Node* srcNode = *lowerBucket;
           if (srcNode) {
@@ -306,7 +306,8 @@ public:
     /**
       Reduces the capacity of the hash set.
     */
-    inline void shrink() throw() {
+    inline void shrink()
+    {
       if (capacity > MINIMUM_CAPACITY) {
         // fold upper half buckets into lower buckets
         Node** lowerBucket = getBuckets();
@@ -339,21 +340,22 @@ public:
     /**
       Returns the capacity of the hash set.
     */
-    inline unsigned int getCapacity() const throw() {
+    inline MemorySize getCapacity() const noexcept {
       return capacity;
     }
     
     /**
       Returns the number of elements in the hash set.
     */
-    inline unsigned int getSize() const throw() {
+    inline MemorySize getSize() const noexcept {
       return size;
     }
 
     /**
       Returns true if the specified value is in the hash set.
     */
-    inline bool hasValue(const Value& key) throw() {
+    bool hasValue(const Value& key) noexcept
+    {
       const unsigned long hash = getHash(key);
       Node** bucket = getBuckets() + (hash & mask);
       
@@ -384,7 +386,8 @@ public:
     /**
       Returns true if the specified value is in the hash set.
     */
-    inline bool hasValue(const Value& value) const throw() {
+    bool hasValue(const Value& value) const noexcept
+    {
       const unsigned long hash = getHash(value);
       const Node* const* bucket = getBuckets() + (hash & mask);
       const Node* child = *bucket;
@@ -398,7 +401,8 @@ public:
     /**
       Adds the element to the set.
     */
-    inline void add(const Value& value) throw(MemoryException) {
+    void add(const Value& value)
+    {
       const unsigned long hash = getHash(value);
       Node** buckets = getBuckets() + (hash & mask);
       if (*buckets) {
@@ -427,7 +431,7 @@ public:
     /**
       Removes the specified value from the set.
     */
-    inline void remove(const Value& value) throw(InvalidNode) {
+    void remove(const Value& value) throw(InvalidNode) {
       const unsigned long hash = getHash(value);
       Node** bucket = getBuckets() + (hash & mask);
       Node* child = *bucket;
@@ -454,7 +458,8 @@ public:
     /**
       Destroys the hash set.
     */
-    inline ~HashSetImpl() throw() {
+    ~HashSetImpl()
+    {
       Node** bucket = getBuckets();
       const Node* const* endBucket = bucket + capacity;
       while (bucket != endBucket) {
@@ -494,7 +499,7 @@ public:
     /** The current position of the enumeration. */
     Node* node = nullptr;
     /** The number of elements. */
-    unsigned int numberOfElements = 0;
+    MemorySize numberOfElements = 0;
   public:
       
     /**
@@ -502,17 +507,18 @@ public:
       
       @param hashSet The hash set.
     */
-    inline HashSetEnumerator(Reference<HashSetImpl> _impl) throw()
+    inline HashSetEnumerator(Reference<HashSetImpl> _impl) noexcept
       : impl(_impl),
         bucket(impl->getBuckets()),
         node(*bucket),
-        numberOfElements(impl->getSize()) {
+        numberOfElements(impl->getSize())
+    {
     }
 
     /**
       Returns true if there is more elements in this enumeration.
     */
-    inline bool hasNext() const throw() {
+    inline bool hasNext() const noexcept {
       return numberOfElements;
     }
 
@@ -532,7 +538,7 @@ public:
       return result;
     }
 
-    inline ~HashSetEnumerator() throw() {
+    inline ~HashSetEnumerator() noexcept {
     }
   };
   
@@ -572,13 +578,13 @@ public:
   /**
     Initializes hash set from another hash set.
   */
-  HashSet(const HashSet& copy) throw() : impl(copy.impl) {
+  HashSet(const HashSet& copy) noexcept : impl(copy.impl) {
   }
   
   /**
     Assignment of hash set by hash set.
   */
-  HashSet& operator=(const HashSet& eq) throw() {
+  HashSet& operator=(const HashSet& eq) noexcept {
     impl = eq.impl;
     return *this;
   }
@@ -586,28 +592,28 @@ public:
   /**
     Returns the capacity of the hash set.
   */
-  inline unsigned int getCapacity() const throw() {
+  inline MemorySize getCapacity() const noexcept {
     return impl->getCapacity();
   }
 
   /**
     Returns the number of elements in the hash set.
   */
-  inline unsigned int getSize() const throw() {
+  inline MemorySize getSize() const noexcept {
     return impl->getSize();
   }
   
   /**
     Returns true if the hash set is empty.
   */
-  inline bool isEmpty() const throw() {
+  inline bool isEmpty() const noexcept {
     return impl->getSize() == 0;
   }
 
   /**
     Returns true if the specified value is in the set.
   */
-  bool hasValue(const Value& value) const throw() {
+  bool hasValue(const Value& value) const noexcept {
     return impl->hasValue(value);
   }
   
@@ -631,21 +637,22 @@ public:
   /**
     Removes all the values from the hash set.
   */
-  void removeAll() throw() {
+  void removeAll()
+  {
     impl = new HashSetImpl(DEFAULT_CAPACITY); // initial capacity is unknown
   }
   
   /**
     Returns the enumerator of the hash set.
   */
-  Enumerator getEnumerator() throw() {
+  Enumerator getEnumerator() noexcept {
     return Enumerator(impl);
   }
 
   /**
     Returns the read enumerator of the hash set.
   */
-  ReadEnumerator getReadEnumerator() const throw() {
+  ReadEnumerator getReadEnumerator() const noexcept {
     return ReadEnumerator(impl);
   }
 };

@@ -717,23 +717,7 @@ public:
   */
   static String getMultibyteString(const wchar* string)
     throw(NullPointer, MultibyteException, WideStringException);
-
-  /**
-    Returns the length of the NULL-terminated string.
-
-    @param string The NULL-terminated string.
-    @param maximum The maximum length of the string. The default is MAXIMUM_LENGTH.
-  */
-  static inline MemorySize getLengthOfMustBeTerminated(
-    const wchar* string,
-    MemorySize maximum = MAXIMUM_LENGTH) throw(StringException)
-  {
-    bassert(string, StringException(Type::getType<String>()));
-    const wchar* terminator = find<wchar>(string, maximum, 0);
-    bassert(terminator, StringException(Type::getType<String>()));
-    return terminator - string;
-  }
-
+  
   /**
     Returns the length of the NULL-terminated string.
 

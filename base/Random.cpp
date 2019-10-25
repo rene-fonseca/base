@@ -48,7 +48,8 @@ void Random::fill(uint8* dest, const uint8* end) noexcept
 RANDOM_IMPL(int8);
 RANDOM_IMPL(int16);
 RANDOM_IMPL(int32);
-RANDOM_IMPL(int64);
+RANDOM_IMPL(long);
+RANDOM_IMPL(long long);
 // RANDOM_IMPL(int128);
 
 template<>
@@ -61,7 +62,8 @@ int128 Random::random<int128>() noexcept {
 RANDOM_IMPL(uint8);
 RANDOM_IMPL(uint16);
 RANDOM_IMPL(uint32);
-RANDOM_IMPL(uint64);
+RANDOM_IMPL(unsigned long);
+RANDOM_IMPL(unsigned long long);
 // RANDOM_IMPL(uint128);
 
 template<>

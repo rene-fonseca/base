@@ -15,6 +15,7 @@
 
 #include <base/string/FormatOutputStream.h>
 #include <base/io/RandomInputStream.h>
+#include <base/iterator/CountingIterator.h>
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
@@ -72,9 +73,51 @@ template<>
 _COM_AZURE_DEV__BASE__API uint32 Random::random<uint32>() noexcept;
 
 template<>
-_COM_AZURE_DEV__BASE__API uint64 Random::random<uint64>() noexcept;
+_COM_AZURE_DEV__BASE__API unsigned long Random::random<unsigned long>() noexcept;
+
+template<>
+_COM_AZURE_DEV__BASE__API unsigned long long Random::random<unsigned long long>() noexcept;
 
 template<>
 _COM_AZURE_DEV__BASE__API uint128 Random::random<uint128>() noexcept;
+
+template<class TYPE>
+class RandomIterator : public CountingIterator {
+public:
+
+  inline RandomIterator(MemorySize count) noexcept
+    : CountingIterator(count)
+  {
+  }
+
+  inline TYPE operator*() const noexcept
+  {
+    return Random::random<TYPE>();
+  }
+};
+
+/** Producer for n number of random numbers. */
+template<class TYPE>
+class RandomNumbers {
+private:
+
+  MemorySize count = 0;
+public:
+
+  inline RandomNumbers(MemorySize _count) noexcept
+    : count(_count)
+  {
+  }
+
+  inline RandomIterator<TYPE> begin() const noexcept
+  {
+    return 0;
+  }
+
+  inline RandomIterator<TYPE> end() const noexcept
+  {
+    return count;
+  }
+};
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

@@ -107,9 +107,8 @@ private:
     // pool.release(buffers);
   }
   
-  inline void pushRequest(
-    const uint8* buffer, unsigned int size) throw(OrbException) {
-    WRITE_SOURCE_LOCATION();
+  inline void pushRequest(const uint8* buffer, unsigned int size) throw(OrbException)
+  {
   }
   
   /**

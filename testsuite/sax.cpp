@@ -938,7 +938,6 @@ protected:
           Node child = node.getFirstChild();
           child.isValid();
           child = child.getNextSibling()) {
-          WRITE_SOURCE_LOCATION();
           traverseNode(child);
         }
         
@@ -1171,8 +1170,8 @@ public:
   }
 
   XMLReader::InputSource resolveEntity(
-    const String& publicId, const String& systemId) throw(SAXException) {
-    WRITE_SOURCE_LOCATION();
+    const String& publicId, const String& systemId) throw(SAXException)
+  {
     return 0;
   }
 

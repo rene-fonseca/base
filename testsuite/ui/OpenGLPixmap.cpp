@@ -415,7 +415,6 @@ public:
      //makeCone();
       makeCube();
       //makeTorus();
-     WRITE_SOURCE_LOCATION();
     }
 
     void setQuality(Quality quality) throw() {
@@ -600,16 +599,12 @@ public:
       openGL.glColor4f(0.0, 1.0, 0.0, 0.75);
       
       {
-        WRITE_SOURCE_LOCATION();
         OpenGL::Block block(openGL, OpenGL::QUAD_STRIP); // draw the sides of the cube
-        WRITE_SOURCE_LOCATION();
         static double X[3] = {3, 3, 3};
         openGL.glVertex3dv(X);
-        WRITE_SOURCE_LOCATION();
        
         // Normal A
         openGL.glNormal3f(0.0, 0.0, -1.0);
-        WRITE_SOURCE_LOCATION();
         
         openGL.glVertex3i(3, 3, -3); // vertex 1
         openGL.glVertex3i(3, 3, -3); // vertex 1

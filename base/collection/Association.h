@@ -134,7 +134,7 @@ public:
   /**
     Compares the specified associations with each other.
   */
-  friend int compare<>(const Association& left, const Association& right) noexcept;
+  friend int compare<>(const Association& left, const Association& right);
 };
 
 template<class KEY, class VALUE>

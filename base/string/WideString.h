@@ -1441,7 +1441,7 @@ public:
 };
 
 template<>
-int compare<WideString>(const WideString& left, const WideString& right) throw();
+int compare<WideString>(const WideString& left, const WideString& right);
 
 /**
   Writes wide string to format stream.

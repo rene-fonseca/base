@@ -1373,7 +1373,7 @@ public:
 };
 
 template<>
-int compare<String>(const String& left, const String& right) throw();
+int compare<String>(const String& left, const String& right);
 
 template<>
 class _COM_AZURE_DEV__BASE__API Hash<String> {

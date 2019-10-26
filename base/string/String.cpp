@@ -852,7 +852,7 @@ Array<String> String::split(char separator, bool group) const
 }
 
 template<>
-int compare<String>(const String& left, const String& right) throw()
+int compare<String>(const String& left, const String& right)
 {
   return left.compareTo(right);
 }

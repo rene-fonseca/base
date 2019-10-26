@@ -18,6 +18,7 @@
 #include <base/collection/Hash.h>
 #include <base/mem/ReferenceCountedObject.h>
 #include <base/mem/NullPointer.h>
+#include <base/Base.h>
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
@@ -87,6 +88,22 @@ public:
   }
 
   /**
+    Move initialization of automation pointer from other automation pointer.
+  */
+  inline Reference(Reference&& copy)
+    : value(copy.value)
+  {
+#if 0
+    if (value) {
+      ReferenceCountedObject::ReferenceImpl(*value).addReference();
+    }
+    copy.invalidate();
+#else // no need to do counting
+    copy.value = nullptr;
+#endif
+  }
+
+  /**
     Initialization of automation pointer from other automation pointer using
     compile time polymorphism.
   */
@@ -132,12 +149,30 @@ public:
   /**
     Assignment of automation pointer to this automation pointer.
   */
-  inline Reference& operator=(const Reference& eq)
+  inline Reference& operator=(const Reference& copy)
   {
-    setValue(eq.value); // no need to protect against self assignment
+    setValue(copy.value); // no need to protect against self assignment
     return *this;
   }
-  
+
+  /**
+    Assignment of automation pointer to this automation pointer.
+  */
+  inline Reference& operator=(Reference&& copy)
+  {
+    if (this != &copy) { // no self assignment since we invalidate copy
+#if 0
+      setValue(copy.value);
+      copy.invalidate();
+#else
+      setValue(nullptr); // make sure we release existing object
+      value = copy.value; // no need to do counting
+      copy.value = nullptr;
+#endif
+    }
+    return *this;
+  }
+
   /**
     Assignment of automation pointer to this automation pointer using compile
     time polymorphism.
@@ -322,7 +357,20 @@ public:
   {
     setValue(nullptr);
   }
+
+  static inline void swapper(Reference& a, Reference& b) noexcept
+  {
+    base::swapper(a.value, b.value); // self swap allowed - no reference counting required
+  }
 };
+
+// TAG: we should likely forward to class swapper directly with class traits specialization
+
+template<class TYPE>
+inline void swapper(Reference<TYPE>& a, Reference<TYPE>& b)
+{
+  Reference<TYPE>::swapper(a, b);
+}
 
 /** Type that supports all references. */
 typedef Reference<ReferenceCountedObject> AnyReference;

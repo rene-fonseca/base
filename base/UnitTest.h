@@ -307,6 +307,18 @@ public:
     NORMAL,
     VERBOSE
   };
+
+  class SortTests {
+  public:
+
+    bool operator()(const Reference<UnitTest>& a, const Reference<UnitTest>& b)
+    {
+      if (a->getPriority() < b->getPriority()) {
+        return true;
+      }
+      return false;
+    }
+  };
 private:
   
   Verbosity verbosity = VERBOSE;

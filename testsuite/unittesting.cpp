@@ -16,6 +16,7 @@
 #include <base/string/Format.h>
 #include <base/string/ANSIEscapeSequence.h>
 #include <base/UnitTest.h>
+#include <algorithm>
 
 using namespace com::azure::dev::base;
 
@@ -127,7 +128,9 @@ public:
     } else if (command == COMMAND_LIST) {
       auto& manager = UnitTestManager::getManager();
       manager.loadTests();
-      const auto& tests = manager.getTests();
+      auto tests = manager.getTests();
+      std::sort(tests.begin(), tests.end(), UnitTestManager::SortTests());
+
 // TAG: add ansi color - can we turn on/off colors globally
       for (auto test : tests) {
         if (useANSIColor) {

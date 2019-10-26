@@ -23,11 +23,11 @@
   </Type>
 
   <Type Name="base::String">
-    <DisplayString>{{ text={elements.value->elements} length={elements.value->size} }}</DisplayString>
+    <DisplayString>{{ text={elements.value->elements} length={elements.value->size - 1} }}</DisplayString>
   </Type>
 
   <Type Name="base::WideString">
-    <DisplayString>{{ text={elements.value->elements} length={elements.value->size} }}</DisplayString>
+    <DisplayString>{{ text={elements.value->elements} length={elements.value->size - 1} }}</DisplayString>
   </Type>
 
   <Type Name="base::AnyValue">

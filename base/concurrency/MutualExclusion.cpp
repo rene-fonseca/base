@@ -114,6 +114,7 @@ class TEST_CLASS(MutualExclusion) : public UnitTest {
 public:
 
   TEST_PRIORITY(0);
+  TEST_IMPACT(CRITICAL);
   TEST_TIMEOUT_MS(30 * 1000);
 
   void run() override

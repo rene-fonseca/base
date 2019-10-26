@@ -145,7 +145,9 @@ public:
           fout << "  SOURCE=" << test->getSource() << EOL;
         }
         fout << "  PRIORITY=" << test->getPriority() << EOL;
-        fout << "  IMPACT=" << test->getImpact() << EOL;
+        static const char* IMPACTS[] = { "PRIVACY", "SECURITY", "CRITICAL", "IMPORTANT", "NORMAL", "LOW", "IGNORE" };
+        ASSERT(test->getImpact() < getArraySize(IMPACTS));
+        fout << "  IMPACT=" << IMPACTS[test->getImpact()] << EOL;
         if (test->getAllowConcurrentRun()) {
           fout << "  CONCURRENT=" << test->getAllowConcurrentRun() << EOL;
         }

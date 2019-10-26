@@ -54,16 +54,18 @@ public:
 
   enum {
     HERE_MARKER = 0x21564836,
-    DEFAULT_PRIORITY = 0,
+    DEFAULT_PRIORITY = 0, // key feature priority
     DEFAULT_TIMEOUT = 15 * 60 * 1000
   };
 
   enum Impact {
-    PRIVACY,
-    SECURITY,
-    CRITICAL,
+    PRIVACY, // loss of privacy
+    SECURITY, // loss of trust
+    CRITICAL, // corruption
+    IMPORTANT, // common issue
     NORMAL,
-    IGNORE
+    LOW, // rare less important problem
+    IGNORE // nothing major - not recommended to be used
   };
   
   enum ResultEvent {
@@ -316,6 +318,11 @@ public:
       if (a->getPriority() < b->getPriority()) {
         return true;
       }
+      if (a->getPriority() == b->getPriority()) {
+        if (a->getImpact() < b->getImpact()) {
+          return true;
+        }
+      }
       return false;
     }
   };
@@ -486,10 +493,10 @@ public:
 /** Tells system that test may be run concurrent with other tests. */
 #define TEST_ALLOW_CONCURRENT() bool getAllowConcurrentRun() const noexcept override {return true;}
 
-/** Sets the priority the test. Lower priorty gets run first. */
+/** Sets the priority the test. Lower priorty is "higher" and gets run first. */
 #define TEST_PRIORITY(priority) int getPriority() const noexcept override {return static_cast<int>(priority);}
 
-/** Sets the priority the test. Lower priorty gets run first. */
+/** Sets the priority the test. Lower impact is "higher" and gets run first for the same priority group. */
 #define TEST_IMPACT(impact) Impact getImpact() const noexcept override {return static_cast<Impact>(impact);}
 
 /** Sets the timeout for the test in milliseconds. */

@@ -971,7 +971,8 @@ std::wstring toWide(const char* s)
 class TEST_CLASS(String) : public UnitTest {
 public:
 
-  TEST_PRIORITY(100);
+  TEST_PRIORITY(10);
+  TEST_IMPACT(CRITICAL)
   TEST_TIMEOUT_MS(30 * 1000);
 
   void run() override

@@ -30,39 +30,40 @@ unsigned int RandomInputStream::available() const noexcept
 unsigned int RandomInputStream::read(uint8* buffer, const unsigned int _size, bool nonblocking) noexcept
 {
   const uint8* end = buffer + _size;
-
-  unsigned int bits = engine();
-
-  if (_size <= sizeof(unsigned int)) {
-    if (_size == sizeof(unsigned int)) {
-      *reinterpret_cast<unsigned int*>(buffer) = bits;
-      return _size;
-    }
-    while (buffer != end) {
-      *buffer++ = static_cast<uint8>(bits & 0xff);
-      bits >>= 8;
-    }
-    return _size;
-  }
-
   unsigned int size = _size;
 
-  // fix alignment
-  switch (getAddressOf(buffer) & (sizeof(uint32) - 1)) {
-  case 1: // fall through
-    if (buffer != end) {
-      *buffer++ = ((bits >> 0) & 0xff);
-      --size;
+  if ((getAddressOf(buffer) & (sizeof(uint32) - 1)) != 0) { // misaligned buffer
+    unsigned int bits = engine();
+
+    if (_size <= sizeof(unsigned int)) {
+      if (_size == sizeof(unsigned int)) {
+        *reinterpret_cast<unsigned int*>(buffer) = bits;
+        return _size;
+      }
+      while (buffer != end) {
+        *buffer++ = static_cast<uint8>(bits & 0xff);
+        bits >>= 8;
+      }
+      return _size;
     }
-  case 2: // fall through
-    if (buffer != end) {
-      *buffer++ = ((bits >> 8) & 0xff);
-      --size;
-    }
-  case 3: // fall through
-    if (buffer != end) {
-      *buffer++ = ((bits >> 16) & 0xff);
-      --size;
+
+    // fix alignment
+    switch (getAddressOf(buffer) & (sizeof(uint32) - 1)) {
+    case 1: // fall through
+      if (buffer != end) {
+        *buffer++ = ((bits >> 0) & 0xff);
+        --size;
+      }
+    case 2: // fall through
+      if (buffer != end) {
+        *buffer++ = ((bits >> 8) & 0xff);
+        --size;
+      }
+    case 3: // fall through
+      if (buffer != end) {
+        *buffer++ = ((bits >> 16) & 0xff);
+        --size;
+      }
     }
   }
 
@@ -75,7 +76,10 @@ unsigned int RandomInputStream::read(uint8* buffer, const unsigned int _size, bo
   buffer = reinterpret_cast<uint8*>(dest);
 
   ASSERT((end - buffer) < sizeof(uint32));
-  bits = engine();
+  if (buffer == end) {
+    return _size;
+  }
+  unsigned int bits = engine();
   while (buffer != end) { // only a few loops
     *buffer++ = ((bits >> 0) & 0xff);
     bits >>= 8;

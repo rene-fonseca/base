@@ -17,6 +17,7 @@
 #include <base/concurrency/Thread.h>
 #include <base/string/ANSIEscapeSequence.h>
 #include <base/objectmodel/JSON.h>
+#include <base/Random.h>
 #include <algorithm>
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
@@ -438,6 +439,21 @@ public:
   }
 };
 
+template<class TYPE>
+void doit(TYPE& a, TYPE& b)
+{
+  fout << "!!! HERE1" << ENDL;
+}
+
+template<class TYPE>
+void doit(typename Array<TYPE>::Element& a, typename Array<TYPE>::Element& b)
+{
+  TYPE& aa = a;
+  TYPE& bb = b;
+  swapper(aa, bb);
+  fout << "!!! HERE2" << ENDL;
+}
+
 bool UnitTestManager::runTests(const String& pattern)
 {
   // TAG: add support for pattern
@@ -448,7 +464,30 @@ bool UnitTestManager::runTests(const String& pattern)
   // TAG: allow tests to run concurrently
 
   loadTests();
-  std::sort(tests.begin(), tests.end(), SortTests());
+
+  Array<MemorySize> indices;
+  MemorySize size = tests.getSize();
+  indices.setSize(size);
+  for (MemorySize i = 0; i < size; ++i) {
+    indices[i] = i;
+  }
+
+  if (randomize) {
+    // TAG: size is a direct member of Array - put in elements
+    // TAG: need a good way to randomize indices
+    MemorySize count = 2 * size;
+    while (count > 0) {
+      MemorySize i = Random::random<MemorySize>() % size;
+      MemorySize j = Random::random<MemorySize>() % size;
+      MemorySize& ii = indices[i];
+      MemorySize& jj = indices[j];
+      swapper(ii, jj); // TAG: cannot swap directly
+      // TAG: doit(indices[i], indices[j]); // TAG: cannot swap directly
+      --count;
+    }
+  } else {
+    std::sort(tests.begin(), tests.end(), SortTests());
+  }
 
   unsigned int passed = 0;
   unsigned int failed = 0;
@@ -456,6 +495,7 @@ bool UnitTestManager::runTests(const String& pattern)
   Thread::Times totalTimes;
 
   for (auto test : tests) {
+    // auto test = tests[index];
     // TAG: show progress - show time since last output - include processing time
     Timer timer;
     timer.getLiveMicroseconds();

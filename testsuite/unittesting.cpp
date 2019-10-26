@@ -79,7 +79,6 @@ public:
         reportJSON = true;
       } else if (argument == "--randomize") {
         randomize = true;
-        // TAG: reverse order support
       } else {
         if (argument.startsWith("-")) {
           ferr << "Unsupported argument." << ENDL;
@@ -182,6 +181,7 @@ public:
       }
       
       manager.setUseANSIColors(useANSIColor);
+      manager.setRandomize(randomize);
 
       if (reportJSON) {
         manager.setUseJSON(true);

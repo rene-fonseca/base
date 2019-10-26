@@ -331,6 +331,7 @@ private:
   Verbosity verbosity = VERBOSE;
   bool useJSON = false;
   bool useANSIColors = false;
+  bool randomize = false;
   unsigned int passed = 0;
   unsigned int failed = 0;
   Timer timer;
@@ -391,6 +392,11 @@ public:
   inline void setUseANSIColors(bool _useANSIColors) noexcept
   {
     useANSIColors = _useANSIColors;
+  }
+
+  inline void setRandomize(bool _randomize) noexcept
+  {
+    randomize = _randomize;
   }
 
   /** Runs the test. A test must be able to run multiple times. */

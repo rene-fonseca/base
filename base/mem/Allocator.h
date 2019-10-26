@@ -50,7 +50,7 @@ public:
     Initializes the elements of the sequence using the default constructor.
     Uninitializeable objects are not initialized.
   */
-  static inline void initialize(TYPE* dest, const TYPE* end)
+  static void initialize(TYPE* dest, const TYPE* end)
   {
     ASSERT(dest <= end);
     if (!Uninitializeable<TYPE>::IS_UNINITIALIZEABLE) {
@@ -65,7 +65,7 @@ public:
     Initializes the elements of the sequence by copying elements from other
     sequence. The memory image is copied directly for relocatable objects.
   */
-  static inline void initializeByCopy(TYPE* restrict dest, const TYPE* restrict src, MemorySize count)
+  static void initializeByCopy(TYPE* restrict dest, const TYPE* restrict src, MemorySize count)
   {
     if (Uninitializeable<TYPE>::IS_UNINITIALIZEABLE || Relocateable<TYPE>::IS_RELOCATEABLE) {
       copy<TYPE>(dest, src, count); // blocks do not overlap
@@ -83,7 +83,7 @@ public:
     Initializes the elements of the sequence by moving elements from other
     sequence. This does nothing for relocateable object.
   */
-  static inline void initializeByMove(TYPE* dest, TYPE* src, const TYPE* end)
+  static void initializeByMove(TYPE* dest, TYPE* src, const TYPE* end)
   {
     ASSERT(src <= end);
     if (!Uninitializeable<TYPE>::IS_UNINITIALIZEABLE && !Relocateable<TYPE>::IS_RELOCATEABLE) {
@@ -103,7 +103,7 @@ public:
     Destroys the elements of the sequence. Does nothing for uninitializeable
     objects.
   */
-  static inline void destroy(TYPE* dest, const TYPE* end)
+  static void destroy(TYPE* dest, const TYPE* end)
   {
     ASSERT(dest <= end);
     if (!Uninitializeable<TYPE>::IS_UNINITIALIZEABLE) {

@@ -140,7 +140,7 @@ public:
 template<class KEY, class VALUE>
 inline int compare(
   const Association<KEY, VALUE>& left,
-  const Association<KEY, VALUE>& right) noexcept
+  const Association<KEY, VALUE>& right)
 {
   return compare(left.getKey(), right.getKey());
 }

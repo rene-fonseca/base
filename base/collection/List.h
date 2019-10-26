@@ -166,11 +166,11 @@ template<class TYPE>
 class ListIterator {
 public:
 
-  typedef typename TYPE Value;
-  typedef typename TYPE* Pointer;
-  typedef typename TYPE& Reference;
-  typedef typename MemoryDiff Distance;
-  typedef typename BidirectionalIterator Category;
+  typedef TYPE Value;
+  typedef TYPE* Pointer;
+  typedef TYPE& Reference;
+  typedef MemoryDiff Distance;
+  typedef BidirectionalIterator Category;
 protected:
 
   ListNode<TYPE>* node = nullptr;
@@ -355,11 +355,11 @@ template<class TYPE>
 class ListReadIterator {
 public:
 
-  typedef typename TYPE Value;
-  typedef typename const TYPE* Pointer;
-  typedef typename const TYPE& Reference;
-  typedef typename MemoryDiff Distance;
-  typedef typename BidirectionalIterator Category;
+  typedef TYPE Value;
+  typedef const TYPE* Pointer;
+  typedef const TYPE& Reference;
+  typedef MemoryDiff Distance;
+  typedef BidirectionalIterator Category;
 protected:
 
   const ListNode<TYPE>* node = nullptr;
@@ -1169,6 +1169,9 @@ void bubbleSort(const TYPE& _begin, const TYPE& _end)
   // implementation with forward iterator only - bidirectional iterator not required
   // TAG: we could do a merge sort also - by splitting items in the middle and sorting independently
 
+  // static_assert(std::is_same<ForwardIterator, typename TYPE::Category>::value, "Iterator must be ForwardIterator.");
+  const ForwardIterator* ensureForwardIterator = static_cast<const typename TYPE::Category*>(nullptr);
+
   TYPE end = _end; // we lower end per loop
   while (true) { // loop until all items sorted
     TYPE current = _begin; // restart
@@ -1202,3 +1205,6 @@ void List<TYPE>::sort()
 }
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE
+
+_COM_AZURE_DEV__BASE__STD_ITERATOR_TRAITS(base::ListIterator);
+_COM_AZURE_DEV__BASE__STD_ITERATOR_TRAITS(base::ListReadIterator);

@@ -58,8 +58,8 @@ public:
     MemorySize index = 0;
 
     Element(const Element& copy) noexcept;
-    Element& operator=(const Element& eq) noexcept;
-    
+    Element& operator=(const Element& copy);
+
     inline Element(Array& _array, MemorySize _index) noexcept
       : array(_array),
         index(_index)
@@ -80,6 +80,14 @@ public:
       Returns the value.
     */
     inline operator const Value&() const throw(OutOfRange)
+    {
+      return array.getAt(index);
+    }
+
+    /**
+      Returns the value.
+    */
+    inline operator Value&() throw(OutOfRange)
     {
       return array.getAt(index);
     }
@@ -396,6 +404,18 @@ public:
 
     @param index The index of the element.
   */
+  Value& getAt(MemorySize index) throw(OutOfRange)
+  {
+    bassert(index < getSize(), OutOfRange(this));
+    return getElements()[index];
+  }
+
+  /**
+    Returns the element at the specified index. Raises OutOfRange if the index
+    is invalid.
+
+    @param index The index of the element.
+  */
   const Value& getAt(MemorySize index) const throw(OutOfRange)
   {
     bassert(index < getSize(), OutOfRange(this));
@@ -437,6 +457,14 @@ public:
     return getAt(index);
   }
 };
+
+template<class TYPE>
+void swapper(typename Array<TYPE>::Element& a, typename Array<TYPE>::Element& b)
+{
+  typename Array<TYPE>::Value& aa = a;
+  typename Array<TYPE>::Value& bb = b;
+  swapper(aa, bb);
+}
 
 /**
   Writes a string representation of an array to a format stream.

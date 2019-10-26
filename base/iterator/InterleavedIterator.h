@@ -22,21 +22,22 @@ _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
   Iterator used to traverse interleaved elements within a sequence.
 
   @short Iterator of interleaved elements within a sequence.
-  @version 1.0
 */
 template<class TRAITS>
 class InterleavedIterator : public Iterator<TRAITS> {
 public:
   
-  typedef typename Iterator<TRAITS>::Distance Distance;
+  typedef typename Iterator<TRAITS>::Value Value;
   typedef typename Iterator<TRAITS>::Pointer Pointer;
   typedef typename Iterator<TRAITS>::Reference Reference;
+  typedef typename Iterator<TRAITS>::Distance Distance;
+  typedef typename Iterator<TRAITS>::Category Category;
 protected:
   
   /** The position of the iterator. */
   Pointer element;
   /** The fixed distance between "consecutive" elements. */
-  unsigned int step = 0;
+  MemoryDiff step = 0;
 public:
 
   /**
@@ -45,12 +46,13 @@ public:
     @param element The initial value of the iterator.
     @param step The number of elements to skip over per element.
   */
-  InterleavedIterator(Pointer element, unsigned int step) throw();
+  InterleavedIterator(Pointer element, MemoryDiff step);
 
   /**
     Prefix increment.
   */
-  inline InterleavedIterator& operator++() throw() {
+  inline InterleavedIterator& operator++()
+  {
     element += step;
     return *this;
   }
@@ -58,7 +60,8 @@ public:
   /**
     Postfix decrement.
   */
-  inline InterleavedIterator operator++(int) throw() {
+  inline InterleavedIterator operator++(int)
+  {
     InterleavedIterator result(*this);
     element += step;
     return result;
@@ -67,7 +70,8 @@ public:
   /**
     Prefix decrement.
   */
-  inline InterleavedIterator& operator--() throw() {
+  inline InterleavedIterator& operator--()
+  {
     element -= step;
     return *this;
   }
@@ -75,7 +79,8 @@ public:
   /**
     Postfix decrement.
   */
-  inline InterleavedIterator operator--(int) throw() {
+  inline InterleavedIterator operator--(int)
+  {
     InterleavedIterator result(*this);
     element -= step;
     return result;
@@ -84,7 +89,8 @@ public:
   /**
     Move the specified distance forward.
   */
-  inline InterleavedIterator& operator+=(Distance distance) throw() {
+  inline InterleavedIterator& operator+=(Distance distance)
+  {
     element += step * distance;
     return *this;
   }
@@ -92,7 +98,8 @@ public:
   /**
     Move the specified distance backwards.
   */
-  inline InterleavedIterator& operator-=(Distance distance) throw() {
+  inline InterleavedIterator& operator-=(Distance distance)
+  {
     element -= step * distance;
     return *this;
   }
@@ -100,61 +107,73 @@ public:
   /**
     Returns true if the iterators are equal.
   */
-  inline bool operator!=(const InterleavedIterator& eq) const throw() {
+  inline bool operator!=(const InterleavedIterator& eq) const
+  {
     return element != eq.element;
   }
 
   /**
     Returns true if this iterator is less than the specified iterator.
   */
-  inline bool operator<(const InterleavedIterator& eq) const throw() {
+  inline bool operator<(const InterleavedIterator& eq) const
+  {
     return element < eq.element;
   }
 
   /**
     Access the element.
   */
-  inline Reference operator*() const throw() {
+  inline Reference operator*() const
+  {
     return *element;
   }
 
   /**
     Access the element.
   */
-  inline Pointer operator->() const throw() {
+  inline Pointer operator->() const
+  {
     return element;
   }
 
   /**
     Returns the pointer value of the iterator.
   */
-  inline Pointer getValue() const throw() {
+  inline Pointer getValue() const
+  {
     return element;
   }
 
   /**
     Returns the element at the specified index from this element.
   */
-  inline Reference operator[](int index) const throw() {
+  inline Reference operator[](MemoryDiff index) const
+  {
     return element[index * step];
   }  
 };
 
 template<class TRAITS>
-inline InterleavedIterator<TRAITS>::InterleavedIterator(Pointer _element, unsigned int _step) throw()
-  : element(_element), step(_step) {
+inline InterleavedIterator<TRAITS>::InterleavedIterator(Pointer _element, MemoryDiff _step)
+  : element(_element),
+    step(_step)
+{
 }
 
 template<class TRAITS>
-inline InterleavedIterator<TRAITS> operator+(const InterleavedIterator<TRAITS>& left, int right) throw() {
+inline InterleavedIterator<TRAITS> operator+(const InterleavedIterator<TRAITS>& left, MemoryDiff right)
+{
   InterleavedIterator<TRAITS> result(left);
   return result += right;
 }
 
 template<class TRAITS>
-inline InterleavedIterator<TRAITS> operator-(const InterleavedIterator<TRAITS>& left, int right) throw() {
+inline InterleavedIterator<TRAITS> operator-(const InterleavedIterator<TRAITS>& left, MemoryDiff right)
+{
   InterleavedIterator<TRAITS> result(left);
   return result -= right;
 }
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE
+
+_COM_AZURE_DEV__BASE__STD_ITERATOR_TRAITS(base::InterleavedIterator);

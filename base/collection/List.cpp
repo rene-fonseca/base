@@ -80,14 +80,14 @@ public:
     for (auto i : range(-10, 20)) {
       li.append(i);
     }
-    fout << li << ENDL;
+    // fout << li << ENDL;
 
     List<String> ls;
     ls.append("abc");
     ls.append("123");
     ls.append("up");
     ls.append("down");
-    fout << ls << ENDL;
+    // fout << ls << ENDL;
 
     for (const auto& value : ls) {
     }

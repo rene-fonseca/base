@@ -364,8 +364,6 @@ public:
   }
 };
 
-// TAG: we should likely forward to class swapper directly with class traits specialization
-
 template<class TYPE>
 inline void swapper(Reference<TYPE>& a, Reference<TYPE>& b)
 {

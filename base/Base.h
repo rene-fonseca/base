@@ -148,9 +148,10 @@ inline int compare(const TYPE& a, const TYPE& b)
 template<class TYPE>
 inline void swapper(TYPE& a, TYPE& b)
 {
-  TYPE temp = a;
-  a = b;
-  b = temp;
+  // TAG: call swapper for TYPE if available to avoid intermediate?
+  TYPE temp(std::move(a));
+  a = std::move(b);
+  b = std::move(temp);
 }
 
 /**

@@ -60,8 +60,7 @@ public:
   /**
     Initializes the synchronization object.
   */
-  inline Once() noexcept {
-  }
+  Once() noexcept;
   
   /**
     This method returns true for one thread only and only on the first

@@ -24,6 +24,8 @@ _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
   Uniform Resource Names (URNs) are intended to serve as persistent,
   location-independent, resource identifiers. The components of the urn are
   stored internally in escaped format.
+ 
+  See https://en.wikipedia.org/wiki/Uniform_Resource_Name.
   
   @code
   Urn urn("urn:NID:NSS")

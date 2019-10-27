@@ -258,6 +258,7 @@ endif ()
 
 add_subdirectory("testsuite")
 
+include(CTest)
 enable_testing()
 
 if (CMAKE_VERSION VERSION_GREATER 3.7.8)

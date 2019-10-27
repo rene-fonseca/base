@@ -19,6 +19,7 @@
 #  include <windows.h>
 #else // unix
 #  include <csignal>
+#  include <sys/types.h>
 #  include <sys/ptrace.h>
 #endif // flavor
 

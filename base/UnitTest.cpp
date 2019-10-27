@@ -219,23 +219,24 @@ void UnitTest::run()
   onFailed("Test not implemented");
 }
 
-#if 0 // TAG: convert enum to iterator
-inline Pointer begin() throw() {
-  return hasNext();
+#define CHECK_TYPE(TYPE, OBJECT) \
+  if (dynamic_cast<const TYPE*>(&e)) { \
+    return Type::getType<TYPE>(); \
+  }
+
+// TAG: move to proper place
+Type getTypeOfException(const Exception& e) noexcept
+{
+  // TAG: register all exceptions globally for look up - linked list?
+  // TAG: return Type instead of literal
+  // TAG: use virtual method - virtual Type getThisType() const {return Type::getType(*this);}
+  CHECK_TYPE(OutOfRange, e);
+  CHECK_TYPE(IteratorException, e);
+  CHECK_TYPE(InvalidEnumeration, e);
+  return Type::getType(e);
 }
 
-inline Pointer end() throw() {
-  return nullptr;
-}
-
-inline Pointer operator++() throw(EndOfEnumeration) {
-  return next();
-}
-
-inline Pointer operator*() throw(EndOfEnumeration) {
-  return next();
-}
-#endif
+// TAG: REGISTER_EXCEPTION(OutOfRange);
 
 Reference<UnitTest::Run> UnitTest::runImpl()
 {
@@ -256,13 +257,20 @@ Reference<UnitTest::Run> UnitTest::runImpl()
   try {
     run();
   } catch (Exception& e) {
-    if (e.getMessage()) {
-      onFailed(Format::subst("Test failed with exception: '%1'", e.getType())); // TAG: dump all info for exception
+
+    String type = "<UNKNOWN>";
+    if (e.getType().isInitialized()) {
+      type = e.getType().getLocalName();
     } else {
-      onFailed(Format::subst("Test failed with exception: '%1'", e.getType(), e.getMessage())); // TAG: dump all info for exception
+      type = getTypeOfException(e).getLocalName();
+    }
+
+    if (e.getMessage()) {
+      onFailed(Format::subst("Test failed with exception: '%1' / '%2'", type, e.getMessage()));
+    } else {
+      onFailed(Format::subst("Test failed with exception: '%1'", type));
     }
   } catch (std::exception& e) {
-    // TAG: dump all info for exception
     String w = e.what();
     if (w.isEmpty()) {
       onFailed("Test failed with std::exception");
@@ -511,6 +519,7 @@ bool UnitTestManager::runTests(const String& pattern)
     
     TestingThread thread(test);
     thread.start();
+    bool timedOut = false;
     if (progressMode) {
       do {
         auto elapsed = timer.getLiveMicroseconds();
@@ -528,9 +537,34 @@ bool UnitTestManager::runTests(const String& pattern)
         if (UnitTestManager::getManager().getUseANSIColors()) {
           fout << normal();
         }
+
+        if ((elapsed / 1000) > test->getTimeout()) {
+          timedOut = true;
+          break;
+        }
+
       } while (!thread.doneEvent.wait(500 * 1000));
     }
-    thread.join();
+
+    auto elapsed = timer.getLiveMicroseconds();
+    if (timedOut || ((elapsed / 1000) > test->getTimeout())) {
+      timedOut = true;
+      if (progressMode) {
+        fout << "                                                                               \r";
+      }
+      if (UnitTestManager::getManager().getUseANSIColors()) {
+        fout << setForeground(ANSIEscapeSequence::MAGENTA);
+      }
+      fout << "  TEST: TIMED OUT / " << test->getName() << ENDL;
+      if (UnitTestManager::getManager().getUseANSIColors()) {
+        fout << normal();
+      }
+      // thread.terminate(); // terminate on exit of loop instead
+    }
+
+    if (!timedOut) {
+      thread.join();
+    }
     
     #if 0
         if (!progressMode) {
@@ -543,7 +577,7 @@ bool UnitTestManager::runTests(const String& pattern)
         }
     #endif
     
-    if (thread.success) {
+    if (!timedOut && thread.success) {
       ++passed;
     } else {
       ++failed;

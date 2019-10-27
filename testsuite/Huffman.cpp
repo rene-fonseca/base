@@ -16,7 +16,7 @@
 #include <base/string/StringOutputStream.h>
 #include <base/io/FileOutputStream.h>
 #include <base/compression/Huffman.h>
-#include <base/mathematics/Random.h>
+#include <base/Random.h>
 #include <base/Cast.h>
 
 using namespace com::azure::dev::base;
@@ -87,13 +87,14 @@ public:
     huffman.decode(fos, buffer.getElements(), buffer.getSize());
   }
 
-  void random(const String& destination) throw(IOException) {
-    Random random;
-    unsigned int size = random.getInteger() % (64 * 1024);
-    
+  void random(const String& destination) throw(IOException)
+  {
+    unsigned int size = Random::random<unsigned int>() % (64 * 1024);
+
     Allocator<uint8> buffer(size);
     for (unsigned int i = 0; i < buffer.getSize(); ++i) {
-      buffer.getElements()[i] = random.getInteger(); // slow
+      unsigned int r = Random::random<unsigned int>();
+      buffer.getElements()[i] = r; // slow
     }
     
     File file(destination, File::WRITE, File::CREATE|File::TRUNCATE);

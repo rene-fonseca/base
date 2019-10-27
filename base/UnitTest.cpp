@@ -448,7 +448,7 @@ String makeProgress(double progress, unsigned int width = 20)
     result.append('=');
   }
   result.append('>');
-  for (int i = 0; i < (width - count); ++i) {
+  for (int i = 0; i < static_cast<int>(width - count); ++i) {
     result.append(' ');
   }
   return result;
@@ -456,9 +456,7 @@ String makeProgress(double progress, unsigned int width = 20)
 
 bool UnitTestManager::runTests(const String& pattern)
 {
-  // TAG: add support for pattern
-  // TAG: continue on failure - can also get critical from test and continue is non-critical
-  // TAG: allow test to be terminated
+  // TAG: allow test to be terminated timeout
   // TAG: allow tests to run concurrently
 
   loadTests();
@@ -473,15 +471,16 @@ bool UnitTestManager::runTests(const String& pattern)
   }
 #endif
   
-  Array<MemorySize> indices;
-  MemorySize size = tests.getSize();
-  indices.setSize(size);
-  for (MemorySize i = 0; i < size; ++i) {
-    indices[i] = i;
+  Array<Reference<UnitTest> > tests;
+  // TAG: tests.ensureCapacity();
+  for (auto test : this->tests) {
+    if (Parser::doesMatchPattern(pattern, test->getName())) {
+      tests.append(test);
+    }
   }
 
   if (randomize) {
-    indices.shuffle();
+    tests.shuffle();
   } else {
     std::sort(tests.begin(), tests.end(), SortTests());
   }
@@ -491,8 +490,7 @@ bool UnitTestManager::runTests(const String& pattern)
   unsigned int count = 0;
   Thread::Times totalTimes;
 
-  for (auto index : indices) {
-    auto test = tests[index];
+  for (auto test : tests) {
     // TAG: show progress - show time since last output - include processing time
     Timer timer;
 

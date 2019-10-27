@@ -90,7 +90,6 @@ public:
           ferr << "Unsupported argument." << ENDL;
           return false;
         }
-        // TAG: handle priority
         pattern = argument;
       }
     }
@@ -111,11 +110,18 @@ public:
     version();
     fout << "Usage: " << getFormalName() << " [options] [pattern]" << EOL
       << EOL
-      << "--help      This message" << EOL
-      << "--version   Dump the version" << EOL
+      << "--help           This message" << EOL
+      << "--version        Dump the version" << EOL
       << EOL
-      << "--list      List all tests" << EOL
-      << "--run       Run tests" << EOL
+      << "--list           List all tests" << EOL
+      << "--run            Run tests" << EOL
+      << "--compact        Compact mode" << EOL
+      << "--verbose        Verbose mode" << EOL
+      << "--progress       Progress mode" << EOL
+      << "--color          Use ANSI colors" << EOL
+      << "--json           Output results as JSON" << EOL
+      << "--randomize      Run tests in random order" << EOL
+      << "--stopOnFailure  Stop on first failure" << EOL
       << ENDL;
   }
 
@@ -136,8 +142,12 @@ public:
       auto tests = manager.getTests();
       std::sort(tests.begin(), tests.end(), UnitTestManager::SortTests());
 
-// TAG: add ansi color - can we turn on/off colors globally
       for (auto test : tests) {
+
+        if (!Parser::doesMatchPattern(pattern, test->getName())) {
+          continue;
+        }
+
         if (useANSIColor) {
           fout << "TEST " << bold() << test->getName() << normal() << ":" << EOL;
         } else {

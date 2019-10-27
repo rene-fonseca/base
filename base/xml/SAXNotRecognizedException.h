@@ -61,6 +61,8 @@ public:
   inline SAXNotRecognizedException(const char* message, Type type) throw()
     : SAXException(message, type) {
   }
+  
+  _COM_AZURE_DEV__BASE__EXCEPTION_THIS_TYPE()
 };
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

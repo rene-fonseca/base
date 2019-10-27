@@ -59,6 +59,8 @@ public:
   inline FileException(const char* message, Type type) throw()
     : IOException(message, type) {
   }
+  
+  _COM_AZURE_DEV__BASE__EXCEPTION_THIS_TYPE()
 };
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

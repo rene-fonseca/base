@@ -40,7 +40,8 @@ public:
     @param message The message.
   */
   inline DeviceException(const char* message) noexcept
-    : ResourceException(message) {
+    : ResourceException(message)
+  {
   }
 
   /**
@@ -48,7 +49,9 @@ public:
     
     @param type The identity of the type.
   */
-  inline DeviceException(Type type) noexcept : ResourceException(type) {
+  inline DeviceException(Type type) noexcept
+    : ResourceException(type)
+  {
   }
   
   /**
@@ -58,8 +61,11 @@ public:
     @param type The identity of the type.
   */
   inline DeviceException(const char* message, Type type) noexcept
-    : ResourceException(message, type) {
+    : ResourceException(message, type)
+  {
   }
+  
+  _COM_AZURE_DEV__BASE__EXCEPTION_THIS_TYPE()
 };
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

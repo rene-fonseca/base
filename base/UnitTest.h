@@ -54,16 +54,18 @@ public:
 
   enum {
     HERE_MARKER = 0x21564836,
-    DEFAULT_PRIORITY = 0,
+    DEFAULT_PRIORITY = 0, // key feature priority
     DEFAULT_TIMEOUT = 15 * 60 * 1000
   };
 
   enum Impact {
-    PRIVACY,
-    SECURITY,
-    CRITICAL,
+    PRIVACY, // loss of privacy
+    SECURITY, // loss of trust
+    CRITICAL, // corruption
+    IMPORTANT, // common issue
     NORMAL,
-    IGNORE
+    LOW, // rare less important problem
+    IGNORE // nothing major - not recommended to be used
   };
   
   enum ResultEvent {
@@ -307,11 +309,36 @@ public:
     NORMAL,
     VERBOSE
   };
+
+  class SortTests {
+  public:
+
+    bool operator()(const Reference<UnitTest>& a, const Reference<UnitTest>& b)
+    {
+      if (a->getPriority() < b->getPriority()) {
+        return true;
+      }
+      if (a->getPriority() == b->getPriority()) {
+        if (a->getImpact() < b->getImpact()) {
+          return true;
+        }
+        if (a->getImpact() <= b->getImpact()) {
+          if (a->getName() < b->getName()) {
+            return true;
+          }
+        }
+      }
+      return false;
+    }
+  };
 private:
   
   Verbosity verbosity = VERBOSE;
   bool useJSON = false;
   bool useANSIColors = false;
+  bool randomize = false;
+  bool stopOnFailure = false;
+  bool progressMode = false;
   unsigned int passed = 0;
   unsigned int failed = 0;
   Timer timer;
@@ -374,6 +401,26 @@ public:
     useANSIColors = _useANSIColors;
   }
 
+  inline void setRandomize(bool _randomize) noexcept
+  {
+    randomize = _randomize;
+  }
+
+  inline void setStopOnFailure(bool _stopOnFailure) noexcept
+  {
+    stopOnFailure = _stopOnFailure;
+  }
+
+  inline bool getProgressMode() const noexcept
+  {
+    return progressMode;
+  }
+  
+  inline void setProgressMode(bool _progressMode) noexcept
+  {
+    progressMode = _progressMode;
+  }
+
   /** Runs the test. A test must be able to run multiple times. */
   bool runTest(Reference<UnitTest> test);
 
@@ -384,7 +431,7 @@ public:
   bool runTests(const String& pattern = "*");
 
   /** Returns all the registered tests. */
-  inline const Array<Reference<UnitTest> >& getTests() const
+  inline const Array<Reference<UnitTest> >& getTests() const noexcept
   {
     return tests;
   }
@@ -418,16 +465,17 @@ public:
 };
 
 
-#define TEST_REGISTER_IMPL(ID, TYPE) \
-  namespace tests { \
-    void _COM_AZURE_DEV__BASE__CONCATENATE(ID, _entry)() { base::UnitTestManager::getManager().registerTest<TEST_CLASS(TYPE)>(#TYPE, UnitTestManager::trimPath(_COM_AZURE_DEV__BASE__SOURCE_FILE), String()); } \
-    base::UnitTestManager::RegisterEntry::EntryNode _COM_AZURE_DEV__BASE__CONCATENATE(ID, _storage) = {#TYPE, _COM_AZURE_DEV__BASE__CONCATENATE(ID, _entry), nullptr, false}; \
-    base::UnitTestManager::RegisterEntry _COM_AZURE_DEV__BASE__CONCATENATE(ID, _register)(&_COM_AZURE_DEV__BASE__CONCATENATE(ID, _storage)); \
-  }
 
-/** Fast registration of test for later run. Test will be put in the "tests" subnamespace. */
+#define TEST_REGISTER_IMPL(ID, TYPE) \
+  namespace { namespace ID { \
+    void _entry() { base::UnitTestManager::getManager().registerTest<TEST_CLASS(TYPE)>(#TYPE, UnitTestManager::trimPath(_COM_AZURE_DEV__BASE__SOURCE_FILE), String()); } \
+    base::UnitTestManager::RegisterEntry::EntryNode _storage = {#TYPE, _entry, nullptr, false}; \
+    base::UnitTestManager::RegisterEntry _register(&_storage); \
+  } }
+
+/** Fast registration of test for later run. Test will be put into unique subnamespace. */
 #define TEST_REGISTER(TYPE) \
-  TEST_REGISTER_IMPL(_COM_AZURE_DEV__BASE__MAKE_IDENTIFIER(test), TYPE)
+  TEST_REGISTER_IMPL(_COM_AZURE_DEV__BASE__MAKE_IDENTIFIER(tests), TYPE)
 
 /** Sets the priority the test. Lower priorty gets run first. */
 #define TEST_DEPENDENCY(CLASS, DEPENDENCY) // TAG: how can we handle this - register combo of names
@@ -474,10 +522,10 @@ public:
 /** Tells system that test may be run concurrent with other tests. */
 #define TEST_ALLOW_CONCURRENT() bool getAllowConcurrentRun() const noexcept override {return true;}
 
-/** Sets the priority the test. Lower priorty gets run first. */
+/** Sets the priority the test. Lower priorty is "higher" and gets run first. */
 #define TEST_PRIORITY(priority) int getPriority() const noexcept override {return static_cast<int>(priority);}
 
-/** Sets the priority the test. Lower priorty gets run first. */
+/** Sets the priority the test. Lower impact is "higher" and gets run first for the same priority group. */
 #define TEST_IMPACT(impact) Impact getImpact() const noexcept override {return static_cast<Impact>(impact);}
 
 /** Sets the timeout for the test in milliseconds. */

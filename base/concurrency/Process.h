@@ -88,6 +88,8 @@ public:
     inline ProcessException(const char* message, Type type) noexcept
       : Exception(message, type) {
     }
+    
+    _COM_AZURE_DEV__BASE__EXCEPTION_THIS_TYPE()
   };
 
   // TAG: do we need a base class for this kind of class

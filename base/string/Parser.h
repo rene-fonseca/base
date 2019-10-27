@@ -32,6 +32,8 @@ public:
     : Exception(message)
   {
   }
+  
+  _COM_AZURE_DEV__BASE__EXCEPTION_THIS_TYPE()
 };
 
 /** Parser. */
@@ -199,6 +201,9 @@ public:
       ++src;
     }
   }
+
+  /** Returns true if the string matches the given pattern (using * and ?). */
+  static bool doesMatchPattern(const String& pattern, const String& text);
 };
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

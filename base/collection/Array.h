@@ -22,8 +22,33 @@
 #include <base/OutOfRange.h>
 #include <base/string/FormatOutputStream.h>
 #include <base/Functor.h>
+#include <base/Random.h>
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
+
+/** Shuffles elements for the given iterators. See https://en.wikipedia.org/wiki/Fisher%E2%80%93Yates_shuffle#Modern_method. */
+template<class ITERATOR>
+void shuffle(const ITERATOR& begin, const ITERATOR& end)
+{
+  const RandomAccessIterator* ensureIterator = static_cast<const typename ITERATOR::Category*>(nullptr);
+  auto n = end - begin;
+  while (n > 1) {
+    MemorySize i = Random::random<MemorySize>() % n;
+    --n;
+    swapper(begin[i], begin[n]); // move to last
+  }
+}
+
+template<class TYPE>
+void shuffle(TYPE* begin, TYPE* end)
+{
+  auto n = end - begin;
+  while (n > 1) {
+    MemorySize i = Random::random<MemorySize>() % n;
+    --n;
+    swapper(begin[i], begin[n]); // move to last
+  }
+}
 
 /**
   The Array collection is a container for an ordered sequence of elements which
@@ -41,6 +66,8 @@ public:
 
   /** The type of the values. */
   typedef TYPE Value;
+  // typedef TYPE* Pointer;
+  // typedef TYPE& Reference;
 
   typedef typename CapacityAllocator<TYPE>::Iterator Iterator;
   typedef typename CapacityAllocator<TYPE>::ReadIterator ReadIterator;
@@ -58,8 +85,8 @@ public:
     MemorySize index = 0;
 
     Element(const Element& copy) noexcept;
-    Element& operator=(const Element& eq) noexcept;
-    
+    Element& operator=(const Element& copy);
+
     inline Element(Array& _array, MemorySize _index) noexcept
       : array(_array),
         index(_index)
@@ -80,6 +107,14 @@ public:
       Returns the value.
     */
     inline operator const Value&() const throw(OutOfRange)
+    {
+      return array.getAt(index);
+    }
+
+    /**
+      Returns the value.
+    */
+    inline operator Value&() throw(OutOfRange)
     {
       return array.getAt(index);
     }
@@ -396,6 +431,18 @@ public:
 
     @param index The index of the element.
   */
+  Value& getAt(MemorySize index) throw(OutOfRange)
+  {
+    bassert(index < getSize(), OutOfRange(this));
+    return getElements()[index];
+  }
+
+  /**
+    Returns the element at the specified index. Raises OutOfRange if the index
+    is invalid.
+
+    @param index The index of the element.
+  */
   const Value& getAt(MemorySize index) const throw(OutOfRange)
   {
     bassert(index < getSize(), OutOfRange(this));
@@ -421,9 +468,10 @@ public:
 
     @param index The index of the element.
   */
-  inline Element operator[](MemorySize index) throw(OutOfRange)
+  inline TYPE& operator[](MemorySize index) throw(OutOfRange)
   {
-    return Element(*this, index);
+    return getAt(index);
+    // return Element(*this, index);
   }
 
   /**
@@ -436,7 +484,21 @@ public:
   {
     return getAt(index);
   }
+
+  /** Shuffles the elements. */
+  void shuffle()
+  {
+    base::shuffle(begin(), end());
+  }
 };
+
+template<class TYPE>
+void swapper(typename Array<TYPE>::Element& a, typename Array<TYPE>::Element& b)
+{
+  typename Array<TYPE>::Value& aa = a;
+  typename Array<TYPE>::Value& bb = b;
+  swapper(aa, bb);
+}
 
 /**
   Writes a string representation of an array to a format stream.

@@ -255,7 +255,7 @@ namespace internal {
   ThreadImpl threadImpl; // use this variable through 'threadLocal'
 }; // end of namespace internal
 
-SpinLock Random::spinLock;
+SpinLock RandomLegacy::spinLock;
 UnitTestManager UnitTestManager::unitTestManager;
 ModuleManager ModuleManager::moduleManager;
 
@@ -272,9 +272,10 @@ private:
   Socket::SocketImpl invalidSocket;
 public:
 
-  Initialization() throw()
-    : invalidSocket(OperatingSystem::INVALID_HANDLE, Socket::IPV4, Socket::STREAM) {
-    Random::randomize(); // randomize global random number generator
+  Initialization() noexcept
+    : invalidSocket(OperatingSystem::INVALID_HANDLE, Socket::IPV4, Socket::STREAM)
+  {
+    RandomLegacy::randomize(); // randomize global random number generator
 
     // having a global invalid handle safes us from allocating/deallocating many handles
     ReferenceCountedObject::ReferenceImpl(invalidHandle).addReference(); // prevent destruction of object

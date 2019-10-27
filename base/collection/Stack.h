@@ -14,6 +14,7 @@
 #pragma once
 
 #include <base/collection/Collection.h>
+#include <base/collection/DoubleLinkedNode.h>
 #include <base/collection/Enumeration.h>
 #include <base/OutOfRange.h>
 #include <base/MemoryException.h>
@@ -35,55 +36,9 @@ template<class TYPE>
 class Stack : public Collection {
 protected:
 
-  /*
-    A node of a stack.
-  */
-  class StackNode {
-  protected:
-    
-    StackNode* next = nullptr;
-    StackNode* previous = nullptr;
-    TYPE value;
-  public:
-    
-    inline StackNode(
-      StackNode* _next,
-      StackNode* _previous,
-      const TYPE& _value) noexcept
-      : next(_next), previous(_previous), value(_value)
-    {
-    }
-    
-    inline StackNode* getNext() const noexcept
-    {
-      return next;
-    }
-    
-    inline void setNext(StackNode* value) noexcept
-    {
-      next = value;
-    }
-    
-    inline StackNode* getPrevious() const noexcept
-    {
-      return previous;
-    }
-    
-    inline void setPrevious(StackNode* value) noexcept
-    {
-      previous = value;
-    }
-    
-    inline TYPE* getValue() noexcept
-    {
-      return &value;
-    }
-    
-    inline const TYPE* getValue() const noexcept
-    {
-      return &value;
-    }
-  };
+  typedef DoubleLinkedNode<TYPE> StackNode;
+  typedef DoubleLinkedNodeIterator<TYPE> Iterator;
+  typedef DoubleLinkedNodeReadIterator<TYPE> ReadIterator;
 
   /*
     Enumerator of elements of a stack.
@@ -217,6 +172,14 @@ protected:
     /**
       Returns the top node of the stack.
     */
+    inline StackNode* getTop() noexcept
+    {
+      return top;
+    }
+
+    /**
+      Returns the top node of the stack.
+    */
     inline const StackNode* getTop() const noexcept
     {
       return top;
@@ -308,6 +271,12 @@ protected:
         top->setPrevious(nullptr);
       }
     }
+
+#if 0
+    void popBottom() throw(EmptyContainer)
+    {
+    }
+#endif
     
     /**
       Removes all the elements from the stack.
@@ -322,7 +291,7 @@ protected:
       }
       bottom = nullptr;
     }
-    
+ 
     /**
       Destroys the stack.
     */
@@ -429,10 +398,14 @@ public:
   */
   inline void pop(MemorySize count) throw(OutOfRange)
   {
-    elements.copyOnWrite();
-    elements->pop(count);
+    if (count > 0) {
+      elements.copyOnWrite();
+      elements->pop(count);
+    }
   }
 
+  // TAG: add support for moving element to top/bottom by iterator
+  
   /**
     Returns a non-modifying enumerator of the stack. The elements are enumerated
     from top to bottom.
@@ -441,7 +414,27 @@ public:
   {
     return ReadEnumerator(elements->getTop());
   }
-  
+
+  Iterator begin() noexcept
+  {
+    return Iterator(elements->getTop());
+  }
+
+  Iterator end() noexcept
+  {
+    return Iterator(nullptr);
+  }
+
+  ReadIterator cbegin() const noexcept
+  {
+    return ReadIterator(elements->getTop());
+  }
+
+  ReadIterator cend() const noexcept
+  {
+    return ReadIterator(nullptr);
+  }
+
   /**
     Removes all the elements from the stack.
   */

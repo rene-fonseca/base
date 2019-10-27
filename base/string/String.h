@@ -159,6 +159,7 @@ public:
 */
 
 class _COM_AZURE_DEV__BASE__API String : public virtual Object {
+  friend void swapper<String>(String& a, String& b);
 public:
 
   /** Character specific properties and manipulators. */
@@ -337,7 +338,17 @@ public:
   /**
     Initializes string from other string.
   */
-  inline String(const String& copy) throw() : elements(copy.elements) {
+  inline String(const String& copy) noexcept
+    : elements(copy.elements)
+  {
+  }
+
+  /**
+    Initializes string from other string.
+  */
+  inline String(String&& copy) noexcept
+    : elements(copy.elements) {
+    copy.elements = DEFAULT_STRING.elements; // make empty so we may avoid future copyOnWrite()
   }
 
   /**
@@ -353,12 +364,21 @@ public:
   /**
     Assignment of string to string.
   */
-  inline String& operator=(const String& eq) noexcept
+  inline String& operator=(const String& copy) noexcept
   {
-    elements = eq.elements; // self assignment handled by automation pointer
+    elements = copy.elements; // self assignment handled by automation pointer
     return *this;
   }
-  
+
+  String& operator=(String&& copy) noexcept
+  {
+    if (this != &copy) { // self assigment not allowed
+      elements = copy.elements;
+      copy.elements = DEFAULT_STRING.elements; // make empty so we may avoid future copyOnWrite()
+    }
+    return *this;
+  }
+
   /**
     Assignment of string literal to string.
   */
@@ -1353,7 +1373,7 @@ public:
 };
 
 template<>
-int compare<String>(const String& left, const String& right) throw();
+int compare<String>(const String& left, const String& right);
 
 template<>
 class _COM_AZURE_DEV__BASE__API Hash<String> {
@@ -1403,6 +1423,12 @@ inline String operator-(const String& left, const String& right)
   } else {
     return String(left); // return copy of left
   }
+}
+
+template<>
+inline void swapper<String>(String& a, String& b)
+{
+  swapper(a.elements, b.elements); // self swap allowed
 }
 
 /** Converts String to UTF-8 string. */

@@ -852,7 +852,7 @@ Array<String> String::split(char separator, bool group) const
 }
 
 template<>
-int compare<String>(const String& left, const String& right) throw()
+int compare<String>(const String& left, const String& right)
 {
   return left.compareTo(right);
 }
@@ -971,7 +971,8 @@ std::wstring toWide(const char* s)
 class TEST_CLASS(String) : public UnitTest {
 public:
 
-  TEST_PRIORITY(100);
+  TEST_PRIORITY(10);
+  TEST_IMPACT(CRITICAL)
   TEST_TIMEOUT_MS(30 * 1000);
 
   void run() override

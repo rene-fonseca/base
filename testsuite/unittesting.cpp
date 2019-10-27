@@ -16,6 +16,7 @@
 #include <base/string/Format.h>
 #include <base/string/ANSIEscapeSequence.h>
 #include <base/UnitTest.h>
+#include <algorithm>
 
 using namespace com::azure::dev::base;
 
@@ -42,6 +43,8 @@ private:
   Verbosity verbosity = NORMAL;
   bool useANSIColor = false;
   bool randomize = false;
+  bool stopOnFailure = false;
+  bool progressMode = false;
   bool reportJSON = false;
   String pattern = "*";
 public:
@@ -78,13 +81,15 @@ public:
         reportJSON = true;
       } else if (argument == "--randomize") {
         randomize = true;
-        // TAG: reverse order support
+      } else if (argument == "--stopOnFailure") {
+        stopOnFailure = true;
+      } else if (argument == "--progress") {
+        progressMode = true;
       } else {
         if (argument.startsWith("-")) {
           ferr << "Unsupported argument." << ENDL;
           return false;
         }
-        // TAG: handle priority
         pattern = argument;
       }
     }
@@ -105,11 +110,18 @@ public:
     version();
     fout << "Usage: " << getFormalName() << " [options] [pattern]" << EOL
       << EOL
-      << "--help      This message" << EOL
-      << "--version   Dump the version" << EOL
+      << "--help           This message" << EOL
+      << "--version        Dump the version" << EOL
       << EOL
-      << "--list      List all tests" << EOL
-      << "--run       Run tests" << EOL
+      << "--list           List all tests" << EOL
+      << "--run            Run tests" << EOL
+      << "--compact        Compact mode" << EOL
+      << "--verbose        Verbose mode" << EOL
+      << "--progress       Progress mode" << EOL
+      << "--color          Use ANSI colors" << EOL
+      << "--json           Output results as JSON" << EOL
+      << "--randomize      Run tests in random order" << EOL
+      << "--stopOnFailure  Stop on first failure" << EOL
       << ENDL;
   }
 
@@ -127,9 +139,14 @@ public:
     } else if (command == COMMAND_LIST) {
       auto& manager = UnitTestManager::getManager();
       manager.loadTests();
-      const auto& tests = manager.getTests();
-// TAG: add ansi color - can we turn on/off colors globally
+      auto tests = manager.getTests();
+      std::sort(tests.begin(), tests.end(), UnitTestManager::SortTests());
+
       for (auto test : tests) {
+        if (!Parser::doesMatchPattern(pattern, test->getName())) {
+          continue;
+        }
+
         if (useANSIColor) {
           fout << "TEST " << bold() << test->getName() << normal() << ":" << EOL;
         } else {
@@ -142,7 +159,9 @@ public:
           fout << "  SOURCE=" << test->getSource() << EOL;
         }
         fout << "  PRIORITY=" << test->getPriority() << EOL;
-        fout << "  IMPACT=" << test->getImpact() << EOL;
+        static const char* IMPACTS[] = { "PRIVACY", "SECURITY", "CRITICAL", "IMPORTANT", "NORMAL", "LOW", "IGNORE" };
+        ASSERT(test->getImpact() < getArraySize(IMPACTS));
+        fout << "  IMPACT=" << IMPACTS[test->getImpact()] << EOL;
         if (test->getAllowConcurrentRun()) {
           fout << "  CONCURRENT=" << test->getAllowConcurrentRun() << EOL;
         }
@@ -177,6 +196,9 @@ public:
       }
       
       manager.setUseANSIColors(useANSIColor);
+      manager.setRandomize(randomize);
+      manager.setStopOnFailure(stopOnFailure);
+      manager.setProgressMode(progressMode);
 
       if (reportJSON) {
         manager.setUseJSON(true);
@@ -186,7 +208,6 @@ public:
         setExitCode(1);
       }
 
-      // TAG: add randomize order support
       // TAG: generate list of tests giving different results
       // TAG: add support for loading baseline for comparison
       // TAG: allow new run via http

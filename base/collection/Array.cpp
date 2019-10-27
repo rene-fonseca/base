@@ -40,10 +40,15 @@ public:
     as.append("123");
     as.append("up");
     as.append("down");
+    // TAG: need UTF-8 comparison for String
 
     TEST_ASSERT(std::find(as.begin(), as.end(), "up") != as.end());
     TEST_ASSERT((std::find(as.begin(), as.end(), "up") - as.begin()) == 2);
     TEST_ASSERT(std::find(as.begin(), as.end(), "left") == as.end());
+
+    std::sort(as.begin(), as.end());
+    TEST_ASSERT((std::find(as.begin(), as.end(), "123") - as.begin()) == 0);
+    TEST_ASSERT((std::find(as.begin(), as.end(), "up") - as.begin()) == 3);
   }
 };
 

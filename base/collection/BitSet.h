@@ -52,18 +52,21 @@ public:
     unsigned long mask = 0;
     
     inline BitReference(unsigned long* _word, unsigned long _mask) noexcept
-      : word(_word), mask(_mask) {
+      : word(_word), mask(_mask)
+    {
     }
   public:
     
     inline BitReference(const BitReference& copy) noexcept
-      : word(copy.word), mask(copy.mask) {
+      : word(copy.word), mask(copy.mask)
+    {
     }
     
     /**
       Assignment of bit.
     */
-    inline BitReference& operator=(const BitReference& eq) noexcept {
+    inline BitReference& operator=(const BitReference& eq) noexcept
+    {
       word = eq.word;
       mask = eq.mask;
       return *this;
@@ -72,7 +75,8 @@ public:
     /**
       Assignment of bit.
     */
-    inline BitReference& operator=(bool value) noexcept {
+    inline BitReference& operator=(bool value) noexcept
+    {
       if (value) {
         *word |= mask;
       } else {
@@ -84,7 +88,8 @@ public:
     /**
       Logic and operator.
     */
-    inline BitReference& operator&=(bool value) noexcept {
+    inline BitReference& operator&=(bool value) noexcept
+    {
       if (!value) {
         *word &= ~mask;
       }
@@ -94,7 +99,8 @@ public:
     /**
       Logic or operator.
     */
-    inline BitReference& operator|=(bool value) noexcept {
+    inline BitReference& operator|=(bool value) noexcept
+    {
       if (value) {
         *word |= mask;
       }
@@ -104,7 +110,8 @@ public:
     /**
       Logic xor operator.
     */
-    inline BitReference& operator^=(bool value) noexcept {
+    inline BitReference& operator^=(bool value) noexcept
+    {
       if (value) {
         *word ^= mask; // flip
       }
@@ -114,7 +121,8 @@ public:
     /**
       Returns the value of the referenced bit.
     */
-    inline operator bool() const noexcept {
+    inline operator bool() const noexcept
+    {
       return *word & mask;
     }
   };
@@ -131,20 +139,22 @@ public:
     /** The bit within the word. */
     unsigned long mask = 0;
     
-    inline BitReadReference(
-      const unsigned long* _word, unsigned long _mask) noexcept
-      : word(_word), mask(_mask) {
+    inline BitReadReference(const unsigned long* _word, unsigned long _mask) noexcept
+      : word(_word), mask(_mask)
+    {
     }
   public:
     
     inline BitReadReference(const BitReadReference& copy) noexcept
-      : word(copy.word), mask(copy.mask) {
+      : word(copy.word), mask(copy.mask)
+    {
     }
     
     /**
       Assignment of bit.
     */
-    inline BitReadReference& operator=(const BitReadReference& eq) noexcept {
+    inline BitReadReference& operator=(const BitReadReference& eq) noexcept
+    {
       word = eq.word;
       mask = eq.mask;
       return *this;
@@ -153,7 +163,8 @@ public:
     /**
       Returns the value of the referenced bit.
     */
-    inline operator bool() const noexcept {
+    inline operator bool() const noexcept
+    {
       return *word & mask;
     }
   };
@@ -168,14 +179,17 @@ public:
     /** The bit. */
     BitReference bit;
     
-    inline BitPointer(const BitReference& _bit) noexcept : bit(_bit) {
+    inline BitPointer(const BitReference& _bit) noexcept
+      : bit(_bit)
+    {
     }
   public:
     
     /**
       Returns the reference to the bit.
     */
-    inline BitReference operator*() const noexcept {
+    inline BitReference operator*() const noexcept
+    {
       return bit;
     }
   };
@@ -190,14 +204,17 @@ public:
     /** The bit. */
     BitReadReference bit;
     
-    inline BitReadPointer(const BitReadReference& _bit) noexcept : bit(_bit) {
+    inline BitReadPointer(const BitReadReference& _bit) noexcept
+      : bit(_bit)
+    {
     }
   public:
     
     /**
       Returns the reference to the bit.
     */
-    inline BitReadReference operator*() const noexcept {
+    inline BitReadReference operator*() const noexcept
+    {
       return bit;
     }
   };
@@ -210,7 +227,7 @@ public:
     typedef bool Value;
     typedef const BitReference Reference;
     typedef const BitPointer Pointer;
-    typedef unsigned int Distance;
+    typedef MemoryDiff Distance;
   };
 
   /**
@@ -295,7 +312,7 @@ public:
     typedef bool Value;
     typedef BitReadReference Reference;
     typedef BitReadPointer Pointer;
-    typedef unsigned int Distance;
+    typedef MemoryDiff Distance;
   };
   
   /**

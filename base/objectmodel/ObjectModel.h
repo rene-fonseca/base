@@ -46,6 +46,8 @@ public:
   */
   inline ObjectModelException(const char* message) noexcept : Exception(message) {
   }
+  
+  _COM_AZURE_DEV__BASE__EXCEPTION_THIS_TYPE()
 };
 
 /** Generic object model. */

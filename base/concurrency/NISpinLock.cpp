@@ -22,8 +22,11 @@ NISpinLock::NISpinLock() noexcept
 
 void NISpinLock::exclusiveLock() const noexcept
 {
-  MemoryDiff expected = LOCK_FREE;
-  while (!value.compareAndExchangeWeak(expected, LOCK_TAKEN)) {
+  while (true) {
+    MemoryDiff expected = LOCK_FREE;
+    if (value.compareAndExchangeWeak(expected, LOCK_TAKEN)) {
+      break;
+    }
 
 #if defined(_DEBUG)
     MemoryDiff current = value;

@@ -17,7 +17,7 @@
 #include <base/string/StringOutputStream.h>
 #include <base/mathematics/ExpressionParser.h>
 #include <base/mathematics/Math.h>
-#include <base/mathematics/Random.h>
+#include <base/Random.h>
 
 using namespace com::azure::dev::base;
 
@@ -141,7 +141,7 @@ private:
       const double* value) const throw(ExpressionException) {
       switch (id) {
       case FUNCTION_RANDOM:
-        return Random::getLongDouble();
+        return Random::random<int64>() * 1.0/PrimitiveTraits<int32>::MAXIMUM; // not completely symmetric
       case FUNCTION_ABS:
         return Math::abs(value[0]);
       case FUNCTION_SIGN:

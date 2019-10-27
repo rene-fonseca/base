@@ -15,9 +15,11 @@
 
 #include <base/collection/Collection.h>
 #include <base/collection/Enumeration.h>
+#include <base/Iterator.h>
 #include <base/collection/InvalidEnumeration.h>
 #include <base/collection/InvalidNode.h>
 #include <base/collection/EmptyContainer.h>
+#include <base/collection/Array.h>
 #include <base/mem/Reference.h>
 #include <base/string/FormatOutputStream.h>
 
@@ -82,6 +84,374 @@ public:
   inline void setValue(const TYPE& value) noexcept
   {
     this->value = value;
+  }
+};
+
+
+
+template<class TYPE>
+class ListIterator {
+public:
+
+  typedef TYPE Value;
+  typedef TYPE* Pointer;
+  typedef TYPE& Reference;
+  typedef MemoryDiff Distance;
+  typedef BidirectionalIterator Category;
+protected:
+
+  ListNode<TYPE>* node = nullptr;
+  _COM_AZURE_DEV__BASE__PROTECT_ITERATORS_ADD_CONTEXT(); // TAG: ListNode can handle some modifications
+public:
+
+  /**
+    Initializes iterator.
+
+    @param value The initial value of the iterator.
+  */
+  explicit inline ListIterator(ListNode<TYPE>* _node) noexcept
+    : node(_node)
+  {
+  }
+
+  /**
+    Initializes iterator from other iterator.
+  */
+  inline ListIterator(const ListIterator& copy) noexcept
+    : node(copy.node)
+  {
+  }
+
+  /**
+    Initializes iterator from other iterator.
+  */
+  template<class POLY>
+  inline ListIterator(const ListIterator<POLY>& copy) noexcept
+    : node(copy.getValue())
+  {
+  }
+
+  /**
+    Initializes iterator from other iterator.
+  */
+  inline ListIterator& operator=(const ListIterator& eq) noexcept
+  {
+    node = eq.node;
+    return *this;
+  }
+
+  /**
+    Initializes iterator from other iterator.
+  */
+  template<class POLY>
+  inline ListIterator& operator=(const ListIterator<POLY>& eq) noexcept
+  {
+    node = eq.getValue();
+    return *this;
+  }
+
+  /**
+    Prefix increment.
+  */
+  inline ListIterator& operator++() noexcept
+  {
+    _COM_AZURE_DEV__BASE__PROTECT_ITERATORS_UNMODIFIED();
+    ASSERT(node);
+    node = node->getNext();
+    return *this;
+  }
+
+  /**
+    Postfix increment.
+  */
+  inline ListIterator operator++(int) noexcept
+  {
+    _COM_AZURE_DEV__BASE__PROTECT_ITERATORS_UNMODIFIED();
+    ListIterator result(*this);
+    ASSERT(node);
+    node = node->getNext();
+    return result;
+  }
+
+  /**
+    Prefix decrement.
+  */
+  inline ListIterator& operator--() noexcept
+  {
+    _COM_AZURE_DEV__BASE__PROTECT_ITERATORS_UNMODIFIED();
+    ASSERT(node);
+    node = node->getPrevious();
+    return *this;
+  }
+
+  /**
+    Postfix decrement.
+  */
+  inline ListIterator operator--(int) noexcept
+  {
+    _COM_AZURE_DEV__BASE__PROTECT_ITERATORS_UNMODIFIED();
+    ListIterator result(*this);
+    ASSERT(node);
+    node = node->getPrevious();
+    return result;
+  }
+
+  /**
+    Moves the specified distance forward.
+  */
+  ListIterator& operator+=(Distance distance) noexcept
+  {
+    if (distance < 0) {
+      while (distance++) {
+        --(*this);
+      }
+    } else {
+      while (distance--) {
+        ++(*this);
+      }
+    }
+    return *this;
+  }
+
+  /**
+    Moves the specified distance backwards.
+  */
+  ListIterator& operator-=(Distance distance) noexcept
+  {
+    if (distance < 0) {
+      while (distance++) {
+        ++(*this);
+      }
+    } else {
+      while (distance--) {
+        --(*this);
+      }
+    }
+    return *this;
+  }
+
+  /**
+    Returns true if the iterators are equal.
+  */
+  inline bool operator==(const ListIterator& eq) const noexcept
+  {
+    _COM_AZURE_DEV__BASE__PROTECT_ITERATORS_COMPATIBLE(*this, eq);
+    return node == eq.node;
+  }
+
+  /**
+    Returns true if the iterators aren't equal.
+  */
+  inline bool operator!=(const ListIterator& eq) const noexcept
+  {
+    _COM_AZURE_DEV__BASE__PROTECT_ITERATORS_COMPATIBLE(*this, eq);
+    return node != eq.node;
+  }
+
+  /**
+    Access the element.
+  */
+  inline Reference operator*() const noexcept
+  {
+    _COM_AZURE_DEV__BASE__PROTECT_ITERATORS_UNMODIFIED();
+    return *(node->getValue());
+  }
+
+  /**
+    Access the element.
+  */
+  inline Pointer operator->() const noexcept
+  {
+    _COM_AZURE_DEV__BASE__PROTECT_ITERATORS_UNMODIFIED();
+    return node->getValue();
+  }
+
+  /**
+    Returns the pointer value of the iterator.
+  */
+  inline Pointer getValue() const noexcept
+  {
+    _COM_AZURE_DEV__BASE__PROTECT_ITERATORS_UNMODIFIED();
+    return node->getValue();
+  }
+};
+
+
+
+template<class TYPE>
+class ListReadIterator {
+public:
+
+  typedef TYPE Value;
+  typedef const TYPE* Pointer;
+  typedef const TYPE& Reference;
+  typedef MemoryDiff Distance;
+  typedef BidirectionalIterator Category;
+protected:
+
+  const ListNode<TYPE>* node = nullptr;
+public:
+
+  /**
+    Initializes iterator.
+
+    @param value The initial value of the iterator.
+  */
+  explicit inline ListReadIterator(const ListNode<TYPE>* _node) noexcept
+    : node(_node)
+  {
+  }
+
+  /**
+    Initializes iterator from other iterator.
+  */
+  inline ListReadIterator(const ListReadIterator& copy) noexcept
+    : node(copy.node)
+  {
+  }
+
+  /**
+    Initializes iterator from other iterator.
+  */
+  template<class POLY>
+  inline ListReadIterator(const ListReadIterator<POLY>& copy) noexcept
+    : node(copy.getValue())
+  {
+  }
+
+  /**
+    Initializes iterator from other iterator.
+  */
+  inline ListReadIterator& operator=(const ListReadIterator& eq) noexcept
+  {
+    node = eq.node;
+    return *this;
+  }
+
+  /**
+    Initializes iterator from other iterator.
+  */
+  template<class POLY>
+  inline ListReadIterator& operator=(const ListReadIterator<POLY>& eq) noexcept
+  {
+    node = eq.getValue();
+    return *this;
+  }
+
+  /**
+    Prefix increment.
+  */
+  inline ListReadIterator& operator++() noexcept
+  {
+    ASSERT(node);
+    node = node->getNext();
+    return *this;
+  }
+
+  /**
+    Postfix increment.
+  */
+  inline ListReadIterator operator++(int) noexcept
+  {
+    ListReadIterator result(*this);
+    ASSERT(node);
+    node = node->getNext();
+    return result;
+  }
+
+  /**
+    Prefix decrement.
+  */
+  inline ListReadIterator& operator--() noexcept
+  {
+    ASSERT(node);
+    node = node->getPrevious();
+    return *this;
+  }
+
+  /**
+    Postfix decrement.
+  */
+  inline ListReadIterator operator--(int) noexcept
+  {
+    ListReadIterator result(*this);
+    ASSERT(node);
+    node = node->getPrevious();
+    return result;
+  }
+
+  /**
+    Moves the specified distance forward.
+  */
+  ListReadIterator& operator+=(Distance distance) noexcept
+  {
+    if (distance < 0) {
+      while (distance++) {
+        --(*this);
+      }
+    } else {
+      while (distance--) {
+        ++(*this);
+      }
+    }
+    return *this;
+  }
+
+  /**
+    Moves the specified distance backwards.
+  */
+  ListReadIterator& operator-=(Distance distance) noexcept
+  {
+    if (distance < 0) {
+      while (distance++) {
+        ++(*this);
+      }
+    } else {
+      while (distance--) {
+        --(*this);
+      }
+    }
+    return *this;
+  }
+
+  /**
+    Returns true if the iterators are equal.
+  */
+  inline bool operator==(const ListReadIterator& eq) const noexcept
+  {
+    return node == eq.node;
+  }
+
+  /**
+    Returns true if the iterators aren't equal.
+  */
+  inline bool operator!=(const ListReadIterator& eq) const noexcept
+  {
+    return node != eq.node;
+  }
+
+  /**
+    Access the element.
+  */
+  inline Reference operator*() const noexcept
+  {
+    return *(node->getValue());
+  }
+
+  /**
+    Access the element.
+  */
+  inline Pointer operator->() const noexcept
+  {
+    return node->getValue();
+  }
+
+  /**
+    Returns the pointer value of the iterator.
+  */
+  inline Pointer getValue() const noexcept
+  {
+    return node->getValue();
   }
 };
 
@@ -256,6 +626,7 @@ public:
   typedef TYPE Value;
   /** The type of a node. */
   typedef ListNode<Value> Node;
+  // TAG: use this instead typedef DoubleLinkedNode<Value> Node;
 
   typedef ListEnumerator<EnumeratorTraits<TYPE> > Enumerator;
   typedef ListReadEnumerator<ReadEnumeratorTraits<TYPE> > ReadEnumerator;
@@ -452,6 +823,44 @@ protected:
       remove(last);
     }
 
+    void shuffle()
+    {
+      MemorySize n = size;
+      if (n <= 1) {
+        return; // nothing to do
+      }
+
+      PrimitiveArray<ListNode<TYPE>*> nodes(n);
+      {
+        auto src = first;
+        for (MemorySize i = 0; i < n; ++i) { // fill buffer
+          nodes[i] = src;
+          src = src->getNext();
+        }
+        ASSERT(!src);
+      }
+      base::shuffle(&nodes[0], &nodes[0] + nodes.size());
+
+      // rebuild node list
+      {
+        auto src = nodes.begin();
+        auto node = *src++;
+        node->setPrevious(nullptr);
+        node->setNext(nullptr);
+        first = node;
+        last = node;
+
+        const auto end = nodes.end();
+        while (src != end) {
+          node = *src++;
+          node->setPrevious(last);
+          node->setNext(nullptr);
+          last->setNext(node);
+          last = node;
+        }
+      }
+    }
+
     /**
       Destroys the list.
     */
@@ -563,6 +972,26 @@ public:
     return ReadEnumerator(getFirst());
   }
 
+  ListIterator<TYPE> begin() noexcept
+  {
+    return ListIterator<TYPE>(getFirst());
+  }
+
+  ListIterator<TYPE> end() noexcept
+  {
+    return ListIterator<TYPE>(nullptr);
+  }
+
+  ListReadIterator<TYPE> begin() const noexcept
+  {
+    return ListReadIterator<TYPE>(getFirst());
+  }
+
+  ListReadIterator<TYPE> end() const noexcept
+  {
+    return ListReadIterator<TYPE>(nullptr);
+  }
+
   /**
     Returns the index of the node with the specified value in this list.
 
@@ -656,7 +1085,19 @@ public:
   {
     elements = new ListImpl(); // copyOnWrite is not required
   }
+
+  /**
+    Sorts the elements of this list. Requires operator<= for TYPE.
+  */
+  void sort();
   
+  /**
+    Shuffles elements. See https ://en.wikipedia.org/wiki/Fisher%E2%80%93Yates_shuffle#Modern_method.
+
+    Uses temporary buffer but avoid copy construction of values.
+  */
+  void shuffle();
+
   /**
     Removes the node specified by the enumeration from this list.
 
@@ -694,4 +1135,60 @@ FormatOutputStream& operator<<(
   return stream;
 }
 
+/** Bubble sort. O(n^2). Only forward iterator required. operator<= used for comparison of values. */
+template<class TYPE>
+void bubbleSort(const TYPE& _begin, const TYPE& _end)
+{
+  // implementation with forward iterator only - bidirectional iterator not required
+  // TAG: we could do a merge sort also - by splitting items in the middle and sorting independently
+
+  // static_assert(std::is_same<ForwardIterator, typename TYPE::Category>::value, "Iterator must be ForwardIterator.");
+  const ForwardIterator* ensureForwardIterator = static_cast<const typename TYPE::Category*>(nullptr);
+
+  TYPE end = _end; // we lower end per loop
+  while (true) { // loop until all items sorted
+    TYPE current = _begin; // restart
+    if (current == end) { // done - no more items to sort
+      break;
+    }
+
+    // move max to end
+    bool swapped = false;
+    TYPE next = current;
+    ++next;
+    while (next != end) {
+      if (!(*current <= *next)) { // dont swap on = but < is the primary comparison operator for algorithms
+        swapper(*current, *next);
+        swapped = true;
+      }
+      ++current;
+      ++next;
+    }
+    if (!swapped) {
+      return; // nothing to do
+    }
+    end = current; // max now at end so no need to look at this again
+  }
+}
+
+template<class TYPE>
+void List<TYPE>::sort()
+{
+  bubbleSort(begin(), end());
+}
+
+template<class TYPE>
+void List<TYPE>::shuffle()
+{
+  MemorySize n = getSize();
+  if (n <= 1) {
+    return; // nothing to do
+  }
+  elements.copyOnWrite();
+  elements->shuffle();
+}
+
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE
+
+_COM_AZURE_DEV__BASE__STD_ITERATOR_TRAITS(base::ListIterator);
+_COM_AZURE_DEV__BASE__STD_ITERATOR_TRAITS(base::ListReadIterator);

@@ -13,6 +13,7 @@
 
 #include <base/net/Urn.h>
 #include <base/string/ASCIITraits.h>
+#include <base/UnitTest.h>
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
@@ -315,5 +316,30 @@ void Urn::setNSS(const String& value) throw(InvalidFormat) {
 String Urn::getUrn() const throw(MemoryException) {
   return Literal("urn:") + nid + Literal(":") + nss;
 }
+
+#if 0 && defined(_COM_AZURE_DEV__BASE__TESTS) // TAG: not implemented fully
+
+class TEST_CLASS(Urn) : public UnitTest {
+public:
+
+  TEST_PRIORITY(100);
+  TEST_IMPACT(PRIVACY);
+
+  void run() override
+  {
+    // TAG: use static instead of constructor
+    Urn urn1("urn:isbn:0451450523");
+    Urn urn2("urn:isan:0000-0000-2CEA-0000-1-0000-0000-Y");
+    Urn urn3("urn:uuid:6e8bc430-9c3a-11d9-9669-0800200c9a66");
+
+    TEST_ASSERT(urn1.getNID() == "isbn");
+    TEST_ASSERT(urn2.getNSS() == "0000-0000-2CEA-0000-1-0000-0000-Y");
+    TEST_ASSERT(urn3.getNSS() == "6e8bc430-9c3a-11d9-9669-0800200c9a66");
+  }
+};
+
+TEST_REGISTER(Urn);
+
+#endif
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

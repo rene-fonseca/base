@@ -2568,7 +2568,8 @@ bool WideString::isLowerCased() const throw() {
   return true;
 }
 
-bool WideString::isTitleCased() const throw() {
+bool WideString::isTitleCased() const throw()
+{
   ReadIterator i = getBeginReadIterator();
   ReadIterator end = getEndReadIterator();
   while (i != end) {
@@ -2580,8 +2581,8 @@ bool WideString::isTitleCased() const throw() {
 }
 
 template<>
-int compare<WideString>(
-  const WideString& left, const WideString& right) throw() {
+int compare<WideString>(const WideString& left, const WideString& right)
+{
   return left.compareTo(right);
 }
 

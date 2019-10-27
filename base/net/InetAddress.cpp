@@ -18,6 +18,7 @@
 #include <base/concurrency/Thread.h>
 #include <base/ByteOrder.h>
 #include <base/Type.h>
+#include <base/UnitTest.h>
 
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32) // temporary solution until arch independant types have been defined
 #  include <winsock2.h>
@@ -792,5 +793,33 @@ FormatOutputStream& operator<<(FormatOutputStream& stream, const InetAddress& va
                 << DEC << addr[2] << '.'
                 << DEC << addr[3];
 }
+
+#if defined(_COM_AZURE_DEV__BASE__TESTS)
+
+class TEST_CLASS(InetAddress) : public UnitTest {
+public:
+
+  TEST_PRIORITY(100);
+  TEST_IMPACT(PRIVACY);
+
+  void run() override
+  {
+    InetAddress a1("127.0.0.1");
+    InetAddress a2("172.30.33.14");
+    InetAddress a3("::ffff:172.30.33.14");
+    InetAddress a4("0.0.0.0");
+    InetAddress a5("::1");
+    TEST_ASSERT(a4.isUnspecified());
+    TEST_ASSERT(a3.isIPv4Mapped());
+    TEST_ASSERT(a1.isLoopback());
+    TEST_ASSERT(a5.isLoopback());
+    TEST_ASSERT(a2.convertToIPv6());
+    TEST_ASSERT(a3.convertToIPv4());
+  }
+};
+
+TEST_REGISTER(InetAddress);
+
+#endif
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

@@ -17,6 +17,8 @@
 #include <base/concurrency/Thread.h>
 #include <base/string/ANSIEscapeSequence.h>
 #include <base/objectmodel/JSON.h>
+#include <base/Random.h>
+#include <base/TypeInfo.h>
 #include <algorithm>
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
@@ -218,24 +220,6 @@ void UnitTest::run()
   onFailed("Test not implemented");
 }
 
-#if 0 // TAG: convert enum to iterator
-inline Pointer begin() throw() {
-  return hasNext();
-}
-
-inline Pointer end() throw() {
-  return nullptr;
-}
-
-inline Pointer operator++() throw(EndOfEnumeration) {
-  return next();
-}
-
-inline Pointer operator*() throw(EndOfEnumeration) {
-  return next();
-}
-#endif
-
 Reference<UnitTest::Run> UnitTest::runImpl()
 {
   auto& manager = UnitTestManager::getManager();
@@ -255,13 +239,20 @@ Reference<UnitTest::Run> UnitTest::runImpl()
   try {
     run();
   } catch (Exception& e) {
+
+    const char* _type = e.getThisType().getLocalName();
+#if (_COM_AZURE_DEV__BASE__COMPILER != _COM_AZURE_DEV__BASE__COMPILER_MSC)
+    String type = TypeInfo::demangleName(_type);
+#else
+    String type(_type);
+#endif
+
     if (e.getMessage()) {
-      onFailed(Format::subst("Test failed with exception: '%1'", e.getType())); // TAG: dump all info for exception
+      onFailed(Format::subst("Test failed with exception: '%1' / '%2'", type, e.getMessage()));
     } else {
-      onFailed(Format::subst("Test failed with exception: '%1'", e.getType(), e.getMessage())); // TAG: dump all info for exception
+      onFailed(Format::subst("Test failed with exception: '%1'", type));
     }
   } catch (std::exception& e) {
-    // TAG: dump all info for exception
     String w = e.what();
     if (w.isEmpty()) {
       onFailed("Test failed with std::exception");
@@ -301,7 +292,7 @@ Reference<UnitTest::Run> UnitTest::runImpl()
   r->failed += (pointsReach - pointsReached);
   r->failed += (pointsNotReach - pointsNotReached);
   
-  if (manager.getVerbosity() > UnitTestManager::SILENT) {
+  if ((manager.getVerbosity() > UnitTestManager::SILENT) && !manager.getProgressMode()) {
     if (UnitTestManager::getManager().getUseANSIColors()) {
       fout << setForeground(
         (r->failed || (pointsReached != pointsReach) || (pointsNotReached != pointsNotReach)) ? ANSIEscapeSequence::RED : ANSIEscapeSequence::GREEN
@@ -424,6 +415,7 @@ private:
 public:
   
   bool success = false;
+  Event doneEvent;
   Thread::Times times;
   
   TestingThread(Reference<UnitTest> _test) : test(_test)
@@ -433,34 +425,50 @@ public:
   void run()
   {
     auto& manager = UnitTestManager::getManager();
-    success = manager.runTest(test);
+    try {
+      success = manager.runTest(test);
+    } catch (...) {
+    }
+    doneEvent.signal();
     times = Thread::getTimes();
   }
 };
 
-class SortTests {
-public:
-
-  bool operator()(Reference<UnitTest> a, Reference<UnitTest> b)
-  {
-    if (a->getPriority() < b->getPriority()) {
-      return true;
-    }
-    return false;
+String makeProgress(double progress, unsigned int width = 20)
+{
+  // improve
+  String result;
+  int count = static_cast<int>(progress * width);
+  for (int i = 0; i < (count - 1); ++i) {
+    result.append('=');
   }
-};
+  result.append('>');
+  for (int i = 0; i < static_cast<int>(width - count); ++i) {
+    result.append(' ');
+  }
+  return result;
+}
 
 bool UnitTestManager::runTests(const String& pattern)
 {
-  // TAG: add support for pattern
-  // TAG: continue on failure - can also get critical from test and continue is non-critical
-  // TAG: order tests by priority, limited time
-  // TAG: allow to run by priority - p < some value
-  // TAG: allow test to be terminated
+  // TAG: allow test to be terminated timeout
   // TAG: allow tests to run concurrently
 
   loadTests();
-  // std::sort(&tests[0], &tests[0], SortTests());
+
+  Array<Reference<UnitTest> > tests;
+  // TAG: tests.ensureCapacity();
+  for (auto test : this->tests) {
+    if (Parser::doesMatchPattern(pattern, test->getName())) {
+      tests.append(test);
+    }
+  }
+
+  if (randomize) {
+    tests.shuffle();
+  } else {
+    std::sort(tests.begin(), tests.end(), SortTests());
+  }
 
   unsigned int passed = 0;
   unsigned int failed = 0;
@@ -470,56 +478,103 @@ bool UnitTestManager::runTests(const String& pattern)
   for (auto test : tests) {
     // TAG: show progress - show time since last output - include processing time
     Timer timer;
-    timer.getLiveMicroseconds();
 
     ++count;
-    fout << "===============================================================================" << EOL;
-    if (UnitTestManager::getManager().getUseANSIColors()) {
-      fout << "TEST " << bold() << test->getName() << normal();
-    } else {
-      fout << "TEST " << test->getName();
+    if (!progressMode) {
+      fout << "===============================================================================" << EOL;
+      if (UnitTestManager::getManager().getUseANSIColors()) {
+        fout << "TEST " << bold() << test->getName() << normal();
+      } else {
+        fout << "TEST " << test->getName();
+      }
+      fout << " [" << count << "/" << tests.getSize() << "] (" << static_cast<int>(count * 1000.0 / tests.getSize()) / 10.0 << "%)" << ENDL;
+      if (UnitTestManager::getManager().getUseANSIColors()) {
+        fout << normal();
+      }
+      if (!test->getSource().isEmpty()) {
+        fout << "  Source: " << test->getSource() << ENDL;
+      }
+      if (!test->getDescription().isEmpty()) {
+        fout << "  Description: " << test->getDescription() << ENDL;
+      }
     }
-    fout << " [" << count << "/" << tests.getSize() << "] (" << static_cast<int>(count * 1000.0 / tests.getSize()) / 10.0 << "%)" << ENDL;
-    if (UnitTestManager::getManager().getUseANSIColors()) {
-      fout << normal();
-    }
-    if (!test->getSource().isEmpty()) {
-      fout << "  Source: " << test->getSource() << ENDL;
-    }
-    if (!test->getDescription().isEmpty()) {
-      fout << "  Description: " << test->getDescription() << ENDL;
-    }
-
-    // fout << "                                                                               \r"
-    //     << Format::subst("TEST: %1 - %2/%3 (%4%%)\r", test->getName(), count, tests.getSize(), static_cast<int>(count*1000.0/tests.getSize())/10.0) << FLUSH;
-
-    // TAG: record processing time for thread
-    // TAG: we could sample processing time also
-    // TAG: need viewer for test results
-
+    
     TestingThread thread(test);
     thread.start();
-    thread.join();
-    if (thread.success) {
+    bool timedOut = false;
+    if (progressMode) {
+      do {
+        auto elapsed = timer.getLiveMicroseconds();
+        // TAG: get line width from console and trim output to fit
+        /*
+        fout << "                                                                               \r"
+           << Format::subst("TEST: [%1] PASSED:%2 FAILED:%3 / %4/%5 / %6 / %7 s\r", makeProgress(count*1.0/tests.getSize(), 20), passed, failed, count, tests.getSize(), test->getName(), elapsed/1000/1000.0) << FLUSH;
+        */
+        String percent = format() << ZEROPAD << setWidth(4) << static_cast<int>(count*1000.0/tests.getSize())/10.0;
+        if (UnitTestManager::getManager().getUseANSIColors()) {
+          fout << setForeground(!failed ? ANSIEscapeSequence::GREEN : ANSIEscapeSequence::RED) << bold();
+        }
+        fout << "                                                                               \r"
+             << Format::subst("TEST: [%1%%] PASSED:%2 FAILED:%3 / %4/%5 / %6 / %7 ms\r", percent, passed, failed, count, tests.getSize(), test->getName(), elapsed/1000.0) << FLUSH;
+        if (UnitTestManager::getManager().getUseANSIColors()) {
+          fout << normal();
+        }
+
+        if ((elapsed / 1000) > test->getTimeout()) {
+          timedOut = true;
+          break;
+        }
+
+      } while (!thread.doneEvent.wait(500 * 1000));
+    }
+
+    auto elapsed = timer.getLiveMicroseconds();
+    if (timedOut || ((elapsed / 1000) > test->getTimeout())) {
+      timedOut = true;
+      if (progressMode) {
+        fout << "                                                                               \r";
+      }
+      if (UnitTestManager::getManager().getUseANSIColors()) {
+        fout << setForeground(ANSIEscapeSequence::MAGENTA);
+      }
+      fout << "  TEST: TIMED OUT / " << test->getName() << ENDL;
+      if (UnitTestManager::getManager().getUseANSIColors()) {
+        fout << normal();
+      }
+      // thread.terminate(); // terminate on exit of loop instead
+    }
+
+    if (!timedOut) {
+      thread.join();
+    }
+    
+    #if 0
+        if (!progressMode) {
+          auto time = thread.times.getTotal();
+          if (time < 10000) {
+            fout << "  PROCESSING TIME: " << thread.times.getTotal() / 1.0 << " ns" << ENDL;
+          } else {
+            fout << "  PROCESSING TIME: " << thread.times.getTotal() / 1000000.0 << " ms" << ENDL;
+          }
+        }
+    #endif
+    
+    if (!timedOut && thread.success) {
       ++passed;
     } else {
       ++failed;
-    }
-
-#if 0
-    if (true) {
-      auto time = thread.times.getTotal();
-      if (time < 10000) {
-        fout << "  PROCESSING TIME: " << thread.times.getTotal() / 1.0 << " ns" << ENDL;
-      } else {
-        fout << "  PROCESSING TIME: " << thread.times.getTotal() / 1000000.0 << " ms" << ENDL;
+      if (stopOnFailure) {
+        break;
       }
     }
-#endif
 
     totalTimes = totalTimes + thread.times;
   }
-
+  
+  if (progressMode) {
+    fout << "                                                                               \r";
+  }
+  
   fout << EOL << "===============================================================================" << EOL;
   if (UnitTestManager::getManager().getUseANSIColors()) {
     fout << setForeground((passed == count) ? ANSIEscapeSequence::GREEN : ANSIEscapeSequence::RED) << Format::subst("TOTAL PASSED: %1/%2", passed, count) << normal() << ENDL;
@@ -572,7 +627,5 @@ const char* UnitTestManager::trimPath(const char* src) noexcept
   }
   return last;
 }
-
-// TAG: add support for http server to view results live
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

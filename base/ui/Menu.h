@@ -63,6 +63,8 @@ _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
     */
     inline MenuException(const char* message, Type type) throw() : UserInterfaceException(message, type) {
     }
+    
+    _COM_AZURE_DEV__BASE__EXCEPTION_THIS_TYPE()
   };
 
 /**

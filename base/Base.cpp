@@ -19,6 +19,8 @@
 #  include <windows.h>
 #else // unix
 #  include <csignal>
+#  include <sys/types.h>
+#  include <sys/ptrace.h>
 #endif // flavor
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
@@ -123,9 +125,17 @@ void Debug::breakpoint() noexcept
   static bool useBreakpoint = true;
   if (useBreakpoint) {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
-    DebugBreak();
+    if (IsDebuggerPresent()) {
+      DebugBreak();
+    }
+#else
+#if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__GNULINUX)
+    if (ptrace(PTRACE_TRACEME, 0, NULL, 0) == -1) { // detect debugger - need a better way
+      std::raise(SIGINT);
+    }
 #else
     std::raise(SIGINT);
+#endif
 #endif
   }
 }

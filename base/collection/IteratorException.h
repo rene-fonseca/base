@@ -18,20 +18,19 @@
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 /**
-  Exception raised on unexpected errors (this is an internal error).
+  This exception indicates that an iterator is used incorrectly.
   
-  @short Exception raised on unexpected conditions.
-  @ingroup exceptions
-  @version 1.0
+  @ingroup collections exceptions
 */
 
-class _COM_AZURE_DEV__BASE__API UnexpectedFailure : public Exception {
+class _COM_AZURE_DEV__BASE__API IteratorException : public Exception {
 public:
 
   /**
     Initializes the exception object with no message.
   */
-  inline UnexpectedFailure() noexcept {
+  inline IteratorException() noexcept
+  {
   }
 
   /**
@@ -39,25 +38,28 @@ public:
 
     @param message The message.
   */
-  inline UnexpectedFailure(const char* message) noexcept : Exception(message) {
+  inline IteratorException(const char* message) noexcept
+    : Exception(message) {
   }
-
+  
   /**
     Initializes the exception object without an associated message.
     
     @param type The identity of the type.
   */
-  inline UnexpectedFailure(Type type) noexcept : Exception(type) {
+  inline IteratorException(Type type) noexcept
+    : Exception(type) {
   }
   
   /**
     Initializes the exception object.
-
+    
     @param message An NULL-terminated string (ASCII).
     @param type The identity of the type.
   */
-  inline UnexpectedFailure(const char* message, Type type) noexcept
-    : Exception(message, type) {
+  inline IteratorException(const char* message, Type type) noexcept
+    : Exception(message, type)
+  {
   }
   
   _COM_AZURE_DEV__BASE__EXCEPTION_THIS_TYPE()

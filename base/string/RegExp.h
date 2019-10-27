@@ -72,6 +72,8 @@ public:
     inline RegExpException(const char* message, Type type) noexcept
       : Exception(message, type) {
     }
+    
+    _COM_AZURE_DEV__BASE__EXCEPTION_THIS_TYPE()
   };
 
   /**

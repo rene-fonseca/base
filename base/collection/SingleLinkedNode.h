@@ -13,7 +13,7 @@
 
 #pragma once
 
-#include <base/features.h>
+#include <base/Iterator.h>
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
@@ -101,4 +101,347 @@ public:
   }
 };
 
+template<class TYPE>
+class SingleLinkedNodeIterator {
+public:
+
+  typedef TYPE Value;
+  typedef TYPE* Pointer;
+  typedef TYPE& Reference;
+  typedef MemoryDiff Distance;
+  typedef ForwardIterator Category;
+protected:
+
+  SingleLinkedNode<TYPE>* node = nullptr;
+  _COM_AZURE_DEV__BASE__PROTECT_ITERATORS_ADD_CONTEXT();
+public:
+
+  /**
+    Initializes iterator.
+
+    @param value The initial value of the iterator.
+  */
+  explicit inline SingleLinkedNodeIterator(SingleLinkedNode<TYPE>* _node) noexcept
+    : node(_node)
+  {
+  }
+
+  /**
+    Initializes iterator from other iterator.
+  */
+  inline SingleLinkedNodeIterator(const SingleLinkedNodeIterator& copy) noexcept
+    : node(copy.node)
+  {
+  }
+
+  /**
+    Initializes iterator from other iterator.
+  */
+  inline SingleLinkedNodeIterator& operator=(const SingleLinkedNodeIterator& copy) noexcept
+  {
+    node = copy.node;
+    return *this;
+  }
+
+  /**
+    Prefix increment.
+  */
+  inline SingleLinkedNodeIterator& operator++() noexcept
+  {
+    _COM_AZURE_DEV__BASE__PROTECT_ITERATORS_UNMODIFIED();
+    ASSERT(node);
+    node = node->getNext();
+    return *this;
+  }
+
+  /**
+    Postfix increment.
+  */
+  inline SingleLinkedNodeIterator operator++(int) noexcept
+  {
+    _COM_AZURE_DEV__BASE__PROTECT_ITERATORS_UNMODIFIED();
+    SingleLinkedNodeIterator result(*this);
+    ASSERT(node);
+    node = node->getNext();
+    return result;
+  }
+
+  /**
+    Prefix decrement.
+  */
+  inline SingleLinkedNodeIterator& operator--() noexcept
+  {
+    _COM_AZURE_DEV__BASE__PROTECT_ITERATORS_UNMODIFIED();
+    ASSERT(node);
+    node = node->getPrevious();
+    return *this;
+  }
+
+  /**
+    Postfix decrement.
+  */
+  inline SingleLinkedNodeIterator operator--(int) noexcept
+  {
+    _COM_AZURE_DEV__BASE__PROTECT_ITERATORS_UNMODIFIED();
+    SingleLinkedNodeIterator result(*this);
+    ASSERT(node);
+    node = node->getPrevious();
+    return result;
+  }
+
+  /**
+    Moves the specified distance forward.
+  */
+  SingleLinkedNodeIterator& operator+=(Distance distance) noexcept
+  {
+    if (distance < 0) {
+      while (distance++) {
+        --(*this);
+      }
+    }
+    else {
+      while (distance--) {
+        ++(*this);
+      }
+    }
+    return *this;
+  }
+
+  /**
+    Moves the specified distance backwards.
+  */
+  SingleLinkedNodeIterator& operator-=(Distance distance) noexcept
+  {
+    if (distance < 0) {
+      while (distance++) {
+        ++(*this);
+      }
+    }
+    else {
+      while (distance--) {
+        --(*this);
+      }
+    }
+    return *this;
+  }
+
+  /**
+    Returns true if the iterators are equal.
+  */
+  inline bool operator==(const SingleLinkedNodeIterator& eq) const noexcept
+  {
+    _COM_AZURE_DEV__BASE__PROTECT_ITERATORS_COMPATIBLE(*this, eq);
+    return node == eq.node;
+  }
+
+  /**
+    Returns true if the iterators aren't equal.
+  */
+  inline bool operator!=(const SingleLinkedNodeIterator& eq) const noexcept
+  {
+    _COM_AZURE_DEV__BASE__PROTECT_ITERATORS_COMPATIBLE(*this, eq);
+    return node != eq.node;
+  }
+
+  /**
+    Access the element.
+  */
+  inline Reference operator*() const noexcept
+  {
+    _COM_AZURE_DEV__BASE__PROTECT_ITERATORS_UNMODIFIED();
+    return *(node->getValue());
+  }
+
+  /**
+    Access the element.
+  */
+  inline Pointer operator->() const noexcept
+  {
+    _COM_AZURE_DEV__BASE__PROTECT_ITERATORS_UNMODIFIED();
+    return node->getValue();
+  }
+
+  /**
+    Returns the pointer value of the iterator.
+  */
+  inline Pointer getValue() const noexcept
+  {
+    _COM_AZURE_DEV__BASE__PROTECT_ITERATORS_UNMODIFIED();
+    return node->getValue();
+  }
+};
+
+template<class TYPE>
+class SingleLinkedNodeReadIterator {
+public:
+
+  typedef TYPE Value;
+  typedef TYPE* Pointer;
+  typedef TYPE& Reference;
+  typedef MemoryDiff Distance;
+  typedef ForwardIterator Category;
+protected:
+
+  const SingleLinkedNode<TYPE>* node = nullptr;
+  _COM_AZURE_DEV__BASE__PROTECT_ITERATORS_ADD_CONTEXT();
+public:
+
+  /**
+    Initializes iterator.
+
+    @param value The initial value of the iterator.
+  */
+  explicit inline SingleLinkedNodeReadIterator(const SingleLinkedNode<TYPE>* _node) noexcept
+    : node(_node)
+  {
+  }
+
+  /**
+    Initializes iterator from other iterator.
+  */
+  inline SingleLinkedNodeReadIterator(const SingleLinkedNodeReadIterator& copy) noexcept
+    : node(copy.node)
+  {
+  }
+
+  /**
+    Initializes iterator from other iterator.
+  */
+  inline SingleLinkedNodeReadIterator& operator=(const SingleLinkedNodeReadIterator& copy) noexcept
+  {
+    node = copy.node;
+    return *this;
+  }
+
+  /**
+    Prefix increment.
+  */
+  inline SingleLinkedNodeReadIterator& operator++() noexcept
+  {
+    _COM_AZURE_DEV__BASE__PROTECT_ITERATORS_UNMODIFIED();
+    ASSERT(node);
+    node = node->getNext();
+    return *this;
+  }
+
+  /**
+    Postfix increment.
+  */
+  inline SingleLinkedNodeReadIterator operator++(int) noexcept
+  {
+    _COM_AZURE_DEV__BASE__PROTECT_ITERATORS_UNMODIFIED();
+    SingleLinkedNodeReadIterator result(*this);
+    ASSERT(node);
+    node = node->getNext();
+    return result;
+  }
+
+  /**
+    Prefix decrement.
+  */
+  inline SingleLinkedNodeReadIterator& operator--() noexcept
+  {
+    _COM_AZURE_DEV__BASE__PROTECT_ITERATORS_UNMODIFIED();
+    ASSERT(node);
+    node = node->getPrevious();
+    return *this;
+  }
+
+  /**
+    Postfix decrement.
+  */
+  inline SingleLinkedNodeReadIterator operator--(int) noexcept
+  {
+    _COM_AZURE_DEV__BASE__PROTECT_ITERATORS_UNMODIFIED();
+    SingleLinkedNodeReadIterator result(*this);
+    ASSERT(node);
+    node = node->getPrevious();
+    return result;
+  }
+
+  /**
+    Moves the specified distance forward.
+  */
+  SingleLinkedNodeReadIterator& operator+=(Distance distance) noexcept
+  {
+    if (distance < 0) {
+      while (distance++) {
+        --(*this);
+      }
+    }
+    else {
+      while (distance--) {
+        ++(*this);
+      }
+    }
+    return *this;
+  }
+
+  /**
+    Moves the specified distance backwards.
+  */
+  SingleLinkedNodeReadIterator& operator-=(Distance distance) noexcept
+  {
+    if (distance < 0) {
+      while (distance++) {
+        ++(*this);
+      }
+    }
+    else {
+      while (distance--) {
+        --(*this);
+      }
+    }
+    return *this;
+  }
+
+  /**
+    Returns true if the iterators are equal.
+  */
+  inline bool operator==(const SingleLinkedNodeReadIterator& eq) const noexcept
+  {
+    _COM_AZURE_DEV__BASE__PROTECT_ITERATORS_COMPATIBLE(*this, eq);
+    return node == eq.node;
+  }
+
+  /**
+    Returns true if the iterators aren't equal.
+  */
+  inline bool operator!=(const SingleLinkedNodeReadIterator& eq) const noexcept
+  {
+    _COM_AZURE_DEV__BASE__PROTECT_ITERATORS_COMPATIBLE(*this, eq);
+    return node != eq.node;
+  }
+
+  /**
+    Access the element.
+  */
+  inline Reference operator*() const noexcept
+  {
+    _COM_AZURE_DEV__BASE__PROTECT_ITERATORS_UNMODIFIED();
+    return *(node->getValue());
+  }
+
+  /**
+    Access the element.
+  */
+  inline Pointer operator->() const noexcept
+  {
+    _COM_AZURE_DEV__BASE__PROTECT_ITERATORS_UNMODIFIED();
+    return node->getValue();
+  }
+
+  /**
+    Returns the pointer value of the iterator.
+  */
+  inline Pointer getValue() const noexcept
+  {
+    _COM_AZURE_DEV__BASE__PROTECT_ITERATORS_UNMODIFIED();
+    return node->getValue();
+  }
+};
+
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE
+
+_COM_AZURE_DEV__BASE__STD_ITERATOR_TRAITS(base::SingleLinkedNodeIterator);
+_COM_AZURE_DEV__BASE__STD_ITERATOR_TRAITS(base::SingleLinkedNodeReadIterator);

@@ -32,8 +32,11 @@ bool SpinLock::invariant() const noexcept
 
 void SpinLock::exclusiveLock() const noexcept
 {
-  MemoryDiff expected = LOCK_FREE;
-  while (!value.compareAndExchangeWeak(expected, LOCK_TAKEN)) {
+  while (true) {
+    MemoryDiff expected = LOCK_FREE;
+    if (value.compareAndExchangeWeak(expected, LOCK_TAKEN)) {
+      break;
+    }
 
 #if defined(_DEBUG)
     MemoryDiff current = value;
@@ -60,6 +63,7 @@ class TEST_CLASS(SpinLock) : public UnitTest {
 public:
 
   TEST_PRIORITY(0);
+  TEST_IMPACT(CRITICAL);
   TEST_TIMEOUT_MS(30 * 1000);
 
   void run() override

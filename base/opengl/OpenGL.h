@@ -461,6 +461,8 @@ public:
   */
   inline OpenGLException(const char* message, Type type) throw() : Exception(message, type) {
   }
+  
+  _COM_AZURE_DEV__BASE__EXCEPTION_THIS_TYPE()
 };
 
 /**

@@ -14,6 +14,7 @@
 #pragma once
 
 #include <base/Trace.h>
+#include <utility>
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
@@ -29,7 +30,9 @@ public:
   enum {IS_CONSTANT = true};
 };
 
-template<class TYPE> inline bool isConstPointer() throw() {
+template<class TYPE>
+inline bool isConstPointer() noexcept
+{
   return ConstPointerHelper<TYPE>::IS_CONSTANT;
 }
 
@@ -38,7 +41,8 @@ template<class TYPE> inline bool isConstPointer() throw() {
   Returns the minimum value.
 */
 template<class TYPE>
-inline TYPE minimum(TYPE a, TYPE b) throw() {
+inline TYPE minimum(TYPE a, TYPE b)
+{
   return (a <= b) ? a : b;
 }
 
@@ -46,7 +50,8 @@ inline TYPE minimum(TYPE a, TYPE b) throw() {
   Returns the minimum value among the 3 values.
 */
 template<class TYPE>
-inline TYPE minimum(TYPE a, TYPE b, TYPE c) throw() {
+inline TYPE minimum(TYPE a, TYPE b, TYPE c)
+{
   return minimum<TYPE>(minimum<TYPE>(a, b), c);
 }
 
@@ -70,7 +75,8 @@ inline TYPE maximum(TYPE a, TYPE b, TYPE c) {
   Returns the minimum value.
 */
 template<class TYPE>
-inline const TYPE& minimum(const TYPE& a, const TYPE& b) throw() {
+inline const TYPE& minimum(const TYPE& a, const TYPE& b)
+{
   return (a <= b) ? a : b;
 }
 
@@ -78,7 +84,8 @@ inline const TYPE& minimum(const TYPE& a, const TYPE& b) throw() {
   Returns the minimum value among the 3 values.
 */
 template<class TYPE>
-inline const TYPE& minimum(const TYPE& a, const TYPE& b, const TYPE& c) throw() {
+inline const TYPE& minimum(const TYPE& a, const TYPE& b, const TYPE& c)
+{
   return minimum<TYPE>(minimum<TYPE>(a, b), c);
 }
 
@@ -125,7 +132,8 @@ inline TYPE maximum(initializer_list<TYPE> l) {
   operators.
 */
 template<class TYPE>
-inline int compare(const TYPE& a, const TYPE& b) throw() {
+inline int compare(const TYPE& a, const TYPE& b)
+{
   if (a < b) {
     return -1;
   } else if (a == b) {
@@ -139,16 +147,20 @@ inline int compare(const TYPE& a, const TYPE& b) throw() {
   Swaps the values.
 */
 template<class TYPE>
-inline void swapper(TYPE& a, TYPE& b) throw() {
-  TYPE temp = a;
-  a = b;
-  b = temp;
+inline void swapper(TYPE& a, TYPE& b)
+{
+  // TAG: call swapper for TYPE if available to avoid intermediate?
+  TYPE temp(std::move(a));
+  a = std::move(b);
+  b = std::move(temp);
 }
 
 /**
   Returns the absolute value of the specified argument.
 */
-template<class TYPE> inline TYPE absolute(const TYPE& value) throw() {
+template<class TYPE>
+inline TYPE absolute(const TYPE& value) noexcept
+{
   return (value >= TYPE(0)) ? value : -value;
 }
 
@@ -162,7 +174,8 @@ template<class TYPE> inline TYPE absolute(const TYPE& value) throw() {
   @see Assertion
 */
 template<class EXCEPTION>
-inline void bassert(bool assertion, const EXCEPTION& exception) throw(EXCEPTION) {
+inline void bassert(bool assertion, const EXCEPTION& exception)
+{
   if (!assertion) {
     throw exception;
   }
@@ -183,7 +196,8 @@ public:
     @param assertion The assertion.
     @param message The message.
   */
-  inline Assertion(bool assertion, const char* message) throw() {
+  inline Assertion(bool assertion, const char* message) noexcept
+  {
     if (!assertion) {
       Trace::message(message);
     }
@@ -217,7 +231,8 @@ public:
       MY_ERROR
     };
     
-    void myMethod() throw() {
+    void myMethod()
+    {
       if (Constraint<sizeof(unsigned int) == sizeof(unsigned long)>::UNSPECIFIED);
       ...
       if (Constraint<sizeof(unsigned int) == sizeof(unsigned long), MyClass>::MY_ERROR);

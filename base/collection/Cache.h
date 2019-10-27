@@ -24,6 +24,7 @@ _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 class _COM_AZURE_DEV__BASE__API CacheException : public Exception {
 public:
   
+  _COM_AZURE_DEV__BASE__EXCEPTION_THIS_TYPE()
 };
 
 template<class KEY, class VALUE>

@@ -14,6 +14,7 @@
 #pragma once
 
 #include <base/collection/EndOfEnumeration.h>
+#include <base/Primitives.h>
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
@@ -74,7 +75,7 @@ public:
 
   typedef VALUE Value;
   typedef VALUE* Pointer;
-  typedef unsigned int Distance;
+  typedef MemoryDiff Distance;
 };
 
 /**
@@ -93,7 +94,7 @@ public:
 
   typedef VALUE Value;
   typedef const VALUE* Pointer;
-  typedef unsigned int Distance;
+  typedef MemoryDiff Distance;
 };
 
 /**

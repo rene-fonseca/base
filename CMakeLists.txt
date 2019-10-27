@@ -224,10 +224,10 @@ endif ()
 # install(FILES ${base_HEADERS} DESTINATION include/base)
 
 # set(CMAKE_DEBUG_POSTFIX "-debug")
-install(TARGETS base base_STATIC
-  EXPORT baseConfig
-###  PUBLIC_HEADER DESTINATION "${CMAKE_BINARY_DIR}/install/include/base"
-)
+### install(TARGETS base base_STATIC
+###   EXPORT baseConfig
+###   PUBLIC_HEADER DESTINATION "${CMAKE_BINARY_DIR}/install/include/base"
+### )
 
 install(TARGETS base base_STATIC
   CONFIGURATIONS Debug

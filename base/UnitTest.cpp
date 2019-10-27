@@ -407,9 +407,7 @@ void UnitTestManager::loadTests()
       entry->loaded = true; // TAG: we can also remove from linked list
       if (INLINE_ASSERT(entry->entry)) {
         try {
-          for (unsigned int i = 0; i < 100; ++i) {
-            entry->entry();
-          }
+          entry->entry();
         } catch (...) {
           Trace::message(Format::subst(MESSAGE("Failed to register test '%1'"), String(entry->key)).native());
           ASSERT(!"Failed to register test");

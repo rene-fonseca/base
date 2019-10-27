@@ -59,4 +59,53 @@ ucs4 Parser::readUCS4() {
   return ch;
 }
 
+namespace {
+
+  bool doesMatchPatternImpl(Parser pattern, Parser text)
+  {
+    // a heap stack would be a more reliable choice
+    while (pattern.hasMore() && text.hasMore()) {
+      if (!pattern.hasMore()) {
+        return false;
+      }
+      const char ch = pattern.read();
+      if (ch == '*') {
+        if (!pattern.hasMore()) {
+          return true; // if we end with * we match anything from here
+        }
+        if (doesMatchPatternImpl(pattern, text)) { // first try without consuming anything for *
+          return true;
+        }
+        while (text.hasMore()) { // try until everything has been read
+          text.skip(); // skip 1 char
+          if (doesMatchPatternImpl(pattern, text)) {
+            return true;
+          }
+        }
+        return false;
+      } else if (ch == '?') {
+        if (!text.hasMore()) {
+          return false;
+        }
+        text.skip(); // skip any
+      } else { // exact match
+        if (!text.hasMore()) {
+          return false;
+        }
+        if (text.read() != ch) {
+          return false;
+        }
+      }
+    }
+    return !pattern.hasMore() && !text.hasMore();
+  }
+}
+
+bool Parser::doesMatchPattern(const String& _pattern, const String& _text)
+{
+  Parser pattern(_pattern);
+  Parser text(_text);
+  return doesMatchPatternImpl(pattern, text);
+}
+
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

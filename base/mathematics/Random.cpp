@@ -19,7 +19,7 @@ _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 namespace RandomImpl {
 
   template<>
-  class Traits<Random::MT11213A> {
+  class Traits<RandomLegacy::MT11213A> {
   public:
 
     static const unsigned int w = 32;
@@ -36,7 +36,7 @@ namespace RandomImpl {
   };
 
   template<>
-  class Traits<Random::MT11213B> {
+  class Traits<RandomLegacy::MT11213B> {
   public:
 
     static const unsigned int w = 32;
@@ -53,7 +53,7 @@ namespace RandomImpl {
   };
 
   template<>
-  class Traits<Random::MT19937> {
+  class Traits<RandomLegacy::MT19937> {
   public:
 
     static const unsigned int w = 32;
@@ -70,7 +70,7 @@ namespace RandomImpl {
   };
 
   template<>
-  class Traits<Random::TT800> {
+  class Traits<RandomLegacy::TT800> {
   public:
 
     static const unsigned int w = 32;
@@ -88,15 +88,15 @@ namespace RandomImpl {
 
 //  class Randomizer {
 //  public:
-//    inline Randomizer() throw() {Random::randomize();}
+//    inline Randomizer() throw() {RandomLegacy::randomize();}
 //  };
 
 }; // end of namespace RandomImpl
 
-unsigned int Random::state[Random::Traits::n];
-unsigned int Random::nextWord; // initialized by randomize()
+unsigned int RandomLegacy::state[RandomLegacy::Traits::n];
+unsigned int RandomLegacy::nextWord; // initialized by randomize()
 
-void Random::randomize() throw() {
+void RandomLegacy::randomize() throw() {
   long long seed = Timer().getStartTime();
   seed += 20010908014640LL; // magic date/time in UTC - 09/08/2001 01:46:40
   seed &= 0xffffffff;
@@ -106,27 +106,29 @@ void Random::randomize() throw() {
   randomize(seed);
 }
 
-void Random::randomize(unsigned int seed) throw() {
+void RandomLegacy::randomize(unsigned int seed) throw()
+{
   ASSERT((Traits::w == 32) && (sizeof(unsigned int) == 4));
-  Random::spinLock.exclusiveLock();
+  RandomLegacy::spinLock.exclusiveLock();
     for (unsigned int i = 0; i < Traits::n; ++i) {
       // assert: (seed != 0) && (seed < (1 << 32))
       state[i] = seed;
       seed *= 69069;
     }
     nextWord = 0;
-  Random::spinLock.releaseLock();
+  RandomLegacy::spinLock.releaseLock();
 }
 
-unsigned int Random::getInteger() throw() {
+unsigned int RandomLegacy::getInteger() throw()
+{
   ASSERT((Traits::w == 32) && (sizeof(unsigned int) == 4));
   unsigned int bits = 0;
-  Random::spinLock.exclusiveLock();
+  RandomLegacy::spinLock.exclusiveLock();
     unsigned int i = (nextWord + Traits::m < Traits::n) ? (nextWord + Traits::m) : (nextWord + Traits::m - Traits::n);
     unsigned int y = (state[i] & ~((1 << Traits::r) - 1)) | (state[i + 1] & ((1 << Traits::r) - 1));
     bits = state[nextWord] = state[i] ^ (y >> 1) ^ ((y & 0x1) ? Traits::a : 0);
     nextWord = ++nextWord % Traits::n;
-  Random::spinLock.releaseLock();
+  RandomLegacy::spinLock.releaseLock();
 
   if (Traits::u != 0) {
     bits ^= (bits >> Traits::u);

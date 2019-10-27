@@ -22,7 +22,7 @@
 #include <base/security/User.h>
 #include <base/concurrency/Process.h>
 #include <base/net/InetAddress.h>
-#include <base/mathematics/Random.h>
+#include <base/Random.h>
 #include <base/ByteOrder.h>
 
 // TAG: need method to traverse links for win32 platforms
@@ -1677,7 +1677,7 @@ String FileSystem::getTempFileName(unsigned int options) throw() {
       stream << '-';
     }
     first = false;
-    unsigned int random = Random::getInteger();
+    unsigned int random = Random::random<unsigned int>();
     stream << HEX << ZEROPAD << random;
   }
   if (options & SUFFIX) {

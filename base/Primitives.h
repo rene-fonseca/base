@@ -746,23 +746,68 @@ public:
 
 /** Primitive array. */
 template<class TYPE>
-class PrimitiveArray : public std::vector<TYPE> {
+class PrimitiveArray {
+private:
+  
+  TYPE* buffer = nullptr;
+  MemorySize count = 0;
 public:
 
-  inline PrimitiveArray(MemorySize size) : std::vector<TYPE>(size) {
-    ASSERT(size > 0); // we need to be able to get a valid pointer
+  PrimitiveArray(MemorySize size)
+  {
+    if (size > 0) {
+      buffer = new TYPE[size];
+      this->count = size;
+    }
   }
 
-  inline operator TYPE* () {
-    return &std::vector<TYPE>::operator[](0);
+  void resize(MemorySize count) noexcept
+  {
+    if (count != this->count) {
+      delete[] buffer;
+      buffer = new TYPE[count];
+      this->count = count;
+    }
   }
 
-  inline operator const TYPE* () const {
-    return &std::vector<TYPE>::operator[](0);
+  inline operator TYPE* () noexcept
+  {
+    return buffer;
   }
 
-  inline MemorySize size() const {
-    return std::vector<TYPE>::size();
+  inline operator const TYPE* () const noexcept
+  {
+    return buffer;
+  }
+
+  inline MemorySize size() const noexcept
+  {
+    return count;
+  }
+  
+  inline TYPE* begin() noexcept
+  {
+    return buffer;
+  }
+
+  inline TYPE* end() noexcept
+  {
+    return buffer + count;
+  }
+
+  inline const TYPE* cbegin() const noexcept
+  {
+    return buffer;
+  }
+
+  inline const TYPE* cend() const noexcept
+  {
+    return buffer + count;
+  }
+
+  ~PrimitiveArray()
+  {
+    delete[] buffer;
   }
 };
 

@@ -22,8 +22,22 @@
 #include <base/OutOfRange.h>
 #include <base/string/FormatOutputStream.h>
 #include <base/Functor.h>
+#include <base/Random.h>
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
+
+/** Shuffles elements for the given iterators. See https://en.wikipedia.org/wiki/Fisher%E2%80%93Yates_shuffle#Modern_method. */
+template<class ITERATOR>
+void shuffle(const ITERATOR& begin, const ITERATOR& end)
+{
+  const RandomAccessIterator* ensureIterator = static_cast<const typename ITERATOR::Category*>(nullptr);
+  auto n = end - begin;
+  while (n > 1) {
+    MemorySize i = Random::random<MemorySize>() % n;
+    --n;
+    swapper(begin[i], begin[n]); // move to last
+  }
+}
 
 /**
   The Array collection is a container for an ordered sequence of elements which
@@ -41,6 +55,8 @@ public:
 
   /** The type of the values. */
   typedef TYPE Value;
+  // typedef TYPE* Pointer;
+  // typedef TYPE& Reference;
 
   typedef typename CapacityAllocator<TYPE>::Iterator Iterator;
   typedef typename CapacityAllocator<TYPE>::ReadIterator ReadIterator;
@@ -441,9 +457,10 @@ public:
 
     @param index The index of the element.
   */
-  inline Element operator[](MemorySize index) throw(OutOfRange)
+  inline TYPE& operator[](MemorySize index) throw(OutOfRange)
   {
-    return Element(*this, index);
+    return getAt(index);
+    // return Element(*this, index);
   }
 
   /**
@@ -455,6 +472,12 @@ public:
   inline const Value& operator[](MemorySize index) const throw(OutOfRange)
   {
     return getAt(index);
+  }
+
+  /** Shuffles the elements. */
+  void shuffle()
+  {
+    base::shuffle(begin(), end());
   }
 };
 

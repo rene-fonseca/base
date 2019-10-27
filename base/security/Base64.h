@@ -60,7 +60,6 @@ public:
       return size;
     }
     
-    
     /**
       Returns the bytes to be encoded.
     */

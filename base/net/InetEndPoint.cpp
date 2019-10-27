@@ -13,6 +13,7 @@
 
 #include <base/net/InetEndPoint.h>
 #include <base/Integer.h>
+#include <base/UnitTest.h>
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
@@ -95,5 +96,24 @@ FormatOutputStream& operator<<(
   stream << ':' << value.getPort();
   return stream;
 }
+
+#if 0 && defined(_COM_AZURE_DEV__BASE__TESTS)
+
+class TEST_CLASS(InetAddress) : public UnitTest {
+public:
+
+  TEST_PRIORITY(100);
+  TEST_IMPACT(PRIVACY);
+
+  void run() override
+  {
+    InetEndPoint e1("127.0.0.1:80");
+    InetEndPoint e2("127.0.0.1:9999");
+  }
+};
+
+TEST_REGISTER(InetAddress);
+
+#endif
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

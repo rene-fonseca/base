@@ -19,6 +19,7 @@
 #  include <windows.h>
 #else // unix
 #  include <csignal>
+#  include <sys/ptrace.h>
 #endif // flavor
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE

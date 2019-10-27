@@ -39,6 +39,17 @@ void shuffle(const ITERATOR& begin, const ITERATOR& end)
   }
 }
 
+template<class TYPE>
+void shuffle(TYPE* begin, TYPE* end)
+{
+  auto n = end - begin;
+  while (n > 1) {
+    MemorySize i = Random::random<MemorySize>() % n;
+    --n;
+    swapper(begin[i], begin[n]); // move to last
+  }
+}
+
 /**
   The Array collection is a container for an ordered sequence of elements which
   provides random access to the individual elements. Elements must have a

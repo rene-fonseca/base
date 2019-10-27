@@ -895,6 +895,44 @@ protected:
       remove(last);
     }
 
+    void shuffle()
+    {
+      MemorySize n = size;
+      if (n <= 1) {
+        return; // nothing to do
+      }
+
+      PrimitiveArray<ListNode<TYPE>*> nodes(n);
+      {
+        auto src = first;
+        for (MemorySize i = 0; i < n; ++i) { // fill buffer
+          nodes[i] = src;
+          src = src->getNext();
+        }
+        ASSERT(!src);
+      }
+      base::shuffle(&nodes[0], &nodes[0] + nodes.size());
+
+      // rebuild node list
+      {
+        auto src = nodes.begin();
+        auto node = *src++;
+        node->setPrevious(nullptr);
+        node->setNext(nullptr);
+        first = node;
+        last = node;
+
+        const auto end = nodes.end();
+        while (src != end) {
+          node = *src++;
+          node->setPrevious(last);
+          node->setNext(nullptr);
+          last->setNext(node);
+          last = node;
+        }
+      }
+    }
+
     /**
       Destroys the list.
     */
@@ -1126,6 +1164,13 @@ public:
   void sort();
   
   /**
+    Shuffles elements. See https ://en.wikipedia.org/wiki/Fisher%E2%80%93Yates_shuffle#Modern_method.
+
+    Uses temporary buffer but avoid copy construction of values.
+  */
+  void shuffle();
+
+  /**
     Removes the node specified by the enumeration from this list.
 
     @param enu Enumeration specifying the element to be removed.
@@ -1202,6 +1247,17 @@ template<class TYPE>
 void List<TYPE>::sort()
 {
   bubbleSort(begin(), end());
+}
+
+template<class TYPE>
+void List<TYPE>::shuffle()
+{
+  MemorySize n = getSize();
+  if (n <= 1) {
+    return; // nothing to do
+  }
+  elements.copyOnWrite();
+  elements->shuffle();
 }
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

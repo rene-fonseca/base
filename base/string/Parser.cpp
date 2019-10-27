@@ -64,7 +64,7 @@ namespace {
   bool doesMatchPatternImpl(Parser pattern, Parser text)
   {
     // a heap stack would be a more reliable choice
-    while (pattern.hasMore() && text.hasMore()) {
+    while (pattern.hasMore() || text.hasMore()) {
       if (!pattern.hasMore()) {
         return false;
       }
@@ -97,7 +97,7 @@ namespace {
         }
       }
     }
-    return !pattern.hasMore() && !text.hasMore();
+    return true;
   }
 }
 

@@ -143,7 +143,6 @@ public:
       std::sort(tests.begin(), tests.end(), UnitTestManager::SortTests());
 
       for (auto test : tests) {
-
         if (!Parser::doesMatchPattern(pattern, test->getName())) {
           continue;
         }

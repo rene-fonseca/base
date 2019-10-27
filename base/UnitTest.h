@@ -322,6 +322,11 @@ public:
         if (a->getImpact() < b->getImpact()) {
           return true;
         }
+        if (a->getImpact() <= b->getImpact()) {
+          if (a->getName() < b->getName()) {
+            return true;
+          }
+        }
       }
       return false;
     }

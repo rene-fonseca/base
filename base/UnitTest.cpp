@@ -407,7 +407,9 @@ void UnitTestManager::loadTests()
       entry->loaded = true; // TAG: we can also remove from linked list
       if (INLINE_ASSERT(entry->entry)) {
         try {
-          entry->entry();
+          for (unsigned int i = 0; i < 100; ++i) {
+            entry->entry();
+          }
         } catch (...) {
           Trace::message(Format::subst(MESSAGE("Failed to register test '%1'"), String(entry->key)).native());
           ASSERT(!"Failed to register test");
@@ -425,6 +427,7 @@ private:
 public:
   
   bool success = false;
+  Event doneEvent;
   Thread::Times times;
   
   TestingThread(Reference<UnitTest> _test) : test(_test)
@@ -434,7 +437,11 @@ public:
   void run()
   {
     auto& manager = UnitTestManager::getManager();
-    success = manager.runTest(test);
+    try {
+      success = manager.runTest(test);
+    } catch (...) {
+    }
+    doneEvent.signal();
     times = Thread::getTimes();
   }
 };
@@ -461,16 +468,6 @@ bool UnitTestManager::runTests(const String& pattern)
 
   loadTests();
 
-#if 0 // do a lot of tests by duplicating tests
-  // TAG: need to fix corruption issue
-  auto tests = this->tests;
-  for (unsigned int i = 0; i < 100; ++i) {
-    for (auto& test : tests) {
-      tests.append(new UnitTest(*test));
-    }
-  }
-#endif
-  
   Array<Reference<UnitTest> > tests;
   // TAG: tests.ensureCapacity();
   for (auto test : this->tests) {
@@ -516,13 +513,8 @@ bool UnitTestManager::runTests(const String& pattern)
     
     TestingThread thread(test);
     thread.start();
-    // TAG: show progress here so we can see it live
-    // TAG: show subpasses/fails - elapsed time
-    // TAG: check thread event
     if (progressMode) {
-      // TAG: get memory used
-      // TAG: use color GREEN / RED
-      for (unsigned int i = 0; i < 100; ++i) {
+      do {
         auto elapsed = timer.getLiveMicroseconds();
         // TAG: get line width from console and trim output to fit
         /*
@@ -538,9 +530,7 @@ bool UnitTestManager::runTests(const String& pattern)
         if (UnitTestManager::getManager().getUseANSIColors()) {
           fout << normal();
         }
-        Thread::microsleep(1*1000);
-        // TAG: clear when done
-      }
+      } while (!thread.doneEvent.wait(500 * 1000));
     }
     thread.join();
     
@@ -623,7 +613,5 @@ const char* UnitTestManager::trimPath(const char* src) noexcept
   }
   return last;
 }
-
-// TAG: add support for http server to view results live
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

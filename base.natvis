@@ -86,4 +86,8 @@
     <DisplayString>{{ size={size} }}</DisplayString>
 	<!-- DEFINE -->
   </Type>
+
+  <Type Name="base::UnitTest">
+    <DisplayString>{{ name={name} }}</DisplayString>
+  </Type>
 </AutoVisualizer>

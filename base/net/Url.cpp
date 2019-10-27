@@ -14,6 +14,7 @@
 #include <base/net/Url.h>
 #include <base/net/InetAddress.h>
 #include <base/string/ASCIITraits.h>
+#include <base/UnitTest.h>
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
@@ -169,7 +170,7 @@ Url& Url::operator=(const Url& eq) throw()
 }
 
 bool Url::isRelative() const throw() {
-  return !path.getLength() || path.startsWith(Literal("/"));
+  return path.isEmpty() || path.startsWith(Literal("/"));
 }
 
 String Url::validateScheme(
@@ -452,5 +453,40 @@ void Url::setPath(const String& value) throw(UrlException, MemoryException) {
 FormatOutputStream& operator<<(FormatOutputStream& stream, const Url& value) throw(MemoryException, IOException) {
   return stream << value.getUrl();
 }
+
+#if defined(_COM_AZURE_DEV__BASE__TESTS)
+
+class TEST_CLASS(Url) : public UnitTest {
+public:
+
+  TEST_PRIORITY(100);
+  TEST_IMPACT(PRIVACY);
+
+  void run() override
+  {
+    Url url1("https://www.google.com/");
+    Url url2("http://www.google.com/");
+    Url url3("ftp://username:password@www.google.com/");
+    Url url4("http://www.google.com:8080/");
+    Url url5("https://www.google.com/sub1/sub2");
+    Url url6("sub1/sub2");
+
+    // TEST_ASSERT(!url1.isRelative()); // change behavior?
+    TEST_ASSERT(url1.getHost() == "www.google.com");
+    TEST_ASSERT(url2.getScheme() == "http");
+    TEST_ASSERT(url3.getUser() == "username");
+    TEST_ASSERT(url3.getPassword() == "password");
+    TEST_ASSERT(url4.getPort() == "8080");
+
+    TEST_ASSERT(url1.getPath() == ""); // should we use / for empty?
+    TEST_ASSERT(url5.getPath() == "sub1/sub2");
+    TEST_ASSERT(!url5.isRelative());
+    // TEST_ASSERT(url6.isRelative());
+  }
+};
+
+TEST_REGISTER(Url);
+
+#endif
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

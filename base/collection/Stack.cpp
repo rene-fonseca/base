@@ -48,9 +48,11 @@ public:
     }
     */
     
+    /* // GCC issue
     TEST_ASSERT(std::find(si.begin(), si.end(), 10) != si.end());
     TEST_ASSERT(std::find(si.begin(), si.end(), 19) == si.end());
-
+    */
+    
     si.removeAll();
     TEST_ASSERT(si.isEmpty());
   }

@@ -43,6 +43,8 @@ private:
   Verbosity verbosity = NORMAL;
   bool useANSIColor = false;
   bool randomize = false;
+  bool stopOnFailure = false;
+  bool progressMode = false;
   bool reportJSON = false;
   String pattern = "*";
 public:
@@ -79,6 +81,10 @@ public:
         reportJSON = true;
       } else if (argument == "--randomize") {
         randomize = true;
+      } else if (argument == "--stopOnFailure") {
+        stopOnFailure = true;
+      } else if (argument == "--progress") {
+        progressMode = true;
       } else {
         if (argument.startsWith("-")) {
           ferr << "Unsupported argument." << ENDL;
@@ -182,6 +188,8 @@ public:
       
       manager.setUseANSIColors(useANSIColor);
       manager.setRandomize(randomize);
+      manager.setStopOnFailure(stopOnFailure);
+      manager.setProgressMode(progressMode);
 
       if (reportJSON) {
         manager.setUseJSON(true);
@@ -191,7 +199,6 @@ public:
         setExitCode(1);
       }
 
-      // TAG: add randomize order support
       // TAG: generate list of tests giving different results
       // TAG: add support for loading baseline for comparison
       // TAG: allow new run via http

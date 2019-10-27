@@ -332,6 +332,8 @@ private:
   bool useJSON = false;
   bool useANSIColors = false;
   bool randomize = false;
+  bool stopOnFailure = false;
+  bool progressMode = false;
   unsigned int passed = 0;
   unsigned int failed = 0;
   Timer timer;
@@ -399,6 +401,21 @@ public:
     randomize = _randomize;
   }
 
+  inline void setStopOnFailure(bool _stopOnFailure) noexcept
+  {
+    stopOnFailure = _stopOnFailure;
+  }
+
+  inline bool getProgressMode() const noexcept
+  {
+    return progressMode;
+  }
+  
+  inline void setProgressMode(bool _progressMode) noexcept
+  {
+    progressMode = _progressMode;
+  }
+
   /** Runs the test. A test must be able to run multiple times. */
   bool runTest(Reference<UnitTest> test);
 
@@ -409,7 +426,7 @@ public:
   bool runTests(const String& pattern = "*");
 
   /** Returns all the registered tests. */
-  inline const Array<Reference<UnitTest> >& getTests() const
+  inline const Array<Reference<UnitTest> >& getTests() const noexcept
   {
     return tests;
   }
@@ -443,16 +460,17 @@ public:
 };
 
 
-#define TEST_REGISTER_IMPL(ID, TYPE) \
-  namespace tests { \
-    void _COM_AZURE_DEV__BASE__CONCATENATE(ID, _entry)() { base::UnitTestManager::getManager().registerTest<TEST_CLASS(TYPE)>(#TYPE, UnitTestManager::trimPath(_COM_AZURE_DEV__BASE__SOURCE_FILE), String()); } \
-    base::UnitTestManager::RegisterEntry::EntryNode _COM_AZURE_DEV__BASE__CONCATENATE(ID, _storage) = {#TYPE, _COM_AZURE_DEV__BASE__CONCATENATE(ID, _entry), nullptr, false}; \
-    base::UnitTestManager::RegisterEntry _COM_AZURE_DEV__BASE__CONCATENATE(ID, _register)(&_COM_AZURE_DEV__BASE__CONCATENATE(ID, _storage)); \
-  }
 
-/** Fast registration of test for later run. Test will be put in the "tests" subnamespace. */
+#define TEST_REGISTER_IMPL(ID, TYPE) \
+  namespace { namespace ID { \
+    void _entry() { base::UnitTestManager::getManager().registerTest<TEST_CLASS(TYPE)>(#TYPE, UnitTestManager::trimPath(_COM_AZURE_DEV__BASE__SOURCE_FILE), String()); } \
+    base::UnitTestManager::RegisterEntry::EntryNode _storage = {#TYPE, _entry, nullptr, false}; \
+    base::UnitTestManager::RegisterEntry _register(&_storage); \
+  } }
+
+/** Fast registration of test for later run. Test will be put into unique subnamespace. */
 #define TEST_REGISTER(TYPE) \
-  TEST_REGISTER_IMPL(_COM_AZURE_DEV__BASE__MAKE_IDENTIFIER(test), TYPE)
+  TEST_REGISTER_IMPL(_COM_AZURE_DEV__BASE__MAKE_IDENTIFIER(tests), TYPE)
 
 /** Sets the priority the test. Lower priorty gets run first. */
 #define TEST_DEPENDENCY(CLASS, DEPENDENCY) // TAG: how can we handle this - register combo of names

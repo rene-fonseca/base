@@ -302,7 +302,7 @@ Reference<UnitTest::Run> UnitTest::runImpl()
   r->failed += (pointsReach - pointsReached);
   r->failed += (pointsNotReach - pointsNotReached);
   
-  if (manager.getVerbosity() > UnitTestManager::SILENT) {
+  if ((manager.getVerbosity() > UnitTestManager::SILENT) && !manager.getProgressMode()) {
     if (UnitTestManager::getManager().getUseANSIColors()) {
       fout << setForeground(
         (r->failed || (pointsReached != pointsReach) || (pointsNotReached != pointsNotReach)) ? ANSIEscapeSequence::RED : ANSIEscapeSequence::GREEN
@@ -439,32 +439,40 @@ public:
   }
 };
 
-template<class TYPE>
-void doit(TYPE& a, TYPE& b)
+String makeProgress(double progress, unsigned int width = 20)
 {
-  fout << "!!! HERE1" << ENDL;
-}
-
-template<class TYPE>
-void doit(typename Array<TYPE>::Element& a, typename Array<TYPE>::Element& b)
-{
-  TYPE& aa = a;
-  TYPE& bb = b;
-  swapper(aa, bb);
-  fout << "!!! HERE2" << ENDL;
+  // improve
+  String result;
+  int count = static_cast<int>(progress * width);
+  for (int i = 0; i < (count - 1); ++i) {
+    result.append('=');
+  }
+  result.append('>');
+  for (int i = 0; i < (width - count); ++i) {
+    result.append(' ');
+  }
+  return result;
 }
 
 bool UnitTestManager::runTests(const String& pattern)
 {
   // TAG: add support for pattern
   // TAG: continue on failure - can also get critical from test and continue is non-critical
-  // TAG: order tests by priority, limited time
-  // TAG: allow to run by priority - p < some value
   // TAG: allow test to be terminated
   // TAG: allow tests to run concurrently
 
   loadTests();
 
+#if 0 // do a lot of tests by duplicating tests
+  // TAG: need to fix corruption issue
+  auto tests = this->tests;
+  for (unsigned int i = 0; i < 100; ++i) {
+    for (auto& test : tests) {
+      tests.append(new UnitTest(*test));
+    }
+  }
+#endif
+  
   Array<MemorySize> indices;
   MemorySize size = tests.getSize();
   indices.setSize(size);
@@ -473,18 +481,7 @@ bool UnitTestManager::runTests(const String& pattern)
   }
 
   if (randomize) {
-    // TAG: size is a direct member of Array - put in elements
-    // TAG: need a good way to randomize indices
-    MemorySize count = 2 * size;
-    while (count > 0) {
-      MemorySize i = Random::random<MemorySize>() % size;
-      MemorySize j = Random::random<MemorySize>() % size;
-      MemorySize& ii = indices[i];
-      MemorySize& jj = indices[j];
-      swapper(ii, jj); // TAG: cannot swap directly
-      // TAG: doit(indices[i], indices[j]); // TAG: cannot swap directly
-      --count;
-    }
+    indices.shuffle();
   } else {
     std::sort(tests.begin(), tests.end(), SortTests());
   }
@@ -494,60 +491,88 @@ bool UnitTestManager::runTests(const String& pattern)
   unsigned int count = 0;
   Thread::Times totalTimes;
 
-  for (auto test : tests) {
-    // auto test = tests[index];
+  for (auto index : indices) {
+    auto test = tests[index];
     // TAG: show progress - show time since last output - include processing time
     Timer timer;
-    timer.getLiveMicroseconds();
 
     ++count;
-    fout << "===============================================================================" << EOL;
-    if (UnitTestManager::getManager().getUseANSIColors()) {
-      fout << "TEST " << bold() << test->getName() << normal();
-    } else {
-      fout << "TEST " << test->getName();
+    if (!progressMode) {
+      fout << "===============================================================================" << EOL;
+      if (UnitTestManager::getManager().getUseANSIColors()) {
+        fout << "TEST " << bold() << test->getName() << normal();
+      } else {
+        fout << "TEST " << test->getName();
+      }
+      fout << " [" << count << "/" << tests.getSize() << "] (" << static_cast<int>(count * 1000.0 / tests.getSize()) / 10.0 << "%)" << ENDL;
+      if (UnitTestManager::getManager().getUseANSIColors()) {
+        fout << normal();
+      }
+      if (!test->getSource().isEmpty()) {
+        fout << "  Source: " << test->getSource() << ENDL;
+      }
+      if (!test->getDescription().isEmpty()) {
+        fout << "  Description: " << test->getDescription() << ENDL;
+      }
     }
-    fout << " [" << count << "/" << tests.getSize() << "] (" << static_cast<int>(count * 1000.0 / tests.getSize()) / 10.0 << "%)" << ENDL;
-    if (UnitTestManager::getManager().getUseANSIColors()) {
-      fout << normal();
-    }
-    if (!test->getSource().isEmpty()) {
-      fout << "  Source: " << test->getSource() << ENDL;
-    }
-    if (!test->getDescription().isEmpty()) {
-      fout << "  Description: " << test->getDescription() << ENDL;
-    }
-
-    // fout << "                                                                               \r"
-    //     << Format::subst("TEST: %1 - %2/%3 (%4%%)\r", test->getName(), count, tests.getSize(), static_cast<int>(count*1000.0/tests.getSize())/10.0) << FLUSH;
-
-    // TAG: record processing time for thread
-    // TAG: we could sample processing time also
-    // TAG: need viewer for test results
-
+    
     TestingThread thread(test);
     thread.start();
+    // TAG: show progress here so we can see it live
+    // TAG: show subpasses/fails - elapsed time
+    // TAG: check thread event
+    if (progressMode) {
+      // TAG: get memory used
+      // TAG: use color GREEN / RED
+      for (unsigned int i = 0; i < 100; ++i) {
+        auto elapsed = timer.getLiveMicroseconds();
+        // TAG: get line width from console and trim output to fit
+        /*
+        fout << "                                                                               \r"
+           << Format::subst("TEST: [%1] PASSED:%2 FAILED:%3 / %4/%5 / %6 / %7 s\r", makeProgress(count*1.0/tests.getSize(), 20), passed, failed, count, tests.getSize(), test->getName(), elapsed/1000/1000.0) << FLUSH;
+        */
+        String percent = format() << ZEROPAD << setWidth(4) << static_cast<int>(count*1000.0/tests.getSize())/10.0;
+        if (UnitTestManager::getManager().getUseANSIColors()) {
+          fout << setForeground(!failed ? ANSIEscapeSequence::GREEN : ANSIEscapeSequence::RED) << bold();
+        }
+        fout << "                                                                               \r"
+             << Format::subst("TEST: [%1%%] PASSED:%2 FAILED:%3 / %4/%5 / %6 / %7 ms\r", percent, passed, failed, count, tests.getSize(), test->getName(), elapsed/1000.0) << FLUSH;
+        if (UnitTestManager::getManager().getUseANSIColors()) {
+          fout << normal();
+        }
+        Thread::microsleep(1*1000);
+        // TAG: clear when done
+      }
+    }
     thread.join();
+    
+    #if 0
+        if (!progressMode) {
+          auto time = thread.times.getTotal();
+          if (time < 10000) {
+            fout << "  PROCESSING TIME: " << thread.times.getTotal() / 1.0 << " ns" << ENDL;
+          } else {
+            fout << "  PROCESSING TIME: " << thread.times.getTotal() / 1000000.0 << " ms" << ENDL;
+          }
+        }
+    #endif
+    
     if (thread.success) {
       ++passed;
     } else {
       ++failed;
-    }
-
-#if 0
-    if (true) {
-      auto time = thread.times.getTotal();
-      if (time < 10000) {
-        fout << "  PROCESSING TIME: " << thread.times.getTotal() / 1.0 << " ns" << ENDL;
-      } else {
-        fout << "  PROCESSING TIME: " << thread.times.getTotal() / 1000000.0 << " ms" << ENDL;
+      if (stopOnFailure) {
+        break;
       }
     }
-#endif
 
     totalTimes = totalTimes + thread.times;
   }
-
+  
+  if (progressMode) {
+    fout << "                                                                               \r";
+  }
+  
   fout << EOL << "===============================================================================" << EOL;
   if (UnitTestManager::getManager().getUseANSIColors()) {
     fout << setForeground((passed == count) ? ANSIEscapeSequence::GREEN : ANSIEscapeSequence::RED) << Format::subst("TOTAL PASSED: %1/%2", passed, count) << normal() << ENDL;

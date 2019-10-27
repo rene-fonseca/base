@@ -54,33 +54,33 @@ public:
     @see getExceptionType
     @return False if not supported.
   */
-  static bool isUnwinding() throw();
+  static bool isUnwinding() noexcept;
   
   /**
     Returns the type of the caught exception.
     
     @return An uninitialized type is returned if no exception has been caught or this method isn't supported.
   */
-  static Type getExceptionType() throw();
+  static Type getExceptionType() noexcept;
   
   /**
     Initializes the exception object without an associated message and type identity.
   */
-  Exception() throw();
+  Exception() noexcept;
   
   /**
     Initializes the exception object.
 
     @param message An NULL-terminated string (ASCII).
   */
-  Exception(const char* message) throw();
+  Exception(const char* message) noexcept;
   
   /**
     Initializes the exception object without an associated message.
     
     @param type The identity of the type.
   */
-  Exception(Type type) throw();
+  Exception(Type type) noexcept;
   
   /**
     Initializes the exception object.
@@ -97,40 +97,40 @@ public:
     @param message An NULL-terminated string (ASCII).
     @param type The identity of the type.
   */
-  Exception(const char* message, Type type) throw();
+  Exception(const char* message, Type type) noexcept;
   
   /**
     Copy constructor.
 
     @param exception The exception object to be copied.
   */
-  Exception(const Exception& copy) throw();
+  Exception(const Exception& copy) noexcept;
 
   /**
     Returns the associated cause. 0 indicates an unspecified cause.
   */
-  inline unsigned int getCause() const throw() {
+  inline unsigned int getCause() const noexcept {
     return cause;
   }
 
   /**
     Sets the cause. 0 indicates an unspecified cause.
   */
-  inline void setCause(unsigned int cause) throw() {
+  inline void setCause(unsigned int cause) noexcept {
     this->cause = cause;
   }
   
   /**
     Returns the associated native error code. 0 if no error.
   */
-  inline unsigned int getError() const throw() {
+  inline unsigned int getError() const noexcept {
     return error;
   }
   
   /**
     Sets the native error code. 0 indicates no error.
   */
-  inline void setError(unsigned int error) throw() {
+  inline void setError(unsigned int error) noexcept {
     this->error = error;
   }
   
@@ -139,28 +139,31 @@ public:
 
     @return The message associated with the exception.
   */
-  inline const char* getMessage() const throw() {
+  inline const char* getMessage() const noexcept {
     return message;
   }
   
   /**
     Associates the exception with the specified message.
   */
-  inline void setMessage(const char* message) throw() {
+  inline void setMessage(const char* message) noexcept {
     this->message = message;
   }
+
+  /** Returns the type of the exception. */
+  virtual Type getThisType() const noexcept;
   
   /**
     Returns the identity of the type which raised the exception.
   */
-  inline Type getType() const throw() {
+  inline Type getType() const noexcept {
     return type;
   }
   
   /**
     Sets the identity of the type which raised the exception.
   */
-  inline void setType(const Type& type) throw() {
+  inline void setType(const Type& type) noexcept {
     this->type = type;
   }
   
@@ -174,7 +177,8 @@ public:
   Associates the exception with the given cause.
 */
 template<class EXCEPTION>
-inline EXCEPTION bindCause(EXCEPTION e, unsigned int cause) throw() {
+inline EXCEPTION bindCause(EXCEPTION e, unsigned int cause) noexcept
+{
   e.setCause(cause);
   return e;
 }
@@ -183,7 +187,8 @@ inline EXCEPTION bindCause(EXCEPTION e, unsigned int cause) throw() {
   Associates the exception with the given native error code.
 */
 template<class EXCEPTION>
-inline EXCEPTION bindError(EXCEPTION e, unsigned int error) throw() {
+inline EXCEPTION bindError(EXCEPTION e, unsigned int error) noexcept
+{
   e.setError(error);
   return e;
 }
@@ -192,7 +197,8 @@ inline EXCEPTION bindError(EXCEPTION e, unsigned int error) throw() {
   Associates the exception with the given message.
 */
 template<class EXCEPTION>
-inline EXCEPTION bindMessage(EXCEPTION e, const char* message) throw() {
+inline EXCEPTION bindMessage(EXCEPTION e, const char* message) noexcept
+{
   e.setMessage(message);
   return e;
 }
@@ -201,14 +207,22 @@ inline EXCEPTION bindMessage(EXCEPTION e, const char* message) throw() {
   Associates the exception with the given type.
 */
 template<class EXCEPTION>
-inline EXCEPTION bindType(EXCEPTION e, const Type& type) throw() {
+inline EXCEPTION bindType(EXCEPTION e, const Type& type) noexcept
+{
   e.setType(type);
   return e;
 }
 
 template<class EXCEPTION>
-inline void raise(EXCEPTION e) throw(EXCEPTION) {
+inline void _raise(EXCEPTION e) throw(EXCEPTION)
+{
   throw e;
 }
+
+#define _COM_AZURE_DEV__BASE__EXCEPTION_THIS_TYPE() \
+  Type getThisType() const noexcept override \
+  { \
+    return Type::getType(*this); \
+  }
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

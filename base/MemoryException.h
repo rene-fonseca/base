@@ -57,6 +57,8 @@ public:
   inline MemoryException(const char* message, Type type) noexcept
     : ResourceException(message, type) {
   }
+  
+  _COM_AZURE_DEV__BASE__EXCEPTION_THIS_TYPE()
 };
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

@@ -23,7 +23,7 @@
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
-bool Exception::isUnwinding() throw() {
+bool Exception::isUnwinding() noexcept{
 #if defined(_COM_AZURE_DEV__BASE__EXCEPTION_V3MV)
 #  if defined(_COM_AZURE_DEV__BASE__EXCEPTION_V3MV_TRANSPARENT)
     const abi::__cxa_eh_globals* abi::__cxa_get_globals();
@@ -41,7 +41,7 @@ bool Exception::isUnwinding() throw() {
 #endif
 }
 
-Type Exception::getExceptionType() throw() {
+Type Exception::getExceptionType() noexcept{
 #if defined(_COM_AZURE_DEV__BASE__EXCEPTION_V3MV)
 #  if defined(_COM_AZURE_DEV__BASE__EXCEPTION_V3MV_TRANSPARENT)
     const abi::__cxa_eh_globals* abi::__cxa_get_globals();
@@ -61,40 +61,44 @@ Type Exception::getExceptionType() throw() {
 #endif
 }
 
-Exception::Exception() throw()
-  : message(0),
-    cause(PrimitiveTraits<unsigned int>::MAXIMUM),
-    error(0) {
+Exception::Exception() noexcept
+  : cause(PrimitiveTraits<unsigned int>::MAXIMUM)
+{
 }
 
-Exception::Exception(const char* _message) throw()
+Exception::Exception(const char* _message) noexcept
   : message(_message),
-    cause(PrimitiveTraits<unsigned int>::MAXIMUM),
-    error(0) {
+    cause(PrimitiveTraits<unsigned int>::MAXIMUM)
+{
 }
 
-Exception::Exception(Type _type) throw()
-  : message(0),
-    type(_type),
-    cause(PrimitiveTraits<unsigned int>::MAXIMUM),
-    error(0) {
+Exception::Exception(Type _type) noexcept
+  : type(_type),
+    cause(PrimitiveTraits<unsigned int>::MAXIMUM)
+{
 }
 
-Exception::Exception(const char* _message, Type _type) throw()
+Exception::Exception(const char* _message, Type _type) noexcept
   : message(_message),
     type(_type),
-    cause(PrimitiveTraits<unsigned int>::MAXIMUM),
-    error(0) {
+    cause(PrimitiveTraits<unsigned int>::MAXIMUM)
+{
 }
 
-Exception::Exception(const Exception& copy) throw()
+Exception::Exception(const Exception& copy) noexcept
   : message(copy.message),
     type(copy.type),
     cause(copy.cause),
-    error(copy.error) {
+    error(copy.error)
+{
 }
 
-Exception::~Exception() throw() {
+Type Exception::getThisType() const noexcept
+{
+  return Type::getType(*this);
+}
+
+Exception::~Exception() noexcept{
 }
 
 #if defined(_COM_AZURE_DEV__BASE__TESTS)

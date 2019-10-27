@@ -84,6 +84,8 @@ public:
   inline int getArgumentNumber() const noexcept {
     return argumentNumber;
   }
+  
+  _COM_AZURE_DEV__BASE__EXCEPTION_THIS_TYPE()
 };
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

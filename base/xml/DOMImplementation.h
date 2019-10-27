@@ -64,6 +64,8 @@ public:
 
   class _COM_AZURE_DEV__BASE__API EventException : public Exception {
   public:
+    
+    _COM_AZURE_DEV__BASE__EXCEPTION_THIS_TYPE()
   };
   
   class _COM_AZURE_DEV__BASE__API EventTarget : public Interface {

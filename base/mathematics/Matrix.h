@@ -257,20 +257,32 @@ public:
   
   /** @short Exception raised by the Matrix class. */
   class MatrixException : public Exception {
+  public:
+    
+    _COM_AZURE_DEV__BASE__EXCEPTION_THIS_TYPE()
   };
   
   /**
     @short Raised if an operation is given incompatible matrices to work on.
   */
   class IncompatibleMatrices : public IncompatibleOperands {
+  public:
+    
+    _COM_AZURE_DEV__BASE__EXCEPTION_THIS_TYPE()
   };
   
   /** @short Raised by some operations if matrix is non-square. */
   class NotSquare : public MatrixException {
+  public:
+    
+    _COM_AZURE_DEV__BASE__EXCEPTION_THIS_TYPE()
   };
   
   /** @short Raised by some operations if matrix is singular. */
   class Singular : public MatrixException {
+  public:
+    
+    _COM_AZURE_DEV__BASE__EXCEPTION_THIS_TYPE()
   };
 
   /**

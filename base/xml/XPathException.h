@@ -58,6 +58,8 @@ public:
   inline XPathException(const char* message, Type type) throw()
     : TransformerException(message, type) {
   }
+  
+  _COM_AZURE_DEV__BASE__EXCEPTION_THIS_TYPE()
 };
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

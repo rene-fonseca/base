@@ -41,6 +41,8 @@ public:
   inline void setPosition(const LineColumn& _position) noexcept {
     position = _position;
   }
+  
+  _COM_AZURE_DEV__BASE__EXCEPTION_THIS_TYPE()
 };
 
 /**

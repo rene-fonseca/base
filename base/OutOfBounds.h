@@ -31,7 +31,8 @@ public:
   /**
     Initializes the exception object with no message.
   */
-  inline OutOfBounds() noexcept {
+  inline OutOfBounds() noexcept
+  {
   }
 
   /**
@@ -39,7 +40,9 @@ public:
 
     @param message The message.
   */
-  inline OutOfBounds(const char* message) noexcept : Exception(message) {
+  inline OutOfBounds(const char* message) noexcept
+    : Exception(message)
+  {
   }
   
   /**
@@ -47,7 +50,9 @@ public:
     
     @param type The identity of the type.
   */
-  inline OutOfBounds(Type type) noexcept : Exception(type) {
+  inline OutOfBounds(Type type) noexcept
+    : Exception(type)
+  {
   }
 
   /**
@@ -57,8 +62,11 @@ public:
     @param type The identity of the type.
   */
   inline OutOfBounds(const char* message, Type type) noexcept
-    : Exception(message, type) {
+    : Exception(message, type)
+  {
   }
+  
+  _COM_AZURE_DEV__BASE__EXCEPTION_THIS_TYPE()
 };
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

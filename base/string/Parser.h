@@ -32,6 +32,8 @@ public:
     : Exception(message)
   {
   }
+  
+  _COM_AZURE_DEV__BASE__EXCEPTION_THIS_TYPE()
 };
 
 /** Parser. */

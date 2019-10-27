@@ -14,6 +14,8 @@
 #pragma once
 
 #include <base/Primitives.h>
+#include <base/collection/IteratorException.h>
+#include <base/mem/Reference.h>
 #include <iterator>
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
@@ -146,6 +148,79 @@ public:
 
   typedef std::contiguous_iterator_tag iterator_category;
 };
+#endif
+
+/** Collection information for iterator. */
+class CollectionOwnerContext : public ReferenceCountedObject {
+  friend class IteratorOwnerContext;
+private:
+
+  MemorySize iteratorModificationId = 0;
+public:
+
+  inline void onBreakIterators() noexcept
+  {
+    ++iteratorModificationId;
+  }
+
+  inline ~CollectionOwnerContext()
+  {
+    iteratorModificationId = -1; // mark destructed - doesnt happen in the normal case since iterator will have handle to owner - this can be bad through since execution order can change! weak reference would be desired
+  }
+};
+
+/** Iterator information. */
+class IteratorOwnerContext {
+private:
+
+  Reference<CollectionOwnerContext> owner; // weak reference is preferred
+  MemorySize modificationId = 0; // modification id when iterator got constructed
+public:
+
+  void setOwner(const Reference<CollectionOwnerContext>& _owner, MemorySize _modificationId) noexcept
+  {
+    owner = _owner;
+    modificationId = _modificationId;
+  }
+
+  void ensureUnmodified() const
+  {
+    if (owner && (modificationId != owner->iteratorModificationId)) {
+      throw IteratorException("Iterator used after owner modification.");
+    }
+  }
+
+  static void ensureCompatible(const IteratorOwnerContext& a, const IteratorOwnerContext& b)
+  {
+    a.ensureUnmodified();
+    b.ensureUnmodified();
+    // nullptr allowed
+    if (a.owner != b.owner) {
+      throw IteratorException("Comparison of iterators belonging to different owners.");
+    }
+  }
+
+  template<class TYPE>
+  static void ensureCompatibleIterators(const TYPE& a, const TYPE& b)
+  {
+    ensureCompatible(a.ownerContext, b.ownerContext);
+  }
+};
+
+#if 0 && defined(_COM_AZURE_DEV__BASE__DEBUG) // not used for now
+#  define _COM_AZURE_DEV__BASE__PROTECT_ITERATORS
+#endif
+
+#if defined(_COM_AZURE_DEV__BASE__PROTECT_ITERATORS)
+#  define _COM_AZURE_DEV__BASE__PROTECT_ITERATORS_UNMODIFIED() ownerContext.ensureUnmodified()
+#  define _COM_AZURE_DEV__BASE__PROTECT_ITERATORS_COMPATIBLE(A, B) IteratorOwnerContext::ensureCompatibleIterators(A, B)
+#  define _COM_AZURE_DEV__BASE__PROTECT_ITERATORS_ADD_CONTEXT() \
+  friend class IteratorOwnerContext; \
+  IteratorOwnerContext ownerContext
+#else
+#  define _COM_AZURE_DEV__BASE__PROTECT_ITERATORS_UNMODIFIED() if (true) {}
+#  define _COM_AZURE_DEV__BASE__PROTECT_ITERATORS_COMPATIBLE(A, B) if (true) {}
+#  define _COM_AZURE_DEV__BASE__PROTECT_ITERATORS_ADD_CONTEXT()
 #endif
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

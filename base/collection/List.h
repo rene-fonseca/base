@@ -626,6 +626,7 @@ public:
   typedef TYPE Value;
   /** The type of a node. */
   typedef ListNode<Value> Node;
+  // TAG: use this instead typedef DoubleLinkedNode<Value> Node;
 
   typedef ListEnumerator<EnumeratorTraits<TYPE> > Enumerator;
   typedef ListReadEnumerator<ReadEnumeratorTraits<TYPE> > ReadEnumerator;

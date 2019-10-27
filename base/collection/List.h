@@ -145,7 +145,7 @@ public:
   }
 };
 
-#if defined(_COM_AZURE_DEV__BASE__DEBUG)
+#if 0 && defined(_COM_AZURE_DEV__BASE__DEBUG) // not used for now
 #  define _COM_AZURE_DEV__BASE__PROTECT_ITERATORS
 #endif
 

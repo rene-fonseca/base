@@ -18,6 +18,7 @@
 #include <base/string/ANSIEscapeSequence.h>
 #include <base/objectmodel/JSON.h>
 #include <base/Random.h>
+#include <base/TypeInfo.h>
 #include <algorithm>
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
@@ -219,25 +220,6 @@ void UnitTest::run()
   onFailed("Test not implemented");
 }
 
-#define CHECK_TYPE(TYPE, OBJECT) \
-  if (dynamic_cast<const TYPE*>(&e)) { \
-    return Type::getType<TYPE>(); \
-  }
-
-// TAG: move to proper place
-Type getTypeOfException(const Exception& e) noexcept
-{
-  // TAG: register all exceptions globally for look up - linked list?
-  // TAG: return Type instead of literal
-  // TAG: use virtual method - virtual Type getThisType() const {return Type::getType(*this);}
-  CHECK_TYPE(OutOfRange, e);
-  CHECK_TYPE(IteratorException, e);
-  CHECK_TYPE(InvalidEnumeration, e);
-  return Type::getType(e);
-}
-
-// TAG: REGISTER_EXCEPTION(OutOfRange);
-
 Reference<UnitTest::Run> UnitTest::runImpl()
 {
   auto& manager = UnitTestManager::getManager();
@@ -258,12 +240,12 @@ Reference<UnitTest::Run> UnitTest::runImpl()
     run();
   } catch (Exception& e) {
 
-    String type = "<UNKNOWN>";
-    if (e.getType().isInitialized()) {
-      type = e.getType().getLocalName();
-    } else {
-      type = getTypeOfException(e).getLocalName();
-    }
+    const char* _type = e.getThisType().getLocalName();
+#if (_COM_AZURE_DEV__BASE__COMPILER != _COM_AZURE_DEV__BASE__COMPILER_MSC)
+    String type = TypeInfo::demangleName(_type);
+#else
+    String type(_type);
+#endif
 
     if (e.getMessage()) {
       onFailed(Format::subst("Test failed with exception: '%1' / '%2'", type, e.getMessage()));

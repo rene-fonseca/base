@@ -20,6 +20,7 @@
 #include <base/collection/InvalidEnumeration.h>
 #include <base/collection/InvalidNode.h>
 #include <base/collection/EmptyContainer.h>
+#include <base/collection/Array.h>
 #include <base/mem/Reference.h>
 #include <base/string/FormatOutputStream.h>
 

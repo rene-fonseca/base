@@ -487,9 +487,18 @@ public:
 #define TEST_ASSERT(EXPRESSION) \
   base::UnitTest::onAssert(EXPRESSION, #EXPRESSION, __LINE__)
 
+/** Require expression to be equal to the given comperand. operator==() must be supported. Expression and comperand must have output rule to FormatOutputStream. */
+#define TEST_EQUAL(EXPRESSION, COMPERAND) \
+  base::UnitTest::onAssert((EXPRESSION) == COMPERAND, _COM_AZURE_DEV__BASE__STRINGIFY((EXPRESSION) == COMPERAND), __LINE__); \
+  if (!((EXPRESSION) == COMPERAND)) { \
+    StringOutputStream stream; \
+    stream << "Expecting value '" << COMPERAND << "' for '" << _COM_AZURE_DEV__BASE__STRINGIFY(EXPRESSION) << "'. But got '" << (EXPRESSION) << "'." << FLUSH; \
+    base::UnitTest::onPrint(stream.getString(), __LINE__); \
+  }
+
 /** Assert within an expression. */
 #define TEST_INLINE_ASSERT(EXPRESSION) \
-  (base::UnitTest::onAssert(EXPRESSION, #EXPRESSION, __LINE__), (EXPRESSION))
+  (base::UnitTest::onAssert(EXPRESSION, "" #EXPRESSION, __LINE__), (EXPRESSION))
 
 /** Print info. */
 #define TEST_PRINT(TEXT) base::UnitTest::onPrint(TEXT, __LINE__)

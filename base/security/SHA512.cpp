@@ -15,6 +15,7 @@
 #include <base/Functor.h>
 #include <base/security/Base64.h>
 #include <base/string/ASCIITraits.h>
+#include <base/UnitTest.h>
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
@@ -180,5 +181,31 @@ String SHA512::getBase64() const noexcept {
   }
   return Base64::encode(temp, sizeof(temp));
 }
+
+#if defined(_COM_AZURE_DEV__BASE__TESTS)
+
+class TEST_CLASS(SHA512) : public UnitTest {
+public:
+
+  TEST_PRIORITY(50);
+  TEST_IMPACT(SECURITY)
+
+  String getSHA512(const uint8* buffer, MemorySize size)
+  {
+    SHA512 digest;
+    digest.push(buffer, size);
+    digest.pushEnd();
+    return digest.getValue();
+  }
+
+  void run() override
+  {
+    TEST_ASSERT(getSHA512(nullptr, 0) == "cf83e1357eefb8bdf1542850d66d8007d620e4050b5715dc83f4a921d36ce9ce47d0d13c5d85f2b0ff8318d2877eec2f63b931bd47417a81a538327af927da3e");
+  }
+};
+
+TEST_REGISTER(SHA512);
+
+#endif
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

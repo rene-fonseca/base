@@ -23,7 +23,7 @@ jobs:
       script: |
         set PATH=%PATH%;$(System.DefaultWorkingDirectory)/build/Debug
         echo %PATH%
-	ctest -T Test -C Debug
+        ctest -T Test -C Debug
 
       workingDirectory: $(System.DefaultWorkingDirectory)/build
 

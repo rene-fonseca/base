@@ -12,9 +12,8 @@
  ***************************************************************************/
 
 #include <base/security/SHA256.h>
+#include <base/security/Bytes.h>
 #include <base/Functor.h>
-#include <base/security/Base64.h>
-#include <base/string/ASCIITraits.h>
 #include <base/UnitTest.h>
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
@@ -149,32 +148,18 @@ void SHA256::pushEnd() noexcept {
   bytesInBuffer = 0;
 }
 
-String SHA256::getValue() const noexcept {
-  String result(sizeof(messageDigest) * 2);
-  result.forceToLength(sizeof(messageDigest) * 2);
-  String::Iterator i = result.getBeginIterator();
-  for (unsigned int j = 0; j < getArraySize(messageDigest); ++j) {
-    uint32 word = messageDigest[j];
-    for (unsigned int k = sizeof(uint32) * 8; k > 0;) {
-      k -= 4;
-      *i++ = ASCIITraits::valueToDigit((word >> k) & 0x0f); // high-order digit
-      k -= 4;
-      *i++ = ASCIITraits::valueToDigit((word >> k) & 0x0f); // low-order digit
-    }
-  }
-  return result;
+String SHA256::getValue() const noexcept
+{
+  uint8 temp[sizeof(messageDigest)];
+  Bytes::convertWordsToBytesBigEndian(temp, messageDigest);
+  return Bytes::getAsHex(temp, sizeof(temp));
 }
 
-String SHA256::getBase64() const noexcept {
+String SHA256::getBase64() const noexcept
+{
   uint8 temp[sizeof(messageDigest)];
-  uint8* p = temp;
-  for (unsigned int j = 0; j < getArraySize(messageDigest); ++j) {
-    uint32 word = messageDigest[j];
-    for (unsigned int k = 0; k < sizeof(uint32); ++k, word >>= 8) {
-      *p++ = word;
-    }
-  }
-  return Base64::encode(temp, sizeof(temp));
+  Bytes::convertWordsToBytesBigEndian(temp, messageDigest);
+  return Bytes::getAsBase64(temp, sizeof(temp));
 }
 
 #if defined(_COM_AZURE_DEV__BASE__TESTS)
@@ -193,9 +178,15 @@ public:
     return digest.getValue();
   }
 
+  String getSHA256(const char* text)
+  {
+    return getSHA256(reinterpret_cast<const uint8*>(text), getNullTerminatedLength(text));
+  }
+
   void run() override
   {
-    TEST_ASSERT(getSHA256(nullptr, 0) == "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855");
+    TEST_EQUAL(getSHA256(""), "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855");
+    TEST_EQUAL(getSHA256("abc"), "ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad");
   }
 };
 

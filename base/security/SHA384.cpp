@@ -12,9 +12,8 @@
  ***************************************************************************/
 
 #include <base/security/SHA384.h>
+#include <base/security/Bytes.h>
 #include <base/Functor.h>
-#include <base/security/Base64.h>
-#include <base/string/ASCIITraits.h>
 #include <base/UnitTest.h>
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
@@ -172,32 +171,16 @@ uint8 SHA384::getDigest(MemorySize index) const
 
 String SHA384::getValue() const noexcept
 {
-  String result(sizeof(uint64) * (getArraySize(messageDigest) - 2) * 2);
-  result.forceToLength(sizeof(uint64) * (getArraySize(messageDigest) - 2) * 2);
-  String::Iterator i = result.getBeginIterator();
-  for (unsigned int j = 0; j < (getArraySize(messageDigest) - 2); ++j) {
-    uint64 word = messageDigest[j];
-    for (unsigned int k = sizeof(uint64) * 8; k > 0;) {
-      k -= 4;
-      *i++ = ASCIITraits::valueToDigit((word >> k) & 0x0f); // high-order digit
-      k -= 4;
-      *i++ = ASCIITraits::valueToDigit((word >> k) & 0x0f); // low-order digit
-    }
-  }
-  return result;
+  uint8 temp[sizeof(uint64) * (8 /*getArraySize(messageDigest)*/ - 2)];
+  Bytes::convertWordsToBytesBigEndian(temp, messageDigest, getArraySize(messageDigest) - 2);
+  return Bytes::getAsHex(temp, sizeof(temp));
 }
 
 String SHA384::getBase64() const noexcept
 {
   uint8 temp[sizeof(uint64) * (8 /*getArraySize(messageDigest)*/ - 2)];
-  uint8* p = temp;
-  for (unsigned int j = 0; j < (getArraySize(messageDigest) - 2); ++j) {
-    uint64 word = messageDigest[j];
-    for (unsigned int k = 0; k < sizeof(uint64); ++k, word >>= 8) {
-      *p++ = word;
-    }
-  }
-  return Base64::encode(temp, sizeof(temp));
+  Bytes::convertWordsToBytesBigEndian(temp, messageDigest, getArraySize(messageDigest) - 2);
+  return Bytes::getAsBase64(temp, sizeof(temp));
 }
 
 #if defined(_COM_AZURE_DEV__BASE__TESTS)

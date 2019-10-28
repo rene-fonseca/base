@@ -74,7 +74,7 @@ public:
   */
   FileOutputStream(
     const String& path,
-    unsigned int options,
+    unsigned int options = CREATE | TRUNCATE,
     unsigned int permissions = 0x640) throw(FileNotFound);
 
   FileOutputStream(const FileOutputStream& copy) throw();

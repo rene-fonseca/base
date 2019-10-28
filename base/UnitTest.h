@@ -86,7 +86,7 @@ public:
   class HereMeta {
   public:
 
-    const char* description; // description of point
+    const char* description = nullptr; // description of point
     bool reach = true; // point must be reached
     unsigned int count = 0; // number of times point was reached
   };

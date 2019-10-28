@@ -455,7 +455,7 @@ void ExpressionParser::readValue() throw(ExpressionException) {
   }
   
   String buffer = expression.substring(begin, index);
-  char* end;
+  char* end = nullptr;
   // TAG: not the best solution - but it works for now
   double value = strtod(buffer.getElements(), &end);
   if ((end != &buffer.getElements()[index - begin]) || (errno == ERANGE)) {

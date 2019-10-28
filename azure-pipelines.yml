@@ -18,8 +18,13 @@ jobs:
 
   - task: CmdLine@2
     displayName: 'Run tests'
+    continueOnError: true
     inputs:
-      script: 'ctest -T Test -C Debug'
+      script: |
+        set PATH=%PATH%;$(System.DefaultWorkingDirectory)/build/Debug
+        echo %PATH%
+        ctest -T Test -C Debug
+
       workingDirectory: $(System.DefaultWorkingDirectory)/build
 
   - task: PublishTestResults@2
@@ -49,6 +54,7 @@ jobs:
 
   - task: CmdLine@2
     displayName: 'Run tests'
+    continueOnError: true
     inputs:
       script: 'ctest -T Test'
       workingDirectory: $(System.DefaultWorkingDirectory)/build
@@ -80,6 +86,7 @@ jobs:
 
   - task: CmdLine@2
     displayName: 'Run tests'
+    continueOnError: true
     inputs:
       script: 'ctest -T Test'
       workingDirectory: $(System.DefaultWorkingDirectory)/build

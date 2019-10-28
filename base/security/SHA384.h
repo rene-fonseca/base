@@ -132,6 +132,23 @@ public:
   }
 
   /**
+    Returns the digest of the given message.
+  */
+  static String getDigest(const uint8* buffer, MemorySize size)
+  {
+    SHA384 digest;
+    digest.push(buffer, size);
+    digest.pushEnd();
+    return digest.getValue(); // TAG: return as bytes
+  }
+
+  /** Returns the size of the digest in bytes. */
+  MemorySize getDigestSize() const noexcept;
+
+  /** Returns n'th byte of the digest. */
+  uint8 getDigest(MemorySize index) const;
+
+  /**
     Returns the message digest encoded in hex. This is only valid after
     pushEnd() has been invoked.
   */

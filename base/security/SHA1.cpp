@@ -15,6 +15,7 @@
 #include <base/Functor.h>
 #include <base/security/Base64.h>
 #include <base/string/ASCIITraits.h>
+#include <base/UnitTest.h>
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
@@ -157,7 +158,8 @@ unsigned int SHA1::push(const uint8* buffer, unsigned int size) throw(OutOfRange
   return result;
 }
 
-void SHA1::pushEnd() noexcept {
+void SHA1::pushEnd() noexcept
+{
   ASSERT(bytesInBuffer < BLOCK_SIZE);
   buffer[bytesInBuffer++] = 0x80; // append 0b10000000
   
@@ -184,7 +186,8 @@ void SHA1::pushEnd() noexcept {
   bytesInBuffer = 0;
 }
 
-String SHA1::getValue() const noexcept { 
+String SHA1::getValue() const noexcept
+{
   String result(sizeof(messageDigest) * 2);
   result.forceToLength(sizeof(messageDigest) * 2);
   String::Iterator i = result.getBeginIterator();
@@ -200,7 +203,8 @@ String SHA1::getValue() const noexcept {
   return result;
 }
 
-String SHA1::getBase64() const noexcept {
+String SHA1::getBase64() const noexcept
+{
   uint8 temp[sizeof(messageDigest)];
   uint8* p = temp;
   for (unsigned int j = 0; j < getArraySize(messageDigest); ++j) {
@@ -211,5 +215,37 @@ String SHA1::getBase64() const noexcept {
   }
   return Base64::encode(temp, sizeof(temp));
 }
+
+#if defined(_COM_AZURE_DEV__BASE__TESTS)
+
+class TEST_CLASS(SHA1) : public UnitTest {
+public:
+
+  TEST_PRIORITY(50);
+  TEST_IMPACT(SECURITY);
+
+  String getSHA1(const uint8* buffer, MemorySize size)
+  {
+    SHA1 digest;
+    digest.push(buffer, size);
+    digest.pushEnd();
+    return digest.getValue();
+  }
+
+  String getSHA1(const char* text)
+  {
+    return getSHA1(reinterpret_cast<const uint8*>(text), getNullTerminatedLength(text));
+  }
+
+  void run() override
+  {
+    TEST_EQUAL(getSHA1(""), "da39a3ee5e6b4b0d3255bfef95601890afd80709");
+    TEST_EQUAL(getSHA1("abc"), "a9993e364706816aba3e25717850c26c9cd0d89d");
+  }
+};
+
+TEST_REGISTER(SHA1);
+
+#endif
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

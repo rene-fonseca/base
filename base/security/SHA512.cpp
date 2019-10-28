@@ -188,7 +188,7 @@ class TEST_CLASS(SHA512) : public UnitTest {
 public:
 
   TEST_PRIORITY(50);
-  TEST_IMPACT(SECURITY)
+  TEST_IMPACT(SECURITY);
 
   String getSHA512(const uint8* buffer, MemorySize size)
   {
@@ -198,9 +198,15 @@ public:
     return digest.getValue();
   }
 
+  String getSHA512(const char* text)
+  {
+    return getSHA512(reinterpret_cast<const uint8*>(text), getNullTerminatedLength(text));
+  }
+
   void run() override
   {
-    TEST_ASSERT(getSHA512(nullptr, 0) == "cf83e1357eefb8bdf1542850d66d8007d620e4050b5715dc83f4a921d36ce9ce47d0d13c5d85f2b0ff8318d2877eec2f63b931bd47417a81a538327af927da3e");
+    TEST_EQUAL(getSHA512(""), "cf83e1357eefb8bdf1542850d66d8007d620e4050b5715dc83f4a921d36ce9ce47d0d13c5d85f2b0ff8318d2877eec2f63b931bd47417a81a538327af927da3e");
+    TEST_EQUAL(getSHA512("abc"), "ddaf35a193617abacc417349ae20413112e6fa4e89a97ea20a9eeee64b55d39a2192992a274fc1a836ba3c23a3feebbd454d4423643ce80e2a9ac94fa54ca49f");
   }
 };
 

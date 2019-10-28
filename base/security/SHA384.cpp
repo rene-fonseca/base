@@ -154,7 +154,24 @@ void SHA384::pushEnd() noexcept {
   bytesInBuffer = 0;
 }
 
-String SHA384::getValue() const noexcept {
+MemorySize SHA384::getDigestSize() const noexcept
+{
+  return (getArraySize(messageDigest) - 2) * sizeof(uint64);
+}
+
+uint8 SHA384::getDigest(MemorySize index) const
+{
+  MemorySize size = (getArraySize(messageDigest) - 2) * sizeof(uint64);
+  if (index >= size) {
+    throw OutOfRange();
+  }
+  const uint64 word = messageDigest[index/sizeof(uint64)];
+  const uint64 shift = 8 * (index % sizeof(uint64));
+  return static_cast<uint8>((word >> shift) & 0xff);
+}
+
+String SHA384::getValue() const noexcept
+{
   String result(sizeof(uint64) * (getArraySize(messageDigest) - 2) * 2);
   result.forceToLength(sizeof(uint64) * (getArraySize(messageDigest) - 2) * 2);
   String::Iterator i = result.getBeginIterator();
@@ -170,7 +187,8 @@ String SHA384::getValue() const noexcept {
   return result;
 }
 
-String SHA384::getBase64() const noexcept {
+String SHA384::getBase64() const noexcept
+{
   uint8 temp[sizeof(uint64) * (8 /*getArraySize(messageDigest)*/ - 2)];
   uint8* p = temp;
   for (unsigned int j = 0; j < (getArraySize(messageDigest) - 2); ++j) {
@@ -188,7 +206,7 @@ class TEST_CLASS(SHA384) : public UnitTest {
 public:
 
   TEST_PRIORITY(50);
-  TEST_IMPACT(SECURITY)
+  TEST_IMPACT(SECURITY);
 
   String getSHA384(const uint8* buffer, MemorySize size)
   {
@@ -198,9 +216,15 @@ public:
     return digest.getValue();
   }
 
+  String getSHA384(const char* text)
+  {
+    return getSHA384(reinterpret_cast<const uint8*>(text), getNullTerminatedLength(text));
+  }
+
   void run() override
   {
-    TEST_ASSERT(getSHA384(nullptr, 0) == "38b060a751ac96384cd9327eb1b1e36a21fdb71114be07434c0cc7bf63f6e1da274edebfe76f65fbd51ad2f14898b95b");
+    TEST_EQUAL(getSHA384(""), "38b060a751ac96384cd9327eb1b1e36a21fdb71114be07434c0cc7bf63f6e1da274edebfe76f65fbd51ad2f14898b95b");
+    TEST_EQUAL(getSHA384("abc"), "cb00753f45a35e8bb5a03d699ac65007272c32ab0eded1631a8b605a43ff5bed8086072ba1e7cc2358baeca134c825a7");
   }
 };
 

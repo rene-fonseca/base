@@ -51,7 +51,7 @@ public:
 private:
 
   /** Message digest buffer. */
-  unsigned int messageDigest[4] = {0, 0, 0, 0};
+  uint32 messageDigest[4] = {0, 0, 0, 0};
   /** The total number of bytes pushed. */
   uint64 totalSize = 0;
   /** Temporary container for incomplete 16 word block. */
@@ -102,6 +102,8 @@ public:
     pushEnd() has been invoked.
   */
   String getBase64() const noexcept;
+
+  ~MD5Sum();
 };
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

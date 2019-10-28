@@ -819,8 +819,9 @@ String UnitTestManager::getJUnit() const
     }
   }
 
-  xml += Format::subst("<testsuites id=\"%1\" name=\"%2\" tests=\"%3\" failures=\"%4\" time=\"%5\">\n", Guid::createGuidAsString, "BASE", 1, failed ? 1 : 0, totalTime/1000000.0);
-  xml += Format::subst("<testsuite id=\"%1\" name=\"%2\" tests=\"%3\" failures=\"%4\" time=\"%5\">\n", Guid::createGuidAsString, "BASE", tests.getSize(), failed, totalTime/1000000.0);
+  String name = "BASE"; // TAG: how should we handle this
+  xml += Format::subst("<testsuites id=\"%1\" name=\"%2\" tests=\"%3\" failures=\"%4\" time=\"%5\">\n", Guid::createGuidAsString(), name, 1, failed ? 1 : 0, totalTime/1000000.0);
+  xml += Format::subst("<testsuite id=\"%1\" name=\"%2\" tests=\"%3\" failures=\"%4\" time=\"%5\">\n", Guid::createGuidAsString(), name, tests.getSize(), failed, totalTime/1000000.0);
 #if 0
   xml += "<properties>\n";
   xml += "<property name=\"%1\" value=\"%2\"/>\n";

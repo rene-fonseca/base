@@ -389,7 +389,8 @@ String& String::replace(
 
 MemorySize String::replaceAll(
   const String& fromStr,
-  const String& toStr) throw(StringException, MemoryException) {
+  const String& toStr) throw(StringException, MemoryException)
+{
   MemorySize count = 0;
   MemorySize start = 0;
   MemoryDiff found = -1;

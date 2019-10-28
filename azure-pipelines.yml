@@ -22,13 +22,19 @@ jobs:
     inputs:
       script: |
         set PATH=%PATH%;$(System.DefaultWorkingDirectory)/build/Debug
+        $(System.DefaultWorkingDirectory)/build/Debug/testsuite/unittesting --junit $(System.DefaultWorkingDirectory)/build/junit.xml
         ctest -T Test -C Debug
-
       workingDirectory: $(System.DefaultWorkingDirectory)/build
 
   - task: PublishTestResults@2
     inputs:
-      testResultsFormat: cTest
+      testResultsFormat: 'JUnit'
+      testResultsFiles: '**/junit.xml'
+      testRunTitle: 'Unittest results'
+
+  - task: PublishTestResults@2
+    inputs:
+      testResultsFormat: 'cTest'
       testResultsFiles: '**/Test.xml'
       testRunTitle: 'Test results for CTest'
 
@@ -56,12 +62,20 @@ jobs:
     displayName: 'Run tests'
     continueOnError: true
     inputs:
-      script: 'ctest -T Test'
+      script: |
+        $(System.DefaultWorkingDirectory)/build/testsuite/unittesting --junit $(System.DefaultWorkingDirectory)/build/junit.xml
+        ctest -T Test
       workingDirectory: $(System.DefaultWorkingDirectory)/build
 
   - task: PublishTestResults@2
     inputs:
-      testResultsFormat: cTest
+      testResultsFormat: 'JUnit'
+      testResultsFiles: '**/junit.xml'
+      testRunTitle: 'Unittest results'
+
+  - task: PublishTestResults@2
+    inputs:
+      testResultsFormat: 'cTest'
       testResultsFiles: '**/Test.xml'
       testRunTitle: 'Test results for CTest'
 
@@ -89,12 +103,20 @@ jobs:
     displayName: 'Run tests'
     continueOnError: true
     inputs:
-      script: 'ctest -T Test'
+      script: |
+        $(System.DefaultWorkingDirectory)/build/testsuite/unittesting --junit $(System.DefaultWorkingDirectory)/build/junit.xml
+        ctest -T Test
       workingDirectory: $(System.DefaultWorkingDirectory)/build
 
   - task: PublishTestResults@2
     inputs:
-      testResultsFormat: cTest
+      testResultsFormat: 'JUnit'
+      testResultsFiles: '**/junit.xml'
+      testRunTitle: 'Unittest results'
+
+  - task: PublishTestResults@2
+    inputs:
+      testResultsFormat: 'cTest'
       testResultsFiles: '**/Test.xml'
       testRunTitle: 'Test results for CTest'
 

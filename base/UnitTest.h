@@ -80,6 +80,7 @@ public:
 
     ResultEvent event = FAILED;
     String what;
+    unsigned int line = 0;
   };
 
   /** Info on here point. */
@@ -102,6 +103,11 @@ public:
     // unsigned int asserts = 0;
     Map<const void*, HereMeta> heres;
     Array<TestResult> results;
+    String exceptionFailure;
+    String exceptionType;
+
+    /** Returns XML fragment. */
+    String getJUnit() const;
 
     /** Called on explicit print request. */
     void onPrint(const String& what, unsigned int line = 0);
@@ -286,6 +292,12 @@ public:
   {
     return 0;
   }
+  
+  Reference<Run> getLastRun()
+  {
+    return !runs.isEmpty() ? runs.getAt(runs.getSize() - 1) : nullptr;
+  }
+
 
   /** Runs the test. */
   virtual void run();
@@ -293,8 +305,9 @@ public:
   /** Internal run. */
   Reference<Run> runImpl();
 
-  // TAG: get result in test format XML/JSON
-  
+  /** Returns the JUnit fragment. */
+  String getJUnit() const;
+
   ~UnitTest();
 };
 
@@ -358,6 +371,9 @@ public:
   
   /** Only returns the filename after the last / or \. */
   static const char* trimPath(const char*) noexcept;
+
+  /** Returns the JUnit document. */
+  String getJUnit() const;
 
   /** Create test instance and adds it. */
   template<class TYPE>

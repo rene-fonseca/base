@@ -16,7 +16,9 @@
 #include <base/concurrency/Process.h>
 #include <base/concurrency/Thread.h>
 #include <base/string/ANSIEscapeSequence.h>
+#include <base/string/Format.h>
 #include <base/objectmodel/JSON.h>
+#include <base/Guid.h>
 #include <base/Random.h>
 #include <base/TypeInfo.h>
 #include <algorithm>
@@ -57,6 +59,7 @@ void UnitTest::Run::onPrint(const String& what, unsigned int line)
   TestResult result;
   result.passed = xxx;
   result.what = what;
+  result.line = line;
   */
 
   if (UnitTestManager::getManager().getVerbosity() > UnitTestManager::NORMAL) {
@@ -78,6 +81,7 @@ void UnitTest::Run::onPassed(const String& what, unsigned int line)
   TestResult result;
   result.event = PASSED;
   result.what = what;
+  result.line = line;
 
   if (UnitTestManager::getManager().getVerbosity() > UnitTestManager::NORMAL) {
     if (UnitTestManager::getManager().getUseANSIColors()) {
@@ -103,6 +107,8 @@ void UnitTest::Run::onFailed(const String& what, unsigned int line)
   TestResult result;
   result.event = FAILED;
   result.what = what;
+  result.line = line;
+  
   if (UnitTestManager::getManager().getVerbosity() >= UnitTestManager::NORMAL) {
     if (UnitTestManager::getManager().getUseANSIColors()) {
       fout << setForeground(ANSIEscapeSequence::RED);
@@ -247,16 +253,26 @@ Reference<UnitTest::Run> UnitTest::runImpl()
     String type(_type);
 #endif
 
+    currentRun->exceptionFailure = "Failed with exception.";
+    currentRun->exceptionType = e.getThisType().getLocalName(); // "base::Exception" - use simple format - skip class prefix
     if (e.getMessage()) {
+      currentRun->exceptionFailure = e.getMessage();
       onFailed(Format::subst("Test failed with exception: '%1' / '%2'", type, e.getMessage()));
     } else {
       onFailed(Format::subst("Test failed with exception: '%1'", type));
     }
   } catch (std::exception& e) {
-    String w = e.what();
+    const String w = e.what();
+    currentRun->exceptionFailure = "Failed with exception.";
+    currentRun->exceptionType = "std::exception";
     if (w.isEmpty()) {
       onFailed("Test failed with std::exception");
     } else {
+      currentRun->exceptionFailure = w;
+      // TAG: map std::exception to the actual type - add all known types
+      if (dynamic_cast<const std::runtime_error*>(&e)) {
+        currentRun->exceptionType = "std::runtime_error";
+      }
       onFailed(Format::subst("Test failed with std::exception: '%1'", w));
     }
   } catch (...) {
@@ -357,6 +373,73 @@ Reference<UnitTest::Run> UnitTest::runImpl()
   }
 
   return r;
+}
+
+String UnitTest::getJUnit() const
+{
+  String xml;
+  
+  Reference<Run> run;
+  if (!runs.isEmpty()) {
+    run = runs.getAt(runs.getSize() - 1);
+  }
+  uint64 time = 0;
+  if (run) {
+    time = run->endTime - run->startTime;
+  }
+  // alternatively use getType() for classname
+  xml += Format::subst("<testcase id=\"%1\" name=\"%2\" classname=\"%3\" time=\"%4\">", Guid::createGuidAsString(), getName(), getName(), time/1000000.0);
+  String output;
+  String error;
+  if (!run) {
+    xml += "<skipped/>";
+  } else {
+    if (run && !run->exceptionFailure.isEmpty()) {
+      xml += Format::subst("<error message=\"%1\" type=\"%2\"/>", run->exceptionFailure, run->exceptionType);
+    }
+    
+    // getDescription();
+    // getImpact();
+    
+    // TAG: escape data
+    for (auto result : run->results) {
+      if (result.event == FAILED) {
+        // type: WARNING
+        xml += Format::subst("<failure message=\"%1\" type=\"%2\">", Format::subst("%1:%2 ", getSource(), result.line) + result.what, "ERROR");
+        xml += "<![CDATA[";
+        xml += result.what + "\n";
+        xml += Format::subst("File: %1\n", getSource());
+        xml += Format::subst("Line: %1\n", result.line);
+        xml += "]]>";
+        xml += "</failure>";
+      }
+      switch (result.event) {
+      case FAILED:
+        output += Format::subst("FAILED [%1:%2]: ", getSource(), result.line) + result.what + "\n";
+        break;
+      case PASSED:
+        output += Format::subst("PASSED [%1:%2]: ", getSource(), result.line) + result.what + "\n";
+        break;
+      case PRINT:
+        output += Format::subst("PRINT [%1:%2]: ", getSource(), result.line) + result.what + "\n";
+        break;
+      }
+    }
+  }
+  if (!output.isEmpty()) {
+    xml += "<system-out><![CDATA[";
+    output.replaceAll("]]>", "]]&gt;");
+    xml += output;
+    xml += "]]></system-out>";
+  }
+  if (!error.isEmpty()) {
+    xml += "<system-err><![CDATA[";
+    error.replaceAll("]]>", "]]&gt;");
+    xml += error;
+    xml += "]]></system-err>";
+  }
+  xml += "</testcase>";
+  return xml;
 }
 
 UnitTest::~UnitTest()
@@ -626,6 +709,129 @@ const char* UnitTestManager::trimPath(const char* src) noexcept
     ++src;
   }
   return last;
+}
+
+String UnitTestManager::getJUnit() const
+{
+  // https://www.ibm.com/support/knowledgecenter/en/SSQ2R2_14.2.0/com.ibm.rsar.analysis.codereview.cobol.doc/topics/cac_useresults_junit.html
+#if 0
+  <?xml version="1.0" encoding="UTF-8" ?>
+  <!-- from https://svn.jenkins-ci.org/trunk/hudson/dtkit/dtkit-format/dtkit-junit-model/src/main/resources/com/thalesgroup/dtkit/junit/model/xsd/junit-4.xsd -->
+  <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
+
+      <xs:element name="failure">
+          <xs:complexType mixed="true">
+              <xs:attribute name="type" type="xs:string" use="optional"/>
+              <xs:attribute name="message" type="xs:string" use="optional"/>
+          </xs:complexType>
+      </xs:element>
+
+      <xs:element name="error">
+          <xs:complexType mixed="true">
+              <xs:attribute name="type" type="xs:string" use="optional"/>
+              <xs:attribute name="message" type="xs:string" use="optional"/>
+          </xs:complexType>
+      </xs:element>
+
+      <xs:element name="properties">
+          <xs:complexType>
+              <xs:sequence>
+                  <xs:element ref="property" maxOccurs="unbounded"/>
+              </xs:sequence>
+          </xs:complexType>
+      </xs:element>
+
+      <xs:element name="property">
+          <xs:complexType>
+              <xs:attribute name="name" type="xs:string" use="required"/>
+              <xs:attribute name="value" type="xs:string" use="required"/>
+          </xs:complexType>
+      </xs:element>
+
+      <xs:element name="skipped" type="xs:string"/>
+      <xs:element name="system-err" type="xs:string"/>
+      <xs:element name="system-out" type="xs:string"/>
+
+      <xs:element name="testcase">
+          <xs:complexType>
+              <xs:sequence>
+                  <xs:element ref="skipped" minOccurs="0" maxOccurs="1"/>
+                  <xs:element ref="error" minOccurs="0" maxOccurs="unbounded"/>
+                  <xs:element ref="failure" minOccurs="0" maxOccurs="unbounded"/>
+                  <xs:element ref="system-out" minOccurs="0" maxOccurs="unbounded"/>
+                  <xs:element ref="system-err" minOccurs="0" maxOccurs="unbounded"/>
+              </xs:sequence>
+              <xs:attribute name="name" type="xs:string" use="required"/>
+              <xs:attribute name="assertions" type="xs:string" use="optional"/>
+              <xs:attribute name="time" type="xs:string" use="optional"/>
+              <xs:attribute name="classname" type="xs:string" use="optional"/>
+              <xs:attribute name="status" type="xs:string" use="optional"/>
+          </xs:complexType>
+      </xs:element>
+
+      <xs:element name="testsuite">
+          <xs:complexType>
+              <xs:sequence>
+                  <xs:element ref="properties" minOccurs="0" maxOccurs="1"/>
+                  <xs:element ref="testcase" minOccurs="0" maxOccurs="unbounded"/>
+                  <xs:element ref="system-out" minOccurs="0" maxOccurs="1"/>
+                  <xs:element ref="system-err" minOccurs="0" maxOccurs="1"/>
+              </xs:sequence>
+              <xs:attribute name="name" type="xs:string" use="required"/>
+              <xs:attribute name="tests" type="xs:string" use="required"/>
+              <xs:attribute name="failures" type="xs:string" use="optional"/>
+              <xs:attribute name="errors" type="xs:string" use="optional"/>
+              <xs:attribute name="time" type="xs:string" use="optional"/>
+              <xs:attribute name="disabled" type="xs:string" use="optional"/>
+              <xs:attribute name="skipped" type="xs:string" use="optional"/>
+              <xs:attribute name="timestamp" type="xs:string" use="optional"/>
+              <xs:attribute name="hostname" type="xs:string" use="optional"/>
+              <xs:attribute name="id" type="xs:string" use="optional"/>
+              <xs:attribute name="package" type="xs:string" use="optional"/>
+          </xs:complexType>
+      </xs:element>
+
+      <xs:element name="testsuites">
+          <xs:complexType>
+              <xs:sequence>
+                  <xs:element ref="testsuite" minOccurs="0" maxOccurs="unbounded"/>
+              </xs:sequence>
+              <xs:attribute name="name" type="xs:string" use="optional"/>
+              <xs:attribute name="time" type="xs:string" use="optional"/>
+              <xs:attribute name="tests" type="xs:string" use="optional"/>
+              <xs:attribute name="failures" type="xs:string" use="optional"/>
+              <xs:attribute name="disabled" type="xs:string" use="optional"/>
+              <xs:attribute name="errors" type="xs:string" use="optional"/>
+          </xs:complexType>
+      </xs:element>
+
+  </xs:schema>
+#endif
+  
+  String xml;
+  xml += "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n";
+
+  uint64 totalTime = 0;
+  for (auto test : tests) {
+    if (auto run = test->getLastRun()) {
+      uint64 time = run->endTime - run->startTime;
+      totalTime += time;
+    }
+  }
+
+  xml += Format::subst("<testsuites id=\"%1\" name=\"%2\" tests=\"%3\" failures=\"%4\" time=\"%5\">\n", Guid::createGuidAsString, "BASE", 1, failed ? 1 : 0, totalTime/1000000.0);
+  xml += Format::subst("<testsuite id=\"%1\" name=\"%2\" tests=\"%3\" failures=\"%4\" time=\"%5\">\n", Guid::createGuidAsString, "BASE", tests.getSize(), failed, totalTime/1000000.0);
+#if 0
+  xml += "<properties>\n";
+  xml += "<property name=\"%1\" value=\"%2\"/>\n";
+  xml += "</properties>\n";
+#endif
+  for (auto test : tests) {
+    xml += test->getJUnit();
+  }
+  xml += "</testsuite>\n";
+  xml += "</testsuites>\n";
+  return xml;
 }
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

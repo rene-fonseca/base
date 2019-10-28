@@ -16,6 +16,7 @@
 #include <base/string/Format.h>
 #include <base/string/ANSIEscapeSequence.h>
 #include <base/UnitTest.h>
+#include <base/io/FileOutputStream.h>
 #include <algorithm>
 
 using namespace com::azure::dev::base;
@@ -46,6 +47,8 @@ private:
   bool stopOnFailure = false;
   bool progressMode = false;
   bool reportJSON = false;
+  bool reportJUnit = false;
+  String junitPath;
   String pattern = "*";
 public:
 
@@ -79,6 +82,13 @@ public:
         useANSIColor = true;
       } else if (argument == "--json") {
         reportJSON = true;
+      } else if (argument == "--junit") {
+        reportJUnit = true;
+        if (!enu.hasNext()) {
+          ferr << "Expected JUnit path." << ENDL;
+          return false;
+        }
+        junitPath = *enu.next();
       } else if (argument == "--randomize") {
         randomize = true;
       } else if (argument == "--stopOnFailure") {
@@ -120,6 +130,7 @@ public:
       << "--progress       Progress mode" << EOL
       << "--color          Use ANSI colors" << EOL
       << "--json           Output results as JSON" << EOL
+      << "--junit          Output results as JUnit. JUnit path must follow." << EOL
       << "--randomize      Run tests in random order" << EOL
       << "--stopOnFailure  Stop on first failure" << EOL
       << ENDL;
@@ -208,6 +219,16 @@ public:
         setExitCode(1);
       }
 
+      if (reportJUnit) {
+        String xml = manager.getJUnit();
+        try {
+          FileOutputStream fos(junitPath);
+          fos.write(reinterpret_cast<const uint8*>(xml.getElements()), xml.getLength());
+        } catch (...) {
+          ferr << "Error: Failed to write JUnit file." << ENDL;
+          setExitCode(1);
+        }
+      }
       // TAG: generate list of tests giving different results
       // TAG: add support for loading baseline for comparison
       // TAG: allow new run via http

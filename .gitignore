@@ -21,3 +21,4 @@ include/
 *.so.*
 *.dylib
 .DS_Store
+junit.xml

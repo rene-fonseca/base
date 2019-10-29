@@ -44,7 +44,8 @@ _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 class ApplicationImpl {
 public:
 
-  static void terminationExceptionHandler() throw() {
+  static void terminationExceptionHandler() noexcept
+  {
     StringOutputStream stream;
     const Type exceptionType = Exception::getExceptionType();
     if (exceptionType.isInitialized()) {
@@ -94,7 +95,8 @@ public:
     exit(Application::EXIT_CODE_INTERNAL_ERROR); // TAG: is abort() better
   }
   
-  static void unexpectedExceptionHandler() throw() {
+  static void unexpectedExceptionHandler() noexcept
+  {
     StringOutputStream stream;
     const Type exceptionType = Exception::getExceptionType();
     if (exceptionType.isInitialized()) {
@@ -190,7 +192,7 @@ public:
     isWindows2000OrLater ? ((HWND)-3) : ((HWND)0), // no parent or owner window - (HWND(-3)) ~ HWND_MESSAGE
     ((HWND)0), // no parent or owner window
                                         //isWindows2000OrLater ? ((HWND)-3) : ((HWND)0), // (HWND(-3)) ~ HWND_MESSAGE
-  DWORD dispatchResult;
+  DWORD dispatchResult = 0;
   LRESULT result2 = ::SendMessageTimeout(
     messageWindow,
     10000 + WM_QUIT,

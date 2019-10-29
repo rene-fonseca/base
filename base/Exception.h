@@ -214,7 +214,7 @@ inline EXCEPTION bindType(EXCEPTION e, const Type& type) noexcept
 }
 
 template<class EXCEPTION>
-inline void _raise(EXCEPTION e) throw(EXCEPTION)
+inline void _raise(const EXCEPTION& e) throw(EXCEPTION)
 {
   throw e;
 }

@@ -193,7 +193,8 @@ const WideString WideString::DEFAULT_STRING(WIDEMESSAGE(""));
 
 namespace internal {
   
-  void terminationExceptionHandler() throw() {
+  void terminationExceptionHandler() noexcept
+  {
     Trace::message("Exception was raised during application initialization or cleanup.");
     SystemLogger::write(
       SystemLogger::ERROR,
@@ -203,7 +204,8 @@ namespace internal {
     exit(Application::EXIT_CODE_INITIALIZATION);
   }
 
-  void unexpectedExceptionHandler() throw() {
+  void unexpectedExceptionHandler() noexcept
+  {
     StringOutputStream stream;
     try {
       throw;
@@ -233,13 +235,15 @@ namespace internal {
     }
     Trace::message(stream.getString().getElements());
     SystemLogger::write(SystemLogger::ERROR, stream.getString());
+    ferr << stream.getString() << ENDL;
     exit(Application::EXIT_CODE_INITIALIZATION);
   }
   
   class ExceptionHandlers {
   public:
     
-    ExceptionHandlers() throw() {
+    ExceptionHandlers() noexcept
+    {
       // install exception handlers
       std::set_terminate(terminationExceptionHandler);
       std::set_unexpected(unexpectedExceptionHandler);

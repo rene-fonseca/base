@@ -600,18 +600,17 @@ void UnitTestManager::loadTests()
   }
   RegisterEntry::nodes = nullptr; // we have data in heap now - allow unload of module
 
-  // add the dependencies
+  // add the dependencies set by TEST_DEPENDENCY_ON - TEST_DEPENDENCY is recommended since it doesnt have global id issue
   Reference<UnitTest> previousTest;
   auto dependency = DependencyEntry::nodes;
   while (dependency) {
-    // TAG: should get use override method instead - add multiple dependencies? - solves problem of using global id for test
-    const String key = dependency->key; // TAG: we should really use the full id
+    const String key = dependency->key; // not global id
     const String id = dependency->dependency;
     if (previousTest && (previousTest->getName() == key)) { // avoid search for test
       previousTest->addDependency(id);
     } else {
       for (auto test : tests) {
-        if (test->getName() == key) { // TAG: fix global id issue
+        if (test->getName() == key) {
           test->addDependency(id); // we do not resolve dependencies until we run the test
           previousTest = test;
           break;
@@ -830,7 +829,7 @@ bool UnitTestManager::runTests(const String& pattern)
 
 Reference<UnitTest> UnitTestManager::getTest(const String& id) const noexcept
 {
-  // TAG: use lookup
+  // use lookup if this gets used later
   for (auto test : tests) {
     if (test->getId() == id) {
       return test;
@@ -865,7 +864,7 @@ UnitTestManager::RegisterEntry::RegisterEntry(EntryNode* _node)
 UnitTestManager::RegisterEntry::~RegisterEntry()
 {
   if (node) {
-    // TAG: we need to pull out from linked list because entire storage if no longer available
+    // TAG: we need to pull out from linked list because entire storage is no longer available
 #if 0
     auto previous = node->previous;
     auto next = node->next;

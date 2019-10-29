@@ -390,7 +390,6 @@ private:
   Timer timer;
   MutualExclusion lock;
   Array<Reference<UnitTest> > tests;
-  // TAG: Map<String, Reference<UnitTest> > lookup;
 
   static UnitTestManager unitTestManager;
 public:

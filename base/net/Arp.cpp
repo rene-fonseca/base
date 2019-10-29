@@ -94,7 +94,7 @@ namespace internal {
 HashTable<String, unsigned int> InetInterface::getInterfaceNames() throw() {
   HashTable<String, unsigned int> interfaces;
 #if 0 && defined(_COM_AZURE_DEV__BASE__INET_IPV6)
-  struct if_nameindex* ni;
+  struct if_nameindex* ni = nullptr;
   if ((ni = if_nameindex()) == 0) { // MT-safe
     throw NetworkException(
       "Unable to get interfaces",
@@ -184,7 +184,7 @@ HashTable<String, unsigned int> InetInterface::getInterfaceNames() throw() {
 List<InetInterface> InetInterface::getInterfaces() throw(NetworkException) {
   List<InetInterface> interfaces;
 #if 0 && defined(_COM_AZURE_DEV__BASE__INET_IPV6)
-  struct if_nameindex* ni;
+  struct if_nameindex* ni = nullptr;
   if ((ni = if_nameindex()) == 0) { // MT-safe
     throw NetworkException(
       "Unable to get interfaces",

@@ -77,7 +77,7 @@ List<InetAddress> InetAddress::getAddressesByName(const String& name) throw(Host
   fill<uint8>(Cast::getAddress(hint), sizeof(hint), 0);
   hint.ai_family = PF_UNSPEC;
 
-  struct addrinfo* ai;
+  struct addrinfo* ai = nullptr;
   if (getaddrinfo(name.getElements(), 0, &hint, &ai) != 0) { // MT-level is safe
     throw HostNotFound(
       "Unable to lookup host by name",
@@ -109,7 +109,7 @@ List<InetAddress> InetAddress::getAddressesByName(const String& name) throw(Host
 
   freeaddrinfo(ai); // release resources - MT-level is safe
 #else // use ordinary BSD sockets - IPv4
-  struct hostent* hp;
+  struct hostent* hp = nullptr;
 
 #  if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
     if (!(hp = gethostbyname(name.getElements()))) { // MT-safe
@@ -156,7 +156,7 @@ InetAddress InetAddress::getAddressByName(const String& name) throw(HostNotFound
   fill<uint8>(Cast::getAddress(hint), sizeof(hint), 0);
   hint.ai_family = PF_UNSPEC;
 
-  struct addrinfo* ai;
+  struct addrinfo* ai = nullptr;
   if (getaddrinfo(name.getElements(), 0, &hint, &ai) != 0) { // MT-level is safe
     throw HostNotFound("Unable to lookup host by name", Type::getType<InetAddress>());
   }
@@ -497,7 +497,7 @@ String InetAddress::getHostName(bool fullyQualified) const throw(HostNotFound) {
 
   return NativeString(hostname);
 #else // use ordinary BSD sockets - IPv4
-  struct hostent* hp;
+  struct hostent* hp = nullptr;
 
   if ((family == IP_VERSION_6) &&
       ((address.words[0] != 0) ||

@@ -620,7 +620,7 @@ class SAXDumper : public XMLReader::DTDHandler,
                   public XMLReader::ContentHandler {
 private:
 
-  XMLReader* reader;
+  XMLReader* reader = nullptr;
 public:
   
   SAXDumper(XMLReader* _reader) throw()

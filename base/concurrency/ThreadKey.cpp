@@ -55,7 +55,7 @@ void* ThreadKeyImpl::getKey() const throw(ThreadKeyException) {
   }
   return result;
 #else
-  const pthread_key_t* internalKey;
+  const pthread_key_t* internalKey = nullptr;
   if (sizeof(pthread_key_t) <= sizeof(Key)) {
     internalKey = Cast::pointer<const pthread_key_t*>(&key);
   } else {
@@ -71,7 +71,7 @@ void ThreadKeyImpl::setKey(void* value) throw(ThreadKeyException) {
     throw ThreadKeyException(this);
   }
 #else
-  pthread_key_t* internalKey;
+  pthread_key_t* internalKey = nullptr;
   if (sizeof(pthread_key_t) <= sizeof(Key)) {
     internalKey = Cast::pointer<pthread_key_t*>(&key);
   } else {

@@ -37,7 +37,7 @@ public:
   class Recorder : public virtual Runnable {
   private:
 
-    IntercomServlet* intercomServlet;
+    IntercomServlet* intercomServlet = nullptr;
   public:
 
     Recorder(IntercomServlet* object) throw()
@@ -52,7 +52,7 @@ public:
   class Player : public virtual Runnable {
   private:
 
-    IntercomServlet* intercomServlet;
+    IntercomServlet* intercomServlet = nullptr;
   public:
 
     Player(IntercomServlet* object) throw()
@@ -67,7 +67,7 @@ public:
   class Reader : public virtual Runnable {
   private:
 
-    IntercomServlet* intercomServlet;
+    IntercomServlet* intercomServlet = nullptr;
   public:
 
     Reader(IntercomServlet* object) throw()
@@ -82,7 +82,7 @@ public:
   class Writer : public virtual Runnable {
   private:
 
-    IntercomServlet* intercomServlet;
+    IntercomServlet* intercomServlet = nullptr;
   public:
 
     Writer(IntercomServlet* object) throw()
@@ -388,13 +388,13 @@ private:
   static const unsigned int MAJOR_VERSION = 1;
   static const unsigned int MINOR_VERSION = 0;
 
-  bool loopback;
-  bool isServer;
+  bool loopback = false;
+  bool isServer = false;
   String host;
-  unsigned short port;
-  unsigned int channels;
-  unsigned int samplingRate;
-  IntercomServlet* intercomServlet;
+  unsigned short port = 0;
+  unsigned int channels = 0;
+  unsigned int samplingRate = 0;
+  IntercomServlet* intercomServlet = nullptr;
 public:
   
   /** The default port. */

@@ -1574,7 +1574,7 @@ _COM_AZURE_DEV__BASE__PACKED__END
 //       }
 //       buffer[offset + sizeof(LittleEndian<uint16>) + *length] = 0; // add terminator
 //       char fullPath[MAX_PATH];
-//       char* fullFilename;
+//       char* fullFilename = nullptr;
 //       bool error = ::GetFullPathName(buffer + offset + sizeof(LittleEndian<uint16>),
 //                                      sizeof(fullPath),
 //                                      fullPath,

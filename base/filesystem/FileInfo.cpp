@@ -210,7 +210,7 @@ FileInfo::FileInfo(const String& _path) throw(FileSystemException)
   bool explicitEveryone = false;
   
   for (unsigned int i = 0; i < aclInfo.AceCount; ++i) {
-    ACE_HEADER* ace;
+    ACE_HEADER* ace = nullptr;
     ::GetAce(acl, i, (void**)&ace); // TAG: why cast under cygwin
     PSID sid;
     ACCESS_MASK mask;

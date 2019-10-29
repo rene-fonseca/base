@@ -335,7 +335,7 @@ unsigned int File::getMode() const throw(FileException) {
   bool explicitEveryone = false;
   
   for (unsigned int i = 0; i < aclInfo.AceCount; ++i) {
-    ACE_HEADER* ace;
+    ACE_HEADER* ace = nullptr;
     ::GetAce(acl, i, (void**)&ace);
     PSID sid;
     ACCESS_MASK mask;
@@ -529,7 +529,7 @@ AccessControlList File::getACL() const throw(FileException) {
 //        << "  bytes free: " << information.AclBytesFree << EOL;
   
   for (unsigned int i = 0; i < information.AceCount; ++i) {
-    ACE_HEADER* ace;
+    ACE_HEADER* ace = nullptr;
     ::GetAce(acl, i, (void**)&ace);
     
     AccessControlEntry::AccessMask accessMask = 0;

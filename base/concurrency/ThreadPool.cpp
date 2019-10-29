@@ -33,7 +33,7 @@ void ThreadPool::Wrapper::run() throw() {
 
 void ThreadPool::run() throw() {
   Thread* context = Thread::getThread();
-  Runnable* job;
+  Runnable* job = nullptr;
 
   while (!context->isTerminated()) {
     semaphore.wait(); // wait for job or termination event

@@ -175,7 +175,7 @@ int Process::getPriority() throw(ProcessException) {
 
 void Process::setPriority(int priority) throw(ProcessException) {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
-  DWORD priorityClass;
+  DWORD priorityClass = 0;
   if (priority <= -20) {
     priorityClass = REALTIME_PRIORITY_CLASS;
   } else if (priority <= -10) {
@@ -300,7 +300,7 @@ bool Process::isAlive() const throw(ProcessException) {
 //     0 // optional actions
 //   );
   // use SYNCHRONIZE
-  DWORD exitCode;
+  DWORD exitCode = 0;
   HANDLE handle = ::OpenProcess(PROCESS_QUERY_INFORMATION, FALSE, static_cast<DWORD>(id));
   bassert(handle != 0, ProcessException("Unable to query process", this));
   BOOL result = ::GetExitCodeProcess(handle, &exitCode);
@@ -451,7 +451,7 @@ public:
   static BOOL CALLBACK windowHandler(HWND window, LPARAM parameter) {
     KillImpl* kill = (KillImpl*)(parameter);
     
-    DWORD processId;
+    DWORD processId = 0;
     /*DWORD threadId =*/ ::GetWindowThreadProcessId(window, &processId);
     
     if (processId == kill->getProcess().getId()) {

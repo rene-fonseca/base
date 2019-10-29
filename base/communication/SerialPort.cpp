@@ -202,7 +202,7 @@ bool SerialPort::isCD() const throw(CommunicationsException) {
 
 bool SerialPort::isCTS() const throw(CommunicationsException) {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
-  DWORD state;
+  DWORD state = 0;
   bassert(::GetCommModemStatus(handle->getHandle(), &state) != 0, CommunicationsException());
   return (state & MS_CTS_ON) != 0;
 #else // unix
@@ -212,7 +212,7 @@ bool SerialPort::isCTS() const throw(CommunicationsException) {
 
 bool SerialPort::isDSR() const throw(CommunicationsException) {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
-  DWORD state;
+  DWORD state = 0;
   bassert(::GetCommModemStatus(handle->getHandle(), &state) != 0, CommunicationsException());
   return (state & MS_DSR_ON) != 0;
 #else // unix
@@ -230,7 +230,7 @@ bool SerialPort::isDTR() const throw(CommunicationsException) {
 
 bool SerialPort::isRI() const throw(CommunicationsException) {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
-  DWORD state;
+  DWORD state = 0;
   bassert(::GetCommModemStatus(handle->getHandle(), &state) != 0, CommunicationsException());
   return (state & MS_RING_ON) != 0;
 #else // unix

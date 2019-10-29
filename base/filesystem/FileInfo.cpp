@@ -96,7 +96,7 @@ FileInfo::FileInfo(const String& _path) throw(FileSystemException)
     // TAG: fix buffer size (protect against buffer overflow)
     char* buffer[17000]; // need alternative - first attempt to get length first failed
     REPARSE_DATA_BUFFER* reparseHeader = (REPARSE_DATA_BUFFER*)&buffer;
-    DWORD bytesWritten;
+    DWORD bytesWritten = 0;
     error |= ::DeviceIoControl(link, FSCTL_GET_REPARSE_POINT, // handle and ctrl
                                0, 0, // input
                                reparseHeader, sizeof(buffer), // output
@@ -104,8 +104,8 @@ FileInfo::FileInfo(const String& _path) throw(FileSystemException)
     ::CloseHandle(link);
     bassert(!error, FileSystemException(this));
     
-    wchar* substPath;
-    unsigned int substLength;
+    wchar* substPath = nullptr;
+    unsigned int substLength = 0;
     switch (reparseHeader->ReparseTag) {
     case 0x80000000|IO_REPARSE_TAG_SYMBOLIC_LINK:
       substPath = reparseHeader->SymbolicLinkReparseBuffer.PathBuffer +

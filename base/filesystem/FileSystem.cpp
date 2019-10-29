@@ -689,7 +689,7 @@ void FileSystem::removeFolder(const String& path) throw(FileSystemException) {
     }
     uint8 buffer[REPARSE_GUID_DATA_BUFFER_HEADER_SIZE + 256]; // TAG: doc missing for min. size
     REPARSE_GUID_DATA_BUFFER* reparseHeader = (REPARSE_GUID_DATA_BUFFER*)buffer;
-    DWORD bytesWritten;
+    DWORD bytesWritten = 0;
     if (::DeviceIoControl(
           link,
           FSCTL_GET_REPARSE_POINT,
@@ -835,7 +835,7 @@ bool FileSystem::isLink(const String& path) throw(NotSupported, FileSystemExcept
     // TAG: test if partial support works - ERROR_MORE_DATA
     uint8 buffer[17000]; // TAG: fixme
     REPARSE_DATA_BUFFER* reparseHeader = (REPARSE_DATA_BUFFER*)buffer;
-    DWORD bytesWritten;
+    DWORD bytesWritten = 0;
     bool error = ::DeviceIoControl(
       link,
       FSCTL_GET_REPARSE_POINT,
@@ -979,7 +979,7 @@ public:
       // TAG: fix buffer size
       uint8 buffer[17000]; // need alternative - first attempt to get length first failed
       REPARSE_DATA_BUFFER* reparseHeader = (REPARSE_DATA_BUFFER*)buffer;
-      DWORD bytesWritten;
+      DWORD bytesWritten = 0;
       bool error = ::DeviceIoControl(
         link,
         FSCTL_GET_REPARSE_POINT,
@@ -1101,7 +1101,7 @@ public:
     stream.Size.QuadPart = (wideFullPath.getLength() + 1) * sizeof(wchar); // including terminator
     
     bool success = false;
-    DWORD bytesWritten;
+    DWORD bytesWritten = 0;
     void* context = nullptr;
     if (::BackupWrite(
           handle,
@@ -1321,7 +1321,7 @@ String FileSystem::getLink(const String& path) throw(NotSupported, FileSystemExc
     // TAG: fix buffer size
     uint8 buffer[17000]; // need alternative - first attempt to get length first failed
     REPARSE_DATA_BUFFER* reparseHeader = (REPARSE_DATA_BUFFER*)buffer;
-    DWORD bytesWritten;
+    DWORD bytesWritten = 0;
     bool error = ::DeviceIoControl(
       link,
       FSCTL_GET_REPARSE_POINT,
@@ -1451,7 +1451,7 @@ _COM_AZURE_DEV__BASE__PACKED__END
     char buffer[4096 * 2]; // maximum link size
     const ShortcutHeader* header = (const ShortcutHeader*)buffer;
     
-    DWORD linkLength;
+    DWORD linkLength = 0;
     bool error = ::ReadFile(link, buffer, sizeof(buffer), &linkLength, 0) == 0;
     ::CloseHandle(link);
     

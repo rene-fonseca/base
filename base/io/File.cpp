@@ -128,7 +128,7 @@ File::File() throw() : fd(File::FileHandle::invalid) {
 File::File(const String& path, Access access, unsigned int options) throw(AccessDenied, FileNotFound)
   : fd(File::FileHandle::invalid) {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
-  DWORD creationFlags;
+  DWORD creationFlags = 0;
   switch (options & (CREATE | TRUNCATE)) {
   case 0:
     creationFlags = OPEN_EXISTING;
@@ -173,7 +173,7 @@ File::File(const String& path, Access access, unsigned int options) throw(Access
     // TAG: fix buffer size (protect against buffer overflow)
     char* buffer[17000]; // need alternative - first attempt to get length first failed
     REPARSE_DATA_BUFFER* reparseHeader = (REPARSE_DATA_BUFFER*)&buffer;
-    DWORD bytesWritten;
+    DWORD bytesWritten = 0;
     error |= ::DeviceIoControl(link, FSCTL_GET_REPARSE_POINT, // handle and ctrl
                                0, 0, // input
                                reparseHeader, sizeof(buffer), // output

@@ -154,20 +154,34 @@ public:
       std::sort(tests.begin(), tests.end(), UnitTestManager::SortTests());
 
       for (auto test : tests) {
-        if (!Parser::doesMatchPattern(pattern, test->getName())) {
+        const String id = test->getId();
+        if (!Parser::doesMatchPattern(pattern, id)) {
           continue;
         }
 
         if (useANSIColor) {
-          fout << "TEST " << bold() << test->getName() << normal() << ":" << EOL;
+          if (String project = test->getProject()) {
+            fout << "TEST " << bold() << project << '/' << setForeground(ANSIEscapeSequence::BLUE) << test->getName() << normal();
+          } else {
+            fout << "TEST " << bold() << id << normal();
+          }
         } else {
-          fout << "TEST " << test->getName() << ":" << EOL;
+          fout << "TEST " << id;
         }
-        if (!test->getDescription().isEmpty()) {
-          fout << "  DESCRIPTION=" << test->getDescription() << EOL;
+        if (verbosity <= COMPACT) {
+          fout << EOL << FLUSH;
+          continue;
         }
-        if (!test->getSource().isEmpty()) {
-          fout << "  SOURCE=" << test->getSource() << EOL;
+
+        fout << ":" << EOL;
+        if (String description = test->getDescription()) {
+          fout << "  DESCRIPTION=" << description << EOL;
+        }
+        if (String source = test->getSource()) {
+          fout << "  SOURCE=" << source << EOL;
+        }
+        if (String owner = test->getOwner()) {
+          fout << "  OWNER=" << owner << EOL;
         }
         fout << "  PRIORITY=" << test->getPriority() << EOL;
         static const char* IMPACTS[] = { "PRIVACY", "SECURITY", "CRITICAL", "IMPORTANT", "NORMAL", "LOW", "IGNORE" };

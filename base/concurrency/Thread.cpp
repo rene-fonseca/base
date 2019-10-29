@@ -775,6 +775,8 @@ public:
 
   TEST_PRIORITY(10);
   TEST_PROJECT("base/concurrency");
+  TEST_DEPENDENCY("base/*/AtomicCounter");
+  TEST_DEPENDENCY("base/*/MutualExclusion");
   TEST_TIMEOUT_MS(30 * 1000);
 
   void runFromThread()
@@ -803,8 +805,6 @@ void MyThread::run()
 }
 
 TEST_REGISTER(Thread);
-TEST_DEPENDENCY(Thread, "base/concurrency/AtomicCounter");
-TEST_DEPENDENCY(Thread, "base/concurrency/MutualExclusion");
 
 #endif
 

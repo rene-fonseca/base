@@ -485,6 +485,32 @@ String UnitTest::getJUnit() const
     // stats: getIO(), getMemeory(), getProcessingTime()
 
     // TAG: escape data - switch to XML API when ready
+    if (getDescription()) {
+      output += Format::subst("DESCRIPTION: %1", getDescription()) + "\n";
+    }
+    if (getOwner()) {
+      output += Format::subst("OWNER: %1", getOwner()) + "\n";
+    }
+    output += Format::subst("PRIORITY: %1", getPriority()) + "\n";
+    static const char* IMPACTS[] = { "PRIVACY", "SECURITY", "CRITICAL", "IMPORTANT", "NORMAL", "LOW", "IGNORE" };
+    ASSERT(getImpact() < getArraySize(IMPACTS));
+    output += Format::subst("IMPACT: %1", String(IMPACTS[getImpact()])) + "\n";
+    output += Format::subst("TIMEOUT: %1", getTimeout()) + "\n";
+
+    for (auto dependency : getDependencies()) {
+      auto tests = UnitTestManager::getManager().getTestByPattern(dependency);
+      if (tests) {
+        for (auto dependent : tests) {
+          if (dependent->getId() == getId()) {
+            continue; // ignore self
+          }
+          output += Format::subst("DEPENDENCY: %1", dependent->getId()) + "\n";
+        }
+      } else {
+        output += Format::subst("DEPENDENCY: %1 (NO MATCH FOUND)", dependency) + "\n";
+      }
+    }
+
     for (auto result : run->results) {
       if (result.event == FAILED) {
         // type: WARNING
@@ -638,6 +664,25 @@ String makeProgress(double progress, unsigned int width = 20)
   return result;
 }
 
+namespace {
+
+  /** Returns the id for presentation. */
+  String presentId(const String& id)
+  {
+    if (UnitTestManager::getManager().getUseANSIColors()) {
+      StringOutputStream stream;
+      auto i = id.lastIndexOf('/');
+      if (i >= 0) {
+        stream << bold() << id.substring(0, i + 1) << setForeground(ANSIEscapeSequence::BLUE) << id.substring(i + 1) << normal() << FLUSH;
+      } else {
+        stream << bold() << setForeground(ANSIEscapeSequence::BLUE) << id << normal() << FLUSH;
+      }
+      return stream.getString();
+    }
+    return id;
+  }
+}
+
 bool UnitTestManager::runTests(const String& pattern)
 {
   // TAG: allow tests to run concurrently
@@ -680,12 +725,8 @@ bool UnitTestManager::runTests(const String& pattern)
     ++count;
     if (!progressMode) {
       fout << "===============================================================================" << EOL;
-      if (UnitTestManager::getManager().getUseANSIColors()) {
-        fout << "TEST " << bold() << test->getName() << normal();
-      } else {
-        fout << "TEST " << test->getName();
-      }
-      fout << " [" << count << "/" << tests.getSize() << "] (" << static_cast<int>(count * 1000.0 / tests.getSize()) / 10.0 << "%)" << ENDL;
+      fout << "TEST " << presentId(test->getId())
+           << " [" << count << "/" << tests.getSize() << "] (" << static_cast<int>(count * 1000.0 / tests.getSize()) / 10.0 << "%)" << ENDL;
       if (UnitTestManager::getManager().getUseANSIColors()) {
         fout << normal();
       }
@@ -1016,6 +1057,13 @@ String UnitTestManager::getJUnit(const String& uuid, const String& name) const
   xml += "</testsuite>\n";
   xml += "</testsuites>\n";
   return xml;
+}
+
+UnitTest::AddDependency::AddDependency(UnitTest* test, const char* id)
+{
+  if (test) {
+    test->addDependency(id);
+  }
 }
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

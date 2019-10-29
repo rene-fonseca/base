@@ -92,6 +92,13 @@ public:
     unsigned int count = 0; // number of times point was reached
   };
 
+  /** Adds given dependency to test. */
+  class AddDependency {
+  public:
+
+    AddDependency(UnitTest* test, const char* id);
+  };
+
   /* Recording of test run. */
   class Run : public ReferenceCountedObject {
   public:
@@ -554,8 +561,16 @@ public:
 #define TEST_REGISTER(TYPE) \
   TEST_REGISTER_IMPL(_COM_AZURE_DEV__BASE__MAKE_IDENTIFIER(tests), TYPE)
 
+/**
+  Adds dependency for test. If required test failed this test is skipped.
+  DEPENDENCY may be a pattern. TEST_DEPENDENCY is recommended over
+  TEST_DEPENDENCY_ON.
+*/
+#define TEST_DEPENDENCY(DEPENDENCY) \
+  base::UnitTest::AddDependency _COM_AZURE_DEV__BASE__MAKE_IDENTIFIER(_dependency) = base::UnitTest::AddDependency(this, DEPENDENCY);
+
 /** Sets dependency on other test. If required test failed this test is skipped. DEPENDENCY may be a pattern. */
-#define TEST_DEPENDENCY(TYPE, DEPENDENCY) \
+#define TEST_DEPENDENCY_ON(TYPE, DEPENDENCY) \
   namespace { namespace _COM_AZURE_DEV__BASE__MAKE_IDENTIFIER(tests) { \
     base::UnitTestManager::DependencyEntry::DependencyNode _storage = {#TYPE, "" DEPENDENCY, nullptr}; \
     base::UnitTestManager::DependencyEntry _register(&_storage); \

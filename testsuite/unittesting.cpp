@@ -220,7 +220,7 @@ public:
         }
 
         for (auto dependency : test->getDependencies()) {
-          auto detests = manager.getTestByPattern(dependency);
+          auto tests = manager.getTestByPattern(dependency);
           if (tests) {
             for (auto dependent : tests) {
               if (dependent->getId() == test->getId()) {

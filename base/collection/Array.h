@@ -498,6 +498,12 @@ public:
     return getAt(index);
   }
 
+  /** Returns true if not empty. */
+  inline operator bool() const noexcept
+  {
+    return !isEmpty();
+  }
+
   /** Shuffles the elements. */
   void shuffle()
   {

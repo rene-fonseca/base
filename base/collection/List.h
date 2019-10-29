@@ -1112,6 +1112,12 @@ public:
     enu.next(); // raises exception if end has been reached
     remove(node);
   }*/
+
+  /** Returns true if not empty. */
+  inline operator bool() const noexcept
+  {
+    return !isEmpty();
+  }
 };
 
 /**

@@ -112,13 +112,13 @@ public:
   /**
     Assignment of allocator by allocator.
   */
-  inline CapacityAllocator& operator=(const CapacityAllocator& eq) throw(MemoryException)
+  inline CapacityAllocator& operator=(const CapacityAllocator& copy) throw(MemoryException)
   {
-    if (&eq != this) { // protect against self assignment
-      size = eq.size;
-      capacity = eq.capacity;
-      granularity = eq.granularity;
-      Allocator<TYPE>::operator=(eq);
+    if (&copy != this) { // protect against self assignment
+      size = copy.size;
+      capacity = copy.capacity;
+      granularity = copy.granularity;
+      Allocator<TYPE>::operator=(copy);
     }
     return *this;
   }

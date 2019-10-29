@@ -130,15 +130,27 @@ public:
   /**
     Sets the size of the array.
   */
-  inline void setSize(MemorySize size)
+  void setSize(MemorySize size)
   {
     if (size != this->size) {
+      elements.copyOnWrite();
       this->size = size;
       if (elements.isValid()) {
         elements->setSize(size);
       } else {
         elements = new ReferenceCountedCapacityAllocator<Value>(size, ReferenceCountedCapacityAllocator<Value>::DEFAULT_GRANULARITY);
       }
+    }
+  }
+
+  /**
+    Ensure capacity.
+  */
+  void ensureCapacity(MemorySize capacity)
+  {
+    elements.copyOnWrite();
+    if (elements) {
+      elements->ensureCapacity(capacity);
     }
   }
 
@@ -207,7 +219,8 @@ public:
   */
   inline Array(const Array& copy) noexcept
     : elements(copy.elements),
-      size(copy.size) {
+      size(copy.size)
+  {
   }
 
   Array(Array&& move) noexcept
@@ -221,11 +234,11 @@ public:
   /**
     Assignment of array to array.
   */
-  inline Array& operator=(const Array& eq) noexcept
+  inline Array& operator=(const Array& copy) noexcept
   {
-    if (&eq != this) {
-      elements = eq.elements;
-      size = eq.size;
+    if (&copy != this) {
+      elements = copy.elements;
+      size = copy.size;
     }
     return *this;
   }

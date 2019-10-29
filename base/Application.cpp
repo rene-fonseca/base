@@ -46,9 +46,11 @@ public:
 
   static void terminationExceptionHandler() noexcept
   {
+    static bool firstTime = true;    
     StringOutputStream stream;
     const Type exceptionType = Exception::getExceptionType();
-    if (exceptionType.isInitialized()) {
+    if (firstTime || exceptionType.isInitialized()) {
+      firstTime = false;
       try {
         throw;
       } catch (Exception& e) {

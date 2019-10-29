@@ -23,6 +23,7 @@
 #include <base/TypeInfo.h>
 #include <base/Date.h>
 #include <algorithm>
+#include <memory>
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 

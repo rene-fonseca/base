@@ -15,7 +15,9 @@
 
 #include <base/string/Format.h>
 #include <base/collection/Array.h>
+#include <base/collection/List.h>
 #include <base/collection/Map.h>
+#include <base/collection/Pair.h>
 #include <base/Type.h>
 #include <base/Timer.h>
 #include <base/concurrency/MutualExclusion.h>
@@ -221,6 +223,9 @@ public:
   /** Sets the type (from class) of the test. */
   void setType(const Type& type);
 
+  /** Returns the ID of the test (project/name). */
+  String getId() const;
+
   /** Returns the name/id of the test. */
   inline const String& getName() const noexcept
   {
@@ -370,6 +375,7 @@ private:
   MutualExclusion lock;
 
   Array<Reference<UnitTest> > tests;
+  List<Pair<String, String > > dependencies;
 
   static UnitTestManager unitTestManager;
 public:
@@ -384,8 +390,13 @@ public:
   /** Only returns the filename after the last / or \. */
   static const char* trimPath(const char*) noexcept;
 
-  /** Returns the JUnit document. */
-  String getJUnit() const;
+  /**
+    Returns the JUnit document.
+
+    @param uuid UUID to use for testsuite. If empty, a random UUID will be used.
+    @param name The testsuite name ("BASE" by default).
+  */
+  String getJUnit(const String& uuid = String(), const String& name = "BASE") const;
 
   /** Create test instance and adds it. */
   template<class TYPE>
@@ -490,6 +501,30 @@ public:
 
     ~RegisterEntry();
   };
+
+  /** Internal test dependency helper. */
+  class _COM_AZURE_DEV__BASE__API DependencyEntry {
+    friend class UnitTestManager;
+  public:
+
+    struct DependencyNode {
+      const char* key;
+      const char* dependency;
+      DependencyNode* next; // next node
+    };
+
+    DependencyNode* node = nullptr;
+  private:
+
+    /** The last test dependency. This is a pointer so it is always ready for use during global initialization. */
+    static DependencyNode* nodes;
+  public:
+
+    /** Records test dependency. */
+    DependencyEntry(DependencyNode* entry);
+
+    ~DependencyEntry();
+  };
 };
 
 
@@ -505,8 +540,12 @@ public:
 #define TEST_REGISTER(TYPE) \
   TEST_REGISTER_IMPL(_COM_AZURE_DEV__BASE__MAKE_IDENTIFIER(tests), TYPE)
 
-/** Sets the priority the test. Lower priorty gets run first. */
-#define TEST_DEPENDENCY(CLASS, DEPENDENCY) // TAG: how can we handle this - register combo of names
+/** Sets dependency on other test. If required test failed this test is skipped. */
+#define TEST_DEPENDENCY(TYPE, DEPENDENCY) \
+  namespace { namespace _COM_AZURE_DEV__BASE__MAKE_IDENTIFIER(tests) { \
+    base::UnitTestManager::DependencyEntry::DependencyNode _storage = {#TYPE, "" DEPENDENCY, nullptr}; \
+    base::UnitTestManager::DependencyEntry _register(&_storage); \
+  } }
 
 /** Tag all references to the Test class using this define. */
 #define TEST_CLASS(CLASS) _TEST_ ## CLASS

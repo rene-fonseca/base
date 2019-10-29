@@ -49,6 +49,7 @@ private:
   bool reportJSON = false;
   bool reportJUnit = false;
   String junitPath;
+  String testsuiteUUID;
   String pattern = "*";
 public:
 
@@ -89,6 +90,12 @@ public:
           return false;
         }
         junitPath = *enu.next();
+      } else if (argument == "--uuid") {
+        if (!enu.hasNext()) {
+          ferr << "Expected testsuite UUID." << ENDL;
+          return false;
+        }
+        testsuiteUUID = *enu.next();
       } else if (argument == "--randomize") {
         randomize = true;
       } else if (argument == "--stopOnFailure") {
@@ -131,6 +138,7 @@ public:
       << "--color          Use ANSI colors" << EOL
       << "--json           Output results as JSON" << EOL
       << "--junit          Output results as JUnit. JUnit path must follow." << EOL
+      << "--uuid           UUID for testsuite." << EOL
       << "--randomize      Run tests in random order" << EOL
       << "--stopOnFailure  Stop on first failure" << EOL
       << ENDL;
@@ -138,7 +146,6 @@ public:
 
   void main()
   {
-    // TAG: get pattern and priority from args
     if (!parseArguments()) {
       return;
     }
@@ -234,7 +241,7 @@ public:
       }
 
       if (reportJUnit) {
-        String xml = manager.getJUnit();
+        String xml = manager.getJUnit(testsuiteUUID);
         try {
           FileOutputStream fos(junitPath);
           fos.write(reinterpret_cast<const uint8*>(xml.getElements()), xml.getLength());
@@ -243,9 +250,9 @@ public:
           setExitCode(1);
         }
       }
+
       // TAG: generate list of tests giving different results
       // TAG: add support for loading baseline for comparison
-      // TAG: allow new run via http
     } else {
       help();
     }

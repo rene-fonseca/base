@@ -21,14 +21,27 @@
 #include <base/Guid.h>
 #include <base/Random.h>
 #include <base/TypeInfo.h>
+#include <base/Date.h>
 #include <algorithm>
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 UnitTestManager::RegisterEntry::EntryNode* UnitTestManager::RegisterEntry::nodes = nullptr;
+UnitTestManager::DependencyEntry::DependencyNode* UnitTestManager::DependencyEntry::nodes = nullptr;
 
 UnitTest::UnitTest()
 {
+}
+
+String UnitTest::getId() const
+{
+  String id;
+  if (String project = getProject()) {
+    id = project + "/" + name;
+  } else {
+    id = name;
+  }
+  return id;
 }
 
 void UnitTest::setName(const String& _name)
@@ -217,7 +230,6 @@ Reference<ObjectModel::Object> UnitTest::Run::getReport() const
 
 bool UnitTest::Run::compare(const Run& a, const Run& b)
 {
-  // TAG: get report
   return false;
 }
 
@@ -226,8 +238,64 @@ void UnitTest::run()
   onFailed("Test not implemented");
 }
 
+const char* getStdExceptionName(const std::exception& e) noexcept
+{
+  if (dynamic_cast<const std::runtime_error*>(&e)) {
+    if (dynamic_cast<const std::range_error*>(&e)) {
+      return "std::range_error";
+    } else if (dynamic_cast<const std::overflow_error*>(&e)) {
+      return "std::overflow_error";
+    } else if (dynamic_cast<const std::underflow_error*>(&e)) {
+      return "std::underflow_error";
+    } else if (dynamic_cast<const std::out_of_range*>(&e)) {
+      return "std::out_of_range";
+#if 0
+    } else if (dynamic_cast<const std::regex_error*>(&e)) { // C++11
+      return "std::regex_error";
+#endif
+    } else if (dynamic_cast<const std::system_error*>(&e)) { // C++11
+      return "std::system_error";
+    }
+    return "std::runtime_error";
+  } else if (dynamic_cast<const std::logic_error*>(&e)) {
+    if (dynamic_cast<const std::invalid_argument*>(&e)) {
+      return "std::invalid_argument";
+    } else if (dynamic_cast<const std::domain_error*>(&e)) {
+      return "std::domain_error";
+    } else if (dynamic_cast<const std::length_error*>(&e)) {
+      return "std::length_error";
+    } else if (dynamic_cast<const std::out_of_range*>(&e)) {
+      return "std::out_of_range";
+#if 0
+    } else if (dynamic_cast<const std::future_error*>(&e)) { // C++11
+      return "std::future_error";
+#endif
+    }
+    return "std::logic_error";
+  } else if (dynamic_cast<const std::bad_typeid*>(&e)) {
+    return "std::bad_typeid";
+  } else if (dynamic_cast<const std::bad_cast*>(&e)) {
+    return "std::bad_cast";
+  } else if (dynamic_cast<const std::bad_weak_ptr*>(&e)) { // C++11
+    return "std::bad_weak_ptr";
+#if 0
+  } else if (dynamic_cast<const std::bad_function_call*>(&e)) { // C++11
+    return "std::bad_function_call";
+#endif
+  } else if (dynamic_cast<const std::bad_alloc*>(&e)) {
+    return "std::bad_alloc";
+  } else if (dynamic_cast<const std::bad_array_new_length*>(&e)) { // C++11
+    return "std::bad_array_new_length";
+  } else if (dynamic_cast<const std::bad_exception*>(&e)) {
+    return "std::bad_exception";
+  }
+  return "std::exception";
+}
+
 Reference<UnitTest::Run> UnitTest::runImpl()
 {
+  // TAG: how should we handle access to required login/accounts/resources - get environment variable?
+
   auto& manager = UnitTestManager::getManager();
   
   Reference<Run> r = new Run();
@@ -243,6 +311,8 @@ Reference<UnitTest::Run> UnitTest::runImpl()
   }
   */
   try {
+    throw std::range_error("avbbb");
+    throw std::runtime_error("123");
     run();
   } catch (Exception& e) {
 
@@ -264,16 +334,12 @@ Reference<UnitTest::Run> UnitTest::runImpl()
   } catch (std::exception& e) {
     const String w = e.what();
     currentRun->exceptionFailure = "Failed with exception.";
-    currentRun->exceptionType = "std::exception";
+    currentRun->exceptionType = getStdExceptionName(e);
     if (w.isEmpty()) {
       onFailed("Test failed with std::exception");
     } else {
       currentRun->exceptionFailure = w;
-      // TAG: map std::exception to the actual type - add all known types
-      if (dynamic_cast<const std::runtime_error*>(&e)) {
-        currentRun->exceptionType = "std::runtime_error";
-      }
-      onFailed(Format::subst("Test failed with std::exception: '%1'", w));
+      onFailed(Format::subst("Test failed with exception '%1': '%2'", currentRun->exceptionType, w));
     }
   } catch (...) {
     onFailed("Test failed with unknown exception");
@@ -387,25 +453,26 @@ String UnitTest::getJUnit() const
   if (run) {
     time = run->endTime - run->startTime;
   }
-  // alternatively use getType() for classname
-  // TAG: allow filtering - use prefix for id - e.g. base/AtomicCounter - prefix can be guid
-  // TAG: dump modules - short list - as option
-  // TAG: set project for unittests
-  // TAG: how to filter - base/*
-  
-  // TAG: base:priority="XXX"
-  String id;
-  if (!getProject().isEmpty()) {
-    id = getProject() + "/" + getName();
-  }
+
+  String id = getId();
   if (id.isEmpty()) {
     id = Guid::createGuidAsString();
   }
+
+  // alternatively use getType() for classname
   const String owner = getOwner(); // responsible entity
   xml += Format::subst(
-    "<testcase id=\"%1\" name=\"%2\" classname=\"%3\" time=\"%4\" owner=\"%5\">",
-    id, getName(), getName(), time/1000000.0, owner // TAG: priority
+    "<testcase id=\"%1\" name=\"%2\" classname=\"%3\" time=\"%4\" owner=\"%5\" priority=\"%6\">",
+    id, getName(), getName(), time/1000000.0, owner, getPriority()
   );
+
+#if 0
+  if (String description = getDescription()) {
+    description.replaceAll("]]>", "]]&gt;");
+    xml += "<base:description><![CDATA[" + description + "]]></base:description>";
+  }
+#endif
+
   String output;
   String error;
   if (!run) {
@@ -414,12 +481,12 @@ String UnitTest::getJUnit() const
     if (run && !run->exceptionFailure.isEmpty()) {
       xml += Format::subst("<error message=\"%1\" type=\"%2\"/>", run->exceptionFailure, run->exceptionType);
     }
-    
-    // unsupported: - add if namespace is enabled - useBaseNamespace()
-    // getDescription();
+
+    // additional info
     // getImpact();
-    
-    // TAG: escape data
+    // stats: getIO(), getMemeory(), getProcessingTime()
+
+    // TAG: escape data - switch to XML API when ready
     for (auto result : run->results) {
       if (result.event == FAILED) {
         // type: WARNING
@@ -495,7 +562,7 @@ void UnitTestManager::loadTests()
   auto entry = RegisterEntry::nodes;
   while (entry) {
     if (!entry->loaded) {
-      entry->loaded = true; // TAG: we can also remove from linked list
+      entry->loaded = true; // we can also remove from linked list
       if (INLINE_ASSERT(entry->entry)) {
         try {
           entry->entry();
@@ -507,6 +574,14 @@ void UnitTestManager::loadTests()
     }
     entry = entry->next;
   }
+  RegisterEntry::nodes = nullptr; // we have data in heap now - allow unload of module
+
+  auto dependency = DependencyEntry::nodes;
+  while (dependency) {
+    dependencies.append(Pair<String, String>(dependency->key, dependency->dependency));
+    dependency = dependency->next;
+  }
+  DependencyEntry::nodes = nullptr; // we have data in heap now - allow unload of module
 }
 
 class TestingThread : public Thread {
@@ -552,15 +627,22 @@ String makeProgress(double progress, unsigned int width = 20)
 
 bool UnitTestManager::runTests(const String& pattern)
 {
-  // TAG: allow test to be terminated timeout
   // TAG: allow tests to run concurrently
 
   loadTests();
 
   Array<Reference<UnitTest> > tests;
-  // TAG: tests.ensureCapacity();
+  tests.ensureCapacity(this->tests.getSize());
   for (auto test : this->tests) {
-    if (Parser::doesMatchPattern(pattern, test->getName())) {
+
+    String id;
+    if (String project = test->getProject()) {
+      id = test->getProject() + "/" + test->getName();
+    } else {
+      id = test->getName();
+    }
+
+    if (Parser::doesMatchPattern(pattern, id)) {
       tests.append(test);
     }
   }
@@ -569,6 +651,8 @@ bool UnitTestManager::runTests(const String& pattern)
     tests.shuffle();
   } else {
     std::sort(tests.begin(), tests.end(), SortTests());
+    
+    // TAG: handle dependencies - reorder
   }
 
   unsigned int passed = 0;
@@ -599,6 +683,9 @@ bool UnitTestManager::runTests(const String& pattern)
         fout << "  Description: " << test->getDescription() << ENDL;
       }
     }
+
+    // TAG: find by ID
+    // TAG: skip if dependent test failed
     
     TestingThread thread(test);
     thread.start();
@@ -702,11 +789,31 @@ UnitTestManager::RegisterEntry::RegisterEntry(EntryNode* _node)
 UnitTestManager::RegisterEntry::~RegisterEntry()
 {
   if (node) {
-    // TAG: we need to pull out from linked list also!
+    // TAG: we need to pull out from linked list because entire storage if no longer available
+#if 0
+    auto previous = node->previous;
+    auto next = node->next;
+    previous->next = next;
+    next->previous = previous;
+#endif
     node->entry = nullptr; // prevent access of unloaded memory
-    // TAG: if already loaded we will have a problem
-    // ASSERT(!node->loaded); // Unloading module which has registered test
-    // TAG: find module and disable
+  }
+}
+
+UnitTestManager::DependencyEntry::DependencyEntry(DependencyNode* _node)
+  : node(_node)
+{
+  if (node) {
+    auto previous = nodes;
+    node->next = previous;
+    nodes = node;
+  }
+}
+
+UnitTestManager::DependencyEntry::~DependencyEntry()
+{
+  if (node) {
+    // TAG: we need to pull out from linked list because entire storage if no longer available
   }
 }
 
@@ -729,7 +836,7 @@ const char* UnitTestManager::trimPath(const char* src) noexcept
   return last;
 }
 
-String UnitTestManager::getJUnit() const
+String UnitTestManager::getJUnit(const String& uuid, const String& name) const
 {
   // https://www.ibm.com/support/knowledgecenter/en/SSQ2R2_14.2.0/com.ibm.rsar.analysis.codereview.cobol.doc/topics/cac_useresults_junit.html
 #if 0
@@ -840,29 +947,28 @@ String UnitTestManager::getJUnit() const
   // https://docs.microsoft.com/en-us/azure/devops/pipelines/tasks/test/publish-test-results?view=azure-devops&tabs=yaml
   // See results mapping
 
-  String name = "BASE"; // TAG: how should we handle this
   // xmlns:base="https://dev.azure.com/renefonseca/base"
   // attributes: disabled, errors
   xml += Format::subst(
-    "<testsuites xmlns:base=\"https://dev.azure.com/renefonseca/base\" id=\"%1\" name=\"%2\" tests=\"%3\" failures=\"%4\" time=\"%5\">\n",
-    Guid::createGuidAsString(), name, 1, failed ? 1 : 0, totalTime/1000000.0
+    "<testsuites id=\"%1\" name=\"%2\">\n", // tests = \"%3\" failures=\"%4\" time=\"%5\"
+    Guid::createGuidAsString(), name ? name : "BASE" /*, 1, failed ? 1 : 0, totalTime/1000000.0*/
   );
   
-  // TAG: when registering test add prefix
-  // TAG: disable unittest for ctest
   String hostname = "localhost";
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
-  hostname = "windows"; // TAG: get version of windows
+  hostname = "windows";
 #elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__GNULINUX)
   hostname = "gnulinux";
 #elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__MACOS)
   hostname = "macos";
 #endif
   
-  // TAG: timestamp - ISO 8601 format (2014-01-21T16:17:18)
+  // timestamp - ISO 8601 format (2014-01-21T16:17:18) without timezone!
+  String timestamp = Date::getNow().format(String("%FT%T"), false);
+  // other attributes: errors, disabled, skipped, package
   xml += Format::subst(
     "<testsuite id=\"%1\" name=\"%2\" hostname=\"%3\" tests=\"%4\" failures=\"%5\" time=\"%6\" timestamp=\"%7\">\n",
-    Guid::createGuidAsString(), name, hostname, tests.getSize(), failed, totalTime/1000000.0, 0 // TAG: FIXME
+    uuid ? uuid : Guid::createGuidAsString(), name ? name : "BASE", hostname, tests.getSize(), failed, totalTime/1000000.0, timestamp
   );
 #if 0
   xml += "<properties>\n";

@@ -803,8 +803,8 @@ void MyThread::run()
 }
 
 TEST_REGISTER(Thread);
-TEST_DEPENDENCY(Thread, AtomicCounter);
-TEST_DEPENDENCY(Thread, MutualExclusion);
+TEST_DEPENDENCY(Thread, "base/concurrency/AtomicCounter");
+TEST_DEPENDENCY(Thread, "base/concurrency/MutualExclusion");
 
 #endif
 

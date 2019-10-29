@@ -122,7 +122,7 @@ List<InetAddress> InetAddress::getAddressesByName(const String& name) throw(Host
          (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__SOLARIS))
     struct hostent h;
     char buffer[1024]; // how big should this buffer be
-    int error;
+    int error = 0;
     if (!(hp = gethostbyname_r(name.getElements(), &h, buffer, sizeof(buffer), &error))) {
       throw HostNotFound(
         "Unable to lookup host by name",
@@ -132,7 +132,7 @@ List<InetAddress> InetAddress::getAddressesByName(const String& name) throw(Host
 #  elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__GNULINUX)
     struct hostent h;
     char buffer[1024]; // how big should this buffer be
-    int error;
+    int error = 0;
     if (gethostbyname_r(name.getElements(), &h, buffer, sizeof(buffer), &hp, &error)) {
       throw HostNotFound("Unable to lookup host by name", Type::getType<InetAddress>());
     }
@@ -187,14 +187,14 @@ InetAddress InetAddress::getAddressByName(const String& name) throw(HostNotFound
          (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__SOLARIS))
     struct hostent h;
     char buffer[1024]; // how big should this buffer be
-    int error;
+    int error = 0;
     if (!(hp = gethostbyname_r(name.getElements(), &h, buffer, sizeof(buffer), &error))) {
       throw HostNotFound("Unable to lookup host by name", Type::getType<InetAddress>());
     }
 #  elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__GNULINUX)
     struct hostent h;
     char buffer[1024]; // how big should this buffer be
-    int error;
+    int error = 0;
     if (gethostbyname_r(name.getElements(), &h, buffer, sizeof(buffer), &hp, &error)) {
       throw HostNotFound("Unable to lookup host by name", Type::getType<InetAddress>());
     }
@@ -518,7 +518,7 @@ String InetAddress::getHostName(bool fullyQualified) const throw(HostNotFound) {
          (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__SOLARIS))
     struct hostent result;
     char buffer[1024]; // how big should this buffer be
-    int error;
+    int error = 0;
     hp = gethostbyaddr_r(
       Cast::getCharAddress(address.words[3]),
       sizeof(address.words[3]),

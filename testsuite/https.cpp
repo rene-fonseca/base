@@ -399,7 +399,7 @@ private:
   StreamSocket controlConnection;
 
   /** Specifies that a new response is pending. */
-  bool responsePending;
+  bool responsePending = false;
   /** The last line of the last response. */
   String response;
   /** The last status code. */
@@ -407,17 +407,18 @@ private:
   /** Reason phrase of last reply. */
   String reasonPhrase;
   /** Specifies the verbosity. */
-  Verbosity verbosity;
+  Verbosity verbosity = ALL;
   
   /** The retry delay in seconds. */
-  unsigned int retryDelay;
+  unsigned int retryDelay = 0;
   /** The number of retry attempts. */
-  unsigned int retryAttempts;
+  unsigned int retryAttempts = 0;
   /** Read buffer. */
   Allocator<uint8> buffer;
 protected:
 
-  void translateStatus(const String& value) throw(HTTPException) {
+  void translateStatus(const String& value) throw(HTTPException)
+  {
     String::ReadIterator i = value.getBeginReadIterator();
     String::ReadIterator end = value.getEndReadIterator();
 

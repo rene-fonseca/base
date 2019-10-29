@@ -644,7 +644,7 @@ void Socket::shutdownOutputStream() throw(NetworkException) {
 }
 
 bool Socket::getBooleanOption(int option) const throw(NetworkException) {
-  int buffer;
+  int buffer = 0;
   unsigned int length = sizeof(buffer);
   internal::SocketImpl::getOption(
     (SOCKET)socket->getHandle(),
@@ -668,7 +668,7 @@ void Socket::setBooleanOption(int option, bool value) throw(NetworkException) {
 }
 
 int Socket::getErrorState() const throw(NetworkException) {
-  int buffer;
+  int buffer = 0;
   unsigned int length = sizeof(buffer);
   internal::SocketImpl::getOption(
     (SOCKET)socket->getHandle(),
@@ -729,7 +729,7 @@ void Socket::setLinger(int seconds) throw(NetworkException) {
 }
 
 int Socket::getReceiveBufferSize() const throw(NetworkException) {
-  int buffer;
+  int buffer = 0;
   unsigned int length = sizeof(buffer);
   internal::SocketImpl::getOption(
     (SOCKET)socket->getHandle(),
@@ -753,7 +753,7 @@ void Socket::setReceiveBufferSize(int size) throw(NetworkException) {
 }
 
 int Socket::getSendBufferSize() const throw(NetworkException) {
-  int buffer;
+  int buffer = 0;
   unsigned int length = sizeof(buffer);
   internal::SocketImpl::getOption((SOCKET)socket->getHandle(), SOL_SOCKET, SO_SNDBUF, &buffer, &length);
   return buffer;
@@ -778,7 +778,7 @@ void Socket::setSendBufferSize(int size) throw(NetworkException) {
 // TAG: max backlog queue length: SOMAXCONN
 
 bool Socket::getDontRoute() const throw(NetworkException) {
-  int buffer;
+  int buffer = 0;
   unsigned int length = sizeof(buffer);
   internal::SocketImpl::getOption(
     (SOCKET)socket->getHandle(),
@@ -864,7 +864,7 @@ void Socket::setSendTimeout(uint64 nanoseconds) throw(NetworkException) {
 }
 
 bool Socket::getTcpNoDelay() const throw(NetworkException) {
-  int buffer;
+  int buffer = 0;
   unsigned int length = sizeof(buffer);
   internal::SocketImpl::getOption(
     (SOCKET)socket->getHandle(),
@@ -889,7 +889,7 @@ void Socket::setTcpNoDelay(bool value) throw(NetworkException) {
 
 uint64 Socket::getTcpDeferAccept() const throw(NetworkException) {
 #if (defined(TCP_DEFER_ACCEPT))
-  int buffer;
+  int buffer = 0;
   unsigned int length = sizeof(buffer);
   internal::SocketImpl::getOption(
     (SOCKET)socket->getHandle(),
@@ -920,7 +920,7 @@ void Socket::setTcpDeferAccept(uint64 value) throw(NetworkException) {
 }
  
 unsigned int Socket::getTimeToLive() const throw(NetworkException) {
-  int buffer;
+  int buffer = 0;
   unsigned int length = sizeof(buffer);
   internal::SocketImpl::getOption(
     (SOCKET)socket->getHandle(),
@@ -1116,7 +1116,7 @@ void Socket::setMulticastInterface(const InetAddress& interface) throw(NetworkEx
 uint8 Socket::getUnicastHops() const throw(NetworkException) {
 #if (defined(_COM_AZURE_DEV__BASE__INET_IPV6))
   if (socket->getDomain() == Socket::IPV6) {
-    int buffer;
+    int buffer = 0;
     unsigned int length = sizeof(buffer);
     internal::SocketImpl::getOption(
       (SOCKET)socket->getHandle(),
@@ -1140,7 +1140,7 @@ uint8 Socket::getUnicastHops() const throw(NetworkException) {
 void Socket::setUnicastHops(uint8 value) throw(NetworkException) {
 #if (defined(_COM_AZURE_DEV__BASE__INET_IPV6))
   if (socket->getDomain() == Socket::IPV6) {
-    int buffer;
+    int buffer = 0;
     internal::SocketImpl::setOption(
       (SOCKET)socket->getHandle(),
       IPPROTO_IPV6,
@@ -1465,7 +1465,7 @@ void Socket::leaveGroup(const InetAddress& interface, const InetAddress& group) 
 bool Socket::getIPv6Restriction() const throw(NetworkException) {
 #if (defined(_COM_AZURE_DEV__BASE__INET_IPV6) && defined(IPV6_V6ONLY))
   if (socket->getDomain() == Socket::IPV6) {
-    int buffer;
+    int buffer = 0;
     unsigned int length = sizeof(buffer);
     internal::SocketImpl::getOption(
       (SOCKET)socket->getHandle(),
@@ -1487,7 +1487,7 @@ bool Socket::getIPv6Restriction() const throw(NetworkException) {
 void Socket::setIPv6Restriction(bool value) throw(NetworkException) {
 #if (defined(_COM_AZURE_DEV__BASE__INET_IPV6) && defined(IPV6_V6ONLY))
   if (socket->getDomain() == Socket::IPV6) {
-    int buffer;
+    int buffer = 0;
     internal::SocketImpl::setOption(
       (SOCKET)socket->getHandle(),
       IPPROTO_IPV6,
@@ -1513,7 +1513,7 @@ void Socket::setNonBlocking(bool value) throw(NetworkException) {
     internal::SocketImpl::raiseNetwork("Unable to set blocking mode");
   }
 #else // unix
-  int flags;
+  int flags = 0;
   if ((flags = fcntl((SOCKET)socket->getHandle(), F_GETFL)) == -1) {
     internal::SocketImpl::raiseNetwork("Unable to get flags for socket");
   }
@@ -1543,7 +1543,7 @@ bool Socket::getAsynchronous() throw(NetworkException) {
 //     internal::SocketImpl::raiseNetwork("Unable to set blocking mode");
 //   }
 #else // unix
-  int flags;
+  int flags = 0;
   if ((flags = fcntl((SOCKET)socket->getHandle(), F_GETFL)) == -1) {
     internal::SocketImpl::raiseNetwork("Unable to get flags for socket");
   }
@@ -1558,7 +1558,7 @@ void Socket::setAsynchronous(bool value) throw(NetworkException) {
 //     internal::SocketImpl::raiseNetwork("Unable to set blocking mode");
 //   }
 #else // unix
-  int flags;
+  int flags = 0;
   if ((flags = fcntl((SOCKET)socket->getHandle(), F_GETFL)) == -1) {
     internal::SocketImpl::raiseNetwork("Unable to get flags for socket");
   }

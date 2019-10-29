@@ -35,7 +35,7 @@ private:
   static const unsigned int BLOCK_SIZE = 4096 * 4;
   
   uint8 buffer[BLOCK_SIZE];
-  unsigned int job;
+  unsigned int job = 0;
 public:
   
   class Job {
@@ -56,7 +56,8 @@ public:
     int numberOfArguments,
     const char* arguments[],
     const char* environment[])
-    : Application("digest", numberOfArguments, arguments, environment) {
+    : Application("digest", numberOfArguments, arguments, environment)
+  {
     job = Job::SHA1;
   }  
   

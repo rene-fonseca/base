@@ -251,7 +251,7 @@ List<InetInterface> InetInterface::getInterfaces() throw(NetworkException) {
   }
 #elif 1 || (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__GNULINUX)
   int handle = socket(PF_INET, SOCK_STREAM, 0);
-//   int numberOfInterfaces;
+//   int numberOfInterfaces = 0;
 // #if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__GNULINUX)
 //   const int command = SIOCGIFCOUNT;
 // #else
@@ -361,7 +361,7 @@ unsigned int InetInterface::getIndexByName(const String& name) throw(NetworkExce
   throw NetworkException(Type::getType<InetInterface>());
 #else
   int handle = socket(PF_INET, SOCK_STREAM, 0);
-//   int numberOfInterfaces;
+//   int numberOfInterfaces = 0;
 // #if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__GNULINUX)
 //   const int command = SIOCGIFCOUNT;
 // #else
@@ -444,7 +444,7 @@ unsigned int InetInterface::getIndexByAddress(const InetAddress& address) throw(
   throw NetworkException("Unable to resolve interface", Type::getType<InetInterface>());
 #else
   int handle = socket(PF_INET, SOCK_STREAM, 0);
-//   int numberOfInterfaces;
+//   int numberOfInterfaces = 0;
 // #if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__GNULINUX)
 //   const int command = SIOCGIFCOUNT;
 // #else
@@ -536,7 +536,7 @@ String InetInterface::getName(unsigned int index) throw(NetworkException) {
   return stream.getString();
 #else
   int handle = socket(PF_INET, SOCK_STREAM, 0);
-//   int numberOfInterfaces;
+//   int numberOfInterfaces = 0;
 // #if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__GNULINUX)
 //   const int command = SIOCGIFCOUNT;
 // #else
@@ -633,7 +633,7 @@ InetAddress InetInterface::getAddress(unsigned int index) throw(NetworkException
 #else
   struct ifreq req;
   int handle = socket(PF_INET, SOCK_STREAM, 0);
-//   int numberOfInterfaces;
+//   int numberOfInterfaces = 0;
 // #if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__GNULINUX)
 //   const int command = SIOCGIFCOUNT;
 // #else

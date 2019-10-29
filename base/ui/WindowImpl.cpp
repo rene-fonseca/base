@@ -818,8 +818,8 @@ bool WindowImpl::loadModule(bool load) throw() {
       // TAG: need support for connection to any server (e.g. "localhost:0.0")
       Display* display = ::XOpenDisplay(0);
       if (display) {
-//         int numberOfVisuals;
-//         XVisualInfo temp;
+//         int numberOfVisuals = 0;
+//         XVisualInfo temp = 0;
 //         temp.depth = 24;
 //         XVisualInfo* info = XGetVisualInfo(display, VisualDepthMask, &temp, &numberOfVisuals);
 //         fout << numberOfVisuals << ENDL;

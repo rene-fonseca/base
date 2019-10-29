@@ -254,7 +254,7 @@ nothing OpenGLPixmapContext::initialize(const Dimension& dimension, unsigned int
     };
     
     for (unsigned int i = 0; i < getArraySize(ATTRIBUTES); ++i) {
-      int value;
+      int value = 0;
       int result = native::GLX::glXGetConfig(
         (Display*)Backend<WindowImpl>::getDisplay(),
         visualInfo,

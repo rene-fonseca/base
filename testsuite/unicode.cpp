@@ -115,10 +115,12 @@ public:
     int numberOfArguments,
     const char* arguments[],
     const char* environment[])
-    : Application("Unicode", numberOfArguments, arguments, environment) {
+    : Application("Unicode", numberOfArguments, arguments, environment)
+  {
   }
 
-  void doit(const String& path) {
+  void doit(const String& path)
+  {
     unsigned int totalNumberOfCodes = 0;
     unsigned int totalNumberOfUpper = 0;
     unsigned int totalNumberOfLower = 0;

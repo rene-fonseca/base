@@ -166,8 +166,8 @@ namespace native {
         return false;
       }
       
-      int major;
-      int minor;
+      int major = 0;
+      int minor = 0;
       result = native::GLX::glXQueryVersion(
         (Display*)Backend<WindowImpl>::getDisplay(),
         &major,

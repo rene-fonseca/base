@@ -139,7 +139,7 @@ unsigned int SoundInputStream::getChannels() const throw() {
   SharedSynchronize<ReadWriteLock> sharedSynchronize(SoundDevice::soundDevice.guard);
   OperatingSystem::Handle handle = SoundDevice::soundDevice.getReadHandle();
   #if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__GNULINUX)
-    int channels;
+    int channels = 0;
     bassert(::ioctl(handle, SOUND_PCM_READ_CHANNELS, &channels) == 0, UnexpectedFailure());
     return channels;
   #elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__SOLARIS)
@@ -159,7 +159,7 @@ unsigned int SoundInputStream::getRate() const throw() {
   SharedSynchronize<ReadWriteLock> sharedSynchronize(SoundDevice::soundDevice.guard);
   OperatingSystem::Handle handle = SoundDevice::soundDevice.getReadHandle();
   #if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__GNULINUX)
-    int rate;
+    int rate = 0;
     bassert(::ioctl(handle, SOUND_PCM_READ_RATE, &rate) == 0, UnexpectedFailure());
     return rate;
   #elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__SOLARIS)

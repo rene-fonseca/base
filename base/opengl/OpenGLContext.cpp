@@ -314,7 +314,7 @@ nothing OpenGLContext::initialize(const Format& format) throw(OpenGLException, U
   
 //   {
 //     // GLX 1.3
-//     int numberOfConfigs;
+//     int numberOfConfigs = 0;
 //     GLXFBConfig* configs = native::GLX::glXGetFBConfigs((Display*)displayHandle, screenId, &numberOfConfigs);
 
 //     static const unsigned int ATTRIBUTES[] = {
@@ -339,7 +339,7 @@ nothing OpenGLContext::initialize(const Format& format) throw(OpenGLException, U
 //     for (unsigned int i = 0; i < numberOfConfigs; ++i) {
 //       fout << "Config: " << i << ENDL;
 //       for (unsigned int j = 0; j < getArraySize(ATTRIBUTES); ++j) {
-//         int value;
+//         int value = 0;
 //         int result = native::GLX::glXGetFBConfigAttrib((Display*)displayHandle, configs[i], ATTRIBUTES[j], &value);
 //         if (result == Success) {
 //           fout << indent(2) << ATTRIBUTES[j] << ':' << ' ' << value << ENDL;
@@ -453,7 +453,7 @@ nothing OpenGLContext::initialize(const Format& format) throw(OpenGLException, U
     };
     
     for (unsigned int i = 0; i < getArraySize(ATTRIBUTES); ++i) {
-      int value;
+      int value = 0;
       int result = native::GLX::glXGetConfig(
         (Display*)displayHandle,
         visualInfo,

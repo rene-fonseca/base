@@ -28,7 +28,7 @@ private:
   static const unsigned int MAJOR_VERSION = 1;
   static const unsigned int MINOR_VERSION = 2;
   
-  unsigned int currentYear;
+  unsigned int currentYear = 0;
   String thisYearFormat;
   String otherYearFormat;
 public:
@@ -37,7 +37,8 @@ public:
     int numberOfArguments,
     const char* arguments[],
     const char* environment[])
-    : Application("filesystem", numberOfArguments, arguments, environment) {
+    : Application("filesystem", numberOfArguments, arguments, environment)
+  {
     currentYear = Date::getNow().getYear();
     thisYearFormat = "%b %#d %H:%M";
     otherYearFormat = "%b %#d  %Y";

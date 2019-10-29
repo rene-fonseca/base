@@ -813,7 +813,7 @@ void GraphicsContext::pie(
 unsigned int GraphicsContext::getWidthOf(
   char ch) const throw(UserInterfaceException) {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
-  INT width;
+  INT width = 0;
   bassert(
     ::GetCharWidth32(
       (HDC)graphicsContextHandle,

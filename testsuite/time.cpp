@@ -79,7 +79,7 @@ public:
     
     Timer timer;
     Process child;
-    int exitCode;
+    int exitCode = 0;
     
     try {      
       timer.start();

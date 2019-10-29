@@ -34,11 +34,11 @@ private:
   static const unsigned short ECHO_SERVICE_PORT = 7;
   
   /** The server port. */
-  unsigned short port;
+  unsigned short port = 0;
   /** The bytes to send. */
-  unsigned int dataSize;
-  unsigned int timeout;
-  unsigned int packetsToTransmit;
+  unsigned int dataSize = 0;
+  unsigned int timeout = 0;
+  unsigned int packetsToTransmit = 0;
   
   enum Command {
     COMMAND_HELP,

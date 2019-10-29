@@ -729,7 +729,7 @@ void File::changeOwner(const String& path, const Trustee& owner, const Trustee& 
   uid_t uid = owner.getIntegralId();
   gid_t gid = group.getIntegralId();
   
-  int error;
+  int error = 0;
   if (followLink) {
     error = ::chown(path.getElements(), uid, gid);
   } else {

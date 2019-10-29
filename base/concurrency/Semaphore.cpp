@@ -170,7 +170,7 @@ int Semaphore::getValue() const throw(SemaphoreException) {
     return -1; // not supported
   #endif
 #elif defined(_COM_AZURE_DEV__BASE__PTHREAD_SEMAPHORE)
-  int value;
+  int value = 0;
   sem_t* sem = (sizeof(sem_t) <= sizeof(void*)) ? (sem_t*)&semaphore : (sem_t*)semaphore;
   if (::sem_getvalue(sem, &value)) { // value is not negative
     throw SemaphoreException(this);

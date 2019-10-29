@@ -1467,7 +1467,7 @@ void convertFloatingPoint(
     LargeInteger::leftShift(Mplus, integerSize, 1); // Mplus = M+
   }
 
-  int cutPlace;
+  int cutPlace = 0;
 
   bool adjusted = false;
   while (true) {

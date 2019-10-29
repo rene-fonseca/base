@@ -1806,7 +1806,7 @@ FileSystem::Quota FileSystem::getQuota(
   Quota result;
 #if ((_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__GNULINUX) || \
      (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__IRIX65))
-  int id;
+  int id = 0;
   switch (trustee.getType()) {
   case Trustee::USER:
 #if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__GNULINUX)

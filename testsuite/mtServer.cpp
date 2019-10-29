@@ -33,7 +33,7 @@ Semaphore semaphore;
 class CommunicationThread : public Runnable {
 private:
 
-  unsigned int id;
+  unsigned int id = 0;
 public:
 
   CommunicationThread(unsigned int _id) : id(_id) {

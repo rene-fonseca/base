@@ -101,7 +101,7 @@ public:
         Literal("")
       };
 
-      unsigned int description;
+      unsigned int description = 0;
       switch (exceptionCode) {
       case EXCEPTION_ACCESS_VIOLATION:
         description = DESCRIPTION_ACCESS_VIOLATION;

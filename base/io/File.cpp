@@ -183,8 +183,8 @@ File::File(const String& path, Access access, unsigned int options) throw(Access
       break;
     }
     
-    wchar* substPath;
-    unsigned int substLength;
+    wchar* substPath = nullptr;
+    unsigned int substLength = 0;
     switch (reparseHeader->ReparseTag) {
     case 0x80000000|IO_REPARSE_TAG_SYMBOLIC_LINK:
       substPath = reparseHeader->SymbolicLinkReparseBuffer.PathBuffer + reparseHeader->SymbolicLinkReparseBuffer.SubstituteNameOffset;

@@ -24,8 +24,8 @@ SpinLock lock;
 class MyThread : public Runnable {
 private:
 
-  char value;
-  unsigned int count;
+  char value = 0;
+  unsigned int count = 0;
 public:
 
   MyThread(char _value, unsigned int _count)

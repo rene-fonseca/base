@@ -25,10 +25,10 @@ class AsyncTransfer : public AsynchronousReadEventListener,
                       public AsynchronousWriteEventListener {
 private:
 
-  bool stop;
-  bool eof;
-  unsigned int bufferSize;
-  unsigned int bytesRead;
+  bool stop = false;
+  bool eof = false;
+  unsigned int bufferSize = 0;
+  unsigned int bytesRead = 0;
 public:
 
   void asynchronousCompletion(

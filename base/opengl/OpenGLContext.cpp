@@ -70,8 +70,8 @@ void OpenGLContext::destroy() throw() {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
 struct MonitorEnumeratorData {
   Array<OpenGLContext::Format> formats;
-  unsigned int flags;
-  unsigned int id;
+  unsigned int flags = 0;
+  unsigned int id = 0;
 };
 
 BOOL CALLBACK enumerateMonitor(HMONITOR monitor, HDC hdc, LPRECT rect, LPARAM context) throw() {

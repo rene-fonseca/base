@@ -946,7 +946,7 @@ void Socket::setTimeToLive(unsigned int value) throw(NetworkException) {
 uint8 Socket::getMulticastHops() const throw(NetworkException) {
 #if (defined(_COM_AZURE_DEV__BASE__INET_IPV6))
   if (socket->getDomain() == Socket::IPV6) {
-    unsigned int buffer;
+    unsigned int buffer = 0;
     unsigned int length = sizeof(buffer);
     internal::SocketImpl::getOption(
       (SOCKET)socket->getHandle(),
@@ -958,7 +958,7 @@ uint8 Socket::getMulticastHops() const throw(NetworkException) {
     return buffer;
   } else {
 #endif
-    u_char buffer;
+    u_char buffer = 0;
     unsigned int length = sizeof(buffer);
     internal::SocketImpl::getOption(
       (SOCKET)socket->getHandle(),
@@ -1058,7 +1058,7 @@ void Socket::setMulticastLoopback(bool value) throw(NetworkException) {
 InetAddress Socket::getMulticastInterface() const throw(NetworkException) {
 #if (defined(_COM_AZURE_DEV__BASE__INET_IPV6))
   if (socket->getDomain() == Socket::IPV6) {
-    unsigned int buffer;
+    unsigned int buffer = 0;
     unsigned int length = sizeof(buffer);
     internal::SocketImpl::getOption(
       (SOCKET)socket->getHandle(),
@@ -1070,7 +1070,7 @@ InetAddress Socket::getMulticastInterface() const throw(NetworkException) {
     // TAG: fixme - resolve index
     return InetAddress();
   } else {
-    int buffer;
+    int buffer = 0;
     unsigned int length = sizeof(buffer);
     internal::SocketImpl::getOption(
       (SOCKET)socket->getHandle(),

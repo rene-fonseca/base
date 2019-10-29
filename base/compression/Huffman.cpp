@@ -579,7 +579,7 @@ public:
     while (true) {
       unsigned int length = minimumLength;
       bitBuffer &= (1 << availableBits) - 1; // mask out garbage bits
-      unsigned int code;
+      unsigned int code = 0;
       
       // read minimum length bits
       if (availableBits >= length) {

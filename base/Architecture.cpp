@@ -19,7 +19,7 @@ unsigned int Architecture::getTechonologies() noexcept
 {
   unsigned int result = 0;
 #if (_COM_AZURE_DEV__BASE__ARCH == _COM_AZURE_DEV__BASE__X86)
-  unsigned int eflags;
+  unsigned int eflags = 0;
   
   enum Flag {
     CF = 1 << 0,
@@ -110,7 +110,7 @@ Architecture::Minor Architecture::getMinorArchitecture() noexcept
   result = X86_386;
   // TAG: add check for X86_486
   
-  unsigned int eflags;
+  unsigned int eflags = 0;
 
   enum Flag {
     CF = 1 << 0,

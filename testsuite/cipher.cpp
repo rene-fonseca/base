@@ -400,7 +400,7 @@ public:
       0xab, 0xf7, 0x15, 0x88, 0x09, 0xcf, 0x4f, 0x3c
     };
     
-    unsigned int type;
+    unsigned int type = 0;
     try {
       type = FileSystem::getType(srcPath);
     } catch (FileSystemException&) {

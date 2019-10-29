@@ -141,7 +141,7 @@ public:
 
     uint8 buffer[BLOCK_SIZE];
     MD5Sum sum;
-    unsigned int count;
+    unsigned int count = 0;
     while ((count = file.read(buffer, sizeof(buffer), true)) > 0) {
       fout << '.' << FLUSH;
       sum.push(buffer, count);
@@ -160,7 +160,7 @@ public:
 
     uint8 buffer[BLOCK_SIZE];
     SHA1 sum;
-    unsigned int count;
+    unsigned int count = 0;
     while ((count = file.read(buffer, sizeof(buffer), true)) > 0) {
       fout << '.' << FLUSH;
       sum.push(buffer, count);
@@ -179,7 +179,7 @@ public:
 
     uint8 buffer[BLOCK_SIZE];
     SHA256 sum;
-    unsigned int count;
+    unsigned int count = 0;
     while ((count = file.read(buffer, sizeof(buffer), true)) > 0) {
       fout << '.' << FLUSH;
       sum.push(buffer, count);
@@ -198,7 +198,7 @@ public:
 
     uint8 buffer[BLOCK_SIZE];
     SHA384 sum;
-    unsigned int count;
+    unsigned int count = 0;
     while ((count = file.read(buffer, sizeof(buffer), true)) > 0) {
       fout << '.' << FLUSH;
       sum.push(buffer, count);
@@ -217,7 +217,7 @@ public:
 
     uint8 buffer[BLOCK_SIZE];
     SHA512 sum;
-    unsigned int count;
+    unsigned int count = 0;
     while ((count = file.read(buffer, sizeof(buffer), true)) > 0) {
       fout << '.' << FLUSH;
       sum.push(buffer, count);

@@ -339,11 +339,11 @@ class SAXTracer : public XMLReader::DTDHandler,
                   public XMLReader::ContentHandler {
 private:
   
-  unsigned int i;
+  unsigned int i = 0;
 public:
   
-  SAXTracer() throw() {
-    i = 0;
+  SAXTracer() noexcept
+  {
   }
 
   static String quote(const String& value) throw() {

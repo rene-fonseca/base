@@ -64,7 +64,7 @@ public:
     FileInputStream file(path, 0);
     
     Adler32 sum;
-    unsigned int count;
+    unsigned int count = 0;
     while ((count = file.read(buffer, sizeof(buffer), true)) > 0) {
       sum.push(buffer, count);
     }
@@ -78,7 +78,7 @@ public:
     FileInputStream file(path, 0);
     
     CRC32 sum;
-    unsigned int count;
+    unsigned int count = 0;
     while ((count = file.read(buffer, sizeof(buffer), true)) > 0) {
       sum.push(buffer, count);
     }
@@ -92,7 +92,7 @@ public:
     FileInputStream file(path, 0);
     
     MD5Sum sum;
-    unsigned int count;
+    unsigned int count = 0;
     while ((count = file.read(buffer, sizeof(buffer), true)) > 0) {
       sum.push(buffer, count);
     }
@@ -105,7 +105,7 @@ public:
     FileInputStream file(path, 0);
 
     SHA1 sum;
-    unsigned int count;
+    unsigned int count = 0;
     while ((count = file.read(buffer, sizeof(buffer), true)) > 0) {
       sum.push(buffer, count);
     }
@@ -118,7 +118,7 @@ public:
     FileInputStream file(path, 0);
 
     SHA256 sum;
-    unsigned int count;
+    unsigned int count = 0;
     while ((count = file.read(buffer, sizeof(buffer), true)) > 0) {
       sum.push(buffer, count);
     }
@@ -131,7 +131,7 @@ public:
     FileInputStream file(path, 0);
 
     SHA384 sum;
-    unsigned int count;
+    unsigned int count = 0;
     while ((count = file.read(buffer, sizeof(buffer), true)) > 0) {
       sum.push(buffer, count);
     }
@@ -144,7 +144,7 @@ public:
     FileInputStream file(path, 0);
 
     SHA512 sum;
-    unsigned int count;
+    unsigned int count = 0;
     while ((count = file.read(buffer, sizeof(buffer), true)) > 0) {
       sum.push(buffer, count);
     }
@@ -179,8 +179,9 @@ public:
     }
   }
   
-  void digest(const String& path) {
-    unsigned int type;
+  void digest(const String& path)
+  {
+    unsigned int type = 0;
     try {
       type = FileSystem::getType(path);
     } catch (FileSystemException&) {

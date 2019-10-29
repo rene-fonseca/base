@@ -122,7 +122,7 @@ unsigned int SoundInputStream::available() const throw() {
   #if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__GNULINUX)
     return 0;
   #elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__SOLARIS)
-    unsigned int available;
+    unsigned int available = 0;
     bassert(::ioctl(handle, I_NREAD, &available) == 0, UnexpectedFailure()); // should not fail
     return available;
 //    return available & ~(channels * 2 - 1); // align to sample frame (channels * bitsPerSample/8)

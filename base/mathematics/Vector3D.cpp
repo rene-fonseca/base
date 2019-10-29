@@ -26,6 +26,7 @@ class TEST_CLASS(Vector3D) : public UnitTest {
 public:
 
   TEST_PRIORITY(100);
+  TEST_PROJECT("base/math");
   TEST_TIMEOUT_MS(30 * 1000);
 
   void run() override

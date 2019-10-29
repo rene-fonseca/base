@@ -173,6 +173,7 @@ class TEST_CLASS(SHA512) : public UnitTest {
 public:
 
   TEST_PRIORITY(50);
+  TEST_PROJECT("base/security");
   TEST_IMPACT(SECURITY);
 
   String getSHA512(const uint8* buffer, MemorySize size)

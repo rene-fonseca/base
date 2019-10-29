@@ -267,6 +267,7 @@ class TEST_CLASS(MD5Sum) : public UnitTest {
 public:
 
   TEST_PRIORITY(50);
+  TEST_PROJECT("base/security");
   TEST_IMPACT(SECURITY);
 
   String getMD5Sum(const uint8* buffer, MemorySize size)

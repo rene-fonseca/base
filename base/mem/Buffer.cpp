@@ -76,6 +76,7 @@ class TEST_CLASS(Buffer) : public UnitTest {
 public:
 
   TEST_PRIORITY(10);
+  TEST_PROJECT("base/mem");
   TEST_TIMEOUT_MS(30 * 1000);
   // TAG: TEST_LIMIT_PROCESSING_TIME(1000);
   // TAG: TEST_LIMIT_MEMORY(1024);

@@ -73,6 +73,7 @@ class TEST_CLASS(List) : public UnitTest {
 public:
 
   TEST_PRIORITY(10);
+  TEST_PROJECT("base/collection");
 
   void run() override
   {

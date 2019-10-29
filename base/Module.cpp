@@ -512,6 +512,7 @@ class TEST_CLASS(ModuleManager) : public UnitTest {
 public:
 
   TEST_PRIORITY(10);
+  TEST_PROJECT("base/mem");
 
   void run() override
   {

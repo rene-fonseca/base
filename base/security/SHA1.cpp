@@ -205,6 +205,7 @@ class TEST_CLASS(SHA1) : public UnitTest {
 public:
 
   TEST_PRIORITY(50);
+  TEST_PROJECT("base/security");
   TEST_IMPACT(SECURITY);
 
   String getSHA1(const uint8* buffer, MemorySize size)

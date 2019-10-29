@@ -37,6 +37,7 @@ class TEST_CLASS(AtomicCounter) : public UnitTest {
 public:
 
   TEST_PRIORITY(0);
+  TEST_PROJECT("base/concurrency");
   TEST_IMPACT(CRITICAL);
   TEST_TIMEOUT_MS(30 * 1000);
 

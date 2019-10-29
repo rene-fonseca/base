@@ -24,6 +24,7 @@ class TEST_CLASS(Type) : public UnitTest {
 public:
 
   TEST_PRIORITY(10);
+  TEST_PROJECT("base");
 
   class MyClass {
   };

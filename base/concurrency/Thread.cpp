@@ -774,6 +774,7 @@ private:
 public:
 
   TEST_PRIORITY(10);
+  TEST_PROJECT("base/concurrency");
   TEST_TIMEOUT_MS(30 * 1000);
 
   void runFromThread()

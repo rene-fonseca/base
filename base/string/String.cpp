@@ -973,6 +973,7 @@ class TEST_CLASS(String) : public UnitTest {
 public:
 
   TEST_PRIORITY(10);
+  TEST_PROJECT("base/string");
   TEST_IMPACT(CRITICAL)
   TEST_TIMEOUT_MS(30 * 1000);
 

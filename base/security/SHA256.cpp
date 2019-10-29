@@ -168,6 +168,7 @@ class TEST_CLASS(SHA256) : public UnitTest {
 public:
 
   TEST_PRIORITY(50);
+  TEST_PROJECT("base/security");
   TEST_IMPACT(SECURITY)
 
   String getSHA256(const uint8* buffer, MemorySize size)

@@ -460,6 +460,7 @@ class TEST_CLASS(Url) : public UnitTest {
 public:
 
   TEST_PRIORITY(100);
+  TEST_PROJECT("base/net");
   TEST_IMPACT(PRIVACY);
 
   void run() override

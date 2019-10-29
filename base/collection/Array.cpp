@@ -27,6 +27,7 @@ class TEST_CLASS(Array) : public UnitTest {
 public:
 
   TEST_PRIORITY(10);
+  TEST_PROJECT("base/collection");
 
   void run() override
   {

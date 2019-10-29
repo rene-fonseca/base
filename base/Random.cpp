@@ -96,6 +96,7 @@ class TEST_CLASS(Random) : public UnitTest {
 public:
 
   TEST_PRIORITY(100);
+  TEST_PROJECT("base");
   TEST_IMPACT(PRIVACY);
 
   void run() override

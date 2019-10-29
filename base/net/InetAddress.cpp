@@ -800,6 +800,7 @@ class TEST_CLASS(InetAddress) : public UnitTest {
 public:
 
   TEST_PRIORITY(100);
+  TEST_PROJECT("base/net");
   TEST_IMPACT(PRIVACY);
 
   void run() override

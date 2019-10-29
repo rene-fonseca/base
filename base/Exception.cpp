@@ -109,6 +109,7 @@ class TEST_CLASS(Exception) : public UnitTest {
 public:
 
   TEST_PRIORITY(10);
+  TEST_PROJECT("base");
 
   void run() override
   {

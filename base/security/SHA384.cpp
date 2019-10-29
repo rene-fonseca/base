@@ -189,6 +189,7 @@ class TEST_CLASS(SHA384) : public UnitTest {
 public:
 
   TEST_PRIORITY(50);
+  TEST_PROJECT("base/security");
   TEST_IMPACT(SECURITY);
 
   String getSHA384(const uint8* buffer, MemorySize size)

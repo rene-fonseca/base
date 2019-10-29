@@ -2630,7 +2630,7 @@ Literal WindowImpl::getMouseButtonName(Mouse::Button button) throw() {
 bool WindowImpl::isResponding(
   unsigned int milliseconds) throw(UserInterfaceException) {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
-  DWORD_PTR result;
+  DWORD_PTR result = 0;
   LRESULT temp = ::SendMessageTimeout(
     (HWND)drawableHandle,
     WM_USER + WindowImpl::PING_MESSAGE,

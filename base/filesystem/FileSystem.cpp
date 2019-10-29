@@ -775,7 +775,7 @@ bool FileSystem::supportsLinks() throw() {
 // return infomation about the file system capabilities
 // unsigned int FileSystem::getCapabilities(const String& path) throw() {
 // #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
-//   DWORD flags;
+//   DWORD flags = 0;
 //   BOOL result = ::GetVolumeInformation("C:\\", // root directory
 //                                        0, // volume name buffer
 //                                        0, // length of name buffer

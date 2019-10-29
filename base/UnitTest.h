@@ -263,6 +263,18 @@ public:
     return NORMAL;
   }
   
+  /** Use TEST_OWNER to set owner for test. */
+  virtual String getOwner() const noexcept
+  {
+    return String();
+  }
+
+  /** Use TEST_PROJECT to set project for test. */
+  virtual String getProject() const noexcept
+  {
+    return String();
+  }
+  
   /** Use TEST_TIMEOUT_MS to set priority for test. */
   virtual unsigned int getTimeout() const noexcept
   {
@@ -547,11 +559,17 @@ public:
 /** Tells system that test may be run concurrent with other tests. */
 #define TEST_ALLOW_CONCURRENT() bool getAllowConcurrentRun() const noexcept override {return true;}
 
-/** Sets the priority the test. Lower priorty is "higher" and gets run first. */
+/** Sets the priority for the test. Lower priorty is "higher" and gets run first. */
 #define TEST_PRIORITY(priority) int getPriority() const noexcept override {return static_cast<int>(priority);}
 
-/** Sets the priority the test. Lower impact is "higher" and gets run first for the same priority group. */
+/** Sets the impact for the test. Lower impact is "higher" and gets run first for the same priority group. */
 #define TEST_IMPACT(impact) Impact getImpact() const noexcept override {return static_cast<Impact>(impact);}
+
+/** Sets the owner for the test. */
+#define TEST_OWNER(owner) String getOwner() const noexcept override {return static_cast<const char*>(owner);}
+
+/** Sets the project for the test. */
+#define TEST_PROJECT(project) String getProject() const noexcept override {return static_cast<const char*>(project);}
 
 /** Sets the timeout for the test in milliseconds. */
 #define TEST_TIMEOUT_MS(timeout) unsigned int getTimeout() const noexcept override {return static_cast<unsigned int>(timeout);}

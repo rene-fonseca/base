@@ -388,7 +388,24 @@ String UnitTest::getJUnit() const
     time = run->endTime - run->startTime;
   }
   // alternatively use getType() for classname
-  xml += Format::subst("<testcase id=\"%1\" name=\"%2\" classname=\"%3\" time=\"%4\">", Guid::createGuidAsString(), getName(), getName(), time/1000000.0);
+  // TAG: allow filtering - use prefix for id - e.g. base/AtomicCounter - prefix can be guid
+  // TAG: dump modules - short list - as option
+  // TAG: set project for unittests
+  // TAG: how to filter - base/*
+  
+  // TAG: base:priority="XXX"
+  String id;
+  if (!getProject().isEmpty()) {
+    id = getProject() + "/" + getName();
+  }
+  if (id.isEmpty()) {
+    id = Guid::createGuidAsString();
+  }
+  const String owner = getOwner(); // responsible entity
+  xml += Format::subst(
+    "<testcase id=\"%1\" name=\"%2\" classname=\"%3\" time=\"%4\" owner=\"%5\">",
+    id, getName(), getName(), time/1000000.0, owner // TAG: priority
+  );
   String output;
   String error;
   if (!run) {
@@ -398,6 +415,7 @@ String UnitTest::getJUnit() const
       xml += Format::subst("<error message=\"%1\" type=\"%2\"/>", run->exceptionFailure, run->exceptionType);
     }
     
+    // unsupported: - add if namespace is enabled - useBaseNamespace()
     // getDescription();
     // getImpact();
     
@@ -818,10 +836,34 @@ String UnitTestManager::getJUnit() const
       totalTime += time;
     }
   }
+  
+  // https://docs.microsoft.com/en-us/azure/devops/pipelines/tasks/test/publish-test-results?view=azure-devops&tabs=yaml
+  // See results mapping
 
   String name = "BASE"; // TAG: how should we handle this
-  xml += Format::subst("<testsuites id=\"%1\" name=\"%2\" tests=\"%3\" failures=\"%4\" time=\"%5\">\n", Guid::createGuidAsString(), name, 1, failed ? 1 : 0, totalTime/1000000.0);
-  xml += Format::subst("<testsuite id=\"%1\" name=\"%2\" tests=\"%3\" failures=\"%4\" time=\"%5\">\n", Guid::createGuidAsString(), name, tests.getSize(), failed, totalTime/1000000.0);
+  // xmlns:base="https://dev.azure.com/renefonseca/base"
+  // attributes: disabled, errors
+  xml += Format::subst(
+    "<testsuites xmlns:base=\"https://dev.azure.com/renefonseca/base\" id=\"%1\" name=\"%2\" tests=\"%3\" failures=\"%4\" time=\"%5\">\n",
+    Guid::createGuidAsString(), name, 1, failed ? 1 : 0, totalTime/1000000.0
+  );
+  
+  // TAG: when registering test add prefix
+  // TAG: disable unittest for ctest
+  String hostname = "localhost";
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
+  hostname = "windows"; // TAG: get version of windows
+#elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__GNULINUX)
+  hostname = "gnulinux";
+#elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__MACOS)
+  hostname = "macos";
+#endif
+  
+  // TAG: timestamp - ISO 8601 format (2014-01-21T16:17:18)
+  xml += Format::subst(
+    "<testsuite id=\"%1\" name=\"%2\" hostname=\"%3\" tests=\"%4\" failures=\"%5\" time=\"%6\" timestamp=\"%7\">\n",
+    Guid::createGuidAsString(), name, hostname, tests.getSize(), failed, totalTime/1000000.0, 0 // TAG: FIXME
+  );
 #if 0
   xml += "<properties>\n";
   xml += "<property name=\"%1\" value=\"%2\"/>\n";

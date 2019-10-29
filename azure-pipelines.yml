@@ -22,7 +22,8 @@ jobs:
     inputs:
       script: |
         set PATH=%PATH%;$(System.DefaultWorkingDirectory)/build/Debug
-        $(System.DefaultWorkingDirectory)/build/Debug/testsuite/unittesting --junit $(System.DefaultWorkingDirectory)/build/junit.xml
+        $(System.DefaultWorkingDirectory)/build/testsuite/Debug/unittesting --junit $(System.DefaultWorkingDirectory)/build/junit.xml
+        rem $(System.DefaultWorkingDirectory)/testsuite/Debug/unittesting --junit $(System.DefaultWorkingDirectory)/junit.xml
         ctest -T Test -C Debug
       workingDirectory: $(System.DefaultWorkingDirectory)/build
 

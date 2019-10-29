@@ -1038,7 +1038,13 @@ String UnitTestManager::getJUnit(const String& uuid, const String& name) const
 #elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__MACOS)
   hostname = "macos";
 #endif
-  
+
+#if (_COM_AZURE_DEV__BASE__DEBUG)
+  const String configuration("Debug");
+#else
+  const String configuration("Release");
+#endif
+
   // timestamp - ISO 8601 format (2014-01-21T16:17:18) without timezone!
   String timestamp = Date::getNow().format(String("%FT%T"), false);
   // other attributes: errors, disabled, skipped, package
@@ -1046,6 +1052,7 @@ String UnitTestManager::getJUnit(const String& uuid, const String& name) const
     "<testsuite id=\"%1\" name=\"%2\" hostname=\"%3\" tests=\"%4\" failures=\"%5\" time=\"%6\" timestamp=\"%7\">\n",
     uuid ? uuid : Guid::createGuidAsString(), name ? name : "BASE", hostname, tests.getSize(), failed, totalTime/1000000.0, timestamp
   );
+  // TAG: add configuration
 #if 0
   xml += "<properties>\n";
   xml += "<property name=\"%1\" value=\"%2\"/>\n";

@@ -193,7 +193,7 @@ public:
 private:
 
   /** The host local id of the process. */
-  unsigned long id;
+  unsigned long id = 0;
   /** Handle to the process. */
   Reference<Handle> handle;
 public:

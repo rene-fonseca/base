@@ -144,6 +144,22 @@ public:
       << ENDL;
   }
 
+  /** Returns the id for presentation. */
+  String presentId(const String& id)
+  {
+    if (useANSIColor) {
+      StringOutputStream stream;
+      auto i = id.lastIndexOf('/');
+      if (i >= 0) {
+        stream << bold() << id.substring(0, i + 1) << setForeground(ANSIEscapeSequence::BLUE) << id.substring(i + 1) << normal() << FLUSH;
+      } else {
+        stream << bold() << setForeground(ANSIEscapeSequence::BLUE) << id << normal() << FLUSH;
+      }
+      return stream.getString();
+    }
+    return id;
+  }
+
   void main()
   {
     if (!parseArguments()) {
@@ -166,15 +182,7 @@ public:
           continue;
         }
 
-        if (useANSIColor) {
-          if (String project = test->getProject()) {
-            fout << "TEST " << bold() << project << '/' << setForeground(ANSIEscapeSequence::BLUE) << test->getName() << normal();
-          } else {
-            fout << "TEST " << bold() << id << normal();
-          }
-        } else {
-          fout << "TEST " << id;
-        }
+        fout << "TEST " << presentId(id);
         if (verbosity <= COMPACT) {
           fout << EOL << FLUSH;
           continue;
@@ -209,6 +217,20 @@ public:
         }
         if (test->getLimitMemory() > 0) {
           fout << "  Limit memory=" << test->getLimitMemory() << " kb" << EOL;
+        }
+
+        for (auto dependency : test->getDependencies()) {
+          auto detests = manager.getTestByPattern(dependency);
+          if (tests) {
+            for (auto dependent : tests) {
+              if (dependent->getId() == test->getId()) {
+                continue; // ignore self
+              }
+              fout << "  DEPENDENCY=" << presentId(dependent->getId()) << EOL;
+            }
+          } else {
+            fout << "  DEPENDENCY=" << presentId(dependency) << " (NO MATCH FOUND)" << EOL;
+          }
         }
         fout << FLUSH;
       }

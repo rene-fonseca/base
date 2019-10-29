@@ -311,8 +311,6 @@ Reference<UnitTest::Run> UnitTest::runImpl()
   }
   */
   try {
-    throw std::range_error("avbbb");
-    throw std::runtime_error("123");
     run();
   } catch (Exception& e) {
 
@@ -576,9 +574,24 @@ void UnitTestManager::loadTests()
   }
   RegisterEntry::nodes = nullptr; // we have data in heap now - allow unload of module
 
+  // add the dependencies
+  Reference<UnitTest> previousTest;
   auto dependency = DependencyEntry::nodes;
   while (dependency) {
-    dependencies.append(Pair<String, String>(dependency->key, dependency->dependency));
+    // TAG: should get use override method instead - add multiple dependencies? - solves problem of using global id for test
+    const String key = dependency->key; // TAG: we should really use the full id
+    const String id = dependency->dependency;
+    if (previousTest && (previousTest->getName() == key)) { // avoid search for test
+      previousTest->addDependency(id);
+    } else {
+      for (auto test : tests) {
+        if (test->getName() == key) { // TAG: fix global id issue
+          test->addDependency(id); // we do not resolve dependencies until we run the test
+          previousTest = test;
+          break;
+        }
+      }
+    }
     dependency = dependency->next;
   }
   DependencyEntry::nodes = nullptr; // we have data in heap now - allow unload of module
@@ -772,6 +785,28 @@ bool UnitTestManager::runTests(const String& pattern)
   fout << "TOTAL PROCESSING TIME: " << totalTimes.getTotal()/1000000.0 << " ms" << ENDL;
 
   return !failed;
+}
+
+Reference<UnitTest> UnitTestManager::getTest(const String& id) const noexcept
+{
+  // TAG: use lookup
+  for (auto test : tests) {
+    if (test->getId() == id) {
+      return test;
+    }
+  }
+  return nullptr;
+}
+
+Array<Reference<UnitTest> > UnitTestManager::getTestByPattern(const String& pattern) const noexcept
+{
+  Array<Reference<UnitTest> > result;
+  for (auto test : tests) {
+    if (Parser::doesMatchPattern(pattern, test->getId())) {
+      result.append(test);
+    }
+  }
+  return result;
 }
 
 UnitTestManager::RegisterEntry::RegisterEntry(EntryNode* _node)

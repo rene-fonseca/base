@@ -15,9 +15,7 @@
 
 #include <base/string/Format.h>
 #include <base/collection/Array.h>
-#include <base/collection/List.h>
 #include <base/collection/Map.h>
-#include <base/collection/Pair.h>
 #include <base/Type.h>
 #include <base/Timer.h>
 #include <base/concurrency/MutualExclusion.h>
@@ -153,6 +151,8 @@ private:
   Array<Reference<Run> > runs;
   /** The current run. */
   Reference<Run> currentRun;
+  /** Dependencies. */
+  Array<String> dependencies;
 protected:
 
   /** Called on explicit print request. */
@@ -315,6 +315,15 @@ public:
     return !runs.isEmpty() ? runs.getAt(runs.getSize() - 1) : nullptr;
   }
 
+  inline const Array<String>& getDependencies() const noexcept
+  {
+    return dependencies;
+  }
+
+  void addDependency(const String& id)
+  {
+    dependencies.append(id);
+  }
 
   /** Runs the test. */
   virtual void run();
@@ -373,9 +382,8 @@ private:
   unsigned int failed = 0;
   Timer timer;
   MutualExclusion lock;
-
   Array<Reference<UnitTest> > tests;
-  List<Pair<String, String > > dependencies;
+  // TAG: Map<String, Reference<UnitTest> > lookup;
 
   static UnitTestManager unitTestManager;
 public:
@@ -475,6 +483,12 @@ public:
     return tests;
   }
 
+  /** Returns the test for the given ID. */
+  Reference<UnitTest> getTest(const String& id) const noexcept;
+
+  /** Returns the test(s) matching the given pattern. */
+  Array<Reference<UnitTest> > getTestByPattern(const String& id) const noexcept;
+
   /** Internal test registration helper. */
   class _COM_AZURE_DEV__BASE__API RegisterEntry {
     friend class UnitTestManager;
@@ -540,7 +554,7 @@ public:
 #define TEST_REGISTER(TYPE) \
   TEST_REGISTER_IMPL(_COM_AZURE_DEV__BASE__MAKE_IDENTIFIER(tests), TYPE)
 
-/** Sets dependency on other test. If required test failed this test is skipped. */
+/** Sets dependency on other test. If required test failed this test is skipped. DEPENDENCY may be a pattern. */
 #define TEST_DEPENDENCY(TYPE, DEPENDENCY) \
   namespace { namespace _COM_AZURE_DEV__BASE__MAKE_IDENTIFIER(tests) { \
     base::UnitTestManager::DependencyEntry::DependencyNode _storage = {#TYPE, "" DEPENDENCY, nullptr}; \

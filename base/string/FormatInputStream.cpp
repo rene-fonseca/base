@@ -193,7 +193,7 @@ FormatInputStream& operator>>(FormatInputStream& stream, String& value) throw(IO
 FormatInputStream& operator>>(FormatInputStream& stream, unsigned int& value) throw(InvalidFormat, IOException)
 {
   value = 0;
-  char ch;
+  char ch = 0;
   do {
     ch = stream.getCharacter();
   } while (String::Traits::isSpace(ch));

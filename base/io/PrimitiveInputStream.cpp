@@ -24,13 +24,13 @@ PrimitiveInputStream::PrimitiveInputStream(
 }
 
 bool PrimitiveInputStream::readBoolean() throw(IOException) {
-  char value;
+  char value = 0;
   read(Cast::getAddress(value), sizeof(value));
   return value != 0;
 }
 
 char PrimitiveInputStream::readChar() throw(IOException) {
-  char value;
+  char value = 0;
   read(Cast::getAddress(value), sizeof(value));
   return value;
 }

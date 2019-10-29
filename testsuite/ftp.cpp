@@ -228,7 +228,7 @@ protected:
       String line(256);
 
       while (true) { // read line
-        char ch;
+        char ch = 0;
         instream >> ch;
         bassert(
           String::Traits::isASCII(ch),

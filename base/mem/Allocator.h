@@ -62,6 +62,26 @@ public:
   }
 
   /**
+    Initializes the elements of the sequence using the given value.
+    Uninitializeable objects are not initialized.
+  */
+  static void initialize(TYPE* dest, const TYPE* end, const TYPE& value)
+  {
+    ASSERT(dest <= end);
+    if (Uninitializeable<TYPE>::IS_UNINITIALIZEABLE) {
+      while (dest != end) {
+        *dest = value;
+        ++dest;
+      }
+    } else {
+      while (dest != end) {
+        new(dest) TYPE(value); // inplace initialization
+        ++dest;
+      }
+    }
+  }
+
+  /**
     Initializes the elements of the sequence by copying elements from other
     sequence. The memory image is copied directly for relocatable objects.
   */
@@ -80,8 +100,7 @@ public:
   }
 
   /**
-    Initializes the elements of the sequence by moving elements from other
-    sequence. This does nothing for relocateable object.
+    Initializes the elements of the sequence by moving elements from other sequence. Arrays must not overlap.
   */
   static void initializeByMove(TYPE* dest, TYPE* src, const TYPE* end)
   {
@@ -96,12 +115,20 @@ public:
         ++dest;
         ++src;
       }
+    } else {
+      while (src != end) {
+        *dest = *src;
+#if defined(_COM_AZURE_DEV__BASE__ANY_DEBUG)
+        fill<uint8>(reinterpret_cast<uint8*>(src), sizeof(TYPE), 0xaa);
+#endif
+        ++dest;
+        ++src;
+      }
     }
   }
 
   /**
-    Destroys the elements of the sequence. Does nothing for uninitializeable
-    objects.
+    Destroys the elements of the sequence. Does nothing for uninitializeable objects.
   */
   static void destroy(TYPE* dest, const TYPE* end)
   {
@@ -311,6 +338,38 @@ public:
           elements = temp;
           // default initialization of new objects
           initialize(elements + this->size, elements + size);
+        }
+      }
+      this->size = size;
+    }
+  }
+
+  /** Same as setSize() but fills new elements with the given value instead of using default initialization. */
+  void setSize(MemorySize size, const TYPE& value)
+  {
+    if (size != this->size) {
+      if (Uninitializeable<TYPE>::IS_UNINITIALIZEABLE) {
+        // no need to destroy or initialize elements
+        elements = Heap::resize(elements, size);
+        if (size > this->size) { // are have increased array size
+          TYPE* dest = elements;
+          const TYPE* end = dest + size;
+          while (dest != end) {
+            *dest = value;
+            ++dest;
+          }
+        }
+      } else {
+        if (size < this->size) { // are we about to reduce the array
+          destroy(elements + size, elements + this->size);
+          elements = Heap::resize(elements, size);
+        } else { // array is to be expanded
+          TYPE* temp = Heap::allocate<TYPE>(size); // new array
+          initializeByMove(temp, elements, elements + this->size);
+          Heap::release(elements); // free previous array
+          elements = temp;
+          // initialization of new objects by value
+          initialize(elements + this->size, elements + size, value);
         }
       }
       this->size = size;

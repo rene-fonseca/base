@@ -98,6 +98,13 @@ public:
     setSize(size);
   }
 
+  inline CapacityAllocator(MemorySize size, const TYPE& value, MemorySize _granularity) throw(OutOfRange, MemoryException)
+    : granularity(_granularity)
+  {
+    bassert(granularity >= MINIMUM_GRANULARITY, OutOfRange(this));
+    setSize(size, value);
+  }
+
   /**
     Initializes allocator from other allocator.
   */
@@ -209,6 +216,17 @@ public:
       size = _size;
       Allocator<TYPE>::setSize(
         (maximum(size, capacity) + granularity - 1)/granularity * granularity
+      );
+    }
+  }
+
+  void setSize(MemorySize _size, const TYPE& value) throw(MemoryException)
+  {
+    if (_size != size) {
+      size = _size;
+      Allocator<TYPE>::setSize(
+        (maximum(size, capacity) + granularity - 1)/granularity * granularity,
+        value
       );
     }
   }

@@ -346,9 +346,9 @@ public:
   /**
     Initializes string from other string.
   */
-  inline String(String&& copy) noexcept
-    : elements(copy.elements) {
-    copy.elements = DEFAULT_STRING.elements; // make empty so we may avoid future copyOnWrite()
+  String(String&& move) noexcept
+    : elements(move.elements) {
+    move.elements = DEFAULT_STRING.elements; // make empty so we may avoid future copyOnWrite()
   }
 
   /**
@@ -370,11 +370,11 @@ public:
     return *this;
   }
 
-  String& operator=(String&& copy) noexcept
+  String& operator=(String&& move) noexcept
   {
-    if (this != &copy) { // self assigment not allowed
-      elements = copy.elements;
-      copy.elements = DEFAULT_STRING.elements; // make empty so we may avoid future copyOnWrite()
+    if (this != &move) { // self assigment not allowed
+      elements = move.elements;
+      move.elements = DEFAULT_STRING.elements; // make empty so we may avoid future copyOnWrite()
     }
     return *this;
   }

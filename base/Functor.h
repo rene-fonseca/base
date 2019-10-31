@@ -443,7 +443,7 @@ inline void swap(TYPE* restrict left, TYPE* restrict right, MemorySize count)
 
 /** Sets every element in the sequence to a specified value. */
 template<class TYPE>
-void fill(TYPE* dest, MemorySize count, const TYPE value) // TAG: we want & in the general case but not for primitives
+void fill(TYPE* dest, MemorySize count, const TYPE& value) // & causes linker issues for constexpr
 {
   const TYPE* const end = dest + count;
   while (dest != end) {
@@ -454,13 +454,13 @@ void fill(TYPE* dest, MemorySize count, const TYPE value) // TAG: we want & in t
 
 #if defined(_COM_AZURE_DEV__BASE__HAVE_MEMSET)
 template<>
-inline void fill<char>(char* dest, MemorySize count, const char value)
+inline void fill<char>(char* dest, MemorySize count, const char& value)
 {
   isoc::memset(dest, value, count);
 }
 
 template<>
-inline void fill<uint8>(uint8* dest, MemorySize count, const uint8 value)
+inline void fill<uint8>(uint8* dest, MemorySize count, const uint8& value)
 {
   isoc::memset(dest, value, count);
 }

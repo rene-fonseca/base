@@ -65,7 +65,7 @@ FileDescriptorInputStream& FileDescriptorInputStream::operator=(
 unsigned int FileDescriptorInputStream::available() const throw(IOException)
 {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
-  DWORD bytesAvailable;
+  DWORD bytesAvailable = 0;
   switch (::GetFileType(fd->getHandle())) {
   case FILE_TYPE_PIPE:
     if (!::PeekNamedPipe((HANDLE)fd->getHandle(), 0, 0, 0, &bytesAvailable, 0)) {
@@ -74,7 +74,7 @@ unsigned int FileDescriptorInputStream::available() const throw(IOException)
     break;
   case FILE_TYPE_DISK:
     {
-      DWORD highWord;
+      DWORD highWord = 0;
       long long size = ::GetFileSize((HANDLE)fd->getHandle(), &highWord);
       LARGE_INTEGER position;
       position.QuadPart = 0;

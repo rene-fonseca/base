@@ -438,7 +438,7 @@ unsigned int InetInterface::getIndexByName(const String& name) throw(NetworkExce
 unsigned int InetInterface::getIndexByAddress(const InetAddress& address) throw(NetworkException) {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   int handle = socket(PF_INET, SOCK_STREAM, 0);
-  DWORD bytesReturned;
+  DWORD bytesReturned = 0;
   if (::WSAIoctl(
         handle,
         SIO_GET_INTERFACE_LIST,

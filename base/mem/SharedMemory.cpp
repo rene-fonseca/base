@@ -167,7 +167,7 @@ void SharedMemory::SharedMemoryImpl::setProtection(
     }
   }
   
-  DWORD previousProtection;
+  DWORD previousProtection = 0;
   bassert(
     ::VirtualProtect(address, region.getSize(), protection, &previousProtection),
     MemoryException(this)

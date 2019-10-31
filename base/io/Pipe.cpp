@@ -124,7 +124,7 @@ bool Pipe::atEnd() const throw(PipeException) {
 
 unsigned int Pipe::available() const throw(PipeException) {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
-  DWORD bytesAvailable;
+  DWORD bytesAvailable = 0;
   if (!::PeekNamedPipe(fd->getHandle(), 0, 0, 0, &bytesAvailable, 0)) {
     throw PipeException("Unable to get available bytes", this);
   }

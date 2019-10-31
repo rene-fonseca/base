@@ -83,6 +83,9 @@ public:
     }
     // fout << li << ENDL;
 
+    List<unsigned int> lui = {0, 1, 3, 5, 7, 9};
+    TEST_ASSERT(lui.getSize() == 6);
+
     List<String> ls;
     ls.append("abc");
     ls.append("123");
@@ -114,6 +117,16 @@ public:
     ls.sort();
     // fout << "SORTED: " << ls << ENDL;
     TEST_ASSERT(std::find(ls.begin(), ls.end(), "123") == ls.begin());
+    
+    // TAG: add rotate
+    
+    TEST_ASSERT(ls);
+    ls.prepend("prepend");
+    ls.append("append");
+    ls.removeLast();
+    ls.removeFirst();
+    ls.removeAll();
+    TEST_ASSERT(!ls);
   }
 };
 

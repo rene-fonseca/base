@@ -81,7 +81,7 @@ public:
     return &value;
   }
 
-  inline void setValue(const TYPE& value) noexcept
+  inline void setValue(const TYPE& value)
   {
     this->value = value;
   }
@@ -134,9 +134,9 @@ public:
   /**
     Initializes iterator from other iterator.
   */
-  inline ListIterator& operator=(const ListIterator& eq) noexcept
+  inline ListIterator& operator=(const ListIterator& copy) noexcept
   {
-    node = eq.node;
+    node = copy.node;
     return *this;
   }
 
@@ -144,9 +144,9 @@ public:
     Initializes iterator from other iterator.
   */
   template<class POLY>
-  inline ListIterator& operator=(const ListIterator<POLY>& eq) noexcept
+  inline ListIterator& operator=(const ListIterator<POLY>& copy) noexcept
   {
-    node = eq.getValue();
+    node = copy.getValue();
     return *this;
   }
 
@@ -273,6 +273,14 @@ public:
   {
     _COM_AZURE_DEV__BASE__PROTECT_ITERATORS_UNMODIFIED();
     return node->getValue();
+  }
+  
+  /**
+    Returns the pointer value of the iterator.
+  */
+  inline ListNode<TYPE>* getNode() const noexcept
+  {
+    return node;
   }
 };
 
@@ -452,6 +460,14 @@ public:
   inline Pointer getValue() const noexcept
   {
     return node->getValue();
+  }
+
+  /**
+    Returns the pointer value of the iterator.
+  */
+  inline const ListNode<TYPE>* getNode() const noexcept
+  {
+    return node;
   }
 };
 
@@ -652,23 +668,24 @@ protected:
       @param node Node specifying the position. Must not be nullptr.
       @param value The value to be inserted.
     */
-    inline void insert(Node* node, const TYPE& value) noexcept
+    Node* insert(Node* node, const TYPE& value)
     {
       Node* previous = node->getPrevious();
-      Node* temp = new Node(node, previous, value);
-      node->setPrevious(temp);
+      Node* newNode = new Node(node, previous, value);
+      node->setPrevious(newNode);
       if (previous) {
-        previous->setNext(temp);
+        previous->setNext(newNode);
       }
       ++size;
+      return newNode;
     }
 
     /**
       Removes the specified node from this list.
 
-      @param node The node to be removed. Must not be NULL.
+      @param node The node to be removed. Must not be nullptr.
     */
-    inline void remove(Node* node) noexcept
+    void remove(Node* node)
     {
       Node* next = node->getNext();
       Node* previous = node->getPrevious();
@@ -693,7 +710,7 @@ protected:
     /**
       Initializes list from other list.
     */
-    ListImpl(const ListImpl& copy) noexcept
+    ListImpl(const ListImpl& copy)
     {
       const Node* node = copy.getFirst();
       while (node) {
@@ -702,14 +719,16 @@ protected:
       }
     }
 
-    ListImpl(ListImpl&& copy) noexcept
+    ListImpl(ListImpl&& move) noexcept
     {
-      first = copy.first;
-      copy.first = nullptr;
-      last = copy.last;
-      copy.last = nullptr;
-      size = copy.size;
-      copy.size = 0;
+      if (this != &move) {
+        first = move.first;
+        move.first = nullptr;
+        last = move.last;
+        move.last = nullptr;
+        size = move.size;
+        move.size = 0;
+      }
     }
 
     /**
@@ -761,13 +780,12 @@ protected:
         Node* node = new Node(nullptr, last, value);
         last->setNext(node);
         last = node;
-        ++size;
       } else { // list is empty
         Node* node = new Node(nullptr, nullptr, value);
         first = node;
         last = node;
-        ++size;
       }
+      ++size;
     }
 
     /**
@@ -779,13 +797,12 @@ protected:
         Node* node = new Node(first, nullptr, value);
         first->setPrevious(node);
         first = node;
-        ++size;
       } else { // list is empty
         Node* node = new Node(nullptr, nullptr, value);
         first = node;
         last = node;
-        ++size;
       }
+      ++size;
     }
 
     /**
@@ -804,23 +821,33 @@ protected:
     /**
       Removes this first node of this list.
     */
-    void removeFirst() throw(EmptyContainer)
+    void removeFirst()
     {
       if (!first) {
         throw EmptyContainer();
       }
-      remove(first);
+      Node* node = first;
+      first = first->getNext();
+      if (!first) {
+        last = nullptr;
+      }
+      remove(node);
     }
 
     /**
       Removes the last node of this list.
     */
-    void removeLast() throw(EmptyContainer)
+    void removeLast()
     {
       if (!last) {
         throw EmptyContainer();
       }
-      remove(last);
+      Node* node = last;
+      last = last->getPrevious();
+      if (!last) {
+        first = nullptr;
+      }
+      remove(node);
     }
 
     void shuffle()
@@ -922,19 +949,28 @@ public:
   {
   }
 
+  List(std::initializer_list<TYPE> values)
+    : elements(new ListImpl())
+  {
+    for (const auto& value : values) {
+      append(value);
+    }
+  }
+  
   /**
     Initializes list from other list.
   */
   inline List(const List& copy) noexcept
-    : elements(copy.elements) {
+    : elements(copy.elements)
+  {
   }
   
   /**
     Assignment of list by list.
   */
-  inline List& operator=(const List& eq) noexcept
+  inline List& operator=(const List& copy) noexcept
   {
-    elements = eq.elements;
+    elements = copy.elements;
     return *this;
   }
   
@@ -961,6 +997,7 @@ public:
   */
   inline Enumerator getEnumerator() noexcept
   {
+    elements.copyOnWrite();
     return Enumerator(getFirst());
   }
 
@@ -972,13 +1009,15 @@ public:
     return ReadEnumerator(getFirst());
   }
 
-  ListIterator<TYPE> begin() noexcept
+  ListIterator<TYPE> begin()
   {
+    elements.copyOnWrite();
     return ListIterator<TYPE>(getFirst());
   }
 
-  ListIterator<TYPE> end() noexcept
+  ListIterator<TYPE> end()
   {
+    elements.copyOnWrite();
     return ListIterator<TYPE>(nullptr);
   }
 
@@ -991,24 +1030,6 @@ public:
   {
     return ListReadIterator<TYPE>(nullptr);
   }
-
-  /**
-    Returns the index of the node with the specified value in this list.
-
-    @return -1 if the node isn't in the list.
-  */
-/*  MemoryDiff indexOf(const TYPE& value) const noexcept
-  {
-    const ListNode* current = first;
-    MemoryDiff index = 0;
-    while (current) {
-      if (current->getValue() == value) {
-        return index;
-      }
-      current = current->getNext();
-    }
-    return -1; // value not found
-  }*/
 
   // Node manip
 
@@ -1051,14 +1072,18 @@ public:
     @param enu Enumeration of this list specifying the position.
     @param value The value to be inserted.
   */
-/*  void insert(Enumeration& enu, const TYPE& value) throw(InvalidEnumeration)
+  void insert(const ListIterator<TYPE>& it, const TYPE& value)
   {
     elements.copyOnWrite();
-    if (enu.getOwner() != this) {
-      throw InvalidEnumeration();
+#if 0
+    if (it.getOwner() != this) {
+      throw InvalidIterator();
     }
-//    insert(enu.node, value);
-  }*/
+#endif
+    // TAG: allow empty also - nullptr
+    Node* node = it.getNode();
+    // TAG: elements->insert(node, value);
+  }
 
   /**
     Removes this first node of this list.
@@ -1099,19 +1124,24 @@ public:
   void shuffle();
 
   /**
-    Removes the node specified by the enumeration from this list.
+    Removes the node specified by the iterator from this list.
 
-    @param enu Enumeration specifying the element to be removed.
+    @param it Iterator specifying the element to be removed.
   */
-/*  void remove(ListEnumeration& enu) throw(InvalidEnumeration, EndOfEnumeration)
+  void remove(const ListIterator<TYPE>& it)
   {
-    if (enu.getOwner() != this) {
-      throw InvalidEnumeration();
+#if 0
+    if (it.getOwner() != this) {
+      throw InvalidIterator();
     }
+#endif
+    elements.copyOnWrite();
+#if 0
     ListNode* node = nullptr; //enu.node;
     enu.next(); // raises exception if end has been reached
     remove(node);
-  }*/
+#endif
+  }
 
   /** Returns true if not empty. */
   inline operator bool() const noexcept
@@ -1126,8 +1156,7 @@ public:
   @relates List
 */
 template<class TYPE>
-FormatOutputStream& operator<<(
-  FormatOutputStream& stream, const List<TYPE>& value) throw(IOException)
+FormatOutputStream& operator<<(FormatOutputStream& stream, const List<TYPE>& value) throw(IOException)
 {
   typename List<TYPE>::ReadEnumerator enu = value.getReadEnumerator();
   stream << '[';
@@ -1180,6 +1209,7 @@ void bubbleSort(const TYPE& _begin, const TYPE& _end)
 template<class TYPE>
 void List<TYPE>::sort()
 {
+  elements.copyOnWrite();
   bubbleSort(begin(), end());
 }
 

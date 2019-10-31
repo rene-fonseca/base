@@ -38,8 +38,8 @@ private:
   /**
     Default assignment is prohibited.
   */
-  ReferenceCountedCapacityAllocator& operator=(
-    const ReferenceCountedCapacityAllocator& eq) noexcept;
+  ReferenceCountedCapacityAllocator& operator=(const ReferenceCountedCapacityAllocator&) noexcept = delete;
+  ReferenceCountedCapacityAllocator& operator=(const ReferenceCountedCapacityAllocator&&) noexcept = delete;
 public:
 
   /**

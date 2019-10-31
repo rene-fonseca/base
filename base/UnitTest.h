@@ -591,6 +591,22 @@ public:
     base::UnitTest::onPrint(stream.getString(), __LINE__); \
   }
 
+/** Require expression to throw given exception.. */
+#define TEST_EXCEPTION(EXPRESSION, EXCEPTION) \
+  try { \
+    EXPRESSION; \
+    TEST_ASSERT(!"Expecting exception " #EXCEPTION); \
+  } catch (EXCEPTION& e) { \
+  } catch (Exception& e) { \
+    StringOutputStream stream; \
+    stream << "Expecting exception '" << Type::getType<EXCEPTION>() << "' for '" << _COM_AZURE_DEV__BASE__STRINGIFY(EXPRESSION) << "'." << FLUSH; \
+    base::UnitTest::onPrint(stream.getString(), __LINE__); \
+  } catch (...) { \
+    StringOutputStream stream; \
+    stream << "Expecting exception '" << Type::getType<EXCEPTION>() << "' for '" << _COM_AZURE_DEV__BASE__STRINGIFY(EXPRESSION) << "'." << FLUSH; \
+    base::UnitTest::onPrint(stream.getString(), __LINE__); \
+  }
+
 /** Assert within an expression. */
 #define TEST_INLINE_ASSERT(EXPRESSION) \
   (base::UnitTest::onAssert(EXPRESSION, "" #EXPRESSION, __LINE__), (EXPRESSION))

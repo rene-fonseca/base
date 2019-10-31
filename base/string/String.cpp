@@ -225,7 +225,8 @@ void String::forceToLength(MemorySize length) throw(StringException, MemoryExcep
   const MemorySize originalLength = getLength();
   setLength(length);
   if (originalLength < length) {
-    fill(getBuffer() + originalLength, length - originalLength, Traits::TERMINATOR);
+    auto ch = Traits::TERMINATOR;
+    fill(getBuffer() + originalLength, length - originalLength, ch);
   }
 }
 

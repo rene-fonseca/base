@@ -20,8 +20,8 @@ ArgumentParser::Option::Option(
   const String& _name,
   unsigned int _flags) throw(OutOfDomain)
   : name(_name),
-    shortName(0),
-    flags(_flags) {
+    flags(_flags)
+{
 }
     
 ArgumentParser::Option::Option(
@@ -30,39 +30,45 @@ ArgumentParser::Option::Option(
   unsigned int _flags) throw(OutOfDomain)
   : name(_name),
     shortName(_shortName),
-    flags(_flags) {
+    flags(_flags)
+{
   bassert(ASCIITraits::isAlphaNum(shortName), OutOfDomain(this));
 }
 
 ArgumentParser::FlagOption::FlagOption(
   const String& name, unsigned int flags) throw(OutOfDomain)
-  : Option(name, flags) {
+  : Option(name, flags)
+{
 }
 
 ArgumentParser::FlagOption::FlagOption(
   const String& name,
   char shortName,
   unsigned int flags) throw(OutOfDomain)
-  : Option(name, shortName, flags) {
+  : Option(name, shortName, flags)
+{
 }
 
 ArgumentParser::StringOption::StringOption(
   const String& name, unsigned int flags) throw(OutOfDomain)
-  : Option(name, flags) {
+  : Option(name, flags)
+{
 }
 
 ArgumentParser::StringOption::StringOption(
   const String& name,
   char shortName,
   unsigned int flags) throw(OutOfDomain)
-  : Option(name, shortName, flags) {
+  : Option(name, shortName, flags)
+{
 }
 
 ArgumentParser::RegExpOption::RegExpOption(
   const String& name,
   const String& pattern,
   unsigned int flags) throw(OutOfDomain)
-  : Option(name, flags), expression(pattern) {
+  : Option(name, flags), expression(pattern)
+{
 }
 
 ArgumentParser::RegExpOption::RegExpOption(
@@ -70,50 +76,59 @@ ArgumentParser::RegExpOption::RegExpOption(
   char shortName,
   const String& pattern,
   unsigned int flags) throw(OutOfDomain)
-  : Option(name, shortName, flags), expression(pattern) {
+  : Option(name, shortName, flags), expression(pattern)
+{
 }
 
-bool ArgumentParser::RegExpOption::isValid(const String& value) const throw() {
+bool ArgumentParser::RegExpOption::isValid(const String& value) const throw()
+{
   return expression.match(value).isComplete(value);
 }
 
 ArgumentParser::BooleanOption::BooleanOption(
   const String& name, unsigned int flags) throw(OutOfDomain)
-  : Option(name, flags) {
+  : Option(name, flags)
+{
 }
 
 ArgumentParser::BooleanOption::BooleanOption(
   const String& name,
   char shortName,
   unsigned int flags) throw(OutOfDomain)
-  : Option(name, shortName, flags) {
+  : Option(name, shortName, flags)
+{
 }
 
 ArgumentParser::CardinalOption::CardinalOption(
   const String& name, unsigned int flags) throw(OutOfDomain)
-  : Option(name, flags) {
+  : Option(name, flags)
+{
 }
 
 ArgumentParser::CardinalOption::CardinalOption(
   const String& name,
   char shortName,
   unsigned int flags) throw(OutOfDomain)
-  : Option(name, shortName, flags) {
+  : Option(name, shortName, flags)
+{
 }
 
 ArgumentParser::RealOption::RealOption(
   const String& name, unsigned int flags) throw(OutOfDomain)
-  : Option(name, flags) {
+  : Option(name, flags)
+{
 }
 
 ArgumentParser::RealOption::RealOption(
   const String& name,
   char shortName,
   unsigned int flags) throw(OutOfDomain)
-  : Option(name, shortName, flags) {
+  : Option(name, shortName, flags)
+{
 }
 
-bool ArgumentParser::RealOption::isValid(const String& value) const throw() {
+bool ArgumentParser::RealOption::isValid(const String& value) const throw()
+{
   // TAG: sign
   String::ReadIterator i = value.getBeginReadIterator();
   String::ReadIterator end = value.getEndReadIterator();
@@ -131,24 +146,27 @@ bool ArgumentParser::RealOption::isValid(const String& value) const throw() {
 
 ArgumentParser::EnumOption::EnumOption(
   const String& name, unsigned int flags) throw(OutOfDomain)
-  : Option(name, flags) {
+  : Option(name, flags)
+{
 }
 
 ArgumentParser::EnumOption::EnumOption(
   const String& name,
   char shortName,
   unsigned int flags) throw(OutOfDomain)
-  : Option(name, shortName, flags) {
+  : Option(name, shortName, flags)
+{
 }
 
 ArgumentParser::ArgumentParser(unsigned int _flags)
   : flags(_flags),
     shortNames(25 + 25 + 10)
 {
+  auto v = PrimitiveTraits<unsigned int>::MAXIMUM;
   fill(
     shortNames.getElements(),
     shortNames.getSize(),
-    PrimitiveTraits<unsigned int>::MAXIMUM // mark as unused
+    v // mark as unused
   );
 }
 

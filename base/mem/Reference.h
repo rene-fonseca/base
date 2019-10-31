@@ -90,16 +90,16 @@ public:
   /**
     Move initialization of automation pointer from other automation pointer.
   */
-  inline Reference(Reference&& copy)
-    : value(copy.value)
+  inline Reference(Reference&& move)
+    : value(move.value)
   {
 #if 0
     if (value) {
       ReferenceCountedObject::ReferenceImpl(*value).addReference();
     }
-    copy.invalidate();
+    move.invalidate();
 #else // no need to do counting
-    copy.value = nullptr;
+    move.value = nullptr;
 #endif
   }
 
@@ -158,16 +158,16 @@ public:
   /**
     Assignment of automation pointer to this automation pointer.
   */
-  inline Reference& operator=(Reference&& copy)
+  inline Reference& operator=(Reference&& move)
   {
-    if (this != &copy) { // no self assignment since we invalidate copy
+    if (this != &move) { // no self assignment since we invalidate copy
 #if 0
-      setValue(copy.value);
-      copy.invalidate();
+      setValue(move.value);
+      move.invalidate();
 #else
       setValue(nullptr); // make sure we release existing object
-      value = copy.value; // no need to do counting
-      copy.value = nullptr;
+      value = move.value; // no need to do counting
+      move.value = nullptr;
 #endif
     }
     return *this;

@@ -31,11 +31,11 @@ private:
     COMMAND_SUM
   };
   
-  Command command;
-  bool showFiles;
-  bool showFolders;
-  bool summarize;
-  uint64 blockSize;
+  Command command = COMMAND_SUM;
+  bool showFiles = false;
+  bool showFolders = false;
+  bool summarize = false;
+  uint64 blockSize = 1;
   Array<String> paths;
 public:
   
@@ -43,15 +43,12 @@ public:
     int numberOfArguments,
     const char* arguments[],
     const char* environment[])
-    : Application("du", numberOfArguments, arguments, environment) {
-    showFiles = false;
-    showFolders = false;
-    summarize = false;
-    blockSize = 1;
-    command = COMMAND_SUM;
+    : Application("du", numberOfArguments, arguments, environment)
+  {
   }
   
-  void parseArguments() {
+  void parseArguments()
+  {
     Array<String> arguments = getArguments();
     Array<String>::ReadEnumerator enu = arguments.getReadEnumerator();
     while (enu.hasNext()) {

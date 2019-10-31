@@ -36,11 +36,11 @@ private:
     COMMAND_COPY
   };
   
-  Command command;
-  bool force;
-  bool progress;
-  bool silent;
-  bool statistics;
+  Command command = COMMAND_ERROR;
+  bool force = false;
+  bool progress = false;
+  bool silent = false;
+  bool statistics = false;
   String source;
   String destination;
 public:
@@ -49,15 +49,12 @@ public:
     int numberOfArguments,
     const char* arguments[],
     const char* environment[])
-    : Application("cp", numberOfArguments, arguments, environment) {
-    command = COMMAND_ERROR;
-    force = false;
-    progress = false;
-    silent = false;
-    statistics = false;
+    : Application("cp", numberOfArguments, arguments, environment)
+  {
   }
   
-  void parseArguments() {
+  void parseArguments()
+  {
     bool sourceSpecified = false;
     bool destinationSpecified = false;
     

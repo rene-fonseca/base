@@ -108,10 +108,10 @@ private:
   Semaphore readingSemaphore;
   Semaphore writingSemaphore;
   MutualExclusion guard;
-  unsigned int channels;
-  unsigned int sampleRate;
-  bool isServer;
-  bool loopback;
+  unsigned int channels = 0;
+  unsigned int sampleRate = 0;
+  bool isServer = false;
+  bool loopback = false;
   InetEndPoint endPoint;
   StreamSocket streamSocket;
 public:
@@ -120,7 +120,8 @@ public:
     : recorder(this),
       player(this),
       reader(this),
-      writer(this) {
+      writer(this)
+  {
     this->channels = channels;
     this->sampleRate = sampleRate;
     this->isServer = isServer;
@@ -128,7 +129,8 @@ public:
     this->loopback = loopback;
   }
   
-  void record() throw() {
+  void record() throw()
+  {
     SoundInputStream soundInputStream(sampleRate, channels);
     soundInputStream.resume();
     while (!Thread::getThread()->isTerminated()) {

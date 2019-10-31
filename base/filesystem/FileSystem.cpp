@@ -1150,7 +1150,7 @@ void FileSystem::makeHardLink(const String& target, const String& path) throw(No
     CreateHardLink = (PCreateHardLink)::GetProcAddress(::GetModuleHandle("kernel32.dll"), "CreateHardLinkA");
     cachedCreateHardLink = true;
   }
-  bool error;
+  bool error = true;
   if (CreateHardLink) {
     error = CreateHardLink(path.getElements(), target.getElements(), 0) == 0;
   } else {

@@ -35,10 +35,10 @@ private:
     COMMAND_FILE_TYPE
   };
   
-  Command command;
-  bool followLink;
-  bool force;
-  bool recursive;
+  Command command = COMMAND_ERROR;
+  bool followLink = false;
+  bool force = false;
+  bool recursive = false;
   Array<String> paths;
 public:
   
@@ -46,14 +46,12 @@ public:
     int numberOfArguments,
     const char* arguments[],
     const char* environment[])
-    : Application("filetype", numberOfArguments, arguments, environment) {
-    command = COMMAND_ERROR;
-    force = false;
-    followLink = false;
-    recursive = false;
+    : Application("filetype", numberOfArguments, arguments, environment)
+  {
   }
   
-  void parseArguments() {
+  void parseArguments()
+  {
     Array<String> arguments = getArguments();
     Array<String>::ReadEnumerator enu = arguments.getReadEnumerator();
     while (enu.hasNext()) {

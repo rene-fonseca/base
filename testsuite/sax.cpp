@@ -816,21 +816,21 @@ class DOMToSAX : public XMLReader {
 private:
   
   /** The registered content handler. */
-  ContentHandler* contentHandler;
+  ContentHandler* contentHandler = nullptr;
   /** The registered DTD handler. */
-  DTDHandler* dtdHandler;
+  DTDHandler* dtdHandler = nullptr;
   /** The registered entity resolver. */
-  EntityResolver* entityResolver;
+  EntityResolver* entityResolver = nullptr;
   /** The registered error handler. */
-  ErrorHandler* errorHandler;
+  ErrorHandler* errorHandler = nullptr;
   /** Specifies whether or not to validate the document. */
-  bool validate;
+  bool validate = false;
   /** Specifies whether or not the parsing should be terminated. */
-  bool terminated;
+  bool terminated = false;
   /** Specifies whether or not the parsing is in progress. */
-  bool parsing;
+  bool parsing = false;
   /** Specified whether or not the document is standalone. */
-  bool standalone;
+  bool standalone = false;
 protected:
   
   void traverseNode(Node node) throw(SAXException) {
@@ -1125,17 +1125,16 @@ private:
     COMMAND_BUILD_DOM
   };
 
-  Command command;
-  bool debug;
+  Command command = COMMAND_BUILD_DOM;
+  bool debug = false;
 public:
 
   SAXApplication(
     int numberOfArguments,
     const char* arguments[],
     const char* environment[]) throw()
-    : Application("sax", numberOfArguments, arguments, environment) {
-    command = COMMAND_BUILD_DOM;
-    debug = false;
+    : Application("sax", numberOfArguments, arguments, environment)
+  {
   }
 
   static String getLocationString(const SAXParseException& exception) throw() {

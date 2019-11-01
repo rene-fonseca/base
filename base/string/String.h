@@ -373,7 +373,7 @@ public:
   String& operator=(String&& move) noexcept
   {
     if (this != &move) { // self assigment not allowed
-      elements = move.elements;
+      elements = std::move(move.elements);
       move.elements = DEFAULT_STRING.elements; // make empty so we may avoid future copyOnWrite()
     }
     return *this;

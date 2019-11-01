@@ -56,6 +56,18 @@ public:
   }
 
   /**
+    Initializes a linked node with default construction of value.
+
+    @param next The next node in the container.
+    @param previous The previous node in the container.
+  */
+  inline DoubleLinkedNode(DoubleLinkedNode* _next, DoubleLinkedNode* _previous)
+    : next(_next),
+      previous(_previous)
+  {
+  }
+
+  /**
     Initializes a linked node.
 
     @param next The next node in the container.
@@ -656,8 +668,8 @@ public:
 
 enum {
   CREATE_DOUBLE_LINKED_NODE,
-  CREATE_DOUBLE_LINKED_NODE_BY_MOVE,
-  CREATE_DOUBLE_LINKED_NODE_BY_SWAP,
+  CREATE_DOUBLE_LINKED_NODE_BY_MOVE_CONSTRUCT,
+  CREATE_DOUBLE_LINKED_NODE_BY_MOVE_ASSIGN,
 };
 
 /** Helper class for choosing between copy and move. Uses copy construction by default. */
@@ -672,25 +684,24 @@ public:
 };
 
 template<class TYPE>
-class CreateDoubleLinkedNode<TYPE, CREATE_DOUBLE_LINKED_NODE_BY_MOVE> {
+class CreateDoubleLinkedNode<TYPE, CREATE_DOUBLE_LINKED_NODE_BY_MOVE_CONSTRUCT> {
 public:
 
   // requires move constructible
   static inline DoubleLinkedNode<TYPE>* createNode(DoubleLinkedNode<TYPE>* next, DoubleLinkedNode<TYPE>* previous, TYPE&& value)
   {
-    return new DoubleLinkedNode<TYPE>(next, previous, std::move(value));
+    return new DoubleLinkedNode<TYPE>(next, previous, std::move(value)); // move construction
   }
 };
 
 template<class TYPE>
-class CreateDoubleLinkedNode<TYPE, CREATE_DOUBLE_LINKED_NODE_BY_SWAP> {
+class CreateDoubleLinkedNode<TYPE, CREATE_DOUBLE_LINKED_NODE_BY_MOVE_ASSIGN> {
 public:
 
   // requires default construction and move assignable
   static inline DoubleLinkedNode<TYPE>* createNode(DoubleLinkedNode<TYPE>* next, DoubleLinkedNode<TYPE>* previous, TYPE&& value)
   {
-    TYPE defaultValue;
-    auto temp = new DoubleLinkedNode<TYPE>(next, previous, defaultValue); // copy construction // TAG: inplace construction!
+    auto temp = new DoubleLinkedNode<TYPE>(next, previous); // default initialization
     temp->getValue() = std::move(value);
     return temp;
   }
@@ -700,8 +711,8 @@ template<class TYPE>
 class GetDoubleLinkedNodeConstruction {
 public:
 
-  static constexpr int HOW = std::is_move_constructible<TYPE>() ? CREATE_DOUBLE_LINKED_NODE_BY_MOVE :
-    ((std::is_move_assignable<TYPE>() && std::is_default_constructible<TYPE>()) ? CREATE_DOUBLE_LINKED_NODE_BY_SWAP : CREATE_DOUBLE_LINKED_NODE);
+  static constexpr int HOW = std::is_move_constructible<TYPE>() ? CREATE_DOUBLE_LINKED_NODE_BY_MOVE_CONSTRUCT :
+    ((std::is_move_assignable<TYPE>() && std::is_default_constructible<TYPE>()) ? CREATE_DOUBLE_LINKED_NODE_BY_MOVE_ASSIGN : CREATE_DOUBLE_LINKED_NODE);
 };
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

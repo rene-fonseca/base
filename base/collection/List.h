@@ -25,7 +25,7 @@
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 /**
-  Linked list data structure.
+  Linked list data structure. Use of List reduces copying of elements.
 
   You can enumerate the elements of a list like this (myMember is a member
   function of MyClass):

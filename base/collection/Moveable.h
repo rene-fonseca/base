@@ -186,4 +186,34 @@ public:
   }
 };
 
+/** Class used to ensure containers work for default constructible and move assignable types (can be used for fast swap). */
+class _COM_AZURE_DEV__BASE__API DefaultAndMoveAssignable {
+private:
+
+  DefaultAndMoveAssignable(DefaultAndMoveAssignable&& move) = delete;
+public:
+
+  DefaultAndMoveAssignable()
+  {
+  }
+
+  DefaultAndMoveAssignable(const DefaultAndMoveAssignable& copy)
+  {
+  }
+
+  DefaultAndMoveAssignable& operator=(const DefaultAndMoveAssignable& copy)
+  {
+    return *this;
+  }
+
+  DefaultAndMoveAssignable& operator=(DefaultAndMoveAssignable&& move)
+  {
+    return *this;
+  }
+
+  ~DefaultAndMoveAssignable()
+  {
+  }
+};
+
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

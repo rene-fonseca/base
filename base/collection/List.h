@@ -322,16 +322,19 @@ protected:
       }
     }
 
+    void removeAll()
+    {
+      while (first) {
+        removeFirst();
+      }
+    }
+
     /**
       Destroys the list.
     */
-    ~ListImpl()
+    inline ~ListImpl()
     {
-      while (first) {
-        Node* node = first;
-        first = first->getNext();
-        delete node;
-      }
+      removeAll(); // may throw
     }
   };
 

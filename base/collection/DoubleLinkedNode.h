@@ -689,8 +689,9 @@ public:
   // requires default construction and move assignable
   static inline DoubleLinkedNode<TYPE>* createNode(DoubleLinkedNode<TYPE>* next, DoubleLinkedNode<TYPE>* previous, TYPE&& value)
   {
-    auto temp = new DoubleLinkedNode<TYPE>(next, previous, TYPE());
-    swapper(temp->getValue(), value);
+    TYPE defaultValue;
+    auto temp = new DoubleLinkedNode<TYPE>(next, previous, defaultValue); // copy construction // TAG: inplace construction!
+    temp->getValue() = std::move(value);
     return temp;
   }
 };

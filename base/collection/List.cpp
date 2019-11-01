@@ -107,6 +107,10 @@ public:
     TEST_ASSERT(!stats.gotCopies() && !stats.gotMoves()); // since only node reordering
     stats.reset();
 
+    List<DefaultAndMoveAssignable> list5;
+    DefaultAndMoveAssignable x;
+    list5.append(DefaultAndMoveAssignable());
+
     List<int> li;
     for (auto i : range(-10, 20)) {
       li.append(i);

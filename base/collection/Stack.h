@@ -91,9 +91,9 @@ protected:
     inline Pointer next() throw(EndOfEnumeration)
     {
       bassert(current != nullptr, EndOfEnumeration());
-      Pointer temp = current->getValue();
+      auto temp = current;
       current = current->getNext();
-      return temp;
+      return &(temp->getValue());
     }
     
     /**
@@ -144,11 +144,11 @@ protected:
     /**
       Initialize stack from other stack.
     */
-    inline StackImpl(const StackImpl& copy)
+    StackImpl(const StackImpl& copy)
     {
       const StackNode* node = copy.bottom;
       while (node) {
-        push(*node->getValue());
+        push(node->getValue());
         node = node->getPrevious();
       }
     }
@@ -201,7 +201,7 @@ protected:
         node = node->getNext();
         --index;
       }
-      return *node->getValue();
+      return node->getValue();
     }
     
     /**
@@ -242,7 +242,7 @@ protected:
       } else {
         top->setPrevious(nullptr);
       }
-      TYPE result = *temp->getValue();
+      TYPE result = temp->getValue();
       delete temp;
       return result;
     }

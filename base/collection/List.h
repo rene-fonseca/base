@@ -426,16 +426,45 @@ public:
     return elements->getSize() == 0;
   }
 
-#if 0
-  inline const TYPE& getFirst() const
+  /** Returns the first element. */
+  TYPE& getFirst()
   {
     auto node = getFirstNode();
     if (!node) {
       throw EmptyContainer();
     }
-    return *node;
+    return node->getValue();
   }
-#endif
+
+  /** Returns the first element. */
+  const TYPE& getFirst() const
+  {
+    auto node = getFirstNode();
+    if (!node) {
+      throw EmptyContainer();
+    }
+    return node->getValue();
+  }
+
+  /** Returns the last element. */
+  TYPE& getLast()
+  {
+    auto node = getLastNode();
+    if (!node) {
+      throw EmptyContainer();
+    }
+    return node->getValue();
+  }
+
+  /** Returns the last element. */
+  const TYPE& getLast() const
+  {
+    auto node = getLastNode();
+    if (!node) {
+      throw EmptyContainer();
+    }
+    return node->getValue();
+  }
 
   /**
     Returns a modifying enumerator of the list.

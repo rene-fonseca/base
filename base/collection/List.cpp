@@ -121,6 +121,8 @@ public:
     ls.append("123");
     ls.append("up");
     ls.append("down");
+    TEST_ASSERT(ls.getFirst() == "abc");
+    TEST_ASSERT(ls.getLast() == "down");
     // fout << ls << ENDL;
 
     for (const auto& value : ls) {
@@ -153,6 +155,8 @@ public:
     TEST_ASSERT(ls);
     ls.prepend("prepend");
     ls.append("append");
+    ls.getFirst() = "assign";
+    ls.getLast() = "assign";
     ls.removeLast();
     ls.removeFirst();
     ls.removeAll();

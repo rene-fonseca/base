@@ -225,8 +225,7 @@ public:
 
   Array(Array&& move) noexcept
   {
-    elements = move.elements;
-    move.elements = nullptr;
+    elements = std::move(move.elements);
     size = move.size;
     move.size = 0;
   }
@@ -246,8 +245,7 @@ public:
   Array& operator=(Array&& move) noexcept
   {
     if (&move != this) {
-      elements = move.elements;
-      move.elements = nullptr;
+      elements = std::move(move.elements);
       size = move.size;
       move.size = 0;
     }

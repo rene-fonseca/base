@@ -12,6 +12,7 @@
  ***************************************************************************/
 
 #include <base/collection/List.h>
+#include <base/collection/Moveable.h>
 #include <base/UnitTest.h>
 #include <algorithm>
 
@@ -77,6 +78,35 @@ public:
 
   void run() override
   {
+    TEST_ASSERT(std::is_move_assignable<List<String> >());
+    TEST_ASSERT(std::is_move_constructible<List<String> >());
+
+    List<NonDefaultConstructible> list1;
+    list1.append(NonDefaultConstructible(nullptr));
+    auto it1 = list1.begin();
+
+    List<NonMoveable> list2;
+    list2.append(NonMoveable());
+    auto it2 = list2.begin();
+
+    Moveable::Stats stats;
+    List<Moveable> list3;
+    list3.append(Moveable(stats));
+    list3.append(Moveable(stats));
+    list3.append(Moveable(stats));
+    list3.append(Moveable(stats));
+    list3.append(Moveable(stats));
+    stats.reset();
+    auto list4 = list3;
+    TEST_ASSERT(!stats.gotCopies() && !stats.gotMoves());
+    stats.reset();
+    auto it3 = list3.begin(); // force copy
+    TEST_ASSERT(stats.gotCopies() && !stats.gotMoves());
+    stats.reset();
+    list3.shuffle();
+    TEST_ASSERT(!stats.gotCopies() && !stats.gotMoves()); // since only node reordering
+    stats.reset();
+
     List<int> li;
     for (auto i : range(-10, 20)) {
       li.append(i);

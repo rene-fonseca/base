@@ -14,8 +14,7 @@
 #pragma once
 
 #include <base/collection/Collection.h>
-#include <base/collection/Enumeration.h>
-#include <base/Iterator.h>
+#include <base/collection/DoubleLinkedNode.h>
 #include <base/collection/InvalidEnumeration.h>
 #include <base/collection/InvalidNode.h>
 #include <base/collection/EmptyContainer.h>
@@ -24,598 +23,6 @@
 #include <base/string/FormatOutputStream.h>
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
-
-/**
-  A node in a list.
-
-  @short A node in a list.
-  @ingroup collections
-*/
-
-template<class TYPE>
-class ListNode {
-protected:
-
-  /** The next node in the list. */
-  ListNode* next = nullptr;
-  /** The previous node in the list. */
-  ListNode* previous = nullptr;
-  /** The value associated with the node. */
-  TYPE value;
-public:
-
-  inline ListNode(ListNode* _next, ListNode* _previous, const TYPE& _value)
-    : next(_next),
-      previous(_previous),
-      value(_value)
-  {
-  }
-  
-  inline ListNode* getNext() const noexcept
-  {
-    return next;
-  }
-  
-  inline void setNext(ListNode* next) noexcept
-  {
-    this->next = next;
-  }
-  
-  inline ListNode* getPrevious() const noexcept
-  {
-    return previous;
-  }
-
-  inline void setPrevious(ListNode* previous) noexcept
-  {
-    this->previous = previous;
-  }
-
-  inline TYPE* getValue() noexcept
-  {
-    return &value;
-  }
-
-  inline const TYPE* getValue() const noexcept
-  {
-    return &value;
-  }
-
-  inline void setValue(const TYPE& value)
-  {
-    this->value = value;
-  }
-};
-
-
-
-template<class TYPE>
-class ListIterator {
-public:
-
-  typedef TYPE Value;
-  typedef TYPE* Pointer;
-  typedef TYPE& Reference;
-  typedef MemoryDiff Distance;
-  typedef BidirectionalIterator Category;
-protected:
-
-  ListNode<TYPE>* node = nullptr;
-  _COM_AZURE_DEV__BASE__PROTECT_ITERATORS_ADD_CONTEXT(); // TAG: ListNode can handle some modifications
-public:
-
-  /**
-    Initializes iterator.
-
-    @param value The initial value of the iterator.
-  */
-  explicit inline ListIterator(ListNode<TYPE>* _node) noexcept
-    : node(_node)
-  {
-  }
-
-  /**
-    Initializes iterator from other iterator.
-  */
-  inline ListIterator(const ListIterator& copy) noexcept
-    : node(copy.node)
-  {
-  }
-
-  /**
-    Initializes iterator from other iterator.
-  */
-  template<class POLY>
-  inline ListIterator(const ListIterator<POLY>& copy) noexcept
-    : node(copy.getValue())
-  {
-  }
-
-  /**
-    Initializes iterator from other iterator.
-  */
-  inline ListIterator& operator=(const ListIterator& copy) noexcept
-  {
-    node = copy.node;
-    return *this;
-  }
-
-  /**
-    Initializes iterator from other iterator.
-  */
-  template<class POLY>
-  inline ListIterator& operator=(const ListIterator<POLY>& copy) noexcept
-  {
-    node = copy.getValue();
-    return *this;
-  }
-
-  /**
-    Prefix increment.
-  */
-  inline ListIterator& operator++() noexcept
-  {
-    _COM_AZURE_DEV__BASE__PROTECT_ITERATORS_UNMODIFIED();
-    ASSERT(node);
-    node = node->getNext();
-    return *this;
-  }
-
-  /**
-    Postfix increment.
-  */
-  inline ListIterator operator++(int) noexcept
-  {
-    _COM_AZURE_DEV__BASE__PROTECT_ITERATORS_UNMODIFIED();
-    ListIterator result(*this);
-    ASSERT(node);
-    node = node->getNext();
-    return result;
-  }
-
-  /**
-    Prefix decrement.
-  */
-  inline ListIterator& operator--() noexcept
-  {
-    _COM_AZURE_DEV__BASE__PROTECT_ITERATORS_UNMODIFIED();
-    ASSERT(node);
-    node = node->getPrevious();
-    return *this;
-  }
-
-  /**
-    Postfix decrement.
-  */
-  inline ListIterator operator--(int) noexcept
-  {
-    _COM_AZURE_DEV__BASE__PROTECT_ITERATORS_UNMODIFIED();
-    ListIterator result(*this);
-    ASSERT(node);
-    node = node->getPrevious();
-    return result;
-  }
-
-  /**
-    Moves the specified distance forward.
-  */
-  ListIterator& operator+=(Distance distance) noexcept
-  {
-    if (distance < 0) {
-      while (distance++) {
-        --(*this);
-      }
-    } else {
-      while (distance--) {
-        ++(*this);
-      }
-    }
-    return *this;
-  }
-
-  /**
-    Moves the specified distance backwards.
-  */
-  ListIterator& operator-=(Distance distance) noexcept
-  {
-    if (distance < 0) {
-      while (distance++) {
-        ++(*this);
-      }
-    } else {
-      while (distance--) {
-        --(*this);
-      }
-    }
-    return *this;
-  }
-
-  /**
-    Returns true if the iterators are equal.
-  */
-  inline bool operator==(const ListIterator& eq) const noexcept
-  {
-    _COM_AZURE_DEV__BASE__PROTECT_ITERATORS_COMPATIBLE(*this, eq);
-    return node == eq.node;
-  }
-
-  /**
-    Returns true if the iterators aren't equal.
-  */
-  inline bool operator!=(const ListIterator& eq) const noexcept
-  {
-    _COM_AZURE_DEV__BASE__PROTECT_ITERATORS_COMPATIBLE(*this, eq);
-    return node != eq.node;
-  }
-
-  /**
-    Access the element.
-  */
-  inline Reference operator*() const noexcept
-  {
-    _COM_AZURE_DEV__BASE__PROTECT_ITERATORS_UNMODIFIED();
-    return *(node->getValue());
-  }
-
-  /**
-    Access the element.
-  */
-  inline Pointer operator->() const noexcept
-  {
-    _COM_AZURE_DEV__BASE__PROTECT_ITERATORS_UNMODIFIED();
-    return node->getValue();
-  }
-
-  /**
-    Returns the pointer value of the iterator.
-  */
-  inline Pointer getValue() const noexcept
-  {
-    _COM_AZURE_DEV__BASE__PROTECT_ITERATORS_UNMODIFIED();
-    return node->getValue();
-  }
-  
-  /**
-    Returns the pointer value of the iterator.
-  */
-  inline ListNode<TYPE>* getNode() const noexcept
-  {
-    return node;
-  }
-};
-
-
-
-template<class TYPE>
-class ListReadIterator {
-public:
-
-  typedef TYPE Value;
-  typedef const TYPE* Pointer;
-  typedef const TYPE& Reference;
-  typedef MemoryDiff Distance;
-  typedef BidirectionalIterator Category;
-protected:
-
-  const ListNode<TYPE>* node = nullptr;
-public:
-
-  /**
-    Initializes iterator.
-
-    @param value The initial value of the iterator.
-  */
-  explicit inline ListReadIterator(const ListNode<TYPE>* _node) noexcept
-    : node(_node)
-  {
-  }
-
-  /**
-    Initializes iterator from other iterator.
-  */
-  inline ListReadIterator(const ListReadIterator& copy) noexcept
-    : node(copy.node)
-  {
-  }
-
-  /**
-    Initializes iterator from other iterator.
-  */
-  template<class POLY>
-  inline ListReadIterator(const ListReadIterator<POLY>& copy) noexcept
-    : node(copy.getValue())
-  {
-  }
-
-  /**
-    Initializes iterator from other iterator.
-  */
-  inline ListReadIterator& operator=(const ListReadIterator& eq) noexcept
-  {
-    node = eq.node;
-    return *this;
-  }
-
-  /**
-    Initializes iterator from other iterator.
-  */
-  template<class POLY>
-  inline ListReadIterator& operator=(const ListReadIterator<POLY>& eq) noexcept
-  {
-    node = eq.getValue();
-    return *this;
-  }
-
-  /**
-    Prefix increment.
-  */
-  inline ListReadIterator& operator++() noexcept
-  {
-    ASSERT(node);
-    node = node->getNext();
-    return *this;
-  }
-
-  /**
-    Postfix increment.
-  */
-  inline ListReadIterator operator++(int) noexcept
-  {
-    ListReadIterator result(*this);
-    ASSERT(node);
-    node = node->getNext();
-    return result;
-  }
-
-  /**
-    Prefix decrement.
-  */
-  inline ListReadIterator& operator--() noexcept
-  {
-    ASSERT(node);
-    node = node->getPrevious();
-    return *this;
-  }
-
-  /**
-    Postfix decrement.
-  */
-  inline ListReadIterator operator--(int) noexcept
-  {
-    ListReadIterator result(*this);
-    ASSERT(node);
-    node = node->getPrevious();
-    return result;
-  }
-
-  /**
-    Moves the specified distance forward.
-  */
-  ListReadIterator& operator+=(Distance distance) noexcept
-  {
-    if (distance < 0) {
-      while (distance++) {
-        --(*this);
-      }
-    } else {
-      while (distance--) {
-        ++(*this);
-      }
-    }
-    return *this;
-  }
-
-  /**
-    Moves the specified distance backwards.
-  */
-  ListReadIterator& operator-=(Distance distance) noexcept
-  {
-    if (distance < 0) {
-      while (distance++) {
-        ++(*this);
-      }
-    } else {
-      while (distance--) {
-        --(*this);
-      }
-    }
-    return *this;
-  }
-
-  /**
-    Returns true if the iterators are equal.
-  */
-  inline bool operator==(const ListReadIterator& eq) const noexcept
-  {
-    return node == eq.node;
-  }
-
-  /**
-    Returns true if the iterators aren't equal.
-  */
-  inline bool operator!=(const ListReadIterator& eq) const noexcept
-  {
-    return node != eq.node;
-  }
-
-  /**
-    Access the element.
-  */
-  inline Reference operator*() const noexcept
-  {
-    return *(node->getValue());
-  }
-
-  /**
-    Access the element.
-  */
-  inline Pointer operator->() const noexcept
-  {
-    return node->getValue();
-  }
-
-  /**
-    Returns the pointer value of the iterator.
-  */
-  inline Pointer getValue() const noexcept
-  {
-    return node->getValue();
-  }
-
-  /**
-    Returns the pointer value of the iterator.
-  */
-  inline const ListNode<TYPE>* getNode() const noexcept
-  {
-    return node;
-  }
-};
-
-
-
-/**
-  Enumeration of elements in a list.
-  
-  @short Enumerator of list with modification access.
-  @ingroup collections
-*/
-
-template<class TRAITS>
-class ListEnumerator : public Enumerator<TRAITS> {
-public:
-
-  typedef typename Enumerator<TRAITS>::Value Value;
-  typedef typename Enumerator<TRAITS>::Pointer Pointer;
-private:
-  
-  /** The current position in the enumeration. */
-  ListNode<Value>* current = nullptr;
-public:
-
-  /**
-    Initializes an enumeration of all the elements of a list.
-
-    @param begin Specifies the beginning of the enumeration.
-  */
-  explicit inline ListEnumerator(ListNode<Value>* begin) noexcept
-    : current(begin)
-  {
-  }
-
-  /**
-    Initializes enumeration from other enumeration.
-  */
-  inline ListEnumerator(const ListEnumerator& copy) noexcept
-    : current(copy.current)
-  {
-  }
-
-  /**
-    Returns true if the enumeration still contains elements.
-  */
-  inline bool hasNext() const noexcept
-  {
-    return current != nullptr;
-  }
-
-  /**
-    Returns the next element and advances the position of this enumeration.
-  */
-  inline Pointer next() throw(EndOfEnumeration)
-  {
-    bassert(current != nullptr, EndOfEnumeration());
-    Pointer temp = current->getValue();
-    current = current->getNext();
-    return temp;
-  }
-
-  /**
-    Returns true if the enumerations are pointing to the same position.
-  */
-  inline bool operator==(const ListEnumerator& eq) const noexcept
-  {
-    return current == eq.current;
-  }
-
-  /**
-    Returns true if the enumerations aren't pointing to the same position.
-  */
-  inline bool operator!=(const ListEnumerator& eq) const noexcept
-  {
-    return current != eq.current;
-  }
-};
-
-/**
-  Enumeration of elements in a list.
-
-  @short Non-modifying enumerator of list.
-*/
-
-template<class TRAITS>
-class ListReadEnumerator : public Enumerator<TRAITS> {
-protected:
-
-  typedef typename Enumerator<TRAITS>::Value Value;
-  typedef typename Enumerator<TRAITS>::Pointer Pointer;
-
-  /** The current position in the enumeration. */
-  const ListNode<Value>* current = nullptr;
-public:
-
-  /**
-    Initializes an enumeration of all the elements of a list.
-
-    @param begin Specifies the beginning of the enumeration.
-  */
-  explicit inline ListReadEnumerator(const ListNode<Value>* begin) noexcept
-    : current(begin)
-  {
-  }
-
-  /**
-    Initializes enumeration from other enumeration.
-  */
-  inline ListReadEnumerator(const ListReadEnumerator& copy) noexcept
-    : current(copy.current)
-  {
-  }
-
-  /**
-    Returns true if the enumeration still contains elements.
-  */
-  inline bool hasNext() const noexcept
-  {
-    return current != nullptr;
-  }
-
-  /**
-    Returns the next element and advances the position of this enumeration.
-  */
-  inline Pointer next() throw(EndOfEnumeration)
-  {
-    bassert(current != nullptr, EndOfEnumeration());
-    Pointer temp = current->getValue();
-    current = current->getNext();
-    return temp;
-  }
-
-  /**
-    Returns true if the enumerations are pointing to the same position.
-  */
-  inline bool operator==(const ListReadEnumerator& eq) const noexcept {
-    return current == eq.current;
-  }
-
-  /**
-    Returns true if the enumerations aren't pointing to the same position.
-  */
-  inline bool operator!=(const ListReadEnumerator& eq) const noexcept {
-    return current != eq.current;
-  }
-};
-
-
 
 /**
   Linked list data structure.
@@ -641,11 +48,12 @@ public:
   /** The type of a value. */
   typedef TYPE Value;
   /** The type of a node. */
-  typedef ListNode<Value> Node;
-  // TAG: use this instead typedef DoubleLinkedNode<Value> Node;
+  typedef DoubleLinkedNode<Value> Node;
 
-  typedef ListEnumerator<EnumeratorTraits<TYPE> > Enumerator;
-  typedef ListReadEnumerator<ReadEnumeratorTraits<TYPE> > ReadEnumerator;
+  typedef DoubleLinkedNodeIterator<TYPE> Iterator;
+  typedef DoubleLinkedNodeReadIterator<TYPE> ReadIterator;
+  typedef DoubleLinkedNodeEnumerator<EnumeratorTraits<TYPE> > Enumerator;
+  typedef DoubleLinkedNodeReadEnumerator<ReadEnumeratorTraits<TYPE> > ReadEnumerator;
 protected:
 
   /*
@@ -696,7 +104,7 @@ protected:
         previous->setNext(next);
       }
       --size;
-      delete node;
+      delete node; // could throw
     }
   public:
 
@@ -714,7 +122,7 @@ protected:
     {
       const Node* node = copy.getFirst();
       while (node) {
-        append(*node->getValue());
+        append(node->getValue());
         node = node->getNext();
       }
     }
@@ -776,15 +184,28 @@ protected:
     */
     void append(const TYPE& value)
     {
-      if (size) {
-        Node* node = new Node(nullptr, last, value);
+      Node* node = new Node(nullptr, last, value);
+      if (last) { // list is not empty
         last->setNext(node);
-        last = node;
       } else { // list is empty
-        Node* node = new Node(nullptr, nullptr, value);
         first = node;
-        last = node;
       }
+      last = node;
+      ++size;
+    }
+
+    /**
+      Appends the value to the end of this list.
+    */
+    void append(TYPE&& value)
+    {
+      Node* node = CreateDoubleLinkedNode<TYPE, GetDoubleLinkedNodeConstruction<TYPE>::HOW>::createNode(nullptr, last, std::move(value));
+      if (last) { // list is not empty
+        last->setNext(node);
+      } else { // list is empty
+        first = node;
+      }
+      last = node;
       ++size;
     }
 
@@ -793,15 +214,28 @@ protected:
     */
     void prepend(const TYPE& value)
     {
-      if (size) {
-        Node* node = new Node(first, nullptr, value);
+      Node* node = new Node(first, nullptr, value);
+      if (first) { // list is not empty
         first->setPrevious(node);
-        first = node;
       } else { // list is empty
-        Node* node = new Node(nullptr, nullptr, value);
-        first = node;
         last = node;
       }
+      first = node;
+      ++size;
+    }
+
+    /**
+      Prepends the value to the beginning of this list.
+    */
+    void prepend(TYPE&& value)
+    {
+      Node* node = CreateDoubleLinkedNode<TYPE, GetDoubleLinkedNodeConstruction<TYPE>::HOW>::createNode(first, nullptr, std::move(value));
+      if (first) { // list is not empty
+        first->setPrevious(node);
+      } else { // list is empty
+        last = node;
+      }
+      first = node;
       ++size;
     }
 
@@ -857,7 +291,7 @@ protected:
         return; // nothing to do
       }
 
-      PrimitiveArray<ListNode<TYPE>*> nodes(n);
+      PrimitiveArray<Node*> nodes(n);
       {
         auto src = first;
         for (MemorySize i = 0; i < n; ++i) { // fill buffer
@@ -909,7 +343,7 @@ protected:
   /**
     Returns the first node of the list.
   */
-  inline Node* getFirst()
+  inline Node* getFirstNode()
   {
     elements.copyOnWrite();
     return elements->getFirst();
@@ -918,7 +352,7 @@ protected:
   /**
     Returns the first node of the list.
   */
-  inline const Node* getFirst() const noexcept
+  inline const Node* getFirstNode() const noexcept
   {
     return elements->getFirst();
   }
@@ -926,7 +360,7 @@ protected:
   /**
     Returns the last node of the list.
   */
-  inline Node* getLast()
+  inline Node* getLastNode()
   {
     elements.copyOnWrite();
     return elements->getLast();
@@ -935,7 +369,7 @@ protected:
   /**
     Returns the last node of the list.
   */
-  inline const Node* getLast() const noexcept
+  inline const Node* getLastNode() const noexcept
   {
     return elements->getLast();
   }
@@ -992,13 +426,24 @@ public:
     return elements->getSize() == 0;
   }
 
+#if 0
+  inline const TYPE& getFirst() const
+  {
+    auto node = getFirstNode();
+    if (!node) {
+      throw EmptyContainer();
+    }
+    return *node;
+  }
+#endif
+
   /**
     Returns a modifying enumerator of the list.
   */
-  inline Enumerator getEnumerator() noexcept
+  Enumerator getEnumerator()
   {
     elements.copyOnWrite();
-    return Enumerator(getFirst());
+    return Enumerator(getFirstNode());
   }
 
   /**
@@ -1006,29 +451,39 @@ public:
   */
   inline ReadEnumerator getReadEnumerator() const noexcept
   {
-    return ReadEnumerator(getFirst());
+    return ReadEnumerator(getFirstNode());
   }
 
-  ListIterator<TYPE> begin()
+  Iterator begin()
   {
     elements.copyOnWrite();
-    return ListIterator<TYPE>(getFirst());
+    return Iterator(getFirstNode());
   }
 
-  ListIterator<TYPE> end()
+  Iterator end()
   {
     elements.copyOnWrite();
-    return ListIterator<TYPE>(nullptr);
+    return Iterator(nullptr);
   }
 
-  ListReadIterator<TYPE> begin() const noexcept
+  ReadIterator begin() const noexcept
   {
-    return ListReadIterator<TYPE>(getFirst());
+    return ReadIterator(getFirstNode());
   }
 
-  ListReadIterator<TYPE> end() const noexcept
+  ReadIterator end() const noexcept
   {
-    return ListReadIterator<TYPE>(nullptr);
+    return ReadIterator(nullptr);
+  }
+
+  ReadIterator cbegin() const noexcept
+  {
+    return ReadIterator(getFirstNode());
+  }
+
+  ReadIterator cend() const noexcept
+  {
+    return ReadIterator(nullptr);
   }
 
   // Node manip
@@ -1045,6 +500,39 @@ public:
   }
 
   /**
+    Appends the specified value to the end of this list.
+
+    @param value The value to be appended to the list.
+  */
+  void append(TYPE&& value)
+  {
+    elements.copyOnWrite();
+    elements->append(std::move(value));
+  }
+
+  /**
+    Appends the specified value to the end of this list.
+
+    @param value The value to be appended to the list.
+  */
+  void add(const TYPE& value) // alias to allow switch between container types
+  {
+    elements.copyOnWrite();
+    elements->append(value);
+  }
+
+  /**
+    Appends the specified value to the end of this list.
+
+    @param value The value to be appended to the list.
+  */
+  void add(TYPE&& value) // alias to allow switch between container types
+  {
+    elements.copyOnWrite();
+    elements->append(std::move(value));
+  }
+
+  /**
     Prepends the value to the beginning of this list.
 
     @param value The value to be prepended to the list.
@@ -1056,14 +544,14 @@ public:
   }
 
   /**
-    Appends the specified value to the end of this list.
+    Prepends the value to the beginning of this list.
 
-    @param value The value to be appended to the list.
+    @param value The value to be prepended to the list.
   */
-  void add(const TYPE& value)
+  void prepend(TYPE&& value)
   {
     elements.copyOnWrite();
-    elements->append(value);
+    elements->prepend(std::move(value));
   }
 
   /**
@@ -1072,7 +560,7 @@ public:
     @param enu Enumeration of this list specifying the position.
     @param value The value to be inserted.
   */
-  void insert(const ListIterator<TYPE>& it, const TYPE& value)
+  void insert(const Iterator& it, const TYPE& value)
   {
     elements.copyOnWrite();
 #if 0
@@ -1128,7 +616,7 @@ public:
 
     @param it Iterator specifying the element to be removed.
   */
-  void remove(const ListIterator<TYPE>& it)
+  void remove(const Iterator& it)
   {
 #if 0
     if (it.getOwner() != this) {
@@ -1137,7 +625,7 @@ public:
 #endif
     elements.copyOnWrite();
 #if 0
-    ListNode* node = nullptr; //enu.node;
+    Node* node = nullptr; //enu.node;
     enu.next(); // raises exception if end has been reached
     remove(node);
 #endif
@@ -1225,6 +713,3 @@ void List<TYPE>::shuffle()
 }
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE
-
-_COM_AZURE_DEV__BASE__STD_ITERATOR_TRAITS(base::ListIterator);
-_COM_AZURE_DEV__BASE__STD_ITERATOR_TRAITS(base::ListReadIterator);

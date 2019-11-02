@@ -479,7 +479,7 @@ String UnitTest::getJUnit() const
 
     // additional info
     // getImpact();
-    // stats: getIO(), getMemeory(), getProcessingTime()
+    // stats: getIO(), getMemory(), getProcessingTime()
 
     // TAG: escape data - switch to XML API when ready
     if (getDescription()) {
@@ -1048,12 +1048,11 @@ String UnitTestManager::getJUnit(const String& uuid, const String& name) const
     "<testsuite id=\"%1\" name=\"%2\" hostname=\"%3\" tests=\"%4\" failures=\"%5\" time=\"%6\" timestamp=\"%7\">\n",
     uuid ? uuid : Guid::createGuidAsString(), name ? name : "BASE", hostname, tests.getSize(), failed, totalTime/1000000.0, timestamp
   );
-  // TAG: add configuration
-#if 0
+
   xml += "<properties>\n";
-  xml += "<property name=\"%1\" value=\"%2\"/>\n";
+  xml += Format::subst("<property name=\"%1\" value=\"%2\"/>\n", "configuration", configuration);
   xml += "</properties>\n";
-#endif
+
   for (auto test : tests) {
     xml += test->getJUnit();
   }

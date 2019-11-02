@@ -71,30 +71,13 @@ protected:
   protected:
 
     /**
-      Inserts the value at the specified node of this list.
+      Detaches the specified node from this list.
 
-      @param node Node specifying the position. Must not be nullptr.
-      @param value The value to be inserted.
+      @param node The node to be detached. Must not be nullptr.
     */
-    Node* insert(Node* node, const TYPE& value)
+    Node* detachNode(Node* node) noexcept
     {
-      Node* previous = node->getPrevious();
-      Node* newNode = new Node(node, previous, value);
-      node->setPrevious(newNode);
-      if (previous) {
-        previous->setNext(newNode);
-      }
-      ++size;
-      return newNode;
-    }
-
-    /**
-      Removes the specified node from this list.
-
-      @param node The node to be removed. Must not be nullptr.
-    */
-    void remove(Node* node)
-    {
+      BASSERT(node);
       Node* next = node->getNext();
       Node* previous = node->getPrevious();
       if (next) {
@@ -104,7 +87,15 @@ protected:
         previous->setNext(next);
       }
       --size;
-      delete node; // could throw
+      if (node == first) {
+        first = node->getNext();
+      }
+      if (node == last) {
+        last = node->getPrevious();
+      }
+      node->setNext(nullptr);
+      node->setPrevious(nullptr);
+      return node;
     }
   public:
 
@@ -179,6 +170,121 @@ protected:
       return last;
     }
 
+    inline void attachBefore(Node* node, Node* next)
+    {
+      BASSERT(node && !(node->getNext()) && !(node->getPrevious()));
+      if (!next) {
+        first = node;
+        last = node;
+        ++size;
+        return;
+      }
+      auto p = next->getPrevious();
+      if (p) {
+        p->setNext(node);
+      }
+      node->setNext(next);
+      node->setPrevious(p);
+      next->setPrevious(node);
+      if (!node->getPrevious()) {
+        first = node;
+      }
+      if (!last) {
+        last = node;
+      }
+      ++size;
+    }
+
+    inline void attachAfter(Node* node, Node* previous)
+    {
+      BASSERT(node && !(node->getNext()) && !(node->getPrevious()));
+      if (!previous) {
+        first = node;
+        last = node;
+        ++size;
+        return;
+      }
+      auto n = previous->getNext();
+      if (n) {
+        n->setPrevious(node);
+      }
+      node->setPrevious(previous);
+      node->setNext(n);
+      previous->setNext(node);
+      if (!node->getNext()) {
+        last = node;
+      }
+      if (!first) {
+        first = node;
+      }
+      ++size;
+    }
+
+    /**
+      Inserts the value at the specified node of this list.
+
+      @param node Node specifying the position. Must not be nullptr.
+      @param value The value to be inserted.
+    */
+    Node* insert(Node* node, const TYPE& value)
+    {
+      // if node is nullptr then we insert at end
+      Node* previous = !node ? last : node->getPrevious();
+      Node* newNode = new Node(node, previous, value);
+      if (node) {
+        node->setPrevious(newNode);
+      }
+      if (previous) {
+        previous->setNext(newNode);
+      }
+      if (!previous) {
+        first = newNode;
+      }
+      if (previous == last) {
+        last = newNode;
+      }
+      ++size;
+      return newNode;
+    }
+
+    /**
+      Inserts the value at the specified node of this list.
+
+      @param node Node specifying the position. Must not be nullptr.
+      @param value The value to be inserted.
+    */
+    Node* insert(Node* node, TYPE&& value)
+    {
+      // if node is nullptr then we insert at end
+      Node* previous = !node ? last : node->getPrevious();
+      Node* newNode = CreateDoubleLinkedNode<TYPE, GetDoubleLinkedNodeConstruction<TYPE>::HOW>::createNode(node, previous, std::move(value));
+      if (node) {
+        node->setPrevious(newNode);
+      }
+      if (previous) {
+        previous->setNext(newNode);
+      }
+      if (!previous) {
+        first = newNode;
+      }
+      if (previous == last) {
+        last = newNode;
+      }
+      ++size;
+      return newNode;
+    }
+
+    /**
+      Removes the specified node from this list.
+
+      @param node The node to be removed. Must not be nullptr.
+    */
+    void remove(Node* node)
+    {
+      detachNode(node);
+      delete node; // could throw
+    }
+
     /**
       Appends the value to the end of this list.
     */
@@ -238,19 +344,6 @@ protected:
       first = node;
       ++size;
     }
-
-    /**
-      Inserts the value at the specified position.
-
-      @param enu Enumeration of this list specifying the position.
-      @param value The value to be inserted.
-    */
-/*    void insert(Enumeration& enu, const TYPE& value) throw(InvalidEnumeration) {
-      if (enu.getOwner() != this) {
-        throw InvalidEnumeration();
-      }
-  //    insert(enu.node, value);
-    }*/
 
     /**
       Removes this first node of this list.
@@ -319,6 +412,26 @@ protected:
           last->setNext(node);
           last = node;
         }
+      }
+    }
+
+    /**
+      Moves the node to the front.
+    */
+    void moveToFront(Node* node)
+    {
+      if (node != first) {
+        attachBefore(detachNode(node), first);
+      }
+    }
+
+    /**
+      Moves the node to the back.
+    */
+    void moveToBack(Node* node)
+    {
+      if (node != last) {
+        attachAfter(detachNode(node), last);
       }
     }
 
@@ -587,22 +700,90 @@ public:
   }
 
   /**
-    Inserts the value at the specified position.
+    Inserts the value before the specified position. If iterator is end iterator the value is inserted at the end.
 
-    @param enu Enumeration of this list specifying the position.
+    @param it Insert position.
     @param value The value to be inserted.
   */
   void insert(const Iterator& it, const TYPE& value)
   {
-    elements.copyOnWrite();
-#if 0
-    if (it.getOwner() != this) {
-      throw InvalidIterator();
+    _COM_AZURE_DEV__BASE__PROTECT_ITERATORS_COMPATIBLE(it, begin());
+    if (elements.isMultiReferenced()) {
+      throw IteratorException("Iterator used for multi-referenced container.");
     }
-#endif
-    // TAG: allow empty also - nullptr
-    Node* node = it.getNode();
-    // TAG: elements->insert(node, value);
+    // elements.copyOnWrite(); // would invalidate iterator
+    auto node = it.getNode();
+    elements->insert(node, value);
+  }
+
+  /**
+    Inserts the value before the specified position. If iterator is end iterator the value is inserted at the end.
+
+    @param it Insert position.
+    @param value The value to be inserted.
+  */
+  void insert(const Iterator& it, TYPE&& value)
+  {
+    _COM_AZURE_DEV__BASE__PROTECT_ITERATORS_COMPATIBLE(it, begin());
+    if (elements.isMultiReferenced()) {
+      throw IteratorException("Iterator used for multi-referenced container.");
+    }
+    // elements.copyOnWrite(); // would invalidate iterator
+    auto node = it.getNode();
+    elements->insert(node, std::move(value));
+  }
+
+  /**
+    Removes the node specified by the iterator from this list.
+
+    @param it Iterator specifying the element to be removed.
+  */
+  void remove(const Iterator& it)
+  {
+    _COM_AZURE_DEV__BASE__PROTECT_ITERATORS_COMPATIBLE(it, begin());
+    if (elements.isMultiReferenced()) {
+      throw IteratorException("Iterator used for multi-referenced container.");
+    }
+    // elements.copyOnWrite(); // would invalidate iterator
+    auto node = it.getNode();
+    if (!node) {
+      throw IteratorException();
+    }
+    elements->remove(node);
+  }
+
+  /**
+    Moves the value at the specified position to the front.
+  */
+  void moveToFront(const Iterator& it)
+  {
+    _COM_AZURE_DEV__BASE__PROTECT_ITERATORS_COMPATIBLE(it, begin());
+    if (elements.isMultiReferenced()) {
+      throw IteratorException("Iterator used for multi-referenced container.");
+    }
+    // elements.copyOnWrite(); // would invalidate iterator
+    auto node = it.getNode();
+    if (!node) {
+      throw IteratorException();
+    }
+    elements->moveToFront(node);
+  }
+
+  /**
+    Moves the value at the specified position to the back.
+  */
+  void moveToBack(const Iterator& it)
+  {
+    _COM_AZURE_DEV__BASE__PROTECT_ITERATORS_COMPATIBLE(it, begin());
+    if (elements.isMultiReferenced()) {
+      throw IteratorException("Iterator used for multi-referenced container.");
+    }
+    // elements.copyOnWrite(); // would invalidate iterator
+    auto node = it.getNode();
+    if (!node) {
+      throw IteratorException();
+    }
+    elements->moveToBack(node);
   }
 
   /**
@@ -642,26 +823,6 @@ public:
     Uses temporary buffer but avoid copy construction of values.
   */
   void shuffle();
-
-  /**
-    Removes the node specified by the iterator from this list.
-
-    @param it Iterator specifying the element to be removed.
-  */
-  void remove(const Iterator& it)
-  {
-#if 0
-    if (it.getOwner() != this) {
-      throw InvalidIterator();
-    }
-#endif
-    elements.copyOnWrite();
-#if 0
-    Node* node = nullptr; //enu.node;
-    enu.next(); // raises exception if end has been reached
-    remove(node);
-#endif
-  }
 
   /** Returns true if not empty. */
   inline operator bool() const noexcept
@@ -730,7 +891,7 @@ template<class TYPE>
 void List<TYPE>::sort()
 {
   elements.copyOnWrite();
-  bubbleSort(begin(), end());
+  bubbleSort(begin(), end()); // TAG: swap nodes instead - at least when TYPE doesnt allow move
 }
 
 template<class TYPE>

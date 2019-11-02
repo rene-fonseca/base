@@ -78,8 +78,11 @@ public:
 
   void run() override
   {
-    TEST_ASSERT(std::is_move_assignable<List<String> >());
+    TEST_ASSERT(std::is_default_constructible<List<String> >());
+    TEST_ASSERT(std::is_copy_constructible<List<String> >());
+    TEST_ASSERT(std::is_copy_assignable<List<String> >());
     TEST_ASSERT(std::is_move_constructible<List<String> >());
+    TEST_ASSERT(std::is_move_assignable<List<String> >());
 
     List<NonDefaultConstructible> list1;
     list1.append(NonDefaultConstructible(nullptr));
@@ -108,7 +111,6 @@ public:
     stats.reset();
 
     List<DefaultAndMoveAssignable> list5;
-    DefaultAndMoveAssignable x;
     list5.append(DefaultAndMoveAssignable());
 
     List<int> li;
@@ -153,14 +155,31 @@ public:
     ls.sort();
     // fout << "SORTED: " << ls << ENDL;
     TEST_ASSERT(std::find(ls.begin(), ls.end(), "123") == ls.begin());
-    
-    // TAG: add rotate
-    
+
     TEST_ASSERT(ls);
+    auto it = ls.begin();
     ls.prepend("prepend");
+    TEST_ASSERT(ls.getFirst() == "prepend");
     ls.append("append");
+    TEST_ASSERT(ls.getLast() == "append");
+    ls.insert(ls.begin(), "a");
+    TEST_ASSERT(ls.getFirst() == "a");
+    ls.insert(ls.end(), "b");
+    TEST_ASSERT(ls.getLast() == "b");
+    ls.insert(it, "c");
+    ls.moveToFront(it);
+    TEST_ASSERT(ls.getFirst() == "123");
+    ls.moveToFront(it);
+    TEST_ASSERT(ls.getFirst() == "123");
+    ls.moveToBack(it);
+    TEST_ASSERT(ls.getLast() == "123");
+    ls.moveToBack(it);
+    TEST_ASSERT(ls.getLast() == "123");
+    ls.remove(it);
     ls.getFirst() = "assign";
+    TEST_ASSERT(ls.getFirst() == "assign");
     ls.getLast() = "assign";
+    TEST_ASSERT(ls.getLast() == "assign");
     ls.removeLast();
     ls.removeFirst();
     ls.removeAll();

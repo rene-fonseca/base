@@ -158,6 +158,7 @@ private:
   MemorySize iteratorModificationId = 0;
 public:
 
+  /** Called when all iterators must be marked dirty. */
   inline void onBreakIterators() noexcept
   {
     ++iteratorModificationId;
@@ -165,7 +166,7 @@ public:
 
   inline ~CollectionOwnerContext()
   {
-    iteratorModificationId = -1; // mark destructed - doesnt happen in the normal case since iterator will have handle to owner - this can be bad through since execution order can change! weak reference would be desired
+    iteratorModificationId = -1; // mark destructed - doesnt happen in the normal case since iterator will have handle to owner - this can be bad though since execution order can change! weak reference would be desired
   }
 };
 

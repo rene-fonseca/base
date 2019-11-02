@@ -39,7 +39,7 @@ private:
   /**
     Default assignment is prohibited.
   */
-  ReferenceCountedAllocator& operator=(const ReferenceCountedAllocator& eq) throw();
+  ReferenceCountedAllocator& operator=(const ReferenceCountedAllocator& assign) throw();
 public:
 
   /**

@@ -334,10 +334,10 @@ public:
 
     @param eq The matrix containing the desired elements.
   */
-  Matrix& operator=(const Matrix& eq) throw(MemoryException) {
-    this->elements = eq.elements;
-    this->rows = eq.rows;
-    this->columns = eq.columns;
+  Matrix& operator=(const Matrix& assign) throw(MemoryException) {
+    this->elements = assign.elements;
+    this->rows = assign.rows;
+    this->columns = assign.columns;
     return *this;
   }
 

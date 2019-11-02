@@ -61,8 +61,8 @@ public:
   /**
     Assignment of transformer by transformer.
   */
-  inline Transformer& operator=(const Transformer& eq) throw() {
-    transformer = eq.transformer;
+  inline Transformer& operator=(const Transformer& assign) throw() {
+    transformer = assign.transformer;
     return *this;
   }
 #endif

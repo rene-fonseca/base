@@ -149,8 +149,8 @@ public:
   /**
     Assignment of menu from other menu.
   */
-  inline Menu& operator=(const Menu& eq) throw() {
-    handle = eq.handle;
+  inline Menu& operator=(const Menu& assign) throw() {
+    handle = assign.handle;
     return *this;
   }
 

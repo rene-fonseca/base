@@ -61,9 +61,9 @@ public:
 
     @param dimension The desired dimension.
   */
-  inline Dimension& operator=(const Dimension& eq) noexcept {
-    width = eq.width; // no need to protect against self-assignment
-    height = eq.height;
+  inline Dimension& operator=(const Dimension& assign) noexcept {
+    width = assign.width; // no need to protect against self-assignment
+    height = assign.height;
     return *this;
   }
 

@@ -30,7 +30,7 @@ private:
   /* Disable the default copy constructor. */
   Polymorphic(const Polymorphic& copy) throw();
   /* Disable the default assignment operator. */
-  Polymorphic& operator=(const Polymorphic& eq) throw();
+  Polymorphic& operator=(const Polymorphic& assign) throw();
 public:
 
   /**

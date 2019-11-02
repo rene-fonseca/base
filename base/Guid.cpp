@@ -104,10 +104,10 @@ Guid::Guid(const Guid& _copy) noexcept
   copy<uint8>(guid, _copy.guid, sizeof(guid));
 }
 
-Guid& Guid::operator=(const Guid& eq) noexcept
+Guid& Guid::operator=(const Guid& assign) noexcept
 {
-  if (&eq != this) {
-    copy<uint8>(guid, eq.guid, sizeof(guid));
+  if (&assign != this) {
+    copy<uint8>(guid, assign.guid, sizeof(guid));
   }
   return *this;
 }

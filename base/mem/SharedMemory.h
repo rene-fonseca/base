@@ -143,7 +143,7 @@ public:
   /**
     Assignment of object by object.
   */
-  SharedMemory& operator=(const SharedMemory& eq) throw();
+  SharedMemory& operator=(const SharedMemory& assign) throw();
   
   /**
     Returns the offset within the file of the mapped region.

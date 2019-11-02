@@ -64,8 +64,8 @@ public:
   /**
     Assignment of node map by node map.
   */
-  inline NamedNodeMap& operator=(const NamedNodeMap& eq) throw() {
-    context = eq.context;
+  inline NamedNodeMap& operator=(const NamedNodeMap& assign) throw() {
+    context = assign.context;
     return *this;
   }
   

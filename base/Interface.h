@@ -30,7 +30,7 @@ private:
   /* Disable the default copy constructor. */
   Interface(const Interface& copy) throw();
   /* Disable the default assignment operator. */
-  Interface& operator=(const Interface& eq) throw();
+  Interface& operator=(const Interface& assign) throw();
 public:
 
   /**

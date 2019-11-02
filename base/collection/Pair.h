@@ -65,11 +65,11 @@ public:
   /**
     Assignment of pair by pair.
   */
-  Pair& operator=(const Pair& eq)
+  Pair& operator=(const Pair& assign)
   {
-    if (&eq != this) { // protect against self assignment
-      first = eq.first;
-      second = eq.second;
+    if (&assign != this) { // protect against self assignment
+      first = assign.first;
+      second = assign.second;
     }
     return *this;
   }

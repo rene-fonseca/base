@@ -71,7 +71,7 @@ private:
   /**
     Assignment operator. Does not modify the internal locking object.
   */
-  inline Synchronizeable& operator=(const Synchronizeable& eq) throw() {
+  inline Synchronizeable& operator=(const Synchronizeable& assign) throw() {
     return *this;
   }
 protected:

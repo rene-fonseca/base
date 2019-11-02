@@ -109,7 +109,7 @@ private:
   const Synchronizeable<LOCK>& object;
 
   Synchronize(const Synchronize& copy) throw();
-  Synchronize& operator=(const Synchronize& eq) throw();
+  Synchronize& operator=(const Synchronize& assign) throw();
 public:
   
   /**

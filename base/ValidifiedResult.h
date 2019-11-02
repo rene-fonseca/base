@@ -64,11 +64,11 @@ public:
   /**
     Initializes object by other object.
   */
-  inline ValidifiedResult& operator=(const ValidifiedResult& eq)
+  inline ValidifiedResult& operator=(const ValidifiedResult& assign)
   {
-    if (&eq != this) {
-      value = eq.value;
-      valid = eq.valid;
+    if (&assign != this) {
+      value = assign.value;
+      valid = assign.valid;
     }
     return *this;
   }

@@ -157,9 +157,9 @@ MappedFile::MappedFile(const File& file, const FileRegion& region, bool writeabl
 //#endif // flavor
 }
 
-MappedFile& MappedFile::operator=(const MappedFile& eq) throw() {
-  if (&eq == this) {
-    map = eq.map;
+MappedFile& MappedFile::operator=(const MappedFile& assign) throw() {
+  if (&assign == this) {
+    map = assign.map;
   }
   return *this;
 }

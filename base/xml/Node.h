@@ -79,8 +79,8 @@ public:
       : context(copy.context) {
     }
     
-    inline ShadowDocument& operator=(const ShadowDocument& eq) throw() {
-      context = eq.context;
+    inline ShadowDocument& operator=(const ShadowDocument& assign) throw() {
+      context = assign.context;
       return *this;
     }
     
@@ -102,8 +102,8 @@ public:
       : context(copy.context) {
     }
     
-    inline ShadowElement& operator=(const ShadowElement& eq) throw() {
-      context = eq.context;
+    inline ShadowElement& operator=(const ShadowElement& assign) throw() {
+      context = assign.context;
       return *this;
     }
     
@@ -155,10 +155,10 @@ public:
   /**
     Assignment of node by node.
   */
-  inline Node& operator=(const Node& eq) throw() {
-    if (&eq != this) {
-      context = eq.context;
-      readonly = eq.readonly;
+  inline Node& operator=(const Node& assign) throw() {
+    if (&assign != this) {
+      context = assign.context;
+      readonly = assign.readonly;
     }
     return *this;
   }

@@ -268,8 +268,8 @@ File::File(const String& path, Access access, unsigned int options) throw(Access
   }
 }
 
-File& File::operator=(const File& eq) throw() {
-  fd = eq.fd; // no need to protect against self-assignment
+File& File::operator=(const File& assign) throw() {
+  fd = assign.fd; // no need to protect against self-assignment
   return *this;
 }
 

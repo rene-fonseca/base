@@ -591,8 +591,8 @@ public:
   /**
     Assignment of hash set by hash set.
   */
-  HashSet& operator=(const HashSet& eq) noexcept {
-    impl = eq.impl;
+  HashSet& operator=(const HashSet& assign) noexcept {
+    impl = assign.impl;
     return *this;
   }
   

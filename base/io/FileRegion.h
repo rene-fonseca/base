@@ -60,9 +60,9 @@ public:
   /**
     Assignment of region by region.
   */
-  inline FileRegion& operator=(const FileRegion& eq) throw() {
-    offset = eq.offset; // no need to protect against self-assignment
-    size = eq.size;
+  inline FileRegion& operator=(const FileRegion& assign) throw() {
+    offset = assign.offset; // no need to protect against self-assignment
+    size = assign.size;
     return *this;
   }
 

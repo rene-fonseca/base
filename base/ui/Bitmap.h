@@ -107,8 +107,8 @@ public:
   /**
     Assignment of bitmap by bitmap.
   */
-  inline Bitmap& operator=(const Bitmap& eq) throw() {
-    handle = eq.handle;
+  inline Bitmap& operator=(const Bitmap& assign) throw() {
+    handle = assign.handle;
     return *this;
   }
 

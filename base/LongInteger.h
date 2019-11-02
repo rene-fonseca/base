@@ -95,8 +95,8 @@ public:
   /**
     Assignment of integer to this integer.
   */
-  inline LongInteger& operator=(const LongInteger& eq) noexcept {
-    value = eq.value;
+  inline LongInteger& operator=(const LongInteger& assign) noexcept {
+    value = assign.value;
     return *this;
   }
 

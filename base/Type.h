@@ -106,8 +106,8 @@ public:
   /**
     Assignment of type object from other type object.
   */
-  inline Type& operator=(const Type& eq) throw() {
-    type = eq.type;
+  inline Type& operator=(const Type& assign) throw() {
+    type = assign.type;
     return *this;
   }
 

@@ -81,8 +81,8 @@ public:
   /**
     Assignment of integer to this integer.
   */
-  inline Integer& operator=(const Integer& eq) throw() {
-    value = eq.value;
+  inline Integer& operator=(const Integer& assign) throw() {
+    value = assign.value;
     return *this;
   }
 

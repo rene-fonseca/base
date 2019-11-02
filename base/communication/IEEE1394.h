@@ -546,8 +546,8 @@ public:
   /**
     Assignment of IEEE 1394 from other IEEE 1394 object.
   */
-  inline IEEE1394& operator=(const IEEE1394& eq) throw() {
-    ieee1394impl = eq.ieee1394impl;
+  inline IEEE1394& operator=(const IEEE1394& assign) throw() {
+    ieee1394impl = assign.ieee1394impl;
     return *this;
   }
 

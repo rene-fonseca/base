@@ -82,9 +82,9 @@ public:
   /**
     Assignment of cache by cache.
   */
-  inline Cache& operator=(const Cache& eq) noexcept
+  inline Cache& operator=(const Cache& assign) noexcept
   {
-    elements = eq.elements;
+    elements = assign.elements;
     return *this;
   }
   

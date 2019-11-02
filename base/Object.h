@@ -18,8 +18,7 @@
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 /**
-  The base class of all non-abstract classes. Objects are not copyable by
-  default.
+  The base class of all non-abstract classes.
   
   @short Object.
   @version 1.0
@@ -31,11 +30,6 @@ private:
 #if defined(_COM_AZURE_DEV__BASE__DEBUG)
   unsigned int objectId = 0;
 #endif
-
-  /* Disable the default copy constructor. */
-  Object(const Object& copy) noexcept;
-  /* Disable the default assignment operator. */
-  Object& operator=(const Object& eq) noexcept;
 public:
 
   /**
@@ -46,9 +40,32 @@ public:
     : objectId(Debug::allocateUniqueId())
   {
   }
-#else
+#elif 0
   inline Object() noexcept
   {
+  }
+#endif
+
+#if defined(_COM_AZURE_DEV__BASE__DEBUG)
+  inline Object(const Object& copy) noexcept
+    : objectId(Debug::allocateUniqueId())
+  {
+  }
+#elif 0
+  inline Object(const Object& copy) noexcept
+  {
+  }
+#endif
+
+#if defined(_COM_AZURE_DEV__BASE__DEBUG)
+  Object& operator=(const Object& assign) noexcept
+  {
+    return *this;
+  }
+#elif 0
+  Object& operator=(const Object& assign) noexcept
+  {
+    return *this;
   }
 #endif
 };
@@ -57,7 +74,7 @@ template<>
 class Uninitializeable<Object> {
 public:
 
-  static const bool IS_UNINITIALIZEABLE = Uninitializeable<bool>::IS_UNINITIALIZEABLE;
+  static constexpr bool IS_UNINITIALIZEABLE = Uninitializeable<bool>::IS_UNINITIALIZEABLE;
 };
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

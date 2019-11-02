@@ -169,14 +169,12 @@ void UnitTest::Run::onHere(const Here* _here)
     onFailed("Test failed due to bad here marker");
     return;
   }
-  if (!heres.hasKey(here)) {
+  auto found = heres.find(here);
+  if (!found) {
     onFailed("Test failed due to undeclared key");
     return;
   }
-
-  HereMeta meta = heres[here];
-  ++meta.count;
-  heres.add(here, meta); // TAG: improve map so we can use heres[here] directly
+  ++(found->count);
 }
 
 void UnitTest::Run::onNotHere(const NotHere* _here)
@@ -189,14 +187,12 @@ void UnitTest::Run::onNotHere(const NotHere* _here)
     onFailed("Test failed due to bad here marker");
     return;
   }
-  if (!heres.hasKey(here)) {
+  auto found = heres.find(here);
+  if (!found) {
     onFailed("Test failed due to undeclared key");
     return;
   }
-
-  HereMeta meta = heres[here];
-  ++meta.count;
-  heres.add(here, meta); // TAG: improve map so we can use heres[here] directly
+  ++(found->count);
 }
 
 Reference<ObjectModel::Object> UnitTest::Run::getReport() const
@@ -710,7 +706,7 @@ bool UnitTestManager::runTests(const String& pattern)
   } else {
     std::sort(tests.begin(), tests.end(), SortTests());
     
-    // TAG: handle dependencies - reorder
+    // TAG: handle dependencies - reorder - handle cyclic dependencies
   }
 
   unsigned int passed = 0;

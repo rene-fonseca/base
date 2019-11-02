@@ -1596,16 +1596,18 @@ _COM_AZURE_DEV__BASE__PACKED__END
 #endif
 }
 
-String FileSystem::getTempFolder(TemporaryFolder folder) throw() {
+String FileSystem::getTempFolder(TemporaryFolder folder) throw()
+{
   // TAG: need to expand variables (win32) (e.g. set TMP=%HOME%\temp)
   switch (folder) {
   case FileSystem::USER_SPECIFIED:
     {
       const Map<String, String> environment = Application::getApplication()->getEnvironment();
-      if (environment.hasKey(MESSAGE("TMP"))) {
-        return environment[MESSAGE("TMP")];
-      } else if (environment.hasKey(MESSAGE("TEMP"))) {
-        return environment[MESSAGE("TEMP")];
+      if (const auto found = environment.find(MESSAGE("TMP"))) {
+        return *found;
+      }
+      if (const auto found = environment.find(MESSAGE("TEMP"))) {
+        return *found;
       }
     }
   case FileSystem::MACHINE_NONPERSISTENT:

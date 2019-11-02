@@ -83,8 +83,10 @@ public:
 #endif
 
     TEST_ASSERT(map1.hasKey("key2"));
+    TEST_ASSERT(map1.find("key2"));
     map1.remove("key2");
     TEST_ASSERT(!map1.hasKey("key2"));
+    TEST_ASSERT(!map1.find("key2"));
     TEST_ASSERT(map1.getSize() == 4);
     
     TEST_EXCEPTION(map1.remove("key6"), InvalidKey);

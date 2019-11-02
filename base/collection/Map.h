@@ -248,6 +248,40 @@ public:
   }
 
   /**
+    Returns the value associated with the specified key.
+
+    @param key The key of the value.
+
+    @return nullptr is key doesn't exist.
+  */
+  Value* find(const Key& key)
+  {
+    typename Tree::Node* node = elements.find(key);
+    if (!node) {
+      return nullptr;
+    }
+    Node& association = node->getValue();
+    return &(association.getValue());
+  }
+
+  /**
+    Returns the value associated with the specified key.
+
+    @param key The key of the value.
+
+    @return nullptr is key doesn't exist.
+  */
+  const Value* find(const Key& key) const
+  {
+    const typename Tree::Node* node = elements.find(key);
+    if (!node) {
+      return nullptr;
+    }
+    const Node& association = node->getValue();
+    return &(association.getValue());
+  }
+
+  /**
     Returns the value associated with the specified key. Raises InvalidKey
     if the specified key doesn't exist in this map.
 

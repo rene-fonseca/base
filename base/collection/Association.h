@@ -36,16 +36,16 @@ private:
   /** The value associated with the key. */
   VALUE value;
 
-  /* Disable the default assignment operator. */
-  Association& operator=(const Association& eq) noexcept;
+  /* Disable the default assignment operator to prevent use mistakes by changing key. */
+  Association& operator=(const Association& assign) = delete;
 public:
 
   /**
     Initializes an association with the specified key and uninitalized value.
 
-    @param key The
+    @param key The key.
   */
-  inline Association(const KEY& _key) noexcept
+  Association(const KEY& _key)
     : key(_key)
   {
   }
@@ -53,21 +53,54 @@ public:
   /**
     Initializes association from other association.
   */
-  inline Association(const Association& copy) noexcept
+  Association(const Association& copy)
     : key(copy.key),
       value(copy.value)
   {
   }
 
   /**
+    Initializes association from other association.
+  */
+  Association(Association&& move)
+    : key(std::move(move.key)),
+      value(std::move(move.value))
+  {
+  }
+
+  /**
     Initializes an association with the specified key and value.
 
-    @param key The
+    @param key The key.
     @param value The value of the association.
   */
-  inline Association(const KEY& _key, const VALUE& _value) noexcept
+  Association(const KEY& _key, const VALUE& _value)
     : key(_key),
       value(_value)
+  {
+  }
+
+  /**
+    Initializes an association with the specified key and value.
+
+    @param key The key.
+    @param value The value of the association.
+  */
+  Association(const KEY& _key, VALUE&& _value)
+    : key(_key),
+    value(std::move(_value))
+  {
+  }
+
+  /**
+    Initializes an association with the specified key and value.
+
+    @param key The key.
+    @param value The value of the association.
+  */
+  Association(KEY&& _key, VALUE&& _value)
+    : key(std::move(_key)),
+      value(std::move(_value))
   {
   }
 
@@ -110,25 +143,35 @@ public:
 
     @param value The new value.
   */
-  inline void setValue(const VALUE& value) noexcept
+  inline void setValue(const VALUE& value)
   {
     this->value = value;
   }
 
   /**
+    Sets the value of the association.
+
+    @param value The new value.
+  */
+  inline void setValue(VALUE&& value)
+  {
+    this->value = std::move(value);
+  }
+
+  /**
     Returns true if the associations are equal.
   */
-  inline bool operator==(const Association& eq) const noexcept
+  inline bool operator==(const Association& compare) const
   {
-    return key == eq.key;
+    return key == compare.key;
   }
 
   /**
     Returns true if this association is less than the specified association.
   */
-  inline bool operator<(const Association& eq) const noexcept
+  inline bool operator<(const Association& compare) const
   {
-    return key < eq.key;
+    return key < compare.key;
   }
 
   /**

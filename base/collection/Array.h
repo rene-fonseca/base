@@ -123,8 +123,6 @@ private:
 
   /** The elements of the array. */
   Reference<ReferenceCountedCapacityAllocator<Value> > elements;
-  /** The number of elements in the array. */
-  MemorySize size = 0;
 public:
 
   /**
@@ -132,17 +130,28 @@ public:
   */
   void setSize(MemorySize size)
   {
-    if (size != this->size) {
-      elements.copyOnWrite();
-      this->size = size;
-      if (elements.isValid()) {
+    if (!elements || (size != elements->getSize())) {
+      if (elements) {
+        elements.copyOnWrite();
         elements->setSize(size);
       } else {
         elements = new ReferenceCountedCapacityAllocator<Value>(size, ReferenceCountedCapacityAllocator<Value>::DEFAULT_GRANULARITY);
       }
     }
   }
-
+  
+  void setSize(MemorySize size, const TYPE& value)
+  {
+    if (!elements || (size != elements->getSize())) {
+      if (elements) {
+        elements.copyOnWrite();
+      } else {
+        elements = new ReferenceCountedCapacityAllocator<Value>(ReferenceCountedCapacityAllocator<Value>::DEFAULT_GRANULARITY);
+      }
+      elements->setSize(size, value);
+    }
+  }
+  
   /**
     Ensure capacity.
   */
@@ -197,13 +206,12 @@ public:
     ReferenceCountedCapacityAllocator<Value>::DEFAULT_GRANULARITY.
   */
   Array(
-    MemorySize _size,
-    Value value,
+    MemorySize size,
+    const Value& value,
     MemorySize granularity = ReferenceCountedCapacityAllocator<Value>::DEFAULT_GRANULARITY)
-    : elements(new ReferenceCountedCapacityAllocator<Value>(_size, granularity)),
-      size(_size)
+    : elements(new ReferenceCountedCapacityAllocator<Value>(granularity))
   {
-    fill(getElements(), size, value);
+    elements->setSize(size, value);
   }
 
   /**
@@ -217,9 +225,8 @@ public:
   /**
     Initializes array from other array.
   */
-  inline Array(const Array& copy) noexcept
-    : elements(copy.elements),
-      size(copy.size)
+  Array(const Array& copy) noexcept
+    : elements(copy.elements)
   {
   }
 
@@ -227,19 +234,23 @@ public:
   {
     elements = move.elements;
     move.elements = nullptr;
+    /*
     size = move.size;
     move.size = 0;
+    swapper(elements, move.elements);
+    */
   }
 
   /**
     Assignment of array to array.
   */
-  inline Array& operator=(const Array& copy) noexcept
+  Array& operator=(const Array& copy) noexcept
   {
     if (&copy != this) {
       elements = copy.elements;
-      size = copy.size;
+      // size = copy.size;
     }
+    // elements = copy.elements; // self assignment allowed
     return *this;
   }
 
@@ -248,9 +259,10 @@ public:
     if (&move != this) {
       elements = move.elements;
       move.elements = nullptr;
-      size = move.size;
-      move.size = 0;
+      // size = move.size;
+      // move.size = 0;
     }
+    // elements = std::move(move.elements);
     return *this;
   }
 
@@ -259,7 +271,7 @@ public:
   */
   inline MemorySize getSize() const noexcept
   {
-    return size;
+    return elements ? elements->getSize() : 0;
   }
 
   /**
@@ -267,7 +279,7 @@ public:
   */
   inline bool isEmpty() const noexcept
   {
-    return size == 0;
+    return getSize() == 0;
   }
 
   /**
@@ -314,6 +326,22 @@ public:
     Returns the end of the allocator as a non-modifying array.
   */
   inline ReadIterator end() const noexcept
+  {
+    return getEndReadIterator();
+  }
+
+  /**
+    Returns the first element of the allocator as a non-modifying array.
+  */
+  inline ReadIterator cbegin() const noexcept
+  {
+    return getBeginReadIterator();
+  }
+
+  /**
+    Returns the end of the allocator as a non-modifying array.
+  */
+  inline ReadIterator cend() const noexcept
   {
     return getEndReadIterator();
   }
@@ -366,7 +394,7 @@ public:
   /**
     Append from initializer list.
   */
-  inline void append(std::initializer_list<Value> l)
+  void append(std::initializer_list<Value> l)
   {
     // optimize this
     for (auto i = l.begin(); i != l.end(); ++i) {
@@ -390,7 +418,7 @@ public:
   /**
     Prepends from initializer list.
   */
-  inline void prepend(std::initializer_list<Value> l)
+  void prepend(std::initializer_list<Value> l)
   {
     // optimize this
     auto i = l.end();
@@ -406,7 +434,7 @@ public:
     @param index Specifies the insert position.
     @param value The value to be inserted.
   */
-  void insert(MemorySize index, const Value& value) throw(OutOfRange)
+  void insert(MemorySize index, const Value& value)
   {
     bassert(index <= getSize(), OutOfRange(this));
     setSize(getSize() + 1);
@@ -415,13 +443,18 @@ public:
     elements[index] = value;
   }
 
+  void insert(const Iterator& it, const Value& value)
+  {
+    insert(it - begin(), value);
+  }
+
   /**
     Remove the element specified by the index. Raises OutOfRange if the index is
     invalid.
 
     @param index The index of the element to be removed.
   */
-  void remove(MemorySize index) throw(OutOfRange)
+  void remove(MemorySize index)
   {
     bassert(index < getSize(), OutOfRange(this));
     Value* elements = getElements(); // size must be set after
@@ -429,13 +462,17 @@ public:
     setSize(getSize() - 1);
   }
 
+  void remove(const Iterator& it)
+  {
+    remove(it - begin());
+  }
+  
   /**
     Removes all the elements from this array.
   */
   void removeAll()
   {
-    elements = new ReferenceCountedCapacityAllocator<Value>(); // no need to copy
-    size = 0;
+    elements = nullptr; // no need to copy
   }
 
   /**
@@ -469,7 +506,7 @@ public:
     @param index The index of the element.
     @param value The desired value.
   */
-  void setAt(MemorySize index, const Value& value) throw(OutOfRange)
+  void setAt(MemorySize index, const Value& value)
   {
     bassert(index < getSize(), OutOfRange(this));
     getElements()[index] = value;
@@ -484,7 +521,6 @@ public:
   inline TYPE& operator[](MemorySize index) throw(OutOfRange)
   {
     return getAt(index);
-    // return Element(*this, index);
   }
 
   /**
@@ -501,13 +537,41 @@ public:
   /** Returns true if not empty. */
   inline operator bool() const noexcept
   {
-    return !isEmpty();
+    return getSize() != 0;
   }
 
   /** Shuffles the elements. */
   void shuffle()
   {
     base::shuffle(begin(), end());
+  }
+  
+  /** Returns the index of the first found value. Returns -1 if not found. */
+  MemoryDiff indexOf(const TYPE& value) const
+  {
+    ReadIterator src = cbegin();
+    const ReadIterator end = cend();
+    while (src != end) {
+      if (*src == value) {
+        return src - cbegin();
+      }
+      ++src;
+    }
+    return -1;
+  }
+
+  /** Returns the index of the last found value. Returns -1 if not found. */
+  MemoryDiff lastIndexOf(const TYPE& value) const
+  {
+    ReadIterator src = cend();
+    const ReadIterator begin = cbegin();
+    while (src != begin) {
+      --src;
+      if (*src == value) {
+        return src - begin;
+      }
+    }
+    return -1;
   }
 };
 
@@ -525,8 +589,7 @@ void swapper(typename Array<TYPE>::Element& a, typename Array<TYPE>::Element& b)
   @relates Array
 */
 template<class TYPE>
-FormatOutputStream& operator<<(
-  FormatOutputStream& stream, const Array<TYPE>& value) throw(IOException)
+FormatOutputStream& operator<<(FormatOutputStream& stream, const Array<TYPE>& value) throw(IOException)
 {
   typename Array<TYPE>::ReadEnumerator enu = value.getReadEnumerator();
   stream << '[';

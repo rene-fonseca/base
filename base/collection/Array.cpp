@@ -50,6 +50,47 @@ public:
     std::sort(as.begin(), as.end());
     TEST_ASSERT((std::find(as.begin(), as.end(), "123") - as.begin()) == 0);
     TEST_ASSERT((std::find(as.begin(), as.end(), "up") - as.begin()) == 3);
+    TEST_ASSERT(as.indexOf("123") == 0);
+    TEST_ASSERT(as.lastIndexOf("123") == 0);
+    TEST_ASSERT(as.indexOf("left") == -1);
+    TEST_ASSERT(as.lastIndexOf("left") == -1);
+
+    for (auto i = as.begin(); i != as.end(); ++i) {
+      String& s = *i;
+    }
+    for (auto i = as.cbegin(); i != as.cend(); ++i) {
+      const String& s = *i;
+    }
+
+    TEST_ASSERT(as);
+
+    as.getAt(0);
+    as.getAt(as.getSize() - 1);
+    as.setAt(as.getSize() - 1, "SET");
+    TEST_EXCEPTION(as.getAt(as.getSize()), OutOfRange);
+    TEST_EXCEPTION(as.setAt(as.getSize(), "out of range"), OutOfRange);
+
+    as.prepend("prepend");
+    as.insert(as.begin(), "prepend2");
+    as.remove(as.begin());
+    as.insert(as.end(), "append2");
+    as.remove(as.getSize() - 1);
+    as.append("append");
+    as.setSize(100, "fill by value");
+    as.setSize(10, "reduce");
+    as.shuffle();
+    std::reverse(as.begin(), as.end());
+    std::move(as.begin(), as.end(), as.begin());
+    as.removeAll();
+    TEST_ASSERT(!as);
+    
+    TEST_ASSERT(std::is_move_constructible<Array<String> >());
+    TEST_ASSERT(std::is_move_assignable<Array<String> >());
+    
+    Array<unsigned int> al(100, 99);
+    
+    // TAG: Slice slice(4, 6)
+    // TAG: Slice(begin(), begin() + 5)
   }
 };
 

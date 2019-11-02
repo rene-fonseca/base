@@ -52,7 +52,8 @@ public:
   /**
     Initializes an empty priority queue.
   */
-  PriorityQueue() noexcept {
+  PriorityQueue() noexcept
+  {
   }
 
   /**
@@ -64,16 +65,27 @@ public:
   }
 
   /**
+    Initializes a priority queue from other priority queue.
+  */
+  PriorityQueue(PriorityQueue&& move) noexcept
+    : elements(std::move(move.elements)),
+      size(std::move(move.size))
+  {
+  }
+
+  /**
     Returns the number of elements in the priority queue.
   */
-  inline MemorySize getSize() const noexcept {
+  inline MemorySize getSize() const noexcept
+  {
     return size;
   }
 
   /**
     Returns true if the priority queue is empty.
   */
-  inline bool isEmpty() const noexcept {
+  inline bool isEmpty() const noexcept
+  {
     return !size;
   }
 
@@ -87,7 +99,8 @@ public:
   {
     auto node = elements.find(Node(priority));
     if (node) { // does the priority already exist in the tree
-      Queue<Value>& queue = node->getValue()->getValue();
+      auto& nodeValue = node->getValue();
+      Queue<Value>& queue = nodeValue.getValue();
       queue.push(value);
     } else {
       Queue<Value> queue;
@@ -97,18 +110,22 @@ public:
     ++size; // always increment 'cause we always push a value onto some queue
   }
 
+  // TAG: add move
+
   /**
     Removes the element at the front of the priority queue. Raises
     InvalidNode if the priority queue is empty.
   */
-  Value pop() throw(InvalidNode) {
+  Value pop() throw(InvalidNode)
+  {
     Value result;
     bassert(size, InvalidNode("Priority queue is empty", this));
 
     auto node = elements.getLast();
     bool removeQueue = false;
     {
-      Queue<Value>& queue = node->getValue()->getValue();
+      auto& nodeValue = node->getValue();
+      Queue<Value>& queue = nodeValue.getValue();
       result = queue.pop(); // queue is never empty
       removeQueue = queue.isEmpty();
     }

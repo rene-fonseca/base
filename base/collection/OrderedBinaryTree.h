@@ -32,6 +32,7 @@ public:
 
   /** The type of the value. */
   typedef TYPE Value;
+  // TAG: need separate storage and key for search - typedef KEY Key;
   /** The type of the node. */
   typedef typename BinaryTree<TYPE>::Node Node;
 
@@ -90,35 +91,40 @@ public:
   /**
     Initializes an empty ordered binary tree.
   */
-  OrderedBinaryTree() noexcept {
+  OrderedBinaryTree() noexcept
+  {
   }
 
   /**
     Initializes binary tree from other binary tree.
   */
-  OrderedBinaryTree(const OrderedBinaryTree& copy) noexcept
-    : BinaryTree<TYPE>(copy) {
+  OrderedBinaryTree(const OrderedBinaryTree& copy)
+    : BinaryTree<TYPE>(copy)
+  {
   }
 
   /**
     Assignment of ordered binary tree to ordered binary tree.
   */
-  OrderedBinaryTree& operator=(const OrderedBinaryTree& eq) noexcept {
-    BinaryTree<TYPE>::operator=(eq);
+  OrderedBinaryTree& operator=(const OrderedBinaryTree& copy)
+  {
+    BinaryTree<TYPE>::operator=(copy);
     return *this;
   }
 
   /**
     Returns a modifying enumerator of the ordered binary tree.
   */
-  inline Enumerator getEnumerator() noexcept {
+  inline Enumerator getEnumerator() noexcept
+  {
     return Enumerator(getRoot());
   }
 
   /**
     Returns a non-modifying enumerator of the ordered binary tree.
   */
-  inline ReadEnumerator getReadEnumerator() const noexcept {
+  inline ReadEnumerator getReadEnumerator() const noexcept
+  {
     return ReadEnumerator(getRoot());
   }
 
@@ -127,13 +133,13 @@ public:
 
     @param value The value to look for.
 
-    @return The node with the matching value. 0 if not found.
+    @return The node with the matching value. nullptr if not found.
   */
-  Node* find(const Value& value) noexcept {
+  Node* find(const Value& value) noexcept
+  {
     Node* node = getRoot();
-
     while (node) {
-      int result = compare(value, *node->getValue());
+      int result = compare(value, node->getValue());
       if (result < 0) {
         node = node->getLeft();
       } else if (result > 0) {
@@ -150,13 +156,13 @@ public:
 
     @param value The value to look for.
 
-    @return The node with the matching value. 0 if not found.
+    @return The node with the matching value. nullptr if not found.
   */
-  const Node* find(const Value& value) const noexcept {
+  const Node* find(const Value& value) const noexcept
+  {
     const Node* node = BinaryTree<Value>::getRoot();
-
     while (node) {
-      int result = compare(value, *node->getValue());
+      int result = compare(value, node->getValue());
       if (result < 0) {
         node = node->getLeft();
       } else if (result > 0) {
@@ -171,12 +177,12 @@ public:
   /**
     Returns the first/smallest value of this tree.
 
-    @return 0 if the tree is empty.
+    @return nullptr if the tree is empty.
   */
-  Node* getFirst() noexcept {
+  Node* getFirst() noexcept
+  {
     Node* node = BinaryTree<Value>::getRoot();
     Node* previous = nullptr; // not found
-
     while (node) {
       previous = node;
       node = node->getLeft();
@@ -187,12 +193,12 @@ public:
   /**
     Returns the last/highest value of this tree.
 
-    @return 0 if the tree is empty.
+    @return nullptr if the tree is empty.
   */
-  Node* getLast() noexcept {
+  Node* getLast() noexcept
+  {
     Node* node = BinaryTree<Value>::getRoot();
     Node* previous = nullptr; // not found
-
     while (node) {
       previous = node;
       node = node->getRight();
@@ -216,7 +222,7 @@ public:
     }
 
     while (true) {
-      int result = compare(value, *node->getValue());
+      int result = compare(value, node->getValue());
       if (result < 0) {
         if (node->getLeft()) {
           node = node->getLeft();
@@ -232,7 +238,7 @@ public:
           return nullptr;
         }
       } else {
-        return node->getValue(); // node with this value already exists
+        return &(node->getValue()); // node with this value already exists
       }
     }
   }
@@ -243,7 +249,8 @@ public:
 
     @param node The node to be removed.
   */
-  void remove(Node* node) throw(InvalidNode) {
+  void remove(Node* node) throw(InvalidNode)
+  {
     if (!node) {
       throw InvalidNode();
     }
@@ -286,7 +293,8 @@ public:
   /**
     Removes all the nodes from the tree.
   */
-  void removeAll() noexcept {
+  void removeAll()
+  {
     BinaryTree<TYPE>::removeAll();
   }
 };

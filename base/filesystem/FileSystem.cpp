@@ -1602,9 +1602,9 @@ String FileSystem::getTempFolder(TemporaryFolder folder) throw() {
   case FileSystem::USER_SPECIFIED:
     {
       const Map<String, String> environment = Application::getApplication()->getEnvironment();
-      if (environment.isKey(MESSAGE("TMP"))) {
+      if (environment.hasKey(MESSAGE("TMP"))) {
         return environment[MESSAGE("TMP")];
-      } else if (environment.isKey(MESSAGE("TEMP"))) {
+      } else if (environment.hasKey(MESSAGE("TEMP"))) {
         return environment[MESSAGE("TEMP")];
       }
     }

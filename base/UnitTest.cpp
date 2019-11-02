@@ -146,7 +146,7 @@ void UnitTest::Run::registerHere(const Here* here, const char* description)
   HereMeta meta;
   meta.description = description;
   meta.reach = true;
-  heres[static_cast<const void*>(here)] = meta;
+  heres.add(static_cast<const void*>(here), meta);
 }
 
 void UnitTest::Run::registerNotHere(const NotHere* here, const char* description)
@@ -156,7 +156,7 @@ void UnitTest::Run::registerNotHere(const NotHere* here, const char* description
   HereMeta meta;
   meta.description = description;
   meta.reach = false;
-  heres[static_cast<const void*>(here)] = meta;
+  heres.add(static_cast<const void*>(here), meta);
 }
 
 void UnitTest::Run::onHere(const Here* _here)
@@ -169,14 +169,14 @@ void UnitTest::Run::onHere(const Here* _here)
     onFailed("Test failed due to bad here marker");
     return;
   }
-  if (!heres.isKey(here)) {
+  if (!heres.hasKey(here)) {
     onFailed("Test failed due to undeclared key");
     return;
   }
 
   HereMeta meta = heres[here];
   ++meta.count;
-  heres[here] = meta; // TAG: improve map so we can use heres[here] directly
+  heres.add(here, meta); // TAG: improve map so we can use heres[here] directly
 }
 
 void UnitTest::Run::onNotHere(const NotHere* _here)
@@ -189,14 +189,14 @@ void UnitTest::Run::onNotHere(const NotHere* _here)
     onFailed("Test failed due to bad here marker");
     return;
   }
-  if (!heres.isKey(here)) {
+  if (!heres.hasKey(here)) {
     onFailed("Test failed due to undeclared key");
     return;
   }
 
   HereMeta meta = heres[here];
   ++meta.count;
-  heres[here] = meta; // TAG: improve map so we can use heres[here] directly
+  heres.add(here, meta); // TAG: improve map so we can use heres[here] directly
 }
 
 Reference<ObjectModel::Object> UnitTest::Run::getReport() const

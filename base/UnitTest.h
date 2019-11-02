@@ -592,7 +592,7 @@ public:
 
 /** An assert/subtest within the test. */
 #define TEST_ASSERT(EXPRESSION) \
-  base::UnitTest::onAssert(EXPRESSION, #EXPRESSION, __LINE__)
+  base::UnitTest::onAssert((EXPRESSION), _COM_AZURE_DEV__BASE__STRINGIFY(EXPRESSION), __LINE__)
 
 /** Require expression to be equal to the given comperand. operator==() must be supported. Expression and comperand must have output rule to FormatOutputStream. */
 #define TEST_EQUAL(EXPRESSION, COMPERAND) \

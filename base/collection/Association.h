@@ -88,7 +88,7 @@ public:
   */
   Association(const KEY& _key, VALUE&& _value)
     : key(_key),
-    value(std::move(_value))
+      value(std::move(_value))
   {
   }
 

@@ -239,7 +239,7 @@ void UnitTest::run()
   onFailed("Test not implemented");
 }
 
-const char* getStdExceptionName(const std::exception& e) noexcept
+const char* UnitTestManager::getStdExceptionName(const std::exception& e) noexcept
 {
   if (dynamic_cast<const std::runtime_error*>(&e)) {
     if (dynamic_cast<const std::range_error*>(&e)) {
@@ -333,7 +333,7 @@ Reference<UnitTest::Run> UnitTest::runImpl()
   } catch (std::exception& e) {
     const String w = e.what();
     currentRun->exceptionFailure = "Failed with exception.";
-    currentRun->exceptionType = getStdExceptionName(e);
+    currentRun->exceptionType = UnitTestManager::getStdExceptionName(e);
     if (w.isEmpty()) {
       onFailed("Test failed with std::exception");
     } else {

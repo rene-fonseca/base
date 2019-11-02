@@ -58,6 +58,7 @@ public:
     DEFAULT_TIMEOUT = 15 * 60 * 1000
   };
 
+  /** Potential impact of test. Lower is worse. */
   enum Impact {
     PRIVACY, // loss of privacy
     SECURITY, // loss of trust
@@ -68,6 +69,7 @@ public:
     IGNORE // nothing major - not recommended to be used
   };
   
+  /** A single result event. */
   enum ResultEvent {
     FAILED,
     PASSED,
@@ -109,12 +111,9 @@ public:
     unsigned int failed = 0;
     // unsigned int asserts = 0;
     Map<const void*, HereMeta> heres;
-    Array<TestResult> results;
+    Array<TestResult> results; // all results for a run
     String exceptionFailure;
     String exceptionType;
-
-    /** Returns XML fragment. */
-    String getJUnit() const;
 
     /** Called on explicit print request. */
     void onPrint(const String& what, unsigned int line = 0);
@@ -317,16 +316,19 @@ public:
     return 0;
   }
   
+  /** Returns the last run. */
   Reference<Run> getLastRun()
   {
     return !runs.isEmpty() ? runs.getAt(runs.getSize() - 1) : nullptr;
   }
 
+  /** Returns dependencies. */
   inline const Array<String>& getDependencies() const noexcept
   {
     return dependencies;
   }
 
+  /** Adds dependency. */
   void addDependency(const String& id)
   {
     dependencies.append(id);
@@ -356,6 +358,7 @@ public:
     VERBOSE
   };
 
+  /** Sort tests. */
   class SortTests {
   public:
 
@@ -393,7 +396,10 @@ private:
 
   static UnitTestManager unitTestManager;
 public:
-  
+
+  /** Returns description type for std exception. */
+  static const char* getStdExceptionName(const std::exception& e) noexcept;
+
   UnitTestManager();
   
   static UnitTestManager& getManager();
@@ -444,31 +450,37 @@ public:
     useJSON = _useJSON;
   }
 
+  /** Returns color mode. */
   inline bool getUseANSIColors() const noexcept
   {
     return useANSIColors;
   }
 
+  /** Sets color mode. */
   inline void setUseANSIColors(bool _useANSIColors) noexcept
   {
     useANSIColors = _useANSIColors;
   }
 
+  /** Sets randomization mode. */
   inline void setRandomize(bool _randomize) noexcept
   {
     randomize = _randomize;
   }
 
+  /** Sets stop on failure. */
   inline void setStopOnFailure(bool _stopOnFailure) noexcept
   {
     stopOnFailure = _stopOnFailure;
   }
 
+  /** Returns progress mode. */
   inline bool getProgressMode() const noexcept
   {
     return progressMode;
   }
   
+  /** Sets progress mode. */
   inline void setProgressMode(bool _progressMode) noexcept
   {
     progressMode = _progressMode;
@@ -591,20 +603,29 @@ public:
     base::UnitTest::onPrint(stream.getString(), __LINE__); \
   }
 
-/** Require expression to throw given exception.. */
+/** Require expression to throw given exception. */
 #define TEST_EXCEPTION(EXPRESSION, EXCEPTION) \
   try { \
     EXPRESSION; \
-    TEST_ASSERT(!"Expecting exception " #EXCEPTION); \
-  } catch (EXCEPTION& e) { \
+    base::UnitTest::onAssert(false, "Expecting exception '" #EXCEPTION "' for expression '" #EXPRESSION "'", __LINE__); \
+  } catch (EXCEPTION&) { \
   } catch (Exception& e) { \
     StringOutputStream stream; \
-    stream << "Expecting exception '" << Type::getType<EXCEPTION>() << "' for '" << _COM_AZURE_DEV__BASE__STRINGIFY(EXPRESSION) << "'." << FLUSH; \
+    stream << "Expecting exception '" << Type::getType<EXCEPTION>() << "' for '" << _COM_AZURE_DEV__BASE__STRINGIFY(EXPRESSION) \
+           << "' but got " << e.getThisType() << " with message '" << e.getMessage() << "'." << FLUSH; \
     base::UnitTest::onPrint(stream.getString(), __LINE__); \
+    throw; \
+  } catch (std::exception& e) { \
+    StringOutputStream stream; \
+    stream << "Expecting exception '" << Type::getType<EXCEPTION>() << "' for '" << _COM_AZURE_DEV__BASE__STRINGIFY(EXPRESSION) \
+           << "' but got " << UnitTestManager::getStdExceptionName(e) << " with message '" << e.what() << "'." << FLUSH; \
+    base::UnitTest::onPrint(stream.getString(), __LINE__); \
+    throw; \
   } catch (...) { \
     StringOutputStream stream; \
-    stream << "Expecting exception '" << Type::getType<EXCEPTION>() << "' for '" << _COM_AZURE_DEV__BASE__STRINGIFY(EXPRESSION) << "'." << FLUSH; \
+    stream << "Expecting exception '" << Type::getType<EXCEPTION>() << "' for '" << _COM_AZURE_DEV__BASE__STRINGIFY(EXPRESSION) << "' but got unknown exception." << FLUSH; \
     base::UnitTest::onPrint(stream.getString(), __LINE__); \
+    throw; \
   }
 
 /** Assert within an expression. */

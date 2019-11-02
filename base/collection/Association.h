@@ -167,11 +167,59 @@ public:
   }
 
   /**
+    Returns true if the associations are not equal.
+  */
+  inline bool operator!=(const Association& compare) const
+  {
+    return !(operator==(compare));
+  }
+
+  /**
     Returns true if this association is less than the specified association.
   */
   inline bool operator<(const Association& compare) const
   {
     return key < compare.key;
+  }
+
+  /**
+    Returns true if this association is not less than the specified association.
+  */
+  inline bool operator>=(const Association& compare) const
+  {
+    return !(operator<(compare));
+  }
+
+  /**
+    Returns true if the associations are equal.
+  */
+  inline bool operator==(const KEY& compare) const
+  {
+    return key == compare;
+  }
+
+  /**
+    Returns true if the associations are not equal.
+  */
+  inline bool operator!=(const KEY& compare) const
+  {
+    return !operator==(compare);
+  }
+
+  /**
+    Returns true if this association is less than the specified association.
+  */
+  inline bool operator<(const KEY& compare) const
+  {
+    return key < compare;
+  }
+
+  /**
+    Returns true if this association is not less than the specified association.
+  */
+  inline bool operator>=(const KEY& compare) const
+  {
+    return !(operator<(compare));
   }
 
   /**

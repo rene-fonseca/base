@@ -741,7 +741,7 @@ Application::Application(
       const String temp(*environment);
       const int index = temp.indexOf('=');
       if (index != -1) { // ignore the environment string if it doesn't contain '='
-        this->environment[temp.substring(0, index - 1)] = temp.substring(index + 1);
+        this->environment.add(temp.substring(0, index - 1), temp.substring(index + 1));
       }
     }
   }

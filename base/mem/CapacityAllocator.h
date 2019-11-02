@@ -210,7 +210,7 @@ public:
     unchanged). If the size is reduced the elements up to the new size are
     unchanged.
   */
-  void setSize(MemorySize _size) throw(MemoryException)
+  void setSize(MemorySize _size)
   {
     if (_size != size) {
       size = _size;
@@ -220,14 +220,22 @@ public:
     }
   }
 
-  void setSize(MemorySize _size, const TYPE& value) throw(MemoryException)
+  void setSize(MemorySize _size, const TYPE& value)
   {
     if (_size != size) {
-      size = _size;
+      const MemorySize actualSize = Allocator<TYPE>::getSize();
       Allocator<TYPE>::setSize(
-        (maximum(size, capacity) + granularity - 1)/granularity * granularity,
+        (maximum(_size, capacity) + granularity - 1)/granularity * granularity,
         value
       );
+      if (_size > size) {
+        auto dest = Allocator<TYPE>::getElements() + size;
+        const auto end = Allocator<TYPE>::getElements() + minimum(_size, actualSize);
+        for (; dest != end; ++dest) {
+          *dest = value;
+        }
+      }
+      size = _size;
     }
   }
 

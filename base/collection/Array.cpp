@@ -84,11 +84,16 @@ public:
     as.removeAll();
     TEST_ASSERT(!as);
     
+    auto as2 = as;
+    as2 = Array<String>();
+        
     TEST_ASSERT(std::is_move_constructible<Array<String> >());
     TEST_ASSERT(std::is_move_assignable<Array<String> >());
     
     Array<unsigned int> al(100, 99);
-    
+    Array<unsigned int> al2;
+    swapper(al, al2);
+
     // TAG: Slice slice(4, 6)
     // TAG: Slice(begin(), begin() + 5)
   }

@@ -233,7 +233,6 @@ public:
   Array(Array&& move) noexcept
   {
     elements = std::move(move.elements);
-    move.elements = nullptr;
   }
 
   /**
@@ -241,23 +240,13 @@ public:
   */
   Array& operator=(const Array& copy) noexcept
   {
-    if (&copy != this) {
-      elements = copy.elements;
-      // size = copy.size;
-    }
-    // elements = copy.elements; // self assignment allowed
+    elements = copy.elements; // self assignment allowed
     return *this;
   }
 
   Array& operator=(Array&& move) noexcept
   {
-    if (&move != this) {
-      elements = std::move(move.elements);
-      move.elements = nullptr;
-      // size = move.size;
-      // move.size = 0;
-    }
-    // elements = std::move(move.elements);
+    elements = std::move(move.elements);
     return *this;
   }
 
@@ -380,10 +369,19 @@ public:
   */
   void append(const Value& value)
   {
-    MemorySize size = getSize();
+    setSize(getSize() + 1, value);
+  }
+
+  /**
+    Appends the value to this array.
+
+    @param value The value to be appended.
+  */
+  void append(Value&& value)
+  {
+    const auto size = getSize();
     setSize(size + 1);
-    Value* elements = getElements(); // size must be set before
-    elements[size] = value;
+    getElements()[size] = std::move(value);
   }
 
   /**
@@ -433,7 +431,7 @@ public:
   {
     bassert(index <= getSize(), OutOfRange(this));
     setSize(getSize() + 1);
-    Value* elements = getElements(); // size must be set before
+    auto elements = getElements(); // size must be set before
     move(elements + index + 1, elements + index, getSize() - index);
     elements[index] = value;
   }
@@ -505,6 +503,19 @@ public:
   {
     bassert(index < getSize(), OutOfRange(this));
     getElements()[index] = value;
+  }
+
+  /**
+    Sets the element at the specified index. Raises OutOfRange if the index is
+    invalid.
+
+    @param index The index of the element.
+    @param value The desired value.
+  */
+  void setAt(MemorySize index, Value&& value)
+  {
+    bassert(index < getSize(), OutOfRange(this));
+    getElements()[index] = std::move(value);
   }
 
   /**

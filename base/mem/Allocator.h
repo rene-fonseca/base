@@ -209,16 +209,34 @@ public:
     initializeByCopy(elements, copy.elements, size);
   }
 
+  Allocator(Allocator&& move)
+    : elements(std::move(move.elements)), size(move.size)
+  {
+    move.elements = nullptr;
+    move.size = 0;
+  }
+
   /**
     Assignment of allocator by allocator.
   */
-  Allocator& operator=(const Allocator& eq) throw(MemoryException)
+  Allocator& operator=(const Allocator& copy) throw(MemoryException)
   {
-    if (&eq != this) { // protect against self assignment
+    if (&copy != this) { // protect against self assignment
       destroy(elements, elements + size);
-      size = eq.size;
+      size = copy.size;
       elements = Heap::resize(elements, size);
-      initializeByCopy(elements, eq.elements, size); // initialization of elements by copying
+      initializeByCopy(elements, copy.elements, size); // initialization of elements by copying
+    }
+    return *this;
+  }
+
+  Allocator& operator=(Allocator&& move) throw(MemoryException)
+  {
+    if (&move != this) { // protect against self assignment
+      elements = std::move(move.elements);
+      size = move.size;
+      move.element = nullptr;
+      move.size = 0;
     }
     return *this;
   }

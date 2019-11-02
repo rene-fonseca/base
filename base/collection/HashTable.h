@@ -59,7 +59,7 @@ public:
     HashTable& hashTable;
     const Key& key;
     Element(const Element& copy) noexcept;
-    Element& operator=(const Element& eq) noexcept;
+    Element& operator=(const Element& assign) noexcept;
 
     inline Element(HashTable& _hashTable, const Key& _key) noexcept
       : hashTable(_hashTable),
@@ -808,9 +808,9 @@ public:
   /**
     Assignment of hash table by hash table.
   */
-  inline HashTable& operator=(const HashTable& eq) noexcept
+  inline HashTable& operator=(const HashTable& assign) noexcept
   {
-    impl = eq.impl;
+    impl = assign.impl;
     return *this;
   }
 

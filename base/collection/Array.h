@@ -232,13 +232,8 @@ public:
 
   Array(Array&& move) noexcept
   {
-    elements = move.elements;
+    elements = std::move(move.elements);
     move.elements = nullptr;
-    /*
-    size = move.size;
-    move.size = 0;
-    swapper(elements, move.elements);
-    */
   }
 
   /**
@@ -257,7 +252,7 @@ public:
   Array& operator=(Array&& move) noexcept
   {
     if (&move != this) {
-      elements = move.elements;
+      elements = std::move(move.elements);
       move.elements = nullptr;
       // size = move.size;
       // move.size = 0;

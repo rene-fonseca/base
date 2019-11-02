@@ -65,7 +65,8 @@ public:
     Returns the current value and increments the position. Raises
     EndOfEnumeration if the end has been reached.
   */
-  Pointer next() throw(EndOfEnumeration) {
+  Pointer next() throw(EndOfEnumeration)
+  {
     bassert(more, EndOfEnumeration());
 
     Pointer result = node;
@@ -111,13 +112,13 @@ private:
   /** The states of the infix order traversal state machine */
   enum Traverse {TRAVERSE_SUBTREE, RETURN_LEFT, RETURN_RIGHT};
   /** The root of the binary tree. */
-  Pointer root;
+  Pointer root = nullptr;
   /** The current position in the enumeration. */
-  Pointer node;
+  Pointer node = nullptr;
   /** Specifies that more elements are available. */
   bool more = false;
   /** Specifies that subtree should be traversed. */
-  Traverse traverse;
+  Traverse traverse = TRAVERSE_SUBTREE;
 public:
 
   /**
@@ -129,7 +130,8 @@ public:
     : root(_node),
       node(_node),
       more(_node != nullptr),
-      traverse(TRAVERSE_SUBTREE) {
+      traverse(TRAVERSE_SUBTREE)
+  {
   }
 
   /**
@@ -144,12 +146,13 @@ public:
     Returns the current value and increments the position. Raises
     EndOfEnumeration if the end has been reached.
   */
-  Pointer next() throw(EndOfEnumeration) {
+  Pointer next() throw(EndOfEnumeration)
+  {
     if (!more) {
       throw EndOfEnumeration();
     }
 
-    Pointer result = 0; // indicate no result
+    Pointer result = nullptr; // indicate no result
 
     while (true) { // keep looking until we know if end has been reached
 
@@ -246,9 +249,9 @@ private:
   typedef typename Enumerator<TRAITS>::Value Value;
 
   /** The root of the binary tree. */
-  Pointer root;
+  Pointer root = nullptr;
   /** The current position in the enumeration. */
-  Pointer node;
+  Pointer node = nullptr;
   /** Specifies that more elements are available. */
   bool more = false;
 public:
@@ -259,7 +262,8 @@ public:
     @param node The root node of the binary tree.
   */
   PostfixOrderEnumerator(Pointer _node) noexcept
-    : root(_node), node(_node), more(_node != nullptr) {
+    : root(_node), node(_node), more(_node != nullptr)
+  {
   }
 
   /**
@@ -274,19 +278,20 @@ public:
     Returns the current value and increments the position. Raises
     EndOfEnumeration if the end has been reached.
   */
-  Pointer next() throw(EndOfEnumeration) {
+  Pointer next() throw(EndOfEnumeration)
+  {
     if (!more) {
       throw EndOfEnumeration();
     }
 
-    Pointer result = 0;
+    Pointer result = nullptr;
     while (!result) {
       if (node->getLeft()) { // traverse left subtree
         node = node->getLeft();
       } else if (node->getRight()) { // traverse right subtree
         node = node->getRight();
       } else {
-        Pointer temp;
+        Pointer temp = nullptr;
         do { // return from subtree
           result = node;
           if (node == root) {
@@ -423,7 +428,7 @@ public:
       if (node) {
         Node* left = copySubtree(node->getLeft());
         Node* right = copySubtree(node->getRight());
-        Node* result = new Node(nullptr, left, right, *node->getValue());
+        Node* result = new Node(nullptr, left, right, node->getValue());
         if (left) {
           left->setParent(result);
         }
@@ -601,7 +606,7 @@ public:
     ~BinaryTreeImpl()
     {
       destroySubtree(root);
-      root = 0;
+      root = nullptr;
     }
   };
 protected:
@@ -631,9 +636,9 @@ public:
   /**
     Assignment of binary tree to binary tree.
   */
-  inline BinaryTree& operator=(const BinaryTree& eq) noexcept
+  inline BinaryTree& operator=(const BinaryTree& copy) noexcept
   {
-    elements = eq.elements;
+    elements = copy.elements;
     return *this;
   }
   

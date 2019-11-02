@@ -62,6 +62,10 @@ typedef struct _REPARSE_DATA_BUFFER {
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
+FolderInfo::FolderInfo()
+{
+}
+
 FolderInfo::FolderInfo(const String& _path) throw(FileSystemException)
   : path(_path), mode(0), links(0) {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
@@ -354,11 +358,13 @@ FolderInfo::FolderInfo(const String& _path) throw(FileSystemException)
 #endif // flavor
 }
 
-FolderInfo FolderInfo::getParent() const throw(FileSystemException) {
-  return *this; // not impl
+FolderInfo FolderInfo::getParent() const throw(FileSystemException)
+{
+  return FolderInfo(); // not impl
 }
 
-Array<String> FolderInfo::getEntries() const throw(FileSystemException) {
+Array<String> FolderInfo::getEntries() const throw(FileSystemException)
+{
   Array<String> result;
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   HANDLE handle;
@@ -477,10 +483,6 @@ Array<String> FolderInfo::getEntries() const throw(FileSystemException) {
   #endif
 #endif // flavor
   return result;
-}
-
-const String& FolderInfo::getPath() const throw() {
-  return path;
 }
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

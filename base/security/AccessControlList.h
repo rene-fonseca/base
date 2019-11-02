@@ -64,19 +64,21 @@ public:
   /**
     Assignment of object by object.
   */
-  AccessControlList& operator=(const AccessControlList& eq) noexcept;
+  AccessControlList& operator=(const AccessControlList& assign) noexcept;
 
   /**
     Returns true if the ACL is empty.
   */
-  inline bool isEmpty() const noexcept {
+  inline bool isEmpty() const noexcept
+  {
     return acl.isEmpty();
   }
 
   /**
     Returns the number of entries in the list.
   */
-  inline unsigned int getSize() const noexcept {
+  inline unsigned int getSize() const noexcept
+  {
     return acl.getSize();
   }
   
@@ -117,28 +119,32 @@ public:
   /**
     Returns the associated owner.
   */
-  inline const Trustee& getOwner() noexcept {
+  inline const Trustee& getOwner() noexcept
+  {
     return owner;
   }
 
   /**
     Set the associated owner.
   */
-  inline void setOwner(const Trustee& owner) noexcept {
+  inline void setOwner(const Trustee& owner) noexcept
+  {
     this->owner = owner;
   }
 
   /**
     Returns the associated primary group.
   */
-  inline const Trustee& getGroup() noexcept {
+  inline const Trustee& getGroup() noexcept
+  {
     return group;
   }
   
   /**
     Set the associated primary group.
   */
-  inline void setGroup(const Trustee& group) noexcept {
+  inline void setGroup(const Trustee& group) noexcept
+  {
     this->group = group;
   }
   

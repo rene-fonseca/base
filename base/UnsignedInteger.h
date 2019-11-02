@@ -91,8 +91,8 @@ public:
   /**
     Assignment of integer to this integer.
   */
-  inline UnsignedInteger& operator=(const UnsignedInteger& eq) noexcept {
-    value = eq.value;
+  inline UnsignedInteger& operator=(const UnsignedInteger& assign) noexcept {
+    value = assign.value;
     return *this;
   }
 

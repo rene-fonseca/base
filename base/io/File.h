@@ -157,7 +157,7 @@ public:
   /**
     Assignment of file object.
   */
-  File& operator=(const File& eq) throw();
+  File& operator=(const File& assign) throw();
 
 
 

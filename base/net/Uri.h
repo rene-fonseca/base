@@ -139,7 +139,7 @@ public:
   /**
     Assignment of uri by uri.
   */
-  Uri& operator=(const Uri& eq) throw();
+  Uri& operator=(const Uri& assign) throw();
 
   /**
     Returns true if the uri is relative.

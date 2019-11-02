@@ -17,6 +17,8 @@
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
+// TAG: add support for move when adding new values
+
 /**
   Binary tree with the nodes ordered. All the values of the left and right
   subtrees are respectively less than and greater than the value for any node.
@@ -26,12 +28,14 @@ _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
   @version 1.0
 */
 
-template<class TYPE>
+template<class TYPE, class KEY = TYPE>
 class OrderedBinaryTree : protected BinaryTree<TYPE> {
 public:
 
   /** The type of the value. */
   typedef TYPE Value;
+  /** The type of the key. */
+  typedef KEY Key;
   /** The type of the node. */
   typedef typename BinaryTree<TYPE>::Node Node;
 
@@ -90,35 +94,40 @@ public:
   /**
     Initializes an empty ordered binary tree.
   */
-  OrderedBinaryTree() noexcept {
+  OrderedBinaryTree() noexcept
+  {
   }
 
   /**
     Initializes binary tree from other binary tree.
   */
-  OrderedBinaryTree(const OrderedBinaryTree& copy) noexcept
-    : BinaryTree<TYPE>(copy) {
+  OrderedBinaryTree(const OrderedBinaryTree& copy)
+    : BinaryTree<TYPE>(copy)
+  {
   }
 
   /**
     Assignment of ordered binary tree to ordered binary tree.
   */
-  OrderedBinaryTree& operator=(const OrderedBinaryTree& eq) noexcept {
-    BinaryTree<TYPE>::operator=(eq);
+  OrderedBinaryTree& operator=(const OrderedBinaryTree& copy)
+  {
+    BinaryTree<TYPE>::operator=(copy);
     return *this;
   }
 
   /**
     Returns a modifying enumerator of the ordered binary tree.
   */
-  inline Enumerator getEnumerator() noexcept {
+  inline Enumerator getEnumerator() noexcept
+  {
     return Enumerator(getRoot());
   }
 
   /**
     Returns a non-modifying enumerator of the ordered binary tree.
   */
-  inline ReadEnumerator getReadEnumerator() const noexcept {
+  inline ReadEnumerator getReadEnumerator() const noexcept
+  {
     return ReadEnumerator(getRoot());
   }
 
@@ -127,13 +136,13 @@ public:
 
     @param value The value to look for.
 
-    @return The node with the matching value. 0 if not found.
+    @return The node with the matching value. nullptr if not found.
   */
-  Node* find(const Value& value) noexcept {
+  Node* find(const Key& value) noexcept
+  {
     Node* node = getRoot();
-
     while (node) {
-      int result = compare(value, *node->getValue());
+      const int result = compare<const Key&>(value, node->getValue());
       if (result < 0) {
         node = node->getLeft();
       } else if (result > 0) {
@@ -150,13 +159,13 @@ public:
 
     @param value The value to look for.
 
-    @return The node with the matching value. 0 if not found.
+    @return The node with the matching value. nullptr if not found.
   */
-  const Node* find(const Value& value) const noexcept {
-    const Node* node = BinaryTree<Value>::getRoot();
-
+  const Node* find(const Key& value) const noexcept
+  {
+    const Node* node = getRoot();
     while (node) {
-      int result = compare(value, *node->getValue());
+      const int result = compare<const Key&>(value, node->getValue());
       if (result < 0) {
         node = node->getLeft();
       } else if (result > 0) {
@@ -171,12 +180,12 @@ public:
   /**
     Returns the first/smallest value of this tree.
 
-    @return 0 if the tree is empty.
+    @return nullptr if the tree is empty.
   */
-  Node* getFirst() noexcept {
-    Node* node = BinaryTree<Value>::getRoot();
+  Node* getFirst() noexcept
+  {
+    Node* node = getRoot();
     Node* previous = nullptr; // not found
-
     while (node) {
       previous = node;
       node = node->getLeft();
@@ -187,12 +196,12 @@ public:
   /**
     Returns the last/highest value of this tree.
 
-    @return 0 if the tree is empty.
+    @return nullptr if the tree is empty.
   */
-  Node* getLast() noexcept {
-    Node* node = BinaryTree<Value>::getRoot();
+  Node* getLast() noexcept
+  {
+    Node* node = getRoot();
     Node* previous = nullptr; // not found
-
     while (node) {
       previous = node;
       node = node->getRight();
@@ -208,7 +217,7 @@ public:
   */
   Value* add(const Value& value)
   {
-    Node* node = BinaryTree<Value>::getRoot();
+    Node* node = getRoot();
 
     if (!node) {
       this->elements = new typename BinaryTree<Value>::BinaryTreeImpl(new Node(nullptr, nullptr, nullptr, value)); // attach root node
@@ -216,7 +225,7 @@ public:
     }
 
     while (true) {
-      int result = compare(value, *node->getValue());
+      const int result = compare<const Key&>(value, node->getValue());
       if (result < 0) {
         if (node->getLeft()) {
           node = node->getLeft();
@@ -232,7 +241,10 @@ public:
           return nullptr;
         }
       } else {
-        return node->getValue(); // node with this value already exists
+        if (!std::is_same<Value, Key>()) {
+          node->getValue() = value; // force assignment
+        }
+        return &(node->getValue()); // node with this value already exists
       }
     }
   }
@@ -243,14 +255,15 @@ public:
 
     @param node The node to be removed.
   */
-  void remove(Node* node) throw(InvalidNode) {
+  void remove(Node* node) throw(InvalidNode)
+  {
     if (!node) {
       throw InvalidNode();
     }
 
     this->elements.copyOnWrite();
 
-    if (node == BinaryTree<Value>::getRoot()) { // set new root
+    if (node == getRoot()) { // set new root
       if (node->getLeft()) {
         BinaryTree<Value>::setRoot(node->getLeft());
       } else if (node->getRight()) {
@@ -286,7 +299,8 @@ public:
   /**
     Removes all the nodes from the tree.
   */
-  void removeAll() noexcept {
+  void removeAll()
+  {
     BinaryTree<TYPE>::removeAll();
   }
 };

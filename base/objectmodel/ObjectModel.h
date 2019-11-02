@@ -253,7 +253,7 @@ public:
       MemorySize index = 0;
 
       Element(const Element& copy) noexcept;
-      Element& operator=(const Element& eq) noexcept;
+      Element& operator=(const Element& assign) noexcept;
     public:
 
       inline Element(Array& _array, MemorySize _index) : array(_array), index(_index)
@@ -370,7 +370,7 @@ public:
       Reference<String> key;
 
       Element(const Element& copy) noexcept;
-      Element& operator=(const Element& eq) noexcept;
+      Element& operator=(const Element& assign) noexcept;
     public:
 
       inline Element(Object& _object, const Reference<String>& _key) : object(_object), key(_key)

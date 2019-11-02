@@ -92,7 +92,7 @@ public:
   inline DOMImplementation(const DOMImplementation& copy) throw() {
   }
 
-  inline DOMImplementation& operator=(const DOMImplementation& eq) throw() {
+  inline DOMImplementation& operator=(const DOMImplementation& assign) throw() {
     return *this;
   }
   

@@ -187,9 +187,9 @@ Urn::Urn(const Urn& copy) throw()
 {
 }
 
-Urn& Urn::operator=(const Urn& eq) throw() {
-  nid = eq.nid;
-  nss = eq.nss;
+Urn& Urn::operator=(const Urn& assign) throw() {
+  nid = assign.nid;
+  nss = assign.nss;
   return *this;
 }
 

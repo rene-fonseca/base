@@ -78,7 +78,7 @@ public:
   /**
     Assignment of URN by URN.
   */
-  Urn& operator=(const Urn& eq) throw();
+  Urn& operator=(const Urn& assign) throw();
   
   /**
     Returns true if the URN are equal.

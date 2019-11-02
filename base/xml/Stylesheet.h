@@ -98,8 +98,8 @@ public:
   /**
     Assignment of stylesheet by stylesheet.
   */
-  inline Stylesheet& operator=(const Stylesheet& eq) throw() {
-    stylesheet = eq.stylesheet;
+  inline Stylesheet& operator=(const Stylesheet& assign) throw() {
+    stylesheet = assign.stylesheet;
     return *this;
   }
 

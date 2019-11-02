@@ -360,7 +360,7 @@ public:
   */
   FormatOutputStream(OutputStream& out, unsigned int size = DEFAULT_BUFFER_SIZE) throw(BindException);
   
-  FormatOutputStream(const FormatOutputStream& copy) throw();
+  FormatOutputStream(const FormatOutputStream& copy) = delete;
   
   /**
     Sets the desired position of the decimal-point within the field. Please

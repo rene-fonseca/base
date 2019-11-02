@@ -12,6 +12,7 @@
  ***************************************************************************/
 
 #include <base/collection/List.h>
+#include <base/collection/Moveable.h>
 #include <base/UnitTest.h>
 #include <algorithm>
 
@@ -77,6 +78,41 @@ public:
 
   void run() override
   {
+    TEST_ASSERT(std::is_default_constructible<List<String> >());
+    TEST_ASSERT(std::is_copy_constructible<List<String> >());
+    TEST_ASSERT(std::is_copy_assignable<List<String> >());
+    TEST_ASSERT(std::is_move_constructible<List<String> >());
+    TEST_ASSERT(std::is_move_assignable<List<String> >());
+
+    List<NonDefaultConstructible> list1;
+    list1.append(NonDefaultConstructible(nullptr));
+    auto it1 = list1.begin();
+
+    List<NonMoveable> list2;
+    list2.append(NonMoveable());
+    auto it2 = list2.begin();
+
+    Moveable::Stats stats;
+    List<Moveable> list3;
+    list3.append(Moveable(stats));
+    list3.append(Moveable(stats));
+    list3.append(Moveable(stats));
+    list3.append(Moveable(stats));
+    list3.append(Moveable(stats));
+    stats.reset();
+    auto list4 = list3;
+    TEST_ASSERT(!stats.gotCopies() && !stats.gotMoves());
+    stats.reset();
+    auto it3 = list3.begin(); // force copy
+    TEST_ASSERT(stats.gotCopies() && !stats.gotMoves());
+    stats.reset();
+    list3.shuffle();
+    TEST_ASSERT(!stats.gotCopies() && !stats.gotMoves()); // since only node reordering
+    stats.reset();
+
+    List<DefaultAndMoveAssignable> list5;
+    list5.append(DefaultAndMoveAssignable());
+
     List<int> li;
     for (auto i : range(-10, 20)) {
       li.append(i);
@@ -91,6 +127,8 @@ public:
     ls.append("123");
     ls.append("up");
     ls.append("down");
+    TEST_ASSERT(ls.getFirst() == "abc");
+    TEST_ASSERT(ls.getLast() == "down");
     // fout << ls << ENDL;
 
     for (const auto& value : ls) {
@@ -117,12 +155,31 @@ public:
     ls.sort();
     // fout << "SORTED: " << ls << ENDL;
     TEST_ASSERT(std::find(ls.begin(), ls.end(), "123") == ls.begin());
-    
-    // TAG: add rotate
-    
+
     TEST_ASSERT(ls);
+    auto it = ls.begin();
     ls.prepend("prepend");
+    TEST_ASSERT(ls.getFirst() == "prepend");
     ls.append("append");
+    TEST_ASSERT(ls.getLast() == "append");
+    ls.insert(ls.begin(), "a");
+    TEST_ASSERT(ls.getFirst() == "a");
+    ls.insert(ls.end(), "b");
+    TEST_ASSERT(ls.getLast() == "b");
+    ls.insert(it, "c");
+    ls.moveToFront(it);
+    TEST_ASSERT(ls.getFirst() == "123");
+    ls.moveToFront(it);
+    TEST_ASSERT(ls.getFirst() == "123");
+    ls.moveToBack(it);
+    TEST_ASSERT(ls.getLast() == "123");
+    ls.moveToBack(it);
+    TEST_ASSERT(ls.getLast() == "123");
+    ls.remove(it);
+    ls.getFirst() = "assign";
+    TEST_ASSERT(ls.getFirst() == "assign");
+    ls.getLast() = "assign";
+    TEST_ASSERT(ls.getLast() == "assign");
     ls.removeLast();
     ls.removeFirst();
     ls.removeAll();

@@ -122,7 +122,7 @@ public:
   /**
     Assignment of object to object.
   */
-  AnyValue& operator=(const AnyValue& eq) noexcept;
+  AnyValue& operator=(const AnyValue& assign) noexcept;
   
   /**
     Returns the internal representation of the value.

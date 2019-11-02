@@ -26,15 +26,17 @@
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 OpenFileDialog::OpenFileDialog() throw()
-  : flags(OpenFileDialog::MUST_EXIST), defaultFilter(0) {
+  : flags(OpenFileDialog::MUST_EXIST), defaultFilter(0)
+{
 }
 
-void OpenFileDialog::setFilter(
-  const String& description, const String& filter) throw() {
-  filters[description] = filter;
+void OpenFileDialog::setFilter(const String& description, const String& filter) throw()
+{
+  filters.add(description, filter);
 }
 
-bool OpenFileDialog::execute() throw(UserInterfaceException) {
+bool OpenFileDialog::execute() throw(UserInterfaceException)
+{
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   typedef BOOL (WINAPI *FGetOpenFileNameW)(LPOPENFILENAME);
   static FGetOpenFileNameW GetOpenFileNameW = nullptr;

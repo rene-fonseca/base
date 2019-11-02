@@ -78,10 +78,10 @@ public:
   /**
     Assignment of pipe to pipe.
   */
-  inline Pipe& operator=(const Pipe& eq) throw() {
+  inline Pipe& operator=(const Pipe& assign) throw() {
     // no need to protect against self assignment
-    fd = eq.fd;
-    end = eq.end;
+    fd = assign.fd;
+    end = assign.end;
     return *this;
   }
 

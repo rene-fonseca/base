@@ -54,10 +54,10 @@ public:
     fout << "li: " << li << ENDL;
 
     fout << "Adding elements to list (8, 9, 10, and 11)" << ENDL;
-    li.add(8);
-    li.add(9);
-    li.add(10);
-    li.add(11);
+    li.append(8);
+    li.append(9);
+    li.append(10);
+    li.append(11);
     fout << "li: " << li << ENDL;
 
     fout << "Size of list: " << li.getSize() << ENDL;

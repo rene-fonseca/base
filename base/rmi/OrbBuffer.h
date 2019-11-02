@@ -109,11 +109,11 @@ public:
     Allocates the specified number of bytes.
     
     @param size The number of bytes to write.
-    @return 0 if invalid request.
+    @return nullptr if invalid request.
   */
   inline uint8* push(unsigned int size) throw() {
     if (end < (writeHead + size)) {
-      return 0;
+      return nullptr;
     }
     uint8* result = writeHead;
     writeHead += size;
@@ -124,11 +124,11 @@ public:
     Reads the specified number of bytes.
 
     @param size The number of bytes to read.
-    @return 0 if the buffer doesn't contain the requested number of bytes.
+    @return nullptr if the buffer doesn't contain the requested number of bytes.
   */
   inline const uint8* pull(unsigned int size) throw() {
     if (writeHead < (readHead + size)) {
-      return 0;
+      return nullptr;
     }
     const uint8* result = readHead;
     readHead += size;

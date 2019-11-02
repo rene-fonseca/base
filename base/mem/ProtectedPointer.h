@@ -67,9 +67,9 @@ public:
   /**
     Assignment of automation pointer to this automation pointer.
   */
-  inline ProtectedPointer& operator=(const ProtectedPointer& eq) noexcept
+  inline ProtectedPointer& operator=(const ProtectedPointer& assign) noexcept
   {
-    value = eq.value;
+    value = assign.value;
     return *this;
   }
 
@@ -78,10 +78,9 @@ public:
     time polymorphism.
   */
   template<class POLY>
-  inline ProtectedPointer& operator=(
-    const ProtectedPointer<POLY>& eq) noexcept
+  inline ProtectedPointer& operator=(const ProtectedPointer<POLY>& assign) noexcept
   {
-    value = eq.value;
+    value = assign.value;
     return *this;
   }
   

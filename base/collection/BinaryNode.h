@@ -48,12 +48,21 @@ public:
     @param parent The parent node of this node.
     @param value The value to be associated with the node.
   */
-  inline BinaryNode(
-    BinaryNode* _parent,
-    std::nullptr_t left,
-    std::nullptr_t right,
-    const TYPE& _value)
-    : parent(_parent), value(_value)
+  inline BinaryNode(BinaryNode* _parent, std::nullptr_t left, std::nullptr_t right, const TYPE& _value)
+    : parent(_parent),
+      value(_value)
+  {
+  }
+
+  /**
+    Initializes a binary node.
+
+    @param parent The parent node of this node.
+    @param value The value to be associated with the node.
+  */
+  inline BinaryNode(BinaryNode* _parent, std::nullptr_t left, std::nullptr_t right, TYPE&& _value)
+    : parent(_parent),
+      value(std::move(_value))
   {
   }
 
@@ -65,76 +74,108 @@ public:
     @param right The right child node.
     @param value The value to be associated with the node.
   */
-  inline BinaryNode(
-    BinaryNode* _parent,
-    BinaryNode* _left,
-    BinaryNode* _right,
-    const TYPE& _value)
-    : parent(_parent), left(_left), right(_right), value(_value)
+  BinaryNode(BinaryNode* _parent, BinaryNode* _left, BinaryNode* _right, const TYPE& _value)
+    : parent(_parent),
+      left(_left),
+      right(_right),
+      value(_value)
+  {
+  }
+
+  /**
+    Initializes a binary node.
+
+    @param parent The parent node of this node.
+    @param left The left child node.
+    @param right The right child node.
+    @param value The value to be associated with the node.
+  */
+  BinaryNode(BinaryNode* _parent, BinaryNode* _left, BinaryNode* _right, TYPE&& _value)
+    : parent(_parent),
+      left(_left),
+      right(_right),
+      value(std::move(_value))
   {
   }
 
   /**
     Returns the parent node.
   */
-  inline BinaryNode* getParent() const throw() {
+  inline BinaryNode* getParent() const noexcept
+  {
     return parent;
   }
 
   /**
     Sets the parent node.
   */
-  inline void setParent(BinaryNode* parent) throw() {
+  inline void setParent(BinaryNode* parent) noexcept
+  {
     this->parent = parent;
   }
 
   /**
     Returns the left child node.
   */
-  inline BinaryNode* getLeft() const throw() {
+  inline BinaryNode* getLeft() const noexcept
+  {
     return left;
   }
 
   /**
     Sets the left child node.
   */
-  inline void setLeft(BinaryNode* left) throw() {
+  inline void setLeft(BinaryNode* left) noexcept
+  {
     this->left = left;
   }
 
   /**
     Returns the right child node.
   */
-  inline BinaryNode* getRight() const throw() {
+  inline BinaryNode* getRight() const noexcept
+  {
     return right;
   }
 
   /**
     Sets the right child node.
   */
-  inline void setRight(BinaryNode* right) throw() {
+  inline void setRight(BinaryNode* right) noexcept
+  {
     this->right = right;
   }
 
   /**
     Returns the value of the node.
   */
-  inline TYPE* getValue() throw() {
-    return &value;
+  inline TYPE& getValue() noexcept
+  {
+    return value;
   }
 
   /**
     Returns the value of the node.
   */
-  inline const TYPE* getValue() const throw() {
-    return &value;
+  inline const TYPE& getValue() const noexcept
+  {
+    return value;
   }
 
   /**
     Sets the value of the node.
   */
-  inline void setValue(TYPE value) throw() {
+  inline void setValue(const TYPE& value)
+  {
     this->value = value;
+  }
+
+  /**
+    Sets the value of the node.
+  */
+  inline void setValue(TYPE&& value)
+  {
+    this->value = std::move(value);
   }
 };
 
@@ -169,19 +210,19 @@ public:
 //
 //    @param value The pointer to be automated.
 //  */
-//  explicit inline BinaryNodePointer(Node value = 0) throw() : ptr(value) {
+//  explicit inline BinaryNodePointer(Node value = 0) noexcept : ptr(value) {
 //  }
 //
 //  /**
 //    Copy constructor. Transfers ownership from copy to this object (copy loses ownership).
 //  */
-//  inline BinaryNodePointer(BinaryNodePointer& copy) throw() : ptr(copy.ptr) {
+//  inline BinaryNodePointer(BinaryNodePointer& copy) noexcept : ptr(copy.ptr) {
 //  }
 //
 //  /**
 //    Assignment operator.
 //  */
-//  inline BinaryNodePointer& operator=(BinaryNodePointer& obj) throw() {
+//  inline BinaryNodePointer& operator=(BinaryNodePointer& obj) noexcept {
 //    if (&obj != this) { // protect against self assignment
 //      ptr = obj.ptr;
 //    }
@@ -211,14 +252,14 @@ public:
 //  /**
 //    Returns mutable value of binary node.
 //  */
-//  inline Pointer operator->() throw() {
+//  inline Pointer operator->() noexcept {
 //    return ptr->getValue();
 //  }
 //
 //  /**
 //    Returns constant value of binary node.
 //  */
-//  inline const Pointer operator->() const throw() {
+//  inline const Pointer operator->() const noexcept {
 //    return ptr->getValue();
 //  }
 //};

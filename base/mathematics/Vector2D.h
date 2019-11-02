@@ -62,9 +62,9 @@ public:
   /**
     Assignment of this vector from vector.
   */
-  inline Vector2D& operator=(const Vector2D& eq) throw() {
-    x = eq.x; // no need to protect against self-assignment
-    y = eq.y;
+  inline Vector2D& operator=(const Vector2D& assign) throw() {
+    x = assign.x; // no need to protect against self-assignment
+    y = assign.y;
     return *this;
   }
 

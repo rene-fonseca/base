@@ -68,9 +68,9 @@ public:
   /**
     Assignment of position by position.
   */
-  inline Position& operator=(const Position& eq) throw() {
-    x = eq.x;
-    y = eq.y;
+  inline Position& operator=(const Position& assign) throw() {
+    x = assign.x;
+    y = assign.y;
     return *this;
   }
 

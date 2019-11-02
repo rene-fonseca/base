@@ -103,7 +103,7 @@ public:
   /**
     Assignment of mapping by mapping.
   */
-  MappedFile& operator=(const MappedFile& eq) throw();
+  MappedFile& operator=(const MappedFile& assign) throw();
 
   /**
     Returns the mapped bytes. Do not use the mapping outside the requested

@@ -159,7 +159,7 @@ public:
   /**
     Assignment of url by url.
   */
-  Url& operator=(const Url& eq) throw();
+  Url& operator=(const Url& assign) throw();
 
   /**
     Returns true if the url is relative.

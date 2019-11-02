@@ -53,9 +53,9 @@ EUI64::EUI64(const EUI64& _copy) throw() {
   copy<uint8>(id, _copy.id, sizeof(id));
 }
 
-EUI64& EUI64::operator=(const EUI64& eq) throw() {
-  if (&eq != this) {
-    copy<uint8>(id, eq.id, sizeof(id));
+EUI64& EUI64::operator=(const EUI64& assign) throw() {
+  if (&assign != this) {
+    copy<uint8>(id, assign.id, sizeof(id));
   }
   return *this;
 }

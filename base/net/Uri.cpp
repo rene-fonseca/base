@@ -213,14 +213,14 @@ Uri::Uri(const Uri& copy) throw()
 {
 }
 
-Uri& Uri::operator=(const Uri& eq) throw()
+Uri& Uri::operator=(const Uri& assign) throw()
 {
-  scheme = eq.scheme;
-  user = eq.user;
-  password = eq.password;
-  host = eq.host;
-  port = eq.port;
-  path = eq.path;
+  scheme = assign.scheme;
+  user = assign.user;
+  password = assign.password;
+  host = assign.host;
+  port = assign.port;
+  path = assign.path;
   return *this;
 }
 

@@ -14,6 +14,7 @@
 #pragma once
 
 #include <base/Iterator.h>
+#include <base/collection/Enumeration.h>
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
@@ -22,7 +23,6 @@ _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
   bidirectional traversal of elements.
 
   @short Double linked node
-  @version 1.0
 */
 
 template<class TYPE>
@@ -48,6 +48,26 @@ public:
   }
 
   /**
+    Initializes a linked node with no previous and next node.
+  */
+  inline DoubleLinkedNode(nullptr_t, nullptr_t, TYPE&& _value)
+    : value(std::move(_value))
+  {
+  }
+
+  /**
+    Initializes a linked node with default construction of value.
+
+    @param next The next node in the container.
+    @param previous The previous node in the container.
+  */
+  inline DoubleLinkedNode(DoubleLinkedNode* _next, DoubleLinkedNode* _previous)
+    : next(_next),
+      previous(_previous)
+  {
+  }
+
+  /**
     Initializes a linked node.
 
     @param next The next node in the container.
@@ -58,6 +78,20 @@ public:
     : next(_next),
       previous(_previous),
       value(_value)
+  {
+  }
+
+  /**
+    Initializes a linked node.
+
+    @param next The next node in the container.
+    @param previous The previous node in the container.
+    @param value The value to be associated with the node.
+  */
+  inline DoubleLinkedNode(DoubleLinkedNode* _next, DoubleLinkedNode* _previous, TYPE&& _value)
+    : next(_next),
+      previous(_previous),
+      value(std::move(_value))
   {
   }
 
@@ -96,23 +130,31 @@ public:
   /**
     Returns the value of the node.
   */
-  inline TYPE* getValue() noexcept
+  inline TYPE& getValue() noexcept
   {
-    return &value;
+    return value;
   }
 
   /**
     Returns the value of the node.
   */
-  inline const TYPE* getValue() const noexcept
+  inline const TYPE& getValue() const noexcept
   {
-    return &value;
+    return value;
   }
 
   /**
     Sets the value of the node.
   */
   inline void setValue(const TYPE& value) noexcept
+  {
+    this->value = value;
+  }
+
+  /**
+    Sets the value of the node.
+  */
+  inline void setValue(TYPE&& value) noexcept
   {
     this->value = value;
   }
@@ -274,7 +316,7 @@ public:
   inline Reference operator*() const noexcept
   {
     _COM_AZURE_DEV__BASE__PROTECT_ITERATORS_UNMODIFIED();
-    return *(node->getValue());
+    return node->getValue();
   }
 
   /**
@@ -283,7 +325,7 @@ public:
   inline Pointer operator->() const noexcept
   {
     _COM_AZURE_DEV__BASE__PROTECT_ITERATORS_UNMODIFIED();
-    return node->getValue();
+    return &(node->getValue());
   }
 
   /**
@@ -292,7 +334,16 @@ public:
   inline Pointer getValue() const noexcept
   {
     _COM_AZURE_DEV__BASE__PROTECT_ITERATORS_UNMODIFIED();
-    return node->getValue();
+    return &(node->getValue());
+  }
+
+  /**
+    Returns the pointer value of the iterator.
+  */
+  inline DoubleLinkedNode<TYPE>* getNode() const noexcept
+  {
+    _COM_AZURE_DEV__BASE__PROTECT_ITERATORS_UNMODIFIED();
+    return node;
   }
 };
 
@@ -301,8 +352,8 @@ class DoubleLinkedNodeReadIterator {
 public:
 
   typedef TYPE Value;
-  typedef TYPE* Pointer;
-  typedef TYPE& Reference;
+  typedef const TYPE* Pointer;
+  typedef const TYPE& Reference;
   typedef MemoryDiff Distance;
   typedef BidirectionalIterator Category;
 protected:
@@ -385,7 +436,7 @@ public:
   }
 
   /**
-    Moves the specified distance forward.
+    Moves the specified distance forward. O(n) complexity.
   */
   DoubleLinkedNodeReadIterator& operator+=(Distance distance) noexcept
   {
@@ -402,7 +453,7 @@ public:
   }
 
   /**
-    Moves the specified distance backwards.
+    Moves the specified distance backwards. O(n) complexity.
   */
   DoubleLinkedNodeReadIterator& operator-=(Distance distance) noexcept
   {
@@ -442,7 +493,7 @@ public:
   inline Reference operator*() const noexcept
   {
     _COM_AZURE_DEV__BASE__PROTECT_ITERATORS_UNMODIFIED();
-    return *node;
+    return node->getValue();
   }
 
   /**
@@ -451,7 +502,7 @@ public:
   inline Pointer operator->() const noexcept
   {
     _COM_AZURE_DEV__BASE__PROTECT_ITERATORS_UNMODIFIED();
-    return node->getValue();
+    return &(node->getValue());
   }
 
   /**
@@ -460,8 +511,208 @@ public:
   inline Pointer getValue() const noexcept
   {
     _COM_AZURE_DEV__BASE__PROTECT_ITERATORS_UNMODIFIED();
-    return node->getValue();
+    return &(node->getValue());
   }
+
+  /**
+    Returns the pointer value of the iterator.
+  */
+  inline const DoubleLinkedNode<TYPE>* getNode() const noexcept
+  {
+    _COM_AZURE_DEV__BASE__PROTECT_ITERATORS_UNMODIFIED();
+    return node;
+  }
+};
+
+/**
+  Enumeration of elements in a DoubleLinkedNode.
+
+  @short Modifying enumerator of DoubleLinkedNode.
+*/
+template<class TRAITS>
+class DoubleLinkedNodeEnumerator : public Enumerator<TRAITS> {
+public:
+
+  typedef typename Enumerator<TRAITS>::Value Value;
+  typedef typename Enumerator<TRAITS>::Pointer Pointer;
+protected:
+
+  /** The current position in the enumeration. */
+  DoubleLinkedNode<Value>* current = nullptr;
+public:
+
+  /**
+    Initializes an enumeration of all the elements of a DoubleLinkedNode.
+
+    @param begin Specifies the beginning of the enumeration.
+  */
+  explicit inline DoubleLinkedNodeEnumerator(DoubleLinkedNode<Value>* begin) noexcept
+    : current(begin)
+  {
+  }
+
+  /**
+    Initializes enumeration from other enumeration.
+  */
+  inline DoubleLinkedNodeEnumerator(const DoubleLinkedNodeEnumerator& copy) noexcept
+    : current(copy.current)
+  {
+  }
+
+  /**
+    Returns true if the enumeration still contains elements.
+  */
+  inline bool hasNext() const noexcept
+  {
+    return current != nullptr;
+  }
+
+  /**
+    Returns the next element and advances the position of this enumeration.
+  */
+  Pointer next() throw(EndOfEnumeration)
+  {
+    bassert(current != nullptr, EndOfEnumeration());
+    auto temp = current;
+    current = current->getNext();
+    return &(temp->getValue());
+  }
+
+  /**
+    Returns true if the enumerations are pointing to the same position.
+  */
+  inline bool operator==(const DoubleLinkedNodeEnumerator& eq) const noexcept
+  {
+    return current == eq.current;
+  }
+
+  /**
+    Returns true if the enumerations aren't pointing to the same position.
+  */
+  inline bool operator!=(const DoubleLinkedNodeEnumerator& eq) const noexcept
+  {
+    return current != eq.current;
+  }
+};
+
+/**
+  Enumeration of elements in a DoubleLinkedNode.
+
+  @short Non-modifying enumerator of DoubleLinkedNode.
+*/
+template<class TRAITS>
+class DoubleLinkedNodeReadEnumerator : public Enumerator<TRAITS> {
+public:
+
+  typedef typename Enumerator<TRAITS>::Value Value;
+  typedef typename Enumerator<TRAITS>::Pointer Pointer;
+protected:
+
+  /** The current position in the enumeration. */
+  const DoubleLinkedNode<Value>* current = nullptr;
+public:
+
+  /**
+    Initializes an enumeration of all the elements of a DoubleLinkedNode.
+
+    @param begin Specifies the beginning of the enumeration.
+  */
+  explicit inline DoubleLinkedNodeReadEnumerator(const DoubleLinkedNode<Value>* begin) noexcept
+    : current(begin)
+  {
+  }
+
+  /**
+    Initializes enumeration from other enumeration.
+  */
+  inline DoubleLinkedNodeReadEnumerator(const DoubleLinkedNodeReadEnumerator& copy) noexcept
+    : current(copy.current)
+  {
+  }
+
+  /**
+    Returns true if the enumeration still contains elements.
+  */
+  inline bool hasNext() const noexcept
+  {
+    return current != nullptr;
+  }
+
+  /**
+    Returns the next element and advances the position of this enumeration.
+  */
+  Pointer next() throw(EndOfEnumeration)
+  {
+    bassert(current != nullptr, EndOfEnumeration());
+    auto temp = current;
+    current = current->getNext();
+    return &(temp->getValue());
+  }
+
+  /**
+    Returns true if the enumerations are pointing to the same position.
+  */
+  inline bool operator==(const DoubleLinkedNodeReadEnumerator& eq) const noexcept
+  {
+    return current == eq.current;
+  }
+
+  /**
+    Returns true if the enumerations aren't pointing to the same position.
+  */
+  inline bool operator!=(const DoubleLinkedNodeReadEnumerator& eq) const noexcept
+  {
+    return current != eq.current;
+  }
+};
+
+enum {
+  CREATE_DOUBLE_LINKED_NODE,
+  CREATE_DOUBLE_LINKED_NODE_BY_MOVE_CONSTRUCT,
+  CREATE_DOUBLE_LINKED_NODE_BY_MOVE_ASSIGN,
+};
+
+/** Helper class for choosing between copy and move. Uses copy construction by default. */
+template<class TYPE, int>
+class CreateDoubleLinkedNode {
+public:
+
+  static inline DoubleLinkedNode<TYPE>* createNode(DoubleLinkedNode<TYPE>* next, DoubleLinkedNode<TYPE>* previous, TYPE&& value)
+  {
+    return new DoubleLinkedNode<TYPE>(next, previous, value); // copy by default
+  }
+};
+
+template<class TYPE>
+class CreateDoubleLinkedNode<TYPE, CREATE_DOUBLE_LINKED_NODE_BY_MOVE_CONSTRUCT> {
+public:
+
+  // requires move constructible
+  static inline DoubleLinkedNode<TYPE>* createNode(DoubleLinkedNode<TYPE>* next, DoubleLinkedNode<TYPE>* previous, TYPE&& value)
+  {
+    return new DoubleLinkedNode<TYPE>(next, previous, std::move(value)); // move construction
+  }
+};
+
+template<class TYPE>
+class CreateDoubleLinkedNode<TYPE, CREATE_DOUBLE_LINKED_NODE_BY_MOVE_ASSIGN> {
+public:
+
+  // requires default construction and move assignable
+  static inline DoubleLinkedNode<TYPE>* createNode(DoubleLinkedNode<TYPE>* next, DoubleLinkedNode<TYPE>* previous, TYPE&& value)
+  {
+    auto temp = new DoubleLinkedNode<TYPE>(next, previous); // default initialization
+    temp->getValue() = std::move(value);
+    return temp;
+  }
+};
+
+template<class TYPE>
+class GetDoubleLinkedNodeConstruction {
+public:
+
+  static constexpr int HOW = std::is_move_constructible<TYPE>() ? CREATE_DOUBLE_LINKED_NODE_BY_MOVE_CONSTRUCT :
+    ((std::is_move_assignable<TYPE>() && std::is_default_constructible<TYPE>()) ? CREATE_DOUBLE_LINKED_NODE_BY_MOVE_ASSIGN : CREATE_DOUBLE_LINKED_NODE);
 };
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

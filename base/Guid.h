@@ -61,7 +61,7 @@ public:
 
   Guid(const Guid& _copy) noexcept;
   
-  Guid& operator=(const Guid& eq) noexcept;
+  Guid& operator=(const Guid& assign) noexcept;
 
   /**
     Returns true if the identifiers are identical.

@@ -67,8 +67,8 @@ public:
   /**
     Assignment of value by value.
   */
-  inline LongDouble& operator=(const LongDouble& eq) noexcept {
-    value = eq.value;
+  inline LongDouble& operator=(const LongDouble& assign) noexcept {
+    value = assign.value;
     return *this;
   }
 

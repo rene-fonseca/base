@@ -35,7 +35,7 @@ private:
   /**
     Default assignment is not permitted.
   */
-  NotCopyable& operator=(const NotCopyable& eq) noexcept;
+  NotCopyable& operator=(const NotCopyable& assign) noexcept;
 };
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

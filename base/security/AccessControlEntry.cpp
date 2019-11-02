@@ -16,63 +16,73 @@
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
-AccessControlEntry::AccessControlEntry() throw()
-  : trustee(Trustee::EVERYONE, 0) {
+AccessControlEntry::AccessControlEntry() noexcept
+  : trustee(Trustee::EVERYONE, 0)
+{
   permissions.allowed = 0;
   permissions.denied = 0;
 }
 
 AccessControlEntry::AccessControlEntry(
-  const Trustee& _trustee, AccessMask allowed) throw()
-  : trustee(_trustee) {
+  const Trustee& _trustee, AccessMask allowed) noexcept
+  : trustee(_trustee)
+{
   permissions.allowed = allowed;
   permissions.denied = 0;
 }
 
 AccessControlEntry::AccessControlEntry(
-  const Trustee& _trustee, const Permissions& _permissions) throw()
-  : trustee(_trustee), permissions(_permissions) {
+  const Trustee& _trustee, const Permissions& _permissions) noexcept
+  : trustee(_trustee), permissions(_permissions)
+{
 }
 
-AccessControlEntry::AccessControlEntry(const AccessControlEntry& copy) throw()
-  : trustee(copy.trustee), permissions(copy.permissions) {
+AccessControlEntry::AccessControlEntry(const AccessControlEntry& copy) noexcept
+  : trustee(copy.trustee), permissions(copy.permissions)
+{
 }
 
-AccessControlEntry& AccessControlEntry::operator=(
-  const AccessControlEntry& eq) throw() {
-  trustee = eq.trustee;
-  permissions = eq.permissions;
+AccessControlEntry& AccessControlEntry::operator=(const AccessControlEntry& assign) noexcept
+{
+  trustee = assign.trustee;
+  permissions = assign.permissions;
   return *this;
 }
 
-void AccessControlEntry::replace(const Permissions& permissions) throw() {
+void AccessControlEntry::replace(const Permissions& permissions) noexcept
+{
   this->permissions.denied = permissions.denied;
   this->permissions.allowed = permissions.allowed & ~permissions.denied;
 }
 
-void AccessControlEntry::filter(AccessMask mask) throw() {
+void AccessControlEntry::filter(AccessMask mask) noexcept
+{
   permissions.allowed &= mask;
   permissions.denied &= mask;
 }
 
-void AccessControlEntry::grant(AccessMask allowed) throw() {
+void AccessControlEntry::grant(AccessMask allowed) noexcept
+{
   permissions.denied &= ~allowed;
   permissions.allowed |= allowed;
 }
 
-void AccessControlEntry::revoke(AccessMask denied) throw() {
+void AccessControlEntry::revoke(AccessMask denied) noexcept
+{
   permissions.allowed &= ~denied;
   permissions.denied |= denied;
 }
 
-void AccessControlEntry::combine(const Permissions& permissions) throw() {
+void AccessControlEntry::combine(const Permissions& permissions) noexcept
+{
   this->permissions.denied &= ~permissions.allowed;
   this->permissions.allowed |= permissions.allowed;
   this->permissions.allowed &= ~permissions.denied;
   this->permissions.denied |= permissions.denied;
 }
 
-String AccessControlEntry::maskToString(AccessMask mask) throw() {
+String AccessControlEntry::maskToString(AccessMask mask)
+{
   String result; // TAG: should be optimized using iterator
   mask &= FULL; // filters out SYNCHRONIZE
   
@@ -143,7 +153,8 @@ String AccessControlEntry::maskToString(AccessMask mask) throw() {
 
 FormatOutputStream& operator<<(
   FormatOutputStream& stream,
-  const AccessControlEntry& ace) throw(IOException) {
+  const AccessControlEntry& ace) throw(IOException)
+{
   StringOutputStream s;
   s << ace.getTrustee().getName() << ':';
   

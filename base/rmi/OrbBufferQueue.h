@@ -46,9 +46,8 @@ public:
     Initializes the buffer queue.
   */
   inline BufferQueue(Reference<OrbBufferPool> _pool) throw()
-    : pool(_pool) {
-    first = 0;
-    last = 0;
+    : pool(_pool)
+  {
   }
   
   /**
@@ -68,15 +67,16 @@ public:
   /**
     Returns the next buffer in the queue.
 
-    @return 0 if no buffer is available.
+    @return nullptr if no buffer is available.
   */
-  inline OrbBuffer* pop() throw() {
+  inline OrbBuffer* pop() throw()
+  {
     ExclusiveSynchronize<Guard> _guard(guard);
     OrbBuffer* buffer = first;
     if (first) {
       first = first->getNext();
       if (!first) {
-        last = 0;
+        last = nullptr;
       }
     }
     buffer->setNext(nullptr);

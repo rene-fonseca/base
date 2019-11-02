@@ -69,9 +69,9 @@ public:
   /**
     Initializes iterator from other iterator.
   */
-  inline SequenceIterator& operator=(const SequenceIterator& eq) noexcept
+  inline SequenceIterator& operator=(const SequenceIterator& assign) noexcept
   {
-    element = eq.element;
+    element = assign.element;
     return *this;
   }
 

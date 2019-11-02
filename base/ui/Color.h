@@ -91,8 +91,8 @@ public:
   /**
     Assignment of color by color.
   */
-  inline Color& operator=(const Color& eq) throw() {
-    value = eq.value;
+  inline Color& operator=(const Color& assign) throw() {
+    value = assign.value;
     return *this;
   }
 

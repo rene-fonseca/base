@@ -81,16 +81,28 @@ protected:
     }
 
     /**
+      Initializes queue from other queue.
+    */
+    QueueImpl(QueueImpl&& move) noexcept
+      : first(std::move(move.first)),
+        last(std::move(move.last)),
+        size(std::move(move.size))
+    {
+    }
+
+    /**
       Returns the number of elements of the queue.
     */
-    inline MemorySize getSize() const noexcept {
+    inline MemorySize getSize() const noexcept
+    {
       return size;
     }
 
     /**
       Returns true if the queue is empty.
     */
-    inline bool isEmpty() const noexcept {
+    inline bool isEmpty() const noexcept
+    {
       return !size;
     }
 
@@ -112,7 +124,8 @@ protected:
     /**
       Removes the value at the front of the queue.
     */
-    Value pop() throw(InvalidNode) {
+    Value pop() throw(InvalidNode)
+    {
       if (!size) {
         throw InvalidNode("Queue is empty", this);
       }
@@ -135,7 +148,7 @@ protected:
       while (first) {
         Node* temp = first;
         first = first->getNext();
-        delete temp;
+        delete temp; // could throw
       }
     }
   };
@@ -143,26 +156,47 @@ protected:
   /**
     The elements of the queue.
   */
-  Reference<QueueImpl > elements;
+  Reference<QueueImpl> elements;
 public:
 
   /**
     Initializes an empty queue.
   */
   Queue()
-    : elements(new QueueImpl()) {
+    : elements(new QueueImpl())
+  {
   }
 
   /**
     Initializes queue from other queue.
   */
-  inline Queue(const Queue& copy) noexcept : elements(copy.elements) {
+  inline Queue(const Queue& copy) noexcept
+    : elements(copy.elements)
+  {
+  }
+
+  /**
+    Initializes queue from other queue.
+  */
+  inline Queue(Queue&& move) noexcept
+    : elements(std::move(move.elements))
+  {
+  }
+
+  /**
+    Assigns queue from other queue.
+  */
+  inline Queue& operator=(const Queue& copy) noexcept
+  {
+    elements = copy.elements;
+    return *this;
   }
 
   /**
     Returns the number of elements in the queue.
   */
-  inline MemorySize getSize() const noexcept {
+  inline MemorySize getSize() const noexcept
+  {
     SharedSynchronize<Guard>(*this);
     return elements->getSize();
   }
@@ -170,7 +204,8 @@ public:
   /**
     Returns true if the queue is empty.
   */
-  inline bool isEmpty() const noexcept {
+  inline bool isEmpty() const noexcept
+  {
     SharedSynchronize<Guard>(*this);
     return elements->isEmpty();
   }

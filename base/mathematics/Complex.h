@@ -176,9 +176,9 @@ public:
   /**
     Assignment of complex number by complex number.
   */
-  inline Complex& operator=(const Complex& eq) throw() {
-    real = eq.real; // no need to protect against self-assignment
-    imaginary = eq.imaginary;
+  inline Complex& operator=(const Complex& assign) throw() {
+    real = assign.real; // no need to protect against self-assignment
+    imaginary = assign.imaginary;
     return *this;
   }
 

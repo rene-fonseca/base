@@ -39,10 +39,11 @@ public:
   typedef VALUE Value;
   /** The type of an association in the map. */
   typedef Association<Key, Value> Node;
+  typedef OrderedBinaryTree<Node, Key> Tree;
 private:
 
   /** The associations of the map. */
-  OrderedBinaryTree<Node> elements;
+  Tree elements;
   /** The number of associations in the map. */
   MemorySize size = 0;
 public:
@@ -54,11 +55,11 @@ public:
   private:
 
     typedef typename Enumerator<ReadEnumeratorTraits<Node> >::Pointer Pointer;
-    typename OrderedBinaryTree<Node>::ReadEnumerator enu;
+    typename Tree::ReadEnumerator enu;
   public:
 
     inline ReadEnumerator(
-      typename OrderedBinaryTree<Node>::ReadEnumerator _enu) noexcept
+      typename Tree::ReadEnumerator _enu) noexcept
       : enu(_enu)
     {
     }
@@ -70,7 +71,7 @@ public:
 
     inline Pointer next() throw(EndOfEnumeration)
     {
-      return enu.next()->getValue();
+      return &(enu.next()->getValue());
     }
   };
 
@@ -82,11 +83,12 @@ public:
   private:
 
     typedef typename ValueEnumerator::Pointer Pointer;
-    typename OrderedBinaryTree<Node>::Enumerator enu;
+    // typedef typename ValueEnumerator::Reference Reference;
+    typename Tree::Enumerator enu;
   public:
 
     inline ValueEnumerator(
-      typename OrderedBinaryTree<Node>::Enumerator _enu) noexcept
+      typename Tree::Enumerator _enu) noexcept
       : enu(_enu)
     {
     }
@@ -96,9 +98,10 @@ public:
       return enu.hasNext();
     }
 
+    // TAG: return by value instead
     inline Pointer next() throw(EndOfEnumeration)
     {
-      return &enu.next()->getValue()->getValue();
+      return &(enu.next()->getValue().getValue());
     }
   };
 
@@ -111,20 +114,32 @@ public:
     
     Map& map;
     const Key& key;
-    Element(const Element& copy) noexcept;
-    Element& operator=(const Element& eq) noexcept;
+
+    Element& operator=(const Element& assign) noexcept = delete;
     
-    inline Element(Map& _map, const Key& _key) noexcept
-      : map(_map), key(_key) {
+    inline Element(Map& _map, const Key& _key)
+      : map(_map), key(_key)
+    {
     }
   public:
-    
+
+    inline Element(const Element& copy) noexcept
+      : map(copy.map),
+        key(copy.key)
+    {
+    }
+
     inline Element& operator=(const Value& value)
     {
       map.add(key, value);
       return *this;
     }
-    
+
+    inline operator Value&() throw(InvalidKey)
+    {
+      return map.getValue(key);
+    }
+
     inline operator const Value&() const throw(InvalidKey)
     {
       return map.getValue(key);
@@ -142,19 +157,43 @@ public:
   /**
     Initializes map from other map.
   */
-  Map(const Map& copy) noexcept
+  Map(const Map& copy)
     : elements(copy.elements),
       size(copy.size)
   {
   }
 
   /**
+    Initializes map from other map.
+  */
+  Map(Map&& move)
+    : elements(std::move(move.elements)),
+      size(std::move(move.size))
+  {
+  }
+
+  /**
     Assignment of map to map.
   */
-  Map& operator=(const Map& eq)
+  Map& operator=(const Map& copy)
   {
-    elements = eq.elements;
-    size = eq.size;
+    if (this != &copy) {
+      elements = copy.elements;
+      size = copy.size;
+    }
+    return *this;
+  }
+
+  /**
+    Assignment of map to map.
+  */
+  Map& operator=(Map&& move)
+  {
+    if (this != &move) {
+      elements = std::move(move.elements);
+      size = std::move(move.size);
+      move.size = 0;
+    }
     return *this;
   }
 
@@ -172,6 +211,14 @@ public:
   inline bool isEmpty() const noexcept
   {
     return size == 0;
+  }
+
+  /**
+    Returns true if the map is not empty.
+  */
+  inline operator bool() const noexcept
+  {
+    return size != 0;
   }
 
   /**
@@ -195,9 +242,59 @@ public:
 
     @param key The value to search for.
   */
-  bool isKey(const Key& key) const noexcept
+  bool hasKey(const Key& key) const noexcept
   {
-    return elements.find(Association<Key, Value>(key));
+    return elements.find(key);
+  }
+
+  /**
+    Returns the value associated with the specified key.
+
+    @param key The key of the value.
+
+    @return nullptr is key doesn't exist.
+  */
+  Value* find(const Key& key)
+  {
+    typename Tree::Node* node = elements.find(key);
+    if (!node) {
+      return nullptr;
+    }
+    Node& association = node->getValue();
+    return &(association.getValue());
+  }
+
+  /**
+    Returns the value associated with the specified key.
+
+    @param key The key of the value.
+
+    @return nullptr is key doesn't exist.
+  */
+  const Value* find(const Key& key) const
+  {
+    const typename Tree::Node* node = elements.find(key);
+    if (!node) {
+      return nullptr;
+    }
+    const Node& association = node->getValue();
+    return &(association.getValue());
+  }
+
+  /**
+    Returns the value associated with the specified key. Raises InvalidKey
+    if the specified key doesn't exist in this map.
+
+    @param key The key of the value.
+  */
+  Value& getValue(const Key& key) throw(InvalidKey)
+  {
+    typename Tree::Node* node = elements.find(key);
+    if (!node) {
+      throw InvalidKey();
+    }
+    Node& association = node->getValue();
+    return association.getValue();
   }
 
   /**
@@ -208,12 +305,12 @@ public:
   */
   const Value& getValue(const Key& key) const throw(InvalidKey)
   {
-    const typename OrderedBinaryTree<Association<Key, Value> >::Node* node =
-      elements.find(Association<Key, Value>(key));
+    const typename Tree::Node* node = elements.find(key);
     if (!node) {
       throw InvalidKey();
     }
-    return node->getValue()->getValue();
+    const Node& association = node->getValue();
+    return association.getValue();
   }
 
   /**
@@ -225,7 +322,7 @@ public:
   */
   void add(const Key& key, const Value& value)
   {
-    Node* result = elements.add(Association<Key, Value>(key, value));
+    Node* result = elements.add(Node(key, value));
     if (result) {
       // key already exists
       result->setValue(value); // set the new value
@@ -236,24 +333,48 @@ public:
   }
 
   /**
+    Associates the specified key with the specified value in this map. If the
+    key already is associated with a value, the value is overridden.
+
+    @param key The key.
+    @param value The value.
+  */
+  void add(const Key& key, Value&& value)
+  {
+    typename Tree::Node* node = elements.find(key);
+    if (node) { // key already exists
+      Node& association = node->getValue();
+      association.setValue(std::move(value)); // set the new value
+    } else { // key does not exist
+      Node* result = elements.add(Node(key, std::move(value)));
+      ++size;
+    }
+  }
+
+  /**
     Removes the specified key and its associated value from this map. Raises
     InvalidKey if the key doesn't exist in this map.
   */
   void remove(const Key& key) throw(InvalidKey)
   {
-    elements.remove(elements.find(Association<Key, Value>(key)));
+    typename Tree::Node* node = elements.find(key);
+    if (!node) {
+      throw InvalidKey();
+    }
+    elements.remove(node);
     --size; // never ends up here if the key doesn't exist
   }
 
   /**
     Removes all the keys from this map.
   */
-  void removeAll() noexcept
+  void removeAll()
   {
     elements.removeAll();
     size = 0;
   }
 
+#if 0
   /**
     Returns the value associated with the specified key when used as 'rvalue'.
     When used as 'lvalue' the key is associated with the specified value.
@@ -262,6 +383,15 @@ public:
   {
     return Element(*this, key);
   }
+#else
+  /**
+    Returns the value associated with the specified key.
+  */
+  inline Value& operator[](const Key& key) throw(InvalidKey)
+  {
+    return getValue(key);
+  }
+#endif
 
   /**
     Returns the value associated with the specified key.
@@ -270,6 +400,8 @@ public:
   {
     return getValue(key);
   }
+
+  // TAG: add begin(), end()
 };
 
 /**

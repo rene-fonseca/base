@@ -26,9 +26,8 @@ FileOutputStream::FileOutputStream(
   const FileOutputStream& copy) throw() : file(copy.file) {
 }
 
-FileOutputStream& FileOutputStream::operator=(
-  const FileOutputStream& eq) throw() {
-  file = eq.file;
+FileOutputStream& FileOutputStream::operator=(const FileOutputStream& assign) throw() {
+  file = assign.file;
   return *this;
 }
 

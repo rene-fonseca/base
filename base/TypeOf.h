@@ -27,7 +27,7 @@ class TypeOf {
 private:
 
   /** Default assignment is prohibited. */
-  TypeOf& operator=(const TypeOf& eq) throw();
+  TypeOf& operator=(const TypeOf& assign) throw();
 public:
 
   /** The type. */

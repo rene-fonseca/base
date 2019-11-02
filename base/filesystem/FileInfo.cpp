@@ -366,8 +366,4 @@ FileInfo::FileInfo(const String& _path) throw(FileSystemException)
 #endif // flavor
 }
 
-const String& FileInfo::getPath() const throw() {
-  return path;
-}
-
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

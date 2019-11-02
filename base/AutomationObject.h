@@ -40,7 +40,7 @@ private:
   /** Prevent default copy construction. */
   AutomationObject(const AutomationObject& copy) noexcept /*final*/;
   /** Prevent default assignment. */
-  AutomationObject& operator=(const AutomationObject& eq) noexcept /*final*/;
+  AutomationObject& operator=(const AutomationObject& assign) noexcept /*final*/;
 protected:
   
   /** Default initialization. */

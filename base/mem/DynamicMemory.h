@@ -52,7 +52,7 @@ private:
 
     @param size The desired size of the memory block in number of bytes.
 
-    @return 0 if not successful.
+    @return nullptr if not successful.
   */
   static void* allocate(MemorySize size) throw();
 

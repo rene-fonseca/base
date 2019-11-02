@@ -175,8 +175,8 @@ namespace extension {
     /**
       Assignment of handle by handle.
     */
-    inline RegistryKey& operator=(const RegistryKey& eq) throw() {
-      key = eq.key;
+    inline RegistryKey& operator=(const RegistryKey& assign) throw() {
+      key = assign.key;
       return *this;
     }
     

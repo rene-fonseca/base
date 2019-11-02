@@ -69,7 +69,7 @@ public:
     /** The reference counted object. */
     const ReferenceCountedObject& object;
     ReferenceImpl(const ReferenceImpl&) noexcept;
-    ReferenceImpl& operator=(const ReferenceImpl& eq) noexcept;
+    ReferenceImpl& operator=(const ReferenceImpl& assign) noexcept;
   public:
     
     /**

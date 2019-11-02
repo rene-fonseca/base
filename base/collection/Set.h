@@ -60,7 +60,7 @@ public:
     
     inline Pointer next() throw(EndOfEnumeration)
     {
-      return enu.next()->getValue();
+      return &(enu.next()->getValue());
     }
   };
 

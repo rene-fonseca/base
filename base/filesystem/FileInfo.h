@@ -98,21 +98,24 @@ public:
   /**
     Returns the size of the file in bytes.
   */
-  inline long long getSize() const throw() {
+  inline long long getSize() const noexcept
+  {
     return size;
   }
   
   /**
     Returns the owner of the file.
   */
-  const User& getOwner() const throw() {
+  inline const User& getOwner() const noexcept
+  {
     return owner;
   }
   
   /**
     Returns the group of the file.
   */
-  const Group& getGroup() const throw() {
+  inline const Group& getGroup() const noexcept
+  {
     return group;
   }
 
@@ -121,7 +124,8 @@ public:
 
     @return The maximum possible value if mode isn't supported.
   */
-  inline unsigned int getMode() const throw() {
+  inline unsigned int getMode() const noexcept
+  {
     return mode;
   }
 
@@ -130,35 +134,42 @@ public:
 
     @return 0 is not supported.
   */
-  inline unsigned int getLinks() const throw() {
+  inline unsigned int getLinks() const noexcept
+  {
     return links;
   }
   
   /**
     Returns the last modification time of the file.
   */
-  inline Date getLastModification() const throw() {
+  inline const Date& getLastModification() const noexcept
+  {
     return modification;
   }
   
   /**
     Returns the last access time of the file.
   */
-  inline Date getLastAccess() const throw() {
+  inline const Date& getLastAccess() const noexcept
+  {
     return access;
   }
   
   /**
     Returns the last chnage time of the file.
   */
-  inline Date getLastChange() const throw() {
+  inline const Date& getLastChange() const noexcept
+  {
     return change;
   }
   
   /**
     Returns the path of the file.
   */
-  const String& getPath() const throw();
+  inline const String& getPath() const noexcept
+  {
+    return path;
+  }
 };
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

@@ -146,7 +146,7 @@ void UnitTest::Run::registerHere(const Here* here, const char* description)
   HereMeta meta;
   meta.description = description;
   meta.reach = true;
-  heres[static_cast<const void*>(here)] = meta;
+  heres.add(static_cast<const void*>(here), meta);
 }
 
 void UnitTest::Run::registerNotHere(const NotHere* here, const char* description)
@@ -156,7 +156,7 @@ void UnitTest::Run::registerNotHere(const NotHere* here, const char* description
   HereMeta meta;
   meta.description = description;
   meta.reach = false;
-  heres[static_cast<const void*>(here)] = meta;
+  heres.add(static_cast<const void*>(here), meta);
 }
 
 void UnitTest::Run::onHere(const Here* _here)
@@ -169,14 +169,12 @@ void UnitTest::Run::onHere(const Here* _here)
     onFailed("Test failed due to bad here marker");
     return;
   }
-  if (!heres.isKey(here)) {
+  auto found = heres.find(here);
+  if (!found) {
     onFailed("Test failed due to undeclared key");
     return;
   }
-
-  HereMeta meta = heres[here];
-  ++meta.count;
-  heres[here] = meta; // TAG: improve map so we can use heres[here] directly
+  ++(found->count);
 }
 
 void UnitTest::Run::onNotHere(const NotHere* _here)
@@ -189,14 +187,12 @@ void UnitTest::Run::onNotHere(const NotHere* _here)
     onFailed("Test failed due to bad here marker");
     return;
   }
-  if (!heres.isKey(here)) {
+  auto found = heres.find(here);
+  if (!found) {
     onFailed("Test failed due to undeclared key");
     return;
   }
-
-  HereMeta meta = heres[here];
-  ++meta.count;
-  heres[here] = meta; // TAG: improve map so we can use heres[here] directly
+  ++(found->count);
 }
 
 Reference<ObjectModel::Object> UnitTest::Run::getReport() const
@@ -239,7 +235,7 @@ void UnitTest::run()
   onFailed("Test not implemented");
 }
 
-const char* getStdExceptionName(const std::exception& e) noexcept
+const char* UnitTestManager::getStdExceptionName(const std::exception& e) noexcept
 {
   if (dynamic_cast<const std::runtime_error*>(&e)) {
     if (dynamic_cast<const std::range_error*>(&e)) {
@@ -333,7 +329,7 @@ Reference<UnitTest::Run> UnitTest::runImpl()
   } catch (std::exception& e) {
     const String w = e.what();
     currentRun->exceptionFailure = "Failed with exception.";
-    currentRun->exceptionType = getStdExceptionName(e);
+    currentRun->exceptionType = UnitTestManager::getStdExceptionName(e);
     if (w.isEmpty()) {
       onFailed("Test failed with std::exception");
     } else {
@@ -483,7 +479,7 @@ String UnitTest::getJUnit() const
 
     // additional info
     // getImpact();
-    // stats: getIO(), getMemeory(), getProcessingTime()
+    // stats: getIO(), getMemory(), getProcessingTime()
 
     // TAG: escape data - switch to XML API when ready
     if (getDescription()) {
@@ -710,7 +706,7 @@ bool UnitTestManager::runTests(const String& pattern)
   } else {
     std::sort(tests.begin(), tests.end(), SortTests());
     
-    // TAG: handle dependencies - reorder
+    // TAG: handle dependencies - reorder - handle cyclic dependencies
   }
 
   unsigned int passed = 0;
@@ -1052,12 +1048,11 @@ String UnitTestManager::getJUnit(const String& uuid, const String& name) const
     "<testsuite id=\"%1\" name=\"%2\" hostname=\"%3\" tests=\"%4\" failures=\"%5\" time=\"%6\" timestamp=\"%7\">\n",
     uuid ? uuid : Guid::createGuidAsString(), name ? name : "BASE", hostname, tests.getSize(), failed, totalTime/1000000.0, timestamp
   );
-  // TAG: add configuration
-#if 0
+
   xml += "<properties>\n";
-  xml += "<property name=\"%1\" value=\"%2\"/>\n";
+  xml += Format::subst("<property name=\"%1\" value=\"%2\"/>\n", "configuration", configuration);
   xml += "</properties>\n";
-#endif
+
   for (auto test : tests) {
     xml += test->getJUnit();
   }

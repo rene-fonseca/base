@@ -51,7 +51,7 @@ LinkerModule* LinkerManager::load(
   LinkerModule* module = registratedModule;
   registratedModule = 0;
   // release lock
-  modules[module] = dl;
+  modules.add(module, dl);
   return module;
 }
 

@@ -68,8 +68,8 @@ public:
   /**
     Assignment of value by value.
   */
-  inline Float& operator=(const Float& eq) noexcept {
-    value = eq.value;
+  inline Float& operator=(const Float& assign) noexcept {
+    value = assign.value;
     return *this;
   }
 

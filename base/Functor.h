@@ -1015,7 +1015,7 @@ private:
   Member member;
 
   /** Disable default assignment. */
-  InvokeMember& operator=(const InvokeMember& eq) throw();
+  InvokeMember& operator=(const InvokeMember& assign) throw();
 public:
 
   /**
@@ -1060,7 +1060,7 @@ private:
   Member member;
 
   /** Disable default assignment. */
-  InvokeConstMember& operator=(const InvokeConstMember& eq) throw();
+  InvokeConstMember& operator=(const InvokeConstMember& assign) throw();
 public:
 
   /**

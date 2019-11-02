@@ -35,9 +35,6 @@ private:
   KEY key;
   /** The value associated with the key. */
   VALUE value;
-
-  /* Disable the default assignment operator to prevent use mistakes by changing key. */
-  Association& operator=(const Association& assign) = delete;
 public:
 
   /**
@@ -102,6 +99,14 @@ public:
     : key(std::move(_key)),
       value(std::move(_value))
   {
+  }
+
+  /* Assign new value. */
+  Association& operator=(const Association& assign)
+  {
+    BASSERT(key == assign.key);
+    value = assign.value;
+    return *this;
   }
 
 #if 0 // do not allow key to be changed in-place
@@ -220,6 +225,14 @@ public:
   inline bool operator>=(const KEY& compare) const
   {
     return !(operator<(compare));
+  }
+
+  /**
+    Returns the key value of the association. Requires for implicit comparison.
+  */
+  inline operator const KEY&() const noexcept
+  {
+    return key;
   }
 
   /**

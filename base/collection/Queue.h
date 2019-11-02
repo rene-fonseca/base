@@ -184,6 +184,15 @@ public:
   }
 
   /**
+    Assigns queue from other queue.
+  */
+  inline Queue& operator=(const Queue& copy) noexcept
+  {
+    elements = copy.elements;
+    return *this;
+  }
+
+  /**
     Returns the number of elements in the queue.
   */
   inline MemorySize getSize() const noexcept

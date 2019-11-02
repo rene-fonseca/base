@@ -39,10 +39,11 @@ public:
   typedef VALUE Value;
   /** The type of an association in the map. */
   typedef Association<Key, Value> Node;
+  typedef OrderedBinaryTree<Node, Key> Tree;
 private:
 
   /** The associations of the map. */
-  OrderedBinaryTree<Node> elements;
+  Tree elements;
   /** The number of associations in the map. */
   MemorySize size = 0;
 public:
@@ -54,11 +55,11 @@ public:
   private:
 
     typedef typename Enumerator<ReadEnumeratorTraits<Node> >::Pointer Pointer;
-    typename OrderedBinaryTree<Node>::ReadEnumerator enu;
+    typename Tree::ReadEnumerator enu;
   public:
 
     inline ReadEnumerator(
-      typename OrderedBinaryTree<Node>::ReadEnumerator _enu) noexcept
+      typename Tree::ReadEnumerator _enu) noexcept
       : enu(_enu)
     {
     }
@@ -83,11 +84,11 @@ public:
 
     typedef typename ValueEnumerator::Pointer Pointer;
     // typedef typename ValueEnumerator::Reference Reference;
-    typename OrderedBinaryTree<Node>::Enumerator enu;
+    typename Tree::Enumerator enu;
   public:
 
     inline ValueEnumerator(
-      typename OrderedBinaryTree<Node>::Enumerator _enu) noexcept
+      typename Tree::Enumerator _enu) noexcept
       : enu(_enu)
     {
     }
@@ -243,7 +244,7 @@ public:
   */
   bool hasKey(const Key& key) const noexcept
   {
-    return elements.find(Node(key));
+    return elements.find(key);
   }
 
   /**
@@ -254,8 +255,7 @@ public:
   */
   Value& getValue(const Key& key) throw(InvalidKey)
   {
-    typename OrderedBinaryTree<Node>::Node* node =
-      elements.find(Node(key)); // TAG: bad due to copy of key and default value
+    typename Tree::Node* node = elements.find(key);
     if (!node) {
       throw InvalidKey();
     }
@@ -271,8 +271,7 @@ public:
   */
   const Value& getValue(const Key& key) const throw(InvalidKey)
   {
-    const typename OrderedBinaryTree<Node>::Node* node =
-      elements.find(Node(key));
+    const typename Tree::Node* node = elements.find(key);
     if (!node) {
       throw InvalidKey();
     }
@@ -308,7 +307,7 @@ public:
   */
   void add(const Key& key, Value&& value)
   {
-    typename OrderedBinaryTree<Node>::Node* node = elements.find(Node(key));
+    typename Tree::Node* node = elements.find(key);
     if (node) { // key already exists
       Node& association = node->getValue();
       association.setValue(std::move(value)); // set the new value
@@ -324,7 +323,7 @@ public:
   */
   void remove(const Key& key) throw(InvalidKey)
   {
-    typename OrderedBinaryTree<Node>::Node* node = elements.find(Node(key));
+    typename Tree::Node* node = elements.find(key);
     if (!node) {
       throw InvalidKey();
     }

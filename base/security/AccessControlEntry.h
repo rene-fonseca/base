@@ -122,13 +122,13 @@ public:
   /**
     Initializes ACE as EVERYONE with all permissions denied.
   */
-  AccessControlEntry() throw();
+  AccessControlEntry() noexcept;
   
   /**
     Initializes ACE with specified trustee and no allowed access (and no denied
     access).
   */
-  AccessControlEntry(const Trustee& trustee) throw();
+  AccessControlEntry(const Trustee& trustee) noexcept;
   
   /**
     Initializes access control entry (ACE) with the specified allowed (and no
@@ -137,7 +137,7 @@ public:
     @param trustee The trustee.
     @param allowed The allowed permissions (e.g. READ, WRITE, ...).
   */
-  AccessControlEntry(const Trustee& trustee, AccessMask allowed) throw();
+  AccessControlEntry(const Trustee& trustee, AccessMask allowed) noexcept;
   
   /**
     Initializes access control entry (ACE) with the specified allowed and
@@ -147,22 +147,22 @@ public:
     @param permissions The allowed/denied permissions (e.g. READ, WRITE, ...).
   */
   AccessControlEntry(
-    const Trustee& trustee, const Permissions& permissions) throw();
+    const Trustee& trustee, const Permissions& permissions) noexcept;
   
   /**
     Initialization of object from other object.
   */
-  AccessControlEntry(const AccessControlEntry& copy) throw();
+  AccessControlEntry(const AccessControlEntry& copy) noexcept;
   
   /**
     Assignment of object by object.
   */
-  AccessControlEntry& operator=(const AccessControlEntry& eq) throw();
+  AccessControlEntry& operator=(const AccessControlEntry& assign) noexcept;
   
   /**
     Returns the permissions.
   */
-  inline const Permissions& getPermissions() const throw() {
+  inline const Permissions& getPermissions() const noexcept {
     return permissions;
   }
   
@@ -172,45 +172,45 @@ public:
     
     @param permissions The new permissions.
   */
-  void replace(const Permissions& permissions) throw();
+  void replace(const Permissions& permissions) noexcept;
   
   /**
     Filters out any permissions missing from the specified mask.
   */
-  void filter(AccessMask permissions) throw();
+  void filter(AccessMask permissions) noexcept;
   
   /**
     Grants the specified permissions.
 
     @param allowed The permissions to allow.
   */
-  void grant(AccessMask allowed) throw();
+  void grant(AccessMask allowed) noexcept;
   
   /**
     Marks the specified permissions as denied.
 
     @param denied The permissions to deny.
   */
-  void revoke(AccessMask denied) throw();
+  void revoke(AccessMask denied) noexcept;
   
   /**
     Combines the specified permissions with the ACE.
     
     @param permissions The permissions to merge with.
   */
-  void combine(const Permissions& permissions) throw();
+  void combine(const Permissions& permissions) noexcept;
   
   /**
     Returns the trustee.
   */
-  inline const Trustee& getTrustee() const throw() {
+  inline const Trustee& getTrustee() const noexcept {
     return trustee;
   }
 
   /**
     Returns a string representation of the access mask.
   */
-  static String maskToString(AccessMask mask) throw();
+  static String maskToString(AccessMask mask);
 };
 
 /**

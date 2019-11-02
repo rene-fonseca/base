@@ -16,21 +16,25 @@
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
-AccessControlList::AccessControlList() noexcept {
+AccessControlList::AccessControlList() noexcept
+{
 }
 
 AccessControlList::AccessControlList(const AccessControlList& copy) noexcept
-  : acl(copy.acl), owner(copy.owner), group(copy.group) {
+  : acl(copy.acl), owner(copy.owner), group(copy.group)
+{
 }
 
-AccessControlList& AccessControlList::operator=(const AccessControlList& eq) noexcept {
-  acl = eq.acl;
-  owner = eq.owner;
-  group = eq.group;
+AccessControlList& AccessControlList::operator=(const AccessControlList& assign) noexcept
+{
+  acl = assign.acl;
+  owner = assign.owner;
+  group = assign.group;
   return *this;
 }
 
-bool AccessControlList::add(const AccessControlEntry& ace, bool replace) noexcept {
+bool AccessControlList::add(const AccessControlEntry& ace, bool replace) noexcept
+{
   Array<AccessControlEntry>::Iterator i = acl.getBeginIterator();
   const Array<AccessControlEntry>::Iterator end = acl.getEndIterator();
   const Trustee& trustee = ace.getTrustee();
@@ -49,11 +53,13 @@ bool AccessControlList::add(const AccessControlEntry& ace, bool replace) noexcep
   return false;
 }
 
-void AccessControlList::remove(unsigned int index) throw(OutOfRange) {
+void AccessControlList::remove(unsigned int index) throw(OutOfRange)
+{
   acl.remove(index);
 }
 
-bool AccessControlList::remove(const Trustee& trustee) noexcept {
+bool AccessControlList::remove(const Trustee& trustee) noexcept
+{
   Array<AccessControlEntry>::ReadIterator i = acl.getBeginIterator();
   const Array<AccessControlEntry>::ReadIterator end = acl.getEndIterator();
   while (i < end) {
@@ -66,7 +72,8 @@ bool AccessControlList::remove(const Trustee& trustee) noexcept {
   return false;
 }
 
-bool AccessControlList::hasTrustee(const Trustee& trustee) const noexcept {
+bool AccessControlList::hasTrustee(const Trustee& trustee) const noexcept
+{
   Array<AccessControlEntry>::ReadIterator i = acl.getBeginReadIterator();
   const Array<AccessControlEntry>::ReadIterator end = acl.getEndReadIterator();
   while (i < end) {
@@ -78,7 +85,8 @@ bool AccessControlList::hasTrustee(const Trustee& trustee) const noexcept {
   return false;
 }
 
-const AccessControlEntry& AccessControlList::getACE(const Trustee& trustee) const throw(InvalidKey) {
+const AccessControlEntry& AccessControlList::getACE(const Trustee& trustee) const throw(InvalidKey)
+{
   Array<AccessControlEntry>::ReadEnumerator enu = acl.getReadEnumerator();
   while (enu.hasNext()) {
     const AccessControlEntry* ace = enu.next();
@@ -90,7 +98,8 @@ const AccessControlEntry& AccessControlList::getACE(const Trustee& trustee) cons
 }
 
 // need exception to indicate that isMemberOf failed
-AccessControlList::Permissions AccessControlList::getEffectiveAccess(const Trustee& trustee) const noexcept { // TAG: fix exception
+AccessControlList::Permissions AccessControlList::getEffectiveAccess(const Trustee& trustee) const noexcept // TAG: fix exception
+{
   Permissions effective;
   effective.allowed = 0;
   effective.denied = 0;
@@ -109,11 +118,13 @@ AccessControlList::Permissions AccessControlList::getEffectiveAccess(const Trust
   return effective;
 }
 
-Array<AccessControlEntry>::ReadEnumerator AccessControlList::getReadEnumerator() const noexcept {
+Array<AccessControlEntry>::ReadEnumerator AccessControlList::getReadEnumerator() const noexcept
+{
   return acl.getReadEnumerator();
 }
 
-FormatOutputStream& operator<<(FormatOutputStream& stream, const AccessControlList& acl) throw(IOException) {
+FormatOutputStream& operator<<(FormatOutputStream& stream, const AccessControlList& acl) throw(IOException)
+{
   StringOutputStream s;
   Array<AccessControlEntry>::ReadEnumerator enu = acl.getReadEnumerator();
   // acl.getEffectiveAccess(acl.getOwner())

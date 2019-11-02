@@ -87,22 +87,14 @@ private:
   unsigned int links = 0;
 public:
 
+  FolderInfo();
+
   /**
     Initializes a folder.
 
     @param path the path of the folder.
   */
   FolderInfo(const String& path) throw(FileSystemException);
-
-  /**
-    Initializes folder from other folder.
-  */
-  FolderInfo(const FolderInfo& copy) throw()
-    : path(copy.path),
-      modification(copy.modification),
-      access(copy.access),
-      change(copy.change) {
-  }
 
   /**
     Returns a folder object for the parent folder.
@@ -117,14 +109,16 @@ public:
   /**
     Returns the owner of the folder.
   */
-  const User& getOwner() const throw() {
+  inline const User& getOwner() const noexcept
+  {
     return owner;
   }
   
   /**
     Returns the group of the folder.
   */
-  const Group& getGroup() const throw() {
+  inline const Group& getGroup() const noexcept
+  {
     return group;
   }
 
@@ -133,7 +127,8 @@ public:
 
     @return The maximum possible value if mode isn't supported.
   */
-  inline unsigned int getMode() const throw() {
+  inline unsigned int getMode() const noexcept
+  {
     return mode;
   }
   
@@ -142,35 +137,42 @@ public:
     
     @return 0 is not supported.
   */
-  inline unsigned int getLinks() const throw() {
+  inline unsigned int getLinks() const noexcept
+  {
     return links;
   }
 
   /**
     Returns the last modification time of the folder.
   */
-  inline Date getLastModification() const throw() {
+  inline const Date& getLastModification() const noexcept
+  {
     return modification;
   }
 
   /**
     Returns the last access time of the folder.
   */
-  inline Date getLastAccess() const throw() {
+  inline const Date& getLastAccess() const noexcept
+  {
     return access;
   }
 
   /**
     Returns the last chnage time of the folder.
   */
-  inline Date getLastChange() const throw() {
+  inline const Date& getLastChange() const noexcept
+  {
     return change;
   }
 
   /**
     Returns the path of the folder.
   */
-  const String& getPath() const throw();
+  inline const String& getPath() const noexcept
+  {
+    return path;
+  }
 };
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

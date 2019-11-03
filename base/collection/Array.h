@@ -123,6 +123,81 @@ private:
 
   /** The elements of the array. */
   Reference<ReferenceCountedCapacityAllocator<Value> > elements;
+  
+  /** Moves all values up by 1 index. */
+  static inline void moveUp(Value* src, MemorySize count)
+  {
+    if (!count) {
+      return;
+    }
+    const Value* begin = src;
+    Value* end = src + count;
+    if (!std::is_fundamental<TYPE>() && std::is_move_assignable<TYPE>()) {
+      for (; end != begin; --end) {
+        end[0] = std::move(end[-1]); // move forward
+      }
+    } else  {
+      for (; end != begin; --end) {
+        end[0] = end[-1]; // move forward
+      }
+    }
+  }
+
+  /** Moves all values up by n indices. */
+  static inline void moveUp(Value* src, MemorySize count, MemoryDiff offset)
+  {
+    if (!count) {
+      return;
+    }
+    const Value* begin = src;
+    Value* end = src + count;
+    if (!std::is_fundamental<TYPE>() && std::is_move_assignable<TYPE>()) {
+      for (; end != begin; --end) {
+        end[offset - 1] = std::move(end[-1]); // move forward
+      }
+    } else  {
+      for (; end != begin; --end) {
+        end[offset - 1] = end[-1]; // move forward
+      }
+    }
+  }
+
+  /** Moves all values down by 1 index. */
+  static inline void moveDown(Value* src, MemorySize count)
+  {
+    if (!count) {
+      return;
+    }
+    const Value* end = src + count;
+    if (!std::is_fundamental<TYPE>() && std::is_move_assignable<TYPE>()) {
+      for (; src != end; ++src) {
+        src[0] = std::move(src[1]); // move down
+      }
+    } else  {
+      for (; src != end; ++src) {
+        src[0] = src[1]; // move down
+      }
+    }
+  }
+
+  /** Moves all values down by n indices. */
+  static inline void moveDown(Value* src, const MemorySize count, const MemorySize offset)
+  {
+    BASSERT(offset > 0);
+    if (!count) {
+      return;
+    }
+    const Value* end = src + count;
+    if (!std::is_fundamental<TYPE>() && std::is_move_assignable<TYPE>()) {
+      for (; src != end; ++src) {
+        src[0] = std::move(src[offset]); // move down
+      }
+    } else  {
+      for (; src != end; ++src) {
+        src[0] = src[offset]; // move down
+      }
+    }
+  }
 public:
 
   /**
@@ -266,6 +341,30 @@ public:
     return getSize() == 0;
   }
 
+  /** Returns the first element. */
+  inline TYPE& getFirst()
+  {
+    return getAt(0);
+  }
+
+  /** Returns the first element. */
+  inline const TYPE& getFirst() const
+  {
+    return getAt(0);
+  }
+
+  /** Returns the last element. */
+  inline TYPE& getLast()
+  {
+    return getAt(getSize() - 1);
+  }
+
+  /** Returns the last element. */
+  inline const TYPE& getLast() const
+  {
+    return getAt(getSize() - 1);
+  }
+
   /**
     Returns the first element of the allocator as a modifying array.
   */
@@ -389,12 +488,14 @@ public:
   */
   void append(std::initializer_list<Value> l)
   {
-    // optimize this
+    const auto size = getSize(); // original size
+    setSize(size + l.size());
+    auto dest = getElements() + size;
     for (auto i = l.begin(); i != l.end(); ++i) {
-      append(*i);
+      *dest++ = *i;
     }
   }
-
+  
   /**
     Prepends the value to this array.
 
@@ -402,10 +503,25 @@ public:
   */
   void prepend(const Value& value)
   {
-    setSize(getSize() + 1);
-    Value* elements = getElements(); // size must be set before
-    move(elements + 1, elements, getSize());
-    elements[0] = value;
+    const auto size = getSize(); // original size
+    setSize(size + 1); // better to prepend in allocator
+    auto dest = getElements(); // size must be set before
+    moveUp(dest, size);
+    dest[0] = value;
+  }
+
+  /**
+    Prepends the value to this array.
+
+    @param value The value to be prepended.
+  */
+  void prepend(Value&& value)
+  {
+    const auto size = getSize(); // original size
+    setSize(size + 1); // better to prepend in allocator
+    auto dest = getElements(); // size must be set before
+    moveUp(dest, size);
+    dest[0] = std::move(value);
   }
 
   /**
@@ -413,10 +529,12 @@ public:
   */
   void prepend(std::initializer_list<Value> l)
   {
-    // optimize this
-    auto i = l.end();
-    while (i != l.begin()) {
-      prepend(*--i);
+    const auto size = getSize(); // original size
+    setSize(size + l.size());
+    auto dest = getElements();
+    moveUp(dest, size, l.size());
+    for (auto i = l.begin(); i != l.end(); ++i) {
+      *dest++ = *i;
     }
   }
 
@@ -430,15 +548,38 @@ public:
   void insert(MemorySize index, const Value& value)
   {
     bassert(index <= getSize(), OutOfRange(this));
-    setSize(getSize() + 1);
-    auto elements = getElements(); // size must be set before
-    move(elements + index + 1, elements + index, getSize() - index);
-    elements[index] = value;
+    const auto size = getSize(); // original size
+    setSize(size + 1); // better to prepend in allocator
+    auto dest = getElements(); // size must be set before
+    moveUp(dest, size - index);
+    dest[index] = value;
+  }
+
+  /**
+    Inserts the value at the specified position. Raises OutOfRange if the
+    specified index is invalid.
+
+    @param index Specifies the insert position.
+    @param value The value to be inserted.
+  */
+  void insert(MemorySize index, Value&& value)
+  {
+    bassert(index <= getSize(), OutOfRange(this));
+    const auto size = getSize(); // original size
+    setSize(size + 1); // better to prepend in allocator
+    auto dest = getElements(); // size must be set before
+    moveUp(dest, size - index);
+    dest[index] = std::move(value);
   }
 
   void insert(const Iterator& it, const Value& value)
   {
     insert(it - begin(), value);
+  }
+
+  void insert(const Iterator& it, Value&& value)
+  {
+    insert(it - begin(), std::move(value));
   }
 
   /**
@@ -450,22 +591,70 @@ public:
   void remove(MemorySize index)
   {
     bassert(index < getSize(), OutOfRange(this));
-    Value* elements = getElements(); // size must be set after
-    move(elements + index, elements + index + 1, getSize() - index - 1);
-    setSize(getSize() - 1);
+    auto dest = getElements(); // size must be set after
+    const auto size = getSize(); // original size
+    moveDown(dest + index, size - index - 1);
+    setSize(size - 1);
   }
 
+  /** Removes the element at the given position. */
   void remove(const Iterator& it)
   {
     remove(it - begin());
   }
+
+  /** Removes the elements within the given positions. */
+  void remove(MemorySize _begin, MemorySize _end)
+  {
+    bassert(_begin < getSize(), OutOfRange(this));
+    bassert(_end < getSize(), OutOfRange(this));
+    bassert(_begin <= _end, OutOfRange(this));
+    
+    auto count = _end - _begin;
+    if (!count) {
+      return; // nothing to do
+    }
+    auto dest = getElements(); // size must be set after
+    const auto size = getSize(); // original size
+    moveDown(dest + _begin, size - _begin - count, count);
+    setSize(size - count);
+  }
   
+  /** Removes the elements within the given positions. */
+  void remove(const Iterator& _begin, const Iterator& _end)
+  {
+    auto b = begin();
+    remove(_begin - b, _end - b);
+  }
+
   /**
     Removes all the elements from this array.
   */
   void removeAll()
   {
     elements = nullptr; // no need to copy
+  }
+
+  /** Returns a new Array for the given elements. */
+  Array slice(MemorySize _begin, MemorySize _end) const
+  {
+    bassert(_begin < getSize(), OutOfRange(this));
+    bassert(_end < getSize(), OutOfRange(this));
+    bassert(_begin <= _end, OutOfRange(this));
+    
+    auto count = _end - _begin;
+    Array result;
+    result.setSize(count);
+    auto dest = result.getElements();
+    base::copy(dest, getElements() + _begin, count);
+    return result;
+  }
+
+  /** Returns a new Array for the given elements. */
+  Array slice(const Iterator& _begin, const Iterator& _end) const
+  {
+    const auto b = begin();
+    return slice(_begin - b, _end - b);
   }
 
   /**

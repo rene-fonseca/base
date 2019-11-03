@@ -69,7 +69,7 @@ public:
     as.setAt(as.getSize() - 1, "SET");
     TEST_EXCEPTION(as.getAt(as.getSize()), OutOfRange);
     TEST_EXCEPTION(as.setAt(as.getSize(), "out of range"), OutOfRange);
-
+    
     as.prepend("prepend");
     as.insert(as.begin(), "prepend2");
     as.remove(as.begin());
@@ -81,6 +81,7 @@ public:
     as.shuffle();
     std::reverse(as.begin(), as.end());
     std::move(as.begin(), as.end(), as.begin());
+    as.remove(2, 4);
     as.removeAll();
     TEST_ASSERT(!as);
     
@@ -94,8 +95,15 @@ public:
     Array<unsigned int> al2;
     swapper(al, al2);
 
-    // TAG: Slice slice(4, 6)
-    // TAG: Slice(begin(), begin() + 5)
+    al2 = {1,2,3,4};
+    TEST_ASSERT(al2.getLast() == 4);
+    al2.append({10,20,30,40});
+    al2.prepend({100,200,300,400});
+    TEST_ASSERT(al2.getFirst() == 100);
+    TEST_ASSERT(al2.getLast() == 40);
+
+    auto al3 = al2.slice(3, 7);
+    al3 = al2.slice(al2.begin() + 3, al2.begin() + 7);
   }
 };
 

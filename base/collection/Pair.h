@@ -14,6 +14,7 @@
 #pragma once
 
 #include <base/features.h>
+#include <utility>
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
@@ -59,7 +60,17 @@ public:
     Initializes a pair from other pair.
   */
   Pair(const Pair& copy)
-    : first(copy.first), second(copy.second) {
+    : first(copy.first), second(copy.second)
+  {
+  }
+
+  /**
+    Initializes a pair from other pair.
+  */
+  Pair(Pair&& move)
+    : first(std::move(move.first)),
+      second(std::move(move.second))
+  {
   }
 
   /**
@@ -70,6 +81,18 @@ public:
     if (&assign != this) { // protect against self assignment
       first = assign.first;
       second = assign.second;
+    }
+    return *this;
+  }
+
+  /**
+    Assignment of pair by pair.
+  */
+  Pair& operator=(Pair&& assign)
+  {
+    if (&assign != this) { // protect against self assignment
+      first = std::move(assign.first);
+      second = std::move(assign.second);
     }
     return *this;
   }
@@ -93,43 +116,67 @@ public:
   /**
     Sets the first value.
   */
-  void setFirst(const First& value) noexcept
+  void setFirst(const First& value)
   {
     first = value;
   }
 
   /**
+    Sets the first value.
+  */
+  void setFirst(First&& value)
+  {
+    first = std::move(value);
+  }
+
+  /**
     Sets the second value.
   */
-  void setSecond(const Second& value) noexcept
+  void setSecond(const Second& value)
   {
     second = value;
+  }
+
+  /**
+    Sets the second value.
+  */
+  void setSecond(Second&& value)
+  {
+    second = std::move(value);
   }
 
   /**
     Returns -1, 0, or 1 if this pair is less than, equal to, or greater than
     the specified pair.
   */
-  inline int compareTo(const Pair& eq) const
+  inline int compareTo(const Pair& compare) const
   {
-    int result = compareTo(first, eq.first);
-    return (result != 0) ? result : compareTo(second, eq.second);
+    int result = compareTo(first, compare.first);
+    return (result != 0) ? result : compareTo(second, compare.second);
   }
 
   /**
     Returns true if this pair is equal to the specified pair.
   */
-  inline bool operator==(const Pair& eq) const
+  inline bool operator==(const Pair& compare) const
   {
-    return (first == eq.first) && (second == eq.second);
+    return (first == compare.first) && (second == compare.second);
+  }
+
+  /**
+    Returns true if this pair is equal to the specified pair.
+  */
+  inline bool operator!=(const Pair& compare) const
+  {
+    return !(operator==(compare));
   }
 
   /**
     Returns true if this pair is less than the specified pair.
   */
-  inline bool operator<(const Pair& eq) const
+  inline bool operator<(const Pair& compare) const
   {
-    return (first < eq.first) || ((first == eq.first) && (second < eq.second));
+    return (first < compare.first) || ((first == compare.first) && (second < compare.second));
   }
 
   /**

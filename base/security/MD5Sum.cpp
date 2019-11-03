@@ -186,7 +186,7 @@ void MD5Sum::pushBlock(const uint8* block) noexcept
   state[3] += d;
 }
 
-unsigned int MD5Sum::push(const uint8* buffer, unsigned int size) throw(OutOfRange)
+unsigned int MD5Sum::push(const uint8* buffer, unsigned int size)
 {
   if (size == 0) {
     return 0;

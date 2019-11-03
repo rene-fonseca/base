@@ -32,8 +32,7 @@ private:
   void* handle = nullptr;
   
   /** Returns a pointer to the global symbol. */
-  static void* getGlobalSymbolImpl(
-    const String& symbol) throw(LinkerException);
+  static void* getGlobalSymbolImpl(const String& symbol) throw(LinkerException);
 public:
 
   typedef void (*Function)();

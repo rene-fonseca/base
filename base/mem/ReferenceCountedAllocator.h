@@ -45,7 +45,8 @@ public:
   /**
     Initializes an empty allocator.
   */
-  inline explicit ReferenceCountedAllocator() throw() {
+  inline explicit ReferenceCountedAllocator() noexcept
+  {
   }
 
   /**
@@ -56,15 +57,17 @@ public:
     @param size Specifies the initial size of the allocator.
   */
   inline explicit ReferenceCountedAllocator(MemorySize size) throw(MemoryException)
-    : Allocator<TYPE>(size) {
+    : Allocator<TYPE>(size)
+  {
   }
 
   /**
     Initializes the allocator by copying from the specified allocator. Raises
     MemoryException if unable to allocate the required memory.
   */
-  ReferenceCountedAllocator(const ReferenceCountedAllocator& copy) throw(MemoryException)
-    : Allocator<TYPE>(copy) {
+  inline ReferenceCountedAllocator(const ReferenceCountedAllocator& copy) throw(MemoryException)
+    : Allocator<TYPE>(copy)
+  {
   }
 };
 

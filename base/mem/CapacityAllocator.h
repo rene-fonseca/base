@@ -70,7 +70,8 @@ public:
     @param granularity Specifies the number of elements to allocate at a time.
   */
   inline explicit CapacityAllocator(MemorySize _granularity) throw(OutOfRange)
-    : granularity(_granularity) {
+    : granularity(_granularity)
+  {
     bassert(granularity >= MINIMUM_GRANULARITY, OutOfRange(this));
   }
 
@@ -187,6 +188,38 @@ public:
   }
 
   /**
+    Returns the first element of the allocator as a modifying iterator.
+  */
+  inline Iterator begin() noexcept
+  {
+    return Iterator(Allocator<TYPE>::getElements());
+  }
+
+  /**
+    Returns the end of the allocator as a modifying iterator.
+  */
+  inline Iterator end() noexcept
+  {
+    return Iterator(Allocator<TYPE>::getElements() + size);
+  }
+
+  /**
+    Returns the first element of the allocator as a non-modifying iterator.
+  */
+  inline ReadIterator begin() const noexcept
+  {
+    return ReadIterator(Allocator<TYPE>::getElements());
+  }
+
+  /**
+    Returns the end of the allocator as a non-modifying iterator.
+  */
+  inline ReadIterator end() const noexcept
+  {
+    return ReadIterator(Allocator<TYPE>::getElements() + size);
+  }
+
+  /**
     Returns a modifying enumerator of the allocator.
   */
   inline Enumerator getEnumerator() noexcept
@@ -201,6 +234,7 @@ public:
   {
     return ReadEnumerator(Allocator<TYPE>::getElements(), Allocator<TYPE>::getElements() + size);
   }
+
 
   /**
     Sets the number of elements of the allocator. If the size is increased the
@@ -220,6 +254,10 @@ public:
     }
   }
 
+  /**
+    Resize allocator but use given value to fill any new elements instead of
+    using default constructor.
+  */
   void setSize(MemorySize _size, const TYPE& value)
   {
     if (_size != size) {

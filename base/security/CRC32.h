@@ -22,6 +22,8 @@ _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 /**
   Implementation of the 32 bit Cyclic Redundancy Check (CRC-32) algorithm as
   described by ISO 3309 (also see RFC 1952).
+
+  Should only be used for compatibility with legacy systems.
   
   @short CRC-32.
   @ingroup security
@@ -56,23 +58,33 @@ public:
   unsigned int push(const uint8* buffer, unsigned int size) noexcept;
   
   /**
+    Does nothing.
+  */
+  inline void pushEnd() noexcept
+  {
+  }
+
+  /**
     Returns the total size of the original message.
   */
-  inline uint64 getTotalSize() const noexcept {
+  inline uint64 getTotalSize() const noexcept
+  {
     return totalSize;
   }
   
   /**
     Returns the checksum.
   */
-  inline uint32 getValue() const noexcept {
+  inline uint32 getValue() const noexcept
+  {
     return checksum;
   }
 
   /**
     Sets the checksum.
   */
-  inline void setValue(uint32 value) noexcept {
+  inline void setValue(uint32 value) noexcept
+  {
     checksum = value;
   }
 };

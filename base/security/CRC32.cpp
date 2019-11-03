@@ -12,6 +12,7 @@
  ***************************************************************************/
 
 #include <base/security/CRC32.h>
+#include <base/UnitTest.h>
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
@@ -76,5 +77,39 @@ unsigned int CRC32::push(const uint8* buffer, unsigned int size) throw() {
   totalSize += size;
   return size;
 }
+
+#if defined(_COM_AZURE_DEV__BASE__TESTS)
+
+class TEST_CLASS(CRC32) : public UnitTest {
+public:
+
+  TEST_PRIORITY(50);
+  TEST_PROJECT("base/security");
+  TEST_IMPACT(SECURITY);
+
+  uint32 getCRC32(const uint8* buffer, MemorySize size)
+  {
+    CRC32 digest;
+    digest.push(buffer, size);
+    digest.pushEnd();
+    return digest.getValue();
+  }
+
+  uint32 getCRC32(const char* text)
+  {
+    return getCRC32(reinterpret_cast<const uint8*>(text), getNullTerminatedLength(text));
+  }
+
+  void run() override
+  {
+    TEST_EQUAL(getCRC32(""), 0x00000000);
+    TEST_EQUAL(getCRC32("abc"), 0x352441c2);
+    TEST_EQUAL(getCRC32("The quick brown fox jumps over the lazy dog"), 0x414fa339);
+  }
+};
+
+TEST_REGISTER(CRC32);
+
+#endif
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

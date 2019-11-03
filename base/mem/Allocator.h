@@ -235,7 +235,7 @@ public:
     if (&move != this) { // protect against self assignment
       elements = std::move(move.elements);
       size = move.size;
-      move.element = nullptr;
+      move.elements = nullptr;
       move.size = 0;
     }
     return *this;

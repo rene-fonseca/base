@@ -128,6 +128,16 @@ public:
   }
 
   /**
+    Returns true if the specified key is present is this set.
+
+    @param key The value to search for.
+  */
+  bool hasKey(const KEY& key) const noexcept
+  {
+    return elements.find(key);
+  }
+
+  /**
     Adds the specified key to the set.
 
     @param key The key to be added to the set.
@@ -159,6 +169,11 @@ public:
   {
     elements.removeAll();
     size = 0;
+  }
+  
+  inline operator bool() const noexcept
+  {
+    return getSize() != 0;
   }
 };
 

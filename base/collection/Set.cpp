@@ -33,8 +33,8 @@ public:
       si.add(i);
     }
     // fout << si << ENDL;
-    TEST_ASSERT(si.isKey(-10));
-    TEST_ASSERT(!si.isKey(20));
+    TEST_ASSERT(si.hasKey(-10));
+    TEST_ASSERT(!si.hasKey(20));
 
     Set<String> ss;
     ss.add("abc");
@@ -44,8 +44,9 @@ public:
     // fout << ss << ENDL;
 
     TEST_ASSERT(ss.getSize() == 4);
-    TEST_ASSERT(ss.isKey("up"));
-    TEST_ASSERT(!ss.isKey("UP"));
+    TEST_ASSERT(ss.hasKey("up"));
+    TEST_ASSERT(!ss.hasKey("UP"));
+    TEST_ASSERT(ss);
 
     // TAG: add iterators
 #if 0

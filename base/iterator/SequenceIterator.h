@@ -36,8 +36,15 @@ public:
 protected:
 
   /** The position of the iterator. */
-  Pointer element;
+  Pointer element = nullptr;
 public:
+
+  /**
+    Initializes iterator.
+  */
+  inline SequenceIterator() noexcept
+  {
+  }
 
   /**
     Initializes iterator.
@@ -54,6 +61,14 @@ public:
   */
   inline SequenceIterator(const SequenceIterator& copy) noexcept
     : element(copy.element)
+  {
+  }
+
+  /**
+    Initializes iterator from other iterator.
+  */
+  inline SequenceIterator(SequenceIterator&& move) noexcept
+    : element(std::move(move.element))
   {
   }
 
@@ -78,10 +93,19 @@ public:
   /**
     Initializes iterator from other iterator.
   */
-  template<class POLY>
-  inline SequenceIterator& operator=(const SequenceIterator<POLY>& eq) noexcept
+  inline SequenceIterator& operator=(SequenceIterator&& assign) noexcept
   {
-    element = eq.getValue();
+    element = std::move(assign.element);
+    return *this;
+  }
+
+  /**
+    Initializes iterator from other iterator.
+  */
+  template<class POLY>
+  inline SequenceIterator& operator=(const SequenceIterator<POLY>& assign) noexcept
+  {
+    element = assign.getValue();
     return *this;
   }
 
@@ -144,46 +168,46 @@ public:
   /**
     Returns true if the iterators are equal.
   */
-  inline bool operator==(const SequenceIterator& eq) const noexcept
+  inline bool operator==(const SequenceIterator& compare) const noexcept
   {
-    return element == eq.element;
+    return element == compare.element;
   }
 
   /**
     Returns true if the iterators aren't equal.
   */
-  inline bool operator!=(const SequenceIterator& eq) const noexcept
+  inline bool operator!=(const SequenceIterator& compare) const noexcept
   {
-    return element != eq.element;
+    return !(element == compare.element);
   }
 
   /**
     Returns true if this iterator is less than the specified iterator.
   */
-  inline bool operator<(const SequenceIterator& eq) const noexcept
+  inline bool operator<(const SequenceIterator& compare) const noexcept
   {
-    return element < eq.element;
+    return element < compare.element;
   }
 
-  inline bool operator<=(const SequenceIterator& eq) const noexcept
+  inline bool operator>(const SequenceIterator& compare) const noexcept
   {
-    return element <= eq.element;
+    return element > compare.element;
   }
   
   /**
     Returns true if this iterator is greater than or equal to the specified
     iterator.
   */
-  inline bool operator>=(const SequenceIterator& eq) const noexcept
+  inline bool operator>=(const SequenceIterator& compare) const noexcept
   {
-    return element >= eq.element;
+    return !(element < compare.element);
   }
 
-  inline bool operator>(const SequenceIterator& eq) const noexcept
+  inline bool operator<=(const SequenceIterator& compare) const noexcept
   {
-    return element > eq.element;
+    return !(element > compare.element);
   }
-  
+
   /**
     Access the element.
   */

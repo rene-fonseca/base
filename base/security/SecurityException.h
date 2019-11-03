@@ -31,7 +31,8 @@ public:
   /**
     Initializes the exception object with no message.
   */
-  inline SecurityException() noexcept {
+  inline SecurityException() noexcept
+  {
   }
 
   /**
@@ -40,7 +41,8 @@ public:
     @param message The message.
   */
   inline SecurityException(const char* message) noexcept
-    : Exception(message) {
+    : Exception(message)
+  {
   }
   
   /**
@@ -48,7 +50,8 @@ public:
     
     @param type The identity of the type.
   */
-  inline SecurityException(Type type) noexcept : Exception(type) {
+  inline SecurityException(Type type) noexcept : Exception(type)
+  {
   }
   
   /**
@@ -58,7 +61,8 @@ public:
     @param type The identity of the type.
   */
   inline SecurityException(const char* message, Type type) noexcept
-    : Exception(message, type) {
+    : Exception(message, type)
+  {
   }
   
   _COM_AZURE_DEV__BASE__EXCEPTION_THIS_TYPE()

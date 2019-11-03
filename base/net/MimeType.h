@@ -105,21 +105,24 @@ public:
   /**
     Returns false if the objects are different.
   */
-  inline bool operator!=(const MimeType& value) const throw() {
+  inline bool operator!=(const MimeType& value) const throw()
+  {
     return !(operator==(value));
   }
   
   /**
     Returns the type.
   */
-  inline const String& getType() const throw() {
+  inline const String& getType() const noexcept
+  {
     return type;
   }
   
   /**
     Returns the subtype.
   */
-  inline const String& getSubtype() const throw() {
+  inline const String& getSubtype() const noexcept
+  {
     return subtype;
   }
   

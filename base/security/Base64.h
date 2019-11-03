@@ -56,18 +56,22 @@ public:
     /**
       Returns the size of the buffer.
     */
-    inline MemorySize getSize() const noexcept {
+    inline MemorySize getSize() const noexcept
+    {
       return size;
     }
     
     /**
       Returns the bytes to be encoded.
     */
-    inline const char* getBytes() const noexcept {
+    inline const char* getBytes() const noexcept
+    {
       return buffer;
     }
   };
-  
+
+  static constexpr unsigned int BITS_PER_CHARACTER = 6;
+
   /** Lookup table for mapping digits into values. */
   static const signed char VALUES[256];
   /** Digits of the Base64 encoding. */
@@ -79,8 +83,9 @@ public:
     Returns the digit for the specified value. The value returned is undefined
     if the value is not in the range [0;63].
   */
-  static inline char valueToDigit(unsigned int value) noexcept {
-    return DIGITS[value & 0x3f];
+  static inline char valueToDigit(unsigned int value) noexcept
+  {
+    return DIGITS[static_cast<uint8>(value & 0x3f)];
   }
   
   /**
@@ -88,7 +93,8 @@ public:
 
     @return -1 if not a valid Base64 digit.
   */
-  static inline int valueToDigit(char digit) noexcept {
+  static inline int valueToDigit(char digit) noexcept
+  {
     return VALUES[static_cast<unsigned char>(digit)];
   }
 

@@ -13,6 +13,7 @@
 
 #include <base/security/Base64.h>
 #include <base/string/ASCIITraits.h>
+#include <base/UnitTest.h>
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
@@ -73,39 +74,50 @@ const signed char Base64::VALUES[256] = {
 //   }
 // }
 
-String Base64::encode(const uint8* buffer, MemorySize size) noexcept
+String Base64::encode(const uint8* src, MemorySize size) noexcept
 {
-  unsigned int length = (size * 8 + 5) / 6;
-  String result(length);
+  // PADDING can be optional depending on use case
+  const MemorySize length = (((size * 8 + (BITS_PER_CHARACTER - 1)) / BITS_PER_CHARACTER + 3)/4 * 4); // round up to 4 digits with padding
+  String result;
   result.forceToLength(length);
-  String::Iterator i = result.getBeginIterator();
-  const String::Iterator end = result.getEndIterator();
-
-  unsigned int bitBuffer = 0;
-  unsigned int bitsInBuffer = 0;
-
-  while (i < end) {
-    if (bitsInBuffer < 6) {
-      switch (minimum<MemorySize>(size, 3U)) { // read as many octets as possible
-      case 3:
-        bitBuffer |= *buffer++ << bitsInBuffer;
-        bitsInBuffer += 8;
-        --size; // yes no break here
-      case 2:
-        bitBuffer |= *buffer++ << bitsInBuffer;
-        bitsInBuffer += 8;
-        --size; // yes no break here
-      case 1:
-        bitBuffer |= *buffer++ << bitsInBuffer;
-        bitsInBuffer += 8;
-        --size;
-      }
-      // do nothing if no more octets - while loop knows when to stop
-    }
-    *i++ = valueToDigit(bitBuffer & 0x3f);
-    bitBuffer >>= 6; // may not be valid for last digit
-    bitsInBuffer -= 6; // may not be valid for last digit
+  auto dest = result.getBeginIterator();
+  // left to right for bits
+  while (size >= 3) { // read all 3 octet chunks - 24 bits
+    const uint32 bitBuffer = (static_cast<uint32>(src[0]) << 16) |
+      (static_cast<uint32>(src[1]) << 8) |
+      static_cast<uint32>(src[2]);
+    src += 3;
+    size -= 3;
+    *dest++ = DIGITS[(bitBuffer >> (3 * BITS_PER_CHARACTER)) & 0x3f];
+    *dest++ = DIGITS[(bitBuffer >> (2 * BITS_PER_CHARACTER)) & 0x3f];
+    *dest++ = DIGITS[(bitBuffer >> (1 * BITS_PER_CHARACTER)) & 0x3f];
+    *dest++ = DIGITS[(bitBuffer >> (0 * BITS_PER_CHARACTER)) & 0x3f];
   }
+
+  BASSERT(size < 3);
+  switch (size) {
+  case 1: // in 8 bit => out 12 bit
+    {
+      const uint32 bitBuffer = static_cast<uint32>(src[0]) << 4; // 4 bits are zero
+      *dest++ = DIGITS[(bitBuffer >> (1 * BITS_PER_CHARACTER)) & 0x3f];
+      *dest++ = DIGITS[(bitBuffer >> (0 * BITS_PER_CHARACTER)) & 0x3f];
+      *dest++ = Base64::PAD;
+      *dest++ = Base64::PAD;
+    }
+    break;
+  case 2: // in 16 bit => out 18 bit
+    {
+      const uint32 bitBuffer = ((static_cast<uint32>(src[0]) << 8) | static_cast<uint32>(src[1])) << 2;
+      *dest++ = DIGITS[(bitBuffer >> (2 * BITS_PER_CHARACTER)) & 0x3f];
+      *dest++ = DIGITS[(bitBuffer >> (1 * BITS_PER_CHARACTER)) & 0x3f];
+      *dest++ = DIGITS[(bitBuffer >> (0 * BITS_PER_CHARACTER)) & 0x3f];
+      *dest++ = Base64::PAD;
+    }
+    break;
+  case 0: // no padding
+    break;
+  }
+  BASSERT(dest == result.getEndIterator());
   return result;
 }
 
@@ -142,7 +154,7 @@ FormatOutputStream& operator<<(FormatOutputStream& stream, const Base64::Descrip
     --lines;
   }
 
-  unsigned int rest = size%BYTES_PER_LINE;
+  unsigned int rest = size % BYTES_PER_LINE;
   if (rest) {
     char* i = line;
     const char* end = i + rest/3;
@@ -159,7 +171,7 @@ FormatOutputStream& operator<<(FormatOutputStream& stream, const Base64::Descrip
     }
 
     // handle last quantum
-    switch (rest%3) {
+    switch (rest % 3) {
     case 1: // last 8 bit
       {
         unsigned int bitBuffer = src[0];
@@ -187,5 +199,38 @@ FormatOutputStream& operator<<(FormatOutputStream& stream, const Base64::Descrip
   
   return stream;
 }
+
+#if defined(_COM_AZURE_DEV__BASE__TESTS)
+
+class TEST_CLASS(Base64) : public UnitTest {
+public:
+
+  TEST_PRIORITY(50);
+  TEST_PROJECT("base/security");
+  TEST_IMPACT(SECURITY);
+
+  String getBase64(const uint8* buffer, MemorySize size)
+  {
+    return Base64::encode(buffer, size);
+  }
+
+  String getBase64(const char* text)
+  {
+    return getBase64(reinterpret_cast<const uint8*>(text), getNullTerminatedLength(text));
+  }
+
+  void run() override
+  {
+    TEST_EQUAL(getBase64(""), "");
+    TEST_EQUAL(getBase64(" "), "IA==");
+    TEST_EQUAL(getBase64("abc"), "YWJj");
+    TEST_EQUAL(getBase64("abcdefghijklmnopqrstuvwxyz"), "YWJjZGVmZ2hpamtsbW5vcHFyc3R1dnd4eXo=");    
+    TEST_EQUAL(getBase64("The quick brown fox jumps over the lazy dog"), "VGhlIHF1aWNrIGJyb3duIGZveCBqdW1wcyBvdmVyIHRoZSBsYXp5IGRvZw==");
+  }
+};
+
+TEST_REGISTER(Base64);
+
+#endif
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

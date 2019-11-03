@@ -14,6 +14,7 @@
 #pragma once
 
 #include <base/Object.h>
+#include <base/string/String.h>
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
@@ -28,6 +29,17 @@ public:
     Initializes the request.
   */
   HTTPSRequest();
+  
+  // set header
+  
+  bool open(const String& url);
+  
+  void send(const String& body);
+  
+  void close();
+  
+  // get response
+  // responseText
   
   ~HTTPSRequest();
 };

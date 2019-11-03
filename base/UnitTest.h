@@ -596,11 +596,15 @@ public:
 
 /** Require expression to be equal to the given comperand. operator==() must be supported. Expression and comperand must have output rule to FormatOutputStream. */
 #define TEST_EQUAL(EXPRESSION, COMPERAND) \
-  base::UnitTest::onAssert((EXPRESSION) == COMPERAND, _COM_AZURE_DEV__BASE__STRINGIFY((EXPRESSION) == COMPERAND), __LINE__); \
-  if (!((EXPRESSION) == COMPERAND)) { \
-    StringOutputStream stream; \
-    stream << "Expecting value '" << COMPERAND << "' for '" << _COM_AZURE_DEV__BASE__STRINGIFY(EXPRESSION) << "'. But got '" << (EXPRESSION) << "'." << FLUSH; \
-    base::UnitTest::onPrint(stream.getString(), __LINE__); \
+  { \
+    const auto result = (EXPRESSION); \
+    const bool equal = result == COMPERAND; \
+    base::UnitTest::onAssert(equal, _COM_AZURE_DEV__BASE__STRINGIFY((EXPRESSION) == COMPERAND), __LINE__); \
+    if (!equal) { \
+      StringOutputStream stream; \
+      stream << "Expecting value '" << COMPERAND << "' for '" << _COM_AZURE_DEV__BASE__STRINGIFY(EXPRESSION) << "'. But got '" << result << "'." << FLUSH; \
+      base::UnitTest::onPrint(stream.getString(), __LINE__); \
+    } \
   }
 
 /** Require expression to throw given exception. */

@@ -51,13 +51,15 @@ public:
 private:
 
   /** Message digest buffer. */
-  uint32 messageDigest[4] = {0, 0, 0, 0};
+  uint32 state[4] = {0, 0, 0, 0};
   /** The total number of bytes pushed. */
   uint64 totalSize = 0;
   /** Temporary container for incomplete 16 word block. */
   uint8 buffer[BLOCK_SIZE];
   /** The number of bytes in the buffer. */
   unsigned int bytesInBuffer = 0;
+  /** Not more input accepted. */
+  bool closed = false;
 
   /** Push one block (16 words). */
   void pushBlock(const uint8* block) noexcept;
@@ -76,18 +78,19 @@ public:
     @param buffer The buffer holding the data.
     @param size The number of octets in the buffer.
   */
-  unsigned int push(const uint8* buffer, unsigned int size) throw(OutOfRange);
+  unsigned int push(const uint8* buffer, unsigned int size);
   
   /**
     This function should be invoked when the entire message has been pushed.
     Do NOT use push() after invoking this function.
   */
-  void pushEnd() noexcept;
+  void pushEnd();
   
   /**
     Returns the total size of the original message.
   */
-  inline uint64 getTotalSize() const noexcept {
+  inline uint64 getTotalSize() const noexcept
+  {
     return totalSize;
   }
   

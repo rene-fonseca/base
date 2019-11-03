@@ -66,23 +66,22 @@ MD5Sum::MD5Sum() noexcept
 {
   clear(buffer);
 
-  messageDigest[0] = 0x67452301;
-  messageDigest[1] = 0xefcdab89;
-  messageDigest[2] = 0x98badcfe;
-  messageDigest[3] = 0x10325476;
+  state[0] = 0x67452301;
+  state[1] = 0xefcdab89;
+  state[2] = 0x98badcfe;
+  state[3] = 0x10325476;
 }
 
 void MD5Sum::pushBlock(const uint8* block) noexcept
 {
-  ASSERT(bytesInBuffer == BLOCK_SIZE);
-  uint32 a = messageDigest[0];
-  uint32 b = messageDigest[1];
-  uint32 c = messageDigest[2];
-  uint32 d = messageDigest[3];
+  uint32 a = state[0];
+  uint32 b = state[1];
+  uint32 c = state[2];
+  uint32 d = state[3];
 
   // decode
-  uint32 words[BLOCK_SIZE/sizeof(uint32)];
-  for (unsigned int i = 0; i < BLOCK_SIZE/sizeof(uint32); ++i) {
+  uint32 words[BLOCK_SIZE / sizeof(uint32)];
+  for (unsigned int i = 0; i < BLOCK_SIZE / sizeof(uint32); ++i) {
     words[i] = (static_cast<uint32>(block[0]) << 0) |
       (static_cast<uint32>(block[1]) << 8) |
       (static_cast<uint32>(block[2]) << 16) |
@@ -181,16 +180,23 @@ void MD5Sum::pushBlock(const uint8* block) noexcept
   MD5SumImpl::translate(MD5SumImpl::I, c, d, a, b, words[ 2], S43, 0x2ad7d2bb);
   MD5SumImpl::translate(MD5SumImpl::I, b, c, d, a, words[ 9], S44, 0xeb86d391);
 
-  messageDigest[0] += a;
-  messageDigest[1] += b;
-  messageDigest[2] += c;
-  messageDigest[3] += d;
+  state[0] += a;
+  state[1] += b;
+  state[2] += c;
+  state[3] += d;
 }
 
 unsigned int MD5Sum::push(const uint8* buffer, unsigned int size) throw(OutOfRange)
 {
+  if (size == 0) {
+    return 0;
+  }
+  if (closed) {
+    throw OutOfRange("MD5Sum has been closed.");
+  }
+
   bassert(size < (MAXIMUM_SIZE - totalSize), OutOfRange());
-  unsigned int result = size;
+  const unsigned int result = size;
   totalSize += size;
   if ((size + bytesInBuffer) >= BLOCK_SIZE) { // do we have a complete block
     if (bytesInBuffer > 0) { // do we need to empty internal buffer
@@ -205,6 +211,7 @@ unsigned int MD5Sum::push(const uint8* buffer, unsigned int size) throw(OutOfRan
       buffer += BLOCK_SIZE;
       size -= BLOCK_SIZE;
     }
+    BASSERT(bytesInBuffer == 0);
   }
 
   copy(this->buffer + bytesInBuffer, buffer, size); // put remaining octets into internal buffer
@@ -212,12 +219,25 @@ unsigned int MD5Sum::push(const uint8* buffer, unsigned int size) throw(OutOfRan
   return result;
 }
 
-void MD5Sum::pushEnd() noexcept
+void MD5Sum::pushEnd()
 {
-  ASSERT(bytesInBuffer < BLOCK_SIZE);
-  const uint64 length = static_cast<uint64>(totalSize * 8); // modulo 2^64
+  if (closed) {
+    throw OutOfRange("MD5Sum has been closed.");
+  }
+  closed = true;
 
-  if (bytesInBuffer >= (BLOCK_SIZE - 2 * 4)) { // do we need one more block
+  if (!INLINE_ASSERT(bytesInBuffer < BLOCK_SIZE)) { // not required for here for safety
+    pushBlock(buffer);
+    bytesInBuffer = 0;
+  }
+
+  const uint64 length = static_cast<uint64>(totalSize * 8); // modulo 2^64
+  buffer[bytesInBuffer++] = 0x80; // ATTENTION: padding starts with 0x80 - minimum 1 byte padding!
+
+  const unsigned int BIT_BYTES = 2 * 4;
+  BASSERT(sizeof(length) == BIT_BYTES);
+
+  if (bytesInBuffer > (BLOCK_SIZE - BIT_BYTES)) { // do we need one more block
     while (bytesInBuffer < BLOCK_SIZE) { // zero padding
       buffer[bytesInBuffer++] = 0x00;
     }
@@ -226,42 +246,43 @@ void MD5Sum::pushEnd() noexcept
   }
 
   // pad to byte 56 so there is room for bit length
-  while (bytesInBuffer < (BLOCK_SIZE - 2 * 4)) { // zero padding
+  while (bytesInBuffer < (BLOCK_SIZE - BIT_BYTES)) { // zero padding
     buffer[bytesInBuffer++] = 0x00;
   }
 
   // append length of original message to block - padding excluded
-  for (unsigned int i = 0; i < 64; i += 8) {
+  for (unsigned int i = 0; i < (8 * BIT_BYTES); i += 8) {
     buffer[bytesInBuffer++] = static_cast<uint8>((length >> i) & 0xff);
   }
+  BASSERT(bytesInBuffer == BLOCK_SIZE);
   pushBlock(buffer);
   bytesInBuffer = 0;
 }
 
 String MD5Sum::getValue() const noexcept
 {
-  uint8 temp[sizeof(uint32) * 4 /*getArraySize(messageDigest)*/];
-  Bytes::convertWordsToBytes(temp, messageDigest, getArraySize(messageDigest));
+  uint8 temp[sizeof(uint32) * 4 /*getArraySize(state)*/];
+  Bytes::convertWordsToBytes(temp, state, getArraySize(state));
   return Bytes::getAsHex(temp, sizeof(temp));
 }
 
 String MD5Sum::getBase64() const noexcept
 {
-  uint8 temp[sizeof(uint32) * 4 /*getArraySize(messageDigest)*/];
-  Bytes::convertWordsToBytes(temp, messageDigest, getArraySize(messageDigest));
+  uint8 temp[sizeof(uint32) * 4 /*getArraySize(state)*/];
+  Bytes::convertWordsToBytes(temp, state, getArraySize(state));
   return Bytes::getAsBase64(temp, sizeof(temp));
 }
 
 MD5Sum::~MD5Sum()
 {
   // remove data from stack/heap
-  clear(messageDigest);
+  clear(state);
   totalSize = 0;
   clear(buffer);
   bytesInBuffer = 0;
 }
 
-#if 0 && defined(_COM_AZURE_DEV__BASE__TESTS) // TAG: wrong calc for pushBlock()
+#if defined(_COM_AZURE_DEV__BASE__TESTS)
 
 class TEST_CLASS(MD5Sum) : public UnitTest {
 public:
@@ -292,7 +313,7 @@ public:
     TEST_EQUAL(getMD5Sum("message digest"), "f96b697d7cb7938d525a2f31aaf161d0");
     TEST_EQUAL(getMD5Sum("abcdefghijklmnopqrstuvwxyz"), "c3fcd3d76192e4007dfb496cca67e13b");
     TEST_EQUAL(getMD5Sum("ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789"), "d174ab98d277d9f5a5611c2c9f419d9f");
-    TEST_EQUAL(getMD5Sum("12345678901234567890123456789012345678901234567890123456789012345678901234567890"), "90015098357edf4a22be3c955ac49da2e2107b67a");
+    TEST_EQUAL(getMD5Sum("12345678901234567890123456789012345678901234567890123456789012345678901234567890"), "57edf4a22be3c955ac49da2e2107b67a");
   }
 };
 

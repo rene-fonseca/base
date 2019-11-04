@@ -52,6 +52,7 @@ public:
   CFHTTPMessageRef cfHttpReq = nullptr;
   CFReadStreamRef stream = nullptr;
   CFHTTPMessageRef response = nullptr;
+  uint8 pendingByte = 0;
 #endif
 
   void close()
@@ -379,7 +380,15 @@ void HTTPSRequest::send(const String& _body)
     throw HTTPException("Failed to send HTTP request.");
   }
   _handle->stream = stream;
-  String temp = getResponse(); // TAG: cannot get header until after read? how do we get content length
+
+  // read 1 byte to force response to become available
+  uint8 buffer = 0;
+  CFReadStreamOpen(stream);
+  CFReadStreamRead(stream, &buffer, 1); // wait for data to become available
+  _handle->pendingByte = buffer;
+  // CFReadStreamClose(stream); // this breaks getResponse()
+  
+  // kCFStreamPropertyHTTPResponseHeader is not available until all data has been read
   CFHTTPMessageRef response = (CFHTTPMessageRef)CFReadStreamCopyProperty(stream, kCFStreamPropertyHTTPResponseHeader);
   if (!response) {
     CFRelease(stream);
@@ -570,18 +579,26 @@ void HTTPSRequest::getResponse(PushInterface* pi)
   BASSERT(_handle->stream);
   
   PrimitiveArray<uint8> buffer(16 * 1024);
-  CFReadStreamOpen(_handle->stream);
+  // CFReadStreamOpen(_handle->stream); // we read in send()
+  unsigned int offset = 1;
+  buffer[0] = _handle->pendingByte; // read in send()
   while (true) {
-    CFIndex bytesRead = CFReadStreamRead(_handle->stream, buffer, buffer.size());
+    CFIndex bytesRead = CFReadStreamRead(_handle->stream, buffer + offset, buffer.size() - offset);
     if (bytesRead < 0) {
       CFStreamStatus status = CFReadStreamGetStatus(_handle->stream);
       CFReadStreamClose(_handle->stream);
       throw IOException("Failed to read response.");
     }
+    const bool done = bytesRead == 0;
+    bytesRead += offset;
+    offset = 0;
     if (bytesRead == 0) {
       break;
     }
     pi->push(static_cast<const uint8*>(buffer), bytesRead);
+    if (done) {
+      break;
+    }
   }
   CFReadStreamClose(_handle->stream);
 

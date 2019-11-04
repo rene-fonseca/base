@@ -13,16 +13,9 @@
 
 #include <base/Application.h>
 #include <base/Timer.h>
-#include <base/Trace.h>
 #include <base/Primitives.h>
 #include <base/UnsignedInteger.h>
-#include <base/concurrency/Thread.h>
-#include <base/io/File.h>
-#include <base/net/StreamSocket.h>
-#include <base/net/InetEndPoint.h>
-#include <base/net/InetInterface.h>
-#include <base/net/InetService.h>
-#include <base/net/ServerSocket.h>
+#include <base/io/FileOutputStream.h>
 #include <base/net/HTTPSRequest.h>
 #include <base/net/Url.h>
 #include <base/string/FormatInputStream.h>
@@ -46,43 +39,10 @@ namespace commands {
 
 using namespace commands;
 
-/**
-  This exception is raised by the HTTP class.
-
-  @short HTTP exception.
-  @version 1.0
-*/
-
-class HTTPException : public IOException {
-private:
-
-  /** Specifies that the exception cannot be resolved. */
-  bool permanent = true;
-public:
-
-  /**
-    Initializes the exception object with no message.
-  */
-  inline HTTPException() {
-  }
-  
-  /**
-    Initializes the exception object.
-
-    @param message The message.
-  */
-  inline HTTPException(const char* message) : IOException(message) {
-  }
-  
-  inline bool isPermanent() {
-    return permanent;
-  }
-};
-
 class PushInterface {
 public:
 
-  virtual bool pushBegin(long long totalSize) = 0;
+  virtual bool pushBegin(uint64 totalSize) = 0;
   virtual unsigned int push(const uint8* buffer, unsigned int size) = 0;
   virtual void pushEnd() = 0;
 };
@@ -90,14 +50,14 @@ public:
 class PullInterface {
 public:
 
-  virtual long long pullBegin() const = 0;
+  virtual uint64 pullBegin() const = 0;
   virtual unsigned int pull(uint8* buffer, unsigned int size) = 0;
 };
 
 class PushToNothing {
 public:
 
-  bool pushBegin(long long totalSize) {
+  bool pushBegin(uint64 totalSize) {
     return true;
   }
 
@@ -115,7 +75,7 @@ public:
   PushToStandardOutput() {
   }
 
-  bool pushBegin(long long totalSize) {
+  bool pushBegin(uint64 totalSize) {
     return true;
   }
 
@@ -160,14 +120,15 @@ private:
 
   File file;
   Timer timer;
-  long long bytesWritten = 0;
-  long long totalSize = 0;
+  uint64 bytesWritten = 0;
+  uint64 totalSize = 0;
 public:
 
   PushToFile(File _file) : file(_file) {
   }
 
-  bool pushBegin(long long totalSize) {
+  bool pushBegin(uint64 totalSize)
+  {
     this->totalSize = totalSize;
     timer.start();
     return true;
@@ -219,13 +180,14 @@ public:
   {
   }
   
-  void main() {
+  void main()
+  {
     fout << getFormalName() << " version "
          << MAJOR_VERSION << '.' << MINOR_VERSION << EOL
          << "The Base Framework (Test Suite)" << EOL
          << "Copyright (C) 2001-2019 by Rene Moeller Fonseca" << EOL
          << ENDL;
-    
+
     Array<String> arguments = getArguments();
 
     String url = MESSAGE("www.google.com/"); // default url
@@ -247,31 +209,47 @@ public:
       setExitCode(Application::EXIT_CODE_ERROR);
       return;
     }
-    
-    HTTPSRequest request;
-    if (!request.open(HTTPSRequest::METHOD_GET, url)) {
+
+    try {
+      HTTPSRequest request;
+      if (!request.open(HTTPSRequest::METHOD_GET, url)) {
+        setExitCode(Application::EXIT_CODE_ERROR);
+        return;
+      }
+
+      // TAG: get from options
+      // request.setRequestHeader("Content-Length", "0");
+      // TAG: allow form data - get from options
+
+      String body;
+      request.send(body);
+      // TAG: read from stdin/file with progress
+
+      if (file) {
+        FileOutputStream fos(file);
+        request.getResponse(&fos);
+      } else {
+        const String response = request.getResponse();
+        fout << response << FLUSH;
+      }
+      // TAG: write to stdout/file - with progress
+
+      String header = request.getResponseHeader();
+      fout << header << ENDL;
+
+      try {
+        fout << "Status: " << request.getStatus() << ENDL;
+      } catch (...) {
+      }
+      try {
+        fout << "Status text: " << request.getStatusText() << ENDL;
+      } catch (...) {
+      }
+      request.close();
+    } catch (...) {
       setExitCode(Application::EXIT_CODE_ERROR);
       return;
     }
-    
-    // TAG: get from options
-    // request.setRequestHeader(<#const String &name#>, <#const String &value#>);
-
-    String body;
-    request.send(body);
-
-    String response = request.getResponse();
-    fout << response << FLUSH;
-    
-    try {
-      fout << "!!! status: " << request.getStatus() << ENDL;
-    } catch (...) {
-    }
-    try {
-      fout << "!!! status test: " << request.getStatusText() << ENDL;
-    } catch (...) {
-    }
-    request.close();
   }
 };
 

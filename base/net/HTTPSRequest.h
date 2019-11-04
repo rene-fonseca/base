@@ -20,6 +20,15 @@
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
+// TAG: move to proper place
+class _COM_AZURE_DEV__BASE__API PushInterface {
+public:
+
+  virtual bool pushBegin(uint64 totalSize) = 0;
+  virtual unsigned int push(const uint8* buffer, unsigned int size) = 0;
+  virtual void pushEnd() = 0;
+};
+
 class _COM_AZURE_DEV__BASE__API HTTPException : public NetworkException {
 public:
 
@@ -107,14 +116,23 @@ public:
   /** Returns the status text. */
   String getStatusText();
 
+  /** Returns the content length for the response. */
+  uint64 getContentLength();
+
+  /** Returns the value of the given header. */
+  String getResponseHeader(const String& name);
+
+  /** Returns the entire response header. */
+  String getResponseHeader();
+
   /** Returns the response. */
   String getResponse();
 
   /** Returns the response. */
   void getResponse(OutputStream* os);
 
-  /** Returns the response header. */
-  String getResponseHeader();
+  /** Returns the response. */
+  void getResponse(PushInterface* pi);
 
   ~HTTPSRequest();
 };

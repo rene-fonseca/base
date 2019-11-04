@@ -16,6 +16,7 @@
 #include <base/Primitives.h>
 #include <base/UnsignedInteger.h>
 #include <base/io/FileOutputStream.h>
+#include <base/concurrency/Thread.h>
 #include <base/net/HTTPSRequest.h>
 #include <base/net/Url.h>
 #include <base/string/FormatInputStream.h>
@@ -38,14 +39,6 @@ namespace commands {
 }; // commands namespace
 
 using namespace commands;
-
-class PushInterface {
-public:
-
-  virtual bool pushBegin(uint64 totalSize) = 0;
-  virtual unsigned int push(const uint8* buffer, unsigned int size) = 0;
-  virtual void pushEnd() = 0;
-};
 
 class PullInterface {
 public:
@@ -114,7 +107,6 @@ public:
   }
 };
 
-
 class PushToFile : public virtual Object, public PushInterface {
 private:
 
@@ -124,7 +116,9 @@ private:
   uint64 totalSize = 0;
 public:
 
-  PushToFile(File _file) : file(_file) {
+  PushToFile(File _file)
+    : file(_file)
+  {
   }
 
   bool pushBegin(uint64 totalSize)
@@ -134,34 +128,35 @@ public:
     return true;
   }
   
-  unsigned int push(const uint8* buffer, unsigned int size) {
+  unsigned int push(const uint8* buffer, unsigned int size)
+  {
     unsigned int result = file.write(buffer, size);
     ASSERT(result == size);
     bytesWritten += size;
     if (totalSize > 0) {
-      fout << "  bytes written=" << bytesWritten
-           << "  completed=" << base::FIXED << setWidth(7) << setPrecision(3)
-           << static_cast<long double>(bytesWritten)/totalSize*100 << '%'
-           << "  time=" << base::FIXED << setWidth(6) << timer.getLiveMicroseconds()/1000000.
-           << "  rate=" << base::FIXED << setWidth(12) << setPrecision(3)
-           << (1000000./1024 * static_cast<long double>(bytesWritten)/timer.getLiveMicroseconds())
-           << "kb/s\r" << FLUSH;
+      fout << "Read=" << bytesWritten
+           << "  Progress=" << base::FIXED << (bytesWritten*1000/totalSize)/10.0 << '%'
+           << "  Time=" << base::FIXED << timer.getLiveMicroseconds()/100000/10.0 << " s"
+           << "  Rate=" << base::FIXED << setPrecision(1) << (1000000./1024 * static_cast<double>(bytesWritten)/timer.getLiveMicroseconds())
+           << " kb/s          \r" << FLUSH;
     } else {
-      fout << "  bytes written=" << bytesWritten
-           << "  time=" << base::FIXED << setWidth(6) << timer.getLiveMicroseconds()/1000000.
-           << "  rate=" << base::FIXED << setWidth(12) << setPrecision(3)
-           << (1000000./1024 * static_cast<long double>(bytesWritten)/timer.getLiveMicroseconds())
-           << "kb/s\r" << FLUSH;
+      fout << "Read=" << bytesWritten // TAG: show in kb/Mb/Gb/...
+           << "  Time=" << base::FIXED << timer.getLiveMicroseconds()/100000/10.0 << " s" // use HH:MM:SS format
+           << "  Rate=" << base::FIXED << setPrecision(1) << (1000000./1024 * static_cast<double>(bytesWritten)/timer.getLiveMicroseconds())
+           << " kb/s          \r" << FLUSH;
     }
+    Thread::microsleep(125*1000); // TAG: temp test
     return size;
   }
   
-  void pushEnd() {
+  void pushEnd()
+  {
     fout << ENDL;
     file.close();
   }
   
-  virtual ~PushToFile() {
+  virtual ~PushToFile()
+  {
   }
 };
 
@@ -225,26 +220,31 @@ public:
       request.send(body);
       // TAG: read from stdin/file with progress
 
+      fout << "Status: " << request.getStatus() << ENDL;
+      fout << "Status text: " << request.getStatusText() << ENDL;
+      fout << "Content length: " << request.getContentLength() << ENDL;
+
+      // fout << "Content length: " << request.getResponseHeader("Content-Length") << ENDL;
+      // fout << "Content type: " << request.getResponseHeader("Content-Type") << ENDL;
+
+      const String header = request.getResponseHeader(); // TAG: subst CRLFs with EOL
+      fout << header << ENDL;
+
       if (file) {
-        FileOutputStream fos(file);
-        request.getResponse(&fos);
+        PushToFile push(File(file, File::WRITE, File::CREATE | File::TRUNCATE));
+        // FileOutputStream fos(file);
+        request.getResponse(&push);
       } else {
+        PushToStandardOutput push;
+        request.getResponse(&push);
+        /*
         const String response = request.getResponse();
         fout << response << FLUSH;
+        */
+        fout << "<DONE>" << ENDL;
       }
       // TAG: write to stdout/file - with progress
 
-      String header = request.getResponseHeader();
-      fout << header << ENDL;
-
-      try {
-        fout << "Status: " << request.getStatus() << ENDL;
-      } catch (...) {
-      }
-      try {
-        fout << "Status text: " << request.getStatusText() << ENDL;
-      } catch (...) {
-      }
       request.close();
     } catch (...) {
       setExitCode(Application::EXIT_CODE_ERROR);

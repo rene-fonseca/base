@@ -12,7 +12,9 @@
  ***************************************************************************/
 
 #include <base/net/HTTPSRequest.h>
+#include <base/net/Url.h>
 #include <base/Primitives.h>
+#include <base/UnsignedInteger.h>
 
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
 #  include <Windows.h>
@@ -36,9 +38,44 @@ const char* HTTPSRequest::METHOD_DELETE = "DELETE";
 class HTTPRequestHandle : public ReferenceCountedObject {
 public:
 
-#if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__MACOS)
+  uint32 status = 0;
+  String statusText;
+
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
+  HINTERNET hInternet = nullptr;
+  HINTERNET hConnect = nullptr;
+  HINTERNET hRequest = nullptr; // HttpOpenRequest
+#elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__MACOS)
   CFHTTPMessageRef cfHttpReq = nullptr;
 #endif
+
+  void close()
+  {
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
+    if (hRequest) {
+      INLINE_ASSERT(InternetCloseHandle(hRequest));
+      hRequest = nullptr;
+    }
+    if (hConnect) {
+      INLINE_ASSERT(InternetCloseHandle(hConnect));
+      hConnect = nullptr;
+    }
+    if (hInternet) {
+      INLINE_ASSERT(InternetCloseHandle(hInternet));
+      hInternet = nullptr;
+    }
+#elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__MACOS)
+    if (cfHttpReq) {
+      CFRelease(cfHttpReq);
+      cfHttpReq = nullptr;
+    }
+#endif
+  }
+
+  ~HTTPRequestHandle()
+  {
+    close();
+  }
 };
 
 namespace {
@@ -95,16 +132,69 @@ bool HTTPSRequest::open(const String& _method, const String& _url, const String&
     throw HTTPException("HTTP request is already open.");
   }
 
-#if 0 && (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
-  String agent;
-  HINTERNET hInternet = InternetOpenW(toOS(agent), INTERNET_OPEN_TYPE_DIRECT, NULL, NULL, 0);
-  HINTERNET hConnect = InternetConnectW(hInternet, url, 80, NULL, NULL, INTERNET_SERVICE_HTTP, 0, NULL);
-  HINTERNET hRequest = HttpOpenRequestW(hConnect, L"GET", L"", NULL, NULL, acceptTypes, 0, 0);
-  BOOL bRequestSent = HttpSendRequestW(hRequest, NULL, 0, NULL, 0);
-  bKeepReading = InternetReadFile(hRequest, buff, nBuffSize, &dwBytesRead);
-#endif
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
+  Url url(_url);
+  const String scheme = url.getScheme();
+  unsigned int port = 0;
+  if (scheme == "https") {
+    port = INTERNET_DEFAULT_HTTPS_PORT;
+  } else if (scheme == "http") {
+    port = INTERNET_DEFAULT_HTTP_PORT;
+  } else {
+    throw HTTPException("Failed to open HTTP request due to unsupported protocol.");
+  }
+
+  if (url.getPort()) {
+    try {
+      const unsigned int port = UnsignedInteger::parse(url.getPort(), UnsignedInteger::DEC);
+    } catch (InvalidFormat&) {
+      throw HTTPException("Failed to open HTTP request due to invalid port.");
+    }
+  }
+
+  HINTERNET hInternet = InternetOpenW(L"Mozilla/5.0" /*toWide(agent).c_str()*/, INTERNET_OPEN_TYPE_DIRECT, NULL, NULL, 0);
+  if (!hInternet) {
+    throw HTTPException("Failed to open HTTP request.");
+  }
+
+  HINTERNET hConnect = InternetConnectW(
+    hInternet,
+    toWide(url.getHost()).c_str(),
+    port,
+    _user ? toWide(_user).c_str() : NULL,
+    _password ? toWide(_password).c_str() : NULL,
+    INTERNET_SERVICE_HTTP,
+    0,
+    NULL
+  );
+  if (!hConnect) {
+    InternetCloseHandle(hInternet);
+    throw HTTPException("Failed to open HTTP request.");
+  }
+
+  HINTERNET hRequest = HttpOpenRequestW(
+    hConnect,
+    toWide(_method).c_str(),
+    toWide(url.getPath()).c_str() /*object*/,
+    L"HTTP/1.1",
+    NULL /*referrer*/,
+    NULL /*acceptTypes*/,
+    INTERNET_FLAG_RELOAD /*flags*/, // TAG: we can allow cache as option
+    NULL
+  );
+  if (!hRequest) {
+    InternetCloseHandle(hConnect);
+    InternetCloseHandle(hInternet);
+    throw HTTPException("Failed to open HTTP request.");
+  }
   
-#if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__MACOS)
+  Reference<HTTPRequestHandle> handle = new HTTPRequestHandle();
+  handle->hInternet = hInternet;
+  handle->hConnect = hConnect;
+  handle->hRequest = hRequest;
+  this->handle = handle;
+
+#elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__MACOS)
   MACString url(_url.native());
   CFURLRef cfUrl = CFURLCreateWithString(kCFAllocatorDefault, url, NULL);
   MACString requestMethod(_method);
@@ -140,11 +230,22 @@ void HTTPSRequest::setRequestHeader(const String& name, const String& value)
     throw HTTPException("HTTP request is not open.");
   }
 
-#if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__MACOS)
+  if (!name.isASCII() || !value.isASCII()) {
+    throw HTTPException("Header must use ASCII only.");
+  }
+
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
+  // ISO-8859 - 1 characters
+  // WideCharToMultiByte() codepage 28591
+  // TAG: HTTP_ADDREQ_FLAG_REPLACE
+  INLINE_ASSERT(HttpAddRequestHeadersW(_handle->hRequest, toWide(name + ": " + value + "\r\n").c_str(), (DWORD)-1, HTTP_ADDREQ_FLAG_ADD));
+#elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__MACOS)
   // CFHTTPMessageIsRequest
   MACString headerFieldName(name.native());
   MACString headerFieldValue(value.native());
   CFHTTPMessageSetHeaderFieldValue(_handle->cfHttpReq, headerFieldName, headerFieldValue);
+#else
+  BASSERT(!"Not implemented");
 #endif
 }
 
@@ -156,6 +257,11 @@ void HTTPSRequest::send(const String& _body)
   }
 
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
+  // TAG: what is the difference for variables and body
+  BOOL requestSent = HttpSendRequestW(_handle->hRequest, NULL, 0, const_cast<char*>(_body.native()), _body.getLength());
+  if (!requestSent) {
+    throw HTTPException("Failed to send HTTP request.");
+  }
 #elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__MACOS)
   MACString body(_body.native()); // TAG: need support for \0 in body
   CFDataRef bodyData = CFStringCreateExternalRepresentation(kCFAllocatorDefault, body, kCFStringEncodingUTF8, 0);
@@ -171,8 +277,6 @@ void HTTPSRequest::send(const String& _body)
 #endif
 }
 
-// TAG: set agent
-
 unsigned int HTTPSRequest::getStatus()
 {
   Reference<HTTPRequestHandle> _handle = handle.cast<HTTPRequestHandle>();
@@ -180,6 +284,7 @@ unsigned int HTTPSRequest::getStatus()
     throw HTTPException("HTTP request is not open.");
   }
 
+  return _handle->status;
 
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
 #elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__MACOS)
@@ -202,9 +307,10 @@ unsigned int HTTPSRequest::getStatus()
   response = nullptr;
   CFRelease(stream);
   stream = nullptr;
+  return code;
 #endif
   
-  return code;
+  return 0;
 }
 
 String HTTPSRequest::getStatusText()
@@ -215,6 +321,8 @@ String HTTPSRequest::getStatusText()
   if (!_handle) {
     throw HTTPException("HTTP request is not open.");
   }
+
+  return _handle->statusText;
 
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
 #elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__MACOS)
@@ -255,6 +363,105 @@ String HTTPSRequest::getResponse()
   }
 
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
+
+  DWORD word = 0;
+  DWORD size = sizeof(word);
+  if (!HttpQueryInfo(_handle->hRequest,
+    HTTP_QUERY_STATUS_CODE | HTTP_QUERY_FLAG_NUMBER,
+    &word,
+    &size,
+    NULL)) {
+    // not what
+  }
+  _handle->status = word;
+
+  if (!HttpQueryInfo(_handle->hRequest,
+    HTTP_QUERY_CONTENT_LENGTH | HTTP_QUERY_FLAG_NUMBER,
+    &word,
+    &size,
+    NULL)) {
+    // not what
+  }
+
+  PrimitiveArray<uint8> buffer(16 * 1024); // TAG: add secure clear support
+  while (true) {
+    DWORD bytesRead = 0;
+    BOOL status = InternetReadFile(
+      _handle->hRequest,
+      buffer,
+      buffer.size(),
+      &bytesRead
+    );
+    if (bytesRead == 0) {
+      break;
+    }
+    if (!status) {
+      throw IOException("Failed to read response.");
+    }
+    result.append(MemorySpan(buffer, bytesRead));
+  }
+
+  // DWORD word = 0;
+  size = sizeof(word);
+  if (!HttpQueryInfo(_handle->hRequest,
+                     HTTP_QUERY_STATUS_CODE | HTTP_QUERY_FLAG_NUMBER,
+                     &word,
+                     &size,
+                     NULL)) {
+    // not what
+  }
+  _handle->status = word;
+
+  if (!HttpQueryInfo(_handle->hRequest,
+                     HTTP_QUERY_CONTENT_LENGTH | HTTP_QUERY_FLAG_NUMBER,
+                     &word,
+                     &size,
+                     NULL)) {
+    // not what
+  }
+
+  size = buffer.size();
+  while (true) {
+    if (!HttpQueryInfoW(_handle->hRequest,
+                       HTTP_QUERY_RAW_HEADERS_CRLF, // TAG: get all relevant data
+                       &buffer,
+                       &size,
+                       NULL)) {
+      DWORD error = GetLastError();
+      if (error == ERROR_INSUFFICIENT_BUFFER) {
+        buffer.resize(buffer.size() * 2);
+        size = buffer.size();
+        continue;
+      }
+      break; // not what
+    }
+    const std::wstring text = reinterpret_cast<const wchar*>(static_cast<const uint8*>(buffer));
+    String _text = text;
+    break;
+  }
+
+  // HTTP_QUERY_CONTENT_LENGTH, HTTP_QUERY_STATUS_TEXT, HTTP_QUERY_RAW_HEADERS, HTTP_QUERY_RAW_HEADERS_CRLF, HTTP_QUERY_VERSION
+  size = buffer.size();
+  String name("Content-Type");
+  while (true) {
+    strcpy((char*)static_cast<uint8*>(buffer), name.native());
+    if (!HttpQueryInfoA(_handle->hRequest,
+      HTTP_QUERY_CUSTOM,
+      &buffer,
+      &size,
+      NULL)) {
+      DWORD error = GetLastError();
+      if (error == ERROR_INSUFFICIENT_BUFFER) {
+        buffer.resize(buffer.size() * 2);
+        size = buffer.size();
+        continue;
+      }
+      break; // not what
+    }
+    String text(reinterpret_cast<const char*>(static_cast<const uint8*>(buffer)));
+    break;
+  }
+
 #elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__MACOS)
   
 #pragma clang diagnostic push
@@ -334,6 +541,44 @@ String HTTPSRequest::getResponse()
   return result;
 }
 
+void HTTPSRequest::getResponse(OutputStream* os)
+{
+  // TAG: optimize
+  if (os) {
+    String response = getResponse();
+    os->write(reinterpret_cast<const uint8*>(response.native()), response.getLength(), false);
+    os->close();
+  }
+}
+
+String HTTPSRequest::getResponseHeader()
+{
+  String result;
+
+  if (!handle) {
+    return result; // ignore
+  }
+
+  Reference<HTTPRequestHandle> _handle = handle.cast<HTTPRequestHandle>();
+  if (!_handle) {
+    throw HTTPException("HTTP request is not open.");
+  }
+
+#if 0
+  wchar responseText[4096];
+  DWORD responseTextSize = 4096;
+  // TAG: handle ERROR_INSUFFICIENT_BUFFER
+  if (!HttpQueryInfo(_handle->hRequest,
+                     HTTP_QUERY_STATUS_CODE,
+                     &responseText,
+                     &responseTextSize,
+                     NULL)) {
+  }
+#endif
+
+  return result;
+}
+
 void HTTPSRequest::close()
 {
   if (!handle) {
@@ -345,12 +590,8 @@ void HTTPSRequest::close()
     throw HTTPException("HTTP request is not open.");
   }
 
-#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
-#elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__MACOS)
-  CFRelease(_handle->cfHttpReq);
-  _handle->cfHttpReq = nullptr;
+  _handle->close();
   handle = nullptr;
-#endif
 }
 
 HTTPSRequest::~HTTPSRequest()

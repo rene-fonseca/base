@@ -175,7 +175,7 @@ target_include_directories(base PUBLIC
 endif ()
 
 if (MSVC)
-  target_link_libraries(base Ws2_32 Netapi32 Winmm)
+  target_link_libraries(base Ws2_32 Netapi32 Winmm Wininet)
 elseif (APPLE)
   find_library(corefoundation CoreFoundation)
   find_library(cfnetwork CFNetwork)

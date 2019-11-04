@@ -16,6 +16,7 @@
 #include <base/Object.h>
 #include <base/string/String.h>
 #include <base/net/NetworkException.h>
+#include <base/io/OutputStream.h>
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
@@ -78,14 +79,23 @@ public:
   */
   HTTPSRequest();
   
-  // TAG: set header
-  
-  /** Opens request. */
+  /**
+    Opens request.
+
+    @param method The connection method. CONNECT, DELETE, GET, HEAD, OPTIONS, PATCH, POST, PUT, TRACE.
+    @param url The connection url.
+  */
   bool open(const String& method, const String& url, const String& user = String(), const String& password = String());
  
-  /** Sets the request header. */
+  /** Sets the request header. Call after open() and before send(). */
   void setRequestHeader(const String& name, const String& value);
-  
+
+  /** Sets the user agent header. Call after open() and before send(). */
+  inline void setAgent(const String& agent)
+  {
+    setRequestHeader("User-Agent", agent);
+  }
+
   /** Sends request. */
   void send(const String& body = String());
   
@@ -97,15 +107,15 @@ public:
   /** Returns the status text. */
   String getStatusText();
 
+  /** Returns the response. */
+  String getResponse();
+
+  /** Returns the response. */
+  void getResponse(OutputStream* os);
+
+  /** Returns the response header. */
   String getResponseHeader();
 
-  // TAG: OutputStream
-  String getResponse();
-  
-  // unsigned int getStatusCode();
-  
-  // String getStatusText();
-    
   ~HTTPSRequest();
 };
 

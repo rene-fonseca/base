@@ -596,7 +596,7 @@ void HTTPSRequest::getResponse(PushInterface* pi)
 
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
 
-  PrimitiveArray<uint8> buffer(/*16 * 1024*/ 128); // TAG: add secure clear support
+  PrimitiveArray<uint8> buffer(16 * 1024); // TAG: add secure clear support
   while (true) {
     DWORD bytesRead = 0;
     BOOL status = InternetReadFile(

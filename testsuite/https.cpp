@@ -145,7 +145,7 @@ public:
            << "  Rate=" << base::FIXED << setPrecision(1) << (1000000./1024 * static_cast<double>(bytesWritten)/timer.getLiveMicroseconds())
            << " kb/s          \r" << FLUSH;
     }
-    Thread::microsleep(125*1000); // TAG: temp test
+    // Thread::microsleep(125*1000); // TAG: temp test
     return size;
   }
   
@@ -165,6 +165,11 @@ private:
 
   static const unsigned int MAJOR_VERSION = 1;
   static const unsigned int MINOR_VERSION = 0;
+
+  Map<String, String> fields;
+  String url;
+  String filepath;
+  bool showHeader = false || true;
 public:
   
   HTTPSApplication(
@@ -175,6 +180,40 @@ public:
   {
   }
   
+  bool parseArguments()
+  {
+    Array<String> arguments = getArguments();
+    Array<String>::ReadEnumerator enu = arguments.getReadEnumerator();
+    while (enu.hasNext()) {
+      const String argument = *enu.next();
+      if (argument == "--field") {
+        if (!enu.hasNext()) {
+          ferr << "Expected header field name." << ENDL;
+          return false;
+        }
+        auto name = *enu.next();
+        if (!enu.hasNext()) {
+          ferr << "Expected header field value." << ENDL;
+          return false;
+        }
+        auto value = *enu.next();
+        fields.add(name, value);
+      } else if (argument == "--header") {
+        showHeader = true;
+      } else {
+        if (!url) {
+          url = argument;
+        } else if (!filepath) {
+          filepath = argument;
+        } else {
+          ferr << "Invalid argument." << ENDL;
+          return false;
+        }
+      }
+    }
+    return true;
+  }
+
   void main()
   {
     fout << getFormalName() << " version "
@@ -183,27 +222,12 @@ public:
          << "Copyright (C) 2001-2019 by Rene Moeller Fonseca" << EOL
          << ENDL;
 
-    Array<String> arguments = getArguments();
-
-    String url = MESSAGE("www.google.com/"); // default url
-    String file; // default file
-
-    switch (arguments.getSize()) {
-    case 0:
-      // use defaults
-      break;
-    case 1:
-      url = arguments[0]; // the address
-      break;
-    case 2:
-      url = arguments[0]; // the address
-      file = arguments[1]; // the service
-      break;
-    default:
-      fout << "Usage: " << getFormalName() << " [url] [output]" << ENDL;
+    if (!parseArguments()) {
       setExitCode(Application::EXIT_CODE_ERROR);
       return;
     }
+
+    // fout << "Usage: " << getFormalName() << " [url] [output]" << ENDL;
 
     try {
       HTTPSRequest request;
@@ -212,8 +236,13 @@ public:
         return;
       }
 
-      // TAG: get from options
-      // request.setRequestHeader("Content-Length", "0");
+      auto enu = fields.getReadEnumerator();
+      while (enu.hasNext()) {
+        auto nv = enu.next();
+        request.setRequestHeader(nv->getKey(), nv->getValue());
+      }
+      
+      // request.setRequestHeader("Keep-Alive", "30");
       // TAG: allow form data - get from options
 
       String body;
@@ -226,27 +255,23 @@ public:
 
       // fout << "Content length: " << request.getResponseHeader("Content-Length") << ENDL;
       // fout << "Content type: " << request.getResponseHeader("Content-Type") << ENDL;
-
-      const String header = request.getResponseHeader(); // TAG: subst CRLFs with EOL
-      fout << header << ENDL;
-
-      if (file) {
-        PushToFile push(File(file, File::WRITE, File::CREATE | File::TRUNCATE));
-        // FileOutputStream fos(file);
+      
+      if (showHeader) {
+        const String header = request.getResponseHeader(); // TAG: subst CRLFs with EOL
+        fout << header << ENDL;
+      }
+      
+      if (filepath) {
+        PushToFile push(File(filepath, File::WRITE, File::CREATE | File::TRUNCATE));
         request.getResponse(&push);
       } else {
         PushToStandardOutput push;
         request.getResponse(&push);
-        /*
-        const String response = request.getResponse();
-        fout << response << FLUSH;
-        */
-        fout << "<DONE>" << ENDL;
       }
-      // TAG: write to stdout/file - with progress
 
       request.close();
     } catch (...) {
+      ferr << "Failed to read response." << ENDL;
       setExitCode(Application::EXIT_CODE_ERROR);
       return;
     }

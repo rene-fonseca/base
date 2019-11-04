@@ -25,6 +25,8 @@
 #include <algorithm>
 #include <memory>
 
+// TAG: record timestamps for all events and show in output
+
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 UnitTestManager::RegisterEntry::EntryNode* UnitTestManager::RegisterEntry::nodes = nullptr;
@@ -1066,6 +1068,22 @@ UnitTest::AddDependency::AddDependency(UnitTest* test, const char* id)
   if (test) {
     test->addDependency(id);
   }
+}
+
+AnyValue UnitTest::getState(const String& id)
+{
+  const AnyValue* value = UnitTestManager::getManager().states.find(id);
+  if (!value) {
+    return AnyValue();
+  }
+  onPrint(Format::subst("Getting state '%1' = '%2'", id, *value));
+  return *value;
+}
+
+void UnitTest::setState(const String& id, const AnyValue& value)
+{
+  onPrint(Format::subst("Setting state '%1' = '%2'", id, value));
+  UnitTestManager::getManager().states.add(name, value);
 }
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

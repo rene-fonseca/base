@@ -337,6 +337,12 @@ public:
   /** Runs the test. */
   virtual void run();
 
+  /** Returns the global state. Allows tests to share state. But keep tests deterministic. */
+  AnyValue getState(const String& id);
+
+  /** Sets the global state. Allows tests to share state. But keep tests deterministic. */
+  void setState(const String& id, const AnyValue& value);
+
   /** Internal run. */
   Reference<Run> runImpl();
 
@@ -392,7 +398,10 @@ private:
   unsigned int failed = 0;
   Timer timer;
   MutualExclusion lock;
+  /** All tests. */
   Array<Reference<UnitTest> > tests;
+  /** States. */
+  Map<String, AnyValue> states;
 
   static UnitTestManager unitTestManager;
 public:

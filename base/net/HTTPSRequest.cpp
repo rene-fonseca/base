@@ -181,8 +181,6 @@ bool HTTPSRequest::open(const String& _method, const String& _url, const String&
   const String password = url.getPassword() ? url.getPassword() : _password;
   const String path = url.getPath() ? url.getPath() : "/";
 
-  // TAG: build url for macOS
-
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   HINTERNET hInternet = InternetOpenW(L"Mozilla/5.0" /*toWide(agent).c_str()*/, INTERNET_OPEN_TYPE_DIRECT, NULL, NULL, 0);
   if (!hInternet) {
@@ -384,7 +382,8 @@ void HTTPSRequest::send(const String& _body)
   // read 1 byte to force response to become available
   uint8 buffer = 0;
   CFReadStreamOpen(stream);
-  CFReadStreamRead(stream, &buffer, 1); // wait for data to become available
+  CFIndex bytesRead = CFReadStreamRead(stream, &buffer, 1); // wait for data to become available
+  BASSERT(bytesRead == 1);
   _handle->pendingByte = buffer;
   // CFReadStreamClose(stream); // this breaks getResponse()
   
@@ -556,7 +555,7 @@ void HTTPSRequest::getResponse(PushInterface* pi)
 
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
 
-  PrimitiveArray<uint8> buffer(16 * 1024); // TAG: add secure clear support
+  PrimitiveArray<uint8> buffer(16 * 1024);
   while (true) {
     DWORD bytesRead = 0;
     BOOL status = InternetReadFile(

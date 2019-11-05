@@ -169,7 +169,7 @@ private:
   Map<String, String> fields;
   String url;
   String filepath;
-  bool showHeader = false || true;
+  bool showHeader = false;
 public:
   
   HTTPSApplication(

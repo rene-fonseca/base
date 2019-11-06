@@ -185,10 +185,9 @@ public:
     request.setRequestHeader("Content-Type", "application/json; charset=utf-8");
 
     request.send(body);
-    String response = request.getResponse();
+    const String response = request.getResponse();
     request.close();
 
-    // auto r = JSON().parse(response);
     auto r = JSON().parse(response).cast<ObjectModel::Object>();
     if (r) {
       fout << r << ENDL;

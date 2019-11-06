@@ -443,7 +443,7 @@ _COM_AZURE_DEV__BASE__PACKED__END
     const unsigned int rawOffset,
     const unsigned int rawSize) throw(IOException)
   {
-    if (!(virtualAddress & 3) == 0)) {
+    if ((virtualAddress & 3) != 0)) {
       throw OutOfDomain(this);
     }
     
@@ -560,7 +560,7 @@ _COM_AZURE_DEV__BASE__PACKED__END
     const unsigned int rawOffset,
     const unsigned int rawSize) throw(IOException)
   {
-    if (!(virtualAddress & 3) == 0)) {
+    if ((virtualAddress & 3) != 0)) {
       throw OutOfDomain(this);
     }
     
@@ -659,7 +659,7 @@ _COM_AZURE_DEV__BASE__PACKED__END
     const unsigned int rawOffset,
     const unsigned int rawSize) throw(IOException)
   {
-    if (!(virtualAddress & 3) == 0)) {
+    if ((virtualAddress & 3) != 0)) {
       throw OutOfDomain(this);
     }
     

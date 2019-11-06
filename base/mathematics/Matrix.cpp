@@ -566,9 +566,12 @@ Matrix<TYPE> Matrix<TYPE>::solve(const Matrix<TYPE>& value) const throw(Incompat
 }
 
 template<class TYPE>
-Matrix<TYPE>& Matrix<TYPE>::clip(unsigned int rows, unsigned int columns) throw(OutOfRange, MemoryException) {
-  bassert((rows <= this->rows) && (columns <= this->columns), OutOfRange());
-
+Matrix<TYPE>& Matrix<TYPE>::clip(unsigned int rows, unsigned int columns) throw(OutOfRange, MemoryException)
+{
+  if (!((rows <= this->rows) && (columns <= this->columns))) {
+    throw OutOfRange();
+  }
+  
   TYPE* elements = getMutableElements();
   const TYPE* src = elements + this->columns - columns; // first row is ok
   TYPE* dest = elements + columns; // first row is ok

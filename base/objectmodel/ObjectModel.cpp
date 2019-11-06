@@ -345,7 +345,9 @@ bool ObjectModel::Object::hasKey(const Reference<String>& key) const noexcept
     return false;
   }
   for (const auto& v : values) {
-    bassert(v.first, NullPointer("Key is null."));
+    if (!v.first) {
+      throw NullPointer("Key is null.");
+    }
     if (v.first->value == key->value) {
       return true;
     }
@@ -359,7 +361,9 @@ Reference<ObjectModel::Value> ObjectModel::Object::getValue(const Reference<Stri
     return nullptr;
   }
   for (const auto& v : values) {
-    bassert(v.first, NullPointer("Key is null."));
+    if (!v.first) {
+      throw NullPointer("Key is null.");
+    }
     if (v.first->value == key->value) {
       return v.second;
     }
@@ -373,7 +377,9 @@ void ObjectModel::Object::setValue(const Reference<String>& key, const Reference
     throw NullPointer("Key is null.");
   }
   for (auto& v : values) {
-    bassert(v.first, NullPointer("Key is null."));
+    if (!v.first) {
+      throw NullPointer("Key is null.");
+    }
     if (v.first->value == key->value) {
       v.second = value;
       return;
@@ -439,7 +445,9 @@ Reference<ObjectModel::Value> ObjectModel::Object::getPath(const char* path, boo
     // find value
     Reference<Value> result;
     for (const auto& v : current->values) {
-      bassert(v.first, NullPointer("Key is null."));
+      if (!v.first) {
+        throw NullPointer("Key is null.");
+      }
       if (v.first->value == key) {
         result = v.second; // found
         break;

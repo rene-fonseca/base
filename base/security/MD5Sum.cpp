@@ -195,7 +195,9 @@ unsigned int MD5Sum::push(const uint8* buffer, unsigned int size)
     throw OutOfRange("MD5Sum has been closed.");
   }
 
-  bassert(size < (MAXIMUM_SIZE - totalSize), OutOfRange());
+  if (size > (MAXIMUM_SIZE - totalSize)) {
+    throw OutOfRange();
+  }
   const unsigned int result = size;
   totalSize += size;
   if ((size + bytesInBuffer) >= BLOCK_SIZE) { // do we have a complete block

@@ -72,7 +72,9 @@ public:
   inline explicit CapacityAllocator(MemorySize _granularity) throw(OutOfRange)
     : granularity(_granularity)
   {
-    bassert(granularity >= MINIMUM_GRANULARITY, OutOfRange(this));
+    if (granularity < MINIMUM_GRANULARITY) {
+      throw OutOfRange(this);
+    }
   }
 
   /**
@@ -87,7 +89,9 @@ public:
   inline CapacityAllocator(MemorySize size, MemorySize _granularity) throw(OutOfRange, MemoryException)
     : granularity(_granularity)
   {
-    bassert(granularity >= MINIMUM_GRANULARITY, OutOfRange(this));
+    if (granularity < MINIMUM_GRANULARITY) {
+      throw OutOfRange(this);
+    }
     setSize(size);
   }
 
@@ -95,14 +99,18 @@ public:
     : capacity(_capacity),
       granularity(_granularity)
   {
-    bassert(granularity >= MINIMUM_GRANULARITY, OutOfRange(this));
+    if (granularity < MINIMUM_GRANULARITY) {
+      throw OutOfRange(this);
+    }
     setSize(size);
   }
 
   inline CapacityAllocator(MemorySize size, const TYPE& value, MemorySize _granularity) throw(OutOfRange, MemoryException)
     : granularity(_granularity)
   {
-    bassert(granularity >= MINIMUM_GRANULARITY, OutOfRange(this));
+    if (granularity < MINIMUM_GRANULARITY) {
+      throw OutOfRange(this);
+    }
     setSize(size, value);
   }
 
@@ -285,7 +293,9 @@ public:
   inline void setGranularity(MemorySize granularity) throw(OutOfRange)
   {
     if (granularity != this->granularity) {
-      bassert(granularity >= MINIMUM_GRANULARITY, OutOfRange(this));
+      if (granularity < MINIMUM_GRANULARITY) {
+        throw OutOfRange(this);
+      }
       this->granularity = granularity;
     }
   }

@@ -32,7 +32,9 @@ ArgumentParser::Option::Option(
     shortName(_shortName),
     flags(_flags)
 {
-  bassert(ASCIITraits::isAlphaNum(shortName), OutOfDomain(this));
+  if (!ASCIITraits::isAlphaNum(shortName)) {
+    throw OutOfDomain(this);
+  }
 }
 
 ArgumentParser::FlagOption::FlagOption(

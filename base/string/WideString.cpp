@@ -1804,12 +1804,16 @@ void WideString::setGranularity(MemorySize granularity) throw() {
 }
 
 ucs4 WideString::getAt(MemorySize index) const throw(OutOfRange) {
-  bassert(index < getLength(), OutOfRange(this));
+  if (index >= getLength()) {
+    throw OutOfRange(this);
+  }
   return getBuffer()[index];
 }
 
 void WideString::setAt(MemorySize index, ucs4 value) throw(OutOfRange) {
-  bassert(index < getLength(), OutOfRange(this));
+  if (index >= getLength()) {
+    throw OutOfRange(this);
+  }
   if (value != Traits::TERMINATOR) {
     getBuffer()[index] = value;
   } else {

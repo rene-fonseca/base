@@ -721,7 +721,9 @@ Application::Application(
     hangingup(false) {
   initialize();
   
-  bassert((numberOfArguments > 0) && (arguments), OutOfDomain(this));
+  if (!((numberOfArguments > 0) && arguments)) {
+    throw OutOfDomain(this);
+  }
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   wchar buffer[MAX_PATH + 1]; // what if path starts with "\\?\"
   DWORD length = ::GetModuleFileName(0, buffer, MAX_PATH /*lengthOf(buffer)*/);

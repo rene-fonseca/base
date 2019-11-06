@@ -232,13 +232,17 @@ void String::forceToLength(MemorySize length) throw(StringException, MemoryExcep
 
 char String::getAt(MemorySize index) const throw(OutOfRange)
 {
-  bassert(index < getLength(), OutOfRange(this));
+  if (index >= getLength()) {
+    throw OutOfRange(this);
+  }
   return getBuffer()[index];
 }
 
 void String::setAt(MemorySize index, char value) throw(OutOfRange)
 {
-  bassert(index < getLength(), OutOfRange(this));
+  if (index >= getLength()) {
+    throw OutOfRange(this);
+  }
   getBuffer()[index] = value; // allow terminated within string
 }
 

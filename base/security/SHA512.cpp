@@ -94,8 +94,11 @@ void SHA512::pushBlock(const uint8* block) noexcept {
   messageDigest[7] += h;
 }
 
-unsigned int SHA512::push(const uint8* buffer, unsigned int size) throw(OutOfRange) {
-  bassert(size < MAXIMUM_SIZE - totalSize, OutOfRange());
+unsigned int SHA512::push(const uint8* buffer, unsigned int size) throw(OutOfRange)
+{
+  if (size > (MAXIMUM_SIZE - totalSize)) {
+    throw OutOfRange();
+  }
   unsigned int result = size;
   totalSize += size;
   if (size + bytesInBuffer >= BLOCK_SIZE) { // do we have a complete block

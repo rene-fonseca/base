@@ -98,7 +98,9 @@ void SHA256::pushBlock(const uint8* block) noexcept {
 }
 
 unsigned int SHA256::push(const uint8* buffer, unsigned int size) throw(OutOfRange) {
-  bassert(size < MAXIMUM_SIZE - totalSize, OutOfRange());
+  if (size > (MAXIMUM_SIZE - totalSize)) {
+    throw OutOfRange();
+  }
   unsigned int result = size;
   totalSize += size;
   if (size + bytesInBuffer >= BLOCK_SIZE) { // do we have a complete block

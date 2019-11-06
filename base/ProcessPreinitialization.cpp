@@ -39,32 +39,14 @@ namespace internal {
 
     extern "C" int main();
     
-    // Thread::entry???
-    
-class Abi {
-public:
-
-  // TAG: should not be inlined - get parent of current frame
-  static void* getStackFrame() throw() {
-    void** frame = nullptr;
-#if (_COM_AZURE_DEV__BASE__ARCH == _COM_AZURE_DEV__BASE__X86)
-    asm (
-      "movl %%ebp,%0;\n"
-      : "=m" (frame) // output
-    );
-    frame = (void**)*frame; // get parent frame
-#endif
-    return frame;
-  }
-};
-    
     // handle to the global process heap
     OperatingSystem::Handle processHeap = nullptr;
     
     // the original unhandled exception filter
     LPTOP_LEVEL_EXCEPTION_FILTER originalExceptionFilter = nullptr;
     
-    LONG exceptionFilter(EXCEPTION_POINTERS* exception) {
+    LONG exceptionFilter(EXCEPTION_POINTERS* exception)
+    {
       char errorMessage[sizeof("Internal error: System exception 0x################ (access violation) while reading from 0x################ at 0x################")]; // worst case
       char* dest = errorMessage;
       

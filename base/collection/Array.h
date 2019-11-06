@@ -547,7 +547,9 @@ public:
   */
   void insert(MemorySize index, const Value& value)
   {
-    bassert(index <= getSize(), OutOfRange(this));
+    if (!(index < getSize())) {
+      throw OutOfRange(this);
+    }
     const auto size = getSize(); // original size
     setSize(size + 1); // better to prepend in allocator
     auto dest = getElements(); // size must be set before
@@ -564,7 +566,9 @@ public:
   */
   void insert(MemorySize index, Value&& value)
   {
-    bassert(index <= getSize(), OutOfRange(this));
+    if (!(index < getSize())) {
+      throw OutOfRange(this);
+    }
     const auto size = getSize(); // original size
     setSize(size + 1); // better to prepend in allocator
     auto dest = getElements(); // size must be set before
@@ -590,7 +594,9 @@ public:
   */
   void remove(MemorySize index)
   {
-    bassert(index < getSize(), OutOfRange(this));
+    if (!(index < getSize())) {
+      throw OutOfRange(this);
+    }
     auto dest = getElements(); // size must be set after
     const auto size = getSize(); // original size
     moveDown(dest + index, size - index - 1);
@@ -606,9 +612,15 @@ public:
   /** Removes the elements within the given positions. */
   void remove(MemorySize _begin, MemorySize _end)
   {
-    bassert(_begin < getSize(), OutOfRange(this));
-    bassert(_end < getSize(), OutOfRange(this));
-    bassert(_begin <= _end, OutOfRange(this));
+    if (!(_begin < getSize())) {
+      throw OutOfRange(this);
+    }
+    if (!(_end < getSize())) {
+      throw OutOfRange(this);
+    }
+    if (!(_begin <= _end)) {
+      throw OutOfRange(this);
+    }
     
     auto count = _end - _begin;
     if (!count) {
@@ -638,10 +650,16 @@ public:
   /** Returns a new Array for the given elements. */
   Array slice(MemorySize _begin, MemorySize _end) const
   {
-    bassert(_begin < getSize(), OutOfRange(this));
-    bassert(_end < getSize(), OutOfRange(this));
-    bassert(_begin <= _end, OutOfRange(this));
-    
+    if (!(_begin < getSize())) {
+      throw OutOfRange(this);
+    }
+    if (!(_end < getSize())) {
+      throw OutOfRange(this);
+    }
+    if (!(_begin <= _end)) {
+      throw OutOfRange(this);
+    }
+
     auto count = _end - _begin;
     Array result;
     result.setSize(count);
@@ -665,7 +683,9 @@ public:
   */
   Value& getAt(MemorySize index) throw(OutOfRange)
   {
-    bassert(index < getSize(), OutOfRange(this));
+    if (!(index < getSize())) {
+      throw OutOfRange(this);
+    }
     return getElements()[index];
   }
 
@@ -677,7 +697,9 @@ public:
   */
   const Value& getAt(MemorySize index) const throw(OutOfRange)
   {
-    bassert(index < getSize(), OutOfRange(this));
+    if (!(index < getSize())) {
+      throw OutOfRange(this);
+    }
     return getElements()[index];
   }
 
@@ -690,7 +712,9 @@ public:
   */
   void setAt(MemorySize index, const Value& value)
   {
-    bassert(index < getSize(), OutOfRange(this));
+    if (!(index < getSize())) {
+      throw OutOfRange(this);
+    }
     getElements()[index] = value;
   }
 
@@ -703,7 +727,9 @@ public:
   */
   void setAt(MemorySize index, Value&& value)
   {
-    bassert(index < getSize(), OutOfRange(this));
+    if (!(index < getSize())) {
+      throw OutOfRange(this);
+    }
     getElements()[index] = std::move(value);
   }
 

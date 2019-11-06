@@ -146,8 +146,11 @@ static uint8* getStorage(MemorySize size) throw();
 static void garbageCollect() throw();
 #endif
 
-void Thread::nanosleep(unsigned int nanoseconds) throw(OutOfDomain) {
-  bassert(nanoseconds < 1000000000, OutOfDomain(Type::getType<Thread>()));
+void Thread::nanosleep(unsigned int nanoseconds) throw(OutOfDomain)
+{
+  if (nanoseconds >= 1000000000) {
+    throw OutOfDomain(Type::getType<Thread>());
+  }
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   // TAG: use select (but test if better)
   HANDLE timer = ::CreateWaitableTimer(0, TRUE, 0);
@@ -194,8 +197,11 @@ void Thread::nanosleep(unsigned int nanoseconds) throw(OutOfDomain) {
 #endif // flavor
 }
 
-void Thread::microsleep(unsigned int microseconds) throw(OutOfDomain) {
-  bassert(microseconds < 1000000000, OutOfDomain(Type::getType<Thread>()));
+void Thread::microsleep(unsigned int microseconds) throw(OutOfDomain)
+{
+  if (microseconds >= 1000000000) {
+    throw OutOfDomain(Type::getType<Thread>());
+  }
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   ::Sleep((microseconds+999)/1000); // round up
 #else // unix
@@ -232,8 +238,11 @@ void Thread::microsleep(unsigned int microseconds) throw(OutOfDomain) {
 #endif
 }
 
-void Thread::millisleep(unsigned int milliseconds) throw(OutOfDomain) {
-  bassert(milliseconds < 1000000000, OutOfDomain(Type::getType<Thread>()));
+void Thread::millisleep(unsigned int milliseconds) throw(OutOfDomain)
+{
+  if (milliseconds >= 1000000000) {
+    throw OutOfDomain(Type::getType<Thread>());
+  }
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   ::Sleep(milliseconds);
 #else // unix
@@ -270,8 +279,11 @@ void Thread::millisleep(unsigned int milliseconds) throw(OutOfDomain) {
 #endif
 }
 
-void Thread::sleep(unsigned int seconds) throw(OutOfDomain) {
-  bassert(seconds < 1000000, OutOfDomain(Type::getType<Thread>()));
+void Thread::sleep(unsigned int seconds) throw(OutOfDomain)
+{
+  if (seconds >= 1000000) {
+    throw OutOfDomain(Type::getType<Thread>());
+  }
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   ::Sleep(seconds * 1000);
 #else // unix

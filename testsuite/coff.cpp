@@ -441,8 +441,11 @@ _COM_AZURE_DEV__BASE__PACKED__END
     File file,
     const uint32 virtualAddress,
     const unsigned int rawOffset,
-    const unsigned int rawSize) throw(IOException) {
-    bassert((virtualAddress & 3) == 0, OutOfDomain(this));
+    const unsigned int rawSize) throw(IOException)
+  {
+    if (!(virtualAddress & 3) == 0)) {
+      throw OutOfDomain(this);
+    }
     
     Allocator<uint8> buffer(rawSize);
     
@@ -555,8 +558,11 @@ _COM_AZURE_DEV__BASE__PACKED__END
     File file,
     const uint32 virtualAddress,
     const unsigned int rawOffset,
-    const unsigned int rawSize) throw(IOException) {
-    bassert((virtualAddress & 3) == 0, OutOfDomain(this));
+    const unsigned int rawSize) throw(IOException)
+  {
+    if (!(virtualAddress & 3) == 0)) {
+      throw OutOfDomain(this);
+    }
     
     Allocator<uint8> buffer(rawSize);
     
@@ -651,8 +657,11 @@ _COM_AZURE_DEV__BASE__PACKED__END
     File file,
     const uint32 virtualAddress,
     const unsigned int rawOffset,
-    const unsigned int rawSize) throw(IOException) {
-    bassert((virtualAddress & 3) == 0, OutOfDomain(this));
+    const unsigned int rawSize) throw(IOException)
+  {
+    if (!(virtualAddress & 3) == 0)) {
+      throw OutOfDomain(this);
+    }
     
     Allocator<uint8> buffer(rawSize);
     

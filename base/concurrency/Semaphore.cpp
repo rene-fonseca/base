@@ -95,8 +95,11 @@ unsigned int Semaphore::getMaximum() throw() {
   return SemaphoreImpl::MAXIMUM;
 }
 
-Semaphore::Semaphore(unsigned int value) throw(OutOfDomain, SemaphoreException) {
-  bassert(value <= SemaphoreImpl::MAXIMUM, OutOfDomain(this));
+Semaphore::Semaphore(unsigned int value) throw(OutOfDomain, SemaphoreException)
+{
+  if (!(value <= SemaphoreImpl::MAXIMUM)) {
+    throw OutOfDomain(this);
+  }
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   if (!(semaphore = (SemaphoreImpl::Semaphore)::CreateSemaphore(0, value, SemaphoreImpl::MAXIMUM, 0))) {
     throw SemaphoreException(this);

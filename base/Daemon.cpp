@@ -186,7 +186,9 @@ Daemon::Daemon(Runnable* runnable) throw(SingletonException, ResourceException) 
   static unsigned int singleton = 0;
   bassert(singleton == 0, SingletonException("Daemon has been instantiated"));
   ++singleton;
-  bassert(runnable, OutOfDomain());
+  if (!runnable) {
+    throw OutOfDomain();
+  }
   bassert(Application::getApplication(), Exception("Application has not been institiated"));
   DaemonImpl::runnable = runnable;
   DaemonImpl::parentThread = Thread::getThread();
@@ -288,11 +290,14 @@ void Daemon::install() {
 
 #else // unix
 
-Daemon::Daemon(Runnable* runnable) throw(SingletonException, ResourceException) {
+Daemon::Daemon(Runnable* runnable) throw(SingletonException, ResourceException)
+{
   static unsigned int singleton = 0;
   bassert(singleton == 0, SingletonException("Daemon has been instantiated"));
   ++singleton;
-  bassert(runnable, OutOfDomain());
+  if (!runnable) {
+    throw OutOfDomain();
+  }
   bassert(Application::getApplication(), Exception("Application has not been institiated"));
 
   switch(fork()) {

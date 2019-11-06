@@ -89,7 +89,9 @@ void IEEE1394::IsochronousReadRequestImpl::setSubchannel(
     getStatus() == READY,
     bindCause(IEEE1394Exception("Request not ready", this), IEEE1394::REQUEST_NOT_READY)
   );
-  bassert(subchannel <= IEEE1394::BROADCAST, OutOfDomain(this));
+  if (!(subchannel <= IEEE1394::BROADCAST)) {
+    throw OutOfDomain(this);
+  }
   this->subchannel = subchannel;
 }
 

@@ -718,8 +718,11 @@ public:
     @param physicalId The physical id of the node [0; 63[.
   */
   inline bool isLinkLayerActive(
-    unsigned int physicalId) const throw(OutOfDomain) {
-    bassert(physicalId < numberOfNodes, OutOfDomain(this));
+    unsigned int physicalId) const throw(OutOfDomain)
+  {
+    if (!(physicalId < numberOfNodes)) {
+      throw OutOfDomain(this);
+    }
     return nodes[physicalId].link;
   }
 
@@ -735,9 +738,11 @@ public:
     
     @param physicalId The physical id of the node [0; 63[.
   */
-  inline bool isContender(
-    unsigned int physicalId) const throw(OutOfDomain) {
-    bassert(physicalId < numberOfNodes, OutOfDomain(this));
+  inline bool isContender(unsigned int physicalId) const throw(OutOfDomain)
+  {
+    if (!(physicalId < numberOfNodes)) {
+      throw OutOfDomain(this);
+    }
     return nodes[physicalId].contender;
   }
   
@@ -746,8 +751,11 @@ public:
 
     @param physicalId The physical id the node.    
   */
-  inline bool isTransactionCapable(unsigned int physicalId) const throw() {
-    bassert(physicalId < numberOfNodes, OutOfDomain(this));
+  inline bool isTransactionCapable(unsigned int physicalId) const throw()
+  {
+    if (!(physicalId < numberOfNodes)) {
+      throw OutOfDomain(this);
+    }
     return nodes[physicalId].link;
   }
 
@@ -756,9 +764,11 @@ public:
 
     @param physicalId The physical id the node.
   */
-  inline unsigned int getGapCount(
-    unsigned int physicalId) const throw(OutOfDomain) {
-    bassert(physicalId < numberOfNodes, OutOfDomain(this));
+  inline unsigned int getGapCount(unsigned int physicalId) const throw(OutOfDomain)
+  {
+    if (!(physicalId < numberOfNodes)) {
+      throw OutOfDomain(this);
+    }
     return nodes[physicalId].gapCount;
   }
 
@@ -767,9 +777,11 @@ public:
 
     @param physicalId The physical id the node.
   */
-  inline unsigned int getNumberOfPorts(
-    unsigned int physicalId) const throw(OutOfDomain) {
-    bassert(physicalId < numberOfNodes, OutOfDomain(this));
+  inline unsigned int getNumberOfPorts(unsigned int physicalId) const throw(OutOfDomain)
+  {
+    if (!(physicalId < numberOfNodes)) {
+      throw OutOfDomain(this);
+    }
     return nodes[physicalId].numberOfPorts;
   }
 
@@ -793,9 +805,11 @@ public:
 
     @param physicalId The physical id the node.
   */
-  inline unsigned int getLocalMaximumPayload(
-    unsigned int physicalId) const throw(OutOfDomain) {
-    bassert(physicalId < numberOfNodes, OutOfDomain(this));
+  inline unsigned int getLocalMaximumPayload(unsigned int physicalId) const throw(OutOfDomain)
+  {
+    if (!(physicalId < numberOfNodes)) {
+      throw OutOfDomain(this);
+    }
     return nodes[physicalId].maximumPayload;
   }
   
@@ -804,9 +818,11 @@ public:
 
     @param physicalId The physical id the node.
   */
-  inline PowerClass getPowerClass(
-    unsigned int physicalId) const throw(OutOfDomain) {
-    bassert(physicalId < numberOfNodes, OutOfDomain(this));
+  inline PowerClass getPowerClass(unsigned int physicalId) const throw(OutOfDomain)
+  {
+    if (!(physicalId < numberOfNodes)) {
+      throw OutOfDomain(this);
+    }
     return nodes[physicalId].powerClass;
   }
   

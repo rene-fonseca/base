@@ -77,8 +77,11 @@ unsigned int EUI64::getCompanyId() const throw() {
   return (((static_cast<unsigned int>(id[0]) << 8) | id[1]) << 8) | id[2];
 }
 
-void EUI64::setCompanyId(unsigned int companyId) throw(OutOfDomain) {
-  bassert(companyId <= 0xffffff, OutOfDomain(this));
+void EUI64::setCompanyId(unsigned int companyId) throw(OutOfDomain)
+{
+  if (!(companyId <= 0xffffff)) {
+    throw OutOfDomain(this);
+  }
   id[0] = companyId >> 16;
   id[1] = companyId >> 8;
   id[2] = companyId;
@@ -88,8 +91,11 @@ uint64 EUI64::getExtensionId() const throw() {
   return (((((((static_cast<uint64>(id[3]) << 8) | id[4]) << 8) | id[5]) << 8) | id[6]) << 8) | id[7];
 }
 
-void EUI64::setExtensionId(uint64 extensionId) throw(OutOfDomain) {
-  bassert(extensionId <= 0xffffffff, OutOfDomain(this));
+void EUI64::setExtensionId(uint64 extensionId) throw(OutOfDomain)
+{
+  if (!(extensionId <= 0xffffffff)) {
+    throw OutOfDomain(this);
+  }
   id[3] = extensionId >> 32;
   id[4] = extensionId >> 24;
   id[5] = extensionId >> 16;

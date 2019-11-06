@@ -60,7 +60,9 @@ public:
     
     for (unsigned int i = 0; i < getArraySize(FACTORS); ++i) {
       const unsigned int factor = FACTORS[i];
-      bassert(factor <= 0x0f, OutOfRange(this));
+      if (!(factor <= 0x0f)) {
+        throw OutOfRange(this));
+      }
       fout << "const uint8 Aes::DOT_"
            << ASCIITraits::valueToDigit(factor, true) << "[256] = {"
            << EOL;

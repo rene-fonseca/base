@@ -67,7 +67,9 @@ public:
   */
   Pointer next() throw(EndOfEnumeration)
   {
-    bassert(more, EndOfEnumeration());
+    if (!more) {
+      throw EndOfEnumeration();
+    }
 
     Pointer result = node;
 

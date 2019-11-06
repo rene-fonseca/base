@@ -23,7 +23,8 @@
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
-bool Exception::isUnwinding() noexcept{
+bool Exception::isUnwinding() noexcept
+{
 #if defined(_COM_AZURE_DEV__BASE__EXCEPTION_V3MV)
 #  if defined(_COM_AZURE_DEV__BASE__EXCEPTION_V3MV_TRANSPARENT)
     const abi::__cxa_eh_globals* abi::__cxa_get_globals();
@@ -41,7 +42,8 @@ bool Exception::isUnwinding() noexcept{
 #endif
 }
 
-Type Exception::getExceptionType() noexcept{
+Type Exception::getExceptionType() noexcept
+{
 #if defined(_COM_AZURE_DEV__BASE__EXCEPTION_V3MV)
 #  if defined(_COM_AZURE_DEV__BASE__EXCEPTION_V3MV_TRANSPARENT)
     const abi::__cxa_eh_globals* abi::__cxa_get_globals();
@@ -98,7 +100,8 @@ Type Exception::getThisType() const noexcept
   return Type::getType(*this);
 }
 
-Exception::~Exception() noexcept{
+Exception::~Exception() noexcept
+{
 }
 
 #if defined(_COM_AZURE_DEV__BASE__TESTS)

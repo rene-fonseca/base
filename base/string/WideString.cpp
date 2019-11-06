@@ -1603,7 +1603,9 @@ WideString::WideString(const NativeWideString& string) throw(WideStringException
 
 WideString::WideString(const NativeWideString& string, MemorySize maximum) throw(OutOfDomain, WideStringException, MemoryException)
 {
-  bassert(maximum <= MAXIMUM_LENGTH, OutOfDomain(this));
+  if (maximum >= MAXIMUM_LENGTH) {
+    throw OutOfDomain(this);
+  }
 
   if (!string.getValue()) {
     elements = DEFAULT_STRING.elements;
@@ -1704,7 +1706,9 @@ WideString::WideString(const NativeString& string) throw(MultibyteException, Mem
 
 WideString::WideString(const NativeString& string, MemorySize maximum) throw(OutOfDomain, MultibyteException, MemoryException)
 {
-  bassert(maximum <= MAXIMUM_LENGTH, OutOfDomain(this));
+  if (maximum >= MAXIMUM_LENGTH) {
+    throw OutOfDomain(this);
+  }
   
   if (!string.getValue()) { // is string null
     elements = DEFAULT_STRING.elements;

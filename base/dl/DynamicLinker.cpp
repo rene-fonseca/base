@@ -28,7 +28,8 @@
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 void* DynamicLinker::getGlobalSymbolImpl(
-  const String& symbol) throw(LinkerException) {
+  const String& symbol) throw(LinkerException)
+{
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   // GetModuleHandle does not increment reference count
   void* result = (void*)(::GetProcAddress(::GetModuleHandle(0), symbol.getElements()));
@@ -53,7 +54,8 @@ void* DynamicLinker::getGlobalSymbolImpl(
 // TAG: get path of module support
 // TAG: enumerate modules support
 
-//String DynamicLinker::getPath() throw() {
+//String DynamicLinker::getPath() noexcept
+//{
 //#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
 //  String path(MAX_PATH); // maximum path length in ANSI mode
 //  DWORD length = ::GetModuleFileNameEx(
@@ -72,8 +74,8 @@ void* DynamicLinker::getGlobalSymbolImpl(
 //#endif // flavor
 //}
 
-DynamicLinker::DynamicLinker(
-  const String& path, unsigned int options) throw(LinkerException) {
+DynamicLinker::DynamicLinker(const String& path, unsigned int options) throw(LinkerException)
+{
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   if ((handle = ::LoadLibraryEx(toWide(path).c_str(), 0, 0)) == nullptr) {
     throw LinkerException("Unable to open module", this);
@@ -95,8 +97,8 @@ DynamicLinker::DynamicLinker(
 #endif // flavor
 }
 
-void* DynamicLinker::getSymbol(
-  const Literal& symbol) const throw(LinkerException) {
+void* DynamicLinker::getSymbol(const Literal& symbol) const throw(LinkerException)
+{
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   void* result = (void*)(::GetProcAddress((HMODULE)handle, symbol.getValue()));
   bassert(result != nullptr, LinkerException("Unable to resolve symbol", this));
@@ -108,8 +110,8 @@ void* DynamicLinker::getSymbol(
 #endif // flavor
 }
 
-void* DynamicLinker::getSymbol(
-  const String& symbol) const throw(LinkerException) {
+void* DynamicLinker::getSymbol(const String& symbol) const throw(LinkerException)
+{
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   void* result = (void*)(::GetProcAddress((HMODULE)handle, symbol.getElements()));
   bassert(result != 0, LinkerException("Unable to resolve symbol", this));
@@ -121,8 +123,8 @@ void* DynamicLinker::getSymbol(
 #endif // flavor
 }
 
-void* DynamicLinker::getUncertainSymbol(
-  const Literal& symbol) const throw() {
+void* DynamicLinker::getUncertainSymbol(const Literal& symbol) const noexcept
+{
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   return (void*)(::GetProcAddress((HMODULE)handle, symbol.getValue()));
 #else // unix
@@ -130,7 +132,8 @@ void* DynamicLinker::getUncertainSymbol(
 #endif // flavor
 }
 
-void* DynamicLinker::getUncertainSymbol(const String& symbol) const throw() {
+void* DynamicLinker::getUncertainSymbol(const String& symbol) const noexcept
+{
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   return (void*)(::GetProcAddress((HMODULE)handle, symbol.getElements()));
 #else // unix
@@ -141,7 +144,8 @@ void* DynamicLinker::getUncertainSymbol(const String& symbol) const throw() {
 bool DynamicLinker::import(
   StaticFunctionDescriptor* functions,
   unsigned int numberOfFunctions,
-  bool flags) throw() {
+  bool flags) noexcept
+{
   bool result = true;
   for (unsigned int i = 0; i < numberOfFunctions; ++i) {
     void* address = getUncertainSymbol(NativeString(functions[i].symbol));
@@ -156,7 +160,8 @@ bool DynamicLinker::import(
   return result;
 }
 
-DynamicLinker::~DynamicLinker() {
+DynamicLinker::~DynamicLinker()
+{
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   bassert(
     ::FreeLibrary((HMODULE)handle),
@@ -168,6 +173,64 @@ DynamicLinker::~DynamicLinker() {
     LinkerException("Unable to close module", this)
   );
 #endif // flavor
+}
+
+String DynamicLinker::getImagePath(void* address)
+{
+  String result;
+#if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__MACOS)
+  Dl_info info;
+  int status = dladdr(address, &info);
+  if (status) {
+    return info.dli_fname;
+  }
+#else
+  BASSERT(!"Not implemented");
+#endif
+  return result;
+}
+
+void* DynamicLinker::getImageAddress(void* address) noexcept
+{
+#if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__MACOS)
+  Dl_info info;
+  int status = dladdr(address, &info);
+  if (status) {
+    return info.dli_fbase;
+  }
+#else
+  BASSERT(!"Not implemented");
+#endif
+  return nullptr;
+}
+
+void* DynamicLinker::getSymbolAddress(void* address) noexcept
+{
+#if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__MACOS)
+  Dl_info info;
+  int status = dladdr(address, &info);
+  if (status) {
+    return info.dli_saddr;
+  }
+#else
+  BASSERT(!"Not implemented");
+#endif
+  return nullptr;
+}
+
+String DynamicLinker::getSymbolName(void* address)
+{
+  String result;
+#if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__MACOS)
+  Dl_info info;
+  int status = dladdr(address, &info);
+  if (status) {
+    return info.dli_sname;
+  }
+#else
+  BASSERT(!"Not implemented");
+#endif
+  return result;
 }
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

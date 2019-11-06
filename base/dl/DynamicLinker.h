@@ -91,7 +91,7 @@ public:
     @param symbol The symbol to be resolved.
     @return The address of the symbol (0 is not available).
   */
-  void* getUncertainSymbol(const String& symbol) const throw();
+  void* getUncertainSymbol(const String& symbol) const noexcept;
   
   /**
     Returns the address of the specified symbol.
@@ -99,7 +99,7 @@ public:
     @param symbol The symbol to be resolved.
     @return The address of the symbol (0 is not available).
   */
-  void* getUncertainSymbol(const Literal& symbol) const throw();
+  void* getUncertainSymbol(const Literal& symbol) const noexcept;
 
   /** Flags for use with import method. */
   enum Flags {
@@ -118,7 +118,19 @@ public:
   */
   bool import(
     StaticFunctionDescriptor* functions,
-    unsigned int numberOfFunctions, bool flags = 0) throw();
+    unsigned int numberOfFunctions, bool flags = 0) noexcept;
+
+  /** Returns the path of the image for the given executable address. */
+  static String getImagePath(void* address);
+
+  /** Returns the image address for the given executable address. */
+  static void* getImageAddress(void* address) noexcept;
+
+  /** Returns the closest symbol for the given executable address. */
+  static void* getSymbolAddress(void* address) noexcept;
+
+  /** Returns the closest symbol for the given executable address. */
+  static String getSymbolName(void* address);
   
   /**
     Closes the module.

@@ -142,7 +142,7 @@ public:
       fout << "};" << EOL;
       fout << FLUSH;
 
-    } catch (std::exception) {
+    } catch (...) {
       ferr << "Error: Failed to generate code." << ENDL;
       setExitCode(1);
       return;

@@ -52,6 +52,10 @@ StackFrame StackFrame::getStack(unsigned int levels)
   void* frame = _frame;
   while (frame && (count < levels)) {
     ++count;
+    void* ip = reinterpret_cast<void**>(frame)[1]; // TAG: handle all ABIs
+    if (reinterpret_cast<MemorySize>(ip) < 0x10000) { // TAG: what is the proper way to detect top of stack
+      break;
+    }
     frame = *reinterpret_cast<void**>(frame);
   }
   frames.frames.setSize(count);
@@ -60,7 +64,8 @@ StackFrame StackFrame::getStack(unsigned int levels)
   count = 0;
   while (frame && (count < levels)) {
     ++count;
-    *dest++ = frame;
+    void* ip = reinterpret_cast<void**>(frame)[1]; // TAG: handle all ABIs
+    *dest++ = ip;
     frame = *reinterpret_cast<void**>(frame);
   }
   return frames;
@@ -70,11 +75,11 @@ void StackFrame::dump(unsigned int levels)
 {
   void* frame = getStackFrame();
   MemorySize count = 0;
+  fout << "Stack trace:" << EOL;
   if (!frame) {
-    fout << "NO STACK FRAMES" << ENDL;
+    fout << indent(2) << "NO STACK FRAMES" << EOL;
     return;
   }
-  fout << "Stack trace:" << ENDL;
   while (frame && (count < levels)) {
     // TAG: need to get symbol name from debugger info
     void* ip = reinterpret_cast<void**>(frame)[1]; // TAG: handle all ABIs
@@ -83,13 +88,36 @@ void StackFrame::dump(unsigned int levels)
     }
     const String name = DynamicLinker::getSymbolName(ip);
     if (name) {
-      fout << count << ": " << TypeInfo::demangleName(name.native()) << ENDL;
+      fout << indent(2) << count << ": " << TypeInfo::demangleName(name.native()) << EOL;
     } else {
-      fout << count << ": " << frame << " " << ip << ENDL;
+      fout << indent(2) << count << ": " << ip << EOL;
     }
     ++count;
     frame = *reinterpret_cast<void**>(frame);
   }
+  fout << FLUSH;
+}
+
+FormatOutputStream& operator<<(
+  FormatOutputStream& stream,
+  const StackFrame& value) throw(IOException)
+{
+  auto size = value.getSize();
+  stream << "Stack trace:" << EOL;
+  if (size == 0) {
+    stream << indent(2) << "NO STACK FRAMES" << EOL;
+    return stream;
+  }
+  for (MemorySize i = 0; i < size; ++i) {
+    void* ip = value.getFrame(i);
+    const String name = DynamicLinker::getSymbolName(ip);
+    if (name) {
+      stream << indent(2) << i << ": " << TypeInfo::demangleName(name.native()) << EOL;
+    } else {
+      stream << indent(2) << i << ": " << ip << EOL;
+    }
+  }
+  return stream;
 }
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

@@ -31,13 +31,19 @@ public:
   StackFrame();
 
   /** Returns the number of stack frames. */
-  inline MemorySize getSize() const
+  inline MemorySize getSize() const noexcept
   {
     return frames.getSize();
   }
   
+  /** Returns the number of stack frames. */
+  inline bool isEmpty() const noexcept
+  {
+    return frames.isEmpty();
+  }
+  
   /** Returns the stack frame. */
-  inline void* getFrame(MemorySize index) noexcept
+  inline void* getFrame(MemorySize index) const noexcept
   {
     if (index >= frames.getSize()) {
       return nullptr;
@@ -64,5 +70,7 @@ public:
   */
   static void dump(unsigned int levels = 32);
 };
+
+_COM_AZURE_DEV__BASE__API FormatOutputStream& operator<<(FormatOutputStream& stream, const StackFrame& value) throw(IOException);
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

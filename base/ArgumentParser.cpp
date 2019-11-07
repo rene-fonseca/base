@@ -203,10 +203,7 @@ ArgumentParser::Argument* ArgumentParser::getArgument(
   } else { // options which take a value
     bassert(
       !(option->getFlags() & Option::EXPLICIT),
-      bindCause(
-        ArgumentException(this),
-        ArgumentException::VALUE_MISSING
-      )
+      ArgumentException(this).setCause(ArgumentException::VALUE_MISSING)
     );
     if (option.isType<BooleanOption>()) {
       argument = new NamedArgument(
@@ -244,16 +241,13 @@ ArgumentParser::Argument* ArgumentParser::getArgument(
   bool occured) const throw(ArgumentException) {
   Argument* argument = nullptr;
   if (option.isType<FlagOption>()) {
-    throw bindCause(ArgumentException(this), ArgumentException::VALUE_PRESENT);
+    throw ArgumentException(this).setCause(ArgumentException::VALUE_PRESENT);
   } else { // options which take a value
     if (option.isType<BooleanOption>()) {
       Reference<BooleanOption> temp = option.cast<BooleanOption>();
       bassert(
         temp.isValid(),
-        bindCause(
-          ArgumentException(this),
-          ArgumentException::INVALID_VALUE
-        )
+        ArgumentException(this).setCause(ArgumentException::INVALID_VALUE)
       );
       argument = new StringArgument(
         option->getName(),
@@ -270,10 +264,7 @@ ArgumentParser::Argument* ArgumentParser::getArgument(
       Reference<CardinalOption> temp = option.cast<CardinalOption>();
       bassert(
         temp->isValid(value),
-        bindCause(
-          ArgumentException(this),
-          ArgumentException::INVALID_VALUE
-        )
+        ArgumentException(this).setCause(ArgumentException::INVALID_VALUE)
       );
       argument = new StringArgument(
         option->getName(),
@@ -284,10 +275,7 @@ ArgumentParser::Argument* ArgumentParser::getArgument(
       Reference<RealOption> temp = option.cast<RealOption>();
       bassert(
         temp->isValid(value),
-        bindCause(
-          ArgumentException(this),
-          ArgumentException::INVALID_VALUE
-        )
+        ArgumentException(this).setCause(ArgumentException::INVALID_VALUE)
       );
       argument = new StringArgument(
         option->getName(),
@@ -298,10 +286,7 @@ ArgumentParser::Argument* ArgumentParser::getArgument(
       Reference<EnumOption> temp = option.cast<EnumOption>();
       bassert(
         temp->isValid(value),
-        bindCause(
-          ArgumentException(this),
-          ArgumentException::INVALID_VALUE
-        )
+        ArgumentException(this).setCause(ArgumentException::INVALID_VALUE)
       );
       argument = new StringArgument(
         option->getName(),
@@ -339,19 +324,13 @@ Array<ArgumentParser::Argument*> ArgumentParser::operator()(
         
         bassert(
           names.isKey(name),
-          bindCause(
-            ArgumentException(this),
-            ArgumentException::INVALID_OPTION
-          )
+          ArgumentException(this).setCause(ArgumentException::INVALID_OPTION)
         );
         Reference<Option> option = options[names[name]];
         const bool o = occured.hasValue(name);
         bassert(
           !(option->getFlags() & Option::STRICT) || !o,
-          bindCause(
-            ArgumentException(this),
-            ArgumentException::STRICT_VIOLATION
-          )
+          ArgumentException(this).setCause(ArgumentException::STRICT_VIOLATION)
         );
         
         if (o) {
@@ -392,27 +371,18 @@ Array<ArgumentParser::Argument*> ArgumentParser::operator()(
         while (j != endShortName) {
           bassert(
             ASCIITraits::isAlphaNum(*j),
-            bindCause(
-              ArgumentException(this),
-              ArgumentException::INVALID_SYMBOL
-            )
+            ArgumentException(this).setCause(ArgumentException::INVALID_SYMBOL)
           );
           const uint8 shortNameIndex = getIndexOfShortName(*j);
           bassert(
             lookup[shortNameIndex] != PrimitiveTraits<unsigned int>::MAXIMUM,
-            bindCause(
-              ArgumentException(this),
-              ArgumentException::INVALID_OPTION
-            )
+            ArgumentException(this).setCause(ArgumentException::INVALID_OPTION)
           );
           Reference<Option> option = options[lookup[shortNameIndex]];
           const bool o = occured.hasValue(option->getName());
           bassert(
             !(option->getFlags() & Option::STRICT) || !o,
-            bindCause(
-              ArgumentException(this),
-              ArgumentException::STRICT_VIOLATION
-            )
+            ArgumentException(this).setCause(ArgumentException::STRICT_VIOLATION)
           );
           
           if (o) {
@@ -449,7 +419,7 @@ Array<ArgumentParser::Argument*> ArgumentParser::operator()(
       // TAG: prefix options?
       bassert(
         this->flags & ORPHANS,
-        bindCause(ArgumentException(this), ArgumentException::ORPHAN)
+        ArgumentException(this).setCause(ArgumentException::ORPHAN)
       );
       result.append(new OrphanArgument(argument));
     }
@@ -463,10 +433,7 @@ Array<ArgumentParser::Argument*> ArgumentParser::operator()(
         if (option->getFlags() & Option::MANDATORY) {
           bassert(
             occured.hasValue(option->getName()),
-            bindCause(
-              ArgumentException(this),
-              ArgumentException::MANDATORY_VIOLATION
-            )
+            ArgumentException(this).setCause(ArgumentException::MANDATORY_VIOLATION)
           );
         }
       }

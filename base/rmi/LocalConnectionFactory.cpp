@@ -26,10 +26,7 @@ LocalConnectionFactory::LocalConnectionFactory(
   this->identifier = endPoint;
   try {
   } catch (...) {
-    throw bindCause(
-      OrbException(this),
-      OrbException::UNABLE_TO_INITIALIZE_FACTORY
-    );
+    throw OrbException(this).setCause(OrbException::UNABLE_TO_INITIALIZE_FACTORY);
   }
 }
 

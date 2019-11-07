@@ -547,7 +547,7 @@ public:
   */
   void insert(MemorySize index, const Value& value)
   {
-    if (!(index < getSize())) {
+    if (!(index <= getSize())) {
       throw OutOfRange(this);
     }
     const auto size = getSize(); // original size
@@ -566,7 +566,7 @@ public:
   */
   void insert(MemorySize index, Value&& value)
   {
-    if (!(index < getSize())) {
+    if (!(index <= getSize())) {
       throw OutOfRange(this);
     }
     const auto size = getSize(); // original size

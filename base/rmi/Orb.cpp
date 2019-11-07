@@ -88,7 +88,7 @@ void Orb::registerEncoding(
   bassert(Urn::isUrn(urn), InvalidFormat(this));
 //   bassert(
 //     urn.startsWith(OrbEncoding::getUrnNamespace()),
-//     bindCause(OrbException(this), OrbException::INVALID_ENCODING_NAMESPACE)
+//     OrbException(this).setCause(OrbException::INVALID_ENCODING_NAMESPACE)
 //   );
   bassert(!encodings.isKey(urn), AmbiguousRegistration(this));
   encodings.add(urn, encoding);
@@ -106,28 +106,28 @@ void Orb::registerScheme(
 }
 
 void Orb::registerFactory(Reference<OrbConnectionFactory> factory)
-  throw(OrbException, MemoryException) {
-  
+  throw(OrbException, MemoryException)
+{
   String urn = factory->getUrn();
   bassert(
     schemes.isKey(urn),
-    bindCause(OrbException(this), OrbException::SCHEME_NOT_REGISTERED)
+    OrbException(this).setCause(OrbException::SCHEME_NOT_REGISTERED)
   );
   factories.add(factory);
 }
 
 void Orb::openFactory(const String& identifier)
-  throw(InvalidFormat, OrbException, MemoryException) {
-  
+  throw(InvalidFormat, OrbException, MemoryException)
+{
   const int colon = identifier.indexOf("://");
   bassert(
     colon > 0,
-    bindCause(OrbException(this), OrbException::SCHEME_MISSING)
+    OrbException(this).setCause(OrbException::SCHEME_MISSING)
   );
   const String schemeId = identifier.substring(0, colon);
   bassert(
     schemeIds.isKey(schemeId),
-    bindCause(OrbException(this), OrbException::SCHEME_NOT_REGISTERED)
+    OrbException(this).setCause(OrbException::SCHEME_NOT_REGISTERED)
   );
   Reference<OrbScheme> scheme = schemes[schemeId];
   registerFactory(scheme->openFactory(identifier));
@@ -163,13 +163,13 @@ Orb::OrbConnectionReference Orb::getConnectionReference(
   const int colon = identifier.indexOf("://");
   bassert(
     colon >= 0,
-    bindCause(OrbException(this), OrbException::SCHEME_MISSING)
+    OrbException(this).setCause(OrbException::SCHEME_MISSING)
   );
   
   const String schemeId = identifier.substring(0, colon);
   bassert(
     schemeIds.isKey(schemeId),
-    bindCause(OrbException(this), OrbException::SCHEME_NOT_REGISTERED)
+    OrbException(this).setCause(OrbException::SCHEME_NOT_REGISTERED)
   );
   Reference<OrbScheme> scheme = schemeIds[schemeId];
   
@@ -260,7 +260,7 @@ void Orb::onIncomingConnection(
   String urn = connection->getUrn();
   bassert(
     schemes.isKey(urn),
-    bindCause(OrbException(this), OrbException::SCHEME_NOT_REGISTERED)
+    OrbException(this).setCause(OrbException::SCHEME_NOT_REGISTERED)
   );
   Reference<OrbScheme> scheme = schemes[urn];
   scheme->add(connection);
@@ -321,7 +321,7 @@ public:
     case INVOCATION:
     case 0:
     default:
-      throw bindCause(OrbException(this), OrbException::INVALID_REQUEST);
+      throw OrbException(this).setCause(OrbException::INVALID_REQUEST);
     }
   }
 };

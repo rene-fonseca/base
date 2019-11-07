@@ -74,7 +74,7 @@ public:
       int methodId = getMethodId("getDate");
       bassert(
         methodId >= 0,
-        bindCause(OrbException("No such method"), OrbException::INVALID_METHOD)
+        OrbException("No such method").setCause(OrbException::INVALID_METHOD)
       );
       
       // marshaling

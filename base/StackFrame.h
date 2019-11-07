@@ -55,7 +55,12 @@ public:
     Returns the stack frame.
   */
   static void* getStackFrame() noexcept;
-    
+
+  /**
+    Returns the caller.
+  */
+  static void* getCaller() noexcept;
+
   /**
     Returns the stack.
    

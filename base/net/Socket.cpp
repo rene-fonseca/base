@@ -1128,10 +1128,7 @@ uint8 Socket::getUnicastHops() const throw(NetworkException) {
     return buffer;
   } else {
 #endif
-    throw bindCause(
-      NetworkException(this),
-      NetworkException::OPERATION_NOT_SUPPORTED
-    );
+    throw NetworkException(this).setCause(NetworkException::OPERATION_NOT_SUPPORTED);
 #if (defined(_COM_AZURE_DEV__BASE__INET_IPV6))
   }
 #endif
@@ -1150,10 +1147,7 @@ void Socket::setUnicastHops(uint8 value) throw(NetworkException) {
     );
   } else {
 #endif
-    throw bindCause(
-      NetworkException(this),
-      NetworkException::OPERATION_NOT_SUPPORTED
-    );
+    throw NetworkException(this).setCause(NetworkException::OPERATION_NOT_SUPPORTED);
 #if (defined(_COM_AZURE_DEV__BASE__INET_IPV6))
   }
 #endif
@@ -1416,7 +1410,7 @@ void Socket::leaveGroup(const InetAddress& interface, const InetAddress& group) 
   } else {
     InetAddress i = interface;
     InetAddress g = group;
-    bassert(i.convertToIPv4() && g.convertToIPv4(), bindCause(NetworkException(this), 0));
+    bassert(i.convertToIPv4() && g.convertToIPv4(), NetworkException(this).setCause(0));
     struct ip_mreq mreq;
     copy<uint8>(
       Cast::getAddress(mreq.imr_multiaddr.s_addr),
@@ -1497,10 +1491,7 @@ void Socket::setIPv6Restriction(bool value) throw(NetworkException) {
     );
   } else {
 #endif
-    throw bindCause(
-      NetworkException(this),
-      NetworkException::OPERATION_NOT_SUPPORTED
-    );
+    throw NetworkException(this).setCause(NetworkException::OPERATION_NOT_SUPPORTED);
 #if (defined(_COM_AZURE_DEV__BASE__INET_IPV6) && defined(IPV6_V6ONLY))
   }
 #endif

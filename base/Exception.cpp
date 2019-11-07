@@ -116,6 +116,15 @@ Exception::Exception(const Exception& copy) noexcept
     cause(copy.cause),
     error(copy.error)
 {
+#if defined(_COM_AZURE_DEV__BASE__ANY_DEBUG)
+  copies = copy.copies + 1;
+
+  static MemorySize total = 0;
+  ++total;
+
+  ferr << "WARNING: UNDESIRED COPY OF EXCEPTION: " << copies << "/" << total << ENDL;
+  StackFrame::dump();
+#endif
 #if 0 && defined(_COM_AZURE_DEV__BASE__ANY_DEBUG)
   // ferr << "WARNING: UNDESIRED COPY OF EXCEPTION" << ENDL;
   // StackFrame::dump();

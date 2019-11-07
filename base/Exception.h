@@ -54,6 +54,10 @@ private:
   unsigned int cause = 0;
   /** The associated system error code. */
   unsigned int error = 0;
+#if defined(_COM_AZURE_DEV__BASE__DEBUG)
+  /** The number of times the exception got copy constructed. Try to keep to 0. */
+  unsigned int copies = 0;
+#endif
 public:
 
   /** Returns true if stack traces for new exceptions are printed. */

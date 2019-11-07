@@ -146,56 +146,253 @@ public:
   }
 };
 
+class ServiceException : public Exception {
+public:
+  
+  /**
+    Initializes the exception object with no message.
+  */
+  inline ServiceException() noexcept {
+  }
+
+  /**
+    Initializes the exception object.
+
+    @param message The message.
+  */
+  inline ServiceException(const char* message) noexcept : Exception(message) {
+  }
+  
+  /**
+    Initializes the exception with a type.
+    
+    @param type The type.
+  */
+  inline ServiceException(Type type) noexcept : Exception(type) {
+  }
+  
+  /**
+    Initializes the exception with a message and type.
+
+    @param message The message.
+    @param type The type.
+  */
+  inline ServiceException(const char* message, Type type) noexcept
+    : Exception(message, type) {
+  }
+};
+
+class SlackException : public ServiceException {
+public:
+  
+  /**
+    Initializes the exception object with no message.
+  */
+  inline SlackException() noexcept {
+  }
+
+  /**
+    Initializes the exception object.
+
+    @param message The message.
+  */
+  inline SlackException(const char* message) noexcept : ServiceException(message) {
+  }
+  
+  /**
+    Initializes the exception with a type.
+    
+    @param type The type.
+  */
+  inline SlackException(Type type) noexcept : ServiceException(type) {
+  }
+  
+  /**
+    Initializes the exception with a message and type.
+
+    @param message The message.
+    @param type The type.
+  */
+  inline SlackException(const char* message, Type type) noexcept
+    : ServiceException(message, type) {
+  }
+};
+
 /** Slack integration. */
 class Slack {
 public:
 
-  String url = "https://slack.com/api/chat.postMessage";
   String token;
+  bool verbose = true;
 
   Slack(const String& _token)
     : token(_token)
   {
   }
+
+  Reference<ObjectModel::Object> get(const String& url)
+  {
+    String response;
+    try {
+      HTTPSRequest request;
+      if (!request.open(HTTPSRequest::METHOD_GET, url)) {
+        return nullptr;
+      }
+
+      request.setRequestHeader("Authorization", "Bearer " + token);
+      // request.setRequestHeader("Content-Type", "application/json; charset=utf-8");
+
+      request.send();
+      response = request.getResponse();
+      request.close();
+    } catch (...) {
+      return nullptr;
+    }
+    
+    auto r = JSON().parse(response).cast<ObjectModel::Object>(); // TAG: do this via Value class
+    if (!r) {
+      return nullptr;
+    }
+
+    if (verbose) {
+      fout << r << ENDL;
+    }
+    
+    auto ok = r->getBoolean("ok", false);
+    if (!ok) {
+      return nullptr;
+    }
+    
+    return r;
+  }
   
-  void chat_postMessage(const String& channel, const String& text)
+  Reference<ObjectModel::Object> post(const String& url, Reference<ObjectModel::Object> o)
+  {
+    const String body = JSON::getJSON(o, false);
+    // fout << body << ENDL;
+    
+    String response;
+    try {
+      HTTPSRequest request;
+      if (!request.open(HTTPSRequest::METHOD_POST, url)) {
+        return nullptr;
+      }
+
+      request.setRequestHeader("Authorization", "Bearer " + token);
+      request.setRequestHeader("Content-Type", "application/json; charset=utf-8");
+
+      request.send(body);
+      response = request.getResponse();
+      request.close();
+    } catch (...) {
+      return nullptr;
+    }
+    
+    auto r = JSON().parse(response).cast<ObjectModel::Object>(); // TAG: do this via Value class
+    if (!r) {
+      return nullptr;
+    }
+
+    if (verbose) {
+      fout << r << ENDL;
+    }
+    
+    auto ok = r->getBoolean("ok", false);
+    if (!ok) {
+      return nullptr;
+    }
+    
+    return r;
+  }
+  
+  // TAG: test link, images, ...
+  String chat_postMessage(const String& channel, const String& text, const String& thread = String())
   {
     if (!token) {
-      return;
+      throw SlackException("No token.");
     }
     
     // TAG: check webhook API
-    
+    const String url = "https://slack.com/api/chat.postMessage";
+
     ObjectModel o;
     auto root = o.createObject();
     root->setValue(o.createString("channel"), o.createString(channel));
     root->setValue(o.createString("text"), o.createString(text));
     root->setValue(o.createString("as_user"), o.createBoolean(true));
     root->setValue(o.createString("username"), o.createString("From C++"));
-// thread_ts - reply
-    String body = JSON::getJSON(root, false);
-    fout << body << ENDL;
-
-    HTTPSRequest request;
-    if (!request.open(HTTPSRequest::METHOD_POST, url)) {
-      return;
+    if (thread) {
+      root->setValue(o.createString("thread_ts"), o.createString(thread));
     }
 
-    request.setRequestHeader("Authorization", "Bearer " + token);
-    request.setRequestHeader("Content-Type", "application/json; charset=utf-8");
-
-    request.send(body);
-    const String response = request.getResponse();
-    request.close();
-
-    auto r = JSON().parse(response).cast<ObjectModel::Object>();
+    Reference<ObjectModel::Object> r = post(url, root);
     if (r) {
-      fout << r << ENDL;
-
-      fout << "TS: " << r->getString("ts", String()) << ENDL;
-      // TAG: read JSON and get msg id - ts field
+      auto ts = r->getString("ts", String());
+      fout << "TS: " << ts << ENDL;
+      return ts;
     }
+    
+    return String();
   }
+
+  String chat_update(const String& channel, const String& text, const String& thread)
+  {
+    if (!token) {
+      throw SlackException("No token.");
+    }
+
+    const String url = "https://slack.com/api/chat.update";
+
+    ObjectModel o;
+    auto root = o.createObject();
+    root->setValue(o.createString("ts"), o.createString(thread));
+    root->setValue(o.createString("channel"), o.createString(channel));
+    root->setValue(o.createString("text"), o.createString(text));
+    root->setValue(o.createString("as_user"), o.createBoolean(true));
+    root->setValue(o.createString("username"), o.createString("From C++"));
+    // TAG: add support for set with String, bool, int, double, ...
+    
+    Reference<ObjectModel::Object> r = post(url, root);
+    if (r) {
+      auto ts = r->getString("ts", String());
+      // fout << "TS: " << ts << ENDL;
+      return ts;
+    }
+    
+    return String();
+  }
+
+  bool channels_info(const String& channel)
+  {
+    if (!token) {
+      throw SlackException("No token.");
+    }
+
+    const String url = "https://slack.com/api/channels.info?channel=" + channel;
+
+#if 0
+    ObjectModel o;
+    auto root = o.createObject();
+    root->setValue(o.createString("channel"), o.createString(channel));
+#endif
+    
+    Reference<ObjectModel::Object> r = get(url);
+    if (r) {
+      auto c = r->getObject("channel");
+      fout << c << ENDL;
+      return true;
+    }
+    
+    return false;
+  }
+  
+  // TAG: https://slack.com/api/api.test
+  // https://slack.com/api/channels.list
+  // https://slack.com/api/chat.delete
+  // https://slack.com/api/users.info
+  // https://slack.com/api/users.list
+  // https://api.slack.com/rtm
+
 };
 
 class SlackApplication : public Application {
@@ -207,6 +404,9 @@ private:
   String token;
   String channel;
   String text;
+  String thread;
+  bool post = false;
+  bool update = false;
 public:
   
   SlackApplication(
@@ -241,6 +441,22 @@ public:
           return false;
         }
         text = *enu.next();
+        post = true;
+        update = false;
+      } else if (argument == "--update") {
+        if (!enu.hasNext()) {
+          ferr << "Expected text." << ENDL;
+          return false;
+        }
+        text = *enu.next();
+        post = false;
+        update = true;
+      } else if (argument == "--thread") {
+        if (!enu.hasNext()) {
+          ferr << "Expected thread ts." << ENDL;
+          return false;
+        }
+        thread = *enu.next();
       } else {
         if (!token) {
           token = argument;
@@ -269,59 +485,26 @@ public:
       setExitCode(Application::EXIT_CODE_ERROR);
       return;
     }
-
-    Slack slack(token);
-    slack.chat_postMessage(channel, text);
-    return;
     
-#if 0
-    try {
-      HTTPSRequest request;
-      if (!request.open(HTTPSRequest::METHOD_GET, url)) {
-        setExitCode(Application::EXIT_CODE_ERROR);
-        return;
-      }
+    // TAG: get from env TOKEN, CHANNEL, ... SLACK_TOKEN, SLACK_CHANNEL, ...
 
-      auto enu = fields.getReadEnumerator();
-      while (enu.hasNext()) {
-        auto nv = enu.next();
-        request.setRequestHeader(nv->getKey(), nv->getValue());
-      }
-      
-      // request.setRequestHeader("Keep-Alive", "30");
-      // TAG: allow form data - get from options
-
-      String body;
-      request.send(body);
-      // TAG: read from stdin/file with progress
-
-      fout << "Status: " << request.getStatus() << ENDL;
-      fout << "Status text: " << request.getStatusText() << ENDL;
-      fout << "Content length: " << request.getContentLength() << ENDL;
-
-      // fout << "Content length: " << request.getResponseHeader("Content-Length") << ENDL;
-      // fout << "Content type: " << request.getResponseHeader("Content-Type") << ENDL;
-      
-      if (showHeader) {
-        const String header = request.getResponseHeader(); // TAG: subst CRLFs with EOL
-        fout << header << ENDL;
-      }
-      
-      if (filepath) {
-        PushToFile push(File(filepath, File::WRITE, File::CREATE | File::TRUNCATE));
-        request.getResponse(&push);
-      } else {
-        PushToStandardOutput push;
-        request.getResponse(&push);
-      }
-
-      request.close();
-    } catch (...) {
-      ferr << "Failed to read response." << ENDL;
-      setExitCode(Application::EXIT_CODE_ERROR);
+    if (!token) {
+      ferr << "Error: Need token." << ENDL;
+      setExitCode(1);
       return;
     }
-#endif
+    
+    Slack slack(token);
+    if (post) {
+      slack.chat_postMessage(channel, text, thread);
+    } else if (update) {
+      slack.chat_update(channel, text, thread);
+    } else if (channel) {
+      slack.channels_info(channel);
+    } else {
+      ferr << "Error: Need action." << ENDL;
+      setExitCode(1);
+    }
   }
 };
 

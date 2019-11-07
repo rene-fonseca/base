@@ -36,7 +36,15 @@ _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 */
 
 class _COM_AZURE_DEV__BASE__API Exception {
+public:
+
+  /** Callback for exception. */
+  typedef void (*ExceptionHandler)(Exception* exception);
 private:
+
+  /** When enabled, all exceptions are printed to stderr. */
+  static bool dumpExceptions;
+  static ExceptionHandler exceptionHandler;
 
   /** The message associated with the exception (ASCII format). This may not be available. */
   const char* message = nullptr;
@@ -47,7 +55,27 @@ private:
   /** The associated system error code. */
   unsigned int error = 0;
 public:
-  
+
+  /** Returns true if stack traces for new exceptions are printed. */
+  static inline bool getDumpExceptions() noexcept
+  {
+    return dumpExceptions;
+  }
+
+  /** Enables printing of stack traces when exceptions are constructed. */
+  static inline void setDumpExceptions(bool _dumpExceptions) noexcept
+  {
+    dumpExceptions = _dumpExceptions;
+  }
+
+  /** Sets exception handler. */
+  static inline ExceptionHandler setExceptionHandler(ExceptionHandler _exceptionHandler) noexcept
+  {
+    auto result = exceptionHandler;
+    exceptionHandler = _exceptionHandler;
+    return result;
+  }
+
   /**
     Returns true if the stack is currently being unwinded due to a raised exception.
     

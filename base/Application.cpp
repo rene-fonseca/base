@@ -41,6 +41,20 @@
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
+  void defaultExceptionHandler(Exception* exception) noexcept
+  {
+    if (exception) {
+      auto tls = Thread::getLocalContext();
+      if (tls) {
+        tls->stackTrace = StackFrame::getStack(64); // TAG: we can use static memory, make sure we do not reallocate
+        // TAG: only if dumping and if exception isnt silenced
+        if (Exception::getDumpExceptions()) {
+          ferr << "EXCEPTION CONSTRUCTED BY: " << tls->stackTrace << ENDL;
+        }
+      }
+    }
+  }
+
 class ApplicationImpl {
 public:
 
@@ -51,6 +65,14 @@ public:
     const Type exceptionType = Exception::getExceptionType();
     if (firstTime || exceptionType.isInitialized()) {
       firstTime = false;
+
+      auto tls = Thread::getLocalContext();
+      if (tls) {
+        if (!tls->stackTrace.isEmpty()) {
+          ferr << "LAST EXCEPTION " << tls->stackTrace << ENDL;
+        }
+      }
+
       try {
         throw;
       } catch (Exception& e) {

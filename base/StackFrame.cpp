@@ -44,28 +44,59 @@ void* StackFrame::getStackFrame() noexcept
   return frame;
 }
 
+namespace {
+
+  /** Returns the instruction pointer (return address) for the given stack frame. */
+  inline void* getInstructionPointer(void* frame) noexcept
+  {
+    void* ip = reinterpret_cast<void**>(frame)[1]; // TAG: handle all ABIs
+    return ip;
+  }
+}
+
+void* StackFrame::getCaller() noexcept
+{
+  void* frame = getStackFrame();
+  return getInstructionPointer(frame);
+}
+
+#if 0 // low level
+MemorySize StackFrame::getStack(void** dest, MemorySize size)
+{
+  return 0;
+}
+#endif
+
 StackFrame StackFrame::getStack(unsigned int levels)
 {
   StackFrame frames;
-
   unsigned int count = 0;
   void* _frame = getStackFrame();
   void* frame = _frame;
   while (frame && (count < levels)) {
     ++count;
-    void* ip = reinterpret_cast<void**>(frame)[1]; // TAG: handle all ABIs
+    void* ip = getInstructionPointer(frame);
+    void* symbol = DynamicLinker::getSymbolAddress(ip); // TAG: can we avoid this
+    if (!symbol) {
+      break;
+    }
     if (reinterpret_cast<MemorySize>(ip) < 0x10000) { // TAG: what is the proper way to detect top of stack
       break;
     }
+    auto previous = frame;
     frame = *reinterpret_cast<void**>(frame);
+    if (!frame || (frame == previous)) {
+      break;
+    }
   }
-  frames.frames.setSize(count);
+  const MemorySize size = count;
+  frames.frames.setSize(size);
   void** dest = frames.frames.getElements();
   frame = _frame;
   count = 0;
-  while (frame && (count < levels)) {
+  while (frame && (count < size)) {
     ++count;
-    void* ip = reinterpret_cast<void**>(frame)[1]; // TAG: handle all ABIs
+    void* ip = getInstructionPointer(frame);
     *dest++ = ip;
     frame = *reinterpret_cast<void**>(frame);
   }
@@ -80,15 +111,17 @@ void StackFrame::dump(unsigned int levels)
   }
   here = true;
 
+  FormatOutputStream& stream = ferr;
+
   void* frame = getStackFrame();
   MemorySize count = 0;
-  fout << "Stack trace:" << EOL;
+  stream << "Stack trace:" << EOL;
   if (!frame) {
-    fout << indent(2) << "NO STACK FRAMES" << EOL;
+    stream << indent(2) << "NO STACK FRAMES" << EOL;
     return;
   }
   while (frame && (count < levels)) {
-    void* ip = reinterpret_cast<void**>(frame)[1]; // TAG: handle all ABIs
+    void* ip = getInstructionPointer(frame);
     void* symbol = DynamicLinker::getSymbolAddress(ip);
     if (!symbol) {
       break;
@@ -98,14 +131,14 @@ void StackFrame::dump(unsigned int levels)
     }
     const String name = DynamicLinker::getSymbolName(ip);
     if (name) {
-      fout << indent(2) << count << ": " << symbol << "+" << HEX << ZEROPAD << NOPREFIX << setWidth(4) << (reinterpret_cast<uint8*>(ip) - reinterpret_cast<uint8*>(symbol)) << " " << TypeInfo::demangleName(name.native()) << EOL;
+      stream << indent(2) << count << ": " << symbol << "+" << HEX << ZEROPAD << NOPREFIX << setWidth(4) << (reinterpret_cast<uint8*>(ip) - reinterpret_cast<uint8*>(symbol)) << " " << TypeInfo::demangleName(name.native()) << EOL;
     } else {
-      fout << indent(2) << count << ": " << symbol << "+" << HEX << ZEROPAD << NOPREFIX << setWidth(4) << (reinterpret_cast<uint8*>(ip) - reinterpret_cast<uint8*>(symbol)) << EOL;
+      stream << indent(2) << count << ": " << symbol << "+" << HEX << ZEROPAD << NOPREFIX << setWidth(4) << (reinterpret_cast<uint8*>(ip) - reinterpret_cast<uint8*>(symbol)) << EOL;
     }
     ++count;
     frame = *reinterpret_cast<void**>(frame);
   }
-  fout << FLUSH;
+  stream << FLUSH;
   here = false;
 }
 

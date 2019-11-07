@@ -23,6 +23,7 @@
 #include <base/mem/NullPointer.h>
 #include <base/string/FormatOutputStream.h>
 #include <base/io/RandomInputStream.h>
+#include <base/StackFrame.h>
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
@@ -498,6 +499,8 @@ public:
   /** Random generator. */
   RandomInputStream randomInputStream;
   // TAG: add description?
+  /** Last known stack trace for exception. */
+  StackFrame stackTrace;
 
   ThreadLocalContext()
     : storage(Thread::THREAD_LOCAL_STORAGE)

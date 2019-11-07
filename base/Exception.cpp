@@ -20,6 +20,7 @@
 #endif
 
 #include <base/string/String.h>
+#include <base/StackFrame.h>
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
@@ -63,21 +64,43 @@ Type Exception::getExceptionType() noexcept
 #endif
 }
 
+extern void defaultExceptionHandler(Exception* exception) noexcept;
+
+bool Exception::dumpExceptions = false;
+
+Exception::ExceptionHandler Exception::exceptionHandler = &defaultExceptionHandler;
+
 Exception::Exception() noexcept
   : cause(PrimitiveTraits<unsigned int>::MAXIMUM)
 {
+#if 0 // || defined(_COM_AZURE_DEV__BASE__ANY_DEBUG) // TAG: also add support for Release config
+  if (exceptionHandler) {
+    exceptionHandler(this);
+  }
+#endif
 }
 
 Exception::Exception(const char* _message) noexcept
   : message(_message),
     cause(PrimitiveTraits<unsigned int>::MAXIMUM)
 {
+#if 0 // || defined(_COM_AZURE_DEV__BASE__ANY_DEBUG) // TAG: also add support for Release config
+  if (exceptionHandler) {
+    exceptionHandler(this);
+    // TAG: UnitTest should hook handler
+  }
+#endif
 }
 
 Exception::Exception(Type _type) noexcept
   : type(_type),
     cause(PrimitiveTraits<unsigned int>::MAXIMUM)
 {
+#if 0 // && defined(_COM_AZURE_DEV__BASE__ANY_DEBUG) // TAG: also add support for Release config
+  if (exceptionHandler) {
+    exceptionHandler(this);
+  }
+#endif
 }
 
 Exception::Exception(const char* _message, Type _type) noexcept
@@ -93,6 +116,10 @@ Exception::Exception(const Exception& copy) noexcept
     cause(copy.cause),
     error(copy.error)
 {
+#if 0 && defined(_COM_AZURE_DEV__BASE__ANY_DEBUG)
+  // ferr << "WARNING: UNDESIRED COPY OF EXCEPTION" << ENDL;
+  // StackFrame::dump();
+#endif
 }
 
 Type Exception::getThisType() const noexcept

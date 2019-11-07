@@ -88,16 +88,19 @@ void StackFrame::dump(unsigned int levels)
     return;
   }
   while (frame && (count < levels)) {
-    // TAG: need to get symbol name from debugger info
     void* ip = reinterpret_cast<void**>(frame)[1]; // TAG: handle all ABIs
-    if (reinterpret_cast<MemorySize>(ip) < 0x10000) { // TAG: what is the proper way to detect top of stack
+    void* symbol = DynamicLinker::getSymbolAddress(ip);
+    if (!symbol) {
+      break;
+    }
+    if (reinterpret_cast<MemorySize>(ip) < 0x10000) {
       break;
     }
     const String name = DynamicLinker::getSymbolName(ip);
     if (name) {
-      fout << indent(2) << count << ": " << TypeInfo::demangleName(name.native()) << EOL;
+      fout << indent(2) << count << ": " << symbol << "+" << HEX << ZEROPAD << NOPREFIX << setWidth(4) << (reinterpret_cast<uint8*>(ip) - reinterpret_cast<uint8*>(symbol)) << " " << TypeInfo::demangleName(name.native()) << EOL;
     } else {
-      fout << indent(2) << count << ": " << ip << EOL;
+      fout << indent(2) << count << ": " << symbol << "+" << HEX << ZEROPAD << NOPREFIX << setWidth(4) << (reinterpret_cast<uint8*>(ip) - reinterpret_cast<uint8*>(symbol)) << EOL;
     }
     ++count;
     frame = *reinterpret_cast<void**>(frame);
@@ -118,11 +121,15 @@ FormatOutputStream& operator<<(
   }
   for (MemorySize i = 0; i < size; ++i) {
     void* ip = value.getFrame(i);
+    void* symbol = DynamicLinker::getSymbolAddress(ip);
+    if (!symbol) {
+      break;
+    }
     const String name = DynamicLinker::getSymbolName(ip);
     if (name) {
-      stream << indent(2) << i << ": " << TypeInfo::demangleName(name.native()) << EOL;
+      stream << indent(2) << i << ": " << symbol << "+" << HEX << ZEROPAD << NOPREFIX << setWidth(4) << (reinterpret_cast<uint8*>(ip) - reinterpret_cast<uint8*>(symbol)) << " " << TypeInfo::demangleName(name.native()) << EOL;
     } else {
-      stream << indent(2) << i << ": " << ip << EOL;
+      stream << indent(2) << i << ": " << symbol << "+" << HEX << ZEROPAD << NOPREFIX << setWidth(4) << (reinterpret_cast<uint8*>(ip) - reinterpret_cast<uint8*>(symbol)) << EOL;
     }
   }
   return stream;

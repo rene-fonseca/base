@@ -84,7 +84,19 @@ public:
   inline NetworkException(const char* message, const Type& type) noexcept
     : IOException(message, type) {
   }
-  
+
+  inline NetworkException(const char* message, const Type& type, unsigned int cause) noexcept
+    : IOException(message, type)
+  {
+    setCause(cause);
+  }
+
+  inline NetworkException(const char* message, const Type& type, unsigned int error, int) noexcept
+    : IOException(message, type)
+  {
+    setError(error);
+  }
+
   _COM_AZURE_DEV__BASE__EXCEPTION_THIS_TYPE()
 };
 

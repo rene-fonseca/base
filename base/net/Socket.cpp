@@ -384,15 +384,13 @@ namespace internal {
 
     static inline void raiseNetwork(const char* message) throw(NetworkException)
     {
-      unsigned int error = getNativeError();
-      NetworkException e(message, Type::getType<Socket>());
-      unsigned int cause = getCause(error);
+      const unsigned int error = getNativeError();
+      const unsigned int cause = getCause(error);
       if (cause != PrimitiveTraits<unsigned int>::MAXIMUM) {
-        e.setCause(cause);
+        throw NetworkException(message, Type::getType<Socket>(), cause);
       } else {
-        e.setError(error);
+        throw NetworkException(message, Type::getType<Socket>(), error, 0);
       }
-      throw e; // will copy
     }
     
     static inline void getOption(
@@ -452,7 +450,7 @@ Socket::SocketImpl::~SocketImpl() {
       } else {
         e.setError(error);
       }
-      throw e;
+      throw e; // will copy
     }
   }
 }

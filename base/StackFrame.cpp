@@ -26,7 +26,8 @@ void* StackFrame::getStackFrame() noexcept
 {
   void** frame = nullptr;
 
-#if (_COM_AZURE_DEV__BASE__COMPILER == _COM_AZURE_DEV__BASE__COMPILER_LLVM)
+#if ((_COM_AZURE_DEV__BASE__COMPILER == _COM_AZURE_DEV__BASE__COMPILER_LLVM) || \
+     (_COM_AZURE_DEV__BASE__COMPILER == _COM_AZURE_DEV__BASE__COMPILER_GCC))
   asm("mov %%rbp, %0" : "=rm" ( frame ));
 #elif (_COM_AZURE_DEV__BASE__ARCH == _COM_AZURE_DEV__BASE__X86)
   asm (
@@ -73,6 +74,12 @@ StackFrame StackFrame::getStack(unsigned int levels)
 
 void StackFrame::dump(unsigned int levels)
 {
+  static bool here = false;
+  if (here) {
+    return;
+  }
+  here = true;
+
   void* frame = getStackFrame();
   MemorySize count = 0;
   fout << "Stack trace:" << EOL;
@@ -96,6 +103,7 @@ void StackFrame::dump(unsigned int levels)
     frame = *reinterpret_cast<void**>(frame);
   }
   fout << FLUSH;
+  here = false;
 }
 
 FormatOutputStream& operator<<(

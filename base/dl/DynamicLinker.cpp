@@ -178,7 +178,8 @@ DynamicLinker::~DynamicLinker()
 String DynamicLinker::getImagePath(void* address)
 {
   String result;
-#if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__MACOS)
+#if ((_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__MACOS) || \
+     (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__GNULINUX))
   Dl_info info;
   int status = dladdr(address, &info);
   if (status) {
@@ -192,7 +193,8 @@ String DynamicLinker::getImagePath(void* address)
 
 void* DynamicLinker::getImageAddress(void* address) noexcept
 {
-#if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__MACOS)
+#if ((_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__MACOS) || \
+     (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__GNULINUX))
   Dl_info info;
   int status = dladdr(address, &info);
   if (status) {
@@ -206,7 +208,8 @@ void* DynamicLinker::getImageAddress(void* address) noexcept
 
 void* DynamicLinker::getSymbolAddress(void* address) noexcept
 {
-#if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__MACOS)
+#if ((_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__MACOS) || \
+     (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__GNULINUX))
   Dl_info info;
   int status = dladdr(address, &info);
   if (status) {
@@ -221,7 +224,8 @@ void* DynamicLinker::getSymbolAddress(void* address) noexcept
 String DynamicLinker::getSymbolName(void* address)
 {
   String result;
-#if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__MACOS)
+#if ((_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__MACOS) || \
+     (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__GNULINUX))
   Dl_info info;
   int status = dladdr(address, &info);
   if (status) {

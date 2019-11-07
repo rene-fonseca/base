@@ -17,4 +17,12 @@ _COM_AZURE_DEV__BASE__DUMMY_SYMBOL
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
+MultibyteException::MultibyteException(const char* message, const Type& type, unsigned int cause, MemoryDiff octetIndex, MemoryDiff suboctetIndex) noexcept
+  : Exception(message, type)
+{
+  setCause(cause);
+  setOctetIndex(octetIndex);
+  setSuboctetIndex(suboctetIndex);
+}
+
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

@@ -617,31 +617,27 @@ MemorySize WideString::UTF8ToUCS2(ucs2* dest, const uint8* src, MemorySize size,
 
 #if 0 // TAG: fixme
 inline /*???*/
-void WideString::invalidCode(
-  int octetIndex, int suboctetIndex) throw(MultibyteException)
+void WideString::invalidCode(int octetIndex, int suboctetIndex) throw(MultibyteException)
 {
-  MultibyteException e(
-    "Invalid character code",
-    Type::getType<WideString>()
+  throw MultibyteException(
+    "Invalid character code.",
+    Type::getType<WideString>(),
+    MultibyteException::INVALID_CHARACTER_CODE,
+    octetIndex,
+    suboctetIndex
   );
-  e.setCause(MultibyteException::INVALID_CHARACTER_CODE);
-  e.setOctetIndex(octetIndex);
-  e.setSuboctetIndex(suboctetIndex);
-  throw e; // will copy
 }
 
 inline /*???*/
-void WideString::incompleteCode(
-  int octetIndex, int suboctetIndex) throw(MultibyteException)
+void WideString::incompleteCode(int octetIndex, int suboctetIndex) throw(MultibyteException)
 {
-  MultibyteException e(
-    "Incomplete character code",
-    Type::getType<WideString>()
+  throw MultibyteException(
+    "Incomplete character code.",
+    Type::getType<WideString>(),
+    MultibyteException::INCOMPLETE_CHARACTER_CODE,
+    octetIndex,
+    suboctetIndex
   );
-  e.setCause(MultibyteException::INCOMPLETE_CHARACTER_CODE);
-  e.setOctetIndex(octetIndex);
-  e.setSuboctetIndex(suboctetIndex);
-  throw e;
 }
 #endif
 
@@ -675,19 +671,23 @@ MemorySize WideString::UTF8ToUCS4(ucs4* dest, const uint8* src, MemorySize size,
           throw MultibyteException("Unexpected end reached.", Type::getType<WideString>());
         case Unicode::UTF8_ERROR_INCOMPLETE:
         {
-          MultibyteException e("Incomplete character code.", Type::getType<WideString>());
-          e.setCause(MultibyteException::INCOMPLETE_CHARACTER_CODE);
-          e.setOctetIndex(src - srcBegin);
-          e.setSuboctetIndex(0);
-          throw e;
+          throw MultibyteException(
+            "Incomplete character code.",
+            Type::getType<WideString>(),
+            MultibyteException::INCOMPLETE_CHARACTER_CODE,
+            src - srcBegin,
+            0
+          );
         }
         case Unicode::UTF8_ERROR_BAD_ENCODING:
         default:
-          MultibyteException e("Bad UTF-8 character encoding.", Type::getType<WideString>());
-          e.setCause(MultibyteException::INVALID_CHARACTER_CODE);
-          e.setOctetIndex(src - srcBegin);
-          e.setSuboctetIndex(0);
-          throw e;
+          throw MultibyteException(
+            "Bad UTF-8 character encoding.",
+            Type::getType<WideString>(),
+            MultibyteException::INVALID_CHARACTER_CODE,
+            src - srcBegin,
+            0
+          );
         }
       }
       src += status; // bytes read
@@ -704,19 +704,23 @@ MemorySize WideString::UTF8ToUCS4(ucs4* dest, const uint8* src, MemorySize size,
         throw MultibyteException("Unexpected end reached.", Type::getType<WideString>()); // not expected
       case Unicode::UTF8_ERROR_INCOMPLETE:
       {
-        MultibyteException e("Incomplete character code.", Type::getType<WideString>());
-        e.setCause(MultibyteException::INCOMPLETE_CHARACTER_CODE);
-        e.setOctetIndex(src - srcBegin);
-        e.setSuboctetIndex(0);
-        throw e;
+        throw MultibyteException(
+          "Incomplete character code.",
+          Type::getType<WideString>(),
+          MultibyteException::INCOMPLETE_CHARACTER_CODE,
+          src - srcBegin,
+          0
+        );
       }
       case Unicode::UTF8_ERROR_BAD_ENCODING:
       default:
-        MultibyteException e("Bad UTF-8 character encoding.", Type::getType<WideString>());
-        e.setCause(MultibyteException::INVALID_CHARACTER_CODE);
-        e.setOctetIndex(src - srcBegin);
-        e.setSuboctetIndex(0);
-        throw e;
+        throw MultibyteException(
+          "Bad UTF-8 character encoding.",
+          Type::getType<WideString>(),
+          MultibyteException::INVALID_CHARACTER_CODE,
+          src - srcBegin,
+          0
+        );
       }
     }
     src += status; // bytes read

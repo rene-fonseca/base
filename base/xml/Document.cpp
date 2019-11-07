@@ -61,7 +61,7 @@ DocumentType Document::createAndSetDocumentType(
   
   bassert(
     doc->intSubset == 0,
-    bindCause(DOMException(this), DOMException::HIERARCHY_REQUEST)
+    DOMException(this).setCause(DOMException::HIERARCHY_REQUEST)
   );
   
   xmlDtd* dtd = xmlCreateIntSubset(
@@ -132,10 +132,7 @@ Attribute Document::createAttributeNS(
       (((prefix != "xmlns") || (qualifiedName != "xmlns")) &&
        (namespaceURI == "http://www.w3.org/2000/xmlns")) &&
       (localName.indexOf(":") < 0),
-      bindCause(
-        DOMException("Malformed qualified name", this),
-        DOMException::NAMESPACE_ERROR
-      )
+      DOMException("Malformed qualified name", this).setCause(DOMException::NAMESPACE_ERROR)
     );
     
     ns = xmlNewNs( // TAG: destroy if exception is raised
@@ -148,10 +145,7 @@ Attribute Document::createAttributeNS(
     localName = qualifiedName;
     bassert(
       localName.isProper() && !namespaceURI.isProper(),
-      bindCause(
-        DOMException("Malformed qualified name", this),
-        DOMException::NAMESPACE_ERROR
-      )
+      DOMException("Malformed qualified name", this).setCause(DOMException::NAMESPACE_ERROR)
     );
   }
 
@@ -274,19 +268,13 @@ Element Document::createElementNS(
       ((prefix != "xml") ||
        (namespaceURI == "http://www.w3.org/XML/1998/namespace")) &&
         (localName.indexOf(":") < 0),
-      bindCause(
-        DOMException("Malformed qualified name", this),
-        DOMException::NAMESPACE_ERROR
-      )
+      DOMException("Malformed qualified name", this).setCause(DOMException::NAMESPACE_ERROR)
     );
   } else {
     localName = qualifiedName;
     bassert(
       localName.isProper(),
-      bindCause(
-        DOMException("Malformed qualified name", this),
-        DOMException::NAMESPACE_ERROR
-      )
+      DOMException("Malformed qualified name", this).setCause(DOMException::NAMESPACE_ERROR)
     );
   }
   
@@ -437,7 +425,7 @@ Node Document::importNode(Node importedNode, bool deep) throw(DOMException) {
   case XML_ATTRIBUTE_NODE:
     {
       if (doc->doc != doc) { // at root
-        throw bindCause(DOMException(this), DOMException::NOT_SUPPORTED);
+        throw DOMException(this).setCause(DOMException::NOT_SUPPORTED);
       }
       xmlNode* result = (xmlNode*)xmlCopyProp((xmlNode*)doc, (xmlAttr*)node);
       result->parent = 0;
@@ -445,7 +433,7 @@ Node Document::importNode(Node importedNode, bool deep) throw(DOMException) {
       return result;
     }
   default:
-		throw bindCause(DOMException(this), DOMException::NOT_SUPPORTED);
+		throw DOMException(this).setCause(DOMException::NOT_SUPPORTED);
   }
 #else
   throw DOMException(this);

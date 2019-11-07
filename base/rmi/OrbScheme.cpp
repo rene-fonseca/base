@@ -18,7 +18,7 @@ _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 Reference<OrbConnectionFactory> OrbScheme::openFactory(
   const String& identifier) throw(InvalidFormat, OrbException) {
   // TAG: validate identifier
-  throw bindCause(OrbException(this), OrbException::NOT_SUPPORTED);
+  throw OrbException(this).setCause(OrbException::NOT_SUPPORTED);
 }
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

@@ -44,7 +44,7 @@ OrbBuffer* OrbBufferPool::acquire(unsigned int holding) throw(OrbException) {
       ExclusiveSynchronize<Guard> _guard(guard);
       --numberOfBuffers; // undo
       if (numberOfBuffers == holding) {
-        throw bindCause(OrbException(this), OrbException::OUT_OF_MEMORY);
+        throw OrbException(this).setCause(OrbException::OUT_OF_MEMORY);
       }
     }
     if (node) {

@@ -58,7 +58,7 @@ IEEE1394::IEEE1394() throw(IEEE1394Exception) {
 void IEEE1394::IsochronousRequestImpl::setOptions(unsigned int options) throw(IEEE1394Exception) {
   bassert(
     status == READY,
-    IEEE1394Exception("Request not ready", this).setCause(IEEE1394::REQUEST_NOT_READY)
+    bindCause(IEEE1394Exception("Request not ready", this), IEEE1394::REQUEST_NOT_READY)
   );
   this->options = options;
 }
@@ -66,7 +66,7 @@ void IEEE1394::IsochronousRequestImpl::setOptions(unsigned int options) throw(IE
 void IEEE1394::IsochronousRequestImpl::reset() throw(IEEE1394Exception) {
   bassert(
     status != PENDING,
-    IEEE1394Exception("Request is pending", this).setCause(IEEE1394::REQUEST_NOT_PENDING)
+    bindCause(IEEE1394Exception("Request is pending", this), IEEE1394::REQUEST_NOT_PENDING)
   );
   resetContext();
   status = READY;
@@ -87,7 +87,7 @@ void IEEE1394::IsochronousReadRequestImpl::setSubchannel(
   unsigned int subchannel) throw(OutOfDomain, IEEE1394Exception) {
   bassert(
     getStatus() == READY,
-    IEEE1394Exception("Request not ready", this).setCause(IEEE1394::REQUEST_NOT_READY)
+    bindCause(IEEE1394Exception("Request not ready", this), IEEE1394::REQUEST_NOT_READY)
   );
   if (!(subchannel <= IEEE1394::BROADCAST)) {
     throw OutOfDomain(this);
@@ -99,7 +99,7 @@ void IEEE1394::IsochronousReadRequestImpl::setBuffer(
   uint8* buffer, unsigned int size) throw(IEEE1394Exception) {
   bassert(
     getStatus() == READY,
-    IEEE1394Exception("Request not ready", this).setCause(IEEE1394::REQUEST_NOT_READY)
+    bindCause(IEEE1394Exception("Request not ready", this), IEEE1394::REQUEST_NOT_READY)
   );
   this->buffer = buffer;
   this->bufferSize = size;
@@ -108,7 +108,7 @@ void IEEE1394::IsochronousReadRequestImpl::setBuffer(
 void IEEE1394::IsochronousReadFixedPacketsRequestImpl::setPayload(unsigned int payload) throw(OutOfDomain, IEEE1394Exception) {
   bassert(
     getStatus() == READY,
-    IEEE1394Exception("Request not ready", this).setCause(IEEE1394::REQUEST_NOT_READY)
+    bindCause(IEEE1394Exception("Request not ready", this), IEEE1394::REQUEST_NOT_READY)
   );
   bassert(payload % sizeof(Quadlet) == 0, OutOfDomain(this));
   this->payload = payload;
@@ -117,7 +117,7 @@ void IEEE1394::IsochronousReadFixedPacketsRequestImpl::setPayload(unsigned int p
 void IEEE1394::IsochronousReadFixedDataRequestImpl::setNumberOfPackets(unsigned int packets) throw(OutOfDomain, IEEE1394Exception) {
   bassert(
     getStatus() == READY,
-    IEEE1394Exception("Request not ready", this).setCause(IEEE1394::REQUEST_NOT_READY)
+    bindCause(IEEE1394Exception("Request not ready", this), IEEE1394::REQUEST_NOT_READY)
   );
   this->numberOfPackets = packets;
 }
@@ -125,7 +125,7 @@ void IEEE1394::IsochronousReadFixedDataRequestImpl::setNumberOfPackets(unsigned 
 void IEEE1394::IsochronousReadFixedDataRequestImpl::setHeaderSize(unsigned int size) throw(OutOfDomain, IEEE1394Exception) {
   bassert(
     getStatus() == READY,
-    IEEE1394Exception("Request not ready", this).setCause(IEEE1394::REQUEST_NOT_READY)
+    bindCause(IEEE1394Exception("Request not ready", this), IEEE1394::REQUEST_NOT_READY)
   );
   bassert(payload % sizeof(Quadlet) == 0, OutOfDomain(this));
   this->headerSize = size;
@@ -134,7 +134,7 @@ void IEEE1394::IsochronousReadFixedDataRequestImpl::setHeaderSize(unsigned int s
 void IEEE1394::IsochronousReadFixedDataRequestImpl::setPayload(unsigned int payload) throw(OutOfDomain, IEEE1394Exception) {
   bassert(
     getStatus() == READY,
-    IEEE1394Exception("Request not ready", this).setCause(IEEE1394::REQUEST_NOT_READY)
+    bindCause(IEEE1394Exception("Request not ready", this), IEEE1394::REQUEST_NOT_READY)
   );
   bassert(payload % sizeof(Quadlet) == 0, OutOfDomain(this));
   this->payload = payload;
@@ -160,7 +160,7 @@ void IEEE1394::IsochronousWriteRequestImpl::setBuffer(
   const uint8* buffer,
   unsigned int size,
   unsigned int numberOfPackets) throw(IEEE1394Exception) {
-  bassert(getStatus() == READY, IEEE1394Exception("Request not ready", this).setCause(IEEE1394::REQUEST_NOT_READY));
+  bassert(getStatus() == READY, bindCause(IEEE1394Exception("Request not ready", this), IEEE1394::REQUEST_NOT_READY));
   this->buffer = buffer;
   this->bufferSize = size;
   this->numberOfPackets = numberOfPackets;
@@ -191,7 +191,7 @@ void IEEE1394::IsochronousWriteRequestImpl::setBuffer(
 void IEEE1394::IsochronousWriteRequestImpl::setSpeed(unsigned int speed) throw(OutOfDomain, IEEE1394Exception) {
   bassert(
     getStatus() == READY,
-    IEEE1394Exception("Request not ready", this).setCause(IEEE1394::REQUEST_NOT_READY)
+    bindCause(IEEE1394Exception("Request not ready", this), IEEE1394::REQUEST_NOT_READY)
   );
   switch (speed) {
   case 100:
@@ -267,12 +267,12 @@ EUI64 IEEE1394::getIdentifier(unsigned short node) throw(IEEE1394Exception) {
   uint32 crc = getQuadlet(node, IEEE1394::CONFIGURATION_ROM);
   bassert(
     (crc >> 24) >= 4,  // minimum size for general format
-    IEEE1394Exception("No general configuration ROM", this).setCause(IEEE1394::NO_GENERAL_CONFIGURATION_ROM)
+    bindCause(IEEE1394Exception("No general configuration ROM", this), IEEE1394::NO_GENERAL_CONFIGURATION_ROM)
   );
   uint32 name = getQuadlet(node, IEEE1394::BUS_INFO_NAME);
   bassert(
     name == 0x31333934, // "1394"
-    IEEE1394Exception("No general configuration ROM", this).setCause(IEEE1394::NO_GENERAL_CONFIGURATION_ROM)    
+    bindCause(IEEE1394Exception("No general configuration ROM", this), IEEE1394::NO_GENERAL_CONFIGURATION_ROM)
   );
   return getEUI64(node);
 }
@@ -283,12 +283,12 @@ unsigned int IEEE1394::getMaximumPayload(unsigned short node) throw(IEEE1394Exce
   // minimum size for general format
   bassert(
     ((crc >> 24) * sizeof(Quadlet)) >= sizeof(BusInfo),
-    IEEE1394Exception("No general configuration ROM", this).setCause(NO_GENERAL_CONFIGURATION_ROM)
+    bindCause(IEEE1394Exception("No general configuration ROM", this), NO_GENERAL_CONFIGURATION_ROM)
   );
   uint32 name = getQuadlet(node, IEEE1394::BUS_INFO_NAME);
   bassert(
     name == 0x31333934, // "1394"
-    IEEE1394Exception("No general configuration ROM", this).setCause(NO_GENERAL_CONFIGURATION_ROM)
+    bindCause(IEEE1394Exception("No general configuration ROM", this), NO_GENERAL_CONFIGURATION_ROM)
   );
   uint32 flags = getQuadlet(node, IEEE1394::BUS_INFO_FLAGS);
   unsigned int max = getBits(flags, 12, 4); // max_rec field
@@ -327,7 +327,7 @@ unsigned int IEEE1394::getVendorId(unsigned short node) throw(IEEE1394Exception)
   bassert(
     ((crc >> 24) * sizeof(Quadlet) >= sizeof(BusInfo)) && // check for general ROM format
     (name == 0x31333934), // "1394"
-    IEEE1394Exception("Invalid configuration ROM", this).setCause(IEEE1394::INVALID_BUS_INFORMATION_BLOCK)
+    bindCause(IEEE1394Exception("Invalid configuration ROM", this), IEEE1394::INVALID_BUS_INFORMATION_BLOCK)
   );
   
   const uint32 rootDirectoryOffset =
@@ -361,12 +361,12 @@ String IEEE1394::getDescription(unsigned short node) throw(IEEE1394Exception) {
   // minimum size for general format
   bassert(
     ((crc >> 24) * sizeof(Quadlet)) >= sizeof(BusInfo),
-    IEEE1394Exception("No general configuration ROM", this).setCause(NO_GENERAL_CONFIGURATION_ROM)
+    bindCause(IEEE1394Exception("No general configuration ROM", this), NO_GENERAL_CONFIGURATION_ROM)
   );
   uint32 name = getQuadlet(node, IEEE1394::BUS_INFO_NAME);
   bassert(
     name == 0x31333934, // "1394"
-    IEEE1394Exception("No general configuration ROM", this).setCause(NO_GENERAL_CONFIGURATION_ROM)
+    bindCause(IEEE1394Exception("No general configuration ROM", this), NO_GENERAL_CONFIGURATION_ROM)
   );
   const uint32 rootDirectoryOffset =
     IEEE1394::CONFIGURATION_ROM + ((crc >> 24) + 1) * sizeof(Quadlet);
@@ -409,12 +409,12 @@ String IEEE1394::getKeywords(unsigned short node) throw(IEEE1394Exception) {
   // minimum size for general format
   bassert(
     ((crc >> 24) * sizeof(Quadlet)) >= sizeof(BusInfo),
-    IEEE1394Exception("No general configuration ROM", this).setCause(NO_GENERAL_CONFIGURATION_ROM)
+    bindCause(IEEE1394Exception("No general configuration ROM", this), NO_GENERAL_CONFIGURATION_ROM)
   );
   uint32 name = getQuadlet(node, IEEE1394::BUS_INFO_NAME);
   bassert(
     name == 0x31333934, // "1394"
-    IEEE1394Exception("No general configuration ROM", this).setCause(NO_GENERAL_CONFIGURATION_ROM)
+    bindCause(IEEE1394Exception("No general configuration ROM", this), NO_GENERAL_CONFIGURATION_ROM)
   );
   const uint32 rootDirectoryOffset =
     IEEE1394::CONFIGURATION_ROM + ((crc >> 24) + 1) * sizeof(Quadlet);

@@ -382,8 +382,8 @@ namespace internal {
       }
     }
 
-    static inline void raiseNetwork(
-      const char* message) throw(NetworkException) {
+    static inline void raiseNetwork(const char* message) throw(NetworkException)
+    {
       unsigned int error = getNativeError();
       NetworkException e(message, Type::getType<Socket>());
       unsigned int cause = getCause(error);
@@ -392,7 +392,7 @@ namespace internal {
       } else {
         e.setError(error);
       }
-      throw e;
+      throw e; // will copy
     }
     
     static inline void getOption(
@@ -1128,7 +1128,7 @@ uint8 Socket::getUnicastHops() const throw(NetworkException) {
     return buffer;
   } else {
 #endif
-    throw NetworkException(this).setCause(NetworkException::OPERATION_NOT_SUPPORTED);
+    throw bindCause(NetworkException(this), NetworkException::OPERATION_NOT_SUPPORTED);
 #if (defined(_COM_AZURE_DEV__BASE__INET_IPV6))
   }
 #endif
@@ -1147,7 +1147,7 @@ void Socket::setUnicastHops(uint8 value) throw(NetworkException) {
     );
   } else {
 #endif
-    throw NetworkException(this).setCause(NetworkException::OPERATION_NOT_SUPPORTED);
+    throw bindCause(NetworkException(this), NetworkException::OPERATION_NOT_SUPPORTED);
 #if (defined(_COM_AZURE_DEV__BASE__INET_IPV6))
   }
 #endif
@@ -1491,7 +1491,7 @@ void Socket::setIPv6Restriction(bool value) throw(NetworkException) {
     );
   } else {
 #endif
-    throw NetworkException(this).setCause(NetworkException::OPERATION_NOT_SUPPORTED);
+    throw bindCause(NetworkException(this), NetworkException::OPERATION_NOT_SUPPORTED);
 #if (defined(_COM_AZURE_DEV__BASE__INET_IPV6) && defined(IPV6_V6ONLY))
   }
 #endif

@@ -627,7 +627,7 @@ void WideString::invalidCode(
   e.setCause(MultibyteException::INVALID_CHARACTER_CODE);
   e.setOctetIndex(octetIndex);
   e.setSuboctetIndex(suboctetIndex);
-  throw e;
+  throw e; // will copy
 }
 
 inline /*???*/

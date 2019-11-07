@@ -64,12 +64,13 @@ public:
     ai.insert(9, 23);
     fout << "ai: " << ai << ENDL;
 
-    fout << "Invalid insert (expecting OutOfRange)" << ENDL;
+    fout << "Invalid insert (expecting OutOfRange) for size " << ai.getSize() << ENDL;
     try {
       ai.insert(11, 123);
     } catch (Exception& e) {
       fout << indent(2) << "Catched exception: " << TypeInfo::getTypename(e) << ENDL;
     }
+    ai.insert(10, 1234); // at end
 
     fout << "Removing element at index 2" << ENDL;
     ai.remove(2);

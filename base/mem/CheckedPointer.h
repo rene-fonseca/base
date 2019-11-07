@@ -140,7 +140,9 @@ public:
   inline CheckedPointer<POLY> cast() throw(CastException)
   {
     POLY* temp = dynamic_cast<POLY*>(value);
-    bassert(temp, CastException(this));
+    if (!temp) {
+      throw CastException(this);
+    }
     return temp;
   }
   
@@ -149,7 +151,9 @@ public:
   */
   inline TYPE& operator*() throw(NullPointer)
   {
-    bassert(value, NullPointer(this));
+    if (!value) {
+      throw NullPointer(this);
+    }
     return *value;
   }
   
@@ -158,7 +162,9 @@ public:
   */
   inline const TYPE& operator*() const throw(NullPointer)
   {
-    bassert(value, NullPointer(this));
+    if (!value) {
+      throw NullPointer(this);
+    }
     return *value;
   }
   
@@ -167,7 +173,9 @@ public:
   */
   inline TYPE* operator->() throw(NullPointer)
   {
-    bassert(value, NullPointer(this));
+    if (!value) {
+      throw NullPointer(this);
+    }
     return value;
   }
   
@@ -176,7 +184,9 @@ public:
   */
   inline const TYPE* operator->() const throw(NullPointer)
   {
-    bassert(value, NullPointer(this));
+    if (!value) {
+      throw NullPointer(this);
+    }
     return value;
   }
   

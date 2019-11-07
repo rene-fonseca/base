@@ -137,7 +137,9 @@ public:
   inline Pointer<POLY> cast() const throw(CastException)
   {
     const POLY* result = dynamic_cast<const POLY*>(value);
-    bassert(result, CastException(this));
+    if (!result) {
+      throw CastException(this);
+    }
     return result;
   }
   

@@ -501,7 +501,9 @@ public:
           // child is the first node
         }
       }
-      bassert(child, InvalidKey(this));
+      if (!child) {
+        throw InvalidKey(this);
+      }
       return *child->getValue();
     }
     
@@ -517,7 +519,9 @@ public:
              ((child->getHash() != hash) || (child->getKey() != key))) {
         child = child->getNext();
       }
-      bassert(child, InvalidKey(this));
+      if (!child) {
+        throw InvalidKey(this);
+      }
       return child->getValue();
     }
     
@@ -582,7 +586,9 @@ public:
       const unsigned long hash = getHash(key);
       Node** bucket = getBuckets() + (hash & mask);
       Node* child = *bucket;
-      bassert(child, InvalidKey(this));
+      if (!child) {
+        throw InvalidKey(this);
+      }
       if ((child->getHash() == hash) && (child->getKey() == key)) {
         *bucket = child->getNext(); // unlink first node (next could be 0)
       } else {
@@ -592,7 +598,9 @@ public:
           parent = child;
           child = child->getNext();
         }
-        bassert(child, InvalidKey(this));
+        if (!child) {
+          throw InvalidKey(this);
+        }
         parent->setNext(child->getNext()); // unlink node from linked list
       }
       --size;
@@ -675,7 +683,9 @@ public:
     */
     Pointer next() throw(EndOfEnumeration)
     {
-      bassert(numberOfElements, EndOfEnumeration(this));
+      if (!numberOfElements) {
+        throw EndOfEnumeration(this);
+      }
       while (!node) {
         ++bucket;
         node = *bucket;
@@ -743,7 +753,9 @@ public:
     */
     Pointer next() throw(EndOfEnumeration)
     {
-      bassert(numberOfElements, EndOfEnumeration(this));
+      if (!numberOfElements) {
+        throw EndOfEnumeration(this);
+      }
       while (!node) {
         ++bucket;
         node = *bucket;

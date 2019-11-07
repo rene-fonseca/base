@@ -279,7 +279,9 @@ public:
       Returns the next element and advances the position of this enumeration.
     */
     inline Pointer next() throw(EndOfEnumeration) {
-      bassert(count != 0, EndOfEnumeration());
+      if (count == 0) {
+        throw EndOfEnumeration();
+      }
       if (count % (sizeof(unsigned long) * 8) == 0) {
         --word;
       }
@@ -363,7 +365,9 @@ public:
       Returns the next element and advances the position of this enumeration.
     */
     inline Pointer next() throw(EndOfEnumeration) {
-      bassert(count != 0, EndOfEnumeration());
+      if (count == 0) {
+        throw EndOfEnumeration();
+      }
       if (count % (sizeof(unsigned long) * 8) == 0) {
         --word;
       }

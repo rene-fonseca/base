@@ -84,24 +84,32 @@ public:
   }
 
   inline TYPE& operator*() throw(NullPointer) {
-    bassert(object, NullPointer(this));
+    if (!object) {
+      throw NullPointer(this);
+    }
     return *object;
   }
 
   inline const TYPE& operator*() const throw(NullPointer) {
-    bassert(object, NullPointer(this));
+    if (!object) {
+      throw NullPointer(this);
+    }
     return *object;
   }
 
   inline TYPE* operator->() throw(NullPointer)
   {
-    bassert(object, NullPointer(this));
+    if (!object) {
+      throw NullPointer(this);
+    }
     return object;
   }
 
   inline const TYPE* operator->() const throw(NullPointer)
   {
-    bassert(object, NullPointer(this));
+    if (!object) {
+      throw NullPointer(this);
+    }
     return object;
   }
 

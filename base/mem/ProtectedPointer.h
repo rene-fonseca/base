@@ -41,9 +41,12 @@ public:
     
     @param value The object pointer to be automated.
   */
-  inline ProtectedPointer(TYPE* _value) throw(NullPointer) : value(_value)
+  inline ProtectedPointer(TYPE* _value) throw(NullPointer)
+    : value(_value)
   {
-    bassert(value, NullPointer(this));
+    if (!value) {
+      throw NullPointer(this);
+    }
   }
   
   /**

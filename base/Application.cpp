@@ -624,10 +624,9 @@ public:
 
 void Application::initialize() throw() {
   static unsigned int singleton = 0;
-  bassert(
-    singleton == 0,
-    SingletonException("Application has been initialized", this)
-  );
+  if (singleton != 0) {
+    throw SingletonException("Application has been initialized", this);
+  }
   ++singleton;
 
   // install signal handler
@@ -678,10 +677,9 @@ void Application::initialize() throw() {
   action.sa_flags = SA_SIGINFO;
   action.sa_sigaction = ApplicationImpl::actionHandler;
   for (unsigned int i = 0; i < getArraySize(SIGNALS); ++i) {
-    bassert(
-      sigaction(SIGNALS[i], &action, 0) == 0,
-      UnexpectedFailure("Unable to register signal handler", this)
-    );
+    if (sigaction(SIGNALS[i], &action, 0) != 0) {
+      throw UnexpectedFailure("Unable to register signal handler", this);
+    }
   }
 #  elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__IRIX65)
     if (!((bsd_signal(SIGHUP, ApplicationImpl::signalHandler) != SIG_ERR) &&

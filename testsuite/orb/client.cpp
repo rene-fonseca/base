@@ -82,7 +82,9 @@ public:
       DateSkeleton* skeleton = Cast::getPointer<DateSkeleton*>(
         reference.getId()
       );
-      bassert(skeleton, NullPointer(this));
+      if (!skeleton) {
+        throw NullPointer(this);
+      }
       // bassert(skeleton, CastException(this));
       return skeleton->getDate();
     }

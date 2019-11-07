@@ -659,7 +659,9 @@ LinuxRawIEEE1394::~LinuxRawIEEE1394() {
 }
 
 void LinuxRawIEEE1394::registerFCPListener(FunctionControlProtocolListener* listener) throw(IEEE1394Exception) {
-  bassert(listener, NullPointer(this));
+  if (!listener) {
+    throw NullPointer(this);
+  }
   
   LinuxRawIEEE1394Impl::RequestContext requestContext;
   requestContext.type = LinuxRawIEEE1394::REQUEST_FCP_LISTEN;

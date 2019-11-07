@@ -165,14 +165,9 @@ inline TYPE absolute(const TYPE& value) noexcept
 }
 
 /**
-  Raises the specified exception if the assertion is false.
-
-  @param assertion The assertion.
-  @param exception The exception.
-
-  @ingroup debugging
-  @see Assertion
+  Raises the specified exception if the assertion is false. Do NOT use.
 */
+#if 0
 template<class EXCEPTION>
 inline void bassert(bool assertion, const EXCEPTION& exception)
 {
@@ -180,6 +175,13 @@ inline void bassert(bool assertion, const EXCEPTION& exception)
     throw exception;
   }
 }
+#endif
+
+// TAG: temporary workaround to avoid construction of exception
+#define bassert(expression, exception) \
+  if (!static_cast<bool>(expression)) { \
+    throw exception; \
+  }
 
 /**
   This class allows assertions to be specified outside a function body. This

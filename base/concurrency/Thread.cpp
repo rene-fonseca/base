@@ -436,7 +436,9 @@ Thread::Thread(Runnable* _runnable) throw(NullPointer, ResourceException)
     state(NOTSTARTED),
     identifier(nullptr)
 {
-  bassert(runnable, NullPointer(this));
+  if (!runnable) {
+    throw NullPointer(this);
+  }
   parent = Thread::getThread();
   ASSERT(parent); // a parent must always exist
 }

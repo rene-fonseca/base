@@ -172,9 +172,11 @@ void Bitmap::encode(Format format, Encoding encoding, void* data) throw() {
 #endif
 
 // TAG: use Color
-uint32 Bitmap::getPixel(
-  const Position& position) const throw(UserInterfaceException) {
-  bassert(handle.isValid(), NullPointer(this));
+uint32 Bitmap::getPixel(const Position& position) const throw(UserInterfaceException)
+{
+  if (!handle.isValid()) {
+    throw NullPointer(this);
+  }
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   return 0; // TAG: fixme
 #elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__MACOS)
@@ -192,8 +194,11 @@ uint32 Bitmap::getPixel(
 // TAG: use Color
 void Bitmap::setPixel(
   const Position& position,
-  uint32 value) const throw(UserInterfaceException) {
-  bassert(handle.isValid(), NullPointer(this));
+  uint32 value) const throw(UserInterfaceException)
+{
+  if (!handle.isValid()) {
+    throw NullPointer(this);
+  }
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   // TAG: fixme
 #elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__MACOS)

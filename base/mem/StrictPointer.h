@@ -43,7 +43,9 @@ public:
   */
   inline StrictPointer(TYPE* _value) throw(NullPointer) : value(_value)
   {
-    bassert(value, NullPointer(this));
+    if (!value) {
+      throw NullPointer(this);
+    }
   }
   
   /**

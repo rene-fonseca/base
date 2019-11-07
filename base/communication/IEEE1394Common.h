@@ -1985,8 +1985,11 @@ public:
     */
     inline IsochronousReadChannel(
       IsochronousReadChannelImpl* _readChannel) throw()
-      : readChannel(_readChannel) {
-      bassert(_readChannel, NullPointer(this));
+      : readChannel(_readChannel)
+    {
+      if (!_readChannel) {
+        throw NullPointer(this);
+      }
     }
     
     /**
@@ -2145,8 +2148,11 @@ public:
     */
     inline IsochronousWriteChannel(
       IsochronousWriteChannelImpl* _writeChannel) throw()
-      : writeChannel(_writeChannel) {
-      bassert(_writeChannel, NullPointer(this));
+      : writeChannel(_writeChannel)
+    {
+      if (!_writeChannel) {
+        throw NullPointer(this);
+      }
     }
 
     /**

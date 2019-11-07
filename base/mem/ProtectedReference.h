@@ -62,8 +62,12 @@ public:
     
     @param value The desired pointer value.
   */
-  inline ProtectedReference(TYPE* _value) throw(NullPointer) : value(_value) {
-    bassert(value, NullPointer(this));
+  inline ProtectedReference(TYPE* _value) throw(NullPointer)
+    : value(_value)
+  {
+    if (!value) {
+      throw NullPointer(this);
+    }
     ReferenceCountedObject::ReferenceImpl(*value).addReference();
   }
   
@@ -89,9 +93,12 @@ public:
     Dynamic cast. Raises CastException if unable to cast.
   */
   template<class POLY>
-  inline ProtectedReference<POLY> cast() throw(CastException) {
+  inline ProtectedReference<POLY> cast() throw(CastException)
+  {
     POLY* result = dynamic_cast<POLY*>(value);
-    bassert(result, CastException(this));
+    if (!result) {
+      throw CastException(this);
+    }
     return result;
   }
   
@@ -99,9 +106,12 @@ public:
     Dynamic cast. Raises CastException if unable to cast.
   */
   template<class POLY>
-  inline const ProtectedReference<POLY> cast() const throw(CastException) {
+  inline const ProtectedReference<POLY> cast() const throw(CastException)
+  {
     const POLY* result = dynamic_cast<const POLY*>(value);
-    bassert(result, CastException(this));
+    if (!result) {
+      throw CastException(this);
+    }
     return result;
   }
   

@@ -42,7 +42,9 @@ public:
   */
   inline Lifetime(TYPE* _object) throw(NullPointer) : object(_object)
   {
-    bassert(object, NullPointer(this));
+    if (!object) {
+      throw NullPointer(this);
+    }
   }
   
   /**

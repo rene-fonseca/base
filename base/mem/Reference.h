@@ -133,7 +133,9 @@ public:
   inline Reference<POLY> castChecked() const throw(CastException)
   {
     POLY* temp = dynamic_cast<POLY*>(value);
-    bassert(temp, CastException(this));
+    if (!temp) {
+      throw CastException(this);
+    }
     return temp;
   }
 

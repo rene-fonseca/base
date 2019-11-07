@@ -572,7 +572,9 @@ public:
   */
   Pointer next() throw(EndOfEnumeration)
   {
-    bassert(current != nullptr, EndOfEnumeration());
+    if (!current) {
+      throw EndOfEnumeration();
+    }
     auto temp = current;
     current = current->getNext();
     return &(temp->getValue());
@@ -643,7 +645,9 @@ public:
   */
   Pointer next() throw(EndOfEnumeration)
   {
-    bassert(current != nullptr, EndOfEnumeration());
+    if (!current) {
+      throw EndOfEnumeration();
+    }
     auto temp = current;
     current = current->getNext();
     return &(temp->getValue());

@@ -88,9 +88,11 @@ protected:
     /**
       Returns the next element and advances the position of this enumeration.
     */
-    inline Pointer next() throw(EndOfEnumeration)
+    Pointer next() throw(EndOfEnumeration)
     {
-      bassert(current != nullptr, EndOfEnumeration());
+      if (!current) {
+        throw EndOfEnumeration();
+      }
       auto temp = current;
       current = current->getNext();
       return &(temp->getValue());

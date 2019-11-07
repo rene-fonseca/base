@@ -136,7 +136,7 @@ public:
 
     try {
       auto& TEST_UNIQUE_ID(id) = *myOtherObject3;
-    } catch (NullPointer) {
+    } catch (NullPointer&) {
       TEST_HERE(A);
     }
 

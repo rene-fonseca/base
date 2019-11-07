@@ -28,6 +28,7 @@ client
 coff
 compress
 cp
+cpp
 daemon
 datagramClient
 datagramServer
@@ -52,6 +53,7 @@ intercom
 io
 ln
 ls
+modules
 mtServer
 multicastServer
 objinfo
@@ -61,6 +63,7 @@ referenceCounting
 rm
 sax
 server
+slack
 time
 touch
 unittesting

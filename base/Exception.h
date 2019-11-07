@@ -55,7 +55,7 @@ private:
   /** The associated system error code. */
   unsigned int error = 0;
 #if defined(_COM_AZURE_DEV__BASE__DEBUG)
-  /** The number of times the exception got copy constructed. Try to keep to 0. */
+  /** The number of times the exception got copy constructed. This can indicate catch without reference. Try to keep to 0. */
   unsigned int copies = 0;
 #endif
 public:
@@ -112,7 +112,7 @@ public:
     
     @param type The identity of the type.
   */
-  Exception(Type type) noexcept;
+  Exception(const Type& type) noexcept;
   
   /**
     Initializes the exception object.
@@ -130,7 +130,7 @@ public:
     @param message An NULL-terminated string (ASCII).
     @param type The identity of the type.
   */
-  Exception(const char* message, Type type) noexcept;
+  Exception(const char* message, const Type& type) noexcept;
   
   /**
     Copy constructor.
@@ -138,6 +138,13 @@ public:
     @param exception The exception object to be copied.
   */
   Exception(const Exception& copy) noexcept;
+
+  /**
+    Move constructor.
+
+    @param exception The exception object to be moved.
+  */
+  Exception(Exception&& move) noexcept;
 
   /**
     Returns the associated cause. 0 indicates an unspecified cause.
@@ -150,10 +157,9 @@ public:
   /**
     Sets the cause. 0 indicates an unspecified cause.
   */
-  inline Exception& setCause(unsigned int cause) noexcept
+  inline void setCause(unsigned int cause) noexcept
   {
     this->cause = cause;
-    return *this;
   }
   
   /**
@@ -167,10 +173,9 @@ public:
   /**
     Sets the native error code. 0 indicates no error.
   */
-  inline Exception& setError(unsigned int error) noexcept
+  inline void setError(unsigned int error) noexcept
   {
     this->error = error;
-    return *this;
   }
   
   /**
@@ -186,10 +191,9 @@ public:
   /**
     Associates the exception with the specified message.
   */
-  inline Exception& setMessage(const char* message) noexcept
+  inline void setMessage(const char* message) noexcept
   {
     this->message = message;
-    return *this;
   }
 
   /** Returns the type of the exception. */
@@ -198,7 +202,7 @@ public:
   /**
     Returns the identity of the type which raised the exception.
   */
-  inline Type getType() const noexcept
+  inline const Type& getType() const noexcept
   {
     return type;
   }
@@ -206,10 +210,9 @@ public:
   /**
     Sets the identity of the type which raised the exception.
   */
-  inline Exception& setType(const Type& type) noexcept
+  inline void setType(const Type& type) noexcept
   {
     this->type = type;
-    return *this;
   }
   
   /**
@@ -222,46 +225,62 @@ public:
   Associates the exception with the given cause.
 */
 template<class EXCEPTION>
-inline EXCEPTION& bindCause(EXCEPTION& e, unsigned int cause) noexcept
+inline EXCEPTION&& bindCause(EXCEPTION&& e, unsigned int cause) noexcept
 {
   e.setCause(cause);
-  return e;
+  return std::move(e);
 }
 
 /**
   Associates the exception with the given native error code.
 */
 template<class EXCEPTION>
-inline EXCEPTION& bindError(EXCEPTION& e, unsigned int error) noexcept
+inline EXCEPTION&& bindError(EXCEPTION&& e, unsigned int error) noexcept
 {
   e.setError(error);
-  return e;
+  return std::move(e);
 }
 
 /**
   Associates the exception with the given message.
 */
 template<class EXCEPTION>
-inline EXCEPTION& bindMessage(EXCEPTION& e, const char* message) noexcept
+inline EXCEPTION&& bindMessage(EXCEPTION&& e, const char* message) noexcept
 {
   e.setMessage(message);
-  return e;
+  return std::move(e);
 }
 
 /**
   Associates the exception with the given type.
 */
 template<class EXCEPTION>
-inline EXCEPTION& bindType(EXCEPTION& e, const Type& type) noexcept
+inline EXCEPTION&& bindType(EXCEPTION&& e, const Type& type) noexcept
 {
   e.setType(type);
-  return e;
+  return std::move(e);
 }
 
 template<class EXCEPTION>
-inline void _raise(const EXCEPTION& e) throw(EXCEPTION)
+inline EXCEPTION&& bindException(EXCEPTION&& e, const char* message, const Type& type) noexcept
 {
-  throw e;
+  e.setMessage(message);
+  e.setType(type);
+  return std::move(e);
+}
+
+template<class EXCEPTION>
+inline EXCEPTION&& bindException(EXCEPTION&& e, const char* message, unsigned int cause) noexcept
+{
+  e.setMessage(message);
+  e.setCause(cause);
+  return std::move(e);
+}
+
+template<class EXCEPTION>
+inline void _raise(EXCEPTION&& e) throw(EXCEPTION)
+{
+  throw std::move(e);
 }
 
 #define _COM_AZURE_DEV__BASE__EXCEPTION_THIS_TYPE() \

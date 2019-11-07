@@ -92,7 +92,7 @@ Exception::Exception(const char* _message) noexcept
 #endif
 }
 
-Exception::Exception(Type _type) noexcept
+Exception::Exception(const Type& _type) noexcept
   : type(_type),
     cause(PrimitiveTraits<unsigned int>::MAXIMUM)
 {
@@ -103,7 +103,7 @@ Exception::Exception(Type _type) noexcept
 #endif
 }
 
-Exception::Exception(const char* _message, Type _type) noexcept
+Exception::Exception(const char* _message, const Type& _type) noexcept
   : message(_message),
     type(_type),
     cause(PrimitiveTraits<unsigned int>::MAXIMUM)
@@ -131,6 +131,17 @@ Exception::Exception(const Exception& copy) noexcept
 #endif
 }
 
+Exception::Exception(Exception&& move) noexcept
+  : message(move.message),
+    type(move.type),
+    cause(move.cause),
+    error(move.error)
+{
+#if defined(_COM_AZURE_DEV__BASE__ANY_DEBUG)
+  copies = move.copies;
+#endif
+}
+
 Type Exception::getThisType() const noexcept
 {
   return Type::getType(*this);
@@ -143,6 +154,10 @@ Exception::~Exception() noexcept
 #if defined(_COM_AZURE_DEV__BASE__TESTS)
 
 class MyExceptionContext {};
+
+class MyException : public Exception {
+public:
+};
 
 class TEST_CLASS(Exception) : public UnitTest {
 public:
@@ -157,13 +172,10 @@ public:
     TEST_DECLARE_HERE(C);
 
     try {
-      Exception e;
-      e.setType(Type::getType<MyExceptionContext>());
-      e.setCause(1);
-      throw e;
+      throw bindException(bindType(MyException(), Type::getType<MyExceptionContext>()), "My message.", 1);
       TEST_NOT_HERE(B);
-    } catch (Exception& e) {
-      TEST_ASSERT(e.getMessage() == nullptr);
+    } catch (MyException& e) {
+      TEST_ASSERT(e.getMessage() == "My message."); // compare pointers!
       TEST_ASSERT(e.getCause() == 1);
       TEST_ASSERT(e.getType() == Type::getType<MyExceptionContext>());
       TEST_HERE(A);

@@ -450,7 +450,7 @@ public:
     
     @param type The identity of the type.
   */
-  inline OpenGLException(Type type) throw() : Exception(type) {
+  inline OpenGLException(const Type& type) throw() : Exception(type) {
   }
   
   /**
@@ -459,7 +459,7 @@ public:
     @param message An NULL-terminated string.
     @param type The identity of the type.
   */
-  inline OpenGLException(const char* message, Type type) throw() : Exception(message, type) {
+  inline OpenGLException(const char* message, const Type& type) throw() : Exception(message, type) {
   }
   
   _COM_AZURE_DEV__BASE__EXCEPTION_THIS_TYPE()

@@ -47,7 +47,7 @@ public:
     
     @param type The identity of the type.
   */
-  inline HostNotFound(Type type) noexcept : NetworkException(type) {
+  inline HostNotFound(const Type& type) noexcept : NetworkException(type) {
   }
   
   /**
@@ -56,7 +56,7 @@ public:
     @param message An NULL-terminated string (ASCII).
     @param type The identity of the type.
   */
-  inline HostNotFound(const char* message, Type type) noexcept
+  inline HostNotFound(const char* message, const Type& type) noexcept
     : NetworkException(message, type) {
   }
   

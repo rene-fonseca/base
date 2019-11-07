@@ -52,7 +52,7 @@ public:
     
     @param type The identity of the type.
   */
-  inline AlreadyKeyException(Type type) noexcept
+  inline AlreadyKeyException(const Type& type) noexcept
     : Exception(type)
   {
   }
@@ -63,7 +63,7 @@ public:
     @param message An NULL-terminated string (ASCII).
     @param type The identity of the type.
   */
-  inline AlreadyKeyException(const char* message, Type type) noexcept
+  inline AlreadyKeyException(const char* message, const Type& type) noexcept
     : Exception(message, type)
   {
   }

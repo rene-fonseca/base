@@ -47,7 +47,7 @@ public:
     
     @param type The identity of the type.
   */
-  inline EmptyContainer(Type type) noexcept : Exception(type)
+  inline EmptyContainer(const Type& type) noexcept : Exception(type)
   {
   }
   
@@ -57,7 +57,7 @@ public:
     @param message An NULL-terminated string (ASCII).
     @param type The identity of the type.
   */
-  inline EmptyContainer(const char* message, Type type) noexcept
+  inline EmptyContainer(const char* message, const Type& type) noexcept
     : Exception(message, type)
   {
   }

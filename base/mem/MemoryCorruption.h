@@ -48,7 +48,7 @@ public:
     
     @param type The identity of the type.
   */
-  inline MemoryCorruption(Type type) noexcept : MemoryException(type) {
+  inline MemoryCorruption(const Type& type) noexcept : MemoryException(type) {
   }
   
   /**
@@ -57,7 +57,7 @@ public:
     @param message An NULL-terminated string (ASCII).
     @param type The identity of the type.
   */
-  inline MemoryCorruption(const char* message, Type type) noexcept
+  inline MemoryCorruption(const char* message, const Type& type) noexcept
     : MemoryException(message, type) {
   }
 };

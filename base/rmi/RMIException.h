@@ -47,7 +47,7 @@ public:
     
     @param type The identity of the type.
   */
-  inline RMIException(Type type) noexcept : Exception(type) {
+  inline RMIException(const Type& type) noexcept : Exception(type) {
   }
   
   /**
@@ -56,7 +56,7 @@ public:
     @param message An NULL-terminated string (ASCII).
     @param type The identity of the type.
   */
-  inline RMIException(const char* message, Type type) noexcept
+  inline RMIException(const char* message, const Type& type) noexcept
     : Exception(message, type){
   }
   

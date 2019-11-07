@@ -83,7 +83,7 @@ public:
       
       @param type The identity of the type.
     */
-    inline UrlException(Type type) throw() : InvalidFormat(type) {
+    inline UrlException(const Type& type) throw() : InvalidFormat(type) {
     }
 
     /**
@@ -92,7 +92,7 @@ public:
       @param message An NULL-terminated string (ASCII).
       @param type The identity of the type.
     */
-    inline UrlException(const char* message, Type type) throw()
+    inline UrlException(const char* message, const Type& type) throw()
       : InvalidFormat(message, type) {
     }
   };

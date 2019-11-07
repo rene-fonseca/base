@@ -48,7 +48,7 @@ public:
     
     @param type The identity of the type.
   */
-  inline SAXNotRecognizedException(Type type) throw()
+  inline SAXNotRecognizedException(const Type& type) throw()
     : SAXException(type) {
   }
   
@@ -58,7 +58,7 @@ public:
     @param message An NULL-terminated string (ASCII).
     @param type The identity of the type.
   */
-  inline SAXNotRecognizedException(const char* message, Type type) throw()
+  inline SAXNotRecognizedException(const char* message, const Type& type) throw()
     : SAXException(message, type) {
   }
   

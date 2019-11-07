@@ -51,7 +51,7 @@ public:
     
     @param type The identity of the type.
   */
-  inline Overflow(Type type) noexcept : Exception(type) {
+  inline Overflow(const Type& type) noexcept : Exception(type) {
   }
   
   /**
@@ -60,7 +60,7 @@ public:
     @param message An NULL-terminated string (ASCII).
     @param type The identity of the type.
   */
-  inline Overflow(const char* message, Type type) noexcept
+  inline Overflow(const char* message, const Type& type) noexcept
     : Exception(message, type) {
   }
   

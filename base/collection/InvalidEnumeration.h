@@ -49,7 +49,7 @@ public:
     
     @param type The identity of the type.
   */
-  inline InvalidEnumeration(Type type) noexcept
+  inline InvalidEnumeration(const Type& type) noexcept
     : Exception(type) {
   }
   
@@ -59,7 +59,7 @@ public:
     @param message An NULL-terminated string (ASCII).
     @param type The identity of the type.
   */
-  inline InvalidEnumeration(const char* message, Type type) noexcept
+  inline InvalidEnumeration(const char* message, const Type& type) noexcept
     : Exception(message, type)
   {
   }

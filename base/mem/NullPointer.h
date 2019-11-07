@@ -47,7 +47,7 @@ public:
     
     @param type The identity of the type.
   */
-  inline NullPointer(Type type) noexcept : MemoryException(type) {
+  inline NullPointer(const Type& type) noexcept : MemoryException(type) {
   }
 
   /**
@@ -56,7 +56,7 @@ public:
     @param message An NULL-terminated string (ASCII).
     @param type The identity of the type.
   */
-  inline NullPointer(const char* message, Type type) noexcept
+  inline NullPointer(const char* message, const Type& type) noexcept
     : MemoryException(message, type) {
   }
   

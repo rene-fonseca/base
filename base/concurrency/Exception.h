@@ -48,7 +48,7 @@ public:
     
     @param type The identity of the type.
   */
-  inline BarrierException(Type type) noexcept
+  inline BarrierException(const Type& type) noexcept
     : LockException(type) {
   }
   
@@ -58,7 +58,7 @@ public:
     @param message An NULL-terminated string (ASCII).
     @param type The identity of the type.
   */
-  inline BarrierException(const char* message, Type type) noexcept
+  inline BarrierException(const char* message, const Type& type) noexcept
     : LockException(message, type) {
   }
 };

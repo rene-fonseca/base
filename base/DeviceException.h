@@ -49,7 +49,7 @@ public:
     
     @param type The identity of the type.
   */
-  inline DeviceException(Type type) noexcept
+  inline DeviceException(const Type& type) noexcept
     : ResourceException(type)
   {
   }
@@ -60,7 +60,7 @@ public:
     @param message An NULL-terminated string (ASCII).
     @param type The identity of the type.
   */
-  inline DeviceException(const char* message, Type type) noexcept
+  inline DeviceException(const char* message, const Type& type) noexcept
     : ResourceException(message, type)
   {
   }

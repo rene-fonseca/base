@@ -169,7 +169,7 @@ public:
       
       @param type The identity of the type.
     */
-    inline ThreadException(Type type) throw() : Exception(type) {
+    inline ThreadException(const Type& type) throw() : Exception(type) {
     }
     
     /**
@@ -178,7 +178,7 @@ public:
       @param message An NULL-terminated string (ASCII).
       @param type The identity of the type.
     */
-    inline ThreadException(const char* message, Type type) throw()
+    inline ThreadException(const char* message, const Type& type) throw()
       : Exception(message, type) {
     }
     
@@ -201,10 +201,10 @@ public:
     inline Self(const char* message) throw() : ThreadException(message) {
     }
     
-    inline Self(Type type) throw() : ThreadException(type) {
+    inline Self(const Type& type) throw() : ThreadException(type) {
     }
     
-    inline Self(const char* message, Type type) throw()
+    inline Self(const char* message, const Type& type) throw()
       : ThreadException(message, type) {
     }
   };

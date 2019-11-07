@@ -71,7 +71,7 @@ public:
     
     @param type The identity of the type.
   */
-  inline SAXParseException(Type type) noexcept
+  inline SAXParseException(const Type& type) noexcept
     : SAXException(type) {
   }
   
@@ -81,7 +81,7 @@ public:
     @param message An NULL-terminated string (ASCII).
     @param type The identity of the type.
   */
-  inline SAXParseException(const char* message, Type type) noexcept
+  inline SAXParseException(const char* message, const Type& type) noexcept
     : SAXException(message, type) {
   }
   

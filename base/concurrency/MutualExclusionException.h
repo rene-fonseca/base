@@ -48,7 +48,7 @@ public:
     
     @param type The identity of the type.
   */
-  inline MutualExclusionException(Type type) noexcept : LockException(type) {
+  inline MutualExclusionException(const Type& type) noexcept : LockException(type) {
   }
   
   /**
@@ -57,7 +57,7 @@ public:
     @param message An NULL-terminated string (ASCII).
     @param type The identity of the type.
   */
-  inline MutualExclusionException(const char* message, Type type) noexcept
+  inline MutualExclusionException(const char* message, const Type& type) noexcept
     : LockException(message, type) {
   }
   

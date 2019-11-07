@@ -49,7 +49,7 @@ public:
     
     @param type The identity of the type.
   */
-  inline EventException(Type type) noexcept : LockException(type) {
+  inline EventException(const Type& type) noexcept : LockException(type) {
   }
   
   /**
@@ -58,7 +58,7 @@ public:
     @param message An NULL-terminated string (ASCII).
     @param type The identity of the type.
   */
-  inline EventException(const char* message, Type type) noexcept
+  inline EventException(const char* message, const Type& type) noexcept
     : LockException(message, type) {
   }
   

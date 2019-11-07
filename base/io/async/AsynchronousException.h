@@ -45,7 +45,7 @@ public:
     
     @param type The identity of the type.
   */
-  inline AsynchronousException(Type type) throw() : IOException(type) {
+  inline AsynchronousException(const Type& type) throw() : IOException(type) {
   }
 
   /**
@@ -54,7 +54,7 @@ public:
     @param message An NULL-terminated string (ASCII).
     @param type The identity of the type.
   */  
-  inline AsynchronousException(const char* message, Type type) throw()
+  inline AsynchronousException(const char* message, const Type& type) throw()
     : IOException(message, type) {
   }
   

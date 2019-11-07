@@ -48,7 +48,7 @@ public:
     
     @param type The identity of the type.
   */
-  inline ServiceNotFound(Type type) throw() : NetworkException(type) {
+  inline ServiceNotFound(const Type& type) throw() : NetworkException(type) {
   }
   
   /**
@@ -57,7 +57,7 @@ public:
     @param message An NULL-terminated string (ASCII).
     @param type The identity of the type.
   */
-  inline ServiceNotFound(const char* message, Type type) throw()
+  inline ServiceNotFound(const char* message, const Type& type) throw()
     : NetworkException(message, type) {
   }
   

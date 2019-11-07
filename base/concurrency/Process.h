@@ -82,10 +82,10 @@ public:
       : Exception(message) {
     }
     
-    inline ProcessException(Type type) noexcept : Exception(type) {
+    inline ProcessException(const Type& type) noexcept : Exception(type) {
     }
     
-    inline ProcessException(const char* message, Type type) noexcept
+    inline ProcessException(const char* message, const Type& type) noexcept
       : Exception(message, type) {
     }
     

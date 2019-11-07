@@ -47,7 +47,7 @@ public:
     
     @param type The identity of the type.
   */
-  inline BindException(Type type) throw() : IOException(type) {
+  inline BindException(const Type& type) throw() : IOException(type) {
   }
   
   /**
@@ -56,7 +56,7 @@ public:
     @param message An NULL-terminated string (ASCII).
     @param type The identity of the type.
   */
-  inline BindException(const char* message, Type type) throw()
+  inline BindException(const char* message, const Type& type) throw()
     : IOException(message, type) {
   }
   

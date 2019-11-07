@@ -64,7 +64,7 @@ public:
     
     @param type The identity of the type.
   */
-  inline OrbException(Type type) throw() : RMIException(type) {
+  inline OrbException(const Type& type) throw() : RMIException(type) {
   }
   
   /**
@@ -73,7 +73,7 @@ public:
     @param message An NULL-terminated string (ASCII).
     @param type The identity of the type.
   */
-  inline OrbException(const char* message, Type type) throw()
+  inline OrbException(const char* message, const Type& type) throw()
     : RMIException(message, type) {
   }
   

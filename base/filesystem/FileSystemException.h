@@ -47,7 +47,7 @@ public:
     
     @param type The identity of the type.
   */
-  inline FileSystemException(Type type) noexcept : Exception(type) {
+  inline FileSystemException(const Type& type) noexcept : Exception(type) {
   }
   
   /**
@@ -56,7 +56,7 @@ public:
     @param message An NULL-terminated string (ASCII).
     @param type The identity of the type.
   */
-  inline FileSystemException(const char* message, Type type) noexcept
+  inline FileSystemException(const char* message, const Type& type) noexcept
     : Exception(message, type) {
   }
   

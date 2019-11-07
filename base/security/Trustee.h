@@ -83,7 +83,7 @@ public:
 
       @param type The identity of the type.
     */
-    inline TrusteeException(Type type) noexcept : Exception(type) {
+    inline TrusteeException(const Type& type) noexcept : Exception(type) {
     }
 
     /**
@@ -92,7 +92,7 @@ public:
       @param message An NULL-terminated string (ASCII).
       @param type The identity of the type.
     */
-    inline TrusteeException(const char* message, Type type) noexcept
+    inline TrusteeException(const char* message, const Type& type) noexcept
       : Exception(message, type) {
     }
     

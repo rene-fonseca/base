@@ -47,7 +47,7 @@ public:
     
     @param type The identity of the type.
   */
-  inline TransformerException(Type type) noexcept : Exception(type) {
+  inline TransformerException(const Type& type) noexcept : Exception(type) {
   }
   
   /**
@@ -56,7 +56,7 @@ public:
     @param message An NULL-terminated string (ASCII).
     @param type The identity of the type.
   */
-  inline TransformerException(const char* message, Type type) noexcept
+  inline TransformerException(const char* message, const Type& type) noexcept
     : Exception(message, type) {
   }
   

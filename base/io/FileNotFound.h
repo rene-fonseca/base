@@ -47,7 +47,7 @@ public:
 
     @param type The identity of the type.
   */
-  inline FileNotFound(Type type) throw() : FileException(type) {
+  inline FileNotFound(const Type& type) throw() : FileException(type) {
   }
 
   /**
@@ -56,7 +56,7 @@ public:
     @param message An NULL-terminated string (ASCII).
     @param type The identity of the type.
   */
-  inline FileNotFound(const char* message, Type type) throw()
+  inline FileNotFound(const char* message, const Type& type) throw()
     : FileException(message, type) {
   }
   

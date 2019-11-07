@@ -49,7 +49,7 @@ public:
     
     @param type The identity of the type.
   */
-  inline SemaphoreException(Type type) throw() : LockException(type) {
+  inline SemaphoreException(const Type& type) throw() : LockException(type) {
   }
   
   /**
@@ -58,7 +58,7 @@ public:
     @param message An NULL-terminated string (ASCII).
     @param type The identity of the type.
   */
-  inline SemaphoreException(const char* message, Type type) throw()
+  inline SemaphoreException(const char* message, const Type& type) throw()
     : LockException(message, type) {
   }
   

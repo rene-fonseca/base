@@ -66,10 +66,10 @@ public:
       : Exception(message) {
     }
     
-    inline ThreadPoolException(Type type) throw() : Exception(type) {
+    inline ThreadPoolException(const Type& type) throw() : Exception(type) {
     }
     
-    inline ThreadPoolException(const char* message, Type type) throw()
+    inline ThreadPoolException(const char* message, const Type& type) throw()
       : Exception(message, type) {
     }
     

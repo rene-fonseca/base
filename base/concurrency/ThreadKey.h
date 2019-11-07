@@ -57,12 +57,12 @@ public:
     {
     }
     
-    inline ThreadKeyException(Type type) noexcept
+    inline ThreadKeyException(const Type& type) noexcept
       : Exception(type)
     {
     }
     
-    inline ThreadKeyException(const char* message, Type type) noexcept
+    inline ThreadKeyException(const char* message, const Type& type) noexcept
       : Exception(message, type)
     {
     }

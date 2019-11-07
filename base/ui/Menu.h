@@ -52,7 +52,7 @@ _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
       
       @param type The identity of the type.
     */
-    inline MenuException(Type type) throw() : UserInterfaceException(type) {
+    inline MenuException(const Type& type) throw() : UserInterfaceException(type) {
     }
   
     /**
@@ -61,7 +61,7 @@ _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
       @param message An NULL-terminated string.
       @param type The identity of the type.
     */
-    inline MenuException(const char* message, Type type) throw() : UserInterfaceException(message, type) {
+    inline MenuException(const char* message, const Type& type) throw() : UserInterfaceException(message, type) {
     }
     
     _COM_AZURE_DEV__BASE__EXCEPTION_THIS_TYPE()

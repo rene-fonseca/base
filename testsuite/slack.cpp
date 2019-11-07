@@ -168,7 +168,7 @@ public:
     
     @param type The type.
   */
-  inline ServiceException(Type type) noexcept : Exception(type) {
+  inline ServiceException(const Type& type) noexcept : Exception(type) {
   }
   
   /**
@@ -177,7 +177,7 @@ public:
     @param message The message.
     @param type The type.
   */
-  inline ServiceException(const char* message, Type type) noexcept
+  inline ServiceException(const char* message, const Type& type) noexcept
     : Exception(message, type) {
   }
 };
@@ -204,7 +204,7 @@ public:
     
     @param type The type.
   */
-  inline SlackException(Type type) noexcept : ServiceException(type) {
+  inline SlackException(const Type& type) noexcept : ServiceException(type) {
   }
   
   /**
@@ -213,7 +213,7 @@ public:
     @param message The message.
     @param type The type.
   */
-  inline SlackException(const char* message, Type type) noexcept
+  inline SlackException(const char* message, const Type& type) noexcept
     : ServiceException(message, type) {
   }
 };

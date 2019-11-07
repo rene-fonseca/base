@@ -49,7 +49,7 @@ public:
     
     @param type The identity of the type.
   */
-  inline IncompatibleOperands(Type type) noexcept : Exception(type) {
+  inline IncompatibleOperands(const Type& type) noexcept : Exception(type) {
   }
   
   /**
@@ -58,7 +58,7 @@ public:
     @param message An NULL-terminated string (ASCII).
     @param type The identity of the type.
   */
-  inline IncompatibleOperands(const char* message, Type type) noexcept
+  inline IncompatibleOperands(const char* message, const Type& type) noexcept
     : Exception(message, type) {
   }
   

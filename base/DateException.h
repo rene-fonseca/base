@@ -48,7 +48,7 @@ public:
     
     @param type The identity of the type.
   */
-  inline DateException(Type type) noexcept : Exception(type) {
+  inline DateException(const Type& type) noexcept : Exception(type) {
   }
   
   /**
@@ -57,7 +57,7 @@ public:
     @param message An NULL-terminated string (ASCII).
     @param type The identity of the type.
   */
-  inline DateException(const char* message, Type type) noexcept
+  inline DateException(const char* message, const Type& type) noexcept
     : Exception(message, type) {
   }
   

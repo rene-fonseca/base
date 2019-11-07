@@ -46,7 +46,7 @@ public:
     
     @param type The identity of the type.
   */
-  inline XPathException(Type type) throw() : TransformerException(type) {
+  inline XPathException(const Type& type) throw() : TransformerException(type) {
   }
   
   /**
@@ -55,7 +55,7 @@ public:
     @param message An NULL-terminated string (ASCII).
     @param type The identity of the type.
   */
-  inline XPathException(const char* message, Type type) throw()
+  inline XPathException(const char* message, const Type& type) throw()
     : TransformerException(message, type) {
   }
   

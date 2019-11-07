@@ -47,7 +47,7 @@ public:
     
     @param type The identity of the type.
   */
-  WideStringException(Type type) noexcept : Exception(type) {
+  WideStringException(const Type& type) noexcept : Exception(type) {
   }
   
   /**
@@ -56,7 +56,7 @@ public:
     @param message An NULL-terminated string (ASCII).
     @param type The identity of the type.
   */
-  inline WideStringException(const char* message, Type type) noexcept
+  inline WideStringException(const char* message, const Type& type) noexcept
     : Exception(message, type) {
   }
   

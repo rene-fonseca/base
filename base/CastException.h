@@ -47,7 +47,7 @@ public:
     
     @param type The type.
   */
-  inline CastException(Type type) noexcept : Exception(type) {
+  inline CastException(const Type& type) noexcept : Exception(type) {
   }
   
   /**
@@ -56,7 +56,7 @@ public:
     @param message The message.
     @param type The type.
   */
-  inline CastException(const char* message, Type type) noexcept
+  inline CastException(const char* message, const Type& type) noexcept
     : Exception(message, type) {
   }
   

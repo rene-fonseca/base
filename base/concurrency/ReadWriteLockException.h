@@ -48,7 +48,7 @@ public:
     
     @param type The identity of the type.
   */
-  inline ReadWriteLockException(Type type) noexcept : LockException(type) {
+  inline ReadWriteLockException(const Type& type) noexcept : LockException(type) {
   }
   
   /**
@@ -57,7 +57,7 @@ public:
     @param message An NULL-terminated string (ASCII).
     @param type The identity of the type.
   */
-  inline ReadWriteLockException(const char* message, Type type) noexcept
+  inline ReadWriteLockException(const char* message, const Type& type) noexcept
     : LockException(message, type) {
   }
   

@@ -50,7 +50,7 @@ public:
     
     @param type The identity of the type.
   */
-  inline InvalidKey(Type type) noexcept
+  inline InvalidKey(const Type& type) noexcept
     : Exception(type) {
   }
   
@@ -60,7 +60,7 @@ public:
     @param message An NULL-terminated string (ASCII).
     @param type The identity of the type.
   */
-  inline InvalidKey(const char* message, Type type) noexcept
+  inline InvalidKey(const char* message, const Type& type) noexcept
     : Exception(message, type)
   {
   }

@@ -72,7 +72,7 @@ public:
     
     @param type The identity of the type.
   */
-  inline NetworkException(Type type) noexcept : IOException(type) {
+  inline NetworkException(const Type& type) noexcept : IOException(type) {
   }
   
   /**
@@ -81,7 +81,7 @@ public:
     @param message An NULL-terminated string (ASCII).
     @param type The identity of the type.
   */
-  inline NetworkException(const char* message, Type type) noexcept
+  inline NetworkException(const char* message, const Type& type) noexcept
     : IOException(message, type) {
   }
   

@@ -62,7 +62,7 @@ public:
     
     @param type The identity of the type.
   */
-  MultibyteException(Type type) noexcept : Exception(type) {
+  MultibyteException(const Type& type) noexcept : Exception(type) {
   }
   
   /**
@@ -71,7 +71,7 @@ public:
     @param message An NULL-terminated string (ASCII).
     @param type The identity of the type.
   */
-  inline MultibyteException(const char* message, Type type) noexcept
+  inline MultibyteException(const char* message, const Type& type) noexcept
     : Exception(message, type) {
   }
   

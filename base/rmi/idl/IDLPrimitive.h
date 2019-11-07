@@ -53,7 +53,7 @@ public:
   /**
     Initializes the IDL primitive type.
   */
-  IDLPrimitive(Type type) throw();
+  IDLPrimitive(const Type& type) throw();
   
   /**
     Returns the primitive type.

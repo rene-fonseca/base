@@ -47,7 +47,7 @@ public:
     
     @param type The identity of the type.
   */
-  inline PipeException(Type type) throw() : IOException(type) {
+  inline PipeException(const Type& type) throw() : IOException(type) {
   }
   
   /**
@@ -56,7 +56,7 @@ public:
     @param message An NULL-terminated string (ASCII).
     @param type The identity of the type.
   */
-  inline PipeException(const char* message, Type type) throw()
+  inline PipeException(const char* message, const Type& type) throw()
     : IOException(message, type) {
   }
   

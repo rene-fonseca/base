@@ -96,7 +96,7 @@ Document DOMImplementation::createDocument(
 #if defined(_COM_AZURE_DEV__BASE__XML_XMLSOFT_ORG)
   bassert(
     Document(doctype.getOwnerDocument()).isInvalid(),
-    DOMException(this).setCause(DOMException::WRONG_DOCUMENT)
+    bindCause(DOMException(this), DOMException::WRONG_DOCUMENT)
   );
   xmlDoc* doc = xmlNewDoc(
     Cast::pointer<const xmlChar*>(version.getElements())
@@ -128,7 +128,7 @@ Document DOMImplementation::createDocument(
 #if defined(_COM_AZURE_DEV__BASE__XML_XMLSOFT_ORG)
   bassert(
     Document(doctype.getOwnerDocument()).isInvalid(),
-    DOMException(this).setCause(DOMException::WRONG_DOCUMENT)
+    bindCause(DOMException(this), DOMException::WRONG_DOCUMENT)
   );
   xmlDoc* doc = xmlNewDoc(
     Cast::pointer<const xmlChar*>(version.getElements())

@@ -606,7 +606,7 @@ void XMLDefaultReader::parse(
   long long size = file.getSize();
   bassert(
     size >= 4,
-    SAXParseException("Document not well-formed", this).setCause(SAXParseException::NOT_WELL_FORMED)
+    bindCause(SAXParseException("Document not well-formed", this), SAXParseException::NOT_WELL_FORMED)
   );
   FileReader reader(file, 0);
   reader.peek(4); // minimum number of bytes
@@ -641,7 +641,7 @@ void XMLDefaultReader::parse(
   } else {
     bassert(
       result == 0,
-      SAXParseException("Document not well-formed", this).setCause(SAXParseException::NOT_WELL_FORMED)
+      bindCause(SAXParseException("Document not well-formed", this), SAXParseException::NOT_WELL_FORMED)
     );
   }
 #else // no xml support
@@ -674,7 +674,7 @@ void XMLDefaultReader::parse(
   } else {
     bassert(
       result == 0,
-      SAXParseException("Document not well-formed", this).setCause(SAXParseException::NOT_WELL_FORMED)
+      bindCause(SAXParseException("Document not well-formed", this), SAXParseException::NOT_WELL_FORMED)
     );
   }
 #else // no xml support
@@ -759,7 +759,7 @@ void XMLDefaultReader::parse(const String& systemId) throw(SAXException) {
   } else {
     bassert(
       result == 0,
-      SAXParseException("Document not well-formed", this).setCause(SAXParseException::NOT_WELL_FORMED)
+      bindCause(SAXParseException("Document not well-formed", this), SAXParseException::NOT_WELL_FORMED)
     );
   }
 #else // no xml support

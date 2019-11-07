@@ -249,7 +249,7 @@ Process Process::execute(const String& command) throw(ProcessException) {
                     &startInfo, // STARTUPINFO
                     &processInformation // receives PROCESS_INFORMATION
     ) != 0,
-    ProcessException("Unable to execute command", Type::getType<Process>()).setCause(::GetLastError())
+    bindCause(ProcessException("Unable to execute command", Type::getType<Process>()), ::GetLastError())
   );
   
   ::CloseHandle(processInformation.hThread);

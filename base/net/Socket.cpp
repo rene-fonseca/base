@@ -443,8 +443,8 @@ Socket::SocketImpl::~SocketImpl() {
     if (::close((int)getHandle())) {
 #endif // flavor
       IOException e("Unable to close socket", this);
-      unsigned int error = internal::SocketImpl::getNativeError();
-      unsigned int cause = internal::SocketImpl::getCause(error);
+      const unsigned int error = internal::SocketImpl::getNativeError();
+      const unsigned int cause = internal::SocketImpl::getCause(error);
       if (cause != PrimitiveTraits<unsigned int>::MAXIMUM) {
         e.setCause(cause);
       } else {
@@ -1408,7 +1408,7 @@ void Socket::leaveGroup(const InetAddress& interface, const InetAddress& group) 
   } else {
     InetAddress i = interface;
     InetAddress g = group;
-    bassert(i.convertToIPv4() && g.convertToIPv4(), NetworkException(this).setCause(0));
+    bassert(i.convertToIPv4() && g.convertToIPv4(), NetworkException(this));
     struct ip_mreq mreq;
     copy<uint8>(
       Cast::getAddress(mreq.imr_multiaddr.s_addr),

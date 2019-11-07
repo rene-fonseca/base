@@ -507,12 +507,12 @@ Node Node::appendChild(Node _child) throw(DOMException) {
   
   bassert(
     child->doc == node->doc,
-    DOMException(this).setCause(DOMException::WRONG_DOCUMENT)
+    bindCause(DOMException(this), DOMException::WRONG_DOCUMENT)
   );
   
   bassert(
     NodeImpl::isAppendAble(*this, _child),
-    DOMException(this).setCause(DOMException::HIERARCHY_REQUEST)
+    bindCause(DOMException(this), DOMException::HIERARCHY_REQUEST)
   );
   
   NodeImpl::unlink(child);
@@ -569,12 +569,12 @@ Node Node::insertBefore(Node _newChild, Node _refChild) throw(DOMException) {
   
   bassert(
     newChild->doc == node->doc,
-    DOMException(this).setCause(DOMException::WRONG_DOCUMENT)
+    bindCause(DOMException(this), DOMException::WRONG_DOCUMENT)
   );
   
   bassert(
     NodeImpl::isAppendAble(*this, newChild),
-    DOMException(this).setCause(DOMException::HIERARCHY_REQUEST)
+    bindCause(DOMException(this), DOMException::HIERARCHY_REQUEST)
   );
 
   NodeImpl::unlink(newChild);
@@ -710,7 +710,7 @@ void Node::setPrefix(const String& prefix) throw(DOMException) {
 				 (compare(uri, "http://www.w3.org/2000/xmlns", sizeof("http://www.w3.org/2000/xmlns")) != 0)) ||
 				((node->type == XML_ATTRIBUTE_NODE) &&
 				 (compare((const char*)node->name, "xmlns", sizeof("xmlns")) == 0))) {
-			throw DOMException(this).setCause(DOMException::NAMESPACE_ERROR);
+			throw bindCause(DOMException(this), DOMException::NAMESPACE_ERROR);
 		}
 		xmlNs* ns = xmlNewNs(0, (const xmlChar*)uri, (const xmlChar*)prefix);
     node->ns = ns;
@@ -803,7 +803,7 @@ Node Node::cloneNode(bool deep) throw(DOMException) {
   case XML_ENTITY_DECL: // not XML_ENTITY_NODE
   case XML_NOTATION_NODE:
   case XML_DTD_NODE: // not XML_DOCUMENT_TYPE_NODE
-    throw DOMException(this).setCause(DOMException::NOT_SUPPORTED);
+    throw bindCause(DOMException(this), DOMException::NOT_SUPPORTED);
 	default:
     xmlNode* result = xmlDocCopyNode(node, node->doc, deep ? 1 : 0);
     bassert(result, DOMException(this));

@@ -86,7 +86,7 @@ Array<String> AttributeDecl::getEnumerationValues() const throw(DOMException) {
   xmlAttribute* attribute = (xmlAttribute*)getContext();
   bassert(
     attribute->atype == XML_ATTRIBUTE_ENUMERATION,
-    DOMException(this).setCause(DOMException::NOT_SUPPORTED)
+    bindCause(DOMException(this), DOMException::NOT_SUPPORTED)
   );
   Array<String> result;
   xmlEnumeration* e = attribute->tree;

@@ -1881,7 +1881,7 @@ FileSystem::Quota FileSystem::getQuota(
     }
     ::close(fd);
   }
-  throw FileSystemException(Type::getType<FileSystem>()).setError(errno);
+  throw bindError(FileSystemException(Type::getType<FileSystem>()), errno);
 #else
   result.hardLimit = 0;
   result.softLimit = 0;

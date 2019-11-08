@@ -109,11 +109,15 @@ public:
     uint64 endTime = 0;
     unsigned int passed = 0;
     unsigned int failed = 0;
+    unsigned int exceptions = 0;
     // unsigned int asserts = 0;
     Map<const void*, HereMeta> heres;
     Array<TestResult> results; // all results for a run
     String exceptionFailure;
     String exceptionType;
+
+    /** Called on exception. */
+    void onException(Exception* exception);
 
     /** Called on explicit print request. */
     void onPrint(const String& what, unsigned int line = 0);
@@ -159,6 +163,10 @@ private:
   Reference<Run> currentRun;
   /** Dependencies. */
   Array<String> dependencies;
+public:
+
+  /** Called on exception. */
+  void onException(Exception* exception);
 protected:
 
   /** Called on explicit print request. */
@@ -400,6 +408,7 @@ private:
   bool randomize = false;
   bool stopOnFailure = false;
   bool progressMode = false;
+  bool traceExceptions = false;
   unsigned int passed = 0;
   unsigned int failed = 0;
   Timer timer;
@@ -499,6 +508,12 @@ public:
   inline void setProgressMode(bool _progressMode) noexcept
   {
     progressMode = _progressMode;
+  }
+
+  /** Sets exception trace mode. */
+  inline void setTraceExceptions(bool _traceExceptions) noexcept
+  {
+    traceExceptions = _traceExceptions;
   }
 
   /** Runs the test. A test must be able to run multiple times. */

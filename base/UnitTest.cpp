@@ -32,6 +32,24 @@ _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 UnitTestManager::RegisterEntry::EntryNode* UnitTestManager::RegisterEntry::nodes = nullptr;
 UnitTestManager::DependencyEntry::DependencyNode* UnitTestManager::DependencyEntry::nodes = nullptr;
 
+namespace {
+
+  Exception::ExceptionHandler oldExceptionHandler = nullptr;
+  Reference<UnitTest> currentTest; // would need to be thread local for concurrent tests
+
+  /** Exception construction hook. */
+  void testExceptionHandler(Exception* exception) noexcept
+  {
+    // we want to skip a stack trace level - we skip on output
+    if (oldExceptionHandler) {
+      oldExceptionHandler(exception);
+    }
+    if (exception && currentTest) {
+      currentTest->onException(exception);
+    }
+  }
+}
+
 UnitTest::UnitTest()
 {
 }
@@ -65,6 +83,37 @@ void UnitTest::setSource(const String& _source)
 void UnitTest::setType(const Type& _type)
 {
   type = _type;
+}
+
+void UnitTest::onException(Exception* exception)
+{
+  if (INLINE_ASSERT(exception && currentRun)) {
+    // TAG: some exception should be ignored - eof/parsing - get type from exception
+    currentRun->onException(exception);
+  }
+}
+
+void UnitTest::Run::onException(Exception* exception)
+{
+  StringOutputStream sos;
+
+  if (exception) {
+    sos << "NEW EXCEPTION [" << ++exceptions << "]:"; // during construction we do not have final exception type
+    onPrint(sos.toString());
+  }
+
+  Exception::StackTrace stackTrace = Exception::getStackTrace();
+  if (stackTrace.begin != stackTrace.end) {
+    ++stackTrace.begin; // skip handler
+    if (stackTrace.begin != stackTrace.end) {
+      StackFrame::toStream(sos, stackTrace.begin, stackTrace.end - stackTrace.begin, true);
+      for (const auto& line : sos.toString().split('\n')) {
+        if (line) {
+          onPrint(line);
+        }
+      }
+    }
+  }
 }
 
 void UnitTest::Run::onPrint(const String& what, unsigned int line)
@@ -328,6 +377,7 @@ Reference<UnitTest::Run> UnitTest::runImpl()
     } else {
       onFailed(Format::subst("Test failed with exception: '%1'", type));
     }
+    currentRun->onException(nullptr);
   } catch (std::exception& e) {
     const String w = e.what();
     currentRun->exceptionFailure = "Failed with exception.";
@@ -639,9 +689,11 @@ public:
   {
     auto& manager = UnitTestManager::getManager();
     try {
+      currentTest = test;
       success = manager.runTest(test);
     } catch (...) {
     }
+    currentTest = nullptr;
     doneEvent.signal();
     times = Thread::getTimes();
   }
@@ -684,6 +736,11 @@ namespace {
 bool UnitTestManager::runTests(const String& pattern, bool runDevel)
 {
   // TAG: allow tests to run concurrently
+
+  if (traceExceptions) {
+    oldExceptionHandler = Exception::setExceptionHandler(testExceptionHandler);
+    BASSERT(oldExceptionHandler);
+  }
 
   loadTests();
 
@@ -828,6 +885,11 @@ bool UnitTestManager::runTests(const String& pattern, bool runDevel)
     fout << Format::subst("TOTAL PASSED: %1/%2", passed, count) << ENDL;
   }
   fout << "TOTAL PROCESSING TIME: " << totalTimes.getTotal()/1000000.0 << " ms" << ENDL;
+
+  if (oldExceptionHandler) {
+    Exception::setExceptionHandler(oldExceptionHandler); // could use automation class for this
+    oldExceptionHandler = nullptr;
+  }
 
   return !failed;
 }

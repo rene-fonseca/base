@@ -52,6 +52,7 @@ private:
   String testsuiteUUID;
   String pattern = "*";
   bool runDevel = false;
+  bool traceExceptions = false;
 public:
 
   TestApplication(
@@ -86,6 +87,8 @@ public:
         reportJSON = true;
       } else if (argument == "--devel") {
         runDevel = true;
+      } else if (argument == "--exceptions") {
+        traceExceptions = true;
       } else if (argument == "--junit") {
         reportJUnit = true;
         if (!enu.hasNext()) {
@@ -260,6 +263,7 @@ public:
       manager.setRandomize(randomize);
       manager.setStopOnFailure(stopOnFailure);
       manager.setProgressMode(progressMode);
+      manager.setTraceExceptions(traceExceptions);
 
       if (reportJSON) {
         manager.setUseJSON(true);

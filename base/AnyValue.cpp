@@ -150,7 +150,6 @@ AnyValue::AnyValue(const AnyReference& value) noexcept
 AnyValue::AnyValue(const AnyValue& copy) noexcept
   : representation(copy.representation)
 {
-  
   switch (representation) {
   case VOID:
     break;
@@ -210,6 +209,74 @@ AnyValue::AnyValue(const AnyValue& copy) noexcept
     break;
   case REFERENCE:
     reference = copy.reference;
+    break;
+  default:
+    INVALID_CONTROL_FLOW();
+  }
+}
+
+AnyValue::AnyValue(AnyValue&& move) noexcept
+  : representation(move.representation)
+{
+  switch (representation) {
+  case VOID:
+    break;
+  case TYPE:
+    type = move.type;
+    break;
+  case POINTER:
+    p = move.p;
+    break;
+  case CHARACTER:
+    character = move.character;
+    break;
+  case WIDE_CHARACTER:
+    wideCharacter = move.wideCharacter;
+    break;
+  case BOOLEAN:
+    boolean = move.boolean;
+    break;
+  case SHORT_INTEGER:
+    shortInteger = move.shortInteger;
+    break;
+  case UNSIGNED_SHORT_INTEGER:
+    unsignedShortInteger = move.unsignedShortInteger;
+    break;
+  case INTEGER:
+    integer = move.integer;
+    break;
+  case UNSIGNED_INTEGER:
+    unsignedInteger = move.unsignedInteger;
+    break;
+  case LONG_INTEGER:
+    longInteger = move.longInteger;
+    break;
+  case UNSIGNED_LONG_INTEGER:
+    unsignedLongInteger = move.unsignedLongInteger;
+    break;
+  case LONG_LONG_INTEGER:
+    longLongInteger = move.longLongInteger;
+    break;
+  case UNSIGNED_LONG_LONG_INTEGER:
+    unsignedLongLongInteger = move.unsignedLongLongInteger;
+    break;
+  case FLOAT:
+    f = move.f;
+    break;
+  case DOUBLE:
+    d = move.d;
+    break;
+  case LONG_DOUBLE:
+    ld = move.ld;
+    break;
+  case STRING:
+    string = std::move(move.string);
+    break;
+  case WIDE_STRING:
+    wideString = std::move(move.wideString);
+    break;
+  case REFERENCE:
+    reference = std::move(move.reference);
     break;
   default:
     INVALID_CONTROL_FLOW();
@@ -277,6 +344,81 @@ AnyValue& AnyValue::operator=(const AnyValue& copy) noexcept
       break;
     case WIDE_STRING:
       wideString = copy.wideString;
+      break;
+    case REFERENCE:
+      reference = copy.reference;
+      break;
+    default:
+      INVALID_CONTROL_FLOW();
+    }
+  }
+  return *this;
+}
+
+AnyValue& AnyValue::operator=(AnyValue&& move) noexcept
+{
+  if (&move != this) { // only if not self-assignment
+    reset();
+    representation = move.representation;
+    switch (representation) {
+    case VOID:
+      break;
+    case TYPE:
+      type = move.type;
+      break;
+    case POINTER:
+      p = move.p;
+      break;
+    case CHARACTER:
+      character = move.character;
+      break;
+    case WIDE_CHARACTER:
+      wideCharacter = move.wideCharacter;
+      break;
+    case BOOLEAN:
+      boolean = move.boolean;
+      break;
+    case SHORT_INTEGER:
+      shortInteger = move.shortInteger;
+      break;
+    case UNSIGNED_SHORT_INTEGER:
+      unsignedShortInteger = move.unsignedShortInteger;
+      break;
+    case INTEGER:
+      integer = move.integer;
+      break;
+    case UNSIGNED_INTEGER:
+      unsignedInteger = move.unsignedInteger;
+      break;
+    case LONG_INTEGER:
+      longInteger = move.longInteger;
+      break;
+    case UNSIGNED_LONG_INTEGER:
+      unsignedLongInteger = move.unsignedLongInteger;
+      break;
+    case LONG_LONG_INTEGER:
+      longLongInteger = move.longLongInteger;
+      break;
+    case UNSIGNED_LONG_LONG_INTEGER:
+      unsignedLongLongInteger = move.unsignedLongLongInteger;
+      break;
+    case FLOAT:
+      f = move.f;
+      break;
+    case DOUBLE:
+      d = move.d;
+      break;
+    case LONG_DOUBLE:
+      ld = move.ld;
+      break;
+    case STRING:
+      string = std::move(move.string);
+      break;
+    case WIDE_STRING:
+      wideString = std::move(move.wideString);
+      break;
+    case REFERENCE:
+      reference = std::move(move.reference);
       break;
     default:
       INVALID_CONTROL_FLOW();
@@ -1359,8 +1501,8 @@ public:
 
     AnyValue v1;
     TEST_ASSERT(v1.getRepresentation() == AnyValue::VOID);
-    auto v2 = v1;
-    v2 = AnyValue();
+    auto v2 = v1; // copy
+    v2 = AnyValue("text"); // move
 
     v1 = nullptr;
 
@@ -1371,9 +1513,9 @@ public:
     TEST_ASSERT(v1.isText());
     v1 = L"wides";
     TEST_ASSERT(v1.isText());
-    v1 = String("chars");
+    v1 = String("text");
     TEST_ASSERT(v1.isText());
-    v1 = WideString(L"wides");
+    v1 = WideString(L"text");
     TEST_ASSERT(v1.isText());
 
     v1 = 123;

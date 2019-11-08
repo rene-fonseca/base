@@ -118,12 +118,22 @@ public:
     Initializes value as copy of other value.
   */
   AnyValue(const AnyValue& copy) noexcept;
-  
+
+  /**
+    Initializes value from other value.
+  */
+  AnyValue::AnyValue(AnyValue&& move) noexcept;
+
   /**
     Assignment of object to object.
   */
   AnyValue& operator=(const AnyValue& assign) noexcept;
-  
+
+  /**
+    Assignment of object to object.
+  */
+  AnyValue& operator=(AnyValue&& assign) noexcept;
+
   /**
     Returns the internal representation of the value.
   */

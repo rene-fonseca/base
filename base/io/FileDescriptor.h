@@ -95,6 +95,9 @@ public:
   */
   void close() throw(IOException);
 
+  /** Returns true if the file descriptor is a pipe. */
+  bool isPipe() const noexcept;
+
   /**
     Gets the flags of the file descriptor.
   */

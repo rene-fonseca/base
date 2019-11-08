@@ -67,6 +67,18 @@ void FileDescriptor::close() throw(IOException) {
   fd = Descriptor::invalid;
 }
 
+bool FileDescriptor::isPipe() const noexcept
+{
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
+  return false;
+#else // unix
+  // get type directly instead
+  // TAG: also not if file
+  const int status = lseek(fd->getHandle(), 0, SEEK_CUR);
+  return (status < 0) && (errno == ESPIPE);
+#endif
+}
+
 int FileDescriptor::getFlags() const throw(IOException) {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   return 0;
@@ -132,7 +144,8 @@ FileDescriptor FileDescriptor::getStandardInput() throw() {
   }
   return FileDescriptor(handle);
 #else // unix
-  return FileDescriptor(0);
+  static FileDescriptor fd(0); // we do not want this to be closed implicitly
+  return fd;
 #endif // flavor
 }
 
@@ -150,7 +163,8 @@ FileDescriptor FileDescriptor::getStandardOutput() throw() {
   }
   return FileDescriptor(handle);
 #else // unix
-  return FileDescriptor(1);
+  static FileDescriptor fd(1); // we do not want this to be closed implicitly
+  return fd;
 #endif // flavor
 }
 
@@ -177,7 +191,8 @@ FileDescriptor FileDescriptor::getStandardError() throw() {
   }
   return FileDescriptor(handle);
 #else // unix
-  return FileDescriptor(2);
+  static FileDescriptor fd(2); // we do not want this to be closed implicitly
+  return fd;
 #endif // flavor
 }
 

@@ -122,7 +122,7 @@ public:
   /**
     Initializes value from other value.
   */
-  AnyValue::AnyValue(AnyValue&& move) noexcept;
+  AnyValue(AnyValue&& move) noexcept;
 
   /**
     Assignment of object to object.

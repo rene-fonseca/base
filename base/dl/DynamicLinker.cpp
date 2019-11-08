@@ -13,9 +13,11 @@
 
 #include <base/platforms/features.h>
 #include <base/dl/DynamicLinker.h>
+#include <base/Application.h>
 
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
 #  include <windows.h>
+#  include <dbghelp.h>
 #else // unix
 #  include <dlfcn.h>
 #if 0
@@ -27,8 +29,60 @@
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
-void* DynamicLinker::getGlobalSymbolImpl(
-  const String& symbol) throw(LinkerException)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
+
+namespace {
+
+  typedef BOOL (__stdcall* SymInitializeFunc)(HANDLE hProcess, PCSTR UserSearchPath, BOOL fInvadeProcess);
+  typedef BOOL (__stdcall* SymCleanupFunc)(HANDLE hProcess);
+  typedef BOOL (__stdcall* SymFromAddrFunc)(HANDLE hProcess, DWORD64 Address, PDWORD64 Displacement, PSYMBOL_INFO Symbol);
+
+  bool initialized = false;
+  HMODULE handle = nullptr;
+  SymInitializeFunc symInitialize = nullptr;
+  SymCleanupFunc symCleanup = nullptr;
+  SymFromAddrFunc symFromAddr = nullptr;
+
+  class Initialize {
+  public:
+
+    ~Initialize() {
+      if (symCleanup) {
+        symCleanup(GetCurrentProcess());
+
+        symInitialize = nullptr;
+        symCleanup = nullptr;
+        symFromAddr = nullptr;
+      }
+      if (handle) {
+        FreeLibrary(handle);
+        handle = nullptr;
+      }
+    }
+  };
+
+  Initialize initialize;
+
+  void loadDbgHelp()
+  {
+    if (!initialized) {
+      initialized = true;
+      handle = ::LoadLibraryExW(L"dbghelp.dll", 0, 0); // TAG: use DynamicLibrary class
+      symInitialize = (SymInitializeFunc)GetProcAddress(handle, "SymInitialize");
+      if (symInitialize) {
+        symCleanup = (SymCleanupFunc)GetProcAddress(handle, "SymCleanup");
+        if (symCleanup) {
+          BOOL status = symInitialize(GetCurrentProcess(), NULL, TRUE || FALSE); // we want to load on demand instead
+          symFromAddr = (SymFromAddrFunc)GetProcAddress(handle, "SymFromAddr");
+        }
+      }
+    }
+  }
+}
+
+#endif
+
+void* DynamicLinker::getGlobalSymbolImpl(const String& symbol) throw(LinkerException)
 {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   // GetModuleHandle does not increment reference count
@@ -178,8 +232,33 @@ DynamicLinker::~DynamicLinker()
 String DynamicLinker::getImagePath(void* address)
 {
   String result;
-#if ((_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__MACOS) || \
-     (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__GNULINUX))
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
+  MutualExclusion::Sync _guard(Application::getApplication()->getLock()); // dbghelp is not MT-safe
+  loadDbgHelp();
+  if (symFromAddr) {
+    DWORD64 displacement = 0;
+    SYMBOL_INFO info;
+    info.SizeOfStruct = sizeof(SYMBOL_INFO);
+    info.MaxNameLen = 0;
+    if (INLINE_ASSERT(symFromAddr(GetCurrentProcess(), reinterpret_cast<MemorySize>(address), &displacement, &info))) {
+      HMODULE handle = reinterpret_cast<HMODULE>(static_cast<MemorySize>(info.ModBase));
+      PrimitiveArray<wchar> buffer(1024);
+      while (buffer.size() < (64 * 1024)) {
+        DWORD length = GetModuleFileNameW(handle, buffer, buffer.size());
+        if (length == 0) {
+          if (GetLastError() == ERROR_INSUFFICIENT_BUFFER) {
+            buffer.resize(buffer.size() * 2);
+            continue;
+          }
+          break;
+        }
+        result = String(buffer, length);
+        break;
+      }
+    }
+  }
+#elif ((_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__MACOS) || \
+       (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__GNULINUX))
   Dl_info info;
   int status = dladdr(address, &info);
   if (status) {
@@ -193,8 +272,20 @@ String DynamicLinker::getImagePath(void* address)
 
 void* DynamicLinker::getImageAddress(void* address) noexcept
 {
-#if ((_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__MACOS) || \
-     (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__GNULINUX))
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
+  MutualExclusion::Sync _guard(Application::getApplication()->getLock()); // dbghelp is not MT-safe
+  loadDbgHelp();
+  if (symFromAddr) {
+    DWORD64 displacement = 0;
+    SYMBOL_INFO info;
+    info.SizeOfStruct = sizeof(SYMBOL_INFO);
+    info.MaxNameLen = 0;
+    if (INLINE_ASSERT(symFromAddr(GetCurrentProcess(), reinterpret_cast<MemorySize>(address), &displacement, &info))) {
+      return reinterpret_cast<void*>(static_cast<MemorySize>(info.ModBase));
+    }
+  }
+#elif ((_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__MACOS) || \
+       (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__GNULINUX))
   Dl_info info;
   int status = dladdr(address, &info);
   if (status) {
@@ -206,10 +297,30 @@ void* DynamicLinker::getImageAddress(void* address) noexcept
   return nullptr;
 }
 
+// #pragma comment(lib, "dbghelp.lib")
+
 void* DynamicLinker::getSymbolAddress(void* address) noexcept
 {
-#if ((_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__MACOS) || \
-     (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__GNULINUX))
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
+  MutualExclusion::Sync _guard(Application::getApplication()->getLock()); // dbghelp is not MT-safe
+  loadDbgHelp();
+  if (symFromAddr) {
+    DWORD64 displacement = 0;
+    SYMBOL_INFO info;
+    info.SizeOfStruct = sizeof(SYMBOL_INFO);
+    info.MaxNameLen = 0;
+    BASSERT(sizeof(info.Name[0]) == 1); // char - not wchar
+
+    // TAG: ensure we load symbols if available and not yet loaded
+    BOOL status = symFromAddr(GetCurrentProcess(), reinterpret_cast<MemorySize>(address), &displacement, &info);
+    if (!status) {
+      DWORD error = ::GetLastError();
+      return nullptr;
+    }
+    return reinterpret_cast<void*>(static_cast<MemorySize>(info.Address));
+  }
+#elif ((_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__MACOS) || \
+       (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__GNULINUX))
   Dl_info info;
   int status = dladdr(address, &info);
   if (status) {
@@ -224,8 +335,25 @@ void* DynamicLinker::getSymbolAddress(void* address) noexcept
 String DynamicLinker::getSymbolName(void* address)
 {
   String result;
-#if ((_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__MACOS) || \
-     (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__GNULINUX))
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
+  MutualExclusion::Sync _guard(Application::getApplication()->getLock()); // dbghelp is not MT-safe
+  loadDbgHelp();
+  if (symFromAddr) {
+    DWORD64 displacement = 0;
+    const unsigned int MAXIMUM_NAME = 4096; // nested templates can give very long names
+    PrimitiveArray<uint8> buffer(MAXIMUM_NAME + sizeof(SYMBOL_INFO) - 1);
+    SYMBOL_INFO* info = reinterpret_cast<SYMBOL_INFO*>(static_cast<uint8*>(buffer));
+    info->SizeOfStruct = sizeof(SYMBOL_INFO);
+    info->MaxNameLen = MAXIMUM_NAME;
+    BOOL status = symFromAddr(GetCurrentProcess(), reinterpret_cast<MemorySize>(address), &displacement, info);
+    if (!status) {
+      DWORD error = ::GetLastError();
+    } else {
+      result = String(info->Name, info->NameLen);
+    }
+  }
+#elif ((_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__MACOS) || \
+       (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__GNULINUX))
   Dl_info info;
   int status = dladdr(address, &info);
   if (status) {

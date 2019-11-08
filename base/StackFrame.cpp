@@ -16,18 +16,24 @@
 #include <base/string/FormatOutputStream.h>
 #include <base/TypeInfo.h>
 
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
+#  include <windows.h>
+#endif
+
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 StackFrame::StackFrame()
 {
 }
 
-void* StackFrame::getStackFrame() noexcept
+__declspec(noinline) void* StackFrame::getStackFrame() noexcept
 {
   void** frame = nullptr;
 
-#if ((_COM_AZURE_DEV__BASE__COMPILER == _COM_AZURE_DEV__BASE__COMPILER_LLVM) || \
-     (_COM_AZURE_DEV__BASE__COMPILER == _COM_AZURE_DEV__BASE__COMPILER_GCC))
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
+  return nullptr; // not available for x64
+#elif ((_COM_AZURE_DEV__BASE__COMPILER == _COM_AZURE_DEV__BASE__COMPILER_LLVM) || \
+       (_COM_AZURE_DEV__BASE__COMPILER == _COM_AZURE_DEV__BASE__COMPILER_GCC))
   asm("mov %%rbp, %0" : "=rm" ( frame ));
 #elif (_COM_AZURE_DEV__BASE__ARCH == _COM_AZURE_DEV__BASE__X86)
   asm (
@@ -37,9 +43,8 @@ void* StackFrame::getStackFrame() noexcept
 #else
   BASSERT(!"Not implemented");
 #endif
-  // register void* sp asm ("sp");
   if (frame) {
-    frame = (void**)*frame; // get parent frame
+    frame = reinterpret_cast<void**>(*frame); // get parent frame
   }
   return frame;
 }
@@ -49,6 +54,9 @@ namespace {
   /** Returns the instruction pointer (return address) for the given stack frame. */
   inline void* getInstructionPointer(void* frame) noexcept
   {
+    if (!frame) {
+      return nullptr;
+    }
     void* ip = reinterpret_cast<void**>(frame)[1]; // TAG: handle all ABIs
     return ip;
   }
@@ -56,26 +64,48 @@ namespace {
 
 void* StackFrame::getCaller() noexcept
 {
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
+  return _ReturnAddress();
+#else
   void* frame = getStackFrame();
   return getInstructionPointer(frame);
+#endif
 }
 
-#if 0 // low level
-MemorySize StackFrame::getStack(void** dest, MemorySize size)
-{
-  return 0;
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
+
+namespace {
+
+  typedef USHORT (__stdcall *RtlCaptureStackBackTraceFunc)(ULONG FramesToSkip, ULONG FramesToCapture, PVOID* BackTrace, PULONG BackTraceHash);
+
+  bool initialized = false;
+  HMODULE handle = nullptr;
+  RtlCaptureStackBackTraceFunc rtlCaptureStackBackTrace = nullptr;
+
+  void loadNtDll()
+  {
+    if (!initialized) {
+      initialized = true;
+      handle = ::LoadLibraryExW(L"ntdll.dll", 0, 0);
+      rtlCaptureStackBackTrace = (RtlCaptureStackBackTraceFunc)GetProcAddress(handle, "RtlCaptureStackBackTrace");
+    }
+  }
 }
+
 #endif
 
-StackFrame StackFrame::getStack(unsigned int levels)
+MemorySize StackFrame::getStack(void** dest, MemorySize size)
 {
-  StackFrame frames;
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
+  USHORT count = RtlCaptureStackBackTrace(1, size, dest, NULL);
+#else
   unsigned int count = 0;
   void* _frame = getStackFrame();
   void* frame = _frame;
-  while (frame && (count < levels)) {
+  while (frame && (count < size)) {
     ++count;
     void* ip = getInstructionPointer(frame);
+    *dest++ = ip;
     void* symbol = DynamicLinker::getSymbolAddress(ip); // TAG: can we avoid this
     if (!symbol) {
       break;
@@ -85,86 +115,122 @@ StackFrame StackFrame::getStack(unsigned int levels)
     }
     auto previous = frame;
     frame = *reinterpret_cast<void**>(frame);
-    if (!frame || (frame == previous)) {
-      break;
+  }
+  return count;
+#endif
+  // TAG: calc hash for stack trace
+  return count;
+}
+
+StackFrame StackFrame::getStack(unsigned int levels)
+{
+  StackFrame frames;
+
+  if (levels == 0) {
+    return frames;
+  }
+
+  {
+    void* trace[256]; // quick buffer
+    const MemorySize count = getStack(trace, minimum<MemorySize>(levels, getArraySize(trace)));
+    if (!INLINE_ASSERT(count > 0)) {
+      return frames;
+    }
+    if ((count != getArraySize(trace)) || (count <= levels)) { // no overflow
+      frames.frames.setSize(count);
+      copy(frames.frames.getElements(), trace, count);
+      return frames;
     }
   }
-  const MemorySize size = count;
-  frames.frames.setSize(size);
-  void** dest = frames.frames.getElements();
-  frame = _frame;
-  count = 0;
-  while (frame && (count < size)) {
-    ++count;
-    void* ip = getInstructionPointer(frame);
-    *dest++ = ip;
-    frame = *reinterpret_cast<void**>(frame);
+  
+  PrimitiveArray<void*> buffer(1024);
+  MemorySize count = 0;
+  while (buffer.size() < (64 * 1024)) {
+    count = getStack(buffer, minimum<MemorySize>(levels, buffer.size()));
+    if ((count == buffer.size()) && (count < levels)) { // overflow
+      buffer.resize(buffer.size() * 2);
+      continue;
+    }
+    break;
   }
+
+  frames.frames.setSize(count);
+  copy(frames.frames.getElements(), static_cast<void**>(buffer), count);
+
   return frames;
+}
+
+// TAG: add support for registering stack trace in global lookup and get hash key for it
+
+void /*StackFrame::*/dump(FormatOutputStream& stream, void* const * trace, MemorySize size, bool verbose)
+{
+  // we could color code modules
+  const unsigned int INDENT = 2;
+
+  stream << "Stack trace:" << EOL;
+  if (!trace || (size == 0)) {
+    stream << indent(INDENT) << "NO STACK FRAMES" << EOL;
+    return;
+  }
+  for (MemorySize i = 0; i < size; ++i) {
+    void* ip = trace[i];
+    void* symbol = DynamicLinker::getSymbolAddress(ip);
+    if (symbol) {
+      const String name = DynamicLinker::getSymbolName(ip);
+      auto displacement = (reinterpret_cast<uint8*>(ip) - reinterpret_cast<uint8*>(symbol));
+      if (name) {
+        stream << indent(INDENT) << i << ": " << symbol << "+" << HEX << ZEROPAD << NOPREFIX << setWidth(4) << displacement << " " << TypeInfo::demangleName(name.native()) << EOL;
+      } else {
+        stream << indent(INDENT) << i << ": " << symbol << "+" << HEX << ZEROPAD << NOPREFIX << setWidth(4) << displacement << EOL;
+      }
+    } else {
+      stream << indent(INDENT) << i << ": ?" << ip << EOL;
+    }
+    if (verbose) {
+      stream << indent(INDENT) << "!" << DynamicLinker::getImagePath(ip) << EOL; // TAG: just show the filename
+    }
+  }
 }
 
 void StackFrame::dump(unsigned int levels)
 {
-  static bool here = false;
-  if (here) {
+  if (levels == 0) {
     return;
   }
-  here = true;
 
-  FormatOutputStream& stream = ferr;
+  {
+    void* trace[256]; // quick buffer
+    const MemorySize count = getStack(trace, minimum<MemorySize>(levels, getArraySize(trace)));
+    if (!INLINE_ASSERT(count > 0)) {
+      return;
+    }
+    if ((count != getArraySize(trace)) || (count <= levels)) { // no overflow
+      base::dump(ferr, trace, count, false);
+      ferr << FLUSH;
+      return;
+    }
+  }
 
-  void* frame = getStackFrame();
+  PrimitiveArray<void*> buffer(1024);
   MemorySize count = 0;
-  stream << "Stack trace:" << EOL;
-  if (!frame) {
-    stream << indent(2) << "NO STACK FRAMES" << EOL;
-    return;
+  while (buffer.size() < (64 * 1024)) {
+    count = getStack(buffer, minimum<MemorySize>(levels, buffer.size()));
+    if ((count == buffer.size()) && (count < levels)) { // overflow
+      buffer.resize(buffer.size() * 2);
+      continue;
+    }
+    break;
   }
-  while (frame && (count < levels)) {
-    void* ip = getInstructionPointer(frame);
-    void* symbol = DynamicLinker::getSymbolAddress(ip);
-    if (!symbol) {
-      break;
-    }
-    if (reinterpret_cast<MemorySize>(ip) < 0x10000) {
-      break;
-    }
-    const String name = DynamicLinker::getSymbolName(ip);
-    if (name) {
-      stream << indent(2) << count << ": " << symbol << "+" << HEX << ZEROPAD << NOPREFIX << setWidth(4) << (reinterpret_cast<uint8*>(ip) - reinterpret_cast<uint8*>(symbol)) << " " << TypeInfo::demangleName(name.native()) << EOL;
-    } else {
-      stream << indent(2) << count << ": " << symbol << "+" << HEX << ZEROPAD << NOPREFIX << setWidth(4) << (reinterpret_cast<uint8*>(ip) - reinterpret_cast<uint8*>(symbol)) << EOL;
-    }
-    ++count;
-    frame = *reinterpret_cast<void**>(frame);
-  }
-  stream << FLUSH;
-  here = false;
+
+  base::dump(ferr, buffer, count, false);
+  ferr << FLUSH;
 }
 
 FormatOutputStream& operator<<(
   FormatOutputStream& stream,
   const StackFrame& value) throw(IOException)
 {
-  auto size = value.getSize();
-  stream << "Stack trace:" << EOL;
-  if (size == 0) {
-    stream << indent(2) << "NO STACK FRAMES" << EOL;
-    return stream;
-  }
-  for (MemorySize i = 0; i < size; ++i) {
-    void* ip = value.getFrame(i);
-    void* symbol = DynamicLinker::getSymbolAddress(ip);
-    if (!symbol) {
-      break;
-    }
-    const String name = DynamicLinker::getSymbolName(ip);
-    if (name) {
-      stream << indent(2) << i << ": " << symbol << "+" << HEX << ZEROPAD << NOPREFIX << setWidth(4) << (reinterpret_cast<uint8*>(ip) - reinterpret_cast<uint8*>(symbol)) << " " << TypeInfo::demangleName(name.native()) << EOL;
-    } else {
-      stream << indent(2) << i << ": " << symbol << "+" << HEX << ZEROPAD << NOPREFIX << setWidth(4) << (reinterpret_cast<uint8*>(ip) - reinterpret_cast<uint8*>(symbol)) << EOL;
-    }
-  }
+  base::dump(stream, value.getTrace(), value.getSize(), false);
   return stream;
 }
 

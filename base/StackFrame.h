@@ -22,13 +22,19 @@ _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
   Stack frame.
 */
 
-class _COM_AZURE_DEV__BASE__API StackFrame {
+class _COM_AZURE_DEV__BASE__API StackFrame { // TAG: rename
 private:
   
   Allocator<void*> frames;
 public:
   
   StackFrame();
+
+  /** Returns the number of stack frames. */
+  inline void* const * getTrace() const noexcept
+  {
+    return frames.getElements();
+  }
 
   /** Returns the number of stack frames. */
   inline MemorySize getSize() const noexcept
@@ -52,21 +58,26 @@ public:
   }
   
   /**
-    Returns the stack frame.
+    Returns the stack frame. Not available for all platforms.
   */
   static void* getStackFrame() noexcept;
 
   /**
-    Returns the caller.
+    Returns the caller. Not available for all platforms.
   */
   static void* getCaller() noexcept;
+
+  /**
+    Returns the stack trace.
+  */
+  static MemorySize getStack(void** dest, MemorySize size);
 
   /**
     Returns the stack.
    
     @param levels The maximum number of levels to dump.
   */
-  static StackFrame getStack(unsigned int levels);
+  static StackFrame getStack(unsigned int levels = 32);
 
   /**
    Dump stack.

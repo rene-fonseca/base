@@ -179,7 +179,7 @@ StackFrame StackFrame::getStack(unsigned int skip, unsigned int levels)
 
   return frames;
 }
-#include <unistd.h>
+
 // TAG: add support for registering stack trace in global lookup and get hash key for it
 
 void StackFrame::toStream(FormatOutputStream& stream, const void* const * trace, MemorySize size, unsigned int flags)

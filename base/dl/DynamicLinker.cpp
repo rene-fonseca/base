@@ -229,7 +229,7 @@ DynamicLinker::~DynamicLinker()
 #endif // flavor
 }
 
-String DynamicLinker::getImagePath(void* address)
+String DynamicLinker::getImagePath(const void* address)
 {
   String result;
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
@@ -270,7 +270,7 @@ String DynamicLinker::getImagePath(void* address)
   return result;
 }
 
-void* DynamicLinker::getImageAddress(void* address) noexcept
+void* DynamicLinker::getImageAddress(const void* address) noexcept
 {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   MutualExclusion::Sync _guard(Application::getApplication()->getLock()); // dbghelp is not MT-safe
@@ -299,7 +299,7 @@ void* DynamicLinker::getImageAddress(void* address) noexcept
 
 // #pragma comment(lib, "dbghelp.lib")
 
-void* DynamicLinker::getSymbolAddress(void* address) noexcept
+void* DynamicLinker::getSymbolAddress(const void* address) noexcept
 {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   MutualExclusion::Sync _guard(Application::getApplication()->getLock()); // dbghelp is not MT-safe
@@ -332,7 +332,7 @@ void* DynamicLinker::getSymbolAddress(void* address) noexcept
   return nullptr;
 }
 
-String DynamicLinker::getSymbolName(void* address)
+String DynamicLinker::getSymbolName(const void* address)
 {
   String result;
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)

@@ -121,16 +121,16 @@ public:
     unsigned int numberOfFunctions, bool flags = 0) noexcept;
 
   /** Returns the path of the image for the given executable address. */
-  static String getImagePath(void* address);
+  static String getImagePath(const void* address);
 
   /** Returns the image address for the given executable address. */
-  static void* getImageAddress(void* address) noexcept;
+  static void* getImageAddress(const void* address) noexcept;
 
   /** Returns the closest symbol for the given executable address. */
-  static void* getSymbolAddress(void* address) noexcept;
+  static void* getSymbolAddress(const void* address) noexcept;
 
   /** Returns the closest symbol for the given executable address. */
-  static String getSymbolName(void* address);
+  static String getSymbolName(const void* address);
   
   /**
     Closes the module.

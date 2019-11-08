@@ -14,6 +14,7 @@
 #include <base/StackFrame.h>
 #include <base/dl/DynamicLinker.h>
 #include <base/string/FormatOutputStream.h>
+#include <base/filesystem/FileSystem.h>
 #include <base/TypeInfo.h>
 
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
@@ -179,19 +180,25 @@ void StackFrame::toStream(FormatOutputStream& stream, const void* const * trace,
   for (MemorySize i = 0; i < size; ++i) {
     const void* ip = trace[i];
     const void* symbol = DynamicLinker::getSymbolAddress(ip);
+
+    String path;
+    if (verbose) {
+      path = FileSystem::getComponent(DynamicLinker::getImagePath(ip), FileSystem::FILENAME);
+      if (path) {
+        path += "!";
+      }
+    }
+
     if (symbol) {
       const String name = DynamicLinker::getSymbolName(ip);
       auto displacement = (reinterpret_cast<const uint8*>(ip) - reinterpret_cast<const uint8*>(symbol));
       if (name) {
-        stream << indent(INDENT) << i << ": " << symbol << "+" << HEX << ZEROPAD << NOPREFIX << setWidth(4) << displacement << " " << TypeInfo::demangleName(name.native()) << EOL;
+        stream << indent(INDENT) << i << ": " << symbol << "+" << HEX << ZEROPAD << NOPREFIX << setWidth(4) << displacement << " " << path << TypeInfo::demangleName(name.native()) << EOL;
       } else {
         stream << indent(INDENT) << i << ": " << symbol << "+" << HEX << ZEROPAD << NOPREFIX << setWidth(4) << displacement << EOL;
       }
     } else {
       stream << indent(INDENT) << i << ": ?" << ip << EOL;
-    }
-    if (verbose) {
-      stream << indent(INDENT) << "!" << DynamicLinker::getImagePath(ip) << EOL; // TAG: just show the filename
     }
   }
 }

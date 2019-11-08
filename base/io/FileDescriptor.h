@@ -95,6 +95,9 @@ public:
   */
   void close() throw(IOException);
 
+  /** Returns true if the handle is a terminal. */
+  bool isTerminal() const noexcept;
+
   /** Returns true if the file descriptor is a pipe. */
   bool isPipe() const noexcept;
 

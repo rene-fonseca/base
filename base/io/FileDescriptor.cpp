@@ -67,6 +67,16 @@ void FileDescriptor::close() throw(IOException) {
   fd = Descriptor::invalid;
 }
 
+bool FileDescriptor::isTerminal() const noexcept
+{
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
+  return false;
+#else // unix
+  const int status = isatty(fd->getHandle());
+  return (status == 1);
+#endif
+}
+
 bool FileDescriptor::isPipe() const noexcept
 {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)

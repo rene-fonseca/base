@@ -734,8 +734,9 @@ Type AnyValue::getType() const noexcept
   switch (representation) {
   case TYPE:
     return Type::makeType(type);
+  default:
+    return Type();
   }
-  return Type();
 }
 
 void* AnyValue::getPointer() const noexcept
@@ -743,8 +744,9 @@ void* AnyValue::getPointer() const noexcept
   switch (representation) {
   case POINTER:
     return p;
+  default:
+    return nullptr;
   }
-  return nullptr;
 }
 
 char AnyValue::getChar() const noexcept

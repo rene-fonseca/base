@@ -288,7 +288,14 @@ public:
 
   String(const std::string& string) throw(StringException, MemoryException);
 
+  /** Converts to UTF-8. */
   String(const std::wstring& string) throw(StringException, MemoryException);
+
+  /** Converts to UTF-8. */
+  String(const wchar* string) throw(StringException, MemoryException);
+
+  /** Converts to UTF-8. */
+  String(const wchar* string, MemorySize length) throw(StringException, MemoryException);
 
 #if 0 // TAG: bad for now due to match with structs also - or static_cast<const char*>() is required
   /**

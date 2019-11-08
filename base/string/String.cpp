@@ -80,6 +80,18 @@ String::String(const std::wstring& string) throw(StringException, MemoryExceptio
   initialize(utf8.c_str(), utf8.size());
 }
 
+String::String(const wchar* string) throw(StringException, MemoryException)
+{
+  const std::string utf8 = toUTF8(string);
+  initialize(utf8.c_str(), utf8.size());
+}
+
+String::String(const wchar* string, MemorySize length) throw(StringException, MemoryException)
+{
+  const std::string utf8 = toUTF8(string, length);
+  initialize(utf8.c_str(), utf8.size());
+}
+
 String::String(StringOutputStream& stream)
 {
   operator=(stream.toString());
@@ -941,14 +953,22 @@ std::string toUTF8(const std::wstring& s)
 /** Converts wstring to UTF-8 string. */
 std::string toUTF8(const wchar* s)
 {
-  std::wstring_convert<std::codecvt_utf8<wchar_t>, wchar_t> convert;
-  return convert.to_bytes(s);
+  if (s) {
+    std::wstring_convert<std::codecvt_utf8<wchar_t>, wchar_t> convert;
+    return convert.to_bytes(s);
+  } else {
+    return std::string();
+  }
 }
 
 std::string toUTF8(const wchar* s, MemorySize length)
 {
-  std::wstring_convert<std::codecvt_utf8<wchar_t>, wchar_t> convert;
-  return convert.to_bytes(s, s + length);
+  if (s) {
+    std::wstring_convert<std::codecvt_utf8<wchar_t>, wchar_t> convert;
+    return convert.to_bytes(s, s + length);
+  } else {
+    return std::string();
+  }
 }
 
 /** Converts UTF-8 string to wstring. */

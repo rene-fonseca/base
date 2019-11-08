@@ -104,7 +104,9 @@ void UnitTest::Run::onException(Exception* exception)
 
   Exception::StackTrace stackTrace = Exception::getStackTrace();
   if (stackTrace.begin != stackTrace.end) {
-    ++stackTrace.begin; // skip handler
+    if (exception) {
+      ++stackTrace.begin; // skip handler
+    }
     if (stackTrace.begin != stackTrace.end) {
       StackFrame::toStream(sos, stackTrace.begin, stackTrace.end - stackTrace.begin, true);
       for (const auto& line : sos.toString().split('\n')) {

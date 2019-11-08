@@ -68,13 +68,6 @@ public:
     if (firstTime || exceptionType.isInitialized()) {
       firstTime = false;
 
-      auto tls = Thread::getLocalContext();
-      if (tls) {
-        if (!tls->stackTrace.isEmpty()) {
-          ferr << "LAST EXCEPTION " << tls->stackTrace << ENDL;
-        }
-      }
-
       try {
         throw;
       } catch (Exception& e) {
@@ -114,6 +107,14 @@ public:
       stream << "Internal error: explicit termination." << FLUSH;
     }
     ferr << stream.getString() << ENDL; // TAG: use appropriate error stream
+    
+    auto tls = Thread::getLocalContext();
+    if (tls) {
+      if (!tls->stackTrace.isEmpty()) {
+        ferr << tls->stackTrace << ENDL;
+      }
+    }
+    
 #if defined(_COM_AZURE_DEV__BASE__ANY_DEBUG)
     // TAG: need runtime debug mode support (e.g. bool Trace::debug or with level support)
     Trace::message(stream.getString().getElements());
@@ -740,7 +741,8 @@ Application::Application(
   : formalName(_formalName),
     exitCode(EXIT_CODE_NORMAL),
     terminated(false),
-    hangingup(false) {
+    hangingup(false)
+{
   initialize();
   
   if (!((numberOfArguments > 0) && arguments)) {
@@ -773,29 +775,50 @@ Application::Application(
   application = this;
 }
 
-int Application::exceptionHandler(const Exception& e) throw() {
+int Application::exceptionHandler(const Exception& e) throw()
+{
   ferr << e << ENDL;
+
+  auto tls = Thread::getLocalContext();
+  if (tls) {
+    if (!tls->stackTrace.isEmpty()) {
+      ferr << tls->stackTrace << ENDL;
+    }
+  }
+
   setExitCode(Application::EXIT_CODE_ERROR);
   return Application::EXIT_CODE_ERROR;
 }
 
-int Application::exceptionHandler() throw() {
+int Application::exceptionHandler() throw()
+{
   ferr << "Internal error: unspecified exception." << ENDL;
+
+  auto tls = Thread::getLocalContext();
+  if (tls) {
+    if (!tls->stackTrace.isEmpty()) {
+      ferr << tls->stackTrace << ENDL;
+    }
+  }
+
   setExitCode(Application::EXIT_CODE_ERROR);
   return Application::EXIT_CODE_ERROR;
 }
 
-void Application::hangup() throw() {
+void Application::hangup() throw()
+{
   MutualExclusion::Sync _guard(lock);
   hangingup = true;
 }
 
-void Application::terminate() throw() {
+void Application::terminate() throw()
+{
   terminated = true;
   onTermination();
 }
 
-bool Application::isHangingup() throw() {
+bool Application::isHangingup() throw()
+{
   bool result = false;
   MutualExclusion::Sync _guard(lock);
   result = hangingup;

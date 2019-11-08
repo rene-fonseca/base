@@ -14,6 +14,7 @@
 #include <base/objectmodel/ObjectModel.h>
 #include <base/LongInteger.h>
 #include <base/mathematics/Math.h>
+#include <base/UnitTest.h>
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
@@ -783,5 +784,60 @@ FormatOutputStream& operator<<(FormatOutputStream& stream, const Reference<Objec
 
   return stream;
 }
+
+#if defined(_COM_AZURE_DEV__BASE__TESTS)
+
+class TEST_CLASS(ObjectModel) : public UnitTest {
+public:
+
+  TEST_PRIORITY(200);
+  TEST_PROJECT("base/objectmodel");
+
+  void run() override
+  {
+    ObjectModel o;
+    auto root = o.createObject();
+    TEST_ASSERT(root->isEmpty());
+    root->setValue(o.createString("name"), o.createString("value"));
+    root->setValue(o.createString("state"), o.createBoolean(true));
+    root->setValue(o.createString("integer"), o.createInteger(-123));
+    root->setValue(o.createString("number"), o.createFloat(123.0));
+    TEST_ASSERT(!root->isEmpty());
+    TEST_ASSERT(root->getSize() == 4);
+
+    auto a = o.createArray();
+    root->setValue(o.createString("list"), a);
+    a->append(o.createInteger(12));
+    a->append(o.createInteger(54));
+    a->append(o.createInteger(54));
+    a->append(o.createInteger(66));
+    a->append(o.createBoolean(false)); // mixed types
+    a->append(o.createFloat(-456));
+    a->append(o.createString(L"Hello, World!"));
+    TEST_ASSERT(a->getSize() == 7);
+
+    auto sub = o.createObject();
+    sub->setValue(o.createString("name"), o.createString("John Doe"));
+    sub->setValue(o.createString("description"), o.createString("My description."));
+    root->setValue(o.createString("sub"), sub);
+
+    TEST_EQUAL(root->getString("name", ""), "value");
+    TEST_EQUAL(root->getString("qwerty", "Default"), "Default");
+    TEST_EQUAL(root->getBoolean("state", false), true);
+    TEST_EQUAL(root->getBoolean("qwerty", false), false);
+    TEST_EQUAL(root->getInteger("integer", -1), -123);
+    TEST_EQUAL(root->getInteger("qwerty", -1), -1);
+    TEST_EQUAL(root->getFloat("number", 0), 123.0);
+    TEST_EQUAL(root->getFloat("qwerty", -1.0), -1.0);
+    TEST_ASSERT(root->getObject("sub"));
+    TEST_ASSERT(!root->getObject("qwerty"));
+    TEST_EQUAL(root->getString("sub/name", ""), "John Doe");
+    TEST_EQUAL(root->getString("sub/qwerty", ""), "");
+  }
+};
+
+TEST_REGISTER(ObjectModel);
+
+#endif
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

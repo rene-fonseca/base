@@ -94,14 +94,18 @@ namespace {
 
 #endif
 
-MemorySize StackFrame::getStack(void** dest, MemorySize size)
+unsigned int StackFrame::getStack(void** dest, unsigned int size, unsigned int skip)
 {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
-  USHORT count = RtlCaptureStackBackTrace(1, size, dest, NULL);
+  USHORT count = RtlCaptureStackBackTrace(skip + 1, size, dest, NULL);
 #else
-  unsigned int count = 0;
   void* _frame = getStackFrame();
   void* frame = _frame;
+  ++skip;
+  while (frame && skip--) {
+    frame = *reinterpret_cast<void**>(frame);
+  }
+  unsigned int count = 0;
   while (frame && (count < size)) {
     ++count;
     void* ip = getInstructionPointer(frame);
@@ -113,16 +117,14 @@ MemorySize StackFrame::getStack(void** dest, MemorySize size)
     if (reinterpret_cast<MemorySize>(ip) < 0x10000) { // TAG: what is the proper way to detect top of stack
       break;
     }
-    auto previous = frame;
     frame = *reinterpret_cast<void**>(frame);
   }
-  return count;
 #endif
   // TAG: calc hash for stack trace
   return count;
 }
 
-StackFrame StackFrame::getStack(unsigned int levels)
+StackFrame StackFrame::getStack(unsigned int skip, unsigned int levels)
 {
   StackFrame frames;
 
@@ -130,9 +132,11 @@ StackFrame StackFrame::getStack(unsigned int levels)
     return frames;
   }
 
+  ++skip;
+
   {
     void* trace[256]; // quick buffer
-    const MemorySize count = getStack(trace, minimum<MemorySize>(levels, getArraySize(trace)));
+    const unsigned int count = getStack(trace, minimum<MemorySize>(levels, getArraySize(trace)), skip);
     if (!INLINE_ASSERT(count > 0)) {
       return frames;
     }
@@ -144,9 +148,9 @@ StackFrame StackFrame::getStack(unsigned int levels)
   }
   
   PrimitiveArray<void*> buffer(1024);
-  MemorySize count = 0;
+  unsigned int count = 0;
   while (buffer.size() < (64 * 1024)) {
-    count = getStack(buffer, minimum<MemorySize>(levels, buffer.size()));
+    count = getStack(buffer, minimum<MemorySize>(levels, buffer.size()), skip);
     if ((count == buffer.size()) && (count < levels)) { // overflow
       buffer.resize(buffer.size() * 2);
       continue;
@@ -162,7 +166,7 @@ StackFrame StackFrame::getStack(unsigned int levels)
 
 // TAG: add support for registering stack trace in global lookup and get hash key for it
 
-void /*StackFrame::*/dump(FormatOutputStream& stream, void* const * trace, MemorySize size, bool verbose)
+void StackFrame::toStream(FormatOutputStream& stream, const void* const * trace, MemorySize size, bool verbose)
 {
   // we could color code modules
   const unsigned int INDENT = 2;
@@ -173,11 +177,11 @@ void /*StackFrame::*/dump(FormatOutputStream& stream, void* const * trace, Memor
     return;
   }
   for (MemorySize i = 0; i < size; ++i) {
-    void* ip = trace[i];
-    void* symbol = DynamicLinker::getSymbolAddress(ip);
+    const void* ip = trace[i];
+    const void* symbol = DynamicLinker::getSymbolAddress(ip);
     if (symbol) {
       const String name = DynamicLinker::getSymbolName(ip);
-      auto displacement = (reinterpret_cast<uint8*>(ip) - reinterpret_cast<uint8*>(symbol));
+      auto displacement = (reinterpret_cast<const uint8*>(ip) - reinterpret_cast<const uint8*>(symbol));
       if (name) {
         stream << indent(INDENT) << i << ": " << symbol << "+" << HEX << ZEROPAD << NOPREFIX << setWidth(4) << displacement << " " << TypeInfo::demangleName(name.native()) << EOL;
       } else {
@@ -192,20 +196,22 @@ void /*StackFrame::*/dump(FormatOutputStream& stream, void* const * trace, Memor
   }
 }
 
-void StackFrame::dump(unsigned int levels)
+void StackFrame::dump(unsigned int skip, unsigned int levels)
 {
   if (levels == 0) {
     return;
   }
 
+  ++skip;
+
   {
     void* trace[256]; // quick buffer
-    const MemorySize count = getStack(trace, minimum<MemorySize>(levels, getArraySize(trace)));
+    const MemorySize count = getStack(trace, minimum<MemorySize>(levels, getArraySize(trace)), skip);
     if (!INLINE_ASSERT(count > 0)) {
       return;
     }
     if ((count != getArraySize(trace)) || (count <= levels)) { // no overflow
-      base::dump(ferr, trace, count, false);
+      toStream(ferr, trace, count, false);
       ferr << FLUSH;
       return;
     }
@@ -214,7 +220,7 @@ void StackFrame::dump(unsigned int levels)
   PrimitiveArray<void*> buffer(1024);
   MemorySize count = 0;
   while (buffer.size() < (64 * 1024)) {
-    count = getStack(buffer, minimum<MemorySize>(levels, buffer.size()));
+    count = getStack(buffer, minimum<MemorySize>(levels, buffer.size()), skip);
     if ((count == buffer.size()) && (count < levels)) { // overflow
       buffer.resize(buffer.size() * 2);
       continue;
@@ -222,7 +228,7 @@ void StackFrame::dump(unsigned int levels)
     break;
   }
 
-  base::dump(ferr, buffer, count, false);
+  toStream(ferr, buffer, count, false);
   ferr << FLUSH;
 }
 
@@ -230,7 +236,7 @@ FormatOutputStream& operator<<(
   FormatOutputStream& stream,
   const StackFrame& value) throw(IOException)
 {
-  base::dump(stream, value.getTrace(), value.getSize(), false);
+  StackFrame::toStream(stream, value.getTrace(), value.getSize(), false);
   return stream;
 }
 

@@ -70,21 +70,26 @@ public:
   /**
     Returns the stack trace.
   */
-  static MemorySize getStack(void** dest, MemorySize size);
+  static unsigned int getStack(void** dest, unsigned int size, unsigned int skip = 1);
 
   /**
     Returns the stack.
    
     @param levels The maximum number of levels to dump.
   */
-  static StackFrame getStack(unsigned int levels = 32);
+  static StackFrame getStack(unsigned int skip = 1, unsigned int levels = 32);
 
   /**
    Dump stack.
    
     @param levels The maximum number of levels to dump.
   */
-  static void dump(unsigned int levels = 32);
+  static void dump(unsigned int skip = 1, unsigned int levels = 32);
+
+  /**
+    Format stack trace to stream.
+  */
+  static void toStream(FormatOutputStream& stream, const void* const* trace, MemorySize size, bool verbose = false);
 };
 
 _COM_AZURE_DEV__BASE__API FormatOutputStream& operator<<(FormatOutputStream& stream, const StackFrame& value) throw(IOException);

@@ -268,6 +268,12 @@ public:
     return DEFAULT_PRIORITY;
   }
 
+  /** Use TEST_IN_DEVELOPMENT to tag test as being in development. */
+  virtual bool isInDevelopment() const noexcept
+  {
+    return false;
+  }
+
   /** Use TEST_IMPACT to set priority for test. */
   virtual Impact getImpact() const noexcept
   {
@@ -502,7 +508,7 @@ public:
   void loadTests();
 
   /** Runs the tests matching the given pattern. */
-  bool runTests(const String& pattern = "*");
+  bool runTests(const String& pattern = "*", bool runDevel = false);
 
   /** Returns all the registered tests. */
   inline const Array<Reference<UnitTest> >& getTests() const noexcept
@@ -678,6 +684,9 @@ public:
 
 /** Sets the priority for the test. Lower priorty is "higher" and gets run first. */
 #define TEST_PRIORITY(priority) int getPriority() const noexcept override {return static_cast<int>(priority);}
+
+/** Tags the test as being in development which means test is ignored by default. */
+#define TEST_IN_DEVELOPMENT() bool isInDevelopment() const noexcept override {return true;}
 
 /** Sets the impact for the test. Lower impact is "higher" and gets run first for the same priority group. */
 #define TEST_IMPACT(impact) Impact getImpact() const noexcept override {return static_cast<Impact>(impact);}

@@ -681,7 +681,7 @@ namespace {
   }
 }
 
-bool UnitTestManager::runTests(const String& pattern)
+bool UnitTestManager::runTests(const String& pattern, bool runDevel)
 {
   // TAG: allow tests to run concurrently
 
@@ -698,9 +698,15 @@ bool UnitTestManager::runTests(const String& pattern)
       id = test->getName();
     }
 
-    if (Parser::doesMatchPattern(pattern, id)) {
-      tests.append(test);
+    if (!Parser::doesMatchPattern(pattern, id)) {
+      continue;
     }
+
+    if (!runDevel && test->isInDevelopment()) {
+      continue; // skip
+    }
+
+    tests.append(test);
   }
 
   if (randomize) {

@@ -51,6 +51,7 @@ private:
   String junitPath;
   String testsuiteUUID;
   String pattern = "*";
+  bool runDevel = false;
 public:
 
   TestApplication(
@@ -83,6 +84,8 @@ public:
         useANSIColor = true;
       } else if (argument == "--json") {
         reportJSON = true;
+      } else if (argument == "--devel") {
+        runDevel = true;
       } else if (argument == "--junit") {
         reportJUnit = true;
         if (!enu.hasNext()) {
@@ -199,6 +202,10 @@ public:
           fout << "  OWNER=" << owner << EOL;
         }
         fout << "  PRIORITY=" << test->getPriority() << EOL;
+        if (test->isInDevelopment()) {
+          fout << "  DEVELOPMENT=" << test->isInDevelopment() << EOL;
+        }
+        
         static const char* IMPACTS[] = { "PRIVACY", "SECURITY", "CRITICAL", "IMPORTANT", "NORMAL", "LOW", "IGNORE" };
         ASSERT(test->getImpact() < getArraySize(IMPACTS));
         fout << "  IMPACT=" << IMPACTS[test->getImpact()] << EOL;
@@ -258,7 +265,7 @@ public:
         manager.setUseJSON(true);
       }
       
-      if (!manager.runTests(pattern)) {
+      if (!manager.runTests(pattern, runDevel)) {
         setExitCode(1);
       }
 

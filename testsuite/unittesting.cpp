@@ -17,6 +17,7 @@
 #include <base/string/ANSIEscapeSequence.h>
 #include <base/UnitTest.h>
 #include <base/io/FileOutputStream.h>
+#include <base/io/FileDescriptor.h>
 #include <algorithm>
 
 using namespace com::azure::dev::base;
@@ -42,7 +43,7 @@ private:
 
   Command command = COMMAND_RUN;
   Verbosity verbosity = NORMAL;
-  bool useANSIColor = false;
+  bool useANSIColors = false;
   bool randomize = false;
   bool stopOnFailure = false;
   bool progressMode = false;
@@ -81,8 +82,8 @@ public:
         verbosity = COMPACT;
       } else if (argument == "--verbose") {
         verbosity = VERBOSE;
-      } else if (argument == "--color") {
-        useANSIColor = true;
+      } else if (argument == "--colors") {
+        useANSIColors = true;
       } else if (argument == "--json") {
         reportJSON = true;
       } else if (argument == "--devel") {
@@ -136,24 +137,24 @@ public:
       << "--help           This message" << EOL
       << "--version        Dump the version" << EOL
       << EOL
-      << "--list           List all tests" << EOL
-      << "--run            Run tests" << EOL
-      << "--compact        Compact mode" << EOL
-      << "--verbose        Verbose mode" << EOL
-      << "--progress       Progress mode" << EOL
-      << "--color          Use ANSI colors" << EOL
-      << "--json           Output results as JSON" << EOL
+      << "--list           List all tests." << EOL
+      << "--run            Run tests." << EOL
+      << "--compact        Compact mode." << EOL
+      << "--verbose        Verbose mode." << EOL
+      << "--progress       Progress mode." << EOL
+      << "--colors         Use ANSI colors." << EOL
+      << "--json           Output results as JSON." << EOL
       << "--junit          Output results as JUnit. JUnit path must follow." << EOL
       << "--uuid           UUID for testsuite." << EOL
-      << "--randomize      Run tests in random order" << EOL
-      << "--stopOnFailure  Stop on first failure" << EOL
+      << "--randomize      Run tests in random order." << EOL
+      << "--stopOnFailure  Stop on first failure." << EOL
       << ENDL;
   }
 
   /** Returns the id for presentation. */
   String presentId(const String& id)
   {
-    if (useANSIColor) {
+    if (useANSIColors) {
       StringOutputStream stream;
       auto i = id.lastIndexOf('/');
       if (i >= 0) {
@@ -170,6 +171,10 @@ public:
   {
     if (!parseArguments()) {
       return;
+    }
+    
+    if (!useANSIColors) {
+      useANSIColors = !FileDescriptor::getStandardOutput().isPipe();
     }
 
     if (command == COMMAND_VERSION) {
@@ -259,7 +264,7 @@ public:
         break;
       }
       
-      manager.setUseANSIColors(useANSIColor);
+      manager.setUseANSIColors(useANSIColors);
       manager.setRandomize(randomize);
       manager.setStopOnFailure(stopOnFailure);
       manager.setProgressMode(progressMode);

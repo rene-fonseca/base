@@ -118,12 +118,22 @@ public:
     Initializes value as copy of other value.
   */
   AnyValue(const AnyValue& copy) noexcept;
-  
+
+  /**
+    Initializes value from other value.
+  */
+  AnyValue::AnyValue(AnyValue&& move) noexcept;
+
   /**
     Assignment of object to object.
   */
   AnyValue& operator=(const AnyValue& assign) noexcept;
-  
+
+  /**
+    Assignment of object to object.
+  */
+  AnyValue& operator=(AnyValue&& assign) noexcept;
+
   /**
     Returns the internal representation of the value.
   */
@@ -157,7 +167,12 @@ public:
     Returns true if the value represented by character(s).
   */
   bool isText() const noexcept;
-  
+
+  /**
+    Initializes value as void pointer.
+  */
+  AnyValue(nullptr_t) noexcept;
+
   /**
     Initializes value as type.
   */
@@ -274,12 +289,17 @@ public:
   AnyValue(const AnyReference& value) noexcept;
 
   /**
+    Sets the value as void pointer.
+  */
+  AnyValue& operator=(nullptr_t) noexcept;
+
+  /**
     Sets the value as a type.
   */
   AnyValue& operator=(const Type& value) noexcept;
 
   /**
-    Sets the value as a character.
+    Sets the value as a pointer.
   */
   AnyValue& operator=(void* value) noexcept;
 
@@ -352,6 +372,16 @@ public:
     Sets the value as a long double.
   */
   AnyValue& operator=(long double value) noexcept;
+  
+  /**
+    Sets the value as a string.
+  */
+  AnyValue& operator=(const char* value) noexcept;
+
+  /**
+    Sets the value as a wide string.
+  */
+  AnyValue& operator=(const wchar* value) noexcept;
 
   /**
     Sets the value as a string.
@@ -371,7 +401,7 @@ public:
   /**
     Returns value as a type.
   */
-  const Type& getType() const noexcept;
+  Type getType() const noexcept;
 
   /**
     Returns value as a pointer.

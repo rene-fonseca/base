@@ -21,7 +21,9 @@ _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 /**
   Implementation of the Adler-32 checksum algorithm as specified by RFC 1950.
-  
+
+  Should only be used for compatibility with legacy systems.
+
   @short Adler-32.
   @ingroup security
   @see CRC32

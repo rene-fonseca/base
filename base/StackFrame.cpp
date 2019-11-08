@@ -26,7 +26,7 @@ StackFrame::StackFrame()
 {
 }
 
-__declspec(noinline) void* StackFrame::getStackFrame() noexcept
+void* StackFrame::getStackFrame() noexcept
 {
   void** frame = nullptr;
 

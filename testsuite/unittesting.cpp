@@ -62,6 +62,7 @@ public:
     const char* environment[])
     : Application("unittesting", numberOfArguments, arguments, environment)
   {
+    useANSIColors = FileDescriptor::getStandardOutput().isTerminal();
   }
   
   bool parseArguments()
@@ -173,10 +174,6 @@ public:
       return;
     }
     
-    if (!useANSIColors) {
-      useANSIColors = !FileDescriptor::getStandardOutput().isPipe();
-    }
-
     if (command == COMMAND_VERSION) {
       version();
     } else if (command == COMMAND_HELP) {

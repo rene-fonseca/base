@@ -20,6 +20,7 @@
 #include <base/string/StringOutputStream.h>
 #include <base/collection/HashTable.h>
 #include <base/string/ANSIEscapeSequence.h>
+#include <base/io/FileDescriptor.h>
 
 using namespace com::azure::dev::base;
 
@@ -56,13 +57,13 @@ public:
     int numberOfArguments,
     const char* arguments[],
     const char* environment[])
-    : Application("ls", numberOfArguments, arguments, environment) {
-    
+    : Application("ls", numberOfArguments, arguments, environment)
+  {
     currentYear = Date::getNow().getYear();
     thisYearFormat = MESSAGE("%b %#d %H:%M");
     otherYearFormat = MESSAGE("%b %#d  %Y");
     limitTrustees = false;
-    colorize = false;
+    colorize = FileDescriptor::getStandardOutput().isTerminal();
     command = COMMAND_LIST;
     path = MESSAGE(".");
   }

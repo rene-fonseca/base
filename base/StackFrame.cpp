@@ -16,9 +16,13 @@
 #include <base/string/FormatOutputStream.h>
 #include <base/filesystem/FileSystem.h>
 #include <base/TypeInfo.h>
+#include <base/string/ANSIEscapeSequence.h>
 
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
 #  include <windows.h>
+#elif ((_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__MACOS) || \
+       (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__GNULINX))
+#  include <execinfo.h>
 #endif
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
@@ -99,10 +103,20 @@ unsigned int StackFrame::getStack(void** dest, unsigned int size, unsigned int s
 {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   USHORT count = RtlCaptureStackBackTrace(skip + 1, size, dest, NULL);
+#elif ((_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__MACOS) || \
+       (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__GNULINX))
+  int count = backtrace(dest, size);
+  if (count < 0) {
+    return 0;
+  }
+  if (skip >= count) {
+    return 0;
+  }
+  move(dest, dest + skip, count - skip);
+  count -= skip;
 #else
-  void* _frame = getStackFrame();
-  void* frame = _frame;
-  ++skip;
+  void* frame = getStackFrame();
+  // ++skip;
   while (frame && skip--) {
     frame = *reinterpret_cast<void**>(frame);
   }
@@ -110,7 +124,6 @@ unsigned int StackFrame::getStack(void** dest, unsigned int size, unsigned int s
   while (frame && (count < size)) {
     ++count;
     void* ip = getInstructionPointer(frame);
-    *dest++ = ip;
     void* symbol = DynamicLinker::getSymbolAddress(ip); // TAG: can we avoid this
     if (!symbol) {
       break;
@@ -118,6 +131,7 @@ unsigned int StackFrame::getStack(void** dest, unsigned int size, unsigned int s
     if (reinterpret_cast<MemorySize>(ip) < 0x10000) { // TAG: what is the proper way to detect top of stack
       break;
     }
+    *dest++ = ip;
     frame = *reinterpret_cast<void**>(frame);
   }
 #endif
@@ -164,41 +178,85 @@ StackFrame StackFrame::getStack(unsigned int skip, unsigned int levels)
 
   return frames;
 }
-
+#include <unistd.h>
 // TAG: add support for registering stack trace in global lookup and get hash key for it
 
-void StackFrame::toStream(FormatOutputStream& stream, const void* const * trace, MemorySize size, bool verbose)
+void StackFrame::toStream(FormatOutputStream& stream, const void* const * trace, MemorySize size, unsigned int flags)
 {
-  // we could color code modules
-  const unsigned int INDENT = 2;
+  const bool showAddress = (flags & FLAG_SHOW_ADDRESS) != 0;
+  const bool useColors = (flags & FLAG_USE_COLORS) != 0;
+  const unsigned int INDENT = ((flags & FLAG_INDENT) != 0) ? 2 : 0;
 
   stream << "Stack trace:" << EOL;
   if (!trace || (size == 0)) {
     stream << indent(INDENT) << "NO STACK FRAMES" << EOL;
     return;
   }
+
+  unsigned int field1 = 1;
+  if (size >= 100) {
+    field1 = 3;
+  } else if (size >= 10) {
+    field1 = 2;
+  }
+
+  unsigned int field2 = 8; // never less than 8
+  if (sizeof(MemorySize) > 4) {
+    MemorySize bits = 0;
+    for (MemorySize i = 0; i < size; ++i) {
+      MemorySize ip = reinterpret_cast<MemorySize>(trace[i]); // technically we should resolve symbol - but not hard done
+      bits |= ip;
+    }
+    unsigned int digits = 0;
+    while (bits) {
+      bits >>= 4;
+      ++digits;
+    }
+    field2 = maximum(digits, field2);
+  }
+  field2 += 2; // prefix
+
   for (MemorySize i = 0; i < size; ++i) {
     const void* ip = trace[i];
     const void* symbol = DynamicLinker::getSymbolAddress(ip);
 
     String path;
-    if (verbose) {
+    if (flags & FLAG_SHOW_MODULE) {
       path = FileSystem::getComponent(DynamicLinker::getImagePath(ip), FileSystem::FILENAME);
-      if (path) {
-        path += "!";
-      }
     }
 
     if (symbol) {
       const String name = DynamicLinker::getSymbolName(ip);
       auto displacement = (reinterpret_cast<const uint8*>(ip) - reinterpret_cast<const uint8*>(symbol));
-      if (name) {
-        stream << indent(INDENT) << i << ": " << symbol << "+" << HEX << ZEROPAD << NOPREFIX << setWidth(4) << displacement << " " << path << TypeInfo::demangleName(name.native()) << EOL;
-      } else {
-        stream << indent(INDENT) << i << ": " << symbol << "+" << HEX << ZEROPAD << NOPREFIX << setWidth(4) << displacement << EOL;
+      stream << indent(INDENT) << setWidth(field1) << i << ": ";
+      if (showAddress) {
+        if (useColors) {
+          stream << setForeground(ANSIEscapeSequence::RED) << setWidth(field2) << symbol << "+" << HEX << ZEROPAD << NOPREFIX << setWidth(4) << displacement << normal();
+        } else {
+          stream << setWidth(field2) << symbol << "+" << HEX << ZEROPAD << NOPREFIX << setWidth(4) << displacement;
+        }
       }
+      if (name) {
+        if (showAddress) {
+          stream << " ";
+        }
+        if (useColors) {
+          if (path) {
+            stream << setForeground(ANSIEscapeSequence::GREEN) << path << normal() << "!";
+          }
+          stream << setForeground(ANSIEscapeSequence::BLUE) << bold() << TypeInfo::demangleName(name.native());
+          stream << normal();
+        } else {
+          if (path) {
+            stream << path << "!" << TypeInfo::demangleName(name.native());
+          } else {
+            stream << TypeInfo::demangleName(name.native());
+          }
+        }
+      }
+      stream << EOL;
     } else {
-      stream << indent(INDENT) << i << ": ?" << ip << EOL;
+      stream << indent(INDENT) << setWidth(field1) << i << ": ?" << ip << EOL;
     }
   }
 }
@@ -210,6 +268,8 @@ void StackFrame::dump(unsigned int skip, unsigned int levels)
   }
 
   ++skip;
+  // ferr.getUseANSI();
+  const unsigned int flags = StackFrame::FLAG_SHOW_ADDRESS | StackFrame::FLAG_SHOW_MODULE | StackFrame::FLAG_INDENT;
 
   {
     void* trace[256]; // quick buffer
@@ -218,7 +278,7 @@ void StackFrame::dump(unsigned int skip, unsigned int levels)
       return;
     }
     if ((count != getArraySize(trace)) || (count <= levels)) { // no overflow
-      toStream(ferr, trace, count, false);
+      toStream(ferr, trace, count, flags);
       ferr << FLUSH;
       return;
     }
@@ -235,7 +295,7 @@ void StackFrame::dump(unsigned int skip, unsigned int levels)
     break;
   }
 
-  toStream(ferr, buffer, count, false);
+  toStream(ferr, buffer, count, flags);
   ferr << FLUSH;
 }
 
@@ -243,7 +303,12 @@ FormatOutputStream& operator<<(
   FormatOutputStream& stream,
   const StackFrame& value) throw(IOException)
 {
-  StackFrame::toStream(stream, value.getTrace(), value.getSize(), false);
+  // TAG: detect color
+  // TAG: stream.getUseANSI();
+  StackFrame::toStream(
+    stream, value.getTrace(), value.getSize(),
+    StackFrame::FLAG_SHOW_ADDRESS | StackFrame::FLAG_SHOW_MODULE | StackFrame::FLAG_INDENT
+  );
   return stream;
 }
 

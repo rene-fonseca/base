@@ -86,10 +86,17 @@ public:
   */
   static void dump(unsigned int skip = 1, unsigned int levels = 32);
 
+  enum {
+    FLAG_SHOW_ADDRESS = 1 << 0,
+    FLAG_SHOW_MODULE = 1 << 1,
+    FLAG_INDENT = 1 << 2,
+    FLAG_USE_COLORS = 1 << 3
+  };
+  
   /**
     Format stack trace to stream.
   */
-  static void toStream(FormatOutputStream& stream, const void* const* trace, MemorySize size, bool verbose = false);
+  static void toStream(FormatOutputStream& stream, const void* const* trace, MemorySize size, unsigned int flags = FLAG_SHOW_ADDRESS | FLAG_SHOW_MODULE | FLAG_INDENT);
 };
 
 _COM_AZURE_DEV__BASE__API FormatOutputStream& operator<<(FormatOutputStream& stream, const StackFrame& value) throw(IOException);

@@ -108,7 +108,11 @@ void UnitTest::Run::onException(Exception* exception)
       ++stackTrace.begin; // skip handler
     }
     if (stackTrace.begin != stackTrace.end) {
-      StackFrame::toStream(sos, stackTrace.begin, stackTrace.end - stackTrace.begin, true);
+      StackFrame::toStream(
+        sos, stackTrace.begin, stackTrace.end - stackTrace.begin,
+        StackFrame::FLAG_SHOW_ADDRESS | StackFrame::FLAG_SHOW_MODULE | StackFrame::FLAG_INDENT |
+        (UnitTestManager::getManager().getUseANSIColors() ? StackFrame::FLAG_USE_COLORS : 0)
+      );
       for (const auto& line : sos.toString().split('\n')) {
         if (line) {
           onPrint(line);

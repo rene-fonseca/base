@@ -13,6 +13,8 @@
 
 #include <base/platforms/features.h>
 #include <base/concurrency/ThreadKey.h>
+#include <base/concurrency/Thread.h>
+#include <base/UnitTest.h>
 
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
 #  include <windows.h>
@@ -103,5 +105,67 @@ ThreadKeyImpl::~ThreadKeyImpl() {
   }
 #endif // flavor
 }
+
+#if defined(_COM_AZURE_DEV__BASE__TESTS)
+
+class TEST_CLASS(ThreadKey);
+
+class MyThreadKey : public Thread {
+private:
+
+  TEST_CLASS(ThreadKey)* parent = nullptr;
+public:
+
+  MyThreadKey(TEST_CLASS(ThreadKey)* _parent) : parent(_parent)
+  {
+  }
+
+  void run() override;
+};
+
+class TEST_CLASS(ThreadKey) : public UnitTest {
+public:
+
+  TEST_PRIORITY(10);
+  // test devel filter with this TEST_IN_DEVELOPMENT();
+  TEST_PROJECT("base/concurrency");
+
+  ThreadKey<String> key;
+
+  void runFromThread()
+  {
+    String local;
+    TEST_ASSERT(!key.getKey());
+    key.setKey(&local);
+    TEST_ASSERT(key.getKey() == &local);
+    // keep bad pointer
+  }
+
+  void run() override
+  {
+    String local;
+    TEST_ASSERT(!key.getKey());
+    key.setKey(&local);
+    TEST_ASSERT(key.getKey() == &local);
+
+    MyThreadKey thread1(this);
+    thread1.start();
+    Thread::nanosleep(1000 * 1000);
+    thread1.join();
+
+    TEST_ASSERT(key.getKey() == &local);
+    key.setKey(nullptr);
+    TEST_ASSERT(!key.getKey());
+  }
+};
+
+void MyThreadKey::run()
+{
+  parent->runFromThread();
+}
+
+TEST_REGISTER(ThreadKey);
+
+#endif
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

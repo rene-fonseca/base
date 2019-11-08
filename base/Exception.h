@@ -215,7 +215,21 @@ public:
   {
     this->type = type;
   }
-  
+
+  class StackTrace {
+  public:
+
+    const void* const* begin = nullptr; // beginning of trace
+    const void* const* end = nullptr; // end of trace
+  };
+
+  /**
+    Returns the stack trace for the last constructed exception. Avoid constructing exception that are not thrown as these will hide the true exception.
+
+    @return Can return nullptr if exception is unknown. Do NOT keep the pointers outside scope.
+  */
+  static StackTrace getStackTrace();
+
   /**
     Destroys exception object.
   */

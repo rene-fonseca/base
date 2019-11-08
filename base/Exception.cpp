@@ -12,6 +12,7 @@
  ***************************************************************************/
 
 #include <base/platforms/features.h>
+#include <base/concurrency/Thread.h>
 #include <base/Exception.h>
 #include <base/UnitTest.h>
 
@@ -68,39 +69,69 @@ extern void defaultExceptionHandler(Exception* exception) noexcept;
 
 bool Exception::dumpExceptions = false;
 
+#if defined(_COM_AZURE_DEV__BASE__ANY_DEBUG)
 Exception::ExceptionHandler Exception::exceptionHandler = &defaultExceptionHandler;
+#else
+Exception::ExceptionHandler Exception::exceptionHandler = nullptr;
+#endif
+
+#if 0
+template<class TYPE>
+class Span {
+public:
+
+  const TYPE* begin = nullptr;
+  const TYPE* end = nullptr;
+
+  inline bool empty() const noexcept
+  {
+    return end == begin;
+  }
+
+  inline MemoryDiff size() const noexcept
+  {
+    return end - begin;
+  }
+};
+#endif
+
+Exception::StackTrace Exception::getStackTrace()
+{
+  // TAG: can we clear trace at after exception is caught
+  StackTrace result;
+  auto tls = Thread::getLocalContext();
+  if (tls) {
+    const auto& stackTrace = tls->stackTrace;
+    result.begin = stackTrace.getTrace();
+    result.end = result.begin + stackTrace.getSize();
+  }
+  return result;
+}
 
 Exception::Exception() noexcept
   : cause(PrimitiveTraits<unsigned int>::MAXIMUM)
 {
-#if 0 // || defined(_COM_AZURE_DEV__BASE__ANY_DEBUG) // TAG: also add support for Release config
-  if (exceptionHandler) {
+  if (exceptionHandler) { // not installed for release builds - but can be installed at runtime
     exceptionHandler(this);
   }
-#endif
 }
 
 Exception::Exception(const char* _message) noexcept
   : message(_message),
     cause(PrimitiveTraits<unsigned int>::MAXIMUM)
 {
-#if 0 // || defined(_COM_AZURE_DEV__BASE__ANY_DEBUG) // TAG: also add support for Release config
-  if (exceptionHandler) {
+  if (exceptionHandler) { // not installed for release builds - but can be installed at runtime
     exceptionHandler(this);
-    // TAG: UnitTest should hook handler
   }
-#endif
 }
 
 Exception::Exception(const Type& _type) noexcept
   : type(_type),
     cause(PrimitiveTraits<unsigned int>::MAXIMUM)
 {
-#if 0 // && defined(_COM_AZURE_DEV__BASE__ANY_DEBUG) // TAG: also add support for Release config
-  if (exceptionHandler) {
+  if (exceptionHandler) { // not installed for release builds - but can be installed at runtime
     exceptionHandler(this);
   }
-#endif
 }
 
 Exception::Exception(const char* _message, const Type& _type) noexcept
@@ -108,6 +139,9 @@ Exception::Exception(const char* _message, const Type& _type) noexcept
     type(_type),
     cause(PrimitiveTraits<unsigned int>::MAXIMUM)
 {
+  if (exceptionHandler) { // not installed for release builds - but can be installed at runtime
+    exceptionHandler(this);
+  }
 }
 
 Exception::Exception(const Exception& copy) noexcept
@@ -116,6 +150,7 @@ Exception::Exception(const Exception& copy) noexcept
     cause(copy.cause),
     error(copy.error)
 {
+  // undesired case for exception handler
 #if defined(_COM_AZURE_DEV__BASE__ANY_DEBUG)
   copies = copy.copies + 1;
 
@@ -137,6 +172,7 @@ Exception::Exception(Exception&& move) noexcept
     cause(move.cause),
     error(move.error)
 {
+  // undesired case for exception handler
 #if defined(_COM_AZURE_DEV__BASE__ANY_DEBUG)
   copies = move.copies;
 #endif

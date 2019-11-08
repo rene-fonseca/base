@@ -14,6 +14,7 @@
 #include <base/objectmodel/JSON.h>
 #include <base/io/File.h>
 #include <base/string/Posix.h>
+#include <base/UnitTest.h>
 #include <locale>
 #include <codecvt>
 
@@ -383,5 +384,78 @@ String JSON::getJSON(Reference<ObjectModel::Value> value, bool niceFormat)
   }
   return value->toString(niceFormat);
 }
+
+#if defined(_COM_AZURE_DEV__BASE__TESTS)
+
+class TEST_CLASS(JSON) : public UnitTest {
+public:
+
+  TEST_PRIORITY(200);
+  TEST_PROJECT("base/objectmodel");
+
+  bool ensureFailure(const char* text)
+  {
+    try {
+      JSON().parse(text);
+    } catch (...) {
+      return true;
+    }
+    return false;
+  }
+
+  void run() override
+  {
+    ObjectModel o;
+    auto root = o.createObject();
+    TEST_ASSERT(root->isEmpty());
+    root->setValue(o.createString("name"), o.createString("value"));
+    root->setValue(o.createString("state"), o.createBoolean(true));
+    root->setValue(o.createString("integer"), o.createInteger(-123));
+    root->setValue(o.createString("number"), o.createFloat(123.0));
+    TEST_ASSERT(!root->isEmpty());
+    TEST_ASSERT(root->getSize() == 4);
+
+    auto a = o.createArray();
+    root->setValue(o.createString("list"), a);
+    a->append(o.createInteger(12));
+    a->append(o.createInteger(54));
+    a->append(o.createInteger(54));
+    a->append(o.createInteger(66));
+    a->append(o.createBoolean(false)); // mixed types
+    a->append(o.createFloat(-456));
+    a->append(o.createString(L"Hello, World!"));
+    TEST_ASSERT(a->getSize() == 7);
+
+    String normal = JSON::getJSON(root, false);
+    TEST_ASSERT(normal.getLength() > 1);
+    TEST_ASSERT(normal[0] == '{');
+    TEST_ASSERT(normal[normal.getLength() - 1] == '}');
+    TEST_ASSERT(normal);
+    auto o1 = JSON().parse(normal).cast<ObjectModel::Object>();
+    String nice = JSON::getJSON(root, true);
+    TEST_ASSERT(nice);
+    auto o2 = JSON().parse(nice).cast<ObjectModel::Object>();
+    TEST_EQUAL(JSON::getJSON(o2, false), normal); // floats should map to the same string representation also
+
+    TEST_ASSERT(ensureFailure("#"));
+    TEST_ASSERT(ensureFailure("{nul}"));
+    TEST_ASSERT(ensureFailure("{false}"));
+    TEST_ASSERT(ensureFailure("{,}"));
+    TEST_ASSERT(ensureFailure("{\"qwerty\":true,}"));
+    TEST_ASSERT(ensureFailure("{qwerty:1}"));
+    TEST_ASSERT(ensureFailure("{\"qwerty:1}"));
+    TEST_ASSERT(ensureFailure("{\"qwerty\"\":1}"));
+    // TEST_ASSERT(ensureFailure("{\"qwerty\":1e}")); // if this allowed by spec?
+    TEST_ASSERT(ensureFailure("{\"qwerty\":1e1e}"));
+    TEST_ASSERT(ensureFailure("{\"qwerty\":1,1e}"));
+    TEST_ASSERT(ensureFailure("{\"qwerty\":0x1}"));
+    TEST_ASSERT(ensureFailure("[,]"));
+    TEST_ASSERT(ensureFailure("[1,]"));
+  }
+};
+
+TEST_REGISTER(JSON);
+
+#endif
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

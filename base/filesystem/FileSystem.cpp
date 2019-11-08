@@ -1602,7 +1602,7 @@ String FileSystem::getTempFolder(TemporaryFolder folder) throw()
   switch (folder) {
   case FileSystem::USER_SPECIFIED:
     {
-      const Map<String, String> environment = Application::getApplication()->getEnvironment();
+      const Map<String, String>& environment = Application::getApplication()->getEnvironment();
       if (const auto found = environment.find(MESSAGE("TMP"))) {
         return *found;
       }

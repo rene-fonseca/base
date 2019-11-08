@@ -17,6 +17,7 @@
 #include <base/filesystem/FileSystem.h>
 #include <base/TypeInfo.h>
 #include <base/string/ANSIEscapeSequence.h>
+#include <base/io/FileDescriptor.h>
 
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
 #  include <windows.h>
@@ -268,8 +269,8 @@ void StackFrame::dump(unsigned int skip, unsigned int levels)
   }
 
   ++skip;
-  // ferr.getUseANSI();
-  const unsigned int flags = StackFrame::FLAG_SHOW_ADDRESS | StackFrame::FLAG_SHOW_MODULE | StackFrame::FLAG_INDENT;
+  const unsigned int flags = StackFrame::FLAG_SHOW_ADDRESS | StackFrame::FLAG_SHOW_MODULE | StackFrame::FLAG_INDENT |
+    (FileDescriptor::getStandardError().isTerminal() ? StackFrame::FLAG_USE_COLORS : 0);
 
   {
     void* trace[256]; // quick buffer
@@ -303,11 +304,10 @@ FormatOutputStream& operator<<(
   FormatOutputStream& stream,
   const StackFrame& value) throw(IOException)
 {
-  // TAG: detect color
-  // TAG: stream.getUseANSI();
   StackFrame::toStream(
     stream, value.getTrace(), value.getSize(),
-    StackFrame::FLAG_SHOW_ADDRESS | StackFrame::FLAG_SHOW_MODULE | StackFrame::FLAG_INDENT
+    StackFrame::FLAG_SHOW_ADDRESS | StackFrame::FLAG_SHOW_MODULE | StackFrame::FLAG_INDENT |
+      (FileDescriptor::getStandardError().isTerminal() ? StackFrame::FLAG_USE_COLORS : 0)
   );
   return stream;
 }

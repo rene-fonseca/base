@@ -33,6 +33,55 @@ StackFrame::StackFrame()
 {
 }
 
+MemoryDiff StackFrame::find(void* address) const noexcept
+{
+  const void* const* src = frames.getElements();
+  for (MemorySize i = 0; i < frames.getSize(); ++i) {
+    const void* ip = src[i];
+    const void* symbol = DynamicLinker::getSymbolAddress(ip);
+    if (symbol == address) {
+      return i; // found
+    }
+  }
+  return -1;
+}
+
+MemoryDiff StackFrame::findLast(void* address) const noexcept
+{
+  const void* const* src = frames.getElements();
+  for (MemoryDiff i = frames.getSize() - 1; i >= 0; --i) {
+    const void* ip = src[i];
+    const void* symbol = DynamicLinker::getSymbolAddress(ip);
+    if (symbol == address) {
+      return i; // found
+    }
+  }
+  return -1;
+}
+
+void StackFrame::stripUntil(MemorySize index) noexcept
+{
+  if (index > 0) {
+    const MemorySize size = frames.getSize();
+    if (index >= size) {
+      frames.setSize(0);
+      return;
+    }
+    void** dest = frames.getElements();
+    move(dest, dest + index, size - index);
+    frames.setSize(size - index);
+  }
+}
+
+MemorySize StackFrame::stripUntil(void* address) noexcept
+{
+  MemoryDiff index = find(address);
+  if (index > 0) { // found
+    stripUntil(index);
+  }
+  return index;
+}
+
 void* StackFrame::getStackFrame() noexcept
 {
   void** frame = nullptr;
@@ -219,6 +268,7 @@ void StackFrame::toStream(FormatOutputStream& stream, const void* const * trace,
   }
   field2 += 2; // prefix
 
+  MemorySize count = 0;
   for (MemorySize i = 0; i < size; ++i) {
     const void* ip = trace[i];
     const void* symbol = DynamicLinker::getSymbolAddress(ip);
@@ -229,9 +279,9 @@ void StackFrame::toStream(FormatOutputStream& stream, const void* const * trace,
     }
 
     if (symbol) {
+      stream << indent(INDENT) << setWidth(field1) << count << ": ";
       const String name = DynamicLinker::getSymbolName(ip);
       auto displacement = (reinterpret_cast<const uint8*>(ip) - reinterpret_cast<const uint8*>(symbol));
-      stream << indent(INDENT) << setWidth(field1) << i << ": ";
       if (showAddress) {
         if (useColors) {
           stream << setForeground(ANSIEscapeSequence::RED) << setWidth(field2) << symbol << "+" << HEX << ZEROPAD << NOPREFIX << setWidth(4) << displacement << normal();
@@ -257,17 +307,20 @@ void StackFrame::toStream(FormatOutputStream& stream, const void* const * trace,
           }
         }
       }
+      stream << EOL;
     } else { // no descrption
-
-      stream << indent(INDENT) << setWidth(field1) << i << ": ";
-      if (useColors) {
-        stream << setForeground(ANSIEscapeSequence::RED) << setWidth(field2) << ip << normal();
-      } else {
-        stream << setWidth(field2) << ip;
+      if ((flags & FLAG_COMPACT) == 0) {
+        stream << indent(INDENT) << setWidth(field1) << count << ": ";
+        if (useColors) {
+          stream << setForeground(ANSIEscapeSequence::RED) << setWidth(field2) << ip << normal();
+        } else {
+          stream << setWidth(field2) << ip;
+        }
+        stream << "?"; // TAG: we could still show image name
+        stream << EOL;
       }
-      stream << "?";
     }
-    stream << EOL;
+    ++count;
   }
 }
 

@@ -56,7 +56,33 @@ public:
     }
     return frames.getElements()[index];
   }
-  
+
+  /**
+    Returns the index of the symbol address if found.
+
+    @return Returns -1 if not found.
+  */  
+  MemoryDiff find(void* address) const noexcept;
+
+  /**
+    Returns the index of the last occurrence symbol address if found.
+
+    @return Returns -1 if not found.
+  */  
+  MemoryDiff findLast(void* address) const noexcept;
+
+  /**
+    Strips any frames before the given index.
+  */
+  void stripUntil(MemorySize index) noexcept;
+
+  /**
+    Strips any frames before the first occurrence of the given address if present on the stack.
+
+    @return The number of frames skipped.
+  */  
+  MemorySize stripUntil(void* ip) noexcept;
+
   /**
     Returns the stack frame. Not available for all platforms.
   */
@@ -90,7 +116,8 @@ public:
     FLAG_SHOW_ADDRESS = 1 << 0,
     FLAG_SHOW_MODULE = 1 << 1,
     FLAG_INDENT = 1 << 2,
-    FLAG_USE_COLORS = 1 << 3
+    FLAG_COMPACT = 1 << 3,
+    FLAG_USE_COLORS = 1 << 4
   };
   
   /**

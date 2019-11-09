@@ -64,13 +64,21 @@ _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 class ApplicationImpl {
 public:
 
-  static void exceptionHandler(const StackFrame& stackTrace) noexcept
+  static void exceptionHandler(StackFrame& stackTrace) noexcept
   {
     if (!stackTrace.isEmpty()) {
-      // TAG: info before __cxa_throw is not relevant
+#if !(_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
+      // info before initial __cxa_throw is not useful
+      void* address = (void*)&__cxa_throw;
+      auto index = stackTrace.findLast(address);
+      if (index >= 0) {
+        stackTrace.stripUntil(index);
+      }
+#endif
+
       StackFrame::toStream(
         ferr, stackTrace.getTrace(), stackTrace.getSize(),
-        StackFrame::FLAG_SHOW_ADDRESS | StackFrame::FLAG_SHOW_MODULE | StackFrame::FLAG_INDENT |
+        StackFrame::FLAG_COMPACT | StackFrame::FLAG_SHOW_ADDRESS | StackFrame::FLAG_SHOW_MODULE | StackFrame::FLAG_INDENT |
         (FileDescriptor::getStandardError().isANSITerminal() ? StackFrame::FLAG_USE_COLORS : 0)
       );
     }

@@ -1427,7 +1427,7 @@ unsigned int AdvancedEncryptionStandard::pushEnd(
   }
 }
 
-#if 0 && defined(_COM_AZURE_DEV__BASE__TESTS)
+#if defined(_COM_AZURE_DEV__BASE__TESTS)
 
 class TEST_CLASS(AdvancedEncryptionStandard) : public UnitTest {
 public:
@@ -1436,23 +1436,125 @@ public:
   TEST_PROJECT("base/security");
   TEST_IMPACT(SECURITY);
 
-  String getAES(uint8* dest, const uint8* buffer, MemorySize size)
+  void aes(uint8* dest, const uint8* key, const uint8* buffer, MemorySize size, AdvancedEncryptionStandard::Cipher cipher)
   {
-    uint8 key[256/8] = {0};
-    AdvancedEncryptionStandard aes(key, AdvancedEncryptionStandard::CIPHER_256, false);
+    AdvancedEncryptionStandard aes(
+      key,
+      cipher,
+      false
+    );
     aes.push(dest, buffer, size);
-    aes.pushEnd(dest, size);
-    return "";
+    aes.pushEnd(dest, size); // TAG: undesired size
   }
 
-  String getAES(const char* text)
+  String convert(const String& text)
   {
-    return getAES(nullptr, reinterpret_cast<const uint8*>(text), getNullTerminatedLength(text));
+    String result;
+    if (!INLINE_ASSERT((text.getLength() % 2) == 0)) {
+      throw Exception("Expected equal hex digit.");
+    }
+    if (text) {
+      auto src = text.begin();
+      auto end = text.end();
+      while (src != end) {
+        if (!ASCIITraits::isHexDigit(src[0]) || !ASCIITraits::isHexDigit(src[1])) {
+          throw Exception("Expected hex digits.");
+        }
+        char value = (ASCIITraits::digitToValue(src[0]) << 4) | ASCIITraits::digitToValue(src[1]);
+        result.append(value);
+        src+= 2;
+      }
+    }
+    return result;
+  }
+
+  String convert(const uint8* src, MemorySize size)
+  {
+    String result;
+    result.ensureCapacity(size * 2);
+    const uint8* end = src + size;
+    while (src != end) {
+      result.append(ASCIITraits::valueToDigit((*src >> 4) & 0xf)); // high
+      result.append(ASCIITraits::valueToDigit((*src >> 0) & 0xf)); // low
+      ++src;
+    }
+    return result;
+  }
+
+  String getAES(const char* _key, const char* _text)
+  {
+    String key = convert(_key);
+    String text = convert(_text);
+    PrimitiveArray<uint8> buffer(text.getLength());
+    if (key.getLength() == (128/8)) {
+      aes(buffer, reinterpret_cast<const uint8*>(key.native()), reinterpret_cast<const uint8*>(text.native()), text.getLength(), AdvancedEncryptionStandard::CIPHER_128);
+    } else if (key.getLength() == (192/8)) {
+      aes(buffer, reinterpret_cast<const uint8*>(key.native()), reinterpret_cast<const uint8*>(text.native()), text.getLength(), AdvancedEncryptionStandard::CIPHER_192);
+    } else if (key.getLength() == (256/8)) {
+      aes(buffer, reinterpret_cast<const uint8*>(key.native()), reinterpret_cast<const uint8*>(text.native()), text.getLength(), AdvancedEncryptionStandard::CIPHER_256);
+    } else {
+      throw Exception("Invalid key.");
+    }
+    return convert(buffer, buffer.size());
   }
 
   void run() override
   {
-    // TEST_EQUAL(getAES(""), "");
+    // https://csrc.nist.gov/CSRC/media/Projects/Cryptographic-Algorithm-Validation-Program/documents/aes/AESAVS.pdf
+    
+    const char* iv =
+    "f34481ec3cc627bacd5dc3fb08f273e6"
+    "9798c4640bad75c7c3227db910174e72"
+    "96ab5c2ff612d9dfaae8c31f30c42168"
+    "6a118a874519e64e9963798a503f1d35"
+    "cb9fceec81286ca3e989bd979b0cb284"
+    "b26aeb1874e47ca8358ff22378f09144"
+    "58c8e00b2631686d54eab84b91f0aca1";
+
+    const char* ciphertext =
+    "0336763e966d92595a567cc9ce537f5e"
+    "a9a1631bf4996954ebc093957b234589"
+    "ff4f8391a6a40ca5b25d23bedd44a597"
+    "dc43be40be0e53712f7e2bf5ca707209"
+    "92beedab1895a94faa69b632e5cc47ce"
+    "459264f4798f6a78bacb89c15ed3d601"
+    "08a4e2efec8a8e3312ca7460b9040bbf";
+    
+    TEST_EQUAL(getAES("00000000000000000000000000000000", iv), String(ciphertext));
+    
+    iv =
+    "1b077a6af4b7f98229de786d7516b639"
+    "9c2d8842e5f48f57648205d39a239af1"
+    "bff52510095f518ecca60af4205444bb"
+    "51719783d3185a535bd75adc65071ce1"
+    "26aa49dcfe7629a8901a69a9914e6dfd"
+    "941a4773058224e1ef66d10e0a6ee782";
+    
+    ciphertext =
+    "275cfc0413d8ccb70513c3859b1d0f72"
+    "c9b8135ff1b5adc413dfd053b21bd96d"
+    "4a3650c3371ce2eb35e389a171427440"
+    "4f354592ff7c8847d2d0870ca9481b7c"
+    "d5e08bf9a182e857cf40b3a36ee248cc"
+    "067cd9d3749207791841562507fa9626";
+
+    TEST_EQUAL(getAES("000000000000000000000000000000000000000000000000", iv), String(ciphertext));
+
+    iv =
+    "014730f80ac625fe84f026c60bfd547d"
+    "0b24af36193ce4665f2825d7b4749c98"
+    "761c1fe41a18acf20d241650611d90f1"
+    "8a560769d605868ad80d819bdba03771"
+    "91fbef2d15a97816060bee1feaa49afe";
+    
+    ciphertext =
+    "5c9d844ed46f9885085e5d6a4f94c7d7"
+    "a9ff75bd7cf6613d3731c77c3b6d0c04"
+    "623a52fcea5d443e48d9181ab32c7421"
+    "38f2c7ae10612415d27ca190d27da8b4"
+    "1bc704f1bce135ceb810341b216d7abe";
+    
+    TEST_EQUAL(getAES("0000000000000000000000000000000000000000000000000000000000000000", iv), String(ciphertext));
   }
 };
 

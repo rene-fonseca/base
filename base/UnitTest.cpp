@@ -88,7 +88,7 @@ void UnitTest::setType(const Type& _type)
 void UnitTest::onException(Exception* exception)
 {
   if (INLINE_ASSERT(exception && currentRun)) {
-    // TAG: some exception should be ignored - eof/parsing - get type from exception
+    // TAG: some exceptions should be ignored - eof/parsing - get type from exception
     currentRun->onException(exception);
   }
 }

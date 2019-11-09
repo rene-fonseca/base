@@ -44,12 +44,18 @@ _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
   void defaultExceptionHandler(Exception* exception) noexcept
   {
+    // would be best to hook __cxa_throw to get stack trace at throw only
     if (exception) {
       if (auto tls = Thread::getLocalContext()) {
-        tls->stackTrace = StackFrame::getStack(1, 64); // TAG: we can use static memory, make sure we do not reallocate
+        tls->stackTrace = StackFrame::getStack(1, 64); // skip 2 on GNULINUX
         // TAG: only if dumping and if exception isnt silenced
         if (Exception::getDumpExceptions()) {
-          ferr << "EXCEPTION CONSTRUCTED BY: " << tls->stackTrace << ENDL;
+          ferr << "EXCEPTION CONSTRUCTED BY: " << ENDL;
+          StackFrame::toStream(
+            ferr, tls->stackTrace.getTrace(), tls->stackTrace.getSize(),
+            StackFrame::FLAG_SHOW_ADDRESS | StackFrame::FLAG_SHOW_MODULE | StackFrame::FLAG_INDENT |
+            (FileDescriptor::getStandardError().isANSITerminal() ? StackFrame::FLAG_USE_COLORS : 0)
+          );
         }
       }
     }
@@ -58,20 +64,27 @@ _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 class ApplicationImpl {
 public:
 
-  static void terminationExceptionHandler() noexcept
+  static void exceptionHandler(const StackFrame& stackTrace) noexcept
   {
-    // unit testing cannot continue anyway when this happens
+    if (!stackTrace.isEmpty()) {
+      // TAG: info before __cxa_throw is not relevant
+      StackFrame::toStream(
+        ferr, stackTrace.getTrace(), stackTrace.getSize(),
+        StackFrame::FLAG_SHOW_ADDRESS | StackFrame::FLAG_SHOW_MODULE | StackFrame::FLAG_INDENT |
+        (FileDescriptor::getStandardError().isANSITerminal() ? StackFrame::FLAG_USE_COLORS : 0)
+      );
+    }
 
     static bool firstTime = true;    
     StringOutputStream stream;
-    const Type exceptionType = Exception::getExceptionType();
-    if (firstTime || exceptionType.isInitialized()) {
+    // const Type exceptionType = Exception::getExceptionType();
+    if (firstTime /*|| exceptionType.isInitialized()*/) {
       firstTime = false;
 
       try {
         throw;
       } catch (Exception& e) {
-        stream << "Internal error: uncaught exception '"
+        stream << "Internal error: Uncaught exception '"
                << TypeInfo::getTypename(e) << "' was raised";
         if (e.getType().isInitialized()) {
           stream << " by '" << TypeInfo::getTypename(e.getType()) << '\'';
@@ -98,13 +111,19 @@ public:
           }
         }
         stream << '.' << FLUSH;
+      } catch (std::exception& e) {
+        if (const String w = e.what()) {
+          stream << "Internal error: Uncaught exception '" << Exception::getStdExceptionName(e)
+                 << "' was raised with message '" << w << "'." << FLUSH;
+        } else {
+          stream << "Internal error: Uncaught exception '" << Exception::getStdExceptionName(e)
+                 << "' was raised." << FLUSH;
+        }
       } catch (...) {
-        stream << "Internal error: uncaught and unsupported exception '"
-               << TypeInfo::getTypename(exceptionType)
-               << "' was raised." << FLUSH;
+        stream << "Internal error: Uncaught and unknown exception." << FLUSH;
       }
     } else {
-      stream << "Internal error: explicit termination." << FLUSH;
+      stream << "Internal error: Explicit termination." << FLUSH;
     }
     ferr << stream.getString() << ENDL; // TAG: use appropriate error stream
     
@@ -124,60 +143,19 @@ public:
 #endif
     exit(Application::EXIT_CODE_INTERNAL_ERROR); // TAG: is abort() better
   }
-  
+
+  static void terminationExceptionHandler() noexcept
+  {
+    ferr << "Internal error: Application will be terminated." << ENDL;
+    auto stackTrace = StackFrame::getStack(2);
+    exceptionHandler(stackTrace);
+  }
+
   static void unexpectedExceptionHandler() noexcept
   {
-    StringOutputStream stream;
-    const Type exceptionType = Exception::getExceptionType();
-    if (exceptionType.isInitialized()) {
-      try {
-        throw;
-      } catch (Exception& e) {
-        stream << "Internal error: exception '"
-               << TypeInfo::getTypename(e) << "' was raised";
-        if (e.getType().isInitialized()) {
-          stream << " by '" << TypeInfo::getTypename(e.getType()) << '\'';
-        }
-        const unsigned int cause = e.getCause();
-        const unsigned int nativeError = e.getError();
-        const char* message = e.getMessage();
-        if (message || (cause != PrimitiveTraits<unsigned int>::MAXIMUM)) {
-          stream << " with";
-        }
-        if (message) {
-          stream << " message '" << message << '\'';
-        }
-        if (message && (cause != PrimitiveTraits<unsigned int>::MAXIMUM)) {
-          stream << " and";
-        }
-        if (cause != PrimitiveTraits<unsigned int>::MAXIMUM) {
-          stream << " cause " << cause;
-        } else if (nativeError != 0) {
-          stream << " due to native error " << nativeError;
-          unsigned int error = OperatingSystem::getErrorCode(nativeError);
-          if (error != OperatingSystem::UNSPECIFIED_ERROR) {
-            stream << ' ' << '(' << OperatingSystem::getErrorMessage(error) << ')'
-                   << " and";
-          }
-        }
-        stream << " in violation with exception specification." << FLUSH;
-      } catch (...) {
-        stream << "Internal error: unsupported exception '"
-               << TypeInfo::getTypename(exceptionType)
-               << "' was raised in violation with exception specification."
-               << FLUSH;
-      }
-    } else {
-      stream << "Internal error: explicit invocation of unexpected." << FLUSH;
-    }
-#if defined(_COM_AZURE_DEV__BASE__ANY_DEBUG)
-    Trace::message(stream.getString().getElements());
-#endif
-    // TAG: either use SystemLogger or ferr but not both
-    SystemLogger::write(SystemLogger::ERROR, stream.getString());
-    // TAG: only if ferr is valid
-    ferr << stream.getString() << ENDL;
-    exit(Application::EXIT_CODE_INTERNAL_ERROR); // TAG: is abort() or terminate() better
+    ferr << "Internal error: Unexpected exception." << ENDL;
+    auto stackTrace = StackFrame::getStack(2);
+    exceptionHandler(stackTrace);
   }
 
   /* The application signal handler. */
@@ -320,7 +298,7 @@ public:
       default:
         break;
       }
-      ferr << "Internal error: floating-point exception";
+      ferr << "Internal error: Floating-point exception";
       if (error) {
         ferr << SP << '(' << error << ')';
       }
@@ -341,7 +319,7 @@ public:
       default:
         break;
       }
-      ferr << "Internal error: bus error ";
+      ferr << "Internal error: Bus error ";
       if (error) {
         ferr << '(' << error << ')';
       }
@@ -373,7 +351,7 @@ public:
       default:
         break;
       }
-      ferr << "Internal error: illegal instruction";
+      ferr << "Internal error: Illegal instruction";
       if (error) {
         ferr << SP << '(' << error << ')';
       }
@@ -798,7 +776,7 @@ int Application::exceptionHandler(const Exception& e) throw()
 
 int Application::exceptionHandler() throw()
 {
-  ferr << "Internal error: unspecified exception." << ENDL;
+  ferr << "Internal error: Unspecified exception." << ENDL;
 
   if (auto tls = Thread::getLocalContext()) {
     if (!tls->stackTrace.isEmpty()) {

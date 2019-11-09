@@ -292,60 +292,6 @@ void UnitTest::run()
   onFailed("Test not implemented");
 }
 
-const char* UnitTestManager::getStdExceptionName(const std::exception& e) noexcept
-{
-  if (dynamic_cast<const std::runtime_error*>(&e)) {
-    if (dynamic_cast<const std::range_error*>(&e)) {
-      return "std::range_error";
-    } else if (dynamic_cast<const std::overflow_error*>(&e)) {
-      return "std::overflow_error";
-    } else if (dynamic_cast<const std::underflow_error*>(&e)) {
-      return "std::underflow_error";
-    } else if (dynamic_cast<const std::out_of_range*>(&e)) {
-      return "std::out_of_range";
-#if 0
-    } else if (dynamic_cast<const std::regex_error*>(&e)) { // C++11
-      return "std::regex_error";
-#endif
-    } else if (dynamic_cast<const std::system_error*>(&e)) { // C++11
-      return "std::system_error";
-    }
-    return "std::runtime_error";
-  } else if (dynamic_cast<const std::logic_error*>(&e)) {
-    if (dynamic_cast<const std::invalid_argument*>(&e)) {
-      return "std::invalid_argument";
-    } else if (dynamic_cast<const std::domain_error*>(&e)) {
-      return "std::domain_error";
-    } else if (dynamic_cast<const std::length_error*>(&e)) {
-      return "std::length_error";
-    } else if (dynamic_cast<const std::out_of_range*>(&e)) {
-      return "std::out_of_range";
-#if 0
-    } else if (dynamic_cast<const std::future_error*>(&e)) { // C++11
-      return "std::future_error";
-#endif
-    }
-    return "std::logic_error";
-  } else if (dynamic_cast<const std::bad_typeid*>(&e)) {
-    return "std::bad_typeid";
-  } else if (dynamic_cast<const std::bad_cast*>(&e)) {
-    return "std::bad_cast";
-  } else if (dynamic_cast<const std::bad_weak_ptr*>(&e)) { // C++11
-    return "std::bad_weak_ptr";
-#if 0
-  } else if (dynamic_cast<const std::bad_function_call*>(&e)) { // C++11
-    return "std::bad_function_call";
-#endif
-  } else if (dynamic_cast<const std::bad_alloc*>(&e)) {
-    return "std::bad_alloc";
-  } else if (dynamic_cast<const std::bad_array_new_length*>(&e)) { // C++11
-    return "std::bad_array_new_length";
-  } else if (dynamic_cast<const std::bad_exception*>(&e)) {
-    return "std::bad_exception";
-  }
-  return "std::exception";
-}
-
 Reference<UnitTest::Run> UnitTest::runImpl()
 {
   // TAG: how should we handle access to required login/accounts/resources - get environment variable?
@@ -387,7 +333,7 @@ Reference<UnitTest::Run> UnitTest::runImpl()
   } catch (std::exception& e) {
     const String w = e.what();
     currentRun->exceptionFailure = "Failed with exception.";
-    currentRun->exceptionType = UnitTestManager::getStdExceptionName(e);
+    currentRun->exceptionType = Exception::getStdExceptionName(e);
     if (w.isEmpty()) {
       onFailed("Test failed with std::exception");
     } else {

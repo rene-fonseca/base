@@ -421,9 +421,6 @@ private:
   static UnitTestManager unitTestManager;
 public:
 
-  /** Returns description type for std exception. */
-  static const char* getStdExceptionName(const std::exception& e) noexcept;
-
   UnitTestManager();
   
   static UnitTestManager& getManager();
@@ -652,7 +649,7 @@ public:
   } catch (std::exception& e) { \
     StringOutputStream stream; \
     stream << "Expecting exception '" << Type::getType<EXCEPTION>() << "' for '" << _COM_AZURE_DEV__BASE__STRINGIFY(EXPRESSION) \
-           << "' but got " << UnitTestManager::getStdExceptionName(e) << " with message '" << e.what() << "'." << FLUSH; \
+           << "' but got " << Exception::getStdExceptionName(e) << " with message '" << e.what() << "'." << FLUSH; \
     base::UnitTest::onPrint(stream.getString(), __LINE__); \
     throw; \
   } catch (...) { \

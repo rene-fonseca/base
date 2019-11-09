@@ -210,7 +210,7 @@ namespace internal {
     try {
       throw;
     } catch (Exception& e) {
-      stream << "Internal error: exception '"
+      stream << "Internal error: Exception '"
              << TypeInfo::getTypename(e) << "' was raised";
       if (e.getType().isInitialized()) {
         stream << " by '" << TypeInfo::getTypename(e.getType()) << '\'';
@@ -231,7 +231,7 @@ namespace internal {
       }
       stream << " in violation with exception specification during application initialization or cleanup." << FLUSH;
     } catch (...) {
-      stream << "Internal error: unsupported exception was raised in violation with exception specification during application initialization or cleanup." << FLUSH;
+      stream << "Internal error: Unsupported exception was raised in violation with exception specification during application initialization or cleanup." << FLUSH;
     }
     Trace::message(stream.getString().getElements());
     SystemLogger::write(SystemLogger::ERROR, stream.getString());

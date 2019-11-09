@@ -90,6 +90,11 @@ public:
   static bool isUnwinding() noexcept;
   
   /**
+    Returns description for well-known Std C++ exceptions.
+  */
+  static const char* getStdExceptionName(const std::exception& e) noexcept;
+
+  /**
     Returns the type of the caught exception.
     
     @return An uninitialized type is returned if no exception has been caught or this method isn't supported.

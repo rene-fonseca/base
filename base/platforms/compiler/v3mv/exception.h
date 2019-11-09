@@ -71,7 +71,3 @@ namespace abi {
 }; // end of namespace abi
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE
-
-#else
-#  error Multiple inclusion of base/platforms/compiler/v3mv/exception.h
-#endif

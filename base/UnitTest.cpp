@@ -314,6 +314,8 @@ Reference<UnitTest::Run> UnitTest::runImpl()
     run();
   } catch (Exception& e) {
 
+    // stack trace here is not useful ferr << StackFrame::getStack(0, 64) << ENDL;
+
     const char* _type = e.getThisType().getLocalName();
 #if (_COM_AZURE_DEV__BASE__COMPILER != _COM_AZURE_DEV__BASE__COMPILER_MSC)
     String type = TypeInfo::demangleName(_type);

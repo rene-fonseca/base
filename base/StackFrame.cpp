@@ -275,7 +275,10 @@ void StackFrame::toStream(FormatOutputStream& stream, const void* const * trace,
 
     String path;
     if (flags & FLAG_SHOW_MODULE) {
-      path = FileSystem::getComponent(DynamicLinker::getImagePath(ip), FileSystem::FILENAME);
+      path = DynamicLinker::getImagePath(ip);
+      if ((flags & FLAG_FULL_PATH) == 0) {
+        path = FileSystem::getComponent(path, FileSystem::FILENAME);
+      }
     }
 
     if (symbol) {

@@ -47,7 +47,7 @@ _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
     // would be best to hook __cxa_throw to get stack trace at throw only
     if (exception) {
       if (auto tls = Thread::getLocalContext()) {
-        tls->stackTrace = StackFrame::getStack(1, 64);
+        tls->stackTrace = StackFrame::getStack(1, 64); // TAG: can we skip stack so we only get the first exception constructor?
         // TAG: only if dumping and if exception isnt silenced
         if (Exception::getDumpExceptions()) {
           ferr << "EXCEPTION CONSTRUCTED BY: " << ENDL;

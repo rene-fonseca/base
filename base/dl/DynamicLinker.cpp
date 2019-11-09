@@ -346,6 +346,7 @@ String DynamicLinker::getSymbolName(const void* address)
     info->SizeOfStruct = sizeof(SYMBOL_INFO);
     info->MaxNameLen = MAXIMUM_NAME;
     BOOL status = symFromAddr(GetCurrentProcess(), reinterpret_cast<MemorySize>(address), &displacement, info);
+    // TAG: missing type info
     if (!status) {
       DWORD error = ::GetLastError();
     } else {

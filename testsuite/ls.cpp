@@ -135,9 +135,10 @@ public:
          << ENDL;
   }
 
-  void list() {
+  void list()
+  {
     if (!FileSystem::folderExists(path)) {
-      ferr << "Error: " << "Path does not exist" << ENDL;
+      ferr << "Error: " << "Not a folder." << ENDL;
       setExitCode(EXIT_CODE_ERROR);
       return;
     }

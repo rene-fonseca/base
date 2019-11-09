@@ -287,7 +287,9 @@ void StackFrame::toStream(FormatOutputStream& stream, const void* const * trace,
       auto displacement = (reinterpret_cast<const uint8*>(ip) - reinterpret_cast<const uint8*>(symbol));
       if (showAddress) {
         if (useColors) {
-          stream << setForeground(ANSIEscapeSequence::RED) << setWidth(field2) << symbol << "+" << HEX << ZEROPAD << NOPREFIX << setWidth(4) << displacement << normal();
+          stream << setForeground(ANSIEscapeSequence::RED)
+                 << setWidth(field2) << symbol << "+" << HEX << ZEROPAD << NOPREFIX << setWidth(4) << displacement
+                 << normal();
         } else {
           stream << setWidth(field2) << symbol << "+" << HEX << ZEROPAD << NOPREFIX << setWidth(4) << displacement;
         }

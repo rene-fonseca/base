@@ -63,7 +63,12 @@ public:
     thisYearFormat = MESSAGE("%b %#d %H:%M");
     otherYearFormat = MESSAGE("%b %#d  %Y");
     limitTrustees = false;
-    colorize = FileDescriptor::getStandardOutput().isTerminal();
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
+    colorize = false;
+#else
+    colorize = FileDescriptor::getStandardError().isTerminal() &&
+        Application::getApplication()->getEnvironment().hasKey("TERM");
+#endif
     command = COMMAND_LIST;
     path = MESSAGE(".");
   }

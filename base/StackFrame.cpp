@@ -18,6 +18,7 @@
 #include <base/TypeInfo.h>
 #include <base/string/ANSIEscapeSequence.h>
 #include <base/io/FileDescriptor.h>
+#include <base/Application.h>
 
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
 #  include <windows.h>
@@ -267,10 +268,16 @@ void StackFrame::dump(unsigned int skip, unsigned int levels)
   if (levels == 0) {
     return;
   }
-
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
+  const bool colors = false;
+#else
+  const bool colors = FileDescriptor::getStandardError().isTerminal() &&
+    Application::getApplication()->getEnvironment().hasKey("TERM");
+#endif
+  
   ++skip;
   const unsigned int flags = StackFrame::FLAG_SHOW_ADDRESS | StackFrame::FLAG_SHOW_MODULE | StackFrame::FLAG_INDENT |
-    (FileDescriptor::getStandardError().isTerminal() ? StackFrame::FLAG_USE_COLORS : 0);
+    (colors ? StackFrame::FLAG_USE_COLORS : 0);
 
   {
     void* trace[256]; // quick buffer
@@ -304,10 +311,16 @@ FormatOutputStream& operator<<(
   FormatOutputStream& stream,
   const StackFrame& value) throw(IOException)
 {
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
+  const bool colors = false;
+#else
+  const bool colors = FileDescriptor::getStandardError().isTerminal() &&
+    Application::getApplication()->getEnvironment().hasKey("TERM");
+#endif
   StackFrame::toStream(
     stream, value.getTrace(), value.getSize(),
     StackFrame::FLAG_SHOW_ADDRESS | StackFrame::FLAG_SHOW_MODULE | StackFrame::FLAG_INDENT |
-      (FileDescriptor::getStandardError().isTerminal() ? StackFrame::FLAG_USE_COLORS : 0)
+      (colors ? StackFrame::FLAG_USE_COLORS : 0)
   );
   return stream;
 }

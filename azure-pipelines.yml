@@ -64,7 +64,8 @@ jobs:
     continueOnError: true
     inputs:
       script: |
-        $(System.DefaultWorkingDirectory)/build/testsuite/unittesting --junit $(System.DefaultWorkingDirectory)/build/junit.xml
+        export CLICOLOR_FORCE=1
+        $(System.DefaultWorkingDirectory)/build/testsuite/unittesting --colors --junit $(System.DefaultWorkingDirectory)/build/junit.xml
         ctest -T Test
       workingDirectory: $(System.DefaultWorkingDirectory)/build
 
@@ -105,6 +106,7 @@ jobs:
     continueOnError: true
     inputs:
       script: |
+        export CLICOLOR_FORCE=1
         $(System.DefaultWorkingDirectory)/build/testsuite/unittesting --junit $(System.DefaultWorkingDirectory)/build/junit.xml
         ctest -T Test
       workingDirectory: $(System.DefaultWorkingDirectory)/build

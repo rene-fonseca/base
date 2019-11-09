@@ -110,7 +110,8 @@ public:
   static Application* getApplication() noexcept;
 
   /** Returns the application lock. Do NOT abuse. */
-  inline MutualExclusion& getLock() {
+  inline MutualExclusion& getLock()
+  {
     return lock;
   }
   

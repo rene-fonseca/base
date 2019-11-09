@@ -19,6 +19,7 @@
 #include <base/string/StringOutputStream.h>
 #include <base/UnexpectedFailure.h>
 #include <base/string/WideString.h>
+#include <base/io/FileDescriptor.h>
 #include <stdlib.h>
 
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
@@ -44,8 +45,7 @@ _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
   void defaultExceptionHandler(Exception* exception) noexcept
   {
     if (exception) {
-      auto tls = Thread::getLocalContext();
-      if (tls) {
+      if (auto tls = Thread::getLocalContext()) {
         tls->stackTrace = StackFrame::getStack(1, 64); // TAG: we can use static memory, make sure we do not reallocate
         // TAG: only if dumping and if exception isnt silenced
         if (Exception::getDumpExceptions()) {
@@ -108,10 +108,13 @@ public:
     }
     ferr << stream.getString() << ENDL; // TAG: use appropriate error stream
     
-    auto tls = Thread::getLocalContext();
-    if (tls) {
+    if (auto tls = Thread::getLocalContext()) {
       if (!tls->stackTrace.isEmpty()) {
-        ferr << tls->stackTrace << ENDL;
+        StackFrame::toStream(
+          ferr, tls->stackTrace.getTrace(), tls->stackTrace.getSize(),
+          StackFrame::FLAG_SHOW_ADDRESS | StackFrame::FLAG_SHOW_MODULE | StackFrame::FLAG_INDENT |
+          (FileDescriptor::getStandardError().isANSITerminal() ? StackFrame::FLAG_USE_COLORS : 0)
+        );
       }
     }
     
@@ -779,10 +782,13 @@ int Application::exceptionHandler(const Exception& e) throw()
 {
   ferr << e << ENDL;
 
-  auto tls = Thread::getLocalContext();
-  if (tls) {
+  if (auto tls = Thread::getLocalContext()) {
     if (!tls->stackTrace.isEmpty()) {
-      ferr << tls->stackTrace << ENDL;
+      StackFrame::toStream(
+        ferr, tls->stackTrace.getTrace(), tls->stackTrace.getSize(),
+        StackFrame::FLAG_SHOW_ADDRESS | StackFrame::FLAG_SHOW_MODULE | StackFrame::FLAG_INDENT |
+        (FileDescriptor::getStandardError().isANSITerminal() ? StackFrame::FLAG_USE_COLORS : 0)
+      );
     }
   }
 
@@ -794,10 +800,13 @@ int Application::exceptionHandler() throw()
 {
   ferr << "Internal error: unspecified exception." << ENDL;
 
-  auto tls = Thread::getLocalContext();
-  if (tls) {
+  if (auto tls = Thread::getLocalContext()) {
     if (!tls->stackTrace.isEmpty()) {
-      ferr << tls->stackTrace << ENDL;
+      StackFrame::toStream(
+        ferr, tls->stackTrace.getTrace(), tls->stackTrace.getSize(),
+        StackFrame::FLAG_SHOW_ADDRESS | StackFrame::FLAG_SHOW_MODULE | StackFrame::FLAG_INDENT |
+        (FileDescriptor::getStandardError().isANSITerminal() ? StackFrame::FLAG_USE_COLORS : 0)
+      );
     }
   }
 

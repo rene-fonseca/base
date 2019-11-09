@@ -22,6 +22,7 @@
 #include <base/Random.h>
 #include <base/TypeInfo.h>
 #include <base/Date.h>
+#include <base/io/FileDescriptor.h>
 #include <algorithm>
 #include <memory>
 
@@ -108,9 +109,16 @@ void UnitTest::Run::onException(Exception* exception)
       ++stackTrace.begin; // skip handler
     }
     if (stackTrace.begin != stackTrace.end) {
+      if (UnitTestManager::getManager().getVerbosity() < UnitTestManager::VERBOSE) {
+        StackFrame::toStream(
+          fout, stackTrace.begin, stackTrace.end - stackTrace.begin,
+          StackFrame::FLAG_COMPACT | StackFrame::FLAG_SHOW_ADDRESS | StackFrame::FLAG_SHOW_MODULE | StackFrame::FLAG_INDENT |
+          (UnitTestManager::getManager().getUseANSIColors() ? StackFrame::FLAG_USE_COLORS : 0)
+        );
+      }
       StackFrame::toStream(
         sos, stackTrace.begin, stackTrace.end - stackTrace.begin,
-        StackFrame::FLAG_SHOW_ADDRESS | StackFrame::FLAG_SHOW_MODULE | StackFrame::FLAG_INDENT |
+        StackFrame::FLAG_COMPACT | StackFrame::FLAG_SHOW_ADDRESS | StackFrame::FLAG_SHOW_MODULE | StackFrame::FLAG_INDENT |
         (UnitTestManager::getManager().getUseANSIColors() ? StackFrame::FLAG_USE_COLORS : 0)
       );
       for (const auto& line : sos.toString().split('\n')) {

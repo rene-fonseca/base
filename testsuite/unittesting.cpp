@@ -83,8 +83,10 @@ public:
         verbosity = COMPACT;
       } else if (argument == "--verbose") {
         verbosity = VERBOSE;
-      } else if (argument == "--colors") {
+      } else if (argument == "--color") {
         useANSIColors = true;
+      } else if (argument == "--nocolor") {
+        useANSIColors = false;
       } else if (argument == "--json") {
         reportJSON = true;
       } else if (argument == "--devel") {
@@ -143,7 +145,8 @@ public:
       << "--compact        Compact mode." << EOL
       << "--verbose        Verbose mode." << EOL
       << "--progress       Progress mode." << EOL
-      << "--colors         Use ANSI colors." << EOL
+      << "--color          Use ANSI colors." << EOL
+      << "--nocolor        Don't use ANSI colors." << EOL
       << "--json           Output results as JSON." << EOL
       << "--junit          Output results as JUnit. JUnit path must follow." << EOL
       << "--uuid           UUID for testsuite." << EOL

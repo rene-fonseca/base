@@ -122,13 +122,13 @@ public:
     version();
     fout << "Usage: " << getFormalName() << " [options] [path]" << EOL
          << EOL
-         << "--help      this message" << EOL
-         << "--version   dump the version" << EOL
+         << "--help      This message." << EOL
+         << "--version   Dump the version." << EOL
          << EOL
-         << "--color     enable colorization of output" << EOL
-         << "--nocolor   disable colorization of output" << EOL
-         << "--limit     limit trustee fields to fixed size" << EOL
-         << "--nolimit   disable fixed trustee fields" << EOL
+         << "--color     Enable colorization of output." << EOL
+         << "--nocolor   Disable colorization of output." << EOL
+         << "--limit     Limit trustee fields to fixed size." << EOL
+         << "--nolimit   Disable fixed trustee fields." << EOL
          << ENDL;
   }
 

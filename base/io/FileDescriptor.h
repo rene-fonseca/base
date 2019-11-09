@@ -95,6 +95,9 @@ public:
   */
   void close() throw(IOException);
 
+  /** Returns true if the handle is an ANSI terminal. */
+  bool isANSITerminal() const noexcept;
+
   /** Returns true if the handle is a terminal. */
   bool isTerminal() const noexcept;
 

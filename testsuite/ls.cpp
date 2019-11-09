@@ -63,24 +63,21 @@ public:
     thisYearFormat = MESSAGE("%b %#d %H:%M");
     otherYearFormat = MESSAGE("%b %#d  %Y");
     limitTrustees = false;
-#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
-    colorize = false;
-#else
-    colorize = FileDescriptor::getStandardError().isTerminal() &&
-        Application::getApplication()->getEnvironment().hasKey("TERM");
-#endif
+    colorize = FileDescriptor::getStandardOutput().isANSITerminal();
     command = COMMAND_LIST;
     path = MESSAGE(".");
   }
   
-  inline String getTime(const Date& date) const {
+  inline String getTime(const Date& date) const
+  {
     return date.format(
       (date.getYear() == currentYear) ? thisYearFormat : otherYearFormat,
       true
     );
   }
   
-  void parseArguments() {
+  void parseArguments()
+  {
     bool pathSpecified = false;
     
     Array<String> arguments = getArguments();

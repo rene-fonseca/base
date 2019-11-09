@@ -62,11 +62,7 @@ public:
     const char* environment[])
     : Application("unittesting", numberOfArguments, arguments, environment)
   {
-#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
-#else
-      useANSIColors = FileDescriptor::getStandardOutput().isTerminal() &&
-        Application::getApplication()->getEnvironment().hasKey("TERM");
-#endif
+    useANSIColors = FileDescriptor::getStandardOutput().isANSITerminal();
   }
   
   bool parseArguments()

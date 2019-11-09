@@ -268,12 +268,7 @@ void StackFrame::dump(unsigned int skip, unsigned int levels)
   if (levels == 0) {
     return;
   }
-#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
-  const bool colors = false;
-#else
-  const bool colors = FileDescriptor::getStandardError().isTerminal() &&
-    Application::getApplication()->getEnvironment().hasKey("TERM");
-#endif
+  const bool colors = FileDescriptor::getStandardError().isANSITerminal(); // use ferr
   
   ++skip;
   const unsigned int flags = StackFrame::FLAG_SHOW_ADDRESS | StackFrame::FLAG_SHOW_MODULE | StackFrame::FLAG_INDENT |
@@ -311,12 +306,7 @@ FormatOutputStream& operator<<(
   FormatOutputStream& stream,
   const StackFrame& value) throw(IOException)
 {
-#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
-  const bool colors = false;
-#else
-  const bool colors = FileDescriptor::getStandardError().isTerminal() &&
-    Application::getApplication()->getEnvironment().hasKey("TERM");
-#endif
+  const bool colors = false; // FileDescriptor::getStandardError().isANSITerminal(); // stream may not be stderr
   StackFrame::toStream(
     stream, value.getTrace(), value.getSize(),
     StackFrame::FLAG_SHOW_ADDRESS | StackFrame::FLAG_SHOW_MODULE | StackFrame::FLAG_INDENT |

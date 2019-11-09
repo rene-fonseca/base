@@ -14,9 +14,11 @@
 #include <base/platforms/features.h>
 #include <base/io/FileDescriptor.h>
 #include <base/io/EndOfFile.h>
+#include <base/Application.h>
 
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
 #  include <windows.h>
+#  include <io.h>
 #else // unix
 #  include <sys/types.h>
 #  include <sys/stat.h>
@@ -33,7 +35,8 @@ _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 // Handle* FileDescriptor::Descriptor::invalid = nullptr;
 
-FileDescriptor::Descriptor::~Descriptor() {
+FileDescriptor::Descriptor::~Descriptor()
+{
   if (isValid()) {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
     if (!::CloseHandle(getHandle())) {
@@ -49,27 +52,58 @@ FileDescriptor::Descriptor::~Descriptor() {
 
 
 
-FileDescriptor::FileDescriptor() throw() : fd(FileDescriptor::Descriptor::invalid) {
+FileDescriptor::FileDescriptor() throw()
+  : fd(FileDescriptor::Descriptor::invalid)
+{
 }
 
-FileDescriptor::FileDescriptor(OperatingSystem::Handle handle) throw() : fd(new Descriptor(handle)) {
+FileDescriptor::FileDescriptor(OperatingSystem::Handle handle) throw()
+  : fd(new Descriptor(handle))
+{
 }
 
-FileDescriptor::FileDescriptor(const FileDescriptor& copy) throw() : fd(copy.fd) {
+FileDescriptor::FileDescriptor(const FileDescriptor& copy) throw()
+  : fd(copy.fd)
+{
 }
 
-FileDescriptor& FileDescriptor::operator=(const FileDescriptor& eq) throw() {
-  fd = eq.fd; // no need to protect against self assignment
+FileDescriptor& FileDescriptor::operator=(const FileDescriptor& copy) throw()
+{
+  fd = copy.fd; // no need to protect against self assignment
   return *this;
 }
 
-void FileDescriptor::close() throw(IOException) {
+void FileDescriptor::close() throw(IOException)
+{
   fd = Descriptor::invalid;
+}
+
+bool FileDescriptor::isANSITerminal() const noexcept
+{
+  if (!FileDescriptor::getStandardOutput().isTerminal()) {
+    return false;
+  }
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
+  DWORD mode = 0;
+  BOOL status = GetConsoleMode(fd->getHandle(), &mode);
+  if (mode & ENABLE_VIRTUAL_TERMINAL_PROCESSING) { // VT100 compatibility mode
+    return true;
+  }
+#else
+  if (Application::getApplication()->getEnvironment().hasKey("TERM")) { // handle Xcode
+    return true;
+  }
+#endif
+  return false;
 }
 
 bool FileDescriptor::isTerminal() const noexcept
 {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
+  DWORD type = ::GetFileType(fd->getHandle());
+  if (type == FILE_TYPE_CHAR) { // matches: Visual Studio Debug Console, Windows Terminal, Command Promt
+    return true;
+  }
   return false;
 #else // unix
   const int status = isatty(fd->getHandle());
@@ -80,6 +114,10 @@ bool FileDescriptor::isTerminal() const noexcept
 bool FileDescriptor::isPipe() const noexcept
 {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
+  DWORD type = ::GetFileType(fd->getHandle());
+  if (type == FILE_TYPE_PIPE) {
+    return true;
+  }
   return false;
 #else // unix
   // get type directly instead
@@ -89,7 +127,8 @@ bool FileDescriptor::isPipe() const noexcept
 #endif
 }
 
-int FileDescriptor::getFlags() const throw(IOException) {
+int FileDescriptor::getFlags() const throw(IOException)
+{
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   return 0;
 #else // unix
@@ -101,7 +140,8 @@ int FileDescriptor::getFlags() const throw(IOException) {
 #endif // flavor
 }
 
-void FileDescriptor::setFlags(int flags) throw(IOException) {
+void FileDescriptor::setFlags(int flags) throw(IOException)
+{
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
 #else // unix
   if (::fcntl(fd->getHandle(), F_SETFL, flags) != 0) {
@@ -110,21 +150,25 @@ void FileDescriptor::setFlags(int flags) throw(IOException) {
 #endif // flavor
 }
 
-OperatingSystem::Handle FileDescriptor::getHandle() const throw() {
+OperatingSystem::Handle FileDescriptor::getHandle() const throw()
+{
   return fd->getHandle();
 }
 
-bool FileDescriptor::isValid() const throw() {
+bool FileDescriptor::isValid() const throw()
+{
   return fd->isValid();
 }
 
-void FileDescriptor::setHandle(OperatingSystem::Handle handle) throw() {
+void FileDescriptor::setHandle(OperatingSystem::Handle handle) throw()
+{
   if (handle != fd->getHandle()) {
     fd = new Descriptor(handle);
   }
 }
 
-void FileDescriptor::setNonBlocking(bool value) throw(IOException) {
+void FileDescriptor::setNonBlocking(bool value) throw(IOException)
+{
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
 #else // unix
   int flags = getFlags();
@@ -140,7 +184,8 @@ void FileDescriptor::setNonBlocking(bool value) throw(IOException) {
 #endif // flavor
 }
 
-FileDescriptor FileDescriptor::getStandardInput() throw() {
+FileDescriptor FileDescriptor::getStandardInput() throw()
+{
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   OperatingSystem::Handle handle = ::GetStdHandle(STD_INPUT_HANDLE); // should never fail
 
@@ -152,14 +197,16 @@ FileDescriptor FileDescriptor::getStandardInput() throw() {
   } else if (::GetFileType(handle) == FILE_TYPE_UNKNOWN) {
     handle = OperatingSystem::INVALID_HANDLE;
   }
-  return FileDescriptor(handle);
+  static FileDescriptor fd(handle);
+  return fd;
 #else // unix
   static FileDescriptor fd(0); // we do not want this to be closed implicitly
   return fd;
 #endif // flavor
 }
 
-FileDescriptor FileDescriptor::getStandardOutput() throw() {
+FileDescriptor FileDescriptor::getStandardOutput() throw()
+{
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   OperatingSystem::Handle handle = ::GetStdHandle(STD_OUTPUT_HANDLE); // should never fail
   
@@ -171,14 +218,16 @@ FileDescriptor FileDescriptor::getStandardOutput() throw() {
   } else if (::GetFileType(handle) == FILE_TYPE_UNKNOWN) {
     handle = OperatingSystem::INVALID_HANDLE;
   }
-  return FileDescriptor(handle);
+  static FileDescriptor fd(handle);
+  return fd;
 #else // unix
   static FileDescriptor fd(1); // we do not want this to be closed implicitly
   return fd;
 #endif // flavor
 }
 
-FileDescriptor FileDescriptor::getStandardError() throw() {
+FileDescriptor FileDescriptor::getStandardError() throw()
+{
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   OperatingSystem::Handle handle = ::GetStdHandle(STD_ERROR_HANDLE); // should never fail
 
@@ -199,14 +248,16 @@ FileDescriptor FileDescriptor::getStandardError() throw() {
   } else if (::GetFileType(handle) == FILE_TYPE_UNKNOWN) {
     handle = OperatingSystem::INVALID_HANDLE;
   }
-  return FileDescriptor(handle);
+  static FileDescriptor fd(handle);
+  return fd;
 #else // unix
   static FileDescriptor fd(2); // we do not want this to be closed implicitly
   return fd;
 #endif // flavor
 }
 
-FileDescriptor::~FileDescriptor() {
+FileDescriptor::~FileDescriptor()
+{
 }
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

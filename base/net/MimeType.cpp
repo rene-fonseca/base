@@ -99,18 +99,21 @@ MimeType::MimeType(MediaType _mediaType, const String& _subtype) throw(OutOfDoma
   this->subtype = _subtype;
 }
 
-MimeType::MimeType(const String& value) throw(InvalidFormat) : mediaType(UNINITIALIZED) {
-  const int index = value.indexOf('/');
+MimeType::MimeType(const String& value) throw(InvalidFormat)
+  : mediaType(UNINITIALIZED)
+{
+  const MemoryDiff index = value.indexOf('/');
   bassert(index >= 0, InvalidFormat(this));
-  type = value.substring(0, index - 1);
+  type = value.substring(0, index);
   subtype = value.substring(index + 1);
 }
 
-MimeType& MimeType::operator=(const MimeType& eq) throw() {
-  if (&eq != this) {
-    type = eq.type;
-    subtype = eq.subtype;
-    mediaType = eq.mediaType;
+MimeType& MimeType::operator=(const MimeType& copy) throw()
+{
+  if (&copy != this) {
+    type = copy.type;
+    subtype = copy.subtype;
+    mediaType = copy.mediaType;
   }
   return *this;
 }

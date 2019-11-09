@@ -156,7 +156,7 @@ namespace win32 {
       String temp(*environment);
       int index = temp.indexOf('=');
       if (index != -1) { // ignore the environment string if it doesn't contain
-        this->environment[temp.substring(0, index - 1)] = temp.substring(index +
+        this->environment[temp.substring(0, index)] = temp.substring(index)
       }
     }
   }

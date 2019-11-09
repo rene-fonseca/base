@@ -763,11 +763,11 @@ Application::Application(
   }
 
   if (environment) {
-    for (; *environment != 0; ++environment) {
+    for (; *environment != nullptr; ++environment) {
       const String temp(*environment);
-      const int index = temp.indexOf('=');
+      const MemoryDiff index = temp.indexOf('=');
       if (index != -1) { // ignore the environment string if it doesn't contain '='
-        this->environment.add(temp.substring(0, index - 1), temp.substring(index + 1));
+        this->environment.add(temp.substring(0, index), temp.substring(index + 1));
       }
     }
   }

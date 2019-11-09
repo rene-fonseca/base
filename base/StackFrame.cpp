@@ -23,7 +23,7 @@
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
 #  include <windows.h>
 #elif ((_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__MACOS) || \
-       (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__GNULINX))
+       (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__GNULINUX))
 #  include <execinfo.h>
 #endif
 
@@ -106,7 +106,7 @@ unsigned int StackFrame::getStack(void** dest, unsigned int size, unsigned int s
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   USHORT count = RtlCaptureStackBackTrace(skip + 1, size, dest, NULL);
 #elif ((_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__MACOS) || \
-       (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__GNULINX))
+       (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__GNULINUX))
   int count = backtrace(dest, size);
   if (count < 0) {
     return 0;
@@ -115,7 +115,7 @@ unsigned int StackFrame::getStack(void** dest, unsigned int size, unsigned int s
     return 0;
   }
   move(dest, dest + skip, count - skip);
-  count -= skip;
+  count -= skip; // we cannot detect overflow due to skip
 #else
   void* frame = getStackFrame();
   // ++skip;

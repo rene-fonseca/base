@@ -36,12 +36,16 @@ namespace {
   typedef BOOL (__stdcall* SymInitializeFunc)(HANDLE hProcess, PCSTR UserSearchPath, BOOL fInvadeProcess);
   typedef BOOL (__stdcall* SymCleanupFunc)(HANDLE hProcess);
   typedef BOOL (__stdcall* SymFromAddrFunc)(HANDLE hProcess, DWORD64 Address, PDWORD64 Displacement, PSYMBOL_INFO Symbol);
+  typedef DWORD(__stdcall* SymGetOptionsFunc)();
+  typedef DWORD(__stdcall* SymSetOptionsFunc)(DWORD SymOptions);
 
   bool initialized = false;
   HMODULE handle = nullptr;
   SymInitializeFunc symInitialize = nullptr;
   SymCleanupFunc symCleanup = nullptr;
   SymFromAddrFunc symFromAddr = nullptr;
+  SymGetOptionsFunc symGetOptions = nullptr;
+  SymSetOptionsFunc symSetOptions = nullptr;
 
   class Initialize {
   public:
@@ -73,6 +77,13 @@ namespace {
         symCleanup = (SymCleanupFunc)GetProcAddress(handle, "SymCleanup");
         if (symCleanup) {
           BOOL status = symInitialize(GetCurrentProcess(), NULL, TRUE || FALSE); // we want to load on demand instead
+
+          symGetOptions = (SymGetOptionsFunc)GetProcAddress(handle, "SymGetOptions");
+          symSetOptions = (SymSetOptionsFunc)GetProcAddress(handle, "SymSetOptions");
+          if (symSetOptions && symGetOptions) {
+            symSetOptions((symGetOptions() | SYMOPT_UNDNAME | 0*SYMOPT_LOAD_LINES | SYMOPT_DEBUG | 0*SYMOPT_LOAD_ANYTHING) /*& ~SYMOPT_UNDNAME*/);
+          }
+
           symFromAddr = (SymFromAddrFunc)GetProcAddress(handle, "SymFromAddr");
         }
       }
@@ -297,8 +308,6 @@ void* DynamicLinker::getImageAddress(const void* address) noexcept
   return nullptr;
 }
 
-// #pragma comment(lib, "dbghelp.lib")
-
 void* DynamicLinker::getSymbolAddress(const void* address) noexcept
 {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
@@ -332,6 +341,8 @@ void* DynamicLinker::getSymbolAddress(const void* address) noexcept
   return nullptr;
 }
 
+// #pragma comment(lib, "dbghelp.lib")
+
 String DynamicLinker::getSymbolName(const void* address)
 {
   String result;
@@ -347,9 +358,17 @@ String DynamicLinker::getSymbolName(const void* address)
     info->MaxNameLen = MAXIMUM_NAME;
     BOOL status = symFromAddr(GetCurrentProcess(), reinterpret_cast<MemorySize>(address), &displacement, info);
     // TAG: missing type info
+
     if (!status) {
       DWORD error = ::GetLastError();
     } else {
+#if 0
+      // TAG: add support for source and line info in stack trace
+      IMAGEHLP_LINE64 line;
+      line.SizeOfStruct = sizeof(line);
+      DWORD disp = 0;
+      status = SymGetLineFromAddr(GetCurrentProcess(), reinterpret_cast<MemorySize>(address), &disp, &line);
+#endif
       result = String(info->Name, info->NameLen);
     }
   }

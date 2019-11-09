@@ -272,7 +272,7 @@ unsigned int Pipe::write(
 void Pipe::wait() const throw(PipeException) {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   DWORD result = ::WaitForSingleObject(fd->getHandle(), INFINITE);
-  ASSERT(result == WAIT_OBJECT_0);
+  BASSERT(result == WAIT_OBJECT_0);
 #else // unix
   fd_set rfds;
   FD_ZERO(&rfds);

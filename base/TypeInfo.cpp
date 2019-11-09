@@ -1011,7 +1011,7 @@ String TypeInfo::demangleName(const char* mangled) throw(InvalidFormat) {
   }
   String result(demangled);
   free(demangled);
-  ASSERT(result.endsWith(suffix));
+  BASSERT(result.endsWith(suffix));
   result.setAt(result.getLength() - 3, 0); // remove function name
   return result;
 }
@@ -1022,7 +1022,7 @@ String TypeInfo::demangleName(const char* mangled) throw(InvalidFormat) {
   Allocator<uint8>* buffer = Thread::getLocalStorage();
   int result =
     cplus_demangle(mangled, buffer->getElements(), buffer->getSize());
-  ASSERT(!result);
+  BASSERT(!result);
   return String(buffer->getElements());
 }
 
@@ -1031,7 +1031,7 @@ String TypeInfo::demangleName(const char* mangled) throw(InvalidFormat) {
 String TypeInfo::demangleName(const char* mangled) throw(InvalidFormat) {
   char buffer[MAXDBUF];
   int result = demangle(mangled, buffer);
-  ASSERT(!result);
+  BASSERT(!result);
   return String(buffer);
 }
 

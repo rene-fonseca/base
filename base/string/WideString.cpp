@@ -2524,7 +2524,7 @@ MemorySize WideString::count(const WideString& string, MemorySize start) const t
 
 String WideString::getMultibyteString() const throw(MultibyteException, MemoryException)
 {
-  ASSERT((sizeof(wchar) == sizeof(ucs2)) || (sizeof(wchar) == sizeof(ucs4)));
+  BASSERT((sizeof(wchar) == sizeof(ucs2)) || (sizeof(wchar) == sizeof(ucs4)));
   String result;
   const int numberOfCharacters = getLength(); // TAG: one character per element - could be 2
   if (numberOfCharacters) {

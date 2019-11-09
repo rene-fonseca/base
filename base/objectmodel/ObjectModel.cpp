@@ -477,7 +477,7 @@ Reference<ObjectModel::Value> ObjectModel::Object::getPath(const char* path, boo
     }
     current = result.cast<Object>();
   }
-  ASSERT(!*path);
+  BASSERT(!*path);
   return nullptr;
 }
 
@@ -621,7 +621,7 @@ FormatOutputStream& operator<<(FormatOutputStream& stream, const Reference<Objec
   } else if (Math::isInfinity(value->value)) {
     stream << ((value->value < 0) ? MESSAGE("-infinity") : MESSAGE("infinity")); // should we use null instead of string
   } else {
-    ASSERT(!"Unsupported float.");
+    BASSERT(!"Unsupported float.");
     stream << value->value;
   }
 
@@ -640,7 +640,7 @@ FormatOutputStream& operator<<(FormatOutputStream& stream, const Reference<Objec
   for (MemorySize i = 0; i < length; ++i) {
     char ch = value->value[i];
     // TAG: read ucs4
-    ASSERT(ch <= 0x7f); // TAG: add support
+    BASSERT(ch <= 0x7f); // TAG: add support
     if (ch < ' ') {
       stream << '\\';
       switch (ch) {
@@ -684,7 +684,7 @@ FormatOutputStream& operator<<(FormatOutputStream& stream, const Reference<Objec
   if (!value) {
     return stream << MESSAGE("null");
   }
-  ASSERT(!"Binary block not supported.");
+  BASSERT(!"Binary block not supported.");
   // TAG: write as string
   return stream;
 }

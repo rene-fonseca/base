@@ -33,7 +33,7 @@ void PopUpWindow::destroy() throw() {
   if (drawableHandle) {
     // nothing to destroy
   }
-  ASSERT(screenHandle == 0);
+  BASSERT(screenHandle == 0);
 #elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__MACOS)
 #else // unix
   if (graphicsContextHandle) {

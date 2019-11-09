@@ -421,7 +421,7 @@ void toStringYAML(YAMLOutputStream& stream, Reference<ObjectModel::Float> value)
   } else if (Math::isInfinity(value->value)) {
     stream << ((value->value < 0) ? MESSAGE("-.inf") : MESSAGE(".inf")); // should we use null instead of string
   } else {
-    ASSERT(!"Unsupported float.");
+    BASSERT(!"Unsupported float.");
     stream << value->value;
   }
 }
@@ -440,7 +440,7 @@ void toStringYAML(YAMLOutputStream& stream, Reference<ObjectModel::String> value
   for (MemorySize i = 0; i < length; ++i) {
     const char ch = value->value[i];
     // TAG: read ucs4
-    ASSERT(ch <= 0x7f); // TAG: add support
+    BASSERT(ch <= 0x7f); // TAG: add support
     if (ch < ' ') {
       stream << '\\';
       switch (ch) {

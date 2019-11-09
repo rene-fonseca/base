@@ -112,20 +112,20 @@ public:
     } else {
       // release exclusive lock
       ::LeaveCriticalSection(&common);
-      ASSERT(writers > 0);
+      BASSERT(writers > 0);
       if (--writers == 0) {
         ::SetEvent(blockReaders);
       }
     }
-    ASSERT(::WaitForSingleObject(blockReaders, 0) == WAIT_OBJECT_0);
+    BASSERT(::WaitForSingleObject(blockReaders, 0) == WAIT_OBJECT_0);
     spinLock.releaseLock();
   }
   
   inline ~ReadWriteLockImpl() throw() {
-    ASSERT(::TryEnterCriticalSection(&common) != 0);
+    BASSERT(::TryEnterCriticalSection(&common) != 0);
     ::DeleteCriticalSection(&common);
     ::CloseHandle(blockReaders);
-    ASSERT((spinLock.tryExclusiveLock()) && (readers == 0) && (writers == 0));
+    BASSERT((spinLock.tryExclusiveLock()) && (readers == 0) && (writers == 0));
   }
 };
 

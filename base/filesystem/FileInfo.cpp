@@ -110,7 +110,7 @@ FileInfo::FileInfo(const String& _path) throw(FileSystemException)
     case 0x80000000|IO_REPARSE_TAG_SYMBOLIC_LINK:
       substPath = reparseHeader->SymbolicLinkReparseBuffer.PathBuffer +
         reparseHeader->SymbolicLinkReparseBuffer.SubstituteNameOffset;
-      ASSERT(
+      BASSERT(
         reparseHeader->SymbolicLinkReparseBuffer.SubstituteNameLength % 2 == 0
       );
       substLength =
@@ -119,7 +119,7 @@ FileInfo::FileInfo(const String& _path) throw(FileSystemException)
     case IO_REPARSE_TAG_MOUNT_POINT:
       substPath = reparseHeader->MountPointReparseBuffer.PathBuffer +
         reparseHeader->MountPointReparseBuffer.SubstituteNameOffset;
-      ASSERT(
+      BASSERT(
         reparseHeader->MountPointReparseBuffer.SubstituteNameLength % 2 == 0
       );
       substLength = reparseHeader->MountPointReparseBuffer.SubstituteNameLength/2; // keep prefix "\??\"

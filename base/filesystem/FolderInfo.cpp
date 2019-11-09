@@ -117,12 +117,12 @@ FolderInfo::FolderInfo(const String& _path) throw(FileSystemException)
     switch (reparseHeader->ReparseTag) {
     case 0x80000000|IO_REPARSE_TAG_SYMBOLIC_LINK:
       substPath = reparseHeader->SymbolicLinkReparseBuffer.PathBuffer + reparseHeader->SymbolicLinkReparseBuffer.SubstituteNameOffset;
-      ASSERT(reparseHeader->SymbolicLinkReparseBuffer.SubstituteNameLength % 2 == 0);
+      BASSERT(reparseHeader->SymbolicLinkReparseBuffer.SubstituteNameLength % 2 == 0);
       substLength = reparseHeader->SymbolicLinkReparseBuffer.SubstituteNameLength/2;
       break;
     case IO_REPARSE_TAG_MOUNT_POINT:
       substPath = reparseHeader->MountPointReparseBuffer.PathBuffer + reparseHeader->MountPointReparseBuffer.SubstituteNameOffset;
-      ASSERT(reparseHeader->MountPointReparseBuffer.SubstituteNameLength % 2 == 0);
+      BASSERT(reparseHeader->MountPointReparseBuffer.SubstituteNameLength % 2 == 0);
       substLength = reparseHeader->MountPointReparseBuffer.SubstituteNameLength/2; // keep prefix "\??\"
       break;
     default:

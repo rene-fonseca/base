@@ -112,7 +112,7 @@ inline const TYPE& maximum(const TYPE& a, const TYPE& b, const TYPE& c) {
 #if 0
 template<class TYPE>
 inline TYPE maximum(initializer_list<TYPE> l) {
-  ASSERT(!l.empty());
+  BASSERT(!l.empty());
   auto src = l.begin();
   auto end = l.end();
   TYPE result = *src++;

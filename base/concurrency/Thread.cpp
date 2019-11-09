@@ -112,7 +112,7 @@ void* Thread::entry(Thread* thread) throw()
 }
 
 void Thread::exit() throw() {
-  ASSERT(getThread()->state == ALIVE);
+  BASSERT(getThread()->state == ALIVE);
   getThread()->state = EXIT;
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   ::ExitThread(0); // will properly create resource leaks
@@ -124,7 +124,7 @@ void Thread::exit() throw() {
 ThreadLocalContext* Thread::getLocalContext() noexcept
 {
   auto tlc = threadLocalContext.getKey();
-  ASSERT(tlc);
+  BASSERT(tlc);
   return tlc;
 }
 
@@ -169,7 +169,7 @@ void Thread::nanosleep(unsigned int nanoseconds) throw(OutOfDomain)
     interval.tv_sec = nanoseconds/1000000000;
     interval.tv_nsec = nanoseconds % 1000000000;
     if (::nanosleep(&interval, &interval) == -1) {
-      ASSERT(errno == EINTR); // interrupted by signal
+      BASSERT(errno == EINTR); // interrupted by signal
 //      return interval.tv_nsec;
     }
   #elif defined(_COM_AZURE_DEV__BASE__HAVE_PSELECT)
@@ -178,7 +178,7 @@ void Thread::nanosleep(unsigned int nanoseconds) throw(OutOfDomain)
     interval.tv_nsec = nanoseconds % 1000000000;
     int result = ::pselect(0, 0, 0, 0, &interval, 0);
     if (result != 0) {
-      ASSERT(errno == EINTR); // interrupted by signal
+      BASSERT(errno == EINTR); // interrupted by signal
 //      return 0; // TAG: calculate remaining time
     }
     // [EINVAL] is not possible since pselect must support min. 31 days
@@ -188,7 +188,7 @@ void Thread::nanosleep(unsigned int nanoseconds) throw(OutOfDomain)
     interval.tv_usec = (nanoseconds+999)/1000; // round up
     int result = ::select(0, 0, 0, 0, &interval);
     if (result != 0) {
-      ASSERT(errno == EINTR); // interrupted by signal
+      BASSERT(errno == EINTR); // interrupted by signal
 //      return 0; // TAG: calculate remaining time
     }
     // [EINVAL] is not possible since select must support min. 31 days
@@ -210,7 +210,7 @@ void Thread::microsleep(unsigned int microseconds) throw(OutOfDomain)
     interval.tv_sec = microseconds/1000000;
     interval.tv_nsec = (microseconds % 1000000) * 1000;
     if (::nanosleep(&interval, &interval) == -1) {
-      ASSERT(errno == EINTR); // interrupted by signal
+      BASSERT(errno == EINTR); // interrupted by signal
 //      return interval.tv_nsec;
     }
   #elif defined(_COM_AZURE_DEV__BASE__HAVE_PSELECT)
@@ -219,7 +219,7 @@ void Thread::microsleep(unsigned int microseconds) throw(OutOfDomain)
     interval.tv_nsec = (microseconds % 1000000) * 1000;
     int result = ::pselect(0, 0, 0, 0, &interval, 0);
     if (result != 0) {
-      ASSERT(errno == EINTR); // interrupted by signal
+      BASSERT(errno == EINTR); // interrupted by signal
 //      return 0; // TAG: calculate remaining time
     }
     // [EINVAL] is not possible since pselect must support min. 31 days
@@ -229,7 +229,7 @@ void Thread::microsleep(unsigned int microseconds) throw(OutOfDomain)
     interval.tv_usec = microseconds;
     int result = ::select(0, 0, 0, 0, &interval);
     if (result != 0) {
-      ASSERT(errno == EINTR); // interrupted by signal
+      BASSERT(errno == EINTR); // interrupted by signal
 //      return 0; // TAG: calculate remaining time
     }
     // [EINVAL] is not possible since select must support min. 31 days
@@ -251,7 +251,7 @@ void Thread::millisleep(unsigned int milliseconds) throw(OutOfDomain)
     interval.tv_sec = milliseconds/1000;
     interval.tv_nsec = (milliseconds % 1000) * 1000000;
     if (::nanosleep(&interval, &interval) == -1) {
-      ASSERT(errno == EINTR); // interrupted by signal
+      BASSERT(errno == EINTR); // interrupted by signal
 //      return interval.tv_sec * 1000 + interval.tv_nsec/1000000;
     }
   #elif defined(_COM_AZURE_DEV__BASE__HAVE_PSELECT)
@@ -260,7 +260,7 @@ void Thread::millisleep(unsigned int milliseconds) throw(OutOfDomain)
     interval.tv_nsec = (milliseconds % 1000) * 1000000;
     int result = ::pselect(0, 0, 0, 0, &interval, 0);
     if (result != 0) {
-      ASSERT(errno == EINTR); // interrupted by signal
+      BASSERT(errno == EINTR); // interrupted by signal
 //      return 0; // TAG: calculate remaining time
     }
     // [EINVAL] is not possible since pselect must support min. 31 days
@@ -270,7 +270,7 @@ void Thread::millisleep(unsigned int milliseconds) throw(OutOfDomain)
     interval.tv_usec = (milliseconds % 1000) * 1000;
     int result = ::select(0, 0, 0, 0, &interval);
     if (result != 0) {
-      ASSERT(errno == EINTR); // interrupted by signal
+      BASSERT(errno == EINTR); // interrupted by signal
 //      return 0; // TAG: calculate remaining time
     }
     // [EINVAL] is not possible since select must support min. 31 days
@@ -292,7 +292,7 @@ void Thread::sleep(unsigned int seconds) throw(OutOfDomain)
     interval.tv_sec = seconds;
     interval.tv_nsec = 0;
     if (::nanosleep(&interval, &interval) == -1) {
-      ASSERT(errno == EINTR); // interrupted by signal
+      BASSERT(errno == EINTR); // interrupted by signal
 //      return interval.tv_sec;
     }
   #elif defined(_COM_AZURE_DEV__BASE__HAVE_PSELECT)
@@ -301,7 +301,7 @@ void Thread::sleep(unsigned int seconds) throw(OutOfDomain)
     interval.tv_nsec = 0;
     int result = ::pselect(0, 0, 0, 0, &interval, 0);
     if (result != 0) {
-      ASSERT(errno == EINTR); // interrupted by signal
+      BASSERT(errno == EINTR); // interrupted by signal
 //      return 0; // TAG: calculate remaining time
     }
     // [EINVAL] is not possible since pselect must support min. 31 days
@@ -311,7 +311,7 @@ void Thread::sleep(unsigned int seconds) throw(OutOfDomain)
     interval.tv_usec = 0;
     int result = ::select(0, 0, 0, 0, &interval);
     if (result != 0) {
-      ASSERT(errno == EINTR); // interrupted by signal
+      BASSERT(errno == EINTR); // interrupted by signal
 //      return 0; // TAG: calculate remaining time
     }
     // [EINVAL] is not possible since select must support min. 31 days
@@ -371,7 +371,7 @@ inline void* getAsPointer(const long value) noexcept
 #if (_COM_AZURE_DEV__BASE__COMPILER != _COM_AZURE_DEV__BASE__COMPILER_GCC)
 inline void* getAsPointer(const int64 value) noexcept
 {
-  ASSERT(sizeof(void*) >= sizeof(value));
+  BASSERT(sizeof(void*) >= sizeof(value));
   return reinterpret_cast<void*>(static_cast<MemoryDiff>(value));
 }
 #endif
@@ -399,7 +399,7 @@ inline void* getAsPointer(const unsigned long value) noexcept
 #if (_COM_AZURE_DEV__BASE__COMPILER != _COM_AZURE_DEV__BASE__COMPILER_GCC)
 inline void* getAsPointer(const uint64 value) noexcept
 {
-  ASSERT(sizeof(void*) >= sizeof(value));
+  BASSERT(sizeof(void*) >= sizeof(value));
   return reinterpret_cast<void*>(static_cast<MemorySize>(value));
 }
 #endif
@@ -427,7 +427,7 @@ Thread::Thread() throw(ResourceException)
     identifier(nullptr)
 {
   parent = Thread::getThread();
-  ASSERT(parent); // a parent must always exist
+  BASSERT(parent); // a parent must always exist
 }
 
 Thread::Thread(Runnable* _runnable) throw(NullPointer, ResourceException)
@@ -440,11 +440,11 @@ Thread::Thread(Runnable* _runnable) throw(NullPointer, ResourceException)
     throw NullPointer(this);
   }
   parent = Thread::getThread();
-  ASSERT(parent); // a parent must always exist
+  BASSERT(parent); // a parent must always exist
 }
 
 void Thread::setTerminationState(State state) throw() {
-  ASSERT(isSelf() && (state > ALIVE));
+  BASSERT(isSelf() && (state > ALIVE));
   this->state = state;
   terminationEvent.signal(); // do not access state here after
 }
@@ -536,7 +536,7 @@ int Thread::getNamedPriority(Priority priority) throw()
 #else // unix
   static const int PRIORITY[] = {-20, -20, 0, 19};
 #endif // flavor
-  ASSERT(isWithin<int>(0, priority, 3));
+  BASSERT(isWithin<int>(0, priority, 3));
   return PRIORITY[priority];
 }
 
@@ -680,7 +680,7 @@ Thread::Times Thread::getTimes() throw()
   FILETIME system;
   FILETIME user;
   BOOL status = ::GetThreadTimes(::GetCurrentThread(), &creationTime, &exitTime, &system, &user);
-  ASSERT(status);
+  BASSERT(status);
   result.user = Cast::impersonate<unsigned long long>(user) * 100ULL;
   result.system = Cast::impersonate<unsigned long long>(system) * 100ULL;
   return result;
@@ -706,7 +706,7 @@ bool Thread::join() const throw(ThreadException) {
     return false;
   }
   terminationEvent.wait(); // allows multiple contexts to wait for thread to terminate
-  ASSERT(state > ALIVE); // thread must be terminated here
+  BASSERT(state > ALIVE); // thread must be terminated here
   return true;
 }
 
@@ -759,7 +759,7 @@ Thread::~Thread() {
   if (getParent() != 0) {
     if (state != Thread::NOTSTARTED) {
       terminationEvent.wait(); // allows multiple contexts to wait for thread to terminate
-      ASSERT(state > Thread::ALIVE); // thread must be terminated here
+      BASSERT(state > Thread::ALIVE); // thread must be terminated here
     }
   }
 }

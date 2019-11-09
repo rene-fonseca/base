@@ -75,7 +75,7 @@ public:
   }
   
   inline Iterator getWriteIterator(unsigned int size = 0) throw() {
-    ASSERT(size <= getAvailable());
+    BASSERT(size <= getAvailable());
     uint8* previous = writeHead;
     writeHead += size;
     return Iterator(previous);
@@ -109,7 +109,7 @@ public:
       }
       
       // copy to internal buffer
-      ASSERT((size < getAvailable()) && (getAvailable() == (end - begin)));
+      BASSERT((size < getAvailable()) && (getAvailable() == (end - begin)));
       writeHead += size; // elements already initialized
     }
   }
@@ -132,7 +132,7 @@ public:
       size -= bytesToWrite;
       
       // copy to internal buffer
-      ASSERT((size < getAvailable()) && (getAvailable() == (end-begin)));
+      BASSERT((size < getAvailable()) && (getAvailable() == (end-begin)));
       copy(writeHead, buffer, size);
       writeHead += size;
     }
@@ -194,7 +194,7 @@ public:
     // insert nodes in sorted list (frequency)
     int lastNode = ALPHABET_SIZE - 1;
     for (; (lastNode >= 0) && (nodes[lastNode].frequency == 0); --lastNode) {} // find non-zero frequency
-    ASSERT(lastNode >= 0); // size > 0 => lastNode >= 0
+    BASSERT(lastNode >= 0); // size > 0 => lastNode >= 0
     
     unsigned int lastList = 0; // the index of the last linked list
     lists[lastList] = lastNode;
@@ -353,7 +353,7 @@ public:
       *dest++ = garbageBits;
     }
 
-    ASSERT(static_cast<MemorySize>(dest - header) <= getArraySize(header));
+    BASSERT(static_cast<MemorySize>(dest - header) <= getArraySize(header));
     
     os.write2(Cast::getAddress(header), dest - header);
   }
@@ -409,7 +409,7 @@ public:
           }
         }
         
-        ASSERT(bits <= 8);
+        BASSERT(bits <= 8);
         
         if (bits <= availableBits) {
           bitBuffer <<= bits;
@@ -572,7 +572,7 @@ public:
     unsigned int availableBits = 0;
     const uint8* wordEnd = src + (((end - src) * 8 - garbageBits)/(sizeof(bitBuffer) * 8)) * sizeof(bitBuffer);
     
-    ASSERT(minimumLength <= 8);
+    BASSERT(minimumLength <= 8);
     bassert(minimumLength <= 8, UnexpectedFailure());
     
     // TAG: should be optimized (use initial 8 bit lookup table to predict length of code - garbage does not matter)

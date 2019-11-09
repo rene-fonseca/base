@@ -1335,7 +1335,7 @@ public:
   {
     const MemorySize length = getLength();
     const char* result = elements->getElements();
-    ASSERT(result[length] == Traits::TERMINATOR);
+    BASSERT(result[length] == Traits::TERMINATOR);
     if (result[length] != Traits::TERMINATOR) { // TAG: remove when ready
       const MemorySize likelyLength = getNullTerminatedLength(result);
       const MemorySize lengthAgain = getLength();
@@ -1351,7 +1351,7 @@ public:
   {
     const MemorySize length = getLength();
     const char* result = elements->getElements();
-    ASSERT(result[length] == Traits::TERMINATOR);
+    BASSERT(result[length] == Traits::TERMINATOR);
     return result + length;
   }
 
@@ -1364,7 +1364,7 @@ public:
   inline const char* getBytes() const noexcept
   {
     const char* result = elements->getElements();
-    ASSERT(result[getLength()] == Traits::TERMINATOR);
+    BASSERT(result[getLength()] == Traits::TERMINATOR);
     return result;
   }
 
@@ -1374,7 +1374,7 @@ public:
   inline const char* native() const noexcept
   {
     const char* result = elements->getElements();
-    ASSERT(result[getLength()] == Traits::TERMINATOR);
+    BASSERT(result[getLength()] == Traits::TERMINATOR);
     return result;
   }
 };

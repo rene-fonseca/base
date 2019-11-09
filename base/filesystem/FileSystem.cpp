@@ -351,7 +351,7 @@ String FileSystem::getCurrentFolder() throw(FileSystemException) {
   return toUTF8(buffer, length);
 #else // unix
   Allocator<uint8>* buffer = Thread::getLocalStorage();
-  ASSERT(buffer->getSize() > PATH_MAX);
+  BASSERT(buffer->getSize() > PATH_MAX);
   if (::getcwd((char*)buffer->getElements(), buffer->getSize()/sizeof(char))) {
     throw FileSystemException(
       "Unable to get current folder",
@@ -857,7 +857,7 @@ bool FileSystem::isLink(const String& path) throw(NotSupported, FileSystemExcept
       }
     } else {
       if (::GetLastError() == ERROR_MORE_DATA) {
-        ASSERT(bytesWritten >= REPARSE_DATA_BUFFER_HEADER_SIZE);
+        BASSERT(bytesWritten >= REPARSE_DATA_BUFFER_HEADER_SIZE);
         if (IsReparseTagMicrosoft(reparseHeader->ReparseTag)) {
           switch (reparseHeader->ReparseTag) {
           case 0x80000000|IO_REPARSE_TAG_SYMBOLIC_LINK:
@@ -1002,7 +1002,7 @@ public:
       switch (reparseHeader->ReparseTag) {
       case 0x80000000|IO_REPARSE_TAG_SYMBOLIC_LINK:
         {
-          ASSERT((reparseHeader->MountPointReparseBuffer.SubstituteNameLength % sizeof(wchar) == 0) &&
+          BASSERT((reparseHeader->MountPointReparseBuffer.SubstituteNameLength % sizeof(wchar) == 0) &&
                  (reparseHeader->MountPointReparseBuffer.SubstituteNameLength/sizeof(wchar) > 4));
           wchar* substPath = reparseHeader->SymbolicLinkReparseBuffer.PathBuffer +
             reparseHeader->SymbolicLinkReparseBuffer.SubstituteNameOffset + 4;
@@ -1013,7 +1013,7 @@ public:
         }
       case IO_REPARSE_TAG_MOUNT_POINT:
         {
-          ASSERT((reparseHeader->MountPointReparseBuffer.SubstituteNameLength % sizeof(wchar) == 0) &&
+          BASSERT((reparseHeader->MountPointReparseBuffer.SubstituteNameLength % sizeof(wchar) == 0) &&
                  (reparseHeader->MountPointReparseBuffer.SubstituteNameLength/sizeof(wchar) > 4));
           wchar* substPath = reparseHeader->MountPointReparseBuffer.PathBuffer +
             reparseHeader->MountPointReparseBuffer.SubstituteNameOffset + 4;
@@ -1344,7 +1344,7 @@ String FileSystem::getLink(const String& path) throw(NotSupported, FileSystemExc
     switch (reparseHeader->ReparseTag) {
     case 0x80000000|IO_REPARSE_TAG_SYMBOLIC_LINK:
       {
-        ASSERT((reparseHeader->MountPointReparseBuffer.SubstituteNameLength % 2 == 0) &&
+        BASSERT((reparseHeader->MountPointReparseBuffer.SubstituteNameLength % 2 == 0) &&
           (reparseHeader->MountPointReparseBuffer.SubstituteNameLength/2 > 4));
         wchar* substPath = reparseHeader->SymbolicLinkReparseBuffer.PathBuffer +
           reparseHeader->SymbolicLinkReparseBuffer.SubstituteNameOffset + 4;
@@ -1355,7 +1355,7 @@ String FileSystem::getLink(const String& path) throw(NotSupported, FileSystemExc
       }
     case IO_REPARSE_TAG_MOUNT_POINT:
       {
-        ASSERT((reparseHeader->MountPointReparseBuffer.SubstituteNameLength % 2 == 0) &&
+        BASSERT((reparseHeader->MountPointReparseBuffer.SubstituteNameLength % 2 == 0) &&
                (reparseHeader->MountPointReparseBuffer.SubstituteNameLength/2 > 4));
         wchar* substPath = reparseHeader->MountPointReparseBuffer.PathBuffer +
           reparseHeader->MountPointReparseBuffer.SubstituteNameOffset + 4;

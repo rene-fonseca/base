@@ -55,7 +55,7 @@ unsigned int Barrier::wait(bool reset) throw(LockException) {
       resetEvent.wait();
       event.reset();
       waiting--;
-      ASSERT(waiting == 0);
+      BASSERT(waiting == 0);
       return waiting;
     }
   }

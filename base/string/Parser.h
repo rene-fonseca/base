@@ -54,14 +54,14 @@ public:
   Parser(const uint8* _src, const uint8* _end) noexcept
     : src(_src), end(_end)
   {
-    ASSERT(src <= end);
+    BASSERT(src <= end);
   }
   
   /** Constructs parser. */
   Parser(const String& text) noexcept
     : src(reinterpret_cast<const uint8*>(text.native())), end(reinterpret_cast<const uint8*>(text.getEnd()))
   {
-    ASSERT(src <= end);
+    BASSERT(src <= end);
   }
 
   /** Returns the current marker. */

@@ -598,7 +598,7 @@ OpenGL::Function OpenGL::getFunction(const String& name) throw() {
 void OpenGL::loadFunctions(Descriptor* descriptor, unsigned int size) throw() {
   const Descriptor* end = descriptor + size;
   while (descriptor < end) {
-    ASSERT(static_cast<bool>(descriptor->name) && !descriptor->function);
+    BASSERT(static_cast<bool>(descriptor->name) && !descriptor->function);
     if (opengl::getFunction) {
       this->*(descriptor->function) = opengl::getFunction(
         descriptor->name.getValue()
@@ -620,7 +620,7 @@ void OpenGL::loadFunctions(Descriptor* descriptor, unsigned int size) throw() {
 void OpenGL::fixMissing(Descriptor* descriptor, unsigned int size) throw() {
   const Descriptor* end = descriptor + size;
   while (descriptor < end) {
-    ASSERT(static_cast<bool>(descriptor->name) && !descriptor->function);
+    BASSERT(static_cast<bool>(descriptor->name) && !descriptor->function);
     if (opengl::getFunction) {
       this->*(descriptor->function) = opengl::getFunction(
         descriptor->name.getValue()

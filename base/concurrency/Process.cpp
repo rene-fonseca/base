@@ -514,7 +514,7 @@ bool Process::terminate(bool force) throw(ProcessException) {
     
     // TAG: WM_QUIT is normally not posted - is this ok - do we need to post to specific window handle
     // BOOL result = ::PostThreadMessage(static_cast<DWORD>(id), WM_QUIT, Application::EXIT_CODE_EXTERNAL, 0);
-    // ASSERT(result != 0);
+    // BASSERT(result != 0);
     // TAG: throw ProcessException(this)
   }
 #else

@@ -1022,7 +1022,7 @@ public:
   inline Range(const TYPE _start, const TYPE _stop, const TYPE _step) noexcept
     : start(_start), stop(_stop), step(_step)
   {
-    ASSERT(step != 0);
+    BASSERT(step != 0);
   }
 
   inline RangeIterator<TYPE> begin() const noexcept

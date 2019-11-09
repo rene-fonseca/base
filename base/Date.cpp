@@ -103,7 +103,7 @@ int Date::normalize(DateTime& dateTime, bool redundancy) throw() {
       month = MONTHS_PER_YEAR - ((-month)%MONTHS_PER_YEAR);
     }
   }
-  ASSERT((month >= 0) && (month < MONTHS_PER_YEAR));
+  BASSERT((month >= 0) && (month < MONTHS_PER_YEAR));
   
   int64 year = dateTime.year + carrier;
 
@@ -309,7 +309,7 @@ int64 Date::getBias() throw() {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   TIME_ZONE_INFORMATION information;
   DWORD status = ::GetTimeZoneInformation(&information);
-  ASSERT(status != TIME_ZONE_ID_INVALID);
+  BASSERT(status != TIME_ZONE_ID_INVALID);
   return information.Bias * 60000000LL; // TAG: what about the other bias'
 #else // unix
   tzset(); // update variables
@@ -1129,7 +1129,7 @@ String Date::format(
       case 'z': // offset from UTC +hhmm/-hhmm
         {
           int bias = +1234; // TAG: FIXME
-          ASSERT((bias >= -(12*60 + 59)) && (bias <= (12*60 + 59))); // 
+          BASSERT((bias >= -(12*60 + 59)) && (bias <= (12*60 + 59))); // 
           if (bias > 0) {
             stream << '+' << setWidth(2) << ZEROPAD << bias/60
                    << setWidth(2) << ZEROPAD << bias%60;

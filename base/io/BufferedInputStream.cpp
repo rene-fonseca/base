@@ -57,7 +57,7 @@ unsigned int BufferedInputStream::read(
         this->buffer.getElements(),
         minimum<MemorySize>(this->buffer.getSize(), available)
       ); // refill of internal buffer without blocking
-      ASSERT(count == available);
+      BASSERT(count == available);
     } else if (nonblocking) {
       break;
     } else { // blocking
@@ -67,7 +67,7 @@ unsigned int BufferedInputStream::read(
         this->buffer.getElements(),
         minimum<MemorySize>(this->buffer.getSize(), available)
       ); // refill of internal buffer without blocking
-      ASSERT((count > 0) && (count == available));
+      BASSERT((count > 0) && (count == available));
     }
   }
   return bytesRead;
@@ -95,7 +95,7 @@ unsigned int BufferedInputStream::peek(
       ); // fill internal buffer (blocking)
     }
   }
-  ASSERT(position <= this->count);
+  BASSERT(position <= this->count);
   return count;
 }
 

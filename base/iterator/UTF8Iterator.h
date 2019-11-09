@@ -106,7 +106,7 @@ public:
   */
   UTF8Iterator& operator+=(Distance distance) noexcept
   {
-    ASSERT(distance >= 0);
+    BASSERT(distance >= 0);
     while (distance--) {
       ++element;
     }
@@ -167,7 +167,7 @@ public:
   /** Skip a single byte - not encoded character. Used to skip bad codes only. */
   void skipByte() noexcept
   {
-    ASSERT(*element); // we do not want to skip past null terminator
+    BASSERT(*element); // we do not want to skip past null terminator
     ++element;
   }
 

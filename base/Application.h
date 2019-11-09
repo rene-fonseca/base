@@ -127,7 +127,7 @@ public:
       // check runtime
       Version::isBuildCompatible();
 
-      ASSERT(!Runtime::isGlobalInitialization() || !"Global initialization not allowed for Application.");
+      BASSERT(!Runtime::isGlobalInitialization() || !"Global initialization not allowed for Application.");
 
       APPLICATION application(numberOfArguments, arguments, environment);
       try {

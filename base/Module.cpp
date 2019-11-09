@@ -28,7 +28,7 @@ Module::Module()
 
 void Module::setId(const String& _id)
 {
-  ASSERT(isFullyQualifiedId(_id));
+  BASSERT(isFullyQualifiedId(_id));
   id = _id;
 }
 
@@ -39,7 +39,7 @@ void Module::setUrl(const String& _url)
 
 void Module::setConsumer(const String& _consumer)
 {
-  ASSERT(isValidConsumer(_consumer));
+  BASSERT(isValidConsumer(_consumer));
   consumer = _consumer;
 }
 
@@ -105,7 +105,7 @@ void ModuleManager::loadModules()
         try {
           entry->entry();
         } catch (...) {
-          ASSERT(!"Failed to register module");
+          BASSERT(!"Failed to register module");
         }
       }
     }
@@ -300,7 +300,7 @@ namespace {
     result += '"';
     for (char ch : text) { // TAG: need to read as UTF-8?
       // TAG: read ucs4
-      ASSERT(ch <= 0x7f); // TAG: add support
+      BASSERT(ch <= 0x7f); // TAG: add support
       if (ch < ' ') {
         result += '\\';
         switch (ch) {

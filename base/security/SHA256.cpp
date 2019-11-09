@@ -124,7 +124,7 @@ unsigned int SHA256::push(const uint8* buffer, unsigned int size) throw(OutOfRan
 }
 
 void SHA256::pushEnd() noexcept {
-  ASSERT(bytesInBuffer < BLOCK_SIZE);
+  BASSERT(bytesInBuffer < BLOCK_SIZE);
   buffer[bytesInBuffer++] = 0x80; // append 0b10000000
   
   const unsigned int SIZE_FIELD = 64/8;

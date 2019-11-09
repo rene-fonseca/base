@@ -46,7 +46,7 @@ LinkerModule* LinkerManager::deregistrate() throw() {
 LinkerModule* LinkerManager::load(
   const String& modulePath) throw(LinkerException) {
   // acquire lock
-  ASSERT(!registratedModule);
+  BASSERT(!registratedModule);
   DynamicLinker* dl = new DynamicLinker(modulePath, DynamicLinker::LAZY);
   LinkerModule* module = registratedModule;
   registratedModule = 0;
@@ -58,7 +58,7 @@ LinkerModule* LinkerManager::load(
 void LinkerManager::unload(
   LinkerModule* module) throw(InvalidKey, LinkerException) {
   // acquire lock
-  ASSERT(!registratedModule);
+  BASSERT(!registratedModule);
   DynamicLinker* dl = modules[module];
   registratedModule = module;
   delete dl;

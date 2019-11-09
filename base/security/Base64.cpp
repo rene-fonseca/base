@@ -129,7 +129,7 @@ FormatOutputStream& operator<<(FormatOutputStream& stream, const Base64::Descrip
   const unsigned int CHARACTERS_PER_LINE = 76;
   const unsigned int BITS_PER_CHARACTER = 6;
   const unsigned int BITS_PER_LINE = CHARACTERS_PER_LINE * BITS_PER_CHARACTER;
-  ASSERT(BITS_PER_LINE % 8 == 0);
+  BASSERT(BITS_PER_LINE % 8 == 0);
   const unsigned int BYTES_PER_LINE = BITS_PER_LINE;
   
   unsigned int lines = size/BYTES_PER_LINE; // whole lines

@@ -224,11 +224,11 @@ void SharedMemory::SharedMemoryImpl::synchronize(
 SharedMemory::SharedMemoryImpl::~SharedMemoryImpl() throw() {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   BOOL status = ::UnmapViewOfFile(address);
-  ASSERT(status != 0);
+  BASSERT(status != 0);
   ::CloseHandle(handle);
 #else // unix
   int status = ::munmap(address, getSize());
-  ASSERT(status == 0);
+  BASSERT(status == 0);
 #endif // flavor
 }
 
@@ -244,7 +244,7 @@ unsigned int SharedMemory::getGranularity() throw() {
     return 4096 * 2; // TAG: fixme
   #else
     long size = ::sysconf(_SC_PAGE_SIZE);
-    ASSERT((size > 0) && (size <= PrimitiveTraits<unsigned int>::MAXIMUM));
+    BASSERT((size > 0) && (size <= PrimitiveTraits<unsigned int>::MAXIMUM));
     return size;
   #endif
 #endif // flavor

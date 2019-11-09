@@ -318,13 +318,13 @@ SoundDevice SoundDevice::soundDevice;
 
 Application::Stub::Stub()
 {
-  ASSERT(_impl::initializing && !_impl::destructing);
+  BASSERT(_impl::initializing && !_impl::destructing);
   _impl::initializing = false;
 }
 
 Application::Stub::~Stub()
 {
-  ASSERT(!_impl::initializing && !_impl::destructing);
+  BASSERT(!_impl::initializing && !_impl::destructing);
   _impl::destructing = true;
 }
 

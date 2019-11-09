@@ -229,7 +229,7 @@ Trustee::TrusteeType Trustee::getType() const throw(TrusteeException) {
   }
   return type;
 #else // unix
-  ASSERT((type == Trustee::USER) || (type == Trustee::GROUP) || (type == Trustee::EVERYONE));
+  BASSERT((type == Trustee::USER) || (type == Trustee::GROUP) || (type == Trustee::EVERYONE));
   return type;
 #endif // flavor
 }
@@ -248,14 +248,14 @@ bool Trustee::isMemberOf(const Trustee& trustee) const throw(TrusteeException) {
                        0, &domainNameSize,
                        &sidType); // does function set sidType even when it fails
     // expected error: ERROR_INSUFFICIENT_BUFFER
-    ASSERT(sidType != SidTypeInvalid);
+    BASSERT(sidType != SidTypeInvalid);
     type = ((sidType == SidTypeGroup) || (sidType == SidTypeWellKnownGroup)) ? Trustee::GROUP : Trustee::USER;
   }
   if (type != Trustee::GROUP) {
     return false;
   }
 #else // unix
-  ASSERT((type == Trustee::USER) || (type == Trustee::GROUP) || (type == Trustee::EVERYONE));
+  BASSERT((type == Trustee::USER) || (type == Trustee::GROUP) || (type == Trustee::EVERYONE));
   if (type == Trustee::EVERYONE) {
     return true;
   }

@@ -108,7 +108,7 @@ void RandomLegacy::randomize() throw() {
 
 void RandomLegacy::randomize(unsigned int seed) throw()
 {
-  ASSERT((Traits::w == 32) && (sizeof(unsigned int) == 4));
+  BASSERT((Traits::w == 32) && (sizeof(unsigned int) == 4));
   RandomLegacy::spinLock.exclusiveLock();
     for (unsigned int i = 0; i < Traits::n; ++i) {
       // assert: (seed != 0) && (seed < (1 << 32))
@@ -121,7 +121,7 @@ void RandomLegacy::randomize(unsigned int seed) throw()
 
 unsigned int RandomLegacy::getInteger() throw()
 {
-  ASSERT((Traits::w == 32) && (sizeof(unsigned int) == 4));
+  BASSERT((Traits::w == 32) && (sizeof(unsigned int) == 4));
   unsigned int bits = 0;
   RandomLegacy::spinLock.exclusiveLock();
     unsigned int i = (nextWord + Traits::m < Traits::n) ? (nextWord + Traits::m) : (nextWord + Traits::m - Traits::n);

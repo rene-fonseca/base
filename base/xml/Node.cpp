@@ -493,7 +493,7 @@ public:
     }
     
     NodeImpl::checkNode(_node); // TAG: fixme
-    ASSERT(isUnlinked(_node));
+    BASSERT(isUnlinked(_node));
   }
 };
 #endif

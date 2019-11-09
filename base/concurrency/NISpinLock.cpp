@@ -30,7 +30,7 @@ void NISpinLock::exclusiveLock() const noexcept
 
 #if defined(_DEBUG)
     MemoryDiff current = value;
-    ASSERT((current == LOCK_FREE) || (current == LOCK_TAKEN));
+    BASSERT((current == LOCK_FREE) || (current == LOCK_TAKEN));
 #endif
 
     // yield

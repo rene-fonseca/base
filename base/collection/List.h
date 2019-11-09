@@ -391,7 +391,7 @@ protected:
           nodes[i] = src;
           src = src->getNext();
         }
-        ASSERT(!src);
+        BASSERT(!src);
       }
       base::shuffle(&nodes[0], &nodes[0] + nodes.size());
 

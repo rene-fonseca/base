@@ -147,7 +147,7 @@ Guid Guid::createGuid() noexcept
   if (status != S_OK) {
     return result;
   }
-  ASSERT(sizeof(_guid) == sizeof(result.guid)); // for C++17 static_assert();
+  BASSERT(sizeof(_guid) == sizeof(result.guid)); // for C++17 static_assert();
   copy<uint8>(result.guid, reinterpret_cast<const uint8*>(&_guid), sizeof(result.guid));
 #else
   Random::fill(result.guid);
@@ -202,7 +202,7 @@ String Guid::toString() const
   *dest++ = ASCIITraits::valueToUpperDigit(guid[15] >> 0);
   *dest++ = '}';
   *dest = '\0';
-  ASSERT((dest - result) == (sizeof(result) - 1));
+  BASSERT((dest - result) == (sizeof(result) - 1));
   return String(result, (sizeof(result) - 1));
 
 #if 0

@@ -116,7 +116,7 @@ unsigned int MappedFile::getGranularity() throw() {
     return 4096 * 2; // TAG: fixme
   #else
     long size = ::sysconf(_SC_PAGE_SIZE);
-    ASSERT((size > 0) && (size <= PrimitiveTraits<unsigned int>::MAXIMUM));
+    BASSERT((size > 0) && (size <= PrimitiveTraits<unsigned int>::MAXIMUM));
     return size;
   #endif
 #endif // flavor

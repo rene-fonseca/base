@@ -217,7 +217,7 @@ String Format::Subst::format() const
     buffer.append(MemorySpan(segmentBegin, src));
     ++src; // skip %
     if (src == end) {
-      // ASSERT(!"Unexpected end after % for substitution string.");
+      // BASSERT(!"Unexpected end after % for substitution string.");
       buffer.append('%'); // better to allow bad string format since this could comes from easy mistakes
       segmentBegin = src; // restart segment
       break;
@@ -234,14 +234,14 @@ String Format::Subst::format() const
       ++src;
     }
     if (src == digitsBegin) { // no digits
-      // ASSERT(!"Expected digits after % for substitution string.");
+      // BASSERT(!"Expected digits after % for substitution string.");
       buffer.append('%'); // better to allow bad string format since this could comes from easy mistakes
       segmentBegin = src; // restart segment
       continue;
     }
 
     if ((src - digitsBegin) > 2) { // we expect max 2 digits
-      // ASSERT(!"Too many digits after % for substitution string.");
+      // BASSERT(!"Too many digits after % for substitution string.");
       buffer.append(MESSAGE("<NULL>")); // behave like missing argument
       segmentBegin = src; // restart segment
       continue;
@@ -254,7 +254,7 @@ String Format::Subst::format() const
     }
 
     if (index == 0) {
-      // ASSERT(!"Expected 1-based index for substitution string.");
+      // BASSERT(!"Expected 1-based index for substitution string.");
       buffer.append(MESSAGE("<NULL>")); // behave like missing argument
       segmentBegin = src; // restart segment
       continue;

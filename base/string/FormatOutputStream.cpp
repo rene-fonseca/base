@@ -1119,14 +1119,14 @@ public:
 
   static inline void setBit(unsigned int* value, unsigned int size, unsigned int bit)
   {
-    ASSERT(bit < (size * sizeof(unsigned int) * 8));
+    BASSERT(bit < (size * sizeof(unsigned int) * 8));
     fill(value, size, 0U);
     value[bit/(sizeof(unsigned int) * 8)] = 1U << (bit % (sizeof(unsigned int) * 8));
   }
 
   static inline bool addBit(unsigned int* value, unsigned int size, unsigned int bit)
   {
-    ASSERT(bit < (size * sizeof(unsigned int) * 8));
+    BASSERT(bit < (size * sizeof(unsigned int) * 8));
     value += bit/(sizeof(unsigned int) * 8);
     unsigned int carrier = 1 << (bit % (sizeof(unsigned int) * 8));
     for (const unsigned int* end = value + size; value < end; ++value) {
@@ -1227,7 +1227,7 @@ public:
     const unsigned int* end = value + size;
     unsigned int borrow = 0;
     for (; value < end; ++value, ++right) {
-      ASSERT(borrow <= 1);
+      BASSERT(borrow <= 1);
       unsigned long long temp = (1ULL << (sizeof(unsigned int) * 8)) + *value - *right - borrow;
       *value = temp;
       borrow = (temp >> (sizeof(unsigned int) * 8)) ? 0 : 1;
@@ -1400,7 +1400,7 @@ void convertFloatingPoint(
   numberOfDigits = 0;
   exponent = 0; // TAG: fixme could already have been initialized (only in FASTEST mode)
 
-  ASSERT(significant > 0);
+  BASSERT(significant > 0);
   --significant; // TAG: why this
 
   bool roundUp = false;
@@ -1420,7 +1420,7 @@ void convertFloatingPoint(
                                         + 4 /* multiplication with 10, addition with 10, sum of integers */
                                         + sizeof(unsigned int)*8 - 1 /* round up */
                                        )/(sizeof(unsigned int)*8);
-  ASSERT((integerSize > 0) && (integerSize <= 513));
+  BASSERT((integerSize > 0) && (integerSize <= 513));
 
   // allocate integers on stack (potentially 10kb)
   PrimitiveArray<unsigned int> S(integerSize);
@@ -1585,7 +1585,7 @@ void convertFloatingPoint(
 
 FormatOutputStream& FormatOutputStream::operator<<(float value) throw(IOException)
 {
-  ASSERT(sizeof(float) == sizeof(FloatingPoint::FloatRepresentation));
+  BASSERT(sizeof(float) == sizeof(FloatingPoint::FloatRepresentation));
   union {
     float primitive;
     FloatingPoint::FloatRepresentation fields;
@@ -1609,7 +1609,7 @@ FormatOutputStream& FormatOutputStream::operator<<(float value) throw(IOExceptio
 
 FormatOutputStream& FormatOutputStream::operator<<(double value) throw(IOException)
 {
-  ASSERT(sizeof(double) == sizeof(FloatingPoint::DoubleRepresentation));
+  BASSERT(sizeof(double) == sizeof(FloatingPoint::DoubleRepresentation));
   union {
     double primitive;
     FloatingPoint::DoubleRepresentation fields;
@@ -1634,7 +1634,7 @@ FormatOutputStream& FormatOutputStream::operator<<(double value) throw(IOExcepti
 FormatOutputStream& FormatOutputStream::operator<<(long double value) throw(IOException)
 {
   // return operator<<(static_cast<double>(value));
-  ASSERT(sizeof(long double) == sizeof(FloatingPoint::LongDoubleRepresentation));
+  BASSERT(sizeof(long double) == sizeof(FloatingPoint::LongDoubleRepresentation));
   union {
     long double primitive;
     FloatingPoint::LongDoubleRepresentation fields;
@@ -1933,7 +1933,7 @@ void FormatOutputStream::writeFloatingPointType(
         write(Cast::pointer<const uint8*>(static_cast<const char*>(buffer)), length); // write characters
         break;
       case Symbols::RADIX:
-        ASSERT(radix);
+        BASSERT(radix);
         unsigned int beforeRadix = radix - buffer; // character before radix (excluding)
         unsigned int prefixLength = 0; // left justify by default
         if (static_cast<unsigned int>(context.radixPosition) >= beforeRadix) {

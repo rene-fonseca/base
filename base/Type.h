@@ -36,7 +36,7 @@ private:
   };
 
   inline Type(const std::type_info* _type) throw() {
-    ASSERT(_type);
+    BASSERT(_type);
     type = _type ? _type : &typeid(Uninitialized); // prevent nullptr
   }
   

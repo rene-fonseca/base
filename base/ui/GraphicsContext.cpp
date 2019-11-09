@@ -504,7 +504,7 @@ void GraphicsContext::line(
 
 // void GraphicsContext::polyline(const Array<Position>& points, unsigned int flags) throw(UserInterfaceException) {
 // #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
-//   ASSERT(sizeof(POINTS) == (2 * sizeof(int)));
+//   BASSERT(sizeof(POINTS) == (2 * sizeof(int)));
 //   ::Polyline(
 //     (HDC)graphicsContextHandle,
 //     points.getElements(),

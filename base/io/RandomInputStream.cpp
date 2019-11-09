@@ -75,7 +75,7 @@ unsigned int RandomInputStream::read(uint8* buffer, const unsigned int _size, bo
   }
   buffer = reinterpret_cast<uint8*>(dest);
 
-  ASSERT((end - buffer) < sizeof(uint32));
+  BASSERT((end - buffer) < sizeof(uint32));
   if (buffer == end) {
     return _size;
   }

@@ -647,7 +647,7 @@ namespace extension {
               ) == ERROR_SUCCESS) && ((type == REG_SZ) || (type == REG_EXPAND_SZ)),
              RegistryException(this)
       );
-      ASSERT(size >= 1); // size includes terminator
+      BASSERT(size >= 1); // size includes terminator
       String result;
       result.forceToLength(size - 1);
       DWORD secondType;
@@ -694,13 +694,13 @@ namespace extension {
               ) == ERROR_SUCCESS) && (type == REG_MULTI_SZ),
              RegistryException(this));
       
-      ASSERT((buffer[size - 2] == 0) && (buffer[size - 1] == 0));
+      BASSERT((buffer[size - 2] == 0) && (buffer[size - 1] == 0));
       
       Array<String> result;
       const char* src = buffer.getElements();
       while (src[0] && src[1]) {
         const char* end = find<char>(src, size, 0);
-        ASSERT(end);
+        BASSERT(end);
         unsigned int length = end - src;
         String temp(end - src);
         copy<char>(temp.getElements(), src, length);

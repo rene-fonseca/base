@@ -53,7 +53,7 @@ public:
   */
   virtual inline ~DynamicObject() noexcept(false) {
 #if defined(_COM_AZURE_DEV__BASE__DEBUG)
-    ASSERT(valid == STATE_VALID);
+    BASSERT(valid == STATE_VALID);
     valid = STATE_INVALID;
 #endif
   }

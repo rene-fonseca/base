@@ -42,7 +42,7 @@ void String::initialize(const char* src, MemorySize length)
 String::String() noexcept
   : elements(DEFAULT_STRING.elements)
 {
-  ASSERT(elements); // we never want a nullptr
+  BASSERT(elements); // we never want a nullptr
 }
 
 String::String(Default d)
@@ -425,7 +425,7 @@ String String::substring(MemorySize start, MemorySize end) const
     if (end > length) {
       end = length; // force to end of string
     }
-    ASSERT((0 <= start) && (start < end) && (end <= getLength()));
+    BASSERT((0 <= start) && (start < end) && (end <= getLength()));
     const MemorySize lengthOfSubstring = end - start;
     String result(lengthOfSubstring);
     result.setLength(lengthOfSubstring);
@@ -739,7 +739,7 @@ MemorySize String::count(const String& string, MemorySize start) const noexcept
 char* String::getElements() throw()
 {
   auto result = getBuffer(); // copy on write
-  ASSERT(result[getLength()] == Traits::TERMINATOR);
+  BASSERT(result[getLength()] == Traits::TERMINATOR);
   result[getLength()] = Traits::TERMINATOR; // TAG: remove this when ready
   return result;
 }

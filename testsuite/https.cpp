@@ -131,7 +131,7 @@ public:
   unsigned int push(const uint8* buffer, unsigned int size)
   {
     unsigned int result = file.write(buffer, size);
-    ASSERT(result == size);
+    BASSERT(result == size);
     bytesWritten += size;
     if (totalSize > 0) {
       fout << "Read=" << bytesWritten

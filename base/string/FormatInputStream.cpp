@@ -38,7 +38,7 @@ bool FormatInputStream::overwriteFromSource() throw(IOException) {
   tail = head;
   unsigned int bytesRead =
     FilterInputStream::read(head.getValue(), bytesToRead); // will not block
-  ASSERT(bytesRead == bytesToRead);
+  BASSERT(bytesRead == bytesToRead);
   head += bytesRead;
   return true;
 }
@@ -52,7 +52,7 @@ bool FormatInputStream::appendFromSource() throw(IOException) {
   unsigned int size =
     minimum<unsigned int>(buffer.getEndReadIterator() - head, available);
   unsigned int bytesRead = FilterInputStream::read(head.getValue(), size); // will not block
-  ASSERT(bytesRead == size);
+  BASSERT(bytesRead == size);
   head += size;
   return true;
 }

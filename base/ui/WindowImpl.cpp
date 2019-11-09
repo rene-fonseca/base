@@ -112,13 +112,13 @@ namespace windowImpl {
   void removeWindow(void* handle) throw() {
     const unsigned int hash = getHash(handle);
     Entry* entry = windows[hash];
-    ASSERT((entry->window != 0) && (entry->handle != 0));
+    BASSERT((entry->window != 0) && (entry->handle != 0));
     Entry* previous = nullptr;
     while (entry->handle != handle) {
       previous = entry;
       entry = entry->next;
     }
-    ASSERT(entry->handle == handle);
+    BASSERT(entry->handle == handle);
     if (previous) {
       previous->next = entry->next;
     } else {

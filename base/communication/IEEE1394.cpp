@@ -657,7 +657,7 @@ void IEEE1394::reload() throw(IEEE1394Exception) {
       getQuadlet(makeNodeId(isochronousResourceManagerId), IEEE1394::BUS_MANAGER_ID)
     );
     
-    ASSERT(id < IEEE1394::BROADCAST); // IRM present
+    BASSERT(id < IEEE1394::BROADCAST); // IRM present
     
     try {
       const unsigned short node = makeNodeId(id);

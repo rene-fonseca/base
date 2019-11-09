@@ -524,7 +524,7 @@ _COM_AZURE_DEV__BASE__PACKED__END
     const unsigned int base = directory->ordinalBase;
     for (unsigned int i = 0; i < directory->namePointers; ++i) {
       const int o = *ordinalTable;
-      ASSERT(static_cast<unsigned int>(o) >= base);
+      BASSERT(static_cast<unsigned int>(o) >= base);
       const uint32 address = exportTable[o - base];
 
       String name = String(
@@ -871,10 +871,10 @@ _COM_AZURE_DEV__BASE__PACKED__END
           subsystem = windowsHeader.subsystem;
           numberOfDirectoryEntries = windowsHeader.numberOfDirectoryEntries;
           
-          ASSERT(
+          BASSERT(
             (windowsHeader.sizeOfImage % windowsHeader.sectionAlignment) == 0
           );
-          ASSERT(
+          BASSERT(
             (windowsHeader.sizeOfHeaders % windowsHeader.fileAlignment) == 0
           );
           
@@ -1021,7 +1021,7 @@ _COM_AZURE_DEV__BASE__PACKED__END
         CommonObjectFileFormat::SectionHeader header;
         file.read(Cast::getAddress(header), sizeof(header));
 
-        ASSERT(header.sizeOfRawData <= header.virtualSize);
+        BASSERT(header.sizeOfRawData <= header.virtualSize);
 
         NamedSection section = UNKNOWN_SECTION;
         for (unsigned int j = BSS_SECTION; j <= THREAD_LOCAL_STORAGE_SECTION; ++j) {
@@ -1132,7 +1132,7 @@ _COM_AZURE_DEV__BASE__PACKED__END
         LittleEndian<uint32> temp;
         file.read(Cast::getAddress(temp), sizeof(temp));
         unsigned int size = temp;
-        ASSERT(size >= sizeof(temp));
+        BASSERT(size >= sizeof(temp));
         size -= sizeof(temp);
         stringTable.setSize(size);
         file.read(stringTable.getElements(), size);
@@ -1157,7 +1157,7 @@ _COM_AZURE_DEV__BASE__PACKED__END
             (static_cast<uint32>(static_cast<uint8>(entry.name[6])) << 16) +
             (static_cast<uint32>(static_cast<uint8>(entry.name[5])) << 8) +
             (static_cast<uint32>(static_cast<uint8>(entry.name[4])) << 0);
-          ASSERT(offset < stringTable.getSize());
+          BASSERT(offset < stringTable.getSize());
           name = String(
             NativeString(
               Cast::pointer<const char*>(stringTable.getElements() + offset)

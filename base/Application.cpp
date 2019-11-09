@@ -647,7 +647,7 @@ void Application::initialize() throw() {
   windowClass.lpfnWndProc = /*(WNDPROC)*/ApplicationImpl::messageHandler;
   windowClass.lpszClassName = L"https://dev.azure.com/renefonseca/base";
   ATOM result = ::RegisterClassEx(&windowClass);
-  ASSERT(result != 0);
+  BASSERT(result != 0);
 
   OSVERSIONINFO versionInfo;
   versionInfo.dwOSVersionInfoSize = sizeof(versionInfo);
@@ -754,7 +754,7 @@ Application::Application(
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   wchar buffer[MAX_PATH + 1]; // what if path starts with "\\?\"
   DWORD length = ::GetModuleFileName(0, buffer, MAX_PATH /*lengthOf(buffer)*/);
-  ASSERT(length > 0);
+  BASSERT(length > 0);
   if (length > 0) { // TAG: need inline assert
     path = toUTF8(WideString(buffer, length));
   }

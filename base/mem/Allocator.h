@@ -52,7 +52,7 @@ public:
   */
   static void initialize(TYPE* dest, const TYPE* end)
   {
-    ASSERT(dest <= end);
+    BASSERT(dest <= end);
     if (!Uninitializeable<TYPE>::IS_UNINITIALIZEABLE) {
       while (dest != end) {
         new(dest) TYPE(); // inplace initialization
@@ -67,7 +67,7 @@ public:
   */
   static void initialize(TYPE* dest, const TYPE* end, const TYPE& value)
   {
-    ASSERT(dest <= end);
+    BASSERT(dest <= end);
     if (Uninitializeable<TYPE>::IS_UNINITIALIZEABLE) {
       while (dest != end) {
         *dest = value;
@@ -104,7 +104,7 @@ public:
   */
   static void initializeByMove(TYPE* dest, TYPE* src, const TYPE* end)
   {
-    ASSERT(src <= end);
+    BASSERT(src <= end);
     if (!Uninitializeable<TYPE>::IS_UNINITIALIZEABLE && !Relocateable<TYPE>::IS_RELOCATEABLE) {
       while (src != end) {
         new(dest) TYPE(*src); // copy object
@@ -132,7 +132,7 @@ public:
   */
   static void destroy(TYPE* dest, const TYPE* end)
   {
-    ASSERT(dest <= end);
+    BASSERT(dest <= end);
     if (!Uninitializeable<TYPE>::IS_UNINITIALIZEABLE) {
       while (dest != end) {
         dest->~TYPE();

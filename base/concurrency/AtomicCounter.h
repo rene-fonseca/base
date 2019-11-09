@@ -87,7 +87,7 @@ namespace _win32 {
   template<>
   inline int atomicExchange(volatile int* target, const int value) noexcept
   {
-    ASSERT(sizeof(int) == sizeof(long));
+    BASSERT(sizeof(int) == sizeof(long));
     return _InterlockedExchange(reinterpret_cast<volatile long*>(target), value);
   }
 
@@ -228,9 +228,9 @@ public:
   */
   inline AtomicCounter(const TYPE _value = DEFAULT_VALUE) noexcept
   {
-    ASSERT((getAddressOf(&value) & (sizeof(TYPE) - 1)) == 0);
+    BASSERT((getAddressOf(&value) & (sizeof(TYPE) - 1)) == 0);
 #if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__MACOS)
-    ASSERT(atomic_is_lock_free(&value));
+    BASSERT(atomic_is_lock_free(&value));
     atomic_init(&value, _value);
 #else
     store(_value);
@@ -242,9 +242,9 @@ public:
   */
   inline AtomicCounter(const AtomicCounter& _value) noexcept
   {
-    ASSERT((getAddressOf(&value) & (sizeof(TYPE) - 1)) == 0);
+    BASSERT((getAddressOf(&value) & (sizeof(TYPE) - 1)) == 0);
 #if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__MACOS)
-    ASSERT(atomic_is_lock_free(&value));
+    BASSERT(atomic_is_lock_free(&value));
     atomic_init(&value, _value.load());
 #else
     store(_value.load());
@@ -371,7 +371,7 @@ public:
   */
   inline bool compareAndExchange(TYPE& expected, const TYPE desired) noexcept
   {
-    ASSERT(expected != desired);
+    BASSERT(expected != desired);
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32) && \
     (_COM_AZURE_DEV__BASE__COMPILER == _COM_AZURE_DEV__BASE__COMPILER_MSC)
     TYPE initial = _win32::atomicCompareExchange<TYPE>(&value, desired, expected);
@@ -390,7 +390,7 @@ public:
   */
   inline bool compareAndExchangeWeak(TYPE& expected, const TYPE desired) noexcept
   {
-    ASSERT(expected != desired);
+    BASSERT(expected != desired);
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32) && \
     (_COM_AZURE_DEV__BASE__COMPILER == _COM_AZURE_DEV__BASE__COMPILER_MSC)
     TYPE initial = _win32::atomicCompareExchange<TYPE>(&value, desired, expected);

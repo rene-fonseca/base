@@ -67,6 +67,7 @@ public:
     as.getAt(0);
     as.getAt(as.getSize() - 1);
     as.setAt(as.getSize() - 1, "SET");
+as.getAt(as.getSize());
     TEST_EXCEPTION(as.getAt(as.getSize()), OutOfRange);
     TEST_EXCEPTION(as.setAt(as.getSize(), "out of range"), OutOfRange);
     

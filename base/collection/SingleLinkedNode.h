@@ -149,7 +149,7 @@ public:
   inline SingleLinkedNodeIterator& operator++() noexcept
   {
     _COM_AZURE_DEV__BASE__PROTECT_ITERATORS_UNMODIFIED();
-    ASSERT(node);
+    BASSERT(node);
     node = node->getNext();
     return *this;
   }
@@ -161,7 +161,7 @@ public:
   {
     _COM_AZURE_DEV__BASE__PROTECT_ITERATORS_UNMODIFIED();
     SingleLinkedNodeIterator result(*this);
-    ASSERT(node);
+    BASSERT(node);
     node = node->getNext();
     return result;
   }
@@ -172,7 +172,7 @@ public:
   inline SingleLinkedNodeIterator& operator--() noexcept
   {
     _COM_AZURE_DEV__BASE__PROTECT_ITERATORS_UNMODIFIED();
-    ASSERT(node);
+    BASSERT(node);
     node = node->getPrevious();
     return *this;
   }
@@ -184,7 +184,7 @@ public:
   {
     _COM_AZURE_DEV__BASE__PROTECT_ITERATORS_UNMODIFIED();
     SingleLinkedNodeIterator result(*this);
-    ASSERT(node);
+    BASSERT(node);
     node = node->getPrevious();
     return result;
   }
@@ -319,7 +319,7 @@ public:
   inline SingleLinkedNodeReadIterator& operator++() noexcept
   {
     _COM_AZURE_DEV__BASE__PROTECT_ITERATORS_UNMODIFIED();
-    ASSERT(node);
+    BASSERT(node);
     node = node->getNext();
     return *this;
   }
@@ -331,7 +331,7 @@ public:
   {
     _COM_AZURE_DEV__BASE__PROTECT_ITERATORS_UNMODIFIED();
     SingleLinkedNodeReadIterator result(*this);
-    ASSERT(node);
+    BASSERT(node);
     node = node->getNext();
     return result;
   }
@@ -342,7 +342,7 @@ public:
   inline SingleLinkedNodeReadIterator& operator--() noexcept
   {
     _COM_AZURE_DEV__BASE__PROTECT_ITERATORS_UNMODIFIED();
-    ASSERT(node);
+    BASSERT(node);
     node = node->getPrevious();
     return *this;
   }
@@ -354,7 +354,7 @@ public:
   {
     _COM_AZURE_DEV__BASE__PROTECT_ITERATORS_UNMODIFIED();
     SingleLinkedNodeReadIterator result(*this);
-    ASSERT(node);
+    BASSERT(node);
     node = node->getPrevious();
     return result;
   }

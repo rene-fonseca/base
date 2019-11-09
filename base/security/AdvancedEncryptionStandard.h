@@ -157,7 +157,7 @@ private:
   inline unsigned int cipherPushEnd(uint8* dest, unsigned int size) noexcept
   {
     const unsigned int BLOCK_SIZE = CIPHER::BLOCK_SIZE;
-    ASSERT(bytesInBuffer < BLOCK_SIZE);
+    BASSERT(bytesInBuffer < BLOCK_SIZE);
     if (size <= BLOCK_SIZE) {
       return 0;
     }

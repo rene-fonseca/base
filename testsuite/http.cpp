@@ -314,7 +314,7 @@ public:
   
   unsigned int push(const uint8* buffer, unsigned int size) {
     unsigned int result = file.write(buffer, size);
-    ASSERT(result == size);
+    BASSERT(result == size);
     bytesWritten += size;
     if (totalSize > 0) {
       fout << "  bytes written=" << bytesWritten
@@ -514,7 +514,7 @@ protected:
     if (verbosity >= DEBUG_NORMAL) {
       fout << "DEBUG: bytes available: " << instream.available() << ENDL;
     }
-    ASSERT(instream.available() == controlConnection.available());
+    BASSERT(instream.available() == controlConnection.available());
     
     // int terminationCode = -1; // invalidate
     
@@ -593,7 +593,7 @@ protected:
         }
 
         totalLength += chunkSize;
-        ASSERT(push);
+        BASSERT(push);
         if (push->pushBegin(0)) { // total size is unknown
           long long bytesRead = 0;
           while (bytesRead < chunkSize) {
@@ -605,7 +605,7 @@ protected:
         }
 
         instream >> line;
-        ASSERT(line.isEmpty());
+        BASSERT(line.isEmpty());
       }
       push->pushEnd();
 

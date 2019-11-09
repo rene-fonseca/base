@@ -42,7 +42,7 @@ CharacterSet CharacterSet::load(
       InvalidFormat(Type::getType<CharacterSet>())
     );
     
-    ASSERT(Cast::getOffset(data) % sizeof(uint32) == 0);
+    BASSERT(Cast::getOffset(data) % sizeof(uint32) == 0);
     
     CharacterSet characterSet;
     ucs4* dest = characterSet.characterSet->getElements();

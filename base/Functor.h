@@ -349,7 +349,7 @@ inline void transformByBinary(TYPE* restrict result, const TYPE* restrict left, 
 template<class TYPE>
 void copy(TYPE* restrict dest, const TYPE* restrict src, MemorySize count)
 {
-  ASSERT((dest < src) && ((dest + count) < src) || (src < dest) && ((src + count) < dest)); // no overlap
+  BASSERT((dest < src) && ((dest + count) < src) || (src < dest) && ((src + count) < dest)); // no overlap
   if (Relocateable<TYPE>::IS_RELOCATEABLE) {
     copy<uint8>(reinterpret_cast<uint8*>(dest), reinterpret_cast<const uint8*>(src), sizeof(TYPE) * count);
   } else {

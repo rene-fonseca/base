@@ -161,7 +161,7 @@ unsigned int SHA1::push(const uint8* buffer, unsigned int size) throw(OutOfRange
 
 void SHA1::pushEnd() noexcept
 {
-  ASSERT(bytesInBuffer < BLOCK_SIZE);
+  BASSERT(bytesInBuffer < BLOCK_SIZE);
   buffer[bytesInBuffer++] = 0x80; // append 0b10000000
   
   const unsigned int SIZE_FIELD = 64/8;

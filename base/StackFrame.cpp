@@ -111,6 +111,7 @@ unsigned int StackFrame::getStack(void** dest, unsigned int size, unsigned int s
   if (count < 0) {
     return 0;
   }
+  ++skip;
   if (skip >= count) {
     return 0;
   }
@@ -256,10 +257,17 @@ void StackFrame::toStream(FormatOutputStream& stream, const void* const * trace,
           }
         }
       }
-      stream << EOL;
-    } else {
-      stream << indent(INDENT) << setWidth(field1) << i << ": ?" << ip << EOL;
+    } else { // no descrption
+
+      stream << indent(INDENT) << setWidth(field1) << i << ": ";
+      if (useColors) {
+        stream << setForeground(ANSIEscapeSequence::RED) << setWidth(field2) << ip << normal();
+      } else {
+        stream << setWidth(field2) << ip;
+      }
+      stream << "?";
     }
+    stream << EOL;
   }
 }
 

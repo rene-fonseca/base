@@ -80,21 +80,42 @@ void FileDescriptor::close() throw(IOException)
 
 bool FileDescriptor::isANSITerminal() const noexcept
 {
-  if (!FileDescriptor::getStandardOutput().isTerminal()) {
-    return false;
+  // https://bixense.com/clicolors/
+  const auto& env = Application::getApplication()->getEnvironment();
+  if (auto value = env.find("CLICOLOR_FORCE")) { // defaults to disabled
+    if (*value != "0") {
+      return true;
+    }
   }
+
+  bool atty = FileDescriptor::getStandardOutput().isTerminal();
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
-  DWORD mode = 0;
-  BOOL status = GetConsoleMode(fd->getHandle(), &mode);
-  if (mode & ENABLE_VIRTUAL_TERMINAL_PROCESSING) { // VT100 compatibility mode
-    return true;
-  }
-#else
-  if (Application::getApplication()->getEnvironment().hasKey("TERM")) { // handle Xcode
-    return true;
+  {
+    DWORD mode = 0;
+    BOOL status = GetConsoleMode(fd->getHandle(), &mode);
+    if (!status || ((mode & ENABLE_VIRTUAL_TERMINAL_PROCESSING) == 0)) { // VT100 compatibility mode
+      atty = false;
+    }
   }
 #endif
-  return false;
+  
+  if (!atty) {
+    return false;
+  }
+  
+  if (auto value = env.find("CLICOLOR")) { // defaults to enabled
+    if (*value == "0") {
+      return false;
+    }
+  }
+
+#if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__MACOS)
+  if (!env.hasKey("TERM")) { // handle Xcode
+    return false;
+  }
+#endif
+  
+  return true;
 }
 
 bool FileDescriptor::isTerminal() const noexcept

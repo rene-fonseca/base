@@ -13,6 +13,7 @@
 
 #include <base/security/AdvancedEncryptionStandard.h>
 #include <base/Functor.h>
+#include <base/UnitTest.h>
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
@@ -1425,5 +1426,38 @@ unsigned int AdvancedEncryptionStandard::pushEnd(
     return 0;
   }
 }
+
+#if 0 && defined(_COM_AZURE_DEV__BASE__TESTS)
+
+class TEST_CLASS(AdvancedEncryptionStandard) : public UnitTest {
+public:
+
+  TEST_PRIORITY(50);
+  TEST_PROJECT("base/security");
+  TEST_IMPACT(SECURITY);
+
+  String getAES(uint8* dest, const uint8* buffer, MemorySize size)
+  {
+    uint8 key[256/8] = {0};
+    AdvancedEncryptionStandard aes(key, AdvancedEncryptionStandard::CIPHER_256, false);
+    aes.push(dest, buffer, size);
+    aes.pushEnd(dest, size);
+    return "";
+  }
+
+  String getAES(const char* text)
+  {
+    return getAES(nullptr, reinterpret_cast<const uint8*>(text), getNullTerminatedLength(text));
+  }
+
+  void run() override
+  {
+    // TEST_EQUAL(getAES(""), "");
+  }
+};
+
+TEST_REGISTER(AdvancedEncryptionStandard);
+
+#endif
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

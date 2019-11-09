@@ -61,13 +61,15 @@ _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
     }
   }
 
+// LLVM extern "C" void __cxa_throw();
+
 class ApplicationImpl {
 public:
 
   static void exceptionHandler(StackFrame& stackTrace) noexcept
   {
     if (!stackTrace.isEmpty()) {
-#if !(_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__COMPILER == _COM_AZURE_DEV__BASE__COMPILER_GCC) // not in stack trace for LLVM
       // info before initial __cxa_throw is not useful
       void* address = (void*)&__cxa_throw;
       auto index = stackTrace.findLast(address);

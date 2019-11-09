@@ -14,6 +14,7 @@
 #include <base/Guid.h>
 #include <base/string/StringOutputStream.h>
 #include <base/Random.h>
+#include <base/UnitTest.h>
 
 // see https://tools.ietf.org/html/rfc4122
 
@@ -51,7 +52,7 @@ Guid Guid::getGuid(const char* text)
     throw InvalidFormat("Invalid guid.");
   }
   if ((text[0] != '{') || (text[37] != '}') ||
-      (text[9] != '-') || (text[14] != '-') || (text[19] != '-') || (text[26] != '-')) {
+      (text[9] != '-') || (text[14] != '-') || (text[19] != '-') || (text[24] != '-')) {
     throw InvalidFormat("Invalid guid.");
   }
 
@@ -80,7 +81,7 @@ bool Guid::isGuid(const char* text)
     return false;
   }
   if ((text[0] != '{') || (text[37] != '}') ||
-    (text[9] != '-') || (text[14] != '-') || (text[19] != '-') || (text[26] != '-')) {
+      (text[9] != '-') || (text[14] != '-') || (text[19] != '-') || (text[24] != '-')) {
     return false;
   }
 
@@ -234,5 +235,33 @@ FormatOutputStream& operator<<(FormatOutputStream& stream, const Guid& guid)
 {
   return stream << guid.toString();
 }
+
+#if defined(_COM_AZURE_DEV__BASE__TESTS)
+
+class TEST_CLASS(Guid) : public UnitTest {
+public:
+
+  TEST_PRIORITY(100);
+  TEST_PROJECT("base");
+
+  void run() override
+  {
+    auto g1 = Guid::createGuid();
+    TEST_ASSERT(g1 != Guid::createGuid());
+    auto g2 = g1;
+    auto g3 = Guid::createGuidAsString();
+
+    TEST_ASSERT(g1.toString() != g3);
+
+    TEST_ASSERT(Guid::isGuid(g3));
+    TEST_ASSERT(Guid::isGuid("{D02FDC11-7324-6C24-DBCE-3E64AE8A6422}"));
+    auto g4 = Guid::getGuid("{D02FDC11-7324-6C24-DBCE-3E64AE8A6422}");
+    TEST_EXCEPTION(Guid::getGuid("{D02FDC11-7324-6C24-DBCE-3E64AE8A6422"), InvalidFormat);
+  }
+};
+
+TEST_REGISTER(Guid);
+
+#endif
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

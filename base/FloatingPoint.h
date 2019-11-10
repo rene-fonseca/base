@@ -303,6 +303,8 @@ _COM_AZURE_DEV__BASE__PACKED__END
   typedef Representation::IEEE754DoublePrecision FloatRepresentation;
 #elif (_COM_AZURE_DEV__BASE__FLOAT == _COM_AZURE_DEV__BASE__IEEE_EXTENDED_DOUBLE_PRECISION_96)
   typedef Representation::IEEEExtendedDoublePrecision96 FloatRepresentation;
+#elif (_COM_AZURE_DEV__BASE__FLOAT == _COM_AZURE_DEV__BASE__IEEE_EXTENDED_DOUBLE_PRECISION_96_ALIGN16)
+  typedef Representation::IEEEExtendedDoublePrecision96 FloatRepresentation;
 #elif (_COM_AZURE_DEV__BASE__FLOAT == _COM_AZURE_DEV__BASE__IEEE_EXTENDED_DOUBLE_PRECISION_128)
   typedef Representation::IEEEExtendedDoublePrecision128 FloatRepresentation;
 #elif (_COM_AZURE_DEV__BASE__FLOAT == _COM_AZURE_DEV__BASE__IEEE_QUADRUPLE_PRECISION)
@@ -317,6 +319,8 @@ _COM_AZURE_DEV__BASE__PACKED__END
   typedef Representation::IEEE754DoublePrecision DoubleRepresentation;
 #elif (_COM_AZURE_DEV__BASE__DOUBLE == _COM_AZURE_DEV__BASE__IEEE_EXTENDED_DOUBLE_PRECISION_96)
   typedef Representation::IEEEExtendedDoublePrecision96 DoubleRepresentation;
+#elif (_COM_AZURE_DEV__BASE__DOUBLE == _COM_AZURE_DEV__BASE__IEEE_EXTENDED_DOUBLE_PRECISION_96_ALIGN16)
+  typedef Representation::IEEEExtendedDoublePrecision96 DoubleRepresentation;
 #elif (_COM_AZURE_DEV__BASE__DOUBLE == _COM_AZURE_DEV__BASE__IEEE_EXTENDED_DOUBLE_PRECISION_128)
   typedef Representation::IEEEExtendedDoublePrecision128 DoubleRepresentation;
 #elif (_COM_AZURE_DEV__BASE__DOUBLE == _COM_AZURE_DEV__BASE__IEEE_QUADRUPLE_PRECISION)
@@ -330,6 +334,8 @@ _COM_AZURE_DEV__BASE__PACKED__END
 #elif (_COM_AZURE_DEV__BASE__LONG_DOUBLE == _COM_AZURE_DEV__BASE__IEEE_754_DOUBLE_PRECISION)
   typedef Representation::IEEE754DoublePrecision LongDoubleRepresentation;
 #elif (_COM_AZURE_DEV__BASE__LONG_DOUBLE == _COM_AZURE_DEV__BASE__IEEE_EXTENDED_DOUBLE_PRECISION_96)
+  typedef Representation::IEEEExtendedDoublePrecision96 LongDoubleRepresentation;
+#elif (_COM_AZURE_DEV__BASE__LONG_DOUBLE == _COM_AZURE_DEV__BASE__IEEE_EXTENDED_DOUBLE_PRECISION_96_ALIGN16)
   typedef Representation::IEEEExtendedDoublePrecision96 LongDoubleRepresentation;
 #elif (_COM_AZURE_DEV__BASE__LONG_DOUBLE == _COM_AZURE_DEV__BASE__IEEE_EXTENDED_DOUBLE_PRECISION_128)
   typedef Representation::IEEEExtendedDoublePrecision128 LongDoubleRepresentation;
@@ -668,7 +674,19 @@ _COM_AZURE_DEV__BASE__PACKED__END
 _COM_AZURE_DEV__BASE__PACKED__BEGIN
   struct IEEEExtendedDoublePrecision96 {
     Representation::IEEEExtendedDoublePrecision96 value;
-
+    
+    // TAG: special case only - need struct IEEEExtendedDoublePrecision96Align16
+#if ((_COM_AZURE_DEV__BASE__FLOAT == _COM_AZURE_DEV__BASE__IEEE_EXTENDED_DOUBLE_PRECISION_96_ALIGN16) || \
+     (_COM_AZURE_DEV__BASE__DOUBLE == _COM_AZURE_DEV__BASE__IEEE_EXTENDED_DOUBLE_PRECISION_96_ALIGN16) || \
+     (_COM_AZURE_DEV__BASE__LONG_DOUBLE == _COM_AZURE_DEV__BASE__IEEE_EXTENDED_DOUBLE_PRECISION_96_ALIGN16))
+    uint32 unused;
+#if ((_COM_AZURE_DEV__BASE__FLOAT == _COM_AZURE_DEV__BASE__IEEE_EXTENDED_DOUBLE_PRECISION_96) || \
+     (_COM_AZURE_DEV__BASE__DOUBLE == _COM_AZURE_DEV__BASE__IEEE_EXTENDED_DOUBLE_PRECISION_96) || \
+     (_COM_AZURE_DEV__BASE__LONG_DOUBLE == _COM_AZURE_DEV__BASE__IEEE_EXTENDED_DOUBLE_PRECISION_96))
+#error _COM_AZURE_DEV__BASE__IEEE_EXTENDED_DOUBLE_PRECISION_96 and _COM_AZURE_DEV__BASE__IEEE_EXTENDED_DOUBLE_PRECISION_96_ALIGN16 at the same time
+#endif
+#endif
+    
     /** Minimum normalized positive floating-point number (2^(e_min-1)). */
     static constexpr long double MINIMUM = 3.362103143112093506262677817321752602598079344846471240108827229808742699390728967043092706365056223e-4932L;
     /** Maximum representable finite floating-point number (2^e_max). */
@@ -1178,6 +1196,8 @@ _COM_AZURE_DEV__BASE__PACKED__END
   typedef IEEE754DoublePrecision ToFloat;
 #elif (_COM_AZURE_DEV__BASE__FLOAT == _COM_AZURE_DEV__BASE__IEEE_EXTENDED_DOUBLE_PRECISION_96)
   typedef IEEEExtendedDoublePrecision96 ToFloat;
+#elif (_COM_AZURE_DEV__BASE__FLOAT == _COM_AZURE_DEV__BASE__IEEE_EXTENDED_DOUBLE_PRECISION_96_ALIGN16)
+  typedef IEEEExtendedDoublePrecision96 ToFloat;
 #elif (_COM_AZURE_DEV__BASE__FLOAT == _COM_AZURE_DEV__BASE__IEEE_EXTENDED_DOUBLE_PRECISION_128)
   typedef IEEEExtendedDoublePrecision128 ToFloat;
 #elif (_COM_AZURE_DEV__BASE__FLOAT == _COM_AZURE_DEV__BASE__IEEE_QUADRUPLE_PRECISION)
@@ -1192,6 +1212,8 @@ _COM_AZURE_DEV__BASE__PACKED__END
   typedef IEEE754DoublePrecision ToDouble;
 #elif (_COM_AZURE_DEV__BASE__DOUBLE == _COM_AZURE_DEV__BASE__IEEE_EXTENDED_DOUBLE_PRECISION_96)
   typedef IEEEExtendedDoublePrecision96 ToDouble;
+#elif (_COM_AZURE_DEV__BASE__DOUBLE == _COM_AZURE_DEV__BASE__IEEE_EXTENDED_DOUBLE_PRECISION_96_ALIGN16)
+  typedef IEEEExtendedDoublePrecision96 ToDouble;
 #elif (_COM_AZURE_DEV__BASE__DOUBLE == _COM_AZURE_DEV__BASE__IEEE_EXTENDED_DOUBLE_PRECISION_128)
   typedef IEEEExtendedDoublePrecision128 ToDouble;
 #elif (_COM_AZURE_DEV__BASE__DOUBLE == _COM_AZURE_DEV__BASE__IEEE_QUADRUPLE_PRECISION)
@@ -1205,6 +1227,8 @@ _COM_AZURE_DEV__BASE__PACKED__END
 #elif (_COM_AZURE_DEV__BASE__LONG_DOUBLE == _COM_AZURE_DEV__BASE__IEEE_754_DOUBLE_PRECISION)
   typedef IEEE754DoublePrecision ToLongDouble;
 #elif (_COM_AZURE_DEV__BASE__LONG_DOUBLE == _COM_AZURE_DEV__BASE__IEEE_EXTENDED_DOUBLE_PRECISION_96)
+  typedef IEEEExtendedDoublePrecision96 ToLongDouble;
+#elif (_COM_AZURE_DEV__BASE__LONG_DOUBLE == _COM_AZURE_DEV__BASE__IEEE_EXTENDED_DOUBLE_PRECISION_96_ALIGN16)
   typedef IEEEExtendedDoublePrecision96 ToLongDouble;
 #elif (_COM_AZURE_DEV__BASE__LONG_DOUBLE == _COM_AZURE_DEV__BASE__IEEE_EXTENDED_DOUBLE_PRECISION_128)
   typedef IEEEExtendedDoublePrecision128 ToLongDouble;
@@ -1266,6 +1290,8 @@ inline FloatingPoint::IEEE754DoublePrecision::operator long double() const noexc
 inline FloatingPoint::IEEEExtendedDoublePrecision96::operator float() const noexcept {
 #if (_COM_AZURE_DEV__BASE__FLOAT == _COM_AZURE_DEV__BASE__IEEE_EXTENDED_DOUBLE_PRECISION_96)
   return *reinterpret_cast<const float*>(&value);
+#elif (_COM_AZURE_DEV__BASE__FLOAT == _COM_AZURE_DEV__BASE__IEEE_EXTENDED_DOUBLE_PRECISION_96_ALIGN16)
+  return *reinterpret_cast<const long double*>(&value);
 #else
   return ToFloat(value);
 #endif // float
@@ -1274,6 +1300,8 @@ inline FloatingPoint::IEEEExtendedDoublePrecision96::operator float() const noex
 inline FloatingPoint::IEEEExtendedDoublePrecision96::operator double() const noexcept {
 #if (_COM_AZURE_DEV__BASE__DOUBLE == _COM_AZURE_DEV__BASE__IEEE_EXTENDED_DOUBLE_PRECISION_96)
   return *reinterpret_cast<const double*>(&value);
+#elif (_COM_AZURE_DEV__BASE__DOUBLE == _COM_AZURE_DEV__BASE__IEEE_EXTENDED_DOUBLE_PRECISION_96_ALIGN16)
+  return *reinterpret_cast<const long double*>(&value);
 #else
   return ToDouble(value);
 #endif // double
@@ -1281,6 +1309,8 @@ inline FloatingPoint::IEEEExtendedDoublePrecision96::operator double() const noe
   
 inline FloatingPoint::IEEEExtendedDoublePrecision96::operator long double() const noexcept {
 #if (_COM_AZURE_DEV__BASE__LONG_DOUBLE == _COM_AZURE_DEV__BASE__IEEE_EXTENDED_DOUBLE_PRECISION_96)
+  return *reinterpret_cast<const long double*>(&value);
+#elif (_COM_AZURE_DEV__BASE__LONG_DOUBLE == _COM_AZURE_DEV__BASE__IEEE_EXTENDED_DOUBLE_PRECISION_96_ALIGN16)
   return *reinterpret_cast<const long double*>(&value);
 #else
   return ToLongDouble(value);

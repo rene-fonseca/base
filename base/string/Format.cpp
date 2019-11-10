@@ -13,6 +13,7 @@
 
 #include <base/string/Format.h>
 #include <base/string/StringOutputStream.h>
+#include <base/UnitTest.h>
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
@@ -284,5 +285,52 @@ FormatOutputStream& operator<<(FormatOutputStream& stream, const Format::Subst& 
 {
   return subst.operator<<(stream);
 }
+
+#if defined(_COM_AZURE_DEV__BASE__TESTS)
+
+class TEST_CLASS(Format) : public UnitTest {
+public:
+
+  TEST_PRIORITY(40);
+  TEST_PROJECT("base/string");
+
+  void run() override
+  {
+    TEST_EQUAL(Format::subst("My name is %1 and I'm %2 years old.", "John", 18), "My name is John and I'm 18 years old.");
+    TEST_EQUAL(Format::subst("Current percent is %1%%.", 45), "Current percent is 45%.");
+
+    TEST_EQUAL(Format::subst("%1", false), "false");
+    TEST_EQUAL(Format::subst("%1", true), "true");
+    TEST_EQUAL(Format::subst("%1", -123), "-123");
+    TEST_EQUAL(Format::subst("%1", 123U), "123");
+    TEST_EQUAL(Format::subst("%1", -123.0f), "-123");
+    TEST_EQUAL(Format::subst("%1", -123.0), "-123");
+    TEST_EQUAL(Format::subst("%1", -123.0L), "-123");
+    TEST_EQUAL(Format::subst("%1", String("")), "");
+    TEST_EQUAL(Format::subst("%1", String("Hello, World!")), "Hello, World!");
+
+    TEST_EQUAL(Format::subst(""), "");
+    TEST_EQUAL(Format::subst("%1 %2 %3", 1, 2, 3), "1 2 3");
+    TEST_EQUAL(Format::subst("%1 %1", 1), "1 1"); // repeat
+    TEST_EQUAL(Format::subst("%1 %1", 1, 2), "1 1"); // unused
+    TEST_EQUAL(Format::subst("%1 %2 %3 %4", 1, 2, 3), "1 2 3 <NULL>"); // missing
+
+    TEST_EQUAL(Format::subst("%0"), "<NULL>"); // bad index
+    TEST_EQUAL(Format::subst("%99"), "<NULL>"); // bad index
+
+    TEST_EQUAL(
+      Format::subst(
+        "The value is %1 = %2 = %3.",
+        format() << 12354, format() << HEX << 12354, format() << ZEROPAD << setWidth(10) << 12354
+      ),
+      "The value is 12354 = 0x3042 = 0000012354."
+    ); // inline formatting
+
+  }
+};
+
+TEST_REGISTER(Format);
+
+#endif
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

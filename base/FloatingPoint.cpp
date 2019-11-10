@@ -984,14 +984,34 @@ public:
     FloatingPoint::ToLongDouble f6(-1.0L);
     TEST_ASSERT(f6.isNegative());
 
-    FloatingPoint::ToDouble f7(1.0/0);
+    volatile int zero = 0;
+
+    FloatingPoint::ToFloat f7f(1.0f/zero);
+    TEST_ASSERT(!f7f.isNaN());
+    TEST_ASSERT(f7f.isInfinity());
+
+    FloatingPoint::ToFloat f8f(-1.0f/zero);
+    TEST_ASSERT(!f8f.isNaN());
+    TEST_ASSERT(f8f.isInfinity());
+
+    FloatingPoint::ToDouble f7(1.0/zero);
     TEST_ASSERT(!f7.isNaN());
     TEST_ASSERT(f7.isInfinity());
 
-    FloatingPoint::ToDouble f8(-1.0/0);
+    FloatingPoint::ToDouble f8(-1.0/zero);
     TEST_ASSERT(!f8.isNaN());
     TEST_ASSERT(f8.isInfinity());
 
+#if 0 // TAG: FIXME clang macOS
+    FloatingPoint::ToLongDouble f7l(1.0L/zero);
+    TEST_ASSERT(!f7l.isNaN());
+    TEST_ASSERT(f7l.isInfinity());
+
+    FloatingPoint::ToLongDouble f8l(-1.0L/zero);
+    TEST_ASSERT(!f8l.isNaN());
+    TEST_ASSERT(f8l.isInfinity());
+#endif
+    
     FloatingPoint::ToFloat f10(nanf(""));
     TEST_ASSERT(f10.isNaN());
     TEST_ASSERT(f10.isQuiteNaN());
@@ -1007,7 +1027,7 @@ public:
     TEST_ASSERT(f12.isQuiteNaN());
     TEST_ASSERT(!f12.isSignalingNaN());
     
-    FloatingPoint::ToDouble f13(0.0/0);
+    FloatingPoint::ToDouble f13(0.0/zero);
     TEST_ASSERT(f13.isNaN());
     TEST_ASSERT(f13.isQuiteNaN());
     TEST_ASSERT(!f13.isSignalingNaN());

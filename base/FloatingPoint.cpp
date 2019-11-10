@@ -13,6 +13,9 @@
 
 #include <base/FloatingPoint.h>
 #include <base/string/ASCIITraits.h>
+#include <base/mathematics/Math.h>
+#include <base/UnitTest.h>
+#include <limits>
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
@@ -338,7 +341,8 @@ long double FloatingPoint::getLongDouble(const String& value) throw(InvalidForma
   return 0;
 }
 
-void FloatingPoint::IEEE754SinglePrecision::setValue(const FloatingPoint::Representation::IEEEExtendedDoublePrecision96& _value) throw() {
+void FloatingPoint::IEEE754SinglePrecision::setValue(const FloatingPoint::Representation::IEEEExtendedDoublePrecision96& _value) noexcept
+{
   value.negative = _value.negative;
   if (~_value.exponent == 0) {
     value.exponent = ~0;
@@ -387,7 +391,8 @@ void FloatingPoint::IEEE754SinglePrecision::setValue(const FloatingPoint::Repres
   }
 }
     
-void FloatingPoint::IEEE754SinglePrecision::setValue(const FloatingPoint::Representation::IEEEExtendedDoublePrecision128& _value) throw() {
+void FloatingPoint::IEEE754SinglePrecision::setValue(const FloatingPoint::Representation::IEEEExtendedDoublePrecision128& _value) noexcept
+{
   value.negative = _value.negative;
   if (~_value.exponent == 0) {
     value.exponent = ~0;
@@ -436,7 +441,8 @@ void FloatingPoint::IEEE754SinglePrecision::setValue(const FloatingPoint::Repres
   }
 }
 
-void FloatingPoint::IEEE754DoublePrecision::setValue(const FloatingPoint::Representation::IEEEExtendedDoublePrecision96& _value) throw() {
+void FloatingPoint::IEEE754DoublePrecision::setValue(const FloatingPoint::Representation::IEEEExtendedDoublePrecision96& _value) noexcept
+{
   value.negative = _value.negative;
   if (~_value.exponent == 0) {
     value.exponent = ~0;
@@ -492,7 +498,8 @@ void FloatingPoint::IEEE754DoublePrecision::setValue(const FloatingPoint::Repres
   }
 }
     
-void FloatingPoint::IEEE754DoublePrecision::setValue(const FloatingPoint::Representation::IEEEExtendedDoublePrecision128& _value) throw() {
+void FloatingPoint::IEEE754DoublePrecision::setValue(const FloatingPoint::Representation::IEEEExtendedDoublePrecision128& _value) noexcept
+{
   value.negative = _value.negative;
   if (~_value.exponent == 0) {
     value.exponent = ~0;
@@ -548,7 +555,8 @@ void FloatingPoint::IEEE754DoublePrecision::setValue(const FloatingPoint::Repres
   }
 }
 
-void FloatingPoint::IEEEQuadruplePrecision::setValue(const FloatingPoint::Representation::IEEEExtendedDoublePrecision96& _value) throw() {
+void FloatingPoint::IEEEQuadruplePrecision::setValue(const FloatingPoint::Representation::IEEEExtendedDoublePrecision96& _value) noexcept
+{
   value.negative = _value.negative;
   if (~_value.exponent == 0) {
     if ((_value.mantissa1 == 0) && (_value.mantissa0 == 0)) {
@@ -616,7 +624,8 @@ void FloatingPoint::IEEEQuadruplePrecision::setValue(const FloatingPoint::Repres
   }
 }
 
-void FloatingPoint::IEEEQuadruplePrecision::setValue(const FloatingPoint::Representation::IEEEExtendedDoublePrecision128& _value) throw() {
+void FloatingPoint::IEEEQuadruplePrecision::setValue(const FloatingPoint::Representation::IEEEExtendedDoublePrecision128& _value) noexcept
+{
   value.negative = _value.negative;
   if (~_value.exponent == 0) {
     if ((_value.mantissa1 == 0) && (_value.mantissa0 == 0)) {
@@ -690,7 +699,8 @@ void analyseFloatingPoint<FloatingPoint::Representation::IEEE754SinglePrecision>
   unsigned int& precision,
   unsigned int* mantissa,
   int& exponent,
-  unsigned int& flags) throw() {
+  unsigned int& flags) noexcept
+{
   typedef FloatingPoint::Representation::IEEE754SinglePrecision Representation;
   
   unsigned int fieldExponent = value.exponent;
@@ -737,7 +747,8 @@ void analyseFloatingPoint<FloatingPoint::Representation::IEEE754DoublePrecision>
   unsigned int& precision,
   unsigned int* mantissa,
   int& exponent,
-  unsigned int& flags) throw() {
+  unsigned int& flags) noexcept
+{
   typedef FloatingPoint::Representation::IEEE754DoublePrecision Representation;
   
   unsigned int fieldExponent = value.exponent;
@@ -785,7 +796,8 @@ void analyseFloatingPoint<FloatingPoint::Representation::IEEEExtendedDoublePreci
   unsigned int& precision,
   unsigned int* mantissa,
   int& exponent,
-  unsigned int& flags) throw() {
+  unsigned int& flags) noexcept
+{
   typedef FloatingPoint::Representation::IEEEExtendedDoublePrecision96 Representation;
   
   unsigned int fieldExponent = value.exponent;
@@ -833,7 +845,8 @@ void analyseFloatingPoint<FloatingPoint::Representation::IEEEExtendedDoublePreci
   unsigned int& precision,
   unsigned int* mantissa,
   int& exponent,
-  unsigned int& flags) throw() {
+  unsigned int& flags) noexcept
+{
   typedef FloatingPoint::Representation::IEEEExtendedDoublePrecision128 Representation;
   
   unsigned int fieldExponent = value.exponent;
@@ -881,7 +894,8 @@ void analyseFloatingPoint<FloatingPoint::Representation::IEEEQuadruplePrecision>
   unsigned int& precision,
   unsigned int* mantissa,
   int& exponent,
-  unsigned int& flags) throw() {
+  unsigned int& flags) noexcept
+{
   typedef FloatingPoint::Representation::IEEEQuadruplePrecision Representation;
   
   unsigned int fieldExponent = value.exponent;
@@ -925,5 +939,105 @@ void analyseFloatingPoint<FloatingPoint::Representation::IEEEQuadruplePrecision>
     }
   }
 }
+
+#if defined(_COM_AZURE_DEV__BASE__TESTS)
+
+class TEST_CLASS(FloatingPoint) : public UnitTest {
+public:
+
+  TEST_PRIORITY(10);
+  TEST_PROJECT("base");
+
+  void run() override
+  {
+    TEST_ASSERT(sizeof(float) == sizeof(FloatingPoint::ToFloat));
+    TEST_ASSERT(sizeof(double) == sizeof(FloatingPoint::ToDouble));
+    TEST_ASSERT(sizeof(long double) == sizeof(FloatingPoint::ToLongDouble));
+
+    FloatingPoint::ToFloat f1(1.0f);
+    TEST_ASSERT(f1.isOrdinary());
+    TEST_ASSERT(!f1.isNaN());
+    TEST_ASSERT(!f1.isInfinity());
+    TEST_ASSERT(!f1.isQuiteNaN());
+    TEST_ASSERT(!f1.isSignalingNaN());
+
+    FloatingPoint::ToDouble f2(1.0);
+    TEST_ASSERT(f2.isOrdinary());
+    TEST_ASSERT(!f2.isNaN());
+    TEST_ASSERT(!f2.isInfinity());
+    TEST_ASSERT(!f2.isQuiteNaN());
+    TEST_ASSERT(!f2.isSignalingNaN());
+
+    FloatingPoint::ToLongDouble f3(1.0L);
+    TEST_ASSERT(f3.isOrdinary());
+    TEST_ASSERT(!f3.isNaN());
+    TEST_ASSERT(!f3.isInfinity());
+    TEST_ASSERT(!f3.isQuiteNaN());
+    TEST_ASSERT(!f3.isSignalingNaN());
+
+    FloatingPoint::ToFloat f4(-1.0f);
+    TEST_ASSERT(f4.isNegative());
+
+    FloatingPoint::ToDouble f5(-1.0);
+    TEST_ASSERT(f5.isNegative());
+
+    FloatingPoint::ToLongDouble f6(-1.0L);
+    TEST_ASSERT(f6.isNegative());
+
+    FloatingPoint::ToDouble f7(1.0/0);
+    TEST_ASSERT(!f7.isNaN());
+    TEST_ASSERT(f7.isInfinity());
+
+    FloatingPoint::ToDouble f8(-1.0/0);
+    TEST_ASSERT(!f8.isNaN());
+    TEST_ASSERT(f8.isInfinity());
+
+    FloatingPoint::ToFloat f10(nanf(""));
+    TEST_ASSERT(f10.isNaN());
+    TEST_ASSERT(f10.isQuiteNaN());
+    TEST_ASSERT(!f10.isSignalingNaN());
+    
+    FloatingPoint::ToDouble f11(nan(""));
+    TEST_ASSERT(f11.isNaN());
+    TEST_ASSERT(f11.isQuiteNaN());
+    TEST_ASSERT(!f11.isSignalingNaN());
+    
+    FloatingPoint::ToLongDouble f12(nanl(""));
+    TEST_ASSERT(f12.isNaN());
+    TEST_ASSERT(f12.isQuiteNaN());
+    TEST_ASSERT(!f12.isSignalingNaN());
+    
+    FloatingPoint::ToDouble f13(0.0/0);
+    TEST_ASSERT(f13.isNaN());
+    TEST_ASSERT(f13.isQuiteNaN());
+    TEST_ASSERT(!f13.isSignalingNaN());
+
+    FloatingPoint::ToFloat f14(std::numeric_limits<float>::signaling_NaN());
+    TEST_ASSERT(f14.isNaN());
+    TEST_ASSERT(!f14.isQuiteNaN());
+    TEST_ASSERT(f14.isSignalingNaN());
+
+    FloatingPoint::ToDouble f15(std::numeric_limits<double>::signaling_NaN());
+    TEST_ASSERT(f15.isNaN());
+    TEST_ASSERT(!f15.isQuiteNaN());
+    TEST_ASSERT(f15.isSignalingNaN());
+
+    FloatingPoint::ToLongDouble f16(std::numeric_limits<long double>::signaling_NaN());
+    TEST_ASSERT(f16.isNaN());
+    TEST_ASSERT(!f16.isQuiteNaN());
+    TEST_ASSERT(f16.isSignalingNaN());
+
+    FloatingPoint::ToFloat f17(Math::sqrt(-1.0f));
+    TEST_ASSERT(f17.isQuiteNaN());
+    FloatingPoint::ToDouble f18(Math::sqrt(-1.0));
+    TEST_ASSERT(f18.isQuiteNaN());
+    FloatingPoint::ToLongDouble f19(Math::sqrt(-1.0L));
+    TEST_ASSERT(f19.isQuiteNaN());
+  }
+};
+
+TEST_REGISTER(FloatingPoint);
+
+#endif
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

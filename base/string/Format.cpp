@@ -301,29 +301,28 @@ public:
 
     TEST_EQUAL(Format::subst("%1", false), "false");
     TEST_EQUAL(Format::subst("%1", true), "true");
+    TEST_EQUAL(Format::subst("%1", '!'), "!");
+    TEST_EQUAL(Format::subst("%1", L'!'), "!");
     TEST_EQUAL(Format::subst("%1", -123), "-123");
     TEST_EQUAL(Format::subst("%1", 123U), "123");
     TEST_EQUAL(Format::subst("%1", -123.0f), "-123");
     TEST_EQUAL(Format::subst("%1", -123.0), "-123");
-    // TEST_EQUAL(Format::subst("%1", -123.0L), "-123"); // GNULINUX hangs
-
-    // TAG: FIXME fout << 123.0L << ENDL;
+    TEST_EQUAL(Format::subst("%1", -123.0L), "-123");
 
     volatile int zero = 0;
-#if 0
     TEST_EQUAL(Format::subst("%1", 0.0f/zero), "nan");
     TEST_EQUAL(Format::subst("%1", 0.0/zero), "nan");
-    // TEST_EQUAL(Format::subst("%1", 0.0L/zero), "nan");
+    TEST_EQUAL(Format::subst("%1", 0.0L/zero), "nan");
     TEST_EQUAL(Format::subst("%1", 123.0f/zero), "inf");
     TEST_EQUAL(Format::subst("%1", 123.0/zero), "inf");
-    // TEST_EQUAL(Format::subst("%1", 123.0L/zero), "inf");
+    TEST_EQUAL(Format::subst("%1", 123.0L/zero), "inf");
     TEST_EQUAL(Format::subst("%1", -123.0f/zero), "-inf");
     TEST_EQUAL(Format::subst("%1", -123.0/zero), "-inf");
-    // TEST_EQUAL(Format::subst("%1", -123.0L/zero), "-inf");
-#endif
+    TEST_EQUAL(Format::subst("%1", -123.0L/zero), "-inf");
 
     TEST_EQUAL(Format::subst("%1", String("")), "");
     TEST_EQUAL(Format::subst("%1", String("Hello, World!")), "Hello, World!");
+    TEST_EQUAL(Format::subst("%1", WideString(L"Hello, World!")), "Hello, World!");
 
     TEST_EQUAL(Format::subst(""), "");
     TEST_EQUAL(Format::subst("%1 %2 %3", 1, 2, 3), "1 2 3");

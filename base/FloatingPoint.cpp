@@ -1050,11 +1050,6 @@ public:
     TEST_ASSERT(f_qNaN.isQuiteNaN());
     TEST_ASSERT(!f_qNaN.isSignalingNaN());
     
-    float qNaN = std::numeric_limits<float>::quiet_NaN();
-    uint32_t* pqNaN = reinterpret_cast<uint32_t*>(&qNaN);
-    float sNaN = std::numeric_limits<float>::signaling_NaN();
-    uint32_t* psNaN = reinterpret_cast<uint32_t*>(&sNaN);
-
 #if !(_COM_AZURE_DEV__BASE__COMPILER == _COM_AZURE_DEV__BASE__COMPILER_MSC)
     FloatingPoint::ToFloat f_sNaN(std::numeric_limits<float>::signaling_NaN()); // MSC bug - returns qNaN / VS 16.3.8
     TEST_ASSERT(f_sNaN.isNaN());

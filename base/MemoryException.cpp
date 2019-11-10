@@ -15,11 +15,22 @@
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
-MemoryException::MemoryException() throw() {
+MemoryException::MemoryException() noexcept
+{
 }
 
-MemoryException::MemoryException(const char* message) throw()
+MemoryException::MemoryException(const char* message) noexcept
   : ResourceException(message) {
+}
+
+MemoryException::MemoryException(const Type& type) noexcept
+  : ResourceException(type)
+{
+}
+
+MemoryException::MemoryException(const char* message, const Type& type) noexcept
+  : ResourceException(message, type)
+{
 }
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

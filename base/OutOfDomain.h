@@ -32,24 +32,21 @@ public:
   /**
     Initializes the exception object with no message.
   */
-  inline OutOfDomain() noexcept {
-  }
+  OutOfDomain() noexcept;
 
   /**
     Initializes the exception object.
 
     @param message The message.
   */
-  inline OutOfDomain(const char* message) noexcept : Exception(message) {
-  }
+  OutOfDomain(const char* message) noexcept;
   
   /**
     Initializes the exception object without an associated message.
     
     @param type The identity of the type.
   */
-  inline OutOfDomain(const Type& type) noexcept : Exception(type) {
-  }
+  OutOfDomain(const Type& type) noexcept;
   
   /**
     Initializes the exception object.
@@ -57,9 +54,7 @@ public:
     @param message An NULL-terminated string (ASCII).
     @param type The identity of the type.
   */
-  inline OutOfDomain(const char* message, const Type& type) noexcept
-    : Exception(message, type) {
-  }
+  OutOfDomain(const char* message, const Type& type) noexcept;
   
   _COM_AZURE_DEV__BASE__EXCEPTION_THIS_TYPE()
 };

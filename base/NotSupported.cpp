@@ -13,8 +13,25 @@
 
 #include <base/NotSupported.h>
 
-_COM_AZURE_DEV__BASE__DUMMY_SYMBOL
-
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
+
+NotSupported::NotSupported() noexcept
+{
+}
+
+NotSupported::NotSupported(const char* message) noexcept
+  : Exception(message)
+{
+}
+
+NotSupported::NotSupported(const Type& type) noexcept
+  : Exception(type)
+{
+}
+
+NotSupported::NotSupported(const char* message, const Type& type) noexcept
+  : Exception(message, type)
+{
+}
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

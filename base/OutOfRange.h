@@ -31,24 +31,21 @@ public:
   /**
     Initializes the exception object with no message.
   */
-  inline OutOfRange() noexcept {
-  }
+  OutOfRange() noexcept;
 
   /**
     Initializes the exception object.
 
     @param message The message.
   */
-  inline OutOfRange(const char* message) noexcept : Exception(message) {
-  }
+  OutOfRange(const char* message) noexcept;
 
   /**
     Initializes the exception object without an associated message.
     
     @param type The identity of the type.
   */
-  inline OutOfRange(const Type& type) noexcept : Exception(type) {
-  }
+  OutOfRange(const Type& type) noexcept;
 
   /**
     Initializes the exception object.
@@ -56,9 +53,7 @@ public:
     @param message An NULL-terminated string (ASCII).
     @param type The identity of the type.
   */
-  inline OutOfRange(const char* message, const Type& type) noexcept
-    : Exception(message, type) {
-  }
+  OutOfRange(const char* message, const Type& type) noexcept;
   
   _COM_AZURE_DEV__BASE__EXCEPTION_THIS_TYPE()
 };

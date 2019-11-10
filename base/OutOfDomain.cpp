@@ -13,8 +13,25 @@
 
 #include <base/OutOfDomain.h>
 
-_COM_AZURE_DEV__BASE__DUMMY_SYMBOL
-
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
+
+OutOfDomain::OutOfDomain() noexcept
+{
+}
+
+OutOfDomain::OutOfDomain(const char* message) noexcept
+  : Exception(message)
+{
+}
+
+OutOfDomain::OutOfDomain(const Type& type) noexcept
+  : Exception(type)
+{
+}
+
+OutOfDomain::OutOfDomain(const char* message, const Type& type) noexcept
+  : Exception(message, type)
+{
+}
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

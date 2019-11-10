@@ -35,24 +35,21 @@ public:
   /**
     Initializes the exception object with no message.
   */
-  inline Overflow() noexcept {
-  }
+  Overflow() noexcept;
   
   /**
     Initializes the exception object.
 
     @param message The message.
   */
-  inline Overflow(const char* message) noexcept : Exception(message) {
-  }
+  Overflow(const char* message) noexcept;
   
   /**
     Initializes the exception object without an associated message.
     
     @param type The identity of the type.
   */
-  inline Overflow(const Type& type) noexcept : Exception(type) {
-  }
+  Overflow(const Type& type) noexcept;
   
   /**
     Initializes the exception object.
@@ -60,9 +57,7 @@ public:
     @param message An NULL-terminated string (ASCII).
     @param type The identity of the type.
   */
-  inline Overflow(const char* message, const Type& type) noexcept
-    : Exception(message, type) {
-  }
+  Overflow(const char* message, const Type& type) noexcept;
   
   _COM_AZURE_DEV__BASE__EXCEPTION_THIS_TYPE()
 };

@@ -45,8 +45,7 @@ public:
     
     @param type The identity of the type.
   */
-  inline MemoryException(const Type& type) noexcept : ResourceException(type) {
-  }
+  MemoryException(const Type& type) noexcept;
   
   /**
     Initializes the exception object.
@@ -54,9 +53,7 @@ public:
     @param message An NULL-terminated string (ASCII).
     @param type The identity of the type.
   */
-  inline MemoryException(const char* message, const Type& type) noexcept
-    : ResourceException(message, type) {
-  }
+  MemoryException(const char* message, const Type& type) noexcept;
   
   _COM_AZURE_DEV__BASE__EXCEPTION_THIS_TYPE()
 };

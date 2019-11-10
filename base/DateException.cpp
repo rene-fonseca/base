@@ -13,8 +13,24 @@
 
 #include <base/DateException.h>
 
-_COM_AZURE_DEV__BASE__DUMMY_SYMBOL
-
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
+
+DateException::DateException() noexcept
+{
+}
+
+DateException::DateException(const char* message) noexcept
+  : Exception(message) {
+}
+
+DateException::DateException(const Type& type) noexcept
+  : Exception(type)
+{
+}
+
+DateException::DateException(const char* message, const Type& type) noexcept
+  : Exception(message, type)
+{
+}
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

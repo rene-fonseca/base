@@ -31,24 +31,21 @@ public:
   /**
     Initializes the exception object with no message.
   */
-  inline CastException() noexcept {
-  }
+  CastException() noexcept;
 
   /**
     Initializes the exception object.
 
     @param message The message.
   */
-  inline CastException(const char* message) noexcept : Exception(message) {
-  }
+  CastException(const char* message) noexcept;
   
   /**
     Initializes the exception with a type.
     
     @param type The type.
   */
-  inline CastException(const Type& type) noexcept : Exception(type) {
-  }
+  CastException(const Type& type) noexcept;
   
   /**
     Initializes the exception with a message and type.
@@ -56,9 +53,7 @@ public:
     @param message The message.
     @param type The type.
   */
-  inline CastException(const char* message, const Type& type) noexcept
-    : Exception(message, type) {
-  }
+  CastException(const char* message, const Type& type) noexcept;
   
   _COM_AZURE_DEV__BASE__EXCEPTION_THIS_TYPE()
 };

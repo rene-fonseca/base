@@ -13,8 +13,25 @@
 
 #include <base/Overflow.h>
 
-_COM_AZURE_DEV__BASE__DUMMY_SYMBOL
-
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
+
+Overflow::Overflow() noexcept
+{
+}
+
+Overflow::Overflow(const char* message) noexcept
+  : Exception(message)
+{
+}
+
+Overflow::Overflow(const Type& type) noexcept
+  : Exception(type)
+{
+}
+
+Overflow::Overflow(const char* message, const Type& type) noexcept
+  : Exception(message, type)
+{
+}
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

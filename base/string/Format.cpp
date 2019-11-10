@@ -317,6 +317,7 @@ public:
 
     TEST_EQUAL(Format::subst("%0"), "<NULL>"); // bad index
     TEST_EQUAL(Format::subst("%99"), "<NULL>"); // bad index
+    TEST_EQUAL(Format::subst("%-"), "%-"); // missing % escape
 
     TEST_EQUAL(
       Format::subst(

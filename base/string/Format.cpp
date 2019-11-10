@@ -337,9 +337,9 @@ public:
     TEST_EQUAL(
       Format::subst(
         "The value is %1 = %2 = %3.",
-        format() << 12354, format() << HEX << 12354, format() << ZEROPAD << setWidth(10) << 12354
+        format() << 12345, format() << HEX << 12345, format() << ZEROPAD << setWidth(10) << 12345
       ),
-      "The value is 12354 = 0x3042 = 0000012354."
+      "The value is 12345 = 0x3039 = 0000012345."
     ); // inline formatting
 
   }

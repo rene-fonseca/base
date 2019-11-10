@@ -13,8 +13,25 @@
 
 #include <base/ResourceException.h>
 
-_COM_AZURE_DEV__BASE__DUMMY_SYMBOL
-
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
+
+ResourceException::ResourceException() noexcept
+{
+}
+
+ResourceException::ResourceException(const char* message) noexcept
+  : Exception(message)
+{
+}
+
+ResourceException::ResourceException(const Type& type) noexcept
+  : Exception(type)
+{
+}
+
+ResourceException::ResourceException(const char* message, const Type& type) noexcept
+  : Exception(message, type)
+{
+}
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

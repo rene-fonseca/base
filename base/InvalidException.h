@@ -30,24 +30,21 @@ public:
   /**
     Initializes the exception object with no message.
   */
-  inline InvalidException() noexcept {
-  }
+  InvalidException() noexcept;
 
   /**
     Initializes the exception object.
 
     @param message The message.
   */
-  inline InvalidException(const char* message) noexcept : Exception(this) {
-  }
+  InvalidException(const char* message) noexcept;
 
   /**
     Initializes the exception object without an associated message.
     
     @param type The identity of the type.
   */
-  inline InvalidException(const Type& type) noexcept : Exception(type) {
-  }
+  InvalidException(const Type& type) noexcept;
   
   /**
     Initializes the exception object.
@@ -55,9 +52,7 @@ public:
     @param message An NULL-terminated string (ASCII).
     @param type The identity of the type.
   */
-  inline InvalidException(const char* message, const Type& type) noexcept
-    : Exception(message, type) {
-  }
+  InvalidException(const char* message, const Type& type) noexcept;
   
   _COM_AZURE_DEV__BASE__EXCEPTION_THIS_TYPE()
 };

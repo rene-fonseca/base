@@ -31,28 +31,21 @@ public:
   /**
     Initializes the exception object with no message.
   */
-  inline DeviceException() noexcept {
-  }
+  DeviceException() noexcept;
 
   /**
     Initializes the exception object.
 
     @param message The message.
   */
-  inline DeviceException(const char* message) noexcept
-    : ResourceException(message)
-  {
-  }
+  DeviceException(const char* message) noexcept;
 
   /**
     Initializes the exception object without an associated message.
     
     @param type The identity of the type.
   */
-  inline DeviceException(const Type& type) noexcept
-    : ResourceException(type)
-  {
-  }
+  DeviceException(const Type& type) noexcept;
   
   /**
     Initializes the exception object.
@@ -60,10 +53,7 @@ public:
     @param message An NULL-terminated string (ASCII).
     @param type The identity of the type.
   */
-  inline DeviceException(const char* message, const Type& type) noexcept
-    : ResourceException(message, type)
-  {
-  }
+  DeviceException(const char* message, const Type& type) noexcept;
   
   _COM_AZURE_DEV__BASE__EXCEPTION_THIS_TYPE()
 };

@@ -13,8 +13,25 @@
 
 #include <base/DeviceException.h>
 
-_COM_AZURE_DEV__BASE__DUMMY_SYMBOL
-
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
+
+DeviceException::DeviceException() noexcept
+{
+}
+
+DeviceException::DeviceException(const char* message) noexcept
+  : ResourceException(this)
+{
+}
+
+DeviceException::DeviceException(const Type& type) noexcept
+  : ResourceException(type)
+{
+}
+
+DeviceException::DeviceException(const char* message, const Type& type) noexcept
+  : ResourceException(message, type)
+{
+}
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

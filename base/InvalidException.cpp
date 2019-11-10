@@ -13,8 +13,25 @@
 
 #include <base/InvalidException.h>
 
-_COM_AZURE_DEV__BASE__DUMMY_SYMBOL
-
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
+
+InvalidException::InvalidException() noexcept
+{
+}
+
+InvalidException::InvalidException(const char* message) noexcept
+  : Exception(this)
+{
+}
+
+InvalidException::InvalidException(const Type& type) noexcept
+  : Exception(type)
+{
+}
+
+InvalidException::InvalidException(const char* message, const Type& type) noexcept
+  : Exception(message, type)
+{
+}
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

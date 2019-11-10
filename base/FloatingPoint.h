@@ -824,7 +824,7 @@ _COM_AZURE_DEV__BASE__PACKED__BEGIN
     inline bool isSignalingNaN() const noexcept {
       return (value.exponent == value.ALL_BITS_EXPONENT) &&
         ((value.mantissa1 & (1 << (32 - 1))) == 0) &&
-        ((value.mantissa1 != 0) || (value.mantissa0 != 0)); // by not infinity
+        ((value.mantissa1 != 0) || (value.mantissa0 != 0)); // but not infinity
     }
     
     operator float() const noexcept;
@@ -994,7 +994,7 @@ _COM_AZURE_DEV__BASE__PACKED__BEGIN
     */
     inline bool isSignalingNaN() const noexcept {
       return (value.exponent == value.ALL_BITS_EXPONENT) &&
-        ((value.mantissa1 & (1 << (32 - 1))) == 0);
+        ((value.mantissa1 & (1 << (32 - 1))) == 0) &&
         ((value.mantissa1 != 0) || (value.mantissa0 != 0)); // but not infitity
     }
     

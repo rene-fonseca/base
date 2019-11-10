@@ -1672,7 +1672,7 @@ FormatOutputStream& FormatOutputStream::operator<<(double _value) throw(IOExcept
 FormatOutputStream& FormatOutputStream::operator<<(long double _value) throw(IOException)
 {
 #if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__GNULINUX) // TAG: need to fix this
-  return operator<<(static_cast<double>(value));
+  return operator<<(static_cast<double>(_value));
 #endif
 
   BASSERT(sizeof(long double) == sizeof(FloatingPoint::LongDoubleRepresentation));

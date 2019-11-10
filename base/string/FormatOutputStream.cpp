@@ -21,6 +21,7 @@
 #include <base/string/StringOutputStream.h>
 #include <base/concurrency/AtomicCounter.h>
 #include <base/TypeInfo.h>
+#include <base/UnitTest.h>
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
@@ -1972,5 +1973,71 @@ String operator<<(FormatOutputStream& stream, const GetString& getString)
   stream.flush();
   return stream.toString();
 }
+
+#if defined(_COM_AZURE_DEV__BASE__TESTS)
+
+class TEST_CLASS(FormatOutputStream) : public UnitTest {
+public:
+
+  TEST_PRIORITY(40);
+  TEST_PROJECT("base/string");
+
+  void run() override
+  {
+    typedef StringOutputStream f;
+
+    TEST_EQUAL(String(f() << false), "false");
+    TEST_EQUAL(String(f() << true), "true");
+    TEST_EQUAL(String(f() << '!'), "!");
+    // TEST_EQUAL(String(f() << L'!'), "!");
+    TEST_EQUAL(String(f() << -123), "-123");
+
+    TEST_EQUAL(String(f() << static_cast<short>(-123)), "-123");
+    TEST_EQUAL(String(f() << static_cast<unsigned short>(123)), "123");
+    TEST_EQUAL(String(f() << -123), "-123");
+    TEST_EQUAL(String(f() << 123U), "123");
+    TEST_EQUAL(String(f() << static_cast<long>(-123)), "-123");
+    TEST_EQUAL(String(f() << static_cast<unsigned long>(123)), "123");
+    TEST_EQUAL(String(f() << static_cast<long long>(-123)), "-123");
+    TEST_EQUAL(String(f() << static_cast<unsigned long long>(123)), "123");
+    TEST_EQUAL(String(f() << -123.0f), "-123");
+    TEST_EQUAL(String(f() << -123.0), "-123");
+    TEST_EQUAL(String(f() << -123.0L), "-123");
+
+    volatile int zero = 0;
+    TEST_EQUAL(String(f() << 0.0f/zero), "nan");
+    TEST_EQUAL(String(f() << 0.0/zero), "nan");
+    TEST_EQUAL(String(f() << 0.0L/zero), "nan");
+    TEST_EQUAL(String(f() << 123.0f/zero), "inf");
+    TEST_EQUAL(String(f() << 123.0/zero), "inf");
+    TEST_EQUAL(String(f() << 123.0L/zero), "inf");
+    TEST_EQUAL(String(f() << -123.0f/zero), "-inf");
+    TEST_EQUAL(String(f() << -123.0/zero), "-inf");
+    TEST_EQUAL(String(f() << -123.0L/zero), "-inf");
+
+    TEST_EQUAL(String(f() << ""), "");
+    TEST_EQUAL(String(f() << MESSAGE("Hello, World!")), "Hello, World!");
+    TEST_EQUAL(String(f() << "Hello, World!"), "Hello, World!");
+    // TEST_EQUAL(String(f() << (L"Hello, World!")), "Hello, World!");
+
+    TEST_EQUAL(String(f() << static_cast<void*>(nullptr)), "0x0");
+    TEST_EQUAL(String(f() << BIN << 12345), "0b11000000111001");
+    TEST_EQUAL(String(f() << DEC << 12345), "12345");
+    TEST_EQUAL(String(f() << OCT << 12345), "030071");
+    TEST_EQUAL(String(f() << HEX << 12345), "0x3039");
+#if 0 // not supported
+    TEST_EQUAL(String(f() << FBIN << 12345.0), "");
+    TEST_EQUAL(String(f() << FDEC << 12345.0), "");
+    TEST_EQUAL(String(f() << FOCT << 12345.0), "");
+    TEST_EQUAL(String(f() << FHEX << 12345.0), "");
+#endif
+    TEST_EQUAL(String(f() << ZEROPAD << setWidth(10) << 12345), "0000012345");
+    TEST_EQUAL(String(f() << indent(7)), "       ");
+  }
+};
+
+TEST_REGISTER(FormatOutputStream);
+
+#endif
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

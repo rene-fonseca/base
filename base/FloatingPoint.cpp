@@ -948,8 +948,33 @@ public:
   TEST_PRIORITY(10);
   TEST_PROJECT("base");
 
+  template<typename TYPE>
+  void test_IEEE_EXTENDED_DOUBLE_PRECISION_96_ALIGN16(TYPE _value) {
+    TEST_ASSERT(sizeof(TYPE) == 16);
+    if (sizeof(TYPE) == 16) {
+_COM_AZURE_DEV__BASE__PACKED__BEGIN
+      union {
+        uint32 words[4];
+        TYPE value;
+      } _COM_AZURE_DEV__BASE__PACKED data;
+_COM_AZURE_DEV__BASE__PACKED__END
+      data.words[0] = 0xabcdfedc;
+      data.words[1] = 0xabcdfedc;
+      data.words[2] = 0xabcdfedc;
+      data.words[3] = 0xabcdfedc;
+      data.value = _value;
+      TEST_ASSERT(data.words[0] != 0xabcdfedc);
+      TEST_ASSERT(data.words[1] != 0xabcdfedc);
+      TEST_ASSERT(data.words[2] != 0xabcdfedc);
+      TEST_ASSERT((data.words[2] >> 16) == 0xabcd); // if only 10 bytes are used
+      TEST_ASSERT(data.words[3] == 0xabcdfedc);
+    }
+  }
+  
   void run() override
   {
+    volatile int zero = 0;
+
     TEST_ASSERT(sizeof(float) <= sizeof(double));
     TEST_ASSERT(sizeof(double) <= sizeof(long double));
 
@@ -957,6 +982,21 @@ public:
     TEST_ASSERT(sizeof(double) == sizeof(FloatingPoint::ToDouble));
     TEST_ASSERT(sizeof(long double) == sizeof(FloatingPoint::ToLongDouble));
 
+#if (_COM_AZURE_DEV__BASE__FLOAT == _COM_AZURE_DEV__BASE__IEEE_EXTENDED_DOUBLE_PRECISION_96_ALIGN16)
+    test_IEEE_EXTENDED_DOUBLE_PRECISION_96_ALIGN16<float>(-123.456f);
+    test_IEEE_EXTENDED_DOUBLE_PRECISION_96_ALIGN16<float>(-123.456f/zero);
+#endif
+
+#if (_COM_AZURE_DEV__BASE__DOUBLE == _COM_AZURE_DEV__BASE__IEEE_EXTENDED_DOUBLE_PRECISION_96_ALIGN16)
+    test_IEEE_EXTENDED_DOUBLE_PRECISION_96_ALIGN16<double>(-123.456);
+    test_IEEE_EXTENDED_DOUBLE_PRECISION_96_ALIGN16<double>(-123.456/zero);
+#endif
+
+#if (_COM_AZURE_DEV__BASE__LONG_DOUBLE == _COM_AZURE_DEV__BASE__IEEE_EXTENDED_DOUBLE_PRECISION_96_ALIGN16)
+    test_IEEE_EXTENDED_DOUBLE_PRECISION_96_ALIGN16<long double>(-123.456L);
+    test_IEEE_EXTENDED_DOUBLE_PRECISION_96_ALIGN16<long double>(-123.456L/zero);
+#endif
+    
     FloatingPoint::ToFloat f1(1.0f);
     TEST_ASSERT(f1.isOrdinary());
     TEST_ASSERT(!f1.isNaN());
@@ -986,8 +1026,6 @@ public:
 
     FloatingPoint::ToLongDouble ld_n1(-1.0L);
     TEST_ASSERT(ld_n1.isNegative());
-
-    volatile int zero = 0;
 
     FloatingPoint::ToFloat f_1div0(1.0f/zero);
     TEST_ASSERT(!f_1div0.isNaN());

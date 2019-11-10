@@ -739,6 +739,8 @@ bool UnitTestManager::runTests(const String& pattern, bool runDevel)
   unsigned int passed = 0;
   unsigned int failed = 0;
   unsigned int count = 0;
+  Array<String> failedTests;
+
   Thread::Times totalTimes;
 
   for (auto test : tests) {
@@ -831,6 +833,7 @@ bool UnitTestManager::runTests(const String& pattern, bool runDevel)
       if (stopOnFailure) {
         break;
       }
+      failedTests.append(test->getId());
     }
 
     totalTimes = totalTimes + thread.times;
@@ -847,6 +850,9 @@ bool UnitTestManager::runTests(const String& pattern, bool runDevel)
     fout << Format::subst("TOTAL PASSED: %1/%2", passed, count) << ENDL;
   }
   fout << "TOTAL PROCESSING TIME: " << totalTimes.getTotal()/1000000.0 << " ms" << ENDL;
+  if (failedTests) {
+    fout << "FAILED TESTS: " << failedTests << ENDL; // TAG: can we make generic container style formatting prefix, spacing, separator, suffix
+  }
 
   if (oldExceptionHandler) {
     Exception::setExceptionHandler(oldExceptionHandler); // could use automation class for this

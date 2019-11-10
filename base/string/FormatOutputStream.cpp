@@ -1671,7 +1671,9 @@ FormatOutputStream& FormatOutputStream::operator<<(double _value) throw(IOExcept
 
 FormatOutputStream& FormatOutputStream::operator<<(long double _value) throw(IOException)
 {
-  // return operator<<(static_cast<double>(value));
+#if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__GNULINUX) // TAG: need to fix this
+  return operator<<(static_cast<double>(value));
+#endif
 
   BASSERT(sizeof(long double) == sizeof(FloatingPoint::LongDoubleRepresentation));
   const FloatingPoint::ToLongDouble value(_value);

@@ -1043,7 +1043,6 @@ _COM_AZURE_DEV__BASE__PACKED__END
     TEST_ASSERT(!d_n1div0.isNaN());
     TEST_ASSERT(d_n1div0.isInfinity());
 
-#if 1 // TAG: FIXME clang macOS
     FloatingPoint::ToLongDouble ld_1div0(1.0L/zero);
     TEST_ASSERT(!ld_1div0.isNaN());
     TEST_ASSERT(ld_1div0.isInfinity());
@@ -1051,7 +1050,6 @@ _COM_AZURE_DEV__BASE__PACKED__END
     FloatingPoint::ToLongDouble ld_n1div0(-1.0L/zero);
     TEST_ASSERT(!ld_n1div0.isNaN());
     TEST_ASSERT(ld_n1div0.isInfinity());
-#endif
     
     FloatingPoint::ToFloat f_nan(nanf(""));
     TEST_ASSERT(f_nan.isNaN());
@@ -1078,7 +1076,7 @@ _COM_AZURE_DEV__BASE__PACKED__END
     TEST_ASSERT(d_0div0.isQuiteNaN());
     TEST_ASSERT(!d_0div0.isSignalingNaN());
 
-    FloatingPoint::ToDouble ld_0div0(0.0L/zero);
+    FloatingPoint::ToLongDouble ld_0div0(0.0L/zero);
     TEST_ASSERT(ld_0div0.isNaN());
     TEST_ASSERT(ld_0div0.isQuiteNaN());
     TEST_ASSERT(!ld_0div0.isSignalingNaN());
@@ -1127,5 +1125,7 @@ _COM_AZURE_DEV__BASE__PACKED__END
 TEST_REGISTER(FloatingPoint);
 
 #endif
+
+// TAG: quick FormatOutputStream to get full info for float state
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

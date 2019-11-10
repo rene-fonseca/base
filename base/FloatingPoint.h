@@ -812,16 +812,27 @@ _COM_AZURE_DEV__BASE__PACKED__BEGIN
       Returns true if the value is either +INFINITY or -INFINITY.
     */
     inline bool isInfinity() const noexcept {
+#if 1 // temporary workaround until we have x86 representation
+      constexpr uint32 HIGH = 1 << (32 - 1);
+      return (value.exponent == value.ALL_BITS_EXPONENT) &&
+        (((value.mantissa1 & ~HIGH) == 0) && (value.mantissa0 == 0));
+#else
       return (value.exponent == value.ALL_BITS_EXPONENT) && (value.mantissa1 == 0) &&
         (value.mantissa0 == 0);
+#endif
     }
     
     /**
       Returns true if the value is Not-a-Number (NaN).
     */
     inline bool isNaN() const noexcept {
+#if 1 // temporary workaround until we have x86 representation
+      return (value.exponent == value.ALL_BITS_EXPONENT) &&
+        !isInfinity();
+#else
       return (value.exponent == value.ALL_BITS_EXPONENT) &&
         ((value.mantissa1 != 0) || (value.mantissa0 != 0));
+#endif
     }
     
     /**
@@ -830,8 +841,13 @@ _COM_AZURE_DEV__BASE__PACKED__BEGIN
       NaN.
     */
     inline bool isQuiteNaN() const noexcept {
+#if 1 // temporary workaround until we have x86 representation
+      return (value.exponent == value.ALL_BITS_EXPONENT) &&
+        !isInfinity() && !isSignalingNaN();
+#else
       return (value.exponent == value.ALL_BITS_EXPONENT) &&
         ((value.mantissa1 & (1 << (32 - 1))) != 0);
+#endif
     }
     
     /**
@@ -840,9 +856,14 @@ _COM_AZURE_DEV__BASE__PACKED__BEGIN
       called a signaling NaN.
     */
     inline bool isSignalingNaN() const noexcept {
+#if 1 // temporary workaround until we have x86 representation
+      return (value.exponent == value.ALL_BITS_EXPONENT) &&
+        (((value.mantissa1 & 0xc0000000) == 0x80000000) && ((value.mantissa1 != 0) || (value.mantissa0 != 0)));
+#else
       return (value.exponent == value.ALL_BITS_EXPONENT) &&
         ((value.mantissa1 & (1 << (32 - 1))) == 0) &&
         ((value.mantissa1 != 0) || (value.mantissa0 != 0)); // but not infinity
+#endif
     }
     
     operator float() const noexcept;

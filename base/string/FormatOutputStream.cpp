@@ -1583,20 +1583,22 @@ void convertFloatingPoint(
   }
 }
 
-FormatOutputStream& FormatOutputStream::operator<<(float value) throw(IOException)
+FormatOutputStream& FormatOutputStream::operator<<(float _value) throw(IOException)
 {
   BASSERT(sizeof(float) == sizeof(FloatingPoint::FloatRepresentation));
-  union {
-    float primitive;
-    FloatingPoint::FloatRepresentation fields;
-  } representation;
-  representation.primitive = value;
+  const FloatingPoint::ToFloat value(_value);
+
+  if (value.isNaN()) {
+    return *this << MESSAGE("nan");
+  } else if (value.isInfinity()) {
+    return *this << (!value.isNegative() ? MESSAGE("inf") : MESSAGE("-inf"));
+  }
 
   unsigned int precision = 0;
   unsigned int mantissa[(FloatingPoint::FloatRepresentation::SIGNIFICANT + (sizeof(unsigned int) * 8) - 1)/(sizeof(unsigned int) * 8)];
   int exponent = 0;
   unsigned int flags = 0;
-  analyseFloatingPoint(representation.fields, precision, mantissa, exponent, flags);
+  analyseFloatingPoint(value.value, precision, mantissa, exponent, flags);
   writeFloatingPointType(
     precision,
     mantissa,
@@ -1607,20 +1609,22 @@ FormatOutputStream& FormatOutputStream::operator<<(float value) throw(IOExceptio
   return *this;
 }
 
-FormatOutputStream& FormatOutputStream::operator<<(double value) throw(IOException)
+FormatOutputStream& FormatOutputStream::operator<<(double _value) throw(IOException)
 {
   BASSERT(sizeof(double) == sizeof(FloatingPoint::DoubleRepresentation));
-  union {
-    double primitive;
-    FloatingPoint::DoubleRepresentation fields;
-  } representation;
-  representation.primitive = value;
+  const FloatingPoint::ToDouble value(_value);
+
+  if (value.isNaN()) {
+    return *this << MESSAGE("nan");
+  } else if (value.isInfinity()) {
+    return *this << (!value.isNegative() ? MESSAGE("inf") : MESSAGE("-inf"));
+  }
   
   unsigned int precision = 0;
   unsigned int mantissa[(FloatingPoint::DoubleRepresentation::SIGNIFICANT + (sizeof(unsigned int) * 8) - 1)/(sizeof(unsigned int) * 8)];
   int exponent = 0;
   unsigned int flags = 0;
-  analyseFloatingPoint(representation.fields, precision, mantissa, exponent, flags);
+  analyseFloatingPoint(value.value, precision, mantissa, exponent, flags);
   writeFloatingPointType(
     precision,
     mantissa,
@@ -1631,21 +1635,24 @@ FormatOutputStream& FormatOutputStream::operator<<(double value) throw(IOExcepti
   return *this;
 }
 
-FormatOutputStream& FormatOutputStream::operator<<(long double value) throw(IOException)
+FormatOutputStream& FormatOutputStream::operator<<(long double _value) throw(IOException)
 {
   // return operator<<(static_cast<double>(value));
+
   BASSERT(sizeof(long double) == sizeof(FloatingPoint::LongDoubleRepresentation));
-  union {
-    long double primitive;
-    FloatingPoint::LongDoubleRepresentation fields;
-  } representation;
-  representation.primitive = value;
+  const FloatingPoint::ToLongDouble value(_value);
+
+  if (value.isNaN()) {
+    return *this << MESSAGE("nan");
+  } else if (value.isInfinity()) {
+    return *this << (!value.isNegative() ? MESSAGE("inf") : MESSAGE("-inf"));
+  }
 
   unsigned int precision = 0;
   unsigned int mantissa[(FloatingPoint::LongDoubleRepresentation::SIGNIFICANT + (sizeof(unsigned int) * 8) - 1)/(sizeof(unsigned int) * 8)];
   int exponent = 0;
   unsigned int flags = 0;
-  analyseFloatingPoint(representation.fields, precision, mantissa, exponent, flags);
+  analyseFloatingPoint(value.value, precision, mantissa, exponent, flags);
 
   writeFloatingPointType(
     precision,

@@ -23,6 +23,7 @@
 #include <base/OutOfDomain.h>
 #include <base/OutOfRange.h>
 #include <base/Literal.h>
+#include <base/WideLiteral.h>
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
@@ -493,6 +494,8 @@ public:
   */
   void addCharacterField(const char* buffer, MemorySize size) throw(IOException);
 
+  void addCharacterField(const wchar* buffer, MemorySize size) throw(IOException);
+
   /**
     Writes a preformated integer to the stream.
   */
@@ -548,7 +551,12 @@ public:
     addCharacterField(&value, 1);
     return *this;
   }
-  
+
+  inline FormatOutputStream& operator<<(wchar value) throw(IOException) {
+    addCharacterField(&value, 1);
+    return *this;
+  }
+
   FormatOutputStream& operator<<(short int value) throw(IOException);
   FormatOutputStream& operator<<(unsigned short int value) throw(IOException);
   FormatOutputStream& operator<<(int value) throw(IOException);
@@ -567,9 +575,20 @@ public:
     return *this;
   }
 
+  inline FormatOutputStream& operator<<(const NativeWideString& value) throw(IOException)
+  {
+    addCharacterField(value.getValue(), value.getLength());
+    return *this;
+  }
+
   inline FormatOutputStream& operator<<(const char* value) throw(IOException)
   {
     return *this << NativeString(value);
+  }
+
+  inline FormatOutputStream& operator<<(const wchar* value) throw(IOException)
+  {
+    return *this << NativeWideString(value);
   }
 
   /**
@@ -607,7 +626,13 @@ public:
     addCharacterField(literal.getValue(), literal.getLength());
     return *this;
   }
-  
+
+  inline FormatOutputStream& operator<<(
+    const WideLiteral& literal) throw(IOException) {
+    addCharacterField(literal.getValue(), literal.getLength());
+    return *this;
+  }
+
   /**
     Writes a nice description of the exception to the format output stream.
   */

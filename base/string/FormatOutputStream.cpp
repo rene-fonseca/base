@@ -385,6 +385,39 @@ void FormatOutputStream::addCharacterField(const char* buffer, MemorySize size) 
   context = defaultContext;
 }
 
+void FormatOutputStream::addCharacterField(const wchar* buffer, MemorySize size) throw(IOException)
+{
+  ExclusiveSynchronize<Guard> _guard(guard);
+
+  Symbols::Justification justification;
+  switch (context.justification) {
+  case Symbols::RIGHT:
+    justification = Symbols::RIGHT;
+    break;
+  case Symbols::LEFT:
+    justification = Symbols::LEFT;
+    break;
+  case Symbols::RADIX: // no radix - use default
+  case Symbols::DEPENDENT:
+  default:
+    justification = Symbols::LEFT; // TAG: is this locale specific
+  }
+
+  const std::string text = toUTF8(buffer, size);
+
+  if (justification == Symbols::LEFT) {
+    write(Cast::pointer<const uint8*>(text.c_str()), text.size()); // write characters
+  }
+  // what if multi-wchar character - we ignore for now
+  if (size < static_cast<unsigned int>(context.width)) { // write blanks if required
+    unfoldValue(' ', context.width - size); // we use number of wchars
+  }
+  if (context.justification == Symbols::RIGHT) {
+    write(Cast::pointer<const uint8*>(text.c_str()), text.size()); // write characters
+  }
+  context = defaultContext;
+}
+
 void FormatOutputStream::addIntegerField(const char* buffer, unsigned int size, bool isSigned) throw(IOException)
 {
   ExclusiveSynchronize<Guard> _guard(guard);
@@ -1989,7 +2022,7 @@ public:
     TEST_EQUAL(String(f() << false), "false");
     TEST_EQUAL(String(f() << true), "true");
     TEST_EQUAL(String(f() << '!'), "!");
-    // TEST_EQUAL(String(f() << L'!'), "!");
+    TEST_EQUAL(String(f() << L'!'), "!");
     TEST_EQUAL(String(f() << -123), "-123");
 
     TEST_EQUAL(String(f() << static_cast<short>(-123)), "-123");
@@ -2018,7 +2051,8 @@ public:
     TEST_EQUAL(String(f() << ""), "");
     TEST_EQUAL(String(f() << MESSAGE("Hello, World!")), "Hello, World!");
     TEST_EQUAL(String(f() << "Hello, World!"), "Hello, World!");
-    // TEST_EQUAL(String(f() << (L"Hello, World!")), "Hello, World!");
+    TEST_EQUAL(String(f() << WIDEMESSAGE("Hello, World!")), "Hello, World!");
+    TEST_EQUAL(String(f() << L"Hello, World!"), "Hello, World!");
 
     TEST_EQUAL(String(f() << static_cast<void*>(nullptr)), "0x0");
     TEST_EQUAL(String(f() << BIN << 12345), "0b11000000111001");

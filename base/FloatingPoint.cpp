@@ -950,6 +950,9 @@ public:
 
   void run() override
   {
+    TEST_ASSERT(sizeof(float) <= sizeof(double));
+    TEST_ASSERT(sizeof(double) <= sizeof(long double));
+
     TEST_ASSERT(sizeof(float) == sizeof(FloatingPoint::ToFloat));
     TEST_ASSERT(sizeof(double) == sizeof(FloatingPoint::ToDouble));
     TEST_ASSERT(sizeof(long double) == sizeof(FloatingPoint::ToLongDouble));
@@ -975,84 +978,116 @@ public:
     TEST_ASSERT(!f3.isQuiteNaN());
     TEST_ASSERT(!f3.isSignalingNaN());
 
-    FloatingPoint::ToFloat f4(-1.0f);
-    TEST_ASSERT(f4.isNegative());
+    FloatingPoint::ToFloat f_n1(-1.0f);
+    TEST_ASSERT(f_n1.isNegative());
 
-    FloatingPoint::ToDouble f5(-1.0);
-    TEST_ASSERT(f5.isNegative());
+    FloatingPoint::ToDouble d_n1(-1.0);
+    TEST_ASSERT(d_n1.isNegative());
 
-    FloatingPoint::ToLongDouble f6(-1.0L);
-    TEST_ASSERT(f6.isNegative());
+    FloatingPoint::ToLongDouble ld_n1(-1.0L);
+    TEST_ASSERT(ld_n1.isNegative());
 
     volatile int zero = 0;
 
-    FloatingPoint::ToFloat f7f(1.0f/zero);
-    TEST_ASSERT(!f7f.isNaN());
-    TEST_ASSERT(f7f.isInfinity());
+    FloatingPoint::ToFloat f_1div0(1.0f/zero);
+    TEST_ASSERT(!f_1div0.isNaN());
+    TEST_ASSERT(f_1div0.isInfinity());
 
-    FloatingPoint::ToFloat f8f(-1.0f/zero);
-    TEST_ASSERT(!f8f.isNaN());
-    TEST_ASSERT(f8f.isInfinity());
+    FloatingPoint::ToFloat f_n1div0(-1.0f/zero);
+    TEST_ASSERT(!f_n1div0.isNaN());
+    TEST_ASSERT(f_n1div0.isInfinity());
 
-    FloatingPoint::ToDouble f7(1.0/zero);
-    TEST_ASSERT(!f7.isNaN());
-    TEST_ASSERT(f7.isInfinity());
+    FloatingPoint::ToDouble d_1div0(1.0/zero);
+    TEST_ASSERT(!d_1div0.isNaN());
+    TEST_ASSERT(d_1div0.isInfinity());
 
-    FloatingPoint::ToDouble f8(-1.0/zero);
-    TEST_ASSERT(!f8.isNaN());
-    TEST_ASSERT(f8.isInfinity());
+    FloatingPoint::ToDouble d_n1div0(-1.0/zero);
+    TEST_ASSERT(!d_n1div0.isNaN());
+    TEST_ASSERT(d_n1div0.isInfinity());
 
-#if 0 // TAG: FIXME clang macOS
-    FloatingPoint::ToLongDouble f7l(1.0L/zero);
-    TEST_ASSERT(!f7l.isNaN());
-    TEST_ASSERT(f7l.isInfinity());
+#if 1 // TAG: FIXME clang macOS
+    FloatingPoint::ToLongDouble ld_1div0(1.0L/zero);
+    TEST_ASSERT(!ld_1div0.isNaN());
+    TEST_ASSERT(ld_1div0.isInfinity());
 
-    FloatingPoint::ToLongDouble f8l(-1.0L/zero);
-    TEST_ASSERT(!f8l.isNaN());
-    TEST_ASSERT(f8l.isInfinity());
+    FloatingPoint::ToLongDouble ld_n1div0(-1.0L/zero);
+    TEST_ASSERT(!ld_n1div0.isNaN());
+    TEST_ASSERT(ld_n1div0.isInfinity());
 #endif
     
-    FloatingPoint::ToFloat f10(nanf(""));
-    TEST_ASSERT(f10.isNaN());
-    TEST_ASSERT(f10.isQuiteNaN());
-    TEST_ASSERT(!f10.isSignalingNaN());
+    FloatingPoint::ToFloat f_nan(nanf(""));
+    TEST_ASSERT(f_nan.isNaN());
+    TEST_ASSERT(f_nan.isQuiteNaN());
+    TEST_ASSERT(!f_nan.isSignalingNaN());
+
+    FloatingPoint::ToDouble d_nan(nan(""));
+    TEST_ASSERT(d_nan.isNaN());
+    TEST_ASSERT(d_nan.isQuiteNaN());
+    TEST_ASSERT(!d_nan.isSignalingNaN());
     
-    FloatingPoint::ToDouble f11(nan(""));
-    TEST_ASSERT(f11.isNaN());
-    TEST_ASSERT(f11.isQuiteNaN());
-    TEST_ASSERT(!f11.isSignalingNaN());
+    FloatingPoint::ToLongDouble ld_nan(nanl(""));
+    TEST_ASSERT(ld_nan.isNaN());
+    TEST_ASSERT(ld_nan.isQuiteNaN());
+    TEST_ASSERT(!ld_nan.isSignalingNaN());
+
+    FloatingPoint::ToFloat f_0div0(0.0f/zero);
+    TEST_ASSERT(f_0div0.isNaN());
+    TEST_ASSERT(f_0div0.isQuiteNaN());
+    TEST_ASSERT(!f_0div0.isSignalingNaN());
+
+    FloatingPoint::ToDouble d_0div0(0.0/zero);
+    TEST_ASSERT(d_0div0.isNaN());
+    TEST_ASSERT(d_0div0.isQuiteNaN());
+    TEST_ASSERT(!d_0div0.isSignalingNaN());
+
+    FloatingPoint::ToDouble ld_0div0(0.0L/zero);
+    TEST_ASSERT(ld_0div0.isNaN());
+    TEST_ASSERT(ld_0div0.isQuiteNaN());
+    TEST_ASSERT(!ld_0div0.isSignalingNaN());
+
+    FloatingPoint::ToFloat f_qNaN(std::numeric_limits<float>::quiet_NaN());
+    TEST_ASSERT(f_qNaN.isNaN());
+    TEST_ASSERT(f_qNaN.isQuiteNaN());
+    TEST_ASSERT(!f_qNaN.isSignalingNaN());
     
-    FloatingPoint::ToLongDouble f12(nanl(""));
-    TEST_ASSERT(f12.isNaN());
-    TEST_ASSERT(f12.isQuiteNaN());
-    TEST_ASSERT(!f12.isSignalingNaN());
-    
-    FloatingPoint::ToDouble f13(0.0/zero);
-    TEST_ASSERT(f13.isNaN());
-    TEST_ASSERT(f13.isQuiteNaN());
-    TEST_ASSERT(!f13.isSignalingNaN());
+    float qNaN = std::numeric_limits<float>::quiet_NaN();
+    uint32_t* pqNaN = reinterpret_cast<uint32_t*>(&qNaN);
+    float sNaN = std::numeric_limits<float>::signaling_NaN();
+    uint32_t* psNaN = reinterpret_cast<uint32_t*>(&sNaN);
 
-    FloatingPoint::ToFloat f14(std::numeric_limits<float>::signaling_NaN());
-    TEST_ASSERT(f14.isNaN());
-    TEST_ASSERT(!f14.isQuiteNaN());
-    TEST_ASSERT(f14.isSignalingNaN());
+#if !(_COM_AZURE_DEV__BASE__COMPILER == _COM_AZURE_DEV__BASE__COMPILER_MSC)
+    FloatingPoint::ToFloat f_sNaN(std::numeric_limits<float>::signaling_NaN()); // MSC bug - returns qNaN / VS 16.3.8
+    TEST_ASSERT(f_sNaN.isNaN());
+    TEST_ASSERT(!f_sNaN.isQuiteNaN());
+    TEST_ASSERT(f_sNaN.isSignalingNaN());
+#endif
 
-    FloatingPoint::ToDouble f15(std::numeric_limits<double>::signaling_NaN());
-    TEST_ASSERT(f15.isNaN());
-    TEST_ASSERT(!f15.isQuiteNaN());
-    TEST_ASSERT(f15.isSignalingNaN());
+    FloatingPoint::ToDouble d_qNaN(std::numeric_limits<double>::quiet_NaN());
+    TEST_ASSERT(d_qNaN.isNaN());
+    TEST_ASSERT(d_qNaN.isQuiteNaN());
+    TEST_ASSERT(!d_qNaN.isSignalingNaN());
 
-    FloatingPoint::ToLongDouble f16(std::numeric_limits<long double>::signaling_NaN());
-    TEST_ASSERT(f16.isNaN());
-    TEST_ASSERT(!f16.isQuiteNaN());
-    TEST_ASSERT(f16.isSignalingNaN());
+    FloatingPoint::ToDouble d_sNaN(std::numeric_limits<double>::signaling_NaN());
+    TEST_ASSERT(d_sNaN.isNaN());
+    TEST_ASSERT(!d_sNaN.isQuiteNaN());
+    TEST_ASSERT(d_sNaN.isSignalingNaN());
 
-    FloatingPoint::ToFloat f17(Math::sqrt(-1.0f));
-    TEST_ASSERT(f17.isQuiteNaN());
-    FloatingPoint::ToDouble f18(Math::sqrt(-1.0));
-    TEST_ASSERT(f18.isQuiteNaN());
-    FloatingPoint::ToLongDouble f19(Math::sqrt(-1.0L));
-    TEST_ASSERT(f19.isQuiteNaN());
+    FloatingPoint::ToLongDouble ld_qNaN(std::numeric_limits<long double>::quiet_NaN());
+    TEST_ASSERT(ld_qNaN.isNaN());
+    TEST_ASSERT(ld_qNaN.isQuiteNaN());
+    TEST_ASSERT(!ld_qNaN.isSignalingNaN());
+
+    FloatingPoint::ToLongDouble ld_sNaN(std::numeric_limits<long double>::signaling_NaN());
+    TEST_ASSERT(ld_sNaN.isNaN());
+    TEST_ASSERT(!ld_sNaN.isQuiteNaN());
+    TEST_ASSERT(ld_sNaN.isSignalingNaN());
+
+    FloatingPoint::ToFloat f_sqrt(Math::sqrt(-1.0f));
+    TEST_ASSERT(f_sqrt.isQuiteNaN());
+    FloatingPoint::ToDouble d_sqrt(Math::sqrt(-1.0));
+    TEST_ASSERT(d_sqrt.isQuiteNaN());
+    FloatingPoint::ToLongDouble ld_sqrt(Math::sqrt(-1.0L));
+    TEST_ASSERT(ld_sqrt.isQuiteNaN());
   }
 };
 

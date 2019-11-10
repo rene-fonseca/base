@@ -85,7 +85,6 @@ public:
   
   class Representation {
   public:
-    // TAG: problem if sizeof(uint32) != sizeof(unsigned int)
     
     /*
       Representation of single precision (32-bit) floating point type as
@@ -494,7 +493,7 @@ _COM_AZURE_DEV__BASE__PACKED__BEGIN
     */
     inline bool isSignalingNaN() const noexcept {
       return (value.exponent == value.ALL_BITS_EXPONENT) &&
-        ((value.mantissa0 & (1 << (23 - 1))) == 0) && (value.mantissa0 != 0);
+        ((value.mantissa0 & (1 << (23 - 1))) == 0) && (value.mantissa0 != 0); // but not infitity
     }
     
     operator float() const noexcept;
@@ -653,8 +652,8 @@ _COM_AZURE_DEV__BASE__PACKED__BEGIN
     */
     inline bool isSignalingNaN() const noexcept {
       return (value.exponent == value.ALL_BITS_EXPONENT) &&
-        ((value.mantissa1 & (1 << (20 - 1))) == 0) &&
-        ((value.mantissa1 != 0) || (value.mantissa0 != 0));
+        ((value.mantissa1 & (1 << (20 - 1))) == 0) && // high bit not set
+        ((value.mantissa1 != 0) || (value.mantissa0 != 0)); // but not infitity
     }
     
     operator float() const noexcept;
@@ -814,7 +813,7 @@ _COM_AZURE_DEV__BASE__PACKED__BEGIN
     */
     inline bool isQuiteNaN() const noexcept {
       return (value.exponent == value.ALL_BITS_EXPONENT) &&
-        ((value.mantissa1 & (1 << (20 - 1))) != 0);
+        ((value.mantissa1 & (1 << (32 - 1))) != 0);
     }
     
     /**
@@ -824,8 +823,8 @@ _COM_AZURE_DEV__BASE__PACKED__BEGIN
     */
     inline bool isSignalingNaN() const noexcept {
       return (value.exponent == value.ALL_BITS_EXPONENT) &&
-        ((value.mantissa1 & (1 << (20 - 1))) == 0) &&
-        ((value.mantissa1 != 0) || (value.mantissa0 != 0));
+        ((value.mantissa1 & (1 << (32 - 1))) == 0) &&
+        ((value.mantissa1 != 0) || (value.mantissa0 != 0)); // by not infinity
     }
     
     operator float() const noexcept;
@@ -985,7 +984,7 @@ _COM_AZURE_DEV__BASE__PACKED__BEGIN
     */
     inline bool isQuiteNaN() const noexcept {
       return (value.exponent == value.ALL_BITS_EXPONENT) &&
-        ((value.mantissa1 & 0xc0000000) == 0xc0000000); // TAG: need to check this
+        ((value.mantissa1 & (1 << (32 - 1))) != 0);
     }
     
     /**
@@ -995,8 +994,8 @@ _COM_AZURE_DEV__BASE__PACKED__BEGIN
     */
     inline bool isSignalingNaN() const noexcept {
       return (value.exponent == value.ALL_BITS_EXPONENT) &&
-        ((value.mantissa1 & 0xa0000000) == 0xa0000000) && // TAG: need to check this
-        ((value.mantissa1 != 0) || (value.mantissa0 != 0));
+        ((value.mantissa1 & (1 << (32 - 1))) == 0);
+        ((value.mantissa1 != 0) || (value.mantissa0 != 0)); // but not infitity
     }
     
     operator float() const noexcept;
@@ -1150,7 +1149,7 @@ _COM_AZURE_DEV__BASE__PACKED__BEGIN
     */
     inline bool isQuiteNaN() const noexcept {
       return (value.exponent == value.ALL_BITS_EXPONENT) &&
-        ((value.mantissa3 & (1 << (20 - 1))) != 0);
+        ((value.mantissa3 & (1 << (16 - 1))) != 0);
     }
     
     /**
@@ -1160,9 +1159,9 @@ _COM_AZURE_DEV__BASE__PACKED__BEGIN
     */
     inline bool isSignalingNaN() const noexcept {
       return (value.exponent == value.ALL_BITS_EXPONENT) &&
-        ((value.mantissa3 & (1 << (20 - 1))) == 0) &&
+        ((value.mantissa3 & (1 << (16 - 1))) == 0) &&
         ((value.mantissa3 != 0) || (value.mantissa2 != 0) ||
-         (value.mantissa1 != 0) || (value.mantissa0 != 0));
+         (value.mantissa1 != 0) || (value.mantissa0 != 0)); // but not infitity
     }
     
     operator float() const noexcept;

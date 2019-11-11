@@ -19,6 +19,7 @@
 #include <base/string/ANSIEscapeSequence.h>
 #include <base/io/FileDescriptor.h>
 #include <base/Application.h>
+#include <base/string/Format.h>
 
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
 #  include <windows.h>
@@ -274,6 +275,7 @@ void StackFrame::toStream(FormatOutputStream& stream, const void* const * trace,
   }
   field2 += 2; // prefix
 
+  String lastAddress;
   MemorySize count = 0;
   for (MemorySize i = 0; i < size; ++i) {
     const void* ip = trace[i];
@@ -292,12 +294,23 @@ void StackFrame::toStream(FormatOutputStream& stream, const void* const * trace,
       const String name = DynamicLinker::getSymbolName(ip);
       auto displacement = (reinterpret_cast<const uint8*>(ip) - reinterpret_cast<const uint8*>(symbol));
       if (showAddress) {
+        StringOutputStream sos;
+        sos << setWidth(field2) << symbol << "+" << HEX << ZEROPAD << NOPREFIX << setWidth(4) << displacement;
+        const String address = sos.toString();
         if (useColors) {
+          MemorySize j = 0; // find first difference for new address
+          for (; i < minimum(address.getLength(), lastAddress.getLength()); ++j) {
+            if (address[j] != lastAddress[j]) {
+              break;
+            }
+          }
+          lastAddress = address;
           stream << setForeground(ANSIEscapeSequence::RED)
-                 << setWidth(field2) << symbol << "+" << HEX << ZEROPAD << NOPREFIX << setWidth(4) << displacement
+                 << /*italic() <<*/ address.substring(0, j) /*<< '.'*/ << normal() << underscore()
+                 << setForeground(ANSIEscapeSequence::RED) << address.substring(j)
                  << normal();
         } else {
-          stream << setWidth(field2) << symbol << "+" << HEX << ZEROPAD << NOPREFIX << setWidth(4) << displacement;
+          stream << address;
         }
       }
       if (name) {

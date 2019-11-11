@@ -14,6 +14,7 @@
 #include <base/Base.h>
 #include <base/concurrency/AtomicCounter.h>
 #include <base/string/FormatOutputStream.h>
+#include <base/StackFrame.h>
 
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
 #  include <windows.h>
@@ -74,6 +75,11 @@ bool Assert::handle(const char* message)
   *dest++ = '\0'; // always room for terminator
   
   Trace::message(buffer);
+
+  static bool useStackTrace = true; // TAG: look up application option
+  if (useStackTrace) {
+    StackFrame::dump();
+  }
 
   static bool useBreakpoint = true; // TAG: look up application option
   if (useBreakpoint) {

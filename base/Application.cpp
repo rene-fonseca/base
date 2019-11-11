@@ -66,9 +66,12 @@ _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 class ApplicationImpl {
 public:
 
-  static void exceptionHandler(StackFrame& stackTrace) noexcept
+  static void exceptionHandler(StackFrame* _stackTrace) noexcept
   {
-    if (!stackTrace.isEmpty()) {
+    static bool firstTime = true;
+
+    if (firstTime && _stackTrace) {
+      StackFrame& stackTrace = *_stackTrace;
 #if (_COM_AZURE_DEV__BASE__COMPILER == _COM_AZURE_DEV__BASE__COMPILER_GCC) // not in stack trace for LLVM
       // info before initial __cxa_throw is not useful
       void* address = (void*)&__cxa_throw;
@@ -78,14 +81,15 @@ public:
       }
 #endif
 
-      StackFrame::toStream(
-        ferr, stackTrace.getTrace(), stackTrace.getSize(),
-        StackFrame::FLAG_COMPACT | StackFrame::FLAG_SHOW_ADDRESS | StackFrame::FLAG_SHOW_MODULE | StackFrame::FLAG_INDENT |
-        (FileDescriptor::getStandardError().isANSITerminal() ? StackFrame::FLAG_USE_COLORS : 0)
-      );
+      if (!stackTrace.isEmpty()) {
+        StackFrame::toStream(
+          ferr, stackTrace.getTrace(), stackTrace.getSize(),
+          StackFrame::FLAG_COMPACT | StackFrame::FLAG_SHOW_ADDRESS | StackFrame::FLAG_SHOW_MODULE | StackFrame::FLAG_INDENT |
+          (FileDescriptor::getStandardError().isANSITerminal() ? StackFrame::FLAG_USE_COLORS : 0)
+        );
+      }
     }
 
-    static bool firstTime = true;    
     StringOutputStream stream;
     // const Type exceptionType = Exception::getExceptionType();
     if (firstTime /*|| exceptionType.isInitialized()*/) {
@@ -133,7 +137,7 @@ public:
         stream << "Internal error: Uncaught and unknown exception." << FLUSH;
       }
     } else {
-      stream << "Internal error: Explicit termination." << FLUSH;
+      stream << "Internal error: No exception detected so must be explicit termination by throw; or std::terminate()." << FLUSH;
     }
     ferr << stream.getString() << ENDL; // TAG: use appropriate error stream
     
@@ -156,16 +160,28 @@ public:
 
   static void terminationExceptionHandler() noexcept
   {
-    ferr << "Internal error: Application will be terminated." << ENDL;
-    auto stackTrace = StackFrame::getStack(2);
-    exceptionHandler(stackTrace);
+    static bool firstTime = true;
+    if (firstTime) {
+      firstTime = false;
+      ferr << "Internal error: Application will be terminated." << ENDL;
+      auto stackTrace = StackFrame::getStack(2);
+      exceptionHandler(&stackTrace);
+    } else {
+      exceptionHandler(nullptr);
+    }
   }
 
   static void unexpectedExceptionHandler() noexcept
   {
-    ferr << "Internal error: Unexpected exception." << ENDL;
-    auto stackTrace = StackFrame::getStack(2);
-    exceptionHandler(stackTrace);
+    static bool firstTime = true;
+    if (firstTime) {
+      firstTime = false;
+      ferr << "Internal error: Unexpected exception." << ENDL;
+      auto stackTrace = StackFrame::getStack(2);
+      exceptionHandler(&stackTrace);
+    } else {
+      exceptionHandler(nullptr);
+    }
   }
 
   /* The application signal handler. */

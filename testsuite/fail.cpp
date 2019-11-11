@@ -57,7 +57,7 @@ public:
       command = argument;
     }
     if (!command) {
-      ferr << "Command not specified (outofrange, rethrow, nullpointer, runtimeerror, outofmem, throwstring, throwstring2, terminate)." << ENDL;
+      ferr << "Command not specified (outofrange, rethrow, onlythrow, nullpointer, runtimeerror, outofmem, throwstring, throwstring2, terminate)." << ENDL;
       return false;
     }
     return true;
@@ -75,6 +75,11 @@ public:
     } catch (Exception&) {
       throw;
     }
+  }
+  
+  void throwNothing()
+  {
+    throw;
   }
   
   void throwNullPointer() noexcept
@@ -124,6 +129,8 @@ public:
       throwOutOfRange();
     } else if (command == "rethrow") {
       rethrowOutOfRange();
+    } else if (command == "onlythrow") {
+      throwNothing();
     } else if (command == "nullpointer") {
       throwNullPointer();
     } else if (command == "runtimeerror") {
@@ -136,9 +143,10 @@ public:
       Allocator<uint8> buffer;
       MemorySize size = 0;
       --size;
+      size /= 2;
       buffer.setSize(size);
     } else if (command == "terminate") {
-      std::terminate(); // TAG: current writing stack trace twice for no reason
+      std::terminate();
     } else if (command == "dumpstack") {
       dumpStack();
     } else {

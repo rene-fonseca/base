@@ -329,7 +329,12 @@ void StackFrame::toStream(FormatOutputStream& stream, const void* const * trace,
         if (showAddress) {
           stream << " ";
         }
-        const String demangled = TypeInfo::demangleName(name.native());
+        String demangled = TypeInfo::demangleName(name.native());
+        const bool stripNamespace = flags & FLAG_STRIP_NAMESPACE; // this will compact output quite a bit
+        if (stripNamespace) {
+          demangled.replaceAll("base::", String()); // or std:: // TAG: we should check char just before to make sure this is a namespace
+          // TAG: we can add a register of namespace macro like register of test to support stripping of any namespace
+        }
         if (useColors) {
           if (path) {
             stream << setForeground(ANSIEscapeSequence::GREEN) << path << normal() << "!";

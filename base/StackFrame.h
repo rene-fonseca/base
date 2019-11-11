@@ -118,7 +118,8 @@ public:
     FLAG_INDENT = 1 << 2,
     FLAG_COMPACT = 1 << 3,
     FLAG_FULL_PATH = 1 << 4,
-    FLAG_USE_COLORS = 1 << 5
+    FLAG_USE_COLORS = 1 << 5,
+    FLAG_STRIP_NAMESPACE = 1 << 6
   };
   
   /**

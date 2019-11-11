@@ -164,15 +164,21 @@ unsigned int StackFrame::getStack(void** dest, unsigned int size, unsigned int s
   if (count < 0) {
     return 0;
   }
-  while ((count > 0) && (reinterpret_cast<MemorySize>(dest[count - 1]) < 0x10000)) {
-    --count; // remove bad text seg pointer
-  }
   ++skip;
   if (skip >= count) {
     return 0;
   }
-  move(dest, dest + skip, count - skip);
-  count -= skip; // we cannot detect overflow due to skip
+  auto write = dest;
+  auto src = dest + skip;
+  auto end = dest + count;
+  while (src != end) { // remove bad text seg pointer
+    if ((reinterpret_cast<MemorySize>(*src) >= 0x10000) /*&& !(reinterpret_cast<MemorySize>(*src) >> (12*4-1))*/) {
+      *write++ = *src;
+    }
+    ++src;
+  }
+  count = static_cast<unsigned int>(write - dest);
+  // we cannot detect overflow due to skip
 #else
   void* frame = getStackFrame();
   // ++skip;

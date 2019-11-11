@@ -330,16 +330,22 @@ public:
   /**
     Returns the reference counted object.
   */
-  inline TYPE* operator->() noexcept
+  inline TYPE* operator->()
   {
+    if (!value) {
+      throw NullPointer(this);
+    }
     return value;
   }
   
   /**
     Returns the reference counted object.
   */
-  inline const TYPE* operator->() const noexcept
+  inline const TYPE* operator->() const
   {
+    if (!value) {
+      throw NullPointer(this);
+    }
     return value;
   }
 

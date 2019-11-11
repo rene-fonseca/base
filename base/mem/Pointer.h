@@ -66,15 +66,16 @@ public:
   */
   template<class POLY>
   inline Pointer(const Pointer<POLY>& copy) noexcept
-    : value(copy.getValue()) {
+    : value(copy.getValue())
+  {
   }
   
   /**
     Assignment of automation pointer to this automation pointer.
   */
-  inline Pointer& operator=(const Pointer& eq) noexcept
+  inline Pointer& operator=(const Pointer& assign) noexcept
   {
-    value = eq.value;
+    value = assign.value;
     return *this;
   }
   
@@ -83,9 +84,9 @@ public:
     time polymorphism.
   */
   template<class POLY>
-  inline Pointer& operator=(const Pointer<POLY>& eq) noexcept
+  inline Pointer& operator=(const Pointer<POLY>& assign) noexcept
   {
-    value = eq.getValue();
+    value = assign.getValue();
     return *this;
   }
   
@@ -146,24 +147,27 @@ public:
   /**
     Returns true if the pointers are equal.
   */
-  inline bool operator==(const Pointer& eq) const noexcept
+  inline bool operator==(const Pointer& compare) const noexcept
   {
-    return value == eq.value;
+    return value == compare.value;
   }
   
   /**
     Returns true if the pointers are non-equal.
   */
-  inline bool operator!=(const Pointer& eq) const noexcept
+  inline bool operator!=(const Pointer& compare) const noexcept
   {
-    return value != eq.value;
+    return value != compare.value;
   }
   
   /**
     Dereference the automation pointer for modifying access.
   */
-  inline TYPE* const operator->() noexcept
+  inline TYPE* const operator->()
   {
+    if (!value) {
+      throw NullPointer(this);
+    }
     return value;
   }
   
@@ -172,6 +176,9 @@ public:
   */
   inline const TYPE* const operator->() const noexcept
   {
+    if (!value) {
+      throw NullPointer(this);
+    }
     return value;
   }
   

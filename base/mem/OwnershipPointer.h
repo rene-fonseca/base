@@ -81,13 +81,13 @@ public:
   /**
     Assignment operator.
   */
-  inline OwnershipPointer& operator=(OwnershipPointer& eq)
+  inline OwnershipPointer& operator=(OwnershipPointer& assign)
   {
-    if (&eq != this) { // protect against self assignment
+    if (&assign != this) { // protect against self assignment
       if (object) {
         delete object;
       }
-      object = eq.relinquishOwnership();
+      object = assign.relinquishOwnership();
     }
     return *this;
   }
@@ -96,13 +96,13 @@ public:
     Assignment operator.
   */
   template<class POLY>
-  inline OwnershipPointer& operator=(OwnershipPointer<POLY>& eq)
+  inline OwnershipPointer& operator=(OwnershipPointer<POLY>& assign)
   {
-    if (eq.object != object) { // protect against self assignment
+    if (assign.object != object) { // protect against self assignment
       if (object) {
         delete object;
       }
-      object = eq.relinquishOwnership();
+      object = assign.relinquishOwnership();
     }
     return *this;
   }
@@ -173,16 +173,22 @@ public:
   /**
     Returns object for modifying access.
   */
-  inline TYPE* operator->() noexcept
+  inline TYPE* operator->()
   {
+    if (!object) {
+      throw NullPointer(this);
+    }
     return object;
   }
   
   /**
     Returns object for non-modifying access.
   */
-  inline const TYPE* operator->() const noexcept
+  inline const TYPE* operator->() const
   {
+    if (!object) {
+      throw NullPointer(this);
+    }
     return object;
   }
   

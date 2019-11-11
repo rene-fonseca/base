@@ -380,6 +380,7 @@ private:
   bool randomize = false;
   bool stopOnFailure = false;
   bool progressMode = false;
+  bool showStackTrace = false;
   bool traceExceptions = false;
   unsigned int passed = 0;
   unsigned int failed = 0;
@@ -465,6 +466,18 @@ public:
   inline void setStopOnFailure(bool _stopOnFailure) noexcept
   {
     stopOnFailure = _stopOnFailure;
+  }
+
+  /** Returns true if stack traces are enabled. */
+  inline bool getShowStackTrace() const noexcept
+  {
+    return showStackTrace;
+  }
+
+  /** Enables stack traces. */
+  inline void setShowStackTrace(bool _showStackTrace) noexcept
+  {
+    showStackTrace = _showStackTrace;
   }
 
   /** Returns progress mode. */

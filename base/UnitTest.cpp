@@ -1127,6 +1127,14 @@ void UnitTest::onAssert(bool passed, const String& what, unsigned int line)
     currentRun->onPassed(what, line);
   } else {
     currentRun->onFailed(what, line);
+    if (UnitTestManager::getManager().getShowStackTrace()) {
+      StackFrame stackTrace = StackFrame::getStack();
+      StackFrame::toStream(
+        fout, stackTrace.getTrace(), stackTrace.getSize(),
+        StackFrame::FLAG_SHOW_ADDRESS | StackFrame::FLAG_SHOW_MODULE | StackFrame::FLAG_INDENT |
+        (UnitTestManager::getManager().getUseANSIColors() ? StackFrame::FLAG_USE_COLORS : 0)
+      );
+    }
   }
 }
 

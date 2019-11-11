@@ -46,6 +46,7 @@ private:
   bool useANSIColors = false;
   bool randomize = false;
   bool stopOnFailure = false;
+  bool showStackTrace = false;
   bool progressMode = false;
   bool reportJSON = false;
   bool reportJUnit = false;
@@ -110,6 +111,8 @@ public:
         randomize = true;
       } else if (argument == "--stopOnFailure") {
         stopOnFailure = true;
+      } else if (argument == "--stackTrace") {
+        showStackTrace = true;
       } else if (argument == "--progress") {
         progressMode = true;
       } else {
@@ -152,6 +155,7 @@ public:
       << "--uuid           UUID for testsuite." << EOL
       << "--randomize      Run tests in random order." << EOL
       << "--stopOnFailure  Stop on first failure." << EOL
+      << "--stackTrace     Show stack trace on assert." << EOL
       << ENDL;
   }
 
@@ -267,6 +271,7 @@ public:
       manager.setUseANSIColors(useANSIColors);
       manager.setRandomize(randomize);
       manager.setStopOnFailure(stopOnFailure);
+      manager.setShowStackTrace(showStackTrace);
       manager.setProgressMode(progressMode);
       manager.setTraceExceptions(traceExceptions);
 

@@ -37,12 +37,12 @@ AnyValue::AnyValue(const Type& value) noexcept
 }
 
 AnyValue::AnyValue(const char* value) noexcept
-  : representation(STRING), string(value), p(nullptr)
+  : representation(STRING), p(nullptr), string(value)
 {
 }
 
 AnyValue::AnyValue(const wchar* value) noexcept
-  : representation(WIDE_STRING), wideString(value), p(nullptr)
+  : representation(WIDE_STRING), p(nullptr), wideString(value)
 {
 }
 

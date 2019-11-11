@@ -13,8 +13,24 @@
 
 #include <base/mem/NullPointer.h>
 
-_COM_AZURE_DEV__BASE__DUMMY_SYMBOL
-
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
+
+NullPointer::NullPointer() noexcept
+{
+}
+
+NullPointer::NullPointer(const char* message) noexcept
+  : MemoryException(message) {
+}
+
+NullPointer::NullPointer(const Type& type) noexcept
+  : MemoryException(type)
+{
+}
+
+NullPointer::NullPointer(const char* message, const Type& type) noexcept
+  : MemoryException(message, type)
+{
+}
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

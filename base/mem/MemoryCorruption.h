@@ -31,25 +31,21 @@ public:
   /**
     Initializes the exception object with no message.
   */
-  inline MemoryCorruption() noexcept {
-  }
+  MemoryCorruption() noexcept;
   
   /**
     Initializes the exception object.
 
     @param message The message.
   */
-  inline MemoryCorruption(const char* message) noexcept
-    : MemoryException(message) {
-  }
+  MemoryCorruption(const char* message) noexcept;
   
   /**
     Initializes the exception object without an associated message.
     
     @param type The identity of the type.
   */
-  inline MemoryCorruption(const Type& type) noexcept : MemoryException(type) {
-  }
+  MemoryCorruption(const Type& type) noexcept;
   
   /**
     Initializes the exception object.
@@ -57,9 +53,7 @@ public:
     @param message An NULL-terminated string (ASCII).
     @param type The identity of the type.
   */
-  inline MemoryCorruption(const char* message, const Type& type) noexcept
-    : MemoryException(message, type) {
-  }
+  MemoryCorruption(const char* message, const Type& type) noexcept;
 };
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

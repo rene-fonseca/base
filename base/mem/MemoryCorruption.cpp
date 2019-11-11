@@ -13,8 +13,24 @@
 
 #include <base/mem/MemoryCorruption.h>
 
-_COM_AZURE_DEV__BASE__DUMMY_SYMBOL
-
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
+
+MemoryCorruption::MemoryCorruption() noexcept
+{
+}
+
+MemoryCorruption::MemoryCorruption(const char* message) noexcept
+  : MemoryException(message) {
+}
+
+MemoryCorruption::MemoryCorruption(const Type& type) noexcept
+  : MemoryException(type)
+{
+}
+
+MemoryCorruption::MemoryCorruption(const char* message, const Type& type) noexcept
+  : MemoryException(message, type)
+{
+}
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

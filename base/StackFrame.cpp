@@ -154,11 +154,17 @@ unsigned int StackFrame::getStack(void** dest, unsigned int size, unsigned int s
 {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   USHORT count = RtlCaptureStackBackTrace(skip + 1, size, dest, NULL);
+  while ((count > 0) && (reinterpret_cast<MemorySize>(dest[count - 1]) < 0x10000)) {
+    --count; // remove bad text seg pointer
+  }
 #elif ((_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__MACOS) || \
        (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__GNULINUX))
   int count = backtrace(dest, size);
   if (count < 0) {
     return 0;
+  }
+  while ((count > 0) && (reinterpret_cast<MemorySize>(dest[count - 1]) < 0x10000)) {
+    --count; // remove bad text seg pointer
   }
   ++skip;
   if (skip >= count) {

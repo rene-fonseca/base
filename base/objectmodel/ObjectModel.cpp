@@ -14,6 +14,7 @@
 #include <base/objectmodel/ObjectModel.h>
 #include <base/LongInteger.h>
 #include <base/mathematics/Math.h>
+#include <base/string/ANSIEscapeSequence.h>
 #include <base/UnitTest.h>
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
@@ -74,6 +75,20 @@ Reference<ObjectModel::Boolean> ObjectModel::createBoolean(bool value)
 }
 
 Reference<ObjectModel::Integer> ObjectModel::createInteger(int value)
+{
+  switch (value) {
+  case -1:
+    return commonIntegerMinus1;
+  case 0:
+    return commonInteger0;
+  case 1:
+    return commonInteger1;
+  default:
+    return new Integer(value);
+  }
+}
+
+Reference<ObjectModel::Integer> ObjectModel::createInteger64(int64 value)
 {
   switch (value) {
   case -1:
@@ -236,8 +251,8 @@ ObjectModel::Array& ObjectModel::Array::operator=(const std::vector<int>& _value
   values.setSize(_values.size());
   MemorySize i = 0;
   Reference<Integer> previous; // catch easy reuse case
-  for (const auto& v : _values) {
-    if (previous && (v == *previous)) {
+  for (auto v : _values) {
+    if (previous && (v == static_cast<int>(*previous))) {
       values[i++] = previous;
     } else {
       previous = globalObjectModel.createInteger(v);
@@ -559,9 +574,22 @@ Reference<ObjectModel::Object> ObjectModel::Object::getObject(const char* path) 
 
 FormatOutputStream& operator<<(FormatOutputStream& stream, const Reference<ObjectModel::Value>& value)
 {
-  if (!value) {
-    return stream << MESSAGE("null");
+  bool useANSI = false;
+  if (ObjectModel::NiceFormat* niceFormat = dynamic_cast<ObjectModel::NiceFormat*>(&stream)) {
+    useANSI = true;
   }
+
+  if (!value) {
+    if (useANSI) {
+      stream << setForeground(ANSIEscapeSequence::MAGENTA) << bold();
+    }
+    stream << MESSAGE("null");
+    if (useANSI) {
+      stream << normal();
+    }
+    return stream;
+  }
+
   switch (value->getType()) {
   case ObjectModel::Value::TYPE_VOID:
     return stream << value.cast<ObjectModel::Void>();
@@ -586,15 +614,48 @@ FormatOutputStream& operator<<(FormatOutputStream& stream, const Reference<Objec
 
 FormatOutputStream& operator<<(FormatOutputStream& stream, const Reference<ObjectModel::Void>& value)
 {
-  return stream << MESSAGE("null");
+  bool useANSI = false;
+  if (ObjectModel::NiceFormat* niceFormat = dynamic_cast<ObjectModel::NiceFormat*>(&stream)) {
+    useANSI = true;
+  }
+
+  if (useANSI) {
+    stream << setForeground(ANSIEscapeSequence::MAGENTA) << bold();
+  }
+  stream << MESSAGE("null");
+  if (useANSI) {
+    stream << normal();
+  }
+  return stream;
 }
 
 FormatOutputStream& operator<<(FormatOutputStream& stream, const Reference<ObjectModel::Boolean>& value)
 {
-  if (!value) {
-    return stream << MESSAGE("null");
+  bool useANSI = false;
+  if (ObjectModel::NiceFormat* niceFormat = dynamic_cast<ObjectModel::NiceFormat*>(&stream)) {
+    useANSI = true;
   }
-  return stream << (value->value ? MESSAGE("true") : MESSAGE("false"));
+
+  if (!value) {
+    if (useANSI) {
+      stream << setForeground(ANSIEscapeSequence::MAGENTA) << bold();
+    }
+    stream << MESSAGE("null");
+    if (useANSI) {
+      stream << normal();
+    }
+    return stream;
+  }
+
+  if (useANSI) {
+    stream << setForeground(ANSIEscapeSequence::MAGENTA) << bold();
+  }
+
+  stream << (value->value ? MESSAGE("true") : MESSAGE("false"));
+  if (useANSI) {
+    stream << normal();
+  }
+  return stream;
 }
 
 // TAG: how can we automatically map to internal classes from object model?
@@ -602,16 +663,54 @@ FormatOutputStream& operator<<(FormatOutputStream& stream, const Reference<Objec
 
 FormatOutputStream& operator<<(FormatOutputStream& stream, const Reference<ObjectModel::Integer>& value)
 {
-  if (!value) {
-    return stream << MESSAGE("null");
+  bool useANSI = false;
+  if (ObjectModel::NiceFormat* niceFormat = dynamic_cast<ObjectModel::NiceFormat*>(&stream)) {
+    useANSI = true;
   }
-  return stream << value->value;
+
+  if (!value) {
+    if (useANSI) {
+      stream << setForeground(ANSIEscapeSequence::MAGENTA) << bold();
+    }
+    stream << MESSAGE("null");
+    if (useANSI) {
+      stream << normal();
+    }
+    return stream;
+  }
+  
+  if (useANSI) {
+    stream << setForeground(ANSIEscapeSequence::BLUE);
+  }
+
+  stream << value->value;
+
+  if (useANSI) {
+    stream << normal();
+  }
+  return stream;
 }
 
 FormatOutputStream& operator<<(FormatOutputStream& stream, const Reference<ObjectModel::Float>& value)
 {
+  bool useANSI = false;
+  if (ObjectModel::NiceFormat* niceFormat = dynamic_cast<ObjectModel::NiceFormat*>(&stream)) {
+    useANSI = true;
+  }
+
   if (!value) {
-    return stream << MESSAGE("null");
+    if (useANSI) {
+      stream << setForeground(ANSIEscapeSequence::MAGENTA) << bold();
+    }
+    stream << MESSAGE("null");
+    if (useANSI) {
+      stream << normal();
+    }
+    return stream;
+  }
+  
+  if (useANSI) {
+    stream << setForeground(ANSIEscapeSequence::BLUE);
   }
 
   if (Math::isFinite(value->value)) { // not inf or nan
@@ -625,13 +724,26 @@ FormatOutputStream& operator<<(FormatOutputStream& stream, const Reference<Objec
     stream << value->value;
   }
 
+  if (useANSI) {
+    stream << normal();
+  }
+
   return stream;
 }
 
 FormatOutputStream& operator<<(FormatOutputStream& stream, const Reference<ObjectModel::String>& value)
 {
+  bool useANSI = false;
+  if (ObjectModel::NiceFormat* niceFormat = dynamic_cast<ObjectModel::NiceFormat*>(&stream)) {
+    useANSI = true;
+  }
+
   if (!value) {
     return stream << MESSAGE("null");
+  }
+  
+  if (useANSI) {
+    stream << setForeground(ANSIEscapeSequence::RED);
   }
 
   stream << '"';
@@ -676,14 +788,31 @@ FormatOutputStream& operator<<(FormatOutputStream& stream, const Reference<Objec
       stream << ch;
     }
   }
-  return stream << '"';
+  stream << '"';
+  if (useANSI) {
+    stream << normal();
+  }
+  return stream;
 }
 
 FormatOutputStream& operator<<(FormatOutputStream& stream, const Reference<ObjectModel::Binary>& value)
 {
-  if (!value) {
-    return stream << MESSAGE("null");
+  bool useANSI = false;
+  if (ObjectModel::NiceFormat* niceFormat = dynamic_cast<ObjectModel::NiceFormat*>(&stream)) {
+    useANSI = true;
   }
+
+  if (!value) {
+    if (useANSI) {
+      stream << setForeground(ANSIEscapeSequence::MAGENTA) << bold();
+    }
+    stream << MESSAGE("null");
+    if (useANSI) {
+      stream << normal();
+    }
+    return stream;
+  }
+
   BASSERT(!"Binary block not supported.");
   // TAG: write as string
   return stream;
@@ -691,8 +820,20 @@ FormatOutputStream& operator<<(FormatOutputStream& stream, const Reference<Objec
 
 FormatOutputStream& operator<<(FormatOutputStream& stream, const Reference<ObjectModel::Array>& value)
 {
+  bool useANSI = false;
+  if (ObjectModel::NiceFormat* niceFormat = dynamic_cast<ObjectModel::NiceFormat*>(&stream)) {
+    useANSI = true;
+  }
+
   if (!value) {
-    return stream << MESSAGE("null");
+    if (useANSI) {
+      stream << setForeground(ANSIEscapeSequence::MAGENTA) << bold();
+    }
+    stream << MESSAGE("null");
+    if (useANSI) {
+      stream << normal();
+    }
+    return stream;
   }
 
   unsigned int level = 0;
@@ -739,8 +880,20 @@ FormatOutputStream& operator<<(FormatOutputStream& stream, const Reference<Objec
 
 FormatOutputStream& operator<<(FormatOutputStream& stream, const Reference<ObjectModel::Object>& value)
 {
+  bool useANSI = false;
+  if (ObjectModel::NiceFormat* niceFormat = dynamic_cast<ObjectModel::NiceFormat*>(&stream)) {
+    useANSI = true;
+  }
+
   if (!value) {
-    return stream << MESSAGE("null");
+    if (useANSI) {
+      stream << setForeground(ANSIEscapeSequence::MAGENTA) << bold();
+    }
+    stream << MESSAGE("null");
+    if (useANSI) {
+      stream << normal();
+    }
+    return stream;
   }
 
   unsigned int level = 0;
@@ -769,6 +922,9 @@ FormatOutputStream& operator<<(FormatOutputStream& stream, const Reference<Objec
     first = false;
     if (niceFormat) {
       stream << indent(level * 2);
+    }
+    if (useANSI) {
+      stream << bold();
     }
     stream << v.first << MESSAGE(": ") << v.second; // "key": value
   }

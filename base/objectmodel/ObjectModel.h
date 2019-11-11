@@ -140,9 +140,12 @@ public:
   class _COM_AZURE_DEV__BASE__API Integer : public Value {
   public:
     
-    int value = 0;
+    int64 value = 0;
 
     inline Integer(int _value) : value(_value) {
+    }
+
+    inline Integer(int64 _value) : value(_value) {
     }
 
     /** Returns the type. */
@@ -150,7 +153,27 @@ public:
       return TYPE_INTEGER;
     }
 
+    inline bool operator==(int compare) const noexcept {
+      return value == compare;
+    }
+
+    inline bool operator!=(int compare) const noexcept {
+      return value != compare;
+    }
+
+    inline bool operator==(int64 compare) const noexcept {
+      return value == compare;
+    }
+
+    inline bool operator!=(int64 compare) const noexcept {
+      return value != compare;
+    }
+
     inline operator int() const noexcept {
+      return value;
+    }
+
+    inline operator int64() const noexcept {
       return value;
     }
   };
@@ -553,7 +576,10 @@ public:
   
   /** Creates an integer. May be reused. */
   Reference<Integer> createInteger(int value = 0);
-  
+
+  /** Creates an integer. May be reused. */
+  Reference<Integer> createInteger64(int64 value = 0);
+
   /** Creates a float. May be reused. */
   Reference<Float> createFloat(double value = 0);
 

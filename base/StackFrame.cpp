@@ -304,17 +304,24 @@ void StackFrame::toStream(FormatOutputStream& stream, const void* const * trace,
         if (showAddress) {
           stream << " ";
         }
+        const String demangled = TypeInfo::demangleName(name.native());
         if (useColors) {
           if (path) {
             stream << setForeground(ANSIEscapeSequence::GREEN) << path << normal() << "!";
           }
-          stream << setForeground(ANSIEscapeSequence::BLUE) << bold() << TypeInfo::demangleName(name.native());
+          auto index = demangled.indexOf('(');
+          if (index >= 0) {
+            stream << setForeground(ANSIEscapeSequence::BLUE) << bold() << demangled.substring(0, index) << normal()
+                   << setForeground(ANSIEscapeSequence::BLUE) << italic() << demangled.substring(index);
+          } else {
+            stream << setForeground(ANSIEscapeSequence::BLUE) << bold() << demangled;
+          }
           stream << normal();
         } else {
           if (path) {
-            stream << path << "!" << TypeInfo::demangleName(name.native());
+            stream << path << "!" << demangled;
           } else {
-            stream << TypeInfo::demangleName(name.native());
+            stream << demangled;
           }
         }
       }

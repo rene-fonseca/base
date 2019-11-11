@@ -305,8 +305,9 @@ void StackFrame::toStream(FormatOutputStream& stream, const void* const * trace,
             }
           }
           lastAddress = address;
-          const bool useDim = !WINDOWS;
-          if (!useDim) {
+          // const bool MACOS = (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__MACOS);
+          const bool useDim = !WINDOWS; // && !MACOS;
+          if (useDim) {
             stream << dim();
           }
           stream << setForeground(ANSIEscapeSequence::RED) << address.substring(0, j) /*<< '.'*/ << normal();

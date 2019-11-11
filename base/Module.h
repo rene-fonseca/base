@@ -14,7 +14,6 @@
 #pragma once
 
 #include <base/collection/Array.h>
-#include <base/objectmodel/ObjectModel.h>
 
 #if defined(MODULE_REGISTER)
 #  error MODULE_REGISTER already defined

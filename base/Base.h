@@ -346,4 +346,16 @@ inline void _COM_AZURE_DEV__BASE__CHECK_DEBUG_RELEASE() noexcept
 #endif
 }
 
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
+/** Build for Windows compatible system. */
+constexpr bool WINDOWS = true;
+/** Build for Unix compatible system. */
+constexpr bool UNICS = false;
+#else
+/** Build for Windows compatible system. */
+constexpr bool WINDOWS = false;
+/** Build for Unix compatible system. */
+constexpr bool UNICS = true;
+#endif
+
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

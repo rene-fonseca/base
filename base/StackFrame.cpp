@@ -305,9 +305,15 @@ void StackFrame::toStream(FormatOutputStream& stream, const void* const * trace,
             }
           }
           lastAddress = address;
-          stream << setForeground(ANSIEscapeSequence::RED)
-                 << dim() << address.substring(0, j) /*<< '.'*/ << normal() /*<< underscore()*/
-                 << setForeground(ANSIEscapeSequence::RED) << address.substring(j)
+          const bool useDim = !WINDOWS;
+          if (!useDim) {
+            stream << dim();
+          }
+          stream << setForeground(ANSIEscapeSequence::RED) << address.substring(0, j) /*<< '.'*/ << normal();
+          if (!useDim) {
+            stream << underscore();
+          }
+          stream << setForeground(ANSIEscapeSequence::RED) << address.substring(j)
                  << normal();
         } else {
           stream << address;

@@ -46,7 +46,8 @@ private:
     Sets the pointer value of this automation pointer. Raises the exceptions
     raised by the destructor of the object.
   */
-  inline void setValue(TYPE* value) {
+  inline void setValue(TYPE* value)
+  {
     ReferenceCountedObject::ReferenceImpl(*value).addReference();
     if (ReferenceCountedObject::ReferenceImpl(*this->value).removeReference()) {
       delete value;
@@ -74,8 +75,9 @@ public:
   /**
     Initialization of automation pointer from other automation pointer.
   */
-  inline ProtectedReference(const ProtectedReference& copy) throw()
-    : value(copy.value) {
+  inline ProtectedReference(const ProtectedReference& copy) noexcept
+    : value(copy.value)
+  {
     ReferenceCountedObject::ReferenceImpl(*value).addReference();
   }
 
@@ -84,8 +86,9 @@ public:
     compile time polymorphism.
   */
   template<class POLY>
-  inline ProtectedReference(const ProtectedReference<POLY>& copy) throw()
-    : value(copy.getValue()) {
+  inline ProtectedReference(const ProtectedReference<POLY>& copy)
+    : value(copy.getValue())
+  {
     ReferenceCountedObject::ReferenceImpl(*value).addReference();
   }
   
@@ -120,9 +123,9 @@ public:
     time polymorphism. Raises the exceptions raised by the destructor of the
     object.
   */
-  inline ProtectedReference& operator=(
-    const ProtectedReference& eq) {
-    setValue(eq.value); // no need to protect against self assignment
+  inline ProtectedReference& operator=(const ProtectedReference& assign)
+  {
+    setValue(assign.value); // no need to protect against self assignment
     return *this;
   }
   
@@ -132,24 +135,26 @@ public:
     object.
   */
   template<class POLY>
-  inline ProtectedReference& operator=(
-    const ProtectedReference<POLY>& eq) {
-    setValue(eq.getValue()); // no need to protect against self assignment
+  inline ProtectedReference& operator=(const ProtectedReference<POLY>& assign)
+  {
+    setValue(assign.getValue()); // no need to protect against self assignment
     return *this;
   }
   
   /**
     Returns true if the references are equal.
   */
-  inline bool operator==(const ProtectedReference& eq) const throw() {
-    return value == eq.value;
+  inline bool operator==(const ProtectedReference& compare) const noexcept
+  {
+    return value == compare.value;
   }
 
   /**
     Returns true if the references are non-equal.
   */
-  inline bool operator!=(const ProtectedReference& eq) const throw() {
-    return value != eq.value;
+  inline bool operator!=(const ProtectedReference& compare) const noexcept
+  {
+    return value != compare.value;
   }
   
   /**
@@ -158,9 +163,9 @@ public:
 
     @return False if the pointer is invalid (i.e. not pointing to an object).
   */
-  inline bool isMultiReferenced() const throw() {
-    return value &&
-      ReferenceCountedObject::ReferenceImpl(*value).isMultiReferenced();
+  inline bool isMultiReferenced() const noexcept
+  {
+    return value && ReferenceCountedObject::ReferenceImpl(*value).isMultiReferenced();
   }
 
   /**
@@ -170,7 +175,8 @@ public:
     the default copy constructor for this to work. Raises the exceptions raised
     by the default copy constructor of the object.
   */
-  inline void copyOnWrite() {
+  inline void copyOnWrite()
+  {
     if (isMultiReferenced()) { // do we have the object for our self
       // remove one reference (no need to delete object since multi-referenced)
       TYPE* temp = new TYPE(*value);
@@ -183,14 +189,16 @@ public:
   /**
     Returns the reference counted object for modifying access.
   */
-  inline TYPE* operator->() throw() {
+  inline TYPE* operator->() noexcept
+  {
     return value;
   }
   
   /**
     Returns the reference counted object for non-modifying access.
   */
-  inline const TYPE* operator->() const throw() {
+  inline const TYPE* operator->() const noexcept
+  {
     return value;
   }
   
@@ -198,7 +206,8 @@ public:
     Destroys the automation pointer. Raises the exceptions raised by the
     destructor of the object.
   */
-  inline ~ProtectedReference() {
+  inline ~ProtectedReference()
+  {
     if (ReferenceCountedObject::ReferenceImpl(*value).removeReference()) {
       delete value;
     }
@@ -216,8 +225,8 @@ template<class TYPE>
 class Hash<ProtectedReference<TYPE> > {
 public:
 
-  inline unsigned long operator()(
-    const ProtectedReference<TYPE>& value) throw() {
+  inline unsigned long operator()(const ProtectedReference<TYPE>& value) noexcept
+  {
     Hash<void*> hash;
     return hash(value.getValue());
   }

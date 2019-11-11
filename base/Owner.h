@@ -83,14 +83,16 @@ public:
     return object != nullptr;
   }
 
-  inline TYPE& operator*() throw(NullPointer) {
+  inline TYPE& operator*() throw(NullPointer)
+  {
     if (!object) {
       throw NullPointer(this);
     }
     return *object;
   }
 
-  inline const TYPE& operator*() const throw(NullPointer) {
+  inline const TYPE& operator*() const throw(NullPointer)
+  {
     if (!object) {
       throw NullPointer(this);
     }
@@ -116,7 +118,7 @@ public:
   /**
     Destroys the object.
   */
-  inline void destroy()
+  void destroy()
   {
     if (object) {
       TYPE* oldObject = object;

@@ -51,17 +51,17 @@ public:
   /**
     Returns true if the pointers are equal.
   */
-  inline bool operator==(const StrictPointer& eq) const noexcept
+  inline bool operator==(const StrictPointer& compare) const noexcept
   {
-    return value == eq.value;
+    return value == compare.value;
   }
   
   /**
     Returns true if the pointers are non-equal.
   */
-  inline bool operator!=(const StrictPointer& eq) const noexcept
+  inline bool operator!=(const StrictPointer& compare) const noexcept
   {
-    return value != eq.value;
+    return value != compare.value;
   }
   
   /**

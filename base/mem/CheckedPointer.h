@@ -73,9 +73,9 @@ public:
   /**
     Assignment of automation pointer to this automation pointer.
   */
-  inline CheckedPointer& operator=(const CheckedPointer& eq) noexcept
+  inline CheckedPointer& operator=(const CheckedPointer& compare) noexcept
   {
-    value = eq.value;
+    value = compare.value;
     return *this;
   }
 
@@ -84,9 +84,9 @@ public:
     time polymorphism.
   */
   template<class POLY>
-  inline CheckedPointer& operator=(const CheckedPointer<POLY>& eq) noexcept
+  inline CheckedPointer& operator=(const CheckedPointer<POLY>& compare) noexcept
   {
-    value = eq.value;
+    value = compare.value;
     return *this;
   }
 
@@ -110,17 +110,17 @@ public:
   /**
     Returns true if the pointers are equal.
   */
-  inline bool operator==(const CheckedPointer& eq) const noexcept
+  inline bool operator==(const CheckedPointer& compare) const noexcept
   {
-    return value == eq.value;
+    return value == compare.value;
   }
   
   /**
     Returns true if the pointers are non-equal.
   */
-  inline bool operator!=(const CheckedPointer& eq) const noexcept
+  inline bool operator!=(const CheckedPointer& compare) const noexcept
   {
-    return value != eq.value;
+    return value != compare.value;
   }
 
   /**

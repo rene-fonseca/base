@@ -75,7 +75,8 @@ public:
   /**
     Initializes an automation pointer as invalid (i.e. nullptr).
   */
-  inline Indirect() throw() {
+  inline Indirect() noexcept
+  {
   }
   
   /**
@@ -144,14 +145,14 @@ public:
     polymorphism.
   */
   template<class POLY>
-  inline Indirect& operator=(const Indirect<POLY>& eq) noexcept
+  inline Indirect& operator=(const Indirect<POLY>& assign) noexcept
   {
     // make sure CastException is not possible
     TYPE* unused = static_cast<POLY*>(nullptr);
     if (unused) { // avoid compiler warning
     }
 #if 0 // TAG: fixme
-    Indirect indirect = eq.cast<TYPE>();
+    Indirect indirect = assign.cast<TYPE>();
 #else
     Indirect indirect;
 #endif
@@ -175,7 +176,7 @@ public:
   /**
     Returns true if the references are equal.
   */
-  inline bool operator==(const Indirect& eq) const noexcept
+  inline bool operator==(const Indirect& compare) const noexcept
   {
     return false;
   }
@@ -183,7 +184,7 @@ public:
   /**
     Returns true if the references are non-equal.
   */
-  inline bool operator!=(const Indirect& eq) const noexcept
+  inline bool operator!=(const Indirect& compare) const noexcept
   {
     return true;
   }
@@ -225,16 +226,22 @@ public:
   /**
     Dereferences the automation pointer.
   */
-  inline TYPE* operator->() noexcept
+  inline TYPE* operator->()
   {
+    if (!value) {
+      throw NullPointer(this);
+    }
     return value;
   }
   
   /**
     Dereferences the automation pointer.
   */
-  inline const TYPE* operator->() const noexcept
+  inline const TYPE* operator->() const
   {
+    if (!value) {
+      throw NullPointer(this);
+    }
     return value;
   }
   

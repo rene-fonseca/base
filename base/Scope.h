@@ -86,7 +86,7 @@ public:
     return object;
   }
 
-  inline void destroy()
+  void destroy()
   {
     if (object) {
       TYPE* oldObject = object;

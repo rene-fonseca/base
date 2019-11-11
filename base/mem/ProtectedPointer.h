@@ -90,23 +90,23 @@ public:
   /**
     Returns true if the pointers are equal.
   */
-  inline bool operator==(const ProtectedPointer& eq) const noexcept
+  inline bool operator==(const ProtectedPointer& compare) const noexcept
   {
-    return value == eq.value;
+    return value == compare.value;
   }
   
   /**
     Returns true if the pointers are non-equal.
   */
-  inline bool operator!=(const ProtectedPointer& eq) const noexcept
+  inline bool operator!=(const ProtectedPointer& compare) const noexcept
   {
-    return value != eq.value;
+    return value != compare.value;
   }
   
   /**
     Returns object for modifying access.
   */
-  inline TYPE* operator->() noexcept
+  inline TYPE* operator->()
   {
     return value;
   }
@@ -114,7 +114,7 @@ public:
   /**
     Returns object for non-modifying access.
   */
-  inline const TYPE* operator->() const noexcept
+  inline const TYPE* operator->() const
   {
     return value;
   }

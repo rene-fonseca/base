@@ -81,13 +81,13 @@ public:
   /**
     Assignment operator.
   */
-  inline ArrayOwnershipPointer& operator=(ArrayOwnershipPointer& eq)
+  inline ArrayOwnershipPointer& operator=(ArrayOwnershipPointer& assign)
   {
-    if (&eq != this) { // protect against self assignment
+    if (&assign != this) { // protect against self assignment
       if (object) {
         delete[] object;
       }
-      object = eq.relinquishOwnership();
+      object = assign.relinquishOwnership();
     }
     return *this;
   }

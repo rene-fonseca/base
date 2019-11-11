@@ -50,7 +50,7 @@ public:
   /**
     Returns mutable object.
   */
-  inline TYPE& operator*() noexcept
+  inline TYPE& operator*()
   {
     return *object;
   }
@@ -66,7 +66,7 @@ public:
   /**
     Returns object for modifying access.
   */
-  inline TYPE* operator->() noexcept
+  inline TYPE* operator->()
   {
     return object;
   }
@@ -74,7 +74,7 @@ public:
   /**
     Returns object for non-modifying access.
   */
-  inline const TYPE* operator->() const noexcept
+  inline const TYPE* operator->() const
   {
     return object;
   }

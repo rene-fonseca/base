@@ -52,23 +52,27 @@ AnyValue::AnyValue(void* value) noexcept
 }
 
 AnyValue::AnyValue(char value) noexcept
-  : representation(CHARACTER), p(nullptr), character(value)
+  : representation(CHARACTER), p(nullptr)
 {
+  character = value;
 }
 
 AnyValue::AnyValue(wchar value) noexcept
-  : representation(WIDE_CHARACTER), p(nullptr), wideCharacter(value)
+  : representation(WIDE_CHARACTER), p(nullptr)
 {
+  wideCharacter = value;
 }
 
 AnyValue::AnyValue(bool value) noexcept
-  : representation(BOOLEAN), p(nullptr), boolean(value)
+  : representation(BOOLEAN), p(nullptr)
 {
+  boolean = value;
 }
 
 AnyValue::AnyValue(short value) noexcept
-  : representation(INTEGER), p(nullptr), shortInteger(value)
+  : representation(INTEGER), p(nullptr)
 {
+  shortInteger = value;
 }
 
 AnyValue::AnyValue(unsigned short value) noexcept

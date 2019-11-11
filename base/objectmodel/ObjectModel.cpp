@@ -123,6 +123,11 @@ Reference<ObjectModel::Float> ObjectModel::createFloat(double value)
   }
 }
 
+Reference<ObjectModel::Comment> ObjectModel::createComment(const base::String& value)
+{
+  return new Comment(value); // new comment
+}
+
 Reference<ObjectModel::String> ObjectModel::createString(const char* value)
 {
   if (!value || !*value) {
@@ -643,6 +648,8 @@ ObjectModel::NiceFormat& operator<<(ObjectModel::NiceFormat& stream, const Refer
     return stream << value.cast<ObjectModel::Integer>();
   case ObjectModel::Value::TYPE_FLOAT:
     return stream << value.cast<ObjectModel::Float>();
+  case ObjectModel::Value::TYPE_COMMENT:
+    return stream << value.cast<ObjectModel::Comment>();
   case ObjectModel::Value::TYPE_STRING:
     return stream << value.cast<ObjectModel::String>();
   case ObjectModel::Value::TYPE_BINARY:
@@ -866,6 +873,40 @@ ObjectModel::NiceFormat& operator<<(ObjectModel::NiceFormat& stream, const Refer
     }
   }
   stream << '"';
+  if (useANSI) {
+    stream << normal();
+  }
+  return stream;
+}
+
+ObjectModel::NiceFormat& operator<<(ObjectModel::NiceFormat& stream, const Reference<ObjectModel::Comment>& value)
+{
+  if (!value) {
+    return stream; // skip
+  }
+  
+  const bool useANSI = stream.getNiceFlags() & ObjectModel::FLAG_COLOR;
+  if (useANSI) {
+    stream << setForeground(ANSIEscapeSequence::GREEN);
+  }
+
+  stream << "// ";
+  const MemorySize length = value->value.getLength();
+  for (MemorySize i = 0; i < length; ++i) {
+    char ch = value->value[i];
+    // TAG: read ucs4
+    BASSERT(ch <= 0x7f); // TAG: add support
+    switch (ch) {
+    case '\n':
+      stream << " ";
+      break;
+    case '\r':
+      stream << " ";
+      break;
+    default:
+      stream << ch;
+    }
+  }
   if (useANSI) {
     stream << normal();
   }

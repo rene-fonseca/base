@@ -61,6 +61,7 @@ public:
     FLAG_COLOR_RGB = 1 << 4, // use RGB escape codes - FLAG_COLOR must still be set
     FLAG_USE_TAB = 1 << 5, // use TAB for indentation
     FLAG_USE_NULL_FOR_SPECIAL = 1 << 6, // use null instead of string with ids
+    FLAG_INCLUDE_COMMENTS = 1 << 7, // include comment with // style
     DEFAULT_FORMATTING = FLAG_INDENT
   };
 
@@ -136,7 +137,8 @@ public:
       TYPE_STRING,
       TYPE_BINARY,
       TYPE_ARRAY,
-      TYPE_OBJECT
+      TYPE_OBJECT,
+      TYPE_COMMENT
     };
 
     /** Returns the type. */
@@ -257,6 +259,39 @@ public:
     }
 
     inline String(const base::String& _value) : value(_value) {
+    }
+
+    /** Returns the size of the string. */
+    MemorySize getSize() const noexcept;
+
+    /** Returns true if string is empty. */
+    inline bool isEmpty() const noexcept {
+      return getSize() == 0;
+    }
+    
+    /** Returns the type. */
+    virtual inline Type getType() const noexcept override {
+      return TYPE_STRING;
+    }
+
+    inline operator const base::String&() const noexcept {
+      return value;
+    }
+  };
+
+  /** Comment. */
+  class _COM_AZURE_DEV__BASE__API Comment : public Value {
+  public:
+    
+    base::String value;
+
+    inline Comment() {
+    }
+
+    inline Comment(const char* _value) : value(_value) {
+    }
+
+    inline Comment(const base::String& _value) : value(_value) {
     }
 
     /** Returns the size of the string. */
@@ -636,6 +671,9 @@ public:
     return commonStringEmpty;
   }
 
+  /** Creates a comment. Similar strings may be reused. */
+  Reference<Comment> createComment(const base::String& value);
+
   /** Creates a string. Similar strings may be reused. */
   Reference<String> createString(const char* value);
 
@@ -719,6 +757,7 @@ _COM_AZURE_DEV__BASE__API FormatOutputStream& operator<<(FormatOutputStream& str
 _COM_AZURE_DEV__BASE__API FormatOutputStream& operator<<(FormatOutputStream& stream, const Reference<ObjectModel::Array>& value);
 _COM_AZURE_DEV__BASE__API FormatOutputStream& operator<<(FormatOutputStream& stream, const Reference<ObjectModel::Object>& value);
 _COM_AZURE_DEV__BASE__API FormatOutputStream& operator<<(FormatOutputStream& stream, const Reference<ObjectModel::Binary>& value);
+_COM_AZURE_DEV__BASE__API FormatOutputStream& operator<<(FormatOutputStream& stream, const Reference<ObjectModel::Comment>& value);
 
 _COM_AZURE_DEV__BASE__API ObjectModel::NiceFormat& operator<<(ObjectModel::NiceFormat& stream, const Reference<ObjectModel::Value>& value);
 _COM_AZURE_DEV__BASE__API ObjectModel::NiceFormat& operator<<(ObjectModel::NiceFormat& stream, const Reference<ObjectModel::Void>& value);
@@ -729,5 +768,6 @@ _COM_AZURE_DEV__BASE__API ObjectModel::NiceFormat& operator<<(ObjectModel::NiceF
 _COM_AZURE_DEV__BASE__API ObjectModel::NiceFormat& operator<<(ObjectModel::NiceFormat& stream, const Reference<ObjectModel::Array>& value);
 _COM_AZURE_DEV__BASE__API ObjectModel::NiceFormat& operator<<(ObjectModel::NiceFormat& stream, const Reference<ObjectModel::Object>& value);
 _COM_AZURE_DEV__BASE__API ObjectModel::NiceFormat& operator<<(ObjectModel::NiceFormat& stream, const Reference<ObjectModel::Binary>& value);
+_COM_AZURE_DEV__BASE__API ObjectModel::NiceFormat& operator<<(ObjectModel::NiceFormat& stream, const Reference<ObjectModel::Comment>& value);
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

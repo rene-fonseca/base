@@ -306,7 +306,7 @@ void StackFrame::toStream(FormatOutputStream& stream, const void* const * trace,
           }
           lastAddress = address;
           stream << setForeground(ANSIEscapeSequence::RED)
-                 << /*italic() <<*/ address.substring(0, j) /*<< '.'*/ << normal() << underscore()
+                 << dim() << address.substring(0, j) /*<< '.'*/ << normal() /*<< underscore()*/
                  << setForeground(ANSIEscapeSequence::RED) << address.substring(j)
                  << normal();
         } else {

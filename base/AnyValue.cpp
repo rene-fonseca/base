@@ -76,28 +76,33 @@ AnyValue::AnyValue(short value) noexcept
 }
 
 AnyValue::AnyValue(unsigned short value) noexcept
-  : representation(UNSIGNED_SHORT_INTEGER), unsignedShortInteger(value)
+  : representation(UNSIGNED_SHORT_INTEGER), p(nullptr)
 {
+  unsignedShortInteger = value;
 }
 
 AnyValue::AnyValue(int value) noexcept
-  : representation(INTEGER), integer(value)
+  : representation(INTEGER), p(nullptr)
 {
+  integer = value;
 }
 
 AnyValue::AnyValue(unsigned int value) noexcept
-  : representation(UNSIGNED_INTEGER), unsignedInteger(value)
+  : representation(UNSIGNED_INTEGER), p(nullptr)
 {
+  unsignedInteger = value;
 }
 
 AnyValue::AnyValue(long value) noexcept
-  : representation(LONG_INTEGER), longInteger(value)
+  : representation(LONG_INTEGER), p(nullptr)
 {
+  longInteger = value;
 }
 
 AnyValue::AnyValue(unsigned long value) noexcept
-  : representation(UNSIGNED_LONG_INTEGER), unsignedLongInteger(value)
+  : representation(UNSIGNED_LONG_INTEGER), p(nullptr)
 {
+  unsignedLongInteger = value;
 }
 
 AnyValue::AnyValue(long long value) noexcept
@@ -112,47 +117,50 @@ AnyValue::AnyValue(unsigned long long value) noexcept
 }
 
 AnyValue::AnyValue(float value) noexcept
-  : representation(FLOAT), f(value)
+  : representation(FLOAT), p(nullptr)
 {
+  f = value;
 }
 
 AnyValue::AnyValue(double value) noexcept
-  : representation(DOUBLE), d(value)
+  : representation(DOUBLE), p(nullptr)
 {
+  d = value;
 }
 
 AnyValue::AnyValue(long double value) noexcept
-  : representation(LONG_DOUBLE), ld(value)
+  : representation(LONG_DOUBLE), p(nullptr)
 {
+  ld = value;
 }
 
 AnyValue::AnyValue(const String& value) noexcept
-  : representation(STRING), string(value)
+  : representation(STRING), p(nullptr), string(value)
 {
 }
 
 AnyValue::AnyValue(const Literal& value) noexcept
-  : representation(STRING), string(value)
+  : representation(STRING), p(nullptr), string(value)
 {
 }
 
 AnyValue::AnyValue(const WideString& value) noexcept
-  : representation(WIDE_STRING), wideString(value)
+  : representation(WIDE_STRING), p(nullptr), wideString(value)
 {
 }
 
 AnyValue::AnyValue(const WideLiteral& value) noexcept
-  : representation(WIDE_STRING), wideString(value)
+  : representation(WIDE_STRING), p(nullptr), wideString(value)
 {
 }
 
 AnyValue::AnyValue(const AnyReference& value) noexcept
-  : representation(REFERENCE), reference(value)
+  : representation(REFERENCE), p(nullptr), reference(value)
 {
 }
 
 AnyValue::AnyValue(const AnyValue& copy) noexcept
-  : representation(copy.representation)
+  : representation(copy.representation), p(nullptr)
 {
   switch (representation) {
   case VOID:
@@ -220,7 +228,7 @@ AnyValue::AnyValue(const AnyValue& copy) noexcept
 }
 
 AnyValue::AnyValue(AnyValue&& move) noexcept
-  : representation(move.representation)
+  : representation(move.representation), p(nullptr)
 {
   switch (representation) {
   case VOID:

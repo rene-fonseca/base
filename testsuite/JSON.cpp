@@ -17,6 +17,7 @@
 #include <base/Timer.h>
 #include <base/Random.h>
 #include <base/Guid.h>
+#include <base/io/FileDescriptor.h>
 
 using namespace com::azure::dev::base;
 
@@ -129,7 +130,7 @@ public:
 
     Reference<ObjectModel::Value> example1 = JSON().parse(JSON_EXAMPLE1);
     // fout << "Example1:" << EOL << example1 << EOL << ENDL;
-    fout << "Example1:" << EOL << JSON::getJSON(example1) << ENDL;
+    fout << "Example1:" << EOL << JSON::getJSONNoFormatting(example1) << ENDL;
 
     try {
       Reference<ObjectModel::Value> example2 = JSON().parse(JSON_EXAMPLE2);
@@ -212,8 +213,11 @@ public:
     a4->setAt(2, nullptr);
     (*o)["meta"] = o2;
 
-    const String text = JSON::getJSON(o, true);
+    const String text = JSON::getJSON(o);
     fout << text << ENDL;
+
+    fout << ">>>" << ENDL;
+    fout << JSON::getJSON(o, ObjectModel::DEFAULT_FORMATTING | (FileDescriptor::getStandardOutput().isANSITerminal() ? ObjectModel::FLAG_COLOR : 0)) << ENDL;
 
     fout << ENDL;
    

@@ -339,19 +339,33 @@ FormatOutputStream& FormatOutputStream::setContext(const Context& context) throw
   return *this;
 }
 
-void FormatOutputStream::indent(unsigned int size) throw(IOException)
+void FormatOutputStream::indent(unsigned int size, bool useTab) throw(IOException)
 {
+  static const Literal TAB_INDENT =
+    "\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t";
   static const Literal INDENT =
     "                                        "
     "                                        ";
   ExclusiveSynchronize<Guard> _guard(guard);
-  if (size <= INDENT.getLength()) {
-    write(
-      Cast::pointer<const uint8*>(INDENT.getValue()),
-      size
-    ); // write characters
+  
+  if (useTab) {
+    if (size <= TAB_INDENT.getLength()) {
+      write(
+        Cast::pointer<const uint8*>(TAB_INDENT.getValue()),
+        size
+      ); // write characters
+    } else {
+      unfoldValue('\t', size);
+    }
   } else {
-    unfoldValue(' ', size);
+    if (size <= INDENT.getLength()) {
+      write(
+        Cast::pointer<const uint8*>(INDENT.getValue()),
+        size
+      ); // write characters
+    } else {
+      unfoldValue(' ', size);
+    }
   }
   // context is not reset to default
 }

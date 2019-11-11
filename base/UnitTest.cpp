@@ -443,7 +443,7 @@ Reference<UnitTest::Run> UnitTest::runImpl()
     report->setValue(o.createString("pointsNotReached"), o.createInteger(pointsNotReached));
     report->setValue(o.createString("pointsNotReach"), o.createInteger(pointsNotReach));
 
-    String json = JSON::getJSON(report, false);
+    String json = JSON::getJSON(report, ObjectModel::DEFAULT_FORMATTING | (UnitTestManager::getManager().getUseANSIColors() ? ObjectModel::FLAG_COLOR : 0));
     ferr << report << ENDL;
   }
 

@@ -54,15 +54,43 @@ public:
 class _COM_AZURE_DEV__BASE__API ObjectModel : public ReferenceCountedObject {
 public:
 
+  enum FormattingFlags {
+    FLAG_COMPACT = 1 << 0,
+    FLAG_INDENT = 1 << 1, // split into lines and indent
+    FLAG_COLOR = 1 << 2, // use ANSI codes
+    FLAG_COLOR_RGB = 1 << 4, // use RGB escape codes - FLAG_COLOR must still be set
+    FLAG_USE_TAB = 1 << 5, // use TAB for indentation
+    FLAG_USE_NULL_FOR_SPECIAL = 1 << 6, // use null instead of string with ids
+    DEFAULT_FORMATTING = FLAG_INDENT
+  };
+
   /** Use this like StringOutputStream to get nice formatted output. */
   class _COM_AZURE_DEV__BASE__API NiceFormat : public StringOutputStream {
   private:
 
     unsigned int level = 0;
     unsigned int maximumLineLength = 80;
+    unsigned int flags = 0; // see FormattingFlags
+    unsigned int indent = 2; // for nice formatting
   public:
 
     inline NiceFormat() : StringOutputStream() {
+    }
+
+    inline unsigned int getNiceFlags() const noexcept {
+      return flags;
+    }
+
+    inline void setNiceFlags(unsigned int flags) noexcept {
+      this->flags = flags;
+    }
+
+    inline unsigned int getIndent() const noexcept {
+      return indent;
+    }
+
+    inline void setIndent(unsigned int indent) noexcept {
+      this->indent = indent;
     }
 
     inline unsigned int getMaximumLineLength() const noexcept {
@@ -80,6 +108,20 @@ public:
     inline void exit() noexcept {
       --level;
     }
+
+    inline NiceFormat& writeIndent()
+    {
+      if (flags & FLAG_USE_TAB) {
+        *this << tabindent(level * indent);
+      } else {
+        *this << base::indent(level * indent);
+      }
+      return *this;
+    }
+
+    NiceFormat& writeKeyword(const Literal& literal);
+
+    NiceFormat& writeTextUnquoted(const Literal& literal);
   };
 
   /** Value. */
@@ -96,12 +138,17 @@ public:
       TYPE_ARRAY,
       TYPE_OBJECT
     };
-    
+
     /** Returns the type. */
     virtual Type getType() const noexcept = 0;
 
     /** Returns string representation. */
-    base::String toString(bool niceFormat) const noexcept;
+    base::String toString(unsigned int flags = DEFAULT_FORMATTING) const noexcept;
+
+    /** Returns string representation. */
+    inline base::String toStringNoFormatting() const noexcept {
+      return toString(0);
+    }
   };
 
   /** Void. */
@@ -671,5 +718,16 @@ _COM_AZURE_DEV__BASE__API FormatOutputStream& operator<<(FormatOutputStream& str
 _COM_AZURE_DEV__BASE__API FormatOutputStream& operator<<(FormatOutputStream& stream, const Reference<ObjectModel::String>& value);
 _COM_AZURE_DEV__BASE__API FormatOutputStream& operator<<(FormatOutputStream& stream, const Reference<ObjectModel::Array>& value);
 _COM_AZURE_DEV__BASE__API FormatOutputStream& operator<<(FormatOutputStream& stream, const Reference<ObjectModel::Object>& value);
+_COM_AZURE_DEV__BASE__API FormatOutputStream& operator<<(FormatOutputStream& stream, const Reference<ObjectModel::Binary>& value);
+
+_COM_AZURE_DEV__BASE__API ObjectModel::NiceFormat& operator<<(ObjectModel::NiceFormat& stream, const Reference<ObjectModel::Value>& value);
+_COM_AZURE_DEV__BASE__API ObjectModel::NiceFormat& operator<<(ObjectModel::NiceFormat& stream, const Reference<ObjectModel::Void>& value);
+_COM_AZURE_DEV__BASE__API ObjectModel::NiceFormat& operator<<(ObjectModel::NiceFormat& stream, const Reference<ObjectModel::Boolean>& value);
+_COM_AZURE_DEV__BASE__API ObjectModel::NiceFormat& operator<<(ObjectModel::NiceFormat& stream, const Reference<ObjectModel::Integer>& value);
+_COM_AZURE_DEV__BASE__API ObjectModel::NiceFormat& operator<<(ObjectModel::NiceFormat& stream, const Reference<ObjectModel::Float>& value);
+_COM_AZURE_DEV__BASE__API ObjectModel::NiceFormat& operator<<(ObjectModel::NiceFormat& stream, const Reference<ObjectModel::String>& value);
+_COM_AZURE_DEV__BASE__API ObjectModel::NiceFormat& operator<<(ObjectModel::NiceFormat& stream, const Reference<ObjectModel::Array>& value);
+_COM_AZURE_DEV__BASE__API ObjectModel::NiceFormat& operator<<(ObjectModel::NiceFormat& stream, const Reference<ObjectModel::Object>& value);
+_COM_AZURE_DEV__BASE__API ObjectModel::NiceFormat& operator<<(ObjectModel::NiceFormat& stream, const Reference<ObjectModel::Binary>& value);
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

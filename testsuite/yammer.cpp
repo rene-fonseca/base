@@ -14,7 +14,7 @@
 #include <base/Application.h>
 #include <base/Timer.h>
 #include <base/Primitives.h>
-#include <base/UnsignedInteger.h>
+#include <base/LongInteger.h>
 #include <base/io/FileOutputStream.h>
 #include <base/concurrency/Thread.h>
 #include <base/net/HTTPSRequest.h>
@@ -22,7 +22,12 @@
 #include <base/string/FormatInputStream.h>
 #include <base/string/FormatOutputStream.h>
 #include <base/string/StringOutputStream.h>
+#include <base/string/Format.h>
 #include <base/objectmodel/JSON.h>
+
+// Get token: https://developer.yammer.com/docs/test-token
+
+// https://developer.yammer.com/docs/api-requests
 
 using namespace com::azure::dev::base;
 
@@ -230,12 +235,12 @@ public:
   {
   }
 
-  Reference<ObjectModel::Object> get(const String& url)
+  Reference<ObjectModel::Object> deleteMethod(const String& url)
   {
     String response;
     try {
       HTTPSRequest request;
-      if (!request.open(HTTPSRequest::METHOD_GET, url)) {
+      if (!request.open(HTTPSRequest::METHOD_DELETE, url)) {
         return nullptr;
       }
 
@@ -260,6 +265,40 @@ public:
     
     auto ok = r->getBoolean("ok", false);
     if (!ok) {
+      return nullptr;
+    }
+    
+    return r;
+  }
+
+  Reference<ObjectModel::Object> get(const String& url)
+  {
+    String response;
+    try {
+      HTTPSRequest request;
+      if (!request.open(HTTPSRequest::METHOD_GET, url)) {
+        return nullptr;
+      }
+
+      request.setRequestHeader("Authorization", "Bearer " + token);
+      // request.setRequestHeader("Content-Type", "application/json; charset=utf-8");
+
+      request.send();
+      response = request.getResponse();
+      request.close();
+    } catch (...) {
+      return nullptr;
+    }
+    
+    auto r = JSON().parse(response).cast<ObjectModel::Object>(); // TAG: do this via Value class
+    if (!r) {
+      ferr << "Error: " << "Request failed." << ENDL;
+      return nullptr;
+    }
+    
+    auto stat = r->getString("response/stat", "");
+    if (stat) {
+      ferr << "Error: " << r->getString("response/message", "Request failed.") << ENDL;
       return nullptr;
     }
     
@@ -290,97 +329,95 @@ public:
     
     auto r = JSON().parse(response).cast<ObjectModel::Object>(); // TAG: do this via Value class
     if (!r) {
+      ferr << "Error: " << "Request failed." << ENDL;
       return nullptr;
     }
 
-    if (verbose) {
-      fout << r << ENDL;
-    }
-    
-    auto ok = r->getBoolean("ok", false);
-    if (!ok) {
+    auto stat = r->getString("response/stat", "");
+    if (stat) {
+      ferr << "Error: " << r->getString("response/message", "Request failed.") << ENDL;
       return nullptr;
     }
     
     return r;
   }
   
-  // TAG: test link, images, ...
-  String chat_postMessage(const String& channel, const String& text, const String& thread = String())
+  Reference<ObjectModel::Object> getMessages()
   {
     if (!token) {
       throw YammerException("No token.");
     }
     
-    // TAG: check webhook API
-    const String url = "https://slack.com/api/chat.postMessage";
+    const String url = "https://www.yammer.com/api/v1/messages.json";
 
+    Reference<ObjectModel::Object> r = get(url);
+    if (r) {
+      fout << r->toString(true) << ENDL;
+    }
+    return r;
+  }
+
+  String postMessage(const String& _group, const String& text)
+  {
+    if (!token) {
+      throw YammerException("No token.");
+    }
+    
+    const String url = "https://www.yammer.com/api/v1/messages.json";
+
+    // TAG: need to get group by name
+    const int64 group = LongInteger::parse(_group); // TAG: doesnt fail LongInteger - also need to check end reached
+    
     ObjectModel o;
     auto root = o.createObject();
-    root->setValue(o.createString("channel"), o.createString(channel));
-    root->setValue(o.createString("text"), o.createString(text));
-    root->setValue(o.createString("as_user"), o.createBoolean(true));
-    root->setValue(o.createString("username"), o.createString("From C++"));
-    if (thread) {
-      root->setValue(o.createString("thread_ts"), o.createString(thread));
+    root->setValue(o.createString("body"), o.createString(text));
+    // root->setValue(o.createString("network_id"), o.createInteger(network_id));
+    root->setValue(o.createString("group_id"), o.createInteger64(group));
+    // root->setValue(o.createString("direct_to_user_ids"), o.createArray());
+    int64 repliedToId = 0;
+    if (repliedToId) {
+      root->setValue(o.createString("replied_to_id"), o.createInteger(repliedToId));
     }
 
+    // TAG: use bot identity?
+    
     Reference<ObjectModel::Object> r = post(url, root);
     if (r) {
-      auto ts = r->getString("ts", String());
-      fout << "TS: " << ts << ENDL;
-      return ts;
+      fout << "REPLY: " << r << ENDL;
     }
     
     return String();
   }
 
-  String chat_update(const String& channel, const String& text, const String& thread)
+
+  bool getThreadInfo(const String& threadId)
   {
     if (!token) {
       throw YammerException("No token.");
     }
 
-    const String url = "https://slack.com/api/chat.update";
-
-    ObjectModel o;
-    auto root = o.createObject();
-    root->setValue(o.createString("ts"), o.createString(thread));
-    root->setValue(o.createString("channel"), o.createString(channel));
-    root->setValue(o.createString("text"), o.createString(text));
-    root->setValue(o.createString("as_user"), o.createBoolean(true));
-    root->setValue(o.createString("username"), o.createString("From C++"));
-    // TAG: add support for set with String, bool, int, double, ...
-    
-    Reference<ObjectModel::Object> r = post(url, root);
-    if (r) {
-      auto ts = r->getString("ts", String());
-      // fout << "TS: " << ts << ENDL;
-      return ts;
-    }
-    
-    return String();
-  }
-
-  bool channels_info(const String& channel)
-  {
-    if (!token) {
-      throw YammerException("No token.");
-    }
-
-    const String url = "https://slack.com/api/channels.info?channel=" + channel;
-
-#if 0
-    ObjectModel o;
-    auto root = o.createObject();
-    root->setValue(o.createString("channel"), o.createString(channel));
-#endif
+    const String url = format() << "get/threads/" << threadId << ".json";
     
     Reference<ObjectModel::Object> r = get(url);
     if (r) {
-      auto c = r->getObject("channel");
-      fout << c << ENDL;
+      fout << *r << ENDL;
       return true;
+    }
+    
+    return false;
+  }
+  
+  bool removeMessage(const unsigned int messageId)
+  {
+    if (!token) {
+      throw YammerException("No token.");
+    }
+
+    const String url = format() << "https://www.yammer.com/api/v1/messages/" << messageId;
+    
+    Reference<ObjectModel::Object> r = deleteMethod(url);
+    if (r) {
+      fout << "REPLY: " << *r << ENDL;
     }
     
     return false;
@@ -394,11 +431,10 @@ private:
   static const unsigned int MINOR_VERSION = 0;
 
   String token;
-  String channel;
+  String group;
+  String threadId;
   String text;
-  String thread;
   bool post = false;
-  bool update = false;
 public:
   
   YammerApplication(
@@ -421,12 +457,18 @@ public:
           return false;
         }
         token = *enu.next();
-      } else if (argument == "--channel") {
+      } else if (argument == "--group") {
+        if (!enu.hasNext()) {
+          ferr << "Expected group." << ENDL;
+          return false;
+        }
+        group = *enu.next();
+      } else if (argument == "--threadId") {
         if (!enu.hasNext()) {
           ferr << "Expected channel." << ENDL;
           return false;
         }
-        channel = *enu.next();
+        threadId = *enu.next();
       } else if (argument == "--post") {
         if (!enu.hasNext()) {
           ferr << "Expected text." << ENDL;
@@ -434,26 +476,11 @@ public:
         }
         text = *enu.next();
         post = true;
-        update = false;
-      } else if (argument == "--update") {
-        if (!enu.hasNext()) {
-          ferr << "Expected text." << ENDL;
-          return false;
-        }
-        text = *enu.next();
-        post = false;
-        update = true;
-      } else if (argument == "--thread") {
-        if (!enu.hasNext()) {
-          ferr << "Expected thread ts." << ENDL;
-          return false;
-        }
-        thread = *enu.next();
       } else {
         if (!token) {
           token = argument;
         } else {
-          ferr << "Invalid argument." << ENDL;
+          ferr << Format::subst("Invalid argument '%1'.", argument) << ENDL;
           return false;
         }
       }
@@ -478,8 +505,6 @@ public:
       return;
     }
     
-    // TAG: get from env TOKEN, CHANNEL, ... SLACK_TOKEN, SLACK_CHANNEL, ...
-
     if (!token) {
       ferr << "Error: Need token." << ENDL;
       setExitCode(1);
@@ -488,14 +513,13 @@ public:
     
     Yammer yammer(token);
     if (post) {
-      yammer.chat_postMessage(channel, text, thread);
-    } else if (update) {
-      yammer.chat_update(channel, text, thread);
-    } else if (channel) {
-      yammer.channels_info(channel);
+      yammer.postMessage(group, text);
+    } else if (threadId) {
+      yammer.getThreadInfo(threadId);
     } else {
-      ferr << "Error: Need action." << ENDL;
-      setExitCode(1);
+      yammer.getMessages();
+      // ferr << "Error: Need action." << ENDL;
+      // setExitCode(1);
     }
   }
 };

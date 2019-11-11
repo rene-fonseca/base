@@ -311,8 +311,7 @@ void StackFrame::toStream(FormatOutputStream& stream, const void* const * trace,
             }
           }
           lastAddress = address;
-          // const bool MACOS = (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__MACOS);
-          const bool useDim = !WINDOWS; // && !MACOS;
+          const bool useDim = false && !WINDOWS;
           if (useDim) {
             stream << dim();
           }

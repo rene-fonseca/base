@@ -1494,7 +1494,9 @@ String WideString::getMultibyteString(const wchar* string)
 
 // TAG: need getMultibyteString() with maximum length argument
 
-WideString::WideString() throw() : elements(DEFAULT_STRING.elements) {
+WideString::WideString() throw()
+  : elements(DEFAULT_STRING.elements)
+{
 }
 
 WideString::WideString(MemorySize capacity) throw(MemoryException)
@@ -1510,6 +1512,16 @@ WideString::WideString(const wchar* string) throw(MemoryException)
     initialize(string, size);
   }
 }
+
+#if 0
+WideString::WideString(const ucs4* string) throw(MemoryException)
+{
+  if (string) {
+    const size_t size = wcslen(string);
+    initialize(string, size);
+  }
+}
+#endif
 
 WideString::WideString(const std::string& string) throw(WideStringException, MemoryException)
 {
@@ -2524,12 +2536,12 @@ MemorySize WideString::count(const WideString& string, MemorySize start) const t
 
 String WideString::getMultibyteString() const throw(MultibyteException, MemoryException)
 {
-  BASSERT((sizeof(wchar) == sizeof(ucs2)) || (sizeof(wchar) == sizeof(ucs4)));
+  BASSERT((sizeof(Char) == sizeof(ucs2)) || (sizeof(Char) == sizeof(ucs4)));
   String result;
   const int numberOfCharacters = getLength(); // TAG: one character per element - could be 2
   if (numberOfCharacters) {
     const ucs4* buffer = getBuffer();
-    if (sizeof(wchar) == sizeof(ucs2)) {
+    if (sizeof(Char) == sizeof(ucs2)) {
       int multibyteLength = UCS2ToUTF8(0, Cast::pointer<const ucs2*>(buffer), numberOfCharacters);
       bassert(
         (numberOfCharacters == 0) || (multibyteLength > 0),

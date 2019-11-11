@@ -41,7 +41,7 @@ class _COM_AZURE_DEV__BASE__API WideTraits {
 public:
   
   /** Specifies the terminator for NULL-terminated strings. */
-  static const ucs4 TERMINATOR = 0;
+  static constexpr ucs4 TERMINATOR = 0;
 private:
 
   struct Range {
@@ -204,17 +204,19 @@ public:
   /** Character specific properties and manipulators. */
   typedef WideTraits Traits;
 
+  typedef ucs4 Char;
+
   struct HashEntry {
     uint8 numberOfCodes;
     unsigned int index;
   };
 
   /** Specifies the granularity of the capacity. Guaranteed to be greater than 0. */
-  static const MemorySize GRANULARITY = 16;
+  static constexpr MemorySize GRANULARITY = 16;
   /** Specifies the maximum length of any string. Guarantees that an int can hold the length of the string. */
-  static const MemorySize MAXIMUM_LENGTH = ((PrimitiveTraits<int>::MAXIMUM/sizeof(ucs4) - 1)/GRANULARITY)*GRANULARITY;
+  static constexpr MemorySize MAXIMUM_LENGTH = ((PrimitiveTraits<int>::MAXIMUM/sizeof(ucs4) - 1)/GRANULARITY)*GRANULARITY;
   /** Hash modulus. */
-  static const unsigned int HASH_MODULUS = 1455;
+  static constexpr unsigned int HASH_MODULUS = 1455;
   /** Character folding hash table. */
   static const HashEntry hashTable[];
   /** Character mapping table for caseless matching. */
@@ -364,9 +366,9 @@ public:
     Specifies the maximum number of bytes per character for any supported
     encoding.
   */
-  static const unsigned int MAXIMUM_MULTIBYTES = 6;
+  static constexpr unsigned int MAXIMUM_MULTIBYTES = 6;
   /** Specifies the byte order mark. */
-  static const ucs4 BOM = 0x0000feff;
+  static constexpr ucs4 BOM = 0x0000feff;
 
   /** The style. */
   enum Style {
@@ -387,7 +389,7 @@ public:
   class _COM_AZURE_DEV__BASE__API UnicodeCharacter {
   private:
     
-    static const Style DEFAULT_STYLE = STYLE_CPP;
+    static constexpr Style DEFAULT_STYLE = STYLE_CPP;
     ucs4 character;
     Style style;
   public:
@@ -758,6 +760,8 @@ public:
   WideString(const WideLiteral& string) throw(WideStringException, MemoryException);
 
   WideString(const wchar* string) throw(MemoryException);
+
+  // WideString(const ucs4* string) throw(MemoryException);
 
   WideString(const std::string& string) throw(WideStringException, MemoryException);
 

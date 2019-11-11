@@ -270,6 +270,11 @@ inline ANSIEscapeSequence::Escape bold() throw() {
   return ANSIEscapeSequence::Escape(Literal("\033[1m"));
 }
 
+/** Activates the italic attribute. ATTENTION: This code is generally supported. */
+inline ANSIEscapeSequence::Escape italic() throw() {
+  return ANSIEscapeSequence::Escape(Literal("\033[3m"));
+}
+
 /** Activates the underscore attribute. */
 inline ANSIEscapeSequence::Escape underscore() throw() {
   return ANSIEscapeSequence::Escape(Literal("\033[4m"));

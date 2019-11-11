@@ -61,11 +61,13 @@ public:
     Literal literal;
   public:
     
-    inline Escape(Literal _literal) throw() : literal(_literal) {
+    inline Escape(Literal _literal) noexcept
+      : literal(_literal)
+    {
     }
     
-    inline FormatOutputStream& operator()(
-      FormatOutputStream& stream) throw(IOException) {
+    inline FormatOutputStream& operator()(FormatOutputStream& stream)
+    {
       return stream << literal;
     }
   };
@@ -77,12 +79,12 @@ public:
     const unsigned int attributes = 0;
   public:
 
-    inline SetAttributes(unsigned int _attributes) throw()
+    inline SetAttributes(unsigned int _attributes) noexcept
       : attributes(_attributes) {
     }
     
-    inline FormatOutputStream& operator()(
-      FormatOutputStream& stream) throw(IOException) {
+    inline FormatOutputStream& operator()(FormatOutputStream& stream)
+    {
       ANSIEscapeSequence(stream).setAttributes(attributes);
       return stream;
     }
@@ -97,12 +99,13 @@ public:
     const Color color;
   public:
 
-    inline SetColor(Method _method, Color _color) throw()
-      : method(_method), color(_color) {
+    inline SetColor(Method _method, Color _color) noexcept
+      : method(_method), color(_color)
+    {
     }
 
-    inline FormatOutputStream& operator()(
-      FormatOutputStream& stream) throw(IOException) {
+    inline FormatOutputStream& operator()(FormatOutputStream& stream)
+    {
       (ANSIEscapeSequence(stream).*method)(color);
       return stream;
     }
@@ -116,12 +119,13 @@ public:
     const unsigned int column = 0;
   public:
 
-    inline SetCursor(unsigned int _line, unsigned int _column) throw()
-      : line(_line), column(_column) {
+    inline SetCursor(unsigned int _line, unsigned int _column) noexcept
+      : line(_line), column(_column)
+    {
     }
     
-    inline FormatOutputStream& operator()(
-      FormatOutputStream& stream) throw(IOException) {
+    inline FormatOutputStream& operator()(FormatOutputStream& stream)
+    {
       ANSIEscapeSequence(stream).setCursor(line, column);
       return stream;
     }    
@@ -136,12 +140,13 @@ public:
     const unsigned int count = 0;
   public:
 
-    inline MoveCursor(Method _method, unsigned int _count) throw()
-      : method(_method), count(_count) {
+    inline MoveCursor(Method _method, unsigned int _count) noexcept
+      : method(_method), count(_count)
+    {
     }
 
-    inline FormatOutputStream& operator()(
-      FormatOutputStream& stream) throw(IOException) {
+    inline FormatOutputStream& operator()(FormatOutputStream& stream)
+    {
       (ANSIEscapeSequence(stream).*method)(count);
       return stream;
     }
@@ -150,8 +155,9 @@ public:
   /**
     Initializes the ANSI escape sequence object.
   */
-  inline ANSIEscapeSequence(FormatOutputStream& _stream) throw()
-    : stream(_stream) {
+  inline ANSIEscapeSequence(FormatOutputStream& _stream) noexcept
+    : stream(_stream)
+  {
   }
 
   /**
@@ -193,151 +199,211 @@ public:
     Sets the background color.
   */
   void setBackground(Color color) throw(IOException);
+
+  /** Activates color by index. Not using standard. */
+  static String color(uint8 index);
+
+  /** Activates RGB color. Not using standard. */
+  static String color(uint8 red, uint8 green, uint8 blue);
+
+  /** Activates background color by index. Not using standard. */
+  static String backgroundColor(uint8 index);
+
+  /** Activates background RGB color. Not using standard. */
+  static String backgroundColor(uint8 red, uint8 green, uint8 blue);
 };
 
 /** Moves the cursor to the home position. */
-inline ANSIEscapeSequence::Escape home() throw() {
+inline ANSIEscapeSequence::Escape home() noexcept {
   return ANSIEscapeSequence::Escape(Literal("ESC[H"));
 }
 
 /** Set the cursor position. */
 inline ANSIEscapeSequence::SetCursor setCursor(
-  unsigned int line, unsigned int column) throw() {
+  unsigned int line, unsigned int column) noexcept {
   return ANSIEscapeSequence::SetCursor(line, column);
 }
 
 /** Moves the cursor up by the specified number of lines. The default is 1. */
-inline ANSIEscapeSequence::MoveCursor up(unsigned int count = 1) throw() {
+inline ANSIEscapeSequence::MoveCursor up(unsigned int count = 1) noexcept {
   return ANSIEscapeSequence::MoveCursor(&ANSIEscapeSequence::up, count);
 }
 
 /** Moves the cursor down by the specified number of lines. The default is 1. */
-inline ANSIEscapeSequence::MoveCursor down(unsigned int count = 1) throw() {
+inline ANSIEscapeSequence::MoveCursor down(unsigned int count = 1) noexcept {
   return ANSIEscapeSequence::MoveCursor(&ANSIEscapeSequence::down, count);
 }
 
 /**
   Moves the cursor forward by the specified number of columns. The default is 1.
 */
-inline ANSIEscapeSequence::MoveCursor forward(unsigned int count = 1) throw() {
+inline ANSIEscapeSequence::MoveCursor forward(unsigned int count = 1) noexcept {
   return ANSIEscapeSequence::MoveCursor(&ANSIEscapeSequence::forward, count);
 }
 
 /**
   Moves the cursor backward by the specified number of columns. The default is 1.
 */
-inline ANSIEscapeSequence::MoveCursor backward(unsigned int count = 1) throw() {
+inline ANSIEscapeSequence::MoveCursor backward(unsigned int count = 1) noexcept {
   return ANSIEscapeSequence::MoveCursor(&ANSIEscapeSequence::backward, count);
 }
 
 /** Saves the position. */
-inline ANSIEscapeSequence::Escape savePosition() throw() {
+inline ANSIEscapeSequence::Escape savePosition() noexcept {
   return ANSIEscapeSequence::Escape(Literal("\033[s"));
 }
 
 /** Restores the position. */
-inline ANSIEscapeSequence::Escape restorePosition() throw() {
+inline ANSIEscapeSequence::Escape restorePosition() noexcept {
   return ANSIEscapeSequence::Escape(Literal("\033[u"));
 }
 
 /** Erases the display. */
-inline ANSIEscapeSequence::Escape clearDisplay() throw() {
+inline ANSIEscapeSequence::Escape clearDisplay() noexcept {
   return ANSIEscapeSequence::Escape(Literal("\033[2J"));
 }
 
 /** Erases the current line. */
-inline ANSIEscapeSequence::Escape clearLine() throw() {
+inline ANSIEscapeSequence::Escape clearLine() noexcept {
   return ANSIEscapeSequence::Escape(Literal("\033[K"));
 }
 
 /** Enables wrapping. */
-inline ANSIEscapeSequence::Escape wrap() throw() {
+inline ANSIEscapeSequence::Escape wrap() noexcept {
   return ANSIEscapeSequence::Escape(Literal("\033[=7h"));
 }
 
 /** Disables wrapping. */
-inline ANSIEscapeSequence::Escape nowrap() throw() {
+inline ANSIEscapeSequence::Escape nowrap() noexcept {
   return ANSIEscapeSequence::Escape(Literal("\033[=7l"));
 }
 
 /** Deactivates all the text attributes. */
-inline ANSIEscapeSequence::Escape normal() throw() {
+inline ANSIEscapeSequence::Escape normal() noexcept {
   return ANSIEscapeSequence::Escape(Literal("\033[0m"));
 }
 
 /** Activates the bold attribute. */
-inline ANSIEscapeSequence::Escape bold() throw() {
+inline ANSIEscapeSequence::Escape bold() noexcept {
   return ANSIEscapeSequence::Escape(Literal("\033[1m"));
 }
 
-/** Activates the italic attribute. ATTENTION: This code is generally supported. */
-inline ANSIEscapeSequence::Escape italic() throw() {
+/** Deactivates the bold attribute. */
+inline ANSIEscapeSequence::Escape nobold() noexcept {
+  return ANSIEscapeSequence::Escape(Literal("\033[22m"));
+}
+
+/** Activates the dim attribute. ATTENTION: This code is NOT generally supported. */
+inline ANSIEscapeSequence::Escape dim() noexcept {
+  return ANSIEscapeSequence::Escape(Literal("\033[2m"));
+}
+
+/** Deactivates the dim attribute. ATTENTION: This code is NOT generally supported. */
+inline ANSIEscapeSequence::Escape nodim() noexcept {
+  return ANSIEscapeSequence::Escape(Literal("\033[22m"));
+}
+
+/** Activates the italic attribute. ATTENTION: This code is NOT generally supported. */
+inline ANSIEscapeSequence::Escape italic() noexcept {
   return ANSIEscapeSequence::Escape(Literal("\033[3m"));
 }
 
+/** Deactivates the italic attribute. ATTENTION: This code is NOT generally supported. */
+inline ANSIEscapeSequence::Escape noitalic() noexcept {
+  return ANSIEscapeSequence::Escape(Literal("\033[23m"));
+}
+
+/** Activates the strike-through attribute. ATTENTION: This code is NOT generally supported. */
+inline ANSIEscapeSequence::Escape strikethrough() noexcept {
+  return ANSIEscapeSequence::Escape(Literal("\033[9m"));
+}
+
+/** Deactivates the strike-through attribute. ATTENTION: This code is NOT generally supported. */
+inline ANSIEscapeSequence::Escape nostrikethrough() noexcept {
+  return ANSIEscapeSequence::Escape(Literal("\033[29m"));
+}
+
 /** Activates the underscore attribute. */
-inline ANSIEscapeSequence::Escape underscore() throw() {
+inline ANSIEscapeSequence::Escape underscore() noexcept {
   return ANSIEscapeSequence::Escape(Literal("\033[4m"));
 }
 
+/** Deactivates the underscore attribute. */
+inline ANSIEscapeSequence::Escape nounderscore() noexcept {
+  return ANSIEscapeSequence::Escape(Literal("\033[24m"));
+}
+
+/** Activates the overline attribute. ATTENTION: This code is NOT generally supported. */
+inline ANSIEscapeSequence::Escape overline() noexcept {
+  return ANSIEscapeSequence::Escape(Literal("\053[4m"));
+}
+
 /** Activates the blink attribute. */
-inline ANSIEscapeSequence::Escape blink() throw() {
+inline ANSIEscapeSequence::Escape blink() noexcept {
   return ANSIEscapeSequence::Escape(Literal("\033[5m"));
 }
 
 /** Activates the reverse attribute. */
-inline ANSIEscapeSequence::Escape reverse() throw() {
+inline ANSIEscapeSequence::Escape reverse() noexcept {
   return ANSIEscapeSequence::Escape(Literal("\033[7m"));
 }
 
 /** Activates the conceal attribute. */
-inline ANSIEscapeSequence::Escape conceal() throw() {
+inline ANSIEscapeSequence::Escape conceal() noexcept {
   return ANSIEscapeSequence::Escape(Literal("\033[8m"));
 }
 
 /** Sets the text attributes. */
-inline ANSIEscapeSequence::SetAttributes setAttributes(
-  unsigned int attributes) throw() {
+inline ANSIEscapeSequence::SetAttributes setAttributes(unsigned int attributes)
+{
   return ANSIEscapeSequence::SetAttributes(attributes);
 }
 
 /** Sets the foreground color. */
-inline ANSIEscapeSequence::SetColor setForeground(
-  ANSIEscapeSequence::Color color) throw() {
+inline ANSIEscapeSequence::SetColor setForeground(ANSIEscapeSequence::Color color)
+{
   return ANSIEscapeSequence::SetColor(&ANSIEscapeSequence::setForeground, color);
 }
 
 /** Sets the background color. */
-inline ANSIEscapeSequence::SetColor setBackground(
-  ANSIEscapeSequence::Color color) throw() {
+inline ANSIEscapeSequence::SetColor setBackground(ANSIEscapeSequence::Color color)
+{
   return ANSIEscapeSequence::SetColor(&ANSIEscapeSequence::setBackground, color);
 }
 
+/** Reset foreground RGB color. */
+inline ANSIEscapeSequence::Escape nocolor()
+{
+  return ANSIEscapeSequence::Escape(Literal("\033[39m"));
+}
+
+/** Reset background RGB color. */
+inline ANSIEscapeSequence::Escape nobackgroundcolor()
+{
+  return ANSIEscapeSequence::Escape(Literal("\033[49m"));
+}
+
 /** Writes the escape sequence to the format output stream. */
-inline FormatOutputStream& operator<<(
-  FormatOutputStream& stream,
-  ANSIEscapeSequence::Escape escape) throw(IOException) {
+inline FormatOutputStream& operator<<(FormatOutputStream& stream, ANSIEscapeSequence::Escape escape)
+{
   return escape(stream);
 }
 
 /** Writes the cursor movement escape sequence to the format output stream. */
-inline FormatOutputStream& operator<<(
-  FormatOutputStream& stream,
-  ANSIEscapeSequence::MoveCursor moveCursor) throw(IOException) {
+inline FormatOutputStream& operator<<(FormatOutputStream& stream, ANSIEscapeSequence::MoveCursor moveCursor)
+{
   return moveCursor(stream);
 }
 
 /** Writes the attribute escape sequence to the format output stream. */
-inline FormatOutputStream& operator<<(
-  FormatOutputStream& stream,
-  ANSIEscapeSequence::SetAttributes setAttributes) throw(IOException) {
+inline FormatOutputStream& operator<<(FormatOutputStream& stream, ANSIEscapeSequence::SetAttributes setAttributes)
+{
   return setAttributes(stream);
 }
 
 /** Writes the color escape sequence to the format output stream. */
-inline FormatOutputStream& operator<<(
-  FormatOutputStream& stream,
-  ANSIEscapeSequence::SetColor setColor) throw(IOException) {
+inline FormatOutputStream& operator<<(FormatOutputStream& stream, ANSIEscapeSequence::SetColor setColor)
+{
   return setColor(stream);
 }
 

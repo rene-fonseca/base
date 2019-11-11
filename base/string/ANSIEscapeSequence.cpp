@@ -12,6 +12,7 @@
  ***************************************************************************/
 
 #include <base/string/ANSIEscapeSequence.h>
+#include <base/string/StringOutputStream.h>
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
@@ -82,7 +83,8 @@ void ANSIEscapeSequence::setForeground(Color color) throw(IOException) {
   stream << buffer;
 }
 
-void ANSIEscapeSequence::setBackground(Color color) throw(IOException) {
+void ANSIEscapeSequence::setBackground(Color color) throw(IOException)
+{
   char buffer[sizeof("\033[4xm")];
   char* dest = buffer;
   *dest++ = '\033';
@@ -92,6 +94,34 @@ void ANSIEscapeSequence::setBackground(Color color) throw(IOException) {
   *dest++ = 'm';
   *dest = 0;
   stream << buffer;
+}
+
+String ANSIEscapeSequence::color(uint8 red, uint8 green, uint8 blue)
+{
+  StringOutputStream sos;
+  sos << "\033[38;2;" << red << ";" << green << ";" << blue << "m";
+  return sos.toString();
+}
+
+String ANSIEscapeSequence::color(uint8 index)
+{
+  StringOutputStream sos;
+  sos << "\033[38;5;" << index << "m";
+  return sos.toString();
+}
+
+String ANSIEscapeSequence::backgroundColor(uint8 red, uint8 green, uint8 blue)
+{
+  StringOutputStream sos;
+  sos << "\033[48;2;" << red << ";" << green << ";" << blue << "m";
+  return sos.toString();
+}
+
+String ANSIEscapeSequence::backgroundColor(uint8 index)
+{
+  StringOutputStream sos;
+  sos << "\033[48;5;" << index << "m";
+  return sos.toString();
 }
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

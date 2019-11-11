@@ -133,6 +133,12 @@ public:
           stream << "Internal error: Uncaught exception '" << Exception::getStdExceptionName(e)
                  << "' was raised." << FLUSH;
         }
+      } catch (const char*) {
+        // TAG: we need safe virtual memory read to show string - we cant assume we can read anything
+        stream << "Internal error: Uncaught string literal exception." << FLUSH;
+      } catch (const wchar*) {
+        // TAG: we need safe virtual memory read to show string - we cant assume we can read anything
+        stream << "Internal error: Uncaught string literal exception." << FLUSH;
       } catch (...) {
         stream << "Internal error: Uncaught and unknown exception." << FLUSH;
       }
@@ -802,9 +808,33 @@ int Application::exceptionHandler(const Exception& e) throw()
 
 int Application::exceptionHandler() throw()
 {
-  ferr << "Internal error: Unspecified exception." << ENDL;
+  setExitCode(Application::EXIT_CODE_ERROR);
 
-  if (auto tls = Thread::getLocalContext()) {
+  try {
+    throw;
+  } catch (Exception& e) {
+    BASSERT(!"Unpexpected Exception.");
+    exceptionHandler(e);
+    return Application::EXIT_CODE_ERROR;
+  } catch (std::exception& e) {
+    if (const String w = e.what()) {
+      ferr << "Internal error: Uncaught exception '" << Exception::getStdExceptionName(e)
+           << "' was raised with message '" << w << "'." << ENDL;
+    } else {
+      ferr << "Internal error: Uncaught exception '" << Exception::getStdExceptionName(e)
+           << "' was raised." << ENDL;
+    }
+  } catch (const char*) {
+    // TAG: we need safe virtual memory read to show string - we cant assume we can read anything
+    ferr << "Internal error: String literal exception." << ENDL;
+  } catch (const wchar*) {
+    // TAG: we need safe virtual memory read to show string - we cant assume we can read anything
+    ferr << "Internal error: String literal exception." << ENDL;
+  } catch (...) {
+    ferr << "Internal error: Unspecified exception." << ENDL;
+  }
+
+  if (auto tls = Thread::getLocalContext()) { // this is not relevant since we didnt get here by throwing base::Exception
     if (!tls->stackTrace.isEmpty()) {
       StackFrame::toStream(
         ferr, tls->stackTrace.getTrace(), tls->stackTrace.getSize(),
@@ -814,7 +844,6 @@ int Application::exceptionHandler() throw()
     }
   }
 
-  setExitCode(Application::EXIT_CODE_ERROR);
   return Application::EXIT_CODE_ERROR;
 }
 

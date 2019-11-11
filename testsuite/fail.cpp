@@ -65,7 +65,7 @@ public:
 
   void throwOutOfRange()
   {
-    throw OutOfRange("Testing throw of out of range exception which must get catch by application stub.");
+    throw OutOfRange("Testing throw of out of range exception which must get caught by application stub.");
   }
 
   void rethrowOutOfRange()
@@ -90,12 +90,12 @@ public:
   
   void throwStdRuntimeError()
   {
-    throw std::runtime_error("Testing throw of std::exception which must get catch by application stub.");
+    throw std::runtime_error("Testing throw of std::exception which must get caught by application stub.");
   }
 
   void throwString()
   {
-    throw "Testing throw of leteral which must get catch by application stub.";
+    throw "Testing throw of leteral which must get caught by application stub.";
   }
 
   void throwString2() noexcept
@@ -134,9 +134,9 @@ public:
     } else if (command == "nullpointer") {
       throwNullPointer();
     } else if (command == "runtimeerror") {
-      throwStdRuntimeError(); // TAG: not getting std info
+      throwStdRuntimeError();
     } else if (command == "throwstring") {
-      throwString(); // TAG: not getting good info for this
+      throwString();
     } else if (command == "throwstring2") {
       throwString2();
     } else if (command == "outofmem") {

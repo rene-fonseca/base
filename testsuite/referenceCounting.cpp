@@ -86,7 +86,7 @@ public:
     fout << "Unreferenced object (expecting 0 references): " << baseStack.getNumberOfReferences_INTERNAL() << ENDL;
 
     fout << "Initializing reference counted object pointers" << ENDL;
-    Reference<Base> base; // ok
+    Reference<Base> base = new Base(); // ok
     fout << "Single referenced object (expecting 1 reference): " << base->getNumberOfReferences_INTERNAL() << ENDL;
     // TAG: add TEST support
 

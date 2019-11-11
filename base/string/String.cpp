@@ -421,7 +421,9 @@ MemorySize String::replaceAll(
 String String::substring(MemorySize start, MemorySize end) const
 {
   const MemorySize length = getLength();
-  if ((start < end) && (start < length)) {
+  if ((start == 0) && (end >= length)) {
+    return *this; // quick copy by reference
+  } else if ((start < end) && (start < length)) {
     if (end > length) {
       end = length; // force to end of string
     }

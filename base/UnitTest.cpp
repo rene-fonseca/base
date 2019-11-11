@@ -850,8 +850,18 @@ bool UnitTestManager::runTests(const String& pattern, bool runDevel)
     fout << Format::subst("TOTAL PASSED: %1/%2", passed, count) << ENDL;
   }
   fout << "TOTAL PROCESSING TIME: " << totalTimes.getTotal()/1000000.0 << " ms" << ENDL;
+
   if (failedTests) {
-    fout << "FAILED TESTS: " << failedTests << ENDL; // TAG: can we make generic container style formatting prefix, spacing, separator, suffix
+    fout << "FAILED TESTS: [";
+    bool first = true;
+    for (const auto& id : failedTests) {
+      if (!first) {
+        fout << "; ";
+      }
+      first = false;
+      fout << presentId(id);
+    }
+    fout << "]" << ENDL;
   }
 
   if (oldExceptionHandler) {

@@ -21,10 +21,7 @@
 
 using namespace com::azure::dev::base;
 
-// TAG: add format substitution support
-// String subst(const String& text, args);
-
-// TAG: add test macros - see std for test output
+// TAG: add support for ObjectModel::Comment // and /**/ style - see https://code.visualstudio.com/docs/languages/json
 
 const char* JSON_EXAMPLE1 = "{"
 "  \"hello\": \"This is a test.\","

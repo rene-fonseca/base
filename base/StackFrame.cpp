@@ -305,7 +305,7 @@ void StackFrame::toStream(FormatOutputStream& stream, const void* const * trace,
         const String address = sos.toString();
         if (useColors) {
           MemorySize j = 0; // find first difference for new address
-          for (; i < minimum(address.getLength(), lastAddress.getLength()); ++j) {
+          for (; j < minimum(address.getLength(), lastAddress.getLength()); ++j) {
             if (address[j] != lastAddress[j]) {
               break;
             }

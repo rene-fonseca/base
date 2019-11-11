@@ -22,7 +22,7 @@
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 AnyValue::AnyValue() noexcept
-  : representation(VOID)
+  : representation(VOID), p(nullptr)
 {
 }
 
@@ -37,12 +37,12 @@ AnyValue::AnyValue(const Type& value) noexcept
 }
 
 AnyValue::AnyValue(const char* value) noexcept
-  : representation(STRING), string(value)
+  : representation(STRING), string(value), p(nullptr)
 {
 }
 
 AnyValue::AnyValue(const wchar* value) noexcept
-  : representation(WIDE_STRING), wideString(value)
+  : representation(WIDE_STRING), wideString(value), p(nullptr)
 {
 }
 
@@ -52,22 +52,22 @@ AnyValue::AnyValue(void* value) noexcept
 }
 
 AnyValue::AnyValue(char value) noexcept
-  : representation(CHARACTER), character(value)
+  : representation(CHARACTER), p(nullptr), character(value)
 {
 }
 
 AnyValue::AnyValue(wchar value) noexcept
-  : representation(WIDE_CHARACTER), wideCharacter(value)
+  : representation(WIDE_CHARACTER), p(nullptr), wideCharacter(value)
 {
 }
 
 AnyValue::AnyValue(bool value) noexcept
-  : representation(BOOLEAN), boolean(value)
+  : representation(BOOLEAN), p(nullptr), boolean(value)
 {
 }
 
 AnyValue::AnyValue(short value) noexcept
-  : representation(INTEGER), shortInteger(value)
+  : representation(INTEGER), p(nullptr), shortInteger(value)
 {
 }
 

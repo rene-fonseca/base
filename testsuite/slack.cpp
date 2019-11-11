@@ -268,7 +268,7 @@ public:
   
   Reference<ObjectModel::Object> post(const String& url, Reference<ObjectModel::Object> o)
   {
-    const String body = JSON::getJSON(o, false);
+    const String body = JSON::getJSONNoFormatting(o);
     // fout << body << ENDL;
     
     String response;

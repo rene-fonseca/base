@@ -213,8 +213,13 @@ public:
 
   static Reference<ObjectModel::Value> parseFile(const String& path);
   
+  /** Converts given ObjectModel to JSON. Use getJSONNoFormatting() to ensure no formatting. */
+  static String getJSON(Reference<ObjectModel::Value> value, unsigned int flags = ObjectModel::DEFAULT_FORMATTING);
+
   /** Converts given ObjectModel to JSON. */
-  static String getJSON(Reference<ObjectModel::Value> value, bool niceFormat = true);
+  static inline String getJSONNoFormatting(Reference<ObjectModel::Value> value) {
+    return getJSON(value, 0);
+  }
 };
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

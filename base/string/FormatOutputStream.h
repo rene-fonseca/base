@@ -465,29 +465,53 @@ public:
     unsigned int length = 0;
   public:
     
-    inline Indent(unsigned int _length) throw()
+    inline Indent(unsigned int _length) noexcept
       : length(_length) {
     }
     
-    inline unsigned int getIndent() const throw() {
+    inline unsigned int getIndent() const noexcept {
       return length;
     }
   };
-  
+
+  class _COM_AZURE_DEV__BASE__API TabIndent {
+  private:
+
+    unsigned int length = 0;
+  public:
+
+    inline TabIndent(unsigned int _length) noexcept
+      : length(_length) {
+    }
+
+    inline unsigned int getIndent() const noexcept {
+      return length;
+    }
+  };
+
   /**
     Indents the stream with the specified number of spaces. This is usually
     used immediately after an EOL.
   */
-  inline FormatOutputStream& operator<<(Indent indent) throw(IOException) {
+  inline FormatOutputStream& operator<<(Indent indent) {
     this->indent(indent.getIndent());
     return *this;
   }
-  
+
+  /**
+    Indents the stream with the specified number of TABs. This is usually
+    used immediately after an EOL.
+  */
+  inline FormatOutputStream& operator<<(TabIndent indent) {
+    this->indent(indent.getIndent(), true);
+    return *this;
+  }
+
   /**
     Writes the specified number of spaces to the stream. The current context is
     ignored and not reset by this method.
   */
-  void indent(unsigned int size) throw(IOException);
+  void indent(unsigned int size, bool useTab = false) throw(IOException);
   
   /**
     Writes the specifies number of characters to the stream.
@@ -668,6 +692,13 @@ extern _COM_AZURE_DEV__BASE__API FormatOutputStream ferr;
 */
 inline FormatOutputStream::Indent indent(unsigned int length) throw() {
   return FormatOutputStream::Indent(length);
+}
+
+/**
+  Indent with TABs.
+*/
+inline FormatOutputStream::TabIndent tabindent(unsigned int length) throw() {
+  return FormatOutputStream::TabIndent(length);
 }
 
 

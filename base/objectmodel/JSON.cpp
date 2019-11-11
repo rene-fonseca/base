@@ -377,12 +377,12 @@ Reference<ObjectModel::Value> JSON::parseFile(const String& path)
   return json.parse(buffer, buffer + buffer.size());
 }
 
-String JSON::getJSON(Reference<ObjectModel::Value> value, bool niceFormat)
+String JSON::getJSON(Reference<ObjectModel::Value> value, unsigned int flags)
 {
   if (!value) {
     throw NullPointer();
   }
-  return value->toString(niceFormat);
+  return value->toString(flags);
 }
 
 #if defined(_COM_AZURE_DEV__BASE__TESTS)
@@ -426,16 +426,16 @@ public:
     a->append(o.createString(L"Hello, World!"));
     TEST_ASSERT(a->getSize() == 7);
 
-    String normal = JSON::getJSON(root, false);
+    String normal = JSON::getJSONNoFormatting(root);
     TEST_ASSERT(normal.getLength() > 1);
     TEST_ASSERT(normal[0] == '{');
     TEST_ASSERT(normal[normal.getLength() - 1] == '}');
     TEST_ASSERT(normal);
     auto o1 = JSON().parse(normal).cast<ObjectModel::Object>();
-    String nice = JSON::getJSON(root, true);
+    String nice = JSON::getJSON(root);
     TEST_ASSERT(nice);
     auto o2 = JSON().parse(nice).cast<ObjectModel::Object>();
-    TEST_EQUAL(JSON::getJSON(o2, false), normal); // floats should map to the same string representation also
+    TEST_EQUAL(JSON::getJSONNoFormatting(o2), normal); // floats should map to the same string representation also
 
     TEST_ASSERT(ensureFailure("#"));
     TEST_ASSERT(ensureFailure("{nul}"));

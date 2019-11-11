@@ -218,6 +218,11 @@ Reference<ObjectModel::Object> ObjectModel::createObject()
   return new Object();
 }
 
+MemorySize ObjectModel::Comment::getSize() const noexcept
+{
+  return value.getLength();
+}
+
 MemorySize ObjectModel::String::getSize() const noexcept
 {
   return value.getLength();

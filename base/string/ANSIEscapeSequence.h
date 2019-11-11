@@ -335,7 +335,12 @@ inline ANSIEscapeSequence::Escape nounderscore() noexcept {
 
 /** Activates the overline attribute. ATTENTION: This code is NOT generally supported. */
 inline ANSIEscapeSequence::Escape overline() noexcept {
-  return ANSIEscapeSequence::Escape(Literal("\053[4m"));
+  return ANSIEscapeSequence::Escape(Literal("\033[53m"));
+}
+
+/** Deactivates the overline attribute. ATTENTION: This code is NOT generally supported. */
+inline ANSIEscapeSequence::Escape nooverline() noexcept {
+  return ANSIEscapeSequence::Escape(Literal("\033[55m"));
 }
 
 /** Activates the blink attribute. */
@@ -343,14 +348,29 @@ inline ANSIEscapeSequence::Escape blink() noexcept {
   return ANSIEscapeSequence::Escape(Literal("\033[5m"));
 }
 
+/** Deactivates the blink attribute. */
+inline ANSIEscapeSequence::Escape noblink() noexcept {
+  return ANSIEscapeSequence::Escape(Literal("\033[25m"));
+}
+
 /** Activates the reverse attribute. */
 inline ANSIEscapeSequence::Escape reverse() noexcept {
   return ANSIEscapeSequence::Escape(Literal("\033[7m"));
 }
 
+/** Deactivates the reverse attribute. */
+inline ANSIEscapeSequence::Escape noreverse() noexcept {
+  return ANSIEscapeSequence::Escape(Literal("\033[27m"));
+}
+
 /** Activates the conceal attribute. */
 inline ANSIEscapeSequence::Escape conceal() noexcept {
   return ANSIEscapeSequence::Escape(Literal("\033[8m"));
+}
+
+/** Dectivates the conceal attribute. */
+inline ANSIEscapeSequence::Escape noconceal() noexcept {
+  return ANSIEscapeSequence::Escape(Literal("\033[28m"));
 }
 
 /** Sets the text attributes. */

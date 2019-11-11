@@ -170,56 +170,28 @@ public:
 protected:
 
   /** Called on explicit print request. */
-  inline void onPrint(const String& what, unsigned int line = 0)
-  {
-    currentRun->onPrint(what, line);
-  }
-
+  void onPrint(const String& what, unsigned int line = 0);
+  
   /** Called when subtest passed. */
-  inline void onPassed(const String& what, unsigned int line = 0)
-  {
-    currentRun->onPassed(what, line);
-  }
-
-  /** Called when subtest failed. */
-  inline void onFailed(const String& what, unsigned int line = 0)
-  {
-    currentRun->onFailed(what, line);
-  }
+  void onPassed(const String& what, unsigned int line = 0);
   
   /** Called when subtest failed. */
-  inline void onAssert(bool passed, const String& what, unsigned int line = 0)
-  {
-    if (passed) {
-      currentRun->onPassed(what, line);
-    } else {
-      currentRun->onFailed(what, line);
-    }
-  }
+  void onFailed(const String& what, unsigned int line = 0);
+  
+  /** Called when subtest failed. */
+  void onAssert(bool passed, const String& what, unsigned int line = 0);
 
   /** Called when here point is declared. */
-  inline void registerHere(const Here* here, const char* description)
-  {
-    currentRun->registerHere(here, description);
-  }
-
+  void registerHere(const Here* here, const char* description);
+  
   /** Called when not-here point is declared. */
-  inline void registerNotHere(const NotHere* here, const char* description)
-  {
-    currentRun->registerNotHere(here, description);
-  }
-
+  void registerNotHere(const NotHere* here, const char* description);
+  
   /** Called when here point is reached. */
-  inline void onHere(const Here* here)
-  {
-    currentRun->onHere(here);
-  }
-
+  void onHere(const Here* here);
+  
   /** Called when nothere point is reached but shouldn't be reached. */
-  inline void onNotHere(const NotHere* here)
-  {
-    currentRun->onNotHere(here);
-  }
+  void onNotHere(const NotHere* here);
 public:
 
   /** Initializes the test. */

@@ -1106,6 +1106,50 @@ UnitTest::AddDependency::AddDependency(UnitTest* test, const char* id)
   }
 }
 
+void UnitTest::onPrint(const String& what, unsigned int line)
+{
+  currentRun->onPrint(what, line);
+}
+
+void UnitTest::onPassed(const String& what, unsigned int line)
+{
+  currentRun->onPassed(what, line);
+}
+
+void UnitTest::onFailed(const String& what, unsigned int line)
+{
+  currentRun->onFailed(what, line);
+}
+
+void UnitTest::onAssert(bool passed, const String& what, unsigned int line)
+{
+  if (passed) {
+    currentRun->onPassed(what, line);
+  } else {
+    currentRun->onFailed(what, line);
+  }
+}
+
+void UnitTest::registerHere(const Here* here, const char* description)
+{
+  currentRun->registerHere(here, description);
+}
+
+void UnitTest::registerNotHere(const NotHere* here, const char* description)
+{
+  currentRun->registerNotHere(here, description);
+}
+
+void UnitTest::onHere(const Here* here)
+{
+  currentRun->onHere(here);
+}
+
+void UnitTest::onNotHere(const NotHere* here)
+{
+  currentRun->onNotHere(here);
+}
+
 AnyValue UnitTest::getState(const String& id)
 {
   const AnyValue* value = UnitTestManager::getManager().states.find(id);

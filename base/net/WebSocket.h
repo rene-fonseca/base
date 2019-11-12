@@ -69,11 +69,21 @@ private:
   
   // TAG: Listener* listeners = nullptr;
   // String url;
+  
   virtual void onOpen() {}
+  
   virtual void onClose() {}
+  
   virtual void onError() {}
-  virtual void onMessage() {}
+  
+  virtual void onMessage(const String& data)
+  {
+    BASSERT(!"HERE");
+  }
 public:
+  
+  /** Returns true if WebSocket is supported. */
+  bool isSupported();
 
   enum ReadyState {
     CONNECTING = 0, // Socket has been created. The connection is not yet open.

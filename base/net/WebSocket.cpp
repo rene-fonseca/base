@@ -19,6 +19,7 @@
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
 #  include <Windows.h>
 #  include <WinInet.h>
+#  include <websocket.h>
 #elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__MACOS)
 #  include <CoreFoundation/CoreFoundation.h>
 #  include <CFNetwork/CFNetwork.h>
@@ -28,6 +29,10 @@
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
+#if 0 && (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
+#  pragma comment(lib, "websocket.lib") // TAG: use runtime linking instead
+#endif
+
 class WebSocketHandle : public ReferenceCountedObject {
 public:
 
@@ -36,7 +41,8 @@ public:
   uint32 status = 0;
   String statusText;
 
-#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
+#if 0 && (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
+  WEB_SOCKET_HANDLE handle;
   HINTERNET hInternet = nullptr;
   HINTERNET hConnect = nullptr;
   HINTERNET hRequest = nullptr; // HttpOpenRequest
@@ -47,21 +53,17 @@ public:
   uint8 pendingByte = 0;
 #endif
 
+  WebSocketHandle()
+  {
+#if 0 && (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
+    clear(handle);
+#endif
+  }
+
   void close()
   {
-#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
-    if (hRequest) {
-      INLINE_ASSERT(InternetCloseHandle(hRequest));
-      hRequest = nullptr;
-    }
-    if (hConnect) {
-      INLINE_ASSERT(InternetCloseHandle(hConnect));
-      hConnect = nullptr;
-    }
-    if (hInternet) {
-      INLINE_ASSERT(InternetCloseHandle(hInternet));
-      hInternet = nullptr;
-    }
+#if 0 && (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
+    WebSocketDeleteHandle(handle);
 #elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__MACOS)
     if (response) {
       CFRelease(response);
@@ -139,6 +141,16 @@ namespace {
 #endif
 }
 
+bool WebSocket::isSupported()
+{
+#if 0 && (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
+  return true;
+#else
+  return false;
+#endif
+}
+
+
 WebSocket::WebSocket()
 {
 }
@@ -153,11 +165,9 @@ bool WebSocket::open(const String& _url, const String& _protocols)
   Url url(_url);
   const String scheme = url.getScheme();
   unsigned int port = 0;
-  if (scheme == "https") {
-    port = 443;
-  } else if (scheme == "http") {
-    port = 80;
-  } else {
+  if (scheme == "wss") {
+  } else if (scheme == "ws") {
+    } else {
     throw WebSocketException("Failed to open WebSocket due to unsupported protocol.");
   }
 
@@ -171,52 +181,23 @@ bool WebSocket::open(const String& _url, const String& _protocols)
 
   const String path = url.getPath() ? url.getPath() : "/";
 
-#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
-  HINTERNET hInternet = InternetOpenW(L"Mozilla/5.0" /*toWide(agent).c_str()*/, INTERNET_OPEN_TYPE_DIRECT, NULL, NULL, 0);
-  if (!hInternet) {
+#if 0 && (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
+
+  // readyState = CONNECTING;
+
+  _handle = new WebSocketHandle();
+  // WEB_SOCKET_PROPERTY properties[];
+  HRESULT result = WebSocketCreateClientHandle(NULL /*&properties*/, 0, &(_handle->handle));
+  if (!SUCCEEDED(result)) {
     return false;
     // throw WebSocketException("Failed to open WebSocket.");
   }
 
-  HINTERNET hConnect = InternetConnectW(
-    hInternet,
-    toWide(url.getHost()).c_str(),
-    443, // port,
-    NULL,
-    NULL,
-    INTERNET_SERVICE_HTTP,
-    0,
-    NULL
-  );
-  if (!hConnect) {
-    InternetCloseHandle(hInternet);
-    return false;
-    // throw WebSocketException("Failed to open WebSocket.");
-  }
+  // TAG: handshake
 
-  HINTERNET hRequest = HttpOpenRequestW(
-    hConnect,
-    L"",
-    toWide(path).c_str() /*object*/,
-    NULL, // L"HTTP/1.1",
-    NULL /*referrer*/,
-    NULL /*acceptTypes*/,
-    ((scheme == "https") ? INTERNET_FLAG_SECURE : 0) | INTERNET_FLAG_RELOAD /*flags*/, // TAG: we can allow cache as option
-    NULL
-  );
-  if (!hRequest) {
-    DWORD error = GetLastError();
-    InternetCloseHandle(hConnect);
-    InternetCloseHandle(hInternet);
-    return false;
-    // throw WebSocketException("Failed to open WebSocket.");
-  }
-
-  Reference<WebSocketHandle> handle = new WebSocketHandle();
-  handle->hInternet = hInternet;
-  handle->hConnect = hConnect;
-  handle->hRequest = hRequest;
   this->handle = handle;
+
+  // readyState = CONNECTED;
 
 #elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__MACOS)
   // we set auth explicitly
@@ -252,44 +233,92 @@ void WebSocket::send(const String& _body)
 
   _handle->sent = true;
 
-#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
-  // TAG: what is the difference for variables and body
-  BOOL requestSent = HttpSendRequestW(_handle->hRequest, NULL, 0, const_cast<char*>(_body.native()), _body.getLength());
-  if (!requestSent) {
+#if 0 && (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
+
+  // TAG: open PerformHandshake
+
+  WEB_SOCKET_BUFFER buffer;
+  buffer.Data.pbBuffer = reinterpret_cast<PBYTE>(const_cast<char*>(_body.native()));
+  buffer.Data.ulBufferLength = _body.getLength();
+
+  HRESULT result = WebSocketSend(_handle->handle, WEB_SOCKET_UTF8_MESSAGE_BUFFER_TYPE, &buffer, _handle.getValue());
+  if (SUCCEEDED(result)) {
     DWORD error = GetLastError();
     throw WebSocketException("Failed to send WebSocket.");
   }
 
-  DWORD word = 0;
-  DWORD size = sizeof(word);
-  if (!HttpQueryInfo(_handle->hRequest,
-    HTTP_QUERY_STATUS_CODE | HTTP_QUERY_FLAG_NUMBER,
-    &word,
-    &size,
-    NULL)) {
-    // not what
-  }
-  _handle->status = word;
+  MemorySize bytesTransferred = 0;
+  WEB_SOCKET_BUFFER buffers[2] = { 0 };
+  ULONG bufferCount = getArraySize(buffers);
+  WEB_SOCKET_ACTION action = WEB_SOCKET_NO_ACTION;
+  WEB_SOCKET_BUFFER_TYPE bufferType = WEB_SOCKET_UTF8_MESSAGE_BUFFER_TYPE;
+  void* applicationContext = nullptr;
+  void* actionContext = nullptr;
 
-  PrimitiveArray<char> buffer(1024);
-  size = buffer.size();
   while (true) {
-    if (!HttpQueryInfoA(_handle->hRequest,
-                        HTTP_QUERY_STATUS_TEXT,
-                        buffer,
-                        &size,
-                        NULL)) {
-      DWORD error = GetLastError();
-      if (error == ERROR_INSUFFICIENT_BUFFER) {
-        buffer.resize(buffer.size() * 2);
-        size = buffer.size();
-        continue;
-      }
-      break; // not what
+    HRESULT result = WebSocketGetAction(
+      _handle->handle,
+      WEB_SOCKET_ALL_ACTION_QUEUE,
+      buffers,
+      &bufferCount,
+      &action,
+      &bufferType,
+      &applicationContext,
+      &actionContext
+    );
+    if (!SUCCEEDED(result)) {
+      WebSocketAbortHandle(_handle->handle);
     }
-    _handle->statusText = static_cast<const char*>(buffer);
-    break;
+
+    bool failed = false;
+    switch (action) {
+    case WEB_SOCKET_NO_ACTION:
+      break;
+    case WEB_SOCKET_RECEIVE_FROM_NETWORK_ACTION:
+      {
+        BASSERT(bufferCount > 0);
+        for (MemorySize i = 0; i < bufferCount; ++i) {
+          // buffers[i].Data.pbBuffer, buffers[i].Data.ulBufferLength
+          // TAG: read from InputStream*
+          bytesTransferred += buffers[i].Data.ulBufferLength; // TAG: would be partial
+        }
+      }
+      break;
+    case WEB_SOCKET_INDICATE_RECEIVE_COMPLETE_ACTION:
+      if (INLINE_ASSERT(bufferCount == 1)) {
+      }
+      break;
+    case WEB_SOCKET_SEND_TO_NETWORK_ACTION:
+      {
+        BASSERT(bufferCount > 0);
+        for (MemorySize i = 0; i < bufferCount; ++i) {
+          // buffers[i].Data.pbBuffer, buffers[i].Data.ulBufferLength
+          // TAG: write to OutputStream*
+        }
+      }
+      break;
+    case WEB_SOCKET_INDICATE_SEND_COMPLETE_ACTION:
+      break;
+    default:
+      BASSERT(!"Unexpected action.");
+      failed = true;
+    }
+    
+    if (action == WEB_SOCKET_NO_ACTION) {
+      break;
+    }
+
+    if (failed) {
+      WebSocketAbortHandle(_handle->handle);
+      break;
+    }
+
+    WebSocketCompleteAction(_handle->handle, actionContext, bytesTransferred);
   }
+
+  // HRESULT result = WebSocketSend(_handle->handle, WEB_SOCKET_BINARY_MESSAGE_BUFFER_TYPE, WEB_SOCKET_BUFFER * pBuffer, _handle.getValue());
+  // HRESULT result = WebSocketSend(_handle->handle, WEB_SOCKET_PING_PONG_BUFFER_TYPE, NULL, _handle.getValue());
+  // HRESULT result = WebSocketReceive(_handle->handle, WEB_SOCKET_BUFFER* pBuffer, _handle.getValue());
 
 #elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__MACOS)
   // TAG: for long request body CFReadStreamCreateForStreamedHTTPRequest - use PullInterface

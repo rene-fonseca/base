@@ -79,7 +79,7 @@ public:
   
   void throwNothing()
   {
-    throw;
+    throw; // TAG: this calls UnhandledException for win32 - add win32 handler
   }
   
   void throwNullPointer() noexcept

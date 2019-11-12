@@ -60,13 +60,15 @@ private:
 public:
 
   inline V3MultiVendorABIDemangler(const char* mangled) throw(InvalidFormat)
-    : p(mangled) {
+    : p(mangled)
+  {
     end = find<char>(mangled, 1024, 0); // find terminator
     bassert(end, InvalidFormat(this));
     encoding();
   }
 
-  inline void addCandidate(unsigned int begin) throw(InvalidFormat) {
+  inline void addCandidate(unsigned int begin) throw(InvalidFormat)
+  {
     CandidateRange range;
     range.begin = begin;
     range.end = demangled.getLength();
@@ -81,7 +83,8 @@ public:
     candidates.append(range); // add new candidate
   }
 
-  inline void addTemplateCandidate(unsigned int begin) throw(InvalidFormat) {
+  inline void addTemplateCandidate(unsigned int begin) throw(InvalidFormat)
+  {
     CandidateRange range;
     range.begin = begin;
     range.end = demangled.getLength();
@@ -99,11 +102,13 @@ public:
   }
 
 
-  inline void dump(const Literal& literal) throw(InvalidFormat) {
+  inline void dump(const Literal& literal) throw(InvalidFormat)
+  {
     demangled.append(literal);
   }
 
-  inline void encoding() throw(InvalidFormat) {
+  inline void encoding() throw(InvalidFormat)
+  {
     if (name()) {
       if (p < end) {
         // remove candidate for function (if present)
@@ -155,7 +160,8 @@ public:
     }
   }
 
-  inline void CVQualifier() throw() {
+  inline void CVQualifier() throw()
+  {
     switch (*p) { // CV-qualifiers
     case 'r':
       ++p;
@@ -172,7 +178,8 @@ public:
     }
   }
 
-  inline bool templateArgument() throw(InvalidFormat) {
+  inline bool templateArgument() throw(InvalidFormat)
+  {
     switch (*p) {
     case 'L': // literal
       ++p; // skip L
@@ -197,7 +204,8 @@ public:
     return false;
   }
 
-  inline bool templateArguments() throw(InvalidFormat) {
+  inline bool templateArguments() throw(InvalidFormat)
+  {
     if (*p == 'I') {
       ++p; // skip I
       demangled += '<';
@@ -217,7 +225,8 @@ public:
     return false;
   }
 
-  inline bool name() throw(InvalidFormat) {
+  inline bool name() throw(InvalidFormat)
+  {
     unsigned int begin = demangled.getLength();
     if (nested()) {
       // FIXME: insert candidate?
@@ -239,7 +248,8 @@ public:
     }
   }
 
-  inline bool unscopedName() throw(InvalidFormat) {
+  inline bool unscopedName() throw(InvalidFormat)
+  {
     if ((*p == 'S') && (p[1] == 't')) {
       p += 2; // skip St
       dump(MESSAGE("std::"));
@@ -253,7 +263,8 @@ public:
     }
   }
 
-  inline bool nested() throw(InvalidFormat) {
+  inline bool nested() throw(InvalidFormat)
+  {
     if (*p == 'N') {
       ++p; // skip N
       CVQualifier(); // not required
@@ -294,7 +305,8 @@ public:
     return false;
   }
 
-  inline bool constructorAndDestructorName() throw(InvalidFormat) {
+  inline bool constructorAndDestructorName() throw(InvalidFormat)
+  {
     if ((*p == 'C') && (p[1] == '1')) {
       p += 2; // skip C1
       demangled.append(demangled.substring(className.begin, className.end));
@@ -328,7 +340,8 @@ public:
     return true;
   }
 
-  inline bool specialName() throw(InvalidFormat) {
+  inline bool specialName() throw(InvalidFormat)
+  {
     if (*p == 'T') {
       ++p; // skip T
       switch (*p) {
@@ -357,7 +370,8 @@ public:
     return false;
   }
 
-  inline bool unqualifiedName() throw(InvalidFormat) {
+  inline bool unqualifiedName() throw(InvalidFormat)
+  {
     unsigned int begin = demangled.getLength();
     if (operatorName()) {
     } else if (sourceName()) {
@@ -369,7 +383,8 @@ public:
     return true;
   }
 
-  inline bool type() throw(InvalidFormat) {
+  inline bool type() throw(InvalidFormat)
+  {
     unsigned int begin = demangled.getLength();
     switch (*p) {
     case 'r':
@@ -642,7 +657,8 @@ public:
     return true;
   }
 
-  inline bool operatorName() throw(InvalidFormat) {
+  inline bool operatorName() throw(InvalidFormat)
+  {
     if ((*p == 'n') && (p[1] == 'w')) {
       p += 2;
       dump(MESSAGE("new"));
@@ -802,7 +818,8 @@ public:
     return true;
   }
 
-  inline bool sourceName() throw() {
+  inline bool sourceName() throw()
+  {
     if (!ASCIITraits::isDigit(*p)) {
       return false;
     }
@@ -815,8 +832,8 @@ public:
     return true;
   }
 
-  inline void appendTemplateCandidate(
-    unsigned int candidate) throw(InvalidFormat) {
+  inline void appendTemplateCandidate(unsigned int candidate) throw(InvalidFormat)
+  {
     bassert(candidate < templateCandidates.getSize(), InvalidFormat(this));
     demangled.append(
       demangled.substring(
@@ -826,7 +843,8 @@ public:
     );
   }
 
-  inline bool templateParameter() throw(InvalidFormat) {
+  inline bool templateParameter() throw(InvalidFormat)
+  {
     if (*p == 'T') {
       ++p; // skip T
       switch (*p) {
@@ -858,7 +876,8 @@ public:
     return false;
   }
 
-  inline void appendCandidate(unsigned int candidate) throw(InvalidFormat) {
+  inline void appendCandidate(unsigned int candidate) throw(InvalidFormat)
+  {
     bassert(candidate < candidates.getSize(), InvalidFormat(this));
     demangled.append(
       demangled.substring(
@@ -868,7 +887,8 @@ public:
     );
   }
 
-  inline bool substitution() throw(InvalidFormat) {
+  inline bool substitution() throw(InvalidFormat)
+  {
     if (*p == 'S') {
       ++p; // skip S
       switch (*p) {
@@ -945,14 +965,16 @@ public:
 
 
 
-String TypeInfo::demangleName(const char* mangled) throw(InvalidFormat) {
+String TypeInfo::demangleName(const char* mangled) throw(InvalidFormat)
+{
   return V3MultiVendorABIDemangler(mangled).getDemangled();
 }
 
 #elif ((_COM_AZURE_DEV__BASE__DEMANGLE == _COM_AZURE_DEV__BASE__DEMANGLE_LLVM) || \
        (_COM_AZURE_DEV__BASE__DEMANGLE == _COM_AZURE_DEV__BASE__DEMANGLE_GCCV3))
 
-String TypeInfo::demangleName(const char* mangled) throw(InvalidFormat) {
+String TypeInfo::demangleName(const char* mangled) throw(InvalidFormat)
+{
   if (!mangled) {
     return String();
   }
@@ -968,7 +990,8 @@ String TypeInfo::demangleName(const char* mangled) throw(InvalidFormat) {
 
 #elif (_COM_AZURE_DEV__BASE__DEMANGLE == _COM_AZURE_DEV__BASE__DEMANGLE_GCCV3)
 
-String TypeInfo::demangleName(const char* mangled) throw(InvalidFormat) {
+String TypeInfo::demangleName(const char* mangled) throw(InvalidFormat)
+{
   static const String prefix(MESSAGE("_Z"));
   String temp = prefix;
   temp.append(NativeString(mangled));
@@ -983,7 +1006,8 @@ String TypeInfo::demangleName(const char* mangled) throw(InvalidFormat) {
 
 #elif (_COM_AZURE_DEV__BASE__DEMANGLE == _COM_AZURE_DEV__BASE__DEMANGLE_GCCV23)
 
-String TypeInfo::demangleName(const char* mangled) throw(InvalidFormat) {
+String TypeInfo::demangleName(const char* mangled) throw(InvalidFormat)
+{
   static const String prefix(MESSAGE("_Z"));
   String temp = prefix;
   temp.append(mangled);
@@ -998,7 +1022,8 @@ String TypeInfo::demangleName(const char* mangled) throw(InvalidFormat) {
 
 #elif (_COM_AZURE_DEV__BASE__DEMANGLE == _COM_AZURE_DEV__BASE__DEMANGLE_GCCV2)
 
-String TypeInfo::demangleName(const char* mangled) throw(InvalidFormat) {
+String TypeInfo::demangleName(const char* mangled) throw(InvalidFormat)
+{
   static const String prefix(MESSAGE("a__"));
   static const String suffix(MESSAGE("::a"));
   // cplus_demangle only demangles function names - need alternative demangler
@@ -1018,26 +1043,35 @@ String TypeInfo::demangleName(const char* mangled) throw(InvalidFormat) {
 
 #elif (_COM_AZURE_DEV__BASE__DEMANGLE == _COM_AZURE_DEV__BASE__DEMANGLE_SUNWSPRO)
 
-String TypeInfo::demangleName(const char* mangled) throw(InvalidFormat) {
+String TypeInfo::demangleName(const char* mangled) throw(InvalidFormat)
+{
   Allocator<uint8>* buffer = Thread::getLocalStorage();
-  int result =
-    cplus_demangle(mangled, buffer->getElements(), buffer->getSize());
+  int result = cplus_demangle(mangled, buffer->getElements(), buffer->getSize());
   BASSERT(!result);
   return String(buffer->getElements());
 }
 
 #elif (_COM_AZURE_DEV__BASE__DEMANGLE == _COM_AZURE_DEV__BASE__DEMANGLE_MIPSPRO)
 
-String TypeInfo::demangleName(const char* mangled) throw(InvalidFormat) {
+String TypeInfo::demangleName(const char* mangled) throw(InvalidFormat)
+{
   char buffer[MAXDBUF];
   int result = demangle(mangled, buffer);
   BASSERT(!result);
   return String(buffer);
 }
 
+#elif (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
+
+String TypeInfo::demangleName(const char* mangled) throw(InvalidFormat)
+{
+  return mangled; // TAG: DynamicLinker::demangle(mangled);
+}
+
 #else // no demangling support
 
-String TypeInfo::demangleName(const char* mangled) throw(InvalidFormat) {
+String TypeInfo::demangleName(const char* mangled) throw(InvalidFormat)
+{
   return mangled;
 }
 

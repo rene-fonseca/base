@@ -11,8 +11,6 @@
     For the licensing terms refer to the file 'LICENSE'.
  ***************************************************************************/
 
-#pragma once
-
 #include <base/net/SSLSocket.h>
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE

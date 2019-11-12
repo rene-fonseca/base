@@ -1097,6 +1097,15 @@ namespace {
 
   inline ObjectModel::NiceFormat& operator<<(FormatOutputStream& _stream, ObjectModel::NiceFormat& stream)
   {
+    static_assert(std::is_base_of<FormatOutputStream, ObjectModel::NiceFormat>(), "Stream must derive from FormatOutputStream.");
+    return stream;
+  }
+
+  /** Cast stream to type. */
+  template<class TYPE>
+  inline TYPE& operator<<(FormatOutputStream& _stream, TYPE& stream)
+  {
+    static_assert(std::is_base_of<FormatOutputStream, TYPE>(), "Stream must derived from FormatOutputStream.");
     BASSERT(static_cast<FormatOutputStream*>(&stream) == &_stream);
     return stream;
   }

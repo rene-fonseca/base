@@ -196,7 +196,7 @@ bool WebSocket::open(const String& _url, const String& _protocols)
 
   HINTERNET hRequest = HttpOpenRequestW(
     hConnect,
-    toWide(_method).c_str(),
+    L"",
     toWide(path).c_str() /*object*/,
     NULL, // L"HTTP/1.1",
     NULL /*referrer*/,

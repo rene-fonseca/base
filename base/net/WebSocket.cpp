@@ -23,7 +23,6 @@
 #  include <CoreFoundation/CoreFoundation.h>
 #  include <CFNetwork/CFNetwork.h>
 #  include <CFNetwork/CFHTTPStream.h>
-#  include <CFNetwork/CFU.h>
 #else
 #endif
 

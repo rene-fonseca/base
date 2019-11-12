@@ -23,6 +23,7 @@
 #include <base/string/FormatOutputStream.h>
 #include <base/string/StringOutputStream.h>
 #include <base/objectmodel/JSON.h>
+#include <base/io/FileDescriptor.h>
 
 using namespace com::azure::dev::base;
 
@@ -255,7 +256,8 @@ public:
     }
 
     if (verbose) {
-      fout << r << ENDL;
+      auto data = JSON::getJSON(r, ObjectModel::DEFAULT_FORMATTING | (FileDescriptor::getStandardOutput().isANSITerminal() ? ObjectModel::FLAG_COLOR : 0));
+      fout << data << ENDL;
     }
     
     auto ok = r->getBoolean("ok", false);
@@ -303,6 +305,28 @@ public:
     }
     
     return r;
+  }
+  
+  String rtm_connect()
+  {
+    if (!token) {
+      throw SlackException("No token.");
+    }
+
+    // TAG: JSON color should highlight url strings
+    
+    // use a bot token
+    // https://api.slack.com/docs/token-types#bot
+    
+    const String url = "https://slack.com/api/rtm.connect";
+
+    auto r = get(url);
+    String wss;
+    if (r) {
+      wss = r->getString("url", "");
+      fout << "WSS: " << wss << ENDL;
+    }
+    return wss;
   }
   
   // TAG: test link, images, ...
@@ -407,6 +431,7 @@ private:
   String thread;
   bool post = false;
   bool update = false;
+  bool rtm = false;
 public:
   
   SlackApplication(
@@ -435,6 +460,10 @@ public:
           return false;
         }
         channel = *enu.next();
+      } else if (argument == "--rtm") {
+        post = false;
+        update = false;
+        rtm = true;
       } else if (argument == "--post") {
         if (!enu.hasNext()) {
           ferr << "Expected text." << ENDL;
@@ -443,6 +472,7 @@ public:
         text = *enu.next();
         post = true;
         update = false;
+        rtm = false;
       } else if (argument == "--update") {
         if (!enu.hasNext()) {
           ferr << "Expected text." << ENDL;
@@ -451,6 +481,7 @@ public:
         text = *enu.next();
         post = false;
         update = true;
+        rtm = false;
       } else if (argument == "--thread") {
         if (!enu.hasNext()) {
           ferr << "Expected thread ts." << ENDL;
@@ -461,7 +492,7 @@ public:
         if (!token) {
           token = argument;
         } else {
-          ferr << "Invalid argument." << ENDL;
+          ferr << "Invalid argument '" << argument << "'." << ENDL;
           return false;
         }
       }
@@ -501,6 +532,8 @@ public:
       slack.chat_update(channel, text, thread);
     } else if (channel) {
       slack.channels_info(channel);
+    } else if (rtm) {
+      slack.rtm_connect();
     } else {
       ferr << "Error: Need action." << ENDL;
       setExitCode(1);

@@ -82,13 +82,23 @@ public:
   }
 
   /**
+    Returns true if an exception is pending.
+  */
+  static bool hasPendingException() noexcept;
+
+  /**
     Returns true if the stack is currently being unwinded due to a raised exception.
     
     @see getExceptionType
     @return False if not supported.
   */
   static bool isUnwinding() noexcept;
-  
+
+  /**
+    Returns the number of currently pending/unhandled exceptions.
+  */
+  static unsigned int getPendingExceptions() noexcept;
+
   /**
     Returns description for well-known Std C++ exceptions.
   */
@@ -297,10 +307,22 @@ inline EXCEPTION&& bindException(EXCEPTION&& e, const char* message, unsigned in
   return std::move(e);
 }
 
+/** Throws the given exception. */
 template<class EXCEPTION>
-inline void _raise(EXCEPTION&& e) throw(EXCEPTION)
+inline void throwit(EXCEPTION&& e) throw(EXCEPTION)
 {
+  static_assert(std::is_base_of<Exception, EXCEPTION>(), "Only Exception derived types may be thrown.");
+  // TAG: record stack trace here
   throw std::move(e);
+  // TAG: throw std::forward(e);
+}
+
+/** Rethrows current exception if any. */
+inline void rethrowit()
+{
+  // TAG: check if current exception is available
+  // TAG: record stack trace here
+  throw;
 }
 
 #define _COM_AZURE_DEV__BASE__EXCEPTION_THIS_TYPE() \
@@ -308,5 +330,26 @@ inline void _raise(EXCEPTION&& e) throw(EXCEPTION)
   { \
     return Type::getType(*this); \
   }
+
+/** Helper class for detecting unwinding during destruction. See http://www.open-std.org/jtc1/sc22/wg21/docs/papers/2014/n4152.pdf. */
+class NewException {
+private:
+
+  const unsigned int pendingExceptions = Exception::getPendingExceptions();
+public:
+
+  /** Returns true if new exception have been . */
+  inline bool isNewException() const noexcept
+  {
+    return pendingExceptions != Exception::getPendingExceptions();
+  }
+};
+
+/** Causes stack dump on exception during destruction. */
+class DumpStackOnException {
+public:
+
+  ~DumpStackOnException() noexcept;
+};
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

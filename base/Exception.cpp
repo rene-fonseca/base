@@ -26,23 +26,35 @@
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
+DumpStackOnException::~DumpStackOnException() noexcept
+{
+  if (Exception::hasPendingException()) {
+    // throw UnwindException("Unexpected exception unwinding during destructor.");
+    ferr << "Internal error: Unexpected exception unwinding." << ENDL;
+    StackFrame::dump();
+  }
+}
+
+// TAG: allocators should dump stack on destruction failure - how do we do it safely - need to destruct existing objects - but these can fail too
+// TAG: throw AllocatorException("Failed to construct object."); - but this will hide causing exception
+
+bool Exception::hasPendingException() noexcept
+{
+  std::exception_ptr exception = std::current_exception();
+  return exception != nullptr;
+}
+
 bool Exception::isUnwinding() noexcept
 {
-#if defined(_COM_AZURE_DEV__BASE__EXCEPTION_V3MV)
-#  if defined(_COM_AZURE_DEV__BASE__EXCEPTION_V3MV_TRANSPARENT)
-    const abi::__cxa_eh_globals* abi::__cxa_get_globals();
-#  else
-    // TAG: exception handling does not have to be "fast"
-    const abi::__cxa_eh_globals* globals = abi::__cxa_get_globals_fast(); // __cxa_get_globals is invoked in Thread.cpp
-#  endif
-  const abi::__cxa_exception* caughtException = globals->caughtExceptions;
-  if (caughtException) {
-    // ferr << caughtException->nextException << ENDL;
-  }
-  return caughtException != 0;
-#else
-  return false;
-#endif
+  return std::uncaught_exceptions() > 0;
+  // return std::uncaught_exception();
+}
+
+unsigned int Exception::getPendingExceptions() noexcept
+{
+  int result = std::uncaught_exceptions();
+  BASSERT(result >= 0);
+  return result;
 }
 
 const char* Exception::getStdExceptionName(const std::exception& e) noexcept

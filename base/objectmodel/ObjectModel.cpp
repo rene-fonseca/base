@@ -621,7 +621,11 @@ FormatOutputStream& operator<<(FormatOutputStream& stream, const Reference<Objec
 ObjectModel::NiceFormat& ObjectModel::NiceFormat::writeKeyword(const Literal& literal)
 {
   if (flags & FLAG_COLOR) {
-    *this << setForeground(ANSIEscapeSequence::MAGENTA) << bold() << literal << normal();
+    if (flags & FLAG_COLOR_RGB) {
+      *this << setForeground(ANSIEscapeSequence::MAGENTA) << bold() << literal << normal();
+    } else {
+      *this << setForeground(ANSIEscapeSequence::MAGENTA) << bold() << literal << normal();
+    }
   } else {
     *this << literal;
   }
@@ -631,7 +635,11 @@ ObjectModel::NiceFormat& ObjectModel::NiceFormat::writeKeyword(const Literal& li
 ObjectModel::NiceFormat& ObjectModel::NiceFormat::writeTextUnquoted(const Literal& literal)
 {
   if (flags & FLAG_COLOR) {
-    *this << setForeground(ANSIEscapeSequence::MAGENTA) << bold() << '"' << literal << '"'<< normal();
+    if (flags & FLAG_COLOR_RGB) {
+      *this << setForeground(ANSIEscapeSequence::MAGENTA) << bold() << '"' << literal << '"'<< normal();
+    } else {
+      *this << setForeground(ANSIEscapeSequence::MAGENTA) << bold() << '"' << literal << '"'<< normal();
+    }
   } else {
     *this << '"' << literal << '"';
   }
@@ -714,7 +722,11 @@ ObjectModel::NiceFormat& operator<<(ObjectModel::NiceFormat& stream, const Refer
 
   const bool useANSI = stream.getNiceFlags() & ObjectModel::FLAG_COLOR;
   if (useANSI) {
-    stream << setForeground(ANSIEscapeSequence::BLUE);
+    if (stream.getNiceFlags() & ObjectModel::FLAG_COLOR_RGB) {
+      stream << setForeground(ANSIEscapeSequence::BLUE);
+    } else {
+      stream << setForeground(ANSIEscapeSequence::BLUE);
+    }
   }
   stream << value->value;
   if (useANSI) {
@@ -763,7 +775,11 @@ ObjectModel::NiceFormat& operator<<(ObjectModel::NiceFormat& stream, const Refer
 
   const bool useANSI = stream.getNiceFlags() & ObjectModel::FLAG_COLOR;
   if (useANSI) {
-    stream << setForeground(ANSIEscapeSequence::BLUE);
+    if (stream.getNiceFlags() & ObjectModel::FLAG_COLOR_RGB) {
+      stream << setForeground(ANSIEscapeSequence::BLUE);
+    } else {
+      stream << setForeground(ANSIEscapeSequence::BLUE);
+    }
   }
   stream << value->value; // POSIX from higher level
   if (useANSI) {
@@ -824,6 +840,40 @@ FormatOutputStream& operator<<(FormatOutputStream& stream, const Reference<Objec
   return stream;
 }
 
+namespace {
+
+#if 0
+  void parseUrl(Parser& parser)
+  {
+    if (parser.peek() : "a-zA-Z");
+    parser.skip("https"); // TAG: consisting of a sequence of characters beginning with a letter and followed by any combination of letters, digits, plus (+), period (.), or hyphen (-)
+    parser.skip(':');
+    parser.skip("//");
+    skip user
+    skip password
+    parser.skip('@');
+    skip host
+    parser.skip(':');
+    // skip port parser.skip();
+    // parser skip path
+    if (parser.peek() == '?') {
+      parser.skip('?');
+      parser skip query
+    }
+    if (parser.peek() == '#') {
+      parser.skip('#');
+      parser skip fragment
+    }
+  }
+
+  void parseUrl(const String& text)
+  {
+    Parser paser(url);
+    parseUrl(parser);
+  }
+#endif
+}
+
 ObjectModel::NiceFormat& operator<<(ObjectModel::NiceFormat& stream, const Reference<ObjectModel::String>& value)
 {
   if (!value) {
@@ -831,8 +881,20 @@ ObjectModel::NiceFormat& operator<<(ObjectModel::NiceFormat& stream, const Refer
   }
   
   const bool useANSI = stream.getNiceFlags() & ObjectModel::FLAG_COLOR;
+  bool showUrl = false;
   if (useANSI) {
-    stream << setForeground(ANSIEscapeSequence::RED);
+    // TAG: check if valid url and highlight
+    showUrl = value->value.startsWith("https://") || value->value.startsWith("http://") || value->value.startsWith("wss://");
+    if (stream.getNiceFlags() & ObjectModel::FLAG_COLOR_RGB) {
+      stream << ANSIEscapeSequence::color(255, 0, 0);
+    } else {
+      if (showUrl) {
+        stream << underscore();
+        stream << setForeground(ANSIEscapeSequence::GREEN); // TAG: find nice color
+      } else {
+        stream << setForeground(ANSIEscapeSequence::RED);
+      }
+    }
   }
 
   stream << '"';
@@ -879,6 +941,9 @@ ObjectModel::NiceFormat& operator<<(ObjectModel::NiceFormat& stream, const Refer
   }
   stream << '"';
   if (useANSI) {
+    if (showUrl) {
+      stream << nounderscore();
+    }
     stream << normal();
   }
   return stream;
@@ -892,7 +957,11 @@ ObjectModel::NiceFormat& operator<<(ObjectModel::NiceFormat& stream, const Refer
   
   const bool useANSI = stream.getNiceFlags() & ObjectModel::FLAG_COLOR;
   if (useANSI) {
-    stream << setForeground(ANSIEscapeSequence::GREEN);
+    if (stream.getNiceFlags() & ObjectModel::FLAG_COLOR_RGB) {
+      stream << setForeground(ANSIEscapeSequence::GREEN);
+    } else {
+      stream << setForeground(ANSIEscapeSequence::GREEN);
+    }
   }
 
   stream << "// ";
@@ -1047,8 +1116,6 @@ ObjectModel::NiceFormat& operator<<(ObjectModel::NiceFormat& stream, const Refer
       level = stream.enter();
     }
   }
-
-  // TAG: use RGB
 
   stream << '{';
   if (level > 0) {

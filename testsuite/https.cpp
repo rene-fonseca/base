@@ -22,6 +22,7 @@
 #include <base/string/FormatInputStream.h>
 #include <base/string/FormatOutputStream.h>
 #include <base/string/StringOutputStream.h>
+#include <base/objectmodel/JSON.h>
 
 using namespace com::azure::dev::base;
 
@@ -265,6 +266,7 @@ public:
         PushToFile push(File(filepath, File::WRITE, File::CREATE | File::TRUNCATE));
         request.getResponse(&push);
       } else {
+        // TAG: if JSON to show nicely
         PushToStandardOutput push;
         request.getResponse(&push);
       }

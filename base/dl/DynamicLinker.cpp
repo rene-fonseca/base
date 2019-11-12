@@ -341,7 +341,77 @@ void* DynamicLinker::getSymbolAddress(const void* address) noexcept
   return nullptr;
 }
 
-// #pragma comment(lib, "dbghelp.lib")
+#if 0 && (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
+
+#pragma comment(lib, "dbghelp.lib") // TAG: temp test
+
+namespace {
+
+  // TAG: just get symbol from dll export table if available? - map address -> index in export table -> to name
+  String demangle(const char* decorated)
+  {
+    char buffer[1024];
+    DWORD flags = UNDNAME_NO_THISTYPE | UNDNAME_NO_MS_KEYWORDS | UNDNAME_NO_SPECIAL_SYMS | UNDNAME_NO_THROW_SIGNATURES |
+      UNDNAME_NO_ACCESS_SPECIFIERS | // no public/private
+      UNDNAME_NO_MEMBER_TYPE; // no virtual/static
+    DWORD size = UnDecorateSymbolName(decorated, buffer, getArraySize(buffer), flags);
+    if (size > 0) {
+      return String(buffer, size);
+    }
+    return String();
+  }
+
+  // unsigned int getIndexByAddress(HMODULE handle, const void* address);
+  // const char* getNameByIndex(HMODULE handle, unsigned int index);
+  // const char* getNameByAddress(HMODULE handle, const void* address);
+
+  unsigned int dumpNames(HMODULE handle, const void* address)
+  {
+    IMAGE_DOS_HEADER* dosHeader = reinterpret_cast<IMAGE_DOS_HEADER*>(handle);
+    if (dosHeader->e_magic != IMAGE_DOS_SIGNATURE) {
+      return 0;
+    }
+    const uint8* start = reinterpret_cast<const uint8*>(dosHeader);
+    const IMAGE_NT_HEADERS* ntHeaders = reinterpret_cast<const IMAGE_NT_HEADERS*>(start + dosHeader->e_lfanew);
+    if (ntHeaders->Signature != 0x00004550) {
+      return 0;
+    }
+    const IMAGE_OPTIONAL_HEADER* optionalHeader = &ntHeaders->OptionalHeader;
+    if (optionalHeader->NumberOfRvaAndSizes < IMAGE_DIRECTORY_ENTRY_EXPORT) {
+      return 0;
+    }
+    if (optionalHeader->DataDirectory[IMAGE_DIRECTORY_ENTRY_EXPORT].Size == 0) {
+      return 0;
+    }
+    const IMAGE_DATA_DIRECTORY* dataDirectory = &optionalHeader->DataDirectory[IMAGE_DIRECTORY_ENTRY_EXPORT];
+    const IMAGE_EXPORT_DIRECTORY* exportDirectory = reinterpret_cast<const IMAGE_EXPORT_DIRECTORY*>(start + dataDirectory->VirtualAddress);
+
+    const DWORD count = exportDirectory->NumberOfNames;
+    const DWORD* functions = reinterpret_cast<const DWORD*>(start + exportDirectory->AddressOfFunctions);
+    const DWORD* names = reinterpret_cast<const DWORD*>(start + exportDirectory->AddressOfNames);
+
+    WORD ordinalBase = 1; // TAG: get from exportDirectory?
+    for (DWORD i = 1; i < count; ++i) {
+      // LPCSTR ordinal = reinterpret_cast<LPCSTR>(static_cast<MemorySize>(i + ordinalBase));
+      // void* fromproc = GetProcAddress(handle, ordinal);
+
+      const void* _address = functions[i] + start;
+      const char* _name = reinterpret_cast<const char*>(names[i] + start);
+      const String name(_name);
+      const String demangled = demangle(_name);
+      if (name.indexOf("OutOfRange") >= 0) {
+        printf("%d = %p = %s\n", i, _address, demangled.native()/*, _name*/);
+      }
+      // TAG: is this a forwarded address pointer?
+      if (_address == address) {
+        return i - 1;
+      }
+    }
+
+    return 0;
+  }
+}
+#endif
 
 String DynamicLinker::getSymbolName(const void* address)
 {
@@ -362,6 +432,16 @@ String DynamicLinker::getSymbolName(const void* address)
     if (!status) {
       DWORD error = ::GetLastError();
     } else {
+
+#if 0
+      static bool first = true;
+      if (first) {
+        first = false;
+        HMODULE module = (HMODULE)(info->ModBase);// GetModuleHandle(L"base.dll");
+        dumpNames(module, reinterpret_cast<uint8*>(info->Address));
+      }
+#endif
+
 #if 0
       // TAG: add support for source and line info in stack trace
       IMAGEHLP_LINE64 line;

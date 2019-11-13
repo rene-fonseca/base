@@ -36,9 +36,10 @@ namespace {
   typedef BOOL (__stdcall* SymInitializeFunc)(HANDLE hProcess, PCSTR UserSearchPath, BOOL fInvadeProcess);
   typedef BOOL (__stdcall* SymCleanupFunc)(HANDLE hProcess);
   typedef BOOL (__stdcall* SymFromAddrFunc)(HANDLE hProcess, DWORD64 Address, PDWORD64 Displacement, PSYMBOL_INFO Symbol);
-  typedef DWORD(__stdcall* SymGetOptionsFunc)();
-  typedef DWORD(__stdcall* SymSetOptionsFunc)(DWORD SymOptions);
-
+  typedef DWORD (__stdcall* SymGetOptionsFunc)();
+  typedef DWORD (__stdcall* SymSetOptionsFunc)(DWORD SymOptions);
+  typedef DWORD (__stdcall* UnDecorateSymbolNameFunc)(PCSTR name, PSTR outputString, DWORD maxStringLength, DWORD flags);
+  
   bool initialized = false;
   HMODULE handle = nullptr;
   SymInitializeFunc symInitialize = nullptr;
@@ -46,6 +47,7 @@ namespace {
   SymFromAddrFunc symFromAddr = nullptr;
   SymGetOptionsFunc symGetOptions = nullptr;
   SymSetOptionsFunc symSetOptions = nullptr;
+  UnDecorateSymbolNameFunc unDecorateSymbolName = nullptr;
 
   class Initialize {
   public:
@@ -85,6 +87,7 @@ namespace {
           }
 
           symFromAddr = (SymFromAddrFunc)GetProcAddress(handle, "SymFromAddr");
+          unDecorateSymbolName = (UnDecorateSymbolNameFunc)GetProcAddress(handle, "UnDecorateSymbolName");
         }
       }
     }
@@ -347,68 +350,178 @@ void* DynamicLinker::getSymbolAddress(const void* address) noexcept
 
 namespace {
 
-  // TAG: just get symbol from dll export table if available? - map address -> index in export table -> to name
   String demangle(const char* decorated)
   {
-    char buffer[1024];
-    DWORD flags = UNDNAME_NO_THISTYPE | UNDNAME_NO_MS_KEYWORDS | UNDNAME_NO_SPECIAL_SYMS | UNDNAME_NO_THROW_SIGNATURES |
-      UNDNAME_NO_ACCESS_SPECIFIERS | // no public/private
-      UNDNAME_NO_MEMBER_TYPE; // no virtual/static
-    DWORD size = UnDecorateSymbolName(decorated, buffer, getArraySize(buffer), flags);
-    if (size > 0) {
-      return String(buffer, size);
+    if (unDecorateSymbolName) {
+      MutualExclusion::Sync _guard(Application::getApplication()->getLock()); // dbghelp is not MT-safe
+      char buffer[4096];
+      DWORD flags = UNDNAME_NO_THISTYPE | UNDNAME_NO_MS_KEYWORDS | UNDNAME_NO_SPECIAL_SYMS | UNDNAME_NO_THROW_SIGNATURES |
+        UNDNAME_NO_ACCESS_SPECIFIERS | // no public/private
+        UNDNAME_NO_MEMBER_TYPE; // no virtual/static
+      DWORD size = unDecorateSymbolName(decorated, buffer, getArraySize(buffer), flags);
+      if (size > 0) {
+        return String(buffer, size);
+      }
     }
-    return String();
+    return decorated;
   }
 
-  // unsigned int getIndexByAddress(HMODULE handle, const void* address);
-  // const char* getNameByIndex(HMODULE handle, unsigned int index);
-  // const char* getNameByAddress(HMODULE handle, const void* address);
+  class Symbol {
+  public:
+    
+    unsigned int index = 0;
+    void* address = nullptr;
+    String name;
+  };
 
-  unsigned int dumpNames(HMODULE handle, const void* address)
+  // https://docs.microsoft.com/en-us/windows/win32/debug/pe-format
+
+  int getModuleIndexByAddress(HMODULE handle, const void* address)
+  {
+    return -1;
+  }
+
+  const char* getModuleNameByIndex(HMODULE handle, uint16 index)
+  {
+    LPCSTR ordinal = reinterpret_cast<LPCSTR>(static_cast<MemorySize>(index));
+    void* fromproc = GetProcAddress(handle, ordinal);
+    return fromproc;
+  }
+
+  const char* getModuleNameByAddress(HMODULE handle, const void* address)
+  {
+    unsigned int index = getModuleIndexByAddress(handle, address);
+    if (index == static_cast<unsigned int>(-1)) {
+      return nullptr;
+    }
+    return getModuleNameByIndex(handle, index);
+  }
+
+  const IMAGE_EXPORT_DIRECTORY* getExportDirectory(HMODULE handle)
   {
     IMAGE_DOS_HEADER* dosHeader = reinterpret_cast<IMAGE_DOS_HEADER*>(handle);
     if (dosHeader->e_magic != IMAGE_DOS_SIGNATURE) {
-      return 0;
+      return nullptr;
     }
     const uint8* start = reinterpret_cast<const uint8*>(dosHeader);
     const IMAGE_NT_HEADERS* ntHeaders = reinterpret_cast<const IMAGE_NT_HEADERS*>(start + dosHeader->e_lfanew);
     if (ntHeaders->Signature != 0x00004550) {
-      return 0;
+      return nullptr;
     }
     const IMAGE_OPTIONAL_HEADER* optionalHeader = &ntHeaders->OptionalHeader;
     if (optionalHeader->NumberOfRvaAndSizes < IMAGE_DIRECTORY_ENTRY_EXPORT) {
-      return 0;
+      return nullptr;
     }
     if (optionalHeader->DataDirectory[IMAGE_DIRECTORY_ENTRY_EXPORT].Size == 0) {
-      return 0;
+      return nullptr;
     }
     const IMAGE_DATA_DIRECTORY* dataDirectory = &optionalHeader->DataDirectory[IMAGE_DIRECTORY_ENTRY_EXPORT];
     const IMAGE_EXPORT_DIRECTORY* exportDirectory = reinterpret_cast<const IMAGE_EXPORT_DIRECTORY*>(start + dataDirectory->VirtualAddress);
+    // PVOID IMAGEAPI ImageDirectoryEntryToData(PVOID Base, BOOLEAN MappedAsImage, USHORT DirectoryEntry, PULONG Size);
+    return exportDirectory;
+  }
 
-    const DWORD count = exportDirectory->NumberOfNames;
+  String getDemangledName(HMODULE handle, const void* address)
+  {
+    const IMAGE_EXPORT_DIRECTORY* exportDirectory = getExportDirectory(handle);
+    if (!exportDirectory) {
+      return String();
+    }
+    const uint8* start = reinterpret_cast<const uint8*>(handle);
+
+    const DWORD countFunctions = exportDirectory->NumberOfFunctions;
+    const DWORD countNames = exportDirectory->NumberOfNames;
     const DWORD* functions = reinterpret_cast<const DWORD*>(start + exportDirectory->AddressOfFunctions);
     const DWORD* names = reinterpret_cast<const DWORD*>(start + exportDirectory->AddressOfNames);
+    const WORD* ordinals = reinterpret_cast<const WORD*>(start + exportDirectory->AddressOfNameOrdinals);
 
-    WORD ordinalBase = 1; // TAG: get from exportDirectory?
-    for (DWORD i = 1; i < count; ++i) {
-      // LPCSTR ordinal = reinterpret_cast<LPCSTR>(static_cast<MemorySize>(i + ordinalBase));
+    // address to index - need to scan all adresses - but we cant reverse this - so we have to scan via ordinals until we find it
+
+#if 1
+    bool addressesSorted = true;
+    for (DWORD i = 1; i < countFunctions; ++i) {
+      if (!(functions[i - 1] < functions[i])) {
+        addressesSorted = false;
+        break;
+      }
+    }
+
+    bool ordinalsSorted = true;
+    for (DWORD i = 1; i < countNames; ++i) {
+      if (!(ordinals[i - 1] < ordinals[i])) {
+        ordinalsSorted = false;
+        break;
+      }
+    }
+#endif
+    
+    // TAG: maybe speed up due to sorted content?
+    // TAG: if both addresses and ordinals are sorted - then we can use binary search to find address
+    // TAG: alternatively scan first time and remember if sorted
+    // MemorySize ordinal = binarySearch(ordinals, ordinals + countNames, address, compare);
+    
+    const DWORD ordinalBase = exportDirectory->Base;
+    for (DWORD i = 0; i < countNames; ++i) {
+      // LPCSTR ordinal = reinterpret_cast<LPCSTR>(static_cast<MemorySize>(i /*- ordinalBase*/));
       // void* fromproc = GetProcAddress(handle, ordinal);
 
-      const void* _address = functions[i] + start;
+      const WORD addressIndex = ordinals[i - ordinalBase]; // TAG: check addressIndex range
+      BASSERT(addressIndex < countFunctions);
+      const void* _address = (addressIndex < countFunctions) ? (functions[addressIndex] + start) : nullptr;
+      // TAG: check if _address is in export section - ignore if so
+      if (_address != address) {
+        continue;
+      }
+
       const char* _name = reinterpret_cast<const char*>(names[i] + start);
-      const String name(_name);
       const String demangled = demangle(_name);
+      
       if (name.indexOf("OutOfRange") >= 0) {
         printf("%d = %p = %s\n", i, _address, demangled.native()/*, _name*/);
       }
+      return demangled;
+    }
+    return String();
+  }
+
+  unsigned int dumpNames(HMODULE handle, const void* address)
+  {
+    const IMAGE_EXPORT_DIRECTORY* exportDirectory = getExportDirectory(handle);
+    if (!exportDirectory) {
+      return -1;
+    }
+    const uint8* start = reinterpret_cast<const uint8*>(handle);
+
+    const DWORD countFunctions = exportDirectory->NumberOfFunctions;
+    const DWORD countNames = exportDirectory->NumberOfNames;
+    const DWORD* functions = reinterpret_cast<const DWORD*>(start + exportDirectory->AddressOfFunctions);
+    const DWORD* names = reinterpret_cast<const DWORD*>(start + exportDirectory->AddressOfNames);
+    const WORD* ordinals = reinterpret_cast<const WORD*>(start + exportDirectory->AddressOfNameOrdinals);
+    if (exportDirectory->AddressOfNames == 0}; // no names
+    // address to index - need to scan all adresses - but we cant reverse this - so we have to scan via ordinals until we find it
+    
+    const DWORD ordinalBase = exportDirectory->Base;
+    for (DWORD i = 0; i < countNames; ++i) {
+      // LPCSTR ordinal = reinterpret_cast<LPCSTR>(static_cast<MemorySize>(i /*- ordinalBase*/));
+      // void* fromproc = GetProcAddress(handle, ordinal);
+
+      const WORD addressIndex = ordinals[i - ordinalBase]; // TAG: check addressIndex range
+      BASSERT(addressIndex < countFunctions);
+      const void* _address = (addressIndex < countFunctions) ? (functions[addressIndex] + start) : nullptr;
+      const char* _name = reinterpret_cast<const char*>(names[i] + start);
+      const String demangled = demangle(_name);
+      
+      if (name.indexOf("OutOfRange") >= 0) {
+        printf("%d = %p = %s\n", i, _address, demangled.native()/*, _name*/);
+      }
+      
       // TAG: is this a forwarded address pointer?
       if (_address == address) {
         return i - 1;
       }
     }
 
-    return 0;
+    return i + ordinalBase;
   }
 }
 #endif
@@ -427,30 +540,35 @@ String DynamicLinker::getSymbolName(const void* address)
     info->SizeOfStruct = sizeof(SYMBOL_INFO);
     info->MaxNameLen = MAXIMUM_NAME;
     BOOL status = symFromAddr(GetCurrentProcess(), reinterpret_cast<MemorySize>(address), &displacement, info);
-    // TAG: missing type info
 
     if (!status) {
       DWORD error = ::GetLastError();
-    } else {
-
-#if 0
-      static bool first = true;
-      if (first) {
-        first = false;
-        HMODULE module = (HMODULE)(info->ModBase);// GetModuleHandle(L"base.dll");
-        dumpNames(module, reinterpret_cast<uint8*>(info->Address));
-      }
-#endif
-
-#if 0
-      // TAG: add support for source and line info in stack trace
-      IMAGEHLP_LINE64 line;
-      line.SizeOfStruct = sizeof(line);
-      DWORD disp = 0;
-      status = SymGetLineFromAddr(GetCurrentProcess(), reinterpret_cast<MemorySize>(address), &disp, &line);
-#endif
-      result = String(info->Name, info->NameLen);
+      return String();
     }
+
+#if 0
+    HMODULE module = reinterpret_cast<HMODULE>(info->ModBase);
+    String demangled = getDemangledName(module, reinterpret_cast<const uint8*>(info->Address)); // recursive MT-lock
+    if (demangled) {
+      return demangled;
+    }
+    
+    static bool first = true;
+    if (first) {
+      first = false;
+      dumpNames(module, reinterpret_cast<const uint8*>(info->Address)); // recursive MT-lock
+    }
+#endif
+
+#if 0
+    // TAG: add support for source and line info in stack trac
+    IMAGEHLP_LINE64 line;
+    line.SizeOfStruct = sizeof(line);
+    DWORD disp = 0;
+    status = SymGetLineFromAddr(GetCurrentProcess(), reinterpret_cast<MemorySize>(address), &disp, &line);
+#endif
+    
+    result = String(info->Name, info->NameLen);
   }
 #elif ((_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__MACOS) || \
        (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__GNULINUX))

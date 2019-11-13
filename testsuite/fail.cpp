@@ -27,6 +27,21 @@
 
 using namespace com::azure::dev::base;
 
+class FailApplication;
+
+class Worker : public Thread {
+private:
+  
+  FailApplication* application = nullptr;
+public:
+  
+  Worker(FailApplication* _app) : application(_app)
+  {
+  }
+  
+  void run();
+};
+
 class FailApplication : public Application {
 private:
 
@@ -34,6 +49,7 @@ private:
   static const unsigned int MINOR_VERSION = 0;
   
   String command;
+  bool useThread = false;
 public:
   
   FailApplication(
@@ -50,11 +66,14 @@ public:
     Array<String>::ReadEnumerator enu = arguments.getReadEnumerator();
     while (enu.hasNext()) {
       const String argument = *enu.next();
-      if (command) {
+      if (argument == "--thread") {
+        useThread = true;
+      } else if (!command) {
+        command = argument;
+      } else {
         ferr << Format::subst("Invalid argument '%1'.", argument) << ENDL;
         return false;
       }
-      command = argument;
     }
     if (!command) {
       ferr << "Command not specified (outofrange, rethrow, onlythrow, nullpointer, runtimeerror, outofmem, throwstring, throwstring2, terminate, resizeinit, resizedestroy, resizecopy, resizemove)." << ENDL;
@@ -119,7 +138,7 @@ public:
   public:
 
     static unsigned int triggerId;
-    static const char* cause;
+    static String cause;
 
     MyClass()
     {
@@ -176,20 +195,9 @@ public:
       buffer.append(MyClass());
     }
   }
-
-  void main()
-  {
-    fout << getFormalName() << " version "
-         << MAJOR_VERSION << '.' << MINOR_VERSION << EOL
-         << "The Base Framework (Test Suite)" << EOL
-         << "Copyright (C) 2001-2019 by Rene Moeller Fonseca" << EOL
-         << ENDL;
-
-    if (!parseArguments()) {
-      setExitCode(Application::EXIT_CODE_ERROR);
-      return;
-    }
     
+  void doit()
+  {
     if (command == "outofrange") {
       throwOutOfRange();
     } else if (command == "rethrow") {
@@ -230,9 +238,36 @@ public:
       setExitCode(123);
     }
   }
+
+  void main()
+  {
+    fout << getFormalName() << " version "
+         << MAJOR_VERSION << '.' << MINOR_VERSION << EOL
+         << "The Base Framework (Test Suite)" << EOL
+         << "Copyright (C) 2001-2019 by Rene Moeller Fonseca" << EOL
+         << ENDL;
+
+    if (!parseArguments()) {
+      setExitCode(Application::EXIT_CODE_ERROR);
+      return;
+    }
+    
+    if (useThread) {
+      Worker worker(this);
+      worker.start();
+      worker.join();
+    } else {
+      doit();
+    }
+  }
 };
 
+void Worker::run()
+{
+  application->doit();
+}
+
 unsigned int FailApplication::MyClass::triggerId = 0;
-const char* FailApplication::MyClass::cause = "";
+String FailApplication::MyClass::cause;
 
 APPLICATION_STUB(FailApplication);

@@ -57,7 +57,7 @@ public:
       command = argument;
     }
     if (!command) {
-      ferr << "Command not specified (outofrange, rethrow, onlythrow, nullpointer, runtimeerror, outofmem, throwstring, throwstring2, terminate)." << ENDL;
+      ferr << "Command not specified (outofrange, rethrow, onlythrow, nullpointer, runtimeerror, outofmem, throwstring, throwstring2, terminate, resizeinit, resizedestroy, resizecopy, resizemove)." << ENDL;
       return false;
     }
     return true;
@@ -112,6 +112,71 @@ public:
     }
   }
 
+  class MyClass {
+  private:
+
+    unsigned int id = 0;
+  public:
+
+    static unsigned int triggerId;
+    static const char* cause;
+
+    MyClass()
+    {
+      static unsigned int count = 0;
+      id = count++;
+      if ((id == triggerId) && (cause == "init")) {
+        throw Exception("Throw on init.");
+      }
+    }
+
+    MyClass(const MyClass& copy)
+    {
+      if ((id == triggerId) && (cause == "copy")) {
+        throw Exception("Throw on copy.");
+      }
+    }
+
+    MyClass(MyClass&& move)
+    {
+      if ((id == triggerId) && (cause == "move")) {
+        throw Exception("Throw on move construct.");
+      }
+    }
+
+    MyClass& operator=(const MyClass& assign)
+    {
+      if ((id == triggerId) && (cause == "copyassign")) {
+        throw Exception("Throw on copy assign.");
+      }
+      return *this;
+    }
+
+    MyClass& operator=(MyClass&& assign)
+    {
+      if ((id == triggerId) && (cause == "moveassign")) {
+        throw Exception("Throw on move assign.");
+      }
+      return *this;
+    }
+
+    ~MyClass() {
+      if ((id == triggerId) && (cause == "destroy")) {
+        throw Exception("Throw on destroy.");
+      }
+    }
+  };
+
+  void resizeArray(const char* cause)
+  {
+    MyClass::triggerId = 1234;
+    MyClass::cause = cause;
+    Array<MyClass> buffer;
+    for (MemorySize i = 0; i < 4096; ++i) {
+      buffer.append(MyClass());
+    }
+  }
+
   void main()
   {
     fout << getFormalName() << " version "
@@ -149,10 +214,25 @@ public:
       std::terminate();
     } else if (command == "dumpstack") {
       dumpStack();
+    } else if (command == "resizeinit") {
+      resizeArray("init");
+    } else if (command == "resizedestroy") {
+      resizeArray("destroy");
+    } else if (command == "resizecopy") {
+      resizeArray("copy");
+    } else if (command == "resizemove") {
+      resizeArray("move");
+    } else if (command == "resizecopyassign") {
+      resizeArray("copyassign");
+    } else if (command == "resizemoveassign") {
+      resizeArray("moveassign");
     } else {
       setExitCode(123);
     }
   }
 };
+
+unsigned int FailApplication::MyClass::triggerId = 0;
+const char* FailApplication::MyClass::cause = "";
 
 APPLICATION_STUB(FailApplication);

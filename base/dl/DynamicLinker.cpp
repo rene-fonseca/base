@@ -544,7 +544,6 @@ String DynamicLinker::getSymbolName(const void* address)
       return String();
     }
 
-#if 1
     HMODULE module = reinterpret_cast<HMODULE>(info->ModBase);
 
     /* testing only
@@ -559,7 +558,6 @@ String DynamicLinker::getSymbolName(const void* address)
     if (demangled) { // we fallback to dbghelp
       return demangled;
     }
-#endif
 
 #if 0
     // TAG: add support for source and line info in stack trace

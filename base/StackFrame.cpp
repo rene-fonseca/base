@@ -358,6 +358,7 @@ void StackFrame::toStream(FormatOutputStream& stream, const void* const * trace,
         if (flags & FLAG_TRIM_SYSTEM) {
           // TAG: could also be "CtrlRoutine" for Win32
           if (demangled == "main") { // TAG: add support for all platforms - better to backtrim when we get stack trace - also handle threads
+            stream << EOL;
             break;
           }
         }

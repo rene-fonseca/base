@@ -353,9 +353,9 @@ public:
           TYPE* temp = Heap::allocate<TYPE>(size); // new array
           initializeByMove(temp, elements, elements + this->size);
           Heap::release(elements); // free previous array
-          elements = temp;
           // default initialization of new objects
-          initialize(elements + this->size, elements + size);
+          initialize(temp + this->size, temp + size); // state of object is bad on exception so we cannot recover
+          elements = temp;
         }
       }
       this->size = size;
@@ -368,9 +368,9 @@ public:
     if (size != this->size) {
       if (Uninitializeable<TYPE>::IS_UNINITIALIZEABLE) {
         // no need to destroy or initialize elements
-        elements = Heap::resize(elements, size);
+        elements = Heap::resize(elements, size); // new array - ok if this throws
         if (size > this->size) { // are have increased array size
-          TYPE* dest = elements;
+          TYPE* dest = elements + this->size; // fill new elements
           const TYPE* end = dest + size;
           while (dest != end) {
             *dest = value;

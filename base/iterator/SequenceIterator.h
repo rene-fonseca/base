@@ -263,6 +263,13 @@ inline SequenceIterator<TYPE> operator+(const SequenceIterator<TYPE>& left, Memo
   return temp += right;
 }
 
+template<class TYPE>
+inline SequenceIterator<TYPE> operator+(MemoryDiff left, const SequenceIterator<TYPE>& right) noexcept
+{
+  SequenceIterator<TYPE> temp(right);
+  return temp += left;
+}
+
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE
 
 _COM_AZURE_DEV__BASE__STD_ITERATOR_TRAITS(base::SequenceIterator);

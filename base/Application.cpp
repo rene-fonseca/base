@@ -56,6 +56,7 @@ _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
             StackFrame::FLAG_SHOW_ADDRESS | StackFrame::FLAG_SHOW_MODULE | StackFrame::FLAG_INDENT |
             (FileDescriptor::getStandardError().isANSITerminal() ? StackFrame::FLAG_USE_COLORS : 0)
           );
+          ferr << FLUSH;
         }
       }
     }
@@ -87,6 +88,7 @@ public:
           StackFrame::FLAG_COMPACT | StackFrame::FLAG_SHOW_ADDRESS | StackFrame::FLAG_SHOW_MODULE | StackFrame::FLAG_INDENT |
           (FileDescriptor::getStandardError().isANSITerminal() ? StackFrame::FLAG_USE_COLORS : 0)
         );
+        ferr << FLUSH;
       }
     }
 
@@ -154,6 +156,7 @@ public:
           StackFrame::FLAG_SHOW_ADDRESS | StackFrame::FLAG_SHOW_MODULE | StackFrame::FLAG_INDENT |
           (FileDescriptor::getStandardError().isANSITerminal() ? StackFrame::FLAG_USE_COLORS : 0)
         );
+        ferr << FLUSH;
       }
     }
     
@@ -808,6 +811,7 @@ int Application::exceptionHandler(const Exception& e) throw()
         StackFrame::FLAG_SHOW_ADDRESS | StackFrame::FLAG_SHOW_MODULE | StackFrame::FLAG_INDENT |
         (FileDescriptor::getStandardError().isANSITerminal() ? StackFrame::FLAG_USE_COLORS : 0)
       );
+      ferr << FLUSH;
     }
   }
 
@@ -850,6 +854,7 @@ int Application::exceptionHandler() throw()
         StackFrame::FLAG_SHOW_ADDRESS | StackFrame::FLAG_SHOW_MODULE | StackFrame::FLAG_INDENT |
         (FileDescriptor::getStandardError().isANSITerminal() ? StackFrame::FLAG_USE_COLORS : 0)
       );
+      ferr << FLUSH;
     }
   }
 

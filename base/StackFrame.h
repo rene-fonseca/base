@@ -119,13 +119,15 @@ public:
     FLAG_COMPACT = 1 << 3,
     FLAG_FULL_PATH = 1 << 4,
     FLAG_USE_COLORS = 1 << 5,
-    FLAG_STRIP_NAMESPACE = 1 << 6
+    FLAG_STRIP_NAMESPACE = 1 << 6,
+    FLAG_TRIM_SYSTEM = 1 << 7,
+    FLAG_DEFAULT = FLAG_COMPACT | FLAG_SHOW_ADDRESS | FLAG_SHOW_MODULE | FLAG_INDENT | FLAG_TRIM_SYSTEM
   };
   
   /**
     Format stack trace to stream.
   */
-  static void toStream(FormatOutputStream& stream, const void* const* trace, MemorySize size, unsigned int flags = FLAG_SHOW_ADDRESS | FLAG_SHOW_MODULE | FLAG_INDENT);
+  static void toStream(FormatOutputStream& stream, const void* const* trace, MemorySize size, unsigned int flags = FLAG_DEFAULT);
 };
 
 _COM_AZURE_DEV__BASE__API FormatOutputStream& operator<<(FormatOutputStream& stream, const StackFrame& value) throw(IOException);

@@ -354,6 +354,12 @@ void StackFrame::toStream(FormatOutputStream& stream, const void* const * trace,
             stream << demangled;
           }
         }
+
+        if (flags & FLAG_TRIM_SYSTEM) {
+          if (demangled == "main") { // TAG: add support for all platforms - better to backtrim when we get stack trace - also handle threads
+            break;
+          }
+        }
       }
       stream << EOL;
     } else { // no descrption
@@ -418,8 +424,7 @@ FormatOutputStream& operator<<(
   const bool colors = false; // FileDescriptor::getStandardError().isANSITerminal(); // stream may not be stderr
   StackFrame::toStream(
     stream, value.getTrace(), value.getSize(),
-    StackFrame::FLAG_SHOW_ADDRESS | StackFrame::FLAG_SHOW_MODULE | StackFrame::FLAG_INDENT |
-      (colors ? StackFrame::FLAG_USE_COLORS : 0)
+    StackFrame::FLAG_DEFAULT | (colors ? StackFrame::FLAG_USE_COLORS : 0)
   );
   return stream;
 }

@@ -112,14 +112,12 @@ void UnitTest::Run::onException(Exception* exception)
       if (UnitTestManager::getManager().getVerbosity() < UnitTestManager::VERBOSE) {
         StackFrame::toStream(
           fout, stackTrace.begin, stackTrace.end - stackTrace.begin,
-          StackFrame::FLAG_COMPACT | StackFrame::FLAG_SHOW_ADDRESS | StackFrame::FLAG_SHOW_MODULE | StackFrame::FLAG_INDENT |
-          (UnitTestManager::getManager().getUseANSIColors() ? StackFrame::FLAG_USE_COLORS : 0)
+          StackFrame::FLAG_DEFAULT | (UnitTestManager::getManager().getUseANSIColors() ? StackFrame::FLAG_USE_COLORS : 0)
         );
       }
       StackFrame::toStream(
         sos, stackTrace.begin, stackTrace.end - stackTrace.begin,
-        StackFrame::FLAG_COMPACT | StackFrame::FLAG_SHOW_ADDRESS | StackFrame::FLAG_SHOW_MODULE | StackFrame::FLAG_INDENT |
-        (UnitTestManager::getManager().getUseANSIColors() ? StackFrame::FLAG_USE_COLORS : 0)
+        StackFrame::FLAG_DEFAULT | (UnitTestManager::getManager().getUseANSIColors() ? StackFrame::FLAG_USE_COLORS : 0)
       );
       for (const auto& line : sos.toString().split('\n')) {
         if (line) {
@@ -1141,8 +1139,7 @@ void UnitTest::onAssert(bool passed, const String& what, unsigned int line)
       StackFrame stackTrace = StackFrame::getStack();
       StackFrame::toStream(
         fout, stackTrace.getTrace(), stackTrace.getSize(),
-        StackFrame::FLAG_SHOW_ADDRESS | StackFrame::FLAG_SHOW_MODULE | StackFrame::FLAG_INDENT |
-        (UnitTestManager::getManager().getUseANSIColors() ? StackFrame::FLAG_USE_COLORS : 0)
+        StackFrame::FLAG_DEFAULT | (UnitTestManager::getManager().getUseANSIColors() ? StackFrame::FLAG_USE_COLORS : 0)
       );
     }
   }

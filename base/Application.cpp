@@ -53,7 +53,7 @@ _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
           ferr << "EXCEPTION CONSTRUCTED BY: " << ENDL;
           StackFrame::toStream(
             ferr, tls->stackTrace.getTrace(), tls->stackTrace.getSize(),
-            StackFrame::FLAG_SHOW_ADDRESS | StackFrame::FLAG_SHOW_MODULE | StackFrame::FLAG_INDENT |
+            StackFrame::FLAG_DEFAULT |
             (FileDescriptor::getStandardError().isANSITerminal() ? StackFrame::FLAG_USE_COLORS : 0)
           );
           ferr << FLUSH;
@@ -85,7 +85,7 @@ public:
       if (!stackTrace.isEmpty()) {
         StackFrame::toStream(
           ferr, stackTrace.getTrace(), stackTrace.getSize(),
-          StackFrame::FLAG_COMPACT | StackFrame::FLAG_SHOW_ADDRESS | StackFrame::FLAG_SHOW_MODULE | StackFrame::FLAG_INDENT |
+          StackFrame::FLAG_COMPACT | StackFrame::FLAG_DEFAULT |
           (FileDescriptor::getStandardError().isANSITerminal() ? StackFrame::FLAG_USE_COLORS : 0)
         );
         ferr << FLUSH;
@@ -153,7 +153,7 @@ public:
       if (!tls->stackTrace.isEmpty()) {
         StackFrame::toStream(
           ferr, tls->stackTrace.getTrace(), tls->stackTrace.getSize(),
-          StackFrame::FLAG_SHOW_ADDRESS | StackFrame::FLAG_SHOW_MODULE | StackFrame::FLAG_INDENT |
+          StackFrame::FLAG_DEFAULT |
           (FileDescriptor::getStandardError().isANSITerminal() ? StackFrame::FLAG_USE_COLORS : 0)
         );
         ferr << FLUSH;
@@ -808,7 +808,7 @@ int Application::exceptionHandler(const Exception& e) throw()
     if (!tls->stackTrace.isEmpty()) {
       StackFrame::toStream(
         ferr, tls->stackTrace.getTrace(), tls->stackTrace.getSize(),
-        StackFrame::FLAG_SHOW_ADDRESS | StackFrame::FLAG_SHOW_MODULE | StackFrame::FLAG_INDENT |
+        StackFrame::FLAG_DEFAULT |
         (FileDescriptor::getStandardError().isANSITerminal() ? StackFrame::FLAG_USE_COLORS : 0)
       );
       ferr << FLUSH;
@@ -851,7 +851,7 @@ int Application::exceptionHandler() throw()
     if (!tls->stackTrace.isEmpty()) {
       StackFrame::toStream(
         ferr, tls->stackTrace.getTrace(), tls->stackTrace.getSize(),
-        StackFrame::FLAG_SHOW_ADDRESS | StackFrame::FLAG_SHOW_MODULE | StackFrame::FLAG_INDENT |
+        StackFrame::FLAG_DEFAULT |
         (FileDescriptor::getStandardError().isANSITerminal() ? StackFrame::FLAG_USE_COLORS : 0)
       );
       ferr << FLUSH;

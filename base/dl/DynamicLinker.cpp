@@ -14,6 +14,7 @@
 #include <base/platforms/features.h>
 #include <base/dl/DynamicLinker.h>
 #include <base/Application.h>
+#include <base/string/Parser.h>
 
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
 #  include <windows.h>
@@ -344,9 +345,9 @@ void* DynamicLinker::getSymbolAddress(const void* address) noexcept
   return nullptr;
 }
 
-#if 0 && (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
 
-#pragma comment(lib, "dbghelp.lib") // TAG: temp test
+// #pragma comment(lib, "dbghelp.lib") // for testing only
 
 namespace {
 
@@ -355,7 +356,7 @@ namespace {
     if (unDecorateSymbolName) {
       MutualExclusion::Sync _guard(Application::getApplication()->getLock()); // dbghelp is not MT-safe
       char buffer[4096];
-      DWORD flags = UNDNAME_NO_THISTYPE | UNDNAME_NO_MS_KEYWORDS | UNDNAME_NO_SPECIAL_SYMS | UNDNAME_NO_THROW_SIGNATURES |
+      DWORD flags = UNDNAME_NO_THISTYPE | 0*UNDNAME_NO_FUNCTION_RETURNS | UNDNAME_NO_MS_KEYWORDS | UNDNAME_NO_SPECIAL_SYMS | UNDNAME_NO_THROW_SIGNATURES |
         UNDNAME_NO_ACCESS_SPECIFIERS | // no public/private
         UNDNAME_NO_MEMBER_TYPE; // no virtual/static
       DWORD size = unDecorateSymbolName(decorated, buffer, getArraySize(buffer), flags);
@@ -365,40 +366,14 @@ namespace {
     }
     return decorated;
   }
-
-  class Symbol {
-  public:
-    
-    unsigned int index = 0;
-    void* address = nullptr;
-    String name;
-  };
-
+  
   // https://docs.microsoft.com/en-us/windows/win32/debug/pe-format
-
-  int getModuleIndexByAddress(HMODULE handle, const void* address)
-  {
-    return -1;
-  }
-
-  const char* getModuleNameByIndex(HMODULE handle, uint16 index)
-  {
-    LPCSTR ordinal = reinterpret_cast<LPCSTR>(static_cast<MemorySize>(index));
-    void* fromproc = GetProcAddress(handle, ordinal);
-    return fromproc;
-  }
-
-  const char* getModuleNameByAddress(HMODULE handle, const void* address)
-  {
-    unsigned int index = getModuleIndexByAddress(handle, address);
-    if (index == static_cast<unsigned int>(-1)) {
-      return nullptr;
-    }
-    return getModuleNameByIndex(handle, index);
-  }
 
   const IMAGE_EXPORT_DIRECTORY* getExportDirectory(HMODULE handle)
   {
+    if (!handle) {
+      return nullptr;
+    }
     IMAGE_DOS_HEADER* dosHeader = reinterpret_cast<IMAGE_DOS_HEADER*>(handle);
     if (dosHeader->e_magic != IMAGE_DOS_SIGNATURE) {
       return nullptr;
@@ -421,70 +396,20 @@ namespace {
     return exportDirectory;
   }
 
-  String getDemangledName(HMODULE handle, const void* address)
+  /** Resolves address from import table entry. */
+  inline const void* getResolvedImportTableAddress(const void* address) noexcept
   {
-    const IMAGE_EXPORT_DIRECTORY* exportDirectory = getExportDirectory(handle);
-    if (!exportDirectory) {
-      return String();
+    // TAG: add support for all architectures
+    const uint8* _address = reinterpret_cast<const uint8*>(address);
+    if (*_address == 0xe9) { // jmp instruction - 32bit relative
+      int32 offset = *reinterpret_cast<const int32*>(_address + 1); // offset word
+      return _address + offset + (sizeof(int32) + 1); // convert address to true function address
     }
-    const uint8* start = reinterpret_cast<const uint8*>(handle);
-
-    const DWORD countFunctions = exportDirectory->NumberOfFunctions;
-    const DWORD countNames = exportDirectory->NumberOfNames;
-    const DWORD* functions = reinterpret_cast<const DWORD*>(start + exportDirectory->AddressOfFunctions);
-    const DWORD* names = reinterpret_cast<const DWORD*>(start + exportDirectory->AddressOfNames);
-    const WORD* ordinals = reinterpret_cast<const WORD*>(start + exportDirectory->AddressOfNameOrdinals);
-
-    // address to index - need to scan all adresses - but we cant reverse this - so we have to scan via ordinals until we find it
-
-#if 1
-    bool addressesSorted = true;
-    for (DWORD i = 1; i < countFunctions; ++i) {
-      if (!(functions[i - 1] < functions[i])) {
-        addressesSorted = false;
-        break;
-      }
-    }
-
-    bool ordinalsSorted = true;
-    for (DWORD i = 1; i < countNames; ++i) {
-      if (!(ordinals[i - 1] < ordinals[i])) {
-        ordinalsSorted = false;
-        break;
-      }
-    }
-#endif
-    
-    // TAG: maybe speed up due to sorted content?
-    // TAG: if both addresses and ordinals are sorted - then we can use binary search to find address
-    // TAG: alternatively scan first time and remember if sorted
-    // MemorySize ordinal = binarySearch(ordinals, ordinals + countNames, address, compare);
-    
-    const DWORD ordinalBase = exportDirectory->Base;
-    for (DWORD i = 0; i < countNames; ++i) {
-      // LPCSTR ordinal = reinterpret_cast<LPCSTR>(static_cast<MemorySize>(i /*- ordinalBase*/));
-      // void* fromproc = GetProcAddress(handle, ordinal);
-
-      const WORD addressIndex = ordinals[i - ordinalBase]; // TAG: check addressIndex range
-      BASSERT(addressIndex < countFunctions);
-      const void* _address = (addressIndex < countFunctions) ? (functions[addressIndex] + start) : nullptr;
-      // TAG: check if _address is in export section - ignore if so
-      if (_address != address) {
-        continue;
-      }
-
-      const char* _name = reinterpret_cast<const char*>(names[i] + start);
-      const String demangled = demangle(_name);
-      
-      if (name.indexOf("OutOfRange") >= 0) {
-        printf("%d = %p = %s\n", i, _address, demangled.native()/*, _name*/);
-      }
-      return demangled;
-    }
-    return String();
+    return nullptr;
   }
 
-  unsigned int dumpNames(HMODULE handle, const void* address)
+  /** Returns the index of the symbol for the given address. Returns -1 if not found. */
+  int getModuleSymbolIndexByAddress(HMODULE handle, const void* address)
   {
     const IMAGE_EXPORT_DIRECTORY* exportDirectory = getExportDirectory(handle);
     if (!exportDirectory) {
@@ -494,34 +419,107 @@ namespace {
 
     const DWORD countFunctions = exportDirectory->NumberOfFunctions;
     const DWORD countNames = exportDirectory->NumberOfNames;
+    // addresses are not sorted
+    const DWORD* functions = reinterpret_cast<const DWORD*>(start + exportDirectory->AddressOfFunctions);
+    const WORD* ordinals = reinterpret_cast<const WORD*>(start + exportDirectory->AddressOfNameOrdinals);
+
+    for (DWORD i = 0; i < countNames; ++i) {
+      const WORD addressIndex = ordinals[i];
+      BASSERT(addressIndex < countFunctions);
+      const void* _address = (addressIndex < countFunctions) ? (functions[addressIndex] + start) : nullptr;
+      // TAG: check if _address is in export section - ignore if so
+      const void* resolvedAddress = getResolvedImportTableAddress(_address);
+      if (resolvedAddress == address) {
+        return i;
+      }
+    }
+    return -1;
+  }
+
+  const char* getMangledName(HMODULE handle, const void* address)
+  {
+    const IMAGE_EXPORT_DIRECTORY* exportDirectory = getExportDirectory(handle);
+    if (!exportDirectory) {
+      return nullptr;
+    }
+    const uint8* start = reinterpret_cast<const uint8*>(handle);
+
+    const DWORD countFunctions = exportDirectory->NumberOfFunctions;
+    const DWORD countNames = exportDirectory->NumberOfNames;
+    // addresses are not sorted
     const DWORD* functions = reinterpret_cast<const DWORD*>(start + exportDirectory->AddressOfFunctions);
     const DWORD* names = reinterpret_cast<const DWORD*>(start + exportDirectory->AddressOfNames);
     const WORD* ordinals = reinterpret_cast<const WORD*>(start + exportDirectory->AddressOfNameOrdinals);
-    if (exportDirectory->AddressOfNames == 0}; // no names
-    // address to index - need to scan all adresses - but we cant reverse this - so we have to scan via ordinals until we find it
-    
-    const DWORD ordinalBase = exportDirectory->Base;
-    for (DWORD i = 0; i < countNames; ++i) {
-      // LPCSTR ordinal = reinterpret_cast<LPCSTR>(static_cast<MemorySize>(i /*- ordinalBase*/));
-      // void* fromproc = GetProcAddress(handle, ordinal);
+    if (exportDirectory->AddressOfNames == 0) {
+      return nullptr; // no names
+    }
 
-      const WORD addressIndex = ordinals[i - ordinalBase]; // TAG: check addressIndex range
+    for (DWORD i = 0; i < countNames; ++i) {
+      const WORD addressIndex = ordinals[i];
       BASSERT(addressIndex < countFunctions);
       const void* _address = (addressIndex < countFunctions) ? (functions[addressIndex] + start) : nullptr;
-      const char* _name = reinterpret_cast<const char*>(names[i] + start);
-      const String demangled = demangle(_name);
-      
-      if (name.indexOf("OutOfRange") >= 0) {
-        printf("%d = %p = %s\n", i, _address, demangled.native()/*, _name*/);
+      // TAG: check if _address is in export section - ignore if so
+
+      const void* resolvedAddress = getResolvedImportTableAddress(_address);
+      if (resolvedAddress == address) {
+        const char* name = reinterpret_cast<const char*>(names[i] + start);
+        return name;
       }
-      
-      // TAG: is this a forwarded address pointer?
-      if (_address == address) {
-        return i - 1;
+    }
+    return nullptr;
+  }
+
+  String getDemangledName(HMODULE handle, const void* address)
+  {
+    String demangled;
+    if (const char* name = getMangledName(handle, address)) {
+      demangled = demangle(name);
+    }
+    return demangled;
+  }
+
+  /** Dumps all symbols in the given module matching the given pattern. */
+  unsigned int dumpSymbols(HMODULE handle, const String& pattern = String(), bool _demangle = true)
+  {
+    const IMAGE_EXPORT_DIRECTORY* exportDirectory = getExportDirectory(handle);
+    if (!exportDirectory) {
+      return 0;
+    }
+    const uint8* start = reinterpret_cast<const uint8*>(handle);
+
+    const DWORD countFunctions = exportDirectory->NumberOfFunctions;
+    const DWORD countNames = exportDirectory->NumberOfNames;
+    const DWORD* functions = reinterpret_cast<const DWORD*>(start + exportDirectory->AddressOfFunctions); // RVAs
+    const DWORD* names = reinterpret_cast<const DWORD*>(start + exportDirectory->AddressOfNames);
+    const WORD* ordinals = reinterpret_cast<const WORD*>(start + exportDirectory->AddressOfNameOrdinals);
+    if (exportDirectory->AddressOfNames == 0) {
+      return 0; // no names
+    }
+    // const char* moduleName = reinterpret_cast<const char*>(start + exportDirectory->Name);
+
+    unsigned int count = 0;
+    const DWORD ordinalBase = exportDirectory->Base;
+    for (DWORD i = 0; i < countNames; ++i) {
+      const WORD addressIndex = ordinals[i];
+      BASSERT(addressIndex < countFunctions);
+      const void* _address = (addressIndex < countFunctions) ? (functions[addressIndex] + start) : nullptr; // import table
+      const char* _name = reinterpret_cast<const char*>(names[i] + start);
+
+      const void* resolvedAddress = getResolvedImportTableAddress(_address);
+
+      if (_demangle) {
+        const String demangled = demangle(_name);
+        if (Parser::doesMatchPattern(pattern, demangled)) {
+          ferr << ++count << " " << PREFIX << resolvedAddress << " " << demangled << ENDL;
+        }
+      } else {
+        if (Parser::doesMatchPattern(pattern, _name)) {
+          ferr << ++count << " " << PREFIX << resolvedAddress << " " << _name << ENDL;
+        }
       }
     }
 
-    return i + ordinalBase;
+    return count;
   }
 }
 #endif
@@ -546,22 +544,25 @@ String DynamicLinker::getSymbolName(const void* address)
       return String();
     }
 
-#if 0
+#if 1
     HMODULE module = reinterpret_cast<HMODULE>(info->ModBase);
-    String demangled = getDemangledName(module, reinterpret_cast<const uint8*>(info->Address)); // recursive MT-lock
-    if (demangled) {
-      return demangled;
-    }
-    
+
+    /* testing only
     static bool first = true;
     if (first) {
       first = false;
-      dumpNames(module, reinterpret_cast<const uint8*>(info->Address)); // recursive MT-lock
+      dumpSymbols(module, "*OutOfRange*"); // recursive MT-lock
+    }
+    */
+
+    String demangled = getDemangledName(module, reinterpret_cast<const uint8*>(info->Address)); // recursive MT-lock
+    if (demangled) { // we fallback to dbghelp
+      return demangled;
     }
 #endif
 
 #if 0
-    // TAG: add support for source and line info in stack trac
+    // TAG: add support for source and line info in stack trace
     IMAGEHLP_LINE64 line;
     line.SizeOfStruct = sizeof(line);
     DWORD disp = 0;

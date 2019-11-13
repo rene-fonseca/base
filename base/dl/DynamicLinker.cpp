@@ -257,6 +257,14 @@ String DynamicLinker::getImagePath(const void* address)
     info.MaxNameLen = 0;
     if (INLINE_ASSERT(symFromAddr(GetCurrentProcess(), reinterpret_cast<MemorySize>(address), &displacement, &info))) {
       HMODULE handle = reinterpret_cast<HMODULE>(static_cast<MemorySize>(info.ModBase));
+
+      if (!handle) {
+        MEMORY_BASIC_INFORMATION mbi;
+        if (VirtualQuery(address, &mbi, sizeof(mbi))) {
+          handle = reinterpret_cast<HMODULE>(mbi.AllocationBase);
+        }
+      }
+
       PrimitiveArray<wchar> buffer(1024);
       while (buffer.size() < (64 * 1024)) {
         DWORD length = GetModuleFileNameW(handle, buffer, buffer.size());

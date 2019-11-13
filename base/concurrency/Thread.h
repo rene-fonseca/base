@@ -264,7 +264,8 @@ protected:
   /**
     Returns the active object.
   */
-  inline Runnable* getRunnable() noexcept {
+  inline Runnable* getRunnable() noexcept
+  {
     return runnable;
   }
 public:

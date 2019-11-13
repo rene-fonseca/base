@@ -851,7 +851,9 @@ int Application::exceptionHandler(const Exception& e) throw()
 int Application::exceptionHandler() throw()
 {
   setExitCode(Application::EXIT_CODE_ERROR);
-
+  // TAG: if UI app - show dialog
+  // TAG: show thread info
+  
   try {
     throw;
   } catch (Exception& e) {

@@ -14,6 +14,7 @@
 #include <base/concurrency/Thread.h>
 #include <base/concurrency/MutualExclusion.h>
 #include <base/string/String.h>
+#include <base/Application.h>
 #include <base/Cast.h>
 #include <base/UnitTest.h>
 
@@ -100,7 +101,10 @@ void* Thread::entry(Thread* thread) throw()
       bassert(parent, ThreadException(Type::getType<Thread>()));
       parent->onChildTermination(thread); // signal parent
       // TAG: problem if parent is destroyed before child
+    } catch (Exception& e) {
+      Application::getApplication()->exceptionHandler(e);
     } catch (...) {
+      Application::getApplication()->exceptionHandler();
       thread->state = EXCEPTION; // uncaugth exception
     }
   } catch (...) {
@@ -111,7 +115,8 @@ void* Thread::entry(Thread* thread) throw()
   return 0;
 }
 
-void Thread::exit() throw() {
+void Thread::exit() throw()
+{
   BASSERT(getThread()->state == ALIVE);
   getThread()->state = EXIT;
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)

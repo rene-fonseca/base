@@ -61,10 +61,10 @@
   </Type>
 
   <Type Name="base::Array&lt;*&gt;">
-    <DisplayString>{{ size={size} }}</DisplayString>
+    <DisplayString>{{ size={elements.value->size} }}</DisplayString>
     <Expand>
       <ArrayItems>
-        <Size>size</Size>
+        <Size>elements.value->size</Size>
         <ValuePointer>elements.value->elements</ValuePointer>
       </ArrayItems>
     </Expand>

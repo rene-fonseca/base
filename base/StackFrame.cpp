@@ -356,7 +356,17 @@ void StackFrame::toStream(FormatOutputStream& stream, const void* const * trace,
         }
 
         if (flags & FLAG_TRIM_SYSTEM) {
-          // TAG: could also be "CtrlRoutine" for Win32
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
+          if (demangled == "CtrlRoutine") {
+            stream << EOL;
+            break;
+          }
+#elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__MACOS)
+          if (demangled == "_pthread_start") {
+            stream << EOL;
+            break;
+          }
+#endif
           if (demangled == "main") { // TAG: add support for all platforms - better to backtrim when we get stack trace - also handle threads
             stream << EOL;
             break;

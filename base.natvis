@@ -60,6 +60,16 @@
     </Expand>
   </Type>
 
+  <Type Name="base::Allocator&lt;*&gt;">
+    <DisplayString>{{ size={size} }}</DisplayString>
+    <Expand>
+      <ArrayItems>
+        <Size>size</Size>
+        <ValuePointer>elements</ValuePointer>
+      </ArrayItems>
+    </Expand>
+  </Type>
+
   <Type Name="base::Array&lt;*&gt;">
     <DisplayString>{{ size={elements.value->size} }}</DisplayString>
     <Expand>

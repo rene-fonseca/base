@@ -152,7 +152,7 @@ public:
     MyClass(const MyClass& copy)
     {
       if ((id == triggerId) && (cause == "copy")) {
-        throw Exception("Throw on copy.");
+        throw Exception("Throw on copy construct.");
       }
     }
 
@@ -192,6 +192,7 @@ public:
     MyClass::cause = cause;
     Array<MyClass> buffer;
     for (MemorySize i = 0; i < 4096; ++i) {
+      fout << "#" << i << " " << FLUSH;
       buffer.append(MyClass());
     }
   }

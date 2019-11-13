@@ -244,13 +244,17 @@ public:
   );
 #endif // disabled
   
-  static BOOL WINAPI signalHandler(DWORD signal) throw() {
+  static BOOL WINAPI signalHandler(DWORD signal) noexcept
+  {
     switch (signal) {
     case CTRL_LOGOFF_EVENT:
     case CTRL_SHUTDOWN_EVENT:
     case CTRL_CLOSE_EVENT: // console is closing
     case CTRL_BREAK_EVENT: // Ctrl+Break
     case CTRL_C_EVENT: // Ctrl+C
+      if (FileDescriptor::getStandardError().isTerminal()) {
+        ferr << "Aborted by user" << ENDL;
+      }
       SystemLogger::write(SystemLogger::INFORMATION, "Terminate signal.");
       if (Application::application) {
         Application::application->terminate();
@@ -563,7 +567,8 @@ public:
   }
 #  endif
   
-  static void signalHandler(int signal) throw() {
+  static void signalHandler(int signal) noexcept
+  {
     switch (signal) {
     case SIGHUP: // hangup
       if (Thread::getThread()->isMainThread()) {
@@ -574,6 +579,9 @@ public:
       }
       break;
     case SIGQUIT: // quit signal from keyboard
+      if (FileDescriptor::getStandardError().isTerminal()) {
+        ferr << "Aborted by user" << ENDL;
+      }
       if (Thread::getThread()->isMainThread()) {
         SystemLogger::write(SystemLogger::INFORMATION, "Quit signal.");
         if (Application::application) {
@@ -638,7 +646,8 @@ public:
 
 
 
-void Application::initialize() throw() {
+void Application::initialize() throw()
+{
   static unsigned int singleton = 0;
   if (singleton != 0) {
     throw SingletonException("Application has been initialized", this);
@@ -868,7 +877,8 @@ bool Application::isHangingup() throw()
   return result;
 }
 
-void Application::onTermination() throw() {
+void Application::onTermination() throw()
+{
   exit(exitCode);
 }
 

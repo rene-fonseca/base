@@ -179,7 +179,8 @@ public:
       return *this;
     }
 
-    ~MyClass() {
+    ~MyClass()
+    {
       if ((id == triggerId) && (cause == "destroy")) {
         throw Exception("Throw on destroy.");
       }

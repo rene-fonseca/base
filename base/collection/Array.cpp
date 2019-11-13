@@ -113,7 +113,7 @@ public:
     }
     TEST_ASSERT(binarySearch(ai2.begin(), ai2.end(), -10) == ai2.begin());
     TEST_ASSERT(binarySearch(ai2.begin(), ai2.end(), 19) != ai2.end());
-    TEST_ASSERT(binarySearch(ai2.begin(), ai2.end(), 20) != ai2.end());
+    TEST_ASSERT(binarySearch(ai2.begin(), ai2.end(), 20) == ai2.end());
   }
 };
 

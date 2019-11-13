@@ -837,20 +837,22 @@ ITERATOR binarySearch(const ITERATOR& begin, const ITERATOR& end, const TYPE& fi
   }
   ITERATOR low = begin;
   ITERATOR high = end - 1; // last item // TAG: not desired for forward
-  while (!(low == high)) {
-    const ITERATOR n = low + (high - low)/2; // mid
-    if (compare(find, *n)) { // find < *n
+  while (true) {
+    const ITERATOR n = low + (high - low)/2; // mid - expensive for non-random iterator
+    if (compare(find, *n)) { // find < *n - assumed expensive check
+      if (n == low) { // assumed quick check
+        return end; // not found
+      }
       high = n - 1; // TAG: not desired for forward - we would need to cache from earlier distance iteration
-    } else if (compare(*n, find)) { // *n < find
+    } else if (compare(*n, find)) { // *n < find - assumed expensive check
+      if (n == high) { // assumed quick check
+        return end; // not found
+      }
       low = n + 1;
     } else {
       return n; // found
     }
   }
-  if (!compare(*low, find) && !compare(find, *low)) {
-    return low;
-  }
-  return end; // not found
 }
 
 /** Binary search. Uses operator< only. Assume value is equal when !(a<b) && !(b<a). */

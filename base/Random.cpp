@@ -23,7 +23,11 @@ namespace _impl {
   inline RandomInputStream& getRandomInputStream() noexcept
   {
     auto tls = Thread::getLocalContext();
-    return tls->randomInputStream; // nullptr not expected
+    if (tls) {
+      return tls->randomInputStream; // nullptr not expected
+    }
+    static RandomInputStream dummy;
+    return dummy;
   }
 }
 

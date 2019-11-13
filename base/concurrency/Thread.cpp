@@ -124,7 +124,7 @@ void Thread::exit() throw() {
 ThreadLocalContext* Thread::getLocalContext() noexcept
 {
   auto tlc = threadLocalContext.getKey();
-  BASSERT(tlc);
+  // BASSERT(tlc); // happens when system starts a new thread - e.g. Ctrl+C on Win32
   return tlc;
 }
 

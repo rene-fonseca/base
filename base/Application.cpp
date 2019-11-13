@@ -247,6 +247,15 @@ public:
   );
 #endif // disabled
   
+  class AbortException : public Exception {
+  public:
+
+    AbortException(const char* message)
+      : Exception(message)
+    {
+    }
+  };
+
   static BOOL WINAPI signalHandler(DWORD signal) noexcept
   {
     switch (signal) {
@@ -255,8 +264,24 @@ public:
     case CTRL_CLOSE_EVENT: // console is closing
     case CTRL_BREAK_EVENT: // Ctrl+Break
     case CTRL_C_EVENT: // Ctrl+C
-      if (FileDescriptor::getStandardError().isTerminal()) {
-        ferr << "Aborted by user" << ENDL;
+      static bool firstTime = true;
+      if (firstTime) {
+        firstTime = false;
+        if (FileDescriptor::getStandardError().isTerminal()) {
+          ferr << "Aborted by user." << ENDL;
+
+#if 0 // not useful for Win32
+          StackFrame stackTrace = StackFrame::getStack(0);
+          StackFrame::toStream(
+            ferr, stackTrace.getTrace(), stackTrace.getSize(),
+            StackFrame::FLAG_DEFAULT |
+            (FileDescriptor::getStandardError().isANSITerminal() ? StackFrame::FLAG_USE_COLORS : 0)
+          );
+          ferr << FLUSH;
+#endif
+
+          // throwit(AbortException("Aborted by user."));
+        }
       }
       SystemLogger::write(SystemLogger::INFORMATION, "Terminate signal.");
       if (Application::application) {
@@ -582,8 +607,12 @@ public:
       }
       break;
     case SIGQUIT: // quit signal from keyboard
-      if (FileDescriptor::getStandardError().isTerminal()) {
-        ferr << "Aborted by user" << ENDL;
+      static bool firstTime = true;
+      if (firstTime) {
+        firstTime = false;
+        if (FileDescriptor::getStandardError().isTerminal()) {
+          ferr << "Aborted by user." << ENDL;
+        }
       }
       if (Thread::getThread()->isMainThread()) {
         SystemLogger::write(SystemLogger::INFORMATION, "Quit signal.");

@@ -372,6 +372,7 @@ public:
         if (size > this->size) { // are have increased array size
           TYPE* dest = elements + this->size; // fill new elements
           const TYPE* end = dest + size;
+          const TYPE* end = elements + size;
           while (dest != end) {
             *dest = value;
             ++dest;

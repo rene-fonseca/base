@@ -857,7 +857,7 @@ ITERATOR binarySearch(const ITERATOR& begin, const ITERATOR& end, const TYPE& fi
 template<class ITERATOR, class TYPE>
 ITERATOR binarySearch(const ITERATOR& begin, const ITERATOR& end, const TYPE& find)
 {
-  return binarySearch(begin, end, find, std::less<>());
+  return binarySearch(begin, end, find, std::less<TYPE>());
 }
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

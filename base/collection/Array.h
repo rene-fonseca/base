@@ -479,7 +479,7 @@ public:
   void append(Value&& value)
   {
     const auto size = getSize();
-    setSize(size + 1);
+    setSize(size + 1); // requires default constructor
     getElements()[size] = std::move(value);
   }
 

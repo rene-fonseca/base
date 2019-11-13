@@ -105,6 +105,15 @@ public:
 
     auto al3 = al2.slice(3, 7);
     al3 = al2.slice(al2.begin() + 3, al2.begin() + 7);
+
+    Array<int> ai2;
+    TEST_ASSERT(binarySearch(ai2.begin(), ai2.end(), 123) == ai2.end());
+    for (auto i : range(-10, 20)) {
+      ai2.append(i);
+    }
+    TEST_ASSERT(binarySearch(ai2.begin(), ai2.end(), -10) == ai2.begin());
+    TEST_ASSERT(binarySearch(ai2.begin(), ai2.end(), 19) != ai2.end());
+    TEST_ASSERT(binarySearch(ai2.begin(), ai2.end(), 20) != ai2.end());
   }
 };
 

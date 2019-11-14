@@ -18,6 +18,20 @@
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
+/** Memory span. */
+template<class TYPE>
+class Span {
+public:
+
+  TYPE* buffer = nullptr;
+  MemorySize size = 0;
+
+  inline Span(TYPE* _buffer, MemorySize _size)
+    : buffer(_buffer), size(_size)
+  {
+  }
+};
+
 /**
   @defgroup memory Memory
 */
@@ -136,6 +150,11 @@ public:
   {
     HeapImpl::release(heap);
   }
+
+  /**
+    Called to register heap leaks.
+  */
+  static void onLeak(const Type* type, void* buffer, MemorySize size);
 };
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

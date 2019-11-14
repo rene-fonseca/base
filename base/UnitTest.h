@@ -345,6 +345,7 @@ public:
 
   enum Verbosity {
     SILENT,
+    FINAL,
     COMPACT,
     NORMAL,
     VERBOSE

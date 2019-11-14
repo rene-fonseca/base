@@ -381,7 +381,7 @@ Reference<UnitTest::Run> UnitTest::runImpl()
   r->failed += (pointsReach - pointsReached);
   r->failed += (pointsNotReach - pointsNotReached);
   
-  if ((manager.getVerbosity() > UnitTestManager::SILENT) && !manager.getProgressMode()) {
+  if ((manager.getVerbosity() > UnitTestManager::FINAL) && !manager.getProgressMode()) {
     if (UnitTestManager::getManager().getUseANSIColors()) {
       fout << setForeground(
         (r->failed || (pointsReached != pointsReach) || (pointsNotReached != pointsNotReach)) ? ANSIEscapeSequence::RED : ANSIEscapeSequence::GREEN
@@ -746,7 +746,7 @@ bool UnitTestManager::runTests(const String& pattern, bool runDevel)
     Timer timer;
 
     ++count;
-    if (!progressMode) {
+    if (!progressMode && (verbosity > FINAL)) {
       fout << "===============================================================================" << EOL;
       fout << "TEST " << presentId(test->getId())
            << " [" << count << "/" << tests.getSize() << "] (" << static_cast<int>(count * 1000.0 / tests.getSize()) / 10.0 << "%)" << ENDL;
@@ -841,25 +841,29 @@ bool UnitTestManager::runTests(const String& pattern, bool runDevel)
     fout << "                                                                               \r";
   }
   
-  fout << EOL << "===============================================================================" << EOL;
-  if (UnitTestManager::getManager().getUseANSIColors()) {
-    fout << setForeground((passed == count) ? ANSIEscapeSequence::GREEN : ANSIEscapeSequence::RED) << Format::subst("TOTAL PASSED: %1/%2", passed, count) << normal() << ENDL;
-  } else {
-    fout << Format::subst("TOTAL PASSED: %1/%2", passed, count) << ENDL;
-  }
-  fout << "TOTAL PROCESSING TIME: " << totalTimes.getTotal()/1000000.0 << " ms" << ENDL;
-
-  if (failedTests) {
-    fout << "FAILED TESTS: [";
-    bool first = true;
-    for (const auto& id : failedTests) {
-      if (!first) {
-        fout << "; ";
-      }
-      first = false;
-      fout << presentId(id);
+  if (verbosity > SILENT) {
+    if (verbosity > FINAL) {
+      fout << EOL << "===============================================================================" << EOL;
     }
-    fout << "]" << ENDL;
+    if (UnitTestManager::getManager().getUseANSIColors()) {
+      fout << setForeground((passed == count) ? ANSIEscapeSequence::GREEN : ANSIEscapeSequence::RED) << Format::subst("TOTAL PASSED: %1/%2", passed, count) << normal() << ENDL;
+    } else {
+      fout << Format::subst("TOTAL PASSED: %1/%2", passed, count) << ENDL;
+    }
+    fout << "TOTAL PROCESSING TIME: " << totalTimes.getTotal()/1000000.0 << " ms" << ENDL;
+
+    if (failedTests) {
+      fout << "FAILED TESTS: [";
+      bool first = true;
+      for (const auto& id : failedTests) {
+        if (!first) {
+          fout << "; ";
+        }
+        first = false;
+        fout << presentId(id);
+      }
+      fout << "]" << ENDL;
+    }
   }
 
   if (oldExceptionHandler) {

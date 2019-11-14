@@ -36,6 +36,8 @@ private:
   };
 
   enum Verbosity {
+    SILENT,
+    FINAL,
     COMPACT,
     NORMAL,
     VERBOSE
@@ -80,6 +82,10 @@ public:
         command = COMMAND_LIST;
       } else if (argument == "--run") {
         command = COMMAND_RUN;
+      } else if (argument == "--silent") {
+        verbosity = SILENT;
+      } else if (argument == "--final") {
+        verbosity = FINAL;
       } else if (argument == "--compact") {
         verbosity = COMPACT;
       } else if (argument == "--verbose") {
@@ -145,6 +151,8 @@ public:
       << EOL
       << "--list           List all tests." << EOL
       << "--run            Run tests." << EOL
+      << "--quiet          Quiet mode." << EOL
+      << "--final          Final mode." << EOL
       << "--compact        Compact mode." << EOL
       << "--verbose        Verbose mode." << EOL
       << "--progress       Progress mode." << EOL
@@ -257,6 +265,12 @@ public:
       auto& manager = UnitTestManager::getManager();
 
       switch (verbosity) {
+      case SILENT:
+        manager.setVerbosity(UnitTestManager::SILENT);
+        break;
+      case FINAL:
+        manager.setVerbosity(UnitTestManager::FINAL);
+        break;
       case COMPACT:
         manager.setVerbosity(UnitTestManager::COMPACT);
         break;

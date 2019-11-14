@@ -753,11 +753,13 @@ bool UnitTestManager::runTests(const String& pattern, bool runDevel)
       if (UnitTestManager::getManager().getUseANSIColors()) {
         fout << normal();
       }
-      if (!test->getSource().isEmpty()) {
-        fout << "  Source: " << test->getSource() << ENDL;
-      }
-      if (!test->getDescription().isEmpty()) {
-        fout << "  Description: " << test->getDescription() << ENDL;
+      if (verbosity > COMPACT) {
+        if (!test->getSource().isEmpty()) {
+          fout << "  Source: " << test->getSource() << ENDL;
+        }
+        if (!test->getDescription().isEmpty()) {
+          fout << "  Description: " << test->getDescription() << ENDL;
+        }
       }
     }
 

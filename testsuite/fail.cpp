@@ -92,6 +92,7 @@ public:
     try {
       throwOutOfRange();
     } catch (Exception&) {
+      fout << "RETHROW" << ENDL;
       throw;
     }
   }
@@ -131,6 +132,85 @@ public:
     }
   }
 
+  class TestExceptionBase {
+  public:
+    
+    TestExceptionBase() {
+      fout << this << " " << "TestExceptionBase()" << ENDL;
+    }
+
+    ~TestExceptionBase() {
+      fout << this << " " << "~TestExceptionBase(): " << (Exception::isUnwinding() ? "Unwind" : "Normal") << ENDL;
+    }
+  };
+
+  template<int ID>
+  class TestExceptionObject {
+  public:
+    
+    TestExceptionObject() {
+      fout << this << " " << "TestExceptionObject(): " << ID << ENDL;
+    }
+
+    ~TestExceptionObject() {
+      fout << this << " " << "~TestExceptionObject(): " << ID << " " << (Exception::isUnwinding() ? "Unwind" : "Normal")<< ENDL;
+    }
+  };
+
+  class TestExceptionThrow : public TestExceptionBase {
+  public:
+    
+    TestExceptionObject<1> o1;
+    
+    TestExceptionThrow()
+    {
+      fout << this << " " << "TestExceptionThrow()" << ENDL;
+      TestExceptionObject<2> o2;
+      throw Exception("Constructor exception.");
+    }
+
+    ~TestExceptionThrow()
+    {
+      fout << this << " " << "~TestExceptionThrow(): " << (Exception::isUnwinding() ? "Unwind" : "Normal") << ENDL;
+    }
+  };
+
+  class TestExceptionDestructThrow : public TestExceptionBase {
+  public:
+    
+    TestExceptionObject<1> o1;
+    
+    TestExceptionDestructThrow()
+    {
+      fout << this << " " << "TestExceptionDestructThrow()" << ENDL;
+    }
+
+    ~TestExceptionDestructThrow() noexcept(false)
+    {
+      fout << this << " " << "~TestExceptionDestructThrow(): " << (Exception::isUnwinding() ? "Unwind" : "Normal") << ENDL;
+      TestExceptionObject<2> o2;
+      throw Exception("Destructor exception.");
+    }
+  };
+  
+  class TestExceptionDestructThrow2 : public TestExceptionBase {
+  public:
+    
+    TestExceptionDestructThrow o1;
+    
+    TestExceptionDestructThrow2()
+    {
+      fout << this << " " << "TestExceptionDestructThrow2()" << ENDL;
+    }
+
+    ~TestExceptionDestructThrow2() noexcept(false)
+    {
+      fout << this << " " << "~TestExceptionDestructThrow2(): " << (Exception::isUnwinding() ? "Unwind" : "Normal") << ENDL;
+      throw Exception("Destructor exception.");
+    }
+  };
+  
+  
   class MyClass {
   private:
 
@@ -236,6 +316,20 @@ public:
       resizeArray("copyassign");
     } else if (command == "resizemoveassign") {
       resizeArray("moveassign");
+    } else if (command == "construct") {
+      TestExceptionThrow t1;
+    } else if (command == "destruct") {
+      try {
+        TestExceptionDestructThrow t1;
+      } catch (...) {
+        fout << "CATCH" << ENDL;
+      }
+    } else if (command == "destruct2") {
+      try {
+        TestExceptionDestructThrow2 t1;
+      } catch (...) {
+        fout << "CATCH" << ENDL;
+      }
     } else {
       setExitCode(123);
     }

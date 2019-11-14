@@ -331,13 +331,19 @@ public:
   Allocator& operator=(const Allocator& copy)
   {
     if (&copy != this) { // protect against self assignment
-      // we do NOT use clear() since we need to reuse heap
-      auto original = detach();
-      Leaky<TYPE> leaky(original);
-      destroy(original.buffer, original.buffer + original.size); // can throw
-      auto buffer = resize(original.buffer, copy.size, original.size);
-      initializeByCopy(buffer, copy.elements, copy.size); // initialization of elements by copying
-      attach(buffer, copy.size);
+      if (copy.size == 0) {
+        clear();
+      } else {
+        // we do NOT use clear() since we need to reuse heap
+        auto original = detach();
+        Leaky<TYPE> leaky(original);
+        if (original) {
+          destroy(original.buffer, original.buffer + original.size); // can throw
+        }
+        auto buffer = resize(original.buffer, copy.size, original.size);
+        initializeByCopy(buffer, copy.elements, copy.size); // initialization of elements by copying
+        attach(buffer, copy.size);
+      }
     }
     return *this;
   }
@@ -476,6 +482,7 @@ public:
         if (size < original.size) { // are we about to reduce the array
           destroy(original.buffer + size, original.buffer + original.size); // we cannot recover if this throws
           auto elements = resize(original.buffer, size, original.size);
+          BASSERT(!elements || (elements == original.buffer)); // reallocation NOT allowed - we still have objects initialized
           attach(elements, size);
         } else { // array is to be expanded
           if (temp != original.buffer) { // not if inplace resized

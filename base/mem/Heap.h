@@ -90,13 +90,13 @@ protected:
 
   /**
     Resizes the specified memory block. Raises MemoryException if unable
-    allocate memory block.
+    allocate memory block. Memory block may be moved when memory is made smaller.
 
     @param heap The memory block.
     @param size The desired size of the memory block in number of bytes.
   */
   static void* resize(void* heap, MemorySize size) throw(MemoryException);
-
+  
   /**
     Tries to resize the specified memory block without movement. Raises
     MemoryException on allocation failure.
@@ -150,6 +150,16 @@ public:
   inline static TYPE* resize(TYPE* heap, MemorySize size) throw(MemoryException)
   {
     return static_cast<TYPE*>(HeapImpl::resize(heap, size * sizeof(TYPE)));
+  }
+
+  /** Returns true if inplace reallocation is supported. */
+  static bool canResizeInplace() noexcept
+  {
+  #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
+    return true;
+  #else
+    return false;
+  #endif
   }
 
   /**

@@ -114,6 +114,10 @@ protected:
     return result;
   }
 
+  inline bool canResizeInplace() const {
+    return Heap::canResizeInplace();
+  }
+  
   inline TYPE* tryResize(TYPE* buffer, MemorySize newSize, MemorySize originalSize) noexcept
   {
     // buffer can be nullptr
@@ -125,7 +129,6 @@ protected:
       fill(buffer + newSize, originalSize - newSize, RELEASE_MEMORY); // memory may not be released though
     }
     auto result = Heap::tryResize<TYPE>(buffer, newSize); // wont throw - elements pointer still good!
-    BASSERT((originalSize > newSize) ? static_cast<bool>(result) : true);
     BASSERT(!result || (result == buffer));
     if (result) {
       if (originalSize < newSize) {
@@ -468,22 +471,45 @@ public:
         }
         this->size = size;
       } else { // non-primitive case
-        TYPE* temp = nullptr;
+        TYPE* temp = nullptr; // new buffer
         if (size > this->size) { // extend array
           temp = tryResize(elements, size, this->size); // wont throw - elements pointer still good!
           BASSERT(!temp || (temp == elements));
           if (!temp) {
             temp = allocate(size); // new array - ok if this throws here
           }
+        } else if (!canResizeInplace() && (size > 0)) {
+          temp = allocate(size); // new array - ok if this throws here
         }
+        
         auto original = detach();
         Leaky<TYPE> leaky(original); // TAG: can we add callback to notify parent class to e.g. update cached size
 
         if (size < original.size) { // are we about to reduce the array
-          destroy(original.buffer + size, original.buffer + original.size); // we cannot recover if this throws
-          auto elements = resize(original.buffer, size, original.size);
-          BASSERT(!elements || (elements == original.buffer)); // reallocation NOT allowed - we still have objects initialized
-          attach(elements, size);
+          bool reduced = false;
+          if (!temp) { // try inplace resize
+            reduced = true;
+            destroy(original.buffer + size, original.buffer + original.size); // we cannot recover if this throws
+            temp = tryResize(original.buffer, size, original.size); // wont throw
+            BASSERT(!temp || (temp == original.buffer)); // reallocation NOT allowed - we still have objects initialized
+            if (temp) {
+              attach(temp, size);
+              return;
+            }
+          }
+          if (!temp && (size > 0)) {
+            try {
+              temp = allocate(size); // new array
+            } catch (...) {
+              attach(original); // not modified
+              leaky.clear();
+              throw;
+            }
+          }
+          initializeByMove(temp, original.buffer, original.buffer + size); // we still need to destroy
+          attach(temp, size);
+          destroy(original.buffer, original.buffer + (reduced ? size : original.size)); // we cannot recover if this throws - we leak original buffer
+          release(original.buffer, original.size); // free previous array
         } else { // array is to be expanded
           if (temp != original.buffer) { // not if inplace resized
             initializeByMove(temp, original.buffer, original.buffer + original.size); // we still need to destroy

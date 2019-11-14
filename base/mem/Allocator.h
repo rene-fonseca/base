@@ -31,11 +31,6 @@ _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
   @version 1.2
 */
 
-// TAG: template<class TYPE, bool CLEAR_MEMORY = false> class Allocator;
-// class SecurityAllocator : Allocator<TYPE, true>;
-// class DefaultAllocator : Allocator<TYPE, false>;
-// TAG: easier to make bool option
-
 template<class TYPE>
 class Allocator {
 public:
@@ -45,6 +40,7 @@ public:
 #else
   static constexpr bool clearMemory = false; // memory clear should be handled in destructor since object can be new'ed - but for primitives it makes sense to have option
 #endif
+  static constexpr bool useSafeDestroy = false;
 private:
 
   /** The allocated memory block. */
@@ -205,25 +201,6 @@ public:
 
   /**
     Destroys the elements of the sequence. Does nothing for uninitializeable objects.
-  */
-  static void destroy(TYPE* begin, const TYPE* _end)
-  {
-    BASSERT(begin <= _end);
-    if (!Uninitializeable<TYPE>::IS_UNINITIALIZEABLE) {
-      TYPE* end = (_end - begin) + begin;
-      while (begin != end) { // we destroy from the end
-        --end;
-        end->~TYPE(); // this can throw
-        // we cannot recover since object throwing is now in bad state - ie. partially destructed
-        fill(end, 1, DESTROY_OBJECT);
-      }
-    } else {
-      fill(begin, _end - begin, DESTROY_OBJECT);
-    }
-  }
-
-  /**
-    Destroys the elements of the sequence. Does nothing for uninitializeable objects.
 
     @return Returns the number of failed destroys.
   */
@@ -247,6 +224,31 @@ public:
     }
     return failed;
   }
+
+  /**
+    Destroys the elements of the sequence. Does nothing for uninitializeable objects.
+  */
+  static void destroy(TYPE* begin, const TYPE* _end)
+  {
+    if (useSafeDestroy) {
+      auto failed = destroyAll(begin, _end); // TAG: needs testing - MSC behavior unknown
+      return;
+    }
+
+    BASSERT(begin <= _end);
+    if (!Uninitializeable<TYPE>::IS_UNINITIALIZEABLE) {
+      TYPE* end = (_end - begin) + begin;
+      while (begin != end) { // we destroy from the end
+        --end;
+        end->~TYPE(); // this can throw
+        // we cannot recover since object throwing is now in bad state - ie. partially destructed
+        fill(end, 1, DESTROY_OBJECT);
+      }
+    } else {
+      fill(begin, _end - begin, DESTROY_OBJECT);
+    }
+  }
+
 
   /**
     Initializes the elements of the sequence by moving elements from other sequence. Arrays must not overlap.
@@ -522,10 +524,11 @@ public:
   void clear()
   {
     auto original = detach();
-    Leaky<TYPE> leaky(original);
-    destroy(original.buffer, original.buffer + original.size); // we cannot recover from throw
-    // TAG: use destroyAll?
-    release(original.buffer, original.size); // could throw - but would indicate heap corruption
+    if (original) {
+      Leaky<TYPE> leaky(original);
+      destroy(original.buffer, original.buffer + original.size); // we cannot recover from throw
+      release(original.buffer, original.size); // could throw - but would indicate heap corruption
+    }
   }
   
   ~Allocator()

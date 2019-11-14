@@ -128,7 +128,7 @@ void Heap::onLeak(const Type* type, void* buffer, MemorySize size)
   if (type) {
     // TAG: count types separately
   }
-  BASSERT(!"Leaked memory detected.");
+  // BASSERT(!"Leaked memory detected.");
 }
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

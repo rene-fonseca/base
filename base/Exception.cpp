@@ -149,26 +149,6 @@ Exception::ExceptionHandler Exception::exceptionHandler = &defaultExceptionHandl
 Exception::ExceptionHandler Exception::exceptionHandler = nullptr;
 #endif
 
-#if 0
-template<class TYPE>
-class Span {
-public:
-
-  const TYPE* begin = nullptr;
-  const TYPE* end = nullptr;
-
-  inline bool empty() const noexcept
-  {
-    return end == begin;
-  }
-
-  inline MemoryDiff size() const noexcept
-  {
-    return end - begin;
-  }
-};
-#endif
-
 Exception::StackTrace Exception::getStackTrace()
 {
   // TAG: can we clear trace at after exception is caught

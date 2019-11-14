@@ -29,6 +29,37 @@ public:
   inline Span(TYPE* _buffer, MemorySize _size)
     : buffer(_buffer), size(_size)
   {
+    BASSERT((!buffer && !size) || (buffer && size));
+  }
+
+  inline TYPE* begin() noexcept
+  {
+    return buffer;
+  }
+
+  inline TYPE* end() noexcept
+  {
+    return buffer + size;
+  }
+
+  inline const TYPE* cbegin() const noexcept
+  {
+    return buffer;
+  }
+
+  inline const TYPE* cend() const noexcept
+  {
+    return buffer + size;
+  }
+
+  inline MemorySize getSize() const noexcept
+  {
+    return size;
+  }
+
+  inline operator bool() const noexcept
+  {
+    return buffer;
   }
 };
 

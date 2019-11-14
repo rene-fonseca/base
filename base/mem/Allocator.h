@@ -21,6 +21,47 @@
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
+/** Helper class for detecting leaks when these cannot be avoided. */
+template<class TYPE>
+class Leaky {
+private:
+  
+  TYPE* buffer = nullptr;
+  MemorySize size = 0;
+public:
+
+  inline Leaky() noexcept
+  {
+  }
+  
+  inline Leaky(TYPE* object) noexcept
+    : buffer(object), size(1)
+  {
+  }
+  
+  inline Leaky(TYPE* _buffer, MemorySize _size) noexcept
+    : buffer(_buffer), size(_size)
+  {
+  }
+  
+  inline void clear()
+  {
+    buffer = nullptr;
+    size = 0;
+  }
+  
+  inline ~Leaky()
+  {
+    if (buffer) {
+      if (Exception::isUnwinding()) {
+        // Heap::onLeak(Type::getType<TYPE>(), buffer, size * sizeof(TYPE));
+        // TAG: print warning - error if leaks are not allowed
+        // TAG: show stats on app exit
+      }
+    }
+  }
+};
+
 /**
   Allocator of resizeable memory block. The implementation is not MT-safe.
 
@@ -55,8 +96,7 @@ public:
     BASSERT(dest <= end);
     if (!Uninitializeable<TYPE>::IS_UNINITIALIZEABLE) {
       while (dest != end) {
-        new(dest) TYPE(); // inplace initialization
-        ++dest;
+        new(dest++) TYPE(); // inplace default initialization
       }
     }
   }
@@ -70,13 +110,11 @@ public:
     BASSERT(dest <= end);
     if (Uninitializeable<TYPE>::IS_UNINITIALIZEABLE) {
       while (dest != end) {
-        *dest = value;
-        ++dest;
+        *dest++ = value;
       }
     } else {
       while (dest != end) {
-        new(dest) TYPE(value); // inplace initialization
-        ++dest;
+        new(dest++) TYPE(value); // inplace initialization by copy construction
       }
     }
   }
@@ -92,37 +130,7 @@ public:
     } else {
       const TYPE* end = dest + count;
       while (dest != end) {
-        new(dest) TYPE(*src); // copy object
-        ++dest;
-        ++src;
-      }
-    }
-  }
-
-  /**
-    Initializes the elements of the sequence by moving elements from other sequence. Arrays must not overlap.
-  */
-  static void initializeByMove(TYPE* dest, TYPE* src, const TYPE* end)
-  {
-    BASSERT(src <= end);
-    if (!Uninitializeable<TYPE>::IS_UNINITIALIZEABLE && !Relocateable<TYPE>::IS_RELOCATEABLE) {
-      while (src != end) {
-        new(dest) TYPE(*src); // copy object
-        src->~TYPE(); // destroy old object
-#if defined(_COM_AZURE_DEV__BASE__ANY_DEBUG)
-        fill<uint8>(reinterpret_cast<uint8*>(src), sizeof(TYPE), 0xaa);
-#endif
-        ++dest;
-        ++src;
-      }
-    } else {
-      while (src != end) {
-        *dest = *src;
-#if defined(_COM_AZURE_DEV__BASE__ANY_DEBUG)
-        fill<uint8>(reinterpret_cast<uint8*>(src), sizeof(TYPE), 0xaa);
-#endif
-        ++dest;
-        ++src;
+        new(dest++) TYPE(*src++); // copy object
       }
     }
   }
@@ -130,20 +138,61 @@ public:
   /**
     Destroys the elements of the sequence. Does nothing for uninitializeable objects.
   */
-  static void destroy(TYPE* dest, const TYPE* end)
+  static void destroy(TYPE* begin, const TYPE* _end)
   {
-    BASSERT(dest <= end);
+    BASSERT(begin <= _end);
     if (!Uninitializeable<TYPE>::IS_UNINITIALIZEABLE) {
-      while (dest != end) {
-        dest->~TYPE();
-#if defined(_COM_AZURE_DEV__BASE__ANY_DEBUG)
-        fill<uint8>(reinterpret_cast<uint8*>(dest), sizeof(TYPE), 0xaa);
-#endif
-        ++dest;
+      TYPE* end = (_end - begin) + begin;
+      while (begin != end) { // we destroy from the end
+        --end;
+        end->~TYPE(); // this can throw
+        // we cannot recover since object throwing is now in bad state - ie. partially destructed
+  #if defined(_COM_AZURE_DEV__BASE__ANY_DEBUG)
+        fill<uint8>(reinterpret_cast<uint8*>(end), sizeof(TYPE), 0xaa);
+  #endif
       }
     }
   }
-  
+
+  /**
+    Initializes the elements of the sequence by moving elements from other sequence. Arrays must not overlap.
+  */
+  static void initializeByMove(TYPE* dest, TYPE* src, const TYPE* end, bool& moved)
+  {
+    BASSERT(src <= end);
+    if (!Uninitializeable<TYPE>::IS_UNINITIALIZEABLE && !Relocateable<TYPE>::IS_RELOCATEABLE) {
+      // we move all first
+      const TYPE* moving = src;
+      while (moving != end) {
+        new(dest++) TYPE(std::move(*moving++)); // move objects - less likely to throw than destroy but we really dont know
+      }
+      moved = true; // from here we can recover to some degree by leaking src
+      // we cannot release heap since object can have indirect self references
+      destroy(src, end); // now we destroy all
+    } else { // just copy memory
+      while (src != end) {
+        *dest = *src; // must not throw
+#if defined(_COM_AZURE_DEV__BASE__ANY_DEBUG)
+        fill<uint8>(reinterpret_cast<uint8*>(src), sizeof(TYPE), 0xaa);
+#endif
+        ++dest;
+        ++src;
+      }
+      moved = true;
+    }
+  }
+
+  static void initializeByMove(TYPE* dest, TYPE* src, const TYPE* end)
+  {
+    BASSERT(src <= end);
+    if (INLINE_ASSERT(!Uninitializeable<TYPE>::IS_UNINITIALIZEABLE && !Relocateable<TYPE>::IS_RELOCATEABLE)) {
+      const TYPE* moving = src;
+      while (moving != end) {
+        new(dest++) TYPE(std::move(*moving++)); // move objects - less likely to throw than destroy but we really dont know
+      }
+    }
+  }
+
 //  /**
 //    Enumeration of all the elements of an Allocator.
 //  */
@@ -193,7 +242,7 @@ public:
 
     @param size Specifies the initial size of the allocator.
   */
-  explicit Allocator(MemorySize _size) throw(MemoryException)
+  explicit Allocator(MemorySize _size)
     : elements(Heap::allocate<TYPE>(_size)), size(_size)
   {
     initialize(elements, elements + size); // default initialization of elements
@@ -202,14 +251,14 @@ public:
   /**
     Initializes allocator from other allocator.
   */
-  Allocator(const Allocator& copy) throw(MemoryException)
+  Allocator(const Allocator& copy)
     : elements(Heap::allocate<TYPE>(copy.size)), size(copy.size)
   {
     // initialization of elements by copying
     initializeByCopy(elements, copy.elements, size);
   }
 
-  Allocator(Allocator&& move)
+  Allocator(Allocator&& move) noexcept
     : elements(std::move(move.elements)), size(move.size)
   {
     move.elements = nullptr;
@@ -219,18 +268,23 @@ public:
   /**
     Assignment of allocator by allocator.
   */
-  Allocator& operator=(const Allocator& copy) throw(MemoryException)
+  Allocator& operator=(const Allocator& copy)
   {
     if (&copy != this) { // protect against self assignment
-      destroy(elements, elements + size);
+      auto original = elements;
+      auto originalSize = size;
+      elements = nullptr;
+      size = 0;
+      destroy(original, original + originalSize); // can throw
+      original = Heap::resize(original, copy.size);
+      initializeByCopy(original, copy.elements, copy.size); // initialization of elements by copying
+      elements = original;
       size = copy.size;
-      elements = Heap::resize(elements, size);
-      initializeByCopy(elements, copy.elements, size); // initialization of elements by copying
     }
     return *this;
   }
 
-  Allocator& operator=(Allocator&& move) throw(MemoryException)
+  Allocator& operator=(Allocator&& move) noexcept
   {
     if (&move != this) { // protect against self assignment
       elements = std::move(move.elements);
@@ -328,6 +382,75 @@ public:
   {
     return size == 0;
   }
+  
+  /**
+    Sets the number of elements of the allocator. If the size is increased the
+    original elements are not modified and the newly allocated elements are not
+    initialized. Raises MemoryException if unable to allocate additional
+    memory (does not throw an exception when the size is decreased or
+    unchanged). If the size is reduced the elements up to the new size are
+    unchanged.
+
+    @param size The desired size.
+  */
+  void setSizeImpl(MemorySize size, const TYPE* value)
+  {
+    if (size != this->size) {
+      if (Uninitializeable<TYPE>::IS_UNINITIALIZEABLE) {
+        // no need to destroy or initialize elements
+        elements = Heap::resize(elements, size); // ok if this throws
+        if (value) { // fill new elements
+          if (size > this->size) { // we are increased array size
+            fill(elements + this->size, size - this->size, *value);
+          }
+        }
+        this->size = size;
+      } else { // non-primitive case
+        TYPE* original = elements;
+        const MemorySize originalSize = this->size;
+        TYPE* temp = nullptr;
+        if (size > originalSize) {
+          temp = Heap::tryResize<TYPE>(original, size); // wont throw
+          // TAG: get stats vs fails
+          if (!temp) {
+            temp = Heap::allocate<TYPE>(size); // new array - ok if this throws here
+          }
+        }
+        elements = nullptr; // prevent use of data on exception
+        this->size = 0;
+        Leaky<TYPE> leaky(original, originalSize);
+
+        if (size < originalSize) { // are we about to reduce the array
+          destroy(original + size, original + originalSize); // we cannot recover if this throws
+          elements = Heap::resize(original, size);
+          BASSERT(elements == original); // reallocation is not allowed
+          this->size = size;
+          leaky.clear();
+        } else { // array is to be expanded
+          if (temp != original) { // not if inplace resized
+            initializeByMove(temp, original, original + originalSize); // we still need to destroy
+          }
+          
+          // if construction fails we cannot recover - we can set size to the last valid element and continue
+          if (value) {
+            initialize(temp + originalSize, temp + size, *value); // copy construction
+          } else {
+            initialize(temp + originalSize, temp + size); // default initialization of new objects
+          }
+          // see "fail construct" example - can we just set size of the successful initialized?
+          elements = temp; // now we are free to use elements again
+          this->size = size;
+          leaky.clear();
+
+          if (temp != original) { // not if inplace resized
+            // TAG: add example for destruct throw in fail also
+            destroy(original, original + originalSize); // we cannot recover if this throws - we leak original buffer
+            Heap::release(original); // free previous array
+          }
+        }
+      }
+    }
+  }
 
   /**
     Sets the number of elements of the allocator. If the size is increased the
@@ -339,65 +462,31 @@ public:
 
     @param size The desired size.
   */
-  void setSize(MemorySize size)
+  inline void setSize(MemorySize size)
   {
-    if (size != this->size) {
-      if (Uninitializeable<TYPE>::IS_UNINITIALIZEABLE) {
-        // no need to destroy or initialize elements
-        elements = Heap::resize(elements, size);
-      } else {
-        if (size < this->size) { // are we about to reduce the array
-          destroy(elements + size, elements + this->size);
-          elements = Heap::resize(elements, size);
-        } else { // array is to be expanded
-          TYPE* temp = Heap::allocate<TYPE>(size); // new array
-          initializeByMove(temp, elements, elements + this->size);
-          Heap::release(elements); // free previous array
-          // default initialization of new objects
-          initialize(temp + this->size, temp + size); // state of object is bad on exception so we cannot recover
-          elements = temp;
-        }
-      }
-      this->size = size;
-    }
+    setSizeImpl(size, nullptr);
   }
-
+  
   /** Same as setSize() but fills new elements with the given value instead of using default initialization. */
-  void setSize(MemorySize size, const TYPE& value)
+  inline void setSize(MemorySize size, const TYPE& value)
   {
-    if (size != this->size) {
-      if (Uninitializeable<TYPE>::IS_UNINITIALIZEABLE) {
-        // no need to destroy or initialize elements
-        elements = Heap::resize(elements, size); // new array - ok if this throws
-        if (size > this->size) { // are have increased array size
-          TYPE* dest = elements + this->size; // fill new elements
-          const TYPE* end = elements + size;
-          while (dest != end) {
-            *dest = value;
-            ++dest;
-          }
-        }
-      } else {
-        if (size < this->size) { // are we about to reduce the array
-          destroy(elements + size, elements + this->size);
-          elements = Heap::resize(elements, size);
-        } else { // array is to be expanded
-          TYPE* temp = Heap::allocate<TYPE>(size); // new array
-          initializeByMove(temp, elements, elements + this->size);
-          Heap::release(elements); // free previous array
-          elements = temp;
-          // initialization of new objects by value
-          initialize(elements + this->size, elements + size, value);
-        }
-      }
-      this->size = size;
-    }
+    setSizeImpl(size, &value);
   }
 
+  void clear()
+  {
+    auto original = elements;
+    auto originalSize = size;
+    elements = nullptr;
+    size = 0;
+
+    destroy(original, original + originalSize); // we cannot recover
+    Heap::release(original); // could throw
+  }
+  
   ~Allocator()
   {
-    destroy(elements, elements + size);
-    Heap::release(elements);
+    clear();
   }
 };
 

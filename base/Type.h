@@ -51,6 +51,17 @@ private:
     }
   };
   
+  template<>
+  class GetType<void*> { // prevent pointer types
+  public:
+
+    typedef typename void BaseType; // throw away pointer and resolve recursively
+
+    inline Type operator()(const void* const object) const throw() {
+      return Type();
+    }
+  };
+
   template<class TYPE>
   class GetType<TYPE*> { // prevent pointer types
   public:

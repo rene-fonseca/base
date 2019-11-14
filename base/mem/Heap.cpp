@@ -38,12 +38,12 @@ void* HeapImpl::allocate(MemorySize size) throw(MemoryException)
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   result = static_cast<void*>(::HeapAlloc(internal::specific::processHeap, 0, size));
   if ((!result) && (size != 0)) { // was memory allocated
-    throw bindCause(MemoryException("Unable to allocate heap", Type::getType<HeapImpl>()), ::GetLastError());
+    throw bindCause(MemoryException("Unable to allocate heap.", Type::getType<HeapImpl>()), ::GetLastError());
   }
 #else // unix
   result = ::malloc(size);
   if ((!result) && (size != 0)) { // was memory allocated
-    throw MemoryException("Unable to allocate heap", Type::getType<HeapImpl>());
+    throw MemoryException("Unable to allocate heap.", Type::getType<HeapImpl>());
   }
 #endif // flavor
   return result;
@@ -60,7 +60,7 @@ void* HeapImpl::resize(void* heap, MemorySize size) throw(MemoryException)
       result = static_cast<void*>(::HeapReAlloc(internal::specific::processHeap, 0, heap, size));
     } else {
       if (!::HeapFree(internal::specific::processHeap, 0, heap)) {
-        throw bindCause(MemoryException("Unable to resize heap", Type::getType<HeapImpl>()), ::GetLastError());
+        throw bindCause(MemoryException("Unable to resize heap.", Type::getType<HeapImpl>()), ::GetLastError());
       }
       result = nullptr;
     }
@@ -68,12 +68,12 @@ void* HeapImpl::resize(void* heap, MemorySize size) throw(MemoryException)
     result = static_cast<void*>(::HeapAlloc(internal::specific::processHeap, 0, size));
   }
   if ((!result) && (size != 0)) { // was memory allocated
-    throw bindCause(MemoryException("Unable to resize heap", Type::getType<HeapImpl>()), ::GetLastError());
+    throw bindCause(MemoryException("Unable to resize heap.", Type::getType<HeapImpl>()), ::GetLastError());
   }
 #else // unix
   result = realloc(heap, size);
   if ((!result) && (size != 0)) { // was memory allocated
-    throw MemoryException("Unable to resize heap", Type::getType<HeapImpl>());
+    throw MemoryException("Unable to resize heap.", Type::getType<HeapImpl>());
   }
 #endif // flavor
   return result;

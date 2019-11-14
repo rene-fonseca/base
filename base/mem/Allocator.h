@@ -129,7 +129,7 @@ protected:
       fill(buffer + newSize, originalSize - newSize, RELEASE_MEMORY); // memory may not be released though
     }
     auto result = Heap::tryResize<TYPE>(buffer, newSize); // wont throw - elements pointer still good!
-    BASSERT((originalSize > newSize) ? result : true);
+    BASSERT((originalSize > newSize) ? static_cast<bool>(result) : true);
     BASSERT(!result || (result == buffer));
     if (result) {
       if (originalSize < newSize) {

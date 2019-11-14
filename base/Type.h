@@ -51,6 +51,7 @@ private:
     }
   };
   
+#if 0
   template<>
   class GetType<void*> { // prevent pointer types
   public:
@@ -61,6 +62,7 @@ private:
       return Type();
     }
   };
+#endif
 
   template<class TYPE>
   class GetType<TYPE*> { // prevent pointer types

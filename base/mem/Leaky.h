@@ -55,8 +55,8 @@ public:
   {
     if (buffer && (size > 0)) {
       if (Exception::isUnwinding()) {
-        auto type = Type::getType<TYPE*>();
-        Heap::onLeak(&type, buffer, size * sizeof(TYPE));
+        // auto type = Type::getType<TYPE*>();
+        Heap::onLeak(nullptr /*&type*/, buffer, size * sizeof(TYPE));
       }
     }
   }

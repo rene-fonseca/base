@@ -31,7 +31,7 @@ namespace internal {
 };
 #endif // flavor
 
-void* HeapImpl::allocate(unsigned int size) throw(MemoryException)
+void* HeapImpl::allocate(MemorySize size) throw(MemoryException)
 {
   void* result = nullptr;
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
@@ -48,7 +48,7 @@ void* HeapImpl::allocate(unsigned int size) throw(MemoryException)
   return result;
 }
 
-void* HeapImpl::resize(void* heap, unsigned int size) throw(MemoryException)
+void* HeapImpl::resize(void* heap, MemorySize size) throw(MemoryException)
 {
   void* result = nullptr;
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
@@ -77,7 +77,7 @@ void* HeapImpl::resize(void* heap, unsigned int size) throw(MemoryException)
   return result;
 }
 
-void* HeapImpl::tryResize(void* heap, unsigned int size) throw(MemoryException)
+void* HeapImpl::tryResize(void* heap, MemorySize size) throw(MemoryException)
 {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   if (heap) {

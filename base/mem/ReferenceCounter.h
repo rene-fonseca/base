@@ -360,10 +360,7 @@ public:
 };
 
 template<class TYPE>
-class Relocateable<ReferenceCounter<TYPE> > {
-public:
-
-  static const bool IS_RELOCATEABLE = Relocateable<void*>::IS_RELOCATEABLE;
+class IsRelocateable<ReferenceCounter<TYPE> > : public IsRelocateable<TYPE*> {
 };
 
 template<class TYPE>

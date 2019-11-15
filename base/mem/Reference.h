@@ -51,6 +51,8 @@ private:
   TYPE* value = nullptr;
 public:
 
+  // we need to ignore if type is forward declared static_assert(std::is_base_of<ReferenceCountedObject, TYPE>(), "Reference must be used with ReferenceCountedObject.");
+
   /**
     Initializes an automation pointer as invalid (i.e. nullptr).
   */
@@ -382,11 +384,10 @@ inline void swapper(Reference<TYPE>& a, Reference<TYPE>& b)
 typedef Reference<ReferenceCountedObject> AnyReference;
 
 template<class TYPE>
-class Relocateable<Reference<TYPE> > {
-public:
-
-  static const bool IS_RELOCATEABLE = Relocateable<void*>::IS_RELOCATEABLE;
+class IsRelocateable<Reference<TYPE> > : public IsRelocateable<TYPE*> {
 };
+
+// static_assert(IsRelocateable<Reference<ReferenceCountedObject> >());
 
 template<class TYPE>
 class Hash<Reference<TYPE> > {

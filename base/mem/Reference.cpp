@@ -23,8 +23,6 @@
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
-template class Reference<ReferenceCountedObject>;
-
 #if defined(_COM_AZURE_DEV__BASE__TESTS)
 
 class MyObject;
@@ -99,6 +97,8 @@ public:
 
     Reference<MyOtherObject> nr;
 #endif
+
+    TEST_ASSERT(IsRelocateable<Reference<ReferenceCountedObject> >());
 
     Reference<MyOtherObject> myOtherObject = new MyOtherObject();
     // myOtherObject = myOtherObject; // self assignment

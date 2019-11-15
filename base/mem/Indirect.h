@@ -278,10 +278,7 @@ class Indirect<TYPE*> {
 };
 
 template<class TYPE>
-class Relocateable<Indirect<TYPE> > {
-public:
-
-  static const bool IS_RELOCATEABLE = Relocateable<TYPE*>::IS_RELOCATEABLE;
+class IsRelocateable<Indirect<TYPE> > : public IsRelocateable<TYPE*> {
 };
 
 template<class TYPE>

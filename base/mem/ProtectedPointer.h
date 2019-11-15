@@ -121,10 +121,7 @@ public:
 };
 
 template<class TYPE>
-class Relocateable<ProtectedPointer<TYPE> > {
-public:
-
-  static const bool IS_RELOCATEABLE = Relocateable<void*>::IS_RELOCATEABLE;
+class IsRelocateable<ProtectedPointer<TYPE> > : public IsRelocateable<TYPE*> {
 };
 
 template<class TYPE>

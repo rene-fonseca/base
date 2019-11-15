@@ -2024,6 +2024,147 @@ String operator<<(FormatOutputStream& stream, const GetString& getString)
   return stream.toString();
 }
 
+template<typename TYPE>
+class CheckType {
+public:
+
+  template<typename POLY>
+  static void _checkType(decltype(&POLY::operator String)) {
+    decltype(&POLY::operator String) p = &POLY::operator String;
+    fout << "Got match!" << ENDL;
+  }
+
+  template<typename POLY>
+  static void _checkType(...) {
+    fout << "No match!" << ENDL;
+  }
+
+  static void checkType() {
+    //decltype(&TYPE::operator String) p = &TYPE::operator String;
+    ;
+    typedef String (TYPE::*CastMember)() const;
+    CastMember member = nullptr;
+    _checkType<TYPE>(member);
+  }
+};
+
+
+
+/** Check if TYPE has operator String() const member. https://en.cppreference.com/w/cpp/language/sfinae check. */
+template<typename TYPE>
+class HasStringCast {
+private:
+
+  /** Member type we are looking for. */
+  typedef String (TYPE::* Member)() const; // we only want const member - and String by value - we dont want static either
+
+  typedef bool Yes;
+  typedef void No;
+  static_assert(!std::is_same<Yes, No>(), "Type error.");
+  static_assert(IsComplete<TYPE>(), "Type must be complete.");
+
+  // MSC bug: decltype returns String* type instead of member function pointer type here
+  template<typename POLY> static Yes hasStringCast(decltype(&POLY::operator String));
+  template<typename POLY> static No hasStringCast(...);
+public:
+
+  static constexpr bool VALUE = std::is_same<decltype(hasStringCast<TYPE>(static_cast<Member>(nullptr))), Yes>();
+  // static constexpr bool VALUE = std::is_same<decltype(getType<TYPE>(nullptr)), Member>();
+
+  inline constexpr operator bool() const noexcept
+  {
+    return VALUE;
+  }
+
+  inline constexpr bool operator()() const noexcept
+  {
+    return VALUE;
+  }
+};
+
+/** Check if TYPE has String toString() const member. https://en.cppreference.com/w/cpp/language/sfinae check. */
+template<typename TYPE>
+class HasToString {
+private:
+
+  /** Member type we are looking for. */
+  typedef String (TYPE::* Member)() const; // we only want const member - and String by value - we dont want static either
+
+  // typedef bool Yes;
+  // typedef void No;
+  // static_assert(!std::is_same<Yes, No>(), "Type error.");
+  static_assert(IsComplete<TYPE>(), "Type must be complete.");
+
+  template<typename POLY> static decltype(&POLY::toString) getType(decltype(&POLY::toString));
+  template<typename POLY> static void getType(...);
+
+  // template<typename POLY> static Yes hasToString(decltype(&POLY::toString));
+  // template<typename POLY> static No hasToString(...);
+public:
+
+  // static constexpr bool VALUE = std::is_same<decltype(hasToString<TYPE>(static_cast<Member>(nullptr))), Yes>(); // this works
+  static constexpr bool VALUE = std::is_same<decltype(getType<TYPE>(nullptr)), Member>(); // this works
+
+  inline constexpr operator bool() const noexcept
+  {
+    return VALUE;
+  }
+
+  inline constexpr bool operator()() const noexcept
+  {
+    return VALUE;
+  }
+};
+
+// TAG: priority should be: operator String() -> toString() -> no match
+
+enum {
+  USE_UNKNOWN = 0,
+  USE_STRING_CAST = 1,
+  USE_TO_STRING = 2
+};
+
+template<class TYPE, int match = USE_UNKNOWN>
+class ForwardToString {
+public:
+
+  static inline void write(FormatOutputStream& stream, const TYPE& object)
+  {
+    stream << "!FORMAT UNDEFINED FOR " << Type::getType<TYPE>() << "!";
+  }
+};
+
+template<class TYPE>
+class ForwardToString<TYPE, USE_STRING_CAST> {
+public:
+
+  static inline void write(FormatOutputStream& stream, const TYPE& object)
+  {
+    stream << (object.operator String());
+  }
+};
+
+template<class TYPE>
+class ForwardToString<TYPE, USE_TO_STRING> {
+public:
+
+  static inline void write(FormatOutputStream& stream, const TYPE& object)
+  {
+    stream << object.toString();
+  }
+};
+
+template<class TYPE>
+FormatOutputStream& operator<<(FormatOutputStream& stream, const TYPE& object) // we do NOT allow mutable object
+{
+  // constexpr bool useStringCast = HasStringCast<TYPE>();
+  constexpr bool useToString = HasToString<TYPE>();
+  ForwardToString<TYPE, /*useStringCast ? USE_STRING_CAST :*/ (useToString ? USE_TO_STRING : USE_UNKNOWN)>::write(stream, object);
+  return stream;
+}
+
+
+
 #if defined(_COM_AZURE_DEV__BASE__TESTS)
 
 class TEST_CLASS(FormatOutputStream) : public UnitTest {
@@ -2031,6 +2172,55 @@ public:
 
   TEST_PRIORITY(40);
   TEST_PROJECT("base/string");
+
+  class ClassWithToString {
+  public:
+
+    String toString() const {
+      return "Using ClassWithToString::toString().";
+    }
+  };
+
+  class ClassWithToString2 {
+  public:
+
+    const String& toString() const {
+      static String text = "Using ClassWithToString2::toString().";
+      return text;
+    }
+  };
+
+  class ClassWithToString3 {
+  public:
+
+    String toString() const {
+      return "Using ClassWithToString3::toString().";
+    }
+
+    operator String() const {
+      return "Using ClassWithToString3::operator String().";
+    }
+  };
+
+  class ClassWithMissingConstToString {
+  public:
+
+    String toString() { // missing const
+      return "Using ClassWithMissingConstToString::toString().";
+    }
+  };
+
+  class ClassWithStaticToString {
+  public:
+
+    static String toString() { // static
+      return "Using ClassWithStaticToString::toString().";
+    }
+  };
+
+  class ClassWithoutToString {
+  public:
+  };
 
   void run() override
   {
@@ -2140,6 +2330,24 @@ public:
 #endif
     TEST_EQUAL(String(f() << ZEROPAD << setWidth(10) << 12345), "0000012345");
     TEST_EQUAL(String(f() << indent(7)), "       ");
+
+#if 0
+    // static_assert(HasStringCast<ClassWithToString3>(), "Missing operator String().");
+    // f() << ClassWithToString3() << ENDL;
+
+    static_assert(HasToString<ClassWithToString>(), "Missing toString().");
+    f() << ClassWithToString() << ENDL;
+    static_assert(!HasToString<ClassWithToString2>(), "Matched bad toString()."); // const String&
+    f() << ClassWithToString2() << ENDL;
+    static_assert(HasToString<ClassWithToString3>(), "Missing toString().");
+    f() << ClassWithToString3() << ENDL;
+    static_assert(!HasToString<ClassWithMissingConstToString>(), "Matched bad toString().");
+    f() << ClassWithMissingConstToString() << ENDL;
+    static_assert(!HasToString<ClassWithStaticToString>(), "Matched bad toString().");
+    f() << ClassWithStaticToString() << ENDL;
+    static_assert(!HasToString<ClassWithoutToString>(), "Matched bad toString().");
+    f() << ClassWithoutToString() << ENDL;
+#endif
   }
 };
 

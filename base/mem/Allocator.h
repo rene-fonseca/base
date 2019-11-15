@@ -685,7 +685,7 @@ public:
       Leaky<TYPE> leaky(original);
       initializeByMove(temp.buffer, original.buffer, original.buffer + original.size);
       attach(temp);
-      destroy2(original.buffer, original.size);
+      destroy2(original.buffer, original.buffer + original.size);
       release(original.buffer, original.size);
       return (capacity - Heap::getSize(temp.buffer)) * sizeof(TYPE);
     }

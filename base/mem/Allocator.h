@@ -177,7 +177,7 @@ public:
   static void initialize(TYPE* dest, const TYPE* end)
   {
     BASSERT(dest <= end);
-    if (!Uninitializeable<TYPE>::IS_UNINITIALIZEABLE) {
+    if (!IsUninitializeable<TYPE>()) {
       while (dest != end) {
         new(dest++) TYPE(); // inplace default initialization
       }
@@ -191,7 +191,7 @@ public:
   static void initialize(TYPE* dest, const TYPE* end, const TYPE& value)
   {
     BASSERT(dest <= end);
-    if (Uninitializeable<TYPE>::IS_UNINITIALIZEABLE) {
+    if (IsUninitializeable<TYPE>()) {
       while (dest != end) {
         *dest++ = value;
       }
@@ -208,7 +208,7 @@ public:
   */
   static void initializeByCopy(TYPE* restrict dest, const TYPE* restrict src, MemorySize count)
   {
-    if (Uninitializeable<TYPE>::IS_UNINITIALIZEABLE || Relocateable<TYPE>::IS_RELOCATEABLE) {
+    if (IsUninitializeable<TYPE>() || IsRelocateable<TYPE>()) {
       copy<TYPE>(dest, src, count); // blocks do not overlap
     } else {
       const TYPE* end = dest + count;
@@ -224,7 +224,7 @@ public:
   static void destroy(TYPE* begin, const TYPE* _end, MemorySize& destroyedCount)
   {
     BASSERT(begin <= _end);
-    if (Uninitializeable<TYPE>::IS_UNINITIALIZEABLE || std::is_trivially_destructible<TYPE>()) {
+    if (IsUninitializeable<TYPE>() || std::is_trivially_destructible<TYPE>()) {
       destroyedCount += (_end - begin);
       fill(begin, _end - begin, DESTROY_OBJECT);
       return;
@@ -273,14 +273,32 @@ public:
   static void initializeByMove(TYPE* dest, TYPE* src, const TYPE* end)
   {
     BASSERT(src <= end);
-    if (INLINE_ASSERT(!Uninitializeable<TYPE>::IS_UNINITIALIZEABLE && !Relocateable<TYPE>::IS_RELOCATEABLE)) {
+    // TAG: IsRelocateable<TYPE>() - we can copy memory directly
+
+    while (src != end) {
+      new(dest++) TYPE(std::move(*src++)); // move objects - less likely to throw than destroy but we really dont know
+    }
+    // src still valid object so do NOT fill
+#if 0
+    if (std::is_copy_constructible<TYPE>() || std::is_move_constructible<TYPE>()) {
       while (src != end) {
         new(dest++) TYPE(std::move(*src++)); // move objects - less likely to throw than destroy but we really dont know
       }
       // src still valid object so do NOT fill
-    } else {
-      fill(src, end - src, DESTROY_OBJECT);
+    } else if (std::is_trivially_constructible<TYPE>() && std::is_copy_assignable<TYPE>()) {
+      while (src != end) {
+        // no construction
+        *dest++ = *src++; // move objects - less likely to throw than destroy but we really dont know
+      }
+      // src still valid object so do NOT fill
+    } else if (std::is_default_constructible<TYPE>() && (std::is_copy_assignable<TYPE>() || std::is_move_assignable<TYPE>())) {
+      while (src != end) {
+        new(dest) TYPE();
+        *dest++ = std::move(*src++); // move objects - less likely to throw than destroy but we really dont know
+      }
+      // src still valid object so do NOT fill
     }
+#endif
   }
 
   /**
@@ -289,7 +307,7 @@ public:
   static void initializeByMove(TYPE* dest, TYPE* src, const TYPE* end, bool& moved)
   {
     BASSERT(src <= end);
-    if (!Uninitializeable<TYPE>::IS_UNINITIALIZEABLE && !Relocateable<TYPE>::IS_RELOCATEABLE) {
+    if (!IsUninitializeable<TYPE>() && !IsRelocateable<TYPE>()) {
       initializeByMove(dest, src, end); // we move all first
       moved = true; // from here we can recover to some degree by leaking src
       // we cannot release heap since object can have indirect self references
@@ -497,7 +515,7 @@ public:
   void setSizeImpl(MemorySize size, const TYPE* value)
   {
     if (size != this->size) {
-      if (Uninitializeable<TYPE>::IS_UNINITIALIZEABLE) {
+      if (IsUninitializeable<TYPE>() && IsRelocateable<TYPE>()) {
         // no need to destroy or initialize elements
         elements = resize(elements, size, this->size); // ok if this throws
         if (value) { // fill new elements
@@ -629,7 +647,7 @@ public:
   {
     return Heap::align16(offset);
   }
-  
+
   /**
     Releases unused memory. Requested capacity is ignored. Any object must not have a cached pointer/iterator to the elements!
    
@@ -647,17 +665,29 @@ public:
       return capacity * sizeof(TYPE);
     }
     if (align(capacity * sizeof(TYPE)) > align(size * sizeof(TYPE))) {
-      if (Relocateable<TYPE>::IS_RELOCATEABLE) { // IsUninitializeable<TYPE>() || !IsRelocateable<TYPE>()
+      if (IsRelocateable<TYPE>()) {
         elements = resize(elements, size, capacity); // ok if this throws
         return (capacity - Heap::getSize(elements)) * sizeof(TYPE); // could be negative
-      } else {
-        if (canResizeInplace()) {
-          auto _elements = tryResize(elements, size, capacity);
-          if (_elements) {
-            BASSERT(_elements == elements);
-          }
+      }
+      
+      if (canResizeInplace()) {
+        auto _elements = tryResize(elements, size, capacity);
+        if (_elements) {
+          BASSERT(_elements == elements);
+          return (capacity - Heap::getSize(elements)) * sizeof(TYPE);
         }
       }
+
+      // std::is_move_constructible<TYPE>() && std::is_nothrow_move_constructible<TYPE>();
+
+      Span<TYPE> temp(allocate(size), size); // ok if throws
+      auto original = detach();
+      Leaky<TYPE> leaky(original);
+      initializeByMove(temp.buffer, original.buffer, original.buffer + original.size);
+      attach(temp);
+      destroy2(original.buffer, original.size);
+      release(original.buffer, original.size);
+      return (capacity - Heap::getSize(temp.buffer)) * sizeof(TYPE);
     }
     return 0;
   }

@@ -114,6 +114,9 @@ protected:
     @param heap The memory block.
   */
   static void release(void* heap) throw(MemoryException);
+
+  /** Returns the size of the memory block. */
+  static MemorySize getSize(void* heap) noexcept;
 };
 
 /**
@@ -193,9 +196,44 @@ public:
   }
 
   /**
+    Returns the size of the memory block.
+
+    @param heap The memory block.
+  */
+  template<class TYPE>
+  inline static MemorySize getSize(TYPE* heap) noexcept
+  {
+    return HeapImpl::getSize(heap)/sizeof(TYPE);
+  }
+
+  /**
     Called to register heap leaks.
   */
   static void onLeak(const Type* type, void* buffer, MemorySize size);
+
+  /** Adjusts offset to 64 bytes alignment. */
+  static inline MemorySize align64(MemorySize offset) noexcept
+  {
+    return (offset + (64 - 1)) & ~static_cast<MemorySize>(64 - 1);
+  }
+
+  /** Adjusts offset to 32 bytes alignment. */
+  static inline MemorySize align32(MemorySize offset) noexcept
+  {
+    return (offset + (32 - 1)) & ~static_cast<MemorySize>(32 - 1);
+  }
+
+  /** Adjusts offset to 16 bytes alignment. */
+  static inline MemorySize align16(MemorySize offset) noexcept
+  {
+    return (offset + 0xf) & ~static_cast<MemorySize>(0xf);
+  }
+
+  /** Adjusts offset to 16 bytes alignment. */
+  static inline MemorySize align(MemorySize offset) noexcept
+  {
+    return (offset + 0xf) & ~static_cast<MemorySize>(0xf);
+  }
 };
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

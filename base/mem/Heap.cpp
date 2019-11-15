@@ -121,6 +121,12 @@ void HeapImpl::release(void* heap) throw(MemoryException)
 #endif // flavor
 }
 
+MemorySize HeapImpl::getSize(void* heap) noexcept
+{
+  // TAG: implement
+  return 0;
+}
+
 void Heap::onLeak(const Type* type, void* buffer, MemorySize size)
 {
   static MemorySize total = 0;

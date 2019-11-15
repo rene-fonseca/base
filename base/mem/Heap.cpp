@@ -17,9 +17,10 @@
 #include <base/concurrency/AtomicCounter.h>
 
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
-  #include <windows.h>
+#  include <windows.h>
 #else // unix
-  #include <stdlib.h>
+#  include <stdlib.h>
+#  include <malloc/malloc.h>
 #endif // flavor
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
@@ -121,10 +122,24 @@ void HeapImpl::release(void* heap) throw(MemoryException)
 #endif // flavor
 }
 
-MemorySize HeapImpl::getSize(void* heap) noexcept
+MemorySize HeapImpl::getMinimumSize() noexcept
 {
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   // TAG: implement
   return 0;
+#else
+  return malloc_good_size(1);
+#endif
+}
+
+MemorySize HeapImpl::getSize(void* heap) noexcept
+{
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
+  // TAG: implement
+  return 0;
+#else
+  return malloc_size(heap);
+#endif
 }
 
 void Heap::onLeak(const Type* type, void* buffer, MemorySize size)

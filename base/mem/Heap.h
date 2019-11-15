@@ -115,6 +115,9 @@ protected:
   */
   static void release(void* heap) throw(MemoryException);
 
+  /** Returns the minimum block size. */
+  static MemorySize getMinimumSize() noexcept;
+
   /** Returns the size of the memory block. */
   static MemorySize getSize(void* heap) noexcept;
 };

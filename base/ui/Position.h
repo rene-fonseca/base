@@ -312,7 +312,7 @@ inline Position operator+(const Position& left, const Position& right) throw() {
 _COM_AZURE_DEV__BASE__API FormatOutputStream& operator<<(FormatOutputStream& stream, const Position& value) throw(IOException);
 
 template<>
-class IsUninitializeable<Position> : public IsUninitializeable<decltype(Position::x)> {
+class IsUninitializeable<Position> : public IsUninitializeable<int> {
 };
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

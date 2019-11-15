@@ -192,7 +192,7 @@ _COM_AZURE_DEV__BASE__PACKED__END
 _COM_AZURE_DEV__BASE__API FormatOutputStream& operator<<(FormatOutputStream& stream, const Color& value) throw(IOException);
 
 template<>
-class IsUninitializeable<Color> : public IsUninitializeable<decltype(Color::value)> {
+class IsUninitializeable<Color> : public IsUninitializeable<uint32> {
 };
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

@@ -42,6 +42,25 @@ namespace isoc {
 #endif
 }; // end of namespace isoc
 
+/** Helper to resolve to compile time constant. */
+template<class TYPE, TYPE VALUE>
+class IntegralConstant {
+public:
+
+  inline constexpr operator TYPE() const noexcept
+  {
+    return VALUE;
+  }
+
+  inline constexpr TYPE operator()() const noexcept
+  {
+    return VALUE;
+  }
+};
+
+template<bool VALUE>
+using BooleanConstant = IntegralConstant<bool, VALUE>;
+
 /**
   Specifies whether or not the type is relocateable (i.e. objects may be moved
   directly from one memory location to another without corrupting the object
@@ -62,6 +81,26 @@ public:
   static const bool IS_RELOCATEABLE = primitives::Primitive<TYPE>::IS_PRIMITIVE;
 };
 
+template<typename TYPE>
+class IsRelocateable : public BooleanConstant<Relocateable<TYPE>::IS_RELOCATEABLE> {
+};
+
+template<>
+class IsRelocateable<const void*> : public BooleanConstant<true> {
+};
+
+template<>
+class IsRelocateable<void*> : public BooleanConstant<true> {
+};
+
+template<class TYPE>
+class IsRelocateable<const TYPE*> : public IsRelocateable<const void*> {
+};
+
+template<class TYPE>
+class IsRelocateable<TYPE*> : public IsRelocateable<void*> {
+};
+
 /**
   Specifies whether or not the object may be created and destroyed without
   invoking the constructor and destructor. This also implies that the object is
@@ -76,6 +115,49 @@ public:
   
   static const bool IS_UNINITIALIZEABLE = primitives::Primitive<TYPE>::IS_PRIMITIVE;
 };
+
+template<class TYPE>
+class IsUninitializeable : public IntegralConstant<TYPE, Uninitializeable<TYPE>::IS_UNINITIALIZEABLE> {
+};
+
+
+
+/**
+  Check if TYPE incomplete - ie. only forward declared. https://en.cppreference.com/w/cpp/language/sfinae check.
+
+  Use second template to force reevaluation of IsComplete. You must use a unique ID for or the previous "cached" result will be used.
+
+  class MyClass;
+  static_assert(!IsComplete<MyClass>(), "MyClass is not undefined.");
+  class MyClass {};
+  static_assert(IsComplete<MyClass, 1>(), "MyClass is undefined.");
+*/
+template<typename TYPE, int = 0> // TAG: template<typename TYPE, int = std::unique<int>()> C++ extension - std::unique<int> is a constexpr which starts at 0 and is incremented by 1 for each unique type use. ID generated at use by the compliler not processor
+class IsComplete {
+private:
+
+  typedef uint8 Yes;
+  typedef uint16 No;
+
+  template<typename POLY> static Yes isComplete(char(*)[sizeof(POLY)]);
+  template<typename POLY> static No isComplete(...);
+public:
+
+  static constexpr bool VALUE = sizeof(isComplete<TYPE>(0)) == sizeof(Yes);
+
+  inline constexpr operator bool() const noexcept
+  {
+    return VALUE;
+  }
+
+  inline constexpr bool operator()() const noexcept
+  {
+    return VALUE;
+  }
+};
+
+/** Returns true if the type is complete. Workaround for missing unique default ID support at use for C++ compiler. */
+#define IS_COMPLETE(TYPE) IsComplete<TYPE, __COUNTER__>()
 
 
 

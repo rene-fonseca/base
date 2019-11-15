@@ -74,15 +74,16 @@ using BooleanConstant = IntegralConstant<bool, VALUE>;
   @short Relocateable template class.
   @ingroup memory
 */
+template<typename TYPE>
+class IsRelocateable : public BooleanConstant<primitives::Primitive<TYPE>::IS_PRIMITIVE> {
+};
+
+// legacy
 template<class TYPE>
 class Relocateable {
 public:
-  
-  static const bool IS_RELOCATEABLE = primitives::Primitive<TYPE>::IS_PRIMITIVE;
-};
 
-template<typename TYPE>
-class IsRelocateable : public BooleanConstant<Relocateable<TYPE>::IS_RELOCATEABLE> {
+  static constexpr bool IS_RELOCATEABLE = IsRelocateable<TYPE>();
 };
 
 template<>
@@ -113,11 +114,11 @@ template<class TYPE>
 class Uninitializeable {
 public:
   
-  static const bool IS_UNINITIALIZEABLE = primitives::Primitive<TYPE>::IS_PRIMITIVE;
+  static constexpr bool IS_UNINITIALIZEABLE = primitives::Primitive<TYPE>::IS_PRIMITIVE;
 };
 
 template<class TYPE>
-class IsUninitializeable : public IntegralConstant<TYPE, Uninitializeable<TYPE>::IS_UNINITIALIZEABLE> {
+class IsUninitializeable : public BooleanConstant<Uninitializeable<TYPE>::IS_UNINITIALIZEABLE> {
 };
 
 
@@ -432,7 +433,7 @@ template<class TYPE>
 void copy(TYPE* restrict dest, const TYPE* restrict src, MemorySize count)
 {
   BASSERT((dest < src) && ((dest + count) < src) || (src < dest) && ((src + count) < dest)); // no overlap
-  if (Relocateable<TYPE>::IS_RELOCATEABLE) {
+  if (IsRelocateable<TYPE>()) {
     copy<uint8>(reinterpret_cast<uint8*>(dest), reinterpret_cast<const uint8*>(src), sizeof(TYPE) * count);
   } else {
     const TYPE* const end = dest + count;
@@ -471,7 +472,7 @@ void move(TYPE* dest, const TYPE* src, MemorySize count)
     return;
   }
 
-  if (Relocateable<TYPE>::IS_RELOCATEABLE) {
+  if (IsRelocateable<TYPE>()) {
     move<uint8>(
       reinterpret_cast<uint8*>(dest),
       reinterpret_cast<const uint8*>(src),

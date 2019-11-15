@@ -422,11 +422,7 @@ _COM_AZURE_DEV__BASE__API FormatOutputStream& operator<<(
   const Date& date) throw(InvalidFormat, IOException);
 
 template<>
-class Uninitializeable<Date> {
-public:
-
-  static const bool IS_UNINITIALIZEABLE =
-    Uninitializeable<int64>::IS_UNINITIALIZEABLE;
+class IsUninitializeable<Date> : public IsUninitializeable<int64> {
 };
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

@@ -60,10 +60,7 @@ public:
 };
 
 template<>
-class Uninitializeable<DynamicObject> {
-public:
-
-  static const bool IS_UNINITIALIZEABLE = Uninitializeable<bool>::IS_UNINITIALIZEABLE;
+class IsUninitializeable<DynamicObject> : public IsUninitializeable<uint32> {
 };
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

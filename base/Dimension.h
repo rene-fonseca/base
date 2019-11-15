@@ -183,10 +183,7 @@ inline Dimension::Dimension(unsigned int _width, unsigned int _height) noexcept
 _COM_AZURE_DEV__BASE__API FormatOutputStream& operator<<(FormatOutputStream& stream, const Dimension& value) throw(IOException);
 
 template<>
-class Uninitializeable<Dimension> {
-public:
-
-  static const bool IS_UNINITIALIZEABLE = Uninitializeable<unsigned int>::IS_UNINITIALIZEABLE;
+class IsUninitializeable<Dimension> : public IsUninitializeable<unsigned int> {
 };
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

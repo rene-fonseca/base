@@ -380,10 +380,7 @@ FormatOutputStream& operator<<(
 }
 
 template<class TYPE>
-class Uninitializeable<Quaternion<TYPE> > {
-public:
-
-  static const bool IS_UNINITIALIZEABLE = Uninitializeable<TYPE>::IS_UNINITIALIZEABLE;
+class IsUninitializeable<Quaternion<TYPE> > : public IsUninitializeable<TYPE> {
 };
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

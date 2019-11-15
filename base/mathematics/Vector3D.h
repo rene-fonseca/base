@@ -448,10 +448,7 @@ FormatOutputStream& operator<<(
 }
 
 template<class TYPE>
-class Uninitializeable<Vector3D<TYPE> > {
-public:
-
-  static const bool IS_UNINITIALIZEABLE = Uninitializeable<TYPE>::IS_UNINITIALIZEABLE;
+class IsUninitializeable<Vector3D<TYPE> > : public IsUninitializeable<TYPE> {
 };
 
 typedef Vector3D<float> fvector3;

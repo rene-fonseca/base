@@ -624,10 +624,7 @@ FormatOutputStream& operator<<(
   FormatOutputStream& stream, const Complex& value) throw(IOException);
 
 template<>
-class Uninitializeable<Complex> {
-public:
-
-  static const bool IS_UNINITIALIZEABLE = Uninitializeable<double>::IS_UNINITIALIZEABLE;
+class IsUninitializeable<Complex> : public IsUninitializeable<double> {
 };
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

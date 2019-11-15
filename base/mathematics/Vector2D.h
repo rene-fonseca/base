@@ -424,10 +424,7 @@ FormatOutputStream& operator<<(
 }
 
 template<class TYPE>
-class Uninitializeable<Vector2D<TYPE> > {
-public:
-
-  static const bool IS_UNINITIALIZEABLE = Uninitializeable<TYPE>::IS_UNINITIALIZEABLE;
+class IsUninitializeable<Vector2D<TYPE> > : public IsUninitializeable<TYPE> {
 };
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

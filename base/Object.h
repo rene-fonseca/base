@@ -71,10 +71,7 @@ public:
 };
 
 template<>
-class Uninitializeable<Object> {
-public:
-
-  static constexpr bool IS_UNINITIALIZEABLE = Uninitializeable<bool>::IS_UNINITIALIZEABLE;
-};
+class IsUninitializeable<Object> : public IsUninitializeable<unsigned int> {
+}; 
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

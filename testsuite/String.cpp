@@ -114,7 +114,7 @@ public:
 
     CapacityAllocator<char> b(1234, 256);
     fout << "CapacityAllocator<char>::getSize(): " << b.getSize() << ENDL;
-    fout << "CapacityAllocator<char>::getGranularity(): " << b.getGranularity() << ENDL;
+    // fout << "CapacityAllocator<char>::getGranularity(): " << b.getGranularity() << ENDL;
     fout << "CapacityAllocator<char>::getCapacity(): " << b.getCapacity() << ENDL;
     CapacityAllocator<char>::ReadEnumerator enub = b.getReadEnumerator();
     unsigned int countb = 0;
@@ -130,8 +130,7 @@ public:
     ReferenceCountedCapacityAllocator<char> rb(1234, 256);
     fout << "ReferenceCountedCapacityAllocator<char>::getSize(): "
          << rb.getSize() << ENDL;
-    fout << "ReferenceCountedCapacityAllocator<char>::getGranularity(): "
-         << rb.getGranularity() << ENDL;
+    // fout << "ReferenceCountedCapacityAllocator<char>::getGranularity(): " << rb.getGranularity() << ENDL;
     fout << "ReferenceCountedCapacityAllocator<char>::getCapacity(): "
          << rb.getCapacity() << ENDL;
     ReferenceCountedCapacityAllocator<char>::ReadEnumerator enurb =

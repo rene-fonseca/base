@@ -222,6 +222,7 @@ void String::garbageCollect() throw()
   elements->garbageCollect(); // no need to do copyOnWrite
 }
 
+#if 0
 MemorySize String::getGranularity() const noexcept
 {
   return elements->getGranularity();
@@ -231,6 +232,7 @@ void String::setGranularity(MemorySize granularity) throw()
 {
   elements->setGranularity(granularity);
 }
+#endif
 
 void String::forceToLength(MemorySize length) throw(StringException, MemoryException)
 {

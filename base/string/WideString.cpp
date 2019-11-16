@@ -1815,6 +1815,7 @@ void WideString::garbageCollect() throw() {
   elements->garbageCollect(); // no need to do copyOnWrite
 }
 
+#if 0
 MemorySize WideString::getGranularity() const throw() {
   return elements->getGranularity();
 }
@@ -1822,6 +1823,7 @@ MemorySize WideString::getGranularity() const throw() {
 void WideString::setGranularity(MemorySize granularity) throw() {
   elements->setGranularity(granularity);
 }
+#endif
 
 ucs4 WideString::getAt(MemorySize index) const throw(OutOfRange) {
   if (index >= getLength()) {

@@ -72,7 +72,7 @@ public:
   inline ReferenceCountedCapacityAllocator(
     MemorySize size,
     MemorySize granularity) throw(OutOfRange, MemoryException)
-    : CapacityAllocator<TYPE>(size, granularity)
+    : CapacityAllocator<TYPE>(size/*, granularity*/)
   {
   }
 
@@ -80,7 +80,7 @@ public:
     MemorySize size,
     MemorySize capacity,
     MemorySize granularity) throw(OutOfRange, MemoryException)
-    : CapacityAllocator<TYPE>(size, capacity, granularity)
+    : CapacityAllocator<TYPE>(size, capacity/*, granularity*/)
   {
   }
 

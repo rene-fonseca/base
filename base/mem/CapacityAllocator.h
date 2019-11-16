@@ -16,10 +16,37 @@
 #include <base/mem/Allocator.h>
 #include <base/OutOfRange.h>
 
-// TAG: capacity should apply to underlaying heap - before object init/destruct
-// TAG: add Allocator<TYPE> that doesn't initialize but reserves the memory elements
-
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
+
+// TAG: deprecated
+
+template<class TYPE>
+class CapacityAllocator : public Allocator<TYPE> {
+public:
+  
+  /** Specifies the minimum block size in number of elements. */
+  static constexpr MemorySize MINIMUM_GRANULARITY = 16;
+  /** Specifies the default granularity in number of elements. Guaranteed to be
+      greater than or equal to MINIMUM_GRANULARITY. */
+  static constexpr MemorySize DEFAULT_GRANULARITY = MINIMUM_GRANULARITY;
+
+  inline CapacityAllocator() throw()
+  {
+  }
+  
+  inline CapacityAllocator(MemorySize size) throw(MemoryException)
+  {
+    Allocator<TYPE>::setSize(size);
+  }
+  
+  inline CapacityAllocator(MemorySize size, MemorySize capacity) throw(MemoryException)
+  {
+    Allocator<TYPE>::ensureCapacity(capacity);
+    Allocator<TYPE>::setSize(size);
+  }
+};
+
+#if 0
 
 /**
   Same as Allocator but allocates memory in larger blocks at a time. The
@@ -36,10 +63,10 @@ class CapacityAllocator : public Allocator<TYPE> {
 public:
 
   /** Specifies the minimum block size in number of elements. */
-  static const MemorySize MINIMUM_GRANULARITY = 16;
+  static constexpr MemorySize MINIMUM_GRANULARITY = 16;
   /** Specifies the default granularity in number of elements. Guaranteed to be
       greater than or equal to MINIMUM_GRANULARITY. */
-  static const MemorySize DEFAULT_GRANULARITY = MINIMUM_GRANULARITY;
+  static constexpr MemorySize DEFAULT_GRANULARITY = MINIMUM_GRANULARITY;
 private:
   
   /** The number of elements in the block. */
@@ -346,5 +373,7 @@ public:
     Allocator<TYPE>::setSize(size); // ignore capacity here
   }
 };
+
+#endif
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

@@ -465,6 +465,7 @@ public:
   */
   void garbageCollect() throw();
 
+#if 0
   /**
     Returns the granularity.
   */
@@ -474,7 +475,8 @@ public:
     Sets the granularity.
   */
   void setGranularity(MemorySize granularity) throw();
-
+#endif
+  
   /**
     Sets the length of the string without initializing the elements.
   */

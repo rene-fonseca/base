@@ -49,6 +49,7 @@ public:
     unsigned int size,
     bool nonblocking = false) throw(IOException);
 
+#if 0
   inline unsigned int getGranularity() const noexcept {
     return string.getGranularity();
   }
@@ -56,6 +57,7 @@ public:
   inline void setGranularity(unsigned int granularity) throw() {
     string.setGranularity(granularity);
   }
+#endif
 
   inline const String& getString() const noexcept {
     return string;

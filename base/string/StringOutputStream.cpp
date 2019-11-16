@@ -55,7 +55,7 @@ StringOutputStream::StringOutputStream() throw(BindException) :
   FormatOutputStream(stream)
 {
   stream.ensureCapacity(1024);
-  stream.setGranularity(DEFAULT_GRANULARITY);
+  // stream.setGranularity(DEFAULT_GRANULARITY);
 }
 
 StringOutputStream::StringOutputStream(
@@ -63,7 +63,7 @@ StringOutputStream::StringOutputStream(
   : FormatOutputStream(stream)
 {
   stream.ensureCapacity(1024);
-  stream.setGranularity(granularity);
+  // stream.setGranularity(granularity);
 }
 
 void StringOutputStream::ensureCapacity(MemorySize capacity)
@@ -71,6 +71,7 @@ void StringOutputStream::ensureCapacity(MemorySize capacity)
   stream.ensureCapacity(capacity);
 }
 
+#if 0
 unsigned int StringOutputStream::getGranularity() const noexcept
 {
   return stream.getGranularity();
@@ -80,6 +81,7 @@ void StringOutputStream::setGranularity(unsigned int granularity) throw()
 {
   stream.setGranularity(granularity);
 }
+#endif
 
 const String& StringOutputStream::getString() const noexcept
 {

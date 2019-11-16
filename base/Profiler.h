@@ -73,27 +73,15 @@ public:
 
   static uint64 getTimestamp();
   
-  static void pushEvent(const Event& e)
-  {
-    ++numberOfEvents;
-  }
+  static void pushEvent(const Event& e);
 
-  static bool open(const String& path)
-  {
-    fos = FileOutputStream(path);
-    enabled = true;
-    return false;
-  }
+  static bool open(const String& path);
+  
+  /** Enables profiler. */
+  static void start();
 
-  static void start()
-  {
-    enabled = true;
-  }
-
-  static void stop()
-  {
-    enabled = false;
-  }
+  /** Disables profiler. */
+  static void stop();
   
   static uint64 getNumberOfEvents()
   {

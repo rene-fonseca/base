@@ -15,39 +15,27 @@
 #include <base/Timer.h>
 #include <base/string/String.h>
 #include <base/concurrency/Thread.h>
-#include <base/UInt128.h>
+#include <base/UnitTest.h>
 
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
 #  include <windows.h>
 #else // unix
 #  include <sys/time.h>
+#  include <time.h>
 #endif // flavor
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
-namespace {
+template<class RESULT, class SOURCE>
+inline const RESULT cast(SOURCE source)
+{
+  static_assert(std::is_pointer<RESULT>(), "Types must be pointers.");
+  static_assert(std::is_pointer<SOURCE>(), "Types must be pointers.");
+  static_assert(sizeof(*(RESULT)(nullptr)) == sizeof(*(SOURCE)(nullptr)), "Types must have same size.");
+  return reinterpret_cast<const RESULT>(source);
+}
 
-  // TAG: move to Math
-  inline uint64 muldiv(uint64 value, uint64 mul, uint64 div)
-  {
-    if (!(value >> 32) && !(mul >> 32)) {
-      return value * mul / div;
-    }
-    if (!(value >> (32+16)) && !(mul >> 16)) {
-      return value * mul / div;
-    }
-    if (!(value >> (32 + 16 + 8)) && !(mul >> 8)) {
-      return value * mul / div;
-    }
-    // handle div or mul are power of 2
-    if ((mul % div) == 0) {
-      return value * (mul / div);
-    }
-    // TAG: div can be very small in many cases
-    BASSERT(!"Integer overflow"); // implement
-    return UInt128(value) * UInt128(mul) / UInt128(div);
-    // return value * mul / div; // ignore overflow
-  }
+namespace {
 
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   inline uint64 getFrequency() noexcept
@@ -59,45 +47,47 @@ namespace {
     return frequency.QuadPart;
   }
 
+  inline uint64 getRealImpl() noexcept
+  {
+    FILETIME time;
+    GetSystemTimePreciseAsFileTime(&time);
+    return *cast<const uint64*>(&time);
+  }
+
+  inline uint64 getTicksImpl() noexcept
+  {
+    // https://docs.microsoft.com/en-us/windows/win32/sysinfo/acquiring-high-resolution-time-stamps
+    uint64 ticks = 0;
+    ::QueryPerformanceCounter(cast<LARGE_INTEGER*>(&ticks));
+    return ticks;
+  }
+
   const uint64 frequency = getFrequency(); // counts in seconds
 #endif
 
-  // TAG: const uint64 processStartTime = 0; // reduce overflow
+  uint64 processStartTicks = 0;
+  uint64 processStartReal = 0;
 }
 
 
 
-template<class RESULT, class SOURCE>
-inline const RESULT cast(SOURCE source)
-{
-  static_assert(std::is_pointer<RESULT>(), "Types must be pointers.");
-  static_assert(std::is_pointer<SOURCE>(), "Types must be pointers.");
-  static_assert(sizeof(*(RESULT)(nullptr)) == sizeof(*(SOURCE)(nullptr)), "Types must have same size.");
-  return reinterpret_cast<const RESULT>(source);
-}
 
 
 
 uint64 Timer::getMeasureFrequency() noexcept
 {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
-  auto f = frequency; // TAG: temp test
-
+  const auto startReal = getRealImpl(); // 100ns resolution
+  const uint64 startTicks = getTicksImpl();
   unsigned int sleep = 10000;
   while (sleep < 1000000000) {
-    FILETIME startReal;
-    GetSystemTimePreciseAsFileTime(&startReal);
-    uint64 startTicks = 0;
-    ::QueryPerformanceCounter(cast<LARGE_INTEGER*>(&startTicks));
     Thread::nanosleep(sleep);
-    FILETIME stopReal;
-    GetSystemTimePreciseAsFileTime(&stopReal);
-    uint64 stopTicks = 0;
-    ::QueryPerformanceCounter(cast<LARGE_INTEGER*>(&stopTicks));
-    auto deltaTicks = stopTicks - startTicks;
+    const auto stopReal = getRealImpl();
+    const uint64 stopTicks = getTicksImpl();
+    const auto deltaTicks = stopTicks - startTicks;
     if (deltaTicks >= 1000000) {
-      auto elapsedTime = *cast<const uint64*>(&stopReal) - *cast<const uint64*>(&startReal);
-      return muldiv(deltaTicks, 10 * 1000000, elapsedTime); // ticks per second
+      const auto elapsedTime = stopReal - startReal;
+      return Math::muldiv(deltaTicks, 10 * 1000000, elapsedTime); // ticks per second
     }
     sleep *= 10;
   }
@@ -110,7 +100,7 @@ uint64 Timer::getMeasureFrequency() noexcept
   if (!INLINE_ASSERT(!status)) {
     return 0;
   }
-  uint64 resolution = static_cast<uint64>(1000000000)* temp.tv_sec + temp.tv_nsec;
+  uint64 resolution = static_cast<uint64>(1000000000) * time.tv_sec + time.tv_nsec;
   return 1000000000/resolution;
 #else
   return 1000000;
@@ -121,9 +111,7 @@ uint64 Timer::getMeasureFrequency() noexcept
 uint64 Timer::getRealNow() noexcept
 {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
-  FILETIME time;
-  GetSystemTimePreciseAsFileTime(&time);
-  return *cast<const uint64*>(&time)/10;
+  return getRealImpl()/10;
 #else // unix
 #if 1
   // _POSIX_C_SOURCE >= 199309L
@@ -132,7 +120,7 @@ uint64 Timer::getRealNow() noexcept
   if (!INLINE_ASSERT(!status)) {
     return 0;
   }
-  return static_cast<uint64>(1000000) * temp.tv_sec + (temp.tv_nsec + 500)/1000;
+  return static_cast<uint64>(1000000) * time.tv_sec + (time.tv_nsec + 500)/1000;
 #else
   struct timeval temp;
   gettimeofday(&temp, 0);
@@ -144,11 +132,11 @@ uint64 Timer::getRealNow() noexcept
 uint64 Timer::getNowNS() noexcept
 {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
-  uint64 time = 0;
-  ::QueryPerformanceCounter(cast<LARGE_INTEGER*>(&time));
-  return muldiv(time, 1000000000, frequency);
+  return Math::muldiv(getTicksImpl(), 1000000000, frequency);
 #else // unix
-#if 1
+#if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__MACOS)
+  return clock_gettime_nsec_np(CLOCK_MONOTONIC);
+#elif 1
   // _POSIX_C_SOURCE >= 199309L
   struct timespec time;
   int status = clock_getres(CLOCK_MONOTONIC, &time);
@@ -167,10 +155,7 @@ uint64 Timer::getNowNS() noexcept
 uint64 Timer::getNow() noexcept
 {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
-  // https://docs.microsoft.com/en-us/windows/win32/sysinfo/acquiring-high-resolution-time-stamps
-  uint64 time = 0;
-  ::QueryPerformanceCounter(cast<LARGE_INTEGER*>(&time));
-  return muldiv(time, 1000000, frequency);
+  return Math::muldiv(getTicksImpl(), 1000000, frequency);
 #else // unix
 #if 1
   // _POSIX_C_SOURCE >= 199309L
@@ -179,7 +164,7 @@ uint64 Timer::getNow() noexcept
   if (!INLINE_ASSERT(!status)) {
     return 0;
   }
-  return static_cast<uint64>(1000000)* temp.tv_sec + (temp.tv_nsec + 500)/1000;
+  return static_cast<uint64>(1000000) * time.tv_sec + (time.tv_nsec + 500)/1000;
 #else
   struct timeval temp;
   gettimeofday(&temp, 0);
@@ -205,6 +190,34 @@ void TimeScope::dump() const
   fout << "Elapsed time (H:M:S.microseconds): " << timer << ENDL;
 }
 
-// TAG: add test
+#if defined(_COM_AZURE_DEV__BASE__TESTS)
+
+class TEST_CLASS(Timer) : public UnitTest {
+public:
+
+  TEST_PRIORITY(50);
+  TEST_PROJECT("base");
+
+  void run() override
+  {
+    auto start = Timer::getNow();
+    TEST_ASSERT(start > 0);
+    Timer t1;
+    Thread::nanosleep(100 * 1000);
+    t1.stop();
+    auto elapsed1 = Timer::getNow() - start;
+    TEST_ASSERT(elapsed1 > 0);
+    auto realNow = Timer::getRealNow();
+    TEST_ASSERT(realNow > 0);
+    auto frequency = Timer::getMeasureFrequency();
+    TEST_ASSERT(frequency > 0);
+    auto elapsed2 = t1.getMicroseconds();
+    TEST_ASSERT(elapsed2 > 0);
+  }
+};
+
+TEST_REGISTER(Timer);
+
+#endif
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

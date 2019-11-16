@@ -42,7 +42,9 @@ namespace {
   {
     LARGE_INTEGER frequency; // ticks per second
     BOOL status = ::QueryPerformanceFrequency(&frequency); // ignore any error
-    BASSERT(status);
+    if (INLINE_ASSERT(status)) {
+      return 0;
+    }
     BASSERT(frequency.QuadPart > 0);
     return frequency.QuadPart;
   }
@@ -63,16 +65,62 @@ namespace {
   }
 
   const uint64 frequency = getFrequency(); // counts in seconds
+  const uint64 processStartTicks = getTicksImpl();
+  const uint64 processStartReal = getRealImpl();
+#else
+
+  inline uint64 getRealImpl() noexcept
+  {
+    #if 1
+      // _POSIX_C_SOURCE >= 199309L
+      struct timespec time;
+      int status = clock_gettime(CLOCK_REALTIME, &time);
+      if (!INLINE_ASSERT(!status)) {
+        return 0;
+      }
+      return static_cast<uint64>(1000000) * time.tv_sec + (time.tv_nsec + 500)/1000;
+    #else
+      struct timeval temp;
+      gettimeofday(&temp, 0);
+      return static_cast<uint64>(1000000) * temp.tv_sec + temp.tv_usec;
+    #endif
+  }
+
+  inline uint64 getTicksImpl(bool nano) noexcept
+  {
+#if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__MACOS)
+    if (nano) {
+      return clock_gettime_nsec_np(CLOCK_MONOTONIC);
+    }
 #endif
+#if 1
+    // _POSIX_C_SOURCE >= 199309L
+    struct timespec time;
+    int status = clock_gettime(CLOCK_MONOTONIC, &time);
+    if (!INLINE_ASSERT(!status)) {
+      return 0;
+    }
+    if (nano) {
+      return static_cast<uint64>(1000000 * 1000) * time.tv_sec + time.tv_nsec;
+    } else {
+      return static_cast<uint64>(1000000) * time.tv_sec + (time.tv_nsec + 500)/1000;
+    }
+#else
+    struct timeval temp;
+    gettimeofday(&temp, 0);
+    if (nano) {
+      return static_cast<uint64>(1000000 * 1000) * temp.tv_sec + temp.tv_usec * 1000;
+    } else {
+      return static_cast<uint64>(1000000) * temp.tv_sec + temp.tv_usec;
+    }
+#endif
+  }
 
-  uint64 processStartTicks = 0;
-  uint64 processStartReal = 0;
+  const uint64 processStartTicks = getTicksImpl(false);
+  const uint64 processStartTicksNS = getTicksImpl(true);
+  const uint64 processStartReal = getRealImpl();
+#endif
 }
-
-
-
-
-
 
 uint64 Timer::getMeasureFrequency() noexcept
 {
@@ -96,7 +144,7 @@ uint64 Timer::getMeasureFrequency() noexcept
 #if 1
   // _POSIX_C_SOURCE >= 199309L
   struct timespec time;
-  int status = clock_getres(CLOCK_REALTIME, &time);
+  int status = clock_getres(CLOCK_MONOTONIC, &time);
   if (!INLINE_ASSERT(!status)) {
     return 0;
   }
@@ -111,65 +159,27 @@ uint64 Timer::getMeasureFrequency() noexcept
 uint64 Timer::getRealNow() noexcept
 {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
-  return getRealImpl()/10;
+  return (getRealImpl() - processStartReal)/10;
 #else // unix
-#if 1
-  // _POSIX_C_SOURCE >= 199309L
-  struct timespec time;
-  int status = clock_getres(CLOCK_REALTIME, &time);
-  if (!INLINE_ASSERT(!status)) {
-    return 0;
-  }
-  return static_cast<uint64>(1000000) * time.tv_sec + (time.tv_nsec + 500)/1000;
-#else
-  struct timeval temp;
-  gettimeofday(&temp, 0);
-  return static_cast<uint64>(1000000) * temp.tv_sec + temp.tv_usec;
-#endif
+  return getRealImpl() - processStartReal;
 #endif // flavor
 }
 
 uint64 Timer::getNowNS() noexcept
 {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
-  return Math::muldiv(getTicksImpl(), 1000000000, frequency);
+  return Math::muldiv(getTicksImpl() - processStartTicks, 1000000000, frequency);
 #else // unix
-#if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__MACOS)
-  return clock_gettime_nsec_np(CLOCK_MONOTONIC);
-#elif 1
-  // _POSIX_C_SOURCE >= 199309L
-  struct timespec time;
-  int status = clock_getres(CLOCK_MONOTONIC, &time);
-  if (!INLINE_ASSERT(!status)) {
-    return 0;
-  }
-  return static_cast<uint64>(1000000000) * temp.tv_sec + temp.tv_nsec;
-#else
-  struct timeval temp;
-  gettimeofday(&temp, 0);
-  return static_cast<uint64>(100000000) * temp.tv_sec + temp.tv_usec * 1000;
-#endif
+  return getTicksImpl(true) - processStartTicksNS;
 #endif // flavor
 }
 
 uint64 Timer::getNow() noexcept
 {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
-  return Math::muldiv(getTicksImpl(), 1000000, frequency);
+  return Math::muldiv(getTicksImpl() - processStartTicks, 1000000, frequency);
 #else // unix
-#if 1
-  // _POSIX_C_SOURCE >= 199309L
-  struct timespec time;
-  int status = clock_getres(CLOCK_MONOTONIC, &time);
-  if (!INLINE_ASSERT(!status)) {
-    return 0;
-  }
-  return static_cast<uint64>(1000000) * time.tv_sec + (time.tv_nsec + 500)/1000;
-#else
-  struct timeval temp;
-  gettimeofday(&temp, 0);
-  return static_cast<uint64>(1000000) * temp.tv_sec + temp.tv_usec;
-#endif
+  return getTicksImpl(false) - processStartTicks;
 #endif // flavor
 }
 

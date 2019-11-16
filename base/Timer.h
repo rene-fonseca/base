@@ -35,6 +35,11 @@ private:
   uint64 stopTime = 0;
 public:
 
+  struct Time {
+    uint64 seconds;
+    uint32 nanoseconds;
+  };
+  
   /**
     This class provides methods for converting nanoseconds into other time
     units.

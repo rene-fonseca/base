@@ -55,7 +55,8 @@ private:
   class Up {
   public:
     
-    inline RESULT operator()(RESULT value) const throw() {
+    inline RESULT operator()(RESULT value) const noexcept
+    {
       // Constraint<false, Cast>::NOT_A_POINTER;
     }
   };
@@ -64,7 +65,8 @@ private:
   class Up<RESULT*> {
   public:
     
-    inline RESULT* operator()(RESULT* value) throw() {
+    inline RESULT* operator()(RESULT* value) noexcept
+    {
       return value;
     }
   };
@@ -73,7 +75,8 @@ private:
   class Up<const RESULT*> {
   public:
     
-    inline const RESULT* operator()(const RESULT* value) throw() {
+    inline const RESULT* operator()(const RESULT* value) noexcept
+    {
       return value;
     }
   };
@@ -82,7 +85,8 @@ private:
   class ExplicitCast {
   public:
     
-    inline RESULT operator()(ORIGINAL value) throw() {
+    inline RESULT operator()(ORIGINAL value) noexcept
+    {
       return value;
     }
   };
@@ -91,7 +95,8 @@ private:
   class ExplicitCast<void, ORIGINAL> {
   public:
     
-    inline void operator()(ORIGINAL value) throw() {
+    inline void operator()(ORIGINAL value) noexcept
+    {
     }
   };
   
@@ -99,7 +104,8 @@ private:
   class ExplicitCast<const void, ORIGINAL> {
   public:
     
-    inline const void operator()(ORIGINAL value) throw() {
+    inline const void operator()(ORIGINAL value) noexcept
+    {
     }
   };
   
@@ -107,7 +113,8 @@ private:
   class ExplicitCast<volatile const void, ORIGINAL> {
   public:
     
-    inline volatile const void operator()(ORIGINAL value) throw() {
+    inline volatile const void operator()(ORIGINAL value) noexcept
+    {
     }
   };
 
@@ -116,12 +123,14 @@ private:
   public:
 
 #if 0 // best to disallow non pointers for now
-    static inline RESULT cast(const ORIGINAL& value) throw() { // force input to pointer
+    static inline RESULT cast(const ORIGINAL& value) noexcept
+    { // force input to pointer
       const void* _dummy = value;
       return reinterpret_cast<RESULT>(value);
     }
 
-    static inline RESULT cast(ORIGINAL& value) throw() { // force input to pointer
+    static inline RESULT cast(ORIGINAL& value) noexcept
+    { // force input to pointer
       const void* _dummy = value;
       return reinterpret_cast<RESULT>(value);
     }
@@ -132,7 +141,8 @@ private:
   class PointerCast<RESULT*, ORIGINAL*> {
   public:
     
-    static inline RESULT* cast(ORIGINAL* value) throw() {
+    static inline RESULT* cast(ORIGINAL* value) noexcept
+    {
 _COM_AZURE_DEV__BASE__PACKED__BEGIN
       union {
         ORIGINAL* original;
@@ -148,7 +158,8 @@ _COM_AZURE_DEV__BASE__PACKED__END
   class PointerCast<const RESULT*, const ORIGINAL*> {
   public:
     
-    static inline const RESULT* cast(const ORIGINAL* value) throw() {
+    static inline const RESULT* cast(const ORIGINAL* value) noexcept
+    {
 _COM_AZURE_DEV__BASE__PACKED__BEGIN
       union {
         const ORIGINAL* original;
@@ -164,7 +175,8 @@ _COM_AZURE_DEV__BASE__PACKED__END
   class PointerCast<volatile RESULT*, volatile ORIGINAL*> {
   public:
     
-    static inline volatile RESULT* cast(volatile ORIGINAL* value) throw() {
+    static inline volatile RESULT* cast(volatile ORIGINAL* value) noexcept
+    {
 _COM_AZURE_DEV__BASE__PACKED__BEGIN
       union {
         volatile ORIGINAL* original;
@@ -180,8 +192,8 @@ _COM_AZURE_DEV__BASE__PACKED__END
   class PointerCast<volatile const RESULT*, volatile const ORIGINAL*> {
   public:
     
-    static inline volatile const RESULT* cast(
-      volatile const ORIGINAL* value) throw() {
+    static inline volatile const RESULT* cast(volatile const ORIGINAL* value) noexcept
+    {
 _COM_AZURE_DEV__BASE__PACKED__BEGIN
       union {
         volatile const ORIGINAL* original;
@@ -197,7 +209,8 @@ _COM_AZURE_DEV__BASE__PACKED__END
   class AnyPointerCast {
   public:
     
-    static inline RESULT cast(ORIGINAL value) throw() {
+    static inline RESULT cast(ORIGINAL value) noexcept
+    {
       // Constraint<false, Cast>::NOT_A_POINTER;
     }
   };
@@ -206,7 +219,8 @@ _COM_AZURE_DEV__BASE__PACKED__END
   class AnyPointerCast<RESULT*, ORIGINAL*> {
   public:
     
-    static inline RESULT* cast(ORIGINAL* value) throw() {
+    static inline RESULT* cast(ORIGINAL* value) noexcept
+    {
 _COM_AZURE_DEV__BASE__PACKED__BEGIN
       union {
         ORIGINAL* original;
@@ -226,7 +240,8 @@ _COM_AZURE_DEV__BASE__PACKED__END
   class ReinterpretCast<RESULT*, ORIGINAL*> {
   public:
     
-    inline RESULT* operator()(ORIGINAL* value) const throw() {
+    inline RESULT* operator()(ORIGINAL* value) const noexcept
+    {
 _COM_AZURE_DEV__BASE__PACKED__BEGIN
       union {
         ORIGINAL* original;
@@ -242,7 +257,8 @@ _COM_AZURE_DEV__BASE__PACKED__END
   class ReinterpretCast<const RESULT*, const ORIGINAL*> {
   public:
     
-    inline const RESULT* operator()(const ORIGINAL* value) const throw() {
+    inline const RESULT* operator()(const ORIGINAL* value) const noexcept
+    {
 _COM_AZURE_DEV__BASE__PACKED__BEGIN
       union {
         const ORIGINAL* original;
@@ -262,7 +278,8 @@ _COM_AZURE_DEV__BASE__PACKED__END
   class GetPointerCast<TYPE*> {
   public:
     
-    static inline TYPE* cast(MemorySize value) throw() {
+    static inline TYPE* cast(MemorySize value) noexcept
+    {
       return static_cast<TYPE*>(
         static_cast<void*>(static_cast<char*>(nullptr) + value)
       );
@@ -274,7 +291,8 @@ public:
     Implicit cast to the specified type.
   */
   template<class RESULT>
-  static inline RESULT implicit(RESULT argument) throw() {
+  static inline RESULT implicit(RESULT argument) noexcept
+  {
     return argument;
   }
   
@@ -283,7 +301,8 @@ public:
     (i.e. uint8*).
   */
   template<class TYPE>
-  static inline uint8* getAddress(TYPE& value) throw() {
+  static inline uint8* getAddress(TYPE& value) noexcept
+  {
     return reinterpret_cast<uint8*>(&value);
   }
   
@@ -292,7 +311,8 @@ public:
     (i.e. uint8*).
   */
   template<class TYPE>
-  static inline const uint8* getAddress(const TYPE& value) throw() {
+  static inline const uint8* getAddress(const TYPE& value) noexcept
+  {
     return reinterpret_cast<const uint8*>(&value);
   }
   
@@ -301,7 +321,8 @@ public:
     (i.e. uint8*).
   */
   template<class TYPE>
-  static inline volatile uint8* getAddress(volatile TYPE& value) throw() {
+  static inline volatile uint8* getAddress(volatile TYPE& value) noexcept
+  {
     return reinterpret_cast<volatile uint8*>(&value);
   }
 
@@ -311,7 +332,8 @@ public:
   */
   template<class TYPE>
   static inline volatile const uint8* getAddress(
-    volatile const TYPE& value) throw() {
+    volatile const TYPE& value) noexcept
+  {
     return reinterpret_cast<volatile const uint8*>(&value);
   }
 
@@ -319,7 +341,8 @@ public:
     Returns the address of the specified array as a byte pointer (i.e. uint8*).
   */
   template<class TYPE>
-  static inline uint8* getAddress(TYPE value[]) throw() {
+  static inline uint8* getAddress(TYPE value[]) noexcept
+  {
     return reinterpret_cast<uint8*>(value);
   }
   
@@ -328,7 +351,8 @@ public:
     (i.e. uint8*).
   */
   template<class TYPE>
-  static inline const uint8* getAddress(const TYPE value[]) throw() {
+  static inline const uint8* getAddress(const TYPE value[]) noexcept
+  {
     return reinterpret_cast<const uint8*>(value);
   }
   
@@ -337,7 +361,8 @@ public:
     (i.e. uint8*).
   */
   template<class TYPE>
-  static inline volatile uint8* getAddress(volatile TYPE value[]) throw() {
+  static inline volatile uint8* getAddress(volatile TYPE value[]) noexcept
+  {
     return reinterpret_cast<volatile uint8*>(value);
   }
   
@@ -347,7 +372,8 @@ public:
   */
   template<class TYPE>
   static inline volatile const uint8* getAddress(
-    volatile const TYPE value[]) throw() {
+    volatile const TYPE value[]) noexcept
+  {
     return reinterpret_cast<volatile const uint8*>(value);
   }
   
@@ -355,7 +381,8 @@ public:
     Returns the address of the specified object as a char pointer.
   */
   template<class TYPE>
-  static inline char* getCharAddress(TYPE& value) throw() {
+  static inline char* getCharAddress(TYPE& value) noexcept
+  {
     return reinterpret_cast<char*>(&value);
   }
   
@@ -363,7 +390,8 @@ public:
     Returns the address of the specified object as a char pointer.
   */
   template<class TYPE>
-  static inline const char* getCharAddress(const TYPE& value) throw() {
+  static inline const char* getCharAddress(const TYPE& value) noexcept
+  {
     return reinterpret_cast<const char*>(&value);
   }
   
@@ -371,7 +399,8 @@ public:
     Returns the address of the specified object as a char pointer.
   */
   template<class TYPE>
-  static inline volatile char* getCharAddress(volatile TYPE& value) throw() {
+  static inline volatile char* getCharAddress(volatile TYPE& value) noexcept
+  {
     return reinterpret_cast<volatile char*>(&value);
   }
 
@@ -380,7 +409,8 @@ public:
   */
   template<class TYPE>
   static inline volatile const char* getCharAddress(
-    volatile const TYPE& value) throw() {
+    volatile const TYPE& value) noexcept
+  {
     return reinterpret_cast<volatile const char*>(&value);
   }
 
@@ -388,7 +418,8 @@ public:
     Returns the address of the specified object as a char pointer.
   */
   template<class TYPE>
-  static inline char* getCharAddress(TYPE value[]) throw() {
+  static inline char* getCharAddress(TYPE value[]) noexcept
+  {
     return reinterpret_cast<char*>(value);
   }
   
@@ -396,7 +427,8 @@ public:
     Returns the address of the specified object as a char pointer.
   */
   template<class TYPE>
-  static inline const char* getCharAddress(const TYPE value[]) throw() {
+  static inline const char* getCharAddress(const TYPE value[]) noexcept
+  {
     return reinterpret_cast<const char*>(value);
   }
   
@@ -404,7 +436,8 @@ public:
     Returns the address of the specified object as a char pointer.
   */
   template<class TYPE>
-  static inline volatile char* getCharAddress(volatile TYPE value[]) throw() {
+  static inline volatile char* getCharAddress(volatile TYPE value[]) noexcept
+  {
     return reinterpret_cast<volatile char*>(value);
   }
   
@@ -413,7 +446,8 @@ public:
   */
   template<class TYPE>
   static inline volatile const char* getCharAddress(
-    volatile const TYPE value[]) throw() {
+    volatile const TYPE value[]) noexcept
+  {
     return reinterpret_cast<volatile const char*>(value);
   }
 
@@ -421,7 +455,8 @@ public:
     Returns the memory offset of the specified pointer. Any qualifiers are lost
     in the process!
   */
-  static inline MemorySize getOffset(const volatile void* value) throw() {
+  static inline MemorySize getOffset(const volatile void* value) noexcept
+  {
     return static_cast<const volatile char*>(value) -
       static_cast<const volatile char*>(nullptr);
   }
@@ -430,7 +465,8 @@ public:
     Returns the pointer value corresponding to the specified memory offset.
   */
   template<class TYPE>
-  static inline TYPE getPointer(MemorySize value) throw() {
+  static inline TYPE getPointer(MemorySize value) noexcept
+  {
     return GetPointerCast<TYPE>::cast(value);
   }
   
@@ -440,12 +476,14 @@ public:
     implicit rules which convert the input type to the desired type.
   */
   template<class RESULT>
-  static inline RESULT up(RESULT value) throw() {
+  static inline RESULT up(RESULT value) noexcept
+  {
     return Up<RESULT>(value);
   }
   
   template<class RESULT, class ORIGINAL>
-  static inline RESULT explicitly(ORIGINAL value) throw() {
+  static inline RESULT explicitly(ORIGINAL value) noexcept
+  {
     return ExplicitCast<RESULT, ORIGINAL>();
   }
 
@@ -456,17 +494,20 @@ public:
     not cast away the qualifiers (e.g. const).
   */
   template<class RESULT, class ORIGINAL>
-  static inline RESULT pointer(ORIGINAL value) throw() {
+  static inline RESULT pointer(ORIGINAL value) noexcept
+  {
     return PointerCast<RESULT, ORIGINAL>::cast(value); // TAG: how to handle PrimitiveArray<char> and similar when operator needs to be called?
   }
   
   template<class RESULT, class ORIGINAL>
-  static inline RESULT anypointer(ORIGINAL value) throw() {
+  static inline RESULT anypointer(ORIGINAL value) noexcept
+  {
     return AnyPointerCast<RESULT, ORIGINAL>::cast(value);
   }
   
   template<class RESULT, class ORIGINAL>
-  static inline RESULT reinterpret(ORIGINAL value) throw() {
+  static inline RESULT reinterpret(ORIGINAL value) noexcept
+  {
     return ReinterpretCast<RESULT, ORIGINAL>(value);
   }
   
@@ -475,13 +516,15 @@ public:
   public:
     
     template<class ARGUMENT>
-    static inline RESULT& cast(ARGUMENT& value) throw() {
+    static inline RESULT& cast(ARGUMENT& value) noexcept
+    {
       if (Constraint<sizeof(RESULT) == sizeof(ARGUMENT), Cast>::MISMATCH_OF_IMPERSONATOR_FOOTPRINT) {}
       return *reinterpret_cast<RESULT*>(&value);
     }
     
     template<class ARGUMENT>
-    static inline const RESULT& cast(const ARGUMENT& value) throw() {
+    static inline const RESULT& cast(const ARGUMENT& value) noexcept
+    {
       if (Constraint<sizeof(RESULT) == sizeof(ARGUMENT), Cast>::MISMATCH_OF_IMPERSONATOR_FOOTPRINT) {}
       return *reinterpret_cast<const RESULT*>(&value);
     }
@@ -494,7 +537,8 @@ public:
     @see container
   */
   template<class RESULT, class ARGUMENT>
-  static inline RESULT impersonate(ARGUMENT value) throw() {
+  static inline RESULT impersonate(ARGUMENT value) noexcept
+  {
     return Impersonate<RESULT>::cast(value);
   }
 
@@ -503,7 +547,8 @@ public:
   public:
     
     template<class ARGUMENT>
-    static inline RESULT cast(ARGUMENT& value) throw() {
+    static inline RESULT cast(ARGUMENT& value) noexcept
+    {
       if (Constraint<sizeof(RESULT) >= sizeof(ARGUMENT), Cast>::CONTAINER_FOOTPRINT_TOO_SMALL) {}
 // _COM_AZURE_DEV__BASE__PACKED__BEGIN
       union {
@@ -516,7 +561,8 @@ public:
     }
     
     template<class ARGUMENT>
-    static inline const RESULT cast(const ARGUMENT& value) throw() {
+    static inline const RESULT cast(const ARGUMENT& value) noexcept
+    {
       if (Constraint<sizeof(RESULT) >= sizeof(ARGUMENT), Cast>::CONTAINER_FOOTPRINT_TOO_SMALL) {}
 // _COM_AZURE_DEV__BASE__PACKED__BEGIN
       union {
@@ -536,7 +582,8 @@ public:
     @see impersonate
   */
   template<class RESULT, class ARGUMENT>
-  static inline RESULT container(ARGUMENT value) throw() {
+  static inline RESULT container(ARGUMENT value) noexcept
+  {
     return Container<RESULT>::cast(value);
   }
 
@@ -545,13 +592,15 @@ public:
   public:
     
     template<class ARGUMENT>
-    static inline RESULT cast(ARGUMENT& value) throw() {
+    static inline RESULT cast(ARGUMENT& value) noexcept
+    {
       if (Constraint<sizeof(RESULT) <= sizeof(ARGUMENT), Cast>::ELEMENT_FOOTPRINT_TOO_LARGE) {}
       return *reinterpret_cast<RESULT*>(&value);
     }
     
     template<class ARGUMENT>
-    static inline const RESULT cast(const ARGUMENT& value) throw() {
+    static inline const RESULT cast(const ARGUMENT& value) noexcept
+    {
       if (Constraint<sizeof(RESULT) <= sizeof(ARGUMENT), Cast>::ELEMENT_FOOTPRINT_TOO_LARGE) {}
       return *reinterpret_cast<const RESULT*>(&value);
     }
@@ -564,7 +613,8 @@ public:
     @see container
   */
   template<class RESULT, class ARGUMENT>
-  static inline RESULT extract(ARGUMENT value) throw() {
+  static inline RESULT extract(ARGUMENT value) noexcept
+  {
     return Extract<RESULT>::cast(value);
   }
 };

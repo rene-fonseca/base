@@ -19,18 +19,19 @@
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 /**
-  Timer wrapper class.
+  Timer.
   
   @short Timer.
-  @version 1.0
 */
 
 class _COM_AZURE_DEV__BASE__API Timer : public Object {
 private:
 
-  /** The start time in platform specific resolution. */
+  // TAG: we need nano resolution timer support also
+
+  /** The start time in microseconds. */
   uint64 startTime = 0;
-  /** The stop time in platform specific resolution. */
+  /** The stop time in microseconds. */
   uint64 stopTime = 0;
 public:
 
@@ -39,7 +40,6 @@ public:
     units.
     
     @short Elapsed time conversion.
-    @version 1.0
   */
   class _COM_AZURE_DEV__BASE__API ElapsedTime {
   private:
@@ -196,41 +196,83 @@ public:
       return nanoseconds/(24 * 60 * 60 * 1000000000ULL);
     }
   };
-  
+
+  /**
+    Measure frequency (ticks per second).
+  */
+  static uint64 getMeasureFrequency() noexcept;
+
+  /**
+    Returns the current clock time in microseconds. Time can go backwards.
+  */
+  static uint64 getRealNow() noexcept;
+
+  /**
+    Returns the current time in nanoseconds.
+  */
+  static uint64 getNowNS() noexcept;
+
+  /**
+    Returns the current time in microseconds.
+  */
+  static uint64 getNow() noexcept;
+
   /**
     Initializes the timer. The timer is started.
   */
-  Timer() noexcept;
+  inline Timer() noexcept
+  {
+    start();
+  }
 
   /**
     Starts the timer.
   */
-  void start() noexcept;
+  inline void start() noexcept
+  {
+    startTime = getNow();
+  }
 
   /**
     Stops the timer.
   */
-  void stop() noexcept;
+  inline void stop() noexcept
+  {
+    stopTime = getNow();
+  }
 
   /**
     Returns the start time in microseconds.
   */
-  uint64 getStartTime() const noexcept;
+  inline uint64 getStartTime() const noexcept
+  {
+    return startTime;
+  }
 
   /**
     Returns the stop time in microseconds.
   */
-  uint64 getStopTime() const noexcept;
+  inline uint64 getStopTime() const noexcept
+  {
+    return stopTime;
+  }
 
   /**
     Returns the number of elapsed microseconds between start and stop times.
   */
-  uint64 getMicroseconds() const noexcept;
+  uint64 getMicroseconds() const noexcept
+  {
+    return stopTime - startTime;
+  }
 
   /**
     Returns the number of elapsed microseconds since start.
   */
-  uint64 getLiveMicroseconds() const noexcept;
+  uint64 getLiveMicroseconds() const noexcept
+  {
+    auto now = getNow();
+    return now - startTime;
+  }
 };
 
 /**
@@ -249,32 +291,27 @@ private:
   Timer timer;
 public:
 
-  inline TimeScope() noexcept {
+  inline TimeScope() noexcept
+  {
   }
 
-  inline void start() throw() {
+  inline void start() noexcept
+  {
     timer.start();
   }
 
-  inline void stop() throw() {
+  inline void stop() noexcept
+  {
     timer.stop();
   }
 
-  void dump() const throw(IOException);
+  void dump() const;
 
-  inline ~TimeScope() {
+  inline ~TimeScope()
+  {
     stop();
     dump();
   }
 };
-
-/**
-  Times the current scope. Writes the elapsed time to fout when the scope is exited.
-*/
-#define timeScope() TimeScope _COM_AZURE_DEV__BASE__timer
-
-#define startScopeTimer() _COM_AZURE_DEV__BASE__timer.start()
-
-#define stopScopeTimer() _COM_AZURE_DEV__BASE__timer.stop()
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

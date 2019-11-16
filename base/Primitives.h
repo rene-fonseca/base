@@ -60,14 +60,14 @@ _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 /* 128 bit signed integer. */
 struct int128 {
-  uint64 a;
-  uint64 b;
+  uint64 low;
+  uint64 high;
 };
 
 /* 128 bit unsigned integer. */
 struct uint128 {
-  uint64 a;
-  uint64 b;
+  uint64 low;
+  uint64 high;
 };
 
 /** A native wide character. */

@@ -451,6 +451,38 @@ public:
   }
 
   /**
+    Returns the first element of the allocator as a modifying iterator.
+  */
+  inline Iterator begin() noexcept
+  {
+    return Iterator(getElements());
+  }
+
+  /**
+    Returns the end of the allocator as a modifying iterator.
+  */
+  inline Iterator end() noexcept
+  {
+    return Iterator(getElements() + getSize());
+  }
+
+  /**
+    Returns the first element of the allocator as a non-modifying iterator.
+  */
+  inline ReadIterator begin() const noexcept
+  {
+    return ReadIterator(getElements());
+  }
+
+  /**
+    Returns the end of the allocator as a non-modifying iterator.
+  */
+  inline ReadIterator end() const noexcept
+  {
+    return ReadIterator(getElements() + getSize());
+  }
+
+  /**
     Returns a modifying enumerator of the allocator.
   */
   inline Enumerator getEnumerator() noexcept
@@ -500,6 +532,12 @@ public:
   inline void ensureCapacity() noexcept
   {
     capacity = size;
+  }
+
+  /** Returns the capacity. */
+  inline MemorySize getCapacity() const noexcept
+  {
+    return capacity;
   }
 
   /**
@@ -665,17 +703,17 @@ public:
       return capacity * sizeof(TYPE);
     }
     if (align(capacity * sizeof(TYPE)) > align(size * sizeof(TYPE))) {
-      if (IsRelocateable<TYPE>()) {
-        elements = resize(elements, size, capacity); // ok if this throws
-        return (capacity - Heap::getSize(elements)) * sizeof(TYPE); // could be negative
-      }
-      
       if (canResizeInplace()) {
         auto _elements = tryResize(elements, size, capacity);
         if (_elements) {
           BASSERT(_elements == elements);
           return (capacity - Heap::getSize(elements)) * sizeof(TYPE);
         }
+      }
+
+      if (IsRelocateable<TYPE>()) {
+        elements = resize(elements, size, capacity); // ok if this throws
+        return (capacity - Heap::getSize(elements)) * sizeof(TYPE); // could be negative
       }
 
       // std::is_move_constructible<TYPE>() && std::is_nothrow_move_constructible<TYPE>();

@@ -2163,6 +2163,28 @@ FormatOutputStream& operator<<(FormatOutputStream& stream, const TYPE& object) /
   return stream;
 }
 
+template<class TYPE>
+class DumpTypeInfo {
+public:
+
+  DumpTypeInfo()
+  {
+  }
+};
+
+template<class TYPE>
+FormatOutputStream& operator<<(FormatOutputStream& stream, DumpTypeInfo<TYPE>& type)
+{
+  stream << Type::getType<TYPE>() << EOL
+         << indent(2) << "is_constructible=" << std::is_constructible<TYPE>() << EOL
+         << indent(2) << "is_copy_constructible=" << std::is_copy_constructible<TYPE>() << EOL
+         << indent(2) << "is_move_constructible=" << std::is_move_constructible<TYPE>() << EOL
+         << indent(2) << "is_trivially_copyable=" << std::is_trivially_copyable<TYPE>() << EOL
+         << indent(2) << "is_move_assignable=" << std::is_move_assignable<TYPE>() << EOL
+         << indent(2) << "is_nothrow_destructible=" << std::is_nothrow_destructible<TYPE>() << EOL
+         << indent(2) << "is_destructible=" << std::is_destructible<TYPE>() << EOL;
+  return stream;
+}
 
 
 #if defined(_COM_AZURE_DEV__BASE__TESTS)

@@ -589,6 +589,8 @@ public:
   FormatOutputStream& operator<<(unsigned long value) throw(IOException);
   FormatOutputStream& operator<<(long long value) throw(IOException);
   FormatOutputStream& operator<<(unsigned long long value) throw(IOException);
+  FormatOutputStream& operator<<(int128 value) throw(IOException);
+  FormatOutputStream& operator<<(uint128 value) throw(IOException);
   FormatOutputStream& operator<<(float value) throw(IOException);
   FormatOutputStream& operator<<(double value) throw(IOException);
   FormatOutputStream& operator<<(long double value) throw(IOException);

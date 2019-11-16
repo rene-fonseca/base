@@ -23,6 +23,7 @@
 #include <base/TypeInfo.h>
 #include <base/UnitTest.h>
 #include <base/mathematics/Constants.h>
+#include <base/UInt128.h>
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
@@ -1124,6 +1125,125 @@ FormatOutputStream& FormatOutputStream::operator<<(unsigned long long value) thr
         value >>= 4; // bits per digit
         --dest;
       } while(value > 0);
+      ++dest; // go to first valid char in buffer
+      break;
+    }
+  default:
+    return *this; // do not do anything if base is unknown
+  }
+
+  addIntegerField(dest, sizeof(buffer) - (dest - buffer), false);
+  return *this;
+}
+
+FormatOutputStream& FormatOutputStream::operator<<(int128 _value) throw(IOException)
+{
+  UInt128 value(_value); // no sign
+  char buffer[sizeof(int128) * 8];
+  char* dest = &buffer[sizeof(buffer) - 1]; // point to least significant digit position
+
+  switch (getBase()) {
+  case FormatOutputStream::Symbols::BINARY:
+    {
+      do {
+        *dest = ASCIITraits::valueToDigit(static_cast<unsigned int>(value) & 0x1); // get digit
+        value >>= 1; // bits per digit
+        --dest;
+      } while (value);
+      ++dest; // go to first valid char in buffer
+      break;
+    }
+  case FormatOutputStream::Symbols::OCTAL:
+    {
+      do {
+        *dest = ASCIITraits::valueToDigit(static_cast<unsigned int>(value) & 0x7); // get digit
+        value >>= 3; // bits per digit
+        --dest;
+      } while (value);
+      ++dest; // go to first valid char in buffer
+      break;
+    }
+  case FormatOutputStream::Symbols::DECIMAL:
+    {
+      UInt128 temp = value.isHighBitSet() ? value : -value; // high bit is sign
+      const auto BASE = static_cast<UInt128>(10);
+      do {
+        *dest = ASCIITraits::valueToDigit(temp % BASE); // get digit
+        temp = temp/BASE;
+        --dest;
+      } while (temp);
+      ++dest; // go to first valid char in buffer
+      break;
+    }
+  case FormatOutputStream::Symbols::HEXADECIMAL:
+    {
+      do {
+        *dest = ASCIITraits::valueToDigit(
+          static_cast<unsigned int>(value) & 0xf,
+          (getFlags() & FormatOutputStream::Symbols::UPPER) != 0
+        ); // get bits of digit
+        value >>= 4; // bits per digit
+        --dest;
+      } while (value);
+      ++dest; // go to first valid char in buffer
+      break;
+    }
+  default:
+    return *this; // do not do anything if base is unknown
+  }
+
+  addIntegerField(dest, sizeof(buffer) - (dest - buffer), value.isHighBitSet()); // high bit is sign
+  return *this;
+}
+
+FormatOutputStream& FormatOutputStream::operator<<(uint128 _value) throw(IOException)
+{
+  UInt128 value(_value);
+  char buffer[sizeof(uint128) * 8];
+  char* dest = &buffer[sizeof(buffer) - 1]; // point to least significant digit position
+
+  switch (getBase()) {
+  case FormatOutputStream::Symbols::BINARY:
+    {
+      do {
+        *dest = ASCIITraits::valueToDigit(static_cast<unsigned int>(value) & 0x1); // get digit
+        value >>= 1; // bits per digit
+        --dest;
+      } while (value);
+      ++dest; // go to first valid char in buffer
+      break;
+    }
+  case FormatOutputStream::Symbols::OCTAL:
+    {
+      do {
+        *dest = ASCIITraits::valueToDigit(static_cast<unsigned int>(value) & 0x7); // get digit
+        value >>= 3; // bits per digit
+        --dest;
+      } while (value);
+      ++dest; // go to first valid char in buffer
+      break;
+    }
+  case FormatOutputStream::Symbols::DECIMAL:
+    {
+      const auto BASE = static_cast<UInt128>(10);
+      do {
+        *dest = ASCIITraits::valueToDigit(static_cast<uint8>(value % BASE)); // get digit
+        value /= BASE;
+        --dest;
+      } while (value);
+      ++dest; // go to first valid char in buffer
+      break;
+    }
+  case FormatOutputStream::Symbols::HEXADECIMAL:
+    {
+      do {
+        *dest = ASCIITraits::valueToDigit(
+          static_cast<unsigned int>(value) & 0xf,
+          (getFlags() & FormatOutputStream::Symbols::UPPER) != 0
+        ); // get bits of digit
+        value >>= 4; // bits per digit
+        --dest;
+      } while (value);
       ++dest; // go to first valid char in buffer
       break;
     }

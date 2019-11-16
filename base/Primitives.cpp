@@ -12,6 +12,7 @@
  ***************************************************************************/
 
 #include <base/Primitives.h>
+#include <base/UnitTest.h>
 #include <float.h>
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
@@ -70,5 +71,43 @@ uint8* MemorySpan::copyTo(uint8* dest) const noexcept
   }
   return dest;
 }
+
+
+#if defined(_COM_AZURE_DEV__BASE__TESTS)
+
+class TEST_CLASS(CPP) : public UnitTest {
+public:
+
+  TEST_PRIORITY(0);
+  TEST_PROJECT("base");
+  TEST_IMPACT(CRITICAL);
+  TEST_TIMEOUT_MS(30 * 1000);
+
+  void run() override
+  {
+    TEST_ASSERT(sizeof(char) == 1);
+    TEST_ASSERT(sizeof(char) == sizeof(unsigned char));
+    TEST_ASSERT(sizeof(short) == 2);
+    TEST_ASSERT(sizeof(short) == sizeof(unsigned short));
+    TEST_ASSERT((2 * sizeof(short)) == sizeof(int));
+    TEST_ASSERT(sizeof(int) == sizeof(unsigned int));
+    TEST_ASSERT(sizeof(int) <= sizeof(long));
+    TEST_ASSERT(sizeof(long) == sizeof(unsigned long));
+    TEST_ASSERT(sizeof(long) <= sizeof(long long));
+    TEST_ASSERT(sizeof(long long) == sizeof(unsigned long long));
+
+    TEST_ASSERT(sizeof(float) >= sizeof(uint32));
+    TEST_ASSERT(sizeof(double) >= sizeof(uint64));
+    TEST_ASSERT(sizeof(float) <= sizeof(double));
+    TEST_ASSERT(sizeof(double) <= sizeof(long double));
+
+    TEST_ASSERT((sizeof(size_t) == 4) || (sizeof(size_t) == 8));
+    TEST_ASSERT(sizeof(size_t) == sizeof(void*));
+  }
+};
+
+TEST_REGISTER(CPP);
+
+#endif
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

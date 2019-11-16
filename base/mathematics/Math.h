@@ -1707,7 +1707,7 @@ public:
   /**
     Returns true if the specified integer is a power of 2.
   */
-  static inline bool isPowerOf2(unsigned char value) noexcept
+  static inline bool isPowerOf2(uint8 value) noexcept
   {
     // powers of 2 for 4 bit nibble
     // 1, 2, 4, and 8 => 0b0000000100010110 => 0x0116
@@ -1719,14 +1719,14 @@ public:
   /**
     Returns true if the specified integer is a power of 2.
   */
-  static inline bool isPowerOf2(unsigned int value) noexcept
+  static inline bool isPowerOf2(uint32 value) noexcept
   {
     if (value != 0) {
       while ((value & 0xff) == 0) {
         value >>= 8;
       }
       if (value <= 0xff) {
-        return isPowerOf2(static_cast<unsigned char>(value));
+        return isPowerOf2(static_cast<uint8>(value));
       }
     }
     return false;
@@ -1742,7 +1742,7 @@ public:
         value >>= 8;
       }
       if (value <= 0xff) {
-        return isPowerOf2(static_cast<unsigned char>(value));
+        return isPowerOf2(static_cast<uint8>(value));
       }
     }
     return false;
@@ -1833,6 +1833,47 @@ public:
   {
     unsigned long long result = static_cast<unsigned long long>(1) << iLog2(value);
     return (result >= value) ? result : (result << 1);
+  }
+
+  static inline unsigned int getHighestBit(uint8 value) noexcept
+  {
+    static const uint8 BITS[16] = {0,1,2,2,3,3,3,3,4,4,4,4,4,4,4,4};
+    if (auto bits = BITS[value >> 4]) {
+      return bits + 4;
+    }
+    return BITS[value];
+  }
+
+  static inline unsigned int getHighestBit(uint16 value) noexcept
+  {
+    if (auto bits = getHighestBit(static_cast<uint8>(value >> 8))) {
+      return bits + 8;
+    }
+    return getHighestBit(static_cast<uint8>(value));
+  }
+
+  static inline unsigned int getHighestBit(uint32 value) noexcept
+  {
+    if (auto bits = getHighestBit(static_cast<uint16>(value >> 16))) {
+      return bits + 16;
+    }
+    return getHighestBit(static_cast<uint16>(value));
+  }
+
+  static inline unsigned int getHighestBit(uint64 value) noexcept
+  {
+    if (auto bits = getHighestBit(static_cast<uint32>(value >> 32))) {
+      return bits + 32;
+    }
+    return getHighestBit(static_cast<uint32>(value));
+  }
+
+  static inline unsigned int getHighestBit(const uint128& value) noexcept
+  {
+    if (auto bits = getHighestBit(value.high)) {
+      return bits + 64;
+    }
+    return getHighestBit(value.low);
   }
 
   /**
@@ -1926,6 +1967,8 @@ public:
   {
     return m * (n/gcd(m, n));
   }
+  
+  uint64 muldiv(uint64 value, uint64 mul, uint64 div);
 };
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

@@ -12,6 +12,7 @@
  ***************************************************************************/
 
 #include <base/mathematics/Math.h>
+#include <base/UInt128.h>
 #include <math.h>
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
@@ -158,6 +159,35 @@ int Math::gcd(int m, int n) noexcept
     N = rest;
   }
   return negative ? -N : N;
+}
+
+uint64 Math::muldiv(uint64 value, uint64 mul, uint64 div)
+{
+  const int b1 = getHighestBit(value);
+  const int b2 = getHighestBit(mul);
+  if ((b1 + b2) <= 64) {
+    return value * mul / div;
+  }
+  const unsigned int b3 = getHighestBit(div);
+  // b1 > 0 and b2 > 0
+  if (((1 << (b2 - 1) == mul) && (1 << (b3 - 1)) == div)) { // both are power of 2 // dont care if b3 == 0
+    const int shift = b2 - b3;
+    if (shift >= 0) {
+      return value << shift;
+    } else {
+      return value >> -shift;
+    }
+  }
+  
+  if ((mul % div) == 0) {
+    return value * (mul / div);
+  }
+  auto temp = UInt128(value) * UInt128(mul);
+  if (div) {
+    temp /= UInt128(div);
+  }
+  // return value * mul / div; // ignore overflow
+  return temp;
 }
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

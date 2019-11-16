@@ -155,6 +155,14 @@ public:
     return references;
   }
 
+  /**
+    Returns true if the object should be garbage collected automatically.
+  */
+  virtual bool useGarbageCollector() const noexcept
+  {
+    return false;
+  }
+
   inline ~ReferenceCountedObject()
   {
   }

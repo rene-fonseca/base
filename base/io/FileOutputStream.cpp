@@ -15,15 +15,29 @@
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
+FileOutputStream::FileOutputStream()
+{
+}
+
 FileOutputStream::FileOutputStream(
   const String& path,
   unsigned int options,
   unsigned int permissions) throw(FileNotFound)
-  : file(path, File::WRITE, options) {
+  : file(path, File::WRITE, options)
+{
 }
 
 FileOutputStream::FileOutputStream(
   const FileOutputStream& copy) throw() : file(copy.file) {
+}
+
+bool FileOutputStream::open(
+  const String& path,
+  unsigned int options,
+  unsigned int permissions) throw(FileNotFound)
+{
+  file = File(path, File::WRITE, options);
+  return true;
 }
 
 FileOutputStream& FileOutputStream::operator=(const FileOutputStream& assign) throw() {

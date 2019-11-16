@@ -22,6 +22,10 @@
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
+template<class TYPE> class Reference;
+
+_COM_AZURE_DEV__BASE__API void garbageCollect(Reference<ReferenceCountedObject>& reference);
+
 /**
   Automation pointer for reference counting objects. This class is responsible
   for counting the total number of references to an object. The pointer
@@ -244,7 +248,16 @@ public:
     value = _value;
     if (oldValue) { // skip if pointer is invalid
       if (ReferenceCountedObject::ReferenceImpl(*oldValue).removeReference()) {
+#if 1
+        if (oldValue->useGarbageCollector()) {
+          Reference<ReferenceCountedObject> r(oldValue);
+          base::garbageCollect(r);
+        } else {
+          delete oldValue; // could throw
+        }
+#else
         delete oldValue; // could throw
+#endif
       }
     }
   }
@@ -360,6 +373,12 @@ public:
     return value != nullptr;
   }
   
+  /** Garbage collects object. Object will be set to nullptr. */
+  inline void garbageCollect()
+  {
+    base::garbageCollect(*this);
+  }
+  
   /**
     Destroys the automation pointer.
   */
@@ -379,6 +398,25 @@ inline void swapper(Reference<TYPE>& a, Reference<TYPE>& b)
 {
   Reference<TYPE>::swapper(a, b);
 }
+
+/** Requests automatic garbage collection on destruction. */
+class GarbageCollect {
+private:
+
+  Reference<ReferenceCountedObject> object;
+public:
+  
+  GarbageCollect(Reference<ReferenceCountedObject> _object) noexcept
+    : object(_object) {
+  }
+
+  inline ~GarbageCollect() noexcept
+  {
+    if (object) {
+      object.garbageCollect();
+    }
+  }
+};
 
 /** Type that supports all references. */
 typedef Reference<ReferenceCountedObject> AnyReference;

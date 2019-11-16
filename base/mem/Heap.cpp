@@ -15,6 +15,7 @@
 #include <base/mem/Heap.h>
 #include <base/OperatingSystem.h>
 #include <base/concurrency/AtomicCounter.h>
+#include <base/UnitTest.h>
 
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
 #  include <windows.h>
@@ -72,7 +73,12 @@ void* HeapImpl::resize(void* heap, MemorySize size) throw(MemoryException)
     throw bindCause(MemoryException("Unable to resize heap.", Type::getType<HeapImpl>()), ::GetLastError());
   }
 #else // unix
-  result = realloc(heap, size);
+  if (size) {
+    result = realloc(heap, size);
+  } else {
+    free(heap);
+    result = nullptr;
+  }
   if ((!result) && (size != 0)) { // was memory allocated
     throw MemoryException("Unable to resize heap.", Type::getType<HeapImpl>());
   }
@@ -151,5 +157,42 @@ void Heap::onLeak(const Type* type, void* buffer, MemorySize size)
   }
   // BASSERT(!"Leaked memory detected.");
 }
+
+#if defined(_COM_AZURE_DEV__BASE__TESTS)
+
+class TEST_CLASS(Heap) : public UnitTest {
+public:
+
+  TEST_PRIORITY(0);
+  TEST_PROJECT("base/mem");
+  TEST_IMPACT(CRITICAL);
+  TEST_TIMEOUT_MS(30 * 1000);
+
+  void run() override
+  {
+    const MemorySize minimumSize = Heap::getMinimumSize();
+    double* heap1 = Heap::allocate<double>(1234);
+    TEST_ASSERT(heap1);
+    heap1 = Heap::resize(heap1, 2345);
+    MemorySize size = Heap::getSize(heap1);
+    TEST_ASSERT(size >= 2345);
+    unsigned int* heap2 = Heap::resize<unsigned int>(nullptr, 9876);
+    TEST_ASSERT(heap2);
+    heap1 = Heap::resize(heap1, 3456);
+    TEST_ASSERT(heap1);
+    heap1 = Heap::resize(heap1, 321);
+    TEST_ASSERT(heap1);
+    Heap::release(heap1);
+    heap2 = Heap::resize(heap2, 0); // release
+    TEST_ASSERT(!heap2);
+    // Heap::release(heap2);
+    bool* heap3 = Heap::resize<bool>(nullptr, 0);
+    TEST_ASSERT(!heap3);
+  }
+};
+
+TEST_REGISTER(Heap);
+
+#endif
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

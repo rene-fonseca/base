@@ -133,6 +133,12 @@ protected:
 class _COM_AZURE_DEV__BASE__API Heap : private HeapImpl {
 public:
 
+  /** Returns the minimum block size. */
+  static inline MemorySize getMinimumSize() noexcept
+  {
+    return HeapImpl::getMinimumSize();
+  }
+
   /**
     Allocates the specified number of bytes on the heap. Raises
     MemoryException if unable to allocate the memory block.

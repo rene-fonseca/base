@@ -62,11 +62,7 @@ bool OpenFileDialog::execute() throw(UserInterfaceException)
   *dest++ = L'\0'; // final termination;
   *dest++ = L'\0'; // final termination;
   
-  PrimitiveStackArray<wchar> buffer(4096);
-  bassert(
-    buffer.size() >= 256,
-    UnexpectedFailure("Thread local buffer is too small", this)
-  );
+  PrimitiveStackArray<wchar> buffer(1024);
   const std::wstring _filename(toWide(filename));
   copy(
     static_cast<wchar*>(buffer),

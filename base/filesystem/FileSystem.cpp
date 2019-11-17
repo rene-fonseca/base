@@ -337,7 +337,8 @@ String FileSystem::toUrl(const String& path) throw(FileSystemException) {
   return result;
 }
 
-String FileSystem::getCurrentFolder() throw(FileSystemException) {
+String FileSystem::getCurrentFolder() throw(FileSystemException)
+{
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   DWORD length = ::GetCurrentDirectory(0, NULL);
   if (length == 0) {

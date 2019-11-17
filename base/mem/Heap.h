@@ -383,8 +383,9 @@ private:
 public:
 
   /** Constructs buffer of given size. */
-  PrimitiveStackArray(MemorySize size = 0)
+  PrimitiveStackArray(MemorySize size = 0) // we could use STACK_SIZE - but makes it harder to refactor later
   {
+    BASSERT(size <= STACK_SIZE);
     if (size > 0) {
       if (size > STACK_SIZE) {
         heap.resize(size);

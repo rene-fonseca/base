@@ -702,7 +702,7 @@ String HTTPSRequest::getResponseHeader()
   }
 
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
-  PrimitiveStackArray<uint8> buffer(4 * 4096);
+  PrimitiveArray<uint8> buffer(4 * 4096);
   DWORD size = buffer.size();
   while (size < (1024 * 1024)) {
     if (!HttpQueryInfoW(_handle->hRequest,

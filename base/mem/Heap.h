@@ -15,6 +15,7 @@
 
 #include <base/MemoryException.h>
 #include <base/Primitives.h>
+#include <base/Functor.h>
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 

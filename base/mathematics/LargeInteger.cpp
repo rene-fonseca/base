@@ -24,7 +24,7 @@ void LargeIntegerImpl::clear(Word* value, MemorySize size) noexcept
 
 void LargeIntegerImpl::assign(Word* restrict dest, const Word* restrict src, MemorySize size) noexcept
 {
-  if (!INLINE_ASSERT(dest != src)) {
+  if (!/*INLINE_ASSERT*/(dest != src)) {
     return; // self assignment - violates restrict
   }
   copy(dest, src, size);
@@ -83,8 +83,14 @@ void LargeIntegerImpl::rightShift(Word* value, MemorySize size, unsigned int shi
 {
   unsigned int bitShift = shift % WORD_BITS;
   unsigned int wordShift = shift / WORD_BITS;
-  const Word* src = value + wordShift;
   Word* dest = value;
+  if (wordShift >= size) {
+    for (const Word* end = value + size; dest != end; ++dest) { // mask end of value
+      *dest = 0;
+    }
+    return;
+  }
+  const Word* src = value + wordShift;
 
   if (bitShift != 0) {
     const unsigned int nextBitShift = WORD_BITS - bitShift; // 0 < nextBitShift < WORD_BITS
@@ -300,6 +306,8 @@ LargeIntegerImpl::Word LargeIntegerImpl::divide(Word* value, MemorySize size, Wo
   return remainder;
 }
 
+
+
 // may remainder be the same as dividend - I think so
 void LargeIntegerImpl::divide(
   Word* restrict quotient,
@@ -308,10 +316,8 @@ void LargeIntegerImpl::divide(
   const Word* restrict divisor,
   MemorySize size) noexcept
 {
-  // TAG: if divisior can be in Word then use
-  // Word x divide(value, size, divisor);
+  PrimitiveStackArray<Word> temp(size);
 
-  PrimitiveArray<Word> temp(size);
   clear(quotient, size);
   Word* tempDividend = remainder;
   assign(tempDividend, dividend, size);

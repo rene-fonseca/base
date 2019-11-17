@@ -22,45 +22,50 @@ _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
   @ingroup mathematics
 */
 
-class LargeInteger {
+class _COM_AZURE_DEV__BASE__API LargeInteger {
 private:
 
   /** The value. */
-  unsigned int* value = nullptr;
-  /** The size of the integer. */
-  unsigned int size = 0;
+  Allocator<unsigned int> value;
 public:
 
-  inline LargeInteger() {
-  }
+  LargeInteger();
   
-  inline LargeInteger(const LargeInteger& copy) noexcept
-    : value(copy.value), size(copy.size)
-  {
-  }
+  LargeInteger(const LargeInteger& copy);
   
-  inline LargeInteger& operator=(const LargeInteger& value)
+  LargeInteger(LargeInteger&& move);
+
+  LargeInteger& operator=(const LargeInteger& assign);
+
+  LargeInteger& operator=(LargeInteger&& assign);
+
+  inline MemorySize getSize() const noexcept
   {
-    if (this != &value) {
-      // ...
-    }
-    return *this;
+    return value.getSize();
   }
+
+  void setSize(MemorySize size);
+
+  void extend(MemorySize size);
+
+  void trim();
+
+  bool isZero() const noexcept;
   
   /**
     Unary plus.
   */
-  LargeInteger plus() const;
+  LargeInteger plus() const noexcept;
   
   /**
     Unary minus.
   */
-  LargeInteger minus() const;
+  LargeInteger minus() const noexcept;
   
   /**
     Negates this vector.
   */
-  LargeInteger& negate();
+  LargeInteger& negate() noexcept;
   
   /**
     Adds the specified vector to this vector.
@@ -104,33 +109,45 @@ public:
   /**
     Returns true if the vectors are equal.
 
-    @param vector LargeInteger to be compared.
+    @param value LargeInteger to be compared.
   */
-  bool operator==(const LargeInteger& vector) const;
+  bool operator==(const LargeInteger& value) const noexcept;
   
-  bool operator!=(const LargeInteger& vector) const;
+  inline bool operator!=(const LargeInteger& value) const noexcept
+  {
+    return !operator==(value);
+  }
   
-  bool operator<(const LargeInteger& vector) const;
+  bool operator<(const LargeInteger& value) const noexcept;
   
-  bool operator<=(const LargeInteger& vector) const;
+  bool operator<=(const LargeInteger& value) const noexcept;
   
-  bool operator>(const LargeInteger& vector) const;
+  inline bool operator>(const LargeInteger& value) const noexcept
+  {
+    return !operator<=(value);
+  }
   
-  bool operator>=(const LargeInteger& vector) const;
+  inline bool operator>=(const LargeInteger& value) const noexcept
+  {
+    return !operator>(value);
+  }
 
-  LargeInteger& operator&(const LargeInteger& value);
-  LargeInteger& operator|(const LargeInteger& value);
-  LargeInteger& operator~();
+  LargeInteger& operator&(const LargeInteger& value) noexcept;
   
-  LargeInteger& operator<<=(unsigned int value);
-  LargeInteger& operator>>=(unsigned int value);
+  LargeInteger& operator|(const LargeInteger& value) noexcept;
+  
+  LargeInteger& operator~() noexcept;
+  
+  LargeInteger& operator<<=(unsigned int value) noexcept;
+  
+  LargeInteger& operator>>=(unsigned int value) noexcept;
   
   /**
     Adds the specified vector from this vector.
 
     @param value The value to be added.
   */
-  inline LargeInteger& operator+=(const LargeInteger& value)
+  inline LargeInteger& operator+=(const LargeInteger& value) noexcept
   {
     return add(value);
   }
@@ -140,7 +157,7 @@ public:
 
     @param value The value to be subtracted.
   */
-  inline LargeInteger& operator-=(const LargeInteger& value)
+  inline LargeInteger& operator-=(const LargeInteger& value) noexcept
   {
     return subtract(value);
   }
@@ -150,7 +167,7 @@ public:
 
     @param value The multiplicator.
   */
-  inline LargeInteger& operator*=(int value)
+  inline LargeInteger& operator*=(int value) noexcept
   {
     return multiply(value);
   }
@@ -160,7 +177,7 @@ public:
 
     @param value The divisor.
   */
-  inline LargeInteger& operator/=(int value)
+  inline LargeInteger& operator/=(int value) noexcept
   {
     return divide(value);
   }
@@ -179,6 +196,16 @@ public:
   inline LargeInteger operator-() const
   {
     return minus();
+  }
+
+  inline bool operator!() const noexcept
+  {
+    return isZero();
+  }
+
+  inline operator bool() const noexcept
+  {
+    return !isZero();
   }
   
   

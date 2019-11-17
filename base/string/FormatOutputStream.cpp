@@ -1304,11 +1304,11 @@ void convertFloatingPoint(
   BASSERT((integerSize > 0) && (integerSize <= 513));
 
   // allocate integers on stack (potentially 10kb)
-  PrimitiveArray<unsigned int> S(integerSize);
-  PrimitiveArray<unsigned int> R(integerSize);
-  PrimitiveArray<unsigned int> Mminus(integerSize);
-  PrimitiveArray<unsigned int> Mdouble(integerSize); // 2 * M- (only initialized if required)
-  PrimitiveArray<unsigned int> temp(integerSize);
+  PrimitiveStackArray<unsigned int> S(integerSize);
+  PrimitiveStackArray<unsigned int> R(integerSize);
+  PrimitiveStackArray<unsigned int> Mminus(integerSize);
+  PrimitiveStackArray<unsigned int> Mdouble(integerSize); // 2 * M- (only initialized if required)
+  PrimitiveStackArray<unsigned int> temp(integerSize);
 
   LargeIntegerImpl::clear(R, integerSize);
   LargeIntegerImpl::assign(R, mantissa, mantissaSize);
@@ -1616,7 +1616,7 @@ void FormatOutputStream::writeFloatingPointType(
   int base2Exponent,
   unsigned int valueFlags) throw(IOException)
 {
-  PrimitiveArray<char> buffer(128 + 2 + significant/3); // N = 2 + floor[n/log2(10)] => N < 2 + n/3 // TAG: 128 should be calculated
+  PrimitiveStackArray<char> buffer(128 + 2 + significant/3); // N = 2 + floor[n/log2(10)] => N < 2 + n/3 // TAG: 128 should be calculated
   char* output = buffer;
   const char* radix = nullptr;
   unsigned int flags = context.flags;
@@ -1653,7 +1653,7 @@ void FormatOutputStream::writeFloatingPointType(
       }
     } else {
 
-      PrimitiveArray<uint8> digitBuffer((significant + 1)/3); // N = 2 + floor[n/log2(10)] => N < 3 + n/3
+      PrimitiveStackArray<uint8> digitBuffer((significant + 1)/3); // N = 2 + floor[n/log2(10)] => N < 3 + n/3
       unsigned int numberOfDigits = 0;
       int exponent = 0;
       CutMode cutMode = CUT_MODE_NOGARBAGE;

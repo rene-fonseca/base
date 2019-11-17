@@ -121,7 +121,7 @@ namespace {
         result = native;
         return result;
       }
-      PrimitiveArray<char> buffer(4096);
+      PrimitiveStackArray<char> buffer(4096);
       while (buffer.size() < (1024 * 1024)) {
         if (CFStringGetCString(_text, buffer, buffer.size(), kCFStringEncodingUTF8)) {
           result = buffer;

@@ -265,7 +265,7 @@ String DynamicLinker::getImagePath(const void* address)
         }
       }
 
-      PrimitiveArray<wchar> buffer(1024);
+      PrimitiveStackArray<wchar> buffer(1024);
       while (buffer.size() < (64 * 1024)) {
         DWORD length = GetModuleFileNameW(handle, buffer, buffer.size());
         if (length == 0) {
@@ -541,7 +541,7 @@ String DynamicLinker::getSymbolName(const void* address)
   if (symFromAddr) {
     DWORD64 displacement = 0;
     const unsigned int MAXIMUM_NAME = 4096; // nested templates can give very long names
-    PrimitiveArray<uint8> buffer(MAXIMUM_NAME + sizeof(SYMBOL_INFO) - 1);
+    PrimitiveStackArray<uint8> buffer(MAXIMUM_NAME + sizeof(SYMBOL_INFO) - 1);
     SYMBOL_INFO* info = reinterpret_cast<SYMBOL_INFO*>(static_cast<uint8*>(buffer));
     info->SizeOfStruct = sizeof(SYMBOL_INFO);
     info->MaxNameLen = MAXIMUM_NAME;

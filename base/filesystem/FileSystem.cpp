@@ -343,7 +343,7 @@ String FileSystem::getCurrentFolder() throw(FileSystemException) {
   if (length == 0) {
     throw FileSystemException("Unable to get current folder", Type::getType<FileSystem>());
   }
-  PrimitiveArray<wchar> buffer(length);
+  PrimitiveStackArray<wchar> buffer(length);
   length = ::GetCurrentDirectory(length, buffer);
   if (length == 0) {
     throw FileSystemException("Unable to get current folder", Type::getType<FileSystem>());

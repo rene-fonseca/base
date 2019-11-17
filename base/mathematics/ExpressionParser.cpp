@@ -34,9 +34,10 @@ double ExpressionEvaluator::onFunction(
   throw ExpressionException("Invalid function", this);
 }
 
-double ExpressionEvaluator::evaluate() const throw(ExpressionException) {
+double ExpressionEvaluator::evaluate() const throw(ExpressionException)
+{
   List<Node>::ReadEnumerator enu = nodes.getReadEnumerator();
-  PrimitiveArray<double> stack(nodes.getSize());
+  PrimitiveStackArray<double> stack(nodes.getSize());
   int index = -1;
   while (enu.hasNext()) {
     Node node = *enu.next();
@@ -105,9 +106,10 @@ double ExpressionEvaluator::evaluate() const throw(ExpressionException) {
   return stack[0];
 }
   
-double ExpressionEvaluator::evaluate(const double* variables) const throw(ExpressionException) {
+double ExpressionEvaluator::evaluate(const double* variables) const throw(ExpressionException)
+{
   List<Node>::ReadEnumerator enu = nodes.getReadEnumerator();
-  PrimitiveArray<double> stack(nodes.getSize());
+  PrimitiveStackArray<double> stack(nodes.getSize());
   int index = -1;
   while (enu.hasNext()) {
     Node node = *enu.next();
@@ -176,8 +178,9 @@ double ExpressionEvaluator::evaluate(const double* variables) const throw(Expres
   return stack[0];
 }
 
-void ExpressionEvaluator::evaluate(const double* variables, double* results, unsigned int count) const throw(ExpressionException) {
-  PrimitiveArray<double> stack(nodes.getSize());
+void ExpressionEvaluator::evaluate(const double* variables, double* results, unsigned int count) const throw(ExpressionException)
+{
+  PrimitiveStackArray<double> stack(nodes.getSize());
   for (unsigned int i = 0; i < count; ++i) {
     List<Node>::ReadEnumerator enu = nodes.getReadEnumerator();
     int index = -1;

@@ -134,7 +134,7 @@ HashTable<String, unsigned int> InetInterface::getInterfaceNames() throw() {
        (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__CYGWIN))
   int handle = socket(PF_INET, SOCK_STREAM, 0);
   try {
-    PrimitiveArray<char> buffer(1024);
+    PrimitiveStackArray<char> buffer(1024);
     struct ifconf ifc;
     ifc.ifc_len = buffer.size();
     ifc.ifc_buf = buffer;

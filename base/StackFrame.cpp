@@ -227,7 +227,7 @@ StackFrame StackFrame::getStack(unsigned int skip, unsigned int levels)
     }
   }
   
-  PrimitiveArray<void*> buffer(1024);
+  PrimitiveStackArray<void*> buffer(1024);
   unsigned int count = 0;
   while (buffer.size() < (64 * 1024)) {
     count = getStack(buffer, minimum<MemorySize>(levels, buffer.size()), skip);
@@ -414,7 +414,7 @@ void StackFrame::dump(unsigned int skip, unsigned int levels)
     }
   }
 
-  PrimitiveArray<void*> buffer(1024);
+  PrimitiveStackArray<void*> buffer(1024);
   MemorySize count = 0;
   while (buffer.size() < (64 * 1024)) {
     count = getStack(buffer, minimum<MemorySize>(levels, buffer.size()), skip);

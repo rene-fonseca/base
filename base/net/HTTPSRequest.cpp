@@ -128,7 +128,7 @@ namespace {
         result = native;
         return result;
       }
-      PrimitiveArray<char> buffer(4096);
+      PrimitiveStackArray<char> buffer(4096);
       while (buffer.size() < (1024 * 1024)) {
         if (CFStringGetCString(_text, buffer, buffer.size(), kCFStringEncodingUTF8)) {
           result = buffer;
@@ -327,7 +327,7 @@ void HTTPSRequest::send(const String& _body)
   }
   _handle->status = word;
 
-  PrimitiveArray<char> buffer(1024);
+  PrimitiveStackArray<char> buffer(1024);
   size = buffer.size();
   while (true) {
     if (!HttpQueryInfoA(_handle->hRequest,
@@ -561,7 +561,7 @@ void HTTPSRequest::getResponse(PushInterface* pi)
 
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
 
-  PrimitiveArray<uint8> buffer(16 * 1024);
+  PrimitiveStackArray<uint8> buffer(16 * 1024);
   while (true) {
     DWORD bytesRead = 0;
     BOOL status = InternetReadFile(
@@ -583,7 +583,7 @@ void HTTPSRequest::getResponse(PushInterface* pi)
 
   BASSERT(_handle->stream);
   
-  PrimitiveArray<uint8> buffer(16 * 1024);
+  PrimitiveStackArray<uint8> buffer(16 * 1024);
   // CFReadStreamOpen(_handle->stream); // we read in send()
   unsigned int offset = 1;
   buffer[0] = _handle->pendingByte; // read in send()
@@ -650,7 +650,7 @@ String HTTPSRequest::getResponseHeader(const String& name)
   }
 
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
-  PrimitiveArray<char> buffer(1024);
+  PrimitiveStackArray<char> buffer(1024);
   DWORD size = buffer.size();
   while (size < (1024 * 1024)) {
     strcpy(static_cast<char*>(buffer), name.native());
@@ -702,7 +702,7 @@ String HTTPSRequest::getResponseHeader()
   }
 
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
-  PrimitiveArray<uint8> buffer(4 * 4096);
+  PrimitiveStackArray<uint8> buffer(4 * 4096);
   DWORD size = buffer.size();
   while (size < (1024 * 1024)) {
     if (!HttpQueryInfoW(_handle->hRequest,
@@ -727,8 +727,8 @@ String HTTPSRequest::getResponseHeader()
   CFDataRef data = CFHTTPMessageCopySerializedMessage(_handle->response);
   CFDictionaryRef _dict = CFHTTPMessageCopyAllHeaderFields(_handle->response);
   auto count = CFDictionaryGetCount(_dict);
-  PrimitiveArray<CFTypeRef> keys(count);
-  PrimitiveArray<CFTypeRef> values(count);
+  PrimitiveStackArray<CFTypeRef> keys(count);
+  PrimitiveStackArray<CFTypeRef> values(count);
   CFDictionaryGetKeysAndValues(_dict, (const void **)static_cast<CFTypeRef*>(keys), (const void **)static_cast<CFTypeRef*>(values));
   for (MemorySize i = 0; i < count; ++i) {
     // CFTypeRef k = keys[i];

@@ -393,7 +393,7 @@ public:
       if (!((this->count <= STACK_SIZE) && (count <= STACK_SIZE))) { // use heap
         heap.resize(count); // copies if already in use
         if (this->count <= STACK_SIZE) {
-          copy(heap, stack, this->count);
+          copy<TYPE>(heap, stack, this->count);
         }
       }
       this->count = count;

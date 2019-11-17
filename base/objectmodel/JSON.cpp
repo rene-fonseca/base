@@ -367,7 +367,7 @@ Reference<ObjectModel::Value> JSON::parse(const String& text)
 Reference<ObjectModel::Value> JSON::parseFile(const String& path)
 {
   // TAG: need support for streaming
-  PrimitiveArray<uint8> buffer(0);
+  PrimitiveStackArray<uint8> buffer(0);
   {
     File file(path, File::READ, 0);
     buffer.resize(file.getSize());

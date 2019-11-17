@@ -65,7 +65,7 @@ void Trace::member(const void* pointer, const char* message) throw()
 {
   bassert(message, NullPointer(Type::getType<Trace>()));
   const MemorySize length = getNullTerminatedLength(message);
-  PrimitiveArray<char> buffer(22 + length + 1);
+  PrimitiveStackArray<char> buffer(22 + length + 1);
   // TAG: remove sprintf dependency
   sprintf(buffer, "%p >> %s", pointer, message); // sprintf must be MT-safe
 #if (_COM_AZURE_DEV__BASE__INT_SIZE > 8)

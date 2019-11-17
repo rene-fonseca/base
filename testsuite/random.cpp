@@ -92,7 +92,7 @@ public:
       // TAG: add option to control output type, int, uint, base64, bytes, ...
       // TAG: add file dest
       RandomInputStream& ris = Random::getRandomInputStream();
-      PrimitiveArray<uint8> buffer(4096);
+      PrimitiveStackArray<uint8> buffer(4096);
       while (true) {
         ris.read(buffer, buffer.size(), false);
         auto bytesToWrite = buffer.size();

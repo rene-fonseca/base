@@ -1485,7 +1485,7 @@ public:
   {
     String key = convert(_key);
     String text = convert(_text);
-    PrimitiveArray<uint8> buffer(text.getLength());
+    PrimitiveStackArray<uint8> buffer(text.getLength());
     if (key.getLength() == (128/8)) {
       aes(buffer, reinterpret_cast<const uint8*>(key.native()), reinterpret_cast<const uint8*>(text.native()), text.getLength(), AdvancedEncryptionStandard::CIPHER_128);
     } else if (key.getLength() == (192/8)) {

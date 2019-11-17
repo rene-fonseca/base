@@ -384,7 +384,7 @@ protected:
         return; // nothing to do
       }
 
-      PrimitiveArray<Node*> nodes(n);
+      PrimitiveStackArray<Node*> nodes(n);
       {
         auto src = first;
         for (MemorySize i = 0; i < n; ++i) { // fill buffer

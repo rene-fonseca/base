@@ -77,7 +77,7 @@ bool SaveFileDialog::execute() throw(UserInterfaceException)
   *dest++ = L'\0'; // final termination;
   *dest++ = L'\0'; // final termination;
   
-  PrimitiveArray<wchar> buffer(4096);
+  PrimitiveStackArray<wchar> buffer(4096);
   bassert(
     buffer.size() >= 256,
     UnexpectedFailure("Thread local buffer is too small", this)

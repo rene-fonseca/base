@@ -37,6 +37,7 @@
 #include <base/string/FormatOutputStream.h>
 #include <base/sound/SoundDevice.h>
 #include <base/Literal.h>
+#include <base/Profiler.h>
 #include <base/UnitTest.h>
 #include <base/Module.h>
 #include <stdlib.h>
@@ -313,6 +314,22 @@ FileDescriptorOutputStream standardErrorStream(
 FormatOutputStream _COM_AZURE_DEV__BASE__API ferr(standardErrorStream);
 
 SoundDevice SoundDevice::soundDevice;
+
+bool Profiler::enabled = 0;
+PreferredAtomicCounter Profiler::numberOfEvents = 0;
+bool Profiler::useJSON = false;
+FileOutputStream Profiler::fos;
+
+class ReleaseProfilerEvents {
+public:
+  
+  ~ReleaseProfilerEvents()
+  {
+    Profiler::release();
+  }
+};
+
+ReleaseProfilerEvents _releaseProfilerEvents;
 
 // _impl::RuntimeState runtimeState; // limited to state in this cpp
 

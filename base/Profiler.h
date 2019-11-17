@@ -30,19 +30,23 @@ _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
   https://docs.google.com/document/d/1CvAClvFfyA5R-PhYUmn5OOQtYMH4h6I0nSsKchNAySU/preview
 */
 
-// TAG: add push object to JSON writer
-
 class _COM_AZURE_DEV__BASE__API Profiler {
+private:
+
+  static bool enabled;
+  static PreferredAtomicCounter numberOfEvents;
+  static bool useJSON;
+  static FileOutputStream fos;
 public:
-  
-  // bool open(const String& path);
-  // TAG: store data in temporary file - for MappedFile
   
   static constexpr const char* CAT_MEMORY = "MEMORY";
   static constexpr const char* CAT_OBJECT = "OBJECT";
   static constexpr const char* CAT_IO = "IO";
   static constexpr const char* CAT_NETWORK = "NET";
-
+  static constexpr const char* CAT_WAIT = "WAIT";
+  static constexpr const char* CAT_EXCEPTION = "EXCEPTION"; // TAG: use as error - need to filter ok exceptions
+  static constexpr const char* CAT_RENDERER = "RENDERER";
+  
   enum {
     EVENT_BEGIN = 'B',
     EVENT_END = 'E',
@@ -66,16 +70,16 @@ public:
     uint64 tts; // optional
   };
   
-  static bool enabled;
-  static MemorySize numberOfEvents;
-  static unsigned int flags;
-  static FileOutputStream fos;
-
   static uint64 getTimestamp();
   
+  /** Submit event. */
   static void pushEvent(const Event& e);
 
-  static bool open(const String& path);
+  /** Opens profiler. */
+  static bool open(const String& path, bool useJSON);
+  
+  /** Closes profiler. */
+  static void close();
   
   /** Enables profiler. */
   static void start();
@@ -83,27 +87,35 @@ public:
   /** Disables profiler. */
   static void stop();
   
-  static uint64 getNumberOfEvents()
+  /** Returns true if profiler is enabled. */
+  static inline bool isEnabled()
+  {
+    return enabled;
+  }
+  
+  /** Returns the number of events. */
+  static MemorySize getNumberOfEvents()
   {
     return numberOfEvents;
   }
   
+  /** Initializes event. */
+  static void initEvent(Event& e);
+
+  /** Task. */
   class Task {
   private:
     
-    Event e; // store in TLC
+    Event e;
   public:
     
-    inline Task(const char* name) noexcept
+    inline Task(const char* name, const char* cat = nullptr) noexcept
     {
+      initEvent(e);
       if (enabled) {
-        // beginTask();
-        clear(e);
-        e.pid = Process::getProcess().getId();
-        e.tid = reinterpret_cast<MemorySize>(Thread::getIdentifier());
-        e.ts = getTimestamp();
         e.ph = EVENT_BEGIN;
         e.name = name;
+        e.cat = cat;
         e.dur = 0;
         pushEvent(e);
       }
@@ -112,14 +124,124 @@ public:
     inline ~Task() noexcept
     {
       if (enabled) {
-        e.ts = getTimestamp();
+        auto ts = getTimestamp();
+        e.dur = ts - e.ts;
+        e.ts = ts;
         e.ph = EVENT_END;
         pushEvent(e);
       }
     }
-    
-    // TAG: connect on demand - from command line - add show events streaming
   };
+
+  class IOTask : public Task {
+  public:
+    
+    inline IOTask(const char* name) : Task(name, CAT_IO)
+    {
+    }
+  };
+
+  class WaitTask : public Task {
+  public:
+    
+    inline WaitTask(const char* name) : Task(name, CAT_WAIT)
+    {
+    }
+  };
+  
+  // TAG: network task?
+  
+  class HTTPSTask : public Task {
+  public:
+    
+    inline HTTPSTask(const char* name) : Task(name, CAT_IO)
+    {
+    }
+  };
+
+  static inline void pushObjectCreate(MemorySize size)
+  {
+    if (!enabled) {
+      return;
+    }
+    Event e;
+    initEvent(e);
+    e.ph = EVENT_OBJECT_CREATE;
+    e.cat = CAT_MEMORY;
+    pushEvent(e);
+  }
+  
+  static inline void pushObjectDestroy(MemorySize size)
+  {
+    if (!enabled) {
+      return;
+    }
+    Event e;
+    initEvent(e);
+    e.ph = EVENT_OBJECT_DESTROY;
+    e.cat = CAT_MEMORY;
+    pushEvent(e);
+  }
+
+  static inline void pushException(const char* type)
+  {
+    if (!enabled) {
+      return;
+    }
+    Event e;
+    initEvent(e);
+    e.ph = EVENT_OBJECT_DESTROY; // TAG: fixme
+    e.name = type;
+    e.cat = CAT_EXCEPTION;
+    pushEvent(e);
+  }
+
+  static inline void pushSignal(const char* name)
+  {
+    if (!enabled) {
+      return;
+    }
+    Event e;
+    initEvent(e);
+    e.ph = EVENT_OBJECT_DESTROY; // TAG: fixme
+    e.name = name;
+    e.cat = CAT_WAIT;
+    pushEvent(e);
+  }
+
+  static inline void pushFrame(const char* name)
+  {
+    if (!enabled) {
+      return;
+    }
+    Event e;
+    initEvent(e);
+    e.ph = EVENT_OBJECT_DESTROY; // TAG: fixme
+    e.name = name;
+    e.cat = CAT_RENDERER;
+    pushEvent(e);
+  }
+  
+  /** Release profiler resources. */
+  static void release();
+  
+  // TAG: process and thread stats - no sync for process
+  class Stats {
+  public:
+    
+    uint64 readOperations = 0;
+    uint64 writeOperations = 0;
+    uint64 readBytes = 0;
+    uint64 writtenBytes = 0;
+    uint64 readNetworkBytes = 0;
+    uint64 writtenNetworkBytes = 0;
+    uint64 allocatedBytes = 0;
+    uint64 deallocatedBytes = 0;
+    uint64 waiting = 0; // total time waiting in microseconds
+  };
+  
+  // static Stats& getProcessStats();
+  // static Stats& getThreadStats();
 };
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

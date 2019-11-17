@@ -255,7 +255,10 @@ namespace internal {
 }; // end of namespace - internal
 
 namespace internal {
-  
+
+  void initializeTimer();
+  const bool _initializeTimer = (initializeTimer(), true);
+
   // setup main thread object
   ThreadImpl threadImpl; // use this variable through 'threadLocal'
 }; // end of namespace internal

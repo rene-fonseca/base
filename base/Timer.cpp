@@ -36,14 +36,14 @@ inline const RESULT cast(SOURCE source)
   return reinterpret_cast<const RESULT>(source);
 }
 
-namespace {
+namespace internal {
 
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
-  inline uint64 getFrequency() noexcept
+  uint64 getFrequency() noexcept
   {
     LARGE_INTEGER frequency; // ticks per second
     BOOL status = ::QueryPerformanceFrequency(&frequency); // ignore any error
-    if (INLINE_ASSERT(status)) {
+    if (!INLINE_ASSERT(status)) {
       return 0;
     }
     BASSERT(frequency.QuadPart > 0);
@@ -65,9 +65,16 @@ namespace {
     return ticks;
   }
 
-  const uint64 frequency = getFrequency(); // counts in seconds
-  const uint64 processStartTicks = getTicksImpl();
-  const uint64 processStartReal = getRealImpl();
+  uint64 frequency = 0; // counts in seconds
+  uint64 processStartTicks = 0;
+  uint64 processStartReal = 0;
+
+  void initializeTimer()
+  {
+    frequency = getFrequency(); // counts in seconds
+    processStartTicks = getTicksImpl();
+    processStartReal = getRealImpl();
+  }
 #else
 
   inline uint64 getRealImpl() noexcept
@@ -117,22 +124,29 @@ namespace {
 #endif
   }
 
-  const uint64 processStartTicks = getTicksImpl(false);
-  const uint64 processStartTicksNS = getTicksImpl(true);
-  const uint64 processStartReal = getRealImpl();
+  uint64 processStartTicks = 0;
+  uint64 processStartTicksNS = 0;
+  uint64 processStartReal = 0;
+
+  void initializeTimer()
+  {
+    processStartTicks = getTicksImpl(false);
+    processStartTicksNS = getTicksImpl(true);
+    processStartReal = getRealImpl();
+  }
 #endif
 }
 
 uint64 Timer::getMeasureFrequency() noexcept
 {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
-  const auto startReal = getRealImpl(); // 100ns resolution
-  const uint64 startTicks = getTicksImpl();
+  const auto startReal = internal::getRealImpl(); // 100ns resolution
+  const uint64 startTicks = internal::getTicksImpl();
   unsigned int sleep = 10000;
   while (sleep < 1000000000) {
     Thread::nanosleep(sleep);
-    const auto stopReal = getRealImpl();
-    const uint64 stopTicks = getTicksImpl();
+    const auto stopReal = internal::getRealImpl();
+    const uint64 stopTicks = internal::getTicksImpl();
     const auto deltaTicks = stopTicks - startTicks;
     if (deltaTicks >= 1000000) {
       const auto elapsedTime = stopReal - startReal;
@@ -160,27 +174,27 @@ uint64 Timer::getMeasureFrequency() noexcept
 uint64 Timer::getRealNow() noexcept
 {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
-  return (getRealImpl() - processStartReal)/10;
+  return (internal::getRealImpl() - internal::processStartReal)/10;
 #else // unix
-  return getRealImpl() - processStartReal;
+  return internal::getRealImpl() - internal::processStartReal;
 #endif // flavor
 }
 
 uint64 Timer::getNowNS() noexcept
 {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
-  return Math::muldiv(getTicksImpl() - processStartTicks, 1000000000, frequency);
+  return Math::muldiv(internal::getTicksImpl() - internal::processStartTicks, 1000000000, internal::frequency);
 #else // unix
-  return getTicksImpl(true) - processStartTicksNS;
+  return internal::getTicksImpl(true) - internal::processStartTicksNS;
 #endif // flavor
 }
 
 uint64 Timer::getNow() noexcept
 {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
-  return Math::muldiv(getTicksImpl() - processStartTicks, 1000000, frequency);
+  return Math::muldiv(internal::getTicksImpl() - internal::processStartTicks, 1000000, internal::frequency);
 #else // unix
-  return getTicksImpl(false) - processStartTicks;
+  return internal::getTicksImpl(false) - internal::processStartTicks;
 #endif // flavor
 }
 

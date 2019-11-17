@@ -109,8 +109,8 @@ void* HeapImpl::tryResize(void* heap, MemorySize size) throw(MemoryException)
 {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   if (heap) {
+    auto originalSize = Profiler::isEnabled() ? getSize(heap) : 0;
     if (size) {
-      auto originalSize = Profiler::isEnabled() ? getSize(heap) : 0;
       void* result = static_cast<void*>(::HeapReAlloc(internal::specific::processHeap, HEAP_REALLOC_IN_PLACE_ONLY, heap, size));
       if (result) {
         ++totalResizes;

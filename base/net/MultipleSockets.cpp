@@ -16,6 +16,7 @@
 #include <base/concurrency/ExclusiveSynchronize.h>
 #include <base/concurrency/SingleExclusiveSynchronize.h>
 #include <base/NotImplemented.h>
+#include <base/Profiler.h>
 
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__UNIX)
 #  define _COM_AZURE_DEV__BASE__HAVE_POLL2 // TAG: fixme
@@ -647,7 +648,10 @@ unsigned int MultipleSockets::poll(
 }
 
 void MultipleSockets::signal(
-  SocketListener* listener) throw(ConcurrencyException) {
+  SocketListener* listener) throw(ConcurrencyException)
+{
+  Profiler::pushSignal("MultipleSockets::signal()");
+
   if (!listener) {
     return;
   }

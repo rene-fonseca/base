@@ -13,6 +13,7 @@
 
 #include <base/platforms/features.h>
 #include <base/filesystem/FolderMonitor.h>
+#include <base/Profiler.h>
 
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
 #  include <windows.h>
@@ -49,7 +50,9 @@ bool FolderMonitor::isSignaled() const throw() {
 #endif // flavor
 }
 
-void FolderMonitor::wait() const throw() {
+void FolderMonitor::wait() const throw()
+{
+  Profiler::WaitTask profile("FolderMonitor::wait()");
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   ::WaitForSingleObject(handle, INFINITE);
   ::FindNextChangeNotification(handle); // should never fail
@@ -57,7 +60,10 @@ void FolderMonitor::wait() const throw() {
 #endif // flavor
 }
 
-bool FolderMonitor::wait(unsigned int milliseconds) const throw() {
+bool FolderMonitor::wait(unsigned int milliseconds) const throw()
+{
+  Profiler::WaitTask profile("FolderMonitor::wait()");
+  
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   DWORD result = ::WaitForSingleObject(handle, minimum(milliseconds, 999999999U));
   ::FindNextChangeNotification(handle); // should never fail

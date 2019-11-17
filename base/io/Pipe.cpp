@@ -17,6 +17,7 @@
 #include <base/io/EndOfFile.h>
 #include <base/concurrency/Thread.h>
 #include <base/string/String.h>
+#include <base/Profiler.h>
 
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
 #  include <windows.h>
@@ -269,7 +270,9 @@ unsigned int Pipe::write(
   return bytesWritten;
 }
 
-void Pipe::wait() const throw(PipeException) {
+void Pipe::wait() const throw(PipeException)
+{
+  Profiler::WaitTask profilerTask("Pipe::wait()");
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   DWORD result = ::WaitForSingleObject(fd->getHandle(), INFINITE);
   BASSERT(result == WAIT_OBJECT_0);
@@ -285,7 +288,9 @@ void Pipe::wait() const throw(PipeException) {
 #endif
 }
 
-bool Pipe::wait(unsigned int timeout) const throw(PipeException) {
+bool Pipe::wait(unsigned int timeout) const throw(PipeException)
+{
+  Profiler::WaitTask profile("Pipe::wait()");
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   DWORD result = ::WaitForSingleObject(fd->getHandle(), timeout); // FIXME:
   return result == WAIT_OBJECT_0;
@@ -306,7 +311,8 @@ bool Pipe::wait(unsigned int timeout) const throw(PipeException) {
 #endif
 }
 
-Pipe::~Pipe() {
+Pipe::~Pipe()
+{
   flush();
 }
 

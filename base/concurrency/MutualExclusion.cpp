@@ -13,6 +13,7 @@
 
 #include <base/platforms/features.h>
 #include <base/concurrency/MutualExclusion.h>
+#include <base/Profiler.h>
 #include <base/UnitTest.h>
 
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
@@ -25,7 +26,8 @@
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
-MutualExclusion::MutualExclusion() throw(ResourceException) {
+MutualExclusion::MutualExclusion() throw(ResourceException)
+{
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   mutex = new CRITICAL_SECTION[1];
   ::InitializeCriticalSection((CRITICAL_SECTION*)mutex);
@@ -54,7 +56,9 @@ MutualExclusion::MutualExclusion() throw(ResourceException) {
 #endif
 }
 
-void MutualExclusion::exclusiveLock() const throw(MutualExclusionException) {
+void MutualExclusion::exclusiveLock() const throw(MutualExclusionException)
+{
+  Profiler::WaitTask profile("MutualExclusion::exclusiveLock()");
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   ::EnterCriticalSection((CRITICAL_SECTION*)mutex);
 #else // pthread
@@ -69,7 +73,10 @@ void MutualExclusion::exclusiveLock() const throw(MutualExclusionException) {
 #endif
 }
 
-bool MutualExclusion::tryExclusiveLock() const throw(MutualExclusionException) {
+bool MutualExclusion::tryExclusiveLock() const throw(MutualExclusionException)
+{
+  Profiler::WaitTask profile("MutualExclusion::tryExclusiveLock()");
+  
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   BOOL result = TRUE;
   result = ::TryEnterCriticalSection((CRITICAL_SECTION*)mutex);
@@ -86,7 +93,10 @@ bool MutualExclusion::tryExclusiveLock() const throw(MutualExclusionException) {
 #endif
 }
 
-void MutualExclusion::releaseLock() const throw(MutualExclusionException) {
+void MutualExclusion::releaseLock() const throw(MutualExclusionException)
+{
+  Profiler::pushSignal("MutualExclusion::releaseLock()");
+
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   ::LeaveCriticalSection((CRITICAL_SECTION*)mutex);
 #else // pthread
@@ -96,7 +106,8 @@ void MutualExclusion::releaseLock() const throw(MutualExclusionException) {
 #endif
 }
 
-MutualExclusion::~MutualExclusion() {
+MutualExclusion::~MutualExclusion()
+{
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   ::DeleteCriticalSection((CRITICAL_SECTION*)mutex);
   delete[] (CRITICAL_SECTION*)mutex;

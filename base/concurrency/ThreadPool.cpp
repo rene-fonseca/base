@@ -15,6 +15,7 @@
 #include <base/collection/Functor.h>
 #include <base/concurrency/ExclusiveSynchronize.h>
 #include <base/concurrency/SharedSynchronize.h>
+#include <base/Profiler.h>
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
@@ -31,7 +32,8 @@ void ThreadPool::Wrapper::run() throw() {
 
 
 
-void ThreadPool::run() throw() {
+void ThreadPool::run() throw()
+{
   Thread* context = Thread::getThread();
   Runnable* job = nullptr;
 
@@ -91,12 +93,14 @@ ThreadPool::ThreadPool(JobProvider* _provider, unsigned int threads) throw()
   setThreads(threads);
 }
 
-unsigned int ThreadPool::getThreads() const throw() {
+unsigned int ThreadPool::getThreads() const throw()
+{
   SharedSynchronize<Guard> _guard(guard);
   return desiredThreads;
 }
 
-void ThreadPool::setThreads(unsigned int value) throw(ThreadPoolException) {
+void ThreadPool::setThreads(unsigned int value) throw(ThreadPoolException)
+{
   ExclusiveSynchronize<Guard> _guard(guard);
 
   if (terminated) {
@@ -141,23 +145,29 @@ void ThreadPool::setThreads(unsigned int value) throw(ThreadPoolException) {
   }
 }
 
-void ThreadPool::terminate() throw() {
+void ThreadPool::terminate() throw()
+{
   ExclusiveSynchronize<Guard> _guard(guard);
   terminated = true;
   forEach(pool, invokeMember(&Thread::terminate));
 }
 
-void ThreadPool::join() throw() {
+void ThreadPool::join() throw()
+{
+  Profiler::WaitTask profile("ThreadPool::join()");
+
   // threads should not be signaled here
   ExclusiveSynchronize<Guard> _guard(guard);
   forEach(pool, invokeMember(&Thread::join));
 }
 
-void ThreadPool::post() throw() {
+void ThreadPool::post() throw()
+{
   semaphore.post();
 }
 
-ThreadPool::~ThreadPool() throw() {
+ThreadPool::~ThreadPool() throw()
+{
   terminate();
   join();
 

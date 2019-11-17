@@ -13,14 +13,19 @@
 
 #include <base/concurrency/RecursiveMutualExclusion.h>
 #include <base/concurrency/ExclusiveSynchronize.h>
+#include <base/Profiler.h>
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 RecursiveMutualExclusion::RecursiveMutualExclusion() throw(ResourceException)
-  : owner(0), numberOfLocks(0) {
+  : owner(0), numberOfLocks(0)
+{
 }
 
-void RecursiveMutualExclusion::exclusiveLock() const throw(MutualExclusionException) {
+void RecursiveMutualExclusion::exclusiveLock() const throw(MutualExclusionException)
+{
+  Profiler::WaitTask profile("RecursiveMutualExclusion::exclusiveLock()");
+  
   Thread::Identifier id = Thread::getIdentifier();
   {
     ExclusiveSynchronize<Guard> _guard(guard);
@@ -37,7 +42,10 @@ void RecursiveMutualExclusion::exclusiveLock() const throw(MutualExclusionExcept
   }
 }
 
-bool RecursiveMutualExclusion::tryExclusiveLock() const throw(MutualExclusionException) {
+bool RecursiveMutualExclusion::tryExclusiveLock() const throw(MutualExclusionException)
+{
+  Profiler::WaitTask profile("RecursiveMutualExclusion::tryExclusiveLock()");
+  
   Thread::Identifier id = Thread::getIdentifier();
   ExclusiveSynchronize<Guard> _guard(guard);
   if (owner == id) {
@@ -52,7 +60,9 @@ bool RecursiveMutualExclusion::tryExclusiveLock() const throw(MutualExclusionExc
   }
 }
 
-void RecursiveMutualExclusion::releaseLock() const throw(MutualExclusionException) {
+void RecursiveMutualExclusion::releaseLock() const throw(MutualExclusionException)
+{
+  Profiler::pushSignal("RecursiveMutualExclusion::releaseLock()");
   // Thread::Identifier id = Thread::getIdentifier();
   ExclusiveSynchronize<Guard> _guard(guard);
   // bassert(owner == id, ConcurrencyException(this));
@@ -62,7 +72,8 @@ void RecursiveMutualExclusion::releaseLock() const throw(MutualExclusionExceptio
   }
 }
 
-RecursiveMutualExclusion::~RecursiveMutualExclusion() {
+RecursiveMutualExclusion::~RecursiveMutualExclusion()
+{
   bassert(
     guard.tryExclusiveLock() && lock.tryExclusiveLock(),
     MutualExclusionException(this)

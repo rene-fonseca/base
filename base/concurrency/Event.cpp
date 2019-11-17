@@ -13,6 +13,7 @@
 
 #include <base/platforms/features.h>
 #include <base/concurrency/Event.h>
+#include <base/Profiler.h>
 
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
 #  include <windows.h>
@@ -39,7 +40,8 @@ public:
 };
 
 // TAG: why "throw(Event::EventException)" and not just "throw(EventException)"
-Event::Event() throw(ResourceException) {
+Event::Event() throw(ResourceException)
+{
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   if ((context = Cast::pointer<void*>(::CreateEvent(0, TRUE, FALSE, 0))) == 0) {
     throw ResourceException("Unable to initialize event", this);
@@ -78,7 +80,8 @@ Event::Event() throw(ResourceException) {
 #endif
 }
 
-bool Event::isSignaled() const throw(EventException) {
+bool Event::isSignaled() const throw(EventException)
+{
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   return ::WaitForSingleObject(context, 0) == WAIT_OBJECT_0; // should never fail
 #else // pthread
@@ -94,7 +97,8 @@ bool Event::isSignaled() const throw(EventException) {
 #endif
 }
 
-void Event::reset() throw(EventException) {
+void Event::reset() throw(EventException)
+{
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   if (!::ResetEvent(context)) {
     throw EventException("Unable to reset event", this);
@@ -110,7 +114,10 @@ void Event::reset() throw(EventException) {
 #endif
 }
 
-void Event::signal() throw(EventException) {
+void Event::signal() throw(EventException)
+{
+  Profiler::pushSignal("Event::wait()");
+
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   if (!::SetEvent(context)) {
     throw EventException("Unable to signal event", this);
@@ -129,7 +136,10 @@ void Event::signal() throw(EventException) {
 #endif
 }
 
-void Event::wait() const throw(EventException) {
+void Event::wait() const throw(EventException)
+{
+  Profiler::WaitTask profile("Event::wait()");
+  
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   if (::WaitForSingleObject(context, INFINITE) != WAIT_OBJECT_0) {
     throw EventException("Unable to wait for event", this);
@@ -152,7 +162,10 @@ void Event::wait() const throw(EventException) {
 #endif
 }
 
-bool Event::wait(unsigned int microseconds) const throw(OutOfDomain, EventException) {
+bool Event::wait(unsigned int microseconds) const throw(OutOfDomain, EventException)
+{
+  Profiler::WaitTask profile("Event::wait()");
+  
   if (microseconds >= 1000000) {
     throw OutOfDomain(this);
   }
@@ -198,7 +211,8 @@ bool Event::wait(unsigned int microseconds) const throw(OutOfDomain, EventExcept
 #endif
 }
 
-Event::~Event() {
+Event::~Event()
+{
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   if (::CloseHandle(context) == 0) {
     throw EventException("Unable to destroy event", this);

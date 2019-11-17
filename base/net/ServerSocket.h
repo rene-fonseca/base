@@ -33,7 +33,8 @@ public:
   /**
     Initializes an invalidated socket object (i.e. unconnected and unbound).
   */
-  inline ServerSocket() throw() {
+  inline ServerSocket() throw()
+  {
   }
 
   ServerSocket(const ServerSocket& eq) throw();
@@ -58,7 +59,8 @@ public:
     @return True if connection has been accepted. False, if connection could
     not be accepted without blocking.
   */
-  inline StreamSocket accept() throw(IOException) {
+  inline StreamSocket accept() throw(IOException)
+  {
     return StreamSocket(*this);
   }
 
@@ -70,14 +72,16 @@ public:
     
     @return An invalid socket if the timeout period expired.
   */
-  inline StreamSocket accept(unsigned int milliseconds) throw(IOException) {
+  inline StreamSocket accept(unsigned int milliseconds) throw(IOException)
+  {
     return StreamSocket(*this);
   }
 
   /**
     Closes this socket.
   */
-  inline void close() throw(IOException) {
+  inline void close() throw(IOException)
+  {
     Socket::close();
   }
 
@@ -86,35 +90,40 @@ public:
     function can be used after a succesful accept determine the locally
     assigned address and port if unspecified.
   */
-  inline void getName() throw() {
+  inline void getName() throw()
+  {
     Socket::getName();
   }
 
   /**
     Returns the local IP address to which the socket is bound.
   */
-  inline const InetAddress& getLocalAddress() const throw() {
+  inline const InetAddress& getLocalAddress() const throw()
+  {
     return Socket::getLocalAddress();
   }
 
   /**
     Returns the local port to which the socket is bound.
   */
-  inline unsigned short getLocalPort() const throw() {
+  inline unsigned short getLocalPort() const throw()
+  {
     return Socket::getLocalPort();
   }
 
   /**
     Sets the blocking mode of the socket.
   */
-  inline void setNonBlocking(bool value) throw(IOException) {
+  inline void setNonBlocking(bool value) throw(IOException)
+  {
     Socket::setNonBlocking(value);
   }
 
   /**
     Blocking wait for incoming connection request.
   */
-  inline void wait() const throw(IOException) {
+  inline void wait() const throw(IOException)
+  {
     Socket::wait();
   }
 
@@ -126,7 +135,8 @@ public:
     @return True, if incoming connection is available. False, if the timeout
     periode expired.
   */
-  inline bool wait(unsigned int microseconds) const throw(IOException) {
+  inline bool wait(unsigned int microseconds) const throw(IOException)
+  {
     return Socket::wait(microseconds);
   }
 };

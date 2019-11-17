@@ -16,6 +16,7 @@
 #include <base/string/String.h>
 #include <base/Application.h>
 #include <base/Cast.h>
+#include <base/Profiler.h>
 #include <base/UnitTest.h>
 
 #if defined(_COM_AZURE_DEV__BASE__EXCEPTION_V3MV)
@@ -95,6 +96,7 @@ void* Thread::entry(Thread* thread) throw()
     thread->state = ALIVE;
     ThreadLocal threadLocal(thread);
     try {
+      Profiler::WaitTask profile("Thread::entry()"); // TAG: include name of thread
       thread->getRunnable()->run();
       thread->state = TERMINATED;
       Thread* parent = thread->getParent();
@@ -153,6 +155,8 @@ static void garbageCollect() throw();
 
 void Thread::nanosleep(unsigned int nanoseconds) throw(OutOfDomain)
 {
+  Profiler::WaitTask profile("sleep");
+  
   if (nanoseconds >= 1000000000) {
     throw OutOfDomain(Type::getType<Thread>());
   }
@@ -204,6 +208,8 @@ void Thread::nanosleep(unsigned int nanoseconds) throw(OutOfDomain)
 
 void Thread::microsleep(unsigned int microseconds) throw(OutOfDomain)
 {
+  Profiler::WaitTask profile("sleep");
+
   if (microseconds >= 1000000000) {
     throw OutOfDomain(Type::getType<Thread>());
   }
@@ -245,6 +251,8 @@ void Thread::microsleep(unsigned int microseconds) throw(OutOfDomain)
 
 void Thread::millisleep(unsigned int milliseconds) throw(OutOfDomain)
 {
+  Profiler::WaitTask profile("sleep");
+
   if (milliseconds >= 1000000000) {
     throw OutOfDomain(Type::getType<Thread>());
   }
@@ -286,6 +294,8 @@ void Thread::millisleep(unsigned int milliseconds) throw(OutOfDomain)
 
 void Thread::sleep(unsigned int seconds) throw(OutOfDomain)
 {
+  Profiler::WaitTask profile("sleep");
+
   if (seconds >= 1000000) {
     throw OutOfDomain(Type::getType<Thread>());
   }
@@ -706,7 +716,10 @@ Thread::Times Thread::getTimes() throw()
 #endif // flavor
 }
 
-bool Thread::join() const throw(ThreadException) {
+bool Thread::join() const throw(ThreadException)
+{
+  Profiler::WaitTask profile("Thread::join()");
+
   if (state == NOTSTARTED) {
     return false;
   }
@@ -751,7 +764,8 @@ void Thread::start() throw(ThreadException) {
 #endif
 }
 
-void Thread::terminate() throw() {
+void Thread::terminate() throw()
+{
   if (!terminated) {
     terminated = true;
     if (runnable) {
@@ -760,7 +774,8 @@ void Thread::terminate() throw() {
   }
 }
 
-Thread::~Thread() {
+Thread::~Thread()
+{
   if (getParent() != 0) {
     if (state != Thread::NOTSTARTED) {
       terminationEvent.wait(); // allows multiple contexts to wait for thread to terminate

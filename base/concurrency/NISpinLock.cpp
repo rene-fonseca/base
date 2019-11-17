@@ -12,6 +12,7 @@
  ***************************************************************************/
 
 #include <base/concurrency/NISpinLock.h>
+#include <base/Profiler.h>
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
@@ -22,6 +23,8 @@ NISpinLock::NISpinLock() noexcept
 
 void NISpinLock::exclusiveLock() const noexcept
 {
+  Profiler::WaitTask profile("NISpinLock::exclusiveLock()");
+
   while (true) {
     MemoryDiff expected = LOCK_FREE;
     if (value.compareAndExchangeWeak(expected, LOCK_TAKEN)) {
@@ -45,6 +48,7 @@ bool NISpinLock::tryExclusiveLock() const noexcept
 
 void NISpinLock::releaseLock() const noexcept
 {
+  Profiler::pushSignal("NISpinLock::releaseLock()");
   value = LOCK_FREE;
 }
 

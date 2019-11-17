@@ -13,6 +13,7 @@
 
 #include <base/concurrency/RecursiveSpinLock.h>
 #include <base/concurrency/ExclusiveSynchronize.h>
+#include <base/Profiler.h>
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
@@ -52,7 +53,9 @@ bool RecursiveSpinLock::tryExclusiveLock() const throw() {
   }
 }
 
-void RecursiveSpinLock::releaseLock() const throw() {
+void RecursiveSpinLock::releaseLock() const throw()
+{
+  Profiler::pushSignal("RecursiveSpinLock::releaseLock()");
   // Thread::Identifier id = Thread::getIdentifier();
   ExclusiveSynchronize<Guard> _guard(guard);
   // bassert(owner == id, ConcurrencyException(this));

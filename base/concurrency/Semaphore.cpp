@@ -13,6 +13,7 @@
 
 #include <base/platforms/features.h>
 #include <base/concurrency/Semaphore.h>
+#include <base/Profiler.h>
 
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
 #  include <windows.h>
@@ -91,7 +92,8 @@ public:
 #endif
 };
 
-unsigned int Semaphore::getMaximum() throw() {
+unsigned int Semaphore::getMaximum() throw()
+{
   return SemaphoreImpl::MAXIMUM;
 }
 
@@ -146,7 +148,8 @@ Semaphore::Semaphore(unsigned int value) throw(OutOfDomain, SemaphoreException)
 #endif
 }
 
-int Semaphore::getValue() const throw(SemaphoreException) {
+int Semaphore::getValue() const throw(SemaphoreException)
+{
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   #if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__WINNT4) || \
       (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__W2K) || \
@@ -193,7 +196,8 @@ int Semaphore::getValue() const throw(SemaphoreException) {
 #endif
 }
 
-void Semaphore::post() throw(Overflow, SemaphoreException) {
+void Semaphore::post() throw(Overflow, SemaphoreException)
+{
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   if (!::ReleaseSemaphore((HANDLE)semaphore, 1, 0)) {
     throw SemaphoreException(this);
@@ -222,7 +226,10 @@ void Semaphore::post() throw(Overflow, SemaphoreException) {
 #endif
 }
 
-void Semaphore::wait() const throw(SemaphoreException) {
+void Semaphore::wait() const throw(SemaphoreException)
+{
+  Profiler::WaitTask profile("Semaphore::wait()");
+  
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   if (::WaitForSingleObject((HANDLE)semaphore, INFINITE) != WAIT_OBJECT_0) {
     throw SemaphoreException(this);
@@ -247,7 +254,8 @@ void Semaphore::wait() const throw(SemaphoreException) {
 #endif
 }
 
-bool Semaphore::tryWait() const throw(SemaphoreException) {
+bool Semaphore::tryWait() const throw(SemaphoreException)
+{
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   return ::WaitForSingleObject((HANDLE)semaphore, 0) == WAIT_OBJECT_0;
 #elif defined(_COM_AZURE_DEV__BASE__PTHREAD_SEMAPHORE)
@@ -269,7 +277,8 @@ bool Semaphore::tryWait() const throw(SemaphoreException) {
 #endif
 }
 
-Semaphore::~Semaphore() {
+Semaphore::~Semaphore()
+{
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   if (!::CloseHandle((HANDLE)semaphore)) {
     throw SemaphoreException(this);

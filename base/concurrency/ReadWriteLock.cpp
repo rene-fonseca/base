@@ -15,6 +15,7 @@
 #include <base/concurrency/ReadWriteLock.h>
 #include <base/concurrency/SpinLock.h>
 #include <base/Base.h>
+#include <base/Profiler.h>
 
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
 #  include <windows.h>
@@ -38,13 +39,15 @@ private:
   HANDLE blockReaders;
 public:
   
-  inline ReadWriteLockImpl() throw(ResourceException) {
+  inline ReadWriteLockImpl() throw(ResourceException)
+  {
     blockReaders = ::CreateEvent(0, TRUE, TRUE, 0); // allow shared locks initially
     bassert(blockReaders != 0, ResourceException(this));
     ::InitializeCriticalSection(&common);
   }
 
-  inline void exclusiveLock() throw() {
+  inline void exclusiveLock() throw()
+  {
     spinLock.exclusiveLock();
     if (writers++ == 0) {
       ::ResetEvent(blockReaders); // prevent shared locks
@@ -53,7 +56,8 @@ public:
     ::EnterCriticalSection(&common); // wait for exclusive lock
   }
 
-  inline bool tryExclusiveLock() throw() {
+  inline bool tryExclusiveLock() throw()
+  {
     // we do not want to relinquish execution context if we not required to do so
     spinLock.exclusiveLock();
     bool result = (::TryEnterCriticalSection(&common) != 0); // must not block
@@ -66,7 +70,8 @@ public:
     return result;
   }
   
-  inline void sharedLock() throw() {
+  inline void sharedLock() throw()
+  {
     // we do not want to relinquish execution context if we not required to do so
     spinLock.exclusiveLock();
     while (true) {
@@ -86,7 +91,8 @@ public:
     spinLock.releaseLock();
   }
 
-  inline bool trySharedLock() throw() {
+  inline bool trySharedLock() throw()
+  {
     // we do not want to relinquish execution context if we not required to do so
     bool result = false;
     spinLock.exclusiveLock();
@@ -102,7 +108,8 @@ public:
     return result;
   }
 
-  inline void releaseLock() throw() {
+  inline void releaseLock() throw()
+  {
     spinLock.exclusiveLock();
     if (readers > 0) {
       // release shared lock
@@ -121,7 +128,8 @@ public:
     spinLock.releaseLock();
   }
   
-  inline ~ReadWriteLockImpl() throw() {
+  inline ~ReadWriteLockImpl() throw()
+  {
     BASSERT(::TryEnterCriticalSection(&common) != 0);
     ::DeleteCriticalSection(&common);
     ::CloseHandle(blockReaders);
@@ -131,7 +139,8 @@ public:
 
 #endif // flavor
 
-ReadWriteLock::ReadWriteLock() throw(ResourceException) {
+ReadWriteLock::ReadWriteLock() throw(ResourceException)
+{
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   representation = new ReadWriteLockImpl();
 #elif defined(_COM_AZURE_DEV__BASE__PTHREAD_RWLOCK)
@@ -178,7 +187,10 @@ ReadWriteLock::ReadWriteLock() throw(ResourceException) {
 #endif
 }
 
-void ReadWriteLock::exclusiveLock() const throw(ReadWriteLockException) {
+void ReadWriteLock::exclusiveLock() const throw(ReadWriteLockException)
+{
+  Profiler::WaitTask profile("ReadWriteLock::exclusiveLock()");
+  
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   static_cast<ReadWriteLockImpl*>(representation)->exclusiveLock();
 #elif defined(_COM_AZURE_DEV__BASE__PTHREAD_RWLOCK)
@@ -197,7 +209,10 @@ void ReadWriteLock::exclusiveLock() const throw(ReadWriteLockException) {
 #endif
 }
 
-bool ReadWriteLock::tryExclusiveLock() const throw(ReadWriteLockException) {
+bool ReadWriteLock::tryExclusiveLock() const throw(ReadWriteLockException)
+{
+  Profiler::WaitTask profile("ReadWriteLock::tryExclusiveLock()");
+
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   return static_cast<ReadWriteLockImpl*>(representation)->tryExclusiveLock();
 #elif defined(_COM_AZURE_DEV__BASE__PTHREAD_RWLOCK)
@@ -221,7 +236,10 @@ bool ReadWriteLock::tryExclusiveLock() const throw(ReadWriteLockException) {
 #endif
 }
 
-void ReadWriteLock::sharedLock() const throw(ReadWriteLockException) {
+void ReadWriteLock::sharedLock() const throw(ReadWriteLockException)
+{
+  Profiler::WaitTask profile("ReadWriteLock::sharedLock()");
+  
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   static_cast<ReadWriteLockImpl*>(representation)->sharedLock();
 #elif defined(_COM_AZURE_DEV__BASE__PTHREAD_RWLOCK)
@@ -240,7 +258,10 @@ void ReadWriteLock::sharedLock() const throw(ReadWriteLockException) {
 #endif
 }
 
-bool ReadWriteLock::trySharedLock() const throw(ReadWriteLockException) {
+bool ReadWriteLock::trySharedLock() const throw(ReadWriteLockException)
+{
+  Profiler::WaitTask profile("ReadWriteLock::trySharedLock()");
+  
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   return static_cast<ReadWriteLockImpl*>(representation)->trySharedLock();
 #elif defined(_COM_AZURE_DEV__BASE__PTHREAD_RWLOCK)
@@ -264,7 +285,9 @@ bool ReadWriteLock::trySharedLock() const throw(ReadWriteLockException) {
 #endif
 }
 
-void ReadWriteLock::releaseLock() const throw(ReadWriteLockException) {
+void ReadWriteLock::releaseLock() const throw(ReadWriteLockException)
+{
+  Profiler::pushSignal("ReadWriteLock::releaseLock()");
   // must be invoked by a thread which has already has a acquired an exclusive or shared lock!
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   static_cast<ReadWriteLockImpl*>(representation)->releaseLock();
@@ -279,7 +302,8 @@ void ReadWriteLock::releaseLock() const throw(ReadWriteLockException) {
 #endif
 }
 
-ReadWriteLock::~ReadWriteLock() {
+ReadWriteLock::~ReadWriteLock()
+{
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   delete static_cast<ReadWriteLockImpl*>(representation);
 #elif defined(_COM_AZURE_DEV__BASE__PTHREAD_RWLOCK)

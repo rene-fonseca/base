@@ -15,6 +15,7 @@
 #include <base/dl/DynamicLinker.h>
 #include <base/NotImplemented.h>
 #include <base/platforms/backend/WindowImpl.h>
+#include <base/Profiler.h>
 
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
 #if !defined(_WIN32_WINNT)
@@ -1905,7 +1906,9 @@ void WindowImpl::exit() throw() {
 #endif // flavor
 }
 
-void WindowImpl::wait() throw(UserInterfaceException) {
+void WindowImpl::wait() throw(UserInterfaceException)
+{
+  Profiler::WaitTask profile("WindowImpl::wait()");
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   ::WaitMessage();
 #elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__MACOS)
@@ -1915,7 +1918,9 @@ void WindowImpl::wait() throw(UserInterfaceException) {
 #endif // flavor
 }
 
-bool WindowImpl::wait(unsigned int milliseconds) throw(UserInterfaceException) {
+bool WindowImpl::wait(unsigned int milliseconds) throw(UserInterfaceException)
+{
+  Profiler::WaitTask profile("WindowImpl::wait()");
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   if (milliseconds > 999999999) { // TAG: fixme
     milliseconds = 999999999;

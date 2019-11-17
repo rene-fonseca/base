@@ -13,6 +13,7 @@
 
 #include <base/concurrency/Barrier.h>
 #include <base/concurrency/ExclusiveSynchronize.h>
+#include <base/Profiler.h>
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
@@ -38,7 +39,9 @@ unsigned int Barrier::getWaiting() const throw() {
   return waiting;
 }
 
-unsigned int Barrier::wait(bool reset) throw(LockException) {
+unsigned int Barrier::wait(bool reset) throw(LockException)
+{
+  Profiler::WaitTask profile("Barrier::wait()");
   {
     ExclusiveSynchronize<MutualExclusion> _guard(mutex); // blocking
     bool waitReset = false;

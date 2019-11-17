@@ -14,6 +14,7 @@
 #include <base/concurrency/SpinLock.h>
 #include <base/concurrency/ExclusiveSynchronize.h>
 #include <base/UnitTest.h>
+// do NOT profile this class
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
@@ -53,7 +54,8 @@ bool SpinLock::tryExclusiveLock() const noexcept
   return value.compareAndExchangeWeak(expected, LOCK_TAKEN);
 }
 
-void SpinLock::releaseLock() const noexcept {
+void SpinLock::releaseLock() const noexcept
+{
   value = LOCK_FREE;
 }
 

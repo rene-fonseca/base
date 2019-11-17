@@ -316,7 +316,8 @@ public:
   /**
     Blocking wait for input to become available.
   */
-  inline void wait() const throw(NetworkException) {
+  inline void wait() const throw(NetworkException)
+  {
     Socket::wait();
   }
 
@@ -326,7 +327,8 @@ public:
     @param timeout The timeout periode in microseconds.
     @return True, if data is available. False, if the timeout periode expired.
   */
-  inline bool wait(unsigned int timeout) const throw(NetworkException) {
+  inline bool wait(unsigned int timeout) const throw(NetworkException)
+  {
     return Socket::wait(timeout);
   }
 

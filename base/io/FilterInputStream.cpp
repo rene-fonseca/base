@@ -32,15 +32,18 @@ unsigned int FilterInputStream::read(
   return in.read(buffer, size, nonblocking);
 }
 
-unsigned int FilterInputStream::skip(unsigned int count) throw(IOException) {
+unsigned int FilterInputStream::skip(unsigned int count) throw(IOException)
+{
   return in.skip(count);
 }
 
-void FilterInputStream::wait() const throw(IOException) {
+void FilterInputStream::wait() const throw(IOException)
+{
   in.wait();
 }
 
-bool FilterInputStream::wait(unsigned int timeout) const throw(IOException) {
+bool FilterInputStream::wait(unsigned int timeout) const throw(IOException)
+{
   return in.wait(timeout);
 }
 

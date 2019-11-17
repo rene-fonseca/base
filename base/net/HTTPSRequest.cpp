@@ -15,6 +15,7 @@
 #include <base/net/Url.h>
 #include <base/Primitives.h>
 #include <base/UnsignedInteger.h>
+#include <base/Profiler.h>
 
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
 #  include <Windows.h>
@@ -153,6 +154,9 @@ HTTPSRequest::HTTPSRequest()
 
 bool HTTPSRequest::open(const String& _method, const String& _url, const String& _user, const String& _password)
 {
+  // TAG: need new task for this
+  Profiler::HTTPSTask profile("HTTPSRequest::open()");
+  
   Reference<HTTPRequestHandle> _handle = handle.cast<HTTPRequestHandle>();
   if (_handle) {
     throw HTTPException("HTTP request is already open.");
@@ -533,6 +537,8 @@ void HTTPSRequest::getResponse(OutputStream* os)
 
 void HTTPSRequest::getResponse(PushInterface* pi)
 {
+  Profiler::HTTPSTask profile("HTTPSRequest::getResponse()");
+
   if (!pi) {
     throw HTTPException("Output stream not set.");
   }
@@ -747,6 +753,9 @@ String HTTPSRequest::getResponseHeader()
 
 void HTTPSRequest::close()
 {
+  // TAG: add end event
+  Profiler::HTTPSTask profile("HTTPSRequest::close()");
+
   if (!handle) {
     return; // ignore
   }

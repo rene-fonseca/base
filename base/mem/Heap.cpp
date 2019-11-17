@@ -15,6 +15,7 @@
 #include <base/mem/Heap.h>
 #include <base/OperatingSystem.h>
 #include <base/concurrency/AtomicCounter.h>
+#include <base/Profiler.h>
 #include <base/UnitTest.h>
 
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
@@ -36,6 +37,8 @@ namespace internal {
 
 void* HeapImpl::allocate(MemorySize size) throw(MemoryException)
 {
+  Profiler::pushObjectCreate(size);
+  
   void* result = nullptr;
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   result = static_cast<void*>(::HeapAlloc(internal::specific::processHeap, 0, size));
@@ -53,6 +56,16 @@ void* HeapImpl::allocate(MemorySize size) throw(MemoryException)
 
 void* HeapImpl::resize(void* heap, MemorySize size) throw(MemoryException)
 {
+  if (heap) {
+    auto originalSize = getSize(heap);
+    if (size != originalSize) {
+      Profiler::pushObjectDestroy(originalSize);
+      Profiler::pushObjectCreate(size);
+    }
+  } else {
+    Profiler::pushObjectCreate(size);
+  }
+
   void* result = nullptr;
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   // is serialization enabled for the heap object returned by GetProcessHeap
@@ -97,13 +110,21 @@ void* HeapImpl::tryResize(void* heap, MemorySize size) throw(MemoryException)
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   if (heap) {
     if (size) {
+      auto originalSize = Profiler::isEnabled() ? getSize(heap) : 0;
       void* result = static_cast<void*>(::HeapReAlloc(internal::specific::processHeap, HEAP_REALLOC_IN_PLACE_ONLY, heap, size));
       if (result) {
         ++totalResizes;
         totalMemory += size;
+        
+        if (size != originalSize) {
+          Profiler::pushObjectDestroy(originalSize);
+          Profiler::pushObjectCreate(size);
+        }
       }
       return result;
     } else {
+      Profiler::pushObjectDestroy(originalSize);
+
       if (!::HeapFree(internal::specific::processHeap, 0, heap)) {
         throw bindCause(MemoryException("Unable to resize heap.", Type::getType<HeapImpl>()), ::GetLastError());
       }
@@ -119,6 +140,10 @@ void* HeapImpl::tryResize(void* heap, MemorySize size) throw(MemoryException)
 
 void HeapImpl::release(void* heap) throw(MemoryException)
 {
+  if (heap) {
+    Profiler::pushObjectDestroy(getSize(heap));
+  }
+
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   if (!::HeapFree(internal::specific::processHeap, 0, heap)) {
     throw bindCause(MemoryException("Unable to release heap.", Type::getType<HeapImpl>()), ::GetLastError());

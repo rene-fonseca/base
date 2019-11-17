@@ -19,6 +19,9 @@
 #include <base/net/Socket.h>
 #include <base/concurrency/Thread.h>
 #include <base/NotImplemented.h>
+#include <base/Profiler.h>
+
+// TAG: profile socket for entire use
 
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
 #  include <base/platforms/win32/AsyncReadStreamContext.h> // platform specific
@@ -1151,7 +1154,8 @@ void Socket::setUnicastHops(uint8 value) throw(NetworkException) {
 #endif
 }
 
-void Socket::joinGroup(const InetAddress& group) throw(NetworkException) {
+void Socket::joinGroup(const InetAddress& group) throw(NetworkException)
+{
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   InetAddress g = group;
   bassert(g.convertToIPv4(), NetworkException(this));
@@ -1225,7 +1229,8 @@ void Socket::joinGroup(const InetAddress& group) throw(NetworkException) {
 #endif // flavor
 }
 
-void Socket::joinGroup(const InetAddress& interface, const InetAddress& group) throw(NetworkException) {
+void Socket::joinGroup(const InetAddress& interface, const InetAddress& group) throw(NetworkException)
+{
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   InetAddress i = interface;
   InetAddress g = group;
@@ -1807,7 +1812,9 @@ AsynchronousWriteOperation Socket::write(
 #endif // flavor
 }
 
-void Socket::wait() const throw(NetworkException) {
+void Socket::wait() const throw(NetworkException)
+{
+  Profiler::WaitTask profile("Socket::wait()");
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   fd_set rfds;
   FD_ZERO(&rfds);
@@ -1829,7 +1836,9 @@ void Socket::wait() const throw(NetworkException) {
 #endif // flavor
 }
 
-bool Socket::wait(unsigned int microseconds) const throw(NetworkException) {
+bool Socket::wait(unsigned int microseconds) const throw(NetworkException)
+{
+  Profiler::WaitTask profile("Socket::wait()");
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   fd_set rfds;
   FD_ZERO(&rfds);

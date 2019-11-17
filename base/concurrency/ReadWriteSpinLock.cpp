@@ -13,6 +13,7 @@
 
 #include <base/concurrency/ReadWriteSpinLock.h>
 #include <base/concurrency/ExclusiveSynchronize.h>
+#include <base/Profiler.h>
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
@@ -76,7 +77,9 @@ bool ReadWriteSpinLock::trySharedLock() const throw() {
   return false;
 }
 
-void ReadWriteSpinLock::releaseLock() const throw() {
+void ReadWriteSpinLock::releaseLock() const throw()
+{
+  Profiler::pushSignal("ReadWriteSpinLock::releaseLock()");
   ExclusiveSynchronize<Guard> _guard(guard);
   if (writer) {
     // assumes executing thread has the lock

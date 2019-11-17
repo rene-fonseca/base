@@ -17,6 +17,7 @@
 #include <base/Application.h>
 #include <base/Cast.h>
 #include <base/string/WideString.h>
+#include <base/Profiler.h>
 
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
 #  include <windows.h>
@@ -279,7 +280,8 @@ Process Process::execute(const String& command) throw(ProcessException) {
 #endif // flavor
 }
 
-Process& Process::operator=(const Process& eq) throw() {
+Process& Process::operator=(const Process& eq) throw()
+{
   if (&eq == this) {
     id = eq.id;
     handle = eq.handle;
@@ -287,7 +289,8 @@ Process& Process::operator=(const Process& eq) throw() {
   return *this;
 }
 
-bool Process::isAlive() const throw(ProcessException) {
+bool Process::isAlive() const throw(ProcessException)
+{
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
 //   HANDLE newHandle;
 //   BOOL res = ::DuplicateHandle(
@@ -349,7 +352,8 @@ bool Process::isAlive() const throw(ProcessException) {
 #endif // flavor
 }
 
-String Process::getName() const throw(NotSupported, ProcessException) {
+String Process::getName() const throw(NotSupported, ProcessException)
+{
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   HANDLE process = ::OpenProcess(PROCESS_QUERY_INFORMATION, FALSE, id);
   bassert(process, ProcessException(this));
@@ -363,7 +367,8 @@ String Process::getName() const throw(NotSupported, ProcessException) {
 #endif
 }
 
-void Process::lock() throw(ProcessException) {
+void Process::lock() throw(ProcessException)
+{
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   if (!handle->isValid()) {
     HANDLE result = ::OpenProcess(SYNCHRONIZE, FALSE, static_cast<DWORD>(id));
@@ -374,7 +379,9 @@ void Process::lock() throw(ProcessException) {
 #endif // flavor
 }
 
-int Process::wait(unsigned int microseconds) throw() {
+int Process::wait(unsigned int microseconds) throw()
+{
+  Profiler::WaitTask profile("Process::wait()");
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   if (!handle->isValid()) {
     lock();
@@ -391,7 +398,9 @@ int Process::wait(unsigned int microseconds) throw() {
 #endif // flavor
 }
 
-int Process::wait() throw(ProcessException) {
+int Process::wait() throw(ProcessException)
+{
+  Profiler::WaitTask profile("Process::wait()");
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   if (!handle->isValid()) {
     lock();

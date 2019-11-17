@@ -250,7 +250,7 @@ public:
       if (ReferenceCountedObject::ReferenceImpl(*oldValue).removeReference()) {
 #if 1
         if (oldValue->useGarbageCollector()) {
-          Reference<ReferenceCountedObject> r(oldValue);
+          Reference<ReferenceCountedObject> r(oldValue); // TAG: move to CPP
           base::garbageCollect(r);
         } else {
           delete oldValue; // could throw

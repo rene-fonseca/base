@@ -277,6 +277,8 @@ public:
       TEST_HERE(C);
       TEST_ASSERT(String(e.getMessage()) == String("Message"));
     }
+    
+    // TAG: test constructor and destructor exception
   }
 };
 

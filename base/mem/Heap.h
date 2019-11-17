@@ -245,4 +245,100 @@ public:
   }
 };
 
+
+
+/**
+  Pointer to heap. Note destructor will not release heap unless
+  RELEASE_ON_DESTRUCT is set! Likewise copy construction and
+  assignment copy the pointer value. This is to behave like a normal
+  pointer. You must call release explicitly.
+*/
+template<class TYPE, bool RELEASE_ON_DESTRUCT = false>
+class HeapBlock {
+private:
+
+  TYPE* heap = nullptr;
+public:
+
+  /** No memory. */
+  inline HeapBlock() noexcept
+  {
+  }
+
+  /** Allocates memory of given size. */
+  inline HeapBlock(MemorySize size)
+  {
+    heap = Heap::allocate<TYPE>(size);
+  }
+
+  /** Copy of pointer value! */
+  inline HeapBlock(const HeapBlock& copy) noexcept
+    : heap(copy.heap) // like a normal pointer!
+  {
+  }
+
+  /** Assignment of pointer value! */
+  inline HeapBlock& operator=(const HeapBlock& assign) noexcept
+  {
+    heap = assign.heap; // like a normal pointer!
+    return *this;
+  }
+
+  /** Resizes block. */
+  inline void resize(MemorySize size)
+  {
+    // TAG: should we release if size == 0? - can be done inside Heap::resize()
+    heap = Heap::resize<TYPE>(heap, size);
+    BASSERT((size == 0) || heap); // NOTE: some platforms allocate memory even when size == 0 is requested
+  }
+
+  /** Tries inplace resize. Returns true on success. */
+  inline bool tryResize(MemorySize size) noexcept
+  {
+    auto result = Heap::tryResize<TYPE>(heap, size);
+    BASSERT(!result || (result == heap));
+    return result;
+  }
+
+  /** Returns the size of the block. Can return 0 if not supported. */
+  inline MemorySize getSize() const noexcept
+  {
+    return Heap::getSize(heap);
+  }
+
+  /** Releases heap. Make sure to call explicitly for normal use cases! */
+  inline void release()
+  {
+    Heap::release<TYPE>(heap);
+    heap = nullptr;
+  }
+
+  /** Returns the native pointer. */
+  inline operator TYPE* () const noexcept
+  {
+    return heap;
+  }
+
+  /** Returns the native pointer. */
+  inline operator const TYPE* () const noexcept
+  {
+    return heap;
+  }
+
+  /** Returns true if pointer is not nullptr. */
+  inline operator bool () const noexcept
+  {
+    return heap;
+  }
+
+  /** Destruct. Only releases if RELEASE_ON_DESTRUCT is set. */
+  inline ~HeapBlock()
+  {
+    if (RELEASE_ON_DESTRUCT) {
+      Heap::release(heap);
+    }
+    heap = nullptr; // leak if not release explicitly
+  }
+};
+
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

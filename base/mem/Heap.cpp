@@ -39,6 +39,25 @@ namespace internal {
 };
 #endif // flavor
 
+void* HeapImpl::allocateNoThrow(MemorySize size) noexcept
+{
+  Profiler::pushObjectCreate(size);
+  
+  void* result = nullptr;
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
+  result = static_cast<void*>(::HeapAlloc(internal::specific::processHeap, 0, size));
+  if ((!result) && (size != 0)) { // was memory allocated
+    return nullptr;
+  }
+#else // unix
+  result = ::malloc(size);
+  if ((!result) && (size != 0)) { // was memory allocated
+    return nullptr;
+  }
+#endif // flavor
+  return result;
+}
+
 void* HeapImpl::allocate(MemorySize size) throw(MemoryException)
 {
   Profiler::pushObjectCreate(size);

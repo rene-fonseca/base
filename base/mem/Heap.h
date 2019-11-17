@@ -82,6 +82,14 @@ class _COM_AZURE_DEV__BASE__API HeapImpl {
 protected:
 
   /**
+    Allocates the specified number of bytes on the heap. Returns nullptr if
+    unable to allocate the memory block.
+
+    @param size The desired size of the memory block in number of bytes.
+  */
+  static void* allocateNoThrow(MemorySize size) noexcept;
+
+  /**
     Allocates the specified number of bytes on the heap. Raises
     MemoryException if unable to allocate the memory block.
 
@@ -138,6 +146,18 @@ public:
   static inline MemorySize getMinimumSize() noexcept
   {
     return HeapImpl::getMinimumSize();
+  }
+
+  /**
+    Allocates the specified number of bytes on the heap. Returns
+    nullptr if unable to allocate the memory block.
+
+    @param size The desired size of the memory block in number of elements.
+  */
+  template<class TYPE>
+  inline static TYPE* allocateNoThrow(MemorySize size) noexcept
+  {
+    return static_cast<TYPE*>(HeapImpl::allocateNoThrow(size * sizeof(TYPE)));
   }
 
   /**

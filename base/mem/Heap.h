@@ -362,13 +362,94 @@ public:
   }
 };
 
+/** Primitive array. */
+template<class TYPE>
+class PrimitiveArray {
+private:
+  
+  HeapBlock<TYPE, true> buffer;
+  MemorySize count = 0;
+public:
+
+  PrimitiveArray(MemorySize size = 0)
+  {
+    if (size > 0) {
+      buffer.allocate(size);
+      this->count = size;
+    }
+  }
+
+  /** Resizes buffer. */
+  void resize(MemorySize count)
+  {
+    if (count != this->count) {
+      buffer.resize(count);
+      this->count = count;
+    }
+  }
+
+  /** Returns the native pointer. Returns nullptr if empty. */
+  inline operator TYPE* () noexcept
+  {
+    return buffer;
+  }
+
+  /** Returns the native pointer. Returns nullptr if empty. */
+  inline operator const TYPE* () const noexcept
+  {
+    return buffer;
+  }
+
+  /** Returns the size. */
+  inline MemorySize size() const noexcept
+  {
+    return count;
+  }
+
+  /** Returns the begin iterator. */
+  inline TYPE* begin() noexcept
+  {
+    return buffer;
+  }
+
+  /** Returns the end iterator. */
+  inline TYPE* end() noexcept
+  {
+    return buffer + count;
+  }
+
+  /** Returns the begin iterator. */
+  inline const TYPE* cbegin() const noexcept
+  {
+    return buffer;
+  }
+
+  /** Returns the end iterator. */
+  inline const TYPE* cend() const noexcept
+  {
+    return buffer + count;
+  }
+
+  /** Returns the item at given index. */
+  inline TYPE& operator[](MemorySize index) noexcept
+  {
+    return buffer[index];
+  }
+
+  /** Returns the item at given index. */
+  inline const TYPE& operator[](MemorySize index) const noexcept
+  {
+    return buffer[index];
+  }
+};
+
 /** Primitive array which uses stack for small buffer and otherwise heap. Uses 4096 bytes on stack by default but minimum 1 item on stack. */
 template<class TYPE, MemorySize STACK_SIZE = (sizeof(TYPE) <= 4096) ? 4096/sizeof(TYPE) : 1>
 class PrimitiveStackArray {
 private:
 
   TYPE stack[STACK_SIZE];
-  HeapBlock<TYPE> heap;
+  HeapBlock<TYPE, true> heap;
   MemorySize count = 0;
   TYPE* buffer = nullptr;
 
@@ -408,7 +489,7 @@ public:
   }
 
   /** Resizes buffer. */
-  void resize(MemorySize count) noexcept
+  void resize(MemorySize count)
   {
     if (count != this->count) {
       // we never go back from heap to stack!
@@ -475,11 +556,6 @@ public:
   inline const TYPE& operator[](MemorySize index) const noexcept
   {
     return buffer[index];
-  }
-
-  inline ~PrimitiveStackArray()
-  {
-    heap.release();
   }
 };
 

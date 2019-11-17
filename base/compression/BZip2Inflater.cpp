@@ -40,19 +40,16 @@ namespace internal {
     };
     
     static void* allocate(void*, int n, int m) throw() {
-      long long size = static_cast<long long>(n) * m;
+      MemorySize size = static_cast<MemorySize>(n) * m;
       if ((size < 0) || (size > PrimitiveTraits<unsigned int>::MAXIMUM))  {
         return 0;
       }
-      try {
-        return new uint8[size];
-      } catch (MemoryException&) {
-        return 0;
-      }
+      return Heap::allocateNoThrow<uint8>(size);
     }
     
-    static void release(void*, void* memory) throw() {
-      delete[] static_cast<uint8*>(memory);
+    static void release(void*, void* memory) throw()
+    {
+      Heap::release<uint8>(static_cast<uint8*>(memory));
     }
     
     enum Code {

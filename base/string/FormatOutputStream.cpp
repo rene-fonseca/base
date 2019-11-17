@@ -23,6 +23,7 @@
 #include <base/TypeInfo.h>
 #include <base/UnitTest.h>
 #include <base/mathematics/Constants.h>
+#include <base/mathematics/LargeInteger.h>
 #include <base/UInt128.h>
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
@@ -1255,295 +1256,6 @@ FormatOutputStream& FormatOutputStream::operator<<(uint128 _value) throw(IOExcep
   return *this;
 }
 
-
-
-/** Large integer. */
-class LargeInteger {
-public:
-
-  static inline void clear(unsigned int* value, unsigned int size) noexcept
-  {
-    fill(value, size, 0U);
-  }
-
-  static inline void assign(unsigned int* restrict dest, const unsigned int* restrict src, unsigned int size)
-  {
-    if (dest == src) {
-      return; // TAG: self assignment - violates restrict
-    }
-    copy(dest, src, size);
-  }
-
-  static inline unsigned int divide(unsigned int* value, unsigned int size, unsigned int divisor)
-  {
-    unsigned int* word = value + size;
-    unsigned int remainder = 0;
-    while (--word >= value) {
-      unsigned long long temp = (static_cast<unsigned long long>(remainder) << (sizeof(unsigned int) * 8)) + *word;
-      *word = temp/divisor;
-      remainder = temp % divisor;
-    }
-    return remainder;
-  }
-
-  static inline void setBit(unsigned int* value, unsigned int size, unsigned int bit)
-  {
-    BASSERT(bit < (size * sizeof(unsigned int) * 8));
-    fill(value, size, 0U);
-    value[bit/(sizeof(unsigned int) * 8)] = 1U << (bit % (sizeof(unsigned int) * 8));
-  }
-
-  static inline bool addBit(unsigned int* value, unsigned int size, unsigned int bit)
-  {
-    BASSERT(bit < (size * sizeof(unsigned int) * 8));
-    value += bit/(sizeof(unsigned int) * 8);
-    unsigned int carrier = 1 << (bit % (sizeof(unsigned int) * 8));
-    for (const unsigned int* end = value + size; value < end; ++value) {
-      unsigned long long temp = *value + carrier;
-      *value = temp;
-      carrier = (temp & (1ULL << (sizeof(unsigned int) * 8))) ? 1 : 0; // TAG: check generated asm code
-      if (carrier == 0) {
-        return false;
-      }
-    }
-    return true;
-  }
-
-  static inline void leftShift(unsigned int* value, unsigned int size, unsigned int shift)
-  {
-    unsigned int bitShift = shift % (sizeof(unsigned int) * 8);
-    unsigned int wordShift = shift/(sizeof(unsigned int) * 8);
-
-    // start from last non-zero value + wordSize (but do not exceed end)
-    unsigned int* dest = value + size - 1;
-    const unsigned int* src = dest - wordShift;
-
-    if (bitShift != 0) {
-      unsigned int invBitShift = (sizeof(unsigned int) * 8) - bitShift;
-      while (src > value) {
-        *dest = (*src << bitShift) | (src[-1] >> invBitShift);
-        --src;
-        --dest;
-      }
-      *dest = *src << bitShift; // final (shift in zeros)
-    } else {
-      for (; src >= value; --src, --dest) {
-        *dest = *src;
-      }
-    }
-    fill(value, wordShift, 0U); // mask beginning of value
-  }
-  
-  // TAG: fix this - prevent overflow
-  static inline void rightShift(unsigned int* value, unsigned int size, unsigned int shift)
-  {
-    unsigned int bitShift = shift % (sizeof(unsigned int) * 8);
-    unsigned int wordShift = shift/(sizeof(unsigned int) * 8);
-    const unsigned int* src = value + wordShift;
-    unsigned int* dest = value;
-    
-    if (bitShift != 0) {
-      unsigned int nextBitShift = (sizeof(unsigned int) * 8) - bitShift; // 0 < nextBitShift < (sizeof(unsigned int) * 8)
-      for (const unsigned int* end = value + (size - wordShift - 1); dest < end; ++dest) {
-        unsigned int temp = *src >> bitShift;
-        ++src;
-        temp |= *src << nextBitShift;
-        *dest = temp;
-      }
-      *dest++ = *src >> bitShift;
-    } else {
-      for (const unsigned int* end = value + (size - wordShift); dest < end; ++src, ++dest) {
-        *dest = *src;
-      }
-    }
-    for (const unsigned int* end = value + size; dest < end; ++dest) { // mask end of value
-      *dest = 0;
-    }
-  }
-
-  static inline bool add(unsigned int* value, unsigned int size, unsigned int a)
-  {
-    const unsigned int* end = value + size;
-    unsigned int carrier = a;
-    for (; value < end; ++value) {
-      unsigned long long temp = *value + carrier;
-      *value = temp;
-      carrier = temp >> (sizeof(unsigned int) * 8);
-    }
-    return carrier > 0;
-  }
-  
-  static inline bool add(
-    unsigned int* restrict value,
-    const unsigned int* restrict right,
-    unsigned int size) noexcept
-  {
-    const unsigned int* end = value + size;
-    unsigned int carrier = 0;
-    for (; value < end; ++value, ++right) {
-      unsigned long long temp = static_cast<unsigned long long>(*value) + *right + carrier;
-      *value = temp;
-      carrier = temp >> (sizeof(unsigned int) * 8);
-    }
-    return carrier > 0;
-  }
-
-  static inline bool subtract(
-    unsigned int* restrict value,
-    const unsigned int* restrict right,
-    unsigned int size) noexcept
-  {
-    const unsigned int* end = value + size;
-    unsigned int borrow = 0;
-    for (; value < end; ++value, ++right) {
-      BASSERT(borrow <= 1);
-      unsigned long long temp = (1ULL << (sizeof(unsigned int) * 8)) + *value - *right - borrow;
-      *value = temp;
-      borrow = (temp >> (sizeof(unsigned int) * 8)) ? 0 : 1;
-    }
-    return borrow > 0;
-  }
-
-  static inline bool checkOverflow(const unsigned int* restrict left, const unsigned int* restrict right, unsigned int size) noexcept
-  {
-    const unsigned int* end = left + size;
-    unsigned int carrier = 0;
-    for (; left < end; ++left, ++right) {
-      unsigned long long temp = static_cast<unsigned long long>(*left) + *right + carrier;
-      carrier = temp >> (sizeof(unsigned int) * 8);
-    }
-    return carrier > 0;
-  }
-
-  static inline bool multiply(
-    unsigned int* value, unsigned int size, unsigned int m) noexcept
-  {
-    const unsigned int* end = value + size;
-    unsigned int carrier = 0;
-    for (; value < end; ++value) {
-      unsigned long long temp = static_cast<unsigned long long>(*value) * m + carrier;
-      *value = temp;
-      carrier = temp >> (sizeof(unsigned int) * 8);
-    }
-    return carrier > 0;
-  }
-
-  static inline unsigned int getSize(const unsigned int* value, unsigned int size) noexcept
-  {
-    const unsigned int* src = value + size; // start at end of value
-    while (src > value) {
-      if (*--src != 0) {
-        return src - value + 1;
-      }
-    }
-    return 0; // all words are zero
-  }
-
-  static inline unsigned int getBitSize(const unsigned int* value, unsigned int size) noexcept
-  {
-    const unsigned int* src = value + size; // start at end of value
-    while (src > value) {
-      if (*--src != 0) {
-        unsigned int temp = *src;
-        for (int bit = (sizeof(unsigned int) * 8) - 1; bit >= 0; --bit) {
-          if (temp >> bit) {
-            return (src - value) * (sizeof(unsigned int) * 8) + bit + 1;
-          }
-        }
-      }
-    }
-    return 0; // all bits are zero
-  }
-
-  static inline bool isZero(const unsigned int* value, unsigned int size) noexcept
-  {
-    for (const unsigned int* end = value + size; value < end; ++value) {
-      if (*value != 0) {
-        return false;
-      }
-    }
-    return true;
-  }
-
-  static inline bool lessThan(
-    const unsigned int* restrict left,
-    const unsigned int* restrict right,
-    unsigned int size) noexcept
-  {
-    const unsigned int* end = left;
-    left += size;
-    right += size;
-    while (left > end) {
-      --left;
-      --right;
-      if (*left < *right) {
-        return true;
-      } else if (*left > *right) {
-        return false;
-      }
-    }
-    return false;
-  }
-
-  static inline bool equal(
-    const unsigned int* restrict left,
-    const unsigned int* restrict right,
-    unsigned int size) noexcept
-  {
-    const unsigned int* end = left + size;
-    while (left < end) {
-      if (*left++ != *right++) {
-        return false;
-      }
-    }
-    return true;
-  }
-
-  // may remainder be the same as dividend - I think so
-  static inline void divide(
-    unsigned int* restrict quotient,
-    unsigned int* remainder,
-    const unsigned int* dividend,
-    const unsigned int* restrict divisor,
-    unsigned int size) noexcept
-  {
-
-    PrimitiveArray<unsigned int> temp(size);
-    clear(quotient, size);
-    unsigned int* tempDividend = remainder;
-    assign(tempDividend, dividend, size);
-    assign(&temp[0], divisor, size);
-
-    if (lessThan(tempDividend, divisor, size)) {
-      return;
-    }
-
-    unsigned int divisorBitSize = getBitSize(divisor, size);
-    unsigned int positionOfDivisor = getBitSize(tempDividend, size) - divisorBitSize;
-    leftShift(&temp[0], size, positionOfDivisor);
-
-    unsigned int reducedSize = size;
-
-    while (!lessThan(tempDividend, divisor, reducedSize)) {
-      // assert temp >= divisor
-      unsigned int newPosition = getBitSize(tempDividend, reducedSize) - divisorBitSize; // 0 <= newPosition < positionOfDivisor
-      rightShift(&temp[0], reducedSize, positionOfDivisor - newPosition);
-      positionOfDivisor = newPosition;
-
-      if (lessThan(tempDividend, &temp[0], reducedSize)) { // shift = 0 => return value is false
-        rightShift(&temp[0], reducedSize, 1);
-        --positionOfDivisor;
-      }
-
-      addBit(quotient, size, positionOfDivisor); // must be size - is any carrier possible when divisor > 0
-
-      subtract(tempDividend, &temp[0], reducedSize);
-    }
-    // tempDividend is remainder now
-  }
-
-}; // LargeInteger
-
 enum CutMode {
   CUT_MODE_NOGARBAGE,
   CUT_MODE_RELATIVE
@@ -1598,27 +1310,27 @@ void convertFloatingPoint(
   PrimitiveArray<unsigned int> Mdouble(integerSize); // 2 * M- (only initialized if required)
   PrimitiveArray<unsigned int> temp(integerSize);
 
-  LargeInteger::clear(R, integerSize);
-  LargeInteger::assign(R, mantissa, mantissaSize);
+  LargeIntegerImpl::clear(R, integerSize);
+  LargeIntegerImpl::assign(R, mantissa, mantissaSize);
 
   const bool unequalGap = ((nonZero - mantissa) == mantissaSize) &&
     (mantissa[mantissaSize - 1] == (1U << ((significant - 1) % (sizeof(unsigned int) * 8))));
   if (unequalGap) { // f == 1 << (p-1) // TAG: does this work for denormalized values
-    LargeInteger::setBit(S, integerSize, shiftS + 2); // S = 2*S_paper
-    LargeInteger::leftShift(R, integerSize, shiftR + 2); // R = 2*R_paper
+    LargeIntegerImpl::setBit(S, integerSize, shiftS + 2); // S = 2*S_paper
+    LargeIntegerImpl::leftShift(R, integerSize, shiftR + 2); // R = 2*R_paper
   } else {
-    LargeInteger::setBit(S, integerSize, shiftS + 1); // S = 2*S_paper
-  LargeInteger::assign(temp, R, integerSize);
-    LargeInteger::leftShift(R, integerSize, shiftR + 1); // R = 2*R_paper
+    LargeIntegerImpl::setBit(S, integerSize, shiftS + 1); // S = 2*S_paper
+    LargeIntegerImpl::assign(temp, R, integerSize);
+    LargeIntegerImpl::leftShift(R, integerSize, shiftR + 1); // R = 2*R_paper
   }
-  LargeInteger::setBit(Mminus, integerSize, shiftR); // Mminus = M-
+  LargeIntegerImpl::setBit(Mminus, integerSize, shiftR); // Mminus = M-
 
 
-  LargeInteger::assign(temp, S, integerSize);
-  LargeInteger::add(temp, integerSize, 10 - 1);
-  LargeInteger::divide(temp, integerSize, 10); // ceil(S/B)
-  while (LargeInteger::lessThan(R, temp, integerSize)) { // R < ceil(S/B) => R < (S+B-1)/B
-    LargeInteger::multiply(R, integerSize, 10); // R = R * B // TAG: optimize
+  LargeIntegerImpl::assign(temp, S, integerSize);
+  LargeIntegerImpl::add(temp, integerSize, 10 - 1);
+  LargeIntegerImpl::divide(temp, integerSize, 10); // ceil(S/B)
+  while (LargeIntegerImpl::lessThan(R, temp, integerSize)) { // R < ceil(S/B) => R < (S+B-1)/B
+    LargeIntegerImpl::multiply(R, integerSize, 10); // R = R * B // TAG: optimize
     --exponent;
   }
 
@@ -1626,25 +1338,25 @@ void convertFloatingPoint(
   while (alpha > 0) {
     unsigned int n = minimum<int>(alpha, 9);
     alpha -= n;
-    LargeInteger::multiply(Mminus, integerSize, power[n]); // M- = M- * B^n
+    LargeIntegerImpl::multiply(Mminus, integerSize, power[n]); // M- = M- * B^n
   }
 
   unsigned int* Mplus = Mminus;
   if (unequalGap) { // f == 1 << (p-1) // TAG: does this work for denormalized values
     Mplus = Mdouble; // redirect to separate storage
-    LargeInteger::assign(Mplus, Mminus, integerSize);
-    LargeInteger::leftShift(Mplus, integerSize, 1); // Mplus = M+
+    LargeIntegerImpl::assign(Mplus, Mminus, integerSize);
+    LargeIntegerImpl::leftShift(Mplus, integerSize, 1); // Mplus = M+
   }
 
   int cutPlace = 0;
 
   bool adjusted = false;
   while (true) {
-    LargeInteger::assign(temp, R, integerSize);
-    LargeInteger::add(temp, Mplus, integerSize);
-    while (!LargeInteger::lessThan(temp, S, integerSize)) { // 2*R + M+ >= 2*S
+    LargeIntegerImpl::assign(temp, R, integerSize);
+    LargeIntegerImpl::add(temp, Mplus, integerSize);
+    while (!LargeIntegerImpl::lessThan(temp, S, integerSize)) { // 2*R + M+ >= 2*S
       adjusted = false;
-      LargeInteger::multiply(S, integerSize, 10); // S = S * B // TAG: need optimization
+      LargeIntegerImpl::multiply(S, integerSize, 10); // S = S * B // TAG: need optimization
       ++exponent;
     }
 
@@ -1677,34 +1389,34 @@ void convertFloatingPoint(
           break;
         }
 
-        LargeInteger::assign(temp, S, integerSize); // y = S
+        LargeIntegerImpl::assign(temp, S, integerSize); // y = S
         int alpha = -cutPlace;
         if (alpha > 0) {
           while (alpha > 0) {
             unsigned int n = minimum<int>(alpha, 9);
             alpha -= n;
-            LargeInteger::multiply(temp, integerSize, power[n]); // y = y * B^n
+            LargeIntegerImpl::multiply(temp, integerSize, power[n]); // y = y * B^n
           }
         } else {
           while (alpha < 0) {
             unsigned int n = minimum<int>(-alpha, 9);
             alpha += n;
-            LargeInteger::add(temp, integerSize, power[n] - 1);
-            LargeInteger::divide(temp, integerSize, power[n]); // y = ceil(y/B^n)
+            LargeIntegerImpl::add(temp, integerSize, power[n] - 1);
+            LargeIntegerImpl::divide(temp, integerSize, power[n]); // y = ceil(y/B^n)
           }
         }
 
-        if (LargeInteger::lessThan(Mminus, temp, integerSize)) {
-          LargeInteger::assign(Mminus, temp, integerSize); // M- = max(y, M-)
+        if (LargeIntegerImpl::lessThan(Mminus, temp, integerSize)) {
+          LargeIntegerImpl::assign(Mminus, temp, integerSize); // M- = max(y, M-)
         }
         if (unequalGap) { // check if M- and M+ differ
-          if (LargeInteger::lessThan(Mplus, temp, integerSize)) {
-            LargeInteger::assign(Mplus, temp, integerSize); // M+ = max(y, M+)
-          } else if (LargeInteger::equal(Mplus, temp, integerSize)) {
+          if (LargeIntegerImpl::lessThan(Mplus, temp, integerSize)) {
+            LargeIntegerImpl::assign(Mplus, temp, integerSize); // M+ = max(y, M+)
+          } else if (LargeIntegerImpl::equal(Mplus, temp, integerSize)) {
             roundUp = true;
           }
         } else {
-          if (LargeInteger::equal(Mplus, temp, integerSize)) {
+          if (LargeIntegerImpl::equal(Mplus, temp, integerSize)) {
             roundUp = true;
           }
         }
@@ -1717,24 +1429,24 @@ void convertFloatingPoint(
   bool low = false;
   bool high = false;
   while (!low && !high) { // assert: R < S
-    LargeInteger::multiply(R, integerSize, 10); // R = R * B
-    LargeInteger::multiply(Mminus, integerSize, 10); // M- = M- * B
+    LargeIntegerImpl::multiply(R, integerSize, 10); // R = R * B
+    LargeIntegerImpl::multiply(Mminus, integerSize, 10); // M- = M- * B
     if (unequalGap) { // only if M- and M+ differ
-      LargeInteger::multiply(Mplus, integerSize, 10); // M+ = M+ * B
+      LargeIntegerImpl::multiply(Mplus, integerSize, 10); // M+ = M+ * B
     }
 
-    LargeInteger::divide(temp, R, R, S, integerSize); // U = R/S and R=R%S
+    LargeIntegerImpl::divide(temp, R, R, S, integerSize); // U = R/S and R=R%S
     if (static_cast<int>(numberOfDigits) < cutPlace) {
       buffer[numberOfDigits++] = temp[0]; // assert: U < B
     }
 
-    low = LargeInteger::lessThan(R, Mminus, integerSize); // 2*R < M-
-    LargeInteger::assign(temp, R, integerSize); // TAG: need alternative
-    LargeInteger::add(temp, Mplus, integerSize); // temp = 2*R + M+
+    low = LargeIntegerImpl::lessThan(R, Mminus, integerSize); // 2*R < M-
+    LargeIntegerImpl::assign(temp, R, integerSize); // TAG: need alternative
+    LargeIntegerImpl::add(temp, Mplus, integerSize); // temp = 2*R + M+
     if (roundUp) {
-      high = !LargeInteger::lessThan(temp, S, integerSize); // 2*R >= 2*S - M+ <=> 2*R + M+ >= 2*S
+      high = !LargeIntegerImpl::lessThan(temp, S, integerSize); // 2*R >= 2*S - M+ <=> 2*R + M+ >= 2*S
     } else {
-      high = LargeInteger::lessThan(S, temp, integerSize); // 2*R > 2*S - M+ <=> 2*R + M+ > 2*S
+      high = LargeIntegerImpl::lessThan(S, temp, integerSize); // 2*R > 2*S - M+ <=> 2*R + M+ > 2*S
     }
     if (static_cast<int>(numberOfDigits) >= cutPlace) {
       break;
@@ -1745,8 +1457,8 @@ void convertFloatingPoint(
   } else if (high && !low) {
     ++buffer[numberOfDigits - 1];
   } else {
-    LargeInteger::leftShift(R, integerSize, 1); // R = 2*R // TAG: need ordinary compare
-    if (LargeInteger::lessThan(S, R, integerSize)) { // 2*R > S
+    LargeIntegerImpl::leftShift(R, integerSize, 1); // R = 2*R // TAG: need ordinary compare
+    if (LargeIntegerImpl::lessThan(S, R, integerSize)) { // 2*R > S
       ++buffer[numberOfDigits - 1];
     }
   }

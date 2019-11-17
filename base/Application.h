@@ -20,6 +20,7 @@
 #include <base/SingletonException.h>
 #include <base/concurrency/MutualExclusion.h>
 #include <base/Version.h>
+#include <base/Profiler.h>
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
@@ -62,7 +63,7 @@ public:
     EXIT_CODE_USER = 1,
     /** The default exit code indicating an unspecified error. */
     EXIT_CODE_ERROR = 123,
-    /** This value specifies that the true exit code conflicts a reserved exit code in the current context. */
+    /** This value specifies that the true exit code conflicts with a reserved exit code in the current context. */
     EXIT_CODE_CONFLICT = 124,
     /** The exit code indicating an internal error (e.g. uncaught exception and violations of exception specification). */
     EXIT_CODE_INTERNAL_ERROR = 125,
@@ -118,6 +119,8 @@ public:
   template<class APPLICATION>
   static inline int stub(int numberOfArguments, const char* arguments[], const char* environment[]) noexcept
   {
+    Profiler::Task profile("Application::main()");
+
     try {
       // ensure required linker symbols are available
       _COM_AZURE_DEV__BASE__CHECK_SHARED_STATIC(); // ensure linking against correct shared vs static library

@@ -341,4 +341,124 @@ public:
   }
 };
 
+/** Primitive array which uses stack for small buffer and otherwise heap. Uses 4096 bytes on stack by default but minimum 1 item on stack. */
+template<class TYPE, MemorySize STACK_SIZE = (sizeof(TYPE) <= 4096) ? 4096/sizeof(TYPE) : 1>
+class PrimitiveStackArray {
+private:
+
+  TYPE stack[STACK_SIZE];
+  HeapBlock<TYPE> heap;
+  MemorySize count = 0;
+  TYPE* buffer = nullptr;
+
+  inline void update() noexcept
+  {
+    if (count == 0) {
+      buffer = nullptr; // not required in many cases - sometimes buffer is checked against nullptr
+      return;
+    }
+    buffer = (count <= STACK_SIZE) ? stack : heap;
+  }
+public:
+
+  /** Constructs buffer of given size. */
+  PrimitiveStackArray(MemorySize size = 0)
+  {
+    if (size > 0) {
+      if (size > STACK_SIZE) {
+        heap.resize(size);
+      }
+      this->count = size;
+      update();
+    }
+  }
+
+  /** Returns true if only stack is used. */
+  inline bool isUsingStack() const noexcept
+  {
+    return count <= STACK_SIZE;
+  }
+
+  /** Returns true if heap is used. */
+  inline bool isUsingHeap() const noexcept
+  {
+    return count > STACK_SIZE;
+  }
+
+  /** Resizes buffer. */
+  void resize(MemorySize count) noexcept
+  {
+    if (count != this->count) {
+      // we never go back from heap to stack!
+      if (!((this->count <= STACK_SIZE) && (count <= STACK_SIZE))) { // use heap
+        heap.resize(count); // copies if already in use
+        if (this->count <= STACK_SIZE) {
+          copy(heap, stack, this->count);
+        }
+      }
+      this->count = count;
+      update();
+    }
+  }
+
+  /** Returns the native pointer. Returns nullptr if empty. */
+  inline operator TYPE* () noexcept
+  {
+    return buffer;
+  }
+
+  /** Returns the native pointer. Returns nullptr if empty. */
+  inline operator const TYPE* () const noexcept
+  {
+    return buffer;
+  }
+
+  /** Returns the size. */
+  inline MemorySize size() const noexcept
+  {
+    return count;
+  }
+
+  /** Returns the begin iterator. */
+  inline TYPE* begin() noexcept
+  {
+    return buffer;
+  }
+
+  /** Returns the end iterator. */
+  inline TYPE* end() noexcept
+  {
+    return buffer + count;
+  }
+
+  /** Returns the begin iterator. */
+  inline const TYPE* cbegin() const noexcept
+  {
+    return buffer;
+  }
+
+  /** Returns the end iterator. */
+  inline const TYPE* cend() const noexcept
+  {
+    return buffer + count;
+  }
+
+  /** Returns the item at given index. */
+  inline TYPE& operator[](MemorySize index) noexcept
+  {
+    return buffer[index];
+  }
+
+  /** Returns the item at given index. */
+  inline const TYPE& operator[](MemorySize index) const noexcept
+  {
+    return buffer[index];
+  }
+
+  inline ~PrimitiveStackArray()
+  {
+    heap.release();
+  }
+};
+
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

@@ -16,7 +16,7 @@
 #include <base/ui/WindowImpl.h>
 #include <base/platforms/backend/WindowImpl.h>
 #include <base/concurrency/SpinLock.h>
-#include <base/Profiler.h>
+// #include <base/Profiler.h>
 
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
 #  include <base/platforms/win32/GDI.cpp>
@@ -237,7 +237,7 @@ void OpenGLContextImpl::deselect() throw()
 
 void OpenGLContextImpl::swap() throw(OpenGLException)
 {
-  Profiler::pushFrame("OpenGL::swap()");
+  // Profiler::pushFrame("OpenGL::swap()");
   
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   native::GDI::wglSwapBuffers((HDC)graphicsContextHandle); // ignore errors

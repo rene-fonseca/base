@@ -320,6 +320,9 @@ public:
   */
   String(const NativeString& string);
 
+  /** Initializes the string from a char. If you use \0 you will get a string of length 1 with the \0. */
+  // String(char src);
+
   /**
     Initializes the string from a NULL-terminated string.
 

@@ -64,6 +64,13 @@ String::String(MemorySize capacity)
   elements = e;
 }
 
+#if 0
+String::String(char src)
+{
+  initialize(&src, 1);
+}
+#endif
+
 String::String(const char* src)
 {
   initialize(src, getNullTerminatedLength(src));

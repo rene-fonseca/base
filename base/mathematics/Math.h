@@ -1968,7 +1968,7 @@ public:
     return m * (n/gcd(m, n));
   }
   
-  uint64 muldiv(uint64 value, uint64 mul, uint64 div);
+  static uint64 muldiv(uint64 value, uint64 mul, uint64 div);
 };
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

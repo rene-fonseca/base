@@ -170,7 +170,8 @@ uint64 Math::muldiv(uint64 value, uint64 mul, uint64 div)
   }
   const unsigned int b3 = getHighestBit(div);
   // b1 > 0 and b2 > 0
-  if (((1 << (b2 - 1) == mul) && (1 << (b3 - 1)) == div)) { // both are power of 2 // dont care if b3 == 0
+  if (((static_cast<uint64>(1) << (b2 - 1) == mul) &&
+       (static_cast<uint64>(1) << (b3 - 1)) == div)) { // both are power of 2 // dont care if b3 == 0
     const int shift = b2 - b3;
     if (shift >= 0) {
       return value << shift;

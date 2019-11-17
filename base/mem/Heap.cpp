@@ -22,7 +22,11 @@
 #  include <windows.h>
 #else // unix
 #  include <stdlib.h>
+#if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__MACOS)
 #  include <malloc/malloc.h>
+#elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__GNULINUX)
+#  include <malloc.h>
+#endif
 #endif // flavor
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
@@ -158,8 +162,19 @@ MemorySize HeapImpl::getMinimumSize() noexcept
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   // TAG: implement
   return 0;
-#else
+#elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__MACOS)
   return malloc_good_size(1);
+#elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__GNULINUX)
+  static MemorySize minimumSize = 0;
+  if (minimumSize == 0) {
+    if (void* temp = malloc(1)) {
+      minimumSize = malloc_usable_size(temp);
+      free(temp);
+    }
+  }
+  return minimumSize;
+#else
+  return 0;
 #endif
 }
 
@@ -169,7 +184,13 @@ MemorySize HeapImpl::getSize(void* heap) noexcept
   // TAG: implement
   return 0;
 #else
+#if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__MACOS)
   return malloc_size(heap);
+#elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__GNULINUX)
+  return malloc_usable_size(heap);
+#else
+  return 0;
+#endif
 #endif
 }
 

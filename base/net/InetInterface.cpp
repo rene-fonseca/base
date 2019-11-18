@@ -370,6 +370,9 @@ unsigned int InetInterface::getIndexByName(const String& name) throw(NetworkExce
   // TAG: fixme
   throw NetworkException(Type::getType<InetInterface>());
 #else
+  Thread::UseThreadLocalBuffer _buffer;
+  Allocator<uint8>& buffer = _buffer;
+
   int handle = socket(PF_INET, SOCK_STREAM, 0);
 //   int numberOfInterfaces = 0;
 // #if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__GNULINUX)
@@ -467,6 +470,8 @@ unsigned int InetInterface::getIndexByAddress(const InetAddress& address) throw(
   }
   throw NetworkException("Unable to resolve interface", Type::getType<InetInterface>());
 #else
+  Thread::UseThreadLocalBuffer _buffer;
+  Allocator<uint8>& buffer = _buffer;
   int handle = socket(PF_INET, SOCK_STREAM, 0);
 //   int numberOfInterfaces = 0;
 // #if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__GNULINUX)
@@ -575,6 +580,8 @@ String InetInterface::getName(unsigned int index) throw(NetworkException) {
   stream << index << FLUSH;
   return stream.getString();
 #else
+  Thread::UseThreadLocalBuffer _buffer;
+  Allocator<uint8>& buffer = _buffer;
   int handle = socket(PF_INET, SOCK_STREAM, 0);
 //   int numberOfInterfaces = 0;
 // #if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__GNULINUX)
@@ -687,6 +694,8 @@ InetAddress InetInterface::getAddress(unsigned int index) throw(NetworkException
   );
   return internal::InetInterface::getAddress(*Cast::pointer<struct sockaddr*>(&current[index].iiAddress));
 #else
+  Thread::UseThreadLocalBuffer _buffer;
+  Allocator<uint8>& buffer = _buffer;
   struct ifreq req;
   int handle = socket(PF_INET, SOCK_STREAM, 0);
 //   int numberOfInterfaces = 0;

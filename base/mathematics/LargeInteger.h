@@ -33,6 +33,12 @@ public:
 
   static void assign(Word* restrict dest, const Word* restrict src, MemorySize size) noexcept;
   
+  static Word getBits(const Word* words, MemorySize size, unsigned int bitIndex, unsigned bitSize) noexcept;
+
+  static bool isBitSet(const Word* value, MemorySize size, unsigned int bit) noexcept;
+
+  static void setBit(Word* value, MemorySize size, unsigned int bit, bool b) noexcept;
+
   static void setBit(Word* value, MemorySize size, unsigned int bit) noexcept;
 
   static bool addBit(Word* value, MemorySize size, unsigned int bit) noexcept;
@@ -117,6 +123,8 @@ public:
 
   LargeInteger& operator=(LargeInteger&& assign);
 
+  LargeInteger& operator=(Word assign);
+
   /** Returns the word size. */
   inline MemorySize getSize() const noexcept
   {
@@ -140,7 +148,15 @@ public:
 
   /** Returns true if the integer is zero. */
   bool isZero() const noexcept;
+
+  Word getBits(unsigned int bitIndex, unsigned bitSize) const noexcept;
+
+  /** Returns true if the bit is set. */
+  bool isBitSet(unsigned int bit) const noexcept;
   
+  /** Sets the bit. */
+  void setBit(unsigned int bit, bool b) noexcept;
+
   /**
     Unary plus.
   */

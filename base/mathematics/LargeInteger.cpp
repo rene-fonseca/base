@@ -30,6 +30,32 @@ void LargeIntegerImpl::assign(Word* restrict dest, const Word* restrict src, Mem
   copy(dest, src, size);
 }
 
+bool LargeIntegerImpl::isBitSet(const Word* value, MemorySize size, unsigned int bit) noexcept
+{
+  const auto index = bit / WORD_BITS;
+  if (index >= size) {
+    return false;
+  }
+  return value[index] & (static_cast<Word>(1) << (bit % WORD_BITS));
+}
+
+LargeIntegerImpl::Word LargeIntegerImpl::getBits(const Word* words, MemorySize size, unsigned int bitIndex, unsigned bitSize) noexcept
+{
+  BASSERT((bitIndex % bitSize) == 0);
+  Word word = words[bitIndex / WORD_BITS];
+  return (word >> (bitIndex % WORD_BITS)) & ((static_cast<Word>(1) << bitSize) - 1);
+}
+
+void LargeIntegerImpl::setBit(Word* value, MemorySize size, unsigned int bit, bool b) noexcept
+{
+  BASSERT(bit < (size * WORD_BITS));
+  if (b) {
+    value[bit / WORD_BITS] |= static_cast<Word>(1) << (bit % WORD_BITS);
+  } else {
+    value[bit / WORD_BITS] &= ~(static_cast<Word>(1) << (bit % WORD_BITS));
+  }
+}
+
 void LargeIntegerImpl::setBit(Word* value, MemorySize size, unsigned int bit) noexcept
 {
   BASSERT(bit < (size * WORD_BITS));
@@ -296,6 +322,9 @@ bool LargeIntegerImpl::equal(const Word* restrict left, const Word* restrict rig
 
 LargeIntegerImpl::Word LargeIntegerImpl::divide(Word* value, MemorySize size, Word divisor) noexcept
 {
+  // TAG: if divisor is power of 2
+  
+  
   Word* word = value + size;
   Word remainder = 0;
   while (--word >= value) {
@@ -377,6 +406,13 @@ LargeInteger::LargeInteger(LargeInteger&& move)
 LargeInteger& LargeInteger::operator=(const LargeInteger& assign)
 {
   value = assign.value;
+  return *this;
+}
+
+LargeInteger& LargeInteger::operator=(Word assign)
+{
+  value.setSize(1);
+  toWords()[0] = assign;
   return *this;
 }
 
@@ -467,7 +503,23 @@ LargeInteger& LargeInteger::subtract(const LargeInteger& subtrahend)
 
 bool LargeInteger::isZero() const noexcept
 {
-  return LargeIntegerImpl::isZero(value.getElements(), value.getSize());
+  return LargeIntegerImpl::isZero(toWords(), getSize());
+}
+
+LargeIntegerImpl::Word LargeInteger::getBits(unsigned int bitIndex, unsigned bits) const noexcept
+{
+  return LargeIntegerImpl::getBits(toWords(), getSize(), bitIndex, bits);
+}
+
+bool LargeInteger::isBitSet(unsigned int bit) const noexcept
+{
+  return LargeIntegerImpl::isBitSet(toWords(), getSize(), bit);
+}
+
+void LargeInteger::setBit(unsigned int bit, bool b) noexcept
+{
+  extend((bit + LargeIntegerImpl::WORD_BITS - 1) / LargeIntegerImpl::WORD_BITS);
+  LargeIntegerImpl::setBit(toWords(), getSize(), bit, b);
 }
 
 LargeInteger& LargeInteger::operator~() noexcept
@@ -692,6 +744,74 @@ LargeInteger operator/(const LargeInteger& left, const unsigned int right)
   return result;
 }
 
+uint32 getWordBits(const uint32* words, unsigned int size, unsigned int bitIndex, unsigned bitSize)
+{
+  BASSERT((bitIndex % bitSize) == 0);
+  auto word = words[bitIndex / 32];
+  return (word >> (bitIndex % 32)) & ((static_cast<uint32>(1) << bitSize) - 1);
+}
+
+namespace {
+
+  inline char* storeDigits(char* dest, const LargeInteger& value, unsigned int bits, bool upper = false) noexcept
+  {
+    unsigned int bit = value.getSize() * LargeIntegerImpl::WORD_BITS;
+    while (bit && !value.getBits(bit, bits)) {
+      bit -= bits;
+    }
+    if (!bit) {
+      bit += bits;
+    }
+    do {
+      *dest-- = ASCIITraits::valueToDigit(value.getBits(bit, bits), upper); // get digit
+      bit -= bits;
+    } while (bit);
+    ++dest; // go to first valid char in buffer
+    return dest;
+  }
+
+}
+
+FormatOutputStream& operator<<(FormatOutputStream& stream, const LargeInteger& value) throw(IOException)
+{
+  PrimitiveStackArray<char> buffer(4096);
+  char* dest = buffer.end() - 1; // point to least significant digit position
+
+  switch (stream.getBase()) {
+  case FormatOutputStream::Symbols::BINARY:
+    {
+      dest = storeDigits(dest, value, 1);
+      break;
+    }
+  case FormatOutputStream::Symbols::OCTAL:
+    {
+      dest = storeDigits(dest, value, 3);
+      break;
+    }
+  case FormatOutputStream::Symbols::DECIMAL:
+    {
+      LargeInteger temp = (value >= 0U) ? value : -value;
+      do {
+        *dest = ASCIITraits::valueToDigit(temp % 10); // get digit
+        temp /= 10;
+        --dest;
+      } while (temp);
+      ++dest; // go to first valid char in buffer
+      break;
+    }
+  case FormatOutputStream::Symbols::HEXADECIMAL:
+    {
+      dest = storeDigits(dest, value, 4, (stream.getFlags() & FormatOutputStream::Symbols::UPPER) != 0);
+      break;
+    }
+  default:
+    return stream; // do not do anything if base is unknown
+  }
+
+  stream.addIntegerField(dest, sizeof(buffer) - (dest - buffer), value < 0U);
+  return stream;
+}
+
 #if defined(_COM_AZURE_DEV__BASE__TESTS)
 
 class TEST_CLASS(LargeInteger) : public UnitTest {
@@ -703,13 +823,29 @@ public:
   void run() override
   {
     LargeInteger i1;
-    TEST_ASSERT(i1);
+    TEST_ASSERT(!i1);
     TEST_ASSERT(i1 == 0U);
     TEST_ASSERT(!(i1 != 0U));
     TEST_ASSERT(!(i1 < 0U));
     TEST_ASSERT(i1 <= 0U);
     TEST_ASSERT(!(i1 > 0U));
     TEST_ASSERT(i1 >= 0U);
+
+    fout << i1 << ENDL;
+
+    i1 = 1;
+    TEST_ASSERT(i1);
+    TEST_ASSERT(i1 == 1U);
+    TEST_ASSERT(!(i1 != 1U));
+    TEST_ASSERT(!(i1 < 1U));
+    TEST_ASSERT(i1 <= 1U);
+    TEST_ASSERT(!(i1 > 1U));
+    TEST_ASSERT(i1 >= 1U);
+
+    i1 = 11;
+    fout << i1 << ENDL;
+    i1 *= 13;
+    fout << i1 << ENDL;
   }
 };
 

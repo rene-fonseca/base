@@ -27,6 +27,93 @@
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
+#if 0
+template<class TYPE>
+class HandlePointer {
+private:
+
+  TYPE* p = nullptr;
+
+  HandlePointer(const HandlePointer&);
+  HandlePointer(HandlePointer&&);
+public:
+  
+  inline HandlePointer()
+    : p(new TYPE[1])
+  {
+  }
+
+  inline TYPE& operator*() noexcept
+  {
+    BASSERT(p);
+    return *p;
+  }
+
+  inline const TYPE& operator*() const noexcept
+  {
+    BASSERT(p);
+    return *p;
+  }
+
+  inline TYPE* operator->() noexcept
+  {
+    return p;
+  }
+
+  inline const TYPE* operator->() const noexcept
+  {
+    return p;
+  }
+
+  template<class POLY>
+  inline const POLY* cast() const noexcept
+  {
+    return reinterpret_cast<POLY>(p);
+  }
+
+  inline TYPE* detach() noexcept
+  {
+    BASSERT(p);
+    TYPE* result = p;
+    p = nullptr;
+    return result;
+  }
+
+  inline ~HandlePointer()
+  {
+    if (p) {
+      delete[] p;
+    }
+  }
+};
+
+template<>
+class HandlePointer<void> {
+private:
+
+  void* p = nullptr;
+public:
+  
+  template<typename POLY>
+  inline POLY* cast() noexcept {
+    return p;
+  }
+
+  template<typename POLY>
+  inline const POLY* cast() const noexcept {
+    return p;
+  }
+  
+  inline ~HandlePointer()
+  {
+    BASSERT(!p); // prevent destruction
+  }
+};
+
+// need to convert between void* and internal pointer
+// void* cannot be destructed
+#endif
+
 class EventImpl {
 public:
   
@@ -218,10 +305,14 @@ Event::~Event()
     throw EventException("Unable to destroy event", this);
   }
 #else // pthread
-  if (pthread_cond_destroy(&Cast::pointer<EventImpl::Context*>(context)->condition)) {
+  EventImpl::Context* p = Cast::pointer<EventImpl::Context*>(context);
+  if (pthread_cond_destroy(&p->condition)) {
+    pthread_mutex_destroy(&p->mutex); // lets just hope that this doesn't fail
+    delete[] p;
     throw EventException("Unable to destroy event", this);
   }
-  pthread_mutex_destroy(&Cast::pointer<EventImpl::Context*>(context)->mutex); // lets just hope that this doesn't fail
+  pthread_mutex_destroy(&p->mutex); // lets just hope that this doesn't fail
+  delete[] p;
 #endif
 }
 

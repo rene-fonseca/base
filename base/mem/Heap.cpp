@@ -60,6 +60,10 @@ void* HeapImpl::allocateNoThrow(MemorySize size) noexcept
 
 void* HeapImpl::allocate(MemorySize size) throw(MemoryException)
 {
+  if (!size) {
+    return nullptr;
+  }
+
   Profiler::pushObjectCreate(size);
   
   void* result = nullptr;

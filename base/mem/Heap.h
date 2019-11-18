@@ -83,7 +83,7 @@ protected:
 
   /**
     Allocates the specified number of bytes on the heap. Returns nullptr if
-    unable to allocate the memory block.
+    unable to allocate the memory block. Returns nullptr for size 0.
 
     @param size The desired size of the memory block in number of bytes.
   */
@@ -91,7 +91,8 @@ protected:
 
   /**
     Allocates the specified number of bytes on the heap. Raises
-    MemoryException if unable to allocate the memory block.
+    MemoryException if unable to allocate the memory block. Returns nullptr
+    for size 0.
 
     @param size The desired size of the memory block in number of bytes.
   */
@@ -100,6 +101,7 @@ protected:
   /**
     Resizes the specified memory block. Raises MemoryException if unable
     allocate memory block. Memory block may be moved when memory is made smaller.
+    Returns nullptr for size 0.
 
     @param heap The memory block.
     @param size The desired size of the memory block in number of bytes.

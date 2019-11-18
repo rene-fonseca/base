@@ -1316,14 +1316,14 @@ void convertFloatingPoint(
   const bool unequalGap = ((nonZero - mantissa) == mantissaSize) &&
     (mantissa[mantissaSize - 1] == (1U << ((significant - 1) % (sizeof(unsigned int) * 8))));
   if (unequalGap) { // f == 1 << (p-1) // TAG: does this work for denormalized values
-    LargeIntegerImpl::setBit(S, integerSize, shiftS + 2); // S = 2*S_paper
+    LargeIntegerImpl::assignBit(S, integerSize, shiftS + 2); // S = 2*S_paper
     LargeIntegerImpl::leftShift(R, integerSize, shiftR + 2); // R = 2*R_paper
   } else {
-    LargeIntegerImpl::setBit(S, integerSize, shiftS + 1); // S = 2*S_paper
+    LargeIntegerImpl::assignBit(S, integerSize, shiftS + 1); // S = 2*S_paper
     LargeIntegerImpl::assign(temp, R, integerSize);
     LargeIntegerImpl::leftShift(R, integerSize, shiftR + 1); // R = 2*R_paper
   }
-  LargeIntegerImpl::setBit(Mminus, integerSize, shiftR); // Mminus = M-
+  LargeIntegerImpl::assignBit(Mminus, integerSize, shiftR); // Mminus = M-
 
 
   LargeIntegerImpl::assign(temp, S, integerSize);

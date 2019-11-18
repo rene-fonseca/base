@@ -138,7 +138,7 @@ public:
   };
   
   /** Specifies the size of the thread local storage. */
-  static const MemorySize THREAD_LOCAL_STORAGE = 4096;
+  static constexpr MemorySize THREAD_LOCAL_STORAGE = 4096;
   
   /**
     Group of exceptions raised directly by the Thread class.
@@ -286,6 +286,28 @@ public:
     Returns the thread object associated with the executing thread.
   */
   static Thread* getThread() noexcept;
+
+  /** Reuses thread local buffer is available. Avoids heap allocations. */
+  class UseThreadLocalBuffer {
+  private:
+
+    Allocator<uint8> newStorage;
+    Allocator<uint8>* reusedStorage  = nullptr;
+    int id = -1;
+  public:
+
+    UseThreadLocalBuffer(MemorySize size = 0);
+
+    UseThreadLocalBuffer(const UseThreadLocalBuffer&) = delete;
+    UseThreadLocalBuffer& operator=(const UseThreadLocalBuffer&) = delete;
+
+    inline operator Allocator<uint8>&() noexcept
+    {
+      return reusedStorage ? *reusedStorage : newStorage;
+    }
+
+    ~UseThreadLocalBuffer();
+  };
 
   /**
     Returns the thread object associated with the executing thread.
@@ -488,25 +510,62 @@ inline Thread::Times operator-(const Thread::Times& a, const Thread::Times& b) n
   return Thread::Times{a.user - b.user, a.system - b.system};
 }
 
+/** Manages fixed size resource. Not MT-safe. */
+template<unsigned int SIZE>
+class FixedResourceManager {
+public:
+
+  bool slots[SIZE] = {true}; // debug only
+  unsigned int availableSlots[SIZE] = {0}; // available slots
+  unsigned int count = SIZE; // number of available slots
+
+  /** Initializes manager. */
+  FixedResourceManager() noexcept
+  {
+    for (unsigned int i = 0; i < SIZE; ++i) {
+      availableSlots[i] = i;
+    }
+  }
+
+  /** Returns the next available slot. Returns -1 if none available. */
+  int acquire() noexcept
+  {
+    if (count > 0) {
+      --count;
+      auto id = availableSlots[count];
+      BASSERT(slots[id]);
+      slots[id] = false; // mark in use
+      return id;
+    }
+    return -1;
+  }
+
+  /** Releases the given slot. */
+  inline void release(unsigned int id) noexcept
+  {
+    BASSERT(id < SIZE);
+    BASSERT(!slots[id]); // must be allocated
+    slots[id] = false;
+    availableSlots[count++] = id; // return to available
+  }
+};
+
 // TAG: we should hide this
 /** State for all threads. */
 class _COM_AZURE_DEV__BASE__API ThreadLocalContext : public DynamicObject {
 public:
 
+  static constexpr unsigned int STORAGE_BUFFERS = 4; // allows limited recursion
   /** The thread object associated with context. */
   Thread* thread = nullptr;
+  /** Counter for storage usage. */
+  FixedResourceManager<STORAGE_BUFFERS> storageManager;
   /** The thread local storage. */
-  Allocator<uint8> storage;
+  Allocator<uint8> storage[STORAGE_BUFFERS];
   /** Random generator. */
   RandomInputStream randomInputStream;
-  // TAG: add description?
   /** Last known stack trace for exception. */
   StackFrame stackTrace;
-
-  ThreadLocalContext()
-    : storage(Thread::THREAD_LOCAL_STORAGE)
-  {
-  }
 };
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

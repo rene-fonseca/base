@@ -540,7 +540,7 @@ String DynamicLinker::getSymbolName(const void* address)
   loadDbgHelp();
   if (symFromAddr) {
     DWORD64 displacement = 0;
-    const unsigned int MAXIMUM_NAME = 4096; // nested templates can give very long names
+    const unsigned int MAXIMUM_NAME = 2048; // nested templates can give very long names
     PrimitiveStackArray<uint8> buffer(MAXIMUM_NAME + sizeof(SYMBOL_INFO) - 1);
     SYMBOL_INFO* info = reinterpret_cast<SYMBOL_INFO*>(static_cast<uint8*>(buffer));
     info->SizeOfStruct = sizeof(SYMBOL_INFO);

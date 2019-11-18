@@ -295,24 +295,30 @@ public:
 
   inline bool operator>=(const LargeInteger& value) const noexcept
   {
-    return !operator>(value);
+    return !operator<(value);
   }
 
   inline bool operator>=(const Word value) const noexcept
   {
-    return !operator>(value);
+    return !operator<(value);
   }
 
+  /** Bitwise and. */
   LargeInteger& operator&(const LargeInteger& value) noexcept;
   
+  /** Bitwise or. */
   LargeInteger& operator|(const LargeInteger& value) noexcept;
 
+  /** Bitwise xor. */
   LargeInteger& operator^(const LargeInteger& operand) noexcept;
 
+  /** Bitwise negation. */
   LargeInteger& operator~() noexcept;
-  
+
+  /** Shift left. */
   LargeInteger& operator<<=(unsigned int value) noexcept;
   
+  /** Shift right. */
   LargeInteger& operator>>=(unsigned int value) noexcept;
   
   /**

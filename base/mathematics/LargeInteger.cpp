@@ -282,6 +282,8 @@ bool LargeIntegerImpl::multiply(Word* value, const MemorySize size, const Word m
     return false;
   }
 
+  // we can do shift instead for power of 2
+
   const Word* end = value + size;
   Word carrier = 0;
   for (; value != end; ++value) {
@@ -1007,7 +1009,7 @@ FormatOutputStream& operator<<(FormatOutputStream& stream, const LargeInteger& v
       }
 
       BASSERT(value >= 0U);
-      LargeInteger temp = value; // (value >= 0U) ? value : -value;
+      LargeInteger temp(value); // (value >= 0U) ? value : -value;
       temp.ensureCapacity(temp.getSize());
       temp.trim();
 

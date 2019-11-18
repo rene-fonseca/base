@@ -334,7 +334,7 @@ bool LargeIntegerImpl::lessThan(const Word* restrict left, const Word* restrict 
     --right;
     if (*left < *right) {
       return true;
-    } else if (*left > * right) {
+    } else if (*left > *right) {
       return false;
     }
   }
@@ -351,7 +351,7 @@ bool LargeIntegerImpl::lessThanEqual(const Word* restrict left, const Word* rest
     --right;
     if (*left < *right) {
       return true;
-    } else if (*left > * right) {
+    } else if (*left > *right) {
       return false;
     }
   }
@@ -389,7 +389,7 @@ LargeIntegerImpl::Word LargeIntegerImpl::divide(Word* value, const MemorySize si
     }
     const unsigned int shift = Math::getHighestBit(divisor);
     if ((ONE << shift) == divisor) {
-      const Word remainder = ((size > 0) ? value[0] : 0)& ((ONE << shift) - 1);
+      const Word remainder = ((size > 0) ? value[0] : 0) & ((ONE << shift) - 1);
       rightShift(value, size, shift);
       return remainder;
     }
@@ -753,6 +753,28 @@ bool LargeInteger::operator<=(const Word comparand) const noexcept
   return LargeIntegerImpl::isZero(toWords() + 1, s1 - 1);
 }
 
+LargeInteger& LargeInteger::operator<<=(unsigned int shift) noexcept
+{
+  MemorySize _size = 0;
+  const Word* begin = toWords();
+  const Word* src = begin + getSize();
+  while (src != begin) {
+    if (*--src != 0) {
+      _size = (src - begin) + 1;
+    }
+  }
+  
+  extend(_size + (shift + LargeIntegerImpl::WORD_BITS - 1)/ LargeIntegerImpl::WORD_BITS); // no need to extend top zeros
+  LargeIntegerImpl::leftShift(toWords(), getSize(), shift);
+  return *this;
+}
+
+LargeInteger& LargeInteger::operator>>=(unsigned int shift) noexcept
+{
+  LargeIntegerImpl::rightShift(toWords(), getSize(), shift);
+  return *this;
+}
+
 LargeInteger& LargeInteger::multiply(unsigned int value)
 {
   BASSERT(!"Not implemented.");
@@ -929,6 +951,17 @@ public:
     fout << i1 << ENDL;
     i1 *= 13;
     fout << i1 << ENDL;
+
+    for (unsigned int i = 0; i < 10; ++i) {
+      i1 <<= 1;
+      fout << "SHIFT LEFT  " << i1 << ENDL;
+    }
+
+    for (unsigned int i = 0; i < 10; ++i) {
+      i1 >>= 1;
+      fout << "SHIFT RIGHT " << i1 << ENDL;
+    }
+
   }
 };
 

@@ -814,7 +814,8 @@ long long File::getPosition() const throw(FileException) {
 #endif
 }
 
-void File::setPosition(long long position, Whence whence) throw(FileException) {
+void File::setPosition(long long position, Whence whence) throw(FileException)
+{
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   static DWORD relativeTo[] = {FILE_BEGIN, FILE_CURRENT, FILE_END};
   LARGE_INTEGER temp;
@@ -860,14 +861,15 @@ void File::truncate(long long size) throw(FileException) {
   }
 #endif
   if (size > oldSize) {
-    Allocator<uint8>* buffer = Thread::getLocalStorage();
-    fill<uint8>(buffer->getElements(), buffer->getSize(), 0);
+    Thread::UseThreadLocalBuffer _buffer;
+    Allocator<uint8>& buffer = _buffer;
+    fill<uint8>(buffer.getElements(), buffer.getSize(), 0);
     setPosition(oldSize);
     long long count = size - oldSize;
     while (count > 0) {
       count -= write(
-        buffer->getElements(),
-        minimum<long long>(count, buffer->getSize())
+        buffer.getElements(),
+        minimum<long long>(count, buffer.getSize())
       ); // blocking write
     }
   }

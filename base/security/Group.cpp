@@ -90,14 +90,15 @@ Group::Group(const String& name) throw(GroupException) {
 #else // unix
   #if defined(_COM_AZURE_DEV__BASE__HAVE_GETGRNAM_R)
     //long sysconf(_SC_GETGR_R_SIZE_MAX);
-    Allocator<uint8>* buffer = Thread::getLocalStorage();
+    Thread::UseThreadLocalBuffer _buffer;
+    Allocator<uint8>& buffer = _buffer;
     struct group grp;
     struct group* entry = nullptr;
     int result = ::getgrnam_r(
       name.getElements(),
       &grp,
-      (char*)buffer->getElements(),
-      buffer->getSize()/sizeof(char),
+      (char*)buffer.getElements(),
+      buffer.getSize()/sizeof(char),
       &entry
     );
     bassert(result == 0, GroupException(this));
@@ -116,14 +117,15 @@ Group::Group(const User& user) throw(GroupException) {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   throw NotImplemented(this);
 #else // unix
-  Allocator<uint8>* buffer = Thread::getLocalStorage();
+  Thread::UseThreadLocalBuffer _buffer;
+  Allocator<uint8>& buffer = _buffer;
   struct passwd pw;
   struct passwd* entry = nullptr;
   int result = ::getpwuid_r(
     Cast::extract<uid_t>(user.getIntegralId()),
     &pw,
-    (char*)buffer->getElements(),
-    buffer->getSize()/sizeof(char),
+    (char*)buffer.getElements(),
+    buffer.getSize()/sizeof(char),
     &entry
   );
   bassert(result == 0, GroupException(this));
@@ -161,14 +163,15 @@ String Group::getName() const throw(GroupException) {
 #else // unix
   #if defined(_COM_AZURE_DEV__BASE__HAVE_GETGRNAM_R)
     //long sysconf(_SC_GETGR_R_SIZE_MAX);
-    Allocator<uint8>* buffer = Thread::getLocalStorage();
+    Thread::UseThreadLocalBuffer _buffer;
+    Allocator<uint8>& buffer = _buffer;
     struct group grp;
     struct group* entry = nullptr;
     int result = ::getgrgid_r(
       Cast::extract<gid_t>(integralId),
       &grp,
-      (char*)buffer->getElements(),
-      buffer->getSize()/sizeof(char),
+      (char*)buffer.getElements(),
+      buffer.getSize()/sizeof(char),
       &entry
     );
     bassert(result == 0, GroupException(this));
@@ -234,14 +237,15 @@ Array<String> Group::getMembers() const throw(GroupException) {
 #else // unix
   #if defined(_COM_AZURE_DEV__BASE__HAVE_GETGRGID_R)
     //long sysconf(_SC_GETGR_R_SIZE_MAX);
-    Allocator<uint8>* buffer = Thread::getLocalStorage();
+    Thread::UseThreadLocalBuffer _buffer;
+    Allocator<uint8>& buffer = _buffer;
     struct group grp;
     struct group* entry = nullptr;
     int result = ::getgrgid_r(
       Cast::extract<gid_t>(integralId),
       &grp,
-      (char*)buffer->getElements(),
-      buffer->getSize()/sizeof(char),
+      (char*)buffer.getElements(),
+      buffer.getSize()/sizeof(char),
       &entry
     );
     bassert(result == 0, GroupException(this));

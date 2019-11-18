@@ -1045,8 +1045,9 @@ String TypeInfo::demangleName(const char* mangled) throw(InvalidFormat)
 
 String TypeInfo::demangleName(const char* mangled) throw(InvalidFormat)
 {
-  Allocator<uint8>* buffer = Thread::getLocalStorage();
-  int result = cplus_demangle(mangled, buffer->getElements(), buffer->getSize());
+  Thread::UseThreadLocalBuffer _buffer;
+  Allocator<uint8>& buffer = _buffer;
+  int result = cplus_demangle(mangled, buffer.getElements(), buffer.getSize());
   BASSERT(!result);
   return String(buffer->getElements());
 }

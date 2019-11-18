@@ -397,7 +397,8 @@ Array<String> FolderInfo::getEntries() const throw(FileSystemException)
     }
   }
 #else // unix
-  Allocator<uint8>* buffer = Thread::getLocalStorage();
+  Thread::UseThreadLocalBuffer _buffer;
+  Allocator<uint8>& buffer = _buffer;
 
   #if defined(_COM_AZURE_DEV__BASE__LARGE_FILE_SYSTEM)
     DIR* directory = nullptr;
@@ -411,7 +412,7 @@ Array<String> FolderInfo::getEntries() const throw(FileSystemException)
       struct dirent64* entry = nullptr;
 
       errno = 0;
-      if ((status = ::readdir64_r(directory, Cast::pointer<struct dirent64*>(buffer->getElements()), &entry)) != 0) {
+      if ((status = ::readdir64_r(directory, Cast::pointer<struct dirent64*>(buffer.getElements()), &entry)) != 0) {
         if (errno == 0) { // stop if last entry has been read
           break;
         }
@@ -457,14 +458,14 @@ Array<String> FolderInfo::getEntries() const throw(FileSystemException)
       throw FileSystemException("Unable to read entries of folder", this);
     }
   
-    buffer->setSize(maximum(buffer->getSize(), sizeof(struct dirent) + 1));
+    buffer.setSize(maximum(buffer.getSize(), sizeof(struct dirent) + 1));
 
     while (true) {
       int status = 0;
       struct dirent* entry = nullptr;
       
       errno = 0;
-      if ((status = ::readdir_r(directory, Cast::pointer<struct dirent*>(buffer->getElements()), &entry)) != 0) {
+      if ((status = ::readdir_r(directory, Cast::pointer<struct dirent*>(buffer.getElements()), &entry)) != 0) {
         if (errno == 0) { // stop if last entry has been read
           break;
         }

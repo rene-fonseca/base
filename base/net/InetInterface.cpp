@@ -97,6 +97,8 @@ HashTable<String, unsigned int> InetInterface::getInterfaceNames() throw() {
   }
   if_freenameindex(ni); // MT-safe
 #elif (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
+  Thread::UseThreadLocalBuffer _buffer;
+  Allocator<uint8>& buffer = _buffer;
   int handle = socket(PF_INET, SOCK_STREAM, 0);
   DWORD bytesReturned = 0;
   if (::WSAIoctl(
@@ -104,8 +106,8 @@ HashTable<String, unsigned int> InetInterface::getInterfaceNames() throw() {
         SIO_GET_INTERFACE_LIST,
         0,
         0,
-        Thread::getLocalStorage()->getElements(),
-        Thread::getLocalStorage()->getSize(),
+        buffer.getElements(),
+        buffer.getSize(),
         &bytesReturned,
         0,
         0)) {
@@ -116,10 +118,7 @@ HashTable<String, unsigned int> InetInterface::getInterfaceNames() throw() {
     );
   }
   closesocket(handle);
-  const INTERFACE_INFO* current =
-    Cast::pointer<const INTERFACE_INFO*>(
-      Thread::getLocalStorage()->getElements()
-    );
+  const INTERFACE_INFO* current = Cast::pointer<const INTERFACE_INFO*>(buffer.getElements());
   const unsigned int numberOfInterfaces = bytesReturned/sizeof(*current);
   for (unsigned int index = 0; index < numberOfInterfaces; ++index) {
     if (Cast::pointer<struct sockaddr*>(&current->iiAddress)->sa_family != AF_INET) { // TAG: AF_INET6
@@ -183,7 +182,8 @@ HashTable<String, unsigned int> InetInterface::getInterfaceNames() throw() {
   return interfaces;
 }
 
-List<InetInterface> InetInterface::getInterfaces() throw(NetworkException) {
+List<InetInterface> InetInterface::getInterfaces() throw(NetworkException)
+{
   List<InetInterface> interfaces;
 #if (0 && defined(_COM_AZURE_DEV__BASE__INET_IPV6)) // currently disabled
   struct if_nameindex* ni = nullptr;
@@ -208,6 +208,8 @@ List<InetInterface> InetInterface::getInterfaces() throw(NetworkException) {
   }
   if_freenameindex(ni); // MT-safe
 #elif (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
+  Thread::UseThreadLocalBuffer _buffer;
+  Allocator<uint8>& buffer = _buffer;
   int handle = socket(PF_INET, SOCK_STREAM, 0);
   DWORD bytesReturned = 0;
   if (::WSAIoctl(
@@ -215,8 +217,8 @@ List<InetInterface> InetInterface::getInterfaces() throw(NetworkException) {
         SIO_GET_INTERFACE_LIST,
         0,
         0,
-        Thread::getLocalStorage()->getElements(),
-        Thread::getLocalStorage()->getSize(),
+        buffer.getElements(),
+        buffer.getSize(),
         &bytesReturned,
         0,
         0)) {
@@ -227,10 +229,7 @@ List<InetInterface> InetInterface::getInterfaces() throw(NetworkException) {
     );
   }
   closesocket(handle);
-  const INTERFACE_INFO* current =
-    Cast::pointer<const INTERFACE_INFO*>(
-      Thread::getLocalStorage()->getElements()
-    );
+  const INTERFACE_INFO* current = Cast::pointer<const INTERFACE_INFO*>(buffer.getElements());
   const unsigned int numberOfInterfaces = bytesReturned/sizeof(*current);
   for (unsigned int index = 0; index < numberOfInterfaces; ++index) {
     if (Cast::pointer<struct sockaddr*>(&current->iiAddress)->sa_family != AF_INET) { // TAG: AF_INET6
@@ -267,8 +266,8 @@ List<InetInterface> InetInterface::getInterfaces() throw(NetworkException) {
   int handle = socket(PF_INET, SOCK_STREAM, 0);
   try {
     struct ifconf ifc;
-    ifc.ifc_len = Thread::getLocalStorage()->getSize()/sizeof(char);
-    ifc.ifc_buf = (char*)Thread::getLocalStorage()->getElements();
+    ifc.ifc_len = buffer.getSize()/sizeof(char);
+    ifc.ifc_buf = (char*)buffer.getElements();
     if (ioctl(handle, SIOCGIFCONF, &ifc)) {
       close(handle);
       throw NetworkException(
@@ -386,8 +385,8 @@ unsigned int InetInterface::getIndexByName(const String& name) throw(NetworkExce
 //     );
 //   }
   struct ifconf ifc;
-  ifc.ifc_len = Thread::getLocalStorage()->getSize();
-  ifc.ifc_buf = (char*)Thread::getLocalStorage()->getElements();
+  ifc.ifc_len = buffer.getSize();
+  ifc.ifc_buf = (char*)buffer.getElements();
   if (ioctl(handle, SIOCGIFCONF, &ifc)) {
     close(handle);
     throw NetworkException(
@@ -437,6 +436,8 @@ unsigned int InetInterface::getIndexByName(const String& name) throw(NetworkExce
 
 unsigned int InetInterface::getIndexByAddress(const InetAddress& address) throw(NetworkException) {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
+  Thread::UseThreadLocalBuffer _buffer;
+  Allocator<uint8>& buffer = _buffer;
   int handle = socket(PF_INET, SOCK_STREAM, 0);
   DWORD bytesReturned = 0;
   if (::WSAIoctl(
@@ -444,8 +445,8 @@ unsigned int InetInterface::getIndexByAddress(const InetAddress& address) throw(
         SIO_GET_INTERFACE_LIST,
         0,
         0,
-        Thread::getLocalStorage()->getElements(),
-        Thread::getLocalStorage()->getSize(),
+        buffer.getElements(),
+        buffer.getSize(),
         &bytesReturned,
         0,
         0)) {
@@ -453,10 +454,7 @@ unsigned int InetInterface::getIndexByAddress(const InetAddress& address) throw(
     throw NetworkException("Unable to resolve interface", Type::getType<InetInterface>());
   }
   closesocket(handle);
-  const INTERFACE_INFO* current =
-    Cast::pointer<const INTERFACE_INFO*>(
-      Thread::getLocalStorage()->getElements()
-    );
+  const INTERFACE_INFO* current = Cast::pointer<const INTERFACE_INFO*>(buffer.getElements());
   const unsigned int numberOfInterfaces = bytesReturned/sizeof(*current);
   for (unsigned int index = 0; index < numberOfInterfaces; ++index) {
     if (
@@ -484,8 +482,8 @@ unsigned int InetInterface::getIndexByAddress(const InetAddress& address) throw(
 //     );
 //   }
   struct ifconf ifc;
-  ifc.ifc_len = Thread::getLocalStorage()->getSize()/sizeof(char);
-  ifc.ifc_buf = (char*)Thread::getLocalStorage()->getElements();
+  ifc.ifc_len = buffer.getSize()/sizeof(char);
+  ifc.ifc_buf = (char*)buffer.getElements();
   if (ioctl(handle, SIOCGIFCONF, &ifc)) {
     close(handle);
     throw NetworkException(
@@ -546,6 +544,8 @@ String InetInterface::getName(unsigned int index) throw(NetworkException) {
   );
   return String(name, IFNAMSIZ);
 #elif (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
+  Thread::UseThreadLocalBuffer _buffer;
+  Allocator<uint8>& buffer = _buffer;
   int handle = socket(PF_INET, SOCK_STREAM, 0);
   DWORD bytesReturned = 0;
   if (::WSAIoctl(
@@ -553,8 +553,8 @@ String InetInterface::getName(unsigned int index) throw(NetworkException) {
         SIO_GET_INTERFACE_LIST,
         0,
         0,
-        Thread::getLocalStorage()->getElements(),
-        Thread::getLocalStorage()->getSize(),
+        buffer.getElements(),
+        buffer.getSize(),
         &bytesReturned,
         0,
         0)) {
@@ -565,10 +565,7 @@ String InetInterface::getName(unsigned int index) throw(NetworkException) {
     );
   }
   closesocket(handle);
-  const INTERFACE_INFO* current =
-    Cast::pointer<const INTERFACE_INFO*>(
-      Thread::getLocalStorage()->getElements()
-    );
+  const INTERFACE_INFO* current = Cast::pointer<const INTERFACE_INFO*>(buffer.getElements());
   const unsigned int numberOfInterfaces = bytesReturned/sizeof(*current);
   bassert(
     index < numberOfInterfaces,
@@ -593,8 +590,8 @@ String InetInterface::getName(unsigned int index) throw(NetworkException) {
 //     );
 //   }
   struct ifconf ifc;
-  ifc.ifc_len = Thread::getLocalStorage()->getSize();
-  ifc.ifc_buf = (char*)Thread::getLocalStorage()->getElements();
+  ifc.ifc_len = buffer.getSize();
+  ifc.ifc_buf = (char*)buffer.getElements();
   if (ioctl(handle, SIOCGIFCONF, &ifc)) {
     close(handle);
     throw NetworkException(
@@ -661,6 +658,8 @@ InetAddress InetInterface::getAddress(unsigned int index) throw(NetworkException
   close(handle);
   return internal::InetInterface::getAddress(req.ifr_addr);
 #elif (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
+  Thread::UseThreadLocalBuffer _buffer;
+  Allocator<uint8>& buffer = _buffer;
   int handle = socket(PF_INET, SOCK_STREAM, 0);
   DWORD bytesReturned = 0;
   if (::WSAIoctl(
@@ -668,8 +667,8 @@ InetAddress InetInterface::getAddress(unsigned int index) throw(NetworkException
         SIO_GET_INTERFACE_LIST,
         0,
         0,
-        Thread::getLocalStorage()->getElements(),
-        Thread::getLocalStorage()->getSize(),
+        buffer.getElements(),
+        buffer.getSize(),
         &bytesReturned,
         0,
         0)) {
@@ -680,10 +679,7 @@ InetAddress InetInterface::getAddress(unsigned int index) throw(NetworkException
     );
   }
   closesocket(handle);
-  const INTERFACE_INFO* current =
-    Cast::pointer<const INTERFACE_INFO*>(
-      Thread::getLocalStorage()->getElements()
-    );
+  const INTERFACE_INFO* current = Cast::pointer<const INTERFACE_INFO*>(buffer.getElements());
   const unsigned int numberOfInterfaces = bytesReturned/sizeof(*current);
   bassert(
     index < numberOfInterfaces,
@@ -707,8 +703,8 @@ InetAddress InetInterface::getAddress(unsigned int index) throw(NetworkException
 //     );
 //   }
   struct ifconf ifc;
-  ifc.ifc_len = Thread::getLocalStorage()->getSize();
-  ifc.ifc_buf = (char*)Thread::getLocalStorage()->getElements();
+  ifc.ifc_len = buffer.getSize();
+  ifc.ifc_buf = (char*)buffer.getElements();
   if (ioctl(handle, SIOCGIFCONF, &ifc)) {
     close(handle);
     throw NetworkException(
@@ -763,6 +759,8 @@ InetInterface::InetInterface() throw()
 InetInterface::InetInterface(const String& name) throw(NetworkException)
   : index(0), flags(0), metric(0) {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
+  Thread::UseThreadLocalBuffer _buffer;
+  Allocator<uint8>& buffer = _buffer;
   int handle = socket(PF_INET, SOCK_STREAM, 0);
   DWORD bytesReturned = 0;
   if (::WSAIoctl(
@@ -770,8 +768,8 @@ InetInterface::InetInterface(const String& name) throw(NetworkException)
         SIO_GET_INTERFACE_LIST,
         0,
         0,
-        Thread::getLocalStorage()->getElements(),
-        Thread::getLocalStorage()->getSize(),
+        buffer.getElements(),
+        buffer.getSize(),
         &bytesReturned,
         0,
         0)) {
@@ -782,10 +780,7 @@ InetInterface::InetInterface(const String& name) throw(NetworkException)
     );
   }
   closesocket(handle);
-  const INTERFACE_INFO* current =
-    Cast::pointer<const INTERFACE_INFO*>(
-      Thread::getLocalStorage()->getElements()
-    );
+  const INTERFACE_INFO* current = Cast::pointer<const INTERFACE_INFO*>(buffer.getElements());
   const unsigned int numberOfInterfaces = bytesReturned/sizeof(*current);
   for (unsigned int index = 0; index < numberOfInterfaces; ++index) {
     if (Cast::pointer<struct sockaddr*>(&current->iiAddress)->sa_family != AF_INET) { // TAG: AF_INET6

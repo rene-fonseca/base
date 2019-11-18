@@ -143,6 +143,10 @@ Thread* Thread::getThread() noexcept
 
 Thread::UseThreadLocalBuffer::UseThreadLocalBuffer(MemorySize size)
 {
+  // BASSERT(size > 0);
+  if (size == 0) {
+    size = THREAD_LOCAL_STORAGE;
+  }
   if (auto tlc = threadLocalContext.getKey()) {
     id = tlc->storageManager.acquire();
     if (id >= 0) {
@@ -167,13 +171,6 @@ Thread::UseThreadLocalBuffer::~UseThreadLocalBuffer()
       tlc->storageManager.release(id);
     }
   }
-}
-
-// TAG: bad do not use directly
-Allocator<uint8>* Thread::getLocalStorage() noexcept
-{
-  auto tlc = threadLocalContext.getKey();
-  return INLINE_ASSERT(tlc) ? &tlc->storage[0] : nullptr;
 }
 
 #if 0

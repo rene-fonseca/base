@@ -310,11 +310,6 @@ public:
   };
 
   /**
-    Returns the thread object associated with the executing thread.
-  */
-  static Allocator<uint8>* getLocalStorage() noexcept;
-
-  /**
     Makes the executing thread sleep for at least the specified time.
 
     @param nanoseconds The desired time in nanoseconds to make the thread

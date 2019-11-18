@@ -130,14 +130,15 @@ User::User(const String& name) throw(UserException) {
   integralId = 0;
 #else // unix
   // long sysconf(_SC_GETPW_R_SIZE_MAX);
-  Allocator<uint8>* buffer = Thread::getLocalStorage();
+  Thread::UseThreadLocalBuffer _buffer;
+  Allocator<uint8>& buffer = _buffer;
   struct passwd pw;
   struct passwd* entry = nullptr;
   int result = ::getpwnam_r(
     name.getElements(),
     &pw,
-    (char*)buffer->getElements(),
-    buffer->getSize()/sizeof(char),
+    (char*)buffer.getElements(),
+    buffer.getSize()/sizeof(char),
     &entry
   );
   bassert(result == 0, UserException(this));
@@ -176,14 +177,15 @@ String User::getName(bool fallback) const throw(UserException) {
     return String(toUTF8(static_cast<const wchar*>(name))); // TAG: does nameSize hold length of name
   }
 #else // unix
-  Allocator<uint8>* buffer = Thread::getLocalStorage();
+  Thread::UseThreadLocalBuffer _buffer;
+  Allocator<uint8>& buffer = _buffer;
   struct passwd pw;
   struct passwd* entry = nullptr;
   int result = ::getpwuid_r(
     Cast::extract<uid_t>(integralId),
     &pw,
-    (char*)buffer->getElements(),
-    buffer->getSize()/sizeof(char),
+    (char*)buffer.getElements(),
+    buffer.getSize()/sizeof(char),
     &entry
   );
   if (result != 0) {
@@ -196,7 +198,8 @@ String User::getName(bool fallback) const throw(UserException) {
 #endif // flavor
 }
 
-String User::getHomeFolder() const throw(UserException) {
+String User::getHomeFolder() const throw(UserException)
+{
   bassert(isValid(), UserException(this));
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   // TAG: fixme
@@ -207,14 +210,15 @@ String User::getHomeFolder() const throw(UserException) {
 //   );
   throw NotImplemented(this);
 #else // unix  
-  Allocator<uint8>* buffer = Thread::getLocalStorage();
+  Thread::UseThreadLocalBuffer _buffer;
+  Allocator<uint8>& buffer = _buffer;
   struct passwd pw;
   struct passwd* entry = nullptr;
   int result = ::getpwuid_r(
     Cast::extract<uid_t>(integralId),
     &pw,
-    (char*)buffer->getElements(),
-    buffer->getSize()/sizeof(char),
+    (char*)buffer.getElements(),
+    buffer.getSize()/sizeof(char),
     &entry
   );
   bassert(result == 0, UserException(this));

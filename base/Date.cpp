@@ -1164,10 +1164,12 @@ String Date::format(
 
 WideString Date::format(
   const WideString& format,
-  bool local) const throw(InvalidFormat, MemoryException) {
+  bool local) const throw(InvalidFormat, MemoryException)
+{
 #if defined(_COM_AZURE_DEV__BASE__HAVE_WCSFTIME)
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
-  Allocator<uint8>* buffer = Thread::getLocalStorage();
+  Thread::UseThreadLocalBuffer _buffer;
+  Allocator<uint8>& buffer = _buffer;
   time_t nativeTime = (date + 500)/1000; // internal::dateToNative(date);
   struct tm time;
   if (local) {
@@ -1176,17 +1178,18 @@ WideString Date::format(
     gmtime_s(&time, &nativeTime); // MT-safe
   }
   size_t result = wcsftime(
-    Cast::pointer<wchar*>(buffer->getElements()),
-    buffer->getSize()/sizeof(wchar),
+    Cast::pointer<wchar*>(buffer.getElements()),
+    buffer.getSize()/sizeof(wchar),
     nullptr, // TAG: FIXME? format.getElements(),
     &time
   );
   return WideString(
-    Cast::pointer<const wchar*>(buffer->getElements()),
+    Cast::pointer<const wchar*>(buffer.getElements()),
     result
   );
 #else // unix
-  Allocator<uint8>* buffer = Thread::getLocalStorage();
+  Thread::UseThreadLocalBuffer _buffer;
+  Allocator<uint8>& buffer = _buffer;
   time_t nativeTime = internal::dateToNative(date);
   struct tm time;
   if (local) {
@@ -1195,13 +1198,13 @@ WideString Date::format(
     gmtime_r(&nativeTime, &time); // MT-safe
   }
   size_t result = wcsftime(
-    Cast::pointer<wchar*>(buffer->getElements()),
-    buffer->getSize()/sizeof(wchar),
+    Cast::pointer<wchar*>(buffer.getElements()),
+    buffer.getSize()/sizeof(wchar),
     nullptr, // TAG: FIXME format.getElements(),
     &time
   );
   return WideString(
-    Cast::pointer<const wchar*>(buffer->getElements()),
+    Cast::pointer<const wchar*>(buffer.getElements()),
     result
   );
 #endif

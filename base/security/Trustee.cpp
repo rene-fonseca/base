@@ -297,14 +297,15 @@ String Trustee::getName() const throw(TrusteeException) {
     {
 #if defined(_COM_AZURE_DEV__BASE__HAVE_GETGRNAM_R)
       //long sysconf(_SC_GETGR_R_SIZE_MAX);
-      Allocator<uint8>* buffer = Thread::getLocalStorage();
+      Thread::UseThreadLocalBuffer _buffer;
+      Allocator<uint8>& buffer = _buffer;
       struct group grp;
       struct group* entry = nullptr;
       int result = ::getgrgid_r(
         (gid_t)integralId,
         &grp,
-        (char*)buffer->getElements(),
-        buffer->getSize()/sizeof(char),
+        (char*)buffer.getElements(),
+        buffer.getSize()/sizeof(char),
         &entry
       );
       bassert(result == 0, TrusteeException(this));
@@ -318,14 +319,15 @@ String Trustee::getName() const throw(TrusteeException) {
     }
   case Trustee::USER:
     {
-      Allocator<uint8>* buffer = Thread::getLocalStorage();
+      Thread::UseThreadLocalBuffer _buffer;
+      Allocator<uint8>& buffer = _buffer;
       struct passwd pw;
       struct passwd* entry = nullptr;
       int result = ::getpwuid_r(
         (uid_t)integralId,
         &pw,
-        (char*)buffer->getElements(),
-        buffer->getSize()/sizeof(char),
+        (char*)buffer.getElements(),
+        buffer.getSize()/sizeof(char),
         &entry
       );
       bassert(result == 0, TrusteeException("Unable to lookup name", this));

@@ -47,14 +47,16 @@ String InetAddress::getLocalDomainName() throw(NetworkException) {
 }
 #endif
 
-String InetAddress::getLocalHost() throw(NetworkException) {
+String InetAddress::getLocalHost() throw(NetworkException)
+{
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   // I use thread local storage 'cause I don't know what the maximum length is
   // the microsoft example code that I have seen assumes that the name cannot exceed 200 chars
-  Allocator<uint8>* buffer = Thread::getLocalStorage();
-  BASSERT(buffer->getSize()/sizeof(char) > 200);
-  char* name = (char*)buffer->getElements();
-  if (gethostname(name, buffer->getSize()/sizeof(char))) {
+  Thread::UseThreadLocalBuffer _buffer;
+  Allocator<uint8>& buffer = _buffer;
+  BASSERT(buffer.getSize()/sizeof(char) > 200);
+  char* name = (char*)buffer.getElements();
+  if (gethostname(name, buffer.getSize()/sizeof(char))) {
     throw NetworkException(
       "Unable to get local host name",
       Type::getType<InetAddress>()

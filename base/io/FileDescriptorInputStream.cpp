@@ -159,13 +159,14 @@ unsigned int FileDescriptorInputStream::read(
   return bytesRead;
 }
 
-unsigned int FileDescriptorInputStream::skip(
-  unsigned int count) throw(IOException) {
-  Allocator<uint8>* buffer = Thread::getLocalStorage();
+unsigned int FileDescriptorInputStream::skip(unsigned int count) throw(IOException)
+{
+  Thread::UseThreadLocalBuffer _buffer;
+  Allocator<uint8>& buffer = _buffer;
   unsigned int bytesSkipped = 0;
   while (bytesSkipped < count) {
-    unsigned int bytesToRead = minimum<MemorySize>(count - bytesSkipped, buffer->getSize());
-    bytesSkipped += read(buffer->getElements(), bytesToRead);
+    unsigned int bytesToRead = minimum<MemorySize>(count - bytesSkipped, buffer.getSize());
+    bytesSkipped += read(buffer.getElements(), bytesToRead);
   }
   return bytesSkipped;
 }

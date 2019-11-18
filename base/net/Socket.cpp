@@ -1259,9 +1259,11 @@ void Socket::joinGroup(const InetAddress& interface, const InetAddress& group) t
     struct ipv6_mreq mreq;
     mreq.ipv6mr_interface = 0;
     if (!interface.isUnspecified()) {
+      Thread::UseThreadLocalBuffer _buffer;
+      Allocator<uint8>& buffer = _buffer;
       struct ifconf ifc;
-      ifc.ifc_len = Thread::getLocalStorage()->getSize()/sizeof(char);
-      ifc.ifc_buf = (char*)Thread::getLocalStorage()->getElements();
+      ifc.ifc_len = buffer.getSize()/sizeof(char);
+      ifc.ifc_buf = (char*)buffer.getElements();
       if (ioctl((SOCKET)socket->getHandle(), SIOCGIFCONF, &ifc)) {
         internal::SocketImpl::raiseNetwork("Unable to resolve interface");
       }

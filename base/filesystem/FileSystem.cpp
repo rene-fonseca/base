@@ -351,15 +351,16 @@ String FileSystem::getCurrentFolder() throw(FileSystemException)
   }
   return toUTF8(buffer, length);
 #else // unix
-  Allocator<uint8>* buffer = Thread::getLocalStorage();
-  BASSERT(buffer->getSize() > PATH_MAX);
-  if (::getcwd((char*)buffer->getElements(), buffer->getSize()/sizeof(char))) {
+  Thread::UseThreadLocalBuffer _buffer;
+  Allocator<uint8>& buffer = _buffer;
+  BASSERT(buffer.getSize() > PATH_MAX);
+  if (::getcwd((char*)buffer.getElements(), buffer.getSize()/sizeof(char))) {
     throw FileSystemException(
       "Unable to get current folder",
       Type::getType<FileSystem>()
     );
   }
-  return String((const char*)buffer->getElements());
+  return String((const char*)buffer.getElements());
 #endif // flavor
 }
 

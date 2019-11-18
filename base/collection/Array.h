@@ -210,7 +210,7 @@ public:
         elements.copyOnWrite();
         elements->setSize(size);
       } else {
-        elements = new ReferenceCountedCapacityAllocator<Value>(size, ReferenceCountedCapacityAllocator<Value>::DEFAULT_GRANULARITY);
+        elements = new ReferenceCountedCapacityAllocator<Value>(size/*, ReferenceCountedCapacityAllocator<Value>::DEFAULT_GRANULARITY*/);
       }
     }
   }
@@ -221,7 +221,7 @@ public:
       if (elements) {
         elements.copyOnWrite();
       } else {
-        elements = new ReferenceCountedCapacityAllocator<Value>(ReferenceCountedCapacityAllocator<Value>::DEFAULT_GRANULARITY);
+        elements = new ReferenceCountedCapacityAllocator<Value>(/*ReferenceCountedCapacityAllocator<Value>::DEFAULT_GRANULARITY*/);
       }
       elements->setSize(size, value);
     }
@@ -282,9 +282,9 @@ public:
   */
   Array(
     MemorySize size,
-    const Value& value,
-    MemorySize granularity = ReferenceCountedCapacityAllocator<Value>::DEFAULT_GRANULARITY)
-    : elements(new ReferenceCountedCapacityAllocator<Value>(granularity))
+    const Value& value/*,
+    MemorySize granularity = ReferenceCountedCapacityAllocator<Value>::DEFAULT_GRANULARITY*/)
+    : elements(new ReferenceCountedCapacityAllocator<Value>(/*granularity*/))
   {
     elements->setSize(size, value);
   }

@@ -343,6 +343,15 @@ public:
     attach(span);
   }
 
+  explicit Allocator(MemorySize _size, MemorySize _capacity)
+  {
+    ensureCapacity(_capacity);
+    Span<TYPE> span(allocate(_size), _size);
+    Leaky<TYPE> leaky(span);
+    initialize(span.buffer, span.buffer + span.size); // default initialization of elements
+    attach(span);
+  }
+
   /**
     Initializes allocator from other allocator.
   */

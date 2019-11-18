@@ -32,7 +32,7 @@ _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 */
 
 template<class TYPE>
-class ReferenceCountedCapacityAllocator : public ReferenceCountedObject, public CapacityAllocator<TYPE> {
+class ReferenceCountedCapacityAllocator : public ReferenceCountedObject, public Allocator<TYPE> {
 private:
 
   /**
@@ -46,7 +46,7 @@ public:
     Initializes an empty allocator with the default granularity.
   */
   inline explicit ReferenceCountedCapacityAllocator() noexcept
-    : CapacityAllocator<TYPE>()
+    : Allocator<TYPE>()
   {
   }
 
@@ -56,8 +56,9 @@ public:
     @param granularity Specifies the number of elements to allocate at a time.
   */
   inline explicit ReferenceCountedCapacityAllocator(MemorySize granularity) throw(OutOfRange)
-    : CapacityAllocator<TYPE>(granularity)
+    : Allocator<TYPE>(granularity)
   {
+    BASSERT(!"Remove granularity");
   }
   
   /**
@@ -72,7 +73,7 @@ public:
   inline ReferenceCountedCapacityAllocator(
     MemorySize size,
     MemorySize granularity) throw(OutOfRange, MemoryException)
-    : CapacityAllocator<TYPE>(size/*, granularity*/)
+    : Allocator<TYPE>(size/*, granularity*/)
   {
   }
 
@@ -80,7 +81,7 @@ public:
     MemorySize size,
     MemorySize capacity,
     MemorySize granularity) throw(OutOfRange, MemoryException)
-    : CapacityAllocator<TYPE>(size, capacity/*, granularity*/)
+    : Allocator<TYPE>(size, capacity/*, granularity*/)
   {
   }
 
@@ -89,7 +90,7 @@ public:
     MemoryException if unable to allocate the required memory.
   */
   ReferenceCountedCapacityAllocator(const ReferenceCountedCapacityAllocator& copy) throw(MemoryException)
-    : CapacityAllocator<TYPE>(copy)
+    : Allocator<TYPE>(copy)
   {
   }
 };

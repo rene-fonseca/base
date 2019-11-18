@@ -43,8 +43,8 @@ BitSet::BitSet()
 BitSet::BitSet(unsigned int _size, bool value)
   : elements(
       new ReferenceCountedCapacityAllocator<unsigned long>(
-        getNumberOfElements(_size),
-        ReferenceCountedCapacityAllocator<unsigned long>::DEFAULT_GRANULARITY
+        getNumberOfElements(_size)/*,
+        ReferenceCountedCapacityAllocator<unsigned long>::DEFAULT_GRANULARITY*/
       )
     ),
     size(_size)

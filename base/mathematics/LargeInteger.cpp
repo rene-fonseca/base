@@ -20,7 +20,7 @@ _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 // TAG: put in Math
 
 /** Returns the carry for the addition. */
-inline uint8 addCarry(uint8& value, const uint8 addend)
+inline uint8 addCarry(uint8& value, const uint8 addend) noexcept
 {
   // use intrinsic
   constexpr uint8 MAXIMUM = (static_cast<uint8>(0) - 1);
@@ -32,7 +32,7 @@ inline uint8 addCarry(uint8& value, const uint8 addend)
   return 0;
 }
 
-inline uint16 addCarry(uint16& value, const uint16 addend)
+inline uint16 addCarry(uint16& value, const uint16 addend) noexcept
 {
   // use intrinsic
   constexpr uint16 MAXIMUM = (static_cast<uint16>(0) - 1);
@@ -44,7 +44,7 @@ inline uint16 addCarry(uint16& value, const uint16 addend)
   return 0;
 }
 
-inline uint32 addCarry(uint32& value, const uint32 addend)
+inline uint32 addCarry(uint32& value, const uint32 addend) noexcept
 {
   // use intrinsic
   constexpr uint32 MAXIMUM = (static_cast<uint32>(0) - 1);
@@ -56,7 +56,7 @@ inline uint32 addCarry(uint32& value, const uint32 addend)
   return 0;
 }
 
-inline uint64 addCarry(uint64& value, const uint64 addend)
+inline uint64 addCarry(uint64& value, const uint64 addend) noexcept
 {
   // use intrinsic
   constexpr uint64 MAXIMUM = (static_cast<uint64>(0) - 1);
@@ -68,7 +68,7 @@ inline uint64 addCarry(uint64& value, const uint64 addend)
   return 0;
 }
 
-inline uint32 subtractBorrow(uint32& value, const uint32 subtrahend)
+inline uint32 subtractBorrow(uint32& value, const uint32 subtrahend) noexcept
 {
   // use intrinsic
   const uint32 borrow = (subtrahend > value) ? 1 : 0;
@@ -78,7 +78,7 @@ inline uint32 subtractBorrow(uint32& value, const uint32 subtrahend)
 
 void LargeIntegerImpl::clear(Word* value, MemorySize size) noexcept
 {
-  fill<Word>(value, size, ZERO);
+  fill<Word>(value, size, 0U);
 }
 
 void LargeIntegerImpl::assign(Word* restrict dest, const Word* restrict src, MemorySize size) noexcept
@@ -92,7 +92,7 @@ void LargeIntegerImpl::assign(Word* restrict dest, const Word* restrict src, Mem
 void LargeIntegerImpl::assignBit(Word* value, const MemorySize size, const MemorySize bitIndex) noexcept
 {
   BASSERT(bitIndex < (size * WORD_BITS));
-  fill<Word>(value, size, ZERO);
+  fill<Word>(value, size, 0U);
   value[bitIndex / WORD_BITS] = ONE << (bitIndex % WORD_BITS);
 }
 
@@ -147,6 +147,10 @@ bool LargeIntegerImpl::addBit(Word* value, const MemorySize size, const MemorySi
 
 void LargeIntegerImpl::leftShift(Word* value, const MemorySize size, const unsigned int shift) noexcept
 {
+  if (shift == 0) {
+    return;
+  }
+
   const unsigned int bitShift = shift % WORD_BITS;
   const unsigned int wordShift = shift / WORD_BITS;
 
@@ -178,6 +182,10 @@ void LargeIntegerImpl::leftShift(Word* value, const MemorySize size, const unsig
 // TAG: fix this - prevent overflow
 void LargeIntegerImpl::rightShift(Word* value, const MemorySize size, const unsigned int shift) noexcept
 {
+  if (shift == 0) {
+    return;
+  }
+
   unsigned int bitShift = shift % WORD_BITS;
   unsigned int wordShift = shift / WORD_BITS;
   Word* dest = value;
@@ -257,13 +265,20 @@ bool LargeIntegerImpl::subtract(Word* restrict value, const Word* restrict subtr
 
 bool LargeIntegerImpl::multiply(Word* value, const MemorySize size, const Word multiplicand) noexcept
 {
+  if (multiplicand == 1) {
+    return false;
+  } else if (multiplicand == 0) {
+    clear(value, size);
+    return false;
+  }
+
   const Word* end = value + size;
-  DoubleWord carrier = 0;
+  Word carrier = 0;
   for (; value != end; ++value) {
     const DoubleWord temp = static_cast<DoubleWord>(*value) * multiplicand; // limit MAX*MAX!
     *value = static_cast<Word>(temp & MAXIMUM);
-    carrier = addCarry(*value, carrier);
-    carrier += (temp >> WORD_BITS);
+    carrier = addCarry(*value, carrier); // 1 or 0
+    carrier += (temp >> WORD_BITS); // +MAX*MAX/(MAX + 1) => <+MAX => (carrier <= MAX) no overflow
   }
   return carrier > 0;
 }
@@ -753,18 +768,25 @@ bool LargeInteger::operator<=(const Word comparand) const noexcept
   return LargeIntegerImpl::isZero(toWords() + 1, s1 - 1);
 }
 
-LargeInteger& LargeInteger::operator<<=(unsigned int shift) noexcept
+LargeInteger& LargeInteger::operator<<=(const unsigned int shift) noexcept
 {
-  MemorySize _size = 0;
-  const Word* begin = toWords();
-  const Word* src = begin + getSize();
-  while (src != begin) {
-    if (*--src != 0) {
-      _size = (src - begin) + 1;
+  if (shift == 0) {
+    return *this;
+  }
+
+  { // TAG: check high bits
+    MemorySize newWords = (shift + LargeIntegerImpl::WORD_BITS - 1) / LargeIntegerImpl::WORD_BITS;
+    const Word* begin = toWords();
+    const Word* src = begin + getSize();
+    while ((src != begin) && newWords) {
+      if (*--src != 0) {
+        break;
+      }
+      --newWords;
     }
+    extend(getSize() + newWords); // no need to extend top zeros
   }
   
-  extend(_size + (shift + LargeIntegerImpl::WORD_BITS - 1)/ LargeIntegerImpl::WORD_BITS); // no need to extend top zeros
   LargeIntegerImpl::leftShift(toWords(), getSize(), shift);
   return *this;
 }
@@ -775,9 +797,25 @@ LargeInteger& LargeInteger::operator>>=(unsigned int shift) noexcept
   return *this;
 }
 
-LargeInteger& LargeInteger::multiply(unsigned int value)
+LargeInteger& LargeInteger::multiply(const unsigned int multiplicand)
 {
-  BASSERT(!"Not implemented.");
+  const auto size = getSize();
+  if (size == 0) {
+    return *this; // already 0
+  }
+
+  const unsigned int shift = Math::getHighestBit(multiplicand);
+  if ((static_cast<LargeIntegerImpl::Word>(1) << shift) == multiplicand) { // power of 2 case
+    *this <<= shift;
+    return *this;
+  }
+
+  auto words = toWords();
+  const unsigned int highBit = Math::getHighestBit(toWords()[size - 1]);
+  if ((highBit + shift) >= LargeIntegerImpl::WORD_BITS) {
+    extend(size + 1); // no need to extend if we dont need more bits
+  }
+  LargeIntegerImpl::multiply(words, size, multiplicand);
   return *this;
 }
 
@@ -858,62 +896,84 @@ LargeInteger operator%(const LargeInteger& left, const unsigned int right)
 
 namespace {
 
-  inline char* storeDigits(char* dest, const LargeInteger& value, unsigned int bits, bool upper = false) noexcept
+  char* storeDigits(char* dest, const LargeInteger& value, const unsigned int fieldSize, const bool upper = false) noexcept
   {
-    unsigned int bit = value.getSize() * LargeIntegerImpl::WORD_BITS;
-    while (bit && !value.getBits(bit, bits)) {
-      bit -= bits;
+    BASSERT(fieldSize);
+    if (value.getSize() == 0) {
+      *dest++ = '0';
+      return dest;
     }
-    if (!bit) {
-      bit += bits;
+
+    char* first = dest;
+    // trim upper zeros
+    MemorySize bitIndex = (value.getSize() * LargeIntegerImpl::WORD_BITS - 1) / fieldSize * fieldSize; // start on proper bit offset
+    while ((bitIndex >= fieldSize) && !value.getBits(bitIndex, fieldSize)) { // skip top zeros
+      bitIndex -= fieldSize;
     }
-    do {
-      *dest-- = ASCIITraits::valueToDigit(value.getBits(bit, bits), upper); // get digit
-      bit -= bits;
-    } while (bit);
-    ++dest; // go to first valid char in buffer
+
+    for (MemorySize i = 0; i <= bitIndex; i += fieldSize) { // bitIndex is lower bound hence <=
+      *dest++ = ASCIITraits::valueToDigit(value.getBits(i, fieldSize), upper); // get digit
+    }
+
+    char* last = dest - 1;
+    while (first < last) { // reverse
+      swapper(*first++, *last--);
+    }
+
     return dest;
   }
-
 }
 
 FormatOutputStream& operator<<(FormatOutputStream& stream, const LargeInteger& value) throw(IOException)
 {
   PrimitiveStackArray<char> buffer(4096);
-  char* dest = buffer.end() - 1; // point to least significant digit position
 
+  char* dest = nullptr;
   switch (stream.getBase()) {
   case FormatOutputStream::Symbols::BINARY:
     {
-      dest = storeDigits(dest, value, 1);
+      buffer.resize(maximum<MemorySize>((value.getSize() * LargeIntegerImpl::WORD_BITS + 1 - 1) / 1, 1));
+      dest = storeDigits(buffer, value, 1);
       break;
     }
   case FormatOutputStream::Symbols::OCTAL:
     {
-      dest = storeDigits(dest, value, 3);
+      buffer.resize(maximum<MemorySize>((value.getSize() * LargeIntegerImpl::WORD_BITS + 3 - 1) / 3, 1));
+      dest = storeDigits(buffer, value, 3);
       break;
     }
   case FormatOutputStream::Symbols::DECIMAL:
     {
+      // base 10 => <4 bit
+      // we can do better since we just assume many digits - 1000 < 1024 => 3 digits < 10 bit
+      buffer.resize(maximum<MemorySize>((((value.getSize() * LargeIntegerImpl::WORD_BITS + 10 - 1) / 10) + 2)/3, 1)); // 10 bits - 3 digits
+      dest = buffer;
       LargeInteger temp = (value >= 0U) ? value : -value;
-      do {
-        *dest = ASCIITraits::valueToDigit(temp % 10U); // get digit
+      // TAG: slow if we do not discard upper zeros - set capacity and then resize per iteration
+      while (temp) {
+        // TAG: calc quotion and remainder at the same time
+        *dest++ = ASCIITraits::valueToDigit(temp % 10U); // get digit
         temp /= 10U;
-        --dest;
-      } while (temp);
-      ++dest; // go to first valid char in buffer
+      }
+
+      char* first = buffer;
+      char* last = dest - 1;
+      while (first < last) { // reverse
+        swapper(*first++, *last--);
+      }
       break;
     }
   case FormatOutputStream::Symbols::HEXADECIMAL:
     {
-      dest = storeDigits(dest, value, 4, (stream.getFlags() & FormatOutputStream::Symbols::UPPER) != 0);
+      buffer.resize(maximum<MemorySize>((value.getSize() * LargeIntegerImpl::WORD_BITS + 4 - 1) / 4, 1));
+      dest = storeDigits(buffer, value, 4, (stream.getFlags() & FormatOutputStream::Symbols::UPPER) != 0);
       break;
     }
   default:
     return stream; // do not do anything if base is unknown
   }
 
-  stream.addIntegerField(dest, sizeof(buffer) - (dest - buffer), value < 0U);
+  stream.addIntegerField(buffer, dest - buffer, value < 0U);
   return stream;
 }
 
@@ -927,6 +987,8 @@ public:
 
   void run() override
   {
+    fout << HEX; // TAG: until DEC is supported
+
     LargeInteger i1;
     TEST_ASSERT(!i1);
     TEST_ASSERT(i1 == 0U);
@@ -936,7 +998,7 @@ public:
     TEST_ASSERT(!(i1 > 0U));
     TEST_ASSERT(i1 >= 0U);
 
-    fout << i1 << ENDL;
+    fout << "ZERO: " << HEX << i1 << ENDL;
 
     i1 = 1;
     TEST_ASSERT(i1);
@@ -948,18 +1010,18 @@ public:
     TEST_ASSERT(i1 >= 1U);
 
     i1 = 11;
-    fout << i1 << ENDL;
+    fout << "ONE: " << HEX << i1 << ENDL;
     i1 *= 13;
-    fout << i1 << ENDL;
+    fout << "13: " << HEX << i1 << ENDL;
 
     for (unsigned int i = 0; i < 10; ++i) {
       i1 <<= 1;
-      fout << "SHIFT LEFT  " << i1 << ENDL;
+      fout << "SHIFT LEFT  " << HEX << i1 << ENDL;
     }
 
     for (unsigned int i = 0; i < 10; ++i) {
       i1 >>= 1;
-      fout << "SHIFT RIGHT " << i1 << ENDL;
+      fout << "SHIFT RIGHT " << HEX << i1 << ENDL;
     }
 
   }

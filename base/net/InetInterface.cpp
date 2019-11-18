@@ -263,6 +263,8 @@ List<InetInterface> InetInterface::getInterfaces() throw(NetworkException)
 #elif ((_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__GNULINUX) || \
        (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__IRIX65) || \
        (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__SOLARIS))
+  Thread::UseThreadLocalBuffer _buffer;
+  Allocator<uint8>& buffer = _buffer;
   int handle = socket(PF_INET, SOCK_STREAM, 0);
   try {
     struct ifconf ifc;

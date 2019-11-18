@@ -81,8 +81,13 @@ bool LargeIntegerImpl::addBit(Word* value, MemorySize size, unsigned int bit) no
 
 void LargeIntegerImpl::leftShift(Word* value, MemorySize size, unsigned int shift) noexcept
 {
-  unsigned int bitShift = shift % WORD_BITS;
-  unsigned int wordShift = shift / WORD_BITS;
+  const unsigned int bitShift = shift % WORD_BITS;
+  const unsigned int wordShift = shift / WORD_BITS;
+
+  if (wordShift >= size) {
+    fill(value, size, 0U); // mask beginning of value
+    return;
+  }
 
   // start from last non-zero value + wordSize (but do not exceed end)
   Word* dest = value + size - 1;
@@ -111,9 +116,7 @@ void LargeIntegerImpl::rightShift(Word* value, MemorySize size, unsigned int shi
   unsigned int wordShift = shift / WORD_BITS;
   Word* dest = value;
   if (wordShift >= size) {
-    for (const Word* end = value + size; dest != end; ++dest) { // mask end of value
-      *dest = 0;
-    }
+    fill(value, size, 0U); // mask beginning of value
     return;
   }
   const Word* src = value + wordShift;
@@ -817,7 +820,7 @@ FormatOutputStream& operator<<(FormatOutputStream& stream, const LargeInteger& v
 class TEST_CLASS(LargeInteger) : public UnitTest {
 public:
 
-  TEST_PRIORITY(1000);
+  TEST_PRIORITY(1); // used for float to string
   TEST_PROJECT("base/math");
 
   void run() override

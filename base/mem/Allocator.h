@@ -99,7 +99,6 @@ protected:
   /** Allocate new memory. */
   inline TYPE* allocate(const MemorySize size)
   {
-    BASSERT(size > 0);
     const auto adjustedNewSize = getAdjustedSize(size);
     auto result = Heap::allocate<TYPE>(adjustedNewSize);
     fill(result, adjustedNewSize, INIT_MEMORY);

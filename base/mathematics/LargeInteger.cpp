@@ -244,6 +244,16 @@ bool LargeIntegerImpl::checkAdditionOverflow(const Word* restrict value, const W
   return carrier > 0;
 }
 
+void LargeIntegerImpl::negate(Word* restrict value, const MemorySize size) noexcept
+{
+  Word borrower = 0;
+  for (const Word* end = value + size; (value != end) /*&& borrower*/; ++value) {
+    *value = 0 - *value;
+    *value -= borrower;
+    borrower = 1;
+  }
+}
+
 bool LargeIntegerImpl::subtract(Word* restrict value, const MemorySize size, const Word subtrahend) noexcept
 {
   Word borrower = subtrahend;
@@ -556,18 +566,17 @@ LargeInteger LargeInteger::minus() const noexcept
 
 LargeInteger& LargeInteger::negate() noexcept
 {
-  auto src = value.getElements();
-  auto end = src + value.getSize();
-  while (src != end) {
-    // TAG: FIXME
+  if (getSize() == 0) {
+    return *this;
   }
+  LargeIntegerImpl::negate(toWords(), getSize());
   return *this;
 }
 
 void LargeInteger::extend(MemorySize size) // TAG: we only extend for unsigned for now
 {
   if (size > value.getSize()) {
-    value.setSize(value.getSize(), 0);
+    value.setSize(size, 0);
   }
 }
 
@@ -575,14 +584,14 @@ void LargeInteger::signExtend(MemorySize size)
 {
   if (size > value.getSize()) {
     bool negative = (value.getSize() > 0) && (value.getElements()[value.getSize() - 1] >> (LargeIntegerImpl::WORD_BITS - 1));
-    value.setSize(value.getSize(), negative ? LargeIntegerImpl::MAXIMUM : 0);
+    value.setSize(size, negative ? LargeIntegerImpl::MAXIMUM : 0);
   }
 }
 
 void LargeInteger::trim()
 {
   auto size = LargeIntegerImpl::getSize(value.getElements(), value.getSize());
-  value.setSize(size);
+  value.setSize(maximum<MemorySize>(size, 1)); // minimum 1 word
 }
 
 LargeInteger& LargeInteger::add(const LargeInteger& addend)
@@ -809,7 +818,9 @@ LargeInteger& LargeInteger::operator<<=(const unsigned int shift) noexcept
       }
       --newWords;
     }
-    extend(getSize() + newWords); // no need to extend top zeros
+    if (newWords) {
+      extend(getSize() + newWords); // no need to extend top zeros
+    }
   }
   
   LargeIntegerImpl::leftShift(toWords(), getSize(), shift);
@@ -995,7 +1006,8 @@ FormatOutputStream& operator<<(FormatOutputStream& stream, const LargeInteger& v
         break;
       }
 
-      LargeInteger temp = (value >= 0U) ? value : -value;
+      BASSERT(value >= 0U);
+      LargeInteger temp = value; // (value >= 0U) ? value : -value;
       temp.ensureCapacity(temp.getSize());
       temp.trim();
 

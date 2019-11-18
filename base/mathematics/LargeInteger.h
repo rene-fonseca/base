@@ -66,6 +66,9 @@ public:
 
   /** Returns true if addition causes carrier. */
   static bool checkAdditionOverflow(const Word* restrict left, const Word* restrict right, MemorySize size) noexcept;
+  
+  /** Negates integer. */
+  static void negate(Word* restrict value, const MemorySize size) noexcept;
 
   /** Subtract single word. */
   static bool subtract(Word* restrict value, MemorySize size, Word subtrahend) noexcept;

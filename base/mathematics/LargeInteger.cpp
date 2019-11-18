@@ -395,7 +395,7 @@ bool LargeIntegerImpl::equal(const Word* restrict left, const Word* restrict rig
   return true;
 }
 
-LargeIntegerImpl::Word LargeIntegerImpl::divide(Word* value, const MemorySize size, const Word divisor) noexcept
+LargeIntegerImpl::Word LargeIntegerImpl::divide(Word* dividend, const MemorySize size, const Word divisor) noexcept
 {
   { // simple case for power of 2
     if (divisor == 0) {
@@ -404,19 +404,44 @@ LargeIntegerImpl::Word LargeIntegerImpl::divide(Word* value, const MemorySize si
     }
     const unsigned int shift = Math::getHighestBit(divisor);
     if ((ONE << shift) == divisor) {
-      const Word remainder = ((size > 0) ? value[0] : 0) & ((ONE << shift) - 1);
-      rightShift(value, size, shift);
+      const Word remainder = ((size > 0) ? dividend[0] : 0) & ((ONE << shift) - 1);
+      rightShift(dividend, size, shift);
       return remainder;
     }
   }
 
-  Word* word = value + size;
+  Word* word = dividend + size;
   Word remainder = 0;
-  while (--word >= value) {
+  while (--word >= dividend) {
     const DoubleWord temp = (static_cast<DoubleWord>(remainder) << WORD_BITS) + *word;
     *word = static_cast<Word>((temp / divisor) & MAXIMUM);
+    remainder = temp % divisor; // is it better to do (temp - quotient * divisor)?
+  }
+  return remainder;
+}
+
+LargeIntegerImpl::Word LargeIntegerImpl::remainder(const Word* dividend, const MemorySize size, const Word divisor) noexcept
+{
+  { // simple case for power of 2
+    if (divisor == 0) {
+      BASSERT(!"Division by 0");
+      return 0;
+    }
+    const unsigned int shift = Math::getHighestBit(divisor);
+    if ((ONE << shift) == divisor) {
+      const Word remainder = ((size > 0) ? dividend[0] : 0)& ((ONE << shift) - 1);
+      BASSERT(remainder < divisor);
+      return remainder;
+    }
+  }
+
+  const Word* word = dividend + size;
+  Word remainder = 0;
+  while (--word >= dividend) {
+    const DoubleWord temp = (static_cast<DoubleWord>(remainder) << WORD_BITS) + *word;
     remainder = temp % divisor;
   }
+  BASSERT(remainder < divisor);
   return remainder;
 }
 
@@ -819,16 +844,25 @@ LargeInteger& LargeInteger::multiply(const unsigned int multiplicand)
   return *this;
 }
 
-LargeInteger& LargeInteger::divide(unsigned int value)
+unsigned int LargeInteger::divide(const unsigned int divisor)
 {
-  BASSERT(!"Not implemented.");
-  return *this;
+  if (getSize() == 0) {
+    return 0;
+  }
+  if (divisor == 0) {
+    *this = 0U;
+    return 0;
+  }
+
+  return LargeIntegerImpl::divide(toWords(), getSize(), divisor);
 }
 
-LargeInteger& LargeInteger::remainder(unsigned int value)
+unsigned int LargeInteger::remainder(const unsigned int divisor) const noexcept
 {
-  BASSERT(!"Not implemented.");
-  return *this;
+  if (getSize() == 0) {
+    return 0;
+  }
+  return LargeIntegerImpl::remainder(toWords(), getSize(), divisor);
 }
 
 LargeInteger operator+(const LargeInteger& left, const LargeInteger& right)
@@ -896,6 +930,13 @@ LargeInteger operator%(const LargeInteger& left, const unsigned int right)
 
 namespace {
 
+  void reverse(char* first, char* last) noexcept
+  {
+    while (first < last) {
+      swapper(*first++, *last--);
+    }
+  }
+
   char* storeDigits(char* dest, const LargeInteger& value, const unsigned int fieldSize, const bool upper = false) noexcept
   {
     BASSERT(fieldSize);
@@ -915,17 +956,17 @@ namespace {
       *dest++ = ASCIITraits::valueToDigit(value.getBits(i, fieldSize), upper); // get digit
     }
 
-    char* last = dest - 1;
-    while (first < last) { // reverse
-      swapper(*first++, *last--);
-    }
-
+    reverse(first, dest - 1); // make high digits first
     return dest;
   }
 }
 
 FormatOutputStream& operator<<(FormatOutputStream& stream, const LargeInteger& value) throw(IOException)
 {
+  if (value.getSize() <= 1) {
+    return stream << (value & LargeIntegerImpl::MAXIMUM);
+  }
+
   PrimitiveStackArray<char> buffer(4096);
 
   char* dest = nullptr;
@@ -948,19 +989,27 @@ FormatOutputStream& operator<<(FormatOutputStream& stream, const LargeInteger& v
       // we can do better since we just assume many digits - 1000 < 1024 => 3 digits < 10 bit
       buffer.resize(maximum<MemorySize>((((value.getSize() * LargeIntegerImpl::WORD_BITS + 10 - 1) / 10) + 2)/3, 1)); // 10 bits - 3 digits
       dest = buffer;
-      LargeInteger temp = (value >= 0U) ? value : -value;
-      // TAG: slow if we do not discard upper zeros - set capacity and then resize per iteration
-      while (temp) {
-        // TAG: calc quotion and remainder at the same time
-        *dest++ = ASCIITraits::valueToDigit(temp % 10U); // get digit
-        temp /= 10U;
+
+      if (value.getSize() == 0) {
+        *dest++ = '0';
+        break;
       }
 
-      char* first = buffer;
-      char* last = dest - 1;
-      while (first < last) { // reverse
-        swapper(*first++, *last--);
+      LargeInteger temp = (value >= 0U) ? value : -value;
+      temp.ensureCapacity(temp.getSize());
+      temp.trim();
+
+      unsigned int count = (sizeof(LargeIntegerImpl::Word) == 4) ? 10 : 20; // LargeIntegerImpl::MAXIMUM / 10 ^ n => n == 10
+      while (temp) {
+        const unsigned int remainder = temp.divide(10U);
+        *dest++ = ASCIITraits::valueToDigit(remainder); // get digit
+        if (!--count) { // get rid of upper zeros
+          temp.trim();
+          count = (sizeof(LargeIntegerImpl::Word) == 4) ? 10 : 20;
+        }
       }
+
+      reverse(buffer, dest - 1); // make high digits first
       break;
     }
   case FormatOutputStream::Symbols::HEXADECIMAL:
@@ -987,8 +1036,6 @@ public:
 
   void run() override
   {
-    fout << HEX; // TAG: until DEC is supported
-
     LargeInteger i1;
     TEST_ASSERT(!i1);
     TEST_ASSERT(i1 == 0U);
@@ -998,7 +1045,7 @@ public:
     TEST_ASSERT(!(i1 > 0U));
     TEST_ASSERT(i1 >= 0U);
 
-    fout << "ZERO: " << HEX << i1 << ENDL;
+    fout << "ZERO: " << i1 << ENDL;
 
     i1 = 1;
     TEST_ASSERT(i1);
@@ -1009,19 +1056,21 @@ public:
     TEST_ASSERT(!(i1 > 1U));
     TEST_ASSERT(i1 >= 1U);
 
-    i1 = 11;
-    fout << "ONE: " << HEX << i1 << ENDL;
-    i1 *= 13;
-    fout << "13: " << HEX << i1 << ENDL;
+    fout << "ONE: " << i1 << ENDL;
 
-    for (unsigned int i = 0; i < 10; ++i) {
-      i1 <<= 1;
-      fout << "SHIFT LEFT  " << HEX << i1 << ENDL;
+    i1 = 11;
+    fout << "11: " << i1 << ENDL;
+    i1 *= 13;
+    fout << "13*11: " << i1 << ENDL;
+
+    for (unsigned int i = 0; i < 17; ++i) {
+      i1 <<= 3;
+      fout << "SHIFT LEFT  " << i1 << ENDL;
     }
 
-    for (unsigned int i = 0; i < 10; ++i) {
-      i1 >>= 1;
-      fout << "SHIFT RIGHT " << HEX << i1 << ENDL;
+    for (unsigned int i = 0; i < 17; ++i) {
+      i1 >>= 3;
+      fout << "SHIFT RIGHT " << i1 << ENDL;
     }
 
   }

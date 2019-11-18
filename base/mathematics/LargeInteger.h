@@ -105,7 +105,10 @@ public:
   static bool equal(const Word* restrict left, const Word* restrict right, MemorySize size) noexcept;
 
   /** Divides by single word. */
-  static Word divide(Word* value, MemorySize size, Word divisor) noexcept;
+  static Word divide(Word* dividend, MemorySize size, Word divisor) noexcept;
+
+  /** Remainder by single word. Doesnt modify dividend. */
+  static Word remainder(const Word* dividend, MemorySize size, Word divisor) noexcept;
 
   // may remainder be the same as dividend - I think so
   static void divide(
@@ -224,18 +227,20 @@ public:
   LargeInteger& multiply(unsigned int value);
 
   /**
-    Divides this vector with the specified value.
+    Divides this integer with the specified divisor.
 
-    @param value The divisor.
+    @param divisor The divisor.
+
+    @return Returns the remainder.
   */
-  LargeInteger& divide(unsigned int divisor);
+  unsigned int divide(const unsigned int divisor);
 
   /**
-    Returns the remainder.
+    Returns the remainder without modification.
 
     @param value The divisor.
   */
-  LargeInteger& remainder(unsigned int divisor);
+  unsigned int remainder(unsigned int divisor) const noexcept;
 
   /**
     Negates the specified vector and stores the result in this vector.
@@ -332,29 +337,32 @@ public:
 
     @param value The multiplicator.
   */
-  inline LargeInteger& operator*=(unsigned int value) noexcept
+  inline LargeInteger& operator*=(unsigned int multiplicand) noexcept
   {
-    return multiply(value);
+    return multiply(multiplicand);
   }
 
   /**
     Divides this vector with the specified value.
 
-    @param value The divisor.
+    @param divisor The divisor.
   */
-  inline LargeInteger& operator/=(unsigned int value) noexcept
+  inline LargeInteger& operator/=(const unsigned int divisor) noexcept
   {
-    return divide(value);
+    divide(divisor);
+    return *this;
   }
 
   /**
     Divides this vector with the specified value.
 
-    @param value The divisor.
+    @param divisor The divisor.
   */
-  inline LargeInteger& operator%=(unsigned int value) noexcept
+  inline unsigned int operator%=(const unsigned int divisor) noexcept
   {
-    return remainder(value);
+    auto result = remainder(divisor);
+    *this = result;
+    return result;
   }
 
   /**
@@ -382,7 +390,25 @@ public:
   {
     return !isZero();
   }
-  
+
+  inline unsigned int operator&(const unsigned int word) const noexcept
+  {
+    if (getSize() == 0) {
+      return 0;
+    }
+    return toWords()[0] & word;
+  }
+
+  /** Returns the integer as a word. Must be MAXIMUM at most. */
+  inline Word getAsWord() const noexcept
+  {
+    if (getSize() == 0) {
+      return 0;
+    }
+    BASSERT(*this <= LargeIntegerImpl::MAXIMUM);
+    return toWords()[0];
+  }
+
   /**
     Writes a string representation of a vector object to a format stream.
   */

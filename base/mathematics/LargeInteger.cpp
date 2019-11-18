@@ -1059,7 +1059,7 @@ public:
     TEST_ASSERT(!(i1 > 0U));
     TEST_ASSERT(i1 >= 0U);
 
-    fout << "ZERO: " << i1 << ENDL;
+    // fout << "ZERO: " << i1 << ENDL;
 
     i1 = 1;
     TEST_ASSERT(i1);
@@ -1070,21 +1070,21 @@ public:
     TEST_ASSERT(!(i1 > 1U));
     TEST_ASSERT(i1 >= 1U);
 
-    fout << "ONE: " << i1 << ENDL;
+    // fout << "ONE: " << i1 << ENDL;
 
     i1 = 11;
-    fout << "11: " << i1 << ENDL;
+    // fout << "11: " << i1 << ENDL;
     i1 *= 13;
-    fout << "13*11: " << i1 << ENDL;
+    // fout << "13*11: " << i1 << ENDL;
 
     for (unsigned int i = 0; i < 17; ++i) {
       i1 <<= 3;
-      fout << "SHIFT LEFT  " << i1 << ENDL;
+      // fout << "SHIFT LEFT  " << i1 << ENDL;
     }
 
     for (unsigned int i = 0; i < 17; ++i) {
       i1 >>= 3;
-      fout << "SHIFT RIGHT " << i1 << ENDL;
+      // fout << "SHIFT RIGHT " << i1 << ENDL;
     }
 
   }

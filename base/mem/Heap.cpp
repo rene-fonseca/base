@@ -102,7 +102,7 @@ void* HeapImpl::resize(void* heap, MemorySize size) throw(MemoryException)
       }
       result = nullptr;
     }
-  } else {
+  } else if (size)  {
     result = static_cast<void*>(::HeapAlloc(internal::specific::processHeap, 0, size));
   }
   if ((!result) && (size != 0)) { // was memory allocated
@@ -179,8 +179,14 @@ void HeapImpl::release(void* heap) throw(MemoryException)
 MemorySize HeapImpl::getMinimumSize() noexcept
 {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
-  // TAG: implement
-  return 0;
+  static MemorySize minimumSize = 0;
+  if (minimumSize == 0) {
+    if (void* temp = HeapAlloc(internal::specific::processHeap, 0, 1)) {
+      minimumSize = HeapSize(internal::specific::processHeap, 0, temp);
+      HeapFree(internal::specific::processHeap, 0, temp);
+    }
+  }
+  return minimumSize;
 #elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__MACOS)
   return malloc_good_size(1);
 #elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__GNULINUX)
@@ -200,8 +206,7 @@ MemorySize HeapImpl::getMinimumSize() noexcept
 MemorySize HeapImpl::getSize(void* heap) noexcept
 {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
-  // TAG: implement
-  return 0;
+  return HeapSize(internal::specific::processHeap, 0, heap);
 #else
 #if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__MACOS)
   return malloc_size(heap);
@@ -258,6 +263,10 @@ public:
 
     PrimitiveStackArray<uint64> pa2(512);
     TEST_ASSERT(pa2.isUsingStack());
+
+    PrimitiveStackArray<uint8> pa3(1234);
+    pa3.resize(4321);
+    TEST_ASSERT(pa3.isUsingHeap());
   }
 };
 

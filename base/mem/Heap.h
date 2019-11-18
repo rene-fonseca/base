@@ -269,14 +269,13 @@ public:
 
 
 /**
-  Pointer to heap. Note destructor will not release heap unless
-  RELEASE_ON_DESTRUCT is set! Likewise copy construction and
+  Pointer to heap. Note destructor will not release heap! Likewise copy construction and
   assignment copy the pointer value. This is to behave like a normal
   pointer. You must call release explicitly.
 */
-template<class TYPE, bool RELEASE_ON_DESTRUCT = false>
+template<typename TYPE>
 class HeapBlock {
-private:
+protected:
 
   TYPE* heap = nullptr;
 public:
@@ -298,10 +297,41 @@ public:
   {
   }
 
+  /** Copy of pointer value! */
+  inline HeapBlock(HeapBlock&& move) noexcept
+    : heap(move.heap) // like a normal pointer!
+  {
+    move.heap = nullptr;
+  }
+
   /** Assignment of pointer value! */
   inline HeapBlock& operator=(const HeapBlock& assign) noexcept
   {
     heap = assign.heap; // like a normal pointer!
+    return *this;
+  }
+
+  /** Assignment of pointer value! */
+  inline HeapBlock& operator=(std::nullptr_t assign) noexcept
+  {
+    heap = assign; // like a normal pointer!
+    return *this;
+  }
+
+  /** Assignment of pointer value! */
+  inline HeapBlock& operator=(TYPE* assign) noexcept
+  {
+    heap = assign; // like a normal pointer!
+    return *this;
+  }
+
+  /** Assignment of pointer value! */
+  inline HeapBlock& operator=(HeapBlock&& assign) noexcept
+  {
+    if (this != &assign) {
+      heap = assign.heap; // like a normal pointer!
+      assign.heap = nullptr;
+    }
     return *this;
   }
 
@@ -335,7 +365,7 @@ public:
   }
 
   /** Returns the native pointer. */
-  inline operator TYPE* () const noexcept
+  inline operator TYPE* () noexcept
   {
     return heap;
   }
@@ -352,13 +382,59 @@ public:
     return heap;
   }
 
-  /** Destruct. Only releases if RELEASE_ON_DESTRUCT is set. */
+  /** Destruct. */
   inline ~HeapBlock()
   {
-    if (RELEASE_ON_DESTRUCT) {
-      Heap::release(heap);
-    }
     heap = nullptr; // leak if not release explicitly
+  }
+};
+
+template<typename TYPE>
+class HeapBlockOwned : public HeapBlock<TYPE> {
+private:
+
+  HeapBlockOwned(const HeapBlockOwned& copy) noexcept;
+  HeapBlockOwned& operator=(const HeapBlockOwned& assign) noexcept;
+public:
+
+  typedef HeapBlock<TYPE> Base;
+  
+  using Base::resize;
+  using Base::tryResize;
+  using Base::release;
+  using Base::getSize;
+  using Base::operator TYPE*;
+  using Base::operator const TYPE*;
+  using Base::operator bool;
+
+  /** No memory. */
+  inline HeapBlockOwned() noexcept
+  {
+  }
+
+  /** Allocates memory of given size. */
+  inline HeapBlockOwned(MemorySize size)
+    : Base(size)
+  {
+  }
+
+  /** Copy of pointer value! */
+  inline HeapBlockOwned(Base&& move) noexcept
+    : Base(std::move(move))
+  {
+  }
+
+  /** Assignment of pointer value! */
+  inline HeapBlockOwned& operator=(HeapBlockOwned&& assign) noexcept
+  {
+    HeapBlock<TYPE>::operator=(std::move(assign));
+    return *this;
+  }
+
+  /** Destruct. Releases heap. */
+  inline ~HeapBlockOwned()
+  {
+    release();
   }
 };
 
@@ -367,14 +443,14 @@ template<class TYPE>
 class PrimitiveArray {
 private:
   
-  HeapBlock<TYPE, true> buffer;
+  HeapBlockOwned<TYPE> buffer;
   MemorySize count = 0;
 public:
 
   PrimitiveArray(MemorySize size = 0)
   {
     if (size > 0) {
-      buffer.allocate(size);
+      buffer.resize(size);
       this->count = size;
     }
   }
@@ -449,7 +525,7 @@ class PrimitiveStackArray {
 private:
 
   TYPE stack[STACK_SIZE];
-  HeapBlock<TYPE, true> heap;
+  HeapBlockOwned<TYPE> heap;
   MemorySize count = 0;
   TYPE* buffer = nullptr;
 

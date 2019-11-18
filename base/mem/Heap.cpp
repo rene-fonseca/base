@@ -253,6 +253,11 @@ public:
     // Heap::release(heap2);
     bool* heap3 = Heap::resize<bool>(nullptr, 0);
     TEST_ASSERT(!heap3);
+    
+    PrimitiveArray<double> pa1(1024);
+
+    PrimitiveStackArray<uint64> pa2(512);
+    TEST_ASSERT(pa2.isUsingStack());
   }
 };
 

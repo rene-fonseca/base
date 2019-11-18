@@ -55,10 +55,9 @@ public:
 
     @param granularity Specifies the number of elements to allocate at a time.
   */
-  inline explicit ReferenceCountedCapacityAllocator(MemorySize granularity) throw(OutOfRange)
-    : Allocator<TYPE>(granularity)
+  inline explicit ReferenceCountedCapacityAllocator(MemorySize size) throw(OutOfRange)
+    : Allocator<TYPE>(size)
   {
-    BASSERT(!"Remove granularity");
   }
   
   /**

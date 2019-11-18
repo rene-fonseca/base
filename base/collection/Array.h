@@ -265,10 +265,10 @@ public:
   /**
     Initializes an empty array with the specified granularity.
 
-    @param granularity The desired granularity.
+    @param size The size of the array.
   */
-  explicit Array(MemorySize granularity)
-    : elements(new ReferenceCountedCapacityAllocator<Value>(granularity))
+  explicit Array(MemorySize size)
+    : elements(new ReferenceCountedCapacityAllocator<Value>(size))
   {
   }
 

@@ -17,9 +17,68 @@
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
+// TAG: put in Math
+
+/** Returns the carry for the addition. */
+inline uint8 addCarry(uint8& value, const uint8 addend)
+{
+  // use intrinsic
+  constexpr uint8 MAXIMUM = (static_cast<uint8>(0) - 1);
+  if (value > (MAXIMUM - addend)) {
+    value += addend;
+    return 1;
+  }
+  value += addend;
+  return 0;
+}
+
+inline uint16 addCarry(uint16& value, const uint16 addend)
+{
+  // use intrinsic
+  constexpr uint16 MAXIMUM = (static_cast<uint16>(0) - 1);
+  if (value > (MAXIMUM - addend)) {
+    value += addend;
+    return 1;
+  }
+  value += addend;
+  return 0;
+}
+
+inline uint32 addCarry(uint32& value, const uint32 addend)
+{
+  // use intrinsic
+  constexpr uint32 MAXIMUM = (static_cast<uint32>(0) - 1);
+  if (value > (MAXIMUM - addend)) {
+    value += addend;
+    return 1;
+  }
+  value += addend;
+  return 0;
+}
+
+inline uint64 addCarry(uint64& value, const uint64 addend)
+{
+  // use intrinsic
+  constexpr uint64 MAXIMUM = (static_cast<uint64>(0) - 1);
+  if (value > (MAXIMUM - addend)) {
+    value += addend;
+    return 1;
+  }
+  value += addend;
+  return 0;
+}
+
+inline uint32 subtractBorrow(uint32& value, const uint32 subtrahend)
+{
+  // use intrinsic
+  const uint32 borrow = (subtrahend > value) ? 1 : 0;
+  value -= subtrahend;
+  return borrow;
+}
+
 void LargeIntegerImpl::clear(Word* value, MemorySize size) noexcept
 {
-  fill<Word>(value, size, 0);
+  fill<Word>(value, size, ZERO);
 }
 
 void LargeIntegerImpl::assign(Word* restrict dest, const Word* restrict src, MemorySize size) noexcept
@@ -30,56 +89,63 @@ void LargeIntegerImpl::assign(Word* restrict dest, const Word* restrict src, Mem
   copy(dest, src, size);
 }
 
-bool LargeIntegerImpl::isBitSet(const Word* value, MemorySize size, unsigned int bit) noexcept
+void LargeIntegerImpl::assignBit(Word* value, const MemorySize size, const MemorySize bitIndex) noexcept
 {
-  const auto index = bit / WORD_BITS;
+  BASSERT(bitIndex < (size * WORD_BITS));
+  fill<Word>(value, size, ZERO);
+  value[bitIndex / WORD_BITS] = ONE << (bitIndex % WORD_BITS);
+}
+
+LargeIntegerImpl::Word LargeIntegerImpl::getBits(const Word* words, MemorySize size, MemorySize bitIndex, unsigned fieldSize) noexcept
+{
+  BASSERT(fieldSize <= WORD_BITS);
+  const MemorySize index = bitIndex / WORD_BITS;
+  const Word word = words[index];
+  const unsigned int shift = bitIndex - index * WORD_BITS;
+  Word result = (word >> shift) & ((ONE << fieldSize) - 1);
+  if ((shift + fieldSize) > WORD_BITS) {
+    const unsigned int nextBits = shift + fieldSize - WORD_BITS;
+    const Word nextWord = ((index + 1) < size) ? words[index + 1] : ZERO; // zeropad
+    result |= (nextWord & ((ONE << nextBits) - 1)) << (fieldSize - nextBits);
+  }
+  return result;
+}
+
+bool LargeIntegerImpl::isBitSet(const Word* value, const MemorySize size, const MemorySize bitIndex) noexcept
+{
+  const auto index = bitIndex / WORD_BITS;
   if (index >= size) {
     return false;
   }
-  return value[index] & (static_cast<Word>(1) << (bit % WORD_BITS));
+  return value[index] & (ONE << (bitIndex % WORD_BITS));
 }
 
-LargeIntegerImpl::Word LargeIntegerImpl::getBits(const Word* words, MemorySize size, unsigned int bitIndex, unsigned bitSize) noexcept
+void LargeIntegerImpl::setBit(Word* value, const MemorySize size, const MemorySize bitIndex, const bool bitValue) noexcept
 {
-  BASSERT((bitIndex % bitSize) == 0);
-  Word word = words[bitIndex / WORD_BITS];
-  return (word >> (bitIndex % WORD_BITS)) & ((static_cast<Word>(1) << bitSize) - 1);
-}
-
-void LargeIntegerImpl::setBit(Word* value, MemorySize size, unsigned int bit, bool b) noexcept
-{
-  BASSERT(bit < (size * WORD_BITS));
-  if (b) {
-    value[bit / WORD_BITS] |= static_cast<Word>(1) << (bit % WORD_BITS);
+  BASSERT(bitIndex < (size * WORD_BITS));
+  const MemorySize index = bitIndex / WORD_BITS;
+  if (bitValue) {
+    value[index] |= ONE << (bitIndex % WORD_BITS);
   } else {
-    value[bit / WORD_BITS] &= ~(static_cast<Word>(1) << (bit % WORD_BITS));
+    value[index] &= ~(ONE << (bitIndex % WORD_BITS));
   }
 }
 
-void LargeIntegerImpl::setBit(Word* value, MemorySize size, unsigned int bit) noexcept
+bool LargeIntegerImpl::addBit(Word* value, const MemorySize size, const MemorySize bitIndex) noexcept
 {
-  BASSERT(bit < (size * WORD_BITS));
-  fill<Word>(value, size, 0);
-  value[bit / WORD_BITS] = static_cast<Word>(1) << (bit % WORD_BITS);
-}
-
-bool LargeIntegerImpl::addBit(Word* value, MemorySize size, unsigned int bit) noexcept
-{
-  BASSERT(bit < (size * WORD_BITS));
-  value += bit / WORD_BITS;
-  Word carrier = static_cast<Word>(1) << (bit % WORD_BITS);
-  for (const Word* end = value + size; value < end; ++value) {
-    const DoubleWord temp = static_cast<DoubleWord>(*value) + carrier;
-    *value = temp;
-    carrier = (temp & (static_cast<DoubleWord>(1) << WORD_BITS)) ? 1 : 0;
-    if (carrier == 0) {
+  BASSERT(bitIndex < (size * WORD_BITS));
+  value += bitIndex / WORD_BITS;
+  Word carrier = ONE << (bitIndex % WORD_BITS);
+  for (const Word* end = value + size; value != end; ++value) {
+    carrier = addCarry(*value, carrier);
+    if (carrier == ZERO) {
       return false;
     }
   }
   return true;
 }
 
-void LargeIntegerImpl::leftShift(Word* value, MemorySize size, unsigned int shift) noexcept
+void LargeIntegerImpl::leftShift(Word* value, const MemorySize size, const unsigned int shift) noexcept
 {
   const unsigned int bitShift = shift % WORD_BITS;
   const unsigned int wordShift = shift / WORD_BITS;
@@ -110,7 +176,7 @@ void LargeIntegerImpl::leftShift(Word* value, MemorySize size, unsigned int shif
 }
 
 // TAG: fix this - prevent overflow
-void LargeIntegerImpl::rightShift(Word* value, MemorySize size, unsigned int shift) noexcept
+void LargeIntegerImpl::rightShift(Word* value, const MemorySize size, const unsigned int shift) noexcept
 {
   unsigned int bitShift = shift % WORD_BITS;
   unsigned int wordShift = shift / WORD_BITS;
@@ -123,7 +189,7 @@ void LargeIntegerImpl::rightShift(Word* value, MemorySize size, unsigned int shi
 
   if (bitShift != 0) {
     const unsigned int nextBitShift = WORD_BITS - bitShift; // 0 < nextBitShift < WORD_BITS
-    for (const Word* end = value + (size - wordShift - 1); dest < end; ++dest) {
+    for (const Word* end = value + (size - wordShift - 1); dest != end; ++dest) {
       Word temp = *src >> bitShift;
       ++src;
       temp |= *src << nextBitShift;
@@ -131,90 +197,78 @@ void LargeIntegerImpl::rightShift(Word* value, MemorySize size, unsigned int shi
     }
     *dest++ = *src >> bitShift;
   } else {
-    for (const Word* end = value + (size - wordShift); dest < end; ++src, ++dest) {
+    for (const Word* end = value + (size - wordShift); dest != end; ++src, ++dest) {
       *dest = *src;
     }
   }
-  for (const Word* end = value + size; dest < end; ++dest) { // mask end of value
+  for (const Word* end = value + size; dest != end; ++dest) { // mask end of value
     *dest = 0;
   }
 }
 
-bool LargeIntegerImpl::add(Word* value, MemorySize size, Word addend) noexcept
+bool LargeIntegerImpl::add(Word* value, const MemorySize size, const Word addend) noexcept
 {
-  const Word* end = value + size;
   Word carrier = addend;
-  for (; (value < end) && carrier; ++value) {
-    const bool carry = *value > (MAXIMUM - carrier);
-    *value += carrier;
-    carrier = carry ? 1 : 0;
+  for (const Word* end = value + size; (value != end) && carrier; ++value) {
+    carrier = addCarry(*value, carrier);
   }
   return carrier > 0;
 }
 
-bool LargeIntegerImpl::add(Word* restrict value, const Word* restrict addend, MemorySize size) noexcept
+bool LargeIntegerImpl::add(Word* restrict value, const Word* restrict addend, const MemorySize size) noexcept
 {
-  const Word* end = value + size;
   Word carrier = 0;
-  for (; value < end; ++value, ++addend) {
-    // switch single Word implementation
-    const DoubleWord temp = static_cast<DoubleWord>(*value) + *addend + carrier;
-    *value = static_cast<Word>(temp & MAXIMUM);
-    carrier = static_cast<Word>(temp >> WORD_BITS);
+  for (const Word* end = value + size; value != end; ++value, ++addend) {
+    carrier = addCarry(*value, carrier);
+    carrier += addCarry(*value, *addend);
   }
   return carrier > 0;
 }
 
-bool LargeIntegerImpl::subtract(Word* restrict value, MemorySize size, Word subtrahend) noexcept
+bool LargeIntegerImpl::checkAdditionOverflow(const Word* restrict value, const Word* restrict addend, const MemorySize size) noexcept
 {
-  const Word* end = value + size;
+  Word carrier = 0;
+  for (const Word* end = value + size; value != end; ++value, ++addend) {
+    auto temp = *value;
+    carrier = addCarry(temp, carrier);
+    carrier += addCarry(temp, *addend);
+  }
+  return carrier > 0;
+}
+
+bool LargeIntegerImpl::subtract(Word* restrict value, const MemorySize size, const Word subtrahend) noexcept
+{
   Word borrower = subtrahend;
-  for (; (value < end) && borrower; ++value) {
-    const bool borrow = *value < borrower;
-    *value -= borrower;
-    borrower = borrow ? 1 : 0;
+  for (const Word* end = value + size; (value != end) && borrower; ++value) {
+    borrower = subtractBorrow(*value, borrower);
+  }
+  return borrower > 0; // if size == 0 then borrower is subtrahend - not 1 or 0
+}
+
+bool LargeIntegerImpl::subtract(Word* restrict value, const Word* restrict subtrahend, const MemorySize size) noexcept
+{
+  Word borrower = 0;
+  for (const Word* end = value + size; value != end; ++value, ++subtrahend) {
+    borrower = subtractBorrow(*value, borrower);
+    borrower += subtractBorrow(*value, *subtrahend);
   }
   return borrower > 0;
 }
 
-bool LargeIntegerImpl::subtract(Word* restrict value, const Word* restrict subtrahend, MemorySize size) noexcept
+bool LargeIntegerImpl::multiply(Word* value, const MemorySize size, const Word multiplicand) noexcept
 {
   const Word* end = value + size;
-  Word borrow = 0;
-  for (; value < end; ++value, ++subtrahend) {
-    // switch single Word implementation
-    BASSERT(borrow <= 1);
-    const DoubleWord temp = (static_cast<DoubleWord>(1) << WORD_BITS) + *value - *subtrahend - borrow;
+  DoubleWord carrier = 0;
+  for (; value != end; ++value) {
+    const DoubleWord temp = static_cast<DoubleWord>(*value) * multiplicand; // limit MAX*MAX!
     *value = static_cast<Word>(temp & MAXIMUM);
-    borrow = (temp >> WORD_BITS) ? 1 : 0;
-  }
-  return borrow > 0;
-}
-
-bool LargeIntegerImpl::checkOverflow(const Word* restrict left, const Word* restrict right, MemorySize size) noexcept
-{
-  const Word* end = left + size;
-  Word carrier = 0;
-  for (; left < end; ++left, ++right) {
-    const DoubleWord temp = static_cast<DoubleWord>(*left) + *right + carrier;
-    carrier = static_cast<Word>(temp >> WORD_BITS);
+    carrier = addCarry(*value, carrier);
+    carrier += (temp >> WORD_BITS);
   }
   return carrier > 0;
 }
 
-bool LargeIntegerImpl::multiply(Word* value, MemorySize size, Word multiplicand) noexcept
-{
-  const Word* end = value + size;
-  Word carrier = 0;
-  for (; value < end; ++value) {
-    const DoubleWord temp = static_cast<DoubleWord>(*value) * multiplicand + carrier;
-    *value = static_cast<Word>(temp);
-    carrier = static_cast<Word>(temp >> WORD_BITS);
-  }
-  return carrier > 0;
-}
-
-MemorySize LargeIntegerImpl::getSize(const Word* value, MemorySize size) noexcept
+MemorySize LargeIntegerImpl::getSize(const Word* value, const MemorySize size) noexcept
 {
   const Word* src = value + size; // start at end of value
   while (src > value) {
@@ -225,27 +279,19 @@ MemorySize LargeIntegerImpl::getSize(const Word* value, MemorySize size) noexcep
   return 0; // all words are zero
 }
 
-MemorySize LargeIntegerImpl::getBitSize(const Word* value, MemorySize size) noexcept
+MemorySize LargeIntegerImpl::getBitSize(const Word* value, const MemorySize size) noexcept
 {
   const MemorySize count = getSize(value, size);
   if (count == 0) {
     return 0;
   }
   const auto bit = Math::getHighestBit(value[count - 1]);
-  return count * WORD_BITS + bit + 1;
-
-#if 0
-  for (int bit = WORD_BITS - 1; bit >= 0; --bit) {
-    if (temp >> bit) {
-      return (src - value) * WORD_BITS + bit + 1;
-    }
-  }
-#endif
+  return (count - 1) * WORD_BITS + (bit + 1);
 }
 
-bool LargeIntegerImpl::isZero(const Word* value, MemorySize size) noexcept
+bool LargeIntegerImpl::isZero(const Word* value, const MemorySize size) noexcept
 {
-  for (const Word* end = value + size; value < end; ++value) {
+  for (const Word* end = value + size; value != end; ++value) {
     if (*value != 0) {
       return false;
     }
@@ -253,7 +299,7 @@ bool LargeIntegerImpl::isZero(const Word* value, MemorySize size) noexcept
   return true;
 }
 
-bool LargeIntegerImpl::isOne(const Word* value, MemorySize size) noexcept
+bool LargeIntegerImpl::isOne(const Word* value, const MemorySize size) noexcept
 {
   if (size == 0) {
     return false;
@@ -264,7 +310,7 @@ bool LargeIntegerImpl::isOne(const Word* value, MemorySize size) noexcept
   return isZero(value + 1, size - 1);
 }
 
-bool LargeIntegerImpl::lessThan(const Word* restrict left, MemorySize size, Word comparand) noexcept
+bool LargeIntegerImpl::lessThan(const Word* restrict left, const MemorySize size, const Word comparand) noexcept
 {
   if (comparand == 0) {
     return false;
@@ -278,7 +324,7 @@ bool LargeIntegerImpl::lessThan(const Word* restrict left, MemorySize size, Word
   return isZero(left + 1, size - 1);
 }
 
-bool LargeIntegerImpl::lessThan(const Word* restrict left, const Word* restrict right, MemorySize size) noexcept
+bool LargeIntegerImpl::lessThan(const Word* restrict left, const Word* restrict right, const MemorySize size) noexcept
 {
   const Word* end = left;
   left += size;
@@ -292,10 +338,10 @@ bool LargeIntegerImpl::lessThan(const Word* restrict left, const Word* restrict 
       return false;
     }
   }
-  return false;
+  return false; // equal
 }
 
-bool LargeIntegerImpl::lessThanEqual(const Word* restrict left, const Word* restrict right, MemorySize size) noexcept
+bool LargeIntegerImpl::lessThanEqual(const Word* restrict left, const Word* restrict right, const MemorySize size) noexcept
 {
   const Word* end = left;
   left += size;
@@ -309,13 +355,24 @@ bool LargeIntegerImpl::lessThanEqual(const Word* restrict left, const Word* rest
       return false;
     }
   }
-  return true;
+  return true; // equal
 }
 
-bool LargeIntegerImpl::equal(const Word* restrict left, const Word* restrict right, MemorySize size) noexcept
+bool LargeIntegerImpl::equal(const Word* restrict left, MemorySize size, const Word comparand) noexcept
+{
+  if (size == 0) {
+    return comparand == 0;
+  }
+  if (*left != comparand) {
+    return false;
+  }
+  return isZero(left + 1, size - 1);
+}
+
+bool LargeIntegerImpl::equal(const Word* restrict left, const Word* restrict right, const MemorySize size) noexcept
 {
   const Word* end = left + size;
-  while (left < end) {
+  while (left != end) {
     if (*left++ != *right++) {
       return false;
     }
@@ -323,11 +380,21 @@ bool LargeIntegerImpl::equal(const Word* restrict left, const Word* restrict rig
   return true;
 }
 
-LargeIntegerImpl::Word LargeIntegerImpl::divide(Word* value, MemorySize size, Word divisor) noexcept
+LargeIntegerImpl::Word LargeIntegerImpl::divide(Word* value, const MemorySize size, const Word divisor) noexcept
 {
-  // TAG: if divisor is power of 2
-  
-  
+  { // simple case for power of 2
+    if (divisor == 0) {
+      BASSERT(!"Division by 0");
+      return 0;
+    }
+    const unsigned int shift = Math::getHighestBit(divisor);
+    if ((ONE << shift) == divisor) {
+      const Word remainder = ((size > 0) ? value[0] : 0)& ((ONE << shift) - 1);
+      rightShift(value, size, shift);
+      return remainder;
+    }
+  }
+
   Word* word = value + size;
   Word remainder = 0;
   while (--word >= value) {
@@ -346,7 +413,7 @@ void LargeIntegerImpl::divide(
   Word* remainder,
   const Word* dividend,
   const Word* restrict divisor,
-  MemorySize size) noexcept
+  const MemorySize size) noexcept
 {
   PrimitiveStackArray<Word> temp(size);
 
@@ -686,13 +753,19 @@ bool LargeInteger::operator<=(const Word comparand) const noexcept
   return LargeIntegerImpl::isZero(toWords() + 1, s1 - 1);
 }
 
-LargeInteger& LargeInteger::multiply(int value)
+LargeInteger& LargeInteger::multiply(unsigned int value)
 {
   BASSERT(!"Not implemented.");
   return *this;
 }
 
-LargeInteger& LargeInteger::divide(int value)
+LargeInteger& LargeInteger::divide(unsigned int value)
+{
+  BASSERT(!"Not implemented.");
+  return *this;
+}
+
+LargeInteger& LargeInteger::remainder(unsigned int value)
 {
   BASSERT(!"Not implemented.");
   return *this;
@@ -747,11 +820,18 @@ LargeInteger operator/(const LargeInteger& left, const unsigned int right)
   return result;
 }
 
-uint32 getWordBits(const uint32* words, unsigned int size, unsigned int bitIndex, unsigned bitSize)
+LargeInteger operator%(const LargeInteger& left, const LargeInteger& right)
 {
-  BASSERT((bitIndex % bitSize) == 0);
-  auto word = words[bitIndex / 32];
-  return (word >> (bitIndex % 32)) & ((static_cast<uint32>(1) << bitSize) - 1);
+  LargeInteger result(left, right.getSize());
+  result %= right;
+  return result;
+}
+
+LargeInteger operator%(const LargeInteger& left, const unsigned int right)
+{
+  LargeInteger result(left);
+  result %= right;
+  return result;
 }
 
 namespace {
@@ -795,8 +875,8 @@ FormatOutputStream& operator<<(FormatOutputStream& stream, const LargeInteger& v
     {
       LargeInteger temp = (value >= 0U) ? value : -value;
       do {
-        *dest = ASCIITraits::valueToDigit(temp % 10); // get digit
-        temp /= 10;
+        *dest = ASCIITraits::valueToDigit(temp % 10U); // get digit
+        temp /= 10U;
         --dest;
       } while (temp);
       ++dest; // go to first valid char in buffer

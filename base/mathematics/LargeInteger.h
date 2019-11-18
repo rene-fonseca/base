@@ -27,54 +27,84 @@ public:
   typedef uint64 DoubleWord;
   static constexpr unsigned int WORD_SIZE = sizeof(Word);
   static constexpr unsigned int WORD_BITS = WORD_SIZE * 8;
-  static constexpr unsigned int MAXIMUM = static_cast<Word>(0) - 1;
-  
+  static constexpr Word ZERO = static_cast<Word>(0);
+  static constexpr Word ONE = static_cast<Word>(1);
+  static constexpr Word MAXIMUM = static_cast<Word>(0) - 1;
+
+  /** Sets words to 0. */
   static void clear(Word* value, MemorySize size) noexcept;
 
+  /** Assigns words. */
   static void assign(Word* restrict dest, const Word* restrict src, MemorySize size) noexcept;
-  
-  static Word getBits(const Word* words, MemorySize size, unsigned int bitIndex, unsigned bitSize) noexcept;
 
-  static bool isBitSet(const Word* value, MemorySize size, unsigned int bit) noexcept;
+  /** Assigns bit. */
+  static void assignBit(Word* value, MemorySize size, MemorySize bitIndex) noexcept;
 
-  static void setBit(Word* value, MemorySize size, unsigned int bit, bool b) noexcept;
+  /** Returns bit field. fieldSize must be WORD_SIZE or less. */
+  static Word getBits(const Word* words, MemorySize size, MemorySize bitIndex, unsigned int fieldSize) noexcept;
 
-  static void setBit(Word* value, MemorySize size, unsigned int bit) noexcept;
+  /** Returns true if the bit is set. */
+  static bool isBitSet(const Word* value, MemorySize size, MemorySize bitIndex) noexcept;
 
-  static bool addBit(Word* value, MemorySize size, unsigned int bit) noexcept;
+  /** Sets the bit. */
+  static void setBit(Word* value, MemorySize size, MemorySize bitIndex, bool bitValue) noexcept;
 
+  /** Add the bit. */
+  static bool addBit(Word* value, MemorySize size, MemorySize bitIndex) noexcept;
+
+  /** Left shift. */
   static void leftShift(Word* value, MemorySize size, unsigned int shift) noexcept;
 
+  /** Right shift. */
   static void rightShift(Word* value, MemorySize size, unsigned int shift) noexcept;
 
+  /** Add single word. */
   static bool add(Word* value, MemorySize size, Word addend) noexcept;
 
+  /** Add words. */
   static bool add(Word* restrict value, const Word* restrict right, MemorySize size) noexcept;
 
+  /** Returns true if addition causes carrier. */
+  static bool checkAdditionOverflow(const Word* restrict left, const Word* restrict right, MemorySize size) noexcept;
+
+  /** Subtract single word. */
   static bool subtract(Word* restrict value, MemorySize size, Word subtrahend) noexcept;
 
+  /** Subtract words. */
   static bool subtract(Word* restrict value, const Word* restrict right, MemorySize size) noexcept;
 
-  static bool checkOverflow(const Word* restrict left, const Word* restrict right, MemorySize size) noexcept;
-
+  /** Multiply word. */
   static bool multiply(Word* value, MemorySize size, Word multiplicand) noexcept;
 
   static MemorySize getSize(const Word* value, MemorySize size) noexcept;
 
   static MemorySize getBitSize(const Word* value, MemorySize size) noexcept;
 
+  /** Returns true if zero. */
   static bool isZero(const Word* value, MemorySize size) noexcept;
 
+  /** Returns true if one. */
   static bool isOne(const Word* value, MemorySize size) noexcept;
 
+  /** Returns true if less than. */
   static bool lessThan(const Word* restrict left, MemorySize size, Word comparand) noexcept;
 
+  /** Returns true if less than. */
   static bool lessThan(const Word* restrict left, const Word* restrict right, MemorySize size) noexcept;
-  
+
+  /** Returns true if less than or equal. */
+  static bool lessThanEqual(const Word* restrict left, MemorySize size, Word comparand) noexcept;
+
+  /** Returns true if less than or equal. */
   static bool lessThanEqual(const Word* restrict left, const Word* restrict right, MemorySize size) noexcept;
 
+  /** Returns true if equal. */
+  static bool equal(const Word* restrict left, MemorySize size, Word comparand) noexcept;
+
+  /** Returns true if equal. */
   static bool equal(const Word* restrict left, const Word* restrict right, MemorySize size) noexcept;
 
+  /** Divides by single word. */
   static Word divide(Word* value, MemorySize size, Word divisor) noexcept;
 
   // may remainder be the same as dividend - I think so
@@ -191,14 +221,21 @@ public:
     
     @param value The multiplicator.
   */
-  LargeInteger& multiply(int value);
+  LargeInteger& multiply(unsigned int value);
 
   /**
     Divides this vector with the specified value.
 
     @param value The divisor.
   */
-  LargeInteger& divide(int value);
+  LargeInteger& divide(unsigned int divisor);
+
+  /**
+    Returns the remainder.
+
+    @param value The divisor.
+  */
+  LargeInteger& remainder(unsigned int divisor);
 
   /**
     Negates the specified vector and stores the result in this vector.
@@ -295,7 +332,7 @@ public:
 
     @param value The multiplicator.
   */
-  inline LargeInteger& operator*=(int value) noexcept
+  inline LargeInteger& operator*=(unsigned int value) noexcept
   {
     return multiply(value);
   }
@@ -305,9 +342,19 @@ public:
 
     @param value The divisor.
   */
-  inline LargeInteger& operator/=(int value) noexcept
+  inline LargeInteger& operator/=(unsigned int value) noexcept
   {
     return divide(value);
+  }
+
+  /**
+    Divides this vector with the specified value.
+
+    @param value The divisor.
+  */
+  inline LargeInteger& operator%=(unsigned int value) noexcept
+  {
+    return remainder(value);
   }
 
   /**
@@ -350,6 +397,10 @@ LargeInteger operator-(const LargeInteger& left, const LargeInteger& right);
 LargeInteger operator*(const LargeInteger& left, const LargeInteger& right);
 
 LargeInteger operator/(const LargeInteger& left, const LargeInteger& right);
+
+LargeInteger operator%(const LargeInteger& left, const LargeInteger& right);
+
+LargeInteger operator%(const LargeInteger& left, unsigned int right);
 
 /**
   Returns the product of the vector and the value.

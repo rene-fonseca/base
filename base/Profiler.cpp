@@ -181,7 +181,7 @@ void Profiler::close()
         tts->value = e.tts;
 
         const String text = JSON::getJSON(item);
-        fout << text << ENDL;
+        // fout << text << ENDL;
         fos.write(reinterpret_cast<const uint8*>(text.native()), text.getLength(), false);
         fos.write(reinterpret_cast<const uint8*>("\n"), 1, false);
       } else {

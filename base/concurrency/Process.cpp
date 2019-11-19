@@ -34,6 +34,9 @@
 #  include <stdlib.h>
 
 #  define _COM_AZURE_DEV__BASE__HAVE_GETRUSAGE
+#if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__MACOS)
+#  include <libproc.h>
+#endif
 #endif
 
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__UNIX)
@@ -352,6 +355,33 @@ bool Process::isAlive() const throw(ProcessException)
 #endif // flavor
 }
 
+#if 0
+// struct proc_taskinfo taskInfo;
+// int status = proc_pidinfo(id, PROC_PIDTASKINFO, 0, &taskInfo, sizeof(taskInfo));
+
+Array<unsigned int> /*Process::*/getPIDs()
+{
+  Array<unsigned int> result;
+#if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__MACOS)
+  result.setSize(4096);
+  while (true) {
+    int count = proc_listallpids(&result[0], result.getSize());
+    if (count < 0) {
+      return result;
+    }
+    if (count < result.getSize()) {
+      result.setSize(count);
+      break;
+    }
+    result.setSize(result.getSize() * 2);
+  }
+#else
+  BASSERT(!"Not implemented.");
+#endif
+  return result;
+}
+#endif
+
 String Process::getName() const throw(NotSupported, ProcessException)
 {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
@@ -363,7 +393,16 @@ String Process::getName() const throw(NotSupported, ProcessException)
   ::CloseHandle(process);
   return toUTF8(WideString(buffer, length - 1));
 #else // unix
-  throw NotSupported(this);
+#if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__MACOS)
+  PrimitiveStackArray<char> buffer(PROC_PIDPATHINFO_MAXSIZE);
+  int status = proc_pidpath(id, buffer, buffer.size());
+  if (status < 0) {
+    return String();
+  }
+  return String(static_cast<const char*>(buffer), status);
+#else
+  return String();
+#endif
 #endif
 }
 

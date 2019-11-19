@@ -112,7 +112,7 @@ namespace {
     info.dwFlags = 0;
 #pragma warning(push)
 #pragma warning(disable: 6320 6322)
-    __try{
+    __try {
       RaiseException(MS_VC_EXCEPTION, 0, sizeof(info) / sizeof(ULONG_PTR), (ULONG_PTR*)&info);
     } __except (EXCEPTION_EXECUTE_HANDLER){
     }
@@ -121,9 +121,21 @@ namespace {
 }
 #endif
 
-void Thread::setThreadName(const char* name) noexcept
+String Thread::getThreadName()
+{
+  if (auto tlc = getLocalContext()) {
+    return tlc->name;
+  }
+  return String();
+}
+
+void Thread::setThreadName(const char* name)
 {
   if (name) {
+    if (auto tlc = getLocalContext()) {
+      tlc->name = name;
+    }
+
     Profiler::pushThreadMeta(new Profiler::ReferenceString(name));
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
     SetThreadName(GetCurrentThreadId(), name);

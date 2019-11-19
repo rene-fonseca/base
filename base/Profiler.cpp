@@ -206,7 +206,7 @@ void Profiler::start()
 {
   enabled = true;
   pushProcessMeta(new ReferenceString(Process::getProcess().getName()));
-  pushThreadMeta(new ReferenceString("main")); // TAG: get thread name
+  pushThreadMeta(new ReferenceString(Thread::getThreadName()));
 }
 
 void Profiler::stop() noexcept

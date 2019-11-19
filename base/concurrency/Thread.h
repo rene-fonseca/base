@@ -453,8 +453,11 @@ public:
   */
   static Times getTimes() throw();
 
+  /** Returns the thread name is available. */
+  static String getThreadName();
+
   /** Sets thread name. */
-  static void setThreadName(const char* name) noexcept;
+  static void setThreadName(const char* name);
 
   /**
     The calling thread waits for the thread complete. Several threads are

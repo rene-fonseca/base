@@ -31,7 +31,7 @@ public:
   Thread* thread = nullptr;
   /** Simple unique id - does NOT relate to system IDs. */
   unsigned int simpleId = 0;
-  // String description; // we use system thread name only for now
+  String name;
   /** Profiling context. */
   struct {
     unsigned int suspended = 0;

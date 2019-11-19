@@ -76,6 +76,23 @@ inline uint32 subtractBorrow(uint32& value, const uint32 subtrahend) noexcept
   return borrow;
 }
 
+#if 0
+void LargeIntegerImpl::clear(Words& value) noexcept
+{
+  fill<Word>(value.begin, value.maximumSize, 0U);
+  value.size = 0;
+}
+
+void LargeIntegerImpl::assign(Words& dest, const Words& src) noexcept
+{
+  if (dest.begin == src.begin) { // self assignment
+    return;
+  }
+  BASSERT(dest.maximumSize >= src.maximumSize);
+  copy(dest.begin, src.begin, src.size);
+}
+#endif
+
 void LargeIntegerImpl::clear(Word* value, MemorySize size) noexcept
 {
   fill<Word>(value, size, 0U);

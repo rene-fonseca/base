@@ -31,6 +31,20 @@ public:
   static constexpr Word ONE = static_cast<Word>(1);
   static constexpr Word MAXIMUM = static_cast<Word>(0) - 1;
 
+#if 0
+  /** Words. */
+  class Words {
+  public:
+
+    Word* begin = nullptr; // first word
+    MemorySize size = 0; // non-zero words
+    MemorySize maximumSize = 0; // full size
+  };
+
+  static void clear(Words& value) noexcept;
+  static void assign(Words& dest, const Word& src) noexcept;
+#endif
+
   /** Sets words to 0. */
   static void clear(Word* value, MemorySize size) noexcept;
 

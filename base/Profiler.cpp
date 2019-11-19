@@ -19,9 +19,12 @@
 #include <base/concurrency/ThreadLocalContext.h>
 #include <base/dl/DynamicLinker.h>
 #include <base/filesystem/FileSystem.h>
+#include <base/Application.h>
 #include <base/UnitTest.h>
 
- // TAG: compact stack trace like utf8
+// ATTENTION: we do not want to record heap/IO for Profile implementation
+
+// TAG: compact stack trace like utf8
  
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
@@ -518,9 +521,21 @@ namespace {
   }
 }
 
+namespace {
+
+  inline void writeString(FileOutputStream& fos, const char* text)
+  {
+    fos.write(reinterpret_cast<const uint8*>(text), getNullTerminatedLength(text), false);
+  }
+
+  inline void writeString(FileOutputStream& fos, const String& text)
+  {
+    fos.write(reinterpret_cast<const uint8*>(text.native()), text.getLength(), false);
+  }
+}
+
 void Profiler::close()
 {
-  // ATTENTION: we do not want to record heap/IO for Profile implementation
   stop();
 
   SpinLock::Sync _sync(lock);
@@ -535,9 +550,12 @@ void Profiler::close()
   ObjectModel o;
   
   if (useJSON) {
-    String text("{\n\"traceEvents\": [\n");
-    fos.write(reinterpret_cast<const uint8*>(text.native()), text.getLength(), false);
+    writeString(fos, "{\n");
+    writeString(fos, "\"traceEvents\": [\n");
   }
+
+  // TAG: REUSE
+  auto NAME = o.createString("name");
 
   while (current) {
     for (MemorySize i = 0; i < current->size; ++i) {
@@ -576,12 +594,11 @@ void Profiler::close()
 
         // "s" for instant event scope global, process, thread (default)
         
-        const String text = JSON::getJSON(item); // single event
-        fos.write(reinterpret_cast<const uint8*>(text.native()), text.getLength(), false);
+        writeString(fos, JSON::getJSON(item)); // single event
         if (((i + 1) < current->size) || current->previous) { // not last - we could use counter also
-          fos.write(reinterpret_cast<const uint8*>(","), 1, false);
+          writeString(fos, ",");
         }
-        fos.write(reinterpret_cast<const uint8*>("\n"), 1, false);
+        writeString(fos, "\n");
       } else {
         fos.write(reinterpret_cast<const uint8*>(&e), sizeof(e), false);
       }
@@ -590,12 +607,20 @@ void Profiler::close()
   }
 
   if (useJSON) {
-    String text("]\n");
-    fos.write(reinterpret_cast<const uint8*>(text.native()), text.getLength(), false);
+    writeString(fos, "]\n");
+
+    if (useJSON) {
+      if (auto app = Application::getApplication()) {
+        auto otherData = o.createObject();
+        otherData->setValue(o.createString("version"), o.createString(app->getFormalName()));
+        writeString(fos, ",\n\"otherData\": {\n");
+        writeString(fos, JSON::getJSON(otherData));
+        writeString(fos, "}\n"); // terminate otherData
+      }
+    }
 
     if (useStackFrames) {
-      String text1(",\n\"stackFrames\": {\n");
-      fos.write(reinterpret_cast<const uint8*>(text1.native()), text1.getLength(), false);
+      writeString(fos, ",\n\"stackFrames\": {\n");
 
       auto frames = o.createObject();
       for (MemorySize id = 0; id < stackFrames.getSize(); ++id) {
@@ -614,15 +639,11 @@ fout << "!!! " << f.parent << " " << f.name << " " << f.category << ENDL;
         frames->setValue(o.createString(format() << id), frame);
       }
 
-      const String text = JSON::getJSON(frames); // TAG: write single frame at a time instead
-      fos.write(reinterpret_cast<const uint8*>(text.native()), text.getLength(), false);
-
-      String text2("}\n}\n"); // terminate frames and root object
-      fos.write(reinterpret_cast<const uint8*>(text2.native()), text2.getLength(), false);
+      writeString(fos, JSON::getJSON(frames)); // TAG: write single frame at a time instead
+      writeString(fos, "}\n"); // terminate frames
     }
 
-    String text3("}\n"); // terminate root object
-    fos.write(reinterpret_cast<const uint8*>(text3.native()), text3.getLength(), false);
+    writeString(fos, "}\n"); // terminate root object
 
 /*
     "displayTimeUnit": "ns", // "ms" or "ns"

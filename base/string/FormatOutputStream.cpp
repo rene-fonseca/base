@@ -1279,7 +1279,7 @@ void convertFloatingPoint(
   };
 
   numberOfDigits = 0;
-  exponent = 0; // TAG: fixme could already have been initialized (only in FASTEST mode)
+  exponent = 0;
 
   BASSERT(significant > 0);
   --significant; // TAG: why this
@@ -1294,7 +1294,6 @@ void convertFloatingPoint(
   const unsigned int shiftS = maximum<int>(-(base2Exponent - static_cast<int>(significant)), 0); // max(0, -(e-p))
   const unsigned int shiftR = maximum<int>(base2Exponent - significant, 0); // max(e-p, 0)
 
-  // TAG: in debug mode use worst case size
   // number of words in large integers
   unsigned int integerSize = (maximum<int>(maximum<int>(shiftS, shiftR), maximum<int>(base2Exponent, significant)) /* value bits */
                                         + 2 /* additional shifts */
@@ -1309,6 +1308,7 @@ void convertFloatingPoint(
   PrimitiveStackArray<unsigned int> Mminus(integerSize);
   PrimitiveStackArray<unsigned int> Mdouble(integerSize); // 2 * M- (only initialized if required)
   PrimitiveStackArray<unsigned int> temp(integerSize);
+  // TAG: optimize by tracking actual sizes of each integer - use helper class LargeIntegerImpl(words, size)
 
   LargeIntegerImpl::clear(R, integerSize);
   LargeIntegerImpl::assign(R, mantissa, mantissaSize);
@@ -1325,12 +1325,15 @@ void convertFloatingPoint(
   }
   LargeIntegerImpl::assignBit(Mminus, integerSize, shiftR); // Mminus = M-
 
-
   LargeIntegerImpl::assign(temp, S, integerSize);
   LargeIntegerImpl::add(temp, integerSize, 10 - 1);
   LargeIntegerImpl::divide(temp, integerSize, 10); // ceil(S/B)
   while (LargeIntegerImpl::lessThan(R, temp, integerSize)) { // R < ceil(S/B) => R < (S+B-1)/B
-    LargeIntegerImpl::multiply(R, integerSize, 10); // R = R * B // TAG: optimize
+    // TAG: check highest bit - can calc safe multiplication 2^n > 10^m
+    // LargeIntegerImpl::multiply(R, integerSize, 1000*1000*1000); // R = R * B // TAG: optimize
+    // exponent -= 9;
+
+    LargeIntegerImpl::multiply(R, integerSize, 10); // R = R * B
     --exponent;
   }
 

@@ -15,8 +15,10 @@
 #include <base/Timer.h>
 #include <base/objectmodel/JSON.h>
 #include <base/concurrency/SpinLock.h>
-#include <base/collection/HashTable.h>
-#include <base/StackFrame.h>
+#include <base/collection/Map.h>
+#include <base/concurrency/ThreadLocalContext.h>
+#include <base/dl/DynamicLinker.h>
+#include <base/filesystem/FileSystem.h>
 #include <base/UnitTest.h>
 
 // TAG: we should be able to push multi process events to common dest - use merge tool?
@@ -27,6 +29,47 @@ namespace {
 
   SpinLock lock;
   const unsigned int pid = Process::getProcess().getId();
+  Array<StackFrame> stackFramesHash; // cached frames (hash table)
+  Array<StackFrame> stackFramesUnhash; // cached frames (remaining stack traces)
+
+  class Frame {
+  public:
+
+    String name;
+    String category; // module
+    unsigned int parent = 0;
+
+    Frame()
+    {
+    }
+
+    Frame(const String& _name, const String& _category, unsigned int _parent)
+      : name(_name), category(_category), parent(_parent)
+    {
+    }
+
+    bool operator==(const Frame& compare) const noexcept
+    {
+      return (parent == compare.parent) &&
+        (name == compare.name) &&
+        (category == compare.category);
+    }
+  };
+
+  Array<Frame> stackFrames;
+  Map<uint32, unsigned int> stackFramesLookup;
+
+  inline const StackFrame& getStackFrameImpl(uint32 sf)
+  {
+    if (sf & 0x80000000U) {
+      const uint32 index = sf & ~0x80000000U;
+      BASSERT(index < stackFramesUnhash.getSize());
+      return stackFramesUnhash[index];
+    } else {
+      BASSERT(sf < stackFramesHash.getSize());
+      return stackFramesHash[sf];
+    }
+  }
 
   class Block {
   public:
@@ -65,16 +108,73 @@ namespace {
   }
 }
 
+bool Profiler::useStackFrames = false; // include stack frames for events
+unsigned int Profiler::minimumWaitTime = 5; // minimum time to wait to record event
+unsigned int Profiler::minimumHeapSize = 4096 * 2; // minimum heap size to record event
+
+bool Profiler::isEnabled() noexcept
+{
+  return enabled;
+}
+
+void Profiler::setUseStackFrames(bool _useStackFrames) noexcept
+{
+  useStackFrames = _useStackFrames;
+}
+
+void Profiler::setMinimumWaitTime(unsigned int _minimumWaitTime) noexcept
+{
+  minimumWaitTime = _minimumWaitTime;
+}
+
+void Profiler::setMinimumHeapSize(unsigned int _minimumHeapSize) noexcept
+{
+  minimumHeapSize = _minimumHeapSize;
+}
+
+bool Profiler::isEnabledScope() noexcept
+{
+  if (!enabled) {
+    return false;
+  }
+  if (auto tlc = Thread::getLocalContext()) {
+    return tlc->profiling.suspended == 0;
+  }
+  return true; // unknown thread
+}
+
+MemorySize Profiler::getNumberOfEvents() noexcept
+{
+  return numberOfEvents;
+}
+
+void Profiler::SuspendProfiling::suspendAndResume(bool resume) noexcept
+{
+  if (auto tlc = Thread::getLocalContext()) {
+    auto& profiling = tlc->profiling;
+    if (resume) {
+      ++profiling.suspended;
+    } else {
+      BASSERT(profiling.suspended > 0);
+      --profiling.suspended;
+    }
+  }
+}
+
 void Profiler::release()
 {
-  if (isEnabled()) {
+  if (enabled) {
     close();
   }
   SpinLock::Sync _sync(lock);
   releaseEvents();
+  swapper(stackFramesHash, Array<StackFrame>());
+  swapper(stackFramesUnhash, Array<StackFrame>());
+  swapper(stackFrames, Array<Frame>());
+  stackFramesLookup.removeAll();
 }
 
-uint64 Profiler::getTimestamp()
+uint64 Profiler::getTimestamp() noexcept
 {
   return Timer::getNow();
 }
@@ -99,27 +199,121 @@ void Profiler::start()
   pushThreadMeta(new ReferenceString("main")); // TAG: get thread name
 }
 
-void Profiler::stop()
+void Profiler::stop() noexcept
 {
   enabled = false;
 }
 
-void Profiler::initEvent(Event& e)
+StackFrame Profiler::getStackFrame(uint32 sf)
 {
-  e.pid = pid;
+  // we would need to copy to avoid race condition
+  SpinLock::Sync _sync(lock);
+  return getStackFrameImpl(sf);
+}
+
+uint32 Profiler::getStackFrame(StackFrame&& stackTrace)
+{
+  SpinLock::Sync _sync(lock);
+
+  constexpr unsigned int FRAMES = 65521; // 4723
+  if (stackFramesHash.getSize() != FRAMES) { // we can resize if too many conflicts
+    stackFramesHash.setSize(FRAMES);
+  }
+
+  static MemorySize capacity = 1024;
+  stackFramesUnhash.ensureCapacity(capacity);
+
+  const uint32 hash = stackTrace.getHash() % FRAMES;
+
+  static unsigned int frames = 0;
+  static unsigned int hits = 0;
+  static unsigned int conflicts = 0;
+  if (stackFramesHash[hash].isEmpty()) { // unused slot
+    ++frames;
+    stackFramesHash[hash] = std::move(stackTrace);
+    return hash;
+  } else {
+    if (stackTrace == stackFramesHash[hash]) { // hit
+      ++hits;
+      return hash;
+    } else {
+      ++conflicts;
+      auto size = stackFramesUnhash.getSize();
+      if (size >= capacity) { // TAG: need getCapacity()
+        capacity = stackFramesUnhash.getSize() * 2;
+        stackFramesUnhash.ensureCapacity(capacity);
+      }
+      stackFramesUnhash.append(std::move(stackTrace));
+      return size | 0x80000000U; // differentiate from hash id
+    }
+  }
+}
+
+void Profiler::initEvent(Event& e) noexcept
+{
+  // e.pid = pid; // written on export
   if (auto tlc = Thread::getLocalContext()) {
     e.tid = tlc->simpleId;
   } else { // TAG: fix missing id
     e.tid = 0;
     // e.tid = reinterpret_cast<MemorySize>(Thread::getIdentifier());
   }
-  e.ts = Timer::getNow();
+  e.ts = Timer::toXTimeUS(Timer::getNow());
+
+  if (useStackFrames) {
+    // TAG: skip extra frame when ready
+    e.sf = getStackFrame(StackFrame::getStack()); // we cannot recover from memory exception
+  }
 }
 
-namespace {
+unsigned int Profiler::Task::getTask(const char* name, const char* cat) noexcept
+{
+  if (auto tlc = Thread::getLocalContext()) {
+    auto& profiling = tlc->profiling;
+    if (profiling.events.getSize() < tlc->PROFILER_TASKS) {
+      profiling.events.setSize(tlc->PROFILER_TASKS);
+    }
+    const unsigned int id = profiling.tasks++; // push
+    auto& e = profiling.events.getElements()[id];
+    initEvent(e);
+    e.name = name;
+    e.cat = cat;
+    return id;
+  }
+  return static_cast<unsigned int>(0) - 1; // bad id
+}
 
-  Array<StackFrame> stackFrames;
-  const bool initialize = (stackFrames.setSize(65521+0*4723), true);
+/*
+Timer::XTime operator-(Timer::XTime left, Timer::XTime right) noexcept
+{
+  return Timer::toXTimeUS(Timer::toTimeUS(left) - Timer::toTimeUS(right));
+}
+*/
+
+Profiler::Task::~Task() noexcept
+{
+  if (taskId == (static_cast<unsigned int>(0) - 1)) { // bad id
+    return;
+  }
+  if (!enabled) {
+    return;
+  }
+  auto tlc = Thread::getLocalContext();
+  if (tlc) {
+    BASSERT(taskId < tlc->profiling.tasks);
+    --(tlc->profiling.tasks); // pop stack
+    if (tlc->profiling.suspended != 0) {
+      return;
+    }
+  }
+
+  // use EVENT_COMPLETE to combine BEGIN and END events
+  const auto ts = Timer::getNow();
+  Event& e = tlc->profiling.events.getElements()[taskId];
+  e.ts = Timer::toXTimeUS(ts);
+  e.ph = EVENT_COMPLETE;
+  e.dur = Timer::toXTimeUS(ts - Timer::toTimeUS(e.ts));
+  pushEvent(e);
 }
 
 void Profiler::pushEvent(const Event& e)
@@ -127,29 +321,183 @@ void Profiler::pushEvent(const Event& e)
   if (!INLINE_ASSERT(enabled)) {
     return;
   }
-
-  // TAG: make unique id for stack trace
-  StackFrame stackTrace = StackFrame::getStack();
-  // stackTrace.dump();
-  uint32 hash = stackTrace.getHash();
-  // fout << hash << ENDL;
-  hash %= 65521; // 4723;
-  fout << hash << ENDL;
-  
-  static unsigned int frames = 0;
-  static unsigned int conflicts = 0;
-  if (stackFrames[hash].isEmpty()) {
-    ++frames;
-    stackFrames[hash] = stackTrace;
-  } else {
-    if (stackTrace != stackFrames[hash]) {
-      ++conflicts;
-    }
-  }
-  fout << "STACK: " << frames << " / " << conflicts << ENDL;
-
+  // TAG: FIXME - check scope?
   ++numberOfEvents;
   addEvent(e);
+}
+
+void Profiler::pushObjectCreateImpl(MemorySize size)
+{
+  const bool isID = size & (static_cast<MemorySize>(1) << (sizeof(MemorySize) * 8 - 1));
+  if (!isID) {
+    if (size < minimumHeapSize) {
+      return;
+    }
+  }
+  if (!isEnabledScope()) {
+    return;
+  }
+  Event e;
+  initEvent(e);
+  e.ph = EVENT_OBJECT_CREATE;
+  e.cat = CAT_MEMORY;
+  if (isID) {
+    // remember id
+  }
+  pushEvent(e);
+}
+
+void Profiler::pushObjectDestroyImpl(MemorySize size)
+{
+  if (size < minimumHeapSize) {
+    return;
+  }
+  if (!isEnabledScope()) {
+    return;
+  }
+  Event e;
+  initEvent(e);
+  e.ph = EVENT_OBJECT_DESTROY;
+  e.cat = CAT_MEMORY;
+  pushEvent(e);
+}
+
+void Profiler::pushExceptionImpl(const char* type)
+{
+  if (!isEnabledScope()) {
+    return;
+  }
+  Event e;
+  initEvent(e);
+  e.ph = EVENT_INSTANT;
+  if (type) {
+    e.data = new ReferenceString(TypeInfo::demangleName(type));
+  }
+  e.cat = CAT_EXCEPTION;
+  pushEvent(e);
+}
+
+void Profiler::pushSignalImpl(const char* name)
+{
+  if (!isEnabledScope()) {
+    return;
+  }
+  Event e;
+  initEvent(e);
+  e.ph = EVENT_INSTANT;
+  e.name = name;
+  e.cat = CAT_SIGNAL;
+  pushEvent(e);
+}
+
+void Profiler::pushThreadStartImpl(const char* name, unsigned int parentId)
+{
+  if (!isEnabledScope()) {
+    return;
+  }
+  Event e;
+  initEvent(e);
+  e.ph = EVENT_INSTANT;
+  e.name = name;
+  e.cat = "THREAD";
+  pushEvent(e);
+}
+
+void Profiler::pushProcessMetaImpl(ReferenceCountedObject* name)
+{
+  if (!isEnabledScope()) {
+    return;
+  }
+  Event e;
+  initEvent(e);
+  e.ph = EVENT_META;
+  e.name = "process_name";
+  e.cat = "PROCESS";
+  e.data = name;
+  pushEvent(e);
+}
+
+void Profiler::pushThreadMetaImpl(ReferenceCountedObject* name/*, unsigned int parentId*/)
+{
+  if (!isEnabledScope()) {
+    return;
+  }
+  Event e;
+  initEvent(e);
+  e.ph = EVENT_META;
+  e.name = "thread_name";
+  e.cat = "THREAD";
+  e.data = name;
+  pushEvent(e);
+}
+
+namespace {
+
+  unsigned int buildStackFrame(const uint32 sf)
+  {
+    if (auto value = stackFramesLookup.find(sf)) { // found stack
+      return *value;
+    }
+
+    const StackFrame& frame = getStackFrameImpl(sf);
+    auto size = frame.getSize();
+    if (!INLINE_ASSERT(size > 0)) {
+      return 0; // bad
+    }
+
+    if (sf & 0x80000000U) { // look through unhashed frames
+      const uint32 index = sf & ~0x80000000U;
+      for (MemorySize i = 0; i < index; ++i) {
+        if (stackFramesUnhash[i] == frame) {
+          // found
+          const uint32 _sf = i | 0x80000000U;
+          if (auto value = stackFramesLookup.find(_sf)) { // found stack
+            return *value;
+          }
+          BASSERT(!"Unexpected flow.");
+          break;
+        }
+      }
+    }
+
+    MemorySize parent = 0;
+    auto trace = frame.getTrace();
+    for (MemoryDiff i = size - 1; i >= 0; --i) { // reverse trace!
+      if (auto ip = trace[i]) {
+        const void* symbol = DynamicLinker::getSymbolAddress(ip);
+        if (!symbol) {
+          continue;
+        }
+        const String name = DynamicLinker::getSymbolName(ip);
+        const String demangled = TypeInfo::demangleName(name.native());
+        if (!demangled) {
+          continue;
+        }
+
+        String path = DynamicLinker::getImagePath(ip);
+        path = FileSystem::getComponent(path, FileSystem::FILENAME);
+
+        // look for the same frame O(n^2) complexity though // TAG: optimize?
+        const Frame frame(demangled, path, parent);
+        auto it = std::find(stackFrames.begin(), stackFrames.end(), frame);
+        if (it != stackFrames.end()) {
+          parent = static_cast<unsigned int>(it - stackFrames.begin());
+        } else {
+          if (stackFrames.getSize() == stackFrames.getCapacity()) {
+            stackFrames.ensureCapacity(stackFrames.getSize() * 2);
+          }
+          parent = stackFrames.getSize();
+          stackFrames.append(frame);
+        }
+      }
+    }
+
+    if (parent) {
+      stackFramesLookup.add(sf, parent);
+    }
+
+    return parent;
+  }
 }
 
 void Profiler::close()
@@ -165,38 +513,30 @@ void Profiler::close()
       current = current->next;
     }
   }
-  
+
   ObjectModel o;
-  auto item = o.createObject();
   
   if (useJSON) {
-    // "traceEvents": [
-    String text("[");
+    String text("{\n\"traceEvents\": [\n");
     fos.write(reinterpret_cast<const uint8*>(text.native()), text.getLength(), false);
   }
-  bool first = true;
+
   while (current) {
     for (MemorySize i = 0; i < current->size; ++i) {
       const Event& e = current->events[i];
       if (useJSON) {
         
-        // put network/IO in separate track - requires unique ids?
-
-        // TAG: if meta then store thread/process info
+        auto item = o.createObject();
+        item->setValue(o.createString("pid"), o.createInteger(pid));
         item->setValue(o.createString("tid"), o.createInteger(e.tid));
-        char temp[2];
-        temp[0] = e.ph;
-        temp[1] = '\0';
-        item->setValue(o.createString("ph"), o.createString(temp));
+        item->setValue(o.createString("ph"), o.createString(String(&e.ph, 1)));
         item->setValue(o.createString("name"), o.createString(e.name));
         item->setValue(o.createString("cat"), o.createString(e.cat));
+
         if (e.ph == EVENT_META) {
-          // continue;
-          
           if (auto r = e.data.cast<ReferenceString>()) {
             auto args = o.createObject();
             item->setValue(o.createString("args"), args);
-            // item->setValue(o.createString("name"), o.createString("process_name"));
             args->setValue(o.createString("name"), o.createString(r->string));
           }
         } else if (e.ph == EVENT_INSTANT) {
@@ -204,31 +544,25 @@ void Profiler::close()
             item->setValue(o.createString("name"), o.createString(r->string));
           }
         } else {
-          item->setValue(o.createString("ts"), o.createInteger(e.ts));
-          item->setValue(o.createString("dur"), o.createInteger(e.dur));
-          item->setValue(o.createString("tdur"), o.createInteger(e.tdur));
-          item->setValue(o.createString("tts"), o.createInteger(e.tts));
+          item->setValue(o.createString("ts"), o.createInteger(Timer::toTimeUS(e.ts)));
+          item->setValue(o.createString("dur"), o.createInteger(Timer::toTimeUS(e.dur)));
+          // item->setValue(o.createString("tdur"), o.createInteger(e.tdur));
+          // item->setValue(o.createString("tts"), o.createInteger(e.tts));
+        }
+
+        if (useStackFrames && e.sf) { // TAG: is 0 a valid sf id?
           // "sf" or "stack": ["0x1", "0x2"] // for stack frame
-          // get from stack frame lot
+          const unsigned int id = buildStackFrame(e.sf);
+          item->setValue(o.createString("sf"), o.createString(format() << id));
         }
-/*
-        {
-          'category': 'modulename',
-          'name': 'symbol',
-          'parent': 1 // if available
-        }
-*/
-        
+
         // "s" for instant event scope global, process, thread (default)
         
-        if (!first) {
+        const String text = JSON::getJSON(item); // single event
+        fos.write(reinterpret_cast<const uint8*>(text.native()), text.getLength(), false);
+        if (((i + 1) < current->size) || current->previous) { // not last - we could use counter also
           fos.write(reinterpret_cast<const uint8*>(","), 1, false);
         }
-        first = false;
-        const String text = JSON::getJSON(item);
-        item->removeKey(o.createString("args"));
-        // fout << text << ENDL;
-        fos.write(reinterpret_cast<const uint8*>(text.native()), text.getLength(), false);
         fos.write(reinterpret_cast<const uint8*>("\n"), 1, false);
       } else {
         fos.write(reinterpret_cast<const uint8*>(&e), sizeof(e), false);
@@ -236,9 +570,42 @@ void Profiler::close()
     }
     current = current->previous;
   }
+
   if (useJSON) {
     String text("]\n");
     fos.write(reinterpret_cast<const uint8*>(text.native()), text.getLength(), false);
+
+    if (useStackFrames) {
+      String text1(",\n\"stackFrames\": {\n");
+      fos.write(reinterpret_cast<const uint8*>(text1.native()), text1.getLength(), false);
+
+      auto frames = o.createObject();
+      for (MemorySize id = 0; id < stackFrames.getSize(); ++id) {
+        const auto& f = stackFrames[id];
+        auto frame = o.createObject();
+        if (f.parent) {
+          frame->setValue(o.createString("parent"), o.createString(format() << f.parent));
+        }
+        if (f.name) {
+          frame->setValue(o.createString("name"), o.createString(f.name));
+        }
+        if (f.category) {
+          frame->setValue(o.createString("category"), o.createString(f.category));
+        }
+fout << "!!! " << f.parent << " " << f.name << " " << f.category << ENDL;
+        frames->setValue(o.createString(format() << id), frame);
+      }
+
+      const String text = JSON::getJSON(frames); // TAG: write single frame at a time instead
+      fos.write(reinterpret_cast<const uint8*>(text.native()), text.getLength(), false);
+
+      String text2("}\n}\n"); // terminate frames and root object
+      fos.write(reinterpret_cast<const uint8*>(text2.native()), text2.getLength(), false);
+    }
+
+    String text3("}\n"); // terminate root object
+    fos.write(reinterpret_cast<const uint8*>(text3.native()), text3.getLength(), false);
+
 /*
     "displayTimeUnit": "ns", // "ms" or "ns"
     "systemTraceEvents": "SystemTraceData", // Linux ftrace data or Windows ETW trace data. This data must start with # tracer: and adhere to the Linux ftrace format or adhere to Windows ETW format

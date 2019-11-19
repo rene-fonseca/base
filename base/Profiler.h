@@ -18,6 +18,7 @@
 #include <base/concurrency/Process.h>
 #include <base/io/FileOutputStream.h>
 #include <base/TypeInfo.h>
+#include <base/Timer.h>
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
@@ -32,25 +33,61 @@ _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 */
 
 class _COM_AZURE_DEV__BASE__API Profiler {
+public:
+
+  /** Event information. See https://docs.google.com/document/d/1CvAClvFfyA5R-PhYUmn5OOQtYMH4h6I0nSsKchNAySU/preview. Volatile class subject to change. */
+  class _COM_AZURE_DEV__BASE__API Event {
+  public:
+
+    Reference<ReferenceCountedObject> data; // meta info
+    const char* cat = nullptr;
+    const char* name = nullptr;
+    // uint32 pid = 0; // process id // we output on export
+    uint32 tid = 0; // thread id
+    Timer::XTime ts; // timestamp
+    // const char* args = nullptr; // src_file, src_func - used for counter event - use data for meta info
+    Timer::XTime dur; // duration
+    // Timer::XTime tdur = 0; // optional - duration
+    // uint64 tts = 0; // optional
+    // const char* cname = nullptr; // color green, red // use flags member required
+    uint32 sf = 0; // stack frame
+    char ph = 0; // event type
+    uint8 flags = 0; // flags
+  };
 private:
 
   static bool enabled;
   static PreferredAtomicCounter numberOfEvents;
   static bool useJSON;
   static FileOutputStream fos;
+  static bool useStackFrames; // include stack frames for events
+  static unsigned int minimumWaitTime; // minimum time to wait to record event
+  static unsigned int minimumHeapSize; // minimum heap size to record event
+
+  /** Submit event. */
+  static void pushEvent(const Event& e);
+  static void pushObjectCreateImpl(MemorySize size);
+  static void pushObjectDestroyImpl(MemorySize size);
+  static void pushExceptionImpl(const char* type);
+  static void pushSignalImpl(const char* name);
+  static void pushThreadStartImpl(const char* name, unsigned int parentId);
+  static void pushProcessMetaImpl(ReferenceCountedObject* name);
+  static void pushThreadMetaImpl(ReferenceCountedObject* name/*, unsigned int parentId*/);
 public:
-  
-  // TAG: make option
-  static constexpr bool RECORD_STACK_FRAMES = false;
-  static constexpr unsigned int MINIMUM_WAIT_TIME = 1;
-  static constexpr unsigned int MINIMUM_HEAP_SIZE = 4096 * 2;
+
+  /** Enables stack frames. */
+  static void setUseStackFrames(bool useStackFrames) noexcept;
+  /** Set the minimum time to wait to record event. */
+  static void setMinimumWaitTime(unsigned int minimumWaitTime) noexcept;
+  /** Sets the minimum heap size to record event. */
+  static void setMinimumHeapSize(unsigned int minimumHeapSize) noexcept;
 
   static constexpr const char* CAT_MEMORY = "MEMORY";
   static constexpr const char* CAT_OBJECT = "OBJECT";
   static constexpr const char* CAT_IO = "IO";
   static constexpr const char* CAT_NETWORK = "NET";
   static constexpr const char* CAT_WAIT = "WAIT";
-  static constexpr const char* CAT_EXCEPTION = "EXCEPTION"; // TAG: use as error - need to filter ok exceptions
+  static constexpr const char* CAT_EXCEPTION = "EXCEPTION";
   static constexpr const char* CAT_SIGNAL = "SIGNAL";
   static constexpr const char* CAT_RENDERER = "RENDERER";
   
@@ -69,79 +106,73 @@ public:
     EVENT_INSTANT = 'i'
   };
 
-  /** Suspends profiling for the current thread. */
-  class SuspendProfiling {
+  /** Suspends profiling for the current scope. */
+  class _COM_AZURE_DEV__BASE__API SuspendProfiling {
+  private:
+  
+    static void suspendAndResume(bool resume) noexcept;
   public:
     
-    SuspendProfiling()
+    inline SuspendProfiling() noexcept
     {
+      suspendAndResume(false);
     }
 
-    ~SuspendProfiling()
+    inline ~SuspendProfiling() noexcept
     {
+      suspendAndResume(true);
     }
   };
 
-  class ProfileObject {
+  /** Use this to profile a specific class. */
+  class _COM_AZURE_DEV__BASE__API ProfileObject {
   private:
     
-    const char* cat = nullptr;
-    // TAG: generate id
+    const MemorySize id = Debug::allocateUniqueId();
   public:
     
     ProfileObject() noexcept
     {
-      pushObjectCreate(0);
+      pushObjectCreate(id | (static_cast<MemorySize>(1) << (sizeof(MemorySize) * 8 - 1)));
     }
 
+#if 0
+    // cat not used for now
     ProfileObject(const char* _cat) noexcept : cat(_cat)
     {
+      pushObjectCreate(id | (static_cast<MemorySize>(1) << (sizeof(MemorySize) * 8 - 1)));
     }
+#endif
 
     ~ProfileObject() noexcept
     {
-      pushObjectDestroy(0);
+      pushObjectDestroy(id | (static_cast<MemorySize>(1) << (sizeof(MemorySize) * 8 - 1)));
     }
   };
 
-  class ReferenceString : public ReferenceCountedObject {
+  /** A reference counted string. */
+  class _COM_AZURE_DEV__BASE__API ReferenceString : public ReferenceCountedObject {
   public:
     
     String string;
     
-    ReferenceString() {
+    inline ReferenceString() noexcept
+    {
     }
 
-    ReferenceString(const String& _string) : string(_string)
+    inline ReferenceString(const String& _string) noexcept : string(_string)
     {
     }
   };
   
-  // see https://docs.google.com/document/d/1CvAClvFfyA5R-PhYUmn5OOQtYMH4h6I0nSsKchNAySU/preview
-  class Event {
-  public:
-    
-    uint32 pid = 0; // process id
-    uint32 tid = 0; // thread id
-    uint64 ts = 0; // microsecond timestamp
-    char ph = 0; // event type
-    const char* cat = nullptr;
-    const char* name = nullptr;
-    const char* args = nullptr; // src_file, src_func - used for counter event
-    uint64 dur = 0; // duration in microseconds
-    uint64 tdur = 0; // optional - duration in microseconds
-    uint64 tts = 0; // optional
-    // const char* cname = nullptr; // color green, red
-    // uint32 sf = 0; // stack frame
-    Reference<ReferenceCountedObject> data;
-  };
-  
-  // static (HashTable map hash to StackFrame) stackFrames;
+  /** Returns the stack frame for the given id. */
+  static StackFrame getStackFrame(uint32 sf);
 
-  static uint64 getTimestamp();
-  
-  /** Submit event. */
-  static void pushEvent(const Event& e);
+  /** Returns unique ID for stack frame. */
+  static uint32 getStackFrame(StackFrame&& stackTrace);
+
+  /** Returns timestamp. */
+  static uint64 getTimestamp() noexcept;
 
   /** Opens profiler. */
   static bool open(const String& path, bool useJSON);
@@ -153,56 +184,50 @@ public:
   static void start();
 
   /** Disables profiler. */
-  static void stop();
-  
-  /** Returns true if profiler is enabled. */
-  static inline bool isEnabled()
-  {
-    return enabled;
-  }
-  
+  static void stop() noexcept;
+
+  /** Returns true if profiler is enabled globally. */
+  static bool isEnabled() noexcept;
+
+  /** Returns true if profiler is enabled for scope. */
+  static bool isEnabledScope() noexcept;
+
   /** Returns the number of events. */
-  static MemorySize getNumberOfEvents()
-  {
-    return numberOfEvents;
-  }
+  static MemorySize getNumberOfEvents() noexcept;
   
-  /** Initializes event. */
-  static void initEvent(Event& e);
+  /** Initializes event with pid/tid/ts. */
+  static void initEvent(Event& e) noexcept;
 
   /** Task. */
-  class Task {
+  class _COM_AZURE_DEV__BASE__API Task {
   private:
-    
-    Event e;
+
+    static unsigned int getTask(const char* name, const char* cat) noexcept;
+
+    unsigned int taskId = 0;
   public:
     
-    inline Task(const char* name, const char* cat = nullptr) noexcept
+    inline Task(const char* _name, const char* _cat = nullptr) noexcept
     {
-      initEvent(e);
-      if (enabled) {
-        e.ph = EVENT_BEGIN;
-        e.name = name;
-        e.cat = cat;
-        e.dur = 0;
-        pushEvent(e);
+      if (enabled) { // doesnt matter if we do this for scope disabled case - we check this in destructor
+        taskId = getTask(_name, _cat);
       }
     }
 
-    inline ~Task() noexcept
+    ~Task() noexcept;
+  };
+
+  /** Wait task. */
+  class _COM_AZURE_DEV__BASE__API WaitTask : public Task {
+  public:
+
+    inline WaitTask(const char* name) : Task(name, CAT_WAIT)
     {
-      // use EVENT_COMPLETE to combine BEGIN and END events
-      if (enabled) {
-        auto ts = getTimestamp();
-        e.dur = ts - e.ts;
-        e.ts = ts;
-        e.ph = EVENT_END;
-        pushEvent(e);
-      }
     }
   };
 
-  class IOTask : public Task {
+  /** IO task. */
+  class _COM_AZURE_DEV__BASE__API IOTask : public Task {
   public:
     
     inline IOTask(const char* name) : Task(name, CAT_IO)
@@ -210,24 +235,11 @@ public:
     }
   };
 
-  class WaitTask : public Task {
+  /** HTTPS/Websocket task. */
+  class _COM_AZURE_DEV__BASE__API HTTPSTask : public IOTask {
   public:
     
-    inline WaitTask(const char* name) : Task(name, CAT_WAIT)
-    {
-      // delay output until end
-    }
-    
-    inline ~WaitTask()
-    {
-      // TAG: check duration
-    }
-  };
-
-  class HTTPSTask : public Task {
-  public:
-    
-    inline HTTPSTask(const char* name) : Task(name, CAT_IO)
+    inline HTTPSTask(const char* name) : IOTask(name)
     {
     }
   };
@@ -237,29 +249,15 @@ public:
     if (!enabled) {
       return;
     }
-    if (size < MINIMUM_HEAP_SIZE) {
-      return;
-    }
-    Event e;
-    initEvent(e);
-    e.ph = EVENT_OBJECT_CREATE;
-    e.cat = CAT_MEMORY;
-    pushEvent(e);
+    pushObjectCreateImpl(size);
   }
-  
+
   static inline void pushObjectDestroy(MemorySize size)
   {
     if (!enabled) {
       return;
     }
-    if (size < MINIMUM_HEAP_SIZE) {
-      return;
-    }
-    Event e;
-    initEvent(e);
-    e.ph = EVENT_OBJECT_DESTROY;
-    e.cat = CAT_MEMORY;
-    pushEvent(e);
+    pushObjectDestroyImpl(size);
   }
 
   static inline void pushException(const char* type)
@@ -267,14 +265,7 @@ public:
     if (!enabled) {
       return;
     }
-    Event e;
-    initEvent(e);
-    e.ph = EVENT_INSTANT;
-    if (type) {
-      e.data = new ReferenceString(TypeInfo::demangleName(type));
-    }
-    e.cat = CAT_EXCEPTION;
-    pushEvent(e);
+    pushExceptionImpl(type);
   }
 
   static inline void pushSignal(const char* name)
@@ -282,12 +273,7 @@ public:
     if (!enabled) {
       return;
     }
-    Event e;
-    initEvent(e);
-    e.ph = EVENT_INSTANT;
-    e.name = name;
-    e.cat = CAT_SIGNAL;
-    pushEvent(e);
+    pushSignalImpl(name);
   }
 
   static inline void pushThreadStart(const char* name, unsigned int parentId)
@@ -295,12 +281,7 @@ public:
     if (!enabled) {
       return;
     }
-    Event e;
-    initEvent(e);
-    e.ph = EVENT_INSTANT;
-    e.name = name;
-    e.cat = "THREAD";
-    pushEvent(e);
+    pushThreadStartImpl(name, parentId);
   }
 
   static inline void pushProcessMeta(ReferenceCountedObject* name)
@@ -308,13 +289,7 @@ public:
     if (!enabled) {
       return;
     }
-    Event e;
-    initEvent(e);
-    e.ph = EVENT_META;
-    e.name = "process_name";
-    e.cat = "PROCESS";
-    e.data = name;
-    pushEvent(e);
+    pushProcessMetaImpl(name);
   }
 
   static inline void pushThreadMeta(ReferenceCountedObject* name/*, unsigned int parentId*/)
@@ -322,33 +297,14 @@ public:
     if (!enabled) {
       return;
     }
-    Event e;
-    initEvent(e);
-    e.ph = EVENT_META;
-    e.name = "thread_name";
-    e.cat = "THREAD";
-    e.data = name;
-    pushEvent(e);
+    pushThreadMetaImpl(name);
   }
 
-  static inline void pushFrame(const char* name)
-  {
-    if (!enabled) {
-      return;
-    }
-    Event e;
-    initEvent(e);
-    e.ph = EVENT_INSTANT; // TAG: fixme
-    e.name = name;
-    e.cat = CAT_RENDERER;
-    pushEvent(e);
-  }
-  
   /** Release profiler resources. */
   static void release();
   
   // TAG: process and thread stats - no sync for process
-  class Stats {
+  class _COM_AZURE_DEV__BASE__API Stats {
   public:
     
     uint64 readOperations = 0;

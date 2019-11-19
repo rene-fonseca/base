@@ -239,6 +239,17 @@ public:
   }
 
   /**
+    Returns the capacity.
+  */
+  MemorySize getCapacity() const noexcept
+  {
+    if (elements) {
+      return elements->getCapacity();
+    }
+    return 0;
+  }
+
+  /**
     Returns the elements of the array for modifying access.
   */
   inline Value* getElements()

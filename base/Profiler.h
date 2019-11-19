@@ -17,6 +17,7 @@
 #include <base/concurrency/Thread.h>
 #include <base/concurrency/Process.h>
 #include <base/io/FileOutputStream.h>
+#include <base/TypeInfo.h>
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
@@ -39,37 +40,104 @@ private:
   static FileOutputStream fos;
 public:
   
+  // TAG: make option
+  static constexpr bool RECORD_STACK_FRAMES = false;
+  static constexpr unsigned int MINIMUM_WAIT_TIME = 1;
+  static constexpr unsigned int MINIMUM_HEAP_SIZE = 4096 * 2;
+
   static constexpr const char* CAT_MEMORY = "MEMORY";
   static constexpr const char* CAT_OBJECT = "OBJECT";
   static constexpr const char* CAT_IO = "IO";
   static constexpr const char* CAT_NETWORK = "NET";
   static constexpr const char* CAT_WAIT = "WAIT";
   static constexpr const char* CAT_EXCEPTION = "EXCEPTION"; // TAG: use as error - need to filter ok exceptions
+  static constexpr const char* CAT_SIGNAL = "SIGNAL";
   static constexpr const char* CAT_RENDERER = "RENDERER";
   
   enum {
     EVENT_BEGIN = 'B',
     EVENT_END = 'E',
+    EVENT_ASYNC_BEGIN = 'b',
+    EVENT_ASYNC_END = 'e',
     EVENT_COMPLETE = 'X',
     EVENT_COUNTER = 'C',
-    EVENT_OBJECT_CREATE = 'N',
-    EVENT_OBJECT_DESTROY = 'D',
-    EVENT_SAMPLE = 'P'
+    EVENT_OBJECT_CREATE = 'N', // set "id"
+    EVENT_OBJECT_DESTROY = 'D', // set "id"
+    EVENT_SAMPLE = 'P',
+    EVENT_MEMORY = 'v',
+    EVENT_META = 'M',
+    EVENT_INSTANT = 'i'
+  };
+
+  /** Suspends profiling for the current thread. */
+  class SuspendProfiling {
+  public:
+    
+    SuspendProfiling()
+    {
+    }
+
+    ~SuspendProfiling()
+    {
+    }
+  };
+
+  class ProfileObject {
+  private:
+    
+    const char* cat = nullptr;
+    // TAG: generate id
+  public:
+    
+    ProfileObject() noexcept
+    {
+      pushObjectCreate(0);
+    }
+
+    ProfileObject(const char* _cat) noexcept : cat(_cat)
+    {
+    }
+
+    ~ProfileObject() noexcept
+    {
+      pushObjectDestroy(0);
+    }
+  };
+
+  class ReferenceString : public ReferenceCountedObject {
+  public:
+    
+    String string;
+    
+    ReferenceString() {
+    }
+
+    ReferenceString(const String& _string) : string(_string)
+    {
+    }
   };
   
-  struct Event {
-    uint32 pid; // process id
-    uint32 tid; // thread id
-    uint64 ts; // microsecond timestamp
-    char ph; // event type
-    const char* cat;
-    const char* name;
-    const char* args; // src_file, src_func
-    uint64 dur; // duration in microseconds
-    uint64 tdur; // optional - duration in microseconds
-    uint64 tts; // optional
+  // see https://docs.google.com/document/d/1CvAClvFfyA5R-PhYUmn5OOQtYMH4h6I0nSsKchNAySU/preview
+  class Event {
+  public:
+    
+    uint32 pid = 0; // process id
+    uint32 tid = 0; // thread id
+    uint64 ts = 0; // microsecond timestamp
+    char ph = 0; // event type
+    const char* cat = nullptr;
+    const char* name = nullptr;
+    const char* args = nullptr; // src_file, src_func - used for counter event
+    uint64 dur = 0; // duration in microseconds
+    uint64 tdur = 0; // optional - duration in microseconds
+    uint64 tts = 0; // optional
+    // const char* cname = nullptr; // color green, red
+    // uint32 sf = 0; // stack frame
+    Reference<ReferenceCountedObject> data;
   };
   
+  // static (HashTable map hash to StackFrame) stackFrames;
+
   static uint64 getTimestamp();
   
   /** Submit event. */
@@ -123,6 +191,7 @@ public:
 
     inline ~Task() noexcept
     {
+      // use EVENT_COMPLETE to combine BEGIN and END events
       if (enabled) {
         auto ts = getTimestamp();
         e.dur = ts - e.ts;
@@ -146,11 +215,15 @@ public:
     
     inline WaitTask(const char* name) : Task(name, CAT_WAIT)
     {
+      // delay output until end
+    }
+    
+    inline ~WaitTask()
+    {
+      // TAG: check duration
     }
   };
-  
-  // TAG: network task?
-  
+
   class HTTPSTask : public Task {
   public:
     
@@ -164,6 +237,9 @@ public:
     if (!enabled) {
       return;
     }
+    if (size < MINIMUM_HEAP_SIZE) {
+      return;
+    }
     Event e;
     initEvent(e);
     e.ph = EVENT_OBJECT_CREATE;
@@ -174,6 +250,9 @@ public:
   static inline void pushObjectDestroy(MemorySize size)
   {
     if (!enabled) {
+      return;
+    }
+    if (size < MINIMUM_HEAP_SIZE) {
       return;
     }
     Event e;
@@ -190,8 +269,10 @@ public:
     }
     Event e;
     initEvent(e);
-    e.ph = EVENT_OBJECT_DESTROY; // TAG: fixme
-    e.name = type;
+    e.ph = EVENT_INSTANT;
+    if (type) {
+      e.data = new ReferenceString(TypeInfo::demangleName(type));
+    }
     e.cat = CAT_EXCEPTION;
     pushEvent(e);
   }
@@ -203,9 +284,50 @@ public:
     }
     Event e;
     initEvent(e);
-    e.ph = EVENT_OBJECT_DESTROY; // TAG: fixme
+    e.ph = EVENT_INSTANT;
     e.name = name;
-    e.cat = CAT_WAIT;
+    e.cat = CAT_SIGNAL;
+    pushEvent(e);
+  }
+
+  static inline void pushThreadStart(const char* name, unsigned int parentId)
+  {
+    if (!enabled) {
+      return;
+    }
+    Event e;
+    initEvent(e);
+    e.ph = EVENT_INSTANT;
+    e.name = name;
+    e.cat = "THREAD";
+    pushEvent(e);
+  }
+
+  static inline void pushProcessMeta(ReferenceCountedObject* name)
+  {
+    if (!enabled) {
+      return;
+    }
+    Event e;
+    initEvent(e);
+    e.ph = EVENT_META;
+    e.name = "process_name";
+    e.cat = "PROCESS";
+    e.data = name;
+    pushEvent(e);
+  }
+
+  static inline void pushThreadMeta(ReferenceCountedObject* name/*, unsigned int parentId*/)
+  {
+    if (!enabled) {
+      return;
+    }
+    Event e;
+    initEvent(e);
+    e.ph = EVENT_META;
+    e.name = "thread_name";
+    e.cat = "THREAD";
+    e.data = name;
     pushEvent(e);
   }
 
@@ -216,7 +338,7 @@ public:
     }
     Event e;
     initEvent(e);
-    e.ph = EVENT_OBJECT_DESTROY; // TAG: fixme
+    e.ph = EVENT_INSTANT; // TAG: fixme
     e.name = name;
     e.cat = CAT_RENDERER;
     pushEvent(e);

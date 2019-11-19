@@ -157,11 +157,12 @@ void* Thread::entry(Thread* thread) throw()
       Application::getApplication()->exceptionHandler();
       thread->state = EXCEPTION; // uncaugth exception
     }
+
+    // TAG: set kernel and user time
+    thread->terminationEvent.signal(); // do not access state here after
   } catch (...) {
     thread->state = INTERNAL; // hopefully we will never end up here
   }
-  // TAG: set kernel and user time
-  thread->terminationEvent.signal(); // do not access state here after
   return 0;
 }
 

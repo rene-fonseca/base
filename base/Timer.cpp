@@ -215,6 +215,75 @@ void TimeScope::dump() const
   fout << "Elapsed time (H:M:S.microseconds): " << timer << ENDL;
 }
 
+uint64 Timer::toTimeNS(XTime time) noexcept
+{
+  switch (time.exponent) {
+  case 0:
+    return static_cast<uint64>(time.mantissa); // ns
+  case 1:
+    return static_cast<uint64>(time.mantissa) * 1000; // us
+  case 2:
+    return static_cast<uint64>(time.mantissa) * 1000000; // ms
+  case 3:
+  default:
+    return static_cast<uint64>(time.mantissa) * 1000000000; // s
+  }
+}
+
+uint64 Timer::toTimeUS(XTime time) noexcept
+{
+  switch (time.exponent) {
+  case 0:
+    return (static_cast<uint64>(time.mantissa) + 500) / 1000; // ns
+  case 1:
+    return static_cast<uint64>(time.mantissa) * 1; // us
+  case 2:
+    return static_cast<uint64>(time.mantissa) * 1000; // ms
+  case 3:
+  default:
+    return static_cast<uint64>(time.mantissa) * 1000000; // s
+  }
+}
+
+Timer::XTime Timer::toXTimeNS(uint64 nanoseconds) noexcept
+{
+  constexpr uint32 MAXIMUM = (static_cast<uint32>(1) << 30) - 1;
+
+  XTime result; // round down
+  if (nanoseconds <= MAXIMUM) {
+    result.exponent = 0; // ns
+    result.mantissa = nanoseconds;
+  } else if (((nanoseconds + 0 * 500) / 1000) <= MAXIMUM) {
+    result.exponent = 1; // us
+    result.mantissa = (nanoseconds + 0 * 500) / 1000;
+  } else if (((nanoseconds + 0 * 500000) / 1000000) <= MAXIMUM) {
+    result.exponent = 2; // ms
+    result.mantissa = (nanoseconds + 0 * 500000) / 1000000;
+  } else {
+    result.exponent = 3; // s
+    result.mantissa = (nanoseconds + 0 * 500000000) / 1000000000;
+  }
+  return result;
+}
+
+Timer::XTime Timer::toXTimeUS(uint64 microseconds) noexcept
+{
+  constexpr uint32 MAXIMUM = (static_cast<uint32>(1) << 30) - 1;
+
+  XTime result; // round down
+  if (microseconds <= MAXIMUM) {
+    result.exponent = 1; // us
+    result.mantissa = microseconds;
+  } else if (((microseconds + 0 * 500) / 1000) <= MAXIMUM) {
+    result.exponent = 2; // ms
+    result.mantissa = (microseconds + 0 * 500) / 1000;
+  } else {
+    result.exponent = 3; // s
+    result.mantissa = (microseconds + 0 * 500000) / 1000000;
+  }
+  return result;
+}
+
 #if defined(_COM_AZURE_DEV__BASE__TESTS)
 
 class TEST_CLASS(Timer) : public UnitTest {

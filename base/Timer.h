@@ -35,6 +35,24 @@ private:
   uint64 stopTime = 0;
 public:
 
+  /** 32-bit duration/elapsed time. ns/us/ms/s. Used when memory footprint is important. */
+  struct XTime {
+    uint32 exponent : 2; // 0~ns, 1~us, 2~ms: 3~s
+    uint32 mantissa : 30;
+  };
+  
+  /** Converts XTime to normal 64-bit time (nanoseconds). */
+  static uint64 toTimeNS(XTime time) noexcept;
+
+  /** Converts XTime to normal 64-bit time (microseconds). */
+  static uint64 toTimeUS(XTime time) noexcept;
+
+  /** Returns XTime from nanoseconds. */
+  static XTime toXTimeNS(uint64 nanoseconds) noexcept;
+
+  /** Returns XTime from microseconds. */
+  static XTime toXTimeUS(uint64 microseconds) noexcept;
+
   struct Time {
     uint64 seconds;
     uint32 nanoseconds;

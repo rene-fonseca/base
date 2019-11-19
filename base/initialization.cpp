@@ -100,7 +100,9 @@ public:
   
   ThreadImpl() throw()
     : thread(static_cast<Thread*>(nullptr)),
-      threadLocal(&thread) { // no parent for main thread
+      threadLocal(&thread) // no parent for main thread
+  {
+    Thread::setThreadName("main");
   }
 };
 

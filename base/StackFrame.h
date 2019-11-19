@@ -30,6 +30,9 @@ public:
   
   StackFrame();
 
+  /** Returns hash for stack trace. */
+  uint32 getHash() const noexcept;
+  
   /** Returns the number of stack frames. */
   inline void* const * getTrace() const noexcept
   {
@@ -105,13 +108,31 @@ public:
   */
   static StackFrame getStack(unsigned int skip = 1, unsigned int levels = 32);
 
+  inline bool operator==(const StackFrame& compare) const noexcept
+  {
+    if (frames.getSize() != compare.getSize()) {
+      return false;
+    }
+    for (MemorySize i = 0; i < frames.getSize(); ++i) {
+      if (frames.getElements()[i] != compare.frames.getElements()[i]) {
+        return false;
+      }
+    }
+    return true;
+  }
+
+  inline bool operator!=(const StackFrame& compare) const noexcept
+  {
+    return !(operator==(compare));
+  }
+
   /**
    Dump stack.
    
     @param levels The maximum number of levels to dump.
   */
   static void dump(unsigned int skip = 1, unsigned int levels = 32);
-
+  
   enum {
     FLAG_SHOW_ADDRESS = 1 << 0,
     FLAG_SHOW_MODULE = 1 << 1,

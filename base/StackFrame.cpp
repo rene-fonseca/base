@@ -34,6 +34,22 @@ StackFrame::StackFrame()
 {
 }
 
+uint32 StackFrame::getHash() const noexcept
+{
+  if (frames.isEmpty()) {
+    return 0;
+  }
+  uint32 result = 0;
+  for (auto v : frames) {
+    auto value = reinterpret_cast<MemorySize>(v); // high are likely 0
+    result = (result >> (32 - 3)) | (result << 3);
+    result ^= value;
+  }
+  result = (result >> (32 - 3)) | (result << 3);
+  result ^= frames.getSize();
+  return result;
+}
+
 MemoryDiff StackFrame::find(void* address) const noexcept
 {
   const void* const* src = frames.getElements();

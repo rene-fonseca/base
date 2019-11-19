@@ -452,7 +452,10 @@ public:
     Returns the current processing times (both user and system times).
   */
   static Times getTimes() throw();
-  
+
+  /** Sets thread name. */
+  static void setThreadName(const char* name) noexcept;
+
   /**
     The calling thread waits for the thread complete. Several threads are
     allowed to be waiting for the same thread to complete. A thread will block
@@ -553,6 +556,8 @@ public:
   static constexpr unsigned int STORAGE_BUFFERS = 4; // allows limited recursion
   /** The thread object associated with context. */
   Thread* thread = nullptr;
+  /** Simple id. */
+  unsigned int simpleId = 0;
   /** Counter for storage usage. */
   FixedResourceManager<STORAGE_BUFFERS> storageManager;
   /** The thread local storage. */

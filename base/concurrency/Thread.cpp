@@ -50,6 +50,8 @@ Thread::ThreadLocal::ThreadLocal(Thread* _thread)
   }
   auto tlc = new ThreadLocalContext();
   tlc->thread = _thread;
+  static PreferredAtomicCounter id;
+  tlc->simpleId = ++id;
   threadLocalContext.setKey(tlc);
 }
 
@@ -85,7 +87,51 @@ void Thread::ThreadLocal::garbageCollect() throw()
 }
 #endif
 
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
+namespace {
 
+  const DWORD MS_VC_EXCEPTION = 0x406D1388;
+
+#pragma pack(push,8)
+  typedef struct tagTHREADNAME_INFO
+  {
+    DWORD dwType; // Must be 0x1000.
+    LPCSTR szName; // Pointer to name (in user addr space).
+    DWORD dwThreadID; // Thread ID (-1=caller thread).
+    DWORD dwFlags; // Reserved for future use, must be zero.
+  } THREADNAME_INFO;
+#pragma pack(pop)
+
+  void SetThreadName(DWORD dwThreadID, const char* threadName)
+  {
+    THREADNAME_INFO info;
+    info.dwType = 0x1000;
+    info.szName = threadName;
+    info.dwThreadID = dwThreadID;
+    info.dwFlags = 0;
+#pragma warning(push)
+#pragma warning(disable: 6320 6322)
+    __try{
+      RaiseException(MS_VC_EXCEPTION, 0, sizeof(info) / sizeof(ULONG_PTR), (ULONG_PTR*)&info);
+    } __except (EXCEPTION_EXECUTE_HANDLER){
+    }
+#pragma warning(pop)
+  }
+
+// TAG: SetThreadDescription();
+}
+#endif
+
+void Thread::setThreadName(const char* name) noexcept
+{
+  if (name) {
+    Profiler::pushThreadMeta(new Profiler::ReferenceString(name));
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
+#else
+    pthread_setname_np(name);
+#endif
+  }
+}
 
 void* Thread::entry(Thread* thread) throw()
 {
@@ -96,6 +142,7 @@ void* Thread::entry(Thread* thread) throw()
     thread->state = ALIVE;
     ThreadLocal threadLocal(thread);
     try {
+      // Thread::setThreadName("Unnamed");
       Profiler::WaitTask profile("Thread::entry()"); // TAG: include name of thread
       thread->getRunnable()->run();
       thread->state = TERMINATED;
@@ -754,10 +801,18 @@ bool Thread::join() const throw(ThreadException)
   return true;
 }
 
-void Thread::run() {
+void Thread::run()
+{
 }
 
-void Thread::start() throw(ThreadException) {
+void Thread::start() throw(ThreadException)
+{
+  unsigned int simpleId = 0;
+  if (auto tlc = threadLocalContext.getKey()) {
+    simpleId = tlc->simpleId;
+  }
+  Profiler::pushThreadStart("Thread::start()", simpleId);
+
   // TAG: don't forget the thread priority
   bassert(state == NOTSTARTED, ThreadException(this));
   state = STARTING;
@@ -771,7 +826,7 @@ void Thread::start() throw(ThreadException) {
     0,
     &id
   );
-  bassert(handle, ResourceException("Unable to create thread", this));
+  bassert(handle, ResourceException("Unable to create thread.", this));
   identifier = getAsPointer(id);
   ::CloseHandle(handle); // detach
   // TAG: does this always work or must this be postponed until entry function
@@ -783,7 +838,7 @@ void Thread::start() throw(ThreadException) {
   pthread_t id;
   if (pthread_create(&id, &attributes, (void*(*)(void*))&entry, (void*)this)) {
     pthread_attr_destroy(&attributes);
-    throw ResourceException("Unable to create thread", this);
+    throw ResourceException("Unable to create thread.", this);
   }
   identifier = getAsPointer(id);
   pthread_attr_destroy(&attributes);

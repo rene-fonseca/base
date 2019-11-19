@@ -178,9 +178,12 @@ void Profiler::release()
   }
   SpinLock::Sync _sync(lock);
   releaseEvents();
-  swapper(stackFramesHash, Array<StackFrame>());
-  swapper(stackFramesUnhash, Array<StackFrame>());
-  swapper(stackFrames, Array<Frame>());
+  stackFramesHash.ensureCapacity(0);
+  stackFramesHash.setSize(0);
+  stackFramesUnhash.ensureCapacity(0);
+  stackFramesUnhash.setSize(0);
+  stackFrames.ensureCapacity(0);
+  stackFrames.setSize(0);
   stackFramesLookup.removeAll();
 }
 

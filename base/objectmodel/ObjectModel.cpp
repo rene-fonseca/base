@@ -389,6 +389,21 @@ bool ObjectModel::Object::hasKey(const Reference<String>& key) const noexcept
   return false;
 }
 
+bool ObjectModel::Object::removeKey(const Reference<String>& key) noexcept
+{
+  if (!key) {
+    return false;
+  }
+  for (auto i = values.begin(); i != values.end(); ++i) {
+    auto j = *i;
+    if (j.first->value == key->value) {
+      values.remove(i);
+      return true;
+    }
+  }
+  return false;
+}
+
 Reference<ObjectModel::Value> ObjectModel::Object::getValue(const Reference<String>& key) const throw(ObjectModelException)
 {
   if (!key) {

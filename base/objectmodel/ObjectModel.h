@@ -461,6 +461,9 @@ public:
     /** Returns true if the key exists. */
     bool hasKey(const Reference<String>& key) const noexcept;
 
+    /** Removes key if it exists. */
+    bool removeKey(const Reference<String>& key) noexcept;
+
     /** Returns the value for the given key. */
     Reference<Value> getValue(const Reference<String>& key) const throw(ObjectModelException);
     

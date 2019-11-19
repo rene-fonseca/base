@@ -649,6 +649,8 @@ public:
   {
     auto& manager = UnitTestManager::getManager();
     try {
+      String name = "Test " + test->getId();
+      Thread::setThreadName(name.native());
       currentTest = test;
       success = manager.runTest(test);
     } catch (...) {

@@ -14,7 +14,7 @@
 #pragma once
 
 #include <base/mem/Allocator.h>
-#include <base/string/String.h>
+#include <base/string/FormatOutputStream.h>
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
@@ -33,7 +33,7 @@ public:
   /** Returns hash for stack trace. */
   uint32 getHash() const noexcept;
   
-  /** Returns the number of stack frames. */
+  /** Returns the stack frames. */
   inline void* const * getTrace() const noexcept
   {
     return frames.getElements();

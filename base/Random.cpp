@@ -12,7 +12,7 @@
  ***************************************************************************/
 
 #include <base/Random.h>
-#include <base/concurrency/Thread.h>
+#include <base/concurrency/ThreadLocalContext.h>
 #include <base/concurrency/ApplicationSynchronize.h>
 #include <base/UnitTest.h>
 

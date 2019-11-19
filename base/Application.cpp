@@ -15,7 +15,7 @@
 #include <base/Application.h>
 #include <base/TypeInfo.h>
 #include <base/SystemLogger.h>
-#include <base/concurrency/Thread.h>
+#include <base/concurrency/ThreadLocalContext.h>
 #include <base/string/StringOutputStream.h>
 #include <base/UnexpectedFailure.h>
 #include <base/string/WideString.h>

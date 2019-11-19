@@ -548,24 +548,5 @@ public:
   }
 };
 
-// TAG: we should hide this
-/** State for all threads. */
-class _COM_AZURE_DEV__BASE__API ThreadLocalContext : public DynamicObject {
-public:
-
-  static constexpr unsigned int STORAGE_BUFFERS = 4; // allows limited recursion
-  /** The thread object associated with context. */
-  Thread* thread = nullptr;
-  /** Simple id. */
-  unsigned int simpleId = 0;
-  /** Counter for storage usage. */
-  FixedResourceManager<STORAGE_BUFFERS> storageManager;
-  /** The thread local storage. */
-  Allocator<uint8> storage[STORAGE_BUFFERS];
-  /** Random generator. */
-  RandomInputStream randomInputStream;
-  /** Last known stack trace for exception. */
-  StackFrame stackTrace;
-};
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

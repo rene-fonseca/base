@@ -12,7 +12,7 @@
  ***************************************************************************/
 
 #include <base/platforms/features.h>
-#include <base/concurrency/Thread.h>
+#include <base/concurrency/ThreadLocalContext.h>
 #include <base/Exception.h>
 #include <base/UnitTest.h>
 #include <memory>

@@ -12,6 +12,7 @@
  ***************************************************************************/
 
 #include <base/concurrency/Thread.h>
+#include <base/concurrency/ThreadLocalContext.h>
 #include <base/concurrency/MutualExclusion.h>
 #include <base/string/String.h>
 #include <base/Application.h>
@@ -117,8 +118,6 @@ namespace {
     }
 #pragma warning(pop)
   }
-
-// TAG: SetThreadDescription();
 }
 #endif
 
@@ -127,8 +126,10 @@ void Thread::setThreadName(const char* name) noexcept
   if (name) {
     Profiler::pushThreadMeta(new Profiler::ReferenceString(name));
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
+    SetThreadName(GetCurrentThreadId(), name);
 #else
     pthread_setname_np(name);
+    // alternatively for MacOS / proc_setthreadname(void* buffer, int buffersize)
 #endif
   }
 }
@@ -173,6 +174,11 @@ void Thread::exit() throw()
 #else // pthread
   pthread_exit(0); // will properly create resource leaks
 #endif // flavor
+}
+
+ThreadLocalContext::ThreadLocalContext()
+{
+  // profiling.events.setSize(PROFILER_TASKS); // done on demand
 }
 
 ThreadLocalContext* Thread::getLocalContext() noexcept

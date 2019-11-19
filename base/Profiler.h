@@ -22,10 +22,6 @@
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
-/*
- Profiler::Task task("HTTPRequest");
-*/
-
 /**
   Profiler.
  
@@ -35,7 +31,7 @@ _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 class _COM_AZURE_DEV__BASE__API Profiler {
 public:
 
-  /** Event information. See https://docs.google.com/document/d/1CvAClvFfyA5R-PhYUmn5OOQtYMH4h6I0nSsKchNAySU/preview. Volatile class subject to change. */
+  /** Event information. Volatile class subject to change. */
   class _COM_AZURE_DEV__BASE__API Event {
   public:
 
@@ -50,7 +46,7 @@ public:
     // Timer::XTime tdur = 0; // optional - duration
     // uint64 tts = 0; // optional
     // const char* cname = nullptr; // color green, red // use flags member required
-    uint32 sf = 0; // stack frame
+    uint32 sf = 0; // stack frame // uint16 would be enough
     char ph = 0; // event type
     uint8 flags = 0; // flags
   };
@@ -202,9 +198,13 @@ public:
   class _COM_AZURE_DEV__BASE__API Task {
   private:
 
+    static constexpr unsigned int BAD = static_cast<unsigned int>(0) - 1;
+
+    unsigned int taskId = BAD;
+
     static unsigned int getTask(const char* name, const char* cat) noexcept;
 
-    unsigned int taskId = 0;
+    static void pushTask(unsigned int taskId) noexcept;
   public:
     
     inline Task(const char* _name, const char* _cat = nullptr) noexcept
@@ -214,7 +214,12 @@ public:
       }
     }
 
-    ~Task() noexcept;
+    inline ~Task() noexcept // we must not allow exception for profiling since it changes exception handling otherwise
+    {
+      if (taskId != BAD) {
+        pushTask(taskId);
+      }
+    }
   };
 
   /** Wait task. */

@@ -21,8 +21,8 @@
 #include <base/filesystem/FileSystem.h>
 #include <base/UnitTest.h>
 
-// TAG: we should be able to push multi process events to common dest - use merge tool?
-
+ // TAG: compact stack trace like utf8
+ 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 namespace {
@@ -74,9 +74,11 @@ namespace {
   class Block {
   public:
     
+    static constexpr unsigned int SIZE = 4096;
+
     Block* next = nullptr;
     Block* previous = nullptr;
-    Profiler::Event events[4096];
+    Profiler::Event events[SIZE];
     MemorySize size = 0;
   };
 
@@ -85,11 +87,15 @@ namespace {
   void addEvent(const Profiler::Event& e)
   {
     SpinLock::Sync _sync(lock);
-    if (!blocks || (blocks->size >= 4096)) {
-      Block* b = reinterpret_cast<Block*>(malloc(sizeof(Block))); // do NOT record memory alloc as event
+    if (!blocks || (blocks->size >= Block::SIZE)) {
+      constexpr MemorySize SIZE = sizeof(Block);
+      void* heap = malloc(SIZE);
+      if (!heap) {
+        return;
+      }
+      new(heap) Block(); // do NOT record memory alloc as event
+      Block* b = reinterpret_cast<Block*>(heap);
       b->next = blocks;
-      b->previous = nullptr;
-      b->size = 0;
       if (blocks) {
         blocks->previous = b;
       }
@@ -103,6 +109,7 @@ namespace {
     while (blocks) {
       auto b = blocks;
       blocks = blocks->next;
+      b->~Block();
       free(b);
     }
   }
@@ -140,7 +147,7 @@ bool Profiler::isEnabledScope() noexcept
   if (auto tlc = Thread::getLocalContext()) {
     return tlc->profiling.suspended == 0;
   }
-  return true; // unknown thread
+  return false; // unknown thread and also happens before TLC has been constructed
 }
 
 MemorySize Profiler::getNumberOfEvents() noexcept
@@ -153,10 +160,10 @@ void Profiler::SuspendProfiling::suspendAndResume(bool resume) noexcept
   if (auto tlc = Thread::getLocalContext()) {
     auto& profiling = tlc->profiling;
     if (resume) {
-      ++profiling.suspended;
-    } else {
       BASSERT(profiling.suspended > 0);
       --profiling.suspended;
+    } else {
+      ++profiling.suspended;
     }
   }
 }
@@ -254,33 +261,43 @@ void Profiler::initEvent(Event& e) noexcept
   // e.pid = pid; // written on export
   if (auto tlc = Thread::getLocalContext()) {
     e.tid = tlc->simpleId;
-  } else { // TAG: fix missing id
-    e.tid = 0;
-    // e.tid = reinterpret_cast<MemorySize>(Thread::getIdentifier());
+  } else {
+    e.tid = 0; // e.g. before TLC has been constructed
   }
-  e.ts = Timer::toXTimeUS(Timer::getNow());
 
   if (useStackFrames) {
     // TAG: skip extra frame when ready
     e.sf = getStackFrame(StackFrame::getStack()); // we cannot recover from memory exception
   }
+
+  e.ts = Timer::toXTimeUS(Timer::getNow());
 }
 
 unsigned int Profiler::Task::getTask(const char* name, const char* cat) noexcept
 {
   if (auto tlc = Thread::getLocalContext()) {
     auto& profiling = tlc->profiling;
-    if (profiling.events.getSize() < tlc->PROFILER_TASKS) {
-      profiling.events.setSize(tlc->PROFILER_TASKS);
+    if (profiling.suspended) {
+      return BAD;
     }
+    auto& tasks = profiling.events;
+    if (tasks.getSize() < tlc->PROFILER_TASKS) {
+      SuspendProfiling suspendProfiling; // no thanks to recursion
+      tasks.setSize(tlc->PROFILER_TASKS);
+    }
+    if (profiling.tasks >= tasks.getSize()) {
+      SuspendProfiling suspendProfiling; // no thanks to recursion
+      tasks.setSize(tasks.getSize() * 2);
+    }
+
     const unsigned int id = profiling.tasks++; // push
-    auto& e = profiling.events.getElements()[id];
+    auto& e = tasks.getElements()[id];
     initEvent(e);
     e.name = name;
     e.cat = cat;
     return id;
   }
-  return static_cast<unsigned int>(0) - 1; // bad id
+  return BAD; // e.g. before thread local has been constructed
 }
 
 /*
@@ -290,9 +307,9 @@ Timer::XTime operator-(Timer::XTime left, Timer::XTime right) noexcept
 }
 */
 
-Profiler::Task::~Task() noexcept
+void Profiler::Task::pushTask(unsigned int taskId) noexcept
 {
-  if (taskId == (static_cast<unsigned int>(0) - 1)) { // bad id
+  if (taskId == BAD) {
     return;
   }
   if (!enabled) {
@@ -301,6 +318,7 @@ Profiler::Task::~Task() noexcept
   auto tlc = Thread::getLocalContext();
   if (tlc) {
     BASSERT(taskId < tlc->profiling.tasks);
+    BASSERT(tlc->profiling.tasks > 0);
     --(tlc->profiling.tasks); // pop stack
     if (tlc->profiling.suspended != 0) {
       return;
@@ -310,9 +328,9 @@ Profiler::Task::~Task() noexcept
   // use EVENT_COMPLETE to combine BEGIN and END events
   const auto ts = Timer::getNow();
   Event& e = tlc->profiling.events.getElements()[taskId];
-  e.ts = Timer::toXTimeUS(ts);
   e.ph = EVENT_COMPLETE;
   e.dur = Timer::toXTimeUS(ts - Timer::toTimeUS(e.ts));
+  e.ts = Timer::toXTimeUS(ts); // after dur
   pushEvent(e);
 }
 

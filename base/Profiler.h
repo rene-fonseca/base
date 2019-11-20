@@ -25,6 +25,8 @@
 // TAG: skip extra frame when ready
 // TAG: hook exception throws
 // TAG: trim module filename
+// TAG: support external stack trace
+// TAG: sample memory/objects
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
@@ -254,6 +256,11 @@ public:
     }
   };
 
+  // TAG: push error/warning
+  // TAG: exception constructors
+  // TAG: push sample
+  // TAG: auto push if task takes a long time
+  
   static inline void pushObjectCreate(MemorySize size) // TAG: include pointer value - resize needs to call destroy/create when pointer changes
   {
     if (!enabled) {

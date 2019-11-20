@@ -35,6 +35,7 @@ namespace {
   Array<StackFrame> stackFramesHash; // cached frames (hash table)
   Array<StackFrame> stackFramesUnhash; // cached frames (remaining stack traces)
 
+  /** Single frame. */
   class Frame {
   public:
 
@@ -42,16 +43,16 @@ namespace {
     String category; // module
     unsigned int parent = 0;
 
-    Frame()
+    inline Frame()
     {
     }
 
-    Frame(const String& _name, const String& _category, unsigned int _parent)
+    inline Frame(const String& _name, const String& _category, unsigned int _parent)
       : name(_name), category(_category), parent(_parent)
     {
     }
 
-    bool operator==(const Frame& compare) const noexcept
+    inline bool operator==(const Frame& compare) const noexcept
     {
       return (parent == compare.parent) &&
         (name == compare.name) &&
@@ -59,13 +60,16 @@ namespace {
     }
   };
 
-  Array<Frame> stackFrames;
-  Map<uint32, unsigned int> stackFramesLookup;
+  Array<Frame> stackFrames; // all frames - index is id for frame
+  Map<uint32, unsigned int> stackFramesLookup; // lookup for sf to first frame
 
+  constexpr uint32 SF_HIGH_BIT = 0x80000000U;
+
+  /** Returns the stack frame for the given sf. */
   inline const StackFrame& getStackFrameImpl(uint32 sf)
   {
-    if (sf & 0x80000000U) {
-      const uint32 index = sf & ~0x80000000U;
+    if (sf & SF_HIGH_BIT) {
+      const uint32 index = sf & ~SF_HIGH_BIT;
       BASSERT(index < stackFramesUnhash.getSize());
       return stackFramesUnhash[index];
     } else {
@@ -74,19 +78,22 @@ namespace {
     }
   }
 
+  /** Block of events. */
   class Block {
   public:
     
     static constexpr unsigned int SIZE = 4096;
 
-    Block* next = nullptr;
-    Block* previous = nullptr;
-    Profiler::Event events[SIZE];
-    MemorySize size = 0;
+    Block* next = nullptr; // next block
+    Block* previous = nullptr; // previous block
+    Profiler::Event events[SIZE]; // preallocated buffer for events
+    MemorySize size = 0; // events in the block
   };
 
+  /** Double linked list of all events. */
   Block* blocks = nullptr;
 
+  /** Add new event. */
   void addEvent(const Profiler::Event& e)
   {
     SpinLock::Sync _sync(lock);
@@ -107,6 +114,7 @@ namespace {
     blocks->events[blocks->size++] = e;
   }
 
+  /** Release all events. */
   void releaseEvents()
   {
     while (blocks) {
@@ -257,7 +265,7 @@ uint32 Profiler::getStackFrame(StackFrame&& stackTrace)
         stackFramesUnhash.ensureCapacity(capacity);
       }
       stackFramesUnhash.append(std::move(stackTrace));
-      return size | 0x80000000U; // differentiate from hash id
+      return size | SF_HIGH_BIT; // differentiate from hash id
     }
   }
 }
@@ -349,7 +357,6 @@ void Profiler::pushEvent(const Event& e)
   if (!INLINE_ASSERT(enabled)) {
     return;
   }
-  // TAG: FIXME - check scope?
   ++numberOfEvents;
   addEvent(e);
 }
@@ -473,13 +480,15 @@ namespace {
       return 0; // bad
     }
 
-    if (sf & 0x80000000U) { // look through unhashed frames
-      const uint32 index = sf & ~0x80000000U;
+    // TAG: test this
+    if (sf & SF_HIGH_BIT) { // look through unhashed frames
+      const uint32 index = sf & ~SF_HIGH_BIT;
       for (MemorySize i = 0; i < index; ++i) {
         if (stackFramesUnhash[i] == frame) {
           // found
-          const uint32 _sf = i | 0x80000000U;
+          const uint32 _sf = i | SF_HIGH_BIT;
           if (auto value = stackFramesLookup.find(_sf)) { // found stack
+            // fout << "FOUND UNHASHED FRAME" << ENDL;
             return *value;
           }
           BASSERT(!"Unexpected flow.");
@@ -488,8 +497,10 @@ namespace {
       }
     }
 
-    MemorySize parent = 0;
+    MemorySize parent = -1;
     auto trace = frame.getTrace();
+    String previousName;
+    // fout << indent(8) << "!!! BEGIN" << ENDL;
     for (MemoryDiff i = size - 1; i >= 0; --i) { // reverse trace!
       if (auto ip = trace[i]) {
         const void* symbol = DynamicLinker::getSymbolAddress(ip);
@@ -497,24 +508,33 @@ namespace {
           continue;
         }
         const String name = DynamicLinker::getSymbolName(ip);
+        if (name == previousName) {
+          continue;
+        }
+        previousName = name;
         const String demangled = TypeInfo::demangleName(name.native());
         if (!demangled) {
           continue;
         }
 
+        // TAG: first frame need no parent id
+        // TAG: compress frame by pattern matching
         String path = DynamicLinker::getImagePath(ip);
-        path = FileSystem::getComponent(path, FileSystem::FILENAME);
+        path = FileSystem::getComponent(path, FileSystem::NAME); // reduce since FILENAME takes up more space
 
+        // reference partial frames when possible
         // look for the same frame O(n^2) complexity though // TAG: optimize?
         const Frame frame(demangled, path, parent);
         auto it = std::find(stackFrames.begin(), stackFrames.end(), frame);
         if (it != stackFrames.end()) {
+          // fout << "FOUND FRAME " << it->parent << " " << demangled << ENDL;
           parent = static_cast<unsigned int>(it - stackFrames.begin());
         } else {
           if (stackFrames.getSize() == stackFrames.getCapacity()) {
             stackFrames.ensureCapacity(stackFrames.getSize() * 2);
           }
           parent = stackFrames.getSize();
+          // fout << "NEW FRAME " << parent << " => " << frame.parent << " " << demangled<< ENDL;
           stackFrames.append(frame);
         }
       }
@@ -785,6 +805,7 @@ void Profiler::close()
         metadata->setValue(o.createString("clock-domain"), o.createString("MONOTONIC"));
         metadata->setValue(o.createString("highres-ticks"), o.createBoolean(true));
 
+        // TAG: move
         const char* os = nullptr;
         switch (_COM_AZURE_DEV__BASE__OS) {
         case _COM_AZURE_DEV__BASE__GNULINUX:
@@ -815,7 +836,7 @@ void Profiler::close()
           os = "AIX";
           break;
         case _COM_AZURE_DEV__BASE__MACOS:
-          os = "MacOS";
+          os = "macOS";
           break;
         default:
           ;
@@ -823,15 +844,14 @@ void Profiler::close()
         if (os) {
           metadata->setValue(o.createString("os-name"), o.createString(os));
         }
-        
+        // metadata->setValue(o.createString("physical-memory"), o.createInteger(...::getMemory()/1024/1024));
+
         // "clock-domain":"LINUX_CLOCK_MONOTONIC"
         // "command_line":STR // do NOT include due to possibility of tokens/passwd
         // "cpu-brand":STR,"cpu-family":INT,"cpu-model":INT,"cpu-stepping":INT
         // "network-type":"WiFi"
         // "os-arch":"x86_64"
-        // "os-name":"Linux"
         // "os-version":""
-        // "physical-memory":32076
         // "product-version":"BASE 0.9"
         // metadata->setValue(o.createString("num-cpus"), o.createInteger(0));
         // metadata->setValue(o.createString("revision"), o.createString("GITID"));
@@ -858,7 +878,7 @@ void Profiler::close()
         if (f.category) {
           frame->setValue(CATEGORY, o.createString(f.category));
         }
-fout << "!!! " << f.parent << " " << f.name << " " << f.category << ENDL;
+        // fout << "!!! " << f.parent << " " << f.name << " " << f.category << ENDL;
         frames->setValue(o.createString(format() << id), frame);
         // writeString(fos, JSON::getJSON(frame));
       }

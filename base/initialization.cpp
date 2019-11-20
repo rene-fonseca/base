@@ -11,6 +11,11 @@
     For the licensing terms refer to the file 'LICENSE'.
  ***************************************************************************/
 
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32) // annoying dependency
+#  pragma warning(disable : 4073)
+#  pragma init_seg(lib)
+#endif
+
 #include <base/platforms/features.h>
 #include <base/initialization.h>
 #include <base/string/StringOutputStream.h>
@@ -355,12 +360,13 @@ bool Runtime::isGlobalStateInGoodCondition() noexcept
   return !Runtime::isGlobalInitialization() && !Runtime::isGlobalDestruction();
 }
 
-void moduleEntry() {
+void moduleEntry()
+{
 }
 
-void moduleCleanUp() {
+void moduleCleanUp()
+{
 }
-
 
 namespace cleanup {
 
@@ -405,6 +411,8 @@ public:
   }
 };
 
-CleanupImpl _cleanup; // keep last
+CleanupImpl _cleanup; // keep at end
+
+// _impl::RuntimeState runtimeState; // need this
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

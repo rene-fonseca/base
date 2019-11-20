@@ -161,6 +161,12 @@ void* HeapImpl::tryResize(void* heap, MemorySize size) throw(MemoryException)
     return nullptr;
   }
 #else // unix
+  if (heap) {
+    if (size == 0) {
+      Profiler::pushObjectDestroy(originalSize);
+      free(heap);
+    }
+  }
   return nullptr;
 #endif // flavor
 }

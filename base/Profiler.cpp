@@ -486,15 +486,12 @@ namespace {
       return 0; // bad
     }
 
-    // TAG: test this
     if (sf & SF_HIGH_BIT) { // look through unhashed frames
       const uint32 index = sf & ~SF_HIGH_BIT;
-      for (MemorySize i = 0; i < index; ++i) {
+      for (MemoryDiff i = static_cast<int32>(index) - 1; i >= 0; --i) {
         if (stackFramesUnhash[i] == frame) {
-          // found
-          const uint32 _sf = i | SF_HIGH_BIT;
-          if (auto value = stackFramesLookup.find(_sf)) { // found stack
-            // fout << "FOUND UNHASHED FRAME" << ENDL;
+          if (auto value = stackFramesLookup.find(i | SF_HIGH_BIT)) { // found stack
+            stackFramesLookup.add(sf, *value); // remember this sf
             return *value;
           }
           BASSERT(!"Unexpected flow.");

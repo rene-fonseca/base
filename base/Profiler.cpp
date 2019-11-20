@@ -65,6 +65,7 @@ namespace profiler {
   };
 
   Array<Frame> stackFrames; // all frames - index is id for frame
+  Array<MemorySize> stackFramesRoots; // only frame roots
   Map<uint32, unsigned int> stackFramesLookup; // lookup for sf to first frame
 
   constexpr uint32 SF_HIGH_BIT = 0x80000000U;
@@ -205,6 +206,8 @@ void Profiler::release()
   stackFramesUnhash.setSize(0);
   stackFrames.ensureCapacity(0);
   stackFrames.setSize(0);
+  stackFramesRoots.ensureCapacity(0);
+  stackFramesRoots.setSize(0);
   stackFramesLookup.removeAll();
   releaseEvents();
 }
@@ -542,9 +545,27 @@ namespace {
         }
 
         const Frame frame(demangled, path, parent);
-        // we need to look through all frames and then ensure all previous frames match in the list - this is expensive
-        // look for the same frame O(n^2) complexity though // TAG: optimize
-        auto it = std::find(stackFrames.begin(), stackFrames.end(), frame);
+        auto it = stackFrames.end();
+        if (parent > 0) { // TAG: >= root buffer of buffer
+          // TAG: if we can look up all frames for a given parent
+          // TAG: we can also build the longest frames before the short ones - makes it more likely to reuse
+          // slow linear search - O(n^2) complexity
+          it = stackFrames.begin() + parent;
+          for (const auto end = stackFrames.end(); it != end; ++it) {
+            if (*it == frame) {
+              break;
+            }
+          }
+        } else { // only look through roots (limited number)
+          auto rootIt = stackFramesRoots.begin() + parent;
+          for (const auto end = stackFramesRoots.end(); rootIt != end; ++rootIt) {
+            if (stackFrames[*rootIt] == frame) {
+              it = stackFrames.begin() + *rootIt; // convert index to iterator
+              break;
+            }
+          }
+        }
+
         if (it != stackFrames.end()) {
           parent = static_cast<unsigned int>(it - stackFrames.begin()) + 1;
           // fout << "REUSE FRAME " << parent << " => " << it->parent << " " << it->name << ENDL;
@@ -555,6 +576,10 @@ namespace {
           stackFrames.append(frame);
           auto previous = parent;
           parent = stackFrames.getSize(); // next frame uses this as parent
+          if (frame.parent == 0) {
+            // TAG: roots[frame.parent].append(parent - 1);
+            stackFramesRoots.append(parent - 1); // index of root
+          }
           // fout << "NEW FRAME " << parent << " => " << previous << " " << demangled << ENDL;
         }
       }

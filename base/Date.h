@@ -18,6 +18,7 @@
 #include <base/string/String.h>
 #include <base/string/WideString.h>
 #include <base/string/InvalidFormat.h>
+#include <base/collection/Hash.h>
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
@@ -423,6 +424,17 @@ _COM_AZURE_DEV__BASE__API FormatOutputStream& operator<<(
 
 template<>
 class IsUninitializeable<Date> : public IsUninitializeable<int64> {
+};
+
+template<>
+class _COM_AZURE_DEV__BASE__API Hash<Date> {
+public:
+
+  inline unsigned long operator()(const Date& value) noexcept
+  {
+    Hash<int64> hash;
+    return hash(value.getValue());
+  }
 };
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

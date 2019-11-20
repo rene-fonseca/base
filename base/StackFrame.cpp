@@ -30,11 +30,105 @@
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
+// TAG: add support for registering stack trace in global lookup and get hash key for it
+#if 0
+class StackFrames {
+public:
+
+  Array<StackFrame> hashed;
+  Array<StackFrame> unhashed;
+
+  // TAG: see profiler
+};
+#endif
+
+template<class TYPE>
+class MeasureHashPerformance {
+private:
+
+  Hash<TYPE> hash;
+  Array<unsigned int> slots;
+  unsigned int size = 0;
+  unsigned int hits = 0;
+  unsigned int misses = 0;
+public:
+
+  MeasureHashPerformance(unsigned int size = 19391) // normal to use a prime
+  {
+    slots.setSize(size, 0);
+  }
+
+  inline void update(const TYPE& value)
+  {
+    auto h = hash(value);
+    unsigned int slot = slots[h % size];
+    if (slot != 0) {
+      ++slot;
+      ++hits;
+    } else {
+      ++misses;
+      slot = 1;
+    }
+  }
+
+  void update(const Allocator<TYPE>& values)
+  {
+    for (const auto& v : values) {
+      update(values);
+    }
+  }
+
+  void update(const Array<TYPE>& values)
+  {
+    // Timer timer;
+    for (const auto& v : values) {
+      update(values);
+    }
+  }
+};
+
+template<class TYPE>
+class MeasureHashPerformance2 {
+private:
+
+  // TAG: generate histogram for many different sizes
+  // TAG: dump stats
+};
+
+/** Check if TYPE has unsigned long getHash() const member. https://en.cppreference.com/w/cpp/language/sfinae check. */
+template<typename TYPE>
+class HasGetHash {
+private:
+
+  /** Member type we are looking for. */
+  typedef unsigned long (TYPE::* Member)() const; // we only want const member - we dont want static either
+
+  static_assert(IsComplete<TYPE>(), "Type must be complete.");
+
+  template<typename POLY> static decltype(&POLY::getHash) getType(decltype(&POLY::getHash));
+  template<typename POLY> static void getType(...);
+public:
+
+  static constexpr bool VALUE = std::is_same<decltype(getType<TYPE>(nullptr)), Member>(); // this works
+
+  inline constexpr operator bool() const noexcept
+  {
+    return VALUE;
+  }
+
+  inline constexpr bool operator()() const noexcept
+  {
+    return VALUE;
+  }
+};
+
+
+
 StackFrame::StackFrame()
 {
 }
 
-uint32 StackFrame::getHash() const noexcept
+unsigned long StackFrame::getHash() const noexcept
 {
   if (frames.isEmpty()) {
     return 0;
@@ -46,7 +140,7 @@ uint32 StackFrame::getHash() const noexcept
     result ^= value;
   }
   result = (result >> (32 - 3)) | (result << 3);
-  result ^= frames.getSize();
+  result ^= 0x5533070b * frames.getSize(); // low bits only
   return result;
 }
 
@@ -259,8 +353,6 @@ StackFrame StackFrame::getStack(unsigned int skip, unsigned int levels)
 
   return frames;
 }
-
-// TAG: add support for registering stack trace in global lookup and get hash key for it
 
 void StackFrame::toStream(FormatOutputStream& stream, const void* const * trace, MemorySize size, unsigned int flags)
 {

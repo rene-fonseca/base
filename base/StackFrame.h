@@ -31,7 +31,7 @@ public:
   StackFrame();
 
   /** Returns hash for stack trace. */
-  uint32 getHash() const noexcept;
+  unsigned long getHash() const noexcept;
   
   /** Returns the stack frames. */
   inline void* const * getTrace() const noexcept
@@ -108,7 +108,7 @@ public:
   */
   static StackFrame getStack(unsigned int skip = 1, unsigned int levels = 32);
 
-  inline bool operator==(const StackFrame& compare) const noexcept
+  bool operator==(const StackFrame& compare) const noexcept
   {
     if (frames.getSize() != compare.getSize()) {
       return false;
@@ -152,5 +152,15 @@ public:
 };
 
 _COM_AZURE_DEV__BASE__API FormatOutputStream& operator<<(FormatOutputStream& stream, const StackFrame& value) throw(IOException);
+
+template<>
+class _COM_AZURE_DEV__BASE__API Hash<StackFrame> {
+public:
+
+  unsigned long operator()(const StackFrame& value) noexcept
+  {
+    return value.getHash();
+  }
+};
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

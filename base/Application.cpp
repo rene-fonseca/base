@@ -784,6 +784,11 @@ Application* Application::getApplication() noexcept
   return application;
 }
 
+MutualExclusion& Application::getLock() noexcept
+{
+  return lock;
+}
+
 Application::Application(const String& _formalName) throw(SingletonException)
   : formalName(_formalName),
     exitCode(EXIT_CODE_NORMAL),

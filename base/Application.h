@@ -99,7 +99,7 @@ private:
   /** Specifies whether the application should reload its configuration. */
   bool hangingup = false;
   /** Synchronization object. */
-  MutualExclusion lock;
+  static MutualExclusion lock; // must be available during process initialization
 
   /** Common initialization method used by constructors. */
   void initialize() throw();
@@ -111,10 +111,7 @@ public:
   static Application* getApplication() noexcept;
 
   /** Returns the application lock. Do NOT abuse. */
-  inline MutualExclusion& getLock()
-  {
-    return lock;
-  }
+  static MutualExclusion& getLock() noexcept;
   
   template<class APPLICATION>
   static inline int stub(int numberOfArguments, const char* arguments[], const char* environment[]) noexcept

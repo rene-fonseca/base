@@ -248,7 +248,7 @@ String DynamicLinker::getImagePath(const void* address)
 {
   String result;
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
-  MutualExclusion::Sync _guard(Application::getApplication()->getLock()); // dbghelp is not MT-safe
+  MutualExclusion::Sync _guard(Application::getLock()); // dbghelp is not MT-safe
   loadDbgHelp();
   if (symFromAddr) {
     DWORD64 displacement = 0;
@@ -296,7 +296,7 @@ String DynamicLinker::getImagePath(const void* address)
 void* DynamicLinker::getImageAddress(const void* address) noexcept
 {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
-  MutualExclusion::Sync _guard(Application::getApplication()->getLock()); // dbghelp is not MT-safe
+  MutualExclusion::Sync _guard(Application::getLock()); // dbghelp is not MT-safe
   loadDbgHelp();
   if (symFromAddr) {
     DWORD64 displacement = 0;
@@ -323,7 +323,7 @@ void* DynamicLinker::getImageAddress(const void* address) noexcept
 void* DynamicLinker::getSymbolAddress(const void* address) noexcept
 {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
-  MutualExclusion::Sync _guard(Application::getApplication()->getLock()); // dbghelp is not MT-safe
+  MutualExclusion::Sync _guard(Application::getLock()); // dbghelp is not MT-safe
   loadDbgHelp();
   if (symFromAddr) {
     DWORD64 displacement = 0;
@@ -362,7 +362,7 @@ namespace {
   String demangle(const char* decorated)
   {
     if (unDecorateSymbolName) {
-      MutualExclusion::Sync _guard(Application::getApplication()->getLock()); // dbghelp is not MT-safe
+      MutualExclusion::Sync _guard(Application::getLock()); // dbghelp is not MT-safe
       char buffer[4096];
       DWORD flags = UNDNAME_NO_THISTYPE | 0*UNDNAME_NO_FUNCTION_RETURNS | UNDNAME_NO_MS_KEYWORDS | UNDNAME_NO_SPECIAL_SYMS | UNDNAME_NO_THROW_SIGNATURES |
         UNDNAME_NO_ACCESS_SPECIFIERS | // no public/private
@@ -536,7 +536,7 @@ String DynamicLinker::getSymbolName(const void* address)
 {
   String result;
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
-  MutualExclusion::Sync _guard(Application::getApplication()->getLock()); // dbghelp is not MT-safe
+  MutualExclusion::Sync _guard(Application::getLock()); // dbghelp is not MT-safe
   loadDbgHelp();
   if (symFromAddr) {
     DWORD64 displacement = 0;

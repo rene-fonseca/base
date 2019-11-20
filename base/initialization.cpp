@@ -189,6 +189,8 @@ namespace internal {
   DebugDynamicMemoryImpl debugDynamicMemoryImpl;
 };
 
+MutualExclusion Application::lock;
+
 Application* Application::application(nullptr); // initialize application as uninitialized
 String::Default forceDefaultString;
 const String String::DEFAULT_STRING(forceDefaultString);

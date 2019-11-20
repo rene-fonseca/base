@@ -150,16 +150,19 @@ public:
     // use color indicate subpixels? gray ~ half
 
     String line;
+#if 0
     line.setLength(width);
     for (int h = height - 1; h >= 0; --h) {
       for (auto& ch : line) {
-        ch = ' ';
+        line[w] = ' ';
       }
       for (unsigned int w = 0; w < width; ++w) {
         line[w] = field[h * width + w];
       }
       fout << line << ENDL;
     }
+#endif
+    
   }
 
   void getHist() const noexcept

@@ -329,9 +329,7 @@ FormatOutputStream _COM_AZURE_DEV__BASE__API ferr(standardErrorStream);
 SoundDevice SoundDevice::soundDevice;
 
 bool Profiler::enabled = 0;
-PreferredAtomicCounter Profiler::numberOfEvents = 0;
-bool Profiler::useJSON = false;
-FileOutputStream Profiler::fos;
+Profiler::ProfilerImpl Profiler::profiler;
 
 Application::Stub::Stub()
 {

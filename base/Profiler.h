@@ -19,6 +19,8 @@
 #include <base/io/FileOutputStream.h>
 #include <base/TypeInfo.h>
 #include <base/Timer.h>
+#include <base/concurrency/SpinLock.h>
+#include <base/collection/Map.h>
 
 // TAG: check unknown threads
 // TAG: add heap ids
@@ -57,15 +59,103 @@ public:
     uint8 flags = 0; // flags
     uint16 id = 0xffff; // object id - 0xffff is reserved
   };
+  
+  /** Single frame. */
+  class Frame {
+  public:
+
+    String name;
+    String category; // module
+    unsigned int parent = 0; // 0 is no parent
+
+    inline Frame()
+    {
+    }
+
+    inline Frame(const String& _name, const String& _category, unsigned int _parent)
+      : name(_name), category(_category), parent(_parent)
+    {
+    }
+
+    inline bool operator==(const Frame& compare) const noexcept
+    {
+      return (parent == compare.parent) &&
+        (name == compare.name) &&
+        (category == compare.category);
+    }
+  };
+
+  // TAG: should be hidden
+  class ProfilerImpl {
+  public:
+
+    /** Block of events. */
+    class Block {
+    public:
+      
+      static constexpr unsigned int SIZE = 4096;
+
+      Block* next = nullptr; // next block
+      Block* previous = nullptr; // previous block
+      Profiler::Event events[SIZE]; // preallocated buffer for events
+      MemorySize size = 0; // events in the block
+    };
+
+    /** Double linked list of all events. */
+    Block* blocks = nullptr;
+    const unsigned int pid = Process::getProcess().getId();
+    Array<StackFrame> stackFramesHash; // cached frames (hash table)
+    Array<StackFrame> stackFramesUnhash; // cached frames (remaining stack traces)
+    String stackPattern; // stack frame pattern
+    Array<Frame> stackFrames; // all frames - index is id for frame
+    Array<MemorySize> stackFramesRoots; // only frame roots
+    Map<uint32, unsigned int> stackFramesLookup; // lookup for sf to first frame
+
+    PreferredAtomicCounter numberOfEvents;
+    FileOutputStream fos;
+    bool useStackFrames = false; // include stack frames for events
+    unsigned int minimumWaitTime = 1; // minimum time to wait to record event
+    unsigned int minimumHeapSize = 4096 * 2/2; // minimum heap size to record event
+
+    static constexpr uint32 SF_HIGH_BIT = 0x80000000U;
+    
+    bool open(const String& path);
+
+    /** Add new event. */
+    void addEvent(const Profiler::Event& e);
+
+    /** Returns the stack frame for the given sf. */
+    inline const StackFrame& getStackFrame(uint32 sf) const noexcept
+    {
+      if ((sf & SF_HIGH_BIT) == 0) {
+        // BASSERT(sf < stackFramesHash.getSize());
+        return stackFramesHash[sf];
+      } else {
+        const uint32 index = sf & ~SF_HIGH_BIT;
+        // BASSERT(index < stackFramesUnhash.getSize());
+        return stackFramesUnhash[index];
+      }
+    }
+
+    uint32 getStackFrame(StackFrame&& stackTrace);
+
+    unsigned int buildStackFrame(const uint32 sf);
+    
+    void close();
+    
+    /** Release events. */
+    void releaseEvents();
+
+    /** Release. */
+    void release();
+    
+    ~ProfilerImpl();
+  };
+  
+  static ProfilerImpl profiler;
 private:
 
   static bool enabled;
-  static PreferredAtomicCounter numberOfEvents;
-  static bool useJSON;
-  static FileOutputStream fos;
-  static bool useStackFrames; // include stack frames for events
-  static unsigned int minimumWaitTime; // minimum time to wait to record event
-  static unsigned int minimumHeapSize; // minimum heap size to record event
 
   /** Submit event. */
   static void pushEvent(const Event& e);
@@ -170,17 +260,11 @@ public:
     }
   };
   
-  /** Returns the stack frame for the given id. */
-  static StackFrame getStackFrame(uint32 sf);
-
-  /** Returns unique ID for stack frame. */
-  static uint32 getStackFrame(StackFrame&& stackTrace);
-
   /** Returns timestamp. */
   static uint64 getTimestamp() noexcept;
 
   /** Opens profiler. */
-  static bool open(const String& path, bool useJSON);
+  static bool open(const String& path);
   
   /** Closes profiler. */
   static void close();

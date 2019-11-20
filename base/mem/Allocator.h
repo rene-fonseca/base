@@ -593,7 +593,7 @@ public:
             destroy2(original.buffer + size, original.buffer + original.size); // we cannot recover if this throws
             temp = tryResize(original.buffer, size, original.size); // wont throw
             BASSERT(!temp || (temp == original.buffer)); // reallocation NOT allowed - we still have objects initialized
-            if (temp) {
+            if (temp || (size == 0)) {
               attach(temp, size);
               return;
             }

@@ -163,6 +163,7 @@ void* HeapImpl::tryResize(void* heap, MemorySize size) throw(MemoryException)
 #else // unix
   if (heap) {
     if (size == 0) {
+      auto originalSize = Profiler::isEnabled() ? getSize(heap) : 0;
       Profiler::pushObjectDestroy(originalSize);
       free(heap);
     }

@@ -42,6 +42,12 @@ public:
 };
 #endif
 
+/**
+  Hash performance measurement.
+
+  You should shuffle the values before updating and do multiple runs.
+*/
+
 template<class TYPE>
 class MeasureHashPerformance {
 private:
@@ -49,6 +55,7 @@ private:
   Hash<TYPE> hash;
   Array<unsigned int> slots;
   unsigned int size = 0;
+  unsigned int used = 0;
   unsigned int hits = 0;
   unsigned int misses = 0;
 public:
@@ -56,6 +63,111 @@ public:
   MeasureHashPerformance(unsigned int size = 19391) // normal to use a prime
   {
     slots.setSize(size, 0);
+  }
+
+  inline unsigned int getSize() const noexcept
+  {
+    return size;
+  }
+
+  inline unsigned int getUsed() const noexcept
+  {
+    return used;
+  }
+
+  inline unsigned int getHits() const noexcept
+  {
+    return hits;
+  }
+
+  inline unsigned int getMisses() const noexcept
+  {
+    return misses;
+  }
+
+  // TAG: median is better measure
+  // TAG: need distribution 5% 10%, ...
+
+  /** Returns the average slot size. */
+  unsigned int getAvgSlot() const noexcept
+  {
+    unsigned int result = 0;
+    for (auto slot : slots) {
+      result += slot;
+    }
+    return (result + size/2)/size;
+  }
+
+  /** Returns the minimum slot size. */
+  unsigned int getMinSlot() const noexcept
+  {
+    unsigned int result = static_cast<unsigned int>(-1);
+    for (auto slot : slots) {
+      if (slot < result) {
+        result = slot;
+      }
+    }
+    return result;
+  }
+
+  /** Returns the maximum slot size. */
+  unsigned int getMaxSlot() const noexcept
+  {
+    unsigned int result = 0;
+    for (auto slot : slots) {
+      if (slot > result) {
+        result = slot;
+      }
+    }
+    return result;
+  }
+
+  void dumpHist(const Array<unsigned int>& hist)
+  {
+    const unsigned int height = 20;
+    const unsigned int width = 79;
+    
+    Array<unsigned int> condensed(width);
+    const MemorySize W = hist.getSize();
+    for (MemorySize i = 0; i < W; ++i) {
+      condensed[width * (i + W / 2) / W] += hist[i];
+    }
+
+    unsigned int m = 0;
+    for (MemorySize i = 0; i < condensed.getSize(); ++i) {
+      m = maximum(m, condensed[i]);
+    }
+
+    // linear/logarithmic
+
+    Array<bool> field(height * width, false);
+    if (m > 0) {
+      for (MemorySize i = 0; i < condensed.getSize(); ++i) {
+        auto h = (condensed[i] + m/2) / m;
+      }
+    }
+
+    // use color indicate subpixels? gray ~ half
+
+    String line;
+    line.setLength(width);
+    for (int h = height - 1; h >= 0; --h) {
+      for (auto& ch : line) {
+        ch = ' ';
+      }
+      for (unsigned int w = 0; w < width; ++w) {
+        line[w] = field[h * width + w];
+      }
+      fout << line << ENDL;
+    }
+  }
+
+  void getHist() const noexcept
+  {
+    Array<unsigned int> counts(size + 1);
+    for (auto slot : slots) {
+      counts[slot]++;
+    }
   }
 
   inline void update(const TYPE& value)
@@ -67,7 +179,16 @@ public:
       ++hits;
     } else {
       ++misses;
+      ++used;
       slot = 1;
+    }
+  }
+
+  void update(const TYPE* values, MemorySize count)
+  {
+    const TYPE* end = values + count;
+    for (; values != end; ++values) {
+      update(*values);
     }
   }
 
@@ -133,7 +254,7 @@ unsigned long StackFrame::getHash() const noexcept
   if (frames.isEmpty()) {
     return 0;
   }
-  uint32 result = 0;
+  unsigned long result = 0;
   for (auto v : frames) {
     auto value = reinterpret_cast<MemorySize>(v); // high are likely 0
     result = (result >> (32 - 3)) | (result << 3);

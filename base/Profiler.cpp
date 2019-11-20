@@ -119,8 +119,8 @@ namespace {
 }
 
 bool Profiler::useStackFrames = false; // include stack frames for events
-unsigned int Profiler::minimumWaitTime = 5; // minimum time to wait to record event
-unsigned int Profiler::minimumHeapSize = 4096 * 2; // minimum heap size to record event
+unsigned int Profiler::minimumWaitTime = 1; // minimum time to wait to record event
+unsigned int Profiler::minimumHeapSize = 4096 * 2/2; // minimum heap size to record event
 
 bool Profiler::isEnabled() noexcept
 {
@@ -272,7 +272,7 @@ void Profiler::initEvent(Event& e) noexcept
   }
 
   if (useStackFrames) {
-    // TAG: skip extra frame when ready
+    SuspendProfiling suspendProfiling; // no thanks to recursion
     e.sf = getStackFrame(StackFrame::getStack()); // we cannot recover from memory exception
   }
 
@@ -335,8 +335,12 @@ void Profiler::Task::pushTask(unsigned int taskId) noexcept
   const auto ts = Timer::getNow();
   Event& e = tlc->profiling.events.getElements()[taskId];
   e.ph = EVENT_COMPLETE;
-  e.dur = Timer::toXTimeUS(ts - Timer::toTimeUS(e.ts));
+  auto dur = ts - Timer::toTimeUS(e.ts);
+  e.dur = Timer::toXTimeUS(dur);
   e.ts = Timer::toXTimeUS(ts); // after dur
+  if (dur < minimumWaitTime) {
+    return;
+  }
   pushEvent(e);
 }
 
@@ -366,7 +370,7 @@ void Profiler::pushObjectCreateImpl(MemorySize size)
   e.ph = EVENT_OBJECT_CREATE;
   e.cat = CAT_MEMORY;
   if (isID) {
-    // remember id
+    e.id = static_cast<uint16>(size & 0xffff); // remember id // TAG: need more bits to be sure
   }
   pushEvent(e);
 }
@@ -557,51 +561,205 @@ void Profiler::close()
     writeString(fos, "\"traceEvents\": [\n");
   }
 
-  // TAG: REUSE
+  auto PID = o.createString("pid");
+  auto TID = o.createString("tid");
+  auto PH = o.createString("ph");
   auto NAME = o.createString("name");
+  auto CAT = o.createString("cat");
+  auto TS = o.createString("ts");
+  auto DUR = o.createString("dur");
+  auto TTS = o.createString("tts");
+  auto TDUR = o.createString("tdur");
+  auto SF = o.createString("sf");
+  auto ARGS = o.createString("args");
+  auto PARENT = o.createString("parent");
+  auto CATEGORY = o.createString("category");
+  auto ID = o.createString("id");
+  auto CNAME = o.createString("cname");
 
+  auto PH_B = o.createString("B");
+  auto PH_E = o.createString("E");
+  auto PH_b = o.createString("b");
+  auto PH_e = o.createString("e");
+  auto PH_X = o.createString("X");
+  auto PH_C = o.createString("C");
+  auto PH_N = o.createString("N");
+  auto PH_D = o.createString("D");
+  auto PH_P = o.createString("P");
+  auto PH_v = o.createString("v");
+  auto PH_M = o.createString("M");
+  auto PH_i = o.createString("i");
+
+/* cnames:
+  thread_state_uninterruptible
+  thread_state_iowait
+  thread_state_running
+  thread_state_runnable
+  thread_state_sleeping
+  thread_state_unknown
+  background_memory_dump
+  light_memory_dump
+  detailed_memory_dump
+  vsync_highlight_color
+  generic_work
+  good
+  bad
+  terrible
+  black
+  grey
+  white
+  yellow
+  olive
+  rail_response
+  rail_animation
+  rail_idle
+  rail_load
+  startup
+  heap_dump_stack_frame
+  heap_dump_object_type
+  heap_dump_child_node_arrow
+  cq_build_running
+  cq_build_passed
+  cq_build_failed
+  cq_build_abandoned
+  cq_build_attempt_runnig
+  cq_build_attempt_passed
+  cq_build_attempt_failed
+*/
+  
+  auto _pid = o.createInteger(pid);
+  auto _tid = o.createInteger(0);
+
+  auto P_EXCEPTION = static_cast<const void*>(CAT_EXCEPTION);
+  auto P_WAIT = static_cast<const void*>(CAT_WAIT);
+  auto P_SIGNAL = static_cast<const void*>(CAT_SIGNAL);
+
+  bool first = true;
   while (current) {
     for (MemorySize i = 0; i < current->size; ++i) {
       const Event& e = current->events[i];
       if (useJSON) {
+
+        if (e.tid != _tid->value) {
+          _tid = o.createInteger(e.tid);
+        }
         
         auto item = o.createObject();
-        item->setValue(o.createString("pid"), o.createInteger(pid));
-        item->setValue(o.createString("tid"), o.createInteger(e.tid));
-        item->setValue(o.createString("ph"), o.createString(String(&e.ph, 1)));
-        item->setValue(o.createString("name"), o.createString(e.name));
-        item->setValue(o.createString("cat"), o.createString(e.cat));
+        item->setValue(PID, _pid);
+        item->setValue(TID, _tid);
+        item->setValue(TS, o.createInteger(Timer::toTimeUS(e.ts))); // required
+        if (e.name) {
+          item->setValue(NAME, o.createString(e.name));
+        }
+        if (e.cat) {
+          item->setValue(CAT, o.createString(e.cat));
+        }
+        
+        auto ph = PH_B;
+        switch (e.ph) {
+        case EVENT_BEGIN:
+          ph = PH_B;
+          break;
+        case EVENT_END:
+          ph = PH_E;
+          break;
+        case EVENT_ASYNC_BEGIN:
+          ph = PH_b;
+          break;
+        case EVENT_ASYNC_END:
+          ph = PH_e;
+          break;
+        case EVENT_COMPLETE:
+          ph = PH_X;
+          break;
+        case EVENT_COUNTER:
+          ph = PH_C;
+          break;
+        case EVENT_OBJECT_CREATE:
+          ph = PH_N;
+          break;
+        case EVENT_OBJECT_DESTROY:
+          ph = PH_D;
+          break;
+        case EVENT_SAMPLE:
+          ph = PH_P;
+          break;
+        case EVENT_MEMORY:
+          ph = PH_v;
+          break;
+        case EVENT_META:
+          ph = PH_M;
+          break;
+        case EVENT_INSTANT:
+          ph = PH_i;
+          break;
+        default:
+          BASSERT(!"Unsupported PH");
+        }
+        item->setValue(PH, ph);
 
-        if (e.ph == EVENT_META) {
+        switch (e.ph) {
+        case EVENT_COMPLETE:
+          item->setValue(DUR, o.createInteger(Timer::toTimeUS(e.dur)));
+          
+#if 0
+          if (static_cast<const void*>(e.cat) == P_WAIT) {
+            item->setValue(CNAME, o.createString("bad"));
+          }
+#endif
+          // item->setValue(TDUR, o.createInteger(e.tdur));
+          // item->setValue(TTS, o.createInteger(e.tts));
+          break;
+        case EVENT_META:
           if (auto r = e.data.cast<ReferenceString>()) {
             auto args = o.createObject();
-            item->setValue(o.createString("args"), args);
-            args->setValue(o.createString("name"), o.createString(r->string));
+            item->setValue(ARGS, args);
+            args->setValue(NAME, o.createString(r->string));
           }
-        } else if (e.ph == EVENT_INSTANT) {
+          // item->setValue(CAT, o.createString("__metadata"));
+          /*
+            "name":"num_cpus","args":{"number":8}
+            "name":"process_sort_index","args":{"sort_index":-5}
+            "name":"process_uptime_seconds","args":{"uptime":INT}
+            "name":"thread_sort_index","args":{"sort_index":-1}
+          */
+          break;
+        case EVENT_OBJECT_CREATE:
+        case EVENT_OBJECT_DESTROY:
+          if (e.id != 0xffff) {
+            item->setValue(ID, o.createInteger(e.id));
+          }
+          // TAG: use pointer value for heap
+          break;
+        case EVENT_INSTANT:
           if (auto r = e.data.cast<ReferenceString>()) {
-            item->setValue(o.createString("name"), o.createString(r->string));
+            item->setValue(NAME, o.createString(r->string));
           }
-        } else {
-          item->setValue(o.createString("ts"), o.createInteger(Timer::toTimeUS(e.ts)));
-          item->setValue(o.createString("dur"), o.createInteger(Timer::toTimeUS(e.dur)));
-          // item->setValue(o.createString("tdur"), o.createInteger(e.tdur));
-          // item->setValue(o.createString("tts"), o.createInteger(e.tts));
+#if 0
+          if (static_cast<const void*>(e.cat) == P_SIGNAL) {
+            item->setValue(CNAME, o.createString("good"));
+          } else if (static_cast<const void*>(e.cat) == P_EXCEPTION) {
+            item->setValue(CNAME, o.createString("bad"));
+          }
+#endif
+          break;
+        default:
+          ; // what data do we need
         }
 
         if (useStackFrames && e.sf) { // TAG: is 0 a valid sf id?
           // "sf" or "stack": ["0x1", "0x2"] // for stack frame
           const unsigned int id = buildStackFrame(e.sf);
-          item->setValue(o.createString("sf"), o.createString(format() << id));
+          item->setValue(SF, o.createString(format() << id));
         }
 
         // "s" for instant event scope global, process, thread (default)
-        
-        writeString(fos, JSON::getJSON(item)); // single event
-        if (((i + 1) < current->size) || current->previous) { // not last - we could use counter also
-          writeString(fos, ",");
+        if (!first) {
+          writeString(fos, ",\n");
         }
-        writeString(fos, "\n");
+        first = false;
+
+        writeString(fos, JSON::getJSON(item)); // single event
       } else {
         fos.write(reinterpret_cast<const uint8*>(&e), sizeof(e), false);
       }
@@ -610,43 +768,109 @@ void Profiler::close()
   }
 
   if (useJSON) {
+    writeString(fos, "\n");
     writeString(fos, "]\n");
 
     if (useJSON) {
       if (auto app = Application::getApplication()) {
         auto otherData = o.createObject();
         otherData->setValue(o.createString("version"), o.createString(app->getFormalName()));
-        writeString(fos, ",\n\"otherData\": {\n");
+        writeString(fos, ",\n\"otherData\": ");
         writeString(fos, JSON::getJSON(otherData));
-        writeString(fos, "}\n"); // terminate otherData
+        writeString(fos, "\n"); // terminate otherData
+      }
+
+      if (true) {
+        auto metadata = o.createObject();
+        metadata->setValue(o.createString("clock-domain"), o.createString("MONOTONIC"));
+        metadata->setValue(o.createString("highres-ticks"), o.createBoolean(true));
+
+        const char* os = nullptr;
+        switch (_COM_AZURE_DEV__BASE__OS) {
+        case _COM_AZURE_DEV__BASE__GNULINUX:
+          os = "GNU/Linux";
+          break;
+        case _COM_AZURE_DEV__BASE__IRIX65:
+          os = "IRIX";
+          break;
+        case _COM_AZURE_DEV__BASE__SOLARIS:
+          os = "Solaris";
+          break;
+        case _COM_AZURE_DEV__BASE__CYGWIN:
+          os = "Cygwin";
+          break;
+        case _COM_AZURE_DEV__BASE__WINNT4:
+          os = "Windows";
+          break;
+        case _COM_AZURE_DEV__BASE__W2K:
+          os = "Windows";
+          break;
+        case _COM_AZURE_DEV__BASE__WXP:
+          os = "Windows";
+          break;
+        case _COM_AZURE_DEV__BASE__BEOS:
+          os = "BEOS";
+          break;
+        case _COM_AZURE_DEV__BASE__AIX:
+          os = "AIX";
+          break;
+        case _COM_AZURE_DEV__BASE__MACOS:
+          os = "MacOS";
+          break;
+        default:
+          ;
+        }
+        if (os) {
+          metadata->setValue(o.createString("os-name"), o.createString(os));
+        }
+        
+        // "clock-domain":"LINUX_CLOCK_MONOTONIC"
+        // "command_line":STR // do NOT include due to possibility of tokens/passwd
+        // "cpu-brand":STR,"cpu-family":INT,"cpu-model":INT,"cpu-stepping":INT
+        // "network-type":"WiFi"
+        // "os-arch":"x86_64"
+        // "os-name":"Linux"
+        // "os-version":""
+        // "physical-memory":32076
+        // "product-version":"BASE 0.9"
+        // metadata->setValue(o.createString("num-cpus"), o.createInteger(0));
+        // metadata->setValue(o.createString("revision"), o.createString("GITID"));
+
+        writeString(fos, ",\n\"metadata\": ");
+        writeString(fos, JSON::getJSON(metadata));
+        writeString(fos, "\n"); // terminate metadata
       }
     }
 
     if (useStackFrames) {
-      writeString(fos, ",\n\"stackFrames\": {\n");
+      writeString(fos, ",\n\"stackFrames\": ");
 
       auto frames = o.createObject();
       for (MemorySize id = 0; id < stackFrames.getSize(); ++id) {
         const auto& f = stackFrames[id];
         auto frame = o.createObject();
         if (f.parent) {
-          frame->setValue(o.createString("parent"), o.createString(format() << f.parent));
+          frame->setValue(PARENT, o.createString(format() << f.parent));
         }
         if (f.name) {
-          frame->setValue(o.createString("name"), o.createString(f.name));
+          frame->setValue(NAME, o.createString(f.name));
         }
         if (f.category) {
-          frame->setValue(o.createString("category"), o.createString(f.category));
+          frame->setValue(CATEGORY, o.createString(f.category));
         }
 fout << "!!! " << f.parent << " " << f.name << " " << f.category << ENDL;
         frames->setValue(o.createString(format() << id), frame);
+        // writeString(fos, JSON::getJSON(frame));
       }
 
-      writeString(fos, JSON::getJSON(frames)); // TAG: write single frame at a time instead
-      writeString(fos, "}\n"); // terminate frames
+      writeString(fos, JSON::getJSON(frames));
+      writeString(fos, "\n"); // terminate frames
     }
 
     writeString(fos, "}\n"); // terminate root object
+    
+    // TAG: trace viewer - extension - would like redirect for lookup url spec in JSON
+    // https://cs.chromium.org/search/?sq=package:chromium&type=cs&q=Thread::entry()
 
 /*
     "displayTimeUnit": "ns", // "ms" or "ns"
@@ -681,6 +905,7 @@ public:
   void run() override
   {
     Profiler::open("profiler.json", true);
+    Profiler::setUseStackFrames(true);
     Profiler::start();
   }
 };

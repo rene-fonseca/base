@@ -20,6 +20,12 @@
 #include <base/TypeInfo.h>
 #include <base/Timer.h>
 
+// TAG: check unknown threads
+// TAG: add heap ids
+// TAG: skip extra frame when ready
+// TAG: hook exception throws
+// TAG: trim module filename
+
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 /**
@@ -41,14 +47,13 @@ public:
     // uint32 pid = 0; // process id // we output on export
     uint32 tid = 0; // thread id
     Timer::XTime ts; // timestamp
-    // const char* args = nullptr; // src_file, src_func - used for counter event - use data for meta info
     Timer::XTime dur; // duration
-    // Timer::XTime tdur = 0; // optional - duration
-    // uint64 tts = 0; // optional
-    // const char* cname = nullptr; // color green, red // use flags member required
+    // Timer::XTime tdur = 0; // optional - thread duration
+    // uint64 tts = 0; // optional thread timestamp
     uint32 sf = 0; // stack frame // uint16 would be enough
     char ph = 0; // event type
     uint8 flags = 0; // flags
+    uint16 id = 0xffff; // object id - 0xffff is reserved
   };
 private:
 
@@ -249,7 +254,7 @@ public:
     }
   };
 
-  static inline void pushObjectCreate(MemorySize size)
+  static inline void pushObjectCreate(MemorySize size) // TAG: include pointer value - resize needs to call destroy/create when pointer changes
   {
     if (!enabled) {
       return;

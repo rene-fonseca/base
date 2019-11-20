@@ -20,6 +20,7 @@
 #include <base/dl/DynamicLinker.h>
 #include <base/filesystem/FileSystem.h>
 #include <base/Application.h>
+#include <base/initialization.h>
 #include <base/UnitTest.h>
 
 // ATTENTION: we do not want to record heap/IO for Profile implementation
@@ -28,8 +29,10 @@
  
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
-namespace {
+namespace profiler {
 
+  // ATTENTION: nodependencies on other translation units or we need to put global state in initialization.cpp
+  // we always depend on String static state!
   SpinLock lock;
   const unsigned int pid = Process::getProcess().getId();
   Array<StackFrame> stackFramesHash; // cached frames (hash table)
@@ -124,7 +127,12 @@ namespace {
       free(b);
     }
   }
-}
+
+  CallOnDestruct callOnDestruct([]() {Profiler::release(); }); // bad due to String state // TAG: need to ensure init order for all platforms
+  // RegisterCleanup registerCleanup([]() {Profiler::release(); }); // String state will be good
+} // profiler
+
+using namespace profiler;
 
 bool Profiler::useStackFrames = false; // include stack frames for events
 unsigned int Profiler::minimumWaitTime = 1; // minimum time to wait to record event
@@ -185,7 +193,6 @@ void Profiler::release()
     close();
   }
   SpinLock::Sync _sync(lock);
-  releaseEvents();
   stackFramesHash.ensureCapacity(0);
   stackFramesHash.setSize(0);
   stackFramesUnhash.ensureCapacity(0);
@@ -193,6 +200,7 @@ void Profiler::release()
   stackFrames.ensureCapacity(0);
   stackFrames.setSize(0);
   stackFramesLookup.removeAll();
+  releaseEvents();
 }
 
 uint64 Profiler::getTimestamp() noexcept
@@ -239,10 +247,8 @@ uint32 Profiler::getStackFrame(StackFrame&& stackTrace)
   constexpr unsigned int FRAMES = 65521; // 4723
   if (stackFramesHash.getSize() != FRAMES) { // we can resize if too many conflicts
     stackFramesHash.setSize(FRAMES);
+    stackFramesUnhash.ensureCapacity(1024);
   }
-
-  static MemorySize capacity = 1024;
-  stackFramesUnhash.ensureCapacity(capacity);
 
   const uint32 hash = stackTrace.getHash() % FRAMES;
 
@@ -260,9 +266,8 @@ uint32 Profiler::getStackFrame(StackFrame&& stackTrace)
     } else {
       ++conflicts;
       auto size = stackFramesUnhash.getSize();
-      if (size >= capacity) { // TAG: need getCapacity()
-        capacity = stackFramesUnhash.getSize() * 2;
-        stackFramesUnhash.ensureCapacity(capacity);
+      if (size >= stackFramesUnhash.getCapacity()) {
+        stackFramesUnhash.ensureCapacity(stackFramesUnhash.getSize() * 2);
       }
       stackFramesUnhash.append(std::move(stackTrace));
       return size | SF_HIGH_BIT; // differentiate from hash id
@@ -281,7 +286,8 @@ void Profiler::initEvent(Event& e) noexcept
 
   if (useStackFrames) {
     SuspendProfiling suspendProfiling; // no thanks to recursion
-    e.sf = getStackFrame(StackFrame::getStack()); // we cannot recover from memory exception
+    // skip initEvent() -> internal caller -> ?
+    e.sf = getStackFrame(StackFrame::getStack(2)); // we cannot recover from memory exception
   }
 
   e.ts = Timer::toXTimeUS(Timer::getNow());

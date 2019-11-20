@@ -379,10 +379,40 @@ bool ObjectModel::Object::hasKey(const Reference<String>& key) const noexcept
     return false;
   }
   for (const auto& v : values) {
-    if (!v.first) {
-      throw NullPointer("Key is null.");
+    if (!INLINE_ASSERT(v.first)) {
+      continue;
     }
     if (v.first->value == key->value) {
+      return true;
+    }
+  }
+  return false;
+}
+
+bool ObjectModel::Object::hasKey(const base::String& key) const noexcept
+{
+  for (const auto& v : values) {
+    if (!INLINE_ASSERT(v.first)) {
+      continue;
+    }
+    if (v.first->value == key) {
+      return true;
+    }
+  }
+  return false;
+}
+
+bool ObjectModel::Object::hasKey(const char* _key) const noexcept
+{
+  if (!_key) {
+    return false;
+  }
+  NativeString key(_key);
+  for (const auto& v : values) {
+    if (!INLINE_ASSERT(v.first)) {
+      continue;
+    }
+    if (v.first->value == key) {
       return true;
     }
   }
@@ -404,16 +434,74 @@ bool ObjectModel::Object::removeKey(const Reference<String>& key) noexcept
   return false;
 }
 
-Reference<ObjectModel::Value> ObjectModel::Object::getValue(const Reference<String>& key) const throw(ObjectModelException)
+bool ObjectModel::Object::removeKey(const base::String& key) noexcept
+{
+  for (auto i = values.begin(); i != values.end(); ++i) {
+    auto j = *i;
+    if (j.first->value == key) {
+      values.remove(i);
+      return true;
+    }
+  }
+  return false;
+}
+
+bool ObjectModel::Object::removeKey(const char* _key) noexcept
+{
+  if (!_key) {
+    return false;
+  }
+  NativeString key(_key);
+  for (auto i = values.begin(); i != values.end(); ++i) {
+    auto j = *i;
+    if (j.first->value == key) {
+      values.remove(i);
+      return true;
+    }
+  }
+  return false;
+}
+
+Reference<ObjectModel::Value> ObjectModel::Object::getValue(const Reference<String>& key) const noexcept
 {
   if (!key) {
     return nullptr;
   }
   for (const auto& v : values) {
-    if (!v.first) {
-      throw NullPointer("Key is null.");
+    if (!INLINE_ASSERT(v.first)) {
+      continue;
     }
     if (v.first->value == key->value) {
+      return v.second;
+    }
+  }
+  return nullptr;
+}
+
+Reference<ObjectModel::Value> ObjectModel::Object::getValue(const base::String& key) const noexcept
+{
+  for (const auto& v : values) {
+    if (!INLINE_ASSERT(v.first)) {
+      continue;
+    }
+    if (v.first->value == key) {
+      return v.second;
+    }
+  }
+  return nullptr;
+}
+
+Reference<ObjectModel::Value> ObjectModel::Object::getValue(const char* _key) const noexcept
+{
+  if (!_key) {
+    return nullptr;
+  }
+  NativeString key(_key);
+  for (const auto& v : values) {
+    if (!INLINE_ASSERT(v.first)) {
+      continue;
+    }
+    if (v.first->value == key) {
       return v.second;
     }
   }
@@ -426,15 +514,97 @@ void ObjectModel::Object::setValue(const Reference<String>& key, const Reference
     throw NullPointer("Key is null.");
   }
   for (auto& v : values) {
-    if (!v.first) {
-      throw NullPointer("Key is null.");
+    if (!INLINE_ASSERT(v.first)) {
+      continue;
     }
     if (v.first->value == key->value) {
       v.second = value;
       return;
     }
   }
-  values.append(std::pair<Reference<String>, Reference<Value> >(key, value));
+  values.append(Association(key, value));
+}
+
+void ObjectModel::Object::setValue(const base::String& key, const Reference<Value>& value)
+{
+  for (auto& v : values) {
+    if (!INLINE_ASSERT(v.first)) {
+      continue;
+    }
+    if (v.first->value == key) {
+      v.second = value;
+      return;
+    }
+  }
+  values.append(Association(globalObjectModel.createString(key), value));
+}
+
+void ObjectModel::Object::setValue(const base::String& key, const bool value)
+{
+  for (auto& v : values) {
+    if (!INLINE_ASSERT(v.first)) {
+      continue;
+    }
+    if (v.first->value == key) {
+      v.second = globalObjectModel.createBoolean(value);
+      return;
+    }
+  }
+  values.append(Association(globalObjectModel.createString(key), globalObjectModel.createBoolean(value)));
+}
+
+void ObjectModel::Object::setValue(const base::String& key, const int64 value)
+{
+  for (auto& v : values) {
+    if (!INLINE_ASSERT(v.first)) {
+      continue;
+    }
+    if (v.first->value == key) {
+      v.second = globalObjectModel.createInteger64(value);
+      return;
+    }
+  }
+  values.append(Association(globalObjectModel.createString(key), globalObjectModel.createInteger64(value)));
+}
+
+void ObjectModel::Object::setValue(const base::String& key, const double value)
+{
+  for (auto& v : values) {
+    if (!INLINE_ASSERT(v.first)) {
+      continue;
+    }
+    if (v.first->value == key) {
+      v.second = globalObjectModel.createFloat(value);
+      return;
+    }
+  }
+  values.append(Association(globalObjectModel.createString(key), globalObjectModel.createFloat(value)));
+}
+
+void ObjectModel::Object::setValue(const base::String& key, const base::String& value)
+{
+  for (auto& v : values) {
+    if (!INLINE_ASSERT(v.first)) {
+      continue;
+    }
+    if (v.first->value == key) {
+      v.second = globalObjectModel.createString(value);
+      return;
+    }
+  }
+  values.append(Association(globalObjectModel.createString(key), globalObjectModel.createString(value)));
+}
+
+void ObjectModel::Object::setValue(const char* key, const char* value)
+{
+  if (!key) {
+    throw NullPointer("Key is null.");
+  }
+  if (!value) {
+    setValue(base::String(key), nullptr);
+  } else {
+    setValue(base::String(key), base::String(value));
+  }
 }
 
 Reference<ObjectModel::Value> ObjectModel::Object::getPath(const char* path, bool forceNull) throw(ObjectModelException)

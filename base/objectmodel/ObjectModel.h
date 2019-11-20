@@ -432,6 +432,7 @@ public:
 
     Array& operator=(const std::vector<bool>& values);
     Array& operator=(const std::vector<int>& values);
+    Array& operator=(const std::vector<int64>& values);
     Array& operator=(const std::vector<double>& values);
     Array& operator=(const std::vector<base::String>& values);
 
@@ -443,6 +444,7 @@ public:
   class _COM_AZURE_DEV__BASE__API Object : public Value {
   public:
     
+    typedef std::pair<Reference<String>, Reference<Value> > Association;
     base::Array<std::pair<Reference<String>, Reference<Value> > > values;
 
     /** Returns the type. */
@@ -454,21 +456,34 @@ public:
     MemorySize getSize() const noexcept;
 
     /** Returns the size of the array. */
-    inline bool isEmpty() const noexcept {
+    inline bool isEmpty() const noexcept
+    {
       return getSize() == 0;
     }
 
     /** Returns true if the key exists. */
     bool hasKey(const Reference<String>& key) const noexcept;
+    bool hasKey(const base::String& key) const noexcept;
+    bool hasKey(const char* key) const noexcept;
 
     /** Removes key if it exists. */
     bool removeKey(const Reference<String>& key) noexcept;
+    bool removeKey(const base::String& key) noexcept;
+    bool removeKey(const char* key) noexcept;
 
-    /** Returns the value for the given key. */
-    Reference<Value> getValue(const Reference<String>& key) const throw(ObjectModelException);
-    
-    /** Sets the value for the given key. */
+    /** Returns the value for the given key. Returns nullptr is key doesn't exist. */
+    Reference<Value> getValue(const Reference<String>& key) const noexcept;
+    Reference<Value> getValue(const base::String& key) const noexcept;
+    Reference<Value> getValue(const char* key) const noexcept;
+
+    /** Sets the value for the given key. key must not be nullptr. */
     void setValue(const Reference<String>& key, const Reference<Value>& value);
+    void setValue(const base::String& key, const Reference<Value>& value);
+    void setValue(const base::String& key, const bool value);
+    void setValue(const base::String& key, const int64 value);
+    void setValue(const base::String& key, const double value);
+    void setValue(const base::String& key, const base::String& value);
+    void setValue(const char* key, const char* value);
 
     class Element {
       friend class Object;

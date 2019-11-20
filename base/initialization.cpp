@@ -12,6 +12,7 @@
  ***************************************************************************/
 
 #include <base/platforms/features.h>
+#include <base/initialization.h>
 #include <base/string/StringOutputStream.h>
 #include <base/ProcessPreinitialization.h>
 #include <base/SystemLogger.h>
@@ -327,19 +328,6 @@ PreferredAtomicCounter Profiler::numberOfEvents = 0;
 bool Profiler::useJSON = false;
 FileOutputStream Profiler::fos;
 
-class ReleaseProfilerEvents {
-public:
-  
-  ~ReleaseProfilerEvents()
-  {
-    Profiler::release();
-  }
-};
-
-ReleaseProfilerEvents _releaseProfilerEvents;
-
-// _impl::RuntimeState runtimeState; // limited to state in this cpp
-
 Application::Stub::Stub()
 {
   BASSERT(_impl::initializing && !_impl::destructing);
@@ -372,5 +360,51 @@ void moduleEntry() {
 
 void moduleCleanUp() {
 }
+
+
+namespace cleanup {
+
+  SpinLock lock;
+  Cleanup::CleanupFunction functions[32] = {0}; // ATTENTION: fix size array so we can only use internally to Base
+  unsigned int count = 0;
+
+  bool registerCleanup(Cleanup::CleanupFunction function) noexcept
+  {
+    SpinLock::Sync _sync(lock);
+    if (function) {
+      if (INLINE_ASSERT(count < getArraySize(functions))) {
+        functions[count++] = function;
+        return true;
+      }
+    }
+    return false;
+  }
+
+  void cleanupAll()
+  {
+    // clean up in reverse order!
+    while (count > 0) {
+      --count;
+      functions[count]();
+      functions[count] = nullptr;
+    }
+  }
+}
+
+bool Cleanup::registerCleanup(CleanupFunction function) noexcept
+{
+  return cleanup::registerCleanup(function);
+}
+
+class CleanupImpl {
+public:
+
+  ~CleanupImpl()
+  {
+    cleanup::cleanupAll();
+  }
+};
+
+CleanupImpl _cleanup; // keep last
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

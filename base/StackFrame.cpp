@@ -249,20 +249,52 @@ StackFrame::StackFrame()
 {
 }
 
+namespace {
+
+  void BASE_ADDRESS()
+  {
+  }
+
+  inline void updateHash(unsigned long& state, const uint8 bits) noexcept
+  {
+    // needs performance testing
+    if (true /*sizeof(unsigned long) == 4*/) {
+      state = (state << 11) ^ (state >> 11);
+      state ^= 0x98badcfe;
+      state ^= (static_cast<uint32>(bits) << 24) | (static_cast<uint32>(bits) << 16) | (static_cast<uint32>(bits) << 8) | (static_cast<uint32>(bits) << 0);
+      state ^= 0x10325476;
+      state ^= (state << 27) ^ (state >> 27);
+    }
+  }
+}
+
 unsigned long StackFrame::getHash() const noexcept
 {
   if (frames.isEmpty()) {
     return 0;
   }
-  unsigned long result = 0;
-  for (auto v : frames) {
-    auto value = reinterpret_cast<MemorySize>(v); // high are likely 0
-    result = (result >> (32 - 3)) | (result << 3);
-    result ^= value;
+
+  const MemorySize base = reinterpret_cast<MemorySize>(&BASE_ADDRESS);
+
+  MemorySize previous = base;
+  unsigned long state = (sizeof(unsigned long) == 4) ? 0x67452301 : 0x67452301efcdab89ULL;
+  
+  MemorySize offset = frames.getSize(); // low bits only
+  while (offset) { // likely only 1 iteration
+    updateHash(state, static_cast<uint8>(offset & 0xff));
+    offset >>= 8;
   }
-  result = (result >> (32 - 3)) | (result << 3);
-  result ^= 0x5533070b * frames.getSize(); // low bits only
-  return result;
+
+  for (auto v : frames) {
+    const auto address = reinterpret_cast<MemorySize>(v); // high are likely 0
+    auto offset = (address >= previous) ? (address - previous) : (previous - address); // get the lower order bits that matter
+    previous = address;
+    while (offset) { // likely <=3 iterations
+      updateHash(state, static_cast<uint8>(offset & 0xff));
+      offset >>= 8;
+    }
+  }
+  return state;
 }
 
 MemoryDiff StackFrame::find(void* address) const noexcept

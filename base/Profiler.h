@@ -84,7 +84,9 @@ public:
   static void setMinimumWaitTime(unsigned int minimumWaitTime) noexcept;
   /** Sets the minimum heap size to record event. */
   static void setMinimumHeapSize(unsigned int minimumHeapSize) noexcept;
-
+  /** Sets the stack frame pattern. */
+  static void setStackPattern(const String& stackPattern) noexcept;
+  
   static constexpr const char* CAT_MEMORY = "MEMORY";
   static constexpr const char* CAT_OBJECT = "OBJECT";
   static constexpr const char* CAT_IO = "IO";

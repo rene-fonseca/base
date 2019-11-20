@@ -37,6 +37,7 @@ namespace profiler {
   const unsigned int pid = Process::getProcess().getId();
   Array<StackFrame> stackFramesHash; // cached frames (hash table)
   Array<StackFrame> stackFramesUnhash; // cached frames (remaining stack traces)
+  String stackPattern; // stack frame pattern
 
   /** Single frame. */
   class Frame {
@@ -156,6 +157,11 @@ void Profiler::setMinimumWaitTime(unsigned int _minimumWaitTime) noexcept
 void Profiler::setMinimumHeapSize(unsigned int _minimumHeapSize) noexcept
 {
   minimumHeapSize = _minimumHeapSize;
+}
+
+void Profiler::setStackPattern(const String& _stackPattern) noexcept
+{
+  stackPattern = _stackPattern;
 }
 
 bool Profiler::isEnabledScope() noexcept
@@ -500,10 +506,13 @@ namespace {
       }
     }
 
-    MemorySize parent = -1;
+    MemorySize parent = 0; // no parent
     auto trace = frame.getTrace();
+
     String previousName;
-    // fout << indent(8) << "!!! BEGIN" << ENDL;
+    String path;
+    void* previousImageAddress = nullptr;
+
     for (MemoryDiff i = size - 1; i >= 0; --i) { // reverse trace!
       if (auto ip = trace[i]) {
         const void* symbol = DynamicLinker::getSymbolAddress(ip);
@@ -519,26 +528,34 @@ namespace {
         if (!demangled) {
           continue;
         }
+        
+        void* imageAddress = DynamicLinker::getImageAddress(ip); // returns nullptr for some modules
+        if (!imageAddress || (imageAddress != previousImageAddress)) {
+          previousImageAddress = imageAddress;
+          path = FileSystem::getComponent(DynamicLinker::getImagePath(ip), FileSystem::NAME); // reduce since FILENAME takes up more space
+        }
 
-        // TAG: first frame need no parent id
-        // TAG: compress frame by pattern matching
-        String path = DynamicLinker::getImagePath(ip);
-        path = FileSystem::getComponent(path, FileSystem::NAME); // reduce since FILENAME takes up more space
+        if (stackPattern) { // could really be list of allowed modules "name;name2;name3"
+          if (!Parser::doesMatchPattern(stackPattern, path)) {
+            continue;
+          }
+        }
 
-        // reference partial frames when possible
-        // look for the same frame O(n^2) complexity though // TAG: optimize?
         const Frame frame(demangled, path, parent);
+        // we need to look through all frames and then ensure all previous frames match in the list - this is expensive
+        // look for the same frame O(n^2) complexity though // TAG: optimize
         auto it = std::find(stackFrames.begin(), stackFrames.end(), frame);
         if (it != stackFrames.end()) {
-          // fout << "FOUND FRAME " << it->parent << " " << demangled << ENDL;
-          parent = static_cast<unsigned int>(it - stackFrames.begin());
+          parent = static_cast<unsigned int>(it - stackFrames.begin()) + 1;
+          // fout << "REUSE FRAME " << parent << " => " << it->parent << " " << it->name << ENDL;
         } else {
           if (stackFrames.getSize() == stackFrames.getCapacity()) {
             stackFrames.ensureCapacity(stackFrames.getSize() * 2);
           }
-          parent = stackFrames.getSize();
-          // fout << "NEW FRAME " << parent << " => " << frame.parent << " " << demangled<< ENDL;
           stackFrames.append(frame);
+          auto previous = parent;
+          parent = stackFrames.getSize(); // next frame uses this as parent
+          // fout << "NEW FRAME " << parent << " => " << previous << " " << demangled << ENDL;
         }
       }
     }
@@ -872,7 +889,7 @@ void Profiler::close()
       for (MemorySize id = 0; id < stackFrames.getSize(); ++id) {
         const auto& f = stackFrames[id];
         auto frame = o.createObject();
-        if (f.parent) {
+        if (f.parent != 0) {
           frame->setValue(PARENT, o.createString(format() << f.parent));
         }
         if (f.name) {
@@ -881,8 +898,7 @@ void Profiler::close()
         if (f.category) {
           frame->setValue(CATEGORY, o.createString(f.category));
         }
-        // fout << "!!! " << f.parent << " " << f.name << " " << f.category << ENDL;
-        frames->setValue(o.createString(format() << id), frame);
+        frames->setValue(o.createString(format() << (id + 1)), frame); // 1-indexed
         // writeString(fos, JSON::getJSON(frame));
       }
 

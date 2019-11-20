@@ -421,6 +421,7 @@ unsigned int StackFrame::getStack(void** dest, unsigned int size, unsigned int s
   while ((count > 0) && (reinterpret_cast<MemorySize>(dest[count - 1]) < 0x10000)) {
     --count; // remove bad text seg pointer
   }
+  // trim to &Thread::entry, &main and similar roots
 #elif ((_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__MACOS) || \
        (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__GNULINUX))
   int count = backtrace(dest, size);
@@ -618,7 +619,7 @@ void StackFrame::toStream(FormatOutputStream& stream, const void* const * trace,
 
         if (flags & FLAG_TRIM_SYSTEM) {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
-          if (demangled == "CtrlRoutine") {
+          if ((demangled == MESSAGE("BaseThreadInitThunk")) || (demangled == MESSAGE("CtrlRoutine"))) {
             stream << EOL;
             break;
           }

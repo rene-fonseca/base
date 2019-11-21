@@ -102,6 +102,8 @@ public:
       MemorySize size = 0; // events in the block
     };
 
+    static constexpr unsigned int MAXIMUM_STACK_TRACE = 64;
+    
     /** Double linked list of all events. */
     Block* blocks = nullptr;
     const unsigned int pid = Process::getProcess().getId();
@@ -109,7 +111,7 @@ public:
     Array<StackFrame> stackFramesUnhash; // cached frames (remaining stack traces)
     String stackPattern; // stack frame pattern
     Array<Frame> stackFrames; // all frames - index is id for frame
-    Array<MemorySize> stackFramesRoots; // only frame roots
+    Array<MemorySize> stackFramesByParent[MAXIMUM_STACK_TRACE]; // lookup by parent
     Map<uint32, unsigned int> stackFramesLookup; // lookup for sf to first frame
 
     PreferredAtomicCounter numberOfEvents;

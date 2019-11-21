@@ -139,9 +139,12 @@ unsigned int Profiler::ProfilerImpl::buildStackFrame(const uint32 sf)
 
       const Frame frame(demangled, path, parent);
       auto it = stackFrames.end();
-      if (parent > 0) { // TAG: >= root buffer of buffer
-        // TAG: if we can look up all frames for a given parent
-        // TAG: we can also build the longest frames before the short ones - makes it more likely to reuse
+      
+      // TAG: better to use sorting via binary tree - operator< is well defined
+      // Map<Frame, unsigned int> sortedFrames; // sortedFrames.add(Frame(), 1);
+      
+      if (parent >= MAXIMUM_STACK_TRACE) {
+        // not expected since we trim stack to limit
         // slow linear search - O(n^2) complexity
         it = stackFrames.begin() + parent;
         for (const auto end = stackFrames.end(); it != end; ++it) {
@@ -149,11 +152,12 @@ unsigned int Profiler::ProfilerImpl::buildStackFrame(const uint32 sf)
             break;
           }
         }
-      } else { // only look through roots (limited number)
-        auto rootIt = stackFramesRoots.begin() + parent;
-        for (const auto end = stackFramesRoots.end(); rootIt != end; ++rootIt) {
-          if (stackFrames[*rootIt] == frame) {
-            it = stackFrames.begin() + *rootIt; // convert index to iterator
+      } else { // only look through limited frames
+        const auto& frames = stackFramesByParent[parent];
+        const auto end = frames.end();
+        for (auto j = frames.begin(); j != end; ++j) {
+          if (stackFrames[*j] == frame) {
+            it = stackFrames.begin() + *j; // convert index to iterator
             break;
           }
         }
@@ -169,9 +173,8 @@ unsigned int Profiler::ProfilerImpl::buildStackFrame(const uint32 sf)
         stackFrames.append(frame);
         auto previous = parent;
         parent = stackFrames.getSize(); // next frame uses this as parent
-        if (frame.parent == 0) {
-          // TAG: roots[frame.parent].append(parent - 1);
-          stackFramesRoots.append(parent - 1); // index of root
+        if (frame.parent < MAXIMUM_STACK_TRACE) {
+          stackFramesByParent[frame.parent].append(parent - 1); // index of frame
         }
         // fout << "NEW FRAME " << parent << " => " << previous << " " << demangled << ENDL;
       }
@@ -203,8 +206,10 @@ void Profiler::ProfilerImpl::release()
   stackFramesUnhash.setSize(0);
   stackFrames.ensureCapacity(0);
   stackFrames.setSize(0);
-  stackFramesRoots.ensureCapacity(0);
-  stackFramesRoots.setSize(0);
+  for (MemorySize i = 0; i < MAXIMUM_STACK_TRACE; ++i) {
+    stackFramesByParent[i].ensureCapacity(0);
+    stackFramesByParent[i].setSize(0);
+  }
   stackFramesLookup.removeAll();
   releaseEvents();
 }
@@ -370,7 +375,7 @@ void Profiler::initEvent(Event& e) noexcept
   if (profiler.useStackFrames) {
     SuspendProfiling suspendProfiling; // no thanks to recursion
     // skip initEvent() -> internal caller -> ?
-    e.sf = profiler.getStackFrame(StackFrame::getStack(2)); // we cannot recover from memory exception
+    e.sf = profiler.getStackFrame(StackFrame::getStack(2, ProfilerImpl::MAXIMUM_STACK_TRACE)); // we cannot recover from memory exception
   }
 
   e.ts = Timer::toXTimeUS(Timer::getNow());

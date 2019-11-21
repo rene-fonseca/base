@@ -470,6 +470,7 @@ unsigned int StackFrame::getStack(void** dest, unsigned int size, unsigned int s
     if (!symbol) {
       break;
     }
+    // use VirtualMemory::EXECUTE
     if (reinterpret_cast<MemorySize>(ip) < 0x10000) { // TAG: what is the proper way to detect top of stack
       break;
     }

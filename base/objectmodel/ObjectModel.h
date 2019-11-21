@@ -479,6 +479,7 @@ public:
     /** Sets the value for the given key. key must not be nullptr. */
     void setValue(const Reference<String>& key, const Reference<Value>& value);
     void setValue(const base::String& key, const Reference<Value>& value);
+    void setValue(const base::String& key, std::nullptr_t);
     void setValue(const base::String& key, const bool value);
     void setValue(const base::String& key, const int64 value);
     void setValue(const base::String& key, const double value);

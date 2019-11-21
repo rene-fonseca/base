@@ -539,6 +539,20 @@ void ObjectModel::Object::setValue(const base::String& key, const Reference<Valu
   values.append(Association(globalObjectModel.createString(key), value));
 }
 
+void ObjectModel::Object::setValue(const base::String& key, std::nullptr_t)
+{
+  for (auto& v : values) {
+    if (!INLINE_ASSERT(v.first)) {
+      continue;
+    }
+    if (v.first->value == key) {
+      v.second = nullptr;
+      return;
+    }
+  }
+  values.append(Association(globalObjectModel.createString(key), nullptr));
+}
+
 void ObjectModel::Object::setValue(const base::String& key, const bool value)
 {
   for (auto& v : values) {

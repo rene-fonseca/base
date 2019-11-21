@@ -33,6 +33,8 @@ public:
   }
 
   void run() {
+    setThreadName("MyThread");
+    
     {
       ExclusiveSynchronize<SpinLock> exclusiveSyncrhonize(lock);
       fout << "Written by MyThread object" << ENDL;

@@ -161,6 +161,7 @@ public:
 
 void MyThreadKey::run()
 {
+  setThreadName("ThreadKey / MyThread");
   parent->runFromThread();
 }
 

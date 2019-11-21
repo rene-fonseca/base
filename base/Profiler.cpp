@@ -21,15 +21,24 @@
 #include <base/initialization.h>
 #include <base/UnitTest.h>
 
+#if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__MACOS)
+#include <sys/resource.h>
+#endif
+
 // ATTENTION: we do not want to record heap/IO for Profile implementation
 // TAG: compact stack trace like utf8
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
-namespace {
+namespace profiler {
 
   SpinLock lock;
+
+  PreferredAtomicCounter memoryUsed;
+  PreferredAtomicCounter objects;
 }
+
+using namespace profiler;
 
 bool Profiler::ProfilerImpl::open(const String& path)
 {
@@ -316,7 +325,22 @@ void Profiler::start()
 {
   enabled = true;
   pushProcessMeta(new ReferenceString(Process::getProcess().getName()));
-  pushThreadMeta(new ReferenceString(Thread::getThreadName()));
+ 
+  if (auto tlc = Thread::getLocalContext()) {
+    if (tlc->simpleId != 1) { // current thread is not main thread
+      Event e;
+      initEvent(e);
+      e.tid = 1;
+      e.ph = EVENT_META;
+      e.name = "thread_name";
+      e.cat = "THREAD"; // "__metadata"
+      e.data = new ReferenceString("main");
+      pushEvent(e);
+    }
+  }
+  
+  auto name = Thread::getThreadName();
+  pushThreadMeta(new ReferenceString(name));
 }
 
 void Profiler::stop() noexcept
@@ -412,14 +436,17 @@ void Profiler::pushEvent(const Event& e)
   if (!INLINE_ASSERT(enabled)) {
     return;
   }
+  
   ++profiler.numberOfEvents;
   profiler.addEvent(e);
 }
 
-void Profiler::pushObjectCreateImpl(MemorySize size)
+void Profiler::pushObjectCreateImpl(MemorySize id, MemorySize size)
 {
-  const bool isID = size & (static_cast<MemorySize>(1) << (sizeof(MemorySize) * 8 - 1));
-  if (!isID) {
+  memoryUsed += size;
+  ++objects;
+
+  if (size > 0) {
     if (size < profiler.minimumHeapSize) {
       return;
     }
@@ -431,16 +458,27 @@ void Profiler::pushObjectCreateImpl(MemorySize size)
   initEvent(e);
   e.ph = EVENT_OBJECT_CREATE;
   e.cat = CAT_MEMORY;
-  if (isID) {
-    e.id = static_cast<uint16>(size & 0xffff); // remember id // TAG: need more bits to be sure
-  }
+  e.id = id; // remember id
   pushEvent(e);
+  
+  pushCountersImpl(); // TAG: temp test - sample every duration or heap operations
 }
 
-void Profiler::pushObjectDestroyImpl(MemorySize size)
+void Profiler::pushObjectCreateImpl(MemorySize id)
 {
-  if (size < profiler.minimumHeapSize) {
-    return;
+  pushObjectCreateImpl(id, 0);
+}
+
+void Profiler::pushObjectDestroyImpl(MemorySize id, MemorySize size)
+{
+  BASSERT(memoryUsed >= size);
+  memoryUsed -= size;
+  --objects;
+
+  if (size > 0) {
+    if (size < profiler.minimumHeapSize) {
+      return;
+    }
   }
   if (!isEnabledScope()) {
     return;
@@ -449,7 +487,13 @@ void Profiler::pushObjectDestroyImpl(MemorySize size)
   initEvent(e);
   e.ph = EVENT_OBJECT_DESTROY;
   e.cat = CAT_MEMORY;
+  e.id = id; // remember id
   pushEvent(e);
+}
+
+void Profiler::pushObjectDestroyImpl(MemorySize id)
+{
+  pushObjectDestroyImpl(id, 0);
 }
 
 void Profiler::pushExceptionImpl(const char* type)
@@ -502,7 +546,7 @@ void Profiler::pushProcessMetaImpl(ReferenceCountedObject* name)
   initEvent(e);
   e.ph = EVENT_META;
   e.name = "process_name";
-  e.cat = "PROCESS";
+  e.cat = "PROCESS"; // "__metadata"
   e.data = name;
   pushEvent(e);
 }
@@ -516,8 +560,36 @@ void Profiler::pushThreadMetaImpl(ReferenceCountedObject* name/*, unsigned int p
   initEvent(e);
   e.ph = EVENT_META;
   e.name = "thread_name";
-  e.cat = "THREAD";
+  e.cat = "THREAD"; // "__metadata"
   e.data = name;
+  pushEvent(e);
+}
+
+Profiler::ReferenceCounters::ReferenceCounters() noexcept
+{
+#if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__MACOS)
+  // TAG: temp test
+  // struct rusage usage;
+  // int status = getrusage(RUSAGE_SELF, &usage);
+  this->memoryUsed = profiler::memoryUsed; // usage.ru_maxrss; // usage.ru_ixrss + usage.ru_idrss + usage.ru_isrss;
+  this->objects = profiler::objects;
+  // processingTime = static_cast<uint64>(usage.ru_utime.tv_sec + usage.ru_stime.tv_sec) * 1000000 + static_cast<uint64>(usage.ru_utime.tv_usec + usage.ru_stime.tv_usec); // Process::getCurrentProcess().getTimes();
+  // io = usage.ru_msgrcv + usage.ru_msgsnd;
+  // operations = usage.ru_inblock + usage.ru_oublock;
+#endif
+}
+
+void Profiler::pushCountersImpl()
+{
+  if (!isEnabledScope()) {
+    return;
+  }
+  Event e;
+  initEvent(e);
+  e.ph = EVENT_COUNTER;
+  e.name = "UpdateCounters"; // what values are allowed
+  e.cat = "PROCESS"; // "__metadata"
+  e.data = new ReferenceCounters();
   pushEvent(e);
 }
 
@@ -604,6 +676,7 @@ void Profiler::ProfilerImpl::close()
   auto TDUR = o.createString("tdur");
   auto SF = o.createString("sf");
   auto ARGS = o.createString("args");
+  auto DATA = o.createString("data");
   auto PARENT = o.createString("parent");
   auto CATEGORY = o.createString("category");
   auto ID = o.createString("id");
@@ -758,10 +831,9 @@ void Profiler::ProfilerImpl::close()
           break;
         case EVENT_OBJECT_CREATE:
         case EVENT_OBJECT_DESTROY:
-          if (e.id != 0xffff) {
+          if (e.id) {
             item->setValue(ID, o.createInteger(e.id));
           }
-          // TAG: use pointer value for heap
           break;
         case EVENT_INSTANT:
           if (auto r = e.data.cast<ReferenceString>()) {
@@ -774,6 +846,22 @@ void Profiler::ProfilerImpl::close()
             item->setValue(CNAME, o.createString("bad"));
           }
 #endif
+          break;
+        case EVENT_COUNTER:
+          if (auto r = e.data.cast<ReferenceCounters>()) {
+            item->setValue("s", "g");
+            auto args = o.createObject();
+            item->setValue(ARGS, args);
+            auto data = o.createObject();
+            args->setValue(DATA, data);
+            // data->setValue("documents", format() << r->...);
+            // data->setValue("jsEventListeners", format() << r->...);
+            data->setValue("jsHeapSizeUsed", format() << r->memoryUsed);
+            data->setValue("nodes", format() << r->objects);
+            // data->setValue("processingTime", format() << r->processingTime);
+            // data->setValue("io", format() << r->io);
+            // data->setValue("operations", format() << r->operations);
+          }
           break;
         default:
           ; // what data do we need

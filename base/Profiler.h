@@ -22,13 +22,14 @@
 #include <base/concurrency/SpinLock.h>
 #include <base/collection/Map.h>
 
-// TAG: check unknown threads
 // TAG: add heap ids
-// TAG: skip extra frame when ready
 // TAG: hook exception throws
-// TAG: trim module filename
 // TAG: support external stack trace
 // TAG: sample memory/objects
+// TAG: push error/warning
+// TAG: exception constructors
+// push UI frame begin/end - count each frame
+// push UI user interaction
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
@@ -159,13 +160,16 @@ private:
 
   /** Submit event. */
   static void pushEvent(const Event& e);
-  static void pushObjectCreateImpl(MemorySize size);
-  static void pushObjectDestroyImpl(MemorySize size);
+  static void pushObjectCreateImpl(MemorySize id, MemorySize size);
+  static void pushObjectCreateImpl(MemorySize id);
+  static void pushObjectDestroyImpl(MemorySize id, MemorySize size);
+  static void pushObjectDestroyImpl(MemorySize id);
   static void pushExceptionImpl(const char* type);
   static void pushSignalImpl(const char* name);
   static void pushThreadStartImpl(const char* name, unsigned int parentId);
   static void pushProcessMetaImpl(ReferenceCountedObject* name);
   static void pushThreadMetaImpl(ReferenceCountedObject* name/*, unsigned int parentId*/);
+  static void pushCountersImpl();
 public:
 
   /** Enables stack frames. */
@@ -228,20 +232,20 @@ public:
     
     ProfileObject() noexcept
     {
-      pushObjectCreate(id | (static_cast<MemorySize>(1) << (sizeof(MemorySize) * 8 - 1)));
+      pushObjectCreate(id, 0);
     }
 
 #if 0
     // cat not used for now
     ProfileObject(const char* _cat) noexcept : cat(_cat)
     {
-      pushObjectCreate(id | (static_cast<MemorySize>(1) << (sizeof(MemorySize) * 8 - 1)));
+      pushObjectCreate(id, 0);
     }
 #endif
 
     ~ProfileObject() noexcept
     {
-      pushObjectDestroy(id | (static_cast<MemorySize>(1) << (sizeof(MemorySize) * 8 - 1)));
+      pushObjectDestroy(id, 0);
     }
   };
 
@@ -258,6 +262,19 @@ public:
     inline ReferenceString(const String& _string) noexcept : string(_string)
     {
     }
+  };
+
+  /** A reference counted string. */
+  class _COM_AZURE_DEV__BASE__API ReferenceCounters : public ReferenceCountedObject {
+  public:
+    
+    MemorySize memoryUsed = 0; // memory in use
+    MemorySize objects = 0; // number of objects
+    uint64 processingTime = 0; // processing time
+    uint64 io = 0; // IO transmitted
+    uint64 operations = 0; // number of IO operations
+
+    ReferenceCounters() noexcept;
   };
   
   /** Returns timestamp. */
@@ -341,26 +358,37 @@ public:
     {
     }
   };
-
-  // TAG: push error/warning
-  // TAG: exception constructors
-  // TAG: push sample
-  // TAG: auto push if task takes a long time
   
-  static inline void pushObjectCreate(MemorySize size) // TAG: include pointer value - resize needs to call destroy/create when pointer changes
+  static inline void pushObjectCreate(MemorySize id, MemorySize size)
   {
     if (!enabled) {
       return;
     }
-    pushObjectCreateImpl(size);
+    pushObjectCreateImpl(id, size);
   }
 
-  static inline void pushObjectDestroy(MemorySize size)
+  static inline void pushObjectCreate(MemorySize id)
   {
     if (!enabled) {
       return;
     }
-    pushObjectDestroyImpl(size);
+    pushObjectCreateImpl(id);
+  }
+
+  static inline void pushObjectDestroy(MemorySize id, MemorySize size)
+  {
+    if (!enabled) {
+      return;
+    }
+    pushObjectDestroyImpl(id, size);
+  }
+
+  static inline void pushObjectDestroy(MemorySize id)
+  {
+    if (!enabled) {
+      return;
+    }
+    pushObjectDestroyImpl(id);
   }
 
   static inline void pushException(const char* type)
@@ -401,6 +429,14 @@ public:
       return;
     }
     pushThreadMetaImpl(name);
+  }
+
+  static inline void pushCounters()
+  {
+    if (!enabled) {
+      return;
+    }
+    pushCountersImpl();
   }
 
   /** Release profiler resources. */

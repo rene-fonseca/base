@@ -22,7 +22,7 @@ _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
   Stack frame.
 */
 
-class _COM_AZURE_DEV__BASE__API StackFrame { // TAG: rename
+class _COM_AZURE_DEV__BASE__API StackFrame {
 private:
   
   Allocator<void*> frames;
@@ -99,14 +99,16 @@ public:
   /**
     Returns the stack trace.
   */
-  static unsigned int getStack(void** dest, unsigned int size, unsigned int skip = 1);
+  static unsigned int getStack(void** dest, unsigned int size, unsigned int skip = 1, bool trim = true);
 
   /**
     Returns the stack.
    
+    @param skip Skip the first frames.
     @param levels The maximum number of levels to dump.
+    @param trim Trim to base address.
   */
-  static StackFrame getStack(unsigned int skip = 1, unsigned int levels = 32);
+  static StackFrame getStack(unsigned int skip = 1, unsigned int levels = 32, bool trim = true);
 
   bool operator==(const StackFrame& compare) const noexcept
   {

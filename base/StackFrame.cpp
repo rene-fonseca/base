@@ -417,7 +417,17 @@ namespace {
 
 #endif
 
-unsigned int StackFrame::getStack(void** dest, unsigned int size, unsigned int skip)
+#if 0
+namaespace {
+  
+  bool VirtualMemory::getInfo(void*) noexcept
+  {
+    return true; // TAG:
+  }
+}
+#endif
+
+unsigned int StackFrame::getStack(void** dest, unsigned int size, unsigned int skip, bool trim)
 {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   USHORT count = RtlCaptureStackBackTrace(skip + 1, size, dest, NULL);
@@ -467,11 +477,15 @@ unsigned int StackFrame::getStack(void** dest, unsigned int size, unsigned int s
     frame = *reinterpret_cast<void**>(frame);
   }
 #endif
-  // TAG: calc hash for stack trace
+  
+  if (trim) {
+    // TAG: remove item not in base image - but include main()
+  }
+  
   return count;
 }
 
-StackFrame StackFrame::getStack(unsigned int skip, unsigned int levels)
+StackFrame StackFrame::getStack(unsigned int skip, unsigned int levels, bool trim)
 {
   StackFrame frames;
 
@@ -480,24 +494,11 @@ StackFrame StackFrame::getStack(unsigned int skip, unsigned int levels)
   }
 
   ++skip;
-
-  {
-    void* trace[256]; // quick buffer
-    const unsigned int count = getStack(trace, minimum<MemorySize>(levels, getArraySize(trace)), skip);
-    if (!INLINE_ASSERT(count > 0)) {
-      return frames;
-    }
-    if ((count != getArraySize(trace)) || (count <= levels)) { // no overflow
-      frames.frames.setSize(count);
-      copy(frames.frames.getElements(), trace, count);
-      return frames;
-    }
-  }
   
-  PrimitiveStackArray<void*> buffer(1024);
+  PrimitiveStackArray<void*> buffer(256);
   unsigned int count = 0;
   while (buffer.size() < (64 * 1024)) {
-    count = getStack(buffer, minimum<MemorySize>(levels, buffer.size()), skip);
+    count = getStack(buffer, minimum<MemorySize>(levels, buffer.size()), skip, trim);
     if ((count == buffer.size()) && (count < levels)) { // overflow
       buffer.resize(buffer.size() * 2);
       continue;
@@ -509,6 +510,11 @@ StackFrame StackFrame::getStack(unsigned int skip, unsigned int levels)
   copy(frames.frames.getElements(), static_cast<void**>(buffer), count);
 
   return frames;
+}
+
+namespace {
+
+  const void* imageBase = DynamicLinker::getImageAddress((void*)&StackFrame::toStream);
 }
 
 void StackFrame::toStream(FormatOutputStream& stream, const void* const * trace, MemorySize size, unsigned int flags)
@@ -621,6 +627,7 @@ void StackFrame::toStream(FormatOutputStream& stream, const void* const * trace,
         }
 
         if (flags & FLAG_TRIM_SYSTEM) {
+          // TAG: skip until first base address
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
           if ((demangled == MESSAGE("BaseThreadInitThunk")) || (demangled == MESSAGE("CtrlRoutine"))) {
             stream << EOL;

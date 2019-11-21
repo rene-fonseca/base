@@ -120,7 +120,6 @@ unsigned int Profiler::ProfilerImpl::buildStackFrame(const uint32 sf)
         continue;
       }
       previousName = demangled;
-      // TAG: trim during stack trace
       if (demangled.startsWith("base::Profiler::")) { // we do not want to include Profiler methods in stack
         continue;
       }
@@ -472,7 +471,14 @@ void Profiler::pushObjectCreateImpl(MemorySize id, MemorySize size)
   e.id = id; // remember id
   pushEvent(e);
   
-  pushCountersImpl(); // TAG: temp test - sample every duration or heap operations
+  static MemorySize sample = 0;
+  sample += size;
+  sample += 128;
+  if (sample >= 4096) {
+    sample = 0;
+    pushCountersImpl();
+  }
+  
 }
 
 void Profiler::pushObjectCreateImpl(MemorySize id)

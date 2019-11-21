@@ -324,9 +324,6 @@ inline TYPE&& operator*(const Exception::Hook&& hook, TYPE&& exception)
   return std::move(exception);
 }
 
-/** Throws exception. throwit MyException(). */
-#define throwit Exception::Hook() *
-
 /** Throws the given exception but requires function call style. */
 template<class EXCEPTION>
 inline void throwthis(EXCEPTION&& e)
@@ -336,12 +333,17 @@ inline void throwthis(EXCEPTION&& e)
   throw std::move(e); // throw std::forward(e);
 }
 
+/** Throws exception. throwit MyException(). */
+#define throwit Exception::Hook() * // fake keyword
+
 /** Rethrows current exception if any. */
 inline void rethrow()
 {
   Exception::rethrow(); // does throw
   // throw; // throwing in handler
 }
+
+#define rethrowit Exception::rethrow() // fake keyword
 
 #define _COM_AZURE_DEV__BASE__EXCEPTION_THIS_TYPE() \
   Type getThisType() const noexcept override \

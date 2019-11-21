@@ -29,11 +29,13 @@ private:
 public:
 
   MyThread(char _value, unsigned int _count)
-    : value(_value), count(_count) {
+    : value(_value), count(_count)
+  {
   }
 
-  void run() {
-    setThreadName("MyThread");
+  void run()
+  {
+    Thread::setThreadName("MyThread");
     
     {
       ExclusiveSynchronize<SpinLock> exclusiveSyncrhonize(lock);
@@ -62,7 +64,8 @@ public:
     : Application(MESSAGE("Thread"), numberOfArguments, arguments, environment) {
   }
 
-  void main() {
+  void main()
+  {
     fout << getFormalName() << " version "
          << MAJOR_VERSION << '.' << MINOR_VERSION << EOL
          << "The Base Framework (Test Suite)" << EOL

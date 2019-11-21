@@ -84,7 +84,7 @@ public:
 
   void throwOutOfRange()
   {
-    throw OutOfRange("Testing throw of out of range exception which must get caught by application stub.");
+    throwit OutOfRange("Testing throw of out of range exception which must get caught by application stub.");
   }
 
   void rethrowOutOfRange()
@@ -99,7 +99,7 @@ public:
   
   void throwNothing()
   {
-    throw; // TAG: this calls UnhandledException for win32 - add win32 handler
+    rethrowit; // TAG: this calls UnhandledException for win32 - add win32 handler
   }
   
   void throwNullPointer() noexcept

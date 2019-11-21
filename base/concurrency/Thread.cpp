@@ -935,6 +935,7 @@ public:
 
 void MyThread::run()
 {
+  setThreadName("Thread / MyThread");
   parent->runFromThread();
 }
 

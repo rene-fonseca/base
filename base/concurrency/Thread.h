@@ -50,6 +50,7 @@ class ThreadLocalContext;
     }
     
     void run() throw() {
+      setThreadName("MyThread");
       while (count--) {
       }
     }

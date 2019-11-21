@@ -106,15 +106,26 @@ unsigned int Profiler::ProfilerImpl::buildStackFrame(const uint32 sf)
         continue;
       }
       const String name = DynamicLinker::getSymbolName(ip);
+#if 0
       if (name == previousName) {
         continue;
       }
       previousName = name;
+#endif
       const String demangled = TypeInfo::demangleName(name.native());
       if (!demangled) {
         continue;
       }
-        
+      if (demangled == previousName) {
+        continue;
+      }
+      previousName = demangled;
+      // TAG: trim during stack trace
+      if (demangled.startsWith("base::Profiler::")) { // we do not want to include Profiler methods in stack
+        continue;
+      }
+      // TAG: trim system functions
+      
       void* imageAddress = DynamicLinker::getImageAddress(ip); // returns nullptr for some modules
       if (!imageAddress || (imageAddress != previousImageAddress)) {
         previousImageAddress = imageAddress;
@@ -471,7 +482,9 @@ void Profiler::pushObjectCreateImpl(MemorySize id)
 
 void Profiler::pushObjectDestroyImpl(MemorySize id, MemorySize size)
 {
-  BASSERT(memoryUsed >= size);
+  // profiler might have been enabled after objects have been created
+  // BASSERT(objects > 0);
+  // BASSERT(memoryUsed >= size);
   memoryUsed -= size;
   --objects;
 

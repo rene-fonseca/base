@@ -24,7 +24,48 @@
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
-String SystemInformation::getVendor() throw() {
+String SystemInformation::getOS() noexcept
+{
+  const char* os = nullptr;
+  switch (_COM_AZURE_DEV__BASE__OS) {
+  case _COM_AZURE_DEV__BASE__GNULINUX:
+    os = "GNU/Linux";
+    break;
+  case _COM_AZURE_DEV__BASE__IRIX65:
+    os = "IRIX";
+    break;
+  case _COM_AZURE_DEV__BASE__SOLARIS:
+    os = "Solaris";
+    break;
+  case _COM_AZURE_DEV__BASE__CYGWIN:
+    os = "Cygwin";
+    break;
+  case _COM_AZURE_DEV__BASE__WINNT4:
+    os = "Windows";
+    break;
+  case _COM_AZURE_DEV__BASE__W2K:
+    os = "Windows";
+    break;
+  case _COM_AZURE_DEV__BASE__WXP:
+    os = "Windows";
+    break;
+  case _COM_AZURE_DEV__BASE__BEOS:
+    os = "BEOS";
+    break;
+  case _COM_AZURE_DEV__BASE__AIX:
+    os = "AIX";
+    break;
+  case _COM_AZURE_DEV__BASE__MACOS:
+    os = "macOS";
+    break;
+  default:
+    ;
+  }
+  return os;
+}
+
+String SystemInformation::getVendor() noexcept
+{
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   return Literal("Microsoft");
 #else
@@ -39,7 +80,8 @@ String SystemInformation::getVendor() throw() {
 #endif
 }
 
-String SystemInformation::getSystem() throw() {
+String SystemInformation::getSystem() noexcept
+{
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   OSVERSIONINFO versionInfo;
   versionInfo.dwOSVersionInfoSize = sizeof(versionInfo);
@@ -65,7 +107,8 @@ String SystemInformation::getSystem() throw() {
 #endif // flavor
 }
 
-String SystemInformation::getRelease() throw() {
+String SystemInformation::getRelease() noexcept
+{
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   return Literal("Unspecified");
 #else
@@ -78,7 +121,8 @@ String SystemInformation::getRelease() throw() {
 #endif
 }
 
-String SystemInformation::getVersion() throw() {
+String SystemInformation::getVersion() noexcept
+{
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   return Literal("Unspecified");
 #else
@@ -91,7 +135,8 @@ String SystemInformation::getVersion() throw() {
 #endif
 }
 
-String SystemInformation::getMachine() throw() {
+String SystemInformation::getMachine() noexcept
+{
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   return Literal("Unspecified");
 #else

@@ -27,31 +27,36 @@ _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 class _COM_AZURE_DEV__BASE__API SystemInformation : public Object {
 public:
-  
+
+  /**
+    Returns the system ID (determinated at build time NOT runtime).
+  */
+  static String getOS() noexcept;
+
   /**
     Returns the vendor name of the operating system.
   */
-  static String getVendor() throw();
+  static String getVendor() noexcept;
 
   /**
     Returns a description of the operating system.
   */
-  static String getSystem() throw();
+  static String getSystem() noexcept;
 
   /**
     Returns the release of the operating system.
   */
-  static String getRelease() throw();
+  static String getRelease() noexcept;
 
   /**
     Returns the version of the operating system.
   */
-  static String getVersion() throw();
+  static String getVersion() noexcept;
 
   /**
     Returns the machine.
   */
-  static String getMachine() throw();
+  static String getMachine() noexcept;
 };
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

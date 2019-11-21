@@ -18,7 +18,7 @@
 #include <base/dl/DynamicLinker.h>
 #include <base/filesystem/FileSystem.h>
 #include <base/Application.h>
-#include <base/initialization.h>
+#include <base/SystemInformation.h>
 #include <base/UnitTest.h>
 
 #if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__MACOS)
@@ -619,46 +619,6 @@ namespace {
   }
 }
 
-String getOS()
-{
-  const char* os = nullptr;
-  switch (_COM_AZURE_DEV__BASE__OS) {
-  case _COM_AZURE_DEV__BASE__GNULINUX:
-    os = "GNU/Linux";
-    break;
-  case _COM_AZURE_DEV__BASE__IRIX65:
-    os = "IRIX";
-    break;
-  case _COM_AZURE_DEV__BASE__SOLARIS:
-    os = "Solaris";
-    break;
-  case _COM_AZURE_DEV__BASE__CYGWIN:
-    os = "Cygwin";
-    break;
-  case _COM_AZURE_DEV__BASE__WINNT4:
-    os = "Windows";
-    break;
-  case _COM_AZURE_DEV__BASE__W2K:
-    os = "Windows";
-    break;
-  case _COM_AZURE_DEV__BASE__WXP:
-    os = "Windows";
-    break;
-  case _COM_AZURE_DEV__BASE__BEOS:
-    os = "BEOS";
-    break;
-  case _COM_AZURE_DEV__BASE__AIX:
-    os = "AIX";
-    break;
-  case _COM_AZURE_DEV__BASE__MACOS:
-    os = "macOS";
-    break;
-  default:
-    ;
-  }
-  return os;
-}
-
 void Profiler::ProfilerImpl::close()
 {
   constexpr bool useJSON = true;
@@ -918,7 +878,7 @@ void Profiler::ProfilerImpl::close()
         metadata->setValue(o.createString("clock-domain"), o.createString("MONOTONIC"));
         metadata->setValue(o.createString("highres-ticks"), o.createBoolean(true));
 
-        if (auto os = getOS()) {
+        if (auto os = SystemInformation::getOS()) {
           metadata->setValue(o.createString("os-name"), o.createString(os));
         }
         // metadata->setValue(o.createString("physical-memory"), o.createInteger(...::getMemory()/1024/1024));

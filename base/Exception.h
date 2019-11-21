@@ -61,6 +61,14 @@ private:
 #endif
 public:
 
+  class Hook {};
+
+  /** Called on throw. */
+  static void onThrow(Exception& exception) noexcept;
+
+  /** Rethrows exception. Throws Exception is not current exception. */
+  static void rethrow();
+
   /** Returns true if stack traces for new exceptions are printed. */
   static inline bool getDumpExceptions() noexcept
   {
@@ -307,22 +315,32 @@ inline EXCEPTION&& bindException(EXCEPTION&& e, const char* message, unsigned in
   return std::move(e);
 }
 
-/** Throws the given exception. */
+/** Helper to hook throw. */
+template<class TYPE>
+inline TYPE&& operator*(const Exception::Hook&& hook, TYPE&& exception)
+{
+  static_assert(std::is_base_of<Exception, TYPE>(), "Only Exception derived types may be thrown.");
+  Exception::onThrow(exception);
+  return std::move(exception);
+}
+
+/** Throws exception. throwit MyException(). */
+#define throwit Exception::Hook() *
+
+/** Throws the given exception but requires function call style. */
 template<class EXCEPTION>
-inline void throwit(EXCEPTION&& e) throw(EXCEPTION)
+inline void throwthis(EXCEPTION&& e)
 {
   static_assert(std::is_base_of<Exception, EXCEPTION>(), "Only Exception derived types may be thrown.");
-  // TAG: record stack trace here
-  throw std::move(e);
-  // TAG: throw std::forward(e);
+  Exception::onThrow(e); // does not throw
+  throw std::move(e); // throw std::forward(e);
 }
 
 /** Rethrows current exception if any. */
-inline void rethrowit()
+inline void rethrow()
 {
-  // TAG: check if current exception is available
-  // TAG: record stack trace here
-  throw;
+  Exception::rethrow(); // does throw
+  // throw; // throwing in handler
 }
 
 #define _COM_AZURE_DEV__BASE__EXCEPTION_THIS_TYPE() \

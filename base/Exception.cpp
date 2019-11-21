@@ -151,7 +151,7 @@ Exception::ExceptionHandler Exception::exceptionHandler = nullptr;
 
 Exception::StackTrace Exception::getStackTrace()
 {
-  // TAG: can we clear trace at after exception is caught
+  // can we clear trace after exception is caught - but rethrow should keep it - so can only clear on final and no more unwinding
   StackTrace result;
   auto tls = Thread::getLocalContext();
   if (tls) {
@@ -162,9 +162,42 @@ Exception::StackTrace Exception::getStackTrace()
   return result;
 }
 
+// C++: it would be preferred to have handler for throw like std::set_terminate() but not a full handler just a hook
+// throw_handler* std::set_throw_handler(throw_handler*) noexcept;
+// throw_handler* std::get_throw_handler() noexcept;
+void Exception::onThrow(Exception& exception) noexcept
+{
+  if (exceptionHandler) { // not installed for release builds - but can be installed at runtime
+    exceptionHandler(&exception);
+  }
+}
+
+void Exception::rethrow()
+{
+  if (exceptionHandler) { // not installed for release builds - but can be installed at runtime
+    try {
+      throw; // calls std::terminate() if no exception
+    } catch (Exception& e) {
+      exceptionHandler(&e);
+      throw;
+    }
+#if 0
+    auto exception = std::current_exception(); // C++: would be nice to be able to dynamic cast to type
+    if (INLINE_ASSERT(exception)) {
+      std::rethrow_exception(exception);
+    } else {
+      // no exception
+    }
+#endif
+  }
+  
+  throw;
+}
+
 Exception::Exception() noexcept
   : cause(PrimitiveTraits<unsigned int>::MAXIMUM)
 {
+  // we cannot use 'this'
   if (exceptionHandler) { // not installed for release builds - but can be installed at runtime
     exceptionHandler(this);
   }

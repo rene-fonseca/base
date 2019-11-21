@@ -39,22 +39,27 @@ namespace internal {
 };
 #endif // flavor
 
+namespace {
+
+  PreferredAtomicCounter totalResizes;
+  PreferredAtomicCounter totalMemory;
+}
+
 void* HeapImpl::allocateNoThrow(MemorySize size) noexcept
 {
-  Profiler::pushObjectCreate(size);
-  
   void* result = nullptr;
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   result = static_cast<void*>(::HeapAlloc(internal::specific::processHeap, 0, size));
-  if ((!result) && (size != 0)) { // was memory allocated
+  if (!result && (size != 0)) { // was memory allocated
     return nullptr;
   }
 #else // unix
   result = ::malloc(size);
-  if ((!result) && (size != 0)) { // was memory allocated
+  if (!result && (size != 0)) { // was memory allocated
     return nullptr;
   }
 #endif // flavor
+  Profiler::pushObjectCreate(reinterpret_cast<MemorySize>(result), size);
   return result;
 }
 
@@ -63,34 +68,37 @@ void* HeapImpl::allocate(MemorySize size) throw(MemoryException)
   if (!size) {
     return nullptr;
   }
-
-  Profiler::pushObjectCreate(size);
   
   void* result = nullptr;
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   result = static_cast<void*>(::HeapAlloc(internal::specific::processHeap, 0, size));
-  if ((!result) && (size != 0)) { // was memory allocated
+  if (!result && (size != 0)) { // was memory allocated
     throw bindCause(MemoryException("Unable to allocate heap.", Type::getType<HeapImpl>()), ::GetLastError());
   }
 #else // unix
   result = ::malloc(size);
-  if ((!result) && (size != 0)) { // was memory allocated
+  if (!result && (size != 0)) { // was memory allocated
     throw MemoryException("Unable to allocate heap.", Type::getType<HeapImpl>());
   }
 #endif // flavor
+  Profiler::pushObjectCreate(reinterpret_cast<MemorySize>(result), size);
   return result;
+}
+
+MemorySize HeapImpl::getHeapUsed() noexcept
+{
+  return 0;
 }
 
 void* HeapImpl::resize(void* heap, MemorySize size) throw(MemoryException)
 {
-  if (heap) {
-    auto originalSize = getSize(heap);
+  MemorySize originalSize = 0;
+  const bool profile = Profiler::isEnabled();
+  if (heap && profile) {
+    originalSize = getSize(heap);
     if (size != originalSize) {
-      Profiler::pushObjectDestroy(originalSize);
-      Profiler::pushObjectCreate(size);
+      Profiler::pushObjectDestroy(reinterpret_cast<MemorySize>(heap), originalSize);
     }
-  } else {
-    Profiler::pushObjectCreate(size);
   }
 
   void* result = nullptr;
@@ -109,7 +117,7 @@ void* HeapImpl::resize(void* heap, MemorySize size) throw(MemoryException)
   } else if (size)  {
     result = static_cast<void*>(::HeapAlloc(internal::specific::processHeap, 0, size));
   }
-  if ((!result) && (size != 0)) { // was memory allocated
+  if (!result && (size != 0)) { // was memory allocated
     throw bindCause(MemoryException("Unable to resize heap.", Type::getType<HeapImpl>()), ::GetLastError());
   }
 #else // unix
@@ -119,54 +127,53 @@ void* HeapImpl::resize(void* heap, MemorySize size) throw(MemoryException)
     free(heap);
     result = nullptr;
   }
-  if ((!result) && (size != 0)) { // was memory allocated
+  if (!result && (size != 0)) { // was memory allocated
     throw MemoryException("Unable to resize heap.", Type::getType<HeapImpl>());
   }
 #endif // flavor
+  if (result && profile) {
+    Profiler::pushObjectCreate(reinterpret_cast<MemorySize>(result), size);
+  }
   return result;
-}
-
-namespace {
-
-  PreferredAtomicCounter totalResizes;
-  PreferredAtomicCounter totalMemory;
 }
 
 void* HeapImpl::tryResize(void* heap, MemorySize size) throw(MemoryException)
 {
+  if (!heap) {
+    return nullptr;
+  }
+  const bool profile = Profiler::isEnabled();
+  const auto originalSize = profile ? getSize(heap) : 0;
+  
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
-  if (heap) {
-    auto originalSize = Profiler::isEnabled() ? getSize(heap) : 0;
+  if (true) {
     if (size) {
       void* result = static_cast<void*>(::HeapReAlloc(internal::specific::processHeap, HEAP_REALLOC_IN_PLACE_ONLY, heap, size));
       if (result) {
         ++totalResizes;
         totalMemory += size;
         
-        if (size != originalSize) {
-          Profiler::pushObjectDestroy(originalSize);
-          Profiler::pushObjectCreate(size);
+        if (profile && (size != originalSize)) {
+          Profiler::pushObjectDestroy(reinterpret_cast<MemorySize>(heap), originalSize);
+          Profiler::pushObjectCreate(reinterpret_cast<MemorySize>(result), size);
         }
       }
       return result;
     } else {
-      Profiler::pushObjectDestroy(originalSize);
+      Profiler::pushObjectDestroy(reinterpret_cast<MemorySize>(heap), originalSize);
 
       if (!::HeapFree(internal::specific::processHeap, 0, heap)) {
         throw bindCause(MemoryException("Unable to resize heap.", Type::getType<HeapImpl>()), ::GetLastError());
       }
       return nullptr;
     }
-  } else {
-    return nullptr;
   }
 #else // unix
-  if (heap) {
-    if (size == 0) {
-      auto originalSize = Profiler::isEnabled() ? getSize(heap) : 0;
-      Profiler::pushObjectDestroy(originalSize);
-      free(heap);
+  if (size == 0) {
+    if (profile) {
+      Profiler::pushObjectDestroy(reinterpret_cast<MemorySize>(heap), originalSize);
     }
+    free(heap);
   }
   return nullptr;
 #endif // flavor
@@ -175,7 +182,9 @@ void* HeapImpl::tryResize(void* heap, MemorySize size) throw(MemoryException)
 void HeapImpl::release(void* heap) throw(MemoryException)
 {
   if (heap) {
-    Profiler::pushObjectDestroy(getSize(heap));
+    if (Profiler::isEnabled()) {
+      Profiler::pushObjectDestroy(reinterpret_cast<MemorySize>(heap), getSize(heap));
+    }
   }
 
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)

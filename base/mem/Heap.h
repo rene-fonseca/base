@@ -81,6 +81,9 @@ public:
 class _COM_AZURE_DEV__BASE__API HeapImpl {
 protected:
 
+  /** Returns the total heap used. */
+  static MemorySize getHeapUsed() noexcept;
+
   /**
     Allocates the specified number of bytes on the heap. Returns nullptr if
     unable to allocate the memory block. Returns nullptr for size 0.

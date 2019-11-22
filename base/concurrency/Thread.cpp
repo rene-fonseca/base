@@ -140,8 +140,12 @@ void Thread::setThreadName(const char* name)
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
     SetThreadName(GetCurrentThreadId(), name);
 #else
+#if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__MACOS)
     pthread_setname_np(name);
     // alternatively for MacOS / proc_setthreadname(void* buffer, int buffersize)
+#elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__GNULINUX)
+    pthread_setname_np(::pthread_self(), name);
+#endif
 #endif
   }
 }

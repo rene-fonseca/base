@@ -18,6 +18,7 @@
 #include <base/UnitTest.h>
 #include <base/io/FileOutputStream.h>
 #include <base/io/FileDescriptor.h>
+#include <base/Profiler.h>
 #include <algorithm>
 
 using namespace com::azure::dev::base;
@@ -57,6 +58,7 @@ private:
   String pattern = "*";
   bool runDevel = false;
   bool traceExceptions = false;
+  bool profile = false;
 public:
 
   TestApplication(
@@ -100,6 +102,8 @@ public:
         runDevel = true;
       } else if (argument == "--exceptions") {
         traceExceptions = true;
+      } else if (argument == "--profile") {
+        profile = true;
       } else if (argument == "--junit") {
         reportJUnit = true;
         if (!enu.hasNext()) {
@@ -292,9 +296,22 @@ public:
       if (reportJSON) {
         manager.setUseJSON(true);
       }
-      
+
+      if (profile) {
+        Profiler::open("profiler.json");
+        Profiler::setUseStackFrames(true);
+        Profiler::start();
+      }
+
       if (!manager.runTests(pattern, runDevel)) {
+        if (profile) {
+          Profiler::close();
+        }
         setExitCode(1);
+      }
+      
+      if (profile) {
+        Profiler::close();
       }
 
       if (reportJUnit) {

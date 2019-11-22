@@ -296,6 +296,8 @@ String DynamicLinker::getImagePath(const void* address)
 void* DynamicLinker::getImageAddress(const void* address) noexcept
 {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
+  // TAG: use VirtualMemory to find image address
+
   MutualExclusion::Sync _guard(Application::getLock()); // dbghelp is not MT-safe
   loadDbgHelp();
   if (symFromAddr) {
@@ -351,6 +353,62 @@ void* DynamicLinker::getSymbolAddress(const void* address) noexcept
   BASSERT(!"Not implemented");
 #endif
   return nullptr;
+}
+
+DynamicLinker::SymbolInfo DynamicLinker::getSymbolInfo(const void* address) noexcept;
+{
+  SymbolInfo result;
+
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
+  MutualExclusion::Sync _guard(Application::getLock()); // dbghelp is not MT-safe
+  loadDbgHelp();
+  if (symFromAddr) {
+    DWORD64 displacement = 0;
+    const unsigned int MAXIMUM_NAME = 2048; // nested templates can give very long names
+    PrimitiveStackArray<uint8> buffer(MAXIMUM_NAME + sizeof(SYMBOL_INFO) - 1);
+    SYMBOL_INFO* info = reinterpret_cast<SYMBOL_INFO*>(static_cast<uint8*>(buffer));
+    info->SizeOfStruct = sizeof(SYMBOL_INFO);
+    info->MaxNameLen = MAXIMUM_NAME;
+    BOOL status = symFromAddr(GetCurrentProcess(), reinterpret_cast<MemorySize>(address), &displacement, info);
+    if (!status) {
+      DWORD error = ::GetLastError();
+      return result;
+    }
+
+    void* address = reinterpret_cast<void*>(static_cast<MemorySize>(info.Address));
+    if (!address) {
+      return result;
+    }
+    result.address = address;
+
+    HMODULE imageAddress = reinterpret_cast<HMODULE>(info->ModBase);
+    if (!imageAddress) {
+      // TAG: lookup
+    }
+    result.imageAddress = imageAddress;
+
+    String demangled = getDemangledName(imageAddress, reinterpret_cast<const uint8*>(info->Address)); // recursive MT-lock
+    if (demangled) { // we fallback to dbghelp
+      result.name = demangled;
+    } else {
+      result = String(info->Name, info->NameLen);
+    }
+
+    return result;
+  }
+#elif ((_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__MACOS) || \
+       (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__GNULINUX))
+  Dl_info info;
+  int status = dladdr(address, &info);
+  if (status) {
+    result.address = info.dli_saddr;
+    result.imageAddress = info.dli_fbase;
+    result.name = info.dli_sname;
+  }
+#else
+  BASSERT(!"Not implemented");
+#endif
+  return result;
 }
 
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)

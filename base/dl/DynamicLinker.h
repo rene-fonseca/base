@@ -131,7 +131,25 @@ public:
 
   /** Returns the closest symbol for the given executable address. */
   static String getSymbolName(const void* address);
-  
+
+  /** Symbol info. */
+  class SymbolInfo {
+  public:
+
+    void* address = nullptr;
+    void* imageAddress = nullptr;
+    String name;
+    // could add some flags/type info
+
+    inline operator bool() const noexcept
+    {
+      return address;
+    }
+  };
+
+  /** Returns the closest symbol for the given executable address. */
+  static SymbolInfo getSymbolInfo(const void* address) noexcept;
+
   /**
     Closes the module.
   */

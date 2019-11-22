@@ -96,6 +96,9 @@ public:
 
   FileOutputStream& operator=(const FileOutputStream& eq) throw();
 
+  /** Returns true if open. */
+  bool isOpen() const noexcept;
+
   void close() throw(IOException);
 
   /**

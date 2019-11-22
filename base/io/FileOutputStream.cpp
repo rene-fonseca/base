@@ -45,6 +45,11 @@ FileOutputStream& FileOutputStream::operator=(const FileOutputStream& assign) th
   return *this;
 }
 
+bool FileOutputStream::isOpen() const noexcept
+{
+  return !file.isClosed();
+}
+
 void FileOutputStream::close() throw(IOException) {
   file.close();
 }

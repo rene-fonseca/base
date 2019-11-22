@@ -23,7 +23,6 @@
 #include <base/collection/Map.h>
 
 // TAG: add heap ids
-// TAG: hook exception throws
 // TAG: support external stack trace
 // TAG: sample memory/objects
 // TAG: push error/warning
@@ -49,22 +48,122 @@ public:
     Reference<ReferenceCountedObject> data; // meta info
     const char* cat = nullptr;
     const char* name = nullptr;
+    union {
+      uint64 microseconds = 0; // only valid until end of task where we switch to - ts and dur
+      struct {
+        Timer::XTime ts; // timestamp
+        Timer::XTime dur; // duration
+      };
+    };
+#if 0 // thread timing is optional
+    union {
+      uint64 threadMicroseconds = 0; // only valid until end of task where we switch to - tts and tdur
+      struct {
+        Timer::XTime tts; // timestamp
+        Timer::XTime tdur; // duration
+      };
+    };
+#endif
     // uint32 pid = 0; // process id // we output on export
     uint32 tid = 0; // thread id
-    Timer::XTime ts; // timestamp
-    Timer::XTime dur; // duration
-    // Timer::XTime tdur = 0; // optional - thread duration
-    // uint64 tts = 0; // optional thread timestamp
     uint32 sf = 0; // stack frame // uint16 would be enough
-    char ph = 0; // event type
-    uint8 flags = 0; // flags
     uint16 id = 0xffff; // object id - 0xffff is reserved
+    uint8 flags = 0; // flags
+    char ph = 0; // event type
   };
-  
-  /** Single frame. */
+
+  class CachePerformance {
+  public:
+
+    MemorySize hits = 0;
+    MemorySize misses = 0;
+  };
+
+#if 0
+  /** Shared strings. */
+  class SharedStrings {
+  private:
+
+    class Bucket {
+    public:
+
+      Set<String> strings;
+    };
+
+    static constexpr MemorySize MAXIMUM_BUCKETS = 1024;
+    static constexpr MemorySize MAXIMUM_BUCKET_SIZE = 1024;
+    Bucket buckets[MAXIMUM_BUCKETS + 1]; // lengths are likely all quite small
+    CachePerformance performance;
+  public:
+
+    void garbageCollect()
+    {
+      for (MemorySize i = 0; i < getArraySize(buckets); ++i) {
+        auto& strings = buckets[i].strings;
+        for (auto& string : strings) {
+#if 0
+          if (string.getReferences() <= 1) {
+            // TAG: remove
+          }
+#endif
+        }
+      }
+    }
+
+    MemorySize getSize() const noexcept
+    {
+      MemorySize count = 0;
+      for (MemorySize i = 0; i < getArraySize(buckets); ++i) {
+        count += buckets[i].strings.getSize();
+      }
+      return count;
+    }
+
+    void clear()
+    {
+      for (MemorySize i = 0; i < getArraySize(buckets); ++i) {
+        buckets[i].strings.clear();
+      }
+    }
+
+    /** Returns a shared string to conserve memory. */
+    String getString(const String& temp)
+    {
+      if (!temp) {
+        return temp; // ok since we reuse empty string already
+      }
+      const MemorySize i = temp.getLength() - 1; // shift to start with bucket 0
+      if (i > MAXIMUM_BUCKETS) {
+        i = MAXIMUM_BUCKETS; // last bucket is for any size
+      }
+      auto& strings = buckets[i].strings;
+      auto found = strings.find(temp); // TAG :remember 0 referenced item
+      if (found != strings.end()) {
+        ++performance.hits;
+        return *found;
+      }
+      ++performance.misses;
+      if (strings.getSize() >= MAXIMUM_BUCKET_SIZE) {
+        // TAG: remove other string if full - with min references
+        // strings.remove(strings.begin());
+      }
+      strings.add(temp);
+      return temp;
+    }
+
+    /** Returns a shared string to conserve memory. */
+    inline String getString(const char* native)
+    {
+      return native ? getString(native) : String();
+    }
+  };
+#endif
+
+  /** Single stack frame. */
   class Frame {
   public:
 
+    const void* symbol = nullptr; // allows fast comparison
     String name;
     String category; // module
     unsigned int parent = 0; // 0 is no parent
@@ -78,11 +177,40 @@ public:
     {
     }
 
+    inline Frame(void* _symbol, const String& _name, const String& _category, unsigned int _parent)
+      : symbol(_symbol), name(_name), category(_category), parent(_parent)
+    {
+    }
+
+    inline bool operator<(const Frame& compare) const noexcept
+    {
+      if (parent < compare.parent) {
+        return true;
+      } else if (parent > compare.parent) {
+        return false;
+      }
+      auto n = name.compareTo(compare.name);
+      if (n < 0) {
+        return true;
+      } else if (n > 0) {
+        return false;
+      }
+      // TAG: compare reference pointer value
+      auto c = category.compareTo(compare.category); // likely to be equal
+      if (c < 0) {
+        return true;
+      }
+      return false;
+    }
+
     inline bool operator==(const Frame& compare) const noexcept
     {
+      return symbol == compare.symbol; // allows fast comparison
+#if 0
       return (parent == compare.parent) &&
         (name == compare.name) &&
         (category == compare.category);
+#endif
     }
   };
 
@@ -103,7 +231,7 @@ public:
     };
 
     static constexpr unsigned int MAXIMUM_STACK_TRACE = 64;
-    
+
     /** Double linked list of all events. */
     Block* blocks = nullptr;
     const unsigned int pid = Process::getProcess().getId();
@@ -112,6 +240,7 @@ public:
     String stackPattern; // stack frame pattern
     Array<Frame> stackFrames; // all frames - index is id for frame
     Array<MemorySize> stackFramesByParent[MAXIMUM_STACK_TRACE]; // lookup by parent
+    MemorySize stackFramesCounters[MAXIMUM_STACK_TRACE] = {0}; // lookup by parent
     Map<uint32, unsigned int> stackFramesLookup; // lookup for sf to first frame
 
     PreferredAtomicCounter numberOfEvents;
@@ -120,7 +249,7 @@ public:
     unsigned int minimumWaitTime = 1; // minimum time to wait to record event
     unsigned int minimumHeapSize = 4096 * 2/2; // minimum heap size to record event
 
-    static constexpr uint32 SF_HIGH_BIT = 0x80000000U;
+    static constexpr uint32 SF_HIGH_BIT = 0x80000000U; // differentiates between hashed and unhashed buffers
     
     bool open(const String& path);
 

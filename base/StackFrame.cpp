@@ -355,10 +355,13 @@ void* StackFrame::getStackFrame() noexcept
 
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   return nullptr; // not available for x64
-#elif ((_COM_AZURE_DEV__BASE__COMPILER == _COM_AZURE_DEV__BASE__COMPILER_LLVM) || \
-       (_COM_AZURE_DEV__BASE__COMPILER == _COM_AZURE_DEV__BASE__COMPILER_GCC))
+#elif ((_COM_AZURE_DEV__BASE__ARCH == _COM_AZURE_DEV__BASE__X86_64) && \
+       ((_COM_AZURE_DEV__BASE__COMPILER == _COM_AZURE_DEV__BASE__COMPILER_LLVM) || \
+        (_COM_AZURE_DEV__BASE__COMPILER == _COM_AZURE_DEV__BASE__COMPILER_GCC)))
   asm("mov %%rbp, %0" : "=rm" ( frame ));
-#elif (_COM_AZURE_DEV__BASE__ARCH == _COM_AZURE_DEV__BASE__X86)
+#elif ((_COM_AZURE_DEV__BASE__ARCH == _COM_AZURE_DEV__BASE__X86) && \
+       ((_COM_AZURE_DEV__BASE__COMPILER == _COM_AZURE_DEV__BASE__COMPILER_LLVM) || \
+        (_COM_AZURE_DEV__BASE__COMPILER == _COM_AZURE_DEV__BASE__COMPILER_GCC)))
   asm (
     "movl %%ebp,%0;\n"
     : "=m" (frame) // output

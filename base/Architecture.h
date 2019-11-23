@@ -61,8 +61,9 @@ public:
     POWER_PC, /**< Power PC. */
     RS, /**< RS. */
     SPARC, /**< Sparc. */
-    X86_64, /**< X86 64 bit. */
-    S390 /**< S390. */
+    X86_64, /**< AMD64. */
+    S390, /**< S390. */
+    ARM /**< ARM. */
   };
   
   /** The minor architecture. */

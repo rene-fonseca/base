@@ -98,6 +98,8 @@ Architecture::Major Architecture::getArchitecture() noexcept
   return X86_64;
 #elif (_COM_AZURE_DEV__BASE__ARCH == _COM_AZURE_DEV__BASE__S390)
   return S390;
+#elif (_COM_AZURE_DEV__BASE__ARCH == _COM_AZURE_DEV__BASE__ARM)
+  return ARM;
 #else
 #  error Unsupported architecture
 #endif

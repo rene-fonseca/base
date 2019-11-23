@@ -457,7 +457,6 @@ unsigned int StackFrame::getStack(const void** dest, unsigned int size, unsigned
   while ((count > 0) && (reinterpret_cast<MemorySize>(dest[count - 1]) < 0x10000)) {
     --count; // remove bad text seg pointer
   }
-  // trim to &Thread::entry, &main and similar roots
 #elif ((_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__MACOS) || \
        (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__GNULINUX))
   int count = backtrace(dest, size);
@@ -502,8 +501,19 @@ unsigned int StackFrame::getStack(const void** dest, unsigned int size, unsigned
   }
 #endif
   
-  if (trim) {
-    // TAG: remove item not in base image - but include main()
+  if (trim && (count > 0)) {
+    // trim to &Thread::entry, &main and similar roots
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32) // TAG: add support for all platforms
+    void* framworkModule = DynamicLinker::getBaseFrameworkImage();
+    void* processModule = DynamicLinker::getProcessImage();
+    while (count > 0) {
+      const void* base = DynamicLinker::getImageAddress(dest[count - 1]);
+      if ((base == framworkModule) || (base == processModule)) {
+        break;
+      }
+      --count;
+    }
+#endif
   }
   
   return count;
@@ -545,11 +555,11 @@ void StackFrame::toStream(FormatOutputStream& stream, const ConstSpan<const void
   ConstSpan<const void*> trace = _trace;
   if (flags & FLAG_TRIM_SYSTEM) { // TAG: remove FLAG_TRIM_SYSTEM below when ready
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32) // TAG: add support for all platforms
-    static const void* baseModule = DynamicLinker::getImageAddress((const void*)&StackFrame::toStream); // could be either exe/shared lib
+    void* framworkModule = DynamicLinker::getBaseFrameworkImage();
     void* processModule = DynamicLinker::getProcessImage();
     for (MemoryDiff i = trace.getSize() - 1; i >= 0; --i) {
       const void* base = DynamicLinker::getImageAddress(trace[i]);
-      if ((base == baseModule) || (base == processModule)) {
+      if ((base == framworkModule) || (base == processModule)) {
         trace = ConstSpan<const void*>(_trace.begin(), i + 1);
         break;
       }

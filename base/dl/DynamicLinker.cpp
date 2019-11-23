@@ -252,13 +252,25 @@ DynamicLinker::~DynamicLinker()
 #endif // flavor
 }
 
+// move to initialize
+namespace {
+
+  void* frameworkImage = DynamicLinker::getImageAddress((const void*)&DynamicLinker::getBaseFrameworkImage);
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
+  void* processImage = ::GetModuleHandle(NULL);
+#else
+  void* processImage = nullptr;
+#endif
+}
+
 void* DynamicLinker::getProcessImage() noexcept
 {
-#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
-  return ::GetModuleHandle(NULL);
-#else
-  return nullptr;
-#endif
+  return processImage;
+}
+
+void* DynamicLinker::getBaseFrameworkImage() noexcept
+{
+  return frameworkImage;
 }
 
 String DynamicLinker::getImagePath(const void* address)

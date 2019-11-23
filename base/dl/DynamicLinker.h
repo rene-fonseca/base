@@ -123,6 +123,9 @@ public:
   /** Returns the image address of the executable. */
   static void* getProcessImage() noexcept;
 
+  /** Returns the image address of the Base Framework model (can be the executable module for static linking). */
+  static void* getBaseFrameworkImage() noexcept;
+
   /** Returns the image address for the given process address. */
   static void* getImageAddress(const void* address) noexcept;
 

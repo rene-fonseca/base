@@ -122,7 +122,7 @@ public:
 
     @param key The value to search for.
   */
-  bool isKey(const KEY& key) const noexcept
+  bool [[deprecated]] isKey(const KEY& key) const noexcept
   {
     return elements.find(key);
   }
@@ -142,12 +142,13 @@ public:
 
     @param key The key to be added to the set.
   */
-  void add(const KEY& key)
+  const KEY* add(const KEY& key)
   {
-    KEY* result = elements.add(key);
+    const KEY* result = elements.add(key);
     if (!result) {
       ++size; // key did not exist
     }
+    return result;
   }
 
   /**
@@ -173,7 +174,7 @@ public:
   
   inline operator bool() const noexcept
   {
-    return getSize() != 0;
+    return size != 0;
   }
 };
 

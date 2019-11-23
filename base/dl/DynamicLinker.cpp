@@ -13,6 +13,7 @@
 
 #include <base/platforms/features.h>
 #include <base/dl/DynamicLinker.h>
+#include <base/mem/VirtualMemory.h>
 #include <base/Application.h>
 #include <base/string/Parser.h>
 
@@ -33,6 +34,13 @@ _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
 
 namespace {
+
+  HMODULE getImageAddressImpl(const void* address) noexcept
+  {
+    HMODULE handle = reinterpret_cast<HMODULE>(VirtualMemory::getBase(address));
+    // TAG: check if image
+    return handle;
+  }
 
   typedef BOOL (__stdcall* SymInitializeFunc)(HANDLE hProcess, PCSTR UserSearchPath, BOOL fInvadeProcess);
   typedef BOOL (__stdcall* SymCleanupFunc)(HANDLE hProcess);
@@ -129,7 +137,7 @@ void* DynamicLinker::getGlobalSymbolImpl(const String& symbol) throw(LinkerExcep
 //  String path(MAX_PATH); // maximum path length in ANSI mode
 //  DWORD length = ::GetModuleFileNameEx(
 //                   ::GetCurrentProcess(), // get pseudo handle
-//                   ::GetModuleHandle(0), // get handle of process image
+//                   ::GetModuleHandle(NULL), // get handle of process image
 //                   path.getBytes(), // path buffer
 //                   MAX_PATH
 //  );
@@ -244,48 +252,60 @@ DynamicLinker::~DynamicLinker()
 #endif // flavor
 }
 
+void* DynamicLinker::getProcessImage() noexcept
+{
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
+  return ::GetModuleHandle(NULL);
+#else
+  return nullptr;
+#endif
+}
+
 String DynamicLinker::getImagePath(const void* address)
 {
   String result;
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
-  MutualExclusion::Sync _guard(Application::getLock()); // dbghelp is not MT-safe
-  loadDbgHelp();
-  if (symFromAddr) {
-    DWORD64 displacement = 0;
-    SYMBOL_INFO info;
-    info.SizeOfStruct = sizeof(SYMBOL_INFO);
-    info.MaxNameLen = 0;
-    if (INLINE_ASSERT(symFromAddr(GetCurrentProcess(), reinterpret_cast<MemorySize>(address), &displacement, &info))) {
-      HMODULE handle = reinterpret_cast<HMODULE>(static_cast<MemorySize>(info.ModBase));
 
-      if (!handle) {
-        MEMORY_BASIC_INFORMATION mbi;
-        if (VirtualQuery(address, &mbi, sizeof(mbi))) {
-          handle = reinterpret_cast<HMODULE>(mbi.AllocationBase);
-        }
-      }
+  HMODULE handle = getImageAddressImpl(address);
 
-      PrimitiveStackArray<wchar> buffer(1024);
-      while (buffer.size() < (64 * 1024)) {
-        DWORD length = GetModuleFileNameW(handle, buffer, buffer.size());
-        if (length == 0) {
-          if (GetLastError() == ERROR_INSUFFICIENT_BUFFER) {
-            buffer.resize(buffer.size() * 2);
-            continue;
-          }
-          break;
-        }
-        result = String(buffer, length);
-        break;
+  if (!handle) { // remove this when tested
+    MutualExclusion::Sync _guard(Application::getLock()); // dbghelp is not MT-safe
+    loadDbgHelp();
+    if (symFromAddr) {
+      DWORD64 displacement = 0;
+      SYMBOL_INFO info;
+      info.SizeOfStruct = sizeof(SYMBOL_INFO);
+      info.MaxNameLen = 0;
+      if (INLINE_ASSERT(symFromAddr(GetCurrentProcess(), reinterpret_cast<MemorySize>(address), &displacement, &info))) {
+        handle = reinterpret_cast<HMODULE>(static_cast<MemorySize>(info.ModBase));
       }
     }
   }
+
+  if (!handle) {
+    return result;
+  }
+
+  PrimitiveStackArray<wchar> buffer(1024);
+  while (buffer.size() < (64 * 1024)) {
+    DWORD length = GetModuleFileNameW(handle, buffer, buffer.size());
+    if (length == 0) {
+      if (GetLastError() == ERROR_INSUFFICIENT_BUFFER) {
+        buffer.resize(buffer.size() * 2);
+        continue;
+      }
+      break;
+    }
+    result = String(buffer, length);
+    break;
+  }
+
 #elif ((_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__MACOS) || \
        (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__GNULINUX))
   Dl_info info;
   int status = dladdr(address, &info);
   if (status) {
-    return info.dli_fname;
+    result = info.dli_fname;
   }
 #else
   BASSERT(!"Not implemented");
@@ -297,6 +317,10 @@ void* DynamicLinker::getImageAddress(const void* address) noexcept
 {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   // TAG: use VirtualMemory to find image address
+  void* imageAddress = VirtualMemory::getBase(address);
+  if (imageAddress) {
+    return imageAddress;
+  }
 
   MutualExclusion::Sync _guard(Application::getLock()); // dbghelp is not MT-safe
   loadDbgHelp();
@@ -306,7 +330,8 @@ void* DynamicLinker::getImageAddress(const void* address) noexcept
     info.SizeOfStruct = sizeof(SYMBOL_INFO);
     info.MaxNameLen = 0;
     if (INLINE_ASSERT(symFromAddr(GetCurrentProcess(), reinterpret_cast<MemorySize>(address), &displacement, &info))) {
-      return reinterpret_cast<void*>(static_cast<MemorySize>(info.ModBase));
+      void* imageAddress = reinterpret_cast<void*>(static_cast<MemorySize>(info.ModBase));
+      return imageAddress;
     }
   }
 #elif ((_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__MACOS) || \
@@ -555,6 +580,9 @@ String DynamicLinker::getSymbolName(const void* address)
     }
 
     HMODULE module = reinterpret_cast<HMODULE>(info->ModBase);
+    if (!module) {
+      module = getImageAddressImpl(address);
+    }
 
     /* testing only
     static bool first = true;
@@ -620,7 +648,7 @@ DynamicLinker::SymbolInfo DynamicLinker::getSymbolInfo(const void* address) noex
 
     HMODULE imageAddress = reinterpret_cast<HMODULE>(info->ModBase);
     if (!imageAddress) {
-      // TAG: lookup
+      imageAddress = getImageAddressImpl(address);
     }
     result.imageAddress = imageAddress;
 

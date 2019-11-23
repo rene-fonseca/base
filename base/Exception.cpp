@@ -155,9 +155,9 @@ Exception::StackTrace Exception::getStackTrace()
   StackTrace result;
   auto tls = Thread::getLocalContext();
   if (tls) {
-    const auto& stackTrace = tls->stackTrace;
-    result.begin = stackTrace.getTrace();
-    result.end = result.begin + stackTrace.getSize();
+    auto stackTrace = tls->stackTrace.getTrace();
+    result.begin = stackTrace.begin();
+    result.end = stackTrace.end();
   }
   return result;
 }

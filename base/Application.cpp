@@ -59,7 +59,7 @@ _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
         if (Exception::getDumpExceptions()) {
           ferr << "EXCEPTION CONSTRUCTED BY: " << ENDL;
           StackFrame::toStream(
-            ferr, tls->stackTrace.getTrace(), tls->stackTrace.getSize(),
+            ferr, tls->stackTrace.getTrace(),
             StackFrame::FLAG_DEFAULT |
             (FileDescriptor::getStandardError().isANSITerminal() ? StackFrame::FLAG_USE_COLORS : 0)
           );
@@ -91,7 +91,7 @@ public:
 
       if (!stackTrace.isEmpty()) {
         StackFrame::toStream(
-          ferr, stackTrace.getTrace(), stackTrace.getSize(),
+          ferr, stackTrace.getTrace(),
           StackFrame::FLAG_COMPACT | StackFrame::FLAG_DEFAULT |
           (FileDescriptor::getStandardError().isANSITerminal() ? StackFrame::FLAG_USE_COLORS : 0)
         );
@@ -159,7 +159,7 @@ public:
     if (auto tls = Thread::getLocalContext()) {
       if (!tls->stackTrace.isEmpty()) {
         StackFrame::toStream(
-          ferr, tls->stackTrace.getTrace(), tls->stackTrace.getSize(),
+          ferr, tls->stackTrace.getTrace(),
           StackFrame::FLAG_DEFAULT |
           (FileDescriptor::getStandardError().isANSITerminal() ? StackFrame::FLAG_USE_COLORS : 0)
         );
@@ -848,7 +848,7 @@ int Application::exceptionHandler(const Exception& e) throw()
   if (auto tls = Thread::getLocalContext()) {
     if (!tls->stackTrace.isEmpty()) {
       StackFrame::toStream(
-        ferr, tls->stackTrace.getTrace(), tls->stackTrace.getSize(),
+        ferr, tls->stackTrace.getTrace(),
         StackFrame::FLAG_DEFAULT |
         (FileDescriptor::getStandardError().isANSITerminal() ? StackFrame::FLAG_USE_COLORS : 0)
       );
@@ -893,7 +893,7 @@ int Application::exceptionHandler() throw()
   if (auto tls = Thread::getLocalContext()) { // this is not relevant since we didnt get here by throwing base::Exception
     if (!tls->stackTrace.isEmpty()) {
       StackFrame::toStream(
-        ferr, tls->stackTrace.getTrace(), tls->stackTrace.getSize(),
+        ferr, tls->stackTrace.getTrace(),
         StackFrame::FLAG_DEFAULT |
         (FileDescriptor::getStandardError().isANSITerminal() ? StackFrame::FLAG_USE_COLORS : 0)
       );

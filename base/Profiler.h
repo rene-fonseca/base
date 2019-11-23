@@ -21,6 +21,7 @@
 #include <base/Timer.h>
 #include <base/concurrency/SpinLock.h>
 #include <base/collection/Map.h>
+#include <base/Performance.h>
 
 // TAG: add heap ids
 // TAG: support external stack trace
@@ -48,35 +49,18 @@ public:
     Reference<ReferenceCountedObject> data; // meta info
     const char* cat = nullptr;
     const char* name = nullptr;
-    union {
-      uint64 microseconds = 0; // only valid until end of task where we switch to - ts and dur
-      struct {
-        Timer::XTime ts; // timestamp
-        Timer::XTime dur; // duration
-      };
-    };
+    Timer::XTime ts; // timestamp
+    Timer::XTime dur; // duration
 #if 0 // thread timing is optional
-    union {
-      uint64 threadMicroseconds = 0; // only valid until end of task where we switch to - tts and tdur
-      struct {
-        Timer::XTime tts; // timestamp
-        Timer::XTime tdur; // duration
-      };
-    };
+    Timer::XTime tts; // timestamp
+    Timer::XTime tdur; // duration
 #endif
+    uint32 sf = 0; // stack frame // uint16 is normally enough
     // uint32 pid = 0; // process id // we output on export
-    uint32 tid = 0; // thread id
-    uint32 sf = 0; // stack frame // uint16 would be enough
+    uint16 tid = 0; // thread id // uint16 is normally enough
     uint16 id = 0xffff; // object id - 0xffff is reserved
     uint8 flags = 0; // flags
     char ph = 0; // event type
-  };
-
-  class CachePerformance {
-  public:
-
-    MemorySize hits = 0;
-    MemorySize misses = 0;
   };
 
   /** Single stack frame. */
@@ -160,7 +144,7 @@ public:
     String stackPattern; // stack frame pattern
     Array<Frame> stackFrames; // all frames - index is id for frame
     Array<MemorySize> stackFramesByParent[MAXIMUM_STACK_TRACE]; // lookup by parent
-    MemorySize stackFramesCounters[MAXIMUM_STACK_TRACE] = {0}; // lookup by parent
+    Performance::Counter stackFramesCounters[MAXIMUM_STACK_TRACE]; // lookup by parent
     Map<uint32, unsigned int> stackFramesLookup; // lookup for sf to first frame
 
     PreferredAtomicCounter numberOfEvents;
@@ -171,6 +155,8 @@ public:
 
     static constexpr uint32 SF_HIGH_BIT = 0x80000000U; // differentiates between hashed and unhashed buffers
     
+    ProfilerImpl();
+
     bool open(const String& path);
 
     /** Add new event. */
@@ -189,7 +175,8 @@ public:
       }
     }
 
-    uint32 getStackFrame(StackFrame&& stackTrace);
+    /** Registers the stack trace. */
+    uint32 getStackFrame(const ConstSpan<const void*>& stackTrace);
 
     unsigned int buildStackFrame(const uint32 sf);
     

@@ -116,7 +116,6 @@ unsigned int Profiler::ProfilerImpl::buildStackFrame(const uint32 sf)
       if (demangled.startsWith("base::Profiler::")) { // we do not want to include Profiler methods in stack
         continue;
       }
-      // TAG: trim system functions
       
       if (!symbol.imageAddress || (symbol.imageAddress != previousImageAddress)) {
         previousImageAddress = symbol.imageAddress;
@@ -131,17 +130,13 @@ unsigned int Profiler::ProfilerImpl::buildStackFrame(const uint32 sf)
 
       const Frame frame(symbol.address, demangled, path, parent);
       auto it = stackFrames.end();
-      
-      // TAG: better to use sorting via binary tree - operator< is well defined
-      // Map<Frame, unsigned int> sortedFrames; // sortedFrames.add(Frame(), 1);
-      
+     
       if (parent >= MAXIMUM_STACK_TRACE) {
         // not expected since we trim stack to limit
         // slow linear search - O(n^2) complexity
         
-        static unsigned int _count = 0;
-        unsigned int& count = _count;
-        ++count;
+        static Performance::Counter counter("Slow linear search through all frames");
+        ++counter;
 
         it = stackFrames.begin() + parent;
         for (const auto end = stackFrames.end(); it != end; ++it) {
@@ -157,7 +152,6 @@ unsigned int Profiler::ProfilerImpl::buildStackFrame(const uint32 sf)
             stackFramesCounters[parent] += j - frames.begin();
             it = stackFrames.begin() + *j; // convert index to iterator
             // swapper(*j, stackFramesByParent[0]); // fast - bubble sort is
-
             break;
           }
         }
@@ -216,38 +210,43 @@ void Profiler::ProfilerImpl::release()
   releaseEvents();
 }
 
-uint32 Profiler::ProfilerImpl::getStackFrame(StackFrame&& stackTrace)
+uint32 Profiler::ProfilerImpl::getStackFrame(const ConstSpan<const void*>& stackTrace)
 {
+  constexpr unsigned int FRAMES = 65521; // 4723
+  const uint32 hash = StackFrame::getHash(stackTrace) % FRAMES;
+
   SpinLock::Sync _sync(lock);
 
-  constexpr unsigned int FRAMES = 65521; // 4723
-  if (stackFramesHash.getSize() != FRAMES) { // we can resize if too many conflicts
+  if (stackFramesHash.getSize() != FRAMES) { // we could resize if too many conflicts but would require calc of hashes
     stackFramesHash.setSize(FRAMES);
     stackFramesUnhash.ensureCapacity(1024);
   }
 
-  const uint32 hash = stackTrace.getHash() % FRAMES;
-
-  static unsigned int frames = 0;
-  static unsigned int hits = 0;
-  static unsigned int conflicts = 0;
-  if (stackFramesHash[hash].isEmpty()) { // unused slot
-    ++frames;
-    stackFramesHash[hash] = std::move(stackTrace);
+  auto& hashItem = stackFramesHash[hash];
+  if (hashItem.isEmpty()) { // unused slot
+    hashItem = stackTrace; // allocation
     return hash;
   } else {
-    if (stackTrace == stackFramesHash[hash]) { // hit
-      ++hits;
+    if (hashItem == stackTrace) { // hit
       return hash;
     } else {
-      ++conflicts;
       auto size = stackFramesUnhash.getSize();
       if (size >= stackFramesUnhash.getCapacity()) {
         stackFramesUnhash.ensureCapacity(stackFramesUnhash.getSize() * 2);
       }
-      stackFramesUnhash.append(std::move(stackTrace));
+      if (size >= SF_HIGH_BIT) {
+        return SF_HIGH_BIT | (SF_HIGH_BIT - 1); // no more room
+      }
+      stackFramesUnhash.append(stackTrace);
       return size | SF_HIGH_BIT; // differentiate from hash id
     }
+  }
+}
+
+Profiler::ProfilerImpl::ProfilerImpl()
+{
+  for (MemorySize i = 0; i < MAXIMUM_STACK_TRACE; ++i) {
+    stackFramesCounters[i].id = "counter";
   }
 }
 
@@ -377,15 +376,16 @@ void Profiler::initEvent(Event& e) noexcept
   if (profiler.useStackFrames) {
     SuspendProfiling suspendProfiling; // no thanks to recursion
     // skip initEvent() -> internal caller -> ?
-#if 0
-    // avoid allocation
-    void* stackTrace[ProfilerImpl::MAXIMUM_STACK_TRACE];
-    unsigned int size = StackFrame::getStack(dest, getArraySize(stackTrace));
-#endif
-    e.sf = profiler.getStackFrame(StackFrame::getStack(2, ProfilerImpl::MAXIMUM_STACK_TRACE)); // we cannot recover from memory exception
+
+    // avoid allocation since stack trace is likely to be in hash table
+    const void* stackTrace[ProfilerImpl::MAXIMUM_STACK_TRACE];
+    const unsigned int size = StackFrame::getStack(stackTrace, getArraySize(stackTrace), 2);
+    e.sf = profiler.getStackFrame(ConstSpan<const void*>(stackTrace, size));
   }
 
-  e.microseconds = Timer::getNow();
+  const uint64 now = Timer::getNow();
+  e.ts = Timer::toXTimeUS(now);
+  e.dur = Timer::toXTimeUS(now - Timer::toTimeUS(e.ts)); // any rounding error
 }
 
 unsigned int Profiler::Task::getTask(const char* name, const char* cat) noexcept
@@ -441,15 +441,15 @@ void Profiler::Task::pushTask(unsigned int taskId) noexcept
   }
 
   // use EVENT_COMPLETE to combine BEGIN and END events
-  const auto ts = Timer::getNow();
+  const uint64 now = Timer::getNow();
   Event& e = tlc->profiling.events.getElements()[taskId];
   e.ph = EVENT_COMPLETE;
-  auto dur = ts - e.microseconds;
+  const uint64 start = Timer::toTimeUS(e.ts) + Timer::toTimeUS(e.dur);
+  auto dur = now - start;
   if (dur < profiler.minimumWaitTime) {
     return;
   }
   e.dur = Timer::toXTimeUS(dur);
-  e.ts = Timer::toXTimeUS(ts); // after dur
   pushEvent(e);
 }
 

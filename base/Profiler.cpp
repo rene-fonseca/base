@@ -990,7 +990,6 @@ public:
 
   void run() override
   {
-    return;
     Profiler::open("profiler.json");
     Profiler::setUseStackFrames(true);
     Profiler::start();

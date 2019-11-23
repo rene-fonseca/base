@@ -17,7 +17,7 @@
 #include <base/collection/Enumeration.h>
 #include <base/collection/InvalidEnumeration.h>
 #include <base/collection/InvalidNode.h>
-#include <base/mem/ReferenceCountedCapacityAllocator.h>
+#include <base/mem/ReferenceCountedAllocator.h>
 #include <base/mem/Reference.h>
 #include <base/OutOfRange.h>
 #include <base/string/FormatOutputStream.h>
@@ -122,7 +122,7 @@ public:
 private:
 
   /** The elements of the array. */
-  Reference<ReferenceCountedCapacityAllocator<Value> > elements;
+  Reference<ReferenceCountedAllocator<Value> > elements;
   
   /** Moves all values up by 1 index. */
   static inline void moveUp(Value* src, MemorySize count)
@@ -210,7 +210,7 @@ public:
         elements.copyOnWrite();
         elements->setSize(size);
       } else {
-        elements = new ReferenceCountedCapacityAllocator<Value>(size/*, ReferenceCountedCapacityAllocator<Value>::DEFAULT_GRANULARITY*/);
+        elements = new ReferenceCountedAllocator<Value>(size/*, ReferenceCountedAllocator<Value>::DEFAULT_GRANULARITY*/);
       }
     }
   }
@@ -221,7 +221,7 @@ public:
       if (elements) {
         elements.copyOnWrite();
       } else {
-        elements = new ReferenceCountedCapacityAllocator<Value>(/*ReferenceCountedCapacityAllocator<Value>::DEFAULT_GRANULARITY*/);
+        elements = new ReferenceCountedAllocator<Value>(/*ReferenceCountedAllocator<Value>::DEFAULT_GRANULARITY*/);
       }
       elements->setSize(size, value);
     }
@@ -269,7 +269,7 @@ public:
   /**
     Initializes an empty array.
   */
-  Array() : elements(new ReferenceCountedCapacityAllocator<Value>())
+  Array() : elements(new ReferenceCountedAllocator<Value>())
   {
   }
 
@@ -279,7 +279,7 @@ public:
     @param size The size of the array.
   */
   explicit Array(MemorySize size)
-    : elements(new ReferenceCountedCapacityAllocator<Value>(size))
+    : elements(new ReferenceCountedAllocator<Value>(size))
   {
   }
 
@@ -289,13 +289,13 @@ public:
     @param size The initial number of elements in the array.
     @param value The value used to initialize the elements.
     @param granularity The desired granularity. Default is
-    ReferenceCountedCapacityAllocator<Value>::DEFAULT_GRANULARITY.
+    ReferenceCountedAllocator<Value>::DEFAULT_GRANULARITY.
   */
   Array(
     MemorySize size,
     const Value& value/*,
-    MemorySize granularity = ReferenceCountedCapacityAllocator<Value>::DEFAULT_GRANULARITY*/)
-    : elements(new ReferenceCountedCapacityAllocator<Value>(/*granularity*/))
+    MemorySize granularity = ReferenceCountedAllocator<Value>::DEFAULT_GRANULARITY*/)
+    : elements(new ReferenceCountedAllocator<Value>(/*granularity*/))
   {
     elements->setSize(size, value);
   }

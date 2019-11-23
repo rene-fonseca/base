@@ -36,15 +36,15 @@ void BitSet::zeroExtend(MemorySize size)
 }
 
 BitSet::BitSet()
-  : elements(new ReferenceCountedCapacityAllocator<unsigned long>()), size(0)
+  : elements(new ReferenceCountedAllocator<unsigned long>()), size(0)
 {
 }
 
 BitSet::BitSet(unsigned int _size, bool value)
   : elements(
-      new ReferenceCountedCapacityAllocator<unsigned long>(
+      new ReferenceCountedAllocator<unsigned long>(
         getNumberOfElements(_size)/*,
-        ReferenceCountedCapacityAllocator<unsigned long>::DEFAULT_GRANULARITY*/
+        ReferenceCountedAllocator<unsigned long>::DEFAULT_GRANULARITY*/
       )
     ),
     size(_size)
@@ -226,7 +226,7 @@ BitSet& BitSet::operator>>=(unsigned int shift) noexcept {
 }
 
 void BitSet::removeAll() noexcept {
-  elements = new ReferenceCountedCapacityAllocator<unsigned long>(); // no need to copy
+  elements = new ReferenceCountedAllocator<unsigned long>(); // no need to copy
   size = 0;
 }
 

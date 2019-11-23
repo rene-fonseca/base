@@ -13,7 +13,7 @@
 
 #pragma once
 
-#include <base/mem/ReferenceCountedCapacityAllocator.h>
+#include <base/mem/ReferenceCountedAllocator.h>
 #include <base/mem/Reference.h>
 #include <base/collection/Collection.h>
 #include <base/collection/Enumeration.h>
@@ -426,7 +426,7 @@ public:
 private:
 
   /** The elements of the bit set. */
-  Reference<ReferenceCountedCapacityAllocator<unsigned long> > elements;
+  Reference<ReferenceCountedAllocator<unsigned long> > elements;
   /** The number of bits in the bit set. */
   MemorySize size = 0;
 protected:

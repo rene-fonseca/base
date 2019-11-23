@@ -15,7 +15,6 @@
 #include <base/mem/Allocator.h>
 #include <base/mem/ReferenceCountedAllocator.h>
 #include <base/mem/CapacityAllocator.h>
-#include <base/mem/ReferenceCountedCapacityAllocator.h>
 #include <base/string/Format.h>
 #include <base/collection/Functor.h>
 #include <base/ValidifiedResult.h>
@@ -127,13 +126,13 @@ public:
     fout << "CapacityAllocator<char>::getCapacity(): " << b.getCapacity() << ENDL;
     fout << ENDL;
 
-    ReferenceCountedCapacityAllocator<char> rb(1234, 256);
-    fout << "ReferenceCountedCapacityAllocator<char>::getSize(): "
+    ReferenceCountedAllocator<char> rb(1234/*, 256*/);
+    fout << "ReferenceCountedAllocator<char>::getSize(): "
          << rb.getSize() << ENDL;
-    // fout << "ReferenceCountedCapacityAllocator<char>::getGranularity(): " << rb.getGranularity() << ENDL;
-    fout << "ReferenceCountedCapacityAllocator<char>::getCapacity(): "
+    // fout << "ReferenceCountedAllocator<char>::getGranularity(): " << rb.getGranularity() << ENDL;
+    fout << "ReferenceCountedAllocator<char>::getCapacity(): "
          << rb.getCapacity() << ENDL;
-    ReferenceCountedCapacityAllocator<char>::ReadEnumerator enurb =
+    ReferenceCountedAllocator<char>::ReadEnumerator enurb =
       rb.getReadEnumerator();
     unsigned int countrb = 0;
     while (enurb.hasNext()) {
@@ -142,7 +141,7 @@ public:
     }
     fout << "Counted number of elements in (rb): " << countrb << ENDL;
     rb.garbageCollect();
-    fout << "ReferenceCountedCapacityAllocator<char>::getCapacity(): "
+    fout << "ReferenceCountedAllocator<char>::getCapacity(): "
          << rb.getCapacity() << ENDL;
     fout << ENDL;
 

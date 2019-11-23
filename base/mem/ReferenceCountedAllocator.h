@@ -61,6 +61,13 @@ public:
   {
   }
 
+#if 0
+  inline explicit ReferenceCountedAllocator(MemorySize size, MemorySize capacity) throw(MemoryException)
+    : Allocator<TYPE>(size, capacity)
+  {
+  }
+#endif
+  
   /**
     Initializes the allocator by copying from the specified allocator. Raises
     MemoryException if unable to allocate the required memory.

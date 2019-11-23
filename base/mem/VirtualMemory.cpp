@@ -106,7 +106,8 @@ Array<VirtualMemory::Module> VirtualMemory::getModules() noexcept {
 #endif // flavor
 }
 
-void VirtualMemory::query(const void* address) noexcept {
+void VirtualMemory::query(const void* address) noexcept
+{
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   throw NotImplemented(Type::getType<VirtualMemory>());
   // DWORD result = ::VirtualQuery(address, &info, sizeof(info));
@@ -115,7 +116,21 @@ void VirtualMemory::query(const void* address) noexcept {
 #endif // flavor
 }
 
-void VirtualMemory::dump() noexcept {
+void* VirtualMemory::getBase(const void* address) noexcept
+{
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
+  MEMORY_BASIC_INFORMATION mbi;
+  if (VirtualQuery(address, &mbi, sizeof(mbi))) {
+    return mbi.AllocationBase;
+  }
+#else
+  BASSERT(!"Not implemented.");
+#endif
+  return nullptr;
+}
+
+void VirtualMemory::dump() noexcept
+{
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   // get page size
   SYSTEM_INFO info;

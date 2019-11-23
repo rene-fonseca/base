@@ -92,6 +92,11 @@ public:
   
   static void query(const void* address) noexcept;
 
+  /**
+    Returns the base address for the address.
+  */
+  static void* getBase(const void* address) noexcept;
+
   static void allocate() noexcept;
   
   static void release() noexcept;

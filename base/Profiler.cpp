@@ -128,52 +128,18 @@ unsigned int Profiler::ProfilerImpl::buildStackFrame(const uint32 sf)
         }
       }
 
-      const Frame frame(symbol.address, demangled, path, parent);
-      auto it = stackFrames.end();
-     
-      if (parent >= MAXIMUM_STACK_TRACE) {
-        // not expected since we trim stack to limit
-        // slow linear search - O(n^2) complexity
-        
-        static Performance::Counter counter("Slow linear search through all frames");
-        // we can bubble up if we use indirect index here
-        it = stackFrames.begin() + parent;
-        for (const auto end = stackFrames.end(); it != end; ++it) {
-          ++counter;
-          if (*it == frame) {
-            break;
-          }
-        }
-      } else { // only look through limited frames
-        auto& frames = stackFramesByParent[parent];
-        static Performance::Counter counter("Fast search");
-
-        for (auto j = frames.begin(), end = frames.end(); j != end; ++j) {
-          ++counter;
-          if (stackFrames[*j] == frame) {
-            it = stackFrames.begin() + *j; // convert index to iterator
-            if (j != frames.begin()) {
-              swapper(*j, frames[0]); // bubble up - faster search
-              //swapper(*j, j[-1]); // bubble up - faster search
-            }
-            break;
-          }
-        }
-      }
-
-      if (it != stackFrames.end()) {
-        parent = static_cast<unsigned int>(it - stackFrames.begin()) + 1;
+      const SymbolAndParent current(symbol.address, parent);
+      if (auto found = stackFramesBySymbol.find(current)) { // TAG: need to balance tree on hit
+        parent = *found + 1; // index  to parent
         // fout << "REUSE FRAME " << parent << " => " << it->parent << " " << it->name << ENDL;
       } else {
         if (stackFrames.getSize() == stackFrames.getCapacity()) {
           stackFrames.ensureCapacity(stackFrames.getSize() * 2);
         }
-        stackFrames.append(frame);
+        stackFrames.append(Frame(demangled, path, parent));
         auto previous = parent;
         parent = stackFrames.getSize(); // next frame uses this as parent
-        if (frame.parent < MAXIMUM_STACK_TRACE) {
-          stackFramesByParent[frame.parent].append(parent - 1); // index of frame
-        }
+        stackFramesBySymbol.add(current, parent - 1); // index of frame
         // fout << "NEW FRAME " << parent << " => " << previous << " " << demangled << ENDL;
       }
     }
@@ -204,10 +170,7 @@ void Profiler::ProfilerImpl::release()
   stackFramesUnhash.setSize(0);
   stackFrames.ensureCapacity(0);
   stackFrames.setSize(0);
-  for (MemorySize i = 0; i < MAXIMUM_STACK_TRACE; ++i) {
-    stackFramesByParent[i].ensureCapacity(0);
-    stackFramesByParent[i].setSize(0);
-  }
+  stackFramesBySymbol.removeAll();
   stackFramesLookup.removeAll();
   releaseEvents();
 }

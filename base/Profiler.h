@@ -67,7 +67,6 @@ public:
   class Frame {
   public:
 
-    const void* symbol = nullptr; // allows fast comparison
     String name;
     String category; // module
     unsigned int parent = 0; // 0 is no parent
@@ -78,11 +77,6 @@ public:
 
     inline Frame(const String& _name, const String& _category, unsigned int _parent)
       : name(_name), category(_category), parent(_parent)
-    {
-    }
-
-    inline Frame(void* _symbol, const String& _name, const String& _category, unsigned int _parent)
-      : symbol(_symbol), name(_name), category(_category), parent(_parent)
     {
     }
 
@@ -109,12 +103,9 @@ public:
 
     inline bool operator==(const Frame& compare) const noexcept
     {
-      return symbol == compare.symbol; // allows fast comparison
-#if 0
       return (parent == compare.parent) &&
         (name == compare.name) &&
         (category == compare.category);
-#endif
     }
   };
 
@@ -136,6 +127,30 @@ public:
 
     static constexpr unsigned int MAXIMUM_STACK_TRACE = 64;
 
+    class SymbolAndParent {
+    public:
+
+      const void* symbol = nullptr;
+      unsigned int parent = 0;
+
+      inline SymbolAndParent(const void* _symbol, unsigned int _parent)
+        : symbol(_symbol), parent(_parent)
+      {
+      }
+
+      inline bool operator<(const SymbolAndParent& value) const noexcept
+      {
+        return (symbol < value.symbol) ||
+          ((symbol == value.symbol) && (parent < value.parent));
+      }
+      
+      // C++: operators could be auto generated when undefined - operator!=() => !operation==(), ...
+      inline bool operator==(const SymbolAndParent& value) const noexcept
+      {
+        return (symbol == value.symbol) && (parent == value.parent);
+      }
+    };
+
     /** Double linked list of all events. */
     Block* blocks = nullptr;
     const unsigned int pid = Process::getProcess().getId();
@@ -143,8 +158,7 @@ public:
     Array<StackFrame> stackFramesUnhash; // cached frames (remaining stack traces)
     String stackPattern; // stack frame pattern
     Array<Frame> stackFrames; // all frames - index is id for frame
-    Array<MemorySize> stackFramesByIndex;
-    Array<MemorySize> stackFramesByParent[MAXIMUM_STACK_TRACE]; // lookup by parent
+    Map<SymbolAndParent, unsigned int> stackFramesBySymbol;
     Map<uint32, unsigned int> stackFramesLookup; // lookup for sf to first frame
 
     PreferredAtomicCounter numberOfEvents;

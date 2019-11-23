@@ -22,6 +22,8 @@
 #  include <unistd.h>
 #  include <errno.h>
 #  include <sys/resource.h>
+//#  include <sys/types.h>
+//#  include <sys/sysctl.h>
 
 #  if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__IRIX65)
 #    define _SC_NPROCESSORS_CONF _SC_NPROC_CONF
@@ -642,6 +644,22 @@ unsigned int OperatingSystem::getErrorCode(unsigned int error) throw() {
     return OperatingSystem::UNSPECIFIED_ERROR;
   }
 #endif
+}
+
+class MemoryInfo {
+public:
+  
+  MemorySize used = 0;
+  MemorySize available = 0;
+};
+
+MemoryInfo getMemory()
+{
+  MemoryInfo result;
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
+#else
+#endif
+  return result;
 }
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

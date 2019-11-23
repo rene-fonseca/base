@@ -143,8 +143,8 @@ public:
     Array<StackFrame> stackFramesUnhash; // cached frames (remaining stack traces)
     String stackPattern; // stack frame pattern
     Array<Frame> stackFrames; // all frames - index is id for frame
+    Array<MemorySize> stackFramesByIndex;
     Array<MemorySize> stackFramesByParent[MAXIMUM_STACK_TRACE]; // lookup by parent
-    Performance::Counter stackFramesCounters[MAXIMUM_STACK_TRACE]; // lookup by parent
     Map<uint32, unsigned int> stackFramesLookup; // lookup for sf to first frame
 
     PreferredAtomicCounter numberOfEvents;

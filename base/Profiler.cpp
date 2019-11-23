@@ -136,26 +136,29 @@ unsigned int Profiler::ProfilerImpl::buildStackFrame(const uint32 sf)
         // slow linear search - O(n^2) complexity
         
         static Performance::Counter counter("Slow linear search through all frames");
-        ++counter;
-
+        // we can bubble up if we use indirect index here
         it = stackFrames.begin() + parent;
         for (const auto end = stackFrames.end(); it != end; ++it) {
+          ++counter;
           if (*it == frame) {
             break;
           }
         }
       } else { // only look through limited frames
-        const auto& frames = stackFramesByParent[parent];
-        const auto end = frames.end();
-        for (auto j = frames.begin(); j != end; ++j) {
+        auto& frames = stackFramesByParent[parent];
+        static Performance::Counter counter("Fast search");
+
+        for (auto j = frames.begin(), end = frames.end(); j != end; ++j) {
+          ++counter;
           if (stackFrames[*j] == frame) {
-            stackFramesCounters[parent] += j - frames.begin();
             it = stackFrames.begin() + *j; // convert index to iterator
-            // swapper(*j, stackFramesByParent[0]); // fast - bubble sort is
+            if (j != frames.begin()) {
+              swapper(*j, frames[0]); // bubble up - faster search
+              //swapper(*j, j[-1]); // bubble up - faster search
+            }
             break;
           }
         }
-        stackFramesCounters[parent] += frames.getSize();
       }
 
       if (it != stackFrames.end()) {
@@ -204,7 +207,6 @@ void Profiler::ProfilerImpl::release()
   for (MemorySize i = 0; i < MAXIMUM_STACK_TRACE; ++i) {
     stackFramesByParent[i].ensureCapacity(0);
     stackFramesByParent[i].setSize(0);
-    stackFramesCounters[i] = 0;
   }
   stackFramesLookup.removeAll();
   releaseEvents();
@@ -245,9 +247,6 @@ uint32 Profiler::ProfilerImpl::getStackFrame(const ConstSpan<const void*>& stack
 
 Profiler::ProfilerImpl::ProfilerImpl()
 {
-  for (MemorySize i = 0; i < MAXIMUM_STACK_TRACE; ++i) {
-    stackFramesCounters[i].id = "counter";
-  }
 }
 
 Profiler::ProfilerImpl::~ProfilerImpl()

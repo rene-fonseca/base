@@ -277,7 +277,7 @@ public:
       } else if (node->getRight()) {
         this->elements->rotateLeft(node);
       } else {
-        break; // stop when the node is a leave in the tree
+        break; // stop when the node is a leaf in the tree
       }
     }
 

@@ -426,6 +426,16 @@ public:
     return elements;
   }
 
+  inline Span<TYPE> getSpan() noexcept
+  {
+    return Span<TYPE>(elements, size);
+  }
+
+  inline ConstSpan<TYPE> getSpan() const noexcept
+  {
+    return ConstSpan<TYPE>(elements, size);
+  }
+
   /**
     Returns the first element of the allocator as a modifying iterator.
   */

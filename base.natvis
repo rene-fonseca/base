@@ -1,9 +1,33 @@
 <?xml version="1.0" encoding="utf-8"?>
 <AutoVisualizer xmlns="http://schemas.microsoft.com/vstudio/debugger/natvis/2010">
   <Type Name="base::MemorySpan">
+    <DisplayString>{{ size={end - begin} }}</DisplayString>
     <Expand>
-      <Item Name="[size]">end - begin</Item>
-	</Expand>
+      <ArrayItems>
+        <Size>end - begin</Size>
+        <ValuePointer>begin</ValuePointer>
+      </ArrayItems>
+    </Expand>
+  </Type>
+
+  <Type Name="base::Span&lt;*&gt;">
+    <DisplayString>{{ size={size} }}</DisplayString>
+    <Expand>
+      <ArrayItems>
+        <Size>size</Size>
+        <ValuePointer>buffer</ValuePointer>
+      </ArrayItems>
+    </Expand>
+  </Type>
+
+  <Type Name="base::ConstSpan&lt;*&gt;">
+    <DisplayString>{{ size={size} }}</DisplayString>
+    <Expand>
+      <ArrayItems>
+        <Size>size</Size>
+        <ValuePointer>buffer</ValuePointer>
+      </ArrayItems>
+    </Expand>
   </Type>
 
   <Type Name="base::DynamicObject">

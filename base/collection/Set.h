@@ -40,11 +40,12 @@ public:
   /* Enumerator of set. */
   template<class TRAITS, class ENU>
   class SetEnumerator : public base::Enumerator<TRAITS> {
-  private:
+  public:
 
     typedef typename Enumerator<TRAITS>::Pointer Pointer;
     typedef typename Enumerator<TRAITS>::Value Value;
-    
+  private:
+
     ENU enu;
   public:
 
@@ -122,7 +123,7 @@ public:
 
     @param key The value to search for.
   */
-  bool isKey(const KEY& key) const noexcept
+  bool [[deprecated]] isKey(const KEY& key) const noexcept
   {
     return elements.find(key);
   }
@@ -142,12 +143,13 @@ public:
 
     @param key The key to be added to the set.
   */
-  void add(const KEY& key)
+  const KEY* add(const KEY& key)
   {
-    KEY* result = elements.add(key);
+    const KEY* result = elements.add(key);
     if (!result) {
       ++size; // key did not exist
     }
+    return result;
   }
 
   /**
@@ -162,6 +164,8 @@ public:
     --size;
   }
 
+  // add template<class PREDICATE> Set::remove(PREDICATE& predicate);
+
   /**
     Removes all the keys from this set.
   */
@@ -173,7 +177,7 @@ public:
   
   inline operator bool() const noexcept
   {
-    return getSize() != 0;
+    return size != 0;
   }
 };
 

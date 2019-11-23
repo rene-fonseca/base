@@ -109,14 +109,15 @@ void UnitTest::Run::onException(Exception* exception)
       ++stackTrace.begin; // skip handler
     }
     if (stackTrace.begin != stackTrace.end) {
+      ConstSpan<const void*> trace(stackTrace.begin, stackTrace.end - stackTrace.begin);
       if (UnitTestManager::getManager().getVerbosity() < UnitTestManager::VERBOSE) {
         StackFrame::toStream(
-          fout, stackTrace.begin, stackTrace.end - stackTrace.begin,
+          fout, trace,
           StackFrame::FLAG_DEFAULT | (UnitTestManager::getManager().getUseANSIColors() ? StackFrame::FLAG_USE_COLORS : 0)
         );
       }
       StackFrame::toStream(
-        sos, stackTrace.begin, stackTrace.end - stackTrace.begin,
+        sos, trace,
         StackFrame::FLAG_DEFAULT | (UnitTestManager::getManager().getUseANSIColors() ? StackFrame::FLAG_USE_COLORS : 0)
       );
       for (const auto& line : sos.toString().split('\n')) {
@@ -1146,7 +1147,7 @@ void UnitTest::onAssert(bool passed, const String& what, unsigned int line)
     if (UnitTestManager::getManager().getShowStackTrace()) {
       StackFrame stackTrace = StackFrame::getStack();
       StackFrame::toStream(
-        fout, stackTrace.getTrace(), stackTrace.getSize(),
+        fout, stackTrace.getTrace(),
         StackFrame::FLAG_DEFAULT | (UnitTestManager::getManager().getUseANSIColors() ? StackFrame::FLAG_USE_COLORS : 0)
       );
     }

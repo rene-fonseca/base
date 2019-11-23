@@ -21,9 +21,9 @@
 #include <base/Timer.h>
 #include <base/concurrency/SpinLock.h>
 #include <base/collection/Map.h>
+#include <base/Performance.h>
 
 // TAG: add heap ids
-// TAG: hook exception throws
 // TAG: support external stack trace
 // TAG: sample memory/objects
 // TAG: push error/warning
@@ -49,22 +49,25 @@ public:
     Reference<ReferenceCountedObject> data; // meta info
     const char* cat = nullptr;
     const char* name = nullptr;
-    // uint32 pid = 0; // process id // we output on export
-    uint32 tid = 0; // thread id
     Timer::XTime ts; // timestamp
     Timer::XTime dur; // duration
-    // Timer::XTime tdur = 0; // optional - thread duration
-    // uint64 tts = 0; // optional thread timestamp
-    uint32 sf = 0; // stack frame // uint16 would be enough
-    char ph = 0; // event type
-    uint8 flags = 0; // flags
+#if 0 // thread timing is optional
+    Timer::XTime tts; // timestamp
+    Timer::XTime tdur; // duration
+#endif
+    uint32 sf = 0; // stack frame // uint16 is normally enough
+    // uint32 pid = 0; // process id // we output on export
+    uint16 tid = 0; // thread id // uint16 is normally enough
     uint16 id = 0xffff; // object id - 0xffff is reserved
+    uint8 flags = 0; // flags
+    char ph = 0; // event type
   };
-  
-  /** Single frame. */
+
+  /** Single stack frame. */
   class Frame {
   public:
 
+    const void* symbol = nullptr; // allows fast comparison
     String name;
     String category; // module
     unsigned int parent = 0; // 0 is no parent
@@ -78,11 +81,40 @@ public:
     {
     }
 
+    inline Frame(void* _symbol, const String& _name, const String& _category, unsigned int _parent)
+      : symbol(_symbol), name(_name), category(_category), parent(_parent)
+    {
+    }
+
+    inline bool operator<(const Frame& compare) const noexcept
+    {
+      if (parent < compare.parent) {
+        return true;
+      } else if (parent > compare.parent) {
+        return false;
+      }
+      auto n = name.compareTo(compare.name);
+      if (n < 0) {
+        return true;
+      } else if (n > 0) {
+        return false;
+      }
+      // TAG: compare reference pointer value
+      auto c = category.compareTo(compare.category); // likely to be equal
+      if (c < 0) {
+        return true;
+      }
+      return false;
+    }
+
     inline bool operator==(const Frame& compare) const noexcept
     {
+      return symbol == compare.symbol; // allows fast comparison
+#if 0
       return (parent == compare.parent) &&
         (name == compare.name) &&
         (category == compare.category);
+#endif
     }
   };
 
@@ -103,7 +135,7 @@ public:
     };
 
     static constexpr unsigned int MAXIMUM_STACK_TRACE = 64;
-    
+
     /** Double linked list of all events. */
     Block* blocks = nullptr;
     const unsigned int pid = Process::getProcess().getId();
@@ -111,6 +143,7 @@ public:
     Array<StackFrame> stackFramesUnhash; // cached frames (remaining stack traces)
     String stackPattern; // stack frame pattern
     Array<Frame> stackFrames; // all frames - index is id for frame
+    Array<MemorySize> stackFramesByIndex;
     Array<MemorySize> stackFramesByParent[MAXIMUM_STACK_TRACE]; // lookup by parent
     Map<uint32, unsigned int> stackFramesLookup; // lookup for sf to first frame
 
@@ -120,8 +153,10 @@ public:
     unsigned int minimumWaitTime = 1; // minimum time to wait to record event
     unsigned int minimumHeapSize = 4096 * 2/2; // minimum heap size to record event
 
-    static constexpr uint32 SF_HIGH_BIT = 0x80000000U;
+    static constexpr uint32 SF_HIGH_BIT = 0x80000000U; // differentiates between hashed and unhashed buffers
     
+    ProfilerImpl();
+
     bool open(const String& path);
 
     /** Add new event. */
@@ -140,7 +175,8 @@ public:
       }
     }
 
-    uint32 getStackFrame(StackFrame&& stackTrace);
+    /** Registers the stack trace. */
+    uint32 getStackFrame(const ConstSpan<const void*>& stackTrace);
 
     unsigned int buildStackFrame(const uint32 sf);
     

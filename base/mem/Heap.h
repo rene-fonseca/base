@@ -22,12 +22,17 @@ _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 /** Memory span. */
 template<class TYPE>
 class Span {
-public:
+public: // public for now
 
   TYPE* buffer = nullptr;
   MemorySize size = 0;
+public:
 
-  inline Span(TYPE* _buffer, MemorySize _size)
+  inline Span() noexcept
+  {
+  }
+
+  inline Span(TYPE* _buffer, MemorySize _size) noexcept
     : buffer(_buffer), size(_size)
   {
     BASSERT((!buffer && !size) || (buffer && size));
@@ -58,9 +63,80 @@ public:
     return size;
   }
 
+  inline TYPE& operator[](MemorySize index) noexcept
+  {
+    return buffer[index];
+  }
+
+  inline const TYPE& operator[](MemorySize index) const noexcept
+  {
+    return buffer[index];
+  }
+
   inline operator bool() const noexcept
   {
+    return size != 0;
+  }
+};
+
+/** Memory span. */
+template<class TYPE>
+class ConstSpan {
+public: // public for now
+
+  const TYPE* buffer = nullptr;
+  MemorySize size = 0;
+public:
+
+  inline ConstSpan() noexcept
+  {
+  }
+
+  inline ConstSpan(const TYPE* _buffer, MemorySize _size) noexcept
+    : buffer(_buffer), size(_size)
+  {
+    BASSERT((!buffer && !size) || (buffer && size));
+  }
+
+  inline ConstSpan(const Span<TYPE>& span) noexcept
+    : buffer(span.buffer), size(span.size)
+  {
+    BASSERT((!buffer && !size) || (buffer && size));
+  }
+
+  inline const TYPE* begin() const noexcept
+  {
     return buffer;
+  }
+
+  inline const TYPE* end() const noexcept
+  {
+    return buffer + size;
+  }
+
+  inline const TYPE* cbegin() const noexcept
+  {
+    return buffer;
+  }
+
+  inline const TYPE* cend() const noexcept
+  {
+    return buffer + size;
+  }
+
+  inline MemorySize getSize() const noexcept
+  {
+    return size;
+  }
+
+  inline const TYPE& operator[](MemorySize index) const noexcept
+  {
+    return buffer[index];
+  }
+
+  inline operator bool() const noexcept
+  {
+    return size != 0;
   }
 };
 

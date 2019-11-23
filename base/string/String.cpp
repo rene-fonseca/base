@@ -155,6 +155,11 @@ bool String::isASCII() const noexcept
   return true;
 }
 
+bool String::isMultiReferenced() const noexcept
+{
+  return elements.isMultiReferenced();
+}
+
 void String::ensureCapacity(MemorySize capacity)
 {
   if (!elements.isMultiReferenced()) {
@@ -751,7 +756,6 @@ char* String::getElements() throw()
 {
   auto result = getBuffer(); // copy on write
   BASSERT(result[getLength()] == Traits::TERMINATOR);
-  result[getLength()] = Traits::TERMINATOR; // TAG: remove this when ready
   return result;
 }
 

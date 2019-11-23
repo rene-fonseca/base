@@ -25,18 +25,28 @@ _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 class _COM_AZURE_DEV__BASE__API StackFrame {
 private:
   
-  Allocator<void*> frames;
+  Allocator<const void*> frames; // we use void* over MemorySize since debugger can show symbols
 public:
   
   StackFrame();
 
+  StackFrame(const ConstSpan<const void*>& stackTrace);
+
+  StackFrame& operator=(const ConstSpan<const void*>& assign);
+
   /** Returns hash for stack trace. */
-  unsigned long getHash() const noexcept;
+  static unsigned long getHash(const ConstSpan<const void*>& stackTrace) noexcept;
+
+  /** Returns hash for stack trace. */
+  inline unsigned long getHash() const noexcept
+  {
+    return getHash(frames.getSpan());
+  }
   
   /** Returns the stack frames. */
-  inline void* const * getTrace() const noexcept
+  inline ConstSpan<const void*> getTrace() const noexcept
   {
-    return frames.getElements();
+    return frames.getSpan();
   }
 
   /** Returns the number of stack frames. */
@@ -52,7 +62,7 @@ public:
   }
   
   /** Returns the stack frame. */
-  inline void* getFrame(MemorySize index) const noexcept
+  inline const void* getFrame(MemorySize index) const noexcept
   {
     if (index >= frames.getSize()) {
       return nullptr;
@@ -65,14 +75,14 @@ public:
 
     @return Returns -1 if not found.
   */  
-  MemoryDiff find(void* address) const noexcept;
+  MemoryDiff find(const void* address) const noexcept;
 
   /**
     Returns the index of the last occurrence symbol address if found.
 
     @return Returns -1 if not found.
   */  
-  MemoryDiff findLast(void* address) const noexcept;
+  MemoryDiff findLast(const void* address) const noexcept;
 
   /**
     Strips any frames before the given index.
@@ -84,7 +94,7 @@ public:
 
     @return The number of frames skipped.
   */  
-  MemorySize stripUntil(void* ip) noexcept;
+  MemorySize stripUntil(const void* ip) noexcept;
 
   /**
     Returns the stack frame. Not available for all platforms.
@@ -99,7 +109,7 @@ public:
   /**
     Returns the stack trace.
   */
-  static unsigned int getStack(void** dest, unsigned int size, unsigned int skip = 1, bool trim = true);
+  static unsigned int getStack(const void** dest, unsigned int size, unsigned int skip = 1, bool trim = true);
 
   /**
     Returns the stack.
@@ -128,6 +138,29 @@ public:
     return !(operator==(compare));
   }
 
+  bool operator==(const ConstSpan<const void*>& compare) const noexcept
+  {
+    if (frames.getSize() != compare.getSize()) {
+      return false;
+    }
+    for (MemorySize i = 0; i < frames.getSize(); ++i) {
+      if (frames.getElements()[i] != compare[i]) {
+        return false;
+      }
+    }
+    return true;
+  }
+
+  inline bool operator!=(const ConstSpan<const void*>& compare) const noexcept
+  {
+    return !(operator==(compare));
+  }
+
+  inline operator bool() const noexcept
+  {
+    return !frames.isEmpty();
+  }
+
   /**
    Dump stack.
    
@@ -150,7 +183,7 @@ public:
   /**
     Format stack trace to stream.
   */
-  static void toStream(FormatOutputStream& stream, const void* const* trace, MemorySize size, unsigned int flags = FLAG_DEFAULT);
+  static void toStream(FormatOutputStream& stream, const ConstSpan<const void*>& stackTrace, unsigned int flags = FLAG_DEFAULT);
 };
 
 _COM_AZURE_DEV__BASE__API FormatOutputStream& operator<<(FormatOutputStream& stream, const StackFrame& value) throw(IOException);

@@ -120,16 +120,22 @@ public:
     StaticFunctionDescriptor* functions,
     unsigned int numberOfFunctions, bool flags = 0) noexcept;
 
-  /** Returns the path of the image for the given executable address. */
-  static String getImagePath(const void* address);
+  /** Returns the image address of the executable. */
+  static void* getProcessImage() noexcept;
 
-  /** Returns the image address for the given executable address. */
+  /** Returns the image address of the Base Framework model (can be the executable module for static linking). */
+  static void* getBaseFrameworkImage() noexcept;
+
+  /** Returns the image address for the given process address. */
   static void* getImageAddress(const void* address) noexcept;
 
-  /** Returns the closest symbol for the given executable address. */
+  /** Returns the path of the image for the given process address. */
+  static String getImagePath(const void* address);
+
+  /** Returns the closest symbol for the given process address. */
   static void* getSymbolAddress(const void* address) noexcept;
 
-  /** Returns the closest symbol for the given executable address. */
+  /** Returns the closest symbol for the given process address. */
   static String getSymbolName(const void* address);
 
   /** Symbol info. */
@@ -147,7 +153,7 @@ public:
     }
   };
 
-  /** Returns the closest symbol for the given executable address. */
+  /** Returns the closest symbol for the given process address. */
   static SymbolInfo getSymbolInfo(const void* address) noexcept;
 
   /**

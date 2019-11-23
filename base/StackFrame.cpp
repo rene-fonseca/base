@@ -252,6 +252,25 @@ StackFrame::StackFrame()
 {
 }
 
+StackFrame::StackFrame(const ConstSpan<const void*>& trace)
+{
+  frames.setSize(trace.getSize());
+  const void** dest = frames.getElements();
+  for (auto src = trace.begin(), end = trace.end(); src != end;) {
+    *dest++ = *src++;
+  }
+}
+
+StackFrame& StackFrame::operator=(const ConstSpan<const void*>& assign)
+{
+  frames.setSize(assign.getSize());
+  const void** dest = frames.getElements();
+  for (auto src = assign.begin(), end = assign.end(); src != end;) {
+    *dest++ = *src++;
+  }
+  return *this;
+}
+
 namespace {
 
   void BASE_ADDRESS()
@@ -271,9 +290,9 @@ namespace {
   }
 }
 
-unsigned long StackFrame::getHash() const noexcept
+unsigned long StackFrame::getHash(const ConstSpan<const void*>& trace) noexcept
 {
-  if (frames.isEmpty()) {
+  if (trace.getSize() == 0) {
     return 0;
   }
 
@@ -281,14 +300,15 @@ unsigned long StackFrame::getHash() const noexcept
 
   MemorySize previous = base;
   unsigned long state = (sizeof(unsigned long) == 4) ? 0x67452301 : 0x67452301efcdab89ULL;
-  
-  MemorySize offset = frames.getSize(); // low bits only
+
+  MemorySize offset = trace.getSize(); // low bits only
   while (offset) { // likely only 1 iteration
     updateHash(state, static_cast<uint8>(offset & 0xff));
     offset >>= 8;
   }
 
-  for (auto v : frames) {
+  for (MemorySize i = 0; i < trace.getSize(); ++i) {
+    auto v = trace[i];
     const auto address = reinterpret_cast<MemorySize>(v); // high are likely 0
     auto offset = (address >= previous) ? (address - previous) : (previous - address); // get the lower order bits that matter
     previous = address;
@@ -300,7 +320,7 @@ unsigned long StackFrame::getHash() const noexcept
   return state;
 }
 
-MemoryDiff StackFrame::find(void* address) const noexcept
+MemoryDiff StackFrame::find(const void* address) const noexcept
 {
   const void* const* src = frames.getElements();
   for (MemorySize i = 0; i < frames.getSize(); ++i) {
@@ -313,7 +333,7 @@ MemoryDiff StackFrame::find(void* address) const noexcept
   return -1;
 }
 
-MemoryDiff StackFrame::findLast(void* address) const noexcept
+MemoryDiff StackFrame::findLast(const void* address) const noexcept
 {
   const void* const* src = frames.getElements();
   for (MemoryDiff i = frames.getSize() - 1; i >= 0; --i) {
@@ -334,13 +354,13 @@ void StackFrame::stripUntil(MemorySize index) noexcept
       frames.setSize(0);
       return;
     }
-    void** dest = frames.getElements();
+    const void** dest = frames.getElements();
     move(dest, dest + index, size - index);
     frames.setSize(size - index);
   }
 }
 
-MemorySize StackFrame::stripUntil(void* address) noexcept
+MemorySize StackFrame::stripUntil(const void* address) noexcept
 {
   MemoryDiff index = find(address);
   if (index > 0) { // found
@@ -355,10 +375,13 @@ void* StackFrame::getStackFrame() noexcept
 
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   return nullptr; // not available for x64
-#elif ((_COM_AZURE_DEV__BASE__COMPILER == _COM_AZURE_DEV__BASE__COMPILER_LLVM) || \
-       (_COM_AZURE_DEV__BASE__COMPILER == _COM_AZURE_DEV__BASE__COMPILER_GCC))
+#elif ((_COM_AZURE_DEV__BASE__ARCH == _COM_AZURE_DEV__BASE__X86_64) && \
+       ((_COM_AZURE_DEV__BASE__COMPILER == _COM_AZURE_DEV__BASE__COMPILER_LLVM) || \
+        (_COM_AZURE_DEV__BASE__COMPILER == _COM_AZURE_DEV__BASE__COMPILER_GCC)))
   asm("mov %%rbp, %0" : "=rm" ( frame ));
-#elif (_COM_AZURE_DEV__BASE__ARCH == _COM_AZURE_DEV__BASE__X86)
+#elif ((_COM_AZURE_DEV__BASE__ARCH == _COM_AZURE_DEV__BASE__X86) && \
+       ((_COM_AZURE_DEV__BASE__COMPILER == _COM_AZURE_DEV__BASE__COMPILER_LLVM) || \
+        (_COM_AZURE_DEV__BASE__COMPILER == _COM_AZURE_DEV__BASE__COMPILER_GCC)))
   asm (
     "movl %%ebp,%0;\n"
     : "=m" (frame) // output
@@ -427,14 +450,13 @@ namaespace {
 }
 #endif
 
-unsigned int StackFrame::getStack(void** dest, unsigned int size, unsigned int skip, bool trim)
+unsigned int StackFrame::getStack(const void** dest, unsigned int size, unsigned int skip, bool trim)
 {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
-  USHORT count = RtlCaptureStackBackTrace(skip + 1, size, dest, NULL);
+  USHORT count = RtlCaptureStackBackTrace(skip + 1, size, const_cast<void**>(dest), NULL);
   while ((count > 0) && (reinterpret_cast<MemorySize>(dest[count - 1]) < 0x10000)) {
     --count; // remove bad text seg pointer
   }
-  // trim to &Thread::entry, &main and similar roots
 #elif ((_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__MACOS) || \
        (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__GNULINUX))
   int count = backtrace(dest, size);
@@ -479,8 +501,19 @@ unsigned int StackFrame::getStack(void** dest, unsigned int size, unsigned int s
   }
 #endif
   
-  if (trim) {
-    // TAG: remove item not in base image - but include main()
+  if (trim && (count > 0)) {
+    // trim to &Thread::entry, &main and similar roots
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32) // TAG: add support for all platforms
+    void* framworkModule = DynamicLinker::getBaseFrameworkImage();
+    void* processModule = DynamicLinker::getProcessImage();
+    while (count > 0) {
+      const void* base = DynamicLinker::getImageAddress(dest[count - 1]);
+      if ((base == framworkModule) || (base == processModule)) {
+        break;
+      }
+      --count;
+    }
+#endif
   }
   
   return count;
@@ -496,7 +529,7 @@ StackFrame StackFrame::getStack(unsigned int skip, unsigned int levels, bool tri
 
   ++skip;
   
-  PrimitiveStackArray<void*> buffer(256);
+  PrimitiveStackArray<const void*> buffer(256);
   unsigned int count = 0;
   while (buffer.size() < (64 * 1024)) {
     count = getStack(buffer, minimum<MemorySize>(levels, buffer.size()), skip, trim);
@@ -508,39 +541,49 @@ StackFrame StackFrame::getStack(unsigned int skip, unsigned int levels, bool tri
   }
 
   frames.frames.setSize(count);
-  copy(frames.frames.getElements(), static_cast<void**>(buffer), count);
+  copy(frames.frames.getElements(), static_cast<const void**>(buffer), count);
 
   return frames;
 }
 
-namespace {
-
-  const void* imageBase = DynamicLinker::getImageAddress((void*)&StackFrame::toStream);
-}
-
-void StackFrame::toStream(FormatOutputStream& stream, const void* const * trace, MemorySize size, unsigned int flags)
+void StackFrame::toStream(FormatOutputStream& stream, const ConstSpan<const void*>& _trace, unsigned int flags)
 {
   const bool showAddress = (flags & FLAG_SHOW_ADDRESS) != 0;
   const bool useColors = (flags & FLAG_USE_COLORS) != 0;
   const unsigned int INDENT = ((flags & FLAG_INDENT) != 0) ? 2 : 0;
 
+  ConstSpan<const void*> trace = _trace;
+  if (flags & FLAG_TRIM_SYSTEM) { // TAG: remove FLAG_TRIM_SYSTEM below when ready
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32) // TAG: add support for all platforms
+    void* framworkModule = DynamicLinker::getBaseFrameworkImage();
+    void* processModule = DynamicLinker::getProcessImage();
+    for (MemoryDiff i = trace.getSize() - 1; i >= 0; --i) {
+      const void* base = DynamicLinker::getImageAddress(trace[i]);
+      if ((base == framworkModule) || (base == processModule)) {
+        trace = ConstSpan<const void*>(_trace.begin(), i + 1);
+        break;
+      }
+    }
+#endif
+  }
+
   stream << "Stack trace:" << EOL;
-  if (!trace || (size == 0)) {
+  if (!trace || (trace.getSize() == 0)) {
     stream << indent(INDENT) << "NO STACK FRAMES" << EOL;
     return;
   }
 
   unsigned int field1 = 1;
-  if (size >= 100) {
+  if (trace.getSize() >= 100) {
     field1 = 3;
-  } else if (size >= 10) {
+  } else if (trace.getSize() >= 10) {
     field1 = 2;
   }
 
   unsigned int field2 = 8; // never less than 8
   if (sizeof(MemorySize) > 4) {
     MemorySize bits = 0;
-    for (MemorySize i = 0; i < size; ++i) {
+    for (MemorySize i = 0; i < trace.getSize(); ++i) {
       MemorySize ip = reinterpret_cast<MemorySize>(trace[i]); // technically we should resolve symbol - but not hard done
       bits |= ip;
     }
@@ -555,25 +598,29 @@ void StackFrame::toStream(FormatOutputStream& stream, const void* const * trace,
 
   String lastAddress;
   MemorySize count = 0;
-  for (MemorySize i = 0; i < size; ++i) {
-    const void* ip = trace[i];
-    const void* symbol = DynamicLinker::getSymbolAddress(ip);
+  void* imageAddress = nullptr;
+  String imagePath;
 
-    String path;
+  for (MemorySize i = 0; i < trace.getSize(); ++i) {
+    const void* ip = trace[i];
+    const DynamicLinker::SymbolInfo info = DynamicLinker::getSymbolInfo(ip);
+
     if (flags & FLAG_SHOW_MODULE) {
-      path = DynamicLinker::getImagePath(ip);
-      if ((flags & FLAG_FULL_PATH) == 0) {
-        path = FileSystem::getComponent(path, FileSystem::FILENAME);
+      if (info.imageAddress != imageAddress) {
+        imageAddress = info.imageAddress;
+        imagePath = DynamicLinker::getImagePath(info.imageAddress);
+        if ((flags & FLAG_FULL_PATH) == 0) {
+          imagePath = FileSystem::getComponent(imagePath, FileSystem::FILENAME);
+        }
       }
     }
 
-    if (symbol) {
+    if (info) {
       stream << indent(INDENT) << setWidth(field1) << count << ": ";
-      const String name = DynamicLinker::getSymbolName(ip);
-      auto displacement = (reinterpret_cast<const uint8*>(ip) - reinterpret_cast<const uint8*>(symbol));
+      auto displacement = (reinterpret_cast<const uint8*>(ip) - reinterpret_cast<const uint8*>(info.address));
       if (showAddress) {
         StringOutputStream sos;
-        sos << setWidth(field2) << symbol << "+" << HEX << ZEROPAD << NOPREFIX << setWidth(4) << displacement;
+        sos << setWidth(field2) << info.address << "+" << HEX << ZEROPAD << NOPREFIX << setWidth(4) << displacement;
         const String address = sos.toString();
         if (useColors) {
           MemorySize j = 0; // find first difference for new address
@@ -597,19 +644,19 @@ void StackFrame::toStream(FormatOutputStream& stream, const void* const * trace,
           stream << address;
         }
       }
-      if (name) {
+      if (info.name) {
         if (showAddress) {
           stream << " ";
         }
-        String demangled = TypeInfo::demangleName(name.native());
+        String demangled = TypeInfo::demangleName(info.name.native());
         const bool stripNamespace = flags & FLAG_STRIP_NAMESPACE; // this will compact output quite a bit
         if (stripNamespace) {
           demangled.replaceAll("base::", String()); // or std:: // TAG: we should check char just before to make sure this is a namespace
           // TAG: we can add a register of namespace macro like register of test to support stripping of any namespace
         }
         if (useColors) {
-          if (path) {
-            stream << setForeground(ANSIEscapeSequence::GREEN) << path << normal() << "!";
+          if (imagePath) {
+            stream << setForeground(ANSIEscapeSequence::GREEN) << imagePath << normal() << "!";
           }
           auto index = demangled.indexOf('(');
           if (index >= 0) {
@@ -620,15 +667,15 @@ void StackFrame::toStream(FormatOutputStream& stream, const void* const * trace,
           }
           stream << normal();
         } else {
-          if (path) {
-            stream << path << "!" << demangled;
+          if (imagePath) {
+            stream << imagePath << "!" << demangled;
           } else {
             stream << demangled;
           }
         }
 
         if (flags & FLAG_TRIM_SYSTEM) {
-          // TAG: skip until first base address
+
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
           if ((demangled == MESSAGE("BaseThreadInitThunk")) || (demangled == MESSAGE("CtrlRoutine"))) {
             stream << EOL;
@@ -674,20 +721,7 @@ void StackFrame::dump(unsigned int skip, unsigned int levels)
   const unsigned int flags = StackFrame::FLAG_SHOW_ADDRESS | StackFrame::FLAG_SHOW_MODULE | StackFrame::FLAG_INDENT |
     (colors ? StackFrame::FLAG_USE_COLORS : 0);
 
-  {
-    void* trace[256]; // quick buffer
-    const MemorySize count = getStack(trace, minimum<MemorySize>(levels, getArraySize(trace)), skip);
-    if (!INLINE_ASSERT(count > 0)) {
-      return;
-    }
-    if ((count != getArraySize(trace)) || (count <= levels)) { // no overflow
-      toStream(ferr, trace, count, flags);
-      ferr << FLUSH;
-      return;
-    }
-  }
-
-  PrimitiveStackArray<void*> buffer(1024);
+  PrimitiveStackArray<const void*> buffer(256);
   MemorySize count = 0;
   while (buffer.size() < (64 * 1024)) {
     count = getStack(buffer, minimum<MemorySize>(levels, buffer.size()), skip);
@@ -698,7 +732,7 @@ void StackFrame::dump(unsigned int skip, unsigned int levels)
     break;
   }
 
-  toStream(ferr, buffer, count, flags);
+  toStream(ferr, ConstSpan<const void*>(buffer, count), flags);
   ferr << FLUSH;
 }
 
@@ -708,7 +742,7 @@ FormatOutputStream& operator<<(
 {
   const bool colors = false; // FileDescriptor::getStandardError().isANSITerminal(); // stream may not be stderr
   StackFrame::toStream(
-    stream, value.getTrace(), value.getSize(),
+    stream, value.getTrace(),
     StackFrame::FLAG_DEFAULT | (colors ? StackFrame::FLAG_USE_COLORS : 0)
   );
   return stream;

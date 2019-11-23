@@ -40,11 +40,12 @@ public:
   /* Enumerator of set. */
   template<class TRAITS, class ENU>
   class SetEnumerator : public base::Enumerator<TRAITS> {
-  private:
+  public:
 
     typedef typename Enumerator<TRAITS>::Pointer Pointer;
     typedef typename Enumerator<TRAITS>::Value Value;
-    
+  private:
+
     ENU enu;
   public:
 
@@ -162,6 +163,8 @@ public:
     elements.remove(elements.find(key));
     --size;
   }
+
+  // add template<class PREDICATE> Set::remove(PREDICATE& predicate);
 
   /**
     Removes all the keys from this set.

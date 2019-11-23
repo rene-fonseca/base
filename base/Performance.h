@@ -46,7 +46,7 @@ public:
       return *this;
     }
 
-    inline Counter& operator+(MemorySize count) noexcept
+    inline Counter& operator+=(MemorySize count) noexcept
     {
       value += count;
       return *this;

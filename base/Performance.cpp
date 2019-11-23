@@ -18,7 +18,7 @@ _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 Performance::Counter::~Counter()
 {
-  fout << "Counter " << id << " = " << static_cast<MemorySize>(value) << ENDL;
+  fout << "Counter '" << id << "' = " << static_cast<MemorySize>(value) << ENDL;
 }
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

@@ -439,7 +439,12 @@ public:
     Returns true if the string is an ASCII string.
   */
   bool isASCII() const throw();
-  
+
+  /**
+    Returns true if the string has multiple references.
+  */
+  bool isMultiReferenced() const noexcept;
+
   /**
     Returns the capacity of the string.
   */

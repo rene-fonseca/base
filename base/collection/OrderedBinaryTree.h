@@ -43,7 +43,7 @@ public:
   /** Non-modifying enumerator. */
   typedef InfixOrderEnumerator<ReadEnumeratorTraits<Node> > ReadEnumerator;
   /** Non-modifying iterator. */
-  // typedef InfixOrderIterator<ReadIteratorTraits<Node> > ReadIterator;
+  typedef InfixOrderIterator<ReadIteratorTraits<Node> > ReadIterator;
 
 //  class Enumeration;
 //  friend class Enumeration;
@@ -133,6 +133,22 @@ public:
   }
 
   /**
+    Returns a non-modifying iterator of the ordered binary tree.
+  */
+  inline ReadIterator begin() const noexcept
+  {
+    return ReadIterator(getRoot());
+  }
+
+  /**
+    Returns a non-modifying iterator of the ordered binary tree.
+  */
+  inline ReadIterator end() const noexcept
+  {
+    return ReadIterator();
+  }
+
+  /**
     Searches for the specified value in this tree.
 
     @param value The value to look for.
@@ -214,7 +230,7 @@ public:
   {
     Allocator<Node*> buffer;
     BinaryTree<TYPE>::BinaryTreeImpl::getNodes(buffer, node);
-    setRoot(BinaryTree<TYPE>::BinaryTreeImpl::buildBalancedTree(buffer));
+    BinaryTree<TYPE>::setRoot(BinaryTree<TYPE>::BinaryTreeImpl::buildBalancedTree(buffer));
   }
 
   static inline bool invariant(const Node* a, const Node* b)
@@ -225,9 +241,11 @@ public:
   inline void rebalance() noexcept
   {
     rebalance(getRoot());
+#if 0
     if (!BinaryTree<TYPE>::BinaryTreeImpl::validate(getRoot(), invariant)) {
       BASSERT(!"OrderedBinaryTree is not ordered correctly.");
     }
+#endif
   }
 
   /** Rebalances the given subtree. */
@@ -262,8 +280,8 @@ public:
     while (true) {
       const int result = compare<const Key&>(value, node->getValue());
       if (result < 0) {
-        if (node->getLeft()) {
-          node = node->getLeft();
+        if (auto left = node->getLeft()) {
+          node = left;
         } else { // attach left child node
           Node* newNode = new Node(node, nullptr, nullptr, value);
           node->setLeft(newNode);
@@ -271,8 +289,8 @@ public:
           return Pair<Node*, bool>(newNode, true);
         }
       } else if (result > 0) {
-        if (node->getRight()) {
-          node = node->getRight();
+        if (auto right = node->getRight()) {
+          node = right;
         } else { // attach right child node
           Node* newNode = new Node(node, nullptr, nullptr, value);
           node->setRight(newNode);

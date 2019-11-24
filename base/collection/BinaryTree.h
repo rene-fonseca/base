@@ -23,6 +23,7 @@
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
+/** Binary tree iterator in the order root, left, and right. */
 template<class TRAITS>
 class PrefixOrderIterator : public ReadIteratorTraits<TRAITS> {
 private:
@@ -35,7 +36,7 @@ private:
 
   /** The root of the binary tree. */
   Pointer root = nullptr;
-  /** The current position of the enumeration. */
+  /** The current position of the iterator. */
   Pointer node = nullptr;
 public:
 
@@ -43,9 +44,10 @@ public:
   {
   }
 
-  inline PrefixOrderIterator(const Pointer* _node) noexcept
-    : root(_node), node(_node)
+  inline PrefixOrderIterator(const Pointer* _root) noexcept
+    : root(_root), node(_root)
   {
+    // starting with root
   }
 
   inline bool operator==(const PrefixOrderIterator& compare) const noexcept
@@ -58,32 +60,38 @@ public:
     return node != compare.node;
   }
 
-  inline PrefixOrderIterator& operator++() noexcept
+  inline PrefixOrderIterator& operator++()
   {
-    Pointer result = node;
-    if (!result) {
-      throw EndOfEnumeration();
+    if (!node) {
+      throw IteratorException();
     }
 
     if (auto left = node->getLeft()) { // traverse left subtree
       node = left;
     } else if (auto right = node->getRight()) { // traverse right subtree
       node = right;
-    } else {
-      Pointer temp;
+    } else { // leaf
+      Pointer child = nullptr;
       do { // return from subtree
         if (node == root) {
-          return result; // end of tree
+          node = nullptr;
+          return *this; // end of tree
         }
-        temp = node;
+        child = node;
         node = node->getParent();
-      } while ((!node->getRight()) || (temp == node->getRight()));
+      } while (!node->getRight() || (child == node->getRight()));
 
       node = node->getRight(); // traverse right subtree - which we know exists
     }
 
-    node = result;
     return *this;
+  }
+  
+  inline PrefixOrderIterator operator++(int) throw(EndOfEnumeration)
+  {
+    PrefixOrderIterator result;
+    ++result;
+    return result;
   }
 
   inline Pointer operator->() const noexcept
@@ -97,8 +105,100 @@ public:
   }
 };
 
+/** Binary tree iterator in the order left, right, and root. */
+template<class TRAITS>
+class PostfixOrderIterator : public ReadIteratorTraits<TRAITS> {
+private:
 
+  typedef typename ReadIteratorTraits<TRAITS>::Value Value;
+  typedef typename ReadIteratorTraits<TRAITS>::Reference Reference;
+  typedef typename ReadIteratorTraits<TRAITS>::Pointer Pointer;
+  typedef typename ReadIteratorTraits<TRAITS>::Distance Distance;
+  typedef ForwardIterator Category;
 
+  /** The root of the binary tree. */
+  Pointer root = nullptr;
+  /** The current position of the iterator. */
+  Pointer node = nullptr;
+  /** The current position of the iterator. */
+  Pointer current = nullptr;
+
+  Pointer* next()
+  {
+    if (!node) {
+      throw IteratorException();
+    }
+    
+    Pointer result = nullptr;
+    while (!result) {
+      if (auto left = node->getLeft()) { // traverse left subtree
+        node = left;
+      } else if (auto right = node->getRight()) { // traverse right subtree
+        node = right;
+      } else { // leaf
+        Pointer child = nullptr;
+        do { // return from subtree
+          result = node;
+          if (node == root) {
+            node = nullptr;
+            return result;
+          }
+          child = node;
+          node = node->getParent();
+        } while (!node->getRight() || (child == node->getRight()));
+
+        node = node->getRight(); // traverse right subtree - which we know exists
+      }
+    }
+    return result;
+  }
+public:
+
+  inline PostfixOrderIterator() noexcept
+  {
+  }
+
+  inline PostfixOrderIterator(const Pointer* _root) noexcept
+    : root(_root), node(_root)
+  {
+    current = next();
+  }
+
+  inline bool operator==(const PostfixOrderIterator& compare) const noexcept
+  {
+    return node == compare.node;
+  }
+
+  inline bool operator!=(const PostfixOrderIterator& compare) const noexcept
+  {
+    return node != compare.node;
+  }
+
+  inline PostfixOrderIterator& operator++()
+  {
+    current = next();
+    return *this;
+  }
+  
+  inline PostfixOrderIterator operator++(int)
+  {
+    PostfixOrderIterator result;
+    ++result;
+    return result;
+  }
+
+  inline Pointer operator->() const noexcept
+  {
+    return current;
+  }
+
+  inline Reference operator*() const noexcept
+  {
+    return *current;
+  }
+};
+
+/** Binary tree iterator in the order left, root, and right. */
 template<class TRAITS>
 class InfixOrderIterator : public ReadIteratorTraits<TRAITS> {
 private:
@@ -119,10 +219,10 @@ private:
   /** Specifies that subtree should be traversed. */
   Traverse traverse = TRAVERSE_SUBTREE;
 
-  Pointer* next() throw(EndOfEnumeration)
+  Pointer* next() throw(IteratorException)
   {
-    if (!current) {
-      throw EndOfEnumeration();
+    if (!node) {
+      throw IteratorException();
     }
 
     Pointer result = nullptr; // indicate no result
@@ -144,7 +244,7 @@ private:
           break;
         }
       case RETURN_RIGHT:
-        Pointer child;
+        Pointer child = nullptr;
         do {
           if (node == root) {
             // we have reached the end of the tree
@@ -182,13 +282,13 @@ public:
     return current != compare.current;
   }
 
-  inline InfixOrderIterator& operator++() throw(EndOfEnumeration)
+  inline InfixOrderIterator& operator++()
   {
     current = next();
     return *this;
   }
 
-  inline InfixOrderIterator operator++(int) throw(EndOfEnumeration)
+  inline InfixOrderIterator operator++(int)
   {
     InfixOrderIterator result;
     ++result;
@@ -205,8 +305,6 @@ public:
     return *current;
   }
 };
-
-
 
 /**
   Enumeration of all the elements of a binary tree traversed in prefix order.
@@ -264,15 +362,15 @@ public:
     } else if (auto right = node->getRight()) { // traverse right subtree
       node = right;
     } else {
-      Pointer temp;
+      Pointer child = nullptr;
       do { // return from subtree
         if (node == root) {
           more = false;
           return result;
         }
-        temp = node;
+        child = node;
         node = node->getParent();
-      } while ((!node->getRight()) || (temp == node->getRight()));
+      } while (!node->getRight() || (child == node->getRight()));
 
       node = node->getRight(); // traverse right subtree - which we know exists
     }
@@ -390,7 +488,7 @@ public:
 //        break;
 
       case RETURN_RIGHT:
-        Pointer child;
+        Pointer child = nullptr;
         do {
           if (node == root) {
             more = false; // we have reached the end of the enumeration
@@ -476,16 +574,16 @@ public:
       } else if (node->getRight()) { // traverse right subtree
         node = node->getRight();
       } else {
-        Pointer temp = nullptr;
+        Pointer child = nullptr;
         do { // return from subtree
           result = node;
           if (node == root) {
             more = false;
             return result;
           }
-          temp = node;
+          child = node;
           node = node->getParent();
-        } while ((!node->getRight()) || (temp == node->getRight()));
+        } while (!node->getRight() || (child == node->getRight()));
 
         node = node->getRight(); // traverse right subtree - which we know exists
       }

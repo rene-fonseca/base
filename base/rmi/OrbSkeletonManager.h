@@ -53,7 +53,8 @@ public:
   /**
     Returns the current number of registered skeletons.
   */
-  inline unsigned int getNumberOfSkeletons() const throw() {
+  inline unsigned int getNumberOfSkeletons() const throw()
+  {
     return skeletons.getSize();
   }
   
@@ -61,29 +62,33 @@ public:
     Returns true if the skeleton with the specified fully qualified name has been
     registered.
   */
-  inline bool hasSkeleton(const String& name) const throw() {
-    return names.isKey(name);
+  inline bool hasSkeleton(const String& name) const throw()
+  {
+    return names.hasKey(name);
   }
   
   /**
     Returns true if the skeleton with the specified identifier has been
     registered.
   */
-  inline bool hasSkeleton(const OrbReference& reference) const throw() {
-    return skeletons.isKey(reference);
+  inline bool hasSkeleton(const OrbReference& reference) const throw()
+  {
+    return skeletons.hasKey(reference);
   }
 
   /**
     Returns the skeleton with the specified fully qualified name.
   */
-  inline Reference<OrbSkeleton> getSkeleton(const String& name) const throw(InvalidKey) {
+  inline Reference<OrbSkeleton> getSkeleton(const String& name) const throw(InvalidKey)
+  {
     return names[name];
   }
   
   /**
     Returns the skeleton with the specified local reference.
   */
-  inline Reference<OrbSkeleton> getSkeleton(const OrbReference& reference) const throw(InvalidKey) {
+  inline Reference<OrbSkeleton> getSkeleton(const OrbReference& reference) const throw(InvalidKey)
+  {
     return skeletons[reference];
   }
   

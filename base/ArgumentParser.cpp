@@ -176,7 +176,7 @@ void ArgumentParser::addOption(
   const Reference<Option>& option) throw(AlreadyKeyException)
 {
   bassert(
-    !names.isKey(option->getName()),
+    !names.hasKey(option->getName()),
     AlreadyKeyException("name already registered", this)
   );
   names.add(option->getName(), options.getSize());
@@ -321,7 +321,7 @@ Array<ArgumentParser::Argument*> ArgumentParser::operator()(
         }
         
         bassert(
-          names.isKey(name),
+          names.hasKey(name),
           bindCause(ArgumentException(this), ArgumentException::INVALID_OPTION)
         );
         Reference<Option> option = options[names[name]];

@@ -368,7 +368,7 @@ public:
     Returns true if the identifier has been registered.
   */
   inline bool isIdentifier(const String& name) const throw() {
-    return identifiers.isKey(name);
+    return identifiers.hasKey(name);
   }
 
   /**

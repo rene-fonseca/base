@@ -201,7 +201,7 @@ public:
             // TAG: need upper limit on number of elements to cache
             User owner = info.getOwner();
             String ownerName;
-            if (owners.isKey(owner)) {
+            if (owners.hasKey(owner)) {
               ownerName = owners[owner];
             } else {
               try {
@@ -216,7 +216,7 @@ public:
             
             Group group = info.getGroup();
             String groupName;
-            if (groups.isKey(group)) {
+            if (groups.hasKey(group)) {
               groupName = groups[group];
             } else {
               try {
@@ -300,7 +300,7 @@ public:
             
             User owner = info.getOwner();
             String ownerName;
-            if (owners.isKey(owner)) {
+            if (owners.hasKey(owner)) {
               ownerName = owners[owner];
             } else {
               try {
@@ -315,7 +315,7 @@ public:
             
             Group group = info.getGroup();
             String groupName;
-            if (groups.isKey(group)) {
+            if (groups.hasKey(group)) {
               groupName = groups[group];
             } else {
               try {

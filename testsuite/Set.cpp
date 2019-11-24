@@ -58,8 +58,8 @@ public:
     forEach(si, sum);
     fout << "sum: " << sum.getResult() << ENDL;
 
-    fout << "Checking whether 4 is in set: " << si.isKey(4) << ENDL;
-    fout << "Checking whether 0 is in set: " << si.isKey(0) << ENDL;
+    fout << "Checking whether 4 is in set: " << si.hasKey(4) << ENDL;
+    fout << "Checking whether 0 is in set: " << si.hasKey(0) << ENDL;
 
     fout << "Size: " << si.getSize() << ENDL;
     fout << "Removing all elements from the set" << ENDL;

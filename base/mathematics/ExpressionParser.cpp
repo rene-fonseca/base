@@ -260,8 +260,9 @@ ExpressionProvider::ExpressionProvider() throw() {
 
 void ExpressionProvider::registerConstant(
   const String& name,
-  unsigned int id) throw(AmbiguousRegistration) {
-  if (identifiers.isKey(name)) {
+  unsigned int id) throw(AmbiguousRegistration)
+{
+  if (identifiers.hasKey(name)) {
     throw AmbiguousRegistration(this);
   }
   identifiers[name] = ExpressionEvaluator::makeConstantNode(id);
@@ -270,8 +271,9 @@ void ExpressionProvider::registerConstant(
 
 void ExpressionProvider::registerVariable(
   const String& name,
-  unsigned int id) throw(AmbiguousRegistration) {
-  if (identifiers.isKey(name)) {
+  unsigned int id) throw(AmbiguousRegistration)
+{
+  if (identifiers.hasKey(name)) {
     throw AmbiguousRegistration(this);
   }
   identifiers[name] = ExpressionEvaluator::makeVariableNode(id);
@@ -281,8 +283,9 @@ void ExpressionProvider::registerVariable(
 void ExpressionProvider::registerFunction(
   const String& name,
   unsigned int id,
-  unsigned int arguments) throw(AmbiguousRegistration) {
-  if (identifiers.isKey(name)) {
+  unsigned int arguments) throw(AmbiguousRegistration)
+{
+  if (identifiers.hasKey(name)) {
     throw AmbiguousRegistration(this);
   }
   identifiers[name] = ExpressionEvaluator::makeFunctionNode(id, arguments);
@@ -290,7 +293,8 @@ void ExpressionProvider::registerFunction(
 }
 
 ExpressionEvaluator::Node ExpressionProvider::getNode(
-  const String& name) const throw(InvalidKey) {
+  const String& name) const throw(InvalidKey)
+{
   return identifiers.getValue(name);
 }
 
@@ -357,7 +361,7 @@ void ExpressionParser::readIdentifier() throw(ExpressionException) {
     if (!autoRegister) {
       throw ExpressionException(begin, "Identifier not recognized");
     }
-    if (unknowns.isKey(identifier)) {
+    if (unknowns.hasKey(identifier)) {
       nodes.append(unknowns[identifier]);
     } else {
       Node node = ExpressionEvaluator::makeUnknownNode(unknowns.getSize());

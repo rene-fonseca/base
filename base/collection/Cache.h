@@ -109,7 +109,7 @@ public:
   */
   inline bool isCached(const Key& key) const throw()
   {
-    return elements.isKey(key);
+    return elements.hasKey(key);
   }
 
   /**
@@ -120,7 +120,7 @@ public:
   */
   inline const Value& getValue(const Key& key) const throw(CacheException)
   {
-    if (!elements.isKey(key)) {
+    if (!elements.hasKey(key)) {
       // Value value = provider->getValue();
       // elements.add(key, value);
       // return value;

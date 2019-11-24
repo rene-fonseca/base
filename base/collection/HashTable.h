@@ -428,7 +428,7 @@ public:
     /**
       Returns true if the specified value is a key in the hash table.
     */
-    inline bool isKey(const Key& key) noexcept
+    inline bool hasKey(const Key& key) noexcept
     {
       const unsigned long hash = getHash(key);
       Node** bucket = getBuckets() + (hash & mask);
@@ -460,7 +460,7 @@ public:
     /**
       Returns true if the specified value is a key in the hash table.
     */
-    inline bool isKey(const Key& key) const noexcept
+    inline bool hasKey(const Key& key) const noexcept
     {
       const unsigned long hash = getHash(key);
       const Node* const* bucket = getBuckets() + (hash & mask);
@@ -858,9 +858,9 @@ public:
   /**
     Returns true if the specified value is a key in the table.
   */
-  inline bool isKey(const Key& key) const noexcept
+  inline bool hasKey(const Key& key) const noexcept
   {
-    return impl->isKey(key);
+    return impl->hasKey(key);
   }
 
   /**

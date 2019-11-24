@@ -525,6 +525,24 @@ void ObjectModel::Object::setValue(const Reference<String>& key, const Reference
   values.append(Association(key, value));
 }
 
+void ObjectModel::Object::setValue(const Reference<String>& key, const base::String& value)
+{
+  if (!key) {
+    throw NullPointer("Key is null.");
+  }
+  auto _value = globalObjectModel.createString(value);
+  for (auto& v : values) {
+    if (!INLINE_ASSERT(v.first)) {
+      continue;
+    }
+    if (v.first->value == key->value) {
+      v.second = _value;
+      return;
+    }
+  }
+  values.append(Association(key, _value));
+}
+
 void ObjectModel::Object::setValue(const base::String& key, const Reference<Value>& value)
 {
   for (auto& v : values) {

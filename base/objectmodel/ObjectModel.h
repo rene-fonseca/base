@@ -18,6 +18,7 @@
 #include <base/collection/Array.h>
 #include <base/string/FormatOutputStream.h>
 #include <base/string/StringOutputStream.h>
+#include <base/collection/BinaryNode.h>
 #include <map>
 #include <vector>
 #include <utility>
@@ -478,6 +479,7 @@ public:
 
     /** Sets the value for the given key. key must not be nullptr. */
     void setValue(const Reference<String>& key, const Reference<Value>& value);
+    void setValue(const Reference<String>& key, const base::String& value);
     void setValue(const base::String& key, const Reference<Value>& value);
     void setValue(const base::String& key, std::nullptr_t);
     void setValue(const base::String& key, const bool value);
@@ -788,5 +790,47 @@ _COM_AZURE_DEV__BASE__API ObjectModel::NiceFormat& operator<<(ObjectModel::NiceF
 _COM_AZURE_DEV__BASE__API ObjectModel::NiceFormat& operator<<(ObjectModel::NiceFormat& stream, const Reference<ObjectModel::Object>& value);
 _COM_AZURE_DEV__BASE__API ObjectModel::NiceFormat& operator<<(ObjectModel::NiceFormat& stream, const Reference<ObjectModel::Binary>& value);
 _COM_AZURE_DEV__BASE__API ObjectModel::NiceFormat& operator<<(ObjectModel::NiceFormat& stream, const Reference<ObjectModel::Comment>& value);
+
+/** Helper to build object model tree from Binary tree. Value must be convertible to String. */
+template<class TYPE>
+class BuildObjectModel {
+private:
+  
+  ObjectModel o;
+  Reference<ObjectModel::String> VALUE;
+  Reference<ObjectModel::String> LEFT;
+  Reference<ObjectModel::String> RIGHT;
+  StringOutputStream sos;
+public:
+
+  BuildObjectModel()
+  {
+    VALUE = o.createString("value");
+    LEFT = o.createString("left");
+    RIGHT = o.createString("right");
+  }
+  
+  Reference<ObjectModel::Object> build(const BinaryNode<TYPE>* node)
+  {
+    if (node) {
+      auto object = o.createObject();
+      object->setValue(VALUE, sos << node->getValue());
+      if (auto left = node->getLeft()) {
+        object->setValue(LEFT, build(left));
+      }
+      if (auto right = node->getRight()) {
+        object->setValue(RIGHT, build(right));
+      }
+      return object;
+    }
+    return nullptr;
+  }
+};
+
+template<class TYPE>
+Reference<ObjectModel::Object> buildObjectModel(const BinaryNode<TYPE>* node)
+{
+  return BuildObjectModel<TYPE>().build(node);
+}
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

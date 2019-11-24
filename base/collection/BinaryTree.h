@@ -17,6 +17,7 @@
 #include <base/collection/BinaryNode.h>
 #include <base/collection/InvalidNode.h>
 #include <base/collection/Enumeration.h>
+#include <base/collection/Pair.h>
 #include <base/string/FormatOutputStream.h>
 #include <base/mem/Reference.h>
 
@@ -675,7 +676,7 @@ public:
       return buildBalancedTree(buffer.getSpan());
     }
     
-    /** Builds a balanced tree. */
+    /** Builds a balanced tree. But uses buffer and rebuilds entire tree. */
     void balanceTree()
     {
       if (root) {
@@ -685,28 +686,63 @@ public:
       }
     }
 
+    static Pair<bool, MemorySize> isBalancedImpl(const Node* node) noexcept
+    {
+      if (!node) {
+        return Pair<bool, MemorySize>(true, 0);
+      }
+      const auto left = isBalanced(node->getLeft());
+      if (!left.first) {
+        return left; // early stop
+      }
+      const auto right = isBalanced(node->getRight());
+      if (!right.first) {
+        return right; // early stop
+      }
+      const bool balanced = (left.second <= right.second) ?
+        ((right.second - left.second) <= 1) : ((left.second - right.second) <= 1);
+      return Pair<bool, MemorySize>(
+        /*left.first && right.first &&*/ balanced,
+        maximum(left.second, right.second) + 1
+      );
+    }
+
+    /** Returns true if the tree is balanced. */
+    static bool isBalanced(const Node* node) noexcept
+    {
+      return isBalancedImpl(node).first;
+    }
+
+    /** Returns how balanced the given tree is. */
+    static Pair<MemorySize, MemorySize> getHowBalancedImpl(const Node* node)
+    {
+      // how much 'work' must be done to make it balanced
+      if (!node) {
+        return Pair<MemorySize, MemorySize>(0, 0);
+      }
+      const auto left = getHowBalancedImpl(node->getLeft());
+      const auto right = getHowBalancedImpl(node->getRight());
+      const MemorySize size = left.first + right.first + 1;
+      const MemorySize work = left.second + right.second;
+      if (left.first <= right.first) {
+        work += right.first - left.first;
+      } else {
+        work += left.first - right.first;
+      }
+      return Pair<MemorySize, MemorySize>(size, work);
+    }
+    
+    /** Returns how balanced the given tree is. */
+    static Pair<MemorySize, MemorySize> getHowBalanced(const Node* node)
+    {
+      return getHowBalancedImpl(node).second;
+    }
+    
 #if 0
     /** Builds a balanced tree. */
-    MemorySize balanceTree(Node* node)
+    MemorySize rebalanceTree(Node* node)
     {
-      // unfold tree
-      // and then rebuild
-      
-      if (!node) {
-        return 0;
-      }
-      const MemorySize left = node->getLeft() ? balanceTree(node->getLeft()) : 0;
-      const MemorySize right = node->getRight() ? balanceTree(node->getRight()) : 0;
-      if (left < right) {
-        while (left < right) {
-          rotateLeft(node);
-        }
-      } else if (left > right) {
-        while (left > right) {
-          rotateRight(node);
-        }
-      }
-      return left + right + 1;
+      // TAG: we only want to do the minimum work
     }
 #endif
     

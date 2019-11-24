@@ -101,11 +101,19 @@ public:
   {
   }
 
-  /* Assign new value. */
+  /* Assigns new value. */
   Association& operator=(const Association& assign)
   {
     BASSERT(key == assign.key);
     value = assign.value;
+    return *this;
+  }
+
+  /* Assigns new value. */
+  Association& operator=(Association&& assign)
+  {
+    BASSERT(key == assign.key);
+    value = std::move(assign.value);
     return *this;
   }
 

@@ -311,6 +311,11 @@ public:
     return association.getValue();
   }
 
+  void rebalance()
+  {
+    elements.rebalance();
+  }
+
   /**
     Associates the specified key with the specified value in this map. If the
     key already is associated with a value, the value is overridden.

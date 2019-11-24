@@ -42,6 +42,8 @@ public:
   typedef InfixOrderEnumerator<EnumeratorTraits<Node> > Enumerator;
   /** Non-modifying enumerator. */
   typedef InfixOrderEnumerator<ReadEnumeratorTraits<Node> > ReadEnumerator;
+  /** Non-modifying iterator. */
+  // typedef InfixOrderIterator<ReadIteratorTraits<Node> > ReadIterator;
 
 //  class Enumeration;
 //  friend class Enumeration;
@@ -208,6 +210,40 @@ public:
     return previous;
   }
 
+  void rebalance(Node* node) noexcept
+  {
+    Allocator<Node*> buffer;
+    BinaryTree<TYPE>::BinaryTreeImpl::getNodes(buffer, node);
+    setRoot(BinaryTree<TYPE>::BinaryTreeImpl::buildBalancedTree(buffer));
+  }
+
+  inline void rebalance() noexcept
+  {
+    rebalance(getRoot());
+    if (!BinaryTree<TYPE>::BinaryTreeImpl::validate(
+         getRoot(),
+         [](const Node* a, const Node* b) {return compare<const Key&>(a->getValue(), b->getValue()); })
+    ) {
+      BASSERT(!"OrderedBinaryTree is not ordered correctly.");
+    }
+  }
+
+  /** Rebalances the given subtree. */
+  inline bool rebalance(Node* node, bool right) noexcept
+  {
+    // auto sl = BinaryTree<TYPE>::BinaryTreeImpl::getSize(node->getLeft());
+    // auto sr = BinaryTree<TYPE>::BinaryTreeImpl::getSize(node->getRight());
+#if 0
+    if (!BinaryTree<TYPE>::BinaryTreeImpl::validate(
+          node,
+          [](const Node* a, const Node* b) {return compare<const Key&>(a->getValue(), b->getValue()); })
+    ) {
+      BASSERT(!"OrderedBinaryTree is not ordered correctly.");
+    }
+#endif
+    return false;
+  }
+
   /**
     Adds a value to the binary tree.
 
@@ -232,6 +268,7 @@ public:
         } else { // attach left child node
           Node* newNode = new Node(node, nullptr, nullptr, value);
           node->setLeft(newNode);
+          rebalance(node, false);
           return Pair<Node*, bool>(newNode, true);
         }
       } else if (result > 0) {
@@ -240,6 +277,7 @@ public:
         } else { // attach right child node
           Node* newNode = new Node(node, nullptr, nullptr, value);
           node->setRight(newNode);
+          rebalance(node, true);
           return Pair<Node*, bool>(newNode, true);
         }
       } else {
@@ -287,6 +325,7 @@ public:
         } else { // attach left child node
           Node* newNode = new Node(node, nullptr, nullptr, std::move(value));
           node->setLeft(newNode);
+          rebalance(node, false);
           return Pair<Node*, bool>(newNode, true);
         }
       } else if (result > 0) {
@@ -295,6 +334,7 @@ public:
         } else { // attach right child node
           Node* newNode = new Node(node, nullptr, nullptr, std::move(value));
           node->setRight(newNode);
+          rebalance(node, true);
           return Pair<Node*, bool>(newNode, true);
         }
       } else {
@@ -363,6 +403,33 @@ public:
     } else { // node is the only element of the tree
       BinaryTree<TYPE>::removeAll();
     }
+  }
+
+  template<class PREDICATE>
+  MemorySize removeImpl(Node* node, PREDICATE predicate)
+  {
+    if (!node) {
+      return 0;
+    }
+    MemorySize count = 0;
+    if (auto left = node->getLeft()) {
+      count = removeImpl(left, predicate);
+    }
+    if (auto right = node->getRight()) {
+      count += removeImpl(right, predicate);
+    }
+    if (predicate(node)) {
+      remove(node);
+      ++count;
+    }
+    return count;
+  }
+
+  /** Removes all elements matching the given predicate. */
+  template<class PREDICATE>
+  MemorySize remove(PREDICATE predicate)
+  {
+    return removeImpl(getRoot(), predicate);
   }
 
   /**

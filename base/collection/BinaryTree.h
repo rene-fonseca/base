@@ -23,12 +23,196 @@
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
+template<class TRAITS>
+class PrefixOrderIterator : public ReadIteratorTraits<TRAITS> {
+private:
+
+  typedef typename ReadIteratorTraits<TRAITS>::Value Value;
+  typedef typename ReadIteratorTraits<TRAITS>::Reference Reference;
+  typedef typename ReadIteratorTraits<TRAITS>::Pointer Pointer;
+  typedef typename ReadIteratorTraits<TRAITS>::Distance Distance;
+  typedef ForwardIterator Category;
+
+  /** The root of the binary tree. */
+  Pointer root = nullptr;
+  /** The current position of the enumeration. */
+  Pointer node = nullptr;
+public:
+
+  inline PrefixOrderIterator() noexcept
+  {
+  }
+
+  inline PrefixOrderIterator(const Pointer* _node) noexcept
+    : root(_node), node(_node)
+  {
+  }
+
+  inline bool operator==(const PrefixOrderIterator& compare) const noexcept
+  {
+    return node == compare.node;
+  }
+
+  inline bool operator!=(const PrefixOrderIterator& compare) const noexcept
+  {
+    return node != compare.node;
+  }
+
+  inline PrefixOrderIterator& operator++() noexcept
+  {
+    Pointer result = node;
+    if (!result) {
+      throw EndOfEnumeration();
+    }
+
+    if (auto left = node->getLeft()) { // traverse left subtree
+      node = left;
+    } else if (auto right = node->getRight()) { // traverse right subtree
+      node = right;
+    } else {
+      Pointer temp;
+      do { // return from subtree
+        if (node == root) {
+          return result; // end of tree
+        }
+        temp = node;
+        node = node->getParent();
+      } while ((!node->getRight()) || (temp == node->getRight()));
+
+      node = node->getRight(); // traverse right subtree - which we know exists
+    }
+
+    node = result;
+    return *this;
+  }
+
+  inline Pointer operator->() const noexcept
+  {
+    return node;
+  }
+
+  inline Reference operator*() const noexcept
+  {
+    return *node;
+  }
+};
+
+
+
+template<class TRAITS>
+class InfixOrderIterator : public ReadIteratorTraits<TRAITS> {
+private:
+
+  typedef typename ReadIteratorTraits<TRAITS>::Value Value;
+  typedef typename ReadIteratorTraits<TRAITS>::Reference Reference;
+  typedef typename ReadIteratorTraits<TRAITS>::Pointer Pointer;
+  typedef typename ReadIteratorTraits<TRAITS>::Distance Distance;
+  typedef ForwardIterator Category;
+
+  /** The states of the infix order traversal state machine */
+  enum Traverse {TRAVERSE_SUBTREE, RETURN_LEFT, RETURN_RIGHT};
+  /** The root of the binary tree. */
+  Pointer root = nullptr;
+  /** The current position in the enumeration. */
+  Pointer node = nullptr;
+  Pointer current = nullptr;
+  /** Specifies that subtree should be traversed. */
+  Traverse traverse = TRAVERSE_SUBTREE;
+
+  Pointer* next() throw(EndOfEnumeration)
+  {
+    if (!current) {
+      throw EndOfEnumeration();
+    }
+
+    Pointer result = nullptr; // indicate no result
+    while (true) { // keep looking until we know if end has been reached
+      switch (traverse) {
+      case TRAVERSE_SUBTREE:
+        while (auto left = node->getLeft()) { // optimized version
+          node = left;
+        }
+        traverse = RETURN_LEFT;
+      case RETURN_LEFT:
+        if (result) { // stop if we already have found a result
+          return result;
+        }
+        result = node; // this node is the next result
+        if (auto right = node->getRight()) { // has right node
+          node = right;
+          traverse = TRAVERSE_SUBTREE;
+          break;
+        }
+      case RETURN_RIGHT:
+        Pointer child;
+        do {
+          if (node == root) {
+            // we have reached the end of the tree
+            return result;
+          }
+          child = node;
+          node = node->getParent();
+        } while (child == node->getRight());
+        traverse = RETURN_LEFT;
+      }
+    }
+    return result;
+  }
+public:
+
+  /**
+    Initializes iterator of binary tree specified by the node.
+
+    @param root The root node of the binary tree.
+  */
+  InfixOrderIterator(Pointer _root) noexcept
+    : root(_root),
+      node(_root)
+  {
+    current = _root ? next() : nullptr; // get first node
+  }
+
+  inline bool operator==(const InfixOrderIterator& compare) const noexcept
+  {
+    return current == compare.current;
+  }
+
+  inline bool operator!=(const InfixOrderIterator& compare) const noexcept
+  {
+    return current != compare.current;
+  }
+
+  inline InfixOrderIterator& operator++() throw(EndOfEnumeration)
+  {
+    current = next();
+    return *this;
+  }
+
+  inline InfixOrderIterator operator++(int) throw(EndOfEnumeration)
+  {
+    InfixOrderIterator result;
+    ++result;
+    return result;
+  }
+
+  inline Pointer operator->() const noexcept
+  {
+    return current;
+  }
+
+  inline Reference operator*() const noexcept
+  {
+    return *current;
+  }
+};
+
+
+
 /**
   Enumeration of all the elements of a binary tree traversed in prefix order.
   
   @short Prefix order enumerator
   @ingroup collections
-  @version 1.0
 */
 template<class TRAITS>
 class PrefixOrderEnumerator : public Enumerator<TRAITS> {
@@ -38,9 +222,9 @@ private:
   typedef typename Enumerator<TRAITS>::Value Value;
   
   /** The root of the binary tree. */
-  Pointer root;
+  Pointer root = nullptr;
   /** The current position of the enumeration. */
-  Pointer node;
+  Pointer node = nullptr;
   /** Specifies whether more elements are available. */
   bool more = false;
 public:
@@ -75,10 +259,10 @@ public:
 
     Pointer result = node;
 
-    if (node->getLeft()) { // traverse left subtree
-      node = node->getLeft();
-    } else if (node->getRight()) { // traverse right subtree
-      node = node->getRight();
+    if (auto left = node->getLeft()) { // traverse left subtree
+      node = left;
+    } else if (auto right = node->getRight()) { // traverse right subtree
+      node = right;
     } else {
       Pointer temp;
       do { // return from subtree
@@ -104,7 +288,6 @@ public:
 
   @short Infix order enumerator
   @ingroup collections
-  @version 1.0
 */
 template<class TRAITS>
 class InfixOrderEnumerator : public Enumerator<TRAITS> {
@@ -133,8 +316,7 @@ public:
   InfixOrderEnumerator(Pointer _node) noexcept
     : root(_node),
       node(_node),
-      more(_node != nullptr),
-      traverse(TRAVERSE_SUBTREE)
+      more(_node != nullptr)
   {
   }
 
@@ -239,11 +421,10 @@ public:
 
 
 /**
-  Enumeration of all the elements of a binary tree traversed in infix order.
+  Enumeration of all the elements of a binary tree traversed in postfix order.
 
   @short Postfix order enumerator
   @ingroup collections
-  @version 1.0
 */
 template<class TRAITS>
 class PostfixOrderEnumerator : public Enumerator<TRAITS> {
@@ -394,7 +575,6 @@ public:
 
   @short Binary tree
   @ingroup collections
-  @version 1.0
 */
 
 template<class TYPE>
@@ -408,11 +588,10 @@ public:
 
   typedef PrefixOrderEnumerator<EnumeratorTraits<Node> > Enumerator;
   typedef PrefixOrderEnumerator<ReadEnumeratorTraits<Node> > ReadEnumerator;
-  
+  typedef PrefixOrderIterator<ReadIteratorTraits<Node> > ReadIterator;
+
   /*
     Internal binary tree implementation.
-
-    @version 1.0
   */
   class BinaryTreeImpl : public ReferenceCountedObject {
   private:
@@ -440,7 +619,8 @@ public:
           right->setParent(result);
         }
         return result;
-      } else {
+      }
+      else {
         return nullptr;
       }
     }
@@ -501,7 +681,7 @@ public:
     {
       return root;
     }
-    
+
     /**
       Returns the root node of the binary tree.
     */
@@ -579,18 +759,22 @@ public:
       if (!node || !node->getRight()) {
         throw InvalidNode();
       }
+      Node* parent = node->getParent();
+
       Node* child = node->getRight();
       node->setRight(child->getLeft());
+      if (auto left = child->getLeft()) {
+        left->setParent(node);
+      }
       child->setLeft(node);
-
-      Node* parent = node->getParent();
       node->setParent(child);
       child->setParent(parent);
 
       if (parent) {
         if (node == parent->getLeft()) {
           parent->setLeft(child);
-        } else {
+        }
+        else {
           parent->setRight(child);
         }
       }
@@ -611,18 +795,22 @@ public:
       if (!node || !node->getLeft()) {
         throw InvalidNode();
       }
+      Node* parent = node->getParent();
+
       Node* child = node->getLeft();
       node->setLeft(child->getRight());
+      if (auto right = child->getRight()) {
+        right->setParent(node);
+      }
       child->setRight(node);
-
-      Node* parent = node->getParent();
       node->setParent(child);
       child->setParent(parent);
 
       if (parent) {
         if (node == parent->getLeft()) {
           parent->setLeft(child);
-        } else {
+        }
+        else {
           parent->setRight(child);
         }
       }
@@ -638,35 +826,45 @@ public:
       }
       return 1 + getSize(node->getLeft()) + getSize(node->getRight());
     }
-    
-    /** Gets all the nodes for the given node. */
-    static void getNodes(Node** dest, Node* node)
+
+    static Node** getNodesImpl(Node** dest, Node* node)
     {
-      getNodes(dest, node->getLeft());
+      // TAG: use infix iterator
+      if (auto left = node->getLeft()) {
+        dest = getNodesImpl(dest, left);
+      }
       *dest++ = node;
-      getNodes(dest, node->getRight());
+      if (auto right = node->getRight()) {
+        dest = getNodesImpl(dest, right);
+      }
+      return dest;
     }
-    
+
     /** Gets all the nodes for the given node. */
     static void getNodes(Allocator<Node*>& buffer, Node* node)
     {
       const MemorySize size = getSize(node);
       buffer.setSize(size);
       if (node) {
-        getNodes(buffer, node);
+        Node** dest = buffer.getElements();
+        getNodesImpl(dest, node);
       }
     }
-    
-    static Node* buildBalancedTree(const Span<Node*>& span)
+
+    static Node* buildBalancedTree(Span<Node*> span)
     {
       const auto size = span.getSize();
-      const auto m = size/2;
+      const auto m = size / 2;
       Node* parent = span[m];
-      parent->setLeft((m > 0) ? build(Span<Node*>(span.begin(), m)) : nullptr);
-      parent->setRight(((m + 1) < size) ? build(Span<Node*>(span.begin() + m + 1, span.end())) : nullptr);
+      parent->setLeft(
+        (m > 0) ? buildBalancedTree(Span<Node*>(span.begin(), m)) : nullptr
+      );
+      parent->setRight(
+        ((m + 1) < size) ? buildBalancedTree(Span<Node*>(span.begin() + m + 1, span.end())) : nullptr
+      );
       return parent;
     }
-    
+
     /** Builds a balanced tree. */
     static Node* buildBalancedTree(Allocator<Node*>& buffer)
     {
@@ -675,7 +873,7 @@ public:
       }
       return buildBalancedTree(buffer.getSpan());
     }
-    
+
     /** Builds a balanced tree. But uses buffer and rebuilds entire tree. */
     void balanceTree()
     {
@@ -704,7 +902,7 @@ public:
       return Pair<bool, MemorySize>(
         /*left.first && right.first &&*/ balanced,
         maximum(left.second, right.second) + 1
-      );
+        );
     }
 
     /** Returns true if the tree is balanced. */
@@ -726,18 +924,56 @@ public:
       const MemorySize work = left.second + right.second;
       if (left.first <= right.first) {
         work += right.first - left.first;
-      } else {
+      }
+      else {
         work += left.first - right.first;
       }
       return Pair<MemorySize, MemorySize>(size, work);
     }
-    
+
     /** Returns how balanced the given tree is. */
     static Pair<MemorySize, MemorySize> getHowBalanced(const Node* node)
     {
       return getHowBalancedImpl(node).second;
     }
-    
+
+    /** Validates the tree for the given predicate. */
+    template<class PREDICATE>
+    static bool validate(const Node* node, PREDICATE predicate)
+    {
+#if 0
+      const Node* previous = nullptr;
+      for (const Node* node : iterable(node)) {
+        if (previous) {
+          if (!predicate(previous, node)) {
+            return false;
+          }
+        }
+        previous = node;
+      }
+      return true;
+#endif
+      if (node) { // avoid recursion
+        if (auto left = node->getLeft()) {
+          if (!predicate(left, node)) {
+            return false;
+          }
+          if (!validate(left, predicate)) {
+            return false;
+          }
+        }
+        if (auto right = node->getRight()) {
+          if (!predicate(node, right)) {
+            return false;
+          }
+          if (!validate(right, predicate)) {
+            return false;
+          }
+        }
+      }
+      return true;
+    }
+
 #if 0
     /** Builds a balanced tree. */
     MemorySize rebalanceTree(Node* node)

@@ -129,6 +129,28 @@ public:
   }
 
   /**
+    Returns the key for the specified key. This makes sense when you need the
+    actual state of the key which might not be used for comparison.
+
+    @param key The key.
+
+    @return nullptr is key doesn't exist.
+  */
+  const KEY* find(const KEY& key) const noexcept
+  {
+    auto node = elements.find(key);
+    if (!node) {
+      return nullptr;
+    }
+    return &(node->getValue());
+  }
+
+  void rebalance()
+  {
+    elements.rebalance();
+  }
+
+  /**
     Adds the specified key to the set.
 
     @param key The key to be added to the set.

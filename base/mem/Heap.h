@@ -38,6 +38,12 @@ public:
     BASSERT((!buffer && !size) || (buffer && size));
   }
 
+  inline Span(TYPE* _buffer, const TYPE* end) noexcept
+    : buffer(_buffer), size(end - _buffer)
+  {
+    BASSERT((!buffer && !size) || (buffer && size));
+  }
+
   inline TYPE* begin() noexcept
   {
     return buffer;
@@ -94,6 +100,12 @@ public:
 
   inline ConstSpan(const TYPE* _buffer, MemorySize _size) noexcept
     : buffer(_buffer), size(_size)
+  {
+    BASSERT((!buffer && !size) || (buffer && size));
+  }
+
+  inline ConstSpan(const TYPE* _buffer, const TYPE* end) noexcept
+    : buffer(_buffer), size(end - _buffer)
   {
     BASSERT((!buffer && !size) || (buffer && size));
   }

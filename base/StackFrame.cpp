@@ -459,7 +459,7 @@ unsigned int StackFrame::getStack(const void** dest, unsigned int size, unsigned
   }
 #elif ((_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__MACOS) || \
        (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__GNULINUX))
-  int count = backtrace(dest, size);
+  int count = backtrace(const_cast<void**>(dest), size);
   if (count < 0) {
     return 0;
   }

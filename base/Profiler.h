@@ -513,4 +513,9 @@ public:
   // static Stats& getThreadStats();
 };
 
+inline FormatOutputStream& operator<<(FormatOutputStream& stream, const Profiler::ProfilerImpl::SymbolAndParent& sp)
+{
+  return stream << sp.symbol << "/" << sp.parent;
+}
+
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

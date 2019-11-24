@@ -19,6 +19,7 @@
 #include <base/filesystem/FileSystem.h>
 #include <base/Application.h>
 #include <base/SystemInformation.h>
+#include <base/objectmodel/ObjectModel.h>
 #include <base/UnitTest.h>
 
 #if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__MACOS)
@@ -36,6 +37,16 @@ namespace profiler {
 
   PreferredAtomicCounter memoryUsed;
   PreferredAtomicCounter objects;
+
+  inline void writeString(FileOutputStream& fos, const char* text)
+  {
+    fos.write(reinterpret_cast<const uint8*>(text), getNullTerminatedLength(text), false);
+  }
+
+  inline void writeString(FileOutputStream& fos, const String& text)
+  {
+    fos.write(reinterpret_cast<const uint8*>(text.native()), text.getLength(), false);
+  }
 }
 
 using namespace profiler;
@@ -170,6 +181,17 @@ void Profiler::ProfilerImpl::release()
   stackFramesUnhash.setSize(0);
   stackFrames.ensureCapacity(0);
   stackFrames.setSize(0);
+  
+  if (false) {
+    // TAG: measure balancing
+    
+    auto root = buildObjectModel(stackFramesBySymbol.getTree().getRoot());
+    if (root) {
+      FileOutputStream fos("symbols.json");
+      writeString(fos, JSON::getJSON(root));
+    }
+  }
+  
   stackFramesBySymbol.removeAll();
   stackFramesLookup.removeAll();
   releaseEvents();
@@ -584,19 +606,6 @@ void Profiler::pushCountersImpl()
   e.cat = "PROCESS"; // "__metadata"
   e.data = new ReferenceCounters();
   pushEvent(e);
-}
-
-namespace {
-
-  inline void writeString(FileOutputStream& fos, const char* text)
-  {
-    fos.write(reinterpret_cast<const uint8*>(text), getNullTerminatedLength(text), false);
-  }
-
-  inline void writeString(FileOutputStream& fos, const String& text)
-  {
-    fos.write(reinterpret_cast<const uint8*>(text.native()), text.getLength(), false);
-  }
 }
 
 void Profiler::ProfilerImpl::close()

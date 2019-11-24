@@ -217,13 +217,15 @@ public:
     setRoot(BinaryTree<TYPE>::BinaryTreeImpl::buildBalancedTree(buffer));
   }
 
+  static inline bool invariant(const Node* a, const Node* b)
+  {
+    return compare<const Key&>(a->getValue(), b->getValue()) < 0;
+  }
+
   inline void rebalance() noexcept
   {
     rebalance(getRoot());
-    if (!BinaryTree<TYPE>::BinaryTreeImpl::validate(
-         getRoot(),
-         [](const Node* a, const Node* b) {return compare<const Key&>(a->getValue(), b->getValue()); })
-    ) {
+    if (!BinaryTree<TYPE>::BinaryTreeImpl::validate(getRoot(), invariant)) {
       BASSERT(!"OrderedBinaryTree is not ordered correctly.");
     }
   }
@@ -234,10 +236,7 @@ public:
     // auto sl = BinaryTree<TYPE>::BinaryTreeImpl::getSize(node->getLeft());
     // auto sr = BinaryTree<TYPE>::BinaryTreeImpl::getSize(node->getRight());
 #if 0
-    if (!BinaryTree<TYPE>::BinaryTreeImpl::validate(
-          node,
-          [](const Node* a, const Node* b) {return compare<const Key&>(a->getValue(), b->getValue()); })
-    ) {
+    if (!BinaryTree<TYPE>::BinaryTreeImpl::validate(getRoot(), invariant)) {
       BASSERT(!"OrderedBinaryTree is not ordered correctly.");
     }
 #endif

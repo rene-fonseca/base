@@ -593,13 +593,14 @@ Profiler::ReferenceCounters::ReferenceCounters() noexcept
 {
 #if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__MACOS)
   // TAG: temp test
-  // struct rusage usage;
-  // int status = getrusage(RUSAGE_SELF, &usage);
+  struct rusage usage;
+  int status = getrusage(RUSAGE_SELF, &usage);
+  
   this->memoryUsed = profiler::memoryUsed; // usage.ru_maxrss; // usage.ru_ixrss + usage.ru_idrss + usage.ru_isrss;
   this->objects = profiler::objects;
-  // processingTime = static_cast<uint64>(usage.ru_utime.tv_sec + usage.ru_stime.tv_sec) * 1000000 + static_cast<uint64>(usage.ru_utime.tv_usec + usage.ru_stime.tv_usec); // Process::getCurrentProcess().getTimes();
-  // io = usage.ru_msgrcv + usage.ru_msgsnd;
-  // operations = usage.ru_inblock + usage.ru_oublock;
+  this->processingTime = static_cast<uint64>(usage.ru_utime.tv_sec + usage.ru_stime.tv_sec) * 1000000 + static_cast<uint64>(usage.ru_utime.tv_usec + usage.ru_stime.tv_usec); // Process::getCurrentProcess().getTimes();
+  // this->io = usage.ru_msgrcv + usage.ru_msgsnd;
+  // this->operations = usage.ru_inblock + usage.ru_oublock;
 #endif
 }
 
@@ -829,10 +830,14 @@ void Profiler::ProfilerImpl::close()
             item->setValue(ARGS, args);
             auto data = o.createObject();
             args->setValue(DATA, data);
-            // data->setValue("documents", format() << r->...);
-            // data->setValue("jsEventListeners", format() << r->...);
+
+            // only supported counters:
             data->setValue("jsHeapSizeUsed", format() << r->memoryUsed);
+            data->setValue("documents", format() << r->objects);
             data->setValue("nodes", format() << r->objects);
+            data->setValue("jsEventListeners", format() << r->processingTime);
+
+            // need support for more counters:
             // data->setValue("processingTime", format() << r->processingTime);
             // data->setValue("io", format() << r->io);
             // data->setValue("operations", format() << r->operations);

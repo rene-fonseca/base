@@ -159,6 +159,7 @@ public:
     String stackPattern; // stack frame pattern
     Array<Frame> stackFrames; // all frames - index is id for frame
     Map<SymbolAndParent, unsigned int> stackFramesBySymbol;
+    MemorySize rebalanceCount = 0;
     Map<uint32, unsigned int> stackFramesLookup; // lookup for sf to first frame
 
     PreferredAtomicCounter numberOfEvents;

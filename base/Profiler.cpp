@@ -140,7 +140,7 @@ unsigned int Profiler::ProfilerImpl::buildStackFrame(const uint32 sf)
       }
 
       const SymbolAndParent current(symbol.address, parent);
-      if (auto found = stackFramesBySymbol.find(current)) { // TAG: need to balance tree on hit
+      if (auto found = stackFramesBySymbol.find(current)) {
         parent = *found + 1; // index  to parent
         // fout << "REUSE FRAME " << parent << " => " << it->parent << " " << it->name << ENDL;
       } else {
@@ -151,6 +151,15 @@ unsigned int Profiler::ProfilerImpl::buildStackFrame(const uint32 sf)
         auto previous = parent;
         parent = stackFrames.getSize(); // next frame uses this as parent
         stackFramesBySymbol.add(current, parent - 1); // index of frame
+
+        // TAG: rebalance tree until done on
+        if (stackFramesBySymbol.getSize() > 4) {
+          ++rebalanceCount;
+          if (rebalanceCount > stackFramesBySymbol.getSize() / 4) {
+            stackFramesBySymbol.rebalance();
+            rebalanceCount = 0;
+          }
+        }
         // fout << "NEW FRAME " << parent << " => " << previous << " " << demangled << ENDL;
       }
     }

@@ -81,7 +81,7 @@ public:
   /**
     Initializes set from other set.
   */
-  inline  Set(const Set& copy) noexcept
+  inline Set(const Set& copy) noexcept
     : elements(copy.elements)
   {
   }

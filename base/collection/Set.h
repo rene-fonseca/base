@@ -123,16 +123,6 @@ public:
 
     @param key The value to search for.
   */
-  bool [[deprecated]] isKey(const KEY& key) const noexcept
-  {
-    return elements.find(key);
-  }
-
-  /**
-    Returns true if the specified key is present is this set.
-
-    @param key The value to search for.
-  */
   bool hasKey(const KEY& key) const noexcept
   {
     return elements.find(key);
@@ -145,7 +135,7 @@ public:
   */
   const KEY* add(const KEY& key)
   {
-    const KEY* result = elements.add(key);
+    const KEY* result = elements.add2(key);
     if (!result) {
       ++size; // key did not exist
     }

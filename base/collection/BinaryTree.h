@@ -17,6 +17,7 @@
 #include <base/collection/BinaryNode.h>
 #include <base/collection/InvalidNode.h>
 #include <base/collection/Enumeration.h>
+#include <base/string/FormatOutputStream.h>
 #include <base/mem/Reference.h>
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
@@ -210,7 +211,7 @@ public:
         do {
           if (node == root) {
             more = false; // we have reached the end of the enumeration
-          return result;
+            return result;
           }
           child = node;
           node = node->getParent();
@@ -521,9 +522,21 @@ public:
 
       @return The new left child node.
     */
-    Node* makeLeft(Node* node, const TYPE& value)
+    static Node* makeLeft(Node* node, const TYPE& value)
     {
       Node* child = new Node(node, nullptr, nullptr, value);
+      node->setLeft(child);
+      return child;
+    }
+
+    /**
+      Makes a left child node.
+
+      @return The new left child node.
+    */
+    static Node* makeLeft(Node* node, TYPE&& value)
+    {
+      Node* child = new Node(node, nullptr, nullptr, std::move(value));
       node->setLeft(child);
       return child;
     }
@@ -533,9 +546,21 @@ public:
 
       @return The new right child node.
     */
-    Node* makeRight(Node* node, const TYPE& value)
+    static Node* makeRight(Node* node, const TYPE& value)
     {
       Node* child = new Node(node, nullptr, nullptr, value);
+      node->setRight(child);
+      return child;
+    }
+
+    /**
+      Makes a right child node.
+
+      @return The new right child node.
+    */
+    static Node* makeRight(Node* node, TYPE&& value)
+    {
+      Node* child = new Node(node, nullptr, nullptr, std::move(value));
       node->setRight(child);
       return child;
     }
@@ -548,7 +573,8 @@ public:
       @param node The subtree to be rotated.
       @return The new parent of the subtree.
     */
-    Node* rotateLeft(Node* node) throw(InvalidNode) {
+    static Node* rotateLeft(Node* node) throw(InvalidNode)
+    {
       if (!node || !node->getRight()) {
         throw InvalidNode();
       }
@@ -579,7 +605,8 @@ public:
       @param node The subtree to be rotated.
       @return The new parent of the subtree.
     */
-    Node* rotateRight(Node* node) throw(InvalidNode) {
+    static Node* rotateRight(Node* node) throw(InvalidNode)
+    {
       if (!node || !node->getLeft()) {
         throw InvalidNode();
       }
@@ -602,6 +629,87 @@ public:
       return child;
     }
 
+    /** Returns the size of the given subtree. */
+    static MemorySize getSize(const Node* node) noexcept
+    {
+      if (!node) {
+        return 0;
+      }
+      return 1 + getSize(node->getLeft()) + getSize(node->getRight());
+    }
+    
+    /** Gets all the nodes for the given node. */
+    static void getNodes(Node** dest, Node* node)
+    {
+      getNodes(dest, node->getLeft());
+      *dest++ = node;
+      getNodes(dest, node->getRight());
+    }
+    
+    /** Gets all the nodes for the given node. */
+    static void getNodes(Allocator<Node*>& buffer, Node* node)
+    {
+      const MemorySize size = getSize(node);
+      buffer.setSize(size);
+      if (node) {
+        getNodes(buffer, node);
+      }
+    }
+    
+    static Node* buildBalancedTree(const Span<Node*>& span)
+    {
+      const auto size = span.getSize();
+      const auto m = size/2;
+      Node* parent = span[m];
+      parent->setLeft((m > 0) ? build(Span<Node*>(span.begin(), m)) : nullptr);
+      parent->setRight(((m + 1) < size) ? build(Span<Node*>(span.begin() + m + 1, span.end())) : nullptr);
+      return parent;
+    }
+    
+    /** Builds a balanced tree. */
+    static Node* buildBalancedTree(Allocator<Node*>& buffer)
+    {
+      if (buffer.getSize() == 0) {
+        return nullptr;
+      }
+      return buildBalancedTree(buffer.getSpan());
+    }
+    
+    /** Builds a balanced tree. */
+    void balanceTree()
+    {
+      if (root) {
+        Allocator<Node*> buffer; // also need balancing without using buffer
+        getNodes(buffer, root);
+        root = buildBalancedTree(buffer);
+      }
+    }
+
+#if 0
+    /** Builds a balanced tree. */
+    MemorySize balanceTree(Node* node)
+    {
+      // unfold tree
+      // and then rebuild
+      
+      if (!node) {
+        return 0;
+      }
+      const MemorySize left = node->getLeft() ? balanceTree(node->getLeft()) : 0;
+      const MemorySize right = node->getRight() ? balanceTree(node->getRight()) : 0;
+      if (left < right) {
+        while (left < right) {
+          rotateLeft(node);
+        }
+      } else if (left > right) {
+        while (left > right) {
+          rotateRight(node);
+        }
+      }
+      return left + right + 1;
+    }
+#endif
+    
     /**
       Destroys the binary tree.
     */
@@ -704,5 +812,53 @@ public:
     elements = new BinaryTreeImpl(); // no need to copy
   }
 };
+
+template<class TYPE>
+class OutputBinaryTree {
+private:
+
+  FormatOutputStream& stream;
+  unsigned int i = 0;
+  bool left = false;
+public:
+  
+  OutputBinaryTree(FormatOutputStream& _stream)
+    : stream(_stream)
+  {
+  }
+
+  void writeNode(const BinaryNode<TYPE>* node)
+  {
+    if (!node) {
+      return;
+    }
+    const bool temp = left;
+    if (node->getLeft()) {
+      left = true;
+      ++i;
+      writeNode(node->getLeft()); // /--
+      --i;
+    }
+    const bool leaf = !node->getLeft() && !node->getRight();
+    stream << indent(i * 2) << "| " << node->getValue() << (leaf ? "*" : "") << EOL;
+    if (node->getRight()) {
+      left = false;
+      ++i;
+      writeNode(node->getRight()); // \--
+      --i;
+    }
+    left = temp;
+  }
+};
+
+template<class TYPE>
+FormatOutputStream& operator<<(FormatOutputStream& stream, const BinaryNode<TYPE>* node)
+{
+  if (node) {
+    OutputBinaryTree<TYPE> outputBinaryTree(stream);
+    outputBinaryTree.writeNode(node, indent);
+  }
+  return stream;
+}
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

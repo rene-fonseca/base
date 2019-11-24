@@ -14,10 +14,9 @@
 #pragma once
 
 #include <base/collection/BinaryTree.h>
+#include <base/collection/Pair.h>
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
-
-// TAG: add support for move when adding new values
 
 /**
   Binary tree with the nodes ordered. All the values of the left and right
@@ -213,15 +212,16 @@ public:
     Adds a value to the binary tree.
 
     @param value The value to be added.
-    @return The value if it already exists. nullptr if the value was not found in the tree.
+    @return The node and boolean which is true if value already exists.
   */
-  Value* add(const Value& value)
+  Pair<Node*, bool> add(const Value& value)
   {
     Node* node = getRoot();
 
     if (!node) {
-      this->elements = new typename BinaryTree<Value>::BinaryTreeImpl(new Node(nullptr, nullptr, nullptr, value)); // attach root node
-      return nullptr;
+      auto node = new Node(nullptr, nullptr, nullptr, value);
+      this->elements = new typename BinaryTree<Value>::BinaryTreeImpl(node); // attach root node
+      return Pair<Node*, bool>(node, true);
     }
 
     while (true) {
@@ -230,25 +230,94 @@ public:
         if (node->getLeft()) {
           node = node->getLeft();
         } else { // attach left child node
-          node->setLeft(new Node(node, nullptr, nullptr, value));
-          return nullptr;
+          Node* newNode = new Node(node, nullptr, nullptr, value);
+          node->setLeft(newNode);
+          return Pair<Node*, bool>(newNode, true);
         }
       } else if (result > 0) {
         if (node->getRight()) {
           node = node->getRight();
         } else { // attach right child node
-          node->setRight(new Node(node, nullptr, nullptr, value));
-          return nullptr;
+          Node* newNode = new Node(node, nullptr, nullptr, value);
+          node->setRight(newNode);
+          return Pair<Node*, bool>(newNode, true);
         }
       } else {
         if (!std::is_same<Value, Key>()) {
           node->getValue() = value; // force assignment
         }
-        return &(node->getValue()); // node with this value already exists
+        return Pair<Node*, bool>(node, false); // node with this value already exists
       }
     }
   }
 
+  /**
+    Adds a value to the binary tree.
+
+    @param value The value to be added.
+    @return The value if it already exists. nullptr if the value was not found in the tree.
+  */
+  Value* add2(const Value& value)
+  {
+    Pair<Node*, bool> result = add(value);
+    return !result.getSecond() ? &(result.getFirst()->getValue()) : nullptr;
+  }
+  
+  /**
+    Adds a value to the binary tree.
+
+    @param value The value to be added.
+    @return The node and boolean which is true if value already exists.
+  */
+  Pair<Node*, bool> add(Value&& value)
+  {
+    Node* node = getRoot();
+
+    if (!node) {
+      auto node = new Node(nullptr, nullptr, nullptr, std::move(value));
+      this->elements = new typename BinaryTree<Value>::BinaryTreeImpl(node); // attach root node
+      return Pair<Node*, bool>(node, true);
+    }
+
+    while (true) {
+      const int result = compare<const Key&>(value, node->getValue());
+      if (result < 0) {
+        if (node->getLeft()) {
+          node = node->getLeft();
+        } else { // attach left child node
+          Node* newNode = new Node(node, nullptr, nullptr, std::move(value));
+          node->setLeft(newNode);
+          return Pair<Node*, bool>(newNode, true);
+        }
+      } else if (result > 0) {
+        if (node->getRight()) {
+          node = node->getRight();
+        } else { // attach right child node
+          Node* newNode = new Node(node, nullptr, nullptr, std::move(value));
+          node->setRight(newNode);
+          return Pair<Node*, bool>(newNode, true);
+        }
+      } else {
+        if (!std::is_same<Value, Key>()) {
+          node->getValue() = std::move(value); // force assignment
+        }
+        return Pair<Node*, bool>(node, false); // node with this value already exists
+      }
+    }
+  }
+
+  /**
+    Adds a value to the binary tree.
+
+    @param value The value to be added.
+    @return The value if it already exists. nullptr if the value was not found in the tree.
+  */
+  Value* add2(Value&& value)
+  {
+    Pair<Node*, bool> result = add(std::move(value));
+    return !result.getSecond() ? &(result.getFirst()->getValue()) : nullptr;
+  }
+  
   /**
     Removes the specified node from the binary tree. Raises InvalidNode if
     the node is invalid.

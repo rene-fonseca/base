@@ -45,7 +45,7 @@ private:
   /** The associations of the map. */
   Tree elements;
   /** The number of associations in the map. */
-  MemorySize size = 0;
+  MemorySize size = 0; // belongs in tree
 public:
 
   /**
@@ -58,8 +58,7 @@ public:
     typename Tree::ReadEnumerator enu;
   public:
 
-    inline ReadEnumerator(
-      typename Tree::ReadEnumerator _enu) noexcept
+    inline ReadEnumerator(typename Tree::ReadEnumerator _enu) noexcept
       : enu(_enu)
     {
     }
@@ -87,8 +86,7 @@ public:
     typename Tree::Enumerator enu;
   public:
 
-    inline ValueEnumerator(
-      typename Tree::Enumerator _enu) noexcept
+    inline ValueEnumerator(typename Tree::Enumerator _enu) noexcept
       : enu(_enu)
     {
     }
@@ -183,7 +181,7 @@ public:
     }
     return *this;
   }
-
+  
   /**
     Assignment of map to map.
   */
@@ -319,16 +317,23 @@ public:
 
     @param key The key.
     @param value The value.
+   
+    @return Returns true if new key was added.
   */
-  void add(const Key& key, const Value& value)
+  bool add(const Key& key, const Value& value)
   {
-    Node* result = elements.add(Node(key, value));
-    if (result) {
+    // TAG: rotate when new node is added? but we need to know length of chains
+    Pair<typename Tree::Node*, bool> result = elements.add(Node(key, value));
+    if (result.getSecond()) {
       // key already exists
-      result->setValue(value); // set the new value
+      typename Tree::Node* node = result.getFirst();
+      Node& association = node->getValue();
+      association.setValue(value); // set the new value
+      return false;
     } else {
       // key did not exist
       ++size;
+      return true;
     }
   }
 
@@ -338,16 +343,22 @@ public:
 
     @param key The key.
     @param value The value.
+   
+    @return Returns true if new key was added.
   */
-  void add(const Key& key, Value&& value)
+  bool add(const Key& key, Value&& value)
   {
+    // auto result = elements.add(Node(key, std::move(value)));
     typename Tree::Node* node = elements.find(key);
     if (node) { // key already exists
       Node& association = node->getValue();
       association.setValue(std::move(value)); // set the new value
+      return false;
     } else { // key does not exist
-      Node* result = elements.add(Node(key, std::move(value)));
+      // annoying to search tree twice
+      auto result = elements.add(Node(key, std::move(value)));
       ++size;
+      return true;
     }
   }
 
@@ -399,6 +410,11 @@ public:
   inline const Value& operator[](const Key& key) const throw(InvalidKey)
   {
     return getValue(key);
+  }
+
+  inline const Tree& getTree() const noexcept
+  {
+    return elements;
   }
 
   // TAG: add begin(), end()

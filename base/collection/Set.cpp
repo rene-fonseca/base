@@ -43,6 +43,13 @@ public:
     ss.add("down");
     // fout << ss << ENDL;
 
+    MemorySize count = 0;
+    for (const auto& v : ss) {
+      ++count;
+      // fout << v << ENDL;
+    }
+    TEST_ASSERT(count == ss.getSize());
+
     TEST_ASSERT(ss.getSize() == 4);
     TEST_ASSERT(ss.hasKey("up"));
     TEST_ASSERT(!ss.hasKey("UP"));

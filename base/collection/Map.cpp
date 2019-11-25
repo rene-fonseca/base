@@ -77,9 +77,33 @@ public:
     map1[String("key3")] = "other";
     TEST_ASSERT(map1[String("key3")] == "other");
 
-    for (auto v : map1) {
-      fout << "! " << v << " " << v.getValue() << ENDL;
+    MemorySize count = 0;
+    for (const auto& v : map1) {
+      ++count;
+      // fout << v << ENDL;
     }
+    TEST_ASSERT(count == map1.getSize());
+
+    count = 0;
+    for (PrefixOrderIterator<ReadIteratorTraits<Map<String, String>::Tree::Node> > src(map1.getTree().getRoot()); src; ++src) {
+      ++count;
+      // fout << *src << ENDL;
+    }
+    TEST_ASSERT(count == map1.getSize());
+
+    count = 0;
+    for (InfixOrderIterator<ReadIteratorTraits<Map<String, String>::Tree::Node> > src(map1.getTree().getRoot()); src; ++src) {
+      ++count;
+      // fout << *src << ENDL;
+    }
+    TEST_ASSERT(count == map1.getSize());
+
+    count = 0;
+    for (PostfixOrderIterator<ReadIteratorTraits<Map<String, String>::Tree::Node> > src(map1.getTree().getRoot()); src; ++src) {
+      ++count;
+      // fout << *src << ENDL;
+    }
+    TEST_ASSERT(count == map1.getSize());
 
     TEST_ASSERT(map1.hasKey("key2"));
     TEST_ASSERT(map1.find("key2"));

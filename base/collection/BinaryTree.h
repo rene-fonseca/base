@@ -25,15 +25,16 @@ _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 /** Binary tree iterator in the order root, left, and right. */
 template<class TRAITS>
-class PrefixOrderIterator : public ReadIteratorTraits<TRAITS> {
-private:
+class PrefixOrderIterator : public Iterator<TRAITS> {
+public:
 
-  typedef typename ReadIteratorTraits<TRAITS>::Value Value;
-  typedef typename ReadIteratorTraits<TRAITS>::Reference Reference;
-  typedef typename ReadIteratorTraits<TRAITS>::Pointer Pointer;
-  typedef typename ReadIteratorTraits<TRAITS>::Distance Distance;
+  typedef typename Iterator<TRAITS>::Value Value;
+  typedef typename Iterator<TRAITS>::Pointer Pointer;
+  typedef typename Iterator<TRAITS>::Reference Reference;
+  typedef typename Iterator<TRAITS>::Distance Distance;
   typedef ForwardIterator Category;
-
+private:
+  
   /** The root of the binary tree. */
   Pointer root = nullptr;
   /** The current position of the iterator. */
@@ -44,7 +45,7 @@ public:
   {
   }
 
-  inline PrefixOrderIterator(const Pointer* _root) noexcept
+  inline PrefixOrderIterator(Pointer _root) noexcept
     : root(_root), node(_root)
   {
     // starting with root
@@ -107,14 +108,15 @@ public:
 
 /** Binary tree iterator in the order left, right, and root. */
 template<class TRAITS>
-class PostfixOrderIterator : public ReadIteratorTraits<TRAITS> {
-private:
+class PostfixOrderIterator : public Iterator<TRAITS> {
+public:
 
-  typedef typename ReadIteratorTraits<TRAITS>::Value Value;
-  typedef typename ReadIteratorTraits<TRAITS>::Reference Reference;
-  typedef typename ReadIteratorTraits<TRAITS>::Pointer Pointer;
-  typedef typename ReadIteratorTraits<TRAITS>::Distance Distance;
+  typedef typename Iterator<TRAITS>::Value Value;
+  typedef typename Iterator<TRAITS>::Pointer Pointer;
+  typedef typename Iterator<TRAITS>::Reference Reference;
+  typedef typename Iterator<TRAITS>::Distance Distance;
   typedef ForwardIterator Category;
+private:
 
   /** The root of the binary tree. */
   Pointer root = nullptr;
@@ -123,7 +125,7 @@ private:
   /** The current position of the iterator. */
   Pointer current = nullptr;
 
-  Pointer* next()
+  Pointer next()
   {
     if (!node) {
       throw IteratorException();
@@ -158,7 +160,7 @@ public:
   {
   }
 
-  inline PostfixOrderIterator(const Pointer* _root) noexcept
+  inline PostfixOrderIterator(Pointer _root) noexcept
     : root(_root), node(_root)
   {
     current = next();
@@ -187,6 +189,7 @@ public:
     return result;
   }
 
+  // TAG: need support for both Node and Node ::value
   inline Pointer operator->() const noexcept
   {
     return current;
@@ -200,15 +203,16 @@ public:
 
 /** Binary tree iterator in the order left, root, and right. */
 template<class TRAITS>
-class InfixOrderIterator : public ReadIteratorTraits<TRAITS> {
-private:
+class InfixOrderIterator : public Iterator<TRAITS> {
+public:
 
-  typedef typename ReadIteratorTraits<TRAITS>::Value Value;
-  typedef typename ReadIteratorTraits<TRAITS>::Reference Reference;
-  typedef typename ReadIteratorTraits<TRAITS>::Pointer Pointer;
-  typedef typename ReadIteratorTraits<TRAITS>::Distance Distance;
+  typedef typename Iterator<TRAITS>::Value Value;
+  typedef typename Iterator<TRAITS>::Pointer Pointer;
+  typedef typename Iterator<TRAITS>::Reference Reference;
+  typedef typename Iterator<TRAITS>::Distance Distance;
   typedef ForwardIterator Category;
-
+private:
+  
   /** The states of the infix order traversal state machine */
   enum Traverse {TRAVERSE_SUBTREE, RETURN_LEFT, RETURN_RIGHT};
   /** The root of the binary tree. */
@@ -219,7 +223,7 @@ private:
   /** Specifies that subtree should be traversed. */
   Traverse traverse = TRAVERSE_SUBTREE;
 
-  Pointer* next() throw(IteratorException)
+  Pointer next()
   {
     if (!node) {
       throw IteratorException();
@@ -259,6 +263,10 @@ private:
     return result;
   }
 public:
+
+  InfixOrderIterator() noexcept
+  {
+  }
 
   /**
     Initializes iterator of binary tree specified by the node.
@@ -405,6 +413,10 @@ private:
   /** Specifies that subtree should be traversed. */
   Traverse traverse = TRAVERSE_SUBTREE;
 public:
+
+  InfixOrderEnumerator() noexcept
+  {
+  }
 
   /**
     Initializes enumeration of binary tree specified by the node.

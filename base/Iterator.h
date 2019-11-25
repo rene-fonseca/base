@@ -49,7 +49,7 @@ public:
   typedef VALUE& Reference;
   typedef VALUE* Pointer;
   typedef MemoryDiff Distance;
-  typedef RandomAccessIterator Category; // TAG: how to handle
+  typedef RandomAccessIterator Category;
 };
 
 /**
@@ -67,7 +67,7 @@ public:
   typedef const VALUE& Reference;
   typedef const VALUE* Pointer;
   typedef MemoryDiff Distance;
-  typedef RandomAccessIterator Category; // TAG: how to handle
+  typedef RandomAccessIterator Category;
 };
 
 /**

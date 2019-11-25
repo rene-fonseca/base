@@ -20,17 +20,17 @@ InvalidKey::InvalidKey() noexcept
 }
 
 InvalidKey::InvalidKey(const char* message) noexcept
-  : Exception(message)
+  : ContainerException(message)
 {
 }
 
 InvalidKey::InvalidKey(const Type& type) noexcept
-  : Exception(type)
+  : ContainerException(type)
 {
 }
 
 InvalidKey::InvalidKey(const char* message, const Type& type) noexcept
-  : Exception(message, type)
+  : ContainerException(message, type)
 {
 }
 

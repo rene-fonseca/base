@@ -13,40 +13,37 @@
 
 #pragma once
 
-#include <base/collection/ContainerException.h>
+#include <base/Exception.h>
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 /**
-  This exception specifies that a key of a collection is invalid. Normally this
-  means that the key has not been associated with a value.
+  This exception is used for issues with container use.
   
-  @short Invalid key exception.
   @ingroup collections exceptions
-  @version 1.0
 */
 
-class _COM_AZURE_DEV__BASE__API InvalidKey : public ContainerException {
+class _COM_AZURE_DEV__BASE__API ContainerException : public Exception {
 public:
-  
+
   /**
     Initializes the exception object with no message.
   */
-  InvalidKey() noexcept;
-  
+  ContainerException() noexcept;
+
   /**
     Initializes the exception object.
-    
+
     @param message The message.
   */
-  InvalidKey(const char* message) noexcept;
-  
+  ContainerException(const char* message) noexcept;
+
   /**
     Initializes the exception object without an associated message.
     
     @param type The identity of the type.
   */
-  InvalidKey(const Type& type) noexcept;
+  ContainerException(const Type& type) noexcept;
   
   /**
     Initializes the exception object.
@@ -54,7 +51,7 @@ public:
     @param message An NULL-terminated string (ASCII).
     @param type The identity of the type.
   */
-  InvalidKey(const char* message, const Type& type) noexcept;
+  ContainerException(const char* message, const Type& type) noexcept;
   
   _COM_AZURE_DEV__BASE__EXCEPTION_THIS_TYPE()
 };

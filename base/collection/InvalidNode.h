@@ -13,7 +13,7 @@
 
 #pragma once
 
-#include <base/Exception.h>
+#include <base/collection/ContainerException.h>
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
@@ -25,7 +25,7 @@ _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
   @version 1.0
 */
 
-class _COM_AZURE_DEV__BASE__API InvalidNode : public Exception {
+class _COM_AZURE_DEV__BASE__API InvalidNode : public ContainerException {
 public:
 
   /**

@@ -20,17 +20,17 @@ InvalidNode::InvalidNode() noexcept
 }
 
 InvalidNode::InvalidNode(const char* message) noexcept
-  : Exception(message)
+  : ContainerException(message)
 {
 }
 
 InvalidNode::InvalidNode(const Type& type) noexcept
-  : Exception(type)
+  : ContainerException(type)
 {
 }
 
 InvalidNode::InvalidNode(const char* message, const Type& type) noexcept
-  : Exception(message, type)
+  : ContainerException(message, type)
 {
 }
 

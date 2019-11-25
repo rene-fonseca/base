@@ -20,17 +20,17 @@ AlreadyKeyException::AlreadyKeyException() noexcept
 }
 
 AlreadyKeyException::AlreadyKeyException(const char* message) noexcept
-  : Exception(message)
+  : ContainerException(message)
 {
 }
 
 AlreadyKeyException::AlreadyKeyException(const Type& type) noexcept
-  : Exception(type)
+  : ContainerException(type)
 {
 }
 
 AlreadyKeyException::AlreadyKeyException(const char* message, const Type& type) noexcept
-  : Exception(message, type)
+  : ContainerException(message, type)
 {
 }
 

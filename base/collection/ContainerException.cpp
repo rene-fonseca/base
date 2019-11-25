@@ -11,26 +11,26 @@
     For the licensing terms refer to the file 'LICENSE'.
  ***************************************************************************/
 
-#include <base/collection/EmptyContainer.h>
+#include <base/collection/ContainerException.h>
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
-EmptyContainer::EmptyContainer() noexcept
+ContainerException::ContainerException() noexcept
 {
 }
 
-EmptyContainer::EmptyContainer(const char* message) noexcept
-  : ContainerException(message)
+ContainerException::ContainerException(const char* message) noexcept
+  : Exception(message)
 {
 }
 
-EmptyContainer::EmptyContainer(const Type& type) noexcept
-  : ContainerException(type)
+ContainerException::ContainerException(const Type& type) noexcept
+  : Exception(type)
 {
 }
 
-EmptyContainer::EmptyContainer(const char* message, const Type& type) noexcept
-  : ContainerException(message, type)
+ContainerException::ContainerException(const char* message, const Type& type) noexcept
+  : Exception(message, type)
 {
 }
 

@@ -13,7 +13,7 @@
 
 #pragma once
 
-#include <base/Exception.h>
+#include <base/collection/ContainerException.h>
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
@@ -23,7 +23,7 @@ _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
   @ingroup collections exceptions
 */
 
-class _COM_AZURE_DEV__BASE__API EmptyContainer : public Exception {
+class _COM_AZURE_DEV__BASE__API EmptyContainer : public ContainerException {
 public:
 
   /**

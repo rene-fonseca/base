@@ -13,8 +13,23 @@
 
 #include <base/collection/IteratorException.h>
 
-_COM_AZURE_DEV__BASE__DUMMY_SYMBOL
-
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
+
+IteratorException::IteratorException() noexcept
+{
+}
+
+IteratorException::IteratorException(const char* message) noexcept
+  : ContainerException(message) {
+}
+
+IteratorException::IteratorException(const Type& type) noexcept
+  : ContainerException(type) {
+}
+
+IteratorException::IteratorException(const char* message, const Type& type) noexcept
+  : ContainerException(message, type)
+{
+}
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

@@ -42,6 +42,20 @@ public:
   typedef InfixOrderEnumerator<EnumeratorTraits<Node> > Enumerator;
   /** Non-modifying enumerator. */
   typedef InfixOrderEnumerator<ReadEnumeratorTraits<Node> > ReadEnumerator;
+
+  /** Modifying iterator. */
+  typedef PrefixOrderIterator<IteratorTraits<Node> > NodePrefixIterator;
+  /** Non-modifying iterator. */
+  typedef PrefixOrderIterator<ReadIteratorTraits<Node> > NodeReadPrefixIterator;
+  /** Modifying iterator. */
+  typedef InfixOrderIterator<IteratorTraits<Node> > NodeInfixIterator;
+  /** Non-modifying iterator. */
+  typedef InfixOrderIterator<ReadIteratorTraits<Node> > NodeReadInfixIterator;
+  /** Modifying iterator. */
+  typedef PostfixOrderIterator<IteratorTraits<Node> > NodePostfixIterator;
+  /** Non-modifying iterator. */
+  typedef PostfixOrderIterator<ReadIteratorTraits<Node> > NodeReadPostfixIterator;
+
   /** Modifying iterator. */
   typedef InfixOrderIterator<IteratorTraits<Node> > NodeIterator;
   /** Non-modifying iterator. */

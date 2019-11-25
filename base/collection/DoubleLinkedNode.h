@@ -570,7 +570,7 @@ public:
   /**
     Returns the next element and advances the position of this enumeration.
   */
-  Pointer next() throw(EndOfEnumeration)
+  Pointer next()
   {
     if (!current) {
       throw EndOfEnumeration();
@@ -643,7 +643,7 @@ public:
   /**
     Returns the next element and advances the position of this enumeration.
   */
-  Pointer next() throw(EndOfEnumeration)
+  Pointer next()
   {
     if (!current) {
       throw EndOfEnumeration();

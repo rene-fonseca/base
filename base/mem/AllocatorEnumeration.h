@@ -68,7 +68,8 @@ public:
   /**
     Returns the next element and advances the position of this enumeration.
   */
-  inline Pointer next() throw(EndOfEnumeration) {
+  inline Pointer next()
+  {
     bassert(current != end, EndOfEnumeration(this));
     return current++;
   }

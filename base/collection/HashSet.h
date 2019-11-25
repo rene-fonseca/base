@@ -526,7 +526,8 @@ public:
     /**
       Returns true if there is more elements in this enumeration.
     */
-    inline bool hasNext() const noexcept {
+    inline bool hasNext() const noexcept
+    {
       return numberOfElements;
     }
 
@@ -534,7 +535,8 @@ public:
       Returns the current value and increments the position. Raises
       EndOfEnumeration if the end has been reached.
     */
-    Pointer next() throw(EndOfEnumeration) {
+    Pointer next()
+    {
       if (!numberOfElements) {
         throw EndOfEnumeration(this);
       }

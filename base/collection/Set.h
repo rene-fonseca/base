@@ -59,7 +59,7 @@ public:
       return enu.hasNext();
     }
     
-    inline Pointer next() throw(EndOfEnumeration)
+    inline Pointer next()
     {
       return &(enu.next()->getValue());
     }

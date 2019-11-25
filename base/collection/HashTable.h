@@ -681,7 +681,7 @@ public:
       Returns the current value and increments the position. Raises
       EndOfEnumeration if the end has been reached.
     */
-    Pointer next() throw(EndOfEnumeration)
+    Pointer next()
     {
       if (!numberOfElements) {
         throw EndOfEnumeration(this);
@@ -751,7 +751,7 @@ public:
       Returns the current value and increments the position. Raises
       EndOfEnumeration if the end has been reached.
     */
-    Pointer next() throw(EndOfEnumeration)
+    Pointer next()
     {
       if (!numberOfElements) {
         throw EndOfEnumeration(this);

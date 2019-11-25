@@ -132,12 +132,13 @@ public:
   /**
     Returns the next element of the enumerator.
   */
-  virtual Pointer next() throw(EndOfEnumeration) = 0;
+  virtual Pointer next() = 0;
 
   /**
     Destroys the enumerator.
   */
-  virtual inline ~Enumerator() {
+  virtual inline ~Enumerator()
+  {
   }
 };
 

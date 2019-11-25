@@ -278,7 +278,8 @@ public:
     /**
       Returns the next element and advances the position of this enumeration.
     */
-    inline Pointer next() throw(EndOfEnumeration) {
+    inline Pointer next()
+    {
       if (count == 0) {
         throw EndOfEnumeration();
       }
@@ -364,7 +365,8 @@ public:
     /**
       Returns the next element and advances the position of this enumeration.
     */
-    inline Pointer next() throw(EndOfEnumeration) {
+    inline Pointer next()
+    {
       if (count == 0) {
         throw EndOfEnumeration();
       }

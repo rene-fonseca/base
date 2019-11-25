@@ -88,7 +88,7 @@ public:
     return *this;
   }
   
-  inline PrefixOrderIterator operator++(int) throw(EndOfEnumeration)
+  inline PrefixOrderIterator operator++(int)
   {
     PrefixOrderIterator result;
     ++result;
@@ -357,7 +357,7 @@ public:
     Returns the current value and increments the position. Raises
     EndOfEnumeration if the end has been reached.
   */
-  Pointer next() throw(EndOfEnumeration)
+  Pointer next()
   {
     if (!more) {
       throw EndOfEnumeration();
@@ -442,7 +442,7 @@ public:
     Returns the current value and increments the position. Raises
     EndOfEnumeration if the end has been reached.
   */
-  Pointer next() throw(EndOfEnumeration)
+  Pointer next()
   {
     if (!more) {
       throw EndOfEnumeration();
@@ -573,7 +573,7 @@ public:
     Returns the current value and increments the position. Raises
     EndOfEnumeration if the end has been reached.
   */
-  Pointer next() throw(EndOfEnumeration)
+  Pointer next()
   {
     if (!more) {
       throw EndOfEnumeration();

@@ -29,10 +29,13 @@ _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 template<class KEY>
 class Set : public Collection {
+public:
+
+  typedef OrderedBinaryTree<KEY> Tree;
 private:
 
   /** The elements of the set. */
-  OrderedBinaryTree<KEY> elements;
+  Tree elements;
   /** The number of elements in the set. */
   MemorySize size = 0;
 public:
@@ -66,9 +69,11 @@ public:
   };
 
   /** Modifying enumerator. */
-  typedef SetEnumerator<EnumeratorTraits<KEY>, typename OrderedBinaryTree<KEY>::Enumerator> Enumerator;
+  typedef SetEnumerator<EnumeratorTraits<KEY>, typename Tree::Enumerator> Enumerator;
   /** Non-modifying enumerator. */
-  typedef SetEnumerator<ReadEnumeratorTraits<KEY>, typename OrderedBinaryTree<KEY>::ReadEnumerator> ReadEnumerator;
+  typedef SetEnumerator<ReadEnumeratorTraits<KEY>, typename Tree::ReadEnumerator> ReadEnumerator;
+  typedef typename Tree::Iterator Iterator; // iteration over KEY
+  typedef typename Tree::ReadIterator ReadIterator; // iteration over KEY
 public:
 
   /**
@@ -190,6 +195,33 @@ public:
   inline operator bool() const noexcept
   {
     return size != 0;
+  }
+
+  /**
+    Returns the key for the specified key. Makes sense when you need to use the key as a reference.
+  */
+  inline const KEY& operator[](const KEY& key) const
+  {
+    auto node = elements.find(key);
+    if (!node) {
+      throw InvalidKey();
+    }
+    return node->getValue();
+  }
+
+  inline const Tree& getTree() const noexcept
+  {
+    return elements;
+  }
+
+  inline ReadIterator begin() const noexcept
+  {
+    return ReadIterator(elements.getRoot());
+  }
+
+  inline ReadIterator end() const noexcept
+  {
+    return ReadIterator();
   }
 };
 

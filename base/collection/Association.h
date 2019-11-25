@@ -101,15 +101,16 @@ public:
   {
   }
 
-  /* Assigns new value. */
+  /* Assigns new value. The key is NOT changed. */
   Association& operator=(const Association& assign)
   {
     BASSERT(key == assign.key);
+    // key is not changed!
     value = assign.value;
     return *this;
   }
 
-  /* Assigns new value. */
+  /* Assigns new value. The key is NOT changed. */
   Association& operator=(Association&& assign)
   {
     BASSERT(key == assign.key);

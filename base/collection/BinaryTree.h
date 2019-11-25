@@ -140,6 +140,9 @@ private:
       } else { // leaf
         Pointer child = nullptr;
         do { // return from subtree
+          if (result) {
+            return result;
+          }
           result = node;
           if (node == root) {
             node = nullptr;
@@ -588,6 +591,9 @@ public:
       } else {
         Pointer child = nullptr;
         do { // return from subtree
+          if (result) {
+            return result;
+          }
           result = node;
           if (node == root) {
             more = false;
@@ -729,8 +735,7 @@ public:
           right->setParent(result);
         }
         return result;
-      }
-      else {
+      } else {
         return nullptr;
       }
     }

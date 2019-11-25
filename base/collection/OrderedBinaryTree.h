@@ -43,9 +43,71 @@ public:
   /** Non-modifying enumerator. */
   typedef InfixOrderEnumerator<ReadEnumeratorTraits<Node> > ReadEnumerator;
   /** Non-modifying iterator. */
-  typedef InfixOrderIterator<IteratorTraits<Node> > Iterator;
+  typedef InfixOrderIterator<IteratorTraits<Node> > NodeIterator;
   /** Non-modifying iterator. */
-  typedef PostfixOrderIterator<ReadIteratorTraits<Node> > ReadIterator;
+  typedef InfixOrderIterator<ReadIteratorTraits<Node> > NodeReadIterator;
+
+  class Iterator : public NodeIterator {
+  public:
+
+    typedef OrderedBinaryTree::Value Value;
+    typedef Value* Pointer;
+    typedef Value& Reference;
+    typedef MemoryDiff Distance;
+    typedef ForwardIterator Category;
+
+    inline Iterator()
+    {
+    }
+
+    inline Iterator(typename Node* node)
+      : NodeIterator(node)
+    {
+    }
+
+    inline Pointer operator->() const noexcept
+    {
+      typename Node* p = NodeIterator::operator->();
+      return &(p->getValue());
+    }
+
+    inline Reference operator*() const noexcept
+    {
+      typename Node& p = NodeIterator::operator*();
+      return p.getValue();
+    }
+  };
+
+  class ReadIterator : public NodeReadIterator {
+  public:
+
+    typedef OrderedBinaryTree::Value Value;
+    typedef const Value* Pointer;
+    typedef const Value& Reference;
+    typedef MemoryDiff Distance;
+    typedef ForwardIterator Category;
+
+    inline ReadIterator()
+    {
+    }
+
+    inline ReadIterator(const Node* node)
+      : NodeReadIterator(node)
+    {
+    }
+
+    inline Pointer operator->() const noexcept
+    {
+      const auto p = NodeReadIterator::operator->();
+      return &(p->getValue());
+    }
+
+    inline Reference operator*() const noexcept
+    {
+      const auto& p = NodeReadIterator::operator*();
+      return p.getValue();
+    }
+  };
 
   using BinaryTree<TYPE>::getRoot;
 

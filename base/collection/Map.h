@@ -40,9 +40,8 @@ public:
   /** The type of an association in the map. */
   typedef Association<Key, Value> Node;
   typedef OrderedBinaryTree<Node, Key> Tree;
-  
-  typedef typename OrderedBinaryTree<Node, Key>::Iterator Iterator;
-  typedef typename OrderedBinaryTree<Node, Key>::ReadIterator ReadIterator;
+  typedef typename Tree::Iterator Iterator; // iteration over Association
+  typedef typename Tree::ReadIterator ReadIterator; // iteration over Association
 private:
 
   /** The associations of the map. */
@@ -427,12 +426,12 @@ public:
 
   inline ReadIterator begin() const noexcept
   {
-    return elements.begin();
+    return ReadIterator(elements.getRoot());
   }
   
   inline ReadIterator end() const noexcept
   {
-    return elements.end();
+    return ReadIterator();
   }
 };
 

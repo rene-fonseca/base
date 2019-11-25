@@ -49,17 +49,19 @@ unsigned int RandomInputStream::read(uint8* buffer, const unsigned int _size, bo
 
     // fix alignment
     switch (getAddressOf(buffer) & (sizeof(uint32) - 1)) {
-    case 1: // fall through
+    case 1:
       if (buffer != end) {
         *buffer++ = ((bits >> 0) & 0xff);
         --size;
       }
-    case 2: // fall through
+      // [[fallthrough]]
+    case 2:
       if (buffer != end) {
         *buffer++ = ((bits >> 8) & 0xff);
         --size;
       }
-    case 3: // fall through
+      // [[fallthrough]]
+    case 3:
       if (buffer != end) {
         *buffer++ = ((bits >> 16) & 0xff);
         --size;

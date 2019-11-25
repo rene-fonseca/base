@@ -77,10 +77,9 @@ public:
     map1[String("key3")] = "other";
     TEST_ASSERT(map1[String("key3")] == "other");
 
-#if 0
     for (auto v : map1) {
+      fout << "! " << v << " " << v.getValue() << ENDL;
     }
-#endif
 
     TEST_ASSERT(map1.hasKey("key2"));
     TEST_ASSERT(map1.find("key2"));

@@ -181,8 +181,31 @@ public:
     elements.remove(elements.find(key));
     --size;
   }
+  
+  template<class PREDICATE>
+  class NodePredicate {
+  private:
+    
+    PREDICATE& predicate;
+  public:
+    
+    inline NodePredicate(PREDICATE& _predicate) noexcept : predicate(_predicate)
+    {
+    }
+    
+    inline bool operator()(const typename Tree::Node* node)
+    {
+      return predicate(node->getValue());
+    }
+  };
 
-  // add template<class PREDICATE> Set::remove(PREDICATE& predicate);
+  template<class PREDICATE>
+  void remove(PREDICATE predicate)
+  {
+    NodePredicate<PREDICATE> _predicate(predicate);
+    MemorySize removed = elements.remove(_predicate);
+    size -= removed;
+  }
 
   /**
     Removes all the keys from this set.

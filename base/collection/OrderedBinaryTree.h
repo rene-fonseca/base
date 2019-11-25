@@ -43,52 +43,9 @@ public:
   /** Non-modifying enumerator. */
   typedef InfixOrderEnumerator<ReadEnumeratorTraits<Node> > ReadEnumerator;
   /** Non-modifying iterator. */
-  typedef InfixOrderIterator<ReadIteratorTraits<Node> > ReadIterator;
-
-//  class Enumeration;
-//  friend class Enumeration;
-//  class ReadOnlyEnumeration;
-//  friend class ReadOnlyEnumeration;
-//
-//  /**
-//    Enumeration of all the elements of an ordered binary tree.
-//
-//    @version 1.0
-//  */
-//  class Enumeration : public InfixOrderEnumeration<Value, Value&, Value*, Node*> {
-//  public:
-//
-//    /**
-//      Initializes an enumeration of all the elements of the specified ordered
-//      binary tree.
-//
-//      @param tree The ordered binary tree being enumerated.
-//    */
-//    inline Enumeration(OrderedBinaryTree& tree) noexcept
-//      : InfixOrderEnumeration<Value, Value&, Value*, Node*>(tree.getRoot())
-//    {
-//    }
-//  };
-//
-//  /**
-//    Non-modifying enumeration of all the elements of an ordered binary tree.
-//
-//    @version 1.0
-//  */
-//  class ReadOnlyEnumeration : public InfixOrderEnumeration<Value, const Value&, const Value*, const Node*> {
-//  public:
-//
-//    /**
-//      Initializes a non-modifying enumeration of all the elements of the
-//      specified ordered binary tree.
-//
-//      @param tree The ordered binary tree being enumerated.
-//    */
-//    inline ReadOnlyEnumeration(const OrderedBinaryTree& tree) noexcept
-//      : InfixOrderEnumeration<Value, const Value&, const Value*, const Node*>(tree.getRoot())
-//    {
-//    }
-//  };
+  typedef InfixOrderIterator<IteratorTraits<Node> > Iterator;
+  /** Non-modifying iterator. */
+  typedef PostfixOrderIterator<ReadIteratorTraits<Node> > ReadIterator;
 
   using BinaryTree<TYPE>::getRoot;
 
@@ -137,7 +94,8 @@ public:
   */
   inline ReadIterator begin() const noexcept
   {
-    return ReadIterator(getRoot());
+    const Node* root = getRoot();
+    return ReadIterator(root);
   }
 
   /**
@@ -238,7 +196,7 @@ public:
     return compare<const Key&>(a->getValue(), b->getValue()) < 0;
   }
 
-  inline void rebalance() noexcept
+  inline void rebalance()
   {
     rebalance(getRoot());
 #if 0

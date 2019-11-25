@@ -75,20 +75,20 @@ public:
     {
     }
 
-    inline Iterator(typename Node* node) noexcept
+    inline Iterator(Node* node) noexcept
       : NodeIterator(node)
     {
     }
 
     inline Pointer operator->() const noexcept
     {
-      typename Node* p = NodeIterator::operator->();
+      Node* p = NodeIterator::operator->();
       return &(p->getValue());
     }
 
     inline Reference operator*() const noexcept
     {
-      typename Node& p = NodeIterator::operator*();
+      Node& p = NodeIterator::operator*();
       return p.getValue();
     }
   };
@@ -114,13 +114,13 @@ public:
 
     inline Pointer operator->() const noexcept
     {
-      const auto p = NodeReadIterator::operator->();
+      const Node* p = NodeReadIterator::operator->();
       return &(p->getValue());
     }
 
     inline Reference operator*() const noexcept
     {
-      const auto& p = NodeReadIterator::operator*();
+      const Node& p = NodeReadIterator::operator*();
       return p.getValue();
     }
   };

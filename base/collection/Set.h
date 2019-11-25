@@ -15,6 +15,7 @@
 
 #include <base/collection/OrderedBinaryTree.h>
 #include <base/collection/Enumeration.h>
+#include <base/collection/InvalidKey.h>
 #include <base/string/FormatOutputStream.h>
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE

@@ -517,7 +517,7 @@ template<unsigned int SIZE>
 class FixedResourceManager {
 public:
 
-  bool slots[SIZE] = {true}; // debug only
+  bool slots[SIZE]; // debug only
   unsigned int availableSlots[SIZE] = {0}; // available slots
   unsigned int count = SIZE; // number of available slots
 
@@ -525,6 +525,7 @@ public:
   FixedResourceManager() noexcept
   {
     for (unsigned int i = 0; i < SIZE; ++i) {
+      slots[i] = true;
       availableSlots[i] = i;
     }
   }
@@ -547,7 +548,7 @@ public:
   {
     BASSERT(id < SIZE);
     BASSERT(!slots[id]); // must be allocated
-    slots[id] = false;
+    slots[id] = true; // mark available
     availableSlots[count++] = id; // return to available
   }
 };

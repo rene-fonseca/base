@@ -15,7 +15,7 @@
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
-#if 1
+#if 0
 template<class ENUMERATOR>
 class EnumeratorToIterable {
 private:
@@ -25,11 +25,14 @@ private:
 public:
 
   inline EnumeratorToIterable(ENUMERATOR& _enumerator) noexcept
-    : enumerator(_enumerator)
+    : enumerator(&_enumerator)
   {
   }
+  
+  class Traits {
+  };
 
-  class ReadIterator {
+  class ReadIterator : public Iterator<Traits> {
   private:
   
     ENUMERATOR& enumerator;
@@ -39,10 +42,18 @@ public:
     inline ReadIterator(ENUMERATOR& _enumerator) noexcept
       : enumerator(_enumerator)
     {
+      if (enumerator.hasNext()) {
+        value = enumerator.next();
+      } else {
+        value = nullptr;
+      }
     }
 
     inline ReadIterator& operator++()
     {
+      if (!value) {
+        throw EndOfEnumeration();
+      }
       if (enumerator.hasNext()) {
         value = enumerator.next();
       } else {
@@ -51,26 +62,26 @@ public:
       return *this;
     }
 
-#if 0
+    inline ReadIterator operator++(int)
+    {
+      ReadIterator result(*this);
+      ++result;
+      return result;
+    }
+    
     inline bool operator==(const ReadIterator& compare) const
     {
-      return !enumerator.hasNext();
+      return value == compare.value;
     }
 
     inline bool operator!=(const ReadIterator& compare) const
     {
-      return enumerator.hasNext();
-    }
-#endif
-
-    inline bool operator==(std::nullptr_t) const
-    {
-      return !enumerator.hasNext();
+      return value != compare.value;
     }
 
-    inline bool operator!=(std::nullptr_t) const
+    inline const Value* operator->() const
     {
-      return enumerator.hasNext();
+      return value;
     }
 
     inline const Value& operator*() const
@@ -84,9 +95,9 @@ public:
     return ReadIterator(enumerator);
   }
 
-  inline std::nullptr_t end() const noexcept
+  inline ReadIterator end() const noexcept
   {
-    return nullptr;
+    return ReadIterator(nullptr);
   }
 };
 
@@ -142,15 +153,17 @@ String SharedStrings::getString(const String& temp)
   }
   // ++performance.misses;
   if (strings.getSize() >= MAXIMUM_BUCKET_SIZE) {
-    for (auto s : iterable(strings)) {
-      fout << "!!!! s " << s << ENDL;
+#if 0
+    for (auto s : strings) {
+      fout << s << ENDL;
     }
-
-    auto e = strings.getEnumerator(); // we want the Node* so we can remove it directly
-    while (e.hasNext()) {
-      String* s = e.next();
-      if (!s->isMultiReferenced()) {
-        strings.remove(*s);
+#endif
+    
+    // TAG: use iterator to remove
+    for (const auto& string : strings) {
+      // we want the Node* so we can remove it directly
+      if (!string.isMultiReferenced()) {
+        strings.remove(string);
         break;
       }
     }
@@ -160,18 +173,10 @@ String SharedStrings::getString(const String& temp)
 
 void SharedStrings::garbageCollect()
 {
-  // optimize using Set::remove(predicate)
-  auto predicate = [](const String& string) {return string.isMultiReferenced(); };
-
+  auto predicate = [](const String& string) {return !string.isMultiReferenced(); };
   for (MemorySize i = 0; i < getArraySize(buckets); ++i) {
     auto& strings = buckets[i].strings;
-    auto e = strings.getEnumerator(); // we want the Node* so we can remove it directly
-    while (e.hasNext()) {
-      String* s = e.next();
-      if (!predicate(*s)) {
-        strings.remove(*s);
-      }
-    }
+    strings.remove(predicate);
   }
 }
 

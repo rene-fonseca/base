@@ -13,8 +13,25 @@
 
 #include <base/collection/EmptyContainer.h>
 
-_COM_AZURE_DEV__BASE__DUMMY_SYMBOL
-
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
+
+EmptyContainer::EmptyContainer() noexcept
+{
+}
+
+EmptyContainer::EmptyContainer(const char* message) noexcept
+  : Exception(message)
+{
+}
+
+EmptyContainer::EmptyContainer(const Type& type) noexcept
+  : Exception(type)
+{
+}
+
+EmptyContainer::EmptyContainer(const char* message, const Type& type) noexcept
+  : Exception(message, type)
+{
+}
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

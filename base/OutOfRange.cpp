@@ -15,6 +15,18 @@
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
+#define EXCEPTION_DECLARATION(TYPE, PARENT) \
+  TYPE() noexcept; \
+  TYPE(const char* message) noexcept; \
+  TYPE(const Type& type) noexcept; \
+  TYPE(const char* message, const Type& type) noexcept;
+
+#define EXCEPTION_IMPLEMENTATION(TYPE, PARENT) \
+  TYPE::TYPE() noexcept {} \
+  TYPE::TYPE(const char* message) noexcept : PARENT(message) {} \
+  TYPE::TYPE(const Type& type) noexcept : PARENT(type) {} \
+  TYPE::TYPE(const char* message, const Type& type) noexcept : PARENT(message, type) {}
+
 OutOfRange::OutOfRange() noexcept
 {
 }

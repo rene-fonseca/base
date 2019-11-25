@@ -13,8 +13,24 @@
 
 #include <base/collection/EndOfEnumeration.h>
 
-_COM_AZURE_DEV__BASE__DUMMY_SYMBOL
-
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
+
+EndOfEnumeration::EndOfEnumeration() noexcept
+{
+}
+
+EndOfEnumeration::EndOfEnumeration(const char* message) noexcept
+  : IteratorException(message) {
+}
+
+EndOfEnumeration::EndOfEnumeration(const Type& type) noexcept
+  : IteratorException(type)
+{
+}
+
+EndOfEnumeration::EndOfEnumeration(const char* message, const Type& type) noexcept
+  : IteratorException(message, type)
+{
+}
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

@@ -13,8 +13,25 @@
 
 #include <base/collection/InvalidKey.h>
 
-_COM_AZURE_DEV__BASE__DUMMY_SYMBOL
-
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
+
+InvalidKey::InvalidKey() noexcept
+{
+}
+
+InvalidKey::InvalidKey(const char* message) noexcept
+  : Exception(message)
+{
+}
+
+InvalidKey::InvalidKey(const Type& type) noexcept
+  : Exception(type)
+{
+}
+
+InvalidKey::InvalidKey(const char* message, const Type& type) noexcept
+  : Exception(message, type)
+{
+}
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

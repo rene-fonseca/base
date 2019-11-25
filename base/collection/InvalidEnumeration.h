@@ -13,7 +13,7 @@
 
 #pragma once
 
-#include <base/Exception.h>
+#include <base/collection/IteratorException.h>
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
@@ -25,33 +25,27 @@ _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
   @version 1.0
 */
 
-class _COM_AZURE_DEV__BASE__API InvalidEnumeration : public Exception {
+class _COM_AZURE_DEV__BASE__API InvalidEnumeration : public IteratorException {
 public:
 
   /**
     Initializes the exception object with no message.
   */
-  inline InvalidEnumeration() noexcept
-  {
-  }
+  InvalidEnumeration() noexcept;
 
   /**
     Initializes the exception object.
 
     @param message The message.
   */
-  inline InvalidEnumeration(const char* message) noexcept
-    : Exception(message) {
-  }
+  InvalidEnumeration(const char* message) noexcept;
   
   /**
     Initializes the exception object without an associated message.
     
     @param type The identity of the type.
   */
-  inline InvalidEnumeration(const Type& type) noexcept
-    : Exception(type) {
-  }
+  InvalidEnumeration(const Type& type) noexcept;
   
   /**
     Initializes the exception object.
@@ -59,10 +53,7 @@ public:
     @param message An NULL-terminated string (ASCII).
     @param type The identity of the type.
   */
-  inline InvalidEnumeration(const char* message, const Type& type) noexcept
-    : Exception(message, type)
-  {
-  }
+  InvalidEnumeration(const char* message, const Type& type) noexcept;
   
   _COM_AZURE_DEV__BASE__EXCEPTION_THIS_TYPE()
 };

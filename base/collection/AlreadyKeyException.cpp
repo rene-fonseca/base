@@ -13,8 +13,25 @@
 
 #include <base/collection/AlreadyKeyException.h>
 
-_COM_AZURE_DEV__BASE__DUMMY_SYMBOL
-
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
+
+AlreadyKeyException::AlreadyKeyException() noexcept
+{
+}
+
+AlreadyKeyException::AlreadyKeyException(const char* message) noexcept
+  : Exception(message)
+{
+}
+
+AlreadyKeyException::AlreadyKeyException(const Type& type) noexcept
+  : Exception(type)
+{
+}
+
+AlreadyKeyException::AlreadyKeyException(const char* message, const Type& type) noexcept
+  : Exception(message, type)
+{
+}
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

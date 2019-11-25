@@ -64,7 +64,7 @@ public:
   inline PrefixOrderIterator& operator++()
   {
     if (!node) {
-      throw IteratorException();
+      throw EndOfEnumeration();
     }
 
     if (auto left = node->getLeft()) { // traverse left subtree
@@ -90,7 +90,7 @@ public:
   
   inline PrefixOrderIterator operator++(int)
   {
-    PrefixOrderIterator result;
+    PrefixOrderIterator result(*this);
     ++result;
     return result;
   }
@@ -103,6 +103,11 @@ public:
   inline Reference operator*() const noexcept
   {
     return *node;
+  }
+
+  inline operator bool() const noexcept
+  {
+    return node;
   }
 };
 
@@ -118,21 +123,56 @@ public:
   typedef ForwardIterator Category;
 private:
 
+  /** The states of the traversal state machine */
+  enum Traverse {TRAVERSE_SUBTREE, RETURN_LEFT, RETURN_RIGHT};
   /** The root of the binary tree. */
   Pointer root = nullptr;
-  /** The current position of the iterator. */
+  /** The internal position. */
   Pointer node = nullptr;
-  /** The current position of the iterator. */
+  /** The current position. */
   Pointer current = nullptr;
+  /** Specifies that subtree should be traversed. */
+  Traverse traverse = TRAVERSE_SUBTREE;
 
   Pointer next()
   {
     if (!node) {
-      throw IteratorException();
+      throw EndOfEnumeration();
     }
-    
-    Pointer result = nullptr;
-    while (!result) {
+
+    while (true) { // keep looking until we know if end has been reached
+      switch (traverse) {
+      case TRAVERSE_SUBTREE:
+        while (auto left = node->getLeft()) {
+          node = left;
+        }
+        traverse = RETURN_LEFT;
+        // [[fallthrough]]
+      case RETURN_LEFT:
+        if (auto right = node->getRight()) { // has right node
+          node = right;
+          traverse = TRAVERSE_SUBTREE;
+          break;
+        }
+        traverse = RETURN_RIGHT;
+        // [[fallthrough]]
+      case RETURN_RIGHT:
+        Pointer result = node; // this node is the next result
+        if (node == root) {
+          node = nullptr; // we have reached the end of the enumeration
+          return result;
+        }
+        Pointer child = node;
+        node = node->getParent();
+        if (child == node->getLeft()) {
+          traverse = RETURN_LEFT;
+        }
+        return result;
+      }
+    }
+  }
+
+#if 0
       if (auto left = node->getLeft()) { // traverse left subtree
         node = left;
       } else if (auto right = node->getRight()) { // traverse right subtree
@@ -154,9 +194,7 @@ private:
 
         node = node->getRight(); // traverse right subtree - which we know exists
       }
-    }
-    return result;
-  }
+#endif
 public:
 
   inline PostfixOrderIterator() noexcept
@@ -166,33 +204,32 @@ public:
   inline PostfixOrderIterator(Pointer _root) noexcept
     : root(_root), node(_root)
   {
-    current = next();
+    current = node ? next() : nullptr; // get first node
   }
 
   inline bool operator==(const PostfixOrderIterator& compare) const noexcept
   {
-    return node == compare.node;
+    return current == compare.current;
   }
 
   inline bool operator!=(const PostfixOrderIterator& compare) const noexcept
   {
-    return node != compare.node;
+    return current != compare.current;
   }
 
   inline PostfixOrderIterator& operator++()
   {
-    current = next();
+    current = node ? next() : nullptr;
     return *this;
   }
   
   inline PostfixOrderIterator operator++(int)
   {
-    PostfixOrderIterator result;
+    PostfixOrderIterator result(*this);
     ++result;
     return result;
   }
 
-  // TAG: need support for both Node and Node ::value
   inline Pointer operator->() const noexcept
   {
     return current;
@@ -201,6 +238,11 @@ public:
   inline Reference operator*() const noexcept
   {
     return *current;
+  }
+
+  inline operator bool() const noexcept
+  {
+    return current;
   }
 };
 
@@ -216,12 +258,13 @@ public:
   typedef ForwardIterator Category;
 private:
   
-  /** The states of the infix order traversal state machine */
+  /** The states of the traversal state machine */
   enum Traverse {TRAVERSE_SUBTREE, RETURN_LEFT, RETURN_RIGHT};
   /** The root of the binary tree. */
   Pointer root = nullptr;
-  /** The current position in the enumeration. */
+  /** The internal position. */
   Pointer node = nullptr;
+  /** The current position. */
   Pointer current = nullptr;
   /** Specifies that subtree should be traversed. */
   Traverse traverse = TRAVERSE_SUBTREE;
@@ -229,17 +272,18 @@ private:
   Pointer next()
   {
     if (!node) {
-      throw IteratorException();
+      throw EndOfEnumeration();
     }
 
     Pointer result = nullptr; // indicate no result
     while (true) { // keep looking until we know if end has been reached
       switch (traverse) {
       case TRAVERSE_SUBTREE:
-        while (auto left = node->getLeft()) { // optimized version
+        while (auto left = node->getLeft()) {
           node = left;
         }
         traverse = RETURN_LEFT;
+        // [[fallthrough]]
       case RETURN_LEFT:
         if (result) { // stop if we already have found a result
           return result;
@@ -250,11 +294,13 @@ private:
           traverse = TRAVERSE_SUBTREE;
           break;
         }
+        traverse = RETURN_RIGHT;
+        // [[fallthrough]]
       case RETURN_RIGHT:
         Pointer child = nullptr;
         do {
           if (node == root) {
-            // we have reached the end of the tree
+            node = nullptr; // we have reached the end of the enumeration
             return result;
           }
           child = node;
@@ -277,10 +323,9 @@ public:
     @param root The root node of the binary tree.
   */
   InfixOrderIterator(Pointer _root) noexcept
-    : root(_root),
-      node(_root)
+    : root(_root), node(_root)
   {
-    current = _root ? next() : nullptr; // get first node
+    current = node ? next() : nullptr; // get first node
   }
 
   inline bool operator==(const InfixOrderIterator& compare) const noexcept
@@ -295,13 +340,13 @@ public:
 
   inline InfixOrderIterator& operator++()
   {
-    current = next();
+    current = node ? next() : nullptr;
     return *this;
   }
 
   inline InfixOrderIterator operator++(int)
   {
-    InfixOrderIterator result;
+    InfixOrderIterator result(*this);
     ++result;
     return result;
   }
@@ -314,6 +359,11 @@ public:
   inline Reference operator*() const noexcept
   {
     return *current;
+  }
+
+  inline operator bool() const noexcept
+  {
+    return current;
   }
 };
 
@@ -334,8 +384,6 @@ private:
   Pointer root = nullptr;
   /** The current position of the enumeration. */
   Pointer node = nullptr;
-  /** Specifies whether more elements are available. */
-  bool more = false;
 public:
 
   /**
@@ -344,7 +392,7 @@ public:
     @param node The root node of the binary tree.
   */
   PrefixOrderEnumerator(Pointer _node) noexcept
-    : root(_node), node(_node), more(_node != nullptr)
+    : root(_node), node(_node)
   {
   }
 
@@ -353,7 +401,7 @@ public:
   */
   inline bool hasNext() const noexcept
   {
-    return more;
+    return node;
   }
 
   /**
@@ -362,7 +410,7 @@ public:
   */
   Pointer next()
   {
-    if (!more) {
+    if (!node) {
       throw EndOfEnumeration();
     }
 
@@ -376,7 +424,7 @@ public:
       Pointer child = nullptr;
       do { // return from subtree
         if (node == root) {
-          more = false;
+          node = nullptr;
           return result;
         }
         child = node;
@@ -405,14 +453,12 @@ private:
   typedef typename Enumerator<TRAITS>::Pointer Pointer;
   typedef typename Enumerator<TRAITS>::Value Value;
 
-  /** The states of the infix order traversal state machine */
+  /** The states of the traversal state machine */
   enum Traverse {TRAVERSE_SUBTREE, RETURN_LEFT, RETURN_RIGHT};
   /** The root of the binary tree. */
   Pointer root = nullptr;
   /** The current position in the enumeration. */
   Pointer node = nullptr;
-  /** Specifies that more elements are available. */
-  bool more = false;
   /** Specifies that subtree should be traversed. */
   Traverse traverse = TRAVERSE_SUBTREE;
 public:
@@ -427,9 +473,7 @@ public:
     @param node The root node of the binary tree.
   */
   InfixOrderEnumerator(Pointer _node) noexcept
-    : root(_node),
-      node(_node),
-      more(_node != nullptr)
+    : root(_node), node(_node)
   {
   }
 
@@ -438,7 +482,7 @@ public:
   */
   inline bool hasNext() const noexcept
   {
-    return more;
+    return node;
   }
 
   /**
@@ -447,85 +491,42 @@ public:
   */
   Pointer next()
   {
-    if (!more) {
+    if (!node) {
       throw EndOfEnumeration();
     }
 
     Pointer result = nullptr; // indicate no result
-
     while (true) { // keep looking until we know if end has been reached
-
       switch (traverse) {
       case TRAVERSE_SUBTREE:
-        while (node->getLeft()) { // optimized version
-          node = node->getLeft();
+        while (auto left = node->getLeft()) {
+          node = left;
         }
         traverse = RETURN_LEFT;
-
-//        if (node->getLeft()) {
-//          node = node->getLeft();
-//          traverse = TRAVERSE_SUBTREE;
-//        } else {
-//          traverse = RETURN_LEFT;
-//        }
-//        break;
-
+        // [[fallthrough]]
       case RETURN_LEFT:
         if (result) { // stop if we already have found a result
           return result;
         }
         result = node; // this node is the next result
-        if (node->getRight()) { // has right node
-          node = node->getRight();
+        if (auto right = node->getRight()) { // has right node
+          node = right;
           traverse = TRAVERSE_SUBTREE;
           break;
         }
-//        if (result) { // stop if we already have found a result
-//          return result;
-//        }
-//        result = node; // this node is the next result
-//        if (node->getRight()) { // has right node
-//          node = node->getRight();
-//          traverse = TRAVERSE_SUBTREE;
-//        } else {
-//          if (node == root) {
-//            more = false; // we have reached the end of the enumeration
-//            return result;
-//          }
-//          Pointer child = node;
-//          node = node->getParent();
-//          if (child == node->getLeft()) {
-//            traverse = RETURN_LEFT;
-//          } else {
-//            traverse = RETURN_RIGHT;
-//          }
-//        }
-//        break;
-
+        traverse = RETURN_RIGHT;
+        // [[fallthrough]]
       case RETURN_RIGHT:
         Pointer child = nullptr;
         do {
           if (node == root) {
-            more = false; // we have reached the end of the enumeration
+            node = nullptr; // we have reached the end of the enumeration
             return result;
           }
           child = node;
           node = node->getParent();
         } while (child == node->getRight());
         traverse = RETURN_LEFT;
-
-//        if (node == root) {
-//          more = false; // we have reached the end of the enumeration
-//          return result;
-//        }
-//        Pointer child = node;
-//        node = node->getParent();
-//        if (child == node->getLeft()) {
-//          traverse = RETURN_LEFT;
-//        } else {
-//          traverse = RETURN_RIGHT;
-//        }
-//        break;
       }
     }
   }
@@ -550,8 +551,6 @@ private:
   Pointer root = nullptr;
   /** The current position in the enumeration. */
   Pointer node = nullptr;
-  /** Specifies that more elements are available. */
-  bool more = false;
 public:
 
   /**
@@ -560,7 +559,7 @@ public:
     @param node The root node of the binary tree.
   */
   PostfixOrderEnumerator(Pointer _node) noexcept
-    : root(_node), node(_node), more(_node != nullptr)
+    : root(_node), node(_node)
   {
   }
 
@@ -569,7 +568,7 @@ public:
   */
   inline bool hasNext() const noexcept
   {
-    return more;
+    return node;
   }
 
   /**
@@ -578,16 +577,16 @@ public:
   */
   Pointer next()
   {
-    if (!more) {
+    if (!node) {
       throw EndOfEnumeration();
     }
 
     Pointer result = nullptr;
     while (!result) {
-      if (node->getLeft()) { // traverse left subtree
-        node = node->getLeft();
-      } else if (node->getRight()) { // traverse right subtree
-        node = node->getRight();
+      if (auto left = node->getLeft()) { // traverse left subtree
+        node = left;
+      } else if (auto right = node->getRight()) { // traverse right subtree
+        node = right;
       } else {
         Pointer child = nullptr;
         do { // return from subtree
@@ -596,7 +595,7 @@ public:
           }
           result = node;
           if (node == root) {
-            more = false;
+            node = nullptr;
             return result;
           }
           child = node;
@@ -621,10 +620,10 @@ public:
 //    while (true) {
 //      function(node);
 //
-//      if (node->getLeft()) { // traverse left subtree
-//        node = node->getLeft();
-//      } else if (node->getRight()) { // traverse right subtree
-//        node = node->getRight();
+//      if (auto left = node->getLeft()) { // traverse left subtree
+//        node = left;
+//      } else if (auto right = node->getRight()) { // traverse right subtree
+//        node = right;
 //      } else {
 //        do { // return from subtree
 //          if (node == root) {
@@ -643,11 +642,11 @@ public:
 //  void traverseInfixOrder(const BinaryNode* root, UNOPR& function) noexcept {
 //    const BinaryNode* node = root;
 //    while (true) {
-//      if (node->getLeft()) { // traverse left subtree
-//        node = node->getLeft();
-//      } else if (node->getRight()) { // traverse right subtree
+//      if (auto left = node->getLeft()) { // traverse left subtree
+//        node = left;
+//      } else if (auto right = node->getRight()) { // traverse right subtree
 //        function(node);
-//        node = node->getRight();
+//        node = right;
 //      } else {
 //        do { // return from subtree
 //          if (node == root) {
@@ -667,10 +666,10 @@ public:
 //  void traversePostfixOrder(const BinaryNode* root, UNOPR& function) noexcept {
 //    const BinaryNode* node = root;
 //    while (true) {
-//      if (node->getLeft()) { // traverse left subtree
-//        node = node->getLeft();
-//      } else if (node->getRight()) { // traverse right subtree
-//        node = node->getRight();
+//      if (auto left = node->getLeft()) { // traverse left subtree
+//        node = left;
+//      } else if (auto right = node->getRight()) { // traverse right subtree
+//        node = right;
 //      } else {
 //        do { // return from subtree
 //          function(node);
@@ -942,9 +941,9 @@ public:
       return 1 + getSize(node->getLeft()) + getSize(node->getRight());
     }
 
+#if 0
     static Node** getNodesImpl(Node** dest, Node* node)
     {
-      // TAG: use infix iterator
       if (auto left = node->getLeft()) {
         dest = getNodesImpl(dest, left);
       }
@@ -954,6 +953,7 @@ public:
       }
       return dest;
     }
+#endif
 
     /** Gets all the nodes for the given node. */
     static void getNodes(Allocator<Node*>& buffer, Node* node)
@@ -962,7 +962,10 @@ public:
       buffer.setSize(size);
       if (node) {
         Node** dest = buffer.getElements();
-        getNodesImpl(dest, node);
+        for (InfixOrderIterator<IteratorTraits<Node> > src(node); src; ++dest, ++src) { // no need for end iterator
+          *dest = &*src;
+        }
+        // getNodesImpl(dest, node);
       }
     }
 
@@ -971,12 +974,16 @@ public:
       const auto size = span.getSize();
       const auto m = size / 2;
       Node* parent = span[m];
-      parent->setLeft(
-        (m > 0) ? buildBalancedTree(Span<Node*>(span.begin(), m)) : nullptr
-      );
-      parent->setRight(
-        ((m + 1) < size) ? buildBalancedTree(Span<Node*>(span.begin() + m + 1, span.end())) : nullptr
-      );
+      auto left = (m > 0) ? buildBalancedTree(Span<Node*>(span.begin(), m)) : nullptr;
+      parent->setLeft(left);
+      if (left) {
+        left->setParent(parent);
+      }      
+      auto right = ((m + 1) < size) ? buildBalancedTree(Span<Node*>(span.begin() + m + 1, span.end())) : nullptr;
+      parent->setRight(right);
+      if (right) {
+        right->setParent(parent);
+      }
       return parent;
     }
 
@@ -986,7 +993,9 @@ public:
       if (buffer.getSize() == 0) {
         return nullptr;
       }
-      return buildBalancedTree(buffer.getSpan());
+      auto parent = buildBalancedTree(buffer.getSpan());
+      parent->setParent(nullptr); // root
+      return parent;
     }
 
     /** Builds a balanced tree. But uses buffer and rebuilds entire tree. */

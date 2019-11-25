@@ -42,11 +42,12 @@ public:
   typedef InfixOrderEnumerator<EnumeratorTraits<Node> > Enumerator;
   /** Non-modifying enumerator. */
   typedef InfixOrderEnumerator<ReadEnumeratorTraits<Node> > ReadEnumerator;
-  /** Non-modifying iterator. */
+  /** Modifying iterator. */
   typedef InfixOrderIterator<IteratorTraits<Node> > NodeIterator;
   /** Non-modifying iterator. */
   typedef InfixOrderIterator<ReadIteratorTraits<Node> > NodeReadIterator;
 
+  /** Modifying iterator over values (NOT nodes). */
   class Iterator : public NodeIterator {
   public:
 
@@ -56,11 +57,11 @@ public:
     typedef MemoryDiff Distance;
     typedef ForwardIterator Category;
 
-    inline Iterator()
+    inline Iterator() noexcept
     {
     }
 
-    inline Iterator(typename Node* node)
+    inline Iterator(typename Node* node) noexcept
       : NodeIterator(node)
     {
     }
@@ -78,6 +79,7 @@ public:
     }
   };
 
+  /** Non-modifying iterator over values (NOT nodes). */
   class ReadIterator : public NodeReadIterator {
   public:
 
@@ -87,11 +89,11 @@ public:
     typedef MemoryDiff Distance;
     typedef ForwardIterator Category;
 
-    inline ReadIterator()
+    inline ReadIterator() noexcept
     {
     }
 
-    inline ReadIterator(const Node* node)
+    inline ReadIterator(const Node* node) noexcept
       : NodeReadIterator(node)
     {
     }
@@ -150,6 +152,13 @@ public:
   {
     return ReadEnumerator(getRoot());
   }
+
+  // C++: would be nice if we can tell for loop to use specific method to get iterators and even better just enumerator
+  // ReadEnumerator [[for/enumerator]] getReadEnumerator() const noexcept;
+  // ReadIterator [[begin]] getBegin() const noexcept;
+  // ReadIterator [[end]] getEnd() const noexcept;
+  // bool [[hasNext]] Enumerator::hasNext() const noexcept;
+  // Value [[getNext]] Enumerator::next() noexcept;
 
   /**
     Returns a non-modifying iterator of the ordered binary tree.
@@ -246,11 +255,15 @@ public:
     return previous;
   }
 
-  void rebalance(Node* node) noexcept
+  Node* rebalance(Node* node) noexcept
   {
+    if (!node) {
+      return nullptr;
+    }
     Allocator<Node*> buffer;
     BinaryTree<TYPE>::BinaryTreeImpl::getNodes(buffer, node);
-    BinaryTree<TYPE>::setRoot(BinaryTree<TYPE>::BinaryTreeImpl::buildBalancedTree(buffer));
+    auto root = BinaryTree<TYPE>::BinaryTreeImpl::buildBalancedTree(buffer);
+    return root;
   }
 
   static inline bool invariant(const Node* a, const Node* b)
@@ -260,12 +273,17 @@ public:
 
   inline void rebalance()
   {
-    rebalance(getRoot());
+    if (auto root = getRoot()) {
+      BASSERT(root->getParent() == nullptr);
+      auto newRoot = rebalance(root);
+      BASSERT(newRoot->getParent() == nullptr);
 #if 0
-    if (!BinaryTree<TYPE>::BinaryTreeImpl::validate(getRoot(), invariant)) {
-      BASSERT(!"OrderedBinaryTree is not ordered correctly.");
-    }
+      if (!BinaryTree<TYPE>::BinaryTreeImpl::validate(newRoot, invariant)) {
+        BASSERT(!"OrderedBinaryTree is not ordered correctly.");
+      }
 #endif
+      BinaryTree<TYPE>::setRoot(newRoot);
+    }
   }
 
   /** Rebalances the given subtree. */
@@ -357,8 +375,8 @@ public:
     while (true) {
       const int result = compare<const Key&>(value, node->getValue());
       if (result < 0) {
-        if (node->getLeft()) {
-          node = node->getLeft();
+        if (auto left = node->getLeft()) {
+          node = left;
         } else { // attach left child node
           Node* newNode = new Node(node, nullptr, nullptr, std::move(value));
           node->setLeft(newNode);
@@ -366,8 +384,8 @@ public:
           return Pair<Node*, bool>(newNode, true);
         }
       } else if (result > 0) {
-        if (node->getRight()) {
-          node = node->getRight();
+        if (auto right = node->getRight()) {
+          node = right;
         } else { // attach right child node
           Node* newNode = new Node(node, nullptr, nullptr, std::move(value));
           node->setRight(newNode);
@@ -410,10 +428,10 @@ public:
     this->elements.copyOnWrite();
 
     if (node == getRoot()) { // set new root
-      if (node->getLeft()) {
-        BinaryTree<Value>::setRoot(node->getLeft());
-      } else if (node->getRight()) {
-        BinaryTree<Value>::setRoot(node->getRight());
+      if (auto left = node->getLeft()) {
+        BinaryTree<Value>::setRoot(left);
+      } else if (auto right = node->getRight()) {
+        BinaryTree<Value>::setRoot(right);
       }
     }
 
@@ -442,9 +460,36 @@ public:
     }
   }
 
+#if 0
+  /** Removes all nodes before the given value. */
+  void removeBefore(const Key& key)
+  {
+    const Node* node = getRoot();
+    while (node) {
+      const int result = compare<const Key&>(key, node->getValue());
+      if (result < 0) {
+        node = node->getLeft();
+      } else if (result > 0) {
+        node = node->getRight();
+      } else {
+        destroySubtree(node->getLeft());
+      }
+      // may need to make subtree new root also
+    }
+  }
+
+  /** Removes all nodes after the given value. */
+  void removeAfter(const Key& value)
+  {
+    // we can remove entire subtree
+    // find node by <
+  }
+#endif
+
   template<class PREDICATE>
   MemorySize removeImpl(Node* node, PREDICATE predicate)
   {
+    // removes nodes bottom-up
     if (!node) {
       return 0;
     }

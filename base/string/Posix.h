@@ -58,18 +58,44 @@ public:
   bool getSeries(const char* src, const char* end, long double& d);
 
   /** Returns true on success. */
+  static bool toFloat(const char* src, const char* end, float& d);
   static bool toDouble(const char* src, const char* end, double& d);
+  static bool toLongDouble(const char* src, const char* end, long double& d);
 
   /** Returns true on success. */
-  static inline bool toDouble(const std::string& text, double& d)
+  static inline bool toFloat(const std::string& text, float& value)
   {
-    return toDouble(text.c_str(), text.c_str() + text.size(), d);
+    return toFloat(text.c_str(), text.c_str() + text.size(), value);
   }
 
   /** Returns true on success. */
-  static inline bool toDouble(const String& text, double& d)
+  static inline bool toFloat(const String& text, float& value)
   {
-    return toDouble(text.native(), text.native() + text.getLength(), d);
+    return toFloat(text.native(), text.native() + text.getLength(), value);
+  }
+
+  /** Returns true on success. */
+  static inline bool toDouble(const std::string& text, double& value)
+  {
+    return toDouble(text.c_str(), text.c_str() + text.size(), value);
+  }
+
+  /** Returns true on success. */
+  static inline bool toDouble(const String& text, double& value)
+  {
+    return toDouble(text.native(), text.native() + text.getLength(), value);
+  }
+
+  /** Returns true on success. */
+  static inline bool toLongDouble(const std::string& text, long double& value)
+  {
+    return toLongDouble(text.c_str(), text.c_str() + text.size(), value);
+  }
+
+  /** Returns true on success. */
+  static inline bool toLongDouble(const String& text, long double& value)
+  {
+    return toLongDouble(text.native(), text.native() + text.getLength(), value);
   }
 };
 

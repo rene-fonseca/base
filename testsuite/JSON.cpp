@@ -78,7 +78,7 @@ public:
     while (count--) {
       double d = -1; // PrimitiveTraits<double>::MAXIMUM; // TAG: need infinity and NaN
       bool result = posix.getSeries(text.getValue(), text.getValue() + text.getLength(), d);
-      if (d == 0) {
+      if (!result) {
         throw Exception();
       }
     }
@@ -90,7 +90,7 @@ public:
     while (count--) {
       double d = -1; // PrimitiveTraits<double>::MAXIMUM; // TAG: need infinity and NaN
       bool result = Posix::toDouble(text.getValue(), text.getValue() + text.getLength(), d);
-      if (d == 0) {
+      if (!result) {
         throw Exception();
       }
     }

@@ -182,6 +182,12 @@ public:
     --size;
   }
   
+  void remove(const Iterator& it)
+  {
+    elements.remove(it);
+    --size;
+  }
+  
   template<class PREDICATE>
   class NodePredicate {
   private:
@@ -198,12 +204,12 @@ public:
       return predicate(node->getValue());
     }
   };
-
+  
   template<class PREDICATE>
-  void remove(PREDICATE predicate)
+  void removeByPredicate(PREDICATE predicate)
   {
     NodePredicate<PREDICATE> _predicate(predicate);
-    MemorySize removed = elements.remove(_predicate);
+    MemorySize removed = elements.removeByPredicate(_predicate);
     size -= removed;
   }
 
@@ -236,6 +242,16 @@ public:
   inline const Tree& getTree() const noexcept
   {
     return elements;
+  }
+
+  inline Iterator begin() noexcept
+  {
+    return Iterator(elements.getRoot());
+  }
+
+  inline Iterator end() noexcept
+  {
+    return Iterator();
   }
 
   inline ReadIterator begin() const noexcept

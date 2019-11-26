@@ -523,11 +523,29 @@ public:
 
   /** Removes all elements matching the given predicate. */
   template<class PREDICATE>
-  MemorySize remove(PREDICATE predicate)
+  MemorySize removeByPredicate(PREDICATE predicate)
   {
     return removeImpl(getRoot(), predicate);
   }
 
+  /** Removes the given item and returns the next iterator. */
+  Iterator remove(const Iterator& it)
+  {
+    const NodeIterator& _it = it;
+    if (!it) {
+      throw InvalidNode();
+    }
+#if 0
+    if (it.getRoot() != getRoot()) {
+      throw InvalidContainer();
+    }
+#endif
+    Iterator result(it);
+    ++result;
+    remove(&*_it); // get Node* from iterator
+    return result;
+  }
+  
   /**
     Removes all the nodes from the tree.
   */

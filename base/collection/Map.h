@@ -369,6 +369,22 @@ public:
     }
   }
 
+  bool add(const Node& value)
+  {
+    Pair<typename Tree::Node*, bool> result = elements.add(value);
+    if (result.getSecond()) {
+      // key already exists
+      typename Tree::Node* node = result.getFirst();
+      Node& association = node->getValue();
+      association.setValue(value.getValue()); // set the new value
+      return false;
+    } else {
+      // key did not exist
+      ++size;
+      return true;
+    }
+  }
+
   /**
     Removes the specified key and its associated value from this map. Raises
     InvalidKey if the key doesn't exist in this map.
@@ -382,7 +398,38 @@ public:
     elements.remove(node);
     --size; // never ends up here if the key doesn't exist
   }
+  
+  void remove(const Iterator& it)
+  {
+    elements.remove(it);
+    --size;
+  }
 
+  template<class PREDICATE>
+  class NodePredicate {
+  private:
+    
+    PREDICATE& predicate;
+  public:
+    
+    inline NodePredicate(PREDICATE& _predicate) noexcept : predicate(_predicate)
+    {
+    }
+    
+    inline bool operator()(const typename Tree::Node* node)
+    {
+      return predicate(node->getValue());
+    }
+  };
+  
+  template<class PREDICATE>
+  void removeByPredicate(PREDICATE predicate)
+  {
+    NodePredicate<PREDICATE> _predicate(predicate);
+    MemorySize removed = elements.removeByPredicate(_predicate);
+    size -= removed;
+  }
+  
   /**
     Removes all the keys from this map.
   */
@@ -423,7 +470,17 @@ public:
   {
     return elements;
   }
+  
+  inline Iterator begin() noexcept
+  {
+    return Iterator(elements.getRoot());
+  }
 
+  inline Iterator end() noexcept
+  {
+    return Iterator();
+  }
+  
   inline ReadIterator begin() const noexcept
   {
     return ReadIterator(elements.getRoot());

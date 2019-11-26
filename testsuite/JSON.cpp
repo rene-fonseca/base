@@ -69,7 +69,8 @@ public:
 
   void testPerformance()
   {
-    const Literal text = MESSAGE("12345.98765e12");
+    // const Literal text = MESSAGE("12345.98765e12");
+    const Literal text = MESSAGE("12345.98765e3");
     Posix posix;
     unsigned int count = 1000000;
     Timer timer;
@@ -82,7 +83,7 @@ public:
       }
     }
     timer.stop();
-    fout << "LOOP 1: " << timer.getMicroseconds() << ENDL;
+    fout << "LOOP 1: " << timer << ENDL;
 
     count = 1000000;
     timer.start();
@@ -94,7 +95,7 @@ public:
       }
     }
     timer.stop();
-    fout << "LOOP 2: " << timer.getMicroseconds() << ENDL;
+    fout << "LOOP 2: " << timer << ENDL;
   }
 
   JSONApplication(
@@ -113,7 +114,7 @@ public:
          << "Copyright (C) 2019 by Rene Moeller Fonseca" << EOL
          << ENDL;
 
-    // testPerformance();
+    testPerformance();
 
 #if 0
     for (unsigned int i = 0; i < 10; ++i) {

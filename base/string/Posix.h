@@ -13,7 +13,7 @@
 
 #pragma once
 
-#include <base/Base.h>
+#include <base/string/String.h>
 #include <sstream>
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
@@ -64,6 +64,12 @@ public:
   static inline bool toDouble(const std::string& text, double& d)
   {
     return toDouble(text.c_str(), text.c_str() + text.size(), d);
+  }
+
+  /** Returns true on success. */
+  static inline bool toDouble(const String& text, double& d)
+  {
+    return toDouble(text.native(), text.native() + text.getLength(), d);
   }
 };
 

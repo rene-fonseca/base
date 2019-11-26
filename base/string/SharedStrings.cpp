@@ -159,11 +159,9 @@ String SharedStrings::getString(const String& temp)
     }
 #endif
     
-    // TAG: use iterator to remove
-    for (const auto& string : strings) {
-      // we want the Node* so we can remove it directly
-      if (!string.isMultiReferenced()) {
-        strings.remove(string);
+    for (Set<String>::Iterator i = strings.begin(); i; ++i) {
+      if (!i->isMultiReferenced()) {
+        strings.remove(i);
         break;
       }
     }
@@ -176,7 +174,7 @@ void SharedStrings::garbageCollect()
   auto predicate = [](const String& string) {return !string.isMultiReferenced(); };
   for (MemorySize i = 0; i < getArraySize(buckets); ++i) {
     auto& strings = buckets[i].strings;
-    strings.remove(predicate);
+    strings.removeByPredicate(predicate);
   }
 }
 

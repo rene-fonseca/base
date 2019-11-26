@@ -13,9 +13,7 @@
 
 #include <base/objectmodel/JSON.h>
 #include <base/io/File.h>
-#include <base/string/Posix.h>
 #include <base/UnitTest.h>
-#include <locale>
 #include <codecvt>
 
 // TAG: handle chars in JSON strings!

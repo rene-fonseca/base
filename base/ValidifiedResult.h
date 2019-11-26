@@ -41,7 +41,7 @@ public:
   /**
     Initializes object as invalid.
   */
-  inline ValidifiedResult() : valid(false)
+  inline ValidifiedResult()
   {
   }
   
@@ -60,6 +60,14 @@ public:
     : value(copy.value), valid(copy.valid)
   {
   }
+
+  /**
+    Initializes object by other object.
+  */
+  inline ValidifiedResult(ValidifiedResult&& move)
+    : value(std::move(move.value)), valid(move.valid)
+  {
+  }
   
   /**
     Initializes object by other object.
@@ -76,9 +84,11 @@ public:
   /**
     Returns the value. Raises InvalidException if result is invalid.
   */
-  inline const TYPE& getValue() const throw(InvalidException)
+  inline const TYPE& getValue() const
   {
-    bassert(valid, InvalidException(this));
+    if (!valid) {
+      throw InvalidException(this);
+    }
     return value;
   }
   

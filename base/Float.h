@@ -47,7 +47,8 @@ public:
   /**
     Initializes the value as zero.
   */
-  inline Float() noexcept {
+  inline Float() noexcept
+  {
   }
 
   /**
@@ -56,19 +57,22 @@ public:
 
     @param value The desired value.
   */
-  inline Float(float _value) noexcept : value(_value) {
+  inline Float(float _value) noexcept : value(_value)
+  {
   }
   
   /**
     Initializes the value by other value.
   */
-  inline Float(const Float& copy) noexcept : value(copy.value) {
+  inline Float(const Float& copy) noexcept : value(copy.value)
+  {
   }
 
   /**
     Assignment of value by value.
   */
-  inline Float& operator=(const Float& assign) noexcept {
+  inline Float& operator=(const Float& assign) noexcept
+  {
     value = assign.value;
     return *this;
   }
@@ -76,7 +80,8 @@ public:
   /**
     Assignment of this value by float primitive.
   */
-  inline Float& operator=(float value) noexcept {
+  inline Float& operator=(float value) noexcept
+  {
     this->value = value;
     return *this;
   }
@@ -84,7 +89,8 @@ public:
   /**
     Returns the value of the float.
   */
-  inline float getValue() const noexcept {
+  inline float getValue() const noexcept
+  {
     return value;
   }
 
@@ -93,35 +99,40 @@ public:
 
     @param value The desired value.
   */
-  inline void setValue(float value) noexcept {
+  inline void setValue(float value) noexcept
+  {
     this->value = value;
   }
 
   /**
     Returns true if the value is negative.
   */
-  inline bool isNegative() const throw() {
+  inline bool isNegative() const noexcept
+  {
     return FloatingPoint::ToFloat(value).isNegative();
   }
   
   /**
     Returns true if the value is an ordinary number (not infinity or NaN).
   */
-  inline bool isOrdinary() const throw() {
+  inline bool isOrdinary() const noexcept
+  {
     return FloatingPoint::ToFloat(value).isOrdinary();
   }
   
   /**
     Returns true if the value is either +INFINITY or -INFINITY.
   */
-  inline bool isInfinity() const throw() {
+  inline bool isInfinity() const noexcept
+  {
     return FloatingPoint::ToFloat(value).isInfinity();
   }
   
   /**
     Returns true if the value is Not a Number (NaN).
   */
-  inline bool isNaN() const throw() {
+  inline bool isNaN() const noexcept
+  {
     return FloatingPoint::ToFloat(value).isNaN();
   }
   
@@ -130,7 +141,8 @@ public:
     and does not raise exceptions in arithmetic operations is called a quiet
     NaN.
   */
-  inline bool isQuiteNaN() const throw() {
+  inline bool isQuiteNaN() const noexcept
+  {
     return FloatingPoint::ToFloat(value).isQuiteNaN();
   }
   
@@ -139,14 +151,16 @@ public:
     an exception when encountered as an operand of arithmetic operations is
     called a signaling NaN.
   */
-  inline bool isSignalingNaN() const throw() {
+  inline bool isSignalingNaN() const noexcept
+  {
     return FloatingPoint::ToFloat(value).isSignalingNaN();
   }
   
   /**
     Casts value to float primitive.
   */
-  inline operator float() const noexcept {
+  inline operator float() const noexcept
+  {
     return value;
   }
 };

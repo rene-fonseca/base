@@ -45,21 +45,24 @@ public:
   /**
     Returns the literal.
   */
-  inline const char* getValue() const noexcept {
+  inline const char* getValue() const noexcept
+  {
     return literal;
   }
   
   /**
     Returns the length of the literal.
   */
-  inline MemorySize getLength() const noexcept {
+  inline MemorySize getLength() const noexcept
+  {
     return length;
   }
 
   /**
     Returns true if not empty.
   */
-  inline operator bool() const noexcept {
+  inline operator bool() const noexcept
+  {
     return length != 0;
   }
 };

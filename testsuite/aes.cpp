@@ -33,7 +33,6 @@ public:
     fout << getFormalName() << " version "
          << MAJOR_VERSION << '.' << MINOR_VERSION << EOL
          << "The Base Framework (Test Suite)" << EOL
-         << "Copyright (C) 2003-2019 by Rene Moeller Fonseca" << EOL
          << ENDL;
 
     static uint8 DATA[5][256];

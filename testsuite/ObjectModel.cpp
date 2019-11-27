@@ -29,14 +29,15 @@ public:
     int numberOfArguments,
     const char* arguments[],
     const char* environment[])
-    : Application("ObjectModel", numberOfArguments, arguments, environment) {
+    : Application("ObjectModel", numberOfArguments, arguments, environment)
+  {
   }
   
-  void main() {
+  void main()
+  {
     fout << getFormalName() << " version "
          << MAJOR_VERSION << '.' << MINOR_VERSION << EOL
          << "The Base Framework (Test Suite)" << EOL
-         << "Copyright (C) 2019 by Rene Moeller Fonseca" << EOL
          << ENDL;
     
     fout << "Initializing ObjectModel" << ENDL;

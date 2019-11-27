@@ -31,14 +31,15 @@ public:
     int numberOfArguments,
     const char* arguments[],
     const char* environment[])
-    : Application("Date", numberOfArguments, arguments, environment) {
+    : Application("Date", numberOfArguments, arguments, environment)
+  {
   }
   
-  void main() {
+  void main()
+  {
     fout << getFormalName() << " version "
          << MAJOR_VERSION << '.' << MINOR_VERSION << EOL
          << "The Base Framework (Test Suite)" << EOL
-         << "Copyright (C) 2002-2019 by Rene Moeller Fonseca" << EOL
          << ENDL;
 
     Date date = Date::getNow();

@@ -198,21 +198,23 @@ public:
          << ENDL;
   }
   
-  void version() throw() {
+  void version() throw()
+  {
     fout << getFormalName() << " version "
          << MAJOR_VERSION << '.' << MINOR_VERSION << EOL
          << "The Base Framework (Test Suite)" << EOL
-         << "Copyright (C) 2002-2019 by Rene Moeller Fonseca" << EOL
          << ENDL;
   }
   
-  void help() throw() {
+  void help() throw()
+  {
     version();
     fout << getFormalName()
          << " [--help] [--port PORT] [--data SIZE] [--time MS] host" << ENDL;
   }
   
-  void main() {
+  void main()
+  {
     Command command = COMMAND_PING;
     String host;
     

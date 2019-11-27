@@ -34,14 +34,15 @@ public:
     int numberOfArguments,
     const char* arguments[],
     const char* environment[])
-    : Application("uuid", numberOfArguments, arguments, environment) {
+    : Application("uuid", numberOfArguments, arguments, environment)
+  {
   }
 
-  void version() {
+  void version()
+  {
     fout << getFormalName() << " version "
          << MAJOR_VERSION << '.' << MINOR_VERSION << EOL
          << "The Base Framework (Test Suite)" << EOL
-         << "Copyright (C) 2019 by Rene Moeller Fonseca" << EOL
          << ENDL;
   }
   

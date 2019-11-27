@@ -2,7 +2,7 @@
     The Base Framework
     A framework for developing platform independent applications
 
-    Copyright (C) 2002-2003 by Rene Moeller Fonseca <fonseca@mip.sdu.dk>
+    See COPYRIGHT.txt for details.
 
     This framework is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -887,7 +887,8 @@ public:
          << EOL;
   }
   
-  void main() {
+  void main()
+  {
     Array<String> arguments = getArguments();
     
     switch (arguments.getSize()) {
@@ -901,7 +902,6 @@ public:
         if (argument == "--version") {
           fout << getFormalName() << " version " << MAJOR_VERSION << '.' << MINOR_VERSION << EOL
                << "The Base Framework (Test Suite)" << EOL
-               << "Copyright (C) 2002-2019 by Rene Moeller Fonseca" << EOL
                << ENDL;
           return;
         }

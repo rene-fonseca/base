@@ -24,14 +24,15 @@ private:
 public:
 
   StackApplication(int argc, const char* argv[], const char* env[]) throw()
-    : Application("Stack", argc, argv, env) {
+    : Application("Stack", argc, argv, env)
+  {
   }
   
-  void main() {
+  void main()
+  {
     fout << getFormalName() << " version "
          << MAJOR_VERSION << '.' << MINOR_VERSION << EOL
          << "The Base Framework (Test Suite)" << EOL
-         << "Copyright (C) 2002-2019 by Rene Moeller Fonseca" << EOL
          << ENDL;
     
     fout << "Initializing Stack<String>" << ENDL;

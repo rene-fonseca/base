@@ -24,14 +24,15 @@ private:
 public:
 
   HashTableApplication(int argc, const char* argv[], const char* env[])
-    : Application("HashTable", argc, argv, env) {
+    : Application("HashTable", argc, argv, env)
+  {
   }
   
-  void main() {
+  void main()
+  {
     fout << getFormalName() << " version "
          << MAJOR_VERSION << '.' << MINOR_VERSION << EOL
          << "The Base Framework (Test Suite)" << EOL
-         << "Copyright (C) 2002-2019 by Rene Moeller Fonseca" << EOL
          << ENDL;
     
     fout << "Initializing map" << ENDL;

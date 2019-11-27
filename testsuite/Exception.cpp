@@ -159,11 +159,11 @@ public:
          << TypeInfo::getTypename<Map<String, long long> >() << ENDL;
   }
 
-  void main() {
+  void main()
+  {
     fout << getFormalName() << " version "
          << MAJOR_VERSION << '.' << MINOR_VERSION << EOL
          << "The Base Framework (Test Suite)" << EOL
-         << "Copyright (C) 2001-2019 by Rene Moeller Fonseca" << EOL
          << ENDL;
 
     testDemangling();

@@ -31,15 +31,16 @@ public:
     : Application("SerialPort", numberOfArguments, arguments, environment) {
   }
   
-  void onTermination() throw() {
+  void onTermination() throw()
+  {
     // override default application termination
   }
 
-  void main() {
+  void main()
+  {
     fout << getFormalName() << " version "
          << MAJOR_VERSION << '.' << MINOR_VERSION << EOL
          << "The Base Framework (Test Suite)" << EOL
-         << "Copyright (C) 2002-2019 by Rene Moeller Fonseca" << EOL
          << ENDL;
 
     const List<String> ports = SerialPort::getPorts();

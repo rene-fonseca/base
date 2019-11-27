@@ -30,14 +30,14 @@ public:
     int numberOfArguments,
     const char* arguments[],
     const char* environment[])
-    : Application("BitSet", numberOfArguments, arguments, environment) {
+    : Application("BitSet", numberOfArguments, arguments, environment)
+  {
   }
   
   void main() {
     fout << getFormalName() << " version "
          << MAJOR_VERSION << '.' << MINOR_VERSION << EOL
          << "The Base Framework (Test Suite)" << EOL
-         << "Copyright (C) 2002-2019 by Rene Moeller Fonseca" << EOL
          << ENDL;
     
     BitSet bitSet(1024, false);

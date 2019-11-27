@@ -26,14 +26,15 @@ private:
 public:
 
   SetApplication(int argc, const char* argv[], const char* env[])
-    : Application("Set", argc, argv, env) {
+    : Application("Set", argc, argv, env)
+  {
   }
   
-  void main() {
+  void main()
+  {
     fout << getFormalName() << " version "
          << MAJOR_VERSION << '.' << MINOR_VERSION << EOL
          << "The Base Framework (Test Suite)" << EOL
-         << "Copyright (C) 2001-2019 by Rene Moeller Fonseca" << EOL
          << ENDL;
     
     fout << "Initializing set" << ENDL;

@@ -134,15 +134,16 @@ public:
     }
   }
   
-  void version() throw() {
+  void version() throw()
+  {
     fout << getFormalName() << " version "
          << MAJOR_VERSION << '.' << MINOR_VERSION << EOL
          << "The Base Framework (Test Suite)" << EOL
-         << "Copyright (C) 2002-2019 by Rene Moeller Fonseca" << EOL
          << ENDL;
   }
   
-  void help() throw() {
+  void help() throw()
+  {
     version();
     fout << "Usage: " << getFormalName() << " [options] path" << EOL
          << EOL

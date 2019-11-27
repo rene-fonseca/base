@@ -102,16 +102,17 @@ public:
     }
   }
   
-  void help() {
+  void help()
+  {
     fout << getFormalName() << " version "
          << MAJOR_VERSION << '.' << MINOR_VERSION << EOL
          << "The Base Framework (Test Suite)" << EOL
-         << "Copyright (C) 2002-2019 by Rene Moeller Fonseca" << EOL
          << ENDL;
     fout << getFormalName() << " [--help]" << ENDL;
   }
   
-  void main() {
+  void main()
+  {
     Command command = INET;
     
     const Array<String> arguments = getArguments();

@@ -101,12 +101,12 @@ public:
     file.write(buffer.getElements(), buffer.getSize());
   }
 
-  void simple(const String& destination) throw(IOException) {
+  void simple(const String& destination) throw(IOException)
+  {
     StringOutputStream stream;
     stream << getFormalName() << " version "
            << MAJOR_VERSION << '.' << MINOR_VERSION << EOL
            << "The Base Framework (Test Suite)" << EOL
-           << "Copyright (C) 2002-2019 by Rene Moeller Fonseca" << EOL
            << FLUSH;
     String message = stream.getString();
     FileOutputStream fos(destination, File::CREATE|File::TRUNCATE);
@@ -118,11 +118,11 @@ public:
     );
   }
   
-  void main() {
+  void main()
+  {
     fout << getFormalName() << " version "
          << MAJOR_VERSION << '.' << MINOR_VERSION << EOL
          << "The Base Framework (Test Suite)" << EOL
-         << "Copyright (C) 2002-2019 by Rene Moeller Fonseca" << EOL
          << ENDL;
 
     Command command = COMMAND_ERROR;

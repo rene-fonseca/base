@@ -1,8 +1,8 @@
 /***************************************************************************
     The Base Framework
-    A framework for developing platform independent applications
+    A framework for developing platform independent applications in C++
 
-    Copyright (C) 2002-2019 by René Møller Fonseca <rene.m.fonseca@gmail.com>
+    Copyright (C) 2000-2019 by René Møller Fonseca <rene.m.fonseca@gmail.com>
 
     This framework is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of

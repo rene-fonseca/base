@@ -22,46 +22,55 @@ _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 const char Version::banner[] =
 "The Base Framework release " _COM_AZURE_DEV__BASE__RELEASE "\n"
 "A framework for developing platform independent applications\n"
-"Copyright (C) 2000-2003 by Rene Moeller Fonseca\n\n"
+"Copyright (C) 2000-2019 by Rene Moeller Fonseca\n\n"
 "This framework is distributed in the hope that it will be useful,\n"
 "but WITHOUT ANY WARRANTY; without even the implied warranty of\n"
 "MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.\n"
 "Please report bugs to https://dev.azure.com/renefonseca/base.\n\n"
 "build data: " _COM_AZURE_DEV__BASE__BUILD_DATE "\n";
 
-unsigned int Version::getMajorVersion() const throw() {
+unsigned int Version::getMajorVersion() const noexcept
+{
   return _COM_AZURE_DEV__BASE__MAJOR_VERSION;
 }
 
-unsigned int Version::getMinorVersion() const throw() {
+unsigned int Version::getMinorVersion() const noexcept
+{
   return _COM_AZURE_DEV__BASE__MINOR_VERSION;
 }
 
-unsigned int Version::getMicroVersion() const throw() {
+unsigned int Version::getMicroVersion() const noexcept
+{
   return _COM_AZURE_DEV__BASE__GIT_REVISION; // TAG: FIXME
 }
 
-unsigned int Version::getRevision() const throw() {
+unsigned int Version::getRevision() const noexcept
+{
   return _COM_AZURE_DEV__BASE__GIT_REVISION;
 }
 
-String Version::getRelease() const throw() {
+String Version::getRelease() const noexcept
+{
   return Literal(_COM_AZURE_DEV__BASE__VERSION);
 }
 
-String Version::getVersion() const throw() {
+String Version::getVersion() const noexcept
+{
   return Literal(_COM_AZURE_DEV__BASE__VERSION);
 }
 
-String Version::getCommit() const throw() {
+String Version::getCommit() const noexcept
+{
   return Literal(_COM_AZURE_DEV__BASE__GIT_COMMIT_SHORT);
 }
 
-int64 Version::getBuildDate() const throw() {
+int64 Version::getBuildDate() const noexcept
+{
   return _COM_AZURE_DEV__BASE__BUILD_DATE_SECONDS;
 }
 
-String Version::getBanner() const throw() {
+String Version::getBanner() const noexcept
+{
   return Literal(banner);
 }
 
@@ -93,7 +102,8 @@ bool Version::getDefine_COM_AZURE_DEV__BASE__DEBUG() noexcept
 #endif
 }
 
-bool Version::getDefine_DEBUG() noexcept {
+bool Version::getDefine_DEBUG() noexcept
+{
 #if defined(_COM_AZURE_DEV__BASE__ANY_DEBUG)
   return true;
 #else

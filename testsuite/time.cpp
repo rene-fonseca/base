@@ -33,7 +33,8 @@ public:
     : Application("time", numberOfArguments, arguments, environment) {
   }
 
-  static String getTimeAsString(uint64 nanoseconds) throw() {
+  static String getTimeAsString(uint64 nanoseconds) throw()
+  {
     uint64 seconds = nanoseconds/1000000000;
     uint32 minutes = seconds/60;
     uint32 hours = minutes/60;
@@ -46,11 +47,11 @@ public:
     return stream.getString();
   }
   
-  void main() {
+  void main()
+  {
     fout << getFormalName() << " version "
          << MAJOR_VERSION << '.' << MINOR_VERSION << EOL
          << "The Base Framework (Test Suite)" << EOL
-         << "Copyright (C) 2002-2019 by Rene Moeller Fonseca" << EOL
          << ENDL;
 
     const Array<String> arguments = getArguments();

@@ -38,16 +38,17 @@ public:
         environment) {
   }
   
-  inline int getSucceedingDayOfWeek(int day) {
+  inline int getSucceedingDayOfWeek(int day)
+  {
     int temp = day + 1;
     return (temp > Date::SATURDAY) ? Date::SUNDAY : temp;
   }
   
-  void main() {
+  void main()
+  {
     fout << getFormalName() << " version "
          << MAJOR_VERSION << '.' << MINOR_VERSION << EOL
          << "The Base Framework (Test Suite)" << EOL
-         << "Copyright (C) 2003-2019 by Rene Moeller Fonseca" << EOL
          << ENDL;
     
     Date now = Date::getNow();

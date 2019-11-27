@@ -36,50 +36,50 @@ public:
   /**
     Returns the major version of the framework.
   */
-  virtual unsigned int getMajorVersion() const throw();
+  virtual unsigned int getMajorVersion() const noexcept;
 
   /**
     Returns the minor version of the framework. By convention equal and
     unequal numbers indicate a final and a debug release, respectively.
   */
-  virtual unsigned int getMinorVersion() const throw();
+  virtual unsigned int getMinorVersion() const noexcept;
 
   /**
     Returns the micro version of the framework.
   */
-  virtual unsigned int getMicroVersion() const throw();
+  virtual unsigned int getMicroVersion() const noexcept;
 
   /**
     Returns the revision of the framework.
   */
-  virtual unsigned int getRevision() const throw();
+  virtual unsigned int getRevision() const noexcept;
 
   /**
     Returns the release of the framework as a string. The format of the string
     is unspecified.
   */
-  virtual String getRelease() const throw();
+  virtual String getRelease() const noexcept;
 
   /**
     Returns the version of the framework as a string. The recommended format
     is 'major.minor.micro suffix' where suffix could be anything.
   */
-  virtual String getVersion() const throw();
+  virtual String getVersion() const noexcept;
 
   /**
     Returns the short commit id.
   */
-  virtual String getCommit() const throw();
+  virtual String getCommit() const noexcept;
 
   /*
     Returns the build date in seconds since epoch.
   */
-  virtual int64 getBuildDate() const throw();
+  virtual int64 getBuildDate() const noexcept;
 
   /**
     Returns a short banner (multiple lines) describing the framework.
   */
-  virtual String getBanner() const throw();
+  virtual String getBanner() const noexcept;
 
   /** Returns the size of DynamicObject. */
   static MemorySize getDynamicObjectSize() noexcept;

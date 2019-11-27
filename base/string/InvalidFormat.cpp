@@ -13,8 +13,23 @@
 
 #include <base/string/InvalidFormat.h>
 
-_COM_AZURE_DEV__BASE__DUMMY_SYMBOL
-
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
+
+InvalidFormat::InvalidFormat() noexcept {
+}
+
+InvalidFormat::InvalidFormat(const char* message) noexcept
+  : Exception(message)
+{
+}
+
+InvalidFormat::InvalidFormat(const Type& type) noexcept
+  : Exception(type)
+{
+}
+
+InvalidFormat::InvalidFormat(const char* message, const Type& type) noexcept
+  : Exception(message, type) {
+}
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

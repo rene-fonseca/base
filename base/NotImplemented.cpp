@@ -13,8 +13,25 @@
 
 #include <base/NotImplemented.h>
 
-_COM_AZURE_DEV__BASE__DUMMY_SYMBOL
-
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
+
+NotImplemented::NotImplemented() noexcept
+{
+}
+
+NotImplemented::NotImplemented(const char* message) noexcept
+  : Exception(this)
+{
+}
+
+NotImplemented::NotImplemented(const Type& type) noexcept
+  : Exception(type)
+{
+}
+
+NotImplemented::NotImplemented(const char* message, const Type& type) noexcept
+  : Exception(message, type)
+{
+}
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

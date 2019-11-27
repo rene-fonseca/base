@@ -74,9 +74,9 @@ public:
   /**
     Initializes iterator from other iterator.
   */
-  inline UTF8Iterator& operator=(const UTF8Iterator& eq) noexcept
+  inline UTF8Iterator& operator=(const UTF8Iterator& assign) noexcept
   {
-    element = eq.element;
+    element = assign.element;
     return *this;
   }
 
@@ -116,44 +116,44 @@ public:
   /**
     Returns true if the iterators are equal.
   */
-  inline bool operator==(const UTF8Iterator& eq) const noexcept
+  inline bool operator==(const UTF8Iterator& compare) const noexcept
   {
-    return element == eq.element;
+    return element == compare.element;
   }
 
   /**
     Returns true if the iterators aren't equal.
   */
-  inline bool operator!=(const UTF8Iterator& eq) const noexcept
+  inline bool operator!=(const UTF8Iterator& compare) const noexcept
   {
-    return element != eq.element;
+    return element != compare.element;
   }
 
   /**
     Returns true if this iterator is less than the specified iterator.
   */
-  inline bool operator<(const UTF8Iterator& eq) const noexcept
+  inline bool operator<(const UTF8Iterator& compare) const noexcept
   {
-    return element < eq.element;
+    return element < compare.element;
   }
 
-  inline bool operator<=(const UTF8Iterator& eq) const noexcept
+  inline bool operator<=(const UTF8Iterator& compare) const noexcept
   {
-    return element <= eq.element;
+    return element <= compare.element;
   }
   
   /**
     Returns true if this iterator is greater than or equal to the specified
     iterator.
   */
-  inline bool operator>=(const UTF8Iterator& eq) const noexcept
+  inline bool operator>=(const UTF8Iterator& compare) const noexcept
   {
-    return element >= eq.element;
+    return element >= compare.element;
   }
 
-  inline bool operator>(const UTF8Iterator& eq) const noexcept
+  inline bool operator>(const UTF8Iterator& compare) const noexcept
   {
-    return element > eq.element;
+    return element > compare.element;
   }
   
   /** Returns true if the UTF-8 encoding is valid at the current position. Does NOT check if code is an allowed UCS4 code as such should be skipped fully. */

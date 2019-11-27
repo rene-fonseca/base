@@ -151,22 +151,21 @@ public:
     return *this;
   }
 
-  inline bool operator==(const UInt128& compare) noexcept
+  inline bool operator==(const UInt128& compare) const noexcept
   {
     return (value.low == compare.value.low) && (value.high == compare.value.high);
   }
 
-  inline bool operator!=(const UInt128& compare) noexcept
+  inline bool operator!=(const UInt128& compare) const noexcept
   {
     return (value.low != compare.value.low) || (value.high != compare.value.high);
   }
 
-  inline bool operator<(const UInt128& compare) noexcept
+  inline bool operator<(const UInt128& compare) const noexcept
   {
     if (value.high < compare.value.high) {
       return true;
-    }
-    else if (value.high == compare.value.high) {
+    } else if (value.high == compare.value.high) {
       if (value.low < compare.value.low) {
         return true;
       }
@@ -174,12 +173,11 @@ public:
     return false;
   }
 
-  inline bool operator<=(const UInt128& compare) noexcept
+  inline bool operator<=(const UInt128& compare) const noexcept
   {
     if (value.high < compare.value.high) {
       return true;
-    }
-    else if (value.high == compare.value.high) {
+    } else if (value.high == compare.value.high) {
       if (value.low <= compare.value.low) {
         return true;
       }
@@ -187,12 +185,12 @@ public:
     return false;
   }
 
-  inline bool operator>(const UInt128& compare) noexcept
+  inline bool operator>(const UInt128& compare) const noexcept
   {
     return !operator<=(compare);
   }
 
-  inline bool operator>=(const UInt128 compare) noexcept
+  inline bool operator>=(const UInt128 compare) const noexcept
   {
     return !operator<(compare);
   }
@@ -336,7 +334,7 @@ public:
 
   inline UInt128& operator+=(const UInt128& _a) noexcept
   {
-    // TAG: C++ extension: alias _a.value a; or using _a.value a;
+    // C++ extension: alias _a.value a; or using _a.value a;
     const auto& a = _a.value;
     const bool carry = a.low < a.low; // TAG: FIXME
     value.high += a.high;
@@ -458,10 +456,8 @@ inline FormatOutputStream& operator<<(FormatOutputStream& stream, const UInt128&
 }
 
 #if 0
-// TAG: could make template that does recursive implementation for any size
 template<typename WORD>
 class BigUnsignedInteger;
-
 typedef BigUnsignedInteger<UInt128> UInt256;
 typedef BigUnsignedInteger<UInt256> UInt512;
 typedef BigUnsignedInteger<UInt512> UInt1024;

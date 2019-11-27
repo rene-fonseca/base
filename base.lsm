@@ -9,6 +9,6 @@ Maintained-by:  René Møller Fonseca <rene.m.fonseca@gmail.com>
 Primary-site:   
 Homepage:       https://dev.azure.com/renefonseca/base
 Original-site:  
-Platforms:      Linux (x86), Irix (mips), Solaris (sparc), and Windows NT (x86).
+Platforms:      Linux (x64/x86), Irix (mips), Solaris (sparc), and Windows (x64/x86).
 Copying-policy: GNU General Public License Version 2, June 1991
 End

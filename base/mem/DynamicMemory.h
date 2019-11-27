@@ -21,6 +21,7 @@ _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 /*
 namespace alloc {
+
   void* operator new(MemorySize) throw(MemoryException);
   void operator delete(void*) throw(MemoryException);
   void* operator new[](MemorySize) throw(MemoryException);
@@ -54,17 +55,15 @@ private:
 
     @return nullptr if not successful.
   */
-  static void* allocate(MemorySize size) throw();
+  static void* allocate(MemorySize size) noexcept;
 
   /**
     Frees the specified memory block previously allocated by allocate(). Does
     nothing if the pointer is 0.
     
     @param memory The memory block.
-
-    @return True on success.
   */
-  static bool release(void* memory) throw();
+  static void release(void* memory) noexcept;
 };
 
 #if 0

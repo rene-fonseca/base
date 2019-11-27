@@ -15,7 +15,6 @@
 #include <base/string/FormatOutputStream.h>
 #include <base/string/StringOutputStream.h>
 #include <base/Functor.h>
-#include <base/mem/DynamicMemory.h>
 #include <base/collection/Array.h>
 #include <base/UnitTest.h>
 #include <locale>

@@ -11,43 +11,19 @@
     For the licensing terms refer to the file 'LICENSE'.
  ***************************************************************************/
 
-#include <base/platforms/features.h>
 #include <base/mem/DynamicMemory.h>
-#include <base/OperatingSystem.h>
-
-#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
-  #include <windows.h>
-#else // unix
-  #include <stdlib.h>
-#endif // flavor
+#include <base/mem/Heap.h>
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
-#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
-namespace internal {
-  namespace specific {
-    extern OperatingSystem::Handle processHeap;
-  };
-};
-#endif // flavor
-
-void* DynamicMemory::allocate(MemorySize size) throw() {
-  void* result = nullptr;
-#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
-  result = static_cast<void*>(::HeapAlloc(internal::specific::processHeap, 0, size));
-#else // unix
-  result = ::malloc(size); // unspecified behavior if size is 0
-#endif // flavor
-  return result;
+void* DynamicMemory::allocate(MemorySize size) noexcept
+{
+  return Heap::allocateNoThrow<uint8>(size);
 }
 
-bool DynamicMemory::release(void* memory) throw() {
-#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
-  return (memory == 0) || (::HeapFree(internal::specific::processHeap, 0, memory) != 0);
-#else // unix
-  ::free(memory); // works with 0 pointer
-  return true;
-#endif // flavor
+void DynamicMemory::release(void* memory) noexcept
+{
+  Heap::release(memory);
 }
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

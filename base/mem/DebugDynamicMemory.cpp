@@ -13,38 +13,23 @@
 
 #include <base/platforms/features.h>
 #include <base/mem/DebugDynamicMemory.h>
+#include <base/mem/Heap.h>
 #include <base/Primitives.h>
-#include <base/OperatingSystem.h>
 #include <base/Base.h>
-
-#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
-#  include <windows.h>
-#else // unix
-#  include <stdlib.h>
-#endif // flavor
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
-#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
-namespace internal {
-  namespace specific {
-    extern OperatingSystem::Handle processHeap;
-  };
-};
-#endif // flavor
-
-void* DebugDynamicMemory::allocate(unsigned int size) throw() {
-  unsigned long long newSize = sizeof(Descriptor) + sizeof(unsigned int) * ((size+sizeof(unsigned int)-1)/sizeof(unsigned int) + PREFIX_WORDS + SUFFIX_WORDS);
+void* DebugDynamicMemory::allocate(MemorySize size) noexcept
+{
+  MemorySize newSize = sizeof(Descriptor) + sizeof(unsigned int) * ((size+sizeof(unsigned int)-1)/sizeof(unsigned int) + PREFIX_WORDS + SUFFIX_WORDS);
   if (newSize > PrimitiveTraits<unsigned int>::MAXIMUM) {
     return 0;
   }
 
-  unsigned int* result = nullptr;
-#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
-  result = static_cast<unsigned int*>(::HeapAlloc(internal::specific::processHeap, 0, newSize));
-#else // unix
-  result = static_cast<unsigned int*>(malloc(newSize)); // unspecified behavior if size is 0
-#endif // flavor  
+  uint8* result = Heap::allocateNoThrow<uint8>(newSize);
+  if (!result) {
+    return nullptr;
+  }
   //assert(result % sizeof(unsigned int) == 0, MemoryCorruption(Type::getType<DebugDynamicMemory>()));
 
   Descriptor* descriptor = Cast::pointer<Descriptor*>(result);
@@ -76,16 +61,15 @@ void* DebugDynamicMemory::allocate(unsigned int size) throw() {
     }
   }
 
-  spinLock.exclusiveLock();
   ++currentAllocations;
-  spinLock.releaseLock();
   
   return user;
 }
 
-bool DebugDynamicMemory::release(void* memory) throw(MemoryCorruption) {
+void DebugDynamicMemory::release(void* memory) throw(MemoryCorruption)
+{
   if (!memory) {
-    return true;
+    return;
   }
   
   // check alignment
@@ -145,16 +129,9 @@ bool DebugDynamicMemory::release(void* memory) throw(MemoryCorruption) {
     }
   }
   
-  spinLock.exclusiveLock();
   --currentAllocations;
-  spinLock.releaseLock();
-
-#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
-  return ::HeapFree(internal::specific::processHeap, 0, memory);
-#else // unix
-  ::free(memory); // works with 0 pointer
-  return true;
-#endif // flavor
+  
+  Heap::release(memory);
 }
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

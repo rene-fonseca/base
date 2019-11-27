@@ -157,15 +157,17 @@ namespace internal {
 }; // end of namespace - internal
 
 SpinLock DebugDynamicMemory::spinLock;
-unsigned long DebugDynamicMemory::currentAllocations(0);
+PreferredAtomicCounter DebugDynamicMemory::currentAllocations;
 
 class DebugDynamicMemoryImpl {
 public:
     
-  DebugDynamicMemoryImpl() throw() {
+  DebugDynamicMemoryImpl() noexcept
+  {
   }
 
-  ~DebugDynamicMemoryImpl() throw() {
+  ~DebugDynamicMemoryImpl() noexcept
+  {
     if (DebugDynamicMemory::currentAllocations > 0) {
       char message[sizeof("0x1234567812345678 allocations have not been released for DebugDynamicMemory")];
       char* dest = message;
@@ -180,8 +182,7 @@ public:
       }
       dest += sizeof(unsigned long) * 2;
 
-      static const Literal
-        literal(" allocations have not been released for DebugDynamicMemory");
+      static const Literal literal(" allocations have not been released for DebugDynamicMemory");
       copy<char>(dest, literal.getValue(), literal.getLength());
       dest += literal.getLength();
       *dest = 0; // terminate string

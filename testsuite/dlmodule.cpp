@@ -19,16 +19,17 @@
 #include "MyLinkerModule.h"
 #include <base/dl/LinkerManager.h>
 #include <base/string/FormatOutputStream.h> // debug only
-#include <base/mem/DynamicMemory.h>
 
 using namespace com::azure::dev::base;
 
-void moduleEntry() {
+void moduleEntry()
+{
   Trace::message("Module entry function");
   LinkerManager::getManager()->registrate(new MyLinkerModule("https://dev.azure.com/base/MyLinkerModule", "MyLinkerModule", "0.1"));
 }
 
-void moduleCleanUp() {
+void moduleCleanUp()
+{
   Trace::message("Module clean-up function");
   delete LinkerManager::getManager()->deregistrate();
 }

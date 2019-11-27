@@ -14,7 +14,7 @@
 #pragma once
 
 #include <base/Object.h>
-#include <base/MemoryException.h>
+#include <base/mem/Heap.h>
 #include <base/OutOfRange.h>
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
@@ -36,14 +36,14 @@ public:
 protected:
 
   /** The bytes of the buffer. */
-  uint8* bytes = nullptr;
+  HeapBlockOwned<uint8> heap;
   /** The size of the buffer. */
   MemorySize size = 0;
   /** The granularity of the size. */
-  MemorySize granularity = 0;
+  MemorySize granularity = DEFAULT_GRANULARITY;
 private:
 
-  Buffer& operator=(const Buffer& assign) throw();
+  Buffer& operator=(const Buffer& assign) noexcept;
 public:
 
   /**
@@ -56,32 +56,35 @@ public:
   */
   explicit Buffer(
     MemorySize size = 0,
-    MemorySize granularity = DEFAULT_GRANULARITY) throw(MemoryException);
+    MemorySize granularity = DEFAULT_GRANULARITY);
   
   /**
     Copy constructor. Raises MemoryException if unable to allocate the required
     memory.
   */
-  Buffer(const Buffer& copy) throw(MemoryException);
+  Buffer(const Buffer& copy);
 
   /**
     Returns the bytes of the buffer.
   */
-  inline uint8* getBytes() throw() {
-    return bytes;
+  inline uint8* getBytes() noexcept
+  {
+    return static_cast<uint8*>(heap);
   }
 
   /**
     Returns the bytes of the buffer.
   */
-  inline const uint8* getBytes() const throw() {
-    return bytes;
+  inline const uint8* getBytes() const noexcept
+  {
+    return static_cast<const uint8*>(heap);
   }
 
   /**
     Returns the size of the buffer.
   */
-  inline MemorySize getSize() const throw() {
+  inline MemorySize getSize() const noexcept
+  {
     return size;
   }
 
@@ -93,52 +96,59 @@ public:
     
     @param size The desired size.
   */
-  void setSize(MemorySize size) throw(MemoryException);
+  void setSize(MemorySize size);
 
   /**
     Returns the byte at the given index.
   */
-  inline uint8 operator[](MemorySize i) const throw(OutOfRange) {
+  inline uint8 operator[](MemorySize i) const
+  {
     if (i >= size) {
       throw OutOfRange();
     }
-    return bytes[i];
+    return static_cast<const uint8*>(heap)[i];
   }
 
   /**
     Returns the byte at the given index.
   */
-  inline uint8& operator[](MemorySize i) throw(OutOfRange) {
+  inline uint8& operator[](MemorySize i)
+  {
     if (i >= size) {
       throw OutOfRange();
     }
-    return bytes[i];
+    return static_cast<uint8*>(heap)[i];
   }
 
   inline uint8* begin() noexcept
   {
-    return bytes;
+    return static_cast<uint8*>(heap);
   }
 
   inline uint8* end() noexcept
   {
-    return bytes + size;
+    return static_cast<uint8*>(heap) + size;
   }
 
   inline const uint8* begin() const noexcept
   {
-    return bytes;
+    return static_cast<const uint8*>(heap);
   }
 
   inline const uint8* end() const noexcept
   {
-    return bytes + size;
+    return static_cast<const uint8*>(heap) + size;
+  }
+
+  inline operator bool() const noexcept
+  {
+    return size != 0;
   }
 
   /**
     Destroys the buffer.
   */
-  ~Buffer() throw();
+  ~Buffer() noexcept;
 };
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

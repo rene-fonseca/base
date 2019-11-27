@@ -39,7 +39,7 @@ class _COM_AZURE_DEV__BASE__API DebugDynamicMemory {
 private:
 
   /** Holds the current number of allocated memory blocks. */
-  static unsigned long currentAllocations;
+  static PreferredAtomicCounter currentAllocations;
   /** Global synchronization object. */
   static SpinLock spinLock;
 
@@ -48,7 +48,7 @@ private:
     /** Magic number identifying the descriptor. */
     void* magic;
     /** The size of the memory block. */
-    unsigned int size;
+    MemorySize size;
     /** Specifies whether or not the memory block has been allocated/deleted. */
     bool allocated;
   };
@@ -67,17 +67,15 @@ public:
 
     @return 0 if not successful.
   */
-  static void* allocate(unsigned int size) throw();
+  static void* allocate(MemorySize size) noexcept;
 
   /**
     Frees the specified memory block previously allocated by allocate(). Does
     nothing if the pointer is 0.
     
     @param memory The memory block.
-
-    @return True on success.
   */
-  static bool release(void* memory) throw(MemoryCorruption);
+  static void release(void* memory) throw(MemoryCorruption);
 };
 
 // /**

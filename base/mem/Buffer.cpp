@@ -14,60 +14,37 @@
 #include <base/platforms/features.h>
 #include <base/mem/Buffer.h>
 #include <base/UnitTest.h>
-#include <string.h>
-#include <stdlib.h>
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 #define NUMBER_TO_GRAN(NUMBER, GRAN) ((((NUMBER) + (GRAN) - 1)/(GRAN)) * (GRAN))
 
-Buffer::Buffer(MemorySize size, MemorySize granularity) throw(MemoryException)
+Buffer::Buffer(MemorySize size, MemorySize granularity)
 {
   this->granularity = (granularity > 0) ? granularity : 1;
   this->size = NUMBER_TO_GRAN(size, granularity);
-  if (this->size > 0) {
-    bytes = static_cast<uint8*>(malloc(this->size));
-  }
-  if ((bytes == nullptr) && (this->size != 0)) { // was memory allocated
-    throw MemoryException(this);
-  }
+  heap.resize(this->size);
 }
 
-Buffer::Buffer(const Buffer& copy) throw(MemoryException)
+Buffer::Buffer(const Buffer& copy)
 {
   granularity = copy.granularity;
   size = copy.size;
-  bytes = static_cast<uint8*>(malloc(size));
-  if ((bytes == nullptr) && (size != 0)) { // was memory allocated
-    throw MemoryException(this);
-  }
-  memcpy(bytes, copy.bytes, size); // copy buffer
+  heap.resize(size);
+  base::copy<uint8>(heap, copy.heap, copy.size);
 }
 
-void Buffer::setSize(MemorySize size) throw(MemoryException)
+void Buffer::setSize(MemorySize size)
 {
   size = NUMBER_TO_GRAN(size, granularity);
   if (size != this->size) { // do we really have to
     this->size = size;
-    if (size == 0) {
-      if (bytes) {
-        ::free(bytes);
-        bytes = nullptr;
-      }
-      return;
-    }
-    uint8* result = static_cast<uint8*>(realloc(bytes, size));
-    if ((result == nullptr) && (size > 0)) { // was memory allocated
-      throw MemoryException(this);
-    }
-    bytes = result;
+    heap.resize(size);
   }
 }
 
-Buffer::~Buffer() throw() {
-  if (bytes) {
-    ::free(bytes);
-  }
+Buffer::~Buffer() noexcept
+{
 }
 
 #if defined(_COM_AZURE_DEV__BASE__TESTS)

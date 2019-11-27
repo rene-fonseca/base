@@ -458,19 +458,19 @@ public:
   }
 
   /** Returns the native pointer. */
-  inline operator TYPE* () noexcept
+  inline operator TYPE*() noexcept
   {
     return heap;
   }
 
   /** Returns the native pointer. */
-  inline operator const TYPE* () const noexcept
+  inline operator const TYPE*() const noexcept
   {
     return heap;
   }
 
   /** Returns true if pointer is not nullptr. */
-  inline operator bool () const noexcept
+  inline operator bool() const noexcept
   {
     return heap;
   }
@@ -558,13 +558,13 @@ public:
   }
 
   /** Returns the native pointer. Returns nullptr if empty. */
-  inline operator TYPE* () noexcept
+  inline operator TYPE*() noexcept
   {
     return buffer;
   }
 
   /** Returns the native pointer. Returns nullptr if empty. */
-  inline operator const TYPE* () const noexcept
+  inline operator const TYPE*() const noexcept
   {
     return buffer;
   }
@@ -674,13 +674,13 @@ public:
   }
 
   /** Returns the native pointer. Returns nullptr if empty. */
-  inline operator TYPE* () noexcept
+  inline operator TYPE*() noexcept
   {
     return buffer;
   }
 
   /** Returns the native pointer. Returns nullptr if empty. */
-  inline operator const TYPE* () const noexcept
+  inline operator const TYPE*() const noexcept
   {
     return buffer;
   }

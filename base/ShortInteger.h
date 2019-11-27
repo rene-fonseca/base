@@ -42,18 +42,37 @@ protected:
   short value = 0;
 public:
   
+  enum {
+    FLAG_ALLOW_SPACES = 1 << 0,
+    FLAG_ALLOW_SIGN = 1 << 1,
+    FLAG_DEFAULT = FLAG_ALLOW_SPACES | FLAG_ALLOW_SIGN
+  };
+
+  /**
+    Returns the value of the integer string representation.
+
+    @param src The string representation.
+    @param end The string representation.
+    @param flags The parsing flags.
+  */
+  static short parse(const char* src, const char* end, unsigned int flags = FLAG_DEFAULT) throw(InvalidFormat);
+
   /**
     Returns the value of the integer string representation.
 
     @param string The string representation.
-    @param withoutSign Effectively prevents signs from being parsed. Default is to allow a single sign.
+    @param flags The parsing flags.
   */
-  static short parse(const String& string, bool withoutSign = false) throw(InvalidFormat);
+  static inline short parse(const String& string, unsigned int flags = FLAG_DEFAULT) throw(InvalidFormat)
+  {
+    return parse(string.native(), string.native() + string.getLength(), flags);
+  }
   
   /**
     Initializes the short integer as zero.
   */
-  inline ShortInteger() noexcept {
+  inline ShortInteger() noexcept
+  {
   }
   
   /**
@@ -64,32 +83,27 @@ public:
   ShortInteger(short value) noexcept;
   
   /**
-    Initializes short integer from string.
-
-    @param string The string.
-  */
-  inline ShortInteger(const String& string) throw(InvalidFormat)
-    : value(parse(string)) {
-  }
-  
-  /**
     Copy constructor. Initializes a new ShortInteger from other ShortInteger object.
   */
-  inline ShortInteger(const ShortInteger& copy) noexcept : value(copy.value) {
+  inline ShortInteger(const ShortInteger& copy) noexcept
+    : value(copy.value)
+  {
   }
 
   /**
     Assignment operator.
   */
-  inline ShortInteger& operator=(const ShortInteger& eq) noexcept {
-    value = eq.value;
+  inline ShortInteger& operator=(const ShortInteger& assign) noexcept
+  {
+    value = assign.value;
     return *this;
   }
 
   /**
     Gets the value of the integer.
   */
-  inline short getValue() const noexcept {
+  inline short getValue() const noexcept
+  {
     return value;
   }
 
@@ -98,19 +112,23 @@ public:
 
     @param value The desired value.
   */
-  inline void setValue(short value) noexcept {
+  inline void setValue(short value) noexcept
+  {
     this->value = value;
   }
 
   /**
     Casts integer to native type.
   */
-  inline operator short () const noexcept {
+  inline operator short () const noexcept
+  {
     return value;
   }
 };
 
-inline ShortInteger::ShortInteger(short _value) noexcept : value(_value) {
+inline ShortInteger::ShortInteger(short _value) noexcept
+  : value(_value)
+{
 }
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

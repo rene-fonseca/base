@@ -16,53 +16,43 @@
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
-// TAG: add support for wchar for parsing
-// TAG: use iterator instead
-
-#if 0
-int Integer::parse(const char* src, const char* end, bool withoutSign) throw(InvalidFormat)
+int Integer::parse(const char* src, const char* end, unsigned int flags) throw(InvalidFormat)
 {
-  return -1;
-}
-#endif
-
-int Integer::parse(const String& str, bool withoutSign) throw(InvalidFormat)
-{
-  String::ReadIterator i = str.getBeginReadIterator();
-  const String::ReadIterator end = str.getEndReadIterator();
-  
-  while ((i < end) && (*i == ' ')) {
-    ++i; // eat space
+  if (flags & FLAG_ALLOW_SPACES) {
+    while ((src != end) && (*src == ' ')) {
+      ++src; // eat space
+    }
   }
   
-  bassert(i < end, InvalidFormat(Type::getType<Integer>()));
+  if (src == end) {
+    throw InvalidFormat(Type::getType<Integer>());
+  }
   
   long long value = 0;
-  if (withoutSign) {
+  if ((flags & FLAG_ALLOW_SIGN) == 0) {
     unsigned long long temp = 0;
-    while (i < end) {
-      char ch = *i++;
+    while (src != end) {
+      char ch = *src++;
       if (!ASCIITraits::isDigit(ch)) {
         break;
       }
-      bassert(temp < PrimitiveTraits<unsigned int>::MAXIMUM,
-             InvalidFormat(Type::getType<Integer>()));
+      bassert(temp < PrimitiveTraits<unsigned int>::MAXIMUM, InvalidFormat(Type::getType<Integer>()));
       temp = temp * 10 + ASCIITraits::digitToValue(ch);
     }
     value = temp;
   } else {
     bool negative = false;
-    if (*i == '-') {
+    if (*src == '-') {
       negative = true;
-      ++i; // yummy that tasted great
-    } else if (*i == '+') {
-      ++i; // I'm not full yet
+      ++src; // yummy that tasted great
+    } else if (*src == '+') {
+      ++src; // I'm not full yet
     }
 
     value = 0; // overflow not possible (2 * sizeof(int) == sizeof(long long))
     if (negative) {
-      while (i < end) {
-        char ch = *i++;
+      while (src != end) {
+        char ch = *src++;
         if (!ASCIITraits::isDigit(ch)) {
           break;
         }
@@ -70,8 +60,8 @@ int Integer::parse(const String& str, bool withoutSign) throw(InvalidFormat)
         bassert(value >= Integer::MINIMUM, InvalidFormat(Type::getType<Integer>()));
       }
     } else {
-      while (i < end) {
-        char ch = *i++;
+      while (src != end) {
+        char ch = *src++;
         if (!ASCIITraits::isDigit(ch)) {
           break;
         }      
@@ -81,11 +71,15 @@ int Integer::parse(const String& str, bool withoutSign) throw(InvalidFormat)
     }
   }
   
-  while ((i < end) && (*i == ' ')) { // rest must be spaces
-    ++i;
+  if (flags & FLAG_ALLOW_SPACES) {
+    while ((src != end) && (*src == ' ')) { // rest must be spaces
+      ++src;
+    }
   }
   
-  bassert(i == end, InvalidFormat(Type::getType<Integer>()));
+  if (src != end) {
+    throw InvalidFormat(Type::getType<Integer>());
+  }
   return value;
 }
 

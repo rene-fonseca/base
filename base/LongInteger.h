@@ -62,12 +62,16 @@ public:
     @param string The string representation.
     @param flags The parsing flags.
   */
-  static long long parse(const String& string, unsigned int flags = FLAG_DEFAULT) throw(InvalidFormat);
+  static inline long long parse(const String& string, unsigned int flags = FLAG_DEFAULT) throw(InvalidFormat)
+  {
+    return parse(string.native(), string.native() + string.getLength(), flags);
+  }
   
   /**
     Initializes the long integer as zero.
   */
-  inline LongInteger() noexcept {
+  inline LongInteger() noexcept
+  {
   }
   
   /**
@@ -78,24 +82,18 @@ public:
   LongInteger(long long value) noexcept;
   
   /**
-    Initializes long integer from string.
-    
-    @param string The string.
-  */
-  inline LongInteger(const String& string) throw(InvalidFormat)
-    : value(parse(string)) {
-  }
-  
-  /**
     Initializes integer by copying from other integer.
   */
-  inline LongInteger(const LongInteger& copy) noexcept : value(copy.value) {
+  inline LongInteger(const LongInteger& copy) noexcept
+    : value(copy.value)
+  {
   }
   
   /**
     Assignment of integer to this integer.
   */
-  inline LongInteger& operator=(const LongInteger& assign) noexcept {
+  inline LongInteger& operator=(const LongInteger& assign) noexcept
+  {
     value = assign.value;
     return *this;
   }
@@ -103,7 +101,8 @@ public:
   /**
     Gets the value of the integer.
   */
-  inline long long getValue() const noexcept {
+  inline long long getValue() const noexcept
+  {
     return value;
   }
 
@@ -112,19 +111,23 @@ public:
 
     @param value The desired value.
   */
-  inline void setValue(long long value) noexcept {
+  inline void setValue(long long value) noexcept
+  {
     this->value = value;
   }
 
   /**
     Casts integer to native type.
   */
-  inline operator long long() const noexcept {
+  inline operator long long() const noexcept
+  {
     return value;
   }
 };
 
-inline LongInteger::LongInteger(long long _value) noexcept : value(_value) {
+inline LongInteger::LongInteger(long long _value) noexcept
+  : value(_value)
+{
 }
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

@@ -42,18 +42,36 @@ protected:
   int value = 0;
 public:
 
+  enum {
+    FLAG_ALLOW_SPACES = 1 << 0,
+    FLAG_ALLOW_SIGN = 1 << 1,
+    FLAG_DEFAULT = FLAG_ALLOW_SPACES | FLAG_ALLOW_SIGN
+  };
+
+  /**
+    Returns the value of the integer string representation.
+
+    @param string The string representation.
+    @param flags The parsing flags.
+  */
+  static int parse(const char* src, const char* end, unsigned int flags = FLAG_DEFAULT) throw(InvalidFormat);
+
   /**
     Returns the value of the integer string representation.
 
     @param string The string representation.
     @param withoutSign Effectively prevents signs from being parsed. Default is to allow a single sign.
   */
-  static int parse(const String& string, bool withoutSign = false) throw(InvalidFormat);
+  static inline int parse(const String& string, unsigned int flags = FLAG_DEFAULT) throw(InvalidFormat)
+  {
+    return parse(string.native(), string.native() + string.getLength(), flags);
+  }
   
   /**
     Initializes the integer as zero.
   */
-  inline Integer() throw() {
+  inline Integer() noexcept
+  {
   }
 
   /**
@@ -61,27 +79,21 @@ public:
 
     @param value The desired value.
   */
-  Integer(int value) throw();
-
-  /**
-    Initializes integer from string.
-
-    @param string The string.
-  */
-  inline Integer(const String& string) throw(InvalidFormat)
-    : value(parse(string)) {
-  }
+  Integer(int value) noexcept;
 
   /**
     Copy constructor. Initializes a new Integer from other Integer object.
   */
-  inline Integer(const Integer& copy) throw() : value(copy.value) {
+  inline Integer(const Integer& copy) noexcept
+    : value(copy.value)
+  {
   }
 
   /**
     Assignment of integer to this integer.
   */
-  inline Integer& operator=(const Integer& assign) throw() {
+  inline Integer& operator=(const Integer& assign) noexcept
+  {
     value = assign.value;
     return *this;
   }
@@ -89,7 +101,8 @@ public:
   /**
     Assignment of native type to this integer.
   */
-  inline Integer& operator=(int value) throw() {
+  inline Integer& operator=(int value) noexcept
+  {
     this->value = value;
     return *this;
   }
@@ -97,7 +110,8 @@ public:
   /**
     Gets the value of the integer.
   */
-  inline int getValue() const throw() {
+  inline int getValue() const noexcept
+  {
     return value;
   }
 
@@ -106,19 +120,21 @@ public:
 
     @param value The desired value.
   */
-  inline void setValue(int value) throw() {
+  inline void setValue(int value) noexcept
+  {
     this->value = value;
   }
 
   /**
     Casts integer to native type.
   */
-  inline operator int() const throw() {
+  inline operator int() const noexcept
+  {
     return value;
   }
 };
 
-inline Integer::Integer(int _value) throw()
+inline Integer::Integer(int _value) noexcept
   : value(_value) {
 }
 

@@ -40,13 +40,18 @@ public:
   /** Specifies the maximum value. */
   static const unsigned long long MAXIMUM = PrimitiveTraits<unsigned long long>::MAXIMUM;
 
+  enum {
+    FLAG_ALLOW_SPACES = 1 << 0
+  };
+  
   enum BaseOptions {
     BIN = 1, /**< Specifies binary integer base (2). */
     DEC = 2, /**< Specifies decimal integer base (10). */
     OCT = 4, /**< Specifies octal integer base (8). */
     HEX = 8, /**< Specifies hexadecimal integer base (16). */
     PREFIX = 16, /**< Specifies that prefix is required. */
-    ANY=BIN|DEC|OCT|HEX|PREFIX /**< Specifies any supported base (integer base is derived from prefix). */
+    ANY=BIN|DEC|OCT|HEX|PREFIX, /**< Specifies any supported base (integer base is derived from prefix). */
+    FLAG_DEFAULT = FLAG_ALLOW_SPACES | ANY
   };
 protected:
 
@@ -57,15 +62,21 @@ public:
   /**
     Returns the value of the integer string representation.
 
-    @param str The string representation.
+    @param src The string representation.
+    @param end The string representation.
     @param accept Specifies the integer bases to accept. Default is ANY.
   */
-  static unsigned long long parse(const String& str, unsigned int accept = ANY) throw(InvalidFormat);
+  static unsigned long long parse(const char* src, const char* end, unsigned int flags = FLAG_DEFAULT) throw(InvalidFormat);
+
+  static unsigned long long parse(const String& string, unsigned int flags = FLAG_DEFAULT) throw(InvalidFormat) {
+    return parse(string.native(), string.native() + string.getLength(), flags);
+  }
 
   /**
     Initializes the integer as zero.
   */
-  inline UnsignedLongInteger() noexcept {
+  inline UnsignedLongInteger() noexcept
+  {
   }
 
   /**
@@ -76,25 +87,18 @@ public:
   UnsignedLongInteger(unsigned long long value) noexcept;
 
   /**
-    Initializes the integer from the specified string representation.
-
-    @param str The string representation.
-    @param accept Specifies the bases to accept. Default is ANY.
-  */
-  inline UnsignedLongInteger(const String& str, unsigned long long accept = ANY) throw(InvalidFormat) : value(parse(str, accept)) {
-  }
-
-  /**
     Copy constructor. Initializes a new Integer from other Integer object.
   */
   inline UnsignedLongInteger(const UnsignedLongInteger& copy) noexcept
-    : value(copy.value) {
+    : value(copy.value)
+  {
   }
 
   /**
     Assignment of integer to this integer.
   */
-  inline UnsignedLongInteger& operator=(const UnsignedLongInteger& assign) noexcept {
+  inline UnsignedLongInteger& operator=(const UnsignedLongInteger& assign) noexcept
+  {
     value = assign.value;
     return *this;
   }
@@ -102,7 +106,8 @@ public:
   /**
     Assignment of native type to this integer.
   */
-  inline UnsignedLongInteger& operator=(unsigned long long value) noexcept {
+  inline UnsignedLongInteger& operator=(unsigned long long value) noexcept
+  {
     this->value = value;
     return *this;
   }
@@ -110,7 +115,8 @@ public:
   /**
     Gets the value of the integer.
   */
-  inline unsigned long long getValue() const noexcept {
+  inline unsigned long long getValue() const noexcept
+  {
     return value;
   }
 
@@ -119,20 +125,23 @@ public:
 
     @param value The desired value.
   */
-  inline void setValue(unsigned long long value) noexcept {
+  inline void setValue(unsigned long long value) noexcept
+  {
     this->value = value;
   }
 
   /**
     Casts integer to native type.
   */
-  inline operator unsigned long long() const noexcept {
+  inline operator unsigned long long() const noexcept
+  {
     return value;
   }
 };
 
 inline UnsignedLongInteger::UnsignedLongInteger(unsigned long long _value) noexcept
-  : value(_value) {
+  : value(_value)
+{
 }
 
 /**

@@ -16,43 +16,43 @@
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
-short ShortInteger::parse(
-  const String& str, bool withoutSign) throw(InvalidFormat) {
-  String::ReadIterator i = str.getBeginReadIterator();
-  const String::ReadIterator end = str.getEndReadIterator();
-  
-  while ((i < end) && (*i == ' ')) {
-    ++i; // eat space
+short ShortInteger::parse(const char* src, const char* end, unsigned int flags) throw(InvalidFormat)
+{
+  if (flags & FLAG_ALLOW_SPACES) {
+    while ((src != end) && (*src == ' ')) {
+      ++src; // eat space
+    }
+  }
+
+  if (src == end) {
+    throw InvalidFormat(Type::getType<ShortInteger>());
   }
   
-  bassert(i < end, InvalidFormat(Type::getType<ShortInteger>()));
-  
   int value = 0;
-  if (withoutSign) {
+  if ((flags & FLAG_ALLOW_SIGN) == 0) {
     unsigned int temp = 0;
-    while (i < end) {
-      char ch = *i++;
+    while (src != end) {
+      char ch = *src++;
       if (!ASCIITraits::isDigit(ch)) {
         break;
       }
-      bassert(temp < PrimitiveTraits<unsigned short>::MAXIMUM,
-             InvalidFormat(Type::getType<ShortInteger>()));
+      bassert(temp < PrimitiveTraits<unsigned short>::MAXIMUM, InvalidFormat(Type::getType<ShortInteger>()));
       temp = temp * 10 + ASCIITraits::digitToValue(ch);
     }
     value = temp;
   } else {
     bool negative = false;
-    if (*i == '-') {
+    if (*src == '-') {
       negative = true;
-      ++i; // yummy that tasted great
-    } else if (*i == '+') {
-      ++i; // I'm not full yet
+      ++src;
+    } else if (*src == '+') {
+      ++src;
     }
 
     value = 0; // overflow not possible (2 * sizeof(short) == sizeof(int))
     if (negative) {
-      while (i < end) {
-        char ch = *i++;
+      while (src != end) {
+        char ch = *src++;
         if (!ASCIITraits::isDigit(ch)) {
           break;
         }
@@ -60,8 +60,8 @@ short ShortInteger::parse(
         bassert(value >= ShortInteger::MINIMUM, InvalidFormat(Type::getType<ShortInteger>()));
       }
     } else {
-      while (i < end) {
-        char ch = *i++;
+      while (src != end) {
+        char ch = *src++;
         if (!ASCIITraits::isDigit(ch)) {
           break;
         }      
@@ -71,11 +71,13 @@ short ShortInteger::parse(
     }
   }
   
-  while ((i < end) && (*i == ' ')) { // rest must be spaces
-    ++i;
+  if (flags & FLAG_ALLOW_SPACES) {
+    while ((src != end) && (*src == ' ')) { // rest must be spaces
+      ++src;
+    }
   }
-  
-  bassert(i == end, InvalidFormat(Type::getType<ShortInteger>()));
+
+  bassert(src == end, InvalidFormat(Type::getType<ShortInteger>()));
   return value;
 }
 

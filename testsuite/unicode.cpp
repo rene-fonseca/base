@@ -184,7 +184,7 @@ public:
         Array<String> fields = line.split(';');
         Array<String>::ReadEnumerator enu = fields.getReadEnumerator();
         
-        uint32 code = UnsignedInteger(*enu.next(), UnsignedInteger::HEX);
+        uint32 code = UnsignedInteger::parse(*enu.next(), UnsignedInteger::HEX);
         if (code > 0x10ffff) {
           ferr << "Error: Invalid character code" << ENDL;
           setExitCode(EXIT_CODE_ERROR);
@@ -279,27 +279,27 @@ public:
         ucs4 upperCharacter = 0;
         if (static_cast<String>(fields[FIELD_UPPER]).isProper()) {
           flags |= HAS_UPPER;
-          upperCharacter = UnsignedInteger(fields[FIELD_UPPER], UnsignedInteger::HEX);
+          upperCharacter = UnsignedInteger::parse(fields[FIELD_UPPER], UnsignedInteger::HEX);
         }
         bassert(WideString::isUCS4(upperCharacter), InvalidFormat());
         
         ucs4 lowerCharacter = 0;
         if (static_cast<String>(fields[FIELD_LOWER]).isProper()) {
           flags |= HAS_LOWER;
-          lowerCharacter = UnsignedInteger(fields[FIELD_LOWER], UnsignedInteger::HEX);
+          lowerCharacter = UnsignedInteger::parse(fields[FIELD_LOWER], UnsignedInteger::HEX);
         }
         bassert(WideString::isUCS4(lowerCharacter), InvalidFormat());
 
         ucs4 titleCharacter = 0;
         if (static_cast<String>(fields[FIELD_TITLE]).isProper()) {
           flags |= HAS_TITLE;
-          titleCharacter = UnsignedInteger(fields[FIELD_TITLE], UnsignedInteger::HEX);
+          titleCharacter = UnsignedInteger::parse(fields[FIELD_TITLE], UnsignedInteger::HEX);
         }
         bassert(WideString::isUCS4(titleCharacter), InvalidFormat());
 
         unsigned int value = 0;
         if (flags & DECIMAL) {
-          value = UnsignedInteger(fields[FIELD_DECIMAL_VALUE], UnsignedInteger::DEC);
+          value = UnsignedInteger::parse(fields[FIELD_DECIMAL_VALUE], UnsignedInteger::DEC);
         }
         
         if (flags & DECIMAL) {

@@ -911,9 +911,9 @@ short AnyValue::getShortInteger() const noexcept
   case UNSIGNED_LONG_LONG_INTEGER:
     return unsignedLongLongInteger;
   case STRING:
-    return ShortInteger::parse(string);
+    return ShortInteger::parse(string, ShortInteger::FLAG_ALLOW_SIGN);
   case WIDE_STRING:
-    return ShortInteger::parse(wideString.getMultibyteString());
+    return ShortInteger::parse(wideString.getMultibyteString(), ShortInteger::FLAG_ALLOW_SIGN);
   default:
     return 0;
   }
@@ -947,9 +947,9 @@ unsigned short AnyValue::getUnsignedShortInteger() const noexcept
   case UNSIGNED_LONG_LONG_INTEGER:
     return unsignedLongLongInteger;
   case STRING:
-    return ShortInteger::parse(string, true);
+    return ShortInteger::parse(string, 0);
   case WIDE_STRING:
-    return ShortInteger::parse(wideString.getMultibyteString(), true);
+    return ShortInteger::parse(wideString.getMultibyteString(), 0);
   default:
     return 0;
   }
@@ -983,9 +983,9 @@ int AnyValue::getInteger() const noexcept
   case UNSIGNED_LONG_LONG_INTEGER:
     return unsignedLongLongInteger;
   case STRING:
-    return Integer::parse(string);
+    return Integer::parse(string, Integer::FLAG_ALLOW_SIGN);
   case WIDE_STRING:
-    return Integer::parse(wideString.getMultibyteString());
+    return Integer::parse(wideString.getMultibyteString(), Integer::FLAG_ALLOW_SIGN);
   default:
     return 0;
   }
@@ -1019,9 +1019,9 @@ unsigned int AnyValue::getUnsignedInteger() const noexcept
   case UNSIGNED_LONG_LONG_INTEGER:
     return unsignedLongLongInteger;
   case STRING:
-    return Integer::parse(string, true);
+    return Integer::parse(string, 0);
   case WIDE_STRING:
-    return Integer::parse(wideString.getMultibyteString(), true);
+    return Integer::parse(wideString.getMultibyteString(), 0);
   default:
     return 0;
   }
@@ -1055,9 +1055,9 @@ long AnyValue::getLongInteger() const noexcept
   case UNSIGNED_LONG_LONG_INTEGER:
     return unsignedLongLongInteger;
   case STRING:
-    return Integer::parse(string); // TAG: make sure long and int are compatible
+    return Integer::parse(string, LongInteger::FLAG_ALLOW_SIGN);
   case WIDE_STRING:
-    return Integer::parse(wideString.getMultibyteString()); // TAG: make sure long and int are compatible
+    return Integer::parse(wideString.getMultibyteString(), LongInteger::FLAG_ALLOW_SIGN);
   default:
     return 0;
   }
@@ -1091,9 +1091,9 @@ unsigned long AnyValue::getUnsignedLongInteger() const noexcept
   case UNSIGNED_LONG_LONG_INTEGER:
     return unsignedLongLongInteger;
   case STRING:
-    return Integer::parse(string, true); // TAG: make sure long and int are compatible
+    return Integer::parse(string, 0);
   case WIDE_STRING:
-    return Integer::parse(wideString.getMultibyteString(), true); // TAG: make sure long and int are compatible
+    return Integer::parse(wideString.getMultibyteString(), 0);
   default:
     return 0;
   }
@@ -1127,9 +1127,9 @@ long long AnyValue::getLongLongInteger() const noexcept
   case UNSIGNED_LONG_LONG_INTEGER:
     return unsignedLongLongInteger;
   case STRING:
-    return LongInteger::parse(string);
+    return LongInteger::parse(string, LongInteger::FLAG_ALLOW_SIGN);
   case WIDE_STRING:
-    return LongInteger::parse(wideString.getMultibyteString());
+    return LongInteger::parse(wideString.getMultibyteString(), LongInteger::FLAG_ALLOW_SIGN);
   default:
     return 0;
   }
@@ -1163,9 +1163,9 @@ unsigned long long AnyValue::getUnsignedLongLongInteger() const noexcept
   case UNSIGNED_LONG_LONG_INTEGER:
     return unsignedLongLongInteger;
   case STRING:
-    return LongInteger::parse(string, true);
+    return LongInteger::parse(string, 0);
   case WIDE_STRING:
-    return LongInteger::parse(wideString.getMultibyteString(), true);
+    return LongInteger::parse(wideString.getMultibyteString(), 0);
   default:
     return 0;
   }

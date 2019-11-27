@@ -37,13 +37,18 @@ public:
   /** Specifies the maximum value. */
   static const unsigned int MAXIMUM = PrimitiveTraits<unsigned int>::MAXIMUM;
 
-  enum BaseOptions {
-    BIN = 1, /**< Specifies binary integer base (2). */
-    DEC = 2, /**< Specifies decimal integer base (10). */
-    OCT = 4, /**< Specifies octal integer base (8). */
-    HEX = 8, /**< Specifies hexadecimal integer base (16). */
-    PREFIX = 16, /**< Specifies that prefix is required. */
-    ANY=BIN|DEC|OCT|HEX|PREFIX /**< Specifies any supported base (integer base is derived from prefix). */
+  enum {
+    FLAG_ALLOW_SPACES = 1 << 0
+  };
+  
+  enum BaseFlags {
+    BIN = 1 << 0, /**< Specifies binary integer base (2). */
+    DEC = 1 << 2, /**< Specifies decimal integer base (10). */
+    OCT = 1 << 3, /**< Specifies octal integer base (8). */
+    HEX = 1 << 4, /**< Specifies hexadecimal integer base (16). */
+    PREFIX = 1 << 5, /**< Specifies that prefix is required. */
+    ANY=BIN|DEC|OCT|HEX|PREFIX, /**< Specifies any supported base (integer base is derived from prefix). */
+    FLAG_DEFAULT = FLAG_ALLOW_SPACES | ANY
   };
 protected:
 
@@ -54,15 +59,21 @@ public:
   /**
     Returns the value of the integer string representation.
 
-    @param string The string representation.
+    @param src The string representation.
+    @param end The string representation.
     @param accept Specifies the integer bases to accept. Default is ANY.
   */
-  static unsigned int parse(const String& string, unsigned int accept = ANY) throw(InvalidFormat);
+  static unsigned int parse(const char* src, const char* end, unsigned int flags = FLAG_DEFAULT) throw(InvalidFormat);
 
+  static unsigned int parse(const String& string, unsigned int flags = FLAG_DEFAULT) throw(InvalidFormat) {
+    return parse(string.native(), string.native() + string.getLength(), flags);
+  }
+  
   /**
     Initializes the integer as zero.
   */
-  inline UnsignedInteger() noexcept {
+  inline UnsignedInteger() noexcept
+  {
   }
 
   /**
@@ -73,25 +84,18 @@ public:
   UnsignedInteger(unsigned int value) noexcept;
 
   /**
-    Initializes the integer from the specified string representation.
-
-    @param str The string representation.
-    @param accept Specifies the bases to accept. Default is ANY.
-  */
-  inline UnsignedInteger(const String& str, unsigned int accept = ANY) throw(InvalidFormat) : value(parse(str, accept)) {
-  }
-
-  /**
     Copy constructor. Initializes a new Integer from other Integer object.
   */
   inline UnsignedInteger(const UnsignedInteger& copy) noexcept
-    : value(copy.value) {
+    : value(copy.value)
+  {
   }
 
   /**
     Assignment of integer to this integer.
   */
-  inline UnsignedInteger& operator=(const UnsignedInteger& assign) noexcept {
+  inline UnsignedInteger& operator=(const UnsignedInteger& assign) noexcept
+  {
     value = assign.value;
     return *this;
   }
@@ -99,7 +103,8 @@ public:
   /**
     Assignment of native type to this integer.
   */
-  inline UnsignedInteger& operator=(unsigned int value) noexcept {
+  inline UnsignedInteger& operator=(unsigned int value) noexcept
+  {
     this->value = value;
     return *this;
   }
@@ -107,7 +112,8 @@ public:
   /**
     Gets the value of the integer.
   */
-  inline unsigned int getValue() const noexcept {
+  inline unsigned int getValue() const noexcept
+  {
     return value;
   }
 
@@ -116,19 +122,23 @@ public:
 
     @param value The desired value.
   */
-  inline void setValue(unsigned int value) noexcept {
+  inline void setValue(unsigned int value) noexcept
+  {
     this->value = value;
   }
 
   /**
     Casts integer to native type.
   */
-  inline operator unsigned int() const noexcept {
+  inline operator unsigned int() const noexcept
+  {
     return value;
   }
 };
 
-inline UnsignedInteger::UnsignedInteger(unsigned int _value) noexcept : value(_value) {
+inline UnsignedInteger::UnsignedInteger(unsigned int _value) noexcept
+  : value(_value)
+{
 }
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

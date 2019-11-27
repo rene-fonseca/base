@@ -92,9 +92,4 @@ long long LongInteger::parse(const char* src, const char* end, unsigned int flag
   return value;
 }
 
-long long LongInteger::parse(const String& string, unsigned int flags) throw(InvalidFormat)
-{
-  return parse(string.getElements(), string.getElements() + string.getLength(), flags);
-}
-
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

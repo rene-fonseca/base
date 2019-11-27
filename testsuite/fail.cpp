@@ -185,6 +185,8 @@ public:
       fout << this << " " << "TestExceptionDestructThrow()" << ENDL;
     }
 
+#pragma warning(disable: 4722)
+
     ~TestExceptionDestructThrow() noexcept(false)
     {
       fout << this << " " << "~TestExceptionDestructThrow(): " << (Exception::isUnwinding() ? "Unwind" : "Normal") << ENDL;

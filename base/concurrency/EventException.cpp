@@ -13,8 +13,24 @@
 
 #include <base/concurrency/EventException.h>
 
-_COM_AZURE_DEV__BASE__DUMMY_SYMBOL
-
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
+
+EventException::EventException() noexcept
+{
+}
+
+EventException::EventException(const char* message) noexcept
+  : LockException(message) {
+}
+
+EventException::EventException(const Type& type) noexcept
+  : LockException(type)
+{
+}
+
+EventException::EventException(const char* message, const Type& type) noexcept
+  : LockException(message, type)
+{
+}
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

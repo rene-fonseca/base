@@ -13,8 +13,25 @@
 
 #include <base/concurrency/ConcurrencyException.h>
 
-_COM_AZURE_DEV__BASE__DUMMY_SYMBOL
-
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
+
+ConcurrencyException::ConcurrencyException() noexcept
+{
+}
+
+ConcurrencyException::ConcurrencyException(const char* message) noexcept
+  : Exception(message)
+{
+}
+
+ConcurrencyException::ConcurrencyException(const Type& type) noexcept
+  : Exception(type)
+{
+}
+
+ConcurrencyException::ConcurrencyException(const char* message, const Type& type) noexcept
+  : Exception(message, type)
+{
+}
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

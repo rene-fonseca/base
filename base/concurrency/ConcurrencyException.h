@@ -37,29 +37,21 @@ public:
   /**
     Initializes the exception object with no message.
   */
-  inline ConcurrencyException() noexcept
-  {
-  }
+  ConcurrencyException() noexcept;
 
   /**
     Initializes the exception object.
 
     @param message The message.
   */
-  inline ConcurrencyException(const char* message) noexcept
-    : Exception(message)
-  {
-  }
+  ConcurrencyException(const char* message) noexcept;
 
   /**
     Initializes the exception object without an associated message.
     
     @param type The identity of the type.
   */
-  inline ConcurrencyException(const Type& type) noexcept
-    : Exception(type)
-  {
-  }
+  ConcurrencyException(const Type& type) noexcept;
   
   /**
     Initializes the exception object.
@@ -67,10 +59,7 @@ public:
     @param message An NULL-terminated string (ASCII).
     @param type The identity of the type.
   */
-  inline ConcurrencyException(const char* message, const Type& type) noexcept
-    : Exception(message, type)
-  {
-  }
+  ConcurrencyException(const char* message, const Type& type) noexcept;
   
   _COM_AZURE_DEV__BASE__EXCEPTION_THIS_TYPE()
 };

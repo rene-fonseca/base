@@ -73,7 +73,8 @@ public:
     the calling thread already has a lock on the object. Raises
     MutualExclusionException on undefined failure.
   */
-  inline void sharedLock() const throw(MutualExclusionException) {
+  inline void sharedLock() const throw(MutualExclusionException)
+  {
     exclusiveLock();
   }
 
@@ -84,7 +85,8 @@ public:
     @return True if the mutual exclusion was locked successfully or already
     was locked by the calling thread.
   */
-  inline bool trySharedLock() const throw(MutualExclusionException) {
+  inline bool trySharedLock() const throw(MutualExclusionException)
+  {
     return tryExclusiveLock();
   }
 

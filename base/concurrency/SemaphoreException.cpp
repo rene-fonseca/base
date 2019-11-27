@@ -13,8 +13,25 @@
 
 #include <base/concurrency/SemaphoreException.h>
 
-_COM_AZURE_DEV__BASE__DUMMY_SYMBOL
-
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
+
+SemaphoreException::SemaphoreException() noexcept
+{
+}
+
+SemaphoreException::SemaphoreException(const char* message) noexcept
+  : LockException(message)
+{
+}
+
+SemaphoreException::SemaphoreException(const Type& type) noexcept
+  : LockException(type)
+{
+}
+
+SemaphoreException::SemaphoreException(const char* message, const Type& type) noexcept
+  : LockException(message, type)
+{
+}
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

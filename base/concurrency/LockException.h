@@ -31,29 +31,21 @@ public:
   /**
     Initializes the exception object with no message.
   */
-  inline LockException() noexcept
-  {
-  }
+  LockException() noexcept;
 
   /**
     Initializes the exception object.
 
     @param message The message.
   */
-  inline LockException(const char* message) noexcept
-    : Exception(message)
-  {
-  }
+  LockException(const char* message) noexcept;
 
   /**
     Initializes the exception object without an associated message.
     
     @param type The identity of the type.
   */
-  inline LockException(const Type& type) noexcept
-    : Exception(type)
-  {
-  }
+  LockException(const Type& type) noexcept;
   
   /**
     Initializes the exception object.
@@ -61,10 +53,7 @@ public:
     @param message An NULL-terminated string (ASCII).
     @param type The identity of the type.
   */
-  inline LockException(const char* message, const Type& type) noexcept
-    : Exception(message, type)
-  {
-  }
+  LockException(const char* message, const Type& type) noexcept;
   
   _COM_AZURE_DEV__BASE__EXCEPTION_THIS_TYPE()
 };

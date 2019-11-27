@@ -31,25 +31,21 @@ public:
   /**
     Initializes the exception object with no message.
   */
-  inline MutualExclusionException() noexcept {
-  }
+  MutualExclusionException() noexcept;
 
   /**
     Initializes the exception object.
 
     @param message The message.
   */
-  inline MutualExclusionException(const char* message) noexcept
-    : LockException(message) {
-  }
+  MutualExclusionException(const char* message) noexcept;
 
   /**
     Initializes the exception object without an associated message.
     
     @param type The identity of the type.
   */
-  inline MutualExclusionException(const Type& type) noexcept : LockException(type) {
-  }
+  MutualExclusionException(const Type& type) noexcept;
   
   /**
     Initializes the exception object.
@@ -57,9 +53,7 @@ public:
     @param message An NULL-terminated string (ASCII).
     @param type The identity of the type.
   */
-  inline MutualExclusionException(const char* message, const Type& type) noexcept
-    : LockException(message, type) {
-  }
+  MutualExclusionException(const char* message, const Type& type) noexcept;
   
   _COM_AZURE_DEV__BASE__EXCEPTION_THIS_TYPE()
 };

@@ -113,7 +113,7 @@ private:
   static const unsigned short ECHO_SERVICE_PORT = 7;
   static const unsigned int CONCURRENCY = 16;
   /** The server port. */
-  unsigned short port;
+  unsigned short port = 0;
   
   enum Command {
     HELP,

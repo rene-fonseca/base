@@ -46,7 +46,7 @@ public:
 
     InetAddress address("0.0.0.0");
 
-    unsigned short port; // the port to bind the server socket to
+    unsigned short port = 0; // the port to bind the server socket to
     try {
       Integer integer(servicename);
       if ((integer < 0) || (integer > 0xffff)) {
@@ -87,7 +87,7 @@ public:
     Allocator<uint8> buffer(4096);
     while (datagrams--) {
       InetAddress remoteAddress;
-      unsigned short remotePort;
+      unsigned short remotePort = 0;
 
       fout << "Waiting for datagram..." << ENDL;
       unsigned int bytesReceived = serverSocket.receiveFrom(

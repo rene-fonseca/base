@@ -68,7 +68,7 @@ public:
       address = InetAddress(a);
     }
 
-    unsigned short port; // the port to bind the server socket to
+    unsigned short port = 0; // the port to bind the server socket to
     try {
       Integer integer(servicename);
       if ((integer < 0) || (integer > 0xffff)) {

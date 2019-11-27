@@ -46,7 +46,7 @@ public:
   void server(const String& servicename) {
     fout << "Hostname: " << InetAddress::getLocalHost() << ENDL;
 
-    unsigned short port; // the port to bind the server socket to
+    unsigned short port = 0; // the port to bind the server socket to
     try {
       Integer integer(servicename);
       if ((integer < 0) || (integer > 0xffff)) {
@@ -124,7 +124,7 @@ public:
     Allocator<uint8> buffer(4096);
     while (!isTerminated()) {
       InetAddress remoteAddress;
-      unsigned short remotePort;
+      unsigned short remotePort = 0;
       
       fout << "Waiting for packet..." << ENDL;
       unsigned int bytesReceived = socket.receiveFrom(

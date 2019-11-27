@@ -62,7 +62,7 @@ public:
       }
     }
 
-    unsigned short port; // the port to bind the server socket to
+    unsigned short port = 0; // the port to bind the server socket to
     try {
       Integer integer(service);
       if ((integer < 0) || (integer > 0xffff)) {
@@ -102,7 +102,7 @@ public:
 
     Allocator<uint8> receiveBuffer(4096);
     InetAddress remoteAddress;
-    unsigned short remotePort;
+    unsigned short remotePort = 0;
 
     fout << "Waiting for datagram..." << ENDL;
     unsigned int bytesReceived = socket.receiveFrom(

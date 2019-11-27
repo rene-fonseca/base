@@ -24,8 +24,8 @@
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
-unsigned short InetService::getByName(
-  const String& name, const String& protocol) throw() {
+unsigned short InetService::getByName(const String& name, const String& protocol) throw()
+{
   struct servent* sp = nullptr;
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   sp = getservbyname(name.getElements(), protocol.getElements()); // MT-safe
@@ -67,7 +67,8 @@ String InetService::getByPort(
 }
 
 InetService::InetService(
-  const String& name, const String& protocol) throw(ServiceNotFound) {
+  const String& name, const String& protocol) throw(ServiceNotFound)
+{
   port = getByName(name, protocol);
   bassert(
     port != 0,
@@ -103,20 +104,24 @@ InetService& InetService::operator=(const InetService& assign) throw()
   return *this;
 }
 
-const String& InetService::getName() const throw() {
+const String& InetService::getName() const throw()
+{
   return name;
 }
 
-unsigned short InetService::getPort() const throw() {
+unsigned short InetService::getPort() const throw()
+{
   return port;
 }
 
-const String& InetService::getProtocol() const throw() {
+const String& InetService::getProtocol() const throw()
+{
   return protocol;
 }
 
 FormatOutputStream& operator<<(
-  FormatOutputStream& stream, const InetService& value) throw(IOException) {
+  FormatOutputStream& stream, const InetService& value) throw(IOException)
+{
   FormatOutputStream::PushContext push(stream);
   return stream << value.name << ' ' << value.port << '/' << value.protocol;
 }

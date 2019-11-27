@@ -32,14 +32,15 @@ public:
     int numberOfArguments,
     const char* arguments[],
     const char* environment[]) throw()
-    : Application("Version", numberOfArguments, arguments, environment) {
+    : Application("Version", numberOfArguments, arguments, environment)
+  {
   }
 
-  void main() throw() {
+  void main() throw()
+  {
     fout << getFormalName() << " version "
          << MAJOR_VERSION << '.' << MINOR_VERSION << EOL
          << "The Base Framework (Test Suite)" << EOL
-         << "Copyright (C) 2002-2019 by Rene Moeller Fonseca" << EOL
          << ENDL;
     
     Orb orb;

@@ -27,14 +27,15 @@ public:
     int numberOfArguments,
     const char* arguments[],
     const char* environment[]) throw()
-    : Application("OpenCL", numberOfArguments, arguments, environment) {
+    : Application("OpenCL", numberOfArguments, arguments, environment)
+  {
   }
   
-  void main() throw() {
+  void main() throw()
+  {
     fout << getFormalName() << " version "
          << MAJOR_VERSION << '.' << MINOR_VERSION << EOL
          << "The Base Framework (Test Suite)" << EOL
-         << "Copyright (C) 2001-2019 by Rene Moeller Fonseca" << EOL
          << ENDL;
     
     fout << "Number of OpenCL devices: " << OpenCL::getNumberOfDevices() << ENDL;

@@ -119,22 +119,26 @@ public:
   class DateServlet : public DateSkeleton {
   private:
 
-    mutable int value;
+    mutable int value = 1234;
   public:
     
-    DateServlet() throw() : value(1234) {
+    DateServlet() throw()
+    {
     }
 
-    int getDate() const throw() {
+    int getDate() const throw()
+    {
       return value++;
     }
   };
   
-  void run() throw() {
+  void run() throw()
+  {
     orb.run();
   }
 
-  void dump() throw() {
+  void dump() throw()
+  {
     fout << "ORB:" << EOL
          << indent(2) << "number of encoding schemes: " << orb.getNumberOfEncodings() << EOL
          << indent(2) << "encoding schemes: " << orb.getEncodings() << EOL
@@ -147,11 +151,11 @@ public:
          << ENDL;
   }
   
-  void main() throw() {
+  void main() throw()
+  {
     fout << getFormalName() << " version "
          << MAJOR_VERSION << '.' << MINOR_VERSION << EOL
          << "The Base Framework (Test Suite)" << EOL
-         << "Copyright (C) 2002-2019 by Rene Moeller Fonseca" << EOL
          << ENDL;
 
     orb.registerEncoding(new LisaEncoding(), Orb::OUTGOING|Orb::INCOMING);

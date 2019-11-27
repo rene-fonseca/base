@@ -29,10 +29,12 @@ public:
     int numberOfArguments,
     const char* arguments[],
     const char* environment[]) throw()
-    : Application("dlapp", numberOfArguments, arguments, environment) {
+    : Application("dlapp", numberOfArguments, arguments, environment)
+  {
   }
 
-  void load(const String& modulePath) {
+  void load(const String& modulePath)
+  {
     LinkerManager manager;
     fout << "Loading module..." << ENDL;
     LinkerModule* temp = manager.load(modulePath);
@@ -53,11 +55,11 @@ public:
     manager.unload(temp);
   }
   
-  void main() throw() {
+  void main() throw()
+  {
     fout << getFormalName() << " version "
          << MAJOR_VERSION << '.' << MINOR_VERSION << EOL
          << "The Base Framework (Test Suite)" << EOL
-         << "Copyright (C) 2001-2019 by Rene Moeller Fonseca" << EOL
          << ENDL;
 
     Array<String> arguments = getArguments();

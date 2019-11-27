@@ -241,36 +241,41 @@ public:
   /**
     Assignment of matrix to matrix.
   */
-  inline Matrix4x4& operator=(const Matrix4x4& eq) throw() {
+  inline Matrix4x4& operator=(const Matrix4x4& assign) throw() {
     // no need to protect against self-assignment (possible overlap)
     copy<TYPE>(
       Cast::pointer<TYPE*>(elements),
-      Cast::pointer<const TYPE*>(eq.elements),
+      Cast::pointer<const TYPE*>(assign.elements),
       4 * 4
     );
     return *this;
   }
 
-  inline TYPE getAt(unsigned int row, unsigned int column) const throw() {
+  inline TYPE getAt(unsigned int row, unsigned int column) const throw()
+  {
     // TAG: check row and column
     return elements[row][column];
   }
 
   inline void setAt(
-    unsigned int row, unsigned int column, const TYPE& value) throw() {
+    unsigned int row, unsigned int column, const TYPE& value) throw()
+  {
     // TAG: check row and column
     elements[row][column] = value;
   }
   
-  inline TYPE* getElements() throw() {
+  inline TYPE* getElements() throw()
+  {
     return reinterpret_cast<TYPE*>(&elements);
   }
 
-  inline const TYPE* getElements() const throw() {
+  inline const TYPE* getElements() const throw()
+  {
     return reinterpret_cast<const TYPE*>(&elements);
   }
 
-  bool isEqual(const Matrix4x4& value) const throw() {
+  bool isEqual(const Matrix4x4& value) const throw()
+  {
     return equal(elements, value.elements, 4 * 4);
   }
 

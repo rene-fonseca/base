@@ -37,41 +37,47 @@ public:
   /**
     Initializes the object reference.
   */
-  inline OrbReference(uint64 _id) throw(OrbException) : id(_id) {
+  inline OrbReference(uint64 _id) throw(OrbException) : id(_id)
+  {
   }
   
   /**
     Initializes reference by reference.
   */
-  inline OrbReference(const OrbReference& copy) throw() : id(copy.id) {
+  inline OrbReference(const OrbReference& copy) throw() : id(copy.id)
+  {
   }
 
   /**
     Assignment of reference be reference.
   */
-  inline OrbReference& operator=(const OrbReference& eq) throw() {
-    id = eq.id;
+  inline OrbReference& operator=(const OrbReference& assign) throw()
+  {
+    id = assign.id;
     return *this;
   }
 
   /**
     Returns true if the objects are equal.
   */
-  inline bool operator==(const OrbReference& eq) const throw() {
-    return id == eq.id;
+  inline bool operator==(const OrbReference& compare) const throw()
+  {
+    return id == compare.id;
   }
   
   /**
     Returns true if the objects are non-equal.
   */
-  inline bool operator!=(const OrbReference& eq) const throw() {
-    return id != eq.id;
+  inline bool operator!=(const OrbReference& compare) const throw()
+  {
+    return id != compare.id;
   }
   
   /**
     Returns the skeleton reference value.
   */
-  inline uint64 getId() const throw() {
+  inline uint64 getId() const throw()
+  {
     return id;
   }
 };
@@ -83,7 +89,8 @@ public:
   /**
     Returns the hash value of the specified object.
   */
-  inline unsigned long operator()(const OrbReference& value) throw() {
+  inline unsigned long operator()(const OrbReference& value) throw()
+  {
     return 257 * value.getId() + (value.getId() >> 32); // TAG: need better hash function
   }
 };

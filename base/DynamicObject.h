@@ -40,7 +40,8 @@ public:
   /**
     Initializes the object.
   */
-  inline DynamicObject() noexcept {
+  inline DynamicObject() noexcept
+  {
   }
 
   /**
@@ -51,7 +52,8 @@ public:
   /**
     Destroys the object.
   */
-  virtual inline ~DynamicObject() noexcept(false) {
+  virtual inline ~DynamicObject() noexcept(false)
+  {
 #if defined(_COM_AZURE_DEV__BASE__DEBUG)
     BASSERT(valid == STATE_VALID);
     valid = STATE_INVALID;

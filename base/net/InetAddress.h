@@ -171,7 +171,7 @@ public:
   /**
     Assignment operator.
   */
-  InetAddress& operator=(const InetAddress& eq) throw();
+  InetAddress& operator=(const InetAddress& assign) throw();
 
   /**
     Returns the family of the address.
@@ -228,13 +228,13 @@ public:
   /**
     Returns true if the adresses are exactly equal.
   */
-  bool operator==(const InetAddress& eq) const throw();
+  bool operator==(const InetAddress& compare) const throw();
   
   /**
     Returns true if the adresses are non-equal.
   */
-  inline bool operator!=(const InetAddress& eq) const throw() {
-    return !operator==(eq);
+  inline bool operator!=(const InetAddress& compare) const throw() {
+    return !operator==(compare);
   }
   
   /**

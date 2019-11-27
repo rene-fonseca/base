@@ -83,33 +83,37 @@ public:
   /**
     Default assignment.
   */
-  InetEndPoint& operator=(const InetEndPoint& eq) noexcept;
+  InetEndPoint& operator=(const InetEndPoint& assign) noexcept;
 
   /**
     Returns true if the end point are equal.
   */
-  inline bool operator==(const InetEndPoint& eq) const noexcept {
-    return (port == eq.port) && (address == eq.address);
+  inline bool operator==(const InetEndPoint& compare) const noexcept
+  {
+    return (port == compare.port) && (address == compare.address);
   }
   
   /**
     Returns true if the end point are non-equal.
   */
-  inline bool operator!=(const InetEndPoint& eq) const noexcept {
-    return (port != eq.port) || (address != eq.address);
+  inline bool operator!=(const InetEndPoint& compare) const noexcept
+  {
+    return (port != compare.port) || (address != compare.address);
   }
   
   /**
     Returns the address.
   */
-  inline const InetAddress& getAddress() const noexcept {
+  inline const InetAddress& getAddress() const noexcept
+  {
     return address;
   }
 
   /**
     Returns the port.
   */
-  inline unsigned short getPort() const noexcept {
+  inline unsigned short getPort() const noexcept
+  {
     return port;
   }
 

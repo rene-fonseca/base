@@ -36,7 +36,8 @@ public:
   /**
     Initializes the interface.
   */
-  inline Interface() throw() {
+  inline Interface() throw()
+  {
   }
   
   /**

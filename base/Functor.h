@@ -1269,7 +1269,7 @@ public:
     SUFFIX suffix;
 
     Invoke(const Invoke& copy) throw();
-    Invoke& operator=(const Invoke& eq) throw();
+    Invoke& operator=(const Invoke& assign) throw();
   public:
     
     inline Invoke(TYPE* _object, PREFIX _prefix, SUFFIX _suffix)

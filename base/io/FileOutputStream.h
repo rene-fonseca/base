@@ -94,7 +94,7 @@ public:
             unsigned int options = CREATE | TRUNCATE,
             unsigned int permissions = 0x640) throw(FileNotFound);
 
-  FileOutputStream& operator=(const FileOutputStream& eq) throw();
+  FileOutputStream& operator=(const FileOutputStream& assign) throw();
 
   /** Returns true if open. */
   bool isOpen() const noexcept;

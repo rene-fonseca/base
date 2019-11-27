@@ -25,13 +25,13 @@ AsynchronousReadCompletion::AsynchronousReadCompletion(
 }
 
 AsynchronousReadCompletion& AsynchronousReadCompletion::operator=(
-  const AsynchronousReadCompletion& eq) throw() {
+  const AsynchronousReadCompletion& assign) throw() {
   // no need to protect against self-assignment
-  buffer = eq.buffer;
-  bytesToRead = eq.bytesToRead;
-  offset = eq.offset;
-  bytesRead = eq.bytesRead;
-  flags = eq.flags;
+  buffer = assign.buffer;
+  bytesToRead = assign.bytesToRead;
+  offset = assign.offset;
+  bytesRead = assign.bytesRead;
+  flags = assign.flags;
   return *this;
 }
 

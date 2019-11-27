@@ -37,7 +37,8 @@ public:
   /**
     Initializes region with offset (0, 0) and dimension (0, 0).
   */
-  inline Region() throw() : offset(0, 0), dimension(0, 0) {
+  inline Region() throw() : offset(0, 0), dimension(0, 0)
+  {
   }
   
   /**
@@ -52,56 +53,64 @@ public:
     Initializes region from other region.
   */
   inline Region(const Region& copy) throw()
-    : offset(copy.offset), dimension(copy.dimension) {
+    : offset(copy.offset), dimension(copy.dimension)
+  {
   }
   
   /**
     Assignment of region by region.
   */
-  inline Region& operator=(const Region& eq) throw() {
-    offset = eq.offset;
-    dimension = eq.dimension;
+  inline Region& operator=(const Region& assign) throw()
+  {
+    offset = assign.offset;
+    dimension = assign.dimension;
     return *this;
   }
   
   /**
     Returns the offset of the region.
   */
-  inline const Point2D& getOffset() const throw() {
+  inline const Point2D& getOffset() const throw()
+  {
     return offset;
   }
   
   /**
     Returns the dimension of the region.
   */
-  inline const Dimension& getDimension() const throw() {
+  inline const Dimension& getDimension() const throw()
+  {
     return dimension;
   }
   
   /**
     Sets the offset of the region.
   */
-  inline void setOffset(const Point2D& offset) throw() {
+  inline void setOffset(const Point2D& offset) throw()
+  {
     this->offset = offset;
   }
   
   /**
     Sets the dimension of the region.
   */
-  inline void setDimension(const Dimension& dimension) throw() {
+  inline void setDimension(const Dimension& dimension) throw()
+  {
     this->dimension = dimension;
   }
   
   /**
     Returns true if the region spans elements (i.e. the dimension is proper).
   */
-  inline bool isProper() const throw() {
+  inline bool isProper() const throw()
+  {
     return dimension.isProper();
   }
 };
 
 inline Region::Region(const Point2D& _offset, const Dimension& _dimension) throw()
-  : offset(_offset), dimension(_dimension) {
+  : offset(_offset), dimension(_dimension)
+{
 }
 
 template<>

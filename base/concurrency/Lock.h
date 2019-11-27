@@ -33,7 +33,7 @@ private:
   /* Disable the default copy constructor. */
   Lock(const Lock& copy) throw();
   /* Disable the default assignment operator. */
-  Lock& operator=(const Lock& eq) throw();
+  Lock& operator=(const Lock& assign) throw();
 public:
 
   typedef ExclusiveSynchronize<Lock> Sync;

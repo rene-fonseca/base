@@ -31,54 +31,64 @@ namespace ByteOrder {
 #if (_COM_AZURE_DEV__BASE__BYTE_ORDER == _COM_AZURE_DEV__BASE__BIG_ENDIAN)
 
   template<class TYPE>
-  inline TYPE fromBigEndian(TYPE value) throw() {
+  inline TYPE fromBigEndian(TYPE value) noexcept
+  {
     return value;
   }
 
   template<class TYPE>
-  inline TYPE toBigEndian(TYPE value) throw() {
+  inline TYPE toBigEndian(TYPE value) noexcept
+  {
     return value;
   }
 
 #elif (_COM_AZURE_DEV__BASE__BYTE_ORDER == _COM_AZURE_DEV__BASE__LITTLE_ENDIAN)
 
   template<class TYPE>
-  inline TYPE fromBigEndian(TYPE value) throw() {
+  inline TYPE fromBigEndian(TYPE value) noexcept
+  {
     return value;
   }
 
   template<>
-  inline uint16 fromBigEndian<uint16>(uint16 value) throw() {
+  inline uint16 fromBigEndian<uint16>(uint16 value) noexcept
+  {
     return (value >> 8) | (value << 8);
   }
 
   template<>
-  inline uint32 fromBigEndian<uint32>(uint32 value) throw() {
+  inline uint32 fromBigEndian<uint32>(uint32 value) noexcept
+  {
     return (value >> 24) | ((value & 0xff0000) >> 8) | ((value & 0xff00) << 8) | (value << 24);
   }
 
   template<>
-  inline uint64 fromBigEndian<uint64>(uint64 value) throw() {
+  inline uint64 fromBigEndian<uint64>(uint64 value) noexcept
+  {
     return fromBigEndian<uint32>(value >> 32) | static_cast<uint64>(fromBigEndian<uint32>(value)) << 32;
   }
 
   template<class TYPE>
-  inline TYPE toBigEndian(TYPE value) throw() {
+  inline TYPE toBigEndian(TYPE value) noexcept
+  {
     return value;
   }
 
   template<>
-  inline uint16 toBigEndian<uint16>(uint16 value) throw() {
+  inline uint16 toBigEndian<uint16>(uint16 value) noexcept
+  {
     return (value >> 8) | (value << 8);
   }
 
   template<>
-  inline uint32 toBigEndian<uint32>(uint32 value) throw() {
+  inline uint32 toBigEndian<uint32>(uint32 value) noexcept
+  {
     return (value >> 24) | ((value & 0xff0000) >> 8) | ((value & 0xff00) << 8) | (value << 24);
   }
 
   template<>
-  inline uint64 toBigEndian<uint64>(uint64 value) throw() {
+  inline uint64 toBigEndian<uint64>(uint64 value) noexcept
+  {
     return toBigEndian<uint32>(value >> 32) | static_cast<uint64>(toBigEndian<uint32>(value & 0xffffffff)) << 32;
   }
 
@@ -109,20 +119,24 @@ _COM_AZURE_DEV__BASE__PACKED__BEGIN
     uint8 a;
     uint8 b;
     
-    inline LittleEndian() throw() {
+    inline LittleEndian() noexcept
+    {
     }
     
-    inline LittleEndian(int16 value) throw()
-      : a(value), b(value >> 8) {
+    inline LittleEndian(int16 value) noexcept
+      : a(value), b(value >> 8)
+    {
     }
     
-    inline int16 operator=(int16 eq) throw() {
-      b = eq >> 8;
-      a = eq;
-      return eq;
+    inline int16 operator=(int16 assign) noexcept
+    {
+      b = assign >> 8;
+      a = assign;
+      return assign;
     }
     
-    inline operator int16() const throw() {
+    inline operator int16() const noexcept
+    {
       return (static_cast<uint16>(b) << 8) + a;
     }
   } _COM_AZURE_DEV__BASE__PACKED;
@@ -135,20 +149,24 @@ _COM_AZURE_DEV__BASE__PACKED__BEGIN
     uint8 a;
     uint8 b;
     
-    inline LittleEndian() throw() {
+    inline LittleEndian() noexcept
+    {
     }
     
-    inline LittleEndian(uint16 value) throw()
-      : a(value), b(value >> 8) {
+    inline LittleEndian(uint16 value) noexcept
+      : a(value), b(value >> 8)
+    {
     }
     
-    inline uint16 operator=(uint16 eq) throw() {
-      b = eq >> 8;
-      a = eq;
-      return eq;
+    inline uint16 operator=(uint16 assign) noexcept
+    {
+      b = assign >> 8;
+      a = assign;
+      return assign;
     }
     
-    inline operator uint16() const throw() {
+    inline operator uint16() const noexcept
+    {
       return (static_cast<uint16>(b) << 8) + a;
     }
   } _COM_AZURE_DEV__BASE__PACKED;
@@ -163,22 +181,25 @@ _COM_AZURE_DEV__BASE__PACKED__BEGIN
     uint8 c;
     uint8 d;
     
-    inline LittleEndian() throw() {
+    inline LittleEndian() noexcept
+    {
     }
     
-    inline LittleEndian(int32 value) throw()
-      : a(value), b(value >> 8), c(value >> 16), d(value >> 24) {
+    inline LittleEndian(int32 value) noexcept
+      : a(value), b(value >> 8), c(value >> 16), d(value >> 24)
+    {
     }
     
-    inline int32 operator=(int32 eq) throw() {
-      d = eq >> 24;
-      c = eq >> 16;
-      b = eq >> 8;
-      a = eq;
-      return eq;
+    inline int32 operator=(int32 assign) noexcept
+    {
+      d = assign >> 24;
+      c = assign >> 16;
+      b = assign >> 8;
+      a = assign;
+      return assign;
     }
     
-    inline operator int32() const throw() {
+    inline operator int32() const noexcept {
       return (((static_cast<uint32>(d) << 8) + c << 8) + b << 8) + a;
     }
   } _COM_AZURE_DEV__BASE__PACKED;
@@ -193,22 +214,26 @@ _COM_AZURE_DEV__BASE__PACKED__BEGIN
     uint8 c;
     uint8 d;
     
-    inline LittleEndian() throw() {
+    inline LittleEndian() noexcept
+    {
     }
     
-    inline LittleEndian(uint32 value) throw()
-      : a(value), b(value >> 8), c(value >> 16), d(value >> 24) {
+    inline LittleEndian(uint32 value) noexcept
+      : a(value), b(value >> 8), c(value >> 16), d(value >> 24)
+    {
     }
     
-    inline uint32 operator=(uint32 eq) throw() {
-      d = eq >> 24;
-      c = eq >> 16;
-      b = eq >> 8;
-      a = eq;
-      return eq;
+    inline uint32 operator=(uint32 assign) noexcept
+    {
+      d = assign >> 24;
+      c = assign >> 16;
+      b = assign >> 8;
+      a = assign;
+      return assign;
     }
   
-    inline operator uint32() const throw() {
+    inline operator uint32() const noexcept
+    {
       return (((static_cast<uint32>(d) << 8) + c << 8) + b << 8) + a;
     }
   } _COM_AZURE_DEV__BASE__PACKED;
@@ -221,20 +246,24 @@ _COM_AZURE_DEV__BASE__PACKED__BEGIN
     LittleEndian<uint32> a;
     LittleEndian<uint32> b;
     
-    inline LittleEndian() throw() {
+    inline LittleEndian() noexcept
+    {
     }
   
-    inline LittleEndian(int64 value) throw()
-      : a(value), b(value >> 32) {
+    inline LittleEndian(int64 value) noexcept
+      : a(value), b(value >> 32)
+    {
     }
     
-    inline int64 operator=(int64 eq) throw() {
-      b = eq >> 32;
-      a = eq;
-      return eq;
+    inline int64 operator=(int64 assign) noexcept
+    {
+      b = assign >> 32;
+      a = assign;
+      return assign;
     }
     
-    inline operator int64() const throw() {
+    inline operator int64() const noexcept
+    {
       return (static_cast<uint64>(b) << 8) + a;
     }
   } _COM_AZURE_DEV__BASE__PACKED;
@@ -247,20 +276,24 @@ _COM_AZURE_DEV__BASE__PACKED__BEGIN
     LittleEndian<uint32> a;
     LittleEndian<uint32> b;
     
-    inline LittleEndian() throw() {
+    inline LittleEndian() noexcept
+    {
     }
     
-    inline LittleEndian(uint64 value) throw()
-      : a(value), b(value >> 32) {
+    inline LittleEndian(uint64 value) noexcept
+      : a(value), b(value >> 32)
+    {
     }
     
-    inline uint64 operator=(uint64 eq) throw() {
-      b = eq >> 32;
-      a = eq;
-      return eq;
+    inline uint64 operator=(uint64 assign) noexcept
+    {
+      b = assign >> 32;
+      a = assign;
+      return assign;
     }
     
-    inline operator uint64() const throw() {
+    inline operator uint64() const noexcept
+    {
       return (static_cast<uint64>(b) << 32) + a;
     }
   } _COM_AZURE_DEV__BASE__PACKED;
@@ -279,19 +312,23 @@ _COM_AZURE_DEV__BASE__PACKED__BEGIN
   struct BigEndian {
     TYPE value;
     
-    inline BigEndian() throw() {
+    inline BigEndian() noexcept
+    {
     }
     
-    inline BigEndian(TYPE _value) throw()
-      : value(_value) {
+    inline BigEndian(TYPE _value) noexcept
+      : value(_value)
+    {
     }
     
-    inline TYPE operator=(TYPE eq) throw() {
-      value = eq;
-      return eq;
+    inline TYPE operator=(TYPE assign) noexcept
+    {
+      value = assign;
+      return assign;
     }
     
-    inline operator TYPE() const throw() {
+    inline operator TYPE() const noexcept
+    {
       return value;
     }
   } _COM_AZURE_DEV__BASE__PACKED;
@@ -314,19 +351,22 @@ _COM_AZURE_DEV__BASE__PACKED__BEGIN
   struct LittleEndian {
     TYPE value;
     
-    inline LittleEndian() throw() {
+    inline LittleEndian() noexcept
+    {
     }
     
-    inline LittleEndian(TYPE _value) throw()
+    inline LittleEndian(TYPE _value) noexcept
       : value(_value) {
     }
     
-    inline TYPE operator=(TYPE eq) throw() {
-      value = eq;
-      return eq;
+    inline TYPE operator=(TYPE assign) noexcept
+    {
+      value = assign;
+      return assign;
     }
     
-    inline operator TYPE() const throw() {
+    inline operator TYPE() const noexcept
+    {
       return value;
     }
   } _COM_AZURE_DEV__BASE__PACKED;
@@ -357,20 +397,24 @@ _COM_AZURE_DEV__BASE__PACKED__BEGIN
     uint8 b;
     uint8 a;
     
-    inline BigEndian() throw() {
+    inline BigEndian() noexcept
+    {
     }
     
-    inline BigEndian(int16 value) throw()
-      : b(value >> 8), a(value) {
+    inline BigEndian(int16 value) noexcept
+      : b(value >> 8), a(value)
+    {
     }
     
-    inline int16 operator=(int16 eq) throw() {
-      b = eq >> 8;
-      a = eq;
-      return eq;
+    inline int16 operator=(int16 assign) noexcept
+    {
+      b = assign >> 8;
+      a = assign;
+      return assign;
     }
     
-    inline operator int16() const throw() {
+    inline operator int16() const noexcept
+    {
       return (static_cast<uint16>(b) << 8) + a;
     }
   } _COM_AZURE_DEV__BASE__PACKED;
@@ -383,20 +427,24 @@ _COM_AZURE_DEV__BASE__PACKED__BEGIN
     uint8 b;
     uint8 a;
 
-    inline BigEndian() throw() {
+    inline BigEndian() noexcept
+    {
     }
     
-    inline BigEndian(uint16 value) throw()
-      : b(value >> 8), a(value) {
+    inline BigEndian(uint16 value) noexcept
+      : b(value >> 8), a(value)
+    {
     }
     
-    inline uint16 operator=(uint16 eq) throw() {
-      b = eq >> 8;
-      a = eq;
-      return eq;
+    inline uint16 operator=(uint16 assign) noexcept
+    {
+      b = assign >> 8;
+      a = assign;
+      return assign;
     }
   
-    inline operator uint16() const throw() {
+    inline operator uint16() const noexcept
+    {
       return (static_cast<uint16>(b) << 8) + a;
     }
   } _COM_AZURE_DEV__BASE__PACKED;
@@ -411,22 +459,26 @@ _COM_AZURE_DEV__BASE__PACKED__BEGIN
     uint8 b;
     uint8 a;
     
-    inline BigEndian() throw() {
+    inline BigEndian() noexcept
+    {
     }
     
-    inline BigEndian(int32 value) throw()
-      : d(value >> 24), c(value >> 16), b(value >> 8), a(value) {
+    inline BigEndian(int32 value) noexcept
+      : d(value >> 24), c(value >> 16), b(value >> 8), a(value)
+    {
     }
     
-    inline int32 operator=(int32 eq) throw() {
-      d = eq >> 24;
-      c = eq >> 16;
-      b = eq >> 8;
-      a = eq;
-      return eq;
+    inline int32 operator=(int32 assign) noexcept
+    {
+      d = assign >> 24;
+      c = assign >> 16;
+      b = assign >> 8;
+      a = assign;
+      return assign;
     }
     
-    inline operator int32() const throw() {
+    inline operator int32() const noexcept
+    {
       return (((((static_cast<uint32>(d) << 8) + c) << 8) + b) << 8) + a;
     }
   } _COM_AZURE_DEV__BASE__PACKED;
@@ -441,22 +493,26 @@ _COM_AZURE_DEV__BASE__PACKED__BEGIN
     uint8 b;
     uint8 a;
     
-    inline BigEndian() throw() {
+    inline BigEndian() noexcept
+    {
     }
     
-    inline BigEndian(uint32 value) throw()
-      : d(value >> 24), c(value >> 16), b(value >> 8), a(value) {
+    inline BigEndian(uint32 value) noexcept
+      : d(value >> 24), c(value >> 16), b(value >> 8), a(value)
+    {
     }
     
-    inline uint32 operator=(uint32 eq) throw() {
-      d = eq >> 24;
-      c = eq >> 16;
-      b = eq >> 8;
-      a = eq;
-      return eq;
+    inline uint32 operator=(uint32 assign) noexcept
+    {
+      d = assign >> 24;
+      c = assign >> 16;
+      b = assign >> 8;
+      a = assign;
+      return assign;
     }
   
-    inline operator uint32() const throw() {
+    inline operator uint32() const noexcept
+    {
       return (((((static_cast<uint32>(d) << 8) + c) << 8) + b) << 8) + a;
     }
   } _COM_AZURE_DEV__BASE__PACKED;
@@ -469,20 +525,24 @@ _COM_AZURE_DEV__BASE__PACKED__BEGIN
     BigEndian<uint32> b;
     BigEndian<uint32> a;
     
-    inline BigEndian() throw() {
+    inline BigEndian() noexcept
+    {
     }
   
-    inline BigEndian(int64 value) throw()
-      : b(value >> 32), a(value) {
+    inline BigEndian(int64 value) noexcept
+      : b(value >> 32), a(value)
+    {
     }
     
-    inline int64 operator=(int64 eq) throw() {
-      b = eq >> 32;
-      a = eq;
-      return eq;
+    inline int64 operator=(int64 assign) noexcept
+    {
+      b = assign >> 32;
+      a = assign;
+      return assign;
     }
     
-    inline operator int64() const throw() {
+    inline operator int64() const noexcept
+    {
       return (static_cast<uint64>(b) << 8) + a;
     }
   } _COM_AZURE_DEV__BASE__PACKED;
@@ -495,20 +555,24 @@ _COM_AZURE_DEV__BASE__PACKED__BEGIN
     BigEndian<uint32> b;
     BigEndian<uint32> a;
     
-    inline BigEndian() throw() {
+    inline BigEndian() noexcept
+    {
     }
     
-    inline BigEndian(uint64 value) throw()
-      : b(value >> 32), a(value) {
+    inline BigEndian(uint64 value) noexcept
+      : b(value >> 32), a(value)
+    {
     }
     
-    inline uint64 operator=(uint64 eq) throw() {
-      b = eq >> 32;
-      a = eq;
-      return eq;
+    inline uint64 operator=(uint64 assign) noexcept
+    {
+      b = assign >> 32;
+      a = assign;
+      return assign;
     }
     
-    inline operator uint64() const throw() {
+    inline operator uint64() const noexcept
+    {
       return (static_cast<uint64>(b) << 32) + a;
     }
   } _COM_AZURE_DEV__BASE__PACKED;

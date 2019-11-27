@@ -37,7 +37,7 @@ public:
   {
   }
 
-  ServerSocket(const ServerSocket& eq) throw();
+  ServerSocket(const ServerSocket& copy) throw();
 
   /**
     Creates a server stream socket and binds it to the specified port and IP address.

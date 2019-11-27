@@ -24,7 +24,8 @@ _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 // template _COM_AZURE_DEV__BASE__API class Vector<double>;
 
 template<class TYPE>
-Vector<TYPE>::Vector(unsigned int size) throw(OutOfDomain) {
+Vector<TYPE>::Vector(unsigned int size) throw(OutOfDomain)
+{
   if (size < 1) {
     throw OutOfDomain(this);
   }
@@ -33,7 +34,8 @@ Vector<TYPE>::Vector(unsigned int size) throw(OutOfDomain) {
 
 template<class TYPE>
 Vector<TYPE>::Vector(
-  const TYPE elements[], unsigned int size) throw(OutOfDomain) {
+  const TYPE elements[], unsigned int size) throw(OutOfDomain)
+{
   if (size < 1) {
     throw OutOfDomain(this);
   }
@@ -42,15 +44,17 @@ Vector<TYPE>::Vector(
 }
 
 template<class TYPE>
-Vector<TYPE>& Vector<TYPE>::operator=(const Vector& eq) throw(MemoryException) {
-  if (&eq != this) { // protect against self assignment
-    elements = eq.elements;
+Vector<TYPE>& Vector<TYPE>::operator=(const Vector& assign) throw(MemoryException)
+{
+  if (&assign != this) { // protect against self assignment
+    elements = assign.elements;
   }
   return *this;
 }
 
 template<class TYPE>
-const TYPE& Vector<TYPE>::getAt(unsigned int index) const throw(OutOfRange) {
+const TYPE& Vector<TYPE>::getAt(unsigned int index) const throw(OutOfRange)
+{
   if (index >= getSize()) {
     throw OutOfRange(this);
   }
@@ -58,7 +62,8 @@ const TYPE& Vector<TYPE>::getAt(unsigned int index) const throw(OutOfRange) {
 }
 
 template<class TYPE>
-void Vector<TYPE>::setAt(unsigned int index, const TYPE& value) throw(OutOfRange) {
+void Vector<TYPE>::setAt(unsigned int index, const TYPE& value) throw(OutOfRange)
+{
   if (index >= getSize()) {
     throw OutOfRange(this);
   }
@@ -66,18 +71,21 @@ void Vector<TYPE>::setAt(unsigned int index, const TYPE& value) throw(OutOfRange
 }
 
 template<class TYPE>
-Vector<TYPE>& Vector<TYPE>::clear() throw() {
+Vector<TYPE>& Vector<TYPE>::clear() throw()
+{
   fill(getElements(), getSize(), TYPE(0));
   return *this;
 }
 
 template<class TYPE>
-Vector<TYPE> Vector<TYPE>::plus() const throw() {
+Vector<TYPE> Vector<TYPE>::plus() const throw()
+{
   return Vector(*this);
 }
 
 template<class TYPE>
-Vector<TYPE> Vector<TYPE>::minus() const throw() {
+Vector<TYPE> Vector<TYPE>::minus() const throw()
+{
   return Vector(getSize()).negate(*this);
 }
 
@@ -88,7 +96,8 @@ Vector<TYPE>& Vector<TYPE>::negate() throw() {
 }
 
 template<class TYPE>
-Vector<TYPE>& Vector<TYPE>::add(const Vector<TYPE>& value) throw(IncompatibleVectors) {
+Vector<TYPE>& Vector<TYPE>::add(const Vector<TYPE>& value) throw(IncompatibleVectors)
+{
   if (value.getSize() != getSize()) {
     throw IncompatibleVectors(this);
   }
@@ -97,7 +106,8 @@ Vector<TYPE>& Vector<TYPE>::add(const Vector<TYPE>& value) throw(IncompatibleVec
 }
 
 template<class TYPE>
-Vector<TYPE>& Vector<TYPE>::subtract(const Vector<TYPE>& value) throw(IncompatibleVectors) {
+Vector<TYPE>& Vector<TYPE>::subtract(const Vector<TYPE>& value) throw(IncompatibleVectors)
+{
   if (value.getSize() != getSize()) {
     throw IncompatibleVectors(this);
   }
@@ -106,39 +116,45 @@ Vector<TYPE>& Vector<TYPE>::subtract(const Vector<TYPE>& value) throw(Incompatib
 }
 
 template<class TYPE>
-Vector<TYPE>& Vector<TYPE>::multiply(const TYPE& value) throw() {
+Vector<TYPE>& Vector<TYPE>::multiply(const TYPE& value) throw()
+{
   transform(getElements(), getSize(), bind2Second(Multiply<TYPE>(), value));
   return *this;
 }
 
-template<class TYPE> Vector<TYPE>& Vector<TYPE>::divide(const TYPE& value) throw() {
+template<class TYPE> Vector<TYPE>& Vector<TYPE>::divide(const TYPE& value) throw()
+{
   transform(getElements(), getSize(), bind2Second(Divide<TYPE>(), value));
   return *this;
 }
 
 template<class TYPE>
-Vector<TYPE>& Vector<TYPE>::negate(const Vector<TYPE>& value) throw() {
+Vector<TYPE>& Vector<TYPE>::negate(const Vector<TYPE>& value) throw()
+{
 //  setDimension(value);
   transformByUnary(getElements(), value.getReadOnlyElements(), getSize(), Negate<TYPE>());
   return *this;
 }
 
 template<class TYPE>
-TYPE Vector<TYPE>::dotdot() const throw() {
+TYPE Vector<TYPE>::dotdot() const throw()
+{
   SquareSum<TYPE> squareSum;
   forEach(getReadOnlyElements(), getSize(), squareSum);
   return squareSum.getResult();
 }
 
 template<class TYPE>
-TYPE Vector<TYPE>::norm() const throw() {
+TYPE Vector<TYPE>::norm() const throw()
+{
   SquareSum<TYPE> squareSum;
   forEach(getReadOnlyElements(), getSize(), squareSum);
   return Math::sqrt(squareSum.getResult());
 }
 
 template<class TYPE>
-bool Vector<TYPE>::operator==(const Vector& value) const throw(IncompatibleVectors) {
+bool Vector<TYPE>::operator==(const Vector& value) const throw(IncompatibleVectors)
+{
   if (value.getSize() != getSize()) {
     throw IncompatibleVectors(this);
   }
@@ -146,22 +162,26 @@ bool Vector<TYPE>::operator==(const Vector& value) const throw(IncompatibleVecto
 }
 
 template<class TYPE>
-Vector<TYPE> operator*(const Vector<TYPE>& left, const TYPE& right) throw(MemoryException) {
+Vector<TYPE> operator*(const Vector<TYPE>& left, const TYPE& right) throw(MemoryException)
+{
   return Vector<TYPE>(left).multiply(right);
 }
 
 template<class TYPE>
-Vector<TYPE> operator*(const TYPE& left, const Vector<TYPE>& right) throw(MemoryException) {
+Vector<TYPE> operator*(const TYPE& left, const Vector<TYPE>& right) throw(MemoryException)
+{
   return Vector<TYPE>(right).multiply(left);
 }
 
 template<class TYPE>
-Vector<TYPE> operator/(const Vector<TYPE>& left, const TYPE& right) throw(MemoryException) {
+Vector<TYPE> operator/(const Vector<TYPE>& left, const TYPE& right) throw(MemoryException)
+{
   return Vector<TYPE>(left).divide(right);
 }
 
 template<class TYPE>
-TYPE dot(const Vector<TYPE>& left, const Vector<TYPE>& right) throw() {
+TYPE dot(const Vector<TYPE>& left, const Vector<TYPE>& right) throw()
+{
   if (left.getSize() != right.getSize()) {
     throw Vector<TYPE>::IncompatibleVectors();
   }
@@ -171,7 +191,8 @@ TYPE dot(const Vector<TYPE>& left, const Vector<TYPE>& right) throw() {
 }
 
 template<class TYPE>
-FormatOutputStream& operator<<(FormatOutputStream& stream, const Vector<TYPE>& value) throw(IOException) {
+FormatOutputStream& operator<<(FormatOutputStream& stream, const Vector<TYPE>& value) throw(IOException)
+{
   FormatOutputStream::PushContext push(stream);
   stream << '(';
   const TYPE* element = value.getReadOnlyElements();

@@ -21,17 +21,19 @@ AsynchronousWriteCompletion::AsynchronousWriteCompletion(
     bytesToWrite(copy.bytesToWrite),
     offset(copy.offset),
     bytesWritten(copy.bytesWritten),
-    flags(copy.flags) {
+    flags(copy.flags)
+{
 }
 
 AsynchronousWriteCompletion& AsynchronousWriteCompletion::operator=(
-  const AsynchronousWriteCompletion& eq) throw() {
+  const AsynchronousWriteCompletion& assign) throw()
+{
   // no need to protect against self-assignment
-  buffer = eq.buffer;
-  bytesToWrite = eq.bytesToWrite;
-  offset = eq.offset;
-  bytesWritten = eq.bytesWritten;
-  flags = eq.flags;
+  buffer = assign.buffer;
+  bytesToWrite = assign.bytesToWrite;
+  offset = assign.offset;
+  bytesWritten = assign.bytesWritten;
+  flags = assign.flags;
   return *this;
 }
 

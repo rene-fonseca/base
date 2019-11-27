@@ -159,7 +159,7 @@ class Synchronize<Unsafe> {
 private:
 
   Synchronize(const Synchronize& copy) throw();
-  Synchronize& operator=(const Synchronize& eq) throw();
+  Synchronize& operator=(const Synchronize& assign) throw();
 public:
   
   /**

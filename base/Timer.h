@@ -74,21 +74,24 @@ public:
     /**
       Initializes time as 0.
     */
-    inline ElapsedTime() noexcept {
+    inline ElapsedTime() noexcept
+    {
     }
 
     /**
       Initializes the time.
     */
-    inline ElapsedTime(unsigned int _nanoseconds) noexcept
-      : nanoseconds(_nanoseconds) {
+    inline ElapsedTime(uint64 _nanoseconds) noexcept
+      : nanoseconds(_nanoseconds)
+    {
     }
 
     /**
       Round to nearest microsecond. Use this after setting the time and before
       converting the time.
     */
-    inline void roundToMicrosecond() noexcept {
+    inline void roundToMicrosecond() noexcept
+    {
       nanoseconds += 500;
     }
     
@@ -96,7 +99,8 @@ public:
       Round to nearest millisecond. Use this after setting the time and before
       converting the time.
     */
-    inline void roundToMillisecond() noexcept {
+    inline void roundToMillisecond() noexcept
+    {
       nanoseconds += 500000;
     }
     
@@ -104,7 +108,8 @@ public:
       Round to nearest second. Use this after setting the time and before
       converting the time.
     */
-    inline void roundToSecond() noexcept {
+    inline void roundToSecond() noexcept
+    {
       nanoseconds += 500000000;
     }
     
@@ -112,7 +117,8 @@ public:
       Round to nearest minute. Use this after setting the time and before
       converting the time.
     */
-    inline void roundToMinute() noexcept {
+    inline void roundToMinute() noexcept
+    {
       nanoseconds += 60 * 500000000ULL;
     }
     
@@ -120,7 +126,8 @@ public:
       Round to nearest hour. Use this after setting the time and before
       converting the time.
     */
-    inline void roundToHour() noexcept {
+    inline void roundToHour() noexcept
+    {
       nanoseconds += 60 * 60 * 500000000ULL;
     }
     
@@ -128,77 +135,88 @@ public:
       Round to nearest day. Use this after setting the time and before
       converting the time.
     */
-    inline void roundToDay() noexcept {
+    inline void roundToDay() noexcept
+    {
       nanoseconds += 24 * 60 * 60 * 500000000ULL;
     }
 
     /**
       Returns the time in nanoseconds.
     */
-    inline uint64 getNanoseconds() const noexcept {
+    inline uint64 getNanoseconds() const noexcept
+    {
       return nanoseconds;
     }
 
     /**
       Sets the time in nanoseconds.
     */
-    inline void setNanoseconds(uint64 nanoseconds) noexcept {
+    inline void setNanoseconds(uint64 nanoseconds) noexcept
+    {
       this->nanoseconds = nanoseconds;
     }
     
     /**
       Returns the time in normalized nanoseconds.
     */
-    inline unsigned int getNNanoseconds() const noexcept {
+    inline unsigned int getNNanoseconds() const noexcept
+    {
       return nanoseconds%1000000000;
     }
     
     /**
       Returns the time in normalized microseconds.
     */
-    inline unsigned int getNMicroseconds() const noexcept {
+    inline unsigned int getNMicroseconds() const noexcept
+    {
       return (nanoseconds/1000)%1000000;
     }
     
     /**
       Returns the time in normalized milliseconds.
     */
-    inline unsigned int getNMilliseconds() const noexcept {
+    inline unsigned int getNMilliseconds() const noexcept
+    {
       return (nanoseconds/1000000)%1000;
     }
     
     /**
       Returns the time in normalized seconds.
     */
-    inline unsigned int getNSeconds() const noexcept {
+    inline unsigned int getNSeconds() const noexcept
+    {
       return (nanoseconds/1000000000)%60;
     }
     
     /**
       Returns the time in seconds.
     */
-    inline uint64 getSeconds() const noexcept {
+    inline uint64 getSeconds() const noexcept
+    {
       return nanoseconds/1000000000;
     }
 
     /**
       Returns the time in normalized minutes.
     */
-    inline unsigned int getNMinutes() const noexcept {
+    inline unsigned int getNMinutes() const noexcept
+    {
       return (nanoseconds/(60 * 1000000000ULL))%60;
     }
     
     /**
       Returns the time in minutes.
     */
-    inline unsigned int getMinutes() const noexcept {
+    inline unsigned int getMinutes() const noexcept
+    {
       return nanoseconds/(60 * 1000000000ULL);
     }
     
     /**
       Returns the time in normalized hours.
     */
-    inline unsigned int getNHours() const noexcept {
+    inline unsigned int getNHours() const noexcept
+    {
       uint64 seconds = nanoseconds/1000000000;
       uint64 minutes = seconds/60;
       uint64 hours = minutes/60;
@@ -208,14 +226,16 @@ public:
     /**
       Returns the time in hours.
     */
-    inline unsigned int getHours() const noexcept {
+    inline unsigned int getHours() const noexcept
+    {
       return nanoseconds/(60 * 60 * 1000000000ULL);
     }
 
     /**
       Returns the time in days.
     */
-    inline unsigned int getDays() const noexcept {
+    inline unsigned int getDays() const noexcept
+    {
       return nanoseconds/(24 * 60 * 60 * 1000000000ULL);
     }
   };

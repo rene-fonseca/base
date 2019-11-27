@@ -75,8 +75,8 @@ public:
   /**
     Assignment of character set by character set.
   */
-  inline CharacterSet& operator=(const CharacterSet& eq) throw() {
-    characterSet = eq.characterSet;
+  inline CharacterSet& operator=(const CharacterSet& assign) throw() {
+    characterSet = assign.characterSet;
     return *this;
   }
   

@@ -128,7 +128,7 @@ public:
   /**
     Assignment of trustee by trustee.
   */
-  Trustee& operator=(const Trustee& eq) noexcept;
+  Trustee& operator=(const Trustee& assign) noexcept;
   
   /**
     Initializes trustee by name.
@@ -139,14 +139,14 @@ public:
     Returns true if the trustees are identical. The method returns true if both
     trustees are invalid.
   */
-  bool operator==(const Trustee& eq) const noexcept;
+  bool operator==(const Trustee& compare) const noexcept;
   
   /**
     Returns false if the trustees are not identical. The method returns false
     if both trustees are invalid.
   */
-  inline bool operator!=(const Trustee& eq) const noexcept {
-    return !(*this == eq);
+  inline bool operator!=(const Trustee& compare) const noexcept {
+    return !(*this == compare);
   }
   
   /**

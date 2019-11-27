@@ -37,8 +37,11 @@ namespace win32 {
 };
 #endif // cygwin
 
-void Trace::message(const char* message) throw() {
-  bassert(message, NullPointer(Type::getType<Trace>()));
+void Trace::message(const char* message) noexcept
+{
+  if (!message) {
+    throw NullPointer(Type::getType<Trace>());
+  }
   
   static bool useBreakpoint = true;
   if (useBreakpoint) {
@@ -61,9 +64,12 @@ void Trace::message(const char* message) throw() {
 #endif // flavor
 }
 
-void Trace::member(const void* pointer, const char* message) throw()
+void Trace::member(const void* pointer, const char* message) noexcept
 {
-  bassert(message, NullPointer(Type::getType<Trace>()));
+  if (!message) {
+    throw NullPointer(Type::getType<Trace>());
+  }
+  
   const MemorySize length = getNullTerminatedLength(message);
   PrimitiveStackArray<char> buffer(22 + length + 1);
   // TAG: remove sprintf dependency
@@ -86,13 +92,13 @@ void Trace::member(const void* pointer, const char* message) throw()
 #endif // flavor
 }
 
-Trace::Trace(const char* _msg) throw()
+Trace::Trace(const char* _msg) noexcept
   : msg(_msg)
 {
   Trace::member(this, msg);
 }
 
-Trace::~Trace() throw()
+Trace::~Trace() noexcept
 {
   Trace::member(this, msg);
 }

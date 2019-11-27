@@ -199,17 +199,17 @@ public:
   /**
     Returns true if the references are equal.
   */
-  inline bool operator==(const ReferenceCounter& eq) const noexcept
+  inline bool operator==(const ReferenceCounter& compare) const noexcept
   {
-    return value == eq.value;
+    return value == compare.value;
   }
 
   /**
     Returns true if the references are non-equal.
   */
-  inline bool operator!=(const ReferenceCounter& eq) const noexcept
+  inline bool operator!=(const ReferenceCounter& compare) const noexcept
   {
-    return value != eq.value;
+    return value != compare.value;
   }
   
   /**

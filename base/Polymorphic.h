@@ -36,7 +36,8 @@ public:
   /**
     Initializes object.
   */
-  inline Polymorphic() throw() {
+  inline Polymorphic() throw()
+  {
   }
   
   /**

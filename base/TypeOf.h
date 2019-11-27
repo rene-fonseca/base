@@ -27,43 +27,50 @@ class TypeOf {
 private:
 
   /** Default assignment is prohibited. */
-  TypeOf& operator=(const TypeOf& assign) throw();
+  TypeOf& operator=(const TypeOf& assign) noexcept;
 public:
 
   /** The type. */
   typedef TYPE Type;
   
   /** Initializes type object. */
-  inline TypeOf() throw() {
+  inline TypeOf() noexcept
+  {
   }
   
   /** Initializes type object from other object. */
-  inline TypeOf(const TypeOf& copy) throw() {
+  inline TypeOf(const TypeOf& copy) noexcept
+  {
   }
   
   /** Initializes type object from value. */
-  inline TypeOf(TYPE value) throw() {
+  inline TypeOf(TYPE value) noexcept
+  {
   }
   
   /** Returns true is the types are the same. */
-  inline bool operator==(const TypeOf& value) const throw() {
+  inline bool operator==(const TypeOf& value) const noexcept
+  {
     return true;
   }
   
   /** Returns true is the types are the different. */
-  inline bool operator!=(const TypeOf& value) const throw() {
+  inline bool operator!=(const TypeOf& value) const noexcept
+  {
     return false;
   }
   
   /** Returns true is the types are the same. */
   template<class POLY>
-  inline bool operator==(const TypeOf<POLY>& value) const throw() {
+  inline bool operator==(const TypeOf<POLY>& value) const noexcept
+  {
     return false;
   }
   
   /** Returns true is the types are the different. */
   template<class POLY>
-  inline bool operator!=(const TypeOf<POLY>& value) const throw() {
+  inline bool operator!=(const TypeOf<POLY>& value) const noexcept
+  {
     return true;
   }
 };
@@ -74,7 +81,8 @@ public:
   @relates TypeOf
 */
 template<class TYPE>
-inline TypeOf<TYPE> type() throw() {
+inline TypeOf<TYPE> type() noexcept
+{
   return TypeOf<TYPE>();
 }
 
@@ -84,7 +92,8 @@ inline TypeOf<TYPE> type() throw() {
   @relates TypeOf
 */
 template<class TYPE>
-inline TypeOf<TYPE> type(TYPE) throw() {
+inline TypeOf<TYPE> type(TYPE) noexcept
+{
   return TypeOf<TYPE>();
 }
 

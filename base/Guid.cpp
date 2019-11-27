@@ -113,14 +113,14 @@ Guid& Guid::operator=(const Guid& assign) noexcept
   return *this;
 }
 
-bool Guid::operator==(const Guid& eq) const noexcept
+bool Guid::operator==(const Guid& _compare) const noexcept
 {
-  return compare<uint8>(guid, eq.guid, sizeof(guid)) == 0;
+  return compare<uint8>(guid, _compare.guid, sizeof(guid)) == 0;
 }
 
-bool Guid::operator!=(const Guid& eq) const noexcept
+bool Guid::operator!=(const Guid& _compare) const noexcept
 {
-  return compare<uint8>(guid, eq.guid, sizeof(guid)) != 0;
+  return compare<uint8>(guid, _compare.guid, sizeof(guid)) != 0;
 }
 
 bool Guid::isNull() const noexcept

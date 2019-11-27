@@ -87,7 +87,7 @@ private:
     /* Disable the default copy constructor. */
     MenuHandle(const MenuHandle& copy) throw();
     /* Disable the default assignment operator. */
-    MenuHandle& operator=(const MenuHandle& eq) throw();
+    MenuHandle& operator=(const MenuHandle& assign) throw();
   public:
 
     /**

@@ -201,19 +201,21 @@ private:
     MemorySize index = 0;
     
     Element(const Element& copy) throw();
-    Element& operator=(const Element& eq) throw();
+    Element& operator=(const Element& assign) throw();
     
     inline Element(String& _string, MemorySize _index) throw()
       : string(_string), index(_index) {
     }
   public:
     
-    inline Element& operator=(char value) throw(OutOfRange) {
+    inline Element& operator=(char value) throw(OutOfRange)
+    {
       string.setAt(index, value);
       return *this;
     }
     
-    inline operator char() const throw(OutOfRange) {
+    inline operator char() const throw(OutOfRange)
+    {
       return string.getAt(index);
     }
   };
@@ -392,7 +394,7 @@ public:
   /**
     Assignment of string literal to string.
   */
-  String& operator=(const Literal& eq) throw(StringException, MemoryException);
+  String& operator=(const Literal& assign) throw(StringException, MemoryException);
 
   template<MemorySize SIZE>
   inline String& operator=(const char (&literal)[SIZE])

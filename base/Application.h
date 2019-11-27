@@ -34,10 +34,12 @@ _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
   public:
   
     MyApplication(int numberOfArguments, const char* arguments[], const char* environment[]) noexcept
-      : Application("MyApplication", numberOfArguments, arguments, environment) {
+      : Application("MyApplication", numberOfArguments, arguments, environment)
+    {
     }
 
-    void main() {
+    void main()
+    {
       // ...
     }
   };
@@ -164,28 +166,32 @@ public:
   /**
     Returns the formal name of the application.
   */
-  inline const String& getFormalName() const noexcept {
+  inline const String& getFormalName() const noexcept
+  {
     return formalName;
   }
 
   /**
     Returns the name/path of the application (argument 0).
   */
-  inline const String& getName() const noexcept {
+  inline const String& getName() const noexcept
+  {
     return path;
   }
 
   /**
     Returns the arguments passed to the application.
   */
-  inline const Array<String>& getArguments() const noexcept {
+  inline const Array<String>& getArguments() const noexcept
+  {
     return arguments;
   }
 
   /**
     Returns the environment variables.
   */
-  inline const Map<String, String>& getEnvironment() const noexcept {
+  inline const Map<String, String>& getEnvironment() const noexcept
+  {
     return environment;
   }
 
@@ -220,7 +226,8 @@ public:
   /**
     Returns the exit code.
   */
-  inline int getExitCode() const noexcept {
+  inline int getExitCode() const noexcept
+  {
     return exitCode;
   }
   
@@ -229,14 +236,16 @@ public:
 
     @param value The desired exit code. The value should be in the range from 0 to 127.
   */
-  inline void setExitCode(int value) noexcept {
+  inline void setExitCode(int value) noexcept
+  {
     exitCode = value;
   }
   
   /**
     Returns true if the application has been signaled to terminate.
   */
-  inline bool isTerminated() const noexcept {
+  inline bool isTerminated() const noexcept
+  {
     return terminated;
   }
 

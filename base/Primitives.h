@@ -750,13 +750,15 @@ public:
 
 // TAG: need separate methods for byte order
 
-  static inline uint16 readUInt16(const uint8* src) noexcept {
+  static inline uint16 readUInt16(const uint8* src) noexcept
+  {
     const uint16 result = (static_cast<uint32>(src[0]) << 8) |
       (static_cast<uint32>(src[1]) << 0);
     return result;
   }
 
-  static inline uint32 readUInt32(const uint8* src) noexcept {
+  static inline uint32 readUInt32(const uint8* src) noexcept
+  {
     const uint32 result = (static_cast<uint32>(src[0]) << 24) |
       (static_cast<uint32>(src[1]) << 16) |
       (static_cast<uint32>(src[2]) << 8) |
@@ -764,7 +766,8 @@ public:
     return result;
   }
 
-  static inline uint64 readUInt64(const uint8* src) noexcept {
+  static inline uint64 readUInt64(const uint8* src) noexcept
+  {
     const uint64 result = (static_cast<uint64>(src[0]) << 56) |
       (static_cast<uint64>(src[1]) << 48) |
       (static_cast<uint64>(src[2]) << 40) |

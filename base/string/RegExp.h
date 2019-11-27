@@ -112,30 +112,34 @@ public:
     /**
       Assignment of substring by substring.
     */
-    inline Substring operator=(const Substring& eq) throw() {
-      offset = eq.offset;
-      end = eq.end;
+    inline Substring operator=(const Substring& assign) throw()
+    {
+      offset = assign.offset;
+      end = assign.end;
       return *this;
     }
 
     /**
       Returns the offset of the substring.
     */
-    inline int getOffset() const throw() {
+    inline int getOffset() const throw()
+    {
       return offset;
     }
 
     /**
       Returns the length of the substring.
     */
-    inline int getLength() const throw() {
+    inline int getLength() const throw()
+    {
       return end - offset;
     }
 
     /**
       Returns true if the substring is empty.
     */
-    inline bool isEmpty() const throw() {
+    inline bool isEmpty() const throw()
+    {
       return end - offset;
     }
 
@@ -144,21 +148,24 @@ public:
       returned by match(...) to check whether the string matched the regular
       expression.
     */
-    inline bool isValid() const throw() {
+    inline bool isValid() const throw()
+    {
       return (offset >= 0) && (end >= 0);
     }
 
     /**
       Returns the substring of the specified string as described by this object.
     */
-    inline String substring(const String& value) throw(MemoryException) {
+    inline String substring(const String& value) throw(MemoryException)
+    {
       return value.substring(offset, end);
     }
 
     /**
       Returns true if this object describes the specified string completely.
     */
-    inline bool isComplete(const String& value) const throw() {
+    inline bool isComplete(const String& value) const throw()
+    {
       return (offset == 0) &&
         (static_cast<unsigned int>(end) == value.getLength());
     }

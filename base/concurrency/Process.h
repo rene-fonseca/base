@@ -218,7 +218,7 @@ public:
   /**
     Assignment of process with process.
   */
-  Process& operator=(const Process& eq) noexcept;
+  Process& operator=(const Process& assign) noexcept;
 
   /**
     Returns the id of the process.

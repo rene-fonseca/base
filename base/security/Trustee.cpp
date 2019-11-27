@@ -106,31 +106,34 @@ Trustee::Trustee(TrusteeType type, const void* _id) throw(OutOfDomain) {
 }
 
 Trustee::Trustee(const Trustee& copy) noexcept
-  : type(copy.type), integralId(copy.integralId), id(copy.id) {
+  : type(copy.type), integralId(copy.integralId), id(copy.id)
+{
 }
 
-Trustee& Trustee::operator=(const Trustee& eq) noexcept {
-  type = eq.type;
+Trustee& Trustee::operator=(const Trustee& assign) noexcept
+{
+  type = assign.type;
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
-  id = eq.id; // dont care about integralId
+  id = assign.id; // dont care about integralId
 #else // unix
-  integralId = eq.integralId; // dont care about id
+  integralId = assign.integralId; // dont care about id
 #endif // flavor
   return *this;
 }
 
-bool Trustee::operator==(const Trustee& eq) const noexcept {
+bool Trustee::operator==(const Trustee& compare) const noexcept
+{
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
-  if (!((id.isValid()) && (eq.id.isValid()))) {
-    return !id.isValid() && !eq.id.isValid();
+  if (!((id.isValid()) && (compare.id.isValid()))) {
+    return !id.isValid() && !compare.id.isValid();
   }
-  return (id->getSize() == eq.id->getSize()) &&
-    (compare(id->getElements(), eq.id->getElements(), id->getSize()) == 0);
+  return (id->getSize() == compare.id->getSize()) &&
+    (compare(id->getElements(), compare.id->getElements(), id->getSize()) == 0);
 #else // unix
   // id attribute is dont-care
   if (Constraint<sizeof(uid_t) == sizeof(gid_t)>::UNSPECIFIED) {}
   return Cast::extract<uid_t>(integralId) ==
-    Cast::extract<uid_t>(eq.integralId);
+    Cast::extract<uid_t>(compare.integralId);
 #endif
 }
 

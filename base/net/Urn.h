@@ -83,19 +83,21 @@ public:
   /**
     Returns true if the URN are equal.
   */
-  bool operator==(const Urn& eq) const throw();
+  bool operator==(const Urn& compare) const throw();
   
   /**
     Returns the namespace identifier.
   */
-  inline const String& getNID() const throw() {
+  inline const String& getNID() const throw()
+  {
     return nid;
   }
   
   /**
     Returns the namespace specific string.
   */
-  inline const String& getNSS() const throw() {
+  inline const String& getNSS() const throw()
+  {
     return nss;
   }
   
@@ -125,7 +127,8 @@ public:
 */
 inline FormatOutputStream& operator<<(
   FormatOutputStream& stream,
-  const Urn& value) throw(MemoryException, IOException) {
+  const Urn& value) throw(MemoryException, IOException)
+{
   return stream << value.getUrn();
 }
 

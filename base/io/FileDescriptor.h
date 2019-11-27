@@ -88,7 +88,7 @@ public:
   /**
     Assignment operator.
   */
-  FileDescriptor& operator=(const FileDescriptor& eq) throw();
+  FileDescriptor& operator=(const FileDescriptor& assign) throw();
 
   /**
     Closes the file descriptor.

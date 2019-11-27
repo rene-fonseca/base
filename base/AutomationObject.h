@@ -44,7 +44,8 @@ private:
 protected:
   
   /** Default initialization. */
-  inline AutomationObject() noexcept {
+  inline AutomationObject() noexcept
+  {
   }
 };
 

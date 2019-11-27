@@ -38,8 +38,7 @@ private:
   const Guard& guard;
   
   SingleExclusiveSynchronize(const SingleExclusiveSynchronize& copy) throw();
-  SingleExclusiveSynchronize& operator=(
-    const SingleExclusiveSynchronize& eq) throw();
+  SingleExclusiveSynchronize& operator=(const SingleExclusiveSynchronize& assign) throw();
 public:
   
   /**
@@ -78,8 +77,7 @@ class SingleExclusiveSynchronize<Unsafe> {
 private:
 
   SingleExclusiveSynchronize(const SingleExclusiveSynchronize& copy) throw();
-  SingleExclusiveSynchronize& operator=(
-    const SingleExclusiveSynchronize& eq) throw();
+  SingleExclusiveSynchronize& operator=(const SingleExclusiveSynchronize& assign) throw();
 public:
 
   /**

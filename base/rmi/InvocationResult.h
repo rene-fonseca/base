@@ -51,7 +51,8 @@ public:
   */
   inline InvocationResult(unsigned int _flags, unsigned int _cause) throw()
     : flags(_flags),
-      cause(_cause) {
+      cause(_cause)
+  {
   }
   
   /**
@@ -59,29 +60,33 @@ public:
   */
   inline InvocationResult(const InvocationResult& copy) throw()
     : flags(copy.flags),
-      cause(copy.cause) {
+      cause(copy.cause)
+  {
   }
   
   /**
     Assignment of object to object.
   */
-  inline InvocationResult& operator=(const InvocationResult& eq) throw() {
-    flags = eq.flags;
-    cause = eq.cause;
+  inline InvocationResult& operator=(const InvocationResult& assign) throw()
+  {
+    flags = assign.flags;
+    cause = assign.cause;
     return *this;
   }
   
   /**
     Returns the flags.
   */
-  inline unsigned int getFlags() const throw() {
+  inline unsigned int getFlags() const throw()
+  {
     return flags;
   }
   
   /**
     Returns the cause.
   */
-  inline unsigned int getCause() const throw() {
+  inline unsigned int getCause() const throw()
+  {
     return cause;
   }
 };

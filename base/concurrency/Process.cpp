@@ -283,11 +283,11 @@ Process Process::execute(const String& command) throw(ProcessException) {
 #endif // flavor
 }
 
-Process& Process::operator=(const Process& eq) throw()
+Process& Process::operator=(const Process& assign) throw()
 {
-  if (&eq == this) {
-    id = eq.id;
-    handle = eq.handle;
+  if (&assign == this) {
+    id = assign.id;
+    handle = assign.handle;
   }
   return *this;
 }

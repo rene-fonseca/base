@@ -60,20 +60,24 @@ EUI64& EUI64::operator=(const EUI64& assign) throw() {
   return *this;
 }
 
-bool EUI64::operator==(const EUI64& eq) const throw() {
-  return compare<uint8>(id, eq.id, sizeof(id)) == 0;
+bool EUI64::operator==(const EUI64& _compare) const throw()
+{
+  return compare<uint8>(id, _compare.id, sizeof(id)) == 0;
 }
 
-bool EUI64::operator!=(const EUI64& eq) const throw() {
-  return compare<uint8>(id, eq.id, sizeof(id)) != 0;
+bool EUI64::operator!=(const EUI64& _compare) const throw()
+{
+  return compare<uint8>(id, _compare.id, sizeof(id)) != 0;
 }
 
-bool EUI64::isInvalid() const throw() {
+bool EUI64::isInvalid() const throw()
+{
   return (id[0] == 0xff) && (id[1] == 0xff) && (id[2] == 0xff) &&
     (id[3] == 0) && (id[4] == 0) && (id[5] == 0) && (id[6] == 0) && (id[7] == 0);
 }
 
-unsigned int EUI64::getCompanyId() const throw() {
+unsigned int EUI64::getCompanyId() const throw()
+{
   return (((static_cast<unsigned int>(id[0]) << 8) | id[1]) << 8) | id[2];
 }
 

@@ -187,23 +187,25 @@ Urn::Urn(const Urn& copy) throw()
 {
 }
 
-Urn& Urn::operator=(const Urn& assign) throw() {
+Urn& Urn::operator=(const Urn& assign) throw()
+{
   nid = assign.nid;
   nss = assign.nss;
   return *this;
 }
 
-bool Urn::operator==(const Urn& eq) const throw() {
-  if (nid.compareToIgnoreCase(eq.nid) != 0) {
+bool Urn::operator==(const Urn& compare) const throw()
+{
+  if (nid.compareToIgnoreCase(compare.nid) != 0) {
     return false;
   }
-  if (nss.getLength() != eq.nss.getLength()) {
+  if (nss.getLength() != compare.nss.getLength()) {
     return false;
   }
   String::ReadIterator i = nss.getBeginReadIterator();
-  String::ReadIterator j = eq.nss.getBeginReadIterator();
+  String::ReadIterator j = compare.nss.getBeginReadIterator();
   const String::ReadIterator iEnd = nss.getEndReadIterator();
-  const String::ReadIterator jEnd = eq.nss.getEndReadIterator();
+  const String::ReadIterator jEnd = compare.nss.getEndReadIterator();
   while ((i != iEnd) && (j != jEnd)) {
     char left = *i++;
     if (left == '%') {
@@ -220,7 +222,8 @@ bool Urn::operator==(const Urn& eq) const throw() {
   return true;
 }
 
-String Urn::getUnescapedNSS() const throw(MemoryException) {
+String Urn::getUnescapedNSS() const throw(MemoryException)
+{
   String result(nss.getLength());
   const String::ReadIterator end = nss.getEndReadIterator();
   for (String::ReadIterator i = nss.getBeginReadIterator(); i < end; ++i) {

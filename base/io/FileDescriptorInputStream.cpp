@@ -53,11 +53,11 @@ FileDescriptorInputStream::FileDescriptorInputStream(
 }
 
 FileDescriptorInputStream& FileDescriptorInputStream::operator=(
-  const FileDescriptorInputStream& eq) throw()
+  const FileDescriptorInputStream& assign) throw()
 {
-  if (&eq != this) { // protect against self assignment
-    fd = eq.fd;
-    end = eq.end;
+  if (&assign != this) { // protect against self assignment
+    fd = assign.fd;
+    end = assign.end;
   }
   return *this;
 }

@@ -295,19 +295,19 @@ public:
   /**
     Returns true if the iterators are equal.
   */
-  inline bool operator==(const DoubleLinkedNodeIterator& eq) const noexcept
+  inline bool operator==(const DoubleLinkedNodeIterator& compare) const noexcept
   {
-    _COM_AZURE_DEV__BASE__PROTECT_ITERATORS_COMPATIBLE(*this, eq);
-    return node == eq.node;
+    _COM_AZURE_DEV__BASE__PROTECT_ITERATORS_COMPATIBLE(*this, compare);
+    return node == compare.node;
   }
 
   /**
     Returns true if the iterators aren't equal.
   */
-  inline bool operator!=(const DoubleLinkedNodeIterator& eq) const noexcept
+  inline bool operator!=(const DoubleLinkedNodeIterator& compare) const noexcept
   {
-    _COM_AZURE_DEV__BASE__PROTECT_ITERATORS_COMPATIBLE(*this, eq);
-    return node != eq.node;
+    _COM_AZURE_DEV__BASE__PROTECT_ITERATORS_COMPATIBLE(*this, compare);
+    return node != compare.node;
   }
 
   /**
@@ -472,19 +472,19 @@ public:
   /**
     Returns true if the iterators are equal.
   */
-  inline bool operator==(const DoubleLinkedNodeReadIterator& eq) const noexcept
+  inline bool operator==(const DoubleLinkedNodeReadIterator& compare) const noexcept
   {
-    _COM_AZURE_DEV__BASE__PROTECT_ITERATORS_COMPATIBLE(*this, eq);
-    return node == eq.node;
+    _COM_AZURE_DEV__BASE__PROTECT_ITERATORS_COMPATIBLE(*this, compare);
+    return node == compare.node;
   }
 
   /**
     Returns true if the iterators aren't equal.
   */
-  inline bool operator!=(const DoubleLinkedNodeReadIterator& eq) const noexcept
+  inline bool operator!=(const DoubleLinkedNodeReadIterator& compare) const noexcept
   {
-    _COM_AZURE_DEV__BASE__PROTECT_ITERATORS_COMPATIBLE(*this, eq);
-    return node != eq.node;
+    _COM_AZURE_DEV__BASE__PROTECT_ITERATORS_COMPATIBLE(*this, compare);
+    return node != compare.node;
   }
 
   /**
@@ -583,17 +583,17 @@ public:
   /**
     Returns true if the enumerations are pointing to the same position.
   */
-  inline bool operator==(const DoubleLinkedNodeEnumerator& eq) const noexcept
+  inline bool operator==(const DoubleLinkedNodeEnumerator& compare) const noexcept
   {
-    return current == eq.current;
+    return current == compare.current;
   }
 
   /**
     Returns true if the enumerations aren't pointing to the same position.
   */
-  inline bool operator!=(const DoubleLinkedNodeEnumerator& eq) const noexcept
+  inline bool operator!=(const DoubleLinkedNodeEnumerator& compare) const noexcept
   {
-    return current != eq.current;
+    return current != compare.current;
   }
 };
 
@@ -656,17 +656,17 @@ public:
   /**
     Returns true if the enumerations are pointing to the same position.
   */
-  inline bool operator==(const DoubleLinkedNodeReadEnumerator& eq) const noexcept
+  inline bool operator==(const DoubleLinkedNodeReadEnumerator& compare) const noexcept
   {
-    return current == eq.current;
+    return current == compare.current;
   }
 
   /**
     Returns true if the enumerations aren't pointing to the same position.
   */
-  inline bool operator!=(const DoubleLinkedNodeReadEnumerator& eq) const noexcept
+  inline bool operator!=(const DoubleLinkedNodeReadEnumerator& compare) const noexcept
   {
-    return current != eq.current;
+    return current != compare.current;
   }
 };
 

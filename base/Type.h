@@ -35,7 +35,8 @@ private:
   class _COM_AZURE_DEV__BASE__API Uninitialized {
   };
 
-  inline Type(const std::type_info* _type) throw() {
+  inline Type(const std::type_info* _type) noexcept
+  {
     BASSERT(_type);
     type = _type ? _type : &typeid(Uninitialized); // prevent nullptr
   }
@@ -46,7 +47,8 @@ private:
 
     typedef TYPE BaseType;
     
-    inline Type operator()(const TYPE& object) const throw() {
+    inline Type operator()(const TYPE& object) const noexcept
+    {
       return Type(&typeid(object));
     }
   };
@@ -58,7 +60,8 @@ private:
 
     typedef typename void BaseType; // throw away pointer and resolve recursively
 
-    inline Type operator()(const void* const object) const throw() {
+    inline Type operator()(const void* const object) const noexcept
+    {
       return Type();
     }
   };
@@ -70,14 +73,16 @@ private:
 
     typedef typename GetType<TYPE>::BaseType BaseType; // throw away pointer and resolve recursively
 
-    inline Type operator()(const TYPE* const object) const throw() {
+    inline Type operator()(const TYPE* const object) const noexcept
+    {
       return GetType<TYPE>()(*object);
     }
   };
 public:
 
   /** Convert native type to Type. */
-  static inline Type makeType(const std::type_info* _type) throw() {
+  static inline Type makeType(const std::type_info* _type) noexcept
+  {
     return Type(_type);
   }
 
@@ -85,7 +90,7 @@ public:
     Returns the type object for the specified type.
   */
   template<class TYPE>
-  static inline Type getType() throw() {
+  static inline Type getType() noexcept {
     return Type(&typeid(typename GetType<TYPE>::BaseType));
   }
 
@@ -93,33 +98,41 @@ public:
     Returns the type object for the type of the specified object.
   */
   template<class TYPE>
-  static inline Type getType(const TYPE& object) throw() {
+  static inline Type getType(const TYPE& object) noexcept
+  {
     return GetType<TYPE>()(object);
   }
 
   /**
     Initializes type object in an uninitialized state.
   */
-  inline Type() throw() : type(&typeid(Uninitialized)) {
+  inline Type() noexcept
+    : type(&typeid(Uninitialized))
+  {
   }
 
   /**
     Initializes type to the type of the specified object.
   */
   template<class TYPE>
-  inline Type(const TYPE& object) throw() : type(GetType<TYPE>()(object).type) {
+  inline Type(const TYPE& object) noexcept
+    : type(GetType<TYPE>()(object).type)
+  {
   }
 
   /**
     Initializes type object from other type object.
   */
-  inline Type(const Type& copy) throw() : type(copy.type) {
+  inline Type(const Type& copy) noexcept
+    : type(copy.type)
+  {
   }
 
   /**
     Assignment of type object from other type object.
   */
-  inline Type& operator=(const Type& assign) throw() {
+  inline Type& operator=(const Type& assign) noexcept
+  {
     type = assign.type;
     return *this;
   }
@@ -127,14 +140,16 @@ public:
   /**
     Returns true if the type object has been initialized.
   */
-  inline bool isInitialized() const throw() {
+  inline bool isInitialized() const noexcept
+  {
     return *type != typeid(Uninitialized);
   }
 
   /**
     Returns true if the type object hasn't been initialized.
   */
-  inline bool isUninitialized() const throw() {
+  inline bool isUninitialized() const noexcept
+  {
     return *type == typeid(Uninitialized);
   }
 
@@ -143,8 +158,9 @@ public:
 
     @return True if both types are uninitialized.
   */
-  inline bool operator==(const Type& eq) const throw() {
-    return *type == *eq.type;
+  inline bool operator==(const Type& compare) const noexcept
+  {
+    return *type == *compare.type;
   }
 
   /**
@@ -152,8 +168,9 @@ public:
 
     @return False if both types are uninitialized.
   */
-  inline bool operator!=(const Type& eq) const throw() {
-    return *type != *eq.type;
+  inline bool operator!=(const Type& compare) const noexcept
+  {
+    return *type != *compare.type;
   }
 
   /**
@@ -163,12 +180,14 @@ public:
 
     @see TypeInfo
   */
-  inline const char* getLocalName() const throw() {
+  inline const char* getLocalName() const noexcept
+  {
     return type->name();
   }
 
   /** Returns the native type_info. */
-  inline operator const std::type_info*() const noexcept {
+  inline operator const std::type_info*() const noexcept
+  {
     return type;
   }
 };

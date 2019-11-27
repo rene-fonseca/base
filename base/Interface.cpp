@@ -15,7 +15,8 @@
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
-Interface::~Interface() throw() {
+Interface::~Interface() throw()
+{
 }
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

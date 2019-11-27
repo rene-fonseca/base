@@ -38,27 +38,29 @@ public:
   /**
     Initializes invalid object.
   */
-  inline AsynchronousWriteOperation() throw() {
+  inline AsynchronousWriteOperation() throw()
+  {
   }
 
   inline AsynchronousWriteOperation(AsynchronousWriteContext* _context) throw()
-    : context(_context) {
+    : context(_context)
+  {
   }
 
   /*
     Initialization by copying from other object.
   */
-  inline AsynchronousWriteOperation(
-    const AsynchronousWriteOperation& copy) throw() {
+  inline AsynchronousWriteOperation(const AsynchronousWriteOperation& copy) throw()
+  {
     this->context = copy.context;
   }
   
   /*
     Assignment operator.
   */
-  inline AsynchronousWriteOperation& operator=(
-    const AsynchronousWriteOperation& eq) throw() {
-    this->context = eq.context;
+  inline AsynchronousWriteOperation& operator=(const AsynchronousWriteOperation& assign) throw()
+  {
+    this->context = assign.context;
     return *this;
   }
 
@@ -66,7 +68,8 @@ public:
     Explicit release of the handle to the asynchronous operation. This does not
     abort the asynchronous operation.
   */
-  inline void release() throw() {
+  inline void release() throw()
+  {
     context = 0;
   }
 

@@ -115,7 +115,7 @@ public:
   /**
     Assignment of group by group.
   */
-  Group& operator=(const Group& eq) noexcept;
+  Group& operator=(const Group& assign) noexcept;
   
   /**
     Initializes the group by name.
@@ -128,14 +128,14 @@ public:
     Returns true if the groups are identical. The method returns true if both
     users are invalid.
   */
-  bool operator==(const Group& eq) const noexcept;
+  bool operator==(const Group& compare) const noexcept;
   
   /**
     Returns false if the groups are not identical. The method returns false if
     both groups are invalid.
   */
-  inline bool operator!=(const Group& eq) const noexcept {
-    return !(*this == eq);
+  inline bool operator!=(const Group& compare) const noexcept {
+    return !(*this == compare);
   }
 
   /**

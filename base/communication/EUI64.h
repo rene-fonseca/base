@@ -68,17 +68,17 @@ public:
   /**
     Assignment of identifier by identifier.
   */
-  EUI64& operator=(const EUI64& eq) throw();
+  EUI64& operator=(const EUI64& assign) throw();
   
   /**
     Returns true if the identifiers are identical.
   */
-  bool operator==(const EUI64& eq) const throw();
+  bool operator==(const EUI64& compare) const throw();
   
   /**
     Returns true if the identifiers are different.
   */
-  bool operator!=(const EUI64& eq) const throw();
+  bool operator!=(const EUI64& compare) const throw();
   
   /**
     Returns the 24 bit company id.

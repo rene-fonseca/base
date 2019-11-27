@@ -294,19 +294,22 @@ private:
     MemorySize index = 0;
     
     Element(const Element& copy) throw();
-    Element& operator=(const Element& eq) throw();
+    Element& operator=(const Element& assign) throw();
     
     inline Element(WideString& _string, MemorySize _index) throw()
-      : string(_string), index(_index) {
+      : string(_string), index(_index)
+    {
     }
   public:
     
-    inline Element& operator=(ucs4 value) throw(OutOfRange) {
+    inline Element& operator=(ucs4 value) throw(OutOfRange)
+    {
       string.setAt(index, value);
       return *this;
     }
     
-    inline operator ucs4() const throw(OutOfRange) {
+    inline operator ucs4() const throw(OutOfRange)
+    {
       return string.getAt(index);
     }
   };
@@ -841,35 +844,38 @@ public:
   /**
     Assignment of string with string.
   */
-  WideString& operator=(const WideString& eq) throw() {
-    elements = eq.elements; // self assignment handled by automation pointer
+  WideString& operator=(const WideString& assign) throw()
+  {
+    elements = assign.elements; // self assignment handled by automation pointer
     return *this;
   }
 
   /**
     Assignment of string literal to string.
   */
-  WideString& operator=(
-    const WideLiteral& eq) throw(WideStringException, MemoryException);
+  WideString& operator=(const WideLiteral& assign) throw(WideStringException, MemoryException);
 
   /**
     Returns the number of characters in the string.
   */
-  inline MemorySize getLength() const throw() {
+  inline MemorySize getLength() const throw()
+  {
     return elements->getSize() - 1;
   }
 
   /**
     Returns true if the string contains no characters.
   */
-  inline bool isEmpty() const throw() {
+  inline bool isEmpty() const throw()
+  {
     return elements->getSize() == 1;
   }
 
   /**
     Returns true if the string contains characters.
   */
-  inline bool isProper() const throw() {
+  inline bool isProper() const throw()
+  {
     return elements->getSize() > 1;
   }
 
@@ -881,7 +887,8 @@ public:
   /**
     Returns the capacity of the string.
   */
-  inline MemorySize getCapacity() const throw() {
+  inline MemorySize getCapacity() const throw()
+  {
     return elements->getCapacity();
   }  
   
@@ -918,42 +925,48 @@ public:
   /**
     Returns the first element of the string as a modifying iterator.
   */
-  inline Iterator getBeginIterator() throw() {
+  inline Iterator getBeginIterator() throw()
+  {
     return elements->getBeginIterator();
   }
 
   /**
     Returns the end of the string as a modifying iterator.
   */
-  inline Iterator getEndIterator() throw() {
+  inline Iterator getEndIterator() throw()
+  {
     return elements->getEndIterator() - 1;
   }
 
   /**
     Returns the first element of the string as a non-modifying iterator.
   */
-  inline ReadIterator getBeginReadIterator() const throw() {
+  inline ReadIterator getBeginReadIterator() const throw()
+  {
     return elements->getBeginReadIterator();
   }
 
   /**
     Returns the end of the string as a non-modifying iterator.
   */
-  inline ReadIterator getEndReadIterator() const throw() {
+  inline ReadIterator getEndReadIterator() const throw()
+  {
     return elements->getEndReadIterator() - 1;
   }
 
   /**
     Returns a modifying enumerator of the string.
   */
-  inline Enumerator getEnumerator() throw() {
+  inline Enumerator getEnumerator() throw()
+  {
     return elements->getEnumerator();
   }
 
   /**
     Returns a non-modifying enumerator of the string.
   */
-  inline ReadEnumerator getReadEnumerator() const throw() {
+  inline ReadEnumerator getReadEnumerator() const throw()
+  {
     return elements->getReadEnumerator();
   }
 
@@ -982,7 +995,8 @@ public:
     Returns a reference to character at the specified index. Raises
     OutOfRange if index exceeds the length of the string.
   */
-  inline Element operator[](MemorySize index) throw(OutOfRange) {
+  inline Element operator[](MemorySize index) throw(OutOfRange)
+  {
     return Element(*this, index);
   }
 
@@ -990,7 +1004,8 @@ public:
     Returns the character at the specified index. Raises OutOfRange if index
     exceeds the length of the string.
   */
-  inline char operator[](MemorySize index) const throw(OutOfRange) {
+  inline char operator[](MemorySize index) const throw(OutOfRange)
+  {
     return getAt(index);
   }
 
@@ -1027,7 +1042,8 @@ public:
 
     @param ch The character to be appended.
   */
-  inline WideString& append(ucs4 ch) throw(WideStringException, MemoryException) {
+  inline WideString& append(ucs4 ch) throw(WideStringException, MemoryException)
+  {
     return insert(getLength(), ch);
   }
 
@@ -1036,7 +1052,8 @@ public:
 
     @param string The string to be appended.
   */
-  inline WideString& append(const WideString& string) throw(WideStringException, MemoryException) {
+  inline WideString& append(const WideString& string) throw(WideStringException, MemoryException)
+  {
     return insert(getLength(), string);
   }
 
@@ -1072,7 +1089,8 @@ public:
 
     @param ch The character to be prepended.
   */
-  inline WideString& prepend(ucs4 ch) throw(WideStringException, MemoryException) {
+  inline WideString& prepend(ucs4 ch) throw(WideStringException, MemoryException)
+  {
     return insert(0, ch);
   }
 
@@ -1081,7 +1099,8 @@ public:
 
     @param string The string to be prepended.
   */
-  inline WideString& prepend(const WideString& string) throw(WideStringException, MemoryException) {
+  inline WideString& prepend(const WideString& string) throw(WideStringException, MemoryException)
+  {
     return insert(0, string);
   }
 
@@ -1154,7 +1173,8 @@ public:
 
     @param start Specifies the start of the substring.
   */
-  inline WideString substring(MemorySize start) const throw(MemoryException) {
+  inline WideString substring(MemorySize start) const throw(MemoryException)
+  {
     return substring(start, getLength());
   }
 
@@ -1163,7 +1183,8 @@ public:
 
     @param suffix The string to be appended.
   */
-  inline WideString& operator+=(const WideString& suffix) throw(MemoryException) {
+  inline WideString& operator+=(const WideString& suffix) throw(MemoryException)
+  {
     return append(suffix);
   }
 
@@ -1274,49 +1295,56 @@ public:
   /**
     Equality operator.
   */
-  inline bool operator==(const WideString& string) const throw() {
+  inline bool operator==(const WideString& string) const throw()
+  {
     return compareTo(string) == 0;
   }
 
   /**
     Equality operator.
   */
-  inline bool operator==(const WideLiteral& string) const throw() {
+  inline bool operator==(const WideLiteral& string) const throw()
+  {
     return compareTo(string) == 0;
   }
 
   /**
     Inequality operator.
   */
-  inline bool operator!=(const WideString& string) const throw() {
+  inline bool operator!=(const WideString& string) const throw()
+  {
     return compareTo(string) != 0;
   }
 
   /**
     Less than operator.
   */
-  inline bool operator<(const WideString& string) const throw() {
+  inline bool operator<(const WideString& string) const throw()
+  {
     return compareTo(string) < 0;
   }
 
   /**
     Less than or equal operator.
   */
-  inline bool operator<=(const WideString& string) const throw() {
+  inline bool operator<=(const WideString& string) const throw()
+  {
     return compareTo(string) <= 0;
   }
 
   /**
     Greater than or equal operator.
   */
-  inline bool operator>=(const WideString& string) const throw() {
+  inline bool operator>=(const WideString& string) const throw()
+  {
     return compareTo(string) >= 0;
   }
 
   /**
     Greater than operator.
   */
-  inline bool operator>(const WideString& string) const throw() {
+  inline bool operator>(const WideString& string) const throw()
+  {
     return compareTo(string) > 0;
   }
 
@@ -1358,7 +1386,8 @@ public:
     Returns the index of the last character that matches the specified character
     starting from the end of the string.
   */
-  inline MemoryDiff lastIndexOf(ucs4 ch) const throw() {
+  inline MemoryDiff lastIndexOf(ucs4 ch) const throw()
+  {
     return lastIndexOf(ch, getLength());
   }
 
@@ -1380,7 +1409,8 @@ public:
 
     @return Index of the last match if any otherwide -1. Also returns -1 if the substring is empty.
   */
-  inline MemoryDiff lastIndexOf(const WideString& string) const throw() {
+  inline MemoryDiff lastIndexOf(const WideString& string) const throw()
+  {
     return lastIndexOf(string, getLength());
   }
 
@@ -1457,14 +1487,16 @@ _COM_AZURE_DEV__BASE__API FormatOutputStream& operator<<(FormatOutputStream& str
 /**
   Returns a new string that is the concatenation of the two specified strings.
 */
-inline WideString operator+(const WideString& left, const WideString& right) throw(MemoryException) {
+inline WideString operator+(const WideString& left, const WideString& right) throw(MemoryException)
+{
   return WideString(left.getLength() + right.getLength()).append(left).append(right);
 }
 
 /**
   String reduction. Removes suffix from string if and only if it ends with the suffix (e.g. ("presuf"-"suf") results in a new string "pre" whereas ("pre"-"suf") results in "pre").
 */
-inline WideString operator-(const WideString& left, const WideString& right) throw(MemoryException) {
+inline WideString operator-(const WideString& left, const WideString& right) throw(MemoryException)
+{
   if (left.endsWith(right)) {
     return left.substring(0, left.getLength() - right.getLength() - 1); // return copy of left without suffix
   } else {

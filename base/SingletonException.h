@@ -33,7 +33,8 @@ public:
   /**
     Initializes the exception object with no message.
   */
-  inline SingletonException() noexcept {
+  inline SingletonException() noexcept
+  {
   }
 
   /**
@@ -49,7 +50,8 @@ public:
     
     @param type The identity of the type.
   */
-  inline SingletonException(const Type& type) noexcept : Exception(type) {
+  inline SingletonException(const Type& type) noexcept : Exception(type)
+  {
   }  
   
   /**
@@ -59,7 +61,8 @@ public:
     @param type The identity of the type.
   */
   inline SingletonException(const char* message, const Type& type) noexcept
-    : Exception(message, type) {
+    : Exception(message, type)
+  {
   }
   
   _COM_AZURE_DEV__BASE__EXCEPTION_THIS_TYPE()

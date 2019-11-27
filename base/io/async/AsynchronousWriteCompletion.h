@@ -72,7 +72,7 @@ public:
   /**
     Assignment of object by object.
   */
-  AsynchronousWriteCompletion& operator=(const AsynchronousWriteCompletion& eq) throw();
+  AsynchronousWriteCompletion& operator=(const AsynchronousWriteCompletion& assign) throw();
 
   inline bool successful() const throw() {
     return (flags & SUCCESSFUL) != 0;

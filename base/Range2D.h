@@ -37,14 +37,19 @@ public:
   /**
     Initializes a Range2D object with the minimum and maximum values set to zero.
   */
-  Range2D() throw();
+  inline Range2D() noexcept
+  {
+  }
 
   /**
     Initializes a Range2D object. The range is copied from the specified range.
 
     @param range The desired range.
   */
-  Range2D(const Range2D& range) throw();
+  inline Range2D(const Range2D& copy) noexcept
+    : minimum(copy.minimum), maximum(copy.maximum)
+  {
+  }
 
   /**
     Initializes a Range2D object with the specified minimum and maximum values.
@@ -52,74 +57,98 @@ public:
     @param minimum The desired minimum value.
     @param maximum The desired maximum value.
   */
-  Range2D(double minimum, double maximum) throw();
+  inline Range2D(double _minimum, double _maximum) noexcept
+    : minimum(_minimum), maximum(_maximum)
+  {
+  }
 
   /**
     Sets the range.
 
     @param range The desired range.
   */
-  void assign(const Range2D &range) throw();
-
-  /**
-    Sets the minimum and maximum values.
-
-    @param minimum The desired minimum value.
-    @param maximum The desired maximum value.
-  */
-  void assign(double minimum, double maximum) throw();
+  inline Range2D& operator=(const Range2D& assign) noexcept
+  {
+    minimum = assign.minimum;
+    maximum = assign.maximum;
+    return *this;
+  }
 
   /**
     Returns true if the value is above the range specified by minimum and maximum.
 
     @param value The value to be checked.
   */
-  bool isAbove(double value) const throw();
+  inline bool isAbove(double value) const noexcept
+  {
+    return value > maximum;
+  }
 
   /**
     Returns true if the value is below the range specified by minimum and maximum.
 
     @param value The value to be checked.
   */
-  bool isBelow(double value) const throw();
+  inline bool isBelow(double value) const noexcept
+  {
+    return value < minimum;
+  }
 
   /**
     Returns true if the value is outside the range specified by minimum and maximum.
 
     @param value The value to be checked.
   */
-  bool isOutside(double value) const throw();
-
+  inline bool isOutside(double value) const noexcept
+  {
+    return (value < minimum) || (value > maximum);
+  }
+  
   /**
     Returns true if the value is within the range specified by minimum and maximum.
 
     @param value The value to be checked.
   */
-  bool isWithin(double value) const throw();
-
+  inline bool isWithin(double value) const noexcept
+  {
+    return (value >= minimum) && (value <= maximum);
+  }
+  
   /**
     Returns the minimum value.
   */
-  double getMinimum() const throw();
+  inline double getMinimum() const noexcept
+  {
+    return minimum;
+  }
 
   /**
     Returns the maximum value.
   */
-  double getMaximum() const throw();
+  inline double getMaximum() const noexcept
+  {
+    return maximum;
+  }
 
   /**
     Sets the minimum value.
 
     @param minimum The desired minimum value.
   */
-  void setMinimum(double minimum) throw();
+  inline void setMinimum(double minimum) noexcept
+  {
+    this->minimum = minimum;
+  }
 
   /**
     Sets the maximum value.
 
     @param maximum The desired maximum value.
   */
-  void setMaximum(double maximum) throw();
+  inline void setMaximum(double maximum) noexcept
+  {
+    this->maximum = maximum;
+  }
 };
 
 /**

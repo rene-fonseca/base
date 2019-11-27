@@ -101,17 +101,17 @@ protected:
     /**
       Returns true if the enumerations are pointing to the same position.
     */
-    inline bool operator==(const StackReadEnumerator& eq) const noexcept
+    inline bool operator==(const StackReadEnumerator& compare) const noexcept
     {
-      return current == eq.current;
+      return current == compare.current;
     }
     
     /**
       Returns true if the enumerations aren't pointing to the same position.
     */
-    inline bool operator!=(const StackReadEnumerator& eq) const noexcept
+    inline bool operator!=(const StackReadEnumerator& compare) const noexcept
     {
-      return current != eq.current;
+      return current != compare.current;
     }
   };
   
@@ -338,9 +338,9 @@ public:
   /**
     Assignment of stack by stack.
   */
-  inline Stack& operator=(const Stack& eq) noexcept
+  inline Stack& operator=(const Stack& assign) noexcept
   {
-    elements = eq.elements;
+    elements = assign.elements;
     return *this;
   }
   

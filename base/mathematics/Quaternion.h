@@ -61,45 +61,51 @@ public:
     @param copy The desired quaternion.
   */
   inline Quaternion(const Quaternion& copy) throw()
-    : x(copy.x), y(copy.y), z(copy.z), w(copy.w) {
+    : x(copy.x), y(copy.y), z(copy.z), w(copy.w)
+  {
   }
 
   /**
     Assignment of quaternion to quaternion.
   */
-  inline Quaternion& operator=(const Quaternion& eq) throw() {
-    x = eq.x; // no need to protect against self-assignment
-    y = eq.y;
-    z = eq.z;
-    w = eq.w;
+  inline Quaternion& operator=(const Quaternion& assign) throw()
+  {
+    x = assign.x; // no need to protect against self-assignment
+    y = assign.y;
+    z = assign.z;
+    w = assign.w;
     return *this;
   }
 
   /**
     Returns the X coordinate of the quaternion.
   */
-  inline TYPE getX() const throw() {
+  inline TYPE getX() const throw()
+  {
     return x;
   }
 
   /**
     Returns the Y coordinate of the quaternion.
   */
-  inline TYPE getY() const throw() {
+  inline TYPE getY() const throw()
+  {
     return y;
   }
 
   /**
     Returns the Z coordinate of the quaternion.
   */
-  inline TYPE getZ() const throw() {
+  inline TYPE getZ() const throw()
+  {
     return z;
   }
 
   /**
     Returns the W coordinate of the quaternion.
   */
-  inline TYPE getW() const throw() {
+  inline TYPE getW() const throw()
+  {
     return w;
   }
   
@@ -108,7 +114,8 @@ public:
 
     @param x The desired X coordinate.
   */
-  inline void setX(const TYPE& x) throw() {
+  inline void setX(const TYPE& x) throw()
+  {
     this->x = x;
   }
 
@@ -117,7 +124,8 @@ public:
 
     @param y The desired Y coordinate.
   */
-  inline void setY(const TYPE& y) throw() {
+  inline void setY(const TYPE& y) throw()
+  {
     this->y = y;
   }
 
@@ -126,7 +134,8 @@ public:
 
     @param z The desired Z coordinate.
   */
-  inline void setZ(const TYPE& z) throw() {
+  inline void setZ(const TYPE& z) throw()
+  {
     this->z = z;
   }
 
@@ -135,14 +144,16 @@ public:
 
     @param w The desired W coordinate.
   */
-  inline void setW(const TYPE& w) throw() {
+  inline void setW(const TYPE& w) throw()
+  {
     this->w = w;
   }
 
   /**
     Sets values less than the specified value to zero.
   */
-  Quaternion& zeroAdjust(const TYPE& zero) throw() {
+  Quaternion& zeroAdjust(const TYPE& zero) throw()
+  {
     if (x < zero) {
       x = TYPE(0);
     }
@@ -161,7 +172,8 @@ public:
   /**
     Returns true if the length of this quaternion is zero.
   */
-  inline bool isZero() const throw() {
+  inline bool isZero() const throw()
+  {
     const TYPE zero(0);
     return (x == zero) && (y == zero) && (z == zero) && (w == zero);
   }
@@ -169,7 +181,8 @@ public:
   /**
     Returns true if the length of this quaternion is greater zero.
   */
-  inline bool isProper() const throw() {
+  inline bool isProper() const throw()
+  {
     const TYPE zero(0);
     return (x != zero) || (y != zero) || (z != zero) || (w != zero);
   }
@@ -177,21 +190,24 @@ public:
   /**
     Unary plus.
   */
-  Quaternion plus() const throw() {
+  Quaternion plus() const throw()
+  {
     return Quaternion(*this);
   }
 
   /**
     Unary minus.
   */
-  Quaternion minus() const throw() {
+  Quaternion minus() const throw()
+  {
     return Quaternion(*this).negate();
   }
 
   /**
     Negates the quaternion.
   */
-  Quaternion& negate() throw() {
+  Quaternion& negate() throw()
+  {
     x = -x;
     y = -y;
     z = -z;
@@ -202,7 +218,8 @@ public:
   /**
     Adds the specified quaternion to this quaternion.
   */
-  Quaternion& add(const Quaternion& value) throw() {
+  Quaternion& add(const Quaternion& value) throw()
+  {
     x += value.x;
     y += value.y;
     z += value.z;
@@ -213,7 +230,8 @@ public:
   /**
     Subtracts the specified quaternion from this quaternion.
   */
-  Quaternion& subtract(const Quaternion& value) throw() {
+  Quaternion& subtract(const Quaternion& value) throw()
+  {
     x -= value.x;
     y -= value.y;
     z -= value.z;
@@ -224,7 +242,8 @@ public:
   /**
     Multiplies this quaternion with the specified value.
   */
-  Quaternion& multiply(const TYPE& value) throw() {
+  Quaternion& multiply(const TYPE& value) throw()
+  {
     x *= value;
     y *= value;
     z *= value;
@@ -235,7 +254,8 @@ public:
   /**
     Divides this quaternion with the specified value.
   */
-  Quaternion& divide(const TYPE& value) throw() {
+  Quaternion& divide(const TYPE& value) throw()
+  {
     TYPE temp = TYPE(1)/value;
     x *= temp;
     y *= temp;
@@ -249,7 +269,8 @@ public:
 
     @param value Quaternion to be compared.
   */
-  inline bool operator==(const Quaternion& value) const throw() {
+  inline bool operator==(const Quaternion& value) const throw()
+  {
     return (x == value.x) && (y == value.y) && (z == value.z) && (w == value.w);
   }
 
@@ -258,7 +279,8 @@ public:
 
     @param value The value to be added.
   */
-  inline Quaternion& operator+=(const Quaternion& value) throw() {
+  inline Quaternion& operator+=(const Quaternion& value) throw()
+  {
     return add(value);
   }
 
@@ -267,7 +289,8 @@ public:
 
     @param value The value to be subtracted.
   */
-  inline Quaternion& operator-=(const Quaternion& value) throw() {
+  inline Quaternion& operator-=(const Quaternion& value) throw()
+  {
     return subtract(value);
   }
 
@@ -276,7 +299,8 @@ public:
 
     @param value The multiplicator.
   */
-  inline Quaternion& operator*=(const TYPE& value) throw() {
+  inline Quaternion& operator*=(const TYPE& value) throw()
+  {
     return multiply(value);
   }
 
@@ -285,21 +309,24 @@ public:
 
     @param value The divisor.
   */
-  inline Quaternion& operator/=(const TYPE& value) throw() {
+  inline Quaternion& operator/=(const TYPE& value) throw()
+  {
     return divide(value);
   }
 
   /**
     Unary plus.
   */
-  inline Quaternion operator+() const throw() {
+  inline Quaternion operator+() const throw()
+  {
     return plus();
   }
 
   /**
     Unary minus.
   */
-  inline Quaternion operator-() const throw() {
+  inline Quaternion operator-() const throw()
+  {
     return minus();
   }
 };
@@ -307,7 +334,8 @@ public:
 template<class TYPE>
 inline Quaternion<TYPE>::Quaternion(
   const TYPE& _x, const TYPE& _y, const TYPE& _z, const TYPE& _w) throw()
-  : x(_x), y(_y), z(_z), w(_w) {
+  : x(_x), y(_y), z(_z), w(_w)
+{
 }
 
 /**
@@ -317,7 +345,8 @@ inline Quaternion<TYPE>::Quaternion(
 */
 template<class TYPE>
 inline Quaternion<TYPE> operator+(
-  const Quaternion<TYPE>& left, const Quaternion<TYPE>& right) throw() {
+  const Quaternion<TYPE>& left, const Quaternion<TYPE>& right) throw()
+{
   return Quaternion<TYPE>(left).add(right);
 }
 
@@ -328,7 +357,8 @@ inline Quaternion<TYPE> operator+(
 */
 template<class TYPE>
 inline Quaternion<TYPE> operator-(
-  const Quaternion<TYPE>& left, const Quaternion<TYPE>& right) throw() {
+  const Quaternion<TYPE>& left, const Quaternion<TYPE>& right) throw()
+{
   return Quaternion<TYPE>(left).subtract(right);
 }
 
@@ -338,8 +368,8 @@ inline Quaternion<TYPE> operator-(
   @relates Quaternion
 */
 template<class TYPE>
-inline Quaternion<TYPE> operator*(
-  const Quaternion<TYPE>& left, const TYPE& right) throw() {
+inline Quaternion<TYPE> operator*(const Quaternion<TYPE>& left, const TYPE& right) throw()
+{
   return Quaternion<TYPE>(left).multiply(right);
 }
 
@@ -349,8 +379,8 @@ inline Quaternion<TYPE> operator*(
   @relates Quaternion
 */
 template<class TYPE>
-inline Quaternion<TYPE> operator*(
-  const TYPE& left, const Quaternion<TYPE>& right) throw() {
+inline Quaternion<TYPE> operator*(const TYPE& left, const Quaternion<TYPE>& right) throw()
+{
   return Quaternion<TYPE>(right).multiply(left);
 }
 
@@ -360,7 +390,8 @@ inline Quaternion<TYPE> operator*(
   @relates Quaternion
 */
 template<class TYPE>
-inline Quaternion<TYPE> operator/(const Quaternion<TYPE>& left, const TYPE& right) throw() {
+inline Quaternion<TYPE> operator/(const Quaternion<TYPE>& left, const TYPE& right) throw()
+{
   return Quaternion<TYPE>(left).divide(right);
 }
 
@@ -372,7 +403,8 @@ inline Quaternion<TYPE> operator/(const Quaternion<TYPE>& left, const TYPE& righ
 */
 template<class TYPE>
 FormatOutputStream& operator<<(
-  FormatOutputStream& stream, const Quaternion<TYPE>& value) throw(IOException) {
+  FormatOutputStream& stream, const Quaternion<TYPE>& value) throw(IOException)
+{
   return stream << '(' << value.getX() << ';'
                 << value.getY() << ';'
                 << value.getZ() << ';'

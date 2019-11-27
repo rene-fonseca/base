@@ -73,7 +73,7 @@ public:
   /**
     Assignment of object by object.
   */
-  AsynchronousReadCompletion& operator=(const AsynchronousReadCompletion& eq) throw();
+  AsynchronousReadCompletion& operator=(const AsynchronousReadCompletion& assign) throw();
 
   inline bool eof() const throw() {
     return (flags & END_OF_FILE) != 0;

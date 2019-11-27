@@ -89,7 +89,7 @@ public:
   /**
     Assignment of MIME type to MIME type.
   */
-  MimeType& operator=(const MimeType& eq) throw();
+  MimeType& operator=(const MimeType& assign) throw();
   
   /**
     Returns true if the type and subtype complies with the grammar described in

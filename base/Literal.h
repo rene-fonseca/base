@@ -38,7 +38,8 @@ public:
   */
   template<MemorySize SIZE>
   inline Literal(const char (&value)[SIZE]) noexcept
-    : literal(value), length(SIZE - 1) {
+    : literal(value), length(SIZE - 1)
+  {
     if (Constraint<(SIZE > 0)>::UNSPECIFIED) {}
   }
   

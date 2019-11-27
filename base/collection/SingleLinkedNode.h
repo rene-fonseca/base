@@ -228,19 +228,19 @@ public:
   /**
     Returns true if the iterators are equal.
   */
-  inline bool operator==(const SingleLinkedNodeIterator& eq) const noexcept
+  inline bool operator==(const SingleLinkedNodeIterator& compare) const noexcept
   {
-    _COM_AZURE_DEV__BASE__PROTECT_ITERATORS_COMPATIBLE(*this, eq);
-    return node == eq.node;
+    _COM_AZURE_DEV__BASE__PROTECT_ITERATORS_COMPATIBLE(*this, compare);
+    return node == compare.node;
   }
 
   /**
     Returns true if the iterators aren't equal.
   */
-  inline bool operator!=(const SingleLinkedNodeIterator& eq) const noexcept
+  inline bool operator!=(const SingleLinkedNodeIterator& compare) const noexcept
   {
-    _COM_AZURE_DEV__BASE__PROTECT_ITERATORS_COMPATIBLE(*this, eq);
-    return node != eq.node;
+    _COM_AZURE_DEV__BASE__PROTECT_ITERATORS_COMPATIBLE(*this, compare);
+    return node != compare.node;
   }
 
   /**
@@ -398,19 +398,19 @@ public:
   /**
     Returns true if the iterators are equal.
   */
-  inline bool operator==(const SingleLinkedNodeReadIterator& eq) const noexcept
+  inline bool operator==(const SingleLinkedNodeReadIterator& compare) const noexcept
   {
-    _COM_AZURE_DEV__BASE__PROTECT_ITERATORS_COMPATIBLE(*this, eq);
-    return node == eq.node;
+    _COM_AZURE_DEV__BASE__PROTECT_ITERATORS_COMPATIBLE(*this, compare);
+    return node == compare.node;
   }
 
   /**
     Returns true if the iterators aren't equal.
   */
-  inline bool operator!=(const SingleLinkedNodeReadIterator& eq) const noexcept
+  inline bool operator!=(const SingleLinkedNodeReadIterator& compare) const noexcept
   {
-    _COM_AZURE_DEV__BASE__PROTECT_ITERATORS_COMPATIBLE(*this, eq);
-    return node != eq.node;
+    _COM_AZURE_DEV__BASE__PROTECT_ITERATORS_COMPATIBLE(*this, compare);
+    return node != compare.node;
   }
 
   /**

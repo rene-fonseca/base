@@ -47,10 +47,10 @@ FileDescriptorOutputStream::FileDescriptorOutputStream(const FileDescriptorOutpu
 {
 }
 
-FileDescriptorOutputStream& FileDescriptorOutputStream::operator=(const FileDescriptorOutputStream& eq) throw()
+FileDescriptorOutputStream& FileDescriptorOutputStream::operator=(const FileDescriptorOutputStream& assign) throw()
 {
-  if (&eq != this) { // protect against self assignment
-    fd = eq.fd;
+  if (&assign != this) { // protect against self assignment
+    fd = assign.fd;
   }
   return *this;
 }

@@ -43,7 +43,7 @@ protected:
   MemorySize granularity = 0;
 private:
 
-  Buffer& operator=(const Buffer& eq) throw();
+  Buffer& operator=(const Buffer& assign) throw();
 public:
 
   /**

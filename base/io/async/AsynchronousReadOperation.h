@@ -59,8 +59,8 @@ public:
     Assignment of object by object.
   */
   inline AsynchronousReadOperation& operator=(
-    const AsynchronousReadOperation& eq) throw() {
-    context = eq.context;
+    const AsynchronousReadOperation& assign) throw() {
+    context = assign.context;
     return *this;
   }
 

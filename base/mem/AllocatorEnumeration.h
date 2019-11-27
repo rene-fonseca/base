@@ -77,15 +77,17 @@ public:
   /**
     Returns true if the enumerations are referencing the same element.
   */
-  inline bool operator==(const AllocatorEnumerator& eq) const noexcept {
-    return current == eq.current;
+  inline bool operator==(const AllocatorEnumerator& compare) const noexcept
+  {
+    return current == compare.current;
   }
 
   /**
     Returns true if the enumerations are not referencing the same element.
   */
-  inline bool operator!=(const AllocatorEnumerator& eq) const noexcept {
-    return current != eq.current;
+  inline bool operator!=(const AllocatorEnumerator& compare) const noexcept
+  {
+    return current != compare.current;
   }
 };
 

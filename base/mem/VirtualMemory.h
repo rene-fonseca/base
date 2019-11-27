@@ -71,11 +71,12 @@ public:
     inline Module(const void* _context) noexcept : context(_context) {
     }
     
-    inline Module(const Module& copy) noexcept : context(copy.context) {
+    inline Module(const Module& copy) noexcept : context(copy.context)
+    {
     }
     
-    inline Module operator=(const Module& eq) noexcept {
-      context = eq.context;
+    inline Module operator=(const Module& assign) noexcept {
+      context = assign.context;
       return *this;
     }
 

@@ -89,28 +89,32 @@ User::User(const void* _id) throw(OutOfDomain) {
 }
 
 User::User(const User& copy) noexcept
-  : integralId(copy.integralId), id(copy.id) {
+  : integralId(copy.integralId), id(copy.id)
+{
 }
 
-User& User::operator=(const User& eq) noexcept {
-  id = eq.id;
-  integralId = eq.integralId;
+User& User::operator=(const User& assign) noexcept
+{
+  id = assign.id;
+  integralId = assign.integralId;
   return *this;
 }
 
-bool User::operator==(const User& eq) const noexcept {
+bool User::operator==(const User& compare) const noexcept
+{
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
-  if (!isValid() || (!eq.isValid())) {
-    return !isValid() && !eq.isValid();
+  if (!isValid() || (!compare.isValid())) {
+    return !isValid() && !compare.isValid();
   }
-  return ::EqualSid((PSID)id->getElements(), (PSID)eq.id->getElements()) != 0;
+  return ::EqualSid((PSID)id->getElements(), (PSID)compare.id->getElements()) != 0;
 #else // unix
   return Cast::extract<uid_t>(integralId) ==
-    Cast::extract<uid_t>(eq.integralId);
+    Cast::extract<uid_t>(compare.integralId);
 #endif
 }
 
-User::User(const String& name) throw(UserException) {
+User::User(const String& name) throw(UserException)
+{
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   SID_NAME_USE sidType;
   uint8 sid[SECURITY_MAX_SID_SIZE];
@@ -147,7 +151,8 @@ User::User(const String& name) throw(UserException) {
 }
 
 // TAG: select full name domain/user with option: LOCAL prefix?, BUILTIN prefix (no)?
-String User::getName(bool fallback) const throw(UserException) {
+String User::getName(bool fallback) const throw(UserException)
+{
   if (!isValid()) {
     return Literal("<unknown>");
   }

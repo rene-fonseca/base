@@ -36,11 +36,13 @@ _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 namespace internal {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
-  inline int64 nativeToDate(const FILETIME& time) throw() {
+  inline int64 nativeToDate(const FILETIME& time) noexcept
+  {
     return (*(uint64*)(&time) - 116444736000000000LL)/10;
   }
   
-  inline FILETIME dateToNative(int64 time) throw() {
+  inline FILETIME dateToNative(int64 time) noexcept
+  {
     const int64 temp = time * 10LL + 116444736000000000LL;
     return *reinterpret_cast<const FILETIME*>(&temp);
   }
@@ -50,20 +52,20 @@ namespace internal {
 #if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__CYGWIN)
   extern "C" long _timezone;
 
-  inline int64 getTimezone() throw() {
+  inline int64 getTimezone() noexcept {
     return _timezone * 1000000LL;
   }
 #else 
-  inline int64 getTimezone() throw() {
+  inline int64 getTimezone() noexcept {
     return timezone * 1000000LL;
   }
 #endif
   
-  inline int64 nativeToDate(time_t time) throw() {
+  inline int64 nativeToDate(time_t time) noexcept {
     return time * 1000000LL;
   }
   
-  inline time_t dateToNative(int64 time) throw() {
+  inline time_t dateToNative(int64 time) noexcept {
     return time/1000000;
   }
 #endif // flavor
@@ -87,7 +89,8 @@ const int
   0, 31, 60, 91, 121, 152, 182, 213, 244, 274, 305, 335, 366
 };
 
-int Date::normalize(DateTime& dateTime, bool redundancy) throw() {
+int Date::normalize(DateTime& dateTime, bool redundancy) noexcept
+{
   int carrier = 0; // and borrow
   
   int month = dateTime.month;
@@ -224,7 +227,8 @@ int Date::normalize(DateTime& dateTime, bool redundancy) throw() {
   return carrier; // unlikely to be non-zero
 }
 
-int Date::getDaysOfMonth(int month, int year) throw(OutOfDomain) {
+int Date::getDaysOfMonth(int month, int year) throw(OutOfDomain)
+{
   bassert(
     (month >= 0) && (month < MONTHS_PER_YEAR),
     OutOfDomain(Type::getType<Date>())
@@ -232,7 +236,8 @@ int Date::getDaysOfMonth(int month, int year) throw(OutOfDomain) {
   return isLeapYear(year) ? DAYS_PER_MONTH_LEAP_YEAR[month] : DAYS_PER_MONTH_NONLEAP_YEAR[month];
 }
 
-int Date::getDayOfWeek(int day, int month, int year) throw() {
+int Date::getDayOfWeek(int day, int month, int year) noexcept
+{
   DateTime dt;
   dt.year = year;
   dt.month = month;
@@ -253,7 +258,8 @@ int Date::getDayOfWeek(int day, int month, int year) throw() {
   // TAG: 0 for Sunday but should be 6 according to ISO...
 }
 
-int Date::getWeek(int day, int month, int year) throw() {
+int Date::getWeek(int day, int month, int year) noexcept
+{
   // week number as defined in ISO-8601
   DateTime dt;
   dt.year = year;
@@ -279,7 +285,8 @@ int Date::getWeek(int day, int month, int year) throw() {
   return d1/DAYS_PER_WEEK + 1;
 }
 
-int Date::getDayOfYear(int day, int month, int year) throw() {
+int Date::getDayOfYear(int day, int month, int year) noexcept
+{
   DateTime dt;
   dt.year = year;
   dt.month = month;
@@ -295,7 +302,8 @@ int Date::getDayOfYear(int day, int month, int year) throw() {
      DAYS_BEFORE_FIRST_OF_MONTH_NONLEAP_YEAR[dt.month]);
 }
 
-Date Date::getNow() throw(DateException) {
+Date Date::getNow() throw(DateException)
+{
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   FILETIME nativeTime;
   ::GetSystemTimeAsFileTime(&nativeTime);
@@ -305,7 +313,8 @@ Date Date::getNow() throw(DateException) {
 #endif
 }
 
-int64 Date::getBias() throw() {
+int64 Date::getBias() noexcept
+{
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   TIME_ZONE_INFORMATION information;
   DWORD status = ::GetTimeZoneInformation(&information);
@@ -359,7 +368,8 @@ Date Date::getTime(int second, int minute, int hour, bool local) throw(DateExcep
 }
 
 Date Date::getDate(
-  int day, int month, int year, bool local) throw(DateException) {
+  int day, int month, int year, bool local) throw(DateException)
+{
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   // TAG: normalize
   FILETIME nativeTime;
@@ -444,7 +454,8 @@ Date Date::getDate(
 #endif
 }
 
-Date::Date(const DateTime& dateTime) throw() {
+Date::Date(const DateTime& dateTime) noexcept
+{
   DateTime dt = dateTime;
   normalize(dt, false);
   int64 days = dt.day +
@@ -482,11 +493,13 @@ Date::Date(const DateTime& dateTime) throw() {
 
 // TAG: add getUTCMillisecond
 
-int Date::getMillisecond() const throw() {
+int Date::getMillisecond() const noexcept
+{
   return (date/1000)%1000; // TAG: fixme UTC to local
 }
 
-int Date::getSecond() const throw() {
+int Date::getSecond() const noexcept
+{
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   SYSTEMTIME time;
   FILETIME nativeTime = internal::dateToNative(date);
@@ -504,7 +517,8 @@ int Date::getSecond() const throw() {
 #endif
 }
 
-int Date::getMinute() const throw() {
+int Date::getMinute() const noexcept
+{
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   SYSTEMTIME time;
   FILETIME nativeTime = internal::dateToNative(date);
@@ -522,7 +536,8 @@ int Date::getMinute() const throw() {
 #endif
 }
 
-int Date::getHour() const throw() {
+int Date::getHour() const noexcept
+{
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   SYSTEMTIME time;
   FILETIME nativeTime = internal::dateToNative(date);
@@ -540,7 +555,8 @@ int Date::getHour() const throw() {
 #endif
 }
 
-int Date::getDay() const throw() {
+int Date::getDay() const noexcept
+{
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   SYSTEMTIME time;
   FILETIME nativeTime = internal::dateToNative(date);
@@ -558,7 +574,8 @@ int Date::getDay() const throw() {
 #endif
 }
 
-int Date::getDayOfWeek() const throw() {
+int Date::getDayOfWeek() const noexcept
+{
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   SYSTEMTIME time;
   FILETIME nativeTime = internal::dateToNative(date);
@@ -576,7 +593,8 @@ int Date::getDayOfWeek() const throw() {
 #endif
 }
 
-int Date::getDayOfYear() const throw() {
+int Date::getDayOfYear() const noexcept
+{
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   SYSTEMTIME time;
   FILETIME nativeTime = internal::dateToNative(date);
@@ -594,7 +612,8 @@ int Date::getDayOfYear() const throw() {
 #endif
 }
 
-int Date::getMonth() const throw() {
+int Date::getMonth() const noexcept
+{
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   SYSTEMTIME time;
   FILETIME nativeTime = internal::dateToNative(date);
@@ -612,7 +631,8 @@ int Date::getMonth() const throw() {
 #endif
 }
 
-int Date::getYear() const throw() {
+int Date::getYear() const noexcept
+{
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   SYSTEMTIME time;
   FILETIME nativeTime = internal::dateToNative(date);
@@ -630,7 +650,8 @@ int Date::getYear() const throw() {
 #endif
 }
 
-int Date::getUTCSecond() const throw() {
+int Date::getUTCSecond() const noexcept
+{
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   SYSTEMTIME time;
   FILETIME nativeTime = internal::dateToNative(date);
@@ -647,7 +668,8 @@ int Date::getUTCSecond() const throw() {
 #endif
 }
 
-int Date::getUTCMinute() const throw() {
+int Date::getUTCMinute() const noexcept
+{
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   SYSTEMTIME time;
   FILETIME nativeTime = internal::dateToNative(date);
@@ -664,7 +686,8 @@ int Date::getUTCMinute() const throw() {
 #endif
 }
 
-int Date::getUTCHour() const throw() {
+int Date::getUTCHour() const noexcept
+{
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   SYSTEMTIME time;
   FILETIME nativeTime = internal::dateToNative(date);
@@ -681,7 +704,8 @@ int Date::getUTCHour() const throw() {
 #endif
 }
 
-int Date::getUTCDay() const throw() {
+int Date::getUTCDay() const noexcept
+{
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   SYSTEMTIME time;
   FILETIME nativeTime = internal::dateToNative(date);
@@ -698,7 +722,8 @@ int Date::getUTCDay() const throw() {
 #endif
 }
 
-int Date::getUTCDayOfWeek() const throw() {
+int Date::getUTCDayOfWeek() const noexcept
+{
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   SYSTEMTIME time;
   FILETIME nativeTime = internal::dateToNative(date);
@@ -715,7 +740,8 @@ int Date::getUTCDayOfWeek() const throw() {
 #endif
 }
 
-int Date::getUTCDayOfYear() const throw() {
+int Date::getUTCDayOfYear() const noexcept
+{
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   SYSTEMTIME time;
   FILETIME nativeTime = internal::dateToNative(date);
@@ -733,7 +759,8 @@ int Date::getUTCDayOfYear() const throw() {
 #endif
 }
 
-int Date::getUTCMonth() const throw() {
+int Date::getUTCMonth() const noexcept
+{
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   SYSTEMTIME time;
   FILETIME nativeTime = internal::dateToNative(date);
@@ -750,7 +777,8 @@ int Date::getUTCMonth() const throw() {
 #endif
 }
 
-int Date::getUTCYear() const throw() {
+int Date::getUTCYear() const noexcept
+{
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   SYSTEMTIME time;
   FILETIME nativeTime = internal::dateToNative(date);
@@ -769,7 +797,8 @@ int Date::getUTCYear() const throw() {
 
 // http://www.faqs.org/faqs/calendars/faq/part2
 
-Date Date::getDateByJulianDay(int julianDay) throw() {
+Date Date::getDateByJulianDay(int julianDay) noexcept
+{
   // Gregorian calendar
   int a = julianDay + 32044;
   int b = (4 * a + 3)/146097;
@@ -788,7 +817,8 @@ Date Date::getDateByJulianDay(int julianDay) throw() {
 
 // ISO-8601: monday first day of week
 
-int Date::getJulianDay() const throw() {
+int Date::getJulianDay() const noexcept
+{
   DateTime dt;
   split(dt);
   // 10 BC => -9
@@ -802,7 +832,8 @@ int Date::getJulianDay() const throw() {
   // return (dt.day + 1) + (153 * m + 2)/5 + 365 * y + y/4 - 32083;
 }
 
-void Date::split(DateTime& result, bool local) const throw() {
+void Date::split(DateTime& result, bool local) const noexcept
+{
 #if 0
   result.microsecond = date%1000000;
   int days = date/SECONDS_PER_DAY;
@@ -1216,7 +1247,8 @@ WideString Date::format(
 
 FormatOutputStream& operator<<(
   FormatOutputStream& stream,
-  const Date& date) throw(InvalidFormat, IOException) {
+  const Date& date) throw(InvalidFormat, IOException)
+{
   stream.addDateField(date);
   return stream;
 }

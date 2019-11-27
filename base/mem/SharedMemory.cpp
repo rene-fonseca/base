@@ -29,7 +29,8 @@ SharedMemory::SharedMemoryImpl::SharedMemoryImpl(
   const File& _file,
   const FileRegion& _region,
   unsigned int _access) throw(MemoryException)
-  : file(_file), region(_region), access(_access) {
+  : file(_file), region(_region), access(_access)
+{
 
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   DWORD protection =
@@ -109,7 +110,8 @@ SharedMemory::SharedMemoryImpl::SharedMemoryImpl(
 #endif // flavor
 }
 
-void SharedMemory::SharedMemoryImpl::lock() throw(MemoryException) {
+void SharedMemory::SharedMemoryImpl::lock() throw(MemoryException)
+{
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   bassert(
     ::VirtualLock(address, region.getSize()),
@@ -127,7 +129,8 @@ void SharedMemory::SharedMemoryImpl::lock() throw(MemoryException) {
 #endif // flavor
 }
 
-void SharedMemory::SharedMemoryImpl::unlock() throw(MemoryException) {
+void SharedMemory::SharedMemoryImpl::unlock() throw(MemoryException)
+{
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   bassert(
     ::VirtualUnlock(address, region.getSize()),
@@ -146,7 +149,8 @@ void SharedMemory::SharedMemoryImpl::unlock() throw(MemoryException) {
 }
 
 void SharedMemory::SharedMemoryImpl::setProtection(
-  unsigned int access) throw(MemoryException) {
+  unsigned int access) throw(MemoryException)
+{
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   DWORD protection = 0;
   if (access == 0) {
@@ -200,7 +204,8 @@ void SharedMemory::SharedMemoryImpl::setProtection(
 }
 
 void SharedMemory::SharedMemoryImpl::synchronize(
-  bool asynchronous) throw(MemoryException) {
+  bool asynchronous) throw(MemoryException)
+{
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   BOOL status = ::FlushViewOfFile(address, getSize());
   bassert(
@@ -221,7 +226,8 @@ void SharedMemory::SharedMemoryImpl::synchronize(
 #endif // flavor
 }
 
-SharedMemory::SharedMemoryImpl::~SharedMemoryImpl() throw() {
+SharedMemory::SharedMemoryImpl::~SharedMemoryImpl() throw()
+{
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   BOOL status = ::UnmapViewOfFile(address);
   BASSERT(status != 0);
@@ -234,7 +240,8 @@ SharedMemory::SharedMemoryImpl::~SharedMemoryImpl() throw() {
 
 // see http://www.engelschall.com/sw/mm
 
-unsigned int SharedMemory::getGranularity() throw() {
+unsigned int SharedMemory::getGranularity() throw()
+{
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   SYSTEM_INFO info;
   ::GetSystemInfo(&info);
@@ -255,7 +262,8 @@ SharedMemory::SharedMemory(
   const String& path,
   const FileRegion& region,
   unsigned int access,
-  unsigned int options) throw(FileException, MemoryException) {
+  unsigned int options) throw(FileException, MemoryException)
+{
   File::Access fileAccess = File::READ;
   if (access & SharedMemory::WRITE) {
     if (access & (SharedMemory::READ|SharedMemory::EXECUTE)) {
@@ -284,31 +292,38 @@ SharedMemory::SharedMemory(
 }
 
 SharedMemory::SharedMemory(const SharedMemory& copy) throw()
-  : sharedMemory(copy.sharedMemory) {
+  : sharedMemory(copy.sharedMemory)
+{
 }
 
-SharedMemory& SharedMemory::operator=(const SharedMemory& eq) throw() {
-  sharedMemory = eq.sharedMemory;
+SharedMemory& SharedMemory::operator=(const SharedMemory& assign) throw()
+{
+  sharedMemory = assign.sharedMemory;
   return *this;
 }
 
-void SharedMemory::lock() throw(MemoryException) {
+void SharedMemory::lock() throw(MemoryException)
+{
   sharedMemory->lock();
 }
 
-void SharedMemory::unlock() throw(MemoryException) {
+void SharedMemory::unlock() throw(MemoryException)
+{
   sharedMemory->unlock();
 }
 
-void SharedMemory::setProtection(unsigned int access) throw(MemoryException) {
+void SharedMemory::setProtection(unsigned int access) throw(MemoryException)
+{
   sharedMemory->setProtection(access);
 }
 
-void SharedMemory::synchronize(bool asynchronous) throw(MemoryException) {
+void SharedMemory::synchronize(bool asynchronous) throw(MemoryException)
+{
   sharedMemory->synchronize(asynchronous);
 }
 
-void SharedMemory::clear() throw() {
+void SharedMemory::clear() throw()
+{
   fill<uint8>(sharedMemory->getBytes(), sharedMemory->getSize(), 0);
 }
 

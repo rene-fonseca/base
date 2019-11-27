@@ -652,8 +652,9 @@ public:
       Assignment of object by object.
     */
     inline IsochronousReadPacketsRequest& operator=(
-      const IsochronousReadPacketsRequest& eq) throw() {
-      context = eq.context;
+      const IsochronousReadPacketsRequest& assign) throw()
+    {
+      context = assign.context;
       return *this;
     }
 
@@ -776,43 +777,49 @@ public:
       Assignment of object by object.
     */
     inline IsochronousReadFixedPacketsRequest& operator=(
-      const IsochronousReadFixedPacketsRequest& eq) throw() {
-      context = eq.context;
+      const IsochronousReadFixedPacketsRequest& assign) throw()
+    {
+      context = assign.context;
       return *this;
     }
 
     /**
       Returns true if request is valid.
     */
-    inline bool isValid() const throw() {
+    inline bool isValid() const throw()
+    {
       return context.isValid();
     }
 
     /**
       Returns true if the request is pending for completion.
     */
-    inline bool isPending() const throw() {
+    inline bool isPending() const throw()
+    {
       return context->isPending();
     }
     
     /**
       Returns the current status of the request.
     */
-    inline IsochronousRequestStatus getStatus() const throw() {
+    inline IsochronousRequestStatus getStatus() const throw()
+    {
       return context->getStatus();
     }
     
     /**
       Resets the request. Raises IEEE1394Exception is request is pending.
     */
-    inline void reset() throw(IEEE1394Exception) {
+    inline void reset() throw(IEEE1394Exception)
+    {
       context->reset();
     }
     
     /**
       Returns the options of the request.
     */
-    inline unsigned int getOptions() const throw() {
+    inline unsigned int getOptions() const throw()
+    {
       return context->getOptions();
     }
     
@@ -920,9 +927,9 @@ public:
     /**
       Assignment of object by object.
     */
-    inline IsochronousReadFixedDataRequest& operator=(
-      const IsochronousReadFixedDataRequest& eq) throw() {
-      context = eq.context;
+    inline IsochronousReadFixedDataRequest& operator=(const IsochronousReadFixedDataRequest& assign) throw()
+    {
+      context = assign.context;
       return *this;
     }
     
@@ -1122,9 +1129,9 @@ public:
     /**
       Assignment of object by object.
     */
-    inline IsochronousReadRequest& operator=(
-      const IsochronousReadRequest& eq) throw() {
-      context = eq.context;
+    inline IsochronousReadRequest& operator=(const IsochronousReadRequest& assign) throw()
+    {
+      context = assign.context;
       return *this;
     }
     
@@ -1256,9 +1263,9 @@ public:
     /**
       Assignment of object by object.
     */
-    inline IsochronousWritePacketsRequest& operator=(
-      const IsochronousWritePacketsRequest& eq) throw() {
-      context = eq.context;
+    inline IsochronousWritePacketsRequest& operator=(const IsochronousWritePacketsRequest& assign) throw()
+    {
+      context = assign.context;
       return *this;
     }
 
@@ -1370,9 +1377,9 @@ public:
     /**
       Assignment of object by object.
     */
-    inline IsochronousWriteFixedPacketsRequest& operator=(
-      const IsochronousWriteFixedPacketsRequest& eq) throw() {
-      context = eq.context;
+    inline IsochronousWriteFixedPacketsRequest& operator=(const IsochronousWriteFixedPacketsRequest& assign) throw()
+    {
+      context = assign.context;
       return *this;
     }
 
@@ -1484,30 +1491,33 @@ public:
     /**
       Assignment of write request by write request.
     */
-    inline IsochronousWriteDataRequest& operator=(
-      const IsochronousWriteDataRequest& eq) throw() {
-      context = eq.context;
+    inline IsochronousWriteDataRequest& operator=(const IsochronousWriteDataRequest& assign) throw()
+    {
+      context = assign.context;
       return *this;
     }
 
     /**
       Returns true if request is valid.
     */
-    inline bool isValid() const throw() {
+    inline bool isValid() const throw()
+    {
       return context.isValid();
     }
     
     /**
       Returns true if the request is pending for completion.
     */
-    inline bool isPending() const throw() {
+    inline bool isPending() const throw()
+    {
       return context->isPending();
     }
     
     /**
       Returns the current status of the request.
     */
-    inline IsochronousRequestStatus getStatus() const throw() {
+    inline IsochronousRequestStatus getStatus() const throw()
+    {
       return context->getStatus();
     }
     
@@ -1620,9 +1630,9 @@ public:
     /**
       Assignment of object by object.
     */
-    inline IsochronousWriteRequest& operator=(
-      const IsochronousWriteRequest& eq) throw() {
-      context = eq.context;
+    inline IsochronousWriteRequest& operator=(const IsochronousWriteRequest& assign) throw()
+    {
+      context = assign.context;
       return *this;
     }
     
@@ -2002,9 +2012,8 @@ public:
     /**
       Assignment of channel by channel.
     */
-    inline IsochronousReadChannel& operator=(
-      const IsochronousReadChannel& eq) throw() {
-      readChannel = eq.readChannel;
+    inline IsochronousReadChannel& operator=(const IsochronousReadChannel& assign) throw() {
+      readChannel = assign.readChannel;
       return *this;
     }
     
@@ -2165,30 +2174,33 @@ public:
     /**
       Assignment of channel by channel.
     */
-    inline IsochronousWriteChannel& operator=(
-      const IsochronousWriteChannel& eq) throw() {
-      writeChannel = eq.writeChannel;
+    inline IsochronousWriteChannel& operator=(const IsochronousWriteChannel& assign) throw()
+    {
+      writeChannel = assign.writeChannel;
       return *this;
     }
 
     /**
       Returns the reserved subchannels.
     */
-    inline uint64 getSubchannels() throw(IEEE1394Exception) {
+    inline uint64 getSubchannels() throw(IEEE1394Exception)
+    {
       return writeChannel->getSubchannels();
     }
 
     /**
       Cancels all pending requests.
     */
-    inline void cancel() throw(IEEE1394Exception) {
+    inline void cancel() throw(IEEE1394Exception)
+    {
       writeChannel->cancel();
     }
     
     /**
       Closes the channel.
     */
-    inline void close() throw(IEEE1394Exception) {
+    inline void close() throw(IEEE1394Exception)
+    {
       writeChannel = new IsochronousWriteChannelImpl();
     }
     

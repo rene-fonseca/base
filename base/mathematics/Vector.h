@@ -49,19 +49,22 @@ public:
     Vector& vector; // use reference to avoid 'copy on write'
     unsigned int index = 0;
     Element(const Element& copy) throw();
-    Element& operator=(const Element& eq) throw();
+    Element& operator=(const Element& assign) throw();
     
     inline Element(Vector& _vector, unsigned int _index) throw()
-      : vector(_vector), index(_index) {
+      : vector(_vector), index(_index)
+    {
     }
   public:
     
-    inline Element& operator=(const TYPE& value) throw(OutOfRange) {
+    inline Element& operator=(const TYPE& value) throw(OutOfRange)
+    {
       vector.setAt(index, value);
       return *this;
     }
     
-    inline operator const TYPE&() const throw(OutOfRange) {
+    inline operator const TYPE&() const throw(OutOfRange)
+    {
       return vector.getAt(index);
     }
   };
@@ -153,7 +156,7 @@ public:
 
     @param eq The vector containing the desired elements.
   */
-  Vector& operator=(const Vector& eq) throw(MemoryException);
+  Vector& operator=(const Vector& assign) throw(MemoryException);
 
 
 

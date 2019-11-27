@@ -40,22 +40,22 @@ public:
   /**
     Write message to standard error.
   */
-  static void message(const char* message) throw();
+  static void message(const char* message) noexcept;
 
   /**
     Write pointer and message to standard error.
   */
-  static void member(const void* ptr, const char* message) throw();
+  static void member(const void* ptr, const char* message) noexcept;
 
   /**
     Writes the message.
   */
-  Trace(const char* message) throw();
+  Trace(const char* message) noexcept;
 
   /**
     Writes the message.
   */
-  ~Trace() throw();
+  ~Trace() noexcept;
 };
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

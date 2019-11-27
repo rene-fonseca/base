@@ -212,9 +212,10 @@ public:
   /**
     Assignment of socket to socket.
   */
-  inline Socket& operator=(const Socket& eq) throw() {
-    if (&eq != this) { // protect against self assignment
-      socket = eq.socket;
+  inline Socket& operator=(const Socket& assign) throw()
+                                        {
+    if (&assign != this) { // protect against self assignment
+      socket = assign.socket;
     }
     return *this;
   }

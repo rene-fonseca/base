@@ -158,23 +158,24 @@ Url::Url(const Url& copy) throw()
 {
 }
 
-Url& Url::operator=(const Url& eq) throw()
+Url& Url::operator=(const Url& assign) throw()
 {
-  scheme = eq.scheme;
-  user = eq.user;
-  password = eq.password;
-  host = eq.host;
-  port = eq.port;
-  path = eq.path;
+  scheme = assign.scheme;
+  user = assign.user;
+  password = assign.password;
+  host = assign.host;
+  port = assign.port;
+  path = assign.path;
   return *this;
 }
 
-bool Url::isRelative() const throw() {
+bool Url::isRelative() const throw()
+{
   return path.isEmpty() || path.startsWith(Literal("/"));
 }
 
-String Url::validateScheme(
-  const String& value) throw(UrlException, MemoryException) {
+String Url::validateScheme(const String& value) throw(UrlException, MemoryException)
+{
   String temp(value.getLength());
   String::ReadIterator end = value.getEndReadIterator();
 

@@ -120,7 +120,7 @@ public:
   /**
     Assignment of user by user.
   */
-  User& operator=(const User& eq) noexcept;
+  User& operator=(const User& assign) noexcept;
   
   /**
     Initializes user by name.
@@ -131,14 +131,14 @@ public:
     Returns true if the users are identical. The method returns true if both
     users are invalid.
   */
-  bool operator==(const User& eq) const noexcept;
+  bool operator==(const User& compare) const noexcept;
   
   /**
     Returns false if the users are not identical. The method returns false if
     both users are invalid.
   */
-  inline bool operator!=(const User& eq) const noexcept {
-    return !(*this == eq);
+  inline bool operator!=(const User& compare) const noexcept {
+    return !(*this == compare);
   }
   
   /**

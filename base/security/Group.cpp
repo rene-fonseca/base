@@ -46,7 +46,8 @@ Group::Group(unsigned long _id) throw(OutOfDomain) : integralId(_id) {
 #endif // flavor
 }
 
-Group::Group(const void* _id) throw(OutOfDomain) {
+Group::Group(const void* _id) throw(OutOfDomain)
+{
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   if (_id == 0) {
     integralId = INVALID;
@@ -63,28 +64,32 @@ Group::Group(const void* _id) throw(OutOfDomain) {
 }
 
 Group::Group(const Group& copy) throw()
-  : integralId(copy.integralId), id(copy.id) {
+  : integralId(copy.integralId), id(copy.id)
+{
 }
 
-Group& Group::operator=(const Group& eq) throw() {
-  id = eq.id;
-  integralId = eq.integralId;
+Group& Group::operator=(const Group& assign) throw()
+{
+  id = assign.id;
+  integralId = assign.integralId;
   return *this;
 }
 
-bool Group::operator==(const Group& eq) const throw() {
+bool Group::operator==(const Group& compare) const throw()
+{
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
-  if (!isValid() || (!eq.isValid())) {
-    return !isValid() && !eq.isValid();
+  if (!isValid() || (!compare.isValid())) {
+    return !isValid() && !compare.isValid();
   }
-  return ::EqualSid((PSID)id->getElements(), (PSID)eq.id->getElements()) != 0;
+  return ::EqualSid((PSID)id->getElements(), (PSID)compare.id->getElements()) != 0;
 #else // unix
   return Cast::extract<gid_t>(integralId) ==
-    Cast::extract<gid_t>(eq.integralId);
+    Cast::extract<gid_t>(compare.integralId);
 #endif
 }
 
-Group::Group(const String& name) throw(GroupException) {
+Group::Group(const String& name) throw(GroupException)
+{
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   throw NotImplemented(this);
 #else // unix

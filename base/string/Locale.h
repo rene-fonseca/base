@@ -174,75 +174,89 @@ public:
   */
   DateFormatSet() throw();
 
-  inline char getDateSeparator() const throw() {
+  inline char getDateSeparator() const throw()
+  {
     return dateSeparator;
   }
 
-  inline char getTimeSeparator() const throw() {
+  inline char getTimeSeparator() const throw()
+  {
     return timeSeparator;
   }
 
-  String getShortNameOfWeekday(unsigned int weekday) const throw(OutOfDomain) {
+  String getShortNameOfWeekday(unsigned int weekday) const throw(OutOfDomain)
+  {
     bassert(weekday < 7, OutOfDomain(Type::getType<DateFormatSet>()));
     return shortNameOfWeekday[weekday];
   }
   
-  String getLongNameOfWeekday(unsigned int weekday) const throw(OutOfDomain) {
+  String getLongNameOfWeekday(unsigned int weekday) const throw(OutOfDomain)
+  {
     bassert(weekday < 7, OutOfDomain(Type::getType<DateFormatSet>()));
     return longNameOfWeekday[weekday];
   }
   
-  String getShortNameOfMonth(unsigned int month) const throw(OutOfDomain) {
+  String getShortNameOfMonth(unsigned int month) const throw(OutOfDomain)
+  {
     bassert(month < 12, OutOfDomain(Type::getType<DateFormatSet>()));
     return shortNameOfMonth[month];
   }
   
-  String getLongNameOfMonth(unsigned int month) const throw(OutOfDomain) {
+  String getLongNameOfMonth(unsigned int month) const throw(OutOfDomain)
+  {
     bassert(month < 12, OutOfDomain(Type::getType<DateFormatSet>()));
     return longNameOfMonth[month];
   }
 
-  inline const String& getPM() const throw() {
+  inline const String& getPM() const throw()
+  {
     return pm;
   }
 
-  inline const String& getAM() const throw() {
+  inline const String& getAM() const throw()
+  {
     return am;
   }
   
 
 
-  inline const String& getShortDateFormat() const throw() {
+  inline const String& getShortDateFormat() const throw()
+  {
     return shortDateFormat;
   }
   
   void setShortDateFormat(const String& format) throw();
   
-  inline const String& getMediumDateFormat() const throw() {
+  inline const String& getMediumDateFormat() const throw()
+  {
     return mediumDateFormat;
   }
   
   void setMediumDateFormat(const String& format) throw();
   
-  inline const String& getLongDateFormat() const throw() {
+  inline const String& getLongDateFormat() const throw()
+  {
     return longDateFormat;
   }
   
   void setLongDateFormat(const String& format) throw();
 
-  inline const String& getShortTimeFormat() const throw() {
+  inline const String& getShortTimeFormat() const throw()
+  {
     return shortTimeFormat;
   }
   
   void setShortTimeFormat(const String& format) throw();
   
-  inline const String& getMediumTimeFormat() const throw() {
+  inline const String& getMediumTimeFormat() const throw()
+  {
     return mediumTimeFormat;
   }
   
   void setMediumTimeFormat(const String& format) throw();
   
-  inline const String& getLongTimeFormat() const throw() {
+  inline const String& getLongTimeFormat() const throw()
+  {
     return longTimeFormat;
   }
   
@@ -300,14 +314,16 @@ public:
   char vectorEnd; // )
   char vectorSeparator; // ,
   
-  inline char getListSeparator() const throw() {
+  inline char getListSeparator() const throw()
+  {
     return listSeparator;
   }
 
   String falseMessage;
   String trueMessage;
   
-  inline const String& getBoolean(bool value) const throw() {
+  inline const String& getBoolean(bool value) const throw()
+  {
     if (value) {
       return trueMessage;
     } else {

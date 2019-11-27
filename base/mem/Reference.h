@@ -212,17 +212,17 @@ public:
   /**
     Returns true if the references are equal.
   */
-  inline bool operator==(const Reference& eq) const noexcept
+  inline bool operator==(const Reference& compare) const noexcept
   {
-    return value == eq.value;
+    return value == compare.value;
   }
 
   /**
     Returns true if the references are non-equal.
   */
-  inline bool operator!=(const Reference& eq) const noexcept
+  inline bool operator!=(const Reference& compare) const noexcept
   {
-    return value != eq.value;
+    return value != compare.value;
   }
   
   /**

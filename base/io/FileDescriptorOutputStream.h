@@ -53,7 +53,7 @@ public:
     Assignment of file descriptor output stream to this file descriptor output
     stream.
   */
-  FileDescriptorOutputStream& operator=(const FileDescriptorOutputStream& eq) throw();
+  FileDescriptorOutputStream& operator=(const FileDescriptorOutputStream& assign) throw();
 
   /**
     Closes the stream and releases any system resources associated with the

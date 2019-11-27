@@ -53,7 +53,7 @@ private:
   Member member;
 
   /** Disable default assignment. */
-  Signal& operator=(const Signal& eq) noexcept;
+  Signal& operator=(const Signal& assign) noexcept;
 public:
 
   /**
@@ -63,20 +63,23 @@ public:
     @param member The end-point of the signal.
   */
   inline Signal(const Sender* _sender, Member _member) noexcept
-    : sender(_sender), member(_member) {
+    : sender(_sender), member(_member)
+  {
   }
   
   /**
     Initialize signal from other signal.
   */
   inline Signal(const Signal& copy) noexcept
-    : sender(copy.sender), member(copy.member) {
+    : sender(copy.sender), member(copy.member)
+  {
   }
 
   /**
     Sends the signal.
   */
-  inline void operator()(Listener* listener) const {
+  inline void operator()(Listener* listener) const
+  {
     (listener->*member)(sender);
   }
 };
@@ -88,7 +91,8 @@ public:
 */
 template<class SENDER, class LISTENER>
 inline Signal<SENDER, LISTENER> signal(
-  const SENDER* sender, void (LISTENER::*member)(const SENDER*)) {
+  const SENDER* sender, void (LISTENER::*member)(const SENDER*))
+{
   return Signal<SENDER, LISTENER>(sender, member);
 }
 

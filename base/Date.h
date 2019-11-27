@@ -141,19 +141,19 @@ public:
     @return The year carrier. Only non-zero if the year falls outside the range
     [-9999;9999].
   */
-  static int normalize(DateTime& dateTime, bool redundancy = true) throw();
+  static int normalize(DateTime& dateTime, bool redundancy = true) noexcept;
   
   /**
     Returns true if the year is a leap year.
   */
-  static inline bool isLeapYear(int year) throw() {
+  static inline bool isLeapYear(int year) noexcept {
     return (year % 4 == 0) && ((year % 100 != 0) || (year % 400 == 0));
   }
   
   /**
     Returns the number of days in the specified year.
   */
-  static inline int getDaysOfYear(int year) throw() {
+  static inline int getDaysOfYear(int year) noexcept {
     return isLeapYear(year) ? 366 : 365;
   }
   
@@ -166,12 +166,12 @@ public:
     Returns the day of the week (Sunday = 0, Monday = 1, etc.). The result is
     unspecified for invalid dates.
   */
-  static int getDayOfWeek(int day, int month, int year) throw();
+  static int getDayOfWeek(int day, int month, int year) noexcept;
 
   /**
     Returns the week of the year.
   */
-  static int getWeek(int day, int month, int year) throw();
+  static int getWeek(int day, int month, int year) noexcept;
 
   /**
     Returns the day (in the range [0; 365]) of the year.
@@ -180,7 +180,7 @@ public:
     @param month The month of the year [0;11].
     @param year The year.
   */
-  static int getDayOfYear(int day, int month, int year) throw();
+  static int getDayOfYear(int day, int month, int year) noexcept;
 
   /**
     Returns the current time in UTC time.
@@ -192,7 +192,7 @@ public:
     Bias may change during the lifetime of the process. This method only works
     on some planet called Earth :-].
   */
-  static int64 getBias() throw();
+  static int64 getBias() noexcept;
   
   /**
     Returns date object for the specified time. Invalid values will be
@@ -245,12 +245,12 @@ public:
   /**
     Returns the date corresponding to the specified Julian day.
   */
-  static Date getDateByJulianDay(int day) throw();
+  static Date getDateByJulianDay(int day) noexcept;
   
   /**
     Initializes the date as 00:00:00 on January 1, 1970.
   */
-  inline Date() throw() {
+  inline Date() noexcept {
   }
   
   /**
@@ -259,25 +259,25 @@ public:
     @param date The number of microseconds elapsed since 00:00:00 on January 1,
     1970, Coordinated Universal Time (UTC).
   */
-  inline Date(int64 _date) throw() : date(_date) {
+  inline Date(int64 _date) noexcept : date(_date) {
   }
   
   /**
     Initializes object from date/time structure.
   */
-  Date(const DateTime& dateTime) throw();
+  Date(const DateTime& dateTime) noexcept;
   
   /**
     Initialize date from other date.
   */
-  inline Date(const Date& copy) throw() : date(copy.date) {
+  inline Date(const Date& copy) noexcept : date(copy.date) {
   }
 
   /**
     Assignment of date with date.
   */
-  inline Date& operator=(const Date& eq) throw() {
-    date = eq.date;
+  inline Date& operator=(const Date& assign) noexcept {
+    date = assign.date;
     return *this;
   }
 
@@ -285,106 +285,106 @@ public:
     Returns the number of microseconds elapsed since 00:00:00 on January 1,
     1970, Coordinated Universal Time (UTC).
   */
-  inline int64 getValue() const throw() {
+  inline int64 getValue() const noexcept {
     return date;
   }
 
   /**
     Adds a bias (in microseconds) to the date.
   */
-  inline void addBias(int64 bias) throw() {
+  inline void addBias(int64 bias) noexcept {
     date += bias;
   }
   
   /**
     Returns the millisecond in local time.
   */
-  int getMillisecond() const throw();
+  int getMillisecond() const noexcept;
   
   /**
     Returns the second in local time.
   */
-  int getSecond() const throw();
+  int getSecond() const noexcept;
 
   /**
     Returns the minute in local time.
   */
-  int getMinute() const throw();
+  int getMinute() const noexcept;
 
   /**
     Returns the hour in local time.
   */
-  int getHour() const throw();
+  int getHour() const noexcept;
 
   /**
     Returns the day of the month in local time.
   */
-  int getDay() const throw();
+  int getDay() const noexcept;
 
   /**
     Returns the day of the week in local time.
   */
-  int getDayOfWeek() const throw();
+  int getDayOfWeek() const noexcept;
 
   /**
     Returns the day of the year in local time.
   */
-  int getDayOfYear() const throw();
+  int getDayOfYear() const noexcept;
   
   /**
     Returns the month in local time.
   */
-  int getMonth() const throw();
+  int getMonth() const noexcept;
   
   /**
     Returns the year in local time.
   */
-  int getYear() const throw();
+  int getYear() const noexcept;
   
   /**
     Returns the second in UTC.
   */
-  int getUTCSecond() const throw();
+  int getUTCSecond() const noexcept;
   
   /**
     Returns the minute in UTC.
   */
-  int getUTCMinute() const throw();
+  int getUTCMinute() const noexcept;
 
   /**
     Returns the hour in UTC.
   */
-  int getUTCHour() const throw();
+  int getUTCHour() const noexcept;
 
   /**
     Returns the day of the month in UTC.
   */
-  int getUTCDay() const throw();
+  int getUTCDay() const noexcept;
 
   /**
     Returns the day of the week in UTC.
   */
-  int getUTCDayOfWeek() const throw();
+  int getUTCDayOfWeek() const noexcept;
 
   /**
     Returns the day of the year in UTC.
   */
-  int getUTCDayOfYear() const throw();
+  int getUTCDayOfYear() const noexcept;
 
   /**
     Returns the month in UTC.
   */
-  int getUTCMonth() const throw();
+  int getUTCMonth() const noexcept;
 
   /**
     Returns the year in UTC.
   */
-  int getUTCYear() const throw();
+  int getUTCYear() const noexcept;
 
   /**
     Returns the Julian day.
   */
-  int getJulianDay() const throw();
+  int getJulianDay() const noexcept;
   
   /**
     Fills the given time structure with the year, month, day of month, day of
@@ -393,7 +393,7 @@ public:
     @param time The time structure.
     @param local Specifies whether the time is in local time.
   */
-  void split(DateTime& time, bool local = false) const throw();
+  void split(DateTime& time, bool local = false) const noexcept;
 
   /**
     Returns the date/time as a string.

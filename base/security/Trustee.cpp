@@ -121,19 +121,19 @@ Trustee& Trustee::operator=(const Trustee& assign) noexcept
   return *this;
 }
 
-bool Trustee::operator==(const Trustee& compare) const noexcept
+bool Trustee::operator==(const Trustee& _compare) const noexcept
 {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
-  if (!((id.isValid()) && (compare.id.isValid()))) {
-    return !id.isValid() && !compare.id.isValid();
+  if (!((id.isValid()) && (_compare.id.isValid()))) {
+    return !id.isValid() && !_compare.id.isValid();
   }
-  return (id->getSize() == compare.id->getSize()) &&
-    (compare(id->getElements(), compare.id->getElements(), id->getSize()) == 0);
+  return (id->getSize() == _compare.id->getSize()) &&
+    (compare(id->getElements(), _compare.id->getElements(), id->getSize()) == 0);
 #else // unix
   // id attribute is dont-care
   if (Constraint<sizeof(uid_t) == sizeof(gid_t)>::UNSPECIFIED) {}
   return Cast::extract<uid_t>(integralId) ==
-    Cast::extract<uid_t>(compare.integralId);
+    Cast::extract<uid_t>(_compare.integralId);
 #endif
 }
 

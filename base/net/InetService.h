@@ -88,7 +88,7 @@ public:
   /**
     Assignment operator.
   */
-  InetService& operator=(const InetService& eq) throw();
+  InetService& operator=(const InetService& assign) throw();
 
   /**
     Returns the name of the service.

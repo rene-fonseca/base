@@ -93,12 +93,12 @@ InetService::InetService(const InetService& copy) throw()
 {
 }
 
-InetService& InetService::operator=(const InetService& eq) throw()
+InetService& InetService::operator=(const InetService& assign) throw()
 {
-  if (&eq != this) { // protect against self assignment
-    name = eq.name;
-    port = eq.port;
-    protocol = eq.protocol;
+  if (&assign != this) { // protect against self assignment
+    name = assign.name;
+    port = assign.port;
+    protocol = assign.protocol;
   }
   return *this;
 }

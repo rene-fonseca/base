@@ -557,14 +557,16 @@ String InetAddress::getHostName(bool fullyQualified) const throw(HostNotFound) {
 #endif // _COM_AZURE_DEV__BASE__INET_IPV6
 }
 
-bool InetAddress::operator==(const InetAddress& eq) const throw() {
-  return (address.words[0] == eq.address.words[0]) &&
-    (address.words[1] == eq.address.words[1]) &&
-    (address.words[2] == eq.address.words[2]) &&
-    (address.words[3] == eq.address.words[3]);
+bool InetAddress::operator==(const InetAddress& compare) const throw()
+{
+  return (address.words[0] == compare.address.words[0]) &&
+    (address.words[1] == compare.address.words[1]) &&
+    (address.words[2] == compare.address.words[2]) &&
+    (address.words[3] == compare.address.words[3]);
 }
 
-bool InetAddress::isSynonymous(const InetAddress& eq) const throw() {
+bool InetAddress::isSynonymous(const InetAddress& eq) const throw()
+{
   if (family == eq.family) {
     return (address.words[3] == eq.address.words[3]) &&
       (address.words[2] == eq.address.words[2]) &&

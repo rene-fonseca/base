@@ -107,17 +107,17 @@ public:
   /**
     Returns true if the iterators are equal.
   */
-  inline bool operator!=(const InterleavedIterator& eq) const
+  inline bool operator!=(const InterleavedIterator& compare) const
   {
-    return element != eq.element;
+    return element != compare.element;
   }
 
   /**
     Returns true if this iterator is less than the specified iterator.
   */
-  inline bool operator<(const InterleavedIterator& eq) const
+  inline bool operator<(const InterleavedIterator& compare) const
   {
-    return element < eq.element;
+    return element < compare.element;
   }
 
   /**

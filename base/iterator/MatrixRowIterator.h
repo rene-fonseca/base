@@ -45,7 +45,7 @@ public:
     
     ElementIterator iterator;
     Element(const Element& copy) noexcept;
-    Element& operator=(const Element& eq) noexcept;
+    Element& operator=(const Element& assign) noexcept;
     
     inline Element(const ElementIterator& _iterator) noexcept
       : iterator(_iterator)

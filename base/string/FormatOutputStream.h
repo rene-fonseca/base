@@ -57,6 +57,7 @@ enum Action {
   NOZEROPAD, /**< Disables zero padding for integer types. */
   GROUPING, /**< Enables thousands grouping for floating-point types (only if the current locale has a grouping character defined). */
   NOGROUPING, /**< Disables thousands grouping for floating-point types. */
+  ENSUREFLOAT, /** Forces floating-point to be non integer. Radix will be added if number can otherwise be confused with an integer. Takes precedence over NECESSARY. */
   PLUS, /**< Forces plus sign to be written for signed integer types (unsigned integer types never has a sign). */
   FPLUS, /**< Forces plus sign to be written for floating-point types. */
   PLUSEXP, /**< Show positive exponent for floating-point types explicitly. */
@@ -137,7 +138,8 @@ public:
       NECESSARY = 128,
       UPPER = 256,
       POSIX = 512,
-      LOCAL_TIME = 1024
+      LOCAL_TIME = 1024,
+      ENSUREFLOAT = 2048
     };
   };
   

@@ -168,6 +168,9 @@ FormatOutputStream& FormatOutputStream::operator<<(Action action) throw(IOExcept
   case NOGROUPING:
     context.flags &= ~Symbols::GROUPING;
     break;
+  case ENSUREFLOAT:
+    context.flags |= Symbols::ENSUREFLOAT;
+    break;
   case PLUS:
     context.flags |= Symbols::PLUS;
     break;
@@ -1626,10 +1629,10 @@ void FormatOutputStream::writeFloatingPointType(
 
   if ((valueFlags & FloatingPoint::FP_ANY_NAN) != 0) {
     if ((flags & Symbols::UPPER) == 0) {
-      copy(output, "nan", sizeof("nan") - 1); // TAG: I guess this should be locale specific
+      copy(output, "nan", sizeof("nan") - 1); // TAG: I guess this should be locale specific when not posix
       output += sizeof("nan") - 1;
     } else {
-      copy(output, "NAN", sizeof("NAN") - 1); // TAG: I guess this should be locale specific
+      copy(output, "NAN", sizeof("NAN") - 1); // TAG: I guess this should be locale specific when not posix
       output += sizeof("NAN") - 1;
     }
   } else {
@@ -1791,6 +1794,16 @@ void FormatOutputStream::writeFloatingPointType(
             writeDigit = true; // first non-zero digit forces following zero-digits to be written
             *output++ = ASCIITraits::valueToDigit(digitValue);
           }
+        }
+      }
+
+      if (!showExponent && (totalDigitsAfterRadix == 0) && (flags & Symbols::ENSUREFLOAT)) {
+        if ((flags & Symbols::POSIX) != 0) {
+          *output++ = '.';
+        } else { // use locale
+          //for (const char* p = locale.getDecimalPoint(); *p != 0; ++p, ++output) {
+          //  *output = *p;
+          //}
         }
       }
 
@@ -2100,6 +2113,11 @@ public:
     TEST_EQUAL(String(f() << -123.0f), "-123");
     TEST_EQUAL(String(f() << -123.0), "-123");
     TEST_EQUAL(String(f() << -123.0L), "-123");
+
+    TEST_EQUAL(String(f() << -0.0), "-0");
+    TEST_EQUAL(String(f() << 0.0), "0");
+    TEST_EQUAL(String(f() << ENSUREFLOAT << -0.0), "-0.");
+    TEST_EQUAL(String(f() << ENSUREFLOAT << 0.0), "0.");
 
     // pi = 3.141592653589793238462643383279502884197169399375105820974944592307816406286208998628034825342117068
     const String PI_IEEE_754_SINGLE_PRECISION = "3.1415927";

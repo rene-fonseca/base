@@ -202,7 +202,7 @@ FormatOutputStream& operator<<(
   FormatOutputStream& stream, const Timer& value) throw(IOException)
 {
   FormatOutputStream::PushContext push(stream);
-  Timer::ElapsedTime time(value.getMicroseconds() * 1000);
+  Timer::ElapsedTime time(((value.getStopTime() == 0) ? value.getLiveMicroseconds() : value.getMicroseconds()) * 1000);
   time.roundToMicrosecond();
   return stream << time.getHours() << ':'
                 << time.getNMinutes() << ':'

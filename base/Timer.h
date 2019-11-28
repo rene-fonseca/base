@@ -161,7 +161,7 @@ public:
     */
     inline unsigned int getNNanoseconds() const noexcept
     {
-      return nanoseconds%1000000000;
+      return nanoseconds % 1000000000;
     }
     
     /**
@@ -169,7 +169,7 @@ public:
     */
     inline unsigned int getNMicroseconds() const noexcept
     {
-      return (nanoseconds/1000)%1000000;
+      return (nanoseconds/1000) % 1000000;
     }
     
     /**
@@ -177,7 +177,7 @@ public:
     */
     inline unsigned int getNMilliseconds() const noexcept
     {
-      return (nanoseconds/1000000)%1000;
+      return (nanoseconds/1000000) % 1000;
     }
     
     /**
@@ -185,7 +185,7 @@ public:
     */
     inline unsigned int getNSeconds() const noexcept
     {
-      return (nanoseconds/1000000000)%60;
+      return (nanoseconds/1000000000) % 60;
     }
     
     /**
@@ -201,7 +201,7 @@ public:
     */
     inline unsigned int getNMinutes() const noexcept
     {
-      return (nanoseconds/(60 * 1000000000ULL))%60;
+      return (nanoseconds/(60 * 1000000000ULL)) % 60;
     }
     
     /**
@@ -220,7 +220,7 @@ public:
       uint64 seconds = nanoseconds/1000000000;
       uint64 minutes = seconds/60;
       uint64 hours = minutes/60;
-      return hours%24;
+      return hours % 24;
     }
     
     /**
@@ -303,7 +303,7 @@ public:
   /**
     Returns the number of elapsed microseconds between start and stop times.
   */
-  uint64 getMicroseconds() const noexcept
+  inline uint64 getMicroseconds() const noexcept
   {
     return stopTime - startTime;
   }
@@ -311,7 +311,7 @@ public:
   /**
     Returns the number of elapsed microseconds since start.
   */
-  uint64 getLiveMicroseconds() const noexcept
+  inline uint64 getLiveMicroseconds() const noexcept
   {
     auto now = getNow();
     return now - startTime;

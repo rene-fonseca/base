@@ -139,7 +139,7 @@ public:
       try {
         Reference<ObjectModel::Value> object = JSON::parseFile(p);
         valid = true;
-      } catch (Exception& e) {
+      } catch (Exception&) {
         // fout << e << ENDL;
       } catch (...) {
       }
@@ -183,7 +183,7 @@ public:
           fout << ">>> " << input << ENDL;
           fout << "<<< " << compact << ENDL;
         }
-      } catch (Exception& e) {
+      } catch (Exception&) {
         // fout << e << ENDL;
       } catch (...) {
       }

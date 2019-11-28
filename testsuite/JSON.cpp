@@ -204,6 +204,8 @@ public:
       fout << "No items." << ENDL;
       return;
     }
+    // TAG: add support for finding item/search by value
+    // TAG: add support for * patterns / regex
     
     String nice = JSON::getJSON(root);
     fout << JSON::getJSON(
@@ -212,10 +214,27 @@ public:
     ) << ENDL;
   }
   
-  void stats(const String& path)
+  void stats(const String& path, const String& xpath)
   {
     // TAG: dump stat support - count items and types
     Reference<ObjectModel::Value> root = JSON::parseFile(path);
+    if (xpath) {
+      if (auto object = root.cast<ObjectModel::Object>()) {
+        root = object->getPath(xpath, true);
+      }
+    }
+    if (!root) {
+      fout << "No items." << ENDL;
+      return;
+    }
+    auto stats = ObjectModel::getStats(root);
+    fout << "objects: " << stats.numberOfObjects << EOL
+         << "arrays: " << stats.numberOfArrays << EOL
+         << "booleans: " << stats.numberOfBools << EOL
+         << "integers: " << stats.numberOfInts << EOL
+         << "floats: " << stats.numberOfFloats << EOL
+         << "strings: " << stats.numberOfStrings << EOL
+         << "nulls: " << stats.numberOfNulls << ENDL;
   }
 
   enum Command {
@@ -284,7 +303,7 @@ public:
       filter(path, xpath);
       return;
     case COMMAND_STATS:
-      stats(path);
+      stats(path, xpath);
       return;
     default:
       ;

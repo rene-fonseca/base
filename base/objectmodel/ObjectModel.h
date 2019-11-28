@@ -749,6 +749,23 @@ public:
 
   /** Creates an object. */
   Reference<Object> createObject();
+  
+  class Stats {
+  public:
+    
+    unsigned int numberOfNulls = 0;
+    unsigned int numberOfObjects = 0;
+    unsigned int numberOfArrays = 0;
+    unsigned int numberOfBools = 0;
+    unsigned int numberOfInts = 0;
+    unsigned int numberOfFloats = 0;
+    unsigned int numberOfStrings = 0;
+    unsigned int numberOfComments = 0;
+    unsigned int numberOfBinaries = 0;
+  };
+
+  /** Returns the stats for the given item. */
+  static Stats getStats(const Reference<ObjectModel::Value>& value);
 };
 
 /** Returns true if the given values are identical. */

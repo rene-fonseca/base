@@ -1345,6 +1345,97 @@ FormatOutputStream& operator<<(FormatOutputStream& stream, const Reference<Objec
 }
 
 namespace {
+  
+#if 0
+  void getStats(ObjectModel::Stats& stats, const Reference<ObjectModel::Void>& value);
+  void getStats(ObjectModel::Stats& stats, const Reference<ObjectModel::Boolean>& value);
+  void getStats(ObjectModel::Stats& stats, const Reference<ObjectModel::Integer>& value);
+  void getStats(ObjectModel::Stats& stats, const Reference<ObjectModel::Float>& value);
+  void getStats(ObjectModel::Stats& stats, const Reference<ObjectModel::String>& value);
+  void getStats(ObjectModel::Stats& stats, const Reference<ObjectModel::Binary>& value);
+  void getStats(ObjectModel::Stats& stats, const Reference<ObjectModel::Comment>& value)
+#endif
+
+  void getStatsImpl(ObjectModel::Stats& stats, const Reference<ObjectModel::Value>& value);
+
+  void getStatsImpl(ObjectModel::Stats& stats, const Reference<ObjectModel::Array>& value)
+  {
+    if (!value) {
+      return;
+    }
+    for (const auto& v : value->values) {
+      getStatsImpl(stats, v);
+    }
+  }
+
+  void getStatsImpl(ObjectModel::Stats& stats, const Reference<ObjectModel::Object>& value)
+  {
+    if (!value) {
+      return;
+    }
+    for (const auto& v : value->values) {
+      stats.numberOfStrings++; // should we count fields also
+      getStatsImpl(stats, v.getSecond());
+    }
+  }
+  
+void getStatsImpl(ObjectModel::Stats& stats, const Reference<ObjectModel::Value>& value)
+{
+  if (!value) {
+    stats.numberOfNulls++;
+    return;
+  }
+
+  switch (value->getType()) {
+  case ObjectModel::Value::TYPE_BOOLEAN:
+    // getStats(stats, value.cast<ObjectModel::Boolean>());
+    stats.numberOfBools++;
+    break;
+  case ObjectModel::Value::TYPE_INTEGER:
+    // getStats(stats, value.cast<ObjectModel::Integer>());
+    stats.numberOfInts++;
+    break;
+  case ObjectModel::Value::TYPE_FLOAT:
+    // getStats(stats, value.cast<ObjectModel::Float>());
+    stats.numberOfFloats++;
+    break;
+  case ObjectModel::Value::TYPE_STRING:
+    // getStats(stats, value.cast<ObjectModel::String>());
+    stats.numberOfStrings++;
+    break;
+  case ObjectModel::Value::TYPE_ARRAY:
+    getStatsImpl(stats, value.cast<ObjectModel::Array>());
+    break;
+  case ObjectModel::Value::TYPE_OBJECT:
+    getStatsImpl(stats, value.cast<ObjectModel::Object>());
+    break;
+  case ObjectModel::Value::TYPE_VOID:
+    // getStats(stats, value.cast<ObjectModel::Void>());
+    stats.numberOfNulls++;
+    break;
+  case ObjectModel::Value::TYPE_COMMENT:
+    // getStats(stats, value.cast<ObjectModel::Comment>());
+    stats.numberOfComments++;
+    break;
+  case ObjectModel::Value::TYPE_BINARY:
+    // getStats(stats, value.cast<ObjectModel::Binary>());
+    stats.numberOfBinaries++;
+    break;
+  default:
+    throw ObjectModelException("Invalid type.");
+  }
+}
+
+}
+
+ObjectModel::Stats ObjectModel::getStats(const Reference<ObjectModel::Value>& value)
+{
+  ObjectModel::Stats stats;
+  getStatsImpl(stats, value);
+  return stats;
+}
+
+namespace {
 
   inline ObjectModel::NiceFormat& operator<<(FormatOutputStream& _stream, ObjectModel::NiceFormat& stream)
   {

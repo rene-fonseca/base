@@ -110,13 +110,15 @@ public:
   /**
     Initializes the key object.
   */
-  inline ThreadKey() throw(ResourceException) {
+  inline ThreadKey() throw(ResourceException)
+  {
   }
 
   /**
     Returns the key.
   */
-  inline TYPE* getKey() const throw(ThreadKeyException) {
+  inline TYPE* getKey() const throw(ThreadKeyException)
+  {
     return static_cast<TYPE*>(ThreadKeyImpl::getKey());
   }
 
@@ -125,7 +127,8 @@ public:
 
     @param value The desired value of the key for the executing thread.
   */
-  inline void setKey(TYPE* value) throw(ThreadKeyException) {
+  inline void setKey(TYPE* value) throw(ThreadKeyException)
+  {
     ThreadKeyImpl::setKey(value);
   }
 };

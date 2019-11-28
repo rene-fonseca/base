@@ -17,17 +17,20 @@
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
-ReadWriteSpinLock::ReadWriteSpinLock() throw() {
+ReadWriteSpinLock::ReadWriteSpinLock() noexcept
+{
 }
 
-void ReadWriteSpinLock::exclusiveLock() const throw() {
+void ReadWriteSpinLock::exclusiveLock() const noexcept
+{
   lock.exclusiveLock();
   // id is really not required when non-recursive (bool would do)
   ExclusiveSynchronize<Guard> _guard(guard);
   writer = Thread::getIdentifier();
 }
 
-bool ReadWriteSpinLock::tryExclusiveLock() const throw() {
+bool ReadWriteSpinLock::tryExclusiveLock() const noexcept
+{
   if (!lock.tryExclusiveLock()) {
     return false;
   }
@@ -37,7 +40,8 @@ bool ReadWriteSpinLock::tryExclusiveLock() const throw() {
   return true;
 }
 
-void ReadWriteSpinLock::sharedLock() const throw() {
+void ReadWriteSpinLock::sharedLock() const noexcept
+{
   {
     ExclusiveSynchronize<Guard> _guard(guard);
     if (numberOfReaders) {
@@ -63,7 +67,8 @@ void ReadWriteSpinLock::sharedLock() const throw() {
   }
 }
 
-bool ReadWriteSpinLock::trySharedLock() const throw() {
+bool ReadWriteSpinLock::trySharedLock() const noexcept
+{
   ExclusiveSynchronize<Guard> _guard(guard);
   if (numberOfReaders) {
     ++numberOfReaders;
@@ -77,7 +82,7 @@ bool ReadWriteSpinLock::trySharedLock() const throw() {
   return false;
 }
 
-void ReadWriteSpinLock::releaseLock() const throw()
+void ReadWriteSpinLock::releaseLock() const noexcept
 {
   Profiler::pushSignal("ReadWriteSpinLock::releaseLock()");
   ExclusiveSynchronize<Guard> _guard(guard);

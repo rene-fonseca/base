@@ -25,7 +25,8 @@
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
-ThreadKeyImpl::ThreadKeyImpl() throw(ResourceException) {
+ThreadKeyImpl::ThreadKeyImpl() throw(ResourceException)
+{
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   DWORD key = 0;
   if ((key = ::TlsAlloc()) == TLS_OUT_OF_INDEXES) {
@@ -49,7 +50,8 @@ ThreadKeyImpl::ThreadKeyImpl() throw(ResourceException) {
 #endif // flavor
 }
 
-void* ThreadKeyImpl::getKey() const throw(ThreadKeyException) {
+void* ThreadKeyImpl::getKey() const throw(ThreadKeyException)
+{
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   void* result = ::TlsGetValue(Cast::extract<DWORD>(key));
   if (!result && (::GetLastError() != NO_ERROR)) {
@@ -67,7 +69,8 @@ void* ThreadKeyImpl::getKey() const throw(ThreadKeyException) {
 #endif // flavor
 }
 
-void ThreadKeyImpl::setKey(void* value) throw(ThreadKeyException) {
+void ThreadKeyImpl::setKey(void* value) throw(ThreadKeyException)
+{
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   if (!::TlsSetValue(Cast::extract<DWORD>(key), value)) {
     throw ThreadKeyException(this);
@@ -85,7 +88,8 @@ void ThreadKeyImpl::setKey(void* value) throw(ThreadKeyException) {
 #endif // flavor
 }
 
-ThreadKeyImpl::~ThreadKeyImpl() {
+ThreadKeyImpl::~ThreadKeyImpl()
+{
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   if (!::TlsFree(Cast::extract<DWORD>(key))) {
     throw ThreadKeyException(this);

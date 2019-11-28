@@ -66,7 +66,7 @@ Thread::ThreadLocal::~ThreadLocal()
 }
 
 #if 0
-uint8* Thread::ThreadLocal::getStorage(MemorySize size) throw()
+uint8* Thread::ThreadLocal::getStorage(MemorySize size) noexcept
 {
   auto s = storage.getKey();
   if (!s) {
@@ -79,7 +79,7 @@ uint8* Thread::ThreadLocal::getStorage(MemorySize size) throw()
   return s->getElements();
 }
 
-void Thread::ThreadLocal::garbageCollect() throw()
+void Thread::ThreadLocal::garbageCollect() noexcept
 {
   auto s = storage.getKey();
   if (s) {
@@ -150,7 +150,7 @@ void Thread::setThreadName(const char* name)
   }
 }
 
-void* Thread::entry(Thread* thread) throw()
+void* Thread::entry(Thread* thread) noexcept
 {
 #if defined(_COM_AZURE_DEV__BASE__EXCEPTION_V3MV) && !defined(_COM_AZURE_DEV__BASE__EXCEPTION_V3MV_TRANSPARENT)
   const abi::__cxa_eh_globals* abi::__cxa_get_globals(); // this allows us to use __cxa_get_globals_fast
@@ -182,7 +182,7 @@ void* Thread::entry(Thread* thread) throw()
   return 0;
 }
 
-void Thread::exit() throw()
+void Thread::exit() noexcept
 {
   BASSERT(getThread()->state == ALIVE);
   getThread()->state = EXIT;
@@ -245,8 +245,8 @@ Thread::UseThreadLocalBuffer::~UseThreadLocalBuffer()
 
 #if 0
 // TAG: add helper function for ensuring thread local buffer of the right size and automatic clear big buffers?
-static uint8* getStorage(MemorySize size) throw();
-static void garbageCollect() throw();
+static uint8* getStorage(MemorySize size) noexcept;
+static void garbageCollect() noexcept;
 #endif
 
 void Thread::nanosleep(unsigned int nanoseconds) throw(OutOfDomain)
@@ -431,7 +431,7 @@ void Thread::sleep(unsigned int seconds) throw(OutOfDomain)
 #endif
 }
 
-void Thread::yield() throw() {
+void Thread::yield() noexcept {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   ::SwitchToThread(); // no errors
 #elif defined(_COM_AZURE_DEV__BASE__PTHREAD_YIELD)
@@ -515,7 +515,7 @@ inline void* getAsPointer(const uint64 value) noexcept
 }
 #endif
 
-Thread::Thread(Thread* _parent) throw()
+Thread::Thread(Thread* _parent) noexcept
   : parent(_parent),
     runnable(nullptr),
     terminated(false),
@@ -554,17 +554,17 @@ Thread::Thread(Runnable* _runnable) throw(NullPointer, ResourceException)
   BASSERT(parent); // a parent must always exist
 }
 
-void Thread::setTerminationState(State state) throw() {
+void Thread::setTerminationState(State state) noexcept {
   BASSERT(isSelf() && (state > ALIVE));
   this->state = state;
   terminationEvent.signal(); // do not access state here after
 }
 
-bool Thread::isAlive() const throw() {
+bool Thread::isAlive() const noexcept {
   return state == ALIVE;
 }
 
-bool Thread::isAncestor() const throw() {
+bool Thread::isAncestor() const noexcept {
   const Thread* executing = getThread();
   const Thread* current = this;
   if (current == executing) {
@@ -579,7 +579,7 @@ bool Thread::isAncestor() const throw() {
   return false;
 }
 
-bool Thread::isChild() const throw() {
+bool Thread::isChild() const noexcept {
   const Thread* current = getThread();
   if (current == this) {
     return false;
@@ -593,11 +593,11 @@ bool Thread::isChild() const throw() {
   return false;
 }
 
-bool Thread::isParent() const throw() {
+bool Thread::isParent() const noexcept {
   return getThread() == getParent();
 }
 
-bool Thread::isSelf() const throw() {
+bool Thread::isSelf() const noexcept {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   return ::GetCurrentThreadId() == getAddressOf(identifier);
 #else // pthread
@@ -605,7 +605,7 @@ bool Thread::isSelf() const throw() {
 #endif
 }
 
-bool Thread::isStandalone() throw() {
+bool Thread::isStandalone() noexcept {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   // THREAD_AM_I_LAST_THREAD info;
 //  status = ntapi::NtQueryInformationThread(::GetCurrentThread(), ntapi::ThreadAmILastThread, &info, sizeof(info), 0);
@@ -618,7 +618,7 @@ bool Thread::isStandalone() throw() {
 
 // TAG: put in Base.h
 template<class TYPE>
-inline TYPE clamp(TYPE minimum, TYPE value, TYPE maximum) throw() {
+inline TYPE clamp(TYPE minimum, TYPE value, TYPE maximum) noexcept {
   if (value < minimum) {
     return minimum;
   } else if (value > maximum) {
@@ -630,7 +630,7 @@ inline TYPE clamp(TYPE minimum, TYPE value, TYPE maximum) throw() {
 
 // TAG: put in Base.h
 template<class TYPE>
-inline bool isWithin(TYPE minimum, TYPE value, TYPE maximum) throw() {
+inline bool isWithin(TYPE minimum, TYPE value, TYPE maximum) noexcept {
   if (value < minimum) {
     return false;
   } else if (value > maximum) {
@@ -640,7 +640,7 @@ inline bool isWithin(TYPE minimum, TYPE value, TYPE maximum) throw() {
   }
 }
 
-int Thread::getNamedPriority(Priority priority) throw()
+int Thread::getNamedPriority(Priority priority) noexcept
 {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   static const int PRIORITY[] = {7 - 31, 7 - 15, 7 - 7, 7 - 1};
@@ -651,7 +651,7 @@ int Thread::getNamedPriority(Priority priority) throw()
   return PRIORITY[priority];
 }
 
-Thread::Identifier Thread::getIdentifier() throw()
+Thread::Identifier Thread::getIdentifier() noexcept
 {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   return getAsPointer(::GetCurrentThreadId());
@@ -782,7 +782,7 @@ int Thread::getPriority() throw(ThreadException) {
 #endif
 }
 
-Thread::Times Thread::getTimes() throw()
+Thread::Times Thread::getTimes() noexcept
 {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   Thread::Times result;
@@ -868,7 +868,7 @@ void Thread::start() throw(ThreadException)
 #endif
 }
 
-void Thread::terminate() throw()
+void Thread::terminate() noexcept
 {
   if (!terminated) {
     terminated = true;

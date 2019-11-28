@@ -46,10 +46,10 @@ class ThreadLocalContext;
     unsigned int count = 0;
   public:
 
-    MyThread(unsigned int _count) throw() : count(_count) {
+    MyThread(unsigned int _count) : count(_count) {
     }
     
-    void run() throw() {
+    void run() {
       setThreadName("MyThread");
       while (count--) {
       }
@@ -95,7 +95,8 @@ public:
     }
 
     inline Times(uint64 _user, uint64 _system) noexcept
-      : user(_user), system(_system) {
+      : user(_user), system(_system)
+    {
     }
 
     /** Returns the total processing time in nanoseconds. */
@@ -154,7 +155,8 @@ public:
     /**
       Initializes the exception object with no message.
     */
-    inline ThreadException() throw() {
+    inline ThreadException() noexcept
+    {
     }
     
     /**
@@ -162,7 +164,9 @@ public:
       
       @param message The message.
     */
-    inline ThreadException(const char* message) throw() : Exception(message) {
+    inline ThreadException(const char* message) noexcept
+      : Exception(message)
+    {
     }
     
     /**
@@ -170,7 +174,9 @@ public:
       
       @param type The identity of the type.
     */
-    inline ThreadException(const Type& type) throw() : Exception(type) {
+    inline ThreadException(const Type& type) noexcept
+      : Exception(type)
+    {
     }
     
     /**
@@ -179,7 +185,7 @@ public:
       @param message An NULL-terminated string (ASCII).
       @param type The identity of the type.
     */
-    inline ThreadException(const char* message, const Type& type) throw()
+    inline ThreadException(const char* message, const Type& type) noexcept
       : Exception(message, type) {
     }
     
@@ -196,17 +202,22 @@ public:
   class _COM_AZURE_DEV__BASE__API Self : public ThreadException {
   public:
 
-    inline Self() throw() {
+    inline Self() noexcept {
     }
     
-    inline Self(const char* message) throw() : ThreadException(message) {
+    inline Self(const char* message) noexcept
+      : ThreadException(message)
+    {
     }
     
-    inline Self(const Type& type) throw() : ThreadException(type) {
+    inline Self(const Type& type) noexcept
+      : ThreadException(type)
+    {
     }
     
-    inline Self(const char* message, const Type& type) throw()
-      : ThreadException(message, type) {
+    inline Self(const char* message, const Type& type) noexcept
+      : ThreadException(message, type)
+    {
     }
   };
 
@@ -215,12 +226,12 @@ public:
 
     @param priority The named priority.
   */
-  static int getNamedPriority(Priority priority) throw();
+  static int getNamedPriority(Priority priority) noexcept;
 
   /**
     Returns the identifier of the executing thread.
   */
-  static Identifier getIdentifier() throw();
+  static Identifier getIdentifier() noexcept;
 private:
 
   /** The parent thread of the thread. */
@@ -259,7 +270,7 @@ private:
   /**
     Redirects a thread to a specified runnable object.
   */
-  static void* entry(Thread* thread) throw();
+  static void* entry(Thread* thread) noexcept;
 protected:
 
   /**
@@ -276,7 +287,7 @@ public:
     have been created on the heap. It is not recommended that you use this
     method.
   */
-  static void exit() throw();
+  static void exit() noexcept;
 
   /**
     Returns the thread object associated with the executing thread.
@@ -347,19 +358,19 @@ public:
     without blocking. Notifies the scheduler that the current thread is willing
     to release its time slice to other threads of the same or higher priority.
   */
-  static void yield() throw();
+  static void yield() noexcept;
 private:
   
   /**
     Initializes thread object for the current execution context with the
     specified parent.
   */
-  Thread(Thread* parent) throw();
+  Thread(Thread* parent) noexcept;
   
   /**
     Sets the termination state of the thread just before the thread is exiting.
   */
-  void setTerminationState(State state) throw();
+  void setTerminationState(State state) noexcept;
 protected:
 
   /**
@@ -388,36 +399,39 @@ public:
   /**
     Returns the thread that created this thread. Returns 0 for the main thread.
   */
-  inline Thread* getParent() const throw() {
+  inline Thread* getParent() const noexcept
+  {
     return parent;
   }
 
   /**
     Returns the execution state of the thread.
   */
-  inline State getState() const throw() {
+  inline State getState() const noexcept
+  {
     return state;
   }
   
   /**
     Returns true if the thread is alive and kicking.
   */
-  bool isAlive() const throw();
+  bool isAlive() const noexcept;
 
   /**
     Returns true if the executing thread is an ancestor of this thread.
   */
-  bool isAncestor() const throw();
+  bool isAncestor() const noexcept;
 
   /**
     Returns true if the executing thread is a child of this thread.
   */
-  bool isChild() const throw();
+  bool isChild() const noexcept;
 
   /**
     Returns true if the thread is the main thread.
   */
-  inline bool isMainThread() const throw() {
+  inline bool isMainThread() const noexcept
+  {
     return parent == nullptr;
   }
 
@@ -425,7 +439,7 @@ public:
     Returns true if the executing thread is the only thread within the process.
     This method is experimental!
   */
-  static bool isStandalone() throw();
+  static bool isStandalone() noexcept;
   
   /**
     Returns the priority level of the executing thread.
@@ -435,24 +449,25 @@ public:
   /**
     Returns true if the executing thread is the parent of this thread.
   */
-  bool isParent() const throw();
+  bool isParent() const noexcept;
 
   /**
     Returns true if the thread is the executing thread.
   */
-  bool isSelf() const throw();
+  bool isSelf() const noexcept;
 
   /**
     Returns true if the thread has been asked to terminate.
   */
-  inline bool isTerminated() const throw() {
+  inline bool isTerminated() const noexcept
+  {
     return terminated;
   }
 
   /**
     Returns the current processing times (both user and system times).
   */
-  static Times getTimes() throw();
+  static Times getTimes() noexcept;
 
   /** Returns the thread name is available. */
   static String getThreadName();
@@ -488,7 +503,7 @@ public:
     Asks the thread to terminate as soon as possible. This does not block
     the executing thread.
   */
-  void terminate() throw();
+  void terminate() noexcept;
 
   /**
     Destroys the thread object. The calling thread blocks until the thread has

@@ -68,7 +68,8 @@ public:
     invoked by the thread for which getToken() returned true. Raises
     ResourceException if unable to allocate the required resources.
   */
-  inline bool getToken() throw(ResourceException) {
+  inline bool getToken() throw(ResourceException)
+  {
     return mask && getTokenImpl();
   }
   

@@ -28,7 +28,7 @@ class _COM_AZURE_DEV__BASE__API ApplicationSynchronize {
 private:
 
   ApplicationSynchronize(const ApplicationSynchronize& copy);
-  ApplicationSynchronize& operator=(const ApplicationSynchronize& eq);
+  ApplicationSynchronize& operator=(const ApplicationSynchronize& assign);
 public:
 
   ApplicationSynchronize();

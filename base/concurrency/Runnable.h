@@ -39,7 +39,8 @@ public:
   /**
     Initializes runnable object.
   */
-  inline Runnable() throw() {
+  inline Runnable() noexcept
+  {
   }
   
   /**
@@ -50,7 +51,8 @@ public:
   /**
     Returns true if the active object should be terminated.
   */
-  inline bool isTerminated() throw() {
+  inline bool isTerminated() noexcept
+  {
     return terminated;
   }
   
@@ -59,13 +61,15 @@ public:
 
     @param child The child thread.
   */
-  virtual void onChild(Thread* child) throw() {
+  virtual void onChild(Thread* child) noexcept
+  {
   }
   
   /**
     Invocated when the thread is asked to terminate. Watch out for MT-safety.
   */
-  virtual void onTermination() throw() {
+  virtual void onTermination() noexcept
+  {
     terminated = true;
   }
   

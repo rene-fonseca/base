@@ -26,13 +26,14 @@ _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 //  }
 //};
 
-void ThreadPool::Wrapper::run() throw() {
+void ThreadPool::Wrapper::run() noexcept
+{
   pool->run();
 }
 
 
 
-void ThreadPool::run() throw()
+void ThreadPool::run() noexcept
 {
   Thread* context = Thread::getThread();
   Runnable* job = nullptr;
@@ -74,7 +75,7 @@ void ThreadPool::run() throw()
   }
 }
 
-ThreadPool::ThreadPool(JobProvider* _provider) throw()
+ThreadPool::ThreadPool(JobProvider* _provider) noexcept
   : runnable(this),
     provider(_provider),
     desiredThreads(0),
@@ -83,7 +84,7 @@ ThreadPool::ThreadPool(JobProvider* _provider) throw()
 {
 }
 
-ThreadPool::ThreadPool(JobProvider* _provider, unsigned int threads) throw()
+ThreadPool::ThreadPool(JobProvider* _provider, unsigned int threads) noexcept
   : runnable(this),
     provider(_provider),
     desiredThreads(0),
@@ -93,7 +94,7 @@ ThreadPool::ThreadPool(JobProvider* _provider, unsigned int threads) throw()
   setThreads(threads);
 }
 
-unsigned int ThreadPool::getThreads() const throw()
+unsigned int ThreadPool::getThreads() const noexcept
 {
   SharedSynchronize<Guard> _guard(guard);
   return desiredThreads;
@@ -145,14 +146,14 @@ void ThreadPool::setThreads(unsigned int value) throw(ThreadPoolException)
   }
 }
 
-void ThreadPool::terminate() throw()
+void ThreadPool::terminate() noexcept
 {
   ExclusiveSynchronize<Guard> _guard(guard);
   terminated = true;
   forEach(pool, invokeMember(&Thread::terminate));
 }
 
-void ThreadPool::join() throw()
+void ThreadPool::join() noexcept
 {
   Profiler::WaitTask profile("ThreadPool::join()");
 
@@ -161,12 +162,12 @@ void ThreadPool::join() throw()
   forEach(pool, invokeMember(&Thread::join));
 }
 
-void ThreadPool::post() throw()
+void ThreadPool::post() noexcept
 {
   semaphore.post();
 }
 
-ThreadPool::~ThreadPool() throw()
+ThreadPool::~ThreadPool() noexcept
 {
   terminate();
   join();

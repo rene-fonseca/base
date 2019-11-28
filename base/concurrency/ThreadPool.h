@@ -59,17 +59,17 @@ public:
   class _COM_AZURE_DEV__BASE__API ThreadPoolException : public Exception {
   public:
     
-    inline ThreadPoolException() throw() {
+    inline ThreadPoolException() noexcept {
     }
     
-    inline ThreadPoolException(const char* message) throw()
+    inline ThreadPoolException(const char* message) noexcept
       : Exception(message) {
     }
     
-    inline ThreadPoolException(const Type& type) throw() : Exception(type) {
+    inline ThreadPoolException(const Type& type) noexcept : Exception(type) {
     }
     
-    inline ThreadPoolException(const char* message, const Type& type) throw()
+    inline ThreadPoolException(const char* message, const Type& type) noexcept
       : Exception(message, type) {
     }
     
@@ -96,13 +96,13 @@ private:
 
       @param pool The thread pool.
     */
-    inline Wrapper(ThreadPool* _pool) throw() : pool(_pool) {
+    inline Wrapper(ThreadPool* _pool) noexcept : pool(_pool) {
     }
 
     /**
       Run the object.
     */
-    void run() throw();
+    void run() noexcept;
   };
 
   friend class Wrapper;
@@ -129,7 +129,7 @@ private:
   Semaphore termination;
 private:
 
-  void run() throw();
+  void run() noexcept;
 public:
 
   /**
@@ -137,7 +137,7 @@ public:
 
     @param provider The job provider.
   */
-  ThreadPool(JobProvider* provider) throw();
+  ThreadPool(JobProvider* provider) noexcept;
 
   /**
     Initializes thread pool with specified number of threads.
@@ -145,12 +145,12 @@ public:
     @param provider The job provider.
     @param threads The initial number of threads in the pool.
   */
-  ThreadPool(JobProvider* provider, unsigned int threads) throw();
+  ThreadPool(JobProvider* provider, unsigned int threads) noexcept;
 
   /**
     Returns the desired number of threads of the pool.
   */
-  unsigned int getThreads() const throw();
+  unsigned int getThreads() const noexcept;
 
   /**
     Sets the desired number of threads of the pool. Blocks until accomplished.
@@ -162,24 +162,24 @@ public:
     Asks all the threads to terminate. Jobs that have not been started are not
     executed.
   */
-  void terminate() throw();
+  void terminate() noexcept;
 
   /**
     Waits for all the threads to terminate. All waiting jobs of the pool are
     executed first unless the pool has been explicitly terminated.
   */
-  void join() throw();
+  void join() noexcept;
 
   /**
     The job provider is required to invoke this function when a job becomes
     available.
   */
-  void post() throw();
+  void post() noexcept;
 
   /**
     Destroys the thread pool.
   */
-  ~ThreadPool() throw();
+  ~ThreadPool() noexcept;
 };
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

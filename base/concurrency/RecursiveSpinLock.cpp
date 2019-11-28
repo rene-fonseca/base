@@ -17,11 +17,12 @@
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
-RecursiveSpinLock::RecursiveSpinLock() throw()
-  : owner(0), numberOfLocks(0) {
+RecursiveSpinLock::RecursiveSpinLock() noexcept
+{
 }
 
-void RecursiveSpinLock::exclusiveLock() const throw() {
+void RecursiveSpinLock::exclusiveLock() const noexcept
+{
   Thread::Identifier id = Thread::getIdentifier();
   {
     ExclusiveSynchronize<Guard> _guard(guard);
@@ -38,7 +39,8 @@ void RecursiveSpinLock::exclusiveLock() const throw() {
   }
 }
 
-bool RecursiveSpinLock::tryExclusiveLock() const throw() {
+bool RecursiveSpinLock::tryExclusiveLock() const noexcept
+{
   Thread::Identifier id = Thread::getIdentifier();
   ExclusiveSynchronize<Guard> _guard(guard);
   if (owner == id) {
@@ -53,7 +55,7 @@ bool RecursiveSpinLock::tryExclusiveLock() const throw() {
   }
 }
 
-void RecursiveSpinLock::releaseLock() const throw()
+void RecursiveSpinLock::releaseLock() const noexcept
 {
   Profiler::pushSignal("RecursiveSpinLock::releaseLock()");
   // Thread::Identifier id = Thread::getIdentifier();

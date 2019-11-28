@@ -49,12 +49,13 @@ public:
   /**
     Initializes the spin lock in unlocked state.
   */
-  RecursiveSpinLock() throw();
+  RecursiveSpinLock() noexcept;
   
   /**
     Returns true if the executing thread is the owner of the lock.
   */
-  inline bool isOwner() const throw() {
+  inline bool isOwner() const noexcept
+  {
     return Thread::getIdentifier() == owner;
   }
 
@@ -62,14 +63,15 @@ public:
     Returns the number of locks currently held by the owner of the lock.
     Garbage is returned unless the executing thread is the owner.
   */
-  inline unsigned int getNumberOfLocks() const throw() {
+  inline unsigned int getNumberOfLocks() const noexcept
+  {
     return numberOfLocks;
   }
   
   /**
     Acquires an exclusive lock.
   */
-  void exclusiveLock() const throw();
+  void exclusiveLock() const noexcept;
   
   /**
     Tries to acquire an exclusive lock. Guaranteed to succeed if the executing
@@ -77,13 +79,14 @@ public:
     
     @return True on success.
   */
-  bool tryExclusiveLock() const throw();
+  bool tryExclusiveLock() const noexcept;
   
   /**
     Acquires a shared lock. For some lock implementations this will acquire an
     exclusive lock.
   */
-  inline void sharedLock() const throw() {
+  inline void sharedLock() const noexcept
+  {
     exclusiveLock();
   }
   
@@ -92,14 +95,15 @@ public:
 
     @return True on success.
   */
-  inline bool trySharedLock() const throw() {
+  inline bool trySharedLock() const noexcept
+  {
     return tryExclusiveLock();
   }
   
   /**
     Releases the spin lock.
   */
-  void releaseLock() const throw();
+  void releaseLock() const noexcept;
 };
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

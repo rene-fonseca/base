@@ -46,7 +46,7 @@ public:
     ::InitializeCriticalSection(&common);
   }
 
-  inline void exclusiveLock() throw()
+  inline void exclusiveLock() noexcept
   {
     spinLock.exclusiveLock();
     if (writers++ == 0) {
@@ -56,7 +56,7 @@ public:
     ::EnterCriticalSection(&common); // wait for exclusive lock
   }
 
-  inline bool tryExclusiveLock() throw()
+  inline bool tryExclusiveLock() noexcept
   {
     // we do not want to relinquish execution context if we not required to do so
     spinLock.exclusiveLock();
@@ -70,7 +70,7 @@ public:
     return result;
   }
   
-  inline void sharedLock() throw()
+  inline void sharedLock() noexcept
   {
     // we do not want to relinquish execution context if we not required to do so
     spinLock.exclusiveLock();
@@ -91,7 +91,7 @@ public:
     spinLock.releaseLock();
   }
 
-  inline bool trySharedLock() throw()
+  inline bool trySharedLock() noexcept
   {
     // we do not want to relinquish execution context if we not required to do so
     bool result = false;
@@ -108,7 +108,7 @@ public:
     return result;
   }
 
-  inline void releaseLock() throw()
+  inline void releaseLock() noexcept
   {
     spinLock.exclusiveLock();
     if (readers > 0) {
@@ -128,7 +128,7 @@ public:
     spinLock.releaseLock();
   }
   
-  inline ~ReadWriteLockImpl() throw()
+  inline ~ReadWriteLockImpl() noexcept
   {
     BASSERT(::TryEnterCriticalSection(&common) != 0);
     ::DeleteCriticalSection(&common);

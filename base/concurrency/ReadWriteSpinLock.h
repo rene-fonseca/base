@@ -47,36 +47,36 @@ public:
   /**
     Initializes the spin lock in unlocked state.
   */
-  ReadWriteSpinLock() throw();
+  ReadWriteSpinLock() noexcept;
   
   /**
     Acquires an exclusive lock.
   */
-  void exclusiveLock() const throw();
+  void exclusiveLock() const noexcept;
   
   /**
     Tries to acquire an exclusive lock.
     
     @return True on success.
   */
-  bool tryExclusiveLock() const throw();
+  bool tryExclusiveLock() const noexcept;
   
   /**
     Acquires a shared lock.
   */
-  inline void sharedLock() const throw();
+  inline void sharedLock() const noexcept;
   
   /**
     Tries to acquire a shared lock.
     
     @return True on success.
   */
-  bool trySharedLock() const throw();
+  bool trySharedLock() const noexcept;
   
   /**
     Releases the spin lock.
   */
-  void releaseLock() const throw();
+  void releaseLock() const noexcept;
 };
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

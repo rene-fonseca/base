@@ -158,7 +158,7 @@ public:
   class _COM_AZURE_DEV__BASE__API Void : public Value {
   public:
 
-    inline Void() {
+    inline Void() noexcept {
     }
 
     /** Returns the type. */
@@ -173,7 +173,7 @@ public:
     
     bool value = false;
 
-    inline Boolean(bool _value) : value(_value) {
+    inline Boolean(bool _value) noexcept : value(_value) {
     }
 
     /** Returns the type. */
@@ -192,10 +192,10 @@ public:
     
     int64 value = 0;
 
-    inline Integer(int _value) : value(_value) {
+    inline Integer(int _value) noexcept : value(_value) {
     }
 
-    inline Integer(int64 _value) : value(_value) {
+    inline Integer(int64 _value) noexcept : value(_value) {
     }
 
     /** Returns the type. */
@@ -234,7 +234,7 @@ public:
     
     double value = 0;
 
-    inline Float(double _value) : value(_value) {
+    inline Float(double _value) noexcept : value(_value) {
     }
     
     /** Returns the type. */
@@ -253,7 +253,7 @@ public:
     
     base::String value;
 
-    inline String() {
+    inline String() noexcept {
     }
 
     inline String(const char* _value) : value(_value) {
@@ -286,7 +286,7 @@ public:
     
     base::String value;
 
-    inline Comment() {
+    inline Comment() noexcept {
     }
 
     inline Comment(const char* _value) : value(_value) {
@@ -431,6 +431,16 @@ public:
       return Element(*this, index);
     }
 
+    inline base::Array<Reference<Value> >::ReadIterator begin() const
+    {
+      return values.begin();
+    }
+
+    inline base::Array<Reference<Value> >::ReadIterator end() const
+    {
+      return values.end();
+    }
+
     Array& operator=(const std::vector<bool>& values);
     Array& operator=(const std::vector<int>& values);
     Array& operator=(const std::vector<int64>& values);
@@ -446,7 +456,7 @@ public:
   public:
     
     typedef std::pair<Reference<String>, Reference<Value> > Association;
-    base::Array<std::pair<Reference<String>, Reference<Value> > > values;
+    base::Array<Association> values;
 
     /** Returns the type. */
     virtual inline Type getType() const noexcept override {
@@ -619,6 +629,16 @@ public:
     }
 #endif
 
+    inline base::Array<Association>::ReadIterator begin() const
+    {
+      return values.begin();
+    }
+
+    inline base::Array<Association>::ReadIterator end() const
+    {
+      return values.end();
+    }
+
     /**
       Returns the value at the given path.
 
@@ -655,6 +675,7 @@ private:
   Reference<Integer> commonInteger1;
   Reference<Integer> commonIntegerMinus1;
   Reference<Float> commonFloat0;
+  Reference<Float> commonFloatM0;
   Reference<Float> commonFloat1;
   Reference<Float> commonFloatMinus1;
   Reference<String> commonStringEmpty;

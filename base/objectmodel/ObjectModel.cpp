@@ -34,6 +34,7 @@ ObjectModel::ObjectModel(bool _allowReuse)
   commonInteger1 = new Integer(1);
   commonIntegerMinus1 = new Integer(-1);
   commonFloat0 = new Float(0);
+  commonFloatM0 = new Float(-0.);
   commonFloat1 = new Float(1);
   commonFloatMinus1 = new Float(-1);
   commonStringEmpty = new String();
@@ -84,6 +85,7 @@ Reference<ObjectModel::Boolean> ObjectModel::createBoolean(bool value)
 
 Reference<ObjectModel::Integer> ObjectModel::createInteger(int value)
 {
+  // common values: -10...10
   switch (value) {
   case -1:
     return commonIntegerMinus1;
@@ -113,7 +115,7 @@ Reference<ObjectModel::Integer> ObjectModel::createInteger64(int64 value)
 Reference<ObjectModel::Float> ObjectModel::createFloat(double value)
 {
   if (value == 0) {
-    return commonFloat0;
+    return (1/value < 0) ? commonFloatM0 : commonFloat0;
   } else if (value == 1) {
     return commonFloat1;
   } else if (value == -1) {
@@ -313,7 +315,8 @@ ObjectModel::Array& ObjectModel::Array::operator=(const std::vector<base::String
 }
 
 template<>
-std::vector<bool> ObjectModel::Array::getAs<bool>() const {
+std::vector<bool> ObjectModel::Array::getAs<bool>() const
+{
   std::vector<bool> result;
   result.reserve(values.getSize());
   for (const auto& v : values) {
@@ -327,7 +330,8 @@ std::vector<bool> ObjectModel::Array::getAs<bool>() const {
 }
 
 template<>
-std::vector<int> ObjectModel::Array::getAs<int>() const {
+std::vector<int> ObjectModel::Array::getAs<int>() const
+{
   std::vector<int> result;
   result.reserve(values.getSize());
   for (const auto& v : values) {
@@ -341,7 +345,8 @@ std::vector<int> ObjectModel::Array::getAs<int>() const {
 }
 
 template<>
-std::vector<double> ObjectModel::Array::getAs<double>() const {
+std::vector<double> ObjectModel::Array::getAs<double>() const
+{
   std::vector<double> result;
   result.reserve(values.getSize());
   for (const auto& v : values) {
@@ -355,7 +360,8 @@ std::vector<double> ObjectModel::Array::getAs<double>() const {
 }
 
 template<>
-std::vector<base::String> ObjectModel::Array::getAs<base::String>() const {
+std::vector<base::String> ObjectModel::Array::getAs<base::String>() const
+{
   std::vector<base::String> result;
   result.reserve(values.getSize());
   for (const auto& v : values) {
@@ -822,6 +828,8 @@ FormatOutputStream& operator<<(FormatOutputStream& stream, const Reference<Objec
     return stream << value.cast<ObjectModel::Integer>();
   case ObjectModel::Value::TYPE_FLOAT:
     return stream << value.cast<ObjectModel::Float>();
+  case ObjectModel::Value::TYPE_COMMENT:
+    return stream << value.cast<ObjectModel::Comment>();
   case ObjectModel::Value::TYPE_STRING:
     return stream << value.cast<ObjectModel::String>();
   case ObjectModel::Value::TYPE_BINARY:
@@ -870,24 +878,24 @@ ObjectModel::NiceFormat& operator<<(ObjectModel::NiceFormat& stream, const Refer
   }
 
   switch (value->getType()) {
-  case ObjectModel::Value::TYPE_VOID:
-    return stream << value.cast<ObjectModel::Void>();
   case ObjectModel::Value::TYPE_BOOLEAN:
     return stream << value.cast<ObjectModel::Boolean>();
   case ObjectModel::Value::TYPE_INTEGER:
     return stream << value.cast<ObjectModel::Integer>();
   case ObjectModel::Value::TYPE_FLOAT:
     return stream << value.cast<ObjectModel::Float>();
-  case ObjectModel::Value::TYPE_COMMENT:
-    return stream << value.cast<ObjectModel::Comment>();
   case ObjectModel::Value::TYPE_STRING:
     return stream << value.cast<ObjectModel::String>();
-  case ObjectModel::Value::TYPE_BINARY:
-    return stream << value.cast<ObjectModel::Binary>();
   case ObjectModel::Value::TYPE_ARRAY:
     return stream << value.cast<ObjectModel::Array>();
   case ObjectModel::Value::TYPE_OBJECT:
     return stream << value.cast<ObjectModel::Object>();
+  case ObjectModel::Value::TYPE_VOID:
+    return stream << value.cast<ObjectModel::Void>();
+  case ObjectModel::Value::TYPE_COMMENT:
+    return stream << value.cast<ObjectModel::Comment>();
+  case ObjectModel::Value::TYPE_BINARY:
+    return stream << value.cast<ObjectModel::Binary>();
   default:
     throw ObjectModelException("Invalid type.");
   }
@@ -959,14 +967,14 @@ FormatOutputStream& operator<<(FormatOutputStream& stream, const Reference<Objec
   }
   
   if (Math::isFinite(value->value)) { // not inf or nan
-    stream << value->value; // POSIX from higher level
+    stream << ENSUREFLOAT << value->value; // POSIX from higher level
   } else if (Math::isNaN(value->value)) {
-    stream << MESSAGE("\"NaN\""); // should we use null instead of string
+    stream << MESSAGE("\"nan\""); // should we use null instead of string
   } else if (Math::isInfinity(value->value)) {
     stream << ((value->value < 0) ? MESSAGE("-infinity") : MESSAGE("infinity")); // should we use null instead of string
   } else {
     BASSERT(!"Unsupported float.");
-    stream << value->value;
+    stream << ENSUREFLOAT << value->value;
   }
 
   return stream;
@@ -998,7 +1006,7 @@ ObjectModel::NiceFormat& operator<<(ObjectModel::NiceFormat& stream, const Refer
       stream << setForeground(ANSIEscapeSequence::BLUE);
     }
   }
-  stream << value->value; // POSIX from higher level
+  stream << ENSUREFLOAT << value->value; // POSIX from higher level
   if (useANSI) {
     stream << normal();
   }
@@ -1166,6 +1174,32 @@ ObjectModel::NiceFormat& operator<<(ObjectModel::NiceFormat& stream, const Refer
   return stream;
 }
 
+FormatOutputStream& operator<<(FormatOutputStream& stream, const Reference<ObjectModel::Comment>& value)
+{
+  if (!value) {
+    return stream; // skip
+  }
+  
+  stream << "// ";
+  const MemorySize length = value->value.getLength();
+  for (MemorySize i = 0; i < length; ++i) {
+    char ch = value->value[i];
+    // TAG: read ucs4
+    BASSERT(ch <= 0x7f); // TAG: add support
+    switch (ch) {
+    case '\n':
+      stream << " ";
+      break;
+    case '\r':
+      stream << " ";
+      break;
+    default:
+      stream << ch;
+    }
+  }
+  return stream;
+}
+
 ObjectModel::NiceFormat& operator<<(ObjectModel::NiceFormat& stream, const Reference<ObjectModel::Comment>& value)
 {
   if (!value) {
@@ -1236,7 +1270,7 @@ FormatOutputStream& operator<<(FormatOutputStream& stream, const Reference<Objec
   bool first = true;
   for (const auto& v : value->values) {
     if (!first) {
-      stream << MESSAGE(", ");
+      stream << ','; // no space for compact
     }
     first = false;
     stream << v;
@@ -1300,10 +1334,10 @@ FormatOutputStream& operator<<(FormatOutputStream& stream, const Reference<Objec
   bool first = true;
   for (const auto& v : value->values) {
     if (!first) {
-      stream << MESSAGE(", ");
+      stream << ','; // no space for compact
     }
     first = false;
-    stream << v.first << MESSAGE(": ") << v.second; // "key": value
+    stream << v.first << ':' << v.second; // "key": value // no space for compact
   }
   stream << '}';
 

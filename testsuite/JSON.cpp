@@ -192,15 +192,44 @@ public:
     }
   }
 
+  void filter(const String& path, const String& xpath)
+  {
+    Reference<ObjectModel::Value> root = JSON::parseFile(path);
+    if (xpath) {
+      if (auto object = root.cast<ObjectModel::Object>()) {
+        root = object->getPath(xpath, true);
+      }
+    }
+    if (!root) {
+      fout << "No items." << ENDL;
+      return;
+    }
+    
+    String nice = JSON::getJSON(root);
+    fout << JSON::getJSON(
+      root,
+      ObjectModel::DEFAULT_FORMATTING | (FileDescriptor::getStandardOutput().isANSITerminal() ? ObjectModel::FLAG_COLOR : 0)
+    ) << ENDL;
+  }
+  
+  void stats(const String& path)
+  {
+    // TAG: dump stat support - count items and types
+    Reference<ObjectModel::Value> root = JSON::parseFile(path);
+  }
+
   enum Command {
     COMMAND_PERFORMANCE,
     COMMAND_TEST,
     COMMAND_ROUNDTRIP,
+    COMMAND_FILTER,
+    COMMAND_STATS,
     COMMAND_OTHER
   };
 
   Command command = COMMAND_OTHER;
   String path;
+  String xpath;
 
   bool parseArguments()
   {
@@ -214,11 +243,16 @@ public:
         command = COMMAND_TEST;
       } else if (argument == "--roundtrip") {
         command = COMMAND_ROUNDTRIP;
+      } else if (argument == "--filter") {
+        command = COMMAND_FILTER;
+      } else if (argument == "--stats") {
+        command = COMMAND_STATS;
       } else {
-        if (path) {
-          return false;
+        if (!path) {
+          path = argument;
+        } else if (!xpath) {
+          xpath = argument;
         }
-        path = argument;
       }
     }
     return true;
@@ -245,6 +279,12 @@ public:
       return;
     case COMMAND_ROUNDTRIP:
       roundtrip(path);
+      return;
+    case COMMAND_FILTER:
+      filter(path, xpath);
+      return;
+    case COMMAND_STATS:
+      stats(path);
       return;
     default:
       ;

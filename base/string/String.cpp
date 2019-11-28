@@ -31,7 +31,7 @@ void String::initialize(const char* src, MemorySize length)
     elements = DEFAULT_STRING.elements;
     return;
   }
-  auto e = new ReferenceCountedCapacityAllocator<char>(length + 1, GRANULARITY);
+  auto e = new ReferenceCountedAllocator<char>(length + 1);
   auto dest = e->getElements();
   base::copy<char>(dest, src, length); // no overlap
   dest[length] = Traits::TERMINATOR;
@@ -47,7 +47,7 @@ String::String() noexcept
 String::String(Default d)
 {
   // force non-nullptr elements
-  auto e = new ReferenceCountedCapacityAllocator<char>(1, GRANULARITY);
+  auto e = new ReferenceCountedAllocator<char>(1);
   e->getElements()[0] = Traits::TERMINATOR;
   elements = e;
 }
@@ -58,7 +58,7 @@ String::String(MemorySize capacity)
     elements = DEFAULT_STRING.elements;
     return;
   }
-  auto e = new ReferenceCountedCapacityAllocator<char>(1, capacity, GRANULARITY);
+  auto e = new ReferenceCountedAllocator<char>(1, capacity);
   e->getElements()[0] = Traits::TERMINATOR;
   elements = e;
 }
@@ -167,7 +167,7 @@ void String::ensureCapacity(MemorySize capacity)
   }
   
   MemorySize length = getLength();
-  auto e = new ReferenceCountedCapacityAllocator<char>(length + 1, capacity, GRANULARITY);
+  auto e = new ReferenceCountedAllocator<char>(length + 1, capacity);
   base::copy<char>(e->getElements(), elements->getElements(), length + 1); // no overlap
   elements = e;
 }
@@ -203,7 +203,7 @@ char* String::getBuffer(MemorySize length) throw(StringException, MemoryExceptio
   }
 
   // resize and copy
-  auto e = new ReferenceCountedCapacityAllocator<char>(length + 1, GRANULARITY); // reset capacity
+  auto e = new ReferenceCountedAllocator<char>(length + 1); // reset capacity
   auto dest = e->getElements();
   if (length < originalLength) {
     base::copy<char>(dest, elements->getElements(), length); // no overlap
@@ -228,22 +228,10 @@ String String::copy() const
   return result;
 }
 
-void String::garbageCollect() throw()
+void String::garbageCollect()
 {
   elements->garbageCollect(); // no need to do copyOnWrite
 }
-
-#if 0
-MemorySize String::getGranularity() const noexcept
-{
-  return elements->getGranularity();
-}
-
-void String::setGranularity(MemorySize granularity) throw()
-{
-  elements->setGranularity(granularity);
-}
-#endif
 
 void String::forceToLength(MemorySize length) throw(StringException, MemoryException)
 {
@@ -459,7 +447,7 @@ String& String::operator-=(const String& suffix)
   return *this;
 }
 
-String& String::reverse() throw()
+String& String::reverse() noexcept
 {
   auto p = getBuffer();
   auto q = &p[getLength() - 1]; // last char - empty string => q < p
@@ -474,13 +462,13 @@ String& String::reverse() throw()
   return *this;
 }
 
-String& String::toLowerCase() throw()
+String& String::toLowerCase() noexcept
 {
   transform<char>(getBuffer(), getLength(), Traits::ToLowerCase());
   return *this;
 }
 
-String& String::toUpperCase() throw()
+String& String::toUpperCase() noexcept
 {
   transform<char>(getBuffer(), getLength(), Traits::ToUpperCase());
   return *this;
@@ -544,7 +532,7 @@ int String::compareTo(const NativeString& string) const noexcept
   return static_cast<int>(*left) - static_cast<int>(*right);
 }
 
-int String::compareToIgnoreCase(const char* left, const char* right) throw()
+int String::compareToIgnoreCase(const char* left, const char* right) noexcept
 {
   while (*left && *right) { // continue until end of any string has been reached
     if (*left != *right) { // not equal
@@ -751,14 +739,14 @@ MemorySize String::count(const String& string, MemorySize start) const noexcept
   return count;
 }
 
-char* String::getElements() throw()
+char* String::getElements()
 {
   auto result = getBuffer(); // copy on write
   BASSERT(result[getLength()] == Traits::TERMINATOR);
   return result;
 }
 
-String& String::trim(char character) throw()
+String& String::trim(char character)
 {
   ReadIterator begin = getBeginReadIterator();
   ReadIterator end = getEndReadIterator();
@@ -889,7 +877,7 @@ int compare<String>(const String& left, const String& right)
   return left.compareTo(right);
 }
 
-unsigned long Hash<String>::operator()(const String& value) throw()
+unsigned long Hash<String>::operator()(const String& value) noexcept
 {
   const char* src = value.getElements();
   const char* end = src + value.getLength();

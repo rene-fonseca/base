@@ -15,8 +15,7 @@
 
 #include <base/Object.h>
 #include <base/OutOfRange.h>
-#include <base/mem/Reference.h>
-#include <base/mem/ReferenceCountedCapacityAllocator.h>
+#include <base/mem/ReferenceCountedAllocator.h>
 #include <base/io/IOException.h>
 #include <base/string/StringException.h>
 #include <base/mem/AllocatorEnumeration.h>
@@ -167,21 +166,17 @@ public:
   
   /** Specifies the string terminator. */
   static const char TERMINATOR = '\0';
-  /**
-    Specifies the granularity of the capacity. Guaranteed to be greater than 0.
-  */
-  static const MemorySize GRANULARITY = 16;
+
   /**
     Specifies the maximum length of any string. Guarantees that an int can hold
     the length of the string.
   */
-  static const MemorySize MAXIMUM_LENGTH =
-    ((PrimitiveTraits<int>::MAXIMUM - sizeof(TERMINATOR))/GRANULARITY)*GRANULARITY;
+  static const MemorySize MAXIMUM_LENGTH = PrimitiveTraits<int>::MAXIMUM - sizeof(TERMINATOR);
 
-  typedef ReferenceCountedCapacityAllocator<char>::Iterator Iterator;
-  typedef ReferenceCountedCapacityAllocator<char>::ReadIterator ReadIterator;
-  typedef ReferenceCountedCapacityAllocator<char>::Enumerator Enumerator;
-  typedef ReferenceCountedCapacityAllocator<char>::ReadEnumerator ReadEnumerator;
+  typedef ReferenceCountedAllocator<char>::Iterator Iterator;
+  typedef ReferenceCountedAllocator<char>::ReadIterator ReadIterator;
+  typedef ReferenceCountedAllocator<char>::Enumerator Enumerator;
+  typedef ReferenceCountedAllocator<char>::ReadEnumerator ReadEnumerator;
 private:
 
   /**
@@ -200,10 +195,10 @@ private:
     String& string;
     MemorySize index = 0;
     
-    Element(const Element& copy) throw();
-    Element& operator=(const Element& assign) throw();
+    Element(const Element& copy) noexcept;
+    Element& operator=(const Element& assign) noexcept;
     
-    inline Element(String& _string, MemorySize _index) throw()
+    inline Element(String& _string, MemorySize _index) noexcept
       : string(_string), index(_index) {
     }
   public:
@@ -224,7 +219,7 @@ private:
     Reference counted buffer holding NULL-terminated string. The array is
     guarantied to be non-empty when the string has been initialized.
   */
-  Reference<ReferenceCountedCapacityAllocator<char> > elements;
+  Reference<ReferenceCountedAllocator<char> > elements;
 protected:
 
   /**
@@ -244,7 +239,8 @@ protected:
   /**
     Returns a non-modifiable buffer.
   */
-  inline const char* getBuffer() const noexcept {
+  inline const char* getBuffer() const noexcept
+  {
     return elements->getElements();
   }
   
@@ -259,7 +255,7 @@ protected:
   /**
     Compare two NULL-terminated strings.
   */
-  static int compareToIgnoreCase(const char* left, const char* right) throw();
+  static int compareToIgnoreCase(const char* left, const char* right) noexcept;
 public:
   
   /**
@@ -268,8 +264,7 @@ public:
   String() noexcept;
 
   /**
-    Initializes a string with no characters in it, initial capacity and
-    granularity of capacity.
+    Initializes a string with no characters in it and the given initial capacity.
     
     @param capacity The initial capacity.
   */
@@ -440,7 +435,7 @@ public:
   /**
     Returns true if the string is an ASCII string.
   */
-  bool isASCII() const throw();
+  bool isASCII() const noexcept;
 
   /**
     Returns true if the string has multiple references.
@@ -473,20 +468,8 @@ public:
     Releases any unused capacity of the string. This applies to all shared
     strings.
   */
-  void garbageCollect() throw();
+  void garbageCollect();
 
-#if 0
-  /**
-    Returns the granularity.
-  */
-  MemorySize getGranularity() const throw();
-
-  /**
-    Sets the granularity.
-  */
-  void setGranularity(MemorySize granularity) throw();
-#endif
-  
   /**
     Sets the length of the string without initializing the elements.
   */
@@ -1030,7 +1013,7 @@ public:
     found, respectively, to be less than, equal to, or greater than the
     specified string.
   */
-  int compareToIgnoreCase(const String& string) const throw();
+  int compareToIgnoreCase(const String& string) const noexcept;
 
   /**
     Compares this string with NULL-terminated string ignoring the case of the
@@ -1300,7 +1283,7 @@ public:
 
     @param character The character to remove.
   */
-  String& trim(char character = ' ') throw();
+  String& trim(char character = ' ');
 
   /**
     Returns the index of the first substring that matches the specified string
@@ -1313,7 +1296,7 @@ public:
     @return Index of the first match if any otherwise -1. Also returns -1 if
     substring is empty.
   */
-  MemoryDiff search(const String& substring, MemorySize start = 0) const throw();
+  MemoryDiff search(const String& substring, MemorySize start = 0) const noexcept;
   
   /**
     Returns the substrings between the specified separator.
@@ -1330,7 +1313,7 @@ public:
   /**
     Returns NULL-terminated string for modifying access.
   */
-  char* getElements() noexcept;
+  char* getElements();
 
   /** Returns true if state is valid. */
   inline bool invariant() const noexcept
@@ -1398,7 +1381,7 @@ template<>
 class _COM_AZURE_DEV__BASE__API Hash<String> {
 public:
 
-  unsigned long operator()(const String& value) throw();
+  unsigned long operator()(const String& value) noexcept;
 };
 
 /**

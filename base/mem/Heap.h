@@ -584,7 +584,7 @@ public:
   /** Returns the end iterator. */
   inline TYPE* end() noexcept
   {
-    return buffer + count;
+    return static_cast<TYPE*>(buffer) + count;
   }
 
   /** Returns the begin iterator. */
@@ -596,7 +596,7 @@ public:
   /** Returns the end iterator. */
   inline const TYPE* cend() const noexcept
   {
-    return buffer + count;
+    return static_cast<const TYPE*>(buffer)+ count;
   }
 
   /** Returns the item at given index. */

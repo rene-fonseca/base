@@ -19,11 +19,12 @@ _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 namespace {
 
   // TAG: for 32-bit arch we need to keep in int32
-
+/*
   constexpr int64 power10(unsigned int exponent) noexcept
   {
     return (exponent > 0) ? 10LL * power10(exponent - 1) : 1;
   }
+*/
 
   constexpr int64 power5(unsigned int exponent) noexcept
   {

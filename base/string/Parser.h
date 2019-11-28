@@ -101,7 +101,7 @@ public:
   }
 
   /** Returns true if the next char is as expected without reading it. */
-  inline bool peek(char ch) const noexcept
+  inline bool peek(char ch) const
   {
     return peek() == ch;
   }
@@ -167,7 +167,7 @@ public:
   }
   
   /** Skips JSON space. */
-  inline void skipJSONSpaces() noexcept
+  inline void skipJSONSpaces()
   {
     while (src != end) {
       switch (peek()) {
@@ -184,7 +184,7 @@ public:
   }
   
   /** Skip any of the given chars until no more. */
-  inline void skipAny(const char* chars) noexcept
+  inline void skipAny(const char* chars)
   {
     while (src != end) {
       const char ch = peek();

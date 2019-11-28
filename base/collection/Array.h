@@ -210,7 +210,7 @@ public:
         elements.copyOnWrite();
         elements->setSize(size);
       } else {
-        elements = new ReferenceCountedAllocator<Value>(size/*, ReferenceCountedAllocator<Value>::DEFAULT_GRANULARITY*/);
+        elements = new ReferenceCountedAllocator<Value>(size);
       }
     }
   }
@@ -221,7 +221,7 @@ public:
       if (elements) {
         elements.copyOnWrite();
       } else {
-        elements = new ReferenceCountedAllocator<Value>(/*ReferenceCountedAllocator<Value>::DEFAULT_GRANULARITY*/);
+        elements = new ReferenceCountedAllocator<Value>();
       }
       elements->setSize(size, value);
     }
@@ -274,7 +274,7 @@ public:
   }
 
   /**
-    Initializes an empty array with the specified granularity.
+    Initializes an array with the specified size.
 
     @param size The size of the array.
   */
@@ -288,14 +288,11 @@ public:
 
     @param size The initial number of elements in the array.
     @param value The value used to initialize the elements.
-    @param granularity The desired granularity. Default is
-    ReferenceCountedAllocator<Value>::DEFAULT_GRANULARITY.
   */
   Array(
     MemorySize size,
-    const Value& value/*,
-    MemorySize granularity = ReferenceCountedAllocator<Value>::DEFAULT_GRANULARITY*/)
-    : elements(new ReferenceCountedAllocator<Value>(/*granularity*/))
+    const Value& value)
+    : elements(new ReferenceCountedAllocator<Value>())
   {
     elements->setSize(size, value);
   }

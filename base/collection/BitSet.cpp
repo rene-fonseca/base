@@ -42,10 +42,7 @@ BitSet::BitSet()
 
 BitSet::BitSet(unsigned int _size, bool value)
   : elements(
-      new ReferenceCountedAllocator<unsigned long>(
-        getNumberOfElements(_size)/*,
-        ReferenceCountedAllocator<unsigned long>::DEFAULT_GRANULARITY*/
-      )
+      new ReferenceCountedAllocator<unsigned long>(getNumberOfElements(_size))
     ),
     size(_size)
 {

@@ -270,6 +270,11 @@ Type Exception::getThisType() const noexcept
   return Type::getType(*this);
 }
 
+bool Exception::isCommonException() const noexcept
+{
+  return false;
+}
+
 Exception::~Exception() noexcept
 {
 }

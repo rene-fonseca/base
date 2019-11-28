@@ -56,6 +56,11 @@ public:
   */
   InvalidFormat(const char* message, const Type& type) noexcept;
   
+  inline bool isCommonException() const noexcept override
+  {
+    return true;
+  }
+
   _COM_AZURE_DEV__BASE__EXCEPTION_THIS_TYPE()
 };
 

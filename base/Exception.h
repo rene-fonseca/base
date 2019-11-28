@@ -238,6 +238,13 @@ public:
   {
     this->type = type;
   }
+  
+  /**
+    Returns true if exception is generally an externally triggered exception that can be suppressed and handled directly.
+    Internal exceptions like NullPointer should not be handled which is the default behavior. E.g. out of resource, EOF,
+    parsing issues, and similar.
+  */
+  virtual bool isCommonException() const noexcept;
 
   class StackTrace {
   public:

@@ -109,7 +109,6 @@ public:
 
   void performance(const String& path)
   {
-    // TAG: dump stat support - count items and types
     Timer timer;
     Reference<ObjectModel::Value> object = JSON::parseFile(path);
     fout << "Reading JSON to DOM: " << timer << ENDL;

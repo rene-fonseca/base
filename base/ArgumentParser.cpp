@@ -23,7 +23,7 @@ ArgumentParser::Option::Option(
     flags(_flags)
 {
 }
-    
+
 ArgumentParser::Option::Option(
   const String& _name,
   char _shortName,
@@ -82,7 +82,7 @@ ArgumentParser::RegExpOption::RegExpOption(
 {
 }
 
-bool ArgumentParser::RegExpOption::isValid(const String& value) const throw()
+bool ArgumentParser::RegExpOption::isValid(const String& value) const noexcept
 {
   return expression.match(value).isComplete(value);
 }
@@ -129,7 +129,7 @@ ArgumentParser::RealOption::RealOption(
 {
 }
 
-bool ArgumentParser::RealOption::isValid(const String& value) const throw()
+bool ArgumentParser::RealOption::isValid(const String& value) const noexcept
 {
   // TAG: sign
   String::ReadIterator i = value.getBeginReadIterator();

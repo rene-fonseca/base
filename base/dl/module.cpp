@@ -24,7 +24,8 @@ _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE
 
 #include <windows.h>
 
-extern "C" BOOL DllMain(HINSTANCE hinstDLL, DWORD fdwReason, LPVOID lpvReserved) {
+extern "C" BOOL DllMain(HINSTANCE hinstDLL, DWORD fdwReason, LPVOID lpvReserved)
+{
   if (fdwReason == DLL_PROCESS_ATTACH) {
     base::moduleEntry();
   } else if (fdwReason == DLL_PROCESS_DETACH) {
@@ -35,21 +36,25 @@ extern "C" BOOL DllMain(HINSTANCE hinstDLL, DWORD fdwReason, LPVOID lpvReserved)
 
 #elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__GNULINUX)
 
-void __attribute__ ((constructor)) moduleInit() {
+void __attribute__ ((constructor)) moduleInit()
+{
   base::moduleEntry();
 }
 
-void __attribute__ ((destructor)) moduleFini() {
+void __attribute__ ((destructor)) moduleFini()
+{
   base::moduleCleanUp();
 }
 
 #else // unix
 
-extern "C" void _init() {
+extern "C" void _init()
+{
   base::moduleEntry();
 }
 
-extern "C" void _fini() {
+extern "C" void _fini()
+{
   base::moduleCleanUp();
 }
 

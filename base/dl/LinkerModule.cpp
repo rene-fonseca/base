@@ -17,7 +17,8 @@ _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 LinkerModule* LinkerModule::linkerModule = nullptr; // initialize linker module as uninitialized
 
-const LinkerModule* LinkerModule::getLinkerModule() throw() {
+const LinkerModule* LinkerModule::getLinkerModule() noexcept
+{
   return linkerModule;
 }
 
@@ -27,24 +28,30 @@ LinkerModule::LinkerModule(const String& i, const String& n, const String& v) th
     version(v)
 {
   static unsigned int singleton = 0;
-  bassert(singleton == 0, SingletonException("LinkerModule has been instantiated", this));
+  if (singleton != 0) {
+    throw SingletonException("LinkerModule has been instantiated", this);
+  }
   ++singleton;
   linkerModule = this;
 }
 
-String LinkerModule::getIdentity() const throw() {
+String LinkerModule::getIdentity() const noexcept
+{
   return identity;
 }
 
-String LinkerModule::getName() const throw() {
+String LinkerModule::getName() const noexcept
+{
   return name;
 }
 
-String LinkerModule::getVersion() const throw() {
+String LinkerModule::getVersion() const noexcept
+{
   return version;
 }
 
-LinkerModule::~LinkerModule() {
+LinkerModule::~LinkerModule()
+{
 }
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

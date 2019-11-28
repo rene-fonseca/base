@@ -73,32 +73,37 @@ public:
     /**
       Returns true if the option has a short name.
     */
-    inline bool hasShortName() const throw() {
+    inline bool hasShortName() const noexcept
+    {
       return shortName != 0;
     }
     
     /**
       Returns the short name of the option.
     */
-    inline char getShortName() const throw() {
+    inline char getShortName() const noexcept
+    {
       return shortName;
     }
     
     /**
       Returns the long name of the option.
     */
-    inline const String& getName() const throw() {
+    inline const String& getName() const noexcept
+    {
       return name;
     }
     
     /**
       Returns the flags.
     */
-    inline unsigned int getFlags() const throw() {
+    inline unsigned int getFlags() const noexcept
+    {
       return flags;
     }
 
-    virtual ~Option() throw() {
+    virtual ~Option() noexcept
+    {
     };
   };
   
@@ -127,19 +132,23 @@ public:
       char shortName,
       unsigned int flags = 0) throw(OutOfDomain);
 
-    inline bool hasDefaultValue() const throw() {
+    inline bool hasDefaultValue() const noexcept
+    {
       return defaultValue.isValid();
     }
     
-    inline const String& getDefaultValue() const throw() {
+    inline const String& getDefaultValue() const noexcept
+    {
       return defaultValue.getValue();
     }
     
-    inline void setDefaultValue(const String& defaultValue) throw() {
+    inline void setDefaultValue(const String& defaultValue) noexcept
+    {
       this->defaultValue = defaultValue;
     }
 
-    inline ~StringOption() throw() {
+    inline ~StringOption() noexcept
+    {
     }
   };
   
@@ -164,9 +173,10 @@ public:
     /**
       Returns true if the value is valid.
     */
-    bool isValid(const String& value) const throw();
+    bool isValid(const String& value) const noexcept;
     
-    inline ~RegExpOption() throw() {
+    inline ~RegExpOption() noexcept
+    {
     }
   };
   
@@ -184,22 +194,26 @@ public:
       char shortName,
       unsigned int flags = 0) throw(OutOfDomain);
     
-    inline bool hasDefaultValue() const throw() {
+    inline bool hasDefaultValue() const noexcept
+    {
       return defaultValue.isValid();
     }
     
-    inline bool getDefaultValue() const throw() {
+    inline bool getDefaultValue() const noexcept
+    {
       return defaultValue.getValue();
     }
     
-    inline void setDefaultValue(bool defaultValue) throw() {
+    inline void setDefaultValue(bool defaultValue) noexcept
+    {
       this->defaultValue = defaultValue;
     }
     
     /**
       Returns true if the value is valid.
     */
-    inline bool isValid(const String& value) const throw() {
+    inline bool isValid(const String& value) const noexcept
+    {
       return (value == "true") || (value == "false");
     }
   };
@@ -223,28 +237,32 @@ public:
     /**
       Returns true if the option has a default value.
     */
-    bool hasDefaultValue() const throw() {
+    bool hasDefaultValue() const noexcept
+    {
       return defaultValue.isValid();
     }
     
     /**
       Returns the default value.
     */
-    inline int getDefaultValue() const throw() {
+    inline int getDefaultValue() const noexcept
+    {
       return defaultValue.getValue();
     }
     
     /**
       Sets the default value.
     */
-    inline void setDefaultValue(int defaultValue) throw() {
+    inline void setDefaultValue(int defaultValue) noexcept
+    {
       this->defaultValue = defaultValue;
     }
 
     /**
       Returns true if the value is valid.
     */
-    inline bool isValid(const String& value) const throw() {
+    inline bool isValid(const String& value) const noexcept
+    {
       // TAG: sign
       String::ReadIterator i = value.getBeginReadIterator();
       String::ReadIterator end = value.getEndReadIterator();
@@ -271,28 +289,31 @@ public:
     /**
       Returns true if the option has a default value.
     */
-    bool hasDefaultValue() const throw() {
+    bool hasDefaultValue() const noexcept
+    {
       return defaultValue.isValid();
     }
     
     /**
       Returns the default value.
     */
-    inline double getDefaultValue() const throw() {
+    inline double getDefaultValue() const noexcept
+    {
       return defaultValue.getValue();
     }
     
     /**
       Sets the default value.
     */
-    inline void setDefaultValue(double defaultValue) throw() {
+    inline void setDefaultValue(double defaultValue) noexcept
+    {
       this->defaultValue = defaultValue;
     }
 
     /**
       Returns true if the value is valid.
     */
-    bool isValid(const String& value) const throw();
+    bool isValid(const String& value) const noexcept;
   };
   
   class _COM_AZURE_DEV__BASE__API EnumOption : public Option {
@@ -318,11 +339,13 @@ public:
     /**
       Returns true if the value is valid.
     */
-    inline bool isValid(const String& value) const throw() {
+    inline bool isValid(const String& value) const noexcept
+    {
       return enums.hasValue(value);
     }
     
-    inline ~EnumOption() throw() {
+    inline ~EnumOption() noexcept
+    {
     }
   };
   
@@ -345,46 +368,53 @@ public:
     /**
       Initializes the argument with the specified flags.
     */
-    inline Argument(unsigned int _flags = 0) throw()
-      : flags(_flags) {
+    inline Argument(unsigned int _flags = 0) noexcept
+      : flags(_flags)
+    {
     }
     
     /**
       Returns true if the value was specified.
     */
-    inline bool isExplicit() const throw() {
+    inline bool isExplicit() const noexcept
+    {
       return flags & EXPLICIT;
     }
     
     /**
       Returns true if the argument is a repetition of an earlier argument.
     */
-    inline bool isEarlier() const throw() {
+    inline bool isEarlier() const noexcept
+    {
       return flags & EARLIER;
     }
     
     /**
       Returns true if the argument is repeted again later.
     */
-    inline bool isLater() const throw() {
+    inline bool isLater() const noexcept
+    {
       return flags & LATER;
     }
 
     /**
       Returns the flags.
     */
-    inline unsigned int getFlags() const throw() {
+    inline unsigned int getFlags() const noexcept
+    {
       return flags;
     }
 
     /**
       Sets the flags.
     */
-    inline void setFlags(unsigned int flags) throw() {
+    inline void setFlags(unsigned int flags) noexcept
+    {
       this->flags = flags;
     }
 
-    inline ~Argument() throw() {
+    inline ~Argument() noexcept
+    {
     }
   };
 
@@ -395,16 +425,19 @@ public:
     String value;
   public:
 
-    inline OrphanArgument(const String& _value, unsigned int flags = 0) throw()
+    inline OrphanArgument(const String& _value, unsigned int flags = 0) noexcept
       : Argument(flags),
-        value(_value) {
+        value(_value)
+    {
     }
 
-    inline const String& getValue() const throw() {
+    inline const String& getValue() const noexcept
+    {
       return value;
     }
     
-    inline ~OrphanArgument() throw() {
+    inline ~OrphanArgument() noexcept
+    {
     }
   };
 
@@ -417,16 +450,19 @@ public:
     
     inline NamedArgument(
       const String& _name,
-      unsigned int flags = 0) throw()
+      unsigned int flags = 0) noexcept
       : Argument(flags),
-        name(_name) {
+        name(_name)
+    {
     }
     
-    inline const String& getName() const throw() {
+    inline const String& getName() const noexcept
+    {
       return name;
     }
     
-    inline ~NamedArgument() throw() {
+    inline ~NamedArgument() noexcept
+    {
     }
   };
   
@@ -439,16 +475,19 @@ public:
     inline StringArgument(
       const String& name,
       const String& _value,
-      unsigned int flags = 0) throw()
+      unsigned int flags = 0) noexcept
       : NamedArgument(name, flags),
-        value(_value) {
+        value(_value)
+    {
     }
     
-    inline const String& getValue() const throw() {
+    inline const String& getValue() const noexcept
+    {
       return value;
     }
     
-    inline ~StringArgument() throw() {
+    inline ~StringArgument() noexcept
+    {
     }
   };
 private:
@@ -462,7 +501,8 @@ private:
   /** The options. */
   Array<Reference<Option> > options;
 
-  static inline uint8 getIndexOfShortName(char shortName) throw() {
+  static inline uint8 getIndexOfShortName(char shortName) noexcept
+  {
     if ((shortName >= 'a') && (shortName <= 'z')) {
       return shortName - 'a';
     } else if ((shortName >= 'A') && (shortName <= 'Z')) {
@@ -523,7 +563,7 @@ public:
 //   Group(Type _type) : type(_type) {
 //   }
 
-//   void add(Option* option) throw() {
+//   void add(Option* option) noexcept {
 //     options.append(option);
 //   }
 // }

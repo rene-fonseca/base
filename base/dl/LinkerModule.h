@@ -39,7 +39,7 @@ public:
   /**
     Returns the linker module object.
   */
-  static const LinkerModule* getLinkerModule() throw();
+  static const LinkerModule* getLinkerModule() noexcept;
 
   /**
     Initializes module.
@@ -55,17 +55,17 @@ public:
   /**
     Returns the identity of the module.
   */
-  String getIdentity() const throw();
+  String getIdentity() const noexcept;
 
   /**
     Returns the name of the module.
   */
-  String getName() const throw();
+  String getName() const noexcept;
 
   /**
     Returns the version of the module.
   */
-  String getVersion() const throw();
+  String getVersion() const noexcept;
 
   /**
     Destroy the module.

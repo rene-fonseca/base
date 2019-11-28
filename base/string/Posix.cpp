@@ -95,17 +95,17 @@ namespace {
     }
     
     if ((src == end) && (i > 0)) { // read all and got at least 1 digit
-      j -= exponent;
-      if (j < getArraySize(EXPONENTS)) {
+      exponent -= j;
+      if (exponent < getArraySize(EXPONENTS)) {
         if (negative) {
           temp = -temp;
         }
         TYPE value = static_cast<TYPE>(temp);
-        if (j > 0) {
+        if (exponent > 0) {
           if (negativeExponent) {
-           value /= EXPONENTS[j];
+           value /= EXPONENTS[exponent];
           } else {
-            value *= EXPONENTS[j];
+            value *= EXPONENTS[exponent];
           }
         }
         _value = value;

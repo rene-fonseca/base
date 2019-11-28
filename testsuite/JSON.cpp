@@ -18,6 +18,7 @@
 #include <base/Random.h>
 #include <base/Guid.h>
 #include <base/io/FileDescriptor.h>
+#include <base/filesystem/FolderInfo.h>
 
 using namespace com::azure::dev::base;
 
@@ -105,7 +106,124 @@ public:
     : Application("JSON", numberOfArguments, arguments, environment)
   {
   }
-  
+
+  void performance(const String& path)
+  {
+    // TAG: dump stat support - count items and types
+    Timer timer;
+    Reference<ObjectModel::Value> object = JSON::parseFile(path);
+    fout << "Reading JSON to DOM: " << timer << ENDL;
+    String compact = JSON::getJSONNoFormatting(object);
+    fout << "Convert DOM to compact JSON: " << timer << ENDL;
+    String nice = JSON::getJSON(object);
+    fout << "Convert DOM to nice JSON: " << timer << ENDL;
+  }
+
+  void test(const String& path)
+  {
+    FolderInfo folder(path);
+    Array<String> entries = folder.getEntries();
+    // fout << entries << ENDL;
+
+    for (const auto filename : entries) {
+      const String p = path + "/" + filename;
+      bool valid = false;
+      if (filename.indexOf("_EXCLUDE") >= 0) {
+        continue;
+      }
+      bool pass = filename.startsWith("pass");
+      bool fail = filename.startsWith("fail");
+      if (!pass && !fail) {
+        continue;
+      }
+      try {
+        Reference<ObjectModel::Value> object = JSON::parseFile(p);
+        valid = true;
+      } catch (Exception& e) {
+        // fout << e << ENDL;
+      } catch (...) {
+      }
+      fout << "Reading: " << filename << " "
+           << ((valid == pass) ? "PASSED" : "FAILED") << ENDL;
+    }
+  }
+
+  void roundtrip(const String& path)
+  {
+    FolderInfo folder(path);
+    Array<String> entries = folder.getEntries();
+    // fout << entries << ENDL;
+
+    for (const auto filename : entries) {
+      const String p = path + "/" + filename;
+      bool match = false;
+      if (!filename.startsWith("roundtrip")) {
+        continue;
+      }
+      if (filename.indexOf("_EXCLUDE") >= 0) {
+        continue;
+      }
+      try {
+        PrimitiveStackArray<uint8> buffer(0);
+        {
+          File file(p, File::READ, 0);
+          buffer.resize(file.getSize());
+          file.read(buffer, buffer.size(), false);
+        }
+        String input(
+          reinterpret_cast<const char*>(static_cast<const uint8*>(buffer)),
+          buffer.size()
+        );
+        Reference<ObjectModel::Value> object = JSON::parse(input);
+        String compact = JSON::getJSONNoFormatting(object);
+        // object = JSON::parse(compact);
+        // String compact2 = JSON::getJSONNoFormatting(object);
+        match = compact == input;
+        if (!match) {
+          fout << ">>> " << input << ENDL;
+          fout << "<<< " << compact << ENDL;
+        }
+      } catch (Exception& e) {
+        // fout << e << ENDL;
+      } catch (...) {
+      }
+      fout << "Reading: " << filename << " "
+           << (match ? "PASSED" : "FAILED") << ENDL;
+    }
+  }
+
+  enum Command {
+    COMMAND_PERFORMANCE,
+    COMMAND_TEST,
+    COMMAND_ROUNDTRIP,
+    COMMAND_OTHER
+  };
+
+  Command command = COMMAND_OTHER;
+  String path;
+
+  bool parseArguments()
+  {
+    Array<String> arguments = getArguments();
+    Array<String>::ReadEnumerator enu = arguments.getReadEnumerator();
+    while (enu.hasNext()) {
+      const String argument = *enu.next();
+      if (argument == "--performance") {
+        command = COMMAND_PERFORMANCE;
+      } else if (argument == "--test") {
+        command = COMMAND_TEST;
+      } else if (argument == "--roundtrip") {
+        command = COMMAND_ROUNDTRIP;
+      } else {
+        if (path) {
+          return false;
+        }
+        path = argument;
+      }
+    }
+    return true;
+  }
+
   void main()
   {
     fout << getFormalName() << " version "
@@ -113,7 +231,26 @@ public:
          << "The Base Framework (Test Suite)" << EOL
          << ENDL;
 
-    testPerformance();
+    if (!parseArguments()) {
+      setExitCode(1);
+      return;
+    }
+
+    switch (command) {
+    case COMMAND_PERFORMANCE:
+      performance(path);
+      return;
+    case COMMAND_TEST:
+      test(path);
+      return;
+    case COMMAND_ROUNDTRIP:
+      roundtrip(path);
+      return;
+    default:
+      ;
+    }
+
+    // testPerformance();
 
 #if 0
     for (unsigned int i = 0; i < 10; ++i) {

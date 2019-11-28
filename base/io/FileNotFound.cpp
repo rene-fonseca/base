@@ -13,8 +13,25 @@
 
 #include <base/io/FileNotFound.h>
 
-_COM_AZURE_DEV__BASE__DUMMY_SYMBOL
-
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
+
+FileNotFound::FileNotFound() noexcept
+{
+}
+
+FileNotFound::FileNotFound(const char* message) noexcept
+  : FileException(message)
+{
+}
+
+FileNotFound::FileNotFound(const Type& type) noexcept
+  : FileException(type)
+{
+}
+
+FileNotFound::FileNotFound(const char* message, const Type& type) noexcept
+  : FileException(message, type)
+{
+}
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

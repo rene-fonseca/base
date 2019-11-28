@@ -42,24 +42,21 @@ public:
   /**
     Initializes the exception object with no message.
   */
-  inline IOException() noexcept {
-  }
+  IOException() noexcept;
 
   /**
     Initializes exception object as unspecified.
 
     @param message The message.
   */
-  inline IOException(const char* message) noexcept : Exception(message) {
-  }
+  IOException(const char* message) noexcept;
   
   /**
     Initializes the exception object without an associated message.
     
     @param type The identity of the type.
   */
-  inline IOException(const Type& type) noexcept : Exception(type) {
-  }
+  IOException(const Type& type) noexcept;
   
   /**
     Initializes the exception object.
@@ -67,9 +64,7 @@ public:
     @param message An NULL-terminated string (ASCII).
     @param type The identity of the type.
   */
-  inline IOException(const char* message, const Type& type) noexcept
-    : Exception(message, type) {
-  }
+  IOException(const char* message, const Type& type) noexcept;
   
   _COM_AZURE_DEV__BASE__EXCEPTION_THIS_TYPE()
 };

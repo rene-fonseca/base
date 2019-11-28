@@ -52,22 +52,22 @@ FileDescriptor::Descriptor::~Descriptor()
 
 
 
-FileDescriptor::FileDescriptor() throw()
+FileDescriptor::FileDescriptor() noexcept
   : fd(FileDescriptor::Descriptor::invalid)
 {
 }
 
-FileDescriptor::FileDescriptor(OperatingSystem::Handle handle) throw()
+FileDescriptor::FileDescriptor(OperatingSystem::Handle handle) noexcept
   : fd(new Descriptor(handle))
 {
 }
 
-FileDescriptor::FileDescriptor(const FileDescriptor& copy) throw()
+FileDescriptor::FileDescriptor(const FileDescriptor& copy) noexcept
   : fd(copy.fd)
 {
 }
 
-FileDescriptor& FileDescriptor::operator=(const FileDescriptor& copy) throw()
+FileDescriptor& FileDescriptor::operator=(const FileDescriptor& copy) noexcept
 {
   fd = copy.fd; // no need to protect against self assignment
   return *this;
@@ -171,17 +171,17 @@ void FileDescriptor::setFlags(int flags) throw(IOException)
 #endif // flavor
 }
 
-OperatingSystem::Handle FileDescriptor::getHandle() const throw()
+OperatingSystem::Handle FileDescriptor::getHandle() const noexcept
 {
   return fd->getHandle();
 }
 
-bool FileDescriptor::isValid() const throw()
+bool FileDescriptor::isValid() const noexcept
 {
   return fd->isValid();
 }
 
-void FileDescriptor::setHandle(OperatingSystem::Handle handle) throw()
+void FileDescriptor::setHandle(OperatingSystem::Handle handle) noexcept
 {
   if (handle != fd->getHandle()) {
     fd = new Descriptor(handle);
@@ -205,7 +205,7 @@ void FileDescriptor::setNonBlocking(bool value) throw(IOException)
 #endif // flavor
 }
 
-FileDescriptor FileDescriptor::getStandardInput() throw()
+FileDescriptor FileDescriptor::getStandardInput() noexcept
 {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   OperatingSystem::Handle handle = ::GetStdHandle(STD_INPUT_HANDLE); // should never fail
@@ -226,7 +226,7 @@ FileDescriptor FileDescriptor::getStandardInput() throw()
 #endif // flavor
 }
 
-FileDescriptor FileDescriptor::getStandardOutput() throw()
+FileDescriptor FileDescriptor::getStandardOutput() noexcept
 {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   OperatingSystem::Handle handle = ::GetStdHandle(STD_OUTPUT_HANDLE); // should never fail
@@ -247,7 +247,7 @@ FileDescriptor FileDescriptor::getStandardOutput() throw()
 #endif // flavor
 }
 
-FileDescriptor FileDescriptor::getStandardError() throw()
+FileDescriptor FileDescriptor::getStandardError() noexcept
 {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   OperatingSystem::Handle handle = ::GetStdHandle(STD_ERROR_HANDLE); // should never fail

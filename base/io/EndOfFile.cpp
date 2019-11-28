@@ -13,8 +13,24 @@
 
 #include <base/io/EndOfFile.h>
 
-_COM_AZURE_DEV__BASE__DUMMY_SYMBOL
-
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
+
+EndOfFile::EndOfFile() noexcept
+{
+}
+
+EndOfFile::EndOfFile(const char* message) noexcept
+  : IOException(message) {
+}
+
+EndOfFile::EndOfFile(const Type& type) noexcept
+  : IOException(type)
+{
+}
+
+EndOfFile::EndOfFile(const char* message, const Type& type) noexcept
+  : IOException(message, type)
+{
+}
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

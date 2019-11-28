@@ -106,7 +106,8 @@ MappedFile::MappedFileImpl::~MappedFileImpl() {
 #endif // flavor
 }
 
-unsigned int MappedFile::getGranularity() throw() {
+unsigned int MappedFile::getGranularity() noexcept
+{
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   SYSTEM_INFO info;
   ::GetSystemInfo(&info);
@@ -122,7 +123,9 @@ unsigned int MappedFile::getGranularity() throw() {
 #endif // flavor
 }
 
-MappedFile::MappedFile(const File& file, const FileRegion& region, bool writeable) throw(FileException) : map(0) {
+MappedFile::MappedFile(const File& file, const FileRegion& region, bool writeable) throw(FileException)
+  : map(0)
+{
   map = new MappedFileImpl(file, region, writeable);
 //  bassert(r.getOffset() >= 0, FileException("Unable to map file", this));
 //#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
@@ -157,7 +160,8 @@ MappedFile::MappedFile(const File& file, const FileRegion& region, bool writeabl
 //#endif // flavor
 }
 
-MappedFile& MappedFile::operator=(const MappedFile& assign) throw() {
+MappedFile& MappedFile::operator=(const MappedFile& assign) noexcept
+{
   if (&assign == this) {
     map = assign.map;
   }

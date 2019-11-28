@@ -13,8 +13,25 @@
 
 #include <base/io/IOException.h>
 
-_COM_AZURE_DEV__BASE__DUMMY_SYMBOL
-
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
+
+IOException::IOException() noexcept
+{
+}
+
+IOException::IOException(const char* message) noexcept
+  : Exception(message)
+{
+}
+
+IOException::IOException(const Type& type) noexcept
+  : Exception(type)
+{
+}
+
+IOException::IOException(const char* message, const Type& type) noexcept
+  : Exception(message, type)
+{
+}
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

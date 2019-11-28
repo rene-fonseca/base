@@ -31,24 +31,21 @@ public:
   /**
     Initializes the exception object with no message.
   */
-  inline FileNotFound() throw() {
-  }
+  FileNotFound() noexcept;
 
   /**
     Initializes the exception object.
 
     @param message The message.
   */
-  inline FileNotFound(const char* message) throw() : FileException(message) {
-  }
+  FileNotFound(const char* message) noexcept;
 
   /**
     Initializes the exception object without an associated message.
 
     @param type The identity of the type.
   */
-  inline FileNotFound(const Type& type) throw() : FileException(type) {
-  }
+  FileNotFound(const Type& type) noexcept;
 
   /**
     Initializes the exception object.
@@ -56,10 +53,13 @@ public:
     @param message An NULL-terminated string (ASCII).
     @param type The identity of the type.
   */
-  inline FileNotFound(const char* message, const Type& type) throw()
-    : FileException(message, type) {
-  }
+  FileNotFound(const char* message, const Type& type) noexcept;
   
+  inline bool isCommonException() const noexcept override
+  {
+    return true;
+  }
+
   _COM_AZURE_DEV__BASE__EXCEPTION_THIS_TYPE()
 };
 

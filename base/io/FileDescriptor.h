@@ -34,11 +34,11 @@ class _COM_AZURE_DEV__BASE__API FileDescriptor : public virtual Object, public v
 public:
 
   /** Returns the standard input file descriptor. */
-  static FileDescriptor getStandardInput() throw();
+  static FileDescriptor getStandardInput() noexcept;
   /** Returns the standard output file descriptor. */
-  static FileDescriptor getStandardOutput() throw();
+  static FileDescriptor getStandardOutput() noexcept;
   /** Returns the standard error file descriptor. */
-  static FileDescriptor getStandardError() throw();
+  static FileDescriptor getStandardError() noexcept;
 
   /**
     Reference counted handle to file descriptor.
@@ -55,7 +55,7 @@ public:
     static Handle* invalid;
 
     /** Initializes descriptor. */
-    inline explicit Descriptor(OperatingSystem::Handle handle) throw()
+    inline explicit Descriptor(OperatingSystem::Handle handle) noexcept
       : Handle(handle) {
     }
     
@@ -71,24 +71,24 @@ public:
   /**
     Initializes the file descriptor as invalid.
   */
-  FileDescriptor() throw();
+  FileDescriptor() noexcept;
 
   /**
     Initializes the file descriptor.
 
     @param handle Handle to file descriptor.
   */
-  FileDescriptor(OperatingSystem::Handle handle) throw();
+  FileDescriptor(OperatingSystem::Handle handle) noexcept;
 
   /**
     Copy constructor.
   */
-  FileDescriptor(const FileDescriptor& copy) throw();
+  FileDescriptor(const FileDescriptor& copy) noexcept;
 
   /**
     Assignment operator.
   */
-  FileDescriptor& operator=(const FileDescriptor& assign) throw();
+  FileDescriptor& operator=(const FileDescriptor& assign) noexcept;
 
   /**
     Closes the file descriptor.
@@ -117,17 +117,17 @@ public:
   /**
     Gets the handle of the file descriptor.
   */
-  OperatingSystem::Handle getHandle() const throw();
+  OperatingSystem::Handle getHandle() const noexcept;
 
   /**
     Returns true if the handle is valid.
   */
-  bool isValid() const throw();
+  bool isValid() const noexcept;
 
   /**
     Sets the handle of the file descriptor.
   */
-  void setHandle(OperatingSystem::Handle handle) throw();
+  void setHandle(OperatingSystem::Handle handle) noexcept;
 
   /**
     Sets the non-blocking flag of the file descriptor.

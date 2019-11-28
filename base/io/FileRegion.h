@@ -53,14 +53,16 @@ public:
   /**
     Initializes region from other region.
   */
-  inline FileRegion(const FileRegion& copy) throw()
-    : offset(copy.offset), size(copy.size) {
+  inline FileRegion(const FileRegion& copy) noexcept
+    : offset(copy.offset), size(copy.size)
+  {
   }
 
   /**
     Assignment of region by region.
   */
-  inline FileRegion& operator=(const FileRegion& assign) throw() {
+  inline FileRegion& operator=(const FileRegion& assign) noexcept
+  {
     offset = assign.offset; // no need to protect against self-assignment
     size = assign.size;
     return *this;
@@ -69,21 +71,24 @@ public:
   /**
     Returns the offset of the file region.
   */
-  inline long long getOffset() const throw() {
+  inline long long getOffset() const noexcept
+  {
     return offset;
   }
 
   /**
     Returns the size of the file region.
   */
-  inline unsigned int getSize() const throw() {
+  inline unsigned int getSize() const noexcept
+  {
     return size;
   }
 
   /**
     Sets the offset of the file region.
   */
-  inline void setOffset(long long offset) throw(OutOfDomain) {
+  inline void setOffset(long long offset) throw(OutOfDomain)
+  {
     bassert(offset < LIMIT - size, OutOfDomain(this));
     this->offset = offset;
   }
@@ -91,7 +96,8 @@ public:
   /**
     Sets the size of the file region.
   */
-  inline void setSize(unsigned int size) throw(OutOfDomain) {
+  inline void setSize(unsigned int size) throw(OutOfDomain)
+  {
     bassert(offset < LIMIT - size, OutOfDomain(this));
     this->size = size;
   }
@@ -99,14 +105,16 @@ public:
   /**
     Returns the end of the region.
   */
-  inline long long getEnd() const throw() {
+  inline long long getEnd() const noexcept
+  {
     return offset + size;
   }
 
   /**
     Returns true if the specified region is contained in this region.
   */
-  inline bool isWithin(const FileRegion& region) const throw() {
+  inline bool isWithin(const FileRegion& region) const noexcept
+  {
     const long long difference = region.offset - offset;
     return (difference >= 0) && ((difference + region.size - size) <= 0);
   }
@@ -114,7 +122,8 @@ public:
 
 inline FileRegion::FileRegion(
   long long _offset, unsigned int _size) throw(OutOfDomain)
-  : offset(_offset), size(_size) {
+  : offset(_offset), size(_size)
+{
   bassert(offset < (LIMIT - size), OutOfDomain(this));
 }
 

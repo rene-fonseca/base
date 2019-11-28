@@ -44,19 +44,23 @@ private:
       const FileRegion& region,
       bool writeable) throw(FileException);
     
-    inline void* getBytes() const throw() {
+    inline void* getBytes() const noexcept
+    {
       return bytes;
     }
 
-    inline File& getFile() throw() {
+    inline File& getFile() noexcept
+    {
       return file;
     }
 
-    inline const FileRegion& getRegion() const throw() {
+    inline const FileRegion& getRegion() const noexcept
+    {
       return region;
     }
 
-    inline bool isWriteable() throw() {
+    inline bool isWriteable() noexcept
+    {
       return writeable;
     }
 
@@ -82,7 +86,7 @@ public:
   /**
     Returns the required granularity of the file region offset.
   */
-  static unsigned int getGranularity() throw();
+  static unsigned int getGranularity() noexcept;
 
   /**
     Initializes a file mapping.
@@ -96,27 +100,29 @@ public:
   /**
     Initializes mapping from other mapping.
   */
-  inline MappedFile(const MappedFile& copy) throw()
+  inline MappedFile(const MappedFile& copy) noexcept
     : map(copy.map) {
   }
 
   /**
     Assignment of mapping by mapping.
   */
-  MappedFile& operator=(const MappedFile& assign) throw();
+  MappedFile& operator=(const MappedFile& assign) noexcept;
 
   /**
     Returns the mapped bytes. Do not use the mapping outside the requested
     mapping range.
   */
-  inline uint8* getBytes() const throw() {
+  inline uint8* getBytes() const noexcept
+  {
     return static_cast<uint8*>(map->getBytes());
   }
 
   /**
     Returns the mapped file region.
   */
-  inline const FileRegion& getRegion() const throw() {
+  inline const FileRegion& getRegion() const noexcept
+  {
     return map->getRegion();
   }
 
@@ -132,7 +138,8 @@ public:
 
     @param region The file region to be mapped.
   */
-  inline void remap(const FileRegion& region) throw(FileException) {
+  inline void remap(const FileRegion& region) throw(FileException)
+  {
     map = new MappedFileImpl(map->getFile(), region, map->isWriteable());
   }
 };

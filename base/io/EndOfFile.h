@@ -31,8 +31,7 @@ public:
   /**
     Initializes the exception object with no message.
   */
-  inline EndOfFile() throw() {
-  }
+  EndOfFile() noexcept;
 
   /**
     Initializes the exception object.
@@ -40,16 +39,14 @@ public:
     @param message The message.
   */
   
-  inline EndOfFile(const char* message) throw() : IOException(message) {
-  }
+  EndOfFile(const char* message) noexcept;
   
   /**
     Initializes the exception object without an associated message.
     
     @param type The identity of the type.
   */
-  inline EndOfFile(const Type& type) throw() : IOException(type) {
-  }
+  EndOfFile(const Type& type) noexcept;
   
   /**
     Initializes the exception object.
@@ -57,10 +54,13 @@ public:
     @param message An NULL-terminated string (ASCII).
     @param type The identity of the type.
   */
-  inline EndOfFile(const char* message, const Type& type) throw()
-    : IOException(message, type) {
-  }
+  EndOfFile(const char* message, const Type& type) noexcept;
   
+  inline bool isCommonException() const noexcept override
+  {
+    return true;
+  }
+
   _COM_AZURE_DEV__BASE__EXCEPTION_THIS_TYPE()
 };
 

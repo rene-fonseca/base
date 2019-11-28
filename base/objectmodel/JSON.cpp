@@ -308,7 +308,11 @@ Reference<ObjectModel::String> JSON::parseString(JSONParser& parser)
               buffer.push(bytes[i]);
             }
           } else {
-            throw JSONException("Malformed string literal.", parser.getPosition());
+            char bytes[4];
+            MemorySize size = Unicode::writeUTF8(bytes, ch);
+            for (MemorySize i = 0; i < size; ++i) {
+              buffer.push(bytes[i]);
+            }
           }
         }
         break;
@@ -434,6 +438,25 @@ Reference<ObjectModel::Value> JSON::parseValue(JSONParser& parser)
 Reference<ObjectModel::Value> JSON::parse(const uint8* src, const uint8* end)
 {
   JSONParser parser(src, end);
+  
+  // TAG: add support for UTF-16 and UTF-32
+  
+  // we may read BOM - but not write it - see rfc7159
+  if (static_cast<uint8>(parser.peek()) == 0xef) {
+    parser.skip();
+    if (static_cast<uint8>(parser.peek()) == 0xbb) {
+      parser.skip();
+      if (static_cast<uint8>(parser.peek()) == 0xbf) {
+        parser.skip();
+      } else {
+        parser.unwind();
+        parser.unwind();
+      }
+    } else {
+      parser.unwind();
+    }
+  }
+  
   Reference<ObjectModel::Value> result = JSON::parseValue(parser);
   skipSpaces(parser);
   if (parser.hasMore()) {

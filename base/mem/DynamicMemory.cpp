@@ -26,4 +26,46 @@ void DynamicMemory::release(void* memory) noexcept
   Heap::release(memory);
 }
 
+#if 0
+void* DynamicMemory::operator new(MemorySize size, void* place) noexcept
+{
+  BASSERT(size > 0);
+  return place;
+}
+
+void* DynamicMemory::operator new[](MemorySize size, void* place) noexcept
+{
+  BASSERT(size > 0);
+  return place;
+}
+#endif
+
+void* DynamicMemory::operator new(MemorySize size)
+{
+  void* result = Heap::allocateNoThrow<uint8>(size);
+  if (!result) {
+    throw MemoryException();
+  }
+  return result;
+}
+
+void DynamicMemory::operator delete(void* memory)
+{
+  Heap::release(memory);
+}
+
+void* DynamicMemory::operator new[](MemorySize size)
+{
+  void* result = Heap::allocateNoThrow<uint8>(size);
+  if (!result) {
+    throw MemoryException();
+  }
+  return result;
+}
+
+void DynamicMemory::operator delete[](void* memory)
+{
+  Heap::release(memory);
+}
+
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

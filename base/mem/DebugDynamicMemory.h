@@ -31,10 +31,6 @@ _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 */
 
 class _COM_AZURE_DEV__BASE__API DebugDynamicMemory {
-//   friend void* operator new(MemorySize) throw(MemoryException);
-//   friend void operator delete(void*) throw(MemoryException);
-//   friend void* operator new[](MemorySize) throw(MemoryException);
-//   friend void operator delete[](void*) throw(MemoryException);
   friend class DebugDynamicMemoryImpl;
 private:
 
@@ -77,44 +73,5 @@ public:
   */
   static void release(void* memory) throw(MemoryCorruption);
 };
-
-// /**
-//   Allocates a block of dynamic memory.
-  
-//   @return 0 if the requested size is 0.
-// */
-// inline void* operator new(MemorySize size) throw(MemoryException) {
-//   bassert(size > 0, MemoryException());
-//   void* result = DebugDynamicMemory::allocate(size);
-//   bassert(result != 0, MemoryException());
-//   return result;
-// }
-
-// /**
-//   Releases a dynamic memory block previously allocated by new. Raises
-//   MemoryException is memory is 0.
-// */
-// inline void operator delete(void* memory) throw(MemoryException) {
-//   bassert(memory && DebugDynamicMemory::release(memory), MemoryException());
-// }
-
-// /**
-//   Allocates a block of dynamic memory for an array.
-
-//   @return 0 if the requested size is 0.
-// */
-// inline void* operator new[](MemorySize size) throw(MemoryException) {
-//   bassert(size > 0, MemoryException());
-//   void* result = DebugDynamicMemory::allocate(size);
-//   bassert(result, MemoryException());
-//   return result;
-// }
-
-// /**
-//   Releases dynamic memory previously allocated by new[].
-// */
-// inline void operator delete[](void* memory) throw(MemoryException) {
-//   bassert(memory && DebugDynamicMemory::release(memory), MemoryException());
-// }
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

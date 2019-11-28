@@ -14,6 +14,7 @@
 #pragma once
 
 #include <base/Object.h>
+#include <base/mem/DynamicMemory.h>
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
@@ -59,6 +60,8 @@ public:
     valid = STATE_INVALID;
 #endif
   }
+  
+  _COM_AZURE_DEV__BASE__OVERRIDE_ALLOC();
 };
 
 template<>

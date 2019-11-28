@@ -14,6 +14,7 @@
 #pragma once
 
 #include <base/Functor.h>
+// #include <base/mem/DynamicMemory.h>
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
@@ -68,6 +69,8 @@ public:
     return *this;
   }
 #endif
+
+  // causes problems for multiple inheritance _COM_AZURE_DEV__BASE__OVERRIDE_ALLOC();
 };
 
 template<>

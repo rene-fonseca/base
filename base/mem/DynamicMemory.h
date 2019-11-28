@@ -19,18 +19,8 @@
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
-/*
-namespace alloc {
-
-  void* operator new(MemorySize) throw(MemoryException);
-  void operator delete(void*) throw(MemoryException);
-  void* operator new[](MemorySize) throw(MemoryException);
-  void operator delete[](void*) throw(MemoryException);
-};
-*/
-
 /**
-  This class provides support for dynamic memory allocation/deallocation.
+  This class provides support for dynamic memory allocation/deallocation. Compatible with Heap class.
 
   @short Dynamic memory.
   @ingroup memory
@@ -39,13 +29,7 @@ namespace alloc {
 */
 
 class _COM_AZURE_DEV__BASE__API DynamicMemory {
-/*
-  friend void* alloc::operator new(MemorySize) throw(MemoryException);
-  friend void alloc::operator delete(void*) throw(MemoryException);
-  friend void* alloc::operator new[](MemorySize) throw(MemoryException);
-  friend void alloc::operator delete[](void*) throw(MemoryException);
-*/
-private:
+public:
 
   /**
     Allocates the specified number of bytes on the heap. The behavior is
@@ -64,22 +48,22 @@ private:
     @param memory The memory block.
   */
   static void release(void* memory) noexcept;
-};
 
-#if 0
-namespace alloc {
-  
   /**
     Dynamic memory placement operator.
   */
-  inline void* operator new(MemorySize, void* place) throw() {
+  static inline void* operator new(MemorySize size, void* place) noexcept
+  {
+    BASSERT(size > 0);
     return place;
   }
   
   /**
     Dynamic memory placement operator for arrays.
   */
-  inline void* operator new[](MemorySize, void* place) throw() {
+  static inline void* operator new[](MemorySize size, void* place) noexcept
+  {
+    BASSERT(size > 0);
     return place;
   }
   
@@ -87,67 +71,77 @@ namespace alloc {
     Allocates a block of dynamic memory of the specified size in bytes. Raises
     MemoryException if the requested size is 0.
   */
-  inline void* operator new(MemorySize size) throw(MemoryException) {
-    bassert(size > 0, MemoryException()); // removed by compiler
-    void* result = DynamicMemory::allocate(size);
-    bassert(result != 0, MemoryException());
-    return result;
-  }
+  static void* operator new(MemorySize size);
   
   /**
     Releases a dynamic memory block previously allocated by new. Raises
     MemoryException if memory is 0.
   */
-  inline void operator delete(void* memory) throw(MemoryException) {
-    bassert(memory && DynamicMemory::release(memory), MemoryException());
-  }
-  
+  static void operator delete(void* memory);
+
   /**
     Allocates a block of dynamic memory for an array of the specified size in
     bytes. Raises MemoryException if the requested size is 0.
   */
-  inline void* operator new[](MemorySize size) throw(MemoryException) {
-    bassert(size > 0, MemoryException()); // removed by compiler
-    void* result = DynamicMemory::allocate(size);
-    bassert(result != 0, MemoryException());
-    return result;
-  }
+  static void* operator new[](MemorySize size);
 
   /**
     Releases dynamic memory previously allocated by new[]. Raises
     MemoryException is memory is 0.
   */
-  inline void operator delete[](void* memory) throw(MemoryException) {
-    bassert(memory && DynamicMemory::release(memory), MemoryException());
-  }
-}; // end of namespace - alloc
-#endif
+  static void operator delete[](void* memory);
+};
+
+/** Override memory allocation for a class. */
+#define _COM_AZURE_DEV__BASE__OVERRIDE_ALLOC() \
+  static inline void* operator new(MemorySize size, void* place) noexcept \
+    {return base::DynamicMemory::operator new(size, place);} \
+  static inline void* operator new[](MemorySize size, void* place) noexcept \
+    {return base::DynamicMemory::operator new[](size, place);} \
+  static inline void* operator new(MemorySize size) \
+    {return base::DynamicMemory::operator new(size);} \
+  static inline void operator delete(void* memory) \
+    {base::DynamicMemory::operator delete(memory);} \
+  static inline void* operator new[](MemorySize size) \
+    {return base::DynamicMemory::operator new[](size);} \
+  static inline void operator delete[](void* memory) \
+    {base::DynamicMemory::operator delete[](memory);}
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE
 
+// global new and delete operators - using inline only to allow different implementations
 #if (!defined(_COM_AZURE_DEV__BASE__DEFAULT_MEMORY) && \
       defined(_COM_AZURE_DEV__BASE__NAMESPACE))
-inline void* operator new(base::MemorySize, void* place) throw() {
+inline void* operator new(base::MemorySize, void* place) noexcept
+{
   return place;
 }
 
-inline void* operator new[](base::MemorySize, void* place) throw() {
+inline void* operator new[](base::MemorySize, void* place) noexcept
+{
   return place;
 }
 
-inline void* operator new(base::MemorySize size) throw(base::MemoryException) {
-  return base::alloc::operator new(size);
+inline void* operator new(base::MemorySize size)
+{
+  return base::DynamicMemory::operator new(size);
 }
 
-inline void operator delete(void* memory) throw(base::MemoryException) {
-  base::alloc::operator delete(memory);
+inline void operator delete(void* memory)
+{
+  base::DynamicMemory::operator delete(memory);
 }
 
-inline void* operator new[](base::MemorySize size) throw(base::MemoryException) {
-  return base::alloc::operator new[](size);
+inline void* operator new[](base::MemorySize size)
+{
+  return base::DynamicMemory::operator new[](size);
 }
 
-inline void operator delete[](void* memory) throw(base::MemoryException) {
-  base::alloc::operator delete[](memory);
+inline void operator delete[](void* memory)
+{
+  base::DynamicMemory::operator delete[](memory);
 }
+
+// also add const std::nothrow_t&
+
 #endif

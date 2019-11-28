@@ -1019,6 +1019,10 @@ _COM_AZURE_DEV__BASE__PACKED__END
     test_IEEE_EXTENDED_DOUBLE_PRECISION_96_ALIGN16<long double>(-123.456L/zero);
 #endif
 
+    TEST_ASSERT(FloatingPoint::ToFloat(-0.0f).isNegative());
+    TEST_ASSERT(FloatingPoint::ToDouble(-0.0).isNegative());
+    TEST_ASSERT(FloatingPoint::ToLongDouble(-0.0l).isNegative());
+
     TEST_ASSERT(muldiv2(constant::EULER_F, 113) == constant::EULER_F);
     TEST_ASSERT(muldiv2(constant::EULER, 113) == constant::EULER);
     TEST_ASSERT(muldiv2(constant::EULER_L, 113) == constant::EULER_L);
@@ -1090,7 +1094,7 @@ _COM_AZURE_DEV__BASE__PACKED__END
     FloatingPoint::ToLongDouble ld_n1div0(-1.0L/zero);
     TEST_ASSERT(!ld_n1div0.isNaN());
     TEST_ASSERT(ld_n1div0.isInfinity());
-    TEST_ASSERT((-1.0L / zero) < 0);
+    TEST_ASSERT((-1.0l / zero) < 0);
 
     FloatingPoint::ToFloat f_nan(nanf(""));
     TEST_ASSERT(f_nan.isNaN());

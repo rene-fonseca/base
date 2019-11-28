@@ -102,7 +102,7 @@ public:
 */
 
 class _COM_AZURE_DEV__BASE__API JSON : public DynamicObject {
-private:
+public:
 
   class _COM_AZURE_DEV__BASE__API JSONParser : public Parser {
   private:
@@ -177,6 +177,7 @@ private:
       }
     }
   };
+private:
   
   ObjectModel objectModel;
   PrimitiveArray<char> buffer; // reused - do NOT reuse on recursion

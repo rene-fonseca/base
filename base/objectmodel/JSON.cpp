@@ -16,8 +16,6 @@
 #include <base/objectmodel/JSON.h>
 #include <base/io/File.h>
 #include <base/UnitTest.h>
-#include <locale>
-#include <codecvt>
 
 // TAG: handle chars in JSON strings!
 
@@ -222,6 +220,27 @@ namespace {
   };
 }
 
+namespace {
+
+  uint16 readUTF16Word(JSON::JSONParser& parser)
+  {
+    const char h0 = parser.read();
+    const char h1 = parser.read();
+    const char h2 = parser.read();
+    const char h3 = parser.read();
+    if (ASCIITraits::isHexDigit(h0) || ASCIITraits::isHexDigit(h1) ||
+        ASCIITraits::isHexDigit(h2) || ASCIITraits::isHexDigit(h3)) {
+      const uint16 d0 = ASCIITraits::digitToValue(h0);
+      const uint16 d1 = ASCIITraits::digitToValue(h1);
+      const uint16 d2 = ASCIITraits::digitToValue(h2);
+      const uint16 d3 = ASCIITraits::digitToValue(h3);
+      const uint16 value = (d0 << 12) | (d1 << 8) | (d2 << 4) | (d3 << 0);
+      return value;
+    }
+    throw JSONException("Malformed UTF-16 word for string literal.", parser.getPosition());
+  }
+}
+  
 Reference<ObjectModel::String> JSON::parseString(JSONParser& parser)
 {
   skipSpaces(parser);
@@ -263,24 +282,31 @@ Reference<ObjectModel::String> JSON::parseString(JSONParser& parser)
         break;
       case 'u':
         {
-          const char h0 = parser.read();
-          const char h1 = parser.read();
-          const char h2 = parser.read();
-          const char h3 = parser.read();
-          if (ASCIITraits::isHexDigit(h0) || ASCIITraits::isHexDigit(h1) ||
-              ASCIITraits::isHexDigit(h2) || ASCIITraits::isHexDigit(h3)) {
-            const uint16 d0 = ASCIITraits::digitToValue(h0);
-            const uint16 d1 = ASCIITraits::digitToValue(h1);
-            const uint16 d2 = ASCIITraits::digitToValue(h2);
-            const uint16 d3 = ASCIITraits::digitToValue(h3);
-            const uint16 value = (d0 << 12) | (d1 << 8) | (d2 << 4) | (d3 << 0);
-// TAG: convert to UTF8 from ?
-            /*
-            const wchar* src = reinterpret_cast<const wchar*>(&value);
-            std::wstring_convert<std::codecvt_utf8<wchar_t>, wchar_t> convert;
-            std::string s = convert.to_bytes(src, src + 1);
-            text += s;
-            */
+          const uint16 value = readUTF16Word(parser);
+          if ((value >= 0xd800) && (value <= 0xdfff)) { // surrogate words
+            if (value >= 0xdc00) {
+              throw JSONException("Unexpected UTF-16 low surrogate.", parser.getPosition());
+            }
+            if (parser.peek() != '\\') {
+              throw JSONException("Missing UTF-16 low surrogate.", parser.getPosition());
+            }
+            parser.skip();
+            if (parser.peek() != 'u') {
+              throw JSONException("Missing UTF-16 low surrogate.", parser.getPosition());
+            }
+            parser.skip();
+            const uint16 value2 = readUTF16Word(parser);
+            if (!((value2 >= 0xdc00) && (value2 <= 0xdfff))) { // surrogate word
+              throw JSONException("Expected UTF-16 low surrogate.", parser.getPosition());
+            }
+            const uint32 high = value - 0xd800; // leading
+            const uint32 low = value2 - 0xdc00; // trailing
+            const ucs4 ch = (high << 10) | low;
+            char bytes[4];
+            MemorySize size = Unicode::writeUTF8(bytes, ch);
+            for (MemorySize i = 0; i < size; ++i) {
+              buffer.push(bytes[i]);
+            }
           } else {
             throw JSONException("Malformed string literal.", parser.getPosition());
           }

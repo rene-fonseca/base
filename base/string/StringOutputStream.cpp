@@ -51,11 +51,10 @@ unsigned int StringOutputStreamWrapper::write(
 
 
 
-StringOutputStream::StringOutputStream() throw(BindException) :
-  FormatOutputStream(stream)
+StringOutputStream::StringOutputStream() throw(BindException)
+  : FormatOutputStream(stream)
 {
   stream.ensureCapacity(1024);
-  // stream.setGranularity(DEFAULT_GRANULARITY);
 }
 
 StringOutputStream::StringOutputStream(
@@ -63,7 +62,6 @@ StringOutputStream::StringOutputStream(
   : FormatOutputStream(stream)
 {
   stream.ensureCapacity(1024);
-  // stream.setGranularity(granularity);
 }
 
 void StringOutputStream::ensureCapacity(MemorySize capacity)

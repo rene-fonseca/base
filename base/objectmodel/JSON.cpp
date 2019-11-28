@@ -282,6 +282,7 @@ Reference<ObjectModel::String> JSON::parseString(JSONParser& parser)
         break;
       case 'u':
         {
+          // none unicode chars are allowed per rfc7159 - should we allow this
           const uint16 value = readUTF16Word(parser);
           if ((value >= 0xd800) && (value <= 0xdfff)) { // surrogate words
             if (value >= 0xdc00) {

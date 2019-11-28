@@ -95,7 +95,7 @@ public:
 /**
   JSON parser. See https://www.json.org/ and https://www.ietf.org/rfc/rfc7159.txt.
 
-  Implementation preserves 64-bit integer and float types.
+  Implementation preserves 64-bit signed integer and float types.
 
   @short JSON
   @version 1.0
@@ -111,8 +111,6 @@ public:
     const uint8* lastLine = nullptr;
     unsigned int tabSize = 2;
   public:
-
-    // TAG: handle UTF8/non ASCII?
     
     JSONParser() noexcept
     {
@@ -184,7 +182,8 @@ private:
   Posix posix; // get series of floats
 
   /** Skip space. */
-  inline void skipSpaces(JSONParser& parser) noexcept {
+  inline void skipSpaces(JSONParser& parser) noexcept
+  {
     parser.skipJSONSpaces();
     // parser.skipAny(" \n\r\t");
   }

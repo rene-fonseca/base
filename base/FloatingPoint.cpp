@@ -996,7 +996,7 @@ _COM_AZURE_DEV__BASE__PACKED__END
     test_IEEE_EXTENDED_DOUBLE_PRECISION_96_ALIGN16<long double>(-123.456L);
     test_IEEE_EXTENDED_DOUBLE_PRECISION_96_ALIGN16<long double>(-123.456L/zero);
 #endif
-    
+
     FloatingPoint::ToFloat f1(1.0f);
     TEST_ASSERT(f1.isOrdinary());
     TEST_ASSERT(!f1.isNaN());
@@ -1034,6 +1034,7 @@ _COM_AZURE_DEV__BASE__PACKED__END
     FloatingPoint::ToFloat f_n1div0(-1.0f/zero);
     TEST_ASSERT(!f_n1div0.isNaN());
     TEST_ASSERT(f_n1div0.isInfinity());
+    TEST_ASSERT((-1.0f / zero) < 0);
 
     FloatingPoint::ToDouble d_1div0(1.0/zero);
     TEST_ASSERT(!d_1div0.isNaN());
@@ -1042,6 +1043,7 @@ _COM_AZURE_DEV__BASE__PACKED__END
     FloatingPoint::ToDouble d_n1div0(-1.0/zero);
     TEST_ASSERT(!d_n1div0.isNaN());
     TEST_ASSERT(d_n1div0.isInfinity());
+    TEST_ASSERT((-1.0 / zero) < 0);
 
     FloatingPoint::ToLongDouble ld_1div0(1.0L/zero);
     TEST_ASSERT(!ld_1div0.isNaN());
@@ -1050,7 +1052,8 @@ _COM_AZURE_DEV__BASE__PACKED__END
     FloatingPoint::ToLongDouble ld_n1div0(-1.0L/zero);
     TEST_ASSERT(!ld_n1div0.isNaN());
     TEST_ASSERT(ld_n1div0.isInfinity());
-    
+    TEST_ASSERT((-1.0L / zero) < 0);
+
     FloatingPoint::ToFloat f_nan(nanf(""));
     TEST_ASSERT(f_nan.isNaN());
     TEST_ASSERT(f_nan.isQuiteNaN());

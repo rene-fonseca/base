@@ -95,6 +95,8 @@ public:
 /**
   JSON parser. See https://www.json.org/ and https://www.ietf.org/rfc/rfc7159.txt.
 
+  Implementation preserves 64-bit integer and float types.
+
   @short JSON
   @version 1.0
 */
@@ -177,10 +179,8 @@ private:
   };
   
   ObjectModel objectModel;
-  std::string text; // reused
+  PrimitiveArray<char> buffer; // reused - do NOT reuse on recursion
   Posix posix; // get series of floats
-  Array<Reference<ObjectModel::Value> > arrayBuffer;
-  Array<ObjectModel::Object::Association> objectBuffer;
 
   /** Skip space. */
   inline void skipSpaces(JSONParser& parser) noexcept {

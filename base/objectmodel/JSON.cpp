@@ -30,8 +30,7 @@ FormatOutputStream& operator<<(FormatOutputStream& stream, const LineColumn& pos
 
 JSON::JSON()
 {
-  arrayBuffer.ensureCapacity(1024);
-  objectBuffer.ensureCapacity(1024);
+  buffer.resize(4096);
 }
 
 Reference<ObjectModel::Void> JSON::parseNull(JSONParser& parser)
@@ -182,14 +181,56 @@ Reference<ObjectModel::Value> JSON::parseNumber(JSONParser& parser)
   return parseFloat(parser);
 }
 
+namespace {
+
+  class BufferWrapper {
+  public:
+
+    PrimitiveArray<char>& buffer;
+    char* dest = nullptr;
+    const char* end = nullptr;
+  public:
+
+    inline BufferWrapper(PrimitiveArray<char>& _buffer) noexcept
+      : buffer(_buffer)
+    {
+      dest = buffer.begin();
+      end = buffer.end();
+    }
+
+    void expand()
+    {
+      const MemorySize offset = dest - buffer.begin();
+      buffer.resize(buffer.size() * 2);
+      dest = buffer.begin() + offset; // new write position
+      end = buffer.end();
+    }
+
+    inline void push(char ch)
+    {
+      if (dest == end) {
+        expand();
+      }
+      *dest = ch;
+      ++dest;
+    }
+
+    inline operator String() const
+    {
+      return String(buffer.begin(), dest - buffer.begin());
+    }
+  };
+}
+
 Reference<ObjectModel::String> JSON::parseString(JSONParser& parser)
 {
   skipSpaces(parser);
   if (!parser.peek('"')) {
     throw JSONException("Expected string.", parser.getPosition());
   }
-  text.clear();
-  text.reserve(1024 * 8);
+
+  BufferWrapper buffer(this->buffer);
+
   parser.skip();
   while (parser.peek() != '"') {
     const char ch = parser.read();
@@ -197,28 +238,28 @@ Reference<ObjectModel::String> JSON::parseString(JSONParser& parser)
       const char ch2 = parser.read();
       switch (ch2) {
       case '"':
-        text.push_back('"');
+        buffer.push('"');
         break;
       case '\\':
-        text.push_back('\\');
+        buffer.push('\\');
         break;
       case '/':
-        text.push_back('/');
+        buffer.push('/');
         break;
       case 'b':
-        text.push_back('\b');
+        buffer.push('\b');
         break;
       case 'f':
-        text.push_back('\f');
+        buffer.push('\f');
         break;
       case 'n':
-        text.push_back('\n');
+        buffer.push('\n');
         break;
       case 'r':
-        text.push_back('\r');
+        buffer.push('\r');
         break;
       case 't':
-        text.push_back('\t');
+        buffer.push('\t');
         break;
       case 'u':
         {
@@ -233,10 +274,13 @@ Reference<ObjectModel::String> JSON::parseString(JSONParser& parser)
             const uint16 d2 = ASCIITraits::digitToValue(h2);
             const uint16 d3 = ASCIITraits::digitToValue(h3);
             const uint16 value = (d0 << 12) | (d1 << 8) | (d2 << 4) | (d3 << 0);
+// TAG: convert to UTF8 from ?
+            /*
             const wchar* src = reinterpret_cast<const wchar*>(&value);
             std::wstring_convert<std::codecvt_utf8<wchar_t>, wchar_t> convert;
             std::string s = convert.to_bytes(src, src + 1);
             text += s;
+            */
           } else {
             throw JSONException("Malformed string literal.", parser.getPosition());
           }
@@ -250,25 +294,25 @@ Reference<ObjectModel::String> JSON::parseString(JSONParser& parser)
         throw JSONException("Malformed string literal.", parser.getPosition());
       }
       if (static_cast<uint8>(ch) < 0x80) {
-        text.push_back(ch);
+        buffer.push(ch);
         continue;
       }
 
       // ACCEPTING: '0020' . '10FFFF' - '"' - '\'
       parser.unwind();
       const auto begin = parser.getCurrent();
-      const ucs4 uch = parser.readUCS4();
+      const ucs4 uch = parser.readUCS4(); // TAG: handle UTF-8/16/32
       if (uch > 0x10ffff) {
         throw JSONException("Bad UTF8 string literal.", parser.getPosition());
       }
-      MemoryDiff bytesRead = parser.getCurrent() - begin;
+      const MemoryDiff bytesRead = parser.getCurrent() - begin;
       for (MemoryDiff i = 0; i < bytesRead; ++i) {
-        text.push_back(begin[i]);
+        buffer.push(begin[i]);
       }
     }
   }
   parser.read('"');
-  return objectModel.createString(String(text));
+  return objectModel.createString(buffer);
 }
 
 Reference<ObjectModel::Array> JSON::parseArray(JSONParser& parser)
@@ -280,13 +324,13 @@ Reference<ObjectModel::Array> JSON::parseArray(JSONParser& parser)
   parser.skip();
   skipSpaces(parser);
   Reference<ObjectModel::Array> result = objectModel.createArray();
+  // result->values.ensureCapacity(16); // use previous array size
   if (parser.peek() == ']') {
     parser.skip();
     return result; // empty
   }
   while (true) {
     skipSpaces(parser);
-    // arrayBuffer.append(parseValue(parser));
     result->append(parseValue(parser));
     skipSpaces(parser);
     switch (parser.peek()) {
@@ -296,15 +340,6 @@ Reference<ObjectModel::Array> JSON::parseArray(JSONParser& parser)
     case ']':
       {
         parser.skip();
-#if 0
-        auto size = arrayBuffer.getSize();
-        result->values.setSize(size);
-        auto dest = result->values.begin();
-        for (auto i = arrayBuffer.begin(), end = arrayBuffer.end(); i != end; ++dest, ++i) {
-          *dest = std::move(*i);
-        }
-        arrayBuffer.setSize(0);
-#endif
         return result;
       }
     default:

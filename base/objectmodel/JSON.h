@@ -74,11 +74,16 @@ public:
     position = _position;
   }
   
+  inline bool isCommonException() const noexcept override
+  {
+    return true;
+  }
+
   _COM_AZURE_DEV__BASE__EXCEPTION_THIS_TYPE()
 };
 
 /**
-  JSON parser. See https://www.json.org/.
+  JSON parser. See https://www.json.org/ and https://www.ietf.org/rfc/rfc7159.txt.
 
   @short JSON
   @version 1.0
@@ -172,7 +177,7 @@ private:
   }
 
   /** Parses integer. */
-  bool parseIntegerImpl(JSONParser& parser, int& i);
+  bool parseIntegerImpl(JSONParser& parser, int64& i);
 public:
 
   /** Constructs JSON parser. */
@@ -209,7 +214,7 @@ public:
   Reference<ObjectModel::Value> parse(const uint8* src, const uint8* end);
 
   /** Returns ObjectModel for the given JSON text. */
-  Reference<ObjectModel::Value> parse(const String& text);
+  static Reference<ObjectModel::Value> parse(const String& text);
 
   static Reference<ObjectModel::Value> parseFile(const String& path);
   

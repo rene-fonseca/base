@@ -11,6 +11,8 @@
     For the licensing terms refer to the file 'LICENSE'.
  ***************************************************************************/
 
+// TAG: add support for UTF8,UTF16,UTF32
+
 #include <base/objectmodel/JSON.h>
 #include <base/io/File.h>
 #include <base/UnitTest.h>
@@ -51,10 +53,15 @@ Reference<ObjectModel::Boolean> JSON::parseBoolean(JSONParser& parser)
   throw JSONException("Expected boolean.", parser.getPosition());
 }
 
-bool JSON::parseIntegerImpl(JSONParser& parser, int& j)
+bool JSON::parseIntegerImpl(JSONParser& parser, int64& j)
 {
+  // numbers in the range [-(2**53)+1, (2**53)-1] must be exact
+
   skipSpaces(parser);
-  int i = 0;
+  if (!parser.hasMore()) {
+    return false;
+  }
+  int64 i = 0;
   int sign = 1;
   if (parser.peek() == '-') {
     parser.read();
@@ -63,6 +70,9 @@ bool JSON::parseIntegerImpl(JSONParser& parser, int& j)
 
   // TAG: add support info on position of failure for exceptions - line and column
 
+  if (!parser.hasMore()) {
+    return false;
+  }
   if (parser.peek() == '0') {
     parser.skip(); // done
   } else {
@@ -71,37 +81,39 @@ bool JSON::parseIntegerImpl(JSONParser& parser, int& j)
     }
     const char ch = parser.read();
     i = static_cast<uint8>(ch - '0'); // first digit
-    while ((parser.peek() >= '0') && (parser.peek() <= '9')) {
+    while (parser.hasMore() && (parser.peek() >= '0') && (parser.peek() <= '9')) {
       const char ch = parser.read();
       uint8 digit = static_cast<uint8>(ch - '0');
       i = i * 10 + digit;
-      if (i * sign < PrimitiveTraits<int>::MINIMUM) {
+      if ((i * sign) < PrimitiveTraits<int64>::MINIMUM) {
         return false;
-      } else if (i * sign > PrimitiveTraits<int>::MAXIMUM) {
+      } else if ((i * sign) > PrimitiveTraits<int64>::MAXIMUM) {
         return false;
       }
     }
   }
 
-  switch (parser.peek()) {
-  case '.':
-  case 'e':
-  case 'E':
-    return false; // float chars
+  if (parser.hasMore()) {
+    switch (parser.peek()) {
+    case '.':
+    case 'e':
+    case 'E':
+      return false; // float chars
+    }
   }
-
-  j = static_cast<int>(i * sign);
+  
+  j = static_cast<int64>(i * sign);
   return true;
 }
 
 Reference<ObjectModel::Integer> JSON::parseInteger(JSONParser& parser)
 {
   skipSpaces(parser);
-  int i = 0;
+  int64 i = 0;
   if (!parseIntegerImpl(parser, i)) {
     throw JSONException("Expected integer.", parser.getPosition());
   }
-  return objectModel.createInteger(i);
+  return objectModel.createInteger64(i);
 }
 
 Reference<ObjectModel::Float> JSON::parseFloat(JSONParser& parser)
@@ -159,11 +171,11 @@ Reference<ObjectModel::Float> JSON::parseFloat(JSONParser& parser)
 Reference<ObjectModel::Value> JSON::parseNumber(JSONParser& parser)
 {
   skipSpaces(parser);
-  int i = 0;
+  int64 i = 0;
   JSONParser integerParser = parser;
   if (parseIntegerImpl(integerParser, i)) {
     parser = integerParser;
-    return objectModel.createInteger(i);
+    return objectModel.createInteger64(i);
   }
   return parseFloat(parser);
 }
@@ -347,7 +359,7 @@ Reference<ObjectModel::Value> JSON::parseValue(JSONParser& parser)
 Reference<ObjectModel::Value> JSON::parse(const uint8* src, const uint8* end)
 {
   JSONParser parser(src, end);
-  auto result = parseObject(parser);
+  Reference<ObjectModel::Value> result = JSON::parseValue(parser);
   skipSpaces(parser);
   if (parser.hasMore()) {
     throw JSONException("Unexpected content after object.", parser.getPosition());
@@ -357,7 +369,8 @@ Reference<ObjectModel::Value> JSON::parse(const uint8* src, const uint8* end)
 
 Reference<ObjectModel::Value> JSON::parse(const String& text)
 {
-  return parse(
+  JSON json;
+  return json.parse(
     reinterpret_cast<const uint8*>(text.getElements()),
     reinterpret_cast<const uint8*>(text.getElements()) + text.getLength()
   );
@@ -450,6 +463,53 @@ public:
     TEST_ASSERT(ensureFailure("{\"qwerty\":0x1}"));
     TEST_ASSERT(ensureFailure("[,]"));
     TEST_ASSERT(ensureFailure("[1,]"));
+  
+    const char* test1 = R""""(
+{
+  "Image": {
+    "Width": 800,
+    "Height": 600,
+    "Title": "View from 15th Floor",
+    "Thumbnail": {
+      "Url": "http://www.example.com/image/481989943",
+      "Height": 125,
+      "Width": 100
+    },
+    "Animated": false,
+    "IDs": [116, 943, 234, 38793]
+  }
+})"""";
+    TEST_ASSERT(JSON().parse(test1));
+
+    const char* test2 = R""""(
+[
+  {
+    "precision": "zip",
+    "Latitude":  37.7668,
+    "Longitude": -122.3959,
+    "Address":   "",
+    "City":      "SAN FRANCISCO",
+    "State":     "CA",
+    "Zip":       "94107",
+    "Country":   "US"
+  },
+  {
+    "precision": "zip",
+    "Latitude":  37.371991,
+    "Longitude": -122.026020,
+    "Address":   "",
+    "City":      "SUNNYVALE",
+    "State":     "CA",
+    "Zip":       "94085",
+    "Country":   "US"
+  }
+])"""";
+    TEST_ASSERT(JSON().parse(test2));
+
+    TEST_ASSERT(JSON().parse("\"Hello world!\""));
+    TEST_ASSERT(JSON().parse("42"));
+    TEST_ASSERT(JSON().parse("true"));
+  
   }
 };
 

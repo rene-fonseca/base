@@ -14,11 +14,9 @@
 #pragma once
 
 #include <base/Base.h>
-#include <base/MemoryException.h>
 #include <base/mem/Allocator.h>
 #include <base/mem/AllocatorEnumeration.h>
 #include <base/mem/ReferenceCountedObject.h>
-#include <base/string/FormatOutputStream.h>
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
@@ -61,12 +59,18 @@ public:
   {
   }
 
-#if 0
+  /**
+    Initializes an allocator of the specified size without initializing the
+    elements. Raises MemoryException if unable to allocate enough memory to
+    hold the requested number of elements.
+
+    @param size Specifies the initial size of the allocator.
+    @param capacity Specifies the initial capacity the allocator.
+  */
   inline explicit ReferenceCountedAllocator(MemorySize size, MemorySize capacity) throw(MemoryException)
     : Allocator<TYPE>(size, capacity)
   {
   }
-#endif
   
   /**
     Initializes the allocator by copying from the specified allocator. Raises

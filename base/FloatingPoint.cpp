@@ -949,6 +949,28 @@ public:
   TEST_PROJECT("base");
 
   template<typename TYPE>
+  static TYPE muldiv2(volatile TYPE value, volatile unsigned int loops) noexcept
+  {
+    for (unsigned int i = 0; i < loops; ++i) {
+      value *= 2; // expected to exact since it only requires exponent addition and subtraction
+    }
+    for (unsigned int i = 0; i < loops; ++i) {
+      value /= 2; // expected to exact since it only requires exponent addition and subtraction
+    }
+    return value;
+  }
+
+  template<typename TYPE>
+  static TYPE getEpsilon() noexcept
+  {
+    TYPE result = 1;
+    while ((static_cast<TYPE>(1) + result) != static_cast<TYPE>(1)) {
+      result /= 2;
+    }
+    return result * 2;
+  }
+
+  template<typename TYPE>
   void test_IEEE_EXTENDED_DOUBLE_PRECISION_96_ALIGN16(TYPE _value) {
     TEST_ASSERT(sizeof(TYPE) == 16);
     if (sizeof(TYPE) == 16) {
@@ -996,6 +1018,22 @@ _COM_AZURE_DEV__BASE__PACKED__END
     test_IEEE_EXTENDED_DOUBLE_PRECISION_96_ALIGN16<long double>(-123.456L);
     test_IEEE_EXTENDED_DOUBLE_PRECISION_96_ALIGN16<long double>(-123.456L/zero);
 #endif
+
+    TEST_ASSERT(muldiv2(constant::EULER_F, 113) == constant::EULER_F);
+    TEST_ASSERT(muldiv2(constant::EULER, 113) == constant::EULER);
+    TEST_ASSERT(muldiv2(constant::EULER_L, 113) == constant::EULER_L);
+    TEST_ASSERT(muldiv2(-constant::EULER_F, 117) == -constant::EULER_F);
+    TEST_ASSERT(muldiv2(-constant::EULER, 117) == -constant::EULER);
+    TEST_ASSERT(muldiv2(-constant::EULER_L, 117) == -constant::EULER_L);
+
+    TEST_ASSERT(getEpsilon<float>() < 2e-7f);
+    TEST_ASSERT(getEpsilon<double>() <= getEpsilon<float>());
+    TEST_ASSERT(getEpsilon<long double>() <= getEpsilon<double>());
+    /*
+    fout << getEpsilon<float>() << ENDL;
+    fout << getEpsilon<double>() << ENDL;
+    fout << getEpsilon<long double>() << ENDL;
+    */
 
     FloatingPoint::ToFloat f1(1.0f);
     TEST_ASSERT(f1.isOrdinary());

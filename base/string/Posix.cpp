@@ -18,7 +18,24 @@ _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 namespace {
 
-  const int64 EXPONENTS[] = { // up to 10^18
+  // TAG: for 32-bit arch we need to keep in int32
+
+  constexpr int64 power10(unsigned int exponent) noexcept
+  {
+    return (exponent > 0) ? 10LL * power10(exponent - 1) : 1;
+  }
+
+  constexpr int64 power5(unsigned int exponent) noexcept
+  {
+    return (exponent > 0) ? 5LL * power5(exponent - 1) : 1;
+  }
+
+  constexpr int32 power2(unsigned int exponent) noexcept
+  {
+    return (exponent > 0) ? static_cast<int32>(2)* power2(exponent - 1) : 1;
+  }
+
+  const int64 EXPONENTS10[19] = { //  64 bit has room for 10^18 - excluding 1 bit for sign
     1,10,100,1000,10000,100000,1000000,10000000,100000000,1000000000,
     10000000000LL, // requires 64-bit from here
     100000000000LL,
@@ -28,8 +45,39 @@ namespace {
     1000000000000000LL,
     10000000000000000LL,
     100000000000000000LL,
-    1000000000000000000LL
+    1000000000000000000LL // power10(18)
   };
+  const int64 EXPONENTS5[28] = { // 64 bit has room for 5 ^ 27 - excluding 1 bit for sign
+    power5(0),power5(1),power5(2),power5(3),power5(4),power5(5),power5(6),power5(7),power5(8),power5(9),
+    power5(10),power5(11),power5(12),power5(13),power5(14),power5(15),power5(16),power5(17),power5(18),power5(19),
+    power5(20),power5(21),power5(22),power5(23),power5(24),power5(25),power5(26),power5(27)
+  };
+  const int32 EXPONENTS2[28] = { // 32 bit has room for 2 ^ 27 - excluding 1 bit for sign
+    power2(0),power2(1),power2(2),power2(3),power2(4),power2(5),power2(6),power2(7),power2(8),power2(9),
+    power2(10),power2(11),power2(12),power2(13),power2(14),power2(15),power2(16),power2(17),power2(18),power2(19),
+    power2(20),power2(21),power2(22),power2(23),power2(24),power2(25),power2(26),power2(27)
+  };
+
+  template<typename TYPE>
+  constexpr TYPE getZero(bool negative) noexcept;
+
+  template<>
+  constexpr float getZero<float>(bool negative) noexcept
+  {
+    return negative ? -0.0f : 0.0f;
+  }
+
+  template<>
+  constexpr double getZero<double>(bool negative) noexcept
+  {
+    return negative ? -0.0 : 0.0;
+  }
+
+  template<>
+  constexpr long double getZero<long double>(bool negative) noexcept
+  {
+    return negative ? -0.0l : 0.0l;
+  }
 
   template<typename TYPE>
   inline int convertImpl(const char* src, const char* end, TYPE& _value) noexcept
@@ -95,17 +143,45 @@ namespace {
     }
     
     if ((src == end) && (i > 0)) { // read all and got at least 1 digit
-      exponent -= j;
-      if (exponent < getArraySize(EXPONENTS)) {
+      if (temp == 0) { // exponent is irrelevant
+        return getZero<TYPE>(negative); // preserve -0
+      }
+      if (negativeExponent) {
+        exponent += j;
+      } else {
+        exponent -= j;
+        if (exponent < 0) {
+          exponent = -exponent;
+          negativeExponent = true;
+        }
+      }
+
+      if (exponent < getArraySize(EXPONENTS10)) {
         if (negative) {
           temp = -temp;
         }
         TYPE value = static_cast<TYPE>(temp);
         if (exponent > 0) {
           if (negativeExponent) {
-           value /= EXPONENTS[exponent];
+            value /= EXPONENTS10[exponent];
           } else {
-            value *= EXPONENTS[exponent];
+            value *= EXPONENTS10[exponent];
+          }
+        }
+        _value = value;
+        return 1;
+      } else if (exponent < getArraySize(EXPONENTS5)) { // exponent 10 => 2*5
+        if (negative) {
+          temp = -temp;
+        }
+        TYPE value = static_cast<TYPE>(temp);
+        if (exponent > 0) {
+          if (negativeExponent) {
+            value /= EXPONENTS5[exponent]; // no exponent overflow for 64 bit int
+            value /= EXPONENTS2[exponent]; // power 2 math is exact
+          } else {
+            value *= EXPONENTS5[exponent]; // no exponent overflow for 64 bit int
+            value *= EXPONENTS2[exponent]; // power 2 math is exact
           }
         }
         _value = value;

@@ -69,10 +69,10 @@ public:
   // typedef TYPE* Pointer;
   // typedef TYPE& Reference;
 
-  typedef typename CapacityAllocator<TYPE>::Iterator Iterator;
-  typedef typename CapacityAllocator<TYPE>::ReadIterator ReadIterator;
-  typedef typename CapacityAllocator<TYPE>::Enumerator Enumerator;
-  typedef typename CapacityAllocator<TYPE>::ReadEnumerator ReadEnumerator;
+  typedef typename Allocator<TYPE>::Iterator Iterator;
+  typedef typename Allocator<TYPE>::ReadIterator ReadIterator;
+  typedef typename Allocator<TYPE>::Enumerator Enumerator;
+  typedef typename Allocator<TYPE>::ReadEnumerator ReadEnumerator;
   
   /*
     Reference to an element within an array.

@@ -26,23 +26,28 @@ public:
   MemorySize line = 0;
   MemorySize column = 0;
   
-  inline LineColumn() noexcept {
+  inline LineColumn() noexcept
+  {
   }
 
   inline LineColumn(MemorySize _line, MemorySize _column) noexcept
-    : line(_line), column(_column) {
+    : line(_line), column(_column)
+  {
   }
   
-  inline bool isProper() const noexcept {
+  inline bool isProper() const noexcept
+  {
     return line > 0;
   }
 
-  inline void nextLine() noexcept {
+  inline void nextLine() noexcept
+  {
     ++line;
     column = 0;
   }
 
-  inline void nextColumn() noexcept {
+  inline void nextColumn() noexcept
+  {
     ++column;
   }
 };
@@ -56,21 +61,26 @@ private:
   LineColumn position;
 public:
   
-  inline JSONException() : Exception() {
+  inline JSONException()
+  {
   }
 
-  inline JSONException(const char* message) : Exception(message) {
+  inline JSONException(const char* message)
+    : Exception(message) {
   }
 
   inline JSONException(const char* message, const LineColumn& _position)
-    : Exception(message), position(_position) {
+    : Exception(message), position(_position)
+  {
   }
 
-  inline const LineColumn& getPosition() const noexcept {
+  inline const LineColumn& getPosition() const noexcept
+  {
     return position;
   }
 
-  inline void setPosition(const LineColumn& _position) noexcept {
+  inline void setPosition(const LineColumn& _position) noexcept
+  {
     position = _position;
   }
   
@@ -169,6 +179,8 @@ private:
   ObjectModel objectModel;
   std::string text; // reused
   Posix posix; // get series of floats
+  Array<Reference<ObjectModel::Value> > arrayBuffer;
+  Array<ObjectModel::Object::Association> objectBuffer;
 
   /** Skip space. */
   inline void skipSpaces(JSONParser& parser) noexcept {

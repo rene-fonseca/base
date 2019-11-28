@@ -30,6 +30,8 @@ FormatOutputStream& operator<<(FormatOutputStream& stream, const LineColumn& pos
 
 JSON::JSON()
 {
+  arrayBuffer.ensureCapacity(1024);
+  objectBuffer.ensureCapacity(1024);
 }
 
 Reference<ObjectModel::Void> JSON::parseNull(JSONParser& parser)
@@ -276,14 +278,15 @@ Reference<ObjectModel::Array> JSON::parseArray(JSONParser& parser)
     throw JSONException("Expected array.", parser.getPosition());
   }
   parser.skip();
-  Reference<ObjectModel::Array> result = objectModel.createArray();
   skipSpaces(parser);
+  Reference<ObjectModel::Array> result = objectModel.createArray();
   if (parser.peek() == ']') {
     parser.skip();
-    return result;
+    return result; // empty
   }
   while (true) {
     skipSpaces(parser);
+    // arrayBuffer.append(parseValue(parser));
     result->append(parseValue(parser));
     skipSpaces(parser);
     switch (parser.peek()) {
@@ -291,8 +294,19 @@ Reference<ObjectModel::Array> JSON::parseArray(JSONParser& parser)
       parser.skip();
       break;
     case ']':
-      parser.skip();
-      return result;
+      {
+        parser.skip();
+#if 0
+        auto size = arrayBuffer.getSize();
+        result->values.setSize(size);
+        auto dest = result->values.begin();
+        for (auto i = arrayBuffer.begin(), end = arrayBuffer.end(); i != end; ++dest, ++i) {
+          *dest = std::move(*i);
+        }
+        arrayBuffer.setSize(0);
+#endif
+        return result;
+      }
     default:
       throw JSONException("Malformed array.", parser.getPosition());
     }

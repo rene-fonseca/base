@@ -16,6 +16,7 @@
 #include <base/Exception.h>
 #include <base/mem/Reference.h>
 #include <base/collection/Array.h>
+#include <base/collection/Pair.h>
 #include <base/string/FormatOutputStream.h>
 #include <base/string/StringOutputStream.h>
 #include <base/collection/BinaryNode.h>
@@ -455,11 +456,12 @@ public:
   class _COM_AZURE_DEV__BASE__API Object : public Value {
   public:
     
-    typedef std::pair<Reference<String>, Reference<Value> > Association;
+    typedef Pair<Reference<String>, Reference<Value> > Association;
     base::Array<Association> values;
 
     /** Returns the type. */
-    virtual inline Type getType() const noexcept override {
+    virtual inline Type getType() const noexcept override
+    {
       return TYPE_OBJECT;
     }
 
@@ -684,7 +686,7 @@ private:
 
   bool allowReuse = false; // only applies to dynamic strings since we could get race conditions otherwise
   /** Used to avoid reallocated of the same strings. */
-  std::map<base::String, Reference<String> > lookup;
+  std::map<base::String, Reference<String> > lookup; // TAG: use hash lookup instead
 public:
   
   /**
@@ -745,25 +747,29 @@ public:
 };
 
 /** Returns true if the given values are identical. */
-inline bool operator==(const Reference<ObjectModel::Value>& a, bool b) {
+inline bool operator==(const Reference<ObjectModel::Value>& a, bool b)
+{
   Reference<ObjectModel::Boolean> _a = a.cast<ObjectModel::Boolean>();
   return _a && (_a->value == b);
 }
 
 /** Returns true if the given values are identical. */
-inline bool operator==(const Reference<ObjectModel::Value>& a, int b) {
+inline bool operator==(const Reference<ObjectModel::Value>& a, int b)
+{
   Reference<ObjectModel::Integer> _a = a.cast<ObjectModel::Integer>();
   return _a && (_a->value == b);
 }
 
 /** Returns true if the given values are identical. */
-inline bool operator==(const Reference<ObjectModel::Value>& a, float b) {
+inline bool operator==(const Reference<ObjectModel::Value>& a, float b)
+{
   Reference<ObjectModel::Float> _a = a.cast<ObjectModel::Float>();
   return _a && (_a->value == b);
 }
 
 /** Returns true if the given values are identical. */
-inline bool operator==(const Reference<ObjectModel::Value>& a, const String& b) {
+inline bool operator==(const Reference<ObjectModel::Value>& a, const String& b)
+{
   Reference<ObjectModel::String> _a = a.cast<ObjectModel::String>();
   return _a && (_a->value == b);
 }

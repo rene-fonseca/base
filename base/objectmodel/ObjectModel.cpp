@@ -385,10 +385,10 @@ bool ObjectModel::Object::hasKey(const Reference<String>& key) const noexcept
     return false;
   }
   for (const auto& v : values) {
-    if (!INLINE_ASSERT(v.first)) {
+    if (!INLINE_ASSERT(v.getFirst())) {
       continue;
     }
-    if (v.first->value == key->value) {
+    if (v.getFirst()->value == key->value) {
       return true;
     }
   }
@@ -398,10 +398,10 @@ bool ObjectModel::Object::hasKey(const Reference<String>& key) const noexcept
 bool ObjectModel::Object::hasKey(const base::String& key) const noexcept
 {
   for (const auto& v : values) {
-    if (!INLINE_ASSERT(v.first)) {
+    if (!INLINE_ASSERT(v.getFirst())) {
       continue;
     }
-    if (v.first->value == key) {
+    if (v.getFirst()->value == key) {
       return true;
     }
   }
@@ -415,10 +415,10 @@ bool ObjectModel::Object::hasKey(const char* _key) const noexcept
   }
   NativeString key(_key);
   for (const auto& v : values) {
-    if (!INLINE_ASSERT(v.first)) {
+    if (!INLINE_ASSERT(v.getFirst())) {
       continue;
     }
-    if (v.first->value == key) {
+    if (v.getFirst()->value == key) {
       return true;
     }
   }
@@ -432,7 +432,7 @@ bool ObjectModel::Object::removeKey(const Reference<String>& key) noexcept
   }
   for (auto i = values.begin(); i != values.end(); ++i) {
     auto j = *i;
-    if (j.first->value == key->value) {
+    if (j.getFirst()->value == key->value) {
       values.remove(i);
       return true;
     }
@@ -444,7 +444,7 @@ bool ObjectModel::Object::removeKey(const base::String& key) noexcept
 {
   for (auto i = values.begin(); i != values.end(); ++i) {
     auto j = *i;
-    if (j.first->value == key) {
+    if (j.getFirst()->value == key) {
       values.remove(i);
       return true;
     }
@@ -460,7 +460,7 @@ bool ObjectModel::Object::removeKey(const char* _key) noexcept
   NativeString key(_key);
   for (auto i = values.begin(); i != values.end(); ++i) {
     auto j = *i;
-    if (j.first->value == key) {
+    if (j.getFirst()->value == key) {
       values.remove(i);
       return true;
     }
@@ -474,11 +474,11 @@ Reference<ObjectModel::Value> ObjectModel::Object::getValue(const Reference<Stri
     return nullptr;
   }
   for (const auto& v : values) {
-    if (!INLINE_ASSERT(v.first)) {
+    if (!INLINE_ASSERT(v.getFirst())) {
       continue;
     }
-    if (v.first->value == key->value) {
-      return v.second;
+    if (v.getFirst()->value == key->value) {
+      return v.getSecond();
     }
   }
   return nullptr;
@@ -487,11 +487,11 @@ Reference<ObjectModel::Value> ObjectModel::Object::getValue(const Reference<Stri
 Reference<ObjectModel::Value> ObjectModel::Object::getValue(const base::String& key) const noexcept
 {
   for (const auto& v : values) {
-    if (!INLINE_ASSERT(v.first)) {
+    if (!INLINE_ASSERT(v.getFirst())) {
       continue;
     }
-    if (v.first->value == key) {
-      return v.second;
+    if (v.getFirst()->value == key) {
+      return v.getSecond();
     }
   }
   return nullptr;
@@ -504,11 +504,11 @@ Reference<ObjectModel::Value> ObjectModel::Object::getValue(const char* _key) co
   }
   NativeString key(_key);
   for (const auto& v : values) {
-    if (!INLINE_ASSERT(v.first)) {
+    if (!INLINE_ASSERT(v.getFirst())) {
       continue;
     }
-    if (v.first->value == key) {
-      return v.second;
+    if (v.getFirst()->value == key) {
+      return v.getSecond();
     }
   }
   return nullptr;
@@ -520,11 +520,11 @@ void ObjectModel::Object::setValue(const Reference<String>& key, const Reference
     throw NullPointer("Key is null.");
   }
   for (auto& v : values) {
-    if (!INLINE_ASSERT(v.first)) {
+    if (!INLINE_ASSERT(v.getFirst())) {
       continue;
     }
-    if (v.first->value == key->value) {
-      v.second = value;
+    if (v.getFirst()->value == key->value) {
+      v.setSecond(value);
       return;
     }
   }
@@ -538,11 +538,11 @@ void ObjectModel::Object::setValue(const Reference<String>& key, const base::Str
   }
   auto _value = globalObjectModel.createString(value);
   for (auto& v : values) {
-    if (!INLINE_ASSERT(v.first)) {
+    if (!INLINE_ASSERT(v.getFirst())) {
       continue;
     }
-    if (v.first->value == key->value) {
-      v.second = _value;
+    if (v.getFirst()->value == key->value) {
+      v.setSecond(_value);
       return;
     }
   }
@@ -552,11 +552,11 @@ void ObjectModel::Object::setValue(const Reference<String>& key, const base::Str
 void ObjectModel::Object::setValue(const base::String& key, const Reference<Value>& value)
 {
   for (auto& v : values) {
-    if (!INLINE_ASSERT(v.first)) {
+    if (!INLINE_ASSERT(v.getFirst())) {
       continue;
     }
-    if (v.first->value == key) {
-      v.second = value;
+    if (v.getFirst()->value == key) {
+      v.setSecond(value);
       return;
     }
   }
@@ -566,11 +566,11 @@ void ObjectModel::Object::setValue(const base::String& key, const Reference<Valu
 void ObjectModel::Object::setValue(const base::String& key, std::nullptr_t)
 {
   for (auto& v : values) {
-    if (!INLINE_ASSERT(v.first)) {
+    if (!INLINE_ASSERT(v.getFirst())) {
       continue;
     }
-    if (v.first->value == key) {
-      v.second = nullptr;
+    if (v.getFirst()->value == key) {
+      v.setSecond(nullptr);
       return;
     }
   }
@@ -580,11 +580,11 @@ void ObjectModel::Object::setValue(const base::String& key, std::nullptr_t)
 void ObjectModel::Object::setValue(const base::String& key, const bool value)
 {
   for (auto& v : values) {
-    if (!INLINE_ASSERT(v.first)) {
+    if (!INLINE_ASSERT(v.getFirst())) {
       continue;
     }
-    if (v.first->value == key) {
-      v.second = globalObjectModel.createBoolean(value);
+    if (v.getFirst()->value == key) {
+      v.setSecond(globalObjectModel.createBoolean(value));
       return;
     }
   }
@@ -594,11 +594,11 @@ void ObjectModel::Object::setValue(const base::String& key, const bool value)
 void ObjectModel::Object::setValue(const base::String& key, const int64 value)
 {
   for (auto& v : values) {
-    if (!INLINE_ASSERT(v.first)) {
+    if (!INLINE_ASSERT(v.getFirst())) {
       continue;
     }
-    if (v.first->value == key) {
-      v.second = globalObjectModel.createInteger64(value);
+    if (v.getFirst()->value == key) {
+      v.setSecond(globalObjectModel.createInteger64(value));
       return;
     }
   }
@@ -608,11 +608,11 @@ void ObjectModel::Object::setValue(const base::String& key, const int64 value)
 void ObjectModel::Object::setValue(const base::String& key, const double value)
 {
   for (auto& v : values) {
-    if (!INLINE_ASSERT(v.first)) {
+    if (!INLINE_ASSERT(v.getFirst())) {
       continue;
     }
-    if (v.first->value == key) {
-      v.second = globalObjectModel.createFloat(value);
+    if (v.getFirst()->value == key) {
+      v.setSecond(globalObjectModel.createFloat(value));
       return;
     }
   }
@@ -622,11 +622,11 @@ void ObjectModel::Object::setValue(const base::String& key, const double value)
 void ObjectModel::Object::setValue(const base::String& key, const base::String& value)
 {
   for (auto& v : values) {
-    if (!INLINE_ASSERT(v.first)) {
+    if (!INLINE_ASSERT(v.getFirst())) {
       continue;
     }
-    if (v.first->value == key) {
-      v.second = globalObjectModel.createString(value);
+    if (v.getFirst()->value == key) {
+      v.setSecond(globalObjectModel.createString(value));
       return;
     }
   }
@@ -702,11 +702,11 @@ Reference<ObjectModel::Value> ObjectModel::Object::getPath(const char* path, boo
     // find value
     Reference<Value> result;
     for (const auto& v : current->values) {
-      if (!v.first) {
+      if (!v.getFirst()) {
         throw NullPointer("Key is null.");
       }
-      if (v.first->value == key) {
-        result = v.second; // found
+      if (v.getFirst()->value == key) {
+        result = v.getSecond(); // found
         break;
       }
     }
@@ -1337,7 +1337,7 @@ FormatOutputStream& operator<<(FormatOutputStream& stream, const Reference<Objec
       stream << ','; // no space for compact
     }
     first = false;
-    stream << v.first << ':' << v.second; // "key": value // no space for compact
+    stream << v.getFirst() << ':' << v.getSecond(); // "key": value // no space for compact
   }
   stream << '}';
 
@@ -1398,11 +1398,11 @@ ObjectModel::NiceFormat& operator<<(ObjectModel::NiceFormat& stream, const Refer
     if (useANSI) {
       stream << bold();
     }
-    stream << v.first;
+    stream << v.getFirst();
     if (useANSI) {
       stream << normal();
     }
-    stream << MESSAGE(": ") << stream << v.second; // "key": value
+    stream << MESSAGE(": ") << stream << v.getSecond(); // "key": value
   }
   if (!first && (level > 0)) {
     stream << EOL;

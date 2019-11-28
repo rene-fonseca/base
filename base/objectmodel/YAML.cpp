@@ -528,9 +528,9 @@ void toStringYAML(YAMLOutputStream& stream, Reference<ObjectModel::Object> value
     }
     stream.eol = false;
     stream << indent(spaces);
-    toStringYAML(stream, v.first);
+    toStringYAML(stream, v.getFirst());
     stream << MESSAGE(": "); // TAG: do not add space if eol follow
-    toStringYAML(stream, v.second);
+    toStringYAML(stream, v.getSecond());
     if (!stream.eol) {
       stream << EOL;
     }

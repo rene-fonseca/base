@@ -40,7 +40,6 @@ public:
 class _COM_AZURE_DEV__BASE__API Parser /*: public Object*/ {
 protected:
   
-  // TAG: add support for skipping UTF-8 chars
   const uint8* src = nullptr;
   const uint8* end = nullptr;
 public:
@@ -135,6 +134,12 @@ public:
 
   /** Returns the next UCS4 char assuming UTF8 encoding. */
   ucs4 readUCS4();
+  
+  /** Skips the next UTF-8 encoded character. */
+  inline void skipUCS4() // TAG: add option to sync to next character
+  {
+    readUCS4();
+  }
 
   /** Returns the next char. */
   inline char read()

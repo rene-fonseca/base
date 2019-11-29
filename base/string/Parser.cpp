@@ -41,7 +41,8 @@ ucs4 Parser::peekUCS4() const
   return ch;
 }
 
-ucs4 Parser::readUCS4() {
+ucs4 Parser::readUCS4()
+{
   ucs4 ch = 0;
   const int status = Unicode::readUCS4(src, end, ch);
   if (status <= 0) {

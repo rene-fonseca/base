@@ -24,13 +24,15 @@ _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
   'normal' pointer.
   
   @code
-  void MyOtherClass::myOtherMethod(MyResource resource) throw(MyException) {
+  void MyOtherClass::myOtherMethod(MyResource resource) throw(MyException)
+  {
     // ...
     bassert(condition, MyException(this));
     // ...
   }
   
-  void MyClass::myMethod() throw(MemoryException, MyException) {
+  void MyClass::myMethod() throw(MemoryException, MyException)
+  {
     ArrayOwnershipPointer<int> buffer = new int[BUFFER_SIZE];
     MyOtherClass* myOtherObject = getOtherObject();
     myOtherObject->myOtherMethod(resource);
@@ -96,13 +98,13 @@ public:
     Assignment operator.
   */
   template<class POLY>
-  inline ArrayOwnershipPointer& operator=(ArrayOwnershipPointer<POLY>& eq)
+  inline ArrayOwnershipPointer& operator=(ArrayOwnershipPointer<POLY>& assign)
   {
-    if (eq.object != object) { // protect against self assignment
+    if (assign.object != object) { // protect against self assignment
       if (object) {
-        delete[] object;
+        delete[] object; // TAG: refactor
       }
-      object = eq.relinquishOwnership();
+      object = assign.relinquishOwnership();
     }
     return *this;
   }
@@ -128,7 +130,7 @@ public:
   inline TYPE* relinquishOwnership() noexcept
   {
     TYPE* temp = object;
-    object = 0;
+    object = nullptr;
     return temp;
   }
   

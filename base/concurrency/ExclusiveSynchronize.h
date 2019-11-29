@@ -64,7 +64,7 @@ private:
   const Guard& guard;
   
   ExclusiveSynchronize(const ExclusiveSynchronize& copy);
-  ExclusiveSynchronize& operator=(const ExclusiveSynchronize& eq);
+  ExclusiveSynchronize& operator=(const ExclusiveSynchronize& assign);
 public:
   
   /**
@@ -101,7 +101,7 @@ class ExclusiveSynchronize<Unsafe> {
 private:
 
   ExclusiveSynchronize(const ExclusiveSynchronize& copy);
-  ExclusiveSynchronize& operator=(const ExclusiveSynchronize& eq);
+  ExclusiveSynchronize& operator=(const ExclusiveSynchronize& assign);
 public:
 
   /**

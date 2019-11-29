@@ -186,9 +186,9 @@ public:
     time polymorphism.
   */
   template<class POLY>
-  inline Reference& operator=(const Reference<POLY>& eq)
+  inline Reference& operator=(const Reference<POLY>& assign)
   {
-    setValue(eq.getValue()); // no need to protect against self assignment
+    setValue(assign.getValue()); // no need to protect against self assignment
     return *this;
   }
 

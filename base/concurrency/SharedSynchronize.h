@@ -29,7 +29,8 @@ _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
     ReadWriteLock guard;
   public:
 
-    void myFirstMethod() const throw(MyResourceException) {
+    void myFirstMethod() const throw(MyResourceException)
+    {
       SynchronizeShared<ReadWriteLock> synchronizeShared(guard);
       // do something as long as it doesn't modify the object
       if (earlyReturn) {
@@ -38,7 +39,8 @@ _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
       bassert(!somethingWentWrong, MyResourceException()); // no need to explicitly release guard
     }
 
-    void mySecondMethod() throw(MyResourceException) {
+    void mySecondMethod() throw(MyResourceException)
+    {
       ExclusiveExclusive<ReadWriteLock> exclusiveShared(guard);
       // do modification of object
       if (earlyReturn) {
@@ -65,7 +67,7 @@ private:
   const Guard& guard;
 
   SharedSynchronize(const SharedSynchronize& copy);
-  SharedSynchronize& operator=(const SharedSynchronize& eq);
+  SharedSynchronize& operator=(const SharedSynchronize& assign);
 public:
 
   /**
@@ -74,7 +76,8 @@ public:
     @param guard The synchronize able object to be synchronized.
   */
   inline explicit SharedSynchronize(const Guard& _guard)
-    : guard(_guard) {
+    : guard(_guard)
+  {
     guard.sharedLock();
   }
   
@@ -82,7 +85,8 @@ public:
     Releases the lock if not already released and destroys the synchronization
     object.
   */
-  inline ~SharedSynchronize() {
+  inline ~SharedSynchronize()
+  {
     guard.releaseLock();
   }
 };
@@ -102,7 +106,7 @@ class SharedSynchronize<Unsafe> {
 private:
   
   SharedSynchronize(const SharedSynchronize& copy);
-  SharedSynchronize& operator=(const SharedSynchronize& eq);
+  SharedSynchronize& operator=(const SharedSynchronize& assign);
 public:
   
   /**
@@ -111,7 +115,8 @@ public:
     @param guard The synchronize able object to be synchronized.
   */
   template<class POLY>
-  inline explicit SharedSynchronize(const POLY& guard) noexcept {
+  inline explicit SharedSynchronize(const POLY& guard) noexcept
+  {
   }
 };
 

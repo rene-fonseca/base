@@ -138,9 +138,9 @@ public:
   /**
     Assignment of automation pointer to this automation pointer.
   */
-  inline ReferenceCounter& operator=(const ReferenceCounter& eq)
+  inline ReferenceCounter& operator=(const ReferenceCounter& assign)
   {
-    if (&eq != this) { // protect against self assignment
+    if (&assign != this) { // protect against self assignment
       if (value) {
         TYPE* oldValue = value;
         value = nullptr;
@@ -151,9 +151,9 @@ public:
           delete oldValue; // could throw
         }
       }
-      if (eq.value) {
-        value = eq.value;
-        references = eq.references;
+      if (assign.value) {
+        value = assign.value;
+        references = assign.references;
         ++*references; // add reference
       }
     }
@@ -165,9 +165,9 @@ public:
     time polymorphism.
   */
   template<class POLY>
-  inline ReferenceCounter& operator=(const ReferenceCounter<POLY>& eq)
+  inline ReferenceCounter& operator=(const ReferenceCounter<POLY>& assign)
   {
-    if (&eq != this) { // protect against self assignment
+    if (&assign != this) { // protect against self assignment
       if (value) {
         TYPE* oldValue = value;
         value = nullptr;
@@ -178,9 +178,9 @@ public:
           delete oldValue; // could throw
         }
       }
-      if (eq.value) {
-        value = eq.value;
-        references = eq.references;
+      if (assign.value) {
+        value = assign.value;
+        references = assign.references;
         ++*references; // add reference
       }
     }

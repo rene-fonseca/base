@@ -609,6 +609,34 @@ public:
     TEST_ASSERT(JSON().parse("42"));
     TEST_ASSERT(JSON().parse("true"));
   
+    const char* test3 = R""""(
+{
+  "foo": ["bar", "baz"],
+  "": 0,
+  "a/b": 1,
+  "c%d": 2,
+  "e^f": 3,
+  "g|h": 4,
+  "i\\j": 5,
+  "k\"l": 6,
+  " ": 7,
+  "m~n": 8
+})"""";
+  
+    auto root3 = JSON().parse(test3).cast<ObjectModel::Object>();
+    TEST_ASSERT(root3->getPath("").isType<ObjectModel::Object>()); // entire document
+    TEST_ASSERT(root3->getPath("/foo").isType<ObjectModel::Array>()); // ["bar", "baz"]
+    TEST_ASSERT(root3->getString("/foo/0", "") == "bar");
+    TEST_ASSERT(root3->getInteger("/", -1) == 0);
+
+    TEST_ASSERT(root3->getInteger("/a~1b", -1) == 1);
+    TEST_ASSERT(root3->getInteger("/c%d", -1) == 2);
+    TEST_ASSERT(root3->getInteger("/e^f", -1) == 3);
+    TEST_ASSERT(root3->getInteger("/g|h", -1) == 4);
+    TEST_ASSERT(root3->getInteger("/i\\j", -1) == 5);
+    TEST_ASSERT(root3->getInteger("/k\"l", -1) == 6);
+    TEST_ASSERT(root3->getInteger("/ ", -1) == 7);
+    TEST_ASSERT(root3->getInteger("/m~0n", -1) == 8);
   }
 };
 

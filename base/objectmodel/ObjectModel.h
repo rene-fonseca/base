@@ -644,6 +644,8 @@ public:
     /**
       Returns the value at the given path.
 
+      https://tools.ietf.org/html/rfc6901
+
       @param path The path of the desired value.
       @param forceNull Avoid exception if value doesn't exist. Returns nullptr otherwise.
     */
@@ -653,7 +655,9 @@ public:
     {
       return getPath(path.native(), forceNull);
     }
-
+    
+    // TAG: add full support for String to handle \0 in path
+    
     /** Returns the boolean for the given path. Returns the default value if doesn't exist. Raises exception if value isn't a boolean. */
     bool getBoolean(const char* path, bool defaultValue) throw(ObjectModelException);
 

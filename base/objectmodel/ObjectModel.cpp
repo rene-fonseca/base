@@ -645,96 +645,80 @@ void ObjectModel::Object::setValue(const char* key, const char* value)
   }
 }
 
+// TAG: add support for setting value by path - "-" can be used to append to array
+// TAG: add support for parsed pointer - to avoid allocations
+
 Reference<ObjectModel::Value> ObjectModel::Object::getPath(const char* path, bool forceNull) throw(ObjectModelException)
 {
   if (!path) {
     return nullptr;
   }
-#if 0 // best to only add this if required later
-  if (*path == '/') { // root is the default
-    ++path;
+  if (!*path) {
+    return this; // entire document
   }
-#endif
-  Reference<Object> current = this;
+  
+  Reference<Value> current = this;
   while (*path) {
-    const char* begin = path;
-    while (*path && (*path != '/') && (*path != '[')) { // find separator
-      ++path;
-    }
-
-    const base::String key(begin, path - begin);
-    if (key.isEmpty()) { // do not allow empty keys for now
+    if (*path != '/') {
       throw ObjectModelException("Invalid path.");
     }
-
-    // handle index for Array array[0]
-    bool arrayExpected = false;
-    long long arrayIndex = -1;
-    if (*path == '[') {
-      arrayExpected = true;
-      ++path;
-      const char* ibegin = path;
-      while ((*path >= '0') && (*path <= '9')) {
+    ++path;
+    
+    if (auto o = current.cast<Object>()) {
+      const char* begin = path;
+      while (*path && (*path != '/')) { // find separator
         ++path;
       }
-      arrayIndex = LongInteger::parse(ibegin, path, 0);
+      base::String key(begin, path - begin);
+      key.replaceAll("~1", "/"); // must be first
+      key.replaceAll("~0", "~");
+      
+      Reference<Value> result = o->getValue(key);
+      if (!result) {
+        if (forceNull) {
+          return nullptr;
+        }
+        throw ObjectModelException("Path not found.");
+      }
+      current = result;
+
+    } else if (auto a = current.cast<Array>()) {
+      const char* ibegin = path;
+      if (*path == '0') {
+        ++path;
+      } else if ((*path >= '1') && (*path <= '9')) {
+        ++path;
+        while ((*path >= '0') && (*path <= '9')) {
+          ++path;
+        }
+      }
+      if (path == ibegin) {
+        throw ObjectModelException("Invalid array index.");
+      }
+      long long arrayIndex = LongInteger::parse(ibegin, path, 0);
       if (arrayIndex < 0) {
         throw ObjectModelException("Invalid array index.");
       }
       if (arrayIndex > PrimitiveTraits<MemorySize>::MAXIMUM) {
         throw ObjectModelException("Invalid array index.");
       }
-      if (*path != ']') {
-        throw ObjectModelException("Invalid path.");
+      
+      if (!((arrayIndex >= 0) && (static_cast<MemorySize>(arrayIndex) < a->values.getSize()))) {
+        if (forceNull) {
+          return nullptr;
+        }
+        throw ObjectModelException("Array index out of range.");
       }
-      ++path; // skip ]
-    }
-
-    if (*path) {
-      if (*path != '/') {
-        throw ObjectModelException("Invalid path.");
-      }
-    }
-    if (*path) { // skip separator
-      ++path;
-    }
-
-    // find value
-    Reference<Value> result;
-    for (const auto& v : current->values) {
-      if (!v.getFirst()) {
-        throw NullPointer("Key is null.");
-      }
-      if (v.getFirst()->value == key) {
-        result = v.getSecond(); // found
-        break;
-      }
-    }
-    if (!result) {
+      current = a->values[arrayIndex];
+    } else {
       if (forceNull) {
         return nullptr;
       }
       throw ObjectModelException("Path not found.");
     }
-
-    if (arrayExpected) {
-      auto a = result.cast<Array>();
-      if (!a) {
-        throw ObjectModelException("Array expected.");
-      }
-      if (!((arrayIndex >= 0) && (static_cast<MemorySize>(arrayIndex) < a->values.getSize()))) {
-        throw ObjectModelException("Array index out of range.");
-      }
-      result = a->values[arrayIndex];
-    }
-
-    if (!*path) {
-      return result;
-    }
-    current = result.cast<Object>();
   }
   BASSERT(!*path);
-  return nullptr;
+  return current;
 }
 
 bool ObjectModel::Object::getBoolean(const char* path, bool defaultValue) throw(ObjectModelException)
@@ -1543,18 +1527,18 @@ public:
     sub->setValue(o.createString("description"), o.createString("My description."));
     root->setValue(o.createString("sub"), sub);
 
-    TEST_EQUAL(root->getString("name", ""), "value");
-    TEST_EQUAL(root->getString("qwerty", "Default"), "Default");
-    TEST_EQUAL(root->getBoolean("state", false), true);
-    TEST_EQUAL(root->getBoolean("qwerty", false), false);
-    TEST_EQUAL(root->getInteger("integer", -1), -123);
-    TEST_EQUAL(root->getInteger("qwerty", -1), -1);
-    TEST_EQUAL(root->getFloat("number", 0), 123.0);
-    TEST_EQUAL(root->getFloat("qwerty", -1.0), -1.0);
-    TEST_ASSERT(root->getObject("sub"));
-    TEST_ASSERT(!root->getObject("qwerty"));
-    TEST_EQUAL(root->getString("sub/name", ""), "John Doe");
-    TEST_EQUAL(root->getString("sub/qwerty", ""), "");
+    TEST_EQUAL(root->getString("/name", ""), "value");
+    TEST_EQUAL(root->getString("/qwerty", "Default"), "Default");
+    TEST_EQUAL(root->getBoolean("/state", false), true);
+    TEST_EQUAL(root->getBoolean("/qwerty", false), false);
+    TEST_EQUAL(root->getInteger("/integer", -1), -123);
+    TEST_EQUAL(root->getInteger("/qwerty", -1), -1);
+    TEST_EQUAL(root->getFloat("/number", 0), 123.0);
+    TEST_EQUAL(root->getFloat("/qwerty", -1.0), -1.0);
+    TEST_ASSERT(root->getObject("/sub"));
+    TEST_ASSERT(!root->getObject("/qwerty"));
+    TEST_EQUAL(root->getString("/sub/name", ""), "John Doe");
+    TEST_EQUAL(root->getString("/sub/qwerty", ""), "");
   }
 };
 

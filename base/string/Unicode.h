@@ -54,8 +54,6 @@ public:
     UTF32LE
   };
 
-  typedef uint16 utf16;
-
   /**
     Returns the maximum number of bytes required to represent any UCS-4 character.
   */

@@ -276,13 +276,13 @@ inline ReferenceCountedCapacityAllocator<ucs4>* allocate(const wchar* text, Memo
   // worst case length is nativeLength
   const MemorySize length = Unicode::UTF16ToUCS4(
     0,
-    Cast::pointer<const Unicode::utf16*>(text),
+    Cast::pointer<const utf16*>(text),
     nativeLength
   );
   auto result = new ReferenceCountedCapacityAllocator<ucs4>(length + 1, WideString::GRANULARITY);
   Unicode::UTF16ToUCS4(
     result->getElements(),
-    Cast::pointer<const Unicode::utf16*>(text),
+    Cast::pointer<const utf16*>(text),
     nativeLength
   );
   return result;
@@ -1530,13 +1530,13 @@ WideString& WideString::insert(MemorySize index, const WideLiteral& literal) thr
     if (sizeof(wchar) == sizeof(ucs2)) {
       MemorySize literalLength = Unicode::UTF16ToUCS4(
         0,
-        Cast::pointer<const Unicode::utf16*>(literal.getValue()),
+        Cast::pointer<const utf16*>(literal.getValue()),
         literal.getLength()
       );
       setLength(length + literalLength);
       Unicode::UTF16ToUCS4(
         buffer + length,
-        Cast::pointer<const Unicode::utf16*>(literal.getValue()),
+        Cast::pointer<const utf16*>(literal.getValue()),
         literal.getLength()
       );
     } else if (sizeof(wchar) == sizeof(ucs4)) {
@@ -1557,14 +1557,14 @@ WideString& WideString::insert(MemorySize index, const WideLiteral& literal) thr
     if (sizeof(wchar) == sizeof(ucs2)) {
       MemorySize literalLength = Unicode::UTF16ToUCS4(
         0,
-        Cast::pointer<const Unicode::utf16*>(literal.getValue()),
+        Cast::pointer<const utf16*>(literal.getValue()),
         literal.getLength()
       );
       setLength(length + literalLength);
       move<ucs4>(buffer + index + literalLength, buffer + index, length - index);
       Unicode::UTF16ToUCS4(
         buffer + length,
-        Cast::pointer<const Unicode::utf16*>(literal.getValue()),
+        Cast::pointer<const utf16*>(literal.getValue()),
         literal.getLength()
       );
     } else if (sizeof(wchar) == sizeof(ucs4)) {
@@ -1597,13 +1597,13 @@ WideString& WideString::append(const WideLiteral& literal) throw(WideStringExcep
   if (sizeof(wchar) == sizeof(ucs2)) {
     MemorySize length = Unicode::UTF16ToUCS4(
       0,
-      Cast::pointer<const Unicode::utf16*>(literal.getValue()),
+      Cast::pointer<const utf16*>(literal.getValue()),
       nativeLength
     );
     setLength(length + nativeLength);
     Unicode::UTF16ToUCS4(
       buffer + length,
-      Cast::pointer<const Unicode::utf16*>(literal.getValue()),
+      Cast::pointer<const utf16*>(literal.getValue()),
       nativeLength
     );
   } else if (sizeof(wchar) == sizeof(ucs4)) {
@@ -1631,14 +1631,14 @@ WideString& WideString::append(const WideLiteral& literal, MemorySize maximum) t
   if (sizeof(wchar) == sizeof(ucs2)) {
     MemorySize length = Unicode::UTF16ToUCS4(
       0,
-      Cast::pointer<const Unicode::utf16*>(literal.getValue()),
+      Cast::pointer<const utf16*>(literal.getValue()),
       nativeLength
     );
     nativeLength = minimum<MemorySize>(nativeLength, maximum);
     setLength(length + nativeLength);
     Unicode::UTF16ToUCS4(
       buffer + length,
-      Cast::pointer<const Unicode::utf16*>(literal.getValue()),
+      Cast::pointer<const utf16*>(literal.getValue()),
       nativeLength
     );
   } else if (sizeof(wchar) == sizeof(ucs4)) {
@@ -1676,14 +1676,14 @@ WideString& WideString::append(const wchar* string, MemorySize maximum) throw(Ou
   if (sizeof(wchar) == sizeof(ucs2)) {
     MemorySize stringLength = Unicode::UTF16ToUCS4(
       0,
-      Cast::pointer<const Unicode::utf16*>(string),
+      Cast::pointer<const utf16*>(string),
       nativeLength
     );
     stringLength = minimum<MemorySize>(stringLength, maximum);
     setLength(length + stringLength);
     Unicode::UTF16ToUCS4(
       buffer + length,
-      Cast::pointer<const Unicode::utf16*>(string),
+      Cast::pointer<const utf16*>(string),
       stringLength
     );
   } else if (sizeof(wchar) == sizeof(ucs4)) {

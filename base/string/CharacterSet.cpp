@@ -79,7 +79,7 @@ CharacterSet CharacterSet::load(
       for (unsigned int i = 0; i < 256; ++i) {
         // duplicates are allowed
         bassert(
-          WideString::isUCS4(*src++),
+          Unicode::isUCS4(*src++),
           InvalidFormat(Type::getType<CharacterSet>())
         );
       }

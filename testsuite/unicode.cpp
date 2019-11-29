@@ -281,21 +281,21 @@ public:
           flags |= HAS_UPPER;
           upperCharacter = UnsignedInteger::parse(fields[FIELD_UPPER], UnsignedInteger::HEX);
         }
-        bassert(WideString::isUCS4(upperCharacter), InvalidFormat());
+        bassert(Unicode::isUCS4(upperCharacter), InvalidFormat());
         
         ucs4 lowerCharacter = 0;
         if (static_cast<String>(fields[FIELD_LOWER]).isProper()) {
           flags |= HAS_LOWER;
           lowerCharacter = UnsignedInteger::parse(fields[FIELD_LOWER], UnsignedInteger::HEX);
         }
-        bassert(WideString::isUCS4(lowerCharacter), InvalidFormat());
+        bassert(Unicode::isUCS4(lowerCharacter), InvalidFormat());
 
         ucs4 titleCharacter = 0;
         if (static_cast<String>(fields[FIELD_TITLE]).isProper()) {
           flags |= HAS_TITLE;
           titleCharacter = UnsignedInteger::parse(fields[FIELD_TITLE], UnsignedInteger::HEX);
         }
-        bassert(WideString::isUCS4(titleCharacter), InvalidFormat());
+        bassert(Unicode::isUCS4(titleCharacter), InvalidFormat());
 
         unsigned int value = 0;
         if (flags & DECIMAL) {

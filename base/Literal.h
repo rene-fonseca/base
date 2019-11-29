@@ -14,6 +14,7 @@
 #pragma once
 
 #include <base/Primitives.h>
+#include <base/Base.h>
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 

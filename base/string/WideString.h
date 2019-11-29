@@ -231,26 +231,6 @@ public:
   /** The type of the non-modifying string enumerator. */
   typedef ReferenceCountedCapacityAllocator<ucs4>::ReadEnumerator ReadEnumerator;
 
-  /** Multibyte encoding. */
-  enum MultibyteEncoding {
-    /** Unicode transformation format (UTF-7). */
-    UTF7,
-    /** Unicode transformation format (UTF-8). */
-    UTF8,
-    /** Unicode transformation format (UTF-16). */
-    UTF16,
-    /** Unicode transformation format (UTF-16) with big endian byte order. */
-    UTF16BE,
-    /** Unicode transformation format (UTF-16) with little endian byte order. */
-    UTF16LE,
-    /** Unicode transformation format (UTF-32). */
-    UTF32,
-    /** Unicode transformation format (UTF-32) with big endian byte order. */
-    UTF32BE,
-    /** Unicode transformation format (UTF-32) with little endian byte order. */
-    UTF32LE
-  };
-
   /** Wide character encoding. */
   enum WideEncoding {
     UCS2, /**< UCS-2 encoding. */
@@ -417,18 +397,8 @@ public:
       this->style = style;
     }
   };
-  
-  /**
-     Returns the maximum number of bytes required to represent any UCS-4 character.
-  */
-  static inline unsigned int getMaximumNumberOfMultibytes(MultibyteEncoding encoding) noexcept
-  {
-    static const unsigned int MAXIMUM_MULTIBYTES[] = {
-      0, 6, 4, 4, 4, 4, 4, 4
-    };
-    return MAXIMUM_MULTIBYTES[encoding];
-  }
 
+#if 0
   /**
     Returns true if the specified value is a valid UCS-4 value (ISO/IEC 10646).
   */
@@ -436,6 +406,7 @@ public:
   {
     return value <= 0x7fffffffU;
   }
+#endif
 
   /**
     Returns the multibyte encoding of the specifies multibyte encoded string.
@@ -445,14 +416,7 @@ public:
     @param src The multibyte encoded string.
     @param size The number of bytes in the multibyte encoded string.
   */
-  MultibyteEncoding getMultibyteEncoding(const uint8* src, MemorySize size) throw();
-
-  /**
-    Returns a MIME charsets for the specified encoding.
-
-    @param encoding The multibyte encoding.
-  */
-  static Literal toString(MultibyteEncoding encoding) throw();
+// TAG: MultibyteEncoding getMultibyteEncoding(const uint8* src, MemorySize size) throw();
   
   /**
     Low-level method which converts an UCS-2 encoded string to UTF-8. A
@@ -460,7 +424,7 @@ public:
     have room for enough bytes (guaranteed to not exceed
     (size + 1) * getMaximumNumberOfMultibytes(UTF8)).
     
-    @param dest The destination buffer (may be 0).
+    @param dest The destination buffer (may be nullptr).
     @param src The UCS-2 encoded string.
     @param size The number of characters in the UCS-2 encoded string.
     @param flags The encoding flags. The default is 0.
@@ -479,7 +443,7 @@ public:
     have room for enough bytes (guaranteed to not exceed
     (size + 1) * getMaximumNumberOfMultibytes(UTF8)).
     
-    @param dest The destination buffer (may be 0).
+    @param dest The destination buffer (may be nullptr).
     @param src The UCS-4 encoded string.
     @param size The number of characters in the UCS-4 encoded string.
     @param flags The encoding flags. The default is 0.
@@ -499,7 +463,7 @@ public:
     The destination buffer must have room for enough characters (guaranteed to
     not exceed size).
     
-    @param dest The destination buffer (may be 0).
+    @param dest The destination buffer (may be nullptr).
     @param src The UTF-8 encoded string.
     @param size The number of bytes in the UTF-8 encoded string.
     @param flags The encoding flags. The default is EAT_BOM.
@@ -517,7 +481,7 @@ public:
     The destination buffer must have room for enough characters (guaranteed to
     not exceed size).
     
-    @param dest The destination buffer (may be 0).
+    @param dest The destination buffer (may be nullptr).
     @param src The UTF-8 encoded string.
     @param size The number of bytes in the UTF-8 encoded string.
     @param flags The encoding flags. The default is EAT_BOM.
@@ -536,7 +500,7 @@ public:
     not exceed size). The UCS-4 characters are restricted to values in the range
     0x00000000-0x0010ffff.
     
-    @param dest The destination buffer (may be 0).
+    @param dest The destination buffer (may be nullptr).
     @param src The UTF-16 encoded string.
     @param size The number of bytes in the UTF-16 encoded string.
     @param flags The encoding flags. The default is EAT_BOM|EXPECT_BOM.
@@ -550,145 +514,13 @@ public:
     unsigned int flags = EAT_BOM|EXPECT_BOM) throw(MultibyteException);
 
   /**
-    Low-level method which converts an UCS-2 encoded string to UCS-4 encoding.
-    The destination buffer must have room for enough characters (guaranteed to
-    not exceed size). The UCS-4 characters are restricted to values in the range
-    0x00000000-0x0010ffff.
-    
-    @param dest The destination buffer (may be 0).
-    @param src The UCS-2 encoded string.
-    @param size The number of characters in the UCS-2 encoded string.
-    @param flags The encoding flags.
-    
-    @return The number of characters in the UCS-4 encoded string.
-  */
-  static MemorySize UCS2ToUCS4(
-    ucs4* dest,
-    const ucs2* src,
-    MemorySize size,
-    unsigned int flags = 0) throw(WideStringException);
-
-  /**
-    Low-level method which converts an UCS-4 encoded string to UCS-2 encoding.
-    The destination buffer must have room for enough characters (guaranteed to
-    not exceed size).
-    
-    @param dest The destination buffer (may be 0).
-    @param src The UCS-4 encoded string.
-    @param size The number of characters in the UCS-4 encoded string.
-    @param flags The encoding flags.
-    
-    @return The number of characters in the UCS-2 encoded string.
-  */
-  static MemorySize UCS4ToUCS2(
-    ucs2* dest,
-    const ucs4* src,
-    MemorySize size,
-    unsigned int flags = 0) throw(WideStringException);
-  
-  /**
-    Low-level method which converts an UCS-2 encoded string to UTF-16BE. A
-    null-terminator is NOT appended to the string. The destination buffer must
-    have room for enough bytes (guaranteed to not exceed
-    (size + 1) * getMaximumNumberOfMultibytes(UTF16BE)).
-    
-    @param dest The destination buffer (may be 0).
-    @param src The UCS-2 encoded string.
-    @param size The number of characters in the UCS-2 encoded string.
-    @param flags The encoding flags. The default is ADD_BOM.
-
-    @return The number of bytes occupied by the UTF-16BE encoded string.
-  */
-  static MemorySize UCS2ToUTF16BE(
-    uint8* dest,
-    const ucs2* src,
-    MemorySize size,
-    unsigned int flags = ADD_BOM) throw(WideStringException);
-
-  /**
-    Low-level method which converts an UCS-2 encoded string to UTF-16LE. A
-    null-terminator is NOT appended to the string. The destination buffer must
-    have room for enough bytes (guaranteed to not exceed
-    (size + 1) * getMaximumNumberOfMultibytes(UTF16LE)).
-    
-    @param dest The destination buffer (may be 0).
-    @param src The UCS-2 encoded string.
-    @param size The number of characters in the UCS-2 encoded string.
-    @param flags The encoding flags. The default is ADD_BOM.
-
-    @return The number of bytes occupied by the UTF-16LE encoded string.
-  */
-  static MemorySize UCS2ToUTF16LE(
-    uint8* dest,
-    const ucs2* src,
-    MemorySize size,
-    unsigned int flags = ADD_BOM) throw(WideStringException);
-
-  /**
-    Low-level method which converts an UCS-4 encoded string to UTF-16BE. A
-    null-terminator is NOT appended to the string. The destination buffer must
-    have room for enough bytes (guaranteed to not exceed
-    (size + 1) * getMaximumNumberOfMultibytes(UTF16BE)).
-    
-    @param dest The destination buffer (may be 0).
-    @param src The UCS-4 encoded string.
-    @param size The number of characters in the UCS-4 encoded string.
-    @param flags The encoding flags. The default is ADD_BOM.
-
-    @return The number of bytes occupied by the UTF-16BE encoded string.
-  */
-  static MemorySize UCS4ToUTF16BE(
-    uint8* dest,
-    const ucs4* src,
-    MemorySize size,
-    unsigned int flags = ADD_BOM) throw(WideStringException);
-
-  /**
-    Low-level method which converts an UCS-4 encoded string to UTF-16LE. A
-    null-terminator is NOT appended to the string. The destination buffer must
-    have room for enough bytes (guaranteed to not exceed
-    (size + 1) * getMaximumNumberOfMultibytes(UTF16LE)).
-    
-    @param dest The destination buffer (may be 0).
-    @param src The UCS-4 encoded string.
-    @param size The number of characters in the UCS-4 encoded string.
-    @param flags The encoding flags. The default is ADD_BOM.
-
-    @return The number of bytes occupied by the UTF-16LE encoded string.
-  */
-  static MemorySize UCS4ToUTF16LE(
-    uint8* dest,
-    const ucs4* src,
-    MemorySize size,
-    unsigned int flags = ADD_BOM) throw(WideStringException);
-
-  /**
-    Low-level method which converts an UCS-4 encoded string to UTF-32LE. A
-    null-terminator is NOT appended to the string. The destination buffer must
-    have room for enough bytes (guaranteed to not exceed
-    (size + 1) * getMaximumNumberOfMultibytes(UTF32LE)).
-    
-    @param dest The destination buffer (may be 0).
-    @param src The UCS-4 encoded string.
-    @param size The number of characters in the UCS-4 encoded string.
-    @param flags The encoding flags. The default is ADD_BOM.
-
-    @return The number of bytes occupied by the UTF-32LE encoded string.
-  */
-  static MemorySize UCS4ToUTF32LE(
-    uint8* dest,
-    const ucs4* src,
-    MemorySize size,
-    unsigned int flags = ADD_BOM) throw(WideStringException);
-
-  /**
     Low-level method which converts an UTF-32 encoded string to UCS-4 encoding.
     The destination buffer must have room for enough characters (guaranteed to
     not exceed size). See the technical report available at
     http://www.unicode.org/unicode/reports/tr19. The UCS-4 characters are
     restricted to values in the range 0x00000000-0x0010ffff.
     
-    @param dest The destination buffer (may be 0).
+    @param dest The destination buffer (may be nullptr).
     @param src The UTF-32 encoded string.
     @param size The number of bytes in the UTF-32 encoded string.
     @param flags The encoding flags. The default is EAT_BOM|EXPECT_BOM.

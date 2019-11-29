@@ -271,28 +271,29 @@ int WideTraits::digitToValue(ucs4 character) throw() {
   return -1;
 }
 
+inline ReferenceCountedCapacityAllocator<ucs4>* allocate(const wchar* text, MemorySize nativeLength)
+{
+  // worst case length is nativeLength
+  const MemorySize length = Unicode::UTF16ToUCS4(
+    0,
+    Cast::pointer<const Unicode::utf16*>(text),
+    nativeLength
+  );
+  auto result = new ReferenceCountedCapacityAllocator<ucs4>(length + 1, WideString::GRANULARITY);
+  Unicode::UTF16ToUCS4(
+    result->getElements(),
+    Cast::pointer<const Unicode::utf16*>(text),
+    nativeLength
+  );
+  return result;
+}
+
 void WideString::initialize(const wchar* string, MemorySize nativeLength) throw(MemoryException)
 {
   if (sizeof(wchar) == sizeof(ucs2)) {
-    MemorySize length = UCS2ToUCS4(
-      0,
-      Cast::pointer<const ucs2*>(string),
-      nativeLength
-    );
-    elements = new ReferenceCountedCapacityAllocator<ucs4>(
-      length + 1,
-      GRANULARITY
-    );
-    UCS2ToUCS4(
-      elements->getElements(),
-      Cast::pointer<const ucs2*>(string),
-      nativeLength
-    );
+    elements = allocate(string, nativeLength);
   } else if (sizeof(wchar) == sizeof(ucs4)) {
-    elements = new ReferenceCountedCapacityAllocator<ucs4>(
-      nativeLength + 1,
-      GRANULARITY
-    );
+    elements = new ReferenceCountedCapacityAllocator<ucs4>(nativeLength + 1, GRANULARITY);
     copy<ucs4>(
       elements->getElements(),
       Cast::pointer<const ucs4*>(string),
@@ -320,28 +321,6 @@ void WideString::initialize(const char* string, MemorySize length) throw(MemoryE
       Cast::pointer<const uint8*>(string),
       length
     );
-  }
-}
-
-Literal WideString::toString(MultibyteEncoding encoding) throw() {
-  switch (encoding) {
-  case UTF7:
-    return Literal("UTF-7");
-  case UTF8:
-    return Literal("UTF-8");
-  case UTF16:
-    return Literal("UTF-16");
-  case UTF16BE:
-    return Literal("UTF-32BE");
-  case UTF16LE:
-    return Literal("UTF-32LE");
-  case UTF32:
-    return Literal("UTF-32");
-  case UTF32BE:
-    return Literal("UTF-32BE");
-  case UTF32LE:
-  default: // avoid warning
-    return Literal("UTF-32LE");
   }
 }
 
@@ -729,243 +708,7 @@ MemorySize WideString::UTF8ToUCS4(ucs4* dest, const uint8* src, MemorySize size,
   }
 }
 
-MemorySize WideString::UCS2ToUTF16BE(uint8* dest, const ucs2* src, MemorySize size, unsigned int flags) throw(WideStringException)
-{
-  if (src == 0) {
-    return 0;
-  }
-  // TAG: fixme
-  return 0;
-}
-
-MemorySize WideString::UCS2ToUTF16LE(uint8* dest, const ucs2* src, MemorySize size, unsigned int flags) throw(WideStringException)
-{
-  if (src == 0) {
-    return 0;
-  }
-  // TAG: fixme
-  return 0;
-}
-
-MemorySize WideString::UCS4ToUTF16BE(uint8* dest, const ucs4* src, MemorySize size, unsigned int flags) throw(WideStringException)
-{
-  if (src == 0) {
-    return 0;
-  }
-  const uint8* const begin = dest;
-  const ucs4* const end = src + size;
-  if (dest) {
-    if (flags & ADD_BOM) {
-      *dest++ = static_cast<uint8>((BOM >> 8) & 0xff); // most significant
-      *dest++ = static_cast<uint8>((BOM >> 0) & 0xff);
-    }
-    while (src < end) {
-      unsigned int value = *src++;
-      if (value <= 0x0000ffff) {
-        bassert(
-          !((value >= 0x0000d800) && (value <= 0x0000dfff)),
-          WideStringException("Value reserved for UTF-16")
-        );
-        *dest++ = value >> 8; // most significant
-        *dest++ = value >> 0;
-      } else if (value <= 0x0010ffff) {
-        uint16 a = (value - 0x00010000)/0x400 + 0xd800; // 10 bit - most significant
-        *dest++ = a >> 8; // most significant
-        *dest++ = a >> 0;
-        uint16 b = (value - 0x00010000)%0x400 + 0xdc00; // 10 bit
-        *dest++ = b >> 8;
-        *dest++ = b >> 0;
-      } else {
-        throw WideStringException("Value incompatible with UTF-16", Type::getType<WideString>());     
-      }
-    }
-    return dest - begin;
-  } else {
-    MemorySize length = 0;
-    if (flags & ADD_BOM) {
-      length += 2;
-    }
-    while (src < end) {
-      unsigned int value = *src++;
-      if (value <= 0x0000ffff) {
-        bassert(!((value >= 0x0000d800) && (value <= 0x0000dfff)), WideStringException("Value reserved for UTF-16"));
-        length += 2;
-      } else if (value <= 0x0010ffff) {
-        bassert((value & 0xf) < 0xe, WideStringException("Invalid UCS-4 character", Type::getType<WideString>()));
-        length += 4;
-      } else {
-        throw WideStringException("Value incompatible with UTF-16", Type::getType<WideString>());
-      }
-    }
-    return length;
-  }
-}
-
-MemorySize WideString::UCS4ToUTF16LE(uint8* dest, const ucs4* src, MemorySize size, unsigned int flags) throw(WideStringException)
-{
-  if (src == 0) {
-    return 0;
-  }
-  const uint8* const begin = dest;
-  const ucs4* const end = src + size;
-  if (dest) {
-    if (flags & ADD_BOM) {
-      *dest++ = static_cast<uint8>((BOM >> 8) & 0xff); // most significant
-      *dest++ = static_cast<uint8>((BOM >> 0) & 0xff);
-    }
-    while (src < end) {
-      unsigned int value = *src++;
-      if (value <= 0x0000ffff) {
-        bassert(
-          !((value >= 0x0000d800) && (value <= 0x0000dfff)),
-          WideStringException("Value reserved for UTF-16")
-        );
-        *dest++ = value >> 0; // least significant
-        *dest++ = value >> 8;
-      } else if (value <= 0x0010ffff) {
-        uint16 a = (value - 0x00010000)/0x400 + 0xd800; // 10 bit - most significant
-        *dest++ = a >> 0; // least significant
-        *dest++ = a >> 8;
-        uint16 b = (value - 0x00010000)%0x400 + 0xdc00; // 10 bit
-        *dest++ = b >> 0;
-        *dest++ = b >> 8;
-      } else {
-        throw WideStringException("Value incompatible with UTF-16", Type::getType<WideString>());     
-      }
-    }
-    return dest - begin;
-  } else {
-    MemorySize length = 0;
-    if (flags & ADD_BOM) {
-      length += 2;
-    }
-    while (src < end) {
-      unsigned int value = *src++;
-      if (value <= 0x0000ffff) {
-        bassert(
-          !((value >= 0x0000d800) && (value <= 0x0000dfff)),
-          WideStringException("Value reserved for UTF-16")
-        );
-        length += 2;
-      } else if (value <= 0x0010ffff) {
-        bassert(
-          (value & 0xf) < 0xe,
-          WideStringException(
-            "Invalid UCS-4 character",
-            Type::getType<WideString>()
-          )
-        );
-        length += 4;
-      } else {
-        throw WideStringException("Value incompatible with UTF-16", Type::getType<WideString>());
-      }
-    }
-    return length;
-  }
-}
-
-MemorySize WideString::UCS2ToUCS4(ucs4* dest, const ucs2* src, MemorySize size, unsigned int flags) throw(WideStringException)
-{
-  if (src == 0) {
-    return 0;
-  }
-  const ucs4* const begin = dest;
-  const ucs2* end = src + size;
-  if (dest) {
-    while (src < end) {
-      const ucs2 code = *src++;
-      bassert(
-        !((code >= 0xdc00) && (code <= 0xdfff)),
-        WideStringException("Reserved code")
-      );
-      if ((code >= 0xd800) && (code <= 0xdbff)) {
-        bassert(src < end, WideStringException("Incomplete sequence"));
-        const ucs2 lowSurrogate = *src++;
-        bassert(
-          (lowSurrogate >= 0xdc00) && (lowSurrogate <= 0xdfff),
-          WideStringException("Invalid sequence")
-        );
-        *dest++ = 0x00010000U +
-          (static_cast<ucs4>(code) - 0xd800) * 0x0400 +
-          (static_cast<ucs4>(lowSurrogate) - 0xdc00);
-      } else {
-        *dest++ = code;
-      }
-    }
-    return dest - begin;
-  } else { // calculate length and validate
-    MemorySize length = 0;
-    while (src < end) {
-      const ucs2 code = *src++;
-      bassert(
-        !((code >= 0xdc00) && (code <= 0xdfff)),
-        WideStringException("Reserved code")
-      );
-      if ((code >= 0xd800) && (code <= 0xdbff)) {
-        bassert(src < end, WideStringException("Incomplete sequence"));
-        const ucs2 lowSurrogate = *src++;
-        bassert(
-          (lowSurrogate >= 0xdc00) && (lowSurrogate <= 0xdfff),
-          WideStringException("Invalid sequence")
-        );
-      }
-      ++length;
-    }
-    return length;
-  }
-}
-
-MemorySize WideString::UCS4ToUCS2(ucs2* dest, const ucs4* src, MemorySize size, unsigned int flags) throw(WideStringException)
-{
-  if (src == 0) {
-    return 0;
-  }
-  const ucs2* const begin = dest;
-  const ucs4* end = src + size;
-  if (dest) {
-    while (src < end) {
-      const ucs4 value = *src++;
-      if (value <= 0x0000ffff) {
-        bassert(
-          !((value >= 0x0000d800) && (value <= 0x0000dfff)),
-          WideStringException("Value reserved for UCS-2 encoding")
-        );
-        *dest++ = value;
-      } else if (value <= 0x0010ffff) {
-        *dest++ = (value - 0x00010000)/0x400 + 0xd800; // 10 bit - most significant
-        *dest++ = (value - 0x00010000)%0x400 + 0xdc00; // 10 bit
-      } else {
-        throw WideStringException("Value incompatible with UCS-2", Type::getType<WideString>());
-      }
-    }
-    return dest - begin;
-  } else { // calculate length and validate
-    MemorySize length = 0;
-    while (src < end) {
-      const ucs4 value = *src++;
-      if (value <= 0x0000ffff) {
-        bassert(
-          !((value >= 0x0000d800) && (value <= 0x0000dfff)),
-          WideStringException("Value reserved for UCS-2 encoding")
-        );
-        ++length;
-      } else if (value <= 0x0010ffff) {
-        bassert(
-          (value & 0xf) < 0xe,
-          WideStringException(
-            "Invalid UCS-4 character",
-            Type::getType<WideString>()
-          )
-        );
-        length += 2;
-      } else {
-        throw WideStringException("Value incompatible with UCS-2", Type::getType<WideString>());
-      }
-    }
-    return length;
-  }
-}
-
+#if 0
 MemorySize WideString::UTF16ToUCS4(ucs4* dest, const uint8* src, MemorySize size, unsigned int flags) throw(MultibyteException)
 {
   if (src == 0) {
@@ -1186,43 +929,6 @@ MemorySize WideString::UTF16ToUCS4(ucs4* dest, const uint8* src, MemorySize size
   }
 }
 
-
-MemorySize WideString::UCS4ToUTF32LE(uint8* dest, const ucs4* src, MemorySize size, unsigned int flags) throw(WideStringException)
-{
-  if (src == 0) {
-    return 0;
-  }
-  const uint8* const begin = dest;
-  const ucs4* const end = src + size;
-
-  if (dest) {
-    if (flags & ADD_BOM) {
-      *dest++ = (BOM >> 0) & 0xff; // least significant
-      *dest++ = (BOM >> 8) & 0xff;
-      *dest++ = (BOM >> 16) & 0xff;
-      *dest++ = (BOM >> 24) & 0xff;
-    }
-    
-    while (src < end) {
-      const ucs4 code = *src++;
-      if (code <= 0x0010ffff) {
-        *dest++ = (code >> 0) & 0xff; // least significant
-        *dest++ = (code >> 8) & 0xff;
-        *dest++ = (code >> 16) & 0xff;
-        *dest++ = (code >> 24) & 0xff;
-      } else {
-        throw WideStringException("Invalid UCS-4 character code", Type::getType<WideString>());
-      }
-    }
-    return dest - begin;
-  } else {
-    while (src < end) {
-      bassert(*src++ <= 0x0010ffff, WideStringException("Invalid UCS-4 character code", Type::getType<WideString>()));
-    }
-    return 4 * (size + ((flags & ADD_BOM) ? 1 : 0));
-  }
-}
-
 WideString::MultibyteEncoding WideString::getMultibyteEncoding(const uint8* src, MemorySize size) throw()
 {
   if (size % 4 == 0) {
@@ -1266,7 +972,9 @@ WideString::MultibyteEncoding WideString::getMultibyteEncoding(const uint8* src,
   }
   return UTF8;
 }
+#endif
 
+#if 0
 MemorySize WideString::UTF32ToUCS4(ucs4* dest, const uint8* src, MemorySize size, unsigned int flags) throw(MultibyteException)
 {
   if (src == 0) {
@@ -1411,7 +1119,9 @@ MemorySize WideString::UTF32ToUCS4(ucs4* dest, const uint8* src, MemorySize size
     throw MultibyteException("Invalid UTF-32 encoding");
   }
 }
+#endif
 
+// TAG: belongs in String
 String WideString::getMultibyteString(const wchar* string)
   throw(NullPointer, MultibyteException, WideStringException)
 {
@@ -1501,21 +1211,7 @@ WideString::WideString(const WideLiteral& literal) throw(WideStringException, Me
 {
   MemorySize nativeLength = literal.getLength();
   if (sizeof(wchar) == sizeof(ucs2)) {
-    MemorySize length = UCS2ToUCS4(
-      0,
-      Cast::pointer<const ucs2*>(literal.getValue()),
-      nativeLength
-    );
-    bassert(
-      length <= MAXIMUM_LENGTH,
-      WideStringException(this)
-    ); // TAG: this is not required
-    elements = new ReferenceCountedCapacityAllocator<ucs4>(length + 1, GRANULARITY);
-    UCS2ToUCS4(
-      elements->getElements(),
-      Cast::pointer<const ucs2*>(literal.getValue()),
-      nativeLength
-    );
+    elements = allocate(literal.getValue(), literal.getLength());
   } else if (sizeof(wchar) == sizeof(ucs4)) {
     bassert(
       nativeLength <= MAXIMUM_LENGTH,
@@ -1548,20 +1244,7 @@ WideString::WideString(const NativeWideString& string) throw(WideStringException
   MemorySize nativeLength = terminator - string.getValue();
   
   if (sizeof(wchar) == sizeof(ucs2)) {
-    MemorySize length = UCS2ToUCS4(
-      0,
-      Cast::pointer<const ucs2*>(string.getValue()),
-      nativeLength
-    );
-    elements = new ReferenceCountedCapacityAllocator<ucs4>(
-      length + 1,
-      GRANULARITY
-    );
-    UCS2ToUCS4(
-      elements->getElements(),
-      Cast::pointer<const ucs2*>(string.getValue()),
-      nativeLength
-    );
+    elements = allocate(string.getValue(), nativeLength);
   } else if (sizeof(wchar) == sizeof(ucs4)) {
     elements = new ReferenceCountedCapacityAllocator<ucs4>(
       nativeLength + 1,
@@ -1595,20 +1278,7 @@ WideString::WideString(const NativeWideString& string, MemorySize maximum) throw
   const MemorySize nativeLength = terminator ? (terminator - string.getValue()) : maximum;
   
   if (sizeof(wchar) == sizeof(ucs2)) {
-    MemorySize length = UCS2ToUCS4(
-      0,
-      Cast::pointer<const ucs2*>(string.getValue()),
-      nativeLength
-    );
-    elements = new ReferenceCountedCapacityAllocator<ucs4>(
-      length + 1,
-      GRANULARITY
-    );
-    UCS2ToUCS4(
-      elements->getElements(),
-      Cast::pointer<const ucs2*>(string.getValue()),
-      nativeLength
-    );
+    elements = allocate(string.getValue(), nativeLength);
   } else if (sizeof(wchar) == sizeof(ucs4)) {
     elements = new ReferenceCountedCapacityAllocator<ucs4>(
       nativeLength + 1,
@@ -1725,20 +1395,7 @@ WideString& WideString::operator=(const WideLiteral& literal) throw(WideStringEx
   ); // TAG: this is not required
   
   if (sizeof(wchar) == sizeof(ucs2)) {
-    MemorySize length = UCS2ToUCS4(
-      0,
-      Cast::pointer<const ucs2*>(literal.getValue()),
-      nativeLength
-    );
-    elements = new ReferenceCountedCapacityAllocator<ucs4>(
-      length + 1,
-      GRANULARITY
-    );
-    UCS2ToUCS4(
-      elements->getElements(),
-      Cast::pointer<const ucs2*>(literal.getValue()),
-      nativeLength
-    );
+    elements = allocate(literal.getValue(), nativeLength);
   } else if (sizeof(wchar) == sizeof(ucs4)) {
     elements = new ReferenceCountedCapacityAllocator<ucs4>(
       nativeLength + 1,
@@ -1871,15 +1528,15 @@ WideString& WideString::insert(MemorySize index, const WideLiteral& literal) thr
   if (index >= length) {
     // insert section at end of string
     if (sizeof(wchar) == sizeof(ucs2)) {
-      MemorySize literalLength = UCS2ToUCS4(
+      MemorySize literalLength = Unicode::UTF16ToUCS4(
         0,
-        Cast::pointer<const ucs2*>(literal.getValue()),
+        Cast::pointer<const Unicode::utf16*>(literal.getValue()),
         literal.getLength()
       );
       setLength(length + literalLength);
-      UCS2ToUCS4(
+      Unicode::UTF16ToUCS4(
         buffer + length,
-        Cast::pointer<const ucs2*>(literal.getValue()),
+        Cast::pointer<const Unicode::utf16*>(literal.getValue()),
         literal.getLength()
       );
     } else if (sizeof(wchar) == sizeof(ucs4)) {
@@ -1898,16 +1555,16 @@ WideString& WideString::insert(MemorySize index, const WideLiteral& literal) thr
   } else {
     // insert section in middle or beginning of string
     if (sizeof(wchar) == sizeof(ucs2)) {
-      MemorySize literalLength = UCS2ToUCS4(
+      MemorySize literalLength = Unicode::UTF16ToUCS4(
         0,
-        Cast::pointer<const ucs2*>(literal.getValue()),
+        Cast::pointer<const Unicode::utf16*>(literal.getValue()),
         literal.getLength()
       );
       setLength(length + literalLength);
       move<ucs4>(buffer + index + literalLength, buffer + index, length - index);
-      UCS2ToUCS4(
+      Unicode::UTF16ToUCS4(
         buffer + length,
-        Cast::pointer<const ucs2*>(literal.getValue()),
+        Cast::pointer<const Unicode::utf16*>(literal.getValue()),
         literal.getLength()
       );
     } else if (sizeof(wchar) == sizeof(ucs4)) {
@@ -1938,15 +1595,15 @@ WideString& WideString::append(const WideLiteral& literal) throw(WideStringExcep
   MemorySize nativeLength = literal.getLength();
   ucs4* buffer = elements->getElements();
   if (sizeof(wchar) == sizeof(ucs2)) {
-    MemorySize length = UCS2ToUCS4(
+    MemorySize length = Unicode::UTF16ToUCS4(
       0,
-      Cast::pointer<const ucs2*>(literal.getValue()),
+      Cast::pointer<const Unicode::utf16*>(literal.getValue()),
       nativeLength
     );
     setLength(length + nativeLength);
-    UCS2ToUCS4(
+    Unicode::UTF16ToUCS4(
       buffer + length,
-      Cast::pointer<const ucs2*>(literal.getValue()),
+      Cast::pointer<const Unicode::utf16*>(literal.getValue()),
       nativeLength
     );
   } else if (sizeof(wchar) == sizeof(ucs4)) {
@@ -1972,16 +1629,16 @@ WideString& WideString::append(const WideLiteral& literal, MemorySize maximum) t
   MemorySize nativeLength = literal.getLength();
   ucs4* buffer = elements->getElements();
   if (sizeof(wchar) == sizeof(ucs2)) {
-    MemorySize length = UCS2ToUCS4(
+    MemorySize length = Unicode::UTF16ToUCS4(
       0,
-      Cast::pointer<const ucs2*>(literal.getValue()),
+      Cast::pointer<const Unicode::utf16*>(literal.getValue()),
       nativeLength
     );
     nativeLength = minimum<MemorySize>(nativeLength, maximum);
     setLength(length + nativeLength);
-    UCS2ToUCS4(
+    Unicode::UTF16ToUCS4(
       buffer + length,
-      Cast::pointer<const ucs2*>(literal.getValue()),
+      Cast::pointer<const Unicode::utf16*>(literal.getValue()),
       nativeLength
     );
   } else if (sizeof(wchar) == sizeof(ucs4)) {
@@ -2017,16 +1674,16 @@ WideString& WideString::append(const wchar* string, MemorySize maximum) throw(Ou
   MemorySize length = getLength();
   ucs4* buffer = elements->getElements();
   if (sizeof(wchar) == sizeof(ucs2)) {
-    MemorySize stringLength = UCS2ToUCS4(
+    MemorySize stringLength = Unicode::UTF16ToUCS4(
       0,
-      Cast::pointer<const ucs2*>(string),
+      Cast::pointer<const Unicode::utf16*>(string),
       nativeLength
     );
     stringLength = minimum<MemorySize>(stringLength, maximum);
     setLength(length + stringLength);
-    UCS2ToUCS4(
+    Unicode::UTF16ToUCS4(
       buffer + length,
-      Cast::pointer<const ucs2*>(string),
+      Cast::pointer<const Unicode::utf16*>(string),
       stringLength
     );
   } else if (sizeof(wchar) == sizeof(ucs4)) {

@@ -1186,43 +1186,6 @@ MemorySize WideString::UTF16ToUCS4(ucs4* dest, const uint8* src, MemorySize size
   }
 }
 
-MemorySize WideString::UCS4ToUTF32BE(uint8* dest, const ucs4* src, MemorySize size, unsigned int flags) throw(WideStringException)
-{
-  if (src == 0) {
-    return 0;
-  }
-  
-  const uint8* begin = dest;
-  const ucs4* end = src + size;
-
-  if (dest) {
-    // TAG: do we need a flag to prevent/allow a redundant BOM (e.g. REDUNDANT_BOM) - also in other methods
-    if (flags & ADD_BOM) {
-      *dest++ = (BOM >> 24) & 0xff; // most significant
-      *dest++ = (BOM >> 16) & 0xff;
-      *dest++ = (BOM >> 8) & 0xff;
-      *dest++ = (BOM >> 0) & 0xff;
-    }
-    
-    while (src < end) {
-      const ucs4 code = *src++;
-      if (code <= 0x0010ffff) {
-        *dest++ = (code >> 24) & 0xff; // most significant
-        *dest++ = (code >> 16) & 0xff;
-        *dest++ = (code >> 8) & 0xff;
-        *dest++ = (code >> 0) & 0xff;
-      } else {
-        throw WideStringException("Invalid UCS-4 character code", Type::getType<WideString>());
-      }
-    }
-  } else {
-    while (src < end) {
-      bassert(*src++ <= 0x0010ffff, WideStringException("Invalid UCS-4 character code", Type::getType<WideString>()));
-    }
-    return 4 * (size + ((flags & ADD_BOM) ? 1 : 0));
-  }
-  return dest - begin;
-}
 
 MemorySize WideString::UCS4ToUTF32LE(uint8* dest, const ucs4* src, MemorySize size, unsigned int flags) throw(WideStringException)
 {

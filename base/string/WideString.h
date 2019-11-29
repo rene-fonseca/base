@@ -341,7 +341,8 @@ protected:
     Returns a modifiable buffer. Forces the internal buffer to be copied if
     shared by multiple strings.
   */
-  inline ucs4* getBuffer() throw(MemoryException) {
+  inline ucs4* getBuffer() throw(MemoryException)
+  {
     elements.copyOnWrite();
     return elements->getElements();
   }
@@ -349,15 +350,15 @@ protected:
   /**
     Returns a non-modifiable buffer.
   */
-  inline const ucs4* getBuffer() const throw() {
+  inline const ucs4* getBuffer() const noexcept
+  {
     return elements->getElements();
   }
 
   /**
     Sets the length of the string.
   */
-  inline void setLength(
-    MemorySize length) throw(WideStringException, MemoryException)
+  inline void setLength(MemorySize length) throw(WideStringException, MemoryException)
   {
     bassert(length <= MAXIMUM_LENGTH, WideStringException(this));
     elements.copyOnWrite(); // we are about to modify the buffer
@@ -366,8 +367,7 @@ protected:
 public:
 
   /**
-    Specifies the maximum number of bytes per character for any supported
-    encoding.
+    Specifies the maximum number of bytes per character for any supported encoding.
   */
   static constexpr unsigned int MAXIMUM_MULTIBYTES = 6;
   /** Specifies the byte order mark. */
@@ -397,30 +397,32 @@ public:
     Style style;
   public:
     
-    inline UnicodeCharacter(ucs4 _character, Style _style = DEFAULT_STYLE) throw()
-      : character(_character), style(_style) {
+    inline UnicodeCharacter(ucs4 _character, Style _style = DEFAULT_STYLE) noexcept
+      : character(_character), style(_style)
+    {
     }
 
-    inline ucs4 getCode() const throw() {
+    inline ucs4 getCode() const noexcept
+    {
       return character;
     }
     
-    inline Style getStyle() const throw() {
+    inline Style getStyle() const noexcept
+    {
       return style;
     }
     
-    inline UnicodeCharacter& setStyle(Style style) throw() {
+    inline void setStyle(Style style) noexcept
+    {
       this->style = style;
-      return *this;
     }
   };
   
   /**
-     Returns the maximum number of bytes required to represent any UCS-4
-     character.
+     Returns the maximum number of bytes required to represent any UCS-4 character.
   */
-  static inline unsigned int getMaximumNumberOfMultibytes(
-    MultibyteEncoding encoding) throw() {
+  static inline unsigned int getMaximumNumberOfMultibytes(MultibyteEncoding encoding) noexcept
+  {
     static const unsigned int MAXIMUM_MULTIBYTES[] = {
       0, 6, 4, 4, 4, 4, 4, 4
     };
@@ -430,7 +432,8 @@ public:
   /**
     Returns true if the specified value is a valid UCS-4 value (ISO/IEC 10646).
   */
-  static inline bool isUCS4(unsigned int value) throw() {
+  static inline bool isUCS4(unsigned int value) noexcept
+  {
     return value <= 0x7fffffffU;
   }
 
@@ -659,25 +662,6 @@ public:
     MemorySize size,
     unsigned int flags = ADD_BOM) throw(WideStringException);
 
-  /**
-    Low-level method which converts an UCS-4 encoded string to UTF-32BE. A
-    null-terminator is NOT appended to the string. The destination buffer must
-    have room for enough bytes (guaranteed to not exceed
-    (size + 1) * getMaximumNumberOfMultibytes(UTF32BE)).
-    
-    @param dest The destination buffer (may be 0).
-    @param src The UCS-4 encoded string.
-    @param size The number of characters in the UCS-4 encoded string.
-    @param flags The encoding flags. The default is ADD_BOM.
-
-    @return The number of bytes occupied by the UTF-32BE encoded string.
-  */
-  static MemorySize UCS4ToUTF32BE(
-    uint8* dest,
-    const ucs4* src,
-    MemorySize size,
-    unsigned int flags = ADD_BOM) throw(WideStringException);
-  
   /**
     Low-level method which converts an UCS-4 encoded string to UTF-32LE. A
     null-terminator is NOT appended to the string. The destination buffer must

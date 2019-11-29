@@ -24,18 +24,18 @@ _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 class _COM_AZURE_DEV__BASE__API Unicode {
 public:
 
-  // TAG: add BOM detection
+  /** Specifies the byte order mark. */
+  static constexpr ucs4 BOM = 0x0000feff;
   
   /** Returns true if the code is a valid UCS4 code. */
   static inline bool isUCS4(unsigned int value) noexcept
   {
     if (value < 0xd800) {
       return true;
-    } else if (value < 0x10000) {
-      return (value >= 0xe000) && (value < 0xffff); // TAG: 0xfffe is special
-    } else {
-      return true;
+    } else if (value <= 0x10ffff) {
+      return (value >= 0xe000);
     }
+    return false;
   }
 
   enum {
@@ -53,190 +53,10 @@ public:
 
     @return Bytes read. If negative this is the error code.
   */
-  static int readUCS4(const uint8* src, const uint8* end, ucs4& ch) noexcept
-  {
-    if (src == end) {
-      return UTF8_ERROR_EMPTY;
-    }
-
-    uint8 value = *src++;
-    if ((value & 0x80) == 0x00) {
-      ch = value;
-      return 1;
-    }
-
-    if ((value & 0xe0) == 0xc0) {
-      ucs4 code = value & ~0xe0;
-      if (src == end) {
-        return UTF8_ERROR_INCOMPLETE;
-      }
-      uint8 temp = *src++;
-      if ((temp & 0xc0) != 0x80) {
-        return UTF8_ERROR_BAD_ENCODING;
-      }
-      code = (code << 6) | (temp & 0x3f);
-      ch = code;
-      return 2;
-    }
-
-    if ((value & 0xf0) == 0xe0) {
-      ucs4 code = value & ~0xf0;
-      for (int i = 0; i < 2; ++i) {
-        if (src == end) {
-          return UTF8_ERROR_INCOMPLETE;
-        }
-        uint8 temp = *src++;
-        if ((temp & 0xc0) != 0x80) {
-          return UTF8_ERROR_BAD_ENCODING;
-        }
-        code = (code << 6) | (temp & 0x3f);
-      }
-      ch = code;
-      return 3;
-    }
-
-    if ((value & 0xf8) == 0xf0) {
-      ucs4 code = value & ~0xf8;
-      for (int i = 0; i < 3; ++i) {
-        if (src == end) {
-          return UTF8_ERROR_INCOMPLETE;
-        }
-        uint8 temp = *src++;
-        if ((temp & 0xc0) != 0x80) {
-          return UTF8_ERROR_BAD_ENCODING;
-        }
-        code = (code << 6) | (temp & 0x3f);
-      }
-      ch = code;
-      return 4;
-    }
-
-    if ((value & 0xfc) == 0xf8) {
-      ucs4 code = value & ~0xfc;
-      for (int i = 0; i < 4; ++i) {
-        if (src == end) {
-          return UTF8_ERROR_INCOMPLETE;
-        }
-        uint8 temp = *src++;
-        if ((temp & 0xc0) != 0x80) {
-          return UTF8_ERROR_BAD_ENCODING;
-        }
-        code = (code << 6) | (temp & 0x3f);
-      }
-      ch = code;
-      return 5;
-    }
-
-    if ((value & 0xfe) == 0xfc) {
-      ucs4 code = value & ~0xfe;
-      for (int i = 0; i < 5; ++i) {
-        if (src == end) {
-          return UTF8_ERROR_INCOMPLETE;
-        }
-        uint8 temp = *src++;
-        if ((temp & 0xc0) != 0x80) {
-          return UTF8_ERROR_BAD_ENCODING;
-        }
-        code = (code << 6) | (temp & 0x3f);
-      }
-      ch = code;
-      return 6;
-    }
-    return UTF8_ERROR_BAD_ENCODING;
-  }
+  static int readUCS4(const uint8* src, const uint8* end, ucs4& ch) noexcept;
 
   /** Read UCS4 from null terminated sequence. */
-  static int readUCS4(const uint8* src, ucs4& ch) noexcept
-  {
-    if (!src || !*src) {
-      return UTF8_ERROR_EMPTY;
-    }
-
-    uint8 value = *src++;
-    if ((value & 0x80) == 0x00) {
-      ch = value;
-      return 1;
-    }
-
-    if ((value & 0xe0) == 0xc0) {
-      ucs4 code = value & ~0xe0;
-      if (!*src) {
-        return UTF8_ERROR_INCOMPLETE;
-      }
-      uint8 temp = *src++;
-      if ((temp & 0xc0) != 0x80) {
-        return UTF8_ERROR_BAD_ENCODING;
-      }
-      code = (code << 6) | temp;
-      ch = code;
-      return 2;
-    }
-
-    if ((value & 0xf0) == 0xe0) {
-      ucs4 code = value & ~0xf0;
-      for (int i = 0; i < 2; ++i) {
-        if (!*src) {
-          return UTF8_ERROR_INCOMPLETE;
-        }
-        uint8 temp = *src++;
-        if ((temp & 0xc0) != 0x80) {
-          return UTF8_ERROR_BAD_ENCODING;
-        }
-        code = (code << 6) | (temp & 0x3f);
-      }
-      ch = code;
-      return 3;
-    }
-
-    if ((value & 0xf8) == 0xf0) {
-      ucs4 code = value & ~0xf8;
-      for (int i = 0; i < 3; ++i) {
-        if (!*src) {
-          return UTF8_ERROR_INCOMPLETE;
-        }
-        uint8 temp = *src++;
-        if ((temp & 0xc0) != 0x80) {
-          return UTF8_ERROR_BAD_ENCODING;
-        }
-        code = (code << 6) | (temp & 0x3f);
-      }
-      ch = code;
-      return 4;
-    }
-
-    if ((value & 0xfc) == 0xf8) {
-      ucs4 code = value & ~0xfc;
-      for (int i = 0; i < 4; ++i) {
-        if (!*src) {
-          return UTF8_ERROR_INCOMPLETE;
-        }
-        uint8 temp = *src++;
-        if ((temp & 0xc0) != 0x80) {
-          return UTF8_ERROR_BAD_ENCODING;
-        }
-        code = (code << 6) | (temp & 0x3f);
-      }
-      ch = code;
-      return 5;
-    }
-
-    if ((value & 0xfe) == 0xfc) {
-      ucs4 code = value & ~0xfe;
-      for (int i = 0; i < 5; ++i) {
-        if (!*src) {
-          return UTF8_ERROR_INCOMPLETE;
-        }
-        uint8 temp = *src++;
-        if ((temp & 0xc0) != 0x80) {
-          return UTF8_ERROR_BAD_ENCODING;
-        }
-        code = (code << 6) | (temp & 0x3f);
-      }
-      ch = code;
-      return 6;
-    }
-    return UTF8_ERROR_BAD_ENCODING;
-  }
+  static int readUCS4(const uint8* src, ucs4& ch) noexcept;
 
   /** Validates if the the given string is using valid UTF-8 encoding. Returns the number of characters if valid. Otherwise returns negative status. */
   static MemoryDiff getUTF8StringLength(const uint8* src, const uint8* end) noexcept;
@@ -265,11 +85,11 @@ public:
   /** Converts UCS4 to UTF-8. Returns 0 is invalid ucs4 character. Buffer must have room for minimum 4 bytes. */
   static inline MemorySize writeUTF8(char* dest, ucs4 ch) noexcept
   {
-    if (ch < ~0x7f) { // 7 bit
+    if (ch <= 0x7f) { // 7 bit
       *dest++ = static_cast<uint8>(ch);
       return 1;
     }
-    if (ch < ~0x7ff) { // 11 bit
+    if (ch <= 0x7ff) { // 11 bit
       *dest++ = static_cast<uint8>(((ch >> 6) & ((1 << 5) - 1)) | 0xc0);
       *dest++ = static_cast<uint8>(((ch >> 0) & ((1 << 6) - 1)) | 0x80);
       return 2;
@@ -289,6 +109,31 @@ public:
     }
     return 0;
   }
+  
+  /** Encoding flags. */
+  enum EncodingFlags {
+    /** Specifies that a BOM should be inserted when encoding to UTF. */
+    ADD_BOM = 1
+  };
+  
+  enum {
+    INVALID_UCS4_CHARACTER = -1
+  };
+
+  /**
+    Low-level method which converts an UCS-4 encoded string to UTF-32BE. A
+    null-terminator is NOT appended to the string. The destination buffer must
+    have room for enough bytes (guaranteed to not exceed
+    (size + 1) * getMaximumNumberOfMultibytes(UTF32BE)).
+    
+    @param dest The destination buffer (may be nullptr).
+    @param src The UCS-4 encoded string.
+    @param size The number of characters in the UCS-4 encoded string.
+    @param flags The encoding flags. The default is ADD_BOM.
+
+    @return The number of bytes occupied by the UTF-32BE encoded string.
+  */
+  MemoryDiff UCS4ToUTF32BE(uint8* dest, const ucs4* src, MemorySize size, unsigned int flags) noexcept;
 };
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

@@ -228,6 +228,13 @@ public:
   /** Returns ObjectModel for the given JSON text. */
   static Reference<ObjectModel::Value> parse(const String& text);
 
+  enum Encoding {
+    UTF_8,
+    UTF_16,
+    UTF_32
+  };
+  
+  /** Returns ObjectModel for the given file. */
   static Reference<ObjectModel::Value> parseFile(const String& path);
   
   /** Converts given ObjectModel to JSON. Use getJSONNoFormatting() to ensure no formatting. */

@@ -97,13 +97,13 @@ public:
     auto a5 = a3->getAs<String>();
     fout << ((a5 == animals) ? MESSAGE("animals has expected value.") : MESSAGE("animals doesn't have expected value.")) << ENDL;
 
-    fout << "Get firstName by path: " << o->getPath("firstName") << ENDL;
-    fout << "Get lastName by path: " << o->getPath("lastName") << ENDL;
-    fout << "Get meta by path: " << o->getPath("meta") << ENDL;
-    fout << "Get description by path: " << o->getString("meta/description", "") << ENDL;
-    fout << "Get age by path: " << o->getInteger("age", 0) << ENDL;
-    fout << "Get non-existing height by path: " << o->getInteger("height", -1) << ENDL;
-    fout << "Get array item by path: " << o->getString("animals[1]", "UNKNOWN") << ENDL;
+    fout << "Get firstName by path: " << o->getPath("/firstName") << ENDL;
+    fout << "Get lastName by path: " << o->getPath("/lastName") << ENDL;
+    fout << "Get meta by path: " << o->getPath("/meta") << ENDL;
+    fout << "Get description by path: " << o->getString("/meta/description", "") << ENDL;
+    fout << "Get age by path: " << o->getInteger("/age", 0) << ENDL;
+    fout << "Get non-existing height by path: " << o->getInteger("/height", -1) << ENDL;
+    fout << "Get array item by path: " << o->getString("/animals/1", "UNKNOWN") << ENDL;
 
     fout << ENDL;
 

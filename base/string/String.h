@@ -22,15 +22,33 @@
 #include <base/iterator/UTF8Iterator.h>
 #include <base/collection/Hash.h>
 #include <base/Literal.h>
+
+#if 0 // get string and wstring types
 #include <string>
-#include <ctype.h> // TAG: alien header
-#include <string.h>
+#else
+// can we forward declare string and wstring - see 17.4.3.1/1 - but we get potential class/struct mismatches for below
+namespace std {
+  template<class Char> struct char_traits;
+  template<class T> class allocator;
+  template<class Char, class Traits, class Allocator> class basic_string;
+}
+
+_COM_AZURE_DEV__BASE__ENTER_NAMESPACE
+
+// we do NOT add types in std namespace
+typedef std::basic_string<char, std::char_traits<char>, std::allocator<char> > string;
+typedef std::basic_string<wchar_t, std::char_traits<wchar_t>, std::allocator<wchar_t> > wstring;
+
+_COM_AZURE_DEV__BASE__LEAVE_NAMESPACE
+
+#endif
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 template<class TYPE> class Array;
 class FormatOutputStream;
 class StringOutputStream;
+class WideString;
 
 /**
   Default character manipulators.
@@ -226,7 +244,17 @@ protected:
     Initializes string.
   */
   void initialize(const char* string, MemorySize length);
-  
+
+  /**
+    Initializes string.
+  */
+  void initialize(const wchar* string, MemorySize length);
+
+  /**
+    Initializes string.
+  */
+  void initialize(const ucs4* string, MemorySize length);
+
   /**
     Returns a modifiable buffer. Forces copy of internal buffer if shared by
     multiple strings.
@@ -293,6 +321,8 @@ public:
 
   /** Converts to UTF-8. */
   String(const wchar* string, MemorySize length) throw(StringException, MemoryException);
+
+  String(const WideString& string);
 
 #if 0 // TAG: bad for now due to match with structs also - or static_cast<const char*>() is required
   /**

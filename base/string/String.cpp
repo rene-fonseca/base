@@ -14,6 +14,7 @@
 #include <base/string/String.h>
 #include <base/string/FormatOutputStream.h>
 #include <base/string/StringOutputStream.h>
+#include <base/string/WideString.h>
 #include <base/Functor.h>
 #include <base/collection/Array.h>
 #include <base/UnitTest.h>
@@ -34,6 +35,43 @@ void String::initialize(const char* src, MemorySize length)
   auto e = new ReferenceCountedAllocator<char>(length + 1);
   auto dest = e->getElements();
   base::copy<char>(dest, src, length); // no overlap
+  dest[length] = Traits::TERMINATOR;
+  elements = e;
+}
+
+void String::initialize(const wchar* src, MemorySize _length)
+{
+  if (_length == 0) {
+    elements = DEFAULT_STRING.elements;
+    return;
+  }
+
+  // TAG: Unicode need wchar* to utf8
+  const std::string utf8 = toUTF8(src);
+  MemorySize length = utf8.size();
+  auto e = new ReferenceCountedAllocator<char>(length + 1);
+  auto dest = e->getElements();
+  base::copy<char>(dest, utf8.c_str(), length); // no overlap
+  dest[length] = Traits::TERMINATOR;
+  elements = e;
+}
+
+void String::initialize(const ucs4* src, MemorySize _length)
+{
+  if (_length == 0) {
+    elements = DEFAULT_STRING.elements;
+    return;
+  }
+
+  // TAG: add method to validate WideString codes also
+  const MemoryDiff length = Unicode::UCS4ToUTF8(nullptr, src, _length);
+  if (length < 0) {
+    throw StringException("Invalid UCS4 string.");
+  }
+
+  auto e = new ReferenceCountedAllocator<char>(length + 1);
+  auto dest = e->getElements();
+  Unicode::UCS4ToUTF8(reinterpret_cast<uint8*>(dest), src, _length);
   dest[length] = Traits::TERMINATOR;
   elements = e;
 }
@@ -75,6 +113,11 @@ String::String(const char* src)
   initialize(src, getNullTerminatedLength(src));
 }
 
+String::String(const WideString& src)
+{
+  initialize(src.native(), src.getLength());
+}
+
 String::String(const std::string& string) throw(StringException, MemoryException)
 {
   initialize(string.c_str(), string.size());
@@ -82,20 +125,17 @@ String::String(const std::string& string) throw(StringException, MemoryException
 
 String::String(const std::wstring& string) throw(StringException, MemoryException)
 {
-  const std::string utf8 = toUTF8(string);
-  initialize(utf8.c_str(), utf8.size());
+  initialize(string.c_str(), string.size());
 }
 
 String::String(const wchar* string) throw(StringException, MemoryException)
 {
-  const std::string utf8 = toUTF8(string);
-  initialize(utf8.c_str(), utf8.size());
+  initialize(string, getNullTerminatedLength(string));
 }
 
 String::String(const wchar* string, MemorySize length) throw(StringException, MemoryException)
 {
-  const std::string utf8 = toUTF8(string, length);
-  initialize(utf8.c_str(), utf8.size());
+  initialize(string, length);
 }
 
 String::String(StringOutputStream& stream)

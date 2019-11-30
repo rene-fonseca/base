@@ -24,7 +24,6 @@
 #include <base/mem/AllocatorEnumeration.h>
 #include <base/Primitives.h>
 #include <base/WideLiteral.h>
-#include <string>
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
@@ -317,7 +316,12 @@ protected:
     Initializes string.
   */
   void initialize(const wchar* string, MemorySize length) throw(MemoryException);
-  
+
+  /**
+    Initializes string.
+  */
+  void initialize(const ucs4* string, MemorySize length) throw(MemoryException);
+
   /**
     Initializes string.
   */
@@ -463,7 +467,7 @@ public:
 
   WideString(const wchar* string) throw(MemoryException);
 
-  // WideString(const ucs4* string) throw(MemoryException);
+  WideString(const ucs4* string) throw(MemoryException);
 
   WideString(const std::string& string) throw(WideStringException, MemoryException);
 
@@ -1169,7 +1173,22 @@ public:
     Returns true if the string is title cased.
   */
   bool isTitleCased() const noexcept;
-  
+
+  /**
+    Returns the characters of the string for non-modifying access.
+  */
+  inline const ucs4* native() const noexcept
+  {
+    const ucs4* result = elements->getElements();
+    BASSERT(result[getLength()] == Traits::TERMINATOR);
+    return result;
+  }
+
+  /**
+    Returns the string as UTF-8 string.
+  */
+  operator String() const;
+
 // *************************************************************************
 //   FRIEND SECTION
 // *************************************************************************

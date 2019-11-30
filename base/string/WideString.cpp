@@ -318,6 +318,12 @@ void WideString::initialize(const wchar* string, MemorySize nativeLength) throw(
   }
 }
 
+void WideString::initialize(const ucs4* string, MemorySize nativeLength) throw(MemoryException)
+{
+  elements = new ReferenceCountedAllocator<ucs4>(nativeLength + 1);
+  copy<ucs4>(elements->getElements(), string, nativeLength); // no overlap
+}
+
 void WideString::initialize(const char* string, MemorySize length) throw(MemoryException)
 {
   const MemorySize numberOfCharacters = Unicode::UTF8ToUCS4(0, Cast::pointer<const uint8*>(string), length);
@@ -834,20 +840,18 @@ WideString::WideString(MemorySize capacity) throw(MemoryException)
 WideString::WideString(const wchar* string) throw(MemoryException)
 {
   if (string) {
-    const size_t size = wcslen(string);
+    const size_t size = getNullTerminatedLength(string);
     initialize(string, size);
   }
 }
 
-#if 0
 WideString::WideString(const ucs4* string) throw(MemoryException)
 {
   if (string) {
-    const size_t size = wcslen(string);
+    const size_t size = getNullTerminatedLength(string);
     initialize(string, size);
   }
 }
-#endif
 
 WideString::WideString(const std::string& string) throw(WideStringException, MemoryException)
 {
@@ -1955,6 +1959,11 @@ FormatOutputStream& operator<<(
   
   stream.addCharacterField(buffer, dest - buffer);
   return stream;
+}
+
+WideString::operator String() const
+{
+  return String(*this);
 }
 
 #if 0

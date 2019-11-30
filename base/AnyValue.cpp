@@ -1181,7 +1181,7 @@ String AnyValue::getString() const noexcept
   case CHARACTER:
     return String(&character, 1);
   case WIDE_CHARACTER:
-    return toUTF8(&wideCharacter, 1); // multi-byte character string
+    return String(&wideCharacter, 1); // multi-byte character string
   case BOOLEAN:
     return String(boolean ? MESSAGE("true") : MESSAGE("false"));
   case STRING:

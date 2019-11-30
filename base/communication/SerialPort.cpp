@@ -15,6 +15,7 @@
 #include <base/communication/SerialPort.h>
 #include <base/communication/CommunicationsException.h>
 #include <base/string/StringOutputStream.h>
+#include <base/string/WideString.h>
 #include <base/UnexpectedFailure.h>
 #include <base/io/EndOfFile.h>
 
@@ -104,9 +105,11 @@ List<String> SerialPort::getPorts() throw() {
   return result;
 }
 
-SerialPort::SerialPort(const String& _name) throw(CommunicationsException) : name(_name) {
+SerialPort::SerialPort(const String& _name) throw(CommunicationsException)
+  : name(_name)
+{
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
-  HANDLE handle = ::CreateFile(toWide(name).c_str(),
+  HANDLE handle = ::CreateFileW(toWide(name).c_str(), // TAG: Unicode::WCharString(name)
                                GENERIC_READ | GENERIC_WRITE,
                                0, // comm devices must be opened w/exclusive-access
                                0, // no security attributes
@@ -119,18 +122,21 @@ SerialPort::SerialPort(const String& _name) throw(CommunicationsException) : nam
 #endif // flavor
 }
 
-String SerialPort::getName() const throw() {
+String SerialPort::getName() const throw()
+{
   return name;
 }
 
-void SerialPort::close() throw(CommunicationsException) {
+void SerialPort::close() throw(CommunicationsException)
+{
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   bassert(::CloseHandle(handle->getHandle()) != 0, CommunicationsException());
   handle = new SerialPortHandle(OperatingSystem::INVALID_HANDLE);
 #endif // flavor
 }
 
-unsigned int SerialPort::getBaudRate() const throw(CommunicationsException) {
+unsigned int SerialPort::getBaudRate() const throw(CommunicationsException)
+{
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   DCB dcb;
   bassert(::GetCommState(handle->getHandle(), &dcb) != 0, CommunicationsException());
@@ -140,7 +146,8 @@ unsigned int SerialPort::getBaudRate() const throw(CommunicationsException) {
 #endif // flavor
 }
 
-unsigned int SerialPort::getDataBits() const throw(CommunicationsException) {
+unsigned int SerialPort::getDataBits() const throw(CommunicationsException)
+{
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   DCB dcb;
   bassert(::GetCommState(handle->getHandle(), &dcb) != 0, CommunicationsException());
@@ -150,7 +157,8 @@ unsigned int SerialPort::getDataBits() const throw(CommunicationsException) {
 #endif // flavor
 }
 
-unsigned int SerialPort::getParity() const throw(CommunicationsException) {
+unsigned int SerialPort::getParity() const throw(CommunicationsException)
+{
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   DCB dcb;
   bassert(::GetCommState(handle->getHandle(), &dcb) != 0, CommunicationsException());
@@ -173,7 +181,8 @@ unsigned int SerialPort::getParity() const throw(CommunicationsException) {
 #endif // flavor
 }
 
-unsigned int SerialPort::getStopBits() const throw(CommunicationsException) {
+unsigned int SerialPort::getStopBits() const throw(CommunicationsException)
+{
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   DCB dcb;
   bassert(::GetCommState(handle->getHandle(), &dcb) != 0, CommunicationsException());
@@ -192,7 +201,8 @@ unsigned int SerialPort::getStopBits() const throw(CommunicationsException) {
 #endif // flavor
 }
 
-bool SerialPort::isCD() const throw(CommunicationsException) {
+bool SerialPort::isCD() const throw(CommunicationsException)
+{
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   return false; // TAG: fixme
 #else // unix
@@ -200,7 +210,8 @@ bool SerialPort::isCD() const throw(CommunicationsException) {
 #endif // flavor
 }
 
-bool SerialPort::isCTS() const throw(CommunicationsException) {
+bool SerialPort::isCTS() const throw(CommunicationsException)
+{
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   DWORD state = 0;
   bassert(::GetCommModemStatus(handle->getHandle(), &state) != 0, CommunicationsException());
@@ -210,7 +221,8 @@ bool SerialPort::isCTS() const throw(CommunicationsException) {
 #endif // flavor
 }
 
-bool SerialPort::isDSR() const throw(CommunicationsException) {
+bool SerialPort::isDSR() const throw(CommunicationsException)
+{
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   DWORD state = 0;
   bassert(::GetCommModemStatus(handle->getHandle(), &state) != 0, CommunicationsException());
@@ -220,7 +232,8 @@ bool SerialPort::isDSR() const throw(CommunicationsException) {
 #endif // flavor
 }
 
-bool SerialPort::isDTR() const throw(CommunicationsException) {
+bool SerialPort::isDTR() const throw(CommunicationsException)
+{
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   return false; // TAG: fixme
 #else // unix
@@ -228,7 +241,8 @@ bool SerialPort::isDTR() const throw(CommunicationsException) {
 #endif // flavor
 }
 
-bool SerialPort::isRI() const throw(CommunicationsException) {
+bool SerialPort::isRI() const throw(CommunicationsException)
+{
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   DWORD state = 0;
   bassert(::GetCommModemStatus(handle->getHandle(), &state) != 0, CommunicationsException());
@@ -238,7 +252,8 @@ bool SerialPort::isRI() const throw(CommunicationsException) {
 #endif // flavor
 }
 
-bool SerialPort::isRTS() const throw(CommunicationsException) {
+bool SerialPort::isRTS() const throw(CommunicationsException)
+{
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   return false; // TAG: fixme
 #else // unix
@@ -246,7 +261,9 @@ bool SerialPort::isRTS() const throw(CommunicationsException) {
 #endif // flavor
 }
 
-void SerialPort::setParameters(unsigned int baudRate, unsigned int dataBits, unsigned int parity, unsigned int stopBits) throw(NotSupported, CommunicationsException) {
+void SerialPort::setParameters(unsigned int baudRate, unsigned int dataBits, unsigned int parity,
+  unsigned int stopBits) throw(NotSupported, CommunicationsException)
+{
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   static const unsigned int mapParity[] = {EVENPARITY, MARKPARITY, NOPARITY, ODDPARITY, SPACEPARITY};
   static const unsigned int mapStopBits[] = {ONESTOPBIT, ONE5STOPBITS, TWOSTOPBITS};
@@ -263,10 +280,12 @@ void SerialPort::setParameters(unsigned int baudRate, unsigned int dataBits, uns
 #endif // flavor
 }
 
-void SerialPort::setFlowControlMode(unsigned int flowMode) throw(CommunicationsException) {
+void SerialPort::setFlowControlMode(unsigned int flowMode) throw(CommunicationsException)
+{
 }
 
-void SerialPort::sendBreak(unsigned int milliseconds) throw(CommunicationsException) {
+void SerialPort::sendBreak(unsigned int milliseconds) throw(CommunicationsException)
+{
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   ::SetCommBreak(handle->getHandle());
   ::Sleep(milliseconds); // FIXME: what if INFINITE
@@ -274,31 +293,36 @@ void SerialPort::sendBreak(unsigned int milliseconds) throw(CommunicationsExcept
 #endif // flavor
 }
 
-void SerialPort::setDTR(bool state) throw(CommunicationsException) {
+void SerialPort::setDTR(bool state) throw(CommunicationsException)
+{
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   bassert(::EscapeCommFunction(handle->getHandle(), state ? (SETDTR) : (CLRDTR)) != 0, CommunicationsException());
 #endif // flavor
 }
 
-void SerialPort::setRTS(bool state) throw(CommunicationsException) {
+void SerialPort::setRTS(bool state) throw(CommunicationsException)
+{
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   bassert(::EscapeCommFunction(handle->getHandle(), state ? (SETRTS) : (CLRRTS)) != 0, CommunicationsException());
 #endif // flavor
 }
 
-bool SerialPort::isReadTimeoutSupported() const throw(CommunicationsException) {
+bool SerialPort::isReadTimeoutSupported() const throw(CommunicationsException)
+{
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
 #endif // flavor
   return true;
 }
 
-bool SerialPort::isWriteTimeoutSupported() const throw(CommunicationsException) {
+bool SerialPort::isWriteTimeoutSupported() const throw(CommunicationsException)
+{
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
 #endif // flavor
   return true;
 }
 
-unsigned int SerialPort::getReadTimeout() const throw(CommunicationsException) {
+unsigned int SerialPort::getReadTimeout() const throw(CommunicationsException)
+{
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   COMMTIMEOUTS timeouts;
   bassert(::GetCommTimeouts(handle->getHandle(), &timeouts) != 0, CommunicationsException());
@@ -308,7 +332,8 @@ unsigned int SerialPort::getReadTimeout() const throw(CommunicationsException) {
 #endif // flavor
 }
 
-unsigned int SerialPort::getWriteTimeout() const throw(CommunicationsException) {
+unsigned int SerialPort::getWriteTimeout() const throw(CommunicationsException)
+{
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   COMMTIMEOUTS timeouts;
   bassert(::GetCommTimeouts(handle->getHandle(), &timeouts) != 0, CommunicationsException());
@@ -318,7 +343,8 @@ unsigned int SerialPort::getWriteTimeout() const throw(CommunicationsException) 
 #endif // flavor
 }
 
-void SerialPort::setReadTimeout(unsigned int milliseconds) throw(CommunicationsException) {
+void SerialPort::setReadTimeout(unsigned int milliseconds) throw(CommunicationsException)
+{
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   COMMTIMEOUTS timeouts;
   clear(timeouts);
@@ -327,7 +353,8 @@ void SerialPort::setReadTimeout(unsigned int milliseconds) throw(CommunicationsE
 #endif // flavor
 }
 
-void SerialPort::setWriteTimeout(unsigned int milliseconds) throw(CommunicationsException) {
+void SerialPort::setWriteTimeout(unsigned int milliseconds) throw(CommunicationsException)
+{
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   COMMTIMEOUTS timeouts;
   clear(timeouts);
@@ -336,7 +363,8 @@ void SerialPort::setWriteTimeout(unsigned int milliseconds) throw(Communications
 #endif // flavor
 }
 
-unsigned int SerialPort::getInputBufferSize() const throw(CommunicationsException) {
+unsigned int SerialPort::getInputBufferSize() const throw(CommunicationsException)
+{
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   COMMPROP properties;
   bassert(::GetCommProperties(handle->getHandle(), &properties) != 0, CommunicationsException());
@@ -346,7 +374,8 @@ unsigned int SerialPort::getInputBufferSize() const throw(CommunicationsExceptio
 #endif // flavor
 }
 
-void SerialPort::setInputBufferSize(unsigned int size) throw(CommunicationsException) {
+void SerialPort::setInputBufferSize(unsigned int size) throw(CommunicationsException)
+{
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   COMMPROP properties;
   bassert((::GetCommProperties(handle->getHandle(), &properties) != 0) &&
@@ -354,7 +383,8 @@ void SerialPort::setInputBufferSize(unsigned int size) throw(CommunicationsExcep
 #endif // flavor
 }
 
-unsigned int SerialPort::getOutputBufferSize() const throw(CommunicationsException) {
+unsigned int SerialPort::getOutputBufferSize() const throw(CommunicationsException)
+{
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   COMMPROP properties;
   bassert(::GetCommProperties(handle->getHandle(), &properties) != 0, CommunicationsException());
@@ -364,7 +394,8 @@ unsigned int SerialPort::getOutputBufferSize() const throw(CommunicationsExcepti
 #endif // flavor
 }
 
-void SerialPort::setOutputBufferSize(unsigned int size) throw(CommunicationsException) {
+void SerialPort::setOutputBufferSize(unsigned int size) throw(CommunicationsException)
+{
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   COMMPROP properties;
   bassert((::GetCommProperties(handle->getHandle(), &properties) != 0) &&
@@ -372,7 +403,8 @@ void SerialPort::setOutputBufferSize(unsigned int size) throw(CommunicationsExce
 #endif // flavor
 }
 
-void SerialPort::asyncCancel() throw(AsynchronousException) {
+void SerialPort::asyncCancel() throw(AsynchronousException)
+{
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   ::CancelIo(handle->getHandle());
 #else // unix
@@ -382,7 +414,8 @@ void SerialPort::asyncCancel() throw(AsynchronousException) {
 AsynchronousReadOperation SerialPort::read(
   uint8* buffer,
   unsigned int bytesToRead,
-  AsynchronousReadEventListener* listener) throw(AsynchronousException) {
+  AsynchronousReadEventListener* listener) throw(AsynchronousException)
+{
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   bassert(listener, AsynchronousException()); // FIXME
   return new win32::AsyncReadStreamContext(handle->getHandle(), buffer, bytesToRead, listener);
@@ -394,7 +427,8 @@ AsynchronousReadOperation SerialPort::read(
 AsynchronousWriteOperation SerialPort::write(
   const uint8* buffer,
   unsigned int bytesToWrite,
-  AsynchronousWriteEventListener* listener) throw(AsynchronousException) {
+  AsynchronousWriteEventListener* listener) throw(AsynchronousException)
+{
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   bassert(listener, AsynchronousException()); // FIXME
   return new win32::AsyncWriteStreamContext(handle->getHandle(), buffer, bytesToWrite, listener);
@@ -406,7 +440,8 @@ AsynchronousWriteOperation SerialPort::write(
 unsigned int SerialPort::read(
   uint8* buffer,
   unsigned int bytesToRead,
-  bool nonblocking) throw(IOException) {
+  bool nonblocking) throw(IOException)
+{
   unsigned int bytesRead = 0;
   while (bytesToRead > 0) {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
@@ -447,7 +482,8 @@ unsigned int SerialPort::read(
 unsigned int SerialPort::write(
   const uint8* buffer,
   unsigned int bytesToWrite,
-  bool nonblocking) throw(IOException) {
+  bool nonblocking) throw(IOException)
+{
   // TAG: currently always blocks
   unsigned int bytesWritten = 0;
   while (bytesToWrite) {
@@ -477,7 +513,8 @@ unsigned int SerialPort::write(
   return bytesWritten;
 }
 
-SerialPort::~SerialPort() {
+SerialPort::~SerialPort()
+{
   close();
 }
 

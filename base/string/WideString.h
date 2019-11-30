@@ -1233,6 +1233,6 @@ inline WideString operator-(const WideString& left, const WideString& right) thr
 _COM_AZURE_DEV__BASE__API FormatOutputStream& operator<<(FormatOutputStream& stream, WideString::UnicodeCharacter character) throw(IOException);
 
 /** Converts WideString to String. */
-std::string toUTF8(const WideString& s);
+std::string toUTF8(const WideString& s); // TAG: remove this
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

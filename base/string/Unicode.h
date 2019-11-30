@@ -454,6 +454,24 @@ public:
     const uint8* src,
     MemorySize size,
     unsigned int flags = EAT_BOM | 0*EXPECT_BOM) /*throw(MultibyteException)*/;
+
+#if 0
+  class WCharString {
+  private:
+
+    PrimitiveBuffer<wchar> buffer;
+  public:
+
+    WCharString(const char* string, MemorySize length);
+    WCharString(const wchar* string, MemorySize length);
+    WCharString(const ucs4* string, MemorySize length);
+
+    inline operator const wchar* const noexcept
+    {
+      return buffer;
+    }
+  };
+#endif
 };
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

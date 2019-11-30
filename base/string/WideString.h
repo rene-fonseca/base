@@ -1192,7 +1192,7 @@ public:
   */
   inline operator String() const
   {
-    return *this;
+    return String(*this);
   }
 
 // *************************************************************************

@@ -90,12 +90,14 @@ public:
   static unsigned int getFlags(ucs4 character) noexcept;
   
   /** Returns true if the character a letter. */
-  static inline bool isLetter(ucs4 character) noexcept {
+  static inline bool isLetter(ucs4 character) noexcept
+  {
     return getFlags(character) & LETTER;
   }
 
   /** Returns true if the character is a letter or a digit. */
-  static inline bool isLetterDigit(ucs4 character) noexcept {
+  static inline bool isLetterDigit(ucs4 character) noexcept
+  {
     return getFlags(character) & (LETTER|DIGIT);
   }
   
@@ -1152,7 +1154,8 @@ public:
   /**
     Returns NULL-terminated wide string.
   */
-  inline const ucs4* getElements() const noexcept {
+  inline const ucs4* getElements() const noexcept
+  {
     // special case: no need to copy on write 'cause we only add terminator
     ucs4* result = const_cast<ucs4*>(elements->getElements());
     result[getLength()] = Traits::TERMINATOR;
@@ -1187,7 +1190,10 @@ public:
   /**
     Returns the string as UTF-8 string.
   */
-  operator String() const;
+  inline operator String() const
+  {
+    return *this;
+  }
 
 // *************************************************************************
 //   FRIEND SECTION
@@ -1231,8 +1237,5 @@ inline WideString operator-(const WideString& left, const WideString& right) thr
   Writes a wide character to the format output stream.
 */
 _COM_AZURE_DEV__BASE__API FormatOutputStream& operator<<(FormatOutputStream& stream, WideString::UnicodeCharacter character) throw(IOException);
-
-/** Converts WideString to String. */
-std::string toUTF8(const WideString& s); // TAG: remove this
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

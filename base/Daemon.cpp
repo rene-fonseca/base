@@ -137,10 +137,11 @@ namespace win32 {
   }
 
   /* Initialize service. */
-  void WINAPI serviceEntry(DWORD numberOfArguments, LPWSTR* argumentVector) {
+  void WINAPI serviceEntry(DWORD numberOfArguments, LPWSTR* argumentVector)
+  {
     DaemonImpl::dispatched = true;
     // register the service control handler
-    DaemonImpl::serviceStatusHandle = ::RegisterServiceCtrlHandler(
+    DaemonImpl::serviceStatusHandle = ::RegisterServiceCtrlHandlerW(
       toWide(Application::getApplication()->getFormalName()).c_str(),
       serviceControlHandler
     );

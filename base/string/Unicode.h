@@ -405,6 +405,9 @@ public:
   /** Convert in-memory (no BOM) UTF-16 to UCS-4. */
   static MemoryDiff UTF16ToUCS4(ucs4* dest, const utf16* src, MemorySize size, unsigned int flags = 0) noexcept;
 
+  /** Convert in-memory (no BOM) UCS-4 to UTF-16. */
+  static MemoryDiff UCS4ToUTF16(utf16* dest, const ucs4* src, MemorySize size, unsigned int flags = 0) noexcept;
+
   /**
     Low-level method which converts an UCS-4 encoded string to UTF-32BE. A
     null-terminator is NOT appended to the string. The destination buffer must
@@ -454,6 +457,36 @@ public:
     const uint8* src,
     MemorySize size,
     unsigned int flags = EAT_BOM | 0*EXPECT_BOM) /*throw(MultibyteException)*/;
+
+  // wchar support
+
+  static inline MemoryDiff UCS4ToWChar(wchar* dest, const ucs4* src, MemorySize size) noexcept
+  {
+    if (sizeof(wchar) == sizeof(utf16)) {
+      return UCS4ToUTF16(reinterpret_cast<utf16*>(dest), src, size);
+    } else if (sizeof(wchar) == sizeof(ucs4)) {
+      for (const auto end = src + size; src != end; ++dest, ++src) { // no code validation
+        *dest = *src;
+      }
+      return size;
+    } else {
+      BASSERT(!"Unsupported wchar.");
+    }
+  }
+
+  static inline MemoryDiff WCharToUCS4(ucs4* dest, const wchar* src, MemorySize size) noexcept
+  {
+    if (sizeof(wchar) == sizeof(utf16)) {
+      return UTF16ToUCS4(dest, reinterpret_cast<const utf16*>(src), size);
+    } else if (sizeof(wchar) == sizeof(ucs4)) {
+      for (const auto end = src + size; src != end; ++dest, ++src) { // no code validation
+        *dest = *src;
+      }
+      return size;
+    } else {
+      BASSERT(!"Unsupported wchar.");
+    }
+  }
 
 #if 0
   class WCharString {

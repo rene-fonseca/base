@@ -786,6 +786,58 @@ MemoryDiff Unicode::UTF16ToUCS4(ucs4* dest, const utf16* src, MemorySize size, u
   }
 }
 
+MemoryDiff Unicode::UCS4ToUTF16(utf16* dest, const ucs4* src, MemorySize size, unsigned int flags) noexcept
+{
+  if (!src) {
+    return 0;
+  }
+  const utf16* const begin = dest;
+  const ucs4* const end = src + size;
+  if (dest) {
+    if (flags & ADD_BOM) {
+      *dest++ = BOM;
+    }
+    while (src != end) {
+      const ucs4 value = *src++;
+      if (value < 0xd800) {
+        *dest++ = value;
+      } else if (value <= 0xdfff) {
+        return INVALID_UCS4_CHARACTER;
+      } else if (value <= 0xffff) {
+        *dest++ = value;
+      } else if (value <= MAX) {
+        uint16 high = ((value - 0x10000) >> 10) + 0xd800; // 10 bit - high
+        *dest++ = high;
+        uint16 low = ((value - 0x10000) & 0x3ff) + 0xdc00; // 10 bit - low
+        *dest++ = low;
+      } else {
+        return INVALID_UCS4_CHARACTER;
+      }
+    }
+    return dest - begin;
+  } else {
+    MemorySize length = 0;
+    if (flags & ADD_BOM) {
+      ++length;
+    }
+    while (src != end) {
+      const ucs4 value = *src++;
+      if (value < 0xd800) {
+        ++length;
+      } else if (value <= 0xdfff) {
+        return INVALID_UCS4_CHARACTER;
+      } else if (value <= 0xffff) {
+        ++length;
+      } else if (value <= MAX) {
+        length += 2;
+      } else {
+        return INVALID_UCS4_CHARACTER;
+      }
+    }
+    return length;
+  }
+}
+
 MemoryDiff Unicode::UCS4ToUTF32BE(uint8* dest, const ucs4* src, MemorySize size, unsigned int flags) noexcept
 {
   if (!src) {

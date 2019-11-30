@@ -23,7 +23,7 @@
 #include <base/collection/Hash.h>
 #include <base/Literal.h>
 
-#if 0 // get string and wstring types
+#if 1 // get string and wstring types
 #include <string>
 #else
 // can we forward declare string and wstring - see 17.4.3.1/1
@@ -218,7 +218,8 @@ private:
     Element& operator=(const Element& assign) noexcept;
     
     inline Element(String& _string, MemorySize _index) noexcept
-      : string(_string), index(_index) {
+      : string(_string), index(_index)
+    {
     }
   public:
     
@@ -385,7 +386,8 @@ public:
     Initializes string from other string.
   */
   String(String&& move) noexcept
-    : elements(move.elements) {
+    : elements(move.elements)
+  {
     move.elements = DEFAULT_STRING.elements; // make empty so we may avoid future copyOnWrite()
   }
 
@@ -686,12 +688,14 @@ public:
     Returns a reference to character at the specified index. Raises
     OutOfRange if index exceeds the length of the string.
   */
-  Element operator[](MemorySize index) throw(OutOfRange) {
+  Element operator[](MemorySize index) throw(OutOfRange)
+  {
     return Element(*this, index);
   }
 
   /** Returns true if non-empty. */
-  inline operator bool() const noexcept {
+  inline operator bool() const noexcept
+  {
     return getLength() != 0;
   }
 
@@ -699,7 +703,8 @@ public:
     Returns the character at the specified index. Raises OutOfRange if index
     exceeds the length of the string.
   */
-  inline char operator[](MemorySize index) const throw(OutOfRange) {
+  inline char operator[](MemorySize index) const throw(OutOfRange)
+  {
     return getAt(index);
   }
 
@@ -781,7 +786,8 @@ public:
 
   template<MemorySize SIZE>
   inline String& append(const char (&literal)[SIZE])
-    throw(StringException, MemoryException) {
+    throw(StringException, MemoryException)
+  {
     return append(Literal(literal));
   }
   
@@ -815,7 +821,8 @@ public:
 
     @param ch The character to be prepended.
   */
-  inline String& prepend(char ch) throw(StringException, MemoryException) {
+  inline String& prepend(char ch) throw(StringException, MemoryException)
+  {
     return insert(0, ch);
   }
 
@@ -824,8 +831,8 @@ public:
 
     @param string The string to be prepended.
   */
-  inline String& prepend(
-    const String& string) throw(StringException, MemoryException) {
+  inline String& prepend(const String& string) throw(StringException, MemoryException)
+  {
     return insert(0, string);
   }
 
@@ -871,7 +878,8 @@ public:
 
   template<MemorySize SIZE>
   inline String& insert(MemorySize index, const char (&literal)[SIZE])
-    throw(StringException, MemoryException) {
+    throw(StringException, MemoryException)
+  {
     return insert(index, Literal(literal));
   }
   
@@ -1058,7 +1066,8 @@ public:
   int compareToIgnoreCase(const NativeString& string) const throw(StringException);
   
   template<MemorySize SIZE>
-  inline int compareToIgnoreCase(const char (&literal)[SIZE]) const noexcept {
+  inline int compareToIgnoreCase(const char (&literal)[SIZE]) const noexcept
+  {
     return compareToIgnoreCase(NativeString(literal));
   }
   
@@ -1077,7 +1086,8 @@ public:
   bool startsWith(const Literal& prefix) const noexcept;
 
   template<MemorySize SIZE>
-  inline bool startsWith(const char (&literal)[SIZE]) const noexcept {
+  inline bool startsWith(const char (&literal)[SIZE]) const noexcept
+  {
     return startsWith(Literal(literal));
   }
   
@@ -1096,26 +1106,30 @@ public:
   bool endsWith(const Literal& suffix) const noexcept;
 
   template<MemorySize SIZE>
-  inline bool endsWith(const char (&literal)[SIZE]) const noexcept {
+  inline bool endsWith(const char (&literal)[SIZE]) const noexcept
+  {
     return endsWith(Literal(literal));
   }
   
   /**
     Equality operator.
   */
-  inline bool operator==(const String& string) const noexcept {
+  inline bool operator==(const String& string) const noexcept
+  {
     return compareTo(string) == 0;
   }
   
   /**
     Equality operator.
   */
-  inline bool operator==(const Literal& string) const noexcept {
+  inline bool operator==(const Literal& string) const noexcept
+  {
     return compareTo(string) == 0;
   }
   
   template<MemorySize SIZE>
-  inline bool operator==(const char (&literal)[SIZE]) const noexcept {
+  inline bool operator==(const char (&literal)[SIZE]) const noexcept
+  {
     if (Constraint<(SIZE > 0)>::UNSPECIFIED) {}
     return compareTo(Literal(literal)) == 0;
   }
@@ -1123,19 +1137,22 @@ public:
   /**
     Inequality operator.
   */
-  inline bool operator!=(const String& string) const noexcept {
+  inline bool operator!=(const String& string) const noexcept
+  {
     return compareTo(string) != 0;
   }
 
   /**
     Equality operator.
   */
-  inline bool operator!=(const Literal& string) const noexcept {
+  inline bool operator!=(const Literal& string) const noexcept
+  {
     return compareTo(string) != 0;
   }
   
   template<MemorySize SIZE>
-  inline bool operator!=(const char (&literal)[SIZE]) const noexcept {
+  inline bool operator!=(const char (&literal)[SIZE]) const noexcept
+  {
     if (Constraint<(SIZE > 0)>::UNSPECIFIED) {}
     return compareTo(Literal(literal)) != 0;
   }
@@ -1143,12 +1160,14 @@ public:
   /**
     Less than operator.
   */
-  inline bool operator<(const String& string) const noexcept {
+  inline bool operator<(const String& string) const noexcept
+  {
     return compareTo(string) < 0;
   }
 
   template<MemorySize SIZE>
-  inline bool operator<(const char (&literal)[SIZE]) const noexcept {
+  inline bool operator<(const char (&literal)[SIZE]) const noexcept
+  {
     if (Constraint<(SIZE > 0)>::UNSPECIFIED) {}
     return compareTo(Literal(literal)) < 0;
   }
@@ -1156,12 +1175,14 @@ public:
   /**
     Less than or equal operator.
   */
-  inline bool operator<=(const String& string) const noexcept {
+  inline bool operator<=(const String& string) const noexcept
+  {
     return compareTo(string) <= 0;
   }
 
   template<MemorySize SIZE>
-  inline bool operator<=(const char (&literal)[SIZE]) const noexcept {
+  inline bool operator<=(const char (&literal)[SIZE]) const noexcept
+  {
     if (Constraint<(SIZE > 0)>::UNSPECIFIED) {}
     return compareTo(Literal(literal)) <= 0;
   }
@@ -1169,24 +1190,28 @@ public:
   /**
     Greater than or equal operator.
   */
-  inline bool operator>=(const String& string) const noexcept {
+  inline bool operator>=(const String& string) const noexcept
+  {
     return compareTo(string) >= 0;
   }
 
   template<MemorySize SIZE>
-  inline bool operator>=(const char (&literal)[SIZE]) const noexcept {
+  inline bool operator>=(const char (&literal)[SIZE]) const noexcept
+  {
     return compareTo(Literal(literal)) >= 0;
   }
   
   /**
     Greater than operator.
   */
-  inline bool operator>(const String& string) const noexcept {
+  inline bool operator>(const String& string) const noexcept
+  {
     return compareTo(string) > 0;
   }
 
   template<MemorySize SIZE>
-  inline bool operator>(const char (&literal)[SIZE]) const noexcept {
+  inline bool operator>(const char (&literal)[SIZE]) const noexcept
+  {
     if (Constraint<(SIZE > 0)>::UNSPECIFIED) {}
     return compareTo(Literal(literal)) > 0;
   }
@@ -1194,42 +1219,48 @@ public:
   /**
     Equality operator.
   */
-  inline bool operator==(const NativeString& string) const noexcept {
+  inline bool operator==(const NativeString& string) const noexcept
+  {
     return compareTo(string) == 0;
   }
 
   /**
     Inequality operator.
   */
-  inline bool operator!=(const NativeString& string) const noexcept {
+  inline bool operator!=(const NativeString& string) const noexcept
+  {
     return compareTo(string) != 0;
   }
 
   /**
     Less than operator.
   */
-  inline bool operator<(const NativeString& string) const noexcept {
+  inline bool operator<(const NativeString& string) const noexcept
+  {
     return compareTo(string) < 0;
   }
 
   /**
     Less than or equal operator.
   */
-  inline bool operator<=(const NativeString& string) const noexcept {
+  inline bool operator<=(const NativeString& string) const noexcept
+  {
     return compareTo(string) <= 0;
   }
 
   /**
     Greater than or equal operator.
   */
-  inline bool operator>=(const NativeString& string) const noexcept {
+  inline bool operator>=(const NativeString& string) const noexcept
+  {
     return compareTo(string) >= 0;
   }
 
   /**
     Greater than operator.
   */
-  inline bool operator>(const NativeString& string) const noexcept {
+  inline bool operator>(const NativeString& string) const noexcept
+  {
     return compareTo(string) > 0;
   }
 
@@ -1464,7 +1495,7 @@ inline void swapper<String>(String& a, String& b)
   swapper(a.elements, b.elements); // self swap allowed
 }
 
-// TAG: remove these
+#if 1 // TAG: move to proper header <base/strings/stdstring.h>
 /** Converts String to UTF-8 string. */
 std::string toUTF8(const String& s);
 
@@ -1477,6 +1508,9 @@ std::string toUTF8(const wchar* s);
 /** Converts const wchar* to UTF-8 string. */
 std::string toUTF8(const wchar* s, MemorySize length);
 
+/** Converts WideString to String. */
+// std::string toUTF8(const WideString& s);
+
 /** Converts UTF-8 string to wstring. */
 std::wstring toWide(const std::string& s);
 
@@ -1485,5 +1519,6 @@ std::wstring toWide(const String& s);
 
 /** Converts UTF-8 (const char*) to wstring. */
 std::wstring toWide(const char* s);
+#endif
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

@@ -286,7 +286,7 @@ inline ReferenceCountedAllocator<ucs4>* allocate(const wchar* text, MemorySize n
 {
   // worst case length is nativeLength - allocate worst case and then release unused if possible
   const MemorySize length = Unicode::UTF16ToUCS4(
-    0,
+    nullptr,
     Cast::pointer<const utf16*>(text),
     nativeLength
   );
@@ -783,9 +783,8 @@ String WideString::getMultibyteString(const wchar* string)
 {
   // TAG: should accept string == 0
   bassert(string, NullPointer(Type::getType<WideString>()));
-  const wchar* terminator = find<wchar>(string, MAXIMUM_LENGTH, 0); // find terminator
-  bassert(terminator, WideStringException(Type::getType<WideString>())); // maximum length exceeded
-  const MemorySize nativeLength = terminator - string;
+
+  const MemorySize nativeLength = getNullTerminatedLength(string, MAXIMUM_LENGTH);
   
   String result;
   if (sizeof(wchar) == sizeof(utf16)) {
@@ -892,9 +891,7 @@ WideString::WideString(const NativeWideString& string) throw(WideStringException
     return;
   }
   
-  const wchar* terminator = find<wchar>(string.getValue(), MAXIMUM_LENGTH, 0);
-  bassert(terminator, WideStringException(this)); // maximum length exceeded
-  MemorySize nativeLength = terminator - string.getValue();
+  const MemorySize nativeLength = getNullTerminatedLength(string.getValue(), MAXIMUM_LENGTH);
   
   if (sizeof(wchar) == sizeof(utf16)) {
     elements = allocate(string.getValue(), nativeLength);
@@ -924,8 +921,7 @@ WideString::WideString(const NativeWideString& string, MemorySize maximum) throw
     return;
   }
   
-  const wchar* terminator = find<wchar>(string.getValue(), maximum, 0);
-  const MemorySize nativeLength = terminator ? (terminator - string.getValue()) : maximum;
+  const MemorySize nativeLength = getNullTerminatedLength(string.getValue(), maximum);
   
   if (sizeof(wchar) == sizeof(utf16)) {
     elements = allocate(string.getValue(), nativeLength);
@@ -970,12 +966,7 @@ WideString::WideString(const NativeString& string) throw(MultibyteException, Mem
     return;
   }
   
-  const char* terminator = find<char>(string.getValue(), MAXIMUM_LENGTH, 0);
-  bassert(
-    terminator,
-    WideStringException(Type::getType<WideString>())
-  ); // maximum length exceeded
-  const MemorySize multibyteLength = terminator - string.getValue();
+  const MemorySize multibyteLength = getNullTerminatedLength(string.getValue(), MAXIMUM_LENGTH);
 
   MemorySize numberOfCharacters = Unicode::UTF8ToUCS4(
     0,
@@ -1004,8 +995,7 @@ WideString::WideString(const NativeString& string, MemorySize maximum) throw(Out
     return;
   }
   
-  const char* terminator = find<char>(string.getValue(), maximum, 0);
-  const MemorySize multibyteLength = (terminator) ? (terminator - string.getValue()) : maximum;
+  const MemorySize multibyteLength = getNullTerminatedLength(string.getValue(), maximum);
   
   MemorySize numberOfCharacters = Unicode::UTF8ToUCS4(
     0,
@@ -1162,7 +1152,7 @@ WideString& WideString::insert(MemorySize index, const WideLiteral& literal) thr
     // insert section at end of string
     if (sizeof(wchar) == sizeof(utf16)) {
       MemorySize literalLength = Unicode::UTF16ToUCS4(
-        0,
+        nullptr,
         Cast::pointer<const utf16*>(literal.getValue()),
         literal.getLength()
       );
@@ -1189,7 +1179,7 @@ WideString& WideString::insert(MemorySize index, const WideLiteral& literal) thr
     // insert section in middle or beginning of string
     if (sizeof(wchar) == sizeof(utf16)) {
       MemorySize literalLength = Unicode::UTF16ToUCS4(
-        0,
+        nullptr,
         Cast::pointer<const utf16*>(literal.getValue()),
         literal.getLength()
       );
@@ -1229,7 +1219,7 @@ WideString& WideString::append(const WideLiteral& literal) throw(WideStringExcep
   ucs4* buffer = elements->getElements();
   if (sizeof(wchar) == sizeof(utf16)) {
     MemorySize length = Unicode::UTF16ToUCS4(
-      0,
+      nullptr,
       Cast::pointer<const utf16*>(literal.getValue()),
       nativeLength
     );
@@ -1263,7 +1253,7 @@ WideString& WideString::append(const WideLiteral& literal, MemorySize maximum) t
   ucs4* buffer = elements->getElements();
   if (sizeof(wchar) == sizeof(utf16)) {
     MemorySize length = Unicode::UTF16ToUCS4(
-      0,
+      nullptr,
       Cast::pointer<const utf16*>(literal.getValue()),
       nativeLength
     );
@@ -1302,13 +1292,12 @@ WideString& WideString::append(const wchar* string, MemorySize maximum) throw(Ou
     string,
     WideStringException(this)
   ); // make sure string is proper (not empty)
-  const wchar* terminator = find<wchar>(string, maximum, 0); // find terminator
-  MemorySize nativeLength = terminator ? (terminator - string) : maximum;
+  const MemorySize nativeLength = getNullTerminatedLength(string, maximum);
   MemorySize length = getLength();
   ucs4* buffer = elements->getElements();
   if (sizeof(wchar) == sizeof(utf16)) {
     MemorySize stringLength = Unicode::UTF16ToUCS4(
-      0,
+      nullptr,
       Cast::pointer<const utf16*>(string),
       nativeLength
     );
@@ -1959,28 +1948,6 @@ FormatOutputStream& operator<<(
   
   stream.addCharacterField(buffer, dest - buffer);
   return stream;
-}
-
-WideString::operator String() const
-{
-  return String(*this);
-}
-
-#if 0
-std::wstring toWide(const WideString& s) {
-  std::wstring_convert<std::codecvt_utf8<char32_t>, char32_t> convert;
-  std::string r = convert.to_bytes((const char32_t*)s.getElements(), (const char32_t*)s.getElements() + s.getLength());
-  return toWide(r);
-}
-#endif
-
-std::string toUTF8(const WideString& s) {
-  // TAG: not tested
-#if 0
-  std::wstring_convert<std::codecvt_utf8<ucs4>, ucs4> convert;
-  return convert.to_bytes(s.getElements(), s.getElements() + s.getLength());
-#endif
-return std::string();
 }
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

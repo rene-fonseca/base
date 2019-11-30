@@ -1884,7 +1884,7 @@ FormatOutputStream& operator<<(
   unsigned int value = character.getCode();
   
   switch (character.getStyle()) {
-  case WideString::STYLE_XML:
+  case WideString::UnicodeCharacter::STYLE_XML:
     if (stream.getFlags() & FormatOutputStream::Symbols::DECIMAL) {
       *dest++ = '&';
       *dest++ = '#';
@@ -1916,7 +1916,7 @@ FormatOutputStream& operator<<(
       *dest++ = ';';
     }
     break;
-  case WideString::STYLE_PERL:
+  case WideString::UnicodeCharacter::STYLE_PERL:
     *dest++ = '\\';
     *dest++ = 'x';
     *dest++ = '{';
@@ -1931,7 +1931,7 @@ FormatOutputStream& operator<<(
     }
     *dest++ = '}';
     break;
-  case WideString::STYLE_CPP:
+  case WideString::UnicodeCharacter::STYLE_CPP:
   default:
     *dest++ = '\\';
     *dest++ = 'u';

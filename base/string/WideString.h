@@ -365,27 +365,28 @@ public:
   /** Specifies the byte order mark. */
   static constexpr ucs4 BOM = 0x0000feff;
 
-  /** The style. */
-  enum Style {
-    /** Java format: \\u1234. */
-    STYLE_JAVA,
-    /** C format: \\u1234. */
-    STYLE_C = STYLE_JAVA,
-    /** C++ format: \\u1234. */
-    STYLE_CPP = STYLE_C,
-    /** HTML format &#x1234; or &#1234; dependent on the current base integer. */
-    STYLE_HTML,
-    /** XML format &#x1234; or &#1234; dependent on the current base integer. */
-    STYLE_XML = STYLE_HTML,
-    /** Perl format: \\x{1234}. */
-    STYLE_PERL
-  };
-
   class _COM_AZURE_DEV__BASE__API UnicodeCharacter {
+  public:
+
+    /** The style. */
+    enum Style {
+      /** Java format: \\u1234. */
+      STYLE_JAVA,
+      /** C format: \\u1234. */
+      STYLE_C = STYLE_JAVA,
+      /** C++ format: \\u1234. */
+      STYLE_CPP = STYLE_C,
+      /** HTML format &#x1234; or &#1234; dependent on the current base integer. */
+      STYLE_HTML,
+      /** XML format &#x1234; or &#1234; dependent on the current base integer. */
+      STYLE_XML = STYLE_HTML,
+      /** Perl format: \\x{1234}. */
+      STYLE_PERL
+    };
   private:
     
     static constexpr Style DEFAULT_STYLE = STYLE_CPP;
-    ucs4 character;
+    ucs4 character = 0;
     Style style;
   public:
     

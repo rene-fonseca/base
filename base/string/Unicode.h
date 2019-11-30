@@ -141,11 +141,12 @@ public:
     } else if (ch <= 0x10ffff) { // 21 bit
       return 4;
     }
+    // TAG: add iso codes also
     return 0;
   }
 
-  /** Converts UCS4 to UTF-8. Returns 0 is invalid ucs4 character. Buffer must have room for minimum 4 bytes. */
-  static inline MemorySize writeUTF8(char* dest, ucs4 ch) noexcept
+  /** Converts UCS4 to UTF-8. Returns 0 is invalid ucs4 character. Buffer must have room for minimum 4 bytes for Unicode code. */
+  static inline MemorySize writeUTF8(uint8* dest, ucs4 ch) noexcept
   {
     if (ch <= 0x7f) { // 7 bit
       *dest++ = static_cast<uint8>(ch);
@@ -168,6 +169,30 @@ public:
       *dest++ = static_cast<uint8>(((ch >> 6) & ((1 << 6) - 1)) | 0x80);
       *dest++ = static_cast<uint8>(((ch >> 0) & ((1 << 6) - 1)) | 0x80);
       return 4;
+    }
+    // TAG: add iso codes also
+    return 0;
+  }
+
+  static inline MemorySize getUTF16Words(ucs4 ch) noexcept
+  {
+    if (ch < 0x10000) {
+      return 1;
+    } else if (ch < MAX) {
+      return 2;
+    }
+    return 0;
+  }
+
+  static inline MemorySize writeUTF16(utf16* dest, ucs4 ch) noexcept
+  {
+    if (ch < 0x10000) {
+      *dest++ = static_cast<utf16>(ch);
+      return 1;
+    } else if (ch < MAX) {
+      *dest++ = static_cast<utf16>(((ch - 0x10000) >> 10) + 0xd800); // 10 bit - high
+      *dest++ = static_cast<utf16>(((ch - 0x10000) & 0x3ff) + 0xdc00); // 10 bit - low
+      return 2;
     }
     return 0;
   }

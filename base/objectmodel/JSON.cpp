@@ -303,13 +303,13 @@ Reference<ObjectModel::String> JSON::parseString(JSONParser& parser)
             const uint32 high = value - 0xd800; // leading
             const uint32 low = value2 - 0xdc00; // trailing
             const ucs4 ch = (high << 10) | low;
-            char bytes[4];
+            uint8 bytes[4];
             MemorySize size = Unicode::writeUTF8(bytes, ch);
             for (MemorySize i = 0; i < size; ++i) {
               buffer.push(bytes[i]);
             }
           } else {
-            char bytes[4];
+            uint8 bytes[4];
             MemorySize size = Unicode::writeUTF8(bytes, ch);
             for (MemorySize i = 0; i < size; ++i) {
               buffer.push(bytes[i]);

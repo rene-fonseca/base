@@ -390,41 +390,28 @@ MemoryDiff Unicode::UTF16ToUTF8(uint8* dest, const utf16* src, MemorySize size, 
   const utf16* end = src + size;
   if (dest) {
     if (flags & ADD_BOM) {
-      *dest++ = 0xef;
-      *dest++ = 0xbb;
-      *dest++ = 0xbf;
+      dest += writeUTF8(dest, BOM);
     }
     while (src != end) {
       const utf16 code = *src++;
-      if (code <= 0x7fU) {
-        *dest++ = static_cast<uint8>(code);
-      } else if (code <= 0x7ffU) {
-        *dest++ = 0xc0 | (code >> 6); // 5 bit - most significant
-        *dest++ = 0x80 | ((code >> 0) & ((1 << 6) - 1)); // 6 bit
-      } else {
-        if ((code >= 0xdc00) && (code <= 0xdfff)) {
+      if (code < 0xd800) {
+        dest += writeUTF8(dest, code);
+      } else if (code <= 0xdbff) {
+        if (src == end) {
+          return ERROR_INCOMPLETE;
+        }
+        const utf16 lowSurrogate = *src++;
+        if (!((code >= 0xdc00) && (code <= 0xdfff))) {
           return ERROR_BAD_ENCODING;
         }
-        if ((code >= 0xd800) && (code <= 0xdbff)) {
-          if (src == end) {
-            return ERROR_INCOMPLETE;
-          }
-          const utf16 lowSurrogate = *src++;
-          if (!((code >= 0xdc00) && (code <= 0xdfff))) {
-            return ERROR_BAD_ENCODING;
-          }
-          const ucs4 ch = 0x10000U +
-            (static_cast<ucs4>(code - 0xd800) << 10) |
-            static_cast<ucs4>(lowSurrogate - 0xdc00);
-          *dest++ = 0xf0 | (ch >> 18); // 3 bit - most significant
-          *dest++ = 0x80 | ((ch >> 12) & ((1 << 6) - 1)); // 6 bit
-          *dest++ = 0x80 | ((ch >> 6) & ((1 << 6) - 1)); // 6 bit
-          *dest++ = 0x80 | ((ch >> 0) & ((1 << 6) - 1)); // 6 bit
-        } else {
-          *dest++ = 0xe0 | (code >> 12); // 4 bit - most significant
-          *dest++ = 0x80 | ((code >> 6) & ((1 << 6) - 1)); // 6 bit
-          *dest++ = 0x80 | ((code >> 0) & ((1 << 6) - 1)); // 6 bit
-        }
+        const ucs4 ch = 0x10000U +
+          (static_cast<ucs4>(code - 0xd800) << 10) |
+          static_cast<ucs4>(lowSurrogate - 0xdc00);
+        dest += writeUTF8(dest, ch);
+      } else if (code <= 0xdfff) {
+        return ERROR_BAD_ENCODING;
+      } else {
+        dest += writeUTF8(dest, code);
       }
     }
     return dest - begin;
@@ -586,7 +573,7 @@ MemoryDiff Unicode::UTF8ToUTF16(utf16* dest, const uint8* src, MemorySize size, 
         return status;
       }
       src += status; // bytes read
-      ++length;
+      length += getUTF16Words(ch);
     }
     return length;
   }
@@ -597,14 +584,23 @@ MemoryDiff Unicode::UTF8ToUCS4(ucs4* dest, const uint8* src, MemorySize size, un
   if (!src) {
     return 0;
   }
-  if ((size >= 3) && (src[0] == 0xef) && (src[1] == 0xbb) && (src[2] == 0xbf)) {
-    if (flags & EAT_BOM) {
-      src += 3;
-    }
-  }
-  
+
   const uint8* const srcBegin = src;
   const uint8* const end = src + size;
+
+  if (flags & EAT_BOM) {
+    if (src != end) {
+      ucs4 ch = 0;
+      const uint8* _src = src;
+      int status = Unicode::readUCS4(_src, end, ch);
+      if (status <= 0) {
+        return status;
+      }
+      if (ch == BOM) {
+        src = _src;
+      }
+    }
+  }
   
   if (dest) {
     const ucs4* const begin = dest;

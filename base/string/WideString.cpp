@@ -282,7 +282,7 @@ int WideTraits::digitToValue(ucs4 character) noexcept
   return -1;
 }
 
-inline ReferenceCountedCapacityAllocator<ucs4>* allocate(const wchar* text, MemorySize nativeLength)
+inline ReferenceCountedAllocator<ucs4>* allocate(const wchar* text, MemorySize nativeLength)
 {
   // worst case length is nativeLength - allocate worst case and then release unused if possible
   const MemorySize length = Unicode::UTF16ToUCS4(
@@ -290,7 +290,7 @@ inline ReferenceCountedCapacityAllocator<ucs4>* allocate(const wchar* text, Memo
     Cast::pointer<const utf16*>(text),
     nativeLength
   );
-  auto result = new ReferenceCountedCapacityAllocator<ucs4>(length + 1, WideString::GRANULARITY);
+  auto result = new ReferenceCountedAllocator<ucs4>(length + 1);
   Unicode::UTF16ToUCS4(
     result->getElements(),
     Cast::pointer<const utf16*>(text),
@@ -304,7 +304,7 @@ void WideString::initialize(const wchar* string, MemorySize nativeLength) throw(
   if (sizeof(wchar) == sizeof(utf16)) {
     elements = allocate(string, nativeLength);
   } else if (sizeof(wchar) == sizeof(ucs4)) {
-    elements = new ReferenceCountedCapacityAllocator<ucs4>(nativeLength + 1, GRANULARITY);
+    elements = new ReferenceCountedAllocator<ucs4>(nativeLength + 1);
     copy<ucs4>(
       elements->getElements(),
       Cast::pointer<const ucs4*>(string),
@@ -322,10 +322,7 @@ void WideString::initialize(const char* string, MemorySize length) throw(MemoryE
 {
   const MemorySize numberOfCharacters = Unicode::UTF8ToUCS4(0, Cast::pointer<const uint8*>(string), length);
   bassert(numberOfCharacters <= MAXIMUM_LENGTH, MemoryException(this));
-  elements = new ReferenceCountedCapacityAllocator<ucs4>(
-    numberOfCharacters + 1,
-    GRANULARITY
-  );
+  elements = new ReferenceCountedAllocator<ucs4>(numberOfCharacters + 1);
   if (numberOfCharacters) {
     Unicode::UTF8ToUCS4(
       Cast::pointer<ucs4*>(elements->getElements()),
@@ -827,8 +824,11 @@ WideString::WideString() noexcept
 
 WideString::WideString(MemorySize capacity) throw(MemoryException)
 {
-  elements = new ReferenceCountedCapacityAllocator<ucs4>(1, GRANULARITY);
+  elements = new ReferenceCountedAllocator<ucs4>();
   elements->ensureCapacity(capacity + 1);
+  elements->setSize(1); // after setting capacity
+  ucs4* result = elements->getElements();
+  result[0] = Traits::TERMINATOR;
 }
 
 WideString::WideString(const wchar* string) throw(MemoryException)
@@ -866,11 +866,7 @@ WideString::WideString(const WideLiteral& literal) throw(WideStringException, Me
   if (sizeof(wchar) == sizeof(utf16)) {
     elements = allocate(literal.getValue(), literal.getLength());
   } else if (sizeof(wchar) == sizeof(ucs4)) {
-    bassert(
-      nativeLength <= MAXIMUM_LENGTH,
-      WideStringException(this)
-    ); // TAG: this is not required
-    elements = new ReferenceCountedCapacityAllocator<ucs4>(nativeLength + 1, GRANULARITY);
+    elements = new ReferenceCountedAllocator<ucs4>(nativeLength + 1);
     copy<ucs4>(
       elements->getElements(),
       Cast::pointer<const ucs4*>(literal.getValue()),
@@ -899,10 +895,7 @@ WideString::WideString(const NativeWideString& string) throw(WideStringException
   if (sizeof(wchar) == sizeof(utf16)) {
     elements = allocate(string.getValue(), nativeLength);
   } else if (sizeof(wchar) == sizeof(ucs4)) {
-    elements = new ReferenceCountedCapacityAllocator<ucs4>(
-      nativeLength + 1,
-      GRANULARITY
-    );
+    elements = new ReferenceCountedAllocator<ucs4>(nativeLength + 1);
     copy<ucs4>(
       elements->getElements(),
       Cast::pointer<const ucs4*>(string.getValue()),
@@ -933,10 +926,7 @@ WideString::WideString(const NativeWideString& string, MemorySize maximum) throw
   if (sizeof(wchar) == sizeof(utf16)) {
     elements = allocate(string.getValue(), nativeLength);
   } else if (sizeof(wchar) == sizeof(ucs4)) {
-    elements = new ReferenceCountedCapacityAllocator<ucs4>(
-      nativeLength + 1,
-      GRANULARITY
-    );
+    elements = new ReferenceCountedAllocator<ucs4>(nativeLength + 1);
     copy<ucs4>(
       elements->getElements(),
       Cast::pointer<const ucs4*>(string.getValue()),
@@ -950,8 +940,7 @@ WideString::WideString(const NativeWideString& string, MemorySize maximum) throw
   }
 }
 
-WideString::WideString(
-  const String& string) throw(MultibyteException, MemoryException)
+WideString::WideString(const String& string) throw(MultibyteException, MemoryException)
 {
   MemorySize multibyteLength = string.getLength();
   MemorySize numberOfCharacters = Unicode::UTF8ToUCS4(
@@ -960,10 +949,7 @@ WideString::WideString(
     multibyteLength
   );
   bassert(numberOfCharacters <= MAXIMUM_LENGTH, MemoryException(this));
-  elements = new ReferenceCountedCapacityAllocator<ucs4>(
-    numberOfCharacters + 1,
-    GRANULARITY
-  );
+  elements = new ReferenceCountedAllocator<ucs4>(numberOfCharacters + 1);
   if (numberOfCharacters) {
     Unicode::UTF8ToUCS4(
       Cast::pointer<ucs4*>(elements->getElements()),
@@ -988,15 +974,12 @@ WideString::WideString(const NativeString& string) throw(MultibyteException, Mem
   const MemorySize multibyteLength = terminator - string.getValue();
 
   MemorySize numberOfCharacters = Unicode::UTF8ToUCS4(
-      0,
-      Cast::pointer<const uint8*>(string.getValue()),
-      multibyteLength
+    0,
+    Cast::pointer<const uint8*>(string.getValue()),
+    multibyteLength
   );
   bassert(numberOfCharacters <= MAXIMUM_LENGTH, MemoryException(this));
-  elements = new ReferenceCountedCapacityAllocator<ucs4>(
-    numberOfCharacters + 1,
-    GRANULARITY
-  );
+  elements = new ReferenceCountedAllocator<ucs4>(numberOfCharacters + 1);
   if (numberOfCharacters) {
     Unicode::UTF8ToUCS4(
       Cast::pointer<ucs4*>(elements->getElements()),
@@ -1026,10 +1009,7 @@ WideString::WideString(const NativeString& string, MemorySize maximum) throw(Out
     multibyteLength
   );
   bassert(numberOfCharacters <= MAXIMUM_LENGTH, MemoryException(this));
-  elements = new ReferenceCountedCapacityAllocator<ucs4>(
-    numberOfCharacters + 1,
-    GRANULARITY
-  );
+  elements = new ReferenceCountedAllocator<ucs4>(numberOfCharacters + 1);
   if (numberOfCharacters) {
     Unicode::UTF8ToUCS4(
       Cast::pointer<ucs4*>(elements->getElements()),
@@ -1042,18 +1022,10 @@ WideString::WideString(const NativeString& string, MemorySize maximum) throw(Out
 WideString& WideString::operator=(const WideLiteral& literal) throw(WideStringException, MemoryException)
 {
   MemorySize nativeLength = literal.getLength();
-  bassert(
-    nativeLength <= MAXIMUM_LENGTH,
-    WideStringException(this)
-  ); // TAG: this is not required
-  
   if (sizeof(wchar) == sizeof(utf16)) {
     elements = allocate(literal.getValue(), nativeLength);
   } else if (sizeof(wchar) == sizeof(ucs4)) {
-    elements = new ReferenceCountedCapacityAllocator<ucs4>(
-      nativeLength + 1,
-      GRANULARITY
-    );
+    elements = new ReferenceCountedAllocator<ucs4>(nativeLength + 1);
     copy<ucs4>(
       elements->getElements(),
       Cast::pointer<const ucs4*>(literal.getValue()),

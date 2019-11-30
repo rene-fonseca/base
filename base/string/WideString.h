@@ -17,7 +17,7 @@
 #include <base/OutOfRange.h>
 #include <base/OutOfDomain.h>
 #include <base/mem/Reference.h>
-#include <base/mem/ReferenceCountedCapacityAllocator.h>
+#include <base/mem/ReferenceCountedAllocator.h>
 #include <base/string/FormatOutputStream.h>
 #include <base/string/MultibyteException.h>
 #include <base/string/WideStringException.h>
@@ -229,13 +229,13 @@ public:
   static const uint32 mappingTable[];
   
   /** The type of the modifying string iterator. */
-  typedef ReferenceCountedCapacityAllocator<ucs4>::Iterator Iterator;
+  typedef ReferenceCountedAllocator<ucs4>::Iterator Iterator;
   /** The type of the non-modifying string iterator. */
-  typedef ReferenceCountedCapacityAllocator<ucs4>::ReadIterator ReadIterator;
+  typedef ReferenceCountedAllocator<ucs4>::ReadIterator ReadIterator;
   /** The type of the modifying string enumerator. */
-  typedef ReferenceCountedCapacityAllocator<ucs4>::Enumerator Enumerator;
+  typedef ReferenceCountedAllocator<ucs4>::Enumerator Enumerator;
   /** The type of the non-modifying string enumerator. */
-  typedef ReferenceCountedCapacityAllocator<ucs4>::ReadEnumerator ReadEnumerator;
+  typedef ReferenceCountedAllocator<ucs4>::ReadEnumerator ReadEnumerator;
 
   /** Wide character encoding. */
   enum WideEncoding {
@@ -305,7 +305,7 @@ private:
     guarantied to be NULL-terminated). However, the attribute is guarantied to
     point to a valid buffer even for empty strings.
   */
-  Reference<ReferenceCountedCapacityAllocator<ucs4> > elements;
+  Reference<ReferenceCountedAllocator<ucs4> > elements;
 
   /**
     Compare the NULL-terminated strings ignoring the case.

@@ -850,13 +850,13 @@ bool WindowImpl::loadModule(bool load) throw() {
         windowImpl::atoms[PING_MESSAGE] =
           ::XInternAtom(
             display,
-            toUTF8(_COM_AZURE_DEV__BASE__ID_PREFIX L"/ui/WindowImpl/PING_MESSAGE").c_str(),
+            String(_COM_AZURE_DEV__BASE__ID_PREFIX L"/ui/WindowImpl/PING_MESSAGE").native(),
             False
           );
         windowImpl::atoms[QUIT_MESSAGE] =
           ::XInternAtom(
             display,
-            toUTF8(_COM_AZURE_DEV__BASE__ID_PREFIX L"/ui/WindowImpl/QUIT_MESSAGE").c_str(),
+            String(_COM_AZURE_DEV__BASE__ID_PREFIX L"/ui/WindowImpl/QUIT_MESSAGE").native(),
             False
           );
       }

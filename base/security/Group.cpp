@@ -138,7 +138,8 @@ Group::Group(const User& user) throw(GroupException) {
 #endif // flavor
 }
 
-String Group::getName() const throw(GroupException) {
+String Group::getName() const throw(GroupException)
+{
   if (!isValid()) {
     return Literal("<unknown>");
   }
@@ -161,9 +162,9 @@ String Group::getName() const throw(GroupException) {
     GroupException("Unable to lookup name", this)
   );
   if (domainName[0] != L'\0') {
-    return toUTF8(WideString(domainName) + WIDEMESSAGE("\\") + WideString(name));
+    return String(domainName) + MESSAGE("\\") + String(name);
   } else {
-    return toUTF8(static_cast<const wchar*>(name)); // TAG: does nameSize hold length of name
+    return String(static_cast<const wchar*>(name)); // TAG: does nameSize hold length of name
   }
 #else // unix
   #if defined(_COM_AZURE_DEV__BASE__HAVE_GETGRNAM_R)

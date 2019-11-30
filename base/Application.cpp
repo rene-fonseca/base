@@ -819,7 +819,7 @@ Application::Application(
   DWORD length = ::GetModuleFileName(0, buffer, MAX_PATH /*lengthOf(buffer)*/);
   BASSERT(length > 0);
   if (length > 0) { // TAG: need inline assert
-    path = toUTF8(WideString(buffer, length));
+    path = String(buffer, length);
   }
 #else
   path = arguments[0]; // TAG: fixme

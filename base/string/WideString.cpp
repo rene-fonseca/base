@@ -789,7 +789,7 @@ String WideString::getMultibyteString(const wchar* string)
   
   String result;
   if (sizeof(wchar) == sizeof(utf16)) {
-    int multibyteLength = Unicode::UTF16ToUTF8(0, Cast::pointer<const utf16*>(string), nativeLength);
+    int multibyteLength = Unicode::UTF16ToUTF8(nullptr, Cast::pointer<const utf16*>(string), nativeLength);
     bassert(
       (nativeLength == 0) || (multibyteLength > 0),
       MultibyteException(Type::getType<WideString>())
@@ -801,7 +801,7 @@ String WideString::getMultibyteString(const wchar* string)
       nativeLength
     );
   } else if (sizeof(wchar) == sizeof(ucs4)) {
-    int multibyteLength = Unicode::UCS4ToUTF8(0, Cast::pointer<const ucs4*>(string), nativeLength);
+    int multibyteLength = Unicode::UCS4ToUTF8(nullptr, Cast::pointer<const ucs4*>(string), nativeLength);
     bassert(
       (nativeLength == 0) || (multibyteLength > 0),
       MultibyteException(Type::getType<WideString>())
@@ -1806,7 +1806,7 @@ String WideString::getMultibyteString() const throw(MultibyteException, MemoryEx
   if (numberOfCharacters) {
     const ucs4* buffer = getBuffer();
     if (sizeof(Char) == sizeof(utf16)) {
-      int multibyteLength = Unicode::UTF16ToUTF8(0, Cast::pointer<const utf16*>(buffer), numberOfCharacters);
+      int multibyteLength = Unicode::UTF16ToUTF8(nullptr, Cast::pointer<const utf16*>(buffer), numberOfCharacters);
       bassert(
         (numberOfCharacters == 0) || (multibyteLength > 0),
         MultibyteException(Type::getType<WideString>())
@@ -1818,7 +1818,7 @@ String WideString::getMultibyteString() const throw(MultibyteException, MemoryEx
         numberOfCharacters
       );
     } else {
-      int multibyteLength = Unicode::UCS4ToUTF8(0, Cast::pointer<const ucs4*>(buffer), numberOfCharacters);
+      int multibyteLength = Unicode::UCS4ToUTF8(nullptr, Cast::pointer<const ucs4*>(buffer), numberOfCharacters);
       bassert(
         (numberOfCharacters == 0) || (multibyteLength > 0),
         MultibyteException(Type::getType<WideString>())

@@ -342,14 +342,14 @@ String FileSystem::getCurrentFolder() throw(FileSystemException)
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   DWORD length = ::GetCurrentDirectory(0, NULL);
   if (length == 0) {
-    throw FileSystemException("Unable to get current folder", Type::getType<FileSystem>());
+    throw FileSystemException("Unable to get current folder.", Type::getType<FileSystem>());
   }
   PrimitiveStackArray<wchar> buffer(length);
   length = ::GetCurrentDirectory(length, buffer);
   if (length == 0) {
-    throw FileSystemException("Unable to get current folder", Type::getType<FileSystem>());
+    throw FileSystemException("Unable to get current folder.", Type::getType<FileSystem>());
   }
-  return toUTF8(buffer, length);
+  return String(buffer, length);
 #else // unix
   Thread::UseThreadLocalBuffer _buffer;
   Allocator<uint8>& buffer = _buffer;
@@ -1783,7 +1783,7 @@ String FileSystem::getFolder(Folder folder) throw() {
       buffer[1] = L'\0';
       buffer[2] = L'\0';
       ::GetWindowsDirectory(buffer, getArraySize(buffer));
-      return toUTF8(buffer);
+      return String(buffer);
     }
   case FileSystem::DEVICES:
     return Literal("\\\\.");
@@ -1792,7 +1792,7 @@ String FileSystem::getFolder(Folder folder) throw() {
     {
       wchar buffer[MAX_PATH + 1];
       ::GetWindowsDirectory(buffer, getArraySize(buffer));
-      return toUTF8(WideString(buffer) + WIDEMESSAGE("\\temp"));
+      return String(buffer) + MESSAGE("\\temp");
     }
   }
 #else // unix

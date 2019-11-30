@@ -102,8 +102,8 @@ bool SaveFileDialog::execute() throw(UserInterfaceException)
   
   BOOL result = GetSaveFileNameW(&saveFile);
   if (result != 0) {
-    folder = toUTF8(saveFile.lpstrFile, saveFile.nFileOffset);
-    filename = toUTF8(saveFile.lpstrFile); // preserved folder
+    folder = String(saveFile.lpstrFile, saveFile.nFileOffset);
+    filename = String(saveFile.lpstrFile); // preserved folder
     defaultFilter = saveFile.nFilterIndex;
   }
   return result != 0;

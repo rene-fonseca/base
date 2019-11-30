@@ -90,7 +90,7 @@ bool OpenFileDialog::execute() throw(UserInterfaceException)
     filenames.removeAll();
     if (flags & OpenFileDialog::ALLOW_MULTIPLE) {
       const wchar* src = openFile.lpstrFile;
-      folder = toUTF8(src);
+      folder = src;
       src += openFile.nFileOffset;
       while (*src) {
         String temp(src);
@@ -98,8 +98,8 @@ bool OpenFileDialog::execute() throw(UserInterfaceException)
         filenames.append(temp);
       }
     } else {
-      folder = String(toUTF8(openFile.lpstrFile, openFile.nFileOffset));
-      filename = String(toUTF8(openFile.lpstrFile)); // preserved folder
+      folder = String(openFile.lpstrFile, openFile.nFileOffset);
+      filename = String(openFile.lpstrFile); // preserved folder
     }
     defaultFilter = openFile.nFilterIndex;
   }

@@ -26,7 +26,8 @@
 #if 0 // get string and wstring types
 #include <string>
 #else
-// can we forward declare string and wstring - see 17.4.3.1/1 - but we get potential class/struct mismatches for below
+// can we forward declare string and wstring - see 17.4.3.1/1
+// but we get potential class/struct mismatches for below - or implementation could use subnamespace __cxx11
 namespace std {
   template<class Char> struct char_traits;
   template<class T> class allocator;
@@ -1463,6 +1464,7 @@ inline void swapper<String>(String& a, String& b)
   swapper(a.elements, b.elements); // self swap allowed
 }
 
+// TAG: remove these
 /** Converts String to UTF-8 string. */
 std::string toUTF8(const String& s);
 

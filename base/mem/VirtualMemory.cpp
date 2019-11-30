@@ -30,7 +30,7 @@ String VirtualMemory::Module::getPath() const noexcept {
   wchar buffer[4096]; // TAG: limit
   unsigned int length = ::GetModuleFileName((HMODULE)context, buffer, sizeof(buffer));
   buffer[length] = 0;
-  return toUTF8(WideString(buffer, length));
+  return String(buffer, length);
 #else // unix
   throw NotImplemented(this);
 #endif // flavor

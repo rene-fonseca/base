@@ -177,9 +177,9 @@ String User::getName(bool fallback) const throw(UserException)
     return s.getString();
   }
   if (domainName[0] != L'\0') {
-    return toUTF8(WideString(domainName) + WIDEMESSAGE("/") + WideString(name));
+    return String(domainName) + MESSAGE("/") + String(name);
   } else {
-    return String(toUTF8(static_cast<const wchar*>(name))); // TAG: does nameSize hold length of name
+    return String(static_cast<const wchar*>(name)); // TAG: does nameSize hold length of name
   }
 #else // unix
   Thread::UseThreadLocalBuffer _buffer;

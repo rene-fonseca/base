@@ -27,10 +27,12 @@
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
-SelectFolderDialog::SelectFolderDialog() throw() {
+SelectFolderDialog::SelectFolderDialog() noexcept
+{
 }
 
-bool SelectFolderDialog::execute() throw(UserInterfaceException) {
+bool SelectFolderDialog::execute() throw(UserInterfaceException)
+{
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   typedef LPITEMIDLIST (WINAPI *FSHBrowseForFolderW)(LPBROWSEINFO);
   static FSHBrowseForFolderW SHBrowseForFolderW = nullptr;
@@ -54,7 +56,7 @@ bool SelectFolderDialog::execute() throw(UserInterfaceException) {
   LPITEMIDLIST result = SHBrowseForFolderW(&browseInfo);
   if (result != 0) {
     // BOOL SHGetPathFromIDList(LPCITEMIDLIST pidl, LPTSTR pszPath);
-    folder = toUTF8(buffer);
+    folder = buffer;
     LPMALLOC malloc;
     /*HRESULT r =*/ ::CoGetMalloc(1, &malloc);
     malloc->Free(result);
@@ -65,7 +67,8 @@ bool SelectFolderDialog::execute() throw(UserInterfaceException) {
 #endif // flavor
 }
 
-SelectFolderDialog::~SelectFolderDialog() throw() {
+SelectFolderDialog::~SelectFolderDialog() noexcept
+{
 }
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

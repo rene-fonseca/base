@@ -42,47 +42,53 @@ public:
   /**
     Initializes the save file dialog window.
   */
-  SelectFolderDialog() throw();
+  SelectFolderDialog() noexcept;
 
   /**
     Returns the flags.
   */
-  inline unsigned int getFlags() const throw() {
+  inline unsigned int getFlags() const noexcept
+  {
     return flags;
   }
 
   /**
     Sets the flags.
   */
-  inline void setFlags(unsigned int flags) throw() {
+  inline void setFlags(unsigned int flags) noexcept
+  {
     this->flags = flags;
   }
   
   /**
     Returns the title of the dialog window.
   */
-  inline const String& getTitle() const throw() {
+  inline const String& getTitle() const noexcept
+  {
     return title;
   }
 
   /**
     Sets the title of the dialog window.
   */
-  inline void setTitle(const String& title) throw() {
+  inline void setTitle(const String& title) noexcept
+  {
     this->title = title;
   }
 
   /**
     Returns the folder.
   */
-  inline const String& getFolder() const throw() {
+  inline const String& getFolder() const noexcept
+  {
     return folder;
   }
   
   /**
     Sets the current folder.
   */
-  inline void setFolder(const String& folder) throw() {
+  inline void setFolder(const String& folder) noexcept
+  {
     this->folder = folder;
   }  
   
@@ -91,7 +97,7 @@ public:
   */
   bool execute() throw(UserInterfaceException);
 
-  ~SelectFolderDialog() throw();
+  ~SelectFolderDialog() noexcept;
 };
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

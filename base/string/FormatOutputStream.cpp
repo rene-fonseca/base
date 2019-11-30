@@ -423,17 +423,18 @@ void FormatOutputStream::addCharacterField(const wchar* buffer, MemorySize size)
     justification = Symbols::LEFT; // TAG: is this locale specific
   }
 
-  const std::string text = toUTF8(buffer, size);
+  // TAG: use Unicode to temp buffer
+  const String text(buffer, size); // requires allocation use stack buffer
 
   if (justification == Symbols::LEFT) {
-    write(Cast::pointer<const uint8*>(text.c_str()), text.size()); // write characters
+    write(Cast::pointer<const uint8*>(text.native()), text.getLength()); // write characters
   }
   // what if multi-wchar character - we ignore for now
   if (size < static_cast<unsigned int>(context.width)) { // write blanks if required
     unfoldValue(' ', context.width - size); // we use number of wchars
   }
   if (context.justification == Symbols::RIGHT) {
-    write(Cast::pointer<const uint8*>(text.c_str()), text.size()); // write characters
+    write(Cast::pointer<const uint8*>(text.native()), text.getLength()); // write characters
   }
   context = defaultContext;
 }

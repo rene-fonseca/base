@@ -1257,8 +1257,8 @@ void FileSystem::makeLink(const String& target, const String& path)
   reparseInfo->MountPointReparseBuffer.PrintNameOffset =
     reparseInfo->MountPointReparseBuffer.SubstituteNameLength + sizeof(WCHAR);
   
-  WideString::UTF8ToUCS2(
-    Cast::pointer<ucs2*>(reparseInfo->MountPointReparseBuffer.PathBuffer),
+  Unicode::UTF8ToUTF16(
+    Cast::pointer<utf16*>(reparseInfo->MountPointReparseBuffer.PathBuffer),
     Cast::pointer<const uint8*>(nativePath.getElements()),
     nativePath.getLength(),
     0

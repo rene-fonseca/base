@@ -41,7 +41,7 @@ Literal Unicode::getMIMECharset(MultibyteEncoding encoding) noexcept
 int Unicode::readUCS4(const uint8* src, const uint8* end, ucs4& ch) noexcept
 {
   if (src == end) {
-    return UTF8_ERROR_EMPTY;
+    return ERROR_EMPTY;
   }
 
   uint8 value = *src++;
@@ -53,11 +53,11 @@ int Unicode::readUCS4(const uint8* src, const uint8* end, ucs4& ch) noexcept
   if ((value & 0xe0) == 0xc0) {
     ucs4 code = value & ~0xe0;
     if (src == end) {
-      return UTF8_ERROR_INCOMPLETE;
+      return ERROR_INCOMPLETE;
     }
     uint8 temp = *src++;
     if ((temp & 0xc0) != 0x80) {
-      return UTF8_ERROR_BAD_ENCODING;
+      return ERROR_BAD_ENCODING;
     }
     code = (code << 6) | (temp & 0x3f);
     ch = code;
@@ -68,11 +68,11 @@ int Unicode::readUCS4(const uint8* src, const uint8* end, ucs4& ch) noexcept
     ucs4 code = value & ~0xf0;
     for (int i = 0; i < 2; ++i) {
       if (src == end) {
-        return UTF8_ERROR_INCOMPLETE;
+        return ERROR_INCOMPLETE;
       }
       uint8 temp = *src++;
       if ((temp & 0xc0) != 0x80) {
-        return UTF8_ERROR_BAD_ENCODING;
+        return ERROR_BAD_ENCODING;
       }
       code = (code << 6) | (temp & 0x3f);
     }
@@ -84,11 +84,11 @@ int Unicode::readUCS4(const uint8* src, const uint8* end, ucs4& ch) noexcept
     ucs4 code = value & ~0xf8;
     for (int i = 0; i < 3; ++i) {
       if (src == end) {
-        return UTF8_ERROR_INCOMPLETE;
+        return ERROR_INCOMPLETE;
       }
       uint8 temp = *src++;
       if ((temp & 0xc0) != 0x80) {
-        return UTF8_ERROR_BAD_ENCODING;
+        return ERROR_BAD_ENCODING;
       }
       code = (code << 6) | (temp & 0x3f);
     }
@@ -100,11 +100,11 @@ int Unicode::readUCS4(const uint8* src, const uint8* end, ucs4& ch) noexcept
     ucs4 code = value & ~0xfc;
     for (int i = 0; i < 4; ++i) {
       if (src == end) {
-        return UTF8_ERROR_INCOMPLETE;
+        return ERROR_INCOMPLETE;
       }
       uint8 temp = *src++;
       if ((temp & 0xc0) != 0x80) {
-        return UTF8_ERROR_BAD_ENCODING;
+        return ERROR_BAD_ENCODING;
       }
       code = (code << 6) | (temp & 0x3f);
     }
@@ -116,24 +116,24 @@ int Unicode::readUCS4(const uint8* src, const uint8* end, ucs4& ch) noexcept
     ucs4 code = value & ~0xfe;
     for (int i = 0; i < 5; ++i) {
       if (src == end) {
-        return UTF8_ERROR_INCOMPLETE;
+        return ERROR_INCOMPLETE;
       }
       uint8 temp = *src++;
       if ((temp & 0xc0) != 0x80) {
-        return UTF8_ERROR_BAD_ENCODING;
+        return ERROR_BAD_ENCODING;
       }
       code = (code << 6) | (temp & 0x3f);
     }
     ch = code;
     return 6;
   }
-  return UTF8_ERROR_BAD_ENCODING;
+  return ERROR_BAD_ENCODING;
 }
 
 int Unicode::readUCS4(const uint8* src, ucs4& ch) noexcept
 {
   if (!src || !*src) {
-    return UTF8_ERROR_EMPTY;
+    return ERROR_EMPTY;
   }
 
   uint8 value = *src++;
@@ -145,11 +145,11 @@ int Unicode::readUCS4(const uint8* src, ucs4& ch) noexcept
   if ((value & 0xe0) == 0xc0) {
     ucs4 code = value & ~0xe0;
     if (!*src) {
-      return UTF8_ERROR_INCOMPLETE;
+      return ERROR_INCOMPLETE;
     }
     uint8 temp = *src++;
     if ((temp & 0xc0) != 0x80) {
-      return UTF8_ERROR_BAD_ENCODING;
+      return ERROR_BAD_ENCODING;
     }
     code = (code << 6) | temp;
     ch = code;
@@ -160,11 +160,11 @@ int Unicode::readUCS4(const uint8* src, ucs4& ch) noexcept
     ucs4 code = value & ~0xf0;
     for (int i = 0; i < 2; ++i) {
       if (!*src) {
-        return UTF8_ERROR_INCOMPLETE;
+        return ERROR_INCOMPLETE;
       }
       uint8 temp = *src++;
       if ((temp & 0xc0) != 0x80) {
-        return UTF8_ERROR_BAD_ENCODING;
+        return ERROR_BAD_ENCODING;
       }
       code = (code << 6) | (temp & 0x3f);
     }
@@ -176,11 +176,11 @@ int Unicode::readUCS4(const uint8* src, ucs4& ch) noexcept
     ucs4 code = value & ~0xf8;
     for (int i = 0; i < 3; ++i) {
       if (!*src) {
-        return UTF8_ERROR_INCOMPLETE;
+        return ERROR_INCOMPLETE;
       }
       uint8 temp = *src++;
       if ((temp & 0xc0) != 0x80) {
-        return UTF8_ERROR_BAD_ENCODING;
+        return ERROR_BAD_ENCODING;
       }
       code = (code << 6) | (temp & 0x3f);
     }
@@ -192,11 +192,11 @@ int Unicode::readUCS4(const uint8* src, ucs4& ch) noexcept
     ucs4 code = value & ~0xfc;
     for (int i = 0; i < 4; ++i) {
       if (!*src) {
-        return UTF8_ERROR_INCOMPLETE;
+        return ERROR_INCOMPLETE;
       }
       uint8 temp = *src++;
       if ((temp & 0xc0) != 0x80) {
-        return UTF8_ERROR_BAD_ENCODING;
+        return ERROR_BAD_ENCODING;
       }
       code = (code << 6) | (temp & 0x3f);
     }
@@ -208,18 +208,18 @@ int Unicode::readUCS4(const uint8* src, ucs4& ch) noexcept
     ucs4 code = value & ~0xfe;
     for (int i = 0; i < 5; ++i) {
       if (!*src) {
-        return UTF8_ERROR_INCOMPLETE;
+        return ERROR_INCOMPLETE;
       }
       uint8 temp = *src++;
       if ((temp & 0xc0) != 0x80) {
-        return UTF8_ERROR_BAD_ENCODING;
+        return ERROR_BAD_ENCODING;
       }
       code = (code << 6) | (temp & 0x3f);
     }
     ch = code;
     return 6;
   }
-  return UTF8_ERROR_BAD_ENCODING;
+  return ERROR_BAD_ENCODING;
 }
 
 MemoryDiff Unicode::getUTF8StringLength(const uint8* src, const uint8* end) noexcept
@@ -323,6 +323,310 @@ MemoryDiff Unicode::UCS2ToUCS4(ucs4* dest, const ucs2* src, MemorySize size, uns
       if ((code >= 0xd800) && (code <= 0xdfff)) {
         return INVALID_UCS2_CHARACTER;
       }
+      ++length;
+    }
+    return length;
+  }
+}
+
+MemoryDiff Unicode::UCS2ToUTF8(uint8* dest, const ucs2* src, MemorySize size, unsigned int flags) noexcept
+{
+  if (!src) {
+    return 0;
+  }
+  const uint8* const begin = dest;
+  const ucs2* end = src + size;
+  if (dest) {
+    if (flags & ADD_BOM) {
+      *dest++ = 0xef;
+      *dest++ = 0xbb;
+      *dest++ = 0xbf;
+    }
+    while (src != end) {
+      const ucs2 code = *src++;
+      if (code <= 0x7fU) {
+        *dest++ = static_cast<uint8>(code);
+      } else if (code <= 0x7ffU) {
+        *dest++ = 0xc0 | (code >> 6); // 5 bit - most significant
+        *dest++ = 0x80 | ((code >> 0) & ((1 << 6) - 1)); // 6 bit
+      } else {
+        if ((code >= 0xd800) && (code <= 0xdfff)) {
+          return INVALID_UCS2_CHARACTER;
+        }
+        *dest++ = 0xe0 | (code >> 12); // 4 bit - most significant
+        *dest++ = 0x80 | ((code >> 6) & ((1 << 6) - 1)); // 6 bit
+        *dest++ = 0x80 | ((code >> 0) & ((1 << 6) - 1)); // 6 bit
+      }
+    }
+    return dest - begin;
+  } else { // calculate length and validate
+    MemorySize length = 0;
+    if (flags & ADD_BOM) {
+      length += 3; // <0xef> <0xbb> <0xbf>
+    }
+    while (src != end) {
+      const ucs2 code = *src++;
+      if (code <= 0x7fU) {
+        ++length;
+      } else if (code <= 0x7ffU) {
+        length += 2;
+      } else {
+        if ((code >= 0xd800) && (code <= 0xdfff)) {
+          return INVALID_UCS2_CHARACTER;
+        }
+        length += 3;
+      }
+    }
+    return length;
+  }
+}
+
+MemoryDiff Unicode::UTF16ToUTF8(uint8* dest, const utf16* src, MemorySize size, unsigned int flags) noexcept
+{
+  if (!src) {
+    return 0;
+  }
+  const uint8* const begin = dest;
+  const utf16* end = src + size;
+  if (dest) {
+    if (flags & ADD_BOM) {
+      *dest++ = 0xef;
+      *dest++ = 0xbb;
+      *dest++ = 0xbf;
+    }
+    while (src != end) {
+      const utf16 code = *src++;
+      if (code <= 0x7fU) {
+        *dest++ = static_cast<uint8>(code);
+      } else if (code <= 0x7ffU) {
+        *dest++ = 0xc0 | (code >> 6); // 5 bit - most significant
+        *dest++ = 0x80 | ((code >> 0) & ((1 << 6) - 1)); // 6 bit
+      } else {
+        if ((code >= 0xdc00) && (code <= 0xdfff)) {
+          return ERROR_BAD_ENCODING;
+        }
+        if ((code >= 0xd800) && (code <= 0xdbff)) {
+          if (src == end) {
+            return ERROR_INCOMPLETE;
+          }
+          const utf16 lowSurrogate = *src++;
+          if (!((code >= 0xdc00) && (code <= 0xdfff))) {
+            return ERROR_BAD_ENCODING;
+          }
+          const ucs4 ch = 0x10000U +
+            (static_cast<ucs4>(code - 0xd800) << 10) |
+            static_cast<ucs4>(lowSurrogate - 0xdc00);
+          *dest++ = 0xf0 | (ch >> 18); // 3 bit - most significant
+          *dest++ = 0x80 | ((ch >> 12) & ((1 << 6) - 1)); // 6 bit
+          *dest++ = 0x80 | ((ch >> 6) & ((1 << 6) - 1)); // 6 bit
+          *dest++ = 0x80 | ((ch >> 0) & ((1 << 6) - 1)); // 6 bit
+        } else {
+          *dest++ = 0xe0 | (code >> 12); // 4 bit - most significant
+          *dest++ = 0x80 | ((code >> 6) & ((1 << 6) - 1)); // 6 bit
+          *dest++ = 0x80 | ((code >> 0) & ((1 << 6) - 1)); // 6 bit
+        }
+      }
+    }
+    return dest - begin;
+  } else { // calculate length and validate
+    MemorySize length = 0;
+    if (flags & ADD_BOM) {
+      length += 3; // <0xef> <0xbb> <0xbf>
+    }
+    while (src != end) {
+      const utf16 code = *src++;
+      if (code <= 0x7fU) {
+        ++length;
+      } else if (code <= 0x7ffU) {
+        length += 2;
+      } else {
+        if ((code >= 0xdc00) && (code <= 0xdfff)) {
+          return ERROR_BAD_ENCODING;
+        }
+        if ((code >= 0xd800) && (code <= 0xdbff)) {
+          if (src == end) {
+            return ERROR_INCOMPLETE;
+          }
+          const utf16 lowSurrogate = *src++;
+          if (!((code >= 0xdc00) && (code <= 0xdfff))) {
+            return ERROR_BAD_ENCODING;
+          }
+          length += 4;
+        } else {
+          length += 3;
+        }
+      }
+    }
+    return length;
+  }
+}
+
+MemoryDiff Unicode::UCS4ToUTF8(uint8* dest, const ucs4* src, MemorySize size, unsigned int flags) noexcept
+{
+  if (!src) {
+    return 0;
+  }
+  const uint8* const begin = dest;
+  const ucs4* end = src + size;
+  if (dest) {
+    if (flags & ADD_BOM) {
+      *dest++ = 0xef;
+      *dest++ = 0xbb;
+      *dest++ = 0xbf;
+    }
+    while (src != end) {
+      ucs4 value = *src++;
+      if (value <= 0x7fU) {
+        *dest++ = value;
+      } else if (value <= 0x7ffU) {
+        *dest++ = 0xc0 | (value >> 6); // 5 bit - most significant
+        *dest++ = 0x80 | ((value >> 0) & ((1 << 6) - 1)); // 6 bit
+      } else if (value <= 0xffffU) {
+        *dest++ = 0xe0 | (value >> 12); // 4 bit - most significant
+        *dest++ = 0x80 | ((value >> 6) & ((1 << 6) - 1)); // 6 bit
+        *dest++ = 0x80 | ((value >> 0) & ((1 << 6) - 1)); // 6 bit
+      } else if (value <= 0x1fffffU) {
+        *dest++ = 0xf0 | (value >> 18); // 3 bit - most significant
+        *dest++ = 0x80 | ((value >> 12) & ((1 << 6) - 1)); // 6 bit
+        *dest++ = 0x80 | ((value >> 6) & ((1 << 6) - 1)); // 6 bit
+        *dest++ = 0x80 | ((value >> 0) & ((1 << 6) - 1)); // 6 bit
+      } else if (value <= 0x3ffffffU) {
+        *dest++ = 0xf8 | (value >> 24); // 3 bit - most significant
+        *dest++ = 0x80 | ((value >> 18) & ((1 << 6) - 1)); // 6 bit
+        *dest++ = 0x80 | ((value >> 12) & ((1 << 6) - 1)); // 6 bit
+        *dest++ = 0x80 | ((value >> 6) & ((1 << 6) - 1)); // 6 bit
+        *dest++ = 0x80 | ((value >> 0) & ((1 << 6) - 1)); // 6 bit
+      } else if (value <= MAX_ISO) {
+        *dest++ = 0xfc | (value >> 30); // 1 bit - most significant
+        *dest++ = 0x80 | ((value >> 24) & ((1 << 6) - 1)); // 6 bit
+        *dest++ = 0x80 | ((value >> 18) & ((1 << 6) - 1)); // 6 bit
+        *dest++ = 0x80 | ((value >> 12) & ((1 << 6) - 1)); // 6 bit
+        *dest++ = 0x80 | ((value >> 6) & ((1 << 6) - 1)); // 6 bit
+        *dest++ = 0x80 | ((value >> 0) & ((1 << 6) - 1)); // 6 bit
+      } else {
+        return INVALID_UCS4_CHARACTER;
+      }
+    }
+    return dest - begin;
+  } else { // calculate length and validate
+    MemorySize length = 0;
+    if (flags & ADD_BOM) {
+      length += 3; // <0xef> <0xbb> <0xbf>
+    }
+    while (src != end) {
+      ucs4 value = *src++;
+      if (value <= 0x7fU) {
+        ++length;
+      } else if (value <= 0x7ffU) {
+        length += 2;
+      } else if (value <= 0xffffU) {
+        length += 3;
+      } else if (value <= 0x1fffffU) {
+        length += 4;
+      } else if (value <= 0x3ffffffU) {
+        length += 5;
+      } else if (value <= 0x7fffffffU) {
+        length += 6;
+      } else {
+        return INVALID_UCS4_CHARACTER;
+      }
+    }
+    return length;
+  }
+}
+
+MemoryDiff Unicode::UTF8ToUTF16(utf16* dest, const uint8* src, MemorySize size, unsigned int flags) noexcept
+{
+  if (!src) {
+    return 0;
+  }
+
+  const uint8* const srcBegin = src;
+  const uint8* const end = src + size;
+
+  if (flags & EAT_BOM) {
+    if (src != end) {
+      ucs4 ch = 0;
+      const uint8* _src = src;
+      int status = Unicode::readUCS4(_src, end, ch);
+      if (status <= 0) {
+        return status;
+      }
+      if (ch == BOM) {
+        src = _src;
+      }
+    }
+  }
+  
+  if (dest) {
+    const utf16* const begin = dest;
+    while (src != end) {
+      ucs4 ch = 0;
+      int status = Unicode::readUCS4(src, end, ch);
+      if (status <= 0) {
+        return status;
+      }
+      src += status; // bytes read
+      if (ch > MAX) {
+        return INVALID_UCS4_CHARACTER;
+      } else if (ch >= 0x10000) {
+        *dest++ = ((ch - 0x10000) >> 10) + 0xd800; // 10 bit - high
+        *dest++ = ((ch - 0x10000) & 0x3ff) + 0xdc00; // 10 bit - low
+      } else {
+        *dest++ = ch;
+      }
+    }
+    return dest - begin;
+  } else { // calculate length and validate
+    MemorySize length = 0;
+    while (src != end) {
+      ucs4 ch = 0;
+      int status = Unicode::readUCS4(src, end, ch);
+      if (status <= 0) {
+        return status;
+      }
+      src += status; // bytes read
+      ++length;
+    }
+    return length;
+  }
+}
+
+MemoryDiff Unicode::UTF8ToUCS4(ucs4* dest, const uint8* src, MemorySize size, unsigned int flags) noexcept
+{
+  if (!src) {
+    return 0;
+  }
+  if ((size >= 3) && (src[0] == 0xef) && (src[1] == 0xbb) && (src[2] == 0xbf)) {
+    if (flags & EAT_BOM) {
+      src += 3;
+    }
+  }
+  
+  const uint8* const srcBegin = src;
+  const uint8* const end = src + size;
+  
+  if (dest) {
+    const ucs4* const begin = dest;
+    while (src != end) {
+      ucs4 ch = 0;
+      int status = Unicode::readUCS4(src, end, ch);
+      if (status <= 0) {
+        return status;
+      }
+      src += status; // bytes read
+      *dest++ = ch;
+    }
+    return dest - begin;
+  } else { // calculate length and validate
+    MemorySize length = 0;
+    while (src != end) {
+      ucs4 ch = 0;
+      int status = Unicode::readUCS4(src, end, ch);
+      if (status <= 0) {
+        return status;
+      }
+      src += status; // bytes read
       ++length;
     }
     return length;
@@ -455,7 +759,7 @@ MemoryDiff Unicode::UTF16ToUCS4(ucs4* dest, const utf16* src, MemorySize size, u
       const utf16 code = *src++;
       if ((code >= 0xd800) && (code <= 0xdfff)) { // surrogate codes
         if (code >= 0xdc00) { // expecting high surrogate
-          return INVALID_ENCODING;
+          return ERROR_BAD_ENCODING;
         }
         if (src == end) {
           return ERROR_INCOMPLETE;
@@ -474,7 +778,7 @@ MemoryDiff Unicode::UTF16ToUCS4(ucs4* dest, const utf16* src, MemorySize size, u
       const utf16 code = *src++;
       if ((code >= 0xd800) && (code <= 0xdfff)) { // surrogate codes
         if (code >= 0xdc00) { // expecting high surrogate
-          return INVALID_ENCODING;
+          return ERROR_BAD_ENCODING;
         }
         if (src == end) {
           return ERROR_INCOMPLETE;

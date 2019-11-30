@@ -29,11 +29,11 @@ ucs4 Parser::peekUCS4() const
   const int status = Unicode::readUCS4(src, end, ch);
   if (status <= 0) {
     switch (status) {
-    case Unicode::UTF8_ERROR_EMPTY:
+    case Unicode::ERROR_EMPTY:
       throw ParseException("Unexpected end reached.");
-    case Unicode::UTF8_ERROR_INCOMPLETE:
+    case Unicode::ERROR_INCOMPLETE:
       throw ParseException("Incomplete UTF-8 character encoding.");
-    case Unicode::UTF8_ERROR_BAD_ENCODING:
+    case Unicode::ERROR_BAD_ENCODING:
     default:
       throw ParseException("Bad UTF-8 character encoding.");
     }
@@ -47,11 +47,11 @@ ucs4 Parser::readUCS4()
   const int status = Unicode::readUCS4(src, end, ch);
   if (status <= 0) {
     switch (status) {
-    case Unicode::UTF8_ERROR_EMPTY:
+    case Unicode::ERROR_EMPTY:
       throw ParseException("Unexpected end reached.");
-    case Unicode::UTF8_ERROR_INCOMPLETE:
+    case Unicode::ERROR_INCOMPLETE:
       throw ParseException("Incomplete UTF-8 character encoding.");
-    case Unicode::UTF8_ERROR_BAD_ENCODING:
+    case Unicode::ERROR_BAD_ENCODING:
     default:
       throw ParseException("Bad UTF-8 character encoding.");
     }

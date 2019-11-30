@@ -88,35 +88,36 @@ public:
   };
   
   /** Returns the flags describing the specified character code. */
-  static unsigned int getFlags(ucs4 character) throw();
+  static unsigned int getFlags(ucs4 character) noexcept;
   
   /** Returns true if the character a letter. */
-  static inline bool isLetter(ucs4 character) throw() {
+  static inline bool isLetter(ucs4 character) noexcept {
     return getFlags(character) & LETTER;
   }
 
   /** Returns true if the character is a letter or a digit. */
-  static inline bool isLetterDigit(ucs4 character) throw() {
+  static inline bool isLetterDigit(ucs4 character) noexcept {
     return getFlags(character) & (LETTER|DIGIT);
   }
   
   /** Returns true if the character is in lower case. */
-  static bool isLower(ucs4 character) throw();
+  static bool isLower(ucs4 character) noexcept;
   
   /** Returns true if the character is in upper case. */
-  static bool isUpper(ucs4 character) throw();
+  static bool isUpper(ucs4 character) noexcept;
   
   /** Returns true if the character is in title case. */
-  static bool isTitle(ucs4 character) throw();
+  static bool isTitle(ucs4 character) noexcept;
 
   /** Returns true if the character is cased. */
-  // static inline bool isCased(ucs4 character) throw();
+  // static inline bool isCased(ucs4 character) noexcept;
   
   /** Returns true if the character is a digit. */
-  static bool isDigit(ucs4 character) throw();
+  static bool isDigit(ucs4 character) noexcept;
   
   /** Returns true if the character is a hex digit. */
-  static inline bool isHexDigit(ucs4 character) throw() {
+  static inline bool isHexDigit(ucs4 character) noexcept
+  {
     if (character < 0x80) { // TAG: need support for all "abcdefABCDEF"
       return ASCIITraits::isHexDigit(character);
     }
@@ -124,31 +125,33 @@ public:
   }
   
   /** Returns true if the character is a white space. */
-  static bool isSpace(ucs4 character) throw(); // TAG: inline check for most common space (i.e. ' ')
+  static bool isSpace(ucs4 character) noexcept; // TAG: inline check for most common space (i.e. ' ')
   
   /** Returns true if the character is a punctuation mark. */
-  static inline bool isPunctuation(ucs4 character) throw() {
+  static inline bool isPunctuation(ucs4 character) noexcept
+  {
     // TAG: check UNIX spec
     // TAG: use table with only punctuation codes
     return getFlags(character) & PUNCTUATION;
   }
   
   /** Returns true if the character is a control character. */
-  static bool isControl(ucs4 character) throw();
+  static bool isControl(ucs4 character) noexcept;
   
   /** Returns true if the character is an ASCII character. */
-  static inline bool isASCII(ucs4 character) throw() {
+  static inline bool isASCII(ucs4 character) noexcept
+  {
     return character < 0x80;
   }
 
   /** Maps the character to lower case. */
-  static ucs4 toLower(ucs4 character) throw();
+  static ucs4 toLower(ucs4 character) noexcept;
   
   /** Maps the character to upper case. */
-  static ucs4 toUpper(ucs4 character) throw();
+  static ucs4 toUpper(ucs4 character) noexcept;
   
   /** Maps the character to title case. */
-  static ucs4 toTitle(ucs4 character) throw();
+  static ucs4 toTitle(ucs4 character) noexcept;
 
   /**
     Returns the value of the specified character. The character must be a digit
@@ -156,12 +159,13 @@ public:
     isHexDigit(). If the character is not a digit an unspecified value is
     returned.
   */
-  int digitToValue(ucs4 character) throw();
+  int digitToValue(ucs4 character) noexcept;
   
   class _COM_AZURE_DEV__BASE__API ToLowerCase {
   public:
     
-    inline ucs4 operator()(ucs4 character) const throw() {
+    inline ucs4 operator()(ucs4 character) const noexcept
+    {
       return toLower(character);
     }
   };
@@ -169,7 +173,8 @@ public:
   class _COM_AZURE_DEV__BASE__API ToUpperCase {
   public:
     
-    inline ucs4 operator()(ucs4 character) const throw() {
+    inline ucs4 operator()(ucs4 character) const noexcept
+    {
       return toUpper(character);
     }
   };
@@ -177,7 +182,8 @@ public:
   class _COM_AZURE_DEV__BASE__API ToTitleCase {
   public:
     
-    inline ucs4 operator()(ucs4 character) const throw() {
+    inline ucs4 operator()(ucs4 character) const noexcept
+    {
       return toTitle(character);
     }
   };
@@ -233,7 +239,7 @@ public:
 
   /** Wide character encoding. */
   enum WideEncoding {
-    UCS2, /**< UCS-2 encoding. */
+    UTF16, /**< UTF-16 encoding. */
     UCS4 /**< UCS-4 encoding. */
   };
 
@@ -273,10 +279,10 @@ private:
     WideString& string;
     MemorySize index = 0;
     
-    Element(const Element& copy) throw();
-    Element& operator=(const Element& assign) throw();
+    Element(const Element& copy) noexcept;
+    Element& operator=(const Element& assign) noexcept;
     
-    inline Element(WideString& _string, MemorySize _index) throw()
+    inline Element(WideString& _string, MemorySize _index) noexcept
       : string(_string), index(_index)
     {
     }
@@ -304,7 +310,7 @@ private:
   /**
     Compare the NULL-terminated strings ignoring the case.
   */
-  static int compareToIgnoreCase(const ucs4* left, const ucs4* right) throw();
+  static int compareToIgnoreCase(const ucs4* left, const ucs4* right) noexcept;
 protected:
   
   /**
@@ -398,16 +404,6 @@ public:
     }
   };
 
-#if 0
-  /**
-    Returns true if the specified value is a valid UCS-4 value (ISO/IEC 10646).
-  */
-  static inline bool isUCS4(unsigned int value) noexcept
-  {
-    return value <= 0x7fffffffU;
-  }
-#endif
-
   /**
     Returns the multibyte encoding of the specifies multibyte encoded string.
     This method will not examine the entire string. An invalid encoding may
@@ -416,123 +412,10 @@ public:
     @param src The multibyte encoded string.
     @param size The number of bytes in the multibyte encoded string.
   */
-// TAG: MultibyteEncoding getMultibyteEncoding(const uint8* src, MemorySize size) throw();
-  
-  /**
-    Low-level method which converts an UCS-2 encoded string to UTF-8. A
-    null-terminator is NOT appended to the string. The destination buffer must
-    have room for enough bytes (guaranteed to not exceed
-    (size + 1) * getMaximumNumberOfMultibytes(UTF8)).
-    
-    @param dest The destination buffer (may be nullptr).
-    @param src The UCS-2 encoded string.
-    @param size The number of characters in the UCS-2 encoded string.
-    @param flags The encoding flags. The default is 0.
-
-    @return The number of bytes occupied by the UTF-8 encoded string.
-  */
-  static MemorySize UCS2ToUTF8(
-    uint8* dest,
-    const ucs2* src,
-    MemorySize size,
-    unsigned int flags = 0) throw(WideStringException);
-  
-  /**
-    Low-level method which converts an UCS-4 encoded string to UTF-8. A
-    null-terminator is NOT appended to the string. The destination buffer must
-    have room for enough bytes (guaranteed to not exceed
-    (size + 1) * getMaximumNumberOfMultibytes(UTF8)).
-    
-    @param dest The destination buffer (may be nullptr).
-    @param src The UCS-4 encoded string.
-    @param size The number of characters in the UCS-4 encoded string.
-    @param flags The encoding flags. The default is 0.
-
-    @return The number of bytes occupied by the UTF-8 encoded string.
-  */
-  static MemorySize UCS4ToUTF8(
-    uint8* dest,
-    const ucs4* src,
-    MemorySize size,
-    unsigned int flags = 0) throw(WideStringException);
+// TAG: MultibyteEncoding getMultibyteEncoding(const uint8* src, MemorySize size) noexcept;
 
   // TAG: UTF-16 see RFC 2781  Unicode Standard, version 3.0
   
-  /**
-    Low-level method which converts an UTF-8 encoded string to UCS-2 encoding.
-    The destination buffer must have room for enough characters (guaranteed to
-    not exceed size).
-    
-    @param dest The destination buffer (may be nullptr).
-    @param src The UTF-8 encoded string.
-    @param size The number of bytes in the UTF-8 encoded string.
-    @param flags The encoding flags. The default is EAT_BOM.
-    
-    @return The number of characters in the UCS-2 encoded string.
-  */
-  static MemorySize UTF8ToUCS2(
-    ucs2* dest,
-    const uint8* src,
-    MemorySize size,
-    unsigned int flags = EAT_BOM) throw(MultibyteException);
-
-  /**
-    Low-level method which converts an UTF-8 encoded string to UCS-4 encoding.
-    The destination buffer must have room for enough characters (guaranteed to
-    not exceed size).
-    
-    @param dest The destination buffer (may be nullptr).
-    @param src The UTF-8 encoded string.
-    @param size The number of bytes in the UTF-8 encoded string.
-    @param flags The encoding flags. The default is EAT_BOM.
-    
-    @return The number of characters in the UCS-4 encoded string.
-  */
-  static MemorySize UTF8ToUCS4(
-    ucs4* dest,
-    const uint8* src,
-    MemorySize size,
-    unsigned int flags = EAT_BOM) throw(MultibyteException);
-
-  /**
-    Low-level method which converts an UTF-16 encoded string to UCS-4 encoding.
-    The destination buffer must have room for enough characters (guaranteed to
-    not exceed size). The UCS-4 characters are restricted to values in the range
-    0x00000000-0x0010ffff.
-    
-    @param dest The destination buffer (may be nullptr).
-    @param src The UTF-16 encoded string.
-    @param size The number of bytes in the UTF-16 encoded string.
-    @param flags The encoding flags. The default is EAT_BOM|EXPECT_BOM.
-    
-    @return The number of characters in the UCS-4 encoded string.
-  */
-  static MemorySize UTF16ToUCS4(
-    ucs4* dest,
-    const uint8* src,
-    MemorySize size,
-    unsigned int flags = EAT_BOM|EXPECT_BOM) throw(MultibyteException);
-
-  /**
-    Low-level method which converts an UTF-32 encoded string to UCS-4 encoding.
-    The destination buffer must have room for enough characters (guaranteed to
-    not exceed size). See the technical report available at
-    http://www.unicode.org/unicode/reports/tr19. The UCS-4 characters are
-    restricted to values in the range 0x00000000-0x0010ffff.
-    
-    @param dest The destination buffer (may be nullptr).
-    @param src The UTF-32 encoded string.
-    @param size The number of bytes in the UTF-32 encoded string.
-    @param flags The encoding flags. The default is EAT_BOM|EXPECT_BOM.
-    
-    @return The number of characters in the UCS-4 encoded string.
-  */
-  static MemorySize UTF32ToUCS4(
-    ucs4* dest,
-    const uint8* src,
-    MemorySize size,
-    unsigned int flags = EAT_BOM|EXPECT_BOM) throw(MultibyteException);
-
   /**
     Returns a multibyte string from a NULL-terminated wide-string.
   */
@@ -548,7 +431,7 @@ public:
     @return maximum if terminator is not found. 0 if string is invalid (i.e. 0).
   */
   static inline MemorySize getLengthOfTerminated(
-    const wchar* string, unsigned int maximum = MAXIMUM_LENGTH) throw()
+    const wchar* string, unsigned int maximum = MAXIMUM_LENGTH) noexcept
 {
     if (!string) {
       return 0;
@@ -560,7 +443,7 @@ public:
   /**
     Initializes an empty string.
   */
-  WideString() throw();
+  WideString() noexcept;
 
   /**
     Initializes a string with no characters in it, initial capacity and
@@ -593,7 +476,8 @@ public:
     @param string String literal.
   */
   template<MemorySize SIZE>
-  inline WideString(const wchar (&string)[SIZE]) throw(MemoryException) {
+  inline WideString(const wchar (&string)[SIZE]) throw(MemoryException)
+  {
     if (Constraint<(SIZE > 0)>::UNSPECIFIED) {}
     initialize(string, SIZE - 1);
   }
@@ -624,7 +508,8 @@ public:
     @param string The NULL-terminated string.
   */
   template<MemorySize SIZE>
-  inline WideString(const char (&string)[SIZE]) throw(MultibyteException, MemoryException) {
+  inline WideString(const char (&string)[SIZE]) throw(MultibyteException, MemoryException)
+  {
     if (Constraint<(SIZE > 0)>::UNSPECIFIED) {}
     initialize(string, SIZE - 1);
   }
@@ -649,7 +534,9 @@ public:
   /**
     Initializes string from other string.
   */
-  inline WideString(const WideString& copy) throw() : elements(copy.elements) {
+  inline WideString(const WideString& copy) noexcept
+    : elements(copy.elements)
+  {
   }
   
   /**
@@ -660,7 +547,7 @@ public:
   /**
     Assignment of string with string.
   */
-  WideString& operator=(const WideString& assign) throw()
+  WideString& operator=(const WideString& assign) noexcept
   {
     elements = assign.elements; // self assignment handled by automation pointer
     return *this;
@@ -674,7 +561,7 @@ public:
   /**
     Returns the number of characters in the string.
   */
-  inline MemorySize getLength() const throw()
+  inline MemorySize getLength() const noexcept
   {
     return elements->getSize() - 1;
   }
@@ -682,7 +569,7 @@ public:
   /**
     Returns true if the string contains no characters.
   */
-  inline bool isEmpty() const throw()
+  inline bool isEmpty() const noexcept
   {
     return elements->getSize() == 1;
   }
@@ -690,7 +577,7 @@ public:
   /**
     Returns true if the string contains characters.
   */
-  inline bool isProper() const throw()
+  inline bool isProper() const noexcept
   {
     return elements->getSize() > 1;
   }
@@ -698,12 +585,12 @@ public:
   /**
     Returns true if the string is an ASCII string.
   */
-  inline bool isASCII() const throw();
+  inline bool isASCII() const noexcept;
   
   /**
     Returns the capacity of the string.
   */
-  inline MemorySize getCapacity() const throw()
+  inline MemorySize getCapacity() const noexcept
   {
     return elements->getCapacity();
   }  
@@ -720,18 +607,18 @@ public:
     Releases any unused capacity of the string. This applies to all shared
     strings.
   */
-  void garbageCollect() throw();
+  void garbageCollect() noexcept;
 
 #if 0
   /**
     Returns the granularity.
   */
-  MemorySize getGranularity() const throw();
+  MemorySize getGranularity() const noexcept;
 
   /**
     Sets the granularity.
   */
-  void setGranularity(MemorySize granularity) throw();
+  void setGranularity(MemorySize granularity) noexcept;
 #endif
   
 // *************************************************************************
@@ -741,7 +628,7 @@ public:
   /**
     Returns the first element of the string as a modifying iterator.
   */
-  inline Iterator getBeginIterator() throw()
+  inline Iterator getBeginIterator() noexcept
   {
     return elements->getBeginIterator();
   }
@@ -749,7 +636,7 @@ public:
   /**
     Returns the end of the string as a modifying iterator.
   */
-  inline Iterator getEndIterator() throw()
+  inline Iterator getEndIterator() noexcept
   {
     return elements->getEndIterator() - 1;
   }
@@ -757,7 +644,7 @@ public:
   /**
     Returns the first element of the string as a non-modifying iterator.
   */
-  inline ReadIterator getBeginReadIterator() const throw()
+  inline ReadIterator getBeginReadIterator() const noexcept
   {
     return elements->getBeginReadIterator();
   }
@@ -765,7 +652,7 @@ public:
   /**
     Returns the end of the string as a non-modifying iterator.
   */
-  inline ReadIterator getEndReadIterator() const throw()
+  inline ReadIterator getEndReadIterator() const noexcept
   {
     return elements->getEndReadIterator() - 1;
   }
@@ -773,7 +660,7 @@ public:
   /**
     Returns a modifying enumerator of the string.
   */
-  inline Enumerator getEnumerator() throw()
+  inline Enumerator getEnumerator() noexcept
   {
     return elements->getEnumerator();
   }
@@ -781,7 +668,7 @@ public:
   /**
     Returns a non-modifying enumerator of the string.
   */
-  inline ReadEnumerator getReadEnumerator() const throw()
+  inline ReadEnumerator getReadEnumerator() const noexcept
   {
     return elements->getReadEnumerator();
   }
@@ -849,7 +736,8 @@ public:
 
     @param index Specifies the character to be removed.
   */
-  inline WideString& removeAt(MemorySize index) throw(MemoryException) {
+  inline WideString& removeAt(MemorySize index) throw(MemoryException)
+  {
     return remove(index, index);
   }
 
@@ -1020,17 +908,17 @@ public:
   /**
     The character sequence contained in this string is replaced by the reverse sequence.
   */
-  WideString& reverse() throw();
+  WideString& reverse() noexcept;
 
   /**
     Converts the characters of this string into the lower case equivalents.
   */
-  WideString& toLowerCase() throw();
+  WideString& toLowerCase() noexcept;
 
   /**
     Converts the characters of this string into the upper case equivalents.
   */
-  WideString& toUpperCase() throw();
+  WideString& toUpperCase() noexcept;
 
 // *************************************************************************
 //   COMPARE SECTION
@@ -1045,7 +933,7 @@ public:
     found, respectively, to be less than, equal to, or greater than the
     specified string.
   */
-  int compareTo(const WideString& string) const throw();
+  int compareTo(const WideString& string) const noexcept;
 
   /**
     Compare this string with a string literal.
@@ -1056,7 +944,7 @@ public:
     found, respectively, to be less than, equal to, or greater than the
     specified string.
   */
-  int compareTo(const WideLiteral& string) const throw();
+  int compareTo(const WideLiteral& string) const noexcept;
   
   /**
     Compare this string with NULL-terminated string.
@@ -1067,7 +955,7 @@ public:
     found, respectively, to be less than, equal to, or greater than the
     specified string.
   */
-  int compareTo(const wchar* string) const throw();
+  int compareTo(const wchar* string) const noexcept;
 
   /**
     Compares this string with other string ignoring the case of the characters.
@@ -1078,40 +966,40 @@ public:
     found, respectively, to be less than, equal to, or greater than the
     specified string.
   */
-  int compareToIgnoreCase(const WideString& string) const throw();
+  int compareToIgnoreCase(const WideString& string) const noexcept;
 
   /**
     Returns true if this string starts with the specified prefix.
 
     @param prefix The string to compare start of this string with.
   */
-  bool startsWith(const WideString& prefix) const throw();
+  bool startsWith(const WideString& prefix) const noexcept;
 
   /**
     Returns true if this string starts with the specified prefix.
 
     @param prefix The string to compare start of this string with.
   */
-  bool startsWith(const WideLiteral& prefix) const throw();
+  bool startsWith(const WideLiteral& prefix) const noexcept;
 
   /**
     Returns true if this string ends with the specified suffix.
 
     @param suffix The string to compare end of this string with.
   */
-  bool endsWith(const WideString& suffix) const throw();
+  bool endsWith(const WideString& suffix) const noexcept;
 
   /**
     Returns true if this string ends with the specified suffix.
 
     @param suffix The string to compare end of this string with.
   */
-  bool endsWith(const WideLiteral& suffix) const throw();
+  bool endsWith(const WideLiteral& suffix) const noexcept;
 
   /**
     Equality operator.
   */
-  inline bool operator==(const WideString& string) const throw()
+  inline bool operator==(const WideString& string) const noexcept
   {
     return compareTo(string) == 0;
   }
@@ -1119,7 +1007,7 @@ public:
   /**
     Equality operator.
   */
-  inline bool operator==(const WideLiteral& string) const throw()
+  inline bool operator==(const WideLiteral& string) const noexcept
   {
     return compareTo(string) == 0;
   }
@@ -1127,7 +1015,7 @@ public:
   /**
     Inequality operator.
   */
-  inline bool operator!=(const WideString& string) const throw()
+  inline bool operator!=(const WideString& string) const noexcept
   {
     return compareTo(string) != 0;
   }
@@ -1135,7 +1023,7 @@ public:
   /**
     Less than operator.
   */
-  inline bool operator<(const WideString& string) const throw()
+  inline bool operator<(const WideString& string) const noexcept
   {
     return compareTo(string) < 0;
   }
@@ -1143,7 +1031,7 @@ public:
   /**
     Less than or equal operator.
   */
-  inline bool operator<=(const WideString& string) const throw()
+  inline bool operator<=(const WideString& string) const noexcept
   {
     return compareTo(string) <= 0;
   }
@@ -1151,7 +1039,7 @@ public:
   /**
     Greater than or equal operator.
   */
-  inline bool operator>=(const WideString& string) const throw()
+  inline bool operator>=(const WideString& string) const noexcept
   {
     return compareTo(string) >= 0;
   }
@@ -1159,7 +1047,7 @@ public:
   /**
     Greater than operator.
   */
-  inline bool operator>(const WideString& string) const throw()
+  inline bool operator>(const WideString& string) const noexcept
   {
     return compareTo(string) > 0;
   }
@@ -1176,7 +1064,7 @@ public:
     @param start Specifies the start position of the search. Default is 0.
     @return Index of the first match if any otherwise -1.
   */
-  MemoryDiff indexOf(ucs4 ch, MemorySize start = 0) const throw();
+  MemoryDiff indexOf(ucs4 ch, MemorySize start = 0) const noexcept;
 
   /**
     Returns the index of the first substring that matches the specified string
@@ -1186,7 +1074,7 @@ public:
     @param start Specifies the start position of the search. Default is 0.
     @return Index of the first match if any otherwise -1. Also returns -1 if substring is empty.
   */
-  MemoryDiff indexOf(const WideString& string, MemorySize start = 0) const throw();
+  MemoryDiff indexOf(const WideString& string, MemorySize start = 0) const noexcept;
 
   /**
     Returns the index of the last character that matches the specified character
@@ -1196,13 +1084,13 @@ public:
     @param start Specifies the start position of the search. Default is end of string.
     @return Index of the last match if any otherwise -1.
   */
-  MemoryDiff lastIndexOf(ucs4 ch, MemorySize start) const throw();
+  MemoryDiff lastIndexOf(ucs4 ch, MemorySize start) const noexcept;
 
   /**
     Returns the index of the last character that matches the specified character
     starting from the end of the string.
   */
-  inline MemoryDiff lastIndexOf(ucs4 ch) const throw()
+  inline MemoryDiff lastIndexOf(ucs4 ch) const noexcept
   {
     return lastIndexOf(ch, getLength());
   }
@@ -1215,7 +1103,7 @@ public:
     @param start Specifies the start position of the search. Default is end of string.
     @return Index of the last match if any otherwise -1. Also returns -1 if the substring is empty.
   */
-  MemoryDiff lastIndexOf(const WideString& string, MemorySize start) const throw();
+  MemoryDiff lastIndexOf(const WideString& string, MemorySize start) const noexcept;
 
   /**
     Returns the index of the last string that matches the specified string
@@ -1225,7 +1113,7 @@ public:
 
     @return Index of the last match if any otherwide -1. Also returns -1 if the substring is empty.
   */
-  inline MemoryDiff lastIndexOf(const WideString& string) const throw()
+  inline MemoryDiff lastIndexOf(const WideString& string) const noexcept
   {
     return lastIndexOf(string, getLength());
   }
@@ -1237,7 +1125,7 @@ public:
     @param start The start position. Default is 0.
     @return The number of occurances of the character.
   */
-  MemorySize count(ucs4 ch, MemorySize start = 0) const throw();
+  MemorySize count(ucs4 ch, MemorySize start = 0) const noexcept;
 
   /**
     Counts the number of occurances of the specified substring in this string.
@@ -1246,7 +1134,7 @@ public:
     @param start The start position. Default is 0.
     @return The number of occurances of the substring.
   */
-  MemorySize count(const WideString& string, MemorySize start = 0) const throw();
+  MemorySize count(const WideString& string, MemorySize start = 0) const noexcept;
 
 // *************************************************************************
 //   END SECTION
@@ -1260,7 +1148,7 @@ public:
   /**
     Returns NULL-terminated wide string.
   */
-  inline const ucs4* getElements() const throw() {
+  inline const ucs4* getElements() const noexcept {
     // special case: no need to copy on write 'cause we only add terminator
     ucs4* result = const_cast<ucs4*>(elements->getElements());
     result[getLength()] = Traits::TERMINATOR;
@@ -1270,17 +1158,17 @@ public:
   /**
     Returns true if the string is upper cased.
   */
-  bool isUpperCased() const throw();
+  bool isUpperCased() const noexcept;
 
   /**
     Returns true if the string is lower case.
   */
-  bool isLowerCased() const throw();
+  bool isLowerCased() const noexcept;
 
   /**
     Returns true if the string is title cased.
   */
-  bool isTitleCased() const throw();
+  bool isTitleCased() const noexcept;
   
 // *************************************************************************
 //   FRIEND SECTION

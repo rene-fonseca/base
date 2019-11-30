@@ -42,9 +42,9 @@ protected:
       src += status;
     } else {
       switch (status) {
-      case Unicode::UTF8_ERROR_INCOMPLETE:
+      case Unicode::ERROR_INCOMPLETE:
         throw MultibyteException(MultibyteException::INCOMPLETE_CHARACTER_CODE);
-      case Unicode::UTF8_ERROR_BAD_ENCODING:
+      case Unicode::ERROR_BAD_ENCODING:
         throw MultibyteException(MultibyteException::INVALID_CHARACTER_CODE);
       default:
         throw MultibyteException();

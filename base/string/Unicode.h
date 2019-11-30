@@ -93,9 +93,11 @@ public:
   }
 
   enum {
-    UTF8_ERROR_EMPTY = 0,
-    UTF8_ERROR_INCOMPLETE = -1,
-    UTF8_ERROR_BAD_ENCODING = -2
+    ERROR_EMPTY = 0,
+    ERROR_INCOMPLETE = -1,
+    ERROR_BAD_ENCODING = -2,
+    INVALID_UCS4_CHARACTER = -3,
+    INVALID_UCS2_CHARACTER = -4
   };
 
   /**
@@ -174,6 +176,44 @@ public:
   // TAG: need validation methods / guidelines
 
   /**
+    Low-level method which converts an UCS-2 encoded string to UTF-8. A
+    null-terminator is NOT appended to the string. The destination buffer must
+    have room for enough bytes (guaranteed to not exceed
+    (size + 1) * getMaximumNumberOfMultibytes(UTF8)).
+
+    @param dest The destination buffer (may be nullptr).
+    @param src The UCS-2 encoded string.
+    @param size The number of characters in the UCS-2 encoded string.
+    @param flags The encoding flags. The default is 0.
+
+    @return The number of bytes occupied by the UTF-8 encoded string.
+  */
+  static MemoryDiff UCS2ToUTF8(
+    uint8* dest,
+    const ucs2* src,
+    MemorySize size,
+    unsigned int flags = 0) noexcept;
+
+  /**
+    Low-level method which converts an UTF16 encoded string to UTF-8. A
+    null-terminator is NOT appended to the string. The destination buffer must
+    have room for enough bytes (guaranteed to not exceed
+    (size + 1) * getMaximumNumberOfMultibytes(UTF8)).
+
+    @param dest The destination buffer (may be nullptr).
+    @param src The UCS-2 encoded string.
+    @param size The number of characters in the UCS-2 encoded string.
+    @param flags The encoding flags. The default is 0.
+
+    @return The number of bytes occupied by the UTF-8 encoded string.
+  */
+  static MemoryDiff UTF16ToUTF8(
+    uint8* dest,
+    const utf16* src,
+    MemorySize size,
+    unsigned int flags = 0) noexcept;
+
+  /**
     Low-level method which converts an UCS-4 encoded string to UCS-2 encoding.
     The destination buffer must have room for enough characters (guaranteed to
     not exceed size). UCS-2 is deprecated.
@@ -185,7 +225,7 @@ public:
 
     @return The number of characters in the UCS-2 encoded string. Negative error code on error.
   */
-  MemoryDiff UCS4ToUCS2(ucs2* dest, const ucs4* src, MemorySize size, unsigned int flags = 0) noexcept;
+  static MemoryDiff UCS4ToUCS2(ucs2* dest, const ucs4* src, MemorySize size, unsigned int flags = 0) noexcept;
 
   /**
     Low-level method which converts an UCS-2 encoded string to UCS-4 encoding.
@@ -201,6 +241,61 @@ public:
     @return The number of characters in the UCS-4 encoded string. Negative error code on error.
   */
   static MemoryDiff UCS2ToUCS4(ucs4* dest, const ucs2* src, MemorySize size, unsigned int flags = 0) noexcept;
+
+  /**
+    Low-level method which converts an UCS-4 encoded string to UTF-8. A
+    null-terminator is NOT appended to the string. The destination buffer must
+    have room for enough bytes (guaranteed to not exceed
+    (size + 1) * getMaximumNumberOfMultibytes(UTF8)).
+    
+    @param dest The destination buffer (may be nullptr).
+    @param src The UCS-4 encoded string.
+    @param size The number of characters in the UCS-4 encoded string.
+    @param flags The encoding flags. The default is 0.
+
+    @return The number of bytes occupied by the UTF-8 encoded string.
+  */
+  static MemoryDiff UCS4ToUTF8(
+    uint8* dest,
+    const ucs4* src,
+    MemorySize size,
+    unsigned int flags = 0) noexcept;
+
+  /**
+    Low-level method which converts an UTF-8 encoded string to UTF-16 encoding.
+    The destination buffer must have room for enough characters (guaranteed to
+    not exceed size).
+
+    @param dest The destination buffer (may be nullptr).
+    @param src The UTF-8 encoded string.
+    @param size The number of bytes in the UTF-8 encoded string.
+    @param flags The encoding flags. The default is EAT_BOM.
+
+    @return The number of words (not characters) in the UTF-16 encoded string.
+  */
+  static MemoryDiff UTF8ToUTF16(
+    utf16* dest,
+    const uint8* src,
+    MemorySize size,
+    unsigned int flags = EAT_BOM) noexcept;
+
+  /**
+    Low-level method which converts an UTF-8 encoded string to UCS-4 encoding.
+    The destination buffer must have room for enough characters (guaranteed to
+    not exceed size).
+
+    @param dest The destination buffer (may be nullptr).
+    @param src The UTF-8 encoded string.
+    @param size The number of bytes in the UTF-8 encoded string.
+    @param flags The encoding flags. The default is EAT_BOM.
+
+    @return The number of characters in the UCS-4 encoded string.
+  */
+  static MemoryDiff UTF8ToUCS4(
+    ucs4* dest,
+    const uint8* src,
+    MemorySize size,
+    unsigned int flags = EAT_BOM) noexcept;
 
   /** Encoding flags. */
   enum EncodingFlags {
@@ -224,13 +319,6 @@ public:
     ASSUME_LE = 32
   };
   // TAG: add flag SKIP_INVALID = 64
-
-  enum {
-    INVALID_UCS4_CHARACTER = -1,
-    INVALID_UCS2_CHARACTER = -2,
-    INVALID_ENCODING = -3,
-    ERROR_INCOMPLETE = -4
-  };
 
   /**
     Low-level method which converts an UCS-4 encoded string to UTF-16BE. A
@@ -269,6 +357,25 @@ public:
     const ucs4* src,
     MemorySize size,
     unsigned int flags = ADD_BOM) noexcept;
+
+  /**
+    Low-level method which converts an UTF-16 encoded string to UCS-4 encoding.
+    The destination buffer must have room for enough characters (guaranteed to
+    not exceed size). The UCS-4 characters are restricted to values in the range
+    0x00000000-0x0010ffff.
+
+    @param dest The destination buffer (may be nullptr).
+    @param src The UTF-16 encoded string.
+    @param size The number of bytes in the UTF-16 encoded string.
+    @param flags The encoding flags. The default is EAT_BOM|EXPECT_BOM.
+
+    @return The number of characters in the UCS-4 encoded string.
+  */
+  static MemoryDiff UTF16ToUCS4(
+    ucs4* dest,
+    const uint8* src,
+    MemorySize size,
+    unsigned int flags = EAT_BOM) noexcept;
 
   /** Convert in-memory (no BOM) UTF-16 to UCS-4. */
   static MemoryDiff UTF16ToUCS4(ucs4* dest, const utf16* src, MemorySize size, unsigned int flags = 0) noexcept;

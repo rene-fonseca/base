@@ -365,52 +365,6 @@ public:
   /** Specifies the byte order mark. */
   static constexpr ucs4 BOM = 0x0000feff;
 
-  class _COM_AZURE_DEV__BASE__API UnicodeCharacter {
-  public:
-
-    /** The style. */
-    enum Style {
-      /** Java format: \\u1234. */
-      STYLE_JAVA,
-      /** C format: \\u1234. */
-      STYLE_C = STYLE_JAVA,
-      /** C++ format: \\u1234. */
-      STYLE_CPP = STYLE_C,
-      /** HTML format &#x1234; or &#1234; dependent on the current base integer. */
-      STYLE_HTML,
-      /** XML format &#x1234; or &#1234; dependent on the current base integer. */
-      STYLE_XML = STYLE_HTML,
-      /** Perl format: \\x{1234}. */
-      STYLE_PERL
-    };
-  private:
-    
-    static constexpr Style DEFAULT_STYLE = STYLE_CPP;
-    ucs4 character = 0;
-    Style style;
-  public:
-    
-    inline UnicodeCharacter(ucs4 _character, Style _style = DEFAULT_STYLE) noexcept
-      : character(_character), style(_style)
-    {
-    }
-
-    inline ucs4 getCode() const noexcept
-    {
-      return character;
-    }
-    
-    inline Style getStyle() const noexcept
-    {
-      return style;
-    }
-    
-    inline void setStyle(Style style) noexcept
-    {
-      this->style = style;
-    }
-  };
-
   /**
     Returns the multibyte encoding of the specifies multibyte encoded string.
     This method will not examine the entire string. An invalid encoding may
@@ -420,32 +374,12 @@ public:
     @param size The number of bytes in the multibyte encoded string.
   */
 // TAG: MultibyteEncoding getMultibyteEncoding(const uint8* src, MemorySize size) noexcept;
-
-  // TAG: UTF-16 see RFC 2781  Unicode Standard, version 3.0
   
   /**
     Returns a multibyte string from a NULL-terminated wide-string.
   */
   static String getMultibyteString(const wchar* string)
     throw(NullPointer, MultibyteException, WideStringException);
-  
-  /**
-    Returns the length of the NULL-terminated string.
-
-    @param string The NULL-terminated string.
-    @param maximum The maximum length of the string. The default is MAXIMUM_LENGTH.
-
-    @return maximum if terminator is not found. 0 if string is invalid (i.e. 0).
-  */
-  static inline MemorySize getLengthOfTerminated(
-    const wchar* string, unsigned int maximum = MAXIMUM_LENGTH) noexcept
-{
-    if (!string) {
-      return 0;
-    }
-    const wchar* terminator = find<wchar>(string, maximum, 0);
-    return terminator ? (terminator - string) : maximum;
-  }
   
   /**
     Initializes an empty string.
@@ -1233,10 +1167,5 @@ inline WideString operator-(const WideString& left, const WideString& right) thr
     return WideString(left); // return copy of left
   }
 }
-
-/**
-  Writes a wide character to the format output stream.
-*/
-_COM_AZURE_DEV__BASE__API FormatOutputStream& operator<<(FormatOutputStream& stream, WideString::UnicodeCharacter character) throw(IOException);
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

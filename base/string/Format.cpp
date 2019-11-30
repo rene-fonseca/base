@@ -322,7 +322,7 @@ public:
 
     TEST_EQUAL(Format::subst("%1", String("")), "");
     TEST_EQUAL(Format::subst("%1", String("Hello, World!")), "Hello, World!");
-    TEST_EQUAL(Format::subst("%1", WideString(L"Hello, World!")), "Hello, World!");
+    TEST_EQUAL(Format::subst("%1", String(WideString(L"Hello, World!"))), "Hello, World!");
 
     TEST_EQUAL(Format::subst(""), "");
     TEST_EQUAL(Format::subst("%1 %2 %3", 1, 2, 3), "1 2 3");

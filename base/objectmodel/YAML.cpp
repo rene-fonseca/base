@@ -16,8 +16,6 @@
 #include <base/string/Posix.h>
 #include <base/mathematics/Math.h>
 #include <base/UnitTest.h>
-#include <locale>
-#include <codecvt>
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
@@ -217,9 +215,11 @@ Reference<ObjectModel::String> YAML::parseString(YAMLParser& parser)
             const uint16 d3 = ASCIITraits::digitToValue(h3);
             const uint16 value = (d0 << 12) | (d1 << 8) | (d2 << 4) | (d3 << 0);
             const wchar* src = reinterpret_cast<const wchar*>(&value);
+            /*
             std::wstring_convert<std::codecvt_utf8<wchar_t>, wchar_t> convert;
             std::string s = convert.to_bytes(src, src + 1);
             text += s;
+            */
           } else {
             throw YAMLException("Malformed string literal.", parser.getPosition());
           }

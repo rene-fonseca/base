@@ -20,7 +20,7 @@
 #include <base/mem/ReferenceCountedAllocator.h>
 #include <base/string/FormatOutputStream.h>
 #include <base/string/MultibyteException.h>
-#include <base/string/WideStringException.h>
+#include <base/string/StringException.h>
 #include <base/mem/AllocatorEnumeration.h>
 #include <base/Primitives.h>
 #include <base/WideLiteral.h>
@@ -218,10 +218,8 @@ public:
     unsigned int index;
   };
 
-  /** Specifies the granularity of the capacity. Guaranteed to be greater than 0. */
-  static constexpr MemorySize GRANULARITY = 16;
   /** Specifies the maximum length of any string. Guarantees that an int can hold the length of the string. */
-  static constexpr MemorySize MAXIMUM_LENGTH = ((PrimitiveTraits<int>::MAXIMUM/sizeof(ucs4) - 1)/GRANULARITY)*GRANULARITY;
+  static constexpr MemorySize MAXIMUM_LENGTH = (PrimitiveTraits<int>::MAXIMUM/sizeof(ucs4) - 1);
   /** Hash modulus. */
   static constexpr unsigned int HASH_MODULUS = 1455;
   /** Character folding hash table. */
@@ -289,13 +287,13 @@ private:
     }
   public:
     
-    inline Element& operator=(ucs4 value) throw(OutOfRange)
+    inline Element& operator=(ucs4 value)
     {
       string.setAt(index, value);
       return *this;
     }
     
-    inline operator ucs4() const throw(OutOfRange)
+    inline operator ucs4() const
     {
       return string.getAt(index);
     }
@@ -317,23 +315,23 @@ protected:
   /**
     Initializes string.
   */
-  void initialize(const wchar* string, MemorySize length) throw(MemoryException);
+  void initialize(const wchar* string, MemorySize length);
 
   /**
     Initializes string.
   */
-  void initialize(const ucs4* string, MemorySize length) throw(MemoryException);
+  void initialize(const ucs4* string, MemorySize length);
 
   /**
     Initializes string.
   */
-  void initialize(const char* string, MemorySize length) throw(MemoryException);
+  void initialize(const char* string, MemorySize length);
   
   /**
     Returns a modifiable buffer. Forces the internal buffer to be copied if
     shared by multiple strings.
   */
-  inline ucs4* getBuffer() throw(MemoryException)
+  inline ucs4* getBuffer()
   {
     elements.copyOnWrite();
     return elements->getElements();
@@ -350,9 +348,9 @@ protected:
   /**
     Sets the length of the string.
   */
-  inline void setLength(MemorySize length) throw(WideStringException, MemoryException)
+  inline void setLength(MemorySize length)
   {
-    bassert(length <= MAXIMUM_LENGTH, WideStringException(this));
+    bassert(length <= MAXIMUM_LENGTH, StringException(this));
     elements.copyOnWrite(); // we are about to modify the buffer
     elements->setSize(length + 1);
   }
@@ -376,12 +374,6 @@ public:
 // TAG: MultibyteEncoding getMultibyteEncoding(const uint8* src, MemorySize size) noexcept;
   
   /**
-    Returns a multibyte string from a NULL-terminated wide-string.
-  */
-  static String getMultibyteString(const wchar* string)
-    throw(NullPointer, MultibyteException, WideStringException);
-  
-  /**
     Initializes an empty string.
   */
   WideString() noexcept;
@@ -392,7 +384,7 @@ public:
 
     @param capacity The initial capacity of the internal buffer.
   */
-  explicit WideString(MemorySize capacity) throw(MemoryException);
+  explicit WideString(MemorySize capacity);
 
   /**
     Initializes the string from a string literal. The string literal is not
@@ -400,15 +392,19 @@ public:
 
     @param string String literal.
   */
-  WideString(const WideLiteral& string) throw(WideStringException, MemoryException);
+  WideString(const WideLiteral& string);
 
-  WideString(const wchar* string) throw(MemoryException);
+  WideString(const wchar* string);
+  
+  WideString(const wchar* string, MemorySize length);
 
-  WideString(const ucs4* string) throw(MemoryException);
+  WideString(const ucs4* string);
 
-  WideString(const std::string& string) throw(WideStringException, MemoryException);
+  WideString(const ucs4* string, MemorySize length);
 
-  WideString(const std::wstring& string) throw(WideStringException, MemoryException);
+  WideString(const std::string& string);
+
+  WideString(const std::wstring& string);
 
   /**
     Initializes the string from a string literal. Implicit initialization is
@@ -417,7 +413,7 @@ public:
     @param string String literal.
   */
   template<MemorySize SIZE>
-  inline WideString(const wchar (&string)[SIZE]) throw(MemoryException)
+  inline WideString(const wchar (&string)[SIZE])
   {
     if (Constraint<(SIZE > 0)>::UNSPECIFIED) {}
     initialize(string, SIZE - 1);
@@ -429,7 +425,7 @@ public:
     @param string NULL-terminated string. If NULL, the string is initialized
     with no characters in it.
   */
-  WideString(const NativeWideString& string) throw(WideStringException, MemoryException);
+  WideString(const NativeWideString& string);
   
   /**
     Initializes the string from a NULL-terminated string. If the length of the
@@ -440,8 +436,7 @@ public:
     with no characters in it.
     @param maximum Specifies the maximum length.
   */
-  WideString(const NativeWideString& string, MemorySize maximum)
-    throw(OutOfDomain, WideStringException, MemoryException);
+  WideString(const NativeWideString& string, MemorySize maximum);
 
   /**
     Initializes string from a NULL-terminated multibyte character string.
@@ -449,7 +444,7 @@ public:
     @param string The NULL-terminated string.
   */
   template<MemorySize SIZE>
-  inline WideString(const char (&string)[SIZE]) throw(MultibyteException, MemoryException)
+  inline WideString(const char (&string)[SIZE])
   {
     if (Constraint<(SIZE > 0)>::UNSPECIFIED) {}
     initialize(string, SIZE - 1);
@@ -461,7 +456,7 @@ public:
     @param string NULL-terminated string. If NULL, the string is initialized
     with no characters in it.
   */
-  WideString(const NativeString& string) throw(MultibyteException, MemoryException);
+  WideString(const NativeString& string);
   
   /**
     Initializes string from a NULL-terminated multibyte string.
@@ -469,8 +464,7 @@ public:
     @param string The NULL-terminated string.
     @param maxmimum The maximum length of the string.
   */
-  WideString(const NativeString& string, MemorySize maximum)
-    throw(OutOfDomain, MultibyteException, MemoryException);
+  WideString(const NativeString& string, MemorySize maximum);
   
   /**
     Initializes string from other string.
@@ -483,7 +477,7 @@ public:
   /**
     Initialized wide string from multibyte string.
   */
-  WideString(const String& string) throw(MultibyteException, MemoryException);
+  WideString(const String& string);
   
   /**
     Assignment of string with string.
@@ -497,7 +491,7 @@ public:
   /**
     Assignment of string literal to string.
   */
-  WideString& operator=(const WideLiteral& assign) throw(WideStringException, MemoryException);
+  WideString& operator=(const WideLiteral& assign);
 
   /**
     Returns the number of characters in the string.
@@ -542,25 +536,16 @@ public:
 
     @param capacity Specifies the minimum capacity of the string.
   */
-  void ensureCapacity(MemorySize capacity) throw(MemoryException);
+  void ensureCapacity(MemorySize capacity);
+
+  /** Clears the string. */
+  void clear();
 
   /**
     Releases any unused capacity of the string. This applies to all shared
     strings.
   */
-  void garbageCollect() noexcept;
-
-#if 0
-  /**
-    Returns the granularity.
-  */
-  MemorySize getGranularity() const noexcept;
-
-  /**
-    Sets the granularity.
-  */
-  void setGranularity(MemorySize granularity) noexcept;
-#endif
+  void garbageCollect();
   
 // *************************************************************************
 //   TRAVERSE SECTION
@@ -622,7 +607,7 @@ public:
     Returns the character at the specified index in this string. Raises
     OutOfRange if index exceeds the length of the string.
   */
-  ucs4 getAt(MemorySize index) const throw(OutOfRange);
+  ucs4 getAt(MemorySize index) const;
 
   /**
     Sets the character at the specified index of this string. If the new
@@ -633,13 +618,13 @@ public:
     @param index The index of the character to set.
     @param value The new character value.
   */
-  void setAt(MemorySize index, ucs4 value) throw(OutOfRange);
+  void setAt(MemorySize index, ucs4 value);
 
   /**
     Returns a reference to character at the specified index. Raises
     OutOfRange if index exceeds the length of the string.
   */
-  inline Element operator[](MemorySize index) throw(OutOfRange)
+  inline Element operator[](MemorySize index)
   {
     return Element(*this, index);
   }
@@ -648,7 +633,7 @@ public:
     Returns the character at the specified index. Raises OutOfRange if index
     exceeds the length of the string.
   */
-  inline char operator[](MemorySize index) const throw(OutOfRange)
+  inline char operator[](MemorySize index) const
   {
     return getAt(index);
   }
@@ -663,21 +648,21 @@ public:
     @param start Specifies the start of the substring.
     @param end Specifies the end of the substring.
   */
-  WideString& remove(MemorySize start, MemorySize end) throw(MemoryException);
+  WideString& remove(MemorySize start, MemorySize end);
 
   /**
     Removes the characters from the specified index to the end of the string.
 
     @param start Specifies the start of the string.
   */
-  WideString& removeFrom(MemorySize start) throw(MemoryException);
+  WideString& removeFrom(MemorySize start);
 
   /**
     Removes the character at the specified position in this string.
 
     @param index Specifies the character to be removed.
   */
-  inline WideString& removeAt(MemorySize index) throw(MemoryException)
+  inline WideString& removeAt(MemorySize index)
   {
     return remove(index, index);
   }
@@ -687,7 +672,7 @@ public:
 
     @param ch The character to be appended.
   */
-  inline WideString& append(ucs4 ch) throw(WideStringException, MemoryException)
+  inline WideString& append(ucs4 ch)
   {
     return insert(getLength(), ch);
   }
@@ -697,7 +682,7 @@ public:
 
     @param string The string to be appended.
   */
-  inline WideString& append(const WideString& string) throw(WideStringException, MemoryException)
+  inline WideString& append(const WideString& string)
   {
     return insert(getLength(), string);
   }
@@ -707,8 +692,7 @@ public:
 
     @param string The string to be appended.
   */
-  WideString& append(
-    const WideLiteral& string) throw(WideStringException, MemoryException);
+  WideString& append(const WideLiteral& string);
 
   /**
     Appends the string literal to this string.
@@ -716,10 +700,7 @@ public:
     @param string The string to be appended.
     @param maximum The maximum length of the to be appended string.
   */
-  WideString& append(
-    const WideLiteral& string,
-    MemorySize maximum)
-    throw(OutOfDomain, WideStringException, MemoryException);
+  WideString& append(const WideLiteral& string, MemorySize maximum);
 
   /**
     Appends the NULL-terminated string to this string.
@@ -727,14 +708,14 @@ public:
     @param string The string to be appended.
     @param maximum The maximum length of the to be appended string.
   */
-  WideString& append(const wchar* string, MemorySize maximum) throw(OutOfDomain, WideStringException, MemoryException);
+  WideString& append(const wchar* string, MemorySize maximum);
 
   /**
     Prepends the character to this string.
 
     @param ch The character to be prepended.
   */
-  inline WideString& prepend(ucs4 ch) throw(WideStringException, MemoryException)
+  inline WideString& prepend(ucs4 ch)
   {
     return insert(0, ch);
   }
@@ -744,7 +725,7 @@ public:
 
     @param string The string to be prepended.
   */
-  inline WideString& prepend(const WideString& string) throw(WideStringException, MemoryException)
+  inline WideString& prepend(const WideString& string)
   {
     return insert(0, string);
   }
@@ -757,7 +738,7 @@ public:
 
     @param ch The character to be inserted.
   */
-  WideString& insert(MemorySize index, ucs4 ch) throw(WideStringException, MemoryException);
+  WideString& insert(MemorySize index, ucs4 ch);
 
   /**
     Inserts the string into this string.
@@ -767,7 +748,7 @@ public:
 
     @param string The string to be inserted.
   */
-  WideString& insert(MemorySize index, const WideString& string) throw(WideStringException, MemoryException);
+  WideString& insert(MemorySize index, const WideString& string);
 
   /**
     Inserts NULL-terminated string into this string.
@@ -777,9 +758,7 @@ public:
 
     @param string The NULL-terminated string to be inserted.
   */
-  WideString& insert(
-    MemorySize index,
-    const WideLiteral& string) throw(WideStringException, MemoryException);
+  WideString& insert(MemorySize index, const WideLiteral& string);
 
   /**
     Replaces the characters in a substring of this string with the characters
@@ -789,7 +768,7 @@ public:
     @param end The end of the substring.
     @param string The string to replace with.
   */
-  WideString& replace(MemorySize start, MemorySize end, const WideString& string) throw(WideStringException, MemoryException);
+  WideString& replace(MemorySize start, MemorySize end, const WideString& string);
 
   /**
     Replaces all occurances of the specified substring with another string in
@@ -799,7 +778,7 @@ public:
     @param toStr The new string.
     @return The number of substrings that was replaced.
   */
-  MemorySize replaceAll(const WideString& fromStr, const WideString& toStr) throw(WideStringException, MemoryException);
+  MemorySize replaceAll(const WideString& fromStr, const WideString& toStr);
 
   /**
     Returns a new string that contains a subsequence of characters currently
@@ -809,7 +788,7 @@ public:
     @param start Specifies the start of the substring.
     @param end Specifies the end of the substring.
   */
-  WideString substring(MemorySize start, MemorySize end) const throw(MemoryException);
+  WideString substring(MemorySize start, MemorySize end) const;
 
   /**
     Returns a new string that contains a subsequence of characters currently
@@ -818,7 +797,7 @@ public:
 
     @param start Specifies the start of the substring.
   */
-  inline WideString substring(MemorySize start) const throw(MemoryException)
+  inline WideString substring(MemorySize start) const
   {
     return substring(start, getLength());
   }
@@ -828,7 +807,7 @@ public:
 
     @param suffix The string to be appended.
   */
-  inline WideString& operator+=(const WideString& suffix) throw(MemoryException)
+  inline WideString& operator+=(const WideString& suffix)
   {
     return append(suffix);
   }
@@ -840,7 +819,7 @@ public:
 
     @param suffix The suffix to be removed.
   */
-  WideString& operator-=(const WideString& suffix) throw(MemoryException);
+  WideString& operator-=(const WideString& suffix);
   
 // *************************************************************************
 //   UNARY SECTION
@@ -1080,11 +1059,6 @@ public:
 // *************************************************************************
 //   END SECTION
 // *************************************************************************
-
-  /**
-    Returns a multibyte string from this wide string.
-  */
-  String getMultibyteString() const throw(MultibyteException, MemoryException);
   
   /**
     Returns NULL-terminated wide string.
@@ -1093,7 +1067,7 @@ public:
   {
     // special case: no need to copy on write 'cause we only add terminator
     ucs4* result = const_cast<ucs4*>(elements->getElements());
-    result[getLength()] = Traits::TERMINATOR;
+    result[getLength()] = Traits::TERMINATOR; // remove
     return result;
   }
 
@@ -1122,6 +1096,7 @@ public:
     return result;
   }
 
+#if 0
   /**
     Returns the string as UTF-8 string.
   */
@@ -1129,7 +1104,18 @@ public:
   {
     return String(*this);
   }
+#endif
 
+#if 0
+  /**
+    Returns the string as UTF-8 string.
+  */
+  inline operator Unicode::WCharString() const
+  {
+    return Unicode::WCharString(*this);
+  }
+#endif
+  
 // *************************************************************************
 //   FRIEND SECTION
 // *************************************************************************
@@ -1137,7 +1123,7 @@ public:
   /**
     Writes string to format stream.
   */
-  _COM_AZURE_DEV__BASE__API friend FormatOutputStream& operator<<(FormatOutputStream& stream, const WideString& value) throw(MultibyteException, IOException);
+  _COM_AZURE_DEV__BASE__API friend FormatOutputStream& operator<<(FormatOutputStream& stream, const WideString& value);
 };
 
 template<>
@@ -1146,12 +1132,12 @@ int compare<WideString>(const WideString& left, const WideString& right);
 /**
   Writes wide string to format stream.
 */
-_COM_AZURE_DEV__BASE__API FormatOutputStream& operator<<(FormatOutputStream& stream, const WideString& value) throw(MultibyteException, IOException);
+_COM_AZURE_DEV__BASE__API FormatOutputStream& operator<<(FormatOutputStream& stream, const WideString& value);
 
 /**
   Returns a new string that is the concatenation of the two specified strings.
 */
-inline WideString operator+(const WideString& left, const WideString& right) throw(MemoryException)
+inline WideString operator+(const WideString& left, const WideString& right)
 {
   return WideString(left.getLength() + right.getLength()).append(left).append(right);
 }
@@ -1159,7 +1145,7 @@ inline WideString operator+(const WideString& left, const WideString& right) thr
 /**
   String reduction. Removes suffix from string if and only if it ends with the suffix (e.g. ("presuf"-"suf") results in a new string "pre" whereas ("pre"-"suf") results in "pre").
 */
-inline WideString operator-(const WideString& left, const WideString& right) throw(MemoryException)
+inline WideString operator-(const WideString& left, const WideString& right)
 {
   if (left.endsWith(right)) {
     return left.substring(0, left.getLength() - right.getLength() - 1); // return copy of left without suffix

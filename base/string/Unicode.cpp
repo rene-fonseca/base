@@ -12,6 +12,7 @@
  ***************************************************************************/
 
 #include <base/string/Unicode.h>
+#include <base/UnitTest.h>
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
@@ -920,6 +921,167 @@ MemoryDiff Unicode::UCS4ToUTF32LE(uint8* dest, const ucs4* src, MemorySize size,
   }
 }
 
-// TAG: add test
+MemoryDiff Unicode::UTF32LEToUCS4(
+  ucs4* dest,
+  const uint8* src,
+  MemorySize size,
+  unsigned int flags)
+{
+  if (!src) {
+    return 0;
+  }
+  
+  // handle BOM
+  const ucs4* const begin = dest;
+  const uint8* const end = src + size;
+
+  if (dest) {
+    while (src != end) {
+      unsigned int code = 0;
+      code |= static_cast<unsigned int>(*src++) << 0;
+      code |= static_cast<unsigned int>(*src++) << 8;
+      code |= static_cast<unsigned int>(*src++) << 16;
+      code |= static_cast<unsigned int>(*src++) << 24; // most significant
+      if (code >= MAX_ISO) {
+        return INVALID_UCS4_CHARACTER;
+      }
+      *dest++ = code;
+    }
+    return dest - begin;
+  } else {
+    MemorySize length = 0;
+    while (src != end) {
+      unsigned int code = 0;
+      code |= static_cast<unsigned int>(*src++) << 0;
+      code |= static_cast<unsigned int>(*src++) << 8;
+      code |= static_cast<unsigned int>(*src++) << 16;
+      code |= static_cast<unsigned int>(*src++) << 24; // most significant
+      if (code >= MAX_ISO) {
+        return INVALID_UCS4_CHARACTER;
+      }
+      ++length;
+    }
+    return length;
+  }
+}
+
+MemoryDiff Unicode::UTF32BEToUCS4(
+  ucs4* dest,
+  const uint8* src,
+  MemorySize size,
+  unsigned int flags)
+{
+  if (!src) {
+    return 0;
+  }
+  
+  // handle BOM
+  const ucs4* const begin = dest;
+  const uint8* const end = src + size;
+
+  if (dest) {
+    while (src != end) {
+      unsigned int code = 0;
+      code |= static_cast<unsigned int>(*src++) << 24; // most significant
+      code |= static_cast<unsigned int>(*src++) << 16;
+      code |= static_cast<unsigned int>(*src++) << 8;
+      code |= static_cast<unsigned int>(*src++) << 0;
+      if (code >= MAX_ISO) {
+        return INVALID_UCS4_CHARACTER;
+      }
+      *dest++ = code;
+    }
+    return dest - begin;
+  } else {
+    MemorySize length = 0;
+    while (src != end) {
+      unsigned int code = 0;
+      code |= static_cast<unsigned int>(*src++) << 24; // most significant
+      code |= static_cast<unsigned int>(*src++) << 16;
+      code |= static_cast<unsigned int>(*src++) << 8;
+      code |= static_cast<unsigned int>(*src++) << 0;
+      if (code >= MAX_ISO) {
+        return INVALID_UCS4_CHARACTER;
+      }
+      ++length;
+    }
+    return length;
+  }
+}
+
+Unicode::ToWCharString::ToWCharString()
+{
+}
+
+Unicode::ToWCharString::ToWCharString(const char* string)
+{
+  const MemorySize length = getNullTerminatedLength(string);
+  const MemoryDiff _length = Unicode::UTF8ToWChar(nullptr, reinterpret_cast<const uint8*>(string), length);
+  buffer.setSize(_length + 1);
+  Unicode::UTF8ToWChar(buffer.getElements(), reinterpret_cast<const uint8*>(string), length);
+  buffer.getElements()[_length] = 0;
+  this->string = buffer.getElements();
+}
+
+Unicode::ToWCharString::ToWCharString(const wchar* string)
+{
+  this->string = string;
+}
+
+Unicode::ToWCharString::ToWCharString(const ucs4* string)
+{
+  if (sizeof(wchar) == sizeof(ucs4)) {
+    this->string = reinterpret_cast<const wchar*>(string);
+  } else {
+    const MemorySize length = getNullTerminatedLength(string);
+    const MemoryDiff _length = Unicode::UCS4ToWChar(nullptr, string, length);
+    buffer.setSize(_length + 1);
+    Unicode::UCS4ToWChar(buffer.getElements(), string, length);
+    buffer.getElements()[_length] = 0;
+    this->string = buffer.getElements();
+  }
+}
+
+Unicode::ToWCharString::ToWCharString(const String& string)
+{
+  const MemorySize length = getNullTerminatedLength(string.native());
+  const MemoryDiff _length = Unicode::UTF8ToWChar(nullptr, reinterpret_cast<const uint8*>(string.native()), length);
+  buffer.setSize(_length + 1);
+  Unicode::UTF8ToWChar(buffer.getElements(), reinterpret_cast<const uint8*>(string.native()), length);
+  buffer.getElements()[_length] = 0;
+  this->string = buffer.getElements();
+}
+
+Unicode::ToWCharString::ToWCharString(const WideString& string)
+{
+  if (sizeof(wchar) == sizeof(ucs4)) {
+    this->string = reinterpret_cast<const wchar*>(string.native());
+  } else {
+    const MemorySize length = getNullTerminatedLength(string.native());
+    const MemoryDiff _length = Unicode::UCS4ToWChar(nullptr, string.native(), length);
+    buffer.setSize(_length + 1);
+    Unicode::UCS4ToWChar(buffer.getElements(), string.native(), length);
+    buffer.getElements()[_length] = 0;
+    this->string = buffer.getElements();
+  }
+}
+
+#if 0 && defined(_COM_AZURE_DEV__BASE__TESTS)
+
+class TEST_CLASS(Unicode) : public UnitTest {
+public:
+
+  TEST_PRIORITY(40);
+  TEST_PROJECT("base/string");
+
+  void run() override
+  {
+    // Unicode::UTF8ToUCS4();
+  }
+};
+
+TEST_REGISTER(Unicode);
+
+#endif
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

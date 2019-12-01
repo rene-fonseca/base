@@ -15,8 +15,12 @@
 
 #include <base/Primitives.h>
 #include <base/Literal.h>
+#include <base/mem/Allocator.h>
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
+
+class String;
+class WideString;
 
 /**
   Unicode helper functions.
@@ -392,7 +396,7 @@ public:
     @param dest The destination buffer (may be nullptr).
     @param src The UTF-16 encoded string.
     @param size The number of bytes in the UTF-16 encoded string.
-    @param flags The encoding flags. The default is EAT_BOM|EXPECT_BOM.
+    @param flags The encoding flags. The default is EAT_BOM.
 
     @return The number of characters in the UCS-4 encoded string.
   */
@@ -448,25 +452,50 @@ public:
     @param dest The destination buffer (may be nullptr).
     @param src The UTF-32 encoded string.
     @param size The number of bytes in the UTF-32 encoded string.
-    @param flags The encoding flags. The default is EAT_BOM|EXPECT_BOM.
+    @param flags The encoding flags. The default is EAT_BOM.
 
     @return The number of characters in the UCS-4 encoded string.
   */
-  static MemorySize UTF32ToUCS4(
+  static MemoryDiff UTF32LEToUCS4(
     ucs4* dest,
     const uint8* src,
     MemorySize size,
-    unsigned int flags = EAT_BOM | 0*EXPECT_BOM) /*throw(MultibyteException)*/;
+    unsigned int flags = EAT_BOM) /*throw(MultibyteException)*/;
+
+  /**
+    Low-level method which converts an UTF-32 encoded string to UCS-4 encoding.
+    The destination buffer must have room for enough characters (guaranteed to
+    not exceed size). See the technical report available at
+    http://www.unicode.org/unicode/reports/tr19. The UCS-4 characters are
+    restricted to values in the range 0x00000000-0x0010ffff.
+
+    @param dest The destination buffer (may be nullptr).
+    @param src The UTF-32 encoded string.
+    @param size The number of bytes in the UTF-32 encoded string.
+    @param flags The encoding flags. The default is EAT_BOM.
+
+    @return The number of characters in the UCS-4 encoded string.
+  */
+  static MemoryDiff UTF32BEToUCS4(
+    ucs4* dest,
+    const uint8* src,
+    MemorySize size,
+    unsigned int flags = EAT_BOM) /*throw(MultibyteException)*/;
 
   // wchar support
 
   static inline MemoryDiff UCS4ToWChar(wchar* dest, const ucs4* src, MemorySize size) noexcept
   {
+    if (!src) {
+      return 0;
+    }
     if (sizeof(wchar) == sizeof(utf16)) {
       return UCS4ToUTF16(reinterpret_cast<utf16*>(dest), src, size);
     } else if (sizeof(wchar) == sizeof(ucs4)) {
-      for (const auto end = src + size; src != end; ++dest, ++src) { // no code validation
-        *dest = *src;
+      if (dest) {
+        for (const auto end = src + size; src != end; ++dest, ++src) { // no code validation
+          *dest = *src;
+        }
       }
       return size;
     } else {
@@ -476,11 +505,16 @@ public:
 
   static inline MemoryDiff WCharToUCS4(ucs4* dest, const wchar* src, MemorySize size) noexcept
   {
+    if (!src) {
+      return 0;
+    }
     if (sizeof(wchar) == sizeof(utf16)) {
       return UTF16ToUCS4(dest, reinterpret_cast<const utf16*>(src), size);
     } else if (sizeof(wchar) == sizeof(ucs4)) {
-      for (const auto end = src + size; src != end; ++dest, ++src) { // no code validation
-        *dest = *src;
+      if (dest) {
+        for (const auto end = src + size; src != end; ++dest, ++src) { // no code validation
+          *dest = *src;
+        }
       }
       return size;
     } else {
@@ -488,20 +522,57 @@ public:
     }
   }
 
-#if 0
-  class WCharString {
+  static inline MemoryDiff UTF8ToWChar(wchar* dest, const uint8* src, MemorySize size) noexcept
+  {
+    if (!src) {
+      return 0;
+    }
+    if (sizeof(wchar) == sizeof(utf16)) {
+      return UTF8ToUTF16(reinterpret_cast<utf16*>(dest), src, size);
+    } else if (sizeof(wchar) == sizeof(ucs4)) {
+      return UTF8ToUCS4(reinterpret_cast<ucs4*>(dest), src, size);
+    } else {
+      BASSERT(!"Unsupported wchar.");
+    }
+  }
+
+  static inline MemoryDiff WCharToUTF8(uint8* dest, const wchar* src, MemorySize size) noexcept
+  {
+    if (!src) {
+      return 0;
+    }
+    if (sizeof(wchar) == sizeof(utf16)) {
+      return UTF16ToUTF8(dest, reinterpret_cast<const utf16*>(src), size);
+    } else if (sizeof(wchar) == sizeof(ucs4)) {
+      return UCS4ToUTF8(dest, reinterpret_cast<const ucs4*>(src), size);
+    } else {
+      BASSERT(!"Unsupported wchar.");
+    }
+  }
+
+#if 1
+  class ToWCharString {
   private:
 
-    PrimitiveBuffer<wchar> buffer;
+    Allocator<wchar> buffer;
+    const wchar* string = nullptr;
   public:
 
-    WCharString(const char* string, MemorySize length);
-    WCharString(const wchar* string, MemorySize length);
-    WCharString(const ucs4* string, MemorySize length);
+    ToWCharString();
+    ToWCharString(const char* string);
+    ToWCharString(const wchar* string);
+    ToWCharString(const ucs4* string);
+    ToWCharString(const String& string);
+    ToWCharString(const WideString& string);
 
-    inline operator const wchar* const noexcept
+    inline const wchar* native() const noexcept
     {
-      return buffer;
+      return string;
+    }
+
+    inline operator const wchar*() const noexcept
+    {
+      return string;
     }
   };
 #endif

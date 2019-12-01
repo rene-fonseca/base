@@ -46,12 +46,10 @@ void String::initialize(const wchar* src, MemorySize _length)
     return;
   }
 
-  // TAG: Unicode need wchar* to utf8
-  const std::string utf8 = toUTF8(src);
-  MemorySize length = utf8.size();
+  const MemorySize length = Unicode::WCharToUTF8(nullptr, src, _length);
   auto e = new ReferenceCountedAllocator<char>(length + 1);
   auto dest = e->getElements();
-  base::copy<char>(dest, utf8.c_str(), length); // no overlap
+  Unicode::WCharToUTF8(reinterpret_cast<uint8*>(dest), src, _length);
   dest[length] = Traits::TERMINATOR;
   elements = e;
 }

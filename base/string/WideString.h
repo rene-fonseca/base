@@ -211,6 +211,7 @@ public:
   /** Character specific properties and manipulators. */
   typedef WideTraits Traits;
 
+  // char32_t
   typedef ucs4 Char;
 
   struct HashEntry {
@@ -315,17 +316,10 @@ protected:
   /**
     Initializes string.
   */
-  void initialize(const wchar* string, MemorySize length);
-
-  /**
-    Initializes string.
-  */
-  void initialize(const ucs4* string, MemorySize length);
-
-  /**
-    Initializes string.
-  */
   void initialize(const char* string, MemorySize length);
+  void initialize(const wchar* string, MemorySize length);
+  void initialize(const char16_t* string, MemorySize nativeLength);
+  void initialize(const ucs4* string, MemorySize length);
   
   /**
     Returns a modifiable buffer. Forces the internal buffer to be copied if
@@ -396,17 +390,14 @@ public:
     @param string String literal.
   */
   WideString(const WideLiteral& string);
-
+  WideString(const char* string);
+  WideString(const char16_t* string);
+  // WideString(const char32_t* string);
   WideString(const wchar* string);
-  
   WideString(const wchar* string, MemorySize length);
-
   WideString(const ucs4* string);
-
   WideString(const ucs4* string, MemorySize length);
-
   WideString(const std::string& string);
-
   WideString(const std::wstring& string);
 
   /**
@@ -492,19 +483,14 @@ public:
   }
 
   /**
-    Assignment of string literal to string.
+    Assignment of string to string.
   */
   WideString& operator=(const WideLiteral& assign);
-
   WideString& operator=(const char* assign);
-
-  /**
-    Assignment of native string to string.
-  */
   WideString& operator=(const wchar* assign);
-
+  WideString& operator=(const char16_t* assign);
+  WideString& operator=(const char32_t* assign);
   WideString& operator=(const std::string& assign);
-
   WideString& operator=(const std::wstring& assign);
 
   /**

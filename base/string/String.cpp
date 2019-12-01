@@ -52,6 +52,21 @@ void String::initialize(const wchar* src, MemorySize _length)
   elements = e;
 }
 
+void String::initialize(const char16_t* src, MemorySize _length)
+{
+  if (_length == 0) {
+    elements = DEFAULT_STRING.elements;
+    return;
+  }
+
+  const MemorySize length = Unicode::UTF16ToUTF8(nullptr, reinterpret_cast<const utf16*>(src), _length);
+  auto e = new ReferenceCountedAllocator<char>(length + 1);
+  auto dest = e->getElements();
+  Unicode::UTF16ToUTF8(reinterpret_cast<uint8*>(dest), reinterpret_cast<const utf16*>(src), _length);
+  dest[length] = Traits::TERMINATOR;
+  elements = e;
+}
+
 void String::initialize(const ucs4* src, MemorySize _length)
 {
   if (_length == 0) {
@@ -109,27 +124,52 @@ String::String(const char* src)
   initialize(src, getNullTerminatedLength(src));
 }
 
+String::String(const char* string, MemorySize length)
+{
+  initialize(string, length);
+}
+
+String::String(const char16_t* src)
+{
+  initialize(src, getNullTerminatedLength(src));
+}
+
+String::String(const char32_t* src)
+{
+  initialize(src, getNullTerminatedLength(src));
+}
+
+String::String(const Literal& src)
+{
+  initialize(src.getValue(), src.getLength());
+}
+
+String::String(const NativeString& src)
+{
+  initialize(src.getValue(), src.getLength());
+}
+
 String::String(const WideString& src)
 {
   initialize(src.native(), src.getLength());
 }
 
-String::String(const std::string& string) throw(StringException, MemoryException)
+String::String(const std::string& string)
 {
   initialize(string.c_str(), string.size());
 }
 
-String::String(const std::wstring& string) throw(StringException, MemoryException)
+String::String(const std::wstring& string)
 {
   initialize(string.c_str(), string.size());
 }
 
-String::String(const wchar* string) throw(StringException, MemoryException)
+String::String(const wchar* string)
 {
   initialize(string, getNullTerminatedLength(string));
 }
 
-String::String(const wchar* string, MemorySize length) throw(StringException, MemoryException)
+String::String(const wchar* string, MemorySize length)
 {
   initialize(string, length);
 }
@@ -144,37 +184,63 @@ String::String(FormatOutputStream& stream)
   operator=(stream.toString());
 }
 
-String& String::operator=(const char* src) throw(StringException, MemoryException)
-{
-  initialize(src, getNullTerminatedLength(src));
-  return *this;
-}
-
-String::String(const Literal& literal) throw(StringException, MemoryException)
-{
-  initialize(literal.getValue(), literal.getLength());
-}
-
-String::String(const NativeString& src)
-{
-  initialize(src.getValue(), src.getLength());
-}
-
-String::String(const NativeString& src, MemorySize maximum) throw(StringException, MemoryException)
+String::String(const NativeString& src, MemorySize maximum)
 {
   bassert(maximum <= MAXIMUM_LENGTH, StringException(this));
   initialize(src.getValue(), getNullTerminatedLength(src.getValue(), maximum));
 }
 
-String& String::operator=(const Literal& literal) throw(StringException, MemoryException) 
+String& String::operator=(const Literal& assign)
 {
-  initialize(literal.getValue(), literal.getLength());
+  initialize(assign.getValue(), assign.getLength());
   return *this;
 }
 
-String& String::operator=(const NativeString& src) throw(StringException, MemoryException)
+String& String::operator=(const NativeString& assign)
 {
-  initialize(src.getValue(), src.getLength());
+  initialize(assign.getValue(), assign.getLength());
+  return *this;
+}
+
+String& String::operator=(const char* assign)
+{
+  initialize(assign, getNullTerminatedLength(assign));
+  return *this;
+}
+
+String& String::operator=(const wchar* assign)
+{
+  initialize(assign, getNullTerminatedLength(assign));
+  return *this;
+}
+
+String& String::operator=(const char16_t* assign)
+{
+  initialize(assign, getNullTerminatedLength(assign));
+  return *this;
+}
+
+String& String::operator=(const char32_t* assign)
+{
+  initialize(assign, getNullTerminatedLength(assign));
+  return *this;
+}
+
+String& String::operator=(const WideString& assign)
+{
+  initialize(assign.getElements(), assign.getLength());
+  return *this;
+}
+
+String& String::operator=(const std::string& assign)
+{
+  initialize(assign.c_str(), assign.size());
+  return *this;
+}
+
+String& String::operator=(const std::wstring& assign)
+{
+  initialize(assign.c_str(), assign.size());
   return *this;
 }
 
@@ -214,7 +280,7 @@ char* String::getBuffer()
   return elements->getElements();
 }
 
-char* String::getBuffer(MemorySize length) throw(StringException, MemoryException)
+char* String::getBuffer(MemorySize length)
 {
   bassert(
     length <= MAXIMUM_LENGTH,
@@ -269,7 +335,7 @@ void String::garbageCollect()
   elements->garbageCollect(); // no need to do copyOnWrite
 }
 
-void String::forceToLength(MemorySize length) throw(StringException, MemoryException)
+void String::forceToLength(MemorySize length)
 {
   const MemorySize originalLength = getLength();
   setLength(length);
@@ -321,15 +387,12 @@ String& String::removeFrom(MemorySize start)
   return *this;
 }
 
-String& String::insert(
-  MemorySize index, char ch) throw(StringException, MemoryException)
+String& String::insert(MemorySize index, char ch)
 {
   return insert(index, MemorySpan(&ch, 1));
 }
 
-String& String::insert(
-  MemorySize index,
-  const String& src) throw(StringException, MemoryException)
+String& String::insert(MemorySize index, const String& src)
 {
   if (getLength() == 0) {
     elements = src.elements; // copy string
@@ -338,7 +401,7 @@ String& String::insert(
   return insert(index, MemorySpan(src.getElements(), src.getLength()));
 }
 
-String& String::insert(MemorySize index, const MemorySpan& span) throw(StringException, MemoryException)
+String& String::insert(MemorySize index, const MemorySpan& span)
 {
   const MemorySize length = getLength();
   const MemorySize newLength = length + span.getSize();
@@ -359,36 +422,34 @@ String& String::insert(MemorySize index, const MemorySpan& span) throw(StringExc
   return *this;
 }
 
-String& String::insert(MemorySize index, const Literal& literal) throw(StringException, MemoryException)
+String& String::insert(MemorySize index, const Literal& literal)
 {
   return insert(index, MemorySpan(literal.getValue(), literal.getLength()));
 }
 
-String& String::insert(
-  MemorySize index,
-  const NativeString& src) throw(StringException, MemoryException)
+String& String::insert(MemorySize index, const NativeString& src)
 {
   return insert(index, MemorySpan(src.getValue(), src.getLength()));
 }
 
-String& String::append(const Literal& literal) throw(StringException, MemoryException)
+String& String::append(const Literal& literal)
 {
   return append(MemorySpan(literal.getValue(), literal.getLength()));
 }
 
-String& String::append(const Literal& literal, MemorySize maximum) throw(StringException, MemoryException)
+String& String::append(const Literal& literal, MemorySize maximum)
 {
   bassert(maximum <= MAXIMUM_LENGTH, StringException(this));
   return append(MemorySpan(literal.getValue(), minimum(literal.getLength(), maximum)));
 }
 
-String& String::append(const NativeString& string, MemorySize maximum) throw(StringException, MemoryException)
+String& String::append(const NativeString& string, MemorySize maximum)
 {
   bassert(maximum <= MAXIMUM_LENGTH, StringException(this));
   return append(MemorySpan(string.getValue(), getNullTerminatedLength(string.getValue(), maximum)));
 }
 
-String& String::append(const MemorySpan& src) throw(StringException, MemoryException)
+String& String::append(const MemorySpan& src)
 {
   if (src.isProper()) {
     const MemorySize suffixLength = src.getSize();
@@ -403,10 +464,7 @@ String& String::append(const MemorySpan& src) throw(StringException, MemoryExcep
   return *this;
 }
 
-String& String::replace(
-  MemorySize start,
-  MemorySize end,
-  const String& string) throw(StringException, MemoryException)
+String& String::replace(MemorySize start, MemorySize end, const String& string)
 {
   MemorySize length = getLength();
   MemorySize strlength = string.getLength();
@@ -441,9 +499,7 @@ String& String::replace(
   return *this;
 }
 
-MemorySize String::replaceAll(
-  const String& fromStr,
-  const String& toStr) throw(StringException, MemoryException)
+MemorySize String::replaceAll(const String& fromStr, const String& toStr)
 {
   MemorySize count = 0;
   MemorySize start = 0;

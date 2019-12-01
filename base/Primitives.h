@@ -77,7 +77,7 @@ typedef uint16 ucs2; // deprecated
 /** UTF-16 encoded character. */
 typedef uint16 utf16;
 /** UCS-4 encoded character (ISO/IEC 10646). */
-typedef uint32 ucs4;
+typedef char32_t /*uint32*/ ucs4;
 
 /* A void type. */
 struct nothing {

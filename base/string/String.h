@@ -246,15 +246,8 @@ protected:
     Initializes string.
   */
   void initialize(const char* string, MemorySize length);
-
-  /**
-    Initializes string.
-  */
   void initialize(const wchar* string, MemorySize length);
-
-  /**
-    Initializes string.
-  */
+  void initialize(const char16_t* string, MemorySize length);
   void initialize(const ucs4* string, MemorySize length);
 
   /**
@@ -264,7 +257,7 @@ protected:
   char* getBuffer();
   
   /** Returns buffer for modification and resizes at the same time. */
-  char* getBuffer(MemorySize length) throw(StringException, MemoryException);
+  char* getBuffer(MemorySize length);
 
   /**
     Returns a non-modifiable buffer.
@@ -311,19 +304,16 @@ public:
 
     @param string String literal.
   */
-  String(const Literal& string) throw(StringException, MemoryException);
-
-  String(const std::string& string) throw(StringException, MemoryException);
-
-  /** Converts to UTF-8. */
-  String(const std::wstring& string) throw(StringException, MemoryException);
-
-  /** Converts to UTF-8. */
-  String(const wchar* string) throw(StringException, MemoryException);
-
-  /** Converts to UTF-8. */
-  String(const wchar* string, MemorySize length) throw(StringException, MemoryException);
-
+  String(const NativeString& string);
+  String(const Literal& string);
+  String(const std::string& string);
+  String(const std::wstring& string);
+  String(const char* string);
+  String(const char* string, MemorySize length);
+  String(const char16_t* string);
+  String(const char32_t* string);
+  String(const wchar* string);
+  String(const wchar* string, MemorySize length);
   String(const WideString& string);
 
 #if 0 // TAG: bad for now due to match with structs also - or static_cast<const char*>() is required
@@ -340,25 +330,9 @@ public:
     initialize(literal, SIZE - 1);
   }
 #endif
-  
-  /**
-    Initializes the string from a NULL-terminated string.
-
-    @param string NULL-terminated string. If NULL, the string is initialized
-    with no characters in it.
-  */
-  String(const NativeString& string);
 
   /** Initializes the string from a char. If you use \0 you will get a string of length 1 with the \0. */
   // String(char src);
-
-  /**
-    Initializes the string from a NULL-terminated string.
-
-    @param string NULL-terminated string. If NULL, the string is initialized
-    with no characters in it.
-  */
-  String(const char* string);
 
   /**
     Initializes the string from a NULL-terminated string. If the length of the
@@ -370,10 +344,8 @@ public:
     with no characters in it.
     @param maximum Specifies the maximum length.
   */
-  String(
-    const NativeString& string,
-    MemorySize maximum) throw(StringException, MemoryException);
-  
+  String(const NativeString& string, MemorySize maximum);
+
   /**
     Initializes string from other string.
   */
@@ -422,7 +394,15 @@ public:
   /**
     Assignment of string literal to string.
   */
-  String& operator=(const Literal& assign) throw(StringException, MemoryException);
+  String& operator=(const Literal& assign);
+  String& operator=(const NativeString& string);
+  String& operator=(const std::string& string);
+  String& operator=(const std::wstring& string);
+  String& operator=(const char* string);
+  String& operator=(const char16_t* string);
+  String& operator=(const char32_t* string);
+  String& operator=(const wchar* string);
+  String& operator=(const WideString& string);
 
   template<MemorySize SIZE>
   inline String& operator=(const char (&literal)[SIZE])
@@ -430,16 +410,6 @@ public:
     if (Constraint<(SIZE < (MAXIMUM_LENGTH + 1))>::UNSPECIFIED) {}
     return operator=(Literal(literal));
   }
-  
-  /**
-    Assignment of string to NULL-terminated string.
-  */
-  String& operator=(const NativeString& string) throw(StringException, MemoryException);
-  
-    /**
-    Assignment of string to NULL-terminated string.
-  */
-  String& operator=(const char* string) throw(StringException, MemoryException);
 
   /**
     Returns the number of characters in the string.
@@ -506,7 +476,7 @@ public:
   /**
     Sets the length of the string without initializing the elements.
   */
-  void forceToLength(MemorySize length) throw(StringException, MemoryException);
+  void forceToLength(MemorySize length);
 
 // *************************************************************************
 //   TRAVERSE SECTION
@@ -782,7 +752,7 @@ public:
 
     @param string The string to be appended.
   */
-  String& append(const Literal& string) throw(StringException, MemoryException);
+  String& append(const Literal& string);
 
   template<MemorySize SIZE>
   inline String& append(const char (&literal)[SIZE])
@@ -797,9 +767,7 @@ public:
     @param string The string to be appended.
     @param maximum The maximum length of the string to be appended.
   */
-  String& append(
-    const Literal& string,
-    MemorySize maximum) throw(StringException, MemoryException);
+  String& append(const Literal& string, MemorySize maximum);
 
   /**
     Appends the NULL-terminated string to this string.
@@ -807,14 +775,12 @@ public:
     @param string The string to be appended.
     @param maximum The maximum length of the string to be appended.
   */
-  String& append(
-    const NativeString& string,
-    MemorySize maximum) throw(StringException, MemoryException);
+  String& append(const NativeString& string, MemorySize maximum);
 
   /**
     Appens memory span. Does nothing is buffer is not proper.
   */
-  String& append(const MemorySpan& buffer) throw(StringException, MemoryException);
+  String& append(const MemorySpan& buffer);
 
   /**
     Prepends the character to this string.
@@ -843,7 +809,7 @@ public:
     exceeds the end of this string the character is inserted at the end.
     @param span The characters to be inserted.
   */
-  String& insert(MemorySize index, const MemorySpan& span) throw(StringException, MemoryException);
+  String& insert(MemorySize index, const MemorySpan& span);
 
   /**
     Inserts the character into this string.
@@ -852,7 +818,7 @@ public:
     exceeds the end of this string the character is inserted at the end.
     @param ch The character to be inserted.
   */
-  String& insert(MemorySize index, char ch) throw(StringException, MemoryException);
+  String& insert(MemorySize index, char ch);
 
   /**
     Inserts the string into this string.
@@ -861,9 +827,7 @@ public:
     exceeds the end of this string the string is inserted at the end.
     @param string The string to be inserted.
   */
-  String& insert(
-    MemorySize index,
-    const String& string) throw(StringException, MemoryException);
+  String& insert(MemorySize index, const String& string);
 
   /**
     Inserts the string literal into this string.
@@ -872,9 +836,7 @@ public:
     exceeds the end of this string the string is inserted at the end.
     @param string The string literal to be inserted.
   */
-  String& insert(
-    MemorySize index,
-    const Literal& string) throw(StringException, MemoryException);
+  String& insert(MemorySize index, const Literal& string);
 
   template<MemorySize SIZE>
   inline String& insert(MemorySize index, const char (&literal)[SIZE])
@@ -890,9 +852,7 @@ public:
     exceeds the end of this string the string is inserted at the end.
     @param string The NULL-terminated string to be inserted.
   */
-  String& insert(
-    MemorySize index,
-    const NativeString& string) throw(StringException, MemoryException);
+  String& insert(MemorySize index, const NativeString& string);
 
   /**
     Replaces the characters in a substring of this string with the characters
@@ -902,10 +862,7 @@ public:
     @param end The end of the substring.
     @param string The string to replace with.
   */
-  String& replace(
-    MemorySize start,
-    MemorySize end,
-    const String& string) throw(StringException, MemoryException);
+  String& replace(MemorySize start, MemorySize end, const String& string);
 
   /**
     Replaces all occurances of the specified substring with another string in
@@ -915,9 +872,7 @@ public:
     @param toStr The new string.
     @return The number of substrings that was replaced.
   */
-  MemorySize replaceAll(
-    const String& fromStr,
-    const String& toStr) throw(StringException, MemoryException);
+  MemorySize replaceAll(const String& fromStr, const String& toStr);
 
   /**
     Returns a new string that contains a subsequence of characters currently

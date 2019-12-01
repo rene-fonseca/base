@@ -702,6 +702,14 @@ MemorySize WideString::UTF32ToUCS4(ucs4* dest, const uint8* src, MemorySize size
 }
 #endif
 
+WideString::WideString(String::Default d)
+{
+  // force non-nullptr elements
+  auto e = new ReferenceCountedAllocator<ucs4>(1);
+  e->getElements()[0] = Traits::TERMINATOR;
+  elements = e;
+}
+
 WideString::WideString() noexcept
   : elements(DEFAULT_STRING.elements)
 {
@@ -1536,9 +1544,12 @@ public:
   void run() override
   {
     WideString a;
+    TEST_ASSERT(!a);
     TEST_ASSERT(a.isEmpty());
     WideString b("literal");
     a = "qwerty";
+    TEST_ASSERT(a);
+    TEST_ASSERT(!a.isEmpty());
     auto c = a + b;
     TEST_ASSERT(c == "qwertyliteral");
     

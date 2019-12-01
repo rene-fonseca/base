@@ -201,7 +201,7 @@ MutualExclusion Application::lock;
 Application* Application::application(nullptr); // initialize application as uninitialized
 String::Default forceDefaultString;
 const String String::DEFAULT_STRING(forceDefaultString);
-const WideString WideString::DEFAULT_STRING(WIDEMESSAGE(""));
+const WideString WideString::DEFAULT_STRING(forceDefaultString);
 
 namespace internal {
   

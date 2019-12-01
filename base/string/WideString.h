@@ -372,7 +372,10 @@ public:
     @param size The number of bytes in the multibyte encoded string.
   */
 // TAG: MultibyteEncoding getMultibyteEncoding(const uint8* src, MemorySize size) noexcept;
-  
+
+  /** Forces a non-null empty string. Avoid this. */
+  WideString(String::Default d);
+
   /**
     Initializes an empty string.
   */

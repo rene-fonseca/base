@@ -18,8 +18,6 @@
 #include <base/Functor.h>
 #include <base/collection/Array.h>
 #include <base/UnitTest.h>
-#include <locale>
-#include <codecvt>
 #include <string.h>
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
@@ -975,61 +973,6 @@ String String::getValidUTF8() const
     }
   }
   return result;
-}
-
-/** Converts wstring to UTF-8 string. */
-std::string toUTF8(const String& s)
-{
-  return std::string(s.getElements(), s.getLength());
-}
-
-/** Converts wstring to UTF-8 string. */
-std::string toUTF8(const std::wstring& s)
-{
-  std::wstring_convert<std::codecvt_utf8<wchar_t>, wchar_t> convert;
-  return convert.to_bytes(s.c_str(), s.c_str() + s.size());
-}
-
-/** Converts wstring to UTF-8 string. */
-std::string toUTF8(const wchar* s)
-{
-  if (s) {
-    std::wstring_convert<std::codecvt_utf8<wchar_t>, wchar_t> convert;
-    return convert.to_bytes(s);
-  } else {
-    return std::string();
-  }
-}
-
-std::string toUTF8(const wchar* s, MemorySize length)
-{
-  if (s) {
-    std::wstring_convert<std::codecvt_utf8<wchar_t>, wchar_t> convert;
-    return convert.to_bytes(s, s + length);
-  } else {
-    return std::string();
-  }
-}
-
-/** Converts UTF-8 string to wstring. */
-std::wstring toWide(const std::string& s)
-{
-  std::wstring_convert<std::codecvt_utf8<wchar_t>, wchar_t> convert;
-  return convert.from_bytes(s.c_str(), s.c_str() + s.size());
-}
-
-/** Converts String to wstring. */
-std::wstring toWide(const String& s)
-{
-  std::wstring_convert<std::codecvt_utf8<wchar_t>, wchar_t> convert;
-  return convert.from_bytes(s.getElements(), s.getElements() + s.getLength());
-}
-
-/** Converts UTF-8 (const char*) to wstring. */
-std::wstring toWide(const char* s)
-{
-  std::wstring_convert<std::codecvt_utf8<wchar_t>, wchar_t> convert;
-  return convert.from_bytes(s);
 }
 
 #if defined(_COM_AZURE_DEV__BASE__TESTS)

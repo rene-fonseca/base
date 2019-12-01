@@ -1495,30 +1495,4 @@ inline void swapper<String>(String& a, String& b)
   swapper(a.elements, b.elements); // self swap allowed
 }
 
-#if 1 // TAG: move to proper header <base/strings/stdstring.h>
-/** Converts String to UTF-8 string. */
-std::string toUTF8(const String& s);
-
-/** Converts wstring to UTF-8 string. */
-std::string toUTF8(const std::wstring& s);
-
-/** Converts const wchar* to UTF-8 string. */
-std::string toUTF8(const wchar* s);
-
-/** Converts const wchar* to UTF-8 string. */
-std::string toUTF8(const wchar* s, MemorySize length);
-
-/** Converts WideString to String. */
-// std::string toUTF8(const WideString& s);
-
-/** Converts UTF-8 string to wstring. */
-std::wstring toWide(const std::string& s);
-
-/** Converts String to wstring. */
-std::wstring toWide(const String& s);
-
-/** Converts UTF-8 (const char*) to wstring. */
-std::wstring toWide(const char* s);
-#endif
-
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

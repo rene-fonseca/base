@@ -1628,6 +1628,11 @@ void FormatOutputStream::writeFloatingPointType(
   const char* radix = nullptr;
   unsigned int flags = context.flags;
 
+  if (context.realBase == Symbols::HEXADECIMAL) {
+    *this << "<NOT SUPPORTED>"; // significant << " " << base2Exponent;
+    return;
+  }
+
   if ((valueFlags & FloatingPoint::FP_ANY_NAN) != 0) {
     if ((flags & Symbols::UPPER) == 0) {
       copy(output, "nan", sizeof("nan") - 1); // TAG: I guess this should be locale specific when not posix

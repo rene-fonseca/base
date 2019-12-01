@@ -496,6 +496,17 @@ public:
   */
   WideString& operator=(const WideLiteral& assign);
 
+  WideString& operator=(const char* assign);
+
+  /**
+    Assignment of native string to string.
+  */
+  WideString& operator=(const wchar* assign);
+
+  WideString& operator=(const std::string& assign);
+
+  WideString& operator=(const std::wstring& assign);
+
   /**
     Returns the number of characters in the string.
   */

@@ -846,9 +846,33 @@ WideString::WideString(const NativeString& string, MemorySize maximum)
   }
 }
 
-WideString& WideString::operator=(const WideLiteral& literal)
+WideString& WideString::operator=(const WideLiteral& assign)
 {
-  initialize(literal.getValue(), literal.getLength());
+  initialize(assign.getValue(), assign.getLength());
+  return *this;
+}
+
+WideString& WideString::operator=(const char* assign)
+{
+  initialize(assign, getNullTerminatedLength(assign));
+  return *this;
+}
+
+WideString& WideString::operator=(const wchar* assign)
+{
+  initialize(assign, getNullTerminatedLength(assign));
+  return *this;
+}
+
+WideString& WideString::operator=(const std::string& assign)
+{
+  initialize(assign.c_str(), assign.size());
+  return *this;
+}
+
+WideString& WideString::operator=(const std::wstring& assign)
+{
+  initialize(assign.c_str(), assign.size());
   return *this;
 }
 
@@ -1557,6 +1581,11 @@ public:
     TEST_ASSERT(c.indexOf("literal") == 6);
     TEST_ASSERT(c.lastIndexOf('y') == 5);
     TEST_ASSERT(c.lastIndexOf("literal") == 6);
+
+    a = L"From wide string";
+    String s = a;
+    WideString w = s;
+    TEST_ASSERT(w == WideString(L"From wide string"));
 
 #if 0
     c = WideString();

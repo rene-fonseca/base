@@ -14,23 +14,23 @@
 #pragma once
 
 #include <base/Object.h>
-#include <base/string/String.h>
+#include <base/string/WideString.h>
 #include <base/io/OutputStream.h>
 #include <base/string/FormatOutputStream.h>
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
-class _COM_AZURE_DEV__BASE__API StringOutputStreamWrapper : public virtual Object,
-                                                            public virtual OutputStream {
+class _COM_AZURE_DEV__BASE__API WideStringOutputStreamWrapper : public virtual Object,
+                                                                public virtual OutputStream {
 private:
 
   /** The string holding the stream data. */
-  String string;
+  WideString string;
   /** Specifies whether the stream has been closed. */
   bool closed = false;
 public:
 
-  inline explicit StringOutputStreamWrapper() noexcept
+  inline explicit WideStringOutputStreamWrapper() noexcept
   {
   }
 
@@ -62,26 +62,26 @@ public:
   }
 #endif
 
-  inline const String& getString() const noexcept
+  inline const WideString& getString() const noexcept
   {
     return string;
   }
   
-  inline ~StringOutputStreamWrapper()
+  inline ~WideStringOutputStreamWrapper()
   {
   }
 };
 
 
 
-// Helper class used by StringOutputStream.
-class _COM_AZURE_DEV__BASE__API StringOutputStreamImpl {
+// Helper class used by WideStringOutputStream.
+class _COM_AZURE_DEV__BASE__API WideStringOutputStreamImpl {
 protected:
 
-  StringOutputStreamWrapper stream;
+  WideStringOutputStreamWrapper stream;
 public:
 
-  inline StringOutputStreamImpl() noexcept
+  inline WideStringOutputStreamImpl() noexcept
   {
   }
 };
@@ -96,7 +96,9 @@ public:
   @version 1.0
 */
 
-class _COM_AZURE_DEV__BASE__API StringOutputStream : protected StringOutputStreamImpl, public FormatOutputStream {
+// TAG: need WideFormatOutputStream
+class _COM_AZURE_DEV__BASE__API WideStringOutputStream
+  : protected WideStringOutputStreamImpl, public FormatOutputStream {
 public:
 
   /** Specifies the default amount of memory by which the capacity is increased. */
@@ -106,14 +108,14 @@ public:
   /**
     Initializes string output stream using the default incrementation value (i.e. DEFAULT_GRANULARITY).
   */
-  StringOutputStream() throw(BindException);
+  WideStringOutputStream() throw(BindException);
 
   /**
     Initializes string output stream.
 
     @param granularity Specifies the default amount of memory by which the capacity of the string is increased.
   */
-  explicit StringOutputStream(unsigned int granularity) throw(BindException);
+  explicit WideStringOutputStream(unsigned int granularity) throw(BindException);
 
   /**
     Reserves capacity in the internal buffer.
@@ -138,12 +140,12 @@ public:
   /**
     Returns the string associated with the stream and restarts the stream.
   */
-  String toString() noexcept;
+  String toString();
 
   /**
     Destroy stream object.
   */
-  ~StringOutputStream()
+  ~WideStringOutputStream()
   {
   }
 };

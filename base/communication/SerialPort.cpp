@@ -56,8 +56,11 @@ SerialPort::SerialPortHandle::~SerialPortHandle() {
   }
 }
 
-List<String> SerialPort::getPorts() throw() {
+List<String> SerialPort::getPorts() throw()
+{
   List<String> result;
+  // Unicode::ToWCharString(stream.getString()).native();
+
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   // FIXME: use registry to determine the available ports
   unsigned int failures = 0;

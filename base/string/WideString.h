@@ -1115,7 +1115,13 @@ public:
     return Unicode::WCharString(*this);
   }
 #endif
-  
+
+  /** Returns true if non-empty. */
+  inline operator bool() const noexcept
+  {
+    return getLength() != 0;
+  }
+
 // *************************************************************************
 //   FRIEND SECTION
 // *************************************************************************

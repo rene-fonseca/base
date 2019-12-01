@@ -519,9 +519,10 @@ public:
     Writes the specifies number of characters to the stream.
   */
   void addCharacterField(const char* buffer, MemorySize size) throw(IOException);
-
   void addCharacterField(const wchar* buffer, MemorySize size) throw(IOException);
-
+  void addCharacterField(const char16_t* buffer, MemorySize size) throw(IOException);
+  void addCharacterField(const char32_t* buffer, MemorySize size) throw(IOException);
+  
   /**
     Writes a preformated integer to the stream.
   */
@@ -564,8 +565,8 @@ public:
     @param literal String literal.
   */
   template<MemorySize SIZE>
-  inline FormatOutputStream& operator<<(
-    const char (&literal)[SIZE]) throw(IOException) {
+  inline FormatOutputStream& operator<<(const char (&literal)[SIZE]) throw(IOException)
+  {
     if (Constraint<(SIZE > 0)>::UNSPECIFIED) {}
     addCharacterField(literal, SIZE - 1);
     return *this;
@@ -617,6 +618,18 @@ public:
   inline FormatOutputStream& operator<<(const wchar* value) throw(IOException)
   {
     return *this << NativeWideString(value);
+  }
+
+  inline FormatOutputStream& operator<<(const char16_t* value) throw(IOException)
+  {
+    addCharacterField(value, getNullTerminatedLength(value));
+    return *this;
+  }
+
+  inline FormatOutputStream& operator<<(const char32_t* value) throw(IOException)
+  {
+    addCharacterField(value, getNullTerminatedLength(value));
+    return *this;
   }
 
   /**

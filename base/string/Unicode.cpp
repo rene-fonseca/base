@@ -258,6 +258,45 @@ MemoryDiff Unicode::getUTF8StringLength(const uint8* src) noexcept
   return length;
 }
 
+MemoryDiff Unicode::getUTF8StringLength(const uint8* src, MemorySize size) noexcept
+{
+  return getUTF8StringLength(src, src + size);
+}
+
+MemoryDiff Unicode::getStringLength(const utf16* src) noexcept
+{
+  MemoryDiff length = UTF16ToUCS4(nullptr, src, getNullTerminatedLength(src));
+  return length;
+}
+
+MemoryDiff Unicode::getStringLength(const utf16* src, MemorySize size) noexcept
+{
+  MemoryDiff length = UTF16ToUCS4(nullptr, src, size);
+  return length;
+}
+
+MemoryDiff Unicode::getStringLength(const char16_t* src) noexcept
+{
+  MemoryDiff length = UTF16ToUCS4(nullptr, reinterpret_cast<const utf16*>(src), getNullTerminatedLength(src));
+  return length;
+}
+
+MemoryDiff Unicode::getStringLength(const char16_t* src, MemorySize size) noexcept
+{
+  MemoryDiff length = UTF16ToUCS4(nullptr, reinterpret_cast<const utf16*>(src), size);
+  return length;
+}
+
+MemoryDiff Unicode::getStringLength(const wchar* src) noexcept
+{
+  return WCharToUCS4(nullptr, src, getNullTerminatedLength(src));
+}
+
+MemoryDiff Unicode::getStringLength(const wchar* src, MemorySize size) noexcept
+{
+  return WCharToUCS4(nullptr, src, size);
+}
+
 MemoryDiff Unicode::UCS4ToUCS2(ucs2* dest, const ucs4* src, MemorySize size, unsigned int flags) noexcept
 {
   if (!src) {

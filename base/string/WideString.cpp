@@ -1579,8 +1579,8 @@ int compare<WideString>(const WideString& left, const WideString& right)
 
 FormatOutputStream& operator<<(FormatOutputStream& stream, const WideString& value)
 {
-  String temp(value);
-  return stream << temp;
+  stream.addCharacterField(value.getElements(), value.getLength());
+  return stream;
 }
 
 #if defined(_COM_AZURE_DEV__BASE__TESTS)

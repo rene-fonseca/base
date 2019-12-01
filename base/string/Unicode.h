@@ -130,6 +130,27 @@ public:
   */
   static MemoryDiff getUTF8StringLength(const uint8* src) noexcept;
 
+  /** Returns the number of characters. */
+  static MemoryDiff getUTF8StringLength(const uint8* src, MemorySize size) noexcept;
+
+  /** Returns the number of characters. */
+  static MemoryDiff getStringLength(const utf16* src) noexcept;
+
+  /** Returns the number of characters. */
+  static MemoryDiff getStringLength(const utf16* src, MemorySize size) noexcept;
+
+  /** Returns the number of characters. */
+  static MemoryDiff getStringLength(const char16_t* src) noexcept;
+
+  /** Returns the number of characters. */
+  static MemoryDiff getStringLength(const char16_t* src, MemorySize size) noexcept;
+
+  /** Returns the number of characters. */
+  static MemoryDiff getStringLength(const wchar* src) noexcept;
+
+  /** Returns the number of characters. */
+  static MemoryDiff getStringLength(const wchar* src, MemorySize size) noexcept;
+
   /**
     Returns number of bytes required for UTF-8 encoding of the given UCS4 character. Returns 0 if invalid UCS4
     character.
@@ -242,6 +263,15 @@ public:
     MemorySize size,
     unsigned int flags = 0) noexcept;
 
+  static inline MemoryDiff UTF16ToUTF8(
+    uint8* dest,
+    const char16_t* src,
+    MemorySize size,
+    unsigned int flags = 0) noexcept
+  {
+    return UTF16ToUTF8(dest, reinterpret_cast<const utf16*>(src), size, flags);
+  }
+
   /**
     Low-level method which converts an UCS-4 encoded string to UCS-2 encoding.
     The destination buffer must have room for enough characters (guaranteed to
@@ -289,6 +319,15 @@ public:
     const ucs4* src,
     MemorySize size,
     unsigned int flags = 0) noexcept;
+
+  static inline MemoryDiff UTF32ToUTF8(
+    uint8* dest,
+    const char32_t* src,
+    MemorySize size,
+    unsigned int flags = 0) noexcept
+  {
+    return UCS4ToUTF8(dest, reinterpret_cast<const ucs4*>(src), size, flags);
+  }
 
   /**
     Low-level method which converts an UTF-8 encoded string to UTF-16 encoding.

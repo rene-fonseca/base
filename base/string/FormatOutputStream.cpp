@@ -393,11 +393,12 @@ void FormatOutputStream::addCharacterField(const char* buffer, MemorySize size) 
     justification = Symbols::LEFT; // TAG: is this locale specific
   }
 
+  const MemoryDiff numberOfChars = Unicode::getUTF8StringLength(reinterpret_cast<const uint8*>(buffer), size);
   if (justification == Symbols::LEFT) {
     write(Cast::pointer<const uint8*>(buffer), size); // write characters
   }
-  if (size < static_cast<unsigned int>(context.width)) { // write blanks if required
-    unfoldValue(' ', context.width - size);
+  if (numberOfChars < static_cast<unsigned int>(context.width)) { // write blanks if required
+    unfoldValue(' ', context.width - numberOfChars);
   }
   if (context.justification == Symbols::RIGHT) {
     write(Cast::pointer<const uint8*>(buffer), size); // write characters
@@ -423,18 +424,98 @@ void FormatOutputStream::addCharacterField(const wchar* buffer, MemorySize size)
     justification = Symbols::LEFT; // TAG: is this locale specific
   }
 
-  // TAG: use Unicode to temp buffer
-  const String text(buffer, size); // requires allocation use stack buffer
+  const MemoryDiff numberOfChars = Unicode::getStringLength(buffer, size);
+  const MemoryDiff length = Unicode::WCharToUTF8(nullptr, buffer, size);
+  if (length < 0) {
+    return;
+  }
+  PrimitiveStackArray<uint8> temp(length + 1);
+  Unicode::WCharToUTF8(temp, buffer, size);
 
   if (justification == Symbols::LEFT) {
-    write(Cast::pointer<const uint8*>(text.native()), text.getLength()); // write characters
+    write(temp, length); // write characters
   }
-  // what if multi-wchar character - we ignore for now
-  if (size < static_cast<unsigned int>(context.width)) { // write blanks if required
-    unfoldValue(' ', context.width - size); // we use number of wchars
+  if (numberOfChars < static_cast<unsigned int>(context.width)) { // write blanks if required
+    unfoldValue(' ', context.width - numberOfChars);
   }
   if (context.justification == Symbols::RIGHT) {
-    write(Cast::pointer<const uint8*>(text.native()), text.getLength()); // write characters
+    write(temp, length); // write characters
+  }
+  context = defaultContext;
+}
+
+void FormatOutputStream::addCharacterField(const char16_t* buffer, MemorySize size) throw(IOException)
+{
+  ExclusiveSynchronize<Guard> _guard(guard);
+
+  Symbols::Justification justification;
+  switch (context.justification) {
+  case Symbols::RIGHT:
+    justification = Symbols::RIGHT;
+    break;
+  case Symbols::LEFT:
+    justification = Symbols::LEFT;
+    break;
+  case Symbols::RADIX: // no radix - use default
+  case Symbols::DEPENDENT:
+  default:
+    justification = Symbols::LEFT; // TAG: is this locale specific
+  }
+
+  const MemoryDiff numberOfChars = size;
+  const MemoryDiff length = Unicode::UTF16ToUTF8(nullptr, buffer, size);
+  if (length < 0) {
+    return;
+  }
+  PrimitiveStackArray<uint8> temp(length + 1);
+  Unicode::UTF16ToUTF8(temp, buffer, size);
+
+  if (justification == Symbols::LEFT) {
+    write(temp, length); // write characters
+  }
+  if (numberOfChars < static_cast<unsigned int>(context.width)) { // write blanks if required
+    unfoldValue(' ', context.width - numberOfChars);
+  }
+  if (context.justification == Symbols::RIGHT) {
+    write(temp, length); // write characters
+  }
+  context = defaultContext;
+}
+
+void FormatOutputStream::addCharacterField(const char32_t* buffer, MemorySize size) throw(IOException)
+{
+  ExclusiveSynchronize<Guard> _guard(guard);
+
+  Symbols::Justification justification;
+  switch (context.justification) {
+  case Symbols::RIGHT:
+    justification = Symbols::RIGHT;
+    break;
+  case Symbols::LEFT:
+    justification = Symbols::LEFT;
+    break;
+  case Symbols::RADIX: // no radix - use default
+  case Symbols::DEPENDENT:
+  default:
+    justification = Symbols::LEFT; // TAG: is this locale specific
+  }
+
+  const MemoryDiff numberOfChars = size;
+  const MemoryDiff length = Unicode::UTF32ToUTF8(nullptr, buffer, size);
+  if (length < 0) {
+    return;
+  }
+  PrimitiveStackArray<uint8> temp(length + 1);
+  Unicode::UTF32ToUTF8(temp, buffer, size);
+
+  if (justification == Symbols::LEFT) {
+    write(temp, length); // write characters
+  }
+  if (numberOfChars < static_cast<unsigned int>(context.width)) { // write blanks if required
+    unfoldValue(' ', context.width - numberOfChars);
+  }
+  if (context.justification == Symbols::RIGHT) {
+    write(temp, length); // write characters
   }
   context = defaultContext;
 }

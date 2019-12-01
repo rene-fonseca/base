@@ -234,7 +234,7 @@ Array<String> Group::getMembers() const throw(GroupException) {
     const GROUP_USERS_INFO_0* p = buffer;
     const GROUP_USERS_INFO_0* end = p + numberOfEntries;
     while (p < end) {
-      result.append(WideString::getMultibyteString(p->grui0_name));
+      result.append(String(p->grui0_name));
       ++p;
     }
     ::NetApiBufferFree(buffer);

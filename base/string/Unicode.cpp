@@ -1009,11 +1009,11 @@ MemoryDiff Unicode::UTF32BEToUCS4(
   }
 }
 
-Unicode::ToWCharString::ToWCharString()
+ToWCharString::ToWCharString()
 {
 }
 
-Unicode::ToWCharString::ToWCharString(const char* string)
+ToWCharString::ToWCharString(const char* string)
 {
   const MemorySize length = getNullTerminatedLength(string);
   const MemoryDiff _length = Unicode::UTF8ToWChar(nullptr, reinterpret_cast<const uint8*>(string), length);
@@ -1023,12 +1023,12 @@ Unicode::ToWCharString::ToWCharString(const char* string)
   this->string = buffer.getElements();
 }
 
-Unicode::ToWCharString::ToWCharString(const wchar* string)
+ToWCharString::ToWCharString(const wchar* string)
 {
   this->string = string;
 }
 
-Unicode::ToWCharString::ToWCharString(const ucs4* string)
+ToWCharString::ToWCharString(const ucs4* string)
 {
   if (sizeof(wchar) == sizeof(ucs4)) {
     this->string = reinterpret_cast<const wchar*>(string);
@@ -1042,7 +1042,7 @@ Unicode::ToWCharString::ToWCharString(const ucs4* string)
   }
 }
 
-Unicode::ToWCharString::ToWCharString(const String& string)
+ToWCharString::ToWCharString(const String& string)
 {
   const MemorySize length = getNullTerminatedLength(string.native());
   const MemoryDiff _length = Unicode::UTF8ToWChar(nullptr, reinterpret_cast<const uint8*>(string.native()), length);
@@ -1052,7 +1052,7 @@ Unicode::ToWCharString::ToWCharString(const String& string)
   this->string = buffer.getElements();
 }
 
-Unicode::ToWCharString::ToWCharString(const WideString& string)
+ToWCharString::ToWCharString(const WideString& string)
 {
   if (sizeof(wchar) == sizeof(ucs4)) {
     this->string = reinterpret_cast<const wchar*>(string.native());

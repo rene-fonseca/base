@@ -52,8 +52,8 @@ bool OpenFileDialog::execute() throw(UserInterfaceException)
   Map<String, String>::ReadEnumerator enu = this->filters.getReadEnumerator();
   while (enu.hasNext()) {
     const Map<String, String>::Node* node = enu.next();
-    const std::wstring value = toWide(node->getValue());
-    const std::wstring key = toWide(node->getKey());
+    const std::wstring value = ToWCharString(node->getValue());
+    const std::wstring key = ToWCharString(node->getKey());
     copy(dest, value.c_str(), value.size() + 1); // include terminator
     dest += value.size() + 1;
     copy(dest, key.c_str(), key.size() + 1); // include terminator
@@ -63,11 +63,11 @@ bool OpenFileDialog::execute() throw(UserInterfaceException)
   *dest++ = L'\0'; // final termination;
   
   PrimitiveStackArray<wchar> buffer(1024);
-  const std::wstring _filename(toWide(filename));
-  copy(
+  const ToWCharString _filename(filename);
+  copy<wchar>(
     static_cast<wchar*>(buffer),
-    _filename.c_str(),
-    _filename.size() + 1
+    _filename,
+    _filename.getLength() + 1
   ); // includes terminator
   
   OPENFILENAME openFile;

@@ -22,10 +22,11 @@
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
-FolderMonitor::FolderMonitor(const String& path) throw(ResourceException) {
+FolderMonitor::FolderMonitor(const String& path) throw(ResourceException)
+{
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   handle = ::FindFirstChangeNotification(
-    toWide(path).c_str(),
+    ToWCharString(path),
     FALSE, // do not watch subfolders
     FILE_NOTIFY_CHANGE_FILE_NAME |
     FILE_NOTIFY_CHANGE_DIR_NAME |
@@ -38,7 +39,8 @@ FolderMonitor::FolderMonitor(const String& path) throw(ResourceException) {
 #endif // flavor
 }
 
-bool FolderMonitor::isSignaled() const throw() {
+bool FolderMonitor::isSignaled() const throw()
+{
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   DWORD result = ::WaitForSingleObject(handle, 0);
   if (result == WAIT_OBJECT_0) {

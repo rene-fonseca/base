@@ -64,7 +64,7 @@ FileInfo::FileInfo(const String& _path) throw(FileSystemException)
   : path(_path), mode(0), links(0) {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   bool error = false;
-  HANDLE file = ::CreateFile(toWide(path).c_str(), // file name
+  HANDLE file = ::CreateFile(ToWCharString(path), // file name
                              0 | READ_CONTROL, // access mode
                              FILE_SHARE_READ | FILE_SHARE_WRITE, // share mode
                              0, // security descriptor
@@ -83,7 +83,7 @@ FileInfo::FileInfo(const String& _path) throw(FileSystemException)
   unsigned int linkLevel = 0;
   const unsigned int maximumLinkLevel = 16;
   while ((file == INVALID_HANDLE_VALUE) && (++linkLevel <= maximumLinkLevel)) {    
-    HANDLE link = ::CreateFile(toWide(path).c_str(), // file name
+    HANDLE link = ::CreateFile(ToWCharString(path), // file name
                                0 | READ_CONTROL, // access mode
                                FILE_SHARE_READ | FILE_SHARE_WRITE, // share mode
                                0, // security descriptor

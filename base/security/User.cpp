@@ -120,7 +120,7 @@ User::User(const String& name) throw(UserException)
   uint8 sid[SECURITY_MAX_SID_SIZE];
   DWORD size = sizeof(sid);
   bassert(::LookupAccountName(nullptr,
-                             toWide(name).c_str(),
+                             ToWCharString(name),
                              &sid,
                              &size,
                              0,
@@ -293,7 +293,7 @@ Array<String> User::getGroups() throw(UserException) {
     const GROUP_USERS_INFO_0* p = buffer;
     const GROUP_USERS_INFO_0* end = p + numberOfEntries;
     while (p < end) {
-      result.append(WideString::getMultibyteString(p->grui0_name));
+      result.append(String(p->grui0_name));
       ++p;
     }
     ::NetApiBufferFree(buffer);
@@ -305,8 +305,8 @@ Array<String> User::getGroups() throw(UserException) {
   return result;
 }
 
-FormatOutputStream& operator<<(
-  FormatOutputStream& stream, const User& value) throw(IOException) {
+FormatOutputStream& operator<<(FormatOutputStream& stream, const User& value) throw(IOException)
+{
   if (!value.isValid()) {
     return stream << "<unknown>";
   }

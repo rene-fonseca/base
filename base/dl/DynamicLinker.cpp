@@ -154,7 +154,7 @@ void* DynamicLinker::getGlobalSymbolImpl(const String& symbol) throw(LinkerExcep
 DynamicLinker::DynamicLinker(const String& path, unsigned int options) throw(LinkerException)
 {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
-  if ((handle = ::LoadLibraryEx(toWide(path).c_str(), 0, 0)) == nullptr) {
+  if ((handle = ::LoadLibraryEx(ToWCharString(path), 0, 0)) == nullptr) {
     throw LinkerException("Unable to open module", this);
   }
 #else // unix

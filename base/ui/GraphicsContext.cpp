@@ -180,7 +180,7 @@ GraphicsContext::Font::Font(
     CLIP_DEFAULT_PRECIS, // clipping precision
     ANTIALIASED_QUALITY, // quality
     DEFAULT_PITCH, // pitch and family
-    toWide(name).c_str() // typeface name
+    ToWCharString(name) // typeface name
   );
   bassert(font, UserInterfaceException(this));
   setHandle(font);

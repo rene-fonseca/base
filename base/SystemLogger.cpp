@@ -30,27 +30,28 @@ _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 // TAG: need to figure out String and WideString API - use string and wstring instead?
 
-void SystemLogger::write(MessageType type, const String& message) throw() {
+void SystemLogger::write(MessageType type, const String& message) throw()
+{
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   static WORD messageType[] = {
     EVENTLOG_INFORMATION_TYPE,
     EVENTLOG_WARNING_TYPE,
     EVENTLOG_ERROR_TYPE
   };
-  HANDLE eventSource;
+  HANDLE eventSource = 0;
   Application* application = Application::getApplication();
   if (application) {
     eventSource = ::RegisterEventSource(
       nullptr,
-      toWide(application->getFormalName()).c_str()
+      ToWCharString(application->getFormalName())
     );
   } else {
     eventSource = ::RegisterEventSource(nullptr, L"Unspecified");
   }
   if (eventSource != 0) {
     LPCTSTR strings[1];
-    std::wstring w = toWide(message);
-    strings[0] = w.c_str();
+    ToWCharString w(message);
+    strings[0] = w;
     ::ReportEvent(eventSource, messageType[type], 0, 0, 0, 1, 0, strings, 0);
     ::DeregisterEventSource(eventSource);
   }

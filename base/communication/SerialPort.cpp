@@ -67,7 +67,7 @@ List<String> SerialPort::getPorts() throw()
   for (unsigned int i = 1; i <= 256; ++i) { // only the first 256 ports
     StringOutputStream stream;
     stream << "com" << i << FLUSH;
-    HANDLE handle = ::CreateFile(toWide(stream.getString()).c_str(),
+    HANDLE handle = ::CreateFile(ToWCharString(stream.getString()),
                                  0, // query only
                                  0, // comm devices must be opened w/exclusive-access
                                  0, // no security attributes
@@ -112,7 +112,7 @@ SerialPort::SerialPort(const String& _name) throw(CommunicationsException)
   : name(_name)
 {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
-  HANDLE handle = ::CreateFileW(toWide(name).c_str(), // TAG: Unicode::WCharString(name)
+  HANDLE handle = ::CreateFileW(ToWCharString(name),
                                GENERIC_READ | GENERIC_WRITE,
                                0, // comm devices must be opened w/exclusive-access
                                0, // no security attributes

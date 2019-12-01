@@ -37,7 +37,8 @@ MessageDialog::MessageDialog(
     answer(MessageDialog::CANCEL) {
 }
 
-bool MessageDialog::execute() throw(UserInterfaceException) {
+bool MessageDialog::execute() throw(UserInterfaceException)
+{
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   static const unsigned int NATIVE_TYPES[] = {
     MB_OK | MB_ICONWARNING, // WARNING
@@ -46,7 +47,7 @@ bool MessageDialog::execute() throw(UserInterfaceException) {
     MB_OK | MB_ICONEXCLAMATION, // EXCLAMATION
     MB_OK | MB_ICONINFORMATION, // INFORMATION
   };
-  int result = ::MessageBox(0, toWide(message).c_str(), toWide(title).c_str(), MB_TOPMOST | MB_SETFOREGROUND | NATIVE_TYPES[category]);
+  int result = ::MessageBox(0, ToWCharString(message), ToWCharString(title), MB_TOPMOST | MB_SETFOREGROUND | NATIVE_TYPES[category]);
   switch (result) {
   case IDABORT:
     answer = MessageDialog::ABORT;

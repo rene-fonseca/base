@@ -143,7 +143,7 @@ Trustee::Trustee(const String& name) throw(TrusteeException) {
   uint8 sid[SECURITY_MAX_SID_SIZE];
   DWORD size = getArraySize(sid);
   bassert(::LookupAccountName(0,
-                             toWide(name).c_str(),
+                             ToWCharString(name),
                              &sid,
                              &size,
                              0,

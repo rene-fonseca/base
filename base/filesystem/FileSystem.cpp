@@ -364,9 +364,10 @@ String FileSystem::getCurrentFolder() throw(FileSystemException)
 #endif // flavor
 }
 
-void FileSystem::setCurrentFolder(const String& path) throw(FileSystemException) {
+void FileSystem::setCurrentFolder(const String& path) throw(FileSystemException)
+{
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
-  if (!::SetCurrentDirectory(toWide(path).c_str())) {
+  if (!::SetCurrentDirectory(ToWCharString(path))) {
    throw FileSystemException("Unable to set current folder", Type::getType<FileSystem>());
   }
 #else // unix
@@ -376,12 +377,13 @@ void FileSystem::setCurrentFolder(const String& path) throw(FileSystemException)
 #endif // flavor
 }
 
-unsigned int FileSystem::getType(const String& path) throw(FileSystemException) {
+unsigned int FileSystem::getType(const String& path) throw(FileSystemException)
+{
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   // TAG: follow link
   unsigned int flags = 0;
   HANDLE file = ::CreateFile(
-    toWide(path).c_str(), // file name
+    ToWCharString(path), // file name
     FILE_READ_ATTRIBUTES | FILE_READ_EA /*| READ_CONTROL*/, // access mode
     FILE_SHARE_READ | FILE_SHARE_WRITE, // share mode
     0, // security descriptor
@@ -399,7 +401,7 @@ unsigned int FileSystem::getType(const String& path) throw(FileSystemException) 
     
     WIN32_FIND_DATA information;
     HANDLE find = ::FindFirstFileEx(
-      toWide(path).c_str(),
+      ToWCharString(path),
       FindExInfoStandard,
       &information,
       FindExSearchNameMatch,
@@ -515,7 +517,7 @@ unsigned int FileSystem::getType(const String& path) throw(FileSystemException) 
 uint64 FileSystem::getSize(const String& path) throw(FileSystemException) {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   WIN32_FIND_DATA information;
-  HANDLE handle = ::FindFirstFile(toWide(path).c_str(), &information);
+  HANDLE handle = ::FindFirstFile(ToWCharString(path), &information);
   bassert(
     handle != INVALID_HANDLE_VALUE,
     FileSystemException("Unable to get size of file", Type::getType<FileSystem>())
@@ -538,7 +540,7 @@ uint64 FileSystem::getSize(const String& path) throw(FileSystemException) {
 bool FileSystem::entryExists(const String& path) throw(FileSystemException) {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   WIN32_FIND_DATA information;
-  HANDLE handle = ::FindFirstFile(toWide(path).c_str(), &information);
+  HANDLE handle = ::FindFirstFile(ToWCharString(path), &information);
   if (handle == INVALID_HANDLE_VALUE) {
     bassert(
       ::GetLastError() == ERROR_FILE_NOT_FOUND,
@@ -581,7 +583,7 @@ bool FileSystem::entryExists(const String& path) throw(FileSystemException) {
 
 bool FileSystem::fileExists(const String& path) throw(FileSystemException) {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
-  DWORD result = ::GetFileAttributes(toWide(path).c_str());
+  DWORD result = ::GetFileAttributes(ToWCharString(path));
   if (result == INVALID_FILE_ATTRIBUTES) {
     // TAG: need support for no access
     return false;
@@ -622,7 +624,7 @@ bool FileSystem::fileExists(const String& path) throw(FileSystemException) {
 
 bool FileSystem::folderExists(const String& path) throw(FileSystemException) {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
-  DWORD result = ::GetFileAttributes(toWide(path).c_str());
+  DWORD result = ::GetFileAttributes(ToWCharString(path));
   if (result == INVALID_FILE_ATTRIBUTES) {
     // TAG: need support for no access
     return false;
@@ -660,10 +662,11 @@ bool FileSystem::folderExists(const String& path) throw(FileSystemException) {
 #endif // flavor
 }
 
-void FileSystem::removeFile(const String& path) throw(FileSystemException) {
+void FileSystem::removeFile(const String& path) throw(FileSystemException)
+{
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
 //  ::SetFileAttributes(file, FILE_ATTRIBUTE_NORMAL);
-  if (!::DeleteFile(toWide(path).c_str())) {
+  if (!::DeleteFile(ToWCharString(path))) {
     throw FileSystemException("Unable to remove file", Type::getType<FileSystem>());
   }
 #else // unix
@@ -673,12 +676,13 @@ void FileSystem::removeFile(const String& path) throw(FileSystemException) {
 #endif // flavor
 }
 
-void FileSystem::removeFolder(const String& path) throw(FileSystemException) {
+void FileSystem::removeFolder(const String& path) throw(FileSystemException)
+{
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
-  DWORD attributes = ::GetFileAttributes(toWide(path).c_str());
+  DWORD attributes = ::GetFileAttributes(ToWCharString(path));
   if ((attributes != INVALID_FILE_ATTRIBUTES) && (attributes & FILE_ATTRIBUTE_REPARSE_POINT)) {
     HANDLE link = ::CreateFile(
-      toWide(path).c_str(),
+      ToWCharString(path),
       FILE_ALL_ACCESS,
       0,
       0,
@@ -725,7 +729,7 @@ void FileSystem::removeFolder(const String& path) throw(FileSystemException) {
         throw FileSystemException("Unable to remove folder", Type::getType<FileSystem>());
       }
       ::CloseHandle(link);
-      if (!::RemoveDirectory(toWide(path).c_str())) {
+      if (!::RemoveDirectory(ToWCharString(path))) {
         throw FileSystemException("Unable to remove folder", Type::getType<FileSystem>());
       }
       // } else if (reparseHeader->ReparseTag == 0x80000000|IO_REPARSE_TAG_SYMBOLIC_LINK) {
@@ -735,7 +739,7 @@ void FileSystem::removeFolder(const String& path) throw(FileSystemException) {
       throw FileSystemException("Unable to remove folder", Type::getType<FileSystem>());
     }
   } else {
-    if (!::RemoveDirectory(toWide(path).c_str())) {
+    if (!::RemoveDirectory(ToWCharString(path))) {
       throw FileSystemException("Unable to remove folder", Type::getType<FileSystem>());
     }
   }
@@ -746,9 +750,10 @@ void FileSystem::removeFolder(const String& path) throw(FileSystemException) {
 #endif // flavor
 }
 
-void FileSystem::makeFolder(const String& path) throw(FileSystemException) {
+void FileSystem::makeFolder(const String& path) throw(FileSystemException)
+{
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
-  if (!::CreateDirectory(toWide(path).c_str(), NULL)) { // use default security descriptor
+  if (!::CreateDirectory(ToWCharString(path), NULL)) { // use default security descriptor
     throw FileSystemException("Unable to make folder", Type::getType<FileSystem>());
   }
 #else // unix
@@ -797,7 +802,8 @@ bool FileSystem::supportsLinks() throw() {
 //   return flags;
 // }
 
-bool FileSystem::isLink(const String& path) throw(NotSupported, FileSystemException) {
+bool FileSystem::isLink(const String& path) throw(NotSupported, FileSystemException)
+{
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   if (cachedSupportsLinks == -1) {
     supportsLinks();
@@ -809,12 +815,12 @@ bool FileSystem::isLink(const String& path) throw(NotSupported, FileSystemExcept
     return false;
   }
   
-  DWORD attributes = ::GetFileAttributes(toWide(path).c_str());
+  DWORD attributes = ::GetFileAttributes(ToWCharString(path));
   if (attributes == INVALID_FILE_ATTRIBUTES) {
     return false;
   }
   if ((attributes & FILE_ATTRIBUTE_REPARSE_POINT) != 0) {
-    HANDLE link = ::CreateFile(toWide(path).c_str(),
+    HANDLE link = ::CreateFile(ToWCharString(path),
                                0,
                                FILE_SHARE_READ | FILE_SHARE_WRITE,
                                0,
@@ -905,7 +911,7 @@ _COM_AZURE_DEV__BASE__PACKED__END
       HAS_ICON = 1 << 6
     };
     HANDLE link = ::CreateFile(
-      toWide(path).c_str(),
+      ToWCharString(path),
       GENERIC_READ,
       FILE_SHARE_READ | FILE_SHARE_WRITE,
       0,
@@ -961,7 +967,7 @@ public:
 //     );
     
     HANDLE link = ::CreateFile(
-      toWide(path).c_str(),
+      ToWCharString(path),
       0,
       FILE_SHARE_READ | FILE_SHARE_WRITE,
       0,
@@ -1011,7 +1017,7 @@ public:
           // skip prefix "\??\"
           unsigned int substLength = reparseHeader->SymbolicLinkReparseBuffer.SubstituteNameLength/2 - 4;
           substPath[substLength] = 0; // add terminator
-          return WideString::getMultibyteString(substPath /*, substLength*/);
+          return String(substPath, substLength);
         }
       case IO_REPARSE_TAG_MOUNT_POINT:
         {
@@ -1022,7 +1028,7 @@ public:
           // skip prefix "\??\"
           unsigned int substLength = reparseHeader->MountPointReparseBuffer.SubstituteNameLength/2 - 4;
           substPath[substLength] = 0; // add terminator
-          return WideString::getMultibyteString(substPath /*, substLength*/);
+          return String(substPath, substLength);
         }
       default:
         error = true;
@@ -1065,21 +1071,22 @@ public:
     return true;
   }
   
-  static inline bool makeHardLink(const String& target, const String& path) throw() {
+  static inline bool makeHardLink(const String& target, const String& path) throw()
+  {
     static bool elevatedPrivileges = false;
     if (!elevatedPrivileges) {
       enablePrivileges();
       elevatedPrivileges = true;
     }
     
-    HANDLE handle = ::CreateFile(toWide(path).c_str(), 0, 0, 0, OPEN_EXISTING, 0, 0);
+    HANDLE handle = ::CreateFile(ToWCharString(path), 0, 0, 0, OPEN_EXISTING, 0, 0);
     if (handle != INVALID_HANDLE_VALUE) { // make path does not exist
       ::CloseHandle(handle);
       return false;
     }
     
     handle = ::CreateFile(
-      toWide(target).c_str(),
+      ToWCharString(target),
       GENERIC_WRITE,
       0,
       0,
@@ -1093,7 +1100,7 @@ public:
     
     wchar fullPath[MAX_PATH];
     wchar* filename = nullptr;
-    ::GetFullPathName(toWide(path).c_str(), MAX_PATH, fullPath, &filename);
+    ::GetFullPathName(ToWCharString(path), MAX_PATH, fullPath, &filename);
     WideString wideFullPath(fullPath);
     
     WIN32_STREAM_ID stream; // setup hard link
@@ -1139,10 +1146,11 @@ public:
 };
 #endif // flavor
 
-void FileSystem::makeHardLink(const String& target, const String& path) throw(NotSupported, FileSystemException) {
+void FileSystem::makeHardLink(const String& target, const String& path) throw(NotSupported, FileSystemException)
+{
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
 #if (_COM_AZURE_DEV__BASE__OS >= _COM_AZURE_DEV__BASE__W2K)
-  bassert(::CreateHardLink(toWide(path).c_str(), toWide(target).c_str(), NULL) != 0,
+  bassert(::CreateHardLink(ToWCharString(path), ToWCharString(target), NULL) != 0,
          FileSystemException("Unable to make hard link", Type::getType<FileSystem>()));
 #else
   typedef BOOL (*PCreateHardLink)(LPCSTR, LPCSTR, LPSECURITY_ATTRIBUTES);
@@ -1178,7 +1186,7 @@ void FileSystem::makeLink(const String& target, const String& path)
 	wchar fullTargetPath[MAX_PATH];
   bassert(
     ::GetFullPathName(
-      toWide(target).c_str(),
+      ToWCharString(target),
       MAX_PATH,
       fullTargetPath,
       &fileNameComponent
@@ -1190,7 +1198,7 @@ void FileSystem::makeLink(const String& target, const String& path)
 	WideString nativePath(L"\\??\\");
   nativePath += NativeWideString(fullTargetPath);
   
-  DWORD attributes = ::GetFileAttributes(toWide(target).c_str());
+  DWORD attributes = ::GetFileAttributes(ToWCharString(target));
   bassert(
     attributes != INVALID_FILE_ATTRIBUTES,
     FileSystemException(Type::getType<FileSystem>())
@@ -1208,10 +1216,10 @@ void FileSystem::makeLink(const String& target, const String& path)
       FileSystemException(Type::getType<FileSystem>())
     ); // watch out for buffer overflow
     // we do not care whether or not it already exists
-    directoryCreated = ::CreateDirectory(toWide(path).c_str(), 0) != 0;
+    directoryCreated = ::CreateDirectory(ToWCharString(path), 0) != 0;
     bassert(directoryCreated, FileSystemException(Type::getType<FileSystem>()));
     link = ::CreateFile(
-      toWide(path).c_str(),
+      ToWCharString(path),
       GENERIC_WRITE,
       0,
       0,
@@ -1229,7 +1237,7 @@ void FileSystem::makeLink(const String& target, const String& path)
       FileSystemException(Type::getType<FileSystem>())
     ); // watch out for buffer overflow
     link = ::CreateFile(
-      toWide(path).c_str(),
+      ToWCharString(path),
       GENERIC_WRITE,
       0,
       0,
@@ -1279,10 +1287,10 @@ void FileSystem::makeLink(const String& target, const String& path)
   if (error) {
     if (isDirectory) {
       if (directoryCreated) {
-        ::RemoveDirectory(toWide(path).c_str()); // clean up
+        ::RemoveDirectory(ToWCharString(path)); // clean up
       }
     } else {
-      ::DeleteFile(toWide(path).c_str()); // clean up // TAG: can we use FILE_FLAG_DELETE_ON_CLOSE
+      ::DeleteFile(ToWCharString(path)); // clean up // TAG: can we use FILE_FLAG_DELETE_ON_CLOSE
     }
   }
   bassert(!error, FileSystemException("Unable to make link", Type::getType<FileSystem>()));
@@ -1303,7 +1311,7 @@ String FileSystem::getLink(const String& path) throw(NotSupported, FileSystemExc
   bassert(cachedSupportsLinks == 1, NotSupported("Symbolic link", Type::getType<FileSystem>()));
   
   HANDLE link = ::CreateFile(
-    toWide(path).c_str(),
+    ToWCharString(path),
     0,
     FILE_SHARE_READ | FILE_SHARE_WRITE,
     0,
@@ -1353,7 +1361,7 @@ String FileSystem::getLink(const String& path) throw(NotSupported, FileSystemExc
         // skip prefix "\??\"
         unsigned int substLength = reparseHeader->SymbolicLinkReparseBuffer.SubstituteNameLength/2 - 4;
         substPath[substLength] = 0; // add terminator
-        return WideString::getMultibyteString(substPath /*, substLength*/);
+        return String(substPath, substLength);
       }
     case IO_REPARSE_TAG_MOUNT_POINT:
       {
@@ -1364,7 +1372,7 @@ String FileSystem::getLink(const String& path) throw(NotSupported, FileSystemExc
         // skip prefix "\??\"
         unsigned int substLength = reparseHeader->MountPointReparseBuffer.SubstituteNameLength/2 - 4;
         substPath[substLength] = 0; // add terminator
-        return WideString::getMultibyteString(substPath /*, substLength*/);
+        return String(substPath, substLength);
       }
     default:
       error = true;
@@ -1441,7 +1449,7 @@ _COM_AZURE_DEV__BASE__PACKED__END
   };
   
   while (true) {
-    link = ::CreateFile(toWide(path).c_str(),
+    link = ::CreateFile(ToWCharString(path),
                         GENERIC_READ, FILE_SHARE_READ | FILE_SHARE_WRITE,
                         0, OPEN_EXISTING, 0, 0);
     if (link == INVALID_HANDLE_VALUE) { // fails if directory

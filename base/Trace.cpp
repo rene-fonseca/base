@@ -49,7 +49,7 @@ void Trace::message(const char* message) noexcept
   }
   
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
-  ::OutputDebugString(toWide(message).c_str());
+  ::OutputDebugString(ToWCharString(message));
 #elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__CYGWIN) // special case
   win32::OutputDebugString(message);
 #else // unix
@@ -78,7 +78,7 @@ void Trace::member(const void* pointer, const char* message) noexcept
 #  error pointer type not supported
 #endif
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
-  ::OutputDebugString(toWide(buffer).c_str());
+  ::OutputDebugString(ToWCharString(buffer));
 #elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__CYGWIN) // special case
   win32::OutputDebugString(buffer);
 #else // unix

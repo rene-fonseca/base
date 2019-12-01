@@ -460,7 +460,7 @@ public:
     ucs4* dest,
     const uint8* src,
     MemorySize size,
-    unsigned int flags = EAT_BOM) /*throw(MultibyteException)*/;
+    unsigned int flags = EAT_BOM);
 
   /**
     Low-level method which converts an UTF-32 encoded string to UCS-4 encoding.
@@ -480,7 +480,7 @@ public:
     ucs4* dest,
     const uint8* src,
     MemorySize size,
-    unsigned int flags = EAT_BOM) /*throw(MultibyteException)*/;
+    unsigned int flags = EAT_BOM);
 
   // wchar support
 
@@ -549,33 +549,40 @@ public:
       BASSERT(!"Unsupported wchar.");
     }
   }
+};
 
-#if 1
-  class ToWCharString {
-  private:
+/** Automation object for converting string to temporary wchar string. */
+class ToWCharString {
+private:
 
-    Allocator<wchar> buffer;
-    const wchar* string = nullptr;
-  public:
+  Allocator<wchar> buffer;
+  const wchar* string = nullptr;
+public:
 
-    ToWCharString();
-    ToWCharString(const char* string);
-    ToWCharString(const wchar* string);
-    ToWCharString(const ucs4* string);
-    ToWCharString(const String& string);
-    ToWCharString(const WideString& string);
+  ToWCharString();
+  ToWCharString(const char* string);
+  ToWCharString(const wchar* string);
+  ToWCharString(const ucs4* string);
+  ToWCharString(const String& string);
+  ToWCharString(const WideString& string);
 
-    inline const wchar* native() const noexcept
-    {
-      return string;
-    }
+  /** Returns the length of the string. Excluding null terminator. */
+  inline MemorySize getLength() const noexcept
+  {
+    return !buffer.isEmpty() ? (buffer.getSize() - 1) : getNullTerminatedLength(string);
+  }
 
-    inline operator const wchar*() const noexcept
-    {
-      return string;
-    }
-  };
-#endif
+  /** Only valid until automation object is destructed. */
+  inline const wchar* native() const noexcept
+  {
+    return string;
+  }
+
+  /** Only valid until automation object is destructed. */
+  inline operator const wchar*() const noexcept
+  {
+    return string;
+  }
 };
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

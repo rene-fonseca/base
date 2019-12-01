@@ -142,7 +142,7 @@ namespace win32 {
     DaemonImpl::dispatched = true;
     // register the service control handler
     DaemonImpl::serviceStatusHandle = ::RegisterServiceCtrlHandlerW(
-      toWide(Application::getApplication()->getFormalName()).c_str(),
+      ToWCharString(Application::getApplication()->getFormalName()),
       serviceControlHandler
     );
 
@@ -262,8 +262,8 @@ void Daemon::install() {
   if (manager) {
     SC_HANDLE service = ::CreateService(
       manager,
-      toWide(Application::getApplication()->getFormalName()).c_str(), // name of service
-      toWide(Application::getApplication()->getFormalName()).c_str(), // name to display
+      ToWCharString(Application::getApplication()->getFormalName()), // name of service
+      ToWCharString(Application::getApplication()->getFormalName()), // name to display
       SERVICE_ALL_ACCESS, // desired access
       SERVICE_WIN32_OWN_PROCESS, // service type
       SERVICE_DEMAND_START, // start type

@@ -1039,13 +1039,15 @@ void WindowImpl::displayMenu(
 #endif // flavor
 }
 
-String WindowImpl::getTitle() const throw(UserInterfaceException) {
+String WindowImpl::getTitle() const throw(UserInterfaceException)
+{
   return title;
 }
 
-void WindowImpl::setTitle(const String& title) throw(UserInterfaceException) {
+void WindowImpl::setTitle(const String& title) throw(UserInterfaceException)
+{
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
-  ::SetWindowText((HWND)drawableHandle, toWide(title).c_str());
+  ::SetWindowText((HWND)drawableHandle, ToWCharString(title));
 #elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__MACOS)
 #else // unix
   ::XChangeProperty(

@@ -243,7 +243,7 @@ Process Process::execute(const String& command) throw(ProcessException) {
 //   startInfo.hStdError
   bassert(
     ::CreateProcess(0,
-                    const_cast<wchar*>(toWide(commandLine).c_str()), // command line (may need quotes)
+                    const_cast<wchar*>(ToWCharString(commandLine).native()), // command line (may need quotes)
                     nullptr, // process security attributes
                     nullptr, // primary thread security attributes
                     TRUE, // handles are inherited

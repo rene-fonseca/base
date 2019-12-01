@@ -146,7 +146,7 @@ File::File(const String& path, Access access, unsigned int options) throw(Access
   
   bool error = false;
   OperatingSystem::Handle handle = ::CreateFile( // TAG: check out FILE_FLAG_POSIX_SEMANTICS
-    toWide(path.getElements()).c_str(), // file name
+    ToWCharString(path.getElements()), // file name
     (access == READ) ? GENERIC_READ : ((access == WRITE) ? GENERIC_WRITE : (GENERIC_READ | GENERIC_WRITE)), // access mode
     (options & EXCLUSIVE) ? 0 : (FILE_SHARE_READ | FILE_SHARE_WRITE), // share mode
     0, // security descriptor
@@ -158,7 +158,7 @@ File::File(const String& path, Access access, unsigned int options) throw(Access
   unsigned int linkLevel = 0;
   const unsigned int maximumLinkLevel = 16;
   while ((handle == OperatingSystem::INVALID_HANDLE) && (++linkLevel <= maximumLinkLevel)) {    
-    OperatingSystem::Handle link = ::CreateFile(toWide(path.getElements()).c_str(), // file name
+    OperatingSystem::Handle link = ::CreateFile(ToWCharString(path.getElements()), // file name
                                                 0 | READ_CONTROL, // access mode
                                                 FILE_SHARE_READ | FILE_SHARE_WRITE, // share mode
                                                 0, // security descriptor

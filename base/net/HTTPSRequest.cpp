@@ -186,7 +186,7 @@ bool HTTPSRequest::open(const String& _method, const String& _url, const String&
   const String path = url.getPath() ? url.getPath() : "/";
 
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
-  HINTERNET hInternet = InternetOpenW(L"Mozilla/5.0" /*toWide(agent).c_str()*/, INTERNET_OPEN_TYPE_DIRECT, NULL, NULL, 0);
+  HINTERNET hInternet = InternetOpenW(L"Mozilla/5.0" /*ToWCharString(agent)*/, INTERNET_OPEN_TYPE_DIRECT, NULL, NULL, 0);
   if (!hInternet) {
     return false;
     // throw HTTPException("Failed to open HTTP request.");
@@ -194,10 +194,10 @@ bool HTTPSRequest::open(const String& _method, const String& _url, const String&
 
   HINTERNET hConnect = InternetConnectW(
     hInternet,
-    toWide(url.getHost()).c_str(),
+    ToWCharString(url.getHost()),
     443, // port,
-    user ? toWide(user).c_str() : NULL,
-    password ? toWide(password).c_str() : NULL,
+    user ? ToWCharString(user) : ToWCharString(),
+    password ? ToWCharString(password) : ToWCharString(),
     INTERNET_SERVICE_HTTP,
     0,
     NULL
@@ -210,8 +210,8 @@ bool HTTPSRequest::open(const String& _method, const String& _url, const String&
 
   HINTERNET hRequest = HttpOpenRequestW(
     hConnect,
-    toWide(_method).c_str(),
-    toWide(path).c_str() /*object*/,
+    ToWCharString(_method),
+    ToWCharString(path) /*object*/,
     NULL, // L"HTTP/1.1",
     NULL /*referrer*/,
     NULL /*acceptTypes*/,
@@ -288,7 +288,7 @@ void HTTPSRequest::setRequestHeader(const String& name, const String& value)
   // ISO-8859 - 1 characters
   // WideCharToMultiByte() codepage 28591
   // TAG: HTTP_ADDREQ_FLAG_REPLACE
-  INLINE_ASSERT(HttpAddRequestHeadersW(_handle->hRequest, toWide(name + ": " + value + "\r\n").c_str(), (DWORD)-1, HTTP_ADDREQ_FLAG_ADD));
+  INLINE_ASSERT(HttpAddRequestHeadersW(_handle->hRequest, ToWCharString(name + ": " + value + "\r\n"), (DWORD)-1, HTTP_ADDREQ_FLAG_ADD));
 #elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__MACOS)
   // CFHTTPMessageIsRequest
   MACString headerFieldName(name);

@@ -12,7 +12,6 @@
  ***************************************************************************/
 
 #include <base/collection/PriorityQueue.h>
-#include <string>
 
 _COM_AZURE_DEV__BASE__DUMMY_SYMBOL
 

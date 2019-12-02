@@ -12,12 +12,8 @@
  ***************************************************************************/
 
 #include <base/mem/ReferenceCounter.h>
-#include <string>
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
-
-template class ReferenceCounter<std::string>;
-template class ReferenceCounter<std::wstring>;
 
 #if defined(TESTS)
 

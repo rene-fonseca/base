@@ -14,7 +14,6 @@
 #include <base/collection/Map.h>
 #include <base/collection/Moveable.h>
 #include <base/UnitTest.h>
-#include <string>
 
 _COM_AZURE_DEV__BASE__DUMMY_SYMBOL
 

@@ -14,7 +14,6 @@
 #pragma once
 
 #include <base/io/InputStream.h>
-#include <random>
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
@@ -27,7 +26,9 @@ _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 class _COM_AZURE_DEV__BASE__API RandomInputStream : public InputStream {
 private:
 
-  std::mt19937 engine;
+  void* engine = nullptr;
+  RandomInputStream(const RandomInputStream&) = delete;
+  RandomInputStream& operator=(const RandomInputStream&) = delete;
 public:
 
   enum {
@@ -35,8 +36,10 @@ public:
   };
 
   /** Initializes random input stream. If seed is set to USE_RANDOM_SEED (0) a random seed will be used. */
-  RandomInputStream(uint32 seed = USE_RANDOM_SEED) noexcept;
-
+  RandomInputStream(uint32 seed = USE_RANDOM_SEED);
+  
+  ~RandomInputStream();
+  
   unsigned int available() const noexcept override;
 
   unsigned int read(uint8* buffer, const unsigned int _size, bool nonblocking) noexcept override;

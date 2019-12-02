@@ -14,12 +14,19 @@
 #include <base/io/RandomInputStream.h>
 #include <base/string/FormatOutputStream.h>
 #include <base/Random.h>
+#include <random> // remove when using own mersenne implementation
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
-RandomInputStream::RandomInputStream(uint32 seed) noexcept
-  : engine(seed ? seed : Random::randomDirect())
+RandomInputStream::RandomInputStream(uint32 seed)
 {
+  engine = new std::mt19937(seed ? seed : Random::randomDirect());
+}
+
+RandomInputStream::~RandomInputStream()
+{
+  auto e = reinterpret_cast<std::mt19937*>(engine);
+  delete e;
 }
 
 unsigned int RandomInputStream::available() const noexcept
@@ -29,6 +36,8 @@ unsigned int RandomInputStream::available() const noexcept
 
 unsigned int RandomInputStream::read(uint8* buffer, const unsigned int _size, bool nonblocking) noexcept
 {
+  auto& engine = *reinterpret_cast<std::mt19937*>(this->engine);
+  
   const uint8* end = buffer + _size;
   unsigned int size = _size;
 

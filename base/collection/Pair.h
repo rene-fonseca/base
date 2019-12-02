@@ -14,7 +14,7 @@
 #pragma once
 
 #include <base/features.h>
-#include <utility>
+#include <utility> // header approved
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 

@@ -58,7 +58,6 @@ public:
     Value value;
     /** The next node in the single linked list. */
     Node* next = nullptr;
-    // TAG: could have been bidirectional
   public:
     
     /**
@@ -67,7 +66,8 @@ public:
     inline Node(unsigned long _hash, const Value& _value) noexcept
       : hash(_hash),
         value(_value),
-        next(nullptr) {
+        next(nullptr)
+    {
     }
     
     /**
@@ -76,48 +76,55 @@ public:
     inline Node(unsigned long _hash, const Value& _value, Node* _next) noexcept
       : hash(_hash),
         value(_value),
-        next(_next) {
+        next(_next)
+    {
     }
 
     /**
       Returns the hash value of the node.
     */
-    inline unsigned long getHash() const noexcept {
+    inline unsigned long getHash() const noexcept
+    {
       return hash;
     }
     
     /**
       Returns the value of the node.
     */
-    inline Value& getValue() noexcept {
+    inline Value& getValue() noexcept
+    {
       return value;
     }
     
     /**
       Returns the value of the node.
     */
-    inline const Value& getValue() const noexcept {
+    inline const Value& getValue() const noexcept
+    {
       return value;
     }
 
     /**
       Returns the next node.
     */
-    inline Node* getNext() noexcept {
+    inline Node* getNext() noexcept
+    {
       return next;
     }
     
     /**
       Returns the next node.
     */
-    inline const Node* getNext() const noexcept {
+    inline const Node* getNext() const noexcept
+    {
       return next;
     }
     
     /**
       Sets the next node.
     */
-    inline void setNext(Node* node) noexcept {
+    inline void setNext(Node* node) noexcept
+    {
       next = node;
     }
   };

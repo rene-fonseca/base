@@ -383,12 +383,12 @@ public:
     o->setValue(objectModel.createString("floats"), a2);
 
     auto a3 = objectModel.createArray();
-    std::vector<String> animals = {"penguin", "giraf", "horse", "lion", "eagle"};
-    std::vector<bool> bs = { false, true, true, false };
+    Array<String> animals = {"penguin", "giraf", "horse", "lion", "eagle"};
+    Array<bool> bs = { false, true, true, false };
     *a3 = bs;
-    std::vector<int> is = { 7, -1, 25, 900 };
+    Array<int> is = { 7, -1, 25, 900 };
     *a3 = is;
-    std::vector<double> ds = { 0.1, -10, 99.9 };
+    Array<double> ds = { 0.1, -10, 99.9 };
     *a3 = ds;
     *a3 = animals;
     o->setValue(objectModel.createString("animals"), a3);

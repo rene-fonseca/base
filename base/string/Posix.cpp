@@ -13,8 +13,51 @@
 
 #include <base/string/Posix.h>
 #include <base/string/ASCIITraits.h>
+#include <sstream> // required until we have proper float to string implementation
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
+
+class MemoryBuffer : public std::streambuf {
+public:
+
+  MemoryBuffer(const char* src, const char* end);
+
+  void reset(const char* src, const char* end);
+};
+
+class MemoryStreamImpl : virtual public MemoryBuffer, public std::istream {
+public:
+
+  MemoryStreamImpl(const char* src = nullptr, const char* end = nullptr);
+  
+  void setLocale(const std::locale& _Loc);
+};
+
+MemoryBuffer::MemoryBuffer(const char* src, const char* end)
+{
+  reset(src, end);
+}
+
+void MemoryBuffer::reset(const char* src, const char* end)
+{
+  char* _src(const_cast<char*>(src));
+  setg(_src, _src, _src + (end - src));
+}
+
+MemoryStreamImpl::MemoryStreamImpl(const char* src, const char* end)
+  : MemoryBuffer(src, end),
+    std::istream(static_cast<std::streambuf*>(this))
+{
+}
+  
+void MemoryStreamImpl::setLocale(const std::locale& _Loc)
+{
+  std::locale _Oldlocale = ios_base::imbue(_Loc);
+  const auto _Rdbuf = rdbuf();
+  if (_Rdbuf) {
+    _Rdbuf->pubimbue(_Loc);
+  }
+}
 
 namespace {
 
@@ -22,18 +65,18 @@ namespace {
 /*
   constexpr int64 power10(unsigned int exponent) noexcept
   {
-    return (exponent > 0) ? 10LL * power10(exponent - 1) : 1;
+    return (exponent > 0) ? (10LL * power10(exponent - 1)) : 1;
   }
 */
 
   constexpr int64 power5(unsigned int exponent) noexcept
   {
-    return (exponent > 0) ? 5LL * power5(exponent - 1) : 1;
+    return (exponent > 0) ? (5LL * power5(exponent - 1)) : 1;
   }
 
   constexpr int32 power2(unsigned int exponent) noexcept
   {
-    return (exponent > 0) ? static_cast<int32>(2)* power2(exponent - 1) : 1;
+    return (exponent > 0) ? (static_cast<int32>(2) * power2(exponent - 1)) : 1;
   }
 
   const int64 EXPONENTS10[19] = { //  64 bit has room for 10^18 - excluding 1 bit for sign
@@ -180,9 +223,12 @@ namespace {
           if (negativeExponent) {
             value /= EXPONENTS5[exponent]; // no exponent overflow for 64 bit int
             value /= EXPONENTS2[exponent]; // power 2 math is exact
+            // f.setBase2Exponent(f.getBase2Exponent() - EXPONENTS2[exponent]);
+            // TAG: need to update exponent directly to guarantee exact
           } else {
             value *= EXPONENTS5[exponent]; // no exponent overflow for 64 bit int
             value *= EXPONENTS2[exponent]; // power 2 math is exact
+            // TAG: need to update exponent directly to guarantee exact
           }
         }
         _value = value;
@@ -210,35 +256,15 @@ namespace {
   }
 }
 
-Posix::MemoryBuffer::MemoryBuffer(const char* src, const char* end)
-{
-  reset(src, end);
-}
-
-void Posix::MemoryBuffer::reset(const char* src, const char* end)
-{
-  char* _src(const_cast<char*>(src));
-  setg(_src, _src, _src + (end - src));
-}
-
-Posix::MemoryStream::MemoryStream(const char* src, const char* end)
-  : MemoryBuffer(src, end),
-    std::istream(static_cast<std::streambuf*>(this))
-{
-}
-  
-void Posix::MemoryStream::setLocale(const std::locale& _Loc)
-{
-  std::locale _Oldlocale = ios_base::imbue(_Loc);
-  const auto _Rdbuf = rdbuf();
-  if (_Rdbuf) {
-    _Rdbuf->pubimbue(_Loc);
-  }
-}
-
 Posix::Posix()
 {
-  ms.setLocale(std::locale::classic()); // c locale
+  ms = new MemoryStreamImpl();
+  ms->setLocale(std::locale::classic()); // c locale
+}
+
+Posix::~Posix()
+{
+  delete ms;
 }
 
 bool Posix::getSeries(const char* src, const char* end, float& _value)
@@ -251,10 +277,10 @@ bool Posix::getSeries(const char* src, const char* end, float& _value)
   }
 
   float value = 0;
-  ms.reset(src, end);
-  ms.clear();
-  ms >> value;
-  if (!ms.eof()) {
+  ms->reset(src, end);
+  ms->clear();
+  *ms >> value;
+  if (!ms->eof()) {
     return false;
   }
   _value = value;
@@ -271,10 +297,10 @@ bool Posix::getSeries(const char* src, const char* end, double& _value)
   }
 
   double value = 0;
-  ms.reset(src, end);
-  ms.clear();
-  ms >> value;
-  if (!ms.eof()) {
+  ms->reset(src, end);
+  ms->clear();
+  *ms >> value;
+  if (!ms->eof()) {
     return false;
   }
   _value = value;
@@ -291,10 +317,10 @@ bool Posix::getSeries(const char* src, const char* end, long double& _value)
   }
 
   long double value = 0;
-  ms.reset(src, end);
-  ms.clear();
-  ms >> value;
-  if (!ms.eof()) {
+  ms->reset(src, end);
+  ms->clear();
+  *ms >> value;
+  if (!ms->eof()) {
     return false;
   }
   _value = value;
@@ -311,7 +337,7 @@ bool Posix::toFloat(const char* src, const char* end, float& _value)
   }
   
   float value = 0;
-  MemoryStream ms(src, end);
+  MemoryStreamImpl ms(src, end);
   ms.setLocale(std::locale::classic()); // c locale
   ms >> value;
   if (!ms.eof()) {
@@ -335,7 +361,7 @@ bool Posix::toDouble(const char* src, const char* end, double& _value)
   // TAG: handle [+-]?0[xX]([0-9a-fA-F]+)?(.?[0-9a-fA-F]+)([pP][+-]?[0-9a-fA-F]+)?
 
   double value = 0;
-  MemoryStream ms(src, end);
+  MemoryStreamImpl ms(src, end);
   ms.setLocale(std::locale::classic()); // c locale
   ms >> value;
   if (!ms.eof()) {
@@ -355,7 +381,7 @@ bool Posix::toLongDouble(const char* src, const char* end, long double& _value)
   }
   
   long double value = 0;
-  MemoryStream ms(src, end);
+  MemoryStreamImpl ms(src, end);
   ms.setLocale(std::locale::classic()); // c locale
   ms >> value;
   if (!ms.eof()) {

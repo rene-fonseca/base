@@ -14,40 +14,27 @@
 #pragma once
 
 #include <base/string/String.h>
-#include <sstream>
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
+class MemoryStreamImpl;
+
 /**
   Posix formatting.
-
-  @version 1.0
 */
 
 class _COM_AZURE_DEV__BASE__API Posix {
 private:
   
-  class _COM_AZURE_DEV__BASE__API MemoryBuffer : public std::streambuf {
-  public:
-
-    MemoryBuffer(const char* src, const char* end);
-
-    void reset(const char* src, const char* end);
-  };
-
-  class _COM_AZURE_DEV__BASE__API MemoryStream : virtual public MemoryBuffer, public std::istream {
-  public:
-
-    MemoryStream(const char* src = nullptr, const char* end = nullptr);
-    
-    void setLocale(const std::locale& _Loc);
-  };
-
-  MemoryStream ms;
+  MemoryStreamImpl* ms = nullptr;
+  Posix(const Posix&) = delete;
+  Posix& operator=(const Posix&) = delete;
 public:
 
   Posix();
-
+  
+  ~Posix();
+  
   /** Returns true on success. Use for fast string to double conversion. */
   bool getSeries(const char* src, const char* end, float& d);
 
@@ -59,7 +46,11 @@ public:
 
   /** Returns true on success. */
   static bool toFloat(const char* src, const char* end, float& d);
+
+  /** Returns true on success. */
   static bool toDouble(const char* src, const char* end, double& d);
+
+  /** Returns true on success. */
   static bool toLongDouble(const char* src, const char* end, long double& d);
 
   /** Returns true on success. */

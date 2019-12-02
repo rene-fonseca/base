@@ -389,6 +389,7 @@ public:
 
     @param string String literal.
   */
+  WideString(const Literal& string);
   WideString(const WideLiteral& string);
   WideString(const char* string);
   WideString(const char16_t* string);
@@ -447,7 +448,7 @@ public:
   /**
     Initializes the string from a NULL-terminated string.
 
-    @param string NULL-terminated string. If NULL, the string is initialized
+    @param string NULL-terminated string. If nullptr, the string is initialized
     with no characters in it.
   */
   WideString(const NativeString& string);
@@ -485,6 +486,7 @@ public:
   /**
     Assignment of string to string.
   */
+  WideString& operator=(const Literal& assign);
   WideString& operator=(const WideLiteral& assign);
   WideString& operator=(const char* assign);
   WideString& operator=(const wchar* assign);

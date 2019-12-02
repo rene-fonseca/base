@@ -770,6 +770,11 @@ WideString::WideString(const std::wstring& string)
   initialize(string.c_str(), string.size());
 }
 
+WideString::WideString(const Literal& literal)
+{
+  initialize(literal.getValue(), literal.getLength());
+}
+
 WideString::WideString(const WideLiteral& literal)
 {
   initialize(literal.getValue(), literal.getLength());
@@ -860,6 +865,12 @@ WideString::WideString(const NativeString& string, MemorySize maximum)
       multibyteLength
     );
   }
+}
+
+WideString& WideString::operator=(const Literal& assign)
+{
+  initialize(assign.getValue(), assign.getLength());
+  return *this;
 }
 
 WideString& WideString::operator=(const WideLiteral& assign)

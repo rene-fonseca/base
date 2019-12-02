@@ -22,7 +22,6 @@
 #include <base/collection/BinaryNode.h>
 #include <map>
 #include <vector>
-#include <utility>
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 

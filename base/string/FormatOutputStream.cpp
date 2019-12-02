@@ -2330,11 +2330,11 @@ public:
     TEST_EQUAL(String(f() << OCT << 12345), "030071");
     TEST_EQUAL(String(f() << HEX << 12345), "0x3039");
     TEST_EQUAL(String(f() << FDEC << -12345.12345), "-12345.12345");
-    TEST_EQUAL(String(f() << FHEX << 0x1.999999999999ap-4f), "0x1.99999p-4");
-    TEST_EQUAL(String(f() << FHEX << 0x1p0), "0x1p0");
-    TEST_EQUAL(String(f() << FHEX << 0x1p1), "0x1p1");
-    TEST_EQUAL(String(f() << FHEX << 0x2p0), "0x1p1");
-    TEST_EQUAL(String(f() << FHEX << 0x1.999999999999ap-4), "0x1.999999999999ap-4");
+    TEST_EQUAL(String(f() << FHEX << 0.1f /*0x1.999999999999ap-4f*/), "0x1.99999p-4");
+    TEST_EQUAL(String(f() << FHEX << 1.0 /*0x1p0*/), "0x1p0");
+    TEST_EQUAL(String(f() << FHEX << 2.0 /*0x1p1*/), "0x1p1");
+    // TEST_EQUAL(String(f() << FHEX << 2 /*0x2p0*/), "0x1p1");
+    TEST_EQUAL(String(f() << FHEX << 0.1 /*0x1.999999999999ap-4*/), "0x1.999999999999ap-4");
     TEST_EQUAL(String(f() << FHEX << -12345.12345), "-0x1.81c8fcd35a858p13");
     TEST_EQUAL(String(f() << ZEROPAD << setWidth(10) << 12345), "0000012345");
     TEST_EQUAL(String(f() << indent(7)), "       ");

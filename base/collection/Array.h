@@ -802,6 +802,20 @@ public:
     }
     return -1;
   }
+  
+  /** Returns reference to the item if found by the given value. */
+  const TYPE* find(const TYPE& value) const
+  {
+    ReadIterator src = cbegin();
+    const ReadIterator end = cend();
+    while (src != end) {
+      if (*src == value) {
+        return &*src;
+      }
+      ++src;
+    }
+    return nullptr;
+  }
 };
 
 template<class TYPE>

@@ -20,7 +20,7 @@
 #include <base/string/FormatOutputStream.h>
 #include <base/string/StringOutputStream.h>
 #include <base/collection/BinaryNode.h>
-#include <map>
+#include <base/collection/HashTable.h>
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
@@ -709,7 +709,7 @@ private:
 
   bool allowReuse = false; // only applies to dynamic strings since we could get race conditions otherwise
   /** Used to avoid reallocated of the same strings. */
-  std::map<base::String, Reference<String> > lookup;
+  HashTable<base::String, Reference<String> > lookup;
 public:
   
   /**

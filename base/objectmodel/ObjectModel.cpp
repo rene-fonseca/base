@@ -137,8 +137,8 @@ Reference<ObjectModel::String> ObjectModel::createString(const char* value)
   }
   const base::String _value(value);
   auto i = lookup.find(value);
-  if (i != lookup.end()) {
-    return i->second; // found identical
+  if (i) {
+    return *i; // found identical
   }
   auto result = new String(_value); // new string
   lookup[_value] = result;
@@ -152,8 +152,8 @@ Reference<ObjectModel::String> ObjectModel::createString(const base::String& val
   }
   const base::String _value(value);
   auto i = lookup.find(value);
-  if (i != lookup.end()) {
-    return i->second; // found identical
+  if (i) {
+    return *i; // found identical
   }
   return new String(_value); // new string
 }

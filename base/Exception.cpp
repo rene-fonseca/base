@@ -16,6 +16,7 @@
 #include <base/Exception.h>
 #include <base/UnitTest.h>
 #include <memory>
+#include <system_error>
 
 #if defined(_COM_AZURE_DEV__BASE__EXCEPTION_V3MV)
   #include <base/platforms/compiler/v3mv/exception.h> // includes private features

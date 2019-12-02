@@ -15,6 +15,7 @@
 #include <base/concurrency/ThreadLocalContext.h>
 #include <base/concurrency/ApplicationSynchronize.h>
 #include <base/UnitTest.h>
+#include <random>
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 

@@ -16,6 +16,7 @@
 #include <base/mathematics/Math.h>
 #include <base/UnitTest.h>
 #include <limits>
+#include <math.h>
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 

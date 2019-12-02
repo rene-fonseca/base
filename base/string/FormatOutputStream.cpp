@@ -1748,17 +1748,23 @@ void FormatOutputStream::writeFloatingPointType(
     if (output[-1] == '.') {
       --output;
     }
+
     *output++ = (context.flags & Symbols::UPPER) ? 'P' : 'p'; // exponent is always required
     if (base2Exponent < 0) {
       *output++ = '-';
       base2Exponent = -base2Exponent;
+    } else if ((flags & Symbols::PLUSEXP) != 0) { // only show positive exponent explicitly if forced
+      *output++ = '+';
     }
-    int shift = sizeof(int) * 8 - 4;
-    while ((shift >= 4) && ((base2Exponent >> shift) == 0)) {
-      shift -= 4;
-    }
-    for (; shift >= 0; shift -= 4) {
-      *output++ = ASCIITraits::valueToLowerDigit((base2Exponent >> shift) & 0xf);
+
+    static const unsigned int BASE10_EXPONENTS[] = { 1, 10, 100, 1000 };
+    bool writeDigit = false;
+    for (int i = getArraySize(BASE10_EXPONENTS) - 1; i >= 0; --i) { // TAG: need limit as arg of method?
+      unsigned int digitValue = base2Exponent / BASE10_EXPONENTS[i] % 10;
+      if (writeDigit || (digitValue != 0) || (i == 0)) {
+        writeDigit = true; // first non-zero digit forces following zero-digits to be written
+        *output++ = ASCIITraits::valueToDigit(digitValue);
+      }
     }
 
   } else { // decimal representation
@@ -1914,7 +1920,7 @@ void FormatOutputStream::writeFloatingPointType(
         static const unsigned int BASE10_EXPONENTS[] = {1, 10, 100, 1000};
         bool writeDigit = ((flags & Symbols::ZEROPADEXP) != 0);
         unsigned int temp = (adjustedExponent >= 0) ? adjustedExponent : -adjustedExponent;
-        for (int i = 3; i >= 0; --i) { // TAG: need limit as arg of method?
+        for (int i = getArraySize(BASE10_EXPONENTS) - 1; i >= 0; --i) { // TAG: need limit as arg of method?
           unsigned int digitValue = temp/BASE10_EXPONENTS[i] % 10;
           if (writeDigit || (digitValue != 0) || (i == 0)) {
             writeDigit = true; // first non-zero digit forces following zero-digits to be written
@@ -2329,7 +2335,7 @@ public:
     TEST_EQUAL(String(f() << FHEX << 0x1p1), "0x1p1");
     TEST_EQUAL(String(f() << FHEX << 0x2p0), "0x1p1");
     TEST_EQUAL(String(f() << FHEX << 0x1.999999999999ap-4), "0x1.999999999999ap-4");
-    TEST_EQUAL(String(f() << FHEX << -12345.12345), "-0x1.81c8fcd35a858pd");
+    TEST_EQUAL(String(f() << FHEX << -12345.12345), "-0x1.81c8fcd35a858p13");
     TEST_EQUAL(String(f() << ZEROPAD << setWidth(10) << 12345), "0000012345");
     TEST_EQUAL(String(f() << indent(7)), "       ");
 

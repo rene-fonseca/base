@@ -17,11 +17,11 @@
 
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32) && \
     (_COM_AZURE_DEV__BASE__COMPILER == _COM_AZURE_DEV__BASE__COMPILER_MSC)
-#  include <intrin.h>
+#  include <intrin.h> // header approved
 #elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__MACOS)
-#  include <stdatomic.h>
+#  include <stdatomic.h> // header approved
 #else
-#  include <atomic>
+#  include <atomic> // header approved
 #endif
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE

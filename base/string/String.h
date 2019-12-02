@@ -24,7 +24,7 @@
 #include <base/Literal.h>
 
 #if 1 // get string and wstring types
-#include <string>
+#include <string> // header approved
 #else
 // can we forward declare string and wstring - see 17.4.3.1/1
 // but we get potential class/struct mismatches for below - or implementation could use subnamespace __cxx11

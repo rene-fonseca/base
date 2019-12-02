@@ -14,7 +14,7 @@
 #pragma once
 
 #include <base/string/WideString.h>
-#include <string>
+#include <string> // header approved
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 

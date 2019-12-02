@@ -106,7 +106,8 @@ public:
     */
     inline Node(unsigned long _hash, const Key& _key, const Value& _value) noexcept
       : hash(_hash),
-        value(_key, _value) {
+        value(_key, _value)
+    {
     }
     
     /**
@@ -115,13 +116,15 @@ public:
     inline Node(unsigned long _hash, const Key& _key, const Value& _value, Node* _next) noexcept
       : hash(_hash),
         value(_key, _value),
-        next(_next) {
+        next(_next)
+    {
     }
     
     /**
       Returns the hash value of the node.
     */
-    inline unsigned long getHash() const noexcept {
+    inline unsigned long getHash() const noexcept
+    {
       return hash;
     }
     
@@ -470,6 +473,44 @@ public:
         child = child->getNext();
       }
       return child;
+    }
+    
+    /**
+      Returns the value associated with the specified key.
+
+      @param key The key of the value.
+
+      @return nullptr is key doesn't exist.
+    */
+    inline Value* find(const Key& key)
+    {
+      const unsigned long hash = getHash(key);
+      Node** bucket = getBuckets() + (hash & mask);
+      Node* child = *bucket;
+      while (child &&
+             ((child->getHash() != hash) || (child->getKey() != key))) {
+        child = child->getNext();
+      }
+      return child ? &(child->getValue()) : nullptr;
+    }
+
+    /**
+      Returns the value associated with the specified key.
+
+      @param key The key of the value.
+
+      @return nullptr is key doesn't exist.
+    */
+    inline const Value* find(const Key& key) const
+    {
+      const unsigned long hash = getHash(key);
+      const Node* const* bucket = getBuckets() + (hash & mask);
+      const Node* child = *bucket;
+      while (child &&
+             ((child->getHash() != hash) || (child->getKey() != key))) {
+        child = child->getNext();
+      }
+      return child ? &(child->getValue()) : nullptr;
     }
     
     /**
@@ -863,6 +904,30 @@ public:
     return impl->hasKey(key);
   }
 
+  /**
+    Returns the value associated with the specified key.
+
+    @param key The key of the value.
+
+    @return nullptr is key doesn't exist.
+  */
+  inline Value* find(const Key& key)
+  {
+    return impl->find(key);
+  }
+
+  /**
+    Returns the value associated with the specified key.
+
+    @param key The key of the value.
+
+    @return nullptr is key doesn't exist.
+  */
+  inline const Value* find(const Key& key) const
+  {
+    return impl->find(key);
+  }
+  
   /**
     Returns the value associated with the specified key. Raises InvalidKey
     if the specified key doesn't exist in this hash table.

@@ -256,9 +256,9 @@ void ObjectModel::Array::append(const Reference<Value>& value)
   values.append(value);
 }
 
-ObjectModel::Array& ObjectModel::Array::operator=(const std::vector<bool>& _values)
+ObjectModel::Array& ObjectModel::Array::operator=(const base::Array<bool>& _values)
 {
-  values.setSize(_values.size());
+  values.setSize(_values.getSize());
   MemorySize i = 0;
   for (const auto& v : _values) {
     values[i++] = globalObjectModel.createBoolean(v); // always reusing
@@ -266,9 +266,9 @@ ObjectModel::Array& ObjectModel::Array::operator=(const std::vector<bool>& _valu
   return *this;
 }
 
-ObjectModel::Array& ObjectModel::Array::operator=(const std::vector<int>& _values)
+ObjectModel::Array& ObjectModel::Array::operator=(const base::Array<int>& _values)
 {
-  values.setSize(_values.size());
+  values.setSize(_values.getSize());
   MemorySize i = 0;
   Reference<Integer> previous; // catch easy reuse case
   for (auto v : _values) {
@@ -282,9 +282,9 @@ ObjectModel::Array& ObjectModel::Array::operator=(const std::vector<int>& _value
   return *this;
 }
 
-ObjectModel::Array& ObjectModel::Array::operator=(const std::vector<double>& _values)
+ObjectModel::Array& ObjectModel::Array::operator=(const base::Array<double>& _values)
 {
-  values.setSize(_values.size());
+  values.setSize(_values.getSize());
   MemorySize i = 0;
   Reference<Float> previous; // catch easy reuse case
   for (const auto& v : _values) {
@@ -298,9 +298,9 @@ ObjectModel::Array& ObjectModel::Array::operator=(const std::vector<double>& _va
   return *this;
 }
 
-ObjectModel::Array& ObjectModel::Array::operator=(const std::vector<base::String>& _values)
+ObjectModel::Array& ObjectModel::Array::operator=(const base::Array<base::String>& _values)
 {
-  values.setSize(_values.size());
+  values.setSize(_values.getSize());
   MemorySize i = 0;
   Reference<String> previous; // catch easy reuse case
   for (const auto& v : _values) {
@@ -315,61 +315,65 @@ ObjectModel::Array& ObjectModel::Array::operator=(const std::vector<base::String
 }
 
 template<>
-std::vector<bool> ObjectModel::Array::getAs<bool>() const
+base::Array<bool> ObjectModel::Array::getAs<bool>() const
 {
-  std::vector<bool> result;
-  result.reserve(values.getSize());
+  base::Array<bool> result;
+  result.setSize(values.getSize());
+  auto dest = result.getBeginIterator();
   for (const auto& v : values) {
     auto _v = v.cast<Boolean>();
     if (!_v) {
       throw ObjectModelException("Expected boolean array.");
     }
-    result.push_back(_v->value);
+    *dest++ = _v->value;
   }
   return result;
 }
 
 template<>
-std::vector<int> ObjectModel::Array::getAs<int>() const
+base::Array<int> ObjectModel::Array::getAs<int>() const
 {
-  std::vector<int> result;
-  result.reserve(values.getSize());
+  base::Array<int> result;
+  result.setSize(values.getSize());
+  auto dest = result.getBeginIterator();
   for (const auto& v : values) {
     auto _v = v.cast<Boolean>();
     if (!_v) {
       throw ObjectModelException("Expected integer array.");
     }
-    result.push_back(_v->value);
+    *dest++ = _v->value;
   }
   return result;
 }
 
 template<>
-std::vector<double> ObjectModel::Array::getAs<double>() const
+base::Array<double> ObjectModel::Array::getAs<double>() const
 {
-  std::vector<double> result;
-  result.reserve(values.getSize());
+  base::Array<double> result;
+  result.setSize(values.getSize());
+  auto dest = result.getBeginIterator();
   for (const auto& v : values) {
     auto _v = v.cast<Float>();
     if (!_v) {
       throw ObjectModelException("Expected float array.");
     }
-    result.push_back(_v->value);
+    *dest++ = _v->value;
   }
   return result;
 }
 
 template<>
-std::vector<base::String> ObjectModel::Array::getAs<base::String>() const
+base::Array<base::String> ObjectModel::Array::getAs<base::String>() const
 {
-  std::vector<base::String> result;
-  result.reserve(values.getSize());
+  base::Array<base::String> result;
+  result.setSize(values.getSize());
+  auto dest = result.getBeginIterator();
   for (const auto& v : values) {
     auto _v = v.cast<String>();
     if (!_v) {
       throw ObjectModelException("Expected string array.");
     }
-    result.push_back(_v->value);
+    *dest++ = _v->value;
   }
   return result;
 }

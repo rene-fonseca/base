@@ -21,7 +21,6 @@
 #include <base/string/StringOutputStream.h>
 #include <base/collection/BinaryNode.h>
 #include <map>
-#include <vector>
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
@@ -317,30 +316,37 @@ public:
   class _COM_AZURE_DEV__BASE__API Binary : public Value {
   public:
     
-    std::vector<uint8> value;
+    base::Array<uint8> value;
 
-    inline Binary() {
+    inline Binary()
+    {
     }
 
-    inline Binary(const std::vector<uint8>& _value) : value(_value) {
+    inline Binary(const base::Array<uint8>& _value)
+      : value(_value)
+    {
     }
 
     /** Returns the size. */
-    MemorySize getSize() const noexcept {
-      return value.size();
+    inline MemorySize getSize() const noexcept
+    {
+      return value.getSize();
     }
 
     /** Returns true if string is empty. */
-    inline bool isEmpty() const noexcept {
+    inline bool isEmpty() const noexcept
+    {
       return getSize() == 0;
     }
     
     /** Returns the type. */
-    virtual inline Type getType() const noexcept override {
+    virtual inline Type getType() const noexcept override
+    {
       return TYPE_BINARY;
     }
 
-    inline operator const std::vector<uint8>&() const noexcept {
+    inline operator const base::Array<uint8>&() const noexcept
+    {
       return value;
     }
   };
@@ -362,11 +368,13 @@ public:
       Element& operator=(const Element& assign) noexcept;
     public:
 
-      inline Element(Array& _array, MemorySize _index) : array(_array), index(_index)
+      inline Element(Array& _array, MemorySize _index)
+        : array(_array), index(_index)
       {
       }
 
-      inline Element& operator=(const Reference<Value>& value) {
+      inline Element& operator=(const Reference<Value>& value)
+      {
         array.setAt(index, value);
         return *this;
       }
@@ -377,34 +385,40 @@ public:
         return *this;
       }
 
-      inline Element& operator=(const bool value) {
+      inline Element& operator=(const bool value)
+      {
         array.setAt(index, new Boolean(value));
         return *this;
       }
 
-      inline Element& operator=(const int value) {
+      inline Element& operator=(const int value)
+      {
         array.setAt(index, new Integer(value));
         return *this;
       }
 
-      inline Element& operator=(const float value) {
+      inline Element& operator=(const float value)
+      {
         array.setAt(index, new Float(value));
         return *this;
       }
 
-      inline Element& operator=(const String& value) {
+      inline Element& operator=(const String& value)
+      {
         array.setAt(index, new String(value));
         return *this;
       }
 #endif
 
-      inline operator Reference<Value>() const {
+      inline operator Reference<Value>() const
+      {
         return array.getAt(index);
       }
     };
 
     /** Returns the type. */
-    virtual inline Type getType() const noexcept override {
+    virtual inline Type getType() const noexcept override
+    {
       return TYPE_ARRAY;
     }
 
@@ -412,7 +426,8 @@ public:
     MemorySize getSize() const noexcept;
 
     /** Returns the size of the array. */
-    inline bool isEmpty() const noexcept {
+    inline bool isEmpty() const noexcept
+    {
       return getSize() == 0;
     }
 
@@ -441,14 +456,14 @@ public:
       return values.end();
     }
 
-    Array& operator=(const std::vector<bool>& values);
-    Array& operator=(const std::vector<int>& values);
-    Array& operator=(const std::vector<int64>& values);
-    Array& operator=(const std::vector<double>& values);
-    Array& operator=(const std::vector<base::String>& values);
+    Array& operator=(const base::Array<bool>& values);
+    Array& operator=(const base::Array<int>& values);
+    Array& operator=(const base::Array<int64>& values);
+    Array& operator=(const base::Array<double>& values);
+    Array& operator=(const base::Array<base::String>& values);
 
     template<class TYPE>
-    std::vector<TYPE> getAs() const;      
+    base::Array<TYPE> getAs() const;
   };
 
   /** Object. */
@@ -694,7 +709,7 @@ private:
 
   bool allowReuse = false; // only applies to dynamic strings since we could get race conditions otherwise
   /** Used to avoid reallocated of the same strings. */
-  std::map<base::String, Reference<String> > lookup; // TAG: use hash lookup instead
+  std::map<base::String, Reference<String> > lookup;
 public:
   
   /**
@@ -810,16 +825,16 @@ inline Reference<ObjectModel::Value> set(const Reference<ObjectModel::Value>& v,
 }
 
 template<>
-_COM_AZURE_DEV__BASE__API std::vector<bool> ObjectModel::Array::getAs<bool>() const;
+_COM_AZURE_DEV__BASE__API base::Array<bool> ObjectModel::Array::getAs<bool>() const;
 
 template<>
-_COM_AZURE_DEV__BASE__API std::vector<int> ObjectModel::Array::getAs<int>() const;
+_COM_AZURE_DEV__BASE__API base::Array<int> ObjectModel::Array::getAs<int>() const;
 
 template<>
-_COM_AZURE_DEV__BASE__API std::vector<double> ObjectModel::Array::getAs<double>() const;
+_COM_AZURE_DEV__BASE__API base::Array<double> ObjectModel::Array::getAs<double>() const;
 
 template<>
-_COM_AZURE_DEV__BASE__API std::vector<base::String> ObjectModel::Array::getAs<base::String>() const;
+_COM_AZURE_DEV__BASE__API base::Array<base::String> ObjectModel::Array::getAs<base::String>() const;
 
 _COM_AZURE_DEV__BASE__API FormatOutputStream& operator<<(FormatOutputStream& stream, const Reference<ObjectModel::Value>& value);
 _COM_AZURE_DEV__BASE__API FormatOutputStream& operator<<(FormatOutputStream& stream, const Reference<ObjectModel::Void>& value);

@@ -210,7 +210,8 @@ namespace ASCIITraitsImpl {
 
 _COM_AZURE_DEV__BASE__API const ASCIITraits::CharacterDescriptor* ASCIITraits::lookup = ASCIITraitsImpl::lookup;
 
-const ASCIITraits::CharacterDescriptor* ASCIITraits::getLookup() {
+const ASCIITraits::CharacterDescriptor* ASCIITraits::getLookup()
+{
   return lookup;
 }
 

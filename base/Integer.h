@@ -15,7 +15,7 @@
 
 #include <base/Object.h>
 #include <base/Primitives.h>
-#include <base/string/String.h>
+#include <base/string/WideString.h>
 #include <base/string/InvalidFormat.h>
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
@@ -67,6 +67,33 @@ public:
     return parse(string.native(), string.native() + string.getLength(), flags);
   }
   
+  /**
+    Returns the value of the integer string representation.
+
+    @param string The string representation.
+    @param flags The parsing flags.
+  */
+  static int parse(const wchar* src, const wchar* end, unsigned int flags = FLAG_DEFAULT) throw(InvalidFormat);
+
+  /**
+    Returns the value of the integer string representation.
+
+    @param string The string representation.
+    @param flags The parsing flags.
+  */
+  static int parse(const ucs4* src, const ucs4* end, unsigned int flags = FLAG_DEFAULT) throw(InvalidFormat);
+
+  /**
+    Returns the value of the integer string representation.
+
+    @param string The string representation.
+    @param withoutSign Effectively prevents signs from being parsed. Default is to allow a single sign.
+  */
+  static inline int parse(const WideString& string, unsigned int flags = FLAG_DEFAULT) throw(InvalidFormat)
+  {
+    return parse(string.native(), string.native() + string.getLength(), flags);
+  }
+
   /**
     Initializes the integer as zero.
   */
@@ -135,7 +162,8 @@ public:
 };
 
 inline Integer::Integer(int _value) noexcept
-  : value(_value) {
+  : value(_value)
+{
 }
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

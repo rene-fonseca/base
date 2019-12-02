@@ -16,7 +16,8 @@
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 FormatOutputStream& operator<<(
-  FormatOutputStream& stream, const Dimension& value) throw(IOException) {
+  FormatOutputStream& stream, const Dimension& value) throw(IOException)
+{
   FormatOutputStream::PushContext push(stream);
   return stream << '(' << value.getWidth() << ',' << value.getHeight() << ')';
 }

@@ -22,27 +22,8 @@
 #include <base/iterator/UTF8Iterator.h>
 #include <base/collection/Hash.h>
 #include <base/Literal.h>
-
-#if 1 // get string and wstring types
 #include <string> // header approved
-#else
-// can we forward declare string and wstring - see 17.4.3.1/1
-// but we get potential class/struct mismatches for below - or implementation could use subnamespace __cxx11
-namespace std {
-  template<class Char> struct char_traits;
-  template<class T> class allocator;
-  template<class Char, class Traits, class Allocator> class basic_string;
-}
-
-_COM_AZURE_DEV__BASE__ENTER_NAMESPACE
-
-// we do NOT add types in std namespace
-typedef std::basic_string<char, std::char_traits<char>, std::allocator<char> > string;
-typedef std::basic_string<wchar_t, std::char_traits<wchar_t>, std::allocator<wchar_t> > wstring;
-
-_COM_AZURE_DEV__BASE__LEAVE_NAMESPACE
-
-#endif
+// C++: nice if we can get header with only forward declaration of basic_string/string/wstring/...
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 

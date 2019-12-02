@@ -1624,7 +1624,6 @@ FormatOutputStream& FormatOutputStream::operator<<(long double _value) throw(IOE
   int exponent = 0;
   unsigned int flags = 0;
   analyseFloatingPoint(value.value, precision, mantissa, exponent, flags);
-
   writeFloatingPointType(
     precision,
     mantissa,
@@ -1673,29 +1672,31 @@ FormatOutputStream& FormatOutputStream::operator<<(const Exception& e) throw(IOE
   return *this << s.getString();
 }
 
-/*
-  0xhex_digit_seq[.hex_digit_seq]p[+|-]binary_exponent[suffix]
+namespace {
 
-*/
-// void FormatOutputStream::writeFloatingHEX...() throw() {
-//   if ((context.flags & Symbols::PREFIX) != 0) { // is prefix requested
-//     switch (context.integerBase) {
-//     case Symbols::BINARY:
-//       write("0", 1);
-//       write(((context.flags & FormatOutputStream::Symbols::UPPER) == 0) ? "b" : "B", 1);
-//       break;
-//     case Symbols::OCTAL:
-//       write("0", 1);
-//       break;
-//     case Symbols::DECIMAL:
-//       break;
-//     case Symbols::HEXADECIMAL:
-//       write("0", 1);
-//       write(((context.flags & FormatOutputStream::Symbols::UPPER) == 0) ? "x" : "X", 1);
-//       break;
-//     }
-//   }
-// }
+  // Returns the nibble at the given bit offset. Words are little endian.
+  inline unsigned int getNibble(const unsigned int* words, unsigned int size, int shift) noexcept
+  {
+    if (shift < 0) {
+      BASSERT(shift > -4);
+      auto word = words[0];
+      word <<= 4 - shift; // shifts in zeros
+      return word & 0xf;
+    } else {
+      const unsigned int i = shift / (sizeof(unsigned int) * 8);
+      const unsigned int j = shift % (sizeof(unsigned int) * 8);
+      BASSERT(i < size);
+      auto word = words[i];
+      if ((i + 1) < size) {
+        const auto remainingBits = (sizeof(unsigned int) * 8) - j;
+        if (remainingBits < 4) {
+          return ((word >> j) | (words[i + 1] << remainingBits)) & 0xf;
+        }
+      }
+      return (word >> j) & 0xf;
+    }
+  }
+}
 
 void FormatOutputStream::writeFloatingPointType(
   unsigned int significant,
@@ -1709,11 +1710,6 @@ void FormatOutputStream::writeFloatingPointType(
   const char* radix = nullptr;
   unsigned int flags = context.flags;
 
-  if (context.realBase == Symbols::HEXADECIMAL) {
-    *this << "<NOT SUPPORTED>"; // significant << " " << base2Exponent;
-    return;
-  }
-
   if ((valueFlags & FloatingPoint::FP_ANY_NAN) != 0) {
     if ((flags & Symbols::UPPER) == 0) {
       copy(output, "nan", sizeof("nan") - 1); // TAG: I guess this should be locale specific when not posix
@@ -1722,7 +1718,50 @@ void FormatOutputStream::writeFloatingPointType(
       copy(output, "NAN", sizeof("NAN") - 1); // TAG: I guess this should be locale specific when not posix
       output += sizeof("NAN") - 1;
     }
-  } else {
+  } else if (context.realBase == Symbols::HEXADECIMAL) {
+    // 0xhex_digit_seq[.hex_digit_seq]p[+| -]binary_exponent[suffix]
+    // see https://en.cppreference.com/w/cpp/language/floating_literal
+
+    // always posix
+    if ((valueFlags & FloatingPoint::FP_NEGATIVE) != 0) {
+      *output++ = '-';
+    } else if ((flags & Symbols::FPLUS) != 0) { // show plus if sign is forced
+      *output++ = '+';
+    }
+
+    *output++ = '0';
+    *output++ = (context.flags & Symbols::UPPER) ? 'X' : 'x';
+    auto begin = output;
+
+    for (int shift = significant - 1; shift > -4; shift -= 4) {
+      const auto value = getNibble(mantissa, mantissaSize, shift);
+      if (output == begin) {
+        *output++ = ASCIITraits::valueToLowerDigit(value);
+        *output++ = '.'; // always posix
+      } else {
+        *output++ = ASCIITraits::valueToLowerDigit(value);
+      }
+    }
+    while ((output[-1] != '.') && (output[-1] == '0')) { // trim zeros
+      --output;
+    }
+    if (output[-1] == '.') {
+      --output;
+    }
+    *output++ = (context.flags & Symbols::UPPER) ? 'P' : 'p'; // exponent is always required
+    if (base2Exponent < 0) {
+      *output++ = '-';
+      base2Exponent = -base2Exponent;
+    }
+    int shift = sizeof(int) * 8 - 4;
+    while ((shift >= 4) && ((base2Exponent >> shift) == 0)) {
+      shift -= 4;
+    }
+    for (; shift >= 0; shift -= 4) {
+      *output++ = ASCIITraits::valueToLowerDigit((base2Exponent >> shift) & 0xf);
+    }
+
+  } else { // decimal representation
 
     if ((flags & Symbols::POSIX) != 0) { // use POSIX
       if ((valueFlags & FloatingPoint::FP_NEGATIVE) != 0) {
@@ -2284,12 +2323,13 @@ public:
     TEST_EQUAL(String(f() << DEC << 12345), "12345");
     TEST_EQUAL(String(f() << OCT << 12345), "030071");
     TEST_EQUAL(String(f() << HEX << 12345), "0x3039");
-#if 0 // not supported
-    TEST_EQUAL(String(f() << FBIN << 12345.0), "");
-    TEST_EQUAL(String(f() << FDEC << 12345.0), "");
-    TEST_EQUAL(String(f() << FOCT << 12345.0), "");
-    TEST_EQUAL(String(f() << FHEX << 12345.0), "");
-#endif
+    TEST_EQUAL(String(f() << FDEC << -12345.12345), "-12345.12345");
+    TEST_EQUAL(String(f() << FHEX << 0x1.999999999999ap-4f), "0x1.99999p-4");
+    TEST_EQUAL(String(f() << FHEX << 0x1p0), "0x1p0");
+    TEST_EQUAL(String(f() << FHEX << 0x1p1), "0x1p1");
+    TEST_EQUAL(String(f() << FHEX << 0x2p0), "0x1p1");
+    TEST_EQUAL(String(f() << FHEX << 0x1.999999999999ap-4), "0x1.999999999999ap-4");
+    TEST_EQUAL(String(f() << FHEX << -12345.12345), "-0x1.81c8fcd35a858pd");
     TEST_EQUAL(String(f() << ZEROPAD << setWidth(10) << 12345), "0000012345");
     TEST_EQUAL(String(f() << indent(7)), "       ");
 

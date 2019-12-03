@@ -561,7 +561,7 @@ void HTTPSRequest::getResponse(PushInterface* pi)
 
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
 
-  PrimitiveStackArray<uint8> buffer(16 * 1024);
+  PrimitiveArray<uint8> buffer(16 * 1024);
   while (true) {
     DWORD bytesRead = 0;
     BOOL status = InternetReadFile(
@@ -583,7 +583,7 @@ void HTTPSRequest::getResponse(PushInterface* pi)
 
   BASSERT(_handle->stream);
   
-  PrimitiveStackArray<uint8> buffer(16 * 1024);
+  PrimitiveArray<uint8> buffer(16 * 1024);
   // CFReadStreamOpen(_handle->stream); // we read in send()
   unsigned int offset = 1;
   buffer[0] = _handle->pendingByte; // read in send()

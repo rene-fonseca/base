@@ -171,7 +171,7 @@ public:
   /**
     Initializes value as void pointer.
   */
-  AnyValue(nullptr_t) noexcept;
+  AnyValue(NullPtr) noexcept;
 
   /**
     Initializes value as type.
@@ -291,7 +291,7 @@ public:
   /**
     Sets the value as void pointer.
   */
-  AnyValue& operator=(nullptr_t) noexcept;
+  AnyValue& operator=(NullPtr) noexcept;
 
   /**
     Sets the value as a type.

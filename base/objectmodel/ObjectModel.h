@@ -507,7 +507,7 @@ public:
     void setValue(const Reference<String>& key, const Reference<Value>& value);
     void setValue(const Reference<String>& key, const base::String& value);
     void setValue(const base::String& key, const Reference<Value>& value);
-    void setValue(const base::String& key, std::nullptr_t);
+    void setValue(const base::String& key, NullPtr);
     void setValue(const base::String& key, const bool value);
     void setValue(const base::String& key, const int64 value);
     void setValue(const base::String& key, const double value);

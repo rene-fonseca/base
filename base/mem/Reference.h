@@ -204,7 +204,7 @@ public:
   /**
     Returns true if the reference is nullptr.
   */
-  inline bool operator==(nullptr_t) const noexcept
+  inline bool operator==(NullPtr) const noexcept
   {
     return value == nullptr;
   }

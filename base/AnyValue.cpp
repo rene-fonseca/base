@@ -26,7 +26,7 @@ AnyValue::AnyValue() noexcept
 {
 }
 
-AnyValue::AnyValue(nullptr_t) noexcept
+AnyValue::AnyValue(NullPtr) noexcept
   : representation(POINTER), p(nullptr)
 {
 }
@@ -549,7 +549,7 @@ bool AnyValue::isText() const noexcept
 
 
 
-AnyValue& AnyValue::operator=(nullptr_t) noexcept
+AnyValue& AnyValue::operator=(NullPtr) noexcept
 {
   reset();
   p = nullptr;

@@ -43,7 +43,7 @@ public:
     @param next The next node in the container.
     @param value The value to be associated with the node.
   */
-  inline SingleLinkedNode(nullptr_t, const TYPE& _value) noexcept
+  inline SingleLinkedNode(NullPtr, const TYPE& _value) noexcept
     : value(_value)
   {
   }

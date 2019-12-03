@@ -84,6 +84,9 @@ struct nothing {
 
 
 
+/** Type of nullptr. */
+typedef decltype(nullptr) NullPtr;
+
 /** The resulting integral type of pointer subtraction. */
 typedef decltype(static_cast<char*>(nullptr) - static_cast<char*>(nullptr)) MemoryDiff;
 

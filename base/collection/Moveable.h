@@ -168,7 +168,7 @@ private:
   NonDefaultConstructible& operator=(NonDefaultConstructible&& move) = delete;
 public:
 
-  explicit NonDefaultConstructible(nullptr_t)
+  explicit NonDefaultConstructible(NullPtr)
   {
   }
 

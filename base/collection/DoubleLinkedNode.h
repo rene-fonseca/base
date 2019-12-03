@@ -42,7 +42,7 @@ public:
   /**
     Initializes a linked node with no previous and next node.
   */
-  inline DoubleLinkedNode(nullptr_t, nullptr_t, const TYPE& _value)
+  inline DoubleLinkedNode(NullPtr, NullPtr, const TYPE& _value)
     : value(_value)
   {
   }
@@ -50,7 +50,7 @@ public:
   /**
     Initializes a linked node with no previous and next node.
   */
-  inline DoubleLinkedNode(nullptr_t, nullptr_t, TYPE&& _value)
+  inline DoubleLinkedNode(NullPtr, NullPtr, TYPE&& _value)
     : value(std::move(_value))
   {
   }

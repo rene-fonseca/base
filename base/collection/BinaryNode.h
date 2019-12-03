@@ -48,7 +48,7 @@ public:
     @param parent The parent node of this node.
     @param value The value to be associated with the node.
   */
-  inline BinaryNode(BinaryNode* _parent, std::nullptr_t left, std::nullptr_t right, const TYPE& _value)
+  inline BinaryNode(BinaryNode* _parent, NullPtr left, NullPtr right, const TYPE& _value)
     : parent(_parent),
       value(_value)
   {
@@ -60,7 +60,7 @@ public:
     @param parent The parent node of this node.
     @param value The value to be associated with the node.
   */
-  inline BinaryNode(BinaryNode* _parent, std::nullptr_t left, std::nullptr_t right, TYPE&& _value)
+  inline BinaryNode(BinaryNode* _parent, NullPtr left, NullPtr right, TYPE&& _value)
     : parent(_parent),
       value(std::move(_value))
   {

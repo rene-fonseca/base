@@ -405,7 +405,7 @@ public:
   }
 
   /** Assignment of pointer value! */
-  inline HeapBlock& operator=(std::nullptr_t assign) noexcept
+  inline HeapBlock& operator=(NullPtr assign) noexcept
   {
     heap = assign; // like a normal pointer!
     return *this;

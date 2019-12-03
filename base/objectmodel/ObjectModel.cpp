@@ -567,7 +567,7 @@ void ObjectModel::Object::setValue(const base::String& key, const Reference<Valu
   values.append(Association(globalObjectModel.createString(key), value));
 }
 
-void ObjectModel::Object::setValue(const base::String& key, std::nullptr_t)
+void ObjectModel::Object::setValue(const base::String& key, NullPtr)
 {
   for (auto& v : values) {
     if (!INLINE_ASSERT(v.getFirst())) {

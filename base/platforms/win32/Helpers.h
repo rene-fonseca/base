@@ -43,23 +43,17 @@ public:
   }
 
   /** UTF-8. */
-  inline OSString(const std::string& s) noexcept
-    : buffer(s)
-  {
-  }
-
-  /** UTF-8. */
   inline OSString(const char* s) noexcept
     : buffer(s)
   {
   }
 
-  inline operator wchar* () noexcept
+  inline operator wchar*() noexcept
   {
     return const_cast<wchar*>(buffer.native());
   }
 
-  inline operator const wchar* () const noexcept
+  inline operator const wchar*() const noexcept
   {
     return buffer;
   }

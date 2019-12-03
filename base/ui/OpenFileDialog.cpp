@@ -82,7 +82,7 @@ bool OpenFileDialog::execute() throw(UserInterfaceException)
   const ToWCharString filters(temp);
   
   const ToWCharString _filename(filename);
-  PrimitiveStackArray<wchar> buffer(maximum<MemorySize>(_filename.getLength() + 1, 4096));
+  PrimitiveStackArray<wchar> buffer(maximum<MemorySize>(_filename.getLength() + 1, 4096/sizeof(wchar)));
   copy<wchar>(
     static_cast<wchar*>(buffer), _filename, _filename.getLength() + 1
   ); // includes terminator

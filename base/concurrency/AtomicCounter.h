@@ -15,11 +15,21 @@
 
 #include <base/Primitives.h>
 
-#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32) && \
-    (_COM_AZURE_DEV__BASE__COMPILER == _COM_AZURE_DEV__BASE__COMPILER_MSC)
+#if ((_COM_AZURE_DEV__BASE__COMPILER == _COM_AZURE_DEV__BASE__COMPILER_LLVM) || \
+     (_COM_AZURE_DEV__BASE__COMPILER == _COM_AZURE_DEV__BASE__COMPILER_GCC))
+// see https://gcc.gnu.org/onlinedocs/gcc/_005f_005fatomic-Builtins.html
+// see https://gcc.gnu.org/wiki/Atomic/GCCMM/AtomicSync for memory orders
+#  if __has_builtin(__atomic_add_fetch) && defined(__ATOMIC_RELAXED) && defined(__ATOMIC_ACQ_REL)
+#    define _COM_AZURE_DEV__BASE__USE_BUILT_IN_ATOMIC
+#  endif
+#endif
+
+#if defined(_COM_AZURE_DEV__BASE__USE_BUILT_IN_ATOMIC)
+#elif (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32) && \
+      (_COM_AZURE_DEV__BASE__COMPILER == _COM_AZURE_DEV__BASE__COMPILER_MSC)
 #  include <intrin.h> // header approved
 #elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__MACOS)
-#  include <string> // header approved // include before stdatomic
+#  include <memory> // required to allow build
 #  include <stdatomic.h> // header approved
 #else
 #  include <atomic> // header approved
@@ -177,7 +187,9 @@ class _COM_AZURE_DEV__BASE__API AtomicCounter {
 private:
 
   /** The value of the counter. */
-#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32) && \
+#if defined(_COM_AZURE_DEV__BASE__USE_BUILT_IN_ATOMIC)
+  mutable volatile TYPE value;
+#elif (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32) && \
     (_COM_AZURE_DEV__BASE__COMPILER == _COM_AZURE_DEV__BASE__COMPILER_MSC)
   volatile TYPE value;
 #elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__MACOS)
@@ -191,7 +203,9 @@ private:
   */
   inline TYPE load() const noexcept
   {
-#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32) && \
+#if defined(_COM_AZURE_DEV__BASE__USE_BUILT_IN_ATOMIC)
+    return __atomic_load_n(&value, __ATOMIC_ACQUIRE); // __ATOMIC_RELAXED, __ATOMIC_SEQ_CST, __ATOMIC_ACQUIRE, __ATOMIC_CONSUME
+#elif (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32) && \
     (_COM_AZURE_DEV__BASE__COMPILER == _COM_AZURE_DEV__BASE__COMPILER_MSC)
     return _win32::atomicAdd<TYPE>(const_cast<volatile TYPE*>(&value), 0);
 #elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__MACOS)
@@ -206,7 +220,10 @@ private:
   */
   inline void store(const TYPE desired) noexcept
   {
-#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32) && \
+#if defined(_COM_AZURE_DEV__BASE__USE_BUILT_IN_ATOMIC)
+    BASSERT(__atomic_is_lock_free(sizeof(value), &value));
+    __atomic_store_n(&value, desired, __ATOMIC_RELEASE); // __ATOMIC_RELAXED, __ATOMIC_SEQ_CST, __ATOMIC_RELEASE
+#elif (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32) && \
     (_COM_AZURE_DEV__BASE__COMPILER == _COM_AZURE_DEV__BASE__COMPILER_MSC)
     _win32::atomicExchange<TYPE>(&value, desired);
 #elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__MACOS)
@@ -229,8 +246,12 @@ public:
   */
   inline AtomicCounter(const TYPE _value = DEFAULT_VALUE) noexcept
   {
+    BASSERT(sizeof(TYPE) <= 16);
     BASSERT((getAddressOf(&value) & (sizeof(TYPE) - 1)) == 0);
-#if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__MACOS)
+#if defined(_COM_AZURE_DEV__BASE__USE_BUILT_IN_ATOMIC)
+    BASSERT(__atomic_is_lock_free(sizeof(value), &value));
+    __atomic_store_n(&value, _value, __ATOMIC_RELEASE); // __ATOMIC_RELAXED, __ATOMIC_SEQ_CST, __ATOMIC_RELEASE
+#elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__MACOS)
     BASSERT(atomic_is_lock_free(&value));
     atomic_init(&value, _value);
 #else
@@ -243,8 +264,12 @@ public:
   */
   inline AtomicCounter(const AtomicCounter& _value) noexcept
   {
+    BASSERT(sizeof(TYPE) <= 16);
     BASSERT((getAddressOf(&value) & (sizeof(TYPE) - 1)) == 0);
-#if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__MACOS)
+#if defined(_COM_AZURE_DEV__BASE__USE_BUILT_IN_ATOMIC)
+    BASSERT(__atomic_is_lock_free(sizeof(value), &value));
+    __atomic_store_n(&value, _value.value, __ATOMIC_RELEASE); // __ATOMIC_RELAXED, __ATOMIC_SEQ_CST, __ATOMIC_RELEASE
+#elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__MACOS)
     BASSERT(atomic_is_lock_free(&value));
     atomic_init(&value, _value.load());
 #else
@@ -308,7 +333,9 @@ public:
   */
   inline TYPE operator+=(const TYPE _value) noexcept
   {
-#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32) && \
+#if defined(_COM_AZURE_DEV__BASE__USE_BUILT_IN_ATOMIC)
+    return __atomic_fetch_add(&value, _value, __ATOMIC_ACQ_REL); // all memory orders
+#elif (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32) && \
     (_COM_AZURE_DEV__BASE__COMPILER == _COM_AZURE_DEV__BASE__COMPILER_MSC)
     return _win32::atomicAdd<TYPE>(&value, _value) + _value;
 #elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__MACOS)
@@ -323,7 +350,9 @@ public:
   */
   inline TYPE operator-=(const TYPE _value) noexcept
   {
-#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32) && \
+#if defined(_COM_AZURE_DEV__BASE__USE_BUILT_IN_ATOMIC)
+    return __atomic_fetch_sub(&value, _value, __ATOMIC_ACQ_REL); // all memory orders
+#elif (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32) && \
     (_COM_AZURE_DEV__BASE__COMPILER == _COM_AZURE_DEV__BASE__COMPILER_MSC)
     return _win32::atomicAdd<TYPE>(&value, -_value) - _value;
 #elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__MACOS)
@@ -357,7 +386,10 @@ public:
   */
   inline TYPE exchange(const TYPE desired) noexcept
   {
-#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32) && \
+#if defined(_COM_AZURE_DEV__BASE__USE_BUILT_IN_ATOMIC)
+    // __ATOMIC_RELAXED, __ATOMIC_SEQ_CST, __ATOMIC_ACQUIRE, __ATOMIC_RELEASE, and __ATOMIC_ACQ_REL
+    return __atomic_exchange_n(&value, desired, __ATOMIC_SEQ_CST);
+#elif (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32) && \
     (_COM_AZURE_DEV__BASE__COMPILER == _COM_AZURE_DEV__BASE__COMPILER_MSC)
     return _win32::atomicExchange<TYPE>(&value, desired);
 #elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__MACOS)
@@ -373,7 +405,9 @@ public:
   inline bool compareAndExchange(TYPE& expected, const TYPE desired) noexcept
   {
     BASSERT(expected != desired);
-#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32) && \
+#if defined(_COM_AZURE_DEV__BASE__USE_BUILT_IN_ATOMIC)
+    return __atomic_compare_exchange_n(&value, &expected, desired, false, __ATOMIC_SEQ_CST, __ATOMIC_SEQ_CST); // strong
+#elif (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32) && \
     (_COM_AZURE_DEV__BASE__COMPILER == _COM_AZURE_DEV__BASE__COMPILER_MSC)
     TYPE initial = _win32::atomicCompareExchange<TYPE>(&value, desired, expected);
     bool result = initial == expected;
@@ -387,12 +421,14 @@ public:
   }
 
   /**
-    Weak compare and exchange.
+    Weak compare and exchange. Prefer strong if unsure.
   */
   inline bool compareAndExchangeWeak(TYPE& expected, const TYPE desired) noexcept
   {
     BASSERT(expected != desired);
-#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32) && \
+#if defined(_COM_AZURE_DEV__BASE__USE_BUILT_IN_ATOMIC)
+    return __atomic_compare_exchange_n(&value, &expected, desired, true, __ATOMIC_SEQ_CST, __ATOMIC_SEQ_CST); // weak
+#elif (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32) && \
     (_COM_AZURE_DEV__BASE__COMPILER == _COM_AZURE_DEV__BASE__COMPILER_MSC)
     TYPE initial = _win32::atomicCompareExchange<TYPE>(&value, desired, expected);
     bool result = initial == expected;

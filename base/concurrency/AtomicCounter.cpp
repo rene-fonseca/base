@@ -16,19 +16,20 @@
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
-#if 0 && defined(_COM_AZURE_DEV__BASE__SHARED_LIBRARY_BUILD)
+#if defined(_COM_AZURE_DEV__BASE__SHARED_LIBRARY_BUILD)
 template _COM_AZURE_DEV__BASE__API class AtomicCounter<char>;
 template _COM_AZURE_DEV__BASE__API class AtomicCounter<short>;
 template _COM_AZURE_DEV__BASE__API class AtomicCounter<int>;
-template _COM_AZURE_DEV__BASE__API class AtomicCounter<long>;
-template _COM_AZURE_DEV__BASE__API class AtomicCounter<long long>;
+template _COM_AZURE_DEV__BASE__API class AtomicCounter<int64>;
 template _COM_AZURE_DEV__BASE__API class AtomicCounter<MemoryDiff>;
+// template _COM_AZURE_DEV__BASE__API class AtomicCounter<int128>;
 
 template _COM_AZURE_DEV__BASE__API class AtomicCounterU<uint8>;
 template _COM_AZURE_DEV__BASE__API class AtomicCounterU<uint16>;
 template _COM_AZURE_DEV__BASE__API class AtomicCounterU<uint32>;
 template _COM_AZURE_DEV__BASE__API class AtomicCounterU<uint64>;
 template _COM_AZURE_DEV__BASE__API class AtomicCounterU<MemorySize>;
+// template _COM_AZURE_DEV__BASE__API class AtomicCounterU<uint128>;
 #endif
 
 #if defined(_COM_AZURE_DEV__BASE__TESTS)

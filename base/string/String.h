@@ -22,8 +22,6 @@
 #include <base/iterator/UTF8Iterator.h>
 #include <base/collection/Hash.h>
 #include <base/Literal.h>
-#include <string> // header approved
-// C++: nice if we can get header with only forward declaration of basic_string/string/wstring/...
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 

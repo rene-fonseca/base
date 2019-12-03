@@ -20,6 +20,8 @@
 #include <base/UnitTest.h>
 #include <string.h>
 
+// C++: nice if we can get header with only forward declaration of basic_string/string/wstring/...
+
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 // TAG: make sure to force copy on any change

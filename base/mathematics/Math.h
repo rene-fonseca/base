@@ -15,34 +15,44 @@
 
 #include <base/Primitives.h>
 #include <base/mathematics/Constants.h>
-#include <math.h>
-
-#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
-#  define _COM_AZURE_DEV__BASE__REDIR_ISOC_HYPOTF(x, y) _hypotf(x, y)
-#  define _COM_AZURE_DEV__BASE__REDIR_ISOC_FABSF(x) (float)fabs(x)
-#  define _COM_AZURE_DEV__BASE__REDIR_ISOC_FABSL(x) fabs((double)x)
-#  define _COM_AZURE_DEV__BASE__REDIR_ISOC_CEILL(x) ceil((double)x)
-#  define _COM_AZURE_DEV__BASE__REDIR_ISOC_FLOORL(x) floor((double)x)
-#endif
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
+
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
+namespace internal { // do NOT use namespace directly
+
+  extern "C" float _hypotf(float, float);
+}
+#  define _COM_AZURE_DEV__BASE__REDIR_ISOC_HYPOTF(x, y) internal::_hypotf(x, y)
+#  define _COM_AZURE_DEV__BASE__REDIR_ISOC_FABSF(x) static_cast<float>(isoc::fabs(static_cast<double>(x)))
+#  define _COM_AZURE_DEV__BASE__REDIR_ISOC_FABSL(x) isoc::fabs(static_cast<double>(x))
+#  define _COM_AZURE_DEV__BASE__REDIR_ISOC_CEILL(x) isoc::ceil(static_cast<double>(x))
+#  define _COM_AZURE_DEV__BASE__REDIR_ISOC_FLOORL(x) isoc::floor(static_cast<double>(x))
+#endif
 
 /**
   @defgroup mathematics Mathematics
 */
 
-namespace isoc {
+namespace isoc { // do NOT use namespace directly
+
   extern "C" float fabsf(float);
   extern "C" double fabs(double);
+#if !defined(_COM_AZURE_DEV__BASE__REDIR_ISOC_FABSL)
   extern "C" long double fabsl(long double);
+#endif
 
   extern "C" float ceilf(float);
   extern "C" double ceil(double);
+#if !defined(_COM_AZURE_DEV__BASE__REDIR_ISOC_CEILL)
   extern "C" long double ceill(long double);
+#endif
 
   extern "C" float floorf(float);
   extern "C" double floor(double);
+#if !defined(_COM_AZURE_DEV__BASE__REDIR_ISOC_FLOORL)
   extern "C" long double floorl(long double);
+#endif
 
   extern "C" float roundf(float);
   extern "C" double round(double);
@@ -58,7 +68,9 @@ namespace isoc {
   extern "C" float cbrtf(float);
   extern "C" double cbrt(double);
 
+#if !defined(_COM_AZURE_DEV__BASE__REDIR_ISOC_HYPOTF)
   extern "C" float hypotf(float, float);
+#endif
   extern "C" double hypot(double, double);
 
   extern "C" float expf(float);
@@ -115,7 +127,7 @@ namespace isoc {
   extern "C" float atan2f(float, float);
   extern "C" double atan2(double, double);
 
-#if 1
+#if 1 // redirect long double functions to double version if not supported
   inline long double sqrtl(long double x) {
     return sqrt(static_cast<double>(x));
   }

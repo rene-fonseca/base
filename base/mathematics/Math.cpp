@@ -13,7 +13,6 @@
 
 #include <base/mathematics/Math.h>
 #include <base/UInt128.h>
-#include <math.h>
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 

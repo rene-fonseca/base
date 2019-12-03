@@ -24,6 +24,7 @@
 #include <base/string/StringOutputStream.h>
 #include <base/string/Format.h>
 #include <base/objectmodel/JSON.h>
+#include <stdexcept>
 
 using namespace com::azure::dev::base;
 
@@ -135,11 +136,13 @@ public:
   class TestExceptionBase {
   public:
     
-    TestExceptionBase() {
+    TestExceptionBase()
+    {
       fout << this << " " << "TestExceptionBase()" << ENDL;
     }
 
-    ~TestExceptionBase() {
+    ~TestExceptionBase()
+    {
       fout << this << " " << "~TestExceptionBase(): " << (Exception::isUnwinding() ? "Unwind" : "Normal") << ENDL;
     }
   };

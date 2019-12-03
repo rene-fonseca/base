@@ -54,35 +54,30 @@ bool SaveFileDialog::execute() throw(UserInterfaceException)
     ); // TAG: fix cast
   }
 
-  wchar filters[4096]; // TAG: fixme
-  wchar* dest = filters;
+  String temp;
   Map<String, String>::ReadEnumerator enu = this->filters.getReadEnumerator();
   while (enu.hasNext()) {
     const Map<String, String>::Node* node = enu.next();
-    const std::wstring value(ToWCharString(node->getValue()));
-    const std::wstring key(ToWCharString(node->getKey()));
-    copy(
-      dest,
-      value.c_str(),
-      value.size() + 1
-    ); // include terminator
-    dest += value.size() + 1;
-    copy(
-      dest,
-      key.c_str(),
-      key.size() + 1
-    ); // include terminator
-    dest += key.size() + 1;
+    // terminator not allowed in value and key
+    if (node->getValue().indexOf('\0') >= 0) {
+      throw UserInterfaceException();
+    }
+    if (node->getKey().indexOf('\0') >= 0) {
+      throw UserInterfaceException();
+    }
+    temp += node->getValue();
+    temp += '\0';
+    temp += node->getKey();
+    temp += '\0';
   }
-  *dest++ = L'\0'; // final termination;
-  *dest++ = L'\0'; // final termination;
+  temp += '\0'; // final termination
+  temp += '\0'; // final termination
+  const ToWCharString filters(temp);
   
-  PrimitiveStackArray<wchar> buffer(1024);
   const ToWCharString _filename(filename);
+  PrimitiveStackArray<wchar> buffer(maximum<MemorySize>(_filename.getLength() + 1, 4096));
   copy<wchar>(
-    static_cast<wchar*>(buffer),
-    _filename,
-    _filename.getLength() + 1
+    static_cast<wchar*>(buffer), _filename, _filename.getLength() + 1
   ); // includes terminator
   
   OPENFILENAME saveFile;

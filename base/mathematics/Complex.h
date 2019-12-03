@@ -13,10 +13,12 @@
 
 #pragma once
 
-#include <base/string/FormatOutputStream.h>
 #include <base/mathematics/Math.h>
-#include <complex.h>
+#include <base/string/FormatOutputStream.h>
 
+// implementation not done
+
+// #include <complex.h> // avoid
 // see std::complex instead
 
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
@@ -38,73 +40,73 @@ namespace isoc {
 
   extern "C" _Fcomplex cabsf(_Fcomplex);
   extern "C" _Dcomplex cabs(_Dcomplex);
-  extern "C" _Lcomplex  cabsl(_Lcomplex);
+  extern "C" _Lcomplex cabsl(_Lcomplex);
 
   extern "C" _Fcomplex csqrtf(_Fcomplex);
   extern "C" _Dcomplex csqrt(_Dcomplex);
-  extern "C" _Lcomplex  csqrtl(_Lcomplex);
+  extern "C" _Lcomplex csqrtl(_Lcomplex);
 
   extern "C" _Fcomplex cexpf(_Fcomplex);
   extern "C" _Dcomplex cexp(_Dcomplex);
-  extern "C" _Lcomplex  cexpl(_Lcomplex);
+  extern "C" _Lcomplex cexpl(_Lcomplex);
 
   extern "C" _Fcomplex clogf(_Fcomplex);
   extern "C" _Dcomplex clog(_Dcomplex);
-  extern "C" _Lcomplex  clogl(_Lcomplex);
+  extern "C" _Lcomplex clogl(_Lcomplex);
 
   extern "C" _Fcomplex cpowf(float, _Fcomplex);
   extern "C" _Dcomplex cpow(double, _Dcomplex);
-  extern "C" _Lcomplex  cpowl(_Lcomplex, _Lcomplex);
+  extern "C" _Lcomplex cpowl(_Lcomplex, _Lcomplex);
 
 
   extern "C" _Fcomplex csinf(_Fcomplex);
   extern "C" _Dcomplex csin(_Dcomplex);
-  extern "C" _Lcomplex  csinl(_Lcomplex);
+  extern "C" _Lcomplex csinl(_Lcomplex);
 
   extern "C" _Fcomplex ccosf(_Fcomplex);
   extern "C" _Dcomplex ccos(_Dcomplex);
-  extern "C" _Lcomplex  ccosl(_Lcomplex);
+  extern "C" _Lcomplex ccosl(_Lcomplex);
 
   extern "C" _Fcomplex casinf(_Fcomplex);
   extern "C" _Dcomplex casin(_Dcomplex);
-  extern "C" _Lcomplex  casinl(_Lcomplex);
+  extern "C" _Lcomplex casinl(_Lcomplex);
 
   extern "C" _Fcomplex cacosf(_Fcomplex);
   extern "C" _Dcomplex cacos(_Dcomplex);
-  extern "C" _Lcomplex  cacosl(_Lcomplex);
+  extern "C" _Lcomplex cacosl(_Lcomplex);
 
   extern "C" _Fcomplex ctanf(_Fcomplex);
   extern "C" _Dcomplex ctan(_Dcomplex);
-  extern "C" _Lcomplex  ctanl(_Lcomplex);
+  extern "C" _Lcomplex ctanl(_Lcomplex);
 
   extern "C" _Fcomplex catanf(_Fcomplex);
   extern "C" _Dcomplex catan(_Dcomplex);
-  extern "C" _Lcomplex  catanl(_Lcomplex);
+  extern "C" _Lcomplex catanl(_Lcomplex);
 
 
   extern "C" _Fcomplex csinhf(_Fcomplex);
   extern "C" _Dcomplex csinh(_Dcomplex);
-  extern "C" _Lcomplex  csinhl(_Lcomplex);
+  extern "C" _Lcomplex csinhl(_Lcomplex);
 
   extern "C" _Fcomplex ccoshf(_Fcomplex);
   extern "C" _Dcomplex ccosh(_Dcomplex);
-  extern "C" _Lcomplex  ccoshl(_Lcomplex);
+  extern "C" _Lcomplex ccoshl(_Lcomplex);
 
   extern "C" _Fcomplex casinhf(_Fcomplex);
   extern "C" _Dcomplex casinh(_Dcomplex);
-  extern "C" _Lcomplex  casinhl(_Lcomplex);
+  extern "C" _Lcomplex casinhl(_Lcomplex);
 
   extern "C" _Fcomplex cacoshf(_Fcomplex);
   extern "C" _Dcomplex cacosh(_Dcomplex);
-  extern "C" _Lcomplex  cacoshl(_Lcomplex);
+  extern "C" _Lcomplex cacoshl(_Lcomplex);
 
   extern "C" _Fcomplex ctanhf(_Fcomplex);
   extern "C" _Dcomplex ctanh(_Dcomplex);
-  extern "C" _Lcomplex  ctanhl(_Lcomplex);
+  extern "C" _Lcomplex ctanhl(_Lcomplex);
 
   extern "C" _Fcomplex catanhf(_Fcomplex);
   extern "C" _Dcomplex catanh(_Dcomplex);
-  extern "C" _Lcomplex  catanhl(_Lcomplex);
+  extern "C" _Lcomplex catanhl(_Lcomplex);
 };
 #endif
 
@@ -121,7 +123,9 @@ public:
 
   typedef double Type;
 
-  /** The imaginary unit. */
+  static const Complex ZERO;
+  static const Complex ONE;
+  static const Complex MINUS_ONE;
   static const Complex II;
 private:
 
@@ -131,14 +135,16 @@ private:
   double imaginary = 0;
 
 #if defined(_COM_AZURE_DEV__BASE__COMPLEX_ISOC)
-  inline _Dcomplex getNative() const throw() {
+  inline _Dcomplex getNative() const noexcept
+  {
     return _DCOMPLEX_(real, imaginary);
     // return real + imaginary * 1i;
   }
 #endif
 
 #if defined(_COM_AZURE_DEV__BASE__COMPLEX_ISOC)
-  static inline Complex getComplex(const _Dcomplex value) throw() {
+  static inline Complex getComplex(const _Dcomplex value) noexcept
+  {
     return Complex(isoc::creal(value), isoc::cimag(value));
   }
 #endif
@@ -147,7 +153,8 @@ public:
   /**
     Initializes complex number as (0, 0).
   */
-  inline Complex() throw() {
+  inline Complex() noexcept
+  {
   }
 
   /**
@@ -156,7 +163,7 @@ public:
 
     @param real The real part.
   */
-  inline Complex(double real) throw();
+  Complex(double real) noexcept;
 
   /**
     Initializes complex number of the specified real and imaginary parts.
@@ -164,19 +171,21 @@ public:
     @param real The desired real part.
     @param imaginary The desired imaginary part.
   */
-  inline Complex(double real, double imaginary) throw();
+  Complex(double real, double imaginary) noexcept;
 
   /**
     Initializes complex number of other complex number.
   */
-  inline Complex(const Complex& copy) throw()
-    : real(copy.real), imaginary(copy.imaginary) {
+  inline Complex(const Complex& copy) noexcept
+    : real(copy.real), imaginary(copy.imaginary)
+  {
   }
 
   /**
     Assignment of complex number by complex number.
   */
-  inline Complex& operator=(const Complex& assign) throw() {
+  inline Complex& operator=(const Complex& assign) noexcept
+  {
     real = assign.real; // no need to protect against self-assignment
     imaginary = assign.imaginary;
     return *this;
@@ -185,13 +194,15 @@ public:
   /**
     Assignment of complex number by real number.
   */
-  inline Complex& operator=(double real) throw() {
+  inline Complex& operator=(double real) noexcept
+  {
     this->real = real; // no need to protect against self-assignment
     imaginary = 0;
     return *this;
   }
 
-  inline Complex sqrt() const throw() {
+  inline Complex sqrt() const noexcept
+  {
 #if defined(_COM_AZURE_DEV__BASE__COMPLEX_ISOC)
     return getComplex(isoc::csqrt(getNative()));
 #else
@@ -199,7 +210,8 @@ public:
 #endif
   }
 
-  inline Complex exp() const throw() {
+  inline Complex exp() const noexcept
+  {
 #if defined(_COM_AZURE_DEV__BASE__COMPLEX_ISOC)
     return getComplex(isoc::cexp(getNative()));
 #else
@@ -207,7 +219,8 @@ public:
 #endif
   }
 
-  inline Complex log() const throw() {
+  inline Complex log() const noexcept
+  {
 #if defined(_COM_AZURE_DEV__BASE__COMPLEX_ISOC)
     return getComplex(isoc::clog(getNative()));
 #else
@@ -215,7 +228,8 @@ public:
 #endif
   }
 
-  inline Complex pow(const double x, const Complex& y) const throw() {
+  inline Complex pow(const double x, const Complex& y) const noexcept
+  {
 #if defined(_COM_AZURE_DEV__BASE__COMPLEX_ISOC)
     return getComplex(isoc::cpow(x, y.getNative()));
 #else
@@ -224,7 +238,8 @@ public:
   }
 
 
-  inline Complex sin() const throw() {
+  inline Complex sin() const noexcept
+  {
 #if defined(_COM_AZURE_DEV__BASE__COMPLEX_ISOC)
     return getComplex(isoc::csin(getNative()));
 #else
@@ -232,7 +247,8 @@ public:
 #endif
   }
 
-  inline Complex asin() const throw() {
+  inline Complex asin() const noexcept
+  {
 #if defined(_COM_AZURE_DEV__BASE__COMPLEX_ISOC)
     return getComplex(isoc::casin(getNative()));
 #else
@@ -240,7 +256,8 @@ public:
 #endif
   }
 
-  inline Complex cos() const throw() {
+  inline Complex cos() const noexcept
+  {
 #if defined(_COM_AZURE_DEV__BASE__COMPLEX_ISOC)
     return getComplex(isoc::ccos(getNative()));
 #else
@@ -248,7 +265,8 @@ public:
 #endif
   }
 
-  inline Complex acos() const throw() {
+  inline Complex acos() const noexcept
+  {
 #if defined(_COM_AZURE_DEV__BASE__COMPLEX_ISOC)
     return getComplex(isoc::cacos(getNative()));
 #else
@@ -256,7 +274,8 @@ public:
 #endif
   }
 
-  inline Complex tan() const throw() {
+  inline Complex tan() const noexcept
+  {
 #if defined(_COM_AZURE_DEV__BASE__COMPLEX_ISOC)
     return getComplex(isoc::ctan(getNative()));
 #else
@@ -264,7 +283,8 @@ public:
 #endif
   }
 
-  inline Complex atan() const throw() {
+  inline Complex atan() const noexcept
+  {
 #if defined(_COM_AZURE_DEV__BASE__COMPLEX_ISOC)
     return getComplex(isoc::catan(getNative()));
 #else
@@ -273,7 +293,8 @@ public:
   }
 
 
-  inline Complex sinh() const throw() {
+  inline Complex sinh() const noexcept
+  {
 #if defined(_COM_AZURE_DEV__BASE__COMPLEX_ISOC)
     return getComplex(isoc::csinh(getNative()));
 #else
@@ -281,7 +302,8 @@ public:
 #endif
   }
 
-  inline Complex asinh() const throw() {
+  inline Complex asinh() const noexcept
+  {
 #if defined(_COM_AZURE_DEV__BASE__COMPLEX_ISOC)
     return getComplex(isoc::casinh(getNative()));
 #else
@@ -289,7 +311,8 @@ public:
 #endif
   }
 
-  inline Complex cosh() const throw() {
+  inline Complex cosh() const noexcept
+  {
 #if defined(_COM_AZURE_DEV__BASE__COMPLEX_ISOC)
     return getComplex(isoc::ccosh(getNative()));
 #else
@@ -297,7 +320,8 @@ public:
 #endif
   }
 
-  inline Complex acosh() const throw() {
+  inline Complex acosh() const noexcept
+  {
 #if defined(_COM_AZURE_DEV__BASE__COMPLEX_ISOC)
     return getComplex(isoc::cacosh(getNative()));
 #else
@@ -305,7 +329,8 @@ public:
 #endif
   }
 
-  inline Complex tanh() const throw() {
+  inline Complex tanh() const noexcept
+  {
 #if defined(_COM_AZURE_DEV__BASE__COMPLEX_ISOC)
     return getComplex(isoc::ctanh(getNative()));
 #else
@@ -313,7 +338,8 @@ public:
 #endif
   }
 
-  inline Complex atanh() const throw() {
+  inline Complex atanh() const noexcept
+  {
 #if defined(_COM_AZURE_DEV__BASE__COMPLEX_ISOC)
     return getComplex(isoc::catanh(getNative()));
 #else
@@ -325,150 +351,100 @@ public:
   /**
     Returns the real part of the complex number.
   */
-  inline double getReal() const throw() {
+  inline double getReal() const noexcept
+  {
     return real;
   }
 
   /**
     Returns the imaginary part of the complex number.
   */
-  inline double getImaginary() const throw() {
+  inline double getImaginary() const noexcept
+  {
     return imaginary;
   }
 
   /**
     Sets the real part of the complex number.
   */
-  inline void setReal(const double value) throw() {
+  inline void setReal(const double value) noexcept
+  {
     real = value;
   }
 
   /**
     Sets the imaginary part of the complex number.
   */
-  inline void setImaginary(const double value) throw() {
+  inline void setImaginary(const double value) noexcept
+  {
     imaginary = value;
   }
 
   /**
     Returns the square of the modulus of the complex number.
   */
-  inline double getSqrModulus() const throw() {
+  inline double getSqrModulus() const noexcept
+  {
     return real * real + imaginary * imaginary;
   }
 
   /**
     Returns the modulus of the complex number.
   */
-  inline double getModulus() const throw() {
+  inline double getModulus() const noexcept
+  {
     return Math::sqrt(getSqrModulus());
   }
 
   /**
     Returns the angle of the complex number.
   */
-  inline double getAngle() const throw() {
+  inline double getAngle() const noexcept
+  {
     return Math::atan2(imaginary, real);
   }
 
   /**
     Unary plus.
   */
-  inline Complex plus() const throw() {
-    return Complex(*this);
+  inline Complex plus() const noexcept
+  {
+    return Complex(real, imaginary);
   }
 
   /**
     Unary minus.
   */
-  inline Complex minus() const throw() {
-    return Complex(*this).negate();
+  inline Complex minus() const noexcept
+  {
+    return Complex(-real, -imaginary);
   }
 
   /**
     Negates this number.
   */
-  inline Complex& negate() throw() {
-    real = -real;
-    imaginary = -imaginary;
-    return *this;
+  inline Complex negate() const noexcept
+  {
+    return Complex(-real, -imaginary);
   }
 
   /**
     Conjugates this number.
   */
-  inline Complex& conjugate() throw() {
-    imaginary = -imaginary;
-    return *this;
+  inline Complex conjugate() const noexcept
+  {
+    return Complex(real, -imaginary);
   }
 
   /**
     Inverts this number.
   */
-  inline Complex& invert() throw() {
+  inline Complex invert() const noexcept
+  {
     double scale = getSqrModulus(); // TAG: possible division by zero
     //assert(scale != 0, DivisionByZero());
     scale = 1/scale;
-    real *= scale;
-    imaginary *= -scale;
-    return *this;
-  }
-
-  /**
-    Adds the specified number to this number.
-  */
-  inline Complex& add(const Complex& value) throw() {
-    real += value.real;
-    imaginary += value.imaginary;
-    return *this;
-  }
-
-  /**
-    Subtracts the specified number from this number.
-  */
-  inline Complex& subtract(const Complex& value) throw() {
-    real -= value.real;
-    imaginary -= value.imaginary;
-    return *this;
-  }
-
-  /**
-    Multiplies this number with the specified value.
-  */
-  inline Complex& multiply(double value) throw() {
-    real *= value;
-    imaginary *= value;
-    return *this;
-  }
-
-  /**
-    Multiplies this number with the specified value.
-  */
-  inline Complex& multiply(const Complex& value) throw() {
-    double temp = real * value.real - imaginary * value.imaginary;
-    imaginary = real * value.imaginary + imaginary * value.real;
-    real = temp;
-    return *this;
-  }
-
-  /**
-    Divides this number with the specified value.
-  */
-  inline Complex& divide(double value) throw() {
-    return multiply(1/value);
-  }
-
-  /**
-    Divides this number with the specified value.
-  */
-  inline Complex& divide(const Complex& value) throw() {
-    double scale = value.getSqrModulus(); // TAG: possible division by zero
-    //assert(scale != 0, DivisionByZero(this));
-    scale = 1/scale;
-    double temp = (real * value.real - imaginary * -value.imaginary) * scale;
-    imaginary = (real * -value.imaginary + imaginary * value.real) * scale;
-    real = temp;
-    // return multiply(Complex(value).invert());
+    return Complex(real * scale, -imaginary * scale);
     return *this;
   }
 
@@ -479,17 +455,26 @@ public:
 
     @param value Complex number to be compared.
   */
-  inline bool operator==(const Complex& value) const throw() {
+  inline bool operator==(const Complex& value) const noexcept
+  {
     return (real == value.real) && (imaginary == value.imaginary);
   }
 
+  inline bool operator!=(const Complex& value) const noexcept
+  {
+    return (real != value.real) || (imaginary != value.imaginary);
+  }
+  
   /**
     Adds the specified number to this number.
 
     @param value The value to be added.
   */
-  inline Complex& operator+=(const Complex& value) throw() {
-    return add(value);
+  inline Complex& operator+=(const Complex& value) noexcept
+  {
+    real += value.real;
+    imaginary += value.imaginary;
+    return *this;
   }
 
   /**
@@ -497,8 +482,11 @@ public:
 
     @param value The value to be subtracted.
   */
-  inline Complex& operator-=(const Complex& value) throw() {
-    return subtract(value);
+  inline Complex& operator-=(const Complex& value) noexcept
+  {
+    real -= value.real;
+    imaginary -= value.imaginary;
+    return *this;
   }
 
   /**
@@ -506,8 +494,12 @@ public:
 
     @param value The multiplicator.
   */
-  inline Complex& operator*=(const Complex& value) throw() {
-    return multiply(value);
+  inline Complex& operator*=(const Complex& value) noexcept
+  {
+    double temp = (real * value.real - imaginary * value.imaginary);
+    imaginary = (real * value.imaginary + imaginary * value.real);
+    real = temp;
+    return *this;
   }
 
   /**
@@ -515,8 +507,11 @@ public:
 
     @param value The multiplicator.
   */
-  inline Complex& operator*=(double value) throw() {
-    return multiply(value);
+  inline Complex& operator*=(double value) noexcept
+  {
+    real *= value;
+    imaginary *= value;
+    return *this;
   }
 
   /**
@@ -524,22 +519,42 @@ public:
 
     @param value The divisor.
   */
-  inline Complex& operator/=(double value) throw() {
-    return divide(value);
+  inline Complex& operator/=(double divisor) noexcept
+  {
+    real /= divisor;
+    imaginary /= divisor;
+    return *this;
+  }
+
+  /**
+    Divides this number with the specified value.
+
+    @param value The divisor.
+  */
+  inline Complex& operator/=(const Complex& divisor) noexcept
+  {
+    auto c = divisor.conjugate();
+    *this *= c;
+    double r = divisor.real * divisor.real + divisor.imaginary * divisor.imaginary;
+    real /= r;
+    imaginary /= r;
+    return *this;
   }
 
   /**
     Unary plus.
   */
-  inline Complex operator+() const throw() {
-    return plus();
+  inline Complex operator+() const noexcept
+  {
+    return Complex(real, imaginary);
   }
 
   /**
     Unary minus.
   */
-  inline Complex operator-() const throw() {
-    return minus();
+  inline Complex operator-() const noexcept
+  {
+    return Complex(-real, -imaginary);
   }
 
 
@@ -547,71 +562,82 @@ public:
   /**
     Returns the sum of the complex numbers.
   */
-  friend Complex operator+(const Complex& left, const Complex& right) throw();
+  friend Complex operator+(const Complex& left, const Complex& right) noexcept;
 
   /**
     Returns the difference of the complex numbers.
   */
-  friend Complex operator-(const Complex& left, const Complex& right) throw();
+  friend Complex operator-(const Complex& left, const Complex& right) noexcept;
 
   /**
     Returns the product of the complex numbers.
   */
-  friend Complex operator*(const Complex& left, const Complex& right) throw();
+  friend Complex operator*(const Complex& left, const Complex& right) noexcept;
 
   /**
     Returns the product of the complex number and the real value.
   */
-  friend Complex operator*(const Complex& left, double right) throw();
+  friend Complex operator*(const Complex& left, double right) noexcept;
 
   /**
     Returns the product of the real value and the complex number.
   */
-  friend Complex operator*(double left, const Complex& right) throw();
+  friend Complex operator*(double left, const Complex& right) noexcept;
 
   /**
     Returns the result of the number divided by the value.
   */
-  friend Complex operator/(const Complex& left, double right) throw();
+  friend Complex operator/(const Complex& left, double right) noexcept;
 };
 
-inline Complex::Complex(double _real) throw() : real(_real) {
+inline Complex::Complex(double _real) noexcept
+  : real(_real)
+{
 }
 
-inline Complex::Complex(double _real, double _imaginary) throw()
-  : real(_real), imaginary(_imaginary) {
+inline Complex::Complex(double _real, double _imaginary) noexcept
+  : real(_real), imaginary(_imaginary)
+{
 }
 
-inline Complex operator+(const Complex& left, const Complex& right) throw() {
+inline Complex operator+(const Complex& left, const Complex& right) noexcept
+{
   return Complex(left.real + right.real, left.imaginary + right.imaginary);
 }
 
-inline Complex operator-(const Complex& left, const Complex& right) throw() {
+inline Complex operator-(const Complex& left, const Complex& right) noexcept
+{
   return Complex(left.real - right.real, left.imaginary - right.imaginary);
 }
 
-inline Complex operator*(const Complex& left, const Complex& right) throw() {
+inline Complex operator*(const Complex& left, const Complex& right) noexcept
+{
   return Complex(
     left.real * right.real - left.imaginary * right.imaginary,
     left.real * right.imaginary + left.imaginary * right.real
   );
 }
 
-inline Complex operator*(const Complex& left, double right) throw() {
+inline Complex operator*(const Complex& left, double right) noexcept
+{
   return Complex(left.real * right, left.imaginary * right);
 }
 
-inline Complex operator*(double left, const Complex& right) throw() {
+inline Complex operator*(double left, const Complex& right) noexcept
+{
   return Complex(right.real * left, right.imaginary * left);
 }
 
-inline Complex operator/(const Complex& left, const Complex& right) throw() {
-  return Complex(left).divide(right);
+inline Complex operator/(const Complex& left, const Complex& right) noexcept
+{
+  Complex result(left);
+  result /= right;
+  return result;
 }
 
-inline Complex operator/(const Complex& left, double right) throw() {
-  double temp = 1/right;
-  return Complex(left.real * temp, left.imaginary * temp);
+inline Complex operator/(const Complex& left, double right) noexcept
+{
+  return Complex(left.real/right, left.imaginary/right);
 }
 
 /**

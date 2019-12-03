@@ -15,6 +15,7 @@
 
 #include <base/Primitives.h>
 #include <base/mathematics/Constants.h>
+#include <math.h>
 
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
 #  define _COM_AZURE_DEV__BASE__REDIR_ISOC_HYPOTF(x, y) _hypotf(x, y)

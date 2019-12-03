@@ -718,8 +718,8 @@ String HTTPSRequest::getResponseHeader()
       }
       throw HTTPException("Failed to read HTTP response header.");
     }
-    const std::wstring text = reinterpret_cast<const wchar*>(static_cast<const uint8*>(buffer));
-    result = text; // no need to go through wstring here
+
+    result = String(reinterpret_cast<const wchar*>(static_cast<const uint8*>(buffer)), size);
     break;
   }
 #elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__MACOS)

@@ -17,8 +17,9 @@
 
 #if ((_COM_AZURE_DEV__BASE__COMPILER == _COM_AZURE_DEV__BASE__COMPILER_LLVM) || \
      (_COM_AZURE_DEV__BASE__COMPILER == _COM_AZURE_DEV__BASE__COMPILER_GCC))
-// see https://gcc.gnu.org/onlinedocs/gcc/_005f_005fatomic-Builtins.html
-// see https://gcc.gnu.org/wiki/Atomic/GCCMM/AtomicSync for memory orders
+// https://gcc.gnu.org/onlinedocs/gcc/_005f_005fatomic-Builtins.html
+// https://en.cppreference.com/w/cpp/atomic/memory_order
+// https://gcc.gnu.org/wiki/Atomic/GCCMM/AtomicSync
 #  if __has_builtin(__atomic_add_fetch) && defined(__ATOMIC_RELAXED) && defined(__ATOMIC_ACQ_REL)
 #    define _COM_AZURE_DEV__BASE__USE_BUILT_IN_ATOMIC
 #  endif
@@ -29,7 +30,7 @@
       (_COM_AZURE_DEV__BASE__COMPILER == _COM_AZURE_DEV__BASE__COMPILER_MSC)
 #  include <intrin.h> // header approved
 #elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__MACOS)
-#  include <memory> // required to allow build
+#  include <memory> // header approved // required to allow build
 #  include <stdatomic.h> // header approved
 #else
 #  include <atomic> // header approved
@@ -444,6 +445,34 @@ public:
   inline ~AtomicCounter() noexcept
   {
     store(DESTRUCT_VALUE); // for MT-consistency
+  }
+
+  static inline void threadFence() noexcept
+  {
+#if defined(_COM_AZURE_DEV__BASE__USE_BUILT_IN_ATOMIC)
+    __atomic_thread_fence(__ATOMIC_SEQ_CST);
+#elif (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32) && \
+      (_COM_AZURE_DEV__BASE__COMPILER == _COM_AZURE_DEV__BASE__COMPILER_MSC)
+    BASSERT(!"AtomicCounter::signalFence() not supported.");
+#elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__MACOS)
+    BASSERT(!"AtomicCounter::signalFence() not supported.");
+#else
+    atomic_thread_fence(std::memory_order_acquire);
+#endif
+  }
+
+  static inline void signalFence() noexcept
+  {
+#if defined(_COM_AZURE_DEV__BASE__USE_BUILT_IN_ATOMIC)
+    __atomic_signal_fence(__ATOMIC_SEQ_CST);
+#elif (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32) && \
+      (_COM_AZURE_DEV__BASE__COMPILER == _COM_AZURE_DEV__BASE__COMPILER_MSC)
+    BASSERT(!"AtomicCounter::signalFence() not supported.");
+#elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__MACOS)
+    BASSERT(!"AtomicCounter::signalFence() not supported.");
+#else
+    atomic_signal_fence(std::memory_order_acquire);
+#endif
   }
 };
 

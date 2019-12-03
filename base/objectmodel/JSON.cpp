@@ -12,12 +12,11 @@
  ***************************************************************************/
 
 // TAG: add support for UTF8,UTF16,UTF32
+// TAG: handle chars in JSON strings!
 
 #include <base/objectmodel/JSON.h>
 #include <base/io/File.h>
 #include <base/UnitTest.h>
-
-// TAG: handle chars in JSON strings!
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 

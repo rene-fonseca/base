@@ -58,7 +58,7 @@ public:
 */
 
 class _COM_AZURE_DEV__BASE__API YAML : public DynamicObject {
-private:
+public:
 
   class _COM_AZURE_DEV__BASE__API YAMLParser : public Parser {
   private:
@@ -133,19 +133,21 @@ private:
       }
     }
   };
-  
+private:
+
   ObjectModel objectModel;
-  std::string text; // reused
+  PrimitiveArray<char> buffer; // reused - do NOT reuse on recursion
   Posix posix; // get series of floats
 
   /** Skip space. */
-  inline void skipSpaces(YAMLParser& parser) noexcept {
+  inline void skipSpaces(YAMLParser& parser) noexcept
+  {
     parser.skipYAMLSpaces();
     // parser.skipAny(" \n\r\t");
   }
 
   /** Parses integer. */
-  bool parseIntegerImpl(YAMLParser& parser, int& i);
+  bool parseIntegerImpl(YAMLParser& parser, int64& i);
 public:
 
   /** Constructs YAML parser. */

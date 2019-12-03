@@ -46,10 +46,13 @@ Reference<ObjectModel::Boolean> YAML::parseBoolean(YAMLParser& parser)
   throw YAMLException("Expected boolean.", parser.getPosition());
 }
 
-bool YAML::parseIntegerImpl(YAMLParser& parser, int& j)
+bool YAML::parseIntegerImpl(YAMLParser& parser, int64& j)
 {
   skipSpaces(parser);
-  int i = 0;
+  if (!parser.hasMore()) {
+    return false;
+  }
+  int64 i = 0;
   int sign = 1;
   if (parser.peek() == '-') {
     parser.read();
@@ -58,6 +61,9 @@ bool YAML::parseIntegerImpl(YAMLParser& parser, int& j)
 
   // TAG: add support info on position of failure for exceptions - line and column
 
+  if (!parser.hasMore()) {
+    return false;
+  }
   if (parser.peek() == '0') {
     parser.skip(); // done
   } else {
@@ -66,37 +72,39 @@ bool YAML::parseIntegerImpl(YAMLParser& parser, int& j)
     }
     const char ch = parser.read();
     i = static_cast<uint8>(ch - '0'); // first digit
-    while ((parser.peek() >= '0') && (parser.peek() <= '9')) {
+    while (parser.hasMore() && (parser.peek() >= '0') && (parser.peek() <= '9')) {
       const char ch = parser.read();
       uint8 digit = static_cast<uint8>(ch - '0');
       i = i * 10 + digit;
-      if (i * sign < PrimitiveTraits<int>::MINIMUM) {
+      if ((i * sign) < PrimitiveTraits<int64>::MINIMUM) {
         return false;
-      } else if (i * sign > PrimitiveTraits<int>::MAXIMUM) {
+      } else if ((i * sign) > PrimitiveTraits<int64>::MAXIMUM) {
         return false;
       }
     }
   }
 
-  switch (parser.peek()) {
-  case '.':
-  case 'e':
-  case 'E':
-    return false; // float chars
+  if (parser.hasMore()) {
+    switch (parser.peek()) {
+    case '.':
+    case 'e':
+    case 'E':
+      return false; // float chars
+    }
   }
-
-  j = static_cast<int>(i * sign);
+  
+  j = static_cast<int64>(i * sign);
   return true;
 }
 
 Reference<ObjectModel::Integer> YAML::parseInteger(YAMLParser& parser)
 {
   skipSpaces(parser);
-  int i = 0;
+  int64 i = 0;
   if (!parseIntegerImpl(parser, i)) {
     throw YAMLException("Expected integer.", parser.getPosition());
   }
-  return objectModel.createInteger(i);
+  return objectModel.createInteger64(i);
 }
 
 Reference<ObjectModel::Float> YAML::parseFloat(YAMLParser& parser)
@@ -154,13 +162,75 @@ Reference<ObjectModel::Float> YAML::parseFloat(YAMLParser& parser)
 Reference<ObjectModel::Value> YAML::parseNumber(YAMLParser& parser)
 {
   skipSpaces(parser);
-  int i = 0;
+  int64 i = 0;
   YAMLParser integerParser = parser;
   if (parseIntegerImpl(integerParser, i)) {
     parser = integerParser;
-    return objectModel.createInteger(i);
+    return objectModel.createInteger64(i);
   }
   return parseFloat(parser);
+}
+
+namespace {
+
+  class BufferWrapper {
+  public:
+
+    PrimitiveArray<char>& buffer;
+    char* dest = nullptr;
+    const char* end = nullptr;
+  public:
+
+    inline BufferWrapper(PrimitiveArray<char>& _buffer) noexcept
+      : buffer(_buffer)
+    {
+      dest = buffer.begin();
+      end = buffer.end();
+    }
+
+    void expand()
+    {
+      const MemorySize offset = dest - buffer.begin();
+      buffer.resize(buffer.size() * 2);
+      dest = buffer.begin() + offset; // new write position
+      end = buffer.end();
+    }
+
+    inline void push(char ch)
+    {
+      if (dest == end) {
+        expand();
+      }
+      *dest = ch;
+      ++dest;
+    }
+
+    inline operator String() const
+    {
+      return String(buffer.begin(), dest - buffer.begin());
+    }
+  };
+}
+
+namespace {
+
+  uint16 readUTF16Word(YAML::YAMLParser& parser)
+  {
+    const char h0 = parser.read();
+    const char h1 = parser.read();
+    const char h2 = parser.read();
+    const char h3 = parser.read();
+    if (ASCIITraits::isHexDigit(h0) || ASCIITraits::isHexDigit(h1) ||
+        ASCIITraits::isHexDigit(h2) || ASCIITraits::isHexDigit(h3)) {
+      const uint16 d0 = ASCIITraits::digitToValue(h0);
+      const uint16 d1 = ASCIITraits::digitToValue(h1);
+      const uint16 d2 = ASCIITraits::digitToValue(h2);
+      const uint16 d3 = ASCIITraits::digitToValue(h3);
+      const uint16 value = (d0 << 12) | (d1 << 8) | (d2 << 4) | (d3 << 0);
+      return value;
+    }
+    throw JSONException("Malformed UTF-16 word for string literal.", parser.getPosition());
+  }
 }
 
 Reference<ObjectModel::String> YAML::parseString(YAMLParser& parser)
@@ -169,8 +239,9 @@ Reference<ObjectModel::String> YAML::parseString(YAMLParser& parser)
   if (!parser.peek('"')) {
     throw YAMLException("Expected string.", parser.getPosition());
   }
-  text.clear();
-  text.reserve(1024 * 8);
+
+  BufferWrapper buffer(this->buffer);
+
   parser.skip();
   while (parser.peek() != '"') {
     const char ch = parser.read();
@@ -178,50 +249,63 @@ Reference<ObjectModel::String> YAML::parseString(YAMLParser& parser)
       const char ch2 = parser.read();
       switch (ch2) {
       case '"':
-        text.push_back('"');
+        buffer.push('"');
         break;
       case '\\':
-        text.push_back('\\');
+        buffer.push('\\');
         break;
       case '/':
-        text.push_back('/');
+        buffer.push('/');
         break;
       case 'b':
-        text.push_back('\b');
+        buffer.push('\b');
         break;
       case 'f':
-        text.push_back('\f');
+        buffer.push('\f');
         break;
       case 'n':
-        text.push_back('\n');
+        buffer.push('\n');
         break;
       case 'r':
-        text.push_back('\r');
+        buffer.push('\r');
         break;
       case 't':
-        text.push_back('\t');
+        buffer.push('\t');
         break;
       case 'u':
         {
-          const char h0 = parser.read();
-          const char h1 = parser.read();
-          const char h2 = parser.read();
-          const char h3 = parser.read();
-          if (ASCIITraits::isHexDigit(h0) || ASCIITraits::isHexDigit(h1) ||
-              ASCIITraits::isHexDigit(h2) || ASCIITraits::isHexDigit(h3)) {
-            const uint16 d0 = ASCIITraits::digitToValue(h0);
-            const uint16 d1 = ASCIITraits::digitToValue(h1);
-            const uint16 d2 = ASCIITraits::digitToValue(h2);
-            const uint16 d3 = ASCIITraits::digitToValue(h3);
-            const uint16 value = (d0 << 12) | (d1 << 8) | (d2 << 4) | (d3 << 0);
-            const wchar* src = reinterpret_cast<const wchar*>(&value);
-            /*
-            std::wstring_convert<std::codecvt_utf8<wchar_t>, wchar_t> convert;
-            std::string s = convert.to_bytes(src, src + 1);
-            text += s;
-            */
+          // none unicode chars are allowed per rfc7159 - should we allow this
+          const uint16 value = readUTF16Word(parser);
+          if ((value >= 0xd800) && (value <= 0xdfff)) { // surrogate words
+            if (value >= 0xdc00) {
+              throw JSONException("Unexpected UTF-16 low surrogate.", parser.getPosition());
+            }
+            if (parser.peek() != '\\') {
+              throw JSONException("Missing UTF-16 low surrogate.", parser.getPosition());
+            }
+            parser.skip();
+            if (parser.peek() != 'u') {
+              throw JSONException("Missing UTF-16 low surrogate.", parser.getPosition());
+            }
+            parser.skip();
+            const uint16 value2 = readUTF16Word(parser);
+            if (!((value2 >= 0xdc00) && (value2 <= 0xdfff))) { // surrogate word
+              throw JSONException("Expected UTF-16 low surrogate.", parser.getPosition());
+            }
+            const uint32 high = value - 0xd800; // leading
+            const uint32 low = value2 - 0xdc00; // trailing
+            const ucs4 ch = (high << 10) | low;
+            uint8 bytes[4];
+            MemorySize size = Unicode::writeUTF8(bytes, ch);
+            for (MemorySize i = 0; i < size; ++i) {
+              buffer.push(bytes[i]);
+            }
           } else {
-            throw YAMLException("Malformed string literal.", parser.getPosition());
+            uint8 bytes[4];
+            MemorySize size = Unicode::writeUTF8(bytes, ch);
+            for (MemorySize i = 0; i < size; ++i) {
+              buffer.push(bytes[i]);
+            }
           }
         }
         break;
@@ -233,25 +317,25 @@ Reference<ObjectModel::String> YAML::parseString(YAMLParser& parser)
         throw YAMLException("Malformed string literal.", parser.getPosition());
       }
       if (static_cast<uint8>(ch) < 0x80) {
-        text.push_back(ch);
+        buffer.push(ch);
         continue;
       }
 
       // ACCEPTING: '0020' . '10FFFF' - '"' - '\'
       parser.unwind();
       const auto begin = parser.getCurrent();
-      const ucs4 uch = parser.readUCS4();
+      const ucs4 uch = parser.readUCS4(); // TAG: handle UTF-8/16/32
       if (uch > 0x10ffff) {
         throw YAMLException("Bad UTF8 string literal.", parser.getPosition());
       }
-      MemoryDiff bytesRead = parser.getCurrent() - begin;
+      const MemoryDiff bytesRead = parser.getCurrent() - begin;
       for (MemoryDiff i = 0; i < bytesRead; ++i) {
-        text.push_back(begin[i]);
+        buffer.push(begin[i]);
       }
     }
   }
   parser.read('"');
-  return objectModel.createString(String(text));
+  return objectModel.createString(buffer);
 }
 
 Reference<ObjectModel::Array> YAML::parseArray(YAMLParser& parser)
@@ -261,11 +345,12 @@ Reference<ObjectModel::Array> YAML::parseArray(YAMLParser& parser)
     throw YAMLException("Expected array.", parser.getPosition());
   }
   parser.skip();
-  Reference<ObjectModel::Array> result = objectModel.createArray();
   skipSpaces(parser);
+  Reference<ObjectModel::Array> result = objectModel.createArray();
+  // result->values.ensureCapacity(16); // use previous array size
   if (parser.peek() == ']') {
     parser.skip();
-    return result;
+    return result; // empty
   }
   while (true) {
     skipSpaces(parser);
@@ -276,8 +361,10 @@ Reference<ObjectModel::Array> YAML::parseArray(YAMLParser& parser)
       parser.skip();
       break;
     case ']':
-      parser.skip();
-      return result;
+      {
+        parser.skip();
+        return result;
+      }
     default:
       throw YAMLException("Malformed array.", parser.getPosition());
     }
@@ -344,7 +431,26 @@ Reference<ObjectModel::Value> YAML::parseValue(YAMLParser& parser)
 Reference<ObjectModel::Value> YAML::parse(const uint8* src, const uint8* end)
 {
   YAMLParser parser(src, end);
-  auto result = parseObject(parser);
+  
+  // TAG: add support for UTF-16 and UTF-32
+  
+  // we may read BOM - but not write it - see rfc7159
+  if (static_cast<uint8>(parser.peek()) == 0xef) {
+    parser.skip();
+    if (static_cast<uint8>(parser.peek()) == 0xbb) {
+      parser.skip();
+      if (static_cast<uint8>(parser.peek()) == 0xbf) {
+        parser.skip();
+      } else {
+        parser.unwind();
+        parser.unwind();
+      }
+    } else {
+      parser.unwind();
+    }
+  }
+  
+  Reference<ObjectModel::Value> result = YAML::parseValue(parser);
   skipSpaces(parser);
   if (parser.hasMore()) {
     throw YAMLException("Unexpected content after object.", parser.getPosition());
@@ -354,7 +460,8 @@ Reference<ObjectModel::Value> YAML::parse(const uint8* src, const uint8* end)
 
 Reference<ObjectModel::Value> YAML::parse(const String& text)
 {
-  return parse(
+  YAML yaml;
+  return yaml.parse(
     reinterpret_cast<const uint8*>(text.getElements()),
     reinterpret_cast<const uint8*>(text.getElements()) + text.getLength()
   );

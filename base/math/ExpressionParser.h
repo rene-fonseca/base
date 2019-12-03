@@ -19,7 +19,7 @@
 #include <base/collection/Stack.h>
 #include <base/collection/List.h>
 #include <base/collection/HashTable.h>
-#include <base/mathematics/ExpressionException.h>
+#include <base/math/ExpressionException.h>
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 

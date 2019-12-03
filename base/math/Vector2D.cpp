@@ -11,23 +11,12 @@
     For the licensing terms refer to the file 'LICENSE'.
  ***************************************************************************/
 
-#include <base/mathematics/ExpressionException.h>
+#include <base/math/Vector2D.h>
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
-ExpressionException::ExpressionException() noexcept
- : index(0) {
-}
-
-ExpressionException::ExpressionException(const char* message) noexcept
-  : Exception(message), index(0) {
-}
-
-ExpressionException::ExpressionException(
-  unsigned int _index,
-  const char* message) noexcept
-  : Exception(message), index(_index)
-{
-}
+template _COM_AZURE_DEV__BASE__API class Vector2D<float>;
+template _COM_AZURE_DEV__BASE__API class Vector2D<double>;
+template _COM_AZURE_DEV__BASE__API class Vector2D<long double>;
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

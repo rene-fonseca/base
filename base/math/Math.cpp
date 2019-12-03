@@ -11,7 +11,7 @@
     For the licensing terms refer to the file 'LICENSE'.
  ***************************************************************************/
 
-#include <base/mathematics/Math.h>
+#include <base/math/Math.h>
 #include <base/UInt128.h>
 #include <math.h>
 

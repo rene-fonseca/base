@@ -14,8 +14,8 @@
 #pragma once
 
 #include <base/string/String.h>
-#include <base/mathematics/Vector3D.h>
-#include <base/mathematics/Matrix4x4.h>
+#include <base/math/Vector3D.h>
+#include <base/math/Matrix4x4.h>
 #include <base/NotSupported.h>
 
 #undef DOMAIN

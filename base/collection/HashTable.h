@@ -17,7 +17,7 @@
 #include <base/collection/Association.h>
 #include <base/collection/InvalidKey.h>
 #include <base/MemoryException.h>
-#include <base/mathematics/Math.h>
+#include <base/math/Math.h>
 #include <base/mem/Reference.h>
 #include <base/string/FormatOutputStream.h>
 

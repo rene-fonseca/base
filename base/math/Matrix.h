@@ -17,8 +17,8 @@
 #include <base/Dimension.h>
 #include <base/OutOfRange.h>
 #include <base/OutOfDomain.h>
-#include <base/mathematics/IncompatibleOperands.h>
-#include <base/mathematics/Vector.h>
+#include <base/math/IncompatibleOperands.h>
+#include <base/math/Vector.h>
 #include <base/mem/Reference.h>
 #include <base/mem/ReferenceCountedAllocator.h>
 #include <base/mem/AllocatorEnumeration.h>

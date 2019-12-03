@@ -14,8 +14,7 @@
 #pragma once
 
 #include <base/string/FormatOutputStream.h>
-#include <base/mathematics/Math.h>
-#include <base/mathematics/Vector2D.h>
+#include <base/math/Vector2D.h>
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 

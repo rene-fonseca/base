@@ -13,7 +13,7 @@
 
 #include <base/objectmodel/ObjectModel.h>
 #include <base/LongInteger.h>
-#include <base/mathematics/Math.h>
+#include <base/math/Math.h>
 #include <base/string/ANSIEscapeSequence.h>
 #include <base/UnitTest.h>
 

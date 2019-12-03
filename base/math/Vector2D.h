@@ -14,7 +14,7 @@
 #pragma once
 
 #include <base/string/FormatOutputStream.h>
-#include <base/mathematics/Math.h>
+#include <base/math/Math.h>
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 

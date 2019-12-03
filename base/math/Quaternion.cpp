@@ -11,10 +11,12 @@
     For the licensing terms refer to the file 'LICENSE'.
  ***************************************************************************/
 
-#include <base/mathematics/IncompatibleOperands.h>
-
-_COM_AZURE_DEV__BASE__DUMMY_SYMBOL
+#include <base/math/Quaternion.h>
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
+
+template _COM_AZURE_DEV__BASE__API class Quaternion<float>;
+template _COM_AZURE_DEV__BASE__API class Quaternion<double>;
+template _COM_AZURE_DEV__BASE__API class Quaternion<long double>;
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

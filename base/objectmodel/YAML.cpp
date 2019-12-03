@@ -14,7 +14,7 @@
 #include <base/objectmodel/YAML.h>
 #include <base/io/File.h>
 #include <base/string/Posix.h>
-#include <base/mathematics/Math.h>
+#include <base/math/Math.h>
 #include <base/UnitTest.h>
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE

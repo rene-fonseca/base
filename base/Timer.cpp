@@ -15,7 +15,7 @@
 #include <base/Timer.h>
 #include <base/string/String.h>
 #include <base/concurrency/Thread.h>
-#include <base/mathematics/Math.h>
+#include <base/math/Math.h>
 #include <base/UnitTest.h>
 
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)

@@ -15,8 +15,8 @@
 #include <base/UnsignedInteger.h>
 #include <base/string/FormatOutputStream.h>
 #include <base/string/StringOutputStream.h>
-#include <base/mathematics/ExpressionParser.h>
-#include <base/mathematics/Math.h>
+#include <base/math/ExpressionParser.h>
+#include <base/math/Math.h>
 #include <base/Random.h>
 
 using namespace com::azure::dev::base;

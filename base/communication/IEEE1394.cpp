@@ -13,7 +13,7 @@
 
 #include <base/communication/IEEE1394.h>
 #include <base/concurrency/Thread.h>
-#include <base/mathematics/Math.h>
+#include <base/math/Math.h>
 #include <base/string/StringOutputStream.h>
 
 // TAG: hops between nodes

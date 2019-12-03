@@ -11,7 +11,7 @@
     For the licensing terms refer to the file 'LICENSE'.
  ***************************************************************************/
 
-#include <base/mathematics/Matrix4x4.h>
+#include <base/math/Matrix4x4.h>
 
 _COM_AZURE_DEV__BASE__DUMMY_SYMBOL
 

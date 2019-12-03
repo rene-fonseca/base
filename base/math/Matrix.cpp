@@ -11,8 +11,8 @@
     For the licensing terms refer to the file 'LICENSE'.
  ***************************************************************************/
 
-#include <base/mathematics/Matrix.h>
-#include <base/mathematics/Math.h>
+#include <base/math/Matrix.h>
+#include <base/math/Math.h>
 #include <base/Functor.h>
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE

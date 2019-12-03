@@ -11,8 +11,8 @@
     For the licensing terms refer to the file 'LICENSE'.
  ***************************************************************************/
 
-#include <base/mathematics/LargeInteger.h>
-#include <base/mathematics/Math.h>
+#include <base/math/LargeInteger.h>
+#include <base/math/Math.h>
 #include <base/UnitTest.h>
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE

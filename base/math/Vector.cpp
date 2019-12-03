@@ -12,8 +12,8 @@
  ***************************************************************************/
 
 #include <base/platforms/features.h>
-#include <base/mathematics/Vector.h>
-#include <base/mathematics/Math.h>
+#include <base/math/Vector.h>
+#include <base/math/Math.h>
 #include <base/Functor.h>
 
 _COM_AZURE_DEV__BASE__DUMMY_SYMBOL

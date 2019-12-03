@@ -97,8 +97,8 @@ file(GLOB base_SRC
   "base/io/async/*.cpp"
   "base/iterator/*.h"
   "base/iterator/*.cpp"
-  "base/mathematics/*.h"
-  "base/mathematics/*.cpp" # TAG: rename to math
+  "base/math/*.h"
+  "base/math/*.cpp"
   "base/mem/*.h"
   "base/mem/*.cpp"
   "base/net/*.h"

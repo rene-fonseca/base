@@ -15,8 +15,8 @@
 #include <base/UnsignedInteger.h>
 #include <base/concurrency/SpinLock.h>
 #include <base/dl/DynamicLinker.h>
-#include <base/mathematics/Math.h>
-#include <base/mathematics/Vector3D.h>
+#include <base/math/Math.h>
+#include <base/math/Vector3D.h>
 
 // TAG: functions imported with glXGetProcAddressARB are context independent (GLX 1.3) (may be static)
 // TAG: this means that we can use dynamic linker class

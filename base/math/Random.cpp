@@ -11,7 +11,7 @@
     For the licensing terms refer to the file 'LICENSE'.
  ***************************************************************************/
 
-#include <base/mathematics/Random.h>
+#include <base/math/Random.h>
 #include <base/Timer.h>
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE

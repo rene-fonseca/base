@@ -15,8 +15,8 @@
 
 #include <base/string/FormatOutputStream.h>
 #include <base/Functor.h>
-#include <base/mathematics/Vector3D.h>
-#include <base/mathematics/Quaternion.h>
+#include <base/math/Vector3D.h>
+#include <base/math/Quaternion.h>
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 

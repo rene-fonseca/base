@@ -14,7 +14,7 @@
 #include <base/Application.h>
 #include <base/Timer.h>
 #include <base/UnsignedInteger.h>
-#include <base/mathematics/Math.h>
+#include <base/math/Math.h>
 #include <base/net/StreamSocket.h>
 #include <base/net/InetInterface.h>
 #include <base/net/InetService.h>

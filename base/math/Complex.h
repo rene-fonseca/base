@@ -13,7 +13,7 @@
 
 #pragma once
 
-#include <base/mathematics/Math.h>
+#include <base/math/Math.h>
 #include <base/string/FormatOutputStream.h>
 
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)

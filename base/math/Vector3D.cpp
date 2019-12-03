@@ -11,7 +11,7 @@
     For the licensing terms refer to the file 'LICENSE'.
  ***************************************************************************/
 
-#include <base/mathematics/Vector3D.h>
+#include <base/math/Vector3D.h>
 #include <base/UnitTest.h>
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE

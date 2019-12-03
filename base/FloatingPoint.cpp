@@ -13,7 +13,7 @@
 
 #include <base/FloatingPoint.h>
 #include <base/string/ASCIITraits.h>
-#include <base/mathematics/Math.h>
+#include <base/math/Math.h>
 #include <base/UnitTest.h>
 #include <limits>
 #include <math.h>

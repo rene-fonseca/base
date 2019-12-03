@@ -30,7 +30,7 @@
 #include <base/concurrency/Process.h>
 #include <base/string/String.h>
 #include <base/string/WideString.h>
-#include <base/mathematics/Random.h>
+#include <base/math/Random.h>
 #include <base/io/Handle.h>
 #include <base/io/FileDescriptor.h>
 #include <base/io/FileDescriptorInputStream.h>

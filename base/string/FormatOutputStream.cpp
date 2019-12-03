@@ -22,8 +22,8 @@
 #include <base/concurrency/AtomicCounter.h>
 #include <base/TypeInfo.h>
 #include <base/UnitTest.h>
-#include <base/mathematics/Constants.h>
-#include <base/mathematics/LargeInteger.h>
+#include <base/math/Constants.h>
+#include <base/math/LargeInteger.h>
 #include <base/UInt128.h>
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE

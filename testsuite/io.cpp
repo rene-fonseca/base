@@ -24,8 +24,8 @@
 #include <base/net/InetAddress.h>
 #include <base/Functor.h>
 #include <base/ByteOrder.h>
-#include <base/mathematics/Constants.h>
-#include <base/mathematics/Math.h>
+#include <base/math/Constants.h>
+#include <base/math/Math.h>
 
 using namespace com::azure::dev::base;
 

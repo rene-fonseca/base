@@ -14,7 +14,6 @@
 #pragma once
 
 #include <base/string/WideString.h>
-#include <string> // header approved
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
@@ -56,6 +55,13 @@ public:
 
   /** Converts UTF-8 string to wstring. */
   static std::wstring toWide(const std::string& s);
+  
+  
+  
+  static String getString(const std::string& string);
+  static String getString(const std::wstring& string);
+  static WideString getWideString(const std::string& string);
+  static WideString getWideString(const std::wstring& string);
 };
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

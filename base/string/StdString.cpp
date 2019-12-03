@@ -163,4 +163,24 @@ std::wstring StdString::toWide(const std::string& s)
 #endif
 }
 
+String StdString::getWideString(const std::string& string)
+{
+  return String(string.c_str(), string.size());
+}
+
+String StdString::getWideString(const std::wstring& string)
+{
+  return String(string.c_str(), string.size());
+}
+
+WideString StdString::getWideString(const std::string& string)
+{
+  return WideString(string.c_str(), string.size());
+}
+
+WideString StdString::getWideString(const std::wstring& string)
+{
+  return WideString(string.c_str(), string.size());
+}
+
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

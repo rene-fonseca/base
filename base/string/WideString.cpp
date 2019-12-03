@@ -760,16 +760,6 @@ WideString::WideString(const ucs4* string, MemorySize length)
   initialize(string, length);
 }
 
-WideString::WideString(const std::string& string)
-{
-  initialize(string.c_str(), string.size());
-}
-
-WideString::WideString(const std::wstring& string)
-{
-  initialize(string.c_str(), string.size());
-}
-
 WideString::WideString(const Literal& literal)
 {
   initialize(literal.getValue(), literal.getLength());

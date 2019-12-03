@@ -287,8 +287,6 @@ public:
   */
   String(const NativeString& string);
   String(const Literal& string);
-  String(const std::string& string);
-  String(const std::wstring& string);
   String(const char* string);
   String(const char* string, MemorySize length);
   String(const char16_t* string);
@@ -377,8 +375,6 @@ public:
   */
   String& operator=(const Literal& assign);
   String& operator=(const NativeString& string);
-  String& operator=(const std::string& string);
-  String& operator=(const std::wstring& string);
   String& operator=(const char* string);
   String& operator=(const char16_t* string);
   String& operator=(const char32_t* string);

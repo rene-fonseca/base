@@ -154,16 +154,6 @@ String::String(const WideString& src)
   initialize(src.native(), src.getLength());
 }
 
-String::String(const std::string& string)
-{
-  initialize(string.c_str(), string.size());
-}
-
-String::String(const std::wstring& string)
-{
-  initialize(string.c_str(), string.size());
-}
-
 String::String(const wchar* string)
 {
   initialize(string, getNullTerminatedLength(string));
@@ -229,18 +219,6 @@ String& String::operator=(const char32_t* assign)
 String& String::operator=(const WideString& assign)
 {
   initialize(assign.getElements(), assign.getLength());
-  return *this;
-}
-
-String& String::operator=(const std::string& assign)
-{
-  initialize(assign.c_str(), assign.size());
-  return *this;
-}
-
-String& String::operator=(const std::wstring& assign)
-{
-  initialize(assign.c_str(), assign.size());
   return *this;
 }
 

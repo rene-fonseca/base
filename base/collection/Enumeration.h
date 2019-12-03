@@ -33,9 +33,7 @@ _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
   template _COM_AZURE_DEV__BASE__API class TYPE<void*>; \
   template _COM_AZURE_DEV__BASE__API class TYPE<float>; \
   template _COM_AZURE_DEV__BASE__API class TYPE<double>; \
-  template _COM_AZURE_DEV__BASE__API class TYPE<long double>; \
-  template _COM_AZURE_DEV__BASE__API class TYPE<std::string>; \
-  template _COM_AZURE_DEV__BASE__API class TYPE<std::wstring>;
+  template _COM_AZURE_DEV__BASE__API class TYPE<long double>;
 // TAG: add String and WideString also
 //  template _COM_AZURE_DEV__BASE__API class TYPE<int64>; \
 //  template _COM_AZURE_DEV__BASE__API class TYPE<uint64>; \

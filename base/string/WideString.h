@@ -398,8 +398,6 @@ public:
   WideString(const wchar* string, MemorySize length);
   WideString(const ucs4* string);
   WideString(const ucs4* string, MemorySize length);
-  WideString(const std::string& string);
-  WideString(const std::wstring& string);
 
   /**
     Initializes the string from a string literal. Implicit initialization is
@@ -492,8 +490,6 @@ public:
   WideString& operator=(const wchar* assign);
   WideString& operator=(const char16_t* assign);
   WideString& operator=(const char32_t* assign);
-  WideString& operator=(const std::string& assign);
-  WideString& operator=(const std::wstring& assign);
 
   /**
     Returns the number of characters in the string.

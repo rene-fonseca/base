@@ -327,7 +327,7 @@ void HTTPSRequest::send(const String& _body)
   }
   _handle->status = word;
 
-  PrimitiveStackArray<char> buffer(1024);
+  PrimitiveStackArray<char> buffer(4096);
   size = buffer.size();
   while (true) {
     if (!HttpQueryInfoA(_handle->hRequest,
@@ -343,7 +343,7 @@ void HTTPSRequest::send(const String& _body)
       }
       break; // not what
     }
-    _handle->statusText = static_cast<const char*>(buffer);
+    _handle->statusText = String(buffer, size/sizeof(char));
     break;
   }
 
@@ -650,24 +650,24 @@ String HTTPSRequest::getResponseHeader(const String& name)
   }
 
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
-  PrimitiveStackArray<char> buffer(1024);
-  DWORD size = buffer.size();
+  PrimitiveStackArray<wchar> buffer(maximum<MemorySize>(name.getLength() + 1, 4096/sizeof(wchar)));
+  DWORD size = buffer.size() * sizeof(wchar);
   while (size < (1024 * 1024)) {
-    strcpy(static_cast<char*>(buffer), name.native());
-    if (!HttpQueryInfoA(_handle->hRequest,
+    Unicode::UTF8ToWChar(buffer, reinterpret_cast<const uint8*>(name.native()), name.getLength() + 1); // with null terminator
+    if (!HttpQueryInfoW(_handle->hRequest,
       HTTP_QUERY_CUSTOM,
       buffer,
-      &size,
+      &size, // bytes not chars
       NULL)) {
       DWORD error = GetLastError();
       if (error == ERROR_INSUFFICIENT_BUFFER) {
         buffer.resize(buffer.size() * 2);
-        size = buffer.size();
+        size = buffer.size() * sizeof(wchar);
         continue;
       }
       break; // not what
     }
-    result = static_cast<const char*>(buffer);
+    result = String(buffer, size/sizeof(wchar));
     break;
   }
 
@@ -702,24 +702,24 @@ String HTTPSRequest::getResponseHeader()
   }
 
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
-  PrimitiveArray<uint8> buffer(4 * 4096);
-  DWORD size = buffer.size();
+  PrimitiveStackArray<wchar> buffer(4096/sizeof(wchar));
+  DWORD size = buffer.size() * sizeof(wchar);
   while (size < (1024 * 1024)) {
     if (!HttpQueryInfoW(_handle->hRequest,
                         HTTP_QUERY_RAW_HEADERS_CRLF,
                         buffer,
-                        &size,
+                        &size, // size in bytes not chars
                         NULL)) {
       DWORD error = GetLastError();
       if (error == ERROR_INSUFFICIENT_BUFFER) {
         buffer.resize(buffer.size() * 2);
-        size = buffer.size();
+        size = buffer.size() * sizeof(wchar);
         continue;
       }
       throw HTTPException("Failed to read HTTP response header.");
     }
 
-    result = String(reinterpret_cast<const wchar*>(static_cast<const uint8*>(buffer)), size);
+    result = String(buffer, size/sizeof(wchar));
     break;
   }
 #elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__MACOS)

@@ -13,7 +13,7 @@
 
 #pragma once
 
-#include <base/string/String.h>
+#include <base/string/WideString.h>
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
@@ -36,55 +36,73 @@ public:
   ~Posix();
   
   /** Returns true on success. Use for fast string to double conversion. */
-  bool getSeries(const char* src, const char* end, float& d);
+  bool getSeries(const char* src, const char* end, float& d) noexcept; // will be deprecated once fully implemented
 
   /** Returns true on success. Use for fast string to double conversion. */
-  bool getSeries(const char* src, const char* end, double& d);
+  bool getSeries(const char* src, const char* end, double& d) noexcept; // will be deprecated once fully implemented
 
   /** Returns true on success. Use for fast string to double conversion. */
-  bool getSeries(const char* src, const char* end, long double& d);
+  bool getSeries(const char* src, const char* end, long double& d) noexcept; // will be deprecated once fully implemented
 
   /** Returns true on success. */
-  static bool toFloat(const char* src, const char* end, float& d);
+  static bool toFloat(const char* src, const char* end, float& d) noexcept;
 
   /** Returns true on success. */
-  static bool toDouble(const char* src, const char* end, double& d);
+  static bool toDouble(const char* src, const char* end, double& d) noexcept;
 
   /** Returns true on success. */
-  static bool toLongDouble(const char* src, const char* end, long double& d);
+  static bool toLongDouble(const char* src, const char* end, long double& d) noexcept;
 
   /** Returns true on success. */
-  static inline bool toFloat(const std::string& text, float& value)
-  {
-    return toFloat(text.c_str(), text.c_str() + text.size(), value);
-  }
+  static bool toFloat(const wchar* src, const wchar* end, float& d) noexcept;
 
   /** Returns true on success. */
-  static inline bool toFloat(const String& text, float& value)
+  static bool toDouble(const wchar* src, const wchar* end, double& d) noexcept;
+
+  /** Returns true on success. */
+  static bool toLongDouble(const wchar* src, const wchar* end, long double& d) noexcept;
+
+  /** Returns true on success. */
+  static bool toFloat(const ucs4* src, const ucs4* end, float& d) noexcept;
+
+  /** Returns true on success. */
+  static bool toDouble(const ucs4* src, const ucs4* end, double& d) noexcept;
+
+  /** Returns true on success. */
+  static bool toLongDouble(const ucs4* src, const ucs4* end, long double& d) noexcept;
+
+  /** Returns true on success. */
+  static inline bool toFloat(const String& text, float& value) noexcept
   {
     return toFloat(text.native(), text.native() + text.getLength(), value);
   }
 
   /** Returns true on success. */
-  static inline bool toDouble(const std::string& text, double& value)
-  {
-    return toDouble(text.c_str(), text.c_str() + text.size(), value);
-  }
-
-  /** Returns true on success. */
-  static inline bool toDouble(const String& text, double& value)
+  static inline bool toDouble(const String& text, double& value) noexcept
   {
     return toDouble(text.native(), text.native() + text.getLength(), value);
   }
 
   /** Returns true on success. */
-  static inline bool toLongDouble(const std::string& text, long double& value)
+  static inline bool toLongDouble(const String& text, long double& value) noexcept
   {
-    return toLongDouble(text.c_str(), text.c_str() + text.size(), value);
+    return toLongDouble(text.native(), text.native() + text.getLength(), value);
   }
 
   /** Returns true on success. */
-  static inline bool toLongDouble(const String& text, long double& value)
+  static inline bool toFloat(const WideString& text, float& value) noexcept
+  {
+    return toFloat(text.native(), text.native() + text.getLength(), value);
+  }
+
+  /** Returns true on success. */
+  static inline bool toDouble(const WideString& text, double& value) noexcept
+  {
+    return toDouble(text.native(), text.native() + text.getLength(), value);
+  }
+
+  /** Returns true on success. */
+  static inline bool toLongDouble(const WideString& text, long double& value) noexcept
   {
     return toLongDouble(text.native(), text.native() + text.getLength(), value);
   }

@@ -126,6 +126,7 @@ namespace {
   template<typename TYPE>
   inline int convertImpl(const char* src, const char* end, TYPE& _value) noexcept
   {
+    // ok that we only advance 1 word for wchar at a time - surrogates not accepted anyway
     if (src == end) {
       return -1;
     }
@@ -267,7 +268,7 @@ Posix::~Posix()
   delete ms;
 }
 
-bool Posix::getSeries(const char* src, const char* end, float& _value)
+bool Posix::getSeries(const char* src, const char* end, float& _value) noexcept
 {
   const int status = convertImpl(src, end, _value);
   if (status > 0) {
@@ -287,7 +288,7 @@ bool Posix::getSeries(const char* src, const char* end, float& _value)
   return true;
 }
 
-bool Posix::getSeries(const char* src, const char* end, double& _value)
+bool Posix::getSeries(const char* src, const char* end, double& _value) noexcept
 {
   const int status = convertImpl(src, end, _value);
   if (status > 0) {
@@ -307,7 +308,7 @@ bool Posix::getSeries(const char* src, const char* end, double& _value)
   return true;
 }
 
-bool Posix::getSeries(const char* src, const char* end, long double& _value)
+bool Posix::getSeries(const char* src, const char* end, long double& _value) noexcept
 {
   const int status = convertImpl(src, end, _value);
   if (status > 0) {
@@ -327,7 +328,7 @@ bool Posix::getSeries(const char* src, const char* end, long double& _value)
   return true;
 }
 
-bool Posix::toFloat(const char* src, const char* end, float& _value)
+bool Posix::toFloat(const char* src, const char* end, float& _value) noexcept
 {
   const int status = convertImpl(src, end, _value);
   if (status > 0) {
@@ -347,7 +348,7 @@ bool Posix::toFloat(const char* src, const char* end, float& _value)
   return true;
 }
 
-bool Posix::toDouble(const char* src, const char* end, double& _value)
+bool Posix::toDouble(const char* src, const char* end, double& _value) noexcept
 {
   const int status = convertImpl(src, end, _value);
   if (status > 0) {
@@ -371,7 +372,7 @@ bool Posix::toDouble(const char* src, const char* end, double& _value)
   return true;
 }
 
-bool Posix::toLongDouble(const char* src, const char* end, long double& _value)
+bool Posix::toLongDouble(const char* src, const char* end, long double& _value) noexcept
 {
   const int status = convertImpl(src, end, _value);
   if (status > 0) {
@@ -389,6 +390,84 @@ bool Posix::toLongDouble(const char* src, const char* end, long double& _value)
   }
   _value = value;
   return true;
+}
+
+bool Posix::toFloat(const wchar* src, const wchar* end, float& _value) noexcept
+{
+  PrimitiveStackArray<char> buffer(end - src);
+  char* dest = buffer;
+  while (src != end) {
+    if (*src >= 0x7f) {
+      return false; // not a float
+    }
+    *dest++ = *src++;
+  }
+  return toFloat(static_cast<const char*>(buffer), dest, _value);
+}
+
+bool Posix::toDouble(const wchar* src, const wchar* end, double& _value) noexcept
+{
+  PrimitiveStackArray<char> buffer(end - src);
+  char* dest = buffer;
+  while (src != end) {
+    if (*src >= 0x7f) {
+      return false; // not a float
+    }
+    *dest++ = *src++;
+  }
+  return toDouble(static_cast<const char*>(buffer), dest, _value);
+}
+
+bool Posix::toLongDouble(const wchar* src, const wchar* end, long double& _value) noexcept
+{
+  PrimitiveStackArray<char> buffer(end - src);
+  char* dest = buffer;
+  while (src != end) {
+    if (*src >= 0x7f) {
+      return false; // not a float
+    }
+    *dest++ = *src++;
+  }
+  return toLongDouble(static_cast<const char*>(buffer), dest, _value);
+}
+
+bool Posix::toFloat(const ucs4* src, const ucs4* end, float& _value) noexcept
+{
+  PrimitiveStackArray<char> buffer(end - src);
+  char* dest = buffer;
+  while (src != end) {
+    if (*src >= 0x7f) {
+      return false; // not a float
+    }
+    *dest++ = *src++;
+  }
+  return toFloat(static_cast<const char*>(buffer), dest, _value);
+}
+
+bool Posix::toDouble(const ucs4* src, const ucs4* end, double& _value) noexcept
+{
+  PrimitiveStackArray<char> buffer(end - src);
+  char* dest = buffer;
+  while (src != end) {
+    if (*src >= 0x7f) {
+      return false; // not a float
+    }
+    *dest++ = *src++;
+  }
+  return toDouble(static_cast<const char*>(buffer), dest, _value);
+}
+
+bool Posix::toLongDouble(const ucs4* src, const ucs4* end, long double& _value) noexcept
+{
+  PrimitiveStackArray<char> buffer(end - src);
+  char* dest = buffer;
+  while (src != end) {
+    if (*src >= 0x7f) {
+      return false; // not a float
+    }
+    *dest++ = *src++;
+  }
+  return toLongDouble(static_cast<const char*>(buffer), dest, _value);
 }
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

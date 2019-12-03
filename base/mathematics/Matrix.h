@@ -30,7 +30,7 @@ _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
   Matrix implementation.
 
   @short Matrix
-  @ingroup mathematics
+  @ingroup math
   @version 1.10
 */
 

@@ -34,9 +34,11 @@ namespace isoc {
   extern "C" double cimag(_Dcomplex);
   extern "C" long double cimagl(_Lcomplex);
 
+#if 0
   extern "C" _Fcomplex cabsf(_Fcomplex);
   extern "C" _Dcomplex cabs(_Dcomplex);
   extern "C" _Lcomplex cabsl(_Lcomplex);
+#endif
 
   extern "C" _Fcomplex csqrtf(_Fcomplex);
   extern "C" _Dcomplex csqrt(_Dcomplex);
@@ -107,11 +109,10 @@ namespace isoc {
 #endif
 
 /**
-  Complex number represented by real and imaginary parts.
+  Complex number represented by real and imaginary parts. double used. template class is not available.
 
   @short Complex number.
-  @ingroup mathematics
-  @version 1.0
+  @ingroup math
 */
 
 class _COM_AZURE_DEV__BASE__API Complex {
@@ -531,7 +532,7 @@ public:
   {
     auto c = divisor.conjugate();
     *this *= c;
-    double r = divisor.real * divisor.real + divisor.imaginary * divisor.imaginary;
+    double r = divisor.real * divisor.real + divisor.imaginary * divisor.imaginary; // -1 * -1 = 1
     real /= r;
     imaginary /= r;
     return *this;
@@ -638,12 +639,11 @@ inline Complex operator/(const Complex& left, double right) noexcept
 
 /**
   Writes a string representation of the complex number to a format stream
-  "(real; imaginary)".
+  "(real[+-]imaginaryi)".
 
   @relates Complex
 */
-FormatOutputStream& operator<<(
-  FormatOutputStream& stream, const Complex& value) throw(IOException);
+FormatOutputStream& operator<<(FormatOutputStream& stream, const Complex& value) throw(IOException);
 
 template<>
 class IsUninitializeable<Complex> : public IsUninitializeable<double> {

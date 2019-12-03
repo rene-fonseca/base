@@ -28,7 +28,7 @@ _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
   
   @short Expression evaluator
   @see ExpressionParser
-  @ingroup mathematics
+  @ingroup math
   @version 1.0
 */
 
@@ -414,7 +414,7 @@ public:
   @short Expression parser.
   @see ExpressionProvider
   @see ExpressionEvaluator
-  @ingroup mathematics
+  @ingroup math
   @version 1.0
 */
 

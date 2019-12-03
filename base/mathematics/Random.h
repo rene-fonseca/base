@@ -32,7 +32,7 @@ namespace RandomImpl {
   implementation is MT-safe.
 
   @short Random number generator
-  @ingroup mathematics
+  @ingroup math
   @version 1.0
 */
 

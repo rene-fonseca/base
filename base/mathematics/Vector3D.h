@@ -23,7 +23,7 @@ _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
   A three-dimensional vector represented by X, Y, and Z coordinates.
 
   @short Three-dimensional vector.
-  @ingroup mathematics
+  @ingroup math
   @version 1.1
 */
 

@@ -25,7 +25,7 @@ _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
   minor.
 
   @short 4 by 4 matrix.
-  @ingroup mathematics
+  @ingroup math
   @version 1.0
 */
 

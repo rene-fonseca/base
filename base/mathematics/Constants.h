@@ -22,7 +22,7 @@ _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
   the accuracy provided here may not be supported by the particular platform.
 
   @short Commonly used mathematical constants
-  @ingroup mathematics
+  @ingroup math
 */
 
 namespace constant {

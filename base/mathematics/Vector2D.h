@@ -22,7 +22,7 @@ _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
   A two-dimensional vector represented by X and Y coordinates.
 
   @short Two-dimensional vector.
-  @ingroup mathematics
+  @ingroup math
   @version 1.1
 */
 

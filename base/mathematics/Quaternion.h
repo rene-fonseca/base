@@ -21,7 +21,7 @@ _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
   A quaternion.
 
   @short Quaternion.
-  @ingroup mathematics
+  @ingroup math
   @version 1.0
 */
 

@@ -27,7 +27,7 @@ _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
   Vector implementation.
   
   @short Vector.
-  @ingroup mathematics
+  @ingroup math
   @version 1.10
 */
 

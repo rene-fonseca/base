@@ -229,7 +229,7 @@ namespace isoc {
   This class is a placeholder for mathematical functions.
 
   @short Mathematical functions
-  @ingroup mathematics
+  @ingroup math
   @version 1.0
 */
 

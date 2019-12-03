@@ -22,7 +22,7 @@ _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
   mother of all random number generators. The RNG has a period of about 2^250.
   
   @short Marsaglia random number generator.
-  @ingroup mathematics
+  @ingroup math
   @version 1.0
 */
 

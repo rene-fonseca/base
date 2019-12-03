@@ -17,7 +17,7 @@
 #include <base/string/FormatOutputStream.h>
 
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
-#include <complex.h> // avoid
+#  include <complex.h> // avoid - really bad as it defines I as macro
 #  define _COM_AZURE_DEV__BASE__COMPLEX_ISOC
 #endif
 

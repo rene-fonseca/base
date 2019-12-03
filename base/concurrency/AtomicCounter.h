@@ -19,6 +19,7 @@
     (_COM_AZURE_DEV__BASE__COMPILER == _COM_AZURE_DEV__BASE__COMPILER_MSC)
 #  include <intrin.h> // header approved
 #elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__MACOS)
+#  include <string> // header approved // include before stdatomic
 #  include <stdatomic.h> // header approved
 #else
 #  include <atomic> // header approved

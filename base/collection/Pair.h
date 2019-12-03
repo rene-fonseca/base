@@ -13,8 +13,7 @@
 
 #pragma once
 
-#include <base/features.h>
-#include <utility> // header approved
+#include <base/Base.h>
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 

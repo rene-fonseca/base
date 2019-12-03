@@ -16,7 +16,7 @@
 #include <base/Primitives.h>
 #include <base/collection/IteratorException.h>
 #include <base/mem/Reference.h>
-#include <iterator> // header approved
+#include <iterator> // header approved // required for iterator type tags
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 

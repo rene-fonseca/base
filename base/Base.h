@@ -14,7 +14,7 @@
 #pragma once
 
 #include <base/Trace.h>
-#include <utility> // header approved
+#include <utility> // header approved // required for std::move()
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 

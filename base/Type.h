@@ -14,7 +14,7 @@
 #pragma once
 
 #include <base/features.h>
-#include <typeinfo> // header approved
+#include <typeinfo> // header approved // required for typeid
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
@@ -90,7 +90,8 @@ public:
     Returns the type object for the specified type.
   */
   template<class TYPE>
-  static inline Type getType() noexcept {
+  static inline Type getType() noexcept
+  {
     return Type(&typeid(typename GetType<TYPE>::BaseType));
   }
 

@@ -163,12 +163,12 @@ std::wstring StdString::toWide(const std::string& s)
 #endif
 }
 
-String StdString::getWideString(const std::string& string)
+String StdString::getString(const std::string& string)
 {
   return String(string.c_str(), string.size());
 }
 
-String StdString::getWideString(const std::wstring& string)
+String StdString::getString(const std::wstring& string)
 {
   return String(string.c_str(), string.size());
 }

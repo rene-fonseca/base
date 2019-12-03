@@ -893,18 +893,6 @@ WideString& WideString::operator=(const char32_t* assign)
   return *this;
 }
 
-WideString& WideString::operator=(const std::string& assign)
-{
-  initialize(assign.c_str(), assign.size());
-  return *this;
-}
-
-WideString& WideString::operator=(const std::wstring& assign)
-{
-  initialize(assign.c_str(), assign.size());
-  return *this;
-}
-
 bool WideString::isASCII() const noexcept
 {
   const ucs4* i = getBuffer();

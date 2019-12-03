@@ -29,9 +29,6 @@
 #elif (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32) && \
       (_COM_AZURE_DEV__BASE__COMPILER == _COM_AZURE_DEV__BASE__COMPILER_MSC)
 #  include <intrin.h> // header approved
-#elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__MACOS)
-#  include <memory> // header approved // required to allow build
-#  include <stdatomic.h> // header approved
 #else
 #  include <atomic> // header approved
 #endif
@@ -191,10 +188,8 @@ private:
 #if defined(_COM_AZURE_DEV__BASE__USE_BUILT_IN_ATOMIC)
   mutable volatile TYPE value;
 #elif (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32) && \
-    (_COM_AZURE_DEV__BASE__COMPILER == _COM_AZURE_DEV__BASE__COMPILER_MSC)
+      (_COM_AZURE_DEV__BASE__COMPILER == _COM_AZURE_DEV__BASE__COMPILER_MSC)
   volatile TYPE value;
-#elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__MACOS)
-  volatile _Atomic(TYPE) value; // initialized in constructors
 #else
   volatile std::atomic<TYPE> value;
 #endif
@@ -209,8 +204,6 @@ private:
 #elif (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32) && \
     (_COM_AZURE_DEV__BASE__COMPILER == _COM_AZURE_DEV__BASE__COMPILER_MSC)
     return _win32::atomicAdd<TYPE>(const_cast<volatile TYPE*>(&value), 0);
-#elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__MACOS)
-    return atomic_load(&value);
 #else
     return value;
 #endif
@@ -225,10 +218,8 @@ private:
     BASSERT(__atomic_is_lock_free(sizeof(value), &value));
     __atomic_store_n(&value, desired, __ATOMIC_RELEASE); // __ATOMIC_RELAXED, __ATOMIC_SEQ_CST, __ATOMIC_RELEASE
 #elif (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32) && \
-    (_COM_AZURE_DEV__BASE__COMPILER == _COM_AZURE_DEV__BASE__COMPILER_MSC)
+      (_COM_AZURE_DEV__BASE__COMPILER == _COM_AZURE_DEV__BASE__COMPILER_MSC)
     _win32::atomicExchange<TYPE>(&value, desired);
-#elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__MACOS)
-    atomic_exchange(&value, desired);
 #else
     value.store(desired);
 #endif
@@ -252,9 +243,6 @@ public:
 #if defined(_COM_AZURE_DEV__BASE__USE_BUILT_IN_ATOMIC)
     BASSERT(__atomic_is_lock_free(sizeof(value), &value));
     __atomic_store_n(&value, _value, __ATOMIC_RELEASE); // __ATOMIC_RELAXED, __ATOMIC_SEQ_CST, __ATOMIC_RELEASE
-#elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__MACOS)
-    BASSERT(atomic_is_lock_free(&value));
-    atomic_init(&value, _value);
 #else
     store(_value);
 #endif
@@ -270,9 +258,6 @@ public:
 #if defined(_COM_AZURE_DEV__BASE__USE_BUILT_IN_ATOMIC)
     BASSERT(__atomic_is_lock_free(sizeof(value), &value));
     __atomic_store_n(&value, _value.value, __ATOMIC_RELEASE); // __ATOMIC_RELAXED, __ATOMIC_SEQ_CST, __ATOMIC_RELEASE
-#elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__MACOS)
-    BASSERT(atomic_is_lock_free(&value));
-    atomic_init(&value, _value.load());
 #else
     store(_value.load());
 #endif
@@ -337,10 +322,8 @@ public:
 #if defined(_COM_AZURE_DEV__BASE__USE_BUILT_IN_ATOMIC)
     return __atomic_fetch_add(&value, _value, __ATOMIC_ACQ_REL); // all memory orders
 #elif (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32) && \
-    (_COM_AZURE_DEV__BASE__COMPILER == _COM_AZURE_DEV__BASE__COMPILER_MSC)
+      (_COM_AZURE_DEV__BASE__COMPILER == _COM_AZURE_DEV__BASE__COMPILER_MSC)
     return _win32::atomicAdd<TYPE>(&value, _value) + _value;
-#elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__MACOS)
-    return atomic_fetch_add(&value, _value) + _value;
 #else
     return value += _value;
 #endif
@@ -354,10 +337,8 @@ public:
 #if defined(_COM_AZURE_DEV__BASE__USE_BUILT_IN_ATOMIC)
     return __atomic_fetch_sub(&value, _value, __ATOMIC_ACQ_REL); // all memory orders
 #elif (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32) && \
-    (_COM_AZURE_DEV__BASE__COMPILER == _COM_AZURE_DEV__BASE__COMPILER_MSC)
+      (_COM_AZURE_DEV__BASE__COMPILER == _COM_AZURE_DEV__BASE__COMPILER_MSC)
     return _win32::atomicAdd<TYPE>(&value, -_value) - _value;
-#elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__MACOS)
-    return atomic_fetch_sub(&value, _value) - _value;
 #else
     return value -= _value;
 #endif
@@ -391,10 +372,8 @@ public:
     // __ATOMIC_RELAXED, __ATOMIC_SEQ_CST, __ATOMIC_ACQUIRE, __ATOMIC_RELEASE, and __ATOMIC_ACQ_REL
     return __atomic_exchange_n(&value, desired, __ATOMIC_SEQ_CST);
 #elif (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32) && \
-    (_COM_AZURE_DEV__BASE__COMPILER == _COM_AZURE_DEV__BASE__COMPILER_MSC)
+      (_COM_AZURE_DEV__BASE__COMPILER == _COM_AZURE_DEV__BASE__COMPILER_MSC)
     return _win32::atomicExchange<TYPE>(&value, desired);
-#elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__MACOS)
-    return atomic_exchange(&value, desired);
 #else
     return value.exchange(desired);
 #endif
@@ -409,13 +388,11 @@ public:
 #if defined(_COM_AZURE_DEV__BASE__USE_BUILT_IN_ATOMIC)
     return __atomic_compare_exchange_n(&value, &expected, desired, false, __ATOMIC_SEQ_CST, __ATOMIC_SEQ_CST); // strong
 #elif (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32) && \
-    (_COM_AZURE_DEV__BASE__COMPILER == _COM_AZURE_DEV__BASE__COMPILER_MSC)
+      (_COM_AZURE_DEV__BASE__COMPILER == _COM_AZURE_DEV__BASE__COMPILER_MSC)
     TYPE initial = _win32::atomicCompareExchange<TYPE>(&value, desired, expected);
     bool result = initial == expected;
     expected = initial;
     return result;
-#elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__MACOS)
-    return atomic_compare_exchange_strong(&value, &expected, desired);
 #else
     return value.compare_exchange_strong(expected, desired);
 #endif
@@ -430,13 +407,11 @@ public:
 #if defined(_COM_AZURE_DEV__BASE__USE_BUILT_IN_ATOMIC)
     return __atomic_compare_exchange_n(&value, &expected, desired, true, __ATOMIC_SEQ_CST, __ATOMIC_SEQ_CST); // weak
 #elif (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32) && \
-    (_COM_AZURE_DEV__BASE__COMPILER == _COM_AZURE_DEV__BASE__COMPILER_MSC)
+      (_COM_AZURE_DEV__BASE__COMPILER == _COM_AZURE_DEV__BASE__COMPILER_MSC)
     TYPE initial = _win32::atomicCompareExchange<TYPE>(&value, desired, expected);
     bool result = initial == expected;
     expected = initial;
     return result;
-#elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__MACOS)
-    return atomic_compare_exchange_weak(&value, &expected, desired);
 #else
     return value.compare_exchange_weak(expected, desired);
 #endif
@@ -454,8 +429,6 @@ public:
 #elif (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32) && \
       (_COM_AZURE_DEV__BASE__COMPILER == _COM_AZURE_DEV__BASE__COMPILER_MSC)
     BASSERT(!"AtomicCounter::signalFence() not supported.");
-#elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__MACOS)
-    BASSERT(!"AtomicCounter::signalFence() not supported.");
 #else
     atomic_thread_fence(std::memory_order_acquire);
 #endif
@@ -467,8 +440,6 @@ public:
     __atomic_signal_fence(__ATOMIC_SEQ_CST);
 #elif (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32) && \
       (_COM_AZURE_DEV__BASE__COMPILER == _COM_AZURE_DEV__BASE__COMPILER_MSC)
-    BASSERT(!"AtomicCounter::signalFence() not supported.");
-#elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__MACOS)
     BASSERT(!"AtomicCounter::signalFence() not supported.");
 #else
     atomic_signal_fence(std::memory_order_acquire);

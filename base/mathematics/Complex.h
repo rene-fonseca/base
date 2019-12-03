@@ -16,12 +16,8 @@
 #include <base/mathematics/Math.h>
 #include <base/string/FormatOutputStream.h>
 
-// implementation not done
-
-// #include <complex.h> // avoid
-// see std::complex instead
-
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
+#include <complex.h> // avoid
 #  define _COM_AZURE_DEV__BASE__COMPLEX_ISOC
 #endif
 

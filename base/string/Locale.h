@@ -30,7 +30,8 @@ private:
   char decimalSymbol = 0;
 public:
 
-  NumericFormatSet() throw() {
+  NumericFormatSet() noexcept
+  {
     groupingDigits = 0;
     groupingSymbol = ',';
     decimalSymbol = '.';
@@ -97,7 +98,8 @@ private:
   } positive;
 public:
 
-  MonetaryFormatSet() throw() {
+  MonetaryFormatSet() noexcept
+  {
     currencySymbol = "";
     fractionalDigits = 2;
     groupingDigits = 0;
@@ -165,21 +167,21 @@ private:
 public:
 
 // TAG: need time zone support - specifies local time offset from UTC time
-//  int getOffset() const throw();
-//  void setOffset(int offset) throw();
-//  String getTimeZone() throw(); returns (+|-)hh:mm if unknown name
+//  int getOffset() const noexcept;
+//  void setOffset(int offset) noexcept;
+//  String getTimeZone() noexcept; returns (+|-)hh:mm if unknown name
   
   /**
     Initializes object with POSIX settings.
   */
-  DateFormatSet() throw();
+  DateFormatSet() noexcept;
 
-  inline char getDateSeparator() const throw()
+  inline char getDateSeparator() const noexcept
   {
     return dateSeparator;
   }
 
-  inline char getTimeSeparator() const throw()
+  inline char getTimeSeparator() const noexcept
   {
     return timeSeparator;
   }
@@ -208,59 +210,59 @@ public:
     return longNameOfMonth[month];
   }
 
-  inline const String& getPM() const throw()
+  inline const String& getPM() const noexcept
   {
     return pm;
   }
 
-  inline const String& getAM() const throw()
+  inline const String& getAM() const noexcept
   {
     return am;
   }
   
 
 
-  inline const String& getShortDateFormat() const throw()
+  inline const String& getShortDateFormat() const noexcept
   {
     return shortDateFormat;
   }
   
-  void setShortDateFormat(const String& format) throw();
+  void setShortDateFormat(const String& format) noexcept;
   
-  inline const String& getMediumDateFormat() const throw()
+  inline const String& getMediumDateFormat() const noexcept
   {
     return mediumDateFormat;
   }
   
-  void setMediumDateFormat(const String& format) throw();
+  void setMediumDateFormat(const String& format) noexcept;
   
-  inline const String& getLongDateFormat() const throw()
+  inline const String& getLongDateFormat() const noexcept
   {
     return longDateFormat;
   }
   
-  void setLongDateFormat(const String& format) throw();
+  void setLongDateFormat(const String& format) noexcept;
 
-  inline const String& getShortTimeFormat() const throw()
+  inline const String& getShortTimeFormat() const noexcept
   {
     return shortTimeFormat;
   }
   
-  void setShortTimeFormat(const String& format) throw();
+  void setShortTimeFormat(const String& format) noexcept;
   
-  inline const String& getMediumTimeFormat() const throw()
+  inline const String& getMediumTimeFormat() const noexcept
   {
     return mediumTimeFormat;
   }
   
-  void setMediumTimeFormat(const String& format) throw();
+  void setMediumTimeFormat(const String& format) noexcept;
   
-  inline const String& getLongTimeFormat() const throw()
+  inline const String& getLongTimeFormat() const noexcept
   {
     return longTimeFormat;
   }
   
-  void setLongTimeFormat(const String& format) throw();
+  void setLongTimeFormat(const String& format) noexcept;
 };
 
 /**
@@ -277,34 +279,34 @@ public:
 
   //static void enable() throw(IOException);
   
-  Locale() throw();
+  Locale() noexcept;
   
   /**
     Returns the current locale as a string.
   */
-  static String getLocale() throw();
+  static String getLocale() noexcept;
   
   /**
     Sets the application locale according to the environment settings.
   */
-  static void setUserLocale() throw();
+  static void setUserLocale() noexcept;
   
   /**
     Sets the locale of the application.
   */
-  static void setASCIILocale() throw();
+  static void setASCIILocale() noexcept;
   
   /**
     Sets the locale of the application.
 
     @return True on success.
   */
-  static bool setLocale(const String& locale) throw();
+  static bool setLocale(const String& locale) noexcept;
 
   /**
     Queries the locale specific numeric and monetary information.
   */
-  static void getLocaleSpecific() throw();
+  static void getLocaleSpecific() noexcept;
 
 
   char listBegin; // {
@@ -314,7 +316,7 @@ public:
   char vectorEnd; // )
   char vectorSeparator; // ,
   
-  inline char getListSeparator() const throw()
+  inline char getListSeparator() const noexcept
   {
     return listSeparator;
   }
@@ -322,7 +324,7 @@ public:
   String falseMessage;
   String trueMessage;
   
-  inline const String& getBoolean(bool value) const throw()
+  inline const String& getBoolean(bool value) const noexcept
   {
     if (value) {
       return trueMessage;

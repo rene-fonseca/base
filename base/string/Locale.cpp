@@ -17,23 +17,28 @@
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
-String Locale::getLocale() throw() {
+String Locale::getLocale() noexcept
+{
   return String(setlocale(LC_ALL, 0));
 }
 
-void Locale::setUserLocale() throw() {
+void Locale::setUserLocale() noexcept
+{
   setlocale(LC_ALL, "");
 }
 
-void Locale::setASCIILocale() throw() {
+void Locale::setASCIILocale() noexcept
+{
   setlocale(LC_ALL, "C"); // TAG: or should we use POSIX
 }
 
-bool Locale::setLocale(const String& locale) throw() {
+bool Locale::setLocale(const String& locale) noexcept
+{
   return setlocale(LC_ALL, locale.getElements()) != 0;
 }
 
-void Locale::getLocaleSpecific() throw() {
+void Locale::getLocaleSpecific() noexcept
+{
   // locale name???
   // select locale - lock
   struct lconv* p = localeconv();
@@ -46,7 +51,6 @@ struct DateFormatSet {
   char separator;
 };
 
-
 struct CollectionFormatSet {
   char begin;
   char end;
@@ -57,7 +61,8 @@ class CollectionFormatSet2 {
 private:
 public:
   FormatSet(C)
-  operator const CollectionFormatSet& throw() {
+  operator const CollectionFormatSet& noexcept
+  {
     return set;
   }
 };
@@ -69,7 +74,8 @@ CollectionFormatSet defaultFormatSet {
 };
 */
 
-DateFormatSet::DateFormatSet() throw() {  
+DateFormatSet::DateFormatSet() noexcept
+{
   shortNameOfWeekday[0] = MESSAGE("Sun");
   shortNameOfWeekday[1] = MESSAGE("Mon");
   shortNameOfWeekday[2] = MESSAGE("Tue");
@@ -125,7 +131,8 @@ DateFormatSet::DateFormatSet() throw() {
   longDateFormat = MESSAGE("%A, %B %d, %Y");
 }
 
-Locale::Locale() throw() {  
+Locale::Locale() noexcept
+{
   falseMessage = MESSAGE("false");
   trueMessage = MESSAGE("true");
 

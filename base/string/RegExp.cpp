@@ -13,6 +13,7 @@
 
 #include <base/platforms/features.h>
 #include <base/string/RegExp.h>
+#include <base/SystemInformation.h>
 #include <base/UnitTest.h>
 
 #if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__GNULINUX) || \
@@ -35,13 +36,13 @@ _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 void RegExp::compile()
 {
   #if defined(_COM_AZURE_DEV__BASE__REGEXP_POSIX)
-    int options = 0;
+    int options = REG_EXTENDED;
     if (!caseSensitive) {
       options |= REG_ICASE;
     }
     regex_t preq;
     int result = regcomp(&preq, pattern.getElements(), options);
-    if (result) { // succesful
+    if (result == 0) { // succesful
       compiled = new char[sizeof(regex_t)];
       copy<char>(
         Cast::pointer<char*>(compiled),
@@ -93,13 +94,13 @@ void RegExp::setPattern(const String& pattern)
 bool RegExp::isRegularExpression(const String& pattern, bool caseSensitive) noexcept
 {
   #if defined(_COM_AZURE_DEV__BASE__REGEXP_POSIX)
-    int options = 0;
+    int options = REG_EXTENDED;
     if (!caseSensitive) {
       options |= REG_ICASE;
     }
     regex_t preq;
     int result = regcomp(&preq, pattern.getElements(), options);
-    if (result) { // succesful
+    if (result == 0) { // succesful
       regfree(&preq);
       return true;
     }
@@ -127,20 +128,20 @@ bool RegExp::doesMatch(
   if (!compiled) {
     throw RegExpException("Regular expression is invalid.", this);
   }
-  if (start >= value.getLength()) {
+  if (start > value.getLength()) {
     throw OutOfRange(this);
   }
   #if defined(_COM_AZURE_DEV__BASE__REGEXP_POSIX)
     regmatch_t pmatch[1];
     int code = regexec(
       static_cast<regex_t*>(compiled),
-      value.getElements(),
+      value.getElements() + start,
       1,
       pmatch,
       0
     );
-    if (!code) { // successful
-      return true;
+    if (code == 0) { // successful
+      return (pmatch[0].rm_so == 0) && (pmatch[0].rm_eo == (value.getLength() - start));
     } else if (code == REG_NOMATCH) {
       return false;
     } else {
@@ -171,20 +172,20 @@ RegExp::Substring RegExp::match(
   if (!compiled) {
     throw RegExpException("Regular expression is invalid.", this);
   }
-  if (start >= value.getLength()) {
+  if (start > value.getLength()) {
     throw OutOfRange(this);
   }
   #if defined(_COM_AZURE_DEV__BASE__REGEXP_POSIX)
     regmatch_t pmatch[1];
     int code = regexec(
       static_cast<regex_t*>(compiled),
-      value.getElements(),
+      value.getElements() + start,
       1,
       pmatch,
       0
     );
-    if (!code) { // successful
-      return Substring(pmatch[0].rm_so, pmatch[0].rm_eo);
+    if (code == 0) { // successful
+      return Substring(pmatch[0].rm_so + start, pmatch[0].rm_eo + start);
     } else if (code == REG_NOMATCH) {
       return Substring();
     } else {
@@ -216,21 +217,21 @@ RegExp::Substring RegExp::match(
   if (!compiled) {
     throw RegExpException("Regular expression is invalid.", this);
   }
-  if (start >= value.getLength()) {
+  if (start > value.getLength()) {
     throw OutOfRange(this);
   }
   #if defined(_COM_AZURE_DEV__BASE__REGEXP_POSIX)
     regmatch_t pmatch[result.getSize()];
     int code = regexec(
       static_cast<regex_t*>(compiled),
-      value.getElements(),
+      value.getElements() + start,
       result.getSize(),
       pmatch,
       0
     );
-    if (!code) { // successful
+    if (code == 0) { // successful
       for (int i = 1; i < result.getSize(); ++i) {
-        result[i] = Substring(pmatch[i].rm_so, pmatch[i].rm_eo);
+        result[i] = Substring(pmatch[i].rm_so + start, pmatch[i].rm_eo + start);
       }
       return Substring(pmatch[0].rm_so, pmatch[0].rm_eo);
     } else if (code == REG_NOMATCH) {
@@ -281,13 +282,25 @@ public:
   
   void run() override
   {
+    if (auto name = SystemInformation::getOS()) {
+      if ((name != "GNU/Linux") && (name != "macOS")) {
+        return;
+      }
+    }
+    
+    TEST_ASSERT(RegExp::isRegularExpression("([0-9]+):?([A-Z]+):{0,3}:.*"));
+    TEST_ASSERT(!RegExp::isRegularExpression("?"));
+    TEST_ASSERT(!RegExp::isRegularExpression("[A--]"));
+
     RegExp r1("[0-9]+");
     TEST_ASSERT(!r1.doesMatch(""));
     TEST_ASSERT(!r1.doesMatch("abc"));
+    TEST_ASSERT(r1.doesMatch("1"));
     TEST_ASSERT(r1.doesMatch("123"));
 
-    RegExp r2("[0-9]+.[0-9]+");
+    RegExp r2("[0-9]+\\.[0-9]+");
     TEST_ASSERT(r2.doesMatch("123.456"));
+    TEST_ASSERT(!r2.doesMatch("123.456e123"));
 
     RegExp r3("[a-zA-Z_][a-zA-Z0-9_]*");
     TEST_ASSERT(!r3.doesMatch("123"));

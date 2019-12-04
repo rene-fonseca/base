@@ -65,13 +65,15 @@ private:
     Copy constructor. Does not copy the internal locking object but creates a
     new locking object.
   */
-  inline Synchronizeable(const Synchronizeable& copy) throw(LockException) {
+  inline Synchronizeable(const Synchronizeable& copy)
+  {
   }
 
   /**
     Assignment operator. Does not modify the internal locking object.
   */
-  inline Synchronizeable& operator=(const Synchronizeable& assign) throw() {
+  inline Synchronizeable& operator=(const Synchronizeable& assign) noexcept
+  {
     return *this;
   }
 protected:
@@ -79,27 +81,31 @@ protected:
   /**
     Initializes a synchronize able object.
   */
-  inline Synchronizeable() throw(LockException) {
+  inline Synchronizeable()
+  {
   }
   
   /**
     Acquires an exclusive lock on this object.
   */
-  inline void exclusiveLock() const throw(LockException) {
+  inline void exclusiveLock() const
+  {
     lock.exclusiveLock();
   }
   
   /**
     Acquires a shared lock on this object.
   */
-  inline void sharedLock() const throw(LockException) {
+  inline void sharedLock() const
+  {
     lock.sharedLock();
   }
   
   /**
     Releases the lock on this object.
   */
-  inline void releaseLock() const throw(LockException) {
+  inline void releaseLock() const
+  {
     lock.releaseLock();
   }
 };
@@ -121,19 +127,22 @@ protected:
   /**
     Acquires an exclusive lock on this object.
   */
-  inline void exclusiveLock() const noexcept {
+  inline void exclusiveLock() const noexcept
+  {
   }
 
   /**
     Acquires a shared lock on this object.
   */
-  inline void sharedLock() const noexcept {
+  inline void sharedLock() const noexcept
+  {
   }
 
   /**
     Releases the lock on this object.
   */
-  inline void releaseLock() const noexcept {
+  inline void releaseLock() const noexcept
+  {
   }
 };
 

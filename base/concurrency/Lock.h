@@ -31,9 +31,9 @@ class _COM_AZURE_DEV__BASE__API Lock {
 private:
 
   /* Disable the default copy constructor. */
-  Lock(const Lock& copy) throw();
+  Lock(const Lock& copy) noexcept = delete;
   /* Disable the default assignment operator. */
-  Lock& operator=(const Lock& assign) throw();
+  Lock& operator=(const Lock& assign) noexcept = delete;
 public:
 
   typedef ExclusiveSynchronize<Lock> Sync;
@@ -41,26 +41,27 @@ public:
   /**
     Initializes lock.
   */
-  inline Lock() throw() {
+  inline Lock() noexcept
+  {
   }
   
   /**
     Acquires an exclusive lock.
   */
-  virtual void exclusiveLock() const throw(LockException) = 0;
+  virtual void exclusiveLock() const = 0;
   
   /**
     Tries to acquire an exclusive lock.
 
     @return True on success.
   */
-  virtual bool tryExclusiveLock() const throw(LockException) = 0;
+  virtual bool tryExclusiveLock() const = 0;
   
   /**
     Acquires a shared lock. For some lock implementations this will acquire an
     exclusive lock.
   */
-  virtual void sharedLock() const throw(LockException) = 0;
+  virtual void sharedLock() const = 0;
   
   /**
     Tries to acquire a shared lock. For some lock implementations this will
@@ -68,12 +69,12 @@ public:
 
     @return True on success.
   */
-  virtual bool trySharedLock() const throw(LockException) = 0;
+  virtual bool trySharedLock() const = 0;
   
   /**
     Releases the lock.
   */
-  virtual void releaseLock() const throw(LockException) = 0;
+  virtual void releaseLock() const = 0;
   
   /**
     Destroy lock.

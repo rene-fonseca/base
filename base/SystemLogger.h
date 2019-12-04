@@ -14,7 +14,7 @@
 #pragma once
 
 #include <base/Object.h>
-#include <base/string/String.h>
+#include <base/string/WideString.h>
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
@@ -36,7 +36,17 @@ public:
   /**
     Sends the specified message to the system logger.
   */
-  static void write(MessageType type, const String& message) throw();
+  static void write(MessageType type, const String& message) noexcept;
+
+  /**
+    Sends the specified message to the system logger.
+  */
+  static void write(MessageType type, const WideString& message) noexcept;
+
+  /**
+    Sends the specified message to the system logger.
+  */
+  static void write(MessageType type, const char* message) noexcept;
 };
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

@@ -24,14 +24,12 @@
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
-// TAG: add support for \0 in strings!
-
-// std::u32string
-
-// TAG: need to figure out String and WideString API - use string and wstring instead?
-
-void SystemLogger::write(MessageType type, const String& message) throw()
+void SystemLogger::write(MessageType type, const String& message) noexcept
 {
+  if (!message) {
+    return;
+  }
+
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   static WORD messageType[] = {
     EVENTLOG_INFORMATION_TYPE,
@@ -41,23 +39,23 @@ void SystemLogger::write(MessageType type, const String& message) throw()
   HANDLE eventSource = 0;
   Application* application = Application::getApplication();
   if (application) {
-    eventSource = ::RegisterEventSource(
+    eventSource = ::RegisterEventSourceW(
       nullptr,
       ToWCharString(application->getFormalName())
     );
   } else {
-    eventSource = ::RegisterEventSource(nullptr, L"Unspecified");
+    eventSource = ::RegisterEventSourceW(nullptr, L"Unspecified");
   }
   if (eventSource != 0) {
     LPCTSTR strings[1];
     ToWCharString w(message);
     strings[0] = w;
-    ::ReportEvent(eventSource, messageType[type], 0, 0, 0, 1, 0, strings, 0);
+    ::ReportEventW(eventSource, messageType[type], 0, 0, 0, 1, 0, strings, 0);
     ::DeregisterEventSource(eventSource);
   }
 #else // unix
   // TAG: not MT-safe
-  static int messageType[] = {LOG_INFO, LOG_WARNING, LOG_ERR};
+  static int messageType[] = { LOG_INFO, LOG_WARNING, LOG_ERR };
   Application* application = Application::getApplication();
   if (application) {
     String formalName = application->getFormalName();
@@ -67,7 +65,8 @@ void SystemLogger::write(MessageType type, const String& message) throw()
 #else
     syslog(LOG_USER | messageType[type], message.getElements(), "");
 #endif
-  } else {
+  }
+  else {
     openlog("Unspecified", LOG_PID, 0);
 #if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__MACOS)
     syslog(LOG_USER | messageType[type], message.getElements(), "");
@@ -77,6 +76,16 @@ void SystemLogger::write(MessageType type, const String& message) throw()
   }
   closelog();
 #endif // flavor
+}
+
+void SystemLogger::write(MessageType type, const WideString& message) noexcept
+{
+  write(type, String(message));
+}
+
+void SystemLogger::write(MessageType type, const char* message) noexcept
+{
+  write(type, String(message));
 }
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

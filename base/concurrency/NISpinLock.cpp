@@ -36,7 +36,7 @@ void NISpinLock::exclusiveLock() const noexcept
     BASSERT((current == LOCK_FREE) || (current == LOCK_TAKEN));
 #endif
 
-    // yield
+    Atomic::yield();
   }
 }
 

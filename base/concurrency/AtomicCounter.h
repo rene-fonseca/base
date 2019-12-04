@@ -20,63 +20,28 @@
 // https://gcc.gnu.org/onlinedocs/gcc/_005f_005fatomic-Builtins.html
 // https://en.cppreference.com/w/cpp/atomic/memory_order
 // https://gcc.gnu.org/wiki/Atomic/GCCMM/AtomicSync
+#if defined(__has_builtin)
 #  if __has_builtin(__atomic_add_fetch) && defined(__ATOMIC_RELAXED) && defined(__ATOMIC_ACQ_REL)
 #    define _COM_AZURE_DEV__BASE__USE_BUILT_IN_ATOMIC
 #  endif
+#endif
 #endif
 
 #if defined(_COM_AZURE_DEV__BASE__USE_BUILT_IN_ATOMIC)
 #elif (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32) && \
       (_COM_AZURE_DEV__BASE__COMPILER == _COM_AZURE_DEV__BASE__COMPILER_MSC)
 #  include <intrin.h> // header approved
+#if ((_COM_AZURE_DEV__BASE__ARCH == _COM_AZURE_DEV__BASE__X86) || (_COM_AZURE_DEV__BASE__ARCH == _COM_AZURE_DEV__BASE__X86_64))
+#  define _COM_AZURE_DEV__BASE__USE_WIN32_INTRINSIC_X86
+#endif
 #else
 #  include <atomic> // header approved
 #endif
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
-template<typename TYPE>
-class MapToSignedType {
-};
-
-template<>
-class MapToSignedType<unsigned char> {
-public:
-
-  typedef char SignedType;
-};
-
-template<>
-class MapToSignedType<unsigned short> {
-public:
-
-  typedef short SignedType;
-};
-
-template<>
-class MapToSignedType<unsigned int> {
-public:
-
-  typedef int SignedType;
-};
-
-template<>
-class MapToSignedType<unsigned long> {
-public:
-
-  typedef long SignedType;
-};
-
-template<>
-class MapToSignedType<unsigned long long> {
-public:
-
-  typedef long long SignedType;
-};
-
-#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32) && \
-    (_COM_AZURE_DEV__BASE__COMPILER == _COM_AZURE_DEV__BASE__COMPILER_MSC)
-namespace _win32 {
+#if defined(_COM_AZURE_DEV__BASE__USE_WIN32_INTRINSIC_X86)
+namespace internal {
 
   template<typename TYPE>
   TYPE atomicExchange(volatile TYPE* target, const TYPE value) noexcept;
@@ -129,6 +94,13 @@ namespace _win32 {
   }
 
   template<>
+  inline int atomicAdd(volatile int* addend, const int value) noexcept
+  {
+    BASSERT(sizeof(int) == sizeof(long));
+    return _InterlockedExchangeAdd(reinterpret_cast<volatile long*>(addend), value);
+  }
+
+  template<>
   inline long atomicAdd(volatile long* addend, const long value) noexcept
   {
     return _InterlockedExchangeAdd(addend, value);
@@ -156,6 +128,13 @@ namespace _win32 {
   }
 
   template<>
+  inline int atomicCompareExchange(volatile int* target, const int exchange, const int comparand) noexcept
+  {
+    BASSERT(sizeof(int) == sizeof(long));
+    return _InterlockedCompareExchange(reinterpret_cast<volatile long*>(target), exchange, comparand);
+  }
+
+  template<>
   inline long atomicCompareExchange(volatile long* target, const long exchange, const long comparand) noexcept
   {
     return _InterlockedCompareExchange(target, exchange, comparand);
@@ -169,10 +148,57 @@ namespace _win32 {
 }
 #endif
 
+/** Atomic helpers. */
+class _COM_AZURE_DEV__BASE__API Atomic {
+public:
+
+  /** Yields CPU. */
+  static inline void yield() noexcept
+  {
+#if (_COM_AZURE_DEV__BASE__COMPILER == _COM_AZURE_DEV__BASE__COMPILER_MSC)
+#if (_COM_AZURE_DEV__BASE__ARCH == _COM_AZURE_DEV__BASE__ARM)
+    __yield();
+#endif
+#endif
+  }
+
+  /** Thread fence. */
+  static inline void threadFence() noexcept
+  {
+#if defined(_COM_AZURE_DEV__BASE__USE_BUILT_IN_ATOMIC)
+    __atomic_thread_fence(__ATOMIC_SEQ_CST);
+#elif defined(_COM_AZURE_DEV__BASE__USE_WIN32_INTRINSIC_X86)
+    _ReadWriteBarrier();
+    static long dummy = 0;
+    _InterlockedCompareExchange(&dummy, 0, 0);
+    _ReadWriteBarrier();
+#elif (_COM_AZURE_DEV__BASE__COMPILER == _COM_AZURE_DEV__BASE__COMPILER_MSC) && \
+      (_COM_AZURE_DEV__BASE__ARCH == _COM_AZURE_DEV__BASE__ARM)
+    __dmb(0xb) // inner shared data memory barrier
+#else
+    atomic_thread_fence(std::memory_order_acquire);
+#endif
+  }
+
+  /** Signal fence. */
+  static inline void signalFence() noexcept
+  {
+#if defined(_COM_AZURE_DEV__BASE__USE_BUILT_IN_ATOMIC)
+    __atomic_signal_fence(__ATOMIC_SEQ_CST);
+#elif defined(_COM_AZURE_DEV__BASE__USE_WIN32_INTRINSIC_X86)
+    _ReadWriteBarrier();
+#else
+    atomic_signal_fence(std::memory_order_acquire);
+#endif
+  }
+};
+
 /**
   MT-safe counter. Try to avoid atomic load() if result is already available from
   previous operation. It is recommended to use signed types to make it easier to
   detect problems around 0.
+
+  Make sure to use common alignment for the given type.
 
   @short Atomic counter
   @see SpinLock
@@ -187,8 +213,7 @@ private:
   /** The value of the counter. */
 #if defined(_COM_AZURE_DEV__BASE__USE_BUILT_IN_ATOMIC)
   mutable volatile TYPE value;
-#elif (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32) && \
-      (_COM_AZURE_DEV__BASE__COMPILER == _COM_AZURE_DEV__BASE__COMPILER_MSC)
+#elif defined(_COM_AZURE_DEV__BASE__USE_WIN32_INTRINSIC_X86)
   volatile TYPE value;
 #else
   volatile std::atomic<TYPE> value;
@@ -201,9 +226,8 @@ private:
   {
 #if defined(_COM_AZURE_DEV__BASE__USE_BUILT_IN_ATOMIC)
     return __atomic_load_n(&value, __ATOMIC_ACQUIRE); // __ATOMIC_RELAXED, __ATOMIC_SEQ_CST, __ATOMIC_ACQUIRE, __ATOMIC_CONSUME
-#elif (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32) && \
-    (_COM_AZURE_DEV__BASE__COMPILER == _COM_AZURE_DEV__BASE__COMPILER_MSC)
-    return _win32::atomicAdd<TYPE>(const_cast<volatile TYPE*>(&value), 0);
+#elif defined(_COM_AZURE_DEV__BASE__USE_WIN32_INTRINSIC_X86)
+    return internal::atomicAdd<TYPE>(const_cast<volatile TYPE*>(&value), 0);
 #else
     return value;
 #endif
@@ -217,9 +241,8 @@ private:
 #if defined(_COM_AZURE_DEV__BASE__USE_BUILT_IN_ATOMIC)
     BASSERT(__atomic_is_lock_free(sizeof(value), &value));
     __atomic_store_n(&value, desired, __ATOMIC_RELEASE); // __ATOMIC_RELAXED, __ATOMIC_SEQ_CST, __ATOMIC_RELEASE
-#elif (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32) && \
-      (_COM_AZURE_DEV__BASE__COMPILER == _COM_AZURE_DEV__BASE__COMPILER_MSC)
-    _win32::atomicExchange<TYPE>(&value, desired);
+#elif defined(_COM_AZURE_DEV__BASE__USE_WIN32_INTRINSIC_X86)
+    internal::atomicExchange<TYPE>(&value, desired);
 #else
     value.store(desired);
 #endif
@@ -321,9 +344,8 @@ public:
   {
 #if defined(_COM_AZURE_DEV__BASE__USE_BUILT_IN_ATOMIC)
     return __atomic_fetch_add(&value, _value, __ATOMIC_ACQ_REL); // all memory orders
-#elif (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32) && \
-      (_COM_AZURE_DEV__BASE__COMPILER == _COM_AZURE_DEV__BASE__COMPILER_MSC)
-    return _win32::atomicAdd<TYPE>(&value, _value) + _value;
+#elif defined(_COM_AZURE_DEV__BASE__USE_WIN32_INTRINSIC_X86)
+    return internal::atomicAdd<TYPE>(&value, _value) + _value;
 #else
     return value += _value;
 #endif
@@ -336,9 +358,8 @@ public:
   {
 #if defined(_COM_AZURE_DEV__BASE__USE_BUILT_IN_ATOMIC)
     return __atomic_fetch_sub(&value, _value, __ATOMIC_ACQ_REL); // all memory orders
-#elif (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32) && \
-      (_COM_AZURE_DEV__BASE__COMPILER == _COM_AZURE_DEV__BASE__COMPILER_MSC)
-    return _win32::atomicAdd<TYPE>(&value, -_value) - _value;
+#elif defined(_COM_AZURE_DEV__BASE__USE_WIN32_INTRINSIC_X86)
+    return internal::atomicAdd<TYPE>(&value, -_value) - _value;
 #else
     return value -= _value;
 #endif
@@ -371,9 +392,8 @@ public:
 #if defined(_COM_AZURE_DEV__BASE__USE_BUILT_IN_ATOMIC)
     // __ATOMIC_RELAXED, __ATOMIC_SEQ_CST, __ATOMIC_ACQUIRE, __ATOMIC_RELEASE, and __ATOMIC_ACQ_REL
     return __atomic_exchange_n(&value, desired, __ATOMIC_SEQ_CST);
-#elif (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32) && \
-      (_COM_AZURE_DEV__BASE__COMPILER == _COM_AZURE_DEV__BASE__COMPILER_MSC)
-    return _win32::atomicExchange<TYPE>(&value, desired);
+#elif defined(_COM_AZURE_DEV__BASE__USE_WIN32_INTRINSIC_X86)
+    return internal::atomicExchange<TYPE>(&value, desired);
 #else
     return value.exchange(desired);
 #endif
@@ -387,9 +407,8 @@ public:
     BASSERT(expected != desired);
 #if defined(_COM_AZURE_DEV__BASE__USE_BUILT_IN_ATOMIC)
     return __atomic_compare_exchange_n(&value, &expected, desired, false, __ATOMIC_SEQ_CST, __ATOMIC_SEQ_CST); // strong
-#elif (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32) && \
-      (_COM_AZURE_DEV__BASE__COMPILER == _COM_AZURE_DEV__BASE__COMPILER_MSC)
-    TYPE initial = _win32::atomicCompareExchange<TYPE>(&value, desired, expected);
+#elif defined(_COM_AZURE_DEV__BASE__USE_WIN32_INTRINSIC_X86)
+    TYPE initial = internal::atomicCompareExchange<TYPE>(&value, desired, expected);
     bool result = initial == expected;
     expected = initial;
     return result;
@@ -406,9 +425,8 @@ public:
     BASSERT(expected != desired);
 #if defined(_COM_AZURE_DEV__BASE__USE_BUILT_IN_ATOMIC)
     return __atomic_compare_exchange_n(&value, &expected, desired, true, __ATOMIC_SEQ_CST, __ATOMIC_SEQ_CST); // weak
-#elif (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32) && \
-      (_COM_AZURE_DEV__BASE__COMPILER == _COM_AZURE_DEV__BASE__COMPILER_MSC)
-    TYPE initial = _win32::atomicCompareExchange<TYPE>(&value, desired, expected);
+#elif defined(_COM_AZURE_DEV__BASE__USE_WIN32_INTRINSIC_X86)
+    TYPE initial = internal::atomicCompareExchange<TYPE>(&value, desired, expected);
     bool result = initial == expected;
     expected = initial;
     return result;
@@ -420,30 +438,6 @@ public:
   inline ~AtomicCounter() noexcept
   {
     store(DESTRUCT_VALUE); // for MT-consistency
-  }
-
-  static inline void threadFence() noexcept
-  {
-#if defined(_COM_AZURE_DEV__BASE__USE_BUILT_IN_ATOMIC)
-    __atomic_thread_fence(__ATOMIC_SEQ_CST);
-#elif (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32) && \
-      (_COM_AZURE_DEV__BASE__COMPILER == _COM_AZURE_DEV__BASE__COMPILER_MSC)
-    BASSERT(!"AtomicCounter::signalFence() not supported.");
-#else
-    atomic_thread_fence(std::memory_order_acquire);
-#endif
-  }
-
-  static inline void signalFence() noexcept
-  {
-#if defined(_COM_AZURE_DEV__BASE__USE_BUILT_IN_ATOMIC)
-    __atomic_signal_fence(__ATOMIC_SEQ_CST);
-#elif (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32) && \
-      (_COM_AZURE_DEV__BASE__COMPILER == _COM_AZURE_DEV__BASE__COMPILER_MSC)
-    BASSERT(!"AtomicCounter::signalFence() not supported.");
-#else
-    atomic_signal_fence(std::memory_order_acquire);
-#endif
   }
 };
 

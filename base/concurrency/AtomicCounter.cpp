@@ -16,7 +16,7 @@
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
-#if defined(_COM_AZURE_DEV__BASE__SHARED_LIBRARY_BUILD)
+#if 1 || defined(_COM_AZURE_DEV__BASE__SHARED_LIBRARY_BUILD)
 template _COM_AZURE_DEV__BASE__API class AtomicCounter<char>;
 template _COM_AZURE_DEV__BASE__API class AtomicCounter<short>;
 template _COM_AZURE_DEV__BASE__API class AtomicCounter<int>;

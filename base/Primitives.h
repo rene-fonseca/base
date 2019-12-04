@@ -997,4 +997,50 @@ inline Range<TYPE> range(const TYPE start, const TYPE stop, const TYPE step) noe
   return Range<TYPE>(start, stop, step);
 }
 
+template<typename TYPE>
+class MapToSignedType {
+};
+
+template<>
+class MapToSignedType<unsigned char> {
+public:
+
+  typedef char SignedType;
+};
+
+template<>
+class MapToSignedType<unsigned short> {
+public:
+
+  typedef short SignedType;
+};
+
+template<>
+class MapToSignedType<unsigned int> {
+public:
+
+  typedef int SignedType;
+};
+
+template<>
+class MapToSignedType<unsigned long> {
+public:
+
+  typedef long SignedType;
+};
+
+template<>
+class MapToSignedType<unsigned long long> {
+public:
+
+  typedef long long SignedType;
+};
+
+template<>
+class MapToSignedType<uint128> {
+public:
+
+  typedef int128 SignedType;
+};
+
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

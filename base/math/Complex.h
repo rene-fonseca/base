@@ -529,6 +529,18 @@ public:
   }
 
   /**
+    Adds the specified number to this number.
+
+    @param value The value to be added.
+  */
+  inline Complex& operator+=(const Imaginary) noexcept
+  {
+    real += 0;
+    imaginary += 1;
+    return *this;
+  }
+
+  /**
     Subtracts the specified complex from this number.
 
     @param value The value to be subtracted.
@@ -537,6 +549,18 @@ public:
   {
     real -= value.real;
     imaginary -= value.imaginary;
+    return *this;
+  }
+
+  /**
+    Subtracts the specified complex from this number.
+
+    @param value The value to be subtracted.
+  */
+  inline Complex& operator-=(const Imaginary) noexcept
+  {
+    real -= 0;
+    imaginary -= 1;
     return *this;
   }
 
@@ -562,6 +586,19 @@ public:
   {
     real *= value;
     imaginary *= value;
+    return *this;
+  }
+
+  /**
+    Multiplies this number with the specified value.
+
+    @param value The multiplicator.
+  */
+  inline Complex& operator*=(const Imaginary) noexcept
+  {
+    double temp = (real * 0 - imaginary * 1);
+    imaginary = (real * 1 + imaginary * 0);
+    real = temp;
     return *this;
   }
 

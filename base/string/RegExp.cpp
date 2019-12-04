@@ -26,7 +26,8 @@
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
-void RegExp::compile() throw(MemoryException) {
+void RegExp::compile()
+{
   #if defined(_COM_AZURE_DEV__BASE__REGEXP_POSIX)
     int options = 0;
     if (!caseSensitive) {
@@ -68,12 +69,14 @@ void RegExp::release() throw() {
 RegExp::RegExp() throw() : compiled(0), caseSensitive(true) {
 }
 
-RegExp::RegExp(const String& _pattern, bool _caseSensitive) throw(MemoryException)
-  : pattern(_pattern), compiled(0), caseSensitive(_caseSensitive) {
+RegExp::RegExp(const String& _pattern, bool _caseSensitive)
+  : pattern(_pattern), compiled(0), caseSensitive(_caseSensitive)
+{
   compile();
 }
 
-void RegExp::setPattern(const String& pattern) throw(MemoryException) {
+void RegExp::setPattern(const String& pattern)
+{
   release();
   this->pattern = pattern;
   compile();
@@ -81,7 +84,7 @@ void RegExp::setPattern(const String& pattern) throw(MemoryException) {
 
 RegExp::Substring RegExp::match(
   const String& value,
-  unsigned int start) const throw(RegExpException, OutOfRange)
+  unsigned int start) const
 {
   if (!compiled) {
     throw RegExpException("Regular expression is invalid", this);
@@ -126,7 +129,7 @@ RegExp::Substring RegExp::match(
 RegExp::Substring RegExp::match(
   const String& value,
   Array<Substring>& result,
-  unsigned int start) const throw(RegExpException, OutOfRange)
+  unsigned int start) const
 {
   if (!compiled) {
     throw RegExpException("Regular expression is invalid", this);

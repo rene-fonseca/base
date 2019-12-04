@@ -178,6 +178,11 @@ public:
     {
       return (offset == 0) && (static_cast<unsigned int>(end) == value.getLength());
     }
+
+    inline operator bool() const noexcept
+    {
+      return (offset >= 0) && (end >= 0);
+    }
   };
 private:
 
@@ -186,7 +191,7 @@ private:
   /** Internal compilation data. */
   void* compiled = nullptr;
   /** Specifies the case sensitivity. */
-  bool caseSensitive = false;
+  bool caseSensitive = true;
 protected:
 
   /** Compiles the regular expression. */
@@ -194,6 +199,9 @@ protected:
   /** Releases any resources. */
   void release() noexcept;
 public:
+
+  /** Returns true if the given expression is a valid regular expression. */
+  static bool isRegularExpression(const String& pattern, bool caseSensitive = true) noexcept;
 
   /**
     Initializes the regular expression in case sensitive mode.
@@ -247,6 +255,11 @@ public:
     Sets the pattern of the regular expression.
   */
   void setPattern(const String& pattern);
+
+  /**
+    Returns true if the value matches the pattern.
+  */
+  bool doesMatch(const String& value, unsigned int start = 0) const;
 
   /**
     Matches the specified string with the regular expression. Raises OutOfRange

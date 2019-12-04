@@ -13,6 +13,7 @@
 
 #include <base/platforms/features.h>
 #include <base/string/RegExp.h>
+#include <base/UnitTest.h>
 
 #if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__GNULINUX) || \
     (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__MACOS)
@@ -73,12 +74,11 @@ void RegExp::release() noexcept
 }
 
 RegExp::RegExp() noexcept
-  : compiled(0), caseSensitive(true)
 {
 }
 
 RegExp::RegExp(const String& _pattern, bool _caseSensitive)
-  : pattern(_pattern), compiled(0), caseSensitive(_caseSensitive)
+  : pattern(_pattern), caseSensitive(_caseSensitive)
 {
   compile();
 }
@@ -88,6 +88,80 @@ void RegExp::setPattern(const String& pattern)
   release();
   this->pattern = pattern;
   compile();
+}
+
+bool RegExp::isRegularExpression(const String& pattern, bool caseSensitive) noexcept
+{
+  #if defined(_COM_AZURE_DEV__BASE__REGEXP_POSIX)
+    int options = 0;
+    if (!caseSensitive) {
+      options |= REG_ICASE;
+    }
+    regex_t preq;
+    int result = regcomp(&preq, pattern.getElements(), options);
+    if (result) { // succesful
+      regfree(&preq);
+      return true;
+    }
+    return false;
+  #elif defined(_COM_AZURE_DEV__BASE__REGEXP_PCRE)
+    int errorOffset = 0;
+    int options = 0;
+    if (!caseSensitive) {
+      options |= PCRE_CASELESS;
+    }
+    void* compiled = pcre_compile(pattern.getElements(), options, 0, &errorOffset, 0);
+    if (compiled) {
+      pcre_free(compiled);
+      return true;
+    }
+  #else // no regexp support
+  #endif
+  return false;
+}
+
+bool RegExp::doesMatch(
+  const String& value,
+  unsigned int start) const
+{
+  if (!compiled) {
+    throw RegExpException("Regular expression is invalid.", this);
+  }
+  if (start >= value.getLength()) {
+    throw OutOfRange(this);
+  }
+  #if defined(_COM_AZURE_DEV__BASE__REGEXP_POSIX)
+    regmatch_t pmatch[1];
+    int code = regexec(
+      static_cast<regex_t*>(compiled),
+      value.getElements(),
+      1,
+      pmatch,
+      0
+    );
+    if (!code) { // successful
+      return true;
+    } else if (code == REG_NOMATCH) {
+      return false;
+    } else {
+      throw RegExpException(this); // should never happen
+    }
+  #elif defined(_COM_AZURE_DEV__BASE__REGEXP_PCRE)
+    int offsets[3]; // yes 3 is correct - pcre_exec uses offsets[2] for temp. storage
+    int code = pcre_exec((const pcre*)compiled, 0, value.getElements(), value.getLength(), start, 0, offsets, 3);
+    if (code < 0) { // error
+      if (code == PCRE_ERROR_NOMATCH) {
+        return false;
+      } else if (code == PCRE_ERROR_NOMEMORY) {
+        throw MemoryException(this);
+      } else {
+        throw RegExpException(this); // should never happen
+      }
+    }
+    return true;
+  #else // no regexp support
+    return false; // never here - RegExpException is raised first
+  #endif
 }
 
 RegExp::Substring RegExp::match(
@@ -194,5 +268,36 @@ RegExp::Substring RegExp::match(
     return Substring(); // never here - RegExpException is raised first 'cause compiled is 0
   #endif
 }
+
+#if defined(_COM_AZURE_DEV__BASE__TESTS)
+
+class TEST_CLASS(RegExp) : public UnitTest {
+public:
+
+  TEST_PRIORITY(80);
+  TEST_PROJECT("base/string");
+  TEST_IMPACT(CRITICAL);
+  TEST_TIMEOUT_MS(30 * 1000);
+  
+  void run() override
+  {
+    RegExp r1("[0-9]+");
+    TEST_ASSERT(!r1.doesMatch(""));
+    TEST_ASSERT(!r1.doesMatch("abc"));
+    TEST_ASSERT(r1.doesMatch("123"));
+
+    RegExp r2("[0-9]+.[0-9]+");
+    TEST_ASSERT(r2.doesMatch("123.456"));
+
+    RegExp r3("[a-zA-Z_][a-zA-Z0-9_]*");
+    TEST_ASSERT(!r3.doesMatch("123"));
+    TEST_ASSERT(r3.doesMatch("myId"));
+    TEST_ASSERT(r3.doesMatch("MY_ID_123"));
+  }
+};
+
+TEST_REGISTER(RegExp);
+
+#endif
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

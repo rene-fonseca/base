@@ -14,7 +14,8 @@
 #include <base/platforms/features.h>
 #include <base/string/RegExp.h>
 
-#if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__GNULINUX)
+#if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__GNULINUX) || \
+    (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__MACOS)
 #  define _COM_AZURE_DEV__BASE__REGEXP_POSIX
 #endif
 

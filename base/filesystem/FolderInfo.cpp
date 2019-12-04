@@ -13,6 +13,7 @@
 
 #include <base/platforms/features.h>
 #include <base/filesystem/FolderInfo.h>
+#include <base/filesystem/FileSystemException.h>
 #include <base/concurrency/Thread.h>
 
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
@@ -66,8 +67,9 @@ FolderInfo::FolderInfo()
 {
 }
 
-FolderInfo::FolderInfo(const String& _path) throw(FileSystemException)
-  : path(_path), mode(0), links(0) {
+FolderInfo::FolderInfo(const String& _path)
+  : path(_path), mode(0), links(0)
+{
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   bool error = false;
   HANDLE folder = ::CreateFile(ToWCharString(path), // file name
@@ -358,12 +360,12 @@ FolderInfo::FolderInfo(const String& _path) throw(FileSystemException)
 #endif // flavor
 }
 
-FolderInfo FolderInfo::getParent() const throw(FileSystemException)
+FolderInfo FolderInfo::getParent() const
 {
   return FolderInfo(); // not impl
 }
 
-Array<String> FolderInfo::getEntries() const throw(FileSystemException)
+Array<String> FolderInfo::getEntries() const
 {
   Array<String> result;
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)

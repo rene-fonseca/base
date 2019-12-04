@@ -13,6 +13,7 @@
 
 #include <base/platforms/features.h>
 #include <base/filesystem/FileInfo.h>
+#include <base/filesystem/FileSystemException.h>
 #include <base/security/Trustee.h>
 
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
@@ -60,8 +61,9 @@ typedef struct _REPARSE_DATA_BUFFER {
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
-FileInfo::FileInfo(const String& _path) throw(FileSystemException)
-  : path(_path), mode(0), links(0) {
+FileInfo::FileInfo(const String& _path)
+  : path(_path)
+{
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   bool error = false;
   HANDLE file = ::CreateFile(ToWCharString(path), // file name

@@ -14,7 +14,6 @@
 #pragma once
 
 #include <base/Object.h>
-#include <base/filesystem/FileSystemException.h>
 #include <base/collection/Array.h>
 #include <base/string/String.h>
 #include <base/Date.h>
@@ -94,17 +93,17 @@ public:
 
     @param path the path of the folder.
   */
-  FolderInfo(const String& path) throw(FileSystemException);
+  FolderInfo(const String& path);
 
   /**
     Returns a folder object for the parent folder.
   */
-  FolderInfo getParent() const throw(FileSystemException);
+  FolderInfo getParent() const;
 
   /**
     Returns the names of the entries (files and subfolders) of this folder.
   */
-  Array<String> getEntries() const throw(FileSystemException);
+  Array<String> getEntries() const;
 
   /**
     Returns the owner of the folder.

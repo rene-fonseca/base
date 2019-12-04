@@ -13,6 +13,7 @@
 
 #include <base/platforms/features.h>
 #include <base/filesystem/FolderMonitor.h>
+#include <base/filesystem/FileSystemException.h>
 #include <base/Profiler.h>
 
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
@@ -22,7 +23,7 @@
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
-FolderMonitor::FolderMonitor(const String& path) throw(ResourceException)
+FolderMonitor::FolderMonitor(const String& path)
 {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   handle = ::FindFirstChangeNotification(
@@ -39,7 +40,7 @@ FolderMonitor::FolderMonitor(const String& path) throw(ResourceException)
 #endif // flavor
 }
 
-bool FolderMonitor::isSignaled() const throw()
+bool FolderMonitor::isSignaled() const noexcept
 {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   DWORD result = ::WaitForSingleObject(handle, 0);
@@ -52,7 +53,7 @@ bool FolderMonitor::isSignaled() const throw()
 #endif // flavor
 }
 
-void FolderMonitor::wait() const throw()
+void FolderMonitor::wait() const noexcept
 {
   Profiler::WaitTask profile("FolderMonitor::wait()");
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
@@ -62,7 +63,7 @@ void FolderMonitor::wait() const throw()
 #endif // flavor
 }
 
-bool FolderMonitor::wait(unsigned int milliseconds) const throw()
+bool FolderMonitor::wait(unsigned int milliseconds) const noexcept
 {
   Profiler::WaitTask profile("FolderMonitor::wait()");
   
@@ -75,7 +76,8 @@ bool FolderMonitor::wait(unsigned int milliseconds) const throw()
 #endif // flavor
 }
 
-FolderMonitor::~FolderMonitor() throw() {
+FolderMonitor::~FolderMonitor() noexcept
+{
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   ::FindCloseChangeNotification(handle); // should never fail
 #else // unix

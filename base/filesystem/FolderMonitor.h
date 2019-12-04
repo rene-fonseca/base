@@ -15,7 +15,6 @@
 
 #include <base/Object.h>
 #include <base/string/String.h>
-#include <base/filesystem/FileSystemException.h>
 #include <base/OperatingSystem.h>
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
@@ -39,29 +38,29 @@ public:
     
     @param path Specifies the folder to monitor.
   */
-  FolderMonitor(const String& path) throw(ResourceException);
+  FolderMonitor(const String& path);
 
   /**
     Returns true if the an event has occured.
   */
-  bool isSignaled() const throw();
+  bool isSignaled() const noexcept;
 
   /**
     Waits for an event.
   */
-  void wait() const throw();
+  void wait() const noexcept;
 
   /**
     Waits for an event.
     
     @param milliseconds The timeout period.
   */
-  bool wait(unsigned int milliseconds) const throw();
+  bool wait(unsigned int milliseconds) const noexcept;
   
   /**
     Destroys the monitor.
   */
-  ~FolderMonitor() throw();
+  ~FolderMonitor() noexcept;
 };
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

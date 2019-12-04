@@ -14,7 +14,6 @@
 #pragma once
 
 #include <base/Object.h>
-#include <base/filesystem/FileSystemException.h>
 #include <base/string/String.h>
 #include <base/Date.h>
 #include <base/security/User.h>
@@ -93,7 +92,7 @@ public:
 
     @param path the path of the file.
   */
-  FileInfo(const String& path) throw(FileSystemException);
+  FileInfo(const String& path);
   
   /**
     Returns the size of the file in bytes.

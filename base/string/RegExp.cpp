@@ -14,6 +14,10 @@
 #include <base/platforms/features.h>
 #include <base/string/RegExp.h>
 
+#if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__GNULINUX)
+#  define _COM_AZURE_DEV__BASE__REGEXP_POSIX
+#endif
+
 #if defined(_COM_AZURE_DEV__BASE__REGEXP_POSIX)
 #  include <regex.h>
 #elif defined(_COM_AZURE_DEV__BASE__REGEXP_PCRE)
@@ -54,7 +58,8 @@ void RegExp::compile()
   #endif
 }
 
-void RegExp::release() throw() {
+void RegExp::release() noexcept
+{
   if (compiled) {
   #if defined(_COM_AZURE_DEV__BASE__REGEXP_POSIX)
     regfree(static_cast<regex_t*>(compiled));
@@ -62,11 +67,13 @@ void RegExp::release() throw() {
   #elif defined(_COM_AZURE_DEV__BASE__REGEXP_PCRE)
     pcre_free(compiled);
   #endif
-    compiled = 0;
+    compiled = nullptr;
   }
 }
 
-RegExp::RegExp() throw() : compiled(0), caseSensitive(true) {
+RegExp::RegExp() noexcept
+  : compiled(0), caseSensitive(true)
+{
 }
 
 RegExp::RegExp(const String& _pattern, bool _caseSensitive)
@@ -87,7 +94,7 @@ RegExp::Substring RegExp::match(
   unsigned int start) const
 {
   if (!compiled) {
-    throw RegExpException("Regular expression is invalid", this);
+    throw RegExpException("Regular expression is invalid.", this);
   }
   if (start >= value.getLength()) {
     throw OutOfRange(this);
@@ -132,7 +139,7 @@ RegExp::Substring RegExp::match(
   unsigned int start) const
 {
   if (!compiled) {
-    throw RegExpException("Regular expression is invalid", this);
+    throw RegExpException("Regular expression is invalid.", this);
   }
   if (start >= value.getLength()) {
     throw OutOfRange(this);

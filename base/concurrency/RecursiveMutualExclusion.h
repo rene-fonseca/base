@@ -48,7 +48,7 @@ public:
     Initializes a mutual exclusion object in the unlocked state. Raises
     ResourceException if unable to initialize the object.
   */
-  RecursiveMutualExclusion() throw(ResourceException);
+  RecursiveMutualExclusion();
 
   /**
     Requests a lock on this mutual exclusion object. The calling thread is
@@ -56,7 +56,7 @@ public:
     the calling thread already has a lock on the object. Raises
     MutualExclusionException on undefined failure.
   */
-  void exclusiveLock() const throw(MutualExclusionException);
+  void exclusiveLock() const;
 
   /**
     Attempts to lock this mutual exclusion object. Raises
@@ -65,7 +65,7 @@ public:
     @return True if the mutual exclusion was locked successfully or already
     was locked by the calling thread.
   */
-  bool tryExclusiveLock() const throw(MutualExclusionException);
+  bool tryExclusiveLock() const;
 
   /**
     Requests a lock on this mutual exclusion object. The calling thread is
@@ -73,7 +73,7 @@ public:
     the calling thread already has a lock on the object. Raises
     MutualExclusionException on undefined failure.
   */
-  inline void sharedLock() const throw(MutualExclusionException)
+  inline void sharedLock() const
   {
     exclusiveLock();
   }
@@ -85,7 +85,7 @@ public:
     @return True if the mutual exclusion was locked successfully or already
     was locked by the calling thread.
   */
-  inline bool trySharedLock() const throw(MutualExclusionException)
+  inline bool trySharedLock() const
   {
     return tryExclusiveLock();
   }
@@ -96,7 +96,7 @@ public:
     the behavior is undefined. Raises MutualExclusionException on
     failure.
   */
-  void releaseLock() const throw(MutualExclusionException);
+  void releaseLock() const;
 
   /**
     Destroys the mutual exclusion object. The mutual exclusion must be in the

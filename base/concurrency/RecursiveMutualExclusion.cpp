@@ -17,12 +17,12 @@
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
-RecursiveMutualExclusion::RecursiveMutualExclusion() throw(ResourceException)
+RecursiveMutualExclusion::RecursiveMutualExclusion()
   : owner(0), numberOfLocks(0)
 {
 }
 
-void RecursiveMutualExclusion::exclusiveLock() const throw(MutualExclusionException)
+void RecursiveMutualExclusion::exclusiveLock() const
 {
   Profiler::WaitTask profile("RecursiveMutualExclusion::exclusiveLock()");
   
@@ -42,7 +42,7 @@ void RecursiveMutualExclusion::exclusiveLock() const throw(MutualExclusionExcept
   }
 }
 
-bool RecursiveMutualExclusion::tryExclusiveLock() const throw(MutualExclusionException)
+bool RecursiveMutualExclusion::tryExclusiveLock() const
 {
   Profiler::WaitTask profile("RecursiveMutualExclusion::tryExclusiveLock()");
   
@@ -60,7 +60,7 @@ bool RecursiveMutualExclusion::tryExclusiveLock() const throw(MutualExclusionExc
   }
 }
 
-void RecursiveMutualExclusion::releaseLock() const throw(MutualExclusionException)
+void RecursiveMutualExclusion::releaseLock() const
 {
   Profiler::pushSignal("RecursiveMutualExclusion::releaseLock()");
   // Thread::Identifier id = Thread::getIdentifier();

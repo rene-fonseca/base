@@ -56,7 +56,7 @@ MutualExclusion::MutualExclusion() throw(ResourceException)
 #endif
 }
 
-void MutualExclusion::exclusiveLock() const throw(MutualExclusionException)
+void MutualExclusion::exclusiveLock() const
 {
   Profiler::WaitTask profile("MutualExclusion::exclusiveLock()");
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
@@ -73,7 +73,7 @@ void MutualExclusion::exclusiveLock() const throw(MutualExclusionException)
 #endif
 }
 
-bool MutualExclusion::tryExclusiveLock() const throw(MutualExclusionException)
+bool MutualExclusion::tryExclusiveLock() const
 {
   Profiler::WaitTask profile("MutualExclusion::tryExclusiveLock()");
   
@@ -93,7 +93,7 @@ bool MutualExclusion::tryExclusiveLock() const throw(MutualExclusionException)
 #endif
 }
 
-void MutualExclusion::releaseLock() const throw(MutualExclusionException)
+void MutualExclusion::releaseLock() const
 {
   Profiler::pushSignal("MutualExclusion::releaseLock()");
 

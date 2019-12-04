@@ -53,7 +53,7 @@ public:
     be acquired. Results are undefined if the calling thread holds the
     read-write lock. Raises ReadWriteLockException on failure.
   */
-  void exclusiveLock() const throw(ReadWriteLockException);
+  void exclusiveLock() const;
 
   /**
     Attempts to acquire an exclusive lock on the read-write lock. Raises the
@@ -61,7 +61,7 @@ public:
 
     @return True if the exclusive lock was successfully acquired.
   */
-  bool tryExclusiveLock() const throw(ReadWriteLockException);
+  bool tryExclusiveLock() const;
 
   /**
     Acquires a shared lock (read-lock) on the read-write lock. The calling
@@ -69,7 +69,7 @@ public:
     calling thread already holds a lock. Raises the exception
     ReadWriteLockException on failure.
   */
-  void sharedLock() const throw(ReadWriteLockException);
+  void sharedLock() const;
 
   /**
     Attempts to acquire a shared lock on the read-write lock. Raises the
@@ -77,14 +77,14 @@ public:
 
     @return True if the shared lock was successfully acquired.
   */
-  bool trySharedLock() const throw(ReadWriteLockException);
+  bool trySharedLock() const;
 
   /**
     This method unlocks the read-write lock. Results are undefines if the
     calling thread does not hold the lock. Raises the exception
     ReadWriteLockException on failure.
   */
-  void releaseLock() const throw(ReadWriteLockException);
+  void releaseLock() const;
 
   /**
     Destroys the read-write lock object. The lock must be in the unlocked

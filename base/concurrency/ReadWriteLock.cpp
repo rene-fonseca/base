@@ -187,7 +187,7 @@ ReadWriteLock::ReadWriteLock() throw(ResourceException)
 #endif
 }
 
-void ReadWriteLock::exclusiveLock() const throw(ReadWriteLockException)
+void ReadWriteLock::exclusiveLock() const
 {
   Profiler::WaitTask profile("ReadWriteLock::exclusiveLock()");
   
@@ -209,7 +209,7 @@ void ReadWriteLock::exclusiveLock() const throw(ReadWriteLockException)
 #endif
 }
 
-bool ReadWriteLock::tryExclusiveLock() const throw(ReadWriteLockException)
+bool ReadWriteLock::tryExclusiveLock() const
 {
   Profiler::WaitTask profile("ReadWriteLock::tryExclusiveLock()");
 
@@ -236,7 +236,7 @@ bool ReadWriteLock::tryExclusiveLock() const throw(ReadWriteLockException)
 #endif
 }
 
-void ReadWriteLock::sharedLock() const throw(ReadWriteLockException)
+void ReadWriteLock::sharedLock() const
 {
   Profiler::WaitTask profile("ReadWriteLock::sharedLock()");
   
@@ -258,7 +258,7 @@ void ReadWriteLock::sharedLock() const throw(ReadWriteLockException)
 #endif
 }
 
-bool ReadWriteLock::trySharedLock() const throw(ReadWriteLockException)
+bool ReadWriteLock::trySharedLock() const
 {
   Profiler::WaitTask profile("ReadWriteLock::trySharedLock()");
   
@@ -285,7 +285,7 @@ bool ReadWriteLock::trySharedLock() const throw(ReadWriteLockException)
 #endif
 }
 
-void ReadWriteLock::releaseLock() const throw(ReadWriteLockException)
+void ReadWriteLock::releaseLock() const
 {
   Profiler::pushSignal("ReadWriteLock::releaseLock()");
   // must be invoked by a thread which has already has a acquired an exclusive or shared lock!

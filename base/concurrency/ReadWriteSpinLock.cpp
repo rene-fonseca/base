@@ -59,7 +59,7 @@ void ReadWriteSpinLock::sharedLock() const noexcept
         ++numberOfReaders;
         return;
       } else if (numberOfReaders) {
-        ++numberOfReaders; // lock already help by reader
+        ++numberOfReaders; // lock already held by reader
         return;
       }
     }

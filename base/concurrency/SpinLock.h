@@ -72,7 +72,8 @@ public:
     Acquires a shared lock. For some lock implementations this will acquire an
     exclusive lock.
   */
-  inline void sharedLock() const noexcept {
+  inline void sharedLock() const noexcept
+  {
     exclusiveLock();
   }
   
@@ -81,7 +82,8 @@ public:
 
     @return True on success.
   */
-  inline bool trySharedLock() const noexcept {
+  inline bool trySharedLock() const noexcept
+  {
     return tryExclusiveLock();
   }
   
@@ -91,7 +93,8 @@ public:
   void releaseLock() const noexcept;
 
 #if 0 // AtomicCounter resets to bad value
-  inline ~SpinLock() {
+  inline ~SpinLock()
+  {
     releaseLock();
   }
 #endif

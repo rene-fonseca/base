@@ -16,8 +16,8 @@
 #include <base/math/Math.h>
 #include <base/string/FormatOutputStream.h>
 
-#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
-#  include <complex.h> // avoid - really bad as it defines I as macro
+#if 0 && (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
+#  include___ <complex.h> // avoid - really bad as it defines I as macro
 #  define _COM_AZURE_DEV__BASE__COMPLEX_ISOC
 #endif
 
@@ -120,9 +120,18 @@ public:
 
   typedef double Type;
 
+  /** Imaginary tag. */
+  class Imaginary {};
+  /** Imaginary symbol. Use for faster math operations. */
+  static const Imaginary I;
+
+  /** Complex number 0. */
   static const Complex ZERO;
+  /** Complex number 1. */
   static const Complex ONE;
+  /** Complex number -1. */
   static const Complex MINUS_ONE;
+  /** Complex number 1i. */
   static const Complex II;
 private:
 
@@ -137,15 +146,21 @@ private:
     return _DCOMPLEX_(real, imaginary);
     // return real + imaginary * 1i;
   }
-#endif
 
-#if defined(_COM_AZURE_DEV__BASE__COMPLEX_ISOC)
   static inline Complex getComplex(const _Dcomplex value) noexcept
   {
     return Complex(isoc::creal(value), isoc::cimag(value));
   }
 #endif
 public:
+
+  /** Polar representation. Complex number equals to r * (cos(a) + i * sin(a)). */
+  class Polar {
+  public:
+    
+    double r = 0;
+    double a = 0;
+  };
 
   /**
     Initializes complex number as (0, 0).
@@ -162,6 +177,13 @@ public:
   */
   Complex(double real) noexcept;
 
+#if 0 // C++: does it make sense to disambiguate functions by setting priority e.g. [[prefer]]
+  /** Initialize as imaginary. */
+  Complex(const Imaginary) noexcept
+    : imaginary(1) {
+  }
+#endif
+  
   /**
     Initializes complex number of the specified real and imaginary parts.
 
@@ -169,6 +191,12 @@ public:
     @param imaginary The desired imaginary part.
   */
   Complex(double real, double imaginary) noexcept;
+
+  inline Complex(const Polar& polar) noexcept
+  {
+    real = polar.r * Math::cos(polar.a);
+    imaginary = polar.r * Math::sin(polar.a);
+  }
 
   /**
     Initializes complex number of other complex number.
@@ -197,35 +225,38 @@ public:
     imaginary = 0;
     return *this;
   }
-
-  inline Complex sqrt() const noexcept
+  
+  static inline Complex sqrt(const Complex& x) noexcept
   {
 #if defined(_COM_AZURE_DEV__BASE__COMPLEX_ISOC)
-    return getComplex(isoc::csqrt(getNative()));
+    return getComplex(isoc::csqrt(x.getNative()));
 #else
-    return Complex();
+    double r = x.getModulus();
+    return Math::sqrt(r) * (x + r)/(x + r).getModulus(); // principal root
 #endif
   }
 
-  inline Complex exp() const noexcept
+  static inline Complex exp(const Complex& x) noexcept
   {
 #if defined(_COM_AZURE_DEV__BASE__COMPLEX_ISOC)
-    return getComplex(isoc::cexp(getNative()));
+    return getComplex(isoc::cexp(x.getNative()));
 #else
-    return Complex();
+    double r = Math::exp(x.real);
+    return Complex(r * Math::cos(x.imaginary), r * Math::sin(x.imaginary));
 #endif
   }
 
-  inline Complex log() const noexcept
+  static inline Complex ln(const Complex& x) noexcept
   {
 #if defined(_COM_AZURE_DEV__BASE__COMPLEX_ISOC)
-    return getComplex(isoc::clog(getNative()));
+    return getComplex(isoc::clog(x.getNative()));
 #else
-    return Complex();
+    auto p = x.getPolar();
+    return Complex(Math::ln(p.r), p.a);
 #endif
   }
 
-  inline Complex pow(const double x, const Complex& y) const noexcept
+  static inline Complex pow(const double x, const Complex& y) noexcept
   {
 #if defined(_COM_AZURE_DEV__BASE__COMPLEX_ISOC)
     return getComplex(isoc::cpow(x, y.getNative()));
@@ -235,115 +266,132 @@ public:
   }
 
 
-  inline Complex sin() const noexcept
+  static inline Complex sin(const Complex& x) noexcept
   {
 #if defined(_COM_AZURE_DEV__BASE__COMPLEX_ISOC)
-    return getComplex(isoc::csin(getNative()));
+    return getComplex(isoc::csin(x.getNative()));
 #else
-    return Complex();
+    // handle inf/nan
+    return 0.5 * (exp(I * x) - exp(-x * I))/I;
 #endif
   }
 
-  inline Complex asin() const noexcept
+  static inline Complex asin(const Complex& x) noexcept
   {
 #if defined(_COM_AZURE_DEV__BASE__COMPLEX_ISOC)
-    return getComplex(isoc::casin(getNative()));
+    return getComplex(isoc::casin(x.getNative()));
 #else
-    return Complex();
+    // handle inf/nan
+    return -(I * ln(I * x + sqrt(1 - x * x)));
 #endif
   }
 
-  inline Complex cos() const noexcept
+  static inline Complex cos(const Complex& x) noexcept
   {
 #if defined(_COM_AZURE_DEV__BASE__COMPLEX_ISOC)
-    return getComplex(isoc::ccos(getNative()));
+    return getComplex(isoc::ccos(x.getNative()));
 #else
-    return Complex();
+    // handle inf/nan
+    return 0.5 * (exp(I * x) + exp(-(I * x)));
 #endif
   }
 
-  inline Complex acos() const noexcept
+  static inline Complex acos(const Complex& x) noexcept
   {
 #if defined(_COM_AZURE_DEV__BASE__COMPLEX_ISOC)
-    return getComplex(isoc::cacos(getNative()));
+    return getComplex(isoc::cacos(x.getNative()));
 #else
-    return Complex();
+    // handle inf/nan
+    return -(I * ln(x + I * sqrt(1 - x * x)));
 #endif
   }
 
-  inline Complex tan() const noexcept
+  static inline Complex tan(const Complex& x) noexcept
   {
 #if defined(_COM_AZURE_DEV__BASE__COMPLEX_ISOC)
-    return getComplex(isoc::ctan(getNative()));
+    return getComplex(isoc::ctan(x.getNative()));
 #else
-    return Complex();
+    // handle inf/nan
+    auto a = exp(I * x);
+    auto b = exp(-(I * x));
+    return (a - b)/(I * (a + b));
 #endif
   }
 
-  inline Complex atan() const noexcept
+  static inline Complex atan(const Complex& x) noexcept
   {
 #if defined(_COM_AZURE_DEV__BASE__COMPLEX_ISOC)
-    return getComplex(isoc::catan(getNative()));
+    return getComplex(isoc::catan(x.getNative()));
 #else
-    return Complex();
+    // handle inf/nan
+    return I * 0.5 + ln((I + x)/(I - x));
 #endif
   }
 
 
-  inline Complex sinh() const noexcept
+  static inline Complex sinh(const Complex& x) noexcept
   {
 #if defined(_COM_AZURE_DEV__BASE__COMPLEX_ISOC)
-    return getComplex(isoc::csinh(getNative()));
+    return getComplex(isoc::csinh(x.getNative()));
 #else
-    return Complex();
+    // handle inf/nan
+    return 0.5 * (exp(x) - exp(-x));
 #endif
   }
 
-  inline Complex asinh() const noexcept
+  static inline Complex asinh(const Complex& x) noexcept
   {
 #if defined(_COM_AZURE_DEV__BASE__COMPLEX_ISOC)
-    return getComplex(isoc::casinh(getNative()));
+    return getComplex(isoc::casinh(x.getNative()));
 #else
-    return Complex();
+    // handle inf/nan
+    return ln(x + sqrt(x * x + 1));
 #endif
   }
 
-  inline Complex cosh() const noexcept
+  static inline Complex cosh(const Complex& x) noexcept
   {
 #if defined(_COM_AZURE_DEV__BASE__COMPLEX_ISOC)
-    return getComplex(isoc::ccosh(getNative()));
+    return getComplex(isoc::ccosh(x.getNative()));
 #else
-    return Complex();
+    // handle inf/nan
+    return 0.5 * (exp(x) + exp(-x));
 #endif
   }
 
-  inline Complex acosh() const noexcept
+  //
+  static inline Complex acosh(const Complex& x) noexcept
   {
 #if defined(_COM_AZURE_DEV__BASE__COMPLEX_ISOC)
     return getComplex(isoc::cacosh(getNative()));
 #else
-    return Complex();
+    // handle inf/nan
+    return ln(x + sqrt(x * x - 1));
 #endif
   }
 
-  inline Complex tanh() const noexcept
+  static inline Complex tanh(const Complex& x) noexcept
   {
 #if defined(_COM_AZURE_DEV__BASE__COMPLEX_ISOC)
-    return getComplex(isoc::ctanh(getNative()));
+    return getComplex(isoc::ctanh(x.getNative()));
 #else
-    return Complex();
+    // handle inf/nan
+    auto temp = exp(2 * x);
+    return (temp - 1)/(temp + 1);
 #endif
   }
 
-  inline Complex atanh() const noexcept
+  static inline Complex atanh(const Complex& x) noexcept
   {
 #if defined(_COM_AZURE_DEV__BASE__COMPLEX_ISOC)
-    return getComplex(isoc::catanh(getNative()));
+    return getComplex(isoc::catanh(x.getNative()));
 #else
-    return Complex();
+    // handle inf/nan
+    return ln((1 + x)/(1 - x)) * 0.5;
 #endif
   }
 
+  
 
   /**
     Returns the real part of the complex number.
@@ -384,13 +432,21 @@ public:
   {
     return real * real + imaginary * imaginary;
   }
+    
+  inline Polar getPolar() const noexcept
+  {
+    Polar result;
+    result.r = Math::hypot(real, imaginary);
+    result.a = Math::atan2(imaginary, real);
+    return result;
+  }
 
   /**
     Returns the modulus of the complex number.
   */
   inline double getModulus() const noexcept
   {
-    return Math::sqrt(getSqrModulus());
+    return Math::hypot(real, imaginary);
   }
 
   /**
@@ -438,11 +494,9 @@ public:
   */
   inline Complex invert() const noexcept
   {
-    double scale = getSqrModulus(); // TAG: possible division by zero
-    //assert(scale != 0, DivisionByZero());
-    scale = 1/scale;
-    return Complex(real * scale, -imaginary * scale);
-    return *this;
+    // 1/complex <=> conjugate/(complex * conjugate)
+    double r = real * real + imaginary * imaginary; // -1 * -1 = 1
+    return Complex(real/r, -imaginary/r);
   }
 
 
@@ -522,7 +576,7 @@ public:
     imaginary /= divisor;
     return *this;
   }
-
+  
   /**
     Divides this number with the specified value.
 
@@ -530,11 +584,19 @@ public:
   */
   inline Complex& operator/=(const Complex& divisor) noexcept
   {
-    auto c = divisor.conjugate();
+    const Complex c = divisor.conjugate();
     *this *= c;
     double r = divisor.real * divisor.real + divisor.imaginary * divisor.imaginary; // -1 * -1 = 1
     real /= r;
     imaginary /= r;
+    return *this;
+  }
+
+  inline Complex& operator/=(const Imaginary) noexcept
+  {
+    double temp = (/*real * 0*/ - imaginary * -1);
+    imaginary = (real * -1 /*+ imaginary * 0*/);
+    real = temp;
     return *this;
   }
 
@@ -554,37 +616,24 @@ public:
     return Complex(-real, -imaginary);
   }
 
-
-
-  /**
-    Returns the sum of the complex numbers.
-  */
+  friend Complex operator+(const double left, const Complex& right) noexcept;
+  friend Complex operator+(const Imaginary, const Complex& right) noexcept;
+  friend Complex operator+(const Complex& left, const Imaginary) noexcept;
+  friend Complex operator+(const Complex& left, const double right) noexcept;
   friend Complex operator+(const Complex& left, const Complex& right) noexcept;
-
-  /**
-    Returns the difference of the complex numbers.
-  */
+  friend Complex operator-(const double left, const Complex& right) noexcept;
+  friend Complex operator-(const Imaginary, const Complex& right) noexcept;
+  friend Complex operator-(const Complex& left, const Imaginary) noexcept;
+  friend Complex operator-(const Complex& left, const double right) noexcept;
   friend Complex operator-(const Complex& left, const Complex& right) noexcept;
-
-  /**
-    Returns the product of the complex numbers.
-  */
   friend Complex operator*(const Complex& left, const Complex& right) noexcept;
-
-  /**
-    Returns the product of the complex number and the real value.
-  */
+  friend Complex operator*(const Imaginary, const Complex& right) noexcept;
+  friend Complex operator*(const Complex& left, const Imaginary) noexcept;
   friend Complex operator*(const Complex& left, double right) noexcept;
-
-  /**
-    Returns the product of the real value and the complex number.
-  */
   friend Complex operator*(double left, const Complex& right) noexcept;
-
-  /**
-    Returns the result of the number divided by the value.
-  */
   friend Complex operator/(const Complex& left, double right) noexcept;
+  friend Complex operator/(const Complex& left, const Complex& right) noexcept;
+  friend Complex operator/(const Complex& left, const Imaginary) noexcept;
 };
 
 inline Complex::Complex(double _real) noexcept
@@ -597,9 +646,49 @@ inline Complex::Complex(double _real, double _imaginary) noexcept
 {
 }
 
+inline Complex operator+(const double left, const Complex& right) noexcept
+{
+  return Complex(left + right.real, right.imaginary);
+}
+
+inline Complex operator+(const Complex& left, const double right) noexcept
+{
+  return Complex(left.real + right, left.imaginary);
+}
+
+inline Complex operator+(const Complex::Imaginary, const Complex& right) noexcept
+{
+  return Complex(right.real, 1 + right.imaginary);
+}
+
+inline Complex operator+(const Complex& left, const Complex::Imaginary) noexcept
+{
+  return Complex(left.real, left.imaginary + 1);
+}
+
 inline Complex operator+(const Complex& left, const Complex& right) noexcept
 {
   return Complex(left.real + right.real, left.imaginary + right.imaginary);
+}
+
+inline Complex operator-(const double left, const Complex& right) noexcept
+{
+  return Complex(left - right.real, -right.imaginary);
+}
+
+inline Complex operator-(const Complex& left, const double right) noexcept
+{
+  return Complex(left.real - right, left.imaginary);
+}
+
+inline Complex operator-(const Complex::Imaginary, const Complex& right) noexcept
+{
+  return Complex(-right.real, 1 - right.imaginary);
+}
+
+inline Complex operator-(const Complex& left, const Complex::Imaginary) noexcept
+{
+  return Complex(left.real, left.imaginary - 1);
 }
 
 inline Complex operator-(const Complex& left, const Complex& right) noexcept
@@ -615,6 +704,22 @@ inline Complex operator*(const Complex& left, const Complex& right) noexcept
   );
 }
 
+inline Complex operator*(const Complex::Imaginary, const Complex& right) noexcept
+{
+  return Complex(
+    /*0 * right.real*/ - 1 * right.imaginary,
+    /*0 * right.imaginary*/ + 1 * right.real
+  );
+}
+
+inline Complex operator*(const Complex& left, const Complex::Imaginary) noexcept
+{
+  return Complex(
+    /*left.real * 0*/ - left.imaginary * 1,
+    left.real * 1 /*+ left.imaginary * 0*/
+  );
+}
+
 inline Complex operator*(const Complex& left, double right) noexcept
 {
   return Complex(left.real * right, left.imaginary * right);
@@ -625,6 +730,11 @@ inline Complex operator*(double left, const Complex& right) noexcept
   return Complex(right.real * left, right.imaginary * left);
 }
 
+inline Complex operator/(const Complex& left, double right) noexcept
+{
+  return Complex(left.real/right, left.imaginary/right);
+}
+
 inline Complex operator/(const Complex& left, const Complex& right) noexcept
 {
   Complex result(left);
@@ -632,9 +742,11 @@ inline Complex operator/(const Complex& left, const Complex& right) noexcept
   return result;
 }
 
-inline Complex operator/(const Complex& left, double right) noexcept
+inline Complex operator/(const Complex& left, const Complex::Imaginary) noexcept
 {
-  return Complex(left.real/right, left.imaginary/right);
+  Complex result(left);
+  result /= Complex::I;
+  return result;
 }
 
 /**

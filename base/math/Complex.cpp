@@ -15,6 +15,7 @@
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
+const Complex::Imaginary Complex::I;
 const Complex Complex::ZERO(0, 0);
 const Complex Complex::ONE(1, 0);
 const Complex Complex::MINUS_ONE(-1, 0);
@@ -25,7 +26,6 @@ FormatOutputStream& operator<<(
 {
   FormatOutputStream::PushContext push(stream);
   return stream << '(' << value.getReal() << FPLUS << value.getImaginary() << "i)";
-  // return stream << '(' << value.getReal() << ';' << value.getImaginary() << ')';
 }
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

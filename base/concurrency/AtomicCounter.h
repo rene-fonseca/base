@@ -21,9 +21,11 @@
 // https://en.cppreference.com/w/cpp/atomic/memory_order
 // https://gcc.gnu.org/wiki/Atomic/GCCMM/AtomicSync
 #if defined(__has_builtin)
-#  if __has_builtin(__atomic_add_fetch) && defined(__ATOMIC_RELAXED) && defined(__ATOMIC_ACQ_REL)
-#    define _COM_AZURE_DEV__BASE__USE_BUILT_IN_ATOMIC
-#  endif
+#if __has_builtin(__atomic_fetch_add) && defined(__ATOMIC_SEQ_CST)
+#  define _COM_AZURE_DEV__BASE__USE_BUILT_IN_ATOMIC
+#endif
+#elif (_COM_AZURE_DEV__BASE__COMPILER == _COM_AZURE_DEV__BASE__COMPILER_GCC) && defined(__ATOMIC_SEQ_CST)
+#  define _COM_AZURE_DEV__BASE__USE_BUILT_IN_ATOMIC
 #endif
 #endif
 

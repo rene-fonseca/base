@@ -15,6 +15,8 @@
 
 #include <base/features.h>
 #include <typeinfo> // header approved // required for typeid
+// C++: if we could forward declare std::type_info we could move all implementation to cpp file except the actual typeid()
+// C++: opaque void* __builtin_typeid() would work also
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
@@ -32,13 +34,13 @@ private:
 
   const std::type_info* type = nullptr;
 
-  class _COM_AZURE_DEV__BASE__API Uninitialized {
-  };
+  /** Returns type used as uninitialized marker. */
+  static const std::type_info* getUninitialized() noexcept;
 
   inline Type(const std::type_info* _type) noexcept
   {
     BASSERT(_type);
-    type = _type ? _type : &typeid(Uninitialized); // prevent nullptr
+    type = _type ? _type : getUninitialized(); // prevent nullptr
   }
   
   template<class TYPE>
@@ -49,23 +51,9 @@ private:
     
     inline Type operator()(const TYPE& object) const noexcept
     {
-      return Type(&typeid(object));
+      return Type::getType<TYPE>();
     }
   };
-  
-#if 0
-  template<>
-  class GetType<void*> { // prevent pointer types
-  public:
-
-    typedef typename void BaseType; // throw away pointer and resolve recursively
-
-    inline Type operator()(const void* const object) const noexcept
-    {
-      return Type();
-    }
-  };
-#endif
 
   template<class TYPE>
   class GetType<TYPE*> { // prevent pointer types
@@ -75,7 +63,7 @@ private:
 
     inline Type operator()(const TYPE* const object) const noexcept
     {
-      return GetType<TYPE>()(*object);
+      return Type::getType<TYPE>();
     }
   };
 public:
@@ -86,13 +74,19 @@ public:
     return Type(_type);
   }
 
+  template<class TYPE>
+  static inline Type getTypeImpl() noexcept
+  {
+    return Type(&typeid(TYPE));
+  }
+
   /**
     Returns the type object for the specified type.
   */
   template<class TYPE>
   static inline Type getType() noexcept
   {
-    return Type(&typeid(typename GetType<TYPE>::BaseType));
+    return getTypeImpl<typename GetType<TYPE>::BaseType>();
   }
 
   /**
@@ -108,7 +102,7 @@ public:
     Initializes type object in an uninitialized state.
   */
   inline Type() noexcept
-    : type(&typeid(Uninitialized))
+    : type(getUninitialized())
   {
   }
 
@@ -143,7 +137,7 @@ public:
   */
   inline bool isInitialized() const noexcept
   {
-    return *type != typeid(Uninitialized);
+    return *type != *getUninitialized();
   }
 
   /**
@@ -151,7 +145,7 @@ public:
   */
   inline bool isUninitialized() const noexcept
   {
-    return *type == typeid(Uninitialized);
+    return *type == *getUninitialized();
   }
 
   /**
@@ -181,10 +175,7 @@ public:
 
     @see TypeInfo
   */
-  inline const char* getLocalName() const noexcept
-  {
-    return type->name();
-  }
+  const char* getLocalName() const noexcept;
 
   /** Returns the native type_info. */
   inline operator const std::type_info*() const noexcept

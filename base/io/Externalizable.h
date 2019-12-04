@@ -41,7 +41,7 @@ public:
 //  template<class TYPE>
 //  static void writeType(OutputStream* out, TYPE object) throw(IOException) {
 //    PrimitiveOutputStream stream(out);
-//    const char* id = typeid(object).name();
+//    const char* id = Type::getType(object).getLocalName();
 //    unsigned int length = getNullTerminatedLength(id);
 //    out->writeUnsignedInteger(length);
 //    out->write(id, length);

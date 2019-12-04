@@ -14,9 +14,23 @@
 #include <base/Type.h>
 #include <base/UnitTest.h>
 
-_COM_AZURE_DEV__BASE__DUMMY_SYMBOL
-
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
+
+namespace {
+
+  class _COM_AZURE_DEV__BASE__API Uninitialized {
+  };
+}
+
+const std::type_info* Type::getUninitialized() noexcept
+{
+  return &typeid(Uninitialized);
+}
+
+const char* Type::getLocalName() const noexcept
+{
+  return type->name();
+}
 
 #if defined(_COM_AZURE_DEV__BASE__TESTS)
 

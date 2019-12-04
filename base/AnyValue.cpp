@@ -447,7 +447,7 @@ Type AnyValue::getRepresentationType() const noexcept
   case TYPE:
     return Type::getType<Type>();
   case POINTER:
-    return Type::makeType(&typeid(void*)); // Type::getType<void*>();
+    return Type::getTypeImpl<void*>();
   case CHARACTER:
     return Type::getType<char>();
   case WIDE_CHARACTER:

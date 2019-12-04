@@ -28,7 +28,8 @@ public:
     int numberOfArguments,
     const char* arguments[],
     const char* environment[])
-    : Application("floatingPoint", numberOfArguments, arguments, environment) {
+    : Application("floatingPoint", numberOfArguments, arguments, environment)
+  {
   }
 
   enum FloatingPointRepresentation {
@@ -41,20 +42,21 @@ public:
   };
 
   template<class TYPE>
-  static FloatingPointRepresentation getRepresentation() {
-    if (typeid(TYPE) == typeid(FloatingPoint::IEEE754SinglePrecision)) {
+  static FloatingPointRepresentation getRepresentation()
+  {
+    if (Type::getType<TYPE>() == Type::getType<FloatingPoint::IEEE754SinglePrecision>()) {
       return IEEE_754_SINGLE_PRECISION;
     } else
-    if (typeid(TYPE) == typeid(FloatingPoint::IEEE754DoublePrecision)) {
+    if (Type::getType<TYPE>() == Type::getType<FloatingPoint::IEEE754DoublePrecision>()) {
       return IEEE_754_DOUBLE_PRECISION;
     } else
-    if (typeid(TYPE) == typeid(FloatingPoint::IEEEExtendedDoublePrecision96)) {
+    if (Type::getType<TYPE>() == Type::getType<FloatingPoint::IEEEExtendedDoublePrecision96>()) {
       return IEEE_EXTENDED_DOUBLE_PRECISION_96;
     } else
-    if (typeid(TYPE) == typeid(FloatingPoint::IEEEExtendedDoublePrecision128)) {
+    if (Type::getType<TYPE>() == Type::getType<FloatingPoint::IEEEExtendedDoublePrecision128>()) {
       return IEEE_EXTENDED_DOUBLE_PRECISION_128;
     } else
-    if (typeid(TYPE) == typeid(FloatingPoint::IEEEQuadruplePrecision)) {
+    if (Type::getType<TYPE>() == Type::getType<FloatingPoint::IEEEQuadruplePrecision>()) {
       return IEEE_QUADRUPLE_PRECISION;
     } else {
       return UNSPECIFIED;
@@ -62,7 +64,8 @@ public:
   }
 
   template<class TYPE>
-  static String getRepresentationAsString() {
+  static String getRepresentationAsString()
+  {
     static const Literal REPRESENTATION[] = {
       MESSAGE("IEEE 754 single precision"),
       MESSAGE("IEEE 754 double precision"),

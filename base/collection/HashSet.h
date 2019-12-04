@@ -149,7 +149,8 @@ public:
     /**
       Returns the hash value of the value.
     */
-    static inline unsigned long getHash(const Value& value) noexcept {
+    static inline unsigned long getHash(const Value& value) noexcept
+    {
       Hash<Value> hash; // Hash is a functor
       return hash(value);
     }
@@ -158,14 +159,16 @@ public:
     /**
       Returns the buckets for modifying access.
     */
-    inline Node** getBuckets() noexcept {
+    inline Node** getBuckets() noexcept
+    {
       return table.getElements();
     }
 
     /**
       Returns the buckets for non-modifying access.
     */
-    inline const Node* const* getBuckets() const noexcept {
+    inline const Node* const* getBuckets() const noexcept
+    {
       return table.getElements();
     }
 
@@ -350,14 +353,16 @@ public:
     /**
       Returns the capacity of the hash set.
     */
-    inline MemorySize getCapacity() const noexcept {
+    inline MemorySize getCapacity() const noexcept
+    {
       return capacity;
     }
     
     /**
       Returns the number of elements in the hash set.
     */
-    inline MemorySize getSize() const noexcept {
+    inline MemorySize getSize() const noexcept
+    {
       return size;
     }
 
@@ -392,7 +397,7 @@ public:
       }
       return child;
     }
-    
+
     /**
       Returns true if the specified value is in the hash set.
     */
@@ -407,7 +412,12 @@ public:
       }
       return child;
     }    
-    
+
+    inline bool hasKey(const Value& key) const noexcept
+    {
+      return hasValue(key);
+    }
+
     /**
       Adds the element to the set.
     */
@@ -557,7 +567,8 @@ public:
       return result;
     }
 
-    inline ~HashSetEnumerator() noexcept {
+    inline ~HashSetEnumerator() noexcept
+    {
     }
   };
   
@@ -601,13 +612,16 @@ public:
   /**
     Initializes hash set from another hash set.
   */
-  HashSet(const HashSet& copy) noexcept : impl(copy.impl) {
+  HashSet(const HashSet& copy) noexcept
+    : impl(copy.impl)
+  {
   }
   
   /**
     Assignment of hash set by hash set.
   */
-  HashSet& operator=(const HashSet& assign) noexcept {
+  HashSet& operator=(const HashSet& assign) noexcept
+  {
     impl = assign.impl;
     return *this;
   }
@@ -615,31 +629,43 @@ public:
   /**
     Returns the capacity of the hash set.
   */
-  inline MemorySize getCapacity() const noexcept {
+  inline MemorySize getCapacity() const noexcept
+  {
     return impl->getCapacity();
   }
 
   /**
     Returns the number of elements in the hash set.
   */
-  inline MemorySize getSize() const noexcept {
+  inline MemorySize getSize() const noexcept
+  {
     return impl->getSize();
   }
   
   /**
     Returns true if the hash set is empty.
   */
-  inline bool isEmpty() const noexcept {
+  inline bool isEmpty() const noexcept
+  {
     return impl->getSize() == 0;
   }
 
   /**
     Returns true if the specified value is in the set.
   */
-  bool hasValue(const Value& value) const noexcept {
+  bool hasValue(const Value& value) const noexcept
+  {
     return impl->hasValue(value);
   }
-  
+
+  /**
+    Returns true if the specified value is in the set.
+  */
+  inline bool hasKey(const Value& key) const noexcept
+  {
+    return hasValue(key);
+  }
+
   /**
     Adds the value to the set.
   */
@@ -653,7 +679,8 @@ public:
     Removes the specified value from this hash set. Raises InvalidNode if the
     value doesn't exist in the set.
   */
-  void remove(const Value& value) throw(InvalidNode, MemoryException) {
+  void remove(const Value& value) throw(InvalidNode, MemoryException)
+  {
     copyOnWrite();
     impl->remove(value);
   }
@@ -669,15 +696,23 @@ public:
   /**
     Returns the enumerator of the hash set.
   */
-  Enumerator getEnumerator() noexcept {
+  Enumerator getEnumerator() noexcept
+  {
     return Enumerator(impl);
   }
 
   /**
     Returns the read enumerator of the hash set.
   */
-  ReadEnumerator getReadEnumerator() const noexcept {
+  ReadEnumerator getReadEnumerator() const noexcept
+  {
     return ReadEnumerator(impl);
+  }
+  
+  /** Returns true is non-empty. */
+  inline operator bool() const noexcept
+  {
+    return impl->getSize() != 0;
   }
 };
 
@@ -685,7 +720,8 @@ public:
   Writes the hash table to the format output stream.
 */
 template<class TYPE>
-FormatOutputStream& operator<<(FormatOutputStream& stream, const HashSet<TYPE>& value) throw(IOException) {
+FormatOutputStream& operator<<(FormatOutputStream& stream, const HashSet<TYPE>& value) throw(IOException)
+{
   typename HashSet<TYPE>::ReadEnumerator enu = value.getReadEnumerator();
   stream << '{';
   while (enu.hasNext()) {

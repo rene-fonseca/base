@@ -1004,6 +1004,12 @@ public:
   {
     return getValue(key);
   }
+  
+  /** Returns true is non-empty. */
+  inline operator bool() const noexcept
+  {
+    return impl->getSize() != 0;
+  }
 };
 
 /**

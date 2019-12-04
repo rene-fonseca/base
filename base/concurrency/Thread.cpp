@@ -431,7 +431,8 @@ void Thread::sleep(unsigned int seconds) throw(OutOfDomain)
 #endif
 }
 
-void Thread::yield() noexcept {
+void Thread::yield() noexcept
+{
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   ::SwitchToThread(); // no errors
 #elif defined(_COM_AZURE_DEV__BASE__PTHREAD_YIELD)
@@ -443,7 +444,8 @@ void Thread::yield() noexcept {
 
 
 
-void Thread::onChildTermination(Thread* thread) {
+void Thread::onChildTermination(Thread* thread)
+{
   if (runnable) {
     runnable->onChild(thread);
   }
@@ -554,17 +556,20 @@ Thread::Thread(Runnable* _runnable) throw(NullPointer, ResourceException)
   BASSERT(parent); // a parent must always exist
 }
 
-void Thread::setTerminationState(State state) noexcept {
+void Thread::setTerminationState(State state) noexcept
+{
   BASSERT(isSelf() && (state > ALIVE));
   this->state = state;
   terminationEvent.signal(); // do not access state here after
 }
 
-bool Thread::isAlive() const noexcept {
+bool Thread::isAlive() const noexcept
+{
   return state == ALIVE;
 }
 
-bool Thread::isAncestor() const noexcept {
+bool Thread::isAncestor() const noexcept
+{
   const Thread* executing = getThread();
   const Thread* current = this;
   if (current == executing) {
@@ -579,7 +584,8 @@ bool Thread::isAncestor() const noexcept {
   return false;
 }
 
-bool Thread::isChild() const noexcept {
+bool Thread::isChild() const noexcept
+{
   const Thread* current = getThread();
   if (current == this) {
     return false;
@@ -593,11 +599,13 @@ bool Thread::isChild() const noexcept {
   return false;
 }
 
-bool Thread::isParent() const noexcept {
+bool Thread::isParent() const noexcept
+{
   return getThread() == getParent();
 }
 
-bool Thread::isSelf() const noexcept {
+bool Thread::isSelf() const noexcept
+{
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   return ::GetCurrentThreadId() == getAddressOf(identifier);
 #else // pthread
@@ -605,7 +613,8 @@ bool Thread::isSelf() const noexcept {
 #endif
 }
 
-bool Thread::isStandalone() noexcept {
+bool Thread::isStandalone() noexcept
+{
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   // THREAD_AM_I_LAST_THREAD info;
 //  status = ntapi::NtQueryInformationThread(::GetCurrentThread(), ntapi::ThreadAmILastThread, &info, sizeof(info), 0);
@@ -618,7 +627,8 @@ bool Thread::isStandalone() noexcept {
 
 // TAG: put in Base.h
 template<class TYPE>
-inline TYPE clamp(TYPE minimum, TYPE value, TYPE maximum) noexcept {
+inline TYPE clamp(TYPE minimum, TYPE value, TYPE maximum) noexcept
+{
   if (value < minimum) {
     return minimum;
   } else if (value > maximum) {
@@ -630,7 +640,8 @@ inline TYPE clamp(TYPE minimum, TYPE value, TYPE maximum) noexcept {
 
 // TAG: put in Base.h
 template<class TYPE>
-inline bool isWithin(TYPE minimum, TYPE value, TYPE maximum) noexcept {
+inline bool isWithin(TYPE minimum, TYPE value, TYPE maximum) noexcept
+{
   if (value < minimum) {
     return false;
   } else if (value > maximum) {
@@ -677,7 +688,8 @@ Thread::Identifier Thread::getIdentifier() noexcept
 #  define ABOVE_NORMAL_PRIORITY_CLASS ((DWORD)0x00008000)
 #endif
 
-int Thread::getPriority() throw(ThreadException) {
+int Thread::getPriority() throw(ThreadException)
+{
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   // see http://msdn.microsoft.com/library/en-us/dllproc/prothred_75ir.asp
   DWORD priorityClass = ::GetPriorityClass(::GetCurrentProcess());

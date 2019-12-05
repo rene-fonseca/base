@@ -116,7 +116,7 @@ public:
     return !valid;
   }
 
-  inline FormatOutputStream& operator<<(FormatOutputStream& stream) const throw(IOException)
+  inline FormatOutputStream& operator<<(FormatOutputStream& stream) const
   {
     if (valid) {
       return stream << static_cast<const TYPE&>(value);
@@ -132,7 +132,7 @@ public:
 template<class TYPE>
 inline FormatOutputStream& operator<<(
   FormatOutputStream& stream,
-  const ValidifiedResult<TYPE>& value) throw(IOException)
+  const ValidifiedResult<TYPE>& value)
 {
   return value.operator<<(stream);
 }

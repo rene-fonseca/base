@@ -1434,7 +1434,7 @@ void AnyValue::setReference(const AnyReference& value) noexcept
   representation = REFERENCE;
 }
 
-FormatOutputStream& operator<<(FormatOutputStream& stream, const AnyValue& value) throw(IOException)
+FormatOutputStream& operator<<(FormatOutputStream& stream, const AnyValue& value)
 {
   switch (value.representation) {
   case AnyValue::TYPE:

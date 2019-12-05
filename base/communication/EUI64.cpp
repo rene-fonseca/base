@@ -147,7 +147,8 @@ void EUI64::setMAC48(const uint8* mac) throw() {
   id[7] = swapNibbles(mac[5]);
 }
 
-FormatOutputStream& operator<<(FormatOutputStream& stream, const EUI64& value) throw(IOException) {
+FormatOutputStream& operator<<(FormatOutputStream& stream, const EUI64& value)
+{
   const uint8* id = value.getBytes();
   StringOutputStream s;
   s << HEX << setWidth(2) << ZEROPAD << NOPREFIX << id[0] << ':'

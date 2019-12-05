@@ -70,6 +70,6 @@ public:
 /**
   Writes a wide character to the format output stream.
 */
-_COM_AZURE_DEV__BASE__API FormatOutputStream& operator<<(FormatOutputStream& stream, UnicodeCharacter character) throw(IOException);
+_COM_AZURE_DEV__BASE__API FormatOutputStream& operator<<(FormatOutputStream& stream, UnicodeCharacter character);
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

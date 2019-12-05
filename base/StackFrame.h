@@ -186,7 +186,7 @@ public:
   static void toStream(FormatOutputStream& stream, const ConstSpan<const void*>& stackTrace, unsigned int flags = FLAG_DEFAULT);
 };
 
-_COM_AZURE_DEV__BASE__API FormatOutputStream& operator<<(FormatOutputStream& stream, const StackFrame& value) throw(IOException);
+_COM_AZURE_DEV__BASE__API FormatOutputStream& operator<<(FormatOutputStream& stream, const StackFrame& value);
 
 template<>
 class _COM_AZURE_DEV__BASE__API Hash<StackFrame> {

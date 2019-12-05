@@ -792,7 +792,7 @@ inline Complex operator/(const Complex& left, const Complex::Imaginary) noexcept
 
   @relates Complex
 */
-FormatOutputStream& operator<<(FormatOutputStream& stream, const Complex& value) throw(IOException);
+FormatOutputStream& operator<<(FormatOutputStream& stream, const Complex& value);
 
 template<>
 class IsUninitializeable<Complex> : public IsUninitializeable<double> {

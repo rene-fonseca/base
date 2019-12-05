@@ -726,53 +726,63 @@ Matrix<TYPE>& Matrix<TYPE>::transpose(const Matrix& value) throw(MemoryException
 }
 
 template<class TYPE>
-bool operator==(const Matrix<TYPE>& left, const Matrix<TYPE>& right) throw() {
+bool operator==(const Matrix<TYPE>& left, const Matrix<TYPE>& right) throw()
+{
   return left.isEqual(right);
 }
 
 template<class TYPE>
-Matrix<TYPE> operator+(const Matrix<TYPE>& left, const Matrix<TYPE>& right) throw(MemoryException) {
+Matrix<TYPE> operator+(const Matrix<TYPE>& left, const Matrix<TYPE>& right) throw(MemoryException)
+{
   return Matrix<TYPE>(left.getDimension()).add(left, right);
 }
 
 template<class TYPE>
-Matrix<TYPE> operator-(const Matrix<TYPE>& left, const Matrix<TYPE>& right) throw(MemoryException) {
+Matrix<TYPE> operator-(const Matrix<TYPE>& left, const Matrix<TYPE>& right) throw(MemoryException)
+{
   return Matrix<TYPE>(left.getDimension()).subtract(left, right);
 }
 
 template<class TYPE>
-Matrix<TYPE> operator*(const Matrix<TYPE>& left, const Matrix<TYPE>& right) throw(MemoryException) {
+Matrix<TYPE> operator*(const Matrix<TYPE>& left, const Matrix<TYPE>& right) throw(MemoryException)
+{
   return Matrix<TYPE>(Dimension(left.rows, right.columns)).multiply(left, right);
 }
 
 template<class TYPE>
-Matrix<TYPE> operator*(const Matrix<TYPE>& left, const TYPE& right) throw(MemoryException) {
+Matrix<TYPE> operator*(const Matrix<TYPE>& left, const TYPE& right) throw(MemoryException)
+{
   return Matrix<TYPE>(left.getDimension()).multiply(left, right);
 }
 
 template<class TYPE>
-Matrix<TYPE> operator*(const TYPE& left, const Matrix<TYPE>& right) throw(MemoryException) {
+Matrix<TYPE> operator*(const TYPE& left, const Matrix<TYPE>& right) throw(MemoryException)
+{
   return Matrix<TYPE>(right.getDimension()).multiply(left, right);
 }
 
 template<class TYPE>
-Matrix<TYPE> operator/(const Matrix<TYPE>& left, const Matrix<TYPE>& right) throw(MemoryException) {
+Matrix<TYPE> operator/(const Matrix<TYPE>& left, const Matrix<TYPE>& right) throw(MemoryException)
+{
   // right is a square matrix
   return Matrix<TYPE>(Dimension(left.rows, right.rows)).multiply(left, right.invert());
 }
 
 template<class TYPE>
-Matrix<TYPE> operator/(const Matrix<TYPE>& left, const TYPE& right) throw(MemoryException) {
+Matrix<TYPE> operator/(const Matrix<TYPE>& left, const TYPE& right) throw(MemoryException)
+{
   return Matrix<TYPE>(left.getDimension()).multiply(left, TYPE(1)/right);
 }
 
 template<class TYPE>
-Matrix<TYPE> operator/(const TYPE& left, const Matrix<TYPE>& right) throw(MemoryException) {
+Matrix<TYPE> operator/(const TYPE& left, const Matrix<TYPE>& right) throw(MemoryException)
+{
   return Matrix<TYPE>(right.getDimension()).multiply(left, right.invert());
 }
 
 template<class TYPE>
-FormatOutputStream& operator<<(FormatOutputStream& stream, const Matrix<TYPE>& value) throw(IOException) {
+FormatOutputStream& operator<<(FormatOutputStream& stream, const Matrix<TYPE>& value)
+{
   FormatOutputStream::PushContext push(stream);
   const TYPE* element = value.getReadOnlyElements();
   stream << '[';

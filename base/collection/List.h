@@ -837,7 +837,7 @@ public:
   @relates List
 */
 template<class TYPE>
-FormatOutputStream& operator<<(FormatOutputStream& stream, const List<TYPE>& value) throw(IOException)
+FormatOutputStream& operator<<(FormatOutputStream& stream, const List<TYPE>& value)
 {
   typename List<TYPE>::ReadEnumerator enu = value.getReadEnumerator();
   stream << '[';

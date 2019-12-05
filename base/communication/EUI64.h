@@ -179,6 +179,6 @@ public:
   Writes the globally unique identifier (EUI-64) to the format output stream
   (e.g. 12:34:56-09:87:65:43:21).
 */
-_COM_AZURE_DEV__BASE__API FormatOutputStream& operator<<(FormatOutputStream& stream, const EUI64& value) throw(IOException);
+_COM_AZURE_DEV__BASE__API FormatOutputStream& operator<<(FormatOutputStream& stream, const EUI64& value);
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

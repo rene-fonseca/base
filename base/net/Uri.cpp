@@ -37,7 +37,8 @@ class UriImpl {
 public:
 
   /** Returns true if the data character is not reserved within the URI. */
-  static inline bool isUnreservedURI(char ch) throw() {
+  static inline bool isUnreservedURI(char ch) throw()
+  {
     if (ASCIITraits::isAlphaNum(ch)) {
       return true;
     }
@@ -49,7 +50,8 @@ public:
   }
 
   /** Returns true if the data character is excluded from the URI. */
-  static inline bool isExcludedURI(char ch) throw() {
+  static inline bool isExcludedURI(char ch) throw()
+  {
     if (ASCIITraits::isControl(ch)) { // 0x00-0x1f and 0x7f
       return true;
     }
@@ -63,7 +65,8 @@ public:
   }
 
   /** Returns true if the character is reserved within the authority component. */
-  static inline bool isReservedAuthority(char ch) throw() {
+  static inline bool isReservedAuthority(char ch) throw()
+  {
     switch (ch) {
     case ';': case ':': case '@': case '?': case '/':
       return true;
@@ -72,7 +75,8 @@ public:
   }
 
   /** Returns true if the character is reserved within the query component. */
-  static inline bool isReservedPath(char ch) throw() {
+  static inline bool isReservedPath(char ch) throw()
+  {
     switch (ch) {
     case ';': case '/': case '?':
       return true;
@@ -81,7 +85,8 @@ public:
   }
 
   /** Returns true if the character is reserved within the query component. */
-  static inline bool isReservedQuery(char ch) throw() {
+  static inline bool isReservedQuery(char ch) throw()
+  {
     switch (ch) {
     case ';': case ':': case '@': case '?': case '/': case '&': case '=': case '+': case ',': case '$':
       return true;
@@ -89,12 +94,14 @@ public:
     return false;
   }
 
-  static inline bool isValidUserInfo(char ch) throw() {
+  static inline bool isValidUserInfo(char ch) throw()
+  {
     // userinfo: unreserved | escaped ; : & = + $ ,
     return false;
   }
 
-  static inline bool isValidRegName(char ch) throw() {
+  static inline bool isValidRegName(char ch) throw()
+  {
     // unreserved | escaped $ , ; : @ & = +
     return false;
   }
@@ -136,11 +143,13 @@ public:
     }
   }
 
-  static inline Encode userEncoding(char ch) throw() {
+  static inline Encode userEncoding(char ch) throw()
+  {
     return ((ch == ':') || (ch == '@') || (ch == '/')) ? ALWAYS : defaultEncoding(ch);
   }
 
-  static inline Encode passwordEncoding(char ch) throw() {
+  static inline Encode passwordEncoding(char ch) throw()
+  {
     return ((ch == ':') || (ch == '@') || (ch == '/')) ? ALWAYS : defaultEncoding(ch);
   }
 
@@ -161,7 +170,8 @@ public:
     return temp;
   }
 
-  static String decode(const String& str, Encoding encoding, bool strict) throw(UriException, MemoryException) {
+  static String decode(const String& str, Encoding encoding, bool strict) throw(UriException, MemoryException)
+  {
     String temp(str.getLength());
     const String::ReadIterator end = str.getEndReadIterator();
     for (String::ReadIterator i = str.getBeginReadIterator(); i < end;) {
@@ -224,11 +234,13 @@ Uri& Uri::operator=(const Uri& assign) throw()
   return *this;
 }
 
-bool Uri::isRelative() const throw() {
+bool Uri::isRelative() const throw()
+{
   return !path.getLength() || path.startsWith("/");
 }
 
-String Uri::validateScheme(const String& value) throw(UriException, MemoryException) {
+String Uri::validateScheme(const String& value) throw(UriException, MemoryException)
+{
   String temp(value.getLength());
   String::ReadIterator end = value.getEndReadIterator();
 
@@ -249,7 +261,8 @@ String Uri::validateScheme(const String& value) throw(UriException, MemoryExcept
   return temp;
 }
 
-String Uri::validateUser(const String& str) throw(UriException) {
+String Uri::validateUser(const String& str) throw(UriException)
+{
   const String::ReadIterator end = str.getEndReadIterator();
   for (String::ReadIterator i = str.getBeginReadIterator(); i < end;) {
     char ch = *i++;
@@ -258,7 +271,8 @@ String Uri::validateUser(const String& str) throw(UriException) {
   return str;
 }
 
-String Uri::validatePassword(const String& str) throw(UriException) {
+String Uri::validatePassword(const String& str) throw(UriException)
+{
   const String::ReadIterator end = str.getEndReadIterator();
   for (String::ReadIterator i = str.getBeginReadIterator(); i < end;) {
     char ch = *i++;
@@ -267,7 +281,8 @@ String Uri::validatePassword(const String& str) throw(UriException) {
   return str;
 }
 
-bool Uri::isHost(String::ReadIterator i, const String::ReadIterator& end) throw() {
+bool Uri::isHost(String::ReadIterator i, const String::ReadIterator& end) throw()
+{
   if (i >= end) {
     return false;
   }
@@ -325,7 +340,8 @@ bool Uri::isHost(String::ReadIterator i, const String::ReadIterator& end) throw(
   }
 }
 
-bool Uri::isPort(String::ReadIterator i, const String::ReadIterator& end) throw() {
+bool Uri::isPort(String::ReadIterator i, const String::ReadIterator& end) throw()
+{
   if (i >= end) {
     return false;
   }
@@ -342,7 +358,8 @@ bool Uri::isPort(String::ReadIterator i, const String::ReadIterator& end) throw(
   return true;
 }
 
-void Uri::parse(const String& uri, bool strict) throw(UriException, MemoryException) {
+void Uri::parse(const String& uri, bool strict) throw(UriException, MemoryException)
+{
   // "scheme:path"
   // reserved characters: %, /, #, ?, *, !, ".", ".."
   // unsafe characters:
@@ -405,31 +422,38 @@ void Uri::parse(const String& uri, bool strict) throw(UriException, MemoryExcept
   }
 }
 
-String Uri::getScheme() const throw() {
+String Uri::getScheme() const throw()
+{
   return scheme;
 }
 
-String Uri::getUser() const throw() {
+String Uri::getUser() const throw()
+{
   return user;
 }
 
-String Uri::getPassword() const throw() {
+String Uri::getPassword() const throw()
+{
   return password;
 }
 
-String Uri::getHost() const throw() {
+String Uri::getHost() const throw()
+{
   return host;
 }
 
-String Uri::getPort() const throw() {
+String Uri::getPort() const throw()
+{
   return port;
 }
 
-String Uri::getPath() const throw(MemoryException) {
+String Uri::getPath() const throw(MemoryException)
+{
   return path;
 }
 
-String Uri::getUri() const throw(MemoryException) {
+String Uri::getUri() const throw(MemoryException)
+{
   String result;
 
   if (!scheme.isEmpty()) {
@@ -463,19 +487,23 @@ String Uri::getUri() const throw(MemoryException) {
   return result;
 }
 
-void Uri::setScheme(const String& value) throw(UriException, MemoryException) {
+void Uri::setScheme(const String& value) throw(UriException, MemoryException)
+{
   scheme = validateScheme(value);
 }
 
-void Uri::setUser(const String& value) throw(UriException, MemoryException) {
+void Uri::setUser(const String& value) throw(UriException, MemoryException)
+{
   user = validateUser(value);
 }
 
-void Uri::setPassword(const String& value) throw(UriException, MemoryException) {
+void Uri::setPassword(const String& value) throw(UriException, MemoryException)
+{
   password = validatePassword(value);
 }
 
-void Uri::setHost(const String& value) throw(UriException) {
+void Uri::setHost(const String& value) throw(UriException)
+{
   bassert(
     isHost(value.getBeginReadIterator(), value.getEndReadIterator()),
     UriException("Invalid host part")
@@ -483,7 +511,8 @@ void Uri::setHost(const String& value) throw(UriException) {
   host = value;
 }
 
-void Uri::setPort(const String& value) throw(UriException) {
+void Uri::setPort(const String& value) throw(UriException)
+{
   bassert(
     isPort(value.getBeginReadIterator(), value.getEndReadIterator()),
     UriException("Invalid port part")
@@ -491,11 +520,13 @@ void Uri::setPort(const String& value) throw(UriException) {
   port = value;
 }
 
-void Uri::setPath(const String& value) throw(UriException, MemoryException) {
+void Uri::setPath(const String& value) throw(UriException, MemoryException)
+{
   path = value;
 }
 
-FormatOutputStream& operator<<(FormatOutputStream& stream, const Uri& value) throw(MemoryException, IOException) {
+FormatOutputStream& operator<<(FormatOutputStream& stream, const Uri& value)
+{
   return stream << value.getUri();
 }
 

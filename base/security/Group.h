@@ -179,7 +179,7 @@ public:
 /**
   Writes the group id to the format output stream.
 */
-_COM_AZURE_DEV__BASE__API FormatOutputStream& operator<<(FormatOutputStream& stream, const Group& value) throw(IOException);
+_COM_AZURE_DEV__BASE__API FormatOutputStream& operator<<(FormatOutputStream& stream, const Group& value);
 
 template<>
 class _COM_AZURE_DEV__BASE__API Hash<Group> {

@@ -991,7 +991,7 @@ namespace {
   }
 }
 
-FormatOutputStream& operator<<(FormatOutputStream& stream, const LargeInteger& value) throw(IOException)
+FormatOutputStream& operator<<(FormatOutputStream& stream, const LargeInteger& value)
 {
   if (value.getSize() <= 1) {
     return stream << (value & LargeIntegerImpl::MAXIMUM);

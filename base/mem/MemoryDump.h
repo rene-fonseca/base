@@ -91,16 +91,17 @@ public:
     this->offset = offset;
   }
   
-  _COM_AZURE_DEV__BASE__API friend FormatOutputStream& operator<<(FormatOutputStream& stream, const MemoryDump& value) throw(IOException);
+  _COM_AZURE_DEV__BASE__API friend FormatOutputStream& operator<<(FormatOutputStream& stream, const MemoryDump& value);
 };
 
 inline MemoryDump::MemoryDump(const uint8* _memory, unsigned int _size, unsigned int _options) throw()
-  : memory(_memory), size(_size), options(_options), wordSize(1), offsetDigits(8), offset(0) {
+  : memory(_memory), size(_size), options(_options), wordSize(1), offsetDigits(8), offset(0)
+{
 }
 
 /**
   Writes the memory to the specified format output stream.
 */
-_COM_AZURE_DEV__BASE__API FormatOutputStream& operator<<(FormatOutputStream& stream, const MemoryDump& value) throw(IOException);
+_COM_AZURE_DEV__BASE__API FormatOutputStream& operator<<(FormatOutputStream& stream, const MemoryDump& value);
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

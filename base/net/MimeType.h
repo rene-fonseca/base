@@ -144,6 +144,6 @@ public:
 /**
   Writes MimeType object to the format output stream (e.g. "text/plain").
 */
-_COM_AZURE_DEV__BASE__API FormatOutputStream& operator<<(FormatOutputStream& stream, const MimeType& value) throw(IOException);
+_COM_AZURE_DEV__BASE__API FormatOutputStream& operator<<(FormatOutputStream& stream, const MimeType& value);
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

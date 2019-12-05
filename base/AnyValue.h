@@ -33,7 +33,7 @@ _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 class _COM_AZURE_DEV__BASE__API AnyValue : public ReferenceCountedObject {
   friend _COM_AZURE_DEV__BASE__API FormatOutputStream& operator<<(
-    FormatOutputStream& stream, const AnyValue& value) throw(IOException);
+    FormatOutputStream& stream, const AnyValue& value);
 public:
 
   /** The supported types. */
@@ -577,6 +577,6 @@ public:
 /**
   Writes any-value object to format output stream.
 */
-_COM_AZURE_DEV__BASE__API FormatOutputStream& operator<<(FormatOutputStream& stream, const AnyValue& value) throw(IOException);
+_COM_AZURE_DEV__BASE__API FormatOutputStream& operator<<(FormatOutputStream& stream, const AnyValue& value);
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

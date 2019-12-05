@@ -123,7 +123,7 @@ Array<AccessControlEntry>::ReadEnumerator AccessControlList::getReadEnumerator()
   return acl.getReadEnumerator();
 }
 
-FormatOutputStream& operator<<(FormatOutputStream& stream, const AccessControlList& acl) throw(IOException)
+FormatOutputStream& operator<<(FormatOutputStream& stream, const AccessControlList& acl)
 {
   StringOutputStream s;
   Array<AccessControlEntry>::ReadEnumerator enu = acl.getReadEnumerator();

@@ -720,7 +720,7 @@ public:
   Writes the hash table to the format output stream.
 */
 template<class TYPE>
-FormatOutputStream& operator<<(FormatOutputStream& stream, const HashSet<TYPE>& value) throw(IOException)
+FormatOutputStream& operator<<(FormatOutputStream& stream, const HashSet<TYPE>& value)
 {
   typename HashSet<TYPE>::ReadEnumerator enu = value.getReadEnumerator();
   stream << '{';

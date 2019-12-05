@@ -439,7 +439,8 @@ void Url::setHost(const String& value) throw(UrlException) {
   host = value;
 }
 
-void Url::setPort(const String& value) throw(UrlException) {
+void Url::setPort(const String& value) throw(UrlException)
+{
   bassert(
     isPort(value.getBeginReadIterator(), value.getEndReadIterator()),
     UrlException("Invalid port part", this)
@@ -447,11 +448,13 @@ void Url::setPort(const String& value) throw(UrlException) {
   port = value;
 }
 
-void Url::setPath(const String& value) throw(UrlException, MemoryException) {
+void Url::setPath(const String& value) throw(UrlException, MemoryException)
+{
   path = value;
 }
 
-FormatOutputStream& operator<<(FormatOutputStream& stream, const Url& value) throw(MemoryException, IOException) {
+FormatOutputStream& operator<<(FormatOutputStream& stream, const Url& value)
+{
   return stream << value.getUrl();
 }
 

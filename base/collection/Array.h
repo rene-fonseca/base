@@ -832,7 +832,7 @@ void swapper(typename Array<TYPE>::Element& a, typename Array<TYPE>::Element& b)
   @relates Array
 */
 template<class TYPE>
-FormatOutputStream& operator<<(FormatOutputStream& stream, const Array<TYPE>& value) throw(IOException)
+FormatOutputStream& operator<<(FormatOutputStream& stream, const Array<TYPE>& value)
 {
   typename Array<TYPE>::ReadEnumerator enu = value.getReadEnumerator();
   stream << '[';

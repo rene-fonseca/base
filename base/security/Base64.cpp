@@ -121,7 +121,7 @@ String Base64::encode(const uint8* src, MemorySize size) noexcept
   return result;
 }
 
-FormatOutputStream& operator<<(FormatOutputStream& stream, const Base64::Descriptor& value) throw(IOException)
+FormatOutputStream& operator<<(FormatOutputStream& stream, const Base64::Descriptor& value)
 {
   const char* src = value.getBytes();
   const unsigned int size = value.getSize();

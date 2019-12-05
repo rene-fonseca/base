@@ -126,7 +126,8 @@ Color::Color(NamedColor color) throw() {
   value = ((temp & 0xff) << 16) | (temp & 0x00ff00) | (temp >> 16);
 }
 
-FormatOutputStream& operator<<(FormatOutputStream& stream, const Color& value) throw(IOException) {
+FormatOutputStream& operator<<(FormatOutputStream& stream, const Color& value)
+{
   FormatOutputStream::PushContext push(stream);
   if (stream.getBase() == FormatOutputStream::Symbols::HEXADECIMAL) {
     return stream << value; // e.g. 0x123456

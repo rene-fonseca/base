@@ -743,7 +743,8 @@ void InetAddress::setAddress(const uint8* address, Family family) throw() {
   }
 }
 
-FormatOutputStream& operator<<(FormatOutputStream& stream, const InetAddress& value) throw(IOException) {
+FormatOutputStream& operator<<(FormatOutputStream& stream, const InetAddress& value)
+{
   // char buffer[sizeof("ffff:ffff:ffff:ffff:ffff:ffff:123.123.123.123")];
   // TAG: do not write directly to stream: use internal stream first
   if (value.family == InetAddress::IP_VERSION_6) {

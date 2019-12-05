@@ -107,7 +107,7 @@ FormatOutputStream::PushContext::~PushContext() noexcept
   stream.context = context;
 }
 
-FormatOutputStream& FormatOutputStream::operator<<(Action action) throw(IOException)
+FormatOutputStream& FormatOutputStream::operator<<(Action action)
 {
   static const Literal SP_STR = " ";
   static const Literal CR_STR = "\r";
@@ -344,7 +344,7 @@ FormatOutputStream& FormatOutputStream::setContext(const Context& context) throw
   return *this;
 }
 
-void FormatOutputStream::indent(unsigned int size, bool useTab) throw(IOException)
+void FormatOutputStream::indent(unsigned int size, bool useTab)
 {
   static const Literal TAB_INDENT =
     "\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t";
@@ -375,7 +375,7 @@ void FormatOutputStream::indent(unsigned int size, bool useTab) throw(IOExceptio
   // context is not reset to default
 }
 
-void FormatOutputStream::addCharacterField(const char* buffer, MemorySize size) throw(IOException)
+void FormatOutputStream::addCharacterField(const char* buffer, MemorySize size)
 {
   ExclusiveSynchronize<Guard> _guard(guard);
 
@@ -406,7 +406,7 @@ void FormatOutputStream::addCharacterField(const char* buffer, MemorySize size) 
   context = defaultContext;
 }
 
-void FormatOutputStream::addCharacterField(const wchar* buffer, MemorySize size) throw(IOException)
+void FormatOutputStream::addCharacterField(const wchar* buffer, MemorySize size)
 {
   ExclusiveSynchronize<Guard> _guard(guard);
 
@@ -444,7 +444,7 @@ void FormatOutputStream::addCharacterField(const wchar* buffer, MemorySize size)
   context = defaultContext;
 }
 
-void FormatOutputStream::addCharacterField(const char16_t* buffer, MemorySize size) throw(IOException)
+void FormatOutputStream::addCharacterField(const char16_t* buffer, MemorySize size)
 {
   ExclusiveSynchronize<Guard> _guard(guard);
 
@@ -482,7 +482,7 @@ void FormatOutputStream::addCharacterField(const char16_t* buffer, MemorySize si
   context = defaultContext;
 }
 
-void FormatOutputStream::addCharacterField(const char32_t* buffer, MemorySize size) throw(IOException)
+void FormatOutputStream::addCharacterField(const char32_t* buffer, MemorySize size)
 {
   ExclusiveSynchronize<Guard> _guard(guard);
 
@@ -520,7 +520,7 @@ void FormatOutputStream::addCharacterField(const char32_t* buffer, MemorySize si
   context = defaultContext;
 }
 
-void FormatOutputStream::addIntegerField(const char* buffer, unsigned int size, bool isSigned) throw(IOException)
+void FormatOutputStream::addIntegerField(const char* buffer, unsigned int size, bool isSigned)
 {
   ExclusiveSynchronize<Guard> _guard(guard);
   unsigned int requiredWidth = size;
@@ -634,7 +634,7 @@ void FormatOutputStream::addIntegerField(const char* buffer, unsigned int size, 
   context = defaultContext;
 }
 
-void FormatOutputStream::addDateField(const Date& date) throw(IOException)
+void FormatOutputStream::addDateField(const Date& date)
 {
   ExclusiveSynchronize<Guard> _guard(guard);
   const bool localTime = ((context.flags & Symbols::LOCAL_TIME) != 0);
@@ -744,13 +744,13 @@ void FormatOutputStream::addDateField(const Date& date) throw(IOException)
 FormatOutputStream::~FormatOutputStream() {
 }
 
-FormatOutputStream& FormatOutputStream::operator<<(bool value) throw(IOException)
+FormatOutputStream& FormatOutputStream::operator<<(bool value)
 {
   // TAG: need locale support
   return *this << (value ? Literal("true") : Literal("false"));
 }
 
-FormatOutputStream& FormatOutputStream::operator<<(short value) throw(IOException)
+FormatOutputStream& FormatOutputStream::operator<<(short value)
 {
   char buffer[sizeof(short) * 8];
   char* dest = &buffer[sizeof(buffer) - 1]; // point to least significant digit position
@@ -811,7 +811,7 @@ FormatOutputStream& FormatOutputStream::operator<<(short value) throw(IOExceptio
   return *this;
 }
 
-FormatOutputStream& FormatOutputStream::operator<<(unsigned short value) throw(IOException)
+FormatOutputStream& FormatOutputStream::operator<<(unsigned short value)
 {
   char buffer[sizeof(unsigned short) * 8];
   char* dest = &buffer[sizeof(buffer) - 1]; // point to least significant digit position
@@ -868,7 +868,7 @@ FormatOutputStream& FormatOutputStream::operator<<(unsigned short value) throw(I
   return *this;
 }
 
-FormatOutputStream& FormatOutputStream::operator<<(int value) throw(IOException)
+FormatOutputStream& FormatOutputStream::operator<<(int value)
 {
   char buffer[sizeof(int) * 8];
   char* dest = &buffer[sizeof(buffer) - 1]; // point to least significant digit position
@@ -929,7 +929,7 @@ FormatOutputStream& FormatOutputStream::operator<<(int value) throw(IOException)
   return *this;
 }
 
-FormatOutputStream& FormatOutputStream::operator<<(unsigned int value) throw(IOException)
+FormatOutputStream& FormatOutputStream::operator<<(unsigned int value)
 {
   char buffer[sizeof(unsigned int) * 8];
   char* dest = &buffer[getArraySize(buffer) - 1]; // point to least significant digit position
@@ -986,7 +986,7 @@ FormatOutputStream& FormatOutputStream::operator<<(unsigned int value) throw(IOE
   return *this;
 }
 
-FormatOutputStream& FormatOutputStream::operator<<(long value) throw(IOException)
+FormatOutputStream& FormatOutputStream::operator<<(long value)
 {
   char buffer[sizeof(long) * 8];
   char* dest = &buffer[sizeof(buffer) - 1]; // point to least significant digit position
@@ -1047,7 +1047,7 @@ FormatOutputStream& FormatOutputStream::operator<<(long value) throw(IOException
   return *this;
 }
 
-FormatOutputStream& FormatOutputStream::operator<<(unsigned long value) throw(IOException)
+FormatOutputStream& FormatOutputStream::operator<<(unsigned long value)
 {
   char buffer[sizeof(unsigned long) * 8];
   char* dest = &buffer[sizeof(buffer) - 1]; // point to least significant digit position
@@ -1104,7 +1104,7 @@ FormatOutputStream& FormatOutputStream::operator<<(unsigned long value) throw(IO
   return *this;
 }
 
-FormatOutputStream& FormatOutputStream::operator<<(long long value) throw(IOException)
+FormatOutputStream& FormatOutputStream::operator<<(long long value)
 {
   char buffer[sizeof(long long) * 8];
   char* dest = &buffer[sizeof(buffer) - 1]; // point to least significant digit position
@@ -1165,7 +1165,7 @@ FormatOutputStream& FormatOutputStream::operator<<(long long value) throw(IOExce
   return *this;
 }
 
-FormatOutputStream& FormatOutputStream::operator<<(unsigned long long value) throw(IOException)
+FormatOutputStream& FormatOutputStream::operator<<(unsigned long long value)
 {
   char buffer[sizeof(unsigned long long) * 8];
   char* dest = &buffer[sizeof(buffer) - 1]; // point to least significant digit position
@@ -1222,7 +1222,7 @@ FormatOutputStream& FormatOutputStream::operator<<(unsigned long long value) thr
   return *this;
 }
 
-FormatOutputStream& FormatOutputStream::operator<<(int128 _value) throw(IOException)
+FormatOutputStream& FormatOutputStream::operator<<(int128 _value)
 {
   UInt128 value(_value); // no sign
   char buffer[sizeof(int128) * 8];
@@ -1282,7 +1282,7 @@ FormatOutputStream& FormatOutputStream::operator<<(int128 _value) throw(IOExcept
   return *this;
 }
 
-FormatOutputStream& FormatOutputStream::operator<<(uint128 _value) throw(IOException)
+FormatOutputStream& FormatOutputStream::operator<<(uint128 _value)
 {
   UInt128 value(_value);
   char buffer[sizeof(uint128) * 8];
@@ -1552,7 +1552,7 @@ void convertFloatingPoint(
   }
 }
 
-FormatOutputStream& FormatOutputStream::operator<<(float _value) throw(IOException)
+FormatOutputStream& FormatOutputStream::operator<<(float _value)
 {
   BASSERT(sizeof(float) == sizeof(FloatingPoint::FloatRepresentation));
   const FloatingPoint::ToFloat value(_value);
@@ -1578,7 +1578,7 @@ FormatOutputStream& FormatOutputStream::operator<<(float _value) throw(IOExcepti
   return *this;
 }
 
-FormatOutputStream& FormatOutputStream::operator<<(double _value) throw(IOException)
+FormatOutputStream& FormatOutputStream::operator<<(double _value)
 {
   BASSERT(sizeof(double) == sizeof(FloatingPoint::DoubleRepresentation));
   const FloatingPoint::ToDouble value(_value);
@@ -1604,7 +1604,7 @@ FormatOutputStream& FormatOutputStream::operator<<(double _value) throw(IOExcept
   return *this;
 }
 
-FormatOutputStream& FormatOutputStream::operator<<(long double _value) throw(IOException)
+FormatOutputStream& FormatOutputStream::operator<<(long double _value)
 {
 #if 0 && (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__GNULINUX)
   return operator<<(static_cast<double>(_value));
@@ -1634,12 +1634,12 @@ FormatOutputStream& FormatOutputStream::operator<<(long double _value) throw(IOE
   return *this;
 }
 
-FormatOutputStream& FormatOutputStream::operator<<(const void* value) throw(IOException)
+FormatOutputStream& FormatOutputStream::operator<<(const void* value)
 {
   return *this << HEX << PREFIX << ZEROPAD << Cast::getOffset(value);
 }
 
-FormatOutputStream& FormatOutputStream::operator<<(const Exception& e) throw(IOException)
+FormatOutputStream& FormatOutputStream::operator<<(const Exception& e)
 {
   StringOutputStream s;
   s << "Exception '"
@@ -1703,7 +1703,7 @@ void FormatOutputStream::writeFloatingPointType(
   unsigned int* mantissa,
   unsigned int mantissaSize,
   int base2Exponent,
-  unsigned int valueFlags) throw(IOException)
+  unsigned int valueFlags)
 {
   PrimitiveStackArray<char> buffer(128 + 2 + significant/3); // N = 2 + floor[n/log2(10)] => N < 2 + n/3 // TAG: 128 should be calculated
   char* output = buffer;
@@ -1988,7 +1988,7 @@ void FormatOutputStream::writeFloatingPointType(
   }
 }
 
-FormatOutputStream& operator<<(FormatOutputStream& stream, const Type& type) throw(IOException)
+FormatOutputStream& operator<<(FormatOutputStream& stream, const Type& type)
 {
   return stream << "Type<" << TypeInfo::getTypename(type) << ">";
 }

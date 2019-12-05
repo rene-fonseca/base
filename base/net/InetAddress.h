@@ -336,13 +336,13 @@ public:
   /**
     Writes a string representation of the address to a stream.
   */
-  _COM_AZURE_DEV__BASE__API friend FormatOutputStream& operator<<(FormatOutputStream& stream, const InetAddress& value) throw(IOException);
+  _COM_AZURE_DEV__BASE__API friend FormatOutputStream& operator<<(FormatOutputStream& stream, const InetAddress& value);
 };
 
 /**
   Writes a string representation of the InetAddress object to a format stream.
 */
-_COM_AZURE_DEV__BASE__API FormatOutputStream& operator<<(FormatOutputStream& stream, const InetAddress& value) throw(IOException);
+_COM_AZURE_DEV__BASE__API FormatOutputStream& operator<<(FormatOutputStream& stream, const InetAddress& value);
 
 template<>
 class Hash<InetAddress> {

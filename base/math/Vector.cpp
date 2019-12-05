@@ -191,7 +191,7 @@ TYPE dot(const Vector<TYPE>& left, const Vector<TYPE>& right) throw()
 }
 
 template<class TYPE>
-FormatOutputStream& operator<<(FormatOutputStream& stream, const Vector<TYPE>& value) throw(IOException)
+FormatOutputStream& operator<<(FormatOutputStream& stream, const Vector<TYPE>& value)
 {
   FormatOutputStream::PushContext push(stream);
   stream << '(';

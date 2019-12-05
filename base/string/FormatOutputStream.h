@@ -272,10 +272,11 @@ public:
       Composite(int _x, int _y) throw() : x(_x), y(_y) {
       }
 
-      friend FormatOutputStream& operator<<(FormatOutputStream& stream, const Composite& value) throw(IOException);
+      friend FormatOutputStream& operator<<(FormatOutputStream& stream, const Composite& value);
     };
     
-    FormatOutputStream& operator<<(FormatOutputStream& stream, const Composite& value) throw(IOException) {
+    FormatOutputStream& operator<<(FormatOutputStream& stream, const Composite& value)
+    {
       FormatOutputStream::PushContext pushContext(stream); // make current context the default context
       return stream << '{' << value.x << ',' << value.y << '}';
     }
@@ -459,7 +460,7 @@ public:
   /**
     Send action to stream.
   */
-  FormatOutputStream& operator<<(Action action) throw(IOException);
+  FormatOutputStream& operator<<(Action action);
 
   class _COM_AZURE_DEV__BASE__API Indent {
   private:
@@ -513,26 +514,25 @@ public:
     Writes the specified number of spaces to the stream. The current context is
     ignored and not reset by this method.
   */
-  void indent(unsigned int size, bool useTab = false) throw(IOException);
+  void indent(unsigned int size, bool useTab = false);
   
   /**
     Writes the specifies number of characters to the stream.
   */
-  void addCharacterField(const char* buffer, MemorySize size) throw(IOException);
-  void addCharacterField(const wchar* buffer, MemorySize size) throw(IOException);
-  void addCharacterField(const char16_t* buffer, MemorySize size) throw(IOException);
-  void addCharacterField(const char32_t* buffer, MemorySize size) throw(IOException);
+  void addCharacterField(const char* buffer, MemorySize size);
+  void addCharacterField(const wchar* buffer, MemorySize size);
+  void addCharacterField(const char16_t* buffer, MemorySize size);
+  void addCharacterField(const char32_t* buffer, MemorySize size);
   
   /**
     Writes a preformated integer to the stream.
   */
-  void addIntegerField(
-    const char* buffer, unsigned int size, bool isSigned) throw(IOException);
+  void addIntegerField(const char* buffer, unsigned int size, bool isSigned);
   
   /**
     Writes a date object to the stream.
   */
-  void addDateField(const Date& date) throw(IOException);
+  void addDateField(const Date& date);
 
   /**
     Writes a preformated floating point value to stream.
@@ -542,7 +542,7 @@ public:
     unsigned int* mantissa,
     unsigned int mantissaSize,
     int base2Exponent,
-    unsigned int valueFlags) throw(IOException);
+    unsigned int valueFlags);
   
   /**
     Gets the context.
@@ -565,68 +565,70 @@ public:
     @param literal String literal.
   */
   template<MemorySize SIZE>
-  inline FormatOutputStream& operator<<(const char (&literal)[SIZE]) throw(IOException)
+  inline FormatOutputStream& operator<<(const char (&literal)[SIZE])
   {
     if (Constraint<(SIZE > 0)>::UNSPECIFIED) {}
     addCharacterField(literal, SIZE - 1);
     return *this;
   }
   
-  FormatOutputStream& operator<<(bool value) throw(IOException);
+  FormatOutputStream& operator<<(bool value);
   
-  inline FormatOutputStream& operator<<(char value) throw(IOException) {
+  inline FormatOutputStream& operator<<(char value)
+  {
     addCharacterField(&value, 1);
     return *this;
   }
 
-  inline FormatOutputStream& operator<<(wchar value) throw(IOException) {
+  inline FormatOutputStream& operator<<(wchar value)
+  {
     addCharacterField(&value, 1);
     return *this;
   }
 
-  FormatOutputStream& operator<<(short int value) throw(IOException);
-  FormatOutputStream& operator<<(unsigned short int value) throw(IOException);
-  FormatOutputStream& operator<<(int value) throw(IOException);
-  FormatOutputStream& operator<<(unsigned int value) throw(IOException);
-  FormatOutputStream& operator<<(long value) throw(IOException);
-  FormatOutputStream& operator<<(unsigned long value) throw(IOException);
-  FormatOutputStream& operator<<(long long value) throw(IOException);
-  FormatOutputStream& operator<<(unsigned long long value) throw(IOException);
-  FormatOutputStream& operator<<(int128 value) throw(IOException);
-  FormatOutputStream& operator<<(uint128 value) throw(IOException);
-  FormatOutputStream& operator<<(float value) throw(IOException);
-  FormatOutputStream& operator<<(double value) throw(IOException);
-  FormatOutputStream& operator<<(long double value) throw(IOException);
+  FormatOutputStream& operator<<(short int value);
+  FormatOutputStream& operator<<(unsigned short int value);
+  FormatOutputStream& operator<<(int value);
+  FormatOutputStream& operator<<(unsigned int value);
+  FormatOutputStream& operator<<(long value);
+  FormatOutputStream& operator<<(unsigned long value);
+  FormatOutputStream& operator<<(long long value);
+  FormatOutputStream& operator<<(unsigned long long value);
+  FormatOutputStream& operator<<(int128 value);
+  FormatOutputStream& operator<<(uint128 value);
+  FormatOutputStream& operator<<(float value);
+  FormatOutputStream& operator<<(double value);
+  FormatOutputStream& operator<<(long double value);
 
-  inline FormatOutputStream& operator<<(const NativeString& value) throw(IOException)
+  inline FormatOutputStream& operator<<(const NativeString& value)
   {
     addCharacterField(value.getValue(), value.getLength());
     return *this;
   }
 
-  inline FormatOutputStream& operator<<(const NativeWideString& value) throw(IOException)
+  inline FormatOutputStream& operator<<(const NativeWideString& value)
   {
     addCharacterField(value.getValue(), value.getLength());
     return *this;
   }
 
-  inline FormatOutputStream& operator<<(const char* value) throw(IOException)
+  inline FormatOutputStream& operator<<(const char* value)
   {
     return *this << NativeString(value);
   }
 
-  inline FormatOutputStream& operator<<(const wchar* value) throw(IOException)
+  inline FormatOutputStream& operator<<(const wchar* value)
   {
     return *this << NativeWideString(value);
   }
 
-  inline FormatOutputStream& operator<<(const char16_t* value) throw(IOException)
+  inline FormatOutputStream& operator<<(const char16_t* value)
   {
     addCharacterField(value, getNullTerminatedLength(value));
     return *this;
   }
 
-  inline FormatOutputStream& operator<<(const char32_t* value) throw(IOException)
+  inline FormatOutputStream& operator<<(const char32_t* value)
   {
     addCharacterField(value, getNullTerminatedLength(value));
     return *this;
@@ -648,14 +650,15 @@ public:
   /**
     Writes a pointer to a format output stream.
   */
-  FormatOutputStream& operator<<(const void* value) throw(IOException);
+  FormatOutputStream& operator<<(const void* value);
 
   /**
     Writes a reference to a format output stream.
   */
   template<class TYPE>
   inline FormatOutputStream& operator<<(
-    Reference<TYPE> value) throw(IOException) {
+    Reference<TYPE> value)
+  {
     return *this << value.getValue();
   }
 
@@ -663,13 +666,15 @@ public:
     Writes a string literal to a format output stream.
   */
   inline FormatOutputStream& operator<<(
-    const Literal& literal) throw(IOException) {
+    const Literal& literal)
+  {
     addCharacterField(literal.getValue(), literal.getLength());
     return *this;
   }
 
   inline FormatOutputStream& operator<<(
-    const WideLiteral& literal) throw(IOException) {
+    const WideLiteral& literal)
+  {
     addCharacterField(literal.getValue(), literal.getLength());
     return *this;
   }
@@ -677,7 +682,7 @@ public:
   /**
     Writes a nice description of the exception to the format output stream.
   */
-  FormatOutputStream& operator<<(const Exception& e) throw(IOException);
+  FormatOutputStream& operator<<(const Exception& e);
 
   /**
     Returns the associated buffer as a String if supported by stream. E.g.
@@ -797,7 +802,8 @@ public:
 */
 template<class TYPE>
 FormatOutputStream& operator<<(
-  FormatOutputStream& stream, const Sequence<TYPE>& value) throw(IOException) {
+  FormatOutputStream& stream, const Sequence<TYPE>& value)
+{
   FormatOutputStream::PushContext push(stream);
   const TYPE* src = value.getValue();
   const TYPE* end = src + value.getSize();
@@ -825,7 +831,7 @@ FormatOutputStream& operator<<(
 /**
   Writes a nice description of the type to the format output stream.
 */
-_COM_AZURE_DEV__BASE__API FormatOutputStream& operator<<(FormatOutputStream& stream, const Type& type) throw(IOException);
+_COM_AZURE_DEV__BASE__API FormatOutputStream& operator<<(FormatOutputStream& stream, const Type& type);
 
 /** Sets the desired width of the field. */
 inline FormatOutputStream::Manipulator setWidth(unsigned int width) noexcept
@@ -860,14 +866,14 @@ inline FormatOutputStream::StringManipulator setDateFormat(const String& format)
 
 inline FormatOutputStream& operator<<(
   FormatOutputStream& stream,
-  const FormatOutputStream::Manipulator& manipulator) throw(IOException)
+  const FormatOutputStream::Manipulator& manipulator)
 {
   return manipulator(stream);
 }
 
 inline FormatOutputStream& operator<<(
   FormatOutputStream& stream,
-  const FormatOutputStream::StringManipulator& manipulator) throw(IOException)
+  const FormatOutputStream::StringManipulator& manipulator)
 {
   return manipulator(stream);
 }

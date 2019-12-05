@@ -305,7 +305,7 @@ Array<String> User::getGroups() throw(UserException) {
   return result;
 }
 
-FormatOutputStream& operator<<(FormatOutputStream& stream, const User& value) throw(IOException)
+FormatOutputStream& operator<<(FormatOutputStream& stream, const User& value)
 {
   if (!value.isValid()) {
     return stream << "<unknown>";

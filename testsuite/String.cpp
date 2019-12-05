@@ -39,14 +39,14 @@ public:
     return value;
   }
 
-  inline FormatOutputStream& operator<<(FormatOutputStream& stream) const throw(IOException)
+  inline FormatOutputStream& operator<<(FormatOutputStream& stream) const
   {
     return stream << static_cast<const TYPE&>(value);
   }
 };
 
 template<class TYPE>
-inline FormatOutputStream& operator<<(FormatOutputStream& stream, const Validate<TYPE>& value) throw(IOException)
+inline FormatOutputStream& operator<<(FormatOutputStream& stream, const Validate<TYPE>& value)
 {
   return value.operator<<(stream);
 }

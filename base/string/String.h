@@ -1379,7 +1379,7 @@ public:
 /**
   Writes string to format stream.
 */
-_COM_AZURE_DEV__BASE__API FormatOutputStream& operator<<(FormatOutputStream& stream, const String& value) throw(IOException);
+_COM_AZURE_DEV__BASE__API FormatOutputStream& operator<<(FormatOutputStream& stream, const String& value);
 
 /**
   Returns a new string that is the concatenation of the two specified strings.

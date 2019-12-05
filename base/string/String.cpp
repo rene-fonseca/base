@@ -960,7 +960,7 @@ unsigned long Hash<String>::operator()(const String& value) noexcept
   return result;
 }
 
-FormatOutputStream& operator<<(FormatOutputStream& stream, const String& value) throw(IOException)
+FormatOutputStream& operator<<(FormatOutputStream& stream, const String& value)
 {
   stream.addCharacterField(value.getElements(), value.getLength());
   return stream;

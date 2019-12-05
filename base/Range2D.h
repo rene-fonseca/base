@@ -154,6 +154,6 @@ public:
 /**
   Writes a string representation of a Range2D object to a format stream. The format is "(minimum, maximum)".
 */
-_COM_AZURE_DEV__BASE__API FormatOutputStream& operator<<(FormatOutputStream& stream, const Range2D& value) throw(IOException);
+_COM_AZURE_DEV__BASE__API FormatOutputStream& operator<<(FormatOutputStream& stream, const Range2D& value);
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

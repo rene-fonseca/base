@@ -193,7 +193,8 @@ BitSet& BitSet::operator<<=(unsigned int shift) noexcept
   return *this;
 }
 
-BitSet& BitSet::operator>>=(unsigned int shift) noexcept {
+BitSet& BitSet::operator>>=(unsigned int shift) noexcept
+{
   if (shift == 0) {
     return *this;
   }
@@ -222,12 +223,14 @@ BitSet& BitSet::operator>>=(unsigned int shift) noexcept {
   return *this;
 }
 
-void BitSet::removeAll() noexcept {
+void BitSet::removeAll() noexcept
+{
   elements = new ReferenceCountedAllocator<unsigned long>(); // no need to copy
   size = 0;
 }
 
-FormatOutputStream& operator<<(FormatOutputStream& stream, const BitSet& value) throw(IOException) {
+FormatOutputStream& operator<<(FormatOutputStream& stream, const BitSet& value)
+{
   StringOutputStream buffer;
   
   const unsigned long* current = value.getElements() + value.getSize();

@@ -15,7 +15,8 @@
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
-FormatOutputStream& operator<<(FormatOutputStream& stream, const Range2D& value) throw(IOException) {
+FormatOutputStream& operator<<(FormatOutputStream& stream, const Range2D& value)
+{
   FormatOutputStream::PushContext push(stream);
   return stream << '(' << value.getMinimum() << ',' << value.getMaximum() << ')';
 }

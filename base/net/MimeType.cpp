@@ -178,21 +178,24 @@ bool MimeType::operator==(const MimeType& value) const throw() {
   return (mediaType == value.mediaType) && subtype.compareToIgnoreCase(value.subtype);
 }
 
-MimeType::MediaType MimeType::getMediaType() const throw() {
+MimeType::MediaType MimeType::getMediaType() const throw()
+{
   if (this->mediaType == UNINITIALIZED) {
     this->mediaType = MimeTypeImpl::getWellKnownMediaType(type);
   }
   return mediaType;
 }
 
-bool MimeType::matches(MediaType mediaType, const String& subtype) const throw() {
+bool MimeType::matches(MediaType mediaType, const String& subtype) const throw()
+{
   if (this->mediaType == UNINITIALIZED) {
     this->mediaType = MimeTypeImpl::getWellKnownMediaType(this->type);
   }
   return (this->mediaType == mediaType) && (this->mediaType != EXTENSION) && this->subtype.compareToIgnoreCase(subtype);
 }
 
-FormatOutputStream& operator<<(FormatOutputStream& stream, const MimeType& value) throw(IOException) {
+FormatOutputStream& operator<<(FormatOutputStream& stream, const MimeType& value)
+{
   StringOutputStream s;
   s << value.getType() << '/' << value.getSubtype() << FLUSH;
   return stream << s.getString();

@@ -756,7 +756,7 @@ FormatOutputStream& operator<<(FormatOutputStream& stream, const InetAddress& va
     } else if ((type & (InetAddress::IPV4_COMPATIBLE|InetAddress::LOOPBACK)) == InetAddress::IPV4_COMPATIBLE) { // ::255.255.255.255
       stream << "::"; // write IPv4 address after this
     } else { // 1080::8:800:200c:417a
-      const uint16* addr = value.address.halfWords;
+      const uint16* addr = reinterpret_cast<const uint16*>(&value.address);
 
       // find longest zero sequence
       int firstZero = 8; // index 8 used later

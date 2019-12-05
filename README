@@ -12,7 +12,7 @@ https://dev.azure.com/renefonseca/base
 Build
 =====
 
-Make sure GIT, cmake, and compiler (e.g. g++) are installed.
+Make sure GIT, cmake, make, and compiler (e.g. g++) are installed.
 
 Debug build
 -----------
@@ -43,9 +43,9 @@ macOS x86_64            Runs continuously on pipeline
 
 Debian 10 x86_64        OK             5 Dec 2019
 Ubuntu 19.04 x86_64     OK             5 Dec 2019
+Fedora 31 x86_64        Ok             5 Dec 2019
 OpenSolaris 11          Pending
 OpenSUSE Linux 15       Pending
-Fedora                  Pending
 RedHat                  Pending
 Linux ARM32             Pending
 Linux ARM64             Pending

@@ -66,11 +66,8 @@ endif()
 #)
 endif ()
 
-if (NOT MSVC)
+if (UNIX)
   find_package(X11)
-  if (X11_FOUND)
-    message("Found X11")
-  endif()
 endif()
 
 file(GLOB_RECURSE base_platforms_SRC

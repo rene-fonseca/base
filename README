@@ -6,3 +6,51 @@ A framework for developing platform independent applications in C++.
 Copyright (C) 2000-2019 by René Møller Fonseca <rene.m.fonseca@gmail.com>
 
 https://dev.azure.com/renefonseca/base
+
+
+
+Build
+=====
+
+Make sure GIT, cmake, and compiler (e.g. g++) are installed.
+
+Debug build
+-----------
+git clone https://renefonseca@dev.azure.com/renefonseca/base/_git/base
+cd base
+cmake . -DCMAKE_BUILD_TYPE=Debug
+make
+./testing/unittesting
+ctest . -C Debug
+
+Release build
+-------------
+git clone https://renefonseca@dev.azure.com/renefonseca/base/_git/base
+cd base
+cmake . -DCMAKE_BUILD_TYPE=Release
+make
+./testing/unittesting
+ctest . -C Release
+
+
+
+Platforms
+=========
+
+Windows x86_64          Runs continuously on pipeline
+Ubuntu 18.04 x86_64     Runs continuously on pipeline
+macOS x86_64            Runs continuously on pipeline
+
+Debian 10 x86_64        OK             5 Dec 2019
+Ubuntu 19.04 x86_64     OK             5 Dec 2019
+OpenSolaris 11          Pending
+OpenSUSE Linux 15       Pending
+Fedora                  Pending
+RedHat                  Pending
+Linux ARM32             Pending
+Linux ARM64             Pending
+Windows ARM32           Pending
+Windows ARM64           Pending
+HP-UX                   Pending
+AIX PowerPC             Pending
+SUSE Linux 15           Pending

@@ -16,18 +16,16 @@
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
 #  include <windows.h>
 #  undef DELETE // yikes
-#elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__MACOS)
 #else // unix (X11)
-#  include <X11/Xlib.h>
-#  include <X11/Xutil.h>
-#  include <X11/Xatom.h>
+#  include <base/platforms/os/unix/X11.h>
 #endif // flavor
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 // TAG: support for capturing screen/window/...
 
-void Pixmap::destroy() throw() {
+void Pixmap::destroy() throw()
+{
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)  
   if (graphicsContextHandle) {
     HGDIOBJ bitmap = ::SelectObject((HDC)graphicsContextHandle, (HGDIOBJ)0); // TAG: is this required
@@ -37,8 +35,7 @@ void Pixmap::destroy() throw() {
   if (drawableHandle) {
     // nothing to destroy
   }
-#elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__MACOS)
-#else // unix
+#elif defined(_COM_AZURE_DEV__BASE__USE_X11)
   if (graphicsContextHandle) {
     // nothing to destroy
   }

@@ -14,71 +14,7 @@
 #pragma once
 
 #include <base/platforms/features.h>
-
-#if (_COM_AZURE_DEV__BASE__FLAVOR != _COM_AZURE_DEV__BASE__UNIX)
-#  error native GLX interface requires unix flavor
-#endif
-
-#if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__MACOS)
-
-// fake types
-
-typedef void* XID;
-typedef unsigned int XVisualInfo;
-typedef unsigned int Display;
-typedef unsigned int Bool;
-typedef void* Pixmap;
-typedef void* Window;
-typedef unsigned int Screen;
-typedef unsigned int Font;
-
-enum {
-  None = 0,
-  Success = 1,
-  False = 0,
-  True = 1,
-
-  StructureNotifyMask = 0x1000,
-  KeymapStateMask,
-  FocusChangeMask,
-  ButtonReleaseMask,
-  ButtonPressMask,
-  KeyReleaseMask,
-  KeyPressMask,
-  VisibilityChangeMask,
-  EnterWindowMask,
-  LeaveWindowMask,
-  PointerMotionMask
-};
-
-inline void XDestroyWindow(Display*, Window) {}
-inline int XDefaultScreen(Display*) {return 0;}
-inline void* XScreenOfDisplay(Display*, int screenId) {return 0;}
-inline int XBlackPixelOfScreen(Screen*) {return 0;}
-inline int XWhitePixelOfScreen(Screen*) {return 0;}
-inline void* DefaultRootWindow(Display*) {return 0;}
-inline void XFree(XVisualInfo*) {}
-
-inline void* XCreateSimpleWindow(
-    Display*,
-    void*,
-    int,
-    int,
-    int,
-    int,
-    int, // border width
-    int, // border color
-    int) {return 0;}
-
-inline void XSelectInput(Display*, Window, int) {}
-inline int XScreenNumberOfScreen(Screen*) {return 0;}
-inline void* XCreatePixmap(Display*, void*, int, int, int) {return 0;}
-inline void XFreePixmap(Display*, Pixmap) {}
-
-#elif (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__UNIX)
-#  include <X11/Xlib.h>
-#  include <X11/Xutil.h>
-#endif // flavor
+#include <base/platforms/os/unix/X11.h>
 
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
 #  define CALL_GLX _COM_AZURE_DEV__BASE__CALL_PASCAL

@@ -19,13 +19,8 @@
 #  include <windows.h>
 #  undef DELETE // yikes
 #else // unix (X11)
-#if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__MACOS)
-#else
-#  include <X11/Xlib.h>
-#  include <X11/Xutil.h>
-#  include <X11/Xatom.h>
+#  include <base/platforms/os/unix/X11.h>
 #  include <stdlib.h>
-#endif
 #endif // flavor
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
@@ -35,19 +30,20 @@ template<>
 class Backend<WindowImpl> {
 public:
 
-  static inline void* getDisplayHandle() throw() {
+  static inline void* getDisplayHandle() throw()
+  {
     return WindowImpl::displayHandle;
   }
 };
 #endif
 
-Bitmap::Handle::~Handle() throw() {
+Bitmap::Handle::~Handle() throw()
+{
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   if (handle) {
     ::DeleteObject((HGDIOBJ)handle);
   }
-#elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__MACOS)
-#else // unix
+#elif defined(_COM_AZURE_DEV__BASE__USE_X11)
   if (handle) {
     XDestroyImage((XImage*)handle);
   }
@@ -122,8 +118,7 @@ Bitmap::Bitmap(
     UserInterfaceException(this)
   );
   handle = new Handle(deviceContextHandle);
-#elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__MACOS)
-#else // unix
+#elif defined(_COM_AZURE_DEV__BASE__USE_X11)
   bassert( // TAG: what is the dimension limit
     (dimension.getWidth() < 65536) && (dimension.getHeight() < 65536),
     UserInterfaceException(this)
@@ -179,15 +174,15 @@ uint32 Bitmap::getPixel(const Position& position) const throw(UserInterfaceExcep
   }
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   return 0; // TAG: fixme
-#elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__MACOS)
-  return 0;
-#else // unix
+#elif defined(_COM_AZURE_DEV__BASE__USE_X11)
   unsigned long pixel = XGetPixel(
     (XImage*)handle->getHandle(),
     position.getX(),
     position.getY()
   );
   return pixel;
+#else
+  return 0;
 #endif // flavor
 }
 
@@ -201,8 +196,7 @@ void Bitmap::setPixel(
   }
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   // TAG: fixme
-#elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__MACOS)
-#else // unix
+#elif defined(_COM_AZURE_DEV__BASE__USE_X11)
   XPutPixel(
     (XImage*)handle->getHandle(),
     position.getX(),
@@ -228,11 +222,11 @@ Dimension Bitmap::getDimension() const throw(UserInterfaceException) {
     &info
   );
   return Dimension(info.bmWidth, info.bmHeight);
-#elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__MACOS)
-  return Dimension();
-#else // unix
+#elif defined(_COM_AZURE_DEV__BASE__USE_X11)
   XImage* image = (XImage*)handle->getHandle();
   return Dimension(image->width, image->height);
+#else
+  return Dimension();
 #endif // flavor
 }
 

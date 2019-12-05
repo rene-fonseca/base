@@ -16,11 +16,8 @@
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
 #  include <base/platforms/win32/Helpers.h>
 #  include <windows.h>
-#elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__MACOS)
 #else // unix (X11)
-#  include <X11/Xlib.h>
-#  include <X11/Xutil.h>
-#  include <X11/Xatom.h>
+#  include <base/platforms/os/unix/X11.h>
 #endif // flavor
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
@@ -301,8 +298,7 @@ void GraphicsContext::clear() throw(UserInterfaceException) {
     ),
     UserInterfaceException(this)
   );
-#elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__MACOS)
-#else // unix
+#elif defined(_COM_AZURE_DEV__BASE__USE_X11)
   ::XClearWindow(
     (Display*)displayHandle,
     (::Window)drawableHandle
@@ -327,8 +323,7 @@ void GraphicsContext::clear(
     ),
     UserInterfaceException(this)
   );
-#elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__MACOS)
-#else // unix
+#elif defined(_COM_AZURE_DEV__BASE__USE_X11)
   ::XClearArea(
     (Display*)displayHandle,
     (::Window)drawableHandle,
@@ -355,8 +350,7 @@ void GraphicsContext::setPixel(
     ) != (COLORREF)(-1),
     UserInterfaceException(this)
   );
-#elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__MACOS)
-#else // unix
+#elif defined(_COM_AZURE_DEV__BASE__USE_X11)
   bassert(
     ::XDrawPoint(
       (Display*)displayHandle,
@@ -404,8 +398,7 @@ void GraphicsContext::setPixels(
       UserInterfaceException(this)
     );
   }
-#elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__MACOS)
-#else // unix
+#elif defined(_COM_AZURE_DEV__BASE__USE_X11)
   Array<Position>::ReadIterator i = positions.getBeginReadIterator();
   const Array<Position>::ReadIterator end = positions.getEndReadIterator();
   while (i != end) {
@@ -485,8 +478,7 @@ void GraphicsContext::line(
     ),
     UserInterfaceException(this)
   );
-#elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__MACOS)
-#else // unix
+#elif defined(_COM_AZURE_DEV__BASE__USE_X11)
   bassert(
     ::XDrawLine(
       (Display*)displayHandle,
@@ -544,8 +536,7 @@ void GraphicsContext::arc(
 //     int nXEndArc,    // x-coord of second radial ending point
 //     int nYEndArc     // y-coord of second radial ending point
 //   );
-#elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__MACOS)
-#else // unix
+#elif defined(_COM_AZURE_DEV__BASE__USE_X11)
   if (flags & GraphicsContext::FILLED) {
     ::XFillArc(
       (Display*)displayHandle,
@@ -602,8 +593,7 @@ void GraphicsContext::rectangle(
     ),
     UserInterfaceException(this)
   );
-#elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__MACOS)
-#else // unix
+#elif defined(_COM_AZURE_DEV__BASE__USE_X11)
   // TAG: use current pen and brush
   bassert(
     ::XDrawRectangle(
@@ -635,8 +625,7 @@ void GraphicsContext::rectangle(
     ),
     UserInterfaceException(this)
   );
-#elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__MACOS)
-#else // unix
+#elif defined(_COM_AZURE_DEV__BASE__USE_X11)
   if (flags & GraphicsContext::FILLED) {
     ::XFillRectangle(
       (Display*)displayHandle,
@@ -903,8 +892,7 @@ void GraphicsContext::text(
     ),
     UserInterfaceException(this)
   );
-#elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__MACOS)
-#else // unix
+#elif defined(_COM_AZURE_DEV__BASE__USE_X11)
 	::XDrawString(
     (Display*)displayHandle,
     (::Window)drawableHandle,
@@ -939,8 +927,7 @@ void GraphicsContext::putBitmap(
       UserInterfaceException(this)
     );
   }
-#elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__MACOS)
-#else // unix
+#elif defined(_COM_AZURE_DEV__BASE__USE_X11)
   if (bitmap.handle.isValid()) {
     bassert(
       !XPutImage(
@@ -987,9 +974,7 @@ Bitmap GraphicsContext::getBitmap(
   Bitmap result;
   result.handle = new Bitmap::Handle(deviceContext);
   return result;
-#elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__MACOS)
-  return Bitmap();
-#else // unix
+#elif defined(_COM_AZURE_DEV__BASE__USE_X11)
   XImage* image = ::XGetImage(
     (Display*)displayHandle,
     (::Window)drawableHandle,
@@ -1004,6 +989,8 @@ Bitmap GraphicsContext::getBitmap(
   Bitmap result;
   result.handle = new Bitmap::Handle(image);
   return result;
+#else
+  return Bitmap();
 #endif // flavor  
 }
 

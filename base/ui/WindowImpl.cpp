@@ -23,13 +23,12 @@
 #endif
 #  include <windows.h>
 #  undef DELETE // yikes
-#elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__MACOS)
 #else // unix (X11)
-#  include <X11/Xlib.h>
-#  include <X11/Xutil.h>
-#  include <X11/Xatom.h>
+#  include <base/platforms/os/unix/X11.h>
+#if defined(_COM_AZURE_DEV__BASE__USE_X11)
 #  include <X11/cursorfont.h>
 #  include <X11/keysym.h>
+#endif
 #endif // flavor
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
@@ -128,8 +127,7 @@ namespace windowImpl {
     delete entry;
   }
 
-#if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__MACOS)
-#elif (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__UNIX)
+#if defined(_COM_AZURE_DEV__BASE__USE_X11)
 
   void (*XBlackPixel)();
   void (*XBlackPixelOfScreen)();
@@ -769,8 +767,7 @@ void WindowImpl::construct() throw() {
   mouseEvent.hwndTrack = (HWND)drawableHandle;
   mouseEvent.dwHoverTime = 0;
   ::TrackMouseEvent(&mouseEvent);
-#elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__MACOS)
-#else // unix
+#elif defined(_COM_AZURE_DEV__BASE__USE_X11)
   ::XSetWMProtocols(
     (Display*)displayHandle,
     (::Window)drawableHandle,
@@ -813,8 +810,7 @@ bool WindowImpl::loadModule(bool load) throw() {
       };
       windowClass = ::RegisterClassEx(&temp); // zero if fails
       success = windowClass != 0;
-#elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__MACOS)
-#else // unix
+#elif defined(_COM_AZURE_DEV__BASE__USE_X11)
       // TAG: fix display handle support (DISPLAY variable could have been changed)
       // TAG: need support for connection to any server (e.g. "localhost:0.0")
       Display* display = ::XOpenDisplay(0);
@@ -874,8 +870,7 @@ bool WindowImpl::loadModule(bool load) throw() {
         _COM_AZURE_DEV__BASE__ID_PREFIX L"/ui/WindowImpl",
         ::GetModuleHandle(NULL)
       );
-#elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__MACOS)
-#else // unix
+#elif defined(_COM_AZURE_DEV__BASE__USE_X11)
       ::XCloseDisplay((Display*)displayHandle);
       displayHandle = 0;
 #endif // flavor
@@ -986,8 +981,7 @@ Position WindowImpl::getBindingOffset(Binding binding) const throw() {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__UNIX)
 void WindowImpl::flush() throw(UserInterfaceException) {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
-#elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__MACOS)
-#else // unix
+#elif defined(_COM_AZURE_DEV__BASE__USE_X11)
   ::XFlush((Display*)displayHandle);
 #endif // flavor
 }
@@ -997,10 +991,10 @@ void WindowImpl::flush() throw(UserInterfaceException) {
 String WindowImpl::getServerVendor() const throw(UserInterfaceException) {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   return Literal("UNSPECIFIED");
-#elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__MACOS)
-  return String();
-#else // unix
+#elif defined(_COM_AZURE_DEV__BASE__USE_X11)
   return NativeString(::XServerVendor((Display*)displayHandle));
+#else
+  return String();
 #endif // flavor
 }
 
@@ -1008,10 +1002,10 @@ unsigned int WindowImpl::getServerRelease() const
   throw(UserInterfaceException) {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   return 0;
-#elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__MACOS)
-  return 0;
-#else // unix
+#elif defined(_COM_AZURE_DEV__BASE__USE_X11)
   return ::XVendorRelease((Display*)displayHandle);
+#else
+  return 0;
 #endif // flavor
 }
 
@@ -1048,8 +1042,7 @@ void WindowImpl::setTitle(const String& title) throw(UserInterfaceException)
 {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   ::SetWindowText((HWND)drawableHandle, ToWCharString(title));
-#elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__MACOS)
-#else // unix
+#elif defined(_COM_AZURE_DEV__BASE__USE_X11)
   ::XChangeProperty(
     (Display*)displayHandle,
     (::Window)drawableHandle,
@@ -1063,17 +1056,18 @@ void WindowImpl::setTitle(const String& title) throw(UserInterfaceException)
 #endif // flavor
 }
 
-String WindowImpl::getIconTitle() const throw(UserInterfaceException) {
+String WindowImpl::getIconTitle() const throw(UserInterfaceException)
+{
   return iconTitle;
 }
 
 void WindowImpl::setIconTitle(
-  const String& iconTitle) throw(UserInterfaceException) {
+  const String& iconTitle) throw(UserInterfaceException)
+{
   this->iconTitle = iconTitle;
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   // TAG: fixme
-#elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__MACOS)
-#else // unix
+#elif defined(_COM_AZURE_DEV__BASE__USE_X11)
   ::XChangeProperty(
     (Display*)displayHandle,
     (::Window)drawableHandle,
@@ -1104,8 +1098,7 @@ void WindowImpl::setPosition(
       UserInterfaceException(this)
     );
   }
-#elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__MACOS)
-#else // unix
+#elif defined(_COM_AZURE_DEV__BASE__USE_X11)
   XWindowChanges changes;
   changes.x = position.getX();
   changes.y = position.getY();
@@ -1118,8 +1111,8 @@ void WindowImpl::setPosition(
 #endif // flavor
 }
 
-void WindowImpl::setDimension(
-  const Dimension& dimension) throw(UserInterfaceException) {
+void WindowImpl::setDimension(const Dimension& dimension) throw(UserInterfaceException)
+{
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   if (dimension != this->dimension) {
     bassert(
@@ -1134,8 +1127,7 @@ void WindowImpl::setDimension(
       UserInterfaceException(this)
     );
   }
-#elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__MACOS)
-#else // unix
+#elif defined(_COM_AZURE_DEV__BASE__USE_X11)
   XWindowChanges changes;
   changes.width = dimension.getWidth();
   changes.height = dimension.getHeight();
@@ -1169,8 +1161,7 @@ void WindowImpl::setRegion(
     ),
     UserInterfaceException(this)
   );
-#elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__MACOS)
-#else // unix
+#elif defined(_COM_AZURE_DEV__BASE__USE_X11)
   XWindowChanges changes;
   changes.x = position.getX();
   changes.y = position.getY();
@@ -1243,8 +1234,7 @@ void WindowImpl::setCursor(Cursor cursor) throw(UserInterfaceException) {
     ::SetCursorPos(point.x, point.y);
     this->cursor = cursor;
   }
-#elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__MACOS)
-#else // unix
+#elif defined(_COM_AZURE_DEV__BASE__USE_X11)
   if (cursor != this->cursor) {
     static const int NATIVE_GLYPH[] = {
       None, // INHERIT
@@ -1292,9 +1282,7 @@ Position WindowImpl::toGlobalPosition(
   const Position& position) const throw(UserInterfaceException) {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   return this->position + position;
-#elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__MACOS)
-  return Position();
-#else // unix
+#elif defined(_COM_AZURE_DEV__BASE__USE_X11)
   int x = 0;
   int y = 0;
   ::Window child;
@@ -1309,6 +1297,8 @@ Position WindowImpl::toGlobalPosition(
     &child
   );
   return Position(x, y);
+#else
+  return Position();
 #endif // flavor
 }
 
@@ -1318,9 +1308,7 @@ Position WindowImpl::getCursorPosition() const throw(UserInterfaceException) {
   POINT point;
   ::GetCursorPos(&point);
   return Position(point.x, point.y);
-#elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__MACOS)
-  return Position();
-#else // unix
+#elif defined(_COM_AZURE_DEV__BASE__USE_X11)
   int rootX = 0;
   int rootY = 0;
   int x = 0;
@@ -1340,16 +1328,18 @@ Position WindowImpl::getCursorPosition() const throw(UserInterfaceException) {
     &nativeState
   );
   return Position(x, y);
+#else
+  return Position();
 #endif // flavor
 }
 
 // TAG: relative to: display, screen, window, or current position
 // TAG: clip region support?
-void WindowImpl::setCursorPosition(const Position& position) throw(UserInterfaceException) {
+void WindowImpl::setCursorPosition(const Position& position) throw(UserInterfaceException)
+{
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   ::SetCursorPos(position.getX(), position.getY()); // screen coordinates
-#elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__MACOS)
-#else // unix
+#elif defined(_COM_AZURE_DEV__BASE__USE_X11)
   ::XWarpPointer(
     (Display*)displayHandle,
     None,
@@ -1364,11 +1354,11 @@ void WindowImpl::setCursorPosition(const Position& position) throw(UserInterface
 #endif // flavor
 }
 
-void WindowImpl::releaseCursorConfinement() throw(UserInterfaceException) {
+void WindowImpl::releaseCursorConfinement() throw(UserInterfaceException)
+{
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   bassert(::ClipCursor(0), UserInterfaceException(this));
-#elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__MACOS)
-#else // unix
+#elif defined(_COM_AZURE_DEV__BASE__USE_X11)
   ::XUngrabPointer((Display*)displayHandle, CurrentTime);
 #endif // flavor
 }
@@ -1379,7 +1369,8 @@ void WindowImpl::releaseCursorConfinement() throw(UserInterfaceException) {
 //   return Region(Position(rect.left, rect.top), Dimension(rect.right - rect.left + 1, rect.bottom - rect.top + 1));
 // }
 
-void WindowImpl::setCursorConfinement() throw(UserInterfaceException) {
+void WindowImpl::setCursorConfinement() throw(UserInterfaceException)
+{
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   POINT offset;
   offset.x = 0;
@@ -1395,8 +1386,7 @@ void WindowImpl::setCursorConfinement() throw(UserInterfaceException) {
   rect.right += offset.x;
   rect.bottom += offset.y;
   bassert(::ClipCursor(&rect), UserInterfaceException(this));
-#elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__MACOS)
-#else // unix
+#elif defined(_COM_AZURE_DEV__BASE__USE_X11)
   int result = ::XGrabPointer(
     (Display*)displayHandle,
     (::Window)drawableHandle,
@@ -1468,8 +1458,7 @@ void WindowImpl::close() throw(UserInterfaceException) {
       UserInterfaceException(this)
     );
   }
-#elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__MACOS)
-#else // unix
+#elif defined(_COM_AZURE_DEV__BASE__USE_X11)
   if (drawableHandle) {
     XClientMessageEvent event;
     event.type = ClientMessage;
@@ -1489,8 +1478,8 @@ void WindowImpl::close() throw(UserInterfaceException) {
 #endif // flavor
 }
 
-bool WindowImpl::isChildOf(
-  const WindowImpl& object) throw(UserInterfaceException) {
+bool WindowImpl::isChildOf(const WindowImpl& object) throw(UserInterfaceException)
+{
   // TAG: fixme
   return false;
 }
@@ -1510,7 +1499,8 @@ bool WindowImpl::isMaximized() throw(UserInterfaceException) {
 #endif // flavor
 }
 
-bool WindowImpl::isMinimized() throw(UserInterfaceException) {
+bool WindowImpl::isMinimized() throw(UserInterfaceException)
+{
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   return ::IsIconic((HWND)drawableHandle) == TRUE;
 #else // unix
@@ -1518,11 +1508,11 @@ bool WindowImpl::isMinimized() throw(UserInterfaceException) {
 #endif // flavor
 }
 
-void WindowImpl::maximize() throw(UserInterfaceException) {
+void WindowImpl::maximize() throw(UserInterfaceException)
+{
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   ::ShowWindow((HWND)drawableHandle, SW_MAXIMIZE);
-#elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__MACOS)
-#else // unix
+#elif defined(_COM_AZURE_DEV__BASE__USE_X11)
   // store current position and dimension
   // what is the decoration frame size?
   int x = 0;
@@ -1554,11 +1544,11 @@ void WindowImpl::maximize() throw(UserInterfaceException) {
 #endif // flavor
 }
 
-void WindowImpl::minimize() throw(UserInterfaceException) {
+void WindowImpl::minimize() throw(UserInterfaceException)
+{
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   ::ShowWindow((HWND)drawableHandle, SW_MINIMIZE);
-#elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__MACOS)
-#else // unix
+#elif defined(_COM_AZURE_DEV__BASE__USE_X11)
   // WM_CHANGE_STATE ClientMessage event with a format of 32 and a first data element of IconicSlate
   ::XIconifyWindow(
    (Display*)displayHandle,
@@ -1568,11 +1558,11 @@ void WindowImpl::minimize() throw(UserInterfaceException) {
 #endif // flavor
 }
 
-void WindowImpl::normalize() throw(UserInterfaceException) {
+void WindowImpl::normalize() throw(UserInterfaceException)
+{
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   ::ShowWindow((HWND)drawableHandle, SW_RESTORE);
-#elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__MACOS)
-#else // unix
+#elif defined(_COM_AZURE_DEV__BASE__USE_X11)
   Position originalPosition = position; // TAG: fixme - must be attribute
   Dimension originalDimension = dimension; // TAG: fixme - must be attribute
   XWindowChanges changes;
@@ -1589,68 +1579,68 @@ void WindowImpl::normalize() throw(UserInterfaceException) {
 #endif // flavor
 }
 
-void WindowImpl::show() throw(UserInterfaceException) {
+void WindowImpl::show() throw(UserInterfaceException)
+{
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   ::ShowWindow((HWND)drawableHandle, SW_SHOW);
-#elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__MACOS)
-#else // unix
+#elif defined(_COM_AZURE_DEV__BASE__USE_X11)
   ::XMapWindow((Display*)displayHandle, (::Window)drawableHandle);
 #endif // flavor
 }
 
-void WindowImpl::hide() throw(UserInterfaceException) {
+void WindowImpl::hide() throw(UserInterfaceException)
+{
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   ::ShowWindow((HWND)drawableHandle, SW_HIDE);
-#elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__MACOS)
-#else // unix
+#elif defined(_COM_AZURE_DEV__BASE__USE_X11)
   ::XUnmapWindow((Display*)displayHandle, (::Window)drawableHandle);
 #endif // flavor
 }
 
-void WindowImpl::enable() throw(UserInterfaceException) {
+void WindowImpl::enable() throw(UserInterfaceException)
+{
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   bassert(
     ::EnableWindow((HWND)drawableHandle, TRUE),
     UserInterfaceException(this)
   );
-#elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__MACOS)
-#else // unix
+#elif defined(_COM_AZURE_DEV__BASE__USE_X11)
   // TAG: is there a better alternative
   ::XMapWindow((Display*)displayHandle, (::Window)drawableHandle);
 #endif // flavor
 }
 
-void WindowImpl::disable() throw(UserInterfaceException) {
+void WindowImpl::disable() throw(UserInterfaceException)
+{
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   bassert(
     ::EnableWindow((HWND)drawableHandle, FALSE),
     UserInterfaceException(this)
   );
-#elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__MACOS)
-#else // unix
+#elif defined(_COM_AZURE_DEV__BASE__USE_X11)
   // TAG: is there a better alternative
   ::XUnmapWindow((Display*)displayHandle, (::Window)drawableHandle);
 #endif // flavor
 }
 
-void WindowImpl::raise() throw(UserInterfaceException) {
+void WindowImpl::raise() throw(UserInterfaceException)
+{
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   bassert(
     ::SetForegroundWindow((HWND)drawableHandle),
     UserInterfaceException(this)
   );
-#elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__MACOS)
-#else // unix
+#elif defined(_COM_AZURE_DEV__BASE__USE_X11)
   ::XMapRaised((Display*)displayHandle, (::Window)drawableHandle);
   // TAG: what about focus
 #endif // flavor
 }
 
-void WindowImpl::acquireFocus() throw(UserInterfaceException) {
+void WindowImpl::acquireFocus() throw(UserInterfaceException)
+{
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   bassert(::SetFocus((HWND)drawableHandle), UserInterfaceException(this));
-#elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__MACOS)
-#else // unix
+#elif defined(_COM_AZURE_DEV__BASE__USE_X11)
   // TAG: fixme
   return;
   ::XSetInputFocus(
@@ -1663,7 +1653,8 @@ void WindowImpl::acquireFocus() throw(UserInterfaceException) {
 }
 
 // TAG: wrong name; use hasCapture or isCapturing
-bool WindowImpl::getCapture() const throw(UserInterfaceException) {
+bool WindowImpl::getCapture() const throw(UserInterfaceException)
+{
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   return ::GetCapture() == (HWND)drawableHandle;
 #else // unix
@@ -1671,15 +1662,15 @@ bool WindowImpl::getCapture() const throw(UserInterfaceException) {
 #endif // flavor
 }
 
-void WindowImpl::setCapture(bool state) throw(UserInterfaceException) {
+void WindowImpl::setCapture(bool state) throw(UserInterfaceException)
+{
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   if (state) {
     ::SetCapture((HWND)drawableHandle);
   } else {
     ::ReleaseCapture();
   }
-#elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__MACOS)
-#else // unix
+#elif defined(_COM_AZURE_DEV__BASE__USE_X11)
   if (state) {
     int result = ::XGrabPointer(
       (Display*)displayHandle,
@@ -1840,24 +1831,27 @@ bool WindowImpl::onClose() throw() {
 void WindowImpl::onVisibility(Visibility visibility) throw() {
 }
 
-void WindowImpl::onFocus(Focus focus) throw() {
+void WindowImpl::onFocus(Focus focus) throw()
+{
 }
 
-void WindowImpl::onMenu(unsigned int identifier) throw() {
+void WindowImpl::onMenu(unsigned int identifier) throw()
+{
   onCommand(identifier);
 }
 
-void WindowImpl::onCommand(unsigned int identifier) throw() {
+void WindowImpl::onCommand(unsigned int identifier) throw()
+{
 }
 
-void WindowImpl::invalidate() throw(UserInterfaceException) {
+void WindowImpl::invalidate() throw(UserInterfaceException)
+{
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   bassert(
     ::InvalidateRect((HWND)drawableHandle, 0, FALSE) != FALSE,
     UserInterfaceException(this)
   );
-#elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__MACOS)
-#else // unix
+#elif defined(_COM_AZURE_DEV__BASE__USE_X11)
   XExposeEvent event;
   event.type = Expose;
   event.x = 0;
@@ -1888,11 +1882,11 @@ void WindowImpl::update() throw(UserInterfaceException) {
 #endif // flavor
 }
 
-void WindowImpl::exit() throw() {
+void WindowImpl::exit() throw()
+{
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   ::PostQuitMessage(0);
-#elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__MACOS)
-#else // unix
+#elif defined(_COM_AZURE_DEV__BASE__USE_X11)
   XClientMessageEvent event;
   event.type = ClientMessage;
   event.window = 0;
@@ -1913,8 +1907,7 @@ void WindowImpl::wait() throw(UserInterfaceException)
   // Profiler::WaitTask profile("WindowImpl::wait()");
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   ::WaitMessage();
-#elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__MACOS)
-#else // unix
+#elif defined(_COM_AZURE_DEV__BASE__USE_X11)
   XEvent event;
   ::XPeekEvent((Display*)displayHandle, &event);
 #endif // flavor
@@ -1972,8 +1965,7 @@ void WindowImpl::dispatch() throw(UserInterfaceException) {
       ::WaitMessage(); // TAG: fixme
     }
   }
-#elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__MACOS)
-#else // unix
+#elif defined(_COM_AZURE_DEV__BASE__USE_X11)
   while (true) {
 //     while (!::XPending((Display*)displayHandle)) {
 //       // TAG: for each window do onIdle()?
@@ -2567,10 +2559,10 @@ unsigned int WindowImpl::getMouseButtons() throw() {
     result |= Mouse::WHEEL;
   }
   return result;
-#elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__MACOS)
-  return 0;
-#else // unix
+#elif defined(_COM_AZURE_DEV__BASE__USE_X11)
   return Mouse::LEFT|Mouse::MIDDLE|Mouse::RIGHT|Mouse::EXTRA|Mouse::EXTRA2; // TAG: fixme
+#else
+  return 0;
 #endif // flavor
 }
 
@@ -2587,12 +2579,12 @@ Dimension WindowImpl::getDisplayDimension() throw() {
   unsigned int width = ::GetSystemMetrics(SM_CXVIRTUALSCREEN);
   unsigned int height = ::GetSystemMetrics(SM_CYVIRTUALSCREEN);
   return Dimension(width, height);
-#elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__MACOS)
-  return Dimension();
-#else // unix
+#elif defined(_COM_AZURE_DEV__BASE__USE_X11)
   unsigned int width = ::XWidthOfScreen((Screen*)screenHandle);
   unsigned int height = ::XHeightOfScreen((Screen*)screenHandle);
   return Dimension(width, height);
+#else
+  return Dimension();
 #endif // flavor
 }
 
@@ -2634,8 +2626,8 @@ Literal WindowImpl::getMouseButtonName(Mouse::Button button) throw() {
   }
 }
 
-bool WindowImpl::isResponding(
-  unsigned int milliseconds) throw(UserInterfaceException) {
+bool WindowImpl::isResponding(unsigned int milliseconds) throw(UserInterfaceException)
+{
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   DWORD_PTR result = 0;
   LRESULT temp = ::SendMessageTimeout(
@@ -2652,9 +2644,7 @@ bool WindowImpl::isResponding(
   }
   bassert(::GetLastError() == 0, UserInterfaceException(this));
   return false;
-#elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__MACOS)
-  return false;
-#else // unix
+#elif defined(_COM_AZURE_DEV__BASE__USE_X11)
   // TAG: use timeout period
   XClientMessageEvent event;
   event.type = ClientMessage;
@@ -2672,16 +2662,18 @@ bool WindowImpl::isResponding(
     (XEvent*)&event
   );
   return false; // TAG: fixme
+#else
+  return false;
 #endif // flavor
 }
 
-WindowImpl::~WindowImpl() throw() {
+WindowImpl::~WindowImpl() throw()
+{
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   if (drawableHandle) {
     ::DestroyWindow((HWND)drawableHandle);
   }
-#elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__MACOS)
-#else // unix
+#elif defined(_COM_AZURE_DEV__BASE__USE_X11)
   if (drawableHandle) {
     XClientMessageEvent event;
     event.type = ClientMessage;

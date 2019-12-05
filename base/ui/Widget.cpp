@@ -16,18 +16,18 @@
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
 #  include <windows.h>
 #  undef DELETE // yikes
-#elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__MACOS)
 #else // unix (X11)
-#  include <X11/Xlib.h>
-#  include <X11/Xutil.h>
-#  include <X11/Xatom.h>
+#  include <base/platforms/os/unix/X11.h>
+#if defined(_COM_AZURE_DEV__BASE__USE_X11)
 #  include <X11/cursorfont.h>
 #  include <X11/keysym.h>
+#endif
 #endif // flavor
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
-void Widget::destroy() throw() {
+void Widget::destroy() throw()
+{
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)  
   if (graphicsContextHandle) {
     ::DeleteDC((HDC)graphicsContextHandle);
@@ -35,8 +35,7 @@ void Widget::destroy() throw() {
   if (drawableHandle) {
     // nothing to destroy
   }
-#elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__MACOS)
-#else // unix
+#elif defined(_COM_AZURE_DEV__BASE__USE_X11)
   if (graphicsContextHandle) {
     // nothing to destroy
   }
@@ -50,7 +49,8 @@ void Widget::destroy() throw() {
   WindowImpl::destroy();
 }
 
-Widget::Widget(Window& owner) throw(UserInterfaceException) {
+Widget::Widget(Window& owner) throw(UserInterfaceException)
+{
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   drawableHandle = ::CreateWindowEx(
     0, // extended style
@@ -74,8 +74,7 @@ Widget::Widget(Window& owner) throw(UserInterfaceException) {
     drawableHandle = 0;
     throw UserInterfaceException("Unable to connect to device context", this);
   }
-#elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__MACOS)
-#else // unix
+#elif defined(_COM_AZURE_DEV__BASE__USE_X11)
   int screenId = ::XDefaultScreen((Display*)displayHandle);
   screenHandle = ::XScreenOfDisplay((Display*)displayHandle, screenId);
   bassert(screenHandle, UserInterfaceException("Unable to open screen", this));
@@ -130,7 +129,8 @@ Widget::Widget(Window& owner) throw(UserInterfaceException) {
   update();
 }
 
-Widget::~Widget() throw() {
+Widget::~Widget() throw()
+{
 }
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

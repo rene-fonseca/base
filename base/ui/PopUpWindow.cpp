@@ -16,16 +16,14 @@
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
 #  include <windows.h>
 #  undef DELETE // yikes
-#elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__MACOS)
 #else // unix (X11)
-#  include <X11/Xlib.h>
-#  include <X11/Xutil.h>
-#  include <X11/Xatom.h>
+#  include <base/platforms/os/unix/X11.h>
 #endif // flavor
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
-void PopUpWindow::destroy() throw() {
+void PopUpWindow::destroy() throw()
+{
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)  
   if (graphicsContextHandle) {
     ::DeleteDC((HDC)graphicsContextHandle);
@@ -34,8 +32,7 @@ void PopUpWindow::destroy() throw() {
     // nothing to destroy
   }
   BASSERT(screenHandle == 0);
-#elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__MACOS)
-#else // unix
+#elif defined(_COM_AZURE_DEV__BASE__USE_X11)
   if (graphicsContextHandle) {
     // nothing to destroy
   }
@@ -74,8 +71,7 @@ PopUpWindow::PopUpWindow(unsigned int flags) throw(UserInterfaceException)
     drawableHandle = 0;
     throw UserInterfaceException("Unable to connect to device context", this);
   }
-#elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__MACOS)
-#else // unix
+#elif defined(_COM_AZURE_DEV__BASE__USE_X11)
   int screenId = ::XDefaultScreen((Display*)displayHandle);
   screenHandle = ::XScreenOfDisplay((Display*)displayHandle, screenId);
   bassert(screenHandle, UserInterfaceException("Unable to open screen", this));
@@ -156,8 +152,7 @@ PopUpWindow::PopUpWindow(const Position& position, const Dimension& dimension, u
     drawableHandle = 0;
     throw UserInterfaceException("Unable to connect to device context", this);
   }
-#elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__MACOS)
-#else // unix
+#elif defined(_COM_AZURE_DEV__BASE__USE_X11)
   int screenId = ::XDefaultScreen((Display*)displayHandle);
   screenHandle = ::XScreenOfDisplay((Display*)displayHandle, screenId);
   bassert(screenHandle, UserInterfaceException("Unable to open screen", this));

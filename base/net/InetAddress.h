@@ -102,18 +102,18 @@ _COM_AZURE_DEV__BASE__PACKED__END
   /**
     Parses the specified string as an Internet address (both IPv4 and IPv6).
   */
-  bool parse(const String& address) throw();
+  bool parse(const String& address) noexcept;
 public:
 
   /**
     Returns true if the specified string is an IPv4 address.
   */
-  static bool isIPv4(const String::ReadIterator begin, const String::ReadIterator end) throw();
+  static bool isIPv4(const String::ReadIterator begin, const String::ReadIterator end) noexcept;
 
   /**
     Returns true if the specified string is an IPv6 address.
   */
-  static bool isIPv6(const String::ReadIterator begin, const String::ReadIterator end) throw();
+  static bool isIPv6(const String::ReadIterator begin, const String::ReadIterator end) noexcept;
 
   /**
     Returns the name of the local host.
@@ -137,7 +137,7 @@ public:
   /**
     Initializes the address as unspecified IPv4 address (matches any address).
   */
-  InetAddress() throw();
+  InetAddress() noexcept;
 
   /**
     Initializes the address as from the specified binary address.
@@ -145,7 +145,7 @@ public:
     @param address The Internet address in network byte order.
     @param family Specifies the family of the binary address (IPv4 or IPv6).
   */
-  InetAddress(const uint8* address, Family family) throw();
+  InetAddress(const uint8* address, Family family) noexcept;
 
   /**
     Initializes the address from the specified string. Implicit initialization
@@ -166,53 +166,59 @@ public:
   /**
     Copy constructor.
   */
-  InetAddress(const InetAddress& copy) throw();
+  InetAddress(const InetAddress& copy) noexcept;
 
   /**
     Assignment operator.
   */
-  InetAddress& operator=(const InetAddress& assign) throw();
+  InetAddress& operator=(const InetAddress& assign) noexcept;
 
   /**
     Returns the family of the address.
   */
-  inline Family getFamily() const throw() {
+  inline Family getFamily() const noexcept
+  {
     return family;
   }
 
   /**
     Returns true if the address family is IPv4.
   */
-  inline bool isIPv4() const throw() {
+  inline bool isIPv4() const noexcept
+  {
     return family == IP_VERSION_4;
   }
   
   /**
     Returns true if the address family is IPv6.
   */
-  inline bool isIPv6() const throw() {
+  inline bool isIPv6() const noexcept
+  {
     return family == IP_VERSION_6;
   }
   
   /**
     Returns the IP address in binary format in network byte order.
   */
-  inline const uint32* getWords() const throw() {
-    return address.words;
+  inline const uint32* getWords() const noexcept
+  {
+    return reinterpret_cast<const uint32*>(&address);
   }
   
   /**
     Returns the IP address in binary format in network byte order.
   */
-  inline const uint8* getAddress() const throw() {
-    return address.octets;
+  inline const uint8* getAddress() const noexcept
+  {
+    return reinterpret_cast<const uint8*>(&address);
   }
 
   /**
     Returns the IP address in binary format in network byte order (this is only
     valid if either isIPv4Mapped() or isIPv4Compatible() returns true).
   */
-  inline const uint8* getIPv4Address() const throw() {
+  inline const uint8* getIPv4Address() const noexcept
+  {
     return &address.octets[12];
   }
 
@@ -228,42 +234,44 @@ public:
   /**
     Returns true if the adresses are exactly equal.
   */
-  bool operator==(const InetAddress& compare) const throw();
+  bool operator==(const InetAddress& compare) const noexcept;
   
   /**
     Returns true if the adresses are non-equal.
   */
-  inline bool operator!=(const InetAddress& compare) const throw() {
+  inline bool operator!=(const InetAddress& compare) const noexcept
+  {
     return !operator==(compare);
   }
   
   /**
     Returns true if the addresses are synonymous.
   */
-  bool isSynonymous(const InetAddress& eq) const throw();
+  bool isSynonymous(const InetAddress& eq) const noexcept;
   
   /**
     Returns true if this address is the unspecified address (i.e. '::' and
     '0.0.0.0' in the case of IPv6 and IPv4, respectively).
   */
-  bool isUnspecified() const throw();
+  bool isUnspecified() const noexcept;
 
   /**
     Returns true if this address is the loopback address (i.e. '::1' and
     '127.0.0.1' in the case of IPv6 and IPv4, respectively). The loopback
     address is a unicast address used to send packets to the local host.
   */
-  bool isLoopback() const throw();
+  bool isLoopback() const noexcept;
 
   /**
     Returns true if this address is a multicast address.
   */
-  bool isMulticast() const throw();
+  bool isMulticast() const noexcept;
 
   /**
     Returns the flags for a multicast address.
   */
-  inline unsigned int getMulticastFlags() const throw() {
+  inline unsigned int getMulticastFlags() const noexcept
+  {
     unsigned int flags = 0;
     if (address.octets[0] == 0xff) {
       flags |= (address.octets[1] & 0x10) ? MULTICAST_TRANSIENT : 0;
@@ -275,38 +283,39 @@ public:
     Returns the scope of a multicast address. This is only valid if the address
     is a multicast address.
   */
-  inline unsigned int getMulticastScope() const throw() {
+  inline unsigned int getMulticastScope() const noexcept
+  {
     return address.octets[1] & 0x0f;
   }
   
   /**
     Returns true if this address is link local.
   */
-  bool isLinkLocal() const throw();
+  bool isLinkLocal() const noexcept;
 
   /**
     Returns true if this address is site local.
   */
-  bool isSiteLocal() const throw();
+  bool isSiteLocal() const noexcept;
 
   /**
     Returns true if the address is an IPv4-mapped IPv6 address (e.g.
     '::ffff:127.0.0.1'). Returns false if address is an IPv4 addresses or the
     address is the unspecified address (i.e. ::).
   */
-  bool isIPv4Mapped() const throw();
+  bool isIPv4Mapped() const noexcept;
 
   /**
     Returns true if this address is an IPv4 compatible IPv6 address (e.g.
     '::127.0.0.1') or if it is an IPv4 address. Returns false if the address is
     the unspecified address (i.e. ::).
   */
-  bool isIPv4Compatible() const throw();
+  bool isIPv4Compatible() const noexcept;
 
   /**
     Returns the type of the address.
   */
-  unsigned int getType() const throw();
+  unsigned int getType() const noexcept;
 
   /**
     Converts an IPv4 address to an IPv4-mapped IPv6 address (IPv6 addresses are
@@ -314,7 +323,7 @@ public:
 
     @return Always returns true.
   */
-  bool convertToIPv6() throw();
+  bool convertToIPv6() noexcept;
 
   /**
     Converts an IPv4-mapped IPv6 address to an IPv4 address (IPv4 addresses are
@@ -323,7 +332,7 @@ public:
     @return Returns true on success (fails if address isn't an IPv4-mapped IPv6
     address or an IPv4 address).
   */
-  bool convertToIPv4() throw();
+  bool convertToIPv4() noexcept;
 
   /**
     Sets the address.
@@ -331,7 +340,7 @@ public:
     @param address The Internet address in network byte order.
     @param family Specifies the family of the binary address (IPv4 or IPv6).
   */
-  void setAddress(const uint8* address, Family family) throw();
+  void setAddress(const uint8* address, Family family) noexcept;
 
   /**
     Writes a string representation of the address to a stream.
@@ -348,7 +357,8 @@ template<>
 class Hash<InetAddress> {
 public:
   
-  inline unsigned long operator()(const InetAddress& value) throw() {
+  inline unsigned long operator()(const InetAddress& value) noexcept
+  {
     unsigned long result = 3929; // TAG: need better hash function
     const uint32* words = value.getWords();
     result = 595123 * result + words[0];

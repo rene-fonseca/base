@@ -72,8 +72,7 @@ public:
     if (low < 0) {
       value.low = low;
       value.high = static_cast<WORD>(-1);
-    }
-    else {
+    } else {
       value.low = low;
       value.high = 0;
     }
@@ -90,8 +89,7 @@ public:
     if (low < 0) {
       value.low = low;
       value.high = static_cast<WORD>(-1);
-    }
-    else {
+    } else {
       value.low = low;
       value.high = 0;
     }
@@ -108,8 +106,7 @@ public:
     if (low < 0) {
       value.low = low;
       value.high = static_cast<WORD>(-1);
-    }
-    else {
+    } else {
       value.low = low;
       value.high = 0;
     }
@@ -126,8 +123,7 @@ public:
     if (low < 0) {
       value.low = low;
       value.high = static_cast<WORD>(-1);
-    }
-    else {
+    } else {
       value.low = low;
       value.high = 0;
     }

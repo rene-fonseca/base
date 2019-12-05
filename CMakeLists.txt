@@ -53,11 +53,11 @@ if (0)
 find_package(OpenGL REQUIRED)
 
 if (OPENGL_FOUND)
-  message("Found OpenGL for Mac OS")
-  message("OpenGL for Mac OS, include dir: ${OPENGL_INCLUDE_DIR}")
-  message("OpenGL for Mac OS, link libraries: ${OPENGL_gl_LIBRARY}")
+  message("Found OpenGL for macOS")
+  message("OpenGL for macOS, include dir: ${OPENGL_INCLUDE_DIR}")
+  message("OpenGL for macOS, link libraries: ${OPENGL_gl_LIBRARY}")
 else (OPENGL_FOUND)
-  message(FATAL_ERROR "OpenGL for Mac OS not found")
+  message(FATAL_ERROR "OpenGL for macOS not found")
 endif()
 
 #target_link_libraries(targets
@@ -65,6 +65,13 @@ endif()
 #  ${OPENGL_glu_LIBRARY}
 #)
 endif ()
+
+if (NOT MSVC)
+  find_package(X11)
+  if (X11_FOUND)
+    message("Found X11")
+  endif()
+endif()
 
 file(GLOB_RECURSE base_platforms_SRC
   "base/platforms/*.h"
@@ -181,7 +188,10 @@ elseif (APPLE)
   find_library(cfnetwork CFNetwork)
   target_link_libraries(base ${cfnetwork} ${corefoundation})
 elseif (UNIX)
-  target_link_libraries(base pthread X11)
+  target_link_libraries(base pthread dl)
+  if (X11_FOUND)
+    target_link_libraries(base X11)
+  endif ()
 # elseif (APPLE)
 #  target_link_libraries(base pthread ${OpenCL_LIBRARY})
 endif ()

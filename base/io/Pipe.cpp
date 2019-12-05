@@ -33,7 +33,12 @@
 #  if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__CYGWIN)
 #    warning ioctl is not supported (CYGWIN)
 #  elif (_COM_AZURE_DEV__BASE__OS != _COM_AZURE_DEV__BASE__MACOS)
-#    include <stropts.h> // defines FLUSH macros
+#    if defined(__has_include)
+#      if __has_include(<stropts.h>)
+#        include <stropts.h> // defines FLUSH macros
+#        define _COM_AZURE_DEV__BASE__USE_FLUSH
+#      endif
+#    endif
 #  endif
 #endif
 
@@ -163,7 +168,7 @@ void Pipe::flush() throw(PipeException) {
 #else // unix
   #if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__MACOS) || (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__CYGWIN)
 //    #warning Pipe::flush() not supported (CYGWIN)
-  #else
+  #elif defined(_COM_AZURE_DEV__BASE__USE_FLUSH)
     int command = FLUSHW;
     if (::ioctl(fd->getHandle(), I_FLUSH, &command)) {
       throw PipeException("Unable to flush pipe", this);

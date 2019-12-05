@@ -64,6 +64,7 @@ void FileDescriptorOutputStream::flush() throw(IOException)
 //    throw IOException("Unable to flush file descriptor");
 //  }
 //  ::FlushFileBuffers((HANDLE)fd->getHandle()); // yes ignore any error
+// #elif defined(_COM_AZURE_DEV__BASE__USE_FLUSH)
 #else // unix
 //  ::fsync(fd->getHandle()); // TAG: this is a bug
 //  if (ioctl(fd->getHandle(), I_FLUSH, FLUSHRW) != 0) {

@@ -758,7 +758,8 @@ LRESULT CALLBACK Backend<WindowImpl>::messageHandler(HWND handle, UINT message, 
 }
 #endif // flavor
 
-void WindowImpl::construct() throw() {
+void WindowImpl::construct() throw()
+{
   windowImpl::addWindow(this, drawableHandle);
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   TRACKMOUSEEVENT mouseEvent;
@@ -928,8 +929,8 @@ WindowImpl::WindowImpl(
     minimumSize(0, 0),
     maximumSize(0, 0),
     screenHandle(0),
-    graphicsContextHandle(0) {
-  
+    graphicsContextHandle(0)
+{
   fill<uint8>(keyboardState, getArraySize(keyboardState), 0);
   lastMousePosition =
     Position(PrimitiveTraits<int>::MINIMUM, PrimitiveTraits<int>::MINIMUM);
@@ -939,7 +940,8 @@ WindowImpl::WindowImpl(
   );
 }
 
-Position WindowImpl::getBindingOffset(Binding binding) const throw() {
+Position WindowImpl::getBindingOffset(Binding binding) const throw()
+{
   const Position position = getPosition();
   const Dimension dimension = getDimension();
   int x = position.getX();
@@ -979,7 +981,8 @@ Position WindowImpl::getBindingOffset(Binding binding) const throw() {
 }
 
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__UNIX)
-void WindowImpl::flush() throw(UserInterfaceException) {
+void WindowImpl::flush() throw(UserInterfaceException)
+{
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
 #elif defined(_COM_AZURE_DEV__BASE__USE_X11)
   ::XFlush((Display*)displayHandle);
@@ -988,7 +991,8 @@ void WindowImpl::flush() throw(UserInterfaceException) {
 #endif // flavor
 
 // TAG: need glx version method, ...
-String WindowImpl::getServerVendor() const throw(UserInterfaceException) {
+String WindowImpl::getServerVendor() const throw(UserInterfaceException)
+{
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   return Literal("UNSPECIFIED");
 #elif defined(_COM_AZURE_DEV__BASE__USE_X11)

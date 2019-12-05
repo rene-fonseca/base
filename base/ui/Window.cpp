@@ -22,7 +22,8 @@
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
-void Window::destroy() throw() {
+void Window::destroy() throw()
+{
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)  
   if (graphicsContextHandle) {
     ::DeleteDC((HDC)graphicsContextHandle);
@@ -31,8 +32,7 @@ void Window::destroy() throw() {
     // nothing to destroy
   }
   BASSERT(screenHandle == 0);
-#elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__MACOS)
-#else // unix
+#elif defined(_COM_AZURE_DEV__BASE__USE_X11)
   if (graphicsContextHandle) {
     // nothing to destroy
   }
@@ -72,8 +72,7 @@ Window::Window(unsigned int flags) throw(UserInterfaceException)
     drawableHandle = 0;
     throw UserInterfaceException("Unable to connect to device context", this);
   }
-#elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__MACOS)
-#else // unix
+#elif defined(_COM_AZURE_DEV__BASE__USE_X11)
   int screenId = ::XDefaultScreen((Display*)displayHandle);
   screenHandle = ::XScreenOfDisplay((Display*)displayHandle, screenId);
   bassert(screenHandle, UserInterfaceException("Unable to open screen", this));
@@ -178,8 +177,7 @@ Window::Window(
     drawableHandle = 0;
     throw UserInterfaceException("Unable to connect to device context", this);
   }
-#elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__MACOS)
-#else // unix
+#elif defined(_COM_AZURE_DEV__BASE__USE_X11)
   int screenId = ::XDefaultScreen((Display*)displayHandle);
   screenHandle = ::XScreenOfDisplay((Display*)displayHandle, screenId);
   bassert(screenHandle, UserInterfaceException("Unable to open screen", this));

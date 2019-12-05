@@ -395,8 +395,10 @@ bool InetAddress::parse(const String& address) throw() {
       return false;
     }
     if (zeroIndex >= 0) { // is zero-compression present
-      move(&this->address.halfWords[zeroIndex + maxValues - writeHead], &this->address.halfWords[zeroIndex], writeHead - zeroIndex);
-      fill<uint16>(&this->address.halfWords[zeroIndex], maxValues - writeHead, 0);
+      uint16* dest = &reinterpret_cast<uint16*>(&this->address)[zeroIndex + maxValues - writeHead];
+      uint16* src = &reinterpret_cast<uint16*>(&this->address)[zeroIndex];
+      move(dest, src, writeHead - zeroIndex);
+      fill<uint16>(src, maxValues - writeHead, 0);
     }
   }
 

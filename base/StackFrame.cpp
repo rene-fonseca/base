@@ -738,7 +738,7 @@ void StackFrame::dump(unsigned int skip, unsigned int levels)
 
 FormatOutputStream& operator<<(
   FormatOutputStream& stream,
-  const StackFrame& value) throw(IOException)
+  const StackFrame& value)
 {
   const bool colors = false; // FileDescriptor::getStandardError().isANSITerminal(); // stream may not be stderr
   StackFrame::toStream(

@@ -924,7 +924,6 @@ Matrix<TYPE> operator/(
   Writes a string representation of a matrix object to a format stream.
 */
 template<class TYPE>
-FormatOutputStream& operator<<(
-  FormatOutputStream& stream, const Matrix<TYPE>& value) throw(IOException);
+FormatOutputStream& operator<<(FormatOutputStream& stream, const Matrix<TYPE>& value);
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

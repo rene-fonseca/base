@@ -343,8 +343,8 @@ String Trustee::getName() const throw(TrusteeException) {
 #endif // flavor
 }
 
-FormatOutputStream& operator<<(
-  FormatOutputStream& stream, const Trustee& value) throw(IOException) {
+FormatOutputStream& operator<<(FormatOutputStream& stream, const Trustee& value)
+{
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   if (!value.id.isValid()) {
     return stream << "<unknown>";

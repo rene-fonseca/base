@@ -436,7 +436,7 @@ public:
     Writes a string representation of a vector object to a format stream.
   */
   _COM_AZURE_DEV__BASE__API friend FormatOutputStream& operator<<(
-    FormatOutputStream& stream, const LargeInteger& value) throw(IOException);
+    FormatOutputStream& stream, const LargeInteger& value);
 };
 
 LargeInteger operator+(const LargeInteger& left, const LargeInteger& right);
@@ -472,6 +472,6 @@ LargeInteger operator/(const LargeInteger& left, int right);
   @relates LargeInteger
 */
 _COM_AZURE_DEV__BASE__API FormatOutputStream& operator<<(
-  FormatOutputStream& stream, const LargeInteger& value) throw(IOException);
+  FormatOutputStream& stream, const LargeInteger& value);
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

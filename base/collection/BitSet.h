@@ -712,8 +712,7 @@ public:
   */
   void removeAll() noexcept;
 
-  friend FormatOutputStream& operator<<(
-    FormatOutputStream& stream, const BitSet& value) throw(IOException);
+  friend FormatOutputStream& operator<<(FormatOutputStream& stream, const BitSet& value);
 };
 
 /**
@@ -721,7 +720,6 @@ public:
   
   @relates BitSet
 */
-FormatOutputStream& operator<<(
-  FormatOutputStream& stream, const BitSet& value) throw(IOException);
+FormatOutputStream& operator<<(FormatOutputStream& stream, const BitSet& value);
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

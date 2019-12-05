@@ -390,7 +390,7 @@ public:
   /**
     Writes a string representation of a vector object to a format stream.
   */
-  friend FormatOutputStream& operator<< <>(FormatOutputStream& stream, const Vector<TYPE>& value) throw(IOException);
+  friend FormatOutputStream& operator<< <>(FormatOutputStream& stream, const Vector<TYPE>& value);
 #endif
 };
 
@@ -424,7 +424,6 @@ TYPE dot(const Vector<TYPE>& left, const Vector<TYPE>& right) throw();
   @relates Vector
 */
 template<class TYPE>
-FormatOutputStream& operator<<(
-  FormatOutputStream& stream, const Vector<TYPE>& value) throw(IOException);
+FormatOutputStream& operator<<(FormatOutputStream& stream, const Vector<TYPE>& value);
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

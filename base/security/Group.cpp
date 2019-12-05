@@ -275,8 +275,8 @@ Array<String> Group::getMembers() const throw(GroupException) {
 #endif // flavor
 }
 
-FormatOutputStream& operator<<(
-  FormatOutputStream& stream, const Group& value) throw(IOException) {
+FormatOutputStream& operator<<(FormatOutputStream& stream, const Group& value)
+{
   if (!value.isValid()) {
     return stream << "<unknown>";
   }

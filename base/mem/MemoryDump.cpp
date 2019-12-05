@@ -17,8 +17,8 @@
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
-FormatOutputStream& operator<<(
-  FormatOutputStream& stream, const MemoryDump& value) throw(IOException) {
+FormatOutputStream& operator<<(FormatOutputStream& stream, const MemoryDump& value)
+{
   const unsigned int bytesPerRow = 16;
   const unsigned int rowsPerHeader = 16;
   const unsigned int wordSize = value.wordSize;

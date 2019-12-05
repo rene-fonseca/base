@@ -21,8 +21,7 @@ const Complex Complex::ONE(1, 0);
 const Complex Complex::MINUS_ONE(-1, 0);
 const Complex Complex::II(0, 1);
 
-FormatOutputStream& operator<<(
-  FormatOutputStream& stream, const Complex& value) throw(IOException)
+FormatOutputStream& operator<<(FormatOutputStream& stream, const Complex& value)
 {
   FormatOutputStream::PushContext push(stream);
   return stream << '(' << value.getReal() << FPLUS << value.getImaginary() << "i)";

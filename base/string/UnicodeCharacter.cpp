@@ -15,9 +15,7 @@
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
-FormatOutputStream& operator<<(
-  FormatOutputStream& stream,
-  UnicodeCharacter character) throw(IOException)
+FormatOutputStream& operator<<(FormatOutputStream& stream, UnicodeCharacter character)
 {
   char buffer[sizeof("&#4294967295;")]; // worst case length
   char* dest = buffer;

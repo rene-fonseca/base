@@ -32,7 +32,7 @@
 
 #if defined(_WIN32)
 #  define _COM_AZURE_DEV__BASE__FLAVOR _COM_AZURE_DEV__BASE__WIN32
-#elif defined(__APPLE__) or defined(__linux__)
+#elif defined(__APPLE__) || defined(__linux__) || defined(__sun__)
 #  define _COM_AZURE_DEV__BASE__FLAVOR _COM_AZURE_DEV__BASE__UNIX
 #else
 #  error Unsupported flavor.
@@ -44,6 +44,12 @@
 #  define _COM_AZURE_DEV__BASE__OS _COM_AZURE_DEV__BASE__MACOS
 #elif defined(__linux__)
 #  define _COM_AZURE_DEV__BASE__OS _COM_AZURE_DEV__BASE__GNULINUX
+#elif defined(__sun__)
+#  define _COM_AZURE_DEV__BASE__OS _COM_AZURE_DEV__BASE__SOLARIS
+#  undef _XOPEN_SOURCE
+#  define _XOPEN_SOURCE 600 // SUSv3/POSIX.1-2001 // see man standards
+#  undef _XOPEN_SOURCE_EXTENDED
+#  define _XOPEN_SOURCE_EXTENDED
 #else
 #  error Unsupported OS.
 #endif

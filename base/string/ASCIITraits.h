@@ -15,6 +15,12 @@
 
 #include <base/features.h>
 
+#if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__SOLARIS)
+// conflicting defines from <sys/regset.h>
+#  undef FS
+#  undef GS
+#endif
+
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 /**

@@ -265,7 +265,7 @@ public:
     TEST_ASSERT(heap1);
     heap1 = Heap::resize(heap1, 2345);
     MemorySize size = Heap::getSize(heap1);
-    TEST_ASSERT(size >= 2345);
+    TEST_ASSERT((size == 0) || (size >= 2345));
     unsigned int* heap2 = Heap::resize<unsigned int>(nullptr, 9876);
     TEST_ASSERT(heap2);
     heap1 = Heap::resize(heap1, 3456);

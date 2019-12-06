@@ -44,6 +44,7 @@ macOS              | x86_64   | Clang   | Runs continuously on pipeline
 Debian 10          | x86_64   | GCC     | OK         | 5 Dec 2019
 Ubuntu 19.04       | x86_64   | GCC     | OK         | 5 Dec 2019
 Fedora 31          | x86_64   | GCC     | Ok         | 5 Dec 2019
+CentOS 8           | x86_64   | GCC     | Pending    |
 OpenSolaris 11     | x86_64   | GCC     | Ok         | 6 Dec 2019
 OpenSolaris 11     | x86_64   | LLVM    | Pending    |
 OpenSolaris 11     | x86_64   | Studio  | Pending    |

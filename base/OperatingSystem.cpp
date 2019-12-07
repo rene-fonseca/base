@@ -372,7 +372,8 @@ int64 OperatingSystem::getResourceLimit(
     RLIMIT_STACK,
     RLIMIT_AS
   };
-#if defined(_COM_AZURE_DEV__BASE__LARGE_FILE_SYSTEM)
+#if defined(_COM_AZURE_DEV__BASE__LARGE_FILE_SYSTEM) && \
+    !( _COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__FREEBSD)
   struct rlimit64 limit;
   ::getrlimit64(RESOURCES[resource], &limit); // must not fail
 #else
@@ -410,7 +411,8 @@ void OperatingSystem::setResourceLimit(Resource resource, int64 limit, LimitType
     RLIMIT_STACK,
     RLIMIT_AS
   };
-#  if defined(_COM_AZURE_DEV__BASE__LARGE_FILE_SYSTEM)
+#  if defined(_COM_AZURE_DEV__BASE__LARGE_FILE_SYSTEM) && \
+    !( _COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__FREEBSD)
   bassert(
     (limit >= -1) &&
     (limit != RLIM_INFINITY) &&

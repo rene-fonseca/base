@@ -48,7 +48,8 @@ void __attribute__ ((destructor)) moduleFini()
 
 #else // unix
 
-#if (_COM_AZURE_DEV__BASE__OS != _COM_AZURE_DEV__BASE__SOLARIS)
+#if (_COM_AZURE_DEV__BASE__OS != _COM_AZURE_DEV__BASE__SOLARIS) && \
+    (_COM_AZURE_DEV__BASE__OS != _COM_AZURE_DEV__BASE__FREEBSD)
 extern "C" void _init()
 {
   base::moduleEntry();

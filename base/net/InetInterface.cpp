@@ -764,11 +764,13 @@ InetAddress InetInterface::getAddress(unsigned int index) throw(NetworkException
 }
 
 InetInterface::InetInterface() throw()
-  : index(0), flags(0), metric(0) {
+  : index(0), flags(0), metric(0)
+{
 }
 
 InetInterface::InetInterface(const String& name) throw(NetworkException)
-  : index(0), flags(0), metric(0) {
+  : index(0), flags(0), metric(0)
+{
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   Thread::UseThreadLocalBuffer _buffer;
   Allocator<uint8>& buffer = _buffer;
@@ -890,8 +892,24 @@ InetInterface::InetInterface(const String& name) throw(NetworkException)
   if (ioctl(handle, SIOCGIFMETRIC, &req) == 0) {
     metric = req.ifr_metric;
   }
-#if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__MACOS)
-  // TAG: FIXMD
+#if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__MACOS) || \
+    (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__FREEBSD)
+
+#if 0 // #include <ifaddrs.h>
+  struct ifaddrs *ifap = NULL;
+  if (getifaddrs(&ifap) == 0) {
+    for (struct ifaddrs* p = ifap; p; p = p->ifa_next) {
+      if (p->ifa_addr->sa_family == AF_LINK) {
+        struct sockaddr_dl* sdp = (struct sockaddr_dl*) p->ifa_addr;
+        ethernet.setMAC48(Cast::getAddress(sdp->sdl_data + sdp->sdl_nlen));
+        freeifaddrs(ifap);
+        break;
+      }
+    }
+    freeifaddrs(ifap);
+  }
+#endif
+
 #elif ((_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__GNULINUX) || \
        (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__CYGWIN))
   if (ioctl(handle, SIOCGIFHWADDR, &req) == 0) {

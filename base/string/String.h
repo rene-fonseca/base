@@ -22,6 +22,7 @@
 #include <base/iterator/UTF8Iterator.h>
 #include <base/collection/Hash.h>
 #include <base/Literal.h>
+#include <ctype.h> // required for isalpha freebsd
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 

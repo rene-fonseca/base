@@ -120,10 +120,11 @@
 #define _COM_AZURE_DEV__BASE__WINNT4 5 // only WIN32
 #define _COM_AZURE_DEV__BASE__W2K 6 // only WIN32
 #define _COM_AZURE_DEV__BASE__WXP 7 // only WIN32
-#define _COM_AZURE_DEV__BASE__BEOS 8
-#define _COM_AZURE_DEV__BASE__AIX 9
+#define _COM_AZURE_DEV__BASE__BEOS 8 // only Unix
+#define _COM_AZURE_DEV__BASE__AIX 9 // only Unix
 #define _COM_AZURE_DEV__BASE__MACOS 10 // only Unix
-#define _COM_AZURE_DEV__BASE__WEBASSEMBLY 11 // only Unix
+#define _COM_AZURE_DEV__BASE__FREEBSD 11 // only Unix
+#define _COM_AZURE_DEV__BASE__WEBASSEMBLY 12 // only Unix
 
 // Major architecture groups
 #define _COM_AZURE_DEV__BASE__X86 1

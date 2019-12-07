@@ -26,6 +26,8 @@
 #  include <malloc/malloc.h>
 #elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__GNULINUX)
 #  include <malloc.h>
+#elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__FREEBSD)
+#  include <malloc_np.h>
 #endif
 #endif // flavor
 
@@ -230,7 +232,8 @@ MemorySize HeapImpl::getSize(void* heap) noexcept
 #else
 #if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__MACOS)
   return malloc_size(heap);
-#elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__GNULINUX)
+#elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__GNULINUX) || \
+      (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__FREEBSD)
   return malloc_usable_size(heap);
 #else
   return 0;

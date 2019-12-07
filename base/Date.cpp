@@ -52,20 +52,32 @@ namespace internal {
 #if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__CYGWIN)
   extern "C" long _timezone;
 
-  inline int64 getTimezone() noexcept {
+  inline int64 getTimezone() noexcept
+  {
     return _timezone * 1000000LL;
   }
+#elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__FREEBSD)
+  inline int64 getTimezone() noexcept
+  {
+    time_t now = time(NULL);
+    struct tm result = {0};
+    localtime_r(&now, &result);
+    return result.tm_gmtoff * 1000000LL;
+  }
 #else 
-  inline int64 getTimezone() noexcept {
+  inline int64 getTimezone() noexcept
+  {
     return timezone * 1000000LL;
   }
 #endif
   
-  inline int64 nativeToDate(time_t time) noexcept {
+  inline int64 nativeToDate(time_t time) noexcept
+  {
     return time * 1000000LL;
   }
   
-  inline time_t dateToNative(int64 time) noexcept {
+  inline time_t dateToNative(int64 time) noexcept
+  {
     return time/1000000;
   }
 #endif // flavor

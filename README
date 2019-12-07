@@ -56,6 +56,7 @@ Linux              | ARM32    |         | Pending    |
 Linux              | ARM64    |         | Pending    |
 Windows            | ARM32    |         | Pending    |
 Windows            | ARM64    |         | Pending    |
-HP-UX              |          |         | Pending    |
-AIX                | PowerPC  |         | Pending    |
+HP-UX 11i v2       |          |         | Pending    |
+AIX 7.2            | PowerPC  |         | Pending    |
+RHEL 8             | PowerPC  |         | Pending    |
 SUSE Linux 15      | x86_64   |         | Pending    |

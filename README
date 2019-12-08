@@ -41,9 +41,11 @@ Windows            | x86_64   | MSC     | Runs continuously on pipeline
 Ubuntu 18.04       | x86_64   | GCC     | Runs continuously on pipeline
 macOS              | x86_64   | Clang   | Runs continuously on pipeline
 
-Windows            | x86      | MSC     | OK         | 8 Dec 2019
-Debian 10          | x86_64   | GCC     | OK         | 5 Dec 2019
-Ubuntu 19.04       | x86_64   | GCC     | OK         | 5 Dec 2019
+Windows            | x86      | MSC     | Ok         | 8 Dec 2019
+Windows            | ARM32    |         | Pending    |
+Windows            | ARM64    | MSC     | Ok         | 8 Dec 2019
+Debian 10          | x86_64   | GCC     | Ok         | 5 Dec 2019
+Ubuntu 19.04       | x86_64   | GCC     | Ok         | 5 Dec 2019
 Fedora 31          | x86_64   | GCC     | Ok         | 5 Dec 2019
 RedHat 8.1         | x86_64   | GCC     | Ok         | 7 Dec 2019
 CentOS 8           | x86_64   | GCC     | Ok         | 6 Dec 2019
@@ -55,8 +57,6 @@ OpenSolaris 11     | sparc    |         | Pending    |
 OpenSUSE Linux 15  |          |         | Pending    |
 Linux              | ARM32    |         | Pending    |
 Linux              | ARM64    |         | Pending    |
-Windows            | ARM32    |         | Pending    |
-Windows            | ARM64    |         | Pending    |
 HP-UX 11i v2       |          |         | Pending    |
 AIX 7.2            | PowerPC  |         | Pending    |
 RHEL 8             | PowerPC  |         | Pending    |

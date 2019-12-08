@@ -41,6 +41,7 @@ Windows            | x86_64   | MSC     | Runs continuously on pipeline
 Ubuntu 18.04       | x86_64   | GCC     | Runs continuously on pipeline
 macOS              | x86_64   | Clang   | Runs continuously on pipeline
 
+Windows            | x86      | MSC     | OK         | 8 Dec 2019
 Debian 10          | x86_64   | GCC     | OK         | 5 Dec 2019
 Ubuntu 19.04       | x86_64   | GCC     | OK         | 5 Dec 2019
 Fedora 31          | x86_64   | GCC     | Ok         | 5 Dec 2019

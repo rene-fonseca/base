@@ -18,7 +18,7 @@ _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 unsigned int Architecture::getTechonologies() noexcept
 {
   unsigned int result = 0;
-#if (_COM_AZURE_DEV__BASE__ARCH == _COM_AZURE_DEV__BASE__X86)
+#if 0 && (_COM_AZURE_DEV__BASE__ARCH == _COM_AZURE_DEV__BASE__X86)
   unsigned int eflags = 0;
   
   enum Flag {
@@ -108,9 +108,8 @@ Architecture::Major Architecture::getArchitecture() noexcept
 Architecture::Minor Architecture::getMinorArchitecture() noexcept
 {
   Architecture::Minor result = GENERIC;
-#if (_COM_AZURE_DEV__BASE__ARCH == _COM_AZURE_DEV__BASE__X86)
+#if 0 && (_COM_AZURE_DEV__BASE__ARCH == _COM_AZURE_DEV__BASE__X86)
   result = X86_386;
-  // TAG: add check for X86_486
   
   unsigned int eflags = 0;
 

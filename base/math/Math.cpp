@@ -52,47 +52,58 @@ const uint8 Math::BIT_REVERSAL[] = {
   0x1f, 0x9f, 0x5f, 0xdf, 0x3f, 0xbf, 0x7f, 0xff
 };
 
-bool Math::isFinite(float value) noexcept {
+bool Math::isFinite(float value) noexcept
+{
   return isfinite(value);
 }
 
-bool Math::isFinite(double value) noexcept {
+bool Math::isFinite(double value) noexcept
+{
   return isfinite(value);
 }
 
-bool Math::isFinite(long double value) noexcept {
+bool Math::isFinite(long double value) noexcept
+{
   return isfinite(value);
 }
 
-bool Math::isInfinity(float value) noexcept {
+bool Math::isInfinity(float value) noexcept
+{
   return isinf(value);
 }
 
-bool Math::isInfinity(double value) noexcept {
+bool Math::isInfinity(double value) noexcept
+{
   return isinf(value);
 }
 
-bool Math::isInfinity(long double value) noexcept {
+bool Math::isInfinity(long double value) noexcept
+{
   return isinf(value);
 }
 
-bool Math::isNaN(float value) noexcept {
+bool Math::isNaN(float value) noexcept
+{
   return isnan(value);
 }
 
-bool Math::isNaN(double value) noexcept {
+bool Math::isNaN(double value) noexcept
+{
   return isnan(value);
 }
 
-bool Math::isNaN(long double value) noexcept {
+bool Math::isNaN(long double value) noexcept
+{
   return isnan(value);
 }
 
-const uint8* Math::getBitReversalData() noexcept {
+const uint8* Math::getBitReversalData() noexcept
+{
   return BIT_REVERSAL;
 }
 
-double Math::lngamma(double value) noexcept {
+double Math::lngamma(double value) noexcept
+{
   // TAG: need better approximation
   // B_2n/(2n * (2n-1) x^(2n-1))
   const double coefficients[7] = {

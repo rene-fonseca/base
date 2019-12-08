@@ -25,9 +25,23 @@ namespace internal { // do NOT use namespace directly
 }
 #  define _COM_AZURE_DEV__BASE__REDIR_ISOC_HYPOTF(x, y) internal::_hypotf(x, y)
 #  define _COM_AZURE_DEV__BASE__REDIR_ISOC_FABSF(x) static_cast<float>(isoc::fabs(static_cast<double>(x)))
-#  define _COM_AZURE_DEV__BASE__REDIR_ISOC_FABSL(x) isoc::fabs(static_cast<double>(x))
-#  define _COM_AZURE_DEV__BASE__REDIR_ISOC_CEILL(x) isoc::ceil(static_cast<double>(x))
-#  define _COM_AZURE_DEV__BASE__REDIR_ISOC_FLOORL(x) isoc::floor(static_cast<double>(x))
+#  define _COM_AZURE_DEV__BASE__REDIR_ISOC_FABSL(x) static_cast<long double>(isoc::fabs(static_cast<double>(x)))
+#  define _COM_AZURE_DEV__BASE__REDIR_ISOC_CEILL(x) static_cast<long double>(isoc::ceil(static_cast<double>(x)))
+#  define _COM_AZURE_DEV__BASE__REDIR_ISOC_FLOORL(x) static_cast<long double>(isoc::floor(static_cast<double>(x)))
+#if (_COM_AZURE_DEV__BASE__ARCH == _COM_AZURE_DEV__BASE__X86)
+#  define _COM_AZURE_DEV__BASE__REDIR_ISOC_CEILF(x) static_cast<float>(isoc::ceil(static_cast<double>(x)))
+#  define _COM_AZURE_DEV__BASE__REDIR_ISOC_FLOORF(x) static_cast<float>(isoc::floor(static_cast<double>(x)))
+#  define _COM_AZURE_DEV__BASE__REDIR_ISOC_SQRTF(x) static_cast<float>(isoc::sqrt(static_cast<double>(x)))
+#  define _COM_AZURE_DEV__BASE__REDIR_ISOC_EXPF(x) static_cast<float>(isoc::exp(static_cast<double>(x)))
+#  define _COM_AZURE_DEV__BASE__REDIR_ISOC_LOGF(x) static_cast<float>(isoc::log(static_cast<double>(x)))
+#  define _COM_AZURE_DEV__BASE__REDIR_ISOC_SINF(x) static_cast<float>(isoc::sin(static_cast<double>(x)))
+#  define _COM_AZURE_DEV__BASE__REDIR_ISOC_COSF(x) static_cast<float>(isoc::cos(static_cast<double>(x)))
+#  define _COM_AZURE_DEV__BASE__REDIR_ISOC_TANF(x) static_cast<float>(isoc::tan(static_cast<double>(x)))
+#  define _COM_AZURE_DEV__BASE__REDIR_ISOC_ASINF(x) static_cast<float>(isoc::asin(static_cast<double>(x)))
+#  define _COM_AZURE_DEV__BASE__REDIR_ISOC_ACOSF(x) static_cast<float>(isoc::acos(static_cast<double>(x)))
+#  define _COM_AZURE_DEV__BASE__REDIR_ISOC_ATANF(x) static_cast<float>(isoc::atan(static_cast<double>(x)))
+#  define _COM_AZURE_DEV__BASE__REDIR_ISOC_ATAN2F(y, x) static_cast<float>(isoc::atan2(static_cast<double>(y), static_cast<double>(x)))
+#endif
 #endif
 
 /**
@@ -42,13 +56,17 @@ namespace isoc { // do NOT use namespace directly
   extern "C" long double fabsl(long double);
 #endif
 
+#if !defined(_COM_AZURE_DEV__BASE__REDIR_ISOC_CEILF)
   extern "C" float ceilf(float);
+#endif
   extern "C" double ceil(double);
 #if !defined(_COM_AZURE_DEV__BASE__REDIR_ISOC_CEILL)
   extern "C" long double ceill(long double);
 #endif
 
+#if !defined(_COM_AZURE_DEV__BASE__REDIR_ISOC_FLOORF)
   extern "C" float floorf(float);
+#endif
   extern "C" double floor(double);
 #if !defined(_COM_AZURE_DEV__BASE__REDIR_ISOC_FLOORL)
   extern "C" long double floorl(long double);
@@ -62,7 +80,9 @@ namespace isoc { // do NOT use namespace directly
   extern "C" double trunc(double);
   extern "C" long double truncl(long double);
 
+#if !defined(_COM_AZURE_DEV__BASE__REDIR_ISOC_SQRTF)
   extern "C" float sqrtf(float);
+#endif
   extern "C" double sqrt(double);
 
   extern "C" float cbrtf(float);
@@ -73,10 +93,14 @@ namespace isoc { // do NOT use namespace directly
 #endif
   extern "C" double hypot(double, double);
 
+#if !defined(_COM_AZURE_DEV__BASE__REDIR_ISOC_EXPF)
   extern "C" float expf(float);
+#endif
   extern "C" double exp(double);
 
+#if !defined(_COM_AZURE_DEV__BASE__REDIR_ISOC_LOGF)
   extern "C" float logf(float);
+#endif
   extern "C" double log(double);
 
   extern "C" float log2f(float);
@@ -88,16 +112,24 @@ namespace isoc { // do NOT use namespace directly
   extern "C" float powf(float, float);
   extern "C" double pow(double, double);
 
+#if !defined(_COM_AZURE_DEV__BASE__REDIR_ISOC_SINF)
   extern "C" float sinf(float);
+#endif
   extern "C" double sin(double);
 
+#if !defined(_COM_AZURE_DEV__BASE__REDIR_ISOC_COSF)
   extern "C" float cosf(float);
+#endif
   extern "C" double cos(double);
 
+#if !defined(_COM_AZURE_DEV__BASE__REDIR_ISOC_ASINF)
   extern "C" float asinf(float);
+#endif
   extern "C" double asin(double);
 
+#if !defined(_COM_AZURE_DEV__BASE__REDIR_ISOC_ACOSF)
   extern "C" float acosf(float);
+#endif
   extern "C" double acos(double);
 
   extern "C" float sinhf(float);
@@ -112,10 +144,14 @@ namespace isoc { // do NOT use namespace directly
   extern "C" float acoshf(float);
   extern "C" double acosh(double);
 
+#if !defined(_COM_AZURE_DEV__BASE__REDIR_ISOC_TANF)
   extern "C" float tanf(float);
+#endif
   extern "C" double tan(double);
 
+#if !defined(_COM_AZURE_DEV__BASE__REDIR_ISOC_ATANF)
   extern "C" float atanf(float);
+#endif
   extern "C" double atan(double);
 
   extern "C" float tanhf(float);
@@ -124,91 +160,114 @@ namespace isoc { // do NOT use namespace directly
   extern "C" float atanhf(float);
   extern "C" double atanh(double);
 
+#if !defined(_COM_AZURE_DEV__BASE__REDIR_ISOC_ATAN2F)
   extern "C" float atan2f(float, float);
+#endif
   extern "C" double atan2(double, double);
 
 #if 1 // redirect long double functions to double version if not supported
-  inline long double sqrtl(long double x) noexcept {
+  inline long double sqrtl(long double x) noexcept
+  {
     return sqrt(static_cast<double>(x));
   }
 
-  inline long double cbrtl(long double x) noexcept {
+  inline long double cbrtl(long double x) noexcept
+  {
     return cbrt(static_cast<double>(x));
   }
 
-  inline long double hypotl(long double x, long double y) noexcept {
+  inline long double hypotl(long double x, long double y) noexcept
+  {
     return hypot(static_cast<double>(x), static_cast<double>(y));
   }
 
-  inline long double expl(long double x) noexcept {
+  inline long double expl(long double x) noexcept
+  {
     return exp(static_cast<double>(x));
   }
 
-  inline long double logl(long double x) noexcept {
+  inline long double logl(long double x) noexcept
+  {
     return log(static_cast<double>(x));
   }
 
-  inline long double log2l(long double x) noexcept {
+  inline long double log2l(long double x) noexcept
+  {
     return log2(static_cast<double>(x));
   }
 
-  inline long double log10l(long double x) noexcept {
+  inline long double log10l(long double x) noexcept
+  {
     return log10(static_cast<double>(x));
   }
 
-  inline long double powl(long double x, long double y) noexcept {
+  inline long double powl(long double x, long double y) noexcept
+  {
     return pow(static_cast<double>(x), static_cast<double>(y));
   }
 
-  inline long double sinl(long double x) noexcept {
+  inline long double sinl(long double x) noexcept
+  {
     return sin(static_cast<double>(x));
   }
 
-  inline long double cosl(long double x) noexcept {
+  inline long double cosl(long double x) noexcept
+  {
     return cos(static_cast<double>(x));
   }
 
-  inline long double asinl(long double x) noexcept {
+  inline long double asinl(long double x) noexcept
+  {
     return asin(static_cast<double>(x));
   }
 
-  inline long double acosl(long double x) noexcept {
+  inline long double acosl(long double x) noexcept
+  {
     return acos(static_cast<double>(x));
   }
 
-  inline long double sinhl(long double x) noexcept {
+  inline long double sinhl(long double x) noexcept
+  {
     return sinh(static_cast<double>(x));
   }
 
-  inline long double coshl(long double x) noexcept {
+  inline long double coshl(long double x) noexcept
+  {
     return cosh(static_cast<double>(x));
   }
 
-  inline long double asinhl(long double x) noexcept {
+  inline long double asinhl(long double x) noexcept
+  {
     return asinh(static_cast<double>(x));
   }
 
-  inline long double acoshl(long double x) noexcept {
+  inline long double acoshl(long double x) noexcept
+  {
     return acosh(static_cast<double>(x));
   }
 
-  inline long double tanl(long double x) noexcept {
+  inline long double tanl(long double x) noexcept
+  {
     return tan(static_cast<double>(x));
   }
 
-  inline long double atanl(long double x) noexcept {
+  inline long double atanl(long double x) noexcept
+  {
     return atan(static_cast<double>(x));
   }
 
-  inline long double tanhl(long double x) noexcept {
+  inline long double tanhl(long double x) noexcept
+  {
     return tanh(static_cast<double>(x));
   }
 
-  inline long double atanhl(long double x) noexcept {
+  inline long double atanhl(long double x) noexcept
+  {
     return atanh(static_cast<double>(x));
   }
 
-  inline long double atan2l(long double x, long double y) noexcept {
+  inline long double atan2l(long double x, long double y) noexcept
+  {
     return atan2(static_cast<double>(x), static_cast<double>(y));
   }
 

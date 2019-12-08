@@ -18,6 +18,7 @@
 #include <base/Cast.h>
 #include <base/string/WideString.h>
 #include <base/Profiler.h>
+#include <base/UnitTest.h>
 
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
 #  include <windows.h>
@@ -76,13 +77,18 @@ Process::ProcessHandle::~ProcessHandle() throw() {
 #endif // flavor
 }
 
-Process::Process() throw() : id(Process::INVALID), handle(ProcessHandle::invalid) {
+Process::Process() noexcept
+  : id(Process::INVALID), handle(ProcessHandle::invalid)
+{
 }
 
-Process::Process(const Process& copy) throw() : id(copy.id), handle(copy.handle) {
+Process::Process(const Process& copy) noexcept
+  : id(copy.id), handle(copy.handle)
+{
 }
 
-Process Process::getProcess() throw() {
+Process Process::getProcess() noexcept
+{
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   return Process(::GetCurrentProcessId());
 #else // unix
@@ -90,7 +96,8 @@ Process Process::getProcess() throw() {
 #endif // flavor
 }
 
-Process Process::getParentProcess() throw() {
+Process Process::getParentProcess() noexcept
+{
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   #if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__WINNT4) || (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__W2K)
     // MT-safe 'cause DWORD is written atomically
@@ -121,7 +128,8 @@ Process Process::getParentProcess() throw() {
 #endif // flavor
 }
 
-Process Process::fork() throw(NotSupported, ProcessException) {
+Process Process::fork()
+{
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   throw NotSupported(Type::getType<Process>());
 #else // unix
@@ -141,7 +149,8 @@ Process Process::fork() throw(NotSupported, ProcessException) {
   #define ABOVE_NORMAL_PRIORITY_CLASS ((DWORD)0x00008000)
 #endif
 
-int Process::getPriority() throw(ProcessException) {
+int Process::getPriority()
+{
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   DWORD priority = ::GetPriorityClass(::GetCurrentProcess());
   switch (priority) {
@@ -177,7 +186,8 @@ int Process::getPriority() throw(ProcessException) {
 #endif // flavor
 }
 
-void Process::setPriority(int priority) throw(ProcessException) {
+void Process::setPriority(int priority)
+{
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   DWORD priorityClass = 0;
   if (priority <= -20) {
@@ -229,7 +239,8 @@ HANDLE CreateRemoteThread(
 );
 #endif
 
-Process Process::execute(const String& command) throw(ProcessException) {
+Process Process::execute(const String& command)
+{
   // inherit handles, environment, use current working directory, and allow this app to wait for process to terminate
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   String commandLine = command;
@@ -283,7 +294,7 @@ Process Process::execute(const String& command) throw(ProcessException) {
 #endif // flavor
 }
 
-Process& Process::operator=(const Process& assign) throw()
+Process& Process::operator=(const Process& assign) noexcept
 {
   if (&assign == this) {
     id = assign.id;
@@ -292,7 +303,7 @@ Process& Process::operator=(const Process& assign) throw()
   return *this;
 }
 
-bool Process::isAlive() const throw(ProcessException)
+bool Process::isAlive() const
 {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
 //   HANDLE newHandle;
@@ -382,7 +393,7 @@ Array<unsigned int> /*Process::*/getPIDs()
 }
 #endif
 
-String Process::getName() const throw(NotSupported, ProcessException)
+String Process::getName() const
 {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   HANDLE process = ::OpenProcess(PROCESS_QUERY_INFORMATION, FALSE, id);
@@ -406,7 +417,7 @@ String Process::getName() const throw(NotSupported, ProcessException)
 #endif
 }
 
-void Process::lock() throw(ProcessException)
+void Process::lock()
 {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   if (!handle->isValid()) {
@@ -418,7 +429,7 @@ void Process::lock() throw(ProcessException)
 #endif // flavor
 }
 
-int Process::wait(unsigned int microseconds) throw()
+int Process::wait(unsigned int microseconds) noexcept
 {
   Profiler::WaitTask profile("Process::wait()");
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
@@ -437,7 +448,7 @@ int Process::wait(unsigned int microseconds) throw()
 #endif // flavor
 }
 
-int Process::wait() throw(ProcessException)
+int Process::wait()
 {
   Profiler::WaitTask profile("Process::wait()");
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
@@ -477,26 +488,33 @@ private:
   State state;
 public:
   
-  inline KillImpl(Process _process) throw() : process(_process), state(WAITING) {
+  inline KillImpl(Process _process) noexcept
+    : process(_process), state(WAITING)
+  {
   }
 
-  inline Process getProcess() const throw() {
+  inline Process getProcess() const noexcept
+  {
     return process;
   }
   
-  inline void onFailure() throw() {
+  inline void onFailure() noexcept
+  {
     state = FAILED;
   }
   
-  inline void onSuccess() throw() {
+  inline void onSuccess() noexcept
+  {
     state = SUCCEEDED;
   }
   
-  inline bool succeeded() const throw() {
+  inline bool succeeded() const noexcept
+  {
     return state == SUCCEEDED;
   }
   
-  static BOOL CALLBACK windowHandler(HWND window, LPARAM parameter) {
+  static BOOL CALLBACK windowHandler(HWND window, LPARAM parameter)
+  {
     KillImpl* kill = (KillImpl*)(parameter);
     
     DWORD processId = 0;
@@ -533,7 +551,8 @@ public:
     return TRUE; // continue enumeration
   }
   
-  inline bool signal() throw() {
+  inline bool signal() noexcept
+  {
     /*BOOL ignore =*/ ::EnumWindows(windowHandler, (LPARAM)this);
     return state == SUCCEEDED;
   }
@@ -541,7 +560,8 @@ public:
 #endif // flavor
 
 // TAG: need process group support
-bool Process::terminate(bool force) throw(ProcessException) {
+bool Process::terminate(bool force)
+{
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   if (force) {
     // TAG: ask nicely first
@@ -581,7 +601,8 @@ bool Process::terminate(bool force) throw(ProcessException) {
 #endif // flavor
 }
 
-Process::Times Process::getTimes() throw() {
+Process::Times Process::getTimes() noexcept
+{
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   if (!handle->isValid()) {
     lock();
@@ -625,7 +646,8 @@ extern "C" int main();
 // class Context (architure)
 
 #if (0 && (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32))
-void dumpDebugInfo(const BYTE* caller, void* instance) throw() {
+void dumpDebugInfo(const BYTE* caller, void* instance) noexcept
+{
   const char* name = ::GetModuleFilename(module) ;
   
   // offset 0 is DOS header
@@ -692,9 +714,7 @@ void dumpDebugInfo(const BYTE* caller, void* instance) throw() {
 // TAG: get current stack usage
 // TAG: get stack available
 
-FormatOutputStream& operator<<(
-  FormatOutputStream& stream,
-  const Process::Layout& value) throw(IOException)
+FormatOutputStream& operator<<(FormatOutputStream& stream, const Process::Layout& value)
 {
   return stream;
   
@@ -751,5 +771,36 @@ FormatOutputStream& operator<<(
   stream << ENDL;
   return stream;
 }
+
+#if defined(_COM_AZURE_DEV__BASE__TESTS)
+
+class TEST_CLASS(Process) : public UnitTest {
+public:
+
+  TEST_PRIORITY(50);
+  TEST_PROJECT("base/concurrency");
+  TEST_IMPACT(CRITICAL);
+  TEST_TIMEOUT_MS(30 * 1000);
+
+  void run() override
+  {
+    Process p = Process::getProcess();
+    TEST_ASSERT(p.getId() != 0);
+    auto parent = p.getParentProcess();
+    TEST_ASSERT(parent.getId() != 0);
+    // TEST_ASSERT(p.getPriority() != 0);
+    auto name = p.getName();
+    // fout << "Process path: " << name << ENDL;
+    TEST_ASSERT(name);
+    auto times = p.getTimes();
+    TEST_ASSERT(times.getTotal() > 0);
+    // TEST_ASSERT(p.isAlive());
+    // TEST_ASSERT(parent.isAlive());
+  }
+};
+
+TEST_REGISTER(Process);
+
+#endif
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

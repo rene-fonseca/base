@@ -49,7 +49,8 @@ public:
     }
 
     inline Times(uint64 _user, uint64 _system) noexcept
-      : user(_user), system(_system) {
+      : user(_user), system(_system)
+    {
     }
 
     /** Returns the total processing time in nanoseconds. */
@@ -75,18 +76,23 @@ public:
   class _COM_AZURE_DEV__BASE__API ProcessException : public Exception {
   public:
     
-    inline ProcessException() noexcept {
+    inline ProcessException() noexcept
+    {
     }
     
     inline ProcessException(const char* message) noexcept
-      : Exception(message) {
+      : Exception(message)
+    {
     }
     
-    inline ProcessException(const Type& type) noexcept : Exception(type) {
+    inline ProcessException(const Type& type) noexcept
+      : Exception(type)
+    {
     }
     
     inline ProcessException(const char* message, const Type& type) noexcept
-      : Exception(message, type) {
+      : Exception(message, type)
+    {
     }
     
     _COM_AZURE_DEV__BASE__EXCEPTION_THIS_TYPE()
@@ -100,7 +106,8 @@ public:
   /**
     Returns the layout of the process.
   */
-  static inline Layout getLayout() noexcept {
+  static inline Layout getLayout() noexcept
+  {
     return Layout();
   }
   
@@ -123,7 +130,8 @@ public:
     
     @return Returns 0 if the value cannot be determined.
   */
-  static inline unsigned long getNumberOfConfiguredProcessors() noexcept {
+  static inline unsigned long getNumberOfConfiguredProcessors() noexcept
+  {
     return OperatingSystem::getVariable(
       OperatingSystem::NUM_OF_CONFIGURED_PROCESSORS
     );
@@ -135,7 +143,8 @@ public:
     
     @return Returns 0 if the value cannot be determined.
   */
-  static inline unsigned long getNumberOfOnlineProcessors() noexcept {
+  static inline unsigned long getNumberOfOnlineProcessors() noexcept
+  {
     return OperatingSystem::getVariable(
       OperatingSystem::NUM_OF_ONLINE_PROCESSORS
     );
@@ -153,17 +162,17 @@ public:
 
     @return The parent returns the child process. The child returns a process with id 0.
   */
-  static Process fork() throw(NotSupported, ProcessException);
+  static Process fork();
 
   /**
     Returns the priority of the process.
   */
-  static int getPriority() throw(ProcessException);
+  static int getPriority();
 
   /**
     Sets the priority of the process.
   */
-  static void setPriority(int priority) throw(ProcessException);
+  static void setPriority(int priority);
  
   /**
     Executes the specified application (quotes are required if module contains
@@ -171,7 +180,7 @@ public:
     
     @return The child process.
   */
-  static Process execute(const String& app) throw(ProcessException);
+  static Process execute(const String& app);
 public:
 
   class _COM_AZURE_DEV__BASE__API ProcessHandle : public Handle {
@@ -184,7 +193,8 @@ public:
     
     /** Initializes process handle. */
     inline ProcessHandle(OperatingSystem::Handle handle) noexcept
-      : Handle(handle) {
+      : Handle(handle)
+    {
     }
     
     /** Releases the resources used by the process. */
@@ -223,14 +233,16 @@ public:
   /**
     Returns the id of the process.
   */
-  inline unsigned long getId() noexcept {
+  inline unsigned long getId() noexcept
+  {
     return id;
   }
 
   /**
     Returns true if the process id is invalid.
   */
-  inline bool isValid() const noexcept {
+  inline bool isValid() const noexcept
+  {
     return id != INVALID;
   }
   
@@ -238,18 +250,18 @@ public:
     Returns true if the process is alive. On some platforms this will only work
     if the process is a child process of the current process.
   */
-  bool isAlive() const throw(ProcessException);
+  bool isAlive() const;
   
   /**
     Returns the name (path) of the process.
   */
-  String getName() const throw(NotSupported, ProcessException);
+  String getName() const;
 
   /**
     Acquires a lock of the process which allows synchronization using the wait
     methods.
   */
-  void lock() throw(ProcessException);
+  void lock();
 
   /**
     Waits for the process to terminate. EXIT_CODE_CONFLICT is returned is the
@@ -267,7 +279,7 @@ public:
 
     @return The exit code (EXIT_CODE_INVALID if exit code is not available).
   */
-  int wait() throw(ProcessException);
+  int wait();
   
   /**
     Requests the process to terminate.
@@ -277,7 +289,7 @@ public:
 
     @return True if the signal was delivered.
   */
-  bool terminate(bool force = false) throw(ProcessException);
+  bool terminate(bool force = false);
 
   /**
     Returns the current processing times (both user and system times).
@@ -292,7 +304,7 @@ inline Process::Process(unsigned long _id) noexcept
 }
 
 _COM_AZURE_DEV__BASE__API FormatOutputStream& operator<<(
-  FormatOutputStream& stream, const Process::Layout& value) throw(IOException);
+  FormatOutputStream& stream, const Process::Layout& value);
 
 /** Add resource times. */
 inline Process::Times operator+(const Process::Times& a, const Process::Times& b) noexcept

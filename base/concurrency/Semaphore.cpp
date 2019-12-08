@@ -14,6 +14,7 @@
 #include <base/platforms/features.h>
 #include <base/concurrency/Semaphore.h>
 #include <base/Profiler.h>
+#include <base/UnitTest.h>
 
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
 #  include <windows.h>
@@ -97,7 +98,7 @@ unsigned int Semaphore::getMaximum() throw()
   return SemaphoreImpl::MAXIMUM;
 }
 
-Semaphore::Semaphore(unsigned int value) throw(OutOfDomain, SemaphoreException)
+Semaphore::Semaphore(unsigned int value)
 {
   if (!(value <= SemaphoreImpl::MAXIMUM)) {
     throw OutOfDomain(this);
@@ -148,7 +149,7 @@ Semaphore::Semaphore(unsigned int value) throw(OutOfDomain, SemaphoreException)
 #endif
 }
 
-int Semaphore::getValue() const throw(SemaphoreException)
+int Semaphore::getValue() const
 {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   #if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__WINNT4) || \
@@ -196,7 +197,7 @@ int Semaphore::getValue() const throw(SemaphoreException)
 #endif
 }
 
-void Semaphore::post() throw(Overflow, SemaphoreException)
+void Semaphore::post()
 {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   if (!::ReleaseSemaphore((HANDLE)semaphore, 1, 0)) {
@@ -226,7 +227,7 @@ void Semaphore::post() throw(Overflow, SemaphoreException)
 #endif
 }
 
-void Semaphore::wait() const throw(SemaphoreException)
+void Semaphore::wait() const
 {
   Profiler::WaitTask profile("Semaphore::wait()");
   
@@ -254,7 +255,7 @@ void Semaphore::wait() const throw(SemaphoreException)
 #endif
 }
 
-bool Semaphore::tryWait() const throw(SemaphoreException)
+bool Semaphore::tryWait() const
 {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   return ::WaitForSingleObject((HANDLE)semaphore, 0) == WAIT_OBJECT_0;
@@ -302,5 +303,33 @@ Semaphore::~Semaphore()
   delete[] (SemaphoreImpl::Semaphore*)semaphore;
 #endif
 }
+
+#if defined(_COM_AZURE_DEV__BASE__TESTS)
+
+class TEST_CLASS(Semaphore) : public UnitTest {
+public:
+
+  TEST_PRIORITY(0);
+  TEST_PROJECT("base/concurrency");
+  TEST_IMPACT(CRITICAL);
+  TEST_TIMEOUT_MS(30 * 1000);
+
+  void run() override
+  {
+    Semaphore semaphore;
+    TEST_ASSERT(semaphore.getValue() == 0);
+    semaphore.post();
+    semaphore.post();
+    TEST_ASSERT(semaphore.getValue() == 2);
+    semaphore.wait();
+    TEST_ASSERT(semaphore.getValue() == 1);
+    TEST_ASSERT(semaphore.tryWait());
+    TEST_ASSERT(semaphore.getValue() == 0);
+  }
+};
+
+TEST_REGISTER(Semaphore);
+
+#endif
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

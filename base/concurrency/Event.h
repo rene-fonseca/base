@@ -40,29 +40,29 @@ public:
   /**
     Initializes the event in the non-signaled state.
   */
-  explicit Event() throw(ResourceException);
+  explicit Event();
 
   /**
     Returns true if this event is in the signaled state.
   */
-  bool isSignaled() const throw(EventException);
+  bool isSignaled() const;
 
   /**
     Resets the event. Returns when all waiting threads.
   */
-  void reset() throw(EventException);
+  void reset();
 
   /**
     Signal the waiting threads. Control is returned immediately.
   */
-  void signal() throw(EventException);
+  void signal();
 
   /**
     Waits for signal. The executing thread is suspended until event is
     signaled. Will wait forever if the event is never signaled. Raises an
     Overflow exception if the maximum number of waiting threads is exceeded.
   */
-  void wait() const throw(EventException);
+  void wait() const;
 
   /**
     Waits for the event to be signaled. The executing thread is suspended
@@ -71,17 +71,18 @@ public:
     threads is exceeded.
 
     @param microseconds The desired time out interval in microseconds. The
-    value must be in the range from 0 to 999999. The exception 'OutOfDomain'
+    value must be in the range from 0 to 1000000000. The exception 'OutOfDomain'
     is raised if this range is violated.
 
     @return True, if the event was signaled before the time-out interval
     expired.
   */
-  bool wait(unsigned int microseconds) const throw(OutOfDomain, EventException);
+  bool wait(unsigned int microseconds) const;
 
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   /** Returns the event handle. */
-  inline OperatingSystem::Handle getHandle() const throw() { // TAG: fixme
+  inline OperatingSystem::Handle getHandle() const noexcept
+  {
     return Cast::pointer<OperatingSystem::Handle>(context);
   }
 #endif

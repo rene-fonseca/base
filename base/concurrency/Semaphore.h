@@ -43,7 +43,7 @@ public:
     guaranteed to be greater than or equal to 32767 and less then or equal to
     Primitive<int>::MAXIMUM.
   */
-  static unsigned int getMaximum() throw();
+  static unsigned int getMaximum() noexcept;
   
   /**
     Initializes the semaphore object. Raises OutOfDomain if the value exceeds
@@ -51,7 +51,7 @@ public:
 
     @param value The initial value. The default is 0.
   */
-  Semaphore(unsigned int value = 0) throw(OutOfDomain, SemaphoreException);
+  Semaphore(unsigned int value = 0);
 
   /**
     Returns the current value of the semaphore. Warning: this method may not be
@@ -59,26 +59,26 @@ public:
 
     @return -1 if not supported.
   */
-  int getValue() const throw(SemaphoreException);
+  int getValue() const;
 
   /**
     Increments the semaphore and signals any thread waiting for a change. This
     method never blocks.
   */
-  void post() throw(Overflow, SemaphoreException);
+  void post();
 
   /**
     Decrements the semaphore and blocks if the semaphore is less than zero
     until another thread signals a change.
   */
-  void wait() const throw(SemaphoreException);
+  void wait() const;
 
   /**
     Non-blocking variant of wait.
 
     @return True if the semaphore was decremented.
   */
-  bool tryWait() const throw(SemaphoreException);
+  bool tryWait() const;
 
   /**
     Destroys the semaphore object.

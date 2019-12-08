@@ -52,22 +52,22 @@ public:
     Initializes the barrier with a count of 0. Raises ResourceException if
     unable to allocate the required resources.
   */
-  Barrier() throw(ResourceException);
+  Barrier();
   
   /**
     Returns the barrier count.
   */
-  unsigned int getCount() const throw();
+  unsigned int getCount() const;
   
   /**
     Sets the barrier count.
   */
-  void setCount(unsigned int value) throw();
+  void setCount(unsigned int value);
   
   /**
     Returns the number of waiting threads.
   */
-  unsigned int getWaiting() const throw();
+  unsigned int getWaiting() const;
   
   /**
     The executing thread blocks until the barrier has been reached (i.e. the
@@ -77,13 +77,13 @@ public:
     
     @return The number of still waiting threads.
   */
-  unsigned int wait(bool reset = false) throw(LockException);
+  unsigned int wait(bool reset = false);
   
   /**
     Resets the barrier. This method is used to wake up all waiting threads
     before the barrier count has been reached.
   */
-  void reset() throw(LockException);
+  void reset();
   
   /**
     Destroys the barrier.

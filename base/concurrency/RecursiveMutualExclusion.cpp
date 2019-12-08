@@ -14,11 +14,13 @@
 #include <base/concurrency/RecursiveMutualExclusion.h>
 #include <base/concurrency/ExclusiveSynchronize.h>
 #include <base/Profiler.h>
+#include <base/UnitTest.h>
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
+// TAG: reimplement using OS mutex
+
 RecursiveMutualExclusion::RecursiveMutualExclusion()
-  : owner(0), numberOfLocks(0)
 {
 }
 
@@ -26,8 +28,8 @@ void RecursiveMutualExclusion::exclusiveLock() const
 {
   Profiler::WaitTask profile("RecursiveMutualExclusion::exclusiveLock()");
   
-  Thread::Identifier id = Thread::getIdentifier();
-  {
+  const Thread::Identifier id = Thread::getIdentifier();
+  if (owner != 0) {
     ExclusiveSynchronize<Guard> _guard(guard);
     if (owner == id) {
       ++numberOfLocks;
@@ -46,18 +48,19 @@ bool RecursiveMutualExclusion::tryExclusiveLock() const
 {
   Profiler::WaitTask profile("RecursiveMutualExclusion::tryExclusiveLock()");
   
-  Thread::Identifier id = Thread::getIdentifier();
+  const Thread::Identifier id = Thread::getIdentifier();
   ExclusiveSynchronize<Guard> _guard(guard);
   if (owner == id) {
     ++numberOfLocks;
     return true;
   } else if (numberOfLocks == 0) {
-    numberOfLocks = 1;
-    owner = id;
-    return true;
-  } else {
-    return false;
+    if (lock.tryExclusiveLock()) {
+      numberOfLocks = 1;
+      owner = id;
+      return true;
+    }
   }
+  return false;
 }
 
 void RecursiveMutualExclusion::releaseLock() const
@@ -74,10 +77,47 @@ void RecursiveMutualExclusion::releaseLock() const
 
 RecursiveMutualExclusion::~RecursiveMutualExclusion()
 {
-  bassert(
-    guard.tryExclusiveLock() && lock.tryExclusiveLock(),
-    MutualExclusionException(this)
-  );
+#if 0
+  if (!guard.tryExclusiveLock() || !lock.tryExclusiveLock()) {
+    throw MutualExclusionException(this);
+  }
+#endif
 }
+
+
+#if defined(_COM_AZURE_DEV__BASE__TESTS)
+
+class TEST_CLASS(RecursiveMutualExclusion) : public UnitTest {
+public:
+
+  TEST_PRIORITY(0);
+  TEST_PROJECT("base/concurrency");
+  TEST_IMPACT(CRITICAL);
+  TEST_TIMEOUT_MS(30 * 1000);
+
+  void run() override
+  {
+    // TAG: add Thread
+    
+    TEST_DECLARE_HERE(A);
+    TEST_DECLARE_HERE(B);
+
+    RecursiveMutualExclusion lock;
+    if (lock.tryExclusiveLock()) {
+      TEST_HERE(A);
+      lock.releaseLock();
+    }
+    if (lock.tryExclusiveLock()) {
+      TEST_HERE(B);
+      lock.releaseLock();
+    }
+    lock.exclusiveLock();
+    lock.releaseLock();
+  }
+};
+
+TEST_REGISTER(RecursiveMutualExclusion);
+
+#endif
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

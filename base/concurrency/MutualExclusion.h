@@ -44,7 +44,7 @@ public:
     Initializes a mutual exclusion object in the unlocked state. Raises
     ResourceException if unable to initialize the object.
   */
-  MutualExclusion() throw(ResourceException);
+  MutualExclusion();
 
   /**
     Requests a lock on this mutual exclusion object. The calling thread is

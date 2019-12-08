@@ -26,7 +26,7 @@
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
-MutualExclusion::MutualExclusion() throw(ResourceException)
+MutualExclusion::MutualExclusion()
 {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   mutex = new CRITICAL_SECTION[1];

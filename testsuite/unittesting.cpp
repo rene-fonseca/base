@@ -230,7 +230,7 @@ public:
         }
         
         static const char* IMPACTS[] = { "PRIVACY", "SECURITY", "CRITICAL", "IMPORTANT", "NORMAL", "LOW", "IGNORE" };
-        BASSERT(test->getImpact() < getArraySize(IMPACTS));
+        BASSERT(static_cast<MemorySize>(test->getImpact()) < getArraySize(IMPACTS));
         fout << "  IMPACT=" << IMPACTS[test->getImpact()] << EOL;
         if (test->getAllowConcurrentRun()) {
           fout << "  CONCURRENT=" << test->getAllowConcurrentRun() << EOL;

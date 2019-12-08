@@ -76,7 +76,12 @@ namespace internal {
   template<>
   inline long long atomicExchange(volatile long long* target, const long long value) noexcept
   {
+#if (_COM_AZURE_DEV__BASE__ARCH == _COM_AZURE_DEV__BASE__X86_64)
     return _InterlockedExchange64(target, value);
+#else
+    BASSERT(!"Not supported.");
+    return 0;
+#endif
   }
 
   // returns initial!
@@ -111,7 +116,12 @@ namespace internal {
   template<>
   inline long long atomicAdd(volatile long long* addend, const long long value) noexcept
   {
+#if (_COM_AZURE_DEV__BASE__ARCH == _COM_AZURE_DEV__BASE__X86_64)
     return _InterlockedExchangeAdd64(addend, value);
+#else
+    BASSERT(!"Not supported.");
+    return 0;
+#endif
   }
 
   template<typename TYPE>
@@ -145,7 +155,12 @@ namespace internal {
   template<>
   inline long long atomicCompareExchange(volatile long long* target, const long long exchange, const long long comparand) noexcept
   {
+#if (_COM_AZURE_DEV__BASE__ARCH == _COM_AZURE_DEV__BASE__X86_64)
     return _InterlockedCompareExchange64(target, exchange, comparand);
+#else
+    BASSERT(!"Not supported.");
+    return 0;
+#endif
   }
 }
 #endif

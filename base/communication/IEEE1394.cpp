@@ -372,7 +372,7 @@ String IEEE1394::getDescription(unsigned short node) throw(IEEE1394Exception) {
     IEEE1394::CONFIGURATION_ROM + ((crc >> 24) + 1) * sizeof(Quadlet);
   
   // read root directory entries
-  uint32 quadlet;
+  uint32 quadlet = 0;
   unsigned int numberOfEntries = getQuadlet(node, rootDirectoryOffset) >> 16;
   for (unsigned int entry = 1; entry <= numberOfEntries; ++entry) {
     const uint32 entryOffset = rootDirectoryOffset + entry * sizeof(Quadlet);
@@ -420,7 +420,7 @@ String IEEE1394::getKeywords(unsigned short node) throw(IEEE1394Exception) {
     IEEE1394::CONFIGURATION_ROM + ((crc >> 24) + 1) * sizeof(Quadlet);
   
   // read root directory entries
-  uint32 quadlet;
+  uint32 quadlet = 0;
   unsigned int numberOfEntries = getQuadlet(node, rootDirectoryOffset) >> 16;
   for (unsigned int entry = 1; entry <= numberOfEntries; ++entry) {
     const uint32 entryOffset = rootDirectoryOffset + entry * sizeof(Quadlet);

@@ -44,8 +44,8 @@ namespace internal {
     
     // the original unhandled exception filter
     LPTOP_LEVEL_EXCEPTION_FILTER originalExceptionFilter = nullptr;
-    
-    LONG exceptionFilter(EXCEPTION_POINTERS* exception)
+
+    LONG WINAPI exceptionFilter(EXCEPTION_POINTERS* exception)
     {
       char errorMessage[sizeof("Internal error: System exception 0x################ (access violation) while reading from 0x################ at 0x################")]; // worst case
       char* dest = errorMessage;
@@ -364,7 +364,8 @@ ProcessPreinitialization::ProcessPreinitialization() throw() {
   //::SetErrorMode(SEM_NOGPFAULTERRORBOX);    
 }
 
-ProcessPreinitialization::~ProcessPreinitialization() throw() {
+ProcessPreinitialization::~ProcessPreinitialization() throw()
+{
   // restore the original unhandled exception filter
   ::SetUnhandledExceptionFilter(internal::specific::originalExceptionFilter);
   if (::WSACleanup() != 0) {

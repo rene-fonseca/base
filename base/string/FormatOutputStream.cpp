@@ -397,7 +397,7 @@ void FormatOutputStream::addCharacterField(const char* buffer, MemorySize size)
   if (justification == Symbols::LEFT) {
     write(Cast::pointer<const uint8*>(buffer), size); // write characters
   }
-  if (numberOfChars < static_cast<unsigned int>(context.width)) { // write blanks if required
+  if (static_cast<MemorySize>(numberOfChars) < static_cast<MemorySize>(context.width)) { // write blanks if required
     unfoldValue(' ', context.width - numberOfChars);
   }
   if (context.justification == Symbols::RIGHT) {
@@ -435,7 +435,7 @@ void FormatOutputStream::addCharacterField(const wchar* buffer, MemorySize size)
   if (justification == Symbols::LEFT) {
     write(temp, length); // write characters
   }
-  if (numberOfChars < static_cast<unsigned int>(context.width)) { // write blanks if required
+  if (static_cast<MemorySize>(numberOfChars) < static_cast<MemorySize>(context.width)) { // write blanks if required
     unfoldValue(' ', context.width - numberOfChars);
   }
   if (context.justification == Symbols::RIGHT) {
@@ -473,7 +473,7 @@ void FormatOutputStream::addCharacterField(const char16_t* buffer, MemorySize si
   if (justification == Symbols::LEFT) {
     write(temp, length); // write characters
   }
-  if (numberOfChars < static_cast<unsigned int>(context.width)) { // write blanks if required
+  if (static_cast<MemorySize>(numberOfChars) < static_cast<MemorySize>(context.width)) { // write blanks if required
     unfoldValue(' ', context.width - numberOfChars);
   }
   if (context.justification == Symbols::RIGHT) {
@@ -511,7 +511,7 @@ void FormatOutputStream::addCharacterField(const char32_t* buffer, MemorySize si
   if (justification == Symbols::LEFT) {
     write(temp, length); // write characters
   }
-  if (numberOfChars < static_cast<unsigned int>(context.width)) { // write blanks if required
+  if (static_cast<MemorySize>(numberOfChars) < static_cast<MemorySize>(context.width)) { // write blanks if required
     unfoldValue(' ', context.width - numberOfChars);
   }
   if (context.justification == Symbols::RIGHT) {
@@ -1527,7 +1527,7 @@ void convertFloatingPoint(
     if (static_cast<int>(numberOfDigits) < cutPlace) {
       buffer[numberOfDigits++] = temp[0]; // assert: U < B
     }
-
+    
     low = LargeIntegerImpl::lessThan(R, Mminus, integerSize); // 2*R < M-
     LargeIntegerImpl::assign(temp, R, integerSize); // TAG: need alternative
     LargeIntegerImpl::add(temp, Mplus, integerSize); // temp = 2*R + M+

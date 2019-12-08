@@ -201,7 +201,7 @@ namespace {
         }
       }
 
-      if (exponent < getArraySize(EXPONENTS10)) {
+      if (static_cast<MemorySize>(exponent) < getArraySize(EXPONENTS10)) {
         if (negative) {
           temp = -temp;
         }
@@ -215,7 +215,7 @@ namespace {
         }
         _value = value;
         return 1;
-      } else if (exponent < getArraySize(EXPONENTS5)) { // exponent 10 => 2*5
+      } else if (static_cast<MemorySize>(exponent) < getArraySize(EXPONENTS5)) { // exponent 10 => 2*5
         if (negative) {
           temp = -temp;
         }

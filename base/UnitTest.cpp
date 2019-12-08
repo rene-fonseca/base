@@ -503,7 +503,7 @@ String UnitTest::getJUnit() const
     }
     output += Format::subst("PRIORITY: %1", getPriority()) + "\n";
     static const char* IMPACTS[] = { "PRIVACY", "SECURITY", "CRITICAL", "IMPORTANT", "NORMAL", "LOW", "IGNORE" };
-    BASSERT(getImpact() < getArraySize(IMPACTS));
+    BASSERT(static_cast<MemorySize>(getImpact()) < getArraySize(IMPACTS));
     output += Format::subst("IMPACT: %1", String(IMPACTS[getImpact()])) + "\n";
     output += Format::subst("TIMEOUT: %1", getTimeout()) + "\n";
 

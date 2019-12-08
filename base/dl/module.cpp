@@ -24,7 +24,7 @@ _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE
 
 #include <windows.h>
 
-extern "C" BOOL DllMain(HINSTANCE hinstDLL, DWORD fdwReason, LPVOID lpvReserved)
+extern "C" BOOL __stdcall DllMain(HINSTANCE hinstDLL, DWORD fdwReason, LPVOID lpvReserved)
 {
   if (fdwReason == DLL_PROCESS_ATTACH) {
     base::moduleEntry();

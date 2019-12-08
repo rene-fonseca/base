@@ -741,7 +741,7 @@ void dumpDebugInfo(const BYTE* caller, void* instance) noexcept
 FormatOutputStream& operator<<(FormatOutputStream& stream, const Process::Layout& value)
 {
   return stream;
-  
+#if 0
   // modules
   // stack
   // threads
@@ -794,6 +794,7 @@ FormatOutputStream& operator<<(FormatOutputStream& stream, const Process::Layout
   
   stream << ENDL;
   return stream;
+#endif
 }
 
 #if defined(_COM_AZURE_DEV__BASE__TESTS)

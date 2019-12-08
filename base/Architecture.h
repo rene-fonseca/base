@@ -63,33 +63,28 @@ public:
     SPARC, /**< Sparc. */
     X86_64, /**< AMD64. */
     S390, /**< S390. */
-    ARM /**< ARM. */
+    ARM, /**< ARM. */
+    ARM64 /**< ARM. */
   };
   
   /** The minor architecture. */
   enum Minor {
-    GENERIC, /**< Unspecified processor. */
-    X86_386, /**< 386. */
-    X86_486, /**< 486. */
-    X86_586, /**< 586. */
-    X86_PENTIUM, /**< Pentimum. */
-    X86_PENTIUM_PRO, /**< Pentimum Pro. */
-    X86_PENTIUM_II, /**< Pentimum II. */
-    X86_PENTIUM_III, /**< Pentimum III. */
-    X86_PENTIUM_IV, /**< Pentimum IV. */
+    GENERIC /**< Unspecified processor. */
   };
   
   /**
     Returns true if the native byte order is big endian.
   */
-  static bool isBigEndian() noexcept {
+  static bool isBigEndian() noexcept
+  {
     return NATIVE == BE;
   }
 
   /**
     Returns true if the native byte order is little endian.
   */
-  static bool isLittleEndian() noexcept {
+  static bool isLittleEndian() noexcept
+  {
     return NATIVE == LE;
   }
 

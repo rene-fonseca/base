@@ -183,6 +183,7 @@ public:
 #endif
 
           ElfHeader header;
+          clear(header);
           if (sourceFile.getSize() < sizeof(header)) {
             ferr << "not elf object" << ENDL;
             return; // TAG: fixme

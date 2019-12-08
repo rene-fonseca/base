@@ -137,8 +137,9 @@
 #define _COM_AZURE_DEV__BASE__X86_64 8
 #define _COM_AZURE_DEV__BASE__S390 9
 #define _COM_AZURE_DEV__BASE__ARM 10
-#define _COM_AZURE_DEV__BASE__WASM32 11
-#define _COM_AZURE_DEV__BASE__WASM64 12
+#define _COM_AZURE_DEV__BASE__ARM64 11
+#define _COM_AZURE_DEV__BASE__WASM32 12
+#define _COM_AZURE_DEV__BASE__WASM64 13
 
 // Architectures (minor)
 #define _COM_AZURE_DEV__BASE__486 1 // only with X86

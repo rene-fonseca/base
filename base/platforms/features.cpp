@@ -46,7 +46,8 @@
      (_COM_AZURE_DEV__BASE__ARCH == _COM_AZURE_DEV__BASE__RS) || \
      (_COM_AZURE_DEV__BASE__ARCH == _COM_AZURE_DEV__BASE__X86_64) || \
      (_COM_AZURE_DEV__BASE__ARCH == _COM_AZURE_DEV__BASE__S390) || \
-     (_COM_AZURE_DEV__BASE__ARCH == _COM_AZURE_DEV__BASE__ARM))
+     (_COM_AZURE_DEV__BASE__ARCH == _COM_AZURE_DEV__BASE__ARM) || \
+     (_COM_AZURE_DEV__BASE__ARCH == _COM_AZURE_DEV__BASE__ARM64))
 #else
 #  error Invalid architecture (ARCH) specification
 #endif

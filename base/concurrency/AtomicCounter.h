@@ -33,8 +33,13 @@
 #elif (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32) && \
       (_COM_AZURE_DEV__BASE__COMPILER == _COM_AZURE_DEV__BASE__COMPILER_MSC)
 #  include <intrin.h> // header approved
-#if ((_COM_AZURE_DEV__BASE__ARCH == _COM_AZURE_DEV__BASE__X86) || (_COM_AZURE_DEV__BASE__ARCH == _COM_AZURE_DEV__BASE__X86_64))
-#  define _COM_AZURE_DEV__BASE__USE_WIN32_INTRINSIC_X86
+#if ((_COM_AZURE_DEV__BASE__ARCH == _COM_AZURE_DEV__BASE__X86) || \
+     (_COM_AZURE_DEV__BASE__ARCH == _COM_AZURE_DEV__BASE__X86_64) || \
+     (_COM_AZURE_DEV__BASE__ARCH == _COM_AZURE_DEV__BASE__ARM) || \
+     (_COM_AZURE_DEV__BASE__ARCH == _COM_AZURE_DEV__BASE__ARM64))
+#  define _COM_AZURE_DEV__BASE__USE_WIN32_INTRINSIC
+#else
+#  include <atomic> // header approved
 #endif
 #else
 #  include <atomic> // header approved
@@ -42,7 +47,7 @@
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
-#if defined(_COM_AZURE_DEV__BASE__USE_WIN32_INTRINSIC_X86)
+#if defined(_COM_AZURE_DEV__BASE__USE_WIN32_INTRINSIC)
 namespace internal {
 
   template<typename TYPE>
@@ -173,7 +178,7 @@ public:
   static inline void yield() noexcept
   {
 #if (_COM_AZURE_DEV__BASE__COMPILER == _COM_AZURE_DEV__BASE__COMPILER_MSC)
-#if (_COM_AZURE_DEV__BASE__ARCH == _COM_AZURE_DEV__BASE__ARM)
+#if (_COM_AZURE_DEV__BASE__ARCH == _COM_AZURE_DEV__BASE__ARM64)
     __yield();
 #endif
 #endif
@@ -184,16 +189,19 @@ public:
   {
 #if defined(_COM_AZURE_DEV__BASE__USE_BUILT_IN_ATOMIC)
     __atomic_thread_fence(__ATOMIC_SEQ_CST);
-#elif defined(_COM_AZURE_DEV__BASE__USE_WIN32_INTRINSIC_X86)
+#elif (_COM_AZURE_DEV__BASE__COMPILER == _COM_AZURE_DEV__BASE__COMPILER_MSC) && \
+      ((_COM_AZURE_DEV__BASE__ARCH == _COM_AZURE_DEV__BASE__X86) || \
+       (_COM_AZURE_DEV__BASE__ARCH == _COM_AZURE_DEV__BASE__X86_64))
     _ReadWriteBarrier();
     static long dummy = 0;
     _InterlockedCompareExchange(&dummy, 0, 0);
     _ReadWriteBarrier();
 #elif (_COM_AZURE_DEV__BASE__COMPILER == _COM_AZURE_DEV__BASE__COMPILER_MSC) && \
-      (_COM_AZURE_DEV__BASE__ARCH == _COM_AZURE_DEV__BASE__ARM)
-    __dmb(0xb) // inner shared data memory barrier
+      ((_COM_AZURE_DEV__BASE__ARCH == _COM_AZURE_DEV__BASE__ARM) || \
+       (_COM_AZURE_DEV__BASE__ARCH == _COM_AZURE_DEV__BASE__ARM64))
+    __dmb(0xb); // inner shared data memory barrier
 #else
-    atomic_thread_fence(std::memory_order_acquire);
+    std::atomic_thread_fence(std::memory_order_acquire);
 #endif
   }
 
@@ -202,10 +210,10 @@ public:
   {
 #if defined(_COM_AZURE_DEV__BASE__USE_BUILT_IN_ATOMIC)
     __atomic_signal_fence(__ATOMIC_SEQ_CST);
-#elif defined(_COM_AZURE_DEV__BASE__USE_WIN32_INTRINSIC_X86)
+#elif defined(_COM_AZURE_DEV__BASE__USE_WIN32_INTRINSIC)
     _ReadWriteBarrier();
 #else
-    atomic_signal_fence(std::memory_order_acquire);
+    std::atomic_signal_fence(std::memory_order_acquire);
 #endif
   }
 };
@@ -230,7 +238,7 @@ private:
   /** The value of the counter. */
 #if defined(_COM_AZURE_DEV__BASE__USE_BUILT_IN_ATOMIC)
   mutable volatile TYPE value;
-#elif defined(_COM_AZURE_DEV__BASE__USE_WIN32_INTRINSIC_X86)
+#elif defined(_COM_AZURE_DEV__BASE__USE_WIN32_INTRINSIC)
   volatile TYPE value;
 #else
   volatile std::atomic<TYPE> value;
@@ -243,7 +251,7 @@ private:
   {
 #if defined(_COM_AZURE_DEV__BASE__USE_BUILT_IN_ATOMIC)
     return __atomic_load_n(&value, __ATOMIC_ACQUIRE); // __ATOMIC_RELAXED, __ATOMIC_SEQ_CST, __ATOMIC_ACQUIRE, __ATOMIC_CONSUME
-#elif defined(_COM_AZURE_DEV__BASE__USE_WIN32_INTRINSIC_X86)
+#elif defined(_COM_AZURE_DEV__BASE__USE_WIN32_INTRINSIC)
     return internal::atomicAdd<TYPE>(const_cast<volatile TYPE*>(&value), 0);
 #else
     return value;
@@ -258,7 +266,7 @@ private:
 #if defined(_COM_AZURE_DEV__BASE__USE_BUILT_IN_ATOMIC)
     BASSERT(__atomic_is_lock_free(sizeof(value), &value));
     __atomic_store_n(&value, desired, __ATOMIC_RELEASE); // __ATOMIC_RELAXED, __ATOMIC_SEQ_CST, __ATOMIC_RELEASE
-#elif defined(_COM_AZURE_DEV__BASE__USE_WIN32_INTRINSIC_X86)
+#elif defined(_COM_AZURE_DEV__BASE__USE_WIN32_INTRINSIC)
     internal::atomicExchange<TYPE>(&value, desired);
 #else
     value.store(desired);
@@ -361,7 +369,7 @@ public:
   {
 #if defined(_COM_AZURE_DEV__BASE__USE_BUILT_IN_ATOMIC)
     return __atomic_fetch_add(&value, _value, __ATOMIC_ACQ_REL); // all memory orders
-#elif defined(_COM_AZURE_DEV__BASE__USE_WIN32_INTRINSIC_X86)
+#elif defined(_COM_AZURE_DEV__BASE__USE_WIN32_INTRINSIC)
     return internal::atomicAdd<TYPE>(&value, _value) + _value;
 #else
     return value += _value;
@@ -375,7 +383,7 @@ public:
   {
 #if defined(_COM_AZURE_DEV__BASE__USE_BUILT_IN_ATOMIC)
     return __atomic_fetch_sub(&value, _value, __ATOMIC_ACQ_REL); // all memory orders
-#elif defined(_COM_AZURE_DEV__BASE__USE_WIN32_INTRINSIC_X86)
+#elif defined(_COM_AZURE_DEV__BASE__USE_WIN32_INTRINSIC)
     return internal::atomicAdd<TYPE>(&value, -_value) - _value;
 #else
     return value -= _value;
@@ -409,7 +417,7 @@ public:
 #if defined(_COM_AZURE_DEV__BASE__USE_BUILT_IN_ATOMIC)
     // __ATOMIC_RELAXED, __ATOMIC_SEQ_CST, __ATOMIC_ACQUIRE, __ATOMIC_RELEASE, and __ATOMIC_ACQ_REL
     return __atomic_exchange_n(&value, desired, __ATOMIC_SEQ_CST);
-#elif defined(_COM_AZURE_DEV__BASE__USE_WIN32_INTRINSIC_X86)
+#elif defined(_COM_AZURE_DEV__BASE__USE_WIN32_INTRINSIC)
     return internal::atomicExchange<TYPE>(&value, desired);
 #else
     return value.exchange(desired);
@@ -424,7 +432,7 @@ public:
     BASSERT(expected != desired);
 #if defined(_COM_AZURE_DEV__BASE__USE_BUILT_IN_ATOMIC)
     return __atomic_compare_exchange_n(&value, &expected, desired, false, __ATOMIC_SEQ_CST, __ATOMIC_SEQ_CST); // strong
-#elif defined(_COM_AZURE_DEV__BASE__USE_WIN32_INTRINSIC_X86)
+#elif defined(_COM_AZURE_DEV__BASE__USE_WIN32_INTRINSIC)
     TYPE initial = internal::atomicCompareExchange<TYPE>(&value, desired, expected);
     bool result = initial == expected;
     expected = initial;
@@ -442,7 +450,7 @@ public:
     BASSERT(expected != desired);
 #if defined(_COM_AZURE_DEV__BASE__USE_BUILT_IN_ATOMIC)
     return __atomic_compare_exchange_n(&value, &expected, desired, true, __ATOMIC_SEQ_CST, __ATOMIC_SEQ_CST); // weak
-#elif defined(_COM_AZURE_DEV__BASE__USE_WIN32_INTRINSIC_X86)
+#elif defined(_COM_AZURE_DEV__BASE__USE_WIN32_INTRINSIC)
     TYPE initial = internal::atomicCompareExchange<TYPE>(&value, desired, expected);
     bool result = initial == expected;
     expected = initial;

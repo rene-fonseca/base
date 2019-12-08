@@ -411,6 +411,30 @@ String Process::getName() const
     return String();
   }
   return String(static_cast<const char*>(buffer), status);
+#elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__GNULINUX) || \
+      (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__SOLARIS) || \
+      (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__FREEBSD)
+  PrimitiveStackArray<char> buffer(4096); 
+  while (buffer.size() < (1024*16)) {
+#if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__GNULINUX)
+    ssize_t length = readlink("/proc/self/exe", buffer, buffer.size());
+#elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__SOLARIS)
+    ssize_t length = readlink("/proc/self/path/a.out", buffer, buffer.size());
+#elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__FREEBSD)
+    ssize_t length = readlink("/proc/curproc/file", buffer, buffer.size());
+#else
+#  error Unsupported OS.
+#endif
+    if (length == -1) {
+      if (errno == ENAMETOOLONG) {
+        buffer.resize(buffer.size() * 2);
+        continue;
+      }
+      break;
+    }
+    return String(buffer, length);
+  }
+  return String();
 #else
   return String();
 #endif

@@ -715,6 +715,7 @@ public:
     return buffer + count;
   }
 
+#if 0
   /** Returns the item at given index. */
   inline TYPE& operator[](MemorySize index) noexcept
   {
@@ -726,6 +727,7 @@ public:
   {
     return buffer[index];
   }
+#endif
 };
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

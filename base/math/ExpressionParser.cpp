@@ -20,17 +20,20 @@
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
-ExpressionEvaluator::ExpressionEvaluator() throw() {
+ExpressionEvaluator::ExpressionEvaluator() noexcept
+{
 }
 
 double ExpressionEvaluator::onConstant(
-  unsigned int constant) const throw(ExpressionException) {
+  unsigned int constant) const throw(ExpressionException)
+{
   throw ExpressionException("Invalid constant", this);
 }
 
 double ExpressionEvaluator::onFunction(
   unsigned int function,
-  const double* value) const throw(ExpressionException) {
+  const double* value) const throw(ExpressionException)
+{
   throw ExpressionException("Invalid function", this);
 }
 
@@ -38,7 +41,7 @@ double ExpressionEvaluator::evaluate() const throw(ExpressionException)
 {
   List<Node>::ReadEnumerator enu = nodes.getReadEnumerator();
   PrimitiveStackArray<double> stack(nodes.getSize());
-  int index = -1;
+  MemoryDiff index = -1;
   while (enu.hasNext()) {
     Node node = *enu.next();
     switch (node.type) {
@@ -110,7 +113,7 @@ double ExpressionEvaluator::evaluate(const double* variables) const throw(Expres
 {
   List<Node>::ReadEnumerator enu = nodes.getReadEnumerator();
   PrimitiveStackArray<double> stack(nodes.getSize());
-  int index = -1;
+  MemoryDiff index = -1;
   while (enu.hasNext()) {
     Node node = *enu.next();
     switch (node.type) {
@@ -183,7 +186,7 @@ void ExpressionEvaluator::evaluate(const double* variables, double* results, uns
   PrimitiveStackArray<double> stack(nodes.getSize());
   for (unsigned int i = 0; i < count; ++i) {
     List<Node>::ReadEnumerator enu = nodes.getReadEnumerator();
-    int index = -1;
+    MemoryDiff index = -1;
     while (enu.hasNext()) {
       Node node = *enu.next();
       switch (node.type) {
@@ -235,7 +238,7 @@ void ExpressionEvaluator::evaluate(const double* variables, double* results, uns
         break;
       case ExpressionEvaluator::FUNCTION:
         if (node.function.arguments == 0) {
-          stack[++index] = onFunction(node.function.id, 0);
+          stack[++index] = onFunction(node.function.id, nullptr);
         } else {
           if (static_cast<unsigned int>(index + 1) < node.function.arguments) {
             throw ExpressionException("Arguments exhausted", this);
@@ -252,10 +255,12 @@ void ExpressionEvaluator::evaluate(const double* variables, double* results, uns
   }
 }
 
-ExpressionEvaluator::~ExpressionEvaluator() throw() {
+ExpressionEvaluator::~ExpressionEvaluator() noexcept
+{
 }
 
-ExpressionProvider::ExpressionProvider() throw() {
+ExpressionProvider::ExpressionProvider() noexcept
+{
 }
 
 void ExpressionProvider::registerConstant(
@@ -298,14 +303,15 @@ ExpressionEvaluator::Node ExpressionProvider::getNode(
   return identifiers.getValue(name);
 }
 
-ExpressionProvider::~ExpressionProvider() throw() {
+ExpressionProvider::~ExpressionProvider() noexcept
+{
 }
 
 
 
 ExpressionParser::ExpressionParser(
   const String& _expression,
-  ExpressionProvider& _provider) throw()
+  ExpressionProvider& _provider) noexcept
   : expression(_expression),
     provider(_provider) {
   autoRegister = false;
@@ -817,7 +823,8 @@ String ExpressionParser::getString() const throw(ExpressionException) {
   return stack.pop();
 }
 
-ExpressionParser::~ExpressionParser() throw() {
+ExpressionParser::~ExpressionParser() noexcept
+{
 }
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

@@ -73,6 +73,8 @@ if (UNIX)
   find_package(X11)
 endif()
 
+find_package(ZLib)
+
 file(GLOB_RECURSE base_platforms_SRC
   "base/platforms/*.h"
   "base/platforms/*.cpp"
@@ -159,6 +161,13 @@ message("Revision: ${GIT_REVISION}")
 
 # generate configuration header
 configure_file(${CMAKE_SOURCE_DIR}/config.h.in ${CMAKE_BINARY_DIR}/generated/base/config.h)
+
+if (ZLIB_FOUND)
+option(_COM_AZURE_DEV__BASE__USE_ZLIB "Enable ZLib" ON)
+endif ()
+option(_COM_AZURE_DEV__BASE__USE_X11 "Enable X11" X11_FOUND)
+configure_file(${CMAKE_SOURCE_DIR}/build.h.in ${CMAKE_BINARY_DIR}/generated/base/build.h)
+
 set(base_ADDITIONAL "")
 if (MSVC)
   configure_file(${CMAKE_SOURCE_DIR}/base.rc.in ${CMAKE_BINARY_DIR}/generated/base/base.rc)
@@ -194,6 +203,10 @@ elseif (UNIX)
   endif ()
 # elseif (APPLE)
 #  target_link_libraries(base pthread ${OpenCL_LIBRARY})
+endif ()
+
+if (ZLIB_FOUND)
+  target_link_libraries(base ${ZLIB_LIBRARIES})
 endif ()
 
 # macOS requires all values to be less than 1024

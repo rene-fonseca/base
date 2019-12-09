@@ -893,7 +893,8 @@ InetInterface::InetInterface(const String& name) throw(NetworkException)
     metric = req.ifr_metric;
   }
 #if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__MACOS) || \
-    (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__FREEBSD)
+    (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__FREEBSD) || \
+    (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__OPENBSD)
 
 #if 0 // #include <ifaddrs.h>
   struct ifaddrs *ifap = NULL;

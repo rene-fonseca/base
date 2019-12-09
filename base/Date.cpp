@@ -56,7 +56,8 @@ namespace internal {
   {
     return _timezone * 1000000LL;
   }
-#elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__FREEBSD)
+#elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__FREEBSD) || \
+      (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__OPENBSD)
   inline int64 getTimezone() noexcept
   {
     time_t now = time(NULL);

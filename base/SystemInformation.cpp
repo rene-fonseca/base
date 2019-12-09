@@ -61,6 +61,9 @@ String SystemInformation::getOS() noexcept
   case _COM_AZURE_DEV__BASE__FREEBSD:
     os = "FreeBSD";
     break;
+  case _COM_AZURE_DEV__BASE__OPENBSD:
+    os = "OpenBSD";
+    break;
   case _COM_AZURE_DEV__BASE__WEBASSEMBLY:
     os = "WebAssembly";
     break;

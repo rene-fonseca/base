@@ -32,10 +32,8 @@
 
 #if defined(_WIN32)
 #  define _COM_AZURE_DEV__BASE__FLAVOR _COM_AZURE_DEV__BASE__WIN32
-#elif defined(__APPLE__) || defined(__linux__) || defined(__sun__) || defined(__FreeBSD__) || defined(__OpenBSD__)
-#  define _COM_AZURE_DEV__BASE__FLAVOR _COM_AZURE_DEV__BASE__UNIX
 #else
-#  error Unsupported flavor.
+#  define _COM_AZURE_DEV__BASE__FLAVOR _COM_AZURE_DEV__BASE__UNIX
 #endif
 
 #if defined(_WIN32)
@@ -50,8 +48,10 @@
 #  define _XOPEN_SOURCE 600 // SUSv3/POSIX.1-2001 // see man standards
 #  undef _XOPEN_SOURCE_EXTENDED
 #  define _XOPEN_SOURCE_EXTENDED
-#elif defined(__FreeBSD__) || defined(__OpenBSD__)
+#elif defined(__FreeBSD__)
 #  define _COM_AZURE_DEV__BASE__OS _COM_AZURE_DEV__BASE__FREEBSD
+#elif defined(__OpenBSD__)
+#  define _COM_AZURE_DEV__BASE__OS _COM_AZURE_DEV__BASE__OPENBSD
 #else
 #  error Unsupported OS.
 #endif
@@ -111,7 +111,8 @@
 #define _COM_AZURE_DEV__BASE__HAVE_MEMSET
 #define _COM_AZURE_DEV__BASE__HAVE_WCSFTIME
 #if (_COM_AZURE_DEV__BASE__OS != _COM_AZURE_DEV__BASE__MACOS) && \
-    ( _COM_AZURE_DEV__BASE__OS != _COM_AZURE_DEV__BASE__FREEBSD)
+    (_COM_AZURE_DEV__BASE__OS != _COM_AZURE_DEV__BASE__FREEBSD) && \
+    (_COM_AZURE_DEV__BASE__OS != _COM_AZURE_DEV__BASE__OPENBSD)
 #  define _COM_AZURE_DEV__BASE__LARGE_FILE_SYSTEM
 #endif
 

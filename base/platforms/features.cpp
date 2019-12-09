@@ -31,6 +31,7 @@
      (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__AIX) || \
      (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__MACOS) || \
      (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__FREEBSD) || \
+     (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__OPENBSD) || \
      (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__WEBASSEMBLY))
 #else
 #  error Invalid operating system (OS) specification

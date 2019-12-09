@@ -22,7 +22,7 @@
 #include <base/iterator/UTF8Iterator.h>
 #include <base/collection/Hash.h>
 #include <base/Literal.h>
-#include <ctype.h> // required for isalpha freebsd
+#include <base/string/ASCIITraits.h>
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
@@ -44,72 +44,6 @@ public:
 
   /** Specifies the terminator for NULL-terminated strings. */
   static const char TERMINATOR = '\0';
-
-  /** Returns true if the character an alphabetic character. */
-  static inline bool isAlpha(char character) noexcept
-  {
-    return isalpha(character);
-  }
-  
-  /** Returns true if the character an alphabetic character or a digit. */
-  static inline bool isAlphaNum(char character) noexcept
-  {
-    return isalnum(character);
-  }
-
-  /** Returns true if the character is lowercase. */
-  static inline bool isLower(char character) noexcept
-  {
-    return islower(character);
-  }
-  
-  /** Returns true if the character is uppercase. */
-  static inline bool isUpper(char character) noexcept
-  {
-    return isupper(character);
-  }
-  
-  /** Returns true if the character is a digit. */
-  static inline bool isDigit(char character) noexcept
-  {
-    return isdigit(character);
-  }
-  
-  /** Returns true if the character is a hex digit. */
-  static inline bool isHexDigit(char character) noexcept
-  {
-    return isxdigit(character);
-  }
-  
-  /** Returns true if the character is a white space. */
-  static inline bool isSpace(char character) noexcept
-  {
-    return isspace(character);
-  }
-  
-  /** Returns true if the character is a punctuation mark. */
-  static inline bool isPunctuation(char character) noexcept
-  {
-    return ispunct(character);
-  }
-  
-  /** Returns true if the character is printable. */
-  static inline bool isPrintable(char character) noexcept
-  {
-    return isprint(character);
-  }
-  
-  /** Returns true if the character is a visible character. */
-  static inline bool isGraph(char character) noexcept
-  {
-    return isgraph(character);
-  }
-  
-  /** Returns true if the character is a control character. */
-  static inline bool isControl(char character) noexcept
-  {
-    return iscntrl(character);
-  }
   
   /** Returns true if the character is an ASCII character. */
   static inline bool isASCII(char character) noexcept
@@ -120,13 +54,13 @@ public:
   /** Converts the character to lowercase. */
   static inline char toLower(char character) noexcept
   {
-    return tolower(character);
+    return ASCIITraits::toLower(character);
   }
   
   /** Converts the character to uppercase. */
   static inline char toUpper(char character) noexcept
   {
-    return toupper(character);
+    return ASCIITraits::toUpper(character);
   }
 
   class _COM_AZURE_DEV__BASE__API ToLowerCase {
@@ -134,7 +68,7 @@ public:
     
     inline char operator()(char value) const noexcept
     {
-      return tolower(value);
+      return ASCIITraits::toLower(value);
     }
   };
 
@@ -143,7 +77,7 @@ public:
     
     inline char operator()(char value) const noexcept
     {
-      return toupper(value);
+      return ASCIITraits::toUpper(value);
     }
   };
 };

@@ -60,7 +60,7 @@ bool FormatInputStream::appendFromSource() throw(IOException) {
 String FormatInputStream::getWord() throw(IOException) {
   String result;
   while (true) { // skip prefix spaces
-    for (; (tail < head) && (String::Traits::isSpace(*tail)); ++tail) {
+    for (; (tail < head) && (ASCIITraits::isSpace(*tail)); ++tail) {
     }
     if (tail < head) { // end of spaces
       break;
@@ -72,7 +72,7 @@ String FormatInputStream::getWord() throw(IOException) {
   
   while (true) {
     const ReadIterator beginning = tail; // beginning of substring
-    for (; (tail < head) && (!String::Traits::isSpace(*tail)); ++tail) {
+    for (; (tail < head) && (!ASCIITraits::isSpace(*tail)); ++tail) {
     }
     unsigned int length = tail - beginning;
     unsigned int offset = result.getLength();
@@ -196,7 +196,7 @@ FormatInputStream& operator>>(FormatInputStream& stream, unsigned int& value) th
   char ch = 0;
   do {
     ch = stream.getCharacter();
-  } while (String::Traits::isSpace(ch));
+  } while (ASCIITraits::isSpace(ch));
 
   do {
     bassert(ASCIITraits::isDigit(ch), InvalidFormat("Not an unsigned int"));
@@ -212,7 +212,7 @@ FormatInputStream& operator>>(FormatInputStream& stream, unsigned int& value) th
       }
       continue;
     }
-  } while (!String::Traits::isSpace(ch));
+  } while (!ASCIITraits::isSpace(ch));
   return stream;
 }
 

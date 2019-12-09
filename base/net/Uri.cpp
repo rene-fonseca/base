@@ -180,7 +180,7 @@ public:
         bassert(end - i >= 2, UriException("Invalid encoding")); // need two digits
         char highDigit = *i++;
         char lowDigit = *i++;
-        bassert(String::Traits::isDigit(highDigit) && String::Traits::isDigit(lowDigit), UriException("Invalid encoding")); // need two digits
+        bassert(ASCIITraits::isDigit(highDigit) && ASCIITraits::isDigit(lowDigit), UriException("Invalid encoding")); // need two digits
         ch = (static_cast<unsigned int>(highDigit - '0') << 4) + static_cast<unsigned int>(lowDigit - '0'); // replace with decoded char
       } else {
         Encode encode = encoding(ch);
@@ -287,17 +287,17 @@ bool Uri::isHost(String::ReadIterator i, const String::ReadIterator& end) throw(
     return false;
   }
 
-  if (String::Traits::isDigit(*i)) { // is IP address
+  if (ASCIITraits::isDigit(*i)) { // is IP address
     // TAG: use InetAddress for IPv6 support
     // 0x1234.0x1234.0x1234.0x1234.0x1234.0x1234.0x1234.0x1234
     // 0x1234.0x1234.0x1234.0x1234.0x1234.0x1234.123.123.123.123
     // "123.123.123.123" or "123.123.123" or "123.123" or "123"
     for (unsigned int digitGroup = 0; digitGroup < 4; ++digitGroup) {
-      if (String::Traits::isDigit(*i)) { // first digit
+      if (ASCIITraits::isDigit(*i)) { // first digit
         ++i;
-        if ((i < end) && String::Traits::isDigit(*i)) { // second digit
+        if ((i < end) && ASCIITraits::isDigit(*i)) { // second digit
           ++i;
-          if ((i < end) && String::Traits::isDigit(*i)) { // third digit
+          if ((i < end) && ASCIITraits::isDigit(*i)) { // third digit
             ++i;
           }
         }
@@ -314,11 +314,11 @@ bool Uri::isHost(String::ReadIterator i, const String::ReadIterator& end) throw(
       }
     }
     return false;
-  } else if (String::Traits::isAlpha(*i)) { // is fully qualified domain name
+  } else if (ASCIITraits::isAlpha(*i)) { // is fully qualified domain name
     while (true) { // see RFC 1034
       // check label
-      if ((i < end) && String::Traits::isAlpha(*i++)) { // check first char
-        while ((i < end) && (String::Traits::isAlphaNum(*i) || (*i == '-'))) {++i;}
+      if ((i < end) && ASCIITraits::isAlpha(*i++)) { // check first char
+        while ((i < end) && (ASCIITraits::isAlphaNum(*i) || (*i == '-'))) {++i;}
         if (*--i == '-') { // char last char
           return false;
         }
@@ -346,7 +346,7 @@ bool Uri::isPort(String::ReadIterator i, const String::ReadIterator& end) throw(
     return false;
   }
 
-  for (unsigned int port = 0; (i < end) && String::Traits::isDigit(*i); ++i) {
+  for (unsigned int port = 0; (i < end) && ASCIITraits::isDigit(*i); ++i) {
     port = (*i - '0') + 10 * port;
     if (port >= (1 << 16)) { // max 16 bit
       return false;

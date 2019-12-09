@@ -370,7 +370,9 @@ int64 OperatingSystem::getResourceLimit(
     RLIMIT_FSIZE,
     RLIMIT_NOFILE,
     RLIMIT_STACK,
+#if !defined(__OpenBSD__)
     RLIMIT_AS
+#endif
   };
 #if defined(_COM_AZURE_DEV__BASE__LARGE_FILE_SYSTEM) && \
     !( _COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__FREEBSD)
@@ -409,9 +411,11 @@ void OperatingSystem::setResourceLimit(Resource resource, int64 limit, LimitType
     RLIMIT_FSIZE,
     RLIMIT_NOFILE,
     RLIMIT_STACK,
+#if !defined(__OpenBSD__)
     RLIMIT_AS
+#endif
   };
-#  if defined(_COM_AZURE_DEV__BASE__LARGE_FILE_SYSTEM) && \
+#if defined(_COM_AZURE_DEV__BASE__LARGE_FILE_SYSTEM) && \
     !( _COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__FREEBSD)
   bassert(
     (limit >= -1) &&

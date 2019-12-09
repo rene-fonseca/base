@@ -15,6 +15,8 @@ if (MSVC)
   add_definitions(-D_UNICODE)
 endif ()
 
+message("System: ${CMAKE_SYSTEM_NAME}")
+
 set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -D_COM_AZURE_DEV__BASE__DEBUG")
 # set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} xxx")
 
@@ -31,6 +33,15 @@ if (MSVC)
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /wd4996") # deprecated
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /wd4251") # DLL export
 else ()
+
+  if ("${CMAKE_SYSTEM}" MATCHES "Linux")
+    if (EXISTS "/etc/os-release")
+      file(READ "/etc/os-release" OS_RELEASE_FILE)
+      string(REGEX MATCH "[\r\n]ID=([a-zA-Z0-9 /\\.]+)" _ ${OS_RELEASE_FILE})
+      set(OS_RELEASE_ID ${CMAKE_MATCH_1})
+    endif ()
+  endif ()
+
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
 
 if (("${CMAKE_CXX_COMPILER_ID}" STREQUAL "AppleClang") OR ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang"))
@@ -48,6 +59,10 @@ elseif ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-error=deprecated-declarations")
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-deprecated-declarations") # FIXME
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Werror") # no warnings allowed
+
+  if ("${OS_RELEASE_ID}" STREQUAL "raspbian")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-psabi") # parameter passing for argument of changed
+  endif ()
 endif ()
 
 endif ()
@@ -197,9 +212,12 @@ elseif (APPLE)
   find_library(cfnetwork CFNetwork)
   target_link_libraries(base ${cfnetwork} ${corefoundation})
 elseif (UNIX)
-  target_link_libraries(base pthread dl)
+  target_link_libraries(base pthread)
+  if (NOT "${CMAKE_SYSTEM_NAME}" STREQUAL "OpenBSD")
+    target_link_libraries(base dl)
+  endif ()
   if (X11_FOUND)
-    target_link_libraries(base X11)
+    target_link_libraries(base ${X11_X11_LIB})
   endif ()
 # elseif (APPLE)
 #  target_link_libraries(base pthread ${OpenCL_LIBRARY})

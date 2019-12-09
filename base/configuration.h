@@ -32,7 +32,7 @@
 
 #if defined(_WIN32)
 #  define _COM_AZURE_DEV__BASE__FLAVOR _COM_AZURE_DEV__BASE__WIN32
-#elif defined(__APPLE__) || defined(__linux__) || defined(__sun__) || defined(__FreeBSD__)
+#elif defined(__APPLE__) || defined(__linux__) || defined(__sun__) || defined(__FreeBSD__) || defined(__OpenBSD__)
 #  define _COM_AZURE_DEV__BASE__FLAVOR _COM_AZURE_DEV__BASE__UNIX
 #else
 #  error Unsupported flavor.
@@ -50,7 +50,7 @@
 #  define _XOPEN_SOURCE 600 // SUSv3/POSIX.1-2001 // see man standards
 #  undef _XOPEN_SOURCE_EXTENDED
 #  define _XOPEN_SOURCE_EXTENDED
-#elif defined(__FreeBSD__)
+#elif defined(__FreeBSD__) || defined(__OpenBSD__)
 #  define _COM_AZURE_DEV__BASE__OS _COM_AZURE_DEV__BASE__FREEBSD
 #else
 #  error Unsupported OS.
@@ -98,7 +98,8 @@
 #define _COM_AZURE_DEV__BASE__FLOAT_WORD_ORDER _COM_AZURE_DEV__BASE__LITTLE_ENDIAN
 #define _COM_AZURE_DEV__BASE__FLOAT _COM_AZURE_DEV__BASE__IEEE_754_SINGLE_PRECISION
 #define _COM_AZURE_DEV__BASE__DOUBLE _COM_AZURE_DEV__BASE__IEEE_754_DOUBLE_PRECISION
-#if (_COM_AZURE_DEV__BASE__COMPILER == _COM_AZURE_DEV__BASE__COMPILER_MSC)
+#if (_COM_AZURE_DEV__BASE__COMPILER == _COM_AZURE_DEV__BASE__COMPILER_MSC) || \
+    (_COM_AZURE_DEV__BASE__ARCH == _COM_AZURE_DEV__BASE__ARM)
 #  define _COM_AZURE_DEV__BASE__LONG_DOUBLE _COM_AZURE_DEV__BASE__IEEE_754_DOUBLE_PRECISION
 #else
 #  define _COM_AZURE_DEV__BASE__LONG_DOUBLE _COM_AZURE_DEV__BASE__IEEE_EXTENDED_DOUBLE_PRECISION_96_ALIGN16

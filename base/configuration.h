@@ -64,13 +64,25 @@
 #  define _COM_AZURE_DEV__BASE__ARCH _COM_AZURE_DEV__BASE__ARM64
 #elif defined(_M_ARM)
 #  define _COM_AZURE_DEV__BASE__ARCH _COM_AZURE_DEV__BASE__ARM
-#else
+#elif defined(_M_IX86)
 #  define _COM_AZURE_DEV__BASE__ARCH _COM_AZURE_DEV__BASE__X86
+#else
+#  error Unsupported arch.
 #endif
+#elif defined(__aarch64__)
+#  define _COM_AZURE_DEV__BASE__ARCH _COM_AZURE_DEV__BASE__ARM64
 #elif defined(__arm__)
 #  define _COM_AZURE_DEV__BASE__ARCH _COM_AZURE_DEV__BASE__ARM
-#else
+#elif defined(__powerpc__) || defined(__powerpc64__)
+#  define _COM_AZURE_DEV__BASE__ARCH _COM_AZURE_DEV__BASE__PPC
+#elif defined(__mips__)
+#  define _COM_AZURE_DEV__BASE__ARCH _COM_AZURE_DEV__BASE__MIPS
+#elif defined(__amd64__)
 #  define _COM_AZURE_DEV__BASE__ARCH _COM_AZURE_DEV__BASE__X86_64
+#elif defined(__i386__)
+#  define _COM_AZURE_DEV__BASE__ARCH _COM_AZURE_DEV__BASE__X86
+#else
+#  error Unsupported arch.
 #endif
 
 #define _COM_AZURE_DEV__BASE__EXTENSIONS

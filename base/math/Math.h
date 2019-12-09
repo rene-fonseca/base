@@ -446,7 +446,7 @@ public:
     #elif defined(_COM_AZURE_DEV__BASE__HAVE_ISOC_ROUND)
       return isoc::round(value);
     #else
-      return (value >= 0) ? Math::ceil(value) : Math::floor(value);
+      return (value >= 0) ? Math::floor(value + 0.5f) : Math::ceil(value - 0.5f);
     #endif
   }
   
@@ -462,7 +462,7 @@ public:
     #elif defined(_COM_AZURE_DEV__BASE__HAVE_ISOC_ROUNDF)
       return isoc::roundf(value);
     #else
-      return 0; // TAG: fixme
+      return (value >= 0) ? Math::floor(value + 0.5) : Math::ceil(value - 0.5);
     #endif
   }
   
@@ -478,7 +478,7 @@ public:
     #elif defined(_COM_AZURE_DEV__BASE__HAVE_ISOC_ROUNDF)
       return isoc::roundf(value);
     #else
-      return 0; // TAG: fixme
+      return (value >= 0) ? Math::floor(value + 0.5L) : Math::ceil(value - 0.5L);
     #endif
   }
   
@@ -513,6 +513,15 @@ public:
       return isoc::truncl(value);
     #endif
   }
+
+  /** Returns the fraction. */
+  static float frac(float value) noexcept;
+
+  /** Returns the fraction. */
+  static double frac(double value) noexcept;
+
+  /** Returns the fraction. */
+  static long double frac(long double value) noexcept;
 
 
 
@@ -779,9 +788,25 @@ public:
   /**
     Returns the logarithm with base n of the value.
   */
+  static inline float logn(float value, float base) noexcept
+  {
+    return Math::ln(value) / base;
+  }
+
+  /**
+    Returns the logarithm with base n of the value.
+  */
+  static inline double logn(double value, double base) noexcept
+  {
+    return Math::ln(value) / base;
+  }
+
+  /**
+    Returns the logarithm with base n of the value.
+  */
   static inline long double logn(long double value, long double base) noexcept
   {
-    return Math::ln(value)/base;
+    return Math::ln(value) / base;
   }
   
   /**

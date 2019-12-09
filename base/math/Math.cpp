@@ -13,6 +13,7 @@
 
 #include <base/math/Math.h>
 #include <base/UInt128.h>
+#include <base/UnitTest.h>
 #include <math.h>
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
@@ -51,6 +52,31 @@ const uint8 Math::BIT_REVERSAL[] = {
   0x0f, 0x8f, 0x4f, 0xcf, 0x2f, 0xaf, 0x6f, 0xef,
   0x1f, 0x9f, 0x5f, 0xdf, 0x3f, 0xbf, 0x7f, 0xff
 };
+
+float Math::frac(float value) noexcept
+{
+  float i = 0;
+  return modf(value, &i);
+}
+
+double Math::frac(double value) noexcept
+{
+  double i = 0;
+  return modf(value, &i);
+#if 0
+  if (value >= 0) {
+    return value - floor(value);
+  } else {
+    return ceil(value) - value;
+  }
+#endif
+}
+
+long double Math::frac(long double value) noexcept
+{
+  long double i = 0;
+  return modf(value, &i);
+}
 
 bool Math::isFinite(float value) noexcept
 {
@@ -201,5 +227,107 @@ uint64 Math::muldiv(uint64 value, uint64 mul, uint64 div)
   // return value * mul / div; // ignore overflow
   return temp;
 }
+
+#if defined(_COM_AZURE_DEV__BASE__TESTS)
+
+class TEST_CLASS(Math) : public UnitTest {
+public:
+
+  TEST_PRIORITY(40);
+  TEST_PROJECT("base/math");
+  TEST_IMPACT(IMPORTANT)
+  TEST_TIMEOUT_MS(30 * 1000);
+
+  void run() override
+  {
+    // TAG: verify out of domain results
+    // TAG: verify nan/inf results
+
+    Math::sin(0.0);
+    Math::cos(0.0);
+    Math::tan(0.0);
+    Math::sin(0.0f);
+    Math::cos(0.0f);
+    Math::tan(0.0f);
+    Math::sin(0.0L);
+    Math::cos(0.0L);
+    Math::tan(0.0L);
+
+    Math::asin(0.0f);
+    Math::acos(0.0f);
+    Math::atan(0.0f);
+    Math::asin(0.0);
+    Math::acos(0.0);
+    Math::atan(0.0);
+    Math::asin(0.0L);
+    Math::acos(0.0L);
+    Math::atan(0.0L);
+
+    Math::atan2(1.0f, 1.0f);
+    Math::atan2(1.0, 1.0);
+    Math::atan2(1.0L, 1.0L);
+
+    TEST_ASSERT(Math::ceil(constant::E_F) > constant::E_F);
+    TEST_ASSERT(Math::ceil(constant::E) > constant::E);
+    TEST_ASSERT(Math::ceil(constant::E_L) > constant::E_L);
+
+    TEST_ASSERT(Math::floor(constant::E_F) < constant::E_F);
+    TEST_ASSERT(Math::floor(constant::E) < constant::E);
+    TEST_ASSERT(Math::floor(constant::E_L) < constant::E_L);
+
+    TEST_ASSERT(Math::round(constant::E_F) > constant::E_F);
+    TEST_ASSERT(Math::round(constant::E) > constant::E);
+    TEST_ASSERT(Math::round(constant::E_L) > constant::E_L);
+    TEST_ASSERT((Math::trunc(constant::E_F) < constant::E_F) && ((Math::trunc(constant::E_F) - 2) < 1e-6f));
+    TEST_ASSERT((Math::trunc(constant::E) < constant::E) && ((Math::trunc(constant::E) - 2) < 1e-6));
+    TEST_ASSERT((Math::trunc(constant::E_L) < constant::E_L) && ((Math::trunc(constant::E_L) - 2) < 1e-6L));
+    TEST_ASSERT(Math::abs(Math::frac(constant::E_F)) < 1);
+    TEST_ASSERT(Math::abs(Math::frac(constant::E)) < 1);
+    TEST_ASSERT(Math::abs(Math::frac(constant::E_L)) < 1);
+
+    TEST_ASSERT(Math::abs(constant::E_F) == constant::E_F);
+    TEST_ASSERT(Math::abs(constant::E) == constant::E);
+    TEST_ASSERT(Math::abs(constant::E_L) == constant::E_L);
+    TEST_ASSERT(Math::abs(-constant::E_F) == constant::E_F);
+    TEST_ASSERT(Math::abs(-constant::E) == constant::E);
+    TEST_ASSERT(Math::abs(-constant::E_L) == constant::E_L);
+
+    TEST_ASSERT(Math::abs(Math::sqrt(constant::E_F) * Math::sqrt(constant::E_F) - constant::E_F) < 1e-6f);
+    TEST_ASSERT(Math::abs(Math::sqrt(constant::E) * Math::sqrt(constant::E) - constant::E) < 1e-8);
+    TEST_ASSERT(Math::abs(Math::sqrt(constant::E_L) * Math::sqrt(constant::E_L) - constant::E_L) < 1e-8L);
+
+    TEST_ASSERT(Math::abs(Math::ln(constant::E_F) - 1) < 1e-6f);
+    TEST_ASSERT(Math::abs(Math::ln(constant::E) - 1) < 1e-8);
+    TEST_ASSERT(Math::abs(Math::ln(constant::E_L) - 1) < 1e-8);
+    TEST_ASSERT(Math::abs(Math::log10(10.0f) - 1) < 1e-6f);
+    TEST_ASSERT(Math::abs(Math::log10(10.0) - 1) < 1e-8);
+    TEST_ASSERT(Math::abs(Math::log10(10.0L) - 1) < 1e-8);
+    TEST_ASSERT(Math::abs(Math::log2(2.0f) - 1) < 1e-6f);
+    TEST_ASSERT(Math::abs(Math::log2(2.0) - 1) < 1e-8);
+    TEST_ASSERT(Math::abs(Math::log2(2.0L) - 1) < 1e-8);
+    TEST_ASSERT(Math::abs(Math::exp(0.0f) - 1) < 1e-6f);
+    TEST_ASSERT(Math::abs(Math::exp(0.0) - 1) < 1e-8);
+    TEST_ASSERT(Math::abs(Math::exp(0.0L) - 1) < 1e-8);
+    TEST_ASSERT(Math::abs(Math::exp(1.0f) - constant::E_F) < 1e-6f);
+    TEST_ASSERT(Math::abs(Math::exp(1.0) - constant::E) < 1e-8);
+    TEST_ASSERT(Math::abs(Math::exp(1.0L) - constant::E_L) < 1e-8);
+
+    Math::cbrt(constant::E_F);
+    Math::cbrt(constant::E);
+    Math::cbrt(constant::E_L);
+
+    Math::hypot(constant::E_F, constant::PI_F);
+    Math::hypot(constant::E, constant::PI);
+    Math::hypot(constant::E_L, constant::PI_L);
+
+    Math::power(constant::E_F, constant::E_F);
+    Math::power(constant::E, constant::E);
+    Math::power(constant::E_L, constant::E_L);
+  }
+};
+
+TEST_REGISTER(Math);
+
+#endif
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

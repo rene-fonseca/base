@@ -56,15 +56,16 @@ public:
   enum Major {
     ALPHA, /**< Alpha. */
     X86, /**< Intel 32 bit. */
+    X86_64, /**< AMD 64-bit. */
     ITANIUM, /**< Itanium. */
     MIPS, /**< MIPS. */
+    MIPS64, /**< MIPS 64-bit. */
     POWER_PC, /**< Power PC. */
     RS, /**< RS. */
     SPARC, /**< Sparc. */
-    X86_64, /**< AMD64. */
     S390, /**< S390. */
     ARM, /**< ARM. */
-    ARM64 /**< ARM. */
+    ARM64 /**< ARM 64-bit. */
   };
   
   /** The minor architecture. */

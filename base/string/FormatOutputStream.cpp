@@ -50,7 +50,7 @@ FormatOutputStream::FormatOutputStream(OutputStream& out, unsigned int size) thr
 {
 }
 
-FormatOutputStream& FormatOutputStream::setRadixPosition(unsigned int position) throw()
+FormatOutputStream& FormatOutputStream::setRadixPosition(unsigned int position) noexcept
 {
   ExclusiveSynchronize<Guard> _guard(guard);
   context.justification = Symbols::RADIX;
@@ -58,21 +58,21 @@ FormatOutputStream& FormatOutputStream::setRadixPosition(unsigned int position) 
   return *this;
 }
 
-FormatOutputStream& FormatOutputStream::setJustification(Symbols::Justification justification) throw()
+FormatOutputStream& FormatOutputStream::setJustification(Symbols::Justification justification) noexcept
 {
   ExclusiveSynchronize<Guard> _guard(guard);
   context.justification = justification;
   return *this;
 }
 
-FormatOutputStream& FormatOutputStream::setWidth(unsigned int width) throw()
+FormatOutputStream& FormatOutputStream::setWidth(unsigned int width) noexcept
 {
   ExclusiveSynchronize<Guard> _guard(guard);
   context.width = minimum(width, MAXIMUM_WIDTH);
   return *this;
 }
 
-FormatOutputStream& FormatOutputStream::setPrecision(unsigned int precision) throw()
+FormatOutputStream& FormatOutputStream::setPrecision(unsigned int precision) noexcept
 {
   ExclusiveSynchronize<Guard> _guard(guard);
   context.flags &= ~Symbols::NECESSARY;
@@ -128,12 +128,6 @@ FormatOutputStream& FormatOutputStream::operator<<(Action action)
     break;
   case HEX:
     context.integerBase = Symbols::HEXADECIMAL;
-    break;
-  case FBIN:
-    context.realBase = Symbols::BINARY;
-    break;
-  case FOCT:
-    context.realBase = Symbols::OCTAL;
     break;
   case FDEC:
     context.realBase = Symbols::DECIMAL;
@@ -334,12 +328,12 @@ FormatOutputStream& FormatOutputStream::operator<<(Action action)
   return *this;
 }
 
-FormatOutputStream& FormatOutputStream::getContext(Context& context) throw()
+FormatOutputStream& FormatOutputStream::getContext(Context& context) noexcept
 {
   return *this;
 }
 
-FormatOutputStream& FormatOutputStream::setContext(const Context& context) throw()
+FormatOutputStream& FormatOutputStream::setContext(const Context& context) noexcept
 {
   return *this;
 }

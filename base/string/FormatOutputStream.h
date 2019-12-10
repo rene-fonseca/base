@@ -46,8 +46,6 @@ enum Action {
   OCT, /**< Selects octal base integer types. */
   DEC, /**< Selects decimal base integer types. */
   HEX, /**< Selects hexadecimal base integer types. */
-  FBIN, /**< Selects binary base for floating-point types. */
-  FOCT, /**< Selects octal base for floating-point types. */
   FDEC, /**< Selects decimal base for floating-point types. */
   FHEX, /**< Selects hexadecimal base for floating-point types. */
   SCIENTIFIC, /**< Selects scientific style for floating-point types ([-]d.ddde[-]dd). One digit before radix character and exponent is always present. The number of digits after the radix character is equal to the selected precision. */
@@ -199,7 +197,7 @@ public:
     const unsigned int value = 0;
   public:
     
-    inline Manipulator(Method _method, unsigned int _value) throw()
+    inline Manipulator(Method _method, unsigned int _value) noexcept
       : method(_method), value(_value) {
     }
     
@@ -219,7 +217,7 @@ public:
     const String value;
   public:
     
-    inline StringManipulator(Method _method, const String& _value) throw()
+    inline StringManipulator(Method _method, const String& _value) noexcept
       : method(_method), value(_value) {
     }
     
@@ -234,10 +232,11 @@ public:
     Context& context;
   public:
     
-    inline GetContext(Context& _context) throw() : context(_context) {
+    inline GetContext(Context& _context) noexcept : context(_context) {
     }
     
-    inline FormatOutputStream& operator()(FormatOutputStream& stream) const throw() {
+    inline FormatOutputStream& operator()(FormatOutputStream& stream) const noexcept
+    {
       return stream.getContext(context);
     }
   };
@@ -248,10 +247,13 @@ public:
     const Context& context;
   public:
 
-    inline SetContext(const Context& _context) throw() : context(_context) {
+    inline SetContext(const Context& _context) noexcept
+      : context(_context)
+    {
     }
     
-    inline FormatOutputStream& operator()(FormatOutputStream& stream) const throw() {
+    inline FormatOutputStream& operator()(FormatOutputStream& stream) const noexcept
+    {
       return stream.setContext(context);
     }
   };
@@ -269,7 +271,7 @@ public:
       int y = 0;
     public:
 
-      Composite(int _x, int _y) throw() : x(_x), y(_y) {
+      Composite(int _x, int _y) noexcept : x(_x), y(_y) {
       }
 
       friend FormatOutputStream& operator<<(FormatOutputStream& stream, const Composite& value);
@@ -373,21 +375,21 @@ public:
 
     @param position The desired position.
   */
-  FormatOutputStream& setRadixPosition(unsigned int position) throw();
+  FormatOutputStream& setRadixPosition(unsigned int position) noexcept;
   
   /**
     Sets the value justification within the field.
 
     @param justification The desired justification.
   */
-  FormatOutputStream& setJustification(Symbols::Justification justification) throw();
+  FormatOutputStream& setJustification(Symbols::Justification justification) noexcept;
   
   /**
     Sets the current field width. The width silently reduced to MAXIMUM_WIDTH.
     
     @param width The desired width.
   */
-  FormatOutputStream& setWidth(unsigned int width) throw();
+  FormatOutputStream& setWidth(unsigned int width) noexcept;
   
   /**
     Sets the precision for floating-point numbers (i.e. the number of digits
@@ -396,7 +398,7 @@ public:
 
     @param precision The desired precision.
   */
-  FormatOutputStream& setPrecision(unsigned int precision) throw();
+  FormatOutputStream& setPrecision(unsigned int precision) noexcept;
 
   /**
     Sets the date format.
@@ -413,7 +415,7 @@ public:
 
     @param locale The desired locale.
   */
-  void setLocale(const Locale& locale) throw();
+  void setLocale(const Locale& locale) noexcept;
   
   /**
     Returns the flags for the next field.
@@ -547,12 +549,12 @@ public:
   /**
     Gets the context.
   */
-  FormatOutputStream& getContext(Context& context) throw();
+  FormatOutputStream& getContext(Context& context) noexcept;
   
   /**
     Sets the context.
   */
-  FormatOutputStream& setContext(const Context& context) throw();
+  FormatOutputStream& setContext(const Context& context) noexcept;
 
   /**
     Writes the debug information to the stream.
@@ -712,14 +714,14 @@ extern _COM_AZURE_DEV__BASE__API FormatOutputStream ferr;
 /**
   Indent.
 */
-inline FormatOutputStream::Indent indent(unsigned int length) throw() {
+inline FormatOutputStream::Indent indent(unsigned int length) noexcept {
   return FormatOutputStream::Indent(length);
 }
 
 /**
   Indent with TABs.
 */
-inline FormatOutputStream::TabIndent tabindent(unsigned int length) throw() {
+inline FormatOutputStream::TabIndent tabindent(unsigned int length) noexcept {
   return FormatOutputStream::TabIndent(length);
 }
 
@@ -736,7 +738,7 @@ inline FormatOutputStream::TabIndent tabindent(unsigned int length) throw() {
     char guid[16];
   public:
   
-    void myMethod() throw() {
+    void myMethod() noexcept {
       if (debugLevel >= VERY_VERBOSE) {
         fout << HEX << ZEROPAD << NOPREFIX << Sequence<unsigned char>(guid, sizeof(guid), ":") << ENDL;
       }
@@ -763,8 +765,9 @@ public:
     @param value The beginning of the sequence.
     @param size The number of elements in the sequence.
   */
-  Sequence(const TYPE* _value, MemorySize _size) throw()
-    : value(_value), size(_size), separator("") {
+  Sequence(const TYPE* _value, MemorySize _size) noexcept
+    : value(_value), size(_size), separator("")
+  {
   }
   
   /**
@@ -778,21 +781,25 @@ public:
     const TYPE* _value,
     MemorySize _size,
     const Literal& _separator) noexcept
-    : value(_value), size(_size), separator(_separator) {
+    : value(_value), size(_size), separator(_separator)
+  {
   }
   
   /** Returns the beginning of the sequence. */
-  inline const TYPE* getValue() const noexcept {
+  inline const TYPE* getValue() const noexcept
+  {
     return value;
   }
 
   /** Returns the number of elements in the sequence. */
-  inline MemorySize getSize() const noexcept {
+  inline MemorySize getSize() const noexcept
+  {
     return size;
   }
 
   /** Returns the separator to be used between elements. */
-  inline const Literal& getSeparator() const noexcept {
+  inline const Literal& getSeparator() const noexcept
+  {
     return separator;
   }
 };

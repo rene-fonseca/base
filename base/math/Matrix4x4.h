@@ -722,8 +722,8 @@ inline Matrix4x4<TYPE> operator/(
   @relates Matrix4x4
 */
 template<class TYPE>
-FormatOutputStream& operator<<(
-  FormatOutputStream& stream, const Matrix4x4<TYPE>& value) throw(IOException) {
+FormatOutputStream& operator<<(FormatOutputStream& stream, const Matrix4x4<TYPE>& value)
+{
   const TYPE* src = value.getElements()--;
   stream << '[';
   for (unsigned int i = 4; i > 0; --i) {

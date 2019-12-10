@@ -60,12 +60,13 @@ public:
     @param size The size of the memory block in bytes.
     @param options The options. Header, repeat of header, offset, and characters are enabled by default.
   */
-  MemoryDump(const uint8* memory, unsigned int size, unsigned int options = HEADER|REPEAT_HEADER|OFFSET|CHARS) throw();
+  MemoryDump(const uint8* memory, unsigned int size, unsigned int options = HEADER|REPEAT_HEADER|OFFSET|CHARS) noexcept;
   
   /**
     Sets the word size (1, 2, 4, or 8).
   */
-  inline void setWordSize(unsigned int value) throw(OutOfDomain) {
+  inline void setWordSize(unsigned int value) throw(OutOfDomain)
+  {
 //     bassert(
 //       (size % value == 0) && (Cast::getOffset(memory) % value == 0) &&
 //       ((value == sizeof(uint8)) || (value == sizeof(uint16)) ||
@@ -78,7 +79,8 @@ public:
   /**
     Sets the global offset.
   */
-  void setOffsetDigits(unsigned int digits) throw(OutOfDomain) {
+  void setOffsetDigits(unsigned int digits) throw(OutOfDomain)
+  {
     bassert((digits >= 4) && (digits <= 16), OutOfDomain(this));
     offsetDigits = digits;
   }
@@ -86,7 +88,8 @@ public:
   /**
     Sets the global offset.
   */
-  void setGlobalOffset(uint64 offset) throw(OutOfDomain) {
+  void setGlobalOffset(uint64 offset) throw(OutOfDomain)
+  {
     bassert(offset % 16 == 0, OutOfDomain(this));
     this->offset = offset;
   }
@@ -94,7 +97,7 @@ public:
   _COM_AZURE_DEV__BASE__API friend FormatOutputStream& operator<<(FormatOutputStream& stream, const MemoryDump& value);
 };
 
-inline MemoryDump::MemoryDump(const uint8* _memory, unsigned int _size, unsigned int _options) throw()
+inline MemoryDump::MemoryDump(const uint8* _memory, unsigned int _size, unsigned int _options) noexcept
   : memory(_memory), size(_size), options(_options), wordSize(1), offsetDigits(8), offset(0)
 {
 }

@@ -854,7 +854,7 @@ public:
     Writes a string representation of a matrix object to a format stream.
   */
   friend FormatOutputStream& operator<< <>(
-    FormatOutputStream& stream, const Matrix& value) throw(IOException);
+    FormatOutputStream& stream, const Matrix& value);
 #endif
 };
 

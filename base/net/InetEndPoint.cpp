@@ -17,18 +17,18 @@
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
-InetEndPoint::InetEndPoint() throw()
+InetEndPoint::InetEndPoint() noexcept
 {
 }
 
 InetEndPoint::InetEndPoint(
-  const InetAddress& _address, unsigned short _port) throw()
+  const InetAddress& _address, unsigned short _port) noexcept
   : address(_address), port(_port)
 {
 }
 
 InetEndPoint::InetEndPoint(
-  const InetAddress& _address, const InetService& service) throw()
+  const InetAddress& _address, const InetService& service) noexcept
   : address(_address), port(service.getPort())
 {
 }
@@ -63,12 +63,12 @@ InetEndPoint::InetEndPoint(
   }
 }
 
-InetEndPoint::InetEndPoint(const InetEndPoint& copy) throw()
+InetEndPoint::InetEndPoint(const InetEndPoint& copy) noexcept
   : address(copy.address), port(copy.port)
 {
 }
 
-InetEndPoint& InetEndPoint::operator=(const InetEndPoint& assign) throw()
+InetEndPoint& InetEndPoint::operator=(const InetEndPoint& assign) noexcept
 {
   if (&assign != this) { // protect against self assignment
     address = assign.address;
@@ -77,23 +77,23 @@ InetEndPoint& InetEndPoint::operator=(const InetEndPoint& assign) throw()
   return *this;
 }
 
-InetService InetEndPoint::getService() const throw()
+InetService InetEndPoint::getService() const noexcept
 {
   return InetService(port);
 }
 
-void InetEndPoint::setAddress(const InetAddress& value) throw()
+void InetEndPoint::setAddress(const InetAddress& value) noexcept
 {
   address = value;
 }
 
-void InetEndPoint::setPort(unsigned short value) throw()
+void InetEndPoint::setPort(unsigned short value) noexcept
 {
   port = value;
 }
 
 FormatOutputStream& operator<<(
-  FormatOutputStream& stream, const InetEndPoint& value) throw(IOException)
+  FormatOutputStream& stream, const InetEndPoint& value)
 {
   FormatOutputStream::PushContext push(stream);
   const InetAddress::Family family = value.getAddress().getFamily();

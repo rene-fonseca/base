@@ -109,13 +109,13 @@ public:
     Writes a string representation of a InetService object to a format stream.
   */
   _COM_AZURE_DEV__BASE__API friend FormatOutputStream& operator<<(
-    FormatOutputStream& stream, const InetService& value) throw(IOException);
+    FormatOutputStream& stream, const InetService& value);
 };
 
 /**
   Writes a string representation of a InetService object to a format stream.
 */
 _COM_AZURE_DEV__BASE__API FormatOutputStream& operator<<(
-  FormatOutputStream& stream, const InetService& value) throw(IOException);
+  FormatOutputStream& stream, const InetService& value);
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

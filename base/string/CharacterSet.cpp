@@ -19,8 +19,8 @@
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
-CharacterSet CharacterSet::load(
-  const String& path) throw(FileException, InvalidFormat) {
+CharacterSet CharacterSet::load(const String& path) throw(FileException, InvalidFormat)
+{
   try {
     File file(path, File::READ, 0);
     FileRegion region(0, minimum<uint64>(file.getSize(), 4096 * 4));
@@ -115,11 +115,13 @@ CharacterSet CharacterSet::load(
 }
 
 CharacterSet::CharacterSet() throw(MemoryException)
-  : characterSet(new CharacterSetImpl(256)) {
+  : characterSet(new CharacterSetImpl(256))
+{
   fill<ucs4>(characterSet->getElements(), characterSet->getSize(), 0);
 }
 
-void CharacterSet::save(const String& path, Architecture::ByteOrder byteOrder) const throw(FileException) {
+void CharacterSet::save(const String& path, Architecture::ByteOrder byteOrder) const throw(FileException)
+{
   try {
     File file(path, File::WRITE, File::CREATE|File::TRUNCATE|File::EXCLUSIVE);
     

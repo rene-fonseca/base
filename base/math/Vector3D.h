@@ -481,8 +481,7 @@ inline Vector3D<TYPE> cross(
   @relates Vector3D
 */
 template<class TYPE>
-FormatOutputStream& operator<<(
-  FormatOutputStream& stream, const Vector3D<TYPE>& value) throw(IOException)
+FormatOutputStream& operator<<(FormatOutputStream& stream, const Vector3D<TYPE>& value)
 {
   return stream << '('
                 << value.getX() << ';'

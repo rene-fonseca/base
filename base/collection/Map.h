@@ -498,8 +498,7 @@ public:
   @relates Map
 */
 template<class KEY, class VALUE>
-FormatOutputStream& operator<<(
-  FormatOutputStream& stream, const Map<KEY, VALUE>& value) throw(IOException)
+FormatOutputStream& operator<<(FormatOutputStream& stream, const Map<KEY, VALUE>& value)
 {
   typename Map<KEY, VALUE>::ReadEnumerator enu = value.getReadEnumerator();
   stream << '{';

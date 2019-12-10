@@ -66,7 +66,7 @@ public:
   /**
     Returns the names and indices of the available interfaces.
   */
-  static HashTable<String, unsigned int> getInterfaceNames() throw();
+  static HashTable<String, unsigned int> getInterfaceNames() noexcept;
   
   /**
     Returns all of the Internet Protocol network interfaces of the host.
@@ -96,7 +96,7 @@ public:
   /**
     Initializes interface.
   */
-  InetInterface() throw();
+  InetInterface() noexcept;
 
   /**
     Initializes interface by name.
@@ -106,73 +106,82 @@ public:
   /**
     Initializes interface by address.
   */
-  InetInterface(const InetAddress& address) throw();
+  InetInterface(const InetAddress& address) noexcept;
   
   /**
     Copy constructor.
   */
-  InetInterface(const InetInterface& copy) throw();
+  InetInterface(const InetInterface& copy) noexcept;
 
   /**
     Returns the index of the network interface.
   */
-  inline unsigned int getIndex() const throw() {
+  inline unsigned int getIndex() const noexcept
+  {
     return index;
   }
   
   /**
     Returns the name of the network interface.
   */
-  inline const String& getName() const throw() {
+  inline const String& getName() const noexcept
+  {
     return name;
   }
   
   /**
     Returns the flags.
   */
-  inline unsigned int getFlags() const throw() {
+  inline unsigned int getFlags() const noexcept
+  {
     return flags;
   }
   
   /**
     Returns the address.
   */
-  inline const InetAddress& getAddress() const throw() {
+  inline const InetAddress& getAddress() const noexcept
+  {
     return address;
   }
   
   /**
     Returns the network mask.
   */
-  inline const InetAddress& getNetmask() const throw() {
+  inline const InetAddress& getNetmask() const noexcept
+  {
     return netmask;
   }
   
   /**
     Returns the broadcast address. Only valid if BROADCAST is set.
   */
-  inline const InetAddress& getBroadcast() const throw() {
+  inline const InetAddress& getBroadcast() const noexcept
+  {
     return broadcast;
   }
   
   /**
     Returns the destination address. Only valid if POINT_TO_POINT is set.
   */
-  inline const InetAddress& getDestination() const throw() {
+  inline const InetAddress& getDestination() const noexcept
+  {
     return destination;
   }
   
   /**
     Returns the ethernet address.
   */
-  inline const EUI64& getEthernetAddress() const throw() {
+  inline const EUI64& getEthernetAddress() const noexcept
+  {
     return ethernet;
   }
 
   /**
     Returns the metric.
   */
-  inline unsigned int getMetric() const throw() {
+  inline unsigned int getMetric() const noexcept
+  {
     return metric;
   }
 };

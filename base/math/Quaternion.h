@@ -403,7 +403,7 @@ inline Quaternion<TYPE> operator/(const Quaternion<TYPE>& left, const TYPE& righ
 */
 template<class TYPE>
 FormatOutputStream& operator<<(
-  FormatOutputStream& stream, const Quaternion<TYPE>& value) throw(IOException)
+  FormatOutputStream& stream, const Quaternion<TYPE>& value)
 {
   return stream << '(' << value.getX() << ';'
                 << value.getY() << ';'

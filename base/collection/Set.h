@@ -271,8 +271,7 @@ public:
   @relates Set
 */
 template<class TYPE>
-FormatOutputStream& operator<<(
-  FormatOutputStream& stream, const Set<TYPE>& value)  throw(IOException)
+FormatOutputStream& operator<<(FormatOutputStream& stream, const Set<TYPE>& value)
 {
   typename Set<TYPE>::ReadEnumerator enu = value.getReadEnumerator();
   stream << '{';

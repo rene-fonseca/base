@@ -198,8 +198,7 @@ uint64 Timer::getNow() noexcept
 #endif // flavor
 }
 
-FormatOutputStream& operator<<(
-  FormatOutputStream& stream, const Timer& value) throw(IOException)
+FormatOutputStream& operator<<(FormatOutputStream& stream, const Timer& value)
 {
   FormatOutputStream::PushContext push(stream);
   Timer::ElapsedTime time(((value.getStopTime() == 0) ? value.getLiveMicroseconds() : value.getMicroseconds()) * 1000);

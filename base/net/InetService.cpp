@@ -119,8 +119,7 @@ const String& InetService::getProtocol() const throw()
   return protocol;
 }
 
-FormatOutputStream& operator<<(
-  FormatOutputStream& stream, const InetService& value) throw(IOException)
+FormatOutputStream& operator<<(FormatOutputStream& stream, const InetService& value)
 {
   FormatOutputStream::PushContext push(stream);
   return stream << value.name << ' ' << value.port << '/' << value.protocol;

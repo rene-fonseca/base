@@ -202,8 +202,7 @@ public:
   @relates Cache
 */
 template<class KEY, class VALUE>
-FormatOutputStream& operator<<(
-  FormatOutputStream& stream, const Cache<KEY, VALUE>& value) throw(IOException)
+FormatOutputStream& operator<<(FormatOutputStream& stream, const Cache<KEY, VALUE>& value)
 {
   return stream << value;
 }

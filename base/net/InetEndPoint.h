@@ -138,13 +138,14 @@ public:
   (e.g. "127.0.0.1:1234" or "[::1]:1234").
 */
 _COM_AZURE_DEV__BASE__API FormatOutputStream& operator<<(
-  FormatOutputStream& stream, const InetEndPoint& value) throw(IOException);
+  FormatOutputStream& stream, const InetEndPoint& value);
 
 template<>
 class Hash<InetEndPoint> {
 public:
   
-  inline unsigned long operator()(const InetEndPoint& value) noexcept {
+  inline unsigned long operator()(const InetEndPoint& value) noexcept
+  {
     return Hash<InetAddress>()(value.getAddress()) * 31 + value.getPort();
   }
 };

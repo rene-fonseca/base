@@ -70,7 +70,8 @@ public:
     Returns true if the end has been reached. This always returns false until
     pushEnd() has been invoked.
   */
-  inline bool atEnd() const throw() {
+  inline bool atEnd() const noexcept
+  {
     return state == ENDED;
   }
   
@@ -114,7 +115,7 @@ public:
   /**
     Destroys the deflater.
   */
-  virtual ~ZLibDeflater() throw();
+  virtual ~ZLibDeflater() noexcept;
 };
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

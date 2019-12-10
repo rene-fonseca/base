@@ -62,20 +62,24 @@ public:
   /**
     Initializes the character set from the specified file.
   */
-  inline CharacterSet(const String& path) throw(FileException, InvalidFormat) {
+  inline CharacterSet(const String& path) throw(FileException, InvalidFormat)
+  {
     load(path);
   }
 
   /**
     Initalizes the character set from other character set.
   */
-  inline CharacterSet(const CharacterSet& copy) throw() : characterSet(copy.characterSet) {
+  inline CharacterSet(const CharacterSet& copy) noexcept
+    : characterSet(copy.characterSet)
+  {
   }
   
   /**
     Assignment of character set by character set.
   */
-  inline CharacterSet& operator=(const CharacterSet& assign) throw() {
+  inline CharacterSet& operator=(const CharacterSet& assign) noexcept
+  {
     characterSet = assign.characterSet;
     return *this;
   }
@@ -83,7 +87,8 @@ public:
   /**
     Returns the character set.
   */
-  inline const ucs4* getCharacterSet() const throw() {
+  inline const ucs4* getCharacterSet() const noexcept
+  {
     return characterSet->getElements();
   }
 
@@ -92,7 +97,8 @@ public:
 
     @param character The character within the character set.
   */
-  inline ucs4 getCharacter(uint8 value) const throw() {
+  inline ucs4 getCharacter(uint8 value) const noexcept
+  {
     return characterSet->getElements()[value];
   }
 
@@ -102,7 +108,8 @@ public:
     @param value The 8 bit character within the character set.
     @param code The Unicode value.
   */
-  inline void setCharacter(uint8 value, ucs4 code) throw() {
+  inline void setCharacter(uint8 value, ucs4 code) noexcept
+  {
     characterSet->getElements()[value] = value;
   }
   

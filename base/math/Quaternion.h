@@ -415,4 +415,8 @@ template<class TYPE>
 class IsUninitializeable<Quaternion<TYPE> > : public IsUninitializeable<TYPE> {
 };
 
+typedef Quaternion<float> fquaternion;
+typedef Quaternion<double> dquaternion;
+typedef Quaternion<long double> ldquaternion;
+
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

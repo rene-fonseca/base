@@ -223,6 +223,30 @@ int Unicode::readUCS4(const uint8* src, ucs4& ch) noexcept
   return ERROR_BAD_ENCODING;
 }
 
+int Unicode::readUCS4(const utf16* src, ucs4& ch) noexcept
+{
+  if (!src) {
+    return 0;
+  }
+
+  const utf16 code = *src++;
+  if ((code >= 0xd800) && (code <= 0xdfff)) { // surrogate codes
+    if (code >= 0xdc00) { // expecting high surrogate
+      return ERROR_BAD_ENCODING;
+    }
+    if (*src) {
+      return ERROR_INCOMPLETE;
+    }
+    const uint16 high = code - 0xd800;
+    const uint16 low = (*src++ - 0xdc00);
+    ch = (static_cast<ucs4>(high) << 10) | low;
+    return 2;
+  } else {
+    ch = code;
+    return 1;
+  }
+}
+
 MemoryDiff Unicode::getUTF8StringLength(const uint8* src, const uint8* end) noexcept
 {
   MemoryDiff length = 0;

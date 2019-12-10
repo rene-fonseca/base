@@ -20,15 +20,13 @@
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
-// TAG: only uint8 is required - char can be cast
-
 /**
-  Iterator used to traverse UTF-8.
+  Iterator used to traverse UTF-16.
 */
-class UTF8Iterator {
+class UTF16Iterator {
 protected:
 
-  typedef const uint8* Pointer;
+  typedef const utf16* Pointer;
   typedef MemoryDiff Distance;
 
   /** The position of the iterator. */
@@ -59,7 +57,7 @@ public:
 
     @param value The initial value of the iterator.
   */
-  inline UTF8Iterator(Pointer value) noexcept
+  inline UTF16Iterator(Pointer value) noexcept
     : element(value)
   {
   }
@@ -67,7 +65,7 @@ public:
   /**
     Initializes iterator from other iterator.
   */
-  inline UTF8Iterator(const UTF8Iterator& copy) noexcept
+  inline UTF16Iterator(const UTF16Iterator& copy) noexcept
     : element(copy.element)
   {
   }
@@ -75,7 +73,7 @@ public:
   /**
     Initializes iterator from other iterator.
   */
-  inline UTF8Iterator& operator=(const UTF8Iterator& assign) noexcept
+  inline UTF16Iterator& operator=(const UTF16Iterator& assign) noexcept
   {
     element = assign.element;
     return *this;
@@ -84,7 +82,7 @@ public:
   /**
     Prefix increment.
   */
-  UTF8Iterator& operator++()
+  UTF16Iterator& operator++()
   {
     ucs4 ch = 0;
     element = next(element, ch);
@@ -94,9 +92,9 @@ public:
   /**
     Postfix increment.
   */
-  UTF8Iterator operator++(int) noexcept
+  UTF16Iterator operator++(int) noexcept
   {
-    UTF8Iterator result(*this);
+    UTF16Iterator result(*this);
     ucs4 ch = 0;
     element = next(element, ch);
     return result;
@@ -105,7 +103,7 @@ public:
   /**
     Moves the specified distance forward.
   */
-  UTF8Iterator& operator+=(Distance distance) noexcept
+  UTF16Iterator& operator+=(Distance distance) noexcept
   {
     BASSERT(distance >= 0);
     while (distance--) {
@@ -117,7 +115,7 @@ public:
   /**
     Returns true if the iterators are equal.
   */
-  inline bool operator==(const UTF8Iterator& compare) const noexcept
+  inline bool operator==(const UTF16Iterator& compare) const noexcept
   {
     return element == compare.element;
   }
@@ -125,7 +123,7 @@ public:
   /**
     Returns true if the iterators aren't equal.
   */
-  inline bool operator!=(const UTF8Iterator& compare) const noexcept
+  inline bool operator!=(const UTF16Iterator& compare) const noexcept
   {
     return element != compare.element;
   }
@@ -133,12 +131,12 @@ public:
   /**
     Returns true if this iterator is less than the specified iterator.
   */
-  inline bool operator<(const UTF8Iterator& compare) const noexcept
+  inline bool operator<(const UTF16Iterator& compare) const noexcept
   {
     return element < compare.element;
   }
 
-  inline bool operator<=(const UTF8Iterator& compare) const noexcept
+  inline bool operator<=(const UTF16Iterator& compare) const noexcept
   {
     return element <= compare.element;
   }
@@ -147,18 +145,18 @@ public:
     Returns true if this iterator is greater than or equal to the specified
     iterator.
   */
-  inline bool operator>=(const UTF8Iterator& compare) const noexcept
+  inline bool operator>=(const UTF16Iterator& compare) const noexcept
   {
     return element >= compare.element;
   }
 
-  inline bool operator>(const UTF8Iterator& compare) const noexcept
+  inline bool operator>(const UTF16Iterator& compare) const noexcept
   {
     return element > compare.element;
   }
   
   /**
-    Returns true if the UTF-8 encoding is valid at the current position. Does NOT check if code is an allowed UCS4
+    Returns true if the UTF-16 encoding is valid at the current position. Does NOT check if code is an allowed UCS4
     code as such should be skipped fully.
   */
   bool hasValidCode() const
@@ -168,7 +166,7 @@ public:
     return status > 0;
   }
 
-  /** Skip a single byte - not encoded character. Used to skip bad codes only. */
+  /** Skip a word - not encoded character. Used to skip bad codes only. */
   void skip() noexcept
   {
     BASSERT(*element); // we do not want to skip past null terminator
@@ -196,19 +194,19 @@ public:
   }
 };
 
-/** UTF-8 enumerator. */
-class UTF8Enumerator {
+/** UTF-16 enumerator. */
+class UTF16Enumerator {
 private:
 
-  UTF8Iterator src = nullptr;
-  UTF8Iterator end = nullptr;
+  UTF16Iterator src = nullptr;
+  UTF16Iterator end = nullptr;
 public:
 
-  inline UTF8Enumerator() noexcept
+  inline UTF16Enumerator() noexcept
   {
   }
 
-  inline UTF8Enumerator(const UTF8Iterator& _begin, const UTF8Iterator& _end) noexcept
+  inline UTF16Enumerator(const UTF16Iterator& _begin, const UTF16Iterator& _end) noexcept
     : src(_begin), end(_end)
   {
   }

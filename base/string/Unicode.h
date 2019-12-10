@@ -115,8 +115,29 @@ public:
   */
   static int readUCS4(const uint8* src, const uint8* end, ucs4& ch) noexcept;
 
-  /** Read UCS4 from null terminated sequence. */
+  /**
+    Read UCS4 from null terminated UTF-8 sequence.
+
+    @return Number of bytes read.
+  */
   static int readUCS4(const uint8* src, ucs4& ch) noexcept;
+
+  /**
+    Read UCS4 from null terminated UTF-16 sequence.
+
+    @return Number of words read (not bytes).
+  */
+  static int readUCS4(const utf16* src, ucs4& ch) noexcept;
+
+  /**
+    Read UCS4 from null terminated UTF-16 sequence.
+
+    @return Number of words read (not bytes).
+  */
+  static inline int readUCS4(const char16_t* src, ucs4& ch) noexcept
+  {
+    return readUCS4(reinterpret_cast<const utf16*>(src), ch);
+  }
 
   /**
     Validates if the the given string is using valid UTF-8 encoding. Returns the number of characters if valid.
@@ -199,6 +220,7 @@ public:
     return 0;
   }
 
+  /** Returns the number of UTF-16 words required to represent the given code. */
   static inline MemorySize getUTF16Words(ucs4 ch) noexcept
   {
     if (ch < 0x10000) {
@@ -209,6 +231,7 @@ public:
     return 0;
   }
 
+  /** Writes the given code as UTF-16. Destination must ave room for minimum 2 words. */
   static inline MemorySize writeUTF16(utf16* dest, ucs4 ch) noexcept
   {
     if (ch < 0x10000) {
@@ -523,6 +546,7 @@ public:
 
   // wchar support
 
+  /** Converts UCS-4 string to wchar string. */
   static inline MemoryDiff UCS4ToWChar(wchar* dest, const ucs4* src, MemorySize size) noexcept
   {
     if (!src) {
@@ -542,6 +566,7 @@ public:
     }
   }
 
+  /** Converts wchar string to UCS-4 string. */
   static inline MemoryDiff WCharToUCS4(ucs4* dest, const wchar* src, MemorySize size) noexcept
   {
     if (!src) {
@@ -561,6 +586,7 @@ public:
     }
   }
 
+  /** Converts UTF-8 string to wchar string. */
   static inline MemoryDiff UTF8ToWChar(wchar* dest, const uint8* src, MemorySize size) noexcept
   {
     if (!src) {
@@ -575,6 +601,7 @@ public:
     }
   }
 
+  /** Converts wchar string to UTF-8 string. */
   static inline MemoryDiff WCharToUTF8(uint8* dest, const wchar* src, MemorySize size) noexcept
   {
     if (!src) {
@@ -590,6 +617,8 @@ public:
   }
 };
 
+// TAG: add support for charset encodings
+
 /** Automation object for converting string to temporary wchar string. */
 class ToWCharString {
 private:
@@ -598,11 +627,17 @@ private:
   const wchar* string = nullptr;
 public:
 
+  /** Empty string. */
   ToWCharString();
+  /** Assumes UTF-8. */
   ToWCharString(const char* string);
+  /** Initialize self. No conversion happens. Do NOT modify string until automation object is destructed. */
   ToWCharString(const wchar* string);
+  /** Initialize from UCS-4 string. */
   ToWCharString(const ucs4* string);
+  /** Initialize from UTF-8 string. */
   ToWCharString(const String& string);
+  /** Initialize from UCS-4 string. */
   ToWCharString(const WideString& string);
 
   /** Returns the length of the string. Excluding null terminator. */

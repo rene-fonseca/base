@@ -16,6 +16,7 @@
 #include <base/mem/VirtualMemory.h>
 #include <base/Application.h>
 #include <base/string/Parser.h>
+#include <base/UnitTest.h>
 
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
 #  include <windows.h>
@@ -110,7 +111,9 @@ void* DynamicLinker::getGlobalSymbolImpl(const String& symbol) throw(LinkerExcep
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   // GetModuleHandle does not increment reference count
   void* result = (void*)(::GetProcAddress(::GetModuleHandle(0), symbol.getElements()));
-  bassert(result != 0, LinkerException("Unable to resolve symbol"));
+  if (!result) {
+    throw LinkerException("Unable to resolve symbol.");
+  }
   return result;
 #else // unix
   #if defined(RTLD_LAZY)
@@ -119,10 +122,12 @@ void* DynamicLinker::getGlobalSymbolImpl(const String& symbol) throw(LinkerExcep
     void* handle = ::dlopen(nullptr, 0); // use unspecified linking
   #endif
   if (handle == 0) {
-    throw LinkerException("Unable to open module");
+    throw LinkerException("Unable to open module.");
   }
   void* result = ::dlsym(handle, symbol.getElements());
-  bassert(dlerror() == 0, LinkerException("Unable to resolve symbol"));
+  if (dlerror() != 0) {
+    throw LinkerException("Unable to resolve symbol.");
+  }
   ::dlclose(handle); // is this required
   return result;
 #endif // flavor
@@ -155,7 +160,7 @@ DynamicLinker::DynamicLinker(const String& path, unsigned int options) throw(Lin
 {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   if ((handle = ::LoadLibraryEx(ToWCharString(path), 0, 0)) == nullptr) {
-    throw LinkerException("Unable to open module", this);
+    throw LinkerException("Unable to open module.", this);
   }
 #else // unix
   #if defined(RTLD_LAZY)
@@ -169,7 +174,7 @@ DynamicLinker::DynamicLinker(const String& path, unsigned int options) throw(Lin
     flags |= RTLD_GLOBAL;
   #endif
   if ((handle = ::dlopen(path.getElements(), flags)) == 0) {
-    throw LinkerException("Unable to open module", this);
+    throw LinkerException("Unable to open module.", this);
   }
 #endif // flavor
 }
@@ -178,11 +183,11 @@ void* DynamicLinker::getSymbol(const Literal& symbol) const throw(LinkerExceptio
 {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   void* result = (void*)(::GetProcAddress((HMODULE)handle, symbol.getValue()));
-  bassert(result != nullptr, LinkerException("Unable to resolve symbol", this));
+  bassert(result != nullptr, LinkerException("Unable to resolve symbol.", this));
   return result;
 #else // unix
   void* result = ::dlsym(handle, symbol.getValue());
-  bassert(dlerror() == 0, LinkerException("Unable to resolve symbol", this));
+  bassert(dlerror() == 0, LinkerException("Unable to resolve symbol.", this));
   return result;
 #endif // flavor
 }
@@ -191,11 +196,11 @@ void* DynamicLinker::getSymbol(const String& symbol) const throw(LinkerException
 {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   void* result = (void*)(::GetProcAddress((HMODULE)handle, symbol.getElements()));
-  bassert(result != 0, LinkerException("Unable to resolve symbol", this));
+  bassert(result != 0, LinkerException("Unable to resolve symbol.", this));
   return result;
 #else // unix
   void* result = ::dlsym(handle, symbol.getElements());
-  bassert(dlerror() == 0, LinkerException("Unable to resolve symbol", this));
+  bassert(dlerror() == 0, LinkerException("Unable to resolve symbol.", this));
   return result;
 #endif // flavor
 }
@@ -242,12 +247,12 @@ DynamicLinker::~DynamicLinker()
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   bassert(
     ::FreeLibrary((HMODULE)handle),
-    LinkerException("Unable to close module", this)
+    LinkerException("Unable to close module.", this)
   );
 #else // unix
   bassert(
     ::dlclose(handle) == 0,
-    LinkerException("Unable to close module", this)
+    LinkerException("Unable to close module.", this)
   );
 #endif // flavor
 }
@@ -687,5 +692,29 @@ DynamicLinker::SymbolInfo DynamicLinker::getSymbolInfo(const void* address) noex
 #endif
   return result;
 }
+
+#if defined(_COM_AZURE_DEV__BASE__TESTS)
+
+class TEST_CLASS(DynamicLinker) : public UnitTest {
+public:
+
+  TEST_PRIORITY(70);
+  TEST_PROJECT("base");
+
+  void run() override
+  {
+    // TEST_ASSERT(DynamicLinker::getProcessImage());
+    TEST_ASSERT(DynamicLinker::getBaseFrameworkImage());
+    TEST_ASSERT(DynamicLinker::getImageAddress((void*)&DynamicLinker::getProcessImage));
+    DynamicLinker::SymbolInfo info = DynamicLinker::getSymbolInfo((void*)&printf);
+    TEST_ASSERT(info.address);
+    TEST_ASSERT(info.imageAddress);
+    TEST_ASSERT(info.name);
+  }
+};
+
+TEST_REGISTER(DynamicLinker);
+
+#endif
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

@@ -52,8 +52,8 @@ public:
   };
 
   template<class TYPE>
-  static inline TYPE getGlobalSymbol(
-    const String& symbol) throw(LinkerException) {
+  static inline TYPE getGlobalSymbol(const String& symbol) throw(LinkerException)
+  {
     return (TYPE)getGlobalSymbolImpl(symbol);
   }
 

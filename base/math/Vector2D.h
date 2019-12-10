@@ -419,12 +419,17 @@ inline TYPE determinant(
 */
 template<class TYPE>
 FormatOutputStream& operator<<(
-  FormatOutputStream& stream, const Vector2D<TYPE>& value) throw(IOException) {
+  FormatOutputStream& stream, const Vector2D<TYPE>& value)
+{
   return stream << '(' << value.getX() << ';' << value.getY() << ')';
 }
 
 template<class TYPE>
 class IsUninitializeable<Vector2D<TYPE> > : public IsUninitializeable<TYPE> {
 };
+
+typedef Vector2D<float> fvector2;
+typedef Vector2D<double> dvector2;
+typedef Vector2D<long double> ldvector2;
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

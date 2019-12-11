@@ -81,7 +81,8 @@ public:
   /**
     Reads one character from the stream.
   */
-  inline char getCharacter() throw(IOException) {
+  inline char getCharacter() throw(IOException)
+  {
     if (tail == head) {
       bassert(overwriteFromSource(), EndOfFile());
     }

@@ -17,8 +17,6 @@
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
-// TAG: add method for validating UTF-8 encoding in String - getUTF8Length()
-
 namespace {
 
   inline MemorySpan toSpan(const String& s) noexcept

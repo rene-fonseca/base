@@ -46,11 +46,11 @@ SerialPort::SerialPortHandle::~SerialPortHandle() {
   if (isValid()) { // dont try to close if handle is invalidated
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
     if (!::CloseHandle(getHandle())) {
-      throw CommunicationsException("Unable to close port", this);
+      throw CommunicationsException("Unable to close port.", this);
     }
 #else // unix
     if (::close(getHandle())) {
-      throw CommunicationsException("Unable to close port", this);
+      throw CommunicationsException("Unable to close port.", this);
     }
 #endif // flavor
   }
@@ -454,7 +454,7 @@ unsigned int SerialPort::read(
       if (::GetLastError() == ERROR_BROKEN_PIPE) {
         result = 0;
       } else {
-        throw IOException("Unable to read from object", this);
+        throw IOException("Unable to read from object.", this);
       }
     }
 #else // unix
@@ -466,7 +466,7 @@ unsigned int SerialPort::read(
       case EAGAIN: // no data available (only in non-blocking mode)
 //        return bytesRead; // try later
       default:
-        throw IOException("Unable to read from object", this);
+        throw IOException("Unable to read from object.", this);
       }
     }
 #endif // flavor
@@ -494,7 +494,7 @@ unsigned int SerialPort::write(
     DWORD result = 0;
     BOOL success = ::WriteFile(handle->getHandle(), buffer, bytesToWrite, &result, 0);
     if (!success) {
-      throw IOException("Unable to write to object", this);
+      throw IOException("Unable to write to object.", this);
     }
 #else // unix
     int result = ::write(handle->getHandle(), buffer, minimum<size_t>(bytesToWrite, SSIZE_MAX));
@@ -505,7 +505,7 @@ unsigned int SerialPort::write(
       case EAGAIN: // no data could be written without blocking (only in non-blocking mode)
 //      return 0; // try later
       default:
-        throw IOException("Unable to write to object", this);
+        throw IOException("Unable to write to object.", this);
       }
     }
 #endif // flavor

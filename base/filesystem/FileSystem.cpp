@@ -561,7 +561,7 @@ bool FileSystem::entryExists(const String& path) throw(FileSystemException) {
     case ENOENT:
       return false;
     default:
-      throw FileSystemException("Unable to examine if entry exists", Type::getType<FileSystem>());
+      throw FileSystemException("Unable to examine if entry exists.", Type::getType<FileSystem>());
     }
   }
 #  else
@@ -574,7 +574,7 @@ bool FileSystem::entryExists(const String& path) throw(FileSystemException) {
     case ENOENT:
       return false;
     default:
-      throw FileSystemException("Unable to examine if entry exists", Type::getType<FileSystem>());
+      throw FileSystemException("Unable to examine if entry exists.", Type::getType<FileSystem>());
     }
   }
 #  endif
@@ -602,7 +602,7 @@ bool FileSystem::fileExists(const String& path) throw(FileSystemException) {
     case ENOENT:
       return false;
     default:
-      throw FileSystemException("Unable to examine if file exists", Type::getType<FileSystem>());
+      throw FileSystemException("Unable to examine if file exists.", Type::getType<FileSystem>());
     }
   }
 #  else
@@ -615,7 +615,7 @@ bool FileSystem::fileExists(const String& path) throw(FileSystemException) {
     case ENOENT:
       return false;
     default:
-      throw FileSystemException("Unable to examine if file exists", Type::getType<FileSystem>());
+      throw FileSystemException("Unable to examine if file exists.", Type::getType<FileSystem>());
     }
   }
 #  endif
@@ -642,7 +642,7 @@ bool FileSystem::folderExists(const String& path) throw(FileSystemException) {
     case ENOENT:
       return false;
     default:
-      throw FileSystemException("Unable to examine if folder exists", Type::getType<FileSystem>());
+      throw FileSystemException("Unable to examine if folder exists.", Type::getType<FileSystem>());
     }
   }
 #  else
@@ -655,7 +655,7 @@ bool FileSystem::folderExists(const String& path) throw(FileSystemException) {
     case ENOENT:
       return false;
     default:
-      throw FileSystemException("Unable to examine if folder exists", Type::getType<FileSystem>());
+      throw FileSystemException("Unable to examine if folder exists.", Type::getType<FileSystem>());
     }
   }
 #  endif
@@ -667,11 +667,11 @@ void FileSystem::removeFile(const String& path) throw(FileSystemException)
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
 //  ::SetFileAttributes(file, FILE_ATTRIBUTE_NORMAL);
   if (!::DeleteFile(ToWCharString(path))) {
-    throw FileSystemException("Unable to remove file", Type::getType<FileSystem>());
+    throw FileSystemException("Unable to remove file.", Type::getType<FileSystem>());
   }
 #else // unix
   if (unlink(path.getElements())) {
-    throw FileSystemException("Unable to remove file", Type::getType<FileSystem>());
+    throw FileSystemException("Unable to remove file.", Type::getType<FileSystem>());
   }
 #endif // flavor
 }
@@ -691,7 +691,7 @@ void FileSystem::removeFolder(const String& path) throw(FileSystemException)
       0
     );
     if (link == INVALID_HANDLE_VALUE) {
-      throw FileSystemException("Unable to remove folder", Type::getType<FileSystem>());
+      throw FileSystemException("Unable to remove folder.", Type::getType<FileSystem>());
     }
     uint8 buffer[REPARSE_GUID_DATA_BUFFER_HEADER_SIZE + 256]; // TAG: doc missing for min. size
     REPARSE_GUID_DATA_BUFFER* reparseHeader = (REPARSE_GUID_DATA_BUFFER*)buffer;
@@ -708,7 +708,7 @@ void FileSystem::removeFolder(const String& path) throw(FileSystemException)
         ) == 0) {
       if (::GetLastError() != ERROR_MORE_DATA) {
         ::CloseHandle(link);
-        throw FileSystemException("Unable to remove folder", Type::getType<FileSystem>());
+        throw FileSystemException("Unable to remove folder.", Type::getType<FileSystem>());
       }
     }
     if (reparseHeader->ReparseTag == IO_REPARSE_TAG_MOUNT_POINT) {
@@ -726,26 +726,26 @@ void FileSystem::removeFolder(const String& path) throw(FileSystemException)
           ) == 0) {
         fout << "12345: " << ::GetLastError() << ENDL;
         ::CloseHandle(link);
-        throw FileSystemException("Unable to remove folder", Type::getType<FileSystem>());
+        throw FileSystemException("Unable to remove folder.", Type::getType<FileSystem>());
       }
       ::CloseHandle(link);
       if (!::RemoveDirectory(ToWCharString(path))) {
-        throw FileSystemException("Unable to remove folder", Type::getType<FileSystem>());
+        throw FileSystemException("Unable to remove folder.", Type::getType<FileSystem>());
       }
       // } else if (reparseHeader->ReparseTag == 0x80000000|IO_REPARSE_TAG_SYMBOLIC_LINK) {
       // TAG: need support for symbolic link to folder
     } else {
       ::CloseHandle(link);
-      throw FileSystemException("Unable to remove folder", Type::getType<FileSystem>());
+      throw FileSystemException("Unable to remove folder.", Type::getType<FileSystem>());
     }
   } else {
     if (!::RemoveDirectory(ToWCharString(path))) {
-      throw FileSystemException("Unable to remove folder", Type::getType<FileSystem>());
+      throw FileSystemException("Unable to remove folder.", Type::getType<FileSystem>());
     }
   }
 #else // unix
   if (rmdir(path.getElements())) {
-    throw FileSystemException("Unable to remove folder", Type::getType<FileSystem>());
+    throw FileSystemException("Unable to remove folder.", Type::getType<FileSystem>());
   }
 #endif // flavor
 }
@@ -754,11 +754,11 @@ void FileSystem::makeFolder(const String& path) throw(FileSystemException)
 {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   if (!::CreateDirectory(ToWCharString(path), NULL)) { // use default security descriptor
-    throw FileSystemException("Unable to make folder", Type::getType<FileSystem>());
+    throw FileSystemException("Unable to make folder.", Type::getType<FileSystem>());
   }
 #else // unix
   if (mkdir(path.getElements(), 0)) {
-    throw FileSystemException("Unable to make folder", Type::getType<FileSystem>());
+    throw FileSystemException("Unable to make folder.", Type::getType<FileSystem>());
   }
 #endif // flavor
 }
@@ -980,7 +980,7 @@ public:
       case ERROR_ACCESS_DENIED:
       case ERROR_SHARING_VIOLATION: // possible with page file
       case ERROR_LOCK_VIOLATION:
-        throw FileSystemException("Not a link", Type::getType<FileSystem>());
+        throw FileSystemException("Not a link.", Type::getType<FileSystem>());
       }
     }
     while (link != INVALID_HANDLE_VALUE) {
@@ -1002,7 +1002,7 @@ public:
         // bool reparse = ::GetLastError() != 4390; // ERROR_NOT_A_REPARSE_POINT
         ::CloseHandle(link);
         // if (reparse) { // no need to check for shell link
-        //   throw FileSystemException("Not a link", Type::getType<FileSystem>());
+        //   throw FileSystemException("Not a link.", Type::getType<FileSystem>());
         // }
         break;
       }
@@ -1324,7 +1324,7 @@ String FileSystem::getLink(const String& path) throw(NotSupported, FileSystemExc
     case ERROR_ACCESS_DENIED:
     case ERROR_SHARING_VIOLATION: // possible with page file
     case ERROR_LOCK_VIOLATION:
-      throw FileSystemException("Not a link", Type::getType<FileSystem>());
+      throw FileSystemException("Not a link.", Type::getType<FileSystem>());
     }
   }
   while (link != INVALID_HANDLE_VALUE) {
@@ -1346,7 +1346,7 @@ String FileSystem::getLink(const String& path) throw(NotSupported, FileSystemExc
       // bool reparse = ::GetLastError() != 4390; // ERROR_NOT_A_REPARSE_POINT
       ::CloseHandle(link);
       // if (reparse) { // no need to check for shell link
-      //   throw FileSystemException("Not a link", Type::getType<FileSystem>());
+      //   throw FileSystemException("Not a link.", Type::getType<FileSystem>());
       // }
       break;
     }
@@ -1597,7 +1597,7 @@ _COM_AZURE_DEV__BASE__PACKED__END
 
     break; // exit while loop
   }
-  throw FileSystemException("Not a link", Type::getType<FileSystem>());
+  throw FileSystemException("Not a link.", Type::getType<FileSystem>());
 #else // unix
   char buffer[PATH_MAX + 1];
   ssize_t length = ::readlink(path.getElements(), buffer, sizeof(buffer));

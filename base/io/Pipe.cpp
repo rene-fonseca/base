@@ -76,7 +76,7 @@ Pair<Pipe, Pipe> Pipe::make() throw(PipeException) {
 #else // unix
   OperatingSystem::Handle handles[2];
   if (::pipe(handles)) {
-    throw PipeException("Unable to create pipe", Type::getType<Pipe>());
+    throw PipeException("Unable to create pipe.", Type::getType<Pipe>());
   }
   Pipe p;
   Pipe q;
@@ -92,13 +92,13 @@ Pipe::PipeHandle::~PipeHandle() {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   if (isValid()) {
     if (::CloseHandle(getHandle())) {
-      throw PipeException("Unable to close pipe", this);
+      throw PipeException("Unable to close pipe.", this);
     }
   }
 #else // unix
   if (isValid()) {
     if (::close(getHandle())) {
-      throw PipeException("Unable to close pipe", this);
+      throw PipeException("Unable to close pipe.", this);
     }
   }
 #endif
@@ -132,7 +132,7 @@ unsigned int Pipe::available() const throw(PipeException) {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   DWORD bytesAvailable = 0;
   if (!::PeekNamedPipe(fd->getHandle(), 0, 0, 0, &bytesAvailable, 0)) {
-    throw PipeException("Unable to get available bytes", this);
+    throw PipeException("Unable to get available bytes.", this);
   }
   return bytesAvailable;
 #else // unix
@@ -143,7 +143,7 @@ unsigned int Pipe::available() const throw(PipeException) {
     struct stat status;
     int result = ::fstat(fd->getHandle(), &status);
   #endif // LFS
-    bassert(result == 0, IOException("Unable to get available bytes", this));
+    bassert(result == 0, IOException("Unable to get available bytes.", this));
     return status.st_size;
 #endif
 }
@@ -163,7 +163,7 @@ unsigned int Pipe::skip(unsigned int count) throw(PipeException)
 void Pipe::flush() throw(PipeException) {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   if (!::FlushFileBuffers(fd->getHandle())) {
-    throw PipeException("Unable to flush pipe", this);
+    throw PipeException("Unable to flush pipe.", this);
   }
 #else // unix
   #if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__MACOS) || (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__CYGWIN)
@@ -171,7 +171,7 @@ void Pipe::flush() throw(PipeException) {
   #elif defined(_COM_AZURE_DEV__BASE__USE_FLUSH)
     int command = FLUSHW;
     if (::ioctl(fd->getHandle(), I_FLUSH, &command)) {
-      throw PipeException("Unable to flush pipe", this);
+      throw PipeException("Unable to flush pipe.", this);
     }
   #endif
 #endif
@@ -202,7 +202,7 @@ unsigned int Pipe::read(
       } else if (error == ERROR_NO_DATA) { // no data available (only in non-blocking mode)
         return bytesRead;
       } else {
-        throw PipeException("Unable to read from pipe", this);
+        throw PipeException("Unable to read from pipe.", this);
       }
     }
 #else // unix
@@ -218,7 +218,7 @@ unsigned int Pipe::read(
       case EAGAIN: // no data available (only in non-blocking mode)
 //        return bytesRead; // try later
       default:
-        throw PipeException("Unable to read from pipe", this);
+        throw PipeException("Unable to read from pipe.", this);
       }
     }
 #endif
@@ -252,7 +252,7 @@ unsigned int Pipe::write(
       0
     );
     if (!success) {
-      throw PipeException("Unable to write to pipe", this);
+      throw PipeException("Unable to write to pipe.", this);
     }
 #else // unix
     int result = ::write(fd->getHandle(), buffer, minimum<size_t>(bytesToWrite, SSIZE_MAX));
@@ -265,7 +265,7 @@ unsigned int Pipe::write(
       case EPIPE:
         throw EndOfFile(this);
       default:
-        throw PipeException("Unable to write to pipe", this);
+        throw PipeException("Unable to write to pipe.", this);
       }
     }
 #endif
@@ -289,7 +289,7 @@ void Pipe::wait() const throw(PipeException)
 
   int result = ::select(fd->getHandle() + 1, &rfds, 0, 0, 0);
   if (result == -1) {
-    throw PipeException("Unable to wait for input", this);
+    throw PipeException("Unable to wait for input.", this);
   }
 #endif
 }
@@ -311,7 +311,7 @@ bool Pipe::wait(unsigned int timeout) const throw(PipeException)
 
   int result = ::select(fd->getHandle() + 1, &rfds, 0, 0, &tv);
   if (result == -1) {
-    throw PipeException("Unable to wait for input", this);
+    throw PipeException("Unable to wait for input.", this);
   }
   return result; // return true if data available
 #endif

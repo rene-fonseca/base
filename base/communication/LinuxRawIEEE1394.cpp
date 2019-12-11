@@ -323,10 +323,10 @@ void LinuxRawIEEE1394::open(const EUI64& adapter) throw(IEEE1394Exception) {
     break;
   case LinuxRawIEEE1394Impl::ERROR_GENERATION:
     generation = request.generation;
-    throw UnexpectedFailure("Synchronization problem", this);
+    throw UnexpectedFailure("Synchronization problem.", this);
     break;
   default:
-    throw IEEE1394Exception("Unable to open adapter", this);
+    throw IEEE1394Exception("Unable to open adapter.", this);
   }
 }
 
@@ -356,7 +356,7 @@ void LinuxRawIEEE1394::dequeueResponse() throw(IEEE1394Exception) {
   
   LinuxRawIEEE1394Impl::Request request;
   if (::read(handle, &request, sizeof(request)) != sizeof(request)) { // blocking
-    throw IEEE1394Exception("Unable to wait for event", this);
+    throw IEEE1394Exception("Unable to wait for event.", this);
   }
   
   switch (request.type) {
@@ -431,7 +431,7 @@ void LinuxRawIEEE1394::dequeueResponse() throw(IEEE1394Exception) {
       requestContext->dequeued = true;
       break;
     default: // not built-in request
-      throw UnexpectedFailure("Invalid context of response", this);
+      throw UnexpectedFailure("Invalid context of response.", this);
     }
   }
 }
@@ -635,7 +635,7 @@ uint32 LinuxRawIEEE1394::lock(unsigned short node, uint64 address, LockInstructi
   }
   
   if (::write(handle, &request, sizeof(request)) != sizeof(request)) {
-    throw IEEE1394Exception("Unable to request lock", this);
+    throw IEEE1394Exception("Unable to request lock.", this);
   }
   
   // wait for completion
@@ -647,11 +647,11 @@ uint32 LinuxRawIEEE1394::lock(unsigned short node, uint64 address, LockInstructi
 }
  
 IEEE1394Common::IsochronousReadChannel LinuxRawIEEE1394::getReadChannel(unsigned int maxPacketsPerRequest, uint64 subchannels) throw(IEEE1394Exception) {
-  throw IEEE1394Exception("getReadChannel is not impl", this);
+  throw IEEE1394Exception("getReadChannel is not impl.", this);
 }
 
 IEEE1394Common::IsochronousWriteChannel LinuxRawIEEE1394::getWriteChannel(unsigned int maxPacketsPerRequest, uint64 subchannels) throw(IEEE1394Exception) {
-  throw IEEE1394Exception("getWriteChannel is not impl", this);
+  throw IEEE1394Exception("getWriteChannel is not impl.", this);
 }
 
 LinuxRawIEEE1394::~LinuxRawIEEE1394() {

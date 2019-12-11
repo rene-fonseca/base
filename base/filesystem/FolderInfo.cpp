@@ -128,7 +128,7 @@ FolderInfo::FolderInfo(const String& _path)
       substLength = reparseHeader->MountPointReparseBuffer.SubstituteNameLength/2; // keep prefix "\??\"
       break;
     default:
-      throw FileSystemException("Unsupported link", this);
+      throw FileSystemException("Unsupported link.", this);
     }
     substPath[1] = '\\'; // convert '\??\' to '\\?\'
     substPath[substLength] = 0; // add terminator
@@ -145,9 +145,9 @@ FolderInfo::FolderInfo(const String& _path)
   }
   if (folder == INVALID_HANDLE_VALUE) {
     if (linkLevel > maximumLinkLevel) {
-      throw FileSystemException("Too many levels of symbolic links", this);
+      throw FileSystemException("Too many levels of symbolic links.", this);
     } else {
-      throw FileSystemException("Not a folder", this);
+      throw FileSystemException("Not a folder.", this);
     }
   }
   
@@ -201,7 +201,7 @@ FolderInfo::FolderInfo(const String& _path)
   ACL_SIZE_INFORMATION aclInfo;
   if (::GetAclInformation(acl, &aclInfo, sizeof(aclInfo), AclSizeInformation) == 0) {
     ::LocalFree(securityDescriptor);
-    throw FileSystemException("Unable to get ACL", this);
+    throw FileSystemException("Unable to get ACL.", this);
   }
   
   // avoid GetEffectiveRightsFromAcl: get groups of owner and implement required functionality
@@ -288,12 +288,12 @@ FolderInfo::FolderInfo(const String& _path)
   #if defined(_COM_AZURE_DEV__BASE__LARGE_FILE_SYSTEM)
     struct stat64 status;
     if (::stat64(path.getElements(), &status) || (!S_ISDIR(status.st_mode))) {
-      throw FileSystemException("Not a folder", this);
+      throw FileSystemException("Not a folder.", this);
     }
   #else
     struct stat status;
     if (::stat(path.getElements(), &status) || (!S_ISDIR(status.st_mode))) {
-      throw FileSystemException("Not a folder", this);
+      throw FileSystemException("Not a folder.", this);
     }
   #endif
     
@@ -380,7 +380,7 @@ Array<String> FolderInfo::getEntries() const
   
   if (handle == INVALID_HANDLE_VALUE) {
     if (::GetLastError() != ERROR_NO_MORE_FILES) {
-      throw FileSystemException("Unable to read entries of folder", this);
+      throw FileSystemException("Unable to read entries of folder.", this);
     }
   } else {
     while (true) {
@@ -390,12 +390,12 @@ Array<String> FolderInfo::getEntries() const
           break;
         }
         ::FindClose(handle); // avoid that resource leak
-        throw FileSystemException("Unable to read entries of folder", this);
+        throw FileSystemException("Unable to read entries of folder.", this);
       }
     }
     
     if (!::FindClose(handle)) {
-      throw FileSystemException("Unable to close folder", this);
+      throw FileSystemException("Unable to close folder.", this);
     }
   }
 #else // unix
@@ -406,7 +406,7 @@ Array<String> FolderInfo::getEntries() const
     DIR* directory = nullptr;
 
     if ((directory = ::opendir(path.getElements())) == 0) {
-      throw FileSystemException("Unable to read entries of folder", this);
+      throw FileSystemException("Unable to read entries of folder.", this);
     }
 
     while (true) {
@@ -419,7 +419,7 @@ Array<String> FolderInfo::getEntries() const
           break;
         }
         ::closedir(directory);
-        throw FileSystemException("Unable to read entries of folder", this);
+        throw FileSystemException("Unable to read entries of folder.", this);
       }
       if (!entry) { // only required for Linux
         break;
@@ -428,14 +428,14 @@ Array<String> FolderInfo::getEntries() const
     }
 
     if (::closedir(directory) != 0) {
-      throw FileSystemException("Unable to close folder", this);
+      throw FileSystemException("Unable to close folder.", this);
     }
   #elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__CYGWIN)
     // TAG: should detect is readdir_r is available (_COM_AZURE_DEV__BASE__READDIR_R)
     #warning using non-reentrant api - readdir
     DIR* directory = nullptr;
     if ((directory = ::opendir(path.getElements())) == 0) {
-      throw FileSystemException("Unable to read entries of folder", this);
+      throw FileSystemException("Unable to read entries of folder.", this);
     }
 
     while (true) {
@@ -447,17 +447,17 @@ Array<String> FolderInfo::getEntries() const
           break;
         }
         ::closedir(directory);
-        throw FileSystemException("Unable to read entries of folder", this);
+        throw FileSystemException("Unable to read entries of folder.", this);
       }
       result.append(String(entry->d_name));
     }
     if (::closedir(directory) != 0) {
-      throw FileSystemException("Unable to close folder", this);
+      throw FileSystemException("Unable to close folder.", this);
     }
   #else
     DIR* directory = nullptr;
     if ((directory = ::opendir(path.getElements())) == 0) {
-      throw FileSystemException("Unable to read entries of folder", this);
+      throw FileSystemException("Unable to read entries of folder.", this);
     }
   
     buffer.setSize(maximum(buffer.getSize(), sizeof(struct dirent) + 1));
@@ -472,7 +472,7 @@ Array<String> FolderInfo::getEntries() const
           break;
         }
         ::closedir(directory);
-        throw FileSystemException("Unable to read entries of folder", this);
+        throw FileSystemException("Unable to read entries of folder.", this);
       }
       if (!entry) { // only required for Linux
         break;
@@ -481,7 +481,7 @@ Array<String> FolderInfo::getEntries() const
     }
 
     if (::closedir(directory) != 0) {
-      throw FileSystemException("Unable to close folder", this);
+      throw FileSystemException("Unable to close folder.", this);
     }
   #endif
 #endif // flavor

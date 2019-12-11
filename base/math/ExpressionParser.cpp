@@ -27,14 +27,14 @@ ExpressionEvaluator::ExpressionEvaluator() noexcept
 double ExpressionEvaluator::onConstant(
   unsigned int constant) const throw(ExpressionException)
 {
-  throw ExpressionException("Invalid constant", this);
+  throw ExpressionException("Invalid constant.", this);
 }
 
 double ExpressionEvaluator::onFunction(
   unsigned int function,
   const double* value) const throw(ExpressionException)
 {
-  throw ExpressionException("Invalid function", this);
+  throw ExpressionException("Invalid function.", this);
 }
 
 double ExpressionEvaluator::evaluate() const throw(ExpressionException)
@@ -49,7 +49,7 @@ double ExpressionEvaluator::evaluate() const throw(ExpressionException)
       stack[++index] = node.value;
       break;
     case ExpressionEvaluator::VARIABLE:
-      throw ExpressionException("Variable in constant expression", this);
+      throw ExpressionException("Variable in constant expression.", this);
       // stack[++index] = lookup node.variable;
     case ExpressionEvaluator::CONSTANT:
       stack[++index] = onConstant(node.constant);
@@ -76,7 +76,7 @@ double ExpressionEvaluator::evaluate() const throw(ExpressionException)
         break;
       case DIVIDE:
         if (stack[index] == 0) {
-          throw ExpressionException("Division by zero", this);
+          throw ExpressionException("Division by zero.", this);
         }
         stack[index - 1] /= stack[index];
         --index;
@@ -88,7 +88,7 @@ double ExpressionEvaluator::evaluate() const throw(ExpressionException)
       case PARENTHESIS:
         break;
       default:
-        throw ExpressionException("Invalid built-in operator", this);
+        throw ExpressionException("Invalid built-in operator.", this);
       }
       break;
     case ExpressionEvaluator::FUNCTION:
@@ -96,14 +96,14 @@ double ExpressionEvaluator::evaluate() const throw(ExpressionException)
         stack[++index] = onFunction(node.function.id, 0);
       } else {
         if (static_cast<unsigned int>(index + 1) < node.function.arguments) {
-          throw ExpressionException("Arguments exhausted", this);
+          throw ExpressionException("Arguments exhausted.", this);
         }
         index -= node.function.arguments - 1;
         stack[index] = onFunction(node.function.id, &stack[index]);
       }
       break;
     case ExpressionEvaluator::UNKNOWN:
-      throw ExpressionException("Unknown", this);
+      throw ExpressionException("Unknown.", this);
     }
   }
   return stack[0];
@@ -148,7 +148,7 @@ double ExpressionEvaluator::evaluate(const double* variables) const throw(Expres
         break;
       case DIVIDE:
         if (stack[index] == 0) {
-          throw ExpressionException("Division by zero", this);
+          throw ExpressionException("Division by zero.", this);
         }
         stack[index - 1] /= stack[index];
         --index;
@@ -160,7 +160,7 @@ double ExpressionEvaluator::evaluate(const double* variables) const throw(Expres
       case PARENTHESIS:
         break;
       default:
-        throw ExpressionException("Invalid built-in operator", this);
+        throw ExpressionException("Invalid built-in operator.", this);
       }
       break;
     case ExpressionEvaluator::FUNCTION:
@@ -168,14 +168,14 @@ double ExpressionEvaluator::evaluate(const double* variables) const throw(Expres
         stack[++index] = onFunction(node.function.id, 0);
       } else {
         if (static_cast<unsigned int>(index + 1) < node.function.arguments) {
-          throw ExpressionException("Arguments exhausted", this);
+          throw ExpressionException("Arguments exhausted.", this);
         }
         index -= node.function.arguments - 1;
         stack[index] = onFunction(node.function.id, &stack[index]);
       }
       break;
     case ExpressionEvaluator::UNKNOWN:
-      throw ExpressionException("Unknown", this);
+      throw ExpressionException("Unknown.", this);
     }
   }
   return stack[0];
@@ -221,7 +221,7 @@ void ExpressionEvaluator::evaluate(const double* variables, double* results, uns
           break;
         case DIVIDE:
           if (stack[index] == 0) {
-            throw ExpressionException("Division by zero", this);
+            throw ExpressionException("Division by zero.", this);
           }
           stack[index - 1] /= stack[index];
           --index;
@@ -233,7 +233,7 @@ void ExpressionEvaluator::evaluate(const double* variables, double* results, uns
         case PARENTHESIS:
           break;
         default:
-          throw ExpressionException("Invalid built-in operator", this);
+          throw ExpressionException("Invalid built-in operator.", this);
         }
         break;
       case ExpressionEvaluator::FUNCTION:
@@ -241,14 +241,14 @@ void ExpressionEvaluator::evaluate(const double* variables, double* results, uns
           stack[++index] = onFunction(node.function.id, nullptr);
         } else {
           if (static_cast<unsigned int>(index + 1) < node.function.arguments) {
-            throw ExpressionException("Arguments exhausted", this);
+            throw ExpressionException("Arguments exhausted.", this);
           }
           index -= node.function.arguments - 1;
           stack[index] = onFunction(node.function.id, &stack[index]);
         }
         break;
       case ExpressionEvaluator::UNKNOWN:
-        throw ExpressionException("Unknown", this);
+        throw ExpressionException("Unknown.", this);
       }
     }
     *results++ = stack[0];
@@ -322,7 +322,7 @@ ExpressionParser::ExpressionParser(
 void ExpressionParser::pop() throw(ExpressionException) {
   Operation operation = stack.pop();
   if (operands < operation.getArguments()) {
-    throw ExpressionException(index, "Operand expected");
+    throw ExpressionException(index, "Operand expected.");
   }
   nodes.append(ExpressionEvaluator::makeNodeFromOperation(operation));
   operands = operands - operation.getArguments() + 1;
@@ -349,7 +349,7 @@ void ExpressionParser::readIdentifier() throw(ExpressionException) {
   unsigned int begin = index;
   bassert(
     (index < length) && ASCIITraits::isAlpha(expression[index]),
-    ExpressionException(begin, "Not an identifier")
+    ExpressionException(begin, "Not an identifier.")
   );
   ++index;
   
@@ -365,7 +365,7 @@ void ExpressionParser::readIdentifier() throw(ExpressionException) {
   
   if (!provider.isIdentifier(identifier)) {
     if (!autoRegister) {
-      throw ExpressionException(begin, "Identifier not recognized");
+      throw ExpressionException(begin, "Identifier not recognized.");
     }
     if (unknowns.hasKey(identifier)) {
       nodes.append(unknowns[identifier]);
@@ -401,7 +401,7 @@ void ExpressionParser::readIdentifier() throw(ExpressionException) {
     // internal knowledge - not returned by ExpressionProvider
     throw ExpressionException(
       index,
-      "Identifier registered as unsupported type"
+      "Identifier registered as unsupported type."
     );
   }
 }
@@ -441,7 +441,7 @@ void ExpressionParser::readValue() throw(ExpressionException) {
   }
 
   if (!digits) {
-    throw ExpressionException(begin, "Not a number");
+    throw ExpressionException(begin, "Not a number.");
   }
 
   // read exponent if present
@@ -463,7 +463,7 @@ void ExpressionParser::readValue() throw(ExpressionException) {
         ++index;
       }
     } else {
-      throw ExpressionException(begin, "Not a number");
+      throw ExpressionException(begin, "Not a number.");
     }
   }
   
@@ -701,7 +701,7 @@ void ExpressionParser::parse() throw(ExpressionException) {
           );
         }
       } else {
-        throw ExpressionException(index, "Invalid symbol");
+        throw ExpressionException(index, "Invalid symbol.");
       }
     }
   }
@@ -711,7 +711,7 @@ void ExpressionParser::parse() throw(ExpressionException) {
   }
   
   if (!stack.isEmpty() || (operands != 1)) {
-    throw ExpressionException(index, "Unexpected end of expression");
+    throw ExpressionException(index, "Unexpected end of expression.");
   }
 }
 
@@ -794,13 +794,13 @@ String ExpressionParser::getString() const throw(ExpressionException) {
       case ExpressionEvaluator::PARENTHESIS:
         break;
       default:
-        throw ExpressionException("Invalid built-in operator", this);
+        throw ExpressionException("Invalid built-in operator.", this);
       }
       break;
     case ExpressionEvaluator::FUNCTION:
       {
         if (static_cast<unsigned int>(index + 1) < node.function.arguments) {
-          throw ExpressionException("Arguments exhausted", this);
+          throw ExpressionException("Arguments exhausted.", this);
         }
         String arguments;
         if (node.function.arguments > 0) {

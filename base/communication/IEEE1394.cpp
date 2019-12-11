@@ -936,133 +936,133 @@ IEEE1394::Speed IEEE1394::getBroadcastSpeed() const throw(OutOfDomain) {
 
 uint64 IEEE1394::IsochronousReadChannelImpl::getSubchannels(
 ) throw(IEEE1394Exception) {
-  throw IEEE1394Exception("Channel is closed", this);
+  throw IEEE1394Exception("Channel is closed.", this);
 }
 
 void IEEE1394::IsochronousReadChannelImpl::cancel() throw(IEEE1394Exception) {
-  throw IEEE1394Exception("Channel is closed", this);
+  throw IEEE1394Exception("Channel is closed.", this);
 }
 
 IEEE1394::IsochronousReadPacketsRequest IEEE1394::IsochronousReadChannelImpl::getReadPacketsRequest() const throw(IEEE1394Exception) {
-  throw IEEE1394Exception("Channel is closed", this);
+  throw IEEE1394Exception("Channel is closed.", this);
 }
 
 IEEE1394::IsochronousReadFixedPacketsRequest
   IEEE1394::IsochronousReadChannelImpl::getReadFixedPacketsRequest(
   ) const throw(IEEE1394Exception) {
-  throw IEEE1394Exception("Channel is closed", this);
+  throw IEEE1394Exception("Channel is closed.", this);
 }
 
 IEEE1394::IsochronousReadFixedDataRequest
   IEEE1394::IsochronousReadChannelImpl::getReadFixedDataRequest(
   ) const throw(IEEE1394Exception) {
-  throw IEEE1394Exception("Channel is closed", this);
+  throw IEEE1394Exception("Channel is closed.", this);
 }
 
 void IEEE1394::IsochronousReadChannelImpl::queue(
   IsochronousReadRequest& request) throw(IEEE1394Exception) {
-  throw IEEE1394Exception("Channel is closed", this);
+  throw IEEE1394Exception("Channel is closed.", this);
 }
 
 void IEEE1394::IsochronousReadChannelImpl::queue(
   IsochronousReadPacketsRequest& request) throw(IEEE1394Exception) {
-  throw IEEE1394Exception("Channel is closed", this);
+  throw IEEE1394Exception("Channel is closed.", this);
 }
 
 void IEEE1394::IsochronousReadChannelImpl::queue(
   IsochronousReadFixedPacketsRequest& request) throw(IEEE1394Exception) {
-  throw IEEE1394Exception("Channel is closed", this);
+  throw IEEE1394Exception("Channel is closed.", this);
 }
 
 void IEEE1394::IsochronousReadChannelImpl::queue(
   IsochronousReadFixedDataRequest& request) throw(IEEE1394Exception) {
-  throw IEEE1394Exception("Channel is closed", this);
+  throw IEEE1394Exception("Channel is closed.", this);
 }
 
 void IEEE1394::IsochronousReadChannelImpl::queue(
   Allocator<IsochronousReadRequest>& request) throw(IEEE1394Exception) {
-  throw IEEE1394Exception("Channel is closed", this);
+  throw IEEE1394Exception("Channel is closed.", this);
 }
 
 IEEE1394::IsochronousReadRequest
   IEEE1394::IsochronousReadChannelImpl::dequeue() throw(IEEE1394Exception) {
-  throw IEEE1394Exception("Channel is closed", this);
+  throw IEEE1394Exception("Channel is closed.", this);
 }
 
 unsigned int IEEE1394::IsochronousReadChannelImpl::dequeue(
   unsigned int requests,
   unsigned int microseconds) throw(OutOfDomain, IEEE1394Exception) {
   bassert(microseconds <= 999999999, OutOfDomain(this));
-  throw IEEE1394Exception("Channel is closed", this);
+  throw IEEE1394Exception("Channel is closed.", this);
 }
 
 bool IEEE1394::IsochronousReadChannelImpl::wait(
   unsigned int microseconds) throw(OutOfDomain, IEEE1394Exception) {
   bassert(microseconds <= 999999999, OutOfDomain(this));
-  throw IEEE1394Exception("Channel is closed", this);
+  throw IEEE1394Exception("Channel is closed.", this);
 }
 
 uint64 IEEE1394::IsochronousWriteChannelImpl::getSubchannels(
 ) throw(IEEE1394Exception) {
-  throw IEEE1394Exception("Channel is closed", this);
+  throw IEEE1394Exception("Channel is closed.", this);
 }
 
 void IEEE1394::IsochronousWriteChannelImpl::cancel() throw(IEEE1394Exception) {
-  throw IEEE1394Exception("Channel is closed", this);
+  throw IEEE1394Exception("Channel is closed.", this);
 }
 
 IEEE1394::IsochronousWritePacketsRequest
   IEEE1394::IsochronousWriteChannelImpl::getWritePacketsRequest(
   ) const throw(IEEE1394Exception) {
-  throw IEEE1394Exception("Channel is closed", this);
+  throw IEEE1394Exception("Channel is closed.", this);
 }
 
 IEEE1394::IsochronousWriteFixedPacketsRequest
   IEEE1394::IsochronousWriteChannelImpl::getWriteFixedPacketsRequest(
   ) const throw(IEEE1394Exception) {
-  throw IEEE1394Exception("Channel is closed", this);
+  throw IEEE1394Exception("Channel is closed.", this);
 }
 
 IEEE1394::IsochronousWriteDataRequest
   IEEE1394::IsochronousWriteChannelImpl::getWriteDataRequest(
   ) const throw(IEEE1394Exception) {
-  throw IEEE1394Exception("Channel is closed", this);
+  throw IEEE1394Exception("Channel is closed.", this);
 }
 
 void IEEE1394::IsochronousWriteChannelImpl::queue(
   IsochronousWriteRequest& request) throw(IEEE1394Exception) {
-  throw IEEE1394Exception("Channel is closed", this);
+  throw IEEE1394Exception("Channel is closed.", this);
 }
 
 void IEEE1394::IsochronousWriteChannelImpl::queue(
   IsochronousWritePacketsRequest& request) throw(IEEE1394Exception) {
-  throw IEEE1394Exception("Channel is closed", this);
+  throw IEEE1394Exception("Channel is closed.", this);
 }
 
 void IEEE1394::IsochronousWriteChannelImpl::queue(
   IsochronousWriteFixedPacketsRequest& request) throw(IEEE1394Exception) {
-  throw IEEE1394Exception("Channel is closed", this);
+  throw IEEE1394Exception("Channel is closed.", this);
 }
 
 void IEEE1394::IsochronousWriteChannelImpl::queue(
   IsochronousWriteDataRequest& request) throw(IEEE1394Exception) {
-  throw IEEE1394Exception("Channel is closed", this);
+  throw IEEE1394Exception("Channel is closed.", this);
 }
 
 void IEEE1394::IsochronousWriteChannelImpl::queue(
   Allocator<IsochronousWriteRequest>& request) throw(IEEE1394Exception) {
-  throw IEEE1394Exception("Channel is closed", this);
+  throw IEEE1394Exception("Channel is closed.", this);
 }
 
 IEEE1394::IsochronousWriteRequest
   IEEE1394::IsochronousWriteChannelImpl::dequeue() throw(IEEE1394Exception) {
-  throw IEEE1394Exception("Channel is closed", this);
+  throw IEEE1394Exception("Channel is closed.", this);
 }
     
 bool IEEE1394::IsochronousWriteChannelImpl::wait(
   unsigned int microseconds) throw(OutOfDomain, IEEE1394Exception) {
   bassert(microseconds <= 999999999, OutOfDomain(this));
-  throw IEEE1394Exception("Channel is closed", this);
+  throw IEEE1394Exception("Channel is closed.", this);
 }
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

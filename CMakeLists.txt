@@ -145,6 +145,8 @@ file(GLOB base_SRC
   "base/string/*.cpp"
   "base/ui/*.h"
   "base/ui/*.cpp"
+  "base/webassembly/*.h"
+  "base/webassembly/*.cpp"
   "base/xml/*.h"
   "base/xml/*.cpp"
 )

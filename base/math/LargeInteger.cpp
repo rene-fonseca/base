@@ -17,65 +17,6 @@
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
-// TAG: put in Math
-
-/** Returns the carry for the addition. */
-inline uint8 addCarry(uint8& value, const uint8 addend) noexcept
-{
-  // use intrinsic
-  constexpr uint8 MAXIMUM = (static_cast<uint8>(0) - 1);
-  if (value > (MAXIMUM - addend)) {
-    value += addend;
-    return 1;
-  }
-  value += addend;
-  return 0;
-}
-
-inline uint16 addCarry(uint16& value, const uint16 addend) noexcept
-{
-  // use intrinsic
-  constexpr uint16 MAXIMUM = (static_cast<uint16>(0) - 1);
-  if (value > (MAXIMUM - addend)) {
-    value += addend;
-    return 1;
-  }
-  value += addend;
-  return 0;
-}
-
-inline uint32 addCarry(uint32& value, const uint32 addend) noexcept
-{
-  // use intrinsic
-  constexpr uint32 MAXIMUM = (static_cast<uint32>(0) - 1);
-  if (value > (MAXIMUM - addend)) {
-    value += addend;
-    return 1;
-  }
-  value += addend;
-  return 0;
-}
-
-inline uint64 addCarry(uint64& value, const uint64 addend) noexcept
-{
-  // use intrinsic
-  constexpr uint64 MAXIMUM = (static_cast<uint64>(0) - 1);
-  if (value > (MAXIMUM - addend)) {
-    value += addend;
-    return 1;
-  }
-  value += addend;
-  return 0;
-}
-
-inline uint32 subtractBorrow(uint32& value, const uint32 subtrahend) noexcept
-{
-  // use intrinsic
-  const uint32 borrow = (subtrahend > value) ? 1 : 0;
-  value -= subtrahend;
-  return borrow;
-}
-
 #if 0
 void LargeIntegerImpl::clear(Words& value) noexcept
 {
@@ -154,7 +95,7 @@ bool LargeIntegerImpl::addBit(Word* value, const MemorySize size, const MemorySi
   value += bitIndex / WORD_BITS;
   Word carrier = ONE << (bitIndex % WORD_BITS);
   for (const Word* end = value + size; value != end; ++value) {
-    carrier = addCarry(*value, carrier);
+    carrier = Math::addCarry(*value, carrier);
     if (carrier == ZERO) {
       return false;
     }
@@ -235,7 +176,7 @@ bool LargeIntegerImpl::add(Word* value, const MemorySize size, const Word addend
 {
   Word carrier = addend;
   for (const Word* end = value + size; (value != end) && carrier; ++value) {
-    carrier = addCarry(*value, carrier);
+    carrier = Math::addCarry(*value, carrier);
   }
   return carrier > 0;
 }
@@ -244,8 +185,8 @@ bool LargeIntegerImpl::add(Word* restrict value, const Word* restrict addend, co
 {
   Word carrier = 0;
   for (const Word* end = value + size; value != end; ++value, ++addend) {
-    carrier = addCarry(*value, carrier);
-    carrier += addCarry(*value, *addend);
+    carrier = Math::addCarry(*value, carrier);
+    carrier += Math::addCarry(*value, *addend);
   }
   return carrier > 0;
 }
@@ -255,8 +196,8 @@ bool LargeIntegerImpl::checkAdditionOverflow(const Word* restrict value, const W
   Word carrier = 0;
   for (const Word* end = value + size; value != end; ++value, ++addend) {
     auto temp = *value;
-    carrier = addCarry(temp, carrier);
-    carrier += addCarry(temp, *addend);
+    carrier = Math::addCarry(temp, carrier);
+    carrier += Math::addCarry(temp, *addend);
   }
   return carrier > 0;
 }
@@ -275,7 +216,7 @@ bool LargeIntegerImpl::subtract(Word* restrict value, const MemorySize size, con
 {
   Word borrower = subtrahend;
   for (const Word* end = value + size; (value != end) && borrower; ++value) {
-    borrower = subtractBorrow(*value, borrower);
+    borrower = Math::subtractBorrow(*value, borrower);
   }
   return borrower > 0; // if size == 0 then borrower is subtrahend - not 1 or 0
 }
@@ -284,8 +225,8 @@ bool LargeIntegerImpl::subtract(Word* restrict value, const Word* restrict subtr
 {
   Word borrower = 0;
   for (const Word* end = value + size; value != end; ++value, ++subtrahend) {
-    borrower = subtractBorrow(*value, borrower);
-    borrower += subtractBorrow(*value, *subtrahend);
+    borrower = Math::subtractBorrow(*value, borrower);
+    borrower += Math::subtractBorrow(*value, *subtrahend);
   }
   return borrower > 0;
 }
@@ -306,7 +247,7 @@ bool LargeIntegerImpl::multiply(Word* value, const MemorySize size, const Word m
   for (; value != end; ++value) {
     const DoubleWord temp = static_cast<DoubleWord>(*value) * multiplicand; // limit MAX*MAX!
     *value = static_cast<Word>(temp & MAXIMUM);
-    carrier = addCarry(*value, carrier); // 1 or 0
+    carrier = Math::addCarry(*value, carrier); // 1 or 0
     carrier += (temp >> WORD_BITS); // +MAX*MAX/(MAX + 1) => <+MAX => (carrier <= MAX) no overflow
   }
   return carrier > 0;

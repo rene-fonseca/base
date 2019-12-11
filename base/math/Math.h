@@ -2066,6 +2066,94 @@ public:
   }
   
   static uint64 muldiv(uint64 value, uint64 mul, uint64 div);
+
+  /** Returns the carry for the addition. */
+  static inline uint8 addCarry(uint8& value, const uint8 addend) noexcept
+  {
+    // use intrinsic
+    constexpr uint8 MAXIMUM = (static_cast<uint8>(0) - 1);
+    if (value > (MAXIMUM - addend)) {
+      value += addend;
+      return 1;
+    }
+    value += addend;
+    return 0;
+  }
+
+  /** Returns the carry for the addition. */
+  static inline uint16 addCarry(uint16& value, const uint16 addend) noexcept
+  {
+    // use intrinsic
+    constexpr uint16 MAXIMUM = (static_cast<uint16>(0) - 1);
+    if (value > (MAXIMUM - addend)) {
+      value += addend;
+      return 1;
+    }
+    value += addend;
+    return 0;
+  }
+
+  /** Returns the carry for the addition. */
+  static inline uint32 addCarry(uint32& value, const uint32 addend) noexcept
+  {
+    // use intrinsic
+    constexpr uint32 MAXIMUM = (static_cast<uint32>(0) - 1);
+    if (value > (MAXIMUM - addend)) {
+      value += addend;
+      return 1;
+    }
+    value += addend;
+    return 0;
+  }
+
+  /** Returns the carry for the addition. */
+  static inline uint64 addCarry(uint64& value, const uint64 addend) noexcept
+  {
+    // use intrinsic
+    constexpr uint64 MAXIMUM = (static_cast<uint64>(0) - 1);
+    if (value > (MAXIMUM - addend)) {
+      value += addend;
+      return 1;
+    }
+    value += addend;
+    return 0;
+  }
+
+  /** Returns 1 on borrow for subtraction. */
+  static inline uint8 subtractBorrow(uint8& value, const uint8 subtrahend) noexcept
+  {
+    // use intrinsic
+    const uint8 borrow = (subtrahend > value) ? 1 : 0;
+    value -= subtrahend;
+    return borrow;
+  }
+
+  /** Returns 1 on borrow for subtraction. */
+  static inline uint16 subtractBorrow(uint16& value, const uint16 subtrahend) noexcept
+  {
+    // use intrinsic
+    const uint16 borrow = (subtrahend > value) ? 1 : 0;
+    value -= subtrahend;
+    return borrow;
+  }
+
+  /** Returns 1 on borrow for subtraction. */
+  static inline uint32 subtractBorrow(uint32& value, const uint32 subtrahend) noexcept
+  {
+    // use intrinsic
+    const uint32 borrow = (subtrahend > value) ? 1 : 0;
+    value -= subtrahend;
+    return borrow;
+  }
+
+  /** Returns 1 on borrow for subtraction. */
+  static inline uint64 subtractBorrow(uint64& value, const uint64 subtrahend) noexcept
+  {
+    // use intrinsic
+    const uint64 borrow = (subtrahend > value) ? 1 : 0;
+    value -= subtrahend;
+    return borrow;
+  }
 };
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

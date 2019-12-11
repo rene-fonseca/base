@@ -43,7 +43,7 @@ private:
   
   static constexpr Style DEFAULT_STYLE = STYLE_CPP;
   ucs4 character = 0;
-  Style style;
+  Style style = DEFAULT_STYLE;
 public:
   
   inline UnicodeCharacter(ucs4 _character, Style _style = DEFAULT_STYLE) noexcept

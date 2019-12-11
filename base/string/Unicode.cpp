@@ -1072,6 +1072,52 @@ MemoryDiff Unicode::UTF32BEToUCS4(
   }
 }
 
+#if 0
+Unicode::MultibyteEncoding Unicode::getMultibyteEncoding(const uint8* src, MemorySize size) noexcept
+{
+  if (size % 4 == 0) {
+    if ((src[0] == 0x00) && (src[1] == 0x00) && (src[2] == 0xfe) && (src[3] == 0xff)) {
+      return UTF32BE;
+    } else if ((src[0] == 0xff) && (src[1] == 0xfe) && (src[2] == 0x00) && (src[3] == 0x00)) {
+      return UTF32LE;
+    } else { // no BOM
+      const uint8* end = src + size;
+      const uint8* s = src;
+      while (s < end) {
+        unsigned int be = (static_cast<unsigned int>(s[0]) << 24) |
+          (static_cast<unsigned int>(s[1]) << 16) |
+          (static_cast<unsigned int>(s[2]) << 8) |
+          (static_cast<unsigned int>(s[3]) << 0);
+        unsigned int le = (static_cast<unsigned int>(s[0]) << 0) |
+          (static_cast<unsigned int>(s[1]) << 8) |
+          (static_cast<unsigned int>(s[2]) << 16) |
+          (static_cast<unsigned int>(s[3]) << 24);
+        bool validBe = (be <= 0x0000ffff) || ((be <= 0x0010ffff) && ((be & 0xf) < 0xe));
+        bool validLe = (le <= 0x0000ffff) || ((le <= 0x0010ffff) && ((le & 0xf) < 0xe));
+        if (validBe && !validLe) {
+          return UTF32BE;
+        } else if (!validBe && validLe) {
+          return UTF32LE;
+        } else if (!validBe && !validLe) {
+          break; // invalid UTF-32 code
+        }
+        s += 4;
+      }
+    }
+  }
+  if (size % 2 == 0) {
+    if ((src[0] == 0xfe) && (src[1] == 0xff)) {
+      return UTF16BE;
+    } else if ((src[0] == 0xff) && (src[1] == 0xfe)) {
+      return UTF16LE;
+    } else {
+      // TAG: fixme
+    }
+  }
+  return UTF8;
+}
+#endif
+
 ToWCharString::ToWCharString()
 {
 }

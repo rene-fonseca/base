@@ -617,7 +617,12 @@ public:
   }
 };
 
-// TAG: add support for charset encodings
+/** 8-bit charset. */
+class CharSet {
+public:
+  
+  virtual ucs4 operator()(uint8 code) const noexcept = 0;
+};
 
 /** Automation object for converting string to temporary wchar string. */
 class ToWCharString {

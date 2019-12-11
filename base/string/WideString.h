@@ -357,16 +357,6 @@ public:
   /** Specifies the byte order mark. */
   static constexpr ucs4 BOM = 0x0000feff;
 
-  /**
-    Returns the multibyte encoding of the specifies multibyte encoded string.
-    This method will not examine the entire string. An invalid encoding may
-    return UTF8.
-    
-    @param src The multibyte encoded string.
-    @param size The number of bytes in the multibyte encoded string.
-  */
-// TAG: MultibyteEncoding getMultibyteEncoding(const uint8* src, MemorySize size) noexcept;
-
   /** Forces a non-null empty string. Avoid this. */
   WideString(String::Default d);
 

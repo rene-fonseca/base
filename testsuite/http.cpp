@@ -558,7 +558,7 @@ protected:
           contentLength = UnsignedInteger(header.getValue());
           hasContentLength = true;
         } catch (InvalidFormat&) {
-          throw HTTPException("Invalid value for Content-Length field");
+          throw HTTPException("Invalid value for Content-Length field.");
         }
       } else if (header.getName() == "Content-Type") {
         contentType = header.getValue();

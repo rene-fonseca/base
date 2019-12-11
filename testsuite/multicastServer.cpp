@@ -50,7 +50,7 @@ public:
     try {
       Integer integer(servicename);
       if ((integer < 0) || (integer > 0xffff)) {
-        throw OutOfRange("Port is out of range");
+        throw OutOfRange("Port is out of range.");
       }
       port = integer;
     } catch (InvalidFormat&) {

@@ -143,15 +143,15 @@ nothing OpenGLWidget::initialize(const Format& format) throw(OpenGLException, Us
   numberOfUnderlayPlanes = (pfd.bReserved >> 4) & 0xf;
   
   if (!::SetPixelFormat((HDC)WindowImpl::graphicsContextHandle, formatId, &pfd)) {
-    throw OpenGLException("Unable to set format", this);
+    throw OpenGLException("Unable to set format.", this);
   }
   if (!(renderingContextHandle = native::GDI::wglCreateContext(
           (HDC)WindowImpl::graphicsContextHandle))) {
-    throw OpenGLException("Unable to create rendering context", this);
+    throw OpenGLException("Unable to create rendering context.", this);
   }
   if (!native::GDI::wglMakeCurrent(
         (HDC)WindowImpl::graphicsContextHandle, (HGLRC)renderingContextHandle)) {
-    throw OpenGLException("Invalid rendering context", this);
+    throw OpenGLException("Invalid rendering context.", this);
   }
 #else // unix
   // TAG: fixme

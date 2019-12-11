@@ -131,7 +131,7 @@ Event::Event()
 {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   if ((context = Cast::pointer<void*>(::CreateEvent(0, TRUE, FALSE, 0))) == 0) {
-    throw ResourceException("Unable to initialize event", this);
+    throw ResourceException("Unable to initialize event.", this);
   }
 #else // pthread
   EventImpl::Context* context = new EventImpl::Context[1];
@@ -233,7 +233,7 @@ void Event::wait() const
   }
 #else // pthread
   if (pthread_mutex_lock(&Cast::pointer<EventImpl::Context*>(context)->mutex)) {
-    throw EventException("Unable to wait for event", this);
+    throw EventException("Unable to wait for event.", this);
   }
 
   while (!Cast::pointer<EventImpl::Context*>(context)->signaled) { // wait for signal
@@ -263,13 +263,13 @@ bool Event::wait(unsigned int microseconds) const
   case WAIT_TIMEOUT:
     return false;
   default:
-    throw EventException("Unable to wait for event", this);
+    throw EventException("Unable to wait for event.", this);
   }
 #else // pthread
   int result = true; // no assignment gives warning
 
   if (pthread_mutex_lock(&Cast::pointer<EventImpl::Context*>(context)->mutex)) {
-    throw EventException("Unable to wait for event", this);
+    throw EventException("Unable to wait for event.", this);
   }
 
   struct timespec absoluteTime;

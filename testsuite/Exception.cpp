@@ -83,7 +83,7 @@ public:
   }
 
   void myInnerFunction() throw(OutOfRange) {
-    throw OutOfRange("This is a message", this);
+    throw OutOfRange("This is a message.", this);
   }
 
   void myOuterFunction() {

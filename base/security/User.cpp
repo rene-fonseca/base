@@ -63,11 +63,11 @@ User User::getCurrentUser() throw(UserException) {
 
 User::User(unsigned long _id) throw(OutOfDomain) : integralId(_id) {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
-  throw OutOfDomain("Invalid user id", this);
+  throw OutOfDomain("Invalid user id.", this);
 #else
 //   bassert(
 //     integralId <= PrimitiveTraits<uid_t>::MAXIMUM,
-//     OutOfDomain("Invalid user id", this)
+//     OutOfDomain("Invalid user id.", this)
 //   );
 #endif
 }
@@ -84,7 +84,7 @@ User::User(const void* _id) throw(OutOfDomain) {
   copy(id->getElements(), Cast::pointer<const uint8*>(_id), size);
   integralId = 0;
 #else // unix
-  throw OutOfDomain("Invalid user id", this);
+  throw OutOfDomain("Invalid user id.", this);
 #endif // flavor
 }
 

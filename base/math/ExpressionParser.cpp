@@ -472,7 +472,7 @@ void ExpressionParser::readValue() throw(ExpressionException) {
   // TAG: not the best solution - but it works for now
   double value = strtod(buffer.getElements(), &end);
   if ((end != &buffer.getElements()[index - begin]) || (errno == ERANGE)) {
-    throw ExpressionException(begin, "Not a number");
+    throw ExpressionException(begin, "Not a number.");
   }
   nodes.append(ExpressionEvaluator::makeValueNode(value));
   ++operands;

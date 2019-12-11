@@ -212,7 +212,7 @@ nothing OpenGLContext::initialize(const Format& format) throw(OpenGLException, U
   if (!(WindowImpl::graphicsContextHandle = ::GetDC((HWND)drawableHandle))) {
     ::DestroyWindow((HWND)drawableHandle);
     drawableHandle = 0;
-    throw UserInterfaceException("Unable to connect to device context", this);
+    throw UserInterfaceException("Unable to connect to device context.", this);
   }
   OpenGLContextImpl::graphicsContextHandle = WindowImpl::graphicsContextHandle; // TAG: fixme
 
@@ -291,19 +291,19 @@ nothing OpenGLContext::initialize(const Format& format) throw(OpenGLException, U
   numberOfUnderlayPlanes = (pfd.bReserved >> 4) & 0xf;
   
   if (!::SetPixelFormat((HDC)WindowImpl::graphicsContextHandle, formatId, &pfd)) {
-    throw OpenGLException("Unable to set format", this);
+    throw OpenGLException("Unable to set format.", this);
   }
   if (!(renderingContextHandle = native::GDI::wglCreateContext(
           (HDC)WindowImpl::graphicsContextHandle))) {
     ::DestroyWindow((HWND)drawableHandle);
     drawableHandle = 0;
-    throw OpenGLException("Unable to create rendering context", this);
+    throw OpenGLException("Unable to create rendering context.", this);
   }
   if (!native::GDI::wglMakeCurrent(
         (HDC)WindowImpl::graphicsContextHandle, (HGLRC)renderingContextHandle)) {
     ::DestroyWindow((HWND)drawableHandle);
     drawableHandle = 0;
-    throw OpenGLException("Invalid rendering context", this);
+    throw OpenGLException("Invalid rendering context.", this);
   }
 #else // unix
   fout << "GLX version: " << HEX << native::GLX::version << ENDL;
@@ -490,7 +490,7 @@ nothing OpenGLContext::initialize(const Format& format) throw(OpenGLException, U
     ::XDestroyWindow((Display*)displayHandle, (::Window)drawableHandle);
     drawableHandle = 0;
     screenHandle = 0;
-    throw OpenGLException("Unable to create rendering context", this);
+    throw OpenGLException("Unable to create rendering context.", this);
   }
   makeCurrent();
   

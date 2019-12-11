@@ -198,7 +198,7 @@ LinuxRawIEEE1394::LinuxRawIEEE1394() throw(IEEE1394Exception) {
   generation = request.generation;
   if (error || (status != IEEE1394Impl::STATUS_OK)) {
     ::close(handle);
-    throw IEEE1394Exception("Incompatibility", this);
+    throw IEEE1394Exception("Incompatibility.", this);
   }
 
   fcpListener = 0;
@@ -244,7 +244,7 @@ Array<EUI64> LinuxRawIEEE1394::getAdapters() throw(IEEE1394Exception) {
   while (true) {
     if ((::write(handle, &request, sizeof(request)) != sizeof(request)) ||
         (::read(handle, &request, sizeof(request)) != sizeof(request))) {
-      throw IEEE1394Exception("Unable to get adapters", this);
+      throw IEEE1394Exception("Unable to get adapters.", this);
     }
     switch (request.error) {
     case LinuxRawIEEE1394Impl::ERROR_NONE:
@@ -272,7 +272,7 @@ Array<EUI64> LinuxRawIEEE1394::getAdapters() throw(IEEE1394Exception) {
       this->generation = request.generation;
       break;
     default:
-      throw IEEE1394Exception("Unable to get adapters", this);
+      throw IEEE1394Exception("Unable to get adapters.", this);
     }
   }
 }

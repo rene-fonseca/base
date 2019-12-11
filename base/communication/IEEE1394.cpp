@@ -185,7 +185,7 @@ void IEEE1394::IsochronousWriteRequestImpl::setBuffer(
 //     queue(readFixedDataRequest);
 //     return;
 //   }
-//   throw IEEE1394Exception("Invalid request", this);
+//   throw IEEE1394Exception("Invalid request.", this);
 // }
 
 void IEEE1394::IsochronousWriteRequestImpl::setSpeed(unsigned int speed) throw(OutOfDomain, IEEE1394Exception) {
@@ -344,7 +344,7 @@ unsigned int IEEE1394::getVendorId(unsigned short node) throw(IEEE1394Exception)
       // TAG: Basler camera has 0x0c as keyValue
     }
   }
-  throw IEEE1394Exception("Invalid configuration ROM", this);
+  throw IEEE1394Exception("Invalid configuration ROM.", this);
 }
 
 int IEEE1394::getPhysicalId(const EUI64& guid) throw() {
@@ -852,7 +852,7 @@ void IEEE1394::loadSpeedMap() throw(IEEE1394Exception) {
   const unsigned short node = makeNodeId(busManagerId);
   uint32 crc = getQuadlet(node, IEEE1394::SPEED_MAP);
   if ((crc >> 16) != ((64 * 62 + 62 + 3)/4 + 1)) {
-    throw IEEE1394Exception("Invalid speed map", this);
+    throw IEEE1394Exception("Invalid speed map.", this);
   }
   
   // get speeds

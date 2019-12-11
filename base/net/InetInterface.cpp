@@ -456,7 +456,7 @@ unsigned int InetInterface::getIndexByAddress(const InetAddress& address) throw(
         0,
         0)) {
     closesocket(handle);
-    throw NetworkException("Unable to resolve interface", Type::getType<InetInterface>());
+    throw NetworkException("Unable to resolve interface.", Type::getType<InetInterface>());
   }
   closesocket(handle);
   const INTERFACE_INFO* current = Cast::pointer<const INTERFACE_INFO*>(buffer.getElements());
@@ -470,7 +470,7 @@ unsigned int InetInterface::getIndexByAddress(const InetAddress& address) throw(
       return index;
     }
   }
-  throw NetworkException("Unable to resolve interface", Type::getType<InetInterface>());
+  throw NetworkException("Unable to resolve interface.", Type::getType<InetInterface>());
 #else
   Thread::UseThreadLocalBuffer _buffer;
   Allocator<uint8>& buffer = _buffer;

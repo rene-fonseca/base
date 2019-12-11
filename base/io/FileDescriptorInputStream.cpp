@@ -126,7 +126,7 @@ unsigned int FileDescriptorInputStream::read(
       if (::GetLastError() == ERROR_BROKEN_PIPE) {
         result = 0;
       } else {
-        throw IOException("Unable to read from object", this);
+        throw IOException("Unable to read from object.", this);
       }
     }
 #else // unix
@@ -142,7 +142,7 @@ unsigned int FileDescriptorInputStream::read(
       case EAGAIN: // no data available (only in non-blocking mode)
 //        return bytesRead; // try later
       default:
-        throw IOException("Unable to read from object", this);
+        throw IOException("Unable to read from object.", this);
       }
     }
 #endif // flavor
@@ -198,7 +198,7 @@ void FileDescriptorInputStream::wait() const throw(IOException) {
 
   int result = ::select(fd->getHandle() + 1, &rfds, 0, 0, 0);
   if (result == -1) {
-    throw IOException("Unable to wait for input", this);
+    throw IOException("Unable to wait for input.", this);
   }
 #endif // flavor
 }
@@ -222,7 +222,7 @@ bool FileDescriptorInputStream::wait(
 
   int result = ::select(fd->getHandle() + 1, &rfds, 0, 0, &tv);
   if (result == -1) {
-    throw IOException("Unable to wait for input", this);
+    throw IOException("Unable to wait for input.", this);
   }
   return result; // return true if data available
 #endif // flavor

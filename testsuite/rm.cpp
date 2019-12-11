@@ -118,7 +118,7 @@ public:
             ferr << "unable to remove entry: " << entry << ENDL;
           }
           if (!force) {
-            throw FileSystemException("Unable to remove entry", this);
+            throw FileSystemException("Unable to remove entry.", this);
           }
         }
       } catch (FileSystemException& e) {

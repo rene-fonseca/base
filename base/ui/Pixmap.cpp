@@ -56,13 +56,13 @@ Pixmap::Pixmap(const Dimension& dimension, unsigned int flags) throw(UserInterfa
   HBITMAP bitmap = ::CreateCompatibleBitmap((HDC)pixmap, dimension.getWidth(), dimension.getHeight());
   if (!bitmap) {
     ::DeleteDC((HDC)pixmap);
-    throw UserInterfaceException("Unable to create pixmap", this);
+    throw UserInterfaceException("Unable to create pixmap.", this);
   }
   HGDIOBJ previous = ::SelectObject((HDC)pixmap, (HGDIOBJ)bitmap);
   if (!previous) {
     ::DeleteObject(bitmap);
     ::DeleteDC(pixmap);
-    throw UserInterfaceException("Unable to create pixmap", this);    
+    throw UserInterfaceException("Unable to create pixmap.", this);
   } else {
     ::DeleteObject(previous); // TAG: is this required
   }

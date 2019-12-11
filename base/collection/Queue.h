@@ -127,7 +127,7 @@ protected:
     Value pop() throw(InvalidNode)
     {
       if (!size) {
-        throw InvalidNode("Queue is empty", this);
+        throw InvalidNode("Queue is empty.", this);
       }
       Node* temp = first;
       first = first->getNext();

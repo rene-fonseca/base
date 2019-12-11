@@ -368,11 +368,11 @@ void FileSystem::setCurrentFolder(const String& path) throw(FileSystemException)
 {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   if (!::SetCurrentDirectory(ToWCharString(path))) {
-   throw FileSystemException("Unable to set current folder", Type::getType<FileSystem>());
+   throw FileSystemException("Unable to set current folder.", Type::getType<FileSystem>());
   }
 #else // unix
   if (::chdir(path.getElements())) {
-    throw FileSystemException("Unable to set current folder", Type::getType<FileSystem>());
+    throw FileSystemException("Unable to set current folder.", Type::getType<FileSystem>());
   }
 #endif // flavor
 }

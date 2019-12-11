@@ -221,7 +221,7 @@ protected:
     int terminationCode = -1; // invalidate
 
     while (!instream.wait(1000000)) { // wait for input
-      // throw Timeout("FTP connection timed out");
+      // throw Timeout("FTP connection timed out.");
     }
 
     while (true) { // read response
@@ -266,7 +266,7 @@ protected:
           }
         }
       } else if (!multipleLines) {
-        throw FTPException("Invalid reply");
+        throw FTPException("Invalid reply.");
       }
     }
     responsePending = false;
@@ -636,17 +636,18 @@ public:
     case POSITIVE_INTERMEDIATE:
       break;
     default:
-      throw FTPException("Unable to login");
+      throw FTPException("Unable to login.");
     }
     switch (sendPassword(password)) {
     case POSITIVE:
       break;
     default:
-      throw FTPException("Unable to login");
+      throw FTPException("Unable to login.");
     }
   }
 
-  void logout() throw(FTPException) {
+  void logout() throw(FTPException)
+  {
     if (verbosity >= DEBUG_NORMAL) {
       fout << "DEBUG: Requesting logout..." << ENDL;
     }
@@ -654,7 +655,8 @@ public:
     getResponse();
   }
 
-  void getDirectoryList() throw(FTPException) {
+  void getDirectoryList() throw(FTPException)
+  {
     if (verbosity >= DEBUG_NORMAL) {
       fout << "DEBUG: Retrieving directory list..." << ENDL;
     }
@@ -664,7 +666,8 @@ public:
     getResponse(); // wait for completed
   }
 
-  void retrieveFile(const String& filename) throw(FTPException) {
+  void retrieveFile(const String& filename) throw(FTPException)
+  {
     if (verbosity >= DEBUG_NORMAL) {
       fout << "DEBUG: Retrieving file..." << ENDL;
     }

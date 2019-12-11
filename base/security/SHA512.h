@@ -71,35 +71,43 @@ private:
 
   static const uint64 K[MESSAGE_SCHEDULE];
   
-  static inline uint64 rotateLeft(uint64 value, unsigned int bits) noexcept {
+  static inline uint64 rotateLeft(uint64 value, unsigned int bits) noexcept
+  {
     return (value << bits) | (value >> (64 - bits));
   }
   
-  static inline uint64 rotateRight(uint64 value, unsigned int bits) noexcept {
+  static inline uint64 rotateRight(uint64 value, unsigned int bits) noexcept
+  {
     return (value >> bits) | (value << (64 - bits));
   }
 
-  static inline uint64 ch(uint64 x, uint64 y, uint64 z) noexcept {
+  static inline uint64 ch(uint64 x, uint64 y, uint64 z) noexcept
+  {
     return (x & y) ^ (~x & z);
   }
   
-  static inline uint64 maj(uint64 x, uint64 y, uint64 z) noexcept {
+  static inline uint64 maj(uint64 x, uint64 y, uint64 z) noexcept
+  {
     return (x & y) ^ (x & z) ^ (y & z);
   }
   
-  static inline uint64 sum0(uint64 x) noexcept {
+  static inline uint64 sum0(uint64 x) noexcept
+  {
     return rotateRight(x, 28) ^ rotateRight(x, 34) ^ rotateRight(x, 39);
   }
   
-  static inline uint64 sum1(uint64 x) noexcept {
+  static inline uint64 sum1(uint64 x) noexcept
+  {
     return rotateRight(x, 14) ^ rotateRight(x, 18) ^ rotateRight(x, 41);
   }
   
-  static inline uint64 sigma0(uint64 x) noexcept {
+  static inline uint64 sigma0(uint64 x) noexcept
+  {
     return rotateRight(x, 1) ^ rotateRight(x, 8) ^ (x >> 7);
   }
   
-  static inline uint64 sigma1(uint64 x) noexcept {
+  static inline uint64 sigma1(uint64 x) noexcept
+  {
     return rotateRight(x, 19) ^ rotateRight(x, 61) ^ (x >> 6);
   }
 public:

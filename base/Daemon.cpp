@@ -308,7 +308,7 @@ Daemon::Daemon(Runnable* runnable) throw(SingletonException, ResourceException)
     break;
   case -1:
     SystemLogger::write(SystemLogger::ERROR, "Unable to daemonize process.");
-    throw ResourceException("Unable to daemonize process");
+    throw ResourceException("Unable to daemonize process.");
     break;
   }
 }

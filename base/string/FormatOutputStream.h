@@ -305,7 +305,8 @@ public:
     */
     PushContext(FormatOutputStream& _stream) noexcept;
     
-    inline const Context& getContext() const noexcept {
+    inline const Context& getContext() const noexcept
+    {
       return context;
     }
     
@@ -330,11 +331,13 @@ public:
       : count(allocateCount()), location(_location) {
     }
     
-    inline const Literal& getLocation() const noexcept {
+    inline const Literal& getLocation() const noexcept
+    {
       return location;
     }
     
-    inline unsigned int getCount() const noexcept {
+    inline unsigned int getCount() const noexcept
+    {
       return count;
     }
   };
@@ -420,42 +423,48 @@ public:
   /**
     Returns the flags for the next field.
   */
-  inline unsigned int getFlags() const noexcept {
+  inline unsigned int getFlags() const noexcept
+  {
     return context.flags;
   }
 
   /**
     Sets the flags for the next field.
   */
-  inline void setFlags(unsigned int flags) noexcept {
+  inline void setFlags(unsigned int flags) noexcept
+  {
     context.flags = flags;
   }
 
   /**
     Returns the current integer base.
   */
-  inline Symbols::Base getBase() const noexcept {
+  inline Symbols::Base getBase() const noexcept
+  {
     return context.integerBase;
   }
   
   /**
     Returns the current floating-point base.
   */
-  inline Symbols::Base getRealBase() const noexcept {
+  inline Symbols::Base getRealBase() const noexcept
+  {
     return context.realBase;
   }
   
   /**
     Returns the current field width.
   */
-  inline unsigned int getWidth() const noexcept {
+  inline unsigned int getWidth() const noexcept
+  {
     return context.width;
   }
   
   /**
     Returns the current precision.
   */
-  inline unsigned int getPrecision() const noexcept {
+  inline unsigned int getPrecision() const noexcept
+  {
     return context.precision;
   }
   
@@ -471,10 +480,12 @@ public:
   public:
     
     inline Indent(unsigned int _length) noexcept
-      : length(_length) {
+      : length(_length)
+    {
     }
     
-    inline unsigned int getIndent() const noexcept {
+    inline unsigned int getIndent() const noexcept
+    {
       return length;
     }
   };
@@ -486,10 +497,12 @@ public:
   public:
 
     inline TabIndent(unsigned int _length) noexcept
-      : length(_length) {
+      : length(_length)
+    {
     }
 
-    inline unsigned int getIndent() const noexcept {
+    inline unsigned int getIndent() const noexcept
+    {
       return length;
     }
   };
@@ -498,7 +511,8 @@ public:
     Indents the stream with the specified number of spaces. This is usually
     used immediately after an EOL.
   */
-  inline FormatOutputStream& operator<<(Indent indent) {
+  inline FormatOutputStream& operator<<(Indent indent)
+  {
     this->indent(indent.getIndent());
     return *this;
   }
@@ -507,7 +521,8 @@ public:
     Indents the stream with the specified number of TABs. This is usually
     used immediately after an EOL.
   */
-  inline FormatOutputStream& operator<<(TabIndent indent) {
+  inline FormatOutputStream& operator<<(TabIndent indent)
+  {
     this->indent(indent.getIndent(), true);
     return *this;
   }
@@ -714,14 +729,16 @@ extern _COM_AZURE_DEV__BASE__API FormatOutputStream ferr;
 /**
   Indent.
 */
-inline FormatOutputStream::Indent indent(unsigned int length) noexcept {
+inline FormatOutputStream::Indent indent(unsigned int length) noexcept
+{
   return FormatOutputStream::Indent(length);
 }
 
 /**
   Indent with TABs.
 */
-inline FormatOutputStream::TabIndent tabindent(unsigned int length) noexcept {
+inline FormatOutputStream::TabIndent tabindent(unsigned int length) noexcept
+{
   return FormatOutputStream::TabIndent(length);
 }
 
@@ -738,7 +755,8 @@ inline FormatOutputStream::TabIndent tabindent(unsigned int length) noexcept {
     char guid[16];
   public:
   
-    void myMethod() noexcept {
+    void myMethod() noexcept
+    {
       if (debugLevel >= VERY_VERBOSE) {
         fout << HEX << ZEROPAD << NOPREFIX << Sequence<unsigned char>(guid, sizeof(guid), ":") << ENDL;
       }
@@ -912,7 +930,8 @@ class _COM_AZURE_DEV__BASE__API GetString {
 };
 
 /** Used to explicitly request String from FormatOutputStream&. */
-inline GetString getString() noexcept {
+inline GetString getString() noexcept
+{
   return GetString();
 }
 

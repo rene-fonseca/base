@@ -73,7 +73,7 @@ Bitmap::Bitmap(
   );
   if (!bitmapHandle) {
     ::DeleteDC((HDC)deviceContextHandle);
-    throw UserInterfaceException("Unable to create bitmap", this);
+    throw UserInterfaceException("Unable to create bitmap.", this);
   }
   HGDIOBJ previous = ::SelectObject(
     (HDC)deviceContextHandle,
@@ -82,7 +82,7 @@ Bitmap::Bitmap(
   if (!previous) {
     ::DeleteObject(bitmapHandle);
     ::DeleteDC(deviceContextHandle);
-    throw UserInterfaceException("Unable to create bitmap", this);    
+    throw UserInterfaceException("Unable to create bitmap.", this);    
   } else {
     ::DeleteObject(previous); // TAG: is this required
   }

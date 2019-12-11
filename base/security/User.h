@@ -137,7 +137,8 @@ public:
     Returns false if the users are not identical. The method returns false if
     both users are invalid.
   */
-  inline bool operator!=(const User& compare) const noexcept {
+  inline bool operator!=(const User& compare) const noexcept
+  {
     return !(*this == compare);
   }
   
@@ -145,21 +146,24 @@ public:
     Returns true if the user is initialized. This does not mean that the user
     exists.
   */
-  inline bool isValid() const noexcept {
+  inline bool isValid() const noexcept
+  {
     return integralId != INVALID;
   }
   
   /**
     Returns the id of the user.
   */
-  inline const void* getId() const noexcept {
+  inline const void* getId() const noexcept
+  {
     return id.isValid() ? id->getElements() : nullptr;
   }
 
   /**
     Returns the integral id of the user.
   */
-  inline unsigned long getIntegralId() const noexcept {
+  inline unsigned long getIntegralId() const noexcept
+  {
     return integralId;
   }
   

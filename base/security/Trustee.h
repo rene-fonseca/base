@@ -145,7 +145,8 @@ public:
     Returns false if the trustees are not identical. The method returns false
     if both trustees are invalid.
   */
-  inline bool operator!=(const Trustee& compare) const noexcept {
+  inline bool operator!=(const Trustee& compare) const noexcept
+  {
     return !(*this == compare);
   }
   
@@ -170,7 +171,8 @@ public:
   /**
     Returns the integral id.
   */
-  inline unsigned long getIntegralId() const noexcept {
+  inline unsigned long getIntegralId() const noexcept
+  {
     return integralId;
   }
   

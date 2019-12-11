@@ -57,7 +57,7 @@ SharedMemory::SharedMemoryImpl::SharedMemoryImpl(
   );
   if (access == 0) {
     ::CloseHandle(handle);
-    throw MemoryException("Unable to open shared memory", this);
+    throw MemoryException("Unable to open shared memory.", this);
   }
 #else // unix
   handle = OperatingSystem::INVALID_HANDLE;

@@ -55,7 +55,8 @@ public:
     /**
       Initializes the exception object with no message.
     */
-    inline GroupException() noexcept {
+    inline GroupException() noexcept
+    {
     }
 
     /**
@@ -63,7 +64,9 @@ public:
 
       @param message The message.
     */
-    inline GroupException(const char* message) noexcept : Exception(message) {
+    inline GroupException(const char* message) noexcept
+      : Exception(message)
+    {
     }
 
     /**
@@ -71,7 +74,9 @@ public:
 
       @param type The identity of the type.
     */
-    inline GroupException(const Type& type) noexcept : Exception(type) {
+    inline GroupException(const Type& type) noexcept
+      : Exception(type)
+    {
     }
 
     /**
@@ -90,7 +95,8 @@ public:
   /**
     Initializes group as invalid.
   */
-  inline Group() noexcept {
+  inline Group() noexcept
+  {
   }
   
   /**
@@ -134,7 +140,8 @@ public:
     Returns false if the groups are not identical. The method returns false if
     both groups are invalid.
   */
-  inline bool operator!=(const Group& compare) const noexcept {
+  inline bool operator!=(const Group& compare) const noexcept
+  {
     return !(*this == compare);
   }
 

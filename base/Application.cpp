@@ -638,17 +638,17 @@ public:
       break;
     case SIGSEGV:
       SystemLogger::write(SystemLogger::INFORMATION, "Segmentation fault.");
-      throw MemoryException("Invalid memory access"); // TAG: remove
+      throw MemoryException("Invalid memory access."); // TAG: remove
       abort();
     case SIGILL:
       SystemLogger::write(SystemLogger::INFORMATION, "Invalid instruction.");
-      throw Exception("Invalid instruction");
+      throw Exception("Invalid instruction.");
     case SIGFPE:
       SystemLogger::write(
         SystemLogger::INFORMATION,
         "Floating point exception."
       );
-      throw Exception("Floating point exception");
+      throw Exception("Floating point exception.");
     case SIGABRT: // abort
       if (Thread::getThread()->isMainThread()) {
         SystemLogger::write(SystemLogger::INFORMATION, "Abort signal.");
@@ -689,14 +689,14 @@ void Application::initialize() throw()
 {
   static unsigned int singleton = 0;
   if (singleton != 0) {
-    throw SingletonException("Application has been initialized", this);
+    throw SingletonException("Application has been initialized.", this);
   }
   ++singleton;
 
   // install signal handler
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   if (!::SetConsoleCtrlHandler((PHANDLER_ROUTINE)ApplicationImpl::signalHandler, TRUE)) {
-    throw UnexpectedFailure("Unable to install signal handler", this);
+    throw UnexpectedFailure("Unable to install signal handler.", this);
   }
 
   WNDCLASSEX windowClass;
@@ -742,7 +742,7 @@ void Application::initialize() throw()
   action.sa_sigaction = ApplicationImpl::actionHandler;
   for (unsigned int i = 0; i < getArraySize(SIGNALS); ++i) {
     if (sigaction(SIGNALS[i], &action, 0) != 0) {
-      throw UnexpectedFailure("Unable to register signal handler", this);
+      throw UnexpectedFailure("Unable to register signal handler.", this);
     }
   }
 #  elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__IRIX65)
@@ -756,7 +756,7 @@ void Application::initialize() throw()
           (bsd_signal(SIGILL, ApplicationImpl::signalHandler) != SIG_ERR) &&
           (bsd_signal(SIGFPE, ApplicationImpl::signalHandler) != SIG_ERR) &&
           (bsd_signal(SIGABRT, ApplicationImpl::signalHandler) != SIG_ERR))) {
-      throw UnexpectedFailure("Unable to register signal handler", this);
+      throw UnexpectedFailure("Unable to register signal handler.", this);
     }
 #  else
     if (!((signal(SIGHUP, ApplicationImpl::signalHandler) != SIG_ERR) &&
@@ -769,7 +769,7 @@ void Application::initialize() throw()
           (signal(SIGILL, ApplicationImpl::signalHandler) != SIG_ERR) &&
           (signal(SIGFPE, ApplicationImpl::signalHandler) != SIG_ERR) &&
           (signal(SIGABRT, ApplicationImpl::signalHandler) != SIG_ERR))) {
-      throw UnexpectedFailure("Unable to register signal handler", this);
+      throw UnexpectedFailure("Unable to register signal handler.", this);
     }
 #  endif
 #endif

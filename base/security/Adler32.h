@@ -59,21 +59,24 @@ public:
   /**
     Returns the total size of the original message.
   */
-  inline uint64 getTotalSize() const noexcept {
+  inline uint64 getTotalSize() const noexcept
+  {
     return totalSize;
   }
   
   /**
     Returns the checksum.
   */
-  inline uint32 getValue() const noexcept {
+  inline uint32 getValue() const noexcept
+  {
     return checksum;
   }
   
   /**
     Sets the checksum.
   */
-  inline void setValue(uint32 value) noexcept {
+  inline void setValue(uint32 value) noexcept
+  {
     checksum = value;
   }
 };

@@ -37,7 +37,7 @@ _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 Group::Group(unsigned long _id) throw(OutOfDomain) : integralId(_id) {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
-  throw OutOfDomain("Invalid user id", this);
+  throw OutOfDomain("Invalid user id.", this);
 #else // unix
 //   bassert(
 //     static_cast<gid_t>(integralId) <= PrimitiveTraits<gid_t>::MAXIMUM,
@@ -59,7 +59,7 @@ Group::Group(const void* _id) throw(OutOfDomain)
   copy(id->getElements(), Cast::pointer<const uint8*>(_id), size);
   integralId = 0;
 #else // unix
-  throw OutOfDomain("Invalid group id", this);
+  throw OutOfDomain("Invalid group id.", this);
 #endif // flavor
 }
 

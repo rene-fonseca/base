@@ -68,26 +68,31 @@ private:
   /** Push one block (16 words). */
   void pushBlock(const uint8* block) noexcept;
   
-  static inline uint32 rotate(uint32 value, unsigned int bits) noexcept {
+  static inline uint32 rotate(uint32 value, unsigned int bits) noexcept
+  {
     return (value << bits) | (value >> (32 - bits));
   }
   
-  static inline void translate1(uint32 a, uint32& b, uint32 c, uint32 d, uint32& e, uint32 word) noexcept {
+  static inline void translate1(uint32 a, uint32& b, uint32 c, uint32 d, uint32& e, uint32 word) noexcept
+  {
     e += rotate(a, 5) + ((b & c) | (~b & d)) + word + 0x5a827999;
     b = rotate(b, 30);
   }
 
-  static inline void translate2(uint32 a, uint32& b, uint32 c, uint32 d, uint32& e, uint32 word) noexcept {
+  static inline void translate2(uint32 a, uint32& b, uint32 c, uint32 d, uint32& e, uint32 word) noexcept
+  {
     e += rotate(a, 5) + (b ^ c ^ d) + word + 0x6ed9eba1;
     b = rotate(b, 30);
   }
 
-  static inline void translate3(uint32 a, uint32& b, uint32 c, uint32 d, uint32& e, uint32 word) noexcept {
+  static inline void translate3(uint32 a, uint32& b, uint32 c, uint32 d, uint32& e, uint32 word) noexcept
+  {
     e += rotate(a, 5) + ((b & c) | (b & d) | (c & d)) + word + 0x8f1bbcdc;
     b = rotate(b, 30);
   }
 
-  static inline void translate4(uint32 a, uint32& b, uint32 c, uint32 d, uint32& e, uint32 word) noexcept {
+  static inline void translate4(uint32 a, uint32& b, uint32 c, uint32 d, uint32& e, uint32 word) noexcept
+  {
     e += rotate(a, 5) + (b ^ c ^ d) + word + 0xca62c1d6;
     b = rotate(b, 30);
   }

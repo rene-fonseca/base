@@ -1712,7 +1712,7 @@ void WindowImpl::setDisplayMode(DisplayMode displayMode) throw(UserInterfaceExce
         mode.dmPelsWidth = 0;
         mode.dmPelsHeight = 0;
         if (::ChangeDisplaySettings(&mode, CDS_FULLSCREEN)) {
-          throw UserInterfaceException("Unable to enter full screen mode", this);
+          throw UserInterfaceException("Unable to enter full screen mode.", this);
         }
         // ::EnumDisplaySettings();
       }

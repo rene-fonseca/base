@@ -695,7 +695,7 @@ int Thread::getPriority() throw(ThreadException)
   DWORD priorityClass = ::GetPriorityClass(::GetCurrentProcess());
   int priority = ::GetThreadPriority(::GetCurrentThread());
   if ((priorityClass == 0) || (priority == THREAD_PRIORITY_ERROR_RETURN)) {
-    throw ThreadException("Unable to get priority of thread", Type::getType<Thread>());
+    throw ThreadException("Unable to get priority of thread.", Type::getType<Thread>());
   }
   
   // named thread priorities

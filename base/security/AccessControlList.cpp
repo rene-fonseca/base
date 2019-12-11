@@ -94,7 +94,7 @@ const AccessControlEntry& AccessControlList::getACE(const Trustee& trustee) cons
       return *ace;
     }
   }
-  throw InvalidKey("Trustee not in ACL", this);
+  throw InvalidKey("Trustee not in ACL.", this);
 }
 
 // need exception to indicate that isMemberOf failed

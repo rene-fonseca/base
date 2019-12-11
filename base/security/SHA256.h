@@ -71,35 +71,43 @@ private:
   
   static const uint32 K[MESSAGE_SCHEDULE];
   
-  static inline uint32 rotateLeft(uint32 value, unsigned int bits) noexcept {
+  static inline uint32 rotateLeft(uint32 value, unsigned int bits) noexcept
+  {
     return (value << bits) | (value >> (32 - bits));
   }
   
-  static inline uint32 rotateRight(uint32 value, unsigned int bits) noexcept {
+  static inline uint32 rotateRight(uint32 value, unsigned int bits) noexcept
+  {
     return (value >> bits) | (value << (32 - bits));
   }
 
-  static inline uint32 ch(uint32 x, uint32 y, uint32 z) noexcept {
+  static inline uint32 ch(uint32 x, uint32 y, uint32 z) noexcept
+  {
     return (x & y) ^ (~x & z);
   }
   
-  static inline uint32 maj(uint32 x, uint32 y, uint32 z) noexcept {
+  static inline uint32 maj(uint32 x, uint32 y, uint32 z) noexcept
+  {
     return (x & y) ^ (x & z) ^ (y & z);
   }
   
-  static inline uint32 sum0(uint32 x) noexcept {
+  static inline uint32 sum0(uint32 x) noexcept
+  {
     return rotateRight(x, 2) ^ rotateRight(x, 13) ^ rotateRight(x, 22);
   }
   
-  static inline uint32 sum1(uint32 x) noexcept {
+  static inline uint32 sum1(uint32 x) noexcept
+  {
     return rotateRight(x, 6) ^ rotateRight(x, 11) ^ rotateRight(x, 25);
   }
   
-  static inline uint32 sigma0(uint32 x) noexcept {
+  static inline uint32 sigma0(uint32 x) noexcept
+  {
     return rotateRight(x, 7) ^ rotateRight(x, 18) ^ (x >> 3);
   }
   
-  static inline uint32 sigma1(uint32 x) noexcept {
+  static inline uint32 sigma1(uint32 x) noexcept
+  {
     return rotateRight(x, 17) ^ rotateRight(x, 19) ^ (x >> 10);
   }
 public:
@@ -128,7 +136,8 @@ public:
   /**
     Returns the total size of the original message.
   */
-  inline uint64 getTotalSize() const noexcept {
+  inline uint64 getTotalSize() const noexcept
+  {
     return totalSize;
   }
 

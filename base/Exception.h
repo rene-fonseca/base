@@ -145,7 +145,7 @@ public:
     void myMethod() throw(Exception)
     {
       if (!condition) {
-        throw Exception("my short message", this);
+        throw Exception("my short message.", this);
       }
       ...
     }

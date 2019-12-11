@@ -67,7 +67,7 @@ namespace opengl {
 
   void CALL_OPENGL missing() throw(OpenGLException) {
     // must always raise exception (to work with any calling convention/argument list)
-    throw OpenGLException("Function not supported", Type::getType<OpenGL>());
+    throw OpenGLException("Function not supported.", Type::getType<OpenGL>());
   }
   
   OpenGL::Descriptor OPEN_GL_1_1[] = {

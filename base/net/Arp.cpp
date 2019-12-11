@@ -426,7 +426,7 @@ unsigned int InetInterface::getIndexByAddress(const InetAddress& address) throw(
         0,
         0)) {
     closesocket(handle);
-    throw NetworkException("Unable to resolve interface", Type::getType<InetInterface>());
+    throw NetworkException("Unable to resolve interface.", Type::getType<InetInterface>());
   }
   closesocket(handle);
   const INTERFACE_INFO* current = Cast::pointer<const INTERFACE_INFO*>(buffer.getElements());
@@ -440,7 +440,7 @@ unsigned int InetInterface::getIndexByAddress(const InetAddress& address) throw(
       return index;
     }
   }
-  throw NetworkException("Unable to resolve interface", Type::getType<InetInterface>());
+  throw NetworkException("Unable to resolve interface.", Type::getType<InetInterface>());
 #else
   int handle = socket(PF_INET, SOCK_STREAM, 0);
 //   int numberOfInterfaces = 0;
@@ -572,7 +572,7 @@ String InetInterface::getName(unsigned int index) throw(NetworkException) {
     offset += sizeof(*current);
   }
   close(handle);
-  throw NetworkException("Unable to resolve interface", Type::getType<InetInterface>());
+  throw NetworkException("Unable to resolve interface.", Type::getType<InetInterface>());
 #endif
 }
 

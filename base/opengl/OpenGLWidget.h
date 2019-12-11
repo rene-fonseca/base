@@ -58,7 +58,8 @@ public:
   /**
     Destroys the widget.
   */
-  inline ~OpenGLWidget() throw() {
+  inline ~OpenGLWidget() throw()
+  {
   }
 };
 

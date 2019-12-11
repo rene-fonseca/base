@@ -15,10 +15,13 @@
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
-Construct::Construct() throw() {
+Construct::Construct() noexcept
+{
 }
 
-Construct::Construct(const char* message) throw() : Exception(message) {
+Construct::Construct(const char* message) noexcept
+  : Exception(message)
+{
 }
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

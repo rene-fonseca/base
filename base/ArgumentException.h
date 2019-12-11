@@ -74,7 +74,8 @@ public:
   /**
     Returns the argument number. Negative if invalid.
   */
-  inline int getArgumentNumber() const noexcept {
+  inline int getArgumentNumber() const noexcept
+  {
     return argumentNumber;
   }
   

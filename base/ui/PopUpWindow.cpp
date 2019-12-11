@@ -64,12 +64,12 @@ PopUpWindow::PopUpWindow(unsigned int flags) throw(UserInterfaceException)
     0 // application window data structure
   );
   if (!(HWND)drawableHandle) {
-    throw UserInterfaceException("Unable to create window", this);
+    throw UserInterfaceException("Unable to create window.", this);
   }
   if (!(graphicsContextHandle = ::GetDC((HWND)drawableHandle))) {
     ::DestroyWindow((HWND)drawableHandle);
     drawableHandle = 0;
-    throw UserInterfaceException("Unable to connect to device context", this);
+    throw UserInterfaceException("Unable to connect to device context.", this);
   }
 #elif defined(_COM_AZURE_DEV__BASE__USE_X11)
   int screenId = ::XDefaultScreen((Display*)displayHandle);
@@ -145,12 +145,12 @@ PopUpWindow::PopUpWindow(const Position& position, const Dimension& dimension, u
     0 // application window data structure
   );
   if (!(HWND)drawableHandle) {
-    throw UserInterfaceException("Unable to create window", this);
+    throw UserInterfaceException("Unable to create window.", this);
   }
   if (!(graphicsContextHandle = ::GetDC((HWND)drawableHandle))) {
     ::DestroyWindow((HWND)drawableHandle);
     drawableHandle = 0;
-    throw UserInterfaceException("Unable to connect to device context", this);
+    throw UserInterfaceException("Unable to connect to device context.", this);
   }
 #elif defined(_COM_AZURE_DEV__BASE__USE_X11)
   int screenId = ::XDefaultScreen((Display*)displayHandle);

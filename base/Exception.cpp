@@ -311,7 +311,7 @@ public:
     }
 
     try {
-      throw Exception("Message");
+      throw Exception("Message.");
     } catch (const Exception& e) {
       TEST_HERE(C);
       TEST_ASSERT(String(e.getMessage()) == String("Message"));

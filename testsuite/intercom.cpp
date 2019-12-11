@@ -461,7 +461,7 @@ public:
         rateSpecified = true;
         samplingRate = temp;
       } else {
-        throw OutOfDomain("Invalid argument");
+        throw OutOfDomain("Invalid argument.");
       }
     }
   }

@@ -28,7 +28,7 @@ Menu::MenuHandle::~MenuHandle() {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
     // TAG: only if unassigned to window
     if (!::DestroyMenu((HMENU)getHandle())) {
-      throw MenuException("Unable to destroy menu", this);
+      throw MenuException("Unable to destroy menu.", this);
     }
 #else // unix
     // TAG: fixme

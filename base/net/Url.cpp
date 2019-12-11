@@ -187,7 +187,7 @@ String Url::validateScheme(const String& value) throw(UrlException, MemoryExcept
     } else if (ch == '.') {
     } else if (ch == '-') {
     } else {
-      throw UrlException("Invalid scheme", Type::getType<Url>());
+      throw UrlException("Invalid scheme.", Type::getType<Url>());
     }
     temp += ch;
   }
@@ -200,7 +200,7 @@ String Url::validateUser(const String& str) throw(UrlException) {
     char ch = *i;
     bassert(
       ASCIITraits::isASCII(ch),
-      UrlException("Invalid character", Type::getType<Url>())
+      UrlException("Invalid character.", Type::getType<Url>())
     );
   }
   return str;

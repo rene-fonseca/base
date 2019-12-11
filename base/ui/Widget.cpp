@@ -67,12 +67,12 @@ Widget::Widget(Window& owner) throw(UserInterfaceException)
     0 // application window data structure
   );
   if (!drawableHandle) {
-    throw UserInterfaceException("Unable to create widget", this);
+    throw UserInterfaceException("Unable to create widget.", this);
   }
   if (!(graphicsContextHandle = ::GetDC((HWND)drawableHandle))) {
     ::DestroyWindow((HWND)drawableHandle);
     drawableHandle = 0;
-    throw UserInterfaceException("Unable to connect to device context", this);
+    throw UserInterfaceException("Unable to connect to device context.", this);
   }
 #elif defined(_COM_AZURE_DEV__BASE__USE_X11)
   int screenId = ::XDefaultScreen((Display*)displayHandle);
@@ -94,7 +94,7 @@ Widget::Widget(Window& owner) throw(UserInterfaceException)
     blackPixel // background
   );
   if (!drawableHandle) {
-    throw UserInterfaceException("Unable to create widget", this);
+    throw UserInterfaceException("Unable to create widget.", this);
   }
   
   ::XSelectInput(

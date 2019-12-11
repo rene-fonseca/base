@@ -1,4 +1,4 @@
-/***************************************************************************
+﻿/***************************************************************************
     The Base Framework
     A framework for developing platform independent applications
 
@@ -1000,11 +1000,11 @@ MemoryDiff Unicode::UTF32LEToUCS4(
 
   if (dest) {
     while (src != end) {
-      unsigned int code = 0;
-      code |= static_cast<unsigned int>(*src++) << 0;
-      code |= static_cast<unsigned int>(*src++) << 8;
-      code |= static_cast<unsigned int>(*src++) << 16;
-      code |= static_cast<unsigned int>(*src++) << 24; // most significant
+      uint32 code = 0;
+      code |= static_cast<uint32>(*src++) << 0;
+      code |= static_cast<uint32>(*src++) << 8;
+      code |= static_cast<uint32>(*src++) << 16;
+      code |= static_cast<uint32>(*src++) << 24; // most significant
       if (code >= MAX_ISO) {
         return INVALID_UCS4_CHARACTER;
       }
@@ -1014,11 +1014,11 @@ MemoryDiff Unicode::UTF32LEToUCS4(
   } else {
     MemorySize length = 0;
     while (src != end) {
-      unsigned int code = 0;
-      code |= static_cast<unsigned int>(*src++) << 0;
-      code |= static_cast<unsigned int>(*src++) << 8;
-      code |= static_cast<unsigned int>(*src++) << 16;
-      code |= static_cast<unsigned int>(*src++) << 24; // most significant
+      uint32 code = 0;
+      code |= static_cast<uint32>(*src++) << 0;
+      code |= static_cast<uint32>(*src++) << 8;
+      code |= static_cast<uint32>(*src++) << 16;
+      code |= static_cast<uint32>(*src++) << 24; // most significant
       if (code >= MAX_ISO) {
         return INVALID_UCS4_CHARACTER;
       }
@@ -1044,11 +1044,11 @@ MemoryDiff Unicode::UTF32BEToUCS4(
 
   if (dest) {
     while (src != end) {
-      unsigned int code = 0;
-      code |= static_cast<unsigned int>(*src++) << 24; // most significant
-      code |= static_cast<unsigned int>(*src++) << 16;
-      code |= static_cast<unsigned int>(*src++) << 8;
-      code |= static_cast<unsigned int>(*src++) << 0;
+      uint32 code = 0;
+      code |= static_cast<uint32>(*src++) << 24; // most significant
+      code |= static_cast<uint32>(*src++) << 16;
+      code |= static_cast<uint32>(*src++) << 8;
+      code |= static_cast<uint32>(*src++) << 0;
       if (code >= MAX_ISO) {
         return INVALID_UCS4_CHARACTER;
       }
@@ -1058,11 +1058,11 @@ MemoryDiff Unicode::UTF32BEToUCS4(
   } else {
     MemorySize length = 0;
     while (src != end) {
-      unsigned int code = 0;
-      code |= static_cast<unsigned int>(*src++) << 24; // most significant
-      code |= static_cast<unsigned int>(*src++) << 16;
-      code |= static_cast<unsigned int>(*src++) << 8;
-      code |= static_cast<unsigned int>(*src++) << 0;
+      uint32 code = 0;
+      code |= static_cast<uint32>(*src++) << 24; // most significant
+      code |= static_cast<uint32>(*src++) << 16;
+      code |= static_cast<uint32>(*src++) << 8;
+      code |= static_cast<uint32>(*src++) << 0;
       if (code >= MAX_ISO) {
         return INVALID_UCS4_CHARACTER;
       }
@@ -1084,14 +1084,14 @@ Unicode::MultibyteEncoding Unicode::getMultibyteEncoding(const uint8* src, Memor
       const uint8* end = src + size;
       const uint8* s = src;
       while (s < end) {
-        unsigned int be = (static_cast<unsigned int>(s[0]) << 24) |
-          (static_cast<unsigned int>(s[1]) << 16) |
-          (static_cast<unsigned int>(s[2]) << 8) |
-          (static_cast<unsigned int>(s[3]) << 0);
-        unsigned int le = (static_cast<unsigned int>(s[0]) << 0) |
-          (static_cast<unsigned int>(s[1]) << 8) |
-          (static_cast<unsigned int>(s[2]) << 16) |
-          (static_cast<unsigned int>(s[3]) << 24);
+        uint32 be = (static_cast<uint32>(s[0]) << 24) |
+          (static_cast<uint32>(s[1]) << 16) |
+          (static_cast<uint32>(s[2]) << 8) |
+          (static_cast<uint32>(s[3]) << 0);
+        uint32 le = (static_cast<uint32>(s[0]) << 0) |
+          (static_cast<uint32>(s[1]) << 8) |
+          (static_cast<uint32>(s[2]) << 16) |
+          (static_cast<uint32>(s[3]) << 24);
         bool validBe = (be <= 0x0000ffff) || ((be <= 0x0010ffff) && ((be & 0xf) < 0xe));
         bool validLe = (le <= 0x0000ffff) || ((le <= 0x0010ffff) && ((le & 0xf) < 0xe));
         if (validBe && !validLe) {
@@ -1175,7 +1175,7 @@ ToWCharString::ToWCharString(const WideString& string)
   }
 }
 
-#if 0 && defined(_COM_AZURE_DEV__BASE__TESTS)
+#if defined(_COM_AZURE_DEV__BASE__TESTS)
 
 class TEST_CLASS(Unicode) : public UnitTest {
 public:
@@ -1185,7 +1185,12 @@ public:
 
   void run() override
   {
-    // Unicode::UTF8ToUCS4();
+    const char /*char8_t*/* s8 = u8"abc 123 æøå ! ÆØÅ ! âêîôû";
+    TEST_ASSERT(Unicode::UTF8ToUCS4(nullptr, reinterpret_cast<const uint8*>(s8), getNullTerminatedLength(s8)) == 25);
+    const char16_t* s16 = u"abc 123 æøå ! ÆØÅ ! âêîôû";
+    TEST_ASSERT(Unicode::UTF16ToUCS4(nullptr, s16, getNullTerminatedLength(s16)) == 25);
+    const char32_t* s32 = U"abc 123 æøå ! ÆØÅ ! âêîôû";
+    TEST_ASSERT(getNullTerminatedLength(s32) == 25);
   }
 };
 

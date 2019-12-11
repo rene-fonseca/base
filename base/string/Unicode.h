@@ -388,6 +388,23 @@ public:
     MemorySize size,
     unsigned int flags = EAT_BOM) noexcept;
 
+  /**
+    Low-level method which converts an UTF-8 encoded string to UCS-4 encoding.
+    The destination buffer must have room for enough characters (guaranteed to
+    not exceed size).
+
+    @param dest The destination buffer (may be nullptr).
+    @param src The UTF-8 encoded string.
+    @param size The number of bytes in the UTF-8 encoded string.
+    @param flags The encoding flags. The default is EAT_BOM.
+
+    @return The number of characters in the UCS-4 encoded string.
+  */
+  static inline MemoryDiff UTF8ToUCS4(ucs4* dest, const char* src, MemorySize size, unsigned int flags = EAT_BOM) noexcept
+  {
+    return UTF8ToUCS4(dest, reinterpret_cast<const uint8*>(src), size, flags);
+  }
+
   /** Encoding flags. */
   enum EncodingFlags {
     /** Specifies that a BOM should be inserted when encoding to UTF. */
@@ -471,8 +488,18 @@ public:
   /** Convert in-memory (no BOM) UTF-16 to UCS-4. */
   static MemoryDiff UTF16ToUCS4(ucs4* dest, const utf16* src, MemorySize size, unsigned int flags = 0) noexcept;
 
+  /** Convert in-memory (no BOM) UTF-16 to UCS-4. */
+  static inline MemoryDiff UTF16ToUCS4(ucs4* dest, const char16_t* src, MemorySize size, unsigned int flags = 0) noexcept {
+    return UTF16ToUCS4(dest, reinterpret_cast<const utf16*>(src), size, flags);
+  }
+
   /** Convert in-memory (no BOM) UCS-4 to UTF-16. */
   static MemoryDiff UCS4ToUTF16(utf16* dest, const ucs4* src, MemorySize size, unsigned int flags = 0) noexcept;
+
+  /** Convert in-memory (no BOM) UCS-4 to UTF-16. */
+  static inline MemoryDiff UCS4ToUTF16(char16_t* dest, const ucs4* src, MemorySize size, unsigned int flags = 0) noexcept {
+    return UCS4ToUTF16(reinterpret_cast<utf16*>(dest), src, size, flags);
+  }
 
   /**
     Low-level method which converts an UCS-4 encoded string to UTF-32BE. A

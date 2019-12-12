@@ -12,6 +12,7 @@
  ***************************************************************************/
 
 #include <base/ui/Widget.h>
+#include <base/build.h>
 
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
 #  include <windows.h>

@@ -12,6 +12,7 @@
  ***************************************************************************/
 
 #include <base/ui/GraphicsContext.h>
+#include <base/build.h>
 
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
 #  include <base/platforms/win32/Helpers.h>

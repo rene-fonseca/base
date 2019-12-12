@@ -14,6 +14,7 @@
 #pragma once
 
 #include <base/platforms/features.h>
+#include <base/build.h>
 
 #if (_COM_AZURE_DEV__BASE__FLAVOR != _COM_AZURE_DEV__BASE__UNIX)
 #  error native GLX interface requires unix flavor

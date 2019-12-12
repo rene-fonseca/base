@@ -62,7 +62,8 @@ public:
     pushEnd() has been invoked if the compressed data has been padded with
     garbage.
   */
-  inline bool atEnd() const throw() {
+  inline bool atEnd() const noexcept
+  {
     return state == ENDED;
   }
   
@@ -99,7 +100,7 @@ public:
   /**
     Destroys the inflater.
   */
-  virtual ~BZip2Inflater() throw();
+  virtual ~BZip2Inflater() noexcept;
 };
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

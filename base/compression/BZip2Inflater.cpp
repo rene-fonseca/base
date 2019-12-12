@@ -16,6 +16,7 @@
 #include <base/io/EndOfFile.h>
 #include <base/string/FormatOutputStream.h>
 #include <base/NotSupported.h>
+#include <base/build.h>
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
@@ -34,12 +35,13 @@ namespace internal {
       unsigned int totalOutputLow;
       unsigned int totalOutputHigh;
       void* state;
-      void* (*allocate)(void*, int, int) throw();
-      void (*release)(void*, void*) throw();
+      void* (*allocate)(void*, int, int) noexcept;
+      void (*release)(void*, void*) noexcept;
       void* opaque;
     };
     
-    static void* allocate(void*, int n, int m) throw() {
+    static void* allocate(void*, int n, int m) noexcept
+    {
       MemorySize size = static_cast<MemorySize>(n) * m;
       if ((size < 0) || (size > PrimitiveTraits<unsigned int>::MAXIMUM))  {
         return 0;
@@ -47,7 +49,7 @@ namespace internal {
       return Heap::allocateNoThrow<uint8>(size);
     }
     
-    static void release(void*, void* memory) throw()
+    static void release(void*, void* memory) noexcept
     {
       Heap::release<uint8>(static_cast<uint8*>(memory));
     }
@@ -70,8 +72,9 @@ namespace internal {
 };
 
 BZip2Inflater::BZip2Inflater() throw(MemoryException)
-  : buffer(BUFFER_SIZE), availableBytes(0), state(RUNNING) {
-#if (defined(_COM_AZURE_DEV__BASE__BZ2))
+  : buffer(BUFFER_SIZE), availableBytes(0), state(RUNNING)
+{
+#if (defined(_COM_AZURE_DEV__BASE__USE_BZIP2))
   internal::BZip2Inflater::Context* context = new internal::BZip2Inflater::Context;
   this->context = context;
   clear(*context);
@@ -86,8 +89,9 @@ BZip2Inflater::BZip2Inflater() throw(MemoryException)
 #endif
 }
 
-unsigned int BZip2Inflater::push(const uint8* buffer, unsigned int size) throw(IOException) {
-#if (defined(_COM_AZURE_DEV__BASE__BZ2))
+unsigned int BZip2Inflater::push(const uint8* buffer, unsigned int size) throw(IOException)
+{
+#if (defined(_COM_AZURE_DEV__BASE__USE_BZIP2))
   bassert(state != ENDED, EndOfFile());
   bassert(state == RUNNING, IOException(this));
   if (availableBytes == this->buffer.getSize()) {
@@ -117,7 +121,7 @@ unsigned int BZip2Inflater::push(const uint8* buffer, unsigned int size) throw(I
 }
 
 void BZip2Inflater::pushEnd() throw(IOException) {
-#if (defined(_COM_AZURE_DEV__BASE__BZ2))
+#if (defined(_COM_AZURE_DEV__BASE__USE_BZIP2))
   if (state != ENDED) {
     bassert(state == RUNNING, IOException(this));
     state = FINISHING;
@@ -128,7 +132,7 @@ void BZip2Inflater::pushEnd() throw(IOException) {
 }
 
 unsigned int BZip2Inflater::pull(uint8* buffer, unsigned int size) throw(IOException) {
-#if (defined(_COM_AZURE_DEV__BASE__BZ2))
+#if (defined(_COM_AZURE_DEV__BASE__USE_BZIP2))
   bassert(state != ENDED, EndOfFile());
   
   if ((state == RUNNING) &&
@@ -189,8 +193,9 @@ unsigned int BZip2Inflater::pull(uint8* buffer, unsigned int size) throw(IOExcep
 #endif
 }
 
-BZip2Inflater::~BZip2Inflater() throw() {
-#if (defined(_COM_AZURE_DEV__BASE__BZ2))
+BZip2Inflater::~BZip2Inflater() noexcept
+{
+#if (defined(_COM_AZURE_DEV__BASE__USE_BZIP2))
   internal::BZip2Inflater::Context* context =
     Cast::pointer<internal::BZip2Inflater::Context*>(this->context);
   internal::BZ2_bzDecompressEnd(context);

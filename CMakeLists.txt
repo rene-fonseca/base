@@ -89,6 +89,7 @@ if (UNIX)
 endif()
 
 find_package(ZLib)
+find_package(BZip2)
 
 file(GLOB_RECURSE base_platforms_SRC
   "base/platforms/*.h"
@@ -182,8 +183,16 @@ configure_file(${CMAKE_SOURCE_DIR}/config.h.in ${CMAKE_BINARY_DIR}/generated/bas
 if (ZLIB_FOUND)
 option(_COM_AZURE_DEV__BASE__USE_ZLIB "Enable ZLib" ON)
 endif ()
+if (BZIP2_FOUND)
+option(_COM_AZURE_DEV__BASE__USE_BZIP2 "Enable BZip2" ON)
+endif ()
+
 option(_COM_AZURE_DEV__BASE__USE_X11 "Enable X11" X11_FOUND)
+option(_COM_AZURE_DEV__BASE__USE_WASM "Enable WASMTIME" WASMTIME_FOUND)
 configure_file(${CMAKE_SOURCE_DIR}/build.h.in ${CMAKE_BINARY_DIR}/generated/base/build.h)
+# generate header with include of ZLIB_INCLUDE_DIRS
+# generate header with include of BZIP2_INCLUDE_DIR
+# e.g. #include <relativepath/xxx.h> ${CMAKE_BINARY_DIR}/generated/base/bzip2.h)
 
 set(base_ADDITIONAL "")
 if (MSVC)
@@ -228,6 +237,10 @@ endif ()
 if (ZLIB_FOUND)
   target_link_libraries(base ${ZLIB_LIBRARIES})
 endif ()
+if (BZIP2_FOUND)
+  target_link_libraries(base ${BZIP2_LIBRARIES})
+endif ()
+
 
 # macOS requires all values to be less than 1024
 set_target_properties(base

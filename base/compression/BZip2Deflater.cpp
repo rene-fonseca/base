@@ -49,7 +49,7 @@ namespace internal {
       return Heap::allocateNoThrow<uint8>(size);
     }
     
-    static void release(void*, void* memory)
+    static void release(void*, void* memory) noexcept
     {
       Heap::release<uint8>(static_cast<uint8*>(memory));
     }
@@ -77,7 +77,7 @@ namespace internal {
   extern "C" int BZ2_bzCompressEnd(BZip2Deflater::Context* stream);
 };
 
-BZip2Deflater::BZip2Deflater() throw(MemoryException)
+BZip2Deflater::BZip2Deflater()
   : buffer(BUFFER_SIZE), availableBytes(0), state(RUNNING)
 {
 #if (defined(_COM_AZURE_DEV__BASE__USE_BZIP2))
@@ -97,7 +97,7 @@ BZip2Deflater::BZip2Deflater() throw(MemoryException)
 #endif
 }
 
-BZip2Deflater::BZip2Deflater(unsigned int compressionLevel) throw(MemoryException)
+BZip2Deflater::BZip2Deflater(unsigned int compressionLevel)
   : buffer(BUFFER_SIZE), availableBytes(0), state(RUNNING)
 {
 #if (defined(_COM_AZURE_DEV__BASE__USE_BZIP2))
@@ -117,7 +117,7 @@ BZip2Deflater::BZip2Deflater(unsigned int compressionLevel) throw(MemoryExceptio
 #endif
 }
 
-void BZip2Deflater::flush() throw(IOException)
+void BZip2Deflater::flush()
 {
 #if (defined(_COM_AZURE_DEV__BASE__USE_BZIP2))
   bassert(state != ENDED, EndOfFile());
@@ -128,7 +128,7 @@ void BZip2Deflater::flush() throw(IOException)
 #endif
 }
 
-unsigned int BZip2Deflater::push(const uint8* buffer, unsigned int size) throw(IOException)
+unsigned int BZip2Deflater::push(const uint8* buffer, unsigned int size)
 {
 #if (defined(_COM_AZURE_DEV__BASE__USE_BZIP2))
   bassert(state != ENDED, EndOfFile());
@@ -153,7 +153,7 @@ unsigned int BZip2Deflater::push(const uint8* buffer, unsigned int size) throw(I
 #endif
 }
 
-void BZip2Deflater::pushEnd() throw(IOException)
+void BZip2Deflater::pushEnd()
 {
 #if (defined(_COM_AZURE_DEV__BASE__USE_BZIP2))
   bassert(state != ENDED, EndOfFile());
@@ -164,7 +164,7 @@ void BZip2Deflater::pushEnd() throw(IOException)
 #endif
 }
 
-unsigned int BZip2Deflater::pull(uint8* buffer, unsigned int size) throw(IOException)
+unsigned int BZip2Deflater::pull(uint8* buffer, unsigned int size)
 {
 #if (defined(_COM_AZURE_DEV__BASE__USE_BZIP2))
   bassert(state != ENDED, EndOfFile());
@@ -245,7 +245,7 @@ unsigned int BZip2Deflater::pull(uint8* buffer, unsigned int size) throw(IOExcep
 #endif
 }
 
-BZip2Deflater::~BZip2Deflater() noexcept
+BZip2Deflater::~BZip2Deflater()
 {
 #if (defined(_COM_AZURE_DEV__BASE__USE_BZIP2))
   internal::BZip2Deflater::Context* context =

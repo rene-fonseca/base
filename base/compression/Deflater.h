@@ -35,16 +35,17 @@ public:
     pulled from the stream). This always returns false until pushEnd() has been
     invoked.
   */
-  virtual bool atEnd() const throw() = 0;
+  virtual bool atEnd() const = 0;
   
   /**
     Flushes any uncompressed data onto the stream. The stream has been flushed
     when pull() returns 0. One or more invocations of pull() is required. push()
     may only be invoked hereafter.
   */
-  virtual void flush() throw(IOException) = 0;
+  virtual void flush() = 0;
 
-  virtual ~Deflater() {
+  virtual ~Deflater()
+  {
   }
 };
 

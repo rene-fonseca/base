@@ -57,20 +57,21 @@ public:
   /**
     Initializes the deflater with the default compression level.
   */
-  BZip2Deflater() throw(MemoryException);
+  BZip2Deflater();
   
   /**
     Initializes the deflater with the specified compression level.
     
     @param compressionLevel The compression level.
   */
-  BZip2Deflater(unsigned int compressionLevel) throw(MemoryException);
+  BZip2Deflater(unsigned int compressionLevel);
   
   /**
     Returns true if the end has been reached. This always returns false until
     pushEnd() has been invoked.
   */
-  inline bool atEnd() const throw() {
+  inline bool atEnd() const noexcept
+  {
     return state == ENDED;
   }
   
@@ -78,7 +79,7 @@ public:
     Flushes the stream. Invoke pull() one or more times to read the compressed
     data. The stream has been flushed when pull() returns 0.
   */
-  void flush() throw(IOException);
+  void flush();
   
   /**
     Pushes uncompressed data onto the stream. This method may return 0 if the
@@ -90,13 +91,13 @@ public:
     
     @return The number of bytes pushed.
   */
-  unsigned int push(const uint8* buffer, unsigned int size) throw(IOException);
+  unsigned int push(const uint8* buffer, unsigned int size);
   
   /**
     This method should be invoked when all uncompressed data has been pushed
     onto the stream. Do not invoke flush(), push(), or pushEnd() hereafter.
   */
-  void pushEnd() throw(IOException);
+  void pushEnd();
   
   /**
     Pulls compressed bytes from the stream. EndOfFile is raised if atEnd()
@@ -109,12 +110,12 @@ public:
     
     @return The number of bytes pulled.
   */
-  unsigned int pull(uint8* buffer, unsigned int size) throw(IOException);
+  unsigned int pull(uint8* buffer, unsigned int size);
   
   /**
     Destroys the deflater.
   */
-  virtual ~BZip2Deflater() throw();
+  virtual ~BZip2Deflater();
 };
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

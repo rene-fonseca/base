@@ -15,6 +15,7 @@
 #include <base/webassembly/WebAssembly.h>
 #include <base/filesystem/FileSystem.h>
 #include <base/string/Format.h>
+#include <base/LongInteger.h>
 
 using namespace com::azure::dev::base;
 
@@ -27,6 +28,7 @@ private:
   enum Command {
     COMMAND_VERSION,
     COMMAND_HELP,
+    COMMAND_DUMP,
     COMMAND_RUN
   };
 public:
@@ -57,12 +59,31 @@ public:
          << EOL
          << "Options:" << EOL
          << indent(2) << "--help      This message" << EOL
-         << indent(2) << "--version   Dump the version" << EOL
+         << indent(2) << "--dump      Dumps info about the WASM module" << EOL
+         << indent(2) << "--version   Show the version" << EOL
          << indent(2) << "--run       Run WASM module" << EOL
          << ENDL;
   }
 
-  void run(const String& path, const String& id, bool time)
+  void dump(const String& path, const String& pattern)
+  {
+    if (!FileSystem::fileExists(path)) {
+      ferr << "Error: Failed to load module." << ENDL;
+      setExitCode(1);
+      return;
+    }
+    WebAssembly wasm;
+    if (!wasm.load(path)) {
+      ferr << "Error: Failed to load and compile module." << ENDL;
+      setExitCode(1);
+      return;
+    }
+    for (auto s : wasm.getExports()) {
+      fout << s.id << EOL;
+    }
+  }
+
+  void run(const String& path, const String& id, const Array<AnyValue>& arguments, bool time)
   {
     if (!FileSystem::fileExists(path)) {
       ferr << "Error: Failed to load module." << ENDL;
@@ -81,7 +102,7 @@ public:
     }
     timer.start();
     try {
-      wasm.call(id, Array<AnyValue>());
+      wasm.call(id, arguments);
     } catch (...) {
       ferr << Format::subst("Error: Failed to call function '%1'.", id) << ENDL;
       setExitCode(1);
@@ -96,7 +117,7 @@ public:
     Command command = COMMAND_RUN;
     String path;
     String id;
-    Array<String> callArguments;
+    Array<AnyValue> callArguments;
     bool time = false;
     
     const auto arguments = getArguments();
@@ -105,6 +126,8 @@ public:
       const String argument = *enu.next();
       if (argument == "--help") {
         command = COMMAND_HELP;
+      } else if (argument == "--dump") {
+        command = COMMAND_DUMP;
       } else if (argument == "--version") {
         command = COMMAND_VERSION;
       } else if (argument == "--time") {
@@ -115,7 +138,11 @@ public:
         } else if (!id) {
           id = argument;
         } else {
-          callArguments.append(argument); // TAG: unescape string type
+          try {
+            callArguments.append(static_cast<int64>(LongInteger::parse(argument)));
+          } catch (...) {
+            callArguments.append(argument); // TAG: unescape string type
+          }
         }
       }
     }
@@ -127,11 +154,14 @@ public:
     case COMMAND_HELP:
       help();
       break;
+    case COMMAND_DUMP:
+      dump();
+      break;
     default:
       if (!id) {
         id = "main";
       }
-      run(path, id, time);
+      run(path, id, callArguments, time);
       break;
     }
   }

@@ -24,7 +24,7 @@ _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 */
 
 class _COM_AZURE_DEV__BASE__API WebAssembly : public Object {
-protected:
+private:
 
   class Handle;
 
@@ -39,19 +39,52 @@ public:
     TYPE_f64,
     TYPE_STRING
   };
-  
-  // TAG: map types
-  // bool -> i32
-  // int -> i32
-  // int64 -> i64
-  // float -> f32
-  // double -> f64
-  // long double -> f64
+
+  /** Returns type as string. */
+  static const char* toString(Type type) noexcept
+  {
+    switch (type) {
+    case TYPE_FUNCTION:
+      return "FUNCTION";
+    case TYPE_i32:
+      return "i32";
+    case TYPE_i64:
+      return "i64";
+    case TYPE_f32:
+      return "f32";
+    case TYPE_f64:
+      return "f64";
+    case TYPE_STRING:
+      return "STRING";
+    default:
+      BASSERT(!"Not supported.");
+      return "UNKNOWN";
+    }
+  }
+
+  /*
+  bool -> i32
+  int -> i32
+  int64 -> i64
+  float -> f32
+  double -> f64
+  long double -> f64
+  String/WideString -> string
+  */
+
+  /*
+  string -> String/WideString
+  i32 -> int
+  i64 -> int64
+  f32 -> float
+  f64 -> double
+  */
 
   /** Description for symbol. */
   class Symbol {
   public:
 
+    String id;
     Type type = TYPE_FUNCTION;
     Array<Type> arguments;
     Type returnType = TYPE_i32;
@@ -104,6 +137,10 @@ public:
 
   /** Calls the function with the given id and arguments. */
   AnyValue call(const String& id, const Array<AnyValue>& arguments);
+
+  // void readMemory(uint8* dest, unsigned int address, unsigned int size);
+  // void writeMemory(unsigned int address, const uint8* src, unsigned int size);
+  // String getString(unsigned int address, unsigned int length);
 
   // TAG: get stack trace
   // TAG: call async to start thread

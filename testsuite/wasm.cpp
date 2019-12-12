@@ -15,6 +15,7 @@
 #include <base/webassembly/WebAssembly.h>
 #include <base/filesystem/FileSystem.h>
 #include <base/string/Format.h>
+#include <base/string/Parser.h>
 #include <base/LongInteger.h>
 
 using namespace com::azure::dev::base;
@@ -79,7 +80,22 @@ public:
       return;
     }
     for (auto s : wasm.getExports()) {
-      fout << s.id << EOL;
+      if (Parser::doesMatchPattern(pattern, s.id)) {
+        if (s.type == WebAssembly::TYPE_FUNCTION) {
+          fout << WebAssembly::toString(s.returnType) << " " << s.id << "(";
+          bool first = true;
+          for (auto a : s.arguments) {
+            if (first) {
+              fout << ", ";
+            }
+            first = false;
+            fout << WebAssembly::toString(a);
+          }
+          fout << ")" << ENDL;
+        } else {
+          fout << WebAssembly::toString(s.returnType) << " " << s.id << ENDL;
+        }
+      }
     }
   }
 
@@ -117,6 +133,7 @@ public:
     Command command = COMMAND_RUN;
     String path;
     String id;
+    String pattern = "*";
     Array<AnyValue> callArguments;
     bool time = false;
     
@@ -137,6 +154,7 @@ public:
           path = argument;
         } else if (!id) {
           id = argument;
+          pattern = argument;
         } else {
           try {
             callArguments.append(static_cast<int64>(LongInteger::parse(argument)));
@@ -155,7 +173,7 @@ public:
       help();
       break;
     case COMMAND_DUMP:
-      dump();
+      dump(path, pattern);
       break;
     default:
       if (!id) {

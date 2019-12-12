@@ -239,7 +239,7 @@ namespace {
     throw JSONException("Malformed UTF-16 word for string literal.", parser.getPosition());
   }
 }
-  
+
 Reference<ObjectModel::String> JSON::parseString(JSONParser& parser)
 {
   skipSpaces(parser);
@@ -343,6 +343,17 @@ Reference<ObjectModel::String> JSON::parseString(JSONParser& parser)
   }
   parser.read('"');
   return objectModel.createString(buffer);
+}
+
+String JSON::parseString(const String& text)
+{
+  JSON json;
+  JSON::JSONParser parser(
+    reinterpret_cast<const uint8*>(text.native()),
+    reinterpret_cast<const uint8*>(text.native()) + text.getLength()
+  );
+  auto s = json.parseString(parser);
+  return s->value;
 }
 
 Reference<ObjectModel::Array> JSON::parseArray(JSONParser& parser)

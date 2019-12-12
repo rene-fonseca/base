@@ -244,6 +244,9 @@ public:
   static inline String getJSONNoFormatting(Reference<ObjectModel::Value> value) {
     return getJSON(value, 0);
   }
+
+  /** Returns the string value for the given JSON string text. */
+  static String parseString(const String& text);
 };
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

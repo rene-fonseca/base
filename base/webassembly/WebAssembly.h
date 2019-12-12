@@ -32,6 +32,7 @@ private:
 public:
 
   enum Type {
+    TYPE_UNSPECIFIED,
     TYPE_FUNCTION,
     TYPE_i32,
     TYPE_i64,
@@ -44,6 +45,8 @@ public:
   static const char* toString(Type type) noexcept
   {
     switch (type) {
+    case TYPE_UNSPECIFIED:
+      return "UNSPECIFIED";
     case TYPE_FUNCTION:
       return "FUNCTION";
     case TYPE_i32:
@@ -58,7 +61,7 @@ public:
       return "STRING";
     default:
       BASSERT(!"Not supported.");
-      return "UNKNOWN";
+      return "UNSPECIFIED";
     }
   }
 

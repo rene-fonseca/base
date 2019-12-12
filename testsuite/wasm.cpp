@@ -17,6 +17,7 @@
 #include <base/string/Format.h>
 #include <base/string/Parser.h>
 #include <base/LongInteger.h>
+#include <base/objectmodel/JSON.h>
 
 using namespace com::azure::dev::base;
 
@@ -66,6 +67,7 @@ public:
          << ENDL;
   }
 
+  /** Dump all exported symbols in module. */
   void dump(const String& path, const String& pattern)
   {
     if (!FileSystem::fileExists(path)) {
@@ -79,7 +81,7 @@ public:
       setExitCode(1);
       return;
     }
-    for (auto s : wasm.getExports()) {
+    for (const auto& s : wasm.getExports()) {
       if (Parser::doesMatchPattern(pattern, s.id)) {
         if (s.type == WebAssembly::TYPE_FUNCTION) {
           fout << WebAssembly::toString(s.returnType) << " " << s.id << "(";
@@ -99,6 +101,7 @@ public:
     }
   }
 
+  /** Call symbol in module. */
   void run(const String& path, const String& id, const Array<AnyValue>& arguments, bool time)
   {
     if (!FileSystem::fileExists(path)) {
@@ -118,7 +121,8 @@ public:
     }
     timer.start();
     try {
-      wasm.call(id, arguments);
+      auto result = wasm.call(id, arguments);
+      fout << result << ENDL;
     } catch (...) {
       ferr << Format::subst("Error: Failed to call function '%1'.", id) << ENDL;
       setExitCode(1);
@@ -159,7 +163,18 @@ public:
           try {
             callArguments.append(static_cast<int64>(LongInteger::parse(argument)));
           } catch (...) {
-            callArguments.append(argument); // TAG: unescape string type
+            double value = 0;
+            if (Posix::toDouble(argument, value)) {
+              callArguments.append(value);
+              continue;
+            }
+            try {
+              callArguments.append(JSON::parseString(argument));
+            } catch (...) {
+              fout << "Error: Invalid argument." << ENDL;
+              setExitCode(1);
+              return;
+            }
           }
         }
       }

@@ -69,6 +69,7 @@ public:
 
   AnyValue call(const String& id, const Array<AnyValue>& arguments)
   {
+    // TAG: handle exceptions
     fout << "Call " << id << "(";
     bool first = true;
     for (auto a : arguments) {

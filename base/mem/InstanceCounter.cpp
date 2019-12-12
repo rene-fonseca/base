@@ -13,6 +13,7 @@
 
 #include <base/mem/InstanceCounter.h>
 #include <base/string/Format.h>
+#include <base/UnitTest.h>
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
@@ -20,7 +21,7 @@ void InstanceCounters::checkInstanceCounters(const Type& type, MemorySize size)
 {
   const MemorySize constructions = this->constructions;
   const MemorySize destructions = this->destructions;
-  if (!INLINE_ASSERT(destructions == constructions)) {
+  if (!/*INLINE_ASSERT*/(destructions == constructions)) {
     Trace::message(
       Format::subst(
         MESSAGE("Leaked %1 object(s) of type %2. Constructed %3 and destructed %4. Minimum leaked memory is %5 bytes."),
@@ -34,22 +35,32 @@ void InstanceCounters::checkInstanceCounters(const Type& type, MemorySize size)
   }
 }
 
-#if defined(TESTS)
 
-class MyObject : public InstanceCounter<MyObject> {
+#if defined(_COM_AZURE_DEV__BASE__TESTS)
+
+class TEST_CLASS(InstanceCounter) : public UnitTest {
 public:
+
+  TEST_PRIORITY(50);
+  TEST_PROJECT("base/mem");
+
+  class MyObject : public InstanceCounter<MyObject> {
+  public:
+  };
+
+  void run() override
+  {
+    MyObject o1;
+    MemorySize instances = getInstanceCount<MyObject>();
+    MyObject o2;
+    instances = getInstanceCount<MyObject>();
+    instances = getInstanceDestructionCount<MyObject>();
+    instances = getInstanceCountFor(o2);
+    instances = getInstanceDestructionCountFor(o2);
+  }
 };
 
-void test()
-{
-  MyObject o1;
-  MemorySize instances = getInstanceCount<MyObject>();
-  MyObject o2;
-  instances = getInstanceCount<MyObject>();
-  instances = getInstanceDestructionCount<MyObject>();
-  instances = getInstanceCountFor(o2);
-  instances = getInstanceDestructionCountFor(o2);
-}
+TEST_REGISTER(InstanceCounter);
 
 #endif
 

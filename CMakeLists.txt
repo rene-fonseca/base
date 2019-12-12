@@ -88,7 +88,7 @@ if (UNIX)
   find_package(X11)
 endif()
 
-find_package(ZLib)
+find_package(ZLIB)
 find_package(BZip2)
 
 file(GLOB_RECURSE base_platforms_SRC

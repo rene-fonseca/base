@@ -31,10 +31,22 @@ protected:
   Reference<ReferenceCountedObject> handle;
 public:
 
-  enum {
-    TYPE_FUNCTION
-    // TAG: add all WASM types
+  enum Type {
+    TYPE_FUNCTION,
+    TYPE_i32,
+    TYPE_i64,
+    TYPE_f32,
+    TYPE_f64,
+    TYPE_STRING
   };
+  
+  // TAG: map types
+  // bool -> i32
+  // int -> i32
+  // int64 -> i64
+  // float -> f32
+  // double -> f64
+  // long double -> f64
 
   /** Description for symbol. */
   class Symbol {
@@ -42,7 +54,7 @@ public:
 
     Type type = TYPE_FUNCTION;
     Array<Type> arguments;
-    Type returnType;
+    Type returnType = TYPE_i32;
   };
 
   class _COM_AZURE_DEV__BASE__API WebAssemblyException : public Exception {
@@ -52,9 +64,9 @@ public:
   // callbacks
   // register host functions - need to parse and build this automatically
   // consider ioctl/syskern appoach for all resource access - need security layer
-  // auto detect dead-lock
+  // auto detect dead-lock / timeout
   // probe features supported for WASM engine
-
+  
   /** Initializes WebAssembly engine. */
   WebAssembly();
 
@@ -78,6 +90,9 @@ public:
 
   /** Loads the given wasm module. */
   bool load(const String& path);
+  
+  /** Loads the given wasm module in buffer. */
+  bool load(const uint8* wasm, MemorySize size);
 
   // TAG: force full compilation instead of JIT
 
@@ -90,6 +105,7 @@ public:
   /** Calls the function with the given id and arguments. */
   AnyValue call(const String& id, const Array<AnyValue>& arguments);
 
+  // TAG: get stack trace
   // TAG: call async to start thread
   // TAG: add template for automatic conversion
 

@@ -51,18 +51,8 @@ public:
   {
   }
 
-  bool load(const String& path)
+  bool load(const uint8* wasm, MemorySize size)
   {
-    Allocator<uint8> buffer;
-    {
-      File file(path, File::READ, 0);
-      if (file.getSize() > (128 * 1024 * 1024)) {
-        return false;
-      }
-      buffer.setSize(file.getSize());
-      file.read(buffer.getElements(), file.getSize());
-    }
-
     return true;
   }
   
@@ -146,7 +136,23 @@ void WebAssembly::garbageCollect()
 bool WebAssembly::load(const String& path)
 {
   auto handle = this->handle.cast<WebAssembly::Handle>();
-  return handle->load(path);
+  
+  Allocator<uint8> buffer;
+  {
+    File file(path, File::READ, 0);
+    if (file.getSize() > (128 * 1024 * 1024)) {
+      return false;
+    }
+    buffer.setSize(file.getSize());
+    file.read(buffer.getElements(), file.getSize());
+  }
+  return load(buffer.getElements(), buffer.getSize());
+}
+
+bool WebAssembly::load(const uint8* wasm, MemorySize size)
+{
+  auto handle = this->handle.cast<WebAssembly::Handle>();
+  return handle->load(wasm, size);
 }
 
 Array<WebAssembly::Symbol> WebAssembly::getExports()

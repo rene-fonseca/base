@@ -13,6 +13,11 @@
 
 #include <base/webassembly/WebAssembly.h>
 #include <base/io/File.h>
+#include <base/build.h>
+
+#if defined(_COM_AZURE_DEV__BASE__USE_WASM)
+#  include <wasm.h>
+#endif
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 

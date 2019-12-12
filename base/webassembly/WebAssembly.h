@@ -145,6 +145,7 @@ public:
   // void writeMemory(unsigned int address, const uint8* src, unsigned int size);
   // String getString(unsigned int address, unsigned int length);
 
+  // TAG: handle imports
   // TAG: get stack trace
   // TAG: call async to start thread
   // TAG: add template for automatic conversion

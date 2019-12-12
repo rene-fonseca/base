@@ -35,7 +35,8 @@ public:
   /**
     Initializes the exception object with no message.
   */
-  inline HTTPException() noexcept {
+  inline HTTPException() noexcept
+  {
   }
 
   /**
@@ -51,7 +52,9 @@ public:
     
     @param type The identity of the type.
   */
-  inline HTTPException(const Type& type) noexcept : NetworkException(type) {
+  inline HTTPException(const Type& type) noexcept
+    : NetworkException(type)
+  {
   }
   
   /**
@@ -61,7 +64,8 @@ public:
     @param type The identity of the type.
   */
   inline HTTPException(const char* message, const Type& type) noexcept
-    : NetworkException(message, type) {
+    : NetworkException(message, type)
+  {
   }
   
   _COM_AZURE_DEV__BASE__EXCEPTION_THIS_TYPE()

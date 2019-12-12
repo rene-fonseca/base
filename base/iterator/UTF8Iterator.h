@@ -20,8 +20,6 @@
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
-// TAG: only uint8 is required - char can be cast
-
 /**
   Iterator used to traverse UTF-8.
 */

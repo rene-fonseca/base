@@ -31,7 +31,8 @@ public:
   /**
     Initializes the exception object with no message.
   */
-  inline AccessDenied() throw() {
+  inline AccessDenied() noexcept
+  {
   }
 
   /**
@@ -39,7 +40,9 @@ public:
 
     @param message The message.
   */
-  inline AccessDenied(const char* message) throw() : IOException(message) {
+  inline AccessDenied(const char* message) noexcept
+    : IOException(message)
+  {
   }
   
   /**
@@ -47,7 +50,9 @@ public:
     
     @param type The identity of the type.
   */
-  inline AccessDenied(const Type& type) throw() : IOException(type) {
+  inline AccessDenied(const Type& type) noexcept
+    : IOException(type)
+  {
   }
   
   /**
@@ -56,8 +61,9 @@ public:
     @param message An NULL-terminated string (ASCII).
     @param type The identity of the type.
   */
-  inline AccessDenied(const char* message, const Type& type) throw()
-    : IOException(message, type) {
+  inline AccessDenied(const char* message, const Type& type) noexcept
+    : IOException(message, type)
+  {
   }
   
   _COM_AZURE_DEV__BASE__EXCEPTION_THIS_TYPE()

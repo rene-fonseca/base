@@ -111,7 +111,9 @@ public:
     static Handle* invalid;
     
     /** Initializes file handle. */
-    inline FileHandle(OperatingSystem::Handle handle) throw() : Handle(handle) {
+    inline FileHandle(OperatingSystem::Handle handle) throw()
+      : Handle(handle)
+    {
     }
     
     /** Releases the resources used by the file. */
@@ -151,7 +153,9 @@ public:
   /**
     Initialize a new file object from other file object.
   */
-  File(const File& copy) throw() : fd(copy.fd) {
+  File(const File& copy) throw()
+    : fd(copy.fd)
+  {
   }
 
   /**
@@ -301,7 +305,8 @@ public:
     Read the specified type.
   */
   template<class TYPE>
-  inline unsigned int read(TYPE& buffer) throw(FileException) {
+  inline unsigned int read(TYPE& buffer) throw(FileException)
+  {
     return read(Cast::getAddress(buffer), sizeof(TYPE));
   }
 
@@ -315,7 +320,8 @@ public:
     bool nonblocking = false) throw(FileException);
 protected:
   
-  OperatingSystem::Handle getHandle() const throw() {
+  OperatingSystem::Handle getHandle() const throw()
+  {
     return fd->getHandle();
   }
 public:

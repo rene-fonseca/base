@@ -162,7 +162,8 @@ public:
   /**
     Returns the permissions.
   */
-  inline const Permissions& getPermissions() const noexcept {
+  inline const Permissions& getPermissions() const noexcept
+  {
     return permissions;
   }
   
@@ -203,7 +204,8 @@ public:
   /**
     Returns the trustee.
   */
-  inline const Trustee& getTrustee() const noexcept {
+  inline const Trustee& getTrustee() const noexcept
+  {
     return trustee;
   }
 

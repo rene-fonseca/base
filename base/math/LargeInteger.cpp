@@ -957,7 +957,7 @@ FormatOutputStream& operator<<(FormatOutputStream& stream, const LargeInteger& v
   case FormatOutputStream::Symbols::DECIMAL:
     {
       // base 10 => <4 bit
-      // we can do better since we just assume many digits - 1000 < 1024 => 3 digits < 10 bit
+      // we can do better since we just assume many digits - 1000 <= 1024 => 3 digits <= 10 bit
       buffer.resize(maximum<MemorySize>((((value.getSize() * LargeIntegerImpl::WORD_BITS + 10 - 1) / 10) + 2)/3, 1)); // 10 bits - 3 digits
       dest = buffer;
 

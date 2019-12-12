@@ -56,6 +56,7 @@ public:
     FRIDAY = 5,
     /** Index of Saturday. */
     SATURDAY = 6,
+    
     /** Normalized index for January. */
     JANUARY = 0,
     /** Normalized index for February. */
@@ -80,6 +81,7 @@ public:
     NOVEMBER = 10,
     /** Normalized index for December. */
     DECEMBER = 11,
+    
     /** The year of the epoch. */
     EPOCH_YEAR = 1970,
     /** The weekday of the first epoch day. */
@@ -146,14 +148,16 @@ public:
   /**
     Returns true if the year is a leap year.
   */
-  static inline bool isLeapYear(int year) noexcept {
+  static inline bool isLeapYear(int year) noexcept
+  {
     return (year % 4 == 0) && ((year % 100 != 0) || (year % 400 == 0));
   }
   
   /**
     Returns the number of days in the specified year.
   */
-  static inline int getDaysOfYear(int year) noexcept {
+  static inline int getDaysOfYear(int year) noexcept
+  {
     return isLeapYear(year) ? 366 : 365;
   }
   
@@ -250,7 +254,8 @@ public:
   /**
     Initializes the date as 00:00:00 on January 1, 1970.
   */
-  inline Date() noexcept {
+  inline Date() noexcept
+  {
   }
   
   /**
@@ -259,7 +264,9 @@ public:
     @param date The number of microseconds elapsed since 00:00:00 on January 1,
     1970, Coordinated Universal Time (UTC).
   */
-  inline Date(int64 _date) noexcept : date(_date) {
+  inline Date(int64 _date) noexcept
+    : date(_date)
+  {
   }
   
   /**
@@ -270,13 +277,16 @@ public:
   /**
     Initialize date from other date.
   */
-  inline Date(const Date& copy) noexcept : date(copy.date) {
+  inline Date(const Date& copy) noexcept
+    : date(copy.date)
+  {
   }
 
   /**
     Assignment of date with date.
   */
-  inline Date& operator=(const Date& assign) noexcept {
+  inline Date& operator=(const Date& assign) noexcept
+  {
     date = assign.date;
     return *this;
   }
@@ -285,14 +295,16 @@ public:
     Returns the number of microseconds elapsed since 00:00:00 on January 1,
     1970, Coordinated Universal Time (UTC).
   */
-  inline int64 getValue() const noexcept {
+  inline int64 getValue() const noexcept
+  {
     return date;
   }
 
   /**
     Adds a bias (in microseconds) to the date.
   */
-  inline void addBias(int64 bias) noexcept {
+  inline void addBias(int64 bias) noexcept
+  {
     date += bias;
   }
   

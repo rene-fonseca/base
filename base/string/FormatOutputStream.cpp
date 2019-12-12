@@ -1692,6 +1692,23 @@ namespace {
   }
 }
 
+#if 0
+char* writeInt(char* dest, int value) noexcept
+{
+  if (value < 0) {
+    *dest++ = '-';
+    value = -value;
+  }
+  auto begin = dest;
+  while (value) {
+    *dest++ =ASCIITraits::valueToDigit(value % 10);
+    value /= 10;
+  }
+  // reverse
+  return dest;
+}
+#endif
+
 void FormatOutputStream::writeFloatingPointType(
   unsigned int significant,
   unsigned int* mantissa,
@@ -1699,17 +1716,19 @@ void FormatOutputStream::writeFloatingPointType(
   int base2Exponent,
   unsigned int valueFlags)
 {
-  PrimitiveStackArray<char> buffer(128 + 2 + significant/3); // N = 2 + floor[n/log2(10)] => N < 2 + n/3 // TAG: 128 should be calculated
+  // N = 2 + floor[n/log2(10)] => N < 2 + n/3 // TAG: 128 should be calculated
+  PrimitiveStackArray<char> buffer(128 + 2 + significant/3);
   char* output = buffer;
   const char* radix = nullptr;
   unsigned int flags = context.flags;
 
   if ((valueFlags & FloatingPoint::FP_ANY_NAN) != 0) {
+    // TAG: I guess this should be locale specific when not posix
     if ((flags & Symbols::UPPER) == 0) {
-      copy(output, "nan", sizeof("nan") - 1); // TAG: I guess this should be locale specific when not posix
+      copy(output, "nan", sizeof("nan") - 1);
       output += sizeof("nan") - 1;
     } else {
-      copy(output, "NAN", sizeof("NAN") - 1); // TAG: I guess this should be locale specific when not posix
+      copy(output, "NAN", sizeof("NAN") - 1);
       output += sizeof("NAN") - 1;
     }
   } else if (context.realBase == Symbols::HEXADECIMAL) {
@@ -1763,16 +1782,12 @@ void FormatOutputStream::writeFloatingPointType(
 
   } else { // decimal representation
 
-    if ((flags & Symbols::POSIX) != 0) { // use POSIX
+    if (true /*(flags & Symbols::POSIX) != 0*/) { // use POSIX
       if ((valueFlags & FloatingPoint::FP_NEGATIVE) != 0) {
         *output++ = '-';
       } else if ((flags & Symbols::FPLUS) != 0) { // show plus if sign is forced
         *output++ = '+';
       }
-    } else { // use locale
-      // numeric or currency
-      // const char* str = (valueFlags & FloatingPoint::FP_NEGATIVE) ? locale->getBeginNegative() : locale->getBeginPositive();
-      // copy to output
     }
 
     if ((valueFlags & FloatingPoint::FP_INFINITY) != 0) {

@@ -32,7 +32,8 @@
      (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__MACOS) || \
      (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__FREEBSD) || \
      (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__OPENBSD) || \
-     (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__WEBASSEMBLY))
+     (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__WEBASSEMBLY) || \
+     (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__WASI))
 #else
 #  error Invalid operating system (OS) specification
 #endif
@@ -49,7 +50,9 @@
      (_COM_AZURE_DEV__BASE__ARCH == _COM_AZURE_DEV__BASE__X86_64) || \
      (_COM_AZURE_DEV__BASE__ARCH == _COM_AZURE_DEV__BASE__S390) || \
      (_COM_AZURE_DEV__BASE__ARCH == _COM_AZURE_DEV__BASE__ARM) || \
-     (_COM_AZURE_DEV__BASE__ARCH == _COM_AZURE_DEV__BASE__ARM64))
+     (_COM_AZURE_DEV__BASE__ARCH == _COM_AZURE_DEV__BASE__ARM64) || \
+     (_COM_AZURE_DEV__BASE__ARCH == _COM_AZURE_DEV__BASE__WASM32) || \
+     (_COM_AZURE_DEV__BASE__ARCH == _COM_AZURE_DEV__BASE__WASM64))
 #else
 #  error Invalid architecture (ARCH) specification
 #endif
@@ -105,3 +108,49 @@ _COM_AZURE_DEV__BASE__DUMMY_SYMBOL
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE
+
+#if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__WASI)
+extern "C" void* __cxa_allocate_exception(size_t thrown_size) throw()
+{
+  return nullptr;
+}
+
+extern "C" void __cxa_throw(void* thrown_exception, void* /*struct std::type_info **/ tinfo, void (*dest)(void*))
+{
+}
+
+extern "C" void __cxa_rethrow()
+{
+}
+
+extern "C" int pthread_self()
+{
+  return 0;
+}
+#include <string.h>
+extern "C" int gethostname(char *name, size_t namelen)
+{
+  strncpy(name, "localhost", namelen);
+  return 0;
+}
+
+extern "C" struct hostent * gethostbyname(const char *name)
+{
+  return nullptr;
+}
+
+extern "C" void* dlopen(const char* path, int mode)
+{
+  return 0;
+}
+#include <stdio.h>
+extern "C" void* dlsym(void* handle, const char* symbol)
+{
+     printf("123123123");
+  return 0;
+}    
+
+extern "C" void * mmap(void *addr, size_t len, int prot, int flags, int fd, off_t offset) {return nullptr;}
+extern "C" int munmap(void *addr, size_t len) {return -1;}
+
+#endif

@@ -52,6 +52,8 @@
 #  define _COM_AZURE_DEV__BASE__OS _COM_AZURE_DEV__BASE__FREEBSD
 #elif defined(__OpenBSD__)
 #  define _COM_AZURE_DEV__BASE__OS _COM_AZURE_DEV__BASE__OPENBSD
+#elif defined(__wasi__)
+#  define _COM_AZURE_DEV__BASE__OS _COM_AZURE_DEV__BASE__WASI
 #else
 #  error Unsupported OS.
 #endif
@@ -81,6 +83,8 @@
 #  define _COM_AZURE_DEV__BASE__ARCH _COM_AZURE_DEV__BASE__X86_64
 #elif defined(__i386__)
 #  define _COM_AZURE_DEV__BASE__ARCH _COM_AZURE_DEV__BASE__X86
+#elif defined(__wasi__)
+#  define _COM_AZURE_DEV__BASE__ARCH _COM_AZURE_DEV__BASE__WASI
 #else
 #  error Unsupported arch.
 #endif
@@ -129,7 +133,8 @@
 #define _COM_AZURE_DEV__BASE__HAVE_WCSFTIME
 #if (_COM_AZURE_DEV__BASE__OS != _COM_AZURE_DEV__BASE__MACOS) && \
     (_COM_AZURE_DEV__BASE__OS != _COM_AZURE_DEV__BASE__FREEBSD) && \
-    (_COM_AZURE_DEV__BASE__OS != _COM_AZURE_DEV__BASE__OPENBSD)
+    (_COM_AZURE_DEV__BASE__OS != _COM_AZURE_DEV__BASE__OPENBSD) && \
+    (_COM_AZURE_DEV__BASE__OS != _COM_AZURE_DEV__BASE__WASI)
 #  define _COM_AZURE_DEV__BASE__LARGE_FILE_SYSTEM
 #endif
 

@@ -104,6 +104,10 @@ Architecture::Major Architecture::getArchitecture() noexcept
   return ARM;
 #elif (_COM_AZURE_DEV__BASE__ARCH == _COM_AZURE_DEV__BASE__ARM64)
   return ARM64;
+#elif (_COM_AZURE_DEV__BASE__ARCH == _COM_AZURE_DEV__BASE__WASM32)
+  return WASM32;
+#elif (_COM_AZURE_DEV__BASE__ARCH == _COM_AZURE_DEV__BASE__WASM64)
+  return WASM64;
 #else
 #  error Unsupported architecture
 #endif

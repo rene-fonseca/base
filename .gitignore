@@ -19,6 +19,8 @@ include/
 *.a
 *.so
 *.so.*
+*.wasm
+wasm
 *.dylib
 .DS_Store
 junit.xml

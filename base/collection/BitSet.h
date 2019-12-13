@@ -690,7 +690,8 @@ public:
     Returns a modifying enumerator of the bit set. The elements are
     enumerated from most significant to the least significant.
   */
-  inline Enumerator getEnumerator() noexcept {
+  inline Enumerator getEnumerator() noexcept
+  {
     return Enumerator(
       elements->getElements() + size/(sizeof(unsigned long) * 8),
       size

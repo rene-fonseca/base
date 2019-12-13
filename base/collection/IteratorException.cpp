@@ -20,11 +20,13 @@ IteratorException::IteratorException() noexcept
 }
 
 IteratorException::IteratorException(const char* message) noexcept
-  : ContainerException(message) {
+  : ContainerException(message)
+{
 }
 
 IteratorException::IteratorException(const Type& type) noexcept
-  : ContainerException(type) {
+  : ContainerException(type)
+{
 }
 
 IteratorException::IteratorException(const char* message, const Type& type) noexcept

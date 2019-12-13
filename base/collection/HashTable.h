@@ -847,7 +847,8 @@ public:
     Initializes the hash table with the specified initial capacity.
   */
   HashTable(MemorySize capacity)
-    : impl(new HashTableImpl(capacity)) {
+    : impl(new HashTableImpl(capacity))
+  {
   }
 
   /**

@@ -1477,7 +1477,8 @@ public:
     */
     inline IsochronousWriteDataRequest(
       IsochronousWriteDataRequestImpl* _context) noexcept // TAG: must be private
-      : context(_context) {
+      : context(_context)
+    {
     }
 
     /**
@@ -1485,7 +1486,8 @@ public:
     */
     inline IsochronousWriteDataRequest(
       const IsochronousWriteDataRequest& copy) noexcept
-      : context(copy.context) {
+      : context(copy.context)
+    {
     }
 
     /**

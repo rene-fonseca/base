@@ -51,11 +51,13 @@ String IEEE1394::getAsString(unsigned short nodeId) noexcept {
   return stream.getString();
 }
 
-IEEE1394::IEEE1394() {
+IEEE1394::IEEE1394()
+{
   ieee1394impl = IEEE1394Impl::getDefault();
 }
 
-void IEEE1394::IsochronousRequestImpl::setOptions(unsigned int options) {
+void IEEE1394::IsochronousRequestImpl::setOptions(unsigned int options)
+{
   bassert(
     status == READY,
     bindCause(IEEE1394Exception("Request not ready", this), IEEE1394::REQUEST_NOT_READY)
@@ -63,7 +65,8 @@ void IEEE1394::IsochronousRequestImpl::setOptions(unsigned int options) {
   this->options = options;
 }
 
-void IEEE1394::IsochronousRequestImpl::reset() {
+void IEEE1394::IsochronousRequestImpl::reset()
+{
   bassert(
     status != PENDING,
     bindCause(IEEE1394Exception("Request is pending", this), IEEE1394::REQUEST_NOT_PENDING)
@@ -72,19 +75,22 @@ void IEEE1394::IsochronousRequestImpl::reset() {
   status = READY;
 }
 
-IEEE1394::IsochronousRequestImpl::~IsochronousRequestImpl() noexcept { // TAG: is this required
+IEEE1394::IsochronousRequestImpl::~IsochronousRequestImpl() noexcept
+{ // TAG: is this required
 }
 
 IEEE1394::IsochronousReadRequestImpl::IsochronousReadRequestImpl() noexcept
   : subchannel(0),
     buffer(0),
     bufferSize(0),
-    receivedPackets(0) {
+    receivedPackets(0)
+{
   // TAG: subchannel must be reserved - at least one reserved channel
 }
 
 void IEEE1394::IsochronousReadRequestImpl::setSubchannel(
-  unsigned int subchannel) {
+  unsigned int subchannel)
+{
   bassert(
     getStatus() == READY,
     bindCause(IEEE1394Exception("Request not ready", this), IEEE1394::REQUEST_NOT_READY)
@@ -96,7 +102,8 @@ void IEEE1394::IsochronousReadRequestImpl::setSubchannel(
 }
 
 void IEEE1394::IsochronousReadRequestImpl::setBuffer(
-  uint8* buffer, unsigned int size) {
+  uint8* buffer, unsigned int size)
+{
   bassert(
     getStatus() == READY,
     bindCause(IEEE1394Exception("Request not ready", this), IEEE1394::REQUEST_NOT_READY)
@@ -105,7 +112,8 @@ void IEEE1394::IsochronousReadRequestImpl::setBuffer(
   this->bufferSize = size;
 }
 
-void IEEE1394::IsochronousReadFixedPacketsRequestImpl::setPayload(unsigned int payload) {
+void IEEE1394::IsochronousReadFixedPacketsRequestImpl::setPayload(unsigned int payload)
+{
   bassert(
     getStatus() == READY,
     bindCause(IEEE1394Exception("Request not ready", this), IEEE1394::REQUEST_NOT_READY)
@@ -114,7 +122,8 @@ void IEEE1394::IsochronousReadFixedPacketsRequestImpl::setPayload(unsigned int p
   this->payload = payload;
 }
 
-void IEEE1394::IsochronousReadFixedDataRequestImpl::setNumberOfPackets(unsigned int packets) {
+void IEEE1394::IsochronousReadFixedDataRequestImpl::setNumberOfPackets(unsigned int packets)
+{
   bassert(
     getStatus() == READY,
     bindCause(IEEE1394Exception("Request not ready", this), IEEE1394::REQUEST_NOT_READY)
@@ -122,7 +131,8 @@ void IEEE1394::IsochronousReadFixedDataRequestImpl::setNumberOfPackets(unsigned 
   this->numberOfPackets = packets;
 }
 
-void IEEE1394::IsochronousReadFixedDataRequestImpl::setHeaderSize(unsigned int size) {
+void IEEE1394::IsochronousReadFixedDataRequestImpl::setHeaderSize(unsigned int size)
+{
   bassert(
     getStatus() == READY,
     bindCause(IEEE1394Exception("Request not ready", this), IEEE1394::REQUEST_NOT_READY)
@@ -460,7 +470,8 @@ String IEEE1394::getKeywords(unsigned short node) {
   return String();
 }
 
-void IEEE1394::checkResetGeneration() {
+void IEEE1394::checkResetGeneration()
+{
   // TAG: IEEE 1394 implementation should provide reset detection support
   try {
     if (!nodes[busManagerId].guid.isInvalid()) {
@@ -961,33 +972,33 @@ IEEE1394::IsochronousReadFixedDataRequest
   throw IEEE1394Exception("Channel is closed.", this);
 }
 
-void IEEE1394::IsochronousReadChannelImpl::queue(
-  IsochronousReadRequest& request) {
+void IEEE1394::IsochronousReadChannelImpl::queue(IsochronousReadRequest& request)
+{
   throw IEEE1394Exception("Channel is closed.", this);
 }
 
-void IEEE1394::IsochronousReadChannelImpl::queue(
-  IsochronousReadPacketsRequest& request) {
+void IEEE1394::IsochronousReadChannelImpl::queue(IsochronousReadPacketsRequest& request)
+{
   throw IEEE1394Exception("Channel is closed.", this);
 }
 
-void IEEE1394::IsochronousReadChannelImpl::queue(
-  IsochronousReadFixedPacketsRequest& request) {
+void IEEE1394::IsochronousReadChannelImpl::queue(IsochronousReadFixedPacketsRequest& request)
+{
   throw IEEE1394Exception("Channel is closed.", this);
 }
 
-void IEEE1394::IsochronousReadChannelImpl::queue(
-  IsochronousReadFixedDataRequest& request) {
+void IEEE1394::IsochronousReadChannelImpl::queue(IsochronousReadFixedDataRequest& request)
+{
   throw IEEE1394Exception("Channel is closed.", this);
 }
 
-void IEEE1394::IsochronousReadChannelImpl::queue(
-  Allocator<IsochronousReadRequest>& request) {
+void IEEE1394::IsochronousReadChannelImpl::queue(Allocator<IsochronousReadRequest>& request)
+{
   throw IEEE1394Exception("Channel is closed.", this);
 }
 
-IEEE1394::IsochronousReadRequest
-  IEEE1394::IsochronousReadChannelImpl::dequeue() {
+IEEE1394::IsochronousReadRequest IEEE1394::IsochronousReadChannelImpl::dequeue()
+{
   throw IEEE1394Exception("Channel is closed.", this);
 }
 

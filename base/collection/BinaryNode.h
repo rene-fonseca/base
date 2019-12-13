@@ -210,19 +210,24 @@ public:
 //
 //    @param value The pointer to be automated.
 //  */
-//  explicit inline BinaryNodePointer(Node value = 0) noexcept : ptr(value) {
+//  explicit inline BinaryNodePointer(Node value = 0) noexcept
+//    : ptr(value)
+//  {
 //  }
 //
 //  /**
 //    Copy constructor. Transfers ownership from copy to this object (copy loses ownership).
 //  */
-//  inline BinaryNodePointer(BinaryNodePointer& copy) noexcept : ptr(copy.ptr) {
+//  inline BinaryNodePointer(BinaryNodePointer& copy) noexcept
+//    : ptr(copy.ptr)
+//  {
 //  }
 //
 //  /**
 //    Assignment operator.
 //  */
-//  inline BinaryNodePointer& operator=(BinaryNodePointer& obj) noexcept {
+//  inline BinaryNodePointer& operator=(BinaryNodePointer& obj) noexcept
+//  {
 //    if (&obj != this) { // protect against self assignment
 //      ptr = obj.ptr;
 //    }
@@ -232,7 +237,8 @@ public:
 //  /**
 //    Returns mutable value of binary node.
 //  */
-//  inline Reference operator*() {
+//  inline Reference operator*()
+//  {
 //    if (!ptr) {
 //      throw NullPointer();
 //    }
@@ -242,7 +248,8 @@ public:
 //  /**
 //    Returns constant value of binary node.
 //  */
-//  inline const Reference operator*() const {
+//  inline const Reference operator*() const
+//  {
 //    if (!ptr) {
 //      throw NullPointer();
 //    }
@@ -252,14 +259,16 @@ public:
 //  /**
 //    Returns mutable value of binary node.
 //  */
-//  inline Pointer operator->() noexcept {
+//  inline Pointer operator->() noexcept
+//  {
 //    return ptr->getValue();
 //  }
 //
 //  /**
 //    Returns constant value of binary node.
 //  */
-//  inline const Pointer operator->() const noexcept {
+//  inline const Pointer operator->() const noexcept
+//  {
 //    return ptr->getValue();
 //  }
 //};

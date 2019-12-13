@@ -413,42 +413,48 @@ public:
   /**
     Returns the number of nodes of the local bus.
   */
-  inline unsigned int getNumberOfNodes() const noexcept {
+  inline unsigned int getNumberOfNodes() const noexcept
+  {
     return numberOfNodes;
   }
 
   /**
     Returns the physical id of the local node (i.e. the adapter).
   */
-  inline unsigned int getLocalId() const noexcept {
+  inline unsigned int getLocalId() const noexcept
+  {
     return localId;
   }
 
   /**
     Returns the physical id of the root node.
   */
-  inline unsigned int getRootNode() const noexcept {
+  inline unsigned int getRootNode() const noexcept
+  {
     return numberOfNodes - 1; // the largest physical id
   }
 
   /**
     Returns the physical id of the cycle master.
   */
-  inline unsigned int getCycleMaster() const noexcept {
+  inline unsigned int getCycleMaster() const noexcept
+  {
     return cycleMasterId;
   }
   
   /**
     Returns the physical id of the bus manager.
   */
-  inline unsigned int getBusManager() const noexcept {
+  inline unsigned int getBusManager() const noexcept
+  {
     return busManagerId;
   }
 
   /**
     Returns the physical id of the isochronous resource manager.
   */
-  inline unsigned int getIsochronousResourceManager() const noexcept {
+  inline unsigned int getIsochronousResourceManager() const noexcept
+  {
     return isochronousResourceManagerId;
   }
 
@@ -500,8 +506,7 @@ public:
     @param a The physical id of the first node.
     @param b The physical id of the second node.
   */
-  Speed getMaximumSpeedBetweenNodes(
-    unsigned int a, unsigned int b) const;
+  Speed getMaximumSpeedBetweenNodes(unsigned int a, unsigned int b) const;
 
   /**
     Returns the maximum speed to the specified node.
@@ -509,7 +514,8 @@ public:
     @param physicalId The physical id of the node.
   */
   inline Speed getMaximumSpeedToNode(
-    unsigned int physicalId) const {
+    unsigned int physicalId) const
+  {
     return getMaximumSpeedBetweenNodes(localId, physicalId);
   }
 
@@ -527,7 +533,8 @@ public:
     Creates a IEEE 1394 object with the specified implementation.
   */
   template<class IMPL>
-  static inline IEEE1394 make() noexcept {
+  static inline IEEE1394 make() noexcept
+  {
     return IEEE1394(new IMPL());
   }
   
@@ -540,13 +547,15 @@ public:
     Initializes IEEE 1394 from other IEEE 1394 object.
   */
   inline IEEE1394(const IEEE1394& copy) noexcept
-    : ieee1394impl(copy.ieee1394impl) {
+    : ieee1394impl(copy.ieee1394impl)
+  {
   }
   
   /**
     Assignment of IEEE 1394 from other IEEE 1394 object.
   */
-  inline IEEE1394& operator=(const IEEE1394& assign) noexcept {
+  inline IEEE1394& operator=(const IEEE1394& assign) noexcept
+  {
     ieee1394impl = assign.ieee1394impl;
     return *this;
   }
@@ -554,28 +563,32 @@ public:
   /**
     Returns true if the bus has been reset.
   */
-  bool hasBeenReset() const noexcept {
+  bool hasBeenReset() const noexcept
+  {
     return ieee1394impl->hasBeenReset();
   }
   
   /**
     Acknowledges the bus reset.
   */
-  inline void acknowledgeReset() noexcept {
+  inline void acknowledgeReset() noexcept
+  {
     ieee1394impl->acknowledgeReset();
   }
 
   /**
     Resets the bus.
   */
-  inline void resetBus() {
+  inline void resetBus()
+  {
     ieee1394impl->resetBus();
   }
   
   /**
     Returns the adapters available.
   */
-  inline Array<EUI64> getAdapters() {
+  inline Array<EUI64> getAdapters()
+  {
     return ieee1394impl->getAdapters();
   }
 

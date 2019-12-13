@@ -615,7 +615,8 @@ public:
 //    Invocates the specified unary operation for each element (non-modifying operation).
 //  */
 //  template<class TYPE, class UNOPR>
-//  void traversePrefixOrder(const BinaryNode* root, UNOPR& function) noexcept {
+//  void traversePrefixOrder(const BinaryNode* root, UNOPR& function) noexcept
+//  {
 //    const BinaryNode* node = root;
 //    while (true) {
 //      function(node);
@@ -639,7 +640,8 @@ public:
 //  }
 //
 //  template<class TYPE, class UNOPR>
-//  void traverseInfixOrder(const BinaryNode* root, UNOPR& function) noexcept {
+//  void traverseInfixOrder(const BinaryNode* root, UNOPR& function) noexcept
+//  {
 //    const BinaryNode* node = root;
 //    while (true) {
 //      if (auto left = node->getLeft()) { // traverse left subtree

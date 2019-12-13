@@ -97,7 +97,8 @@ BitSet& BitSet::reset() noexcept
   return *this;
 }
 
-BitSet& BitSet::reset(MemorySize index) {
+BitSet& BitSet::reset(MemorySize index)
+{
   if (!(index < size)) {
     throw OutOfRange(this);
   }

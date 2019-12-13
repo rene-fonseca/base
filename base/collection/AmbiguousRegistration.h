@@ -52,7 +52,8 @@ public:
     @param type The identity of the type.
   */
   inline AmbiguousRegistration(const Type& type) noexcept
-    : Exception(type) {
+    : Exception(type)
+  {
   }
   
   /**

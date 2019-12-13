@@ -40,7 +40,8 @@ protected:
   /**
     Swaps the 4 bit nibbles of a 8 bit word.
   */
-  static inline uint8 swapNibbles(uint8 value) noexcept {
+  static inline uint8 swapNibbles(uint8 value) noexcept
+  {
     return ((value & 0x0f) << 4) | ((value & 0xf0) >> 4);
   }
 public:
@@ -108,42 +109,48 @@ public:
   /**
     Returns true if the id is an encapsulated EUI-48 identifier.
   */
-  inline bool isEUI48() const noexcept {
+  inline bool isEUI48() const noexcept
+  {
     return (id[3] == 0xff) && (id[4] == 0xfe); // TAG: conflict with RFC 2373
   }
   
   /**
     Returns true if the id is an encapsulated MAC-48 identifier.
   */
-  inline bool isMAC48() const noexcept {
+  inline bool isMAC48() const noexcept
+  {
     return (id[3] == 0xff) && (id[4] == 0xff); // TAG: conflict with RFC 2373
   }
 
   /**
     Returns true if the individual/group bit is set.
   */
-  inline bool isIndividual() const noexcept {
+  inline bool isIndividual() const noexcept
+  {
     return (id[0] & 0x01) == 0;
   }
   
   /**
     Returns true if the universal/local bit is set.
   */
-  inline bool isGlobal() const noexcept {
+  inline bool isGlobal() const noexcept
+  {
     return (id[0] & 0x02) == 0;
   }
 
   /**
     Resets the universal/local bit.
   */
-  inline void makeGlobal() noexcept {
+  inline void makeGlobal() noexcept
+  {
     id[0] &= ~0x02;
   }
   
   /**
     Sets the universal/local bit.
   */
-  inline void makeLocal() noexcept {
+  inline void makeLocal() noexcept
+  {
     id[0] |= 0x02;
   }
   

@@ -16,7 +16,8 @@
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
-EUI64::EUI64() noexcept {
+EUI64::EUI64() noexcept
+{
   id[0] = 0xff;
   id[1] = 0xff;
   id[2] = 0xff;
@@ -27,7 +28,8 @@ EUI64::EUI64() noexcept {
   id[7] = 0x00;
 }
 
-EUI64::EUI64(const uint8 value[8]) noexcept {
+EUI64::EUI64(const uint8 value[8]) noexcept
+{
   copy<uint8>(id, value, sizeof(id));
 }
 
@@ -49,11 +51,13 @@ EUI64::EUI64(const String& value) {
   bassert(i == end, InvalidFormat(this));
 }
 
-EUI64::EUI64(const EUI64& _copy) noexcept {
+EUI64::EUI64(const EUI64& _copy) noexcept
+{
   copy<uint8>(id, _copy.id, sizeof(id));
 }
 
-EUI64& EUI64::operator=(const EUI64& assign) noexcept {
+EUI64& EUI64::operator=(const EUI64& assign) noexcept
+{
   if (&assign != this) {
     copy<uint8>(id, assign.id, sizeof(id));
   }
@@ -107,7 +111,8 @@ void EUI64::setExtensionId(uint64 extensionId)
   id[7] = extensionId;
 }
 
-void EUI64::getEUI48(uint8* eui48) const noexcept {
+void EUI64::getEUI48(uint8* eui48) const noexcept
+{
   eui48[0] = id[0];
   eui48[1] = id[1];
   eui48[2] = id[2];
@@ -116,7 +121,8 @@ void EUI64::getEUI48(uint8* eui48) const noexcept {
   eui48[5] = id[7];
 }
 
-void EUI64::setEUI48(const uint8* eui48) noexcept {
+void EUI64::setEUI48(const uint8* eui48) noexcept
+{
   id[0] = eui48[0];
   id[1] = eui48[1];
   id[2] = eui48[2];
@@ -127,7 +133,8 @@ void EUI64::setEUI48(const uint8* eui48) noexcept {
   id[7] = eui48[5];
 }
 
-void EUI64::getMAC48(uint8* mac) const noexcept {
+void EUI64::getMAC48(uint8* mac) const noexcept
+{
   mac[0] = swapNibbles(id[0]);
   mac[1] = swapNibbles(id[1]);
   mac[2] = swapNibbles(id[2]);
@@ -136,7 +143,8 @@ void EUI64::getMAC48(uint8* mac) const noexcept {
   mac[5] = swapNibbles(id[7]);
 }
 
-void EUI64::setMAC48(const uint8* mac) noexcept {
+void EUI64::setMAC48(const uint8* mac) noexcept
+{
   id[0] = swapNibbles(mac[0]);
   id[1] = swapNibbles(mac[1]);
   id[2] = swapNibbles(mac[2]);

@@ -20,7 +20,8 @@ EndOfEnumeration::EndOfEnumeration() noexcept
 }
 
 EndOfEnumeration::EndOfEnumeration(const char* message) noexcept
-  : IteratorException(message) {
+  : IteratorException(message)
+{
 }
 
 EndOfEnumeration::EndOfEnumeration(const Type& type) noexcept

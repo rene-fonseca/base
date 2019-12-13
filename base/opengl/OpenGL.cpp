@@ -37,6 +37,25 @@
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
+OpenGLException::OpenGLException() noexcept
+{
+}
+
+OpenGLException::OpenGLException(const char* message) noexcept
+  : Exception(message)
+{
+}
+  
+OpenGLException::OpenGLException(const Type& type) noexcept
+  : Exception(type)
+{
+}
+  
+OpenGLException::OpenGLException(const char* message, const Type& type) noexcept
+  : Exception(message, type)
+{
+}
+  
 // TAG: how should we cast to functions and methods
 template<class RESULT>
 inline RESULT method_cast(void* value) noexcept {

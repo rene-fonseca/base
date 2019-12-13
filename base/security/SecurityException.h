@@ -31,28 +31,21 @@ public:
   /**
     Initializes the exception object with no message.
   */
-  inline SecurityException() noexcept
-  {
-  }
+  SecurityException() noexcept;
 
   /**
     Initializes exception object as unspecified.
 
     @param message The message.
   */
-  inline SecurityException(const char* message) noexcept
-    : Exception(message)
-  {
-  }
+  SecurityException(const char* message) noexcept;
   
   /**
     Initializes the exception object without an associated message.
     
     @param type The identity of the type.
   */
-  inline SecurityException(const Type& type) noexcept : Exception(type)
-  {
-  }
+  SecurityException(const Type& type) noexcept;
   
   /**
     Initializes the exception object.
@@ -60,10 +53,7 @@ public:
     @param message An NULL-terminated string (ASCII).
     @param type The identity of the type.
   */
-  inline SecurityException(const char* message, const Type& type) noexcept
-    : Exception(message, type)
-  {
-  }
+  SecurityException(const char* message, const Type& type) noexcept;
   
   _COM_AZURE_DEV__BASE__EXCEPTION_THIS_TYPE()
 };

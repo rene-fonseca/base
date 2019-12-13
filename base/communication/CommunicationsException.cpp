@@ -15,10 +15,24 @@
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
-CommunicationsException::CommunicationsException() noexcept : IOException() {
+CommunicationsException::CommunicationsException() noexcept
+  : IOException()
+{
 }
 
-CommunicationsException::CommunicationsException(const char* message) noexcept : IOException(message) {
+CommunicationsException::CommunicationsException(const char* message) noexcept
+  : IOException(message)
+{
+}
+
+CommunicationsException::CommunicationsException(const Type& type) noexcept
+  : IOException(type)
+{
+}
+  
+CommunicationsException::CommunicationsException(const char* message, const Type& type) noexcept
+  : IOException(message, type)
+{
 }
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

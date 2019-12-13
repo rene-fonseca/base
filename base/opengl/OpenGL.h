@@ -434,24 +434,21 @@ public:
   /**
     Initializes the exception object with no message.
   */
-  inline OpenGLException() noexcept {
-  }
+  OpenGLException() noexcept;
   
   /**
     Initializes the exception object.
     
     @param message The message.
   */
-  inline OpenGLException(const char* message) noexcept : Exception(message) {
-  }
+  OpenGLException(const char* message) noexcept;
   
   /**
     Initializes the exception object without an associated message.
     
     @param type The identity of the type.
   */
-  inline OpenGLException(const Type& type) noexcept : Exception(type) {
-  }
+  OpenGLException(const Type& type) noexcept;
   
   /**
     Initializes the exception object.
@@ -459,8 +456,7 @@ public:
     @param message An NULL-terminated string.
     @param type The identity of the type.
   */
-  inline OpenGLException(const char* message, const Type& type) noexcept : Exception(message, type) {
-  }
+  OpenGLException(const char* message, const Type& type) noexcept;
   
   _COM_AZURE_DEV__BASE__EXCEPTION_THIS_TYPE()
 };

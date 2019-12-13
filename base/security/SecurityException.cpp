@@ -13,8 +13,25 @@
 
 #include <base/security/SecurityException.h>
 
-_COM_AZURE_DEV__BASE__DUMMY_SYMBOL
-
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
+
+SecurityException::SecurityException() noexcept
+{
+}
+
+SecurityException::SecurityException(const char* message) noexcept
+  : Exception(message)
+{
+}
+
+SecurityException::SecurityException(const Type& type) noexcept
+  : Exception(type)
+{
+}
+
+SecurityException::SecurityException(const char* message, const Type& type) noexcept
+  : Exception(message, type)
+{
+}
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

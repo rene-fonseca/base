@@ -45,8 +45,7 @@ public:
     
     @param type The identity of the type.
   */
-  CommunicationsException(const Type& type) noexcept : IOException(type) {
-  }
+  CommunicationsException(const Type& type) noexcept;
   
   /**
     Initializes the exception object.
@@ -54,8 +53,7 @@ public:
     @param message An NULL-terminated string (ASCII).
     @param type The identity of the type.
   */
-  CommunicationsException(const char* message, const Type& type) noexcept : IOException(message, type) {
-  }
+  CommunicationsException(const char* message, const Type& type) noexcept;
   
   _COM_AZURE_DEV__BASE__EXCEPTION_THIS_TYPE()
 };

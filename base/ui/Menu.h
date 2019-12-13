@@ -36,24 +36,21 @@ _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
     /**
       Initializes the exception object with no message.
     */
-    inline MenuException() noexcept {
-    }
+    MenuException() noexcept;
     
     /**
       Initializes the exception object.
       
       @param message The message.
     */
-    inline MenuException(const char* message) noexcept : UserInterfaceException(message) {
-    }
+    MenuException(const char* message) noexcept;
     
     /**
       Initializes the exception object without an associated message.
       
       @param type The identity of the type.
     */
-    inline MenuException(const Type& type) noexcept : UserInterfaceException(type) {
-    }
+    MenuException(const Type& type) noexcept;
   
     /**
       Initializes the exception object.
@@ -61,8 +58,7 @@ _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
       @param message An NULL-terminated string.
       @param type The identity of the type.
     */
-    inline MenuException(const char* message, const Type& type) noexcept : UserInterfaceException(message, type) {
-    }
+    MenuException(const char* message, const Type& type) noexcept;
     
     _COM_AZURE_DEV__BASE__EXCEPTION_THIS_TYPE()
   };

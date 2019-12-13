@@ -22,6 +22,25 @@
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
+MenuException::MenuException() noexcept
+{
+}
+    
+MenuException::MenuException(const char* message) noexcept
+  : UserInterfaceException(message)
+{
+}
+    
+MenuException::MenuException(const Type& type) noexcept
+  : UserInterfaceException(type)
+{
+}
+  
+MenuException::MenuException(const char* message, const Type& type) noexcept
+  : UserInterfaceException(message, type)
+{
+}
+
 // TAG: check out menu flag MNS_MODELESS
 Menu::MenuHandle::~MenuHandle() {
   if (isValid()) { // dont try to close if handle is invalidated

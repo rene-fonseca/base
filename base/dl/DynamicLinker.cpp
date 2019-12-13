@@ -28,6 +28,7 @@
 #    warning dlfcn.h is not compliant with IEEE Std 1003.1-2001
 #  endif
 #endif
+#  include <stdio.h> // printf
 #endif // flavor
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
@@ -706,11 +707,7 @@ public:
     // TEST_ASSERT(DynamicLinker::getProcessImage());
     TEST_ASSERT(DynamicLinker::getBaseFrameworkImage());
     TEST_ASSERT(DynamicLinker::getImageAddress((void*)&DynamicLinker::getProcessImage));
-#if (_COM_AZURE_DEV__BASE__OS != _COM_AZURE_DEV__BASE__WASI)
     DynamicLinker::SymbolInfo info = DynamicLinker::getSymbolInfo((void*)&printf);
-#else
-    DynamicLinker::SymbolInfo info = DynamicLinker::getSymbolInfo((void*)&sleep);
-#endif
     TEST_ASSERT(info.address);
     TEST_ASSERT(info.imageAddress);
     TEST_ASSERT(info.name);

@@ -143,10 +143,9 @@ extern "C" void* dlopen(const char* path, int mode)
 {
   return 0;
 }
-#include <stdio.h>
+
 extern "C" void* dlsym(void* handle, const char* symbol)
 {
-     printf("123123123");
   return 0;
 }    
 

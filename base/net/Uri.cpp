@@ -367,7 +367,7 @@ void Uri::parse(const String& uri, bool strict) throw(UriException, MemoryExcept
   // isAbsolute: return indexOf(':') < indexOf('/');
 
   MemoryDiff index = 0; // current position in the uri
-  MemorySize end = uri.getLength();
+  MemoryDiff end = uri.getLength();
 
   while ((index < end) && (uri[index] == ' ')) { // ignore prefix spaces
     ++index;

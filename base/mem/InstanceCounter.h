@@ -129,7 +129,7 @@ public:
 template<class TYPE>
 inline MemorySize getInstanceCount() noexcept
 {
-  auto counters = InstanceCounter<TYPE>::getInstanceCounters();
+  const auto& counters = InstanceCounter<TYPE>::getInstanceCounters();
   return counters.constructions - counters.destructions;
 }
 

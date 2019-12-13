@@ -79,12 +79,7 @@ public:
   }
 
   /**
-    Initializes an automation pointer with the specified pointer value. The
-    automation pointer may be implicitly initialized.
-
-    @code
-    ReferenceCounter<MyClass> object = new MyClass();
-    @endcode
+    Initializes an automation pointer with the specified pointer value.
 
     @param value The desired pointer value.
     @param references The reference counter.
@@ -92,6 +87,9 @@ public:
   inline ReferenceCounter(TYPE* _value, Counter* _references) noexcept
     : value(_value), references(_references)
   {
+    if (value) {
+      ++*references;
+    }
   }
 
   /**
@@ -207,9 +205,9 @@ public:
   /**
     Assignment of normal pointer to this automation pointer.
   */
-  inline ReferenceCounter& operator=(TYPE* eq)
+  inline ReferenceCounter& operator=(TYPE* assign)
   {
-    setValue(eq);
+    setValue(assign);
     return *this;
   }
 

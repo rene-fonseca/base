@@ -195,9 +195,9 @@ public:
   /**
     Assignment of normal pointer to this automation pointer.
   */
-  inline Reference& operator=(TYPE* eq)
+  inline Reference& operator=(TYPE* assign)
   {
-    setValue(eq);
+    setValue(assign);
     return *this;
   }
 

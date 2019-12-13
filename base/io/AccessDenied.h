@@ -31,29 +31,21 @@ public:
   /**
     Initializes the exception object with no message.
   */
-  inline AccessDenied() noexcept
-  {
-  }
+  AccessDenied() noexcept;
 
   /**
     Initializes exception object as unspecified.
 
     @param message The message.
   */
-  inline AccessDenied(const char* message) noexcept
-    : IOException(message)
-  {
-  }
+  AccessDenied(const char* message) noexcept;
   
   /**
     Initializes the exception object without an associated message.
     
     @param type The identity of the type.
   */
-  inline AccessDenied(const Type& type) noexcept
-    : IOException(type)
-  {
-  }
+  AccessDenied(const Type& type) noexcept;
   
   /**
     Initializes the exception object.
@@ -61,10 +53,7 @@ public:
     @param message An NULL-terminated string (ASCII).
     @param type The identity of the type.
   */
-  inline AccessDenied(const char* message, const Type& type) noexcept
-    : IOException(message, type)
-  {
-  }
+  AccessDenied(const char* message, const Type& type) noexcept;
   
   _COM_AZURE_DEV__BASE__EXCEPTION_THIS_TYPE()
 };

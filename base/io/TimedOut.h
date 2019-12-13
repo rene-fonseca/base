@@ -31,24 +31,21 @@ public:
   /**
     Initializes the exception object with no message.
   */
-  inline TimedOut() noexcept {
-  }
+  TimedOut() noexcept;
 
   /**
     Initializes exception object as unspecified.
 
     @param message The message.
   */
-  inline TimedOut(const char* message) noexcept : IOException(message) {
-  }
+  TimedOut(const char* message) noexcept;
   
   /**
     Initializes the exception object without an associated message.
     
     @param type The identity of the type.
   */
-  inline TimedOut(const Type& type) noexcept : IOException(type) {
-  }
+  TimedOut(const Type& type) noexcept;
   
   /**
     Initializes the exception object.
@@ -56,9 +53,7 @@ public:
     @param message An NULL-terminated string (ASCII).
     @param type The identity of the type.
   */
-  inline TimedOut(const char* message, const Type& type) noexcept
-    : IOException(message, type) {
-  }
+  TimedOut(const char* message, const Type& type) noexcept;
   
   inline bool isCommonException() const noexcept override
   {

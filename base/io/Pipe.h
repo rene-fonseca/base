@@ -14,11 +14,9 @@
 #pragma once
 
 #include <base/Object.h>
-#include <base/io/TimedOut.h>
 #include <base/io/FileDescriptor.h>
 #include <base/io/InputStream.h>
 #include <base/io/OutputStream.h>
-#include <base/io/PipeException.h>
 #include <base/mem/Reference.h>
 #include <base/collection/Pair.h>
 #include <base/io/Handle.h>

@@ -129,7 +129,8 @@ public:
   /**
     Flushes the mapping.
   */
-  inline void synchronize() {
+  inline void synchronize()
+  {
     map->synchronize();
   }
 

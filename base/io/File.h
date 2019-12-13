@@ -14,8 +14,6 @@
 #pragma once
 
 #include <base/Object.h>
-#include <base/io/FileException.h>
-#include <base/io/FileNotFound.h>
 #include <base/io/FileRegion.h>
 #include <base/mem/Reference.h>
 #include <base/string/String.h>
@@ -23,7 +21,6 @@
 #include <base/Primitives.h>
 #include <base/io/Handle.h>
 #include <base/io/async/AsynchronousIOStream.h>
-#include <base/io/AccessDenied.h>
 #include <base/security/AccessControlList.h>
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE

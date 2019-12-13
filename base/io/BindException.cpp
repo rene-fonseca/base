@@ -13,8 +13,25 @@
 
 #include <base/io/BindException.h>
 
-_COM_AZURE_DEV__BASE__DUMMY_SYMBOL
-
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
+
+BindException::BindException() noexcept
+{
+}
+
+BindException::BindException(const char* message) noexcept
+  : IOException(message)
+{
+}
+
+BindException::BindException(const Type& type) noexcept
+  : IOException(type)
+{
+}
+  
+BindException::BindException(const char* message, const Type& type) noexcept
+  : IOException(message, type)
+{
+}
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

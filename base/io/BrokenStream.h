@@ -31,24 +31,21 @@ public:
   /**
     Initializes the exception object with no message.
   */
-  inline BrokenStream() noexcept {
-  }
+  BrokenStream() noexcept;
 
   /**
     Initializes the exception object.
 
     @param message The message.
   */
-  inline BrokenStream(const char* message) noexcept : IOException(message) {
-  }
+  BrokenStream(const char* message) noexcept;
   
   /**
     Initializes the exception object without an associated message.
     
     @param type The identity of the type.
   */
-  inline BrokenStream(const Type& type) noexcept : IOException(type) {
-  }
+  BrokenStream(const Type& type) noexcept;
   
   /**
     Initializes the exception object.
@@ -56,9 +53,7 @@ public:
     @param message An NULL-terminated string (ASCII).
     @param type The identity of the type.
   */
-  inline BrokenStream(const char* message, const Type& type) noexcept
-    : IOException(message, type) {
-  }
+  BrokenStream(const char* message, const Type& type) noexcept;
   
   _COM_AZURE_DEV__BASE__EXCEPTION_THIS_TYPE()
 };

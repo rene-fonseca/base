@@ -13,7 +13,10 @@
 
 #include <base/platforms/features.h>
 #include <base/io/File.h>
+#include <base/io/AccessDenied.h>
 #include <base/io/EndOfFile.h>
+#include <base/io/FileException.h>
+#include <base/io/FileNotFound.h>
 #include <base/concurrency/Thread.h>
 #include <base/Base.h>
 #include <base/Functor.h>

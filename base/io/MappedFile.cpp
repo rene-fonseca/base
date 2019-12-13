@@ -13,6 +13,7 @@
 
 #include <base/platforms/features.h>
 #include <base/io/MappedFile.h>
+#include <base/io/FileException.h>
 #include <base/Base.h>
 #include <base/Functor.h>
 

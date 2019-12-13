@@ -17,10 +17,7 @@
 #include <base/io/async/AsynchronousInputStream.h>
 #include <base/io/async/AsynchronousOutputStream.h>
 #include <base/concurrency/Synchronize.h>
-#include <base/io/AccessDenied.h>
-#include <base/io/TimedOut.h>
 #include <base/io/FileDescriptor.h>
-#include <base/net/NetworkException.h>
 #include <base/net/InetAddress.h>
 #include <base/string/FormatOutputStream.h>
 #include <base/mem/Reference.h>

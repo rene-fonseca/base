@@ -13,8 +13,24 @@
 
 #include <base/io/TimedOut.h>
 
-_COM_AZURE_DEV__BASE__DUMMY_SYMBOL
-
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
+
+TimedOut::TimedOut() noexcept
+{
+}
+
+TimedOut::TimedOut(const char* message) noexcept
+  : IOException(message)
+{
+}
+  
+TimedOut::TimedOut(const Type& type) noexcept
+  : IOException(type) {
+}
+  
+TimedOut::TimedOut(const char* message, const Type& type) noexcept
+  : IOException(message, type)
+{
+}
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

@@ -13,6 +13,7 @@
 
 #include <base/platforms/features.h>
 #include <base/io/Pipe.h>
+#include <base/io/PipeException.h>
 #include <base/Functor.h>
 #include <base/io/EndOfFile.h>
 #include <base/concurrency/Thread.h>

@@ -13,8 +13,25 @@
 
 #include <base/io/AccessDenied.h>
 
-_COM_AZURE_DEV__BASE__DUMMY_SYMBOL
-
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
+
+AccessDenied::AccessDenied() noexcept
+{
+}
+
+AccessDenied::AccessDenied(const char* message) noexcept
+  : IOException(message)
+{
+}
+  
+AccessDenied::AccessDenied(const Type& type) noexcept
+  : IOException(type)
+{
+}
+  
+AccessDenied::AccessDenied(const char* message, const Type& type) noexcept
+  : IOException(message, type)
+{
+}
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

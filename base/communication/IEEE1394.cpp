@@ -574,8 +574,10 @@ unsigned short IEEE1394::findRole(Role role, unsigned int busId) throw(OutOfDoma
   return makeNodeId(IEEE1394::BROADCAST, busId); // not found/present
 }
 
-void IEEE1394::reload() throw(IEEE1394Exception) {
-  for (unsigned int attempts = 10; ; --attempts) { // max wait is 10*100ms
+void IEEE1394::reload() throw(IEEE1394Exception)
+{
+  unsigned int attempts = 10;
+  while (true) { // for (unsigned int attempts = 10; attempts > 0; attempts--) { // max wait is 10*100ms
     // invalidate current attributes
     numberOfNodes = 0;
     localId = IEEE1394::BROADCAST;

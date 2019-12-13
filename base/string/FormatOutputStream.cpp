@@ -35,7 +35,7 @@ namespace {
 
 unsigned int FormatOutputStream::SourceCodeLocation::allocateCount() noexcept
 {
-  return ++sourceCodeLocationCounter;
+  return static_cast<unsigned int>(++sourceCodeLocationCounter);
 }
 
 FormatOutputStream& FormatOutputStream::operator<<(const FormatOutputStream::SourceCodeLocation& location)
@@ -234,7 +234,7 @@ FormatOutputStream& FormatOutputStream::operator<<(Action action)
   case SP:
     write(
       Cast::pointer<const uint8*>(SP_STR.getValue()),
-      SP_STR.getLength()
+      static_cast<unsigned int>(SP_STR.getLength())
     ); // may throw IOException
     break;
   case UNIXEOL:
@@ -249,25 +249,25 @@ FormatOutputStream& FormatOutputStream::operator<<(Action action)
   case CR:
     write(
       Cast::pointer<const uint8*>(CR_STR.getValue()),
-      CR_STR.getLength()
+      static_cast<unsigned int>(CR_STR.getLength())
     ); // may throw IOException
     break;
   case LF:
     write(
       Cast::pointer<const uint8*>(LF_STR.getValue()),
-      LF_STR.getLength()
+      static_cast<unsigned int>(LF_STR.getLength())
     ); // may throw IOException
     break;
   case CRLF:
     write(
       Cast::pointer<const uint8*>(CRLF_STR.getValue()),
-      CRLF_STR.getLength()
+      static_cast<unsigned int>(CRLF_STR.getLength())
     ); // may throw IOException
     break;
   case LFCR:
     write(
       Cast::pointer<const uint8*>(LFCR_STR.getValue()),
-      LFCR_STR.getLength()
+      static_cast<unsigned int>(LFCR_STR.getLength())
     ); // may throw IOException
     break;
   case EOL:
@@ -275,19 +275,19 @@ FormatOutputStream& FormatOutputStream::operator<<(Action action)
     case Symbols::UNIXEOL:
       write(
         Cast::pointer<const uint8*>(LF_STR.getValue()),
-        LF_STR.getLength()
+        static_cast<unsigned int>(LF_STR.getLength())
       ); // may throw IOException
       break;
     case Symbols::WINDOWSEOL:
       write(
         Cast::pointer<const uint8*>(CRLF_STR.getValue()),
-        CRLF_STR.getLength()
+        static_cast<unsigned int>(CRLF_STR.getLength())
       ); // may throw IOException
       break;
     case Symbols::MACEOL:
       write(
         Cast::pointer<const uint8*>(LFCR_STR.getValue()),
-        LFCR_STR.getLength()
+        static_cast<unsigned int>(LFCR_STR.getLength())
       ); // may throw IOException
       break;
     }
@@ -300,19 +300,19 @@ FormatOutputStream& FormatOutputStream::operator<<(Action action)
     case Symbols::UNIXEOL:
       write(
         Cast::pointer<const uint8*>(LF_STR.getValue()),
-        LF_STR.getLength()
+        static_cast<unsigned int>(LF_STR.getLength())
       ); // may throw IOException
       break;
     case Symbols::WINDOWSEOL:
       write(
         Cast::pointer<const uint8*>(CRLF_STR.getValue()),
-        CRLF_STR.getLength()
+        static_cast<unsigned int>(CRLF_STR.getLength())
       ); // may throw IOException
       break;
     case Symbols::MACEOL:
       write(
         Cast::pointer<const uint8*>(LFCR_STR.getValue()),
-        LFCR_STR.getLength()
+        static_cast<unsigned int>(LFCR_STR.getLength())
       ); // may throw IOException
       break;
     }
@@ -389,13 +389,13 @@ void FormatOutputStream::addCharacterField(const char* buffer, MemorySize size)
 
   const MemoryDiff numberOfChars = Unicode::getUTF8StringLength(reinterpret_cast<const uint8*>(buffer), size);
   if (justification == Symbols::LEFT) {
-    write(Cast::pointer<const uint8*>(buffer), size); // write characters
+    write(Cast::pointer<const uint8*>(buffer), static_cast<unsigned int>(size)); // write characters
   }
   if (static_cast<MemorySize>(numberOfChars) < static_cast<MemorySize>(context.width)) { // write blanks if required
-    unfoldValue(' ', context.width - numberOfChars);
+    unfoldValue(' ', static_cast<unsigned int>(context.width - numberOfChars));
   }
   if (context.justification == Symbols::RIGHT) {
-    write(Cast::pointer<const uint8*>(buffer), size); // write characters
+    write(Cast::pointer<const uint8*>(buffer), static_cast<unsigned int>(size)); // write characters
   }
   context = defaultContext;
 }
@@ -427,13 +427,13 @@ void FormatOutputStream::addCharacterField(const wchar* buffer, MemorySize size)
   Unicode::WCharToUTF8(temp, buffer, size);
 
   if (justification == Symbols::LEFT) {
-    write(temp, length); // write characters
+    write(temp, static_cast<unsigned int>(length)); // write characters
   }
   if (static_cast<MemorySize>(numberOfChars) < static_cast<MemorySize>(context.width)) { // write blanks if required
-    unfoldValue(' ', context.width - numberOfChars);
+    unfoldValue(' ', static_cast<unsigned int>(context.width - numberOfChars));
   }
   if (context.justification == Symbols::RIGHT) {
-    write(temp, length); // write characters
+    write(temp, static_cast<unsigned int>(length)); // write characters
   }
   context = defaultContext;
 }
@@ -465,13 +465,13 @@ void FormatOutputStream::addCharacterField(const char16_t* buffer, MemorySize si
   Unicode::UTF16ToUTF8(temp, buffer, size);
 
   if (justification == Symbols::LEFT) {
-    write(temp, length); // write characters
+    write(temp, static_cast<unsigned int>(length)); // write characters
   }
   if (static_cast<MemorySize>(numberOfChars) < static_cast<MemorySize>(context.width)) { // write blanks if required
-    unfoldValue(' ', context.width - numberOfChars);
+    unfoldValue(' ', static_cast<unsigned int>(context.width - numberOfChars));
   }
   if (context.justification == Symbols::RIGHT) {
-    write(temp, length); // write characters
+    write(temp, static_cast<unsigned int>(length)); // write characters
   }
   context = defaultContext;
 }
@@ -503,21 +503,21 @@ void FormatOutputStream::addCharacterField(const char32_t* buffer, MemorySize si
   Unicode::UTF32ToUTF8(temp, buffer, size);
 
   if (justification == Symbols::LEFT) {
-    write(temp, length); // write characters
+    write(temp, static_cast<unsigned int>(length)); // write characters
   }
   if (static_cast<MemorySize>(numberOfChars) < static_cast<MemorySize>(context.width)) { // write blanks if required
-    unfoldValue(' ', context.width - numberOfChars);
+    unfoldValue(' ', static_cast<unsigned int>(context.width - numberOfChars));
   }
   if (context.justification == Symbols::RIGHT) {
-    write(temp, length); // write characters
+    write(temp, static_cast<unsigned int>(length)); // write characters
   }
   context = defaultContext;
 }
 
-void FormatOutputStream::addIntegerField(const char* buffer, unsigned int size, bool isSigned)
+void FormatOutputStream::addIntegerField(const char* buffer, MemorySize size, bool isSigned)
 {
   ExclusiveSynchronize<Guard> _guard(guard);
-  unsigned int requiredWidth = size;
+  MemorySize requiredWidth = size;
 
   if (isSigned &&
       ((context.integerBase != Symbols::BINARY) &&
@@ -557,7 +557,7 @@ void FormatOutputStream::addIntegerField(const char* buffer, unsigned int size, 
   }
 
   unsigned int pads =
-    (requiredWidth >= static_cast<unsigned int>(context.width)) ? 0 : (context.width - requiredWidth);
+    (requiredWidth >= static_cast<unsigned int>(context.width)) ? 0 : static_cast<unsigned int>(context.width - requiredWidth);
 
   if (justification == Symbols::RIGHT) {
     if ((pads > 0) && ((context.flags & Symbols::ZEROPAD) == 0)) { // write blanks if required
@@ -621,7 +621,7 @@ void FormatOutputStream::addIntegerField(const char* buffer, unsigned int size, 
     unfoldValue(digit, pads);
   }
 
-  write(Cast::pointer<const uint8*>(buffer), size); // write late buffer
+  write(Cast::pointer<const uint8*>(buffer), static_cast<unsigned int>(size)); // write late buffer
   if (justification == Symbols::LEFT) {
     unfoldValue(' ', pads);
   }
@@ -722,7 +722,7 @@ void FormatOutputStream::addDateField(const Date& date)
     justification = Symbols::LEFT; // TAG: is this locale specific
   }
 
-  const int size = field.getLength();
+  const int size = static_cast<unsigned int>(field.getLength());
   if (justification == Symbols::LEFT) {
     write(Cast::pointer<const uint8*>(field.getBytes()), size); // write characters
   }
@@ -1958,7 +1958,7 @@ void FormatOutputStream::writeFloatingPointType(
 
   {
     ExclusiveSynchronize<Guard> _guard(guard);
-    unsigned int length = (output - buffer);
+    unsigned int length = static_cast<unsigned int>(output - buffer);
     if (static_cast<unsigned int>(context.width) <= length) {
       write(Cast::pointer<const uint8*>(static_cast<const char*>(buffer)), length); // write characters
     } else {
@@ -1981,7 +1981,7 @@ void FormatOutputStream::writeFloatingPointType(
         break;
       case Symbols::RADIX:
         BASSERT(radix);
-        unsigned int beforeRadix = radix - buffer; // character before radix (excluding)
+        unsigned int beforeRadix = static_cast<unsigned int>(radix - buffer); // character before radix (excluding)
         unsigned int prefixLength = 0; // left justify by default
         if (static_cast<unsigned int>(context.radixPosition) >= beforeRadix) {
           // right justify if radix position is too big

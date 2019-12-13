@@ -313,10 +313,11 @@ ExpressionParser::ExpressionParser(
   const String& _expression,
   ExpressionProvider& _provider) noexcept
   : expression(_expression),
-    provider(_provider) {
+    provider(_provider)
+{
   autoRegister = false;
   index = 0;
-  length = expression.getLength();
+  length = static_cast<unsigned int>(expression.getLength());
 }
 
 void ExpressionParser::pop() throw(ExpressionException) {
@@ -370,7 +371,7 @@ void ExpressionParser::readIdentifier() throw(ExpressionException) {
     if (unknowns.hasKey(identifier)) {
       nodes.append(unknowns[identifier]);
     } else {
-      Node node = ExpressionEvaluator::makeUnknownNode(unknowns.getSize());
+      Node node = ExpressionEvaluator::makeUnknownNode(static_cast<unsigned int>(unknowns.getSize()));
       unknowns[identifier] = node;
       unknownsId[node.unknown] = identifier;
       nodes.append(node);

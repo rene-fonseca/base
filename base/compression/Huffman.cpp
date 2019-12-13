@@ -57,8 +57,9 @@ public:
       writeHead(begin) {
   }
   
-  inline void flush() throw(IOException) {
-    FilterOutputStream::write(begin, writeHead - begin);
+  inline void flush() throw(IOException)
+  {
+    FilterOutputStream::write(begin, static_cast<unsigned int>(writeHead - begin));
     writeHead = begin;
   }
 
@@ -67,7 +68,7 @@ public:
   }
   
   inline unsigned int getAvailable() const throw() {
-    return end - writeHead;
+    return static_cast<unsigned int>(end - writeHead);
   }
 
   inline void undo(unsigned int size) throw() {
@@ -104,7 +105,7 @@ public:
         size -= blocksToWrite*(end - begin);
         fill(begin, (end - begin) - bytesToWrite, value); // init uninitialized elements in buffer
         while (blocksToWrite--) {
-          FilterOutputStream::write(begin, end - begin);
+          FilterOutputStream::write(begin, static_cast<unsigned int>(end - begin));
         }
       }
       
@@ -126,7 +127,7 @@ public:
       flush();
       
       // write block directly from external buffer
-      unsigned int bytesToWrite = (size/(end - begin))*(end - begin);
+      unsigned int bytesToWrite = static_cast<unsigned int>((size/(end - begin))*(end - begin));
       FilterOutputStream::write(buffer, bytesToWrite);
       buffer += bytesToWrite;
       size -= bytesToWrite;
@@ -355,7 +356,7 @@ public:
 
     BASSERT(static_cast<MemorySize>(dest - header) <= getArraySize(header));
     
-    os.write2(Cast::getAddress(header), dest - header);
+    os.write2(Cast::getAddress(header), static_cast<unsigned int>(dest - header));
   }
 
   Encoder(OutputStream& stream, const uint8* buffer, unsigned int size) throw(IOException)
@@ -528,7 +529,7 @@ public:
       --maximumLength;
     }
     
-    return src - buffer; // success
+    return static_cast<unsigned int>(src - buffer); // success
   }
   
   inline void generateCodes() throw() {
@@ -584,10 +585,10 @@ public:
       // read minimum length bits
       if (availableBits >= length) {
         availableBits -= length;
-        code = bitBuffer >> availableBits;
+        code = static_cast<unsigned int>(bitBuffer >> availableBits);
       } else {
         const unsigned int count = length - availableBits; // required number of bits
-        code = bitBuffer;
+        code = static_cast<unsigned int>(bitBuffer);
         availableBits = 0;
         
         if (src >= wordEnd) {
@@ -612,7 +613,7 @@ public:
         }
         
         availableBits -= count;
-        code = (code << count) | (bitBuffer >> availableBits);
+        code = static_cast<unsigned int>((code << count) | (bitBuffer >> availableBits));
       }
       
       while (true) {

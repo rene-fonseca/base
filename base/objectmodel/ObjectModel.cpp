@@ -83,22 +83,7 @@ Reference<ObjectModel::Boolean> ObjectModel::createBoolean(bool value)
   // return new Boolean(value);
 }
 
-Reference<ObjectModel::Integer> ObjectModel::createInteger(int value)
-{
-  // common values: -10...10
-  switch (value) {
-  case -1:
-    return commonIntegerMinus1;
-  case 0:
-    return commonInteger0;
-  case 1:
-    return commonInteger1;
-  default:
-    return new Integer(value);
-  }
-}
-
-Reference<ObjectModel::Integer> ObjectModel::createInteger64(int64 value)
+Reference<ObjectModel::Integer> ObjectModel::createInteger(int64 value)
 {
   switch (value) {
   case -1:
@@ -602,11 +587,11 @@ void ObjectModel::Object::setValue(const base::String& key, const int64 value)
       continue;
     }
     if (v.getFirst()->value == key) {
-      v.setSecond(globalObjectModel.createInteger64(value));
+      v.setSecond(globalObjectModel.createInteger(value));
       return;
     }
   }
-  values.append(Association(globalObjectModel.createString(key), globalObjectModel.createInteger64(value)));
+  values.append(Association(globalObjectModel.createString(key), globalObjectModel.createInteger(value)));
 }
 
 void ObjectModel::Object::setValue(const base::String& key, const double value)
@@ -738,7 +723,8 @@ bool ObjectModel::Object::getBoolean(const char* path, bool defaultValue) throw(
   return b->value;
 }
 
-int ObjectModel::Object::getInteger(const char* path, int defaultValue) throw(ObjectModelException) {
+int64 ObjectModel::Object::getInteger(const char* path, int64 defaultValue) throw(ObjectModelException)
+{
   Reference<Value> v = getPath(path, true);
   if (!v) {
     return defaultValue;

@@ -104,7 +104,7 @@ Reference<ObjectModel::Integer> YAML::parseInteger(YAMLParser& parser)
   if (!parseIntegerImpl(parser, i)) {
     throw YAMLException("Expected integer.", parser.getPosition());
   }
-  return objectModel.createInteger64(i);
+  return objectModel.createInteger(i);
 }
 
 Reference<ObjectModel::Float> YAML::parseFloat(YAMLParser& parser)
@@ -166,7 +166,7 @@ Reference<ObjectModel::Value> YAML::parseNumber(YAMLParser& parser)
   YAMLParser integerParser = parser;
   if (parseIntegerImpl(integerParser, i)) {
     parser = integerParser;
-    return objectModel.createInteger64(i);
+    return objectModel.createInteger(i);
   }
   return parseFloat(parser);
 }
@@ -474,7 +474,7 @@ Reference<ObjectModel::Value> YAML::parseFile(const String& path)
   {
     File file(path, File::READ, 0);
     buffer.resize(file.getSize());
-    file.read(buffer, buffer.size(), false);
+    file.read(buffer, static_cast<unsigned int>(buffer.size()), false);
   }
   YAML yaml;
   return yaml.parse(buffer, buffer + buffer.size());

@@ -143,7 +143,7 @@ bool FileDescriptor::isPipe() const noexcept
 #else // unix
   // get type directly instead
   // TAG: also not if file
-  const int status = lseek(fd->getHandle(), 0, SEEK_CUR);
+  const auto status = lseek(fd->getHandle(), 0, SEEK_CUR);
   return (status < 0) && (errno == ESPIPE);
 #endif
 }

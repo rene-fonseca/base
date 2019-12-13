@@ -123,7 +123,7 @@ public:
     Returns the granularity of addresses/offsets within the shared memory block
     and file object.
   */
-  static unsigned int getGranularity() throw();
+  static MemorySize getGranularity() throw();
   
   /**
     Initializes shared memory object.

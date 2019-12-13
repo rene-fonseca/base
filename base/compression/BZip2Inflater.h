@@ -78,7 +78,7 @@ public:
     
     @return The number of bytes pushed.
   */
-  unsigned int push(const uint8* buffer, MemorySize size) throw(IOException);
+  MemorySize push(const uint8* buffer, MemorySize size) throw(IOException);
   
   /**
     This method should be invoked when all compressed data has been pushed onto

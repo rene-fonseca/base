@@ -118,7 +118,7 @@ unsigned int MappedFile::getGranularity() noexcept
   #else
     long size = ::sysconf(_SC_PAGE_SIZE);
     BASSERT((size > 0) && (size <= PrimitiveTraits<unsigned int>::MAXIMUM));
-    return size;
+    return static_cast<unsigned int>(size);
   #endif
 #endif // flavor
 }

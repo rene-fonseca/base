@@ -59,7 +59,7 @@ LargeIntegerImpl::Word LargeIntegerImpl::getBits(const Word* words, MemorySize s
   BASSERT(fieldSize <= WORD_BITS);
   const MemorySize index = bitIndex / WORD_BITS;
   const Word word = words[index];
-  const unsigned int shift = bitIndex - index * WORD_BITS;
+  const unsigned int shift = static_cast<unsigned int>(bitIndex - index * WORD_BITS);
   Word result = (word >> shift) & ((ONE << fieldSize) - 1);
   if ((shift + fieldSize) > WORD_BITS) {
     const unsigned int nextBits = shift + fieldSize - WORD_BITS;
@@ -436,16 +436,16 @@ void LargeIntegerImpl::divide(
     return;
   }
 
-  unsigned int divisorBitSize = getBitSize(divisor, size);
-  unsigned int positionOfDivisor = getBitSize(tempDividend, size) - divisorBitSize;
-  leftShift(&temp[0], size, positionOfDivisor);
+  auto divisorBitSize = getBitSize(divisor, size);
+  auto positionOfDivisor = getBitSize(tempDividend, size) - divisorBitSize;
+  leftShift(&temp[0], size, static_cast<unsigned int>(positionOfDivisor));
 
   const MemorySize reducedSize = size;
 
   while (!lessThan(tempDividend, divisor, reducedSize)) {
     // assert temp >= divisor
-    unsigned int newPosition = getBitSize(tempDividend, reducedSize) - divisorBitSize; // 0 <= newPosition < positionOfDivisor
-    rightShift(&temp[0], reducedSize, positionOfDivisor - newPosition);
+    auto newPosition = getBitSize(tempDividend, reducedSize) - divisorBitSize; // 0 <= newPosition < positionOfDivisor
+    rightShift(&temp[0], reducedSize, static_cast<unsigned int>(positionOfDivisor - newPosition));
     positionOfDivisor = newPosition;
 
     if (lessThan(tempDividend, &temp[0], reducedSize)) { // shift = 0 => return value is false
@@ -571,7 +571,7 @@ LargeInteger& LargeInteger::subtract(const LargeInteger& subtrahend)
 {
   const auto size = subtrahend.getSize();
   extend(size);
-  bool borrow = LargeIntegerImpl::subtract(toWords(), subtrahend, size);
+  bool borrow = LargeIntegerImpl::subtract(toWords(), subtrahend, static_cast<unsigned int>(size));
   if (borrow) {
     if (getSize() > size) {
       borrow = LargeIntegerImpl::subtract(toWords() + size, getSize(), 1);
@@ -585,7 +585,7 @@ bool LargeInteger::isZero() const noexcept
   return LargeIntegerImpl::isZero(toWords(), getSize());
 }
 
-LargeIntegerImpl::Word LargeInteger::getBits(unsigned int bitIndex, unsigned bits) const noexcept
+LargeIntegerImpl::Word LargeInteger::getBits(unsigned int bitIndex, unsigned int bits) const noexcept
 {
   return LargeIntegerImpl::getBits(toWords(), getSize(), bitIndex, bits);
 }
@@ -919,12 +919,12 @@ namespace {
     char* first = dest;
     // trim upper zeros
     MemorySize bitIndex = (value.getSize() * LargeIntegerImpl::WORD_BITS - 1) / fieldSize * fieldSize; // start on proper bit offset
-    while ((bitIndex >= fieldSize) && !value.getBits(bitIndex, fieldSize)) { // skip top zeros
+    while ((bitIndex >= fieldSize) && !value.getBits(static_cast<unsigned int>(bitIndex), fieldSize)) { // skip top zeros
       bitIndex -= fieldSize;
     }
 
     for (MemorySize i = 0; i <= bitIndex; i += fieldSize) { // bitIndex is lower bound hence <=
-      *dest++ = ASCIITraits::valueToDigit(value.getBits(i, fieldSize), upper); // get digit
+      *dest++ = ASCIITraits::valueToDigit(value.getBits(static_cast<unsigned int>(i), fieldSize), upper); // get digit
     }
 
     reverse(first, dest - 1); // make high digits first

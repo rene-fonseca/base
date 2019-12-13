@@ -27,7 +27,7 @@ StringInputStream::StringInputStream(String& _string) throw(BindException)
 unsigned int StringInputStream::available() const throw(IOException)
 {
   bassert(!closed, IOException(this));
-  return string.getLength() - index;
+  return static_cast<unsigned int>(string.getLength() - index);
 }
 
 void StringInputStream::close() throw(IOException)
@@ -46,7 +46,7 @@ unsigned int StringInputStream::read(uint8* buffer, unsigned int size, bool nonb
     return 0;
   }
   if (size >= string.getLength() - index) {
-    size = string.getLength() - index;
+    size = static_cast<unsigned int>(string.getLength() - index);
   }
   base::copy<uint8>(buffer, Cast::pointer<const uint8*>(string.getBytes()), size);
   return size;
@@ -61,7 +61,7 @@ unsigned int StringInputStream::skip(unsigned int count) throw(IOException)
     return 0;
   }
   if (count >= string.getLength() - index) {
-    count = string.getLength() - index;
+    count = static_cast<unsigned int>(string.getLength() - index);
   }
   index += count;
   return count;

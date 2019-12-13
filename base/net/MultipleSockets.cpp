@@ -143,7 +143,7 @@ void MultipleSockets::add(
         ++fd;
       };
     }
-    const unsigned int desiredCapacity =
+    const MemorySize desiredCapacity =
       (streamSockets.getSize() + GRANULARITY - 1)/GRANULARITY * GRANULARITY;
     if (sizeof(pollfd) * desiredCapacity != context.getSize()) {
       context.setSize(sizeof(pollfd) * desiredCapacity);
@@ -209,7 +209,7 @@ void MultipleSockets::remove(
         --numberOfSelected;
       }
       fds[i] = fds[streamSockets.getSize() + 1 - 1];
-      const unsigned int desiredCapacity =
+      const MemorySize desiredCapacity =
         (streamSockets.getSize() + GRANULARITY - 1)/GRANULARITY * GRANULARITY;
       if (sizeof(pollfd) * desiredCapacity != context.getSize()) {
         context.setSize(sizeof(pollfd) * desiredCapacity);

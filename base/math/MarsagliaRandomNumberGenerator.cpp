@@ -32,7 +32,7 @@ void MarsagliaRandomNumberGenerator::randomize() throw() {
   if (seed == 0) {
     seed = 20010908014640LL;
   }
-  randomize(seed);
+  randomize(static_cast<unsigned int>(seed));
 }
 
 void MarsagliaRandomNumberGenerator::randomize(uint32 seed) throw() {

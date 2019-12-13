@@ -121,9 +121,7 @@ bool RegExp::isRegularExpression(const String& pattern, bool caseSensitive) noex
   return false;
 }
 
-bool RegExp::doesMatch(
-  const String& value,
-  unsigned int start) const
+bool RegExp::doesMatch(const String& value, MemorySize start) const
 {
   if (!compiled) {
     throw RegExpException("Regular expression is invalid.", this);
@@ -167,7 +165,7 @@ bool RegExp::doesMatch(
 
 RegExp::Substring RegExp::match(
   const String& value,
-  unsigned int start) const
+  MemorySize start) const
 {
   if (!compiled) {
     throw RegExpException("Regular expression is invalid.", this);
@@ -212,7 +210,7 @@ RegExp::Substring RegExp::match(
 RegExp::Substring RegExp::match(
   const String& value,
   Array<Substring>& result,
-  unsigned int start) const
+  MemorySize start) const
 {
   if (!compiled) {
     throw RegExpException("Regular expression is invalid.", this);

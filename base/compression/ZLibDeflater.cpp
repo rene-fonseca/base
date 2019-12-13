@@ -136,8 +136,13 @@ void ZLibDeflater::flush() throw(IOException)
 #endif
 }
 
-MemorySize ZLibDeflater::push(const uint8* buffer, MemorySize size) throw(IOException)
+MemorySize ZLibDeflater::push(const uint8* buffer, MemorySize _size) throw(IOException)
 {
+  if (_size > 0xffffffff) {
+    throw IOException(this);
+  }
+  unsigned int size = static_cast<unsigned int>(_size);
+  
 #if (defined(_COM_AZURE_DEV__BASE__USE_ZLIB))
   bassert(state != ENDED, EndOfFile());
   bassert(state == RUNNING, IOException(this));
@@ -150,10 +155,10 @@ MemorySize ZLibDeflater::push(const uint8* buffer, MemorySize size) throw(IOExce
   context->bytesToWrite = size;
   context->totalInput = 0;
   context->nextOutput = this->buffer.getElements() + availableBytes;
-  context->bytesToRead = this->buffer.getSize() - availableBytes;
+  context->bytesToRead = static_cast<unsigned int>(this->buffer.getSize()) - availableBytes;
   int code = internal::deflate(context, internal::ZLibDeflater::NO_FLUSH);
   bassert(code == internal::ZLibDeflater::OK, IOException(this));
-  availableBytes = this->buffer.getSize() - context->bytesToRead;
+  availableBytes = static_cast<unsigned int>(this->buffer.getSize()) - context->bytesToRead;
   return context->totalInput;
 #else
   throw IOException(this);
@@ -171,8 +176,13 @@ void ZLibDeflater::pushEnd() throw(IOException)
 #endif
 }
 
-MemorySize ZLibDeflater::pull(uint8* buffer, MemorySize size) throw(IOException)
+MemorySize ZLibDeflater::pull(uint8* buffer, MemorySize _size) throw(IOException)
 {
+  if (_size > 0xffffffff) {
+    throw IOException(this);
+  }
+  unsigned int size = static_cast<unsigned int>(_size);
+  
 #if (defined(_COM_AZURE_DEV__BASE__USE_ZLIB))
   bassert(state != ENDED, EndOfFile());
   

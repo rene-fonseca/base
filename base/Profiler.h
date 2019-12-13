@@ -133,7 +133,7 @@ public:
       const void* symbol = nullptr;
       unsigned int parent = 0;
 
-      inline SymbolAndParent(const void* _symbol, unsigned int _parent)
+      inline SymbolAndParent(const void* _symbol, unsigned int _parent) noexcept
         : symbol(_symbol), parent(_parent)
       {
       }
@@ -153,7 +153,7 @@ public:
 
     /** Double linked list of all events. */
     Block* blocks = nullptr;
-    const unsigned int pid = Process::getProcess().getId();
+    const MemorySize pid = Process::getProcess().getId();
     Array<StackFrame> stackFramesHash; // cached frames (hash table)
     Array<StackFrame> stackFramesUnhash; // cached frames (remaining stack traces)
     String stackPattern; // stack frame pattern

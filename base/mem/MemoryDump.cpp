@@ -32,7 +32,7 @@ FormatOutputStream& operator<<(FormatOutputStream& stream, const MemoryDump& val
   String underlineOffset = "----------------";
   underlineOffset.forceToLength(value.offsetDigits);
     
-  unsigned int rows = (value.size + bytesPerRow - 1)/bytesPerRow;
+  MemorySize rows = (value.size + bytesPerRow - 1)/bytesPerRow;
   StringOutputStream s;
   
   for (unsigned int row = 0; row < rows; ++row) {

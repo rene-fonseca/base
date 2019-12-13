@@ -54,14 +54,15 @@ private:
   uint8* current = nullptr;
 protected:
   
-  inline FileRegion fixRegion(const FileRegion& region) throw() {
+  inline FileRegion fixRegion(const FileRegion& region) noexcept
+  {
     unsigned int index = region.getOffset() % granularity;
     long long offset = region.getOffset()/granularity*granularity;
     unsigned int minimumSize = region.getSize() + index;
     unsigned int size = (maximum(minimumSize, preferredWindowSize) + granularity - 1)/granularity*granularity;
     long long availableBytes = fileSize - offset;
     if ((availableBytes > 0) && (size > availableBytes)) {
-      size = availableBytes;
+      size = static_cast<unsigned int>(availableBytes);
     }
     if (size < minimumSize) { // force IOException if minimumSize bytes is not available
       size = minimumSize;
@@ -93,21 +94,22 @@ public:
   /**
     Returns the bytes of the entire window.
   */
-  inline const uint8* getBytes() const throw() {
+  inline const uint8* getBytes() const noexcept {
     return begin;
   }
   
   /**
     Returns the available bytes.
   */
-  inline unsigned int getSize() const throw() {
+  inline MemorySize getSize() const noexcept
+  {
     return end - begin;
   }
   
   /**
     Returns the current position indexed from the beginning of the file.
   */
-  inline long long getPosition() const throw() {
+  inline long long getPosition() const noexcept {
     return mapping.getRegion().getOffset() + (current - begin);
   }
 
@@ -187,13 +189,13 @@ public:
 //    elements = Cast::pointer<const TYPE*>(map.getBytes() + index);
 //  }
 //
-//  inline MappedSequence(const MappedSequence& copy) throw() : map(copy.map), elements(copy.elements) {
+//  inline MappedSequence(const MappedSequence& copy) noexcept : map(copy.map), elements(copy.elements) {
 //  }
 //
 //  /**
 //    Returns the sequence.
 //  */
-//  inline const TYPE* getElements() const throw() {
+//  inline const TYPE* getElements() const noexcept {
 //    return elements;
 //  }
 //};
@@ -240,33 +242,33 @@ public:
 //
 //    @param file The file to be read.
 //  */
-//  FileReader(File& file) throw();
+//  FileReader(File& file) noexcept;
 //
 //  /**
 //    Returns the first element of the file mapping window.
 //  */
-//  inline ReadIterator getBegin() const throw() {
+//  inline ReadIterator getBegin() const noexcept {
 //    return ReadIterator(begin);
 //  }
 //
 //  /**
 //    Returns the end of the file mapping window.
 //  */
-//  inline ReadIterator getEnd() const throw() {
+//  inline ReadIterator getEnd() const noexcept {
 //    return ReadIterator(end);
 //  }
 //
 //  /**
 //    Returns the first byte of the mapping.
 //  */
-//  inline const uint8* getBytes() const throw() {
+//  inline const uint8* getBytes() const noexcept {
 //    return begin;
 //  }
 //
 //  /**
 //    Returns the current position of the window.
 //  */
-//  inline const FileRegion& getRegion() const throw() {
+//  inline const FileRegion& getRegion() const noexcept {
 //    return mapping.getRegion();
 //  }
 //

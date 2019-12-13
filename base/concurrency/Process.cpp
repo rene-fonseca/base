@@ -343,7 +343,7 @@ bool Process::isAlive() const
 #else // unix
   
   int status = 0;
-  pid_t result = ::waitpid(id, &status, WNOHANG);
+  pid_t result = ::waitpid(static_cast<pid_t>(id), &status, WNOHANG);
   bassert(result >= 0, ProcessException("Unable to query process.", this));
 
   /**
@@ -419,7 +419,7 @@ String Process::getName() const
 #else // unix
 #if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__MACOS)
   PrimitiveStackArray<char> buffer(PROC_PIDPATHINFO_MAXSIZE);
-  int status = proc_pidpath(id, buffer, buffer.size());
+  int status = proc_pidpath(static_cast<int>(id), buffer, static_cast<unsigned int>(buffer.size()));
   if (status < 0) {
     return String();
   }

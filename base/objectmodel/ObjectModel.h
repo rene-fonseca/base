@@ -206,23 +206,28 @@ public:
       return value == compare;
     }
 
-    inline bool operator!=(int compare) const noexcept {
+    inline bool operator!=(int compare) const noexcept
+    {
       return value != compare;
     }
 
-    inline bool operator==(int64 compare) const noexcept {
+    inline bool operator==(int64 compare) const noexcept
+    {
       return value == compare;
     }
 
-    inline bool operator!=(int64 compare) const noexcept {
+    inline bool operator!=(int64 compare) const noexcept
+    {
       return value != compare;
     }
 
-    inline operator int() const noexcept {
-      return value;
+    inline operator int() const noexcept
+    {
+      return static_cast<int>(value);
     }
 
-    inline operator int64() const noexcept {
+    inline operator int64() const noexcept
+    {
       return value;
     }
   };
@@ -676,7 +681,7 @@ public:
     bool getBoolean(const char* path, bool defaultValue) throw(ObjectModelException);
 
     /** Returns the integer for the given path. Returns the default value if doesn't exist. Raises exception if value isn't an integer. */
-    int getInteger(const char* path, int defaultValue) throw(ObjectModelException);
+    int64 getInteger(const char* path, int64 defaultValue) throw(ObjectModelException);
 
     /** Returns the float for the given path. Returns the default value if doesn't exist. Raises exception if value isn't a float. */
     double getFloat(const char* path, double defaultValue) throw(ObjectModelException);
@@ -724,10 +729,7 @@ public:
   Reference<Boolean> createBoolean(bool value = false);
   
   /** Creates an integer. May be reused. */
-  Reference<Integer> createInteger(int value = 0);
-
-  /** Creates an integer. May be reused. */
-  Reference<Integer> createInteger64(int64 value = 0);
+  Reference<Integer> createInteger(int64 value = 0);
 
   /** Creates a float. May be reused. */
   Reference<Float> createFloat(double value = 0);

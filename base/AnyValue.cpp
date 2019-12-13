@@ -824,13 +824,13 @@ wchar AnyValue::getWideChar() const noexcept
   case UNSIGNED_INTEGER:
     return unsignedInteger;
   case LONG_INTEGER:
-    return longInteger;
+    return static_cast<wchar>(longInteger);
   case UNSIGNED_LONG_INTEGER:
-    return unsignedLongInteger;
+    return static_cast<wchar>(unsignedLongInteger);
   case LONG_LONG_INTEGER:
-    return longLongInteger;
+    return static_cast<wchar>(longLongInteger);
   case UNSIGNED_LONG_LONG_INTEGER:
-    return unsignedLongLongInteger;
+    return static_cast<wchar>(unsignedLongLongInteger);
   case STRING:
     if (string.isProper()) {
       char first = string[0];
@@ -975,13 +975,13 @@ int AnyValue::getInteger() const noexcept
   case UNSIGNED_INTEGER:
     return unsignedInteger;
   case LONG_INTEGER:
-    return longInteger;
+    return static_cast<int>(longInteger);
   case UNSIGNED_LONG_INTEGER:
-    return unsignedLongInteger;
+    return static_cast<int>(unsignedLongInteger);
   case LONG_LONG_INTEGER:
-    return longLongInteger;
+    return static_cast<int>(longLongInteger);
   case UNSIGNED_LONG_LONG_INTEGER:
-    return unsignedLongLongInteger;
+    return static_cast<int>(unsignedLongLongInteger);
   case STRING:
     return Integer::parse(string, Integer::FLAG_ALLOW_SIGN);
   case WIDE_STRING:
@@ -1011,13 +1011,13 @@ unsigned int AnyValue::getUnsignedInteger() const noexcept
   case UNSIGNED_INTEGER:
     return unsignedInteger;
   case LONG_INTEGER:
-    return longInteger;
+    return static_cast<unsigned int>(longInteger);
   case UNSIGNED_LONG_INTEGER:
-    return unsignedLongInteger;
+    return static_cast<unsigned int>(unsignedLongInteger);
   case LONG_LONG_INTEGER:
-    return longLongInteger;
+    return static_cast<unsigned int>(longLongInteger);
   case UNSIGNED_LONG_LONG_INTEGER:
-    return unsignedLongLongInteger;
+    return static_cast<unsigned int>(unsignedLongLongInteger);
   case STRING:
     return Integer::parse(string, 0);
   case WIDE_STRING:

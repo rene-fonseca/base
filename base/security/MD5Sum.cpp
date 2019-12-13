@@ -198,7 +198,7 @@ MemorySize MD5Sum::push(const uint8* buffer, MemorySize size)
   if (size > (MAXIMUM_SIZE - totalSize)) {
     throw OutOfRange();
   }
-  const unsigned int result = size;
+  const MemorySize result = size;
   totalSize += size;
   if ((size + bytesInBuffer) >= BLOCK_SIZE) { // do we have a complete block
     if (bytesInBuffer > 0) { // do we need to empty internal buffer

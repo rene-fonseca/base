@@ -952,7 +952,8 @@ public:
     Removes the specified key and its associated value from this hash table.
     Raises InvalidKey if the key doesn't exist in this hash table.
   */
-  inline void remove(const Key& key) throw(InvalidKey, MemoryException) {
+  inline void remove(const Key& key)
+  {
     copyOnWrite();
     impl->remove(key);
   }
@@ -993,7 +994,8 @@ public:
     Returns the value associated with the specified key when used as 'rvalue'.
     When used as 'lvalue' the key is associated with the specified value.
   */
-  inline Element operator[](const Key& key) throw(InvalidKey, MemoryException) {
+  inline Element operator[](const Key& key)
+  {
     return Element(*this, key);
   }
   

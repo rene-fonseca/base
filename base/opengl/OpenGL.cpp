@@ -670,14 +670,14 @@ OpenGL::OpenGL(unsigned int latest) throw(OpenGLException) {
   const GLubyte* version = glGetString(OpenGL::VERSION); // loaded above
   
   String temp(Cast::pointer<const char*>(version));
-  int index = temp.indexOf(' ');
+  MemoryDiff index = temp.indexOf(' ');
   if (index >= 0) {
     temp.removeFrom(index); // remove implementation specific
   }
   unsigned int major = 1;
   unsigned int minor = 0;
   unsigned int release = 0;
-  unsigned int start = 0;
+  MemorySize start = 0;
   index = temp.indexOf('.', start);
   if (index >= 0) {
     major = UnsignedInteger::parse(
@@ -737,9 +737,9 @@ bool OpenGL::isSupported(const String& name) throw(OpenGLException) {
   );
   const GLubyte* extensions = glGetString(OpenGL::EXTENSIONS);
   String temp(Cast::pointer<const char*>(extensions));
-  unsigned int start = 0;
+  MemorySize start = 0;
   while (true) {
-    int index = temp.indexOf(name, start);
+    MemoryDiff index = temp.indexOf(name, start);
     if (index < 0) {
       return false;
     }

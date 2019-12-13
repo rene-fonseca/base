@@ -338,7 +338,7 @@ public:
     /** The current position in the enumeration. */
     const unsigned long* word = nullptr;
     /** The number of bits left. */
-    unsigned int count = 0;
+    MemorySize count = 0;
     
     /**
       Initializes an enumeration of all the elements of a bit set.
@@ -347,7 +347,7 @@ public:
       @param count The number of bits in the set.
     */
     explicit inline BitSetReadEnumerator(
-      const unsigned long* _word, unsigned int _count) noexcept
+      const unsigned long* _word, MemorySize _count) noexcept
       : word(_word), count(_count)
     {
     }
@@ -414,25 +414,26 @@ public:
   private:
     
     BitSet& bitset; // use reference to avoid 'copy on write'
-    unsigned int index = 0;
+    MemorySize index = 0;
     
     Element(const Element& copy) noexcept;
     Element& operator=(const Element& assign) noexcept;
     
-    inline Element(BitSet& _bitset, unsigned int _index)
+    inline Element(BitSet& _bitset, MemorySize _index)
       : bitset(_bitset),
         index(_index)
     {
     }
   public:
     
-    inline Element& operator=(bool value) throw(OutOfRange)
+    inline Element& operator=(bool value)
     {
       bitset.setAt(index, value);
       return *this;
     }
     
-    inline operator bool() throw(OutOfRange) {
+    inline operator bool()
+    {
       return bitset.getAt(index);
     }
   };
@@ -448,7 +449,7 @@ protected:
     Returns the number of required elements to hold the specified number of
     bits.
   */
-  static inline unsigned int getNumberOfElements(MemorySize size) noexcept
+  static inline MemorySize getNumberOfElements(MemorySize size) noexcept
   {
     return (size + sizeof(unsigned long) * 8 - 1)/(sizeof(unsigned long) * 8);
   }
@@ -495,7 +496,8 @@ protected:
   /**
     Resets any unused bits.
   */
-  inline void reinitialize() noexcept {
+  inline void reinitialize() noexcept
+  {
     unsigned long mask = getBitMask(size) - 1; // TAG: big endian problem
     if ((size > 0) && (mask != 0)) { // are some of the bits unused
       getElements()[getNumberOfElements(size) - 1] &= mask; // reset unused bits
@@ -546,7 +548,7 @@ public:
   /**
     Returns the number of bit in the bit set.
   */
-  inline unsigned int getSize() const noexcept
+  inline MemorySize getSize() const noexcept
   {
     return size;
   }
@@ -565,7 +567,7 @@ public:
     
     @param index The index of the element.
   */
-  bool getAt(unsigned int index) const throw(OutOfRange);
+  bool getAt(MemorySize index) const throw(OutOfRange);
 
   /**
     Sets the bit state at the specified index. Raises OutOfRange if the index
@@ -574,7 +576,7 @@ public:
     @param index The index of the element.
     @param value The desired value.
   */
-  void setAt(unsigned int index, bool value) throw(OutOfRange);
+  void setAt(MemorySize index, bool value) throw(OutOfRange);
 
   /**
     Sets (sets to true) all the states of the bit set.
@@ -596,7 +598,7 @@ public:
     Resets (sets to false) the state at the specified index. Raises OutOfRange
     if the index is invalid.
   */
-  BitSet& reset(unsigned int index) throw(OutOfRange);
+  BitSet& reset(MemorySize index) throw(OutOfRange);
 
   /**
     Inverts all the states of the bit set.
@@ -607,7 +609,7 @@ public:
     Inverts the state at the specified index. Raises OutOfRange if the index is
     invalid.
   */
-  BitSet& flip(unsigned int index) throw(OutOfRange);
+  BitSet& flip(MemorySize index) throw(OutOfRange);
 
   /**
     Binary AND of the bit sets.
@@ -668,7 +670,7 @@ public:
 
     @param index The index of the element.
   */
-  inline Element operator[](unsigned int index) throw(OutOfRange)
+  inline Element operator[](MemorySize index)
   {
     return Element(*this, index);
   }
@@ -679,7 +681,7 @@ public:
 
     @param index The index of the element.
   */
-  inline bool operator[](unsigned int index) const throw(OutOfRange)
+  inline bool operator[](MemorySize index) const
   {
     return getAt(index);
   }

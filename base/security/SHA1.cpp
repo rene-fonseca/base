@@ -138,7 +138,7 @@ MemorySize SHA1::push(const uint8* buffer, MemorySize size) throw(OutOfRange)
   if (size > (MAXIMUM_SIZE - totalSize)) {
     throw OutOfRange();
   }
-  unsigned int result = size;
+  const MemorySize result = size;
   totalSize += size;
   if (size + bytesInBuffer >= BLOCK_SIZE) { // do we have a complete block
     if (bytesInBuffer > 0) { // do we need to empty internal buffer

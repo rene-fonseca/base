@@ -130,11 +130,13 @@ unsigned int Pipe::getBufferSize() const throw() {
 #endif
 }
 
-bool Pipe::atEnd() const throw(PipeException) {
+bool Pipe::atEnd() const throw(PipeException)
+{
   return end;
 }
 
-unsigned int Pipe::available() const throw(PipeException) {
+unsigned int Pipe::available() const throw(PipeException)
+{
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   DWORD bytesAvailable = 0;
   if (!::PeekNamedPipe(fd->getHandle(), 0, 0, 0, &bytesAvailable, 0)) {
@@ -150,7 +152,7 @@ unsigned int Pipe::available() const throw(PipeException) {
     int result = ::fstat(fd->getHandle(), &status);
   #endif // LFS
     bassert(result == 0, IOException("Unable to get available bytes.", this));
-    return status.st_size;
+    return (unsigned int)status.st_size;
 #endif
 }
 
@@ -160,8 +162,8 @@ unsigned int Pipe::skip(unsigned int count) throw(PipeException)
   Allocator<uint8>& buffer = _buffer;
   unsigned int bytesSkipped = 0;
   while (bytesSkipped < count) {
-    unsigned int bytesToRead = minimum<MemorySize>(count - bytesSkipped, buffer.getSize());
-    bytesSkipped += read(buffer.getElements(), bytesToRead);
+    MemorySize bytesToRead = minimum<MemorySize>(count - bytesSkipped, buffer.getSize());
+    bytesSkipped += read(buffer.getElements(), (unsigned int)bytesToRead);
   }
   return bytesSkipped;
 }
@@ -212,7 +214,7 @@ unsigned int Pipe::read(
       }
     }
 #else // unix
-    int result = ::read(
+    int result = (int)::read(
       fd->getHandle(),
       buffer,
       minimum<size_t>(bytesToRead, SSIZE_MAX)
@@ -261,7 +263,7 @@ unsigned int Pipe::write(
       throw PipeException("Unable to write to pipe.", this);
     }
 #else // unix
-    int result = ::write(fd->getHandle(), buffer, minimum<size_t>(bytesToWrite, SSIZE_MAX));
+    int result = (int)::write(fd->getHandle(), buffer, minimum<size_t>(bytesToWrite, SSIZE_MAX));
     if (result < 0) { // has an error occured
       switch (errno) {
       case EINTR: // interrupted by signal before any data was written

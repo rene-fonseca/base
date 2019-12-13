@@ -100,8 +100,13 @@ ZLibInflater::ZLibInflater() throw(MemoryException)
 #endif
 }
 
-MemorySize ZLibInflater::push(const uint8* buffer, MemorySize size) throw(IOException)
+MemorySize ZLibInflater::push(const uint8* buffer, MemorySize _size) throw(IOException)
 {
+  if (_size > 0xffffffff) {
+    throw IOException(this);
+  }
+  unsigned int size = static_cast<unsigned int>(_size);
+  
 #if (defined(_COM_AZURE_DEV__BASE__USE_ZLIB))
   bassert(state != ENDED, EndOfFile());
   bassert(state == RUNNING, IOException(this));
@@ -114,7 +119,7 @@ MemorySize ZLibInflater::push(const uint8* buffer, MemorySize size) throw(IOExce
   context->bytesToWrite = size;
   context->totalInput = 0;
   context->nextOutput = this->buffer.getElements() + availableBytes;
-  context->bytesToRead = this->buffer.getSize() - availableBytes;
+  context->bytesToRead = static_cast<unsigned int>(this->buffer.getSize()) - availableBytes;
   int code = internal::inflate(context, internal::ZLibInflater::NO_FLUSH);
   if (code == internal::ZLibInflater::OK) {
     // continue pushing
@@ -123,14 +128,15 @@ MemorySize ZLibInflater::push(const uint8* buffer, MemorySize size) throw(IOExce
   } else {
     throw IOException(this);
   }
-  availableBytes = this->buffer.getSize() - context->bytesToRead;
+  availableBytes = static_cast<unsigned int>(this->buffer.getSize()) - context->bytesToRead;
   return context->totalInput;
 #else
   throw IOException(this);
 #endif
 }
 
-void ZLibInflater::pushEnd() throw(IOException) {
+void ZLibInflater::pushEnd() throw(IOException)
+{
 #if (defined(_COM_AZURE_DEV__BASE__USE_ZLIB))
   if (state != ENDED) {
     bassert(state == RUNNING, IOException(this));
@@ -141,8 +147,13 @@ void ZLibInflater::pushEnd() throw(IOException) {
 #endif
 }
 
-MemorySize ZLibInflater::pull(uint8* buffer, MemorySize size) throw(IOException)
+MemorySize ZLibInflater::pull(uint8* buffer, MemorySize _size) throw(IOException)
 {
+  if (_size > 0xffffffff) {
+    throw IOException(this);
+  }
+  unsigned int size = static_cast<unsigned int>(_size);
+  
 #if (defined(_COM_AZURE_DEV__BASE__USE_ZLIB))
   bassert(state != ENDED, EndOfFile());
   
@@ -158,7 +169,7 @@ MemorySize ZLibInflater::pull(uint8* buffer, MemorySize size) throw(IOException)
     return size;
   }
   
-  unsigned int bytesRead = 0;
+  MemorySize bytesRead = 0;
   if (availableBytes) {
     copy(buffer, this->buffer.getElements(), availableBytes);
     buffer += availableBytes;
@@ -172,6 +183,7 @@ MemorySize ZLibInflater::pull(uint8* buffer, MemorySize size) throw(IOException)
     break;
   case FLUSHING: // not possible
     break;
+#if 0
     {
       internal::ZLibInflater::Context* context =
         Cast::pointer<internal::ZLibInflater::Context*>(this->context);
@@ -192,6 +204,7 @@ MemorySize ZLibInflater::pull(uint8* buffer, MemorySize size) throw(IOException)
       }
       return bytesRead + size - context->bytesToRead;
     }
+#endif
   case FINISHING:
     {
       internal::ZLibInflater::Context* context =

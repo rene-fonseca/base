@@ -728,8 +728,8 @@ void File::changeOwner(const String& path, const Trustee& owner, const Trustee& 
 #else // unix
   bassert((owner.getType() == Trustee::USER) && (group.getType() == Trustee::GROUP), FileException(Type::getType<File>()));
   
-  uid_t uid = owner.getIntegralId();
-  gid_t gid = group.getIntegralId();
+  uid_t uid = static_cast<uid_t>(owner.getIntegralId());
+  gid_t gid = static_cast<gid_t>(group.getIntegralId());
   
   int error = 0;
   if (followLink) {
@@ -871,7 +871,7 @@ void File::truncate(long long size) throw(FileException) {
     while (count > 0) {
       count -= write(
         buffer.getElements(),
-        minimum<long long>(count, buffer.getSize())
+        (unsigned int)minimum<long long>(count, buffer.getSize())
       ); // blocking write
     }
   }
@@ -1217,7 +1217,8 @@ unsigned long File::getVariable(Variable variable) throw(FileException, NotSuppo
 unsigned int File::read(
   uint8* buffer,
   unsigned int bytesToRead,
-  bool nonblocking) throw(FileException) {
+  bool nonblocking) throw(FileException)
+{
   unsigned int bytesRead = 0;
   while (bytesToRead > 0) {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
@@ -1261,7 +1262,7 @@ unsigned int File::read(
 #else // unix
     int result = 0;
     do {
-      result = ::read(fd->getHandle(), buffer, minimum<size_t>(bytesToRead, SSIZE_MAX));
+      result = (int)::read(fd->getHandle(), buffer, minimum<size_t>(bytesToRead, SSIZE_MAX));
       if (result < 0) { // has an error occured
         switch (errno) { // remember that errno is local to the thread
         case EINTR: // interrupted by signal before any data was read
@@ -1335,7 +1336,7 @@ unsigned int File::write(
 #else // unix
     int result = 0;
     do {
-      result = ::write(fd->getHandle(), buffer, minimum<size_t>(bytesToWrite, SSIZE_MAX));
+      result = (int)::write(fd->getHandle(), buffer, minimum<size_t>(bytesToWrite, SSIZE_MAX));
       if (result < 0) { // has an error occured
         switch (errno) {
         case EINTR: // interrupted by signal before any data was written

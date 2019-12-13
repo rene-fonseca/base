@@ -46,27 +46,27 @@ public:
     /**
       Initializes attribute.
     */
-    inline Attribute() throw() {
+    inline Attribute() noexcept {
     }
     
     /**
       Initializes attribute.
     */
-    inline Attribute(const String& _name, const String& _value) throw()
+    inline Attribute(const String& _name, const String& _value) noexcept
       : name(_name), value(_value) {
     }
     
     /**
       Initializes attribute from attribute.
     */
-    inline Attribute(const Attribute& copy) throw()
+    inline Attribute(const Attribute& copy) noexcept
       : name(copy.name), value(copy.value) {
     }
 
     /**
       Assignment of attribute by attribute.
     */
-    inline Attribute& operator=(const Attribute& assign) throw() {
+    inline Attribute& operator=(const Attribute& assign) noexcept {
       if (&assign != this) {
         name = assign.name;
         value = assign.value;
@@ -77,14 +77,14 @@ public:
     /**
       Returns the name of the attribute.
     */
-    inline const String& getName() const throw() {
+    inline const String& getName() const noexcept {
       return name;
     }
     
     /**
       Returns the value of the attribute.
     */
-    inline const String& getValue() const throw() {
+    inline const String& getValue() const noexcept {
       return value;
     }
   };
@@ -97,28 +97,28 @@ public:
   /**
     Initializes the attributes.
   */
-  inline Attributes() throw() {
+  inline Attributes() noexcept {
   }
   
   /**
     Initializes the attributes.
   */
   inline Attributes(
-    const Array<Attribute>& _attributes) throw()
+    const Array<Attribute>& _attributes) noexcept
     : attributes(_attributes) {
   }
   
   /**
     Initializes XML attributes from other XML attributes.
   */
-  inline Attributes(const Attributes& copy) throw()
+  inline Attributes(const Attributes& copy) noexcept
     : attributes(copy.attributes) {
   }
   
   /**
     Assignemnt of attributes by attributes.
   */
-  inline Attributes& operator=(const Attributes& assign) throw() {
+  inline Attributes& operator=(const Attributes& assign) noexcept {
     if (&assign != this) {
       attributes = assign.attributes;
     }
@@ -128,7 +128,8 @@ public:
   /**
     Returns a hash table mapping attribute names to indices.
   */
-  inline HashTable<String, unsigned int> getHashTable() const throw(MemoryException) {
+  inline HashTable<String, unsigned int> getHashTable() const
+  {
     HashTable<String, unsigned int> result;
     for (unsigned int i = 0; i < attributes.getSize(); ++i) {
       result.add(attributes[i].getName(), i);
@@ -139,7 +140,8 @@ public:
 //   /**
 //     Look up the index of an attribute by XML 1.0 qualified name.
 //   */
-//   unsigned int getIndex(const String& qualifiedName) throw() {
+//   unsigned int getIndex(const String& qualifiedName) noexcept
+//   {
 //     return byName[name];
 //   }
   
@@ -148,63 +150,66 @@ public:
 
 //     @return -1 of not found.
 //   */
-//   int getIndex(const String& uri, const String& localPart) throw();
+//   int getIndex(const String& uri, const String& localPart) noexcept;
 
   /**
     Returns the number of attributes in the list.
   */
-  inline unsigned int getSize() const throw() {
+  inline MemorySize getSize() const noexcept
+  {
     return attributes.getSize();
   }
   
 //   /**
 //     Look up an attribute's local name by index.
 //   */
-//   String getLocalName(unsigned int index) const throw();
+//   String getLocalName(unsigned int index) const noexcept;
   
 //   /**
 //     Look up an attribute's XML 1.0 qualified name by index.
 //   */
-//   String getQName(unsigned int index) const throw();
+//   String getQName(unsigned int index) const noexcept;
   
 //   /**
 //     Look up an attribute's type by index.
 //   */
-//   String getType(unsigned int index) throw();
+//   String getType(unsigned int index) noexcept;
   
 //   /**
 //     Look up an attribute's type by XML 1.0 qualified name.
 //   */
-//   String getType(String qName) throw();
+//   String getType(String qName) noexcept;
   
 //   /**
 //     Look up an attribute's type by Namespace name.
 //   */
-//   String getType(String uri, String localName) throw();
+//   String getType(String uri, String localName) noexcept;
   
 //   /**
 //     Look up an attribute's Namespace URI by index.
 //   */
-//   String getURI(unsigned int index) throw();
+//   String getURI(unsigned int index) noexcept;
 
   /**
     Returns the attributes at the specified index.
   */
-  inline const Attribute& getAttribute(unsigned int index) const throw() {
+  inline const Attribute& getAttribute(unsigned int index) const noexcept
+  {
     return attributes[index];
   }
   
   /**
     Returns the attributes at the specified index.
   */
-  inline const Attribute& operator[](unsigned int index) const throw() {
+  inline const Attribute& operator[](unsigned int index) const noexcept
+  {
     return attributes[index];
   }
   
 //   /**
 //     Look up an attribute's value by XML 1.0 qualified name.
 //   */
-//   String getValue(const String& qName) throw() {
+//   String getValue(const String& qName) noexcept {
 //     return byName[index].getValue();
 //     return String();
 //   }
@@ -212,7 +217,7 @@ public:
   /**
     Look up an attribute's value by Namespace name.
   */
-  //String getValue(const String& uri, const String& localName) throw();
+  //String getValue(const String& uri, const String& localName) noexcept;
 };
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

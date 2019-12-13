@@ -400,8 +400,8 @@ void HTTPSRequest::send(const String& _body)
   }
 #pragma clang diagnostic pop
 
-  const UInt32 code = CFHTTPMessageGetResponseStatusCode(response);
-  _handle->status = code;
+  const CFIndex code = CFHTTPMessageGetResponseStatusCode(response);
+  _handle->status = static_cast<unsigned int>(code);
   
   CFStringRef statusLine = CFHTTPMessageCopyResponseStatusLine(response);
   _handle->statusText = MACString::getString(statusLine);
@@ -509,7 +509,7 @@ public:
   
   MemorySize push(const uint8* buffer, MemorySize size)
   {
-    return os->write(buffer, size, false);
+    return os->write(buffer, static_cast<unsigned int>(size), false);
   }
   
   void pushEnd()

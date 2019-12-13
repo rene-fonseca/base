@@ -641,7 +641,7 @@ public:
     case SIGSEGV:
       SystemLogger::write(SystemLogger::INFORMATION, "Segmentation fault.");
       throw MemoryException("Invalid memory access."); // TAG: remove
-      abort();
+      // abort();
     case SIGILL:
       SystemLogger::write(SystemLogger::INFORMATION, "Invalid instruction.");
       throw Exception("Invalid instruction.");

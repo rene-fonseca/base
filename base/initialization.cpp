@@ -268,7 +268,7 @@ namespace internal {
 namespace internal {
 
   void initializeTimer();
-  const bool _initializeTimer = (initializeTimer(), true);
+  const bool _initializeTimer = (static_cast<void>(initializeTimer()), true);
 
   // setup main thread object
   ThreadImpl threadImpl; // use this variable through 'threadLocal'

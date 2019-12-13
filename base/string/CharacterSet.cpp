@@ -23,7 +23,7 @@ CharacterSet CharacterSet::load(const String& path) throw(FileException, Invalid
 {
   try {
     File file(path, File::READ, 0);
-    FileRegion region(0, minimum<uint64>(file.getSize(), 4096 * 4));
+    FileRegion region(0, (unsigned int)minimum<uint64>(file.getSize(), 4096 * 4));
     MappedFile mappedFile(file, region);
     const uint8* data = mappedFile.getBytes();
 

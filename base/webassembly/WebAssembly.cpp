@@ -150,7 +150,7 @@ bool WebAssembly::load(const String& path)
       return false;
     }
     buffer.setSize(file.getSize());
-    file.read(buffer.getElements(), file.getSize());
+    file.read(buffer.getElements(), static_cast<unsigned int>(file.getSize()));
   }
   return load(buffer.getElements(), buffer.getSize());
 }

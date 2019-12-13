@@ -238,7 +238,8 @@ void SoundOutputStream::wait() throw() {
 #endif // flavor
 }
 
-unsigned int SoundOutputStream::write(const void* buffer, unsigned int size) throw() {
+unsigned int SoundOutputStream::write(const void* buffer, unsigned int size) throw()
+{
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   WAVEHDR header;
   clear(header);
@@ -267,7 +268,7 @@ unsigned int SoundOutputStream::write(const void* buffer, unsigned int size) thr
   while (bytesWritten < size) {
     int result = 0;
     do {
-      result = ::write(handle, buffer, ((size_t)size <= SSIZE_MAX) ? size : SSIZE_MAX);
+      result = (int)::write(handle, buffer, ((static_cast<size_t>(size) <= SSIZE_MAX) ? static_cast<size_t>(size) : SSIZE_MAX));
       if (result < 0) { // has an error occured
         bassert(errno == EINTR, IOException());
       }

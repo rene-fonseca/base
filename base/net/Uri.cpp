@@ -366,8 +366,8 @@ void Uri::parse(const String& uri, bool strict) throw(UriException, MemoryExcept
   // example uri: http://username:password@server:80/folder/
   // isAbsolute: return indexOf(':') < indexOf('/');
 
-  int index = 0; // current position in the uri
-  int end = uri.getLength();
+  MemoryDiff index = 0; // current position in the uri
+  MemorySize end = uri.getLength();
 
   while ((index < end) && (uri[index] == ' ')) { // ignore prefix spaces
     ++index;
@@ -379,20 +379,20 @@ void Uri::parse(const String& uri, bool strict) throw(UriException, MemoryExcept
 
   // read scheme if present
   {
-    int colonIndex = uri.indexOf("://", index);
+    MemoryDiff colonIndex = uri.indexOf("://", index);
     if (colonIndex >= 0) {
       setScheme(UriImpl::decode(uri.substring(index, colonIndex), UriImpl::defaultEncoding, strict));
       index = colonIndex + 3;
     }
   }
 
-  int slashIndex = uri.indexOf('/', index); // find beginning of path
+  MemoryDiff slashIndex = uri.indexOf('/', index); // find beginning of path
 
   // read user, and password if present
   {
-    int atIndex = uri.indexOf('@', index);
+    MemoryDiff atIndex = uri.indexOf('@', index);
     if ((atIndex >= 0) && ((slashIndex < 0) || (atIndex < slashIndex))) {
-      int colonIndex = uri.indexOf(':', index);
+      MemoryDiff colonIndex = uri.indexOf(':', index);
       if ((colonIndex >= 0) && (colonIndex < atIndex)) {
         setUser(UriImpl::decode(uri.substring(index, colonIndex), UriImpl::userEncoding, strict));
         setPassword(UriImpl::decode(uri.substring(colonIndex + 1, atIndex), UriImpl::passwordEncoding, strict));
@@ -405,9 +405,9 @@ void Uri::parse(const String& uri, bool strict) throw(UriException, MemoryExcept
 
   // read host, and port if present
   {
-    int endIndex = (slashIndex < 0) ? end : slashIndex;
-    int colonIndex = uri.indexOf(':', index);
-    int endOfHost = ((colonIndex >= 0) && (colonIndex < endIndex)) ? colonIndex : endIndex;
+    MemoryDiff endIndex = (slashIndex < 0) ? end : slashIndex;
+    MemoryDiff colonIndex = uri.indexOf(':', index);
+    MemoryDiff endOfHost = ((colonIndex >= 0) && (colonIndex < endIndex)) ? colonIndex : endIndex;
     setHost(UriImpl::decode(uri.substring(index, endOfHost), UriImpl::defaultEncoding, strict));
     if ((colonIndex >= 0) && (colonIndex < endIndex)) {
       setPort(UriImpl::decode(uri.substring(colonIndex + 1, endIndex), UriImpl::defaultEncoding, strict));

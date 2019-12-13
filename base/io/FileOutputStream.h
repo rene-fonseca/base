@@ -104,14 +104,16 @@ public:
   /**
     Forces any buffered bytes to be written out.
   */
-  inline void flush() throw(IOException) {
+  inline void flush() throw(IOException)
+  {
     file.flush();
   }
 
   inline unsigned int write(
     const uint8* buffer,
     unsigned int count,
-    bool nonblocking = false) throw(IOException) {
+    bool nonblocking = false) throw(IOException)
+  {
     return file.write(buffer, count, nonblocking);
   }
 };

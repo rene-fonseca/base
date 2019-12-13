@@ -101,7 +101,7 @@ unsigned int FileDescriptorInputStream::available() const throw(IOException)
     int result = ::fstat(fd->getHandle(), &status);
   #endif // LFS
     bassert(result == 0, IOException("Unable to get available bytes", this));
-    return status.st_size;
+    return (unsigned int)status.st_size;
 #endif // flavor
 }
 
@@ -130,7 +130,7 @@ unsigned int FileDescriptorInputStream::read(
       }
     }
 #else // unix
-    int result = ::read(
+    int result = (int)::read(
       fd->getHandle(),
       buffer,
       minimum<size_t>(bytesToRead, SSIZE_MAX)
@@ -165,7 +165,7 @@ unsigned int FileDescriptorInputStream::skip(unsigned int count) throw(IOExcepti
   Allocator<uint8>& buffer = _buffer;
   unsigned int bytesSkipped = 0;
   while (bytesSkipped < count) {
-    unsigned int bytesToRead = minimum<MemorySize>(count - bytesSkipped, buffer.getSize());
+    unsigned int bytesToRead = (unsigned int)minimum<MemorySize>(count - bytesSkipped, buffer.getSize());
     bytesSkipped += read(buffer.getElements(), bytesToRead);
   }
   return bytesSkipped;

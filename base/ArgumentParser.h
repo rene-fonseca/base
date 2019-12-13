@@ -495,9 +495,9 @@ private:
   /** Flags. */
   unsigned int flags = 0;
   /** Map of long names into option descriptor index. */
-  HashTable<String, unsigned int> names;
+  HashTable<String, MemorySize> names;
   /** Map of short names into option descriptor index. */
-  Allocator<unsigned int> shortNames;
+  Allocator<MemorySize> shortNames;
   /** The options. */
   Array<Reference<Option> > options;
 
@@ -512,14 +512,12 @@ private:
     }
   }
   
-  Argument* getArgument(
-    const Reference<Option>& option,
-    bool occured) const throw(ArgumentException);
+  Argument* getArgument(const Reference<Option>& option, bool occured) const;
 
   Argument* getArgument(
     const Reference<Option>& option,
     const String& value,
-    bool occured) const throw(ArgumentException);
+    bool occured) const;
 public:
   
   /**
@@ -532,10 +530,9 @@ public:
   /**
     Registers the specified option.
   */
-  void addOption(const Reference<Option>& option) throw(AlreadyKeyException);
+  void addOption(const Reference<Option>& option);
   
-  Array<Argument*> operator()(
-    const Array<String>& arguments) const throw(ArgumentException);
+  Array<Argument*> operator()(const Array<String>& arguments) const;
   
   // TAG: destroy...?
 };

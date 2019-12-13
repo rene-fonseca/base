@@ -55,7 +55,7 @@ Thread::ThreadLocal::ThreadLocal(Thread* _thread)
   auto tlc = new ThreadLocalContext();
   tlc->thread = _thread;
   static PreferredAtomicCounter id;
-  tlc->simpleId = ++id;
+  tlc->simpleId = static_cast<unsigned int>(++id);
   threadLocalContext.setKey(tlc);
 }
 

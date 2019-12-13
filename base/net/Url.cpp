@@ -305,8 +305,8 @@ bool Url::isPort(String::ReadIterator i, const String::ReadIterator& end) throw(
 void Url::parse(const String& url, bool strict) throw(UrlException, MemoryException) {
   // example url: http://username:password@server:80/folder/
 
-  int index = 0; // current position in the url
-  int end = url.getLength();
+  MemoryDiff index = 0; // current position in the url
+  MemoryDiff end = url.getLength();
 
   while ((index < end) && (url[index] == ' ')) { // ignore prefix spaces
     ++index;
@@ -318,20 +318,20 @@ void Url::parse(const String& url, bool strict) throw(UrlException, MemoryExcept
 
   // read scheme if present
   {
-    int colonIndex = url.indexOf("://", index);
+    MemoryDiff colonIndex = url.indexOf("://", index);
     if (colonIndex >= 0) {
       setScheme(UrlImpl::decode(url.substring(index, colonIndex), UrlImpl::defaultEncoding, strict));
       index = colonIndex + 3;
     }
   }
 
-  int slashIndex = url.indexOf('/', index); // find beginning of path
+  MemoryDiff slashIndex = url.indexOf('/', index); // find beginning of path
 
   // read user, and password if present
   {
-    int atIndex = url.indexOf('@', index);
+    MemoryDiff atIndex = url.indexOf('@', index);
     if ((atIndex >= 0) && ((slashIndex < 0) || (atIndex < slashIndex))) {
-      int colonIndex = url.indexOf(':', index);
+      MemoryDiff colonIndex = url.indexOf(':', index);
       if ((colonIndex >= 0) && (colonIndex < atIndex)) {
         setUser(UrlImpl::decode(url.substring(index, colonIndex), UrlImpl::userEncoding, strict));
         setPassword(UrlImpl::decode(url.substring(colonIndex + 1, atIndex), UrlImpl::passwordEncoding, strict));
@@ -344,9 +344,9 @@ void Url::parse(const String& url, bool strict) throw(UrlException, MemoryExcept
 
   // read host, and port if present
   {
-    int endIndex = (slashIndex < 0) ? end : slashIndex;
-    int colonIndex = url.indexOf(':', index);
-    int endOfHost = ((colonIndex >= 0) && (colonIndex < endIndex)) ? colonIndex : endIndex;
+    MemoryDiff endIndex = (slashIndex < 0) ? end : slashIndex;
+    MemoryDiff colonIndex = url.indexOf(':', index);
+    MemoryDiff endOfHost = ((colonIndex >= 0) && (colonIndex < endIndex)) ? colonIndex : endIndex;
     setHost(UrlImpl::decode(url.substring(index, endOfHost), UrlImpl::defaultEncoding, strict));
     if ((colonIndex >= 0) && (colonIndex < endIndex)) {
       setPort(UrlImpl::decode(url.substring(colonIndex + 1, endIndex), UrlImpl::defaultEncoding, strict));

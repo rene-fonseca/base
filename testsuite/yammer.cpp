@@ -376,7 +376,7 @@ public:
     auto root = o.createObject();
     root->setValue(o.createString("body"), o.createString(text));
     // root->setValue(o.createString("network_id"), o.createInteger(network_id));
-    root->setValue(o.createString("group_id"), o.createInteger64(group));
+    root->setValue(o.createString("group_id"), o.createInteger(group));
     // root->setValue(o.createString("direct_to_user_ids"), o.createArray());
     int64 repliedToId = 0;
     if (repliedToId) {

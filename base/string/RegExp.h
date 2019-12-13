@@ -90,14 +90,14 @@ public:
   private:
 
     /** The offset of the substring. */
-    int offset = 0;
+    MemoryDiff offset = 0;
     /** The end of the substring. */
-    int end = 0;
+    MemoryDiff end = 0;
 
     /**
       Initializes substring descriptor.
     */
-    inline Substring(unsigned int _offset, unsigned int _end) noexcept
+    inline Substring(MemoryDiff _offset, MemoryDiff _end) noexcept
       : offset(_offset), end(_end)
     {
     }
@@ -132,7 +132,7 @@ public:
     /**
       Returns the offset of the substring.
     */
-    inline int getOffset() const noexcept
+    inline MemoryDiff getOffset() const noexcept
     {
       return offset;
     }
@@ -140,7 +140,7 @@ public:
     /**
       Returns the length of the substring.
     */
-    inline int getLength() const noexcept
+    inline MemoryDiff getLength() const noexcept
     {
       return end - offset;
     }
@@ -259,7 +259,7 @@ public:
   /**
     Returns true if the value matches the pattern.
   */
-  bool doesMatch(const String& value, unsigned int start = 0) const;
+  bool doesMatch(const String& value, MemorySize start = 0) const;
 
   /**
     Matches the specified string with the regular expression. Raises OutOfRange
@@ -269,7 +269,7 @@ public:
     @param start The start index. The default is 0.
     @return The substring matched by the entire pattern.
   */
-  Substring match(const String& value, unsigned int start = 0) const;
+  Substring match(const String& value, MemorySize start = 0) const;
 
   /**
     Matches the specified string with the regular expression. Raises OutOfRange
@@ -281,7 +281,7 @@ public:
     @param start The start index. The default is 0.
     @return The substring matched by the entire pattern.
   */
-  Substring match(const String& value, Array<Substring>& arguments, unsigned int start = 0) const;
+  Substring match(const String& value, Array<Substring>& arguments, MemorySize start = 0) const;
 
   /**
     Destroys the regular expression.

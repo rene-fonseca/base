@@ -40,12 +40,12 @@ namespace profiler {
 
   inline void writeString(FileOutputStream& fos, const char* text)
   {
-    fos.write(reinterpret_cast<const uint8*>(text), getNullTerminatedLength(text), false);
+    fos.write(reinterpret_cast<const uint8*>(text), (unsigned int)getNullTerminatedLength(text), false);
   }
 
   inline void writeString(FileOutputStream& fos, const String& text)
   {
-    fos.write(reinterpret_cast<const uint8*>(text.native()), text.getLength(), false);
+    fos.write(reinterpret_cast<const uint8*>(text.native()), (unsigned int)text.getLength(), false);
   }
 }
 
@@ -93,7 +93,7 @@ unsigned int Profiler::ProfilerImpl::buildStackFrame(const uint32 sf)
     const uint32 index = sf & ~SF_HIGH_BIT;
     for (MemoryDiff i = static_cast<int32>(index) - 1; i >= 0; --i) {
       if (stackFramesUnhash[i] == frame) {
-        if (auto value = stackFramesLookup.find(i | SF_HIGH_BIT)) { // found stack
+        if (auto value = stackFramesLookup.find(static_cast<unsigned int>(i | SF_HIGH_BIT))) { // found stack
           stackFramesLookup.add(sf, *value); // remember this sf
           return *value;
         }
@@ -103,7 +103,7 @@ unsigned int Profiler::ProfilerImpl::buildStackFrame(const uint32 sf)
     }
   }
   
-  MemorySize parent = 0; // no parent
+  unsigned int parent = 0; // no parent
   auto trace = frame.getTrace();
 
   String previousName;
@@ -149,7 +149,7 @@ unsigned int Profiler::ProfilerImpl::buildStackFrame(const uint32 sf)
         }
         stackFrames.append(Frame(demangled, path, parent));
         auto previous = parent;
-        parent = stackFrames.getSize(); // next frame uses this as parent
+        parent = static_cast<unsigned int>(stackFrames.getSize()); // next frame uses this as parent
         stackFramesBySymbol.add(current, parent - 1); // index of frame
 
         // TAG: rebalance tree until done on
@@ -191,6 +191,7 @@ void Profiler::ProfilerImpl::release()
   stackFrames.ensureCapacity(0);
   stackFrames.setSize(0);
   
+#if 0
   if (false) {
     // TAG: measure balancing
     
@@ -200,6 +201,7 @@ void Profiler::ProfilerImpl::release()
       writeString(fos, JSON::getJSON(root));
     }
   }
+#endif
   
   stackFramesBySymbol.removeAll();
   stackFramesLookup.removeAll();
@@ -234,7 +236,7 @@ uint32 Profiler::ProfilerImpl::getStackFrame(const ConstSpan<const void*>& stack
         return SF_HIGH_BIT | (SF_HIGH_BIT - 1); // no more room
       }
       stackFramesUnhash.append(stackTrace);
-      return size | SF_HIGH_BIT; // differentiate from hash id
+      return static_cast<uint32>(size | SF_HIGH_BIT); // differentiate from hash id
     }
   }
 }

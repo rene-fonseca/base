@@ -279,7 +279,7 @@ unsigned int SoundInputStream::read(void* buffer, unsigned int size) throw() {
   while (bytesRead < size) {
     int result = 0;
     do {
-      result = ::read(handle, buffer, (static_cast<size_t>(size) <= SSIZE_MAX) ? size : SSIZE_MAX);
+      result = (int)::read(handle, buffer, (static_cast<size_t>(size) <= SSIZE_MAX) ? size : SSIZE_MAX);
       if (result < 0) { // has an error occured
         bassert(errno == EINTR, IOException());
       }

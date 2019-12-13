@@ -192,7 +192,7 @@ String FileSystem::getComponent(const String& path, Component component) throw(F
   int backward = path.lastIndexOf('\\');
   int separator = maximum(forward, backward);
 #else // unix
-  int separator = path.lastIndexOf(SEPARATOR);
+  MemoryDiff separator = path.lastIndexOf(SEPARATOR);
 #endif // flavor
   switch (component) {
   case FileSystem::FOLDER_PATH:
@@ -204,12 +204,12 @@ String FileSystem::getComponent(const String& path, Component component) throw(F
     return path.substring(separator + 1);
   case FileSystem::NAME:
     {
-      int dot = path.indexOf('.', separator + 1);
+      MemoryDiff dot = path.indexOf('.', separator + 1);
       return path.substring(separator + 1, dot);
     }
   case FileSystem::DOTEXTENSION:
     {
-      int dot = path.indexOf('.', separator + 1);
+      MemoryDiff dot = path.indexOf('.', separator + 1);
       if (dot >= 0) {
         return path.substring(dot);
       }
@@ -217,7 +217,7 @@ String FileSystem::getComponent(const String& path, Component component) throw(F
     break;
   case FileSystem::EXTENSION:
     {
-      int dot = path.indexOf('.', separator + 1);
+      MemoryDiff dot = path.indexOf('.', separator + 1);
       if (dot >= 0) {
         return path.substring(dot + 1);
       }
@@ -500,6 +500,7 @@ unsigned int FileSystem::getType(const String& path) throw(FileSystemException)
     flags |= FileSystem::SOCKET;
   }
 
+#if (_COM_AZURE_DEV__BASE__OS != _COM_AZURE_DEV__BASE__MACOS)
   #if defined(S_TYPEISMQ)
     if (S_TYPEISMQ(&status)) {
       flags |= FileSystem::MESSAGE_QUEUE;
@@ -515,6 +516,7 @@ unsigned int FileSystem::getType(const String& path) throw(FileSystemException)
       flags |= FileSystem::SHARED_MEMORY;
     }
   #endif // S_TYPEISSHM
+#endif
   return flags;
 #endif // flavor
 }

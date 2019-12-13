@@ -943,8 +943,8 @@ void Socket::setReceiveTimeout(uint64 nanoseconds) throw(NetworkException)
 #else
   struct timeval buffer;
   if (nanoseconds <= 60*60*24*1000000000ULL) { // one day
-    buffer.tv_sec = (nanoseconds + 999)/1000000000;
-    buffer.tv_usec = (nanoseconds + 999)/1000;
+    buffer.tv_sec = static_cast<uint32>((nanoseconds + 999)/1000000000);
+    buffer.tv_usec = static_cast<uint32>((nanoseconds + 999)/1000);
   } else {
     buffer.tv_sec = 60*60*24;
     buffer.tv_usec = 0;
@@ -983,8 +983,8 @@ void Socket::setSendTimeout(uint64 nanoseconds) throw(NetworkException)
 #else
   struct timeval buffer;
   if (nanoseconds <= 60*60*24*1000000000ULL) { // one day
-    buffer.tv_sec = (nanoseconds + 999)/1000000000;
-    buffer.tv_usec = (nanoseconds + 999)/1000;
+    buffer.tv_sec = static_cast<uint32>((nanoseconds + 999)/1000000000);
+    buffer.tv_usec = static_cast<uint32>((nanoseconds + 999)/1000);
   } else {
     buffer.tv_sec = 60*60*24;
     buffer.tv_usec = 0;
@@ -1778,7 +1778,7 @@ unsigned int Socket::read(
       }
     }
 #else // unix
-    int result = ::recv(
+    int result = (int)::recv(
       (SOCKET)socket->getHandle(),
       buffer,
       minimum<size_t>(bytesToRead, SSIZE_MAX),
@@ -1837,7 +1837,7 @@ unsigned int Socket::write(
       }
     }
 #else // unix
-    int result = ::send(
+    int result = (int)::send(
       (SOCKET)socket->getHandle(),
       buffer,
       minimum<size_t>(bytesToWrite, SSIZE_MAX),
@@ -1878,7 +1878,7 @@ unsigned int Socket::receiveFrom(
   SocketAddress sa;
   socklen sl = sa.getAnySize();
   size = minimum<unsigned int>(size, PrimitiveTraits<int>::MAXIMUM); // silently reduce
-  int result = ::recvfrom(
+  int result = (int)::recvfrom(
     (SOCKET)socket->getHandle(),
     (char*)buffer,
     size,
@@ -1906,7 +1906,7 @@ unsigned int Socket::sendTo(
 #else
   const SocketAddress sa(address, port, socket->getDomain());
   size = minimum<unsigned int>(size, PrimitiveTraits<int>::MAXIMUM); // silently reduce
-  int result = ::sendto(
+  int result = (int)::sendto(
     (SOCKET)socket->getHandle(),
     (const char*)buffer,
     size,

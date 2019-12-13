@@ -206,8 +206,9 @@ InetAddress InetAddress::getAddressByName(const String& name) throw(HostNotFound
       throw HostNotFound("Unable to lookup host by name.", Type::getType<InetAddress>());
     }
 #  endif
-    
-  for (char** p = hp->h_addr_list; *p != 0; p++) {
+  
+  char** p = hp->h_addr_list;
+  while (*p) { // for (char** p = hp->h_addr_list; *p; p++) {
     return InetAddress(Cast::pointer<const uint8*>(*p), IP_VERSION_4);
   }
 #endif // _COM_AZURE_DEV__BASE__INET_IPV6
@@ -337,7 +338,7 @@ bool InetAddress::parse(const String& address) throw() {
   String::ReadIterator i = address.getBeginReadIterator();
   const String::ReadIterator end = address.getEndReadIterator();
 
-  int colon = address.indexOf(':');
+  MemoryDiff colon = address.indexOf(':');
   bool readIPv4 = true; // read IPv4 address from end of addr
 
   if (colon < 0) { // IPv4
@@ -347,7 +348,7 @@ bool InetAddress::parse(const String& address) throw() {
     this->address.words[2] = 0;
   } else { // IPv6
     family = IP_VERSION_6;
-    int dot = address.indexOf('.', colon + 1);
+    MemoryDiff dot = address.indexOf('.', colon + 1);
     readIPv4 = (dot >= 0);
     const String::ReadIterator endIPv6 = (dot >= 0) ? (i + address.lastIndexOf(':', dot) + 1) : end;
 

@@ -94,7 +94,7 @@ inline int parseInteger(const TYPE* src, const TYPE* end, unsigned int flags)
   if (src != end) {
     throw InvalidFormat(Type::getType<Integer>());
   }
-  return value;
+  return static_cast<int>(value);
 }
 
 int Integer::parse(const char* src, const char* end, unsigned int flags) throw(InvalidFormat)

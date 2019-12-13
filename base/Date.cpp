@@ -137,7 +137,7 @@ int Date::normalize(DateTime& dateTime, bool redundancy) noexcept
   }
 
   int64 second = static_cast<int64>(dateTime.second) + carrier;
-  carrier = second/SECONDS_PER_MINUTE;
+  carrier = static_cast<int>(second/SECONDS_PER_MINUTE);
   dateTime.second = second%SECONDS_PER_MINUTE;
   if (second < 0) {
     --carrier; // borrow
@@ -145,7 +145,7 @@ int Date::normalize(DateTime& dateTime, bool redundancy) noexcept
   }
   
   int64 minute = static_cast<int64>(dateTime.minute) + carrier;
-  carrier = minute/MINUTES_PER_HOUR;
+  carrier = static_cast<int>(minute/MINUTES_PER_HOUR);
   dateTime.minute = minute%MINUTES_PER_HOUR;
   if (minute < 0) {
     --carrier; // borrow
@@ -153,7 +153,7 @@ int Date::normalize(DateTime& dateTime, bool redundancy) noexcept
   }
   
   int64 hour = static_cast<int64>(dateTime.hour) + carrier;
-  carrier = hour/HOURS_PER_DAY;
+  carrier = static_cast<int>(hour/HOURS_PER_DAY);
   dateTime.hour = hour%HOURS_PER_DAY;
   if (hour < 0) {
     --carrier; // borrow
@@ -162,17 +162,17 @@ int Date::normalize(DateTime& dateTime, bool redundancy) noexcept
 
   int64 day = static_cast<int64>(dateTime.day) + carrier;
   
-  int daysInMonth = isLeapYear(year) ? DAYS_PER_MONTH_LEAP_YEAR[month] : DAYS_PER_MONTH_NONLEAP_YEAR[month];
+  int daysInMonth = isLeapYear(static_cast<int>(year)) ? DAYS_PER_MONTH_LEAP_YEAR[month] : DAYS_PER_MONTH_NONLEAP_YEAR[month];
   if (day >= daysInMonth) { // traverse forward in time
     year += day/DAYS_PER_400_YEARS;
     day %= DAYS_PER_400_YEARS; // does not change leap year and month
     
-    bool leapYear = isLeapYear(year);
+    bool leapYear = isLeapYear(static_cast<int>(year));
     int daysInYear = leapYear ? DAYS_PER_LEAP_YEAR : DAYS_PER_NONLEAP_YEAR;
     while (day >= daysInYear) { // maximum ~400 loops
       day -= daysInYear; // does not change month
       ++year;
-      leapYear = isLeapYear(year);
+      leapYear = isLeapYear(static_cast<int>(year));
       daysInYear = leapYear ? DAYS_PER_LEAP_YEAR : DAYS_PER_NONLEAP_YEAR;
     }
     
@@ -182,7 +182,7 @@ int Date::normalize(DateTime& dateTime, bool redundancy) noexcept
       ++month;
       if (month == MONTHS_PER_YEAR) {
         ++year;
-        leapYear = isLeapYear(year);
+        leapYear = isLeapYear(static_cast<int>(year));
         month = 0;
       }
       daysInMonth = leapYear ? DAYS_PER_MONTH_LEAP_YEAR[month] : DAYS_PER_MONTH_NONLEAP_YEAR[month]; // month is valid
@@ -191,11 +191,11 @@ int Date::normalize(DateTime& dateTime, bool redundancy) noexcept
     year += day/DAYS_PER_400_YEARS;
     day %= DAYS_PER_400_YEARS; // does not change leap year and month
     
-    bool leapYear = isLeapYear(year);
+    bool leapYear = isLeapYear(static_cast<int>(year));
     int daysInYear = leapYear ? DAYS_PER_LEAP_YEAR : DAYS_PER_NONLEAP_YEAR;
     while (day <= daysInYear) { // maximum ~400 loops
       --year;
-      leapYear = isLeapYear(year);
+      leapYear = isLeapYear(static_cast<int>(year));
       daysInYear = leapYear ? DAYS_PER_LEAP_YEAR : DAYS_PER_NONLEAP_YEAR;
       day += daysInYear; // does not change month
     }
@@ -205,7 +205,7 @@ int Date::normalize(DateTime& dateTime, bool redundancy) noexcept
       --month;
       if (month < 0) {
         --year;
-        leapYear = isLeapYear(year);
+        leapYear = isLeapYear(static_cast<int>(year));
         month = MONTHS_PER_YEAR - 1;
       }
       daysInMonth = leapYear ? DAYS_PER_MONTH_LEAP_YEAR[month] : DAYS_PER_MONTH_NONLEAP_YEAR[month]; // month is valid
@@ -213,17 +213,17 @@ int Date::normalize(DateTime& dateTime, bool redundancy) noexcept
     }
   }
   
-  carrier = year/10000;
+  carrier = static_cast<int>(year/10000);
   
-  dateTime.day = day;
+  dateTime.day = static_cast<int>(day);
   dateTime.month = month;
   dateTime.year = year%10000;
   
   if (redundancy) {
     if (isLeapYear(dateTime.year)) {
-      dateTime.dayOfYear = day + DAYS_BEFORE_FIRST_OF_MONTH_LEAP_YEAR[month];
+      dateTime.dayOfYear = static_cast<int>(day) + DAYS_BEFORE_FIRST_OF_MONTH_LEAP_YEAR[month];
     } else {
-      dateTime.dayOfYear = day + DAYS_BEFORE_FIRST_OF_MONTH_NONLEAP_YEAR[month];
+      dateTime.dayOfYear = static_cast<int>(day) + DAYS_BEFORE_FIRST_OF_MONTH_NONLEAP_YEAR[month];
     }
     
     int a = (month <= 1) ? 1 : 0; // (14 - month)/MONTHS_PER_YEAR
@@ -231,11 +231,11 @@ int Date::normalize(DateTime& dateTime, bool redundancy) noexcept
     // Gregorian calendar
     dateTime.weekday = (day + year + year/4 - year/100 + year/400 + 31 * (month + 1 + MONTHS_PER_YEAR * a - 2)/MONTHS_PER_YEAR)%7;
 
-    int y = year + 4800; // 'a' is subtracted above
+    int y = static_cast<int>(year) + 4800; // 'a' is subtracted above
     int m = month + 1 + MONTHS_PER_YEAR * a - 3;
     // Gregorian calendar
     int julianDay =
-      day + (153 * m + 2)/5 + 365 * y + y/4 - y/100 + y/400 - 32045;
+      static_cast<int>(day + (153 * m + 2)/5 + 365 * y + y/4 - y/100 + y/400 - 32045);
 
     int d4 = (julianDay + 31741 - (julianDay % 7)) % 146097 % 36524 % 1461;
     int L  = d4/1460;

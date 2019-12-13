@@ -45,7 +45,7 @@ void* DebugDynamicMemory::allocate(MemorySize size) noexcept
     unsigned int* dest = prefix;
     const unsigned int* end = user;
     for (; dest < end; ++dest) {
-      *dest = Cast::getOffset(dest);
+      *dest = (unsigned int)Cast::getOffset(dest);
     }
   }
   
@@ -53,11 +53,11 @@ void* DebugDynamicMemory::allocate(MemorySize size) noexcept
   {
     unsigned int* dest = user + size/sizeof(unsigned int);
     if ((size % sizeof(unsigned int)) != 0) {
-      *dest = Cast::getOffset(dest);
+      *dest = (unsigned int)Cast::getOffset(dest);
     }
     const unsigned int* end = dest + SUFFIX_WORDS;
     for (; dest < end; ++dest) {
-      *dest = Cast::getOffset(dest);
+      *dest = (unsigned int)Cast::getOffset(dest);
     }
   }
 
@@ -104,7 +104,7 @@ void DebugDynamicMemory::release(void* memory) throw(MemoryCorruption)
     descriptor->allocated = false;
     spinLock.releaseLock();
     bassert(allocated, MemoryCorruption(Type::getType<DebugDynamicMemory>()));
-    size = descriptor->size;
+    size = (unsigned int)descriptor->size;
   }
   
   // check suffix words

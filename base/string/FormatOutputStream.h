@@ -544,7 +544,7 @@ public:
   /**
     Writes a preformated integer to the stream.
   */
-  void addIntegerField(const char* buffer, unsigned int size, bool isSigned);
+  void addIntegerField(const char* buffer, MemorySize size, bool isSigned);
   
   /**
     Writes a date object to the stream.

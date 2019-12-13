@@ -24,7 +24,7 @@ FormatInputStream::FormatInputStream(InputStream& in) throw(BindException)
 }
 
 unsigned int FormatInputStream::available() const throw(IOException) {
-  return FilterInputStream::available() + (head - tail);
+  return (unsigned int)(FilterInputStream::available() + (head - tail));
 }
 
 bool FormatInputStream::overwriteFromSource() throw(IOException) {
@@ -49,8 +49,8 @@ bool FormatInputStream::appendFromSource() throw(IOException) {
   if (available == 0) {
     return false;
   }
-  unsigned int size =
-    minimum<unsigned int>(buffer.getEndReadIterator() - head, available);
+  unsigned int size = (unsigned int)
+    minimum<MemorySize>(buffer.getEndReadIterator() - head, available);
   unsigned int bytesRead = FilterInputStream::read(head.getValue(), size); // will not block
   BASSERT(bytesRead == size);
   head += size;
@@ -74,8 +74,8 @@ String FormatInputStream::getWord() throw(IOException) {
     const ReadIterator beginning = tail; // beginning of substring
     for (; (tail < head) && (!ASCIITraits::isSpace(*tail)); ++tail) {
     }
-    unsigned int length = tail - beginning;
-    unsigned int offset = result.getLength();
+    unsigned int length = static_cast<unsigned int>(tail - beginning);
+    unsigned int offset = static_cast<unsigned int>(result.getLength());
     result.forceToLength(result.getLength() + length); // extend string
     copy<uint8>(
       Cast::pointer<uint8*>((result.getBeginIterator() + offset).getValue()),
@@ -101,8 +101,8 @@ String FormatInputStream::getLine() throw(IOException) {
     for (; tail < head; ++tail) {
       char ch = *tail;
       if (ch == '\n') {
-        unsigned int length = tail - beginning;
-        unsigned int offset = line.getLength();
+        unsigned int length = static_cast<unsigned int>(tail - beginning);
+        unsigned int offset = static_cast<unsigned int>(line.getLength());
         line.forceToLength(line.getLength() + length); // extend string
         copy<uint8>(
           Cast::pointer<uint8*>((line.getBeginIterator() + offset).getValue()),
@@ -118,8 +118,8 @@ String FormatInputStream::getLine() throw(IOException) {
         }
         return line;
       } else if (ch == '\r') {
-        unsigned int length = tail - beginning;
-        unsigned int offset = line.getLength();
+        unsigned int length = static_cast<unsigned int>(tail - beginning);
+        unsigned int offset = static_cast<unsigned int>(line.getLength());
         line.forceToLength(line.getLength() + length); // extend string
         copy<uint8>(
           Cast::pointer<uint8*>((line.getBeginIterator() + offset).getValue()),
@@ -136,8 +136,8 @@ String FormatInputStream::getLine() throw(IOException) {
         return line;
       }
     }
-    unsigned int length = tail - beginning;
-    unsigned int offset = line.getLength();
+    unsigned int length = static_cast<unsigned int>(tail - beginning);
+    unsigned int offset = static_cast<unsigned int>(line.getLength());
     line.forceToLength(line.getLength() + length); // extend string
     copy<uint8>(
       Cast::pointer<uint8*>((line.getBeginIterator() + offset).getValue()),
@@ -157,7 +157,7 @@ unsigned int FormatInputStream::read(uint8* buffer,
   unsigned int bytesRead = 0; // number of bytes that have been copied into external buffer
   while (true) {
     // copy from internal to external buffer - no overlap
-    unsigned int bytesToCopy = minimum<unsigned int>(size, head - tail);
+    unsigned int bytesToCopy = minimum<unsigned int>(size, static_cast<unsigned int>(head - tail));
     copy(buffer + bytesRead, tail.getValue(), bytesToCopy);
     tail += bytesToCopy;
     bytesRead += bytesToCopy;

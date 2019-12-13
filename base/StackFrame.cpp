@@ -532,7 +532,7 @@ StackFrame StackFrame::getStack(unsigned int skip, unsigned int levels, bool tri
   PrimitiveStackArray<const void*> buffer(256);
   unsigned int count = 0;
   while (buffer.size() < (64 * 1024)) {
-    count = getStack(buffer, minimum<MemorySize>(levels, buffer.size()), skip, trim);
+    count = getStack(buffer, static_cast<unsigned int>(minimum<MemorySize>(levels, buffer.size())), skip, trim);
     if ((count == buffer.size()) && (count < levels)) { // overflow
       buffer.resize(buffer.size() * 2);
       continue;
@@ -724,7 +724,7 @@ void StackFrame::dump(unsigned int skip, unsigned int levels)
   PrimitiveStackArray<const void*> buffer(256);
   MemorySize count = 0;
   while (buffer.size() < (64 * 1024)) {
-    count = getStack(buffer, minimum<MemorySize>(levels, buffer.size()), skip);
+    count = getStack(buffer, static_cast<unsigned int>(minimum<MemorySize>(levels, buffer.size())), skip);
     if ((count == buffer.size()) && (count < levels)) { // overflow
       buffer.resize(buffer.size() * 2);
       continue;

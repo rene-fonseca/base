@@ -458,7 +458,7 @@ unsigned int SerialPort::read(
       }
     }
 #else // unix
-    int result = ::read(handle->getHandle(), buffer, minimum<size_t>(bytesToRead, SSIZE_MAX));
+    int result = (int)::read(handle->getHandle(), buffer, minimum<size_t>(bytesToRead, SSIZE_MAX));
     if (result < 0) { // has an error occured
       switch (errno) { // remember that errno is local to the thread - this simplifies things a lot
       case EINTR: // interrupted by signal before any data was read
@@ -497,7 +497,7 @@ unsigned int SerialPort::write(
       throw IOException("Unable to write to object.", this);
     }
 #else // unix
-    int result = ::write(handle->getHandle(), buffer, minimum<size_t>(bytesToWrite, SSIZE_MAX));
+    int result = (int)::write(handle->getHandle(), buffer, minimum<size_t>(bytesToWrite, SSIZE_MAX));
     if (result < 0) { // has an error occured
       switch (errno) {
       case EINTR: // interrupted by signal before any data was written

@@ -164,7 +164,7 @@ ArgumentParser::ArgumentParser(unsigned int _flags)
   : flags(_flags),
     shortNames(25 + 25 + 10)
 {
-  auto v = PrimitiveTraits<unsigned int>::MAXIMUM;
+  MemorySize v = PrimitiveTraits<MemorySize>::MAXIMUM;
   fill(
     shortNames.getElements(),
     shortNames.getSize(),
@@ -172,8 +172,7 @@ ArgumentParser::ArgumentParser(unsigned int _flags)
   );
 }
 
-void ArgumentParser::addOption(
-  const Reference<Option>& option) throw(AlreadyKeyException)
+void ArgumentParser::addOption(const Reference<Option>& option)
 {
   bassert(
     !names.hasKey(option->getName()),
@@ -181,7 +180,7 @@ void ArgumentParser::addOption(
   );
   names.add(option->getName(), options.getSize());
   if (option->hasShortName()) {
-    unsigned int* lookup = shortNames.getElements();
+    MemorySize* lookup = shortNames.getElements();
     const uint8 shortNameIndex = getIndexOfShortName(option->getShortName());
     bassert(
       lookup[shortNameIndex] == PrimitiveTraits<unsigned int>::MAXIMUM,
@@ -194,7 +193,7 @@ void ArgumentParser::addOption(
 
 ArgumentParser::Argument* ArgumentParser::getArgument(
   const Reference<Option>& option,
-  bool occured) const throw(ArgumentException)
+  bool occured) const
 {
   Argument* argument = nullptr;
   if (option.isType<FlagOption>()) {
@@ -236,7 +235,8 @@ ArgumentParser::Argument* ArgumentParser::getArgument(
 ArgumentParser::Argument* ArgumentParser::getArgument(
   const Reference<Option>& option,
   const String& value,
-  bool occured) const throw(ArgumentException) {
+  bool occured) const
+{
   Argument* argument = nullptr;
   if (option.isType<FlagOption>()) {
     throw bindCause(ArgumentException(this), ArgumentException::VALUE_PRESENT);
@@ -297,11 +297,12 @@ ArgumentParser::Argument* ArgumentParser::getArgument(
 }
 
 Array<ArgumentParser::Argument*> ArgumentParser::operator()(
-  const Array<String>& arguments) const throw(ArgumentException) {
+  const Array<String>& arguments) const
+{
   Array<Argument*> result;
   HashSet<String> occured;
   
-  const unsigned int* lookup = shortNames.getElements();
+  const MemorySize* lookup = shortNames.getElements();
   Array<String>::ReadIterator i = arguments.getBeginReadIterator();
   const Array<String>::ReadIterator endArgument =
     arguments.getEndReadIterator();
@@ -312,7 +313,7 @@ Array<ArgumentParser::Argument*> ArgumentParser::operator()(
       if (argument.startsWith("--")) { // long name
         String name;
         String value;
-        const int assignIndex = argument.indexOf("=");
+        const MemoryDiff assignIndex = argument.indexOf("=");
         if (assignIndex >= 0) {
           name = argument.substring(2, assignIndex);
           value = argument.substring(assignIndex + 1);

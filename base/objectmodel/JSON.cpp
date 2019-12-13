@@ -111,7 +111,7 @@ Reference<ObjectModel::Integer> JSON::parseInteger(JSONParser& parser)
   if (!parseIntegerImpl(parser, i)) {
     throw JSONException("Expected integer.", parser.getPosition());
   }
-  return objectModel.createInteger64(i);
+  return objectModel.createInteger(i);
 }
 
 Reference<ObjectModel::Float> JSON::parseFloat(JSONParser& parser)
@@ -173,7 +173,7 @@ Reference<ObjectModel::Value> JSON::parseNumber(JSONParser& parser)
   JSONParser integerParser = parser;
   if (parseIntegerImpl(integerParser, i)) {
     parser = integerParser;
-    return objectModel.createInteger64(i);
+    return objectModel.createInteger(i);
   }
   return parseFloat(parser);
 }
@@ -492,7 +492,7 @@ Reference<ObjectModel::Value> JSON::parseFile(const String& path)
   {
     File file(path, File::READ, 0);
     buffer.resize(file.getSize());
-    file.read(buffer, buffer.size(), false);
+    file.read(buffer, (unsigned int)buffer.size(), false);
   }
   JSON json;
   return json.parse(buffer, buffer + buffer.size());

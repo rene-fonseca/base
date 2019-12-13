@@ -199,7 +199,7 @@ public:
   /** Returns true if the integer is zero. */
   bool isZero() const noexcept;
 
-  Word getBits(unsigned int bitIndex, unsigned bitSize) const noexcept;
+  Word getBits(unsigned int bitIndex, unsigned int bitSize) const noexcept;
 
   /** Returns true if the bit is set. */
   bool isBitSet(unsigned int bit) const noexcept;

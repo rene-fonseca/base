@@ -240,7 +240,7 @@ SharedMemory::SharedMemoryImpl::~SharedMemoryImpl() throw()
 
 // see http://www.engelschall.com/sw/mm
 
-unsigned int SharedMemory::getGranularity() throw()
+MemorySize SharedMemory::getGranularity() throw()
 {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   SYSTEM_INFO info;

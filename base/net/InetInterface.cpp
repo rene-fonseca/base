@@ -395,7 +395,7 @@ unsigned int InetInterface::getIndexByName(const String& name) throw(NetworkExce
 //     );
 //   }
   struct ifconf ifc;
-  ifc.ifc_len = buffer.getSize();
+  ifc.ifc_len = (int)buffer.getSize();
   ifc.ifc_buf = (char*)buffer.getElements();
   if (ioctl(handle, SIOCGIFCONF, &ifc)) {
     close(handle);
@@ -499,7 +499,7 @@ unsigned int InetInterface::getIndexByAddress(const InetAddress& address) throw(
 //     );
 //   }
   struct ifconf ifc;
-  ifc.ifc_len = buffer.getSize()/sizeof(char);
+  ifc.ifc_len = (int)buffer.getSize()/sizeof(char);
   ifc.ifc_buf = (char*)buffer.getElements();
   if (ioctl(handle, SIOCGIFCONF, &ifc)) {
     close(handle);
@@ -614,7 +614,7 @@ String InetInterface::getName(unsigned int index) throw(NetworkException) {
 //     );
 //   }
   struct ifconf ifc;
-  ifc.ifc_len = buffer.getSize();
+  ifc.ifc_len = (int)buffer.getSize();
   ifc.ifc_buf = (char*)buffer.getElements();
   if (ioctl(handle, SIOCGIFCONF, &ifc)) {
     close(handle);
@@ -734,7 +734,7 @@ InetAddress InetInterface::getAddress(unsigned int index) throw(NetworkException
 //     );
 //   }
   struct ifconf ifc;
-  ifc.ifc_len = buffer.getSize();
+  ifc.ifc_len = (int)buffer.getSize();
   ifc.ifc_buf = (char*)buffer.getElements();
   if (ioctl(handle, SIOCGIFCONF, &ifc)) {
     close(handle);

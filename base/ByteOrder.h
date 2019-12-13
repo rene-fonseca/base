@@ -65,7 +65,8 @@ namespace ByteOrder {
   template<>
   inline uint64 fromBigEndian<uint64>(uint64 value) noexcept
   {
-    return fromBigEndian<uint32>(value >> 32) | static_cast<uint64>(fromBigEndian<uint32>(value)) << 32;
+    return fromBigEndian<uint32>(static_cast<uint32>(value >> 32)) |
+      static_cast<uint64>(fromBigEndian<uint32>(static_cast<uint32>(value))) << 32;
   }
 
   template<class TYPE>
@@ -530,14 +531,14 @@ _COM_AZURE_DEV__BASE__PACKED__BEGIN
     }
   
     inline BigEndian(int64 value) noexcept
-      : b(value >> 32), a(value)
+      : b(static_cast<uint32>(value >> 32)), a(static_cast<uint32>(value))
     {
     }
     
     inline int64 operator=(int64 assign) noexcept
     {
-      b = assign >> 32;
-      a = assign;
+      b = static_cast<uint32>(assign >> 32);
+      a = static_cast<uint32>(assign);
       return assign;
     }
     
@@ -560,14 +561,14 @@ _COM_AZURE_DEV__BASE__PACKED__BEGIN
     }
     
     inline BigEndian(uint64 value) noexcept
-      : b(value >> 32), a(value)
+      : b(static_cast<uint32>(value >> 32)), a(static_cast<uint32>(value))
     {
     }
     
     inline uint64 operator=(uint64 assign) noexcept
     {
-      b = assign >> 32;
-      a = assign;
+      b = static_cast<uint32>(assign >> 32);
+      a = static_cast<uint32>(assign);
       return assign;
     }
     

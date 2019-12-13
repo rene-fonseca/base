@@ -356,8 +356,8 @@ void WebSocket::send(const String& _body)
   }
 #pragma clang diagnostic pop
 
-  const UInt32 code = CFHTTPMessageGetResponseStatusCode(response);
-  _handle->status = code;
+  const CFIndex code = CFHTTPMessageGetResponseStatusCode(response);
+  _handle->status = static_cast<unsigned int>(code);
   
   CFStringRef statusLine = CFHTTPMessageCopyResponseStatusLine(response);
   _handle->statusText = MACString::getString(statusLine);

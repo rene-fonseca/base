@@ -251,16 +251,16 @@ Timer::XTime Timer::toXTimeNS(uint64 nanoseconds) noexcept
   XTime result; // round down
   if (nanoseconds <= MAXIMUM) {
     result.exponent = 0; // ns
-    result.mantissa = nanoseconds;
+    result.mantissa = static_cast<uint32>(nanoseconds);
   } else if (((nanoseconds + 0 * 500) / 1000) <= MAXIMUM) {
     result.exponent = 1; // us
-    result.mantissa = (nanoseconds + 0 * 500) / 1000;
+    result.mantissa = static_cast<uint32>((nanoseconds + 0 * 500) / 1000);
   } else if (((nanoseconds + 0 * 500000) / 1000000) <= MAXIMUM) {
     result.exponent = 2; // ms
-    result.mantissa = (nanoseconds + 0 * 500000) / 1000000;
+    result.mantissa = static_cast<uint32>((nanoseconds + 0 * 500000) / 1000000);
   } else {
     result.exponent = 3; // s
-    result.mantissa = (nanoseconds + 0 * 500000000) / 1000000000;
+    result.mantissa = static_cast<uint32>((nanoseconds + 0 * 500000000) / 1000000000);
   }
   return result;
 }
@@ -272,13 +272,13 @@ Timer::XTime Timer::toXTimeUS(uint64 microseconds) noexcept
   XTime result; // round down
   if (microseconds <= MAXIMUM) {
     result.exponent = 1; // us
-    result.mantissa = microseconds;
+    result.mantissa = static_cast<uint32>(microseconds);
   } else if (((microseconds + 0 * 500) / 1000) <= MAXIMUM) {
     result.exponent = 2; // ms
-    result.mantissa = (microseconds + 0 * 500) / 1000;
+    result.mantissa = static_cast<uint32>((microseconds + 0 * 500) / 1000);
   } else {
     result.exponent = 3; // s
-    result.mantissa = (microseconds + 0 * 500000) / 1000000;
+    result.mantissa = static_cast<uint32>((microseconds + 0 * 500000) / 1000000);
   }
   return result;
 }

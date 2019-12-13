@@ -301,6 +301,17 @@ public:
     unsigned int size,
     bool nonblocking = false) throw(FileException);
 
+#if 0
+  MemorySize read(
+    uint8* buffer,
+    MemorySize size,
+    bool nonblocking = false)
+  {
+    BASSERT(size <= 0xffffffff); // TAG: temp
+    return read(buffer, static_cast<unsigned int>(size), nonblocking);
+  }
+#endif
+
   /**
     Read the specified type.
   */

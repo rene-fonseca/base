@@ -39,7 +39,7 @@ RandomInputStream& Random::getRandomInputStream() noexcept
 
 void Random::fill(uint8* dest, const uint8* end) noexcept
 {
-  auto size = _impl::getRandomInputStream().read(dest, end - dest, false);
+  auto size = _impl::getRandomInputStream().read(dest, static_cast<unsigned int>(end - dest), false);
 }
 
 #define RANDOM_IMPL(TYPE) \

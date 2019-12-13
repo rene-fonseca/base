@@ -204,14 +204,16 @@ protected:
   /**
     Sets the dimension of this matrix to the dimension of the specified matrix.
   */
-  inline void setDimension(const Matrix& value) throw(MemoryException) {
+  inline void setDimension(const Matrix& value) throw(MemoryException)
+  {
     setSize(value.rows, value.columns);
   }
 
   /**
     Gets the number of elements in the matrix.
   */
-  inline unsigned int getSize() const throw() {
+  inline MemorySize getSize() const throw()
+  {
     return elements->getSize();
   }
 
@@ -220,7 +222,8 @@ protected:
   */
   inline void validateElement(
     unsigned int row,
-    unsigned int column) const throw(OutOfRange) {
+    unsigned int column) const throw(OutOfRange)
+  {
     if ((row >= rows) || (column >= columns)) {
       throw OutOfRange();
     }

@@ -93,7 +93,7 @@ unsigned int FileDescriptorOutputStream::write(
       throw IOException("Unable to write to object.");
     }
 #else // unix
-    int result = ::write(fd->getHandle(), buffer, minimum<size_t>(bytesToWrite, SSIZE_MAX));
+    int result = (int)::write(fd->getHandle(), buffer, minimum<size_t>(bytesToWrite, SSIZE_MAX));
     if (result < 0) { // has an error occured
       switch (errno) {
       case EINTR: // interrupted by signal before any data was written

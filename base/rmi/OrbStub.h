@@ -52,7 +52,7 @@ public:
   /**
     Returns the local reference to the object.
   */
-  inline OrbReference getOrbReference() const throw() {
+  inline OrbReference getOrbReference() const noexcept {
     return reference;
   }
   

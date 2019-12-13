@@ -93,7 +93,7 @@ Stylesheet::Stylesheet(const Document& document) noexcept {
 #endif
 }
 
-String Stylesheet::getOutputMethod() const throw() {
+String Stylesheet::getOutputMethod() const noexcept {
 #if defined(_COM_AZURE_DEV__BASE__XSLT_XMLSOFT_ORG)
   xsltStylesheetPtr temp =
     Cast::pointer<xsltStylesheetPtr>(stylesheet->getContext());
@@ -104,7 +104,7 @@ String Stylesheet::getOutputMethod() const throw() {
 #endif
 }
 
-String Stylesheet::getNamespace() const throw() {
+String Stylesheet::getNamespace() const noexcept {
 #if defined(_COM_AZURE_DEV__BASE__XSLT_XMLSOFT_ORG)
   xsltStylesheetPtr temp =
     Cast::pointer<xsltStylesheetPtr>(stylesheet->getContext());
@@ -115,7 +115,7 @@ String Stylesheet::getNamespace() const throw() {
 #endif
 }
 
-String Stylesheet::getVersion() const throw() {
+String Stylesheet::getVersion() const noexcept {
 #if defined(_COM_AZURE_DEV__BASE__XSLT_XMLSOFT_ORG)
   xsltStylesheetPtr temp =
     Cast::pointer<xsltStylesheetPtr>(stylesheet->getContext());
@@ -126,7 +126,7 @@ String Stylesheet::getVersion() const throw() {
 #endif
 }
 
-String Stylesheet::getEncoding() const throw() {
+String Stylesheet::getEncoding() const noexcept {
 #if defined(_COM_AZURE_DEV__BASE__XSLT_XMLSOFT_ORG)
   xsltStylesheetPtr temp =
     Cast::pointer<xsltStylesheetPtr>(stylesheet->getContext());
@@ -137,7 +137,7 @@ String Stylesheet::getEncoding() const throw() {
 #endif
 }
 
-bool Stylesheet::omitXmlDeclaration() const throw() {
+bool Stylesheet::omitXmlDeclaration() const noexcept {
 #if defined(_COM_AZURE_DEV__BASE__XSLT_XMLSOFT_ORG)
   xsltStylesheetPtr temp =
     Cast::pointer<xsltStylesheetPtr>(stylesheet->getContext());
@@ -148,7 +148,7 @@ bool Stylesheet::omitXmlDeclaration() const throw() {
 #endif
 }
 
-String Stylesheet::getPublicId() const throw() {
+String Stylesheet::getPublicId() const noexcept {
 #if defined(_COM_AZURE_DEV__BASE__XSLT_XMLSOFT_ORG)
   xsltStylesheetPtr temp =
     Cast::pointer<xsltStylesheetPtr>(stylesheet->getContext());
@@ -159,7 +159,7 @@ String Stylesheet::getPublicId() const throw() {
 #endif
 }
 
-String Stylesheet::getSystemId() const throw() {
+String Stylesheet::getSystemId() const noexcept {
 #if defined(_COM_AZURE_DEV__BASE__XSLT_XMLSOFT_ORG)
   xsltStylesheetPtr temp =
     Cast::pointer<xsltStylesheetPtr>(stylesheet->getContext());
@@ -170,7 +170,7 @@ String Stylesheet::getSystemId() const throw() {
 #endif
 }
 
-String Stylesheet::getMediaType() const throw() {
+String Stylesheet::getMediaType() const noexcept {
 #if defined(_COM_AZURE_DEV__BASE__XSLT_XMLSOFT_ORG)
   xsltStylesheetPtr temp =
     Cast::pointer<xsltStylesheetPtr>(stylesheet->getContext());
@@ -181,7 +181,7 @@ String Stylesheet::getMediaType() const throw() {
 #endif
 }
 
-bool Stylesheet::isStandalone() const throw() {
+bool Stylesheet::isStandalone() const noexcept {
 #if defined(_COM_AZURE_DEV__BASE__XSLT_XMLSOFT_ORG)
   xsltStylesheetPtr temp =
     Cast::pointer<xsltStylesheetPtr>(stylesheet->getContext());
@@ -192,7 +192,7 @@ bool Stylesheet::isStandalone() const throw() {
 #endif
 }
 
-// bool Stylesheet::stripAllSpaces() const throw() {
+// bool Stylesheet::stripAllSpaces() const noexcept {
 // #if defined(_COM_AZURE_DEV__BASE__XSLT_XMLSOFT_ORG)
 //   xsltStylesheetPtr temp =
 //     Cast::pointer<xsltStylesheetPtr>(stylesheet->getContext());
@@ -203,7 +203,7 @@ bool Stylesheet::isStandalone() const throw() {
 // #endif
 // }
 
-bool Stylesheet::indent() const throw() {
+bool Stylesheet::indent() const noexcept {
 #if defined(_COM_AZURE_DEV__BASE__XSLT_XMLSOFT_ORG)
   xsltStylesheetPtr temp =
     Cast::pointer<xsltStylesheetPtr>(stylesheet->getContext());
@@ -214,7 +214,7 @@ bool Stylesheet::indent() const throw() {
 #endif
 }
 
-Array<String> Stylesheet::getExcludedPrefixes() const throw() {
+Array<String> Stylesheet::getExcludedPrefixes() const noexcept {
 #if defined(_COM_AZURE_DEV__BASE__XSLT_XMLSOFT_ORG)
   xsltStylesheetPtr temp =
     Cast::pointer<xsltStylesheetPtr>(stylesheet->getContext());
@@ -232,7 +232,7 @@ Array<String> Stylesheet::getExcludedPrefixes() const throw() {
 }
 
 #if 0
-Array<String> Stylesheet::getExtensions() const throw() {
+Array<String> Stylesheet::getExtensions() const noexcept {
   Array<String> result;
   return result;
 }

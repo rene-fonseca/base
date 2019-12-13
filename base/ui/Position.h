@@ -77,7 +77,7 @@ public:
   /**
     Returns true if position is (0, 0).
   */
-  inline bool isOrigin() const throw() {
+  inline bool isOrigin() const noexcept {
     return (x == 0) && (y == 0);
   }
   
@@ -88,7 +88,7 @@ public:
     @param upperLeft The upper left corner.
     @param lowerRight The lower right corner.
   */
-  inline bool isWithin(const Position& upperLeft, const Position& lowerRight) const throw() {
+  inline bool isWithin(const Position& upperLeft, const Position& lowerRight) const noexcept {
     return (x >= upperLeft.x) &&
       (y >= upperLeft.y) &&
       (x <= lowerRight.x) &&
@@ -102,7 +102,7 @@ public:
     @param position Upper left corner of the bounding rectangle.
     @param dimension Dimension of the bounding rectangle.
   */
-  inline bool isWithin(const Position& position, const Dimension& dimension) const throw() {
+  inline bool isWithin(const Position& position, const Dimension& dimension) const noexcept {
     return (x >= position.x) &&
       (y >= position.y) &&
       (x < static_cast<int>(position.x + dimension.getWidth())) &&
@@ -115,7 +115,7 @@ public:
     
     @param dimension Dimension of the bounding rectangle.
   */
-  inline bool isWithin(const Dimension& dimension) const throw() {
+  inline bool isWithin(const Dimension& dimension) const noexcept {
     return (x >= 0) &&
       (y >= 0) &&
       (static_cast<unsigned int>(x) < dimension.getWidth()) &&
@@ -152,14 +152,14 @@ public:
   /**
     Returns the X coordinate.
   */
-  inline int getX() const throw() {
+  inline int getX() const noexcept {
     return x;
   }
 
   /**
     Returns the Y coordinate.
   */
-  inline int getY() const throw() {
+  inline int getY() const noexcept {
     return y;
   }
 
@@ -209,7 +209,7 @@ public:
 
     @param position The position to be compared.
   */
-  inline bool operator==(const Position& position) const throw() {
+  inline bool operator==(const Position& position) const noexcept {
     return (x == position.x) && (y == position.y);
   }
   
@@ -218,7 +218,7 @@ public:
 
     @param position The position to be compared.
   */
-  inline bool operator!=(const Position& position) const throw() {
+  inline bool operator!=(const Position& position) const noexcept {
     return (x != position.x) || (y != position.y);
   }
 
@@ -261,14 +261,14 @@ public:
   /**
     Returns true if the position is after the specified position.
   */
-  inline bool isAfter(const Position& position) const throw() {
+  inline bool isAfter(const Position& position) const noexcept {
     return (x > position.x) && (y > position.y);
   }
   
   /**
     Returns true if the position is before the specified position.
   */
-  inline bool isBefore(const Position& position) const throw() {
+  inline bool isBefore(const Position& position) const noexcept {
     return (x < position.x) || (y < position.y);
   }
   
@@ -278,7 +278,7 @@ public:
     
     @param position The lower right corner.
   */
-  inline Dimension getDimension(const Position& position) const throw() {
+  inline Dimension getDimension(const Position& position) const noexcept {
     const Position temp(position.x - x, position.y - y);
     return Dimension(maximum(temp.x, 0), maximum(temp.y, 0));
   }

@@ -94,15 +94,15 @@ public:
     return *this;
   }
 
-  inline ElementIterator getFirst() const throw() {
+  inline ElementIterator getFirst() const noexcept {
     return ElementIterator(this->element, dimension.getWidth());
   }
 
-  inline ElementIterator getEnd() const throw() {
+  inline ElementIterator getEnd() const noexcept {
     return ElementIterator(this->element + dimension.getSize(), dimension.getWidth());
   }
 
-  inline ElementIterator operator[](unsigned int index) const throw() {
+  inline ElementIterator operator[](unsigned int index) const noexcept {
     return ElementIterator(this->element + this->columns * index, dimension.getWidth());
   }
 };

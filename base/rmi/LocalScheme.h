@@ -61,7 +61,7 @@ public:
   /**
     Returns the current number of connections.
   */
-  inline unsigned int getNumberOfConnections() const throw() {
+  inline unsigned int getNumberOfConnections() const noexcept {
     return connections.getSize();
   }
   

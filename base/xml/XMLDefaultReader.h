@@ -72,28 +72,28 @@ public:
   /**
     Returns the current content handler.
   */
-  inline ContentHandler* getContentHandler() const throw() {
+  inline ContentHandler* getContentHandler() const noexcept {
     return contentHandler;
   }
   
   /**
     Returns the current DTD handler.
   */
-  inline DTDHandler* getDTDHandler() const throw() {
+  inline DTDHandler* getDTDHandler() const noexcept {
     return dtdHandler;
   }
   
   /**
     Returns the current entity resolver.
   */
-  inline EntityResolver* getEntityResolver() const throw() {
+  inline EntityResolver* getEntityResolver() const noexcept {
     return entityResolver;
   }
   
   /**
     Returns the current error handler.
   */
-  ErrorHandler* getErrorHandler() const throw() {
+  ErrorHandler* getErrorHandler() const noexcept {
     return errorHandler;
   }
   
@@ -156,7 +156,7 @@ public:
   /**
     Returns the validation flag.
   */
-  inline bool getValidation() const throw() {
+  inline bool getValidation() const noexcept {
     return validate;
   }
 
@@ -170,7 +170,7 @@ public:
   /**
     Returns true if the document is a standalone document.
   */
-  inline bool isStandalone() const throw() {
+  inline bool isStandalone() const noexcept {
     return standalone;
   }
   

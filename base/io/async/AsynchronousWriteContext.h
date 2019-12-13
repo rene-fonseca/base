@@ -33,7 +33,7 @@ protected:
   }
 public:
 
-  virtual AsynchronousWriteCompletion getCompletion() const throw() = 0;
+  virtual AsynchronousWriteCompletion getCompletion() const noexcept = 0;
   
   virtual ~AsynchronousWriteContext();
 };

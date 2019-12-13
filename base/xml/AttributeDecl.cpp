@@ -20,7 +20,7 @@
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
-AttributeDecl::ValueType AttributeDecl::getValueType() const throw() {
+AttributeDecl::ValueType AttributeDecl::getValueType() const noexcept {
 #if defined(_COM_AZURE_DEV__BASE__XML_XMLSOFT_ORG)
   xmlAttribute* attribute = (xmlAttribute*)getContext();
   switch (attribute->atype) {
@@ -52,7 +52,7 @@ AttributeDecl::ValueType AttributeDecl::getValueType() const throw() {
 #endif
 }
 
-AttributeDecl::DefaultType AttributeDecl::getDefaultValueType() const throw() {
+AttributeDecl::DefaultType AttributeDecl::getDefaultValueType() const noexcept {
 #if defined(_COM_AZURE_DEV__BASE__XML_XMLSOFT_ORG)
   xmlAttribute* attribute = (xmlAttribute*)getContext();
   switch (attribute->atype) {
@@ -72,7 +72,7 @@ AttributeDecl::DefaultType AttributeDecl::getDefaultValueType() const throw() {
 #endif
 }
 
-String AttributeDecl::getDefaultValue() const throw() {
+String AttributeDecl::getDefaultValue() const noexcept {
 #if defined(_COM_AZURE_DEV__BASE__XML_XMLSOFT_ORG)
   xmlAttribute* attribute = (xmlAttribute*)getContext();
   return NativeString((const char*)attribute->defaultValue);

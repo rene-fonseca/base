@@ -20,7 +20,7 @@
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
-String Attribute::getName() const throw() {
+String Attribute::getName() const noexcept {
 #if defined(_COM_AZURE_DEV__BASE__XML_XMLSOFT_ORG)
   xmlAttr* attribute = (xmlAttr*)getContext();
   if (attribute->ns && attribute->ns->prefix) {
@@ -35,7 +35,7 @@ String Attribute::getName() const throw() {
 #endif
 }
 
-String Attribute::getValue() const throw() {
+String Attribute::getValue() const noexcept {
 #if defined(_COM_AZURE_DEV__BASE__XML_XMLSOFT_ORG)
   xmlAttr* attribute = (xmlAttr*)getContext();
   xmlChar* content = xmlNodeGetContent((xmlNode*)attribute);
@@ -76,7 +76,7 @@ void Attribute::setValue(const String& value) throw(DOMException) {
 #endif
 }
 
-bool Attribute::isSpecified() const throw() {
+bool Attribute::isSpecified() const noexcept {
 #if defined(_COM_AZURE_DEV__BASE__XML_XMLSOFT_ORG)
   xmlAttr* attribute = (xmlAttr*)getContext();
   return true; // TAG: fixme

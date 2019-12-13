@@ -77,7 +77,7 @@ public:
   /**
     Returns the flags.
   */
-  inline unsigned int getFlags() const throw()
+  inline unsigned int getFlags() const noexcept
   {
     return flags;
   }
@@ -85,7 +85,7 @@ public:
   /**
     Returns the cause.
   */
-  inline unsigned int getCause() const throw()
+  inline unsigned int getCause() const noexcept
   {
     return cause;
   }

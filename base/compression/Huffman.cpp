@@ -63,11 +63,11 @@ public:
     writeHead = begin;
   }
 
-  inline bool isEmpty() const throw() {
+  inline bool isEmpty() const noexcept {
     return writeHead == begin;
   }
   
-  inline unsigned int getAvailable() const throw() {
+  inline unsigned int getAvailable() const noexcept {
     return static_cast<unsigned int>(end - writeHead);
   }
 

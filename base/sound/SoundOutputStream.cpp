@@ -113,7 +113,7 @@ SoundOutputStream::SoundOutputStream(unsigned int samplingRate, unsigned int cha
 #endif // flavor
 }
 
-unsigned int SoundOutputStream::getChannels() const throw() {
+unsigned int SoundOutputStream::getChannels() const noexcept {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   return 0;
 #else
@@ -133,7 +133,7 @@ unsigned int SoundOutputStream::getChannels() const throw() {
 #endif // flavor
 }
 
-unsigned int SoundOutputStream::getRate() const throw() {
+unsigned int SoundOutputStream::getRate() const noexcept {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   return 0;
 #else
@@ -153,7 +153,7 @@ unsigned int SoundOutputStream::getRate() const throw() {
 #endif // flavor
 }
 
-unsigned int SoundOutputStream::getPosition() const throw() {
+unsigned int SoundOutputStream::getPosition() const noexcept {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   MMTIME time;
   clear(time);

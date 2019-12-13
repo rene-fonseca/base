@@ -60,23 +60,23 @@ EUI64& EUI64::operator=(const EUI64& assign) noexcept {
   return *this;
 }
 
-bool EUI64::operator==(const EUI64& _compare) const throw()
+bool EUI64::operator==(const EUI64& _compare) const noexcept
 {
   return compare<uint8>(id, _compare.id, sizeof(id)) == 0;
 }
 
-bool EUI64::operator!=(const EUI64& _compare) const throw()
+bool EUI64::operator!=(const EUI64& _compare) const noexcept
 {
   return compare<uint8>(id, _compare.id, sizeof(id)) != 0;
 }
 
-bool EUI64::isInvalid() const throw()
+bool EUI64::isInvalid() const noexcept
 {
   return (id[0] == 0xff) && (id[1] == 0xff) && (id[2] == 0xff) &&
     (id[3] == 0) && (id[4] == 0) && (id[5] == 0) && (id[6] == 0) && (id[7] == 0);
 }
 
-unsigned int EUI64::getCompanyId() const throw()
+unsigned int EUI64::getCompanyId() const noexcept
 {
   return (((static_cast<unsigned int>(id[0]) << 8) | id[1]) << 8) | id[2];
 }
@@ -91,7 +91,7 @@ void EUI64::setCompanyId(unsigned int companyId) throw(OutOfDomain)
   id[2] = companyId;
 }
 
-uint64 EUI64::getExtensionId() const throw() {
+uint64 EUI64::getExtensionId() const noexcept {
   return (((((((static_cast<uint64>(id[3]) << 8) | id[4]) << 8) | id[5]) << 8) | id[6]) << 8) | id[7];
 }
 
@@ -107,7 +107,7 @@ void EUI64::setExtensionId(uint64 extensionId) throw(OutOfDomain)
   id[7] = extensionId;
 }
 
-void EUI64::getEUI48(uint8* eui48) const throw() {
+void EUI64::getEUI48(uint8* eui48) const noexcept {
   eui48[0] = id[0];
   eui48[1] = id[1];
   eui48[2] = id[2];
@@ -127,7 +127,7 @@ void EUI64::setEUI48(const uint8* eui48) noexcept {
   id[7] = eui48[5];
 }
 
-void EUI64::getMAC48(uint8* mac) const throw() {
+void EUI64::getMAC48(uint8* mac) const noexcept {
   mac[0] = swapNibbles(id[0]);
   mac[1] = swapNibbles(id[1]);
   mac[2] = swapNibbles(id[2]);

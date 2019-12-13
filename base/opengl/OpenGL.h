@@ -3267,11 +3267,11 @@ public:
       }
     }
     
-    inline unsigned int getOffset() const throw() {
+    inline unsigned int getOffset() const noexcept {
       return offset;
     }
     
-    inline void execute() const throw() {
+    inline void execute() const noexcept {
       openGL.glCallLists(numberOfLists, UNSIGNED_INT, objects.getElements());
     }
     
@@ -3292,7 +3292,7 @@ public:
       openGL.glGenTextures(1, &name);
     }
     
-    inline unsigned int getName() const throw() {
+    inline unsigned int getName() const noexcept {
       return name;
     }
     

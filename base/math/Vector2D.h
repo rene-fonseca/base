@@ -71,35 +71,35 @@ public:
   /**
     Returns the square of the modulus of the vector.
   */
-  inline TYPE getSqrModulus() const throw() {
+  inline TYPE getSqrModulus() const noexcept {
     return x * x + y * y;
   }
 
   /**
     Returns the modulus of the vector.
   */
-  inline TYPE getModulus() const throw() {
+  inline TYPE getModulus() const noexcept {
     return Math::sqrt(getSqrModulus());
   }
 
   /**
     Returns the angle of the vector.
   */
-  inline TYPE getAngle() const throw() {
+  inline TYPE getAngle() const noexcept {
     return Math::atan2(y, x);
   }
 
   /**
     Returns the X coordinate.
   */
-  inline TYPE getX() const throw() {
+  inline TYPE getX() const noexcept {
     return x;
   }
 
   /**
     Returns the Y coordinate.
   */
-  inline TYPE getY() const throw() {
+  inline TYPE getY() const noexcept {
     return y;
   }
 
@@ -137,42 +137,42 @@ public:
   /**
     Returns true if the length of this vector is zero.
   */
-  inline bool isZero() const throw() {
+  inline bool isZero() const noexcept {
     return (x == TYPE(0)) && (y == TYPE(0));
   }
 
   /**
     Returns true if the length of this vector is greater zero.
   */
-  inline bool isProper() const throw() {
+  inline bool isProper() const noexcept {
     return (x != TYPE(0)) || (y != TYPE(0));
   }
 
   /**
     Returns true if this vector is orthogonal with the specified vector.
   */
-  inline bool isOrthogonal(const Vector2D& value) const throw() {
+  inline bool isOrthogonal(const Vector2D& value) const noexcept {
     return dot(value) == 0;
   }
 
   /**
     Returns true if this vector is parallel with the specified vector.
   */
-  inline bool isParallel(const Vector2D& value) const throw() {
+  inline bool isParallel(const Vector2D& value) const noexcept {
     return determinant(value) == 0;
   }
 
   /**
     Unary plus.
   */
-  inline Vector2D plus() const throw() {
+  inline Vector2D plus() const noexcept {
     return Vector2D(*this);
   }
 
   /**
     Unary minus.
   */
-  inline Vector2D minus() const throw() {
+  inline Vector2D minus() const noexcept {
     return Vector2D(*this).negate();
   }
 
@@ -224,21 +224,21 @@ public:
   /**
     Returns the dot product of this vector and the specified vector.
   */
-  inline TYPE dot(const Vector2D& value) const throw() {
+  inline TYPE dot(const Vector2D& value) const noexcept {
     return x * value.x + y * value.y;
   }
 
   /**
     Returns the determinant of this vector and the specified vector.
   */
-  inline TYPE determinant(const Vector2D& value) const throw() {
+  inline TYPE determinant(const Vector2D& value) const noexcept {
     return x * value.y - y * value.x;
   }
 
   /**
     Returns the angle between this vector and the specified vector.
   */
-  TYPE getAngle(const Vector2D& value) const throw() {
+  TYPE getAngle(const Vector2D& value) const noexcept {
     TYPE temp = dot(value)/Math::sqrt(getSqrModulus() * value.getSqrModulus());
     return Math::atan2(Math::sqrt(1 - temp * temp), temp);
   }
@@ -246,7 +246,7 @@ public:
   /**
     Returns the projection of this vector onto the specified vector.
   */
-  inline Vector2D getProjection(const Vector2D& value) const throw() {
+  inline Vector2D getProjection(const Vector2D& value) const noexcept {
     return value * dot(value)/value.getSqrModulus();
   }
 
@@ -257,7 +257,7 @@ public:
 
     @param vector Vector to be compared.
   */
-  inline bool operator==(const Vector2D& value) const throw() {
+  inline bool operator==(const Vector2D& value) const noexcept {
     return (x == value.x) && (y == value.y);
   }
 
@@ -300,14 +300,14 @@ public:
   /**
     Unary plus.
   */
-  inline Vector2D operator+() const throw() {
+  inline Vector2D operator+() const noexcept {
     return plus();
   }
 
   /**
     Unary minus.
   */
-  inline Vector2D operator-() const throw() {
+  inline Vector2D operator-() const noexcept {
     return minus();
   }
 

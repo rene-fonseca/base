@@ -20,7 +20,7 @@
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
-String DocumentType::getName() const throw() {
+String DocumentType::getName() const noexcept {
 #if defined(_COM_AZURE_DEV__BASE__XML_XMLSOFT_ORG)
   xmlDtd* documentType = (xmlDtd*)getContext();
   return NativeString((const char*)documentType->name);
@@ -29,7 +29,7 @@ String DocumentType::getName() const throw() {
 #endif
 }
 
-NamedNodeMap DocumentType::getEntities() const throw() {
+NamedNodeMap DocumentType::getEntities() const noexcept {
 #if defined(_COM_AZURE_DEV__BASE__XML_XMLSOFT_ORG)
   xmlDtd* documentType = (xmlDtd*)getContext();
   return documentType->entities;
@@ -38,7 +38,7 @@ NamedNodeMap DocumentType::getEntities() const throw() {
 #endif
 }
 
-NamedNodeMap DocumentType::getNotations() const throw() {
+NamedNodeMap DocumentType::getNotations() const noexcept {
 #if defined(_COM_AZURE_DEV__BASE__XML_XMLSOFT_ORG)
   xmlDtd* documentType = (xmlDtd*)getContext();
   return documentType->notations;
@@ -47,7 +47,7 @@ NamedNodeMap DocumentType::getNotations() const throw() {
 #endif
 }
 
-String DocumentType::getPublicId() const throw() {
+String DocumentType::getPublicId() const noexcept {
 #if defined(_COM_AZURE_DEV__BASE__XML_XMLSOFT_ORG)
   xmlDtd* documentType = (xmlDtd*)getContext();
   return NativeString((const char*)documentType->ExternalID);
@@ -56,7 +56,7 @@ String DocumentType::getPublicId() const throw() {
 #endif
 }
 
-String DocumentType::getSystemId() const throw() {
+String DocumentType::getSystemId() const noexcept {
 #if defined(_COM_AZURE_DEV__BASE__XML_XMLSOFT_ORG)
   xmlDtd* documentType = (xmlDtd*)getContext();
   return NativeString((const char*)documentType->SystemID);
@@ -65,7 +65,7 @@ String DocumentType::getSystemId() const throw() {
 #endif
 }
 
-String DocumentType::getInternalSubset() const throw() {
+String DocumentType::getInternalSubset() const noexcept {
 #if defined(_COM_AZURE_DEV__BASE__XML_XMLSOFT_ORG)
   xmlDtd* documentType = (xmlDtd*)getContext();
   documentType = documentType->doc->intSubset;

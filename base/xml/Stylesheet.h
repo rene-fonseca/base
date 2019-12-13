@@ -46,7 +46,7 @@ private:
     /**
       Returns the context.
     */
-    inline void* getContext() const throw() {
+    inline void* getContext() const noexcept {
       return context;
     }
 

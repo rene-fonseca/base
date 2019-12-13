@@ -117,7 +117,7 @@ void Pipe::close() throw(PipeException) {
   end = true;
 }
 
-unsigned int Pipe::getBufferSize() const throw() {
+unsigned int Pipe::getBufferSize() const noexcept {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   DWORD result = 0;
   GetNamedPipeInfo(fd->getHandle(), 0, &result, 0, 0); // TAG: separate input and output buffer sizes

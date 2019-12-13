@@ -234,7 +234,7 @@ Uri& Uri::operator=(const Uri& assign) noexcept
   return *this;
 }
 
-bool Uri::isRelative() const throw()
+bool Uri::isRelative() const noexcept
 {
   return !path.getLength() || path.startsWith("/");
 }
@@ -422,27 +422,27 @@ void Uri::parse(const String& uri, bool strict) throw(UriException, MemoryExcept
   }
 }
 
-String Uri::getScheme() const throw()
+String Uri::getScheme() const noexcept
 {
   return scheme;
 }
 
-String Uri::getUser() const throw()
+String Uri::getUser() const noexcept
 {
   return user;
 }
 
-String Uri::getPassword() const throw()
+String Uri::getPassword() const noexcept
 {
   return password;
 }
 
-String Uri::getHost() const throw()
+String Uri::getHost() const noexcept
 {
   return host;
 }
 
-String Uri::getPort() const throw()
+String Uri::getPort() const noexcept
 {
   return port;
 }

@@ -36,7 +36,7 @@ public:
     pulled from the stream). This always returns false until pushEnd() has been
     invoked.
   */
-  virtual bool atEnd() const throw() = 0;
+  virtual bool atEnd() const noexcept = 0;
 
   virtual ~Inflater() {
   }

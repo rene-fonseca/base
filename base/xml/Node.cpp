@@ -25,12 +25,12 @@ _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 bool Node::isSupported(
     const String& feature,
-    const String& version) const throw() {
+    const String& version) const noexcept {
   // TAG: fixme
   return false;
 }
 
-String Node::getName() const throw() {
+String Node::getName() const noexcept {
 #if defined(_COM_AZURE_DEV__BASE__XML_XMLSOFT_ORG)
   xmlNode* node = (xmlNode*)context;
   switch (node->type) {
@@ -161,7 +161,7 @@ void Node::setValue(const String& value) throw(DOMException) {
 #endif
 }
 
-Node::NodeType Node::getType() const throw() {
+Node::NodeType Node::getType() const noexcept {
 #if defined(_COM_AZURE_DEV__BASE__XML_XMLSOFT_ORG)
   xmlNode* node = (xmlNode*)context;
   switch (node->type) {
@@ -203,7 +203,7 @@ Node::NodeType Node::getType() const throw() {
 #endif
 }
 
-Node Node::getParent() const throw() {
+Node Node::getParent() const noexcept {
 #if defined(_COM_AZURE_DEV__BASE__XML_XMLSOFT_ORG)
   xmlNode* node = (xmlNode*)context;
   
@@ -224,7 +224,7 @@ Node Node::getParent() const throw() {
 #endif
 }
 
-Node Node::getPreviousSibling() const throw() {
+Node Node::getPreviousSibling() const noexcept {
 #if defined(_COM_AZURE_DEV__BASE__XML_XMLSOFT_ORG)
   xmlNode* node = (xmlNode*)context;
   switch (node->type) {
@@ -238,7 +238,7 @@ Node Node::getPreviousSibling() const throw() {
 #endif
 }
 
-Node Node::getNextSibling() const throw() {
+Node Node::getNextSibling() const noexcept {
 #if defined(_COM_AZURE_DEV__BASE__XML_XMLSOFT_ORG)
   xmlNode* node = (xmlNode*)context;
   switch (node->type) {
@@ -252,7 +252,7 @@ Node Node::getNextSibling() const throw() {
 #endif
 }
 
-Node Node::getFirstChild() const throw() {
+Node Node::getFirstChild() const noexcept {
 #if defined(_COM_AZURE_DEV__BASE__XML_XMLSOFT_ORG)
   xmlNode* node = (xmlNode*)context;
   
@@ -279,7 +279,7 @@ Node Node::getFirstChild() const throw() {
 #endif
 }
 
-Node Node::getLastChild() const throw() {
+Node Node::getLastChild() const noexcept {
 #if defined(_COM_AZURE_DEV__BASE__XML_XMLSOFT_ORG)
   xmlNode* node = (xmlNode*)context;
   
@@ -634,7 +634,7 @@ Node Node::replaceChild(Node newChild, Node oldChild) throw(DOMException) {
   return oldChild;
 }
 
-bool Node::hasChildNodes() const throw() {
+bool Node::hasChildNodes() const noexcept {
 #if defined(_COM_AZURE_DEV__BASE__XML_XMLSOFT_ORG)
   const xmlNode* node = (const xmlNode*)context;
   
@@ -661,7 +661,7 @@ bool Node::hasChildNodes() const throw() {
 #endif
 }
 
-String Node::getNamespaceURI() const throw() {
+String Node::getNamespaceURI() const noexcept {
 #if defined(_COM_AZURE_DEV__BASE__XML_XMLSOFT_ORG)
   xmlNode* node = (xmlNode*)context;
   if (node->ns &&
@@ -720,7 +720,7 @@ void Node::setPrefix(const String& prefix) throw(DOMException) {
 #endif
 }
 
-String Node::getLocalName() const throw() {
+String Node::getLocalName() const noexcept {
 #if defined(_COM_AZURE_DEV__BASE__XML_XMLSOFT_ORG)
   xmlNode* node = (xmlNode*)context;
   if (/*node->ns &&*/ // TAG: should ns be ignored
@@ -735,7 +735,7 @@ String Node::getLocalName() const throw() {
 #endif
 }
 
-bool Node::hasAttributes() const throw() {
+bool Node::hasAttributes() const noexcept {
 #if defined(_COM_AZURE_DEV__BASE__XML_XMLSOFT_ORG)
   xmlNode* node = (xmlNode*)context;
   return (node->type == XML_ELEMENT_NODE) && (node->properties != 0);
@@ -747,7 +747,7 @@ bool Node::hasAttributes() const throw() {
 // remove()???
 // unlink()???
 
-bool Node::isUnlinked() const throw() {
+bool Node::isUnlinked() const noexcept {
 #if defined(_COM_AZURE_DEV__BASE__XML_XMLSOFT_ORG)
   return NodeImpl::isUnlinked(*this);
 #else
@@ -755,7 +755,7 @@ bool Node::isUnlinked() const throw() {
 #endif
 }
 
-bool Node::hasSameOwner(const Node& _node) const throw() {
+bool Node::hasSameOwner(const Node& _node) const noexcept {
 #if defined(_COM_AZURE_DEV__BASE__XML_XMLSOFT_ORG)
   const xmlNode* a = (const xmlNode*)getContext();
   const xmlNode* b = (const xmlNode*)_node.getContext();
@@ -765,7 +765,7 @@ bool Node::hasSameOwner(const Node& _node) const throw() {
 #endif
 }
 
-bool Node::isAncestor(const Node& _child) const throw() {
+bool Node::isAncestor(const Node& _child) const noexcept {
 #if defined(_COM_AZURE_DEV__BASE__XML_XMLSOFT_ORG)
   const xmlNode* node = (const xmlNode*)getContext();
   const xmlNode* child  = (const xmlNode*)_child.getContext();

@@ -125,7 +125,7 @@ SerialPort::SerialPort(const String& _name) throw(CommunicationsException)
 #endif // flavor
 }
 
-String SerialPort::getName() const throw()
+String SerialPort::getName() const noexcept
 {
   return name;
 }

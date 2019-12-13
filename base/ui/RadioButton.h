@@ -48,7 +48,7 @@ public:
   /**
     Returns the background color.
   */
-  inline Color getBackground() const throw() {
+  inline Color getBackground() const noexcept {
     return background;
   }
 
@@ -60,7 +60,7 @@ public:
   /**
     Returns the text color.
   */
-  inline Color getTextColor() const throw() {
+  inline Color getTextColor() const noexcept {
     return textColor;
   }
 

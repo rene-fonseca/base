@@ -43,7 +43,7 @@ public:
   
   Slider(Window& owner) throw(UserInterfaceException);
   
-  inline int getOffset() const throw() {
+  inline int getOffset() const noexcept {
     return offset;
   }
   

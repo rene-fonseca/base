@@ -53,7 +53,7 @@ public:
   /**
     Returns the current number of registered skeletons.
   */
-  inline unsigned int getNumberOfSkeletons() const throw()
+  inline unsigned int getNumberOfSkeletons() const noexcept
   {
     return skeletons.getSize();
   }
@@ -62,7 +62,7 @@ public:
     Returns true if the skeleton with the specified fully qualified name has been
     registered.
   */
-  inline bool hasSkeleton(const String& name) const throw()
+  inline bool hasSkeleton(const String& name) const noexcept
   {
     return names.hasKey(name);
   }
@@ -71,7 +71,7 @@ public:
     Returns true if the skeleton with the specified identifier has been
     registered.
   */
-  inline bool hasSkeleton(const OrbReference& reference) const throw()
+  inline bool hasSkeleton(const OrbReference& reference) const noexcept
   {
     return skeletons.hasKey(reference);
   }

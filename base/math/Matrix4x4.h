@@ -251,7 +251,7 @@ public:
     return *this;
   }
 
-  inline TYPE getAt(unsigned int row, unsigned int column) const throw()
+  inline TYPE getAt(unsigned int row, unsigned int column) const noexcept
   {
     // TAG: check row and column
     return elements[row][column];
@@ -269,12 +269,12 @@ public:
     return reinterpret_cast<TYPE*>(&elements);
   }
 
-  inline const TYPE* getElements() const throw()
+  inline const TYPE* getElements() const noexcept
   {
     return reinterpret_cast<const TYPE*>(&elements);
   }
 
-  bool isEqual(const Matrix4x4& value) const throw()
+  bool isEqual(const Matrix4x4& value) const noexcept
   {
     return equal(elements, value.elements, 4 * 4);
   }
@@ -282,7 +282,7 @@ public:
   /**
     Returns true if the length of this vector is zero.
   */
-  bool isZero() const throw() {
+  bool isZero() const noexcept {
     return !findPredicate(
       elements,
       4 * 4,
@@ -290,7 +290,7 @@ public:
     );
   }
 
-  bool isDiagonal() const throw() {
+  bool isDiagonal() const noexcept {
     const TYPE zero(0);
     return (elements[0][1] == zero) && (elements[0][2] == zero) &&
       (elements[0][3] == zero) && (elements[1][0] == zero) &&
@@ -300,7 +300,7 @@ public:
       (elements[3][1] == zero) && (elements[3][2] == zero);
   }
   
-  bool isSymmetric() const throw() {
+  bool isSymmetric() const noexcept {
     return (elements[0][1] == elements[1][0]) &&
       (elements[0][2] == elements[2][0]) &&
       (elements[0][3] == elements[3][0]) &&
@@ -312,7 +312,7 @@ public:
   /**
     Returns the L1-norm of the matrix.
   */
-  TYPE getL1Norm() const throw() {
+  TYPE getL1Norm() const noexcept {
     AbsoluteSum<TYPE> absoluteSum;
     forEach(elements, 4 * 4, absoluteSum);
     return absoluteSum.getResult();
@@ -321,7 +321,7 @@ public:
   /**
     Returns the square of the Hilbert-Schmidt norm of the matrix.
   */
-  TYPE getSquareHSNorm() const throw() {
+  TYPE getSquareHSNorm() const noexcept {
     SquareSum<TYPE> squareSum;
     forEach(elements, 4 * 4, squareSum);
     return squareSum.getResult();
@@ -330,7 +330,7 @@ public:
   /**
     Returns the infinity norm of the matrix.
   */
-  TYPE getInfinityNorm() const throw() {
+  TYPE getInfinityNorm() const noexcept {
     Maximum<TYPE> maximum;
     forEach(elements, 4 * 4, maximum);
     return maximum.getResult();
@@ -339,7 +339,7 @@ public:
   /**
     Returns the determinant of the matrix.
   */
-  TYPE getDeterminant() const throw() {
+  TYPE getDeterminant() const noexcept {
     const TYPE* src = elements;
     
     // 2x2 determinants for the last two rows
@@ -428,14 +428,14 @@ public:
   /**
     Unary plus.
   */
-  Matrix4x4 plus() const throw() {
+  Matrix4x4 plus() const noexcept {
     return Matrix4x4(*this);
   }
 
   /**
     Unary minus.
   */
-  Matrix4x4 minus() const throw() {
+  Matrix4x4 minus() const noexcept {
     return Matrix4x4(*this).negate();
   }
 
@@ -508,7 +508,7 @@ public:
     Returns an estimate for the deviation from the zero matrix. The estimate is
     calculated as the sum of all elements of the L1-norm.
   */
-  TYPE deviationFromZero() const throw() {
+  TYPE deviationFromZero() const noexcept {
     AbsoluteSum<TYPE> absoluteSum;
     forEach(getElements(), 4 * 4, absoluteSum);
     return absoluteSum.getResult();
@@ -519,7 +519,7 @@ public:
     is calulated as the sum of all elements of the L1-norm of the difference
     between this matrix and the identity matrix.
   */
-  TYPE deviationFromIdentity() const throw() {
+  TYPE deviationFromIdentity() const noexcept {
     TYPE result = 0;
     const TYPE* src = getElements();
     result += absolute(*src - 1);
@@ -595,7 +595,7 @@ public:
 
     @param vector Vector to be compared.
   */
-  inline bool operator==(const Matrix4x4& value) const throw() {
+  inline bool operator==(const Matrix4x4& value) const noexcept {
     return isEqual(value);
   }
 
@@ -638,14 +638,14 @@ public:
   /**
     Unary plus.
   */
-  inline Matrix4x4 operator+() const throw() {
+  inline Matrix4x4 operator+() const noexcept {
     return plus();
   }
 
   /**
     Unary minus.
   */
-  inline Matrix4x4 operator-() const throw() {
+  inline Matrix4x4 operator-() const noexcept {
     return minus();
   }
 };

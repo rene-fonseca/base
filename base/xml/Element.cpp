@@ -20,7 +20,7 @@
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
-String Element::getTagName() const throw() {
+String Element::getTagName() const noexcept {
 #if defined(_COM_AZURE_DEV__BASE__XML_XMLSOFT_ORG)
   xmlNode* node = (xmlNode*)getContext();
   if (node->ns && node->ns->prefix) {
@@ -34,7 +34,7 @@ String Element::getTagName() const throw() {
 #endif
 }
 
-bool Element::hasAttributes() const throw() {
+bool Element::hasAttributes() const noexcept {
 #if defined(_COM_AZURE_DEV__BASE__XML_XMLSOFT_ORG)
   xmlNode* node = (xmlNode*)getContext();
   return node->properties;
@@ -52,7 +52,7 @@ Attribute Element::getFirstAttribute() noexcept {
 #endif
 }
 
-bool Element::hasAttribute(const char* name) const throw() {
+bool Element::hasAttribute(const char* name) const noexcept {
 #if defined(_COM_AZURE_DEV__BASE__XML_XMLSOFT_ORG)
   xmlNode* node = (xmlNode*)getContext();
   xmlAttr* attribute = xmlHasProp(
@@ -182,7 +182,7 @@ Attribute Element::setAttributeNodeNS(
 }
 
 bool Element::hasAttributeNS(
-  const char* namespaceURI, const char* localName) const throw() {
+  const char* namespaceURI, const char* localName) const noexcept {
 #if defined(_COM_AZURE_DEV__BASE__XML_XMLSOFT_ORG)
   xmlNode* node = (xmlNode*)getContext();
   xmlAttr* attribute = xmlHasNsProp(

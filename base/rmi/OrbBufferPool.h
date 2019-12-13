@@ -147,14 +147,14 @@ public:
   /**
     Returns the elements of the current buffer for non-modifying access.
   */
-  inline const uint8* getElements() const throw() {
+  inline const uint8* getElements() const noexcept {
     return last->getElements();
   }
   
   /**
     Returns the size of the current buffer.
   */
-  inline unsigned int getSize() const throw() {
+  inline unsigned int getSize() const noexcept {
     return last->getSize();
   }
   

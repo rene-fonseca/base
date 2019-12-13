@@ -37,7 +37,7 @@ public:
   /**
     Returns true if the bus has been reset since last check.
   */
-  virtual bool hasBeenReset() const throw() = 0;
+  virtual bool hasBeenReset() const noexcept = 0;
 
   /**
     Acknowledges the bus reset.
@@ -75,12 +75,12 @@ public:
   /**
     Returns the physical id of the adapter.
   */
-  virtual unsigned int getLocalId() const throw() = 0;
+  virtual unsigned int getLocalId() const noexcept = 0;
 
   /**
     Returns the number of nodes on the local bus.
   */
-  virtual unsigned int getNumberOfNodes() const throw() = 0;
+  virtual unsigned int getNumberOfNodes() const noexcept = 0;
   
   /**
     Returns the current error status.

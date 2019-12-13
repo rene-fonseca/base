@@ -99,21 +99,21 @@ public:
   /**
     Returns true if the colors are equal.
   */
-  inline bool operator==(const Color color) const throw() {
+  inline bool operator==(const Color color) const noexcept {
     return value == color.value;
   }
   
   /**
     Returns true if the colors are unequal.
   */
-  inline bool operator!=(const Color color) const throw() {
+  inline bool operator!=(const Color color) const noexcept {
     return value != color.value;
   }
 
   /**
     Returns the red component.
   */
-  inline uint8 getRed() const throw() {
+  inline uint8 getRed() const noexcept {
     return static_cast<uint8>(value >> 0);
   }
   
@@ -127,7 +127,7 @@ public:
   /**
     Returns the green component.
   */
-  inline uint8 getGreen() const throw() {
+  inline uint8 getGreen() const noexcept {
     return static_cast<uint8>(value >> 8);
   }
 
@@ -141,7 +141,7 @@ public:
   /**
     Returns the blue component.
   */
-  inline uint8 getBlue() const throw() {
+  inline uint8 getBlue() const noexcept {
     return static_cast<uint8>(value >> 16);
   }
 
@@ -155,7 +155,7 @@ public:
   /**
     Returns the gray value of the color (i.e. (red + green + blue + 1)/3).
   */
-  inline unsigned int getGray() const throw() {
+  inline unsigned int getGray() const noexcept {
     return (static_cast<unsigned int>(value >> 16) +
             static_cast<unsigned int>(value >> 8) +
             static_cast<unsigned int>(value >> 0) + 1)/3;
@@ -173,14 +173,14 @@ public:
   /**
     Returns the color as a value.
   */
-  inline uint32 getValue() const throw() {
+  inline uint32 getValue() const noexcept {
     return value;
   }
   
   /**
     Returns the color as a value.
   */
-  inline operator uint32() const throw() {
+  inline operator uint32() const noexcept {
     return value;
   }
 } _COM_AZURE_DEV__BASE__PACKED;

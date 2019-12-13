@@ -45,7 +45,7 @@ public:
   /**
     Returns the type of the field.
   */
-  inline IDLType getType() const throw() {
+  inline IDLType getType() const noexcept {
     return type;
   }
   

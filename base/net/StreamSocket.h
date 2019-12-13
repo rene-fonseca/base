@@ -121,28 +121,28 @@ public:
   /**
     Returns the IP address to which the socket is connected.
   */
-  inline const InetAddress& getAddress() const throw() {
+  inline const InetAddress& getAddress() const noexcept {
     return Socket::getAddress();
   }
 
   /**
     Returns the remote port to which the socket is connected.
   */
-  inline unsigned short getPort() const throw() {
+  inline unsigned short getPort() const noexcept {
     return Socket::getPort();
   }
 
   /**
     Returns the local IP address to which the socket is bound.
   */
-  inline const InetAddress& getLocalAddress() const throw() {
+  inline const InetAddress& getLocalAddress() const noexcept {
     return Socket::getLocalAddress();
   }
 
   /**
     Returns the local port to which the socket is bound.
   */
-  inline unsigned short getLocalPort() const throw() {
+  inline unsigned short getLocalPort() const noexcept {
     return Socket::getLocalPort();
   }
 
@@ -335,7 +335,7 @@ public:
   /**
     Returns true if the socket is valid.
   */
-  inline bool isValid() const throw() {
+  inline bool isValid() const noexcept {
     return Socket::isValid();
   }
 

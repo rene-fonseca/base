@@ -131,7 +131,7 @@ private:
 //     }
   }
 
-//   inline bool getObjectReference(Reference<OrbConnection>& connection, const String& name) const throw() {
+//   inline bool getObjectReference(Reference<OrbConnection>& connection, const String& name) const noexcept {
 //     // make response
 //     skeletons.hasSkeleton(name);
 //     // write(reference);
@@ -153,11 +153,11 @@ private:
       : connection(copy.connection), reference(copy.reference) {
     }
     
-    inline Reference<OrbConnection> getConnection() const throw() {
+    inline Reference<OrbConnection> getConnection() const noexcept {
       return connection;
     }
     
-    inline OrbReference getReference() const throw() {
+    inline OrbReference getReference() const noexcept {
       return reference;
     }
   };
@@ -193,21 +193,21 @@ public:
   /**
     Returns the current number of registered encoding schemes.
   */
-  inline unsigned int getNumberOfEncodings() const throw() {
+  inline unsigned int getNumberOfEncodings() const noexcept {
     return encodings.getSize();
   }
   
   /**
     Returns the current number of registered schems.
   */
-  inline unsigned int getNumberOfSchemes() const throw() {
+  inline unsigned int getNumberOfSchemes() const noexcept {
     return schemes.getSize();
   }
   
   /**
     Returns the current number of registered factories.
   */
-  inline unsigned int getNumberOfFactories() const throw() {
+  inline unsigned int getNumberOfFactories() const noexcept {
     return factories.getSize();
   }
   

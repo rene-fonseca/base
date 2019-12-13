@@ -20,7 +20,7 @@
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
-String ProcessingInstruction::getTarget() const throw() {
+String ProcessingInstruction::getTarget() const noexcept {
 #if defined(_COM_AZURE_DEV__BASE__XML_XMLSOFT_ORG)
   const xmlNode* node = (const xmlNode*)getContext();
   return NativeString((const char*)node->name);
@@ -29,7 +29,7 @@ String ProcessingInstruction::getTarget() const throw() {
 #endif
 }
 
-String ProcessingInstruction::getData() const throw() {
+String ProcessingInstruction::getData() const noexcept {
 #if defined(_COM_AZURE_DEV__BASE__XML_XMLSOFT_ORG)
   const xmlNode* node = (const xmlNode*)getContext();
   return NativeString((const char*)node->content);

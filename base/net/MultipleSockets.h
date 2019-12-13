@@ -83,7 +83,7 @@ public:
   /**
     Returns the current number of selected sockets.
   */
-  inline unsigned int getSelected() const throw() {
+  inline unsigned int getSelected() const noexcept {
     return numberOfSelected;
   }
   

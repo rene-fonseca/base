@@ -52,7 +52,7 @@ public:
   /**
     Returns the text mode.
   */
-  inline TextMode getTextMode() const throw() {
+  inline TextMode getTextMode() const noexcept {
     return textMode;
   }
 
@@ -64,7 +64,7 @@ public:
   /**
     Returns the current value.
   */
-  inline unsigned int getCurrentValue() const throw() {
+  inline unsigned int getCurrentValue() const noexcept {
     return currentValue;
   }
 
@@ -76,7 +76,7 @@ public:
   /**
     Returns the maximum value.
   */
-  inline unsigned int getMaximumValue() const throw() {
+  inline unsigned int getMaximumValue() const noexcept {
     return maximumValue;
   }
 

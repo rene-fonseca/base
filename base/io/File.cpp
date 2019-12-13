@@ -277,7 +277,7 @@ void File::close() throw(FileException) {
   fd = FileHandle::invalid; // invalidate
 }
 
-bool File::isClosed() const throw() {
+bool File::isClosed() const noexcept {
   return !fd->isValid();
 }
 

@@ -105,7 +105,7 @@ public:
   /**
     Returns false if the objects are different.
   */
-  inline bool operator!=(const MimeType& value) const throw()
+  inline bool operator!=(const MimeType& value) const noexcept
   {
     return !(operator==(value));
   }

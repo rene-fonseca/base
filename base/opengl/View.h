@@ -70,7 +70,7 @@ public:
   /**
     Returns the offset of the region.
   */
-  inline const Point2D& getOffset() const throw()
+  inline const Point2D& getOffset() const noexcept
   {
     return offset;
   }
@@ -78,7 +78,7 @@ public:
   /**
     Returns the dimension of the region.
   */
-  inline const Dimension& getDimension() const throw()
+  inline const Dimension& getDimension() const noexcept
   {
     return dimension;
   }
@@ -102,7 +102,7 @@ public:
   /**
     Returns true if the region spans elements (i.e. the dimension is proper).
   */
-  inline bool isProper() const throw()
+  inline bool isProper() const noexcept
   {
     return dimension.isProper();
   }

@@ -148,21 +148,21 @@ public:
   /**
     Returns the offset within the file of the mapped region.
   */
-  inline long long getOffset() const throw() {
+  inline long long getOffset() const noexcept {
     return sharedMemory->getOffset();
   }
 
   /**
     Returns the size of the map.
   */
-  inline unsigned int getSize() const throw() {
+  inline unsigned int getSize() const noexcept {
     return sharedMemory->getSize();
   }
   
   /**
     Returns the region of the mapped.
   */
-  inline const FileRegion& getRegion() const throw() {
+  inline const FileRegion& getRegion() const noexcept {
     return sharedMemory->getRegion();
   }
   
@@ -176,7 +176,7 @@ public:
   /**
     Returns the shared bytes for non-modifying access.
   */
-  inline const uint8* getBytes() const throw() {
+  inline const uint8* getBytes() const noexcept {
     return sharedMemory->getBytes();
   }
   

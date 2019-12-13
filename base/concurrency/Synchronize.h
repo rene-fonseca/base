@@ -82,7 +82,7 @@ _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
   public:
     typedef DefaultLock LOCK;
 
-    void myFirstMethod() const throw() {
+    void myFirstMethod() const noexcept {
       SynchronizeShared();
       // do something as long as it doesn't modify the object
     }

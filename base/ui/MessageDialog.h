@@ -74,7 +74,7 @@ public:
   /**
     Returns the message category.
   */
-  inline Category getCategory() const throw() {
+  inline Category getCategory() const noexcept {
     return category;
   }
 
@@ -88,7 +88,7 @@ public:
   /**
     Returns the title of the dialog window.
   */
-  inline const String& getTitle() const throw() {
+  inline const String& getTitle() const noexcept {
     return title;
   }
 
@@ -102,7 +102,7 @@ public:
   /**
     Returns the message.
   */
-  inline const String& getMessage() const throw() {
+  inline const String& getMessage() const noexcept {
     return message;
   }
   

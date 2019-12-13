@@ -78,31 +78,31 @@ public:
   DOMEvent() noexcept {
   }
 
-  inline const String& getType() const throw() {
+  inline const String& getType() const noexcept {
     return type;
   }
 
-  inline EventTarget* getTarget() const throw() {
+  inline EventTarget* getTarget() const noexcept {
     return target;
   }
   
-  inline EventTarget* getCurrentTarget() const throw() {
+  inline EventTarget* getCurrentTarget() const noexcept {
     return currentTarget;
   }
   
-  inline PhaseType getPhase() const throw() {
+  inline PhaseType getPhase() const noexcept {
     return phase;
   }
 
-  inline bool getBubbles() const throw() {
+  inline bool getBubbles() const noexcept {
     return bubbles;
   }
 
-  inline bool isCancelable() const throw() {
+  inline bool isCancelable() const noexcept {
     return cancelable;
   }
 
-  inline Date getTimeStamp() const throw() {
+  inline Date getTimeStamp() const noexcept {
     return timeStamp;
   }
 

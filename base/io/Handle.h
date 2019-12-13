@@ -57,14 +57,14 @@ public:
   /**
     Returns the handle.
   */
-  inline OperatingSystem::Handle getHandle() const throw() {
+  inline OperatingSystem::Handle getHandle() const noexcept {
     return handle;
   }
 
   /**
     Returns true if the handle is valid.
   */
-  inline bool isValid() const throw() {
+  inline bool isValid() const noexcept {
     return handle != OperatingSystem::INVALID_HANDLE;
   }
 

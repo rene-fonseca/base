@@ -27,7 +27,7 @@ WaitForObjects::WaitForObjects() noexcept
 {
 }
 
-unsigned int WaitForObjects::getMaximumNumberOfObjects() const throw()
+unsigned int WaitForObjects::getMaximumNumberOfObjects() const noexcept
 {
   return MAXIMUM_WAIT_OBJECTS;
 }
@@ -54,7 +54,7 @@ void WaitForObjects::deregisterAll() noexcept
   handles.removeAll();
 }
   
-Object* WaitForObjects::waitForAny() const throw()
+Object* WaitForObjects::waitForAny() const noexcept
 {
   Profiler::WaitTask profile("WaitForObjects::waitForAny()");
   do {
@@ -64,7 +64,7 @@ Object* WaitForObjects::waitForAny() const throw()
   return objects.getElements[result - WAIT_OBJECT_0];
 }
   
-Object* WaitForObjects::waitForAny(unsigned int timeout) const throw()
+Object* WaitForObjects::waitForAny(unsigned int timeout) const noexcept
 {
   Profiler::WaitTask profile("WaitForObjects::waitForAny()");
   do {
@@ -77,7 +77,7 @@ Object* WaitForObjects::waitForAny(unsigned int timeout) const throw()
   }
 }
 
-void WaitForObjects::waitForAll() const throw()
+void WaitForObjects::waitForAll() const noexcept
 {
   Profiler::WaitTask profile("WaitForObjects::waitForAll()");
   DWORD result = 0;
@@ -86,7 +86,7 @@ void WaitForObjects::waitForAll() const throw()
   } while (result == WAIT_IO_COMPLETION);
 }
   
-bool WaitForObjects::waitForAll(unsigned int timeout) const throw()
+bool WaitForObjects::waitForAll(unsigned int timeout) const noexcept
 {
   Profiler::WaitTask profile("WaitForObjects::waitForAll()");
   DWORD result = 0;

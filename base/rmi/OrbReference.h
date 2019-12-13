@@ -60,7 +60,7 @@ public:
   /**
     Returns true if the objects are equal.
   */
-  inline bool operator==(const OrbReference& compare) const throw()
+  inline bool operator==(const OrbReference& compare) const noexcept
   {
     return id == compare.id;
   }
@@ -68,7 +68,7 @@ public:
   /**
     Returns true if the objects are non-equal.
   */
-  inline bool operator!=(const OrbReference& compare) const throw()
+  inline bool operator!=(const OrbReference& compare) const noexcept
   {
     return id != compare.id;
   }
@@ -76,7 +76,7 @@ public:
   /**
     Returns the skeleton reference value.
   */
-  inline uint64 getId() const throw()
+  inline uint64 getId() const noexcept
   {
     return id;
   }

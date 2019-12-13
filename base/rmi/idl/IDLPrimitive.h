@@ -58,7 +58,7 @@ public:
   /**
     Returns the primitive type.
   */
-  inline Type getType() const throw() {
+  inline Type getType() const noexcept {
     return type;
   }
   

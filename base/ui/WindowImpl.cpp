@@ -941,7 +941,7 @@ WindowImpl::WindowImpl(
   );
 }
 
-Position WindowImpl::getBindingOffset(Binding binding) const throw()
+Position WindowImpl::getBindingOffset(Binding binding) const noexcept
 {
   const Position position = getPosition();
   const Dimension dimension = getDimension();

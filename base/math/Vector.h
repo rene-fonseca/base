@@ -89,14 +89,14 @@ protected:
   /**
     Returns the elements of the vector for read-only.
   */
-  inline const TYPE* getElements() const throw() {
+  inline const TYPE* getElements() const noexcept {
     return elements->getElements();
   }
 
   /**
     Returns the elements of the vector for read-only.
   */
-  inline const TYPE* getReadOnlyElements() const throw() {
+  inline const TYPE* getReadOnlyElements() const noexcept {
     return elements->getElements();
   }
 
@@ -109,7 +109,7 @@ protected:
 public:
 
   /** Gets the size of the vector. */
-  inline unsigned int getSize() const throw() {
+  inline unsigned int getSize() const noexcept {
     return elements->getSize();
   }
 public:
@@ -177,14 +177,14 @@ public:
   /**
     Returns the first element of the allocator as a non-modifying array.
   */
-  inline ReadIterator getBeginIterator() const throw() {
+  inline ReadIterator getBeginIterator() const noexcept {
     return elements->getBeginIterator();
   }
 
   /**
     Returns the end of the allocator as a non-modifying array.
   */
-  inline ReadIterator getEndIterator() const throw() {
+  inline ReadIterator getEndIterator() const noexcept {
     return elements->getEndIterator();
   }
 
@@ -198,7 +198,7 @@ public:
   /**
     Returns a non-modifying enumerator of the array.
   */
-  inline ReadEnumerator getReadEnumerator() const throw() {
+  inline ReadEnumerator getReadEnumerator() const noexcept {
     return elements->getReadEnumerator();
   }
 
@@ -349,14 +349,14 @@ public:
   /**
     Unary plus.
   */
-  inline Vector operator+() const throw() {
+  inline Vector operator+() const noexcept {
     return plus();
   }
 
   /**
     Unary minus.
   */
-  inline Vector operator-() const throw() {
+  inline Vector operator-() const noexcept {
     return minus();
   }
 

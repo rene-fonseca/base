@@ -20,7 +20,7 @@
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
-ElementDecl::ValueType ElementDecl::getValueType() const throw() {
+ElementDecl::ValueType ElementDecl::getValueType() const noexcept {
 #if defined(_COM_AZURE_DEV__BASE__XML_XMLSOFT_ORG)
   xmlElement* element = (xmlElement*)getContext();
   switch (element->etype) {
@@ -40,7 +40,7 @@ ElementDecl::ValueType ElementDecl::getValueType() const throw() {
 #endif
 }
 
-bool ElementDecl::hasAttributes() const throw() {
+bool ElementDecl::hasAttributes() const noexcept {
 #if defined(_COM_AZURE_DEV__BASE__XML_XMLSOFT_ORG)
   xmlElement* element = (xmlElement*)getContext();
   return element->attributes;

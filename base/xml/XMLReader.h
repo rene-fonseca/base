@@ -356,22 +356,22 @@ public:
   /**
     Returns the current content handler.
   */
-  virtual ContentHandler* getContentHandler() const throw() = 0;
+  virtual ContentHandler* getContentHandler() const noexcept = 0;
   
   /**
     Returns the current DTD handler.
   */
-  virtual DTDHandler* getDTDHandler() const throw() = 0;
+  virtual DTDHandler* getDTDHandler() const noexcept = 0;
   
   /**
     Returns the current entity resolver.
   */
-  virtual EntityResolver* getEntityResolver() const throw() = 0;
+  virtual EntityResolver* getEntityResolver() const noexcept = 0;
   
   /**
     Returns the current error handler.
   */
-  virtual ErrorHandler* getErrorHandler() const throw() = 0;
+  virtual ErrorHandler* getErrorHandler() const noexcept = 0;
   
   /**
     Registers a content event handler.
@@ -396,7 +396,7 @@ public:
   /**
     Returns the validation flag.
   */
-  virtual bool getValidation() const throw() = 0;
+  virtual bool getValidation() const noexcept = 0;
 
   /**
     Sets the validation flag.
@@ -406,7 +406,7 @@ public:
   /**
     Returns true if the document is a standalone document.
   */
-  virtual bool isStandalone() const throw() = 0;
+  virtual bool isStandalone() const noexcept = 0;
   
   /**
     Terminates the parsing.

@@ -30,7 +30,7 @@ protected:
   }
 public:
   
-  virtual AsynchronousReadCompletion getCompletion() const throw() = 0;
+  virtual AsynchronousReadCompletion getCompletion() const noexcept = 0;
 
   virtual ~AsynchronousReadContext();
 };

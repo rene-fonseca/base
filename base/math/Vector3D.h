@@ -78,7 +78,7 @@ public:
   /**
     Returns the square of the modulus of the vector.
   */
-  inline TYPE getSqrModulus() const throw()
+  inline TYPE getSqrModulus() const noexcept
   {
     return x*x + y*y + z*z;
   }
@@ -86,7 +86,7 @@ public:
   /**
     Returns the modulus of the vector.
   */
-  inline TYPE getModulus() const throw()
+  inline TYPE getModulus() const noexcept
   {
     return Math::sqrt(getSqrModulus());
   }
@@ -94,7 +94,7 @@ public:
   /**
     Returns the angle of this vector in the X-Y plane.
   */
-  inline TYPE getXYAngle() const throw()
+  inline TYPE getXYAngle() const noexcept
   {
     return Math::atan2(y, x);
   }
@@ -102,7 +102,7 @@ public:
   /**
     Returns the angle between this vector and the X-Y plane.
   */
-  inline TYPE getZAngle() const throw()
+  inline TYPE getZAngle() const noexcept
   {
     return Math::atan2(z, getModulus());
   }
@@ -110,7 +110,7 @@ public:
   /**
     Returns the X coordinate of the vector.
   */
-  inline TYPE getX() const throw()
+  inline TYPE getX() const noexcept
   {
     return x;
   }
@@ -118,7 +118,7 @@ public:
   /**
     Returns the Y coordinate of the vector.
   */
-  inline TYPE getY() const throw()
+  inline TYPE getY() const noexcept
   {
     return y;
   }
@@ -126,7 +126,7 @@ public:
   /**
     Returns the Z coordinate of the vector.
   */
-  inline TYPE getZ() const throw()
+  inline TYPE getZ() const noexcept
   {
     return z;
   }
@@ -181,7 +181,7 @@ public:
   /**
     Returns true if the length of this vector is zero.
   */
-  inline bool isZero() const throw()
+  inline bool isZero() const noexcept
   {
     return (x == TYPE(0)) && (y == TYPE(0) && (z == TYPE(0)));
   }
@@ -189,7 +189,7 @@ public:
   /**
     Returns true if the length of this vector is greater zero.
   */
-  inline bool isProper() const throw()
+  inline bool isProper() const noexcept
   {
     return (x != TYPE(0)) || (y != TYPE(0) || (z != TYPE(0)));
   }
@@ -197,7 +197,7 @@ public:
   /**
     Returns true if this vector is orthogonal with the specified vector.
   */
-  inline bool isOrthogonal(const Vector3D& value) const throw()
+  inline bool isOrthogonal(const Vector3D& value) const noexcept
   {
     return dot(value) == 0;
   }
@@ -205,7 +205,7 @@ public:
   /**
     Returns true if this vector is parallel with the specified vector.
   */
-  inline bool isParallel(const Vector3D& value) const throw()
+  inline bool isParallel(const Vector3D& value) const noexcept
   {
     return cross(value).isZero();
   }
@@ -213,7 +213,7 @@ public:
   /**
     Unary plus.
   */
-  Vector3D plus() const throw()
+  Vector3D plus() const noexcept
   {
     return Vector3D(*this);
   }
@@ -221,7 +221,7 @@ public:
   /**
     Unary minus.
   */
-  Vector3D minus() const throw()
+  Vector3D minus() const noexcept
   {
     return Vector3D(*this).negate();
   }
@@ -284,7 +284,7 @@ public:
   /**
     Returns the dot product of this vector and the specified vector.
   */
-  inline TYPE dot(const Vector3D& value) const throw()
+  inline TYPE dot(const Vector3D& value) const noexcept
   {
     return x * value.x + y * value.y + z * value.z;
   }
@@ -292,7 +292,7 @@ public:
   /**
     Returns the cross product of this vector and the specified vector.
   */
-  Vector3D cross(const Vector3D& value) const throw()
+  Vector3D cross(const Vector3D& value) const noexcept
   {
     return Vector3D(y * value.z - z * value.y, z * value.x - x * value.z, x * value.y - y * value.x);
   }
@@ -300,7 +300,7 @@ public:
   /**
     Returns the angle between this vector and the specified vector.
   */
-  TYPE getAngle(const Vector3D& value) const throw()
+  TYPE getAngle(const Vector3D& value) const noexcept
   {
     // TAG: use return acos(temp);
     TYPE temp = dot(value)/Math::sqrt(getSqrModulus() * value.getSqrModulus());
@@ -310,7 +310,7 @@ public:
   /**
     Returns the projection of this vector onto the specified vector.
   */
-  Vector3D getProjection(const Vector3D& value) const throw()
+  Vector3D getProjection(const Vector3D& value) const noexcept
   {
     return value * dot(value)/value.getSqrModulus();
   }
@@ -323,7 +323,7 @@ public:
 
     @param vector Vector to be compared.
   */
-  inline bool operator==(const Vector3D& value) const throw()
+  inline bool operator==(const Vector3D& value) const noexcept
   {
     return (x == value.x) && (y == value.y) && (z == value.z);
   }
@@ -371,7 +371,7 @@ public:
   /**
     Unary plus.
   */
-  inline Vector3D operator+() const throw()
+  inline Vector3D operator+() const noexcept
   {
     return plus();
   }
@@ -379,7 +379,7 @@ public:
   /**
     Unary minus.
   */
-  inline Vector3D operator-() const throw()
+  inline Vector3D operator-() const noexcept
   {
     return minus();
   }

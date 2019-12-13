@@ -560,7 +560,7 @@ String InetAddress::getHostName(bool fullyQualified) const throw(HostNotFound) {
 #endif // _COM_AZURE_DEV__BASE__INET_IPV6
 }
 
-bool InetAddress::operator==(const InetAddress& compare) const throw()
+bool InetAddress::operator==(const InetAddress& compare) const noexcept
 {
   return (address.words[0] == compare.address.words[0]) &&
     (address.words[1] == compare.address.words[1]) &&
@@ -568,7 +568,7 @@ bool InetAddress::operator==(const InetAddress& compare) const throw()
     (address.words[3] == compare.address.words[3]);
 }
 
-bool InetAddress::isSynonymous(const InetAddress& eq) const throw()
+bool InetAddress::isSynonymous(const InetAddress& eq) const noexcept
 {
   if (family == eq.family) {
     return (address.words[3] == eq.address.words[3]) &&
@@ -606,7 +606,7 @@ bool InetAddress::isSynonymous(const InetAddress& eq) const throw()
   }
 }
 
-bool InetAddress::isUnspecified() const throw() {
+bool InetAddress::isUnspecified() const noexcept {
   // ok for both IPv4 and IPv6
   return (address.words[0] == 0) &&
     (address.words[1] == 0) &&
@@ -614,7 +614,7 @@ bool InetAddress::isUnspecified() const throw() {
     (address.words[3] == 0);
 }
 
-bool InetAddress::isLoopback() const throw() {
+bool InetAddress::isLoopback() const noexcept {
   if (family == IP_VERSION_6) {
     return (address.words[0] == 0) && (address.words[1] == 0) && (address.words[2] == 0) &&
       (address.words[3] == ByteOrder::toBigEndian<uint32>(0x00000001U));
@@ -623,12 +623,12 @@ bool InetAddress::isLoopback() const throw() {
   }
 }
 
-bool InetAddress::isMulticast() const throw() {
+bool InetAddress::isMulticast() const noexcept {
   return ((family == IP_VERSION_6) && (address.octets[0] == 0xff)) ||
     ((family == IP_VERSION_4) && ((address.octets[12] & 0xf0) == 0xe0)); // class d
 }
 
-bool InetAddress::isLinkLocal() const throw() {
+bool InetAddress::isLinkLocal() const noexcept {
   if (family == IP_VERSION_6) {
     return (address.words[0] & ByteOrder::toBigEndian<uint32>(0xffc00000U)) ==
       ByteOrder::toBigEndian<uint32>(0xfe800000U);
@@ -637,13 +637,13 @@ bool InetAddress::isLinkLocal() const throw() {
   }
 }
 
-bool InetAddress::isSiteLocal() const throw() {
+bool InetAddress::isSiteLocal() const noexcept {
   return (family == IP_VERSION_6) &&
     ((address.words[0] & ByteOrder::toBigEndian<uint32>(0xffc00000U)) ==
      ByteOrder::toBigEndian<uint32>(0xfec00000U));
 }
 
-bool InetAddress::isIPv4Mapped() const throw() {
+bool InetAddress::isIPv4Mapped() const noexcept {
   return (family == IP_VERSION_6) &&
     (address.words[0] == 0) &&
     (address.words[1] == 0) &&
@@ -651,7 +651,7 @@ bool InetAddress::isIPv4Mapped() const throw() {
     (address.words[3] != 0);
 }
 
-bool InetAddress::isIPv4Compatible() const throw() {
+bool InetAddress::isIPv4Compatible() const noexcept {
   // ok for both IPv4 and IPv6
   return (address.words[0] == 0) &&
     (address.words[1] == 0) &&
@@ -659,7 +659,7 @@ bool InetAddress::isIPv4Compatible() const throw() {
     (address.words[3] != 0);
 }
 
-unsigned int InetAddress::getType() const throw() {
+unsigned int InetAddress::getType() const noexcept {
   unsigned int result = (family == IP_VERSION_4) ? IPV4 : IPV6;
   if (family == IP_VERSION_4) {
     if (address.words[3] == 0) {

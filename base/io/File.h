@@ -331,7 +331,7 @@ public:
     bool nonblocking = false) throw(FileException);
 protected:
   
-  OperatingSystem::Handle getHandle() const throw()
+  OperatingSystem::Handle getHandle() const noexcept
   {
     return fd->getHandle();
   }

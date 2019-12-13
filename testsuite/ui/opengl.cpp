@@ -245,7 +245,7 @@ public:
     setScale(1);
   }
     
-  inline const Vector3D<double>& getTranslation() const throw() {
+  inline const Vector3D<double>& getTranslation() const noexcept {
     return translation;
   }
     
@@ -253,7 +253,7 @@ public:
     this->translation = translation;
   }
     
-  inline const Vector3D<double>& getRotation() const throw() {
+  inline const Vector3D<double>& getRotation() const noexcept {
     return rotation;
   }
     
@@ -261,7 +261,7 @@ public:
     this->rotation = rotation;
   }
     
-  inline double getScale() const throw() {
+  inline double getScale() const noexcept {
     return scale;
   }
       
@@ -521,7 +521,7 @@ public:
     }
 
     /** Maps the (x,y)-position into world coordinates. */
-    Vector3D<double> getPosition(const Position& position, const int viewPort[4]) const throw() {
+    Vector3D<double> getPosition(const Position& position, const int viewPort[4]) const noexcept {
       double tempX = static_cast<double>(position.getX() - viewPort[0])/static_cast<double>(viewPort[2]);
       double tempY = static_cast<double>(position.getY() - viewPort[1])/static_cast<double>(viewPort[3]);
       return Vector3D<double>(

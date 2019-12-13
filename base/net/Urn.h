@@ -88,7 +88,7 @@ public:
   /**
     Returns the namespace identifier.
   */
-  inline const String& getNID() const throw()
+  inline const String& getNID() const noexcept
   {
     return nid;
   }
@@ -96,7 +96,7 @@ public:
   /**
     Returns the namespace specific string.
   */
-  inline const String& getNSS() const throw()
+  inline const String& getNSS() const noexcept
   {
     return nss;
   }

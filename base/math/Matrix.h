@@ -169,11 +169,11 @@ protected:
   /**
     Returns the elements of the matrix for read-only.
   */
-  inline const TYPE* getReadOnlyElements() const throw() {
+  inline const TYPE* getReadOnlyElements() const noexcept {
     return elements->getElements();
   }
 
-  inline const TYPE* getElements() const throw() {
+  inline const TYPE* getElements() const noexcept {
     return elements->getElements();
   }
 
@@ -181,7 +181,7 @@ protected:
     Returns true if this matrix and the specified matrix have identical
     dimensions.
   */
-  inline bool isCompatible(const Matrix& value) const throw() {
+  inline bool isCompatible(const Matrix& value) const noexcept {
     return (rows == value.rows) && (columns == value.columns);
   }
 
@@ -212,7 +212,7 @@ protected:
   /**
     Gets the number of elements in the matrix.
   */
-  inline MemorySize getSize() const throw()
+  inline MemorySize getSize() const noexcept
   {
     return elements->getSize();
   }
@@ -253,7 +253,7 @@ protected:
   */
   inline unsigned int getIndexOfElement(
     unsigned int row,
-    unsigned int column) const throw() {
+    unsigned int column) const noexcept {
     return row * columns + column;
   }
 public:
@@ -353,21 +353,21 @@ public:
   /**
     Returns the dimension of the matrix.
   */
-  inline Dimension getDimension() const throw() {
+  inline Dimension getDimension() const noexcept {
     return Dimension(rows, columns);
   }
 
   /**
     Returns the number of rows of this matrix.
   */
-  inline unsigned int getRows() const throw() {
+  inline unsigned int getRows() const noexcept {
     return rows;
   }
 
   /**
     Returns the number of columns of this matrix.
   */
-  inline unsigned int getColumns() const throw() {
+  inline unsigned int getColumns() const noexcept {
     return columns;
   }
 
@@ -380,14 +380,14 @@ public:
   /**
     Returns true if the matrix is empty (i.e. has no elements).
   */
-  inline bool isEmpty() const throw() {
+  inline bool isEmpty() const noexcept {
     return (rows == 0) || (columns == 0);
   }
   
   /**
     Returns true if the matrix is a square matrix.
   */
-  inline bool isSquare() const throw() {
+  inline bool isSquare() const noexcept {
     return (rows == columns);
   }
 
@@ -755,7 +755,7 @@ public:
 
     @param value Matrix to be compared.
   */
-  inline bool operator==(const Matrix& value) const throw() {
+  inline bool operator==(const Matrix& value) const noexcept {
     return isEqual(value);
   }
 

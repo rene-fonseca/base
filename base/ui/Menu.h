@@ -105,14 +105,14 @@ private:
     /**
       Returns the handle.
     */
-    inline OperatingSystem::Handle getHandle() const throw() {
+    inline OperatingSystem::Handle getHandle() const noexcept {
       return handle;
     }
     
     /**
       Returns true if the handle is valid.
     */
-    inline bool isValid() const throw() {
+    inline bool isValid() const noexcept {
       return handle != OperatingSystem::INVALID_HANDLE;
     }
     
@@ -157,14 +157,14 @@ public:
   /**
     Returns true if the menu is valid.
   */
-  inline bool isValid() const throw() {
+  inline bool isValid() const noexcept {
     return handle.isValid();
   }
 
   /**
     Returns the opaque menu handle.
   */
-  inline OperatingSystem::Handle getHandle() const throw() {
+  inline OperatingSystem::Handle getHandle() const noexcept {
 //     if (!handle.isValid()) {
 //       return OperatingSystem::INVALID_HANDLE;
 //     }

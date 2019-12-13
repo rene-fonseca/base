@@ -118,7 +118,7 @@ MimeType& MimeType::operator=(const MimeType& copy) noexcept
   return *this;
 }
 
-bool MimeType::isValid() const throw() {
+bool MimeType::isValid() const noexcept {
   // for grammar see RFC 2045
 
   {
@@ -170,7 +170,7 @@ bool MimeType::isValid() const throw() {
   return true;
 }
 
-bool MimeType::operator==(const MimeType& value) const throw() {
+bool MimeType::operator==(const MimeType& value) const noexcept {
   if ((mediaType == UNINITIALIZED) || (mediaType == EXTENSION) ||
       (value.mediaType == UNINITIALIZED) || ((value.mediaType == EXTENSION))) {
     return type.compareToIgnoreCase(value.type) && subtype.compareToIgnoreCase(value.subtype); // avoid cached media type
@@ -178,7 +178,7 @@ bool MimeType::operator==(const MimeType& value) const throw() {
   return (mediaType == value.mediaType) && subtype.compareToIgnoreCase(value.subtype);
 }
 
-MimeType::MediaType MimeType::getMediaType() const throw()
+MimeType::MediaType MimeType::getMediaType() const noexcept
 {
   if (this->mediaType == UNINITIALIZED) {
     this->mediaType = MimeTypeImpl::getWellKnownMediaType(type);
@@ -186,7 +186,7 @@ MimeType::MediaType MimeType::getMediaType() const throw()
   return mediaType;
 }
 
-bool MimeType::matches(MediaType mediaType, const String& subtype) const throw()
+bool MimeType::matches(MediaType mediaType, const String& subtype) const noexcept
 {
   if (this->mediaType == UNINITIALIZED) {
     this->mediaType = MimeTypeImpl::getWellKnownMediaType(this->type);

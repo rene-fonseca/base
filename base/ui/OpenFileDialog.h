@@ -60,7 +60,7 @@ public:
   /**
     Returns the flags.
   */
-  inline unsigned int getFlags() const throw() {
+  inline unsigned int getFlags() const noexcept {
     return flags;
   }
 
@@ -74,7 +74,7 @@ public:
   /**
     Returns the title of the dialog window.
   */
-  inline const String& getTitle() const throw() {
+  inline const String& getTitle() const noexcept {
     return title;
   }
 
@@ -88,7 +88,7 @@ public:
   /**
     Returns the file name.
   */
-  inline const String& getFilename() const throw() {
+  inline const String& getFilename() const noexcept {
     return filename;
   }
   
@@ -102,14 +102,14 @@ public:
   /**
     Returns the file names.
   */
-  inline const Array<String>& getFilenames() const throw() {
+  inline const Array<String>& getFilenames() const noexcept {
     return filenames;
   }
   
   /**
     Returns the initial folder.
   */
-  inline const String& getFolder() const throw() {
+  inline const String& getFolder() const noexcept {
     return folder;
   }
   
@@ -131,7 +131,7 @@ public:
   /**
     Returns the filters.
   */
-  inline const Map<String, String>& getFilters() const throw() {
+  inline const Map<String, String>& getFilters() const noexcept {
     return filters;
   }
   

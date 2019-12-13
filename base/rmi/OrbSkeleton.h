@@ -47,14 +47,14 @@ public:
   /**
     Returns the fully qualified name of the skeleton.
   */
-  inline const String& getOrbName() const throw() {
+  inline const String& getOrbName() const noexcept {
     return name;
   }
   
   /**
     Returns the version of the skeleton.
   */
-  inline unsigned int getVersion() const throw() {
+  inline unsigned int getVersion() const noexcept {
     return version;
   }
   

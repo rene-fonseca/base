@@ -182,7 +182,7 @@ public:
     Returns true when an attribute with a given name is specified on this
     element or has a default value, false otherwise.
   */
-  inline bool hasAttribute(const String& name) const throw() {
+  inline bool hasAttribute(const String& name) const noexcept {
     return hasAttribute(name.native());
   }
 
@@ -194,7 +194,7 @@ public:
     specified on this element or has a default value, false otherwise.
   */
   inline bool hasAttributeNS(
-    const String& namespaceURI, const String& localName) const throw() {
+    const String& namespaceURI, const String& localName) const noexcept {
     return hasAttributeNS(namespaceURI.native(), localName.native());
   }
 };

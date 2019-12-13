@@ -76,7 +76,7 @@ Group& Group::operator=(const Group& assign) noexcept
   return *this;
 }
 
-bool Group::operator==(const Group& compare) const throw()
+bool Group::operator==(const Group& compare) const noexcept
 {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   if (!isValid() || (!compare.isValid())) {

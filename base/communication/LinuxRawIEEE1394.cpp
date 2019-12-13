@@ -210,7 +210,7 @@ LinuxRawIEEE1394::LinuxRawIEEE1394() throw(IEEE1394Exception) {
   }
 }
 
-bool LinuxRawIEEE1394::hasBeenReset() const throw() {
+bool LinuxRawIEEE1394::hasBeenReset() const noexcept {
   return false;
 }
 
@@ -334,11 +334,11 @@ void LinuxRawIEEE1394::close() throw(IEEE1394Exception) {
   // close port?
 }
 
-unsigned int LinuxRawIEEE1394::getLocalId() const throw() {
+unsigned int LinuxRawIEEE1394::getLocalId() const noexcept {
   return localId;
 }
 
-unsigned int LinuxRawIEEE1394::getNumberOfNodes() const throw() {
+unsigned int LinuxRawIEEE1394::getNumberOfNodes() const noexcept {
   return numberOfNodes;
 }
 
@@ -837,7 +837,7 @@ LinuxRawIEEE1394::LinuxRawIEEE1394() throw(IEEE1394Exception) {
   throw NotSupported();
 }
 
-bool LinuxRawIEEE1394::hasBeenReset() const throw() {
+bool LinuxRawIEEE1394::hasBeenReset() const noexcept {
   throw NotSupported();
 }
 
@@ -861,11 +861,11 @@ void LinuxRawIEEE1394::close() throw(IEEE1394Exception) {
   throw NotSupported();
 }
 
-unsigned int LinuxRawIEEE1394::getLocalId() const throw() {
+unsigned int LinuxRawIEEE1394::getLocalId() const noexcept {
   throw NotSupported();
 }
 
-unsigned int LinuxRawIEEE1394::getNumberOfNodes() const throw() {
+unsigned int LinuxRawIEEE1394::getNumberOfNodes() const noexcept {
   throw NotSupported();
 }
 

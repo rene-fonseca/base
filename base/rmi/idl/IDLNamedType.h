@@ -40,7 +40,7 @@ public:
   /**
     Returns the fully qualified name of the type.
   */
-  inline const String& getName() const throw() {
+  inline const String& getName() const noexcept {
     return name;
   }
   

@@ -74,7 +74,7 @@ public:
     Returns the global identifier of the connection scheme (e.g.
     "urn:rmi:orb:scheme:tcpip").
   */
-  virtual String getUrn() const throw() = 0;
+  virtual String getUrn() const noexcept = 0;
   
   /**
     Pushes a buffer onto the outgoing queue of the connection.
@@ -88,7 +88,7 @@ public:
   /**
     Returns the identifier of the end point (e.g. "tcpip://host:1234").
   */
-  virtual String getEndPoint() const throw() = 0;
+  virtual String getEndPoint() const noexcept = 0;
 
   /**
     Returns the reference for the specified connection local identifier.

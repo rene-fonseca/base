@@ -38,7 +38,7 @@ void CharacterData::setData(const String& data) throw(DOMException) {
 #endif
 }
 
-unsigned int CharacterData::getLength() const throw() {
+unsigned int CharacterData::getLength() const noexcept {
 #if defined(_COM_AZURE_DEV__BASE__XML_XMLSOFT_ORG)
   xmlNodePtr node = (xmlNodePtr)getContext();
   const char* content = (const char*)node->content;

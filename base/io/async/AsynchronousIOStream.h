@@ -37,7 +37,7 @@ protected:
   /**
     Returns the operating system handle to the stream.
   */
-  virtual OperatingSystem::Handle getHandle() const throw() = 0;
+  virtual OperatingSystem::Handle getHandle() const noexcept = 0;
 public:
 
   /**

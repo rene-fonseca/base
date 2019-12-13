@@ -20,7 +20,7 @@
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
-String Notation::getPublicId() const throw() {
+String Notation::getPublicId() const noexcept {
 #if defined(_COM_AZURE_DEV__BASE__XML_XMLSOFT_ORG)
   const xmlNode* node = (const xmlNode*)getContext();
   const xmlNotation* notation = (const xmlNotation*)node->name;
@@ -30,7 +30,7 @@ String Notation::getPublicId() const throw() {
 #endif
 }
   
-String Notation::getSystemId() const throw() {
+String Notation::getSystemId() const noexcept {
 #if defined(_COM_AZURE_DEV__BASE__XML_XMLSOFT_ORG)
   const xmlNode* node = (const xmlNode*)getContext();
   const xmlNotation* notation = (const xmlNotation*)node->name;

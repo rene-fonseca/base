@@ -958,7 +958,7 @@ public:
     return false;
   }
 
-  inline const String& getDemangled() const throw() {
+  inline const String& getDemangled() const noexcept {
     return demangled;
   }
 };

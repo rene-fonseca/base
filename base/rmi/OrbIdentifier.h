@@ -48,67 +48,67 @@ public:
   /**
     Returns true if the identifier has a scheme.
   */
-  inline bool hasScheme() const throw() {
+  inline bool hasScheme() const noexcept {
     return scheme.getLength();
   }
 
   /**
     Returns true if the identifier has an end-point.
   */
-  inline bool hasEndPoint() const throw() {
+  inline bool hasEndPoint() const noexcept {
     return endPoint.getLength();
   }
 
   /**
     Returns true if the identifier has a path.
   */
-  inline  bool hasPath() const throw() {
+  inline  bool hasPath() const noexcept {
     return path.getLength();
   }
 
   /**
     Returns the scheme of the identifier.
   */
-  inline const String& getScheme() const throw() {
+  inline const String& getScheme() const noexcept {
     return scheme;
   }
 
   /**
     Returns the end-point of the identifier.
   */
-  inline String getFullScheme() const throw() {
+  inline String getFullScheme() const noexcept {
     return scheme + Literal("://");
   }
 
   /**
     Returns the end-point of the identifier.
   */
-  inline const String& getEndPoint() const throw() {
+  inline const String& getEndPoint() const noexcept {
     return endPoint;
   }
 
   /**
     Returns the end-point of the identifier.
   */
-  inline String getFullEndPoint() const throw() {
+  inline String getFullEndPoint() const noexcept {
     return scheme + Literal("://") + endPoint;
   }
   
   /**
     Returns the end-point of the identifier.
   */
-  inline const String& getPath() const throw() {
+  inline const String& getPath() const noexcept {
     return path;
   }
   
   /**
     Returns the full identifier.
   */
-  inline String getIdentifier() const throw() {
+  inline String getIdentifier() const noexcept {
     return scheme + Literal("://") + endPoint + Literal("/") + path;
   }
 
-//   inline operator String() const throw() {
+//   inline operator String() const noexcept {
 //     return identifier;
 //   }
 };

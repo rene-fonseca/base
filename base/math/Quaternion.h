@@ -80,7 +80,7 @@ public:
   /**
     Returns the X coordinate of the quaternion.
   */
-  inline TYPE getX() const throw()
+  inline TYPE getX() const noexcept
   {
     return x;
   }
@@ -88,7 +88,7 @@ public:
   /**
     Returns the Y coordinate of the quaternion.
   */
-  inline TYPE getY() const throw()
+  inline TYPE getY() const noexcept
   {
     return y;
   }
@@ -96,7 +96,7 @@ public:
   /**
     Returns the Z coordinate of the quaternion.
   */
-  inline TYPE getZ() const throw()
+  inline TYPE getZ() const noexcept
   {
     return z;
   }
@@ -104,7 +104,7 @@ public:
   /**
     Returns the W coordinate of the quaternion.
   */
-  inline TYPE getW() const throw()
+  inline TYPE getW() const noexcept
   {
     return w;
   }
@@ -172,7 +172,7 @@ public:
   /**
     Returns true if the length of this quaternion is zero.
   */
-  inline bool isZero() const throw()
+  inline bool isZero() const noexcept
   {
     const TYPE zero(0);
     return (x == zero) && (y == zero) && (z == zero) && (w == zero);
@@ -181,7 +181,7 @@ public:
   /**
     Returns true if the length of this quaternion is greater zero.
   */
-  inline bool isProper() const throw()
+  inline bool isProper() const noexcept
   {
     const TYPE zero(0);
     return (x != zero) || (y != zero) || (z != zero) || (w != zero);
@@ -190,7 +190,7 @@ public:
   /**
     Unary plus.
   */
-  Quaternion plus() const throw()
+  Quaternion plus() const noexcept
   {
     return Quaternion(*this);
   }
@@ -198,7 +198,7 @@ public:
   /**
     Unary minus.
   */
-  Quaternion minus() const throw()
+  Quaternion minus() const noexcept
   {
     return Quaternion(*this).negate();
   }
@@ -269,7 +269,7 @@ public:
 
     @param value Quaternion to be compared.
   */
-  inline bool operator==(const Quaternion& value) const throw()
+  inline bool operator==(const Quaternion& value) const noexcept
   {
     return (x == value.x) && (y == value.y) && (z == value.z) && (w == value.w);
   }
@@ -317,7 +317,7 @@ public:
   /**
     Unary plus.
   */
-  inline Quaternion operator+() const throw()
+  inline Quaternion operator+() const noexcept
   {
     return plus();
   }
@@ -325,7 +325,7 @@ public:
   /**
     Unary minus.
   */
-  inline Quaternion operator-() const throw()
+  inline Quaternion operator-() const noexcept
   {
     return minus();
   }

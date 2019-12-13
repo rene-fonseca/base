@@ -125,7 +125,7 @@ public:
   /**
     Returns true if the enumerator has more elements.
   */
-  virtual bool hasNext() const throw() = 0;
+  virtual bool hasNext() const noexcept = 0;
 
   /**
     Returns the next element of the enumerator.

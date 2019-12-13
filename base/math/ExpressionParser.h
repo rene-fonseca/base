@@ -108,31 +108,31 @@ public:
         function(_function) {
     }
     
-    inline unsigned int getArguments() const throw() {
+    inline unsigned int getArguments() const noexcept {
       return arguments;
     }
     
-    inline unsigned int getPrecedence() const throw() {
+    inline unsigned int getPrecedence() const noexcept {
       return precedence;
     }
     
-    inline Glue getGlue() const throw() {
+    inline Glue getGlue() const noexcept {
       return glue;
     }
     
-    inline bool isBuiltin() const throw() {
+    inline bool isBuiltin() const noexcept {
       return builtin;
     }
     
-    inline bool isPopable() const throw() {
+    inline bool isPopable() const noexcept {
       return popable;
     }
 
-    inline bool isFunction() const throw() {
+    inline bool isFunction() const noexcept {
       return function;
     }
 
-    inline unsigned int getId() const throw() {
+    inline unsigned int getId() const noexcept {
       return id;
     }
   };
@@ -244,7 +244,7 @@ public:
   /**
     Returns the expression.
   */
-  inline const List<Node>& getExpression() const throw() {
+  inline const List<Node>& getExpression() const noexcept {
     return nodes;
   }
 
@@ -259,7 +259,7 @@ public:
     Returns the names of variables of the formula in the order expected by the
     evaluate methods.
   */
-  inline const List<String>& getVariables() const throw() {
+  inline const List<String>& getVariables() const noexcept {
     return variables;
   }
   
@@ -367,28 +367,28 @@ public:
   /**
     Returns true if the identifier has been registered.
   */
-  inline bool isIdentifier(const String& name) const throw() {
+  inline bool isIdentifier(const String& name) const noexcept {
     return identifiers.hasKey(name);
   }
 
   /**
     Returns the name of the constant with the given id.
   */
-  inline String getConstant(unsigned int id) const throw() {
+  inline String getConstant(unsigned int id) const noexcept {
     return constants[id];
   }
   
   /**
     Returns the name of the variable with the given id.
   */
-  inline String getVariable(unsigned int id) const throw() {
+  inline String getVariable(unsigned int id) const noexcept {
     return variables[id];
   }
   
   /**
     Returns the name of the function with the given id.
   */
-  inline String getFunction(unsigned int id) const throw() {
+  inline String getFunction(unsigned int id) const noexcept {
     return functions[id];
   }
   
@@ -485,14 +485,14 @@ public:
   /**
     Returns the result of the parser.
   */
-  inline const List<Node>& getExpression() const throw() {
+  inline const List<Node>& getExpression() const noexcept {
     return nodes;
   }
   
   /**
     Returns the auto-register mode.
   */
-  inline bool getAutoRegister() const throw() {
+  inline bool getAutoRegister() const noexcept {
     return autoRegister;
   }
   
@@ -506,14 +506,14 @@ public:
   /**
     Returns the unknowns.
   */
-  inline HashTable<String, Node> getUnknowns() const throw() {
+  inline HashTable<String, Node> getUnknowns() const noexcept {
     return unknowns;
   }
   
   /**
     Returns true if the expression contains unknowns.
   */
-  inline bool hasUnknowns() const throw() {
+  inline bool hasUnknowns() const noexcept {
     return unknowns.getSize();
   }
   

@@ -243,7 +243,7 @@ public:
     /**
       Returns the options of the request.
     */
-    inline unsigned int getOptions() const throw() {
+    inline unsigned int getOptions() const noexcept {
       return options;
     }
     
@@ -255,14 +255,14 @@ public:
     /**
       Returns true if the request is pending for completion.
     */
-    inline bool isPending() const throw() {
+    inline bool isPending() const noexcept {
       return status == PENDING;
     }
     
     /**
       Returns the current status of the request.
     */
-    inline IsochronousRequestStatus getStatus() const throw() {
+    inline IsochronousRequestStatus getStatus() const noexcept {
       return status;
     }
     
@@ -324,14 +324,14 @@ public:
     /**
       Returns the buffer.
     */
-    inline uint8* getBuffer() const throw() {
+    inline uint8* getBuffer() const noexcept {
       return buffer;
     }
     
     /**
       Returns the size of the buffer in bytes.
     */
-    unsigned int getBufferSize() const throw() {
+    unsigned int getBufferSize() const noexcept {
       return bufferSize;
     }
 
@@ -346,7 +346,7 @@ public:
     /**
       Returns the number of received packets.
     */
-    inline unsigned int getReceivedPackets() const throw() {
+    inline unsigned int getReceivedPackets() const noexcept {
       return receivedPackets;
     }
   };
@@ -378,7 +378,7 @@ public:
     /**
       Returns the maximum payload in bytes per packet.
     */
-    inline unsigned int getPayload() const throw() {
+    inline unsigned int getPayload() const noexcept {
       return payload;
     }
     
@@ -412,7 +412,7 @@ public:
     /**
       Returns the desired number of packets to be received.
     */
-    inline unsigned int getNumberOfPackets() const throw() {
+    inline unsigned int getNumberOfPackets() const noexcept {
       return numberOfPackets;
     }
     
@@ -425,7 +425,7 @@ public:
     /**
       Returns the size of the header in bytes per packet.
     */
-    inline unsigned int getHeaderSize() const throw() {
+    inline unsigned int getHeaderSize() const noexcept {
       return headerSize;
     }
     
@@ -439,7 +439,7 @@ public:
     /**
       Returns the maximum payload in bytes per packet.
     */
-    inline unsigned int getPayload() const throw() {
+    inline unsigned int getPayload() const noexcept {
       return payload;
     }
     
@@ -453,7 +453,7 @@ public:
     /**
       Returns the secondary buffer used for header data.
     */
-    inline uint8* getSecondaryBuffer() const throw() {
+    inline uint8* getSecondaryBuffer() const noexcept {
       return secondaryBuffer;
     }
 
@@ -506,21 +506,21 @@ public:
     /**
       Returns the buffer.
     */
-    inline const uint8* getBuffer() const throw() {
+    inline const uint8* getBuffer() const noexcept {
       return buffer;
     }
     
     /**
       Returns the size of the buffer in bytes.
     */
-    inline unsigned int getBufferSize() const throw() {
+    inline unsigned int getBufferSize() const noexcept {
       return bufferSize;
     }
 
     /**
       Returns the number of packets in the buffer.
     */
-    inline unsigned int getNumberOfPackets() const throw() {
+    inline unsigned int getNumberOfPackets() const noexcept {
       return numberOfPackets;
     }
     
@@ -539,7 +539,7 @@ public:
     /**
       Returns the transmission speed.
     */
-    inline unsigned int getSpeed() const throw() {
+    inline unsigned int getSpeed() const noexcept {
       return speed;
     }
     
@@ -551,7 +551,7 @@ public:
     /**
       Returns the number of transmitted packets.
     */
-    inline unsigned int getTransmittedPackets() const throw() {
+    inline unsigned int getTransmittedPackets() const noexcept {
       return transmittedPackets;
     }
   };
@@ -593,7 +593,7 @@ public:
     /**
       Returns the secondary buffer used for header data.
     */
-    inline const uint8* getSecondaryBuffer() const throw() {
+    inline const uint8* getSecondaryBuffer() const noexcept {
       return secondaryBuffer;
     }
     
@@ -661,21 +661,21 @@ public:
     /**
       Returns true if request is valid.
     */
-    inline bool isValid() const throw() {
+    inline bool isValid() const noexcept {
       return context.isValid();
     }
     
     /**
       Returns true if the request is pending for completion.
     */
-    inline bool isPending() const throw() {
+    inline bool isPending() const noexcept {
       return context->isPending();
     }
     
     /**
       Returns the current status of the request.
     */
-    inline IsochronousRequestStatus getStatus() const throw() {
+    inline IsochronousRequestStatus getStatus() const noexcept {
       return context->getStatus();
     }
     
@@ -689,14 +689,14 @@ public:
     /**
       Returns the options of the request.
     */
-    inline unsigned int getOptions() const throw() {
+    inline unsigned int getOptions() const noexcept {
       return context->getOptions();
     }
     
     /**
       Returns the size of the buffer.
     */
-    inline unsigned int getBufferSize() const throw() {
+    inline unsigned int getBufferSize() const noexcept {
       return context->getBufferSize();
     }
 
@@ -718,14 +718,14 @@ public:
     /**
       Returns the number of received packets.
     */
-    inline unsigned int getReceivedPackets() const throw() {
+    inline unsigned int getReceivedPackets() const noexcept {
       return context->getReceivedPackets();
     }
 
     /**
       Returns the buffer.
     */
-    inline uint8* getBuffer() const throw() {
+    inline uint8* getBuffer() const noexcept {
       return context->getBuffer();
     }
     
@@ -786,7 +786,7 @@ public:
     /**
       Returns true if request is valid.
     */
-    inline bool isValid() const throw()
+    inline bool isValid() const noexcept
     {
       return context.isValid();
     }
@@ -794,7 +794,7 @@ public:
     /**
       Returns true if the request is pending for completion.
     */
-    inline bool isPending() const throw()
+    inline bool isPending() const noexcept
     {
       return context->isPending();
     }
@@ -802,7 +802,7 @@ public:
     /**
       Returns the current status of the request.
     */
-    inline IsochronousRequestStatus getStatus() const throw()
+    inline IsochronousRequestStatus getStatus() const noexcept
     {
       return context->getStatus();
     }
@@ -818,7 +818,7 @@ public:
     /**
       Returns the options of the request.
     */
-    inline unsigned int getOptions() const throw()
+    inline unsigned int getOptions() const noexcept
     {
       return context->getOptions();
     }
@@ -826,7 +826,7 @@ public:
     /**
       Returns the size of the buffer.
     */
-    inline unsigned int getBufferSize() const throw() {
+    inline unsigned int getBufferSize() const noexcept {
       return context->getBufferSize();
     }
 
@@ -848,14 +848,14 @@ public:
     /**
       Returns the number of received packets.
     */
-    inline unsigned int getReceivedPackets() const throw() {
+    inline unsigned int getReceivedPackets() const noexcept {
       return context->getReceivedPackets();
     }
 
     /**
       Returns the maximum payload in bytes per packet.
     */
-    inline unsigned int getPayload() const throw() {
+    inline unsigned int getPayload() const noexcept {
       return context->getPayload();
     }
 
@@ -870,7 +870,7 @@ public:
     /**
       Returns the buffer.
     */
-    inline uint8* getBuffer() const throw() {
+    inline uint8* getBuffer() const noexcept {
       return context->getBuffer();
     }
     
@@ -936,21 +936,21 @@ public:
     /**
       Returns true if request is valid.
     */
-    inline bool isValid() const throw() {
+    inline bool isValid() const noexcept {
       return context.isValid();
     }
 
     /**
       Returns true if the request is pending for completion.
     */
-    inline bool isPending() const throw() {
+    inline bool isPending() const noexcept {
       return context->isPending();
     }
     
     /**
       Returns the current status of the request.
     */
-    inline IsochronousRequestStatus getStatus() const throw() {
+    inline IsochronousRequestStatus getStatus() const noexcept {
       return context->getStatus();
     }
     
@@ -964,14 +964,14 @@ public:
     /**
       Returns the options of the request.
     */
-    inline unsigned int getOptions() const throw() {
+    inline unsigned int getOptions() const noexcept {
       return context->getOptions();
     }
     
     /**
       Returns the size of the buffer.
     */
-    inline unsigned int getBufferSize() const throw() {
+    inline unsigned int getBufferSize() const noexcept {
       return context->getBufferSize();
     }
 
@@ -993,14 +993,14 @@ public:
     /**
       Returns the number of received packets.
     */
-    inline unsigned int getReceivedPackets() const throw() {
+    inline unsigned int getReceivedPackets() const noexcept {
       return context->getReceivedPackets();
     }
 
     /**
       Returns the desired number of packets to be received.
     */
-    inline unsigned int getNumberOfPackets() const throw() {
+    inline unsigned int getNumberOfPackets() const noexcept {
       return context->getNumberOfPackets();
     }
     
@@ -1015,7 +1015,7 @@ public:
     /**
       Returns the size of the header in bytes per packet.
     */
-    inline unsigned int getHeaderSize() const throw() {
+    inline unsigned int getHeaderSize() const noexcept {
       return context->getHeaderSize();
     }
     
@@ -1031,7 +1031,7 @@ public:
     /**
       Returns the maximum payload in bytes per packet.
     */
-    inline unsigned int getPayload() const throw() {
+    inline unsigned int getPayload() const noexcept {
       return context->getPayload();
     }
 
@@ -1047,14 +1047,14 @@ public:
     /**
       Returns the buffer.
     */
-    inline uint8* getBuffer() const throw() {
+    inline uint8* getBuffer() const noexcept {
       return context->getBuffer();
     }
     
     /**
       Returns the secondary buffer used for header data.
     */
-    inline uint8* getSecondaryBuffer() const throw() {
+    inline uint8* getSecondaryBuffer() const noexcept {
       return context->getSecondaryBuffer();
     }
     
@@ -1138,21 +1138,21 @@ public:
     /**
       Returns true if request is valid.
     */
-    inline bool isValid() const throw() {
+    inline bool isValid() const noexcept {
       return context.isValid();
     }
     
     /**
       Returns true if the request is pending for completion.
     */
-    inline bool isPending() const throw() {
+    inline bool isPending() const noexcept {
       return context->isPending();
     }
     
     /**
       Returns the current status of the request.
     */
-    inline IsochronousRequestStatus getStatus() const throw() {
+    inline IsochronousRequestStatus getStatus() const noexcept {
       return context->getStatus();
     }
     
@@ -1166,7 +1166,7 @@ public:
     /**
       Returns the type of the request.
     */
-    inline IsochronousRequestType getType() const throw() {
+    inline IsochronousRequestType getType() const noexcept {
       if (dynamic_cast<IsochronousReadPacketsRequestImpl*>(context.getValue())) {
         return READ_PACKETS_REQUEST;
       } else if (dynamic_cast<IsochronousReadFixedPacketsRequestImpl*>(context.getValue())) {
@@ -1186,7 +1186,7 @@ public:
       packets request.
     */
     IsochronousReadPacketsRequest
-      getIsochronousReadPacketsRequest() const throw() {
+      getIsochronousReadPacketsRequest() const noexcept {
       return IsochronousReadPacketsRequest(
         dynamic_cast<IsochronousReadPacketsRequestImpl*>(context.getValue()
         )
@@ -1201,7 +1201,7 @@ public:
       fixed packets request.
     */
     IsochronousReadFixedPacketsRequest
-      getIsochronousReadFixedPacketsRequest() const throw() {
+      getIsochronousReadFixedPacketsRequest() const noexcept {
       return IsochronousReadFixedPacketsRequest(
         dynamic_cast<IsochronousReadFixedPacketsRequestImpl*>(
           context.getValue()
@@ -1217,7 +1217,7 @@ public:
       fixed data request.
     */
     IsochronousReadFixedDataRequest
-      getIsochronousReadFixedDataRequest() const throw() {
+      getIsochronousReadFixedDataRequest() const noexcept {
       return IsochronousReadFixedDataRequest(
         dynamic_cast<IsochronousReadFixedDataRequestImpl*>(context.getValue())
       );
@@ -1272,21 +1272,21 @@ public:
     /**
       Returns true if request is valid.
     */
-    inline bool isValid() const throw() {
+    inline bool isValid() const noexcept {
       return context.isValid();
     }
     
     /**
       Returns true if the request is pending for completion.
     */
-    inline bool isPending() const throw() {
+    inline bool isPending() const noexcept {
       return context->isPending();
     }
     
     /**
       Returns the current status of the request.
     */
-    inline IsochronousRequestStatus getStatus() const throw() {
+    inline IsochronousRequestStatus getStatus() const noexcept {
       return context->getStatus();
     }
     
@@ -1300,21 +1300,21 @@ public:
     /**
       Returns the options of the request.
     */
-    inline unsigned int getOptions() const throw() {
+    inline unsigned int getOptions() const noexcept {
       return context->getOptions();
     }    
     
     /**
       Returns the size of the buffer.
     */
-    inline unsigned int getBufferSize() const throw() {
+    inline unsigned int getBufferSize() const noexcept {
       return context->getBufferSize();
     }
     
     /**
       Returns the buffer.
     */
-    inline const uint8* getBuffer() const throw() {
+    inline const uint8* getBuffer() const noexcept {
       return context->getBuffer();
     }
     
@@ -1337,7 +1337,7 @@ public:
     /**
       Returns the number of received packets.
     */
-    inline unsigned int getTransmittedPackets() const throw() {
+    inline unsigned int getTransmittedPackets() const noexcept {
       return context->getTransmittedPackets();
     }
   };
@@ -1386,21 +1386,21 @@ public:
     /**
       Returns true if request is valid.
     */
-    inline bool isValid() const throw() {
+    inline bool isValid() const noexcept {
       return context.isValid();
     }
     
     /**
       Returns true if the request is pending for completion.
     */
-    inline bool isPending() const throw() {
+    inline bool isPending() const noexcept {
       return context->isPending();
     }
     
     /**
       Returns the current status of the request.
     */
-    inline IsochronousRequestStatus getStatus() const throw() {
+    inline IsochronousRequestStatus getStatus() const noexcept {
       return context->getStatus();
     }
     
@@ -1414,21 +1414,21 @@ public:
     /**
       Returns the options of the request.
     */
-    inline unsigned int getOptions() const throw() {
+    inline unsigned int getOptions() const noexcept {
       return context->getOptions();
     }    
     
     /**
       Returns the size of the buffer.
     */
-    inline unsigned int getBufferSize() const throw() {
+    inline unsigned int getBufferSize() const noexcept {
       return context->getBufferSize();
     }
     
     /**
       Returns the buffer.
     */
-    inline const uint8* getBuffer() const throw() {
+    inline const uint8* getBuffer() const noexcept {
       return context->getBuffer();
     }
 
@@ -1451,7 +1451,7 @@ public:
     /**
       Returns the number of received packets.
     */
-    inline unsigned int getTransmittedPackets() const throw() {
+    inline unsigned int getTransmittedPackets() const noexcept {
       return context->getTransmittedPackets();
     }
   };
@@ -1500,7 +1500,7 @@ public:
     /**
       Returns true if request is valid.
     */
-    inline bool isValid() const throw()
+    inline bool isValid() const noexcept
     {
       return context.isValid();
     }
@@ -1508,7 +1508,7 @@ public:
     /**
       Returns true if the request is pending for completion.
     */
-    inline bool isPending() const throw()
+    inline bool isPending() const noexcept
     {
       return context->isPending();
     }
@@ -1516,7 +1516,7 @@ public:
     /**
       Returns the current status of the request.
     */
-    inline IsochronousRequestStatus getStatus() const throw()
+    inline IsochronousRequestStatus getStatus() const noexcept
     {
       return context->getStatus();
     }
@@ -1531,21 +1531,21 @@ public:
     /**
       Returns the options of the request.
     */
-    inline unsigned int getOptions() const throw() {
+    inline unsigned int getOptions() const noexcept {
       return context->getOptions();
     }
     
     /**
       Returns the size of the buffer.
     */
-    inline unsigned int getBufferSize() const throw() {
+    inline unsigned int getBufferSize() const noexcept {
       return context->getBufferSize();
     }
     
     /**
       Returns the buffer.
     */
-    inline const uint8* getBuffer() const throw() {
+    inline const uint8* getBuffer() const noexcept {
       return context->getBuffer();
     }
     
@@ -1568,7 +1568,7 @@ public:
     /**
       Returns the number of received packets.
     */
-    inline unsigned int getTransmittedPackets() const throw() {
+    inline unsigned int getTransmittedPackets() const noexcept {
       return context->getTransmittedPackets();
     }
   };
@@ -1639,21 +1639,21 @@ public:
     /**
       Returns true if request is valid.
     */
-    inline bool isValid() const throw() {
+    inline bool isValid() const noexcept {
       return context.isValid();
     }
     
     /**
       Returns true if the request is pending for completion.
     */
-    inline bool isPending() const throw() {
+    inline bool isPending() const noexcept {
       return context->isPending();
     }
     
     /**
       Returns the current status of the request.
     */
-    inline IsochronousRequestStatus getStatus() const throw() {
+    inline IsochronousRequestStatus getStatus() const noexcept {
       return context->getStatus();
     }
     
@@ -1667,7 +1667,7 @@ public:
     /**
       Returns the type of the request.
     */
-    inline IsochronousRequestType getType() const throw() {
+    inline IsochronousRequestType getType() const noexcept {
       if (dynamic_cast<IsochronousWritePacketsRequestImpl*>(context.getValue())) {
         return WRITE_PACKETS_REQUEST;
       } else if (dynamic_cast<IsochronousWriteFixedPacketsRequestImpl*>(context.getValue())) {
@@ -1687,7 +1687,7 @@ public:
       packets request.
     */
     IsochronousWritePacketsRequest
-      getIsochronousWritePacketsRequest() const throw() {
+      getIsochronousWritePacketsRequest() const noexcept {
       return IsochronousWritePacketsRequest(
         dynamic_cast<IsochronousWritePacketsRequestImpl*>(context.getValue())
       );
@@ -1701,7 +1701,7 @@ public:
       fixed packets request.
     */
     IsochronousWriteFixedPacketsRequest
-      getIsochronousWriteFixedPacketsRequest() const throw() {
+      getIsochronousWriteFixedPacketsRequest() const noexcept {
       return IsochronousWriteFixedPacketsRequest(
         dynamic_cast<IsochronousWriteFixedPacketsRequestImpl*>(
           context.getValue()
@@ -1716,7 +1716,7 @@ public:
       fixed data request.
     */
     IsochronousWriteDataRequest
-      getIsochronousWriteDataRequest() const throw() {
+      getIsochronousWriteDataRequest() const noexcept {
       return IsochronousWriteDataRequest(
         dynamic_cast<IsochronousWriteDataRequestImpl*>(context.getValue())
       );
@@ -2042,7 +2042,7 @@ public:
       Returns a read packet request object (READ_PACKETS_REQUEST).
     */    
     inline IsochronousReadPacketsRequest
-      getReadPacketsRequest() const throw() {
+      getReadPacketsRequest() const noexcept {
       return readChannel->getReadPacketsRequest();
     }
     
@@ -2050,7 +2050,7 @@ public:
       Returns a read fixed packet request object (READ_FIXED_PACKETS_REQUEST).
     */    
     inline IsochronousReadFixedPacketsRequest
-      getReadFixedPacketsRequest() const throw() {
+      getReadFixedPacketsRequest() const noexcept {
       return readChannel->getReadFixedPacketsRequest();
     }
     
@@ -2058,7 +2058,7 @@ public:
       Returns a read fixed data request object (READ_FIXED_DATA_REQUEST).
     */    
     inline IsochronousReadFixedDataRequest
-      getReadFixedDataRequest() const throw() {
+      getReadFixedDataRequest() const noexcept {
       return readChannel->getReadFixedDataRequest();
     }
 
@@ -2208,7 +2208,7 @@ public:
       Returns a write packet request object (WRITE_PACKETS_REQUEST).
     */    
     inline IsochronousWritePacketsRequest
-      getWritePacketsRequest() const throw() {
+      getWritePacketsRequest() const noexcept {
       return writeChannel->getWritePacketsRequest();
     }
     
@@ -2217,14 +2217,14 @@ public:
       (WRITE_FIXED_PACKETS_REQUEST).
     */
     inline IsochronousWriteFixedPacketsRequest
-      getWriteFixedPacketsRequest() const throw() {
+      getWriteFixedPacketsRequest() const noexcept {
       return writeChannel->getWriteFixedPacketsRequest();
     }
     
     /**
       Returns a write data request object (WRITE_DATA_REQUEST).
     */
-    inline IsochronousWriteDataRequest getWriteDataRequest() const throw() {
+    inline IsochronousWriteDataRequest getWriteDataRequest() const noexcept {
       return writeChannel->getWriteDataRequest();
     }
     

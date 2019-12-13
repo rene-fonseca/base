@@ -31,7 +31,7 @@ public:
   inline MultiplySubtract(const TYPE& _value) noexcept : value(_value) {
   }
   
-  inline TYPE operator()(const TYPE& left, const TYPE& right) const throw() {
+  inline TYPE operator()(const TYPE& left, const TYPE& right) const noexcept {
     return left - value * right;
   }
 };
@@ -46,7 +46,7 @@ public:
   inline ZeroAdjust(const TYPE& _zero) : zero(_zero) {
   }
   
-  inline TYPE operator()(const TYPE& value) const throw() {
+  inline TYPE operator()(const TYPE& value) const noexcept {
     return (value > zero) ? value : TYPE(0);
   }
 };
@@ -93,7 +93,7 @@ void Matrix<TYPE>::setAt(unsigned int row, unsigned int column, const TYPE& valu
 
 
 template<class TYPE>
-bool Matrix<TYPE>::isEqual(const Matrix& value) const throw() {
+bool Matrix<TYPE>::isEqual(const Matrix& value) const noexcept {
   if (!isCompatible(value)) {
     return false;
   }
@@ -101,12 +101,12 @@ bool Matrix<TYPE>::isEqual(const Matrix& value) const throw() {
 }
 
 template<class TYPE>
-bool Matrix<TYPE>::isZero() const throw() {
+bool Matrix<TYPE>::isZero() const noexcept {
   return !findPredicate(getReadOnlyElements(), getSize(), bind2Second(NotEqual<TYPE>(), TYPE(0)));
 }
 
 template<class TYPE>
-bool Matrix<TYPE>::isDiagonal() const throw() {
+bool Matrix<TYPE>::isDiagonal() const noexcept {
   if (!isSquare()) {
     return false;
   }
@@ -125,7 +125,7 @@ bool Matrix<TYPE>::isDiagonal() const throw() {
 }
 
 template<class TYPE>
-bool Matrix<TYPE>::isLowerTriangular() const throw() {
+bool Matrix<TYPE>::isLowerTriangular() const noexcept {
   if (!isSquare()) {
     return false;
   }
@@ -142,7 +142,7 @@ bool Matrix<TYPE>::isLowerTriangular() const throw() {
 }
 
 template<class TYPE>
-bool Matrix<TYPE>::isUpperTriangular() const throw() {
+bool Matrix<TYPE>::isUpperTriangular() const noexcept {
   if (!isSquare()) {
     return false;
   }
@@ -159,7 +159,7 @@ bool Matrix<TYPE>::isUpperTriangular() const throw() {
 }
 
 template<class TYPE>
-bool Matrix<TYPE>::isSymmetric() const throw() {
+bool Matrix<TYPE>::isSymmetric() const noexcept {
   if (!isSquare()) {
     return false;
   }
@@ -194,7 +194,7 @@ bool Matrix<TYPE>::isSymmetric() const throw() {
 
 
 template<class TYPE>
-TYPE Matrix<TYPE>::getNorm() const throw() {
+TYPE Matrix<TYPE>::getNorm() const noexcept {
   SquareSum<TYPE> squareSum;
   forEach(getReadOnlyElements(), getSize(), squareSum);
   return Math::sqrt(squareSum.getResult());
@@ -308,12 +308,12 @@ Matrix<TYPE> Matrix<TYPE>::getAdjoint() const throw(NotSquare, MemoryException) 
 
 
 template<class TYPE>
-Matrix<TYPE> Matrix<TYPE>::plus() const throw() {
+Matrix<TYPE> Matrix<TYPE>::plus() const noexcept {
   return Matrix(*this);
 }
 
 template<class TYPE>
-Matrix<TYPE> Matrix<TYPE>::minus() const throw() {
+Matrix<TYPE> Matrix<TYPE>::minus() const noexcept {
   return Matrix(getDimension()).negate(*this);
 }
 
@@ -385,7 +385,7 @@ Matrix<TYPE> Matrix<TYPE>::invert() const throw(NotSquare, Singular, MemoryExcep
 }
 
 template<class TYPE>
-Matrix<TYPE> Matrix<TYPE>::transpose() const throw() {
+Matrix<TYPE> Matrix<TYPE>::transpose() const noexcept {
   return Matrix(Dimension(columns, rows)).transpose(*this);
 }
 

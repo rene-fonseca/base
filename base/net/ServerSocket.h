@@ -98,7 +98,7 @@ public:
   /**
     Returns the local IP address to which the socket is bound.
   */
-  inline const InetAddress& getLocalAddress() const throw()
+  inline const InetAddress& getLocalAddress() const noexcept
   {
     return Socket::getLocalAddress();
   }
@@ -106,7 +106,7 @@ public:
   /**
     Returns the local port to which the socket is bound.
   */
-  inline unsigned short getLocalPort() const throw()
+  inline unsigned short getLocalPort() const noexcept
   {
     return Socket::getLocalPort();
   }

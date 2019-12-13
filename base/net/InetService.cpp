@@ -104,17 +104,17 @@ InetService& InetService::operator=(const InetService& assign) noexcept
   return *this;
 }
 
-const String& InetService::getName() const throw()
+const String& InetService::getName() const noexcept
 {
   return name;
 }
 
-unsigned short InetService::getPort() const throw()
+unsigned short InetService::getPort() const noexcept
 {
   return port;
 }
 
-const String& InetService::getProtocol() const throw()
+const String& InetService::getProtocol() const noexcept
 {
   return protocol;
 }

@@ -64,7 +64,7 @@ public:
   /**
     Returns the text format.
   */
-  unsigned int getTextFormat() const throw() {
+  unsigned int getTextFormat() const noexcept {
     return textFormat;
   }
 

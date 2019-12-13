@@ -52,7 +52,7 @@ public:
     Returns the global identifier of the encoding scheme (e.g.
     "urn:rmi:orb:encoding-scheme:username@somedomain:Lisa").
   */
-  virtual String getUrn() const throw() = 0;
+  virtual String getUrn() const noexcept = 0;
   
   /**
     Destroys the encoding.

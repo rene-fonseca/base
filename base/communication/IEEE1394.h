@@ -413,42 +413,42 @@ public:
   /**
     Returns the number of nodes of the local bus.
   */
-  inline unsigned int getNumberOfNodes() const throw() {
+  inline unsigned int getNumberOfNodes() const noexcept {
     return numberOfNodes;
   }
 
   /**
     Returns the physical id of the local node (i.e. the adapter).
   */
-  inline unsigned int getLocalId() const throw() {
+  inline unsigned int getLocalId() const noexcept {
     return localId;
   }
 
   /**
     Returns the physical id of the root node.
   */
-  inline unsigned int getRootNode() const throw() {
+  inline unsigned int getRootNode() const noexcept {
     return numberOfNodes - 1; // the largest physical id
   }
 
   /**
     Returns the physical id of the cycle master.
   */
-  inline unsigned int getCycleMaster() const throw() {
+  inline unsigned int getCycleMaster() const noexcept {
     return cycleMasterId;
   }
   
   /**
     Returns the physical id of the bus manager.
   */
-  inline unsigned int getBusManager() const throw() {
+  inline unsigned int getBusManager() const noexcept {
     return busManagerId;
   }
 
   /**
     Returns the physical id of the isochronous resource manager.
   */
-  inline unsigned int getIsochronousResourceManager() const throw() {
+  inline unsigned int getIsochronousResourceManager() const noexcept {
     return isochronousResourceManagerId;
   }
 
@@ -554,7 +554,7 @@ public:
   /**
     Returns true if the bus has been reset.
   */
-  bool hasBeenReset() const throw() {
+  bool hasBeenReset() const noexcept {
     return ieee1394impl->hasBeenReset();
   }
   
@@ -701,14 +701,14 @@ public:
     @return As a special case this method returns false for any invalid
     physical id.
   */
-  inline bool isPresent(unsigned int physicalId) const throw() {
+  inline bool isPresent(unsigned int physicalId) const noexcept {
     return physicalId < numberOfNodes;
   }
 
   /**
     Returns the nodes which have the link layer activated as a bit mask.
   */
-  inline uint64 getLinkActiveNodes() const throw() {
+  inline uint64 getLinkActiveNodes() const noexcept {
     return linkActiveNodes;
   }
   
@@ -729,7 +729,7 @@ public:
   /**
     Returns the contender nodes as a bit mask.
   */
-  inline uint64 getContenders() const throw() {
+  inline uint64 getContenders() const noexcept {
     return contenderNodes;
   }
   
@@ -751,7 +751,7 @@ public:
 
     @param physicalId The physical id the node.    
   */
-  inline bool isTransactionCapable(unsigned int physicalId) const throw()
+  inline bool isTransactionCapable(unsigned int physicalId) const noexcept
   {
     if (!(physicalId < numberOfNodes)) {
       throw OutOfDomain(this);

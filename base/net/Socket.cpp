@@ -213,12 +213,12 @@ public:
   }
   
   /** Returns pointer to socket address. */
-  inline const struct sockaddr* getValue() const throw() {
+  inline const struct sockaddr* getValue() const noexcept {
     return &sa;
   }
   
   /** Returns the size of the socket address structure. */
-  inline unsigned int getSize() const throw() {
+  inline unsigned int getSize() const noexcept {
 #  if (defined(_COM_AZURE_DEV__BASE__INET_IPV6))
     return (sa.sa_family == AF_INET6) ? sizeof(ipv6) : sizeof(ipv4);
 #else
@@ -226,7 +226,7 @@ public:
 #endif
   }
   
-  inline Socket::Domain getDomain() const throw() {
+  inline Socket::Domain getDomain() const noexcept {
 #  if (defined(_COM_AZURE_DEV__BASE__INET_IPV6))
     return (sa.sa_family == AF_INET6) ? Socket::IPV6 : Socket::IPV4;
 #else
@@ -235,12 +235,12 @@ public:
   }
   
   /** Returns the maximum size of the supported socket addresses. */
-  inline unsigned int getAnySize() const throw() {
+  inline unsigned int getAnySize() const noexcept {
     return sizeof(storage);
   }
   
   /** Returns the address. */
-  inline InetAddress getAddress() const throw() {
+  inline InetAddress getAddress() const noexcept {
     switch (sa.sa_family) {
     case AF_INET:
       return InetAddress(
@@ -260,7 +260,7 @@ public:
   }
   
   /** Returns the port. */
-  inline unsigned short getPort() const throw() {
+  inline unsigned short getPort() const noexcept {
     switch (sa.sa_family) {
     case AF_INET:
       return ByteOrder::fromBigEndian<unsigned short>(ipv4.sin_port);
@@ -650,19 +650,19 @@ void Socket::getName() noexcept
   socket->setLocalPort(sa.getPort());
 }
 
-const InetAddress& Socket::getAddress() const throw() {
+const InetAddress& Socket::getAddress() const noexcept {
   return socket->getRemoteAddress();
 }
 
-unsigned short Socket::getPort() const throw() {
+unsigned short Socket::getPort() const noexcept {
   return socket->getRemotePort();
 }
 
-const InetAddress& Socket::getLocalAddress() const throw() {
+const InetAddress& Socket::getLocalAddress() const noexcept {
   return socket->getLocalAddress();
 }
 
-unsigned short Socket::getLocalPort() const throw() {
+unsigned short Socket::getLocalPort() const noexcept {
   return socket->getLocalPort();
 }
 

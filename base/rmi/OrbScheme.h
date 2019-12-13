@@ -44,18 +44,18 @@ public:
     Returns the global identifier of the scheme (e.g.
     "urn:rmi:orb:scheme:tcpip").
   */
-  virtual String getUrn() const throw() = 0;
+  virtual String getUrn() const noexcept = 0;
   
   /**
     Returns the scheme identifying the scheme within the application (e.g.
     "tcpip").
   */
-  virtual String getScheme() const throw() = 0;
+  virtual String getScheme() const noexcept = 0;
   
   /**
     Returns the current number of connections.
   */
-  virtual unsigned int getNumberOfConnections() const throw() = 0;
+  virtual unsigned int getNumberOfConnections() const noexcept = 0;
 
   /**
     Returns a connection factory for the specified end point. This may not be

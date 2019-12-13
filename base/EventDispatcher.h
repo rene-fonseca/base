@@ -71,7 +71,7 @@ public:
   /**
     Sends the signal to the registered listeners.
   */
-  void notify() const throw() {
+  void notify() const noexcept {
     forEach(listeners, signal);
   }
 };

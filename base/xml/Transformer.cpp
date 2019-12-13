@@ -46,7 +46,7 @@ void Transformer::setParameter(
   parameters.add(name, value);
 }
 
-// bool Transformer::getXInclude() const throw() {
+// bool Transformer::getXInclude() const noexcept {
 // #if defined(_COM_AZURE_DEV__BASE__XSLT_XMLSOFT_ORG)
 //   return xsltGetXIncludeDefault() != 0;
 // #endif

@@ -194,7 +194,7 @@ Urn& Urn::operator=(const Urn& assign) noexcept
   return *this;
 }
 
-bool Urn::operator==(const Urn& compare) const throw()
+bool Urn::operator==(const Urn& compare) const noexcept
 {
   if (nid.compareToIgnoreCase(compare.nid) != 0) {
     return false;

@@ -98,17 +98,17 @@ private:
       OperatingSystem::Handle handle, Domain domain, Kind kind) noexcept;
     
     /** Returns the protocol. */
-    inline Domain getDomain() const throw() {
+    inline Domain getDomain() const noexcept {
       return domain;
     }
     
     /** Returns the type. */
-    inline Kind getKindype() const throw() {
+    inline Kind getKindype() const noexcept {
       return kind;
     }
     
     /** Returns the local address. */
-    inline const InetAddress& getLocalAddress() const throw() {
+    inline const InetAddress& getLocalAddress() const noexcept {
       return localAddress;
     }
     
@@ -118,7 +118,7 @@ private:
     }
     
     /** Returns the local port. */
-    inline unsigned short getLocalPort() const throw() {
+    inline unsigned short getLocalPort() const noexcept {
       return localPort;
     }
     
@@ -128,7 +128,7 @@ private:
     }
     
     /** Returns the remote address. */
-    inline const InetAddress& getRemoteAddress() const throw() {
+    inline const InetAddress& getRemoteAddress() const noexcept {
       return remoteAddress;
     }
     
@@ -138,7 +138,7 @@ private:
     }
     
     /** Returns the remote port. */
-    inline unsigned short getRemotePort() const throw() {
+    inline unsigned short getRemotePort() const noexcept {
       return remotePort;
     }
     
@@ -148,17 +148,17 @@ private:
     }
     
     /** Returns true if the socket is valid. */
-    inline bool isValid() const throw() {
+    inline bool isValid() const noexcept {
       return getHandle() != OperatingSystem::INVALID_HANDLE;
     }
     
     /** Returns true if socket is connected. */
-    inline bool isConnected() const throw() {
+    inline bool isConnected() const noexcept {
       return getRemotePort() != 0;
     }
     
     /** Returns true if socket is bound. */
-    inline bool isBound() const throw() {
+    inline bool isBound() const noexcept {
       return getLocalPort() != 0;
     }
     
@@ -180,7 +180,7 @@ protected:
   /**
     Returns the handle of the socket.
   */
-  inline OperatingSystem::Handle getHandle() const throw() {
+  inline OperatingSystem::Handle getHandle() const noexcept {
     return socket->getHandle();
   }
   
@@ -526,7 +526,7 @@ public:
   /**
     Returns true if the socket is valid.
   */
-  inline bool isValid() const throw() {
+  inline bool isValid() const noexcept {
     return socket->isValid();
   }
   

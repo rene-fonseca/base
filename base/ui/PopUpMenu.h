@@ -33,9 +33,9 @@ public:
   inline MenuItem() noexcept {
   }
   
-  virtual Dimension getMinimumSize() const throw() = 0;
+  virtual Dimension getMinimumSize() const noexcept = 0;
   
-  virtual Dimension getPreferredSize() const throw() = 0;
+  virtual Dimension getPreferredSize() const noexcept = 0;
   
   // need to know to the final dimension of the context
   // need to know the graphics context
@@ -51,11 +51,11 @@ public:
   inline SeparatorMenuItem() noexcept {
   }
   
-  Dimension getMinimumSize() const throw() {
+  Dimension getMinimumSize() const noexcept {
     return Dimension(MINIMUM_WIDTH, maximum(MINIMUM_HEIGHT, 2 * VERTICAL_MARGIN + 2));
   }
   
-  Dimension getPreferredSize() const throw() {
+  Dimension getPreferredSize() const noexcept {
     return Dimension(MINIMUM_WIDTH, maximum(MINIMUM_HEIGHT, 2 * VERTICAL_MARGIN + 2));
   }
   
@@ -75,7 +75,7 @@ public:
   inline BitmapMenuItem() noexcept : grayed(false) {
   }
   
-  inline bool isGrayed() const throw() {
+  inline bool isGrayed() const noexcept {
     return grayed;
   }
   
@@ -87,7 +87,7 @@ public:
     grayed = false;
   }
   
-  inline const Bitmap& getBitmap() const throw() {
+  inline const Bitmap& getBitmap() const noexcept {
     return bitmap;
   }
   
@@ -95,11 +95,11 @@ public:
     this->bitmap = bitmap;
   }
   
-  Dimension getMinimumSize() const throw() {
+  Dimension getMinimumSize() const noexcept {
     return Dimension(1, 1);
   }
   
-  Dimension getPreferredSize() const throw() {
+  Dimension getPreferredSize() const noexcept {
     return Dimension(1, 1);
   }
   
@@ -128,7 +128,7 @@ public:
     : command(_command) {
   }
   
-  inline unsigned int getCommand() const throw() {
+  inline unsigned int getCommand() const noexcept {
     return command;
   }
   
@@ -164,7 +164,7 @@ public:
       shortcut(_shortcut) {
   }
   
-  inline Alignment getAlignment() const throw() {
+  inline Alignment getAlignment() const noexcept {
     return alignment;
   }
 
@@ -172,7 +172,7 @@ public:
     this->alignment = alignment;
   }
   
-  inline const String& getText() const throw() {
+  inline const String& getText() const noexcept {
     return text;
   }
   
@@ -180,7 +180,7 @@ public:
     this->text = text;
   }
 
-  inline const String& getShortcut() const throw() {
+  inline const String& getShortcut() const noexcept {
     return shortcut;
   }
 
@@ -188,11 +188,11 @@ public:
     this->shortcut = shortcut;
   }
 
-  Dimension getMinimumSize() const throw() {
+  Dimension getMinimumSize() const noexcept {
     return Dimension(0, 0);
   }
   
-  Dimension getPreferredSize() const throw() {
+  Dimension getPreferredSize() const noexcept {
     // if has shortcut
     // width of text + width of shortcut
     // height of (text and shortcut)
@@ -213,7 +213,7 @@ public:
   inline CheckableMenuItem() noexcept : checked(false) {
   }
   
-  inline bool isChecked() const throw() {
+  inline bool isChecked() const noexcept {
     return checked;
   }
 
@@ -239,7 +239,7 @@ public:
   inline RadioMenuItem() noexcept : selected(false) {
   }
 
-  inline bool isSelected() const throw() {
+  inline bool isSelected() const noexcept {
     return selected;
   }
 
@@ -282,7 +282,7 @@ public:
   EditMenuItem(const String& _text) noexcept : text(_text) {
   }
   
-  inline const String& getText() const throw() {
+  inline const String& getText() const noexcept {
     return text;
   }
   
@@ -349,7 +349,7 @@ public:
   /**
     Returns the number of menu items.
   */
-  unsigned int getNumberOfItems() const throw() {
+  unsigned int getNumberOfItems() const noexcept {
     return items.getSize();
   }
   

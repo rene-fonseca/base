@@ -75,23 +75,23 @@ public:
   */
   AsynchronousReadCompletion& operator=(const AsynchronousReadCompletion& assign) noexcept;
 
-  inline bool eof() const throw() {
+  inline bool eof() const noexcept {
     return (flags & END_OF_FILE) != 0;
   }
   
-  inline bool successful() const throw() {
+  inline bool successful() const noexcept {
     return (flags & SUCCESSFUL) != 0;
   }
 
-  inline bool hasCompleted() const throw() {
+  inline bool hasCompleted() const noexcept {
     return (flags & COMPLETED) != 0;
   }
   
-  inline bool isPending() const throw() {
+  inline bool isPending() const noexcept {
     return (flags & COMPLETED) == 0;
   }
 
-  inline bool wasAborted() const throw() {
+  inline bool wasAborted() const noexcept {
     return (flags & ABORTED) != 0;
   }
 
@@ -99,15 +99,15 @@ public:
     return buffer;
   }
   
-  inline unsigned int getBytesToRead() const throw() {
+  inline unsigned int getBytesToRead() const noexcept {
     return bytesToRead;
   }
   
-  inline unsigned long long getOffset() const throw() {
+  inline unsigned long long getOffset() const noexcept {
     return offset;
   }
 
-  inline unsigned int getBytesRead() const throw() {
+  inline unsigned int getBytesRead() const noexcept {
     return bytesRead;
   }
 };

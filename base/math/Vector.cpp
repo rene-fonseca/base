@@ -78,13 +78,13 @@ Vector<TYPE>& Vector<TYPE>::clear() noexcept
 }
 
 template<class TYPE>
-Vector<TYPE> Vector<TYPE>::plus() const throw()
+Vector<TYPE> Vector<TYPE>::plus() const noexcept
 {
   return Vector(*this);
 }
 
 template<class TYPE>
-Vector<TYPE> Vector<TYPE>::minus() const throw()
+Vector<TYPE> Vector<TYPE>::minus() const noexcept
 {
   return Vector(getSize()).negate(*this);
 }
@@ -137,7 +137,7 @@ Vector<TYPE>& Vector<TYPE>::negate(const Vector<TYPE>& value) noexcept
 }
 
 template<class TYPE>
-TYPE Vector<TYPE>::dotdot() const throw()
+TYPE Vector<TYPE>::dotdot() const noexcept
 {
   SquareSum<TYPE> squareSum;
   forEach(getReadOnlyElements(), getSize(), squareSum);
@@ -145,7 +145,7 @@ TYPE Vector<TYPE>::dotdot() const throw()
 }
 
 template<class TYPE>
-TYPE Vector<TYPE>::norm() const throw()
+TYPE Vector<TYPE>::norm() const noexcept
 {
   SquareSum<TYPE> squareSum;
   forEach(getReadOnlyElements(), getSize(), squareSum);

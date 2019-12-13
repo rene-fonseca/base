@@ -433,7 +433,7 @@ public:
   /**
     Returns the current mouse cursor for the window.
   */
-  inline Cursor getCursor() const throw() {
+  inline Cursor getCursor() const noexcept {
     return cursor;
   }
 
@@ -542,11 +542,11 @@ public:
   /**
     Returns true if the window is visible.
   */
-  inline bool isVisible() const throw() {
+  inline bool isVisible() const noexcept {
     return visibility != INVISIBLE;
   }
 
-  inline Visibility getVisibility() const throw() {
+  inline Visibility getVisibility() const noexcept {
     return visibility;
   }
   
@@ -563,7 +563,7 @@ public:
   /**
     Returns true if the window is enabled.
   */
-  inline bool isEnabled() const throw() {
+  inline bool isEnabled() const noexcept {
     return enabled;
   }
   

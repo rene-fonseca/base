@@ -108,28 +108,28 @@ public:
   /**
     Returns true if the id is an encapsulated EUI-48 identifier.
   */
-  inline bool isEUI48() const throw() {
+  inline bool isEUI48() const noexcept {
     return (id[3] == 0xff) && (id[4] == 0xfe); // TAG: conflict with RFC 2373
   }
   
   /**
     Returns true if the id is an encapsulated MAC-48 identifier.
   */
-  inline bool isMAC48() const throw() {
+  inline bool isMAC48() const noexcept {
     return (id[3] == 0xff) && (id[4] == 0xff); // TAG: conflict with RFC 2373
   }
 
   /**
     Returns true if the individual/group bit is set.
   */
-  inline bool isIndividual() const throw() {
+  inline bool isIndividual() const noexcept {
     return (id[0] & 0x01) == 0;
   }
   
   /**
     Returns true if the universal/local bit is set.
   */
-  inline bool isGlobal() const throw() {
+  inline bool isGlobal() const noexcept {
     return (id[0] & 0x02) == 0;
   }
 
@@ -170,7 +170,7 @@ public:
   /**
     Returns the identifier.
   */
-  inline const uint8* getBytes() const throw() {
+  inline const uint8* getBytes() const noexcept {
     return reinterpret_cast<const uint8*>(&id);
   }
 };

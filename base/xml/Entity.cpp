@@ -20,7 +20,7 @@
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
-String Entity::getPublicId() const throw() {
+String Entity::getPublicId() const noexcept {
 #if defined(_COM_AZURE_DEV__BASE__XML_XMLSOFT_ORG)
   xmlNodePtr node = (xmlNodePtr)getContext();
   xmlEntity* entity = (xmlEntity*)node->name;
@@ -34,7 +34,7 @@ String Entity::getPublicId() const throw() {
 #endif
 }
   
-String Entity::getSystemId() const throw() {
+String Entity::getSystemId() const noexcept {
 #if defined(_COM_AZURE_DEV__BASE__XML_XMLSOFT_ORG)
   xmlNodePtr node = (xmlNodePtr)getContext();
   xmlEntity* entity = (xmlEntity*)node->name;
@@ -48,7 +48,7 @@ String Entity::getSystemId() const throw() {
 #endif
 }
   
-String Entity::getNotationName() const throw() {
+String Entity::getNotationName() const noexcept {
 #if defined(_COM_AZURE_DEV__BASE__XML_XMLSOFT_ORG)
   xmlNodePtr node = (xmlNodePtr)getContext();
   xmlEntity* entity = (xmlEntity*)node->name;

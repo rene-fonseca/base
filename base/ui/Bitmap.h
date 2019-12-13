@@ -42,7 +42,7 @@ private:
       : handle(_handle) {
     }
 
-    inline void* getHandle() const throw() {
+    inline void* getHandle() const noexcept {
       return handle;
     }
     
@@ -115,7 +115,7 @@ public:
   /**
     Returns true if the bitmap is valid.
   */
-  inline bool isValid() const throw() {
+  inline bool isValid() const noexcept {
     return handle.isValid();
   }
   

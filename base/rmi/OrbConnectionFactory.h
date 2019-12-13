@@ -42,12 +42,12 @@ public:
     Returns the global identifier of the connection scheme (e.g.
     "urn:rmi:orb:scheme:tcpip").
   */
-  virtual String getUrn() const throw() = 0;
+  virtual String getUrn() const noexcept = 0;
   
   /**
     Returns the identifier of the end point.
   */
-  virtual String getEndPoint() const throw() = 0;
+  virtual String getEndPoint() const noexcept = 0;
   
   /**
     Invoked by the orb.

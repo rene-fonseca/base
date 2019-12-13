@@ -57,18 +57,18 @@ public:
   
   Split(Window& owner) throw(UserInterfaceException);
 
-//   unsigned int getFlags() const throw() {
+//   unsigned int getFlags() const noexcept {
 //   }
 
-  inline bool isVerticalSplit() const throw() {
+  inline bool isVerticalSplit() const noexcept {
     return flags & VERTICAL_SPLIT;
   }
 
-  inline bool isHorizontalSplit() const throw() {
+  inline bool isHorizontalSplit() const noexcept {
     return flags & HORIZONTAL_SPLIT;
   }
 
-  inline bool getFixed() const throw() {
+  inline bool getFixed() const noexcept {
     return flags & FIXED_SPLIT;
   }
   

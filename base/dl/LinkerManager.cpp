@@ -69,7 +69,7 @@ void LinkerManager::unload(
   modules.remove(module);
 }
 
-LinkerManager::ReadEnumerator LinkerManager::getModules() const throw() {
+LinkerManager::ReadEnumerator LinkerManager::getModules() const noexcept {
   return modules.getReadEnumerator();
 }
 

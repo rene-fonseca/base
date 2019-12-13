@@ -65,7 +65,7 @@ public:
   /**
     Type cast to pointer.
   */
-  inline operator TYPE*() const throw() {
+  inline operator TYPE*() const noexcept {
     return object;
   }
 

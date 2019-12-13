@@ -91,7 +91,7 @@ public:
   /**
     Returns the number of elements in the cache.
   */
-  inline MemorySize getSize() const throw()
+  inline MemorySize getSize() const noexcept
   {
     return elements.getSize();
   }
@@ -99,7 +99,7 @@ public:
   /**
     Returns true if the cache is empty.
   */
-  inline bool isEmpty() const throw()
+  inline bool isEmpty() const noexcept
   {
     return elements.getSize() == 0;
   }
@@ -107,7 +107,7 @@ public:
   /**
     Returns true if the specified object is in the cache.
   */
-  inline bool isCached(const Key& key) const throw()
+  inline bool isCached(const Key& key) const noexcept
   {
     return elements.hasKey(key);
   }
@@ -156,7 +156,7 @@ public:
   /**
     Returns a enumerator of the cache for non-modifying access.
   */
-  inline ReadEnumerator getReadEnumerator() const throw()
+  inline ReadEnumerator getReadEnumerator() const noexcept
   {
     return elements.getReadEnumerator();
   }
@@ -172,7 +172,7 @@ public:
   /**
     Returns a enumerator of the values of the cache for non-modifying access.
   */
-  inline ReadValueEnumerator getReadValueEnumerator() const throw()
+  inline ReadValueEnumerator getReadValueEnumerator() const noexcept
   {
     return elements.getReadValueEnumerator();
   }

@@ -169,7 +169,7 @@ Url& Url::operator=(const Url& assign) noexcept
   return *this;
 }
 
-bool Url::isRelative() const throw()
+bool Url::isRelative() const noexcept
 {
   return path.isEmpty() || path.startsWith(Literal("/"));
 }
@@ -361,23 +361,23 @@ void Url::parse(const String& url, bool strict) throw(UrlException, MemoryExcept
   }
 }
 
-String Url::getScheme() const throw() {
+String Url::getScheme() const noexcept {
   return scheme;
 }
 
-String Url::getUser() const throw() {
+String Url::getUser() const noexcept {
   return user;
 }
 
-String Url::getPassword() const throw() {
+String Url::getPassword() const noexcept {
   return password;
 }
 
-String Url::getHost() const throw() {
+String Url::getHost() const noexcept {
   return host;
 }
 
-String Url::getPort() const throw() {
+String Url::getPort() const noexcept {
   return port;
 }
 

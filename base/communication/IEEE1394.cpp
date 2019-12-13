@@ -915,7 +915,7 @@ IEEE1394::Speed IEEE1394::getMaximumLinkSpeed(
   return nodes[physicalId].linkSpeed;
 }
 
-IEEE1394::Speed IEEE1394::getMaximumSpeed(uint64 nodes) const throw() {
+IEEE1394::Speed IEEE1394::getMaximumSpeed(uint64 nodes) const noexcept {
   Speed result = IEEE1394::S3200;
   for (unsigned int id = 0; id < numberOfNodes; ++id) { // ignore non-present nodes
     if ((nodes >> id) & 1) {

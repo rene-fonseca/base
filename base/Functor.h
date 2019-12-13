@@ -640,7 +640,7 @@ public:
     : operation(_operation), first(_first) {
   }
   
-  inline Result operator()(const SecondArgument& second) const throw() {
+  inline Result operator()(const SecondArgument& second) const noexcept {
     return operation(first, second);
   }
 };
@@ -676,7 +676,7 @@ public:
     : operation(_operation), second(_second) {
   }
 
-  inline Result operator()(const FirstArgument& first) const throw() {
+  inline Result operator()(const FirstArgument& first) const noexcept {
     return operation(first, second);
   }
 };
@@ -700,7 +700,7 @@ template<class TYPE>
 class Add : public BinaryOperation<TYPE, TYPE, TYPE> {
 public:
   
-  inline TYPE operator()(const TYPE& left, const TYPE& right) const throw() {
+  inline TYPE operator()(const TYPE& left, const TYPE& right) const noexcept {
     return left + right;
   }
 };
@@ -712,7 +712,7 @@ template<class TYPE>
 class Subtract : public BinaryOperation<TYPE, TYPE, TYPE> {
 public:
   
-  inline TYPE operator()(const TYPE& left, const TYPE& right) const throw() {
+  inline TYPE operator()(const TYPE& left, const TYPE& right) const noexcept {
     return left - right;
   }
 };
@@ -724,7 +724,7 @@ template<class TYPE>
 class Multiply : public BinaryOperation<TYPE, TYPE, TYPE> {
 public:
   
-  inline TYPE operator()(const TYPE& left, const TYPE& right) const throw() {
+  inline TYPE operator()(const TYPE& left, const TYPE& right) const noexcept {
     return left * right;
   }
 };
@@ -736,7 +736,7 @@ template<class TYPE>
 class Divide : public BinaryOperation<TYPE, TYPE, TYPE> {
 public:
   
-  inline TYPE operator()(const TYPE& left, const TYPE& right) const throw() {
+  inline TYPE operator()(const TYPE& left, const TYPE& right) const noexcept {
     return left/right;
   }
 };
@@ -748,7 +748,7 @@ template<class TYPE>
 class Negate : public UnaryOperation<TYPE, TYPE> {
 public:
   
-  inline TYPE operator()(const TYPE& left) const throw() {
+  inline TYPE operator()(const TYPE& left) const noexcept {
     return -left;
   }
 };
@@ -760,7 +760,7 @@ template<class TYPE>
 class Absolute : public UnaryOperation<TYPE, TYPE> {
 public:
   
-  inline TYPE operator()(const TYPE& left) const throw() {
+  inline TYPE operator()(const TYPE& left) const noexcept {
     return absolute(left);
   }
 };
@@ -774,7 +774,7 @@ template<class TYPE>
 class Equal : public BinaryOperation<TYPE, TYPE, bool> {
 public:
   
-  inline bool operator()(const TYPE& left, const TYPE& right) const throw() {
+  inline bool operator()(const TYPE& left, const TYPE& right) const noexcept {
     return left == right;
   }
 };
@@ -786,7 +786,7 @@ template<class TYPE>
 class NotEqual : public BinaryOperation<TYPE, TYPE, bool> {
 public:
   
-  inline bool operator()(const TYPE& left, const TYPE& right) const throw() {
+  inline bool operator()(const TYPE& left, const TYPE& right) const noexcept {
     return !(left == right);
   }
 };
@@ -798,7 +798,7 @@ template<class TYPE>
 class Greater : public BinaryOperation<TYPE, TYPE, bool> {
 public:
   
-  inline bool operator()(const TYPE& left, const TYPE& right) const throw() {
+  inline bool operator()(const TYPE& left, const TYPE& right) const noexcept {
     return left > right;
   }
 };
@@ -810,7 +810,7 @@ template<class TYPE>
 class Less : public BinaryOperation<TYPE, TYPE, bool> {
 public:
   
-  inline bool operator()(const TYPE& left, const TYPE& right) const throw() {
+  inline bool operator()(const TYPE& left, const TYPE& right) const noexcept {
     return left < right;
   }
 };
@@ -822,7 +822,7 @@ template<class TYPE>
 class GreaterOrEqual : public BinaryOperation<TYPE, TYPE, bool> {
 public:
   
-  inline bool operator()(const TYPE& left, const TYPE& right) const throw() {
+  inline bool operator()(const TYPE& left, const TYPE& right) const noexcept {
     return left >= right;
   }
 };
@@ -834,7 +834,7 @@ template<class TYPE>
 class LessOrEqual : public BinaryOperation<TYPE, TYPE, bool> {
 public:
   
-  inline bool operator()(const TYPE& left, const TYPE& right) const throw() {
+  inline bool operator()(const TYPE& left, const TYPE& right) const noexcept {
     return left <= right;
   }
 };
@@ -846,7 +846,7 @@ template<class TYPE>
 class LogicalAnd : public BinaryOperation<TYPE, TYPE, bool> {
 public:
   
-  inline bool operator()(const TYPE& left, const TYPE& right) const throw() {
+  inline bool operator()(const TYPE& left, const TYPE& right) const noexcept {
     return left && right;
   }
 };
@@ -858,7 +858,7 @@ template<class TYPE>
 class LogicalOr : public BinaryOperation<TYPE, TYPE, bool> {
 public:
   
-  inline bool operator()(const TYPE& left, const TYPE& right) const throw() {
+  inline bool operator()(const TYPE& left, const TYPE& right) const noexcept {
     return left || right;
   }
 };
@@ -870,7 +870,7 @@ template<class TYPE>
 class LogicalNot : public UnaryOperation<TYPE, bool> {
 public:
   
-  inline bool operator()(const TYPE& left) const throw() {
+  inline bool operator()(const TYPE& left) const noexcept {
     return !left;
   }
 };
@@ -884,7 +884,7 @@ template<class TYPE>
 class BitwiseAnd : public BinaryOperation<TYPE, TYPE, TYPE> {
 public:
   
-  inline TYPE operator()(const TYPE& left, const TYPE& right) const throw() {
+  inline TYPE operator()(const TYPE& left, const TYPE& right) const noexcept {
     return left & right;
   }
 };
@@ -896,7 +896,7 @@ template<class TYPE>
 class BitwiseOr : public BinaryOperation<TYPE, TYPE, TYPE> {
 public:
   
-  inline TYPE operator()(const TYPE& left, const TYPE& right) const throw() {
+  inline TYPE operator()(const TYPE& left, const TYPE& right) const noexcept {
     return left | right;
   }
 };
@@ -908,7 +908,7 @@ template<class TYPE>
 class BitwiseExclusiveOr : public BinaryOperation<TYPE, TYPE, TYPE> {
 public:
   
-  inline TYPE operator()(const TYPE& left, const TYPE& right) const throw() {
+  inline TYPE operator()(const TYPE& left, const TYPE& right) const noexcept {
     return left ^ right;
   }
 };
@@ -921,7 +921,7 @@ template<class TYPE>
 class Same : public UnaryOperation<TYPE, TYPE> {
 public:
   
-  inline TYPE operator()(const TYPE& value) const throw() {
+  inline TYPE operator()(const TYPE& value) const noexcept {
     return value;
   }
 };
@@ -945,7 +945,7 @@ public:
     result += value;
   }
   
-  inline RESULT getResult() const throw() {
+  inline RESULT getResult() const noexcept {
     return result;
   }
 };
@@ -970,7 +970,7 @@ public:
     result += absolute(value);
   }
   
-  inline RESULT getResult() const throw() {
+  inline RESULT getResult() const noexcept {
     return result;
   }
 };
@@ -995,7 +995,7 @@ public:
     result += value * value;
   }
   
-  inline RESULT getResult() const throw() {
+  inline RESULT getResult() const noexcept {
     return result;
   }
 };
@@ -1019,7 +1019,7 @@ public:
     result += left * right;
   }
   
-  inline RESULT getResult() const throw() {
+  inline RESULT getResult() const noexcept {
     return result;
   }
 };
@@ -1046,7 +1046,7 @@ public:
     }
   }
 
-  inline TYPE getResult() const throw() {
+  inline TYPE getResult() const noexcept {
     return result;
   }
 };
@@ -1074,7 +1074,7 @@ public:
     }
   }
   
-  inline TYPE getResult() const throw() {
+  inline TYPE getResult() const noexcept {
     return result;
   }
 };

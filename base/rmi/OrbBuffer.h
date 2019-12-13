@@ -80,28 +80,28 @@ public:
   /**
     Returns the number of readable bytes.
   */
-  inline unsigned int getReadable() const throw() {
+  inline unsigned int getReadable() const noexcept {
     return writeHead - readHead;
   }
 
   /**
     Returns the number of writeable bytes.
   */
-  inline unsigned int getWriteable() const throw() {
+  inline unsigned int getWriteable() const noexcept {
     return end - writeHead;
   }
 
   /**
     Returns true if no bytes are available for reading.
   */
-  inline bool isEmpty() const throw() {
+  inline bool isEmpty() const noexcept {
     return readHead == writeHead;
   }
   
   /**
     Returns true if no bytes may be written.
   */
-  inline bool isFull() const throw() {
+  inline bool isFull() const noexcept {
     return writeHead == end;
   }
   

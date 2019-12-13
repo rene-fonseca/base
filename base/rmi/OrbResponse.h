@@ -82,27 +82,27 @@ public:
   /**
     Returns the response type.
   */
-  inline ResponseType getResponseType() const throw() {
+  inline ResponseType getResponseType() const noexcept {
     return responseType;
   }
   
-  inline uint8 getOctet() const throw() {
+  inline uint8 getOctet() const noexcept {
     return octet;
   }
 
-  inline char getCharacter() const throw() {
+  inline char getCharacter() const noexcept {
     return character;
   }
   
-  inline ucs2 getWideCharacter() const throw() {
+  inline ucs2 getWideCharacter() const noexcept {
     return wideCharacter;
   }
   
-  inline const String& getString() const throw() {
+  inline const String& getString() const noexcept {
     return string;
   }
   
-  inline const WideString& getWideString() const throw() {
+  inline const WideString& getWideString() const noexcept {
     return wideString;
   }
   

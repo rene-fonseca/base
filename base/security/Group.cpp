@@ -64,12 +64,12 @@ Group::Group(const void* _id) throw(OutOfDomain)
 #endif // flavor
 }
 
-Group::Group(const Group& copy) throw()
+Group::Group(const Group& copy) noexcept
   : integralId(copy.integralId), id(copy.id)
 {
 }
 
-Group& Group::operator=(const Group& assign) throw()
+Group& Group::operator=(const Group& assign) noexcept
 {
   id = assign.id;
   integralId = assign.integralId;
@@ -324,7 +324,7 @@ FormatOutputStream& operator<<(FormatOutputStream& stream, const Group& value)
 #endif // flavor
 }
 
-unsigned long Hash<Group>::operator()(const Group& value) throw() {
+unsigned long Hash<Group>::operator()(const Group& value) noexcept {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   if (!value.id.isValid()) {
     return 0;

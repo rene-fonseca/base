@@ -34,15 +34,15 @@ namespace internal {
       unsigned long totalOutput;
       char* message;
       void* state;
-      void* (*allocate)(void*, int, int) throw();
-      void (*release)(void*, void*) throw();
+      void* (*allocate)(void*, int, int) noexcept;
+      void (*release)(void*, void*) noexcept;
       void* opaque;
       int dataType;
       unsigned long adler;
       unsigned long reserved;
     };
     
-    static void* allocate(void*, int n, int m) throw()
+    static void* allocate(void*, int n, int m) noexcept
     {
       MemorySize size = static_cast<MemorySize>(n) * m;
       if ((size < 0) || (size > PrimitiveTraits<unsigned int>::MAXIMUM))  {
@@ -51,7 +51,7 @@ namespace internal {
       return Heap::allocateNoThrow<uint8>(size);
     }
     
-    static void release(void*, void* memory) throw()
+    static void release(void*, void* memory) noexcept
     {
       Heap::release<uint8>(static_cast<uint8*>(memory));
     }
@@ -236,7 +236,7 @@ MemorySize ZLibInflater::pull(uint8* buffer, MemorySize _size) throw(IOException
 #endif
 }
 
-ZLibInflater::~ZLibInflater() throw() {
+ZLibInflater::~ZLibInflater() noexcept {
 #if (defined(_COM_AZURE_DEV__BASE__USE_ZLIB))
   internal::ZLibInflater::Context* context =
     Cast::pointer<internal::ZLibInflater::Context*>(this->context);

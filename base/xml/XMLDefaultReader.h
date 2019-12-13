@@ -55,7 +55,7 @@ public:
   /**
     Initializes the XML reader.
   */
-  XMLDefaultReader() throw();
+  XMLDefaultReader() noexcept;
   
   /**
     Returns the value of the specified feature.
@@ -128,28 +128,28 @@ public:
   /**
     Registers a content event handler.
   */
-  inline void setContentHandler(ContentHandler* handler) throw() {
+  inline void setContentHandler(ContentHandler* handler) noexcept {
     contentHandler = handler;
   }
   
   /**
     Registers a DTD event handler.
   */
-  inline void setDTDHandler(DTDHandler* handler) throw() {
+  inline void setDTDHandler(DTDHandler* handler) noexcept {
     dtdHandler = handler;
   }
   
   /**
     Registers an entity resolver.
   */
-  inline void setEntityResolver(EntityResolver* _entityResolver) throw() {
+  inline void setEntityResolver(EntityResolver* _entityResolver) noexcept {
     entityResolver = _entityResolver;
   }
   
   /**
     Registers an error event handler.
   */
-  inline void setErrorHandler(ErrorHandler* handler) throw() {
+  inline void setErrorHandler(ErrorHandler* handler) noexcept {
     errorHandler = handler;
   }
 
@@ -163,7 +163,7 @@ public:
   /**
     Sets the validation flag.
   */
-  inline void setVatidation(bool validate) throw() {
+  inline void setVatidation(bool validate) noexcept {
     this->validate = validate;
   }
 
@@ -177,12 +177,12 @@ public:
   /**
     Terminates the parsing.
   */
-  void terminate() throw();
+  void terminate() noexcept;
   
   /**
     Destroys the XML reader.
   */
-  ~XMLDefaultReader() throw();
+  ~XMLDefaultReader() noexcept;
 };
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

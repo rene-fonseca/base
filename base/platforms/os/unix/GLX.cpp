@@ -135,7 +135,7 @@ namespace native {
     {"glXGetSelectedEvent", Cast::pointer<GLX::Function*>((void*)&GLX::glXGetSelectedEvent)}
   };
 
-  bool GLX::import() throw() {
+  bool GLX::import() noexcept {
     // TAG: only load GLX version specific function if available
     static DynamicLinker* dynamicLinker = 0;
     if (!dynamicLinker) {

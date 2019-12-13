@@ -68,7 +68,7 @@ public:
   /**
     Destroys the connection factory.
   */
-  ~LocalConnectionFactory() throw();
+  ~LocalConnectionFactory() noexcept;
 };
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

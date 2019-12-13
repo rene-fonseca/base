@@ -42,7 +42,7 @@ public:
   /**
     Initializes quaternion as origin (0, 0, 0, 0).
   */
-  inline Quaternion() throw() {
+  inline Quaternion() noexcept {
   }
 
   /**
@@ -53,14 +53,14 @@ public:
     @param z The desired Z coordinate.
     @param w The desired W coordinate.
   */
-  Quaternion(const TYPE& x, const TYPE& y, const TYPE& z, const TYPE& w) throw();
+  Quaternion(const TYPE& x, const TYPE& y, const TYPE& z, const TYPE& w) noexcept;
   
   /**
     Initializes quaternion by copying from other quaternion.
 
     @param copy The desired quaternion.
   */
-  inline Quaternion(const Quaternion& copy) throw()
+  inline Quaternion(const Quaternion& copy) noexcept
     : x(copy.x), y(copy.y), z(copy.z), w(copy.w)
   {
   }
@@ -68,7 +68,7 @@ public:
   /**
     Assignment of quaternion to quaternion.
   */
-  inline Quaternion& operator=(const Quaternion& assign) throw()
+  inline Quaternion& operator=(const Quaternion& assign) noexcept
   {
     x = assign.x; // no need to protect against self-assignment
     y = assign.y;
@@ -114,7 +114,7 @@ public:
 
     @param x The desired X coordinate.
   */
-  inline void setX(const TYPE& x) throw()
+  inline void setX(const TYPE& x) noexcept
   {
     this->x = x;
   }
@@ -124,7 +124,7 @@ public:
 
     @param y The desired Y coordinate.
   */
-  inline void setY(const TYPE& y) throw()
+  inline void setY(const TYPE& y) noexcept
   {
     this->y = y;
   }
@@ -134,7 +134,7 @@ public:
 
     @param z The desired Z coordinate.
   */
-  inline void setZ(const TYPE& z) throw()
+  inline void setZ(const TYPE& z) noexcept
   {
     this->z = z;
   }
@@ -144,7 +144,7 @@ public:
 
     @param w The desired W coordinate.
   */
-  inline void setW(const TYPE& w) throw()
+  inline void setW(const TYPE& w) noexcept
   {
     this->w = w;
   }
@@ -152,7 +152,7 @@ public:
   /**
     Sets values less than the specified value to zero.
   */
-  Quaternion& zeroAdjust(const TYPE& zero) throw()
+  Quaternion& zeroAdjust(const TYPE& zero) noexcept
   {
     if (x < zero) {
       x = TYPE(0);
@@ -206,7 +206,7 @@ public:
   /**
     Negates the quaternion.
   */
-  Quaternion& negate() throw()
+  Quaternion& negate() noexcept
   {
     x = -x;
     y = -y;
@@ -218,7 +218,7 @@ public:
   /**
     Adds the specified quaternion to this quaternion.
   */
-  Quaternion& add(const Quaternion& value) throw()
+  Quaternion& add(const Quaternion& value) noexcept
   {
     x += value.x;
     y += value.y;
@@ -230,7 +230,7 @@ public:
   /**
     Subtracts the specified quaternion from this quaternion.
   */
-  Quaternion& subtract(const Quaternion& value) throw()
+  Quaternion& subtract(const Quaternion& value) noexcept
   {
     x -= value.x;
     y -= value.y;
@@ -242,7 +242,7 @@ public:
   /**
     Multiplies this quaternion with the specified value.
   */
-  Quaternion& multiply(const TYPE& value) throw()
+  Quaternion& multiply(const TYPE& value) noexcept
   {
     x *= value;
     y *= value;
@@ -254,7 +254,7 @@ public:
   /**
     Divides this quaternion with the specified value.
   */
-  Quaternion& divide(const TYPE& value) throw()
+  Quaternion& divide(const TYPE& value) noexcept
   {
     TYPE temp = TYPE(1)/value;
     x *= temp;
@@ -279,7 +279,7 @@ public:
 
     @param value The value to be added.
   */
-  inline Quaternion& operator+=(const Quaternion& value) throw()
+  inline Quaternion& operator+=(const Quaternion& value) noexcept
   {
     return add(value);
   }
@@ -289,7 +289,7 @@ public:
 
     @param value The value to be subtracted.
   */
-  inline Quaternion& operator-=(const Quaternion& value) throw()
+  inline Quaternion& operator-=(const Quaternion& value) noexcept
   {
     return subtract(value);
   }
@@ -299,7 +299,7 @@ public:
 
     @param value The multiplicator.
   */
-  inline Quaternion& operator*=(const TYPE& value) throw()
+  inline Quaternion& operator*=(const TYPE& value) noexcept
   {
     return multiply(value);
   }
@@ -309,7 +309,7 @@ public:
 
     @param value The divisor.
   */
-  inline Quaternion& operator/=(const TYPE& value) throw()
+  inline Quaternion& operator/=(const TYPE& value) noexcept
   {
     return divide(value);
   }
@@ -333,7 +333,7 @@ public:
 
 template<class TYPE>
 inline Quaternion<TYPE>::Quaternion(
-  const TYPE& _x, const TYPE& _y, const TYPE& _z, const TYPE& _w) throw()
+  const TYPE& _x, const TYPE& _y, const TYPE& _z, const TYPE& _w) noexcept
   : x(_x), y(_y), z(_z), w(_w)
 {
 }
@@ -345,7 +345,7 @@ inline Quaternion<TYPE>::Quaternion(
 */
 template<class TYPE>
 inline Quaternion<TYPE> operator+(
-  const Quaternion<TYPE>& left, const Quaternion<TYPE>& right) throw()
+  const Quaternion<TYPE>& left, const Quaternion<TYPE>& right) noexcept
 {
   return Quaternion<TYPE>(left).add(right);
 }
@@ -357,7 +357,7 @@ inline Quaternion<TYPE> operator+(
 */
 template<class TYPE>
 inline Quaternion<TYPE> operator-(
-  const Quaternion<TYPE>& left, const Quaternion<TYPE>& right) throw()
+  const Quaternion<TYPE>& left, const Quaternion<TYPE>& right) noexcept
 {
   return Quaternion<TYPE>(left).subtract(right);
 }
@@ -368,7 +368,7 @@ inline Quaternion<TYPE> operator-(
   @relates Quaternion
 */
 template<class TYPE>
-inline Quaternion<TYPE> operator*(const Quaternion<TYPE>& left, const TYPE& right) throw()
+inline Quaternion<TYPE> operator*(const Quaternion<TYPE>& left, const TYPE& right) noexcept
 {
   return Quaternion<TYPE>(left).multiply(right);
 }
@@ -379,7 +379,7 @@ inline Quaternion<TYPE> operator*(const Quaternion<TYPE>& left, const TYPE& righ
   @relates Quaternion
 */
 template<class TYPE>
-inline Quaternion<TYPE> operator*(const TYPE& left, const Quaternion<TYPE>& right) throw()
+inline Quaternion<TYPE> operator*(const TYPE& left, const Quaternion<TYPE>& right) noexcept
 {
   return Quaternion<TYPE>(right).multiply(left);
 }
@@ -390,7 +390,7 @@ inline Quaternion<TYPE> operator*(const TYPE& left, const Quaternion<TYPE>& righ
   @relates Quaternion
 */
 template<class TYPE>
-inline Quaternion<TYPE> operator/(const Quaternion<TYPE>& left, const TYPE& right) throw()
+inline Quaternion<TYPE> operator/(const Quaternion<TYPE>& left, const TYPE& right) noexcept
 {
   return Quaternion<TYPE>(left).divide(right);
 }

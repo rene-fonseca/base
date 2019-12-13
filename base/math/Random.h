@@ -58,38 +58,38 @@ public:
   /**
     Initializes the internal state of the generator from the current time.
   */
-  static void randomize() throw();
+  static void randomize() noexcept;
 
   /**
     Initializes the internal state of the generator.
 
     @param seed The desired seed (generator does not work with zero).
   */
-  static void randomize(unsigned int seed) throw();
+  static void randomize(unsigned int seed) noexcept;
 
   /**
     Returns a random integer (unsigned) utilizing the full range of the type.
   */
-  static unsigned int getInteger() throw();
+  static unsigned int getInteger() noexcept;
 
   /**
     Returns a random real number in the range [0;1].
   */
-  static inline float getFloat() throw() {
+  static inline float getFloat() noexcept {
     return (1.0f/0xffffffff) * getInteger();
   }
 
   /**
     Returns a random real number in the range [0;1].
   */
-  static inline double getDouble() throw() {
+  static inline double getDouble() noexcept {
     return (1.0/0xffffffff) * getInteger();
   }
 
   /**
     Returns a random real number in the range [0;1].
   */
-  static inline long double getLongDouble() throw() {
+  static inline long double getLongDouble() noexcept {
     return (1.0L/0xffffffff) * getInteger();
   }
 };

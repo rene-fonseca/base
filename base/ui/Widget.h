@@ -32,7 +32,7 @@ private:
   /**
     Releases the widget.
   */
-  void destroy() throw();
+  void destroy() noexcept;
 public:
 
   /**
@@ -45,7 +45,7 @@ public:
   /**
     Destroys the widget.
   */
-  ~Widget() throw();
+  ~Widget() noexcept;
 };
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

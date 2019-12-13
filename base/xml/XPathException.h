@@ -31,13 +31,13 @@ public:
   /**
     Initializes the exception with no message.
   */
-  inline XPathException() throw() {
+  inline XPathException() noexcept {
   }
 
   /**
     Initializes the exception with the specified message.
   */
-  inline XPathException(const char* message) throw()
+  inline XPathException(const char* message) noexcept
     : TransformerException(message) {
   }
   
@@ -46,7 +46,7 @@ public:
     
     @param type The identity of the type.
   */
-  inline XPathException(const Type& type) throw() : TransformerException(type) {
+  inline XPathException(const Type& type) noexcept : TransformerException(type) {
   }
   
   /**
@@ -55,7 +55,7 @@ public:
     @param message An NULL-terminated string (ASCII).
     @param type The identity of the type.
   */
-  inline XPathException(const char* message, const Type& type) throw()
+  inline XPathException(const char* message, const Type& type) noexcept
     : TransformerException(message, type) {
   }
   

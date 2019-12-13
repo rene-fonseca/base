@@ -16,7 +16,7 @@
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
-EUI64::EUI64() throw() {
+EUI64::EUI64() noexcept {
   id[0] = 0xff;
   id[1] = 0xff;
   id[2] = 0xff;
@@ -27,7 +27,7 @@ EUI64::EUI64() throw() {
   id[7] = 0x00;
 }
 
-EUI64::EUI64(const uint8 value[8]) throw() {
+EUI64::EUI64(const uint8 value[8]) noexcept {
   copy<uint8>(id, value, sizeof(id));
 }
 
@@ -49,11 +49,11 @@ EUI64::EUI64(const String& value) throw(InvalidFormat) {
   bassert(i == end, InvalidFormat(this));
 }
 
-EUI64::EUI64(const EUI64& _copy) throw() {
+EUI64::EUI64(const EUI64& _copy) noexcept {
   copy<uint8>(id, _copy.id, sizeof(id));
 }
 
-EUI64& EUI64::operator=(const EUI64& assign) throw() {
+EUI64& EUI64::operator=(const EUI64& assign) noexcept {
   if (&assign != this) {
     copy<uint8>(id, assign.id, sizeof(id));
   }
@@ -116,7 +116,7 @@ void EUI64::getEUI48(uint8* eui48) const throw() {
   eui48[5] = id[7];
 }
 
-void EUI64::setEUI48(const uint8* eui48) throw() {
+void EUI64::setEUI48(const uint8* eui48) noexcept {
   id[0] = eui48[0];
   id[1] = eui48[1];
   id[2] = eui48[2];
@@ -136,7 +136,7 @@ void EUI64::getMAC48(uint8* mac) const throw() {
   mac[5] = swapNibbles(id[7]);
 }
 
-void EUI64::setMAC48(const uint8* mac) throw() {
+void EUI64::setMAC48(const uint8* mac) noexcept {
   id[0] = swapNibbles(mac[0]);
   id[1] = swapNibbles(mac[1]);
   id[2] = swapNibbles(mac[2]);

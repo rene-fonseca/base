@@ -43,7 +43,7 @@ public:
   /**
     Initializes the channel.
   */
-  OrbChannel(Reference<OrbEncoder> encoder, Reference<OrbDecoder> decoder) throw();
+  OrbChannel(Reference<OrbEncoder> encoder, Reference<OrbDecoder> decoder) noexcept;
   
   /**
     Returns the fully qualified name of the specified stub.
@@ -58,7 +58,7 @@ public:
   /**
     Destroys the channel.
   */
-  virtual ~OrbChannel() throw();
+  virtual ~OrbChannel() noexcept;
 };
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

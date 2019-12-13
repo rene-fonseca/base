@@ -40,12 +40,12 @@ public:
   /**
     Initializes the ORB stub.
   */
-  OrbStub() throw();
+  OrbStub() noexcept;
   
   /**
     Initializes the ORB stub.
   */
-  inline OrbStub(Reference<OrbChannel> _channel, const OrbReference& _reference) throw()
+  inline OrbStub(Reference<OrbChannel> _channel, const OrbReference& _reference) noexcept
     : channel(_channel), reference(_reference) {
   }
   
@@ -73,7 +73,7 @@ public:
   /**
     Destroys the ORB stub.
   */
-  virtual ~OrbStub() throw();
+  virtual ~OrbStub() noexcept;
 };
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

@@ -36,21 +36,21 @@ private:
   OperatingSystem::Handle handle = OperatingSystem::INVALID_HANDLE;
 
   /* Disable the default copy constructor. */
-  Handle(const Handle& copy) throw();
+  Handle(const Handle& copy) noexcept;
   /* Disable the default assignment operator. */
-  Handle& operator=(const Handle& assign) throw();
+  Handle& operator=(const Handle& assign) noexcept;
 public:
 
   /**
     Initializes an invalid handle.
   */
-  inline Handle() throw() {
+  inline Handle() noexcept {
   }
 
   /**
     Initializes handle using the specified value.
   */
-  explicit inline Handle(OperatingSystem::Handle _handle) throw()
+  explicit inline Handle(OperatingSystem::Handle _handle) noexcept
     : handle(_handle) {
   }
 

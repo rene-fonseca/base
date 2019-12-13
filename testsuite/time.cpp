@@ -29,11 +29,11 @@ public:
   TimeApplication(
     int numberOfArguments,
     const char* arguments[],
-    const char* environment[]) throw()
+    const char* environment[]) noexcept
     : Application("time", numberOfArguments, arguments, environment) {
   }
 
-  static String getTimeAsString(uint64 nanoseconds) throw()
+  static String getTimeAsString(uint64 nanoseconds) noexcept
   {
     uint64 seconds = nanoseconds/1000000000;
     uint32 minutes = seconds/60;

@@ -28,7 +28,7 @@ public:
   static const Literal VIDEO;
 
   static inline MimeType::MediaType getWellKnownMediaType(
-    const String& type) throw() {
+    const String& type) noexcept {
     if (type.compareToIgnoreCase("application")) { // not very optimal
       return MimeType::APPLICATION;
     } else if (type.compareToIgnoreCase("audio")) {
@@ -63,7 +63,7 @@ MimeType::MimeType() throw(MemoryException) {
   mediaType = APPLICATION;
 }
 
-MimeType::MimeType(const String& _type, const String& _subtype) throw()
+MimeType::MimeType(const String& _type, const String& _subtype) noexcept
   : type(_type), subtype(_subtype), mediaType(UNINITIALIZED) {
 }
 
@@ -108,7 +108,7 @@ MimeType::MimeType(const String& value) throw(InvalidFormat)
   subtype = value.substring(index + 1);
 }
 
-MimeType& MimeType::operator=(const MimeType& copy) throw()
+MimeType& MimeType::operator=(const MimeType& copy) noexcept
 {
   if (&copy != this) {
     type = copy.type;

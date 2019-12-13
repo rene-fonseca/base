@@ -130,7 +130,7 @@ public:
 
     @return the relative path if base is blank.
   */
-  static String getPath(const String& base, const String& relative) throw();
+  static String getPath(const String& base, const String& relative) noexcept;
   
   enum Component {
     FOLDER_PATH, /**< The folder with an ending separator (i.e. '/' or '\'). */
@@ -163,13 +163,13 @@ public:
   /**
     Returns true if the specifies path is an absolute path.
   */
-  static bool isAbsolutePath(const String& path) throw();
+  static bool isAbsolutePath(const String& path) noexcept;
 
   /**
     Returns true if the specified path is a explicit folder path (i.e. ends with
     the separator).
   */
-  static inline bool isFolderPath(const String& path) throw();
+  static inline bool isFolderPath(const String& path) noexcept;
   
   /**
     Converts the path to an absolute path.
@@ -252,7 +252,7 @@ public:
     Returns true if symbolic links are supported. This method always returns
     true for Unices.
   */
-  static bool supportsLinks() throw();
+  static bool supportsLinks() noexcept;
   
   /**
     Creates a hard link.
@@ -289,7 +289,7 @@ public:
 
     @param folder Specifies the folder to be used. The default is USER_SPECIFIED.
   */
-  static String getTempFolder(TemporaryFolder folder = USER_SPECIFIED) throw();
+  static String getTempFolder(TemporaryFolder folder = USER_SPECIFIED) noexcept;
   
   /**
     Generates a temporary file name. The returned name should be used in
@@ -301,7 +301,7 @@ public:
     @param fields Specifies the fields to include in the name. The default is
     PREFIX|APPLICATION|USER|SUFFIX.
   */
-  static String getTempFileName(unsigned int fields = PREFIX|APPLICATION|USER|SUFFIX) throw();
+  static String getTempFileName(unsigned int fields = PREFIX|APPLICATION|USER|SUFFIX) noexcept;
   
   /**
     Returns a temporary file.
@@ -345,7 +345,7 @@ public:
   /**
     Returns the path to the specified folder.
   */
-  static String getFolder(Folder folder) throw();
+  static String getFolder(Folder folder) noexcept;
   
   /**
     Returns the quota.

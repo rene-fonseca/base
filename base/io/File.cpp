@@ -122,7 +122,7 @@ File::FileHandle::~FileHandle() {
   }
 }
 
-File::File() throw() : fd(File::FileHandle::invalid) {
+File::File() noexcept : fd(File::FileHandle::invalid) {
 }
 
 File::File(const String& path, Access access, unsigned int options) throw(AccessDenied, FileNotFound)
@@ -268,7 +268,7 @@ File::File(const String& path, Access access, unsigned int options) throw(Access
   }
 }
 
-File& File::operator=(const File& assign) throw() {
+File& File::operator=(const File& assign) noexcept {
   fd = assign.fd; // no need to protect against self-assignment
   return *this;
 }

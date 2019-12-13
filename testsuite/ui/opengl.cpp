@@ -235,11 +235,11 @@ public:
   double scale = 1;
 public:
     
-  inline View() throw() {
+  inline View() noexcept {
     resetParameters();
   }
       
-  inline void resetParameters() throw() {
+  inline void resetParameters() noexcept {
     setTranslation(Vector3D<double>(0, 0, 0));
     setRotation(Vector3D<double>(0, 0, 0));
     setScale(1);
@@ -249,7 +249,7 @@ public:
     return translation;
   }
     
-  inline void setTranslation(const Vector3D<double>& translation) throw() {
+  inline void setTranslation(const Vector3D<double>& translation) noexcept {
     this->translation = translation;
   }
     
@@ -257,7 +257,7 @@ public:
     return rotation;
   }
     
-  inline void setRotation(const Vector3D<double>& rotation) throw() {
+  inline void setRotation(const Vector3D<double>& rotation) noexcept {
     this->rotation = rotation;
   }
     
@@ -265,7 +265,7 @@ public:
     return scale;
   }
       
-  inline void setScale(double scale) throw() {
+  inline void setScale(double scale) noexcept {
     this->scale = scale;
   }
 };
@@ -280,7 +280,7 @@ public:
   OpenGLApplication(
     int numberOfArguments,
     const char* arguments[],
-    const char* environment[]) throw()
+    const char* environment[]) noexcept
     : Application("opengl", numberOfArguments, arguments, environment) {
   }
   
@@ -400,10 +400,10 @@ public:
       makeTorus();
     }
 
-    ~MyOpenGLContext() throw() {
+    ~MyOpenGLContext() noexcept {
     }
     
-    void setQuality(Quality quality) throw() {
+    void setQuality(Quality quality) noexcept {
       // TAG: need attribute
       switch (quality) {
       case QUALITY_WORST:
@@ -432,29 +432,29 @@ public:
       }
     }
 
-    inline void setVerbosity(Verbosity::Value verbosity) throw() {
+    inline void setVerbosity(Verbosity::Value verbosity) noexcept {
       this->verbosity = verbosity;
     }
       
-    void setTranslation(const Vector3D<double>& translation) throw() {
+    void setTranslation(const Vector3D<double>& translation) noexcept {
       view.setTranslation(translation);
     }
       
-    void setRotation(const Vector3D<double>& rotation) throw() {
+    void setRotation(const Vector3D<double>& rotation) noexcept {
       view.setRotation(rotation);
     }
       
-    void setScale(double scale) throw() {
+    void setScale(double scale) noexcept {
       view.setScale(scale);
     }
       
-    void resetViewParameters() throw() {
+    void resetViewParameters() noexcept {
       setTranslation(Vector3D<double>(0, 0, 0));
       setRotation(Vector3D<double>(0, 0, 0));
       setScale(1);
     }
       
-    void setShadingModel(ShadingModel::Model shadingModel) throw() {
+    void setShadingModel(ShadingModel::Model shadingModel) noexcept {
       if (shadingModel != this->shadingModel) {
         this->shadingModel = shadingModel;
         switch (shadingModel) {
@@ -469,7 +469,7 @@ public:
       }
     }
     
-    void setPolygonMode(PolygonMode::Mode polygonMode) throw() {
+    void setPolygonMode(PolygonMode::Mode polygonMode) noexcept {
       if (polygonMode != this->polygonMode) {
         this->polygonMode = polygonMode;
         switch (polygonMode) {
@@ -487,7 +487,7 @@ public:
       }
     }
       
-    void setBlending(bool blending) throw() {
+    void setBlending(bool blending) noexcept {
       if (blending != this->blending) {
         this->blending = blending;
         if (blending) {
@@ -501,7 +501,7 @@ public:
       }
     }
       
-    void setLighting(bool lighting) throw() {
+    void setLighting(bool lighting) noexcept {
       if (lighting != this->lighting) {
         this->lighting = lighting;
         if (lighting) {
@@ -513,7 +513,7 @@ public:
       }
     }
 
-    void setMode(Mode mode) throw() {
+    void setMode(Mode mode) noexcept {
       if (mode != this->mode) {
         this->mode = mode;
         invalidate();
@@ -531,7 +531,7 @@ public:
       );
     }
 
-    void makeSystem() throw() {
+    void makeSystem() noexcept {
       OpenGL::DisplayList displayList(openGL, OBJECT_SYSTEM);
       //         openGL.glColor4f(0.8, 0.8, 0.8, 0.5);
       //         OpenGL::Block block(openGL, OpenGL::LINES);
@@ -561,11 +561,11 @@ public:
       openGL.cone(0.5, 1.0, 16, 1);
     }
      
-    void makeFloor() throw() {
+    void makeFloor() noexcept {
       OpenGL::DisplayList displayList(openGL, OBJECT_FLOOR);
     }
 
-    void makeCube() throw() {
+    void makeCube() noexcept {
       OpenGL::DisplayList displayList(openGL, OBJECT_CUBE);
       
       openGL.glColor4f(0.0, 1.0, 0.0, 0.75);
@@ -601,19 +601,19 @@ public:
       }
     }
     
-    void makeCone() throw() {
+    void makeCone() noexcept {
       OpenGL::DisplayList displayList(openGL, OBJECT_CONE);
       openGL.glColor4f(0.25, 0.5, 0.75, 0.5);
       openGL.cone(6.0, 12.0, 8, 8);
     }
     
-    void makeTorus() throw() {
+    void makeTorus() noexcept {
       OpenGL::DisplayList displayList(openGL, OBJECT_TORUS);
       openGL.glColor4f(0.25, 0.5, 0.75, 0.5);
       openGL.torus(4.0, 8.0, 64, 16);
     }
     
-    void displayObject(unsigned int object) throw() {
+    void displayObject(unsigned int object) noexcept {
       openGL.glClearColor(0.0, 0.0, 0.0, 1.0);
       openGL.glClear(OpenGL::COLOR_BUFFER_BIT | OpenGL::DEPTH_BUFFER_BIT);
       
@@ -632,7 +632,7 @@ public:
       swap();
     }
     
-    void onDisplay() throw() {
+    void onDisplay() noexcept {
       switch (mode) {
       case MODE_SYSTEM:
         displayObject(OBJECT_SYSTEM);
@@ -652,13 +652,13 @@ public:
       }
     }
     
-    void onMove(const Position& position) throw() {
+    void onMove(const Position& position) noexcept {
       if (verbosity >= Verbosity::ALL_MOUSE_EVENTS) {
         fout << "Window move event: " << position << ENDL;
       }
     }
     
-    void onResize(const Dimension& dimension) throw() {
+    void onResize(const Dimension& dimension) noexcept {
       if (verbosity >= Verbosity::ALL_MOUSE_EVENTS) {
         fout << "Resize event: " << dimension << ENDL;
       }
@@ -683,7 +683,7 @@ public:
       Literal literal;
     };
     
-    void onMouseMove(const Position& position, unsigned int state) throw() {
+    void onMouseMove(const Position& position, unsigned int state) noexcept {
       const Position difference = position - mouseButtonPosition;
       if (verbosity >= Verbosity::ALL_MOUSE_EVENTS) {
         fout << "Mouse motion event: " << position << ENDL;
@@ -739,12 +739,12 @@ public:
 //         }
     }
 
-    void onMouseScope(bool scope) throw() {
+    void onMouseScope(bool scope) noexcept {
       fout << "Event: mouse scope "
            << (scope ? MESSAGE("INSIDE SCOPE") : MESSAGE("OUT OF SCOPE")) << ENDL;
     }
     
-    void onMouseButton(const Position& position, Mouse::Button button, Mouse::Event event, unsigned int state) throw() {
+    void onMouseButton(const Position& position, Mouse::Button button, Mouse::Event event, unsigned int state) noexcept {
       static const Flag STATES[] = {
         {Mouse::LEFT, MESSAGE("LEFT")},
         {Mouse::MIDDLE, MESSAGE("MIDDLE")},
@@ -833,7 +833,7 @@ public:
     }
     
     void onMouseWheel(
-      const Position& position, int delta, unsigned int buttons) throw() {
+      const Position& position, int delta, unsigned int buttons) noexcept {
       if (verbosity >= Verbosity::ACTIVE_MOUSE_EVENTS) {
         fout << "Mouse wheel" << ENDL;
       }
@@ -841,7 +841,7 @@ public:
       invalidate();
     }
     
-    void onKey(unsigned int key, unsigned int flags, unsigned int modifiers) throw() {
+    void onKey(unsigned int key, unsigned int flags, unsigned int modifiers) noexcept {
       if (flags & Key::PRESSED) {
         if (flags & Key::DEAD) {
           return;
@@ -947,11 +947,11 @@ public:
       }
     }
     
-    void onIdle() throw() {
+    void onIdle() noexcept {
       invalidate();
     }
     
-    bool onClose() throw() {
+    bool onClose() noexcept {
       fout << "Event: close " << ENDL;
       MessageDialog dialog(MESSAGE("Quit"), MESSAGE("Do you really wan't to quit?"), MessageDialog::QUESTION);
       dialog.execute();
@@ -961,7 +961,7 @@ public:
       return dialog.getAnswer() == MessageDialog::YES;
     }
     
-    void onVisibility(Visibility visibility) throw() {
+    void onVisibility(Visibility visibility) noexcept {
       if (verbosity >= Verbosity::ACTIVE_MOUSE_EVENTS) {
         fout << "Visibility event: "
              << ((visibility == VISIBLE) ? MESSAGE("VISIBLE") : MESSAGE("INVISIBLE"))
@@ -969,7 +969,7 @@ public:
       }
     }
     
-    void onFocus(Focus focus) throw() {
+    void onFocus(Focus focus) noexcept {
       if (verbosity >= Verbosity::ACTIVE_MOUSE_EVENTS) {
         fout << "Focus event: "
              << ((focus == ACQUIRED_FOCUS) ? MESSAGE("ACQUIRED FOCUS") : MESSAGE("LOST FOCUS"))
@@ -977,7 +977,7 @@ public:
       }
     }
 
-    void dumpOpenGLInformation() throw() {
+    void dumpOpenGLInformation() noexcept {
       fout << "Vendor: " << openGL.getVendor() << EOL
            << "Renderer: " << openGL.getRenderer() << EOL
            << "Version: " << openGL.getVersion() << EOL
@@ -1004,13 +1004,13 @@ public:
            << ENDL;
     }
     
-    void dumpCommand(const Literal& description) throw() {
+    void dumpCommand(const Literal& description) noexcept {
       if (verbosity >= Verbosity::COMMANDS) {
         fout << "Command: " << description << ENDL;
       }
     }
      
-    void onCommand(unsigned int identifier) throw() {
+    void onCommand(unsigned int identifier) noexcept {
       switch (identifier) {
       case Command::SELECT_VERBOSITY_NO_INFORMATION:
         dumpCommand(MESSAGE("Set verbosity level to NO_INFORMATION"));

@@ -71,7 +71,7 @@ void Vector<TYPE>::setAt(unsigned int index, const TYPE& value) throw(OutOfRange
 }
 
 template<class TYPE>
-Vector<TYPE>& Vector<TYPE>::clear() throw()
+Vector<TYPE>& Vector<TYPE>::clear() noexcept
 {
   fill(getElements(), getSize(), TYPE(0));
   return *this;
@@ -90,7 +90,7 @@ Vector<TYPE> Vector<TYPE>::minus() const throw()
 }
 
 template<class TYPE>
-Vector<TYPE>& Vector<TYPE>::negate() throw() {
+Vector<TYPE>& Vector<TYPE>::negate() noexcept {
   transform(getElements(), getSize(), Negate<TYPE>());
   return *this;
 }
@@ -116,20 +116,20 @@ Vector<TYPE>& Vector<TYPE>::subtract(const Vector<TYPE>& value) throw(Incompatib
 }
 
 template<class TYPE>
-Vector<TYPE>& Vector<TYPE>::multiply(const TYPE& value) throw()
+Vector<TYPE>& Vector<TYPE>::multiply(const TYPE& value) noexcept
 {
   transform(getElements(), getSize(), bind2Second(Multiply<TYPE>(), value));
   return *this;
 }
 
-template<class TYPE> Vector<TYPE>& Vector<TYPE>::divide(const TYPE& value) throw()
+template<class TYPE> Vector<TYPE>& Vector<TYPE>::divide(const TYPE& value) noexcept
 {
   transform(getElements(), getSize(), bind2Second(Divide<TYPE>(), value));
   return *this;
 }
 
 template<class TYPE>
-Vector<TYPE>& Vector<TYPE>::negate(const Vector<TYPE>& value) throw()
+Vector<TYPE>& Vector<TYPE>::negate(const Vector<TYPE>& value) noexcept
 {
 //  setDimension(value);
   transformByUnary(getElements(), value.getReadOnlyElements(), getSize(), Negate<TYPE>());
@@ -180,7 +180,7 @@ Vector<TYPE> operator/(const Vector<TYPE>& left, const TYPE& right) throw(Memory
 }
 
 template<class TYPE>
-TYPE dot(const Vector<TYPE>& left, const Vector<TYPE>& right) throw()
+TYPE dot(const Vector<TYPE>& left, const Vector<TYPE>& right) noexcept
 {
   if (left.getSize() != right.getSize()) {
     throw Vector<TYPE>::IncompatibleVectors();

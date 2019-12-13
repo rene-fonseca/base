@@ -15,7 +15,7 @@
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
-Color::Color(NamedColor color) throw() {
+Color::Color(NamedColor color) noexcept {
   static uint32 NAMED_COLORS[] = {
     0xfffccc, // Almond(Blanched)
     0x00ffff, // Aqua

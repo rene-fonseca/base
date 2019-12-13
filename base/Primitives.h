@@ -484,7 +484,7 @@ namespace primitives {
     
     @code
     template<class TYPE>
-    void myFunction(const TYPE& value) throw() {
+    void myFunction(const TYPE& value) noexcept {
       if (Primitives::FloatingPoint<TYPE>::IS_FLOATING_POINT) {
         // do something
       } else if (Primitives::Cardinal<TYPE>::IS_CARDINAL) {

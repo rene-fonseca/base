@@ -27,7 +27,7 @@ public:
   LinkApplication(
     int numberOfArguments,
     const char* arguments[],
-    const char* environment[]) throw()
+    const char* environment[]) noexcept
     : Application("ln", numberOfArguments, arguments, environment)
   {
   }
@@ -83,7 +83,7 @@ public:
     }
   }
   
-  ~LinkApplication() throw() {
+  ~LinkApplication() noexcept {
   }
 };
 

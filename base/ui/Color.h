@@ -47,24 +47,24 @@ public:
   /**
     Initializes color with unspecified value.
   */
-  inline Color() throw() {
+  inline Color() noexcept {
   }
 
   /**
     Initializes color from name of color (e.g. YELLOW).
   */
-  Color(NamedColor color) throw();
+  Color(NamedColor color) noexcept;
 
   /**
     Initializes color from rgb value (e.g. 0x123456).
   */
-  inline Color(uint32 _value) throw() : value(_value) {
+  inline Color(uint32 _value) noexcept : value(_value) {
   }
 
   /**
     Initializes color as gray.
   */
-  inline Color(uint8 gray) throw()
+  inline Color(uint8 gray) noexcept
     : value((static_cast<uint32>(gray) << 16) |
             (static_cast<uint32>(gray) << 8) |
             static_cast<uint32>(gray)) {
@@ -75,7 +75,7 @@ public:
     @param green The green component.
     @param blue The blue component.
   */
-  inline Color(uint8 red, uint8 green, uint8 blue) throw()
+  inline Color(uint8 red, uint8 green, uint8 blue) noexcept
     : value((static_cast<uint32>(blue) << 16) |
             (static_cast<uint32>(green) << 8) |
             static_cast<uint32>(red)) {
@@ -84,14 +84,14 @@ public:
   /**
     Initializes color form other color.
   */
-  inline Color(const Color& copy) throw()
+  inline Color(const Color& copy) noexcept
     : value(copy.value) {
   }
 
   /**
     Assignment of color by color.
   */
-  inline Color& operator=(const Color& assign) throw() {
+  inline Color& operator=(const Color& assign) noexcept {
     value = assign.value;
     return *this;
   }
@@ -120,7 +120,7 @@ public:
   /**
     Sets the red component.
   */
-  inline void setRed(uint8 value) throw() {
+  inline void setRed(uint8 value) noexcept {
     value = (value & 0xffff00) | (static_cast<unsigned int>(value) << 0);
   }
 
@@ -134,7 +134,7 @@ public:
   /**
     Sets the green component.
   */
-  inline void setGreen(uint8 value) throw() {
+  inline void setGreen(uint8 value) noexcept {
     value = (value & 0xff00ff) | (static_cast<unsigned int>(value) << 8);
   }
   
@@ -148,7 +148,7 @@ public:
   /**
     Sets the blue component.
   */
-  inline void setBlue(uint8 value) throw() {
+  inline void setBlue(uint8 value) noexcept {
     value = (value & 0x00ffff) | (static_cast<unsigned int>(value) << 16);
   }
 
@@ -164,7 +164,7 @@ public:
   /**
     Sets the color as gray.
   */
-  inline void setGray(uint8 value) throw() {
+  inline void setGray(uint8 value) noexcept {
     value = (static_cast<uint32>(value) << 16) |
       (static_cast<uint32>(value) << 8) |
       static_cast<uint32>(value);

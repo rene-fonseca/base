@@ -715,7 +715,7 @@ void MultipleSockets::signal(
 #endif
 }
 
-MultipleSockets::~MultipleSockets() throw() {
+MultipleSockets::~MultipleSockets() noexcept {
 }
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

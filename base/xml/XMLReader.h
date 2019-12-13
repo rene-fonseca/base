@@ -50,7 +50,7 @@ public:
     /**
       Receives notification of a comment.
     */
-    virtual void comment(const String& data) throw();
+    virtual void comment(const String& data) noexcept;
     
     /**
       Receive notification of a document type declaration.
@@ -62,32 +62,32 @@ public:
     virtual void startDTD(
       const String& name,
       const String& publicId,
-      const String& systemId) throw();
+      const String& systemId) noexcept;
     
     /**
       Receive notification of end of document type declaration.
     */
-    virtual void endDTD() throw();
+    virtual void endDTD() noexcept;
 
     /**
       Receives notification of the start of an entity.
     */
-    virtual void startEntity(const String& name) throw();
+    virtual void startEntity(const String& name) noexcept;
 
     /**
       Receives notification of the end of an entity.
     */
-    virtual void endEntity(const String& name) throw();
+    virtual void endEntity(const String& name) noexcept;
     
     /**
       Receives notification of the start of a CDATA section.
     */
-    virtual void startCDATA() throw();
+    virtual void startCDATA() noexcept;
     
     /**
       Receives notification of the end of a CDATA section.
     */
-    virtual void endCDATA() throw();
+    virtual void endCDATA() noexcept;
     
     /**
       Receive notification of an attribute declaration event.
@@ -106,7 +106,7 @@ public:
       AttributeDecl::ValueType type,
       AttributeDecl::DefaultType defaultType,
       const String& defaultValue,
-      const Array<String>& enumeration) throw();
+      const Array<String>& enumeration) noexcept;
 
     /**
       Receive notification of an element declaration event.
@@ -116,7 +116,7 @@ public:
     */
     virtual void elementDecl(
       const String& name,
-      ElementDecl::ValueType type) throw();
+      ElementDecl::ValueType type) noexcept;
     
     /**
       Receive notification of an internal entity declaration event.
@@ -126,7 +126,7 @@ public:
     */
     virtual void internalEntityDecl(
       const String& name,
-      const String& text) throw();
+      const String& text) noexcept;
     
     /**
       Receive notification of an external entity declaration event.
@@ -138,7 +138,7 @@ public:
     virtual void externalEntityDecl(
       const String& name,
       const String& publicId,
-      const String& systemId) throw();
+      const String& systemId) noexcept;
     
 //     /**
 //       Receive notification of the beginning of an element declaration event.
@@ -147,7 +147,7 @@ public:
 //       @param type The type.
 //     */
 //     virtual void startElementDecl(
-//       const String& name) throw();
+//       const String& name) noexcept;
     
 //     /**
 //       Receive notification of the end of an element declaration event.
@@ -156,7 +156,7 @@ public:
 //       @param type The type.
 //     */
 //     virtual void endElementDecl(
-//       const String& name) throw();
+//       const String& name) noexcept;
     
     /**
       Receive notification of a notation declaration event.
@@ -168,7 +168,7 @@ public:
     virtual void notationDecl(
       const String& name,
       const String& publicId,
-      const String& systemId) throw();
+      const String& systemId) noexcept;
 
     /**
       Receive notification of an unparsed entity declaration event.
@@ -182,7 +182,7 @@ public:
       const String& name,
       const String& publicId,
       const String& systemId,
-      const String& notationName) throw();
+      const String& notationName) noexcept;
   };
 
   class _COM_AZURE_DEV__BASE__API InputSource {
@@ -191,10 +191,10 @@ public:
     void* context = nullptr;
   public:
     
-    inline InputSource() throw() {
+    inline InputSource() noexcept {
     }
 
-    inline InputSource(void* context) throw() {
+    inline InputSource(void* context) noexcept {
     }
   };
   
@@ -258,7 +258,7 @@ public:
       methods in this interface or in DTDHandler (except for
       setDocumentLocator).
     */
-    virtual void startDocument() throw();
+    virtual void startDocument() noexcept;
     
     /**
       Receives notification of the end of a document.
@@ -268,7 +268,7 @@ public:
       until it has either abandoned parsing (because of an unrecoverable error)
       or reached the end of input.
     */
-    virtual void endDocument() throw();
+    virtual void endDocument() noexcept;
     
     /**
       Receives notification of the beginning of an element.
@@ -277,7 +277,7 @@ public:
       const String& namespaceURI,
       const String& localName,
       const String& qName,
-      const Attributes& attributes) throw();
+      const Attributes& attributes) noexcept;
     
     /**
       Receives notification of the end of an element.
@@ -285,59 +285,59 @@ public:
     virtual void endElement(
       const String& namespaceURI,
       const String& localName,
-      const String& qName) throw();
+      const String& qName) noexcept;
     
     /**
       Receives notification of a processing instruction.
     */
     virtual void processingInstruction(
-      const String& target, const String& data) throw();
+      const String& target, const String& data) noexcept;
     
     /**
       Receives notification of character data.
     */
-    virtual void characters(const String& value) throw();
+    virtual void characters(const String& value) noexcept;
     
     /**
       Receives notification of ignorable whitespace in element content.
     */
-    virtual void ignorableWhitespace(const String& value) throw();
+    virtual void ignorableWhitespace(const String& value) noexcept;
     
     /**
       Receives notification of a comment.
     */
-    virtual void comment(const String& value) throw();
+    virtual void comment(const String& value) noexcept;
     
     /**
       Receives notification of a CDATA block.
     */
-    virtual void cdataBlock(const String& value) throw();
+    virtual void cdataBlock(const String& value) noexcept;
     
     /**
       Receives notification of a skipped entity.
     */
-    virtual void skippedEntity(const String& name) throw();
+    virtual void skippedEntity(const String& name) noexcept;
     
     /**
       Receives notification of an entity reference.
     */
-    virtual void entityReference(const String& name) throw();
+    virtual void entityReference(const String& name) noexcept;
     
     /**
       End the scope of a prefix-URI mapping.
     */
-    virtual void endPrefixMapping(const String& prefix) throw();
+    virtual void endPrefixMapping(const String& prefix) noexcept;
     
     /**
       Begin the scope of a prefix-URI Namespace mapping.
     */
     virtual void startPrefixMapping(
-      const String& prefix, const String& uri) throw();
+      const String& prefix, const String& uri) noexcept;
 
     /**
       Receives an object for locating the origin of SAX document events.
     */
-    virtual void setDocumentLocator(Locator* locator) throw();
+    virtual void setDocumentLocator(Locator* locator) noexcept;
   };
 public:
   
@@ -376,22 +376,22 @@ public:
   /**
     Registers a content event handler.
   */
-  virtual void setContentHandler(ContentHandler* handler) throw() = 0;
+  virtual void setContentHandler(ContentHandler* handler) noexcept = 0;
   
   /**
     Registers a DTD event handler.
   */
-  virtual void setDTDHandler(DTDHandler* handler) throw() = 0;
+  virtual void setDTDHandler(DTDHandler* handler) noexcept = 0;
   
   /**
     Registers an entity resolver.
   */
-  virtual void setEntityResolver(EntityResolver* entityResolver) throw() = 0;
+  virtual void setEntityResolver(EntityResolver* entityResolver) noexcept = 0;
   
   /**
     Registers an error event handler.
   */
-  virtual void setErrorHandler(ErrorHandler* handler) throw() = 0;
+  virtual void setErrorHandler(ErrorHandler* handler) noexcept = 0;
 
   /**
     Returns the validation flag.
@@ -401,7 +401,7 @@ public:
   /**
     Sets the validation flag.
   */
-  virtual void setVatidation(bool validate) throw() = 0;
+  virtual void setVatidation(bool validate) noexcept = 0;
 
   /**
     Returns true if the document is a standalone document.
@@ -411,7 +411,7 @@ public:
   /**
     Terminates the parsing.
   */
-  virtual void terminate() throw() = 0;
+  virtual void terminate() noexcept = 0;
 };
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

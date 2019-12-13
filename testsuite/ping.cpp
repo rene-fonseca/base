@@ -50,7 +50,7 @@ public:
   PingApplication(
     int numberOfArguments,
     const char* arguments[],
-    const char* environment[]) throw()
+    const char* environment[]) noexcept
     : Application("ping", numberOfArguments, arguments, environment) {
     port = ECHO_SERVICE_PORT;
     dataSize = 32;
@@ -58,14 +58,14 @@ public:
     packetsToTransmit = 0;
   }
   
-  void onTermination() throw() {
+  void onTermination() noexcept {
   }
   
-  String getTimeAsString2(uint64 microseconds) throw() {
+  String getTimeAsString2(uint64 microseconds) noexcept {
     return Literal("");
   }
   
-  String getTimeAsString(uint64 microseconds) throw() {
+  String getTimeAsString(uint64 microseconds) noexcept {
     StringOutputStream stream;
     if (microseconds < 1000) {
       stream << microseconds << "us";
@@ -80,7 +80,7 @@ public:
     return stream.getString();
   }
   
-  void ping(const String& host) throw() {
+  void ping(const String& host) noexcept {
     bool byName = true;
     InetAddress address;
     
@@ -198,7 +198,7 @@ public:
          << ENDL;
   }
   
-  void version() throw()
+  void version() noexcept
   {
     fout << getFormalName() << " version "
          << MAJOR_VERSION << '.' << MINOR_VERSION << EOL
@@ -206,7 +206,7 @@ public:
          << ENDL;
   }
   
-  void help() throw()
+  void help() noexcept
   {
     version();
     fout << getFormalName()

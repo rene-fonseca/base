@@ -73,17 +73,17 @@ public:
   /**
     Starts the sampling.
   */
-  void resume() throw();
+  void resume() noexcept;
 
   /**
     Stops the sampling.
   */
-  void pause() throw();
+  void pause() noexcept;
 
   /**
     Resets the device.
   */
-  void reset() throw();
+  void reset() noexcept;
 
   /**
     Fills the specified buffer with bytes from the stream. In blocking mode the
@@ -96,12 +96,12 @@ public:
     @param size The size of the buffer.
     @return The actual number of bytes read from the stream.
   */
-  unsigned int read(void* buffer, unsigned int size) throw();
+  unsigned int read(void* buffer, unsigned int size) noexcept;
 
   /**
     Destructs the stream object.
   */
-  ~SoundInputStream() throw();
+  ~SoundInputStream() noexcept;
 };
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

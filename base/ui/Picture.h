@@ -65,17 +65,17 @@ public:
   /**
     Sets the picture.
   */
-  void setPicture(const Dimension& dimension, Format format, Encoding encoding, void* data) throw();
+  void setPicture(const Dimension& dimension, Format format, Encoding encoding, void* data) noexcept;
   
   /**
     Returns the format.
   */
-  Format getFormat() throw();
+  Format getFormat() noexcept;
   
   /**
     Returns the encoding.
   */
-  Encoding getEncoding() throw();
+  Encoding getEncoding() noexcept;
   
   /**
     Returns the bitmap data.
@@ -92,12 +92,12 @@ public:
   /**
     Invoked when the widget should be updated.
   */
-  void onDisplay() throw();
+  void onDisplay() noexcept;
 
   /**
     Destroys the picture.
   */
-  inline ~Picture() throw() {
+  inline ~Picture() noexcept {
   }
 };
 

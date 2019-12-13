@@ -306,7 +306,7 @@ Node Node::getLastChild() const throw() {
 #endif
 }
 
-Node::ShadowDocument Node::getOwnerDocument() throw() {
+Node::ShadowDocument Node::getOwnerDocument() noexcept {
 #if defined(_COM_AZURE_DEV__BASE__XML_XMLSOFT_ORG)
   xmlNode* node = (xmlNode*)context;
   if (node->type == XML_DOCUMENT_NODE) {
@@ -325,7 +325,7 @@ public:
 
   // see section 1.1.1. of "The DOM Structure Model"
   static inline bool isAppendAble(
-    const Node& _node, const Node& _child) throw() {
+    const Node& _node, const Node& _child) noexcept {
     const xmlNode* node = (const xmlNode*)_node.context;
     const xmlNode* child = (const xmlNode*)_child.context;
     
@@ -468,12 +468,12 @@ public:
     }
   }
   
-  static inline bool isUnlinked(const Node& _node) throw() {
+  static inline bool isUnlinked(const Node& _node) noexcept {
     const xmlNode* node = (const xmlNode*)_node.getContext();
     return (node->parent == 0); // && (node->prev == 0) && (node->next == 0);
   }
   
-  static inline void unlink(Node _node) throw() {
+  static inline void unlink(Node _node) noexcept {
     xmlNode* node = (xmlNode*)_node.getContext();
     if (node->parent) {
       xmlNode* parent = node->parent;
@@ -814,7 +814,7 @@ Node Node::cloneNode(bool deep) throw(DOMException) {
 #endif
 }
 
-Node::~Node() throw() {
+Node::~Node() noexcept {
 #if defined(_COM_AZURE_DEV__BASE__XML_XMLSOFT_ORG)
   // TAG: need reference counting!
 #if 0

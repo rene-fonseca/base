@@ -32,7 +32,7 @@ public:
   ServerApplication(
     int numberOfArguments,
     const char* arguments[],
-    const char* environment[]) throw()
+    const char* environment[]) noexcept
     : Application("server", numberOfArguments, arguments, environment) {
   }
 

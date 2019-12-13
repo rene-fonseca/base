@@ -33,13 +33,13 @@ public:
   /**
     Initializes the exception with no message.
   */
-  inline SAXNotRecognizedException() throw() {
+  inline SAXNotRecognizedException() noexcept {
   }
 
   /**
     Initializes the exception with the specified message.
   */
-  inline SAXNotRecognizedException(const char* message) throw()
+  inline SAXNotRecognizedException(const char* message) noexcept
     : SAXException(message) {
   }
   
@@ -48,7 +48,7 @@ public:
     
     @param type The identity of the type.
   */
-  inline SAXNotRecognizedException(const Type& type) throw()
+  inline SAXNotRecognizedException(const Type& type) noexcept
     : SAXException(type) {
   }
   
@@ -58,7 +58,7 @@ public:
     @param message An NULL-terminated string (ASCII).
     @param type The identity of the type.
   */
-  inline SAXNotRecognizedException(const char* message, const Type& type) throw()
+  inline SAXNotRecognizedException(const char* message, const Type& type) noexcept
     : SAXException(message, type) {
   }
   

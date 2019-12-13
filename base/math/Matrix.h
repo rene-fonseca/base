@@ -54,7 +54,7 @@ public:
     unsigned int column = 0;
 
     inline ElementReference(
-      Matrix& _matrix, unsigned int _row, unsigned int _column) throw()
+      Matrix& _matrix, unsigned int _row, unsigned int _column) noexcept
       : matrix(_matrix),
         row(_row),
         column(_column) {
@@ -81,7 +81,7 @@ public:
     
     Matrix& matrix; // use reference to avoid 'copy on write'
     unsigned int row = 0;
-    inline RowReference(Matrix& _matrix, unsigned int _row) throw()
+    inline RowReference(Matrix& _matrix, unsigned int _row) noexcept
       : matrix(_matrix),
         row(_row) {
     }
@@ -111,7 +111,7 @@ public:
 //
 //        @param matrix The matrix being enumerated.
 //      */
-//      Enumeration(Matrix& matrix) throw()
+//      Enumeration(Matrix& matrix) noexcept
 //        : AllocatorEnumeration<TYPE, TYPE&, TYPE*>(matrix.getElements(), matrix.getElements() + matrix.getSize()) {
 //      }
 //    };
@@ -127,7 +127,7 @@ public:
 //
 //        @param matrix The matrix being enumerated.
 //      */
-//      ReadOnlyEnumeration(const Matrix& matrix) throw()
+//      ReadOnlyEnumeration(const Matrix& matrix) noexcept
 //        : AllocatorEnumeration<TYPE, const TYPE&, const TYPE*>(matrix.getElements(), matrix.getElements() + matrix.getSize()) {
 //      }
 //    };
@@ -291,7 +291,7 @@ public:
   /**
     Initializes a matrix with no elements.
   */
-  inline Matrix() throw() {
+  inline Matrix() noexcept {
     setSize(0, 0);
   }
   
@@ -328,7 +328,7 @@ public:
 
     @param matrix The matrix to be copied.
   */
-  inline Matrix(const Matrix& copy) throw()
+  inline Matrix(const Matrix& copy) noexcept
     : elements(copy.elements), rows(copy.rows), columns(copy.columns) {
   }
 
@@ -865,7 +865,7 @@ public:
   @relates Matrix
 */
 template<class TYPE>
-bool operator==(const Matrix<TYPE>& left, const Matrix<TYPE>& right) throw();
+bool operator==(const Matrix<TYPE>& left, const Matrix<TYPE>& right) noexcept;
 
 /**
   @relates Matrix

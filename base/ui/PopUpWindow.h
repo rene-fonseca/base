@@ -31,7 +31,7 @@ private:
   /**
     Releases the rendering context.
   */
-  void destroy() throw();
+  void destroy() noexcept;
 public:
   
   /**

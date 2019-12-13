@@ -28,22 +28,22 @@ class _COM_AZURE_DEV__BASE__API Polymorphic {
 private:
 
   /* Disable the default copy constructor. */
-  Polymorphic(const Polymorphic& copy) throw();
+  Polymorphic(const Polymorphic& copy) noexcept;
   /* Disable the default assignment operator. */
-  Polymorphic& operator=(const Polymorphic& assign) throw();
+  Polymorphic& operator=(const Polymorphic& assign) noexcept;
 public:
 
   /**
     Initializes object.
   */
-  inline Polymorphic() throw()
+  inline Polymorphic() noexcept
   {
   }
   
   /**
     Destroys the object.
   */
-  virtual ~Polymorphic() throw();
+  virtual ~Polymorphic() noexcept;
 };
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

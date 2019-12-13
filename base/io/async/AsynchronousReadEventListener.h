@@ -28,7 +28,7 @@ class _COM_AZURE_DEV__BASE__API AsynchronousReadEventListener : public virtual D
 public:
 
   virtual void asynchronousCompletion(
-    const AsynchronousReadCompletion& completion) throw() = 0;
+    const AsynchronousReadCompletion& completion) noexcept = 0;
 };
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

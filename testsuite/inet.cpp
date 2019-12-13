@@ -44,7 +44,7 @@ public:
     : Application("inet", numberOfArguments, arguments, environment) {
   }
   
-  void onTermination() throw() {
+  void onTermination() noexcept {
   }
   
   void inet() {

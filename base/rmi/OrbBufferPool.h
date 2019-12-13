@@ -61,7 +61,7 @@ public:
   /**
     Initializes the buffer pool.
   */
-  OrbBufferPool() throw();
+  OrbBufferPool() noexcept;
   
   /**
     Acquires a new buffer.
@@ -73,7 +73,7 @@ public:
   /**
     Releases the specified buffers into the buffer pool.
   */
-  inline void release(OrbBuffer* buffers) throw() {
+  inline void release(OrbBuffer* buffers) noexcept {
     if (buffers == 0) {
       return;
     }
@@ -140,7 +140,7 @@ public:
   /**
     Returns the elements of the current buffer for modifying access.
   */
-  inline uint8* getElements() throw() {
+  inline uint8* getElements() noexcept {
     return last->getElements();
   }
   
@@ -158,7 +158,7 @@ public:
     return last->getSize();
   }
   
-  inline OrbBuffer* pop() throw() {
+  inline OrbBuffer* pop() noexcept {
     OrbBuffer* node = first;
     if (first) {
       first = first->getNext();
@@ -170,7 +170,7 @@ public:
     Destroys the buffer list. The acquired buffers are brought back into the
     pool.
   */
-  inline ~BufferList() throw() {
+  inline ~BufferList() noexcept {
     pool->release(first);
   }
 };

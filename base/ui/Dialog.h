@@ -41,7 +41,7 @@ public:
   /**
     Destroys the dialog.
   */
-  virtual ~Dialog() throw();
+  virtual ~Dialog() noexcept;
 };
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

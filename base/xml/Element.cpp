@@ -43,7 +43,7 @@ bool Element::hasAttributes() const throw() {
 #endif
 }
 
-Attribute Element::getFirstAttribute() throw() {
+Attribute Element::getFirstAttribute() noexcept {
 #if defined(_COM_AZURE_DEV__BASE__XML_XMLSOFT_ORG)
   xmlNode* node = (xmlNode*)getContext();
   return node->properties;

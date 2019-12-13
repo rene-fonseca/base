@@ -25,12 +25,12 @@
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
-OpenFileDialog::OpenFileDialog() throw()
+OpenFileDialog::OpenFileDialog() noexcept
   : flags(OpenFileDialog::MUST_EXIST), defaultFilter(0)
 {
 }
 
-void OpenFileDialog::setFilter(const String& description, const String& filter) throw()
+void OpenFileDialog::setFilter(const String& description, const String& filter) noexcept
 {
   filters.add(description, filter);
 }
@@ -126,7 +126,7 @@ bool OpenFileDialog::execute() throw(UserInterfaceException)
 #endif // flavor
 }
 
-OpenFileDialog::~OpenFileDialog() throw() {
+OpenFileDialog::~OpenFileDialog() noexcept {
 }
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

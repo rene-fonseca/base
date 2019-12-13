@@ -48,7 +48,7 @@ public:
     @return 0 if the service was not found.
   */
   static unsigned short getByName(
-    const String& name, const String& protocol) throw();
+    const String& name, const String& protocol) noexcept;
 
   /**
     Returns the name of the service given by the specified port and protocol.
@@ -58,7 +58,7 @@ public:
 
     @return Empty string if service was not found.
   */
-  static String getByPort(unsigned short port, const String& protocol) throw();
+  static String getByPort(unsigned short port, const String& protocol) noexcept;
 
   /**
     Initializes a service object by specified service name and protocol.
@@ -83,12 +83,12 @@ public:
   /**
     Copy constructor.
   */
-  InetService(const InetService& copy) throw();
+  InetService(const InetService& copy) noexcept;
 
   /**
     Assignment operator.
   */
-  InetService& operator=(const InetService& assign) throw();
+  InetService& operator=(const InetService& assign) noexcept;
 
   /**
     Returns the name of the service.

@@ -39,12 +39,12 @@ public:
   /**
     Initializes the IDL exception.
   */
-  IDLException(const String& name, unsigned int version) throw();
+  IDLException(const String& name, unsigned int version) noexcept;
 
   /**
     Adds the specified atttribute.
   */
-  void addAttribute(const IDLAttribute& attribute) throw();
+  void addAttribute(const IDLAttribute& attribute) noexcept;
   
   /**
     Returns the attributes of the exception.
@@ -59,7 +59,7 @@ public:
   /**
     Destroys the IDL exception.
   */
-  ~IDLException() throw();
+  ~IDLException() noexcept;
 };
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

@@ -170,21 +170,21 @@ public:
     @param type The type of the CSR key.
     @param value The value of the CSR key.
   */
-  static inline uint8 makeCSRkey(CSRKeyType type, CSRKeyValue value) throw() {
+  static inline uint8 makeCSRkey(CSRKeyType type, CSRKeyValue value) noexcept {
     return (static_cast<uint8>(type) << 6) | static_cast<uint8>(value);
   }
 
   /**
     Returns the CSR key type of the specified quadlet (native byte order).
   */
-  static inline CSRKeyType getCSRKeyType(uint32 quadlet) throw() {
+  static inline CSRKeyType getCSRKeyType(uint32 quadlet) noexcept {
     return static_cast<CSRKeyType>(quadlet >> (24 + 6));
   }
 
   /**
     Returns the CSR key value of the specified quadlet (native byte order).
   */
-  static inline CSRKeyValue getCSRKeyValue(uint32 quadlet) throw() {
+  static inline CSRKeyValue getCSRKeyValue(uint32 quadlet) noexcept {
     return static_cast<CSRKeyValue>((quadlet >> 24) & ((1 << 6) - 1));
   }
   
@@ -193,7 +193,7 @@ public:
     speed.
   */
   static inline unsigned int getMaximumAsyncPayloadForSpeed(
-    Speed speed) throw() {
+    Speed speed) noexcept {
     return 1 << (static_cast<unsigned int>(speed) + 9);
   }
   
@@ -202,7 +202,7 @@ public:
     speed.
   */
   static inline unsigned int getMaximumIsoPayloadForSpeed(
-    Speed speed) throw() {
+    Speed speed) noexcept {
     return 1 << (static_cast<unsigned int>(speed) + 10);
   }
 
@@ -280,7 +280,7 @@ private:
   /** The IEEE 1394 implementation. */
   Reference<IEEE1394Impl> ieee1394impl;
 
-  inline IEEE1394(IEEE1394Impl* _ieee1394impl) throw()
+  inline IEEE1394(IEEE1394Impl* _ieee1394impl) noexcept
     : ieee1394impl(_ieee1394impl) {
   }
 protected:
@@ -289,7 +289,7 @@ protected:
   inline unsigned int getBits(
     unsigned int value,
     unsigned int offset,
-    unsigned int size) throw() {
+    unsigned int size) noexcept {
     return (value >> offset) & ((1 << size) - 1);
   }
   
@@ -395,7 +395,7 @@ public:
 
     @param nodeId The node id.
   */
-  static String getAsString(unsigned short nodeId) throw();
+  static String getAsString(unsigned short nodeId) noexcept;
   
   /**
     Returns the node id of the node with the desired role.
@@ -527,7 +527,7 @@ public:
     Creates a IEEE 1394 object with the specified implementation.
   */
   template<class IMPL>
-  static inline IEEE1394 make() throw() {
+  static inline IEEE1394 make() noexcept {
     return IEEE1394(new IMPL());
   }
   
@@ -539,14 +539,14 @@ public:
   /**
     Initializes IEEE 1394 from other IEEE 1394 object.
   */
-  inline IEEE1394(const IEEE1394& copy) throw()
+  inline IEEE1394(const IEEE1394& copy) noexcept
     : ieee1394impl(copy.ieee1394impl) {
   }
   
   /**
     Assignment of IEEE 1394 from other IEEE 1394 object.
   */
-  inline IEEE1394& operator=(const IEEE1394& assign) throw() {
+  inline IEEE1394& operator=(const IEEE1394& assign) noexcept {
     ieee1394impl = assign.ieee1394impl;
     return *this;
   }
@@ -561,7 +561,7 @@ public:
   /**
     Acknowledges the bus reset.
   */
-  inline void acknowledgeReset() throw() {
+  inline void acknowledgeReset() noexcept {
     ieee1394impl->acknowledgeReset();
   }
 
@@ -603,7 +603,7 @@ public:
     Returns the guid's of the available nodes on the bus. The cached guid are
     used.
   */
-  Array<EUI64> getNodes() throw();
+  Array<EUI64> getNodes() noexcept;
   
   /**
     Returns the unique identifier of the specified local node. The returned
@@ -660,7 +660,7 @@ public:
 
     @return -1 is not found on the local bus.
   */
-  int getPhysicalId(const EUI64& guid) throw();
+  int getPhysicalId(const EUI64& guid) noexcept;
   
   /**
     Returns a description of the specified node if available in the

@@ -28,7 +28,7 @@ _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 class _COM_AZURE_DEV__BASE__API Pixmap : public GraphicsContext {
 private:
   
-  void destroy() throw();
+  void destroy() noexcept;
 public:
   
   /**
@@ -54,7 +54,7 @@ public:
   /**
     Destroys the pixmap.
   */
-  ~Pixmap() throw();
+  ~Pixmap() noexcept;
 };
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

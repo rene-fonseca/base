@@ -67,7 +67,7 @@ public:
     /**
       Initializes the exception object with no message.
     */
-    inline UrlException() throw() {
+    inline UrlException() noexcept {
     }
 
     /**
@@ -75,7 +75,7 @@ public:
       
       @param message The message.
     */
-    inline UrlException(const char* message) throw() : InvalidFormat(message) {
+    inline UrlException(const char* message) noexcept : InvalidFormat(message) {
     }
 
     /**
@@ -83,7 +83,7 @@ public:
       
       @param type The identity of the type.
     */
-    inline UrlException(const Type& type) throw() : InvalidFormat(type) {
+    inline UrlException(const Type& type) noexcept : InvalidFormat(type) {
     }
 
     /**
@@ -92,7 +92,7 @@ public:
       @param message An NULL-terminated string (ASCII).
       @param type The identity of the type.
     */
-    inline UrlException(const char* message, const Type& type) throw()
+    inline UrlException(const char* message, const Type& type) noexcept
       : InvalidFormat(message, type) {
     }
   };
@@ -116,12 +116,12 @@ protected:
   /**
     Returns true if the string is a valid host specification.
   */
-  static bool isHost(String::ReadIterator i, const String::ReadIterator& end) throw();
+  static bool isHost(String::ReadIterator i, const String::ReadIterator& end) noexcept;
 
   /**
     Returns true if the string is a valid port.
   */
-  static bool isPort(String::ReadIterator i, const String::ReadIterator& end) throw();
+  static bool isPort(String::ReadIterator i, const String::ReadIterator& end) noexcept;
 
   /**
     Parses the string as a url.
@@ -154,12 +154,12 @@ public:
   /**
     Initializes url from other url.
   */
-  Url(const Url& copy) throw();
+  Url(const Url& copy) noexcept;
 
   /**
     Assignment of url by url.
   */
-  Url& operator=(const Url& assign) throw();
+  Url& operator=(const Url& assign) noexcept;
 
   /**
     Returns true if the url is relative.
@@ -238,7 +238,7 @@ public:
   /**
     Destroys the url.
   */
-  inline virtual ~Url() throw() {
+  inline virtual ~Url() noexcept {
   }
 };
 

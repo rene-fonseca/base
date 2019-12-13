@@ -16,7 +16,7 @@
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 AsynchronousWriteCompletion::AsynchronousWriteCompletion(
-  const AsynchronousWriteCompletion& copy) throw() 
+  const AsynchronousWriteCompletion& copy) noexcept 
   : buffer(copy.buffer),
     bytesToWrite(copy.bytesToWrite),
     offset(copy.offset),
@@ -26,7 +26,7 @@ AsynchronousWriteCompletion::AsynchronousWriteCompletion(
 }
 
 AsynchronousWriteCompletion& AsynchronousWriteCompletion::operator=(
-  const AsynchronousWriteCompletion& assign) throw()
+  const AsynchronousWriteCompletion& assign) noexcept
 {
   // no need to protect against self-assignment
   buffer = assign.buffer;

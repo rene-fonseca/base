@@ -36,21 +36,21 @@ void ProgressBar::setTextMode(TextMode textMode) throw(UserInterfaceException) {
   }
 }
 
-void ProgressBar::setCurrentValue(unsigned int value) throw() {
+void ProgressBar::setCurrentValue(unsigned int value) noexcept {
   if (value != currentValue) {
     currentValue = value;
     invalidate();
   }
 }
 
-void ProgressBar::setMaximumValue(unsigned int value) throw() {
+void ProgressBar::setMaximumValue(unsigned int value) noexcept {
   if (value != maximumValue) {
     maximumValue = value;
     invalidate();
   }
 }
 
-// inline Region getReducedRegion(unsigned int width) throw() {
+// inline Region getReducedRegion(unsigned int width) noexcept {
 //   Region result;
 //   result.setX(getPosition().getX() + width);
 //   result.setY(getPosition().getY() + width);
@@ -68,7 +68,7 @@ void ProgressBar::setMaximumValue(unsigned int value) throw() {
 //   return result;
 // }
 
-void ProgressBar::onDisplay() throw() {
+void ProgressBar::onDisplay() noexcept {
   const unsigned int value = minimum(currentValue, maximumValue);
 
   // draw raised frame

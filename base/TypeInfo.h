@@ -47,7 +47,7 @@ public:
     "base::String").
   */
   template<class TYPE>
-  static inline String getTypename() throw() {
+  static inline String getTypename() noexcept {
     return demangleName(Type::getType<TYPE>().getLocalName());
   }
   
@@ -57,7 +57,7 @@ public:
     (e.g. "base::String").
   */
   template<class TYPE>
-  static inline String getTypename(const TYPE& object) throw() {
+  static inline String getTypename(const TYPE& object) noexcept {
     return demangleName(Type(object).getLocalName());
   }
   
@@ -68,7 +68,7 @@ public:
 
     @param type The type.
   */
-  static inline String getTypename(const Type& type) throw() {
+  static inline String getTypename(const Type& type) noexcept {
     return demangleName(type.getLocalName());
   }
 };

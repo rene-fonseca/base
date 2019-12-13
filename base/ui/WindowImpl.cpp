@@ -62,7 +62,7 @@ namespace windowImpl {
   // TAG: remember last window object (better when messages come in bursts)
   Entry* windows[257]; // contains zeros initially
 
-  inline unsigned int getHash(void* handle) throw() {
+  inline unsigned int getHash(void* handle) noexcept {
     const MemorySize offset = Cast::getOffset(handle);
     // TAG: find better shuffle
     return ((offset >> 8) | (offset << ((sizeof(MemorySize) - 1) * 8))) % getArraySize(windows);
@@ -73,14 +73,14 @@ namespace windowImpl {
   // TAG: remember last window object (better when messages come in bursts)
   Entry* windows[257]; // contains zeros initially
   
-  inline unsigned int getHash(void* handle) throw() {
+  inline unsigned int getHash(void* handle) noexcept {
     const MemorySize offset = Cast::getOffset(handle);
     // TAG: find better shuffle
     return ((offset >> 8) | (offset << ((sizeof(MemorySize) - 1) * 8))) % getArraySize(windows);
   }
 #endif // flavor
   
-  WindowImpl* getWindow(void* handle) throw() {
+  WindowImpl* getWindow(void* handle) noexcept {
     const unsigned int hash = getHash(handle);
     Entry* entry = windows[hash];
     while (entry) {
@@ -92,7 +92,7 @@ namespace windowImpl {
     return 0;
   }
 
-  void addWindow(WindowImpl* window, void* handle) throw() {
+  void addWindow(WindowImpl* window, void* handle) noexcept {
     Entry* temp = new Entry;
     temp->next = 0;
     temp->window = window;
@@ -110,7 +110,7 @@ namespace windowImpl {
     }
   }
 
-  void removeWindow(void* handle) throw() {
+  void removeWindow(void* handle) noexcept {
     const unsigned int hash = getHash(handle);
     Entry* entry = windows[hash];
     BASSERT((entry->window != 0) && (entry->handle != 0));
@@ -759,7 +759,7 @@ LRESULT CALLBACK Backend<WindowImpl>::messageHandler(HWND handle, UINT message, 
 }
 #endif // flavor
 
-void WindowImpl::construct() throw()
+void WindowImpl::construct() noexcept
 {
   windowImpl::addWindow(this, drawableHandle);
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
@@ -779,7 +779,7 @@ void WindowImpl::construct() throw()
 #endif // flavor
 }
 
-void WindowImpl::destroy() throw() {
+void WindowImpl::destroy() noexcept {
   graphicsContextHandle = 0;
   if (drawableHandle) {
     windowImpl::removeWindow(drawableHandle);
@@ -788,7 +788,7 @@ void WindowImpl::destroy() throw() {
   screenHandle = 0;
 }
 
-bool WindowImpl::loadModule(bool load) throw() {
+bool WindowImpl::loadModule(bool load) noexcept {
   bool success = true;
   spinLock.exclusiveLock();
   if (load) {
@@ -1368,7 +1368,7 @@ void WindowImpl::releaseCursorConfinement() throw(UserInterfaceException)
 #endif // flavor
 }
 
-// void WindowImpl::getCursorConfinement() throw() {
+// void WindowImpl::getCursorConfinement() noexcept {
 //   RECT rect;
 //   ::GetClipCursor(&rect);
 //   return Region(Position(rect.left, rect.top), Dimension(rect.right - rect.left + 1, rect.bottom - rect.top + 1));
@@ -1791,61 +1791,61 @@ unsigned int WindowImpl::getKeyState(unsigned int code) const throw(UserInterfac
 #endif // flavor
 }
 
-void WindowImpl::onDestruction() throw() {
+void WindowImpl::onDestruction() noexcept {
 }
 
-void WindowImpl::onDisplay() throw() {
+void WindowImpl::onDisplay() noexcept {
 }
 
-void WindowImpl::onMove(const Position& position) throw() {
+void WindowImpl::onMove(const Position& position) noexcept {
 }
 
-void WindowImpl::onResize(const Dimension& dimension) throw() {
+void WindowImpl::onResize(const Dimension& dimension) noexcept {
 }
 
 void WindowImpl::onMouseMove(
-  const Position& position, unsigned int buttons) throw() {
+  const Position& position, unsigned int buttons) noexcept {
 }
 
-void WindowImpl::onMouseScope(bool scope) throw() {
+void WindowImpl::onMouseScope(bool scope) noexcept {
 }
 
 void WindowImpl::onMouseButton(
   const Position& position,
   Mouse::Button button,
   Mouse::Event event,
-  unsigned int state) throw() {
+  unsigned int state) noexcept {
 }
 
 void WindowImpl::onMouseWheel(
-  const Position& position, int delta, unsigned int buttons) throw() {
+  const Position& position, int delta, unsigned int buttons) noexcept {
 }
 
 void WindowImpl::onKey(
-  unsigned int key, unsigned int flags, unsigned int modifiers) throw() {
+  unsigned int key, unsigned int flags, unsigned int modifiers) noexcept {
 }
 
-void WindowImpl::onIdle() throw() {
+void WindowImpl::onIdle() noexcept {
   wait();
 }
 
-bool WindowImpl::onClose() throw() {
+bool WindowImpl::onClose() noexcept {
   return true; // allow window to be closed
 }
 
-void WindowImpl::onVisibility(Visibility visibility) throw() {
+void WindowImpl::onVisibility(Visibility visibility) noexcept {
 }
 
-void WindowImpl::onFocus(Focus focus) throw()
+void WindowImpl::onFocus(Focus focus) noexcept
 {
 }
 
-void WindowImpl::onMenu(unsigned int identifier) throw()
+void WindowImpl::onMenu(unsigned int identifier) noexcept
 {
   onCommand(identifier);
 }
 
-void WindowImpl::onCommand(unsigned int identifier) throw()
+void WindowImpl::onCommand(unsigned int identifier) noexcept
 {
 }
 
@@ -1887,7 +1887,7 @@ void WindowImpl::update() throw(UserInterfaceException) {
 #endif // flavor
 }
 
-void WindowImpl::exit() throw()
+void WindowImpl::exit() noexcept
 {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   ::PostQuitMessage(0);
@@ -2543,7 +2543,7 @@ void WindowImpl::dispatch() throw(UserInterfaceException) {
 #endif // flavor
 }
 
-bool WindowImpl::hasMouse() throw() {
+bool WindowImpl::hasMouse() noexcept {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   return ::GetSystemMetrics(SM_MOUSEPRESENT) == TRUE;
 #else // unix
@@ -2551,7 +2551,7 @@ bool WindowImpl::hasMouse() throw() {
 #endif // flavor
 }
 
-unsigned int WindowImpl::getMouseButtons() throw() {
+unsigned int WindowImpl::getMouseButtons() noexcept {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   unsigned int result = 0;
   unsigned int temp = ::GetSystemMetrics(SM_CMOUSEBUTTONS);
@@ -2571,7 +2571,7 @@ unsigned int WindowImpl::getMouseButtons() throw() {
 #endif // flavor
 }
 
-unsigned int WindowImpl::getNumberOfMonitors() throw() {
+unsigned int WindowImpl::getNumberOfMonitors() noexcept {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   return ::GetSystemMetrics(SM_CMONITORS);
 #else // unix
@@ -2579,7 +2579,7 @@ unsigned int WindowImpl::getNumberOfMonitors() throw() {
 #endif // flavor
 }
 
-Dimension WindowImpl::getDisplayDimension() throw() {
+Dimension WindowImpl::getDisplayDimension() noexcept {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   unsigned int width = ::GetSystemMetrics(SM_CXVIRTUALSCREEN);
   unsigned int height = ::GetSystemMetrics(SM_CYVIRTUALSCREEN);
@@ -2593,7 +2593,7 @@ Dimension WindowImpl::getDisplayDimension() throw() {
 #endif // flavor
 }
 
-unsigned int WindowImpl::getMouseButtonIndex(Mouse::Button button) throw() {
+unsigned int WindowImpl::getMouseButtonIndex(Mouse::Button button) noexcept {
   // keep out to date with WindowImpl::Mouse::Button
   switch (button) {
   case Mouse::MIDDLE:
@@ -2612,7 +2612,7 @@ unsigned int WindowImpl::getMouseButtonIndex(Mouse::Button button) throw() {
   }
 }
 
-Literal WindowImpl::getMouseButtonName(Mouse::Button button) throw() {
+Literal WindowImpl::getMouseButtonName(Mouse::Button button) noexcept {
   // keep out to date with WindowImpl::Mouse::Button
   switch (button) {
   case Mouse::MIDDLE:
@@ -2672,7 +2672,7 @@ bool WindowImpl::isResponding(unsigned int milliseconds) throw(UserInterfaceExce
 #endif // flavor
 }
 
-WindowImpl::~WindowImpl() throw()
+WindowImpl::~WindowImpl() noexcept
 {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   if (drawableHandle) {

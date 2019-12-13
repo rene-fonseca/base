@@ -107,7 +107,7 @@ private:
   /**
     Loads or unloads the user interface component.
   */
-  static bool loadModule(bool load) throw();
+  static bool loadModule(bool load) noexcept;
 protected:
   
   /** The normal title of the window. */
@@ -135,12 +135,12 @@ protected:
     Invoked after initial context specific initialization to finalize the
     generic initialization.
   */
-  void construct() throw();
+  void construct() noexcept;
 
   /**
     Invoked when the window is destroyed.
   */
-  virtual void destroy() throw();
+  virtual void destroy() noexcept;
 public:
 
   /** Window flags. */
@@ -294,12 +294,12 @@ public:
   /**
     Returns the zero-based index of the specified mouse button.
   */
-  static unsigned int getMouseButtonIndex(Mouse::Button button) throw();
+  static unsigned int getMouseButtonIndex(Mouse::Button button) noexcept;
 
   /**
     Returns the name of the specified mouse button.
   */
-  static Literal getMouseButtonName(Mouse::Button button) throw();
+  static Literal getMouseButtonName(Mouse::Button button) noexcept;
   
   /**
     Initializes a new window with position (0, 0) and dimension (0, 0).
@@ -671,26 +671,26 @@ public:
   /**
     Invoked when the window is destroyed.
   */
-  virtual void onDestruction() throw();
+  virtual void onDestruction() noexcept;
   
   /**
     Invoked when the display should be updated.
   */
-  virtual void onDisplay() throw();
+  virtual void onDisplay() noexcept;
   
   /**
     Invoked when the window has been moved.
 
     @param position The new position of the window.
   */
-  virtual void onMove(const Position& position) throw();
+  virtual void onMove(const Position& position) noexcept;
 
   /**
     Invoked when the window has been resized.
 
     @param dimension The new dimension of the window.
   */
-  virtual void onResize(const Dimension& dimension) throw();
+  virtual void onResize(const Dimension& dimension) noexcept;
 
   /**
     Invoked when the mouse is moved.
@@ -699,7 +699,7 @@ public:
     @param buttons The current state of the mouse buttons.
   */
   virtual void onMouseMove(
-    const Position& position, unsigned int buttons) throw();
+    const Position& position, unsigned int buttons) noexcept;
 
   /**
     Invoked then the mouse pointer enters or exits the scope of the window.
@@ -707,7 +707,7 @@ public:
     @param scope Specified whether or not the pointer is in the scope of the
     window.
   */
-  virtual void onMouseScope(bool scope) throw();
+  virtual void onMouseScope(bool scope) noexcept;
 
   /**
     Invoked when the mouse button state changes.
@@ -720,7 +720,7 @@ public:
     const Position& position,
     Mouse::Button button,
     Mouse::Event event,
-    unsigned int state) throw();
+    unsigned int state) noexcept;
 
   /**
     Invoked when the mouse wheel state changes.
@@ -730,7 +730,7 @@ public:
     @param buttons The current state of the mouse buttons.
   */
   virtual void onMouseWheel(
-    const Position& position, int delta, unsigned int buttons) throw();
+    const Position& position, int delta, unsigned int buttons) noexcept;
 
   /**
     Invoked when a key is pressed or released.
@@ -740,40 +740,40 @@ public:
     @param modifiers The current state of the key modifiers (e.g. SHIFT).
   */
   virtual void onKey(
-    unsigned int key, unsigned int flags, unsigned int modifiers) throw();
+    unsigned int key, unsigned int flags, unsigned int modifiers) noexcept;
 
   /**
     Invoked continuously when no messages have been queued. The default
     implementation waits for an incoming message.
   */
-  virtual void onIdle() throw();
+  virtual void onIdle() noexcept;
 
   /**
     Invoked when the window is asked to be closed. This method must return true
     if the window may be closed. The default implementation returns true and
     also asks the application to exit.
   */
-  virtual bool onClose() throw();
+  virtual bool onClose() noexcept;
 
   /**
     Invoked when the visibility state changes.
   */
-  virtual void onVisibility(Visibility visibility) throw();
+  virtual void onVisibility(Visibility visibility) noexcept;
 
   /**
     Invoked when the focus state changes.
   */
-  virtual void onFocus(Focus focus) throw();
+  virtual void onFocus(Focus focus) noexcept;
 
   /**
     Invoked when a command is send from a menu to the window.
   */
-  virtual void onMenu(unsigned int identifier) throw();
+  virtual void onMenu(unsigned int identifier) noexcept;
   
   /**
     Invoked when a command is send to the window.
   */
-  virtual void onCommand(unsigned int identifier) throw();
+  virtual void onCommand(unsigned int identifier) noexcept;
   
   /**
     Requests the window to be updated.
@@ -783,7 +783,7 @@ public:
   /**
     Exit message dispatcher without asking the application to exit.
   */
-  static void exit() throw();
+  static void exit() noexcept;
   
   /**
     Waits for a message.
@@ -814,22 +814,22 @@ public:
   /**
     Returns true if a mouse is present.
   */
-  bool hasMouse() throw();
+  bool hasMouse() noexcept;
 
   /**
     Returns the available mouse buttons.
   */
-  unsigned int getMouseButtons() throw();
+  unsigned int getMouseButtons() noexcept;
   
   /**
     Returns the number of monitors.
   */
-  unsigned int getNumberOfMonitors() throw();
+  unsigned int getNumberOfMonitors() noexcept;
 
   /**
     Returns the dimension of the display.
   */
-  Dimension getDisplayDimension() throw();
+  Dimension getDisplayDimension() noexcept;
 
   /**
     Returns true if the window is reponsing within the specified timeout
@@ -842,7 +842,7 @@ public:
   /**
     Releases the window.
   */
-  virtual ~WindowImpl() throw();
+  virtual ~WindowImpl() noexcept;
 };
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

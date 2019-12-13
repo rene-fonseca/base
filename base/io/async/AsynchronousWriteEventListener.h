@@ -28,7 +28,7 @@ class _COM_AZURE_DEV__BASE__API AsynchronousWriteEventListener : public virtual 
 public:
 
   virtual void asynchronousCompletion(
-    const AsynchronousWriteCompletion& completion) throw() = 0;
+    const AsynchronousWriteCompletion& completion) noexcept = 0;
 };
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

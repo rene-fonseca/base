@@ -92,7 +92,7 @@ private:
   /**
     Invoked by connection scheme when processing is required.
   */
-//   inline void onJob(Reference<OrbScheme> scheme) throw() {
+//   inline void onJob(Reference<OrbScheme> scheme) noexcept {
 //     {
 //       ExclusiveSynchronize<Guard> _guard(guard);
 //       // make schema as job available - schema.getJobId();
@@ -103,7 +103,7 @@ private:
   /**
     Puts the buffer back into the pool.
   */
-  inline void releaseBuffers(OrbBuffer* buffers) throw() {
+  inline void releaseBuffers(OrbBuffer* buffers) noexcept {
     // pool.release(buffers);
   }
   
@@ -149,7 +149,7 @@ private:
       : connection(_connection), reference(_reference) {
     }
 
-    inline OrbConnectionReference(const OrbConnectionReference& copy) throw()
+    inline OrbConnectionReference(const OrbConnectionReference& copy) noexcept
       : connection(copy.connection), reference(copy.reference) {
     }
     
@@ -277,7 +277,7 @@ public:
     throw(InvalidFormat, OrbException, MemoryException);
 
   // TAG: temporary
-  Reference<OrbEncoding> getDefaultEncoding() throw();
+  Reference<OrbEncoding> getDefaultEncoding() noexcept;
   
   template<class POLY>
   Reference<POLY> getObject(const String& identifier)
@@ -324,7 +324,7 @@ public:
   /**
     Invoked on incoming connection (new context).
   */
-  void onConnection(Reference<OrbConnection> connection) throw();
+  void onConnection(Reference<OrbConnection> connection) noexcept;
   
   /**
     Invoked on incoming connection.
@@ -342,7 +342,7 @@ public:
   unsigned int push(
     Reference<OrbConnection> connection,
     const uint8* buffer,
-    unsigned int size) throw();
+    unsigned int size) noexcept;
   
   /**
     Enters the ORB message dispatch loop.
@@ -352,12 +352,12 @@ public:
   /**
     Terminates the message dispatch loop.
   */
-  void terminate() throw();
+  void terminate() noexcept;
   
   /**
     Destroys the orb.
   */
-  ~Orb() throw();
+  ~Orb() noexcept;
 };
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

@@ -216,7 +216,7 @@ namespace native {
     static void (CALL_GLX *glXSelectEvent)(Display* dpy, GLXDrawable draw, unsigned long event_mask);
     static void (CALL_GLX *glXGetSelectedEvent)(Display* dpy, GLXDrawable draw, unsigned long* event_mask);
 
-    static bool import() throw();
+    static bool import() noexcept;
   };
   
 }; // end of native namespace

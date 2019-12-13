@@ -68,22 +68,22 @@ public:
   /**
     Resumes the stream.
   */
-  void resume() throw();
+  void resume() noexcept;
 
   /**
     Pauses the stream.
   */
-  void pause() throw();
+  void pause() noexcept;
 
   /**
     Resets the device.
   */
-  void reset() throw();
+  void reset() noexcept;
 
   /**
     Wait for all the samples to be played back.
   */
-  void wait() throw();
+  void wait() noexcept;
 
   /**
     Writes bytes in buffer to stream.
@@ -92,12 +92,12 @@ public:
     @param size The number of bytes to be written.
     @return The actual number of bytes written.
   */
-  unsigned int write(const void* buffer, unsigned int size) throw();
+  unsigned int write(const void* buffer, unsigned int size) noexcept;
 
   /**
     Destructs the stream object.
   */
-  ~SoundOutputStream() throw();
+  ~SoundOutputStream() noexcept;
 };
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

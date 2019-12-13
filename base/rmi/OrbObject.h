@@ -43,7 +43,7 @@ public:
   /**
     Destroys the orb object.
   */
-  virtual ~OrbObject() throw();
+  virtual ~OrbObject() noexcept;
 };
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

@@ -34,7 +34,7 @@ class _COM_AZURE_DEV__BASE__API ProcessingInstruction : public Node {
   friend class Document;
 protected:
 
-  inline ProcessingInstruction(void* context) throw() : Node(context) {
+  inline ProcessingInstruction(void* context) noexcept : Node(context) {
   }
 public:
 

@@ -23,7 +23,7 @@
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
-GraphicsContext::GraphicsContextObjectHandle::~GraphicsContextObjectHandle() throw() {
+GraphicsContext::GraphicsContextObjectHandle::~GraphicsContextObjectHandle() noexcept {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   if (handle) {
     ::DeleteObject((HGDIOBJ)handle);
@@ -995,7 +995,7 @@ Bitmap GraphicsContext::getBitmap(
 #endif // flavor  
 }
 
-GraphicsContext::~GraphicsContext() throw() {
+GraphicsContext::~GraphicsContext() noexcept {
 }
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

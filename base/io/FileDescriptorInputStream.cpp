@@ -35,25 +35,25 @@
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
-FileDescriptorInputStream::FileDescriptorInputStream() throw()
+FileDescriptorInputStream::FileDescriptorInputStream() noexcept
   : FileDescriptor(), end(false)
 {
 }
 
 FileDescriptorInputStream::FileDescriptorInputStream(
-  const FileDescriptor& fd) throw()
+  const FileDescriptor& fd) noexcept
   : FileDescriptor(fd), end(false)
 {
 }
 
 FileDescriptorInputStream::FileDescriptorInputStream(
-  const FileDescriptorInputStream& copy) throw()
+  const FileDescriptorInputStream& copy) noexcept
   : FileDescriptor(copy), end(copy.end)
 {
 }
 
 FileDescriptorInputStream& FileDescriptorInputStream::operator=(
-  const FileDescriptorInputStream& assign) throw()
+  const FileDescriptorInputStream& assign) noexcept
 {
   if (&assign != this) { // protect against self assignment
     fd = assign.fd;

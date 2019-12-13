@@ -38,11 +38,11 @@ public:
   /**
     Initializes invalid object.
   */
-  inline AsynchronousWriteOperation() throw()
+  inline AsynchronousWriteOperation() noexcept
   {
   }
 
-  inline AsynchronousWriteOperation(AsynchronousWriteContext* _context) throw()
+  inline AsynchronousWriteOperation(AsynchronousWriteContext* _context) noexcept
     : context(_context)
   {
   }
@@ -50,7 +50,7 @@ public:
   /*
     Initialization by copying from other object.
   */
-  inline AsynchronousWriteOperation(const AsynchronousWriteOperation& copy) throw()
+  inline AsynchronousWriteOperation(const AsynchronousWriteOperation& copy) noexcept
   {
     this->context = copy.context;
   }
@@ -58,7 +58,7 @@ public:
   /*
     Assignment operator.
   */
-  inline AsynchronousWriteOperation& operator=(const AsynchronousWriteOperation& assign) throw()
+  inline AsynchronousWriteOperation& operator=(const AsynchronousWriteOperation& assign) noexcept
   {
     this->context = assign.context;
     return *this;
@@ -68,7 +68,7 @@ public:
     Explicit release of the handle to the asynchronous operation. This does not
     abort the asynchronous operation.
   */
-  inline void release() throw()
+  inline void release() noexcept
   {
     context = 0;
   }

@@ -35,7 +35,7 @@ public:
   /**
     Initializes the IDL type.
   */
-  IDLNamedType(const String& name) throw();
+  IDLNamedType(const String& name) noexcept;
   
   /**
     Returns the fully qualified name of the type.
@@ -47,7 +47,7 @@ public:
   /**
     Destroys the IDL type.
   */
-  ~IDLNamedType() throw();
+  ~IDLNamedType() noexcept;
 };
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

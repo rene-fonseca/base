@@ -35,7 +35,7 @@ protected:
   /**
     Initializes attribute declaration.
   */
-  inline AttributeDecl(void* context) throw() : Declaration(context) {
+  inline AttributeDecl(void* context) noexcept : Declaration(context) {
   }
 public:
   

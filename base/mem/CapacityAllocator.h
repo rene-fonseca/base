@@ -30,7 +30,7 @@ public:
       greater than or equal to MINIMUM_GRANULARITY. */
   static constexpr MemorySize DEFAULT_GRANULARITY = MINIMUM_GRANULARITY;
 
-  inline CapacityAllocator() throw()
+  inline CapacityAllocator() noexcept
   {
   }
   

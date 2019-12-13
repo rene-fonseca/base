@@ -32,7 +32,7 @@
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
-String IEEE1394::getAsString(unsigned short nodeId) throw() {
+String IEEE1394::getAsString(unsigned short nodeId) noexcept {
   StringOutputStream stream;
   unsigned int busId = getBusId(nodeId);
   if (busId == IEEE1394::LOCAL_BUS) {
@@ -72,10 +72,10 @@ void IEEE1394::IsochronousRequestImpl::reset() throw(IEEE1394Exception) {
   status = READY;
 }
 
-IEEE1394::IsochronousRequestImpl::~IsochronousRequestImpl() throw() { // TAG: is this required
+IEEE1394::IsochronousRequestImpl::~IsochronousRequestImpl() noexcept { // TAG: is this required
 }
 
-IEEE1394::IsochronousReadRequestImpl::IsochronousReadRequestImpl() throw()
+IEEE1394::IsochronousReadRequestImpl::IsochronousReadRequestImpl() noexcept
   : subchannel(0),
     buffer(0),
     bufferSize(0),
@@ -148,7 +148,7 @@ void IEEE1394::IsochronousReadFixedDataRequestImpl::setBuffer(
   this->secondaryBuffer = secondaryBuffer;
 }
 
-IEEE1394::IsochronousWriteRequestImpl::IsochronousWriteRequestImpl() throw()
+IEEE1394::IsochronousWriteRequestImpl::IsochronousWriteRequestImpl() noexcept
   : buffer(0),
     bufferSize(0),
     numberOfPackets(0),
@@ -216,7 +216,7 @@ void IEEE1394::IsochronousWriteDataRequestImpl::setBuffer(
   this->secondaryBuffer = secondaryBuffer;
 }
 
-Array<EUI64> IEEE1394::getNodes() throw() {
+Array<EUI64> IEEE1394::getNodes() noexcept {
   Array<EUI64> result;
   for (unsigned int id = 0; id < numberOfNodes; ++id) {
     result.append(nodes[id].guid);
@@ -347,7 +347,7 @@ unsigned int IEEE1394::getVendorId(unsigned short node) throw(IEEE1394Exception)
   throw IEEE1394Exception("Invalid configuration ROM.", this);
 }
 
-int IEEE1394::getPhysicalId(const EUI64& guid) throw() {
+int IEEE1394::getPhysicalId(const EUI64& guid) noexcept {
   for (unsigned int id = 0; id < numberOfNodes; ++id) {
     if (nodes[id].guid == guid) {
       return id;

@@ -98,7 +98,7 @@ public:
       Glue _glue,
       bool _builtin,
       bool _popable,
-      bool _function) throw()
+      bool _function) noexcept
       : id(_id),
         arguments(_arguments),
         precedence(_precedence),
@@ -145,7 +145,7 @@ public:
       unsigned int id,
       unsigned int precedence,
       Glue glue,
-      bool popable) throw()
+      bool popable) noexcept
       : Operation(id, 1, precedence, glue, true, popable, false) {
     }
   };
@@ -158,7 +158,7 @@ public:
       unsigned int id,
       unsigned int precedence,
       Glue glue,
-      bool popable) throw()
+      bool popable) noexcept
       : Operation(id, 2, precedence, glue, true, popable, false) {
     }
   };
@@ -167,33 +167,33 @@ public:
   class _COM_AZURE_DEV__BASE__API Function : public Operation {
   public:
     
-    inline Function(unsigned int id, unsigned int arguments) throw()
+    inline Function(unsigned int id, unsigned int arguments) noexcept
       : Operation(id, arguments, 100, RIGHT, false, false, true) {
     }
   };
   
-  static inline Node makeValueNode(double value) throw() {
+  static inline Node makeValueNode(double value) noexcept {
     Node result;
     result.type = VALUE;
     result.value = value;
     return result;
   }
   
-  static inline Node makeConstantNode(unsigned int id) throw() {
+  static inline Node makeConstantNode(unsigned int id) noexcept {
     Node result;
     result.type = CONSTANT;
     result.constant = id;
     return result;
   }
   
-  static inline Node makeVariableNode(unsigned int id) throw() {
+  static inline Node makeVariableNode(unsigned int id) noexcept {
     Node result;
     result.type = VARIABLE;
     result.variable = id;
     return result;
   }  
  
-  static inline Node makeFunctionNode(unsigned int id, unsigned int arguments) throw() {
+  static inline Node makeFunctionNode(unsigned int id, unsigned int arguments) noexcept {
     Node result;
     result.type = FUNCTION;
     result.function.id = id;
@@ -201,14 +201,14 @@ public:
     return result;
   }
   
-  static inline Node makeUnknownNode(unsigned int id) throw() {
+  static inline Node makeUnknownNode(unsigned int id) noexcept {
     Node result;
     result.type = UNKNOWN;
     result.unknown = id;
     return result;
   }
   
-  static inline Node makeNodeFromOperation(Operation operation) throw() {
+  static inline Node makeNodeFromOperation(Operation operation) noexcept {
     Node result;
     // must not be parenthesis
     if (operation.isBuiltin()) {
@@ -239,7 +239,7 @@ public:
   /**
     Initializes expression evaluator.
   */
-  ExpressionEvaluator() throw();
+  ExpressionEvaluator() noexcept;
 
   /**
     Returns the expression.
@@ -251,7 +251,7 @@ public:
   /**
     Sets the expression.
   */
-  inline void setExpression(const List<Node>& nodes) throw() {
+  inline void setExpression(const List<Node>& nodes) noexcept {
     this->nodes = nodes;
   }
 
@@ -266,7 +266,7 @@ public:
   /**
     Sets the variables.
   */
-  inline void setVariables(const List<String>& variables) throw() {
+  inline void setVariables(const List<String>& variables) noexcept {
     this->variables = variables;
   }
   
@@ -300,7 +300,7 @@ public:
     double* results,
     unsigned int count) const throw(ExpressionException);
   
-  virtual ~ExpressionEvaluator() throw();
+  virtual ~ExpressionEvaluator() noexcept;
 };
 
 
@@ -330,7 +330,7 @@ public:
   /**
     Initializes an expression provider.
   */
-  ExpressionProvider() throw();
+  ExpressionProvider() noexcept;
 
   /**
     Registers an identifier as a constant.
@@ -403,7 +403,7 @@ public:
   /**
     Destroys the expression provider.
   */
-  ~ExpressionProvider() throw();
+  ~ExpressionProvider() noexcept;
 };
 
 
@@ -475,7 +475,7 @@ public:
     (e.g. "4+5*x/7").
     @param provider The expression provider.
   */
-  ExpressionParser(const String& expression, ExpressionProvider& provider) throw();
+  ExpressionParser(const String& expression, ExpressionProvider& provider) noexcept;
   
   /**
     Parses the specified arithmetic expression representation.
@@ -499,7 +499,7 @@ public:
   /**
     Sets the auto-register mode.
   */
-  inline void setAutoRegister(bool value) throw() {
+  inline void setAutoRegister(bool value) noexcept {
     autoRegister = value;
   }
   
@@ -525,7 +525,7 @@ public:
   /**
     Destroys the expression parser.
   */
-  ~ExpressionParser() throw();
+  ~ExpressionParser() noexcept;
 };
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

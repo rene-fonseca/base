@@ -21,7 +21,7 @@
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
-bool AsynchronousStream::asyncTest() throw() {
+bool AsynchronousStream::asyncTest() noexcept {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   return ::SleepEx(0, TRUE) == WAIT_IO_COMPLETION;
 #else // unix

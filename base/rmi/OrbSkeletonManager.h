@@ -110,7 +110,7 @@ public:
   /**
     Destroys the ORB skeleton manager.
   */
-  ~OrbSkeletonManager() throw();
+  ~OrbSkeletonManager() noexcept;
 };
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

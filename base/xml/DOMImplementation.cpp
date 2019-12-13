@@ -26,7 +26,7 @@ _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 class DOMImplementationImpl {
 public:
   
-  static void error(void* context, const char* message, ...) throw() {    
+  static void error(void* context, const char* message, ...) noexcept {    
     va_list arg;
     char buffer[4096]; // TAG: possible buffer overrun
     va_start(arg, message);
@@ -61,7 +61,7 @@ public:
 #endif
 
 bool DOMImplementation::hasFeature(
-  const String& name, const String& version) throw() {
+  const String& name, const String& version) noexcept {
   if (version.isProper() && (version != "2.0")) {
     return false;
   }

@@ -32,14 +32,14 @@ public:
   /**
     Initializes the exception object with no message.
   */
-  Destruct() throw();
+  Destruct() noexcept;
 
   /**
     Initializes the exception object.
 
     @param message The message.
   */
-  Destruct(const char* message) throw();
+  Destruct(const char* message) noexcept;
   
   _COM_AZURE_DEV__BASE__EXCEPTION_THIS_TYPE()
 };

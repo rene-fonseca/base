@@ -146,12 +146,12 @@ public:
   /**
     Returns a string representation of the specified error code.
   */
-  static Literal getErrorMessage(unsigned int error) throw();
+  static Literal getErrorMessage(unsigned int error) noexcept;
   
   /**
     Returns the error code for the specified native error code.
   */
-  static unsigned int getErrorCode(unsigned int error) throw();
+  static unsigned int getErrorCode(unsigned int error) noexcept;
   
   /**
     Returns the value of the specified system variable.
@@ -166,7 +166,7 @@ public:
     SOFT_LIMIT.
   */
   static int64 getResourceLimit(
-    Resource resource, LimitType type = SOFT_LIMIT) throw();
+    Resource resource, LimitType type = SOFT_LIMIT) noexcept;
 
   /**
     Set resource limit.

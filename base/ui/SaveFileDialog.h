@@ -53,7 +53,7 @@ public:
   /**
     Initializes the save file dialog window.
   */
-  SaveFileDialog() throw();
+  SaveFileDialog() noexcept;
 
   /**
     Returns the flags.
@@ -65,7 +65,7 @@ public:
   /**
     Sets the flags.
   */
-  inline void setFlags(unsigned int flags) throw() {
+  inline void setFlags(unsigned int flags) noexcept {
     this->flags = flags;
   }
   
@@ -79,7 +79,7 @@ public:
   /**
     Sets the title of the dialog window.
   */
-  inline void setTitle(const String& title) throw() {
+  inline void setTitle(const String& title) noexcept {
     this->title = title;
   }
 
@@ -93,7 +93,7 @@ public:
   /**
     Sets the current file name.
   */
-  inline void setFilename(const String& filename) throw() {
+  inline void setFilename(const String& filename) noexcept {
     this->filename = filename;
   }
   
@@ -107,7 +107,7 @@ public:
   /**
     Sets the initial folder.
   */
-  inline void setFolder(const String& folder) throw() {
+  inline void setFolder(const String& folder) noexcept {
     this->folder = folder;
   }
 
@@ -124,19 +124,19 @@ public:
     @param description The filter description.
     @param filter The filter.
   */
-  void setFilter(const String& description, const String& filter) throw();
+  void setFilter(const String& description, const String& filter) noexcept;
   
   /**
     Sets the filters.
   */
-  void setFilters(const Map<String, String>& filters) throw();
+  void setFilters(const Map<String, String>& filters) noexcept;
   
   /**
     Executes the dialog.
   */
   bool execute() throw(UserInterfaceException);
 
-  ~SaveFileDialog() throw();
+  ~SaveFileDialog() noexcept;
 };
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

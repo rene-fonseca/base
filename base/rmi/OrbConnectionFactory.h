@@ -36,7 +36,7 @@ public:
   /**
     Initializes the connection factory.
   */
-  OrbConnectionFactory() throw();
+  OrbConnectionFactory() noexcept;
   
   /**
     Returns the global identifier of the connection scheme (e.g.
@@ -57,7 +57,7 @@ public:
   /**
     Destroys the connection factory.
   */
-  virtual ~OrbConnectionFactory() throw();
+  virtual ~OrbConnectionFactory() noexcept;
 };
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

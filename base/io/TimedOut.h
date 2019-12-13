@@ -31,7 +31,7 @@ public:
   /**
     Initializes the exception object with no message.
   */
-  inline TimedOut() throw() {
+  inline TimedOut() noexcept {
   }
 
   /**
@@ -39,7 +39,7 @@ public:
 
     @param message The message.
   */
-  inline TimedOut(const char* message) throw() : IOException(message) {
+  inline TimedOut(const char* message) noexcept : IOException(message) {
   }
   
   /**
@@ -47,7 +47,7 @@ public:
     
     @param type The identity of the type.
   */
-  inline TimedOut(const Type& type) throw() : IOException(type) {
+  inline TimedOut(const Type& type) noexcept : IOException(type) {
   }
   
   /**
@@ -56,7 +56,7 @@ public:
     @param message An NULL-terminated string (ASCII).
     @param type The identity of the type.
   */
-  inline TimedOut(const char* message, const Type& type) throw()
+  inline TimedOut(const char* message, const Type& type) noexcept
     : IOException(message, type) {
   }
   

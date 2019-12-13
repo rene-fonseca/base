@@ -23,7 +23,7 @@ _COM_AZURE_DEV__BASE__DUMMY_SYMBOL
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
-WaitForObjects::WaitForObjects() throw()
+WaitForObjects::WaitForObjects() noexcept
 {
 }
 
@@ -48,7 +48,7 @@ void WaitForObjects::deregisterObject(Object* object)
 // objects.remove(i);
 }
 
-void WaitForObjects::deregisterAll() throw()
+void WaitForObjects::deregisterAll() noexcept
 {
   objects.removeAll();
   handles.removeAll();

@@ -61,7 +61,7 @@ public:
   /**
     Destroys the ORB skeleton.
   */
-  virtual ~OrbSkeleton() throw();
+  virtual ~OrbSkeleton() noexcept;
 };
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

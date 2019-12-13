@@ -36,7 +36,7 @@ _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
     /**
       Initializes the exception object with no message.
     */
-    inline MenuException() throw() {
+    inline MenuException() noexcept {
     }
     
     /**
@@ -44,7 +44,7 @@ _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
       
       @param message The message.
     */
-    inline MenuException(const char* message) throw() : UserInterfaceException(message) {
+    inline MenuException(const char* message) noexcept : UserInterfaceException(message) {
     }
     
     /**
@@ -52,7 +52,7 @@ _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
       
       @param type The identity of the type.
     */
-    inline MenuException(const Type& type) throw() : UserInterfaceException(type) {
+    inline MenuException(const Type& type) noexcept : UserInterfaceException(type) {
     }
   
     /**
@@ -61,7 +61,7 @@ _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
       @param message An NULL-terminated string.
       @param type The identity of the type.
     */
-    inline MenuException(const char* message, const Type& type) throw() : UserInterfaceException(message, type) {
+    inline MenuException(const char* message, const Type& type) noexcept : UserInterfaceException(message, type) {
     }
     
     _COM_AZURE_DEV__BASE__EXCEPTION_THIS_TYPE()
@@ -85,21 +85,21 @@ private:
     OperatingSystem::Handle handle;
     
     /* Disable the default copy constructor. */
-    MenuHandle(const MenuHandle& copy) throw();
+    MenuHandle(const MenuHandle& copy) noexcept;
     /* Disable the default assignment operator. */
-    MenuHandle& operator=(const MenuHandle& assign) throw();
+    MenuHandle& operator=(const MenuHandle& assign) noexcept;
   public:
 
     /**
       Initializes an invalid handle.
     */
-    inline MenuHandle() throw() : handle(OperatingSystem::INVALID_HANDLE) {
+    inline MenuHandle() noexcept : handle(OperatingSystem::INVALID_HANDLE) {
     }
     
     /**
       Initializes handle using the specified value.
     */
-    explicit inline MenuHandle(OperatingSystem::Handle _handle) throw() : handle(_handle) {
+    explicit inline MenuHandle(OperatingSystem::Handle _handle) noexcept : handle(_handle) {
     }
     
     /**
@@ -143,13 +143,13 @@ public:
   /**
     Initializes menu from other menu.
   */
-  inline Menu(const Menu& copy) throw() : handle(copy.handle) {
+  inline Menu(const Menu& copy) noexcept : handle(copy.handle) {
   }
 
   /**
     Assignment of menu from other menu.
   */
-  inline Menu& operator=(const Menu& assign) throw() {
+  inline Menu& operator=(const Menu& assign) noexcept {
     handle = assign.handle;
     return *this;
   }

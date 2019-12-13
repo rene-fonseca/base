@@ -72,7 +72,7 @@ public:
     progress = false;
   }
 
-  void onTermination() throw() {
+  void onTermination() noexcept {
     fout << ENDL;
   }
   

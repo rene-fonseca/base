@@ -51,11 +51,11 @@ public:
   IEEE1394Application(
     int numberOfArguments,
     const char* arguments[],
-    const char* environment[]) throw()
+    const char* environment[]) noexcept
     : Application("IEEE1394", numberOfArguments, arguments, environment) {
   }
 
-  void dumpAdapters() throw() {
+  void dumpAdapters() noexcept {
     try {
       IEEE1394 ieee1394;
       Array<EUI64> adapters = ieee1394.getAdapters();
@@ -78,15 +78,15 @@ public:
     }
   }
 
-  void openAdapter(IEEE1394& ieee1394, const EUI64& id) throw() {
+  void openAdapter(IEEE1394& ieee1394, const EUI64& id) noexcept {
     fout << "Opening IEEE 1394 adapter (" << id << ')' << ENDL;
     ieee1394.open(id);
   }
 
-  void dumpAdapter() throw() {
+  void dumpAdapter() noexcept {
   }
   
-  void dumpNodes(const EUI64& guid) throw() {   
+  void dumpNodes(const EUI64& guid) noexcept {   
     try {
       IEEE1394 ieee1394;
       
@@ -269,7 +269,7 @@ public:
   void dumpRegisterSpace(
     uint64 firstAddress,
     uint64 lastAddress,
-    const EUI64& guid, int node) throw() {
+    const EUI64& guid, int node) noexcept {
     try {
       IEEE1394 ieee1394;
       
@@ -338,7 +338,7 @@ public:
   }
 
   void onFCPRequest(
-    unsigned short nodeId, const uint8* buffer, unsigned int size) throw() {
+    unsigned short nodeId, const uint8* buffer, unsigned int size) noexcept {
     fout << "FCP request: " << EOL
          << indent(2) << "source node: " << IEEE1394::getAsString(nodeId)
          << EOL
@@ -348,7 +348,7 @@ public:
   }
 
   void onFCPResponse(
-    unsigned short nodeId, const uint8* buffer, unsigned int size) throw() {
+    unsigned short nodeId, const uint8* buffer, unsigned int size) noexcept {
     fout << "FCP response: " << EOL
          << indent(2) << "source node: " << IEEE1394::getAsString(nodeId)
          << EOL
@@ -357,13 +357,13 @@ public:
     fout << dump << ENDL;
   }
   
-  bool onIsochronousPacket(const uint8* buffer, unsigned int size) throw() {
+  bool onIsochronousPacket(const uint8* buffer, unsigned int size) noexcept {
     MemoryDump dump(buffer, size);
     fout << dump << ENDL;
     return false;
   }
 
-  void fcp(const EUI64& guid) throw() {
+  void fcp(const EUI64& guid) noexcept {
     try {
       IEEE1394 ieee1394;
       
@@ -410,7 +410,7 @@ public:
     }
   }
   
-  void isochronousTransfer(const EUI64& guid, unsigned int channel) throw() {
+  void isochronousTransfer(const EUI64& guid, unsigned int channel) noexcept {
     try {
       IEEE1394 ieee1394;
       
@@ -439,7 +439,7 @@ public:
     }
   }
 
-  void resetBus(const EUI64& guid) throw() {
+  void resetBus(const EUI64& guid) noexcept {
   }
 
   unsigned short getNodeId(const String& string) const throw(InvalidFormat)

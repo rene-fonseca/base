@@ -27,7 +27,7 @@
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
-void Widget::destroy() throw()
+void Widget::destroy() noexcept
 {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)  
   if (graphicsContextHandle) {
@@ -130,7 +130,7 @@ Widget::Widget(Window& owner) throw(UserInterfaceException)
   update();
 }
 
-Widget::~Widget() throw()
+Widget::~Widget() noexcept
 {
 }
 

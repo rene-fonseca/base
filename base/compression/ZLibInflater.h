@@ -99,7 +99,7 @@ public:
   /**
     Destroys the inflater.
   */
-  virtual ~ZLibInflater() throw();
+  virtual ~ZLibInflater() noexcept;
 };
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

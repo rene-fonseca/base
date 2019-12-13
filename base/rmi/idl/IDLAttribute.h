@@ -41,19 +41,19 @@ public:
     
     @param type The type of the attribute.
   */
-  IDLAttribute(const IDLPrimitive& type) throw();
+  IDLAttribute(const IDLPrimitive& type) noexcept;
   
   /**
     Initializes the IDL attribute as an enumeration.
     
     @param type The type of the attribute.
   */
-  IDLAttribute(const IDLEnumeration& type) throw();
+  IDLAttribute(const IDLEnumeration& type) noexcept;
   
   /**
     Destroys the IDL attribute.
   */
-  ~IDLAttribute() throw();
+  ~IDLAttribute() noexcept;
 };
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

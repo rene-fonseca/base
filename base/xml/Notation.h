@@ -38,7 +38,7 @@ class _COM_AZURE_DEV__BASE__API Notation : public Node { // TAG: should be Decla
   friend class Document;
 protected:
   
-  inline Notation(void* context) throw() : Node(context) {
+  inline Notation(void* context) noexcept : Node(context) {
   }
 public:
   

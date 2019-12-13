@@ -47,7 +47,7 @@ Dimension Button::getPreferredSize() throw(UserInterfaceException) {
   );
 }
 
-void Button::onMouseScope(bool scope) throw() {
+void Button::onMouseScope(bool scope) noexcept {
   highlighted = scope;
   invalidate();
 }
@@ -56,7 +56,7 @@ void Button::onMouseButton(
   const Position& position,
   Mouse::Button button,
   Mouse::Event event,
-  unsigned int state) throw() {
+  unsigned int state) noexcept {
   if (button == Mouse::LEFT) {
     if (event == Mouse::PRESSED) {
       pressed = true;
@@ -79,14 +79,14 @@ void Button::onMouseButton(
   }
 }
 
-void Button::onSelection() throw() {
+void Button::onSelection() noexcept {
   fout << "Button: Selection event" << ENDL;
 }
 
 void Button::onKey(
   unsigned int key,
   unsigned int flags,
-  unsigned int modifiers) throw() {
+  unsigned int modifiers) noexcept {
   if (flags & Key::PRESSED) {
     if (flags & Key::DEAD) {
       return;
@@ -98,7 +98,7 @@ void Button::onKey(
   }
 }
 
-void Button::onDisplay() throw() {
+void Button::onDisplay() noexcept {
   // focus, normal, pressed, highlighted
   // 0: enabled, disabled (ignore all other)
   // 1: focus (mark button), no focus

@@ -35,25 +35,25 @@ public:
   /**
     Initializes file descriptor output stream as invalid.
   */
-  FileDescriptorOutputStream() throw();
+  FileDescriptorOutputStream() noexcept;
 
   /**
     Initializes file descriptor output stream from a file descriptor.
 
     @param fd The file descriptor.
   */
-  FileDescriptorOutputStream(const FileDescriptor& fd) throw();
+  FileDescriptorOutputStream(const FileDescriptor& fd) noexcept;
 
   /**
     Initializes file descriptor output stream from other file descriptor output stream.
   */
-  FileDescriptorOutputStream(const FileDescriptorOutputStream& copy) throw();
+  FileDescriptorOutputStream(const FileDescriptorOutputStream& copy) noexcept;
 
   /**
     Assignment of file descriptor output stream to this file descriptor output
     stream.
   */
-  FileDescriptorOutputStream& operator=(const FileDescriptorOutputStream& assign) throw();
+  FileDescriptorOutputStream& operator=(const FileDescriptorOutputStream& assign) noexcept;
 
   /**
     Closes the stream and releases any system resources associated with the

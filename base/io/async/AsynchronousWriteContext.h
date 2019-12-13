@@ -29,7 +29,7 @@ protected:
   /** Self-reference used to protect the object from premature destruction. */
   Reference<AsynchronousWriteContext> selfReference;
 
-  inline AsynchronousWriteContext() throw() : selfReference(this) {
+  inline AsynchronousWriteContext() noexcept : selfReference(this) {
   }
 public:
 

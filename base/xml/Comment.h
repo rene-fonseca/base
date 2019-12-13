@@ -35,7 +35,7 @@ class _COM_AZURE_DEV__BASE__API Comment : public CharacterData {
   friend class Document;
 protected:
   
-  inline Comment(void* context) throw() : CharacterData(context) {
+  inline Comment(void* context) noexcept : CharacterData(context) {
   }
 public:
   

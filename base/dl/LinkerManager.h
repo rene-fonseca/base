@@ -38,17 +38,17 @@ public:
   /**
     Returns the linker manager of the application.
   */
-  static LinkerManager* getManager() throw();
+  static LinkerManager* getManager() noexcept;
 
   /**
     Invoked by module during self-registration process.
   */
-  void registrate(LinkerModule* module) throw();
+  void registrate(LinkerModule* module) noexcept;
 
   /**
     Invoked by module during self-deregistration process.
   */
-  LinkerModule* deregistrate() throw();
+  LinkerModule* deregistrate() noexcept;
 
   /**
     Initializes the manager.

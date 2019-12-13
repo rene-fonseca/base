@@ -353,7 +353,7 @@ long OperatingSystem::getVariable(Variable variable) throw(NotSupported) {
 }
 
 int64 OperatingSystem::getResourceLimit(
-  Resource resource, LimitType type) throw() {
+  Resource resource, LimitType type) noexcept {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   return 0;
   // throw NotSupported(Type::getType<OperatingSystem>());
@@ -465,7 +465,7 @@ void OperatingSystem::setResourceLimit(Resource resource, int64 limit, LimitType
 #endif // flavor
 }
 
-Literal OperatingSystem::getErrorMessage(unsigned int error) throw() {
+Literal OperatingSystem::getErrorMessage(unsigned int error) noexcept {
   static const Literal
     ERROR_MESSAGES[OperatingSystem::UNSPECIFIED_ERROR + 1] = {
     MESSAGE("Ok"),
@@ -512,7 +512,7 @@ Literal OperatingSystem::getErrorMessage(unsigned int error) throw() {
   return ERROR_MESSAGES[error];
 }
 
-unsigned int OperatingSystem::getErrorCode(unsigned int error) throw() {
+unsigned int OperatingSystem::getErrorCode(unsigned int error) noexcept {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   switch (error) {
   case ERROR_SUCCESS:

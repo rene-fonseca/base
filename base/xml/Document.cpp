@@ -28,7 +28,7 @@ _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 Document::Document() throw(DOMException) {
 }
 
-DocumentType Document::getDocumentType() throw() {
+DocumentType Document::getDocumentType() noexcept {
 #if defined(_COM_AZURE_DEV__BASE__XML_XMLSOFT_ORG)
   xmlDoc* doc = (xmlDoc*)getContext();
   xmlDtd* documentType = doc->intSubset;
@@ -38,11 +38,11 @@ DocumentType Document::getDocumentType() throw() {
 #endif
 }
 
-DOMImplementation Document::getImplementation() throw() {
+DOMImplementation Document::getImplementation() noexcept {
   return DOMImplementation();
 }
 
-Element Document::getDocumentElement() throw() {
+Element Document::getDocumentElement() noexcept {
 #if defined(_COM_AZURE_DEV__BASE__XML_XMLSOFT_ORG)
   xmlDoc* doc = (xmlDoc*)getContext();
   xmlNode* node = xmlDocGetRootElement(doc);
@@ -389,7 +389,7 @@ EntityReference Document::createEntityReference(
 #endif
 }
 
-Element Document::getElementById(const String& elementId) throw() {
+Element Document::getElementById(const String& elementId) noexcept {
 #if defined(_COM_AZURE_DEV__BASE__XML_XMLSOFT_ORG)
   xmlDoc* doc = (xmlDoc*)getContext();
   bassert(doc, DOMException(this));

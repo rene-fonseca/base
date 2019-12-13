@@ -39,7 +39,7 @@ class _COM_AZURE_DEV__BASE__API DocumentFragment : public Node {
   friend class Document;
 protected:
 
-  inline DocumentFragment(void* context) throw() : Node(context) {
+  inline DocumentFragment(void* context) noexcept : Node(context) {
   }
 public:
 

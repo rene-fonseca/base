@@ -41,7 +41,7 @@ public:
   static Thread* parentThread; // the daemon context
   static Runnable* runnable; // the active object
 
-  static bool run() throw() {
+  static bool run() noexcept {
     try {
       BASSERT(Thread::getThread() == 0); // make sure this is a new context - ThreadKey is initialized to 0
       DaemonImpl::daemonThread = new Thread(DaemonImpl::parentThread);
@@ -69,7 +69,7 @@ namespace win32 {
   const DWORD SERVICE_CONTROL_USERDEFINED_HANGUP = 128;
 
   /* Sets the current status of the service and reports it to the Service Control Manager. */
-  bool reportStatusToControlManager(DWORD currentState, DWORD exitCode, DWORD waitHint) throw() {
+  bool reportStatusToControlManager(DWORD currentState, DWORD exitCode, DWORD waitHint) noexcept {
     static DWORD checkPoint = 1; // TAG: do we need to reset the checkpoint at some time
     bool result = true;
     

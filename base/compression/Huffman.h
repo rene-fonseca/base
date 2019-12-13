@@ -53,7 +53,7 @@ public:
   /**
     Initializes the object.
   */
-  Huffman() throw();
+  Huffman() noexcept;
 
   /**
     Encodes the content of the specified buffer.
@@ -62,7 +62,7 @@ public:
     @param buffer The buffer.
     @param size The size of the buffer in bytes.
   */
-  void encode(OutputStream& stream, const uint8* buffer, unsigned int size) throw();
+  void encode(OutputStream& stream, const uint8* buffer, unsigned int size) noexcept;
   
   /**
     Decodes the content of the specified buffer.

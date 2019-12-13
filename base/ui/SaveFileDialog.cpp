@@ -25,18 +25,18 @@
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
-SaveFileDialog::SaveFileDialog() throw()
+SaveFileDialog::SaveFileDialog() noexcept
   : flags(SaveFileDialog::ASK_TO_OVERWRITE), defaultFilter(0)
 {
 }
 
-void SaveFileDialog::setFilter(const String& description, const String& filter) throw()
+void SaveFileDialog::setFilter(const String& description, const String& filter) noexcept
 {
   defaultFilter = 0;
   filters.add(description, filter);
 }
 
-void SaveFileDialog::setFilters(const Map<String, String>& filters) throw()
+void SaveFileDialog::setFilters(const Map<String, String>& filters) noexcept
 {
   defaultFilter = 0;
   this->filters = filters;
@@ -107,7 +107,7 @@ bool SaveFileDialog::execute() throw(UserInterfaceException)
 #endif // flavor
 }
 
-SaveFileDialog::~SaveFileDialog() throw() {
+SaveFileDialog::~SaveFileDialog() noexcept {
 }
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

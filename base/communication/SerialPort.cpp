@@ -56,7 +56,7 @@ SerialPort::SerialPortHandle::~SerialPortHandle() {
   }
 }
 
-List<String> SerialPort::getPorts() throw()
+List<String> SerialPort::getPorts() noexcept
 {
   List<String> result;
   // Unicode::ToWCharString(stream.getString()).native();

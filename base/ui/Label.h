@@ -71,7 +71,7 @@ public:
   /**
     Sets the text format.
   */
-  void setTextFormat(unsigned int textFormat) throw() {
+  void setTextFormat(unsigned int textFormat) noexcept {
     this->textFormat = textFormat;
     invalidate();
   }
@@ -79,7 +79,7 @@ public:
   /**
     Sets the background color.
   */
-  inline void setBackground(Color background) throw() {
+  inline void setBackground(Color background) noexcept {
     this->background = background;
     invalidate();
   }
@@ -87,7 +87,7 @@ public:
   /**
     Sets the text color.
   */
-  inline void setForeground(Color foreground) throw() {
+  inline void setForeground(Color foreground) noexcept {
     this->foreground = foreground;
     invalidate();
   }
@@ -95,12 +95,12 @@ public:
   /**
     Invoked when the widget should be repainted.
   */
-  void onDisplay() throw();
+  void onDisplay() noexcept;
 
   /**
     Destroys the label.
   */
-  inline ~Label() throw() {
+  inline ~Label() noexcept {
   }
 };
 

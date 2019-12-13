@@ -148,7 +148,7 @@ public:
   /**
     Removes all the keys from the cache.
   */
-  inline void removeAll() throw() {
+  inline void removeAll() noexcept {
     elements = HashTable<KEY, VALUE>();
   }
 
@@ -164,7 +164,7 @@ public:
   /**
     Returns a enumerator of the values of the cache for modifying access.
   */
-  inline ValueEnumerator getValueEnumerator() throw()
+  inline ValueEnumerator getValueEnumerator() noexcept
   {
     return elements.getValueEnumerator();
   }

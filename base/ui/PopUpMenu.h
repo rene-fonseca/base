@@ -30,7 +30,7 @@ public:
   static const unsigned int LEFT_MARGIN = 32;
   static const unsigned int RIGHT_MARGIN = 32;
   
-  inline MenuItem() throw() {
+  inline MenuItem() noexcept {
   }
   
   virtual Dimension getMinimumSize() const throw() = 0;
@@ -39,7 +39,7 @@ public:
   
   // need to know to the final dimension of the context
   // need to know the graphics context
-  virtual void onDisplay() throw();
+  virtual void onDisplay() noexcept;
 };
 
 class _COM_AZURE_DEV__BASE__API SeparatorMenuItem : public MenuItem {
@@ -48,7 +48,7 @@ public:
   /** The vertical margin. */
   static const unsigned int VERTICAL_MARGIN = 4;
   
-  inline SeparatorMenuItem() throw() {
+  inline SeparatorMenuItem() noexcept {
   }
   
   Dimension getMinimumSize() const throw() {
@@ -59,7 +59,7 @@ public:
     return Dimension(MINIMUM_WIDTH, maximum(MINIMUM_HEIGHT, 2 * VERTICAL_MARGIN + 2));
   }
   
-  void onDisplay(GraphicsContext& graphicsContext) throw() {
+  void onDisplay(GraphicsContext& graphicsContext) noexcept {
     // dark line at middle (-1)
     // light line at middle (+1)
   }
@@ -72,18 +72,18 @@ private:
   Bitmap bitmap;
 public:
   
-  inline BitmapMenuItem() throw() : grayed(false) {
+  inline BitmapMenuItem() noexcept : grayed(false) {
   }
   
   inline bool isGrayed() const throw() {
     return grayed;
   }
   
-  inline void gray() throw() {
+  inline void gray() noexcept {
     grayed = true;
   }
   
-  inline void ungray() throw() {
+  inline void ungray() noexcept {
     grayed = false;
   }
   
@@ -91,7 +91,7 @@ public:
     return bitmap;
   }
   
-  inline void setBitmap(const Bitmap& bitmap) throw() {
+  inline void setBitmap(const Bitmap& bitmap) noexcept {
     this->bitmap = bitmap;
   }
   
@@ -105,7 +105,7 @@ public:
   
   // need to know to the final dimension of the context
   // need to know the graphics context
-  void onDisplay(GraphicsContext& graphicsContext) throw() {
+  void onDisplay(GraphicsContext& graphicsContext) noexcept {
     // if valid bitmap draw it
     Position position(0, 0);
     Dimension dimension(32, 32);
@@ -121,10 +121,10 @@ private:
   unsigned int command = 0;
 public:
   
-  inline CommandMenuItem() throw() {
+  inline CommandMenuItem() noexcept {
   }
   
-  inline CommandMenuItem(unsigned int _command) throw() 
+  inline CommandMenuItem(unsigned int _command) noexcept 
     : command(_command) {
   }
   
@@ -132,7 +132,7 @@ public:
     return command;
   }
   
-  inline void setCommand(unsigned int command) throw() {
+  inline void setCommand(unsigned int command) noexcept {
     this->command = command;
   }
 };
@@ -154,10 +154,10 @@ private:
   String shortcut;
 public:
 
-  inline TextMenuItem() throw() : alignment(LEFT) {
+  inline TextMenuItem() noexcept : alignment(LEFT) {
   }
   
-  inline TextMenuItem(unsigned int command, const String& _text, const String& _shortcut) throw()
+  inline TextMenuItem(unsigned int command, const String& _text, const String& _shortcut) noexcept
     : alignment(LEFT),
       CommandMenuItem(command),
       text(_text),
@@ -168,7 +168,7 @@ public:
     return alignment;
   }
 
-  inline void setAlignment(Alignment alignment) throw() {
+  inline void setAlignment(Alignment alignment) noexcept {
     this->alignment = alignment;
   }
   
@@ -176,7 +176,7 @@ public:
     return text;
   }
   
-  inline void setText(const String& text) throw() {
+  inline void setText(const String& text) noexcept {
     this->text = text;
   }
 
@@ -184,7 +184,7 @@ public:
     return shortcut;
   }
 
-  inline void setShortcut(const String& shortcut) throw() {
+  inline void setShortcut(const String& shortcut) noexcept {
     this->shortcut = shortcut;
   }
 
@@ -199,7 +199,7 @@ public:
     return Dimension(0 + IN_BETWEEN_MARGIN + 0, 0);
   }
   
-  void onDisplay() throw() {
+  void onDisplay() noexcept {
     // if shortcut
   }
 };
@@ -210,22 +210,22 @@ private:
   bool checked = false;
 public:
 
-  inline CheckableMenuItem() throw() : checked(false) {
+  inline CheckableMenuItem() noexcept : checked(false) {
   }
   
   inline bool isChecked() const throw() {
     return checked;
   }
 
-  inline void check() throw() {
+  inline void check() noexcept {
     checked = true;
   }
   
-  inline void uncheck() throw() {
+  inline void uncheck() noexcept {
     checked = false;
   }
   
-  void onDisplay() throw() {
+  void onDisplay() noexcept {
     // draw checkmark bitmap
   }
 };
@@ -236,22 +236,22 @@ private:
   bool selected = false;
 public:
 
-  inline RadioMenuItem() throw() : selected(false) {
+  inline RadioMenuItem() noexcept : selected(false) {
   }
 
   inline bool isSelected() const throw() {
     return selected;
   }
 
-  inline void select() throw() {
+  inline void select() noexcept {
     selected = true;
   }
 
-  inline void deselect() throw() {
+  inline void deselect() noexcept {
     selected = false;
   }
 
-  void onDisplay() throw() {
+  void onDisplay() noexcept {
     // draw radio bitmap
   }
 };
@@ -266,7 +266,7 @@ public:
 class _COM_AZURE_DEV__BASE__API IndependentMenuItem : public MenuItem {
 public:
 
-  void onDisplay() throw() {
+  void onDisplay() noexcept {
   }
 };
 
@@ -276,17 +276,17 @@ private:
   String text;
 public:
   
-  EditMenuItem() throw() {
+  EditMenuItem() noexcept {
   }
   
-  EditMenuItem(const String& _text) throw() : text(_text) {
+  EditMenuItem(const String& _text) noexcept : text(_text) {
   }
   
   inline const String& getText() const throw() {
     return text;
   }
   
-  inline void setText(const String& text) throw() {
+  inline void setText(const String& text) noexcept {
     this->text = text;
   }
 };
@@ -311,12 +311,12 @@ private:
   /**
     Releases the rendering context.
   */
-  void destroy() throw();
+  void destroy() noexcept;
 
   /**
     Invoked by the menu item.
   */
-  void onMenuItem(MenuItem* item) throw() { // user is responsible for invoking update method
+  void onMenuItem(MenuItem* item) noexcept { // user is responsible for invoking update method
   }
 public:
   
@@ -335,14 +335,14 @@ public:
   /**
     Sets the menu item at the specified position.
   */
-  void setItem(unsigned int index) throw() {
+  void setItem(unsigned int index) noexcept {
     items[index] = item;
   }
 
   /**
     Adds the menu item to the end of the item container.
   */
-  void addItem(const MenuItem& item) throw() {
+  void addItem(const MenuItem& item) noexcept {
     items.add(item);
   }
 
@@ -353,7 +353,7 @@ public:
     return items.getSize();
   }
   
-  void onChange() throw();
+  void onChange() noexcept;
   
   /**
     Initializes a pop up window.
@@ -375,7 +375,7 @@ public:
   }
   
   // TAG: the position of the
-  void onChange() throw() {
+  void onChange() noexcept {
     Array<MenuItemReference>::ReadEnumerator enu = items.getReadEnumerator();
     const Dimension screenSize; // TAG: getScreen...
     Dimension xxxSize; // TAG: size
@@ -395,7 +395,7 @@ public:
     finalSize = desiredSize.expand(minimumSize);
   }
 
-  void onScrollUp() throw() {
+  void onScrollUp() noexcept {
     if (firstVisibleItem != firstItem) {
       --firstVisibleItem;
       --lastVisibleItem;
@@ -403,7 +403,7 @@ public:
     // recalc();
   }
   
-  void onScrollDown() throw() {
+  void onScrollDown() noexcept {
     if (lastVisibleItem != lastItem) {
       ++firstVisibleItem;
       ++lastVisibleItem;
@@ -411,10 +411,10 @@ public:
     // recalc();
   }
   
-  void onMouseButton() throw() {
+  void onMouseButton() noexcept {
   }
   
-  void onDisplay() throw() {
+  void onDisplay() noexcept {
     clear();
     
     // if scrolling then draw scroll up item - if at top then grayed

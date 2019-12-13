@@ -73,11 +73,11 @@ public:
     
     virtual void addEventListener(const String& type,
                                   EventListener* listener,
-                                  bool useCapture) throw() = 0;
+                                  bool useCapture) noexcept = 0;
     
     virtual void removeEventListener(const String& type,
                                      EventListener* listener,
-                                     bool useCapture) throw() = 0;
+                                     bool useCapture) noexcept = 0;
     
     virtual bool dispatchEvent(
       const DOMEvent& event) throw(EventException) = 0;
@@ -86,20 +86,20 @@ public:
   /**
     Initializes DOM implementation.
   */
-  inline DOMImplementation() throw() {
+  inline DOMImplementation() noexcept {
   }
   
-  inline DOMImplementation(const DOMImplementation& copy) throw() {
+  inline DOMImplementation(const DOMImplementation& copy) noexcept {
   }
 
-  inline DOMImplementation& operator=(const DOMImplementation& assign) throw() {
+  inline DOMImplementation& operator=(const DOMImplementation& assign) noexcept {
     return *this;
   }
   
   /**
     Returns true if the feature is available.
   */
-  bool hasFeature(const String& name, const String& version) throw();
+  bool hasFeature(const String& name, const String& version) noexcept;
 
   /**
     Creates an enmpty DOM Document object.

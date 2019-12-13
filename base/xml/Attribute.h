@@ -35,7 +35,7 @@ protected:
   /**
     Initializes attribute.
   */
-  inline Attribute(void* context) throw() : Node(context) {
+  inline Attribute(void* context) noexcept : Node(context) {
   }
 public:
   
@@ -70,7 +70,7 @@ public:
   /**
     Returns the owner element.
   */
-  Node::ShadowElement getOwnerElement() throw();
+  Node::ShadowElement getOwnerElement() noexcept;
 };
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

@@ -21,7 +21,7 @@ _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 // Used by LinkerModules to locate the LinkerManager
 LinkerManager* LinkerManager::linkerManager = nullptr; // TAG: need support for any number of managers?
 
-LinkerManager* LinkerManager::getManager() throw()
+LinkerManager* LinkerManager::getManager() noexcept
 {
   if (!linkerManager) {
     ferr << "Internal error: LinkerManager has not been instantiated." << ENDL;
@@ -37,11 +37,11 @@ LinkerManager::LinkerManager() throw(SingletonException)
   linkerManager = this;
 }
 
-void LinkerManager::registrate(LinkerModule* module) throw() {
+void LinkerManager::registrate(LinkerModule* module) noexcept {
   registratedModule = module;
 }
 
-LinkerModule* LinkerManager::deregistrate() throw() {
+LinkerModule* LinkerManager::deregistrate() noexcept {
   return registratedModule;
 }
 

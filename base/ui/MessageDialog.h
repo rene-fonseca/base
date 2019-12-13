@@ -64,12 +64,12 @@ public:
   /**
     Initializes the message dialog.
   */
-  MessageDialog() throw();
+  MessageDialog() noexcept;
 
   /**
     Initializes the message dialog.
   */
-  MessageDialog(const String& title, const String& message, Category category) throw();
+  MessageDialog(const String& title, const String& message, Category category) noexcept;
   
   /**
     Returns the message category.
@@ -81,7 +81,7 @@ public:
   /**
     Sets the flags.
   */
-  inline void setCategory(Category category) throw() {
+  inline void setCategory(Category category) noexcept {
     this->category =category ;
   }
   
@@ -95,7 +95,7 @@ public:
   /**
     Sets the title of the dialog window.
   */
-  inline void setTitle(const String& title) throw() {
+  inline void setTitle(const String& title) noexcept {
     this->title = title;
   }
 
@@ -109,7 +109,7 @@ public:
   /**
     Sets the current folder.
   */
-  inline void setMessage(const String& message) throw() {
+  inline void setMessage(const String& message) noexcept {
     this->message = message;
   }
   
@@ -121,11 +121,11 @@ public:
   /**
     Returns the answer.
   */
-  inline Answer getAnswer() throw() {
+  inline Answer getAnswer() noexcept {
     return answer;
   }
 
-  ~MessageDialog() throw();
+  ~MessageDialog() noexcept;
 };
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

@@ -87,7 +87,7 @@ _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
       // do something as long as it doesn't modify the object
     }
 
-    void mySecondMethod() throw() {
+    void mySecondMethod() noexcept {
       SynchronizeExclusive();
       // do modification of object
     }
@@ -108,8 +108,8 @@ private:
   /** The synchronize able object to be synchronized. */
   const Synchronizeable<LOCK>& object;
 
-  Synchronize(const Synchronize& copy) throw();
-  Synchronize& operator=(const Synchronize& assign) throw();
+  Synchronize(const Synchronize& copy) noexcept;
+  Synchronize& operator=(const Synchronize& assign) noexcept;
 public:
   
   /**
@@ -120,7 +120,7 @@ public:
     shared (read-lock). Default is exclusive.
   */
   inline explicit Synchronize(
-    const Synchronizeable<LOCK>& _object, bool exclusive = true) throw()
+    const Synchronizeable<LOCK>& _object, bool exclusive = true) noexcept
     : object(_object) {
     if (exclusive) {
       object.exclusiveLock();
@@ -132,7 +132,7 @@ public:
   /**
     Forces the lock to be released.
   */
-//    inline void release() throw() {
+//    inline void release() noexcept {
 //      object.releaseLock();
 //    }
 
@@ -140,7 +140,7 @@ public:
     Releases the lock if not already released and destroys the synchronization
     object.
   */
-  inline ~Synchronize() throw() {
+  inline ~Synchronize() noexcept {
     object.releaseLock();
   }
 };
@@ -158,8 +158,8 @@ template<>
 class Synchronize<Unsafe> {
 private:
 
-  Synchronize(const Synchronize& copy) throw();
-  Synchronize& operator=(const Synchronize& assign) throw();
+  Synchronize(const Synchronize& copy) noexcept;
+  Synchronize& operator=(const Synchronize& assign) noexcept;
 public:
   
   /**
@@ -170,20 +170,20 @@ public:
     shared (read-lock). Default is exclusive.
   */
   inline explicit Synchronize(
-    const Synchronizeable<Unsafe>& object, bool exclusive = true) throw() {
+    const Synchronizeable<Unsafe>& object, bool exclusive = true) noexcept {
   }
 
   /**
     Forces the lock to be released.
   */
-  inline void release() throw() {
+  inline void release() noexcept {
   }
 
   /**
     Releases the lock if not already released and destroys the synchronization
     object.
   */
-  inline ~Synchronize() throw() {
+  inline ~Synchronize() noexcept {
   }
 };
 

@@ -48,10 +48,10 @@ public:
     
     Vector& vector; // use reference to avoid 'copy on write'
     unsigned int index = 0;
-    Element(const Element& copy) throw();
-    Element& operator=(const Element& assign) throw();
+    Element(const Element& copy) noexcept;
+    Element& operator=(const Element& assign) noexcept;
     
-    inline Element(Vector& _vector, unsigned int _index) throw()
+    inline Element(Vector& _vector, unsigned int _index) noexcept
       : vector(_vector), index(_index)
     {
     }
@@ -148,7 +148,7 @@ public:
 
     @param copy The vector to be copied.
   */
-  inline Vector(const Vector& copy) throw() : elements(copy.elements) {
+  inline Vector(const Vector& copy) noexcept : elements(copy.elements) {
   }
 
   /**
@@ -163,14 +163,14 @@ public:
   /**
     Returns the first element of the allocator as a modifying array.
   */
-  inline Iterator getBeginIterator() throw() {
+  inline Iterator getBeginIterator() noexcept {
     return elements->getBeginIterator();
   }
 
   /**
     Returns the end of the allocator as a modifying array.
   */
-  inline Iterator getEndIterator() throw() {
+  inline Iterator getEndIterator() noexcept {
     return elements->getEndIterator();
   }
 
@@ -191,7 +191,7 @@ public:
   /**
     Returns a modifying enumerator of the array.
   */
-  inline Enumerator getEnumerator() throw() {
+  inline Enumerator getEnumerator() noexcept {
     return elements->getEnumerator();
   }
 
@@ -247,12 +247,12 @@ public:
   /**
     Sets this vector to the zero vector.
   */
-  Vector& clear() throw();
+  Vector& clear() noexcept;
 
   /**
     Negates this vector.
   */
-  Vector& negate() throw();
+  Vector& negate() noexcept;
 
   /**
     Adds the specified vector to this vector.
@@ -273,19 +273,19 @@ public:
 
     @param value The multiplicator.
   */
-  Vector& multiply(const TYPE& value) throw();
+  Vector& multiply(const TYPE& value) noexcept;
 
   /**
     Divides this vector with the specified value.
 
     @param value The divisor.
   */
-  Vector& divide(const TYPE& value) throw();
+  Vector& divide(const TYPE& value) noexcept;
 
   /**
     Negates the specified vector and stores the result in this vector.
   */
-  Vector& negate(const Vector& value) throw();
+  Vector& negate(const Vector& value) noexcept;
 
   /**
     Returns the dot product of this vector with itself.
@@ -333,7 +333,7 @@ public:
 
     @param value The multiplicator.
   */
-  inline Vector& operator*=(const TYPE& value) throw() {
+  inline Vector& operator*=(const TYPE& value) noexcept {
     return multiply(value);
   }
 
@@ -342,7 +342,7 @@ public:
 
     @param value The divisor.
   */
-  inline Vector& operator/=(const TYPE& value) throw() {
+  inline Vector& operator/=(const TYPE& value) noexcept {
     return divide(value);
   }
 
@@ -385,7 +385,7 @@ public:
   /**
     Returns the dot product of the two vectors.
   */
-  friend TYPE dot<>(const Vector<TYPE>& left, const Vector<TYPE>& right) throw();
+  friend TYPE dot<>(const Vector<TYPE>& left, const Vector<TYPE>& right) noexcept;
 
   /**
     Writes a string representation of a vector object to a format stream.
@@ -416,7 +416,7 @@ Vector<TYPE> operator/(const Vector<TYPE>& left, const TYPE& right) throw(Memory
   Returns the dot product of the two vectors.
 */
 template<class TYPE>
-TYPE dot(const Vector<TYPE>& left, const Vector<TYPE>& right) throw();
+TYPE dot(const Vector<TYPE>& left, const Vector<TYPE>& right) noexcept;
 
 /**
   Writes a string representation of a vector object to a format stream.

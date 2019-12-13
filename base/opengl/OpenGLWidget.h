@@ -39,7 +39,7 @@ private:
   /**
     Releases the rendering context.
   */
-  void destroy() throw();
+  void destroy() noexcept;
 public:
 
   /** OpenGL property. */
@@ -53,12 +53,12 @@ public:
   /**
     Invoked when the widget should be repainted.
   */
-  void onDisplay() throw();
+  void onDisplay() noexcept;
   
   /**
     Destroys the widget.
   */
-  inline ~OpenGLWidget() throw()
+  inline ~OpenGLWidget() noexcept
   {
   }
 };

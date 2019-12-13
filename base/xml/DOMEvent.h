@@ -75,7 +75,7 @@ private:
   Date timeStamp;
 public:
 
-  DOMEvent() throw() {
+  DOMEvent() noexcept {
   }
 
   inline const String& getType() const throw() {
@@ -106,14 +106,14 @@ public:
     return timeStamp;
   }
 
-  void stopPropagation() throw();
+  void stopPropagation() noexcept;
   
-  void preventDefault() throw();
+  void preventDefault() noexcept;
   
   void initEvent(
     const String& eventTypeArg, 
     bool canBubbleArg, 
-    bool cancelableArg) throw();
+    bool cancelableArg) noexcept;
 };
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

@@ -111,7 +111,7 @@ public:
     static Handle* invalid;
     
     /** Initializes file handle. */
-    inline FileHandle(OperatingSystem::Handle handle) throw()
+    inline FileHandle(OperatingSystem::Handle handle) noexcept
       : Handle(handle)
     {
     }
@@ -138,7 +138,7 @@ public:
   /**
     Initializes an invalid file object (correspons to a closed file).
   */
-  File() throw();
+  File() noexcept;
 
   /**
     Initializes a file. If no options are specified the initialization will
@@ -153,7 +153,7 @@ public:
   /**
     Initialize a new file object from other file object.
   */
-  File(const File& copy) throw()
+  File(const File& copy) noexcept
     : fd(copy.fd)
   {
   }
@@ -161,7 +161,7 @@ public:
   /**
     Assignment of file object.
   */
-  File& operator=(const File& assign) throw();
+  File& operator=(const File& assign) noexcept;
 
 
 

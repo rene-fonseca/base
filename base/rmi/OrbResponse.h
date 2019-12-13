@@ -76,7 +76,7 @@ public:
   /**
     Initializes the response.
   */
-  inline OrbResponse(uint8 value) throw() : octet(value), responseType(OCTET) {
+  inline OrbResponse(uint8 value) noexcept : octet(value), responseType(OCTET) {
   }
   
   /**

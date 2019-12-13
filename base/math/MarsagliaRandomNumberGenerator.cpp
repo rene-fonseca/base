@@ -16,16 +16,16 @@
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
-MarsagliaRandomNumberGenerator::MarsagliaRandomNumberGenerator() throw() {
+MarsagliaRandomNumberGenerator::MarsagliaRandomNumberGenerator() noexcept {
   randomize();
 }
 
 MarsagliaRandomNumberGenerator::MarsagliaRandomNumberGenerator(
-  uint32 seed) throw() {
+  uint32 seed) noexcept {
   randomize(seed);
 }
 
-void MarsagliaRandomNumberGenerator::randomize() throw() {
+void MarsagliaRandomNumberGenerator::randomize() noexcept {
   long long seed = Timer().getStartTime();
   seed += 20010908014640LL; // magic date/time in UTC - 09/08/2001 01:46:40
   seed &= 0xffffffff;
@@ -35,7 +35,7 @@ void MarsagliaRandomNumberGenerator::randomize() throw() {
   randomize(static_cast<unsigned int>(seed));
 }
 
-void MarsagliaRandomNumberGenerator::randomize(uint32 seed) throw() {
+void MarsagliaRandomNumberGenerator::randomize(uint32 seed) noexcept {
   uint32 low = seed & 0xffff;
   uint32 number = seed & 0x7fffffff;
   
@@ -58,7 +58,7 @@ void MarsagliaRandomNumberGenerator::randomize(uint32 seed) throw() {
   }
 }
 
-uint32 MarsagliaRandomNumberGenerator::getInteger() throw() {
+uint32 MarsagliaRandomNumberGenerator::getInteger() noexcept {
   uint32 temp1 = 1941 * x1[0] + 1860 * x1[1] + 1812 * x1[2] + 1776 * x1[3] +
     1492 * x1[4] + 1215 * x1[5] + 1066 * x1[6] + 12013 * x1[7] + carry1;
   carry1 = temp1 >> 16;

@@ -49,7 +49,7 @@ bool ElementDecl::hasAttributes() const throw() {
 #endif
 }
 
-AttributeDecl ElementDecl::getFirstAttribute() throw() {
+AttributeDecl ElementDecl::getFirstAttribute() noexcept {
 #if defined(_COM_AZURE_DEV__BASE__XML_XMLSOFT_ORG)
   xmlElement* element = (xmlElement*)getContext();
   return element->attributes;

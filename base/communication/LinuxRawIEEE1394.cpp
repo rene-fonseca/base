@@ -66,7 +66,7 @@ _COM_AZURE_DEV__BASE__PACKED__END
     ERROR_TIMEOUT = -1102
   };
 
-  inline unsigned int mapErrorToStatus(int error) throw() {
+  inline unsigned int mapErrorToStatus(int error) noexcept {
     unsigned int status = IEEE1394Common::STATUS_ERROR;
 
     if (error <= 0) { // TAG: is this ok
@@ -138,7 +138,7 @@ _COM_AZURE_DEV__BASE__PACKED__END
     int status;
   };
 
-  void dumpRequest(const Request& request) throw() {
+  void dumpRequest(const Request& request) noexcept {
     fout << "request: " << EOL
          << indent(2) << "type: " << request.type << EOL
          << indent(2) << "error: " << request.error << EOL
@@ -214,7 +214,7 @@ bool LinuxRawIEEE1394::hasBeenReset() const throw() {
   return false;
 }
 
-void LinuxRawIEEE1394::acknowledgeReset() throw() {
+void LinuxRawIEEE1394::acknowledgeReset() noexcept {
 }
 
 void LinuxRawIEEE1394::resetBus() throw(IEEE1394Exception) {
@@ -841,7 +841,7 @@ bool LinuxRawIEEE1394::hasBeenReset() const throw() {
   throw NotSupported();
 }
 
-void LinuxRawIEEE1394::acknowledgeReset() throw() {
+void LinuxRawIEEE1394::acknowledgeReset() noexcept {
   throw NotSupported();
 }
 

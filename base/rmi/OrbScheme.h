@@ -87,7 +87,7 @@ public:
   /**
     Signals the scheme to be terminated.
   */
-  virtual void terminate() throw() = 0;
+  virtual void terminate() noexcept = 0;
   
   /**
     Invoked by ORB.

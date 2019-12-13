@@ -57,7 +57,7 @@ public:
     unsigned int _bytesToRead,
     unsigned long long _offset,
     unsigned int _bytesRead,
-    unsigned int _flags) throw() 
+    unsigned int _flags) noexcept 
     : buffer(_buffer),
       bytesToRead(_bytesToRead),
       offset(_offset),
@@ -68,12 +68,12 @@ public:
   /**
     Initialization of object from other object.
   */
-  AsynchronousReadCompletion(const AsynchronousReadCompletion& copy) throw();
+  AsynchronousReadCompletion(const AsynchronousReadCompletion& copy) noexcept;
 
   /**
     Assignment of object by object.
   */
-  AsynchronousReadCompletion& operator=(const AsynchronousReadCompletion& assign) throw();
+  AsynchronousReadCompletion& operator=(const AsynchronousReadCompletion& assign) noexcept;
 
   inline bool eof() const throw() {
     return (flags & END_OF_FILE) != 0;
@@ -95,7 +95,7 @@ public:
     return (flags & ABORTED) != 0;
   }
 
-  inline uint8* getBuffer() throw() {
+  inline uint8* getBuffer() noexcept {
     return buffer;
   }
   

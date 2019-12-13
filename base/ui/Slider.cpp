@@ -22,19 +22,19 @@ Slider::Slider(Window& owner) throw(UserInterfaceException)
     split(0x808080) { // normal
 }
 
-void Slider::setOffset(int offset) throw() {
+void Slider::setOffset(int offset) noexcept {
   const Dimension dimension = getDimension();
   this->offset = offset;
   invalidate();
 }
 
-void Slider::onResize(const Dimension& dimension) throw() {
+void Slider::onResize(const Dimension& dimension) noexcept {
   fout << "Split: Event: resize " << dimension << ENDL;
   setOffset(offset); // keep but honor limit
   invalidate();
 }
 
-void Slider::onMouseMove(const Position& position, unsigned int state) throw() {
+void Slider::onMouseMove(const Position& position, unsigned int state) noexcept {
   fout << "Split: Mouse motion event: " << position << ENDL;
   if (drag) {
     setOffset(originalOffset + position.getX() - originalPosition);
@@ -55,7 +55,7 @@ void Slider::onMouseButton(
   const Position& position,
   Mouse::Button button,
   Mouse::Event event,
-  unsigned int state) throw() {
+  unsigned int state) noexcept {
   fout << "Split: Mouse button event: " << position << ENDL;
   if (button == Mouse::LEFT) {
     if (event == Mouse::PRESSED) {
@@ -84,7 +84,7 @@ void Slider::onMouseButton(
   }
 }
 
-void Slider::onKey(unsigned int key, unsigned int flags, unsigned int modifiers) throw() {
+void Slider::onKey(unsigned int key, unsigned int flags, unsigned int modifiers) noexcept {
   if (flags & Key::PRESSED) {
     if (flags & Key::DEAD) {
       return;
@@ -106,7 +106,7 @@ void Slider::onKey(unsigned int key, unsigned int flags, unsigned int modifiers)
   }
 }
 
-void Slider::onDisplay() throw() {
+void Slider::onDisplay() noexcept {
   Dimension dimension = getDimension();
   // left picture
   // right picture
@@ -124,7 +124,7 @@ void Slider::onDisplay() throw() {
   );
 }
 
-Slider::~Slider() throw() {
+Slider::~Slider() noexcept {
 }
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

@@ -210,7 +210,7 @@ _COM_AZURE_DEV__BASE__PACKED__END
     SUBSYSTEM_EFI_RUNTIME_DRIVER = 12
   };
 
-  static String getSubsystemDescription(unsigned int subsystem) throw() {
+  static String getSubsystemDescription(unsigned int subsystem) noexcept {
     switch (subsystem) {
     case SUBSYSTEM_UNKNOWN:
       return Literal("unknown subsystem");
@@ -289,7 +289,7 @@ _COM_AZURE_DEV__BASE__PACKED__BEGIN
   } _COM_AZURE_DEV__BASE__PACKED;
 _COM_AZURE_DEV__BASE__PACKED__END
 
-  static String getMachineDescription(uint32 machine) throw() {
+  static String getMachineDescription(uint32 machine) noexcept {
     switch (machine) {
     case MACHINE_UNKNOWN:
       return Literal("unknown");
@@ -341,11 +341,11 @@ _COM_AZURE_DEV__BASE__PACKED__BEGIN
   } _COM_AZURE_DEV__BASE__PACKED;
 _COM_AZURE_DEV__BASE__PACKED__END
 
-  static bool isCOFF(const String& file) throw() {
+  static bool isCOFF(const String& file) noexcept {
     return false;
   }
   
-  static bool isPE(const String& file) throw() {
+  static bool isPE(const String& file) noexcept {
     return false;
     // if stub avail and offset is ok and signature is PE\0\0 then assume PE format
   }
@@ -376,18 +376,18 @@ public:
   COFFApplication(
     int numberOfArguments,
     const char* arguments[],
-    const char* environment[]) throw() 
+    const char* environment[]) noexcept 
     : Application("coff", numberOfArguments, arguments, environment) {
   }
 
   // TAG: need function to check alignment
 
-  void error(const String& message) throw() {
+  void error(const String& message) noexcept {
     ferr << "Error: " << message << ENDL;
     setExitCode(EXIT_CODE_ERROR);
   }
 
-  void dump(const String& message, uint32 value) throw() {
+  void dump(const String& message, uint32 value) noexcept {
     fout << message << ':' << SP
          << HEX << PREFIX << ZEROPAD << setWidth(10) << value << ENDL;
   }
@@ -680,7 +680,7 @@ _COM_AZURE_DEV__BASE__PACKED__END
     fout << dump << ENDL;
   }
   
-  void dumpDOSHeader(const String& path) throw() {
+  void dumpDOSHeader(const String& path) noexcept {
     CommonObjectFileFormat::ImageDosHeader header;
     File file(path, File::READ, File::EXCLUSIVE);
 
@@ -1031,7 +1031,7 @@ _COM_AZURE_DEV__BASE__PACKED__END
           }
         }
 
-        // TAG: String getBinaryName(const char* name, unsigned int length) throw();
+        // TAG: String getBinaryName(const char* name, unsigned int length) noexcept;
         
         // TAG: $ not allowed in name
         fout << "section: " << i << EOL

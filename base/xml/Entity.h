@@ -34,7 +34,7 @@ class _COM_AZURE_DEV__BASE__API Entity : public Node {
   friend class Document;
 protected:
   
-  inline Entity(void* context) throw() : Node(context) {
+  inline Entity(void* context) noexcept : Node(context) {
   }
 public:
   

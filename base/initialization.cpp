@@ -104,7 +104,7 @@ private:
   Thread::ThreadLocal threadLocal;
 public:
   
-  ThreadImpl() throw()
+  ThreadImpl() noexcept
     : thread(static_cast<Thread*>(nullptr)),
       threadLocal(&thread) // no parent for main thread
   {
@@ -121,14 +121,14 @@ private:
   unsigned int level = 0;
 public:
     
-  TrackProgress(const char* _text = "Progress") throw() : text(_text)
+  TrackProgress(const char* _text = "Progress") noexcept : text(_text)
   {
     ++count;
     level = count;
     printf("TRACK: %s [%d]\n", text, level);
   }
 
-  ~TrackProgress() throw()
+  ~TrackProgress() noexcept
   {
     printf("TRACK: %s [%d]\n", text, level);
   }
@@ -149,7 +149,7 @@ namespace internal {
     ProcessPreinitialization processPreinitialization;
   public:
     
-    ProcessInitialization() throw() {
+    ProcessInitialization() noexcept {
     }
   };
   

@@ -34,7 +34,7 @@ protected:
   /**
     Initializes element declaration.
   */
-  inline ElementDecl(void* context) throw() : Declaration(context) {
+  inline ElementDecl(void* context) noexcept : Declaration(context) {
   }
 public:
 
@@ -90,7 +90,7 @@ public:
   /**
     Returns the first attribute declaration.
   */
-  AttributeDecl getFirstAttribute() throw();
+  AttributeDecl getFirstAttribute() noexcept;
 };
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

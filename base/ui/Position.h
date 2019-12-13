@@ -36,19 +36,19 @@ public:
   /**
     Initializes position as (0, 0).
   */
-  inline Position() throw() {
+  inline Position() noexcept {
   }
 
   /**
     Initializes position with specified x and y values.
   */
-  inline Position(int _x, int _y) throw() : x(_x), y(_y) {
+  inline Position(int _x, int _y) noexcept : x(_x), y(_y) {
   }
 
   /**
     Initializes position from dimension (width, height) as (width - 1, height - 1).
   */
-  inline Position(const Dimension& dimension) throw()
+  inline Position(const Dimension& dimension) noexcept
     : x(dimension.getWidth()),
       y(dimension.getHeight()) {
     if (x > 0) {
@@ -62,13 +62,13 @@ public:
   /**
     Initializes position from other position.
   */
-  inline Position(const Position& copy) throw() : x(copy.x), y(copy.y) {
+  inline Position(const Position& copy) noexcept : x(copy.x), y(copy.y) {
   }
 
   /**
     Assignment of position by position.
   */
-  inline Position& operator=(const Position& assign) throw() {
+  inline Position& operator=(const Position& assign) noexcept {
     x = assign.x;
     y = assign.y;
     return *this;
@@ -130,7 +130,7 @@ public:
 
     @return Returns true if position was NOT changed.
   */
-  inline bool confineTo(const Position& a, const Position& b) throw() {
+  inline bool confineTo(const Position& a, const Position& b) noexcept {
     bool ok = true;
     if (x < minimum(a.x, b.x)) {
       x = minimum(a.x, b.x);
@@ -166,21 +166,21 @@ public:
   /**
     Sets the X coordinate.
   */
-  inline void setX(int x) throw() {
+  inline void setX(int x) noexcept {
     this->x = x;
   }
 
   /**
     Sets the Y coordinate.
   */
-  inline void setY(int y) throw() {
+  inline void setY(int y) noexcept {
     this->y = y;
   }
 
   /**
     Negates this vector.
   */
-  inline Position& negate() throw() {
+  inline Position& negate() noexcept {
     x = -x;
     y = -y;
     return *this;
@@ -189,7 +189,7 @@ public:
   /**
     Adds the specified position to this position.
   */
-  inline Position& add(const Position& value) throw() {
+  inline Position& add(const Position& value) noexcept {
     x += value.x;
     y += value.y;
     return *this;
@@ -198,7 +198,7 @@ public:
   /**
     Subtracts the specified position from this position.
   */
-  inline Position& subtract(const Position& value) throw() {
+  inline Position& subtract(const Position& value) noexcept {
     x -= value.x;
     y -= value.y;
     return *this;
@@ -227,7 +227,7 @@ public:
 
     @param value The value to be added.
   */
-  inline Position& operator+=(const Position& value) throw() {
+  inline Position& operator+=(const Position& value) noexcept {
     return add(value);
   }
 
@@ -236,14 +236,14 @@ public:
 
     @param value The value to be subtracted.
   */
-  inline Position& operator-=(const Position& value) throw() {
+  inline Position& operator-=(const Position& value) noexcept {
     return subtract(value);
   }
   
   /**
     Subtracts the position from this position.
   */
-  inline Position& operator-(const Position& position) throw() {
+  inline Position& operator-(const Position& position) noexcept {
     x -= position.x;
     y -= position.y;
     return *this;
@@ -252,7 +252,7 @@ public:
   /**
     Adds the position from this position.
   */
-  inline Position& operator+(const Position& position) throw() {
+  inline Position& operator+(const Position& position) noexcept {
     x += position.x;
     y += position.y;
     return *this;
@@ -289,7 +289,7 @@ public:
     @param upperLeft The upper left or lower right corner.
     @param lowerRight The upper left or lower right corner.
   */
-  static inline Dimension getDimension(const Position& upperLeft, const Position& lowerRight) throw() {
+  static inline Dimension getDimension(const Position& upperLeft, const Position& lowerRight) noexcept {
     const Position position(upperLeft.x - lowerRight.x, upperLeft.y - lowerRight.y);
     return Dimension(
       maximum(position.x, -position.x),
@@ -298,11 +298,11 @@ public:
   }
 };
 
-inline Position operator-(const Position& left, const Position& right) throw() {
+inline Position operator-(const Position& left, const Position& right) noexcept {
   return Position(left.getX() - right.getX(), left.getY() - right.getY());
 }
 
-inline Position operator+(const Position& left, const Position& right) throw() {
+inline Position operator+(const Position& left, const Position& right) noexcept {
   return Position(left.getX() + right.getX(), left.getY() + right.getY());
 }
 

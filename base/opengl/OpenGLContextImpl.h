@@ -343,7 +343,7 @@ public:
   /**
     Deselects the OpenGL context of the executing thread.
   */
-  void deselect() throw();
+  void deselect() noexcept;
 
   /**
     Swaps all the buffers.

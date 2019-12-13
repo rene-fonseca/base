@@ -40,11 +40,11 @@ public:
     IntercomServlet* intercomServlet = nullptr;
   public:
 
-    Recorder(IntercomServlet* object) throw()
+    Recorder(IntercomServlet* object) noexcept
       : intercomServlet(object) {
     }
 
-    void run() throw() {
+    void run() noexcept {
       intercomServlet->record();
     }
   };
@@ -55,11 +55,11 @@ public:
     IntercomServlet* intercomServlet = nullptr;
   public:
 
-    Player(IntercomServlet* object) throw()
+    Player(IntercomServlet* object) noexcept
       : intercomServlet(object) {
     }
   
-    void run() throw() {
+    void run() noexcept {
       intercomServlet->play();
     }
   };
@@ -70,11 +70,11 @@ public:
     IntercomServlet* intercomServlet = nullptr;
   public:
 
-    Reader(IntercomServlet* object) throw()
+    Reader(IntercomServlet* object) noexcept
       : intercomServlet(object) {
     }
 
-    void run() throw() {
+    void run() noexcept {
       intercomServlet->read();
     }
   };
@@ -85,11 +85,11 @@ public:
     IntercomServlet* intercomServlet = nullptr;
   public:
 
-    Writer(IntercomServlet* object) throw()
+    Writer(IntercomServlet* object) noexcept
       : intercomServlet(object) {
     }
 
-    void run() throw() {
+    void run() noexcept {
       intercomServlet->write();
     }
   };
@@ -116,7 +116,7 @@ private:
   StreamSocket streamSocket;
 public:
 
-  IntercomServlet(unsigned int channels, unsigned int sampleRate, bool loopback, bool isServer, const InetEndPoint& endPoint) throw()
+  IntercomServlet(unsigned int channels, unsigned int sampleRate, bool loopback, bool isServer, const InetEndPoint& endPoint) noexcept
     : recorder(this),
       player(this),
       reader(this),
@@ -129,7 +129,7 @@ public:
     this->loopback = loopback;
   }
   
-  void record() throw()
+  void record() noexcept
   {
     SoundInputStream soundInputStream(sampleRate, channels);
     soundInputStream.resume();
@@ -161,7 +161,7 @@ public:
     fout << "Recording thread terminating" << ENDL;
   }
 
-  void play() throw() {
+  void play() noexcept {
     SoundOutputStream soundOutputStream(sampleRate, channels);
     soundOutputStream.resume();
     while (!Thread::getThread()->isTerminated()) {
@@ -192,7 +192,7 @@ public:
     fout << "Playing thread terminating" << ENDL;
   }
 
-  void write() throw() {
+  void write() noexcept {
     if (loopback) {
       return;
     }
@@ -225,7 +225,7 @@ public:
     fout << "Writing thread terminating" << ENDL;
   }
 
-  void read() throw() {
+  void read() noexcept {
     if (loopback) {
       return;
     }
@@ -261,12 +261,12 @@ public:
     fout << "Reading thread terminating" << ENDL;
   }
 
-  bool hostAllowed(const InetAddress& host) throw() {
+  bool hostAllowed(const InetAddress& host) noexcept {
     // check address 172.30.* (mask then check if equal)
     return true;
   }
 
-  void server() throw() {
+  void server() noexcept {
     fout << "Initializing server socket: " << endPoint << ENDL;
     ServerSocket serverSocket(endPoint.getAddress(), endPoint.getPort(), 1);
 
@@ -278,7 +278,7 @@ public:
     bassert(hostAllowed(streamSocket.getAddress()), OutOfDomain());
   }
 
-  void client() throw() {
+  void client() noexcept {
     fout << "Connecting to server: " << endPoint << ENDL;
     streamSocket.connect(endPoint.getAddress(), endPoint.getPort());
     fout << "Connected to: "
@@ -286,7 +286,7 @@ public:
          << ENDL;
   }
   
-  void run() throw() {
+  void run() noexcept {
     fout << "Allocating buffers..." << ENDL;
     for (unsigned int i = 0; i < 16; ++i) {
       recordingQueue.push(new Allocator<short>(16*256)); //(sampleRate/16+4095)/4096)*4096)
@@ -380,7 +380,7 @@ public:
     fout << "Completed" << ENDL;
   }
   
-  ~IntercomServlet() throw() {
+  ~IntercomServlet() noexcept {
   }
 };
 
@@ -407,7 +407,7 @@ public:
   IntercomApplication(
     int numberOfArguments,
     const char* arguments[],
-    const char* environment[]) throw()
+    const char* environment[]) noexcept
     : Application("intercom", numberOfArguments, arguments, environment) {
     loopback = false;
     isServer = true;
@@ -466,7 +466,7 @@ public:
     }
   }
 
-  void onTermination() throw()
+  void onTermination() noexcept
   {
     // override default application termination
   }
@@ -509,7 +509,7 @@ public:
     IntercomServlet(channels, samplingRate, loopback, isServer, endPoint).run();
   }
 
-  ~IntercomApplication() throw() {
+  ~IntercomApplication() noexcept {
   }
 };
 

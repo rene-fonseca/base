@@ -23,7 +23,7 @@
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
-void PopUpWindow::destroy() throw()
+void PopUpWindow::destroy() noexcept
 {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)  
   if (graphicsContextHandle) {

@@ -176,7 +176,7 @@ unsigned int SoundOutputStream::getPosition() const throw() {
 #endif // flavor
 }
 
-void SoundOutputStream::resume() throw() {
+void SoundOutputStream::resume() noexcept {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   event.reset();
 #else
@@ -189,11 +189,11 @@ void SoundOutputStream::resume() throw() {
 #endif // flavor
 }
 
-void SoundOutputStream::pause() throw() {
+void SoundOutputStream::pause() noexcept {
   // FIXME
 }
 
-void SoundOutputStream::reset() throw() {
+void SoundOutputStream::reset() noexcept {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   ::waveOutReset((HWAVEOUT)handle);
   event.reset();
@@ -208,7 +208,7 @@ void SoundOutputStream::reset() throw() {
 #endif // flavor
 }
 
-void SoundOutputStream::wait() throw() {
+void SoundOutputStream::wait() noexcept {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   WAVEHDR header;
   clear(header);
@@ -238,7 +238,7 @@ void SoundOutputStream::wait() throw() {
 #endif // flavor
 }
 
-unsigned int SoundOutputStream::write(const void* buffer, unsigned int size) throw()
+unsigned int SoundOutputStream::write(const void* buffer, unsigned int size) noexcept
 {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   WAVEHDR header;
@@ -279,7 +279,7 @@ unsigned int SoundOutputStream::write(const void* buffer, unsigned int size) thr
 #endif // flavor
 }
 
-SoundOutputStream::~SoundOutputStream() throw() {
+SoundOutputStream::~SoundOutputStream() noexcept {
   reset();
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   ::waveOutClose((HWAVEOUT)handle);

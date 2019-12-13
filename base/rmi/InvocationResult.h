@@ -49,7 +49,7 @@ public:
     @param flags The flags.
     @param cause The cause.
   */
-  inline InvocationResult(unsigned int _flags, unsigned int _cause) throw()
+  inline InvocationResult(unsigned int _flags, unsigned int _cause) noexcept
     : flags(_flags),
       cause(_cause)
   {
@@ -58,7 +58,7 @@ public:
   /**
     Initialization of object from other object.
   */
-  inline InvocationResult(const InvocationResult& copy) throw()
+  inline InvocationResult(const InvocationResult& copy) noexcept
     : flags(copy.flags),
       cause(copy.cause)
   {
@@ -67,7 +67,7 @@ public:
   /**
     Assignment of object to object.
   */
-  inline InvocationResult& operator=(const InvocationResult& assign) throw()
+  inline InvocationResult& operator=(const InvocationResult& assign) noexcept
   {
     flags = assign.flags;
     cause = assign.cause;

@@ -32,7 +32,7 @@ public:
   /**
     Returns the default IEEE 1394 implementation.
   */
-  static IEEE1394Impl* getDefault() throw();
+  static IEEE1394Impl* getDefault() noexcept;
   
   /**
     Returns true if the bus has been reset since last check.
@@ -42,7 +42,7 @@ public:
   /**
     Acknowledges the bus reset.
   */
-  virtual void acknowledgeReset() throw() = 0;
+  virtual void acknowledgeReset() noexcept = 0;
 
   /**
     Resets the bus.

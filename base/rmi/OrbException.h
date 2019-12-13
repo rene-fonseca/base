@@ -48,7 +48,7 @@ public:
   /**
     Initializes the exception object with no message.
   */
-  inline OrbException() throw() {
+  inline OrbException() noexcept {
   }
   
   /**
@@ -56,7 +56,7 @@ public:
 
     @param message The message.
   */
-  inline OrbException(const char* message) throw() : RMIException(message) {
+  inline OrbException(const char* message) noexcept : RMIException(message) {
   }
   
   /**
@@ -64,7 +64,7 @@ public:
     
     @param type The identity of the type.
   */
-  inline OrbException(const Type& type) throw() : RMIException(type) {
+  inline OrbException(const Type& type) noexcept : RMIException(type) {
   }
   
   /**
@@ -73,7 +73,7 @@ public:
     @param message An NULL-terminated string (ASCII).
     @param type The identity of the type.
   */
-  inline OrbException(const char* message, const Type& type) throw()
+  inline OrbException(const char* message, const Type& type) noexcept
     : RMIException(message, type) {
   }
   

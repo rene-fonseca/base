@@ -15,10 +15,10 @@
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
-AsynchronousException::AsynchronousException() throw() : IOException() {
+AsynchronousException::AsynchronousException() noexcept : IOException() {
 }
 
-AsynchronousException::AsynchronousException(const char* message) throw()
+AsynchronousException::AsynchronousException(const char* message) noexcept
   : IOException(message) {
 }
 

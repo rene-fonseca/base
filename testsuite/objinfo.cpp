@@ -93,12 +93,12 @@ public:
   ElfInfoApplication(
     int numberOfArguments,
     const char* arguments[],
-    const char* environment[]) throw()
+    const char* environment[]) noexcept
     : Application("elfinfo", numberOfArguments, arguments, environment) {
     command = COMMAND_ERROR;
   }
   
-  void parseArguments() throw() {
+  void parseArguments() noexcept {
     bool pathSpecified = false;
     
     Array<String> arguments = getArguments();
@@ -134,7 +134,7 @@ public:
     }
   }
   
-  void version() throw()
+  void version() noexcept
   {
     fout << getFormalName() << " version "
          << MAJOR_VERSION << '.' << MINOR_VERSION << EOL
@@ -142,7 +142,7 @@ public:
          << ENDL;
   }
   
-  void help() throw()
+  void help() noexcept
   {
     version();
     fout << "Usage: " << getFormalName() << " [options] path" << EOL
@@ -154,7 +154,7 @@ public:
          << ENDL;
   }
   
-  void dump() throw() {
+  void dump() noexcept {
     if (!FileSystem::fileExists(path)) {
       ferr << "Error: " << "Source does not exist." << ENDL;
       setExitCode(EXIT_CODE_ERROR);
@@ -249,7 +249,7 @@ public:
     }
   }
   
-  ~ElfInfoApplication() throw() {
+  ~ElfInfoApplication() noexcept {
   }
 };
 

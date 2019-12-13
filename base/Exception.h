@@ -263,7 +263,7 @@ public:
   /**
     Destroys exception object.
   */
-  virtual ~Exception() throw();
+  virtual ~Exception() noexcept;
 };
 
 /**

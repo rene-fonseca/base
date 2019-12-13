@@ -25,7 +25,7 @@ _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 // TAG: support for capturing screen/window/...
 
-void Pixmap::destroy() throw()
+void Pixmap::destroy() noexcept
 {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)  
   if (graphicsContextHandle) {
@@ -110,10 +110,10 @@ void Pixmap::encode(Format format, Encoding encoding, void* data) throw(UserInte
 #endif // flavor
 }
 
-// void* Pixmap::getData() throw() {
+// void* Pixmap::getData() noexcept {
 // }
 
-Pixmap::~Pixmap() throw() {
+Pixmap::~Pixmap() noexcept {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
 #else // unix
 #endif // flavor

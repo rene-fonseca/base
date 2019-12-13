@@ -31,7 +31,7 @@ void enable();
 void add(Object object) throw(?);
 void remove(Object object) throw(?);
 
-void onResize(const Dimension& dimension) throw();
+void onResize(const Dimension& dimension) noexcept;
 // calc new positions and dimensions and call update?
 
 // concept of binding point (inherited from placement operator and set explicitly when added)
@@ -45,21 +45,21 @@ int getAlignment() const throw();
 class _COM_AZURE_DEV__BASE__API PlacementOperator : public UIObject {
 public:
 
-  void disable() throw();
-  void enable() throw();
+  void disable() noexcept;
+  void enable() noexcept;
   bool isEnabled() const throw();
 };
 
 class _COM_AZURE_DEV__BASE__API VerticalPlacement : public Object {
 public:
 
-  VerticalPlacement() throw();
-  VerticalPlacement(unsigned int distance) throw();
+  VerticalPlacement() noexcept;
+  VerticalPlacement(unsigned int distance) noexcept;
 
   unsigned int getDistance();
   void setDistance();
   
-  void add(UIObject object, const Position& position) throw();
+  void add(UIObject object, const Position& position) noexcept;
 };
 
 class _COM_AZURE_DEV__BASE__API HorizontalPlacement : public Object {
@@ -70,16 +70,16 @@ public:
 class _COM_AZURE_DEV__BASE__API CheckboardPlacement : public Object {
 public:
   
-  CheckboardPlacement() throw();
-  CheckboardPlacement(const Dimension& dimension) throw();
+  CheckboardPlacement() noexcept;
+  CheckboardPlacement(const Dimension& dimension) noexcept;
   Dimension getRowsAndColumns() const throw();
   
   // specify the (row, column) with add?
   bool hasObject(UIObject object) const throw();
   bool hasObject(const Position& position) const throw();
-  void add(UIObject object, const Position& position) throw();
-  void remove(const Position& postion) throw();
-  void remove(UIObject object) throw();
+  void add(UIObject object, const Position& position) noexcept;
+  void remove(const Position& postion) noexcept;
+  void remove(UIObject object) noexcept;
 };
 
 // Tabulator - automatic starting corner UPPER_LEFT or LOWER_RIGHT (vertical or horizontal priority)

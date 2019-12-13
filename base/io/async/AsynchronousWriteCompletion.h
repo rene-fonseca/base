@@ -56,7 +56,7 @@ public:
     unsigned int _bytesToWrite,
     unsigned long long _offset,
     unsigned int _bytesWritten,
-    unsigned int _flags) throw() 
+    unsigned int _flags) noexcept 
     : buffer(_buffer),
       bytesToWrite(_bytesToWrite),
       offset(_offset),
@@ -67,12 +67,12 @@ public:
   /**
     Initialization of object from other object.
   */
-  AsynchronousWriteCompletion(const AsynchronousWriteCompletion& copy) throw();
+  AsynchronousWriteCompletion(const AsynchronousWriteCompletion& copy) noexcept;
 
   /**
     Assignment of object by object.
   */
-  AsynchronousWriteCompletion& operator=(const AsynchronousWriteCompletion& assign) throw();
+  AsynchronousWriteCompletion& operator=(const AsynchronousWriteCompletion& assign) noexcept;
 
   inline bool successful() const throw() {
     return (flags & SUCCESSFUL) != 0;

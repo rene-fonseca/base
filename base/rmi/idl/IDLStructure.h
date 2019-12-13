@@ -36,12 +36,12 @@ public:
   /**
     Initializes the IDL structure.
   */
-  IDLStructure(const String& name) throw();
+  IDLStructure(const String& name) noexcept;
   
   /**
     Adds the field to the structure.
   */
-  void addField(const IDLField& field) throw();
+  void addField(const IDLField& field) noexcept;
   
   /**
     Returns the fields.
@@ -51,7 +51,7 @@ public:
   /**
     Destroys the IDL structure.
   */
-  ~IDLStructure() throw();
+  ~IDLStructure() noexcept;
 };
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

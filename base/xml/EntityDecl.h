@@ -32,7 +32,7 @@ protected:
   /**
     Initializes entity declaration.
   */
-  inline EntityDecl(void* context) throw() : Declaration(context) {
+  inline EntityDecl(void* context) noexcept : Declaration(context) {
   }
 public:
   

@@ -109,7 +109,7 @@ Pipe::PipeHandle::~PipeHandle() {
 
 
 
-Pipe::Pipe() throw() : fd(PipeHandle::invalid), end(false) {
+Pipe::Pipe() noexcept : fd(PipeHandle::invalid), end(false) {
 }
 
 void Pipe::close() throw(PipeException) {

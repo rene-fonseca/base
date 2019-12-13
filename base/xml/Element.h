@@ -35,7 +35,7 @@ protected:
   /**
     Internal constructor.
   */
-  inline Element(void* context) throw() : Node(context) {
+  inline Element(void* context) noexcept : Node(context) {
   }
 public:
   
@@ -52,7 +52,7 @@ public:
   /**
     Initializes element.
   */
-  inline Element(const Node::ShadowElement& element) throw()
+  inline Element(const Node::ShadowElement& element) noexcept
     : Node(element.getNode()) {
   }
   
@@ -64,7 +64,7 @@ public:
   /**
     Returns the first attribute node of this element.
   */
-  Attribute getFirstAttribute() throw();
+  Attribute getFirstAttribute() noexcept;
   
   /**
     Retrieves an attribute value by name.

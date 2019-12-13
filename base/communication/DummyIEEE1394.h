@@ -41,7 +41,7 @@ public:
   /**
     Acknowledges the bus reset.
   */
-  void acknowledgeReset() throw();
+  void acknowledgeReset() noexcept;
 
   /**
     Resets the bus.

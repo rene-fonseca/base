@@ -61,7 +61,7 @@ public:
 //     channel->writeUInt16(methodId);
   }
 
-  ~OrbRequest() throw();
+  ~OrbRequest() noexcept;
 };
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

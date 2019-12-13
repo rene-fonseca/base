@@ -27,11 +27,11 @@ namespace ntapi {
   typedef long NTSTATUS;
   typedef long KPRIORITY;
 
-  inline bool succeeded(long status) throw() {
+  inline bool succeeded(long status) noexcept {
     return status >= 0;
   }
 
-  inline bool failed(long status) throw() {
+  inline bool failed(long status) noexcept {
     return status < 0;
   }
   
@@ -45,7 +45,7 @@ namespace ntapi {
   typedef NTSTATUS (__stdcall *PNtQuerySemaphore)(HANDLE, unsigned int /*INFOCLASS*/, SemaphoreInformation*, unsigned long, unsigned long*);
 
   template<class API>
-  inline API getAddress(const char* identifier) throw() {
+  inline API getAddress(const char* identifier) noexcept {
     return (API)::GetProcAddress(::GetModuleHandle(L"ntdll"), identifier);
   }
 };
@@ -98,7 +98,7 @@ public:
 #endif
 };
 
-unsigned int Semaphore::getMaximum() throw()
+unsigned int Semaphore::getMaximum() noexcept
 {
   return SemaphoreImpl::MAXIMUM;
 }

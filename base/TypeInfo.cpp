@@ -160,7 +160,7 @@ public:
     }
   }
 
-  inline void CVQualifier() throw()
+  inline void CVQualifier() noexcept
   {
     switch (*p) { // CV-qualifiers
     case 'r':
@@ -818,7 +818,7 @@ public:
     return true;
   }
 
-  inline bool sourceName() throw()
+  inline bool sourceName() noexcept
   {
     if (!ASCIITraits::isDigit(*p)) {
       return false;

@@ -66,7 +66,7 @@ public:
   */
   OrbConnection(
     ProtectedPointer<Orb> _orb,
-    Reference<OrbBufferPool> _pool) throw()
+    Reference<OrbBufferPool> _pool) noexcept
     : orb(_orb), pool(_pool) /*, outgoing(_pool), incoming(_pool)*/ {
   }
   
@@ -81,7 +81,7 @@ public:
     
     @param buffer The buffer.
   */
-  inline void push(OrbBuffer* buffer) throw() {
+  inline void push(OrbBuffer* buffer) noexcept {
     // outgoing.push(buffer);
   }
   
@@ -95,12 +95,12 @@ public:
 
     @param identifier Identifier (e.g. "/MyObject").
   */
-  virtual OrbReference getReference(const String& identifier) throw() = 0;
+  virtual OrbReference getReference(const String& identifier) noexcept = 0;
   
   /**
     Destroys the connection.
   */
-  virtual ~OrbConnection() throw();
+  virtual ~OrbConnection() noexcept;
 };
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

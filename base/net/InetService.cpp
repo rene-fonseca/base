@@ -24,7 +24,7 @@
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
-unsigned short InetService::getByName(const String& name, const String& protocol) throw()
+unsigned short InetService::getByName(const String& name, const String& protocol) noexcept
 {
   struct servent* sp = nullptr;
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
@@ -46,7 +46,7 @@ unsigned short InetService::getByName(const String& name, const String& protocol
 }
 
 String InetService::getByPort(
-  unsigned short port, const String& protocol) throw() {
+  unsigned short port, const String& protocol) noexcept {
   struct servent* sp = nullptr;
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   sp = getservbyport(ByteOrder::toBigEndian<unsigned short>(port), protocol.getElements()); // MT-safe
@@ -89,12 +89,12 @@ InetService::InetService(
   this->protocol = protocol;
 }
 
-InetService::InetService(const InetService& copy) throw()
+InetService::InetService(const InetService& copy) noexcept
   : name(copy.name), port(copy.port), protocol(copy.protocol)
 {
 }
 
-InetService& InetService::operator=(const InetService& assign) throw()
+InetService& InetService::operator=(const InetService& assign) noexcept
 {
   if (&assign != this) { // protect against self assignment
     name = assign.name;

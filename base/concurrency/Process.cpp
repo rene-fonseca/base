@@ -67,7 +67,7 @@ namespace ntapi {
 };
 #endif
 
-Process::ProcessHandle::~ProcessHandle() throw() {
+Process::ProcessHandle::~ProcessHandle() noexcept {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   if (isValid()) { // dont try to close if handle is invalidated
     ::CloseHandle(getHandle()); // should never fail

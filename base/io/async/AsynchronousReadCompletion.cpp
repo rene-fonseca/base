@@ -16,7 +16,7 @@
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 AsynchronousReadCompletion::AsynchronousReadCompletion(
-  const AsynchronousReadCompletion& copy) throw() 
+  const AsynchronousReadCompletion& copy) noexcept 
   : buffer(copy.buffer),
     bytesToRead(copy.bytesToRead),
     offset(copy.offset),
@@ -25,7 +25,7 @@ AsynchronousReadCompletion::AsynchronousReadCompletion(
 }
 
 AsynchronousReadCompletion& AsynchronousReadCompletion::operator=(
-  const AsynchronousReadCompletion& assign) throw() {
+  const AsynchronousReadCompletion& assign) noexcept {
   // no need to protect against self-assignment
   buffer = assign.buffer;
   bytesToRead = assign.bytesToRead;

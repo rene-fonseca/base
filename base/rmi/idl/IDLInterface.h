@@ -37,12 +37,12 @@ public:
   /**
     Initializes the IDL interface.
   */
-  IDLInterface(const String& name, unsigned int version) throw();
+  IDLInterface(const String& name, unsigned int version) noexcept;
   
   /**
     Adds the specified method.
   */
-  void addMethod(const IDLMethod& method) throw();
+  void addMethod(const IDLMethod& method) noexcept;
   
   /**
     Returns true if the method is available.
@@ -67,7 +67,7 @@ public:
   /**
     Destroys the IDL interface.
   */
-  ~IDLInterface() throw();
+  ~IDLInterface() noexcept;
 };
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

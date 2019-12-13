@@ -64,7 +64,7 @@ public:
     @param type The type of the mime object (e.g. image).
     @param subtype The subtype of the mime object (e.g. jpeg).
   */
-  MimeType(const String& type, const String& subtype) throw();
+  MimeType(const String& type, const String& subtype) noexcept;
   
   /**
     Initializes the mime object with specified values. Use the isValid() method
@@ -89,7 +89,7 @@ public:
   /**
     Assignment of MIME type to MIME type.
   */
-  MimeType& operator=(const MimeType& assign) throw();
+  MimeType& operator=(const MimeType& assign) noexcept;
   
   /**
     Returns true if the type and subtype complies with the grammar described in

@@ -28,7 +28,7 @@ namespace base {
   
     namespace sse2 {
 
-      static inline sse128 myfunc(sse128 a, sse128 b) throw() {
+      static inline sse128 myfunc(sse128 a, sse128 b) noexcept {
         sse128 result;
         asm (
           "addss %0,%1\n\t"
@@ -38,7 +38,7 @@ namespace base {
         return result;
       }
       
-      inline float64 invsqrt(float64 value) throw() {
+      inline float64 invsqrt(float64 value) noexcept {
         float64 result;
         asm (
           "rsqrtss %0,%0\n\t"
@@ -48,7 +48,7 @@ namespace base {
         return result;
       }
 
-      inline float64 sqrt(float64 value) throw() {
+      inline float64 sqrt(float64 value) noexcept {
         float64 result;
         asm (
           "sqrtsd %0,%0\n\t"

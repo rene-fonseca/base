@@ -302,7 +302,7 @@ OpenGLPixmapContext::OpenGLPixmapContext(const Dimension& dimension, unsigned in
     prefixInitialization(initialize(dimension, flags)) {
 }
 
-OpenGLPixmapContext::~OpenGLPixmapContext() throw() {
+OpenGLPixmapContext::~OpenGLPixmapContext() noexcept {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)  
   native::GDI::wglMakeCurrent(0, 0); // deselect current rendering context
   if (renderingContextHandle) {

@@ -61,15 +61,15 @@ public:
     void* handle = nullptr;
   public:
     
-    inline GraphicsContextObjectHandle(void* _handle) throw()
+    inline GraphicsContextObjectHandle(void* _handle) noexcept
       : handle(_handle) {
     }
     
-    inline void* getHandle() throw() {
+    inline void* getHandle() noexcept {
       return handle;
     }
     
-    ~GraphicsContextObjectHandle() throw();
+    ~GraphicsContextObjectHandle() noexcept;
   };
 
   /**
@@ -81,10 +81,10 @@ public:
     Reference<GraphicsContextObjectHandle> handle;
   public:
 
-    inline GraphicsContextObject() throw() {
+    inline GraphicsContextObject() noexcept {
     }
     
-    inline GraphicsContextObject(void* _handle) throw()
+    inline GraphicsContextObject(void* _handle) noexcept
       : handle(new GraphicsContextObjectHandle(_handle)) {
     }
 
@@ -93,7 +93,7 @@ public:
       return handle->getHandle();
     }
 
-    inline void setHandle(void* handle) throw() {
+    inline void setHandle(void* handle) noexcept {
       this->handle = new GraphicsContextObjectHandle(handle);
     }
   };
@@ -105,14 +105,14 @@ public:
     friend class GraphicsContext;
   private:
     
-    inline Pen(void* handle) throw() : GraphicsContextObject(handle) {
+    inline Pen(void* handle) noexcept : GraphicsContextObject(handle) {
     }
   public:
 
     /**
       Initializes invalid pen.
     */
-    inline Pen() throw() : GraphicsContextObject(nullptr) {
+    inline Pen() noexcept : GraphicsContextObject(nullptr) {
     }
 
     /**
@@ -142,11 +142,11 @@ public:
     friend class GraphicsContext;
   private:
     
-    inline Brush(void* handle) throw() : GraphicsContextObject(handle) {
+    inline Brush(void* handle) noexcept : GraphicsContextObject(handle) {
     }
   public:
 
-    inline Brush() throw() : GraphicsContextObject(nullptr) {
+    inline Brush() noexcept : GraphicsContextObject(nullptr) {
     }
 
     /**
@@ -188,11 +188,11 @@ public:
     friend class GraphicsContext;
   private:
     
-    inline Font(void* handle) throw() : GraphicsContextObject(handle) {
+    inline Font(void* handle) noexcept : GraphicsContextObject(handle) {
     }
   public:
 
-    inline Font() throw() : GraphicsContextObject(nullptr) {
+    inline Font() noexcept : GraphicsContextObject(nullptr) {
     }
 
     /**
@@ -585,7 +585,7 @@ public:
   /**
     Destroys the graphics context.
   */
-  ~GraphicsContext() throw();
+  ~GraphicsContext() noexcept;
 };
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

@@ -175,35 +175,35 @@ public:
     @param physicalId The physical id [0; 63].
     @param busId The bus id. The default is the local bus (i.e. 0x3ff).
   */
-  static inline unsigned short makeNodeId(unsigned int physicalId, unsigned int busId = 0x3ff) throw() {
+  static inline unsigned short makeNodeId(unsigned int physicalId, unsigned int busId = 0x3ff) noexcept {
     return ((busId & 0x3ff) << 6) | (physicalId & 0x3f);
   }
 
   /**
     Returns the bus id of the specified node id.
   */
-  static inline unsigned int getBusId(unsigned short node) throw() {
+  static inline unsigned int getBusId(unsigned short node) noexcept {
     return node >> 6;
   }
 
   /**
     Returns true if the bus id of the node id is the local bus.
   */
-  static bool isLocalBus(unsigned short node) throw() {
+  static bool isLocalBus(unsigned short node) noexcept {
     return getBusId(node) == LOCAL_BUS;
   }
 
   /**
     Returns the physical id of the specified node id.
   */
-  static inline unsigned int getPhysicalId(unsigned short node) throw() {
+  static inline unsigned int getPhysicalId(unsigned short node) noexcept {
     return node & 0x3f;
   }
   
   /**
     Returns true if the physical id of the node id is the broadcast id.
   */
-  static bool isBroadcast(unsigned short node) throw() {
+  static bool isBroadcast(unsigned short node) noexcept {
     return getPhysicalId(node) == BROADCAST;
   }
   
@@ -224,19 +224,19 @@ public:
   protected:
 
     /** Reset any context information. */
-    virtual void resetContext() throw() {
+    virtual void resetContext() noexcept {
     }
 
     /** Sets the status. */
-    inline void setStatus(IsochronousRequestStatus status) throw() {
+    inline void setStatus(IsochronousRequestStatus status) noexcept {
       this->status = status;
     }
   public:
 
-    inline IsochronousRequestImpl() throw() {
+    inline IsochronousRequestImpl() noexcept {
     }
     
-    inline IsochronousRequestImpl(unsigned int _options) throw()
+    inline IsochronousRequestImpl(unsigned int _options) noexcept
       : options(_options) {
     }
     
@@ -271,7 +271,7 @@ public:
     */
     void reset() throw(IEEE1394Exception);
 
-    virtual ~IsochronousRequestImpl() throw();
+    virtual ~IsochronousRequestImpl() noexcept;
   };
 
   /**
@@ -297,21 +297,21 @@ public:
     /**
       Sets the number of received packets.
     */
-    inline void setReceivedPackets(unsigned int receivedPackets) throw() {
+    inline void setReceivedPackets(unsigned int receivedPackets) noexcept {
       this->receivedPackets = receivedPackets;
     }
 
-    virtual void resetContext() throw() {
+    virtual void resetContext() noexcept {
       receivedPackets = 0;
     }
   public:
 
-    IsochronousReadRequestImpl() throw();
+    IsochronousReadRequestImpl() noexcept;
 
     /**
       Returns the channel.
     */
-    inline unsigned int getSubchannel() throw() {
+    inline unsigned int getSubchannel() noexcept {
       return subchannel;
     }
     
@@ -492,16 +492,16 @@ public:
     unsigned int transmittedPackets = 0;
   protected:
 
-    void setTransmittedPackets(unsigned int transmittedPackets) throw() {
+    void setTransmittedPackets(unsigned int transmittedPackets) noexcept {
       this->transmittedPackets = transmittedPackets;
     }
 
-    virtual void resetContext() throw() {
+    virtual void resetContext() noexcept {
       transmittedPackets = 0;
     }
   public:
 
-    IsochronousWriteRequestImpl() throw();
+    IsochronousWriteRequestImpl() noexcept;
     
     /**
       Returns the buffer.
@@ -636,7 +636,7 @@ public:
       Initializes object.
     */
     inline IsochronousReadPacketsRequest(
-      IsochronousReadPacketsRequestImpl* _context) throw()
+      IsochronousReadPacketsRequestImpl* _context) noexcept
       : context(_context) {
     }
 
@@ -644,7 +644,7 @@ public:
       Initializes object from other object.
     */
     inline IsochronousReadPacketsRequest(
-      const IsochronousReadPacketsRequest& copy) throw()
+      const IsochronousReadPacketsRequest& copy) noexcept
       : context(copy.context) {
     }
 
@@ -652,7 +652,7 @@ public:
       Assignment of object by object.
     */
     inline IsochronousReadPacketsRequest& operator=(
-      const IsochronousReadPacketsRequest& assign) throw()
+      const IsochronousReadPacketsRequest& assign) noexcept
     {
       context = assign.context;
       return *this;
@@ -703,7 +703,7 @@ public:
     /**
       Returns the subchannel.
     */
-    inline unsigned int getSubchannel() throw() {
+    inline unsigned int getSubchannel() noexcept {
       return context->getSubchannel();
     }
 
@@ -761,7 +761,7 @@ public:
       Initializes object.
     */
     inline IsochronousReadFixedPacketsRequest(
-      IsochronousReadFixedPacketsRequestImpl* _context) throw()
+      IsochronousReadFixedPacketsRequestImpl* _context) noexcept
       : context(_context) {
     }
 
@@ -769,7 +769,7 @@ public:
       Initializes object from other object.
     */
     inline IsochronousReadFixedPacketsRequest(
-      const IsochronousReadFixedPacketsRequest& copy) throw()
+      const IsochronousReadFixedPacketsRequest& copy) noexcept
       : context(copy.context) {
     }
 
@@ -777,7 +777,7 @@ public:
       Assignment of object by object.
     */
     inline IsochronousReadFixedPacketsRequest& operator=(
-      const IsochronousReadFixedPacketsRequest& assign) throw()
+      const IsochronousReadFixedPacketsRequest& assign) noexcept
     {
       context = assign.context;
       return *this;
@@ -833,7 +833,7 @@ public:
     /**
       Returns the subchannel.
     */
-    inline unsigned int getSubchannel() throw() {
+    inline unsigned int getSubchannel() noexcept {
       return context->getSubchannel();
     }
     
@@ -905,14 +905,14 @@ public:
     /**
       Initializes invalid request.
     */
-    inline IsochronousReadFixedDataRequest() throw() {
+    inline IsochronousReadFixedDataRequest() noexcept {
     }
     
     /**
       Initializes object.
     */
     inline IsochronousReadFixedDataRequest(
-      IsochronousReadFixedDataRequestImpl* _context) throw()
+      IsochronousReadFixedDataRequestImpl* _context) noexcept
       : context(_context) {
     }
 
@@ -920,14 +920,14 @@ public:
       Initializes object from other object.
     */
     inline IsochronousReadFixedDataRequest(
-      const IsochronousReadFixedDataRequest& copy) throw()
+      const IsochronousReadFixedDataRequest& copy) noexcept
       : context(copy.context) {
     }
 
     /**
       Assignment of object by object.
     */
-    inline IsochronousReadFixedDataRequest& operator=(const IsochronousReadFixedDataRequest& assign) throw()
+    inline IsochronousReadFixedDataRequest& operator=(const IsochronousReadFixedDataRequest& assign) noexcept
     {
       context = assign.context;
       return *this;
@@ -978,7 +978,7 @@ public:
     /**
       Returns the subchannel.
     */
-    inline unsigned int getSubchannel() throw() {
+    inline unsigned int getSubchannel() noexcept {
       return context->getSubchannel();
     }
 
@@ -1091,7 +1091,7 @@ public:
     /**
       Initializes read request.
     */
-    inline IsochronousReadRequest(IsochronousReadRequestImpl* _context) throw() // TAG: must be private
+    inline IsochronousReadRequest(IsochronousReadRequestImpl* _context) noexcept // TAG: must be private
       : context(_context) {
     }
 
@@ -1099,7 +1099,7 @@ public:
       Initialize read request from read packets request.
     */
     inline IsochronousReadRequest(
-      const IsochronousReadPacketsRequest& request) throw()
+      const IsochronousReadPacketsRequest& request) noexcept
       : context(request.context.getValue()) {
     }
 
@@ -1107,7 +1107,7 @@ public:
       Initialize read request from read packets request.
     */
     inline IsochronousReadRequest(
-      const IsochronousReadFixedPacketsRequest& request) throw()
+      const IsochronousReadFixedPacketsRequest& request) noexcept
       : context(request.context.getValue()) {
     }
 
@@ -1115,21 +1115,21 @@ public:
       Initialize read request from read packets request.
     */
     inline IsochronousReadRequest(
-      const IsochronousReadFixedDataRequest& request) throw()
+      const IsochronousReadFixedDataRequest& request) noexcept
       : context(request.context.getValue()) {
     }
 
     /**
       Initializes object from other object.
     */
-    inline IsochronousReadRequest(const IsochronousReadRequest& copy) throw()
+    inline IsochronousReadRequest(const IsochronousReadRequest& copy) noexcept
       : context(copy.context) {
     }
 
     /**
       Assignment of object by object.
     */
-    inline IsochronousReadRequest& operator=(const IsochronousReadRequest& assign) throw()
+    inline IsochronousReadRequest& operator=(const IsochronousReadRequest& assign) noexcept
     {
       context = assign.context;
       return *this;
@@ -1248,7 +1248,7 @@ public:
       Initializes object.
     */
     inline IsochronousWritePacketsRequest(
-      IsochronousWritePacketsRequestImpl* _context) throw()
+      IsochronousWritePacketsRequestImpl* _context) noexcept
       : context(_context) {
     }
 
@@ -1256,14 +1256,14 @@ public:
       Initializes object from other object.
     */
     inline IsochronousWritePacketsRequest(
-      const IsochronousWritePacketsRequest& copy) throw()
+      const IsochronousWritePacketsRequest& copy) noexcept
       : context(copy.context) {
     }
 
     /**
       Assignment of object by object.
     */
-    inline IsochronousWritePacketsRequest& operator=(const IsochronousWritePacketsRequest& assign) throw()
+    inline IsochronousWritePacketsRequest& operator=(const IsochronousWritePacketsRequest& assign) noexcept
     {
       context = assign.context;
       return *this;
@@ -1362,7 +1362,7 @@ public:
       Initializes object.
     */
     inline IsochronousWriteFixedPacketsRequest(
-      IsochronousWriteFixedPacketsRequestImpl* _context) throw()
+      IsochronousWriteFixedPacketsRequestImpl* _context) noexcept
       : context(_context) {
     }
 
@@ -1370,14 +1370,14 @@ public:
       Initializes object from other object.
     */
     inline IsochronousWriteFixedPacketsRequest(
-      const IsochronousWriteFixedPacketsRequest& copy) throw()
+      const IsochronousWriteFixedPacketsRequest& copy) noexcept
       : context(copy.context) {
     }
 
     /**
       Assignment of object by object.
     */
-    inline IsochronousWriteFixedPacketsRequest& operator=(const IsochronousWriteFixedPacketsRequest& assign) throw()
+    inline IsochronousWriteFixedPacketsRequest& operator=(const IsochronousWriteFixedPacketsRequest& assign) noexcept
     {
       context = assign.context;
       return *this;
@@ -1476,7 +1476,7 @@ public:
       Initializes write request.
     */
     inline IsochronousWriteDataRequest(
-      IsochronousWriteDataRequestImpl* _context) throw() // TAG: must be private
+      IsochronousWriteDataRequestImpl* _context) noexcept // TAG: must be private
       : context(_context) {
     }
 
@@ -1484,14 +1484,14 @@ public:
       Initializes write request from other write request.
     */
     inline IsochronousWriteDataRequest(
-      const IsochronousWriteDataRequest& copy) throw()
+      const IsochronousWriteDataRequest& copy) noexcept
       : context(copy.context) {
     }
 
     /**
       Assignment of write request by write request.
     */
-    inline IsochronousWriteDataRequest& operator=(const IsochronousWriteDataRequest& assign) throw()
+    inline IsochronousWriteDataRequest& operator=(const IsochronousWriteDataRequest& assign) noexcept
     {
       context = assign.context;
       return *this;
@@ -1592,7 +1592,7 @@ public:
       Initializes write request.
     */
     inline IsochronousWriteRequest(
-      IsochronousWriteRequestImpl* _context) throw() // TAG: must be private
+      IsochronousWriteRequestImpl* _context) noexcept // TAG: must be private
       : context(_context) {
     }
 
@@ -1600,7 +1600,7 @@ public:
       Initialize write request from write packets request.
     */
     inline IsochronousWriteRequest(
-      const IsochronousWritePacketsRequest& request) throw()
+      const IsochronousWritePacketsRequest& request) noexcept
       : context(request.context.getValue()) {
     }
 
@@ -1608,7 +1608,7 @@ public:
       Initialize write request from write fixed packets request.
     */
     inline IsochronousWriteRequest(
-      const IsochronousWriteFixedPacketsRequest& request) throw()
+      const IsochronousWriteFixedPacketsRequest& request) noexcept
       : context(request.context.getValue()) {
     }
 
@@ -1616,21 +1616,21 @@ public:
       Initialize write request from write data request.
     */
     inline IsochronousWriteRequest(
-      const IsochronousWriteDataRequest& request) throw()
+      const IsochronousWriteDataRequest& request) noexcept
       : context(request.context.getValue()) {
     }
 
     /**
       Initializes object from other object.
     */
-    inline IsochronousWriteRequest(const IsochronousWriteRequest& copy) throw()
+    inline IsochronousWriteRequest(const IsochronousWriteRequest& copy) noexcept
       : context(copy.context) {
     }
 
     /**
       Assignment of object by object.
     */
-    inline IsochronousWriteRequest& operator=(const IsochronousWriteRequest& assign) throw()
+    inline IsochronousWriteRequest& operator=(const IsochronousWriteRequest& assign) noexcept
     {
       context = assign.context;
       return *this;
@@ -1915,7 +1915,7 @@ protected:
     Returns the context.
   */
   static inline Reference<IsochronousReadPacketsRequestImpl>
-  getContext(IsochronousReadPacketsRequest& request) throw() {
+  getContext(IsochronousReadPacketsRequest& request) noexcept {
     return request.context;
   }
   
@@ -1923,7 +1923,7 @@ protected:
     Returns the context.
   */
   static inline Reference<IsochronousReadFixedPacketsRequestImpl>
-  getContext(IsochronousReadFixedPacketsRequest& request) throw() {
+  getContext(IsochronousReadFixedPacketsRequest& request) noexcept {
     return request.context;
   }
   
@@ -1931,7 +1931,7 @@ protected:
     Returns the context.
   */
   static inline Reference<IsochronousReadFixedDataRequestImpl>
-  getContext(IsochronousReadFixedDataRequest& request) throw() {
+  getContext(IsochronousReadFixedDataRequest& request) noexcept {
     return request.context;
   }
   
@@ -1939,7 +1939,7 @@ protected:
     Returns the context.
   */
   static inline Reference<IsochronousReadRequestImpl>
-  getContext(IsochronousReadRequest& request) throw() {
+  getContext(IsochronousReadRequest& request) noexcept {
     return request.context;
   }
   
@@ -1947,7 +1947,7 @@ protected:
     Returns the context.
   */
   static inline Reference<IsochronousWritePacketsRequestImpl>
-  getContext(IsochronousWritePacketsRequest& request) throw() {
+  getContext(IsochronousWritePacketsRequest& request) noexcept {
     return request.context;
   }
   
@@ -1955,7 +1955,7 @@ protected:
     Returns the context.
   */
   static inline Reference<IsochronousWriteFixedPacketsRequestImpl>
-  getContext(IsochronousWriteFixedPacketsRequest& request) throw() {
+  getContext(IsochronousWriteFixedPacketsRequest& request) noexcept {
     return request.context;
   }
   
@@ -1963,7 +1963,7 @@ protected:
     Returns the context.
   */
   static inline Reference<IsochronousWriteDataRequestImpl>
-  getContext(IsochronousWriteDataRequest& request) throw() {
+  getContext(IsochronousWriteDataRequest& request) noexcept {
     return request.context;
   }
   
@@ -1971,7 +1971,7 @@ protected:
     Returns the context.
   */
   static inline Reference<IsochronousWriteRequestImpl>
-  getContext(IsochronousWriteRequest& request) throw() {
+  getContext(IsochronousWriteRequest& request) noexcept {
     return request.context;
   }
 public:
@@ -1986,7 +1986,7 @@ public:
     /**
       Initialize channel as closed.
     */
-    inline IsochronousReadChannel() throw()
+    inline IsochronousReadChannel() noexcept
       : readChannel(new IsochronousReadChannelImpl()) {
     }
     
@@ -1994,7 +1994,7 @@ public:
       Initializes read channel.
     */
     inline IsochronousReadChannel(
-      IsochronousReadChannelImpl* _readChannel) throw()
+      IsochronousReadChannelImpl* _readChannel) noexcept
       : readChannel(_readChannel)
     {
       if (!_readChannel) {
@@ -2005,14 +2005,14 @@ public:
     /**
       Initialize channel from other channel.
     */
-    inline IsochronousReadChannel(const IsochronousReadChannel& copy) throw()
+    inline IsochronousReadChannel(const IsochronousReadChannel& copy) noexcept
       : readChannel(copy.readChannel) {
     }
 
     /**
       Assignment of channel by channel.
     */
-    inline IsochronousReadChannel& operator=(const IsochronousReadChannel& assign) throw() {
+    inline IsochronousReadChannel& operator=(const IsochronousReadChannel& assign) noexcept {
       readChannel = assign.readChannel;
       return *this;
     }
@@ -2148,7 +2148,7 @@ public:
     /**
       Initializes channel as closed.
     */
-    inline IsochronousWriteChannel() throw()
+    inline IsochronousWriteChannel() noexcept
       : writeChannel(new IsochronousWriteChannelImpl()) {
     }
 
@@ -2156,7 +2156,7 @@ public:
       Initializes write channel.
     */
     inline IsochronousWriteChannel(
-      IsochronousWriteChannelImpl* _writeChannel) throw()
+      IsochronousWriteChannelImpl* _writeChannel) noexcept
       : writeChannel(_writeChannel)
     {
       if (!_writeChannel) {
@@ -2167,14 +2167,14 @@ public:
     /**
       Initializes channel from other channel.
     */
-    inline IsochronousWriteChannel(const IsochronousWriteChannel& copy) throw()
+    inline IsochronousWriteChannel(const IsochronousWriteChannel& copy) noexcept
       : writeChannel(copy.writeChannel) {
     }
 
     /**
       Assignment of channel by channel.
     */
-    inline IsochronousWriteChannel& operator=(const IsochronousWriteChannel& assign) throw()
+    inline IsochronousWriteChannel& operator=(const IsochronousWriteChannel& assign) noexcept
     {
       writeChannel = assign.writeChannel;
       return *this;
@@ -2306,7 +2306,7 @@ public:
     */
     virtual bool onIsochronousPacket(
       const uint8* buffer,
-      unsigned int size) throw() = 0;
+      unsigned int size) noexcept = 0;
   };
 
   /**
@@ -2325,7 +2325,7 @@ public:
     virtual void onFCPRequest(
       unsigned short nodeId,
       const uint8* buffer,
-      unsigned int size) throw() = 0;
+      unsigned int size) noexcept = 0;
 
     /**
       Invoked on an incoming FCP response.
@@ -2337,7 +2337,7 @@ public:
     virtual void onFCPResponse(
       unsigned short nodeId,
       const uint8* buffer,
-      unsigned int size) throw() = 0;
+      unsigned int size) noexcept = 0;
   };
 };
 

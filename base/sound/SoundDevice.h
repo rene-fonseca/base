@@ -64,7 +64,7 @@ public:
   /**
     Initializes the sound device.
   */
-  SoundDevice() throw();
+  SoundDevice() noexcept;
 
   /**
     Returns true if the device is readable.

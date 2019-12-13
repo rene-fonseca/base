@@ -37,7 +37,7 @@ public:
   /**
     Initializes region with offset (0, 0) and dimension (0, 0).
   */
-  inline Region() throw() : offset(0, 0), dimension(0, 0)
+  inline Region() noexcept : offset(0, 0), dimension(0, 0)
   {
   }
   
@@ -47,12 +47,12 @@ public:
     @param offset The desired offset of the region.
     @param dimension The desired dimension of the region.
   */
-  Region(const Point2D& offset, const Dimension& dimension) throw();
+  Region(const Point2D& offset, const Dimension& dimension) noexcept;
   
   /**
     Initializes region from other region.
   */
-  inline Region(const Region& copy) throw()
+  inline Region(const Region& copy) noexcept
     : offset(copy.offset), dimension(copy.dimension)
   {
   }
@@ -60,7 +60,7 @@ public:
   /**
     Assignment of region by region.
   */
-  inline Region& operator=(const Region& assign) throw()
+  inline Region& operator=(const Region& assign) noexcept
   {
     offset = assign.offset;
     dimension = assign.dimension;
@@ -86,7 +86,7 @@ public:
   /**
     Sets the offset of the region.
   */
-  inline void setOffset(const Point2D& offset) throw()
+  inline void setOffset(const Point2D& offset) noexcept
   {
     this->offset = offset;
   }
@@ -94,7 +94,7 @@ public:
   /**
     Sets the dimension of the region.
   */
-  inline void setDimension(const Dimension& dimension) throw()
+  inline void setDimension(const Dimension& dimension) noexcept
   {
     this->dimension = dimension;
   }
@@ -108,7 +108,7 @@ public:
   }
 };
 
-inline Region::Region(const Point2D& _offset, const Dimension& _dimension) throw()
+inline Region::Region(const Point2D& _offset, const Dimension& _dimension) noexcept
   : offset(_offset), dimension(_dimension)
 {
 }

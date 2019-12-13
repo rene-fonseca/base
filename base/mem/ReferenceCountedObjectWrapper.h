@@ -41,14 +41,14 @@ public:
 
     @param value The object to be reference counted.
   */
-  inline ReferenceCountedObjectWrapper(TYPE* value) throw()
+  inline ReferenceCountedObjectWrapper(TYPE* value) noexcept
     : object(value) {
   }
 
   /**
     Returns the object.
   */
-  inline TYPE* operator->() throw() {
+  inline TYPE* operator->() noexcept {
     return object;
   }
 

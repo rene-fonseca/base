@@ -31,14 +31,14 @@ Split::Split(Window& owner) throw(UserInterfaceException)
     split(0x808080) { // normal
 }
 
-// void Split::setState(unsigned int state) throw() {
+// void Split::setState(unsigned int state) noexcept {
 //   if (state != this->state) {
 //     this->state = state;
 //     invalidate();
 //   }
 // }
 
-void Split::setOffset(int offset, Field field) throw() {
+void Split::setOffset(int offset, Field field) noexcept {
   const Dimension dimension = getDimension();
   int total = 0;
   if (flags & VERTICAL_SPLIT) {
@@ -68,13 +68,13 @@ void Split::setOffset(int offset, Field field) throw() {
   invalidate();
 }
 
-void Split::onResize(const Dimension& dimension) throw() {
+void Split::onResize(const Dimension& dimension) noexcept {
   fout << "Split: Event: resize " << dimension << ENDL;
   setOffset(offset, FIRST); // keep but honor limit
   invalidate();
 }
 
-void Split::onMouseScope(bool scope) throw() {
+void Split::onMouseScope(bool scope) noexcept {
   if (!scope) {
     split = Brush(0x808080); // normal
     setCursor(HAND);
@@ -82,7 +82,7 @@ void Split::onMouseScope(bool scope) throw() {
   }
 }
 
-void Split::onMouseMove(const Position& position, unsigned int state) throw() {
+void Split::onMouseMove(const Position& position, unsigned int state) noexcept {
   fout << "Split: Mouse motion event: " << position << ENDL;
   if (drag) {
     setOffset(originalOffset + position.getX() - originalPosition, FIRST);
@@ -103,7 +103,7 @@ void Split::onMouseButton(
   const Position& position,
   Mouse::Button button,
   Mouse::Event event,
-  unsigned int state) throw() {
+  unsigned int state) noexcept {
   
   fout << "Split: Mouse button event: " << position << ENDL;
   if (button == Mouse::LEFT) {
@@ -132,7 +132,7 @@ void Split::onMouseButton(
   }
 }
 
-void Split::onKey(unsigned int key, unsigned int flags, unsigned int modifiers) throw() {
+void Split::onKey(unsigned int key, unsigned int flags, unsigned int modifiers) noexcept {
   if (flags & Key::PRESSED) {
     if (flags & Key::DEAD) {
       return;
@@ -147,7 +147,7 @@ void Split::onKey(unsigned int key, unsigned int flags, unsigned int modifiers) 
   }
 }
 
-void Split::onDisplay() throw() {
+void Split::onDisplay() noexcept {
   Dimension dimension = getDimension();
   rectangle(
     Position(0, 0),

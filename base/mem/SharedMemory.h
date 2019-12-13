@@ -32,7 +32,7 @@ _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 class _COM_AZURE_DEV__BASE__API SharedMemory : public Object {
 public:
   
-  static inline OperatingSystem::Handle getHandle(const File& file) throw() {
+  static inline OperatingSystem::Handle getHandle(const File& file) noexcept {
     return file.getHandle();
   }
   
@@ -94,7 +94,7 @@ public:
     
     void synchronize(bool asynchronous) throw(MemoryException);
     
-    ~SharedMemoryImpl() throw();
+    ~SharedMemoryImpl() noexcept;
   };
 
   friend class SharedMemoryImpl;
@@ -123,7 +123,7 @@ public:
     Returns the granularity of addresses/offsets within the shared memory block
     and file object.
   */
-  static MemorySize getGranularity() throw();
+  static MemorySize getGranularity() noexcept;
   
   /**
     Initializes shared memory object.
@@ -138,12 +138,12 @@ public:
   /**
     Initializes object by object.
   */
-  SharedMemory(const SharedMemory& copy) throw();
+  SharedMemory(const SharedMemory& copy) noexcept;
   
   /**
     Assignment of object by object.
   */
-  SharedMemory& operator=(const SharedMemory& assign) throw();
+  SharedMemory& operator=(const SharedMemory& assign) noexcept;
   
   /**
     Returns the offset within the file of the mapped region.
@@ -169,7 +169,7 @@ public:
   /**
     Returns the shared bytes for modifying access.
   */
-  inline uint8* getBytes() throw() {
+  inline uint8* getBytes() noexcept {
     return sharedMemory->getBytes();
   }
   
@@ -206,7 +206,7 @@ public:
   /**
     Fills the memory with zeros.
   */
-  void clear() throw();
+  void clear() noexcept;
 };
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

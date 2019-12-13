@@ -58,21 +58,21 @@ public:
   /**
     Returns the next buffer.
   */
-  inline OrbBuffer* getNext() throw() {
+  inline OrbBuffer* getNext() noexcept {
     return next;
   }
   
   /**
     Sets the next buffer.
   */
-  inline void setNext(OrbBuffer* next) throw() {
+  inline void setNext(OrbBuffer* next) noexcept {
     this->next = next;
   }
   
   /**
     Resets the buffer.
   */
-  inline void reset() throw() {
+  inline void reset() noexcept {
     readHead = first;
     writeHead = first;
   }
@@ -111,7 +111,7 @@ public:
     @param size The number of bytes to write.
     @return nullptr if invalid request.
   */
-  inline uint8* push(unsigned int size) throw() {
+  inline uint8* push(unsigned int size) noexcept {
     if (end < (writeHead + size)) {
       return nullptr;
     }
@@ -126,7 +126,7 @@ public:
     @param size The number of bytes to read.
     @return nullptr if the buffer doesn't contain the requested number of bytes.
   */
-  inline const uint8* pull(unsigned int size) throw() {
+  inline const uint8* pull(unsigned int size) noexcept {
     if (writeHead < (readHead + size)) {
       return nullptr;
     }

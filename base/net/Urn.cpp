@@ -17,7 +17,7 @@
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
-bool Urn::isUrn(const String& urn) throw() {
+bool Urn::isUrn(const String& urn) noexcept {
   String::ReadIterator i = urn.getBeginReadIterator();
   String::ReadIterator end = urn.getEndReadIterator();
   
@@ -94,7 +94,7 @@ bool Urn::isUrn(const String& urn) throw() {
   return i != j;
 }
 
-Urn::Urn() throw() {
+Urn::Urn() noexcept {
 }
 
 Urn::Urn(const String& urn) throw(InvalidFormat, MemoryException) {
@@ -181,13 +181,13 @@ Urn::Urn(const String& nid, const String& nss) throw(InvalidFormat)
   setNSS(nss);
 }
 
-Urn::Urn(const Urn& copy) throw()
+Urn::Urn(const Urn& copy) noexcept
   : nid(copy.nid),
     nss(copy.nss)
 {
 }
 
-Urn& Urn::operator=(const Urn& assign) throw()
+Urn& Urn::operator=(const Urn& assign) noexcept
 {
   nid = assign.nid;
   nss = assign.nss;

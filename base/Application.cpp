@@ -305,7 +305,7 @@ public:
     HWND window,
     UINT message,
     WPARAM primaryParameter,
-    LPARAM secondaryParameter) throw() {
+    LPARAM secondaryParameter) noexcept {
     // TAG: we should destroy window in destructor
     //StringOutputStream stream;
     //stream << "messageHandler: message=" << message << " primary="
@@ -329,7 +329,7 @@ public:
 
 #  if (defined(_COM_AZURE_DEV__BASE__HAVE_SIGACTION))
   static void actionHandler(
-    int signal, siginfo_t* info, void* opaque) throw() {
+    int signal, siginfo_t* info, void* opaque) noexcept {
     const char* error = nullptr;
 
     const ucontext_t* context = Cast::pointer<const ucontext_t*>(opaque);
@@ -687,7 +687,7 @@ public:
 
 
 
-void Application::initialize() throw()
+void Application::initialize() noexcept
 {
   static unsigned int singleton = 0;
   if (singleton != 0) {
@@ -844,7 +844,7 @@ Application::Application(
   application = this;
 }
 
-int Application::exceptionHandler(const Exception& e) throw()
+int Application::exceptionHandler(const Exception& e) noexcept
 {
   ferr << e << ENDL;
 
@@ -863,7 +863,7 @@ int Application::exceptionHandler(const Exception& e) throw()
   return Application::EXIT_CODE_ERROR;
 }
 
-int Application::exceptionHandler() throw()
+int Application::exceptionHandler() noexcept
 {
   setExitCode(Application::EXIT_CODE_ERROR);
   // TAG: if UI app - show dialog
@@ -907,19 +907,19 @@ int Application::exceptionHandler() throw()
   return Application::EXIT_CODE_ERROR;
 }
 
-void Application::hangup() throw()
+void Application::hangup() noexcept
 {
   MutualExclusion::Sync _guard(lock);
   hangingup = true;
 }
 
-void Application::terminate() throw()
+void Application::terminate() noexcept
 {
   terminated = true;
   onTermination();
 }
 
-bool Application::isHangingup() throw()
+bool Application::isHangingup() noexcept
 {
   bool result = false;
   MutualExclusion::Sync _guard(lock);
@@ -928,19 +928,19 @@ bool Application::isHangingup() throw()
   return result;
 }
 
-void Application::onTermination() throw()
+void Application::onTermination() noexcept
 {
   exit(exitCode);
 }
 
 namespace internal {
   
-  void terminationExceptionHandler() throw();
+  void terminationExceptionHandler() noexcept;
 
-  void unexpectedExceptionHandler() throw();
+  void unexpectedExceptionHandler() noexcept;
 };
 
-Application::~Application() throw() {
+Application::~Application() noexcept {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
 //   if (::DestroyWindow(windowHandle) == 0) {
 //     // failed but we do not care

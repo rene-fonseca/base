@@ -20,7 +20,7 @@
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
-Huffman::Huffman() throw() {
+Huffman::Huffman() noexcept {
 }
 
 class FixedBlockOutputStream : public FilterOutputStream {
@@ -71,11 +71,11 @@ public:
     return static_cast<unsigned int>(end - writeHead);
   }
 
-  inline void undo(unsigned int size) throw() {
+  inline void undo(unsigned int size) noexcept {
     writeHead -= size;
   }
   
-  inline Iterator getWriteIterator(unsigned int size = 0) throw() {
+  inline Iterator getWriteIterator(unsigned int size = 0) noexcept {
     BASSERT(size <= getAvailable());
     uint8* previous = writeHead;
     writeHead += size;
@@ -89,7 +89,7 @@ public:
     *writeHead++ = value;
   }
 
-  inline void unfoldValue(uint8 value, unsigned int size) throw() {
+  inline void unfoldValue(uint8 value, unsigned int size) noexcept {
     // fill internal buffer if possible
     unsigned int bytesToWrite = minimum(size, getAvailable()); // could be 0
     fill(writeHead, bytesToWrite, value);
@@ -175,7 +175,7 @@ private:
   unsigned int numberOfSymbols[ALPHABET_SIZE];
 public:
 
-  void updateCodeLengths(const uint8* buffer, unsigned int size) throw() {
+  void updateCodeLengths(const uint8* buffer, unsigned int size) noexcept {
     fill<uint8>(Cast::getAddress(nodes), sizeof(nodes), 0);
     
     // mark end of linked lists
@@ -253,7 +253,7 @@ public:
     }
   }
 
-  void generateCodes() throw() {
+  void generateCodes() noexcept {
     // determine the canonical Huffman codes
     
     // count number of codes per code length
@@ -294,7 +294,7 @@ public:
 //     fout << ENDL;
   }
   
-  void externalizeSymbolTable() throw() {
+  void externalizeSymbolTable() noexcept {
     // reduce code length range
     unsigned int minimumLength = 1;
     while (numberOfSymbols[minimumLength] == 0) {
@@ -447,7 +447,7 @@ public:
   
 };
 
-void Huffman::encode(OutputStream& stream, const uint8* buffer, unsigned int size) throw() {
+void Huffman::encode(OutputStream& stream, const uint8* buffer, unsigned int size) noexcept {
   Encoder encoder(stream, buffer, size);
 }
 
@@ -532,7 +532,7 @@ public:
     return static_cast<unsigned int>(src - buffer); // success
   }
   
-  inline void generateCodes() throw() {
+  inline void generateCodes() noexcept {
     // determine the canonical Huffman codes
 
     unsigned int currentCodes[ALPHABET_SIZE]; // maximum code length is ALPHABET_SIZE - 1

@@ -33,11 +33,11 @@ public:
   /**
     Initializes an invalidated socket object (i.e. unconnected and unbound).
   */
-  inline ServerSocket() throw()
+  inline ServerSocket() noexcept
   {
   }
 
-  ServerSocket(const ServerSocket& copy) throw();
+  ServerSocket(const ServerSocket& copy) noexcept;
 
   /**
     Creates a server stream socket and binds it to the specified port and IP address.
@@ -90,7 +90,7 @@ public:
     function can be used after a succesful accept determine the locally
     assigned address and port if unspecified.
   */
-  inline void getName() throw()
+  inline void getName() noexcept
   {
     Socket::getName();
   }

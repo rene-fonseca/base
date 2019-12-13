@@ -30,10 +30,10 @@
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
-Transformer::Transformer() throw() {
+Transformer::Transformer() noexcept {
 }
 
-void Transformer::clearParameters() throw() {
+void Transformer::clearParameters() noexcept {
   parameters = HashTable<String, String>();
 }
 
@@ -52,7 +52,7 @@ void Transformer::setParameter(
 // #endif
 // }
 
-// void Transformer::setXInclude(bool value) throw() {
+// void Transformer::setXInclude(bool value) noexcept {
 // #if defined(_COM_AZURE_DEV__BASE__XSLT_XMLSOFT_ORG)
 //   return xsltSetXIncludeDefault(value ? 1 : 0);
 // #endif
@@ -98,11 +98,11 @@ void Transformer::save(const String& filename, const Document& document) throw(D
 #endif
 }
 
-Stylesheet Transformer::getStylesheet() throw() {
+Stylesheet Transformer::getStylesheet() noexcept {
   return stylesheet;
 }
 
-void Transformer::setStylesheet(Stylesheet stylesheet) throw() {
+void Transformer::setStylesheet(Stylesheet stylesheet) noexcept {
   this->stylesheet = stylesheet;
 }
 
@@ -120,7 +120,7 @@ bool Transformer::functionAvailable(
 #endif
 }
 
-Transformer::~Transformer() throw() {
+Transformer::~Transformer() noexcept {
 #if defined(_COM_AZURE_DEV__BASE__XSLT_XMLSOFT_ORG)
 #endif
 }

@@ -104,7 +104,7 @@ private:
   static MutualExclusion lock; // must be available during process initialization
 
   /** Common initialization method used by constructors. */
-  void initialize() throw();
+  void initialize() noexcept;
 public:
   
   /**
@@ -199,29 +199,29 @@ public:
     Handler of uncaught exceptions. By default this handler writes the exception
     to stderr and sets the error code to EXIT_CODE_ERROR.
   */
-  virtual int exceptionHandler(const Exception& e) throw();
+  virtual int exceptionHandler(const Exception& e) noexcept;
 
   /**
     Handler of uncaught unknown exceptions. By default this handler writes an
     error message to stderr and sets the error code to EXIT_CODE_ERROR.
   */
-  virtual int exceptionHandler() throw();
+  virtual int exceptionHandler() noexcept;
 
   /**
     Signals the application to reload its configuration.
   */
-  void hangup() throw();
+  void hangup() noexcept;
 
   /**
     Signals the application to terminate itself.
   */
-  void terminate() throw();
+  void terminate() noexcept;
 
   /**
     Returns true if the application has been signaled to hangup. The hangup flag
     is automatically reset.
   */
-  bool isHangingup() throw();
+  bool isHangingup() noexcept;
 
   /**
     Returns the exit code.
@@ -253,12 +253,12 @@ public:
     Invoked on application termination. Exits the application immediately by
     default (i.e. does not return).
   */
-  virtual void onTermination() throw();
+  virtual void onTermination() noexcept;
 
   /**
     Destroys the application object.
   */
-  virtual ~Application() throw();
+  virtual ~Application() noexcept;
 };
 
 /** Make stub for exe entry point. */

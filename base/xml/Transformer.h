@@ -49,19 +49,19 @@ public:
   /**
     Initializes XSLT processor.
   */
-  Transformer() throw();
+  Transformer() noexcept;
 #if 0
   /**
     Initializes document from other document.
   */
-  inline Transformer(const Transformer& copy) throw()
+  inline Transformer(const Transformer& copy) noexcept
     : transformer(copy.transformer) {
   }
   
   /**
     Assignment of transformer by transformer.
   */
-  inline Transformer& operator=(const Transformer& assign) throw() {
+  inline Transformer& operator=(const Transformer& assign) noexcept {
     transformer = assign.transformer;
     return *this;
   }
@@ -70,7 +70,7 @@ public:
   /**
     Clears all parameters.
   */
-  void clearParameters() throw();
+  void clearParameters() noexcept;
 
   /**
     Returns the value of the parameter.
@@ -103,12 +103,12 @@ public:
   /**
     Returns the stylesheet.
   */
-  Stylesheet getStylesheet() throw();
+  Stylesheet getStylesheet() noexcept;
 
   /**
     Sets the stylesheet.
   */
-  void setStylesheet(Stylesheet stylesheet) throw();
+  void setStylesheet(Stylesheet stylesheet) noexcept;
 
   /**
     Returns true is the function is available.
@@ -121,7 +121,7 @@ public:
   /**
     Destroys the transformer.
   */
-  ~Transformer() throw();
+  ~Transformer() noexcept;
 };
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

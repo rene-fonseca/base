@@ -28,11 +28,11 @@
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
-Stylesheet::StylesheetImpl::StylesheetImpl(void* context) throw() {
+Stylesheet::StylesheetImpl::StylesheetImpl(void* context) noexcept {
   this->context = context;
 }
 
-Stylesheet::StylesheetImpl::~StylesheetImpl() throw() {
+Stylesheet::StylesheetImpl::~StylesheetImpl() noexcept {
 #if defined(_COM_AZURE_DEV__BASE__XSLT_XMLSOFT_ORG)
   if (context) {
     fout << __func__ << ENDL;
@@ -42,7 +42,7 @@ Stylesheet::StylesheetImpl::~StylesheetImpl() throw() {
 #endif
 }
 
-Stylesheet::Stylesheet() throw() {
+Stylesheet::Stylesheet() noexcept {
 #if defined(_COM_AZURE_DEV__BASE__XSLT_XMLSOFT_ORG)
   xsltStylesheetPtr temp = ::xsltNewStylesheet();
   bassert(temp, Exception(this)); // FIXME
@@ -55,7 +55,7 @@ Stylesheet::Stylesheet() throw() {
 #endif
 }
 
-Stylesheet::Stylesheet(const String& filename) throw() {
+Stylesheet::Stylesheet(const String& filename) noexcept {
 #if defined(_COM_AZURE_DEV__BASE__XSLT_XMLSOFT_ORG)
   ::xmlSubstituteEntitiesDefault(1); // FIXME
   xmlLoadExtDtdDefaultValue = 1; // FIXME
@@ -73,7 +73,7 @@ Stylesheet::Stylesheet(const String& filename) throw() {
 #endif
 }
 
-Stylesheet::Stylesheet(const Document& document) throw() {
+Stylesheet::Stylesheet(const Document& document) noexcept {
 #if defined(_COM_AZURE_DEV__BASE__XSLT_XMLSOFT_ORG)
   ::xmlSubstituteEntitiesDefault(1); // FIXME
   xmlLoadExtDtdDefaultValue = 1; // FIXME

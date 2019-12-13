@@ -95,7 +95,7 @@ private:
     
     /** Initializes the socket with the specified handle. */
     SocketImpl(
-      OperatingSystem::Handle handle, Domain domain, Kind kind) throw();
+      OperatingSystem::Handle handle, Domain domain, Kind kind) noexcept;
     
     /** Returns the protocol. */
     inline Domain getDomain() const throw() {
@@ -113,7 +113,7 @@ private:
     }
     
     /** Sets the local address. */
-    inline void setLocalAddress(const InetAddress& value) throw() {
+    inline void setLocalAddress(const InetAddress& value) noexcept {
       localAddress = value;
     }
     
@@ -123,7 +123,7 @@ private:
     }
     
     /** Sets the local port. */
-    inline void setLocalPort(unsigned short port) throw() {
+    inline void setLocalPort(unsigned short port) noexcept {
       localPort = port;
     }
     
@@ -133,7 +133,7 @@ private:
     }
     
     /** Sets the remote address. */
-    inline void setRemoteAddress(const InetAddress& value) throw() {
+    inline void setRemoteAddress(const InetAddress& value) noexcept {
       remoteAddress = value;
     }
     
@@ -143,7 +143,7 @@ private:
     }
     
     /** Sets the remote port. */
-    inline void setRemotePort(unsigned short port) throw() {
+    inline void setRemotePort(unsigned short port) noexcept {
       remotePort = port;
     }
     
@@ -194,25 +194,25 @@ public:
   /**
     Initializes an invalidated socket object (ie. unconnected and unbound).
   */
-  Socket() throw();
+  Socket() noexcept;
 
   /**
     Returns a reference to the socket.
   */
-  inline Reference<ReferenceCountedObject> getReference() throw() {
+  inline Reference<ReferenceCountedObject> getReference() noexcept {
     return socket;
   }
   
   /**
     Initialization of socket from other socket.
   */
-  inline Socket(const Socket& copy) throw() : socket(copy.socket) {
+  inline Socket(const Socket& copy) noexcept : socket(copy.socket) {
   }
 
   /**
     Assignment of socket to socket.
   */
-  inline Socket& operator=(const Socket& assign) throw()
+  inline Socket& operator=(const Socket& assign) noexcept
                                         {
     if (&assign != this) { // protect against self assignment
       socket = assign.socket;
@@ -271,7 +271,7 @@ public:
     function can be used after a succesful accept or connect to determine the
     locally assigned address and port if unspecified.
   */
-  void getName() throw();
+  void getName() noexcept;
 
   /**
     Returns the IP address to which the socket is connected.

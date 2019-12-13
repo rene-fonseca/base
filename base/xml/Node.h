@@ -72,14 +72,14 @@ public:
     void* context = nullptr;
   public:
     
-    inline ShadowDocument(void* _context) throw() : context(_context) {
+    inline ShadowDocument(void* _context) noexcept : context(_context) {
     }
     
-    inline ShadowDocument(const ShadowDocument& copy) throw()
+    inline ShadowDocument(const ShadowDocument& copy) noexcept
       : context(copy.context) {
     }
     
-    inline ShadowDocument& operator=(const ShadowDocument& assign) throw() {
+    inline ShadowDocument& operator=(const ShadowDocument& assign) noexcept {
       context = assign.context;
       return *this;
     }
@@ -95,14 +95,14 @@ public:
     void* context = nullptr;
   public:
     
-    inline ShadowElement(void* _context) throw() : context(_context) {
+    inline ShadowElement(void* _context) noexcept : context(_context) {
     }
     
-    inline ShadowElement(const ShadowElement& copy) throw()
+    inline ShadowElement(const ShadowElement& copy) noexcept
       : context(copy.context) {
     }
     
-    inline ShadowElement& operator=(const ShadowElement& assign) throw() {
+    inline ShadowElement& operator=(const ShadowElement& assign) noexcept {
       context = assign.context;
       return *this;
     }
@@ -122,13 +122,13 @@ protected:
   /**
     Initializes node.
   */
-  inline Node(void* _context) throw() : context(_context) {
+  inline Node(void* _context) noexcept : context(_context) {
   }
 
   /**
     Returns the context for modifying access.
   */
-  inline void* getContext() throw() {
+  inline void* getContext() noexcept {
     return context;
   }
   
@@ -143,19 +143,19 @@ public:
   /**
     Initializes XML node as invalid.
   */
-  inline Node() throw() {
+  inline Node() noexcept {
   }
   
   /**
     Initializes XML node from other XML node.
   */
-  inline Node(const Node& copy) throw() : context(copy.context) {
+  inline Node(const Node& copy) noexcept : context(copy.context) {
   }
   
   /**
     Assignment of node by node.
   */
-  inline Node& operator=(const Node& assign) throw() {
+  inline Node& operator=(const Node& assign) noexcept {
     if (&assign != this) {
       context = assign.context;
       readonly = assign.readonly;
@@ -226,7 +226,7 @@ public:
   /**
     Returns the Document object associated with this node.
   */
-  ShadowDocument getOwnerDocument() throw();
+  ShadowDocument getOwnerDocument() noexcept;
 
   /**
     The namespace prefix of this node, or an improper string if it is
@@ -347,7 +347,7 @@ public:
   /**
     Destroys the handle. The node is destroyed when detached.
   */
-  ~Node() throw();
+  ~Node() noexcept;
 };
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

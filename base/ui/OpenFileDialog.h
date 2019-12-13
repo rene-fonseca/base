@@ -55,7 +55,7 @@ public:
   /**
     Initializes the open file dialog window.
   */
-  OpenFileDialog() throw();
+  OpenFileDialog() noexcept;
 
   /**
     Returns the flags.
@@ -67,7 +67,7 @@ public:
   /**
     Sets the flags.
   */
-  inline void setFlags(unsigned int flags) throw() {
+  inline void setFlags(unsigned int flags) noexcept {
     this->flags = flags;
   }
   
@@ -81,7 +81,7 @@ public:
   /**
     Sets the title of the dialog window.
   */
-  inline void setTitle(const String& title) throw() {
+  inline void setTitle(const String& title) noexcept {
     this->title = title;
   }
 
@@ -95,7 +95,7 @@ public:
   /**
     Sets the current file name.
   */
-  inline void setFilename(const String& filename) throw() {
+  inline void setFilename(const String& filename) noexcept {
     this->filename = filename;
   }
   
@@ -116,7 +116,7 @@ public:
   /**
     Sets the initial folder.
   */
-  inline void setFolder(const String& folder) throw() {
+  inline void setFolder(const String& folder) noexcept {
     this->folder = folder;
   }
   
@@ -126,7 +126,7 @@ public:
     @param description The filter description.
     @param filter The filter.
   */
-  void setFilter(const String& description, const String& filter) throw();
+  void setFilter(const String& description, const String& filter) noexcept;
   
   /**
     Returns the filters.
@@ -138,7 +138,7 @@ public:
   /**
     Sets the filters.
   */
-  inline void setFilters(const Map<String, String>& filters) throw() {
+  inline void setFilters(const Map<String, String>& filters) noexcept {
     this->filters = filters;
   }
   
@@ -147,7 +147,7 @@ public:
   */
   bool execute() throw(UserInterfaceException);
 
-  ~OpenFileDialog() throw();
+  ~OpenFileDialog() noexcept;
 };
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

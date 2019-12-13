@@ -28,7 +28,7 @@ FileOutputStream::FileOutputStream(
 }
 
 FileOutputStream::FileOutputStream(
-  const FileOutputStream& copy) throw() : file(copy.file) {
+  const FileOutputStream& copy) noexcept : file(copy.file) {
 }
 
 bool FileOutputStream::open(
@@ -40,7 +40,7 @@ bool FileOutputStream::open(
   return true;
 }
 
-FileOutputStream& FileOutputStream::operator=(const FileOutputStream& assign) throw() {
+FileOutputStream& FileOutputStream::operator=(const FileOutputStream& assign) noexcept {
   file = assign.file;
   return *this;
 }

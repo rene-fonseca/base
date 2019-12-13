@@ -47,7 +47,7 @@ void forEach(COLLECTION collection, UNOPR function) {
   operation).
 */
 template<class COLLECTION, class UNOPR>
-inline void transform(COLLECTION& collection, UNOPR function) throw() {
+inline void transform(COLLECTION& collection, UNOPR function) noexcept {
   typename COLLECTION::Enumerator enu = collection.getEnumerator();
   while (enu.hasNext()) {
     typename COLLECTION::Enumerator::Pointer value = enu.next();

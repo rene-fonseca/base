@@ -32,12 +32,12 @@ using namespace com::azure::dev::base;
 MyLinkerModule::MyLinkerModule(
   const String& identity,
   const String& name,
-  const String& version) throw()
+  const String& version) noexcept
   : LinkerModule(identity, name, version) {
   fout << "Initializing MyLinkerModule..." << ENDL;
 }
 
-void MyLinkerModule::myFunction() throw() {
+void MyLinkerModule::myFunction() noexcept {
   for (unsigned int count = 0; count < 16; ++count) {
     fout << "Written by MyLinkerModule: " << count << ENDL;
     Thread::sleep(1);

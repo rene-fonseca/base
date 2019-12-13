@@ -75,7 +75,7 @@ unsigned int StringOutputStream::getGranularity() const noexcept
   return stream.getGranularity();
 }
 
-void StringOutputStream::setGranularity(unsigned int granularity) throw()
+void StringOutputStream::setGranularity(unsigned int granularity) noexcept
 {
   stream.setGranularity(granularity);
 }

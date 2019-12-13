@@ -36,20 +36,20 @@ template<>
 class Backend<WindowImpl> {
 public:
 
-  static inline void destroy(WindowImpl* windowImpl) throw() {
+  static inline void destroy(WindowImpl* windowImpl) noexcept {
     windowImpl->destroy();
   }
   
-  static inline void* getDisplay() throw() {
+  static inline void* getDisplay() noexcept {
     return WindowImpl::displayHandle;
   }
   
-  static inline bool loadModule(bool load) throw() {
+  static inline bool loadModule(bool load) noexcept {
     return WindowImpl::loadModule(load);
   }
 
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
-  static LRESULT CALLBACK messageHandler(HWND handle, UINT message, WPARAM wParam, LPARAM lParam) throw();
+  static LRESULT CALLBACK messageHandler(HWND handle, UINT message, WPARAM wParam, LPARAM lParam) noexcept;
 #endif // flavor
   
 };

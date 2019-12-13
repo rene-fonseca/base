@@ -31,7 +31,7 @@ class _COM_AZURE_DEV__BASE__API CharacterData : public Node {
   friend class Document;
 protected:
 
-  inline CharacterData(void* context) throw() : Node(context) {
+  inline CharacterData(void* context) noexcept : Node(context) {
   }
 public:
   

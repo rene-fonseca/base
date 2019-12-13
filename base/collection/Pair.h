@@ -181,7 +181,7 @@ public:
   /**
     Compares the specified pairs with each other.
   */
-  // friend int compare<>(const Pair& left, const Pair& right) throw();
+  // friend int compare<>(const Pair& left, const Pair& right) noexcept;
 };
 
 template<class FIRST, class SECOND>

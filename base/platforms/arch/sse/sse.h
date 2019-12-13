@@ -26,7 +26,7 @@ namespace base {
 
     namespace sse {
 
-      inline float invsqrtf(float value) throw() {
+      inline float invsqrtf(float value) noexcept {
         float result;
         asm (
           "rsqrtss %0,%0\n\t"
@@ -36,7 +36,7 @@ namespace base {
         return result;
       }
 
-      inline float sqrtf(float value) throw() {
+      inline float sqrtf(float value) noexcept {
         float result;
         asm (
           "sqrtss %0,%0\n\t"

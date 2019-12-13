@@ -77,7 +77,7 @@ public:
   /**
     Initialization of socket from other socket.
   */
-  inline StreamSocket(const StreamSocket& copy) throw() : Socket(copy) {
+  inline StreamSocket(const StreamSocket& copy) noexcept : Socket(copy) {
   }
 
   /**

@@ -41,7 +41,7 @@ public:
   /**
     Destroys the date skeleton.
   */
-  ~DateSkeleton() throw();
+  ~DateSkeleton() noexcept;
 };
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

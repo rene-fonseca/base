@@ -28,7 +28,7 @@ private:
 
   void* context = nullptr;
   
-  inline ShadowNode(void* _context) throw() : context(_context) {
+  inline ShadowNode(void* _context) noexcept : context(_context) {
   }
 public:
 };
@@ -50,21 +50,21 @@ private:
   /**
     Initializes the node map.
   */
-  inline NamedNodeMap(void* _context) throw() : context(_context) {
+  inline NamedNodeMap(void* _context) noexcept : context(_context) {
   }
 public:
   
   /**
     Initializes node map from node map.
   */
-  inline NamedNodeMap(const NamedNodeMap& copy) throw()
+  inline NamedNodeMap(const NamedNodeMap& copy) noexcept
     : context(copy.context) {
   }
   
   /**
     Assignment of node map by node map.
   */
-  inline NamedNodeMap& operator=(const NamedNodeMap& assign) throw() {
+  inline NamedNodeMap& operator=(const NamedNodeMap& assign) noexcept {
     context = assign.context;
     return *this;
   }
@@ -86,7 +86,7 @@ public:
   ShadowNode getItem(unsigned int index) throw(DOMException);
   
   ShadowNode getNamedItemNS(
-    const String& namespaceURI, const String& localName) throw();
+    const String& namespaceURI, const String& localName) noexcept;
   
   ShadowNode setNamedItemNS(ShadowNode node) throw(DOMException);
   

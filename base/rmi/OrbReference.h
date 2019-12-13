@@ -44,14 +44,14 @@ public:
   /**
     Initializes reference by reference.
   */
-  inline OrbReference(const OrbReference& copy) throw() : id(copy.id)
+  inline OrbReference(const OrbReference& copy) noexcept : id(copy.id)
   {
   }
 
   /**
     Assignment of reference be reference.
   */
-  inline OrbReference& operator=(const OrbReference& assign) throw()
+  inline OrbReference& operator=(const OrbReference& assign) noexcept
   {
     id = assign.id;
     return *this;
@@ -89,7 +89,7 @@ public:
   /**
     Returns the hash value of the specified object.
   */
-  inline unsigned long operator()(const OrbReference& value) throw()
+  inline unsigned long operator()(const OrbReference& value) noexcept
   {
     return 257 * value.getId() + (value.getId() >> 32); // TAG: need better hash function
   }

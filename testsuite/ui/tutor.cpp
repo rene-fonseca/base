@@ -10,7 +10,7 @@ public:
   TorusApplication(
     int numberOfArguments,
     const char* arguments[],
-    const char* environment[]) throw()
+    const char* environment[]) noexcept
     : Application("torus", numberOfArguments, arguments, environment) {
   }
   
@@ -64,10 +64,10 @@ public:
       mouseRightButtonPressed = false;
     }
 
-    ~MyOpenGLContext() throw() {
+    ~MyOpenGLContext() noexcept {
     }
 
-    void onDisplay() throw() {
+    void onDisplay() noexcept {
       openGL.glClearColor(0.0, 0.0, 0.0, 1.0);
       openGL.glClear(OpenGL::COLOR_BUFFER_BIT | OpenGL::DEPTH_BUFFER_BIT);
       
@@ -84,12 +84,12 @@ public:
       swap();
     }
 
-    void onResize(const Dimension& dimension) throw() {
+    void onResize(const Dimension& dimension) noexcept {
       openGL.glViewport(0, 0, dimension.getWidth(), dimension.getHeight());
       invalidate();
     }
     
-    void onMouseMove(const Position& position, unsigned int state) throw() {
+    void onMouseMove(const Position& position, unsigned int state) noexcept {
       const Position difference = position - mouseButtonPosition;
       setCursor(OpenGLContext::HAND);
       
@@ -127,7 +127,7 @@ public:
       const Position& position,
       Mouse::Button button,
       Mouse::Event event,
-      unsigned int state) throw() {
+      unsigned int state) noexcept {
       
       switch (button) {
       case Mouse::LEFT:

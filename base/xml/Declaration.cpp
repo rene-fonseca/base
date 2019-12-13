@@ -20,7 +20,7 @@
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
-DocumentType Declaration::getDocumentType() throw() {
+DocumentType Declaration::getDocumentType() noexcept {
 #if defined(_COM_AZURE_DEV__BASE__XML_XMLSOFT_ORG)
   xmlNode* decl = (xmlNode*)getContext();
   return decl->parent;

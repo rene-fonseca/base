@@ -38,19 +38,19 @@
 // duplicate separators are redundant: "//"
 
 // return true if the path is valid (syntax)
-bool FileSystem::isValid(const String& name) throw() {
+bool FileSystem::isValid(const String& name) noexcept {
   // level "." or ".." or ? separated with "/" or "\\"
 }
 
-String FileSystem::urlToPath(Url url) throw() {
+String FileSystem::urlToPath(Url url) noexcept {
 }
 
 // returns true if the path is a ...
-bool FileSystem::isForwardPath(const String& path) throw() {
+bool FileSystem::isForwardPath(const String& path) noexcept {
   return false;
 }
 
-bool FileSystem::optimizePath(const String& name) throw() {
+bool FileSystem::optimizePath(const String& name) noexcept {
   String result;
   String::ReadIterator i = path.getBeginReadIterator();
   String::ReadIterator end = path.getEndReadIterator();
@@ -80,7 +80,7 @@ bool FileSystem::optimizePath(const String& name) throw() {
   }
 }
 
-bool FileSystem::isName(const String& name) throw() {
+bool FileSystem::isName(const String& name) noexcept {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   return (name.indexOf(SEPARATOR) < 0) && (name.indexOf('\\') < 0); // TAG: "C:" drive path
 #else
@@ -89,7 +89,7 @@ bool FileSystem::isName(const String& name) throw() {
 }
 
 // returns true if the specified path is a subpath of the root path
-bool FileSystem::isSubPathOf(const String& root, const String& path) throw() {
+bool FileSystem::isSubPathOf(const String& root, const String& path) noexcept {
   if (isAbsolutePath(path)) {
     return path.startsWith(root);
   } else {
@@ -175,7 +175,7 @@ const unsigned int FileSystem::MAXIMUM_PATH_LENGTH = MAX_PATH;
 const unsigned int FileSystem::MAXIMUM_PATH_LENGTH = PATH_MAX;
 #endif // flavor
 
-String FileSystem::getPath(const String& base, const String& relative) throw() {
+String FileSystem::getPath(const String& base, const String& relative) noexcept {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   String result(base.getLength() + sizeof("\\") + relative.getLength());
   result.append(base).append("\\").append(relative);
@@ -227,7 +227,7 @@ String FileSystem::getComponent(const String& path, Component component) throw(F
   return String();
 }
 
-bool FileSystem::isAbsolutePath(const String& path) throw() {
+bool FileSystem::isAbsolutePath(const String& path) noexcept {
   String::ReadIterator i = path.getBeginReadIterator();
   String::ReadIterator end = path.getEndReadIterator();
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
@@ -237,7 +237,7 @@ bool FileSystem::isAbsolutePath(const String& path) throw() {
 #endif // flavor
 }
 
-bool FileSystem::isFolderPath(const String& path) throw() {
+bool FileSystem::isFolderPath(const String& path) noexcept {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   unsigned int length = path.getLength();
   if (length == 0) {
@@ -770,7 +770,7 @@ void FileSystem::makeFolder(const String& path) throw(FileSystemException)
 #endif // flavor
 }
 
-bool FileSystem::supportsLinks() throw() {
+bool FileSystem::supportsLinks() noexcept {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   if (cachedSupportsLinks == -1) {
     OSVERSIONINFO versionInfo;
@@ -785,9 +785,9 @@ bool FileSystem::supportsLinks() throw() {
 }
 
 // TAG: also for platform in general
-// String getFileSystem(const String& path) throw() {...}
+// String getFileSystem(const String& path) noexcept {...}
 // return infomation about the file system capabilities
-// unsigned int FileSystem::getCapabilities(const String& path) throw() {
+// unsigned int FileSystem::getCapabilities(const String& path) noexcept {
 // #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
 //   DWORD flags = 0;
 //   BOOL result = ::GetVolumeInformation("C:\\", // root directory
@@ -1046,7 +1046,7 @@ public:
     }
   }
   
-  static inline bool enablePrivileges() throw() {
+  static inline bool enablePrivileges() noexcept {
     HANDLE token;
     char buffer[sizeof(TOKEN_PRIVILEGES) + sizeof(LUID_AND_ATTRIBUTES)]; // make room for backup and restore privileges
     TOKEN_PRIVILEGES& privileges = *((TOKEN_PRIVILEGES*)buffer);
@@ -1078,7 +1078,7 @@ public:
     return true;
   }
   
-  static inline bool makeHardLink(const String& target, const String& path) throw()
+  static inline bool makeHardLink(const String& target, const String& path) noexcept
   {
     static bool elevatedPrivileges = false;
     if (!elevatedPrivileges) {
@@ -1613,7 +1613,7 @@ _COM_AZURE_DEV__BASE__PACKED__END
 #endif
 }
 
-String FileSystem::getTempFolder(TemporaryFolder folder) throw()
+String FileSystem::getTempFolder(TemporaryFolder folder) noexcept
 {
   // TAG: need to expand variables (win32) (e.g. set TMP=%HOME%\temp)
   switch (folder) {
@@ -1643,7 +1643,7 @@ String FileSystem::getTempFolder(TemporaryFolder folder) throw()
   }
 }
 
-String FileSystem::getTempFileName(unsigned int options) throw() {
+String FileSystem::getTempFileName(unsigned int options) noexcept {
   bool first = true;
   StringOutputStream stream;
   if (options & PREFIX) {
@@ -1788,7 +1788,7 @@ unsigned long FileSystem::getVariable(const String& path, Variable variable) thr
     "/dev/tty"
 */
 
-String FileSystem::getFolder(Folder folder) throw() {
+String FileSystem::getFolder(Folder folder) noexcept {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   switch (folder) {
   case FileSystem::ROOT:

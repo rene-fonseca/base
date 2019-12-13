@@ -51,7 +51,7 @@ protected:
   /**
     Internal constructor.
   */
-  inline Document(void* context) throw() : Node(context) {
+  inline Document(void* context) noexcept : Node(context) {
   }
 public:  
   
@@ -63,18 +63,18 @@ public:
   /**
     Initializes the document as invalid.
   */
-  inline Document(ShadowDocument document) throw() : Node(document.getNode()) {
+  inline Document(ShadowDocument document) noexcept : Node(document.getNode()) {
   }
   
   /**
     The Document Type Declaration associated with this document.
   */
-  DocumentType getDocumentType() throw();
+  DocumentType getDocumentType() noexcept;
   
   /**
     The DOMImplementation object that handles this document.
   */
-  DOMImplementation getImplementation() throw();
+  DOMImplementation getImplementation() noexcept;
 
   /**
     Creates and sets a document type object for this document.
@@ -88,7 +88,7 @@ public:
     This is a convenience attribute that allows direct access to the child node
     that is the root element of the document.
   */
-  Element getDocumentElement() throw();
+  Element getDocumentElement() noexcept;
   
   /**
     Creates an Attribute of the given name.
@@ -151,7 +151,7 @@ public:
   /**
     Returns the Element whose ID is given by elementId.
   */
-  Element getElementById(const String& elementId) throw();
+  Element getElementById(const String& elementId) noexcept;
   
   /**
     Creates a new attribute.

@@ -48,7 +48,7 @@ class _COM_AZURE_DEV__BASE__API EntityReference : public Node {
   friend class Document;
 protected:
   
-  inline EntityReference(void* context) throw() : Node(context) {
+  inline EntityReference(void* context) noexcept : Node(context) {
   }
 public:
   

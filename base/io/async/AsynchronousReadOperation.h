@@ -37,13 +37,13 @@ public:
   /**
     Initializes the handle as invalid.
   */
-  inline AsynchronousReadOperation() throw() {
+  inline AsynchronousReadOperation() noexcept {
   }
   
   /**
     Initializes the handle to the read operation.
   */
-  inline AsynchronousReadOperation(AsynchronousReadContext* _context) throw()
+  inline AsynchronousReadOperation(AsynchronousReadContext* _context) noexcept
     : context(_context) {
   }
   
@@ -51,7 +51,7 @@ public:
     Initialization of object from other object.
   */
   inline AsynchronousReadOperation(
-    const AsynchronousReadOperation& copy) throw() {
+    const AsynchronousReadOperation& copy) noexcept {
     context = copy.context;
   }
 
@@ -59,7 +59,7 @@ public:
     Assignment of object by object.
   */
   inline AsynchronousReadOperation& operator=(
-    const AsynchronousReadOperation& assign) throw() {
+    const AsynchronousReadOperation& assign) noexcept {
     context = assign.context;
     return *this;
   }
@@ -68,7 +68,7 @@ public:
     Explicit release of the handle to the asynchronous operation. This does not
     abort the asynchronous operation.
   */
-  inline void release() throw() {
+  inline void release() noexcept {
     context = nullptr;
   }
   

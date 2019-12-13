@@ -38,7 +38,7 @@ private:
     void* handle = nullptr;
   public:
 
-    inline Handle(void* _handle) throw() 
+    inline Handle(void* _handle) noexcept 
       : handle(_handle) {
     }
 
@@ -46,7 +46,7 @@ private:
       return handle;
     }
     
-    ~Handle() throw();
+    ~Handle() noexcept;
   };
 
   /** Handle to the bitmap. */
@@ -80,7 +80,7 @@ public:
   /**
     Initializes bitmap as invalid.
   */
-  inline Bitmap() throw() {
+  inline Bitmap() noexcept {
   }
 
   /**
@@ -100,14 +100,14 @@ public:
   /**
     Initializes bitmap from other bitmap.
   */
-  inline Bitmap(const Bitmap& copy) throw()
+  inline Bitmap(const Bitmap& copy) noexcept
     : handle(copy.handle) {
   }
 
   /**
     Assignment of bitmap by bitmap.
   */
-  inline Bitmap& operator=(const Bitmap& assign) throw() {
+  inline Bitmap& operator=(const Bitmap& assign) noexcept {
     handle = assign.handle;
     return *this;
   }

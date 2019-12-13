@@ -31,7 +31,7 @@ public:
 
     @return The previous element. Return 0 if no more elements.
   */
-  virtual Pointer previous() throw() = 0;
+  virtual Pointer previous() noexcept = 0;
 
   /**
     Skips a specified number of elements. Raises OutOfBounds if the end is

@@ -53,7 +53,7 @@ public:
   /**
     Initializes the IDL primitive type.
   */
-  IDLPrimitive(const Type& type) throw();
+  IDLPrimitive(const Type& type) noexcept;
   
   /**
     Returns the primitive type.
@@ -65,7 +65,7 @@ public:
   /**
     Destroys the IDL primitive type.
   */
-  ~IDLPrimitive() throw();
+  ~IDLPrimitive() noexcept;
 };
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

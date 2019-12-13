@@ -40,14 +40,14 @@ public:
   typedef typename SequenceIterator<TRAITS>::Reference Reference;
   typedef InterleavedIterator<TRAITS> ElementIterator;
 
-  inline MatrixColumnIterator(Pointer value, const Dimension& _dimension) throw()
+  inline MatrixColumnIterator(Pointer value, const Dimension& _dimension) noexcept
     : SequenceIterator<TRAITS>(value), dimension(_dimension) {
   }
 
   /**
     Prefix increment.
   */
-  inline MatrixColumnIterator& operator++() throw() {
+  inline MatrixColumnIterator& operator++() noexcept {
     ++this->element;
     return *this;
   }
@@ -55,7 +55,7 @@ public:
   /**
     Postfix decrement.
   */
-  inline MatrixColumnIterator operator++(int) throw() {
+  inline MatrixColumnIterator operator++(int) noexcept {
     MatrixColumnIterator result(*this);
     ++this->element;
     return result;
@@ -64,7 +64,7 @@ public:
   /**
     Prefix decrement.
   */
-  inline MatrixColumnIterator& operator--() throw() {
+  inline MatrixColumnIterator& operator--() noexcept {
     --this->element;
     return *this;
   }
@@ -72,7 +72,7 @@ public:
   /**
     Postfix decrement.
   */
-  inline MatrixColumnIterator operator--(int) throw() {
+  inline MatrixColumnIterator operator--(int) noexcept {
     MatrixColumnIterator result(*this);
     --this->element;
     return result;
@@ -81,7 +81,7 @@ public:
   /**
     Move the specified distance forward.
   */
-  inline MatrixColumnIterator& operator+=(Distance distance) throw() {
+  inline MatrixColumnIterator& operator+=(Distance distance) noexcept {
     this->element += distance;
     return *this;
   }
@@ -89,7 +89,7 @@ public:
   /**
     Move the specified distance backwards.
   */
-  inline MatrixColumnIterator& operator-=(Distance distance) throw() {
+  inline MatrixColumnIterator& operator-=(Distance distance) noexcept {
     this->element -= distance;
     return *this;
   }
@@ -108,13 +108,13 @@ public:
 };
 
 template<class TRAITS>
-inline MatrixColumnIterator<TRAITS> operator+(const MatrixColumnIterator<TRAITS>& left, int right) throw() {
+inline MatrixColumnIterator<TRAITS> operator+(const MatrixColumnIterator<TRAITS>& left, int right) noexcept {
   MatrixColumnIterator<TRAITS> result(left);
   return result += right;
 }
 
 template<class TRAITS>
-inline MatrixColumnIterator<TRAITS> operator-(const MatrixColumnIterator<TRAITS>& left, int right) throw() {
+inline MatrixColumnIterator<TRAITS> operator-(const MatrixColumnIterator<TRAITS>& left, int right) noexcept {
   MatrixColumnIterator<TRAITS> result(left);
   return result -= right;
 }

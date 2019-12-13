@@ -226,7 +226,7 @@ void SharedMemory::SharedMemoryImpl::synchronize(
 #endif // flavor
 }
 
-SharedMemory::SharedMemoryImpl::~SharedMemoryImpl() throw()
+SharedMemory::SharedMemoryImpl::~SharedMemoryImpl() noexcept
 {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   BOOL status = ::UnmapViewOfFile(address);
@@ -240,7 +240,7 @@ SharedMemory::SharedMemoryImpl::~SharedMemoryImpl() throw()
 
 // see http://www.engelschall.com/sw/mm
 
-MemorySize SharedMemory::getGranularity() throw()
+MemorySize SharedMemory::getGranularity() noexcept
 {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   SYSTEM_INFO info;
@@ -291,12 +291,12 @@ SharedMemory::SharedMemory(
   }
 }
 
-SharedMemory::SharedMemory(const SharedMemory& copy) throw()
+SharedMemory::SharedMemory(const SharedMemory& copy) noexcept
   : sharedMemory(copy.sharedMemory)
 {
 }
 
-SharedMemory& SharedMemory::operator=(const SharedMemory& assign) throw()
+SharedMemory& SharedMemory::operator=(const SharedMemory& assign) noexcept
 {
   sharedMemory = assign.sharedMemory;
   return *this;
@@ -322,7 +322,7 @@ void SharedMemory::synchronize(bool asynchronous) throw(MemoryException)
   sharedMemory->synchronize(asynchronous);
 }
 
-void SharedMemory::clear() throw()
+void SharedMemory::clear() noexcept
 {
   fill<uint8>(sharedMemory->getBytes(), sharedMemory->getSize(), 0);
 }

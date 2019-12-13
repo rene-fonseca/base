@@ -38,12 +38,12 @@ private:
     Initializes the process. The process will be terminated immediately if
     initialization fails.
   */
-  ProcessPreinitialization() throw();
+  ProcessPreinitialization() noexcept;
 
   /**
     Releases the fundamental process resources.
   */
-  ~ProcessPreinitialization() throw();
+  ~ProcessPreinitialization() noexcept;
 };
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

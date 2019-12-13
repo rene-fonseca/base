@@ -32,7 +32,7 @@ protected:
   /**
     Initializes declaration node.
   */
-  inline Declaration(void* context) throw() : Node(context) {
+  inline Declaration(void* context) noexcept : Node(context) {
   }
 public:
   
@@ -51,7 +51,7 @@ public:
     Returns the document type node of this declaration.
     TAG: need Declaration node for all declarations
   */
-  DocumentType getDocumentType() throw();
+  DocumentType getDocumentType() noexcept;
 };
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

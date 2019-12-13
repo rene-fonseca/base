@@ -28,22 +28,22 @@ class _COM_AZURE_DEV__BASE__API Interface {
 private:
 
   /* Disable the default copy constructor. */
-  Interface(const Interface& copy) throw();
+  Interface(const Interface& copy) noexcept;
   /* Disable the default assignment operator. */
-  Interface& operator=(const Interface& assign) throw();
+  Interface& operator=(const Interface& assign) noexcept;
 public:
 
   /**
     Initializes the interface.
   */
-  inline Interface() throw()
+  inline Interface() noexcept
   {
   }
   
   /**
     Destroys the interface.
   */
-  virtual ~Interface() throw();
+  virtual ~Interface() noexcept;
 };
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

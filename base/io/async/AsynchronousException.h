@@ -31,21 +31,21 @@ public:
   /**
     Initializes the exception object with no message.
   */
-  AsynchronousException() throw();
+  AsynchronousException() noexcept;
 
   /**
     Initializes exception object as unspecified.
 
     @param message The message.
   */
-  AsynchronousException(const char* message) throw();
+  AsynchronousException(const char* message) noexcept;
 
   /**
     Initializes the exception object without an associated message.
     
     @param type The identity of the type.
   */
-  inline AsynchronousException(const Type& type) throw() : IOException(type) {
+  inline AsynchronousException(const Type& type) noexcept : IOException(type) {
   }
 
   /**
@@ -54,7 +54,7 @@ public:
     @param message An NULL-terminated string (ASCII).
     @param type The identity of the type.
   */  
-  inline AsynchronousException(const char* message, const Type& type) throw()
+  inline AsynchronousException(const char* message, const Type& type) noexcept
     : IOException(message, type) {
   }
   

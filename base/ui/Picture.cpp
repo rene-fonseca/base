@@ -24,7 +24,7 @@ void Picture::setBitmap(const Bitmap& bitmap) throw(UserInterfaceException) {
   invalidate();
 }
 
-void Picture::onDisplay() throw() {
+void Picture::onDisplay() noexcept {
   // TAG: handle dimension != picture dimension
   // TAG: binding point?
   

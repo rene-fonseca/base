@@ -41,17 +41,17 @@ private:
   Node current;
 public:
   
-  SAXBuilder() throw() {
+  SAXBuilder() noexcept {
   }
 
-  Document getDocument() throw() {
+  Document getDocument() noexcept {
     return document;
   }
   
   void startDTD(
     const String& name,
     const String& publicId,
-    const String& systemId) throw() {
+    const String& systemId) noexcept {
     DocumentType documentType = document.createAndSetDocumentType(
       name,
       publicId,
@@ -61,13 +61,13 @@ public:
     // current = documentType;
   }
 
-  void endDTD() throw() {
+  void endDTD() noexcept {
   }
 
-  void startEntity(const String& name) throw() {
+  void startEntity(const String& name) noexcept {
   }
 
-  void endEntity(const String& name) throw() {
+  void endEntity(const String& name) noexcept {
   }
   
   void attributeDecl(
@@ -76,29 +76,29 @@ public:
     AttributeDecl::ValueType type,
     AttributeDecl::DefaultType defaultType,
     const String& defaultValue,
-    const Array<String>& enumeration) throw() {
+    const Array<String>& enumeration) noexcept {
     fout << "attributeDecl: " << name << ' ' << type << ENDL;
   }
   
   void elementDecl(
     const String& name,
-    ElementDecl::ValueType type) throw() {
+    ElementDecl::ValueType type) noexcept {
     fout << "elementDecl: " << name << ' ' << type << ENDL;
   }
   
   void entityDecl(
     const String& element,
-    const String& name) throw() {
+    const String& name) noexcept {
     fout << "entityDecl: " << element << ' ' << name << ENDL;
   }
   
-  void startDocument() throw() {
+  void startDocument() noexcept {
     // version, encoding, and standalone
     document = dom.createDocument(MESSAGE("1.0"));
     current = document;
   }
   
-  void endDocument() throw() {
+  void endDocument() noexcept {
     // TAG: set: version, encoding, and standalone
   }
   
@@ -106,7 +106,7 @@ public:
     const String& namespaceURI,
     const String& localName,
     const String& qName,
-    const Attributes& attributes) throw() {
+    const Attributes& attributes) noexcept {
     Element element =
       namespaceURI.isProper() ? document.createElement(localName) :
       document.createElementNS(namespaceURI, qName);
@@ -122,48 +122,48 @@ public:
   void endElement(
     const String& namespaceURI,
     const String& localName,
-    const String& qName) throw() {
+    const String& qName) noexcept {
     current = current.getParent();
   }
   
-  void characters(const String& value) throw() {
+  void characters(const String& value) noexcept {
     //current.appendChild(document.createTextNode(value));
   }
   
-  void comment(const String& value) throw() {
+  void comment(const String& value) noexcept {
     current.appendChild(document.createComment(value));
   }
   
-  void cdataBlock(const String& value) throw() {
+  void cdataBlock(const String& value) noexcept {
     current.appendChild(document.createCDATASection(value));
   }
   
   void processingInstruction(
-    const String& target, const String& data) throw() {
+    const String& target, const String& data) noexcept {
     current.appendChild(
       document.createProcessingInstruction(target, data)
     );
   }
   
-  void ignorableWhitespace(const String& value) throw() {
+  void ignorableWhitespace(const String& value) noexcept {
     // TAG: need preserve flag?
     // TAG: need IgnorableWhitespace node?
   }
   
-  void skippedEntity(const String& name) throw() {
+  void skippedEntity(const String& name) noexcept {
   }
   
   void startPrefixMapping(
-    const String& prefix, const String& uri) throw() {
+    const String& prefix, const String& uri) noexcept {
   }
   
-  void endPrefixMapping(const String& prefix) throw() {
+  void endPrefixMapping(const String& prefix) noexcept {
   }
   
-  void setDocumentLocator(XMLReader::Locator* locator) throw() {
+  void setDocumentLocator(XMLReader::Locator* locator) noexcept {
   }
 
-  virtual ~SAXBuilder() throw() {
+  virtual ~SAXBuilder() noexcept {
   }
 };
 
@@ -178,7 +178,7 @@ private:
   MemorySize numberOfProcessingInstructions;
 public:
   
-  SAXCounter() throw() {
+  SAXCounter() noexcept {
     numberOfElements = 0;
     numberOfAttributes = 0;
     numberOfCharacters = 0;
@@ -209,14 +209,14 @@ public:
   void notationDecl(
     const String& name,
     const String& publicId,
-    const String& systemId) throw() {
+    const String& systemId) noexcept {
   }
 
   void unparsedEntityDecl(
     const String& name,
     const String& publicId,
     const String& systemId,
-    const String& notationName) throw() {
+    const String& notationName) noexcept {
   }
   
   void attributeDecl(
@@ -225,7 +225,7 @@ public:
     AttributeDecl::ValueType type,
     AttributeDecl::DefaultType defaultType,
     const String& defaultValue,
-    const Array<String>& enumeration) throw() {
+    const Array<String>& enumeration) noexcept {
 //     fout << indent(i)
 //          << "attributeDecl("
 //          << "name=" << quote(name) << ", "
@@ -245,7 +245,7 @@ public:
   
   void elementDecl(
     const String& name,
-    ElementDecl::ValueType type) throw() {
+    ElementDecl::ValueType type) noexcept {
 //     fout << indent(i)
 //          << "elementDecl("
 //          << "name=" << quote(name) << ", "
@@ -254,7 +254,7 @@ public:
   
   void internalEntityDecl(
     const String& name,
-    const String& text) throw() {
+    const String& text) noexcept {
 //     fout << indent(i)
 //          << "internalEntityDecl("
 //          << "name=" << quote(name) << ", "
@@ -264,7 +264,7 @@ public:
   void externalEntityDecl(
     const String& name,
     const String& publicId,
-    const String& systemId) throw() {
+    const String& systemId) noexcept {
 //     fout << indent(i)
 //          << "externalEntityDecl("
 //          << "name=" << quote(name) << ", "
@@ -272,7 +272,7 @@ public:
 //          << "systemId=" << quote(systemId) << ')' << EOL;
   }
   
-  void startDocument() throw() {
+  void startDocument() noexcept {
     numberOfElements = 0;
     numberOfAttributes = 0;
     numberOfCharacters = 0;
@@ -280,14 +280,14 @@ public:
     numberOfProcessingInstructions = 0;
   }
   
-  void endDocument() throw() {
+  void endDocument() noexcept {
   }
   
   void startElement(
     const String& namespaceURI,
     const String& localName,
     const String& qName,
-    const Attributes& attributes) throw() {
+    const Attributes& attributes) noexcept {
     numberOfElements++;
     numberOfAttributes += attributes.getSize();
   }
@@ -295,43 +295,43 @@ public:
   void endElement(
     const String& namespaceURI,
     const String& localName,
-    const String& qName) throw() {
+    const String& qName) noexcept {
   }
   
-  void characters(const String& value) throw() {
+  void characters(const String& value) noexcept {
     numberOfCharacters += value.getLength();
   }
   
-  void comment(const String& value) throw() {
+  void comment(const String& value) noexcept {
   }
   
-  void cdataBlock(const String& value) throw() {
+  void cdataBlock(const String& value) noexcept {
     numberOfCharacters += value.getLength();
   }
   
   void processingInstruction(
-    const String& target, const String& data) throw() {
+    const String& target, const String& data) noexcept {
     numberOfProcessingInstructions++;
   }
   
-  void ignorableWhitespace(const String& value) throw() {
+  void ignorableWhitespace(const String& value) noexcept {
     numberOfIgnorableWhitespaces += value.getLength();
   }
   
-  void skippedEntity(const String& name) throw() {
+  void skippedEntity(const String& name) noexcept {
   }
   
   void startPrefixMapping(
-    const String& prefix, const String& uri) throw() {
+    const String& prefix, const String& uri) noexcept {
   }
   
-  void endPrefixMapping(const String& prefix) throw() {
+  void endPrefixMapping(const String& prefix) noexcept {
   }
   
-  void setDocumentLocator(XMLReader::Locator* locator) throw() {
+  void setDocumentLocator(XMLReader::Locator* locator) noexcept {
   }
 
-  virtual ~SAXCounter() throw() {
+  virtual ~SAXCounter() noexcept {
   }
 };
 
@@ -346,7 +346,7 @@ public:
   {
   }
 
-  static String quote(const String& value) throw() {
+  static String quote(const String& value) noexcept {
     WideString wide(value);
     
     StringOutputStream stream;
@@ -390,7 +390,7 @@ public:
     return stream.getString();
   }
 
-  void comment(const String& data) throw() {
+  void comment(const String& data) noexcept {
     fout << indent(i)
          << "comment(" << "data=" << quote(data) << ")" << EOL;
   }
@@ -398,7 +398,7 @@ public:
   void startDTD(
     const String& name,
     const String& publicId,
-    const String& systemId) throw() {
+    const String& systemId) noexcept {
     fout << indent(i)
          << "startDTD("
          << "name=" << quote(name) << ", "
@@ -407,33 +407,33 @@ public:
     i++;
   }
 
-  void endDTD() throw() {
+  void endDTD() noexcept {
     i--;
     fout << indent(i)
          << "endDTD()" << EOL;
   }
 
-  void startEntity(const String& name) throw() {
+  void startEntity(const String& name) noexcept {
     fout << indent(i)
          << "startEntity("
          << "name=" << quote(name) << ')' << EOL;
     i++;
   }
 
-  void endEntity(const String& name) throw() {
+  void endEntity(const String& name) noexcept {
     i--;
     fout << indent(i)
          << "endEntity("
          << "name=" << quote(name) << ')' << EOL;
   }
 
-  void startCDATA() throw() {
+  void startCDATA() noexcept {
     fout << indent(i)
          << "startCDATA()" << EOL;
     i++;
   }
   
-  void endCDATA() throw() {
+  void endCDATA() noexcept {
     i--;
     fout << indent(i)
          << "endCDATA()" << EOL;
@@ -442,7 +442,7 @@ public:
   void notationDecl(
     const String& name,
     const String& publicId,
-    const String& systemId) throw() {
+    const String& systemId) noexcept {
     fout << indent(i)
          << "notationDecl("
          << "name=" << quote(name) << ", "
@@ -454,7 +454,7 @@ public:
     const String& name,
     const String& publicId,
     const String& systemId,
-    const String& notationName) throw() {
+    const String& notationName) noexcept {
     fout << indent(i)
          << "unparsedEntityDecl("
          << "name=" << quote(name) << ", "
@@ -469,7 +469,7 @@ public:
     AttributeDecl::ValueType type,
     AttributeDecl::DefaultType defaultType,
     const String& defaultValue,
-    const Array<String>& enumeration) throw() {
+    const Array<String>& enumeration) noexcept {
     fout << indent(i)
          << "attributeDecl("
          << "name=" << quote(name) << ", "
@@ -489,7 +489,7 @@ public:
   
   void elementDecl(
     const String& name,
-    ElementDecl::ValueType type) throw() {
+    ElementDecl::ValueType type) noexcept {
     fout << indent(i)
          << "elementDecl("
          << "name=" << quote(name) << ", "
@@ -498,7 +498,7 @@ public:
   
   void internalEntityDecl(
     const String& name,
-    const String& text) throw() {
+    const String& text) noexcept {
     fout << indent(i)
          << "internalEntityDecl("
          << "name=" << quote(name) << ", "
@@ -508,7 +508,7 @@ public:
   void externalEntityDecl(
     const String& name,
     const String& publicId,
-    const String& systemId) throw() {
+    const String& systemId) noexcept {
     fout << indent(i)
          << "externalEntityDecl("
          << "name=" << quote(name) << ", "
@@ -516,14 +516,14 @@ public:
          << "systemId=" << quote(systemId) << ')' << EOL;
   }
   
-  void startDocument() throw() {
+  void startDocument() noexcept {
     i = 0;
     fout << indent(i)
          << "startDocument()" << EOL;
     i++;
   }
   
-  void endDocument() throw() {
+  void endDocument() noexcept {
     i--;
     fout << indent(i)
          << "endDocument()" << EOL;
@@ -533,7 +533,7 @@ public:
     const String& namespaceURI,
     const String& localName,
     const String& qName,
-    const Attributes& attributes) throw() {
+    const Attributes& attributes) noexcept {
     fout << indent(i)
          << "startElement("
          << "namespaceURI=" << namespaceURI << ',' << SP
@@ -555,7 +555,7 @@ public:
   void endElement(
     const String& namespaceURI,
     const String& localName,
-    const String& qName) throw() {
+    const String& qName) noexcept {
     i--;
     fout << indent(i)
          << "endElement("
@@ -564,36 +564,36 @@ public:
          << "qName=" << qName << ")" << EOL;
   }
   
-  void characters(const String& value) throw() {
+  void characters(const String& value) noexcept {
     fout << indent(i)
          << "characters(" << "value=" << quote(value) << ")" << EOL;
   }  
   
-  void cdataBlock(const String& value) throw() {
+  void cdataBlock(const String& value) noexcept {
     fout << indent(i)
          << "cdataBlock(" << "value=" << quote(value) << ")" << EOL;
   }
   
   void processingInstruction(
-    const String& target, const String& data) throw() {
+    const String& target, const String& data) noexcept {
     fout << indent(i)
          << "processingInstruction("
          << "target=" << quote(target) << ", "
          << "data=" << quote(data) << ")" << EOL;
   }
   
-  void ignorableWhitespace(const String& value) throw() {
+  void ignorableWhitespace(const String& value) noexcept {
     fout << indent(i)
          << "ignorableWhitespace(" << "value=" << quote(value) << ")" << EOL;
   }
   
-  void skippedEntity(const String& name) throw() {
+  void skippedEntity(const String& name) noexcept {
     fout << indent(i)
          << "skippedEntity(" << "name=" << quote(name) << ")" << EOL;
   }
   
   void startPrefixMapping(
-    const String& prefix, const String& uri) throw() {
+    const String& prefix, const String& uri) noexcept {
     fout << indent(i)
          << "startPrefixMapping("
          << "prefix=" << quote(prefix) << ", "
@@ -601,18 +601,18 @@ public:
     i++;
   }
   
-  void endPrefixMapping(const String& prefix) throw() {
+  void endPrefixMapping(const String& prefix) noexcept {
     i--;
     fout << indent(i)
          << "endPrefixMapping(" << quote(prefix) << ")" << EOL;
   }
   
-  void setDocumentLocator(XMLReader::Locator* locator) throw() {
+  void setDocumentLocator(XMLReader::Locator* locator) noexcept {
     fout << indent(i)
          << "setDocumentLocator(" << locator << ")" << EOL;
   }
 
-  virtual ~SAXTracer() throw() {
+  virtual ~SAXTracer() noexcept {
   }
 };
 
@@ -623,14 +623,14 @@ private:
   XMLReader* reader = nullptr;
 public:
   
-  SAXDumper(XMLReader* _reader) throw()
+  SAXDumper(XMLReader* _reader) noexcept
     : reader(_reader) {
   }
   
   void startDTD(
     const String& name,
     const String& publicId,
-    const String& systemId) throw() {
+    const String& systemId) noexcept {
     fout << "<!DOCTYPE" << SP << name;
     if (publicId.isProper() && systemId.isProper()) {
       fout << SP << "PUBLIC" << SP << "\"" << publicId << "\"" << SP
@@ -643,22 +643,22 @@ public:
     fout << SP << "[" << EOL;
   }
   
-  void endDTD() throw() {
+  void endDTD() noexcept {
     fout << "]>" << EOL;
   }
 
-  void startEntity(const String& name) throw() {
+  void startEntity(const String& name) noexcept {
     // TAG: may be other format?
     fout << "&" << name << ";" << ENDL;
   }
 
-  void endEntity(const String& name) throw() {
+  void endEntity(const String& name) noexcept {
   }
   
   void notationDecl(
     const String& name,
     const String& publicId,
-    const String& systemId) throw() {
+    const String& systemId) noexcept {
     fout << "notationDecl("
          << "name=" << name << ", "
          << "publicId=" << publicId << ", "
@@ -669,7 +669,7 @@ public:
     const String& name,
     const String& publicId,
     const String& systemId,
-    const String& notationName) throw() {
+    const String& notationName) noexcept {
     fout << "unparsedEntityDecl("
          << "name=" << name << ", "
          << "publicId=" << publicId << ", "
@@ -683,7 +683,7 @@ public:
     AttributeDecl::ValueType type,
     AttributeDecl::DefaultType defaultType,
     const String& defaultValue,
-    const Array<String>& enumeration) throw() {
+    const Array<String>& enumeration) noexcept {
     fout << "attributeDecl("
          << "name=" << name << ", "
          << "element=" << element << ", "
@@ -702,7 +702,7 @@ public:
   
   void elementDecl(
     const String& name,
-    ElementDecl::ValueType type) throw() {
+    ElementDecl::ValueType type) noexcept {
     fout << "elementDecl("
          << "name=" << name << ", "
          << "type=" << type << ')' << EOL;
@@ -710,14 +710,14 @@ public:
   
   void internalEntityDecl(
     const String& name,
-    const String& text) throw() {
+    const String& text) noexcept {
     fout << "<!ENTITY " << name << ' ' << '"' << text << '"' << '>' << EOL;
   }
   
   void externalEntityDecl(
     const String& name,
     const String& publicId,
-    const String& systemId) throw() {
+    const String& systemId) noexcept {
     fout << "<!ENTITY " << name << ' ';
     if (publicId.isProper() && systemId.isProper()) {
       fout << "PUBLIC"
@@ -733,7 +733,7 @@ public:
     fout << '>' << EOL;
   }
   
-  void startDocument() throw() {
+  void startDocument() noexcept {
     fout << "<?xml"
          << ' ' << "version" << '=' << "\"" << "1.0" << "\""
          << ' ' << "encoding" << '=' << "\"" << "UTF-8" << "\"";
@@ -743,14 +743,14 @@ public:
     fout << "?>" << EOL;
   }
   
-  void endDocument() throw() {
+  void endDocument() noexcept {
   }
   
   void startElement(
     const String& namespaceURI,
     const String& localName,
     const String& qName,
-    const Attributes& attributes) throw() {
+    const Attributes& attributes) noexcept {
     fout << "<" << qName;
     unsigned int size = attributes.getSize();
     for (unsigned int index = 0; index < size; index++) {
@@ -764,51 +764,51 @@ public:
   void endElement(
     const String& namespaceURI,
     const String& localName,
-    const String& qName) throw() {
+    const String& qName) noexcept {
     fout << "</" << qName << ">";
   }
   
-  void characters(const String& value) throw() {
+  void characters(const String& value) noexcept {
     fout << value;
   }
   
-  void comment(const String& value) throw() {
+  void comment(const String& value) noexcept {
     fout << "<!--" << value << "-->";
   }
   
-  void cdataBlock(const String& value) throw() {
+  void cdataBlock(const String& value) noexcept {
     fout << "<![CDATA[" << value << "]]>";
   }
   
   void processingInstruction(
-    const String& target, const String& data) throw() {
+    const String& target, const String& data) noexcept {
     fout << "<?" << target << SP << data << "?>" << EOL;
   }
   
-  void ignorableWhitespace(const String& value) throw() {
+  void ignorableWhitespace(const String& value) noexcept {
     fout << value;
   }
   
-  void skippedEntity(const String& name) throw() {
+  void skippedEntity(const String& name) noexcept {
     fout << "skippedEntity(" << "name=" << name << ")" << EOL;
   }
   
   void startPrefixMapping(
-    const String& prefix, const String& uri) throw() {
+    const String& prefix, const String& uri) noexcept {
     fout << "startPrefixMapping("
          << "prefix=" << prefix << ", "
          << "uri=" << uri << ")" << EOL;
   }
   
-  void endPrefixMapping(const String& prefix) throw() {
+  void endPrefixMapping(const String& prefix) noexcept {
     fout << "endPrefixMapping(" << prefix << ")" << EOL;
   }
   
-  void setDocumentLocator(XMLReader::Locator* locator) throw() {
+  void setDocumentLocator(XMLReader::Locator* locator) noexcept {
     fout << "setDocumentLocator(" << locator << ")" << EOL;
   }
 
-  virtual ~SAXDumper() throw() {
+  virtual ~SAXDumper() noexcept {
   }
 };
 
@@ -973,7 +973,7 @@ public:
   /**
     Initializes the XML reader.
   */
-  DOMToSAX() throw()
+  DOMToSAX() noexcept
     : contentHandler(0),
       dtdHandler(0),
       entityResolver(0),
@@ -1031,28 +1031,28 @@ public:
   /**
     Registers a content event handler.
   */
-  inline void setContentHandler(ContentHandler* handler) throw() {
+  inline void setContentHandler(ContentHandler* handler) noexcept {
     contentHandler = handler;
   }
   
   /**
     Registers a DTD event handler.
   */
-  inline void setDTDHandler(DTDHandler* handler) throw() {
+  inline void setDTDHandler(DTDHandler* handler) noexcept {
     dtdHandler = handler;
   }
   
   /**
     Registers an entity resolver.
   */
-  inline void setEntityResolver(EntityResolver* _entityResolver) throw() {
+  inline void setEntityResolver(EntityResolver* _entityResolver) noexcept {
     entityResolver = _entityResolver;
   }
   
   /**
     Registers an error event handler.
   */
-  inline void setErrorHandler(ErrorHandler* handler) throw() {
+  inline void setErrorHandler(ErrorHandler* handler) noexcept {
     errorHandler = handler;
   }
 
@@ -1066,7 +1066,7 @@ public:
   /**
     Sets the validation flag.
   */
-  inline void setVatidation(bool validate) throw() {
+  inline void setVatidation(bool validate) noexcept {
     this->validate = validate;
   }
 
@@ -1080,7 +1080,7 @@ public:
   /**
     Terminates the parsing.
   */
-  void terminate() throw() {
+  void terminate() noexcept {
   }
   
   /**
@@ -1105,7 +1105,7 @@ public:
   /**
     Destroys the XML reader.
   */
-  ~DOMToSAX() throw() {
+  ~DOMToSAX() noexcept {
   }
 };
 
@@ -1132,12 +1132,12 @@ public:
   SAXApplication(
     int numberOfArguments,
     const char* arguments[],
-    const char* environment[]) throw()
+    const char* environment[]) noexcept
     : Application("sax", numberOfArguments, arguments, environment)
   {
   }
 
-  static String getLocationString(const SAXParseException& exception) throw() {
+  static String getLocationString(const SAXParseException& exception) noexcept {
     StringOutputStream stream;
     String systemId = exception.getSystemId();
     if (systemId.isProper()) {
@@ -1217,7 +1217,7 @@ public:
     return document;
   }
   
-  void dumpDocument(Document document) throw()
+  void dumpDocument(Document document) noexcept
   {
     document.save("sax.SAXBuilder.xml");
   }

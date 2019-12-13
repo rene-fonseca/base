@@ -44,43 +44,43 @@ public:
   /**
     Initializes the internal state of the generator from the current time.
   */
-  MarsagliaRandomNumberGenerator() throw();
+  MarsagliaRandomNumberGenerator() noexcept;
 
   /**
     Initializes the internal state of the generator.
 
     @param seed The desired seed.
   */
-  MarsagliaRandomNumberGenerator(uint32 seed) throw();
+  MarsagliaRandomNumberGenerator(uint32 seed) noexcept;
   
   /**
     Initializes the internal state of the generator from the current time.
   */
-  void randomize() throw();
+  void randomize() noexcept;
 
   /**
     Initializes the internal state of the generator.
 
     @param seed The desired seed.
   */
-  void randomize(uint32 seed) throw();
+  void randomize(uint32 seed) noexcept;
 
   /**
     Returns a random integer (unsigned) utilizing the full range of the type.
   */
-  uint32 getInteger() throw();
+  uint32 getInteger() noexcept;
 
   /**
     Returns a random real number in the range [0;1].
   */
-  inline double getDouble() throw() {
+  inline double getDouble() noexcept {
     return (1.0/0xffffffff) * getInteger();
   }
   
   /**
     Returns a random real number in the range [0;1].
   */
-  inline long double getLongDouble() throw() {
+  inline long double getLongDouble() noexcept {
     return (1.0L/0xffffffff) * getInteger();
   }
 };

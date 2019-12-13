@@ -32,12 +32,12 @@ public:
   /**
     Initializes the IDL object.
   */
-  IDLObject() throw();
+  IDLObject() noexcept;
   
   /**
     Destroys the IDL object.
   */
-  ~IDLObject() throw();
+  ~IDLObject() noexcept;
 };
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

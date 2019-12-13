@@ -43,7 +43,7 @@ protected:
   /**
     Initializes the document type node.
   */
-  inline DocumentType(void* context) throw() : Node(context) {
+  inline DocumentType(void* context) noexcept : Node(context) {
   }
 public:
 

@@ -108,7 +108,7 @@ namespace base {
       };
       
 #define _COM_AZURE_DEV__BASE__BUILTIN_ATANL builtin::atanl
-      inline long double atanl(long double value) throw() {
+      inline long double atanl(long double value) noexcept {
         long double result;
         asm (
           "fld1\n\t" // load 1
@@ -120,7 +120,7 @@ namespace base {
       }
 
 #define _COM_AZURE_DEV__BASE__BUILTIN_ATAN2L builtin::atan2l
-      inline long double atan2l(long double y, long double x) throw() {
+      inline long double atan2l(long double y, long double x) noexcept {
         long double result;
         asm (
           "fpatan\n\t" // replaces st(1) with atan(st(1)/st(0)) and pops the stack (sign is ok)
@@ -132,7 +132,7 @@ namespace base {
       }
 
 #define _COM_AZURE_DEV__BASE__BUILTIN_COTANL builtin::cotanl
-      inline long double cotanl(long double value) throw() {
+      inline long double cotanl(long double value) noexcept {
         long double result;
         asm (
           "fld1\n\t" // load 1
@@ -147,7 +147,7 @@ namespace base {
       }
 
 #define _COM_AZURE_DEV__BASE__BUILTIN_FREXPL builtin::frexpl
-      inline long double frexp(long double value, int* exponent) throw() {
+      inline long double frexp(long double value, int* exponent) noexcept {
         long double mantissa;
         if (exponent) {
           asm (
@@ -181,7 +181,7 @@ namespace base {
       }
   
 #define _COM_AZURE_DEV__BASE__BUILTIN_FABSF builtin::fabsf
-      inline float fabsf(float value) throw() {
+      inline float fabsf(float value) noexcept {
         float result;
         asm (
           "fabs\n\t"
@@ -192,7 +192,7 @@ namespace base {
       }
 
 #define _COM_AZURE_DEV__BASE__BUILTIN_FABS builtin::fabs
-      inline double fabs(double value) throw() {
+      inline double fabs(double value) noexcept {
         double result;
         asm (
           "fabs\n\t"
@@ -203,7 +203,7 @@ namespace base {
       }
 
 #define _COM_AZURE_DEV__BASE__BUILTIN_FABSL builtin::fabsl
-      inline long double fabsl(long double value) throw() {
+      inline long double fabsl(long double value) noexcept {
         long double result;
         asm (
           "fabs\n\t"
@@ -214,7 +214,7 @@ namespace base {
       }
 
 #define _COM_AZURE_DEV__BASE__BUILTIN_LOGL builtin::logl
-      inline long double logl(long double value) throw() {
+      inline long double logl(long double value) noexcept {
         long double result; // log2(x)/log2(e)
         asm (
           "fld1\n\t" // {1; x}
@@ -230,7 +230,7 @@ namespace base {
       
       // y = ln(1 + x) = log2(1 + x)/log2(e) - "log epsilon"
 #define _COM_AZURE_DEV__BASE__BUILTIN_LOG1PL builtin::log1pl
-      inline long double log1pl(long double value) throw() {
+      inline long double log1pl(long double value) noexcept {
         long double result;
         asm (
           "fld1\n\t" // load 1
@@ -246,7 +246,7 @@ namespace base {
 
       // y = log2(x)
 #define _COM_AZURE_DEV__BASE__BUILTIN_LOG2L builtin::log2l
-      inline long double log2l(long double value) throw() {
+      inline long double log2l(long double value) noexcept {
         long double result;
         asm (
           "fld1\n\t" // {1; x}
@@ -259,7 +259,7 @@ namespace base {
       }
 
 #define _COM_AZURE_DEV__BASE__BUILTIN_LOG10L builtin::log10l
-      inline long double log10l(long double value) throw() {
+      inline long double log10l(long double value) noexcept {
         long double result; // log2(x)/log2(10)
         asm (
           "fld1\n\t" // {1; x}
@@ -274,7 +274,7 @@ namespace base {
       }
 
 #define _COM_AZURE_DEV__BASE__BUILTIN_LOGBL builtin::lognl
-      inline long double lognl(long double value, long double base) throw() {
+      inline long double lognl(long double value, long double base) noexcept {
         long double result; // log2(value)/(log2(e) * base)
         asm (
           "fyl2x\n\t" // {1 * log2(base); x}
@@ -290,7 +290,7 @@ namespace base {
 
       // z = x^y = 2^log2(x)^y = 2^(log2(x) * y)
 #define _COM_AZURE_DEV__BASE__BUILTIN_POWL builtin::powl
-      inline long double powl(long double x, long double y) throw() {
+      inline long double powl(long double x, long double y) noexcept {
         long double result;
         asm (
           "fyl2x\n\t" // replaces st(1) with (st(1) * log2(st(0))) and pop stack
@@ -314,7 +314,7 @@ namespace base {
       }
 
       // y = exp(x) = 2^x = 2^(trunc(x) + frac(x)) = 2^(trunc(x)) * 2^(frac(x))
-      inline long double exp2l(long double value) throw() {
+      inline long double exp2l(long double value) noexcept {
         long double result;
         asm (
           "fld %%st(0)\n\t" // {x; x}
@@ -338,7 +338,7 @@ namespace base {
       // y = 2^(trunc(log2(e) * x) + frac(log2(e) * x))
       // y = 2^(trunc(log2(e) * x)) * 2^(frac(log2(e) * x))
 #define _COM_AZURE_DEV__BASE__BUILTIN_EXPL builtin::expl
-      inline long double expl(long double value) throw() {
+      inline long double expl(long double value) noexcept {
         long double result;
         asm (
           "fldl2e\n\t" // {log2(e), x}
@@ -361,7 +361,7 @@ namespace base {
       }
 
 #define _COM_AZURE_DEV__BASE__BUILTIN_LDEXPL builtin::ldexpl
-      inline long double ldexpl(long double value, int exponent) throw() {
+      inline long double ldexpl(long double value, int exponent) noexcept {
         long double result;
         asm (
           "fildl %2\n\t"
@@ -376,7 +376,7 @@ namespace base {
       }
 
 #define _COM_AZURE_DEV__BASE__BUILTIN_SQRTL builtin::sqrtl
-      inline long double sqrtl(long double value) throw() {
+      inline long double sqrtl(long double value) noexcept {
         long double result;
         asm (
           "fsqrt\n\t" // {sqrt(x)}
@@ -387,7 +387,7 @@ namespace base {
       }
 
 #define _COM_AZURE_DEV__BASE__BUILTIN_COSL builtin::cosl
-      inline long double cosl(long double value) throw() {
+      inline long double cosl(long double value) noexcept {
         long double result;
         asm (
           "fcos\n\t" // {cos(x)}
@@ -398,7 +398,7 @@ namespace base {
       }
   
 #define _COM_AZURE_DEV__BASE__BUILTIN_SINL builtin::sinl
-      inline long double sinl(long double value) throw() {
+      inline long double sinl(long double value) noexcept {
         long double result;
         asm (
           "fsin\n\t" // {sin(x)}
@@ -409,7 +409,7 @@ namespace base {
       }
 
 #define _COM_AZURE_DEV__BASE__BUILTIN_SINCOSL builtin::sincosl
-      inline long double sincosl(long double value) throw() {
+      inline long double sincosl(long double value) noexcept {
         long double cosine;
         long double sine;
         asm (
@@ -421,7 +421,7 @@ namespace base {
       }
 
 #define _COM_AZURE_DEV__BASE__BUILTIN_TANL builtin::tanl
-      inline long double tanl(long double value) throw() {
+      inline long double tanl(long double value) noexcept {
         long double result;
         asm (
           "fptan\n\t" // {1; tan(x); 1 or x; 1}
@@ -433,7 +433,7 @@ namespace base {
         return result; // we return original value on error
       }
       
-      inline long double asinl(long double value) throw() {
+      inline long double asinl(long double value) noexcept {
         long double result; // atan2(x, sqrt(1 - x^2))
         asm (
           "fld %%st(0)\n\t" // {x; x}
@@ -448,7 +448,7 @@ namespace base {
         return result;
       }
       
-      inline long double acosl(long double value) throw() {
+      inline long double acosl(long double value) noexcept {
         long double result; // atan2(sqrt(1 - x^2), x)
         asm (
           "fld %%st(0)\n\t" // {x; x}
@@ -464,7 +464,7 @@ namespace base {
         return result;
       }
 
-      inline long double ceill(long double value) throw() {
+      inline long double ceill(long double value) noexcept {
         long double result;
         unsigned int original;
         unsigned int temporary;
@@ -483,7 +483,7 @@ namespace base {
         return result;
       }
       
-      inline long double floorl(long double value) throw() {
+      inline long double floorl(long double value) noexcept {
         long double result;
         unsigned int original;
         unsigned int temporary;
@@ -502,7 +502,7 @@ namespace base {
         return result;
       }
       
-      inline long double roundl(long double value) throw() {
+      inline long double roundl(long double value) noexcept {
         long double result;
         unsigned int original;
         unsigned int temporary;
@@ -520,7 +520,7 @@ namespace base {
         return result;
       }
       
-      inline long double truncl(long double value) throw() {
+      inline long double truncl(long double value) noexcept {
         long double result;
         unsigned int original;
         unsigned int temporary;
@@ -539,7 +539,7 @@ namespace base {
         return result;
       }
       
-      inline long double fracl(long double value) throw() {
+      inline long double fracl(long double value) noexcept {
         long double result;
         asm (
           "fld %%st(0)\n\t" // {x; x}

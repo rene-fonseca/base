@@ -32,7 +32,7 @@ public:
     Inserts an explicit tests for any pending asynchronous operation
     completions. Relinquishes the currently executing thread voluntarily.
   */
-  static bool asyncTest() throw();
+  static bool asyncTest() noexcept;
 
   /**
     Aborts any pending asynchronous operations (read as well as write) issued by

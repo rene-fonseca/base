@@ -26,7 +26,7 @@
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
-void OpenGLContext::destroy() throw() {
+void OpenGLContext::destroy() noexcept {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)  
   native::GDI::wglMakeCurrent(0, 0); // deselect current rendering context
   if (renderingContextHandle) {
@@ -74,7 +74,7 @@ struct MonitorEnumeratorData {
   unsigned int id = 0;
 };
 
-BOOL CALLBACK enumerateMonitor(HMONITOR monitor, HDC hdc, LPRECT rect, LPARAM context) throw() {
+BOOL CALLBACK enumerateMonitor(HMONITOR monitor, HDC hdc, LPRECT rect, LPARAM context) noexcept {
   MonitorEnumeratorData* temp = (MonitorEnumeratorData*)context;
   int numberOfFormats = ::DescribePixelFormat(hdc, 0, 0, 0);
   
@@ -527,14 +527,14 @@ OpenGLContext::OpenGLContext(
   invalidate();
 }
 
-void OpenGLContext::onDisplay() throw() {
+void OpenGLContext::onDisplay() noexcept {
   openGL.glClearColor(0.0, 0.0, 0.0, 1.0);
   openGL.glClear(OpenGL::COLOR_BUFFER_BIT);
   openGL.glFlush();
   swap();
 }
 
-void OpenGLContext::onResize(const Dimension& dimension) throw() {
+void OpenGLContext::onResize(const Dimension& dimension) noexcept {
   openGL.glViewport(0, 0, dimension.getWidth(), dimension.getHeight());
   onDisplay();
 }

@@ -31,12 +31,12 @@ public:
   /**
     Initializes the IDL type.
   */
-  IDLType() throw();
+  IDLType() noexcept;
   
   /**
     Destroys the IDL type.
   */
-  ~IDLType() throw();
+  ~IDLType() noexcept;
 };
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

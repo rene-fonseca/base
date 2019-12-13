@@ -48,7 +48,7 @@ public:
   /**
     Destroys the OpenGL pixmap rendering context.
   */
-  ~OpenGLPixmapContext() throw();
+  ~OpenGLPixmapContext() noexcept;
 };
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

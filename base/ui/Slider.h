@@ -47,22 +47,22 @@ public:
     return offset;
   }
   
-  void setOffset(int offset) throw();
+  void setOffset(int offset) noexcept;
   
-  void onResize(const Dimension& dimension) throw();
+  void onResize(const Dimension& dimension) noexcept;
   
-  void onMouseMove(const Position& position, unsigned int state) throw();
+  void onMouseMove(const Position& position, unsigned int state) noexcept;
 
-  void onMouseButton(const Position& position, Mouse::Button button, Mouse::Event event, unsigned int state) throw();
+  void onMouseButton(const Position& position, Mouse::Button button, Mouse::Event event, unsigned int state) noexcept;
 
-  void onKey(unsigned int key, unsigned int flags, unsigned int modifiers) throw();
+  void onKey(unsigned int key, unsigned int flags, unsigned int modifiers) noexcept;
 
-  void onDisplay() throw();
+  void onDisplay() noexcept;
 
   /**
     Destroys the split.
   */
-  ~Slider() throw();
+  ~Slider() noexcept;
 };
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

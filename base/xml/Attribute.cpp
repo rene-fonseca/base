@@ -85,7 +85,7 @@ bool Attribute::isSpecified() const throw() {
 #endif
 }
 
-Node::ShadowElement Attribute::getOwnerElement() throw() {
+Node::ShadowElement Attribute::getOwnerElement() noexcept {
 #if defined(_COM_AZURE_DEV__BASE__XML_XMLSOFT_ORG)
   xmlAttr* attribute = (xmlAttr*)getContext();
   return Node::ShadowElement(attribute->parent);

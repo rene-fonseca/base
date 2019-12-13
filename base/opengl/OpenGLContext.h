@@ -39,7 +39,7 @@ private:
   /**
     Releases the rendering context.
   */
-  void destroy() throw();
+  void destroy() noexcept;
 public:
   
   /** OpenGL property. */
@@ -58,14 +58,14 @@ public:
   /**
     Invoked when the display should be updated.
   */
-  void onDisplay() throw();
+  void onDisplay() noexcept;
   
   /**
     Invoked when the window has been resized.
 
     @param dimension The new dimension of the window.
   */
-  void onResize(const Dimension& dimension) throw();
+  void onResize(const Dimension& dimension) noexcept;
 };
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

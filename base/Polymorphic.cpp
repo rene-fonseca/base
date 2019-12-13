@@ -15,7 +15,7 @@
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
-Polymorphic::~Polymorphic() throw() {
+Polymorphic::~Polymorphic() noexcept {
 }
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

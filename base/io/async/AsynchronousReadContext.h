@@ -26,7 +26,7 @@ protected:
   /** Self-reference used to protect the object from premature destruction. */
   Reference<AsynchronousReadContext> selfReference;
   
-  inline AsynchronousReadContext() throw() : selfReference(this) {
+  inline AsynchronousReadContext() noexcept : selfReference(this) {
   }
 public:
   

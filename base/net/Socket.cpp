@@ -138,7 +138,7 @@ private:
   };
 public:
   
-  inline SocketAddress() throw()
+  inline SocketAddress() noexcept
   {
   }
   
@@ -208,7 +208,7 @@ public:
   }
 
   /** Returns pointer to socket address. */
-  inline struct sockaddr* getValue() throw() {
+  inline struct sockaddr* getValue() noexcept {
     return &sa;
   }
   
@@ -274,7 +274,7 @@ public:
   }
 
   /** Sets the socket name from the specified socket. */
-  inline void setSocket(int handle) throw()
+  inline void setSocket(int handle) noexcept
   {
 #if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__WASI)
 #else
@@ -289,7 +289,7 @@ namespace internal {
   class SocketImpl {
   public:
 
-    static inline int getNativeError() throw() {
+    static inline int getNativeError() noexcept {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
       return ::WSAGetLastError();
 #else // unix
@@ -297,7 +297,7 @@ namespace internal {
 #endif // flavor
     }
 
-    static unsigned int getCause(unsigned int error) throw() {
+    static unsigned int getCause(unsigned int error) noexcept {
       switch (error) {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
       case WSAEISCONN:
@@ -453,7 +453,7 @@ namespace internal {
 Socket::SocketImpl::SocketImpl(
   OperatingSystem::Handle _handle,
   Domain _domain,
-  Kind _kind) throw()
+  Kind _kind) noexcept
   : Handle(_handle),
     domain(_domain),
     kind(_kind),
@@ -483,7 +483,7 @@ Socket::SocketImpl::~SocketImpl() {
 
 
 
-Socket::Socket() throw() : socket(SocketImpl::invalid) {
+Socket::Socket() noexcept : socket(SocketImpl::invalid) {
 }
 
 bool Socket::accept(Socket& socket) throw(NetworkException)
@@ -642,7 +642,7 @@ void Socket::listen(unsigned int backlog) throw(NetworkException)
 #endif
 }
 
-void Socket::getName() throw()
+void Socket::getName() noexcept
 {
   SocketAddress sa;
   sa.setSocket((SOCKET)socket->getHandle());

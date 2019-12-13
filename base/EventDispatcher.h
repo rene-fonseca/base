@@ -46,7 +46,7 @@ public:
 
     @param signal The signal to be send on request.
   */
-  EventDispatcher(const Signal<Sender, Listener>& _signal) throw()
+  EventDispatcher(const Signal<Sender, Listener>& _signal) noexcept
     : signal(_signal) {
   }
 
@@ -55,7 +55,7 @@ public:
 
     @param listener The listener to be deregistered.
   */
-  void add(Listener* listener) throw() {
+  void add(Listener* listener) noexcept {
     listeners.add(listener);
   }
 
@@ -64,7 +64,7 @@ public:
 
     @param listener The listener to be deregistered.
   */
-  void remove(Listener* listener) throw() {
+  void remove(Listener* listener) noexcept {
     listeners.remove(listener);
   }
 

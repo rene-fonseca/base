@@ -32,7 +32,7 @@ protected:
   void* drawableHandle = nullptr;
 public:
 
-  inline Drawable() throw() {
+  inline Drawable() noexcept {
   }
 };
 

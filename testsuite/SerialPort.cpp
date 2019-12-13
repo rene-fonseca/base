@@ -31,7 +31,7 @@ public:
     : Application("SerialPort", numberOfArguments, arguments, environment) {
   }
   
-  void onTermination() throw()
+  void onTermination() noexcept
   {
     // override default application termination
   }

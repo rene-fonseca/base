@@ -195,7 +195,7 @@ unsigned int SoundInputStream::getPosition() const throw() {
 #endif // flavor
 }
 
-void SoundInputStream::resume() throw() {
+void SoundInputStream::resume() noexcept {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   ::waveInStart((HWAVEIN)handle);
   event.reset();
@@ -214,7 +214,7 @@ void SoundInputStream::resume() throw() {
 #endif // flavor
 }
 
-void SoundInputStream::pause() throw() {
+void SoundInputStream::pause() noexcept {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   ::waveInStop((HWAVEIN)handle);
   event.reset();
@@ -232,7 +232,7 @@ void SoundInputStream::pause() throw() {
 #endif // flavor
 }
 
-void SoundInputStream::reset() throw() {
+void SoundInputStream::reset() noexcept {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   ::waveInReset((HWAVEIN)handle);
 #else
@@ -250,7 +250,7 @@ void SoundInputStream::reset() throw() {
 #endif // flavor
 }
 
-unsigned int SoundInputStream::read(void* buffer, unsigned int size) throw() {
+unsigned int SoundInputStream::read(void* buffer, unsigned int size) noexcept {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   WAVEHDR header;
   clear(header);
@@ -290,7 +290,7 @@ unsigned int SoundInputStream::read(void* buffer, unsigned int size) throw() {
 #endif // flavor
 }
 
-SoundInputStream::~SoundInputStream() throw() {
+SoundInputStream::~SoundInputStream() noexcept {
   reset();
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   ::waveInClose((HWAVEIN)handle);

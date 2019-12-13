@@ -44,7 +44,7 @@ class _COM_AZURE_DEV__BASE__API Text : public CharacterData {
   friend class Document;
 protected:
 
-  inline Text(void* context) throw() : CharacterData(context) {
+  inline Text(void* context) noexcept : CharacterData(context) {
   }
 public:
   

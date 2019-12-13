@@ -45,7 +45,7 @@ public:
   /**
     Initializes the buffer queue.
   */
-  inline BufferQueue(Reference<OrbBufferPool> _pool) throw()
+  inline BufferQueue(Reference<OrbBufferPool> _pool) noexcept
     : pool(_pool)
   {
   }
@@ -53,7 +53,7 @@ public:
   /**
     Pushes a buffer onto the queue.
   */
-  inline void push(OrbBuffer* buffer) throw() {
+  inline void push(OrbBuffer* buffer) noexcept {
     ExclusiveSynchronize<Guard> _guard(guard);
     if (last) {
       last->setNext(buffer);
@@ -69,7 +69,7 @@ public:
 
     @return nullptr if no buffer is available.
   */
-  inline OrbBuffer* pop() throw()
+  inline OrbBuffer* pop() noexcept
   {
     ExclusiveSynchronize<Guard> _guard(guard);
     OrbBuffer* buffer = first;
@@ -87,7 +87,7 @@ public:
     Destroys the buffer queue. The acquired buffers are brought back into the
     pool.
   */
-  inline ~BufferQueue() throw() {
+  inline ~BufferQueue() noexcept {
     if (first) {
       pool->release(first);
     }

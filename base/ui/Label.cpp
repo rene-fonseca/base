@@ -22,7 +22,7 @@ Label::Label(Window& owner) throw(UserInterfaceException)
   setTextColor(Color(0, 0, 0));
 }
 
-void Label::onDisplay() throw() {
+void Label::onDisplay() noexcept {
   const Dimension dimension = getDimension();
   if (dimension.isProper()) {
     const Position lowerRight(dimension.getWidth() - 1, dimension.getHeight() - 1);

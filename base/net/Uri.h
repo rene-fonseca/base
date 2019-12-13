@@ -96,12 +96,12 @@ protected:
   /**
     Returns true if the string is a valid host specification.
   */
-  static bool isHost(String::ReadIterator i, const String::ReadIterator& end) throw();
+  static bool isHost(String::ReadIterator i, const String::ReadIterator& end) noexcept;
 
   /**
     Returns true if the string is a valid port.
   */
-  static bool isPort(String::ReadIterator i, const String::ReadIterator& end) throw();
+  static bool isPort(String::ReadIterator i, const String::ReadIterator& end) noexcept;
 
   /**
     Parses the string as a uri.
@@ -134,12 +134,12 @@ public:
   /**
     Initializes uri from other uri.
   */
-  Uri(const Uri& copy) throw();
+  Uri(const Uri& copy) noexcept;
 
   /**
     Assignment of uri by uri.
   */
-  Uri& operator=(const Uri& assign) throw();
+  Uri& operator=(const Uri& assign) noexcept;
 
   /**
     Returns true if the uri is relative.

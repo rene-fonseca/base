@@ -39,7 +39,7 @@ public:
   /**
     Initializes vector as the origin (0,0).
   */
-  inline Vector2D() throw() {
+  inline Vector2D() noexcept {
   }
 
   /**
@@ -48,21 +48,21 @@ public:
     @param x The desired X coordinate.
     @param y The desired Y coordinate.
   */
-  Vector2D(const TYPE& x, const TYPE& y) throw();
+  Vector2D(const TYPE& x, const TYPE& y) noexcept;
 
   /**
     Initializes vector by copying from the specified vector.
 
     @param copy The desired vector.
   */
-  inline Vector2D(const Vector2D& copy) throw()
+  inline Vector2D(const Vector2D& copy) noexcept
     : x(copy.x), y(copy.y) {
   }
 
   /**
     Assignment of this vector from vector.
   */
-  inline Vector2D& operator=(const Vector2D& assign) throw() {
+  inline Vector2D& operator=(const Vector2D& assign) noexcept {
     x = assign.x; // no need to protect against self-assignment
     y = assign.y;
     return *this;
@@ -108,7 +108,7 @@ public:
 
     @param x The desired X coordinate.
   */
-  inline void setX(const TYPE& x) throw() {
+  inline void setX(const TYPE& x) noexcept {
     this->x = x;
   }
 
@@ -117,14 +117,14 @@ public:
 
     @param y The desired Y coordinate.
   */
-  inline void setY(const TYPE& y) throw() {
+  inline void setY(const TYPE& y) noexcept {
     this->y = y;
   }
 
   /**
     Sets values less than the specified value to zero.
   */
-  Vector2D& zeroAdjust(const TYPE& zero) throw() {
+  Vector2D& zeroAdjust(const TYPE& zero) noexcept {
     if (x < zero) {
       x = TYPE(0);
     }
@@ -179,7 +179,7 @@ public:
   /**
     Negates this vector.
   */
-  inline Vector2D& negate() throw() {
+  inline Vector2D& negate() noexcept {
     x = -x;
     y = -y;
     return *this;
@@ -188,7 +188,7 @@ public:
   /**
     Adds the specified vector to this vector.
   */
-  inline Vector2D& add(const Vector2D& value) throw() {
+  inline Vector2D& add(const Vector2D& value) noexcept {
     x += value.x;
     y += value.y;
     return *this;
@@ -197,7 +197,7 @@ public:
   /**
     Subtracts the specified vector from this vector.
   */
-  inline Vector2D& subtract(const Vector2D& value) throw() {
+  inline Vector2D& subtract(const Vector2D& value) noexcept {
     x -= value.x;
     y -= value.y;
     return *this;
@@ -206,7 +206,7 @@ public:
   /**
     Multiplies this vector with the specified value.
   */
-  inline Vector2D& multiply(const TYPE& value) throw() {
+  inline Vector2D& multiply(const TYPE& value) noexcept {
     x *= value;
     y *= value;
     return *this;
@@ -215,7 +215,7 @@ public:
   /**
     Divides this vector with the specified value.
   */
-  inline Vector2D& divide(const TYPE& value) throw() {
+  inline Vector2D& divide(const TYPE& value) noexcept {
     x /= value;
     y /= value;
     return *this;
@@ -266,7 +266,7 @@ public:
 
     @param value The value to be added.
   */
-  inline Vector2D& operator+=(const Vector2D& value) throw() {
+  inline Vector2D& operator+=(const Vector2D& value) noexcept {
     return add(value);
   }
 
@@ -275,7 +275,7 @@ public:
 
     @param value The value to be subtracted.
   */
-  inline Vector2D& operator-=(const Vector2D& value) throw() {
+  inline Vector2D& operator-=(const Vector2D& value) noexcept {
     return subtract(value);
   }
 
@@ -284,7 +284,7 @@ public:
 
     @param value The multiplicator.
   */
-  inline Vector2D& operator*=(const TYPE& value) throw() {
+  inline Vector2D& operator*=(const TYPE& value) noexcept {
     return multiply(value);
   }
 
@@ -293,7 +293,7 @@ public:
 
     @param value The divisor.
   */
-  inline Vector2D& operator/=(const TYPE& value) throw() {
+  inline Vector2D& operator/=(const TYPE& value) noexcept {
     return divide(value);
   }
 
@@ -316,22 +316,22 @@ public:
   /**
     Returns the product of the vector and the value.
   */
-  friend Vector2D operator* <>(const Vector2D& left, const TYPE& right) throw();
+  friend Vector2D operator* <>(const Vector2D& left, const TYPE& right) noexcept;
 
   /**
     Returns the product of the vector and the value.
   */
-  friend Vector2D operator* <>(const TYPE& left, const Vector2D& right) throw();
+  friend Vector2D operator* <>(const TYPE& left, const Vector2D& right) noexcept;
 
   /**
     Returns the result of the vector divided by the value.
   */
-  friend Vector2D operator/ <>(const Vector2D& left, const TYPE& right) throw();
+  friend Vector2D operator/ <>(const Vector2D& left, const TYPE& right) noexcept;
 #endif
 };
 
 template<class TYPE>
-inline Vector2D<TYPE>::Vector2D(const TYPE& _x, const TYPE& _y) throw()
+inline Vector2D<TYPE>::Vector2D(const TYPE& _x, const TYPE& _y) noexcept
   : x(_x), y(_y) {
 }
 
@@ -342,7 +342,7 @@ inline Vector2D<TYPE>::Vector2D(const TYPE& _x, const TYPE& _y) throw()
 */
 template<class TYPE>
 inline Vector2D<TYPE> operator+(
-  const Vector2D<TYPE>& left, const Vector2D<TYPE>& right) throw() {
+  const Vector2D<TYPE>& left, const Vector2D<TYPE>& right) noexcept {
   return Vector2D<TYPE>(left).add(right);
 }
 
@@ -353,7 +353,7 @@ inline Vector2D<TYPE> operator+(
 */
 template<class TYPE>
 inline Vector2D<TYPE> operator-(
-  const Vector2D<TYPE>& left, const Vector2D<TYPE>& right) throw() {
+  const Vector2D<TYPE>& left, const Vector2D<TYPE>& right) noexcept {
   return Vector2D<TYPE>(left).subtract(right);
 }
 
@@ -364,7 +364,7 @@ inline Vector2D<TYPE> operator-(
 */
 template<class TYPE>
 inline Vector2D<TYPE> operator*(
-  const Vector2D<TYPE>& left, const TYPE& right) throw() {
+  const Vector2D<TYPE>& left, const TYPE& right) noexcept {
   return Vector2D<TYPE>(left).multiply(right);
 }
 
@@ -375,7 +375,7 @@ inline Vector2D<TYPE> operator*(
 */
 template<class TYPE>
 inline Vector2D<TYPE> operator*(
-  const TYPE& left, const Vector2D<TYPE>& right) throw() {
+  const TYPE& left, const Vector2D<TYPE>& right) noexcept {
   return Vector2D<TYPE>(right).multiply(left);
 }
 
@@ -386,7 +386,7 @@ inline Vector2D<TYPE> operator*(
 */
 template<class TYPE>
 inline Vector2D<TYPE> operator/(
-  const Vector2D<TYPE>& left, const TYPE& right) throw() {
+  const Vector2D<TYPE>& left, const TYPE& right) noexcept {
   return Vector2D<TYPE>(left).divide(right);
 }
 
@@ -396,7 +396,7 @@ inline Vector2D<TYPE> operator/(
   @relates Vector2D
 */
 template<class TYPE>
-inline TYPE dot(const Vector2D<TYPE>& left, const Vector2D<TYPE>& right) throw() {
+inline TYPE dot(const Vector2D<TYPE>& left, const Vector2D<TYPE>& right) noexcept {
   return left.dot(right);
 }
 
@@ -407,7 +407,7 @@ inline TYPE dot(const Vector2D<TYPE>& left, const Vector2D<TYPE>& right) throw()
 */
 template<class TYPE>
 inline TYPE determinant(
-  const Vector2D<TYPE>& left, const Vector2D<TYPE>& right) throw() {
+  const Vector2D<TYPE>& left, const Vector2D<TYPE>& right) noexcept {
   return left.determinant(right);
 }
 

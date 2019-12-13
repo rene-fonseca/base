@@ -35,7 +35,7 @@ public:
   /**
     Initializes the IDL constant.
   */
-  IDLConstant(const String& name) throw();
+  IDLConstant(const String& name) noexcept;
   
   /**
     Returns the fully qualified name of the object.
@@ -47,7 +47,7 @@ public:
   /**
     Destroys the IDL constant.
   */
-  ~IDLConstant() throw();
+  ~IDLConstant() noexcept;
 };
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

@@ -215,7 +215,7 @@ InetAddress InetAddress::getAddressByName(const String& name) throw(HostNotFound
   throw HostNotFound("Unable to lookup host by name.", Type::getType<InetAddress>());
 }
 
-bool InetAddress::isIPv4(const String::ReadIterator begin, const String::ReadIterator end) throw() {
+bool InetAddress::isIPv4(const String::ReadIterator begin, const String::ReadIterator end) noexcept {
   String::ReadIterator i = begin;
   unsigned int words = 0; // get 4 decimal values
   while ((words < 4) && (i != end) && ASCIITraits::isDigit(*i)) {
@@ -243,7 +243,7 @@ bool InetAddress::isIPv4(const String::ReadIterator begin, const String::ReadIte
   return i == end;
 }
 
-bool InetAddress::isIPv6(const String::ReadIterator begin, const String::ReadIterator end) throw() {
+bool InetAddress::isIPv6(const String::ReadIterator begin, const String::ReadIterator end) noexcept {
   String::ReadIterator i = begin;
   String::ReadIterator j = i;
   String::ReadIterator endIPv6 = i; // end of address excluding IPv4 suffix
@@ -334,7 +334,7 @@ bool InetAddress::isIPv6(const String::ReadIterator begin, const String::ReadIte
   return i == end;
 }
 
-bool InetAddress::parse(const String& address) throw() {
+bool InetAddress::parse(const String& address) noexcept {
   String::ReadIterator i = address.getBeginReadIterator();
   const String::ReadIterator end = address.getEndReadIterator();
 
@@ -432,7 +432,7 @@ bool InetAddress::parse(const String& address) throw() {
   return i == end;
 }
 
-InetAddress::InetAddress() throw() {
+InetAddress::InetAddress() noexcept {
 #if (defined(_COM_AZURE_DEV__BASE__INET_IPV6))
   family = IP_VERSION_6;
 #else
@@ -444,7 +444,7 @@ InetAddress::InetAddress() throw() {
   address.words[3] = 0;
 }
 
-InetAddress::InetAddress(const uint8* address, Family family) throw() {
+InetAddress::InetAddress(const uint8* address, Family family) noexcept {
   setAddress(address, family);
 }
 
@@ -459,13 +459,13 @@ InetAddress::InetAddress(const String& address, Family family) throw(InvalidForm
   );
 }
 
-InetAddress::InetAddress(const InetAddress& copy) throw()
+InetAddress::InetAddress(const InetAddress& copy) noexcept
   : family(copy.family),
     address(copy.address)
 {
 }
 
-InetAddress& InetAddress::operator=(const InetAddress& assign) throw() {
+InetAddress& InetAddress::operator=(const InetAddress& assign) noexcept {
   if (&assign != this) {
     family = assign.family;
     address = assign.address;
@@ -704,7 +704,7 @@ unsigned int InetAddress::getType() const throw() {
   return result;
 }
 
-bool InetAddress::convertToIPv6() throw() {
+bool InetAddress::convertToIPv6() noexcept {
   if (family == IP_VERSION_4) {
     family = IP_VERSION_6;
     if (!isUnspecified()) { // leave unspecified
@@ -714,7 +714,7 @@ bool InetAddress::convertToIPv6() throw() {
   return true; // cannot fail
 }
 
-bool InetAddress::convertToIPv4() throw() {
+bool InetAddress::convertToIPv4() noexcept {
   if (family == IP_VERSION_6) {
     if (isIPv4Mapped()) {
       family = IP_VERSION_4;
@@ -728,7 +728,7 @@ bool InetAddress::convertToIPv4() throw() {
   return true; // now IPv4 address
 }
 
-void InetAddress::setAddress(const uint8* address, Family family) throw() {
+void InetAddress::setAddress(const uint8* address, Family family) noexcept {
   this->family = family;
   switch (family) {
   case IP_VERSION_4:

@@ -40,7 +40,7 @@ public:
     
     @param type The type of the field.
   */
-  IDLField(const IDLType& type) throw();
+  IDLField(const IDLType& type) noexcept;
   
   /**
     Returns the type of the field.
@@ -52,7 +52,7 @@ public:
   /**
     Destroys the IDL field.
   */
-  ~IDLField() throw();
+  ~IDLField() noexcept;
 };
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

@@ -41,7 +41,7 @@ public:
   /**
     Initializes vector as origin (0, 0, 0).
   */
-  inline Vector3D() throw()
+  inline Vector3D() noexcept
   {
   }
 
@@ -52,14 +52,14 @@ public:
     @param y The desired Y coordinate.
     @param z The desired Z coordinate.
   */
-  Vector3D(const TYPE& x, const TYPE& y, const TYPE& z) throw();
+  Vector3D(const TYPE& x, const TYPE& y, const TYPE& z) noexcept;
   
   /**
     Initializes vector by copying from the specified vector.
 
     @param vector The desired vector.
   */
-  inline Vector3D(const Vector3D& copy) throw()
+  inline Vector3D(const Vector3D& copy) noexcept
     : x(copy.x), y(copy.y), z(copy.z)
   {
   }
@@ -67,7 +67,7 @@ public:
   /**
     Assignment of this vector from vector.
   */
-  inline Vector3D& operator=(const Vector3D& assign) throw()
+  inline Vector3D& operator=(const Vector3D& assign) noexcept
   {
     x = assign.x; // no need to protect against self-assignment
     y = assign.y;
@@ -136,7 +136,7 @@ public:
 
     @param x The desired X coordinate.
   */
-  inline void setX(const TYPE& x) throw()
+  inline void setX(const TYPE& x) noexcept
   {
     this->x = x;
   }
@@ -146,7 +146,7 @@ public:
 
     @param y The desired Y coordinate.
   */
-  inline void setY(const TYPE& y) throw()
+  inline void setY(const TYPE& y) noexcept
   {
     this->y = y;
   }
@@ -156,7 +156,7 @@ public:
 
     @param z The desired Z coordinate.
   */
-  inline void setZ(const TYPE& z) throw()
+  inline void setZ(const TYPE& z) noexcept
   {
     this->z = z;
   }
@@ -164,7 +164,7 @@ public:
   /**
     Sets values less than the specified value to zero.
   */
-  Vector3D& zeroAdjust(const TYPE& zero) throw()
+  Vector3D& zeroAdjust(const TYPE& zero) noexcept
   {
     if (x < zero) {
       x = TYPE(0);
@@ -229,7 +229,7 @@ public:
   /**
     Negates this vector.
   */
-  Vector3D& negate() throw()
+  Vector3D& negate() noexcept
   {
     x = -x;
     y = -y;
@@ -240,7 +240,7 @@ public:
   /**
     Adds the specified vector to this vector.
   */
-  Vector3D& add(const Vector3D& value) throw()
+  Vector3D& add(const Vector3D& value) noexcept
   {
     x += value.x;
     y += value.y;
@@ -251,7 +251,7 @@ public:
   /**
     Subtracts the specified vector from this vector.
   */
-  Vector3D& subtract(const Vector3D& value) throw()
+  Vector3D& subtract(const Vector3D& value) noexcept
   {
     x -= value.x;
     y -= value.y;
@@ -262,7 +262,7 @@ public:
   /**
     Multiplies this vector with the specified value.
   */
-  Vector3D& multiply(const TYPE& value) throw()
+  Vector3D& multiply(const TYPE& value) noexcept
   {
     x *= value;
     y *= value;
@@ -273,7 +273,7 @@ public:
   /**
     Divides this vector with the specified value.
   */
-  Vector3D& divide(const TYPE& value) throw()
+  Vector3D& divide(const TYPE& value) noexcept
   {
     x /= value;
     y /= value;
@@ -333,7 +333,7 @@ public:
 
     @param value The value to be added.
   */
-  inline Vector3D& operator+=(const Vector3D& value) throw()
+  inline Vector3D& operator+=(const Vector3D& value) noexcept
   {
     return add(value);
   }
@@ -343,7 +343,7 @@ public:
 
     @param value The value to be subtracted.
   */
-  inline Vector3D& operator-=(const Vector3D& value) throw()
+  inline Vector3D& operator-=(const Vector3D& value) noexcept
   {
     return subtract(value);
   }
@@ -353,7 +353,7 @@ public:
 
     @param value The multiplicator.
   */
-  inline Vector3D& operator*=(const TYPE& value) throw()
+  inline Vector3D& operator*=(const TYPE& value) noexcept
   {
     return multiply(value);
   }
@@ -363,7 +363,7 @@ public:
 
     @param value The divisor.
   */
-  inline Vector3D& operator/=(const TYPE& value) throw()
+  inline Vector3D& operator/=(const TYPE& value) noexcept
   {
     return divide(value);
   }
@@ -387,7 +387,7 @@ public:
 
 template<class TYPE>
 inline Vector3D<TYPE>::Vector3D(
-  const TYPE& _x, const TYPE& _y, const TYPE& _z) throw() : x(_x), y(_y), z(_z)
+  const TYPE& _x, const TYPE& _y, const TYPE& _z) noexcept : x(_x), y(_y), z(_z)
 {
 }
 
@@ -398,7 +398,7 @@ inline Vector3D<TYPE>::Vector3D(
 */
 template<class TYPE>
 inline Vector3D<TYPE> operator+(
-  const Vector3D<TYPE>& left, const Vector3D<TYPE>& right) throw()
+  const Vector3D<TYPE>& left, const Vector3D<TYPE>& right) noexcept
 {
   return Vector3D<TYPE>(left).add(right);
 }
@@ -410,7 +410,7 @@ inline Vector3D<TYPE> operator+(
 */
 template<class TYPE>
 inline Vector3D<TYPE> operator-(
-  const Vector3D<TYPE>& left, const Vector3D<TYPE>& right) throw()
+  const Vector3D<TYPE>& left, const Vector3D<TYPE>& right) noexcept
 {
   return Vector3D<TYPE>(left).subtract(right);
 }
@@ -422,7 +422,7 @@ inline Vector3D<TYPE> operator-(
 */
 template<class TYPE>
 inline Vector3D<TYPE> operator*(
-  const Vector3D<TYPE>& left, const TYPE& right) throw()
+  const Vector3D<TYPE>& left, const TYPE& right) noexcept
 {
   return Vector3D<TYPE>(left).multiply(right);
 }
@@ -434,7 +434,7 @@ inline Vector3D<TYPE> operator*(
 */
 template<class TYPE>
 inline Vector3D<TYPE> operator*(
-  const TYPE& left, const Vector3D<TYPE>& right) throw()
+  const TYPE& left, const Vector3D<TYPE>& right) noexcept
 {
   return Vector3D<TYPE>(right).multiply(left);
 }
@@ -446,7 +446,7 @@ inline Vector3D<TYPE> operator*(
 */
 template<class TYPE>
 inline Vector3D<TYPE> operator/(
-  const Vector3D<TYPE>& left, const TYPE& right) throw()
+  const Vector3D<TYPE>& left, const TYPE& right) noexcept
 {
   return Vector3D<TYPE>(left).divide(right);
 }
@@ -457,7 +457,7 @@ inline Vector3D<TYPE> operator/(
   @relates Vector3D
 */
 template<class TYPE>
-inline TYPE dot(const Vector3D<TYPE>& left, const Vector3D<TYPE>& right) throw()
+inline TYPE dot(const Vector3D<TYPE>& left, const Vector3D<TYPE>& right) noexcept
 {
   return left.dot(right);
 }
@@ -469,7 +469,7 @@ inline TYPE dot(const Vector3D<TYPE>& left, const Vector3D<TYPE>& right) throw()
 */
 template<class TYPE>
 inline Vector3D<TYPE> cross(
-  const Vector3D<TYPE>& left, const Vector3D<TYPE>& right) throw()
+  const Vector3D<TYPE>& left, const Vector3D<TYPE>& right) noexcept
 {
   return left.cross(right);
 }

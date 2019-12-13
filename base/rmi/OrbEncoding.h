@@ -36,7 +36,7 @@ public:
     convention all encoding schemes must be placed in the namespace
     "urn:rmi:orb:encoding-scheme:".
   */
-  static String getUrnNamespace() throw();
+  static String getUrnNamespace() noexcept;
   
   /**
     Returns a new decoder.
@@ -57,7 +57,7 @@ public:
   /**
     Destroys the encoding.
   */
-  virtual ~OrbEncoding() throw();
+  virtual ~OrbEncoding() noexcept;
 };
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

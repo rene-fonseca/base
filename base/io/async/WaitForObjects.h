@@ -32,7 +32,7 @@ public:
   /**
     Initializes synchronization object.
   */
-  WaitForObjects() throw();
+  WaitForObjects() noexcept;
 
   /**
     Returns the maximum number of objects allowed.
@@ -49,11 +49,11 @@ public:
   
   /**
   */
-  void deregisterObject(Socket socket) throw();
+  void deregisterObject(Socket socket) noexcept;
   
   /**
   */
-  void deregisterAll() throw();
+  void deregisterAll() noexcept;
   
   /**
   */

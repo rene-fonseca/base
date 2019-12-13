@@ -37,8 +37,8 @@ private:
   /** The synchronize able object to be synchronized. */
   const Guard& guard;
   
-  SingleExclusiveSynchronize(const SingleExclusiveSynchronize& copy) throw();
-  SingleExclusiveSynchronize& operator=(const SingleExclusiveSynchronize& assign) throw();
+  SingleExclusiveSynchronize(const SingleExclusiveSynchronize& copy) noexcept;
+  SingleExclusiveSynchronize& operator=(const SingleExclusiveSynchronize& assign) noexcept;
 public:
   
   /**
@@ -57,7 +57,7 @@ public:
     Releases the lock if not already released and destroys the synchronization
     object.
   */
-  inline ~SingleExclusiveSynchronize() throw() {
+  inline ~SingleExclusiveSynchronize() noexcept {
     guard.releaseLock();
   }
 };
@@ -76,8 +76,8 @@ template<>
 class SingleExclusiveSynchronize<Unsafe> {
 private:
 
-  SingleExclusiveSynchronize(const SingleExclusiveSynchronize& copy) throw();
-  SingleExclusiveSynchronize& operator=(const SingleExclusiveSynchronize& assign) throw();
+  SingleExclusiveSynchronize(const SingleExclusiveSynchronize& copy) noexcept;
+  SingleExclusiveSynchronize& operator=(const SingleExclusiveSynchronize& assign) noexcept;
 public:
 
   /**
@@ -86,7 +86,7 @@ public:
     @param guard The synchronize able object to be synchronized.
   */
   template<class POLY>
-  inline explicit SingleExclusiveSynchronize(const POLY& guard) throw() {
+  inline explicit SingleExclusiveSynchronize(const POLY& guard) noexcept {
   }
 };
 

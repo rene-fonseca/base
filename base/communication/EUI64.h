@@ -40,7 +40,7 @@ protected:
   /**
     Swaps the 4 bit nibbles of a 8 bit word.
   */
-  static inline uint8 swapNibbles(uint8 value) throw() {
+  static inline uint8 swapNibbles(uint8 value) noexcept {
     return ((value & 0x0f) << 4) | ((value & 0xf0) >> 4);
   }
 public:
@@ -48,12 +48,12 @@ public:
   /**
     Initializes identifier as ff:ff:ff-00:00:00:00:00.
   */
-  EUI64() throw();
+  EUI64() noexcept;
   
   /**
     Initializes identifier from array.
   */
-  EUI64(const uint8 value[8]) throw();
+  EUI64(const uint8 value[8]) noexcept;
 
   /**
     Initializes identifier from string.
@@ -63,12 +63,12 @@ public:
   /**
     Initializes identifier from other identifier.
   */
-  EUI64(const EUI64& copy) throw();
+  EUI64(const EUI64& copy) noexcept;
   
   /**
     Assignment of identifier by identifier.
   */
-  EUI64& operator=(const EUI64& assign) throw();
+  EUI64& operator=(const EUI64& assign) noexcept;
   
   /**
     Returns true if the identifiers are identical.
@@ -136,14 +136,14 @@ public:
   /**
     Resets the universal/local bit.
   */
-  inline void makeGlobal() throw() {
+  inline void makeGlobal() noexcept {
     id[0] &= ~0x02;
   }
   
   /**
     Sets the universal/local bit.
   */
-  inline void makeLocal() throw() {
+  inline void makeLocal() noexcept {
     id[0] |= 0x02;
   }
   
@@ -155,7 +155,7 @@ public:
   /**
     Sets the identifier by an EUI-48 identifier.
   */
-  void setEUI48(const uint8* eui48) throw();
+  void setEUI48(const uint8* eui48) noexcept;
   
   /**
     Fills specified array with the MAC idenfier.
@@ -165,7 +165,7 @@ public:
   /**
     Sets the identifier by an MAC-48 identifier.
   */
-  void setMAC48(const uint8* mac) throw();
+  void setMAC48(const uint8* mac) noexcept;
   
   /**
     Returns the identifier.

@@ -309,7 +309,7 @@ namespace internal {
 
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
 
-ProcessPreinitialization::ProcessPreinitialization() throw()
+ProcessPreinitialization::ProcessPreinitialization() noexcept
 {
   // OS version compatibility check
   OSVERSIONINFO versionInfo;
@@ -367,7 +367,7 @@ ProcessPreinitialization::ProcessPreinitialization() throw()
   //::SetErrorMode(SEM_NOGPFAULTERRORBOX);    
 }
 
-ProcessPreinitialization::~ProcessPreinitialization() throw()
+ProcessPreinitialization::~ProcessPreinitialization() noexcept
 {
   // restore the original unhandled exception filter
   ::SetUnhandledExceptionFilter(internal::specific::originalExceptionFilter);
@@ -378,7 +378,7 @@ ProcessPreinitialization::~ProcessPreinitialization() throw()
 
 #else // unix
 
-ProcessPreinitialization::ProcessPreinitialization() throw()
+ProcessPreinitialization::ProcessPreinitialization() noexcept
 {
   // pthread_t is an arithmetic type according to The Single UNIX Specification, Version 2
   if (!((sizeof(Thread::Identifier) >= sizeof(pthread_t)) && // Thread (pthread support)
@@ -389,7 +389,7 @@ ProcessPreinitialization::ProcessPreinitialization() throw()
   }
 }
 
-ProcessPreinitialization::~ProcessPreinitialization() throw()
+ProcessPreinitialization::~ProcessPreinitialization() noexcept
 {
 }
 

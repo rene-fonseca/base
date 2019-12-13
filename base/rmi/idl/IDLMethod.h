@@ -41,7 +41,7 @@ public:
     
     @param name The name of the method.
   */  
-  IDLMethod(const String& name) throw();
+  IDLMethod(const String& name) noexcept;
   
   /**
     Initializes the IDL method.
@@ -49,7 +49,7 @@ public:
     @param name The name of the method.
     @param type The return type of the method.
   */
-  IDLMethod(const String& name, IDLType type) throw();
+  IDLMethod(const String& name, IDLType type) noexcept;
   
   /**
     Adds an argument to the argument list.
@@ -85,7 +85,7 @@ public:
   /**
     Destroys the IDL method.
   */
-  ~IDLMethod() throw();
+  ~IDLMethod() noexcept;
 };
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

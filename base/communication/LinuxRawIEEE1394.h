@@ -102,7 +102,7 @@ public:
   /**
     Acknowledges the bus reset.
   */
-  void acknowledgeReset() throw();
+  void acknowledgeReset() noexcept;
 
   /**
     Returns the adapters available.

@@ -45,7 +45,7 @@
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
-SoundDevice::SoundDevice() throw() : access(0) {
+SoundDevice::SoundDevice() noexcept : access(0) {
 }
 
 void SoundDevice::reacquireAccess(unsigned int access) throw(NotSupported) {

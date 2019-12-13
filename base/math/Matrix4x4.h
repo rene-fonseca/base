@@ -41,7 +41,7 @@ public:
     Returns a homogeneous rotation matrix corresponding to the specified angle of
     rotation (in radians) around the X-axis.
   */
-  static Matrix4x4 getXRotation(TYPE angle) throw() {
+  static Matrix4x4 getXRotation(TYPE angle) noexcept {
     Matrix4x4 result;
     TYPE* dest = result.getElements();
     const TYPE zero(0);
@@ -75,7 +75,7 @@ public:
     Returns a homogeneous rotation matrix corresponding to the specified angle of
     rotation (in radians) around the Y-axis.
   */
-  static Matrix4x4 getYRotation(TYPE angle) throw() {
+  static Matrix4x4 getYRotation(TYPE angle) noexcept {
     Matrix4x4 result;
     TYPE* dest = result.getElements();
     const TYPE zero(0);
@@ -109,7 +109,7 @@ public:
     Returns a homogeneous rotation matrix corresponding to the specified angle of
     rotation (in radians) around the Z-axis.
   */
-  static Matrix4x4 getZRotation(TYPE angle) throw() {
+  static Matrix4x4 getZRotation(TYPE angle) noexcept {
     Matrix4x4 result;
     TYPE* dest = result.getElements();
     const TYPE zero(0);
@@ -143,7 +143,7 @@ public:
     Returns a homogeneous rotation matrix corresponding to the specified Euler
     angles.
   */
-  static Matrix4x4 getXYZRotation(const Vector3D<TYPE> rotation) throw() {
+  static Matrix4x4 getXYZRotation(const Vector3D<TYPE> rotation) noexcept {
     const TYPE cx = Math::cos(rotation.getX());
     const TYPE sx = Math::sin(rotation.getX());
     const TYPE cy = Math::cos(rotation.getY());
@@ -183,7 +183,7 @@ public:
     Returns a homogeneous rotation matrix corresponding to the specified
     quaternion.
   */
-  static Matrix4x4 getQRotation(const Quaternion<TYPE>& quaternion) throw() {
+  static Matrix4x4 getQRotation(const Quaternion<TYPE>& quaternion) noexcept {
     const TYPE xx = quaternion.getX() * quaternion.getX();
     const TYPE xy = quaternion.getX() * quaternion.getY();
     const TYPE xz = quaternion.getX() * quaternion.getZ();
@@ -223,13 +223,13 @@ public:
   /**
     Construct an unitialized matrix.
   */
-  inline Matrix4x4() throw() {
+  inline Matrix4x4() noexcept {
   }
   
   /**
     Initializes matrix by copying from other matrix.
   */
-  inline Matrix4x4(const Matrix4x4& _copy) throw() {
+  inline Matrix4x4(const Matrix4x4& _copy) noexcept {
     // no need to protect against self-assignment (possible overlap)
     copy<TYPE>(
       Cast::pointer<TYPE*>(elements),
@@ -241,7 +241,7 @@ public:
   /**
     Assignment of matrix to matrix.
   */
-  inline Matrix4x4& operator=(const Matrix4x4& assign) throw() {
+  inline Matrix4x4& operator=(const Matrix4x4& assign) noexcept {
     // no need to protect against self-assignment (possible overlap)
     copy<TYPE>(
       Cast::pointer<TYPE*>(elements),
@@ -258,13 +258,13 @@ public:
   }
 
   inline void setAt(
-    unsigned int row, unsigned int column, const TYPE& value) throw()
+    unsigned int row, unsigned int column, const TYPE& value) noexcept
   {
     // TAG: check row and column
     elements[row][column] = value;
   }
   
-  inline TYPE* getElements() throw()
+  inline TYPE* getElements() noexcept
   {
     return reinterpret_cast<TYPE*>(&elements);
   }
@@ -363,7 +363,7 @@ public:
   /**
     Inverses the specified matrix.
   */
-  Matrix4x4& inverse(const Matrix4x4& value) throw() {
+  Matrix4x4& inverse(const Matrix4x4& value) noexcept {
     TYPE* dest = getElements();
     const TYPE* src = value.getElements();
     
@@ -419,7 +419,7 @@ public:
   /**
     Inverses the matrix.
   */
-  Matrix4x4& inverse() throw() {
+  Matrix4x4& inverse() noexcept {
     Matrix4x4 temp(*this);
     inverse(temp);
     return *this;
@@ -442,7 +442,7 @@ public:
   /**
     Negates the quaternion.
   */
-  Matrix4x4 negate() throw() {
+  Matrix4x4 negate() noexcept {
     transform(elements, 4 * 4, Negate<TYPE>());
     return *this;
   }
@@ -450,7 +450,7 @@ public:
   /**
     Adds the specified vector to this vector.
   */
-  Matrix4x4& add(const Matrix4x4& value) throw() {
+  Matrix4x4& add(const Matrix4x4& value) noexcept {
     transformByBinary(elements, value.getElements(), 4 * 4, Add<TYPE>());
     return *this;
   }
@@ -458,7 +458,7 @@ public:
   /**
     Subtracts the specified vector from this vector.
   */
-  Matrix4x4& subtract(const Matrix4x4& value) throw() {
+  Matrix4x4& subtract(const Matrix4x4& value) noexcept {
     transformByBinary(elements, value.getElements(), 4 * 4, Subtract<TYPE>());
     return *this;
   }
@@ -466,7 +466,7 @@ public:
   /**
     Multiplies the matrix elements with the specified value.
   */
-  Matrix4x4& multiply(const TYPE& value) throw() {
+  Matrix4x4& multiply(const TYPE& value) noexcept {
     transform(elements, 4 * 4, bind2Second(Multiply<TYPE>(), value));
     return *this;
   }
@@ -474,7 +474,7 @@ public:
   /**
     Multiplies the matrix with the specified quaternion.
   */
-  Quaternion<TYPE> multiply(const Quaternion<TYPE>& value) throw() {
+  Quaternion<TYPE> multiply(const Quaternion<TYPE>& value) noexcept {
     return Quaternion<TYPE>(
       elements[0][0] * value.getX() + elements[0][1] * value.getY() +
       elements[0][2] * value.getZ() + elements[0][3] * value.getW(),
@@ -490,7 +490,7 @@ public:
   /**
     Multiplies the matrix elements with the specified matrix.
   */
-  Matrix4x4 multiply(const Matrix4x4& value) throw() {
+  Matrix4x4 multiply(const Matrix4x4& value) noexcept {
     Matrix4x4 result;
     TYPE* dest = Cast::pointer<TYPE*>(result.elements);
     for (int r = 3; r >= 0; --r) {
@@ -545,7 +545,7 @@ public:
     Fills the last row with the vector [0 0 0 1] and leaves the other elements
     unchanged.
   */
-  void forceHomogeneous() throw() {
+  void forceHomogeneous() noexcept {
     // TAG: any deviation from 0 0 0 1 should be feed back into the other elements
     elements[3][0] = TYPE(0);
     elements[3][1] = TYPE(0);
@@ -556,12 +556,12 @@ public:
   /**
     Divides this matrix elements with the specified value.
   */
-  Matrix4x4& divide(const TYPE& value) throw() {
+  Matrix4x4& divide(const TYPE& value) noexcept {
     transform(elements, 4 * 4, bind2Second(Divide<TYPE>(), value));
     return *this;
   }
 
-  Matrix4x4& transpose() throw() {
+  Matrix4x4& transpose() noexcept {
     swap(elements[0][1], elements[1][0]);
     swap(elements[0][2], elements[2][0]);
     swap(elements[0][3], elements[3][0]);
@@ -570,7 +570,7 @@ public:
     swap(elements[2][3], elements[3][2]);
   }
   
-  Matrix4x4& transpose(const Matrix4x4& value) throw() {
+  Matrix4x4& transpose(const Matrix4x4& value) noexcept {
     elements[0][0] = value.elements[0][0];
     elements[1][0] = value.elements[0][1];
     elements[2][0] = value.elements[0][2];
@@ -604,7 +604,7 @@ public:
 
     @param value The value to be added.
   */
-  inline Matrix4x4& operator+=(const Matrix4x4& value) throw() {
+  inline Matrix4x4& operator+=(const Matrix4x4& value) noexcept {
     return add(value);
   }
 
@@ -613,7 +613,7 @@ public:
 
     @param value The value to be subtracted.
   */
-  inline Matrix4x4& operator-=(const Matrix4x4& value) throw() {
+  inline Matrix4x4& operator-=(const Matrix4x4& value) noexcept {
     return subtract(value);
   }
 
@@ -622,7 +622,7 @@ public:
 
     @param value The multiplicator.
   */
-  inline Matrix4x4& operator*=(const TYPE& value) throw() {
+  inline Matrix4x4& operator*=(const TYPE& value) noexcept {
     return multiply(value);
   }
 
@@ -631,7 +631,7 @@ public:
 
     @param value The divisor.
   */
-  inline Matrix4x4& operator/=(const TYPE& value) throw() {
+  inline Matrix4x4& operator/=(const TYPE& value) noexcept {
     return divide(value);
   }
 
@@ -657,7 +657,7 @@ public:
 */
 template<class TYPE>
 inline Matrix4x4<TYPE> operator+(
-  const Matrix4x4<TYPE>& left, const Matrix4x4<TYPE>& right) throw() {
+  const Matrix4x4<TYPE>& left, const Matrix4x4<TYPE>& right) noexcept {
   return Matrix4x4<TYPE>(left).add(right);
 }
 
@@ -668,7 +668,7 @@ inline Matrix4x4<TYPE> operator+(
 */
 template<class TYPE>
 inline Matrix4x4<TYPE> operator-(
-  const Matrix4x4<TYPE>& left, const Matrix4x4<TYPE>& right) throw() {
+  const Matrix4x4<TYPE>& left, const Matrix4x4<TYPE>& right) noexcept {
   return Matrix4x4<TYPE>(left).subtract(right);
 }
 
@@ -679,7 +679,7 @@ inline Matrix4x4<TYPE> operator-(
 */
 template<class TYPE>
 inline Matrix4x4<TYPE> operator*(
-  const Matrix4x4<TYPE>& left, const TYPE& right) throw() {
+  const Matrix4x4<TYPE>& left, const TYPE& right) noexcept {
   return Matrix4x4<TYPE>(left).multiply(right);
 }
 
@@ -690,7 +690,7 @@ inline Matrix4x4<TYPE> operator*(
 */
 template<class TYPE>
 inline Matrix4x4<TYPE> operator*(
-  const TYPE& left, const Matrix4x4<TYPE>& right) throw() {
+  const TYPE& left, const Matrix4x4<TYPE>& right) noexcept {
   return Matrix4x4<TYPE>(right).multiply(left);
 }
 
@@ -701,7 +701,7 @@ inline Matrix4x4<TYPE> operator*(
 */
 template<class TYPE>
 inline Matrix4x4<TYPE> operator*(
-  const Matrix4x4<TYPE>& left, const Matrix4x4<TYPE>& right) throw() {
+  const Matrix4x4<TYPE>& left, const Matrix4x4<TYPE>& right) noexcept {
   return Matrix4x4<TYPE>(left).multiply(right);
 }
 
@@ -712,7 +712,7 @@ inline Matrix4x4<TYPE> operator*(
 */
 template<class TYPE>
 inline Matrix4x4<TYPE> operator/(
-  const Matrix4x4<TYPE>& left, const TYPE& right) throw() {
+  const Matrix4x4<TYPE>& left, const TYPE& right) noexcept {
   return Matrix4x4<TYPE>(left).divide(right);
 }
 
@@ -744,7 +744,7 @@ FormatOutputStream& operator<<(FormatOutputStream& stream, const Matrix4x4<TYPE>
 */
 template<class TYPE>
 inline Quaternion<TYPE> operator*(
-  const Matrix4x4<TYPE>& left, const Quaternion<TYPE>& right) throw() {
+  const Matrix4x4<TYPE>& left, const Quaternion<TYPE>& right) noexcept {
   return Matrix4x4<TYPE>(left).multiply(right);
 }
 

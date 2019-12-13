@@ -32,22 +32,22 @@
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
-FileDescriptorOutputStream::FileDescriptorOutputStream() throw()
+FileDescriptorOutputStream::FileDescriptorOutputStream() noexcept
   : FileDescriptor()
 {
 }
 
-FileDescriptorOutputStream::FileDescriptorOutputStream(const FileDescriptor& fd) throw()
+FileDescriptorOutputStream::FileDescriptorOutputStream(const FileDescriptor& fd) noexcept
   : FileDescriptor(fd)
 {
 }
 
-FileDescriptorOutputStream::FileDescriptorOutputStream(const FileDescriptorOutputStream& copy) throw()
+FileDescriptorOutputStream::FileDescriptorOutputStream(const FileDescriptorOutputStream& copy) noexcept
   : FileDescriptor(copy)
 {
 }
 
-FileDescriptorOutputStream& FileDescriptorOutputStream::operator=(const FileDescriptorOutputStream& assign) throw()
+FileDescriptorOutputStream& FileDescriptorOutputStream::operator=(const FileDescriptorOutputStream& assign) noexcept
 {
   if (&assign != this) { // protect against self assignment
     fd = assign.fd;

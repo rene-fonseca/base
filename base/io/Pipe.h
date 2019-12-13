@@ -45,7 +45,7 @@ public:
     static Handle* invalid;
 
     /** Initializes pipe handle. */
-    inline PipeHandle(OperatingSystem::Handle handle) throw() : Handle(handle) {
+    inline PipeHandle(OperatingSystem::Handle handle) noexcept : Handle(handle) {
     }
     
     /** Releases the resources used by the pipe. */
@@ -67,18 +67,18 @@ public:
   /**
     Initializes an invalidated pipe object.
   */
-  Pipe() throw();
+  Pipe() noexcept;
 
   /**
     Initialization of pipe from other pipe.
   */
-  inline Pipe(const Pipe& copy) throw() : fd(copy.fd) {
+  inline Pipe(const Pipe& copy) noexcept : fd(copy.fd) {
   }
 
   /**
     Assignment of pipe to pipe.
   */
-  inline Pipe& operator=(const Pipe& assign) throw() {
+  inline Pipe& operator=(const Pipe& assign) noexcept {
     // no need to protect against self assignment
     fd = assign.fd;
     end = assign.end;

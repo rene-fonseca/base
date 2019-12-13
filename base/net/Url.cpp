@@ -29,7 +29,7 @@ public:
 
   typedef Encode (*Encoding)(char);
 
-  static inline Encode defaultEncoding(char ch) throw() {
+  static inline Encode defaultEncoding(char ch) noexcept {
     switch (ch) {
     case 0x00: case 0x01: case 0x02: case 0x03:
     case 0x04: case 0x05: case 0x06: case 0x07:
@@ -62,11 +62,11 @@ public:
     }
   }
 
-  static inline Encode userEncoding(char ch) throw() {
+  static inline Encode userEncoding(char ch) noexcept {
     return ((ch == ':') || (ch == '@') || (ch == '/')) ? ALWAYS : defaultEncoding(ch);
   }
 
-  static inline Encode passwordEncoding(char ch) throw() {
+  static inline Encode passwordEncoding(char ch) noexcept {
     return ((ch == ':') || (ch == '@') || (ch == '/')) ? ALWAYS : defaultEncoding(ch);
   }
 
@@ -148,7 +148,7 @@ Url::Url(
   }
 }
 
-Url::Url(const Url& copy) throw()
+Url::Url(const Url& copy) noexcept
   : scheme(copy.scheme),
     user(copy.user),
     password(copy.password),
@@ -158,7 +158,7 @@ Url::Url(const Url& copy) throw()
 {
 }
 
-Url& Url::operator=(const Url& assign) throw()
+Url& Url::operator=(const Url& assign) noexcept
 {
   scheme = assign.scheme;
   user = assign.user;
@@ -219,7 +219,7 @@ String Url::validatePassword(const String& str) throw(UrlException) {
 }
 
 bool Url::isHost(
-  String::ReadIterator i, const String::ReadIterator& end) throw() {
+  String::ReadIterator i, const String::ReadIterator& end) noexcept {
   if (i >= end) {
     return false;
   }
@@ -285,7 +285,7 @@ bool Url::isHost(
   }
 }
 
-bool Url::isPort(String::ReadIterator i, const String::ReadIterator& end) throw() {
+bool Url::isPort(String::ReadIterator i, const String::ReadIterator& end) noexcept {
   if (i >= end) {
     return false;
   }

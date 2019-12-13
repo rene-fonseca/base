@@ -44,7 +44,7 @@ public:
   /**
     Initializes the scheme.
   */
-  LocalScheme() throw();
+  LocalScheme() noexcept;
 
   /**
     Returns the global identifier of the scheme (e.g.
@@ -107,7 +107,7 @@ public:
   /**
     Signals the protocol to be terminated.
   */
-  void terminate() throw();
+  void terminate() noexcept;
   
   /**
     Closes the specified connection.
@@ -117,7 +117,7 @@ public:
   /**
     Destroys the scheme.
   */
-  ~LocalScheme() throw();
+  ~LocalScheme() noexcept;
 };
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

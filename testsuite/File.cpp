@@ -32,7 +32,7 @@ private:
 public:
 
   void asynchronousCompletion(
-    const AsynchronousReadCompletion& completion) throw() {
+    const AsynchronousReadCompletion& completion) noexcept {
     bytesRead = completion.getBytesRead();
     if (completion.successful()) {
       fout << "Read completed:" << EOL
@@ -52,7 +52,7 @@ public:
   }
   
   void asynchronousCompletion(
-    const AsynchronousWriteCompletion& completion) throw() {
+    const AsynchronousWriteCompletion& completion) noexcept {
     if (completion.successful()) {
       fout << "Write completed:" << EOL
            << "  bytesWritten=" << completion.getBytesWritten() << EOL

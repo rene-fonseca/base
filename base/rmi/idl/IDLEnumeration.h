@@ -31,12 +31,12 @@ public:
   /**
     Initializes the IDL enumeration.
   */
-  IDLEnumeration(const String& name) throw();
+  IDLEnumeration(const String& name) noexcept;
   
   /**
     Destroys the IDL enumeration.
   */
-  ~IDLEnumeration() throw();
+  ~IDLEnumeration() noexcept;
 };
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

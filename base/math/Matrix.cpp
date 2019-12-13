@@ -28,7 +28,7 @@ protected:
   TYPE value;
 public:
   
-  inline MultiplySubtract(const TYPE& _value) throw() : value(_value) {
+  inline MultiplySubtract(const TYPE& _value) noexcept : value(_value) {
   }
   
   inline TYPE operator()(const TYPE& left, const TYPE& right) const throw() {
@@ -726,7 +726,7 @@ Matrix<TYPE>& Matrix<TYPE>::transpose(const Matrix& value) throw(MemoryException
 }
 
 template<class TYPE>
-bool operator==(const Matrix<TYPE>& left, const Matrix<TYPE>& right) throw()
+bool operator==(const Matrix<TYPE>& left, const Matrix<TYPE>& right) noexcept
 {
   return left.isEqual(right);
 }

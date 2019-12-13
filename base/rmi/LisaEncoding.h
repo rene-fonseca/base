@@ -39,7 +39,7 @@ public:
   class LisaDecoder : public OrbDecoder {
   public:
 
-    inline LisaDecoder(ProtectedPointer<Orb> orb) throw() : OrbDecoder(orb) {
+    inline LisaDecoder(ProtectedPointer<Orb> orb) noexcept : OrbDecoder(orb) {
     }
     
     /**
@@ -208,7 +208,7 @@ public:
     /**
       Initializes the encoder.
     */
-    inline LisaEncoder(ProtectedPointer<Orb> _orb) throw()
+    inline LisaEncoder(ProtectedPointer<Orb> _orb) noexcept
       : OrbEncoder(orb) {
     }
     

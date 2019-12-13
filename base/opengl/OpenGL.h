@@ -434,7 +434,7 @@ public:
   /**
     Initializes the exception object with no message.
   */
-  inline OpenGLException() throw() {
+  inline OpenGLException() noexcept {
   }
   
   /**
@@ -442,7 +442,7 @@ public:
     
     @param message The message.
   */
-  inline OpenGLException(const char* message) throw() : Exception(message) {
+  inline OpenGLException(const char* message) noexcept : Exception(message) {
   }
   
   /**
@@ -450,7 +450,7 @@ public:
     
     @param type The identity of the type.
   */
-  inline OpenGLException(const Type& type) throw() : Exception(type) {
+  inline OpenGLException(const Type& type) noexcept : Exception(type) {
   }
   
   /**
@@ -459,7 +459,7 @@ public:
     @param message An NULL-terminated string.
     @param type The identity of the type.
   */
-  inline OpenGLException(const char* message, const Type& type) throw() : Exception(message, type) {
+  inline OpenGLException(const char* message, const Type& type) noexcept : Exception(message, type) {
   }
   
   _COM_AZURE_DEV__BASE__EXCEPTION_THIS_TYPE()
@@ -493,23 +493,23 @@ private:
   /**
     Returns the extension function.
   */
-  Function getFunction(const Literal& name) throw();
+  Function getFunction(const Literal& name) noexcept;
   
   /**
     Returns the extension function.
   */
-  Function getFunction(const String& name) throw();
+  Function getFunction(const String& name) noexcept;
 private:
   
   /**
     Loads the specified functions.
   */
-  void loadFunctions(Descriptor* descriptor, unsigned int size) throw();
+  void loadFunctions(Descriptor* descriptor, unsigned int size) noexcept;
 
   /**
     Loads the handler for missing functions.
   */
-  void fixMissing(Descriptor* descriptor, unsigned int size) throw();
+  void fixMissing(Descriptor* descriptor, unsigned int size) noexcept;
 public:
 
   typedef unsigned int GLenum;
@@ -3083,14 +3083,14 @@ public:
   /**
     Defines the 2D orthographic projection matrix.
   */
-  inline void ortho2D(GLdouble left, GLdouble right, GLdouble bottom, GLdouble top) throw() {
+  inline void ortho2D(GLdouble left, GLdouble right, GLdouble bottom, GLdouble top) noexcept {
     glOrtho(left, right, bottom, top, -1, 1);
   }
 
   /**
     Defines a viewing transformation.
   */
-  void lookAt(const Vector3D<double>& eye, const Vector3D<double>& center, const Vector3D<double>& up) throw();
+  void lookAt(const Vector3D<double>& eye, const Vector3D<double>& center, const Vector3D<double>& up) noexcept;
 
   /**
     Sets the perspective projection matrix.
@@ -3100,11 +3100,11 @@ public:
     @param zNear Distance from the viewer to the near clipping plane.
     @param zFar Distance from the viewer to the far clipping plane.
   */
-  void perspective(GLdouble fovy, GLdouble aspectRatio, GLdouble zNear, GLdouble zFar) throw();
+  void perspective(GLdouble fovy, GLdouble aspectRatio, GLdouble zNear, GLdouble zFar) noexcept;
   
   Vector3D<double> project(Vector3D<double> object, const Matrix4x4<double> model, const Matrix4x4<double> projection, const GLint viewport[4]) throw(OpenGLException);
   
-  void pickMatrix(GLdouble x, GLdouble y, GLdouble width, GLdouble height, GLint viewport[4]) throw();
+  void pickMatrix(GLdouble x, GLdouble y, GLdouble width, GLdouble height, GLint viewport[4]) noexcept;
   
   Vector3D<double> unProject(const Vector3D<double>& window, const Matrix4x4<double>& model, const Matrix4x4<double>& projection, const GLint viewport[4]) throw(OpenGLException);
 
@@ -3116,17 +3116,17 @@ public:
     @param height The height of the box.
     @param flags The flags.
   */
-  void box(double width, double length, double height, unsigned int flags) throw();
+  void box(double width, double length, double height, unsigned int flags) noexcept;
   
-  void cylinder(GLdouble baseRadius, GLdouble topRadius, GLdouble height, unsigned int slices, unsigned int stacks) throw();
+  void cylinder(GLdouble baseRadius, GLdouble topRadius, GLdouble height, unsigned int slices, unsigned int stacks) noexcept;
   
-  inline void cone(GLdouble baseRadius, GLdouble height, unsigned int slices, unsigned int stacks) throw() {
+  inline void cone(GLdouble baseRadius, GLdouble height, unsigned int slices, unsigned int stacks) noexcept {
     cylinder(baseRadius, 0, height, slices, stacks);
   }
 
-  void disk(double innerRadius, double outerRadius, unsigned int slices, unsigned int loops) throw();
+  void disk(double innerRadius, double outerRadius, unsigned int slices, unsigned int loops) noexcept;
 
-  void partialDisk(GLdouble innerRadius, GLdouble outerRadius, unsigned int slices, unsigned int loops, GLdouble startAngle, GLdouble sweepAngle) throw();
+  void partialDisk(GLdouble innerRadius, GLdouble outerRadius, unsigned int slices, unsigned int loops, GLdouble startAngle, GLdouble sweepAngle) noexcept;
 
   /**
     Sphere.
@@ -3135,7 +3135,7 @@ public:
     @param slices The number of slices.
     @param stacks The number of stacks.
   */
-  void sphere(double radius, unsigned int slices, unsigned int stacks) throw();
+  void sphere(double radius, unsigned int slices, unsigned int stacks) noexcept;
 
   /**
     Torus.
@@ -3145,7 +3145,7 @@ public:
     @param numberOfRings The number of rings.
     @param numberOfSides The number of sides.
   */
-  void torus(GLdouble innerRadius, GLdouble outerRadius, unsigned int numberOfRings, unsigned int numberOfSides) throw();
+  void torus(GLdouble innerRadius, GLdouble outerRadius, unsigned int numberOfRings, unsigned int numberOfSides) noexcept;
   
   /**
     Initializes the OpenGL interface.
@@ -3157,14 +3157,14 @@ public:
   /**
     Returns the OpenGL specification version (0x010100, 0x010200, 0x010201, 0x010300, or 0x010400).
   */
-  inline unsigned int getSpecification() throw() {
+  inline unsigned int getSpecification() noexcept {
     return specification;
   }
 
   /**
     Returns the vendor.
   */
-  inline String getVendor() throw() {
+  inline String getVendor() noexcept {
     const GLubyte* vendor = glGetString(OpenGL::VENDOR);
     return NativeString(Cast::pointer<const char*>(vendor));
   }
@@ -3172,7 +3172,7 @@ public:
   /**
     Returns the renderer.
   */
-  inline String getRenderer() throw() {
+  inline String getRenderer() noexcept {
     const GLubyte* renderer = glGetString(OpenGL::RENDERER);
     return NativeString(Cast::pointer<const char*>(renderer));
   }
@@ -3180,7 +3180,7 @@ public:
   /**
     Returns the version.
   */
-  inline String getVersion() throw() {
+  inline String getVersion() noexcept {
     const GLubyte* version = glGetString(OpenGL::VERSION);
     return NativeString(Cast::pointer<const char*>(version));
   }
@@ -3188,7 +3188,7 @@ public:
   /**
     Returns the extensions.
   */
-  inline String getExtensions() throw() {
+  inline String getExtensions() noexcept {
     const GLubyte* extensions = glGetString(OpenGL::EXTENSIONS);
     return NativeString(Cast::pointer<const char*>(extensions));
   }
@@ -3204,11 +3204,11 @@ public:
     OpenGL& openGL;
   public:
     
-    inline Block(OpenGL& _openGL, GLenum mode) throw() : openGL(_openGL) {
+    inline Block(OpenGL& _openGL, GLenum mode) noexcept : openGL(_openGL) {
       openGL.glBegin(mode);
     }
     
-    inline ~Block() throw() {
+    inline ~Block() noexcept {
       openGL.glEnd();
     }
   };
@@ -3219,11 +3219,11 @@ public:
     OpenGL& openGL;
   public:
     
-    inline PushPop(OpenGL& _openGL) throw() : openGL(_openGL) {
+    inline PushPop(OpenGL& _openGL) noexcept : openGL(_openGL) {
       openGL.glPushMatrix();
     }
     
-    inline ~PushPop() throw() {
+    inline ~PushPop() noexcept {
       openGL.glPopMatrix();
     }
   };
@@ -3234,12 +3234,12 @@ public:
     OpenGL& openGL;
   public:
     
-    inline DisplayList(OpenGL& _openGL, GLuint list, GLenum mode = OpenGL::COMPILE) throw()
+    inline DisplayList(OpenGL& _openGL, GLuint list, GLenum mode = OpenGL::COMPILE) noexcept
       : openGL(_openGL) {
       openGL.glNewList(list, mode);
     }
     
-    inline ~DisplayList() throw() {
+    inline ~DisplayList() noexcept {
       openGL.glEndList();
     }
   };
@@ -3275,7 +3275,7 @@ public:
       openGL.glCallLists(numberOfLists, UNSIGNED_INT, objects.getElements());
     }
     
-    inline ~ReserveDisplayLists() throw() {
+    inline ~ReserveDisplayLists() noexcept {
       openGL.glDeleteLists(offset, numberOfLists);
     }
   };
@@ -3296,7 +3296,7 @@ public:
       return name;
     }
     
-    inline ~ReserveTexture() throw() {
+    inline ~ReserveTexture() noexcept {
       openGL.glDeleteTextures(1, &name);
     }
   };

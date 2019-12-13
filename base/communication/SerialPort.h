@@ -50,7 +50,7 @@ private:
   public:
 
     /** Initializes file handle. */
-    inline SerialPortHandle(OperatingSystem::Handle handle) throw()
+    inline SerialPortHandle(OperatingSystem::Handle handle) noexcept
       : Handle(handle) {
     }
     
@@ -98,7 +98,7 @@ public:
   /**
     Returns the available ports.
   */
-  static List<String> getPorts() throw();
+  static List<String> getPorts() noexcept;
 
   /**
     Initializes the serial communication port.

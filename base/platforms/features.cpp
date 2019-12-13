@@ -110,7 +110,7 @@ _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE
 
 #if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__WASI)
-extern "C" void* __cxa_allocate_exception(size_t thrown_size) throw()
+extern "C" void* __cxa_allocate_exception(size_t thrown_size) noexcept
 {
   return nullptr;
 }

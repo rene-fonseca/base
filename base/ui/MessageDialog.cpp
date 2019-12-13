@@ -25,12 +25,12 @@
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
-MessageDialog::MessageDialog() throw()
+MessageDialog::MessageDialog() noexcept
   : category(MessageDialog::INFORMATION), answer(MessageDialog::CANCEL) {
 }
 
 MessageDialog::MessageDialog(
-  const String& _title, const String& _message, Category _category) throw()
+  const String& _title, const String& _message, Category _category) noexcept
   : category(_category),
     title(_title),
     message(_message),
@@ -85,7 +85,7 @@ bool MessageDialog::execute() throw(UserInterfaceException)
 #endif // flavor
 }
 
-MessageDialog::~MessageDialog() throw() {
+MessageDialog::~MessageDialog() noexcept {
 }
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

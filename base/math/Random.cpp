@@ -88,7 +88,7 @@ namespace RandomImpl {
 
 //  class Randomizer {
 //  public:
-//    inline Randomizer() throw() {RandomLegacy::randomize();}
+//    inline Randomizer() noexcept {RandomLegacy::randomize();}
 //  };
 
 }; // end of namespace RandomImpl
@@ -96,7 +96,7 @@ namespace RandomImpl {
 unsigned int RandomLegacy::state[RandomLegacy::Traits::n];
 unsigned int RandomLegacy::nextWord; // initialized by randomize()
 
-void RandomLegacy::randomize() throw() {
+void RandomLegacy::randomize() noexcept {
   long long seed = Timer().getStartTime();
   seed += 20010908014640LL; // magic date/time in UTC - 09/08/2001 01:46:40
   seed &= 0xffffffff;
@@ -106,7 +106,7 @@ void RandomLegacy::randomize() throw() {
   randomize(static_cast<unsigned int>(seed));
 }
 
-void RandomLegacy::randomize(unsigned int seed) throw()
+void RandomLegacy::randomize(unsigned int seed) noexcept
 {
   BASSERT((Traits::w == 32) && (sizeof(unsigned int) == 4));
   RandomLegacy::spinLock.exclusiveLock();
@@ -119,7 +119,7 @@ void RandomLegacy::randomize(unsigned int seed) throw()
   RandomLegacy::spinLock.releaseLock();
 }
 
-unsigned int RandomLegacy::getInteger() throw()
+unsigned int RandomLegacy::getInteger() noexcept
 {
   BASSERT((Traits::w == 32) && (sizeof(unsigned int) == 4));
   unsigned int bits = 0;

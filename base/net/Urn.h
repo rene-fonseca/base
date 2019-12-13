@@ -48,12 +48,12 @@ public:
   /**
     Returns true if the specified string is a valid urn.
   */
-  static bool isUrn(const String& urn) throw();
+  static bool isUrn(const String& urn) noexcept;
   
   /**
     Initializes urn as invalid.
   */
-  Urn() throw();
+  Urn() noexcept;
   
   /**
     Initializes urn from a string representation.
@@ -73,12 +73,12 @@ public:
   /**
     Initializes urn from other urn.
   */
-  Urn(const Urn& copy) throw();
+  Urn(const Urn& copy) noexcept;
 
   /**
     Assignment of URN by URN.
   */
-  Urn& operator=(const Urn& assign) throw();
+  Urn& operator=(const Urn& assign) noexcept;
   
   /**
     Returns true if the URN are equal.

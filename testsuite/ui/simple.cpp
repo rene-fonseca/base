@@ -27,7 +27,7 @@ public:
   WindowApplication(
     int numberOfArguments,
     const char* arguments[],
-    const char* environment[]) throw()
+    const char* environment[]) noexcept
     : Application("simple", numberOfArguments, arguments, environment) {
   }
   
@@ -44,18 +44,18 @@ public:
       setIconTitle(title);
     }
     
-    void onDisplay() throw() {
+    void onDisplay() noexcept {
       // setBrush();
       clear();
       line(Position(10, 60), Position(64, 20));
       flush();
     }
     
-    void onMove(const Position& position) throw() {
+    void onMove(const Position& position) noexcept {
       fout << "Event: move " << position << ENDL;
     }
     
-    void onResize(const Dimension& dimension) throw() {
+    void onResize(const Dimension& dimension) noexcept {
       fout << "Event: resize " << dimension << ENDL;
       onDisplay();
     }
@@ -65,7 +65,7 @@ public:
       Literal literal;
     };
     
-    void onMouseMove(const Position& position, unsigned int state) throw() {
+    void onMouseMove(const Position& position, unsigned int state) noexcept {
       static const Flag STATES[] = {
         {Mouse::LEFT, Literal("LEFT")},
         {Mouse::MIDDLE, Literal("MIDDLE")},
@@ -94,7 +94,7 @@ public:
       fout << ENDL;
     }
 
-    void onMouseScope(bool scope) throw() {
+    void onMouseScope(bool scope) noexcept {
       fout << "Event: mouse scope "
            << (scope ? Literal("INSIDE SCOPE") : Literal("OUT OF SCOPE")) << ENDL;
     }
@@ -103,7 +103,7 @@ public:
       const Position& position,
       Mouse::Button button,
       Mouse::Event event,
-      unsigned int state) throw() {
+      unsigned int state) noexcept {
       
       static const Flag STATES[] = {
         {Mouse::LEFT, MESSAGE("LEFT")},
@@ -170,12 +170,12 @@ public:
     }
     
     void onMouseWheel(
-      const Position& position, int delta, unsigned int buttons) throw() {
+      const Position& position, int delta, unsigned int buttons) noexcept {
       fout << "Event: mouse wheel " << position << SP << delta << ENDL;
     }
     
     void onKey(
-      unsigned int key, unsigned int flags, unsigned int modifiers) throw() {
+      unsigned int key, unsigned int flags, unsigned int modifiers) noexcept {
       if (flags & Key::PRESSED) {
         if (flags & Key::DEAD) {
           return;
@@ -197,17 +197,17 @@ public:
       }
     }
 
-    void onDestruction() throw() {
+    void onDestruction() noexcept {
       fout << "Event: destruction" << ENDL;
       exit();
     }
     
-    bool onClose() throw() {
+    bool onClose() noexcept {
       fout << "Event: close " << ENDL;
       return true;
     }
     
-    void onVisibility(Visibility visibility) throw() {
+    void onVisibility(Visibility visibility) noexcept {
       static const Literal VISIBILITY[] = {
         Literal("INVISIBLE"),
         Literal("PARTIALLY VISIBLE"),
@@ -217,17 +217,17 @@ public:
       fout << "Event: visibility " << VISIBILITY[visibility] << ENDL;
     }
     
-    void onFocus(Focus focus) throw() {
+    void onFocus(Focus focus) noexcept {
       update();
       fout << "Event: focus "
            << ((focus == ACQUIRED_FOCUS) ? Literal("ACQUIRED") : Literal("LOST")) << ENDL;
     }
     
-    void onMenu(unsigned int identifier) throw() {
+    void onMenu(unsigned int identifier) noexcept {
       fout << "Event: menu " << identifier << ENDL;
     }
     
-    void onCommand(unsigned int identifier) throw() {
+    void onCommand(unsigned int identifier) noexcept {
       fout << "Event: command " << identifier << ENDL;
     }
   };

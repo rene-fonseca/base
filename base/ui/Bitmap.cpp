@@ -31,14 +31,14 @@ template<>
 class Backend<WindowImpl> {
 public:
 
-  static inline void* getDisplayHandle() throw()
+  static inline void* getDisplayHandle() noexcept
   {
     return WindowImpl::displayHandle;
   }
 };
 #endif
 
-Bitmap::Handle::~Handle() throw()
+Bitmap::Handle::~Handle() noexcept
 {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   if (handle) {
@@ -160,10 +160,10 @@ void Bitmap::decode(
   const Dimension& dimension,
   Format format,
   Encoding encoding,
-  const void* data) throw() {
+  const void* data) noexcept {
 }
 
-void Bitmap::encode(Format format, Encoding encoding, void* data) throw() {
+void Bitmap::encode(Format format, Encoding encoding, void* data) noexcept {
 }
 #endif
 

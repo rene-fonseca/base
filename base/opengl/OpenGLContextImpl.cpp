@@ -212,7 +212,7 @@ void OpenGLContextImpl::makeCurrent() throw(OpenGLException)
 #endif // flavor
 }
 
-void OpenGLContextImpl::deselect() throw()
+void OpenGLContextImpl::deselect() noexcept
 {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)  
   native::GDI::wglMakeCurrent(0, 0);

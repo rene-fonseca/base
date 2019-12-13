@@ -72,11 +72,11 @@ public:
     return flags & FIXED_SPLIT;
   }
   
-  void setFixed(bool fixed) throw() {
+  void setFixed(bool fixed) noexcept {
     //(flags & ~FIXED_SPLIT)
   }
 
-  unsigned int getOffset(Field field) throw() {
+  unsigned int getOffset(Field field) noexcept {
     const Dimension dimension = getDimension();
     const unsigned int total = (flags & VERTICAL_SPLIT) ? dimension.getWidth() : dimension.getHeight();
     unsigned int limit = total - widthOfSplit;
@@ -94,32 +94,32 @@ public:
     return 0;
   }
   
-  void setOffset(int offset, Field field) throw();
+  void setOffset(int offset, Field field) noexcept;
   
-  unsigned int getSplitWidth() throw() {
+  unsigned int getSplitWidth() noexcept {
     return widthOfSplit;
   }
 
-  void setWidthOfSplit(unsigned int width) throw() {
+  void setWidthOfSplit(unsigned int width) noexcept {
     widthOfSplit = width;
   }
   
-  void onResize(const Dimension& dimension) throw();
+  void onResize(const Dimension& dimension) noexcept;
 
-  void onMouseScope(bool scope) throw();
+  void onMouseScope(bool scope) noexcept;
   
-  void onMouseMove(const Position& position, unsigned int state) throw();
+  void onMouseMove(const Position& position, unsigned int state) noexcept;
 
-  void onMouseButton(const Position& position, Mouse::Button button, Mouse::Event event, unsigned int state) throw();
+  void onMouseButton(const Position& position, Mouse::Button button, Mouse::Event event, unsigned int state) noexcept;
 
-  void onKey(unsigned int key, unsigned int flags, unsigned int modifiers) throw();
+  void onKey(unsigned int key, unsigned int flags, unsigned int modifiers) noexcept;
 
-  void onDisplay() throw();
+  void onDisplay() noexcept;
 
   /**
     Destroys the split.
   */
-  inline ~Split() throw() {
+  inline ~Split() noexcept {
   }
 };
 

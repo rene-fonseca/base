@@ -387,7 +387,7 @@ inline void transform(TYPE* element, MemorySize count, const UNOPR& function) {
 
 /** The sequences are expected not to overlap. */
 template<class TYPE, class UNOPR>
-inline void transformByUnary(TYPE* restrict result, const TYPE* restrict left, MemorySize count, const UNOPR& function) throw() {
+inline void transformByUnary(TYPE* restrict result, const TYPE* restrict left, MemorySize count, const UNOPR& function) noexcept {
   while (count) {
     *result = function(*left);
     ++result;
@@ -636,7 +636,7 @@ protected:
   FirstArgument first;
 public:
   
-  inline Binder2First(const BINOPR& _operation, FirstArgument _first) throw()
+  inline Binder2First(const BINOPR& _operation, FirstArgument _first) noexcept
     : operation(_operation), first(_first) {
   }
   
@@ -672,7 +672,7 @@ protected:
   SecondArgument second;
 public:
 
-  inline Binder2Second(const BINOPR& _operation, SecondArgument _second) throw()
+  inline Binder2Second(const BINOPR& _operation, SecondArgument _second) noexcept
     : operation(_operation), second(_second) {
   }
 
@@ -687,7 +687,7 @@ public:
 */
 template<class BINOPR>
 inline Binder2Second<BINOPR> bind2Second(
-  const BINOPR& operation, const typename BINOPR::SecondArgument& value) throw() {
+  const BINOPR& operation, const typename BINOPR::SecondArgument& value) noexcept {
   return Binder2Second<BINOPR>(operation, value);
 }
 
@@ -938,10 +938,10 @@ protected:
   RESULT result = 0;
 public:
   
-  inline Sum() throw() {
+  inline Sum() noexcept {
   }
   
-  inline void operator()(const TYPE& value) throw() {
+  inline void operator()(const TYPE& value) noexcept {
     result += value;
   }
   
@@ -963,10 +963,10 @@ protected:
   RESULT result = 0;
 public:
   
-  inline AbsoluteSum() throw() {
+  inline AbsoluteSum() noexcept {
   }
   
-  inline void operator()(const TYPE& value) throw() {
+  inline void operator()(const TYPE& value) noexcept {
     result += absolute(value);
   }
   
@@ -988,10 +988,10 @@ protected:
   RESULT result = 0;
 public:
   
-  inline SquareSum() throw() {
+  inline SquareSum() noexcept {
   }
 
-  inline void operator()(const TYPE& value) throw() {
+  inline void operator()(const TYPE& value) noexcept {
     result += value * value;
   }
   
@@ -1012,10 +1012,10 @@ protected:
   RESULT result = 0;
 public:
   
-  inline DotProduct() throw() {
+  inline DotProduct() noexcept {
   }
   
-  inline void operator()(const TYPE& left, const TYPE& right) throw() {
+  inline void operator()(const TYPE& left, const TYPE& right) noexcept {
     result += left * right;
   }
   
@@ -1037,10 +1037,10 @@ protected:
   TYPE result = 0;
 public:
 
-  inline Minimum(const TYPE& value) throw() : result(value) {
+  inline Minimum(const TYPE& value) noexcept : result(value) {
   }
   
-  inline void operator()(const TYPE& value) throw() {
+  inline void operator()(const TYPE& value) noexcept {
     if (value < result) {
       result = value;
     }
@@ -1064,11 +1064,11 @@ protected:
   TYPE result = 0;
 public:
   
-  inline Maximum(const TYPE& value) throw()
+  inline Maximum(const TYPE& value) noexcept
     : result(value) {
   }
   
-  inline void operator()(const TYPE& value) throw() {
+  inline void operator()(const TYPE& value) noexcept {
     if (value > result) {
       result = value;
     }
@@ -1098,7 +1098,7 @@ private:
   Member member;
 
   /** Disable default assignment. */
-  InvokeMember& operator=(const InvokeMember& assign) throw();
+  InvokeMember& operator=(const InvokeMember& assign) noexcept;
 public:
 
   /**
@@ -1106,14 +1106,14 @@ public:
 
     @param member The member function to be invocated.
   */
-  explicit inline InvokeMember(Member _member) throw()
+  explicit inline InvokeMember(Member _member) noexcept
     : member(_member) {
   }
 
   /**
     Initializes object from other object.
   */
-  inline InvokeMember(const InvokeMember& copy) throw()
+  inline InvokeMember(const InvokeMember& copy) noexcept
     : member(copy.member) {
   }
 
@@ -1143,7 +1143,7 @@ private:
   Member member;
 
   /** Disable default assignment. */
-  InvokeConstMember& operator=(const InvokeConstMember& assign) throw();
+  InvokeConstMember& operator=(const InvokeConstMember& assign) noexcept;
 public:
 
   /**
@@ -1151,14 +1151,14 @@ public:
 
     @param member The member function to be invocated.
   */
-  explicit inline InvokeConstMember(Member _member) throw()
+  explicit inline InvokeConstMember(Member _member) noexcept
     : member(_member) {
   }
 
   /**
     Initializes object from other object.
   */
-  inline InvokeConstMember(const InvokeConstMember& copy) throw()
+  inline InvokeConstMember(const InvokeConstMember& copy) noexcept
     : member(copy.member) {
   }
 
@@ -1201,10 +1201,10 @@ inline InvokeConstMember<TYPE, RESULT> invokeMember(RESULT (TYPE::*member)() con
   class MyClass {
   public:
   
-    MyClass() throw() {
+    MyClass() noexcept {
     }
     
-    int myMethod(int value) throw() {
+    int myMethod(int value) noexcept {
     }
   };
   
@@ -1268,8 +1268,8 @@ public:
     PREFIX prefix;
     SUFFIX suffix;
 
-    Invoke(const Invoke& copy) throw();
-    Invoke& operator=(const Invoke& assign) throw();
+    Invoke(const Invoke& copy) noexcept;
+    Invoke& operator=(const Invoke& assign) noexcept;
   public:
     
     inline Invoke(TYPE* _object, PREFIX _prefix, SUFFIX _suffix)
@@ -1293,14 +1293,14 @@ public:
   /**
     Initialize object with specified prefix and suffix.
   */
-  inline InvokeOutfix(TYPE* object, PREFIX prefix, SUFFIX suffix) throw()
+  inline InvokeOutfix(TYPE* object, PREFIX prefix, SUFFIX suffix) noexcept
     : invoke(object, prefix, suffix) {
   }
 
   /**
     Dereference.
   */
-  inline Invoke operator->() throw() {
+  inline Invoke operator->() noexcept {
     return invoke;
   }
 };

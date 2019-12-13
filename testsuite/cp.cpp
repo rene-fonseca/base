@@ -112,7 +112,7 @@ public:
     }
   }
   
-  void version() throw() {
+  void version() noexcept {
     fout << getFormalName() << " version "
          << MAJOR_VERSION << '.' << MINOR_VERSION << EOL
          << "The Base Framework (Test Suite)" << EOL
@@ -136,11 +136,11 @@ public:
          << ENDL;
   }
   
-  void copyFolder(const String& source, const String& destination) throw() {
+  void copyFolder(const String& source, const String& destination) noexcept {
     // TAG: fixme
   }
   
-  String getProgress(long long position, long long size, long long elapsedTime) throw() {
+  String getProgress(long long position, long long size, long long elapsedTime) noexcept {
     unsigned int percent = position * 100/size;
     long long rate = (position * 1000000)/elapsedTime;
     long long remainingBytes = size - position;
@@ -175,7 +175,7 @@ public:
     return stream.getString();
   }
   
-  void copy() throw() {
+  void copy() noexcept {
     if (!FileSystem::fileExists(source)) {
       ferr << "Error: " << "Source does not exist" << ENDL;
       setExitCode(EXIT_CODE_ERROR);
@@ -281,7 +281,7 @@ public:
     }
   }
   
-  ~CopyApplication() throw() {
+  ~CopyApplication() noexcept {
   }
 };
 

@@ -71,7 +71,7 @@ public:
   /**
     Sets the current value.
   */
-  void setCurrentValue(unsigned int value) throw();
+  void setCurrentValue(unsigned int value) noexcept;
 
   /**
     Returns the maximum value.
@@ -83,17 +83,17 @@ public:
   /**
     Sets the maximum value.
   */
-  void setMaximumValue(unsigned int value) throw();
+  void setMaximumValue(unsigned int value) noexcept;
 
   /**
     Invoked when the button must be updated.
   */
-  void onDisplay() throw();
+  void onDisplay() noexcept;
 
   /**
     Destroys the button.
   */
-  inline ~ProgressBar() throw() {
+  inline ~ProgressBar() noexcept {
   }
 };
 

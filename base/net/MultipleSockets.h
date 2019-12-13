@@ -29,7 +29,7 @@ class _COM_AZURE_DEV__BASE__API SocketListener : public Listener {
 public:
   
   virtual void onSocketEvent(
-    StreamSocket socket, unsigned int events) throw() = 0;
+    StreamSocket socket, unsigned int events) noexcept = 0;
 };
 
 /**
@@ -157,7 +157,7 @@ public:
   /**
     Destroys the object.
   */
-  ~MultipleSockets() throw();
+  ~MultipleSockets() noexcept;
 };
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

@@ -42,7 +42,7 @@ public:
     void* parser,
     const xmlChar* name,
     const xmlChar* publicId,
-    const xmlChar* systemId) throw() {
+    const xmlChar* systemId) noexcept {
     
     UserData* p = static_cast<UserData*>(parser);
     if (p->reader->dtdHandler) {
@@ -58,7 +58,7 @@ public:
   static xmlParserInput* resolveEntity(
     void* parser,
     const xmlChar* publicId,
-    const xmlChar* systemId) throw() {
+    const xmlChar* systemId) noexcept {
     fout << "resolveEntity:" << EOL
          << "publicId:" << String((const char*)publicId)
          << "systemId:" << String((const char*)systemId) << ENDL;
@@ -78,7 +78,7 @@ public:
     int type,
     const xmlChar* publicId,
     const xmlChar* systemId,
-    xmlChar* content) throw() {
+    xmlChar* content) noexcept {
     
     UserData* p = static_cast<UserData*>(parser);
     if (p->reader->dtdHandler) {
@@ -132,7 +132,7 @@ public:
     void* parser,
     const xmlChar* name,
     const xmlChar* publicId,
-    const xmlChar* systemId) throw() {
+    const xmlChar* systemId) noexcept {
     UserData* p = static_cast<UserData*>(parser);
     if (p->reader->dtdHandler) {
       p->reader->dtdHandler->notationDecl(
@@ -150,7 +150,7 @@ public:
     int type,
     int def,
     const xmlChar* defaultValue,
-    xmlEnumeration* tree) throw() {
+    xmlEnumeration* tree) noexcept {
     
     UserData* p = static_cast<UserData*>(parser);
     if (p->reader->dtdHandler) {
@@ -231,7 +231,7 @@ public:
     void* parser,
     const xmlChar* name,
     int type,
-    xmlElementContent* content) throw() {
+    xmlElementContent* content) noexcept {
     
     UserData* p = static_cast<UserData*>(parser);
     if (p->reader->dtdHandler) {
@@ -268,7 +268,7 @@ public:
     const xmlChar* name,
     const xmlChar* publicId,
     const xmlChar* systemId,
-    const xmlChar* notationName) throw() {
+    const xmlChar* notationName) noexcept {
     UserData* p = static_cast<UserData*>(parser);
     if (p->reader->dtdHandler) {
       p->reader->dtdHandler->unparsedEntityDecl(
@@ -280,14 +280,14 @@ public:
     }
   }
   
-  static void startDocument(void* parser) throw() {
+  static void startDocument(void* parser) noexcept {
     UserData* p = static_cast<UserData*>(parser);
     if (p->reader->contentHandler) {
       p->reader->contentHandler->startDocument();
     }
   }
 
-  static void endDocument(void* parser) throw() {
+  static void endDocument(void* parser) noexcept {
     UserData* p = static_cast<UserData*>(parser);
     if (p->reader->contentHandler) {
       p->reader->contentHandler->endDocument();
@@ -295,7 +295,7 @@ public:
   }
   
   static void startElement(
-    void* parser, const xmlChar* name, const xmlChar** atts) throw() {
+    void* parser, const xmlChar* name, const xmlChar** atts) noexcept {
     UserData* p = static_cast<UserData*>(parser);
     if (p->reader->contentHandler) {
       if (atts) {
@@ -332,7 +332,7 @@ public:
     }
   }
 
-  static void endElement(void* parser, const xmlChar* name) throw() {
+  static void endElement(void* parser, const xmlChar* name) noexcept {
     UserData* p = static_cast<UserData*>(parser);
     if (p->reader->contentHandler) {
       p->reader->contentHandler->endElement(
@@ -343,7 +343,7 @@ public:
     }
   }
 
-  static void entityReference(void* parser, const xmlChar* name) throw() {
+  static void entityReference(void* parser, const xmlChar* name) noexcept {
     UserData* p = static_cast<UserData*>(parser);
     if (p->reader->contentHandler) {
       p->reader->contentHandler->entityReference(
@@ -352,7 +352,7 @@ public:
     }
   }
   
-  static void characters(void* parser, const xmlChar* ch, int length) throw() {
+  static void characters(void* parser, const xmlChar* ch, int length) noexcept {
     UserData* p = static_cast<UserData*>(parser);
     if (p->reader->contentHandler) {
       p->reader->contentHandler->characters(
@@ -362,7 +362,7 @@ public:
   }
   
   static void ignorableWhitespace(
-    void* parser, const xmlChar* ch, int length) throw() {
+    void* parser, const xmlChar* ch, int length) noexcept {
     UserData* p = static_cast<UserData*>(parser);
     if (p->reader->contentHandler) {
       p->reader->contentHandler->ignorableWhitespace(
@@ -372,7 +372,7 @@ public:
   }
   
   static void processingInstruction(
-    void* parser, const xmlChar* target, const xmlChar* data) throw() {
+    void* parser, const xmlChar* target, const xmlChar* data) noexcept {
     UserData* p = static_cast<UserData*>(parser);
     if (p->reader->contentHandler) {
       p->reader->contentHandler->processingInstruction(
@@ -382,7 +382,7 @@ public:
     }
   }
   
-  static void comment(void* parser, const xmlChar* value) throw() {
+  static void comment(void* parser, const xmlChar* value) noexcept {
     UserData* p = static_cast<UserData*>(parser);
     if (p->reader->contentHandler) {
       p->reader->contentHandler->comment(
@@ -392,7 +392,7 @@ public:
   }
   
   static void cdataBlock(
-    void* parser, const xmlChar* value, int length) throw() {
+    void* parser, const xmlChar* value, int length) noexcept {
     UserData* p = static_cast<UserData*>(parser);
     if (p->reader->contentHandler) {
       p->reader->contentHandler->cdataBlock(
@@ -401,7 +401,7 @@ public:
     }
   }
 
-  static void warning(void* parser, const char* fmt, ...) throw() {
+  static void warning(void* parser, const char* fmt, ...) noexcept {
     va_list arg;
     char buffer[4096]; // TAG: possible buffer overrun
     va_start(arg, fmt);
@@ -427,7 +427,7 @@ public:
     }
   }
 
-  static void error(void* parser, const char* fmt, ...) throw() {
+  static void error(void* parser, const char* fmt, ...) noexcept {
     va_list arg;
     char buffer[4096]; // TAG: possible buffer overrun
     va_start(arg, fmt);
@@ -453,7 +453,7 @@ public:
     }
   }
   
-  static void fatalError(void* parser, const char* fmt, ...) throw() {
+  static void fatalError(void* parser, const char* fmt, ...) noexcept {
     va_list arg;
     char buffer[4096]; // TAG: possible buffer overrun
     va_start(arg, fmt);
@@ -518,7 +518,7 @@ xmlSAXHandler XMLDefaultReaderImpl::SAX_HANDLER = {
 
 
 
-XMLDefaultReader::XMLDefaultReader() throw()
+XMLDefaultReader::XMLDefaultReader() noexcept
   : contentHandler(0),
     dtdHandler(0),
     entityResolver(0),
@@ -767,7 +767,7 @@ void XMLDefaultReader::parse(const String& systemId) throw(SAXException) {
 #endif
 }
 
-void XMLDefaultReader::terminate() throw() {
+void XMLDefaultReader::terminate() noexcept {
 #if defined(_COM_AZURE_DEV__BASE__XML_XMLSOFT_ORG)
 // int result = xmlParseChunk(static_cast<xmlParserCtxtPtr>(context), 0, 0, 1);
 // bassert(result == 0, SAXException("Unable to terminate parsing"));
@@ -776,7 +776,7 @@ void XMLDefaultReader::terminate() throw() {
 #endif
 }
 
-XMLDefaultReader::~XMLDefaultReader() throw() {
+XMLDefaultReader::~XMLDefaultReader() noexcept {
 }
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

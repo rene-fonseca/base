@@ -41,7 +41,7 @@ private:
     /**
       Initializes invalid stylesheet.
     */
-    StylesheetImpl(void* context) throw();
+    StylesheetImpl(void* context) noexcept;
 
     /**
       Returns the context.
@@ -53,7 +53,7 @@ private:
     /**
       Destroys the stylesheet.
     */
-    ~StylesheetImpl() throw();
+    ~StylesheetImpl() noexcept;
   };
   
   /**
@@ -72,33 +72,33 @@ public:
   /**
     Initializes stylesheet.
   */
-  Stylesheet() throw();
+  Stylesheet() noexcept;
   
   /**
     Initializes the stylesheet.
 
     @param filename The name of the file.
   */
-  Stylesheet(const String& filename) throw();
+  Stylesheet(const String& filename) noexcept;
   
   /**
     Initializes the stylesheet.
 
     @param document The XML document.
   */
-  Stylesheet(const Document& document) throw();
+  Stylesheet(const Document& document) noexcept;
 
   /**
     Initializes stylesheet from other stylesheet.
   */
-  inline Stylesheet(const Stylesheet& copy) throw()
+  inline Stylesheet(const Stylesheet& copy) noexcept
     : stylesheet(copy.stylesheet) {
   }
   
   /**
     Assignment of stylesheet by stylesheet.
   */
-  inline Stylesheet& operator=(const Stylesheet& assign) throw() {
+  inline Stylesheet& operator=(const Stylesheet& assign) noexcept {
     stylesheet = assign.stylesheet;
     return *this;
   }
@@ -122,7 +122,7 @@ public:
   //bool isOutputMethodSet() const throw();
   //Array<String> getExtensions() const throw();
   
-  // Array<?> getStylesheetPIs(const Document& document) throw();
+  // Array<?> getStylesheetPIs(const Document& document) noexcept;
 };
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

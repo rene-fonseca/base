@@ -63,7 +63,7 @@ public:
 
     @param identifier Identifier (e.g. "/MyObject").
   */
-  OrbReference getReference(const String& identifier) throw();
+  OrbReference getReference(const String& identifier) noexcept;
   
   /**
     Pushes data onto the stream. This method may return 0 if the internal
@@ -101,7 +101,7 @@ public:
   /**
     Destroys the local connection.
   */
-  ~LocalConnection() throw();
+  ~LocalConnection() noexcept;
 };
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

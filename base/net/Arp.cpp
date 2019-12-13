@@ -55,7 +55,7 @@ namespace internal {
     };
 #endif
 
-    static inline InetAddress getAddress(const struct sockaddr& address) throw() {
+    static inline InetAddress getAddress(const struct sockaddr& address) noexcept {
 #if defined(_COM_AZURE_DEV__BASE__INET_IPV6)
       switch (address.sa_family) {
       case AF_INET:
@@ -91,7 +91,7 @@ namespace internal {
   };
 }; // end of namespace internal
 
-HashTable<String, unsigned int> InetInterface::getInterfaceNames() throw() {
+HashTable<String, unsigned int> InetInterface::getInterfaceNames() noexcept {
   HashTable<String, unsigned int> interfaces;
 #if 0 && defined(_COM_AZURE_DEV__BASE__INET_IPV6)
   struct if_nameindex* ni = nullptr;
@@ -673,7 +673,7 @@ InetAddress InetInterface::getAddress(unsigned int index) throw(NetworkException
 #endif
 }
 
-InetInterface::InetInterface() throw()
+InetInterface::InetInterface() noexcept
   : index(0), flags(0), metric(0) {
 }
 
@@ -803,7 +803,7 @@ InetInterface::InetInterface(const String& name) throw(NetworkException)
 #endif
 }
 
-InetInterface::InetInterface(const InetInterface& copy) throw()
+InetInterface::InetInterface(const InetInterface& copy) noexcept
   : index(copy.index),
     name(copy.name),
     flags(copy.flags),

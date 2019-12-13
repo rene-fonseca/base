@@ -79,7 +79,7 @@ public:
     unsigned int options = CREATE | TRUNCATE,
     unsigned int permissions = 0x640) throw(FileNotFound);
 
-  FileOutputStream(const FileOutputStream& copy) throw();
+  FileOutputStream(const FileOutputStream& copy) noexcept;
 
   /**
     Open the file output stream.
@@ -94,7 +94,7 @@ public:
             unsigned int options = CREATE | TRUNCATE,
             unsigned int permissions = 0x640) throw(FileNotFound);
 
-  FileOutputStream& operator=(const FileOutputStream& assign) throw();
+  FileOutputStream& operator=(const FileOutputStream& assign) noexcept;
 
   /** Returns true if open. */
   bool isOpen() const noexcept;

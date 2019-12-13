@@ -70,7 +70,7 @@ public:
   /**
     Returns the names and indices of the available interfaces.
   */
-  static HashTable<String, unsigned int> getInterfaceNames() throw();
+  static HashTable<String, unsigned int> getInterfaceNames() noexcept;
   
   /**
     Returns all of the Internet Protocol network interfaces of the host.
@@ -100,7 +100,7 @@ public:
   /**
     Initializes interface.
   */
-  InetInterface() throw();
+  InetInterface() noexcept;
 
   /**
     Initializes interface by name.
@@ -110,12 +110,12 @@ public:
   /**
     Initializes interface by address.
   */
-  InetInterface(const InetAddress& address) throw();
+  InetInterface(const InetAddress& address) noexcept;
   
   /**
     Copy constructor.
   */
-  InetInterface(const InetInterface& copy) throw();
+  InetInterface(const InetInterface& copy) noexcept;
 
   /**
     Returns the index of the network interface.

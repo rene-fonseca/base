@@ -37,7 +37,7 @@ class UriImpl {
 public:
 
   /** Returns true if the data character is not reserved within the URI. */
-  static inline bool isUnreservedURI(char ch) throw()
+  static inline bool isUnreservedURI(char ch) noexcept
   {
     if (ASCIITraits::isAlphaNum(ch)) {
       return true;
@@ -50,7 +50,7 @@ public:
   }
 
   /** Returns true if the data character is excluded from the URI. */
-  static inline bool isExcludedURI(char ch) throw()
+  static inline bool isExcludedURI(char ch) noexcept
   {
     if (ASCIITraits::isControl(ch)) { // 0x00-0x1f and 0x7f
       return true;
@@ -65,7 +65,7 @@ public:
   }
 
   /** Returns true if the character is reserved within the authority component. */
-  static inline bool isReservedAuthority(char ch) throw()
+  static inline bool isReservedAuthority(char ch) noexcept
   {
     switch (ch) {
     case ';': case ':': case '@': case '?': case '/':
@@ -75,7 +75,7 @@ public:
   }
 
   /** Returns true if the character is reserved within the query component. */
-  static inline bool isReservedPath(char ch) throw()
+  static inline bool isReservedPath(char ch) noexcept
   {
     switch (ch) {
     case ';': case '/': case '?':
@@ -85,7 +85,7 @@ public:
   }
 
   /** Returns true if the character is reserved within the query component. */
-  static inline bool isReservedQuery(char ch) throw()
+  static inline bool isReservedQuery(char ch) noexcept
   {
     switch (ch) {
     case ';': case ':': case '@': case '?': case '/': case '&': case '=': case '+': case ',': case '$':
@@ -94,13 +94,13 @@ public:
     return false;
   }
 
-  static inline bool isValidUserInfo(char ch) throw()
+  static inline bool isValidUserInfo(char ch) noexcept
   {
     // userinfo: unreserved | escaped ; : & = + $ ,
     return false;
   }
 
-  static inline bool isValidRegName(char ch) throw()
+  static inline bool isValidRegName(char ch) noexcept
   {
     // unreserved | escaped $ , ; : @ & = +
     return false;
@@ -114,7 +114,7 @@ public:
 
   typedef Encode (*Encoding)(char);
 
-  static inline Encode defaultEncoding(char ch) throw() {
+  static inline Encode defaultEncoding(char ch) noexcept {
     switch (ch) {
     case 0x00: case 0x01: case 0x02: case 0x03: case 0x04: case 0x05: case 0x06: case 0x07:
     case 0x08: case 0x09: case 0x0a: case 0x0b: case 0x0c: case 0x0d: case 0x0e: case 0x0f:
@@ -143,12 +143,12 @@ public:
     }
   }
 
-  static inline Encode userEncoding(char ch) throw()
+  static inline Encode userEncoding(char ch) noexcept
   {
     return ((ch == ':') || (ch == '@') || (ch == '/')) ? ALWAYS : defaultEncoding(ch);
   }
 
-  static inline Encode passwordEncoding(char ch) throw()
+  static inline Encode passwordEncoding(char ch) noexcept
   {
     return ((ch == ':') || (ch == '@') || (ch == '/')) ? ALWAYS : defaultEncoding(ch);
   }
@@ -213,7 +213,7 @@ Uri::Uri(const String& baseUri, const String& relativeUri, bool strict) throw(Ur
   }
 }
 
-Uri::Uri(const Uri& copy) throw()
+Uri::Uri(const Uri& copy) noexcept
   : scheme(copy.scheme),
     user(copy.user),
     password(copy.password),
@@ -223,7 +223,7 @@ Uri::Uri(const Uri& copy) throw()
 {
 }
 
-Uri& Uri::operator=(const Uri& assign) throw()
+Uri& Uri::operator=(const Uri& assign) noexcept
 {
   scheme = assign.scheme;
   user = assign.user;
@@ -281,7 +281,7 @@ String Uri::validatePassword(const String& str) throw(UriException)
   return str;
 }
 
-bool Uri::isHost(String::ReadIterator i, const String::ReadIterator& end) throw()
+bool Uri::isHost(String::ReadIterator i, const String::ReadIterator& end) noexcept
 {
   if (i >= end) {
     return false;
@@ -340,7 +340,7 @@ bool Uri::isHost(String::ReadIterator i, const String::ReadIterator& end) throw(
   }
 }
 
-bool Uri::isPort(String::ReadIterator i, const String::ReadIterator& end) throw()
+bool Uri::isPort(String::ReadIterator i, const String::ReadIterator& end) noexcept
 {
   if (i >= end) {
     return false;

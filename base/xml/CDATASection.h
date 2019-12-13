@@ -45,7 +45,7 @@ class _COM_AZURE_DEV__BASE__API CDATASection : public Text {
   friend class Document;
 protected:
 
-  inline CDATASection(void* context) throw() : Text(context) {
+  inline CDATASection(void* context) noexcept : Text(context) {
   }
 public:
 

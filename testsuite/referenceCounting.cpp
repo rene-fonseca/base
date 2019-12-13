@@ -30,7 +30,7 @@ private:
   int state = 0;
 public:
 
-  Base() throw() {
+  Base() noexcept {
   }
 };
 
@@ -40,7 +40,7 @@ private:
   int childState = 0;
 public:
 
-  Child() throw() {
+  Child() noexcept {
   }
 };
 
@@ -50,7 +50,7 @@ private:
   int otherState = 0;
 public:
 
-  OtherChild() throw() {
+  OtherChild() noexcept {
   }
 };
 
@@ -66,7 +66,7 @@ public:
   ReferenceCountingApplication(
     int numberOfArguments,
     const char* arguments[],
-    const char* environment[]) throw()
+    const char* environment[]) noexcept
     : Application(
         "referenceCounting",
         numberOfArguments,

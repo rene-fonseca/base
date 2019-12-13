@@ -36,24 +36,24 @@ public:
   /**
     Initializes file descriptor input stream as invalid.
   */
-  FileDescriptorInputStream() throw();
+  FileDescriptorInputStream() noexcept;
 
   /**
     Initializes file descriptor input stream from a file descriptor.
 
     @param fd The file descriptor.
   */
-  FileDescriptorInputStream(const FileDescriptor& fd) throw();
+  FileDescriptorInputStream(const FileDescriptor& fd) noexcept;
 
   /**
     Initializes file descriptor input stream from other file descriptor input stream.
   */
-  FileDescriptorInputStream(const FileDescriptorInputStream& copy) throw();
+  FileDescriptorInputStream(const FileDescriptorInputStream& copy) noexcept;
 
   /**
     Assignment of file descriptor input stream to this file descriptor input stream.
   */
-  FileDescriptorInputStream& operator=(const FileDescriptorInputStream& assign) throw();
+  FileDescriptorInputStream& operator=(const FileDescriptorInputStream& assign) noexcept;
 
   /**
     Closes the stream and releases any system resources associated with the

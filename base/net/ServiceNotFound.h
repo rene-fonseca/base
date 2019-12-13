@@ -31,7 +31,7 @@ public:
   /**
     Initializes the exception object with no message.
   */
-  inline ServiceNotFound() throw() {
+  inline ServiceNotFound() noexcept {
   }
 
   /**
@@ -39,7 +39,7 @@ public:
 
     @param message The message.
   */
-  inline ServiceNotFound(const char* message) throw()
+  inline ServiceNotFound(const char* message) noexcept
     : NetworkException(message) {
   }
   
@@ -48,7 +48,7 @@ public:
     
     @param type The identity of the type.
   */
-  inline ServiceNotFound(const Type& type) throw() : NetworkException(type) {
+  inline ServiceNotFound(const Type& type) noexcept : NetworkException(type) {
   }
   
   /**
@@ -57,7 +57,7 @@ public:
     @param message An NULL-terminated string (ASCII).
     @param type The identity of the type.
   */
-  inline ServiceNotFound(const char* message, const Type& type) throw()
+  inline ServiceNotFound(const char* message, const Type& type) noexcept
     : NetworkException(message, type) {
   }
   

@@ -58,7 +58,10 @@ namespace ntapi {
 #    include <semaphore.h>
 #    include <limits.h>
 #  elif (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__UNIX)
+#  if (_COM_AZURE_DEV__BASE__OS != _COM_AZURE_DEV__BASE__WASI)
 #    include <pthread.h>
+#    define _COM_AZURE_DEV__BASE__PTHREAD
+#  endif
 #  endif
 #endif // flavor
 
@@ -82,13 +85,15 @@ public:
   #else
     enum {MAXIMUM = 32767}; // minimum value specified by POSIX standard
   #endif
-#else
+#elif defined(_COM_AZURE_DEV__BASE__PTHREAD)
   struct Semaphore {
     volatile int value;
     pthread_cond_t condition;
     pthread_mutex_t mutex;
   };
 
+  enum {MAXIMUM = PrimitiveTraits<int>::MAXIMUM};
+#else
   enum {MAXIMUM = PrimitiveTraits<int>::MAXIMUM};
 #endif
 };
@@ -119,7 +124,7 @@ Semaphore::Semaphore(unsigned int value)
       throw SemaphoreException(this);
     }
   }
-#else
+#elif defined(_COM_AZURE_DEV__BASE__PTHREAD)
   SemaphoreImpl::Semaphore* semaphore = new SemaphoreImpl::Semaphore[1];
   semaphore->value = value;
   
@@ -146,6 +151,8 @@ Semaphore::Semaphore(unsigned int value)
     throw SemaphoreException(this);
   }
   this->semaphore = semaphore;
+#else
+  BASSERT(!"Not supported.");
 #endif
 }
 
@@ -183,7 +190,7 @@ int Semaphore::getValue() const
     throw SemaphoreException(this);
   }
   return value;
-#else // mutual exclusion
+#elif defined(_COM_AZURE_DEV__BASE__PTHREAD)
   SemaphoreImpl::Semaphore* sem = (SemaphoreImpl::Semaphore*)semaphore;
   unsigned int result = 0;
   if (pthread_mutex_lock(&(sem->mutex))) {
@@ -194,6 +201,9 @@ int Semaphore::getValue() const
     throw SemaphoreException(this);
   }
   return result;
+#else
+  BASSERT(!"Not supported.");
+  return false;
 #endif
 }
 
@@ -208,7 +218,7 @@ void Semaphore::post()
   if (::sem_post(sem) == ERANGE) { // otherwise sem_post returns successfully
     throw Overflow(this);
   }
-#else
+#elif defined(_COM_AZURE_DEV__BASE__PTHREAD)
   SemaphoreImpl::Semaphore* sem = (SemaphoreImpl::Semaphore*)semaphore;
   if (pthread_mutex_lock(&(sem->mutex))) {
     throw SemaphoreException(this);
@@ -224,6 +234,8 @@ void Semaphore::post()
     throw SemaphoreException(this);
   }
   pthread_cond_signal(&(sem->condition)); // we only need to signal one thread
+#else
+  BASSERT(!"Not supported.");
 #endif
 }
 
@@ -240,7 +252,7 @@ void Semaphore::wait() const
   if (::sem_wait(sem)) {
     throw SemaphoreException(this);
   }
-#else
+#elif defined(_COM_AZURE_DEV__BASE__PTHREAD)
   SemaphoreImpl::Semaphore* sem = (SemaphoreImpl::Semaphore*)semaphore;
   if (pthread_mutex_lock(&(sem->mutex))) {
     throw SemaphoreException(this);
@@ -252,6 +264,8 @@ void Semaphore::wait() const
   if (pthread_mutex_unlock(&sem->mutex)) {
     throw SemaphoreException(this);
   }
+#else
+  BASSERT(!"Not supported.");
 #endif
 }
 
@@ -262,7 +276,7 @@ bool Semaphore::tryWait() const
 #elif defined(_COM_AZURE_DEV__BASE__PTHREAD_SEMAPHORE)
   sem_t* sem = (sizeof(sem_t) <= sizeof(void*)) ? (sem_t*)&semaphore : (sem_t*)semaphore;
   return ::sem_trywait(sem) == 0; // did we decrement?
-#else
+#elif defined(_COM_AZURE_DEV__BASE__PTHREAD)
   SemaphoreImpl::Semaphore* sem = (SemaphoreImpl::Semaphore*)semaphore;
   if (pthread_mutex_lock(&(sem->mutex))) {
     throw SemaphoreException(this);
@@ -275,6 +289,9 @@ bool Semaphore::tryWait() const
     throw SemaphoreException(this);
   }
   return result;
+#else
+  BASSERT(!"Not supported.");
+  return false;
 #endif
 }
 
@@ -295,12 +312,14 @@ Semaphore::~Semaphore()
     }
     delete[] (SemaphoreImpl::Semaphore*)semaphore;
   }
-#else
+#elif defined(_COM_AZURE_DEV__BASE__PTHREAD)
   if (pthread_cond_destroy(&((SemaphoreImpl::Semaphore*)semaphore)->condition)) {
     throw SemaphoreException(this);
   }
   pthread_mutex_destroy(&((SemaphoreImpl::Semaphore*)semaphore)->mutex); // lets just hope that this doesn't fail
   delete[] (SemaphoreImpl::Semaphore*)semaphore;
+#else
+  BASSERT(!"Not supported.");
 #endif
 }
 

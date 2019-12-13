@@ -723,6 +723,8 @@ void File::changeOwner(const String& path, const Trustee& owner, const Trustee& 
 // }
 
 
+#elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__WASI)
+  BASSERT(!"Not supported.");
 #else // unix
   bassert((owner.getType() == Trustee::USER) && (group.getType() == Trustee::GROUP), FileException(Type::getType<File>()));
   
@@ -936,6 +938,8 @@ void File::lock(
       }
       break;
     }
+  #elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__WASI)
+    BASSERT(!"Not supported.");
   #else
     bassert(
       (region.getOffset() >= 0) &&
@@ -1008,6 +1012,9 @@ bool File::tryLock(
       throw FileException("Unable to lock region.", this);
     }
     return true;
+  #elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__WASI)
+    BASSERT(!"Not supported.");
+    return false;
   #else
     bassert(
       (region.getOffset() >= 0) && (region.getOffset() <= PrimitiveTraits<int>::MAXIMUM) && (region.getSize() >= 0) && (region.getSize() <= PrimitiveTraits<int>::MAXIMUM),
@@ -1031,7 +1038,8 @@ bool File::tryLock(
 #endif
 }
 
-void File::unlock(const FileRegion& region) throw(FileException) {
+void File::unlock(const FileRegion& region) throw(FileException)
+{
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   bassert((region.getOffset() >= 0) && (region.getSize() >= 0), FileException("Unable to unlock region.", this));
   LARGE_INTEGER offset;
@@ -1053,6 +1061,8 @@ void File::unlock(const FileRegion& region) throw(FileException) {
   }
   ::WaitForSingleObject(overlapped.hEvent, INFINITE); // blocking wait for unlock
   ::CloseHandle(overlapped.hEvent);
+#elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__WASI)
+  BASSERT(!"Not supported.");
 #else // unix
   #if defined(_COM_AZURE_DEV__BASE__LARGE_FILE_SYSTEM)
     bassert((region.getOffset() >= 0) && (region.getSize() >= 0), FileException("Unable to unlock region", this));
@@ -1095,7 +1105,8 @@ void File::unlock(const FileRegion& region) throw(FileException) {
 #endif
 }
 
-Date File::getLastModification() throw(FileException) {
+Date File::getLastModification() throw(FileException)
+{
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   FILETIME time;
   if (::GetFileTime(fd->getHandle(), 0, 0, &time)) {

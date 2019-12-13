@@ -114,6 +114,13 @@ typedef int SOCKET;
   typedef socklen_t socklen;
 #endif
 
+#if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__WASI)
+extern "C" struct hostent* gethostbyaddr(const void *addr, socklen_t len, int type)
+{
+  return nullptr;
+}
+#endif
+
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 class SocketAddress { // Internet end point
@@ -131,7 +138,8 @@ private:
   };
 public:
   
-  inline SocketAddress() throw() {
+  inline SocketAddress() throw()
+  {
   }
   
   /** Initializes socket address. */
@@ -266,9 +274,13 @@ public:
   }
 
   /** Sets the socket name from the specified socket. */
-  inline void setSocket(int handle) throw() {
+  inline void setSocket(int handle) throw()
+  {
+#if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__WASI)
+#else
     socklen length = getAnySize();
     ::getsockname(handle, getValue(), &length);
+#endif
   }
 };
 
@@ -371,8 +383,10 @@ namespace internal {
         return NetworkException::CONNECTION_REFUSED;
       case ECONNRESET:
         return NetworkException::CONNECTION_RESET;
+#if (_COM_AZURE_DEV__BASE__OS != _COM_AZURE_DEV__BASE__WASI)
       case EHOSTDOWN:
         return NetworkException::HOST_DOWN;
+#endif
       case EHOSTUNREACH:
         return NetworkException::HOST_UNREACHABLE;
       case EMSGSIZE:
@@ -418,10 +432,15 @@ namespace internal {
       int level,
       int option,
       const void* buffer,
-      unsigned int length) throw(NetworkException) {
+      unsigned int length) throw(NetworkException)
+    {
+#if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__WASI)
+        raiseNetwork("Unable to set option.");
+#else
       if (::setsockopt(handle, level, option, static_cast<const char*>(buffer), length)) {
-        raiseNetwork("Unable to set option");
+        raiseNetwork("Unable to set option.");
       }
+#endif
     }
     
     // TAG: add support for UDP options: IPPROTO_UDP
@@ -467,7 +486,11 @@ Socket::SocketImpl::~SocketImpl() {
 Socket::Socket() throw() : socket(SocketImpl::invalid) {
 }
 
-bool Socket::accept(Socket& socket) throw(NetworkException) {
+bool Socket::accept(Socket& socket) throw(NetworkException)
+{
+#if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__WASI)
+  return false;
+#else
   // TAG: should return socket (invalid if non available)
   
   if (this->socket->isValid()) {
@@ -501,9 +524,13 @@ bool Socket::accept(Socket& socket) throw(NetworkException) {
   this->socket->setRemoteAddress(sa.getAddress());
   this->socket->setRemotePort(sa.getPort());
   return true;
+#endif
 }
 
-void Socket::bind(const InetAddress& address, unsigned short port) throw(NetworkException) {
+void Socket::bind(const InetAddress& address, unsigned short port) throw(NetworkException)
+{
+#if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__WASI)
+#else
   SocketAddress sa(address, port, socket->getDomain());
   
   if (::bind((SOCKET)socket->getHandle(), sa.getValue(), sa.getSize())) {
@@ -517,13 +544,18 @@ void Socket::bind(const InetAddress& address, unsigned short port) throw(Network
     socket->setLocalAddress(address);
     socket->setLocalPort(port);
   }
+#endif
 }
 
-void Socket::close() throw(NetworkException) {
+void Socket::close() throw(NetworkException)
+{
   socket = SocketImpl::invalid;
 }
 
-void Socket::connect(const InetAddress& address, unsigned short port) throw(NetworkException) {
+void Socket::connect(const InetAddress& address, unsigned short port) throw(NetworkException)
+{
+#if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__WASI)
+#else
   SocketAddress sa(address, port, socket->getDomain());
   if (::connect((SOCKET)socket->getHandle(), sa.getValue(), sa.getSize())) {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
@@ -551,9 +583,13 @@ void Socket::connect(const InetAddress& address, unsigned short port) throw(Netw
 //  socket->setLocalPort(sa.getPort());
   socket->setRemoteAddress(address);
   socket->setRemotePort(port);
+#endif
 }
 
-void Socket::create(Kind kind, Domain domain) throw(NetworkException) {
+void Socket::create(Kind kind, Domain domain) throw(NetworkException)
+{
+#if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__WASI)
+#else
   // TAG: should return new socket not overwrite handle (static method)
   static const int SOCKET_KINDS[] = {SOCK_STREAM, SOCK_DGRAM, SOCK_RAW};
   bassert(
@@ -591,17 +627,23 @@ void Socket::create(Kind kind, Domain domain) throw(NetworkException) {
   );
   socket = new SocketImpl(handle, Socket::IPV4, kind);
 #endif
+#endif
 }
 
-void Socket::listen(unsigned int backlog) throw(NetworkException) {
+void Socket::listen(unsigned int backlog) throw(NetworkException)
+{
+#if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__WASI)
+#else
   // silently reduce the backlog argument
   backlog = minimum<unsigned int>(backlog, PrimitiveTraits<int>::MAXIMUM);
   if (::listen((SOCKET)socket->getHandle(), backlog)) { // may also silently limit backlog
     internal::SocketImpl::raiseNetwork("Unable to set queue limit for incoming connections");
   }
+#endif
 }
 
-void Socket::getName() throw() {
+void Socket::getName() throw()
+{
   SocketAddress sa;
   sa.setSocket((SOCKET)socket->getHandle());
   socket->setLocalAddress(sa.getAddress());
@@ -636,7 +678,8 @@ void Socket::shutdownInputStream() throw(NetworkException) {
 #endif // flavor
 }
 
-void Socket::shutdownOutputStream() throw(NetworkException) {
+void Socket::shutdownOutputStream() throw(NetworkException)
+{
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   if (::shutdown((SOCKET)socket->getHandle(), 1 /*SD_SEND*/)) { // disallow further sends
     internal::SocketImpl::raiseNetwork("Unable to shutdown socket for writing");
@@ -648,7 +691,8 @@ void Socket::shutdownOutputStream() throw(NetworkException) {
 #endif // flavor
 }
 
-bool Socket::getBooleanOption(int option) const throw(NetworkException) {
+bool Socket::getBooleanOption(int option) const throw(NetworkException)
+{
   int buffer = 0;
   unsigned int length = sizeof(buffer);
   internal::SocketImpl::getOption(
@@ -661,7 +705,8 @@ bool Socket::getBooleanOption(int option) const throw(NetworkException) {
   return buffer != 0;
 }
 
-void Socket::setBooleanOption(int option, bool value) throw(NetworkException) {
+void Socket::setBooleanOption(int option, bool value) throw(NetworkException)
+{
   int buffer = value;
   internal::SocketImpl::setOption(
     (SOCKET)socket->getHandle(),
@@ -672,7 +717,11 @@ void Socket::setBooleanOption(int option, bool value) throw(NetworkException) {
   );
 }
 
-int Socket::getErrorState() const throw(NetworkException) {
+int Socket::getErrorState() const throw(NetworkException)
+{
+#if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__WASI)
+  return -1;
+#else
   int buffer = 0;
   unsigned int length = sizeof(buffer);
   internal::SocketImpl::getOption(
@@ -683,40 +732,76 @@ int Socket::getErrorState() const throw(NetworkException) {
     &length
   );
   return buffer; // TAG: map to socket::ErrorState enum
+#endif
 }
 
-bool Socket::getReuseAddress() const throw(NetworkException) {
+bool Socket::getReuseAddress() const throw(NetworkException)
+{
+#if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__WASI)
+  return false;
+#else
   return getBooleanOption(SO_REUSEADDR);
+#endif
 }
 
-void Socket::setReuseAddress(bool value) throw(NetworkException) {
+void Socket::setReuseAddress(bool value) throw(NetworkException)
+{
+#if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__WASI)
+#else
   setBooleanOption(SO_REUSEADDR, value);
+#endif
 }
 
-bool Socket::getKeepAlive() const throw(NetworkException) {
+bool Socket::getKeepAlive() const throw(NetworkException)
+{
+#if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__WASI)
+  return false;
+#else
   return getBooleanOption(SO_KEEPALIVE);
+#endif
 }
 
-void Socket::setKeepAlive(bool value) throw(NetworkException) {
+void Socket::setKeepAlive(bool value) throw(NetworkException)
+{
+#if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__WASI)
+#else
   setBooleanOption(SO_KEEPALIVE, value);
+#endif
 }
 
-bool Socket::getBroadcast() const throw(NetworkException) {
+bool Socket::getBroadcast() const throw(NetworkException)
+{
+#if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__WASI)
+  return false;
+#else
   return getBooleanOption(SO_BROADCAST);
+#endif
 }
 
-void Socket::setBroadcast(bool value) throw(NetworkException) {
+void Socket::setBroadcast(bool value) throw(NetworkException)
+{
+#if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__WASI)
+#else
   setBooleanOption(SO_BROADCAST, value);
+#endif
 }
 
-int Socket::getLinger() const throw(NetworkException) {
+int Socket::getLinger() const throw(NetworkException)
+{
+#if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__WASI)
+  return -1;
+#else
   struct linger buffer;
   unsigned int length = sizeof(buffer);
   internal::SocketImpl::getOption((SOCKET)socket->getHandle(), SOL_SOCKET, SO_LINGER, &buffer, &length);
   return (buffer.l_onoff != 0) ? buffer.l_linger : -1;
+#endif
 }
 
-void Socket::setLinger(int seconds) throw(NetworkException) {
+void Socket::setLinger(int seconds) throw(NetworkException)
+{
+#if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__WASI)
+#else
   struct linger buffer;
   if (seconds < 0) {
     buffer.l_onoff = 0; // disable linger
@@ -731,9 +816,14 @@ void Socket::setLinger(int seconds) throw(NetworkException) {
     &buffer,
     sizeof(buffer)
   );
+#endif
 }
 
-int Socket::getReceiveBufferSize() const throw(NetworkException) {
+int Socket::getReceiveBufferSize() const throw(NetworkException)
+{
+#if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__WASI)
+  return -1;
+#else
   int buffer = 0;
   unsigned int length = sizeof(buffer);
   internal::SocketImpl::getOption(
@@ -744,9 +834,13 @@ int Socket::getReceiveBufferSize() const throw(NetworkException) {
     &length
   );
   return buffer;
+#endif
 }
 
-void Socket::setReceiveBufferSize(int size) throw(NetworkException) {
+void Socket::setReceiveBufferSize(int size) throw(NetworkException)
+{
+#if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__WASI)
+#else
   int buffer = size;
   internal::SocketImpl::setOption(
     (SOCKET)socket->getHandle(),
@@ -755,16 +849,25 @@ void Socket::setReceiveBufferSize(int size) throw(NetworkException) {
     &buffer,
     sizeof(buffer)
   );
+#endif
 }
 
-int Socket::getSendBufferSize() const throw(NetworkException) {
+int Socket::getSendBufferSize() const throw(NetworkException)
+{
+#if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__WASI)
+  return 0;
+#else
   int buffer = 0;
   unsigned int length = sizeof(buffer);
   internal::SocketImpl::getOption((SOCKET)socket->getHandle(), SOL_SOCKET, SO_SNDBUF, &buffer, &length);
   return buffer;
+#endif
 }
 
-void Socket::setSendBufferSize(int size) throw(NetworkException) {
+void Socket::setSendBufferSize(int size) throw(NetworkException)
+{
+#if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__WASI)
+#else
   int buffer = size;
   internal::SocketImpl::setOption(
     (SOCKET)socket->getHandle(),
@@ -773,6 +876,7 @@ void Socket::setSendBufferSize(int size) throw(NetworkException) {
     &buffer,
     sizeof(buffer)
   );
+#endif
 }
 
 // TAG: TCP_MAXSEG maximum segment size
@@ -782,7 +886,11 @@ void Socket::setSendBufferSize(int size) throw(NetworkException) {
 // TAG: connection time (MS specific?): SO_CONNECT_TIME (0xffffffff is not connected)
 // TAG: max backlog queue length: SOMAXCONN
 
-bool Socket::getDontRoute() const throw(NetworkException) {
+bool Socket::getDontRoute() const throw(NetworkException)
+{
+#if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__WASI)
+  return false;
+#else
   int buffer = 0;
   unsigned int length = sizeof(buffer);
   internal::SocketImpl::getOption(
@@ -793,9 +901,13 @@ bool Socket::getDontRoute() const throw(NetworkException) {
     &length
   );
   return buffer != 0;
+#endif
 }
 
-void Socket::setDontRoute(bool value) throw(NetworkException) {
+void Socket::setDontRoute(bool value) throw(NetworkException)
+{
+#if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__WASI)
+#else
   int buffer = value;
   internal::SocketImpl::setOption(
     (SOCKET)socket->getHandle(),
@@ -804,9 +916,14 @@ void Socket::setDontRoute(bool value) throw(NetworkException) {
     &buffer,
     sizeof(buffer)
   );
+#endif
 }
 
-uint64 Socket::getReceiveTimeout() const throw(NetworkException) {
+uint64 Socket::getReceiveTimeout() const throw(NetworkException)
+{
+#if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__WASI)
+  return 0;
+#else
   struct timeval buffer;
   unsigned int length = sizeof(buffer);
   internal::SocketImpl::getOption(
@@ -817,9 +934,13 @@ uint64 Socket::getReceiveTimeout() const throw(NetworkException) {
     &length
   );
   return (static_cast<uint64>(buffer.tv_sec) * 1000000 + buffer.tv_usec) * 1000;
+#endif
 }
 
-void Socket::setReceiveTimeout(uint64 nanoseconds) throw(NetworkException) {
+void Socket::setReceiveTimeout(uint64 nanoseconds) throw(NetworkException)
+{
+#if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__WASI)
+#else
   struct timeval buffer;
   if (nanoseconds <= 60*60*24*1000000000ULL) { // one day
     buffer.tv_sec = (nanoseconds + 999)/1000000000;
@@ -835,9 +956,14 @@ void Socket::setReceiveTimeout(uint64 nanoseconds) throw(NetworkException) {
     &buffer,
     sizeof(buffer)
   );
+#endif
 }
 
-uint64 Socket::getSendTimeout() const throw(NetworkException) {
+uint64 Socket::getSendTimeout() const throw(NetworkException)
+{
+#if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__WASI)
+  return 0;
+#else
   struct timeval buffer;
   unsigned int length = sizeof(buffer);
   internal::SocketImpl::getOption(
@@ -848,9 +974,13 @@ uint64 Socket::getSendTimeout() const throw(NetworkException) {
     &length
   );
   return (static_cast<uint64>(buffer.tv_sec) * 1000000 + buffer.tv_usec) * 1000;
+#endif
 }
 
-void Socket::setSendTimeout(uint64 nanoseconds) throw(NetworkException) {
+void Socket::setSendTimeout(uint64 nanoseconds) throw(NetworkException)
+{
+#if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__WASI)
+#else
   struct timeval buffer;
   if (nanoseconds <= 60*60*24*1000000000ULL) { // one day
     buffer.tv_sec = (nanoseconds + 999)/1000000000;
@@ -866,9 +996,11 @@ void Socket::setSendTimeout(uint64 nanoseconds) throw(NetworkException) {
     &buffer,
     sizeof(buffer)
   );
+#endif
 }
 
-bool Socket::getTcpNoDelay() const throw(NetworkException) {
+bool Socket::getTcpNoDelay() const throw(NetworkException)
+{
   int buffer = 0;
   unsigned int length = sizeof(buffer);
   internal::SocketImpl::getOption(
@@ -881,7 +1013,8 @@ bool Socket::getTcpNoDelay() const throw(NetworkException) {
   return buffer != 0;
 }
 
-void Socket::setTcpNoDelay(bool value) throw(NetworkException) {
+void Socket::setTcpNoDelay(bool value) throw(NetworkException)
+{
   int buffer = value;
   internal::SocketImpl::setOption(
     (SOCKET)socket->getHandle(),
@@ -892,7 +1025,8 @@ void Socket::setTcpNoDelay(bool value) throw(NetworkException) {
   );
 }
 
-uint64 Socket::getTcpDeferAccept() const throw(NetworkException) {
+uint64 Socket::getTcpDeferAccept() const throw(NetworkException)
+{
 #if (defined(TCP_DEFER_ACCEPT))
   int buffer = 0;
   unsigned int length = sizeof(buffer);
@@ -1736,7 +1870,11 @@ unsigned int Socket::receiveFrom(
   uint8* buffer,
   unsigned int size,
   InetAddress& address,
-  unsigned short& port) throw(NetworkException) {
+  unsigned short& port) throw(NetworkException)
+{
+#if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__WASI)
+  return 0;
+#else
   SocketAddress sa;
   socklen sl = sa.getAnySize();
   size = minimum<unsigned int>(size, PrimitiveTraits<int>::MAXIMUM); // silently reduce
@@ -1754,13 +1892,18 @@ unsigned int Socket::receiveFrom(
   address = sa.getAddress();
   port = sa.getPort();
   return result;
+#endif
 }
 
 unsigned int Socket::sendTo(
   const uint8* buffer,
   unsigned int size,
   const InetAddress& address,
-  unsigned short port) throw(NetworkException) {
+  unsigned short port) throw(NetworkException)
+{
+#if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__WASI)
+  return 0;
+#else
   const SocketAddress sa(address, port, socket->getDomain());
   size = minimum<unsigned int>(size, PrimitiveTraits<int>::MAXIMUM); // silently reduce
   int result = ::sendto(
@@ -1772,9 +1915,10 @@ unsigned int Socket::sendTo(
     sa.getSize()
   );
   if (result < 0) {
-    internal::SocketImpl::raiseNetwork("Unable to send to");
+    internal::SocketImpl::raiseNetwork("Unable to send to.");
   }
   return result;
+#endif
 }
 
 void Socket::asyncCancel() throw(AsynchronousException) {

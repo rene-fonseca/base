@@ -137,7 +137,8 @@ bool Trustee::operator==(const Trustee& _compare) const noexcept
 #endif
 }
 
-Trustee::Trustee(const String& name) throw(TrusteeException) {
+Trustee::Trustee(const String& name) throw(TrusteeException)
+{
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   SID_NAME_USE sidType;
   uint8 sid[SECURITY_MAX_SID_SIZE];
@@ -156,6 +157,8 @@ Trustee::Trustee(const String& name) throw(TrusteeException) {
   integralId = INVALID;
   id = new ReferenceCountedAllocator<uint8>(sidSize);
   copy(id->getElements(), Cast::pointer<const uint8*>(sid), sidSize);
+#elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__WASI)
+
 #else // unix
   id = 0;
   //long sysconf(_SC_GETPW_R_SIZE_MAX);
@@ -272,7 +275,8 @@ bool Trustee::isMemberOf(const Trustee& trustee) const throw(TrusteeException) {
 }
 
 // TAG: select full name domain/user with option: LOCAL prefix?, BUILTIN prefix (no)?
-String Trustee::getName() const throw(TrusteeException) {
+String Trustee::getName() const throw(TrusteeException)
+{
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   if (!id.isValid()) {
     return Literal("<unknown>");
@@ -293,6 +297,8 @@ String Trustee::getName() const throw(TrusteeException) {
   } else {
     return String(name); // TAG: does nameSize hold length of name
   }
+#elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__WASI)
+  return String();
 #else // unix
 
   switch (type) {

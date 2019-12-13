@@ -262,11 +262,19 @@ public:
 };
 
 /** Make stub for exe entry point. */
+#if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__WASI)
+#define _COM_AZURE_DEV__BASE__APPLICATION_STUB(APPLICATION) \
+int main(int argc, const char* argv[]) noexcept { \
+  Application::Stub stub; \
+  return com::azure::dev::base::Application::stub<APPLICATION>(argc, argv, nullptr); \
+}
+#else
 #define _COM_AZURE_DEV__BASE__APPLICATION_STUB(APPLICATION) \
 int main(int argc, const char* argv[], const char* env[]) noexcept { \
   Application::Stub stub; \
   return com::azure::dev::base::Application::stub<APPLICATION>(argc, argv, env); \
 }
+#endif
 
 #if (!defined(APPLICATION_STUB))
 /** Make stub for exe entry point. */

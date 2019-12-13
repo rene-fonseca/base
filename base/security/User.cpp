@@ -132,6 +132,7 @@ User::User(const String& name) throw(UserException)
   id = new ReferenceCountedAllocator<uint8>(size);
   copy(id->getElements(), sid, size);
   integralId = 0;
+#elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__WASI)
 #else // unix
   // long sysconf(_SC_GETPW_R_SIZE_MAX);
   Thread::UseThreadLocalBuffer _buffer;
@@ -181,6 +182,8 @@ String User::getName(bool fallback) const throw(UserException)
   } else {
     return String(static_cast<const wchar*>(name)); // TAG: does nameSize hold length of name
   }
+#elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__WASI)
+  return String();
 #else // unix
   Thread::UseThreadLocalBuffer _buffer;
   Allocator<uint8>& buffer = _buffer;
@@ -213,6 +216,8 @@ String User::getHomeFolder() const throw(UserException)
 //     LPTSTR lpProfileDir,
 //     LPDWORD lpcchSize
 //   );
+  throw NotImplemented(this);
+#elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__WASI)
   throw NotImplemented(this);
 #else // unix  
   Thread::UseThreadLocalBuffer _buffer;

@@ -20,7 +20,10 @@
 #  include <windows.h>
 #else // pthread
 #  define __thread // TAG: temp. fix for s390-ibm-linux-gnu
+#if (_COM_AZURE_DEV__BASE__OS != _COM_AZURE_DEV__BASE__WASI)
 #  include <pthread.h>
+#  define _COM_AZURE_DEV__BASE__PTHREAD
+#endif
 #  include <sys/time.h>
 #  include <unistd.h>
 #  include <errno.h>
@@ -118,7 +121,7 @@ public:
 class EventImpl {
 public:
   
-#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__UNIX)
+#if defined(_COM_AZURE_DEV__BASE__PTHREAD)
   struct Context {
     bool signaled;
     pthread_cond_t condition;
@@ -133,7 +136,7 @@ Event::Event()
   if ((context = Cast::pointer<void*>(::CreateEvent(0, TRUE, FALSE, 0))) == 0) {
     throw ResourceException("Unable to initialize event.", this);
   }
-#else // pthread
+#elif defined(_COM_AZURE_DEV__BASE__PTHREAD)
   EventImpl::Context* context = new EventImpl::Context[1];
   context->signaled = false;
 
@@ -164,6 +167,8 @@ Event::Event()
     throw ResourceException(this);
   }
   this->context = context;
+#else
+  BASSERT(!"Not supported.");
 #endif
 }
 
@@ -171,7 +176,7 @@ bool Event::isSignaled() const
 {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   return ::WaitForSingleObject(context, 0) == WAIT_OBJECT_0; // should never fail
-#else // pthread
+#elif defined(_COM_AZURE_DEV__BASE__PTHREAD)
   bool result = false;
   if (pthread_mutex_lock(&Cast::pointer<EventImpl::Context*>(context)->mutex)) {
     throw EventException(this);
@@ -181,6 +186,8 @@ bool Event::isSignaled() const
     throw EventException(this);
   }
   return result;
+#else
+  return false;
 #endif
 }
 
@@ -190,7 +197,7 @@ void Event::reset()
   if (!::ResetEvent(context)) {
     throw EventException("Unable to reset event.", this);
   }
-#else // pthread
+#elif defined(_COM_AZURE_DEV__BASE__PTHREAD)
   if (pthread_mutex_lock(&Cast::pointer<EventImpl::Context*>(context)->mutex)) {
     throw EventException("Unable to reset event.", this);
   }
@@ -198,6 +205,8 @@ void Event::reset()
   if (pthread_mutex_unlock(&Cast::pointer<EventImpl::Context*>(context)->mutex)) {
     throw EventException("Unable to reset event.", this);
   }
+#else
+  BASSERT(!"Not supported.");
 #endif
 }
 
@@ -209,7 +218,7 @@ void Event::signal()
   if (!::SetEvent(context)) {
     throw EventException("Unable to signal event.", this);
   }
-#else // pthread
+#elif defined(_COM_AZURE_DEV__BASE__PTHREAD)
   if (pthread_mutex_lock(&Cast::pointer<EventImpl::Context*>(context)->mutex)) {
     throw EventException("Unable to signal event.", this);
   }
@@ -220,6 +229,8 @@ void Event::signal()
   if (pthread_cond_broadcast(&Cast::pointer<EventImpl::Context*>(context)->condition)) { // unblock all blocked threads
     throw EventException("Unable to signal event.", this);
   }
+#else
+  BASSERT(!"Not supported.");
 #endif
 }
 
@@ -231,7 +242,7 @@ void Event::wait() const
   if (::WaitForSingleObject(context, INFINITE) != WAIT_OBJECT_0) {
     throw EventException("Unable to wait for event.", this);
   }
-#else // pthread
+#elif defined(_COM_AZURE_DEV__BASE__PTHREAD)
   if (pthread_mutex_lock(&Cast::pointer<EventImpl::Context*>(context)->mutex)) {
     throw EventException("Unable to wait for event.", this);
   }
@@ -246,6 +257,8 @@ void Event::wait() const
   if (pthread_mutex_unlock(&Cast::pointer<EventImpl::Context*>(context)->mutex)) {
     throw EventException("Unable to wait for event.", this);
   }
+#else
+  BASSERT(!"Not supported.");
 #endif
 }
 
@@ -265,7 +278,7 @@ bool Event::wait(unsigned int microseconds) const
   default:
     throw EventException("Unable to wait for event.", this);
   }
-#else // pthread
+#elif defined(_COM_AZURE_DEV__BASE__PTHREAD)
   int result = true; // no assignment gives warning
 
   if (pthread_mutex_lock(&Cast::pointer<EventImpl::Context*>(context)->mutex)) {
@@ -295,6 +308,8 @@ bool Event::wait(unsigned int microseconds) const
   }
 
   return result;
+#else
+  return false;
 #endif
 }
 
@@ -304,7 +319,7 @@ Event::~Event()
   if (::CloseHandle(context) == 0) {
     throw EventException("Unable to destroy event.", this);
   }
-#else // pthread
+#elif defined(_COM_AZURE_DEV__BASE__PTHREAD)
   EventImpl::Context* p = Cast::pointer<EventImpl::Context*>(context);
   if (pthread_cond_destroy(&p->condition)) {
     pthread_mutex_destroy(&p->mutex); // lets just hope that this doesn't fail

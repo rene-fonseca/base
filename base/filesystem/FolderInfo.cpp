@@ -489,3 +489,10 @@ Array<String> FolderInfo::getEntries() const
 }
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE
+
+#if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__WASI)
+extern "C" int readdir_r(DIR *dirp, struct dirent *entry, struct dirent **result)
+{
+  return -1;
+}
+#endif

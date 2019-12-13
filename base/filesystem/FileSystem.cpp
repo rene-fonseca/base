@@ -350,6 +350,9 @@ String FileSystem::getCurrentFolder() throw(FileSystemException)
     throw FileSystemException("Unable to get current folder.", Type::getType<FileSystem>());
   }
   return String(buffer, length);
+#elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__WASI)
+  BASSERT(!"Not supported.");
+  return String();
 #else // unix
   Thread::UseThreadLocalBuffer _buffer;
   Allocator<uint8>& buffer = _buffer;
@@ -370,6 +373,8 @@ void FileSystem::setCurrentFolder(const String& path) throw(FileSystemException)
   if (!::SetCurrentDirectory(ToWCharString(path))) {
    throw FileSystemException("Unable to set current folder.", Type::getType<FileSystem>());
   }
+#elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__WASI)
+  BASSERT(!"Not supported.");
 #else // unix
   if (::chdir(path.getElements())) {
     throw FileSystemException("Unable to set current folder.", Type::getType<FileSystem>());

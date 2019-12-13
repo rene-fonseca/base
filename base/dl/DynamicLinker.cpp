@@ -706,7 +706,7 @@ public:
     // TEST_ASSERT(DynamicLinker::getProcessImage());
     TEST_ASSERT(DynamicLinker::getBaseFrameworkImage());
     TEST_ASSERT(DynamicLinker::getImageAddress((void*)&DynamicLinker::getProcessImage));
-    DynamicLinker::SymbolInfo info = DynamicLinker::getSymbolInfo((void*)&printf);
+    DynamicLinker::SymbolInfo info = DynamicLinker::getSymbolInfo((void*)&sleep); // printf
     TEST_ASSERT(info.address);
     TEST_ASSERT(info.imageAddress);
     TEST_ASSERT(info.name);

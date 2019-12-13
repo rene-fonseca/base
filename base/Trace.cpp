@@ -25,7 +25,9 @@
 #else // unix
 #  include <string.h>
 #  include <stdio.h>
+#if (_COM_AZURE_DEV__BASE__OS != _COM_AZURE_DEV__BASE__WASI)
 #  include <syslog.h>
+#endif
 #endif // flavor
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
@@ -52,6 +54,7 @@ void Trace::message(const char* message) noexcept
   ::OutputDebugString(ToWCharString(message));
 #elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__CYGWIN) // special case
   win32::OutputDebugString(message);
+#elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__WASI)
 #else // unix
   // const char* ident = nullptr;
   openlog("TRACE", LOG_PID, 0); // TAG: fixme - do not reopen
@@ -81,6 +84,7 @@ void Trace::member(const void* pointer, const char* message) noexcept
   ::OutputDebugString(ToWCharString(buffer));
 #elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__CYGWIN) // special case
   win32::OutputDebugString(buffer);
+#elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__WASI)
 #else // unix
   openlog("TRACE", LOG_PID, 0); // TAG: fixme - do not reopen
 #if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__MACOS)

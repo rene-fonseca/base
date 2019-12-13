@@ -29,7 +29,10 @@
 #  include <windows.h>
 #else // pthread
 #  define __thread // TAG: temp. fix for s390-ibm-linux-gnu
+#if 1 || (_COM_AZURE_DEV__BASE__OS != _COM_AZURE_DEV__BASE__WASI)
 #  include <pthread.h>
+#  define _COM_AZURE_DEV__BASE__PTHREAD
+#endif
 #  include <signal.h>
 #  include <time.h>
 #  include <sys/time.h>
@@ -865,6 +868,7 @@ void Thread::start() throw(ThreadException)
   identifier = getAsPointer(id);
   ::CloseHandle(handle); // detach
   // TAG: does this always work or must this be postponed until entry function
+#elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__WASI)
 #else // pthread
   pthread_attr_t attributes;
   pthread_attr_init(&attributes);

@@ -21,7 +21,10 @@
 #  include <windows.h>
 #else // unix
 #  define __thread // TAG: temp. fix for s390-ibm-linux-gnu
+#if (_COM_AZURE_DEV__BASE__OS != _COM_AZURE_DEV__BASE__WASI)
 #  include <pthread.h>
+#  define _COM_AZURE_DEV__BASE__PTHREAD
+#endif
 #  include <errno.h>
 #endif // flavor
 
@@ -162,7 +165,7 @@ ReadWriteLock::ReadWriteLock() throw(ResourceException)
     throw ResourceException(this);
   }
   pthread_rwlockattr_destroy(&attributes); // should never fail
-#else
+#elif defined(_COM_AZURE_DEV__BASE__PTHREAD)
   representation = new pthread_mutex_t[1]; // TAG: needs automatic deletion on exception
   pthread_mutexattr_t attributes;
   if (pthread_mutexattr_init(&attributes) != 0) {
@@ -184,6 +187,8 @@ ReadWriteLock::ReadWriteLock() throw(ResourceException)
     throw ResourceException(this);
   }
   pthread_mutexattr_destroy(&attributes); // should never fail
+#else
+  BASSERT(!"Not supported.");
 #endif
 }
 
@@ -197,7 +202,7 @@ void ReadWriteLock::exclusiveLock() const
   if (pthread_rwlock_wrlock(static_cast<pthread_rwlock_t*>(representation))) {
     throw ReadWriteLockException(this);
   }
-#else
+#elif defined(_COM_AZURE_DEV__BASE__PTHREAD)
   int result = pthread_mutex_lock(static_cast<pthread_mutex_t*>(representation));
   if (result == 0) {
     return;
@@ -206,6 +211,8 @@ void ReadWriteLock::exclusiveLock() const
   } else {
     throw ReadWriteLockException(this);
   }
+#else
+  BASSERT(!"Not supported.");
 #endif
 }
 
@@ -224,7 +231,7 @@ bool ReadWriteLock::tryExclusiveLock() const
   } else {
     throw ReadWriteLockException(this);
   }
-#else
+#elif defined(_COM_AZURE_DEV__BASE__PTHREAD)
   int result = pthread_mutex_trylock(static_cast<pthread_mutex_t*>(representation));
   if (result == 0) {
     return true;
@@ -233,6 +240,9 @@ bool ReadWriteLock::tryExclusiveLock() const
   } else {
     throw ReadWriteLockException(this);
   }
+#else
+  BASSERT(!"Not supported.");
+  return false;
 #endif
 }
 
@@ -246,7 +256,7 @@ void ReadWriteLock::sharedLock() const
   if (pthread_rwlock_rdlock(static_cast<pthread_rwlock_t*>(representation))) {
     throw ReadWriteLockException(this);
   }
-#else
+#elif defined(_COM_AZURE_DEV__BASE__PTHREAD)
   int result = pthread_mutex_lock(static_cast<pthread_mutex_t*>(representation));
   if (result == 0) {
     return;
@@ -255,6 +265,8 @@ void ReadWriteLock::sharedLock() const
   } else {
     throw ReadWriteLockException(this);
   }
+#else
+  BASSERT(!"Not supported.");
 #endif
 }
 
@@ -273,7 +285,7 @@ bool ReadWriteLock::trySharedLock() const
   } else {
     throw ReadWriteLockException(this);
   }
-#else
+#elif defined(_COM_AZURE_DEV__BASE__PTHREAD)
   int result = pthread_mutex_trylock(static_cast<pthread_mutex_t*>(representation));
   if (result == 0) {
     return true;
@@ -282,6 +294,9 @@ bool ReadWriteLock::trySharedLock() const
   } else {
     throw ReadWriteLockException(this);
   }
+#else
+  BASSERT(!"Not supported.");
+  return false;
 #endif
 }
 
@@ -295,10 +310,12 @@ void ReadWriteLock::releaseLock() const
   if (pthread_rwlock_unlock(static_cast<pthread_rwlock_t*>(representation))) {
     throw ReadWriteLockException(this);
   }
-#else
+#elif defined(_COM_AZURE_DEV__BASE__PTHREAD)
   if (pthread_mutex_unlock(static_cast<pthread_mutex_t*>(representation))) {
     throw ReadWriteLockException(this);
   }
+#else
+  BASSERT(!"Not supported.");
 #endif
 }
 
@@ -311,11 +328,13 @@ ReadWriteLock::~ReadWriteLock()
     throw ReadWriteLockException(this);
   }
   delete[] static_cast<pthread_rwlock_t*>(representation);
-#else
+#elif defined(_COM_AZURE_DEV__BASE__PTHREAD)
   if (pthread_mutex_destroy(static_cast<pthread_mutex_t*>(representation))) {
     throw ReadWriteLockException(this);
   }
   delete[] static_cast<pthread_mutex_t*>(representation);
+#else
+  BASSERT(!"Not supported.");
 #endif
 }
 

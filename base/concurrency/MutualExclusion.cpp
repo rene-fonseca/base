@@ -20,7 +20,10 @@
 #  include <windows.h>
 #else // unix
 #  define __thread // TAG: temp. fix for s390-ibm-linux-gnu
+#if (_COM_AZURE_DEV__BASE__OS != _COM_AZURE_DEV__BASE__WASI)
 #  include <pthread.h>
+#  define _COM_AZURE_DEV__BASE__PTHREAD
+#endif
 #  include <errno.h>
 #endif // flavor
 
@@ -34,7 +37,7 @@ MutualExclusion::MutualExclusion()
   // TAG: could raise STATUS_INVALID_HANDLE
   ::EnterCriticalSection((CRITICAL_SECTION*)mutex); // force allocation of event (non-paged memory)
   ::LeaveCriticalSection((CRITICAL_SECTION*)mutex);
-#else // pthread
+#elif defined(_COM_AZURE_DEV__BASE__PTHREAD)
   mutex = new pthread_mutex_t[1];
   pthread_mutexattr_t attributes;
   if (pthread_mutexattr_init(&attributes) != 0) {
@@ -53,6 +56,8 @@ MutualExclusion::MutualExclusion()
     throw ResourceException(this);
   }
   pthread_mutexattr_destroy(&attributes); // should never fail
+#else
+  BASSERT(!"Not supported.");
 #endif
 }
 
@@ -61,7 +66,7 @@ void MutualExclusion::exclusiveLock() const
   Profiler::WaitTask profile("MutualExclusion::exclusiveLock()");
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   ::EnterCriticalSection((CRITICAL_SECTION*)mutex);
-#else // pthread
+#elif defined(_COM_AZURE_DEV__BASE__PTHREAD)
   int result = pthread_mutex_lock((pthread_mutex_t*)mutex);
   if (result == 0) {
     return;
@@ -70,6 +75,8 @@ void MutualExclusion::exclusiveLock() const
   } else {
     throw MutualExclusionException(this);
   }
+#else
+  BASSERT(!"Not supported.");
 #endif
 }
 
@@ -81,7 +88,7 @@ bool MutualExclusion::tryExclusiveLock() const
   BOOL result = TRUE;
   result = ::TryEnterCriticalSection((CRITICAL_SECTION*)mutex);
   return result;
-#else // pthread
+#elif defined(_COM_AZURE_DEV__BASE__PTHREAD)
   int result = pthread_mutex_trylock((pthread_mutex_t*)mutex);
   if (result == 0) {
     return true;
@@ -90,6 +97,9 @@ bool MutualExclusion::tryExclusiveLock() const
   } else {
     throw MutualExclusionException(this);
   }
+#else
+  BASSERT(!"Not supported.");
+  return false;
 #endif
 }
 
@@ -99,10 +109,12 @@ void MutualExclusion::releaseLock() const
 
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   ::LeaveCriticalSection((CRITICAL_SECTION*)mutex);
-#else // pthread
+#elif defined(_COM_AZURE_DEV__BASE__PTHREAD)
   if (pthread_mutex_unlock((pthread_mutex_t*)mutex)) {
     throw MutualExclusionException(this);
   }
+#else
+  BASSERT(!"Not supported.");
 #endif
 }
 
@@ -111,11 +123,13 @@ MutualExclusion::~MutualExclusion()
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   ::DeleteCriticalSection((CRITICAL_SECTION*)mutex);
   delete[] (CRITICAL_SECTION*)mutex;
-#else // pthread
+#elif defined(_COM_AZURE_DEV__BASE__PTHREAD)
   if (pthread_mutex_destroy((pthread_mutex_t*)mutex)) {
     throw MutualExclusionException(this);
   }
   delete[] (pthread_mutex_t*)mutex;
+#else
+  BASSERT(!"Not supported.");
 #endif
 }
 

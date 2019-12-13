@@ -26,7 +26,9 @@
 #else
 #  define __thread // TAG: temp. fix for s390-ibm-linux-gnu
 #  include <time.h> // time_t
+#if (_COM_AZURE_DEV__BASE__OS != _COM_AZURE_DEV__BASE__WASI)
 #  include <pthread.h> // pthread_t
+#endif
 #endif
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
@@ -307,7 +309,8 @@ namespace internal {
 
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
 
-ProcessPreinitialization::ProcessPreinitialization() throw() {
+ProcessPreinitialization::ProcessPreinitialization() throw()
+{
   // OS version compatibility check
   OSVERSIONINFO versionInfo;
   versionInfo.dwOSVersionInfoSize = sizeof(versionInfo);
@@ -375,7 +378,8 @@ ProcessPreinitialization::~ProcessPreinitialization() throw()
 
 #else // unix
 
-ProcessPreinitialization::ProcessPreinitialization() throw() {
+ProcessPreinitialization::ProcessPreinitialization() throw()
+{
   // pthread_t is an arithmetic type according to The Single UNIX Specification, Version 2
   if (!((sizeof(Thread::Identifier) >= sizeof(pthread_t)) && // Thread (pthread support)
         (sizeof(long) >= sizeof(time_t)) && // Date
@@ -385,7 +389,8 @@ ProcessPreinitialization::ProcessPreinitialization() throw() {
   }
 }
 
-ProcessPreinitialization::~ProcessPreinitialization() throw() {
+ProcessPreinitialization::~ProcessPreinitialization() throw()
+{
 }
 
 #endif // flavor

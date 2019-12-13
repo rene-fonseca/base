@@ -28,7 +28,8 @@
 #  include <unistd.h>
 #endif // flavor
 
-#if (_COM_AZURE_DEV__BASE__OS != _COM_AZURE_DEV__BASE__CYGWIN)
+#if (_COM_AZURE_DEV__BASE__OS != _COM_AZURE_DEV__BASE__CYGWIN) /*&& \
+    (_COM_AZURE_DEV__BASE__OS != _COM_AZURE_DEV__BASE__WASI)*/
 #  define _COM_AZURE_DEV__BASE__HAVE_GETGRNAM_R
 #  define _COM_AZURE_DEV__BASE__HAVE_GETGRGID_R
 #endif
@@ -120,6 +121,8 @@ Group::Group(const String& name) throw(GroupException)
 
 Group::Group(const User& user) throw(GroupException) {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
+  throw NotImplemented(this);
+#elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__WASI)
   throw NotImplemented(this);
 #else // unix
   Thread::UseThreadLocalBuffer _buffer;
@@ -339,3 +342,10 @@ unsigned long Hash<Group>::operator()(const Group& value) throw() {
 }
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE
+
+#if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__WASI)
+extern "C" int getgrgid_r(gid_t gid, struct group *grp, char *buffer, size_t bufsize, struct group **result)
+{
+  return -1;
+}
+#endif

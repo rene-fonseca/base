@@ -371,6 +371,11 @@ unsigned int InetInterface::getIndexByName(const String& name) throw(NetworkExce
 #elif (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   // TAG: fixme
   throw NetworkException(Type::getType<InetInterface>());
+#elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__WASI)
+  throw NetworkException(
+    "Unable to resolve interface.",
+    Type::getType<InetInterface>()
+  );
 #else
   Thread::UseThreadLocalBuffer _buffer;
   Allocator<uint8>& buffer = _buffer;
@@ -433,7 +438,7 @@ unsigned int InetInterface::getIndexByName(const String& name) throw(NetworkExce
   }
 #endif
   throw NetworkException(
-    "Unable to resolve interface",
+    "Unable to resolve interface.",
     Type::getType<InetInterface>()
   );
 #endif
@@ -471,6 +476,11 @@ unsigned int InetInterface::getIndexByAddress(const InetAddress& address) throw(
     }
   }
   throw NetworkException("Unable to resolve interface.", Type::getType<InetInterface>());
+#elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__WASI)
+  throw NetworkException(
+    "Unable to resolve interface.",
+    Type::getType<InetInterface>()
+  );
 #else
   Thread::UseThreadLocalBuffer _buffer;
   Allocator<uint8>& buffer = _buffer;
@@ -533,7 +543,7 @@ unsigned int InetInterface::getIndexByAddress(const InetAddress& address) throw(
 #endif
   close(handle);
   throw NetworkException(
-    "Unable to resolve interface",
+    "Unable to resolve interface.",
     Type::getType<InetInterface>()
   );
 #endif
@@ -581,6 +591,11 @@ String InetInterface::getName(unsigned int index) throw(NetworkException) {
   StringOutputStream stream;
   stream << index << FLUSH;
   return stream.getString();
+#elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__WASI)
+  throw NetworkException(
+    "Unable to resolve interface",
+    Type::getType<InetInterface>()
+  );
 #else
   Thread::UseThreadLocalBuffer _buffer;
   Allocator<uint8>& buffer = _buffer;
@@ -604,7 +619,7 @@ String InetInterface::getName(unsigned int index) throw(NetworkException) {
   if (ioctl(handle, SIOCGIFCONF, &ifc)) {
     close(handle);
     throw NetworkException(
-      "Unable to resolve interface",
+      "Unable to resolve interface.",
       Type::getType<InetInterface>()
     );
   }
@@ -640,7 +655,7 @@ String InetInterface::getName(unsigned int index) throw(NetworkException) {
 #endif
   close(handle);
   throw NetworkException(
-    "Unable to resolve interface",
+    "Unable to resolve interface.",
     Type::getType<InetInterface>()
   );
 #endif
@@ -695,6 +710,11 @@ InetAddress InetInterface::getAddress(unsigned int index) throw(NetworkException
     NetworkException("Unable to resolve interface", Type::getType<InetInterface>())
   );
   return internal::InetInterface::getAddress(*Cast::pointer<struct sockaddr*>(&current[index].iiAddress));
+#elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__WASI)
+  throw NetworkException(
+    "Unable to resolve interface",
+    Type::getType<InetInterface>()
+  );
 #else
   Thread::UseThreadLocalBuffer _buffer;
   Allocator<uint8>& buffer = _buffer;
@@ -844,6 +864,7 @@ InetInterface::InetInterface(const String& name) throw(NetworkException)
     
     ++current;
   }
+#elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__WASI)
 #else
   bassert(name.getLength() <= IFNAMSIZ, NetworkException(this));
   struct ifreq req;
@@ -911,6 +932,7 @@ InetInterface::InetInterface(const String& name) throw(NetworkException)
   }
 #endif
 
+#elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__WASI)
 #elif ((_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__GNULINUX) || \
        (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__CYGWIN))
   if (ioctl(handle, SIOCGIFHWADDR, &req) == 0) {

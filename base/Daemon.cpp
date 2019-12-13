@@ -301,7 +301,10 @@ Daemon::Daemon(Runnable* runnable) throw(SingletonException, ResourceException)
   }
   bassert(Application::getApplication(), Exception("Application has not been institiated"));
 
-  switch(fork()) {
+#if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__WASI)
+  throw ResourceException("Unable to daemonize process.");
+#else
+  switch (fork()) {
   case 0:
     setsid();
     runnable->run();
@@ -311,6 +314,7 @@ Daemon::Daemon(Runnable* runnable) throw(SingletonException, ResourceException)
     throw ResourceException("Unable to daemonize process.");
     break;
   }
+#endif
 }
 
 #endif

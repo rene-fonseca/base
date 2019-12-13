@@ -29,7 +29,9 @@
 #  if (_COM_AZURE_DEV__BASE__ARCH == _COM_AZURE_DEV__BASE__S390)
 #    define __thread // TAG: temp. fix for s390-ibm-linux-gnu
 #  endif
+#  if (_COM_AZURE_DEV__BASE__OS != _COM_AZURE_DEV__BASE__WASI)
 #  include <sys/signal.h> // defines SIG_ERR on IRIX65
+#  endif
 #  include <signal.h>
 
 #  if (defined(_COM_AZURE_DEV__BASE__HAVE_SIGACTION))
@@ -730,7 +732,8 @@ void Application::initialize() throw()
   );
   
 #else // unix
-#  if (defined(_COM_AZURE_DEV__BASE__HAVE_SIGACTION))
+#  if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__WASI)
+#  elif (defined(_COM_AZURE_DEV__BASE__HAVE_SIGACTION))
   static const int SIGNALS[] = {
     SIGHUP, SIGPIPE, SIGTERM, SIGCHLD, SIGQUIT, SIGINT, SIGABRT, SIGSEGV,
     SIGILL, SIGFPE, SIGBUS

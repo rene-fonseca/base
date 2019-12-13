@@ -73,6 +73,9 @@ Pair<Pipe, Pipe> Pipe::make() throw(PipeException) {
   p.fd = new PipeHandle(ihandle);
   q.fd = new PipeHandle(ohandle);
   return makePair(p, q);
+#elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__WASI)
+  BASSERT(!"Not supported.");
+  return Pair<Pipe, Pipe>();
 #else // unix
   OperatingSystem::Handle handles[2];
   if (::pipe(handles)) {
@@ -119,6 +122,9 @@ unsigned int Pipe::getBufferSize() const throw() {
   DWORD result = 0;
   GetNamedPipeInfo(fd->getHandle(), 0, &result, 0, 0); // TAG: separate input and output buffer sizes
   return result;
+#elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__WASI)
+  BASSERT(!"Not supported.");
+  return 0;
 #else // unix
   return PIPE_BUF;
 #endif

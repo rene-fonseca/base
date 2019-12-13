@@ -25,6 +25,13 @@
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
+#if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__WASI)
+namespace {
+
+  void* global = nullptr;
+}
+#endif
+
 ThreadKeyImpl::ThreadKeyImpl() throw(ResourceException)
 {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
@@ -33,6 +40,7 @@ ThreadKeyImpl::ThreadKeyImpl() throw(ResourceException)
     throw ResourceException(this);
   }
   this->key.pointer = reinterpret_cast<void*>(static_cast<MemorySize>(key));
+#elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__WASI)
 #else // unix
   if (sizeof(pthread_key_t) <= sizeof(Key)) {
     pthread_key_t* internalKey = Cast::pointer<pthread_key_t*>(&key);
@@ -58,6 +66,8 @@ void* ThreadKeyImpl::getKey() const throw(ThreadKeyException)
     throw ThreadKeyException(this);
   }
   return result;
+#elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__WASI)
+  return global;
 #else
   const pthread_key_t* internalKey = nullptr;
   if (sizeof(pthread_key_t) <= sizeof(Key)) {
@@ -75,6 +85,8 @@ void ThreadKeyImpl::setKey(void* value) throw(ThreadKeyException)
   if (!::TlsSetValue(Cast::extract<DWORD>(key), value)) {
     throw ThreadKeyException(this);
   }
+#elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__WASI)
+  global = value;
 #else
   pthread_key_t* internalKey = nullptr;
   if (sizeof(pthread_key_t) <= sizeof(Key)) {
@@ -94,6 +106,7 @@ ThreadKeyImpl::~ThreadKeyImpl()
   if (!::TlsFree(Cast::extract<DWORD>(key))) {
     throw ThreadKeyException(this);
   }
+#elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__WASI)
 #else
   if (sizeof(pthread_key_t) <= sizeof(Key)) {
     pthread_key_t* internalKey = Cast::pointer<pthread_key_t*>(&key);

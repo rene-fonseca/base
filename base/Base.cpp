@@ -23,6 +23,7 @@
 #  include <sys/types.h>
 #  if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__SOLARIS)
 #    include <unistd.h>
+#  elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__WASI)
 #  else
 #    include <sys/ptrace.h>
 #  endif
@@ -138,6 +139,7 @@ void Debug::breakpoint() noexcept
     if (IsDebuggerPresent()) {
       DebugBreak();
     }
+#elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__WASI)
 #else
 #if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__GNULINUX)
     if (ptrace(PTRACE_TRACEME, 0, NULL, 0) == -1) { // detect debugger - need a better way

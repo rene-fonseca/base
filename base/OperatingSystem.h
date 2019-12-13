@@ -18,6 +18,10 @@
 #include <base/OutOfRange.h>
 #include <base/Literal.h>
 
+#if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__WASI)
+#undef PAGE_SIZE
+#endif
+
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 /**

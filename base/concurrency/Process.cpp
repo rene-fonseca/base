@@ -123,6 +123,9 @@ Process Process::getParentProcess() noexcept
   #else
     return Process(Process::INVALID); // win32 doesn't support this (WINNT 4)
   #endif
+#elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__WASI)
+  BASSERT(!"Not supported.");
+  return Process();
 #else // unix
   return Process(::getppid());
 #endif // flavor
@@ -131,6 +134,8 @@ Process Process::getParentProcess() noexcept
 Process Process::fork()
 {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
+  throw NotSupported(Type::getType<Process>());
+#elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__WASI)
   throw NotSupported(Type::getType<Process>());
 #else // unix
   pid_t result = ::fork(); // should we use fork1 on solaris
@@ -171,6 +176,8 @@ int Process::getPriority()
   default:
     return 0; // unknown
   }
+#elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__WASI)
+  return 0;
 #else // unix
   #if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__CYGWIN)
     #warning Process::getPriority() is not supported
@@ -206,6 +213,8 @@ void Process::setPriority(int priority)
   if (!::SetPriorityClass(::GetCurrentProcess(), priorityClass)) {
     throw ProcessException("Unable to set priority of process.", Type::getType<Process>());
   }
+#elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__WASI)
+  BASSERT(!"Not supported.")
 #else // unix
   #if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__CYGWIN)
     #warning Process::setPriority() is not supported
@@ -271,6 +280,8 @@ Process Process::execute(const String& command)
   Process result(processInformation.dwProcessId);
   result.handle = new ProcessHandle(processInformation.hProcess); // keep lock on process
   return result;
+#elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__WASI)
+  return Process();
 #else // unix
   // TAG: use spawn if available
   
@@ -327,6 +338,8 @@ bool Process::isAlive() const
   } else {
     throw ProcessException(this); 
   }
+#elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__WASI)
+  return false;
 #else // unix
   
   int status = 0;
@@ -483,6 +496,8 @@ int Process::wait()
   ::WaitForSingleObject(handle->getHandle(), INFINITE);
   ::GetExitCodeProcess(handle->getHandle(), &exitCode);
   return exitCode;
+#elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__WASI)
+  return 0;
 #else // unix
   int status = 0;
   pid_t result = ::waitpid((pid_t)id, &status, 0);
@@ -609,6 +624,8 @@ bool Process::terminate(bool force)
     // BASSERT(result != 0);
     // TAG: throw ProcessException(this)
   }
+#elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__WASI)
+  return false;
 #else
   int result = ::kill(pid_t(id), force ? (SIGKILL) : (SIGTERM));
   if (!result) {

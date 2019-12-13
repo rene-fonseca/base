@@ -16,14 +16,14 @@
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
-OrbObject::OrbObject() throw(OrbException) {
+OrbObject::OrbObject() {
 }
 
-String OrbObject::getOrbIdentifier() const throw(OrbException) {
+String OrbObject::getOrbIdentifier() const {
   return String("1"); // TAG: fixme
 }
 
-OrbObject::~OrbObject() throw() {
+OrbObject::~OrbObject() noexcept {
 }
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

@@ -367,7 +367,7 @@ public:
     @param out The output stream.
     @param size The size of the buffer. Default is given by DEFAULT_BUFFER_SIZE.
   */
-  FormatOutputStream(OutputStream& out, unsigned int size = DEFAULT_BUFFER_SIZE) throw(BindException);
+  FormatOutputStream(OutputStream& out, unsigned int size = DEFAULT_BUFFER_SIZE);
   
   FormatOutputStream(const FormatOutputStream& copy) = delete;
   

@@ -16,7 +16,7 @@
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 OrbRequest::OrbRequest(
-  const Reference<OrbStub>& _stub, const String& method) throw(OrbException)
+  const Reference<OrbStub>& _stub, const String& method)
   : stub(_stub) {
   methodId = stub->getMethodId(method);
   // channel.writeRequest(LOOKUP_METHOD);
@@ -32,7 +32,7 @@ OrbRequest::OrbRequest(
   bassert(compatible, OrbException("Incompatible methods", this));
 }
 
-OrbRequest::~OrbRequest() throw() {
+OrbRequest::~OrbRequest() noexcept {
 }
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

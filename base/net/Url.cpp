@@ -73,7 +73,7 @@ public:
   static inline String encode(
     const String& str,
     Encoding encoding = defaultEncoding)
-    throw(Url::UrlException, MemoryException) {
+    {
     
     String temp(str.getLength());
     const String::ReadIterator end = str.getEndReadIterator();
@@ -97,7 +97,7 @@ public:
   static String decode(
     const String& str,
     Encoding encoding,
-    bool strict) throw(Url::UrlException, MemoryException) {
+    bool strict) {
     String temp(str.getLength());
     const String::ReadIterator end = str.getEndReadIterator();
     for (String::ReadIterator i = str.getBeginReadIterator(); i < end; ++i) {

@@ -15,26 +15,26 @@
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
-IDLMethod::IDLMethod(const String& name) throw() {
+IDLMethod::IDLMethod(const String& name) noexcept {
 }
 
-void addArgument(const IDLType& type) throw(MemoryException) {
+void addArgument(const IDLType& type) {
   // arguments.add(type); IDLPrimitive, IDLEnumeration, IDLStructure, IDLInterface (in or out)
 }
 
-void addException(const IDLException& exception) throw(MemoryException) {
+void addException(const IDLException& exception) {
   exceptions.add(exception);
 }
 
-bool IDLMethod::hasMethod(const String& name) throw() {
+bool IDLMethod::hasMethod(const String& name) noexcept {
   return methods.isKey(name);
 }
 
-bool IDLMethod::raises(const IDLException& exception) const throw(MemoryException) {
+bool IDLMethod::raises(const IDLException& exception) const {
   return exceptions.isKey(exception.getName());
 }
 
-bool IDLMethod::isCompatible(const IDLMethod& method) const throw() {
+bool IDLMethod::isCompatible(const IDLMethod& method) const noexcept {
 //   Array<IDL>::ReadEnumerator left = attributes.getReadEnumerator();
 //   Array<IDLMethod>::ReadEnumerator right = interface.attributes.getReadEnumerator();
 //   while (left.hasNext() && right.hasNext()) {
@@ -57,7 +57,7 @@ bool IDLMethod::isCompatible(const IDLMethod& method) const throw() {
   return true;
 }
 
-IDLMethod::~IDLMethod() throw() {
+IDLMethod::~IDLMethod() noexcept {
 }
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

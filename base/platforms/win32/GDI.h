@@ -107,7 +107,7 @@ namespace native {
     extern BOOL (CALL_GDI *wglSwapLayerBuffers)(HDC hdc, UINT planes);
     extern BOOL (CALL_GDI *wglDescribeLayerPlane)(HDC hdc, int pixelFormat, int layerPlane, UINT bytes, LPLAYERPLANEDESCRIPTOR lpd);
     
-    bool import() throw();
+    bool import() noexcept;
   };
   
 }; // end of native namespace

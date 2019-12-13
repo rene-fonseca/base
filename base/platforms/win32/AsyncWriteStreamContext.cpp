@@ -43,7 +43,7 @@ namespace win32 {
     OperatingSystem::Handle handle,
     const uint8* _buffer,
     unsigned int _bytesToWrite,
-    AsynchronousWriteEventListener* _listener) throw(IOException)
+    AsynchronousWriteEventListener* _listener)
     : listener(_listener),
       buffer(_buffer),
       bytesToWrite(_bytesToWrite),

@@ -15,18 +15,18 @@
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
-IDLStructure::IDLStructure(const String& name) throw() : IDLNamedType(name) {
+IDLStructure::IDLStructure(const String& name) noexcept : IDLNamedType(name) {
 }
 
-void IDLStructure::addField(const IDLField& field) throw() {
+void IDLStructure::addField(const IDLField& field) noexcept {
   fields.add(field);
 }
 
-const Array<IDLField>& IDLStructure::getFields() const throw() {
+const Array<IDLField>& IDLStructure::getFields() const noexcept {
   return fields;
 }
 
-IDLStructure::~IDLStructure() throw() {
+IDLStructure::~IDLStructure() noexcept {
 }
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

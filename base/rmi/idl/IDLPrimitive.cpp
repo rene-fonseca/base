@@ -15,10 +15,10 @@
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
-IDLPrimitive::IDLPrimitive(Type _type) throw() : type(_type) {
+IDLPrimitive::IDLPrimitive(Type _type) noexcept : type(_type) {
 }
 
-IDLPrimitive::~IDLPrimitive() throw() {
+IDLPrimitive::~IDLPrimitive() noexcept {
 }
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

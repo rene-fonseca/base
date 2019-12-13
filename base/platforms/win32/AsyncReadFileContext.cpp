@@ -47,7 +47,7 @@ namespace win32 {
     uint8* _buffer,
     unsigned int _bytesToRead,
     unsigned long long _offset,
-    AsynchronousReadEventListener* _listener) throw(IOException) 
+    AsynchronousReadEventListener* _listener) 
     : listener(_listener),
       buffer(_buffer),
       bytesToRead(_bytesToRead),

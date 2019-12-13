@@ -18,21 +18,21 @@
 class MyException {
 public:
 
-  MyException() throw() {
+  MyException() noexcept {
   }
 };
 
 class MyClass {
 public:
 
-  MyClass() throw() {
+  MyClass() noexcept {
   }
   
-  static void myStaticMethod() throw(MyException) {
+  static void myStaticMethod() {
     throw MyException();
   }
 
-  void myMethod() throw(MyException) {
+  void myMethod() {
     throw MyException();
   }
 };

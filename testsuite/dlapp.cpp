@@ -28,7 +28,7 @@ public:
   DynamicLinkerApplication(
     int numberOfArguments,
     const char* arguments[],
-    const char* environment[]) throw()
+    const char* environment[]) noexcept
     : Application("dlapp", numberOfArguments, arguments, environment)
   {
   }
@@ -55,7 +55,7 @@ public:
     manager.unload(temp);
   }
   
-  void main() throw()
+  void main() noexcept
   {
     fout << getFormalName() << " version "
          << MAJOR_VERSION << '.' << MINOR_VERSION << EOL

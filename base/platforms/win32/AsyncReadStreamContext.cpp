@@ -45,7 +45,7 @@ namespace win32 {
     OperatingSystem::Handle handle,
     uint8* _buffer,
     unsigned int _bytesToRead,
-    AsynchronousReadEventListener* _listener) throw(IOException)
+    AsynchronousReadEventListener* _listener)
     : listener(_listener),
       buffer(_buffer),
       bytesToRead(_bytesToRead),

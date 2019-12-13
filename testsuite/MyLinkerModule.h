@@ -36,7 +36,7 @@ public:
   MyLinkerModule(
     const String& identity,
     const String& name,
-    const String& version) throw();
+    const String& version) noexcept;
 
-  virtual void myFunction() throw();
+  virtual void myFunction() noexcept;
 };

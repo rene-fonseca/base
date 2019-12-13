@@ -16,7 +16,7 @@
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
-void BarnieDecoder::read(unsigned int* buffer, unsigned int size) throw(IOException) {
+void BarnieDecoder::read(unsigned int* buffer, unsigned int size) {
   LittleEndian<uint32> encodedBuffer[BUFFER_SIZE];
   while (size) {
     const unsigned int partialSize = minimum<unsigned int>(size, getArraySize(encodedBuffer));

@@ -15,11 +15,11 @@
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
-IDLAttribute::IDLAttribute(const IDLEnumeration& _type) throw()
+IDLAttribute::IDLAttribute(const IDLEnumeration& _type) noexcept
   : type(_type) {
 }
 
-IDLAttribute::~IDLAttribute() throw() {
+IDLAttribute::~IDLAttribute() noexcept {
 }
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

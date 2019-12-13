@@ -31,12 +31,12 @@ public:
   VersionApplication(
     int numberOfArguments,
     const char* arguments[],
-    const char* environment[]) throw()
+    const char* environment[]) noexcept
     : Application("Version", numberOfArguments, arguments, environment)
   {
   }
 
-  void main() throw()
+  void main() noexcept
   {
     fout << getFormalName() << " version "
          << MAJOR_VERSION << '.' << MINOR_VERSION << EOL

@@ -15,10 +15,10 @@
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
-IDLNamedType::IDLNamedType(const String& _name) throw() : name(_name) {
+IDLNamedType::IDLNamedType(const String& _name) noexcept : name(_name) {
 }
 
-IDLNamedType::~IDLNamedType() throw() {
+IDLNamedType::~IDLNamedType() noexcept {
 }
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

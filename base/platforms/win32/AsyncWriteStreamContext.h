@@ -44,7 +44,7 @@ namespace win32 {
     unsigned int bytesWritten = 0;
     unsigned int flags = 0;
     
-    inline void notifyAsynchronousCompletionListener() throw() {
+    inline void notifyAsynchronousCompletionListener() noexcept {
       listener->asynchronousCompletion(
         AsynchronousWriteCompletion(
           buffer,
@@ -61,10 +61,10 @@ namespace win32 {
       OperatingSystem::Handle handle,
       const uint8* buffer,
       unsigned int bytesToWrite,
-      AsynchronousWriteEventListener* listener) throw(IOException);
+      AsynchronousWriteEventListener* listener);
   public:
 
-    AsynchronousWriteCompletion getCompletion() const throw() {
+    AsynchronousWriteCompletion getCompletion() const noexcept {
       return AsynchronousWriteCompletion(
         buffer,
         bytesToWrite,

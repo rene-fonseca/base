@@ -20,7 +20,7 @@ _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 #if 0
 
-DateSkeleton::DateSkeleton() throw(OrbException) {
+DateSkeleton::DateSkeleton() {
   OrbInterface interface(MESSAGE("DateSkeleton/1.0"), 1, 0);
   OrbMethod method(MESSAGE("getDate"), OrbPrimitive(OrbPrimitive::LONG_LONG_INTEGER));
   method.addArgument();
@@ -32,7 +32,7 @@ DateSkeleton::DateSkeleton() throw(OrbException) {
 // Stub::hasMethod(const String& name));
 // Stub::importMethod(const String& name));
 
-void DateSkeleton::dispatch(OrbChannel* channel, unsigned int method) throw(IOException) {
+void DateSkeleton::dispatch(OrbChannel* channel, unsigned int method) {
   // TAG: the component invoking dispatch could handle OrbException
   switch (method) {
   case DateSkeleton::METHOD_GET_DATE:
@@ -56,9 +56,9 @@ void DateSkeleton::dispatch(OrbChannel* channel, unsigned int method) throw(IOEx
   }
 }
 
-virtual long long DateSkeleton::getDate() const throw(OrbException) = 0;
+virtual long long DateSkeleton::getDate() const = 0;
 
-DateSkeleton::~DateSkeleton() throw() {
+DateSkeleton::~DateSkeleton() noexcept {
 }
 
 #endif

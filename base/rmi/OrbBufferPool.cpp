@@ -15,12 +15,12 @@
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
-OrbBufferPool::OrbBufferPool() throw() {
+OrbBufferPool::OrbBufferPool() noexcept {
   numberOfBuffers = 0;
   maximumNumberOfBuffers = 16384;
 }
 
-OrbBuffer* OrbBufferPool::acquire(unsigned int holding) throw(OrbException) {
+OrbBuffer* OrbBufferPool::acquire(unsigned int holding) {
   bool newBuffer = false;
   {
     ExclusiveSynchronize<Guard> _guard(guard);

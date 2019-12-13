@@ -20,7 +20,7 @@
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 LocalConnectionFactory::LocalConnectionFactory(
-  const String& endPoint) throw(InvalidFormat, OrbException) {
+  const String& endPoint) {
   bassert(!endPoint.isProper(), InvalidFormat(this));
   
   this->identifier = endPoint;
@@ -30,12 +30,12 @@ LocalConnectionFactory::LocalConnectionFactory(
   }
 }
 
-String LocalConnectionFactory::getEndPoint() const throw() {
+String LocalConnectionFactory::getEndPoint() const noexcept {
   return identifier;
 }
 
 void LocalConnectionFactory::run(
-  ProtectedPointer<Orb> orb) throw(OrbException) {
+  ProtectedPointer<Orb> orb) {
   Thread* thread = Thread::getThread();
   while (!thread->isTerminated()) {
     WRITE_SOURCE_LOCATION();
@@ -43,17 +43,17 @@ void LocalConnectionFactory::run(
   WRITE_SOURCE_LOCATION();
 }
 
-String LocalConnectionFactory::getUrn() const throw() {
+String LocalConnectionFactory::getUrn() const noexcept {
   return Literal("urn:rmi:orb:scheme:local");
 }
 
 Reference<OrbStub> LocalConnectionFactory::getObject(
-  const String& identifier) throw(InvalidFormat, OrbException) {
+  const String& identifier) {
   // check if connection already exists
   return 0; // TAG: fixme
 }
 
-LocalConnectionFactory::~LocalConnectionFactory() throw() {
+LocalConnectionFactory::~LocalConnectionFactory() noexcept {
 }
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

@@ -15,11 +15,11 @@
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
-IDLEnumeration::IDLEnumeration(const String& name) throw()
+IDLEnumeration::IDLEnumeration(const String& name) noexcept
   : IDLNamedType(name) {
 }
 
-IDLEnumeration::~IDLEnumeration() throw() {
+IDLEnumeration::~IDLEnumeration() noexcept {
 }
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

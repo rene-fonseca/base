@@ -43,22 +43,22 @@ namespace extension {
     
     
     
-    RegistryKey RegistryKey::getMachine() throw(RegistryException) {
+    RegistryKey RegistryKey::getMachine() {
       return RegistryKey::RegistryKey(RegistryKey::MACHINE, MESSAGE(""), RegistryKey::READWRITE);
     }
 
-    RegistryKey RegistryKey::getUser() throw(RegistryException) {
+    RegistryKey RegistryKey::getUser() {
       return RegistryKey::RegistryKey(RegistryKey::USER, MESSAGE(""), RegistryKey::READWRITE);
     }
 
-    RegistryKey::RegistryKey() throw() {
+    RegistryKey::RegistryKey() noexcept {
       if (!invalid.isValid()) {
         invalid = new RegistryKey::Handle(OperatingSystem::INVALID_HANDLE);
       }
       key = invalid;
     }
     
-    RegistryKey::RegistryKey(const String& machine, Root root, const String& path, Access access) throw(RegistryException) {
+    RegistryKey::RegistryKey(const String& machine, Root root, const String& path, Access access) {
       HKEY rootKey;
       
       HKEY regRoot;
@@ -110,7 +110,7 @@ namespace extension {
       this->key = new RegistryKey::Handle((OperatingSystem::Handle)regKey);
     }
     
-    RegistryKey::RegistryKey(Root root, const String& path, Access access) throw(RegistryException) {
+    RegistryKey::RegistryKey(Root root, const String& path, Access access) {
       REGSAM regAccess = 0;
       switch (access) {
       case RegistryKey::READ:
@@ -149,7 +149,7 @@ namespace extension {
       key = new RegistryKey::Handle((OperatingSystem::Handle)regKey);
     }
     
-    RegistryKey RegistryKey::open(const String& name, Access access) const throw(RegistryException) {
+    RegistryKey RegistryKey::open(const String& name, Access access) const {
       REGSAM regAccess = 0;
       switch (access) {
       case RegistryKey::READ:
@@ -176,7 +176,7 @@ namespace extension {
       return result;
     }
 
-    RegistryKey RegistryKey::addSubkey(const String& name, Access access) throw(RegistryException) {
+    RegistryKey RegistryKey::addSubkey(const String& name, Access access) {
       HKEY regKey;
       DWORD disposition;
       bassert(::RegCreateKeyEx((HKEY)key->getHandle(), // handle to open key
@@ -195,15 +195,15 @@ namespace extension {
       return result;
     }
  
-    void RegistryKey::close() throw(RegistryException) {
+    void RegistryKey::close() {
       key = invalid; // always initialized at this point
     }
 
-    bool RegistryKey::isValid() const throw() {
+    bool RegistryKey::isValid() const noexcept {
       return key.getValue() != invalid.getValue(); // TAG: fixme key != invalid
     }
     
-    Array<String> RegistryKey::getKeys() throw(RegistryException) {
+    Array<String> RegistryKey::getKeys() {
       DWORD maxLength; // excluding terminator
       DWORD numberOfSubkeys;
       bassert(::RegQueryInfoKey((HKEY)key->getHandle(),
@@ -246,7 +246,7 @@ namespace extension {
       return result;
     }
     
-    Array<String> RegistryKey::getValues() const throw(RegistryException) {
+    Array<String> RegistryKey::getValues() const {
       DWORD maxLength; // excluding terminator
       DWORD numberOfValues;
       bassert(::RegQueryInfoKey((HKEY)key->getHandle(),
@@ -289,7 +289,7 @@ namespace extension {
       return result;
     }
 
-    bool RegistryKey::isEmpty() const throw(RegistryException) {
+    bool RegistryKey::isEmpty() const {
       DWORD numberOfSubkeys;
       DWORD numberOfValues;
       bassert(::RegQueryInfoKey((HKEY)key->getHandle(),
@@ -310,7 +310,7 @@ namespace extension {
       return (numberOfSubkeys == 0) && (numberOfValues == 0);
     }
 
-    bool RegistryKey::isKey(const String& name) const throw(RegistryException) {
+    bool RegistryKey::isKey(const String& name) const {
       HKEY temp;
       LONG error = ::RegOpenKeyEx((HKEY)key->getHandle(), // handle to open key
                                   name.getElements(), // subkey name
@@ -324,7 +324,7 @@ namespace extension {
       return error == ERROR_SUCCESS;
     }
     
-    bool RegistryKey::isValue(const String& name) const throw(RegistryException) {
+    bool RegistryKey::isValue(const String& name) const {
       return ::RegQueryValueEx((HKEY)key->getHandle(),
                                name.getElements(), // value name
                                0, // reserved
@@ -334,7 +334,7 @@ namespace extension {
              ) == ERROR_SUCCESS; // TAG: does this work
     }
 
-    Date RegistryKey::getLastModification() const throw(RegistryException) {
+    Date RegistryKey::getLastModification() const {
       FILETIME modificationTime;
       bassert(::RegQueryInfoKey((HKEY)key->getHandle(),
                                0, // class buffer
@@ -354,7 +354,7 @@ namespace extension {
       return Date((Cast::impersonate<int64>(modificationTime) - 116444736000000000LL)/10000000);
     }
     
-    Trustee RegistryKey::getOwner() const throw(RegistryException) {
+    Trustee RegistryKey::getOwner() const {
       SECURITY_DESCRIPTOR* securityDescriptor;
       PSID ownerSID;
       bassert(::GetSecurityInfo((HKEY)key->getHandle(), SE_REGISTRY_KEY,
@@ -367,7 +367,7 @@ namespace extension {
       return owner;
     }
 
-    Trustee RegistryKey::getGroup() const throw(RegistryException) {
+    Trustee RegistryKey::getGroup() const {
       SECURITY_DESCRIPTOR* securityDescriptor;
       PSID groupSID;
       bassert(::GetSecurityInfo((HKEY)key->getHandle(), SE_REGISTRY_KEY,
@@ -380,14 +380,14 @@ namespace extension {
       return group;
     }
     
-    AccessControlList RegistryKey::getACL() const throw(RegistryException) {
+    AccessControlList RegistryKey::getACL() const {
       // see File::getACL()
     }
     
-    void RegistryKey::setACL(const AccessControlList& acl) throw(RegistryException) {
+    void RegistryKey::setACL(const AccessControlList& acl) {
     }
 
-    AnyValue RegistryKey::getValue(const String& name) const throw(RegistryException) {
+    AnyValue RegistryKey::getValue(const String& name) const {
       DWORD size;
       DWORD type;
       bassert(::RegQueryValueEx((HKEY)key->getHandle(),
@@ -480,7 +480,7 @@ namespace extension {
       }
     }
 
-    void RegistryKey::setValue(const String& name, const AnyValue& value) const throw(RegistryException) {
+    void RegistryKey::setValue(const String& name, const AnyValue& value) const {
       DWORD type;
       String valueAsString;
       DWORD valueAsDWORD;
@@ -565,7 +565,7 @@ namespace extension {
       ) == ERROR_SUCCESS, RegistryException("Unable to set value", this));
     }
 
-    uint32 RegistryKey::getInteger(const String& name) const throw(RegistryException) {
+    uint32 RegistryKey::getInteger(const String& name) const {
       uint32 buffer;
       DWORD size = sizeof(buffer);
       DWORD type;
@@ -586,7 +586,7 @@ namespace extension {
       }
     }
     
-    void RegistryKey::setInteger(const String& name, uint32 value) throw(RegistryException) {
+    void RegistryKey::setInteger(const String& name, uint32 value) {
       LittleEndian<uint32> buffer = value;
       bassert(::RegSetValueEx((HKEY)key->getHandle(), // handle to key
                              name.getElements(), // value name
@@ -597,7 +597,7 @@ namespace extension {
       ) == ERROR_SUCCESS, RegistryException("Unable to set value", this));
     }
 
-    String RegistryKey::getBinary(const String& name) const throw(RegistryException) {
+    String RegistryKey::getBinary(const String& name) const {
       DWORD size;
       DWORD type;
       bassert((::RegQueryValueEx((HKEY)key->getHandle(),
@@ -625,7 +625,7 @@ namespace extension {
       return result;
     }
     
-    void RegistryKey::setBinary(const String& name, const char* buffer, unsigned int size) throw(RegistryException) {
+    void RegistryKey::setBinary(const String& name, const char* buffer, unsigned int size) {
       bassert(::RegSetValueEx((HKEY)key->getHandle(), // handle to key
                              name.getElements(), // value name
                              0, // reserved
@@ -635,7 +635,7 @@ namespace extension {
       ) == ERROR_SUCCESS, RegistryException("Unable to set value", this));
     }
 
-    String RegistryKey::getString(const String& name) const throw(RegistryException) {
+    String RegistryKey::getString(const String& name) const {
       DWORD size;
       DWORD type;
       bassert((::RegQueryValueEx((HKEY)key->getHandle(),
@@ -663,7 +663,7 @@ namespace extension {
       return result;
     }
 
-    void RegistryKey::setValue(const String& name, const String& value) throw(RegistryException) {
+    void RegistryKey::setValue(const String& name, const String& value) {
       bassert(::RegSetValueEx((HKEY)key->getHandle(), // handle to key
                              name.getElements(), // value name
                              0, // reserved
@@ -673,7 +673,7 @@ namespace extension {
       ) == ERROR_SUCCESS, RegistryException("Unable to set value", this));
     }
 
-    Array<String> RegistryKey::getStringSequence(const String& name) const throw(MemoryException, RegistryException) {
+    Array<String> RegistryKey::getStringSequence(const String& name) const {
       DWORD size;
       DWORD type;
       bassert((::RegQueryValueEx((HKEY)key->getHandle(),
@@ -712,7 +712,7 @@ namespace extension {
       return result;
     }
 
-    void RegistryKey::setValue(const String& name, const Array<String>& value) throw(RegistryException) {
+    void RegistryKey::setValue(const String& name, const Array<String>& value) {
       unsigned int size = 0;
 
       Array<String>::ReadIterator i = value.getBeginIterator();
@@ -744,14 +744,14 @@ namespace extension {
              ) == ERROR_SUCCESS, RegistryException("Unable to set value", this));
     }
     
-    void RegistryKey::flush() throw(RegistryException) {
+    void RegistryKey::flush() {
       bassert(
         ::RegFlushKey((HKEY)key->getHandle()) == ERROR_SUCCESS,
         RegistryException("Unable to remove key", this)
       );
     }
 
-    bool RegistryKey::removeKeyRecursively(OperatingSystem::Handle key, const char* name) throw() {
+    bool RegistryKey::removeKeyRecursively(OperatingSystem::Handle key, const char* name) noexcept {
       HKEY subkey;
       LONG error = ::RegOpenKeyEx((HKEY)key, // handle to open key
                                   name, // subkey name
@@ -808,7 +808,7 @@ namespace extension {
       }
     }
     
-    bool RegistryKey::removeKey(const String& name, bool force) throw(RegistryException) {
+    bool RegistryKey::removeKey(const String& name, bool force) {
       if (force) {
         if (!removeKeyRecursively(key->getHandle(), name.getElements())) {
           return false;
@@ -820,14 +820,14 @@ namespace extension {
       return true;
     }
 
-    bool RegistryKey::removeValue(const String& name) throw(RegistryException) {
+    bool RegistryKey::removeValue(const String& name) {
       bassert(
         ::RegDeleteValue((HKEY)key->getHandle(), name.getElements()) == ERROR_SUCCESS,
         RegistryException("Unable to remove value", this)
       );
     }
     
-    RegistryKey::ValueType RegistryKey::getTypeOfValue(const String& name) const throw(RegistryException) {
+    RegistryKey::ValueType RegistryKey::getTypeOfValue(const String& name) const {
       DWORD type;
       bassert(
         ::RegQueryValueEx((HKEY)key->getHandle(),
@@ -865,7 +865,7 @@ namespace extension {
       }
     }
     
-    unsigned int RegistryKey::getSize(const String& name) const throw(RegistryException) {
+    unsigned int RegistryKey::getSize(const String& name) const {
       DWORD size;
       bassert(::RegQueryValueEx((HKEY)key->getHandle(),
                                name.getElements(), // value name

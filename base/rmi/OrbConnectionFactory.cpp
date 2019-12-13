@@ -15,10 +15,10 @@
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
-OrbConnectionFactory::OrbConnectionFactory() throw() {
+OrbConnectionFactory::OrbConnectionFactory() noexcept {
 }
 
-OrbConnectionFactory::~OrbConnectionFactory() throw() {
+OrbConnectionFactory::~OrbConnectionFactory() noexcept {
 }
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

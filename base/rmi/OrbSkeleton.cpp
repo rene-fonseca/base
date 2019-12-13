@@ -15,11 +15,11 @@
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
-OrbSkeleton::OrbSkeleton(const String& _name, unsigned int _version) throw(OrbException)
+OrbSkeleton::OrbSkeleton(const String& _name, unsigned int _version)
   : name(_name), version(_version) {
 }
 
-OrbSkeleton::~OrbSkeleton() throw() {
+OrbSkeleton::~OrbSkeleton() noexcept {
 }
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

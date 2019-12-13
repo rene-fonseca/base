@@ -15,10 +15,10 @@
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
-OrbResponse::OrbResponse() throw() {
+OrbResponse::OrbResponse() noexcept {
 }
 
-OrbResponse::~OrbResponse() throw() {
+OrbResponse::~OrbResponse() noexcept {
 }
 
 /*

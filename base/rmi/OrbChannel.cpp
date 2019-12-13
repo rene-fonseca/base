@@ -15,19 +15,19 @@
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
-OrbChannel::OrbChannel(Reference<OrbEncoder> _encoder, Reference<OrbDecoder> _decoder) throw()
+OrbChannel::OrbChannel(Reference<OrbEncoder> _encoder, Reference<OrbDecoder> _decoder) noexcept
   : encoder(_encoder), decoder(_decoder) {
 }
 
-String OrbChannel::getOrbIdentifier(const OrbStub& object) const throw() {
+String OrbChannel::getOrbIdentifier(const OrbStub& object) const noexcept {
   return ""; // TAG: fixme
 }
 
-String OrbChannel::getOrbInterfaceIdentifier(const OrbStub& object) const throw() {
+String OrbChannel::getOrbInterfaceIdentifier(const OrbStub& object) const noexcept {
   return ""; // TAG: fixme
 }
 
-OrbChannel::~OrbChannel() throw() {
+OrbChannel::~OrbChannel() noexcept {
 }
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

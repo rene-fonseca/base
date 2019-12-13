@@ -45,7 +45,7 @@ namespace win32 {
     const uint8* _buffer,
     unsigned int _bytesToWrite,
     unsigned long long _offset,
-    AsynchronousWriteEventListener* _listener) throw(IOException) 
+    AsynchronousWriteEventListener* _listener) 
     : listener(_listener),
       buffer(_buffer),
       bytesToWrite(_bytesToWrite),

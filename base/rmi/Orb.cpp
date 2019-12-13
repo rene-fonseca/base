@@ -25,7 +25,7 @@ class AmbiguousRegistration : public Exception {
 public:
 };
 
-Reference<OrbEncoding> Orb::getDefaultEncoding() throw() {
+Reference<OrbEncoding> Orb::getDefaultEncoding() noexcept {
   return new LisaEncoding();
 }
 
@@ -33,22 +33,22 @@ Reference<OrbEncoding> Orb::getDefaultEncoding() throw() {
 // getVersion
 // getVendor
 
-Orb::Orb() throw(OrbException) {
+Orb::Orb() {
 }
 
-unsigned int Orb::getNumberOfStubs() const throw() {
+unsigned int Orb::getNumberOfStubs() const noexcept {
   return 0; // TAG: fixme - stubs.getSize();
 }
 
-unsigned int Orb::getNumberOfSkeletons() const throw() {
+unsigned int Orb::getNumberOfSkeletons() const noexcept {
   return skeletons.getNumberOfSkeletons();
 }
 
-unsigned int Orb::getNumberOfConnections() const throw() {
+unsigned int Orb::getNumberOfConnections() const noexcept {
   return 0; // TAG: fixme
 }
  
-HashSet<String> Orb::getEncodings() const throw(MemoryException) {
+HashSet<String> Orb::getEncodings() const {
   HashSet<String> result;
   HashTable<String, Reference<OrbEncoding> >::ReadEnumerator enu =
     encodings.getReadEnumerator();
@@ -58,7 +58,7 @@ HashSet<String> Orb::getEncodings() const throw(MemoryException) {
   return result;
 }
 
-HashSet<String> Orb::getSchemes() const throw(MemoryException) {
+HashSet<String> Orb::getSchemes() const {
   HashSet<String> result;
   HashTable<String, Reference<OrbScheme> >::ReadEnumerator enu =
     schemes.getReadEnumerator();
@@ -68,7 +68,7 @@ HashSet<String> Orb::getSchemes() const throw(MemoryException) {
   return result;
 }
 
-HashSet<String> Orb::getFactories() const throw(MemoryException) {
+HashSet<String> Orb::getFactories() const {
   HashSet<String> result;
   HashSet<Reference<OrbConnectionFactory> >::ReadEnumerator enu =
     factories.getReadEnumerator();
@@ -82,7 +82,7 @@ HashSet<String> Orb::getFactories() const throw(MemoryException) {
 void Orb::registerEncoding(
   Reference<OrbEncoding> encoding,
   unsigned int flags)
-  throw(InvalidFormat, OrbException, AmbiguousRegistration, MemoryException) {
+  {
   
   String urn = encoding->getUrn();
   bassert(Urn::isUrn(urn), InvalidFormat(this));
@@ -96,7 +96,7 @@ void Orb::registerEncoding(
 
 void Orb::registerScheme(
   Reference<OrbScheme> scheme)
-  throw(InvalidFormat, OrbException, AmbiguousRegistration, MemoryException) {
+  {
   
   String urn = scheme->getUrn();
   bassert(Urn::isUrn(urn), InvalidFormat(this));
@@ -106,7 +106,7 @@ void Orb::registerScheme(
 }
 
 void Orb::registerFactory(Reference<OrbConnectionFactory> factory)
-  throw(OrbException, MemoryException)
+ 
 {
   String urn = factory->getUrn();
   bassert(
@@ -117,7 +117,7 @@ void Orb::registerFactory(Reference<OrbConnectionFactory> factory)
 }
 
 void Orb::openFactory(const String& identifier)
-  throw(InvalidFormat, OrbException, MemoryException)
+ 
 {
   const int colon = identifier.indexOf("://");
   bassert(
@@ -141,17 +141,17 @@ void Orb::openFactory(const String& identifier)
 
 //   OrbConnectionReference
   
-//   Reference<OrbConnection> getConnection() const throw() {
+//   Reference<OrbConnection> getConnection() const noexcept {
 //     return connection;
 //   }
   
-//   inline OrbReference getReference() const throw() {
+//   inline OrbReference getReference() const noexcept {
 //     return reference;
 //   }
 // };
 
 Orb::OrbConnectionReference Orb::getConnectionReference(
-  const String& identifier) throw(InvalidFormat, OrbException) {
+  const String& identifier) {
   fout << "DEBUG: " << "Orb::getConnectionReference(\""
        << identifier << "\")" << ENDL;
 
@@ -199,16 +199,16 @@ public:
   
   inline OrbConnectionThread(
     ProtectedPointer<Orb> _orb,
-    Reference<OrbConnection> _connection) throw()
+    Reference<OrbConnection> _connection) noexcept
     : orb(_orb), connection(_connection) {
   }
   
-  void run() throw() {
+  void run() noexcept {
     WRITE_SOURCE_LOCATION();
     orb->onConnection(connection);
   }
 
-  ~OrbConnectionThread() throw() {
+  ~OrbConnectionThread() noexcept {
   }
 };
 
@@ -221,18 +221,18 @@ public:
   
   inline OrbFactoryDispatcher(
     ProtectedPointer<Orb> _orb,
-    Reference<OrbConnectionFactory> _factory) throw()
+    Reference<OrbConnectionFactory> _factory) noexcept
     : orb(_orb), factory(_factory) {
   }
   
-  void run() throw() {
+  void run() noexcept {
     WRITE_SOURCE_LOCATION();
     factory->run(orb);
   }
 };
 
 // a request
-void Orb::onConnection(Reference<OrbConnection> connection) throw() {
+void Orb::onConnection(Reference<OrbConnection> connection) noexcept {
   WRITE_SOURCE_LOCATION();
   
   Allocator<char> incoming(4096); // scheme specific buffer size
@@ -247,13 +247,13 @@ void Orb::onConnection(Reference<OrbConnection> connection) throw() {
   }
 }
 
-// void Orb::onClosedConnection() throw(OrbException) {
+// void Orb::onClosedConnection() {
 //   // register thread for destruction
 // }
 
 void Orb::onIncomingConnection(
   Reference<OrbConnectionFactory> factory,
-  Reference<OrbConnection> connection) throw(OrbException) {
+  Reference<OrbConnection> connection) {
   
   fout << "DEBUG: " << "Incoming connection "
        << connection->getEndPoint() << ENDL;
@@ -285,7 +285,7 @@ private:
     unsigned int availableBytes;
   public:
 
-    Window() throw(MemoryException) {
+    Window() {
     }
   };
   
@@ -293,13 +293,13 @@ public:
   
   static unsigned int INCOMING_BUFFER_SIZE = 16 * 1024;
   
-  OrbSink() throw(MemoryException)
+  OrbSink()
     : incoming(INCOMING_BUFFER_SIZE),
       availableBytes(0) {
   }
   
   // window - up to n requests concurrently
-  unsigned int push(const uint8* buffer, unsigned int size) throw() {
+  unsigned int push(const uint8* buffer, unsigned int size) noexcept {
     // current window
     unsigned int bytesToPush = size;
     while (bytesToPush) {
@@ -330,13 +330,13 @@ public:
 unsigned int Orb::push(
   Reference<OrbConnection> connection,
   const uint8* buffer,
-  unsigned int size) throw() {
+  unsigned int size) noexcept {
   fout << "DEBUG: " << "Incoming data " << size << ENDL;
   // lookup decoder
   return size;
 }
 
-void Orb::run() throw(OrbException) {
+void Orb::run() {
   HashSet<Reference<OrbConnectionFactory> >::Enumerator enu =
     factories.getEnumerator();
   Array<Thread*> threads;
@@ -375,11 +375,11 @@ void Orb::run() throw(OrbException) {
   }
 }
 
-void Orb::terminate() throw() {
+void Orb::terminate() noexcept {
   // TAG: fixme
 }
 
-Orb::~Orb() throw() {
+Orb::~Orb() noexcept {
 }
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

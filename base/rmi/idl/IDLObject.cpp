@@ -15,10 +15,10 @@
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
-IDLObject::IDLObject() throw() {
+IDLObject::IDLObject() noexcept {
 }
 
-IDLObject::~IDLObject() throw() {
+IDLObject::~IDLObject() noexcept {
 }
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

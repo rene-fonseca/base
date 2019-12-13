@@ -15,7 +15,7 @@
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
-OrbIdentifier::OrbIdentifier(const String& identifier) throw(InvalidFormat) {
+OrbIdentifier::OrbIdentifier(const String& identifier) {
   String::ReadIterator i = identifier.getBeginReadIterator();
   String::ReadIterator end = identifier.getEndReadIterator();
   

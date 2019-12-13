@@ -78,7 +78,7 @@ namespace native {
       }
     };
 
-    bool import() throw() {
+    bool import() noexcept {
       // TAG: only load GDI version specific function if available
       static DynamicLinker* dynamicLinker = 0;
       if (!dynamicLinker) {

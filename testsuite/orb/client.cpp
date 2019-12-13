@@ -38,14 +38,14 @@ public:
   ClientApplication(
     int numberOfArguments,
     const char* arguments[],
-    const char* environment[]) throw()
+    const char* environment[]) noexcept
     : Application("client", numberOfArguments, arguments, environment) {
   }
 
   class DateInterface {
   public:
     
-    virtual int getDate() const throw(OrbException) = 0;
+    virtual int getDate() const = 0;
   };
 
   class DateSkeleton;
@@ -58,7 +58,7 @@ public:
       Reference<OrbConnection> connection,
       Reference<OrbDecoder> decoder,
       Reference<OrbEncoder> encoder,
-      const OrbReference& reference) throw()
+      const OrbReference& reference) noexcept
       : OrbStub(orb, connection, decoder, encoder, reference) {
       
 //       DateSkeleton* result = dynamic_cast<DateSkeleton*>(
@@ -67,7 +67,7 @@ public:
 //       bassert(result, CastException(this));
     }
     
-    int getDate() const throw(OrbException) {
+    int getDate() const {
 //       const DateInterface* self =
 //         Cast::getPointer<const DateInterface*>(reference.getId());
 
@@ -95,12 +95,12 @@ public:
     
     // association with 
     
-    inline DateSkeleton() throw(OrbException)
+    inline DateSkeleton()
       : OrbSkeleton("Date", 1) {
       registerMethod("getDate");
     }
 
-    void unmarshal(int methodId) throw() {
+    void unmarshal(int methodId) noexcept {
       switch (methodId) {
       case 0:
         {
@@ -122,22 +122,22 @@ public:
     mutable int value = 1234;
   public:
     
-    DateServlet() throw()
+    DateServlet() noexcept
     {
     }
 
-    int getDate() const throw()
+    int getDate() const noexcept
     {
       return value++;
     }
   };
   
-  void run() throw()
+  void run() noexcept
   {
     orb.run();
   }
 
-  void dump() throw()
+  void dump() noexcept
   {
     fout << "ORB:" << EOL
          << indent(2) << "number of encoding schemes: " << orb.getNumberOfEncodings() << EOL
@@ -151,7 +151,7 @@ public:
          << ENDL;
   }
   
-  void main() throw()
+  void main() noexcept
   {
     fout << getFormalName() << " version "
          << MAJOR_VERSION << '.' << MINOR_VERSION << EOL
@@ -175,7 +175,7 @@ public:
 
   // TAG: add terminate
   
-  virtual ~ClientApplication() throw() {
+  virtual ~ClientApplication() noexcept {
   }
 };
 

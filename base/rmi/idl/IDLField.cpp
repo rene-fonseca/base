@@ -15,10 +15,10 @@
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
-IDLField::IDLField(const IDLType& _type) throw() : type(_type) {
+IDLField::IDLField(const IDLType& _type) noexcept : type(_type) {
 }
 
-IDLField::~IDLField() throw() {
+IDLField::~IDLField() noexcept {
 }
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

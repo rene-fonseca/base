@@ -41,7 +41,7 @@ namespace extension {
     /**
       Initializes the exception object with no message.
     */
-    inline RegistryException() throw() {
+    inline RegistryException() noexcept {
     }
     
     /**
@@ -49,7 +49,7 @@ namespace extension {
       
       @param message The message.
     */
-    inline RegistryException(const char* message) throw() {
+    inline RegistryException(const char* message) noexcept {
     }
     
     /**
@@ -57,7 +57,7 @@ namespace extension {
       
       @param type The identity of the type.
     */
-    inline RegistryException(Type type) throw() : Exception(type) {
+    inline RegistryException(Type type) noexcept : Exception(type) {
     }
     
     /**
@@ -66,7 +66,7 @@ namespace extension {
       @param message An NULL-terminated string (ASCII).
       @param type The identity of the type.
     */
-    inline RegistryException(const char* message, Type type) throw() : Exception(message, type) {
+    inline RegistryException(const char* message, Type type) noexcept : Exception(message, type) {
     }
   };
   
@@ -99,11 +99,11 @@ namespace extension {
     public:
 
       /** Initializes handle. */
-      inline Handle(void* _handle) throw() : handle(_handle) {
+      inline Handle(void* _handle) noexcept : handle(_handle) {
       }
 
       /** Returns the handle to the key. */
-      inline OperatingSystem::Handle getHandle() const throw() {
+      inline OperatingSystem::Handle getHandle() const noexcept {
         return handle;
       }
 
@@ -117,7 +117,7 @@ namespace extension {
     /** Handle to Registry key. */
     Reference<Handle> key;
 
-    bool removeKeyRecursively(OperatingSystem::Handle key, const char* name) throw();
+    bool removeKeyRecursively(OperatingSystem::Handle key, const char* name) noexcept;
   public:
 
     /** Registry root. */
@@ -153,29 +153,29 @@ namespace extension {
     /**
       Returns a handle to the Registry of the local machine.
     */
-    static RegistryKey getMachine() throw(RegistryException);
+    static RegistryKey getMachine();
     
     /**
       Returns a handle to the personal Registry of the current user.
     */
-    static RegistryKey getUser() throw(RegistryException);
+    static RegistryKey getUser();
     
     /**
       Initializes key as invalid.
     */
-    RegistryKey() throw();
+    RegistryKey() noexcept;
 
     /**
       Initialization of handle from other handle.
     */
-    inline RegistryKey(const RegistryKey& copy) throw()
+    inline RegistryKey(const RegistryKey& copy) noexcept
       : key(copy.key) {
     }
 
     /**
       Assignment of handle by handle.
     */
-    inline RegistryKey& operator=(const RegistryKey& assign) throw() {
+    inline RegistryKey& operator=(const RegistryKey& assign) noexcept {
       key = assign.key;
       return *this;
     }
@@ -188,7 +188,7 @@ namespace extension {
       @param path The path of the key within the specified root.
       @param access The desired access (i.e. READ, WRITE, READWRITE).
     */
-    RegistryKey(const String& machine, Root root, const String& path, Access access) throw(RegistryException);
+    RegistryKey(const String& machine, Root root, const String& path, Access access);
 
     /**
       Opens the specified Registry key.
@@ -197,7 +197,7 @@ namespace extension {
       @param path The path of the key within the specified root.
       @param access The desired access (i.e. READ, WRITE, READWRITE).
     */
-    RegistryKey(Root root, const String& path, Access access) throw(RegistryException);
+    RegistryKey(Root root, const String& path, Access access);
     
     /**
       Returns a handle to the specified subkey of this key.
@@ -205,7 +205,7 @@ namespace extension {
       @param name The name of the subkey.
       @param access The desired access (i.e. READ, WRITE, READWRITE).
     */
-    RegistryKey open(const String& name, Access access) const throw(RegistryException);
+    RegistryKey open(const String& name, Access access) const;
 
     /**
       Adds a new subkey.
@@ -213,76 +213,76 @@ namespace extension {
       @param name The name of the subkey.
       @param access The desired access (i.e. READ, WRITE, READWRITE).
     */
-    RegistryKey addSubkey(const String& name, Access access) throw(RegistryException);
+    RegistryKey addSubkey(const String& name, Access access);
 
     /**
       Closes the handle to this key.
     */
-    void close() throw(RegistryException);
+    void close();
 
     /**
       Returns true if the handle is valid.
     */
-    bool isValid() const throw();
+    bool isValid() const;
     
     // TAG: use AnyValue (e.g. Map<String, AnyValue>)?
 
     /**
       Returns the names of the subkeys within the key.
     */
-    Array<String> getKeys() throw(RegistryException);
+    Array<String> getKeys();
 
     /**
       Returns the names of the values within the key.
     */
-    Array<String> getValues() const throw(RegistryException);
+    Array<String> getValues() const;
     
     /**
       Returns true if this key is empty.
     */
-    bool isEmpty() const throw(RegistryException);
+    bool isEmpty() const;
 
     /**
       Returns true if the specified entry exists and is a key.
     */
-    bool isKey(const String& name) const throw(RegistryException);
+    bool isKey(const String& name) const;
     
     /**
       Returns true if the specified entry exists and is a value.
     */
-    bool isValue(const String& name) const throw(RegistryException);
+    bool isValue(const String& name) const;
     
     /**
       Returns the last modification time of the key.
     */
-    Date getLastModification() const throw(RegistryException);
+    Date getLastModification() const;
 
     /**
       Returns the owner of the key.
     */
-    Trustee getOwner() const throw(RegistryException);
+    Trustee getOwner() const;
 
     /**
       Returns the primary group of the key.
     */
-    Trustee getGroup() const throw(RegistryException);
+    Trustee getGroup() const;
 
     /**
       Returns the ACL for the key.
     */
-    AccessControlList getACL() const throw(RegistryException);
+    AccessControlList getACL() const;
     
     /**
       Sets the ACL of the key.
     */
-    void setACL(const AccessControlList& acl) throw(RegistryException);
+    void setACL(const AccessControlList& acl);
 
     /**
       Returns the content of the specified value.
 
       @param name The name of the value.
     */
-    AnyValue getValue(const String& name) const throw(RegistryException);
+    AnyValue getValue(const String& name) const;
 
     /**
       Returns the content of the specified value.
@@ -290,12 +290,12 @@ namespace extension {
       @param name The name of the value.
       @param value The content of the Registry value.
     */
-    void setValue(const String& name, const AnyValue& value) const throw(RegistryException);
+    void setValue(const String& name, const AnyValue& value) const;
 
     /**
       Returns the value of a 32 bit integer value (either INTEGER_VALUE or INTEGER_BE_VALUE)
     */
-    uint32 getInteger(const String& name) const throw(RegistryException);
+    uint32 getInteger(const String& name) const;
 
     /**
       Sets the value as a 32 bit integer (INTEGER_VALUE).
@@ -303,14 +303,14 @@ namespace extension {
       @param name The name of the value.
       @param content The content of the value.
     */
-    void setInteger(const String& name, uint32 value) throw(RegistryException);
+    void setInteger(const String& name, uint32 value);
     
     /**
       Returns the value of a binary value (i.e. BINARY_VALUE and UNSPECIFIED_VALUE).
       
       @param name The name of the value.
     */
-    String getBinary(const String& name) const throw(RegistryException);
+    String getBinary(const String& name) const;
     
     /**
       Sets the value as a binary value (BINARY_VALUE).
@@ -319,12 +319,12 @@ namespace extension {
       @param buffer The source of the value content.
       @param size The number of bytes in the buffer.
     */
-    void setBinary(const String& name, const char* buffer, unsigned int size) throw(RegistryException);
+    void setBinary(const String& name, const char* buffer, unsigned int size);
     
     /**
       Returns the value of a string value (i.e. STRING_VALUE or ENVIRONMENT_STRING_VALUE).
     */
-    String getString(const String& name) const throw(RegistryException);
+    String getString(const String& name) const;
     
     /**
       Sets the value of a string value (STRING_VALUE).
@@ -332,14 +332,14 @@ namespace extension {
       @param name The name of the Registry value.
       @param value The desired content of the value.
     */
-    void setValue(const String& name, const String& value) throw(RegistryException);
+    void setValue(const String& name, const String& value);
     
     /**
       Returns the strings of a multi string value.
       
       @param name The name of the Registry value.
     */
-    Array<String> getStringSequence(const String& name) const throw(MemoryException, RegistryException);
+    Array<String> getStringSequence(const String& name) const;
 
     /**
       Sets the content of a multi string value.
@@ -347,12 +347,12 @@ namespace extension {
       @param name The name of the Registry value.
       @param value The desired mutil string content of the value.
     */
-    void setValue(const String& name, const Array<String>& value) throw(RegistryException);
+    void setValue(const String& name, const Array<String>& value);
     
     /**
       Flushes any cached data to the Registry.
     */
-    void flush() throw(RegistryException);
+    void flush();
     
     /**
       Removes the specified subkey.
@@ -362,7 +362,7 @@ namespace extension {
       
       @return True if key was removed.
     */
-    bool removeKey(const String& name, bool force = false) throw(RegistryException);
+    bool removeKey(const String& name, bool force = false);
     
     /**
       Removes the specified value from this key.
@@ -371,21 +371,21 @@ namespace extension {
       
       @return True if value was removed.
     */
-    bool removeValue(const String& name) throw(RegistryException);
+    bool removeValue(const String& name);
     
     /**
       Returns the type of the specified key or value.
       
       @param name The name of the value.
     */
-    ValueType getTypeOfValue(const String& name) const throw(RegistryException);
+    ValueType getTypeOfValue(const String& name) const;
 
     /**
       Returns the size of the specified value.
       
       @param name The name of the value.
     */
-    unsigned int getSize(const String& name) const throw(RegistryException);
+    unsigned int getSize(const String& name) const;
   };
   
 }; // end of namespace extension

@@ -15,10 +15,10 @@
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
-OrbSkeletonManager::OrbSkeletonManager() throw(MemoryException) {
+OrbSkeletonManager::OrbSkeletonManager() {
 }
 
-void OrbSkeletonManager::add(Reference<OrbSkeleton> skeleton) throw(MemoryException) {
+void OrbSkeletonManager::add(Reference<OrbSkeleton> skeleton) {
   const OrbReference reference(Cast::getOffset(skeleton.getValue()));
   const String name = skeleton->getOrbName();
   names.add(name, skeleton);
@@ -30,21 +30,21 @@ void OrbSkeletonManager::add(Reference<OrbSkeleton> skeleton) throw(MemoryExcept
   }
 }
   
-void OrbSkeletonManager::remove(Reference<OrbSkeleton> skeleton) throw(InvalidKey) {
+void OrbSkeletonManager::remove(Reference<OrbSkeleton> skeleton) {
   const OrbReference reference(Cast::getOffset(skeleton.getValue()));
   const String name = skeleton->getOrbName();
   names.remove(name);
   skeletons.remove(reference);
 }
 
-void OrbSkeletonManager::remove(const String& name) throw(InvalidKey) {
+void OrbSkeletonManager::remove(const String& name) {
   const Reference<OrbSkeleton> skeleton = names[name];
   const OrbReference reference(Cast::getOffset(skeleton.getValue()));
   names.remove(name);
   skeletons.remove(reference);
 }
 
-OrbSkeletonManager::~OrbSkeletonManager() throw() {
+OrbSkeletonManager::~OrbSkeletonManager() noexcept {
 }
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

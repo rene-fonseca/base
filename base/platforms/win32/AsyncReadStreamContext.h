@@ -44,7 +44,7 @@ namespace win32 {
     unsigned int bytesRead = 0;
     unsigned int flags = 0;
     
-    inline void notifyAsynchronousCompletionListener() throw() {
+    inline void notifyAsynchronousCompletionListener() noexcept {
       listener->asynchronousCompletion(
         AsynchronousReadCompletion(buffer, bytesToRead, 0, bytesRead, flags)
       );
@@ -55,10 +55,10 @@ namespace win32 {
       OperatingSystem::Handle handle,
       uint8* buffer,
       unsigned int bytesToRead,
-      AsynchronousReadEventListener* listener) throw(IOException);
+      AsynchronousReadEventListener* listener);
   public:
 
-    AsynchronousReadCompletion getCompletion() const throw() {
+    AsynchronousReadCompletion getCompletion() const noexcept {
       return AsynchronousReadCompletion(buffer, bytesToRead, 0, bytesRead, flags);
     }
 

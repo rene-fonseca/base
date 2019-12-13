@@ -15,7 +15,7 @@
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
-OrbStub::~OrbStub() throw() {
+OrbStub::~OrbStub() noexcept {
 }
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

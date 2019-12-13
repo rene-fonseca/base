@@ -17,19 +17,19 @@
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
-LocalScheme::LocalScheme() throw() {
+LocalScheme::LocalScheme() noexcept {
 }
 
-String LocalScheme::getUrn() const throw() {
+String LocalScheme::getUrn() const noexcept {
   return Literal("urn:rmi:orb:scheme:local");
 }
 
-String LocalScheme::getScheme() const throw() {
+String LocalScheme::getScheme() const noexcept {
   return Literal("local");
 }
 
 Reference<OrbConnectionFactory> LocalScheme::openFactory(
-  const String& identifier) throw(InvalidFormat, OrbException) {
+  const String& identifier) {
   Reference<LocalConnectionFactory> factory =
     new LocalConnectionFactory(identifier);
   return new LocalConnectionFactory(identifier);
@@ -37,7 +37,7 @@ Reference<OrbConnectionFactory> LocalScheme::openFactory(
 
 Reference<OrbConnection> LocalScheme::open(
   ProtectedPointer<Orb> orb,
-  const String& endPoint) throw(InvalidFormat, OrbException) {
+  const String& endPoint) {
   fout << "DEBUG: "
        << "LocalScheme::open(" << '"' << endPoint << '"' << ')' << ENDL;
   
@@ -57,30 +57,30 @@ Reference<OrbConnection> LocalScheme::open(
 }
 
 void LocalScheme::add(
-  Reference<OrbConnection> connection) throw(CastException) {
+  Reference<OrbConnection> connection) {
   Reference<LocalConnection> temp = connection.cast<LocalConnection>();
   ExclusiveSynchronize<Guard> _guard(guard);
   connections.add(temp->getEndPoint(), temp);
 }
 
 void LocalScheme::remove(
-  Reference<OrbConnection> connection) throw(CastException, InvalidKey) {
+  Reference<OrbConnection> connection) {
   Reference<LocalConnection> temp = connection.cast<LocalConnection>();
   ExclusiveSynchronize<Guard> _guard(guard);
   connections.remove(temp->getEndPoint());
 }
 
 void LocalScheme::close(
-  Reference<OrbConnection> connection) throw(OrbException) {
+  Reference<OrbConnection> connection) {
   // TAG: should not be required if reference counting is used appropriately
 }
 
 Reference<OrbConnection> LocalScheme::getConnection(
-  const String& endPoint) throw(InvalidKey) {
+  const String& endPoint) {
   return static_cast<Reference<LocalConnection> >(connections[endPoint]);
 }
 
-void LocalScheme::run(ProtectedPointer<Orb> orb) throw(OrbException) {
+void LocalScheme::run(ProtectedPointer<Orb> orb) {
   Thread* thread = Thread::getThread();
   while (!thread->isTerminated()) {
     HashTable<String, Reference<LocalConnection> >::ValueEnumerator enu =
@@ -92,11 +92,11 @@ void LocalScheme::run(ProtectedPointer<Orb> orb) throw(OrbException) {
   }
 }
 
-void LocalScheme::terminate() throw() {
+void LocalScheme::terminate() noexcept {
   fout << "DEBUG: " << "LocalScheme terminating" << ENDL;
 }
 
-LocalScheme::~LocalScheme() throw() {
+LocalScheme::~LocalScheme() noexcept {
   fout << "DEBUG: " << "LocalScheme destroyed" << ENDL;
 }
 

@@ -20,22 +20,22 @@ _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 LocalConnection::LocalConnection(
   ProtectedPointer<Orb> orb,
-  const String& _identifier) throw(InvalidFormat, OrbException)
+  const String& _identifier)
   : OrbConnection(orb, 0), identifier(_identifier) {
   bassert(!identifier.isProper(), InvalidFormat(this));
 }
 
-String LocalConnection::getUrn() const throw() {
+String LocalConnection::getUrn() const noexcept {
   return Literal("urn:rmi:orb:scheme:local");
 }
 
-String LocalConnection::getEndPoint() const throw() {
+String LocalConnection::getEndPoint() const noexcept {
   return identifier;
 }
 
 // TAG: need method to negotiation encodings on connection open
 
-OrbReference LocalConnection::getReference(const String& identifier) throw() {
+OrbReference LocalConnection::getReference(const String& identifier) noexcept {
   // TAG: request reference for identifier
 
   fout << "DEBUG: " << "LocalConnection::getReference(\"" << identifier
@@ -59,23 +59,23 @@ OrbReference LocalConnection::getReference(const String& identifier) throw() {
 }
 
 unsigned int LocalConnection::push(
-  const uint8* buffer, unsigned int size) throw(IOException) {
+  const uint8* buffer, unsigned int size) {
   return 0;
 }
 
-void LocalConnection::pushEnd() throw(IOException) {
+void LocalConnection::pushEnd() {
 }
 
 unsigned int LocalConnection::pull(
-  uint8* buffer, unsigned int size) throw(IOException) {
+  uint8* buffer, unsigned int size) {
   return 0;
 }
 
-void LocalConnection::reconnect() throw(OrbException) {
+void LocalConnection::reconnect() {
   // TAG: fixme - should this be replaced by other method in other class
 }
 
-LocalConnection::~LocalConnection() throw() {
+LocalConnection::~LocalConnection() noexcept {
   fout << "DEBUG: " << "LocalConnection destroyed" << ENDL;
 }
 

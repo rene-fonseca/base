@@ -16,10 +16,10 @@
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 #if 0
-OrbDateStub::OrbDateStub() throw(OrbException) {
+OrbDateStub::OrbDateStub() {
 }
 
-long long OrbDateStub::getDate() const throw(OrbException) {
+long long OrbDateStub::getDate() const {
   OrbRequest getDateRequest(skeleton, MESSAGE("getDate"));
   channel->writeRequest(request);
   OrbResponse response = channel->readResponse();
@@ -27,7 +27,7 @@ long long OrbDateStub::getDate() const throw(OrbException) {
   return response.getLongLongValue();
 }
 
-OrbDateStub::~OrbDateStub() throw() {
+OrbDateStub::~OrbDateStub() noexcept {
 }
 #endif
 

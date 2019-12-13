@@ -15,10 +15,10 @@
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
-IDLConstant::IDLConstant(const String& _name) throw() : name(_name) {
+IDLConstant::IDLConstant(const String& _name) noexcept : name(_name) {
 }
 
-IDLConstant::~IDLConstant() throw() {
+IDLConstant::~IDLConstant() noexcept {
 }
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

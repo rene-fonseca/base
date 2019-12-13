@@ -15,10 +15,10 @@
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
-IDLType::IDLType() throw() {
+IDLType::IDLType() noexcept {
 }
 
-IDLType::~IDLType() throw() {
+IDLType::~IDLType() noexcept {
 }
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

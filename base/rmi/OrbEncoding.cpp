@@ -15,11 +15,11 @@
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
-String OrbEncoding::getUrnNamespace() throw() {
+String OrbEncoding::getUrnNamespace() noexcept {
   return MESSAGE("urn:rmi:orb:encoding-scheme:");
 }
 
-OrbEncoding::~OrbEncoding() throw() {
+OrbEncoding::~OrbEncoding() noexcept {
 }
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

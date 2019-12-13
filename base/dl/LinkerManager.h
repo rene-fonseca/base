@@ -72,7 +72,7 @@ public:
   /**
     Returns an enumeration of all the modules of the manager.
   */
-  ReadEnumerator getModules() const throw();
+  ReadEnumerator getModules() const noexcept;
 };
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

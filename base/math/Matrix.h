@@ -394,21 +394,21 @@ public:
   /**
     Returns true if the matrices are equal.
   */
-  bool isEqual(const Matrix& value) const throw();
+  bool isEqual(const Matrix& value) const noexcept;
 
   /**
     Returns true if the matrix is the zero matrix.
 
     @return false if matrix contains no elements.
   */
-  bool isZero() const throw();
+  bool isZero() const noexcept;
 
   /**
     Returns true if this matrix is a diagonal matrix.
 
     @return false if matrix is not square or contains no elements.
   */
-  bool isDiagonal() const throw();
+  bool isDiagonal() const noexcept;
 
   /**
     Returns true if this matrix is lower triangular (i.e. the matrix has no
@@ -416,7 +416,7 @@ public:
 
     @return false if matrix is not square or contains no elements.
   */
-  bool isLowerTriangular() const throw();
+  bool isLowerTriangular() const noexcept;
 
   /**
     Returns true if this matrix is upper triangular (i.e. the matrix has no
@@ -424,21 +424,21 @@ public:
 
     @return false if matrix is not square or contains no elements.
   */
-  bool isUpperTriangular() const throw();
+  bool isUpperTriangular() const noexcept;
 
   /**
     Returns true if this matrix is symmetric.
 
     @return false if matrix is not square or contains no elements.
   */
-  bool isSymmetric() const throw();
+  bool isSymmetric() const noexcept;
   
   
   
   /**
     Returns the Hilbert-Schmidt norm of the matrix.
   */
-  TYPE getNorm() const throw();
+  TYPE getNorm() const noexcept;
 
   /**
     Returns the determinant of this matrix.
@@ -566,12 +566,12 @@ public:
   /**
     Unary plus.
   */
-  Matrix plus() const throw();
+  Matrix plus() const noexcept;
 
   /**
     Unary minus.
   */
-  Matrix minus() const throw();
+  Matrix minus() const noexcept;
 
   /**
     Unary inversion.
@@ -581,7 +581,7 @@ public:
   /**
     Returns a new matrix that is the transpose of this matrix.
   */
-  Matrix transpose() const throw();
+  Matrix transpose() const noexcept;
 
 
 

@@ -80,12 +80,12 @@ public:
   /**
     Returns the type of the element.
   */
-  ValueType getValueType() const throw();
+  ValueType getValueType() const noexcept;
 
   /**
     Returns true if the element declaration has any attribute declarations.
   */
-  bool hasAttributes() const throw();
+  bool hasAttributes() const noexcept;
   
   /**
     Returns the first attribute declaration.

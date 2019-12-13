@@ -78,7 +78,7 @@ public:
   /**
     Returns the number of nodes in the map.
   */
-  unsigned int getSize() const throw();
+  unsigned int getSize() const noexcept;
   
   /**
     Returns the node at the specified index.

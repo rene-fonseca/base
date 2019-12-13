@@ -164,32 +164,32 @@ public:
   /**
     Returns true if the url is relative.
   */
-  bool isRelative() const throw();
+  bool isRelative() const noexcept;
 
   /**
     Returns the scheme (a.k.a. protocol).
   */
-  String getScheme() const throw();
+  String getScheme() const noexcept;
 
   /**
     Returns the user.
   */
-  String getUser() const throw();
+  String getUser() const noexcept;
 
   /**
     Returns the password.
   */
-  String getPassword() const throw();
+  String getPassword() const noexcept;
 
   /**
     Returns the host.
   */
-  String getHost() const throw();
+  String getHost() const noexcept;
 
   /**
     Returns the port.
   */
-  String getPort() const throw();
+  String getPort() const noexcept;
 
   /**
     Returns the path.

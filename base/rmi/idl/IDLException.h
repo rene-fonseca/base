@@ -49,12 +49,12 @@ public:
   /**
     Returns the attributes of the exception.
   */
-  Array<IDLAttribute> getAttributes() const throw();
+  Array<IDLAttribute> getAttributes() const noexcept;
   
   /**
     Returns true if the exceptions are compatible.
   */
-  bool isCompatible(const IDLException& exception) const throw();
+  bool isCompatible(const IDLException& exception) const noexcept;
   
   /**
     Destroys the IDL exception.

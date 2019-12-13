@@ -173,7 +173,7 @@ public:
   /**
     Returns true if the file object has been closed (or need has been opened).
   */
-  bool isClosed() const throw();
+  bool isClosed() const noexcept;
 
   /**
     Returns the Access Control List (ACL) of the file.

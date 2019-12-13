@@ -93,17 +93,17 @@ public:
   /**
     Returns the name of the service.
   */
-  const String& getName() const throw();
+  const String& getName() const noexcept;
 
   /**
     Returns the port associated with the service.
   */
-  unsigned short getPort() const throw();
+  unsigned short getPort() const noexcept;
 
   /**
     Returns the protocol of the service.
   */
-  const String& getProtocol() const throw();
+  const String& getProtocol() const noexcept;
 
   /**
     Writes a string representation of a InetService object to a format stream.

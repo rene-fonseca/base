@@ -60,32 +60,32 @@ public:
   /**
     Returns the name.
   */
-  String getName() const throw();
+  String getName() const noexcept;
   
   /**
     Returns the entities.
   */
-  NamedNodeMap getEntities() const throw();
+  NamedNodeMap getEntities() const noexcept;
   
   /**
     Returns the notations.
   */
-  NamedNodeMap getNotations() const throw();
+  NamedNodeMap getNotations() const noexcept;
   
   /**
     Returns the public identifier.
   */
-  String getPublicId() const throw();
+  String getPublicId() const noexcept;
   
   /**
     Returns the system identifier.
   */
-  String getSystemId() const throw();
+  String getSystemId() const noexcept;
   
   /**
     Returns the internal subset.
   */
-  String getInternalSubset() const throw();
+  String getInternalSubset() const noexcept;
 };
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

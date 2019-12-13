@@ -52,12 +52,12 @@ public:
   /**
     Returns the public identifier.
   */
-  String getPublicId() const throw();
+  String getPublicId() const noexcept;
   
   /**
     Returns the system identifier.
   */
-  String getSystemId() const throw();
+  String getSystemId() const noexcept;
 };
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

@@ -427,13 +427,13 @@ public:
 class _COM_AZURE_DEV__BASE__API UserInterfaceStyle : public Object {
 public:
   
-  virtual Color getMenuBackground() const throw();
-  virtual Color getMenuHighlightColor() const throw();
-  virtual Color getMenuMarginColor() const throw();
-  virtual Color getMenuTextColor() const throw();
-  virtual Dimension getMenuBitmapSize() const throw();
-  virtual Bitmap getCheckedBitmap() const throw();
-  virtual Bitmap getSelectedBitmap() const throw();
+  virtual Color getMenuBackground() const noexcept;
+  virtual Color getMenuHighlightColor() const noexcept;
+  virtual Color getMenuMarginColor() const noexcept;
+  virtual Color getMenuTextColor() const noexcept;
+  virtual Dimension getMenuBitmapSize() const noexcept;
+  virtual Bitmap getCheckedBitmap() const noexcept;
+  virtual Bitmap getSelectedBitmap() const noexcept;
 };
 
 #endif

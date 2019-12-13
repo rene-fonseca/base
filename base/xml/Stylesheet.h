@@ -103,24 +103,24 @@ public:
     return *this;
   }
 
-  //OutputType getOutputType() const throw();
+  //OutputType getOutputType() const noexcept;
   
-  String getOutputMethod() const throw();
-  String getNamespace() const throw();
-  String getVersion() const throw();
-  String getEncoding() const throw();
-  bool omitXmlDeclaration() const throw();
+  String getOutputMethod() const noexcept;
+  String getNamespace() const noexcept;
+  String getVersion() const noexcept;
+  String getEncoding() const noexcept;
+  bool omitXmlDeclaration() const noexcept;
   
-  String getPublicId() const throw();
-  String getSystemId() const throw();
-  String getMediaType() const throw();
-  bool isStandalone() const throw();
-  bool indent() const throw();
+  String getPublicId() const noexcept;
+  String getSystemId() const noexcept;
+  String getMediaType() const noexcept;
+  bool isStandalone() const noexcept;
+  bool indent() const noexcept;
 
-  Array<String> getExcludedPrefixes() const throw();
+  Array<String> getExcludedPrefixes() const noexcept;
   
-  //bool isOutputMethodSet() const throw();
-  //Array<String> getExtensions() const throw();
+  //bool isOutputMethodSet() const noexcept;
+  //Array<String> getExtensions() const noexcept;
   
   // Array<?> getStylesheetPIs(const Document& document) noexcept;
 };

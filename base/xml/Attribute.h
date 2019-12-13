@@ -49,12 +49,12 @@ public:
   /**
     Returns the name of the attribute.
   */
-  String getName() const throw();
+  String getName() const noexcept;
   
   /**
     Returns the value of the attribute.
   */
-  String getValue() const throw();
+  String getValue() const noexcept;
 
   /**
     Sets the value of the attribute.
@@ -65,7 +65,7 @@ public:
     Returns true if the attribute value is explicitly specified in the original
     document.
   */
-  bool isSpecified() const throw();
+  bool isSpecified() const noexcept;
   
   /**
     Returns the owner element.

@@ -751,7 +751,7 @@ void dumpDebugInfo(const BYTE* caller, void* instance) noexcept
   }
 #endif  
 
-// TAG: add method Thread::getInvocationLevel() const throw();
+// TAG: add method Thread::getInvocationLevel() const noexcept;
 // TAG: get current stack usage
 // TAG: get stack available
 

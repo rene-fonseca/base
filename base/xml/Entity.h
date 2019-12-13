@@ -49,19 +49,19 @@ public:
     The public identifier associated with the entity, if specified. If the
     public identifier was not specified, this is an improper string.
   */
-  String getPublicId() const throw();
+  String getPublicId() const noexcept;
   
   /**
     The system identifier associated with the entity, if specified. If the
     system identifier was not specified, this is an improper string.
   */
-  String getSystemId() const throw();
+  String getSystemId() const noexcept;
   
   /**
     For unparsed entities, the name of the notation for the entity. For parsed
     entities, this is an improper string.
   */
-  String getNotationName() const throw();
+  String getNotationName() const noexcept;
 };
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

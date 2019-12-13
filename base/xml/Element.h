@@ -59,7 +59,7 @@ public:
   /**
     Returns the target.
   */
-  String getTagName() const throw();
+  String getTagName() const noexcept;
   
   /**
     Returns the first attribute node of this element.
@@ -174,9 +174,9 @@ public:
   /**
     Returns true if the element has any attributes.
   */
-  bool hasAttributes() const throw();
+  bool hasAttributes() const noexcept;
   
-  bool hasAttribute(const char* name) const throw();
+  bool hasAttribute(const char* name) const noexcept;
 
   /**
     Returns true when an attribute with a given name is specified on this
@@ -187,7 +187,7 @@ public:
   }
 
   bool hasAttributeNS(
-    const char* namespaceURI, const char* localName) const throw();
+    const char* namespaceURI, const char* localName) const noexcept;
 
   /**
     Returns true when an attribute with a given local name and namespace URI is

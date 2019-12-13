@@ -51,12 +51,12 @@ public:
     Returns the global identifier of the scheme (e.g.
     "urn:rmi:orb:scheme:local").
   */
-  String getUrn() const throw();
+  String getUrn() const noexcept;
   
   /**
     Returns the identifier of the end point (e.g. "local:///").
   */
-  String getEndPoint() const throw();
+  String getEndPoint() const noexcept;
 
   /**
     Returns the reference for the specified connection local identifier.

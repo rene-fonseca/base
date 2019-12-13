@@ -83,7 +83,7 @@ public:
   /**
     Returns true if the URN are equal.
   */
-  bool operator==(const Urn& compare) const throw();
+  bool operator==(const Urn& compare) const noexcept;
   
   /**
     Returns the namespace identifier.

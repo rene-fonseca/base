@@ -46,7 +46,7 @@ public:
   /**
     Returns the fields.
   */
-  const Array<IDLField>& getFields() const throw();
+  const Array<IDLField>& getFields() const noexcept;
   
   /**
     Destroys the IDL structure.

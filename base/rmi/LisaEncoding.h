@@ -368,7 +368,7 @@ public:
   /**
      Returns the global identifier of the encoding scheme.
   */
-  String getUrn() const throw();
+  String getUrn() const noexcept;
 };
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

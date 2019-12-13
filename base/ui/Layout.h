@@ -30,9 +30,9 @@ public:
   
   Layout(Window& owner) throw(UserInterfaceException);
 
-  Dimension getMinimumSize() const throw();
+  Dimension getMinimumSize() const noexcept;
 
-  Dimension getPreferredSize() const throw();
+  Dimension getPreferredSize() const noexcept;
 };
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

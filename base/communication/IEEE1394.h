@@ -521,7 +521,7 @@ public:
   /**
     Returns the maximum speed supported by all the specified nodes (bit mask).
   */
-  Speed getMaximumSpeed(uint64 nodes) const throw();
+  Speed getMaximumSpeed(uint64 nodes) const noexcept;
   
   /**
     Creates a IEEE 1394 object with the specified implementation.

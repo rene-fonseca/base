@@ -37,7 +37,7 @@ public:
   /**
     Returns the maximum number of objects allowed.
   */
-  unsigned int getMaximumNumberOfObjects() const throw();
+  unsigned int getMaximumNumberOfObjects() const noexcept;
   
   void registerObject(Object* object) throw(OutOfDomain);
 
@@ -57,22 +57,22 @@ public:
   
   /**
   */
-  Object* waitForAny() const throw();
+  Object* waitForAny() const noexcept;
   
   /**
     @param timeout The timeout period.
   */
-  Object* waitForAny(unsigned int timeout) const throw();
+  Object* waitForAny(unsigned int timeout) const noexcept;
   
   /**
     Wait for all the objects to be signaled.
   */
-  void waitForAll() const throw();
+  void waitForAll() const noexcept;
   
   /**
     @param timeout The timeout period.
   */
-  bool waitForAll(unsigned int timeout) const throw();
+  bool waitForAll(unsigned int timeout) const noexcept;
 };
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

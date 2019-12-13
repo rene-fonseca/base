@@ -276,22 +276,22 @@ public:
   /**
     Returns the IP address to which the socket is connected.
   */
-  const InetAddress& getAddress() const throw();
+  const InetAddress& getAddress() const noexcept;
 
   /**
     Returns the remote port to which the socket is connected.
   */
-  unsigned short getPort() const throw();
+  unsigned short getPort() const noexcept;
 
   /**
     Returns the local IP address to which the socket is bound.
   */
-  const InetAddress& getLocalAddress() const throw();
+  const InetAddress& getLocalAddress() const noexcept;
 
   /**
     Returns the local port to which the socket is bound.
   */
-  unsigned short getLocalPort() const throw();
+  unsigned short getLocalPort() const noexcept;
 
   /**
     This function places the socket in a state where it is listening for

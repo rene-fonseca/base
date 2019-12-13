@@ -110,7 +110,7 @@ public:
   /**
     Returns the name of the communications port.
   */
-  String getName() const throw();
+  String getName() const noexcept;
 
   /**
     Registers a SerialPortEventListener object to listen for SerialEvents.

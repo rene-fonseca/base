@@ -95,12 +95,12 @@ public:
     Returns true if the type and subtype complies with the grammar described in
     RFC 2045.
   */
-  bool isValid() const throw();
+  bool isValid() const noexcept;
   
   /**
     Returns true if the objects are equal.
   */
-  bool operator==(const MimeType& value) const throw();
+  bool operator==(const MimeType& value) const noexcept;
   
   /**
     Returns false if the objects are different.
@@ -131,14 +131,14 @@ public:
     
     @return EXTENSION if the media type is unknown.
   */
-  MediaType getMediaType() const throw();
+  MediaType getMediaType() const noexcept;
   
   /**
     Returns true if the media type and subtype matches.
 
     @return Always false if specified type is EXTENSION.
   */
-  bool matches(MediaType mediaType, const String& subtype) const throw();
+  bool matches(MediaType mediaType, const String& subtype) const noexcept;
 };
 
 /**

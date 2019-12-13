@@ -50,14 +50,14 @@ public:
     being the first token following the markup that begins the processing
     instruction.
   */
-  String getTarget() const throw();
+  String getTarget() const noexcept;
   
   /**
     Returns the content of this processing instruction. This data from the
     first non white space character after the target to the character
     immediately preceding the ?>.
   */
-  String getData() const throw();
+  String getData() const noexcept;
   
   /**
     Sets the content of this processing instruction.

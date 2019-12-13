@@ -201,22 +201,22 @@ public:
   /**
     Returns the local part of the qualified name of this node.
   */
-  String getLocalName() const throw();
+  String getLocalName() const noexcept;
   
   /**
     The namespace URI of this node, or an improper string if it is unspecified.
   */
-  String getNamespaceURI() const throw();
+  String getNamespaceURI() const noexcept;
   
   /**
     Returns the name of the node.
   */
-  String getName() const throw();
+  String getName() const noexcept;
   
   /**
     Returns the type of the node.
   */
-  NodeType getType() const throw();
+  NodeType getType() const noexcept;
   
   /**
     Returns the value of the node.
@@ -242,43 +242,43 @@ public:
   /**
     Returns the parent node.
   */
-  Node getParent() const throw();
+  Node getParent() const noexcept;
   
   /**
     Returns the node immediately preceding this node.
   */
-  Node getPreviousSibling() const throw();
+  Node getPreviousSibling() const noexcept;
 
   /**
     Returns the node immediately succeeding this node.
   */
-  Node getNextSibling() const throw();
+  Node getNextSibling() const noexcept;
 
   /**
     Returns the first child node.
   */
-  Node getFirstChild() const throw();
+  Node getFirstChild() const noexcept;
   
   /**
     Returns the last child node.
   */
-  Node getLastChild() const throw();
+  Node getLastChild() const noexcept;
   
   /**
     Returns whether this node (if it is an element) has any attributes.
   */
-  bool hasAttributes() const throw();
+  bool hasAttributes() const noexcept;
   
   /**
     Returns whether this node has any children.
   */
-  bool hasChildNodes() const throw();
+  bool hasChildNodes() const noexcept;
   
   /**
     Tests whether the DOM implementation implements a specific feature and that
     feature is supported by this node.
   */
-  bool isSupported(const String& feature, const String& version) const throw();
+  bool isSupported(const String& feature, const String& version) const noexcept;
 
   /**
     Puts all Text nodes in the full depth of the sub-tree underneath this Node,
@@ -311,7 +311,7 @@ public:
   /**
     Returns true if the node is unlinked.
   */
-  bool isUnlinked() const throw();
+  bool isUnlinked() const noexcept;
   
   /**
     Returns true if the nodes refer to the the same node.
@@ -330,12 +330,12 @@ public:
   /**
     Returns true if the specified node has the same owner as this node.
   */
-  bool hasSameOwner(const Node& node) const throw();
+  bool hasSameOwner(const Node& node) const noexcept;
 
   /**
     Returns true if this node is an ancestor of the specified node.
   */
-  bool isAncestor(const Node& node) const throw();
+  bool isAncestor(const Node& node) const noexcept;
   
   /**
     Returns true if the node is valid.

@@ -50,13 +50,13 @@ public:
     Returns the global identifier of the scheme (e.g.
     "urn:rmi:orb:scheme:tcpip").
   */
-  String getUrn() const throw();
+  String getUrn() const noexcept;
   
   /**
     Returns the scheme identifying the scheme within the application (e.g.
     "local").
   */
-  String getScheme() const throw();
+  String getScheme() const noexcept;
   
   /**
     Returns the current number of connections.

@@ -97,7 +97,7 @@ public:
   /**
     Returns true if the bus has been reset since last check.
   */
-  bool hasBeenReset() const throw();
+  bool hasBeenReset() const noexcept;
 
   /**
     Acknowledges the bus reset.
@@ -130,12 +130,12 @@ public:
   /**
     Returns the physical id of the adapter.
   */
-  unsigned int getLocalId() const throw();
+  unsigned int getLocalId() const noexcept;
 
   /**
     Returns the number of nodes on the local bus.
   */
-  unsigned int getNumberOfNodes() const throw();
+  unsigned int getNumberOfNodes() const noexcept;
 
   /**
     Returns the current error status.

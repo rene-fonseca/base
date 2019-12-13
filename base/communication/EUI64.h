@@ -73,17 +73,17 @@ public:
   /**
     Returns true if the identifiers are identical.
   */
-  bool operator==(const EUI64& compare) const throw();
+  bool operator==(const EUI64& compare) const noexcept;
   
   /**
     Returns true if the identifiers are different.
   */
-  bool operator!=(const EUI64& compare) const throw();
+  bool operator!=(const EUI64& compare) const noexcept;
   
   /**
     Returns the 24 bit company id.
   */
-  unsigned int getCompanyId() const throw();
+  unsigned int getCompanyId() const noexcept;
   
   /**
     Sets the 24 bit company id.
@@ -93,7 +93,7 @@ public:
   /**
     Returns the extension identifier of this EUI-64 id.
   */
-  uint64 getExtensionId() const throw();
+  uint64 getExtensionId() const noexcept;
   
   /**
     Sets the extension identifier of this EUI-64 id.
@@ -103,7 +103,7 @@ public:
   /**
     Returns true if the identifier is ff:ff:ff-00:00:00:00:00.
   */
-  bool isInvalid() const throw();
+  bool isInvalid() const noexcept;
   
   /**
     Returns true if the id is an encapsulated EUI-48 identifier.
@@ -150,7 +150,7 @@ public:
   /**
     Fills the specified array with the EUI-48 identifier.
   */
-  void getEUI48(uint8* eui48) const throw();
+  void getEUI48(uint8* eui48) const noexcept;
 
   /**
     Sets the identifier by an EUI-48 identifier.
@@ -160,7 +160,7 @@ public:
   /**
     Fills specified array with the MAC idenfier.
   */
-  void getMAC48(uint8* mac) const throw();
+  void getMAC48(uint8* mac) const noexcept;
   
   /**
     Sets the identifier by an MAC-48 identifier.

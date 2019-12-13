@@ -48,7 +48,7 @@ public:
     @param offset The offset (from the beginning of the file) of the region.
     @param size The size (in bytes) of the region.
   */
-  FileRegion(long long offset, unsigned int size) throw(OutOfDomain);
+  FileRegion(long long offset, unsigned int size);
 
   /**
     Initializes region from other region.

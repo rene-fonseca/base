@@ -178,12 +178,12 @@ public:
   */
   void save(const String& filename) throw(IOException);
 
-  // bool isStandalone() const throw();
-  // String getVersion() const throw();
-  // String getEncoding() const throw();
-  // String getURI() const throw();
+  // bool isStandalone() const noexcept;
+  // String getVersion() const noexcept;
+  // String getEncoding() const noexcept;
+  // String getURI() const noexcept;
   
-  // String getDocumentType() const throw();
+  // String getDocumentType() const noexcept;
 
   /**
     Returns true if the document is valid.

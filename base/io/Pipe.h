@@ -96,7 +96,7 @@ public:
     To avoid the data being interleaved the packet size must not exceed this
     buffer size.
   */
-  unsigned int getBufferSize() const throw();
+  unsigned int getBufferSize() const noexcept;
 
   /**
     Returns true if the end of the stream has been reached.

@@ -48,12 +48,12 @@ public:
   /**
     Returns the fully qualified name of the specified stub.
   */
-  String getOrbIdentifier(const OrbStub& object) const throw();
+  String getOrbIdentifier(const OrbStub& object) const noexcept;
 
   /**
     Returns the fully qualified name of the interface of the specified stub.
   */
-  String getOrbInterfaceIdentifier(const OrbStub& object) const throw();
+  String getOrbInterfaceIdentifier(const OrbStub& object) const noexcept;
   
   /**
     Destroys the channel.

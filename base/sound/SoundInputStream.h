@@ -53,22 +53,22 @@ public:
   /**
     Returns the number of available samples.
   */
-  unsigned int available() const throw();
+  unsigned int available() const noexcept;
 
   /**
     Returns the number of channels (greater than 0).
   */
-  unsigned int getChannels() const throw();
+  unsigned int getChannels() const noexcept;
 
   /**
     Returns the sampling rate (samples per second).
   */
-  unsigned int getRate() const throw();
+  unsigned int getRate() const noexcept;
 
   /**
     Returns the total number of samples since the last resume.
   */
-  unsigned int getPosition() const throw();
+  unsigned int getPosition() const noexcept;
 
   /**
     Starts the sampling.

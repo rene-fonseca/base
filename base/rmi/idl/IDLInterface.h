@@ -47,7 +47,7 @@ public:
   /**
     Returns true if the method is available.
   */
-  bool hasMethod(const String& name) const throw();
+  bool hasMethod(const String& name) const noexcept;
 
   /**
     Returns the specified method.
@@ -57,12 +57,12 @@ public:
   /**
     Returns the methods.
   */
-  HashSet<IDLMethod> getMethods() const throw();
+  HashSet<IDLMethod> getMethods() const noexcept;
 
   /**
     Returns true if the interfaces are compatible.
   */
-  bool isCompatible(const IDLInterface& interface) const throw();
+  bool isCompatible(const IDLInterface& interface) const noexcept;
   
   /**
     Destroys the IDL interface.

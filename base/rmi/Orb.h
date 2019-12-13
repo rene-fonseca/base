@@ -214,17 +214,17 @@ public:
   /**
     Returns the current number of stubs.
   */
-  unsigned int getNumberOfStubs() const throw();
+  unsigned int getNumberOfStubs() const noexcept;
   
   /**
     Returns the current number of skeletons.
   */
-  unsigned int getNumberOfSkeletons() const throw();
+  unsigned int getNumberOfSkeletons() const noexcept;
 
   /**
      Returns the current number of connections.
   */
-  unsigned int getNumberOfConnections() const throw();
+  unsigned int getNumberOfConnections() const noexcept;
 
   /**
     Returns the current registered encoding schemes.

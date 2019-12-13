@@ -237,12 +237,12 @@ public:
   /**
     Unary plus.
   */
-  Vector plus() const throw();
+  Vector plus() const noexcept;
 
   /**
     Unary minus.
   */
-  Vector minus() const throw();
+  Vector minus() const noexcept;
 
   /**
     Sets this vector to the zero vector.
@@ -290,12 +290,12 @@ public:
   /**
     Returns the dot product of this vector with itself.
   */
-  TYPE dotdot() const throw();
+  TYPE dotdot() const noexcept;
 
   /**
     Returns the L2-norm of the vector.
   */
-  TYPE norm() const throw();
+  TYPE norm() const noexcept;
 
 
 

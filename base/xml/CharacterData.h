@@ -61,7 +61,7 @@ public:
     The number of octets that are available through data and the substringData
     method below.
   */
-  unsigned int getLength() const throw();
+  unsigned int getLength() const noexcept;
   
   /**
     Extracts a range of octets from the node.

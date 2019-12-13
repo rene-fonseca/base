@@ -6,8 +6,8 @@ Distribute evenly horizontally
 Dynamic/fixed dimension
 Dynamic/fixed position (function of alignment and position)
 
-Position getPosition() const throw(); ????
-Dimension getDimension() const throw();
+Position getPosition() const noexcept; ????
+Dimension getDimension() const noexcept;
 
 enum HorizontalAlignment {
   LEFT,
@@ -36,18 +36,18 @@ void onResize(const Dimension& dimension) noexcept;
 
 // concept of binding point (inherited from placement operator and set explicitly when added)
 
-HorizontalAlignment getHorizontalAlignment() const throw();
-VerticalAlignment getVerticalAlignment() const throw();
+HorizontalAlignment getHorizontalAlignment() const noexcept;
+VerticalAlignment getVerticalAlignment() const noexcept;
 
 // [0; 9]?
-int getAlignment() const throw();
+int getAlignment() const noexcept;
 
 class _COM_AZURE_DEV__BASE__API PlacementOperator : public UIObject {
 public:
 
   void disable() noexcept;
   void enable() noexcept;
-  bool isEnabled() const throw();
+  bool isEnabled() const noexcept;
 };
 
 class _COM_AZURE_DEV__BASE__API VerticalPlacement : public Object {
@@ -72,11 +72,11 @@ public:
   
   CheckboardPlacement() noexcept;
   CheckboardPlacement(const Dimension& dimension) noexcept;
-  Dimension getRowsAndColumns() const throw();
+  Dimension getRowsAndColumns() const noexcept;
   
   // specify the (row, column) with add?
-  bool hasObject(UIObject object) const throw();
-  bool hasObject(const Position& position) const throw();
+  bool hasObject(UIObject object) const noexcept;
+  bool hasObject(const Position& position) const noexcept;
   void add(UIObject object, const Position& position) noexcept;
   void remove(const Position& postion) noexcept;
   void remove(UIObject object) noexcept;

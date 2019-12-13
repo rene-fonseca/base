@@ -64,23 +64,23 @@ public:
   /**
     Returns true if the method is static.
   */
-  bool isStatic() const throw();
+  bool isStatic() const noexcept;
   
   /**
     Returns true if the method is non-modifying.
   */
-  bool isNonModifying() const throw();
+  bool isNonModifying() const noexcept;
   
   /**
     Returns true if the method has the specified exception in its exception
     specification.
   */
-  bool raises(IDLException exception) const throw();
+  bool raises(IDLException exception) const noexcept;
   
   /**
     Returns true if this method is compatible with the specified method.
   */
-  bool isCompatible(const IDLMethod& method) const throw();
+  bool isCompatible(const IDLMethod& method) const noexcept;
   
   /**
     Destroys the IDL method.

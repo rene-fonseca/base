@@ -314,7 +314,7 @@ public:
   /**
     Returns the position of the binding point relative to the owner.
   */
-  Position getBindingOffset(Binding binding) const throw();
+  Position getBindingOffset(Binding binding) const noexcept;
   
   /**
     Flushes the window requests to the server.

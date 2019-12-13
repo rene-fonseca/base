@@ -78,17 +78,17 @@ public:
   /**
     Returns the type of the attribute.
   */
-  ValueType getValueType() const throw();
+  ValueType getValueType() const noexcept;
   
   /**
     Returns the default value constraint.
   */
-  DefaultType getDefaultValueType() const throw();
+  DefaultType getDefaultValueType() const noexcept;
   
   /**
     Returns the default value.
   */
-  String getDefaultValue() const throw();
+  String getDefaultValue() const noexcept;
   
   /**
     Returns the enumeration value. Only valid if type is ATTRIBUTE_ENUMERATION.

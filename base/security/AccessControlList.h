@@ -77,7 +77,7 @@ public:
   /**
     Returns the number of entries in the list.
   */
-  inline unsigned int getSize() const noexcept
+  inline MemorySize getSize() const noexcept
   {
     return acl.getSize();
   }

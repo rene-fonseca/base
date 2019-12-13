@@ -222,7 +222,7 @@ class PushInterface {
 public:
 
   virtual bool pushBegin(long long totalSize) = 0;
-  virtual unsigned int push(const uint8* buffer, unsigned int size) = 0;
+  virtual MemorySize push(const uint8* buffer, MemorySize size) = 0;
   virtual void pushEnd() = 0;
 };
 
@@ -230,17 +230,19 @@ class PullInterface {
 public:
 
   virtual long long pullBegin() const = 0;
-  virtual unsigned int pull(uint8* buffer, unsigned int size) = 0;
+  virtual MemorySize pull(uint8* buffer, MemorySize size) = 0;
 };
 
 class PushToNothing {
 public:
 
-  bool pushBegin(long long totalSize) {
+  bool pushBegin(long long totalSize)
+  {
     return true;
   }
 
-  unsigned int push(const uint8* buffer, unsigned int size) {
+  MemorySize push(const uint8* buffer, MemorySize size)
+  {
     return size;
   }
 
@@ -254,11 +256,13 @@ public:
   PushToStandardOutput() {
   }
 
-  bool pushBegin(long long totalSize) {
+  bool pushBegin(long long totalSize)
+  {
     return true;
   }
 
-  unsigned int push(const uint8* buffer, unsigned int size) {
+  MemorySize push(const uint8* buffer, MemorySize size)
+  {
     for (unsigned int i = 0; i < size;) {
       char ch = *buffer++;
       ++i;
@@ -312,7 +316,8 @@ public:
     return true;
   }
   
-  unsigned int push(const uint8* buffer, unsigned int size) {
+  MemorySize push(const uint8* buffer, MemorySize size)
+  {
     unsigned int result = file.write(buffer, size);
     BASSERT(result == size);
     bytesWritten += size;

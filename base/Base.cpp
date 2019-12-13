@@ -152,7 +152,7 @@ void Debug::breakpoint() noexcept
   }
 }
 
-unsigned int Debug::allocateUniqueId() noexcept
+MemorySize Debug::allocateUniqueId() noexcept
 {
   return ++uniqueIdCounter;
 }

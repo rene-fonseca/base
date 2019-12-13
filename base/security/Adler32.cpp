@@ -16,10 +16,12 @@
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
-Adler32::Adler32() noexcept {
+Adler32::Adler32() noexcept
+{
 }
 
-unsigned int Adler32::push(const uint8* buffer, unsigned int size) noexcept {
+MemorySize Adler32::push(const uint8* buffer, MemorySize size) noexcept
+{
   const uint8* const end = buffer + size;
   uint32 s1 = checksum & 0xffff;
   uint32 s2 = (checksum >> 16) & 0xffff;

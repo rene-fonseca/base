@@ -136,7 +136,7 @@ void ZLibDeflater::flush() throw(IOException)
 #endif
 }
 
-unsigned int ZLibDeflater::push(const uint8* buffer, unsigned int size) throw(IOException)
+MemorySize ZLibDeflater::push(const uint8* buffer, MemorySize size) throw(IOException)
 {
 #if (defined(_COM_AZURE_DEV__BASE__USE_ZLIB))
   bassert(state != ENDED, EndOfFile());
@@ -171,7 +171,7 @@ void ZLibDeflater::pushEnd() throw(IOException)
 #endif
 }
 
-unsigned int ZLibDeflater::pull(uint8* buffer, unsigned int size) throw(IOException)
+MemorySize ZLibDeflater::pull(uint8* buffer, MemorySize size) throw(IOException)
 {
 #if (defined(_COM_AZURE_DEV__BASE__USE_ZLIB))
   bassert(state != ENDED, EndOfFile());

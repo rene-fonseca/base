@@ -29,7 +29,7 @@ class _COM_AZURE_DEV__BASE__API Object {
 private:
 
 #if defined(_COM_AZURE_DEV__BASE__DEBUG)
-  unsigned int objectId = 0;
+  MemorySize objectId = 0;
 #endif
 public:
 

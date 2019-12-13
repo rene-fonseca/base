@@ -91,7 +91,7 @@ public:
     
     @return The number of bytes pushed.
   */
-  unsigned int push(const uint8* buffer, unsigned int size);
+  MemorySize push(const uint8* buffer, MemorySize size);
   
   /**
     This method should be invoked when all uncompressed data has been pushed
@@ -110,7 +110,7 @@ public:
     
     @return The number of bytes pulled.
   */
-  unsigned int pull(uint8* buffer, unsigned int size);
+  MemorySize pull(uint8* buffer, MemorySize size);
   
   /**
     Destroys the deflater.

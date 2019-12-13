@@ -487,7 +487,8 @@ public:
     return true;
   }
   
-  unsigned int push(const uint8* buffer, unsigned int size) {
+  MemorySize push(const uint8* buffer, MemorySize size)
+  {
     text.append(MemorySpan(buffer, size));
     return size;
   }
@@ -506,7 +507,7 @@ public:
     return true;
   }
   
-  unsigned int push(const uint8* buffer, unsigned int size)
+  MemorySize push(const uint8* buffer, MemorySize size)
   {
     return os->write(buffer, size, false);
   }

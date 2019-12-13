@@ -133,7 +133,8 @@ void SHA1::pushBlock(const uint8* block) noexcept {
   messageDigest[4] += e;
 }
 
-unsigned int SHA1::push(const uint8* buffer, unsigned int size) throw(OutOfRange) {
+MemorySize SHA1::push(const uint8* buffer, MemorySize size) throw(OutOfRange)
+{
   if (size > (MAXIMUM_SIZE - totalSize)) {
     throw OutOfRange();
   }

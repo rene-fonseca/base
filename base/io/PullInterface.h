@@ -37,7 +37,7 @@ public:
     @return The number of bytes pulled. 0 if the end of the stream has been
     reached.
   */
-  virtual unsigned int pull(uint8* buffer, unsigned int size) = 0;
+  virtual MemorySize pull(uint8* buffer, MemorySize size) = 0;
 };
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

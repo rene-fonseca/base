@@ -100,7 +100,8 @@ ZLibInflater::ZLibInflater() throw(MemoryException)
 #endif
 }
 
-unsigned int ZLibInflater::push(const uint8* buffer, unsigned int size) throw(IOException) {
+MemorySize ZLibInflater::push(const uint8* buffer, MemorySize size) throw(IOException)
+{
 #if (defined(_COM_AZURE_DEV__BASE__USE_ZLIB))
   bassert(state != ENDED, EndOfFile());
   bassert(state == RUNNING, IOException(this));
@@ -140,7 +141,8 @@ void ZLibInflater::pushEnd() throw(IOException) {
 #endif
 }
 
-unsigned int ZLibInflater::pull(uint8* buffer, unsigned int size) throw(IOException) {
+MemorySize ZLibInflater::pull(uint8* buffer, MemorySize size) throw(IOException)
+{
 #if (defined(_COM_AZURE_DEV__BASE__USE_ZLIB))
   bassert(state != ENDED, EndOfFile());
   

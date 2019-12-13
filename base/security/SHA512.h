@@ -125,7 +125,7 @@ public:
     @param buffer The buffer holding the data.
     @param size The number of octets in the buffer.
   */
-  unsigned int push(const uint8* buffer, unsigned int size) throw(OutOfRange);
+  MemorySize push(const uint8* buffer, MemorySize size) throw(OutOfRange);
 
   /**
     This function should be invoked when the entire message has been pushed.
@@ -136,7 +136,8 @@ public:
   /**
     Returns the total size of the original message.
   */
-  inline uint64 getTotalSize() const noexcept {
+  inline uint64 getTotalSize() const noexcept
+  {
     return totalSize;
   }
 

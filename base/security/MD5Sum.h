@@ -78,7 +78,7 @@ public:
     @param buffer The buffer holding the data.
     @param size The number of octets in the buffer.
   */
-  unsigned int push(const uint8* buffer, unsigned int size);
+  MemorySize push(const uint8* buffer, MemorySize size);
   
   /**
     This function should be invoked when the entire message has been pushed.

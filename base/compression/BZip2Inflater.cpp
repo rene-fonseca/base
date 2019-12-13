@@ -89,7 +89,7 @@ BZip2Inflater::BZip2Inflater() throw(MemoryException)
 #endif
 }
 
-unsigned int BZip2Inflater::push(const uint8* buffer, unsigned int size) throw(IOException)
+unsigned int BZip2Inflater::push(const uint8* buffer, MemorySize size) throw(IOException)
 {
 #if (defined(_COM_AZURE_DEV__BASE__USE_BZIP2))
   bassert(state != ENDED, EndOfFile());
@@ -131,7 +131,8 @@ void BZip2Inflater::pushEnd() throw(IOException) {
 #endif
 }
 
-unsigned int BZip2Inflater::pull(uint8* buffer, unsigned int size) throw(IOException) {
+MemorySize BZip2Inflater::pull(uint8* buffer, MemorySize size) throw(IOException)
+{
 #if (defined(_COM_AZURE_DEV__BASE__USE_BZIP2))
   bassert(state != ENDED, EndOfFile());
   

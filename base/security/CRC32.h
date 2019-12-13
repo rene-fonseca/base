@@ -55,7 +55,7 @@ public:
     @param buffer The buffer holding the data.
     @param size The number of octets in the buffer.
   */
-  unsigned int push(const uint8* buffer, unsigned int size) noexcept;
+  MemorySize push(const uint8* buffer, MemorySize size) noexcept;
   
   /**
     Does nothing.

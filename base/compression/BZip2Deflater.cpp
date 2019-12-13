@@ -128,7 +128,7 @@ void BZip2Deflater::flush()
 #endif
 }
 
-unsigned int BZip2Deflater::push(const uint8* buffer, unsigned int size)
+unsigned int BZip2Deflater::push(const uint8* buffer, MemorySize size)
 {
 #if (defined(_COM_AZURE_DEV__BASE__USE_BZIP2))
   bassert(state != ENDED, EndOfFile());
@@ -164,7 +164,7 @@ void BZip2Deflater::pushEnd()
 #endif
 }
 
-unsigned int BZip2Deflater::pull(uint8* buffer, unsigned int size)
+MemorySize BZip2Deflater::pull(uint8* buffer, MemorySize size)
 {
 #if (defined(_COM_AZURE_DEV__BASE__USE_BZIP2))
   bassert(state != ENDED, EndOfFile());

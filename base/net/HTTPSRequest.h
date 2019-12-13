@@ -25,7 +25,7 @@ class _COM_AZURE_DEV__BASE__API PushInterface {
 public:
 
   virtual bool pushBegin(uint64 totalSize) = 0;
-  virtual unsigned int push(const uint8* buffer, unsigned int size) = 0;
+  virtual MemorySize push(const uint8* buffer, MemorySize size) = 0;
   virtual void pushEnd() = 0;
 };
 

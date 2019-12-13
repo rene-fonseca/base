@@ -74,7 +74,7 @@ public:
     
     @return The number of bytes pushed.
   */
-  unsigned int push(const uint8* buffer, unsigned int size) throw(IOException);
+  MemorySize push(const uint8* buffer, MemorySize size) throw(IOException);
   
   /**
     This method should be invoked when all data has been pushed onto the
@@ -91,7 +91,7 @@ public:
     
     @return The number of bytes pulled.
   */
-  unsigned int pull(uint8* buffer, unsigned int size) throw(IOException);
+  MemorySize pull(uint8* buffer, MemorySize size) throw(IOException);
   
   /**
     Reestablishes the connection.

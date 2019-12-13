@@ -45,35 +45,41 @@ class PullInterface {
 public:
 
   virtual uint64 pullBegin() const = 0;
-  virtual unsigned int pull(uint8* buffer, unsigned int size) = 0;
+  virtual MemorySize pull(uint8* buffer, MemorySize size) = 0;
 };
 
 class PushToNothing {
 public:
 
-  bool pushBegin(uint64 totalSize) {
+  bool pushBegin(uint64 totalSize)
+  {
     return true;
   }
 
-  unsigned int push(const uint8* buffer, unsigned int size) {
+  MemorySize push(const uint8* buffer, MemorySize size)
+  {
     return size;
   }
 
-  void pushEnd() {
+  void pushEnd()
+  {
   }
 };
 
 class PushToStandardOutput : public virtual Object, public PushInterface {
 public:
 
-  PushToStandardOutput() {
+  PushToStandardOutput()
+  {
   }
 
-  bool pushBegin(uint64 totalSize) {
+  bool pushBegin(uint64 totalSize)
+  {
     return true;
   }
 
-  unsigned int push(const uint8* buffer, unsigned int size) {
+  MemorySize push(const uint8* buffer, MemorySize size)
+  {
     for (unsigned int i = 0; i < size;) {
       char ch = *buffer++;
       ++i;
@@ -129,7 +135,7 @@ public:
     return true;
   }
   
-  unsigned int push(const uint8* buffer, unsigned int size)
+  MemorySize push(const uint8* buffer, MemorySize size)
   {
     unsigned int result = file.write(buffer, size);
     BASSERT(result == size);

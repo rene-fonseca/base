@@ -706,7 +706,11 @@ public:
     // TEST_ASSERT(DynamicLinker::getProcessImage());
     TEST_ASSERT(DynamicLinker::getBaseFrameworkImage());
     TEST_ASSERT(DynamicLinker::getImageAddress((void*)&DynamicLinker::getProcessImage));
-    DynamicLinker::SymbolInfo info = DynamicLinker::getSymbolInfo((void*)&sleep); // printf
+#if (_COM_AZURE_DEV__BASE__OS != _COM_AZURE_DEV__BASE__WASI)
+    DynamicLinker::SymbolInfo info = DynamicLinker::getSymbolInfo((void*)&printf);
+#else
+    DynamicLinker::SymbolInfo info = DynamicLinker::getSymbolInfo((void*)&sleep);
+#endif
     TEST_ASSERT(info.address);
     TEST_ASSERT(info.imageAddress);
     TEST_ASSERT(info.name);

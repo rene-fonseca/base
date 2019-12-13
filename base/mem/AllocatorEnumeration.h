@@ -48,20 +48,23 @@ public:
     @param end Specifies the end of the enumeration.
   */
   inline AllocatorEnumerator(Pointer begin, Pointer _end) noexcept
-    : current(begin), end(_end) {
+    : current(begin), end(_end)
+  {
   }
 
   /**
     Initializes enumeration from other enumeration.
   */
   inline AllocatorEnumerator(const AllocatorEnumerator& copy) noexcept
-    : current(copy.current), end(copy.end) {
+    : current(copy.current), end(copy.end)
+  {
   }
 
   /**
     Returns true if the enumeration still contains elements.
   */
-  inline bool hasNext() const noexcept {
+  inline bool hasNext() const noexcept
+  {
     return current != end;
   }
 

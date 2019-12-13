@@ -42,20 +42,23 @@ public:
     @param value The object to be reference counted.
   */
   inline ReferenceCountedObjectWrapper(TYPE* value) noexcept
-    : object(value) {
+    : object(value)
+  {
   }
 
   /**
     Returns the object.
   */
-  inline TYPE* operator->() noexcept {
+  inline TYPE* operator->() noexcept
+  {
     return object;
   }
 
   /**
     Returns the object.
   */
-  inline TYPE& operator*() {
+  inline TYPE& operator*()
+  {
     if (!object) {
       throw NullPointer(this);
     }
@@ -65,14 +68,16 @@ public:
   /**
     Type cast to pointer.
   */
-  inline operator TYPE*() const noexcept {
+  inline operator TYPE*() const noexcept
+  {
     return object;
   }
 
   /**
     Destroys the wrapper.
   */
-  inline ~ReferenceCountedObjectWrapper() {
+  inline ~ReferenceCountedObjectWrapper()
+  {
     if (object) {
       delete object;
     }

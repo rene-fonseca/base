@@ -199,7 +199,8 @@ template<class TYPE>
 class Hash<Pointer<TYPE> > {
 public:
 
-  inline unsigned long operator()(const Pointer<TYPE>& value) noexcept {
+  inline unsigned long operator()(const Pointer<TYPE>& value) noexcept
+  {
     Hash<TYPE*> hash;
     return hash(value.getValue());
   }

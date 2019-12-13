@@ -148,7 +148,8 @@ public:
   /**
     Removes all the keys from the cache.
   */
-  inline void removeAll() noexcept {
+  inline void removeAll() noexcept
+  {
     elements = HashTable<KEY, VALUE>();
   }
 

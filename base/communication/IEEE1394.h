@@ -170,21 +170,24 @@ public:
     @param type The type of the CSR key.
     @param value The value of the CSR key.
   */
-  static inline uint8 makeCSRkey(CSRKeyType type, CSRKeyValue value) noexcept {
+  static inline uint8 makeCSRkey(CSRKeyType type, CSRKeyValue value) noexcept
+  {
     return (static_cast<uint8>(type) << 6) | static_cast<uint8>(value);
   }
 
   /**
     Returns the CSR key type of the specified quadlet (native byte order).
   */
-  static inline CSRKeyType getCSRKeyType(uint32 quadlet) noexcept {
+  static inline CSRKeyType getCSRKeyType(uint32 quadlet) noexcept
+  {
     return static_cast<CSRKeyType>(quadlet >> (24 + 6));
   }
 
   /**
     Returns the CSR key value of the specified quadlet (native byte order).
   */
-  static inline CSRKeyValue getCSRKeyValue(uint32 quadlet) noexcept {
+  static inline CSRKeyValue getCSRKeyValue(uint32 quadlet) noexcept
+  {
     return static_cast<CSRKeyValue>((quadlet >> 24) & ((1 << 6) - 1));
   }
   
@@ -193,7 +196,8 @@ public:
     speed.
   */
   static inline unsigned int getMaximumAsyncPayloadForSpeed(
-    Speed speed) noexcept {
+    Speed speed) noexcept
+  {
     return 1 << (static_cast<unsigned int>(speed) + 9);
   }
   
@@ -202,7 +206,8 @@ public:
     speed.
   */
   static inline unsigned int getMaximumIsoPayloadForSpeed(
-    Speed speed) noexcept {
+    Speed speed) noexcept
+  {
     return 1 << (static_cast<unsigned int>(speed) + 10);
   }
 
@@ -289,7 +294,8 @@ protected:
   inline unsigned int getBits(
     unsigned int value,
     unsigned int offset,
-    unsigned int size) noexcept {
+    unsigned int size) noexcept
+  {
     return (value >> offset) & ((1 << size) - 1);
   }
   
@@ -714,14 +720,16 @@ public:
     @return As a special case this method returns false for any invalid
     physical id.
   */
-  inline bool isPresent(unsigned int physicalId) const noexcept {
+  inline bool isPresent(unsigned int physicalId) const noexcept
+  {
     return physicalId < numberOfNodes;
   }
 
   /**
     Returns the nodes which have the link layer activated as a bit mask.
   */
-  inline uint64 getLinkActiveNodes() const noexcept {
+  inline uint64 getLinkActiveNodes() const noexcept
+  {
     return linkActiveNodes;
   }
   
@@ -742,7 +750,8 @@ public:
   /**
     Returns the contender nodes as a bit mask.
   */
-  inline uint64 getContenders() const noexcept {
+  inline uint64 getContenders() const noexcept
+  {
     return contenderNodes;
   }
   

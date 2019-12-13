@@ -95,7 +95,8 @@ void EUI64::setCompanyId(unsigned int companyId)
   id[2] = companyId;
 }
 
-uint64 EUI64::getExtensionId() const noexcept {
+uint64 EUI64::getExtensionId() const noexcept
+{
   return (((((((static_cast<uint64>(id[3]) << 8) | id[4]) << 8) | id[5]) << 8) | id[6]) << 8) | id[7];
 }
 

@@ -208,17 +208,20 @@ public:
   }
 
   /** Returns pointer to socket address. */
-  inline struct sockaddr* getValue() noexcept {
+  inline struct sockaddr* getValue() noexcept
+  {
     return &sa;
   }
   
   /** Returns pointer to socket address. */
-  inline const struct sockaddr* getValue() const noexcept {
+  inline const struct sockaddr* getValue() const noexcept
+  {
     return &sa;
   }
   
   /** Returns the size of the socket address structure. */
-  inline unsigned int getSize() const noexcept {
+  inline unsigned int getSize() const noexcept
+  {
 #  if (defined(_COM_AZURE_DEV__BASE__INET_IPV6))
     return (sa.sa_family == AF_INET6) ? sizeof(ipv6) : sizeof(ipv4);
 #else
@@ -226,7 +229,8 @@ public:
 #endif
   }
   
-  inline Socket::Domain getDomain() const noexcept {
+  inline Socket::Domain getDomain() const noexcept
+  {
 #  if (defined(_COM_AZURE_DEV__BASE__INET_IPV6))
     return (sa.sa_family == AF_INET6) ? Socket::IPV6 : Socket::IPV4;
 #else
@@ -235,12 +239,14 @@ public:
   }
   
   /** Returns the maximum size of the supported socket addresses. */
-  inline unsigned int getAnySize() const noexcept {
+  inline unsigned int getAnySize() const noexcept
+  {
     return sizeof(storage);
   }
   
   /** Returns the address. */
-  inline InetAddress getAddress() const noexcept {
+  inline InetAddress getAddress() const noexcept
+  {
     switch (sa.sa_family) {
     case AF_INET:
       return InetAddress(
@@ -260,7 +266,8 @@ public:
   }
   
   /** Returns the port. */
-  inline unsigned short getPort() const noexcept {
+  inline unsigned short getPort() const noexcept
+  {
     switch (sa.sa_family) {
     case AF_INET:
       return ByteOrder::fromBigEndian<unsigned short>(ipv4.sin_port);
@@ -289,7 +296,8 @@ namespace internal {
   class SocketImpl {
   public:
 
-    static inline int getNativeError() noexcept {
+    static inline int getNativeError() noexcept
+    {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
       return ::WSAGetLastError();
 #else // unix
@@ -297,7 +305,8 @@ namespace internal {
 #endif // flavor
     }
 
-    static unsigned int getCause(unsigned int error) noexcept {
+    static unsigned int getCause(unsigned int error) noexcept
+    {
       switch (error) {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
       case WSAEISCONN:

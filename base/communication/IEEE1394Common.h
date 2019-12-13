@@ -175,28 +175,32 @@ public:
     @param physicalId The physical id [0; 63].
     @param busId The bus id. The default is the local bus (i.e. 0x3ff).
   */
-  static inline unsigned short makeNodeId(unsigned int physicalId, unsigned int busId = 0x3ff) noexcept {
+  static inline unsigned short makeNodeId(unsigned int physicalId, unsigned int busId = 0x3ff) noexcept
+  {
     return ((busId & 0x3ff) << 6) | (physicalId & 0x3f);
   }
 
   /**
     Returns the bus id of the specified node id.
   */
-  static inline unsigned int getBusId(unsigned short node) noexcept {
+  static inline unsigned int getBusId(unsigned short node) noexcept
+  {
     return node >> 6;
   }
 
   /**
     Returns true if the bus id of the node id is the local bus.
   */
-  static bool isLocalBus(unsigned short node) noexcept {
+  static bool isLocalBus(unsigned short node) noexcept
+  {
     return getBusId(node) == LOCAL_BUS;
   }
 
   /**
     Returns the physical id of the specified node id.
   */
-  static inline unsigned int getPhysicalId(unsigned short node) noexcept {
+  static inline unsigned int getPhysicalId(unsigned short node) noexcept
+  {
     return node & 0x3f;
   }
   
@@ -224,16 +228,19 @@ public:
   protected:
 
     /** Reset any context information. */
-    virtual void resetContext() noexcept {
+    virtual void resetContext() noexcept
+    {
     }
 
     /** Sets the status. */
-    inline void setStatus(IsochronousRequestStatus status) noexcept {
+    inline void setStatus(IsochronousRequestStatus status) noexcept
+    {
       this->status = status;
     }
   public:
 
-    inline IsochronousRequestImpl() noexcept {
+    inline IsochronousRequestImpl() noexcept
+    {
     }
     
     inline IsochronousRequestImpl(unsigned int _options) noexcept
@@ -243,7 +250,8 @@ public:
     /**
       Returns the options of the request.
     */
-    inline unsigned int getOptions() const noexcept {
+    inline unsigned int getOptions() const noexcept
+    {
       return options;
     }
     
@@ -255,14 +263,16 @@ public:
     /**
       Returns true if the request is pending for completion.
     */
-    inline bool isPending() const noexcept {
+    inline bool isPending() const noexcept
+    {
       return status == PENDING;
     }
     
     /**
       Returns the current status of the request.
     */
-    inline IsochronousRequestStatus getStatus() const noexcept {
+    inline IsochronousRequestStatus getStatus() const noexcept
+    {
       return status;
     }
     
@@ -297,11 +307,13 @@ public:
     /**
       Sets the number of received packets.
     */
-    inline void setReceivedPackets(unsigned int receivedPackets) noexcept {
+    inline void setReceivedPackets(unsigned int receivedPackets) noexcept
+    {
       this->receivedPackets = receivedPackets;
     }
 
-    virtual void resetContext() noexcept {
+    virtual void resetContext() noexcept
+    {
       receivedPackets = 0;
     }
   public:
@@ -311,27 +323,29 @@ public:
     /**
       Returns the channel.
     */
-    inline unsigned int getSubchannel() noexcept {
+    inline unsigned int getSubchannel() noexcept
+    {
       return subchannel;
     }
     
     /**
       Sets the subchannel.
     */
-    void setSubchannel(
-      unsigned int subchannel);
+    void setSubchannel(unsigned int subchannel);
     
     /**
       Returns the buffer.
     */
-    inline uint8* getBuffer() const noexcept {
+    inline uint8* getBuffer() const noexcept
+    {
       return buffer;
     }
     
     /**
       Returns the size of the buffer in bytes.
     */
-    unsigned int getBufferSize() const noexcept {
+    unsigned int getBufferSize() const noexcept
+    {
       return bufferSize;
     }
 
@@ -346,7 +360,8 @@ public:
     /**
       Returns the number of received packets.
     */
-    inline unsigned int getReceivedPackets() const noexcept {
+    inline unsigned int getReceivedPackets() const noexcept
+    {
       return receivedPackets;
     }
   };
@@ -378,15 +393,15 @@ public:
     /**
       Returns the maximum payload in bytes per packet.
     */
-    inline unsigned int getPayload() const noexcept {
+    inline unsigned int getPayload() const noexcept
+    {
       return payload;
     }
     
     /**
       Sets the maximum payload in bytes per packet.
     */
-    void setPayload(
-      unsigned int payload);
+    void setPayload(unsigned int payload);
   };
 
   /**
@@ -412,7 +427,8 @@ public:
     /**
       Returns the desired number of packets to be received.
     */
-    inline unsigned int getNumberOfPackets() const noexcept {
+    inline unsigned int getNumberOfPackets() const noexcept
+    {
       return numberOfPackets;
     }
     
@@ -425,7 +441,8 @@ public:
     /**
       Returns the size of the header in bytes per packet.
     */
-    inline unsigned int getHeaderSize() const noexcept {
+    inline unsigned int getHeaderSize() const noexcept
+    {
       return headerSize;
     }
     
@@ -433,13 +450,13 @@ public:
       Sets the size of the header in bytes per packet (the size must be an
       integral number of 32 bit words).
     */
-    void setHeaderSize(
-      unsigned int size);
+    void setHeaderSize(unsigned int size);
     
     /**
       Returns the maximum payload in bytes per packet.
     */
-    inline unsigned int getPayload() const noexcept {
+    inline unsigned int getPayload() const noexcept
+    {
       return payload;
     }
     
@@ -453,7 +470,8 @@ public:
     /**
       Returns the secondary buffer used for header data.
     */
-    inline uint8* getSecondaryBuffer() const noexcept {
+    inline uint8* getSecondaryBuffer() const noexcept
+    {
       return secondaryBuffer;
     }
 
@@ -506,21 +524,24 @@ public:
     /**
       Returns the buffer.
     */
-    inline const uint8* getBuffer() const noexcept {
+    inline const uint8* getBuffer() const noexcept
+    {
       return buffer;
     }
     
     /**
       Returns the size of the buffer in bytes.
     */
-    inline unsigned int getBufferSize() const noexcept {
+    inline unsigned int getBufferSize() const noexcept
+    {
       return bufferSize;
     }
 
     /**
       Returns the number of packets in the buffer.
     */
-    inline unsigned int getNumberOfPackets() const noexcept {
+    inline unsigned int getNumberOfPackets() const noexcept
+    {
       return numberOfPackets;
     }
     
@@ -539,7 +560,8 @@ public:
     /**
       Returns the transmission speed.
     */
-    inline unsigned int getSpeed() const noexcept {
+    inline unsigned int getSpeed() const noexcept
+    {
       return speed;
     }
     
@@ -551,7 +573,8 @@ public:
     /**
       Returns the number of transmitted packets.
     */
-    inline unsigned int getTransmittedPackets() const noexcept {
+    inline unsigned int getTransmittedPackets() const noexcept
+    {
       return transmittedPackets;
     }
   };
@@ -689,21 +712,24 @@ public:
     /**
       Returns the options of the request.
     */
-    inline unsigned int getOptions() const noexcept {
+    inline unsigned int getOptions() const noexcept
+    {
       return context->getOptions();
     }
     
     /**
       Returns the size of the buffer.
     */
-    inline unsigned int getBufferSize() const noexcept {
+    inline unsigned int getBufferSize() const noexcept
+    {
       return context->getBufferSize();
     }
 
     /**
       Returns the subchannel.
     */
-    inline unsigned int getSubchannel() noexcept {
+    inline unsigned int getSubchannel() noexcept
+    {
       return context->getSubchannel();
     }
 
@@ -718,14 +744,16 @@ public:
     /**
       Returns the number of received packets.
     */
-    inline unsigned int getReceivedPackets() const noexcept {
+    inline unsigned int getReceivedPackets() const noexcept
+    {
       return context->getReceivedPackets();
     }
 
     /**
       Returns the buffer.
     */
-    inline uint8* getBuffer() const noexcept {
+    inline uint8* getBuffer() const noexcept
+    {
       return context->getBuffer();
     }
     
@@ -735,8 +763,8 @@ public:
       @param buffer The location of the buffer.
       @param size The size of the buffer in bytes.
     */
-    inline void setBuffer(
-      uint8* buffer, unsigned int size) {
+    inline void setBuffer(uint8* buffer, unsigned int size)
+    {
       context->setBuffer(buffer, size);
     }
   };
@@ -762,7 +790,8 @@ public:
     */
     inline IsochronousReadFixedPacketsRequest(
       IsochronousReadFixedPacketsRequestImpl* _context) noexcept
-      : context(_context) {
+      : context(_context)
+    {
     }
 
     /**
@@ -770,7 +799,8 @@ public:
     */
     inline IsochronousReadFixedPacketsRequest(
       const IsochronousReadFixedPacketsRequest& copy) noexcept
-      : context(copy.context) {
+      : context(copy.context)
+    {
     }
 
     /**

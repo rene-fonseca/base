@@ -177,7 +177,8 @@ public:
   /**
     Returns the identifier.
   */
-  inline const uint8* getBytes() const noexcept {
+  inline const uint8* getBytes() const noexcept
+  {
     return reinterpret_cast<const uint8*>(&id);
   }
 };

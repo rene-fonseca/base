@@ -32,7 +32,8 @@
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
-String IEEE1394::getAsString(unsigned short nodeId) noexcept {
+String IEEE1394::getAsString(unsigned short nodeId) noexcept
+{
   StringOutputStream stream;
   unsigned int busId = getBusId(nodeId);
   if (busId == IEEE1394::LOCAL_BUS) {
@@ -226,7 +227,8 @@ void IEEE1394::IsochronousWriteDataRequestImpl::setBuffer(
   this->secondaryBuffer = secondaryBuffer;
 }
 
-Array<EUI64> IEEE1394::getNodes() noexcept {
+Array<EUI64> IEEE1394::getNodes() noexcept
+{
   Array<EUI64> result;
   for (unsigned int id = 0; id < numberOfNodes; ++id) {
     result.append(nodes[id].guid);
@@ -239,17 +241,20 @@ void IEEE1394::open() {
   reload();
 }
 
-void IEEE1394::open(const EUI64& adapter) {
+void IEEE1394::open(const EUI64& adapter)
+{
   ieee1394impl->open(adapter);
   reload();
 }
 
-EUI64 IEEE1394::getLocalIdentifier(unsigned int physicalId) const {
+EUI64 IEEE1394::getLocalIdentifier(unsigned int physicalId) const
+{
   bassert(physicalId < numberOfNodes, OutOfDomain(this));
   return nodes[physicalId].guid;
 }
 
-IEEE1394::Standard IEEE1394::getCompliance(unsigned short node) {
+IEEE1394::Standard IEEE1394::getCompliance(unsigned short node)
+{
   try {
     uint32 crc = getQuadlet(node, IEEE1394::CONFIGURATION_ROM);
     if ((crc >> 24) == 1) {
@@ -273,7 +278,8 @@ IEEE1394::Standard IEEE1394::getCompliance(unsigned short node) {
   return IEEE1394::STANDARD_IEEE_1394A;
 }
 
-EUI64 IEEE1394::getIdentifier(unsigned short node) {
+EUI64 IEEE1394::getIdentifier(unsigned short node)
+{
   uint32 crc = getQuadlet(node, IEEE1394::CONFIGURATION_ROM);
   bassert(
     (crc >> 24) >= 4,  // minimum size for general format
@@ -288,7 +294,8 @@ EUI64 IEEE1394::getIdentifier(unsigned short node) {
 }
 
 
-unsigned int IEEE1394::getMaximumPayload(unsigned short node) {
+unsigned int IEEE1394::getMaximumPayload(unsigned short node)
+{
   uint32 crc = getQuadlet(node, IEEE1394::CONFIGURATION_ROM);
   // minimum size for general format
   bassert(
@@ -305,7 +312,8 @@ unsigned int IEEE1394::getMaximumPayload(unsigned short node) {
   return (max > 0) ? (1 << (max + 1)) : (1 << (1 + 1));
 }
 
-unsigned int IEEE1394::getCapabilities(unsigned short node) {
+unsigned int IEEE1394::getCapabilities(unsigned short node)
+{
   unsigned int capabilities = 0;
   try {
     uint32 crc = getQuadlet(node, IEEE1394::CONFIGURATION_ROM);
@@ -326,7 +334,8 @@ unsigned int IEEE1394::getCapabilities(unsigned short node) {
   return capabilities;
 }
 
-unsigned int IEEE1394::getVendorId(unsigned short node) {
+unsigned int IEEE1394::getVendorId(unsigned short node)
+{
   uint32 crc = getQuadlet(node, IEEE1394::CONFIGURATION_ROM);
   if ((crc >> 24) == 1) { // check for minimal ROM
     return crc & 0x00ffffff;
@@ -357,7 +366,8 @@ unsigned int IEEE1394::getVendorId(unsigned short node) {
   throw IEEE1394Exception("Invalid configuration ROM.", this);
 }
 
-int IEEE1394::getPhysicalId(const EUI64& guid) noexcept {
+int IEEE1394::getPhysicalId(const EUI64& guid) noexcept
+{
   for (unsigned int id = 0; id < numberOfNodes; ++id) {
     if (nodes[id].guid == guid) {
       return id;
@@ -366,7 +376,8 @@ int IEEE1394::getPhysicalId(const EUI64& guid) noexcept {
   return -1; // not found
 }
 
-String IEEE1394::getDescription(unsigned short node) {
+String IEEE1394::getDescription(unsigned short node)
+{
   uint32 crc = getQuadlet(node, IEEE1394::CONFIGURATION_ROM);
   // minimum size for general format
   bassert(
@@ -491,7 +502,8 @@ void IEEE1394::checkResetGeneration()
   reload(); // responsible for setting the new generation number
 }
 
-unsigned short IEEE1394::findRole(Role role, unsigned int busId) {
+unsigned short IEEE1394::findRole(Role role, unsigned int busId)
+{
   bassert(busId <= IEEE1394::LOCAL_BUS, OutOfDomain(this));
   switch (role) {
   case IEEE1394::CYCLE_MASTER: // must/should be root eventually
@@ -706,7 +718,8 @@ void IEEE1394::reload()
   }
 }
 
-void IEEE1394::loadTopologyMap() {
+void IEEE1394::loadTopologyMap()
+{
   const unsigned short node = makeNodeId(busManagerId);
   
   uint32 crc = getQuadlet(node, IEEE1394::TOPOLOGY_MAP);
@@ -813,7 +826,8 @@ void IEEE1394::loadTopologyMap() {
 }
 
 unsigned int IEEE1394::getCycleTime(
-  unsigned short node) {
+  unsigned short node)
+{
   Quadlet quadlet;
   read(
     node,
@@ -838,7 +852,8 @@ unsigned int IEEE1394::getBusTime(
   return quadlet;
 }
 
-unsigned int IEEE1394::getAvailableBandwidth() {
+unsigned int IEEE1394::getAvailableBandwidth()
+{
   Quadlet quadlet;
   read(
     makeNodeId(isochronousResourceManagerId),
@@ -849,7 +864,8 @@ unsigned int IEEE1394::getAvailableBandwidth() {
   return quadlet & ((1 << 13) - 1);
 }
 
-uint64 IEEE1394::getAvailableIsochronousChannels() {
+uint64 IEEE1394::getAvailableIsochronousChannels()
+{
   uint32 high = getQuadlet(
     makeNodeId(isochronousResourceManagerId),
     IEEE1394::CHANNELS_AVAILABLE_HI
@@ -926,7 +942,8 @@ IEEE1394::Speed IEEE1394::getMaximumLinkSpeed(
   return nodes[physicalId].linkSpeed;
 }
 
-IEEE1394::Speed IEEE1394::getMaximumSpeed(uint64 nodes) const noexcept {
+IEEE1394::Speed IEEE1394::getMaximumSpeed(uint64 nodes) const noexcept
+{
   Speed result = IEEE1394::S3200;
   for (unsigned int id = 0; id < numberOfNodes; ++id) { // ignore non-present nodes
     if ((nodes >> id) & 1) {
@@ -937,12 +954,14 @@ IEEE1394::Speed IEEE1394::getMaximumSpeed(uint64 nodes) const noexcept {
 }
 
 IEEE1394::Speed IEEE1394::getMaximumSpeedBetweenNodes(
-  unsigned int a, unsigned int b) const {
+  unsigned int a, unsigned int b) const
+{
   bassert((a < numberOfNodes) && (b < numberOfNodes), OutOfDomain(this));
   return speedMap[a][b]; // or speedMap[b][a]
 }
 
-IEEE1394::Speed IEEE1394::getBroadcastSpeed() const {
+IEEE1394::Speed IEEE1394::getBroadcastSpeed() const
+{
   bassert(localId < numberOfNodes, OutOfDomain(this));
   return speedMap[localId][IEEE1394::BROADCAST];
 }
@@ -962,13 +981,15 @@ IEEE1394::IsochronousReadPacketsRequest IEEE1394::IsochronousReadChannelImpl::ge
 
 IEEE1394::IsochronousReadFixedPacketsRequest
   IEEE1394::IsochronousReadChannelImpl::getReadFixedPacketsRequest(
-  ) const {
+  ) const
+{
   throw IEEE1394Exception("Channel is closed.", this);
 }
 
 IEEE1394::IsochronousReadFixedDataRequest
   IEEE1394::IsochronousReadChannelImpl::getReadFixedDataRequest(
-  ) const {
+  ) const
+{
   throw IEEE1394Exception("Channel is closed.", this);
 }
 
@@ -1004,61 +1025,72 @@ IEEE1394::IsochronousReadRequest IEEE1394::IsochronousReadChannelImpl::dequeue()
 
 unsigned int IEEE1394::IsochronousReadChannelImpl::dequeue(
   unsigned int requests,
-  unsigned int microseconds) {
+  unsigned int microseconds)
+{
   bassert(microseconds <= 999999999, OutOfDomain(this));
   throw IEEE1394Exception("Channel is closed.", this);
 }
 
 bool IEEE1394::IsochronousReadChannelImpl::wait(
-  unsigned int microseconds) {
+  unsigned int microseconds)
+{
   bassert(microseconds <= 999999999, OutOfDomain(this));
   throw IEEE1394Exception("Channel is closed.", this);
 }
 
 uint64 IEEE1394::IsochronousWriteChannelImpl::getSubchannels(
-) {
+)
+{
   throw IEEE1394Exception("Channel is closed.", this);
 }
 
-void IEEE1394::IsochronousWriteChannelImpl::cancel() {
+void IEEE1394::IsochronousWriteChannelImpl::cancel()
+{
   throw IEEE1394Exception("Channel is closed.", this);
 }
 
 IEEE1394::IsochronousWritePacketsRequest
   IEEE1394::IsochronousWriteChannelImpl::getWritePacketsRequest(
-  ) const {
+  ) const
+{
   throw IEEE1394Exception("Channel is closed.", this);
 }
 
 IEEE1394::IsochronousWriteFixedPacketsRequest
   IEEE1394::IsochronousWriteChannelImpl::getWriteFixedPacketsRequest(
-  ) const {
+  ) const
+{
   throw IEEE1394Exception("Channel is closed.", this);
 }
 
 IEEE1394::IsochronousWriteDataRequest
   IEEE1394::IsochronousWriteChannelImpl::getWriteDataRequest(
-  ) const {
+  ) const
+{
   throw IEEE1394Exception("Channel is closed.", this);
 }
 
 void IEEE1394::IsochronousWriteChannelImpl::queue(
-  IsochronousWriteRequest& request) {
+  IsochronousWriteRequest& request)
+{
   throw IEEE1394Exception("Channel is closed.", this);
 }
 
 void IEEE1394::IsochronousWriteChannelImpl::queue(
-  IsochronousWritePacketsRequest& request) {
+  IsochronousWritePacketsRequest& request)
+{
   throw IEEE1394Exception("Channel is closed.", this);
 }
 
 void IEEE1394::IsochronousWriteChannelImpl::queue(
-  IsochronousWriteFixedPacketsRequest& request) {
+  IsochronousWriteFixedPacketsRequest& request)
+{
   throw IEEE1394Exception("Channel is closed.", this);
 }
 
 void IEEE1394::IsochronousWriteChannelImpl::queue(
-  IsochronousWriteDataRequest& request) {
+  IsochronousWriteDataRequest& request)
+{
   throw IEEE1394Exception("Channel is closed.", this);
 }
 
@@ -1073,7 +1105,8 @@ IEEE1394::IsochronousWriteRequest
 }
     
 bool IEEE1394::IsochronousWriteChannelImpl::wait(
-  unsigned int microseconds) {
+  unsigned int microseconds)
+{
   bassert(microseconds <= 999999999, OutOfDomain(this));
   throw IEEE1394Exception("Channel is closed.", this);
 }

@@ -665,7 +665,8 @@ public:
 //  }
 //
 //  template<class TYPE, class UNOPR>
-//  void traversePostfixOrder(const BinaryNode* root, UNOPR& function) noexcept {
+//  void traversePostfixOrder(const BinaryNode* root, UNOPR& function) noexcept
+//  {
 //    const BinaryNode* node = root;
 //    while (true) {
 //      if (auto left = node->getLeft()) { // traverse left subtree

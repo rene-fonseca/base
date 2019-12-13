@@ -98,67 +98,80 @@ private:
       OperatingSystem::Handle handle, Domain domain, Kind kind) noexcept;
     
     /** Returns the protocol. */
-    inline Domain getDomain() const noexcept {
+    inline Domain getDomain() const noexcept
+    {
       return domain;
     }
     
     /** Returns the type. */
-    inline Kind getKindype() const noexcept {
+    inline Kind getKindype() const noexcept
+    {
       return kind;
     }
     
     /** Returns the local address. */
-    inline const InetAddress& getLocalAddress() const noexcept {
+    inline const InetAddress& getLocalAddress() const noexcept
+    {
       return localAddress;
     }
     
     /** Sets the local address. */
-    inline void setLocalAddress(const InetAddress& value) noexcept {
+    inline void setLocalAddress(const InetAddress& value) noexcept
+    {
       localAddress = value;
     }
     
     /** Returns the local port. */
-    inline unsigned short getLocalPort() const noexcept {
+    inline unsigned short getLocalPort() const noexcept
+    {
       return localPort;
     }
     
     /** Sets the local port. */
-    inline void setLocalPort(unsigned short port) noexcept {
+    inline void setLocalPort(unsigned short port) noexcept
+    {
       localPort = port;
     }
     
     /** Returns the remote address. */
-    inline const InetAddress& getRemoteAddress() const noexcept {
+    inline const InetAddress& getRemoteAddress() const noexcept
+    {
       return remoteAddress;
     }
     
     /** Sets the remote address. */
-    inline void setRemoteAddress(const InetAddress& value) noexcept {
+    inline void setRemoteAddress(const InetAddress& value) noexcept
+    {
       remoteAddress = value;
     }
     
     /** Returns the remote port. */
-    inline unsigned short getRemotePort() const noexcept {
+    inline unsigned short getRemotePort() const noexcept
+    {
       return remotePort;
     }
     
     /** Sets the remote port. */
-    inline void setRemotePort(unsigned short port) noexcept {
+    inline void setRemotePort(unsigned short port) noexcept
+    {
       remotePort = port;
     }
     
     /** Returns true if the socket is valid. */
-    inline bool isValid() const noexcept {
+    inline bool isValid() const noexcept
+    {
       return getHandle() != OperatingSystem::INVALID_HANDLE;
     }
     
     /** Returns true if socket is connected. */
-    inline bool isConnected() const noexcept {
+    inline bool isConnected() const noexcept
+    {
       return getRemotePort() != 0;
     }
     
     /** Returns true if socket is bound. */
-    inline bool isBound() const noexcept {
+    inline bool isBound() const noexcept
+    {
       return getLocalPort() != 0;
     }
     
@@ -199,14 +212,17 @@ public:
   /**
     Returns a reference to the socket.
   */
-  inline Reference<ReferenceCountedObject> getReference() noexcept {
+  inline Reference<ReferenceCountedObject> getReference() noexcept
+  {
     return socket;
   }
   
   /**
     Initialization of socket from other socket.
   */
-  inline Socket(const Socket& copy) noexcept : socket(copy.socket) {
+  inline Socket(const Socket& copy) noexcept
+    : socket(copy.socket)
+  {
   }
 
   /**
@@ -254,8 +270,7 @@ public:
     @param address The IP address to connect to.
     @param port The port to connect to.
   */
-  void connect(
-    const InetAddress& address, unsigned  short port);
+  void connect(const InetAddress& address, unsigned  short port);
 
   /**
     Creates either a stream or a datagram socket.
@@ -263,8 +278,7 @@ public:
     @param kind The socket type (e.g. STREAM).
     @param domain The domain (the default is DEFAULT_DOMAIN).
   */
-  void create(
-    Kind kind, Domain domain = DEFAULT_DOMAIN);
+  void create(Kind kind, Domain domain = DEFAULT_DOMAIN);
 
   /**
     Caches the locally assigned address and port of the socket. This member
@@ -526,7 +540,8 @@ public:
   /**
     Returns true if the socket is valid.
   */
-  inline bool isValid() const noexcept {
+  inline bool isValid() const noexcept
+  {
     return socket->isValid();
   }
   

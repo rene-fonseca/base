@@ -16,6 +16,7 @@ if (MSVC)
 endif ()
 
 message("System: ${CMAKE_SYSTEM_NAME}")
+message("Compiler: ${CMAKE_CXX_COMPILER_ID}")
 
 set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -D_COM_AZURE_DEV__BASE__DEBUG")
 # set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} xxx")
@@ -85,12 +86,21 @@ endif()
 #)
 endif ()
 
-if (UNIX)
-  find_package(X11)
-endif()
+set (USE_SHARED 1)
+# TAG: need a way to detect WASM and skip shared
+if ("${CMAKE_SYSTEM_NAME}" STREQUAL "Generic") # WASI
+  set (USE_SHARED 0)
+endif ()
 
-find_package(ZLIB)
-find_package(BZip2)
+if (USE_SHARED)
+  if (UNIX)
+    find_package(X11)
+  endif()
+
+  find_package(ZLIB)
+  find_package(BZip2)
+  # find_package(OpenCL REQUIRED)
+endif ()
 
 file(GLOB_RECURSE base_platforms_SRC
   "base/platforms/*.h"
@@ -201,10 +211,12 @@ if (MSVC)
   set(base_ADDITIONAL ${CMAKE_BINARY_DIR}/generated/base/base.rc)
 endif ()
 
-add_library(base SHARED ${base_SRC} ${base_ADDITIONAL} ${CMAKE_CURRENT_BINARY_DIR}/generated/base/config.h)
-target_compile_definitions(base PRIVATE _COM_AZURE_DEV__BASE__SHARED_LIBRARY_BUILD)
-
-# find_package(OpenCL REQUIRED)
+if (NOT USE_SHARED)
+  add_library(base STATIC ${CMAKE_SOURCE_DIR}/base/dummy.cpp)
+else ()
+  add_library(base SHARED ${base_SRC} ${base_ADDITIONAL} ${CMAKE_CURRENT_BINARY_DIR}/generated/base/config.h)
+  target_compile_definitions(base PRIVATE _COM_AZURE_DEV__BASE__SHARED_LIBRARY_BUILD)
+endif ()
 
 if (1)
 target_include_directories(base PUBLIC

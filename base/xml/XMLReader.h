@@ -210,7 +210,7 @@ public:
       Allows the application to resolve external entities.
     */
     virtual InputSource resolveEntity(
-      const String& publicId, const String& systemId) throw(SAXException);
+      const String& publicId, const String& systemId);
   };
 
   /**
@@ -224,19 +224,19 @@ public:
     /**
       Receives notification of a recoverable error.
     */
-    virtual void error(const SAXParseException& exception) throw(SAXException);
+    virtual void error(const SAXParseException& exception);
 
     /**
       Receives notification of a non-recoverable error.
     */
     virtual void fatalError(
-      const SAXParseException& exception) throw(SAXException);
+      const SAXParseException& exception);
 
     /**
       Receives notification of a warning.
     */
     virtual void warning(
-      const SAXParseException& exception) throw(SAXException);
+      const SAXParseException& exception);
   };
 
   class _COM_AZURE_DEV__BASE__API Locator {
@@ -345,13 +345,13 @@ public:
     Returns the value of the specified feature.
   */
   virtual bool getFeature(const String& name) const
-    throw(SAXNotRecognizedException, SAXNotSupportedException) = 0;
+    = 0;
   
   /**
     Sets the value of the specified feature.
   */
   virtual void setFeature(const String& name, bool value)
-    throw(SAXNotRecognizedException, SAXNotSupportedException) = 0;
+    = 0;
   
   /**
     Returns the current content handler.

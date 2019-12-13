@@ -16,7 +16,7 @@
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
-short ShortInteger::parse(const char* src, const char* end, unsigned int flags) throw(InvalidFormat)
+short ShortInteger::parse(const char* src, const char* end, unsigned int flags)
 {
   if (flags & FLAG_ALLOW_SPACES) {
     while ((src != end) && (*src == ' ')) {

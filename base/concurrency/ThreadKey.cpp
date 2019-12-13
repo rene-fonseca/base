@@ -32,7 +32,7 @@ namespace {
 }
 #endif
 
-ThreadKeyImpl::ThreadKeyImpl() throw(ResourceException)
+ThreadKeyImpl::ThreadKeyImpl()
 {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   DWORD key = 0;
@@ -58,7 +58,7 @@ ThreadKeyImpl::ThreadKeyImpl() throw(ResourceException)
 #endif // flavor
 }
 
-void* ThreadKeyImpl::getKey() const throw(ThreadKeyException)
+void* ThreadKeyImpl::getKey() const
 {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   void* result = ::TlsGetValue(Cast::extract<DWORD>(key));
@@ -79,7 +79,7 @@ void* ThreadKeyImpl::getKey() const throw(ThreadKeyException)
 #endif // flavor
 }
 
-void ThreadKeyImpl::setKey(void* value) throw(ThreadKeyException)
+void ThreadKeyImpl::setKey(void* value)
 {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   if (!::TlsSetValue(Cast::extract<DWORD>(key), value)) {

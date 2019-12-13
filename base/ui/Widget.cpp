@@ -50,7 +50,7 @@ void Widget::destroy() noexcept
   WindowImpl::destroy();
 }
 
-Widget::Widget(Window& owner) throw(UserInterfaceException)
+Widget::Widget(Window& owner)
 {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   drawableHandle = ::CreateWindowEx(

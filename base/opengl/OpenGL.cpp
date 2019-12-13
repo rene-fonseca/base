@@ -65,7 +65,7 @@ namespace opengl {
   typedef OpenGL::Function (CALL_OPENGL *GetFunction)(const char* name);
   GetFunction getFunction = 0;  
 
-  void CALL_OPENGL missing() throw(OpenGLException) {
+  void CALL_OPENGL missing() {
     // must always raise exception (to work with any calling convention/argument list)
     throw OpenGLException("Function not supported.", Type::getType<OpenGL>());
   }
@@ -633,7 +633,7 @@ void OpenGL::fixMissing(Descriptor* descriptor, unsigned int size) noexcept {
   }
 }
 
-OpenGL::OpenGL(unsigned int latest) throw(OpenGLException) {
+OpenGL::OpenGL(unsigned int latest) {
   // TAG: determine supported
   opengl::spinLock.exclusiveLock();
   specification = 0x000000;
@@ -730,7 +730,7 @@ OpenGL::OpenGL(unsigned int latest) throw(OpenGLException) {
   opengl::spinLock.releaseLock();
 }
 
-bool OpenGL::isSupported(const String& name) throw(OpenGLException) {
+bool OpenGL::isSupported(const String& name) {
   bassert(
     name.isProper() && (name.indexOf(' ') < 0),
     OpenGLException(Type::getType<OpenGL>())
@@ -830,7 +830,7 @@ void OpenGL::perspective(GLdouble fovy, GLdouble aspectRatio, GLdouble zNear, GL
   glFrustum(xmin, xmax, ymin, ymax, zNear, zFar);
 }
 
-Vector3D<double> OpenGL::project(Vector3D<double> object, const Matrix4x4<double> model, const Matrix4x4<double> projection, const GLint viewport[4]) throw(OpenGLException) {
+Vector3D<double> OpenGL::project(Vector3D<double> object, const Matrix4x4<double> model, const Matrix4x4<double> projection, const GLint viewport[4]) {
   Quaternion<double> in(object.getX(), object.getY(), object.getZ(), 1);
   Quaternion<double> out = model * in;
   in = projection * out;
@@ -872,7 +872,7 @@ Vector3D<double> OpenGL::unProject(
   const Vector3D<double>& window,
   const Matrix4x4<double>& model,
   const Matrix4x4<double>& projection,
-  const GLint viewport[4]) throw(OpenGLException) {
+  const GLint viewport[4]) {
   
   Matrix4x4<double> A = projection * model;
   Matrix4x4<double> matrix;

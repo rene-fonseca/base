@@ -155,7 +155,7 @@ public:
   class PolygonModeMenu : public Menu {
   public:
     
-    PolygonModeMenu() throw(UserInterfaceException) {
+    PolygonModeMenu() {
       append(MESSAGE("&Fill\tf"), Command::SELECT_POLYGON_MODE_FILL);
       append(MESSAGE("&Line\tl"), Command::SELECT_POLYGON_MODE_LINE);
       append(MESSAGE("&Point\tp"), Command::SELECT_POLYGON_MODE_POINT);
@@ -165,7 +165,7 @@ public:
   class ShadingModelMenu : public Menu {
   public:
     
-    ShadingModelMenu() throw(UserInterfaceException) {
+    ShadingModelMenu() {
       append(MESSAGE("&Flat\tf"), Command::SELECT_SHADING_MODEL_FLAT);
       append(MESSAGE("&Smooth\ts"), Command::SELECT_SHADING_MODEL_SMOOTH);
     }
@@ -174,7 +174,7 @@ public:
   class ModeMenu : public Menu {
   public:
     
-    ModeMenu() throw(UserInterfaceException) {
+    ModeMenu() {
       append(MESSAGE("&System"), Command::SELECT_MODE_SYSTEM);
       append(MESSAGE("&Floor"), Command::SELECT_MODE_FLOOR);
       append(MESSAGE("&Cube"), Command::SELECT_MODE_CUBE);
@@ -186,7 +186,7 @@ public:
   class QualityMenu : public Menu {
   public:
     
-    QualityMenu() throw(UserInterfaceException) {
+    QualityMenu() {
       append(MESSAGE("&Worst"), Command::SELECT_QUALITY_WORST);
       append(MESSAGE("&Normal"), Command::SELECT_QUALITY_NORMAL);
       append(MESSAGE("&Best"), Command::SELECT_QUALITY_BEST);
@@ -196,7 +196,7 @@ public:
   class VerbosityMenu : public Menu {
   public:
     
-    VerbosityMenu() throw(UserInterfaceException) {
+    VerbosityMenu() {
       append(MESSAGE("&No information"), Command::SELECT_VERBOSITY_NO_INFORMATION);
       append(MESSAGE("&Warnings"), Command::SELECT_VERBOSITY_WARNINGS);
       append(MESSAGE("&Normal"), Command::SELECT_VERBOSITY_NORMAL);
@@ -215,7 +215,7 @@ private:
   VerbosityMenu verbosityMenu;
 public:
   
-  MyMenu() throw(UserInterfaceException) {
+  MyMenu() {
     appendMenu(MESSAGE("S&hading model"), shadingModelMenu);
     appendMenu(MESSAGE("&Polygon mode"), polygonModeMenu);
     appendMenu(MESSAGE("&Mode"), modeMenu);
@@ -337,7 +337,7 @@ public:
       const String& title,
       const Position& position,
       const Dimension& dimension,
-      const Format& format) throw(UserInterfaceException)
+      const Format& format)
       : OpenGLContext(position, dimension, format)
     {
       setTitle(title);

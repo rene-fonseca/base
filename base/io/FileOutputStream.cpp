@@ -22,7 +22,7 @@ FileOutputStream::FileOutputStream()
 FileOutputStream::FileOutputStream(
   const String& path,
   unsigned int options,
-  unsigned int permissions) throw(FileNotFound)
+  unsigned int permissions)
   : file(path, File::WRITE, options)
 {
 }
@@ -34,7 +34,7 @@ FileOutputStream::FileOutputStream(
 bool FileOutputStream::open(
   const String& path,
   unsigned int options,
-  unsigned int permissions) throw(FileNotFound)
+  unsigned int permissions)
 {
   file = File(path, File::WRITE, options);
   return true;
@@ -50,7 +50,7 @@ bool FileOutputStream::isOpen() const noexcept
   return !file.isClosed();
 }
 
-void FileOutputStream::close() throw(IOException) {
+void FileOutputStream::close() {
   file.close();
 }
 

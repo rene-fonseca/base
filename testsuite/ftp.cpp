@@ -213,7 +213,7 @@ protected:
     return true;
   }
 
-  void getResponse() throw(FTPException) {
+  void getResponse() {
     FormatInputStream instream(controlConnection);
 
     replyCode.valid = false; // invalidate
@@ -274,7 +274,7 @@ protected:
   }
 
   /** Sends password to server. */
-  void requestPassword(const String& password) throw(IOException) {
+  void requestPassword(const String& password) {
     if (verbosity >= DEBUG_EXTENDED) {
       fout << "DEBUG: Sending command '" << CMD_PASSWORD
            << "' with value '" << password << '\'' << ENDL;
@@ -285,7 +285,7 @@ protected:
   }
 
   /** Sends command to server without an argument. */
-  void request(const String& command) throw(IOException) {
+  void request(const String& command) {
     if (verbosity >= DEBUG_EXTENDED) {
       fout << "DEBUG: Sending command '" << command << "' with no value" << ENDL;
     }
@@ -295,7 +295,7 @@ protected:
   }
 
   /** Sends command to server with an argument. */
-  void request(const String& command, const String& value) throw(IOException) {
+  void request(const String& command, const String& value) {
     if (verbosity >= DEBUG_EXTENDED) {
       fout << "DEBUG: Sending command '" << command << "' with value '" << value << '\'' << ENDL;
     }
@@ -354,7 +354,7 @@ public:
     retryAttempts = value;
   }
 
-  void connect() throw(IOException) {
+  void connect() {
     if (verbosity >= DEBUG_NORMAL) {
       fout << "DEBUG: Establishing control connection to: "
            << endPoint << ENDL;
@@ -364,43 +364,43 @@ public:
     getResponse();
   }
 
-  int sendUser(const String& username) throw(InvalidFormat, FTPException) {
+  int sendUser(const String& username) {
     bassert(isValidString(username), InvalidFormat("Invalid FTP string"));
     request(CMD_USER, username);
     getResponse();
     return replyCode.reply;
   }
 
-  int sendPassword(const String& password) throw(InvalidFormat, FTPException) {
+  int sendPassword(const String& password) {
     bassert(isValidString(password), InvalidFormat("Invalid FTP string"));
     requestPassword(password);
     getResponse();
     return replyCode.reply;
   }
 
-  int sendAccount(const String& account) throw(InvalidFormat, FTPException) {
+  int sendAccount(const String& account) {
     bassert(isValidString(account), InvalidFormat("Invalid FTP string"));
     request(CMD_ACCOUNT, account);
     getResponse();
     return replyCode.reply;
   }
 
-  void sendReinitialize() throw(FTPException) {
+  void sendReinitialize() {
     request(CMD_REINITIALIZE);
     getResponse();
   }
 
-  void sendHelp() throw(FTPException) {
+  void sendHelp() {
     request(CMD_HELP);
     getResponse();
   }
 
-  void sendNoOperation() throw(FTPException) {
+  void sendNoOperation() {
     request(CMD_NOOP);
     getResponse();
   }
 
-  void getSystemType() throw(FTPException) {
+  void getSystemType() {
     if (verbosity >= DEBUG_NORMAL) {
       fout << "DEBUG: Getting system type..." << ENDL;
     }
@@ -408,7 +408,7 @@ public:
     getResponse();
   }
 
-  void getStatus() throw(FTPException) {
+  void getStatus() {
     if (verbosity >= DEBUG_NORMAL) {
       fout << "DEBUG: Getting status..." << ENDL;
     }
@@ -416,7 +416,7 @@ public:
     getResponse();
   }
 
-  void setType(Representation representation) throw(FTPException) {
+  void setType(Representation representation) {
     if (verbosity >= DEBUG_NORMAL) {
       fout << "DEBUG: Setting type..." << ENDL;
     }
@@ -435,7 +435,7 @@ public:
     getResponse();
   }
 
-  void setStructure(Structure structure) throw(FTPException) {
+  void setStructure(Structure structure) {
     if (verbosity >= DEBUG_NORMAL) {
       fout << "DEBUG: Setting file structure..." << ENDL;
     }
@@ -453,7 +453,7 @@ public:
     getResponse();
   }
 
-  void setMode(Mode mode) throw(FTPException) {
+  void setMode(Mode mode) {
     if (verbosity >= DEBUG_NORMAL) {
       fout << "DEBUG: Setting mode..." << ENDL;
     }
@@ -471,7 +471,7 @@ public:
     getResponse();
   }
 
-  void getList() throw(FTPException) {
+  void getList() {
     if (verbosity >= DEBUG_NORMAL) {
       fout << "DEBUG: List..." << ENDL;
     }
@@ -479,7 +479,7 @@ public:
     getResponse();
   }
 
-  void readDirectoryList() throw(IOException) {
+  void readDirectoryList() {
     Allocator<uint8> buffer(4096);
 
     while (true) { // read line until response
@@ -518,7 +518,7 @@ public:
     }
   }
 
-  void readData(long long sizeOfFile) throw(IOException) {
+  void readData(long long sizeOfFile) {
     Allocator<uint8> buffer(4096 * 16);
     File file("ftpoutput", File::WRITE, File::CREATE | File::TRUNCATE);
 
@@ -543,7 +543,7 @@ public:
     fout << ENDL;
   }
 
-  void restart(const String& marker) throw(InvalidFormat, FTPException) {
+  void restart(const String& marker) {
     if (verbosity >= DEBUG_NORMAL) {
       fout << "DEBUG: Restarting..." << ENDL;
     }
@@ -554,7 +554,7 @@ public:
 
   // File commands
 
-  void renameFile(const String& from, const String& to) throw(InvalidFormat, FTPException) {
+  void renameFile(const String& from, const String& to) {
     if (verbosity >= DEBUG_NORMAL) {
       fout << "DEBUG: Renaming file system object..." << ENDL;
     }
@@ -564,7 +564,7 @@ public:
     getResponse();
   }
 
-  void deleteFile(const String& path) throw(InvalidFormat, FTPException) {
+  void deleteFile(const String& path) {
     if (verbosity >= DEBUG_NORMAL) {
       fout << "DEBUG: Deleting file system object..." << ENDL;
     }
@@ -575,7 +575,7 @@ public:
 
   // Directory commands
 
-  void getCurrentDirectory() throw(FTPException) {
+  void getCurrentDirectory() {
     if (verbosity >= DEBUG_NORMAL) {
       fout << "DEBUG: Getting current directory..." << ENDL;
     }
@@ -583,7 +583,7 @@ public:
     getResponse();
   }
 
-  void changeDirectory(const String& path) throw(InvalidFormat, FTPException) {
+  void changeDirectory(const String& path) {
     if (verbosity >= DEBUG_NORMAL) {
       fout << "DEBUG: Changing working directory..." << ENDL;
     }
@@ -597,7 +597,7 @@ public:
     }
   }
 
-  void makeDirectory(const String& path) throw(InvalidFormat, FTPException) {
+  void makeDirectory(const String& path) {
     if (verbosity >= DEBUG_NORMAL) {
       fout << "DEBUG: Creating new directory..." << ENDL;
     }
@@ -606,7 +606,7 @@ public:
     getResponse();
   }
 
-  void removeDirectory(const String& path) throw(InvalidFormat, FTPException) {
+  void removeDirectory(const String& path) {
     if (verbosity >= DEBUG_NORMAL) {
       fout << "DEBUG: Removing directory..." << ENDL;
     }
@@ -616,7 +616,7 @@ public:
   }
 private:
 
-  String clipPassiveResponse(const String& response, int& index) throw(FTPException) {
+  String clipPassiveResponse(const String& response, int& index) {
     String result(3);
     for (int count = 3; count && (index < static_cast<int>(response.getLength())) && (response[index] >= '0') && (response[index] <= '9'); --count) {
       result += response[index++];
@@ -626,7 +626,7 @@ private:
   }
 public:
 
-  void login(const String& username, const String& password) throw(InvalidFormat, FTPException) {
+  void login(const String& username, const String& password) {
     if (verbosity >= DEBUG_NORMAL) {
       fout << "DEBUG: Sending user and password..." << ENDL;
     }
@@ -646,7 +646,7 @@ public:
     }
   }
 
-  void logout() throw(FTPException)
+  void logout()
   {
     if (verbosity >= DEBUG_NORMAL) {
       fout << "DEBUG: Requesting logout..." << ENDL;
@@ -655,7 +655,7 @@ public:
     getResponse();
   }
 
-  void getDirectoryList() throw(FTPException)
+  void getDirectoryList()
   {
     if (verbosity >= DEBUG_NORMAL) {
       fout << "DEBUG: Retrieving directory list..." << ENDL;
@@ -666,7 +666,7 @@ public:
     getResponse(); // wait for completed
   }
 
-  void retrieveFile(const String& filename) throw(FTPException)
+  void retrieveFile(const String& filename)
   {
     if (verbosity >= DEBUG_NORMAL) {
       fout << "DEBUG: Retrieving file..." << ENDL;
@@ -704,7 +704,7 @@ public:
 //const Literal CMD_NAME_LIST = MESSAGE("NLST"); // request name list
 //const Literal CMD_SITE = MESSAGE("SITE"); // site specific
 
-  void abort() throw(FTPException) {
+  void abort() {
     if (verbosity >= DEBUG_NORMAL) {
       fout << "DEBUG: Aborting..." << ENDL;
     }
@@ -712,7 +712,7 @@ public:
     getResponse(); // wait for completed
   }
 
-  void requestActiveTransfer() throw(FTPException) {
+  void requestActiveTransfer() {
     if (verbosity >= DEBUG_NORMAL) {
       fout << "DEBUG: Requesting active transfer mode..." << ENDL;
     }
@@ -735,12 +735,12 @@ public:
     getResponse(); // wait for completed
   }
 
-  void waitForConnection() throw(FTPException) {
+  void waitForConnection() {
     dataConnection = serverDataConnection.accept();
     fout << "Incoming connection from: " << dataConnection.getAddress() << ENDL;
   }
 
-  void requestPassiveTransfer() throw(FTPException) {
+  void requestPassiveTransfer() {
     if (verbosity >= DEBUG_NORMAL) {
       fout << "DEBUG: Requesting passive transfer mode..." << ENDL;
     }
@@ -796,7 +796,7 @@ public:
   MyThread(FileTransferProtocolClient& _client) : client(_client) {
   }
 
-  void run() throw(FTPException) {
+  void run() {
     while (true) {
       client.waitForConnection();
     }

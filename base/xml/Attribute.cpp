@@ -47,7 +47,7 @@ String Attribute::getValue() const noexcept {
 #endif
 }
 
-void Attribute::setValue(const String& value) throw(DOMException) {
+void Attribute::setValue(const String& value) {
 #if defined(_COM_AZURE_DEV__BASE__XML_XMLSOFT_ORG)
   xmlAttr* attribute = (xmlAttr*)getContext();
   if (attribute->children) {

@@ -34,7 +34,7 @@ private:
   /**
     Initializes the pixmap rendering context.
   */
-  nothing initialize(const Dimension& dimension, unsigned int flags) throw(OpenGLException);
+  nothing initialize(const Dimension& dimension, unsigned int flags);
 public:
   
   /**
@@ -43,7 +43,7 @@ public:
     @param dimension The dimension of the pixmap.
     @param flags The format flags.
   */
-  OpenGLPixmapContext(const Dimension& dimension, unsigned int flags) throw(OpenGLException);
+  OpenGLPixmapContext(const Dimension& dimension, unsigned int flags);
 
   /**
     Destroys the OpenGL pixmap rendering context.

@@ -36,7 +36,7 @@ public:
   /**
     Executes the dialog.
   */
-  virtual bool execute() throw(UserInterfaceException) = 0;
+  virtual bool execute() = 0;
 
   /**
     Destroys the dialog.

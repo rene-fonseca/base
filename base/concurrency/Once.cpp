@@ -20,7 +20,7 @@ _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 Once::Once() noexcept {
 }
 
-bool Once::getTokenImpl() throw(ResourceException) {
+bool Once::getTokenImpl() {
   {
     ExclusiveSynchronize<Guard> _guard(guard);
     if (waiting++ == 0) {

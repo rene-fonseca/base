@@ -36,7 +36,7 @@ protected:
   }
 public:
   
-  inline EntityDecl(Node node) throw(CastException) : Declaration(node) {
+  inline EntityDecl(Node node) : Declaration(node) {
     bassert(
       node.isInvalid() || (node.getType() == ENTITY_DECL_NODE),
       CastException(this)

@@ -67,7 +67,7 @@ String InetService::getByPort(
 }
 
 InetService::InetService(
-  const String& name, const String& protocol) throw(ServiceNotFound)
+  const String& name, const String& protocol)
 {
   port = getByName(name, protocol);
   bassert(
@@ -79,7 +79,7 @@ InetService::InetService(
 }
 
 InetService::InetService(
-  unsigned short port, const String& protocol) throw(ServiceNotFound) {
+  unsigned short port, const String& protocol) {
   name = getByPort(port, protocol);
   bassert(
     name.isProper(),

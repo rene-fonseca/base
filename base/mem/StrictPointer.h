@@ -41,7 +41,7 @@ public:
     
     @param value The object pointer to be automated.
   */
-  inline StrictPointer(TYPE* _value) throw(NullPointer) : value(_value)
+  inline StrictPointer(TYPE* _value) : value(_value)
   {
     if (!value) {
       throw NullPointer(this);

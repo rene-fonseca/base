@@ -18,7 +18,7 @@ _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 ServerSocket::ServerSocket(
   const InetAddress& address,
   unsigned short port,
-  unsigned int backlog) throw(IOException)
+  unsigned int backlog)
 {
   create(STREAM);
   bind(address, port);

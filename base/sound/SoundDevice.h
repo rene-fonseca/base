@@ -58,7 +58,7 @@ private:
   /**
     Acquires the desired access to the device.
   */
-  void reacquireAccess(unsigned int access) throw(NotSupported);
+  void reacquireAccess(unsigned int access);
 public:
 
   /**
@@ -83,22 +83,22 @@ public:
   /**
     Acquires read access to the device.
   */
-  void acquireReadAccess() throw(IOException);
+  void acquireReadAccess();
 
   /**
     Releases the read access to the device.
   */
-  void relinquishReadAccess() throw(IOException);
+  void relinquishReadAccess();
 
   /**
     Acquires write access to the device.
   */
-  void acquireWriteAccess() throw(IOException);
+  void acquireWriteAccess();
 
   /**
     Releases the write access to the device.
   */
-  void relinquishWriteAccess() throw(IOException);
+  void relinquishWriteAccess();
 
   /**
     Returns the handle associated with read access from device (may be identical

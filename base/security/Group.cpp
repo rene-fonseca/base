@@ -36,7 +36,7 @@
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
-Group::Group(unsigned long _id) throw(OutOfDomain) : integralId(_id) {
+Group::Group(unsigned long _id) : integralId(_id) {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   throw OutOfDomain("Invalid user id.", this);
 #else // unix
@@ -47,7 +47,7 @@ Group::Group(unsigned long _id) throw(OutOfDomain) : integralId(_id) {
 #endif // flavor
 }
 
-Group::Group(const void* _id) throw(OutOfDomain)
+Group::Group(const void* _id)
 {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   if (_id == 0) {
@@ -89,7 +89,7 @@ bool Group::operator==(const Group& compare) const noexcept
 #endif
 }
 
-Group::Group(const String& name) throw(GroupException)
+Group::Group(const String& name)
 {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   throw NotImplemented(this);
@@ -119,7 +119,7 @@ Group::Group(const String& name) throw(GroupException)
 #endif // flavor
 }
 
-Group::Group(const User& user) throw(GroupException) {
+Group::Group(const User& user) {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   throw NotImplemented(this);
 #elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__WASI)
@@ -141,7 +141,7 @@ Group::Group(const User& user) throw(GroupException) {
 #endif // flavor
 }
 
-String Group::getName() const throw(GroupException)
+String Group::getName() const
 {
   if (!isValid()) {
     return Literal("<unknown>");
@@ -194,7 +194,7 @@ String Group::getName() const throw(GroupException)
 #endif // flavor
 }
 
-Array<String> Group::getMembers() const throw(GroupException) {
+Array<String> Group::getMembers() const {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   Array<String> result;
 

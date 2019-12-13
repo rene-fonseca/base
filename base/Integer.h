@@ -54,7 +54,7 @@ public:
     @param string The string representation.
     @param flags The parsing flags.
   */
-  static int parse(const char* src, const char* end, unsigned int flags = FLAG_DEFAULT) throw(InvalidFormat);
+  static int parse(const char* src, const char* end, unsigned int flags = FLAG_DEFAULT);
 
   /**
     Returns the value of the integer string representation.
@@ -62,7 +62,7 @@ public:
     @param string The string representation.
     @param withoutSign Effectively prevents signs from being parsed. Default is to allow a single sign.
   */
-  static inline int parse(const String& string, unsigned int flags = FLAG_DEFAULT) throw(InvalidFormat)
+  static inline int parse(const String& string, unsigned int flags = FLAG_DEFAULT)
   {
     return parse(string.native(), string.native() + string.getLength(), flags);
   }
@@ -73,7 +73,7 @@ public:
     @param string The string representation.
     @param flags The parsing flags.
   */
-  static int parse(const wchar* src, const wchar* end, unsigned int flags = FLAG_DEFAULT) throw(InvalidFormat);
+  static int parse(const wchar* src, const wchar* end, unsigned int flags = FLAG_DEFAULT);
 
   /**
     Returns the value of the integer string representation.
@@ -81,7 +81,7 @@ public:
     @param string The string representation.
     @param flags The parsing flags.
   */
-  static int parse(const ucs4* src, const ucs4* end, unsigned int flags = FLAG_DEFAULT) throw(InvalidFormat);
+  static int parse(const ucs4* src, const ucs4* end, unsigned int flags = FLAG_DEFAULT);
 
   /**
     Returns the value of the integer string representation.
@@ -89,7 +89,7 @@ public:
     @param string The string representation.
     @param withoutSign Effectively prevents signs from being parsed. Default is to allow a single sign.
   */
-  static inline int parse(const WideString& string, unsigned int flags = FLAG_DEFAULT) throw(InvalidFormat)
+  static inline int parse(const WideString& string, unsigned int flags = FLAG_DEFAULT)
   {
     return parse(string.native(), string.native() + string.getLength(), flags);
   }

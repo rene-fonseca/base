@@ -42,7 +42,7 @@ public:
     @param name The fully qualified name.
     @param version The version of the interface.
   */
-  OrbSkeleton(const String& name, unsigned int version) throw(OrbException);
+  OrbSkeleton(const String& name, unsigned int version);
   
   /**
     Returns the fully qualified name of the skeleton.

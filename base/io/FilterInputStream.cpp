@@ -16,33 +16,33 @@
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 FilterInputStream::FilterInputStream(
-  InputStream& i) throw(BindException) : in(i) {
+  InputStream& i) : in(i) {
 }
 
-unsigned int FilterInputStream::available() const throw(IOException) {
+unsigned int FilterInputStream::available() const {
   return in.available();
 }
 
-void FilterInputStream::close() throw(IOException) {
+void FilterInputStream::close() {
   in.close();
 }
 
 unsigned int FilterInputStream::read(
-  uint8* buffer, unsigned int size, bool nonblocking) throw(IOException) {
+  uint8* buffer, unsigned int size, bool nonblocking) {
   return in.read(buffer, size, nonblocking);
 }
 
-unsigned int FilterInputStream::skip(unsigned int count) throw(IOException)
+unsigned int FilterInputStream::skip(unsigned int count)
 {
   return in.skip(count);
 }
 
-void FilterInputStream::wait() const throw(IOException)
+void FilterInputStream::wait() const
 {
   in.wait();
 }
 
-bool FilterInputStream::wait(unsigned int timeout) const throw(IOException)
+bool FilterInputStream::wait(unsigned int timeout) const
 {
   return in.wait(timeout);
 }

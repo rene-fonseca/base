@@ -34,7 +34,7 @@ InetEndPoint::InetEndPoint(
 }
 
 InetEndPoint::InetEndPoint(
-  const InetAddress& _address, const String& service) throw(ServiceNotFound)
+  const InetAddress& _address, const String& service)
   : address(_address)
 {
   try {
@@ -49,7 +49,7 @@ InetEndPoint::InetEndPoint(
 }
 
 InetEndPoint::InetEndPoint(
-  const String& host, const String& service) throw(ServiceNotFound)
+  const String& host, const String& service)
   : address(host)
 {
   try {

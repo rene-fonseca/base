@@ -252,7 +252,7 @@ static uint8* getStorage(MemorySize size) noexcept;
 static void garbageCollect() noexcept;
 #endif
 
-void Thread::nanosleep(unsigned int nanoseconds) throw(OutOfDomain)
+void Thread::nanosleep(unsigned int nanoseconds)
 {
   Profiler::WaitTask profile("sleep");
   
@@ -305,7 +305,7 @@ void Thread::nanosleep(unsigned int nanoseconds) throw(OutOfDomain)
 #endif // flavor
 }
 
-void Thread::microsleep(unsigned int microseconds) throw(OutOfDomain)
+void Thread::microsleep(unsigned int microseconds)
 {
   Profiler::WaitTask profile("sleep");
 
@@ -348,7 +348,7 @@ void Thread::microsleep(unsigned int microseconds) throw(OutOfDomain)
 #endif
 }
 
-void Thread::millisleep(unsigned int milliseconds) throw(OutOfDomain)
+void Thread::millisleep(unsigned int milliseconds)
 {
   Profiler::WaitTask profile("sleep");
 
@@ -391,7 +391,7 @@ void Thread::millisleep(unsigned int milliseconds) throw(OutOfDomain)
 #endif
 }
 
-void Thread::sleep(unsigned int seconds) throw(OutOfDomain)
+void Thread::sleep(unsigned int seconds)
 {
   Profiler::WaitTask profile("sleep");
 
@@ -536,7 +536,7 @@ Thread::Thread(Thread* _parent) noexcept
 #endif
 }
 
-Thread::Thread() throw(ResourceException)
+Thread::Thread()
   : runnable(this),
     terminated(false),
     state(NOTSTARTED),
@@ -546,7 +546,7 @@ Thread::Thread() throw(ResourceException)
   BASSERT(parent); // a parent must always exist
 }
 
-Thread::Thread(Runnable* _runnable) throw(NullPointer, ResourceException)
+Thread::Thread(Runnable* _runnable)
   : runnable(_runnable),
     terminated(false),
     state(NOTSTARTED),
@@ -691,7 +691,7 @@ Thread::Identifier Thread::getIdentifier() noexcept
 #  define ABOVE_NORMAL_PRIORITY_CLASS ((DWORD)0x00008000)
 #endif
 
-int Thread::getPriority() throw(ThreadException)
+int Thread::getPriority()
 {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   // see http://msdn.microsoft.com/library/en-us/dllproc/prothred_75ir.asp
@@ -827,7 +827,7 @@ Thread::Times Thread::getTimes() noexcept
 #endif // flavor
 }
 
-bool Thread::join() const throw(ThreadException)
+bool Thread::join() const
 {
   Profiler::WaitTask profile("Thread::join()");
 
@@ -843,7 +843,7 @@ void Thread::run()
 {
 }
 
-void Thread::start() throw(ThreadException)
+void Thread::start()
 {
   unsigned int simpleId = 0;
   if (auto tlc = threadLocalContext.getKey()) {

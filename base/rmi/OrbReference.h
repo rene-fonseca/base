@@ -37,7 +37,7 @@ public:
   /**
     Initializes the object reference.
   */
-  inline OrbReference(uint64 _id) throw(OrbException) : id(_id)
+  inline OrbReference(uint64 _id) : id(_id)
   {
   }
   

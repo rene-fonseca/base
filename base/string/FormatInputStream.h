@@ -54,13 +54,13 @@ protected:
     Fills the internal buffer with bytes from the input stream. Removes any
     characters already in the buffer.
   */
-  bool overwriteFromSource() throw(IOException);
+  bool overwriteFromSource();
 
   /**
     Fills the internal buffer with bytes from the input stream without removing
     any characters already in the buffer.
   */
-  bool appendFromSource() throw(IOException);
+  bool appendFromSource();
 public:
 
   /**
@@ -68,7 +68,7 @@ public:
 
     @param in The input stream.
   */
-  FormatInputStream(InputStream& in) throw(BindException);
+  FormatInputStream(InputStream& in);
 
   /**
     Returns the number of bytes that can be read or skipped over without
@@ -76,12 +76,12 @@ public:
 
     @return Available number of bytes in stream.
   */
-  unsigned int available() const throw(IOException);
+  unsigned int available() const;
 
   /**
     Reads one character from the stream.
   */
-  inline char getCharacter() throw(IOException)
+  inline char getCharacter()
   {
     if (tail == head) {
       bassert(overwriteFromSource(), EndOfFile());
@@ -92,12 +92,12 @@ public:
   /**
     Reads one word from the stream.
   */
-  String getWord() throw(IOException);
+  String getWord();
 
   /**
     Reads one line from the stream.
   */
-  String getLine() throw(IOException);
+  String getLine();
 
   /**
     Fills the specified buffer with bytes from the stream. Blocks if asked to
@@ -112,7 +112,7 @@ public:
   unsigned int read(
     uint8* buffer,
     unsigned int size,
-    bool nonblocking = false) throw(IOException);
+    bool nonblocking = false);
 
   /**
     Destroys the format input stream.
@@ -130,20 +130,20 @@ extern _COM_AZURE_DEV__BASE__API FormatInputStream fin;
   Reads one character from the format input stream.
 */
 _COM_AZURE_DEV__BASE__API FormatInputStream& operator>>(
-  FormatInputStream& stream, char& value) throw(IOException);
+  FormatInputStream& stream, char& value);
 
 /**
   Reads one line from the format input stream.
 */
 _COM_AZURE_DEV__BASE__API FormatInputStream& operator>>(
-  FormatInputStream& stream, String& value) throw(IOException);
+  FormatInputStream& stream, String& value);
 
 /**
   Reads unsigned int from the format input stream.
 */
 _COM_AZURE_DEV__BASE__API FormatInputStream& operator>>(
   FormatInputStream& stream,
-  unsigned int& value) throw(InvalidFormat, IOException);
+  unsigned int& value);
 
 //_COM_AZURE_DEV__BASE__API FormatInputStream& operator>>(FormatInputStream& stream, short int& value);
 //_COM_AZURE_DEV__BASE__API FormatInputStream& operator>>(FormatInputStream& stream, unsigned short int& value);

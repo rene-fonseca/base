@@ -66,7 +66,7 @@ void* DebugDynamicMemory::allocate(MemorySize size) noexcept
   return user;
 }
 
-void DebugDynamicMemory::release(void* memory) throw(MemoryCorruption)
+void DebugDynamicMemory::release(void* memory)
 {
   if (!memory) {
     return;

@@ -68,7 +68,7 @@ public:
     
     @param holding The number of buffer currently held by requesting object.
   */
-  OrbBuffer* acquire(unsigned int holding) throw(OrbException);
+  OrbBuffer* acquire(unsigned int holding);
   
   /**
     Releases the specified buffers into the buffer pool.
@@ -122,7 +122,7 @@ public:
   /**
     Initializes the buffer list.
   */
-  inline BufferList(Reference<OrbBufferPool> _pool) throw(MemoryException)
+  inline BufferList(Reference<OrbBufferPool> _pool)
     : pool(_pool) {
     first = pool->acquire();
     last = first;
@@ -131,7 +131,7 @@ public:
   /**
     Acquires a new buffer from the pool.
   */
-  inline void acquire() throw(MemoryException) {
+  inline void acquire() {
     OrbBuffer* buffer = pool->acquire();
     last->setNext(buffer);
     last = buffer;

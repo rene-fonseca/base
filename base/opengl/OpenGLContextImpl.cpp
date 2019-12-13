@@ -27,7 +27,7 @@
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
-void OpenGLContextImpl::loadModule() throw(OpenGLException)
+void OpenGLContextImpl::loadModule()
 {
   // TAG: never release ui component?
   bassert(
@@ -54,11 +54,11 @@ void OpenGLContextImpl::loadModule() throw(OpenGLException)
   );
 }
 
-OpenGLContextImpl::OpenGLContextImpl() throw(OpenGLException)
+OpenGLContextImpl::OpenGLContextImpl()
 {
 }
 
-String OpenGLContextImpl::getGLClientVendor() const throw(OpenGLException)
+String OpenGLContextImpl::getGLClientVendor() const
 {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   return String(); // TAG: fixme
@@ -72,7 +72,7 @@ String OpenGLContextImpl::getGLClientVendor() const throw(OpenGLException)
 #endif // flavor
 }
 
-String OpenGLContextImpl::getGLClientRelease() const throw(OpenGLException)
+String OpenGLContextImpl::getGLClientRelease() const
 {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   return String(); // TAG: fixme
@@ -86,7 +86,7 @@ String OpenGLContextImpl::getGLClientRelease() const throw(OpenGLException)
 #endif // flavor
 }
 
-String OpenGLContextImpl::getGLClientExtensions() const throw(OpenGLException)
+String OpenGLContextImpl::getGLClientExtensions() const
 {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   return String(); // TAG: fixme
@@ -100,7 +100,7 @@ String OpenGLContextImpl::getGLClientExtensions() const throw(OpenGLException)
 #endif // flavor
 }
 
-String OpenGLContextImpl::getGLServerVendor() const throw(OpenGLException)
+String OpenGLContextImpl::getGLServerVendor() const
 {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   return String(); // TAG: fixme
@@ -116,7 +116,7 @@ String OpenGLContextImpl::getGLServerVendor() const throw(OpenGLException)
 #endif // flavor
 }
 
-String OpenGLContextImpl::getGLServerRelease() const throw(OpenGLException)
+String OpenGLContextImpl::getGLServerRelease() const
 {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   return String(); // TAG: fixme
@@ -132,7 +132,7 @@ String OpenGLContextImpl::getGLServerRelease() const throw(OpenGLException)
 #endif // flavor
 }
 
-String OpenGLContextImpl::getGLServerExtensions() const throw(OpenGLException)
+String OpenGLContextImpl::getGLServerExtensions() const
 {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   return String(); // TAG: fixme
@@ -148,7 +148,7 @@ String OpenGLContextImpl::getGLServerExtensions() const throw(OpenGLException)
 #endif // flavor
 }
 
-// bool OpenGLContextImpl::isDirect() const throw(OpenGLException)
+// bool OpenGLContextImpl::isDirect() const
 // {
 // #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
 //   return true; // TAG: unless pixmap
@@ -160,7 +160,7 @@ String OpenGLContextImpl::getGLServerExtensions() const throw(OpenGLException)
 // #endif // flavor
 // }
 
-bool OpenGLContextImpl::hasCurrent() const throw(OpenGLException)
+bool OpenGLContextImpl::hasCurrent() const
 {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   return native::GDI::wglGetCurrentContext() != 0;
@@ -169,7 +169,7 @@ bool OpenGLContextImpl::hasCurrent() const throw(OpenGLException)
 #endif // flavor
 }
 
-bool OpenGLContextImpl::isCurrent() const throw(OpenGLException)
+bool OpenGLContextImpl::isCurrent() const
 {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   return native::GDI::wglGetCurrentContext() == (HGLRC)renderingContextHandle;
@@ -179,7 +179,7 @@ bool OpenGLContextImpl::isCurrent() const throw(OpenGLException)
 #endif // flavor
 }
 
-void OpenGLContextImpl::makeCurrent() throw(OpenGLException)
+void OpenGLContextImpl::makeCurrent()
 {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   native::GDI::wglMakeCurrent(
@@ -235,7 +235,7 @@ void OpenGLContextImpl::deselect() noexcept
 #endif // flavor
 }
 
-void OpenGLContextImpl::swap() throw(OpenGLException)
+void OpenGLContextImpl::swap()
 {
   // Profiler::pushFrame("OpenGL::swap()");
   
@@ -253,7 +253,7 @@ void OpenGLContextImpl::swap() throw(OpenGLException)
 #endif // flavor
 }
 
-void OpenGLContextImpl::swap(int plane) throw(OutOfRange, OpenGLException)
+void OpenGLContextImpl::swap(int plane)
 {
   bassert(
     (plane >= -static_cast<int>(numberOfUnderlayPlanes)) &&

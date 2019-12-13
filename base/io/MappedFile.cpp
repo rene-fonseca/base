@@ -38,7 +38,7 @@
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
-MappedFile::MappedFileImpl::MappedFileImpl(const File& _file, const FileRegion& _region, bool _writeable) throw(FileException)
+MappedFile::MappedFileImpl::MappedFileImpl(const File& _file, const FileRegion& _region, bool _writeable)
   : file(_file), region(_region), writeable(_writeable)
 {
   bassert(region.getOffset() >= 0, FileException("Unable to map file region", this));
@@ -70,7 +70,7 @@ MappedFile::MappedFileImpl::MappedFileImpl(const File& _file, const FileRegion& 
   bytes = address;
 }
 
-void MappedFile::MappedFileImpl::synchronize() throw(FileException) {
+void MappedFile::MappedFileImpl::synchronize() {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   if (!::FlushViewOfFile(bytes, 0)) {
     throw FileException("Unable to flush.", this);
@@ -123,7 +123,7 @@ unsigned int MappedFile::getGranularity() noexcept
 #endif // flavor
 }
 
-MappedFile::MappedFile(const File& file, const FileRegion& region, bool writeable) throw(FileException)
+MappedFile::MappedFile(const File& file, const FileRegion& region, bool writeable)
   : map(0)
 {
   map = new MappedFileImpl(file, region, writeable);

@@ -80,7 +80,7 @@ public:
     /**
       Returns the value of the element.
     */
-    inline operator const Value&() const throw(InvalidKey)
+    inline operator const Value&() const
     {
       return hashTable.getValue(key);
     }
@@ -516,7 +516,7 @@ public:
     /**
       Returns the value associated with the specified key.
     */
-    inline Value& getValue(const Key& key) throw(InvalidKey)
+    inline Value& getValue(const Key& key)
     {
       const unsigned long hash = getHash(key);
       Node** bucket = getBuckets() + (hash & mask);
@@ -551,7 +551,7 @@ public:
     /**
       Returns the value associated with the specified key.
     */
-    inline const Value& getValue(const Key& key) const throw(InvalidKey)
+    inline const Value& getValue(const Key& key) const
     {
       const unsigned long hash = getHash(key);
       const Node* const* bucket = getBuckets() + (hash & mask);
@@ -622,7 +622,7 @@ public:
     /**
       Removes the element with the specified key from the table.
     */
-    inline void remove(const Key& key) throw(InvalidKey)
+    inline void remove(const Key& key)
     {
       const unsigned long hash = getHash(key);
       Node** bucket = getBuckets() + (hash & mask);
@@ -846,7 +846,7 @@ public:
   /**
     Initializes the hash table with the specified initial capacity.
   */
-  HashTable(MemorySize capacity) throw(OutOfDomain, MemoryException)
+  HashTable(MemorySize capacity)
     : impl(new HashTableImpl(capacity)) {
   }
 
@@ -934,7 +934,7 @@ public:
     
     @param key The key of the value.
   */
-  inline const Value& getValue(const Key& key) const throw(InvalidKey)
+  inline const Value& getValue(const Key& key) const
   {
     return impl->getValue(key);
   }
@@ -1002,7 +1002,7 @@ public:
   /**
     Returns the value associated with the specified key.
   */
-  inline const Value& operator[](const Key& key) const throw(InvalidKey)
+  inline const Value& operator[](const Key& key) const
   {
     return getValue(key);
   }
@@ -1020,7 +1020,7 @@ public:
 template<class KEY, class VALUE>
 FormatOutputStream& operator<<(
   FormatOutputStream& stream,
-  const HashTable<KEY, VALUE>& value) throw(IOException) {
+  const HashTable<KEY, VALUE>& value) {
   typename HashTable<KEY, VALUE>::ReadEnumerator enu = value.getReadEnumerator();
   stream << '{';
   while (enu.hasNext()) {

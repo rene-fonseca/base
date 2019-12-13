@@ -85,7 +85,7 @@ private:
   /**
     Acquires a buffer from the pool.
   */
-  inline OrbBuffer* acquireBuffer(unsigned int holding) throw(OrbException) {
+  inline OrbBuffer* acquireBuffer(unsigned int holding) {
     return pool.acquire(holding);
   }
   
@@ -107,7 +107,7 @@ private:
     // pool.release(buffers);
   }
   
-  inline void pushRequest(const uint8* buffer, unsigned int size) throw(OrbException)
+  inline void pushRequest(const uint8* buffer, unsigned int size)
   {
   }
   
@@ -117,7 +117,7 @@ private:
   inline void pushRequest(
     Reference<OrbConnection>& connection,
     const SingleLinkedNode<Allocator<uint8>*>* buffers,
-    unsigned int size) throw(OrbException) {
+    unsigned int size) {
 //     try {
 //       connection->push(buffers, size);
 //     } catch (IOException&) {
@@ -166,7 +166,7 @@ private:
     Returns a stub to the specified object.
   */
   OrbConnectionReference getConnectionReference(const String& identifier)
-    throw(InvalidFormat, OrbException);
+   ;
 public:
   
   /** The default thread concurrency level. */
@@ -188,7 +188,7 @@ public:
   /**
     Initializes the ORB.
   */
-  Orb() throw(OrbException);
+  Orb();
 
   /**
     Returns the current number of registered encoding schemes.
@@ -229,17 +229,17 @@ public:
   /**
     Returns the current registered encoding schemes.
   */
-  HashSet<String> getEncodings() const throw(MemoryException);
+  HashSet<String> getEncodings() const;
 
   /**
     Returns the current registered schemes.
   */
-  HashSet<String> getSchemes() const throw(MemoryException);
+  HashSet<String> getSchemes() const;
 
   /**
     Returns the identifiers of the registered factories.
   */
-  HashSet<String> getFactories() const throw(MemoryException);
+  HashSet<String> getFactories() const;
   
   /**
     Registers the specified ORB encoding. Flags may be use to register the
@@ -251,14 +251,14 @@ public:
   void registerEncoding(
     Reference<OrbEncoding> encoding,
     unsigned int flags = INCOMING|OUTGOING)
-    throw(InvalidFormat, OrbException, AmbiguousRegistration, MemoryException);
+   ;
   
   /**
     Registers the specified scheme.
   */
   void registerScheme(
     Reference<OrbScheme> scheme)
-    throw(InvalidFormat, AmbiguousRegistration, OrbException, MemoryException);
+   ;
 
   /**
     Registers a connection factory.
@@ -266,7 +266,7 @@ public:
     @param factory The connection factory.
   */
   void registerFactory(Reference<OrbConnectionFactory> factory)
-    throw(OrbException, MemoryException);
+   ;
 
   /**
     Opens a factory for the specified end point (e.g. tcpip://localhost:1234).
@@ -274,14 +274,14 @@ public:
     @param identifier The identifier of the end point.
   */
   void openFactory(const String& identifier)
-    throw(InvalidFormat, OrbException, MemoryException);
+   ;
 
   // TAG: temporary
   Reference<OrbEncoding> getDefaultEncoding() noexcept;
   
   template<class POLY>
   Reference<POLY> getObject(const String& identifier)
-    throw(InvalidFormat, OrbException) {
+    {
     // TAG: check type?
     OrbConnectionReference temp = getConnectionReference(identifier);
     // TAG: add stub to registry - stubs.add(identifier, stub);
@@ -299,12 +299,12 @@ public:
     Registers the specified skeleton.
   */
   inline void registerSkeleton(Reference<OrbSkeleton> skeleton)
-    throw(AmbiguousRegistration, MemoryException) {
+    {
     skeletons.add(skeleton);
   }
 
   inline void registerSkeleton(const String& name, Reference<base::OrbSkeleton> skeleton)
-    throw(AmbiguousRegistration, MemoryException) {
+    {
     skeletons.add(/*name,*/ skeleton);
   }
   
@@ -312,14 +312,14 @@ public:
     Unregisters the specified skeleton.
   */
   inline void unregisterSkeleton(Reference<OrbSkeleton> skeleton)
-    throw(InvalidKey) {
+    {
     skeletons.remove(skeleton);
   }
   
   /**
     Returns the identifier of the specified skeleton.
   */
-  String getIdentifier(void* skeleton) throw(OrbException);
+  String getIdentifier(void* skeleton);
 
   /**
     Invoked on incoming connection (new context).
@@ -334,7 +334,7 @@ public:
   */
   void onIncomingConnection(
     Reference<OrbConnectionFactory> factory,
-    Reference<OrbConnection> connection) throw(OrbException);
+    Reference<OrbConnection> connection);
   
   /**
     Invoked by connection on incoming data.
@@ -347,7 +347,7 @@ public:
   /**
     Enters the ORB message dispatch loop.
   */
-  void run() throw(OrbException);
+  void run();
 
   /**
     Terminates the message dispatch loop.

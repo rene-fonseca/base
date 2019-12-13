@@ -62,7 +62,7 @@ FileDescriptorInputStream& FileDescriptorInputStream::operator=(
   return *this;
 }
 
-unsigned int FileDescriptorInputStream::available() const throw(IOException)
+unsigned int FileDescriptorInputStream::available() const
 {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   DWORD bytesAvailable = 0;
@@ -108,7 +108,7 @@ unsigned int FileDescriptorInputStream::available() const throw(IOException)
 unsigned int FileDescriptorInputStream::read(
   uint8* buffer,
   unsigned int bytesToRead,
-  bool nonblocking) throw(IOException) {
+  bool nonblocking) {
   // TAG: currently always blocks
   bassert(!end, EndOfFile(this));
   unsigned int bytesRead = 0;
@@ -159,7 +159,7 @@ unsigned int FileDescriptorInputStream::read(
   return bytesRead;
 }
 
-unsigned int FileDescriptorInputStream::skip(unsigned int count) throw(IOException)
+unsigned int FileDescriptorInputStream::skip(unsigned int count)
 {
   Thread::UseThreadLocalBuffer _buffer;
   Allocator<uint8>& buffer = _buffer;
@@ -171,7 +171,7 @@ unsigned int FileDescriptorInputStream::skip(unsigned int count) throw(IOExcepti
   return bytesSkipped;
 }
 
-void FileDescriptorInputStream::setNonBlocking(bool value) throw(IOException) {
+void FileDescriptorInputStream::setNonBlocking(bool value) {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
 #else // unix
   int flags = getFlags();
@@ -187,7 +187,7 @@ void FileDescriptorInputStream::setNonBlocking(bool value) throw(IOException) {
 #endif // flavor
 }
 
-void FileDescriptorInputStream::wait() const throw(IOException) {
+void FileDescriptorInputStream::wait() const {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   DWORD result = ::WaitForSingleObject(fd->getHandle(), INFINITE);
   BASSERT(result == WAIT_OBJECT_0);
@@ -204,7 +204,7 @@ void FileDescriptorInputStream::wait() const throw(IOException) {
 }
 
 bool FileDescriptorInputStream::wait(
-  unsigned int timeout) const throw(IOException) {
+  unsigned int timeout) const {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   DWORD result = ::WaitForSingleObject(
     fd->getHandle(),

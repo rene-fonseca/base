@@ -59,14 +59,14 @@ public:
   /**
     Returns the fully qualified name of the object.
   */
-  inline String getOrbIdentifier() const throw(OrbException) {
+  inline String getOrbIdentifier() const {
     return channel->getOrbIdentifier(*this);
   }
   
   /**
     Returns the fully qualified name of the interface.
   */
-  inline String getOrbInterfaceIdentifier() const throw(OrbException) {
+  inline String getOrbInterfaceIdentifier() const {
     return channel->getOrbInterfaceIdentifier(*this);
   }
   

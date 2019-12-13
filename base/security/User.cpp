@@ -37,7 +37,7 @@
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
-User User::getCurrentUser() throw(UserException) {
+User User::getCurrentUser() {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   PSECURITY_DESCRIPTOR securityDescriptor = nullptr;
   PSID ownerSID = nullptr;
@@ -61,7 +61,7 @@ User User::getCurrentUser() throw(UserException) {
 #endif // flavor
 }
 
-User::User(unsigned long _id) throw(OutOfDomain) : integralId(_id) {
+User::User(unsigned long _id) : integralId(_id) {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   throw OutOfDomain("Invalid user id.", this);
 #else
@@ -72,7 +72,7 @@ User::User(unsigned long _id) throw(OutOfDomain) : integralId(_id) {
 #endif
 }
 
-User::User(const void* _id) throw(OutOfDomain) {
+User::User(const void* _id) {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   if (_id == 0) {
     integralId = INVALID;
@@ -113,7 +113,7 @@ bool User::operator==(const User& compare) const noexcept
 #endif
 }
 
-User::User(const String& name) throw(UserException)
+User::User(const String& name)
 {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   SID_NAME_USE sidType;
@@ -152,7 +152,7 @@ User::User(const String& name) throw(UserException)
 }
 
 // TAG: select full name domain/user with option: LOCAL prefix?, BUILTIN prefix (no)?
-String User::getName(bool fallback) const throw(UserException)
+String User::getName(bool fallback) const
 {
   if (!isValid()) {
     return Literal("<unknown>");
@@ -206,7 +206,7 @@ String User::getName(bool fallback) const throw(UserException)
 #endif // flavor
 }
 
-String User::getHomeFolder() const throw(UserException)
+String User::getHomeFolder() const
 {
   bassert(isValid(), UserException(this));
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
@@ -236,7 +236,7 @@ String User::getHomeFolder() const throw(UserException)
 #endif // flavor
 }
 
-bool User::isAdmin() const throw(UserException) {
+bool User::isAdmin() const {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   return false;
 //   BOOL isMember = FALSE;
@@ -256,7 +256,7 @@ bool User::isAdmin() const throw(UserException) {
 #endif // flavor
 }
 
-bool User::isMemberOf(const Group& group) throw(UserException) {
+bool User::isMemberOf(const Group& group) {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   throw NotImplemented(this);
 #else // unix
@@ -264,7 +264,7 @@ bool User::isMemberOf(const Group& group) throw(UserException) {
 #endif // flavor
 }
 
-Array<String> User::getGroups() throw(UserException) {
+Array<String> User::getGroups() {
   Array<String> result;
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   bassert(isValid(), UserException(this));

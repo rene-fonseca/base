@@ -159,7 +159,7 @@ _COM_AZURE_DEV__BASE__PACKED__END
   
 }; // end of LinuxRawIEEE1394Impl namespace
 
-LinuxRawIEEE1394::LinuxRawIEEE1394() throw(IEEE1394Exception) {
+LinuxRawIEEE1394::LinuxRawIEEE1394() {
   handle = ::open(
     FileSystem::toAbsolutePath(
       FileSystem::getFolder(FileSystem::DEVICES),
@@ -217,7 +217,7 @@ bool LinuxRawIEEE1394::hasBeenReset() const noexcept {
 void LinuxRawIEEE1394::acknowledgeReset() noexcept {
 }
 
-void LinuxRawIEEE1394::resetBus() throw(IEEE1394Exception) {
+void LinuxRawIEEE1394::resetBus() {
   LinuxRawIEEE1394Impl::Request request;
   clear(request);
   request.type = LinuxRawIEEE1394::REQUEST_RESET_BUS;
@@ -227,7 +227,7 @@ void LinuxRawIEEE1394::resetBus() throw(IEEE1394Exception) {
   // TAG: read new node ids
 }
 
-Array<EUI64> LinuxRawIEEE1394::getAdapters() throw(IEEE1394Exception) {
+Array<EUI64> LinuxRawIEEE1394::getAdapters() {
   LinuxRawIEEE1394Impl::Card cards[MAXIMUM_NUMBER_OF_ADAPTERS]; // TAG: reimpl if can detect # of adapters
   
   LinuxRawIEEE1394Impl::Request request;
@@ -277,12 +277,12 @@ Array<EUI64> LinuxRawIEEE1394::getAdapters() throw(IEEE1394Exception) {
   }
 }
 
-void LinuxRawIEEE1394::open() throw(IEEE1394Exception) {
+void LinuxRawIEEE1394::open() {
   unsigned char primaryAdapter[8] = {0xff, 0xff, 0xff, 0x00, 0x00, 0x00, 0x00, 0x01};
   open(EUI64(primaryAdapter));
 }
 
-void LinuxRawIEEE1394::open(const EUI64& adapter) throw(IEEE1394Exception) {
+void LinuxRawIEEE1394::open(const EUI64& adapter) {
   const unsigned char* id = adapter.getBytes();
   bassert(
     (id[0] == 0xff) && (id[1] == 0xff) && (id[2] == 0xff) && (id[3] == 0x00),
@@ -330,7 +330,7 @@ void LinuxRawIEEE1394::open(const EUI64& adapter) throw(IEEE1394Exception) {
   }
 }
 
-void LinuxRawIEEE1394::close() throw(IEEE1394Exception) {
+void LinuxRawIEEE1394::close() {
   // close port?
 }
 
@@ -342,15 +342,15 @@ unsigned int LinuxRawIEEE1394::getNumberOfNodes() const noexcept {
   return numberOfNodes;
 }
 
-unsigned int LinuxRawIEEE1394::getStatus() const throw(IEEE1394Exception) {
+unsigned int LinuxRawIEEE1394::getStatus() const {
   return status;
 }
 
-unsigned int LinuxRawIEEE1394::getFIFOSize() const throw(IEEE1394Exception) {
+unsigned int LinuxRawIEEE1394::getFIFOSize() const {
   return 1024;
 }
 
-void LinuxRawIEEE1394::dequeueResponse() throw(IEEE1394Exception) {
+void LinuxRawIEEE1394::dequeueResponse() {
   // TAG: need timeout support
   // TAG: must be MT-safe
   
@@ -441,7 +441,7 @@ void LinuxRawIEEE1394::read(
   unsigned short node,
   uint64 address,
   uint8* buffer,
-  unsigned int size) throw(IEEE1394Exception) {
+  unsigned int size) {
   bassert(size % sizeof(IEEE1394Impl::Quadlet) == 0, OutOfDomain(this));
   
   // TAG: use maximum async payload?
@@ -497,7 +497,7 @@ void LinuxRawIEEE1394::write(
   unsigned short node,
   uint64 address,
   const uint8* buffer,
-  unsigned int size) throw(IEEE1394Exception) {
+  unsigned int size) {
   LinuxRawIEEE1394Impl::RequestContext requestContext;
   requestContext.type = LinuxRawIEEE1394::REQUEST_ASYNC_WRITE;
   requestContext.dequeued = false;
@@ -524,7 +524,7 @@ void LinuxRawIEEE1394::write(
   status = requestContext.status;
 }
 
-unsigned int LinuxRawIEEE1394::read(unsigned short node, uint64 address, uint32* buffer, unsigned int size, uint32 value) throw(IEEE1394Exception) {
+unsigned int LinuxRawIEEE1394::read(unsigned short node, uint64 address, uint32* buffer, unsigned int size, uint32 value) {
   // bassert((node < IEEE1394::BROADCAST) && (address % sizeof(*buffer) == 0), OutOfDomain(this));
   LinuxRawIEEE1394Impl::RequestContext requestContext;
   requestContext.type = LinuxRawIEEE1394::REQUEST_ASYNC_READ;
@@ -578,7 +578,7 @@ unsigned int LinuxRawIEEE1394::read(unsigned short node, uint64 address, uint32*
   return hits;
 }
 
-uint32 LinuxRawIEEE1394::lock(unsigned short node, uint64 address, LockInstruction instruction, uint32 argument, uint32 data) throw(IEEE1394Exception) {
+uint32 LinuxRawIEEE1394::lock(unsigned short node, uint64 address, LockInstruction instruction, uint32 argument, uint32 data) {
   bassert((getPhysicalId(node) < IEEE1394Impl::BROADCAST) && (address % sizeof(Quadlet) == 0), IEEE1394Exception(this));
 
   LinuxRawIEEE1394Impl::RequestContext requestContext;
@@ -646,11 +646,11 @@ uint32 LinuxRawIEEE1394::lock(unsigned short node, uint64 address, LockInstructi
   return result;
 }
  
-IEEE1394Common::IsochronousReadChannel LinuxRawIEEE1394::getReadChannel(unsigned int maxPacketsPerRequest, uint64 subchannels) throw(IEEE1394Exception) {
+IEEE1394Common::IsochronousReadChannel LinuxRawIEEE1394::getReadChannel(unsigned int maxPacketsPerRequest, uint64 subchannels) {
   throw IEEE1394Exception("getReadChannel is not impl.", this);
 }
 
-IEEE1394Common::IsochronousWriteChannel LinuxRawIEEE1394::getWriteChannel(unsigned int maxPacketsPerRequest, uint64 subchannels) throw(IEEE1394Exception) {
+IEEE1394Common::IsochronousWriteChannel LinuxRawIEEE1394::getWriteChannel(unsigned int maxPacketsPerRequest, uint64 subchannels) {
   throw IEEE1394Exception("getWriteChannel is not impl.", this);
 }
 
@@ -658,7 +658,7 @@ LinuxRawIEEE1394::~LinuxRawIEEE1394() {
   ::close(handle);
 }
 
-void LinuxRawIEEE1394::registerFCPListener(FunctionControlProtocolListener* listener) throw(IEEE1394Exception) {
+void LinuxRawIEEE1394::registerFCPListener(FunctionControlProtocolListener* listener) {
   if (!listener) {
     throw NullPointer(this);
   }
@@ -687,7 +687,7 @@ void LinuxRawIEEE1394::registerFCPListener(FunctionControlProtocolListener* list
   }
 }
 
-void LinuxRawIEEE1394::unregisterFCPListener() throw(IEEE1394Exception) {
+void LinuxRawIEEE1394::unregisterFCPListener() {
   fcpListener = 0;
   
   LinuxRawIEEE1394Impl::RequestContext requestContext;
@@ -711,7 +711,7 @@ void LinuxRawIEEE1394::unregisterFCPListener() throw(IEEE1394Exception) {
   status = requestContext.status;
 }
 
-void LinuxRawIEEE1394::readIsochronous(unsigned int channel, unsigned int maximumPayload, IsochronousChannelListener* listener) throw(OutOfDomain, IEEE1394Exception) {
+void LinuxRawIEEE1394::readIsochronous(unsigned int channel, unsigned int maximumPayload, IsochronousChannelListener* listener) {
   bassert(listener, OutOfDomain(this)); // TAG: NullPointer
   bassert((maximumPayload > 0) && ((maximumPayload % sizeof(Quadlet)) == 0), OutOfDomain(this));
   bassert(channel < IEEE1394Impl::ISOCHRONOUS_CHANNELS, OutOfDomain(this));
@@ -784,7 +784,7 @@ void LinuxRawIEEE1394::readIsochronous(unsigned int channel, unsigned int maximu
   isochronousChannels[channel].busy = false;
 }
 
-bool LinuxRawIEEE1394::wait(unsigned int milliseconds) throw(OutOfDomain, IEEE1394Exception) {
+bool LinuxRawIEEE1394::wait(unsigned int milliseconds) {
   bassert(milliseconds <= 999999999, OutOfDomain(this));
   struct pollfd fd;
   fd.fd = handle;
@@ -797,11 +797,11 @@ bool LinuxRawIEEE1394::wait(unsigned int milliseconds) throw(OutOfDomain, IEEE13
   return result > 0;
 }
 
-void LinuxRawIEEE1394::dequeue() throw(IEEE1394Exception) {
+void LinuxRawIEEE1394::dequeue() {
   dequeueResponse();
 }
 
-void LinuxRawIEEE1394::writeIsochronous(const uint8* buffer, unsigned int size, unsigned int channel, unsigned int tag, unsigned int sy, Speed speed) throw(OutOfDomain, IEEE1394Exception) {
+void LinuxRawIEEE1394::writeIsochronous(const uint8* buffer, unsigned int size, unsigned int channel, unsigned int tag, unsigned int sy, Speed speed) {
   bassert((channel < IEEE1394Impl::ISOCHRONOUS_CHANNELS) && (speed <= IEEE1394Impl::S400), OutOfDomain(this));
   
   LinuxRawIEEE1394Impl::RequestContext requestContext;
@@ -829,11 +829,11 @@ void LinuxRawIEEE1394::writeIsochronous(const uint8* buffer, unsigned int size, 
 
 #else
 
-void LinuxRawIEEE1394::resetBus() throw(IEEE1394Exception) {
+void LinuxRawIEEE1394::resetBus() {
   throw NotSupported();
 }
 
-LinuxRawIEEE1394::LinuxRawIEEE1394() throw(IEEE1394Exception) {
+LinuxRawIEEE1394::LinuxRawIEEE1394() {
   throw NotSupported();
 }
 
@@ -845,19 +845,19 @@ void LinuxRawIEEE1394::acknowledgeReset() noexcept {
   throw NotSupported();
 }
 
-Array<EUI64> LinuxRawIEEE1394::getAdapters() throw(IEEE1394Exception) {
+Array<EUI64> LinuxRawIEEE1394::getAdapters() {
   throw NotSupported();
 }
 
-void LinuxRawIEEE1394::open() throw(IEEE1394Exception) {
+void LinuxRawIEEE1394::open() {
   throw NotSupported();
 }
 
-void LinuxRawIEEE1394::open(const EUI64& adapter) throw(IEEE1394Exception) {
+void LinuxRawIEEE1394::open(const EUI64& adapter) {
   throw NotSupported();
 }
 
-void LinuxRawIEEE1394::close() throw(IEEE1394Exception) {
+void LinuxRawIEEE1394::close() {
   throw NotSupported();
 }
 
@@ -869,11 +869,11 @@ unsigned int LinuxRawIEEE1394::getNumberOfNodes() const noexcept {
   throw NotSupported();
 }
 
-unsigned int LinuxRawIEEE1394::getStatus() const throw(IEEE1394Exception) {
+unsigned int LinuxRawIEEE1394::getStatus() const {
   throw NotSupported();
 }
 
-unsigned int LinuxRawIEEE1394::getFIFOSize() const throw(IEEE1394Exception) {
+unsigned int LinuxRawIEEE1394::getFIFOSize() const {
   throw NotSupported();
 }
 
@@ -881,7 +881,7 @@ void LinuxRawIEEE1394::read(
   unsigned short node,
   uint64 address,
   uint8* buffer,
-  unsigned int size) throw(IEEE1394Exception) {
+  unsigned int size) {
   throw NotSupported();
 }
 
@@ -889,7 +889,7 @@ void LinuxRawIEEE1394::write(
   unsigned short node,
   uint64 address,
   const uint8* buffer,
-  unsigned int size) throw(IEEE1394Exception) {
+  unsigned int size) {
   throw NotSupported();
 }
 
@@ -898,7 +898,7 @@ unsigned int LinuxRawIEEE1394::read(
   uint64 address,
   uint32* buffer,
   unsigned int size,
-  uint32 value) throw(IEEE1394Exception) {
+  uint32 value) {
   throw NotSupported();
 }
 
@@ -907,50 +907,50 @@ uint32 LinuxRawIEEE1394::lock(
   uint64 address,
   LockInstruction instruction,
   uint32 argument,
-  uint32 data) throw(IEEE1394Exception) {
+  uint32 data) {
   throw NotSupported();
 }
 
 LinuxRawIEEE1394::IsochronousReadChannel LinuxRawIEEE1394::getReadChannel(
   unsigned int maxPacketsPerRequest,
-  uint64 subchannels) throw(IEEE1394Exception) {
+  uint64 subchannels) {
   throw NotSupported();
 }
 
 LinuxRawIEEE1394::IsochronousWriteChannel LinuxRawIEEE1394::getWriteChannel(
   unsigned int maxPacketsPerRequest,
-  uint64 subchannels) throw(IEEE1394Exception) {
+  uint64 subchannels) {
   throw NotSupported();
 }
 
 LinuxRawIEEE1394::~LinuxRawIEEE1394() {
 }
 
-bool LinuxRawIEEE1394::wait(unsigned int milliseconds) throw(OutOfDomain, IEEE1394Exception) {
+bool LinuxRawIEEE1394::wait(unsigned int milliseconds) {
   throw NotSupported();
 }
 
-void LinuxRawIEEE1394::dequeueResponse() throw(IEEE1394Exception) {
+void LinuxRawIEEE1394::dequeueResponse() {
   throw NotSupported();
 }
 
-void LinuxRawIEEE1394::dequeue() throw(IEEE1394Exception) {
+void LinuxRawIEEE1394::dequeue() {
   throw NotSupported();
 }
 
-void LinuxRawIEEE1394::registerFCPListener(FunctionControlProtocolListener* listener) throw(IEEE1394Exception) {
+void LinuxRawIEEE1394::registerFCPListener(FunctionControlProtocolListener* listener) {
   throw NotSupported();
 }
 
-void LinuxRawIEEE1394::unregisterFCPListener() throw(IEEE1394Exception) {
+void LinuxRawIEEE1394::unregisterFCPListener() {
   throw NotSupported();
 }
 
-void LinuxRawIEEE1394::readIsochronous(unsigned int channel, unsigned int maximumPayload, IsochronousChannelListener* listener) throw(OutOfDomain, IEEE1394Exception) {
+void LinuxRawIEEE1394::readIsochronous(unsigned int channel, unsigned int maximumPayload, IsochronousChannelListener* listener) {
   throw NotSupported();
 }
 
-void LinuxRawIEEE1394::writeIsochronous(const uint8* buffer, unsigned int size, unsigned int channel, unsigned int tag, unsigned int sy, Speed speed) throw(OutOfDomain, IEEE1394Exception) {
+void LinuxRawIEEE1394::writeIsochronous(const uint8* buffer, unsigned int size, unsigned int channel, unsigned int tag, unsigned int sy, Speed speed) {
   throw NotSupported();
 }
 

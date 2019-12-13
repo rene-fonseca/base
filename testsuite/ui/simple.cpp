@@ -38,7 +38,7 @@ public:
       const String& title,
       const Position& position,
       const Dimension& dimension,
-      unsigned int flags) throw(UserInterfaceException)
+      unsigned int flags)
       : Window(position, dimension, flags) {
       setTitle(title);
       setIconTitle(title);

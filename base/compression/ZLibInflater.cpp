@@ -77,7 +77,7 @@ namespace internal {
   extern "C" int inflateEnd(ZLibInflater::Context* stream);
 };
 
-ZLibInflater::ZLibInflater() throw(MemoryException)
+ZLibInflater::ZLibInflater()
   : buffer(BUFFER_SIZE), availableBytes(0), state(RUNNING)
 {
 #if (defined(_COM_AZURE_DEV__BASE__USE_ZLIB))
@@ -100,7 +100,7 @@ ZLibInflater::ZLibInflater() throw(MemoryException)
 #endif
 }
 
-MemorySize ZLibInflater::push(const uint8* buffer, MemorySize _size) throw(IOException)
+MemorySize ZLibInflater::push(const uint8* buffer, MemorySize _size)
 {
   if (_size > 0xffffffff) {
     throw IOException(this);
@@ -135,7 +135,7 @@ MemorySize ZLibInflater::push(const uint8* buffer, MemorySize _size) throw(IOExc
 #endif
 }
 
-void ZLibInflater::pushEnd() throw(IOException)
+void ZLibInflater::pushEnd()
 {
 #if (defined(_COM_AZURE_DEV__BASE__USE_ZLIB))
   if (state != ENDED) {
@@ -147,7 +147,7 @@ void ZLibInflater::pushEnd() throw(IOException)
 #endif
 }
 
-MemorySize ZLibInflater::pull(uint8* buffer, MemorySize _size) throw(IOException)
+MemorySize ZLibInflater::pull(uint8* buffer, MemorySize _size)
 {
   if (_size > 0xffffffff) {
     throw IOException(this);

@@ -135,12 +135,12 @@ public:
       return *this;
     }
 
-    inline operator Value&() throw(InvalidKey)
+    inline operator Value&()
     {
       return map.getValue(key);
     }
 
-    inline operator const Value&() const throw(InvalidKey)
+    inline operator const Value&() const
     {
       return map.getValue(key);
     }
@@ -287,7 +287,7 @@ public:
 
     @param key The key of the value.
   */
-  Value& getValue(const Key& key) throw(InvalidKey)
+  Value& getValue(const Key& key)
   {
     typename Tree::Node* node = elements.find(key);
     if (!node) {
@@ -303,7 +303,7 @@ public:
 
     @param key The key of the value.
   */
-  const Value& getValue(const Key& key) const throw(InvalidKey)
+  const Value& getValue(const Key& key) const
   {
     const typename Tree::Node* node = elements.find(key);
     if (!node) {
@@ -389,7 +389,7 @@ public:
     Removes the specified key and its associated value from this map. Raises
     InvalidKey if the key doesn't exist in this map.
   */
-  void remove(const Key& key) throw(InvalidKey)
+  void remove(const Key& key)
   {
     typename Tree::Node* node = elements.find(key);
     if (!node) {
@@ -444,7 +444,7 @@ public:
     Returns the value associated with the specified key when used as 'rvalue'.
     When used as 'lvalue' the key is associated with the specified value.
   */
-  inline Element operator[](const Key& key) throw(InvalidKey)
+  inline Element operator[](const Key& key)
   {
     return Element(*this, key);
   }
@@ -452,7 +452,7 @@ public:
   /**
     Returns the value associated with the specified key.
   */
-  inline Value& operator[](const Key& key) throw(InvalidKey)
+  inline Value& operator[](const Key& key)
   {
     return getValue(key);
   }
@@ -461,7 +461,7 @@ public:
   /**
     Returns the value associated with the specified key.
   */
-  inline const Value& operator[](const Key& key) const throw(InvalidKey)
+  inline const Value& operator[](const Key& key) const
   {
     return getValue(key);
   }

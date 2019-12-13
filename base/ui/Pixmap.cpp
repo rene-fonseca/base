@@ -50,7 +50,7 @@ void Pixmap::destroy() noexcept
   WindowImpl::destroy();
 }
 
-Pixmap::Pixmap(const Dimension& dimension, unsigned int flags) throw(UserInterfaceException) {
+Pixmap::Pixmap(const Dimension& dimension, unsigned int flags) {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   HDC pixmap = ::CreateCompatibleDC(0 /*::GetDCEx(0, 0, 0)*/);
   bassert(pixmap, UserInterfaceException("Unable to create pixmap", this));
@@ -84,7 +84,7 @@ Pixmap::Pixmap(const Dimension& dimension, unsigned int flags) throw(UserInterfa
 // #endif // flavor
 // }
 
-void Pixmap::encode(Format format, Encoding encoding, void* data) throw(UserInterfaceException) {
+void Pixmap::encode(Format format, Encoding encoding, void* data) {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   if ((format == Pixmap::RGB) && (encoding == Pixmap::RGB_32)) {
 //     BITMAPINFOHEADER info;

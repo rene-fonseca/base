@@ -15,12 +15,12 @@
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
-StreamSocket::StreamSocket() throw(NetworkException) {
+StreamSocket::StreamSocket() {
   create(STREAM);
 }
 
 StreamSocket::StreamSocket(
-  const InetAddress& address, unsigned short port) throw(NetworkException)
+  const InetAddress& address, unsigned short port)
 {
   create(STREAM);
   connect(address, port);
@@ -30,14 +30,14 @@ StreamSocket::StreamSocket(
   const InetAddress& address,
   unsigned short port,
   InetAddress& localAddress,
-  unsigned short localPort) throw(NetworkException)
+  unsigned short localPort)
 {
   create(STREAM);
   bind(localAddress, localPort);
   connect(address, port);
 }
 
-StreamSocket::StreamSocket(ServerSocket& socket) throw(NetworkException)
+StreamSocket::StreamSocket(ServerSocket& socket)
 {
   accept(*Cast::pointer<Socket*>(&socket));
 }

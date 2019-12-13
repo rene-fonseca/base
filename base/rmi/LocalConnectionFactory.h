@@ -40,7 +40,7 @@ public:
     @param endPoint The identifier of the end point (e.g. local://).
   */
   LocalConnectionFactory(
-    const String& endPoint) throw(InvalidFormat, OrbException);
+    const String& endPoint);
   
   /**
     Returns the global identifier of the connection scheme (e.g.
@@ -58,12 +58,12 @@ public:
     protocol.
   */
   Reference<OrbStub> getObject(
-    const String& identifier) throw(InvalidFormat, OrbException);
+    const String& identifier);
   
   /**
     Invoked by the orb.
   */
-  void run(ProtectedPointer<Orb> orb) throw(OrbException);
+  void run(ProtectedPointer<Orb> orb);
   
   /**
     Destroys the connection factory.

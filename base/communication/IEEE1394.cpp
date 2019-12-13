@@ -51,11 +51,11 @@ String IEEE1394::getAsString(unsigned short nodeId) noexcept {
   return stream.getString();
 }
 
-IEEE1394::IEEE1394() throw(IEEE1394Exception) {
+IEEE1394::IEEE1394() {
   ieee1394impl = IEEE1394Impl::getDefault();
 }
 
-void IEEE1394::IsochronousRequestImpl::setOptions(unsigned int options) throw(IEEE1394Exception) {
+void IEEE1394::IsochronousRequestImpl::setOptions(unsigned int options) {
   bassert(
     status == READY,
     bindCause(IEEE1394Exception("Request not ready", this), IEEE1394::REQUEST_NOT_READY)
@@ -63,7 +63,7 @@ void IEEE1394::IsochronousRequestImpl::setOptions(unsigned int options) throw(IE
   this->options = options;
 }
 
-void IEEE1394::IsochronousRequestImpl::reset() throw(IEEE1394Exception) {
+void IEEE1394::IsochronousRequestImpl::reset() {
   bassert(
     status != PENDING,
     bindCause(IEEE1394Exception("Request is pending", this), IEEE1394::REQUEST_NOT_PENDING)
@@ -84,7 +84,7 @@ IEEE1394::IsochronousReadRequestImpl::IsochronousReadRequestImpl() noexcept
 }
 
 void IEEE1394::IsochronousReadRequestImpl::setSubchannel(
-  unsigned int subchannel) throw(OutOfDomain, IEEE1394Exception) {
+  unsigned int subchannel) {
   bassert(
     getStatus() == READY,
     bindCause(IEEE1394Exception("Request not ready", this), IEEE1394::REQUEST_NOT_READY)
@@ -96,7 +96,7 @@ void IEEE1394::IsochronousReadRequestImpl::setSubchannel(
 }
 
 void IEEE1394::IsochronousReadRequestImpl::setBuffer(
-  uint8* buffer, unsigned int size) throw(IEEE1394Exception) {
+  uint8* buffer, unsigned int size) {
   bassert(
     getStatus() == READY,
     bindCause(IEEE1394Exception("Request not ready", this), IEEE1394::REQUEST_NOT_READY)
@@ -105,7 +105,7 @@ void IEEE1394::IsochronousReadRequestImpl::setBuffer(
   this->bufferSize = size;
 }
 
-void IEEE1394::IsochronousReadFixedPacketsRequestImpl::setPayload(unsigned int payload) throw(OutOfDomain, IEEE1394Exception) {
+void IEEE1394::IsochronousReadFixedPacketsRequestImpl::setPayload(unsigned int payload) {
   bassert(
     getStatus() == READY,
     bindCause(IEEE1394Exception("Request not ready", this), IEEE1394::REQUEST_NOT_READY)
@@ -114,7 +114,7 @@ void IEEE1394::IsochronousReadFixedPacketsRequestImpl::setPayload(unsigned int p
   this->payload = payload;
 }
 
-void IEEE1394::IsochronousReadFixedDataRequestImpl::setNumberOfPackets(unsigned int packets) throw(OutOfDomain, IEEE1394Exception) {
+void IEEE1394::IsochronousReadFixedDataRequestImpl::setNumberOfPackets(unsigned int packets) {
   bassert(
     getStatus() == READY,
     bindCause(IEEE1394Exception("Request not ready", this), IEEE1394::REQUEST_NOT_READY)
@@ -122,7 +122,7 @@ void IEEE1394::IsochronousReadFixedDataRequestImpl::setNumberOfPackets(unsigned 
   this->numberOfPackets = packets;
 }
 
-void IEEE1394::IsochronousReadFixedDataRequestImpl::setHeaderSize(unsigned int size) throw(OutOfDomain, IEEE1394Exception) {
+void IEEE1394::IsochronousReadFixedDataRequestImpl::setHeaderSize(unsigned int size) {
   bassert(
     getStatus() == READY,
     bindCause(IEEE1394Exception("Request not ready", this), IEEE1394::REQUEST_NOT_READY)
@@ -131,7 +131,7 @@ void IEEE1394::IsochronousReadFixedDataRequestImpl::setHeaderSize(unsigned int s
   this->headerSize = size;
 }
 
-void IEEE1394::IsochronousReadFixedDataRequestImpl::setPayload(unsigned int payload) throw(OutOfDomain, IEEE1394Exception) {
+void IEEE1394::IsochronousReadFixedDataRequestImpl::setPayload(unsigned int payload) {
   bassert(
     getStatus() == READY,
     bindCause(IEEE1394Exception("Request not ready", this), IEEE1394::REQUEST_NOT_READY)
@@ -143,7 +143,7 @@ void IEEE1394::IsochronousReadFixedDataRequestImpl::setPayload(unsigned int payl
 void IEEE1394::IsochronousReadFixedDataRequestImpl::setBuffer(
   uint8* buffer,
   unsigned int size,
-  uint8* secondaryBuffer) throw(IEEE1394Exception) {
+  uint8* secondaryBuffer) {
   IsochronousReadRequestImpl::setBuffer(buffer, size);
   this->secondaryBuffer = secondaryBuffer;
 }
@@ -159,14 +159,14 @@ IEEE1394::IsochronousWriteRequestImpl::IsochronousWriteRequestImpl() noexcept
 void IEEE1394::IsochronousWriteRequestImpl::setBuffer(
   const uint8* buffer,
   unsigned int size,
-  unsigned int numberOfPackets) throw(IEEE1394Exception) {
+  unsigned int numberOfPackets) {
   bassert(getStatus() == READY, bindCause(IEEE1394Exception("Request not ready", this), IEEE1394::REQUEST_NOT_READY));
   this->buffer = buffer;
   this->bufferSize = size;
   this->numberOfPackets = numberOfPackets;
 }
 
-// void IEEE1394::IsochronousReadChannel::queue(IsochronousReadRequest& request) throw(IEEE1394Exception) {
+// void IEEE1394::IsochronousReadChannel::queue(IsochronousReadRequest& request) {
 //   Reference<IsochronousReadRequestImpl> request = request.getContext();
 //   void* requestImpl = context.getValue();
   
@@ -188,7 +188,7 @@ void IEEE1394::IsochronousWriteRequestImpl::setBuffer(
 //   throw IEEE1394Exception("Invalid request.", this);
 // }
 
-void IEEE1394::IsochronousWriteRequestImpl::setSpeed(unsigned int speed) throw(OutOfDomain, IEEE1394Exception) {
+void IEEE1394::IsochronousWriteRequestImpl::setSpeed(unsigned int speed) {
   bassert(
     getStatus() == READY,
     bindCause(IEEE1394Exception("Request not ready", this), IEEE1394::REQUEST_NOT_READY)
@@ -211,7 +211,7 @@ void IEEE1394::IsochronousWriteDataRequestImpl::setBuffer(
   const uint8* buffer,
   unsigned int size,
   unsigned int numberOfPackets,
-  const uint8* secondaryBuffer) throw(IEEE1394Exception) {
+  const uint8* secondaryBuffer) {
   IsochronousWriteRequestImpl::setBuffer(buffer, size, numberOfPackets);
   this->secondaryBuffer = secondaryBuffer;
 }
@@ -224,22 +224,22 @@ Array<EUI64> IEEE1394::getNodes() noexcept {
   return result;
 }
 
-void IEEE1394::open() throw(IEEE1394Exception) {
+void IEEE1394::open() {
   ieee1394impl->open();
   reload();
 }
 
-void IEEE1394::open(const EUI64& adapter) throw(IEEE1394Exception) {
+void IEEE1394::open(const EUI64& adapter) {
   ieee1394impl->open(adapter);
   reload();
 }
 
-EUI64 IEEE1394::getLocalIdentifier(unsigned int physicalId) const throw(OutOfDomain) {
+EUI64 IEEE1394::getLocalIdentifier(unsigned int physicalId) const {
   bassert(physicalId < numberOfNodes, OutOfDomain(this));
   return nodes[physicalId].guid;
 }
 
-IEEE1394::Standard IEEE1394::getCompliance(unsigned short node) throw(IEEE1394Exception) {
+IEEE1394::Standard IEEE1394::getCompliance(unsigned short node) {
   try {
     uint32 crc = getQuadlet(node, IEEE1394::CONFIGURATION_ROM);
     if ((crc >> 24) == 1) {
@@ -263,7 +263,7 @@ IEEE1394::Standard IEEE1394::getCompliance(unsigned short node) throw(IEEE1394Ex
   return IEEE1394::STANDARD_IEEE_1394A;
 }
 
-EUI64 IEEE1394::getIdentifier(unsigned short node) throw(IEEE1394Exception) {
+EUI64 IEEE1394::getIdentifier(unsigned short node) {
   uint32 crc = getQuadlet(node, IEEE1394::CONFIGURATION_ROM);
   bassert(
     (crc >> 24) >= 4,  // minimum size for general format
@@ -278,7 +278,7 @@ EUI64 IEEE1394::getIdentifier(unsigned short node) throw(IEEE1394Exception) {
 }
 
 
-unsigned int IEEE1394::getMaximumPayload(unsigned short node) throw(IEEE1394Exception) {
+unsigned int IEEE1394::getMaximumPayload(unsigned short node) {
   uint32 crc = getQuadlet(node, IEEE1394::CONFIGURATION_ROM);
   // minimum size for general format
   bassert(
@@ -295,7 +295,7 @@ unsigned int IEEE1394::getMaximumPayload(unsigned short node) throw(IEEE1394Exce
   return (max > 0) ? (1 << (max + 1)) : (1 << (1 + 1));
 }
 
-unsigned int IEEE1394::getCapabilities(unsigned short node) throw(IEEE1394Exception) {
+unsigned int IEEE1394::getCapabilities(unsigned short node) {
   unsigned int capabilities = 0;
   try {
     uint32 crc = getQuadlet(node, IEEE1394::CONFIGURATION_ROM);
@@ -316,7 +316,7 @@ unsigned int IEEE1394::getCapabilities(unsigned short node) throw(IEEE1394Except
   return capabilities;
 }
 
-unsigned int IEEE1394::getVendorId(unsigned short node) throw(IEEE1394Exception) {
+unsigned int IEEE1394::getVendorId(unsigned short node) {
   uint32 crc = getQuadlet(node, IEEE1394::CONFIGURATION_ROM);
   if ((crc >> 24) == 1) { // check for minimal ROM
     return crc & 0x00ffffff;
@@ -356,7 +356,7 @@ int IEEE1394::getPhysicalId(const EUI64& guid) noexcept {
   return -1; // not found
 }
 
-String IEEE1394::getDescription(unsigned short node) throw(IEEE1394Exception) {
+String IEEE1394::getDescription(unsigned short node) {
   uint32 crc = getQuadlet(node, IEEE1394::CONFIGURATION_ROM);
   // minimum size for general format
   bassert(
@@ -403,7 +403,7 @@ String IEEE1394::getDescription(unsigned short node) throw(IEEE1394Exception) {
   return String();
 }
 
-String IEEE1394::getKeywords(unsigned short node) throw(IEEE1394Exception) {
+String IEEE1394::getKeywords(unsigned short node) {
   // TAG: also search subdirectories?
   uint32 crc = getQuadlet(node, IEEE1394::CONFIGURATION_ROM);
   // minimum size for general format
@@ -460,7 +460,7 @@ String IEEE1394::getKeywords(unsigned short node) throw(IEEE1394Exception) {
   return String();
 }
 
-void IEEE1394::checkResetGeneration() throw(IEEE1394Exception) {
+void IEEE1394::checkResetGeneration() {
   // TAG: IEEE 1394 implementation should provide reset detection support
   try {
     if (!nodes[busManagerId].guid.isInvalid()) {
@@ -480,7 +480,7 @@ void IEEE1394::checkResetGeneration() throw(IEEE1394Exception) {
   reload(); // responsible for setting the new generation number
 }
 
-unsigned short IEEE1394::findRole(Role role, unsigned int busId) throw(OutOfDomain, IEEE1394Exception) {
+unsigned short IEEE1394::findRole(Role role, unsigned int busId) {
   bassert(busId <= IEEE1394::LOCAL_BUS, OutOfDomain(this));
   switch (role) {
   case IEEE1394::CYCLE_MASTER: // must/should be root eventually
@@ -574,7 +574,7 @@ unsigned short IEEE1394::findRole(Role role, unsigned int busId) throw(OutOfDoma
   return makeNodeId(IEEE1394::BROADCAST, busId); // not found/present
 }
 
-void IEEE1394::reload() throw(IEEE1394Exception)
+void IEEE1394::reload()
 {
   unsigned int attempts = 10;
   while (true) { // for (unsigned int attempts = 10; attempts > 0; attempts--) { // max wait is 10*100ms
@@ -695,7 +695,7 @@ void IEEE1394::reload() throw(IEEE1394Exception)
   }
 }
 
-void IEEE1394::loadTopologyMap() throw(IEEE1394Exception) {
+void IEEE1394::loadTopologyMap() {
   const unsigned short node = makeNodeId(busManagerId);
   
   uint32 crc = getQuadlet(node, IEEE1394::TOPOLOGY_MAP);
@@ -802,7 +802,7 @@ void IEEE1394::loadTopologyMap() throw(IEEE1394Exception) {
 }
 
 unsigned int IEEE1394::getCycleTime(
-  unsigned short node) throw(IEEE1394Exception) {
+  unsigned short node) {
   Quadlet quadlet;
   read(
     node,
@@ -816,7 +816,7 @@ unsigned int IEEE1394::getCycleTime(
 }
 
 unsigned int IEEE1394::getBusTime(
-  unsigned short node) throw(IEEE1394Exception) {
+  unsigned short node) {
   Quadlet quadlet;
   read(
     node,
@@ -827,7 +827,7 @@ unsigned int IEEE1394::getBusTime(
   return quadlet;
 }
 
-unsigned int IEEE1394::getAvailableBandwidth() throw(IEEE1394Exception) {
+unsigned int IEEE1394::getAvailableBandwidth() {
   Quadlet quadlet;
   read(
     makeNodeId(isochronousResourceManagerId),
@@ -838,7 +838,7 @@ unsigned int IEEE1394::getAvailableBandwidth() throw(IEEE1394Exception) {
   return quadlet & ((1 << 13) - 1);
 }
 
-uint64 IEEE1394::getAvailableIsochronousChannels() throw(IEEE1394Exception) {
+uint64 IEEE1394::getAvailableIsochronousChannels() {
   uint32 high = getQuadlet(
     makeNodeId(isochronousResourceManagerId),
     IEEE1394::CHANNELS_AVAILABLE_HI
@@ -850,7 +850,7 @@ uint64 IEEE1394::getAvailableIsochronousChannels() throw(IEEE1394Exception) {
   return Math::getBitReversal((static_cast<uint64>(high) << 32) | low);
 }
 
-void IEEE1394::loadSpeedMap() throw(IEEE1394Exception) {
+void IEEE1394::loadSpeedMap() {
   const unsigned short node = makeNodeId(busManagerId);
   uint32 crc = getQuadlet(node, IEEE1394::SPEED_MAP);
   if ((crc >> 16) != ((64 * 62 + 62 + 3)/4 + 1)) {
@@ -904,13 +904,13 @@ void IEEE1394::loadSpeedMap() throw(IEEE1394Exception) {
 }
 
 IEEE1394::Speed IEEE1394::getMaximumSpeed(
-  unsigned int physicalId) const throw(OutOfDomain) {
+  unsigned int physicalId) const {
   bassert(physicalId < numberOfNodes, OutOfDomain(this));
   return nodes[physicalId].speed; // physical speed
 }
 
 IEEE1394::Speed IEEE1394::getMaximumLinkSpeed(
-  unsigned int physicalId) const throw(OutOfDomain) {
+  unsigned int physicalId) const {
   bassert(physicalId < numberOfNodes, OutOfDomain(this));  
   return nodes[physicalId].linkSpeed;
 }
@@ -926,143 +926,143 @@ IEEE1394::Speed IEEE1394::getMaximumSpeed(uint64 nodes) const noexcept {
 }
 
 IEEE1394::Speed IEEE1394::getMaximumSpeedBetweenNodes(
-  unsigned int a, unsigned int b) const throw(OutOfDomain) {
+  unsigned int a, unsigned int b) const {
   bassert((a < numberOfNodes) && (b < numberOfNodes), OutOfDomain(this));
   return speedMap[a][b]; // or speedMap[b][a]
 }
 
-IEEE1394::Speed IEEE1394::getBroadcastSpeed() const throw(OutOfDomain) {
+IEEE1394::Speed IEEE1394::getBroadcastSpeed() const {
   bassert(localId < numberOfNodes, OutOfDomain(this));
   return speedMap[localId][IEEE1394::BROADCAST];
 }
 
 uint64 IEEE1394::IsochronousReadChannelImpl::getSubchannels(
-) throw(IEEE1394Exception) {
+) {
   throw IEEE1394Exception("Channel is closed.", this);
 }
 
-void IEEE1394::IsochronousReadChannelImpl::cancel() throw(IEEE1394Exception) {
+void IEEE1394::IsochronousReadChannelImpl::cancel() {
   throw IEEE1394Exception("Channel is closed.", this);
 }
 
-IEEE1394::IsochronousReadPacketsRequest IEEE1394::IsochronousReadChannelImpl::getReadPacketsRequest() const throw(IEEE1394Exception) {
+IEEE1394::IsochronousReadPacketsRequest IEEE1394::IsochronousReadChannelImpl::getReadPacketsRequest() const {
   throw IEEE1394Exception("Channel is closed.", this);
 }
 
 IEEE1394::IsochronousReadFixedPacketsRequest
   IEEE1394::IsochronousReadChannelImpl::getReadFixedPacketsRequest(
-  ) const throw(IEEE1394Exception) {
+  ) const {
   throw IEEE1394Exception("Channel is closed.", this);
 }
 
 IEEE1394::IsochronousReadFixedDataRequest
   IEEE1394::IsochronousReadChannelImpl::getReadFixedDataRequest(
-  ) const throw(IEEE1394Exception) {
+  ) const {
   throw IEEE1394Exception("Channel is closed.", this);
 }
 
 void IEEE1394::IsochronousReadChannelImpl::queue(
-  IsochronousReadRequest& request) throw(IEEE1394Exception) {
+  IsochronousReadRequest& request) {
   throw IEEE1394Exception("Channel is closed.", this);
 }
 
 void IEEE1394::IsochronousReadChannelImpl::queue(
-  IsochronousReadPacketsRequest& request) throw(IEEE1394Exception) {
+  IsochronousReadPacketsRequest& request) {
   throw IEEE1394Exception("Channel is closed.", this);
 }
 
 void IEEE1394::IsochronousReadChannelImpl::queue(
-  IsochronousReadFixedPacketsRequest& request) throw(IEEE1394Exception) {
+  IsochronousReadFixedPacketsRequest& request) {
   throw IEEE1394Exception("Channel is closed.", this);
 }
 
 void IEEE1394::IsochronousReadChannelImpl::queue(
-  IsochronousReadFixedDataRequest& request) throw(IEEE1394Exception) {
+  IsochronousReadFixedDataRequest& request) {
   throw IEEE1394Exception("Channel is closed.", this);
 }
 
 void IEEE1394::IsochronousReadChannelImpl::queue(
-  Allocator<IsochronousReadRequest>& request) throw(IEEE1394Exception) {
+  Allocator<IsochronousReadRequest>& request) {
   throw IEEE1394Exception("Channel is closed.", this);
 }
 
 IEEE1394::IsochronousReadRequest
-  IEEE1394::IsochronousReadChannelImpl::dequeue() throw(IEEE1394Exception) {
+  IEEE1394::IsochronousReadChannelImpl::dequeue() {
   throw IEEE1394Exception("Channel is closed.", this);
 }
 
 unsigned int IEEE1394::IsochronousReadChannelImpl::dequeue(
   unsigned int requests,
-  unsigned int microseconds) throw(OutOfDomain, IEEE1394Exception) {
+  unsigned int microseconds) {
   bassert(microseconds <= 999999999, OutOfDomain(this));
   throw IEEE1394Exception("Channel is closed.", this);
 }
 
 bool IEEE1394::IsochronousReadChannelImpl::wait(
-  unsigned int microseconds) throw(OutOfDomain, IEEE1394Exception) {
+  unsigned int microseconds) {
   bassert(microseconds <= 999999999, OutOfDomain(this));
   throw IEEE1394Exception("Channel is closed.", this);
 }
 
 uint64 IEEE1394::IsochronousWriteChannelImpl::getSubchannels(
-) throw(IEEE1394Exception) {
+) {
   throw IEEE1394Exception("Channel is closed.", this);
 }
 
-void IEEE1394::IsochronousWriteChannelImpl::cancel() throw(IEEE1394Exception) {
+void IEEE1394::IsochronousWriteChannelImpl::cancel() {
   throw IEEE1394Exception("Channel is closed.", this);
 }
 
 IEEE1394::IsochronousWritePacketsRequest
   IEEE1394::IsochronousWriteChannelImpl::getWritePacketsRequest(
-  ) const throw(IEEE1394Exception) {
+  ) const {
   throw IEEE1394Exception("Channel is closed.", this);
 }
 
 IEEE1394::IsochronousWriteFixedPacketsRequest
   IEEE1394::IsochronousWriteChannelImpl::getWriteFixedPacketsRequest(
-  ) const throw(IEEE1394Exception) {
+  ) const {
   throw IEEE1394Exception("Channel is closed.", this);
 }
 
 IEEE1394::IsochronousWriteDataRequest
   IEEE1394::IsochronousWriteChannelImpl::getWriteDataRequest(
-  ) const throw(IEEE1394Exception) {
+  ) const {
   throw IEEE1394Exception("Channel is closed.", this);
 }
 
 void IEEE1394::IsochronousWriteChannelImpl::queue(
-  IsochronousWriteRequest& request) throw(IEEE1394Exception) {
+  IsochronousWriteRequest& request) {
   throw IEEE1394Exception("Channel is closed.", this);
 }
 
 void IEEE1394::IsochronousWriteChannelImpl::queue(
-  IsochronousWritePacketsRequest& request) throw(IEEE1394Exception) {
+  IsochronousWritePacketsRequest& request) {
   throw IEEE1394Exception("Channel is closed.", this);
 }
 
 void IEEE1394::IsochronousWriteChannelImpl::queue(
-  IsochronousWriteFixedPacketsRequest& request) throw(IEEE1394Exception) {
+  IsochronousWriteFixedPacketsRequest& request) {
   throw IEEE1394Exception("Channel is closed.", this);
 }
 
 void IEEE1394::IsochronousWriteChannelImpl::queue(
-  IsochronousWriteDataRequest& request) throw(IEEE1394Exception) {
+  IsochronousWriteDataRequest& request) {
   throw IEEE1394Exception("Channel is closed.", this);
 }
 
 void IEEE1394::IsochronousWriteChannelImpl::queue(
-  Allocator<IsochronousWriteRequest>& request) throw(IEEE1394Exception) {
+  Allocator<IsochronousWriteRequest>& request) {
   throw IEEE1394Exception("Channel is closed.", this);
 }
 
 IEEE1394::IsochronousWriteRequest
-  IEEE1394::IsochronousWriteChannelImpl::dequeue() throw(IEEE1394Exception) {
+  IEEE1394::IsochronousWriteChannelImpl::dequeue() {
   throw IEEE1394Exception("Channel is closed.", this);
 }
     
 bool IEEE1394::IsochronousWriteChannelImpl::wait(
-  unsigned int microseconds) throw(OutOfDomain, IEEE1394Exception) {
+  unsigned int microseconds) {
   bassert(microseconds <= 999999999, OutOfDomain(this));
   throw IEEE1394Exception("Channel is closed.", this);
 }

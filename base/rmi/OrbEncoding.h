@@ -41,12 +41,12 @@ public:
   /**
     Returns a new decoder.
   */
-  virtual Reference<OrbDecoder> getDecoder() const throw(MemoryException) = 0;
+  virtual Reference<OrbDecoder> getDecoder() const = 0;
   
   /**
     Returns a new encoder.
   */
-  virtual Reference<OrbEncoder> getEncoder() const throw(MemoryException) = 0;
+  virtual Reference<OrbEncoder> getEncoder() const = 0;
   
   /**
     Returns the global identifier of the encoding scheme (e.g.

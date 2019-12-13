@@ -88,7 +88,7 @@ public:
       : handle(new GraphicsContextObjectHandle(_handle)) {
     }
 
-    inline void* getHandle() throw(UserInterfaceException) {
+    inline void* getHandle() {
       bassert(handle.isValid(), UserInterfaceException(this));
       return handle->getHandle();
     }
@@ -120,7 +120,7 @@ public:
 
       @param color The desired color.
     */
-    Pen(Color color) throw(UserInterfaceException);
+    Pen(Color color);
 
     /**
       Initializes pen with the specified style, color, and width.
@@ -132,7 +132,7 @@ public:
     Pen(
       PenStyle style,
       Color color,
-      unsigned int width = 1) throw(UserInterfaceException);
+      unsigned int width = 1);
   };
 
   /**
@@ -152,17 +152,17 @@ public:
     /**
       Initializes brush with system color.
     */
-    Brush(SystemColor color) throw(UserInterfaceException);
+    Brush(SystemColor color);
 
     /**
       Initializes brush from color.
     */
-    Brush(Color color) throw(UserInterfaceException);
+    Brush(Color color);
 
     /**
       Initializes brush from color.
     */
-    Brush(unsigned int color) throw(UserInterfaceException);
+    Brush(unsigned int color);
   };
   
   /** Font flag. */
@@ -198,9 +198,9 @@ public:
     /**
       Returns the available fonts.
     */
-    static Array<String> getFonts() throw(UserInterfaceException);
+    static Array<String> getFonts();
     
-    // static Information getInformation() throw(UserInterfaceException);
+    // static Information getInformation();
     
     /**
       Initializes the font.
@@ -213,7 +213,7 @@ public:
       const String& name,
       unsigned short height,
       FontWeight weight = NORMAL,
-      unsigned int flags = 0) throw(UserInterfaceException);
+      unsigned int flags = 0);
   };
   
   enum GraphicsFlag {
@@ -274,7 +274,7 @@ public:
   /**
     Initializes the graphics context.
   */
-  inline GraphicsContext() throw(UserInterfaceException) {
+  inline GraphicsContext() {
   }
 
   /**
@@ -283,7 +283,7 @@ public:
   inline GraphicsContext(
     const Position& position,
     const Dimension& dimension,
-    unsigned int flags) throw(UserInterfaceException)
+    unsigned int flags)
     : WindowImpl(position, dimension, flags) {
   }
 
@@ -297,7 +297,7 @@ public:
   /**
     Sets the pen.
   */
-  void setPen(Pen pen) throw(UserInterfaceException);
+  void setPen(Pen pen);
 
   /**
     Returns the current brush.
@@ -309,7 +309,7 @@ public:
   /**
     Sets the brush.
   */
-  void setBrush(Brush brush) throw(UserInterfaceException);
+  void setBrush(Brush brush);
 
   /**
     Returns the current font.
@@ -321,39 +321,39 @@ public:
   /**
     Sets the font.
   */
-  void setFont(Font font) throw(UserInterfaceException);
+  void setFont(Font font);
 
   /**
     Sets the background mode.
   */
-  void setBackgroundMode(bool transparent) throw(UserInterfaceException);
+  void setBackgroundMode(bool transparent);
 
   /**
     Sets the background color.
   */
-  void setBackgroundColor(Color color) throw(UserInterfaceException);
+  void setBackgroundColor(Color color);
 
   /**
     Sets the text color.
   */
-  void setTextColor(Color color) throw(UserInterfaceException);
+  void setTextColor(Color color);
 
   /**
     Sets the text alignment.
   */
-  void setTextAlignment(unsigned int alignment) throw(UserInterfaceException);
+  void setTextAlignment(unsigned int alignment);
   
   /**
     Clears the window.
   */
-  void clear() throw(UserInterfaceException);
+  void clear();
   
   /**
     Clear the specified region.
   */
   void clear(
     const Position& position,
-    const Dimension& dimension) throw(UserInterfaceException);
+    const Dimension& dimension);
   
   /**
     Draws a point.
@@ -365,14 +365,14 @@ public:
   void setPixel(
     const Position& position,
     Color color,
-    unsigned int flags = 0) throw(UserInterfaceException);
+    unsigned int flags = 0);
 
   /**
     Returns the color of the pixel at the specified position.
 
     @param position The position of the pixel.
   */
-  Color getPixel(const Position& position) throw(UserInterfaceException);
+  Color getPixel(const Position& position);
   
   /**
     Draws a point.
@@ -384,14 +384,14 @@ public:
   void setPixels(
     const Array<Position>& positions,
     Color color,
-    unsigned int flags = 0) throw(UserInterfaceException);
+    unsigned int flags = 0);
   
   /**
     Sets the current position.
 
     @param position The position.
   */
-  void moveTo(const Position& position) throw(UserInterfaceException);
+  void moveTo(const Position& position);
 
   /**
     Draws a line from the current position to the specified position using the
@@ -402,7 +402,7 @@ public:
   */
   void lineTo(
     const Position& position,
-    unsigned int flags = 0) throw(UserInterfaceException);
+    unsigned int flags = 0);
 
   /**
     Draws a line using the current pen.
@@ -414,7 +414,7 @@ public:
   void line(
     const Position& upperLeft,
     const Position& lowerRight,
-    unsigned int flags = 0) throw(UserInterfaceException);
+    unsigned int flags = 0);
   
   /**
     Draws an arc.
@@ -426,7 +426,7 @@ public:
     const Dimension& dimension,
     int start,
     int stop,
-    unsigned int flags = 0) throw(UserInterfaceException);
+    unsigned int flags = 0);
 
   /**
     Draws a rectangle using the current pen and brush.
@@ -438,7 +438,7 @@ public:
   void rectangle(
     const Position& upperLeft,
     const Position& b,
-    unsigned int flags = 0) throw(UserInterfaceException);
+    unsigned int flags = 0);
   
   /**
     Draws a rectangle using the current pen and brush.
@@ -450,7 +450,7 @@ public:
   void rectangle(
     const Position& position,
     const Dimension& dimension,
-    unsigned int flags = 0) throw(UserInterfaceException);
+    unsigned int flags = 0);
 
   /**
     Draws a rectangle with the specified brush.
@@ -464,7 +464,7 @@ public:
     const Position& upperLeft,
     const Position& lowerRight,
     Brush brush,
-    unsigned int flags = 0) throw(UserInterfaceException);
+    unsigned int flags = 0);
 
   /**
     Draws a rectangle with the specified brush.
@@ -478,7 +478,7 @@ public:
     const Position& position,
     const Dimension& dimension,
     Brush brush,
-    unsigned int flags = 0) throw(UserInterfaceException);
+    unsigned int flags = 0);
   
   /**
     Draws an ellipse specified by the bounding rectangle using the current pen
@@ -491,7 +491,7 @@ public:
   void ellipse(
     const Position& upperLeft,
     const Position& lowerRight,
-    unsigned int flags = 0) throw(UserInterfaceException);
+    unsigned int flags = 0);
 
   /**
     Draws an ellipse specified by the bounding rectangle using the current pen
@@ -504,7 +504,7 @@ public:
   void ellipse(
     const Position& position,
     const Dimension& dimension,
-    unsigned int flags = 0) throw(UserInterfaceException);
+    unsigned int flags = 0);
 
   /**
     Draws a circle specified by the bounding rectangle using the current pen
@@ -517,7 +517,7 @@ public:
   inline void circle(
     const Position& position,
     unsigned int dimension,
-    unsigned int flags = 0) throw(UserInterfaceException) {
+    unsigned int flags = 0) {
     ellipse(position, Dimension(dimension, dimension), flags);
   }
   
@@ -535,18 +535,18 @@ public:
     const Position& lowerRight,
     const Position& radialA,
     const Position& radialB,
-    unsigned int flags) throw(UserInterfaceException);
+    unsigned int flags);
 
   /**
     Returns the width of the specified character.
   */
-  unsigned int getWidthOf(char ch) const throw(UserInterfaceException);
+  unsigned int getWidthOf(char ch) const;
   
   /**
     Returns the dimension of the text.
   */
   Dimension getDimensionOf(
-    const String& text) const throw(UserInterfaceException);
+    const String& text) const;
 
   /**
     Draws text.
@@ -559,7 +559,7 @@ public:
     const Position& position,
     const Dimension& dimension,
     const String& text,
-    unsigned int flags = 0) throw(UserInterfaceException);
+    unsigned int flags = 0);
 
   /**
     Draws the specified image.
@@ -570,7 +570,7 @@ public:
   void putBitmap(
     const Position& position,
     const Dimension& dimension,
-    const Bitmap& bitmap) throw(UserInterfaceException);
+    const Bitmap& bitmap);
 
   /**
     Extracts the specified region as a bitmap.
@@ -580,7 +580,7 @@ public:
   */
   Bitmap getBitmap(
     const Position& position,
-    const Dimension& dimension) throw(UserInterfaceException);
+    const Dimension& dimension);
 
   /**
     Destroys the graphics context.

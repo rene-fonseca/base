@@ -133,7 +133,7 @@ public:
     @param group The primary group of the file.
     @param followLink Specifies whether or not to follow the link.
   */
-  static void changeOwner(const String& path, const Trustee& owner, const Trustee& group, bool followLink = true) throw(FileException);
+  static void changeOwner(const String& path, const Trustee& owner, const Trustee& group, bool followLink = true);
   
   /**
     Initializes an invalid file object (correspons to a closed file).
@@ -148,7 +148,7 @@ public:
     @param access The desired access to the files.
     @param option Additional options (i.e. CREATE, TRUNCATE, EXCLUSIVE).
   */
-  File(const String& path, Access access, unsigned int options) throw(AccessDenied, FileNotFound);
+  File(const String& path, Access access, unsigned int options);
 
   /**
     Initialize a new file object from other file object.
@@ -168,7 +168,7 @@ public:
   /**
     Closes the file.
   */
-  void close() throw(FileException);
+  void close();
 
   /**
     Returns true if the file object has been closed (or need has been opened).
@@ -178,32 +178,32 @@ public:
   /**
     Returns the Access Control List (ACL) of the file.
   */
-  AccessControlList getACL() const throw(FileException);
+  AccessControlList getACL() const;
 
   /**
     Returns the owner of the file.
   */
-  Trustee getOwner() const throw(FileException);
+  Trustee getOwner() const;
   
   /**
     Returns the group of the file.
   */
-  Trustee getGroup() const throw(FileException);
+  Trustee getGroup() const;
 
   /**
     Returns the permissions of the file.
   */
-  unsigned int getMode() const throw(FileException);
+  unsigned int getMode() const;
   
   /**
     Returns the size of the file in bytes.
   */
-  long long getSize() const throw(FileException);
+  long long getSize() const;
 
   /**
     Returns the current position.
   */
-  long long getPosition() const throw(FileException);
+  long long getPosition() const;
 
   /**
     Sets the position.
@@ -213,7 +213,7 @@ public:
     the file.
   */
   void setPosition(
-    long long position, Whence whence = BEGIN) throw(FileException);
+    long long position, Whence whence = BEGIN);
 
   /**
     Truncates the file to the specified size. The file must have been opened
@@ -221,12 +221,12 @@ public:
     size, the extra data is discarded. If the file was previously shorter, it
     is extended with zeros.
   */
-  void truncate(long long size) throw(FileException);
+  void truncate(long long size);
 
   /**
     Flushes any buffered data.
   */
-  void flush() throw(FileException);
+  void flush();
 
 
 
@@ -239,7 +239,7 @@ public:
     Default is true.
   */
   void lock(
-    const FileRegion& region, bool exclusive = true) throw(FileException);
+    const FileRegion& region, bool exclusive = true);
 
   /**
     Tries to lock specified region of the file. Exclusive locks require the
@@ -252,31 +252,31 @@ public:
     @return True if the lock was acquired.
   */
   bool tryLock(
-    const FileRegion& region, bool exclusive = true) throw(FileException);
+    const FileRegion& region, bool exclusive = true);
 
   /**
     Unlocks the specified region of the file.
 
     @param region The file region to be unlocked.
   */
-  void unlock(const FileRegion& region) throw(FileException);
+  void unlock(const FileRegion& region);
 
 
 
   /**
     Returns the last modification time of the file.
   */
-  Date getLastModification() throw(FileException);
+  Date getLastModification();
 
   /**
     Returns the last access time of the file.
   */
-  Date getLastAccess() throw(FileException);
+  Date getLastAccess();
 
   /**
     Returns the last chnage time of the file.
   */
-  Date getLastChange() throw(FileException);
+  Date getLastChange();
 
 
 
@@ -284,7 +284,7 @@ public:
     Returns the value of the specified file system variable.
   */
   unsigned long getVariable(
-    Variable variable) throw(FileException, NotSupported);
+    Variable variable);
   
 
 
@@ -299,7 +299,7 @@ public:
   unsigned int read(
     uint8* buffer,
     unsigned int size,
-    bool nonblocking = false) throw(FileException);
+    bool nonblocking = false);
 
 #if 0
   MemorySize read(
@@ -316,7 +316,7 @@ public:
     Read the specified type.
   */
   template<class TYPE>
-  inline unsigned int read(TYPE& buffer) throw(FileException)
+  inline unsigned int read(TYPE& buffer)
   {
     return read(Cast::getAddress(buffer), sizeof(TYPE));
   }
@@ -328,7 +328,7 @@ public:
   unsigned int write(
     const uint8* buffer,
     unsigned int size,
-    bool nonblocking = false) throw(FileException);
+    bool nonblocking = false);
 protected:
   
   OperatingSystem::Handle getHandle() const noexcept
@@ -340,7 +340,7 @@ public:
   /**
     Aborts any pending asynchronous operations (read as well as write).
   */
-  void asyncCancel() throw(AsynchronousException);
+  void asyncCancel();
   
   /**
     Requests and asynchronous read operation. Asynchronous IO is only supported
@@ -355,7 +355,7 @@ public:
     uint8* buffer,
     unsigned int bytesToRead,
     unsigned long long offset,
-    AsynchronousReadEventListener* listener) throw(AsynchronousException);
+    AsynchronousReadEventListener* listener);
 
   /**
     Requests and asynchronous write operation. Asynchronous IO is only
@@ -370,7 +370,7 @@ public:
     const uint8* buffer,
     unsigned int bytesToWrite,
     unsigned long long offset,
-    AsynchronousWriteEventListener* listener) throw(AsynchronousException);
+    AsynchronousWriteEventListener* listener);
 
   /**
     Destroys the file handle.

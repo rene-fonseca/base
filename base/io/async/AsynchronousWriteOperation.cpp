@@ -15,7 +15,7 @@
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
-AsynchronousWriteCompletion AsynchronousWriteOperation::getCompletion() const throw(NullPointer) {
+AsynchronousWriteCompletion AsynchronousWriteOperation::getCompletion() const {
   return context->getCompletion();
 }
 

@@ -58,7 +58,7 @@ public:
   /**
     Initializes identifier from string.
   */
-  EUI64(const String& value) throw(InvalidFormat);
+  EUI64(const String& value);
   
   /**
     Initializes identifier from other identifier.
@@ -88,7 +88,7 @@ public:
   /**
     Sets the 24 bit company id.
   */
-  void setCompanyId(unsigned int companyId) throw(OutOfDomain);
+  void setCompanyId(unsigned int companyId);
   
   /**
     Returns the extension identifier of this EUI-64 id.
@@ -98,7 +98,7 @@ public:
   /**
     Sets the extension identifier of this EUI-64 id.
   */
-  void setExtensionId(uint64 extensionId) throw(OutOfDomain);
+  void setExtensionId(uint64 extensionId);
   
   /**
     Returns true if the identifier is ff:ff:ff-00:00:00:00:00.

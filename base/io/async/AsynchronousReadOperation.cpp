@@ -16,7 +16,7 @@
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 AsynchronousReadCompletion
-  AsynchronousReadOperation::getCompletion() const throw(NullPointer) {
+  AsynchronousReadOperation::getCompletion() const {
   return context->getCompletion();
 }
 

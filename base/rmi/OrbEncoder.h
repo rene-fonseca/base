@@ -42,137 +42,137 @@ public:
   /**
     Encodes the specified reference.
   */
-  virtual void write(const OrbReference& value) throw(IOException) = 0;
+  virtual void write(const OrbReference& value) = 0;
   
   /**
     Encodes the specified string.
   */
-  virtual void write(const String& value) throw(IOException) = 0;
+  virtual void write(const String& value) = 0;
   
   /**
     Encodes the specified wide string.
   */
-  virtual void write(const WideString& value) throw(IOException) = 0;
+  virtual void write(const WideString& value) = 0;
   
   /**
     Encodes the elements of the specified array.
   */
-  virtual void write(const char* buffer, unsigned int size) throw(IOException) = 0;
+  virtual void write(const char* buffer, unsigned int size) = 0;
 
   /**
     Encodes the specified value.
   */
-  virtual void write(char value) throw(IOException) = 0;
+  virtual void write(char value) = 0;
   
   /**
     Encodes the elements of the specified array.
   */
-  virtual void write(const short* buffer, unsigned int size) throw(IOException) = 0;
+  virtual void write(const short* buffer, unsigned int size) = 0;
 
   /**
     Encodes the specified value.
   */
-  virtual void write(short value) throw(IOException) = 0;
+  virtual void write(short value) = 0;
   
   /**
     Encodes the elements of the specified array.
   */
-  virtual void write(const unsigned short* buffer, unsigned int size) throw(IOException) = 0;
+  virtual void write(const unsigned short* buffer, unsigned int size) = 0;
 
   /**
     Encodes the specified value.
   */
-  virtual void write(unsigned short value) throw(IOException) = 0;
+  virtual void write(unsigned short value) = 0;
   
   /**
     Encodes the elements of the specified array.
   */
-  virtual void write(const int* buffer, unsigned int size) throw(IOException) = 0;
+  virtual void write(const int* buffer, unsigned int size) = 0;
 
   /**
     Encodes the specified value.
   */
-  virtual void write(int value) throw(IOException) = 0;
+  virtual void write(int value) = 0;
   
   /**
     Encodes the elements of the specified array.
   */
-  virtual void write(const unsigned int* buffer, unsigned int size) throw(IOException) = 0;
+  virtual void write(const unsigned int* buffer, unsigned int size) = 0;
 
   /**
     Encodes the specified value.
   */
-  virtual void write(unsigned int value) throw(IOException) = 0;
+  virtual void write(unsigned int value) = 0;
   
   /**
     Encodes the elements of the specified array.
   */
-  virtual void write(const long* buffer, unsigned int size) throw(IOException) = 0;
+  virtual void write(const long* buffer, unsigned int size) = 0;
 
   /**
     Encodes the specified value.
   */
-  virtual void write(long value) throw(IOException) = 0;
+  virtual void write(long value) = 0;
   
   /**
     Encodes the elements of the specified array.
   */
-  virtual void write(const unsigned long* buffer, unsigned int size) throw(IOException) = 0;
+  virtual void write(const unsigned long* buffer, unsigned int size) = 0;
 
   /**
     Encodes the specified value.
   */
-  virtual void write(unsigned long value) throw(IOException) = 0;
+  virtual void write(unsigned long value) = 0;
   
   /**
     Encodes the elements of the specified array.
   */
-  virtual void write(const long long* buffer, unsigned int size) throw(IOException) = 0;
+  virtual void write(const long long* buffer, unsigned int size) = 0;
 
   /**
     Encodes the specified value.
   */
-  virtual void write(long long value) throw(IOException) = 0;
+  virtual void write(long long value) = 0;
   
   /**
     Encodes the elements of the specified array.
   */
-  virtual void write(const unsigned long long* buffer, unsigned int size) throw(IOException) = 0;
+  virtual void write(const unsigned long long* buffer, unsigned int size) = 0;
 
   /**
     Encodes the specified value.
   */
-  virtual void write(unsigned long long value) throw(IOException) = 0;
+  virtual void write(unsigned long long value) = 0;
   
   /**
     Encodes the elements of the specified array.
   */
-  virtual void write(const float* buffer, unsigned int size) throw(IOException) = 0;
+  virtual void write(const float* buffer, unsigned int size) = 0;
 
   /**
     Encodes the specified value.
   */
-  virtual void write(float value) throw(IOException) = 0;
+  virtual void write(float value) = 0;
   
   /**
     Encodes the elements of the specified array.
   */
-  virtual void write(const double* buffer, unsigned int size) throw(IOException) = 0;
+  virtual void write(const double* buffer, unsigned int size) = 0;
 
   /**
     Encodes the specified value.
   */
-  virtual void write(double value) throw(IOException) = 0;
+  virtual void write(double value) = 0;
   
   /**
     Encodes the elements of the specified array.
   */
-  virtual void write(const long double* buffer, unsigned int size) throw(IOException) = 0;
+  virtual void write(const long double* buffer, unsigned int size) = 0;
 
   /**
     Encodes the specified value.
   */
-  virtual void write(long double value) throw(IOException) = 0;
+  virtual void write(long double value) = 0;
 };
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

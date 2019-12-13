@@ -35,62 +35,62 @@ public:
 
     @param in Input stream to be filtered.
   */
-  explicit PrimitiveInputStream(InputStream& in) throw(BindException);
+  explicit PrimitiveInputStream(InputStream& in);
 
   /**
     Reads a boolean (8 bits) from the stream.
   */
-  bool readBoolean() throw(IOException);
+  bool readBoolean();
 
   /**
     Reads a byte/character (8 bits) from the stream.
   */
-  char readChar() throw(IOException);
+  char readChar();
 
   /**
     Reads a short integer (16 bits) from the stream.
   */
-  short readShortInteger() throw(IOException);
+  short readShortInteger();
 
   /**
     Reads an unsigned short integer (16 bits) from the stream.
   */
-  unsigned short readUnsignedShortInteger() throw(IOException);
+  unsigned short readUnsignedShortInteger();
 
   /**
     Reads an integer (32 bits) from the stream.
   */
-  int readInteger() throw(IOException);
+  int readInteger();
 
   /**
     Reads an unsigned integer (32 bits) from the stream.
   */
-  unsigned int readUnsignedInteger() throw(IOException);
+  unsigned int readUnsignedInteger();
 
   /**
     Reads a long integer (64 bits) from the stream.
   */
-  long long readLongInteger() throw(IOException);
+  long long readLongInteger();
 
   /**
     Reads an unsigned long integer (64 bits) from the stream.
   */
-  unsigned long long readUnsignedLongInteger() throw(IOException);
+  unsigned long long readUnsignedLongInteger();
 
   /**
     Reads a float (IEEE 32 bit format) from the stream.
   */
-  float readFloat() throw(IOException);
+  float readFloat();
 
   /**
     Reads a double (IEEE 64 bit format) from the stream.
   */
-  double readDouble() throw(IOException);
+  double readDouble();
 
   /**
     Reads a long double (Intel 386 style 80 bit format) from the stream.
   */
-  long double readLongDouble() throw(IOException);
+  long double readLongDouble();
 };
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

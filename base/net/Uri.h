@@ -81,17 +81,17 @@ protected:
   /**
     Validates the specified scheme and returns a slightly converted scheme to be used.
   */
-  static String validateScheme(const String& value) throw(UriException, MemoryException);
+  static String validateScheme(const String& value);
 
   /**
     Validates the specified user and returns it.
   */
-  static String validateUser(const String& str) throw(UriException);
+  static String validateUser(const String& str);
 
   /**
     Validates the specified password and returns it.
   */
-  static String validatePassword(const String& str) throw(UriException);
+  static String validatePassword(const String& str);
 
   /**
     Returns true if the string is a valid host specification.
@@ -106,13 +106,13 @@ protected:
   /**
     Parses the string as a uri.
   */
-  void parse(const String& uri, bool strict) throw(UriException, MemoryException);
+  void parse(const String& uri, bool strict);
 public:
 
   /**
     Initializes an empty uri.
   */
-  Uri() throw(MemoryException);
+  Uri();
 
   /**
     Initializes uri from a string representation.
@@ -120,7 +120,7 @@ public:
     @param uri The string representation of the uri.
     @param strict Specifies that unsafe characters are required to be encoded. Default is true.
   */
-  Uri(const String& uri, bool strict = true) throw(UriException, MemoryException);
+  Uri(const String& uri, bool strict = true);
 
   /**
     Initializes uri from separate string representations of relative and base uri.
@@ -129,7 +129,7 @@ public:
     @param base The base uri.
     @param strict Specifies that unsafe characters are required to be encoded. Default is true.
   */
-  Uri(const String& relative, const String& base, bool strict = true) throw(UriException, MemoryException);
+  Uri(const String& relative, const String& base, bool strict = true);
 
   /**
     Initializes uri from other uri.
@@ -174,7 +174,7 @@ public:
   /**
     Returns the path.
   */
-  virtual String getPath() const throw(MemoryException);
+  virtual String getPath() const;
 
   /**
     Returns the search part of the identifier.
@@ -184,7 +184,7 @@ public:
   /**
     Returns the entire identifier.
   */
-  String getUri() const throw(MemoryException);
+  String getUri() const;
 
   /**
     Sets the scheme (a.k.a. protocol). The scheme is composed of letters
@@ -193,32 +193,32 @@ public:
     into lower case. The exception URLException is thrown if the set of allowed
     characters is violated.
   */
-  virtual void setScheme(const String& value) throw(UriException, MemoryException);
+  virtual void setScheme(const String& value);
 
   /**
     Sets the user.
   */
-  void setUser(const String& value) throw(UriException, MemoryException);
+  void setUser(const String& value);
 
   /**
     Sets the password.
   */
-  void setPassword(const String& value) throw(UriException, MemoryException);
+  void setPassword(const String& value);
 
   /**
     Sets the host.
   */
-  void setHost(const String& value) throw(UriException);
+  void setHost(const String& value);
 
   /**
     Sets the port.
   */
-  void setPort(const String& value) throw(UriException);
+  void setPort(const String& value);
 
   /**
     Sets the path.
   */
-  virtual void setPath(const String& value) throw(UriException, MemoryException);
+  virtual void setPath(const String& value);
 };
 
 /**

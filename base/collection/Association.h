@@ -264,7 +264,7 @@ inline int compare(
 template<class KEY, class VALUE>
 FormatOutputStream& operator<<(
   FormatOutputStream& stream,
-  const Association<KEY, VALUE>& value) throw(IOException)
+  const Association<KEY, VALUE>& value)
 {
   return stream << '[' << value.getKey() << ']' << '=' << value.getValue();
 }

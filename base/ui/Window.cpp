@@ -47,7 +47,7 @@ void Window::destroy() noexcept
   WindowImpl::destroy();
 }
 
-Window::Window(unsigned int flags) throw(UserInterfaceException)
+Window::Window(unsigned int flags)
   : GraphicsContext() {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   drawableHandle = ::CreateWindowEx(
@@ -130,7 +130,7 @@ Window::Window(unsigned int flags) throw(UserInterfaceException)
 Window::Window(
   const Position& position,
   const Dimension& dimension,
-  unsigned int flags) throw(UserInterfaceException)
+  unsigned int flags)
   : GraphicsContext(position, dimension, flags) {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   RECT rect;

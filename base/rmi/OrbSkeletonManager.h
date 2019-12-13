@@ -48,7 +48,7 @@ public:
     @param name The fully qualified name.
     @param version The version of the interface.
   */
-  OrbSkeletonManager() throw(MemoryException);
+  OrbSkeletonManager();
   
   /**
     Returns the current number of registered skeletons.
@@ -79,7 +79,7 @@ public:
   /**
     Returns the skeleton with the specified fully qualified name.
   */
-  inline Reference<OrbSkeleton> getSkeleton(const String& name) const throw(InvalidKey)
+  inline Reference<OrbSkeleton> getSkeleton(const String& name) const
   {
     return names[name];
   }
@@ -87,7 +87,7 @@ public:
   /**
     Returns the skeleton with the specified local reference.
   */
-  inline Reference<OrbSkeleton> getSkeleton(const OrbReference& reference) const throw(InvalidKey)
+  inline Reference<OrbSkeleton> getSkeleton(const OrbReference& reference) const
   {
     return skeletons[reference];
   }
@@ -95,17 +95,17 @@ public:
   /**
     Registers the specified skeleton.
   */
-  void add(Reference<OrbSkeleton> skeleton) throw(MemoryException);
+  void add(Reference<OrbSkeleton> skeleton);
   
   /**
     Deregisters the specified skeleton.
   */
-  void remove(Reference<OrbSkeleton> skeleton) throw(InvalidKey);
+  void remove(Reference<OrbSkeleton> skeleton);
 
   /**
     Deregisters the specified skeleton.
   */
-  void remove(const String& name) throw(InvalidKey);
+  void remove(const String& name);
   
   /**
     Destroys the ORB skeleton manager.

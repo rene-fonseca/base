@@ -153,7 +153,7 @@ String AccessControlEntry::maskToString(AccessMask mask)
 
 FormatOutputStream& operator<<(
   FormatOutputStream& stream,
-  const AccessControlEntry& ace) throw(IOException)
+  const AccessControlEntry& ace)
 {
   StringOutputStream s;
   s << ace.getTrustee().getName() << ':';

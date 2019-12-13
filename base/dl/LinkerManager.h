@@ -53,21 +53,21 @@ public:
   /**
     Initializes the manager.
   */
-  LinkerManager() throw(SingletonException);
+  LinkerManager();
 
   /**
     Loads the specified module.
 
     @param module The path of the module to be loaded into address space.
   */
-  LinkerModule* load(const String& module) throw(LinkerException);
+  LinkerModule* load(const String& module);
 
   /**
     Unloads the specified module.
 
     @param module The linker module to be unloaded.
   */
-  void unload(LinkerModule* module) throw(InvalidKey, LinkerException);
+  void unload(LinkerModule* module);
 
   /**
     Returns an enumeration of all the modules of the manager.

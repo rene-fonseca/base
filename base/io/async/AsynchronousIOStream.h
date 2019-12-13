@@ -52,7 +52,7 @@ public:
     uint8* buffer,
     unsigned int bytesToRead,
     unsigned long long offset,
-    AsynchronousReadEventListener* listener) throw(AsynchronousException) = 0;
+    AsynchronousReadEventListener* listener) = 0;
 
   /**
     Requests and asynchronous write operation.
@@ -66,7 +66,7 @@ public:
     const uint8* buffer,
     unsigned int bytesToWrite,
     unsigned long long offset,
-    AsynchronousWriteEventListener* listener) throw(AsynchronousException) = 0;
+    AsynchronousWriteEventListener* listener) = 0;
 };
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

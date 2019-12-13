@@ -77,7 +77,7 @@ String Node::getName() const noexcept {
 #endif
 }
 
-String Node::getValue() const throw(DOMException) {
+String Node::getValue() const {
 #if defined(_COM_AZURE_DEV__BASE__XML_XMLSOFT_ORG)
   xmlNode* node = (xmlNode*)context;
   switch (node->type) {
@@ -106,7 +106,7 @@ String Node::getValue() const throw(DOMException) {
 #endif
 }
 
-void Node::setValue(const String& value) throw(DOMException) {
+void Node::setValue(const String& value) {
 #if defined(_COM_AZURE_DEV__BASE__XML_XMLSOFT_ORG)
   xmlNode* node = (xmlNode*)context;
   switch (node->type) {
@@ -392,7 +392,7 @@ public:
   }
 
   // TAG: use this while debugging
-  static inline void checkNode(const Node& _node) throw(DOMException) {
+  static inline void checkNode(const Node& _node) {
     const xmlNode* node = (const xmlNode*)_node.getContext();
     const xmlNode* parent = node->parent;
 
@@ -498,7 +498,7 @@ public:
 };
 #endif
 
-Node Node::appendChild(Node _child) throw(DOMException) {
+Node Node::appendChild(Node _child) {
 #if defined(_COM_AZURE_DEV__BASE__XML_XMLSOFT_ORG)
   xmlNode* node = (xmlNode*)context;
   xmlNode* child = (xmlNode*)_child.context;
@@ -553,7 +553,7 @@ Node Node::appendChild(Node _child) throw(DOMException) {
 #endif
 }
 
-Node Node::insertBefore(Node _newChild, Node _refChild) throw(DOMException) {
+Node Node::insertBefore(Node _newChild, Node _refChild) {
 #if defined(_COM_AZURE_DEV__BASE__XML_XMLSOFT_ORG)
 	xmlNode* node = (xmlNode*)context;
 	xmlNode* newChild = (xmlNode*)_newChild.context;
@@ -616,7 +616,7 @@ Node Node::insertBefore(Node _newChild, Node _refChild) throw(DOMException) {
 #endif
 }
 
-Node Node::removeChild(Node _oldChild) throw(DOMException) {
+Node Node::removeChild(Node _oldChild) {
 #if defined(_COM_AZURE_DEV__BASE__XML_XMLSOFT_ORG)
   xmlNode* node = (xmlNode*)context;
   xmlNode* oldChild = (xmlNode*)_oldChild.context;
@@ -628,7 +628,7 @@ Node Node::removeChild(Node _oldChild) throw(DOMException) {
 #endif
 }
 
-Node Node::replaceChild(Node newChild, Node oldChild) throw(DOMException) {
+Node Node::replaceChild(Node newChild, Node oldChild) {
   insertBefore(newChild, oldChild);
 	removeChild(oldChild);
   return oldChild;
@@ -676,7 +676,7 @@ String Node::getNamespaceURI() const noexcept {
 #endif
 }
 
-String Node::getPrefix() const throw(DOMException) {
+String Node::getPrefix() const {
 #if defined(_COM_AZURE_DEV__BASE__XML_XMLSOFT_ORG)
   xmlNode* node = (xmlNode*)context;
   return NativeString((const char*)node->ns->prefix);
@@ -692,7 +692,7 @@ String Node::getPrefix() const throw(DOMException) {
 #endif
 }
 
-void Node::setPrefix(const String& prefix) throw(DOMException) {
+void Node::setPrefix(const String& prefix) {
 #if defined(_COM_AZURE_DEV__BASE__XML_XMLSOFT_ORG)
   xmlNode* node = (xmlNode*)context;
 
@@ -783,7 +783,7 @@ bool Node::isAncestor(const Node& _child) const noexcept {
 }
 
 // TAG: should cloneNode() be const?
-Node Node::cloneNode(bool deep) throw(DOMException) {
+Node Node::cloneNode(bool deep) {
 #if defined(_COM_AZURE_DEV__BASE__XML_XMLSOFT_ORG)
   xmlNode* node = (xmlNode*)getContext();
   

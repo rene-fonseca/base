@@ -33,7 +33,7 @@ public:
       const String& title,
       const Position& position,
       const Dimension& dimension,
-      const Format& format) throw(UserInterfaceException)
+      const Format& format)
       : OpenGLContext(position, dimension, format) {
       setTitle(title);
       setIconTitle(title);

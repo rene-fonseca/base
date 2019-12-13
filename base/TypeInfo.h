@@ -39,7 +39,7 @@ public:
     
     @see getTypename
   */
-  static String demangleName(const char* mangled) throw(InvalidFormat);
+  static String demangleName(const char* mangled);
 
   /**
     Returns the demangled type name of the specified type. The result is the

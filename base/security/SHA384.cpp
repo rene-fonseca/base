@@ -94,7 +94,7 @@ void SHA384::pushBlock(const uint8* block) noexcept {
   messageDigest[7] += h;
 }
 
-MemorySize SHA384::push(const uint8* buffer, MemorySize size) throw(OutOfRange)
+MemorySize SHA384::push(const uint8* buffer, MemorySize size)
 {
   if (size > (MAXIMUM_SIZE - totalSize)) {
     throw OutOfRange();

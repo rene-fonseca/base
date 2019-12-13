@@ -53,7 +53,7 @@ bool AccessControlList::add(const AccessControlEntry& ace, bool replace) noexcep
   return false;
 }
 
-void AccessControlList::remove(unsigned int index) throw(OutOfRange)
+void AccessControlList::remove(unsigned int index)
 {
   acl.remove(index);
 }
@@ -85,7 +85,7 @@ bool AccessControlList::hasTrustee(const Trustee& trustee) const noexcept
   return false;
 }
 
-const AccessControlEntry& AccessControlList::getACE(const Trustee& trustee) const throw(InvalidKey)
+const AccessControlEntry& AccessControlList::getACE(const Trustee& trustee) const
 {
   Array<AccessControlEntry>::ReadEnumerator enu = acl.getReadEnumerator();
   while (enu.hasNext()) {

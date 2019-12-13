@@ -108,7 +108,7 @@ List<String> SerialPort::getPorts() noexcept
   return result;
 }
 
-SerialPort::SerialPort(const String& _name) throw(CommunicationsException)
+SerialPort::SerialPort(const String& _name)
   : name(_name)
 {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
@@ -130,7 +130,7 @@ String SerialPort::getName() const noexcept
   return name;
 }
 
-void SerialPort::close() throw(CommunicationsException)
+void SerialPort::close()
 {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   bassert(::CloseHandle(handle->getHandle()) != 0, CommunicationsException());
@@ -138,7 +138,7 @@ void SerialPort::close() throw(CommunicationsException)
 #endif // flavor
 }
 
-unsigned int SerialPort::getBaudRate() const throw(CommunicationsException)
+unsigned int SerialPort::getBaudRate() const
 {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   DCB dcb;
@@ -149,7 +149,7 @@ unsigned int SerialPort::getBaudRate() const throw(CommunicationsException)
 #endif // flavor
 }
 
-unsigned int SerialPort::getDataBits() const throw(CommunicationsException)
+unsigned int SerialPort::getDataBits() const
 {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   DCB dcb;
@@ -160,7 +160,7 @@ unsigned int SerialPort::getDataBits() const throw(CommunicationsException)
 #endif // flavor
 }
 
-unsigned int SerialPort::getParity() const throw(CommunicationsException)
+unsigned int SerialPort::getParity() const
 {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   DCB dcb;
@@ -184,7 +184,7 @@ unsigned int SerialPort::getParity() const throw(CommunicationsException)
 #endif // flavor
 }
 
-unsigned int SerialPort::getStopBits() const throw(CommunicationsException)
+unsigned int SerialPort::getStopBits() const
 {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   DCB dcb;
@@ -204,7 +204,7 @@ unsigned int SerialPort::getStopBits() const throw(CommunicationsException)
 #endif // flavor
 }
 
-bool SerialPort::isCD() const throw(CommunicationsException)
+bool SerialPort::isCD() const
 {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   return false; // TAG: fixme
@@ -213,7 +213,7 @@ bool SerialPort::isCD() const throw(CommunicationsException)
 #endif // flavor
 }
 
-bool SerialPort::isCTS() const throw(CommunicationsException)
+bool SerialPort::isCTS() const
 {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   DWORD state = 0;
@@ -224,7 +224,7 @@ bool SerialPort::isCTS() const throw(CommunicationsException)
 #endif // flavor
 }
 
-bool SerialPort::isDSR() const throw(CommunicationsException)
+bool SerialPort::isDSR() const
 {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   DWORD state = 0;
@@ -235,7 +235,7 @@ bool SerialPort::isDSR() const throw(CommunicationsException)
 #endif // flavor
 }
 
-bool SerialPort::isDTR() const throw(CommunicationsException)
+bool SerialPort::isDTR() const
 {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   return false; // TAG: fixme
@@ -244,7 +244,7 @@ bool SerialPort::isDTR() const throw(CommunicationsException)
 #endif // flavor
 }
 
-bool SerialPort::isRI() const throw(CommunicationsException)
+bool SerialPort::isRI() const
 {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   DWORD state = 0;
@@ -255,7 +255,7 @@ bool SerialPort::isRI() const throw(CommunicationsException)
 #endif // flavor
 }
 
-bool SerialPort::isRTS() const throw(CommunicationsException)
+bool SerialPort::isRTS() const
 {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   return false; // TAG: fixme
@@ -265,7 +265,7 @@ bool SerialPort::isRTS() const throw(CommunicationsException)
 }
 
 void SerialPort::setParameters(unsigned int baudRate, unsigned int dataBits, unsigned int parity,
-  unsigned int stopBits) throw(NotSupported, CommunicationsException)
+  unsigned int stopBits)
 {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   static const unsigned int mapParity[] = {EVENPARITY, MARKPARITY, NOPARITY, ODDPARITY, SPACEPARITY};
@@ -283,11 +283,11 @@ void SerialPort::setParameters(unsigned int baudRate, unsigned int dataBits, uns
 #endif // flavor
 }
 
-void SerialPort::setFlowControlMode(unsigned int flowMode) throw(CommunicationsException)
+void SerialPort::setFlowControlMode(unsigned int flowMode)
 {
 }
 
-void SerialPort::sendBreak(unsigned int milliseconds) throw(CommunicationsException)
+void SerialPort::sendBreak(unsigned int milliseconds)
 {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   ::SetCommBreak(handle->getHandle());
@@ -296,35 +296,35 @@ void SerialPort::sendBreak(unsigned int milliseconds) throw(CommunicationsExcept
 #endif // flavor
 }
 
-void SerialPort::setDTR(bool state) throw(CommunicationsException)
+void SerialPort::setDTR(bool state)
 {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   bassert(::EscapeCommFunction(handle->getHandle(), state ? (SETDTR) : (CLRDTR)) != 0, CommunicationsException());
 #endif // flavor
 }
 
-void SerialPort::setRTS(bool state) throw(CommunicationsException)
+void SerialPort::setRTS(bool state)
 {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   bassert(::EscapeCommFunction(handle->getHandle(), state ? (SETRTS) : (CLRRTS)) != 0, CommunicationsException());
 #endif // flavor
 }
 
-bool SerialPort::isReadTimeoutSupported() const throw(CommunicationsException)
+bool SerialPort::isReadTimeoutSupported() const
 {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
 #endif // flavor
   return true;
 }
 
-bool SerialPort::isWriteTimeoutSupported() const throw(CommunicationsException)
+bool SerialPort::isWriteTimeoutSupported() const
 {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
 #endif // flavor
   return true;
 }
 
-unsigned int SerialPort::getReadTimeout() const throw(CommunicationsException)
+unsigned int SerialPort::getReadTimeout() const
 {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   COMMTIMEOUTS timeouts;
@@ -335,7 +335,7 @@ unsigned int SerialPort::getReadTimeout() const throw(CommunicationsException)
 #endif // flavor
 }
 
-unsigned int SerialPort::getWriteTimeout() const throw(CommunicationsException)
+unsigned int SerialPort::getWriteTimeout() const
 {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   COMMTIMEOUTS timeouts;
@@ -346,7 +346,7 @@ unsigned int SerialPort::getWriteTimeout() const throw(CommunicationsException)
 #endif // flavor
 }
 
-void SerialPort::setReadTimeout(unsigned int milliseconds) throw(CommunicationsException)
+void SerialPort::setReadTimeout(unsigned int milliseconds)
 {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   COMMTIMEOUTS timeouts;
@@ -356,7 +356,7 @@ void SerialPort::setReadTimeout(unsigned int milliseconds) throw(CommunicationsE
 #endif // flavor
 }
 
-void SerialPort::setWriteTimeout(unsigned int milliseconds) throw(CommunicationsException)
+void SerialPort::setWriteTimeout(unsigned int milliseconds)
 {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   COMMTIMEOUTS timeouts;
@@ -366,7 +366,7 @@ void SerialPort::setWriteTimeout(unsigned int milliseconds) throw(Communications
 #endif // flavor
 }
 
-unsigned int SerialPort::getInputBufferSize() const throw(CommunicationsException)
+unsigned int SerialPort::getInputBufferSize() const
 {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   COMMPROP properties;
@@ -377,7 +377,7 @@ unsigned int SerialPort::getInputBufferSize() const throw(CommunicationsExceptio
 #endif // flavor
 }
 
-void SerialPort::setInputBufferSize(unsigned int size) throw(CommunicationsException)
+void SerialPort::setInputBufferSize(unsigned int size)
 {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   COMMPROP properties;
@@ -386,7 +386,7 @@ void SerialPort::setInputBufferSize(unsigned int size) throw(CommunicationsExcep
 #endif // flavor
 }
 
-unsigned int SerialPort::getOutputBufferSize() const throw(CommunicationsException)
+unsigned int SerialPort::getOutputBufferSize() const
 {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   COMMPROP properties;
@@ -397,7 +397,7 @@ unsigned int SerialPort::getOutputBufferSize() const throw(CommunicationsExcepti
 #endif // flavor
 }
 
-void SerialPort::setOutputBufferSize(unsigned int size) throw(CommunicationsException)
+void SerialPort::setOutputBufferSize(unsigned int size)
 {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   COMMPROP properties;
@@ -406,7 +406,7 @@ void SerialPort::setOutputBufferSize(unsigned int size) throw(CommunicationsExce
 #endif // flavor
 }
 
-void SerialPort::asyncCancel() throw(AsynchronousException)
+void SerialPort::asyncCancel()
 {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   ::CancelIo(handle->getHandle());
@@ -417,7 +417,7 @@ void SerialPort::asyncCancel() throw(AsynchronousException)
 AsynchronousReadOperation SerialPort::read(
   uint8* buffer,
   unsigned int bytesToRead,
-  AsynchronousReadEventListener* listener) throw(AsynchronousException)
+  AsynchronousReadEventListener* listener)
 {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   bassert(listener, AsynchronousException()); // FIXME
@@ -430,7 +430,7 @@ AsynchronousReadOperation SerialPort::read(
 AsynchronousWriteOperation SerialPort::write(
   const uint8* buffer,
   unsigned int bytesToWrite,
-  AsynchronousWriteEventListener* listener) throw(AsynchronousException)
+  AsynchronousWriteEventListener* listener)
 {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   bassert(listener, AsynchronousException()); // FIXME
@@ -443,7 +443,7 @@ AsynchronousWriteOperation SerialPort::write(
 unsigned int SerialPort::read(
   uint8* buffer,
   unsigned int bytesToRead,
-  bool nonblocking) throw(IOException)
+  bool nonblocking)
 {
   unsigned int bytesRead = 0;
   while (bytesToRead > 0) {
@@ -485,7 +485,7 @@ unsigned int SerialPort::read(
 unsigned int SerialPort::write(
   const uint8* buffer,
   unsigned int bytesToWrite,
-  bool nonblocking) throw(IOException)
+  bool nonblocking)
 {
   // TAG: currently always blocks
   unsigned int bytesWritten = 0;

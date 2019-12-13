@@ -57,7 +57,7 @@ protected:
   /**
     Loads the OpenGL module.
   */
-  static void loadModule() throw(OpenGLException);
+  static void loadModule();
 public:
 
   /** OpenGL format flags. */
@@ -104,49 +104,49 @@ public:
   /**
     Initializes an OpenGL rendering context.
   */
-  OpenGLContextImpl() throw(OpenGLException);
+  OpenGLContextImpl();
 
   /**
     Returns the vendor of the client.
   */
-  String getGLClientVendor() const throw(OpenGLException);
+  String getGLClientVendor() const;
 
   /**
     Returns the release of the client.
   */
-  String getGLClientRelease() const throw(OpenGLException);
+  String getGLClientRelease() const;
 
   /**
     Returns the client extensions.
   */
-  String getGLClientExtensions() const throw(OpenGLException);
+  String getGLClientExtensions() const;
 
   /**
     Returns the vendor of the server.
   */
-  String getGLServerVendor() const throw(OpenGLException);
+  String getGLServerVendor() const;
 
   /**
     Returns the release of the server.
   */
-  String getGLServerRelease() const throw(OpenGLException);
+  String getGLServerRelease() const;
 
   /**
     Returns the server extensions.
   */
-  String getGLServerExtensions() const throw(OpenGLException);
+  String getGLServerExtensions() const;
   
   /**
     Returns the number of overlay planes.
   */
-  inline unsigned int getNumberOfOverlayPlanes() const throw(OpenGLException) {
+  inline unsigned int getNumberOfOverlayPlanes() const {
     return numberOfOverlayPlanes;
   }
 
   /**
     Returns the number of underlay planes.
   */
-  inline unsigned int getNumberOfUnderlayPlanes() const throw(OpenGLException) {
+  inline unsigned int getNumberOfUnderlayPlanes() const {
     return numberOfUnderlayPlanes;
   }
 
@@ -328,17 +328,17 @@ public:
   /**
     Returns true if the executing thread has an associated OpenGL context.
   */
-  bool hasCurrent() const throw(OpenGLException);
+  bool hasCurrent() const;
   
   /**
     Returns true if the OpenGL context is the current context of the executing thread.
   */
-  bool isCurrent() const throw(OpenGLException);
+  bool isCurrent() const;
   
   /**
     Selects this OpenGL context as the current context of the executing thread.
   */
-  void makeCurrent() throw(OpenGLException);
+  void makeCurrent();
 
   /**
     Deselects the OpenGL context of the executing thread.
@@ -348,14 +348,14 @@ public:
   /**
     Swaps all the buffers.
   */
-  void swap() throw(OpenGLException);
+  void swap();
 
   /**
     Swaps the specified layer.
 
     @param plane The layer to swap.
   */
-  void swap(int plane) throw(OutOfRange, OpenGLException);
+  void swap(int plane);
 };
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

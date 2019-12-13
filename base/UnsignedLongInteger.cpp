@@ -16,7 +16,7 @@
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
-unsigned long long UnsignedLongInteger::parse(const char* src, const char* end, unsigned int flags) throw(InvalidFormat)
+unsigned long long UnsignedLongInteger::parse(const char* src, const char* end, unsigned int flags)
 {
   unsigned int base = 10; // default integer base
 
@@ -115,7 +115,7 @@ unsigned long long UnsignedLongInteger::parse(const char* src, const char* end, 
   return temp;
 }
 
-FormatInputStream& operator>>(FormatInputStream& stream, unsigned long long& value) throw(InvalidFormat, IOException)
+FormatInputStream& operator>>(FormatInputStream& stream, unsigned long long& value)
 {
   value = UnsignedLongInteger::parse(stream.getWord(), UnsignedLongInteger::ANY);
   return stream;

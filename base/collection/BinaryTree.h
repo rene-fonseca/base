@@ -868,7 +868,7 @@ public:
       @param node The subtree to be rotated.
       @return The new parent of the subtree.
     */
-    static Node* rotateLeft(Node* node) throw(InvalidNode)
+    static Node* rotateLeft(Node* node)
     {
       if (!node || !node->getRight()) {
         throw InvalidNode();
@@ -904,7 +904,7 @@ public:
       @param node The subtree to be rotated.
       @return The new parent of the subtree.
     */
-    static Node* rotateRight(Node* node) throw(InvalidNode)
+    static Node* rotateRight(Node* node)
     {
       if (!node || !node->getLeft()) {
         throw InvalidNode();

@@ -220,7 +220,7 @@ MemorySize ObjectModel::Array::getSize() const noexcept
   return values.getSize();
 }
 
-Reference<ObjectModel::Value> ObjectModel::Array::getAt(MemorySize index) const throw(ObjectModelException)
+Reference<ObjectModel::Value> ObjectModel::Array::getAt(MemorySize index) const
 {
   if (index >= values.getSize()) {
     throw OutOfRange();
@@ -637,7 +637,7 @@ void ObjectModel::Object::setValue(const char* key, const char* value)
 // TAG: add support for setting value by path - "-" can be used to append to array
 // TAG: add support for parsed pointer - to avoid allocations
 
-Reference<ObjectModel::Value> ObjectModel::Object::getPath(const char* path, bool forceNull) throw(ObjectModelException)
+Reference<ObjectModel::Value> ObjectModel::Object::getPath(const char* path, bool forceNull)
 {
   if (!path) {
     return nullptr;
@@ -710,7 +710,7 @@ Reference<ObjectModel::Value> ObjectModel::Object::getPath(const char* path, boo
   return current;
 }
 
-bool ObjectModel::Object::getBoolean(const char* path, bool defaultValue) throw(ObjectModelException)
+bool ObjectModel::Object::getBoolean(const char* path, bool defaultValue)
 {
   Reference<Value> v = getPath(path, true);
   if (!v) {
@@ -723,7 +723,7 @@ bool ObjectModel::Object::getBoolean(const char* path, bool defaultValue) throw(
   return b->value;
 }
 
-int64 ObjectModel::Object::getInteger(const char* path, int64 defaultValue) throw(ObjectModelException)
+int64 ObjectModel::Object::getInteger(const char* path, int64 defaultValue)
 {
   Reference<Value> v = getPath(path, true);
   if (!v) {
@@ -736,7 +736,7 @@ int64 ObjectModel::Object::getInteger(const char* path, int64 defaultValue) thro
   return i->value;
 }
 
-double ObjectModel::Object::getFloat(const char* path, double defaultValue) throw(ObjectModelException) {
+double ObjectModel::Object::getFloat(const char* path, double defaultValue) {
   Reference<Value> v = getPath(path, true);
   if (!v) {
     return defaultValue;
@@ -748,7 +748,7 @@ double ObjectModel::Object::getFloat(const char* path, double defaultValue) thro
   return d->value;
 }
 
-base::String ObjectModel::Object::getString(const char* path, const base::String& defaultValue) throw(ObjectModelException)
+base::String ObjectModel::Object::getString(const char* path, const base::String& defaultValue)
 {
   Reference<Value> v = getPath(path, true);
   if (!v) {
@@ -761,7 +761,7 @@ base::String ObjectModel::Object::getString(const char* path, const base::String
   return s->value;
 }
 
-Reference<ObjectModel::Array> ObjectModel::Object::getArray(const char* path) throw(ObjectModelException)
+Reference<ObjectModel::Array> ObjectModel::Object::getArray(const char* path)
 {
   Reference<Value> v = getPath(path, true);
   if (!v) {
@@ -774,7 +774,7 @@ Reference<ObjectModel::Array> ObjectModel::Object::getArray(const char* path) th
   return a;
 }
 
-Reference<ObjectModel::Object> ObjectModel::Object::getObject(const char* path) throw(ObjectModelException)
+Reference<ObjectModel::Object> ObjectModel::Object::getObject(const char* path)
 {
   Reference<Value> v = getPath(path, true);
   if (!v) {

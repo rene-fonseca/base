@@ -107,7 +107,7 @@ namespace {
 
 #endif
 
-void* DynamicLinker::getGlobalSymbolImpl(const String& symbol) throw(LinkerException)
+void* DynamicLinker::getGlobalSymbolImpl(const String& symbol)
 {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   // GetModuleHandle does not increment reference count
@@ -157,7 +157,7 @@ void* DynamicLinker::getGlobalSymbolImpl(const String& symbol) throw(LinkerExcep
 //#endif // flavor
 //}
 
-DynamicLinker::DynamicLinker(const String& path, unsigned int options) throw(LinkerException)
+DynamicLinker::DynamicLinker(const String& path, unsigned int options)
 {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   if ((handle = ::LoadLibraryEx(ToWCharString(path), 0, 0)) == nullptr) {
@@ -180,7 +180,7 @@ DynamicLinker::DynamicLinker(const String& path, unsigned int options) throw(Lin
 #endif // flavor
 }
 
-void* DynamicLinker::getSymbol(const Literal& symbol) const throw(LinkerException)
+void* DynamicLinker::getSymbol(const Literal& symbol) const
 {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   void* result = (void*)(::GetProcAddress((HMODULE)handle, symbol.getValue()));
@@ -193,7 +193,7 @@ void* DynamicLinker::getSymbol(const Literal& symbol) const throw(LinkerExceptio
 #endif // flavor
 }
 
-void* DynamicLinker::getSymbol(const String& symbol) const throw(LinkerException)
+void* DynamicLinker::getSymbol(const String& symbol) const
 {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   void* result = (void*)(::GetProcAddress((HMODULE)handle, symbol.getElements()));

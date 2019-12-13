@@ -118,7 +118,7 @@ public:
     Initializes trustee by id. Raises OutOfDomain if the specified id is not
     supported by the platform.
   */
-  Trustee(TrusteeType type, const void* id) throw(OutOfDomain);
+  Trustee(TrusteeType type, const void* id);
   
   /**
     Initializes trustee from other trustee.
@@ -133,7 +133,7 @@ public:
   /**
     Initializes trustee by name.
   */
-  Trustee(const String& name) throw(TrusteeException);
+  Trustee(const String& name);
   
   /**
     Returns true if the trustees are identical. The method returns true if both
@@ -159,14 +159,14 @@ public:
   /**
     Returns type of the trustee.
   */
-  TrusteeType getType() const throw(TrusteeException);
+  TrusteeType getType() const;
   
   /**
     Returns true if the specified trustee is a member of this trustee (if a
     group) and otherwise returns false (also if trustee is currently INVALID).
     Raises TrusteeException if group could not be enumerated.
   */
-  bool isMemberOf(const Trustee& trustee) const throw(TrusteeException);
+  bool isMemberOf(const Trustee& trustee) const;
 
   /**
     Returns the integral id.
@@ -179,12 +179,12 @@ public:
   /**
     Returns the short name of the trustee.
   */
-  String getName() const throw(TrusteeException);
+  String getName() const;
   
   /**
     Returns the full name of the trustee.
   */
-  String getFullName() const throw(TrusteeException);
+  String getFullName() const;
   
   _COM_AZURE_DEV__BASE__API friend FormatOutputStream& operator<<(FormatOutputStream& stream, const Trustee& value);
 };

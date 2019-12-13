@@ -176,7 +176,7 @@ public:
 
     @param key The value to be removed from the set.
   */
-  void remove(const KEY& key) throw(InvalidNode)
+  void remove(const KEY& key)
   {
     elements.remove(elements.find(key));
     --size;

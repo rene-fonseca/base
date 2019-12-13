@@ -40,7 +40,7 @@ public:
     
     @param object The object pointer to be automated.
   */
-  inline Lifetime(TYPE* _object) throw(NullPointer) : object(_object)
+  inline Lifetime(TYPE* _object) : object(_object)
   {
     if (!object) {
       throw NullPointer(this);

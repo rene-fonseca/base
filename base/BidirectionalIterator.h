@@ -39,7 +39,7 @@ public:
 
     @param distance The desired number of elements skip.
   */
-  virtual void rewind(Distance distance) throw(OutOfBounds) = 0;
+  virtual void rewind(Distance distance) = 0;
 };
 
 template<class TYPE>

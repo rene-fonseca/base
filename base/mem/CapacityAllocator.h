@@ -34,12 +34,12 @@ public:
   {
   }
   
-  inline CapacityAllocator(MemorySize size) throw(MemoryException)
+  inline CapacityAllocator(MemorySize size)
   {
     Allocator<TYPE>::setSize(size);
   }
   
-  inline CapacityAllocator(MemorySize size, MemorySize capacity) throw(MemoryException)
+  inline CapacityAllocator(MemorySize size, MemorySize capacity)
   {
     Allocator<TYPE>::ensureCapacity(capacity);
     Allocator<TYPE>::setSize(size);
@@ -96,7 +96,7 @@ public:
 
     @param granularity Specifies the number of elements to allocate at a time.
   */
-  inline explicit CapacityAllocator(MemorySize _granularity) throw(OutOfRange)
+  inline explicit CapacityAllocator(MemorySize _granularity)
     : granularity(_granularity)
   {
     if (granularity < MINIMUM_GRANULARITY) {
@@ -113,7 +113,7 @@ public:
     @param size Specifies the initial size of the allocator.
     @param granularity Specifies the number of elements to allocate at a time.
   */
-  inline CapacityAllocator(MemorySize size, MemorySize _granularity) throw(OutOfRange, MemoryException)
+  inline CapacityAllocator(MemorySize size, MemorySize _granularity)
     : granularity(_granularity)
   {
     if (granularity < MINIMUM_GRANULARITY) {
@@ -122,7 +122,7 @@ public:
     setSize(size);
   }
 
-  inline CapacityAllocator(MemorySize size, MemorySize _capacity, MemorySize _granularity) throw(OutOfRange, MemoryException)
+  inline CapacityAllocator(MemorySize size, MemorySize _capacity, MemorySize _granularity)
     : capacity(_capacity),
       granularity(_granularity)
   {
@@ -132,7 +132,7 @@ public:
     setSize(size);
   }
 
-  inline CapacityAllocator(MemorySize size, const TYPE& value, MemorySize _granularity) throw(OutOfRange, MemoryException)
+  inline CapacityAllocator(MemorySize size, const TYPE& value, MemorySize _granularity)
     : granularity(_granularity)
   {
     if (granularity < MINIMUM_GRANULARITY) {
@@ -144,7 +144,7 @@ public:
   /**
     Initializes allocator from other allocator.
   */
-  inline CapacityAllocator(const CapacityAllocator& copy) throw(MemoryException)
+  inline CapacityAllocator(const CapacityAllocator& copy)
     : Allocator<TYPE>(copy),
       size(copy.size),
       capacity(copy.capacity),
@@ -155,7 +155,7 @@ public:
   /**
     Assignment of allocator by allocator.
   */
-  inline CapacityAllocator& operator=(const CapacityAllocator& copy) throw(MemoryException)
+  inline CapacityAllocator& operator=(const CapacityAllocator& copy)
   {
     if (&copy != this) { // protect against self assignment
       size = copy.size;
@@ -317,7 +317,7 @@ public:
     of memory until the 'size' is adjusted. Raises OutOfRange if granularity
     is less than MINIMUM_GRANULARITY.
   */
-  inline void setGranularity(MemorySize granularity) throw(OutOfRange)
+  inline void setGranularity(MemorySize granularity)
   {
     if (granularity != this->granularity) {
       if (granularity < MINIMUM_GRANULARITY) {
@@ -341,7 +341,7 @@ public:
 
     @param capacity Specifies the minimum capacity of the allocator.
   */
-  void ensureCapacity(MemorySize _capacity) throw(MemoryException)
+  void ensureCapacity(MemorySize _capacity)
   {
     if (_capacity != capacity) {
       capacity = _capacity;

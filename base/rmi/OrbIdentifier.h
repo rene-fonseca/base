@@ -43,7 +43,7 @@ public:
   /**
     Initializes the identifier.
   */
-  OrbIdentifier(const String& identifier) throw(InvalidFormat);
+  OrbIdentifier(const String& identifier);
 
   /**
     Returns true if the identifier has a scheme.

@@ -164,7 +164,7 @@ public:
   /**
     Returns the number of days in the specified month.
   */
-  static int getDaysOfMonth(int month, int year) throw(OutOfDomain);
+  static int getDaysOfMonth(int month, int year);
 
   /**
     Returns the day of the week (Sunday = 0, Monday = 1, etc.). The result is
@@ -189,7 +189,7 @@ public:
   /**
     Returns the current time in UTC time.
   */
-  static Date getNow() throw(DateException);
+  static Date getNow();
   
   /**
     Returns the bias (in microseconds) for convertion from UTC to local time.
@@ -209,7 +209,7 @@ public:
     UTC time.
   */
   static Date getTime(
-    int second, int minute, int hour, bool local = false) throw(DateException);
+    int second, int minute, int hour, bool local = false);
   
   /**
     Returns date object for the specified date. Invalid values will be
@@ -222,7 +222,7 @@ public:
     UTC time.
   */
   static Date getDate(
-    int day, int month, int year, bool local = false) throw(DateException);
+    int day, int month, int year, bool local = false);
 
   /**
     Returns date object for the specified date and time. Invalid values will be
@@ -244,7 +244,7 @@ public:
     int day,
     int month,
     int year,
-    bool local = false) throw(DateException);
+    bool local = false);
   
   /**
     Returns the date corresponding to the specified Julian day.
@@ -416,7 +416,7 @@ public:
   */
   String format(
     const String& format,
-    bool local = true) const throw(InvalidFormat, MemoryException);
+    bool local = true) const;
   
   /**
     Returns the date/time as a string.
@@ -427,12 +427,12 @@ public:
   */
   WideString format(
     const WideString& format,
-    bool local = true) const throw(InvalidFormat, MemoryException);
+    bool local = true) const;
 };
 
 _COM_AZURE_DEV__BASE__API FormatOutputStream& operator<<(
   FormatOutputStream& stream,
-  const Date& date) throw(InvalidFormat, IOException);
+  const Date& date);
 
 template<>
 class IsUninitializeable<Date> : public IsUninitializeable<int64> {

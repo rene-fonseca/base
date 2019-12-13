@@ -46,7 +46,7 @@ public:
 
     @param string The string providing the data stream.
   */
-  StringInputStream(String& string) throw(BindException);
+  StringInputStream(String& string);
   
   /**
     Returns the number of bytes that can be read or skipped over without
@@ -54,13 +54,13 @@ public:
 
     @return Available number of bytes in stream.
   */
-  unsigned int available() const throw(IOException);
+  unsigned int available() const;
   
   /**
     Closes the input stream and releases any system resources associated with
     the stream.
   */
-  void close() throw(IOException);
+  void close();
   
   /**
     Fills the buffer with bytes from the stream. Blocks if asked to read more
@@ -69,7 +69,7 @@ public:
     @param buffer The buffer.
     @param size The size of the buffer.
   */
-  unsigned int read(uint8* buffer, unsigned int size, bool nonblocking) throw(IOException);
+  unsigned int read(uint8* buffer, unsigned int size, bool nonblocking);
   
   /**
     Skips a specified number of bytes. Blocks if asked to skip more bytes than
@@ -77,7 +77,7 @@ public:
     
     @param count The number of bytes to skip.
   */
-  unsigned int skip(unsigned int count) throw(IOException);
+  unsigned int skip(unsigned int count);
 
   /**
     Destroys the string input stream.

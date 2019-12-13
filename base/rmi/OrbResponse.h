@@ -108,10 +108,10 @@ public:
   
   // set value
   
-  // read response() throw(OrbException, IOException) {
+  // read response() {
   // }
   
-  // write response() throw(OrbException, IOException) {
+  // write response() {
   // }
 };
 

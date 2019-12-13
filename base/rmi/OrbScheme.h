@@ -62,7 +62,7 @@ public:
     supported by the scheme.
   */
   virtual Reference<OrbConnectionFactory> openFactory(
-    const String& identifier) throw(InvalidFormat, OrbException);
+    const String& identifier);
   
   /**
     Returns a connection for the specified identifier. New connections are
@@ -70,19 +70,19 @@ public:
   */
   virtual Reference<OrbConnection> open(
     ProtectedPointer<Orb> orb,
-    const String& identifier) throw(InvalidFormat, OrbException) = 0;
+    const String& identifier) = 0;
   
   /**
     Adds a connection.
   */
   virtual void add(
-    Reference<OrbConnection> connection) throw(CastException) = 0;
+    Reference<OrbConnection> connection) = 0;
   
   /**
     Removes a connection.
   */
   virtual void remove(
-    Reference<OrbConnection> connection) throw(CastException, InvalidKey) = 0;
+    Reference<OrbConnection> connection) = 0;
   
   /**
     Signals the scheme to be terminated.
@@ -92,7 +92,7 @@ public:
   /**
     Invoked by ORB.
   */
-  virtual void run(ProtectedPointer<Orb> orb) throw(OrbException) = 0;
+  virtual void run(ProtectedPointer<Orb> orb) = 0;
 };
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

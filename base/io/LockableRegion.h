@@ -45,7 +45,7 @@ public:
     @param exclusive Specifies that the region should be locked exclusively (if
     false the region is locked shared). This argument is true by default.
   */
-  LockableRegion(const File& file, const FileRegion& region, bool exclusive) throw(FileException);
+  LockableRegion(const File& file, const FileRegion& region, bool exclusive);
 
   /**
     Returns the locked file region.
@@ -61,7 +61,7 @@ public:
     @param exclusive Specifies that the region should be locked exclusively (if
     false the region is locked shared). This argument is true by default.
   */
-  void lock(const FileRegion& region, bool exclusive = true) throw(FileException);
+  void lock(const FileRegion& region, bool exclusive = true);
 
   /**
     Destroys the file region lock (unlocks the region).

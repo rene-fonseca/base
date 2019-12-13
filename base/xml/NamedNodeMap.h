@@ -69,11 +69,11 @@ public:
     return *this;
   }
   
-  ShadowNode getNamedItem(const String& name) throw(DOMException);
+  ShadowNode getNamedItem(const String& name);
   
-  ShadowNode setNamedItem(ShadowNode node) throw(DOMException);
+  ShadowNode setNamedItem(ShadowNode node);
   
-  ShadowNode removeNamedItem(const String& name) throw(DOMException);
+  ShadowNode removeNamedItem(const String& name);
   
   /**
     Returns the number of nodes in the map.
@@ -83,15 +83,15 @@ public:
   /**
     Returns the node at the specified index.
   */
-  ShadowNode getItem(unsigned int index) throw(DOMException);
+  ShadowNode getItem(unsigned int index);
   
   ShadowNode getNamedItemNS(
     const String& namespaceURI, const String& localName) noexcept;
   
-  ShadowNode setNamedItemNS(ShadowNode node) throw(DOMException);
+  ShadowNode setNamedItemNS(ShadowNode node);
   
   ShadowNode removeNamedItemNS(
-    const String& namespaceURI, const String& localName) throw(DOMException);
+    const String& namespaceURI, const String& localName);
 };
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

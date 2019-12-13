@@ -77,7 +77,7 @@ public:
     Returns the completion information associated with the asynchronous
     operation. This method is normally only used for debugging.
   */
-  AsynchronousWriteCompletion getCompletion() const throw(NullPointer);
+  AsynchronousWriteCompletion getCompletion() const;
 };
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

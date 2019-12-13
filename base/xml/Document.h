@@ -58,7 +58,7 @@ public:
   /**
     Initializes the document as invalid.
   */
-  Document() throw(DOMException);
+  Document();
   
   /**
     Initializes the document as invalid.
@@ -82,7 +82,7 @@ public:
   DocumentType createAndSetDocumentType(
     const String& qualifiedName,
     const String& publicId,
-    const String& systemId) throw(DOMException);
+    const String& systemId);
   
   /**
     This is a convenience attribute that allows direct access to the child node
@@ -93,46 +93,46 @@ public:
   /**
     Creates an Attribute of the given name.
   */
-  Attribute createAttribute(const String& name) throw(DOMException);
+  Attribute createAttribute(const String& name);
 
   /**
     Creates an Attribute of the given qualified name and namespace URI.
   */
   Attribute createAttributeNS(
     const String& namespaceURI,
-    const String& qualifiedName) throw(DOMException);
+    const String& qualifiedName);
   
   /**
     Creates an element of the type specified.
   */
-  Element createElement(const String& name) throw(DOMException);
+  Element createElement(const String& name);
   
   /**
     Creates an element of the given qualified name and namespace URI.
   */
   Element createElementNS(
     const String& namespaceURI,
-    const String& qualifiedName) throw(DOMException);
+    const String& qualifiedName);
 
   /**
     Creates an empty DocumentFragment node.
   */
-  DocumentFragment createDocumentFragment() throw(DOMException);
+  DocumentFragment createDocumentFragment();
 
   /**
     Creates a Text node given the specified string.
   */
-  Text createText(const String& data) throw(DOMException);
+  Text createText(const String& data);
 
   /**
     Creates a Comment node given the specified string.
   */
-  Comment createComment(const String& data) throw(DOMException);
+  Comment createComment(const String& data);
   
   /**
     Creates a CDATASection node whose value is the specified string.
   */
-  CDATASection createCDATASection(const String& data) throw(DOMException);
+  CDATASection createCDATASection(const String& data);
 
   /**
     Creates a ProcessingInstruction node given the specified target and data
@@ -140,13 +140,13 @@ public:
   */
   ProcessingInstruction createProcessingInstruction(
     const String& target,
-    const String& data) throw(DOMException);
+    const String& data);
   
   /**
     Creates an EntityReference node.
   */
   EntityReference createEntityReference(
-    const String& name) throw(DOMException);
+    const String& name);
   
   /**
     Returns the Element whose ID is given by elementId.
@@ -157,26 +157,26 @@ public:
     Creates a new attribute.
   */
   Attribute createAttribute(
-    const String& name, const String& value) throw(DOMException);
+    const String& name, const String& value);
 
   /**
     Imports a node from another document to this document. The returned node
     has no parent. The source node is not altered or removed from the original
     document; this method creates a new copy of the source node.
   */
-  Node importNode(Node importedNode, bool deep) throw(DOMException);
+  Node importNode(Node importedNode, bool deep);
   
   /**
     Do XInclude substitution.
   */
-  void doXIncludeSubstitution() throw(DOMException);
+  void doXIncludeSubstitution();
   
   /**
     Save to document to the specified file.
     
     @param filename The name of the file.
   */
-  void save(const String& filename) throw(IOException);
+  void save(const String& filename);
 
   // bool isStandalone() const noexcept;
   // String getVersion() const noexcept;
@@ -188,17 +188,17 @@ public:
   /**
     Returns true if the document is valid.
   */
-  bool validate() const throw(DOMException);
+  bool validate() const;
   
   /**
     Returns true if the tree is valid.
   */
-  bool validate(Node node) const throw(DOMException);
+  bool validate(Node node) const;
   
   /**
     Destroys the document.
   */
-  void destroy() throw(DOMException);
+  void destroy();
 };
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

@@ -55,7 +55,7 @@ public:
 
     @param granularity Specifies the number of elements to allocate at a time.
   */
-  inline explicit ReferenceCountedCapacityAllocator(MemorySize size) throw(OutOfRange)
+  inline explicit ReferenceCountedCapacityAllocator(MemorySize size)
     : Allocator<TYPE>(size)
   {
   }
@@ -71,7 +71,7 @@ public:
   */
   inline ReferenceCountedCapacityAllocator(
     MemorySize size,
-    MemorySize granularity) throw(OutOfRange, MemoryException)
+    MemorySize granularity)
     : Allocator<TYPE>(size/*, granularity*/)
   {
   }
@@ -79,7 +79,7 @@ public:
   inline ReferenceCountedCapacityAllocator(
     MemorySize size,
     MemorySize capacity,
-    MemorySize granularity) throw(OutOfRange, MemoryException)
+    MemorySize granularity)
     : Allocator<TYPE>(size, capacity/*, granularity*/)
   {
   }
@@ -88,7 +88,7 @@ public:
     Initializes the allocator by copying from the specified allocator. Raises
     MemoryException if unable to allocate the required memory.
   */
-  ReferenceCountedCapacityAllocator(const ReferenceCountedCapacityAllocator& copy) throw(MemoryException)
+  ReferenceCountedCapacityAllocator(const ReferenceCountedCapacityAllocator& copy)
     : Allocator<TYPE>(copy)
   {
   }

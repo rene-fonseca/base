@@ -567,7 +567,7 @@ public:
     
     @param index The index of the element.
   */
-  bool getAt(MemorySize index) const throw(OutOfRange);
+  bool getAt(MemorySize index) const;
 
   /**
     Sets the bit state at the specified index. Raises OutOfRange if the index
@@ -576,7 +576,7 @@ public:
     @param index The index of the element.
     @param value The desired value.
   */
-  void setAt(MemorySize index, bool value) throw(OutOfRange);
+  void setAt(MemorySize index, bool value);
 
   /**
     Sets (sets to true) all the states of the bit set.
@@ -587,7 +587,7 @@ public:
     Sets (sets to true) the state at the specified index. Raises OutOfRange if
     the index is invalid.
   */
-  BitSet& set(unsigned int index) throw(OutOfRange);
+  BitSet& set(unsigned int index);
 
   /**
     Resets (set to false) all the states of the bit set.
@@ -598,7 +598,7 @@ public:
     Resets (sets to false) the state at the specified index. Raises OutOfRange
     if the index is invalid.
   */
-  BitSet& reset(MemorySize index) throw(OutOfRange);
+  BitSet& reset(MemorySize index);
 
   /**
     Inverts all the states of the bit set.
@@ -609,7 +609,7 @@ public:
     Inverts the state at the specified index. Raises OutOfRange if the index is
     invalid.
   */
-  BitSet& flip(MemorySize index) throw(OutOfRange);
+  BitSet& flip(MemorySize index);
 
   /**
     Binary AND of the bit sets.

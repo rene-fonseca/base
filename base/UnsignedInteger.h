@@ -63,9 +63,9 @@ public:
     @param end The string representation.
     @param accept Specifies the integer bases to accept. Default is ANY.
   */
-  static unsigned int parse(const char* src, const char* end, unsigned int flags = FLAG_DEFAULT) throw(InvalidFormat);
+  static unsigned int parse(const char* src, const char* end, unsigned int flags = FLAG_DEFAULT);
 
-  static unsigned int parse(const String& string, unsigned int flags = FLAG_DEFAULT) throw(InvalidFormat) {
+  static unsigned int parse(const String& string, unsigned int flags = FLAG_DEFAULT) {
     return parse(string.native(), string.native() + string.getLength(), flags);
   }
   

@@ -50,7 +50,7 @@ public:
     @param name A nice name (e.g. "Flip").
     @param version Version (e.g. "1.12.1").
   */
-  LinkerModule(const String& identity, const String& name, const String& version) throw(SingletonException);
+  LinkerModule(const String& identity, const String& name, const String& version);
 
   /**
     Returns the identity of the module.

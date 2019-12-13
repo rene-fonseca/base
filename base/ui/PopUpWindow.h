@@ -39,7 +39,7 @@ public:
 
     @param flags The flags.
   */
-  PopUpWindow(unsigned int flags) throw(UserInterfaceException);
+  PopUpWindow(unsigned int flags);
   
   /**
     Initializes a pop up window.
@@ -48,7 +48,7 @@ public:
     @param dimension The initial dimension.
     @param flags The flags.
   */
-  PopUpWindow(const Position& position, const Dimension& dimension, unsigned int flags) throw(UserInterfaceException);
+  PopUpWindow(const Position& position, const Dimension& dimension, unsigned int flags);
 };
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

@@ -44,7 +44,7 @@
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
-Pair<Pipe, Pipe> Pipe::make() throw(PipeException) {
+Pair<Pipe, Pipe> Pipe::make() {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   // create two named pipes with unique names (one for input and one for output - may be the same handle)
   HANDLE ihandle = ::CreateFile(
@@ -112,7 +112,7 @@ Pipe::PipeHandle::~PipeHandle() {
 Pipe::Pipe() noexcept : fd(PipeHandle::invalid), end(false) {
 }
 
-void Pipe::close() throw(PipeException) {
+void Pipe::close() {
   fd = PipeHandle::invalid;
   end = true;
 }
@@ -130,12 +130,12 @@ unsigned int Pipe::getBufferSize() const noexcept {
 #endif
 }
 
-bool Pipe::atEnd() const throw(PipeException)
+bool Pipe::atEnd() const
 {
   return end;
 }
 
-unsigned int Pipe::available() const throw(PipeException)
+unsigned int Pipe::available() const
 {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   DWORD bytesAvailable = 0;
@@ -156,7 +156,7 @@ unsigned int Pipe::available() const throw(PipeException)
 #endif
 }
 
-unsigned int Pipe::skip(unsigned int count) throw(PipeException)
+unsigned int Pipe::skip(unsigned int count)
 {
   Thread::UseThreadLocalBuffer _buffer;
   Allocator<uint8>& buffer = _buffer;
@@ -168,7 +168,7 @@ unsigned int Pipe::skip(unsigned int count) throw(PipeException)
   return bytesSkipped;
 }
 
-void Pipe::flush() throw(PipeException) {
+void Pipe::flush() {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   if (!::FlushFileBuffers(fd->getHandle())) {
     throw PipeException("Unable to flush pipe.", this);
@@ -188,7 +188,7 @@ void Pipe::flush() throw(PipeException) {
 unsigned int Pipe::read(
   uint8* buffer,
   unsigned int bytesToRead,
-  bool nonblocking) throw(PipeException) {
+  bool nonblocking) {
   // TAG: currently always blocks
   // select wait mode with SetNamedPipeHandleState for win32
   bassert(!end, EndOfFile(this));
@@ -246,7 +246,7 @@ unsigned int Pipe::read(
 unsigned int Pipe::write(
   const uint8* buffer,
   unsigned int bytesToWrite,
-  bool nonblocking) throw(PipeException) {
+  bool nonblocking) {
   // TAG: currently always blocks
   unsigned int bytesWritten = 0;
   while (bytesToWrite) {
@@ -284,7 +284,7 @@ unsigned int Pipe::write(
   return bytesWritten;
 }
 
-void Pipe::wait() const throw(PipeException)
+void Pipe::wait() const
 {
   Profiler::WaitTask profilerTask("Pipe::wait()");
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
@@ -302,7 +302,7 @@ void Pipe::wait() const throw(PipeException)
 #endif
 }
 
-bool Pipe::wait(unsigned int timeout) const throw(PipeException)
+bool Pipe::wait(unsigned int timeout) const
 {
   Profiler::WaitTask profile("Pipe::wait()");
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)

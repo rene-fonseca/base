@@ -38,7 +38,7 @@ protected:
   }
 public:
 
-  inline ProcessingInstruction(Node node) throw(CastException) : Node(node) {
+  inline ProcessingInstruction(Node node) : Node(node) {
     bassert(
       node.isInvalid() || (node.getType() == PROCESSING_INSTRUCTION_NODE),
       CastException(this)
@@ -62,7 +62,7 @@ public:
   /**
     Sets the content of this processing instruction.
   */
-  void setData(const String& value) throw(DOMException);
+  void setData(const String& value);
 };
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

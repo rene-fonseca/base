@@ -15,7 +15,7 @@
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
-Slider::Slider(Window& owner) throw(UserInterfaceException)
+Slider::Slider(Window& owner)
   : Widget(owner),
     drag(false),
     background(0x301010),

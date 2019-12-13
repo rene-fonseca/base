@@ -32,7 +32,7 @@ private:
   void* handle = nullptr;
   
   /** Returns a pointer to the global symbol. */
-  static void* getGlobalSymbolImpl(const String& symbol) throw(LinkerException);
+  static void* getGlobalSymbolImpl(const String& symbol);
 public:
 
   typedef void (*Function)();
@@ -52,7 +52,7 @@ public:
   };
 
   template<class TYPE>
-  static inline TYPE getGlobalSymbol(const String& symbol) throw(LinkerException)
+  static inline TYPE getGlobalSymbol(const String& symbol)
   {
     return (TYPE)getGlobalSymbolImpl(symbol);
   }
@@ -67,7 +67,7 @@ public:
     @param options The linking options. Default is LAZY.
   */
   DynamicLinker(
-    const String& module, unsigned int options = LAZY) throw(LinkerException);
+    const String& module, unsigned int options = LAZY);
 
   /**
     Returns the address of the specified symbol.
@@ -75,7 +75,7 @@ public:
     @param symbol The symbol to be resolved.
     @return The address of the symbol.
   */
-  void* getSymbol(const String& symbol) const throw(LinkerException);
+  void* getSymbol(const String& symbol) const;
 
   /**
     Returns the address of the specified symbol.
@@ -83,7 +83,7 @@ public:
     @param symbol The symbol to be resolved.
     @return The address of the symbol.
   */
-  void* getSymbol(const Literal& symbol) const throw(LinkerException);
+  void* getSymbol(const Literal& symbol) const;
   
   /**
     Returns the address of the specified symbol.

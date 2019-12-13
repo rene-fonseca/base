@@ -92,7 +92,7 @@ public:
   /**
     Returns the user associated with the current process.
   */
-  static User getCurrentUser() throw(UserException);
+  static User getCurrentUser();
   
   /**
     Initializes user as invalid.
@@ -104,13 +104,13 @@ public:
     Initializes user by id. Raises OutOfDomain if the specified id is not
     supported by the platform.
   */  
-  User(unsigned long _id) throw(OutOfDomain);
+  User(unsigned long _id);
   
   /**
     Initializes user by id. Raises OutOfDomain if the specified id is not
     supported by the platform.
   */
-  User(const void* id) throw(OutOfDomain);
+  User(const void* id);
   
   /**
     Initializes user from other user.
@@ -125,7 +125,7 @@ public:
   /**
     Initializes user by name.
   */
-  User(const String& name) throw(UserException);
+  User(const String& name);
   
   /**
     Returns true if the users are identical. The method returns true if both
@@ -174,34 +174,34 @@ public:
     id should be returned if the name cannot be resolved. Fall-back is enabled
     by default.
   */
-  String getName(bool fallback = true) const throw(UserException);
+  String getName(bool fallback = true) const;
   
   /**
     Returns the full name of the account.
   */
-  String getFullName() const throw(UserException);
+  String getFullName() const;
   
   /**
     Returns the path of the home folder.
   */
-  String getHomeFolder() const throw(UserException);
+  String getHomeFolder() const;
   
   /**
     Returns true if the user is an administrator/root.
   */
-  bool isAdmin() const throw(UserException);
+  bool isAdmin() const;
   
   /**
     Returns true if the user is a member of the specified group.
 
     @return false if the group doesn't exist.
   */
-  bool isMemberOf(const Group& group) throw(UserException);
+  bool isMemberOf(const Group& group);
 
   /**
     Returns the groups to which the user belongs.
   */
-  Array<String> getGroups() throw(UserException);
+  Array<String> getGroups();
 };
 
 /**

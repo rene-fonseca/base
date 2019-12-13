@@ -36,7 +36,7 @@ protected:
   }
 public:
   
-  inline Declaration(Node node) throw(CastException) : Node(node) {
+  inline Declaration(Node node) : Node(node) {
     NodeType type = node.getType();
     bassert(
       node.isInvalid() ||

@@ -44,9 +44,9 @@ public:
     mode.
   */
   FileInputStream(
-    const String& name, bool exclusive = true) throw(FileNotFound);
+    const String& name, bool exclusive = true);
 
-  inline bool atEnd() const throw(FileException) {
+  inline bool atEnd() const {
     return end;
   }
 
@@ -56,16 +56,16 @@ public:
 
     @return Available number of bytes in stream.
   */
-  unsigned int available() const throw(FileException);
+  unsigned int available() const;
 
-  void close() throw(FileException);
+  void close();
 
-  unsigned int skip(unsigned int count) throw(FileException);
+  unsigned int skip(unsigned int count);
 
   inline unsigned int read(
     uint8* buffer,
     unsigned int size,
-    bool nonblocking = false) throw(FileException) {
+    bool nonblocking = false) {
     return file.read(buffer, size, nonblocking);
   }
 
@@ -73,7 +73,7 @@ public:
     Blocking wait for input to become available. This method does nothing for a
     file.
   */
-  void wait() const throw(FileException);
+  void wait() const;
 
   /**
     Blocking wait for input to become available. This method does nothing for a
@@ -82,7 +82,7 @@ public:
     @param timeout The timeout periode in microseconds.
     @return Always returns true.
   */
-  bool wait(unsigned int timeout) const throw(FileException);
+  bool wait(unsigned int timeout) const;
 };
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

@@ -65,7 +65,7 @@ bool Element::hasAttribute(const char* name) const noexcept {
 #endif
 }
 
-String Element::getAttribute(const char* name) const throw(DOMException) {
+String Element::getAttribute(const char* name) const {
 #if defined(_COM_AZURE_DEV__BASE__XML_XMLSOFT_ORG)
   xmlNode* node = (xmlNode*)getContext();
   char* value = (char*)xmlGetProp(node, (const xmlChar*)name.getElements());
@@ -79,7 +79,7 @@ String Element::getAttribute(const char* name) const throw(DOMException) {
 }
 
 void Element::setAttribute(
-  const char* name, const char* value) throw(DOMException) {
+  const char* name, const char* value) {
 #if defined(_COM_AZURE_DEV__BASE__XML_XMLSOFT_ORG)
   xmlNode* node = (xmlNode*)getContext();
   xmlAttr* attribute = xmlSetProp(
@@ -93,7 +93,7 @@ void Element::setAttribute(
 #endif
 }
 
-void Element::removeAttribute(const char* name) throw(DOMException) {
+void Element::removeAttribute(const char* name) {
 #if defined(_COM_AZURE_DEV__BASE__XML_XMLSOFT_ORG)
   xmlNode* node = (xmlNode*)getContext();
   int result = xmlUnsetProp(
@@ -106,21 +106,21 @@ void Element::removeAttribute(const char* name) throw(DOMException) {
 #endif
 }
 
-Attribute Element::getAttributeNode(const char* name) throw(DOMException) {
+Attribute Element::getAttributeNode(const char* name) {
   throw DOMException(this);
 }
 
-Attribute Element::setAttributeNode(Attribute attribute) throw(DOMException) {
+Attribute Element::setAttributeNode(Attribute attribute) {
   throw DOMException(this);
 }
 
-Attribute Element::removeAttributeNode(Attribute attribute) throw(DOMException) {
+Attribute Element::removeAttributeNode(Attribute attribute) {
   throw DOMException(this);
 }
 
 Attribute Element::getAttributeNodeNS(
   const char* namespaceURI,
-  const char* localName) throw(DOMException) {
+  const char* localName) {
 #if defined(_COM_AZURE_DEV__BASE__XML_XMLSOFT_ORG)
   throw DOMException(this);
 //   xmlNode* node = (xmlNode*)getContext();
@@ -139,7 +139,7 @@ Attribute Element::getAttributeNodeNS(
 }
 
 String Element::getAttributeNS(
-  const char* namespaceURI, const char* localName) throw(DOMException) {
+  const char* namespaceURI, const char* localName) {
 #if defined(_COM_AZURE_DEV__BASE__XML_XMLSOFT_ORG)
   xmlNode* node = (xmlNode*)getContext();
   return NativeString(
@@ -157,12 +157,12 @@ String Element::getAttributeNS(
 void Element::setAttributeNS(
   const char* namespaceURI,
   const char* qualifiedName,
-  const char* value) throw(DOMException) {
+  const char* value) {
 }
 
 void Element::removeAttributeNS(
   const char* namespaceURI,
-  const char* localName) throw(DOMException) {
+  const char* localName) {
 #if defined(_COM_AZURE_DEV__BASE__XML_XMLSOFT_ORG)
   xmlNode* node = (xmlNode*)getContext();
   int result = xmlUnsetNsProp(
@@ -177,7 +177,7 @@ void Element::removeAttributeNS(
 }
 
 Attribute Element::setAttributeNodeNS(
-  Attribute attribute) throw(DOMException) {
+  Attribute attribute) {
   throw DOMException(this);
 }
 

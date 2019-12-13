@@ -163,42 +163,42 @@ public:
   /**
     Sets the cursor position.
   */
-  void setCursor(unsigned int line, unsigned int column) throw(IOException);
+  void setCursor(unsigned int line, unsigned int column);
 
   /**
     Moves the cursor up by the specified number of lines.
   */
-  void up(unsigned int count) throw(IOException);
+  void up(unsigned int count);
 
   /**
     Moves the cursor down by the specified number of lines.
   */
-  void down(unsigned int count) throw(IOException);
+  void down(unsigned int count);
 
   /**
     Moves the cursor forward by the specified number of columns.
   */
-  void forward(unsigned int count) throw(IOException);
+  void forward(unsigned int count);
 
   /**
     Moves the cursor backward by the specified number of columns.
   */
-  void backward(unsigned int count) throw(IOException);
+  void backward(unsigned int count);
   
   /**
     Sets the text attributes.
   */
-  void setAttributes(unsigned int flags) throw(IOException);
+  void setAttributes(unsigned int flags);
 
   /**
     Sets the foreground color.
   */
-  void setForeground(Color color) throw(IOException);
+  void setForeground(Color color);
 
   /**
     Sets the background color.
   */
-  void setBackground(Color color) throw(IOException);
+  void setBackground(Color color);
 
   /** Activates color by index. Not using standard. */
   static String color(uint8 index);

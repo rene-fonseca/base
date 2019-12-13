@@ -71,7 +71,7 @@ public:
     @param identifier The identifier of the factory end point.
   */
   Reference<OrbConnectionFactory> openFactory(
-    const String& identifier) throw(InvalidFormat, OrbException);
+    const String& identifier);
   
   /**
     Returns a connection for the specified identifier. New connections
@@ -80,29 +80,29 @@ public:
   */
   Reference<OrbConnection> open(
     ProtectedPointer<Orb> orb,
-    const String& identifier) throw(InvalidFormat, OrbException);
+    const String& identifier);
   
   /**
     Adds a connection.
   */
-  void add(Reference<OrbConnection> connection) throw(CastException);
+  void add(Reference<OrbConnection> connection);
   
   /**
     Removes a connection.
   */
   void remove(
-    Reference<OrbConnection> connection) throw(CastException, InvalidKey);
+    Reference<OrbConnection> connection);
   
   /**
     Returns the connection for the specified end point.
   */
   Reference<OrbConnection> getConnection(
-    const String& endPoint) throw(InvalidKey);
+    const String& endPoint);
   
   /**
     Invoked by ORB.
   */
-  void run(ProtectedPointer<Orb> orb) throw(OrbException);
+  void run(ProtectedPointer<Orb> orb);
   
   /**
     Signals the protocol to be terminated.
@@ -112,7 +112,7 @@ public:
   /**
     Closes the specified connection.
   */
-  void close(Reference<OrbConnection> connection) throw(OrbException);
+  void close(Reference<OrbConnection> connection);
   
   /**
     Destroys the scheme.

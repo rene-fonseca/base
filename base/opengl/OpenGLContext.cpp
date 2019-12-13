@@ -155,7 +155,7 @@ BOOL CALLBACK enumerateMonitor(HMONITOR monitor, HDC hdc, LPRECT rect, LPARAM co
 }
 #endif // flavor
 
-Array<OpenGLContext::Format> OpenGLContext::getFormats(unsigned int flags) throw(OpenGLException, UserInterfaceException) {
+Array<OpenGLContext::Format> OpenGLContext::getFormats(unsigned int flags) {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   MonitorEnumeratorData temp;
   temp.flags = flags;
@@ -170,7 +170,7 @@ Array<OpenGLContext::Format> OpenGLContext::getFormats(unsigned int flags) throw
 #endif // flavor
 }
 
-nothing OpenGLContext::initialize(const Format& format) throw(OpenGLException, UserInterfaceException) {
+nothing OpenGLContext::initialize(const Format& format) {
   OpenGLContextImpl::loadModule();
   
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
@@ -519,7 +519,7 @@ nothing OpenGLContext::initialize(const Format& format) throw(OpenGLException, U
 OpenGLContext::OpenGLContext(
   const Position& position,
   const Dimension& dimension,
-  const Format& format) throw(OpenGLException, UserInterfaceException)
+  const Format& format)
   : WindowImpl(position, dimension, 0), // TAG: fix flags
     OpenGLContextImpl(),
     prefixInitialization(initialize(format)) {

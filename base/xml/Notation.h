@@ -42,7 +42,7 @@ protected:
   }
 public:
   
-  inline Notation(Node node) throw(CastException) : Node(node) {
+  inline Notation(Node node) : Node(node) {
     bassert(
       node.isInvalid() || (node.getType() == NOTATION_NODE),
       CastException(this)

@@ -97,7 +97,7 @@ bool Urn::isUrn(const String& urn) noexcept {
 Urn::Urn() noexcept {
 }
 
-Urn::Urn(const String& urn) throw(InvalidFormat, MemoryException) {
+Urn::Urn(const String& urn) {
   String::ReadIterator i = urn.getBeginReadIterator();
   String::ReadIterator end = urn.getEndReadIterator();
   
@@ -175,7 +175,7 @@ Urn::Urn(const String& urn) throw(InvalidFormat, MemoryException) {
   bassert(i != j, InvalidFormat(this));
 }
 
-Urn::Urn(const String& nid, const String& nss) throw(InvalidFormat)
+Urn::Urn(const String& nid, const String& nss)
 {
   setNID(nid);
   setNSS(nss);
@@ -222,7 +222,7 @@ bool Urn::operator==(const Urn& compare) const noexcept
   return true;
 }
 
-String Urn::getUnescapedNSS() const throw(MemoryException)
+String Urn::getUnescapedNSS() const
 {
   String result(nss.getLength());
   const String::ReadIterator end = nss.getEndReadIterator();
@@ -247,7 +247,7 @@ String Urn::getUnescapedNSS() const throw(MemoryException)
   return result;
 }
 
-void Urn::setNID(const String& value) throw(InvalidFormat) {
+void Urn::setNID(const String& value) {
   String::ReadIterator i = value.getBeginReadIterator();
   const String::ReadIterator end = value.getEndReadIterator();
   
@@ -271,7 +271,7 @@ void Urn::setNID(const String& value) throw(InvalidFormat) {
   this->nid = value;
 }
 
-void Urn::setNSS(const String& value) throw(InvalidFormat) {
+void Urn::setNSS(const String& value) {
   String::ReadIterator i = value.getBeginReadIterator();
   const String::ReadIterator end = value.getEndReadIterator();
   
@@ -316,7 +316,7 @@ void Urn::setNSS(const String& value) throw(InvalidFormat) {
   this->nss = value;
 }
 
-String Urn::getUrn() const throw(MemoryException) {
+String Urn::getUrn() const {
   return Literal("urn:") + nid + Literal(":") + nss;
 }
 

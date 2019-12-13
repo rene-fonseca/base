@@ -193,7 +193,7 @@ protected:
 
       @param index Index of the element. Default is 0 corresponding to the top.
     */
-    const TYPE& peek(MemorySize index = 0) const throw(OutOfRange)
+    const TYPE& peek(MemorySize index = 0) const
     {
       if (index >= getSize()) {
         throw OutOfRange(this);
@@ -231,7 +231,7 @@ protected:
 
       @return The value of the top element.
     */
-    TYPE pop() throw(OutOfRange)
+    TYPE pop()
     {
       if (isEmpty()) {
         throw OutOfRange(this);
@@ -255,7 +255,7 @@ protected:
 
       @param count The number of elements to pop of the stack.
     */
-    void pop(MemorySize count) throw(OutOfRange)
+    void pop(MemorySize count)
     {
       if (count > getSize()) {
         throw OutOfRange(this);
@@ -275,7 +275,7 @@ protected:
     }
 
 #if 0
-    void popBottom() throw(EmptyContainer)
+    void popBottom()
     {
     }
 #endif
@@ -366,7 +366,7 @@ public:
 
     @param index Index of the element. Default is 0 corresponding to the top.
   */
-  inline TYPE peek(MemorySize index = 0) const throw(OutOfRange)
+  inline TYPE peek(MemorySize index = 0) const
   {
     return elements->peek(index);
   }
@@ -386,7 +386,7 @@ public:
 
     @return The value of the top element.
   */
-  inline TYPE pop() throw(OutOfRange)
+  inline TYPE pop()
   {
     elements.copyOnWrite();
     return elements->pop();
@@ -398,7 +398,7 @@ public:
 
     @param count The number of elements to pop of the stack.
   */
-  inline void pop(MemorySize count) throw(OutOfRange)
+  inline void pop(MemorySize count)
   {
     if (count > 0) {
       elements.copyOnWrite();
@@ -454,7 +454,7 @@ public:
 template<class TYPE>
 FormatOutputStream& operator<<(
   FormatOutputStream& stream,
-  const Stack<TYPE>& value) throw(IOException)
+  const Stack<TYPE>& value)
 {
   
   typename Stack<TYPE>::ReadEnumerator enu = value.getReadEnumerator();

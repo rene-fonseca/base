@@ -15,7 +15,7 @@
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
-Layout::Layout(Window& owner) throw(UserInterfaceException)
+Layout::Layout(Window& owner)
   : Widget(owner) { // normal
 }
 

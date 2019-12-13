@@ -52,7 +52,7 @@ public:
   /**
     Returns the specified method.
   */
-  IDLMethod getMethod(const String& name) const throw(InvalidKey);
+  IDLMethod getMethod(const String& name) const;
 
   /**
     Returns the methods.

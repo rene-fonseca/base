@@ -55,7 +55,7 @@ Bitmap::Bitmap(
   const Dimension& dimension,
   Format format,
   Encoding encoding,
-  const void* data) throw(UserInterfaceException)
+  const void* data)
   : handle(0) {
   if (!dimension.isProper()) {
     return;
@@ -168,7 +168,7 @@ void Bitmap::encode(Format format, Encoding encoding, void* data) noexcept {
 #endif
 
 // TAG: use Color
-uint32 Bitmap::getPixel(const Position& position) const throw(UserInterfaceException)
+uint32 Bitmap::getPixel(const Position& position) const
 {
   if (!handle.isValid()) {
     throw NullPointer(this);
@@ -190,7 +190,7 @@ uint32 Bitmap::getPixel(const Position& position) const throw(UserInterfaceExcep
 // TAG: use Color
 void Bitmap::setPixel(
   const Position& position,
-  uint32 value) const throw(UserInterfaceException)
+  uint32 value) const
 {
   if (!handle.isValid()) {
     throw NullPointer(this);
@@ -207,7 +207,7 @@ void Bitmap::setPixel(
 #endif // flavor
 }
 
-Dimension Bitmap::getDimension() const throw(UserInterfaceException) {
+Dimension Bitmap::getDimension() const {
   if (!handle.isValid()) {
     return Dimension(0, 0);
   }

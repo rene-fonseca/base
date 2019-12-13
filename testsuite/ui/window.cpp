@@ -43,7 +43,7 @@ public:
     
     MyOpenGLWidget(
       Window& owner,
-      const Format& format) throw(OpenGLException, UserInterfaceException)
+      const Format& format)
       : OpenGLWidget(owner, format) {
     }
     
@@ -68,7 +68,7 @@ public:
       MyPopUpWindow(
         const Position& position,
         const Dimension& dimension,
-        unsigned int flags = 0) throw(UserInterfaceException)
+        unsigned int flags = 0)
         : PopUpWindow(position, dimension, flags) {
         setBrush(Color(Color::BEIGE));
         setPen(Pen(Color(0, 0, 0 /*Color::BLACK*/)));
@@ -132,7 +132,7 @@ public:
       const String& title,
       const Position& position,
       const Dimension& dimension,
-      unsigned int flags) throw(UserInterfaceException)
+      unsigned int flags)
       : Window(position, dimension, flags),
         popUpWindow(Position(0, 0), Dimension(100, 200), 0),
         label(*this),

@@ -116,7 +116,7 @@ public:
     Removes the element at the front of the priority queue. Raises
     InvalidNode if the priority queue is empty.
   */
-  Value pop() throw(InvalidNode)
+  Value pop()
   {
     Value result;
     bassert(size, InvalidNode("Priority queue is empty", this));

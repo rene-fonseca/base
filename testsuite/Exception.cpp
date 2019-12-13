@@ -82,7 +82,7 @@ public:
     : Application("Exception", numberOfArguments, arguments, environment) {
   }
 
-  void myInnerFunction() throw(OutOfRange) {
+  void myInnerFunction() {
     throw OutOfRange("This is a message.", this);
   }
 

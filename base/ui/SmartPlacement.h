@@ -28,8 +28,8 @@ get/set maximum dimension
 void disable();
 void enable();
 
-void add(Object object) throw(?);
-void remove(Object object) throw(?);
+void add(Object object);
+void remove(Object object);
 
 void onResize(const Dimension& dimension) noexcept;
 // calc new positions and dimensions and call update?

@@ -44,7 +44,7 @@ public:
     Initializes a read-write lock in the unlocked state. Raises
     ResourceException if unable to initialize the object.
   */
-  ReadWriteLock() throw(ResourceException);
+  ReadWriteLock();
 
   /**
     Acquires an exclusive lock (write-lock) on the read-write lock. The

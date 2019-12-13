@@ -31,7 +31,7 @@ EUI64::EUI64(const uint8 value[8]) noexcept {
   copy<uint8>(id, value, sizeof(id));
 }
 
-EUI64::EUI64(const String& value) throw(InvalidFormat) {
+EUI64::EUI64(const String& value) {
   static const char SEPARATORS[8] = {'x', ':', ':', '-', ':', ':', ':', ':'}; // 'x' value is not used
   String::ReadIterator i = value.getBeginReadIterator();
   const String::ReadIterator end = value.getEndReadIterator();
@@ -81,7 +81,7 @@ unsigned int EUI64::getCompanyId() const noexcept
   return (((static_cast<unsigned int>(id[0]) << 8) | id[1]) << 8) | id[2];
 }
 
-void EUI64::setCompanyId(unsigned int companyId) throw(OutOfDomain)
+void EUI64::setCompanyId(unsigned int companyId)
 {
   if (!(companyId <= 0xffffff)) {
     throw OutOfDomain(this);
@@ -95,7 +95,7 @@ uint64 EUI64::getExtensionId() const noexcept {
   return (((((((static_cast<uint64>(id[3]) << 8) | id[4]) << 8) | id[5]) << 8) | id[6]) << 8) | id[7];
 }
 
-void EUI64::setExtensionId(uint64 extensionId) throw(OutOfDomain)
+void EUI64::setExtensionId(uint64 extensionId)
 {
   if (!(extensionId <= 0xffffffff)) {
     throw OutOfDomain(this);

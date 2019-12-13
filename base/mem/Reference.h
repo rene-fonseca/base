@@ -136,7 +136,7 @@ public:
     is invalid or the reference cannot be cast to the specified type.
   */
   template<class POLY>
-  inline Reference<POLY> castChecked() const throw(CastException)
+  inline Reference<POLY> castChecked() const
   {
     POLY* temp = dynamic_cast<POLY*>(value);
     if (!temp) {
@@ -321,7 +321,7 @@ public:
     
     @deprecated
   */
-  inline TYPE& operator*() throw(NullPointer)
+  inline TYPE& operator*()
   {
     if (!value) {
       throw NullPointer(this);
@@ -334,7 +334,7 @@ public:
 
     @deprecated
   */
-  inline const TYPE& operator*() const throw(NullPointer)
+  inline const TYPE& operator*() const
   {
     if (!value) {
       throw NullPointer(this);

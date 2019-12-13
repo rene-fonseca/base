@@ -48,7 +48,7 @@ public:
     @param guard The synchronize able object to be synchronized.
   */
   inline explicit SingleExclusiveSynchronize(
-    const Guard& _guard) throw(ConcurrencyException)
+    const Guard& _guard)
     : guard(_guard) {
     bassert(guard.tryExclusiveLock(), ConcurrencyException(this));
   }

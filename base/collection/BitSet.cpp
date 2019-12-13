@@ -54,7 +54,7 @@ BitSet::BitSet(unsigned int _size, bool value)
   reinitialize();
 }
 
-bool BitSet::getAt(MemorySize index) const throw(OutOfRange)
+bool BitSet::getAt(MemorySize index) const
 {
   if (!(index < size)) {
     throw OutOfRange(this);
@@ -62,7 +62,7 @@ bool BitSet::getAt(MemorySize index) const throw(OutOfRange)
   return getElements()[getElementIndex(index)] & getBitMask(index);
 }
 
-void BitSet::setAt(MemorySize index, bool value) throw(OutOfRange)
+void BitSet::setAt(MemorySize index, bool value)
 {
   if (!(index < size)) {
     throw OutOfRange(this);
@@ -81,7 +81,7 @@ BitSet& BitSet::set() noexcept
   return *this;
 }
 
-BitSet& BitSet::set(unsigned int index) throw(OutOfRange)
+BitSet& BitSet::set(unsigned int index)
 {
   if (!(index < size)) {
     throw OutOfRange(this);
@@ -97,7 +97,7 @@ BitSet& BitSet::reset() noexcept
   return *this;
 }
 
-BitSet& BitSet::reset(MemorySize index) throw(OutOfRange) {
+BitSet& BitSet::reset(MemorySize index) {
   if (!(index < size)) {
     throw OutOfRange(this);
   }
@@ -116,7 +116,7 @@ BitSet& BitSet::flip() noexcept
   return *this;
 }
 
-BitSet& BitSet::flip(MemorySize index) throw(OutOfRange)
+BitSet& BitSet::flip(MemorySize index)
 {
   if (!(index < size)) {
     throw OutOfRange(this);

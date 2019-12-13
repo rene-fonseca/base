@@ -433,7 +433,7 @@ public:
 
     @param node The node to be removed.
   */
-  void remove(Node* node) throw(InvalidNode)
+  void remove(Node* node)
   {
     if (!node) {
       throw InvalidNode();

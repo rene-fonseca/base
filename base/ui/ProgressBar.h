@@ -47,7 +47,7 @@ public:
   /**
     Initializes the button widget.
   */
-  ProgressBar(Window& owner) throw(UserInterfaceException);
+  ProgressBar(Window& owner);
 
   /**
     Returns the text mode.
@@ -59,7 +59,7 @@ public:
   /**
     Sets the text mode.
   */
-  void setTextMode(TextMode textMode) throw(UserInterfaceException);
+  void setTextMode(TextMode textMode);
   
   /**
     Returns the current value.

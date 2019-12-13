@@ -183,7 +183,7 @@ namespace win32 {
 
 };
 
-Daemon::Daemon(Runnable* runnable) throw(SingletonException, ResourceException) {
+Daemon::Daemon(Runnable* runnable) {
   static unsigned int singleton = 0;
   bassert(singleton == 0, SingletonException("Daemon has been instantiated"));
   ++singleton;
@@ -211,7 +211,7 @@ Daemon::Daemon(Runnable* runnable) throw(SingletonException, ResourceException) 
   }
 }
 /*
-void Daemon::start(const Array<String>& arguments) throw(DaemonException) {
+void Daemon::start(const Array<String>& arguments) {
   SC_HANDLE manager = ::OpenSCManager(0, 0, 0);
   bassert(manager, DaemonException(this));
   SC_HANDLE service = ::OpenService(manager, application->getFormalName(), SERVICE_START);
@@ -226,7 +226,7 @@ void Daemon::start(const Array<String>& arguments) throw(DaemonException) {
   ::CloseServiceHandle(manager);
 }
 
-void Daemon::stop() throw(DaemonException) {
+void Daemon::stop() {
   SC_HANDLE manager = ::OpenSCManager(0, 0, 0);
   bassert(manager, DaemonException(this));
   SC_HANDLE service = ::OpenService(manager, 0, SERVICE_STOP);
@@ -238,7 +238,7 @@ void Daemon::stop() throw(DaemonException) {
   ::CloseServiceHandle(manager);
 }
 
-void Daemon::uninstall() throw(DaemonException) {
+void Daemon::uninstall() {
   SC_HANDLE manager = ::OpenSCManager(0, 0, 0);
   bassert(manager, DaemonException(this));
   SC_HANDLE service = ::OpenService(manager, 0, SERVICE_DELETE);
@@ -291,7 +291,7 @@ void Daemon::install() {
 
 #else // unix
 
-Daemon::Daemon(Runnable* runnable) throw(SingletonException, ResourceException)
+Daemon::Daemon(Runnable* runnable)
 {
   static unsigned int singleton = 0;
   bassert(singleton == 0, SingletonException("Daemon has been instantiated"));

@@ -63,7 +63,7 @@ void OpenGLWidget::destroy() noexcept {
   WindowImpl::destroy();
 }
 
-nothing OpenGLWidget::initialize(const Format& format) throw(OpenGLException, UserInterfaceException) {
+nothing OpenGLWidget::initialize(const Format& format) {
   OpenGLContextImpl::loadModule();
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)  
   OpenGLContextImpl::graphicsContextHandle = WindowImpl::graphicsContextHandle; // TAG: fixme
@@ -159,7 +159,7 @@ nothing OpenGLWidget::initialize(const Format& format) throw(OpenGLException, Us
   return nothing();
 }
 
-OpenGLWidget::OpenGLWidget(Window& owner, const Format& format) throw(OpenGLException, UserInterfaceException)
+OpenGLWidget::OpenGLWidget(Window& owner, const Format& format)
   : Widget(owner),
     OpenGLContextImpl(),
     prefixInitialization(initialize(format)) {

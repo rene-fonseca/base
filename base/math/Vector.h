@@ -57,13 +57,13 @@ public:
     }
   public:
     
-    inline Element& operator=(const TYPE& value) throw(OutOfRange)
+    inline Element& operator=(const TYPE& value)
     {
       vector.setAt(index, value);
       return *this;
     }
     
-    inline operator const TYPE&() const throw(OutOfRange)
+    inline operator const TYPE&() const
     {
       return vector.getAt(index);
     }
@@ -79,7 +79,7 @@ protected:
   /**
     Returns the elements of the vector for modification.
   */
-  inline TYPE* getElements() throw(MemoryException) {
+  inline TYPE* getElements() {
     if (elements.isMultiReferenced()) { // do we have the elements for our self
       elements = new ReferenceCountedAllocator<TYPE>(*elements); // make copy of the elements
     }
@@ -103,7 +103,7 @@ protected:
   /**
     Sets the size of the vector. Only invocated by constructors.
   */
-  inline void setSize(unsigned int size) throw(MemoryException) {
+  inline void setSize(unsigned int size) {
     elements = new ReferenceCountedAllocator<TYPE>(size);
   }
 public:
@@ -133,7 +133,7 @@ public:
 
     @param size The number of elements in the vector. Must be non zero.
   */
-  explicit Vector(unsigned int size) throw(OutOfDomain);
+  explicit Vector(unsigned int size);
 
   /**
     Initializes vector from the specified array.
@@ -141,7 +141,7 @@ public:
     @param elements The desired elements.
     @param size The number of elements in the array.
   */
-  Vector(const TYPE elements[], unsigned int size) throw(OutOfDomain);
+  Vector(const TYPE elements[], unsigned int size);
 
   /**
     Initializes vector from other vector.
@@ -156,7 +156,7 @@ public:
 
     @param eq The vector containing the desired elements.
   */
-  Vector& operator=(const Vector& assign) throw(MemoryException);
+  Vector& operator=(const Vector& assign);
 
 
 
@@ -213,7 +213,7 @@ public:
 
     @param index The index of the desired element.
   */
-  const TYPE& getAt(unsigned int index) const throw(OutOfRange);
+  const TYPE& getAt(unsigned int index) const;
 
   /**
     Sets the element at the specified index.
@@ -221,14 +221,14 @@ public:
     @param index The index of the desired element.
     @param value The desired value.
   */
-  void setAt(unsigned int index, const TYPE& value) throw(OutOfRange);
+  void setAt(unsigned int index, const TYPE& value);
 
   /**
     Returns the element at the specified index.
 
     @param index The index of the desired element.
   */
-  inline Element operator[](unsigned int index) throw(OutOfRange) {
+  inline Element operator[](unsigned int index) {
     return Element(*this, index);
   }
 
@@ -259,14 +259,14 @@ public:
 
     @param value The vector to be added.
   */
-  Vector& add(const Vector& value) throw(IncompatibleVectors);
+  Vector& add(const Vector& value);
 
   /**
     Subtracts the specified vector from this vector.
 
     @param vector The vector to be subtracted.
   */
-  Vector& subtract(const Vector& value) throw(IncompatibleVectors);
+  Vector& subtract(const Vector& value);
 
   /**
     Multiplies this vector with the specified value.
@@ -308,14 +308,14 @@ public:
 
     @param vector Vector to be compared.
   */
-  bool operator==(const Vector& vector) const throw(IncompatibleVectors);
+  bool operator==(const Vector& vector) const;
 
   /**
     Adds the specified vector from this vector.
 
     @param value The value to be added.
   */
-  inline Vector& operator+=(const Vector& value) throw(IncompatibleVectors) {
+  inline Vector& operator+=(const Vector& value) {
     return add(value);
   }
 
@@ -324,7 +324,7 @@ public:
 
     @param value The value to be subtracted.
   */
-  inline Vector& operator-=(const Vector& value) throw(IncompatibleVectors) {
+  inline Vector& operator-=(const Vector& value) {
     return subtract(value);
   }
 
@@ -370,17 +370,17 @@ public:
 /**
     Returns the product of the vector and the value.
   */
-  friend Vector operator* <>(const Vector& left, const TYPE& right) throw(MemoryException);
+  friend Vector operator* <>(const Vector& left, const TYPE& right);
 
   /**
     Returns the product of the vector and the value.
   */
-  friend Vector operator* <>(const TYPE& left, const Vector& right) throw(MemoryException);
+  friend Vector operator* <>(const TYPE& left, const Vector& right);
 
   /**
     Returns the result of the vector divided by the value.
   */
-  friend Vector operator/ <>(const Vector& left, const TYPE& right) throw(MemoryException);
+  friend Vector operator/ <>(const Vector& left, const TYPE& right);
 
   /**
     Returns the dot product of the two vectors.
@@ -398,19 +398,19 @@ public:
   Returns the product of the vector and the value.
 */
 template<class TYPE>
-Vector<TYPE> operator*(const Vector<TYPE>& left, const TYPE& right) throw(MemoryException);
+Vector<TYPE> operator*(const Vector<TYPE>& left, const TYPE& right);
 
 /**
   Returns the product of the vector and the value.
 */
 template<class TYPE>
-Vector<TYPE> operator*(const TYPE& left, const Vector<TYPE>& right) throw(MemoryException);
+Vector<TYPE> operator*(const TYPE& left, const Vector<TYPE>& right);
 
 /**
   Returns the result of the vector divided by the value.
 */
 template<class TYPE>
-Vector<TYPE> operator/(const Vector<TYPE>& left, const TYPE& right) throw(MemoryException);
+Vector<TYPE> operator/(const Vector<TYPE>& left, const TYPE& right);
 
 /**
   Returns the dot product of the two vectors.

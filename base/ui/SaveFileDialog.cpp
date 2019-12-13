@@ -42,7 +42,7 @@ void SaveFileDialog::setFilters(const Map<String, String>& filters) noexcept
   this->filters = filters;
 }
 
-bool SaveFileDialog::execute() throw(UserInterfaceException)
+bool SaveFileDialog::execute()
 {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   typedef BOOL (WINAPI *FGetSaveFileNameW)(LPOPENFILENAME);

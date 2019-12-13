@@ -38,7 +38,7 @@ public:
     Aborts any pending asynchronous operations (read as well as write) issued by
     the executing thread.
   */
-  //virtual void asyncCancel() throw(AsynchronousException) = 0;
+  //virtual void asyncCancel() = 0;
 
   virtual ~AsynchronousStream() noexcept(false);
 };

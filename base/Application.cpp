@@ -792,7 +792,7 @@ MutualExclusion& Application::getLock() noexcept
   return lock;
 }
 
-Application::Application(const String& _formalName) throw(SingletonException)
+Application::Application(const String& _formalName)
   : formalName(_formalName),
     exitCode(EXIT_CODE_NORMAL),
     terminated(false),
@@ -806,7 +806,7 @@ Application::Application(
   const String& _formalName,
   int numberOfArguments,
   const char* arguments[],
-  const char* environment[]) throw(SingletonException, OutOfDomain)
+  const char* environment[])
   : formalName(_formalName),
     exitCode(EXIT_CODE_NORMAL),
     terminated(false),

@@ -44,7 +44,7 @@ public:
   /**
     Loads the character set from the specified file.
   */
-  static CharacterSet load(const String& path) throw(FileException, InvalidFormat);
+  static CharacterSet load(const String& path);
   
   /**
     Loads the character set.
@@ -52,17 +52,17 @@ public:
     @param serachPaths The serach paths.
     @param path The path of the character set (normally relative).
   */
-  static CharacterSet load(const Array<String>& searchPaths, const String& path) throw(FileException, InvalidFormat);
+  static CharacterSet load(const Array<String>& searchPaths, const String& path);
   
   /**
     Initializes the character set filled with 0.
   */
-  CharacterSet() throw(MemoryException);
+  CharacterSet();
   
   /**
     Initializes the character set from the specified file.
   */
-  inline CharacterSet(const String& path) throw(FileException, InvalidFormat)
+  inline CharacterSet(const String& path)
   {
     load(path);
   }
@@ -119,7 +119,7 @@ public:
     @param path The file path.
     @param byteOrder The desired byte order. Default is Architecture::NATIVE.
   */
-  void save(const String& path, Architecture::ByteOrder byteOrder = Architecture::NATIVE) const throw(FileException);
+  void save(const String& path, Architecture::ByteOrder byteOrder = Architecture::NATIVE) const;
 };
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

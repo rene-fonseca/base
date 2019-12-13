@@ -32,7 +32,7 @@ class CacheProvider {
 public:
   
   /** Returns the value for the specified key. */
-  virtual const VALUE& getValue(const KEY& key) throw(CacheException) = 0;
+  virtual const VALUE& getValue(const KEY& key) = 0;
 };
 
 /**
@@ -66,7 +66,7 @@ public:
   /**
     Initializes the cache with the specified initial capacity.
   */
-  Cache(MemorySize capacity) throw(OutOfDomain)
+  Cache(MemorySize capacity)
     : elements(capacity)
   {
   }
@@ -118,7 +118,7 @@ public:
     
     @param key The key of the value.
   */
-  inline const Value& getValue(const Key& key) const throw(CacheException)
+  inline const Value& getValue(const Key& key) const
   {
     if (!elements.hasKey(key)) {
       // Value value = provider->getValue();
@@ -140,7 +140,7 @@ public:
     Removes the specified key and its associated value from this cache.
     Raises InvalidKey if the key doesn't exist in the cache.
   */
-  inline void remove(const Key& key) throw(InvalidKey)
+  inline void remove(const Key& key)
   {
     elements.remove(key);
   }
@@ -182,7 +182,7 @@ public:
     Returns the value associated with the specified key when used as 'rvalue'.
     When used as 'lvalue' the key is associated with the specified value.
   */
-  inline typename HashTable<KEY, VALUE>::Element operator[](const Key& key) throw(InvalidKey)
+  inline typename HashTable<KEY, VALUE>::Element operator[](const Key& key)
   {
     return elements[key];
   }
@@ -190,7 +190,7 @@ public:
   /**
     Returns the value associated with the specified key.
   */
-  inline const Value& operator[](const Key& key) const throw(InvalidKey)
+  inline const Value& operator[](const Key& key) const
   {
     return elements.getValue(key);
   }

@@ -87,7 +87,7 @@ public:
   /**
     Sets the offset of the file region.
   */
-  inline void setOffset(long long offset) throw(OutOfDomain)
+  inline void setOffset(long long offset)
   {
     bassert(offset < LIMIT - size, OutOfDomain(this));
     this->offset = offset;
@@ -96,7 +96,7 @@ public:
   /**
     Sets the size of the file region.
   */
-  inline void setSize(unsigned int size) throw(OutOfDomain)
+  inline void setSize(unsigned int size)
   {
     bassert(offset < LIMIT - size, OutOfDomain(this));
     this->size = size;
@@ -121,7 +121,7 @@ public:
 };
 
 inline FileRegion::FileRegion(
-  long long _offset, unsigned int _size) throw(OutOfDomain)
+  long long _offset, unsigned int _size)
   : offset(_offset), size(_size)
 {
   bassert(offset < (LIMIT - size), OutOfDomain(this));

@@ -45,151 +45,151 @@ public:
     /**
       Decodes a reference.
     */
-    void read(OrbReference& value) throw(IOException);
+    void read(OrbReference& value);
   
     /**
       Decodes a string.
     */
-    void read(String& value) throw(IOException);
+    void read(String& value);
   
     /**
       Decodes a wide string.
     */
-    void read(WideString& value) throw(IOException);
+    void read(WideString& value);
   
     /**
       Decodes an array of chars.
     */
-    void read(char* buffer, unsigned int size) throw(IOException);
+    void read(char* buffer, unsigned int size);
   
     /**
       Decodes a char.
     */
-    void read(char& value) throw(IOException);
+    void read(char& value);
   
     /**
       Decodes an array of signed short integers.
     */
-    void read(short* buffer, unsigned int size) throw(IOException);
+    void read(short* buffer, unsigned int size);
   
     /**
       Decodes a signed short integer.
     */
-    void read(short& value) throw(IOException);
+    void read(short& value);
   
     /**
       Decodes an array of unsigned short integers.
     */
-    void read(unsigned short* buffer, unsigned int size) throw(IOException);
+    void read(unsigned short* buffer, unsigned int size);
   
     /**
       Decodes a unsigned short integer.
     */
-    void read(unsigned short&  value) throw(IOException);
+    void read(unsigned short&  value);
   
     /**
       Decodes an array of signed integers.
     */
-    void read(int* buffer, unsigned int size) throw(IOException);
+    void read(int* buffer, unsigned int size);
 
     /**
       Decodes a signed integer.
     */
-    void read(int& value) throw(IOException);
+    void read(int& value);
   
     /**
       Decodes an array of unsigned integers.
     */
-    void read(unsigned int* buffer, unsigned int size) throw(IOException);
+    void read(unsigned int* buffer, unsigned int size);
 
     /**
       Decodes an unsigned integer.
     */
-    void read(unsigned int& value) throw(IOException);
+    void read(unsigned int& value);
   
     /**
       Decodes an array of signed long integers.
     */
-    void read(long* buffer, unsigned int size) throw(IOException);
+    void read(long* buffer, unsigned int size);
 
     /**
       Decodes a signed long integer.
     */
-    void read(long& value) throw(IOException);
+    void read(long& value);
   
     /**
       Decodes an array of unsigned long integers.
     */
-    void read(unsigned long* buffer, unsigned int size) throw(IOException);
+    void read(unsigned long* buffer, unsigned int size);
 
     /**
       Decodes an unsigned long integer.
     */
-    void read(unsigned long& value) throw(IOException);
+    void read(unsigned long& value);
   
     /**
       Decodes an array of signed long long integers.
     */
-    void read(long long* buffer, unsigned int size) throw(IOException);
+    void read(long long* buffer, unsigned int size);
 
     /**
       Decodes a signed long long integer.
     */
-    void read(long long& value) throw(IOException);
+    void read(long long& value);
   
     /**
       Decodes an array of unsigned long long integers.
     */
-    void read(unsigned long long* buffer, unsigned int size) throw(IOException);
+    void read(unsigned long long* buffer, unsigned int size);
   
     /**
       Decodes an unsigned long long interger.
     */
-    void read(unsigned long long& value) throw(IOException);
+    void read(unsigned long long& value);
   
     /**
       Decodes an array of float.
     */
-    void read(float* buffer, unsigned int size) throw(IOException);
+    void read(float* buffer, unsigned int size);
   
     /**
       Decodes a float.
     */
-    void read(float& value) throw(IOException);
+    void read(float& value);
   
     /**
       Decodes an array of double.
     */
-    void read(double* buffer, unsigned int size) throw(IOException);
+    void read(double* buffer, unsigned int size);
   
     /**
       Decodes a double.
     */
-    void read(double& value) throw(IOException);
+    void read(double& value);
   
     /**
       Decodes an array of long double.
     */
-    void read(long double* buffer, unsigned int size) throw(IOException);
+    void read(long double* buffer, unsigned int size);
   
     /**
       Decodes a long double.
     */
-    void read(long double& value) throw(IOException);
+    void read(long double& value);
   };
   
   class LisaEncoder : public OrbEncoder {
   private:
 
     template<class DEST, class SRC>
-    inline void pushValue(SRC value) throw(IOException) {
+    inline void pushValue(SRC value) {
       LittleEndian<DEST> temp = value;
       OrbEncoder::push(Cast::getAddress(temp), sizeof(temp));
     }
     
     template<class DEST, class SRC>
     inline void pushArray(
-      const SRC* buffer, unsigned int size) throw(IOException) {
+      const SRC* buffer, unsigned int size) {
       if (Architecture::isLittleEndian() && (sizeof(SRC) == sizeof(DEST))) {
         OrbEncoder::push(
           Cast::pointer<const uint8*>(buffer),
@@ -215,155 +215,155 @@ public:
     /**
       Encodes the specified reference.
     */
-    void write(const OrbReference& value) throw(IOException);
+    void write(const OrbReference& value);
     
     /**
       Encodes the specified string.
     */
-    void write(const String& value) throw(IOException);
+    void write(const String& value);
     
     /**
       Encodes the specified wide string.
     */
-    void write(const WideString& value) throw(IOException);
+    void write(const WideString& value);
     
     /**
       Encodes the elements of the specified array.
     */
-    void write(const char* buffer, unsigned int size) throw(IOException);
+    void write(const char* buffer, unsigned int size);
     
     /**
       Encodes the specified value.
     */
-    void write(char value) throw(IOException);
+    void write(char value);
     
     /**
       Encodes the elements of the specified array.
     */
-    void write(const short* buffer, unsigned int size) throw(IOException);
+    void write(const short* buffer, unsigned int size);
     
     /**
       Encodes the specified value.
     */
-    void write(short value) throw(IOException);
-    
-    /**
-      Encodes the elements of the specified array.
-    */
-    void write(
-      const unsigned short* buffer, unsigned int size) throw(IOException);
-    
-    /**
-      Encodes the specified value.
-    */
-    void write(unsigned short value) throw(IOException);
-    
-    /**
-      Encodes the elements of the specified array.
-    */
-    void write(const int* buffer, unsigned int size) throw(IOException);
-    
-    /**
-      Encodes the specified value.
-    */
-    void write(int value) throw(IOException);
+    void write(short value);
     
     /**
       Encodes the elements of the specified array.
     */
     void write(
-      const unsigned int* buffer, unsigned int size) throw(IOException);
+      const unsigned short* buffer, unsigned int size);
     
     /**
       Encodes the specified value.
     */
-    void write(unsigned int value) throw(IOException);
+    void write(unsigned short value);
     
     /**
       Encodes the elements of the specified array.
     */
-    void write(const long* buffer, unsigned int size) throw(IOException);
+    void write(const int* buffer, unsigned int size);
     
     /**
       Encodes the specified value.
     */
-    void write(long value) throw(IOException);
+    void write(int value);
+    
+    /**
+      Encodes the elements of the specified array.
+    */
+    void write(
+      const unsigned int* buffer, unsigned int size);
+    
+    /**
+      Encodes the specified value.
+    */
+    void write(unsigned int value);
+    
+    /**
+      Encodes the elements of the specified array.
+    */
+    void write(const long* buffer, unsigned int size);
+    
+    /**
+      Encodes the specified value.
+    */
+    void write(long value);
   
     /**
       Encodes the elements of the specified array.
     */
     void write(
-      const unsigned long* buffer, unsigned int size) throw(IOException);
+      const unsigned long* buffer, unsigned int size);
     
     /**
       Encodes the specified value.
     */
-    void write(unsigned long value) throw(IOException);
+    void write(unsigned long value);
     
     /**
       Encodes the elements of the specified array.
     */
-    void write(const long long* buffer, unsigned int size) throw(IOException);
+    void write(const long long* buffer, unsigned int size);
     
     /**
       Encodes the specified value.
     */
-    void write(long long value) throw(IOException);
-    
-    /**
-      Encodes the elements of the specified array.
-    */
-    void write(
-      const unsigned long long* buffer, unsigned int size) throw(IOException);
-    
-    /**
-      Encodes the specified value.
-    */
-    void write(unsigned long long value) throw(IOException);
-    
-    /**
-      Encodes the elements of the specified array.
-    */
-    void write(const float* buffer, unsigned int size) throw(IOException);
-    
-    /**
-      Encodes the specified value.
-    */
-    void write(float value) throw(IOException);
-    
-    /**
-      Encodes the elements of the specified array.
-    */
-    void write(const double* buffer, unsigned int size) throw(IOException);
-    
-    /**
-      Encodes the specified value.
-    */
-    void write(double value) throw(IOException);
+    void write(long long value);
     
     /**
       Encodes the elements of the specified array.
     */
     void write(
-      const long double* buffer, unsigned int size) throw(IOException);
+      const unsigned long long* buffer, unsigned int size);
     
     /**
       Encodes the specified value.
     */
-    void write(long double value) throw(IOException);
+    void write(unsigned long long value);
+    
+    /**
+      Encodes the elements of the specified array.
+    */
+    void write(const float* buffer, unsigned int size);
+    
+    /**
+      Encodes the specified value.
+    */
+    void write(float value);
+    
+    /**
+      Encodes the elements of the specified array.
+    */
+    void write(const double* buffer, unsigned int size);
+    
+    /**
+      Encodes the specified value.
+    */
+    void write(double value);
+    
+    /**
+      Encodes the elements of the specified array.
+    */
+    void write(
+      const long double* buffer, unsigned int size);
+    
+    /**
+      Encodes the specified value.
+    */
+    void write(long double value);
   };
   
   /**
     Returns a new decoder.
   */
   Reference<OrbDecoder> getDecoder(
-    ProtectedPointer<Orb> orb) const throw(MemoryException);
+    ProtectedPointer<Orb> orb) const;
   
   /**
     Returns a new encoder.
   */
   Reference<OrbEncoder> getEncoder(
-    ProtectedPointer<Orb> orb) const throw(MemoryException);
+    ProtectedPointer<Orb> orb) const;
   
   /**
      Returns the global identifier of the encoding scheme.

@@ -19,72 +19,72 @@
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 PrimitiveOutputStream::PrimitiveOutputStream(
-  OutputStream& out) throw(BindException)
+  OutputStream& out)
   : FilterOutputStream(out) {
 }
 
-void PrimitiveOutputStream::writeBoolean(bool value) throw(IOException) {
+void PrimitiveOutputStream::writeBoolean(bool value) {
   const uint8 temp = value;
   write(Cast::getAddress(temp), sizeof(temp));
 }
 
-void PrimitiveOutputStream::writeChar(char value) throw(IOException) {
+void PrimitiveOutputStream::writeChar(char value) {
   const uint8 temp = value;
   write(Cast::getAddress(temp), sizeof(temp));
 }
 
-void PrimitiveOutputStream::writeShortInteger(short value) throw(IOException) {
+void PrimitiveOutputStream::writeShortInteger(short value) {
   BigEndian<int16> temp;
   temp = value;
   write(Cast::getAddress(temp), sizeof(temp));
 }
 
 void PrimitiveOutputStream::writeUnsignedShortInteger(
-  unsigned short value) throw(IOException) {
+  unsigned short value) {
   BigEndian<uint16> temp;
   temp = value;
   write(Cast::getAddress(temp), sizeof(temp));
 }
 
-void PrimitiveOutputStream::writeInteger(int value) throw(IOException) {
+void PrimitiveOutputStream::writeInteger(int value) {
   BigEndian<int32> temp;
   temp = value;
   write(Cast::getAddress(temp), sizeof(temp));
 }
 
 void PrimitiveOutputStream::writeUnsignedInteger(
-  unsigned int value) throw(IOException) {
+  unsigned int value) {
   BigEndian<uint16> temp;
   temp = value;
   write(Cast::getAddress(temp), sizeof(temp));
 }
 
 void PrimitiveOutputStream::writeLongInteger(
-  long long value) throw(IOException) {
+  long long value) {
   BigEndian<int64> temp;
   temp = value;
   write(Cast::getAddress(temp), sizeof(temp));
 }
 
 void PrimitiveOutputStream::writeUnsignedLongInteger(
-  unsigned long long value) throw(IOException) {
+  unsigned long long value) {
   BigEndian<uint64> temp;
   temp = value;
   write(Cast::getAddress(temp), sizeof(temp));
 }
 
-void PrimitiveOutputStream::writeFloat(float value) throw(IOException) {
+void PrimitiveOutputStream::writeFloat(float value) {
   FloatingPoint::IEEE754SinglePrecision temp = value;
   write(Cast::getAddress(temp), sizeof(temp));
 }
 
-void PrimitiveOutputStream::writeDouble(double value) throw(IOException) {
+void PrimitiveOutputStream::writeDouble(double value) {
   FloatingPoint::IEEE754DoublePrecision temp = value;
   write(Cast::getAddress(temp), sizeof(temp));
 }
 
 void PrimitiveOutputStream::writeLongDouble(
-  long double value) throw(IOException) {
+  long double value) {
   FloatingPoint::IEEEQuadruplePrecision temp = value;
   write(Cast::getAddress(temp), sizeof(temp));
 }

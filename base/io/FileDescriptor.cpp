@@ -73,7 +73,7 @@ FileDescriptor& FileDescriptor::operator=(const FileDescriptor& copy) noexcept
   return *this;
 }
 
-void FileDescriptor::close() throw(IOException)
+void FileDescriptor::close()
 {
   fd = Descriptor::invalid;
 }
@@ -148,7 +148,7 @@ bool FileDescriptor::isPipe() const noexcept
 #endif
 }
 
-int FileDescriptor::getFlags() const throw(IOException)
+int FileDescriptor::getFlags() const
 {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   return 0;
@@ -161,7 +161,7 @@ int FileDescriptor::getFlags() const throw(IOException)
 #endif // flavor
 }
 
-void FileDescriptor::setFlags(int flags) throw(IOException)
+void FileDescriptor::setFlags(int flags)
 {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
 #else // unix
@@ -188,7 +188,7 @@ void FileDescriptor::setHandle(OperatingSystem::Handle handle) noexcept
   }
 }
 
-void FileDescriptor::setNonBlocking(bool value) throw(IOException)
+void FileDescriptor::setNonBlocking(bool value)
 {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
 #else // unix

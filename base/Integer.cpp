@@ -97,17 +97,17 @@ inline int parseInteger(const TYPE* src, const TYPE* end, unsigned int flags)
   return static_cast<int>(value);
 }
 
-int Integer::parse(const char* src, const char* end, unsigned int flags) throw(InvalidFormat)
+int Integer::parse(const char* src, const char* end, unsigned int flags)
 {
   return parseInteger(src, end, flags);
 }
 
-int Integer::parse(const wchar* src, const wchar* end, unsigned int flags) throw(InvalidFormat)
+int Integer::parse(const wchar* src, const wchar* end, unsigned int flags)
 {
   return parseInteger(src, end, flags);
 }
 
-int Integer::parse(const ucs4* src, const ucs4* end, unsigned int flags) throw(InvalidFormat)
+int Integer::parse(const ucs4* src, const ucs4* end, unsigned int flags)
 {
   return parseInteger(src, end, flags);
 }

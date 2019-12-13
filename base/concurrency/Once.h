@@ -54,7 +54,7 @@ private:
   /**
     Internal implementation for the getToken() method.
   */
-  bool getTokenImpl() throw(ResourceException);
+  bool getTokenImpl();
 public:
   
   /**
@@ -68,7 +68,7 @@ public:
     invoked by the thread for which getToken() returned true. Raises
     ResourceException if unable to allocate the required resources.
   */
-  inline bool getToken() throw(ResourceException)
+  inline bool getToken()
   {
     return mask && getTokenImpl();
   }

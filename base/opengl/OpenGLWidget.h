@@ -34,7 +34,7 @@ private:
   /**
     Initializes the OpenGL context.
   */
-  nothing initialize(const Format& format) throw(OpenGLException, UserInterfaceException);
+  nothing initialize(const Format& format);
   
   /**
     Releases the rendering context.
@@ -48,7 +48,7 @@ public:
   /**
     Initializes the OpenGL widget.
   */
-  OpenGLWidget(Window& owner, const Format& format) throw(OpenGLException, UserInterfaceException);
+  OpenGLWidget(Window& owner, const Format& format);
 
   /**
     Invoked when the widget should be repainted.

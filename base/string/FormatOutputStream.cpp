@@ -43,7 +43,7 @@ FormatOutputStream& FormatOutputStream::operator<<(const FormatOutputStream::Sou
   return *this << location.getLocation() << ' ' << '[' << DEC << location.getCount() << ']';
 }
 
-FormatOutputStream::FormatOutputStream(OutputStream& out, unsigned int size) throw(BindException)
+FormatOutputStream::FormatOutputStream(OutputStream& out, unsigned int size)
   : BufferedOutputStream(out, size),
     defaultContext(DEFAULT_CONTEXT),
     context(DEFAULT_CONTEXT)

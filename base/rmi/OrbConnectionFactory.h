@@ -52,7 +52,7 @@ public:
   /**
     Invoked by the orb.
   */
-  virtual void run(ProtectedPointer<Orb> orb) throw(OrbException) = 0;
+  virtual void run(ProtectedPointer<Orb> orb) = 0;
   
   /**
     Destroys the connection factory.

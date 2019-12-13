@@ -124,7 +124,7 @@ protected:
     /**
       Removes the value at the front of the queue.
     */
-    Value pop() throw(InvalidNode)
+    Value pop()
     {
       if (!size) {
         throw InvalidNode("Queue is empty.", this);
@@ -226,7 +226,7 @@ public:
     Removes the element at the front of the queue. Raises InvalidNode if the
     queue is empty.
   */
-  Value pop() throw(InvalidNode)
+  Value pop()
   {
     ExclusiveSynchronize<Guard>(*this);
     elements.copyOnWrite();

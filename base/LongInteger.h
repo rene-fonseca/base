@@ -54,7 +54,7 @@ public:
     @param string The string representation.
     @param flags The parsing flags.
   */
-  static long long parse(const char* src, const char* end, unsigned int flags = FLAG_DEFAULT) throw(InvalidFormat);
+  static long long parse(const char* src, const char* end, unsigned int flags = FLAG_DEFAULT);
 
   /**
     Returns the value of the integer string representation.
@@ -62,7 +62,7 @@ public:
     @param string The string representation.
     @param flags The parsing flags.
   */
-  static inline long long parse(const String& string, unsigned int flags = FLAG_DEFAULT) throw(InvalidFormat)
+  static inline long long parse(const String& string, unsigned int flags = FLAG_DEFAULT)
   {
     return parse(string.native(), string.native() + string.getLength(), flags);
   }

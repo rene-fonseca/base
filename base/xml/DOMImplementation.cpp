@@ -78,7 +78,7 @@ bool DOMImplementation::hasFeature(
 }
 
 Document DOMImplementation::createDocument(
-  const String& version) throw(DOMException) {
+  const String& version) {
 #if defined(_COM_AZURE_DEV__BASE__XML_XMLSOFT_ORG)
   xmlDoc* doc = xmlNewDoc(
     Cast::pointer<const xmlChar*>(version.getElements())
@@ -92,7 +92,7 @@ Document DOMImplementation::createDocument(
 
 Document DOMImplementation::createDocument(
   DocumentType doctype,
-  const String& version) throw(DOMException) {
+  const String& version) {
 #if defined(_COM_AZURE_DEV__BASE__XML_XMLSOFT_ORG)
   bassert(
     Document(doctype.getOwnerDocument()).isInvalid(),
@@ -124,7 +124,7 @@ Document DOMImplementation::createDocument(
   const String& namespaceURI,
   const String& qualifiedName,
   DocumentType doctype,
-  const String& version) throw(DOMException) {
+  const String& version) {
 #if defined(_COM_AZURE_DEV__BASE__XML_XMLSOFT_ORG)
   bassert(
     Document(doctype.getOwnerDocument()).isInvalid(),
@@ -161,7 +161,7 @@ Document DOMImplementation::createDocument(
 }
   
 Document DOMImplementation::createFromURI(
-  const String& systemId, Mode mode, unsigned int flags) throw(DOMException) {
+  const String& systemId, Mode mode, unsigned int flags) {
 #if defined(_COM_AZURE_DEV__BASE__XML_XMLSOFT_ORG)
   
   xmlDoValidityCheckingDefaultValue =
@@ -196,7 +196,7 @@ Document DOMImplementation::createFromURI(
 }
 
 Document DOMImplementation::createDocumentFromString(
-  const String& value, Mode mode, unsigned int flags) throw(DOMException) {
+  const String& value, Mode mode, unsigned int flags) {
 #if defined(_COM_AZURE_DEV__BASE__XML_XMLSOFT_ORG)
   xmlSubstituteEntitiesDefault(
     (flags & DOMImplementation::SUBSTITUTE_ENTITIES) ? 1 : 0
@@ -235,7 +235,7 @@ Document DOMImplementation::createDocumentFromString(
 DocumentType DOMImplementation::createDocumentType(
   const String& qualifiedName,
   const String& publicId,
-  const String& systemId) throw(DOMException) {
+  const String& systemId) {
 #if defined(_COM_AZURE_DEV__BASE__XML_XMLSOFT_ORG)
   xmlDtd* node = xmlCreateIntSubset(
     0,
@@ -251,7 +251,7 @@ DocumentType DOMImplementation::createDocumentType(
 }
 
 void DOMImplementation::saveDocument(
-  Document document, const String& filename, bool indent) throw(DOMException) {
+  Document document, const String& filename, bool indent) {
 #if defined(_COM_AZURE_DEV__BASE__XML_XMLSOFT_ORG)
   xmlDoc* doc = (xmlDoc*)document.getContext();
 	int bytesWritten =
@@ -266,7 +266,7 @@ void DOMImplementation::saveDocument(
   Document document,
   const String& filename,
   const String& encoding,
-  bool indent) throw(DOMException) {
+  bool indent) {
 #if defined(_COM_AZURE_DEV__BASE__XML_XMLSOFT_ORG)
   xmlDoc* doc = (xmlDoc*)document.getContext();
 	int bytesWritten = xmlSaveFormatFileEnc(
@@ -282,7 +282,7 @@ void DOMImplementation::saveDocument(
 }
 
 String DOMImplementation::saveDocumentToMemory(
-  Document document, bool spaces) throw(DOMException) {
+  Document document, bool spaces) {
 #if defined(_COM_AZURE_DEV__BASE__XML_XMLSOFT_ORG)
   // TAG: fixme - xmlIndentTreeOutput = 1 or xmlKeepBlanksDefault(0)
   xmlDoc* doc = (xmlDoc*)document.getContext();
@@ -299,7 +299,7 @@ String DOMImplementation::saveDocumentToMemory(
 }
 
 String DOMImplementation::saveDocumentToMemory(
-  Document document, const String& encoding, bool spaces) throw(DOMException) {
+  Document document, const String& encoding, bool spaces) {
 #if defined(_COM_AZURE_DEV__BASE__XML_XMLSOFT_ORG)
   // TAG: fixme - xmlIndentTreeOutput = 1 or xmlKeepBlanksDefault(0)
   xmlDoc* doc = (xmlDoc*)document.getContext();

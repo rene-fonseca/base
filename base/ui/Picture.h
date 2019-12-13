@@ -36,7 +36,7 @@ public:
   /**
     Initializes the picture widget.
   */
-  Picture(Window& owner) throw(UserInterfaceException);
+  Picture(Window& owner);
   
   /** Pixel format. */
   enum Format {
@@ -87,7 +87,7 @@ public:
   /**
     Sets the bitmap.
   */
-  void setBitmap(const Bitmap& bitmap) throw(UserInterfaceException);
+  void setBitmap(const Bitmap& bitmap);
   
   /**
     Invoked when the widget should be updated.

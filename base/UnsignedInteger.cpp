@@ -16,7 +16,7 @@
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
-unsigned int UnsignedInteger::parse(const char* src, const char* end, unsigned int flags) throw(InvalidFormat)
+unsigned int UnsignedInteger::parse(const char* src, const char* end, unsigned int flags)
 {
   unsigned int base = 10; // default integer base
   

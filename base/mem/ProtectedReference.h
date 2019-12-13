@@ -63,7 +63,7 @@ public:
     
     @param value The desired pointer value.
   */
-  inline ProtectedReference(TYPE* _value) throw(NullPointer)
+  inline ProtectedReference(TYPE* _value)
     : value(_value)
   {
     if (!value) {
@@ -96,7 +96,7 @@ public:
     Dynamic cast. Raises CastException if unable to cast.
   */
   template<class POLY>
-  inline ProtectedReference<POLY> cast() throw(CastException)
+  inline ProtectedReference<POLY> cast()
   {
     POLY* result = dynamic_cast<POLY*>(value);
     if (!result) {
@@ -109,7 +109,7 @@ public:
     Dynamic cast. Raises CastException if unable to cast.
   */
   template<class POLY>
-  inline const ProtectedReference<POLY> cast() const throw(CastException)
+  inline const ProtectedReference<POLY> cast() const
   {
     const POLY* result = dynamic_cast<const POLY*>(value);
     if (!result) {

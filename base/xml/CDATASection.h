@@ -49,7 +49,7 @@ protected:
   }
 public:
 
-  inline CDATASection(Node node) throw(CastException)
+  inline CDATASection(Node node)
     : Text(node) {
     bassert(
       node.isInvalid() || (node.getType() == CDATA_SECTION_NODE),
@@ -57,7 +57,7 @@ public:
     );
   }
   
-  inline CDATASection(Text node) throw(CastException)
+  inline CDATASection(Text node)
     : Text(node) {
     bassert(
       node.isInvalid() || (node.getType() == CDATA_SECTION_NODE),

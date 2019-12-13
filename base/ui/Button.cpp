@@ -15,7 +15,7 @@
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
-Button::Button(Window& owner) throw(UserInterfaceException)
+Button::Button(Window& owner)
   : Widget(owner),
     grayedBrush(Color(192, 192, 192)),
     pressedBrush(Color(64, 96, 192)),
@@ -32,14 +32,14 @@ Button::Button(Window& owner) throw(UserInterfaceException)
   setBackgroundMode(true);
 }
 
-void Button::setText(const String& text) throw(UserInterfaceException) {
+void Button::setText(const String& text) {
   if (text != this->text) {
     this->text = text;
     invalidate();
   }
 }
 
-Dimension Button::getPreferredSize() throw(UserInterfaceException) {
+Dimension Button::getPreferredSize() {
   Dimension dimension = getDimensionOf(text);
   return Dimension(
     dimension.getWidth() + 2 * PREFERRED_HORIZONTAL_MARGIN,

@@ -3102,11 +3102,11 @@ public:
   */
   void perspective(GLdouble fovy, GLdouble aspectRatio, GLdouble zNear, GLdouble zFar) noexcept;
   
-  Vector3D<double> project(Vector3D<double> object, const Matrix4x4<double> model, const Matrix4x4<double> projection, const GLint viewport[4]) throw(OpenGLException);
+  Vector3D<double> project(Vector3D<double> object, const Matrix4x4<double> model, const Matrix4x4<double> projection, const GLint viewport[4]);
   
   void pickMatrix(GLdouble x, GLdouble y, GLdouble width, GLdouble height, GLint viewport[4]) noexcept;
   
-  Vector3D<double> unProject(const Vector3D<double>& window, const Matrix4x4<double>& model, const Matrix4x4<double>& projection, const GLint viewport[4]) throw(OpenGLException);
+  Vector3D<double> unProject(const Vector3D<double>& window, const Matrix4x4<double>& model, const Matrix4x4<double>& projection, const GLint viewport[4]);
 
   /**
     Draws a box.
@@ -3152,7 +3152,7 @@ public:
     
     @param lastest Selects the latest specification to be loaded. The default is version 1.4 (i.e. 0x010400).
   */
-  OpenGL(unsigned int latest = 0x010400) throw(OpenGLException);
+  OpenGL(unsigned int latest = 0x010400);
 
   /**
     Returns the OpenGL specification version (0x010100, 0x010200, 0x010201, 0x010300, or 0x010400).
@@ -3196,7 +3196,7 @@ public:
   /**
     Returns true if the extension is supported.
   */
-  bool isSupported(const String& name) throw(OpenGLException);
+  bool isSupported(const String& name);
 
   class _COM_AZURE_DEV__BASE__API Block {
   private:
@@ -3253,7 +3253,7 @@ public:
     Allocator<unsigned int> objects;
   public:
     
-    inline ReserveDisplayLists(OpenGL& _openGL, unsigned int _numberOfLists) throw(OutOfDomain, OpenGLException)
+    inline ReserveDisplayLists(OpenGL& _openGL, unsigned int _numberOfLists)
       : openGL(_openGL),
         numberOfLists(_numberOfLists),
         objects(_numberOfLists) {
@@ -3287,7 +3287,7 @@ public:
     unsigned int name = 0;
   public:
     
-    inline ReserveTexture(OpenGL& _openGL) throw(OutOfDomain)
+    inline ReserveTexture(OpenGL& _openGL)
       : openGL(_openGL) {
       openGL.glGenTextures(1, &name);
     }

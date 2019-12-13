@@ -1213,9 +1213,9 @@ inline InvokeConstMember<TYPE, RESULT> invokeMember(RESULT (TYPE::*member)() con
   
     MyLock();
     
-    void lock() throw(LockException);
+    void lock();
     
-    void unlock() throw(LockException);
+    void unlock();
   };
   
   class MyPrefix {
@@ -1227,7 +1227,7 @@ inline InvokeConstMember<TYPE, RESULT> invokeMember(RESULT (TYPE::*member)() con
     MyPrefix(MyLock& _lock) noexcept : lock(_lock) {
     }
     
-    inline operator()() throw(LockException) {
+    inline operator()() {
       lock.lock();
     }
   };
@@ -1241,7 +1241,7 @@ inline InvokeConstMember<TYPE, RESULT> invokeMember(RESULT (TYPE::*member)() con
     MySuffix(MyLock& _lock) noexcept : lock(_lock) {
     }
     
-    inline void operator()() throw(LockException) {
+    inline void operator()() {
       lock.unlock();
     }
   };

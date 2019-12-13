@@ -59,7 +59,7 @@ public:
     /**
       Create a new event object of the specified type.
     */
-    virtual DOMEvent createEvent(const String& type) throw(DOMException) = 0;
+    virtual DOMEvent createEvent(const String& type) = 0;
   };
 
   class _COM_AZURE_DEV__BASE__API EventException : public Exception {
@@ -80,7 +80,7 @@ public:
                                      bool useCapture) noexcept = 0;
     
     virtual bool dispatchEvent(
-      const DOMEvent& event) throw(EventException) = 0;
+      const DOMEvent& event) = 0;
   };
   
   /**
@@ -107,7 +107,7 @@ public:
     @param version The XML version. The default is "1.0".
   */
   Document createDocument(
-    const String& version = "1.0") throw(DOMException);
+    const String& version = "1.0");
   
   /**
     Creates a DOM Document object of the specified type.
@@ -117,7 +117,7 @@ public:
   */
   Document createDocument(
     DocumentType doctype,
-    const String& version = "1.0") throw(DOMException);
+    const String& version = "1.0");
 
   /**
     Creates a DOM Document object of the specified type with its document
@@ -132,7 +132,7 @@ public:
     const String& namespaceURI,
     const String& qualifiedName,
     DocumentType doctype,
-    const String& version = "1.0") throw(DOMException);
+    const String& version = "1.0");
   
   /**
     Creates a document from a URI.
@@ -145,7 +145,7 @@ public:
     const String& systemId,
     Mode mode = VALIDATING,
     unsigned int flags = WARNINGS|PEDANTIC|DETECT_IDS|COMPLETE_ATTRIBUTE_LISTS)
-    throw(DOMException);
+   ;
 
   /**
     Creates the document from a string.
@@ -158,7 +158,7 @@ public:
     const String& value,
     Mode mode = VALIDATING,
     unsigned int flags = WARNINGS|PEDANTIC|DETECT_IDS|COMPLETE_ATTRIBUTE_LISTS)
-    throw(DOMException);
+   ;
 
   /**
     Creates an empty DocumentType node.
@@ -166,7 +166,7 @@ public:
   DocumentType createDocumentType(
     const String& qualifiedName,
     const String& publicId,
-    const String& systemId) throw(DOMException);
+    const String& systemId);
   
   /**
     Saves the document to the specified file.
@@ -179,7 +179,7 @@ public:
   void saveDocument(
     Document document,
     const String& filename,
-    bool indent = false) throw(DOMException);
+    bool indent = false);
   
   /**
     Saves the document to the specified file.
@@ -194,7 +194,7 @@ public:
     Document document,
     const String& filename,
     const String& encoding,
-    bool indent) throw(DOMException);
+    bool indent);
 
   /**
     Saves the document to a string.
@@ -204,7 +204,7 @@ public:
     The default is false.
   */
   String saveDocumentToMemory(
-    Document document, bool spaces = false) throw(DOMException);
+    Document document, bool spaces = false);
 
   /**
     Saves the document to a string.
@@ -217,7 +217,7 @@ public:
   String saveDocumentToMemory(
     Document document,
     const String& encoding,
-    bool spaces = false) throw(DOMException);
+    bool spaces = false);
 };
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

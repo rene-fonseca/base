@@ -156,7 +156,7 @@ public:
     Sets the desired number of threads of the pool. Blocks until accomplished.
     Raises ThreadPoolException is the pool has been terminated.
   */
-  void setThreads(unsigned int value) throw(ThreadPoolException);
+  void setThreads(unsigned int value);
 
   /**
     Asks all the threads to terminate. Jobs that have not been started are not

@@ -28,7 +28,7 @@ _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
     ReadWriteLock guard;
   public:
 
-    void myFirstMethod() const throw(MyResourceException) {
+    void myFirstMethod() const {
       SynchronizeShared<ReadWriteLock> synchronizeShared(guard);
       // do something as long as it doesn't modify the object
       if (earlyReturn) {
@@ -37,7 +37,7 @@ _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
       bassert(!somethingWentWrong, MyResourceException()); // no need to explicitly release guard
     }
 
-    void mySecondMethod() throw(MyResourceException) {
+    void mySecondMethod() {
       ExclusiveExclusive<ReadWriteLock> exclusiveShared(guard);
       // do modification of object
       if (earlyReturn) {

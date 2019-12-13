@@ -55,7 +55,7 @@ public:
   /**
     Returns the object.
   */
-  inline TYPE& operator*() throw(NullPointer) {
+  inline TYPE& operator*() {
     if (!object) {
       throw NullPointer(this);
     }

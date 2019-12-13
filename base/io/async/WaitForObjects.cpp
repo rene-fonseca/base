@@ -32,7 +32,7 @@ unsigned int WaitForObjects::getMaximumNumberOfObjects() const noexcept
   return MAXIMUM_WAIT_OBJECTS;
 }
 
-void WaitForObjects::registerObject(Object* object) throw(OutOfDomain)
+void WaitForObjects::registerObject(Object* object)
 { // FIXME: exception name
   bassert(object, OutOfDomain());
   bassert(handles.getSize() == MAXIMUM_WAIT_OBJECTS, OutOfDomain());

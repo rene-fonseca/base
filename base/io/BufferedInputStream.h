@@ -56,7 +56,7 @@ public:
   BufferedInputStream(
     InputStream& in,
     unsigned int size = DEFAULT_BUFFER_SIZE
-  ) throw(BindException, MemoryException);
+  );
 
   /**
     Returns the unread bytes of the internal buffer as sequence. The size of
@@ -87,7 +87,7 @@ public:
 
     @return Available number of bytes in stream.
   */
-  unsigned int available() const throw(IOException);
+  unsigned int available() const;
 
   /**
     Fills the specified buffer with bytes from the stream. Blocks if asked to read more bytes than available.
@@ -100,7 +100,7 @@ public:
   unsigned int read(
     uint8* buffer,
     unsigned int size,
-    bool nonblocking = false) throw(IOException);
+    bool nonblocking = false);
 
   /**
     Skips a specified number of bytes. Blocks if asked to skip more bytes than
@@ -109,12 +109,12 @@ public:
     @param count The number of bytes to skip.
     @return The actual number of bytes skipped.
   */
-  unsigned int skip(unsigned int count) throw(IOException);
+  unsigned int skip(unsigned int count);
 
   /**
     Blocking wait for input to become available.
   */
-  void wait() const throw(IOException);
+  void wait() const;
 
   /**
     Blocking wait for input to become available.
@@ -122,7 +122,7 @@ public:
     @param timeout The timeout periode in microseconds.
     @return True, if data is available. False, if the timeout periode expired.
   */
-  bool wait(unsigned int timeout) const throw(IOException);
+  bool wait(unsigned int timeout) const;
 
   /**
     This function ensures that the requested number of bytes is available in
@@ -133,7 +133,7 @@ public:
     @return The number of bytes in the internal buffer (only less than the
     requested number of bytes if EOF is hit).
   */
-  unsigned int peek(unsigned int count) throw(OutOfDomain, IOException);
+  unsigned int peek(unsigned int count);
 
   /**
     Destroy buffered input stream.

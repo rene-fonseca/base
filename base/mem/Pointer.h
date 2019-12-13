@@ -135,7 +135,7 @@ public:
     Dynamic cast to the specified type.
   */
   template<class POLY>
-  inline Pointer<POLY> cast() const throw(CastException)
+  inline Pointer<POLY> cast() const
   {
     const POLY* result = dynamic_cast<const POLY*>(value);
     if (!result) {

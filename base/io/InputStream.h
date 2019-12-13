@@ -37,7 +37,7 @@ public:
 
     @return Available number of bytes in stream.
   */
-  virtual unsigned int available() const throw(IOException) = 0;
+  virtual unsigned int available() const = 0;
 
 #if 0 // TAG: annoying to deal with nonblocking argument
   /**
@@ -52,7 +52,7 @@ public:
   */
   virtual unsigned int read(
     uint8* buffer,
-    unsigned int size) throw(IOException) = 0;
+    unsigned int size) = 0;
 #endif
   
   /**
@@ -70,7 +70,7 @@ public:
   virtual unsigned int read(
     uint8* buffer,
     unsigned int size,
-    bool nonblocking) throw(IOException) = 0;
+    bool nonblocking) = 0;
 
   /**
     Skips a specified number of bytes. Blocks if asked to skip more bytes than
@@ -79,12 +79,12 @@ public:
     @param count The number of bytes to skip.
     @return The actual number of bytes skipped.
   */
-  virtual unsigned int skip(unsigned int count) throw(IOException) = 0;
+  virtual unsigned int skip(unsigned int count) = 0;
 
   /**
     Blocking wait for input to become available.
   */
-  virtual void wait() const throw(IOException) = 0;
+  virtual void wait() const = 0;
 
   /**
     Blocking wait for input to become available.
@@ -92,7 +92,7 @@ public:
     @param timeout The timeout periode in microseconds.
     @return True, if data is available. False, if the timeout periode expired.
   */
-  virtual bool wait(unsigned int timeout) const throw(IOException) = 0;
+  virtual bool wait(unsigned int timeout) const = 0;
 
   inline ~InputStream() noexcept(false) { // MSC doesnt inherit noexcept
   }

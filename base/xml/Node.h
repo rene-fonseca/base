@@ -168,7 +168,7 @@ public:
 
     @return The node being appended.
   */
-  Node appendChild(Node child) throw(DOMException);
+  Node appendChild(Node child);
 
   /**
     Inserts the node newChild before the existing child node refChild. If
@@ -179,24 +179,24 @@ public:
 
     @return The node being inserted.
   */
-  Node insertBefore(Node newChild, Node refChild) throw(DOMException);
+  Node insertBefore(Node newChild, Node refChild);
 
   /**
     Removes the child node indicated by child from the list of children, and
     returns it.
   */
-  Node removeChild(Node child) throw(DOMException);
+  Node removeChild(Node child);
   
   /**
     Replaces the child node oldChild with newChild  in the list of children,
     and returns the oldChild node.
   */
-  Node replaceChild(Node newChild, Node oldChild) throw(DOMException);
+  Node replaceChild(Node newChild, Node oldChild);
   
   /**
     Returns a duplicate of this node.
   */
-  Node cloneNode(bool deep) throw(DOMException);
+  Node cloneNode(bool deep);
   
   /**
     Returns the local part of the qualified name of this node.
@@ -221,7 +221,7 @@ public:
   /**
     Returns the value of the node.
   */
-  String getValue() const throw(DOMException);
+  String getValue() const;
 
   /**
     Returns the Document object associated with this node.
@@ -232,12 +232,12 @@ public:
     The namespace prefix of this node, or an improper string if it is
     unspecified.
   */
-  String getPrefix() const throw(DOMException);
+  String getPrefix() const;
 
   /**
     Sets the prefix.
   */
-  void setPrefix(const String& prefix) throw(DOMException);
+  void setPrefix(const String& prefix);
   
   /**
     Returns the parent node.
@@ -287,12 +287,12 @@ public:
     references) separates Text nodes, i.e., there are neither adjacent Text
     nodes nor empty Text nodes.
   */
-  void normalize() throw(DOMException);
+  void normalize();
   
   /**
     Sets the value of the node.
   */
-  void setValue(const String& value) throw(DOMException);
+  void setValue(const String& value);
   
   /**
     Returns true if the node has been initialized.

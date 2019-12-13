@@ -28,7 +28,7 @@ _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 class _COM_AZURE_DEV__BASE__API Layout : public Widget {
 public:
   
-  Layout(Window& owner) throw(UserInterfaceException);
+  Layout(Window& owner);
 
   Dimension getMinimumSize() const noexcept;
 

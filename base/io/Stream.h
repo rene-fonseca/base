@@ -33,7 +33,7 @@ public:
     Closes the stream and releases any system resources associated with the
     stream.
   */
-  virtual void close() throw(IOException) = 0;
+  virtual void close() = 0;
 
   /**
     Destroy stream object.

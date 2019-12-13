@@ -20,13 +20,13 @@ void WideStringOutputStreamWrapper::ensureCapacity(MemorySize capacity)
   string.ensureCapacity(capacity);
 }
 
-void WideStringOutputStreamWrapper::close() throw(IOException)
+void WideStringOutputStreamWrapper::close()
 {
   bassert(!closed, IOException("Output stream is closed", this));
   closed = true;
 }
 
-void WideStringOutputStreamWrapper::flush() throw(IOException)
+void WideStringOutputStreamWrapper::flush()
 {
   bassert(!closed, IOException("Output stream is closed", this));
 }
@@ -40,7 +40,7 @@ void WideStringOutputStreamWrapper::restart()
 unsigned int WideStringOutputStreamWrapper::write(
   const uint8* buffer,
   unsigned int size,
-  bool nonblocking) throw(IOException)
+  bool nonblocking)
 {
   bassert(!closed, IOException("Output stream is closed", this));
   if (size > 0) {
@@ -51,14 +51,14 @@ unsigned int WideStringOutputStreamWrapper::write(
 
 
 
-WideStringOutputStream::WideStringOutputStream() throw(BindException)
+WideStringOutputStream::WideStringOutputStream()
   : FormatOutputStream(stream)
 {
   stream.ensureCapacity(1024);
 }
 
 WideStringOutputStream::WideStringOutputStream(
-  unsigned int granularity) throw(BindException)
+  unsigned int granularity)
   : FormatOutputStream(stream)
 {
   stream.ensureCapacity(1024);

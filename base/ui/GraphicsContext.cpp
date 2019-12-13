@@ -33,7 +33,7 @@ GraphicsContext::GraphicsContextObjectHandle::~GraphicsContextObjectHandle() noe
 #endif // flavor
 }
 
-GraphicsContext::Pen::Pen(Color color) throw(UserInterfaceException) {
+GraphicsContext::Pen::Pen(Color color) {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   HPEN pen = ::CreatePen(PS_SOLID, 1, color.getValue());
   bassert(pen, UserInterfaceException(this));
@@ -45,7 +45,7 @@ GraphicsContext::Pen::Pen(Color color) throw(UserInterfaceException) {
 GraphicsContext::Pen::Pen(
   PenStyle style,
   Color color,
-  unsigned int width) throw(UserInterfaceException) {
+  unsigned int width) {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   static const int NATIVE_STYLES[] = { // keep in sync with GraphicsContext::PenStyle
     PS_NULL, // NONE
@@ -70,7 +70,7 @@ GraphicsContext::Pen::Pen(
 }
 
 GraphicsContext::Brush::Brush(
-  SystemColor color) throw(UserInterfaceException) {
+  SystemColor color) {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   static const int NATIVE_COLORS[] = {
     COLOR_WINDOW, // WINDOW_BACKGROUND
@@ -92,7 +92,7 @@ GraphicsContext::Brush::Brush(
 #endif // flavor
 }
 
-GraphicsContext::Brush::Brush(Color color) throw(UserInterfaceException) {
+GraphicsContext::Brush::Brush(Color color) {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   HBRUSH brush = ::CreateSolidBrush(color.getValue());
   bassert(brush, UserInterfaceException(this));
@@ -102,7 +102,7 @@ GraphicsContext::Brush::Brush(Color color) throw(UserInterfaceException) {
 }
 
 GraphicsContext::Brush::Brush(
-  unsigned int color) throw(UserInterfaceException) {
+  unsigned int color) {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   HBRUSH brush = ::CreateSolidBrush(color & 0xffffff);
   bassert(brush, UserInterfaceException(this));
@@ -121,7 +121,7 @@ int CALLBACK EnumFontFamExProc(
 }
 #endif
 
-Array<String> GraphicsContext::Font::getFonts() throw(UserInterfaceException) {
+Array<String> GraphicsContext::Font::getFonts() {
   Array<String> result;
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
 //  LOGFONT logFont;
@@ -155,7 +155,7 @@ GraphicsContext::Font::Font(
   const String& name,
   unsigned short height,
   FontWeight weight,
-  unsigned int flags) throw(UserInterfaceException) {
+  unsigned int flags) {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   static int NATIVE_WEIGHTS[] = {
     FW_THIN, // THIN
@@ -194,7 +194,7 @@ GraphicsContext::Font::Font(
 #endif // flavor
 }
 
-void GraphicsContext::setPen(Pen pen) throw(UserInterfaceException) {
+void GraphicsContext::setPen(Pen pen) {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   this->pen = pen; // put lock on pen
   ::SelectObject(
@@ -205,7 +205,7 @@ void GraphicsContext::setPen(Pen pen) throw(UserInterfaceException) {
 #endif // flavor
 }
 
-void GraphicsContext::setBrush(Brush brush) throw(UserInterfaceException) {
+void GraphicsContext::setBrush(Brush brush) {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   this->brush = brush; // put lock on brush
   ::SelectObject(
@@ -216,7 +216,7 @@ void GraphicsContext::setBrush(Brush brush) throw(UserInterfaceException) {
 #endif // flavor
 }
 
-void GraphicsContext::setFont(Font font) throw(UserInterfaceException) {
+void GraphicsContext::setFont(Font font) {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   ::SelectObject(
     (HDC)graphicsContextHandle,
@@ -227,7 +227,7 @@ void GraphicsContext::setFont(Font font) throw(UserInterfaceException) {
 }
 
 void GraphicsContext::setBackgroundMode(
-  bool transparent) throw(UserInterfaceException) {
+  bool transparent) {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   ::SetBkMode(
     (HDC)graphicsContextHandle,
@@ -238,7 +238,7 @@ void GraphicsContext::setBackgroundMode(
 };
 
 void GraphicsContext::setBackgroundColor(
-  Color color) throw(UserInterfaceException) {
+  Color color) {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   ::SetBkColor(
     (HDC)graphicsContextHandle,
@@ -248,7 +248,7 @@ void GraphicsContext::setBackgroundColor(
 #endif // flavor
 };
 
-void GraphicsContext::setTextColor(Color color) throw(UserInterfaceException) {
+void GraphicsContext::setTextColor(Color color) {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   ::SetTextColor(
     (HDC)graphicsContextHandle,
@@ -259,7 +259,7 @@ void GraphicsContext::setTextColor(Color color) throw(UserInterfaceException) {
 };
 
 void GraphicsContext::setTextAlignment(
-  unsigned int alignment) throw(UserInterfaceException) {
+  unsigned int alignment) {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   unsigned int nativeAlignment = 0;
   if (alignment & Alignment::LEFT) {
@@ -284,7 +284,7 @@ void GraphicsContext::setTextAlignment(
 #endif // flavor
 }
 
-void GraphicsContext::clear() throw(UserInterfaceException) {
+void GraphicsContext::clear() {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   RECT rect;
   rect.left = 0;
@@ -309,7 +309,7 @@ void GraphicsContext::clear() throw(UserInterfaceException) {
 
 void GraphicsContext::clear(
   const Position& position,
-  const Dimension& dimension) throw(UserInterfaceException) {
+  const Dimension& dimension) {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   RECT rect = {0, 0, 0, 0};
   rect.left = position.getX();
@@ -340,7 +340,7 @@ void GraphicsContext::clear(
 void GraphicsContext::setPixel(
   const Position& position,
   Color color,
-  unsigned int flags) throw(UserInterfaceException) {
+  unsigned int flags) {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   bassert(
     ::SetPixel(
@@ -366,7 +366,7 @@ void GraphicsContext::setPixel(
 }
 
 Color GraphicsContext::getPixel(
-  const Position& position) throw(UserInterfaceException) {
+  const Position& position) {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   COLORREF result = ::GetPixel(
     (HDC)graphicsContextHandle,
@@ -384,7 +384,7 @@ Color GraphicsContext::getPixel(
 void GraphicsContext::setPixels(
   const Array<Position>& positions,
   Color color,
-  unsigned int flags) throw(UserInterfaceException) {
+  unsigned int flags) {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   Array<Position>::ReadIterator i = positions.getBeginReadIterator();
   const Array<Position>::ReadIterator end = positions.getEndReadIterator();
@@ -427,7 +427,7 @@ void GraphicsContext::setPixels(
 }
 
 void GraphicsContext::moveTo(
-  const Position& position) throw(UserInterfaceException) {
+  const Position& position) {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   bassert(
     ::MoveToEx(
@@ -445,7 +445,7 @@ void GraphicsContext::moveTo(
 
 void GraphicsContext::lineTo(
   const Position& position,
-  unsigned int flags) throw(UserInterfaceException) {
+  unsigned int flags) {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   bassert(
     ::LineTo(
@@ -463,7 +463,7 @@ void GraphicsContext::lineTo(
 void GraphicsContext::line(
   const Position& upperLeft,
   const Position& lowerRight,
-  unsigned int flags) throw(UserInterfaceException) {
+  unsigned int flags) {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   POINT points[3];
   points[0].x = upperLeft.getX();
@@ -495,7 +495,7 @@ void GraphicsContext::line(
 #endif // flavor  
 }
 
-// void GraphicsContext::polyline(const Array<Position>& points, unsigned int flags) throw(UserInterfaceException) {
+// void GraphicsContext::polyline(const Array<Position>& points, unsigned int flags) {
 // #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
 //   BASSERT(sizeof(POINTS) == (2 * sizeof(int)));
 //   ::Polyline(
@@ -516,7 +516,7 @@ void GraphicsContext::line(
 // #endif // flavor  
 // }
 
-// void GraphicsContext::segments() throw(UserInterface);
+// void GraphicsContext::segments();
 // XDrawSegments
 
 void GraphicsContext::arc(
@@ -524,7 +524,7 @@ void GraphicsContext::arc(
   const Dimension& dimension,
   int start,
   int stop,
-  unsigned int flags) throw(UserInterfaceException) {
+  unsigned int flags) {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
 //   BOOL ::Arc(
 //     (HDC)graphicsContextHandle, // handle to device context
@@ -566,7 +566,7 @@ void GraphicsContext::arc(
 #endif // flavor  
 }
 
-// void GraphicsContext::arc(const Position& position, const Dimension& dimension, int start, int stop, unsigned int flags) throw(UserInterfaceException) {
+// void GraphicsContext::arc(const Position& position, const Dimension& dimension, int start, int stop, unsigned int flags) {
 // #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
 // bassert(::AngleArc(
 //   H(HDC)graphicsContextHandle,
@@ -582,7 +582,7 @@ void GraphicsContext::arc(
 void GraphicsContext::rectangle(
   const Position& upperLeft,
   const Position& lowerRight,
-  unsigned int flags) throw(UserInterfaceException) {
+  unsigned int flags) {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   bassert(
     ::Rectangle(
@@ -614,7 +614,7 @@ void GraphicsContext::rectangle(
 void GraphicsContext::rectangle(
   const Position& position,
   const Dimension& dimension,
-  unsigned int flags) throw(UserInterfaceException) {
+  unsigned int flags) {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   bassert(
     ::Rectangle(
@@ -655,7 +655,7 @@ void GraphicsContext::rectangle(
   const Position& upperLeft,
   const Position& lowerRight,
   Brush brush,
-  unsigned int flags) throw(UserInterfaceException) {
+  unsigned int flags) {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   RECT rect;
   rect.left = upperLeft.getX();
@@ -678,7 +678,7 @@ void GraphicsContext::rectangle(
   const Position& position,
   const Dimension& dimension,
   Brush brush,
-  unsigned int flags) throw(UserInterfaceException) {
+  unsigned int flags) {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   RECT rect;
   rect.left = position.getX();
@@ -720,7 +720,7 @@ void GraphicsContext::rectangle(
 
 void GraphicsContext::rectangle(
   const Array<Region>& rectangles,
-  unsigned int flags) throw(UserInterfaceException) {
+  unsigned int flags) {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
 #else // unix
   ::XFillRectangles(
@@ -737,7 +737,7 @@ void GraphicsContext::rectangle(
 void GraphicsContext::ellipse(
   const Position& upperLeft,
   const Position& lowerRight,
-  unsigned int flags) throw(UserInterfaceException) {
+  unsigned int flags) {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   bassert(
     ::Ellipse(
@@ -756,7 +756,7 @@ void GraphicsContext::ellipse(
 void GraphicsContext::ellipse(
   const Position& position,
   const Dimension& dimension,
-  unsigned int flags) throw(UserInterfaceException) {
+  unsigned int flags) {
   if (!dimension.isProper()) {
     return;
   }
@@ -780,7 +780,7 @@ void GraphicsContext::pie(
   const Position& lowerRight,
   const Position& radialA,
   const Position& radialB,
-  unsigned int flags) throw(UserInterfaceException) {
+  unsigned int flags) {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   bassert(
     ::Pie(
@@ -801,7 +801,7 @@ void GraphicsContext::pie(
 }
 
 unsigned int GraphicsContext::getWidthOf(
-  char ch) const throw(UserInterfaceException) {
+  char ch) const {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   INT width = 0;
   bassert(
@@ -820,7 +820,7 @@ unsigned int GraphicsContext::getWidthOf(
 }
 
 Dimension GraphicsContext::getDimensionOf(
-  const String& text) const throw(UserInterfaceException) {
+  const String& text) const {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   SIZE size = {0, 0};
   OSString _text(text);
@@ -855,7 +855,7 @@ void GraphicsContext::text(
   const Position& position,
   const Dimension& dimension,
   const String& text,
-  unsigned int flags) throw(UserInterfaceException) {
+  unsigned int flags) {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   UINT nativeTextFormat = 0;
   if (flags & TextFormat::LEFT) {
@@ -909,7 +909,7 @@ void GraphicsContext::text(
 void GraphicsContext::putBitmap(
   const Position& position,
   const Dimension& dimension,
-  const Bitmap& bitmap) throw(UserInterfaceException) {
+  const Bitmap& bitmap) {
   // TAG: COPY, AND, OR, XOR, INVERT
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   if (bitmap.handle.isValid()) {
@@ -951,7 +951,7 @@ void GraphicsContext::putBitmap(
 
 Bitmap GraphicsContext::getBitmap(
   const Position& position,
-  const Dimension& dimension) throw(UserInterfaceException) {
+  const Dimension& dimension) {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   HDC deviceContext = ::CreateCompatibleDC((HDC)graphicsContextHandle);
   bassert(deviceContext, UserInterfaceException(this));

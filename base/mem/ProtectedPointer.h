@@ -41,7 +41,7 @@ public:
     
     @param value The object pointer to be automated.
   */
-  inline ProtectedPointer(TYPE* _value) throw(NullPointer)
+  inline ProtectedPointer(TYPE* _value)
     : value(_value)
   {
     if (!value) {

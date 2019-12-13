@@ -39,7 +39,7 @@ protected:
   }
 public:
   
-  inline Attribute(Node node) throw(CastException) : Node(node) {
+  inline Attribute(Node node) : Node(node) {
     bassert(
       node.isInvalid() || (node.getType() == ATTRIBUTE_NODE),
       CastException(this)
@@ -59,7 +59,7 @@ public:
   /**
     Sets the value of the attribute.
   */
-  void setValue(const String& value) throw(DOMException);
+  void setValue(const String& value);
 
   /**
     Returns true if the attribute value is explicitly specified in the original

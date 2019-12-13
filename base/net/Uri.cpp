@@ -153,7 +153,7 @@ public:
     return ((ch == ':') || (ch == '@') || (ch == '/')) ? ALWAYS : defaultEncoding(ch);
   }
 
-  static inline String encode(const String& str, Encoding encoding = defaultEncoding) throw(UriException, MemoryException) {
+  static inline String encode(const String& str, Encoding encoding = defaultEncoding) {
     String temp(str.getLength());
     const String::ReadIterator end = str.getEndReadIterator();
     for (String::ReadIterator i = str.getBeginReadIterator(); i < end;) {
@@ -170,7 +170,7 @@ public:
     return temp;
   }
 
-  static String decode(const String& str, Encoding encoding, bool strict) throw(UriException, MemoryException)
+  static String decode(const String& str, Encoding encoding, bool strict)
   {
     String temp(str.getLength());
     const String::ReadIterator end = str.getEndReadIterator();
@@ -194,16 +194,16 @@ public:
 
 
 
-Uri::Uri() throw(MemoryException)
+Uri::Uri()
 {
 }
 
-Uri::Uri(const String& uri, bool strict) throw(UriException, MemoryException)
+Uri::Uri(const String& uri, bool strict)
 {
   parse(uri, strict);
 }
 
-Uri::Uri(const String& baseUri, const String& relativeUri, bool strict) throw(UriException, MemoryException)
+Uri::Uri(const String& baseUri, const String& relativeUri, bool strict)
 {
   Uri uri(relativeUri);
   if (uri.isRelative()) {
@@ -239,7 +239,7 @@ bool Uri::isRelative() const noexcept
   return !path.getLength() || path.startsWith("/");
 }
 
-String Uri::validateScheme(const String& value) throw(UriException, MemoryException)
+String Uri::validateScheme(const String& value)
 {
   String temp(value.getLength());
   String::ReadIterator end = value.getEndReadIterator();
@@ -261,7 +261,7 @@ String Uri::validateScheme(const String& value) throw(UriException, MemoryExcept
   return temp;
 }
 
-String Uri::validateUser(const String& str) throw(UriException)
+String Uri::validateUser(const String& str)
 {
   const String::ReadIterator end = str.getEndReadIterator();
   for (String::ReadIterator i = str.getBeginReadIterator(); i < end;) {
@@ -271,7 +271,7 @@ String Uri::validateUser(const String& str) throw(UriException)
   return str;
 }
 
-String Uri::validatePassword(const String& str) throw(UriException)
+String Uri::validatePassword(const String& str)
 {
   const String::ReadIterator end = str.getEndReadIterator();
   for (String::ReadIterator i = str.getBeginReadIterator(); i < end;) {
@@ -358,7 +358,7 @@ bool Uri::isPort(String::ReadIterator i, const String::ReadIterator& end) noexce
   return true;
 }
 
-void Uri::parse(const String& uri, bool strict) throw(UriException, MemoryException)
+void Uri::parse(const String& uri, bool strict)
 {
   // "scheme:path"
   // reserved characters: %, /, #, ?, *, !, ".", ".."
@@ -447,12 +447,12 @@ String Uri::getPort() const noexcept
   return port;
 }
 
-String Uri::getPath() const throw(MemoryException)
+String Uri::getPath() const
 {
   return path;
 }
 
-String Uri::getUri() const throw(MemoryException)
+String Uri::getUri() const
 {
   String result;
 
@@ -487,22 +487,22 @@ String Uri::getUri() const throw(MemoryException)
   return result;
 }
 
-void Uri::setScheme(const String& value) throw(UriException, MemoryException)
+void Uri::setScheme(const String& value)
 {
   scheme = validateScheme(value);
 }
 
-void Uri::setUser(const String& value) throw(UriException, MemoryException)
+void Uri::setUser(const String& value)
 {
   user = validateUser(value);
 }
 
-void Uri::setPassword(const String& value) throw(UriException, MemoryException)
+void Uri::setPassword(const String& value)
 {
   password = validatePassword(value);
 }
 
-void Uri::setHost(const String& value) throw(UriException)
+void Uri::setHost(const String& value)
 {
   bassert(
     isHost(value.getBeginReadIterator(), value.getEndReadIterator()),
@@ -511,7 +511,7 @@ void Uri::setHost(const String& value) throw(UriException)
   host = value;
 }
 
-void Uri::setPort(const String& value) throw(UriException)
+void Uri::setPort(const String& value)
 {
   bassert(
     isPort(value.getBeginReadIterator(), value.getEndReadIterator()),
@@ -520,7 +520,7 @@ void Uri::setPort(const String& value) throw(UriException)
   port = value;
 }
 
-void Uri::setPath(const String& value) throw(UriException, MemoryException)
+void Uri::setPath(const String& value)
 {
   path = value;
 }

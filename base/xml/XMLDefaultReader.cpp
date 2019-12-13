@@ -534,7 +534,7 @@ XMLDefaultReader::XMLDefaultReader() noexcept
 }
 
 bool XMLDefaultReader::getFeature(const String& name) const
-  throw(SAXNotRecognizedException, SAXNotSupportedException) {
+  {
 #if defined(_COM_AZURE_DEV__BASE__XML_XMLSOFT_ORG)
   if (name == "http://xml.org/sax/features/validation") {
     return validate;
@@ -557,7 +557,7 @@ bool XMLDefaultReader::getFeature(const String& name) const
 }
 
 void XMLDefaultReader::setFeature(const String& name, bool value)
-  throw(SAXNotRecognizedException, SAXNotSupportedException) {
+  {
 #if defined(_COM_AZURE_DEV__BASE__XML_XMLSOFT_ORG)
   
   // TAG: what about recovering
@@ -576,7 +576,7 @@ void XMLDefaultReader::setFeature(const String& name, bool value)
 }
 
 void XMLDefaultReader::parse(
-  File file, const String& uri) throw(IOException, SAXException) {
+  File file, const String& uri) {
 #if defined(_COM_AZURE_DEV__BASE__XML_XMLSOFT_ORG)
   bassert(!parsing, SAXException(this));
   parsing = true;
@@ -652,7 +652,7 @@ void XMLDefaultReader::parse(
 void XMLDefaultReader::parse(
   const char* buffer,
   unsigned int size,
-  const String& uri) throw(SAXException) {
+  const String& uri) {
 #if defined(_COM_AZURE_DEV__BASE__XML_XMLSOFT_ORG)
   bassert(!parsing, SAXException(this));
   parsing = true;
@@ -711,7 +711,7 @@ public:
   }
 };
 
-void XMLDefaultReader::parse(const String& systemId) throw(SAXException) {
+void XMLDefaultReader::parse(const String& systemId) {
 #if defined(_COM_AZURE_DEV__BASE__XML_XMLSOFT_ORG)
   bassert(!parsing, SAXException(this));
   parsing = true;

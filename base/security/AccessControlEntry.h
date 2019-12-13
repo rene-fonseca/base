@@ -220,6 +220,6 @@ public:
 */
 _COM_AZURE_DEV__BASE__API FormatOutputStream& operator<<(
   FormatOutputStream& stream,
-  const AccessControlEntry& ace) throw(IOException);
+  const AccessControlEntry& ace);
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

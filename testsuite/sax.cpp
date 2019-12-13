@@ -833,7 +833,7 @@ private:
   bool standalone = false;
 protected:
   
-  void traverseNode(Node node) throw(SAXException) {
+  void traverseNode(Node node) {
     switch (node.getType()) {
     case Node::ELEMENT_NODE:
       {
@@ -988,7 +988,7 @@ public:
     Returns the value of the specified feature.
   */
   bool getFeature(const String& name) const
-    throw(SAXNotRecognizedException, SAXNotSupportedException)
+   
   {
     return false;
   }
@@ -997,7 +997,7 @@ public:
     Sets the value of the specified feature.
   */
   void setFeature(const String& name, bool value)
-    throw(SAXNotRecognizedException, SAXNotSupportedException) {
+    {
   }
   
   /**
@@ -1086,7 +1086,7 @@ public:
   /**
     Traverses the specified document.
   */
-  void traverse(const Document& document) throw(SAXException) {
+  void traverse(const Document& document) {
     bassert(!parsing, SAXException(this));
     parsing = true;
     // TAG: fixme
@@ -1147,21 +1147,21 @@ public:
     return stream.getString();
   }
   
-  void error(const SAXParseException& exception) throw(SAXException) {
+  void error(const SAXParseException& exception) {
     fout << FLUSH;
     ferr << "Error: " << exception.getMessage()
          << " at "
          << SAXApplication::getLocationString(exception) << ENDL;
   }
   
-  void fatalError(const SAXParseException& exception) throw(SAXException) {
+  void fatalError(const SAXParseException& exception) {
     fout << FLUSH;
     ferr << "Fatal error: " << exception.getMessage()
          << " at "
          << SAXApplication::getLocationString(exception) << ENDL;
   }
 
-  void warning(const SAXParseException& exception) throw(SAXException) {
+  void warning(const SAXParseException& exception) {
     fout << FLUSH;
     ferr << "Warning: " << exception.getMessage()
          << " at "
@@ -1169,12 +1169,12 @@ public:
   }
 
   XMLReader::InputSource resolveEntity(
-    const String& publicId, const String& systemId) throw(SAXException)
+    const String& publicId, const String& systemId)
   {
     return 0;
   }
 
-  Document getBuiltinDocument() throw(DOMException) {
+  Document getBuiltinDocument() {
     DOMImplementation dom;
     
     Document document = dom.createDocument(MESSAGE("1.0"));

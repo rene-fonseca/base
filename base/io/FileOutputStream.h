@@ -77,7 +77,7 @@ public:
   FileOutputStream(
     const String& path,
     unsigned int options = CREATE | TRUNCATE,
-    unsigned int permissions = 0x640) throw(FileNotFound);
+    unsigned int permissions = 0x640);
 
   FileOutputStream(const FileOutputStream& copy) noexcept;
 
@@ -92,19 +92,19 @@ public:
   */
   bool open(const String& path,
             unsigned int options = CREATE | TRUNCATE,
-            unsigned int permissions = 0x640) throw(FileNotFound);
+            unsigned int permissions = 0x640);
 
   FileOutputStream& operator=(const FileOutputStream& assign) noexcept;
 
   /** Returns true if open. */
   bool isOpen() const noexcept;
 
-  void close() throw(IOException);
+  void close();
 
   /**
     Forces any buffered bytes to be written out.
   */
-  inline void flush() throw(IOException)
+  inline void flush()
   {
     file.flush();
   }
@@ -112,7 +112,7 @@ public:
   inline unsigned int write(
     const uint8* buffer,
     unsigned int count,
-    bool nonblocking = false) throw(IOException)
+    bool nonblocking = false)
   {
     return file.write(buffer, count, nonblocking);
   }

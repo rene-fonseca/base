@@ -354,7 +354,7 @@ _COM_AZURE_DEV__BASE__PACKED__END
 
 FormatOutputStream& operator<<(
   FormatOutputStream& stream,
-  const CommonObjectFileFormat::DirectoryEntry& entry) throw(IOException) {
+  const CommonObjectFileFormat::DirectoryEntry& entry) {
   stream << '['
          << HEX << PREFIX << ZEROPAD << setWidth(10) << entry.rva << ':'
          << HEX << PREFIX << ZEROPAD << setWidth(10) << entry.size
@@ -398,7 +398,7 @@ public:
   void dumpFileRegion(
     File file,
     uint64 offset,
-    unsigned int size) throw(IOException) {
+    unsigned int size) {
     
     uint64 originalPosition = file.getPosition();
     file.setPosition(offset);
@@ -441,7 +441,7 @@ _COM_AZURE_DEV__BASE__PACKED__END
     File file,
     const uint32 virtualAddress,
     const unsigned int rawOffset,
-    const unsigned int rawSize) throw(IOException)
+    const unsigned int rawSize)
   {
     if ((virtualAddress & 3) != 0) {
       throw OutOfDomain(this);
@@ -558,7 +558,7 @@ _COM_AZURE_DEV__BASE__PACKED__END
     File file,
     const uint32 virtualAddress,
     const unsigned int rawOffset,
-    const unsigned int rawSize) throw(IOException)
+    const unsigned int rawSize)
   {
     if ((virtualAddress & 3) != 0) {
       throw OutOfDomain(this);
@@ -657,7 +657,7 @@ _COM_AZURE_DEV__BASE__PACKED__END
     File file,
     const uint32 virtualAddress,
     const unsigned int rawOffset,
-    const unsigned int rawSize) throw(IOException)
+    const unsigned int rawSize)
   {
     if ((virtualAddress & 3) != 0) {
       throw OutOfDomain(this);

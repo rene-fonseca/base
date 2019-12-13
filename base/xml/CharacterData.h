@@ -35,7 +35,7 @@ protected:
   }
 public:
   
-  inline CharacterData(Node node) throw(CastException)
+  inline CharacterData(Node node)
     : Node(node) {
     NodeType type = node.getType();
     bassert(
@@ -50,12 +50,12 @@ public:
   /**
     The character data of the node.
   */
-  String getData() const throw(DOMException);
+  String getData() const;
 
   /**
     Sets the data.
   */
-  void setData(const String& data) throw(DOMException);
+  void setData(const String& data);
   
   /**
     The number of octets that are available through data and the substringData
@@ -67,23 +67,23 @@ public:
     Extracts a range of octets from the node.
   */
   String substringData(
-    unsigned int offset, unsigned int count) throw(DOMException);
+    unsigned int offset, unsigned int count);
   
   /**
     Append the string to the end of the character data of the node.
   */
-  void appendData(const String& value) throw(DOMException);
+  void appendData(const String& value);
 
   /**
     Inserts a string at the specified octet offset.
   */
   void insertData(
-    unsigned int offset, const String& value) throw(DOMException);
+    unsigned int offset, const String& value);
 
   /**
     Remove a range of octets from the node.
   */
-  void deleteData(unsigned int offset, unsigned int count) throw(DOMException);
+  void deleteData(unsigned int offset, unsigned int count);
 
   /**
     Replace the characters starting at the specified 16-bit unit offset with
@@ -92,7 +92,7 @@ public:
   void replaceData(
     unsigned int offset,
     unsigned int count,
-    const String& value) throw(DOMException);
+    const String& value);
 };
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

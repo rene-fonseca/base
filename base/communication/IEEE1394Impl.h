@@ -47,30 +47,30 @@ public:
   /**
     Resets the bus.
   */
-  virtual void resetBus() throw(IEEE1394Exception) = 0;
+  virtual void resetBus() = 0;
     
   /**
     Returns the adapters available.
   */
-  virtual Array<EUI64> getAdapters() throw(IEEE1394Exception) = 0;
+  virtual Array<EUI64> getAdapters() = 0;
   
   /**
     Opens a connection to the primary adapter.
   */
-  virtual void open() throw(IEEE1394Exception) = 0;
+  virtual void open() = 0;
   
   /**
     Opens a connection to the specified adapter.
     
     @param adapter The id of the adapter.
   */
-  virtual void open(const EUI64& adapter) throw(IEEE1394Exception) = 0;
+  virtual void open(const EUI64& adapter) = 0;
   
   /**
     Closes this handle to the adapter. The adapter is destroyed when all
     handles have been closed.
   */
-  virtual void close() throw(IEEE1394Exception) = 0;
+  virtual void close() = 0;
 
   /**
     Returns the physical id of the adapter.
@@ -85,12 +85,12 @@ public:
   /**
     Returns the current error status.
   */
-  virtual unsigned int getStatus() const throw(IEEE1394Exception) = 0;
+  virtual unsigned int getStatus() const = 0;
 
   /**
     Returns the size of the FIFO.
   */
-  virtual unsigned int getFIFOSize() const throw(IEEE1394Exception) = 0;
+  virtual unsigned int getFIFOSize() const = 0;
   
   /**
     Read data from device.
@@ -105,7 +105,7 @@ public:
     unsigned short node,
     uint64 address,
     uint8* buffer,
-    unsigned int size) throw(IEEE1394Exception) = 0;
+    unsigned int size) = 0;
 
   /**
     Write data to device.
@@ -120,7 +120,7 @@ public:
     unsigned short node,
     uint64 address,
     const uint8* buffer,
-    unsigned int size) throw(IEEE1394Exception) = 0;
+    unsigned int size) = 0;
 
   /**
     Read data from device. This method is only used for debugging and
@@ -141,7 +141,7 @@ public:
     uint64 address,
     uint32* buffer,
     unsigned int size,
-    uint32 value) throw(IEEE1394Exception) = 0;
+    uint32 value) = 0;
 
   /**
     Returns an isochronous read channel.
@@ -152,7 +152,7 @@ public:
   */
   virtual IsochronousReadChannel getReadChannel(
     unsigned int maxPacketsPerRequest,
-    uint64 subchannels) throw(IEEE1394Exception) = 0;
+    uint64 subchannels) = 0;
   
   /**
     Returns an isochronous write channel.
@@ -163,7 +163,7 @@ public:
   */
   virtual IsochronousWriteChannel getWriteChannel(
     unsigned int maxPacketsPerRequest,
-    uint64 subchannels) throw(IEEE1394Exception) = 0;
+    uint64 subchannels) = 0;
 
   /**
     Starts an isochronous packet listener.
@@ -176,17 +176,17 @@ public:
     unsigned int channel,
     unsigned int maximumPayload,
     IsochronousChannelListener* listener
-  ) throw(OutOfDomain, IEEE1394Exception) = 0;
+  ) = 0;
 
   virtual bool wait(
-    unsigned int milliseconds) throw(OutOfDomain, IEEE1394Exception) = 0;
+    unsigned int milliseconds) = 0;
   
-  virtual void dequeue() throw(IEEE1394Exception) = 0;
+  virtual void dequeue() = 0;
   
   virtual void registerFCPListener(
-    FunctionControlProtocolListener* listener) throw(IEEE1394Exception) = 0;
+    FunctionControlProtocolListener* listener) = 0;
   
-  virtual void unregisterFCPListener() throw(IEEE1394Exception) = 0;
+  virtual void unregisterFCPListener() = 0;
 
   /**
     Destroys the IEEE 1394 implementation.

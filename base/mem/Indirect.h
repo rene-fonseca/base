@@ -40,19 +40,19 @@ _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
     Array<Indirect> sockets;
   public:
 
-    void add(Indirect<Socket> socket) throw(MemoryException) {
+    void add(Indirect<Socket> socket) {
       sockets.append(socket);
     }
     
-    void add(ServerSocket socket) throw(MemoryException) {
+    void add(ServerSocket socket) {
       sockets.append(socket);
     }
     
-    void add(StreamSocket socket) throw(MemoryException) {
+    void add(StreamSocket socket) {
       sockets.append(socket);
     }
     
-    void add(Socket socket) throw(MemoryException) {
+    void add(Socket socket) {
       sockets.append(socket);
     }
   };
@@ -104,7 +104,7 @@ public:
     @return nullptr if cast is not possible.
   */
   template<class POLY>
-  inline Indirect<POLY> cast() throw(CastException)
+  inline Indirect<POLY> cast()
   {
     POLY* temp = dynamic_cast<POLY*>(value);
     if (!temp) {
@@ -201,7 +201,7 @@ public:
   /**
     Returns the value.
   */
-  inline const TYPE& getValue() const throw(NullPointer)
+  inline const TYPE& getValue() const
   {
     if (!value) {
       throw NullPointer(this);
@@ -214,7 +214,7 @@ public:
     cast failed.
   */
   template<class POLY>
-  inline POLY getValue() const throw(CastException)
+  inline POLY getValue() const
   {
     const POLY* result = dynamic_cast<POLY*>(value);
     if (!result) {

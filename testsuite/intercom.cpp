@@ -416,7 +416,7 @@ public:
     samplingRate = DEFAULT_SAMPLE_RATE;
   }
 
-  void handleArguments() throw(OutOfDomain) {
+  void handleArguments() {
     bool loopbackSpecified = false;
     bool portSpecified = false;
     bool hostSpecified = false;

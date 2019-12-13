@@ -37,7 +37,7 @@ MessageDialog::MessageDialog(
     answer(MessageDialog::CANCEL) {
 }
 
-bool MessageDialog::execute() throw(UserInterfaceException)
+bool MessageDialog::execute()
 {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   static const unsigned int NATIVE_TYPES[] = {

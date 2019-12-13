@@ -41,7 +41,7 @@ private:
   Brush split;
 public:
   
-  Slider(Window& owner) throw(UserInterfaceException);
+  Slider(Window& owner);
   
   inline int getOffset() const noexcept {
     return offset;

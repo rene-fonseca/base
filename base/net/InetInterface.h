@@ -71,27 +71,27 @@ public:
   /**
     Returns all of the Internet Protocol network interfaces of the host.
   */
-  static List<InetInterface> getInterfaces() throw(NetworkException);
+  static List<InetInterface> getInterfaces();
   
   /**
     Returns the index of the specified interface.
   */
-  static unsigned int getIndexByName(const String& name) throw(NetworkException);
+  static unsigned int getIndexByName(const String& name);
   
   /**
     Returns the index of the interface associated with the specified address.
   */
-  static unsigned int getIndexByAddress(const InetAddress& address) throw(NetworkException);
+  static unsigned int getIndexByAddress(const InetAddress& address);
   
   /**
     Returns the name of the specified interface.
   */
-  static String getName(unsigned int index) throw(NetworkException);
+  static String getName(unsigned int index);
   
   /**
     Returns the address of the specified interface.
   */
-  static InetAddress getAddress(unsigned int index) throw(NetworkException);
+  static InetAddress getAddress(unsigned int index);
   
   /**
     Initializes interface.
@@ -101,7 +101,7 @@ public:
   /**
     Initializes interface by name.
   */
-  InetInterface(const String& name) throw(NetworkException);
+  InetInterface(const String& name);
   
   /**
     Initializes interface by address.

@@ -62,7 +62,7 @@ public:
   /**
     Creates a new pair of pipes.
   */
-  static Pair<Pipe, Pipe> make() throw(PipeException);
+  static Pair<Pipe, Pipe> make();
 
   /**
     Initializes an invalidated pipe object.
@@ -88,7 +88,7 @@ public:
   /**
     Closes this pipe.
   */
-  void close() throw(PipeException);
+  void close();
 
   /**
     Returns the size of the internal buffer of the pipe. The data may be
@@ -101,7 +101,7 @@ public:
   /**
     Returns true if the end of the stream has been reached.
   */
-  bool atEnd() const throw(PipeException);
+  bool atEnd() const;
 
   /**
     Returns the number of bytes that can be read or skipped over without
@@ -109,33 +109,33 @@ public:
 
     @return Available number of bytes in stream.
   */
-  unsigned int available() const throw(PipeException);
+  unsigned int available() const;
 
   /**
     Skips a specified number of bytes. Blocks if asked to skip more bytes than
     currently available.
   */
-  unsigned int skip(unsigned int count) throw(PipeException);
+  unsigned int skip(unsigned int count);
 
   /**
     Forces any buffered bytes to be written out.
   */
-  void flush() throw(PipeException);
+  void flush();
 
   unsigned int read(
     uint8* buffer,
     unsigned int size,
-    bool nonblocking = false) throw(PipeException);
+    bool nonblocking = false);
 
   unsigned int write(
     const uint8* buffer,
     unsigned int size,
-    bool nonblocking = false) throw(PipeException);
+    bool nonblocking = false);
 
   /**
     Blocking wait for input to become available.
   */
-  void wait() const throw(PipeException);
+  void wait() const;
 
   /**
     Blocking wait for input to become available.
@@ -143,7 +143,7 @@ public:
     @param timeout The timeout periode in microseconds.
     @return True, if data is available. False, if the timeout periode expired.
   */
-  bool wait(unsigned int timeout) const throw(PipeException);
+  bool wait(unsigned int timeout) const;
 
   /**
     Destroys the pipe.

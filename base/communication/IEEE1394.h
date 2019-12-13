@@ -352,7 +352,7 @@ protected:
   /**
     Returns the guid of the specified node.
   */
-  inline EUI64 getEUI64(unsigned short node) throw(IEEE1394Exception) {
+  inline EUI64 getEUI64(unsigned short node) {
     Quadlet guid[2];
     ieee1394impl->read(
       node,
@@ -370,23 +370,23 @@ protected:
   /**
     Loads the topology map from the bus manager.
   */
-  void loadTopologyMap() throw(IEEE1394Exception);
+  void loadTopologyMap();
 
   /**
     Loads the speed map from the bus manager.
   */
-  void loadSpeedMap() throw(IEEE1394Exception);
+  void loadSpeedMap();
   
   /**
     Reload information from local bus.
   */
-  void reload() throw(IEEE1394Exception);
+  void reload();
 public:
   
   /**
     Check if the bus has been reset.
   */
-  void checkResetGeneration() throw(IEEE1394Exception);
+  void checkResetGeneration();
 public:
 
   /**
@@ -408,7 +408,7 @@ public:
   */
   unsigned short findRole(
     Role role,
-    unsigned int busId = LOCAL_BUS) throw(OutOfDomain, IEEE1394Exception);
+    unsigned int busId = LOCAL_BUS);
   
   /**
     Returns the number of nodes of the local bus.
@@ -458,7 +458,7 @@ public:
     
     @param node The node id.
   */
-  unsigned int getCycleTime(unsigned short node) throw(IEEE1394Exception);
+  unsigned int getCycleTime(unsigned short node);
 
   /**
     Returns the bus time in seconds of the specified node. The node should be
@@ -466,33 +466,33 @@ public:
     
     @param node The node id.
   */
-  unsigned int getBusTime(unsigned short node) throw(IEEE1394Exception);
+  unsigned int getBusTime(unsigned short node);
 
   /**
     Returns the available bandwidth from the current isochronous resource
     manager.
   */
-  unsigned int getAvailableBandwidth() throw(IEEE1394Exception);
+  unsigned int getAvailableBandwidth();
   
   /**
     Returns the available isochronous channels from the current isochronous
     reource manager.
   */
-  uint64 getAvailableIsochronousChannels() throw(IEEE1394Exception);
+  uint64 getAvailableIsochronousChannels();
   
   /**
     Returns the maximum physical speed of the specified node.
 
     @param physicalId The physical id of the node.
   */
-  Speed getMaximumSpeed(unsigned int physicalId) const throw(OutOfDomain);
+  Speed getMaximumSpeed(unsigned int physicalId) const;
 
   /**
     Returns the maximum link speed of the specifed local node.
 
     @param physicalId The physical id of the node.
   */
-  Speed getMaximumLinkSpeed(unsigned int physicalId) const throw(OutOfDomain);
+  Speed getMaximumLinkSpeed(unsigned int physicalId) const;
   
   /**
     Returns the maximum speed between the specified local nodes.
@@ -501,7 +501,7 @@ public:
     @param b The physical id of the second node.
   */
   Speed getMaximumSpeedBetweenNodes(
-    unsigned int a, unsigned int b) const throw(OutOfDomain);
+    unsigned int a, unsigned int b) const;
 
   /**
     Returns the maximum speed to the specified node.
@@ -509,14 +509,14 @@ public:
     @param physicalId The physical id of the node.
   */
   inline Speed getMaximumSpeedToNode(
-    unsigned int physicalId) const throw(OutOfDomain) {
+    unsigned int physicalId) const {
     return getMaximumSpeedBetweenNodes(localId, physicalId);
   }
 
   /**
     Returns the maximum broadcast speed.
   */
-  Speed getBroadcastSpeed() const throw(OutOfDomain);
+  Speed getBroadcastSpeed() const;
   
   /**
     Returns the maximum speed supported by all the specified nodes (bit mask).
@@ -534,7 +534,7 @@ public:
   /**
     Initializes IEEE 1394 with the default implementation.
   */
-  IEEE1394() throw(IEEE1394Exception);
+  IEEE1394();
   
   /**
     Initializes IEEE 1394 from other IEEE 1394 object.
@@ -568,34 +568,34 @@ public:
   /**
     Resets the bus.
   */
-  inline void resetBus() throw(IEEE1394Exception) {
+  inline void resetBus() {
     ieee1394impl->resetBus();
   }
   
   /**
     Returns the adapters available.
   */
-  inline Array<EUI64> getAdapters() throw(IEEE1394Exception) {
+  inline Array<EUI64> getAdapters() {
     return ieee1394impl->getAdapters();
   }
 
   /**
     Opens a connection to the primary adapter.
   */
-  void open() throw(IEEE1394Exception);
+  void open();
   
   /**
     Opens a connection to the specified adapter.
     
     @param adapter The id of the adapter.
   */
-  void open(const EUI64& adapter) throw(IEEE1394Exception);
+  void open(const EUI64& adapter);
   
   /**
     Closes the handle to the adapter. The adapter is destroyed when all handles
     have been closed.
   */
-  inline void close() throw(IEEE1394Exception) {
+  inline void close() {
     ieee1394impl->close();
   }
   
@@ -611,14 +611,14 @@ public:
     
     @param physicalId The physical id of the local node.
   */
-  EUI64 getLocalIdentifier(unsigned int physicalId) const throw(OutOfDomain);
+  EUI64 getLocalIdentifier(unsigned int physicalId) const;
   
   /**
     Returns the IEEE 1394 standard of the specified node.
     
     @param node The node id.
   */
-  Standard getCompliance(unsigned short node) throw(IEEE1394Exception);
+  Standard getCompliance(unsigned short node);
   
   /**
     Returns the unique identifier of the specified node. Raises
@@ -626,7 +626,7 @@ public:
     
     @param node The node id.
   */
-  EUI64 getIdentifier(unsigned short node) throw(IEEE1394Exception);
+  EUI64 getIdentifier(unsigned short node);
 
   /**
     Returns the maximum payload in bytes for asynchronous write transmissions
@@ -634,14 +634,14 @@ public:
     
     @param node The node id.
   */
-  unsigned int getMaximumPayload(unsigned short node) throw(IEEE1394Exception);
+  unsigned int getMaximumPayload(unsigned short node);
   
   /**
     Returns the capabilities of the specified node.
     
     @param node The node id.
   */
-  unsigned int getCapabilities(unsigned short node) throw(IEEE1394Exception);
+  unsigned int getCapabilities(unsigned short node);
   
   /**
     Returns the 24 bit module vendor id of the specified node. Please note that
@@ -650,7 +650,7 @@ public:
     
     @param node The node id.
   */
-  unsigned int getVendorId(unsigned short node) throw(IEEE1394Exception);
+  unsigned int getVendorId(unsigned short node);
   
   /**
     Returns the physical id ([0; 63[) of the node with the specified guid. The
@@ -668,7 +668,7 @@ public:
     
     @param node The node id.
   */
-  String getDescription(unsigned short node) throw(IEEE1394Exception);
+  String getDescription(unsigned short node);
 
   /**
     Returns the keywords (separated by space) of the specified node if
@@ -676,19 +676,19 @@ public:
     
     @param node The node id.
   */
-  String getKeywords(unsigned short node) throw(IEEE1394Exception);
+  String getKeywords(unsigned short node);
   
   /**
     Returns the current error status.
   */
-  inline unsigned int getStatus() const throw(IEEE1394Exception) {
+  inline unsigned int getStatus() const {
     return ieee1394impl->getStatus();
   }
   
   /**
     Returns the size of the FIFO.
   */
-  inline unsigned int getFIFOSize() const throw(IEEE1394Exception) {
+  inline unsigned int getFIFOSize() const {
     return ieee1394impl->getFIFOSize();
   }
   
@@ -718,7 +718,7 @@ public:
     @param physicalId The physical id of the node [0; 63[.
   */
   inline bool isLinkLayerActive(
-    unsigned int physicalId) const throw(OutOfDomain)
+    unsigned int physicalId) const
   {
     if (!(physicalId < numberOfNodes)) {
       throw OutOfDomain(this);
@@ -738,7 +738,7 @@ public:
     
     @param physicalId The physical id of the node [0; 63[.
   */
-  inline bool isContender(unsigned int physicalId) const throw(OutOfDomain)
+  inline bool isContender(unsigned int physicalId) const
   {
     if (!(physicalId < numberOfNodes)) {
       throw OutOfDomain(this);
@@ -764,7 +764,7 @@ public:
 
     @param physicalId The physical id the node.
   */
-  inline unsigned int getGapCount(unsigned int physicalId) const throw(OutOfDomain)
+  inline unsigned int getGapCount(unsigned int physicalId) const
   {
     if (!(physicalId < numberOfNodes)) {
       throw OutOfDomain(this);
@@ -777,7 +777,7 @@ public:
 
     @param physicalId The physical id the node.
   */
-  inline unsigned int getNumberOfPorts(unsigned int physicalId) const throw(OutOfDomain)
+  inline unsigned int getNumberOfPorts(unsigned int physicalId) const
   {
     if (!(physicalId < numberOfNodes)) {
       throw OutOfDomain(this);
@@ -792,7 +792,7 @@ public:
     @param port The port of the node.
   */
   inline PortState getPortState(
-    unsigned int physicalId, unsigned int port) const throw(OutOfDomain) {
+    unsigned int physicalId, unsigned int port) const {
     bassert(
       (physicalId < numberOfNodes) && (port < nodes[physicalId].numberOfPorts),
       OutOfDomain(this)
@@ -805,7 +805,7 @@ public:
 
     @param physicalId The physical id the node.
   */
-  inline unsigned int getLocalMaximumPayload(unsigned int physicalId) const throw(OutOfDomain)
+  inline unsigned int getLocalMaximumPayload(unsigned int physicalId) const
   {
     if (!(physicalId < numberOfNodes)) {
       throw OutOfDomain(this);
@@ -818,7 +818,7 @@ public:
 
     @param physicalId The physical id the node.
   */
-  inline PowerClass getPowerClass(unsigned int physicalId) const throw(OutOfDomain)
+  inline PowerClass getPowerClass(unsigned int physicalId) const
   {
     if (!(physicalId < numberOfNodes)) {
       throw OutOfDomain(this);
@@ -835,7 +835,7 @@ public:
     @return The quadlet in native byte order.
   */
   inline uint32 getQuadlet(
-    unsigned short node, uint32 offset) throw(IEEE1394Exception) {
+    unsigned short node, uint32 offset) {
     Quadlet quadlet;
     ieee1394impl->read(
       node,
@@ -858,7 +858,7 @@ public:
     unsigned short node,
     uint64 address,
     uint8* buffer,
-    unsigned int size) throw(IEEE1394Exception) {
+    unsigned int size) {
     ieee1394impl->read(node, address, buffer, size);
   }
 
@@ -874,7 +874,7 @@ public:
     unsigned short node,
     uint64 address,
     const uint8* buffer,
-    unsigned int size) throw(IEEE1394Exception) {
+    unsigned int size) {
     ieee1394impl->write(node, address, buffer, size);
   }
 
@@ -897,7 +897,7 @@ public:
     uint64 address,
     uint32* buffer,
     unsigned int size,
-    uint32 value) throw(IEEE1394Exception) {
+    uint32 value) {
     return ieee1394impl->read(node, address, buffer, size, value);
   }
   
@@ -910,7 +910,7 @@ public:
   */
   inline IsochronousReadChannel getReadChannel(
     unsigned int maximumPacketsPerRequest,
-    uint64 subchannels) throw(IEEE1394Exception) {
+    uint64 subchannels) {
     return ieee1394impl->getReadChannel(maximumPacketsPerRequest, subchannels);
   }
   
@@ -923,32 +923,32 @@ public:
   */
   inline IsochronousWriteChannel getWriteChannel(
     unsigned int maximumPacketsPerRequest,
-    uint64 subchannels) throw(IEEE1394Exception) {
+    uint64 subchannels) {
     return ieee1394impl->getWriteChannel(maximumPacketsPerRequest, subchannels);
   }
 
   inline bool wait(
-    unsigned int milliseconds) throw(OutOfDomain, IEEE1394Exception) {
+    unsigned int milliseconds) {
     return ieee1394impl->wait(milliseconds);
   }
   
-  inline void dequeue() throw(IEEE1394Exception) {
+  inline void dequeue() {
     ieee1394impl->dequeue();
   }
   
   inline void registerFCPListener(
-    FunctionControlProtocolListener* listener) throw(IEEE1394Exception) {
+    FunctionControlProtocolListener* listener) {
     ieee1394impl->registerFCPListener(listener);
   }
   
-  inline void unregisterFCPListener() throw(IEEE1394Exception) {
+  inline void unregisterFCPListener() {
     ieee1394impl->unregisterFCPListener();
   }
 
   inline void readIsochronous(
     unsigned int channel,
     IsochronousChannelListener* listener
-  ) throw(OutOfDomain, IEEE1394Exception) {
+  ) {
     unsigned int maximumPayload = getMaximumIsoPayloadForSpeed(
       getMaximumSpeed(getLocalId())
     ); // in bytes

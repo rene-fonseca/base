@@ -42,7 +42,7 @@ public:
   /**
     Initializes element from node.
   */
-  inline Element(const Node& node) throw(CastException) : Node(node) {
+  inline Element(const Node& node) : Node(node) {
     bassert(
       node.isInvalid() || (node.getType() == ELEMENT_NODE),
       CastException(this)
@@ -69,74 +69,74 @@ public:
   /**
     Retrieves an attribute value by name.
   */
-  inline String getAttribute(const String& name) const throw(DOMException) {
+  inline String getAttribute(const String& name) const {
     return getAttribute(name.native());
   }
 
-  String getAttribute(const char* name) const throw(DOMException);
+  String getAttribute(const char* name) const;
   
   /**
     Adds a new attribute.
   */
   inline void setAttribute(
-    const String& name, const String& value) throw(DOMException) {
+    const String& name, const String& value) {
     setAttribute(name.native(), value.native());
   }
 
   void setAttribute(
-    const char* name, const char* value) throw(DOMException);
+    const char* name, const char* value);
   
   /**
     Removes an attribute by name.
   */
-  inline void removeAttribute(const String& name) throw(DOMException) {
+  inline void removeAttribute(const String& name) {
     removeAttribute(name.native());
   }
 
-  void removeAttribute(const char* name) throw(DOMException);
+  void removeAttribute(const char* name);
   
   /**
     Retrieves an attribute node by name.
   */
-  inline Attribute getAttributeNode(const String& name) throw(DOMException) {
+  inline Attribute getAttributeNode(const String& name) {
     return getAttributeNode(name.native());
   }
 
-  Attribute getAttributeNode(const char* name) throw(DOMException);
+  Attribute getAttributeNode(const char* name);
   
   /**
     Adds a new attribute node.
   */
-  Attribute setAttributeNode(Attribute attribute) throw(DOMException);
+  Attribute setAttributeNode(Attribute attribute);
   
   /**
     Removes the specified attribute node.
   */
-  Attribute removeAttributeNode(Attribute attribute) throw(DOMException);
+  Attribute removeAttributeNode(Attribute attribute);
   
   /**
     Retrieves an Attribute node by local name and namespace URI.
   */
   inline Attribute getAttributeNodeNS(
     const String& namespaceURI,
-    const String& localName) throw(DOMException) {
+    const String& localName) {
     return getAttributeNodeNS(namespaceURI.native(), localName.native());
   }
 
   Attribute getAttributeNodeNS(
     const char* namespaceURI,
-    const char* localName) throw(DOMException);
+    const char* localName);
   
   /**
     Retrieves an attribute value by local name and namespace URI.
   */
   inline String getAttributeNS(
-    const String& namespaceURI, const String& localName) throw(DOMException) {
+    const String& namespaceURI, const String& localName) {
     return getAttributeNS(namespaceURI.native(), localName.native());
   }
 
   String getAttributeNS(
-    const char* namespaceURI, const char* localName) throw(DOMException);
+    const char* namespaceURI, const char* localName);
 
   /**
     Adds a new attribute.
@@ -144,32 +144,32 @@ public:
   inline void setAttributeNS(
     const String& namespaceURI,
     const String& qualifiedName,
-    const String& value) throw(DOMException) {
+    const String& value) {
     setAttributeNS(namespaceURI.native(), qualifiedName.native(), value.native());
   }
 
   void setAttributeNS(
     const char* namespaceURI,
     const char* qualifiedName,
-    const char* value) throw(DOMException);
+    const char* value);
   
   /**
     Removes an attribute by local name and namespace URI.
   */
   inline void removeAttributeNS(
     const String& namespaceURI,
-    const String& localName) throw(DOMException) {
+    const String& localName) {
     removeAttributeNS(namespaceURI.native(), localName.native());
   }
 
   void removeAttributeNS(
     const char* namespaceURI,
-    const char* localName) throw(DOMException);
+    const char* localName);
   
   /**
     Adds a new attribute.
   */
-  Attribute setAttributeNodeNS(Attribute attribute) throw(DOMException);
+  Attribute setAttributeNodeNS(Attribute attribute);
 
   /**
     Returns true if the element has any attributes.

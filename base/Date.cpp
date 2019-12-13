@@ -246,7 +246,7 @@ int Date::normalize(DateTime& dateTime, bool redundancy) noexcept
   return carrier; // unlikely to be non-zero
 }
 
-int Date::getDaysOfMonth(int month, int year) throw(OutOfDomain)
+int Date::getDaysOfMonth(int month, int year)
 {
   bassert(
     (month >= 0) && (month < MONTHS_PER_YEAR),
@@ -321,7 +321,7 @@ int Date::getDayOfYear(int day, int month, int year) noexcept
      DAYS_BEFORE_FIRST_OF_MONTH_NONLEAP_YEAR[dt.month]);
 }
 
-Date Date::getNow() throw(DateException)
+Date Date::getNow()
 {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   FILETIME nativeTime;
@@ -350,7 +350,7 @@ int64 Date::getBias() noexcept
 #endif // flavor
 }
 
-Date Date::getTime(int second, int minute, int hour, bool local) throw(DateException)
+Date Date::getTime(int second, int minute, int hour, bool local)
 {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   // TAG: normalize input
@@ -392,7 +392,7 @@ Date Date::getTime(int second, int minute, int hour, bool local) throw(DateExcep
 }
 
 Date Date::getDate(
-  int day, int month, int year, bool local) throw(DateException)
+  int day, int month, int year, bool local)
 {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   // TAG: normalize
@@ -437,7 +437,7 @@ Date Date::getDate(
   int day,
   int month,
   int year,
-  bool local) throw(DateException)
+  bool local)
 {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   // TAG: normalize input
@@ -963,7 +963,7 @@ void Date::split(DateTime& result, bool local) const noexcept
 
 String Date::format(
   const String& format,
-  bool local) const throw(InvalidFormat, MemoryException) {
+  bool local) const {
   // time zones?
   DateTime dateTime;
   split(dateTime, local);
@@ -1219,7 +1219,7 @@ String Date::format(
 
 WideString Date::format(
   const WideString& format,
-  bool local) const throw(InvalidFormat, MemoryException)
+  bool local) const
 {
 #if defined(_COM_AZURE_DEV__BASE__HAVE_WCSFTIME)
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
@@ -1264,14 +1264,14 @@ WideString Date::format(
   );
 #endif
 #else
-#  warning WideString Date::format(const WideString& format, bool local) const throw(MemoryException) not available
+#  warning WideString Date::format(const WideString& format, bool local) const not available
   return WideString();
 #endif
 }
 
 FormatOutputStream& operator<<(
   FormatOutputStream& stream,
-  const Date& date) throw(InvalidFormat, IOException)
+  const Date& date)
 {
   stream.addDateField(date);
   return stream;

@@ -118,21 +118,21 @@ public:
   /**
     Returns the name of the local host.
   */
-  static String getLocalHost() throw(NetworkException);
+  static String getLocalHost();
 
   /**
     Returns the IP addresses associated with the specified host name.
 
     @param name The name of the host (e.g. 'www.google.com').
   */
-  static List<InetAddress> getAddressesByName(const String& name) throw(HostNotFound);
+  static List<InetAddress> getAddressesByName(const String& name);
 
   /**
     Returns the first IP address found for the specified host name.
 
     @param name The name of the host (e.g. 'www.google.com').
   */
-  static InetAddress getAddressByName(const String& name) throw(HostNotFound);
+  static InetAddress getAddressByName(const String& name);
   
   /**
     Initializes the address as unspecified IPv4 address (matches any address).
@@ -153,7 +153,7 @@ public:
 
     @param address The internet address (e.g. '172.30.33.14' or '::ffff:172.30.33.14').
   */
-  InetAddress(const String& address) throw(InvalidFormat);
+  InetAddress(const String& address);
 
   /**
     Initializes the address from the specified string.
@@ -161,7 +161,7 @@ public:
     @param address The internet address (e.g. '172.30.33.14' or '::ffff:172.30.33.14').
     @param family Specifies the family to accept.
   */
-  InetAddress(const String& address, Family family) throw(InvalidFormat);
+  InetAddress(const String& address, Family family);
 
   /**
     Copy constructor.
@@ -229,7 +229,7 @@ public:
     @param fullyQualified Specifies that the fully-qualified domain name should
     be returned for local hosts. Default is false.
   */
-  String getHostName(bool fullyQualified = false) const throw(HostNotFound);
+  String getHostName(bool fullyQualified = false) const;
 
   /**
     Returns true if the adresses are exactly equal.

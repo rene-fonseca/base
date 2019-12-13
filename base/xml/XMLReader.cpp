@@ -16,7 +16,7 @@
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 XMLReader::InputSource XMLReader::EntityResolver::resolveEntity(
-  const String& publicId, const String& systemId) throw(SAXException) {
+  const String& publicId, const String& systemId) {
 // TAG: fixme
 //   use default resolver input from systemId
 //     return defaultLoader(
@@ -91,17 +91,17 @@ void XMLReader::DTDHandler::unparsedEntityDecl(
 }
 
 void XMLReader::ErrorHandler::error(
-  const SAXParseException& exception) throw(SAXException) {
+  const SAXParseException& exception) {
   throw exception;
 }
 
 void XMLReader::ErrorHandler::fatalError(
-  const SAXParseException& exception) throw(SAXException) {
+  const SAXParseException& exception) {
   throw exception;
 }
 
 void XMLReader::ErrorHandler::warning(
-  const SAXParseException& exception) throw(SAXException) {
+  const SAXParseException& exception) {
   throw exception;
 }
 

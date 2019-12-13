@@ -33,7 +33,7 @@ public:
   virtual AsynchronousWriteOperation write(
     const uint8* buffer,
     unsigned int bytesToWrite,
-    AsynchronousWriteEventListener* listener) throw(AsynchronousException) = 0;
+    AsynchronousWriteEventListener* listener) = 0;
 
   inline ~AsynchronousOutputStream() noexcept(false) { // MSC doesnt inherit noexcept
   }

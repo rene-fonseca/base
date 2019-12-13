@@ -24,7 +24,7 @@ _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 // template _COM_AZURE_DEV__BASE__API class Vector<double>;
 
 template<class TYPE>
-Vector<TYPE>::Vector(unsigned int size) throw(OutOfDomain)
+Vector<TYPE>::Vector(unsigned int size)
 {
   if (size < 1) {
     throw OutOfDomain(this);
@@ -34,7 +34,7 @@ Vector<TYPE>::Vector(unsigned int size) throw(OutOfDomain)
 
 template<class TYPE>
 Vector<TYPE>::Vector(
-  const TYPE elements[], unsigned int size) throw(OutOfDomain)
+  const TYPE elements[], unsigned int size)
 {
   if (size < 1) {
     throw OutOfDomain(this);
@@ -44,7 +44,7 @@ Vector<TYPE>::Vector(
 }
 
 template<class TYPE>
-Vector<TYPE>& Vector<TYPE>::operator=(const Vector& assign) throw(MemoryException)
+Vector<TYPE>& Vector<TYPE>::operator=(const Vector& assign)
 {
   if (&assign != this) { // protect against self assignment
     elements = assign.elements;
@@ -53,7 +53,7 @@ Vector<TYPE>& Vector<TYPE>::operator=(const Vector& assign) throw(MemoryExceptio
 }
 
 template<class TYPE>
-const TYPE& Vector<TYPE>::getAt(unsigned int index) const throw(OutOfRange)
+const TYPE& Vector<TYPE>::getAt(unsigned int index) const
 {
   if (index >= getSize()) {
     throw OutOfRange(this);
@@ -62,7 +62,7 @@ const TYPE& Vector<TYPE>::getAt(unsigned int index) const throw(OutOfRange)
 }
 
 template<class TYPE>
-void Vector<TYPE>::setAt(unsigned int index, const TYPE& value) throw(OutOfRange)
+void Vector<TYPE>::setAt(unsigned int index, const TYPE& value)
 {
   if (index >= getSize()) {
     throw OutOfRange(this);
@@ -96,7 +96,7 @@ Vector<TYPE>& Vector<TYPE>::negate() noexcept {
 }
 
 template<class TYPE>
-Vector<TYPE>& Vector<TYPE>::add(const Vector<TYPE>& value) throw(IncompatibleVectors)
+Vector<TYPE>& Vector<TYPE>::add(const Vector<TYPE>& value)
 {
   if (value.getSize() != getSize()) {
     throw IncompatibleVectors(this);
@@ -106,7 +106,7 @@ Vector<TYPE>& Vector<TYPE>::add(const Vector<TYPE>& value) throw(IncompatibleVec
 }
 
 template<class TYPE>
-Vector<TYPE>& Vector<TYPE>::subtract(const Vector<TYPE>& value) throw(IncompatibleVectors)
+Vector<TYPE>& Vector<TYPE>::subtract(const Vector<TYPE>& value)
 {
   if (value.getSize() != getSize()) {
     throw IncompatibleVectors(this);
@@ -153,7 +153,7 @@ TYPE Vector<TYPE>::norm() const noexcept
 }
 
 template<class TYPE>
-bool Vector<TYPE>::operator==(const Vector& value) const throw(IncompatibleVectors)
+bool Vector<TYPE>::operator==(const Vector& value) const
 {
   if (value.getSize() != getSize()) {
     throw IncompatibleVectors(this);
@@ -162,19 +162,19 @@ bool Vector<TYPE>::operator==(const Vector& value) const throw(IncompatibleVecto
 }
 
 template<class TYPE>
-Vector<TYPE> operator*(const Vector<TYPE>& left, const TYPE& right) throw(MemoryException)
+Vector<TYPE> operator*(const Vector<TYPE>& left, const TYPE& right)
 {
   return Vector<TYPE>(left).multiply(right);
 }
 
 template<class TYPE>
-Vector<TYPE> operator*(const TYPE& left, const Vector<TYPE>& right) throw(MemoryException)
+Vector<TYPE> operator*(const TYPE& left, const Vector<TYPE>& right)
 {
   return Vector<TYPE>(right).multiply(left);
 }
 
 template<class TYPE>
-Vector<TYPE> operator/(const Vector<TYPE>& left, const TYPE& right) throw(MemoryException)
+Vector<TYPE> operator/(const Vector<TYPE>& left, const TYPE& right)
 {
   return Vector<TYPE>(left).divide(right);
 }

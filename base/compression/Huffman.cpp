@@ -49,7 +49,7 @@ public:
   FixedBlockOutputStream(
     OutputStream& out,
     unsigned int size = DEFAULT_BUFFER_SIZE,
-    unsigned int headroom = 0) throw(BindException, MemoryException)
+    unsigned int headroom = 0)
     : FilterOutputStream(out),
       buffer(maximum(size, MINIMUM_BUFFER_SIZE) + headroom),
       begin(buffer.getElements()),
@@ -57,7 +57,7 @@ public:
       writeHead(begin) {
   }
   
-  inline void flush() throw(IOException)
+  inline void flush()
   {
     FilterOutputStream::write(begin, static_cast<unsigned int>(writeHead - begin));
     writeHead = begin;
@@ -82,7 +82,7 @@ public:
     return Iterator(previous);
   }
   
-  inline void write(uint8 value) throw(IOException) {
+  inline void write(uint8 value) {
     if (writeHead == end) {
       flush();
     }
@@ -115,7 +115,7 @@ public:
     }
   }
   
-  void write2(const uint8* buffer, unsigned int size) throw(IOException) {
+  void write2(const uint8* buffer, unsigned int size) {
     // fill internal buffer if possible
     unsigned int bytesToCopy = minimum(size, getAvailable()); // could be 0
     copy(writeHead, buffer, bytesToCopy);
@@ -359,7 +359,7 @@ public:
     os.write2(Cast::getAddress(header), static_cast<unsigned int>(dest - header));
   }
 
-  Encoder(OutputStream& stream, const uint8* buffer, unsigned int size) throw(IOException)
+  Encoder(OutputStream& stream, const uint8* buffer, unsigned int size)
     : os(stream) {
     
     updateCodeLengths(buffer, size);
@@ -489,7 +489,7 @@ private:
 public:
 
   inline unsigned int readSymbols(
-    const uint8* buffer, unsigned int size) throw(InvalidFormat) {
+    const uint8* buffer, unsigned int size) {
     fill<uint8>(Cast::getAddress(symbols), sizeof(symbols), 0);
     
     const uint8* src = buffer;
@@ -561,7 +561,7 @@ public:
     }
   }
   
-  Decoder(OutputStream& stream, const uint8* buffer, unsigned int size) throw(InvalidFormat)
+  Decoder(OutputStream& stream, const uint8* buffer, unsigned int size)
     : os(stream) {
     const uint8* src = buffer;
     const uint8* end = src + size;
@@ -652,7 +652,7 @@ public:
   
 };
 
-void Huffman::decode(OutputStream& stream, const uint8* buffer, unsigned int size) throw(InvalidFormat) {
+void Huffman::decode(OutputStream& stream, const uint8* buffer, unsigned int size) {
   Decoder decoder(stream, buffer, size);
 }
 

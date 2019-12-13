@@ -328,7 +328,7 @@ public:
   /**
     Returns a reference to the menu item at the specified position.
   */
-  MenuItemReference getItem(unsigned int index) const throw(Invalid...) {
+  MenuItemReference getItem(unsigned int index) const {
     return items[index];
   }
 
@@ -360,7 +360,7 @@ public:
 
     @param flags The flags.
   */
-  PopUpMenu(unsigned int flags) throw(UserInterfaceException);
+  PopUpMenu(unsigned int flags);
   
   /**
     Initializes a pop up window.
@@ -368,9 +368,9 @@ public:
     @param position The initial position.
     @param flags The flags.
   */
-  PopUpMenu(const Position& position, unsigned int flags) throw(UserInterfaceException);
+  PopUpMenu(const Position& position, unsigned int flags);
   
-  void track(const Position& position) throw(UserInterfaceException) {
+  void track(const Position& position) {
     // translate mouse position to window position
   }
   

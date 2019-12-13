@@ -49,12 +49,12 @@ public:
     @param method The name of the name.
   */
   OrbRequest(
-    const Reference<OrbStub>& stub, const String& method) throw(OrbException);
+    const Reference<OrbStub>& stub, const String& method);
   
   /**
     Writes invocation request.
   */
-  inline void invoke() throw(OrbException) {
+  inline void invoke() {
 //     stub->invoke(methodId);
 //     channel->writeRequest(INVOCATION);
 //     channel->writeReference(reference);

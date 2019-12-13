@@ -57,7 +57,7 @@ const Literal MimeTypeImpl::MULTIPART = Literal("multipart");
 const Literal MimeTypeImpl::TEXT = Literal("text");
 const Literal MimeTypeImpl::VIDEO = Literal("video");
 
-MimeType::MimeType() throw(MemoryException) {
+MimeType::MimeType() {
   type = MimeTypeImpl::APPLICATION;
   subtype = "octet-stream";
   mediaType = APPLICATION;
@@ -67,7 +67,7 @@ MimeType::MimeType(const String& _type, const String& _subtype) noexcept
   : type(_type), subtype(_subtype), mediaType(UNINITIALIZED) {
 }
 
-MimeType::MimeType(MediaType _mediaType, const String& _subtype) throw(OutOfDomain, MemoryException) {
+MimeType::MimeType(MediaType _mediaType, const String& _subtype) {
   switch (mediaType) {
   case APPLICATION:
     type = MimeTypeImpl::APPLICATION;
@@ -99,7 +99,7 @@ MimeType::MimeType(MediaType _mediaType, const String& _subtype) throw(OutOfDoma
   this->subtype = _subtype;
 }
 
-MimeType::MimeType(const String& value) throw(InvalidFormat)
+MimeType::MimeType(const String& value)
   : mediaType(UNINITIALIZED)
 {
   const MemoryDiff index = value.indexOf('/');

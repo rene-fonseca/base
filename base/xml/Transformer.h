@@ -75,20 +75,20 @@ public:
   /**
     Returns the value of the parameter.
   */
-  String getParameter(const String& name) throw(InvalidKey);
+  String getParameter(const String& name);
 
   /**
     Sets the parameter.
   */
   void setParameter(
-    const String& name, const String& value) throw(MemoryException);
+    const String& name, const String& value);
   
   /**
     Transforms the source into the result tree.
 
     @param document The XML document to be transformed.
   */
-  Document transform(const Document& document) throw(TransformerException);
+  Document transform(const Document& document);
 
   /**
     Save the document to the specified file.
@@ -98,7 +98,7 @@ public:
   */
   void save(
     const String& filename,
-    const Document& document) throw(DOMException, IOException);
+    const Document& document);
 
   /**
     Returns the stylesheet.
@@ -114,7 +114,7 @@ public:
     Returns true is the function is available.
   */
   bool functionAvailable(
-    const String& ns, const String& name) throw(TransformerException);
+    const String& ns, const String& name);
   
   // URIResolver
   

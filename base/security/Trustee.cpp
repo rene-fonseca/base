@@ -75,7 +75,7 @@ Trustee::Trustee(Group group) noexcept : type(GROUP) {
 #endif // flavor
 }
 
-Trustee::Trustee(TrusteeType type, const void* _id) throw(OutOfDomain) {
+Trustee::Trustee(TrusteeType type, const void* _id) {
   if (_id == 0) {
     type = Trustee::UNSPECIFIED;
     integralId = PrimitiveTraits<unsigned long>::MAXIMUM;
@@ -137,7 +137,7 @@ bool Trustee::operator==(const Trustee& _compare) const noexcept
 #endif
 }
 
-Trustee::Trustee(const String& name) throw(TrusteeException)
+Trustee::Trustee(const String& name)
 {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   SID_NAME_USE sidType;
@@ -215,7 +215,7 @@ bool Trustee::isInitialized() const noexcept {
 #endif // flavor
 }
 
-Trustee::TrusteeType Trustee::getType() const throw(TrusteeException) {
+Trustee::TrusteeType Trustee::getType() const {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   bassert(id.isValid(), TrusteeException("Invalid", this));
   if (type == UNSPECIFIED) {
@@ -240,7 +240,7 @@ Trustee::TrusteeType Trustee::getType() const throw(TrusteeException) {
 #endif // flavor
 }
 
-bool Trustee::isMemberOf(const Trustee& trustee) const throw(TrusteeException) {
+bool Trustee::isMemberOf(const Trustee& trustee) const {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   if (!id.isValid()) {
     return false;
@@ -269,13 +269,13 @@ bool Trustee::isMemberOf(const Trustee& trustee) const throw(TrusteeException) {
   if (type == Trustee::GROUP) {
     // check if member
     return true; // TAG: implement me
-// #warning bool Trustee::isMemberOf(const Trustee& trustee) const throw(TrusteeException) not implemented
+// #warning bool Trustee::isMemberOf(const Trustee& trustee) const not implemented
   }
   return false;
 }
 
 // TAG: select full name domain/user with option: LOCAL prefix?, BUILTIN prefix (no)?
-String Trustee::getName() const throw(TrusteeException)
+String Trustee::getName() const
 {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   if (!id.isValid()) {

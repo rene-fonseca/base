@@ -41,17 +41,17 @@ public:
 
     @param out Output stream to be filtered.
   */
-  explicit FilterOutputStream(OutputStream& out) throw(BindException);
+  explicit FilterOutputStream(OutputStream& out);
 
   /**
     Closes the output stream and releases any system resources associated with the stream.
   */
-  void close() throw(IOException);
+  void close();
 
   /**
     Forces any buffered bytes to be written out.
   */
-  void flush() throw(IOException);
+  void flush();
 
   /**
     Writes the specified number of bytes in the buffer to the stream. In
@@ -67,7 +67,7 @@ public:
   unsigned int write(
     const uint8* buffer,
     unsigned int size,
-    bool nonblocking = false) throw(IOException);
+    bool nonblocking = false);
 };
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

@@ -49,7 +49,7 @@ namespace {
   }
 }
 
-bool OpenFileDialog::execute() throw(UserInterfaceException)
+bool OpenFileDialog::execute()
 {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   typedef BOOL (WINAPI *FGetOpenFileNameW)(LPOPENFILENAME);

@@ -60,7 +60,7 @@ public:
     
     @param urn The string representation of the URN.
   */
-  Urn(const String& urn) throw(InvalidFormat, MemoryException);
+  Urn(const String& urn);
   
   /**
     Initializes URN from nid and nss strings.
@@ -68,7 +68,7 @@ public:
     @param nid The namespace identifier.
     @param nss The namespace specific string.
   */
-  Urn(const String& nid, const String& nss) throw(InvalidFormat);
+  Urn(const String& nid, const String& nss);
   
   /**
     Initializes urn from other urn.
@@ -104,22 +104,22 @@ public:
   /**
     Returns the unescaped namespace specific string.
   */
-  String getUnescapedNSS() const throw(MemoryException);
+  String getUnescapedNSS() const;
 
   /**
     Sets the nid of the URN.
   */
-  void setNID(const String& value) throw(InvalidFormat);
+  void setNID(const String& value);
   
   /**
     Sets the namespace specific string of the URN.
   */
-  void setNSS(const String& value) throw(InvalidFormat);
+  void setNSS(const String& value);
   
   /**
     Returns the URN in escaped format.
   */
-  String getUrn() const throw(MemoryException);
+  String getUrn() const;
 };
 
 /**
@@ -127,7 +127,7 @@ public:
 */
 inline FormatOutputStream& operator<<(
   FormatOutputStream& stream,
-  const Urn& value) throw(MemoryException, IOException)
+  const Urn& value)
 {
   return stream << value.getUrn();
 }

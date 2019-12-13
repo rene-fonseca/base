@@ -49,24 +49,24 @@ public:
   /**
     Initializes the button widget.
   */
-  Button(Window& owner) throw(UserInterfaceException);
+  Button(Window& owner);
   
   /**
     Returns the button text.
   */
-  inline const String& getText() const throw(UserInterfaceException) {
+  inline const String& getText() const {
     return text;
   }
 
   /**
     Returns the preferred size of the button.
   */
-  Dimension getPreferredSize() throw(UserInterfaceException);
+  Dimension getPreferredSize();
   
   /**
     Sets the button text.
   */
-  void setText(const String& text) throw(UserInterfaceException);
+  void setText(const String& text);
   
   /**
     Invoked when the mouse cursor enters and exists the scope of the button.

@@ -54,7 +54,7 @@ public:
     return object;
   }
 
-  inline TYPE& operator*() throw(NullPointer)
+  inline TYPE& operator*()
   {
     if (!object) {
       throw NullPointer(this);
@@ -62,7 +62,7 @@ public:
     return *object;
   }
 
-  inline const TYPE& operator*() const throw(NullPointer)
+  inline const TYPE& operator*() const
   {
     if (!object) {
       throw NullPointer(this);
@@ -70,7 +70,7 @@ public:
     return *object;
   }
 
-  inline TYPE* operator->() throw(NullPointer)
+  inline TYPE* operator->()
   {
     if (!object) {
       throw NullPointer(this);
@@ -78,7 +78,7 @@ public:
     return object;
   }
 
-  inline const TYPE* operator->() const throw(NullPointer)
+  inline const TYPE* operator->() const
   {
     if (!object) {
       throw NullPointer(this);

@@ -55,12 +55,12 @@ public:
   BufferedOutputStream(
     OutputStream& out,
     unsigned int size = DEFAULT_BUFFER_SIZE
-  ) throw(BindException, MemoryException);
+  );
 
   /**
     Forces any buffered bytes to be written out.
   */
-  void flush() throw(IOException);
+  void flush();
 
   /**
     Writes bytes in the specified buffer to stream.
@@ -74,7 +74,7 @@ public:
   unsigned int write(
     const uint8* buffer,
     unsigned int size,
-    bool nonblocking = false) throw(IOException);
+    bool nonblocking = false);
 
   /**
     Writes a single value multiple times to the stream.
@@ -82,7 +82,7 @@ public:
     @param value The value to be written.
     @param count The number of bytes to be written.
   */
-  void unfoldValue(char value, unsigned int count) throw(IOException);
+  void unfoldValue(char value, unsigned int count);
 
   /**
     Flushes the buffer and releases any resources used by the output stream.

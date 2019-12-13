@@ -49,7 +49,7 @@ public:
   ServerSocket(
     const InetAddress& address,
     unsigned short port,
-    unsigned int backlog) throw(IOException);
+    unsigned int backlog);
 
   /**
     Accepts the first connection from the queue of pending connections on this
@@ -59,7 +59,7 @@ public:
     @return True if connection has been accepted. False, if connection could
     not be accepted without blocking.
   */
-  inline StreamSocket accept() throw(IOException)
+  inline StreamSocket accept()
   {
     return StreamSocket(*this);
   }
@@ -72,7 +72,7 @@ public:
     
     @return An invalid socket if the timeout period expired.
   */
-  inline StreamSocket accept(unsigned int milliseconds) throw(IOException)
+  inline StreamSocket accept(unsigned int milliseconds)
   {
     return StreamSocket(*this);
   }
@@ -80,7 +80,7 @@ public:
   /**
     Closes this socket.
   */
-  inline void close() throw(IOException)
+  inline void close()
   {
     Socket::close();
   }
@@ -114,7 +114,7 @@ public:
   /**
     Sets the blocking mode of the socket.
   */
-  inline void setNonBlocking(bool value) throw(IOException)
+  inline void setNonBlocking(bool value)
   {
     Socket::setNonBlocking(value);
   }
@@ -122,7 +122,7 @@ public:
   /**
     Blocking wait for incoming connection request.
   */
-  inline void wait() const throw(IOException)
+  inline void wait() const
   {
     Socket::wait();
   }
@@ -135,7 +135,7 @@ public:
     @return True, if incoming connection is available. False, if the timeout
     periode expired.
   */
-  inline bool wait(unsigned int microseconds) const throw(IOException)
+  inline bool wait(unsigned int microseconds) const
   {
     return Socket::wait(microseconds);
   }

@@ -48,7 +48,7 @@ public:
     @param samplingRate The sampling rate specified in samples per second.
     @param channels The number of channels (must be greater than 0).
   */
-  SoundInputStream(unsigned int samplingRate, unsigned int channels) throw(OutOfDomain, NotSupported);
+  SoundInputStream(unsigned int samplingRate, unsigned int channels);
 
   /**
     Returns the number of available samples.

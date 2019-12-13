@@ -20,7 +20,7 @@
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
-String CharacterData::getData() const throw(DOMException) {
+String CharacterData::getData() const {
 #if defined(_COM_AZURE_DEV__BASE__XML_XMLSOFT_ORG)
   xmlNodePtr node = (xmlNodePtr)getContext();
   return NativeString((const char*)node->content);
@@ -29,7 +29,7 @@ String CharacterData::getData() const throw(DOMException) {
 #endif
 }
 
-void CharacterData::setData(const String& data) throw(DOMException) {
+void CharacterData::setData(const String& data) {
 #if defined(_COM_AZURE_DEV__BASE__XML_XMLSOFT_ORG)
   xmlNodePtr node = (xmlNodePtr)getContext();
 	xmlNodeSetContent(node, (const xmlChar*)data.getElements());
@@ -54,7 +54,7 @@ unsigned int CharacterData::getLength() const noexcept {
 }
 
 String CharacterData::substringData(
-  unsigned int offset, unsigned int count) throw(DOMException) {
+  unsigned int offset, unsigned int count) {
 #if defined(_COM_AZURE_DEV__BASE__XML_XMLSOFT_ORG)
   xmlNodePtr node = (xmlNodePtr)getContext();
   const char* content = (const char*)node->content;
@@ -72,7 +72,7 @@ String CharacterData::substringData(
 #endif
 }
 
-void CharacterData::appendData(const String& value) throw(DOMException) {
+void CharacterData::appendData(const String& value) {
 #if defined(_COM_AZURE_DEV__BASE__XML_XMLSOFT_ORG)
   xmlNodePtr node = (xmlNodePtr)getContext();
   xmlNodeAddContent(node, (const xmlChar*)value.getElements());
@@ -83,7 +83,7 @@ void CharacterData::appendData(const String& value) throw(DOMException) {
 }
 
 void CharacterData::insertData(
-  unsigned int offset, const String& value) throw(DOMException) {
+  unsigned int offset, const String& value) {
 #if defined(_COM_AZURE_DEV__BASE__XML_XMLSOFT_ORG)
   xmlNodePtr node = (xmlNodePtr)getContext();
   String temp((const char*)node->content);
@@ -95,7 +95,7 @@ void CharacterData::insertData(
 }
 
 void CharacterData::deleteData(
-  unsigned int offset, unsigned int count) throw(DOMException) {
+  unsigned int offset, unsigned int count) {
 #if defined(_COM_AZURE_DEV__BASE__XML_XMLSOFT_ORG)
   xmlNodePtr node = (xmlNodePtr)getContext();
   String temp((const char*)node->content);
@@ -109,7 +109,7 @@ void CharacterData::deleteData(
 void CharacterData::replaceData(
   unsigned int offset,
   unsigned int count,
-  const String& value) throw(DOMException) {
+  const String& value) {
 #if defined(_COM_AZURE_DEV__BASE__XML_XMLSOFT_ORG)
   xmlNodePtr node = (xmlNodePtr)getContext();
   String temp((const char*)node->content);

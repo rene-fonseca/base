@@ -451,7 +451,7 @@ public:
     /**
       Removes the specified value from the set.
     */
-    void remove(const Value& value) throw(InvalidNode)
+    void remove(const Value& value)
     {
       const unsigned long hash = getHash(value);
       Node** bucket = getBuckets() + (hash & mask);
@@ -679,7 +679,7 @@ public:
     Removes the specified value from this hash set. Raises InvalidNode if the
     value doesn't exist in the set.
   */
-  void remove(const Value& value) throw(InvalidNode, MemoryException)
+  void remove(const Value& value)
   {
     copyOnWrite();
     impl->remove(value);

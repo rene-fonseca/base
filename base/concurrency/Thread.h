@@ -327,7 +327,7 @@ public:
     @param nanoseconds The desired time in nanoseconds to make the thread
     sleep. The value must be within the domain from 0 to 999999999.
   */
-  static void nanosleep(unsigned int nanoseconds) throw(OutOfDomain);
+  static void nanosleep(unsigned int nanoseconds);
 
   /**
     Makes the executing thread sleep for at least the specified time.
@@ -335,7 +335,7 @@ public:
     @param microseconds The desired time in microseconds to make the thread
     sleep. The value must be within the domain from 0 to 999999999.
   */
-  static void microsleep(unsigned int microseconds) throw(OutOfDomain);
+  static void microsleep(unsigned int microseconds);
 
   /**
     Makes the executing thread sleep for at least the specified time.
@@ -343,7 +343,7 @@ public:
     @param milliseconds The desired time in milliseconds to make the thread
     sleep. The value must be within the domain from 0 to 999999999.
   */
-  static void millisleep(unsigned int milliseconds) throw(OutOfDomain);
+  static void millisleep(unsigned int milliseconds);
 
   /**
     Makes the executing thread sleep for at least the specified time.
@@ -351,7 +351,7 @@ public:
     @param seconds The desired time in seconds to make the thread sleep.
     The value must be within the domain from 0 to 999999.
   */
-  static void sleep(unsigned int seconds) throw(OutOfDomain);
+  static void sleep(unsigned int seconds);
 
   /**
     Relinquishes the time slot of currently executing thread voluntarily
@@ -386,7 +386,7 @@ public:
     Initializes thread object. The thread is suspended until it is
     explicitly started.
   */
-  Thread() throw(ResourceException);
+  Thread();
   
   /**
     Initializes thread object. The thread is suspended until it is
@@ -394,7 +394,7 @@ public:
 
     @param runnable The desired object to be run when the thread is started.
   */
-  Thread(Runnable* runnable) throw(NullPointer, ResourceException);
+  Thread(Runnable* runnable);
   
   /**
     Returns the thread that created this thread. Returns 0 for the main thread.
@@ -444,7 +444,7 @@ public:
   /**
     Returns the priority level of the executing thread.
   */
-  static int getPriority() throw(ThreadException);
+  static int getPriority();
 
   /**
     Returns true if the executing thread is the parent of this thread.
@@ -486,7 +486,7 @@ public:
     @return The method returns false if the thread has not been started and
     otherwise true.
   */
-  bool join() const throw(ThreadException);
+  bool join() const;
   
   /**
     Entry point for the thread.
@@ -497,7 +497,7 @@ public:
     Starts the thread. The underlying context of execution is allocated here
     and not in the thread constructor.
   */
-  void start() throw(ThreadException);
+  void start();
 
   /**
     Asks the thread to terminate as soon as possible. This does not block

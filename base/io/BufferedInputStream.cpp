@@ -18,21 +18,21 @@
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 BufferedInputStream::BufferedInputStream(
-  InputStream& in, unsigned int size) throw(BindException, MemoryException)
+  InputStream& in, unsigned int size)
   : FilterInputStream(in),
     buffer(maximum(size, MINIMUM_BUFFER_SIZE)),
     count(0),
     position(0) {
 }
 
-unsigned int BufferedInputStream::available() const throw(IOException) {
+unsigned int BufferedInputStream::available() const {
   return (count - position) + FilterInputStream::available();
 }
 
 unsigned int BufferedInputStream::read(
   uint8* buffer,
   unsigned int size,
-  bool nonblocking) throw(IOException) {
+  bool nonblocking) {
   unsigned int bytesRead = 0; // number of bytes that have been copied into external buffer
   while (true) {
     // copy from internal to external buffer - no overlap
@@ -74,7 +74,7 @@ unsigned int BufferedInputStream::read(
 }
 
 unsigned int BufferedInputStream::peek(
-  unsigned int count) throw(OutOfDomain, IOException) {
+  unsigned int count) {
   unsigned int unreadBytes = this->count - position;
   if (count > unreadBytes) { // request for more than currently available in this buffer
     bassert(count <= buffer.getSize(), OutOfDomain());
@@ -99,7 +99,7 @@ unsigned int BufferedInputStream::peek(
   return count;
 }
 
-unsigned int BufferedInputStream::skip(unsigned int count) throw(IOException) {
+unsigned int BufferedInputStream::skip(unsigned int count) {
   unsigned int unreadBytes = this->count - position;
   if (count > unreadBytes) {
     position = this->count; // skip all bytes in buffer and more
@@ -110,13 +110,13 @@ unsigned int BufferedInputStream::skip(unsigned int count) throw(IOException) {
   }
 }
 
-void BufferedInputStream::wait() const throw(IOException) {
+void BufferedInputStream::wait() const {
   if (isEmpty()) {
     FilterInputStream::wait();
   }
 }
 
-bool BufferedInputStream::wait(unsigned int timeout) const throw(IOException) {
+bool BufferedInputStream::wait(unsigned int timeout) const {
   if (isEmpty()) {
     return FilterInputStream::wait(timeout);
   } else {

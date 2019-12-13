@@ -42,7 +42,7 @@ private:
     MappedFileImpl(
       const File& file,
       const FileRegion& region,
-      bool writeable) throw(FileException);
+      bool writeable);
     
     inline void* getBytes() const noexcept
     {
@@ -64,7 +64,7 @@ private:
       return writeable;
     }
 
-    void synchronize() throw(FileException);
+    void synchronize();
 
     ~MappedFileImpl();
   };
@@ -95,7 +95,7 @@ public:
     @param region The file region to be mapped. The offset of the region must honour the granularity returned by getGranularity.
     @param writeable Specifies that write access is required. Default is false.
   */
-  MappedFile(const File& file, const FileRegion& region, bool writeable = false) throw(FileException);
+  MappedFile(const File& file, const FileRegion& region, bool writeable = false);
 
   /**
     Initializes mapping from other mapping.
@@ -129,7 +129,7 @@ public:
   /**
     Flushes the mapping.
   */
-  inline void synchronize() throw(FileException) {
+  inline void synchronize() {
     map->synchronize();
   }
 
@@ -138,7 +138,7 @@ public:
 
     @param region The file region to be mapped.
   */
-  inline void remap(const FileRegion& region) throw(FileException)
+  inline void remap(const FileRegion& region)
   {
     map = new MappedFileImpl(map->getFile(), region, map->isWriteable());
   }

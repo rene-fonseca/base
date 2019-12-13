@@ -45,7 +45,7 @@ public:
   */
   LocalConnection(
     ProtectedPointer<Orb> orb,
-    const String& identifier) throw(InvalidFormat, OrbException);
+    const String& identifier);
   
   /**
     Returns the global identifier of the scheme (e.g.
@@ -74,13 +74,13 @@ public:
     
     @return The number of bytes pushed.
   */
-  MemorySize push(const uint8* buffer, MemorySize size) throw(IOException);
+  MemorySize push(const uint8* buffer, MemorySize size);
   
   /**
     This method should be invoked when all data has been pushed onto the
     stream. Do not invoke push() or pushEnd() hereafter.
   */
-  void pushEnd() throw(IOException);
+  void pushEnd();
   
   /**
     Pulls data from the stream. EndOfFile is raised if atEnd() would return
@@ -91,12 +91,12 @@ public:
     
     @return The number of bytes pulled.
   */
-  MemorySize pull(uint8* buffer, MemorySize size) throw(IOException);
+  MemorySize pull(uint8* buffer, MemorySize size);
   
   /**
     Reestablishes the connection.
   */
-  void reconnect() throw(OrbException);
+  void reconnect();
   
   /**
     Destroys the local connection.

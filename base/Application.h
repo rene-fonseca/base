@@ -150,7 +150,7 @@ public:
 
     @param name The formal name.
   */
-  Application(const String& name) throw(SingletonException);
+  Application(const String& name);
 
   /**
     Initializes application.
@@ -161,7 +161,7 @@ public:
     @param environment The "env" argument of the entry function main. This
     argument is not required.
   */
-  Application(const String& name, int numberOfArguments, const char* arguments[], const char* environment[] = 0) throw(SingletonException, OutOfDomain);
+  Application(const String& name, int numberOfArguments, const char* arguments[], const char* environment[] = 0);
 
   /**
     Returns the formal name of the application.

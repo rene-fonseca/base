@@ -46,22 +46,22 @@ public:
   /**
     Converts hex representation to a float.
   */
-  float getFloatAsHex(const String& value) throw(InvalidFormat);
+  float getFloatAsHex(const String& value);
 
   /**
     Converts the string to a float.
   */
-  static float getFloat(const String& value) throw(InvalidFormat);
+  static float getFloat(const String& value);
   
   /**
     Converts the string to a double.
   */
-  static double getDouble(const String& value) throw(InvalidFormat);
+  static double getDouble(const String& value);
   
   /**
     Converts the string to a long double.
   */
-  static long double getLongDouble(const String& value) throw(InvalidFormat);
+  static long double getLongDouble(const String& value);
   
   /** Floating point flags. */
   enum Flags {
@@ -428,7 +428,7 @@ _COM_AZURE_DEV__BASE__PACKED__BEGIN
       @param size The number of mantissa digits.
       @param exponent The exponent (power of 2).
     */
-    IEEE754SinglePrecision(bool negative, const uint8* mantissa, unsigned int size, int exponent) throw(InvalidFormat);
+    IEEE754SinglePrecision(bool negative, const uint8* mantissa, unsigned int size, int exponent);
     
     inline IEEE754SinglePrecision(
       const Representation::IEEE754SinglePrecision& value) noexcept {

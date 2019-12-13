@@ -16,7 +16,7 @@
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
-ProgressBar::ProgressBar(Window& owner) throw(UserInterfaceException)
+ProgressBar::ProgressBar(Window& owner)
   : Widget(owner),
     progressBrush(Color(0, 0, 192)),
     lightPen(Color(192, 192, 192)),
@@ -29,7 +29,7 @@ ProgressBar::ProgressBar(Window& owner) throw(UserInterfaceException)
   setBackgroundMode(true);
 }
 
-void ProgressBar::setTextMode(TextMode textMode) throw(UserInterfaceException) {
+void ProgressBar::setTextMode(TextMode textMode) {
   if (textMode != this->textMode) {
     this->textMode = textMode;
     invalidate();

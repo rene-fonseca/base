@@ -18,13 +18,13 @@ _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 LockableRegion::LockableRegion(
   const File& _file,
   const FileRegion& _region,
-  bool exclusive) throw(FileException) : file(_file), region(_region) {
+  bool exclusive) : file(_file), region(_region) {
   file.lock(region, exclusive);
 }
 
 void LockableRegion::lock(
   const FileRegion& region,
-  bool exclusive) throw(FileException) {
+  bool exclusive) {
   file.unlock(this->region);
   this->region = region;
   file.lock(this->region, exclusive);

@@ -104,14 +104,14 @@ public:
 
     @param id The identifier of the group.
   */
-  Group(unsigned long id) throw(OutOfDomain);
+  Group(unsigned long id);
 
   /**
     Initializes the group by id.
 
     @param id The identifier of the group.
   */
-  Group(const void* id) throw(OutOfDomain);
+  Group(const void* id);
   
   /**
     Initializes group from other group.
@@ -128,7 +128,7 @@ public:
 
     @param name The name of the group.
   */
-  Group(const String& name) throw(GroupException);
+  Group(const String& name);
   
   /**
     Returns true if the groups are identical. The method returns true if both
@@ -148,7 +148,7 @@ public:
   /**
     Initializes group as the primary group of the specified user.
   */
-  Group(const User& user) throw(GroupException);
+  Group(const User& user);
   
   /**
     Returns true if the group is initialized. This does not mean that the group
@@ -175,12 +175,12 @@ public:
   /**
     Returns the name of the group.
   */
-  String getName() const throw(GroupException);
+  String getName() const;
   
   /**
     Returns the members of the group.
   */
-  Array<String> getMembers() const throw(GroupException);
+  Array<String> getMembers() const;
 };
 
 /**

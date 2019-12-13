@@ -59,14 +59,14 @@ public:
     Closes the stream and releases any system resources associated with the
     stream.
   */
-  void close() throw(IOException) {
+  void close() {
     FileDescriptor::close();
   }
 
   /**
     Returns true if the end of the file descriptor has been reached.
   */
-  inline bool atEnd() const throw(IOException) {
+  inline bool atEnd() const {
     return end;
   }
 
@@ -75,7 +75,7 @@ public:
 
     @return Available number of bytes in stream.
   */
-  unsigned int available() const throw(IOException);
+  unsigned int available() const;
 
   /**
     Fills the buffer with bytes from the stream. Blocks if asked to read more
@@ -88,7 +88,7 @@ public:
   unsigned int read(
     uint8* buffer,
     unsigned int size,
-    bool nonblocking = false) throw(IOException);
+    bool nonblocking = false);
 
   /**
     Skips a specified number of bytes. Blocks if asked to skip more bytes than
@@ -96,17 +96,17 @@ public:
 
     @param count The number of bytes to skip.
   */
-  unsigned int skip(unsigned int count) throw(IOException);
+  unsigned int skip(unsigned int count);
 
   /**
     Sets the non-blocking flag of the file descriptor.
   */
-  void setNonBlocking(bool value) throw(IOException);
+  void setNonBlocking(bool value);
 
   /**
     Blocking wait for input to become available.
   */
-  void wait() const throw(IOException);
+  void wait() const;
 
   /**
     Blocking wait for input to become available.
@@ -114,7 +114,7 @@ public:
     @param timeout The timeout periode in microseconds.
     @return True, if data is available. False, if the timeout periode expired.
   */
-  bool wait(unsigned int timeout) const throw(IOException);
+  bool wait(unsigned int timeout) const;
 
   /**
     Releases the file descriptor.

@@ -45,7 +45,7 @@ public:
   }
 
   void compress(
-    const String& source, const String& destination) throw(IOException) {
+    const String& source, const String& destination) {
     File sourceFile(source, File::READ, 0);
     
     unsigned long long size = sourceFile.getSize();
@@ -69,7 +69,7 @@ public:
   
   void uncompress(
     const String& source,
-    const String& destination) throw(InvalidFormat, IOException) {
+    const String& destination) {
     File sourceFile(source, File::READ, 0);
     
     unsigned long long size = sourceFile.getSize();
@@ -87,7 +87,7 @@ public:
     huffman.decode(fos, buffer.getElements(), buffer.getSize());
   }
 
-  void random(const String& destination) throw(IOException)
+  void random(const String& destination)
   {
     unsigned int size = Random::random<unsigned int>() % (64 * 1024);
 
@@ -101,7 +101,7 @@ public:
     file.write(buffer.getElements(), buffer.getSize());
   }
 
-  void simple(const String& destination) throw(IOException)
+  void simple(const String& destination)
   {
     StringOutputStream stream;
     stream << getFormalName() << " version "

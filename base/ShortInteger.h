@@ -55,7 +55,7 @@ public:
     @param end The string representation.
     @param flags The parsing flags.
   */
-  static short parse(const char* src, const char* end, unsigned int flags = FLAG_DEFAULT) throw(InvalidFormat);
+  static short parse(const char* src, const char* end, unsigned int flags = FLAG_DEFAULT);
 
   /**
     Returns the value of the integer string representation.
@@ -63,7 +63,7 @@ public:
     @param string The string representation.
     @param flags The parsing flags.
   */
-  static inline short parse(const String& string, unsigned int flags = FLAG_DEFAULT) throw(InvalidFormat)
+  static inline short parse(const String& string, unsigned int flags = FLAG_DEFAULT)
   {
     return parse(string.native(), string.native() + string.getLength(), flags);
   }

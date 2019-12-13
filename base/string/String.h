@@ -137,13 +137,13 @@ private:
     }
   public:
     
-    inline Element& operator=(char value) throw(OutOfRange)
+    inline Element& operator=(char value)
     {
       string.setAt(index, value);
       return *this;
     }
     
-    inline operator char() const throw(OutOfRange)
+    inline operator char() const
     {
       return string.getAt(index);
     }
@@ -184,7 +184,7 @@ protected:
   /**
     Sets the length of the string.
   */
-  inline void setLength(MemorySize length) throw(StringException, MemoryException)
+  inline void setLength(MemorySize length)
   {
     getBuffer(length);
   }
@@ -551,7 +551,7 @@ public:
     Returns the character at the specified index in this string. Raises
     OutOfRange if index exceeds the length of the string.
   */
-  char getAt(MemorySize index) const throw(OutOfRange);
+  char getAt(MemorySize index) const;
 
   /**
     Sets the character at the specified index of this string. If the new
@@ -562,13 +562,13 @@ public:
     @param index The index of the character to set.
     @param value The new character value.
   */
-  void setAt(MemorySize index, char value) throw(OutOfRange);
+  void setAt(MemorySize index, char value);
 
   /**
     Returns a reference to character at the specified index. Raises
     OutOfRange if index exceeds the length of the string.
   */
-  Element operator[](MemorySize index) throw(OutOfRange)
+  Element operator[](MemorySize index)
   {
     return Element(*this, index);
   }
@@ -583,7 +583,7 @@ public:
     Returns the character at the specified index. Raises OutOfRange if index
     exceeds the length of the string.
   */
-  inline char operator[](MemorySize index) const throw(OutOfRange)
+  inline char operator[](MemorySize index) const
   {
     return getAt(index);
   }
@@ -622,7 +622,7 @@ public:
 
     @param ch The character to be appended.
   */
-  inline String& append(char ch) throw(StringException, MemoryException)
+  inline String& append(char ch)
   {
     return insert(getLength(), ch);
   }
@@ -632,7 +632,7 @@ public:
 
     @param string The string to be appended.
   */
-  inline String& append(const String& string) throw(StringException, MemoryException)
+  inline String& append(const String& string)
   {
     return insert(getLength(), string);
   }
@@ -642,7 +642,7 @@ public:
 
     @param string The string to be appended.
   */
-  inline String& append(const NativeString& string) throw(StringException, MemoryException)
+  inline String& append(const NativeString& string)
   {
     return insert(getLength(), string);
   }
@@ -652,7 +652,7 @@ public:
 
     @param string The native string to be appended.
   */
-  inline String& append(const char* string) throw(StringException, MemoryException)
+  inline String& append(const char* string)
   {
     return append(NativeString(string));
   }
@@ -666,7 +666,7 @@ public:
 
   template<MemorySize SIZE>
   inline String& append(const char (&literal)[SIZE])
-    throw(StringException, MemoryException)
+   
   {
     return append(Literal(literal));
   }
@@ -697,7 +697,7 @@ public:
 
     @param ch The character to be prepended.
   */
-  inline String& prepend(char ch) throw(StringException, MemoryException)
+  inline String& prepend(char ch)
   {
     return insert(0, ch);
   }
@@ -707,7 +707,7 @@ public:
 
     @param string The string to be prepended.
   */
-  inline String& prepend(const String& string) throw(StringException, MemoryException)
+  inline String& prepend(const String& string)
   {
     return insert(0, string);
   }
@@ -750,7 +750,7 @@ public:
 
   template<MemorySize SIZE>
   inline String& insert(MemorySize index, const char (&literal)[SIZE])
-    throw(StringException, MemoryException)
+   
   {
     return insert(index, Literal(literal));
   }
@@ -928,7 +928,7 @@ public:
     found, respectively, to be less than, equal to, or greater than the
     specified string.
   */
-  int compareToIgnoreCase(const NativeString& string) const throw(StringException);
+  int compareToIgnoreCase(const NativeString& string) const;
   
   template<MemorySize SIZE>
   inline int compareToIgnoreCase(const char (&literal)[SIZE]) const noexcept

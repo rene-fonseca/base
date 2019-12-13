@@ -40,7 +40,7 @@ public:
 
     @param flags The flags.
   */
-  Window(unsigned int flags) throw(UserInterfaceException);
+  Window(unsigned int flags);
   
   /**
     Initializes a window.
@@ -52,7 +52,7 @@ public:
   Window(
     const Position& position,
     const Dimension& dimension,
-    unsigned int flags) throw(UserInterfaceException);
+    unsigned int flags);
 };
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

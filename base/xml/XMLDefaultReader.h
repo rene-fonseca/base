@@ -61,13 +61,13 @@ public:
     Returns the value of the specified feature.
   */
   bool getFeature(const String& name) const
-    throw(SAXNotRecognizedException, SAXNotSupportedException);
+   ;
   
   /**
     Sets the value of the specified feature.
   */
   void setFeature(const String& name, bool value)
-    throw(SAXNotRecognizedException, SAXNotSupportedException);
+   ;
   
   /**
     Returns the current content handler.
@@ -104,7 +104,7 @@ public:
     @param uri The uri used to resolve entities. Default is improper string.
   */
   void parse(
-    File file, const String& uri = String()) throw(IOException, SAXException);
+    File file, const String& uri = String());
   
   /**
     Parses the specified buffer.
@@ -116,14 +116,14 @@ public:
   void parse(
     const char* buffer,
     unsigned int size,
-    const String& uri) throw(SAXException);
+    const String& uri);
   
   /**
     Parses an XML document from a system identifier (URI).
     
     @param systemId The identifier of the document.
   */
-  void parse(const String& systemId) throw(SAXException);
+  void parse(const String& systemId);
   
   /**
     Registers a content event handler.

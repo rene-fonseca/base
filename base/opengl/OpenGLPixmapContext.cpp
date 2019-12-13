@@ -23,7 +23,7 @@
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
-nothing OpenGLPixmapContext::initialize(const Dimension& dimension, unsigned int flags) throw(OpenGLException) {
+nothing OpenGLPixmapContext::initialize(const Dimension& dimension, unsigned int flags) {
   screenHandle = nullptr;
   drawableHandle = nullptr;
   graphicsContextHandle = nullptr;
@@ -297,7 +297,7 @@ nothing OpenGLPixmapContext::initialize(const Dimension& dimension, unsigned int
   return nothing();
 }
 
-OpenGLPixmapContext::OpenGLPixmapContext(const Dimension& dimension, unsigned int flags) throw(OpenGLException)
+OpenGLPixmapContext::OpenGLPixmapContext(const Dimension& dimension, unsigned int flags)
   : OpenGLContextImpl(),
     prefixInitialization(initialize(dimension, flags)) {
 }

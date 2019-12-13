@@ -68,7 +68,7 @@ public:
   */
   explicit InetService(
     const String& name,
-    const String& protocol = Literal("tcp")) throw(ServiceNotFound);
+    const String& protocol = Literal("tcp"));
 
   /**
     Initializes a service object by specified port number and protocol.
@@ -78,7 +78,7 @@ public:
   */
   explicit InetService(
     unsigned short port,
-    const String& protocol = Literal("tcp")) throw(ServiceNotFound);
+    const String& protocol = Literal("tcp"));
 
   /**
     Copy constructor.

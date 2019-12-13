@@ -90,7 +90,7 @@ public:
          << ENDL;
   }
 
-  void recursiveRemove(const String& folderPath) throw(FileSystemException) {
+  void recursiveRemove(const String& folderPath) {
     // String originalFolder = FileSystem::getCurrentFolder();
     
     // FileSystem::setCurrentFolder(path);

@@ -25,19 +25,19 @@ ExpressionEvaluator::ExpressionEvaluator() noexcept
 }
 
 double ExpressionEvaluator::onConstant(
-  unsigned int constant) const throw(ExpressionException)
+  unsigned int constant) const
 {
   throw ExpressionException("Invalid constant.", this);
 }
 
 double ExpressionEvaluator::onFunction(
   unsigned int function,
-  const double* value) const throw(ExpressionException)
+  const double* value) const
 {
   throw ExpressionException("Invalid function.", this);
 }
 
-double ExpressionEvaluator::evaluate() const throw(ExpressionException)
+double ExpressionEvaluator::evaluate() const
 {
   List<Node>::ReadEnumerator enu = nodes.getReadEnumerator();
   PrimitiveStackArray<double> stack(nodes.getSize());
@@ -109,7 +109,7 @@ double ExpressionEvaluator::evaluate() const throw(ExpressionException)
   return stack[0];
 }
   
-double ExpressionEvaluator::evaluate(const double* variables) const throw(ExpressionException)
+double ExpressionEvaluator::evaluate(const double* variables) const
 {
   List<Node>::ReadEnumerator enu = nodes.getReadEnumerator();
   PrimitiveStackArray<double> stack(nodes.getSize());
@@ -181,7 +181,7 @@ double ExpressionEvaluator::evaluate(const double* variables) const throw(Expres
   return stack[0];
 }
 
-void ExpressionEvaluator::evaluate(const double* variables, double* results, unsigned int count) const throw(ExpressionException)
+void ExpressionEvaluator::evaluate(const double* variables, double* results, unsigned int count) const
 {
   PrimitiveStackArray<double> stack(nodes.getSize());
   for (unsigned int i = 0; i < count; ++i) {
@@ -265,7 +265,7 @@ ExpressionProvider::ExpressionProvider() noexcept
 
 void ExpressionProvider::registerConstant(
   const String& name,
-  unsigned int id) throw(AmbiguousRegistration)
+  unsigned int id)
 {
   if (identifiers.hasKey(name)) {
     throw AmbiguousRegistration(this);
@@ -276,7 +276,7 @@ void ExpressionProvider::registerConstant(
 
 void ExpressionProvider::registerVariable(
   const String& name,
-  unsigned int id) throw(AmbiguousRegistration)
+  unsigned int id)
 {
   if (identifiers.hasKey(name)) {
     throw AmbiguousRegistration(this);
@@ -288,7 +288,7 @@ void ExpressionProvider::registerVariable(
 void ExpressionProvider::registerFunction(
   const String& name,
   unsigned int id,
-  unsigned int arguments) throw(AmbiguousRegistration)
+  unsigned int arguments)
 {
   if (identifiers.hasKey(name)) {
     throw AmbiguousRegistration(this);
@@ -298,7 +298,7 @@ void ExpressionProvider::registerFunction(
 }
 
 ExpressionEvaluator::Node ExpressionProvider::getNode(
-  const String& name) const throw(InvalidKey)
+  const String& name) const
 {
   return identifiers.getValue(name);
 }
@@ -320,7 +320,7 @@ ExpressionParser::ExpressionParser(
   length = static_cast<unsigned int>(expression.getLength());
 }
 
-void ExpressionParser::pop() throw(ExpressionException) {
+void ExpressionParser::pop() {
   Operation operation = stack.pop();
   if (operands < operation.getArguments()) {
     throw ExpressionException(index, "Operand expected.");
@@ -329,7 +329,7 @@ void ExpressionParser::pop() throw(ExpressionException) {
   operands = operands - operation.getArguments() + 1;
 }
 
-void ExpressionParser::push(Operation operation) throw(ExpressionException) {
+void ExpressionParser::push(Operation operation) {
   while (!stack.isEmpty() &&
          stack.peek().isPopable() &&
          (stack.peek().getPrecedence() > operation.getPrecedence())) {
@@ -346,7 +346,7 @@ void ExpressionParser::push(Operation operation) throw(ExpressionException) {
   unary = true;
 }
 
-void ExpressionParser::readIdentifier() throw(ExpressionException) {
+void ExpressionParser::readIdentifier() {
   unsigned int begin = index;
   bassert(
     (index < length) && ASCIITraits::isAlpha(expression[index]),
@@ -407,7 +407,7 @@ void ExpressionParser::readIdentifier() throw(ExpressionException) {
   }
 }
 
-void ExpressionParser::readValue() throw(ExpressionException) {
+void ExpressionParser::readValue() {
   unsigned int begin = index;
   bool digits = false;
 
@@ -480,7 +480,7 @@ void ExpressionParser::readValue() throw(ExpressionException) {
   unary = false;
 }
 
-void ExpressionParser::parse() throw(ExpressionException) {
+void ExpressionParser::parse() {
   const ExpressionEvaluator::UnaryOperator plus(
     ExpressionEvaluator::PLUS,
     3,
@@ -716,7 +716,7 @@ void ExpressionParser::parse() throw(ExpressionException) {
   }
 }
 
-String ExpressionParser::getString() const throw(ExpressionException) {
+String ExpressionParser::getString() const {
   List<Node>::ReadEnumerator enu = nodes.getReadEnumerator();
   Stack<String> stack;
   while (enu.hasNext()) {

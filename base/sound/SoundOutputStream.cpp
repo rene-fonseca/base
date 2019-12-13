@@ -56,7 +56,7 @@ public:
 };
 #endif // win32
 
-SoundOutputStream::SoundOutputStream(unsigned int samplingRate, unsigned int channels) throw(OutOfDomain, NotSupported) {
+SoundOutputStream::SoundOutputStream(unsigned int samplingRate, unsigned int channels) {
   bassert(channels > 0, OutOfDomain());
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   WAVEFORMATEX format;

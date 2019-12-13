@@ -53,14 +53,14 @@ namespace internal {
   };
 };
 
-MultipleSockets::MultipleSockets() throw(MemoryException) {
+MultipleSockets::MultipleSockets() {
   numberOfSelected = 0;
 }
 
 void MultipleSockets::add(
   StreamSocket socket,
   unsigned int events)
-  throw(ConcurrencyException, AlreadyKeyException, MemoryException) {
+  {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   typedef internal::MultipleSockets::pollfd pollfd;
 
@@ -156,7 +156,7 @@ void MultipleSockets::add(
 }
 
 void MultipleSockets::remove(
-  StreamSocket socket) throw(ConcurrencyException, InvalidKey) {
+  StreamSocket socket) {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   typedef internal::MultipleSockets::pollfd pollfd;
   
@@ -222,7 +222,7 @@ void MultipleSockets::remove(
 }
 
 unsigned int MultipleSockets::getEvents(
-  StreamSocket socket) throw(ConcurrencyException, InvalidKey) {
+  StreamSocket socket) {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   typedef internal::MultipleSockets::pollfd pollfd;
   
@@ -293,7 +293,7 @@ unsigned int MultipleSockets::getEvents(
 }
 
 unsigned int MultipleSockets::getFilter(
-  StreamSocket socket) const throw(ConcurrencyException, InvalidKey) {
+  StreamSocket socket) const {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   typedef internal::MultipleSockets::pollfd pollfd;
   
@@ -344,7 +344,7 @@ unsigned int MultipleSockets::getFilter(
 
 void MultipleSockets::setFilter(
   StreamSocket socket,
-  unsigned int events) throw(ConcurrencyException, InvalidKey) {
+  unsigned int events) {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   typedef internal::MultipleSockets::pollfd pollfd;
   
@@ -395,7 +395,7 @@ void MultipleSockets::setFilter(
 #endif
 }
 
-unsigned int MultipleSockets::poll() throw(ConcurrencyException, IOException) {
+unsigned int MultipleSockets::poll() {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   typedef internal::MultipleSockets::pollfd pollfd;
   
@@ -517,7 +517,7 @@ unsigned int MultipleSockets::poll() throw(ConcurrencyException, IOException) {
 }
 
 unsigned int MultipleSockets::poll(
-  unsigned int milliseconds) throw(ConcurrencyException, IOException) {
+  unsigned int milliseconds) {
   milliseconds = minimum(milliseconds, 999999999U);
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   typedef internal::MultipleSockets::pollfd pollfd;
@@ -648,7 +648,7 @@ unsigned int MultipleSockets::poll(
 }
 
 void MultipleSockets::signal(
-  SocketListener* listener) throw(ConcurrencyException)
+  SocketListener* listener)
 {
   Profiler::pushSignal("MultipleSockets::signal()");
 

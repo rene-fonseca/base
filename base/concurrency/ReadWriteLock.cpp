@@ -42,7 +42,7 @@ private:
   HANDLE blockReaders;
 public:
   
-  inline ReadWriteLockImpl() throw(ResourceException)
+  inline ReadWriteLockImpl()
   {
     blockReaders = ::CreateEvent(0, TRUE, TRUE, 0); // allow shared locks initially
     bassert(blockReaders != 0, ResourceException(this));
@@ -142,7 +142,7 @@ public:
 
 #endif // flavor
 
-ReadWriteLock::ReadWriteLock() throw(ResourceException)
+ReadWriteLock::ReadWriteLock()
 {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   representation = new ReadWriteLockImpl();

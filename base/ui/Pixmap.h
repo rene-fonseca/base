@@ -37,7 +37,7 @@ public:
     @param dimension The dimension of the pixmap.
     @param flags The format flags.
   */
-  Pixmap(const Dimension& dimension, unsigned int flags) throw(UserInterfaceException);
+  Pixmap(const Dimension& dimension, unsigned int flags);
 
   enum Format {
     RGB
@@ -49,7 +49,7 @@ public:
   
   /**
   */
-  void encode(Format format, Encoding encoding, void* data) throw(UserInterfaceException);
+  void encode(Format format, Encoding encoding, void* data);
   
   /**
     Destroys the pixmap.

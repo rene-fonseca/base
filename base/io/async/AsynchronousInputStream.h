@@ -33,7 +33,7 @@ public:
   virtual AsynchronousReadOperation read(
     uint8* buffer,
     unsigned int bytesToRead,
-    AsynchronousReadEventListener* listener) throw(AsynchronousException) = 0;
+    AsynchronousReadEventListener* listener) = 0;
 
   inline ~AsynchronousInputStream() noexcept(false) { // MSC doesnt inherit noexcept
   }

@@ -55,7 +55,7 @@ public:
   /**
     Initializes the inflater.
   */
-  BZip2Inflater() throw(MemoryException);
+  BZip2Inflater();
   
   /**
     Returns true if the end has been reached. This may return true before
@@ -78,13 +78,13 @@ public:
     
     @return The number of bytes pushed.
   */
-  MemorySize push(const uint8* buffer, MemorySize size) throw(IOException);
+  MemorySize push(const uint8* buffer, MemorySize size);
   
   /**
     This method should be invoked when all compressed data has been pushed onto
     the stream. Do not invoke push() or pushEnd() hereafter.
   */
-  void pushEnd() throw(IOException);
+  void pushEnd();
   
   /**
     Pulls decompressed data from the stream. EndOfFile is raised if atEnd()
@@ -95,7 +95,7 @@ public:
     
     @return The number of bytes pulled.
   */
-  MemorySize pull(uint8* buffer, MemorySize size) throw(IOException);
+  MemorySize pull(uint8* buffer, MemorySize size);
   
   /**
     Destroys the inflater.

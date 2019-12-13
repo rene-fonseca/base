@@ -93,7 +93,7 @@ public:
   /**
     Closes the file descriptor.
   */
-  void close() throw(IOException);
+  void close();
 
   /** Returns true if the handle is an ANSI terminal. */
   bool isANSITerminal() const noexcept;
@@ -107,12 +107,12 @@ public:
   /**
     Gets the flags of the file descriptor.
   */
-  int getFlags() const throw(IOException);
+  int getFlags() const;
 
   /**
     Sets the flags of the file descriptor.
   */
-  void setFlags(int flags) throw(IOException);
+  void setFlags(int flags);
 
   /**
     Gets the handle of the file descriptor.
@@ -132,7 +132,7 @@ public:
   /**
     Sets the non-blocking flag of the file descriptor.
   */
-  void setNonBlocking(bool value) throw(IOException);
+  void setNonBlocking(bool value);
 
   /**
     Destroys the file descriptor.

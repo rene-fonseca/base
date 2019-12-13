@@ -39,13 +39,13 @@ public:
   */
   unsigned int getMaximumNumberOfObjects() const noexcept;
   
-  void registerObject(Object* object) throw(OutOfDomain);
+  void registerObject(Object* object);
 
-  void deregisterObject(Object* object) throw(OutOfDomain);
+  void deregisterObject(Object* object);
 
   /**
   */
-  void registerObject(Socket socket) throw(OutOfDomain);
+  void registerObject(Socket socket);
   
   /**
   */

@@ -42,19 +42,19 @@ public:
   /**
     Initializes the label.
   */
-  Label(Window& owner) throw(UserInterfaceException);
+  Label(Window& owner);
 
   /**
     Returns the text.
   */
-  inline const String& getText() const throw(UserInterfaceException) {
+  inline const String& getText() const {
     return text;
   }
 
   /**
     Sets the text.
   */
-  void setText(const String& text) throw(UserInterfaceException) {
+  void setText(const String& text) {
     if (text != this->text) {
       this->text = text;
       invalidate();

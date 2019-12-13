@@ -16,7 +16,7 @@
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
-StringInputStream::StringInputStream(String& _string) throw(BindException)
+StringInputStream::StringInputStream(String& _string)
   : string(_string)
 {
   index = 0;
@@ -24,20 +24,20 @@ StringInputStream::StringInputStream(String& _string) throw(BindException)
   closed = false;
 }
 
-unsigned int StringInputStream::available() const throw(IOException)
+unsigned int StringInputStream::available() const
 {
   bassert(!closed, IOException(this));
   return static_cast<unsigned int>(string.getLength() - index);
 }
 
-void StringInputStream::close() throw(IOException)
+void StringInputStream::close()
 {
   bassert(!closed, IOException(this));
   string = String();
   closed = true;
 }
 
-unsigned int StringInputStream::read(uint8* buffer, unsigned int size, bool nonblocking) throw(IOException)
+unsigned int StringInputStream::read(uint8* buffer, unsigned int size, bool nonblocking)
 {
   bassert(!closed, IOException(this));
   if (index >= string.getLength()) {
@@ -52,7 +52,7 @@ unsigned int StringInputStream::read(uint8* buffer, unsigned int size, bool nonb
   return size;
 }
 
-unsigned int StringInputStream::skip(unsigned int count) throw(IOException)
+unsigned int StringInputStream::skip(unsigned int count)
 {
   bassert(!closed, IOException(this));
   if (index >= string.getLength()) {

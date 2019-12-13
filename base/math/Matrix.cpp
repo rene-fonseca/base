@@ -52,20 +52,20 @@ public:
 };
 
 template<class TYPE>
-Matrix<TYPE>::Matrix(const Dimension& dimension) throw(OutOfDomain) {
+Matrix<TYPE>::Matrix(const Dimension& dimension) {
   bassert(dimension.isProper(), OutOfDomain());
   setSize(dimension.getHeight(), dimension.getWidth());
 }
 
 template<class TYPE>
-Matrix<TYPE>::Matrix(const TYPE elements[], const Dimension& dimension) throw(OutOfDomain) {
+Matrix<TYPE>::Matrix(const TYPE elements[], const Dimension& dimension) {
   bassert(dimension.isProper(), OutOfDomain());
   setSize(dimension.getHeight(), dimension.getWidth());
   copy<TYPE>(getMutableElements(), elements, getSize());
 }
 
 template<class TYPE>
-Matrix<TYPE>::Matrix(Enumerator<ReadEnumeratorTraits<TYPE> >& diagonal, const Dimension& dimension) throw(OutOfDomain) {
+Matrix<TYPE>::Matrix(Enumerator<ReadEnumeratorTraits<TYPE> >& diagonal, const Dimension& dimension) {
   bassert(dimension.isProper(), OutOfDomain());
   setSize(dimension.getHeight(), dimension.getWidth());
   identity();
@@ -79,13 +79,13 @@ Matrix<TYPE>::Matrix(Enumerator<ReadEnumeratorTraits<TYPE> >& diagonal, const Di
 
 
 template<class TYPE>
-const TYPE& Matrix<TYPE>::getAt(unsigned int row, unsigned int column) const throw(OutOfRange) {
+const TYPE& Matrix<TYPE>::getAt(unsigned int row, unsigned int column) const {
   validateElement(row, column);
   return getReadOnlyElements()[row * getColumns() + column];
 }
 
 template<class TYPE>
-void Matrix<TYPE>::setAt(unsigned int row, unsigned int column, const TYPE& value) throw(OutOfRange) {
+void Matrix<TYPE>::setAt(unsigned int row, unsigned int column, const TYPE& value) {
   validateElement(row, column);
   getMutableElements()[row * getColumns() + column] = value;
 }
@@ -201,7 +201,7 @@ TYPE Matrix<TYPE>::getNorm() const noexcept {
 }
 
 template<class TYPE>
-TYPE Matrix<TYPE>::getDeterminant() const throw(NotSquare, MemoryException) {
+TYPE Matrix<TYPE>::getDeterminant() const {
   bassert(isSquare(), NotSquare());
 
   Matrix temp(*this); // make a copy of this matrix
@@ -253,7 +253,7 @@ TYPE Matrix<TYPE>::getDeterminant() const throw(NotSquare, MemoryException) {
 }
 
 template<class TYPE>
-Matrix<TYPE> Matrix<TYPE>::getMinor(unsigned int row, unsigned int column) const throw(OutOfRange, NotSquare, MemoryException) {
+Matrix<TYPE> Matrix<TYPE>::getMinor(unsigned int row, unsigned int column) const {
   validateElement(row, column);
   bassert(isSquare(), NotSquare());
 
@@ -280,7 +280,7 @@ Matrix<TYPE> Matrix<TYPE>::getMinor(unsigned int row, unsigned int column) const
 }
 
 template<class TYPE>
-TYPE Matrix<TYPE>::getCofactor(unsigned int row, unsigned int column) const throw(OutOfRange, NotSquare, MemoryException) {
+TYPE Matrix<TYPE>::getCofactor(unsigned int row, unsigned int column) const {
   TYPE result = getMinor(row, column).getDeterminant();
   if ((row + column) % 2 == 0) {
     result = -result;
@@ -289,7 +289,7 @@ TYPE Matrix<TYPE>::getCofactor(unsigned int row, unsigned int column) const thro
 }
 
 template<class TYPE>
-Matrix<TYPE> Matrix<TYPE>::getAdjoint() const throw(NotSquare, MemoryException) {
+Matrix<TYPE> Matrix<TYPE>::getAdjoint() const {
   bassert(isSquare(), NotSquare());
 
   Matrix result(Dimension(rows, columns));
@@ -318,7 +318,7 @@ Matrix<TYPE> Matrix<TYPE>::minus() const noexcept {
 }
 
 template<class TYPE>
-Matrix<TYPE> Matrix<TYPE>::invert() const throw(NotSquare, Singular, MemoryException) {
+Matrix<TYPE> Matrix<TYPE>::invert() const {
   bassert(isSquare(), NotSquare());
 
   Matrix result(getDimension());
@@ -392,13 +392,13 @@ Matrix<TYPE> Matrix<TYPE>::transpose() const noexcept {
 
 
 template<class TYPE>
-Matrix<TYPE>& Matrix<TYPE>::clear() throw(MemoryException) {
+Matrix<TYPE>& Matrix<TYPE>::clear() {
   fill(getMutableElements(), getSize(), TYPE(0));
   return *this;
 }
 
 template<class TYPE>
-Matrix<TYPE>& Matrix<TYPE>::identity() throw(MemoryException) {
+Matrix<TYPE>& Matrix<TYPE>::identity() {
   TYPE* current = getMutableElements(); // the first element of the matrix
   const TYPE* last = current + getSize() - 1; // the last element of the matrix
 
@@ -414,13 +414,13 @@ Matrix<TYPE>& Matrix<TYPE>::identity() throw(MemoryException) {
 }
 
 template<class TYPE>
-Matrix<TYPE>& Matrix<TYPE>::zeroAdjust(const TYPE& zero) throw(MemoryException) {
+Matrix<TYPE>& Matrix<TYPE>::zeroAdjust(const TYPE& zero) {
   transform(getMutableElements(), getSize(), ZeroAdjust<TYPE>(zero));
   return *this;
 }
 
 template<class TYPE>
-Matrix<TYPE>& Matrix<TYPE>::rowEchelon() throw(MemoryException) {
+Matrix<TYPE>& Matrix<TYPE>::rowEchelon() {
   TYPE* elements = getMutableElements();
 
   unsigned int row = 0;
@@ -469,7 +469,7 @@ Matrix<TYPE>& Matrix<TYPE>::rowEchelon() throw(MemoryException) {
 }
 
 template<class TYPE>
-Matrix<TYPE>& Matrix<TYPE>::pivot(unsigned int row, unsigned int column) throw(OutOfRange, Singular, MemoryException) {
+Matrix<TYPE>& Matrix<TYPE>::pivot(unsigned int row, unsigned int column) {
   validateElement(row, column);
   TYPE* elements = getMutableElements();
   TYPE value = elements[getIndexOfElement(row, column)];
@@ -498,7 +498,7 @@ Matrix<TYPE>& Matrix<TYPE>::pivot(unsigned int row, unsigned int column) throw(O
 }
 
 template<class TYPE>
-Matrix<TYPE> Matrix<TYPE>::solve(const Matrix<TYPE>& value) const throw(IncompatibleOperands, Singular) {
+Matrix<TYPE> Matrix<TYPE>::solve(const Matrix<TYPE>& value) const {
   // back substitution would be more efficient
 
   bassert(isSquare() && (columns == value.rows), IncompatibleOperands("Unable to solve matrix equations"));
@@ -566,7 +566,7 @@ Matrix<TYPE> Matrix<TYPE>::solve(const Matrix<TYPE>& value) const throw(Incompat
 }
 
 template<class TYPE>
-Matrix<TYPE>& Matrix<TYPE>::clip(unsigned int rows, unsigned int columns) throw(OutOfRange, MemoryException)
+Matrix<TYPE>& Matrix<TYPE>::clip(unsigned int rows, unsigned int columns)
 {
   if (!((rows <= this->rows) && (columns <= this->columns))) {
     throw OutOfRange();
@@ -587,46 +587,46 @@ Matrix<TYPE>& Matrix<TYPE>::clip(unsigned int rows, unsigned int columns) throw(
 }
 
 template<class TYPE>
-Matrix<TYPE>& Matrix<TYPE>::negate() throw(MemoryException) {
+Matrix<TYPE>& Matrix<TYPE>::negate() {
   transform(getMutableElements(), getSize(), Negate<TYPE>());
   return *this;
 }
 
 template<class TYPE>
-Matrix<TYPE>& Matrix<TYPE>::add(const Matrix<TYPE>& value) throw(IncompatibleOperands, MemoryException) {
+Matrix<TYPE>& Matrix<TYPE>::add(const Matrix<TYPE>& value) {
   bassert(isCompatible(value), IncompatibleOperands());
   transformByBinary(getMutableElements(), getReadOnlyElements(), getSize(), Add<TYPE>());
   return *this;
 }
 
 template<class TYPE>
-Matrix<TYPE>& Matrix<TYPE>::subtract(const Matrix<TYPE>& value) throw(IncompatibleOperands, MemoryException) {
+Matrix<TYPE>& Matrix<TYPE>::subtract(const Matrix<TYPE>& value) {
   bassert(isCompatible(value), IncompatibleOperands());
   transformByBinary(getMutableElements(), getReadOnlyElements(), getSize(), Subtract<TYPE>());
   return *this;
 }
 
 template<class TYPE>
-Matrix<TYPE>& Matrix<TYPE>::multiply(const TYPE& value) throw(MemoryException) {
+Matrix<TYPE>& Matrix<TYPE>::multiply(const TYPE& value) {
   transform(getMutableElements(), getSize(), bind2Second(Multiply<TYPE>(), value));
   return *this;
 }
 
 template<class TYPE>
-Matrix<TYPE>& Matrix<TYPE>::divide(const TYPE& value) throw(MemoryException) {
+Matrix<TYPE>& Matrix<TYPE>::divide(const TYPE& value) {
   transform(getMutableElements(), getSize(), bind2Second(Multiply<TYPE>(), TYPE(1)/value));
   return *this;
 }
 
 template<class TYPE>
-Matrix<TYPE>& Matrix<TYPE>::negate(const Matrix<TYPE>& value) throw(MemoryException) {
+Matrix<TYPE>& Matrix<TYPE>::negate(const Matrix<TYPE>& value) {
   setDimension(value);
   transformByUnary(getMutableElements(), value.getReadOnlyElements(), getSize(), Negate<TYPE>());
   return *this;
 }
 
 template<class TYPE>
-Matrix<TYPE>& Matrix<TYPE>::add(const Matrix& left, const Matrix& right) throw(IncompatibleOperands, MemoryException) {
+Matrix<TYPE>& Matrix<TYPE>::add(const Matrix& left, const Matrix& right) {
   bassert(left.isCompatible(right), IncompatibleOperands());
   setDimension(left);
   transformByBinary(getMutableElements(), left.getReadOnlyElements(), right.getReadOnlyElements(), getSize(), Add<TYPE>());
@@ -634,7 +634,7 @@ Matrix<TYPE>& Matrix<TYPE>::add(const Matrix& left, const Matrix& right) throw(I
 }
 
 template<class TYPE>
-Matrix<TYPE>& Matrix<TYPE>::subtract(const Matrix& left, const Matrix& right) throw(IncompatibleOperands, MemoryException) {
+Matrix<TYPE>& Matrix<TYPE>::subtract(const Matrix& left, const Matrix& right) {
   bassert(left.isCompatible(right), IncompatibleOperands());
   setDimension(left);
   transformByBinary(getMutableElements(), left.getReadOnlyElements(), right.getReadOnlyElements(), getSize(), Add<TYPE>());
@@ -642,7 +642,7 @@ Matrix<TYPE>& Matrix<TYPE>::subtract(const Matrix& left, const Matrix& right) th
 }
 
 template<class TYPE>
-Matrix<TYPE>& Matrix<TYPE>::multiply(const Matrix<TYPE>& left, const Matrix<TYPE>& right) throw(IncompatibleOperands, MemoryException) {
+Matrix<TYPE>& Matrix<TYPE>::multiply(const Matrix<TYPE>& left, const Matrix<TYPE>& right) {
   bassert(left.columns == right.rows, IncompatibleOperands());
   setSize(left.rows, right.columns);
 
@@ -683,28 +683,28 @@ Matrix<TYPE>& Matrix<TYPE>::multiply(const Matrix<TYPE>& left, const Matrix<TYPE
 }
 
 template<class TYPE>
-Matrix<TYPE>& Matrix<TYPE>::multiply(const Matrix<TYPE>& left, const TYPE& right) throw(MemoryException) {
+Matrix<TYPE>& Matrix<TYPE>::multiply(const Matrix<TYPE>& left, const TYPE& right) {
   setDimension(left);
   transformByUnary(getMutableElements(), left.getReadOnlyElements(), getSize(), bind2Second(Multiply<TYPE>(), right));
   return *this;
 }
 
 template<class TYPE>
-Matrix<TYPE>& Matrix<TYPE>::multiply(const TYPE& left, const Matrix<TYPE>& right) throw(MemoryException) {
+Matrix<TYPE>& Matrix<TYPE>::multiply(const TYPE& left, const Matrix<TYPE>& right) {
   setDimension(right);
   transformByUnary(getMutableElements(), right.getReadOnlyElements(), getSize(), bind2First(Multiply<TYPE>(), left));
   return *this;
 }
 
 template<class TYPE>
-Matrix<TYPE>& Matrix<TYPE>::divide(const Matrix<TYPE>& left, const TYPE& right) throw(MemoryException) {
+Matrix<TYPE>& Matrix<TYPE>::divide(const Matrix<TYPE>& left, const TYPE& right) {
   setDimension(left);
   transformByUnary(getMutableElements(), left.getReadOnlyElements(), getSize(), bind2Second(Divide<TYPE>(), right));
   return *this;
 }
 
 template<class TYPE>
-Matrix<TYPE>& Matrix<TYPE>::transpose(const Matrix& value) throw(MemoryException) {
+Matrix<TYPE>& Matrix<TYPE>::transpose(const Matrix& value) {
   setSize(value.columns, value.rows);
 
   TYPE* dest = getMutableElements();
@@ -732,50 +732,50 @@ bool operator==(const Matrix<TYPE>& left, const Matrix<TYPE>& right) noexcept
 }
 
 template<class TYPE>
-Matrix<TYPE> operator+(const Matrix<TYPE>& left, const Matrix<TYPE>& right) throw(MemoryException)
+Matrix<TYPE> operator+(const Matrix<TYPE>& left, const Matrix<TYPE>& right)
 {
   return Matrix<TYPE>(left.getDimension()).add(left, right);
 }
 
 template<class TYPE>
-Matrix<TYPE> operator-(const Matrix<TYPE>& left, const Matrix<TYPE>& right) throw(MemoryException)
+Matrix<TYPE> operator-(const Matrix<TYPE>& left, const Matrix<TYPE>& right)
 {
   return Matrix<TYPE>(left.getDimension()).subtract(left, right);
 }
 
 template<class TYPE>
-Matrix<TYPE> operator*(const Matrix<TYPE>& left, const Matrix<TYPE>& right) throw(MemoryException)
+Matrix<TYPE> operator*(const Matrix<TYPE>& left, const Matrix<TYPE>& right)
 {
   return Matrix<TYPE>(Dimension(left.rows, right.columns)).multiply(left, right);
 }
 
 template<class TYPE>
-Matrix<TYPE> operator*(const Matrix<TYPE>& left, const TYPE& right) throw(MemoryException)
+Matrix<TYPE> operator*(const Matrix<TYPE>& left, const TYPE& right)
 {
   return Matrix<TYPE>(left.getDimension()).multiply(left, right);
 }
 
 template<class TYPE>
-Matrix<TYPE> operator*(const TYPE& left, const Matrix<TYPE>& right) throw(MemoryException)
+Matrix<TYPE> operator*(const TYPE& left, const Matrix<TYPE>& right)
 {
   return Matrix<TYPE>(right.getDimension()).multiply(left, right);
 }
 
 template<class TYPE>
-Matrix<TYPE> operator/(const Matrix<TYPE>& left, const Matrix<TYPE>& right) throw(MemoryException)
+Matrix<TYPE> operator/(const Matrix<TYPE>& left, const Matrix<TYPE>& right)
 {
   // right is a square matrix
   return Matrix<TYPE>(Dimension(left.rows, right.rows)).multiply(left, right.invert());
 }
 
 template<class TYPE>
-Matrix<TYPE> operator/(const Matrix<TYPE>& left, const TYPE& right) throw(MemoryException)
+Matrix<TYPE> operator/(const Matrix<TYPE>& left, const TYPE& right)
 {
   return Matrix<TYPE>(left.getDimension()).multiply(left, TYPE(1)/right);
 }
 
 template<class TYPE>
-Matrix<TYPE> operator/(const TYPE& left, const Matrix<TYPE>& right) throw(MemoryException)
+Matrix<TYPE> operator/(const TYPE& left, const Matrix<TYPE>& right)
 {
   return Matrix<TYPE>(right.getDimension()).multiply(left, right.invert());
 }

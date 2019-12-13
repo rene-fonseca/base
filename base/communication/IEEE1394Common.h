@@ -250,7 +250,7 @@ public:
     /**
       Sets the options of the request.
     */
-    void setOptions(unsigned int options) throw(IEEE1394Exception);
+    void setOptions(unsigned int options);
     
     /**
       Returns true if the request is pending for completion.
@@ -269,7 +269,7 @@ public:
     /**
       Resets the request. Raises IEEE1394Exception is request is pending.
     */
-    void reset() throw(IEEE1394Exception);
+    void reset();
 
     virtual ~IsochronousRequestImpl() noexcept;
   };
@@ -319,7 +319,7 @@ public:
       Sets the subchannel.
     */
     void setSubchannel(
-      unsigned int subchannel) throw(OutOfDomain, IEEE1394Exception);
+      unsigned int subchannel);
     
     /**
       Returns the buffer.
@@ -341,7 +341,7 @@ public:
       @param buffer The location of the buffer.
       @param size The size of the buffer in bytes.
     */
-    void setBuffer(uint8* buffer, unsigned int size) throw(IEEE1394Exception);
+    void setBuffer(uint8* buffer, unsigned int size);
     
     /**
       Returns the number of received packets.
@@ -386,7 +386,7 @@ public:
       Sets the maximum payload in bytes per packet.
     */
     void setPayload(
-      unsigned int payload) throw(OutOfDomain, IEEE1394Exception);
+      unsigned int payload);
   };
 
   /**
@@ -420,7 +420,7 @@ public:
       Sets the desired number of packets to be received.
     */
     void setNumberOfPackets(
-      unsigned int packets) throw(OutOfDomain, IEEE1394Exception);
+      unsigned int packets);
     
     /**
       Returns the size of the header in bytes per packet.
@@ -434,7 +434,7 @@ public:
       integral number of 32 bit words).
     */
     void setHeaderSize(
-      unsigned int size) throw(OutOfDomain, IEEE1394Exception);
+      unsigned int size);
     
     /**
       Returns the maximum payload in bytes per packet.
@@ -448,7 +448,7 @@ public:
       integral number of 32 bit words).
     */
     void setPayload(
-      unsigned int payload) throw(OutOfDomain, IEEE1394Exception);
+      unsigned int payload);
     
     /**
       Returns the secondary buffer used for header data.
@@ -467,7 +467,7 @@ public:
     void setBuffer(
       uint8* buffer,
       unsigned int size,
-      uint8* secondaryBuffer) throw(IEEE1394Exception);
+      uint8* secondaryBuffer);
   };
 
   /**
@@ -534,7 +534,7 @@ public:
     void setBuffer(
       const uint8* buffer,
       unsigned int size,
-      unsigned int numberOfPackets) throw(IEEE1394Exception);
+      unsigned int numberOfPackets);
     
     /**
       Returns the transmission speed.
@@ -546,7 +546,7 @@ public:
     /**
       Sets the transmissoin speed.
     */
-    void setSpeed(unsigned int speed) throw(OutOfDomain, IEEE1394Exception);
+    void setSpeed(unsigned int speed);
     
     /**
       Returns the number of transmitted packets.
@@ -609,7 +609,7 @@ public:
       const uint8* buffer,
       unsigned int size,
       unsigned int numberOfPackets,
-      const uint8* secondaryBuffer) throw(IEEE1394Exception);
+      const uint8* secondaryBuffer);
   };
 
 
@@ -682,7 +682,7 @@ public:
     /**
       Resets the request. Raises IEEE1394Exception is request is pending.
     */
-    inline void reset() throw(IEEE1394Exception) {
+    inline void reset() {
       context->reset();
     }
     
@@ -711,7 +711,7 @@ public:
       Sets the subchannel.
     */
     inline void setSubchannel(
-      unsigned int subchannel) throw(OutOfDomain, IEEE1394Exception) {
+      unsigned int subchannel) {
       context->setSubchannel(subchannel);
     }
 
@@ -736,7 +736,7 @@ public:
       @param size The size of the buffer in bytes.
     */
     inline void setBuffer(
-      uint8* buffer, unsigned int size) throw(IEEE1394Exception) {
+      uint8* buffer, unsigned int size) {
       context->setBuffer(buffer, size);
     }
   };
@@ -810,7 +810,7 @@ public:
     /**
       Resets the request. Raises IEEE1394Exception is request is pending.
     */
-    inline void reset() throw(IEEE1394Exception)
+    inline void reset()
     {
       context->reset();
     }
@@ -841,7 +841,7 @@ public:
       Sets the subchannel.
     */
     inline void setSubchannel(
-      unsigned int subchannel) throw(OutOfDomain, IEEE1394Exception) {
+      unsigned int subchannel) {
       context->setSubchannel(subchannel);
     }
 
@@ -863,7 +863,7 @@ public:
       Sets the payload in bytes per packet.
     */
     inline void setPayload(
-      unsigned int payload) throw(OutOfDomain, IEEE1394Exception) {
+      unsigned int payload) {
       context->setPayload(payload);
     }
 
@@ -881,7 +881,7 @@ public:
       @param size The size of the buffer in bytes.
     */
     inline void setBuffer(
-      uint8* buffer, unsigned int size) throw(IEEE1394Exception) {
+      uint8* buffer, unsigned int size) {
       context->setBuffer(buffer, size);
     }
   };
@@ -957,7 +957,7 @@ public:
     /**
       Resets the request. Raises IEEE1394Exception is request is pending.
     */
-    inline void reset() throw(IEEE1394Exception) {
+    inline void reset() {
       context->reset();
     }
     
@@ -986,7 +986,7 @@ public:
       Sets the subchannel.
     */
     inline void setSubchannel(
-      unsigned int subchannel) throw(OutOfDomain, IEEE1394Exception) {
+      unsigned int subchannel) {
       context->setSubchannel(subchannel);
     }
 
@@ -1008,7 +1008,7 @@ public:
       Sets the desired number of packets to be received.
     */
     inline void setNumberOfPackets(
-      unsigned int packets) throw(OutOfDomain, IEEE1394Exception) {
+      unsigned int packets) {
       context->setNumberOfPackets(packets);
     }
 
@@ -1024,7 +1024,7 @@ public:
       integral number of 32 bit words).
     */
     inline void setHeaderSize(
-      unsigned int size) throw(OutOfDomain, IEEE1394Exception) {
+      unsigned int size) {
       context->setHeaderSize(size);
     }
     
@@ -1040,7 +1040,7 @@ public:
       of 32 bit words).
     */
     inline void setPayload(
-      unsigned int payload) throw(OutOfDomain, IEEE1394Exception) {
+      unsigned int payload) {
       context->setPayload(payload);
     }
     
@@ -1068,7 +1068,7 @@ public:
     inline void setBuffer(
       uint8* buffer,
       unsigned int size,
-      uint8* secondaryBuffer) throw(IEEE1394Exception) {
+      uint8* secondaryBuffer) {
       context->setBuffer(buffer, size, secondaryBuffer);
     }
   };
@@ -1159,7 +1159,7 @@ public:
     /**
       Resets the request. Raises IEEE1394Exception is request is pending.
     */
-    inline void reset() throw(IEEE1394Exception) {
+    inline void reset() {
       context->reset();
     }
 
@@ -1293,7 +1293,7 @@ public:
     /**
       Resets the request. Raises IEEE1394Exception is request is pending.
     */
-    inline void reset() throw(IEEE1394Exception) {
+    inline void reset() {
       context->reset();
     }
     
@@ -1322,7 +1322,7 @@ public:
       Returns the transmission speed.
     */
     inline unsigned int
-      getSpeed() const throw(OutOfDomain, IEEE1394Exception) {
+      getSpeed() const {
       return context->getSpeed();
     }
 
@@ -1330,7 +1330,7 @@ public:
       Sets the transmission speed.
     */
     inline void setSpeed(
-      unsigned int speed) throw(OutOfDomain, IEEE1394Exception) {
+      unsigned int speed) {
       context->setSpeed(speed);
     }
 
@@ -1407,7 +1407,7 @@ public:
     /**
       Resets the request. Raises IEEE1394Exception is request is pending.
     */
-    inline void reset() throw(IEEE1394Exception) {
+    inline void reset() {
       context->reset();
     }
     
@@ -1436,7 +1436,7 @@ public:
       Returns the transmission speed.
     */
     inline unsigned int
-      getSpeed() const throw(OutOfDomain, IEEE1394Exception) {
+      getSpeed() const {
       return context->getSpeed();
     }
 
@@ -1444,7 +1444,7 @@ public:
       Sets the transmission speed.
     */
     inline void setSpeed(
-      unsigned int speed) throw(OutOfDomain, IEEE1394Exception) {
+      unsigned int speed) {
       context->setSpeed(speed);
     }
 
@@ -1524,7 +1524,7 @@ public:
     /**
       Resets the request. Raises IEEE1394Exception is request is pending.
     */
-    inline void reset() throw(IEEE1394Exception) {
+    inline void reset() {
       context->reset();
     }
     
@@ -1553,7 +1553,7 @@ public:
       Returns the transmission speed.
     */
     inline unsigned int
-      getSpeed() const throw(OutOfDomain, IEEE1394Exception) {
+      getSpeed() const {
       return context->getSpeed();
     }
 
@@ -1561,7 +1561,7 @@ public:
       Sets the transmission speed.
     */
     inline void setSpeed(
-      unsigned int speed) throw(OutOfDomain, IEEE1394Exception) {
+      unsigned int speed) {
       context->setSpeed(speed);
     }
 
@@ -1660,7 +1660,7 @@ public:
     /**
       Resets the request. Raises IEEE1394Exception is request is pending.
     */
-    inline void reset() throw(IEEE1394Exception) {
+    inline void reset() {
       context->reset();
     }
 
@@ -1736,67 +1736,67 @@ public:
     /**
       Returns the reserved subchannels.
     */
-    virtual uint64 getSubchannels() throw(IEEE1394Exception);
+    virtual uint64 getSubchannels();
 
     /**
       Cancels all pending requests.
     */
-    virtual void cancel() throw(IEEE1394Exception);
+    virtual void cancel();
     
     /**
       Returns a read packet request object (READ_PACKETS_REQUEST).
     */    
     virtual IsochronousReadPacketsRequest
-      getReadPacketsRequest() const throw(IEEE1394Exception);
+      getReadPacketsRequest() const;
     
     /**
       Returns a read fixed packet request object (READ_FIXED_PACKETS_REQUEST).
     */    
     virtual IsochronousReadFixedPacketsRequest
-      getReadFixedPacketsRequest() const throw(IEEE1394Exception);
+      getReadFixedPacketsRequest() const;
     
     /**
       Returns a read fixed data request object (READ_FIXED_DATA_REQUEST).
     */    
     virtual IsochronousReadFixedDataRequest
-      getReadFixedDataRequest() const throw(IEEE1394Exception);
+      getReadFixedDataRequest() const;
 
     /**
       Queues the specified read request.
     */
     virtual void queue(
-      IsochronousReadRequest& request) throw(IEEE1394Exception);
+      IsochronousReadRequest& request);
 
     /**
       Queues the specified read request.
     */
     virtual void queue(
-      IsochronousReadPacketsRequest& request) throw(IEEE1394Exception);
+      IsochronousReadPacketsRequest& request);
 
     /**
       Queues the specified read request.
     */
     virtual void queue(
-      IsochronousReadFixedPacketsRequest& request) throw(IEEE1394Exception);
+      IsochronousReadFixedPacketsRequest& request);
 
     /**
       Queues the specified read request.
     */
     virtual void queue(
-      IsochronousReadFixedDataRequest& request) throw(IEEE1394Exception);
+      IsochronousReadFixedDataRequest& request);
     
     /**
       Queues the specified read requests.
     */
     virtual void queue(
-      Allocator<IsochronousReadRequest>& request) throw(IEEE1394Exception);
+      Allocator<IsochronousReadRequest>& request);
 
     /**
       Returns the next completed request.
 
       @return NOT_A_REQUEST if no request is available in the completion queue.
     */
-    virtual IsochronousReadRequest dequeue() throw(IEEE1394Exception);
+    virtual IsochronousReadRequest dequeue();
 
     /**
       Dequeues the specified number of requests.
@@ -1808,7 +1808,7 @@ public:
     */
     virtual unsigned int dequeue(
       unsigned int requests,
-      unsigned int microseconds) throw(OutOfDomain, IEEE1394Exception);
+      unsigned int microseconds);
 
     /**
       Wait for an event.
@@ -1819,7 +1819,7 @@ public:
       otherwise false.
     */
     virtual bool wait(
-      unsigned int microseconds) throw(OutOfDomain, IEEE1394Exception);
+      unsigned int microseconds);
   };
   
   /**
@@ -1835,68 +1835,68 @@ public:
     /**
       Returns the reserved subchannels.
     */
-    virtual uint64 getSubchannels() throw(IEEE1394Exception);
+    virtual uint64 getSubchannels();
 
     /**
       Cancels all pending requests.
     */
-    virtual void cancel() throw(IEEE1394Exception);
+    virtual void cancel();
     
     /**
       Returns a write packet request object (WRITE_PACKETS_REQUEST).
     */    
     virtual IsochronousWritePacketsRequest
-      getWritePacketsRequest() const throw(IEEE1394Exception);
+      getWritePacketsRequest() const;
     
     /**
       Returns a write fixed packet request object
       (WRITE_FIXED_PACKETS_REQUEST).
     */
     virtual IsochronousWriteFixedPacketsRequest
-      getWriteFixedPacketsRequest() const throw(IEEE1394Exception);
+      getWriteFixedPacketsRequest() const;
     
     /**
       Returns a write data request object (WRITE_DATA_REQUEST).
     */
     virtual IsochronousWriteDataRequest
-      getWriteDataRequest() const throw(IEEE1394Exception);
+      getWriteDataRequest() const;
     
     /**
       Queues the specified write request.
     */
     virtual void queue(
-      IsochronousWriteRequest& request) throw(IEEE1394Exception);
+      IsochronousWriteRequest& request);
 
     /**
       Queues the specified write request.
     */
     virtual void queue(
-      IsochronousWritePacketsRequest& request) throw(IEEE1394Exception);
+      IsochronousWritePacketsRequest& request);
 
     /**
       Queues the specified write request.
     */
     virtual void queue(
-      IsochronousWriteFixedPacketsRequest& request) throw(IEEE1394Exception);
+      IsochronousWriteFixedPacketsRequest& request);
 
     /**
       Queues the specified write request.
     */
     virtual void queue(
-      IsochronousWriteDataRequest& request) throw(IEEE1394Exception);
+      IsochronousWriteDataRequest& request);
 
     /**
       Queues the specified write requests.
     */
     virtual void queue(
-      Allocator<IsochronousWriteRequest>& request) throw(IEEE1394Exception);
+      Allocator<IsochronousWriteRequest>& request);
 
     /**
       Returns the next completed request.
 
       @return NOT_A_REQUEST if no request is available in the completion queue.
     */
-    virtual IsochronousWriteRequest dequeue() throw(IEEE1394Exception);
+    virtual IsochronousWriteRequest dequeue();
     
     /**
       Wait for an event.
@@ -1907,7 +1907,7 @@ public:
       otherwise false.
     */
     virtual bool wait(
-      unsigned int microseconds) throw(OutOfDomain, IEEE1394Exception);
+      unsigned int microseconds);
   };
 protected:
   
@@ -2020,21 +2020,21 @@ public:
     /**
       Returns the reserved subchannels.
     */
-    inline uint64 getSubchannels() throw(IEEE1394Exception) {
+    inline uint64 getSubchannels() {
       return readChannel->getSubchannels();
     }
     
     /**
       Cancels all pending requests.
     */
-    inline void cancel() throw(IEEE1394Exception) {
+    inline void cancel() {
       readChannel->cancel();
     }
     
     /**
       Closes the channel.
     */
-    inline void close() throw(IEEE1394Exception) {
+    inline void close() {
       readChannel = new IsochronousReadChannelImpl();
     }
 
@@ -2066,7 +2066,7 @@ public:
       Queues the specified read request.
     */
     inline void queue(
-      IsochronousReadRequest& request) throw(IEEE1394Exception) {
+      IsochronousReadRequest& request) {
       readChannel->queue(request);
     }
     
@@ -2074,7 +2074,7 @@ public:
       Queues the specified read request.
     */
     inline void queue(
-      IsochronousReadPacketsRequest& request) throw(IEEE1394Exception) {
+      IsochronousReadPacketsRequest& request) {
       readChannel->queue(request);
     }
     
@@ -2082,7 +2082,7 @@ public:
       Queues the specified read request.
     */
     inline void queue(
-      IsochronousReadFixedPacketsRequest& request) throw(IEEE1394Exception) {
+      IsochronousReadFixedPacketsRequest& request) {
       readChannel->queue(request);
     }
     
@@ -2090,7 +2090,7 @@ public:
       Queues the specified read request.
     */
     inline void queue(
-      IsochronousReadFixedDataRequest& request) throw(IEEE1394Exception) {
+      IsochronousReadFixedDataRequest& request) {
       readChannel->queue(request);
     }
     
@@ -2098,7 +2098,7 @@ public:
       Queues the specified read requests.
     */
     inline void queue(
-      Allocator<IsochronousReadRequest>& request) throw(IEEE1394Exception) {
+      Allocator<IsochronousReadRequest>& request) {
       readChannel->queue(request);
     }
     
@@ -2107,7 +2107,7 @@ public:
 
       @return NOT_A_REQUEST if no request is available in the completion queue.
     */
-    inline IsochronousReadRequest dequeue() throw(IEEE1394Exception) {
+    inline IsochronousReadRequest dequeue() {
       return readChannel->dequeue();
     }
     
@@ -2121,7 +2121,7 @@ public:
     */
     inline unsigned int dequeue(
       unsigned int requests,
-      unsigned int microseconds) throw(OutOfDomain, IEEE1394Exception) {
+      unsigned int microseconds) {
       return readChannel->dequeue(requests, microseconds);
     }
     
@@ -2133,7 +2133,7 @@ public:
       @return True if event occured within the specified timeout period and
       otherwise false.
     */
-    inline bool wait(unsigned int microseconds) throw(OutOfDomain) {
+    inline bool wait(unsigned int microseconds) {
       return readChannel->wait(microseconds);
     }
   };
@@ -2183,7 +2183,7 @@ public:
     /**
       Returns the reserved subchannels.
     */
-    inline uint64 getSubchannels() throw(IEEE1394Exception)
+    inline uint64 getSubchannels()
     {
       return writeChannel->getSubchannels();
     }
@@ -2191,7 +2191,7 @@ public:
     /**
       Cancels all pending requests.
     */
-    inline void cancel() throw(IEEE1394Exception)
+    inline void cancel()
     {
       writeChannel->cancel();
     }
@@ -2199,7 +2199,7 @@ public:
     /**
       Closes the channel.
     */
-    inline void close() throw(IEEE1394Exception)
+    inline void close()
     {
       writeChannel = new IsochronousWriteChannelImpl();
     }
@@ -2232,7 +2232,7 @@ public:
       Queues the specified write request.
     */
     inline void queue(
-      IsochronousWriteRequest& request) throw(IEEE1394Exception) {
+      IsochronousWriteRequest& request) {
       return writeChannel->queue(request);
     }
 
@@ -2240,7 +2240,7 @@ public:
       Queues the specified write request.
     */
     inline void queue(
-      IsochronousWritePacketsRequest& request) throw(IEEE1394Exception) {
+      IsochronousWritePacketsRequest& request) {
       return writeChannel->queue(request);
     }
 
@@ -2248,7 +2248,7 @@ public:
       Queues the specified write request.
     */
     inline void queue(
-      IsochronousWriteFixedPacketsRequest& request) throw(IEEE1394Exception) {
+      IsochronousWriteFixedPacketsRequest& request) {
       return writeChannel->queue(request);
     }
 
@@ -2256,7 +2256,7 @@ public:
       Queues the specified write request.
     */
     inline void queue(
-      IsochronousWriteDataRequest& request) throw(IEEE1394Exception) {
+      IsochronousWriteDataRequest& request) {
       return writeChannel->queue(request);
     }
 
@@ -2264,7 +2264,7 @@ public:
       Queues the specified write requests.
     */
     inline void queue(
-      Allocator<IsochronousWriteRequest>& request) throw(IEEE1394Exception) {
+      Allocator<IsochronousWriteRequest>& request) {
       return writeChannel->queue(request);
     }
     
@@ -2273,7 +2273,7 @@ public:
 
       @return NOT_A_REQUEST if no request is available in the completion queue.
     */
-    inline IsochronousWriteRequest dequeue() throw(IEEE1394Exception) {
+    inline IsochronousWriteRequest dequeue() {
       return writeChannel->dequeue();
     }
     
@@ -2285,7 +2285,7 @@ public:
       @return True if event occured within the specified timeout period and
       otherwise false.
     */
-    inline bool wait(unsigned int microseconds) throw(OutOfDomain) {
+    inline bool wait(unsigned int microseconds) {
       return writeChannel->wait(microseconds);
     }
   };

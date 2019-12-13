@@ -63,12 +63,12 @@ public:
     unsigned int flags = 0;
   public:
     
-    Option(const String& name, unsigned int flags = 0) throw(OutOfDomain);
+    Option(const String& name, unsigned int flags = 0);
     
     Option(
       const String& name,
       char shortName,
-      unsigned int flags = 0) throw(OutOfDomain);
+      unsigned int flags = 0);
     
     /**
       Returns true if the option has a short name.
@@ -110,12 +110,12 @@ public:
   class _COM_AZURE_DEV__BASE__API FlagOption : public Option {
   public:
     
-    FlagOption(const String& name, unsigned int flags = 0) throw(OutOfDomain);
+    FlagOption(const String& name, unsigned int flags = 0);
     
     FlagOption(
       const String& name,
       char shortName,
-      unsigned int flags = 0) throw(OutOfDomain);
+      unsigned int flags = 0);
   };
   
   class _COM_AZURE_DEV__BASE__API StringOption : public Option {
@@ -125,12 +125,12 @@ public:
   public:
 
     StringOption(
-      const String& name, unsigned int flags = 0) throw(OutOfDomain);
+      const String& name, unsigned int flags = 0);
     
     StringOption(
       const String& name,
       char shortName,
-      unsigned int flags = 0) throw(OutOfDomain);
+      unsigned int flags = 0);
 
     inline bool hasDefaultValue() const noexcept
     {
@@ -162,13 +162,13 @@ public:
     RegExpOption(
       const String& name,
       const String& pattern,
-      unsigned int flags = 0) throw(OutOfDomain);
+      unsigned int flags = 0);
     
     RegExpOption(
       const String& name,
       char shortName,
       const String& pattern,
-      unsigned int flags = 0) throw(OutOfDomain);
+      unsigned int flags = 0);
 
     /**
       Returns true if the value is valid.
@@ -187,12 +187,12 @@ public:
   public:
     
     BooleanOption(
-      const String& name, unsigned int flags = 0) throw(OutOfDomain);
+      const String& name, unsigned int flags = 0);
     
     BooleanOption(
       const String& name,
       char shortName,
-      unsigned int flags = 0) throw(OutOfDomain);
+      unsigned int flags = 0);
     
     inline bool hasDefaultValue() const noexcept
     {
@@ -227,12 +227,12 @@ public:
     // PREFIX, SIGN
     
     CardinalOption(
-      const String& name, unsigned int flags = 0) throw(OutOfDomain);
+      const String& name, unsigned int flags = 0);
     
     CardinalOption(
       const String& name,
       char shortName,
-      unsigned int flags = 0) throw(OutOfDomain);
+      unsigned int flags = 0);
     
     /**
       Returns true if the option has a default value.
@@ -279,12 +279,12 @@ public:
     ValidifiedResult<double> defaultValue;
   public:
     
-    RealOption(const String& name, unsigned int flags = 0) throw(OutOfDomain);
+    RealOption(const String& name, unsigned int flags = 0);
     
     RealOption(
       const String& name,
       char shortName,
-      unsigned int flags = 0) throw(OutOfDomain);
+      unsigned int flags = 0);
     
     /**
       Returns true if the option has a default value.
@@ -323,12 +323,12 @@ public:
     HashSet<String> enums;
   public:
     
-    EnumOption(const String& name, unsigned int flags = 0) throw(OutOfDomain);
+    EnumOption(const String& name, unsigned int flags = 0);
     
     EnumOption(
       const String& name,
       char shortName,
-      unsigned int flags = 0) throw(OutOfDomain);
+      unsigned int flags = 0);
 
     /** Registers a value. */
     inline void addValue(const String& value)

@@ -119,7 +119,7 @@ private:
     MyExpressionEvaluator() {
     }
 
-    double onConstant(unsigned int id) const throw(ExpressionException) {
+    double onConstant(unsigned int id) const {
       switch (id) {
       case CONSTANT_E:
         return constant::E;
@@ -138,7 +138,7 @@ private:
     
     double onFunction(
       unsigned int id,
-      const double* value) const throw(ExpressionException) {
+      const double* value) const {
       switch (id) {
       case FUNCTION_RANDOM:
         return Random::random<int64>() * 1.0/PrimitiveTraits<int32>::MAXIMUM; // not completely symmetric

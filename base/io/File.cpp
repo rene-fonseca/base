@@ -125,7 +125,7 @@ File::FileHandle::~FileHandle() {
 File::File() noexcept : fd(File::FileHandle::invalid) {
 }
 
-File::File(const String& path, Access access, unsigned int options) throw(AccessDenied, FileNotFound)
+File::File(const String& path, Access access, unsigned int options)
   : fd(File::FileHandle::invalid) {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   DWORD creationFlags = 0;
@@ -273,7 +273,7 @@ File& File::operator=(const File& assign) noexcept {
   return *this;
 }
 
-void File::close() throw(FileException) {
+void File::close() {
   fd = FileHandle::invalid; // invalidate
 }
 
@@ -283,7 +283,7 @@ bool File::isClosed() const noexcept {
 
 // TAG: need methods get owner, get group...
 
-unsigned int File::getMode() const throw(FileException) {
+unsigned int File::getMode() const {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   PSECURITY_DESCRIPTOR securityDescriptor = nullptr;
   PSID ownerSID = nullptr;
@@ -472,7 +472,7 @@ unsigned int File::getMode() const throw(FileException) {
 #endif // flavor
 }
 
-AccessControlList File::getACL() const throw(FileException) {
+AccessControlList File::getACL() const {
   AccessControlList result;
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   PSECURITY_DESCRIPTOR securityDescriptor = nullptr;
@@ -679,7 +679,7 @@ AccessControlList File::getACL() const throw(FileException) {
   return result;
 }
 
-Trustee File::getOwner() const throw(FileException) {
+Trustee File::getOwner() const {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   PSECURITY_DESCRIPTOR securityDescriptor = nullptr;
   PSID ownerSID = nullptr;
@@ -707,7 +707,7 @@ Trustee File::getOwner() const throw(FileException) {
 #endif // flavor
 }
 
-void File::changeOwner(const String& path, const Trustee& owner, const Trustee& group, bool followLink) throw(FileException) {
+void File::changeOwner(const String& path, const Trustee& owner, const Trustee& group, bool followLink) {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   throw NotImplemented(Type::getType<File>()); // TAG: fixme
 
@@ -741,7 +741,7 @@ void File::changeOwner(const String& path, const Trustee& owner, const Trustee& 
 #endif // flavor
 }
 
-Trustee File::getGroup() const throw(FileException) {
+Trustee File::getGroup() const {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   PSECURITY_DESCRIPTOR securityDescriptor = nullptr;
   PSID groupSID = nullptr;
@@ -769,7 +769,7 @@ Trustee File::getGroup() const throw(FileException) {
 #endif // flavor
 }
 
-long long File::getSize() const throw(FileException) {
+long long File::getSize() const {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   #if (_COM_AZURE_DEV__BASE__OS >= _COM_AZURE_DEV__BASE__W2K)
     LARGE_INTEGER size; // TAG: unresolved possible byte order problem for big endian architectures
@@ -795,7 +795,7 @@ long long File::getSize() const throw(FileException) {
 #endif
 }
 
-long long File::getPosition() const throw(FileException) {
+long long File::getPosition() const {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   LARGE_INTEGER position;
   position.QuadPart = 0;
@@ -816,7 +816,7 @@ long long File::getPosition() const throw(FileException) {
 #endif
 }
 
-void File::setPosition(long long position, Whence whence) throw(FileException)
+void File::setPosition(long long position, Whence whence)
 {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   static DWORD relativeTo[] = {FILE_BEGIN, FILE_CURRENT, FILE_END};
@@ -840,7 +840,7 @@ void File::setPosition(long long position, Whence whence) throw(FileException)
 #endif
 }
 
-void File::truncate(long long size) throw(FileException) {
+void File::truncate(long long size) {
   long long oldSize = File::getSize();
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   setPosition(size);
@@ -877,7 +877,7 @@ void File::truncate(long long size) throw(FileException) {
   }
 }
 
-void File::flush() throw(FileException) {
+void File::flush() {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   if (!::FlushFileBuffers(fd->getHandle())) {
     throw FileException("Unable to flush.", this);
@@ -890,7 +890,7 @@ void File::flush() throw(FileException) {
 }
 
 void File::lock(
-  const FileRegion& region, bool exclusive) throw(FileException) {
+  const FileRegion& region, bool exclusive) {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   bassert(
     (region.getOffset() >= 0) && (region.getSize() >= 0),
@@ -968,7 +968,7 @@ void File::lock(
 }
 
 bool File::tryLock(
-  const FileRegion& region, bool exclusive) throw(FileException) {
+  const FileRegion& region, bool exclusive) {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   bassert((region.getOffset() >= 0) && (region.getSize() >= 0), FileException("Unable to lock region.", this));
   LARGE_INTEGER offset;
@@ -1038,7 +1038,7 @@ bool File::tryLock(
 #endif
 }
 
-void File::unlock(const FileRegion& region) throw(FileException)
+void File::unlock(const FileRegion& region)
 {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   bassert((region.getOffset() >= 0) && (region.getSize() >= 0), FileException("Unable to unlock region.", this));
@@ -1105,7 +1105,7 @@ void File::unlock(const FileRegion& region) throw(FileException)
 #endif
 }
 
-Date File::getLastModification() throw(FileException)
+Date File::getLastModification()
 {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   FILETIME time;
@@ -1126,7 +1126,7 @@ Date File::getLastModification() throw(FileException)
 #endif
 }
 
-Date File::getLastAccess() throw(FileException) {
+Date File::getLastAccess() {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   FILETIME time;
   if (::GetFileTime(fd->getHandle(), 0, &time, 0)) {
@@ -1146,7 +1146,7 @@ Date File::getLastAccess() throw(FileException) {
 #endif
 }
 
-Date File::getLastChange() throw(FileException) {
+Date File::getLastChange() {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   FILETIME time;
   if (::GetFileTime(fd->getHandle(), &time, 0, 0)) {
@@ -1166,7 +1166,7 @@ Date File::getLastChange() throw(FileException) {
 #endif
 }
 
-unsigned long File::getVariable(Variable variable) throw(FileException, NotSupported) {
+unsigned long File::getVariable(Variable variable) {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   throw NotSupported(this);
 #else // unix
@@ -1217,7 +1217,7 @@ unsigned long File::getVariable(Variable variable) throw(FileException, NotSuppo
 unsigned int File::read(
   uint8* buffer,
   unsigned int bytesToRead,
-  bool nonblocking) throw(FileException)
+  bool nonblocking)
 {
   unsigned int bytesRead = 0;
   while (bytesToRead > 0) {
@@ -1292,7 +1292,7 @@ unsigned int File::read(
 unsigned int File::write(
   const uint8* buffer,
   unsigned int bytesToWrite,
-  bool nonblocking) throw(FileException) {
+  bool nonblocking) {
   unsigned int bytesWritten = 0;
   while (bytesToWrite > 0) {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
@@ -1364,7 +1364,7 @@ unsigned int File::write(
   return bytesWritten;
 }
 
-void File::asyncCancel() throw(AsynchronousException) {
+void File::asyncCancel() {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   ::CancelIo(getHandle());
 #else // unix
@@ -1376,7 +1376,7 @@ AsynchronousReadOperation File::read(
   uint8* buffer,
   unsigned int bytesToRead,
   unsigned long long offset,
-  AsynchronousReadEventListener* listener) throw(AsynchronousException) {
+  AsynchronousReadEventListener* listener) {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   bassert(listener, AsynchronousException(this)); // TAG: fixme
   return new win32::AsyncReadFileContext(getHandle(), buffer, bytesToRead, offset, listener);
@@ -1389,7 +1389,7 @@ AsynchronousWriteOperation File::write(
   const uint8* buffer,
   unsigned int bytesToWrite,
   unsigned long long offset,
-  AsynchronousWriteEventListener* listener) throw(AsynchronousException) {
+  AsynchronousWriteEventListener* listener) {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   bassert(listener, AsynchronousException(this)); // TAG: fixme
   return new win32::AsyncWriteFileContext(getHandle(), buffer, bytesToWrite, offset, listener);

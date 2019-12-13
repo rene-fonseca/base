@@ -30,7 +30,7 @@ _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 class _COM_AZURE_DEV__BASE__API Externalizable {
 public:
 
-//  static TYPE readType(InputStream* in) throw(IOException) {
+//  static TYPE readType(InputStream* in) {
 //    PrimitiveInputStream stream(in);
 //    unsigned int length = stream->readUnsignedInteger();
 //    char id[length];
@@ -39,7 +39,7 @@ public:
 //  }
 //
 //  template<class TYPE>
-//  static void writeType(OutputStream* out, TYPE object) throw(IOException) {
+//  static void writeType(OutputStream* out, TYPE object) {
 //    PrimitiveOutputStream stream(out);
 //    const char* id = Type::getType(object).getLocalName();
 //    unsigned int length = getNullTerminatedLength(id);
@@ -52,14 +52,14 @@ public:
 
     @param in The stream to get the object from.
   */
-  virtual void readExternal(InputStream* in) throw(IOException) = 0;
+  virtual void readExternal(InputStream* in) = 0;
 
   /**
     Writes object to output stream.
 
     @param out The stream to receive the object.
   */
-  virtual void writeExternal(OutputStream* out) throw(IOException) = 0;
+  virtual void writeExternal(OutputStream* out) = 0;
 };
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

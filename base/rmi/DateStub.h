@@ -31,12 +31,12 @@ public:
   /**
     Initializes the date stub.
   */
-  OrbDateStub() throw(OrbException);
+  OrbDateStub();
   
   /**
     Returns the date.
   */
-  long long getDate() const throw(OrbException);
+  long long getDate() const;
   
   /**
     Destroys the date stub.

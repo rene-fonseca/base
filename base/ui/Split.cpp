@@ -23,7 +23,7 @@ _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 // bind dimension
 // allow dimension to changed
 
-Split::Split(Window& owner) throw(UserInterfaceException)
+Split::Split(Window& owner)
   : Widget(owner),
     widthOfSplit(10),
     drag(false),

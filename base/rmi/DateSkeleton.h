@@ -31,12 +31,12 @@ public:
   /**
     Initializes the date skeleton.
   */
-  DateSkeleton() throw(OrbException);
+  DateSkeleton();
   
   /**
     Returns the date.
   */
-  long long getDate() const throw(OrbException);
+  long long getDate() const;
   
   /**
     Destroys the date skeleton.

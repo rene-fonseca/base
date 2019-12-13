@@ -34,7 +34,7 @@ private:
   /**
     Initializes the OpenGL context.
   */
-  nothing initialize(const Format& format) throw(OpenGLException, UserInterfaceException);
+  nothing initialize(const Format& format);
   
   /**
     Releases the rendering context.
@@ -48,12 +48,12 @@ public:
   /**
     Returns the available formats.
   */
-  static Array<Format> getFormats(unsigned int flags) throw(OpenGLException, UserInterfaceException);
+  static Array<Format> getFormats(unsigned int flags);
   
   /**
     Initializes a new OpenGL context.
   */
-  OpenGLContext(const Position& position, const Dimension& dimension, const Format& format) throw(OpenGLException, UserInterfaceException);
+  OpenGLContext(const Position& position, const Dimension& dimension, const Format& format);
   
   /**
     Invoked when the display should be updated.

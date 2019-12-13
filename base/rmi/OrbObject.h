@@ -33,12 +33,12 @@ public:
   /**
     Initializes the orb object.
   */
-  OrbObject() throw(OrbException);
+  OrbObject();
   
   /**
     Returns the identifier of the object.
   */
-  String getOrbIdentifier() const throw(OrbException);
+  String getOrbIdentifier() const;
   
   /**
     Destroys the orb object.

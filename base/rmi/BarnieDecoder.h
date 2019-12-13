@@ -23,7 +23,7 @@ public:
   /**
     Decodes the elements of an array of unsigned int.
   */
-  void read(unsigned int* buffer, unsigned int size) throw(IOException);
+  void read(unsigned int* buffer, unsigned int size);
 };
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

@@ -65,7 +65,7 @@ void* HeapImpl::allocateNoThrow(MemorySize size) noexcept
   return result;
 }
 
-void* HeapImpl::allocate(MemorySize size) throw(MemoryException)
+void* HeapImpl::allocate(MemorySize size)
 {
   if (!size) {
     return nullptr;
@@ -92,7 +92,7 @@ MemorySize HeapImpl::getHeapUsed() noexcept
   return 0;
 }
 
-void* HeapImpl::resize(void* heap, MemorySize size) throw(MemoryException)
+void* HeapImpl::resize(void* heap, MemorySize size)
 {
   MemorySize originalSize = 0;
   const bool profile = Profiler::isEnabled();
@@ -139,7 +139,7 @@ void* HeapImpl::resize(void* heap, MemorySize size) throw(MemoryException)
   return result;
 }
 
-void* HeapImpl::tryResize(void* heap, MemorySize size) throw(MemoryException)
+void* HeapImpl::tryResize(void* heap, MemorySize size)
 {
   if (!heap) {
     return nullptr;
@@ -181,7 +181,7 @@ void* HeapImpl::tryResize(void* heap, MemorySize size) throw(MemoryException)
 #endif // flavor
 }
 
-void HeapImpl::release(void* heap) throw(MemoryException)
+void HeapImpl::release(void* heap)
 {
   if (heap) {
     if (Profiler::isEnabled()) {

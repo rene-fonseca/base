@@ -59,7 +59,7 @@ public:
     FIXED
   };
   
-  inline AttributeDecl(Node node) throw(CastException)
+  inline AttributeDecl(Node node)
     : Declaration(node) {
     bassert(
       node.isInvalid() || (node.getType() == ATTRIBUTE_DECL_NODE),
@@ -67,7 +67,7 @@ public:
     );
   }
   
-  inline AttributeDecl(Declaration node) throw(CastException)
+  inline AttributeDecl(Declaration node)
     : Declaration(node) {
     bassert(
       node.isInvalid() || (node.getType() == ATTRIBUTE_DECL_NODE),
@@ -93,7 +93,7 @@ public:
   /**
     Returns the enumeration value. Only valid if type is ATTRIBUTE_ENUMERATION.
   */
-  Array<String> getEnumerationValues() const throw(DOMException);
+  Array<String> getEnumerationValues() const;
 };
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

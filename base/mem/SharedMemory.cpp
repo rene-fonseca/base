@@ -28,7 +28,7 @@ _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 SharedMemory::SharedMemoryImpl::SharedMemoryImpl(
   const File& _file,
   const FileRegion& _region,
-  unsigned int _access) throw(MemoryException)
+  unsigned int _access)
   : file(_file), region(_region), access(_access)
 {
 
@@ -110,7 +110,7 @@ SharedMemory::SharedMemoryImpl::SharedMemoryImpl(
 #endif // flavor
 }
 
-void SharedMemory::SharedMemoryImpl::lock() throw(MemoryException)
+void SharedMemory::SharedMemoryImpl::lock()
 {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   bassert(
@@ -129,7 +129,7 @@ void SharedMemory::SharedMemoryImpl::lock() throw(MemoryException)
 #endif // flavor
 }
 
-void SharedMemory::SharedMemoryImpl::unlock() throw(MemoryException)
+void SharedMemory::SharedMemoryImpl::unlock()
 {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   bassert(
@@ -149,7 +149,7 @@ void SharedMemory::SharedMemoryImpl::unlock() throw(MemoryException)
 }
 
 void SharedMemory::SharedMemoryImpl::setProtection(
-  unsigned int access) throw(MemoryException)
+  unsigned int access)
 {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   DWORD protection = 0;
@@ -204,7 +204,7 @@ void SharedMemory::SharedMemoryImpl::setProtection(
 }
 
 void SharedMemory::SharedMemoryImpl::synchronize(
-  bool asynchronous) throw(MemoryException)
+  bool asynchronous)
 {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   BOOL status = ::FlushViewOfFile(address, getSize());
@@ -262,7 +262,7 @@ SharedMemory::SharedMemory(
   const String& path,
   const FileRegion& region,
   unsigned int access,
-  unsigned int options) throw(FileException, MemoryException)
+  unsigned int options)
 {
   File::Access fileAccess = File::READ;
   if (access & SharedMemory::WRITE) {
@@ -302,22 +302,22 @@ SharedMemory& SharedMemory::operator=(const SharedMemory& assign) noexcept
   return *this;
 }
 
-void SharedMemory::lock() throw(MemoryException)
+void SharedMemory::lock()
 {
   sharedMemory->lock();
 }
 
-void SharedMemory::unlock() throw(MemoryException)
+void SharedMemory::unlock()
 {
   sharedMemory->unlock();
 }
 
-void SharedMemory::setProtection(unsigned int access) throw(MemoryException)
+void SharedMemory::setProtection(unsigned int access)
 {
   sharedMemory->setProtection(access);
 }
 
-void SharedMemory::synchronize(bool asynchronous) throw(MemoryException)
+void SharedMemory::synchronize(bool asynchronous)
 {
   sharedMemory->synchronize(asynchronous);
 }

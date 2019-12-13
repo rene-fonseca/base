@@ -94,7 +94,7 @@ void SHA512::pushBlock(const uint8* block) noexcept {
   messageDigest[7] += h;
 }
 
-MemorySize SHA512::push(const uint8* buffer, MemorySize size) throw(OutOfRange)
+MemorySize SHA512::push(const uint8* buffer, MemorySize size)
 {
   if (size > (MAXIMUM_SIZE - totalSize)) {
     throw OutOfRange();

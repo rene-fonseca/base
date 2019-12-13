@@ -100,7 +100,7 @@ unsigned int ThreadPool::getThreads() const noexcept
   return desiredThreads;
 }
 
-void ThreadPool::setThreads(unsigned int value) throw(ThreadPoolException)
+void ThreadPool::setThreads(unsigned int value)
 {
   ExclusiveSynchronize<Guard> _guard(guard);
 

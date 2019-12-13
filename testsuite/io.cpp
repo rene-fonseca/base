@@ -31,14 +31,14 @@ using namespace com::azure::dev::base;
 
 FormatOutputStream& operator<<(
   FormatOutputStream& stream,
-  const Pair<float, float>& value) throw(IOException) {
+  const Pair<float, float>& value) {
   FormatOutputStream::PushContext push(stream);
   return stream << '{' << value.getFirst() << ',' << value.getSecond() << '}';
 }
 
 FormatOutputStream& operator<<(
   FormatOutputStream& stream,
-  const Pair<double, double>& value) throw(IOException) {
+  const Pair<double, double>& value) {
   return stream << '{' << value.getFirst() << ',' << value.getSecond() << '}';
 }
 

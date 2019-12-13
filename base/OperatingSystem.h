@@ -156,7 +156,7 @@ public:
   /**
     Returns the value of the specified system variable.
   */
-  static long getVariable(Variable variable) throw(NotSupported);
+  static long getVariable(Variable variable);
 
   /**
     Get resource limit.
@@ -179,7 +179,7 @@ public:
   static void setResourceLimit(
     Resource resource,
     int64 limit,
-    LimitType type = SOFT_LIMIT) throw(OutOfRange);
+    LimitType type = SOFT_LIMIT);
 };
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

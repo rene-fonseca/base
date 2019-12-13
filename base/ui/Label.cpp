@@ -15,7 +15,7 @@
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
-Label::Label(Window& owner) throw(UserInterfaceException)
+Label::Label(Window& owner)
   : Widget(owner),
     textFormat(TextFormat::LEFT|TextFormat::MIDDLE) {
   setBackgroundMode(true);

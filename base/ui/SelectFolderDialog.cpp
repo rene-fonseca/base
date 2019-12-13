@@ -31,7 +31,7 @@ SelectFolderDialog::SelectFolderDialog() noexcept
 {
 }
 
-bool SelectFolderDialog::execute() throw(UserInterfaceException)
+bool SelectFolderDialog::execute()
 {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   typedef LPITEMIDLIST (WINAPI *FSHBrowseForFolderW)(LPBROWSEINFO);

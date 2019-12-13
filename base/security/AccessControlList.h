@@ -96,7 +96,7 @@ public:
   /**
     Removes the entry at the specified index.
   */
-  void remove(unsigned int index) throw(OutOfRange);
+  void remove(unsigned int index);
   
   /**
     Removes a trustee from the list.
@@ -114,7 +114,7 @@ public:
     Returns the access control entry for the specified trustee. Raises
     InvalidKey if no entry is available for the specified truste.
   */
-  const AccessControlEntry& getACE(const Trustee& trustee) const throw(InvalidKey);
+  const AccessControlEntry& getACE(const Trustee& trustee) const;
 
   /**
     Returns the associated owner.

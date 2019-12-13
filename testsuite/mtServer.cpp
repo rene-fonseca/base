@@ -39,7 +39,7 @@ public:
   CommunicationThread(unsigned int _id) : id(_id) {
   }
 
-  void run() throw(IOException) {
+  void run() {
     fout << id << ": " << "Thread is up and running" << ENDL;
 
     while (true) {

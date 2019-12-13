@@ -232,7 +232,7 @@ public:
 //  /**
 //    Returns mutable value of binary node.
 //  */
-//  inline Reference operator*() throw(NullPointer) {
+//  inline Reference operator*() {
 //    if (!ptr) {
 //      throw NullPointer();
 //    }
@@ -242,7 +242,7 @@ public:
 //  /**
 //    Returns constant value of binary node.
 //  */
-//  inline const Reference operator*() const throw(NullPointer) {
+//  inline const Reference operator*() const {
 //    if (!ptr) {
 //      throw NullPointer();
 //    }

@@ -15,11 +15,11 @@
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
-Picture::Picture(Window& owner) throw(UserInterfaceException)
+Picture::Picture(Window& owner)
   : Widget(owner) {
 }
 
-void Picture::setBitmap(const Bitmap& bitmap) throw(UserInterfaceException) {
+void Picture::setBitmap(const Bitmap& bitmap) {
   this->bitmap = bitmap;
   invalidate();
 }

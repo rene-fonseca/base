@@ -157,7 +157,7 @@ _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 const OperatingSystem::Handle OperatingSystem::INVALID_HANDLE = static_cast<char*>(nullptr) - 1;
 #endif
 
-long OperatingSystem::getVariable(Variable variable) throw(NotSupported) {
+long OperatingSystem::getVariable(Variable variable) {
   // TAG: need to cache all cacheable variables
   
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
@@ -398,7 +398,7 @@ int64 OperatingSystem::getResourceLimit(
 #endif // flavor
 }
 
-void OperatingSystem::setResourceLimit(Resource resource, int64 limit, LimitType type) throw(OutOfRange) {
+void OperatingSystem::setResourceLimit(Resource resource, int64 limit, LimitType type) {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   throw NotSupported(Type::getType<OperatingSystem>());
 #elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__WASI)

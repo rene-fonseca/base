@@ -31,7 +31,7 @@ public:
   /**
     Initializes IEEE 1394 implementation.
   */
-  DummyIEEE1394() throw(IEEE1394Exception);
+  DummyIEEE1394();
   
   /**
     Returns true if the bus has been reset since last check.
@@ -46,30 +46,30 @@ public:
   /**
     Resets the bus.
   */
-  void resetBus() throw(IEEE1394Exception);
+  void resetBus();
 
   /**
     Returns the adapters available.
   */
-  Array<EUI64> getAdapters() throw(IEEE1394Exception);
+  Array<EUI64> getAdapters();
   
   /**
     Opens a connection to the primary adapter.
   */
-  void open() throw(IEEE1394Exception);
+  void open();
   
   /**
     Opens a connection to the specified adapter.
     
     @param adapter The id of the adapter.
   */
-  void open(const EUI64& adapter) throw(IEEE1394Exception);
+  void open(const EUI64& adapter);
   
   /**
     Closes this handle to the adapter. The adapter is destroyed when all handles
     have been closed.
   */
-  void close() throw(IEEE1394Exception);
+  void close();
   
   /**
     Returns the physical id of the adapter.
@@ -84,12 +84,12 @@ public:
   /**
     Returns the current error status.
   */
-  unsigned int getStatus() const throw(IEEE1394Exception);
+  unsigned int getStatus() const;
 
   /**
     Returns the size of the FIFO.
   */
-  unsigned int getFIFOSize() const throw(IEEE1394Exception);
+  unsigned int getFIFOSize() const;
   
   /**
     Read data from device.
@@ -104,7 +104,7 @@ public:
     unsigned short node,
     uint64 address,
     uint8* buffer,
-    unsigned int size) throw(IEEE1394Exception);
+    unsigned int size);
 
   /**
     Write data to device.
@@ -119,7 +119,7 @@ public:
     unsigned short node,
     uint64 address,
     const uint8* buffer,
-    unsigned int size) throw(IEEE1394Exception);
+    unsigned int size);
 
   /**
     Read data from device. This method is only used for debugging and
@@ -140,7 +140,7 @@ public:
     uint64 address,
     uint32* buffer,
     unsigned int size,
-    uint32 value) throw(IEEE1394Exception);
+    uint32 value);
 
   /**
     Returns an isochronous read channel.
@@ -151,7 +151,7 @@ public:
   */
   IsochronousReadChannel getReadChannel(
     unsigned int maxPacketsPerRequest,
-    uint64 subchannels) throw(IEEE1394Exception);
+    uint64 subchannels);
   
   /**
     Returns an isochronous write channel.
@@ -162,22 +162,22 @@ public:
   */
   IsochronousWriteChannel getWriteChannel(
     unsigned int maxPacketsPerRequest,
-    uint64 subchannels) throw(IEEE1394Exception);
+    uint64 subchannels);
   
   void readIsochronous(
     unsigned int channel,
     unsigned int maximumPayload,
     IsochronousChannelListener* listener
-  ) throw(OutOfDomain, IEEE1394Exception);
+  );
 
-  bool wait(unsigned int milliseconds) throw(OutOfDomain, IEEE1394Exception);
+  bool wait(unsigned int milliseconds);
   
-  void dequeue() throw(IEEE1394Exception);
+  void dequeue();
   
   void registerFCPListener(
-    FunctionControlProtocolListener* listener) throw(IEEE1394Exception);
+    FunctionControlProtocolListener* listener);
   
-  void unregisterFCPListener() throw(IEEE1394Exception);
+  void unregisterFCPListener();
 };
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

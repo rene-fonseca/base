@@ -16,27 +16,27 @@
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
-void ANSIEscapeSequence::setCursor(unsigned int line, unsigned int column) throw(IOException) {
+void ANSIEscapeSequence::setCursor(unsigned int line, unsigned int column) {
   stream << '\033' << '[' << line << 'L' << ';' << column << 'c' << 'H'; // TAG: use buffer
 }
 
-void ANSIEscapeSequence::up(unsigned int count) throw(IOException) {
+void ANSIEscapeSequence::up(unsigned int count) {
   stream << '\033' << '[' << DEC << count << 'A'; // TAG: use buffer
 }
 
-void ANSIEscapeSequence::down(unsigned int count) throw(IOException) {
+void ANSIEscapeSequence::down(unsigned int count) {
   stream << '\033' << '[' << DEC << count << 'B'; // TAG: use buffer
 }
 
-void ANSIEscapeSequence::forward(unsigned int count) throw(IOException) {
+void ANSIEscapeSequence::forward(unsigned int count) {
   stream << '\033' << '[' << DEC << count << 'C'; // TAG: use buffer
 }
 
-void ANSIEscapeSequence::backward(unsigned int count = 1) throw(IOException) {
+void ANSIEscapeSequence::backward(unsigned int count = 1) {
   stream << '\033' << '[' << DEC << count << 'D'; // TAG: use buffer
 }
 
-void ANSIEscapeSequence::setAttributes(unsigned int flags) throw(IOException) {
+void ANSIEscapeSequence::setAttributes(unsigned int flags) {
   char buffer[sizeof("\033[1;4;5;7;8m")];
   char* dest = buffer;
   
@@ -71,7 +71,7 @@ void ANSIEscapeSequence::setAttributes(unsigned int flags) throw(IOException) {
   stream << buffer;
 }
 
-void ANSIEscapeSequence::setForeground(Color color) throw(IOException) {
+void ANSIEscapeSequence::setForeground(Color color) {
   char buffer[sizeof("\033[3xm")];
   char* dest = buffer;
   *dest++ = '\033';
@@ -83,7 +83,7 @@ void ANSIEscapeSequence::setForeground(Color color) throw(IOException) {
   stream << buffer;
 }
 
-void ANSIEscapeSequence::setBackground(Color color) throw(IOException)
+void ANSIEscapeSequence::setBackground(Color color)
 {
   char buffer[sizeof("\033[4xm")];
   char* dest = buffer;

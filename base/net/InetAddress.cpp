@@ -40,14 +40,14 @@
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 #if 0
-String InetAddress::getLocalDomainName() throw(NetworkException) {
+String InetAddress::getLocalDomainName() {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
 #else // unix
 #endif
 }
 #endif
 
-String InetAddress::getLocalHost() throw(NetworkException)
+String InetAddress::getLocalHost()
 {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   // I use thread local storage 'cause I don't know what the maximum length is
@@ -71,7 +71,7 @@ String InetAddress::getLocalHost() throw(NetworkException)
   return NativeString(name);
 }
 
-List<InetAddress> InetAddress::getAddressesByName(const String& name) throw(HostNotFound) {
+List<InetAddress> InetAddress::getAddressesByName(const String& name) {
   List<InetAddress> result;
   
 #if (defined(_COM_AZURE_DEV__BASE__INET_IPV6))
@@ -152,7 +152,7 @@ List<InetAddress> InetAddress::getAddressesByName(const String& name) throw(Host
   return result;
 }
 
-InetAddress InetAddress::getAddressByName(const String& name) throw(HostNotFound) {
+InetAddress InetAddress::getAddressByName(const String& name) {
 #if (defined(_COM_AZURE_DEV__BASE__INET_IPV6))
   struct addrinfo hint;
   fill<uint8>(Cast::getAddress(hint), sizeof(hint), 0);
@@ -448,11 +448,11 @@ InetAddress::InetAddress(const uint8* address, Family family) noexcept {
   setAddress(address, family);
 }
 
-InetAddress::InetAddress(const String& address) throw(InvalidFormat) {
+InetAddress::InetAddress(const String& address) {
   bassert(parse(address), InvalidFormat("Not an Internet address", this));
 }
 
-InetAddress::InetAddress(const String& address, Family family) throw(InvalidFormat) {
+InetAddress::InetAddress(const String& address, Family family) {
   bassert(
     parse(address) && (this->family == family),
     InvalidFormat("Not an Internet address", this)
@@ -473,7 +473,7 @@ InetAddress& InetAddress::operator=(const InetAddress& assign) noexcept {
   return *this;
 }
 
-String InetAddress::getHostName(bool fullyQualified) const throw(HostNotFound) {
+String InetAddress::getHostName(bool fullyQualified) const {
 #if (defined(_COM_AZURE_DEV__BASE__INET_IPV6))
   struct sockaddr_in6 addr;
   clear(addr);

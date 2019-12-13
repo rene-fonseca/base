@@ -55,7 +55,7 @@ FileDescriptorOutputStream& FileDescriptorOutputStream::operator=(const FileDesc
   return *this;
 }
 
-void FileDescriptorOutputStream::flush() throw(IOException)
+void FileDescriptorOutputStream::flush()
 {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   // TAG: handle may or may not be flushable
@@ -76,7 +76,7 @@ void FileDescriptorOutputStream::flush() throw(IOException)
 unsigned int FileDescriptorOutputStream::write(
   const uint8* buffer,
   unsigned int bytesToWrite,
-  bool nonblocking) throw(IOException) {
+  bool nonblocking) {
   // TAG: currently always blocks
   unsigned int bytesWritten = 0;
   while (bytesToWrite) {

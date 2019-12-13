@@ -24,7 +24,7 @@ _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 // TAG: support hex format
 // TAG: support grouping of digits
 
-float FloatingPoint::getFloatAsHex(const String& value) throw(InvalidFormat) {
+float FloatingPoint::getFloatAsHex(const String& value) {
   String::ReadIterator i = value.getBeginReadIterator();
   const String::ReadIterator end = value.getEndReadIterator();
   
@@ -192,7 +192,7 @@ FloatingPoint::IEEE754SinglePrecision::IEEE754SinglePrecision(
   bool negative,
   const uint8* mantissa,
   unsigned int size,
-  int exponent) throw(InvalidFormat) {
+  int exponent) {
   static const int EXPLICIT_SIGNIFICANT =
     value.HAS_IMPLIED_ONE ? (value.SIGNIFICANT - 1) : value.SIGNIFICANT;
   value.negative = negative;
@@ -243,7 +243,7 @@ FloatingPoint::IEEE754SinglePrecision::IEEE754SinglePrecision(
   value.exponent = exponent + value.BIAS;
 }
 
-float FloatingPoint::getFloat(const String& value) throw(InvalidFormat) {
+float FloatingPoint::getFloat(const String& value) {
   String::ReadIterator i = value.getBeginReadIterator();
   const String::ReadIterator end = value.getEndReadIterator();
   
@@ -332,12 +332,12 @@ float FloatingPoint::getFloat(const String& value) throw(InvalidFormat) {
   return 0;
 }
   
-double FloatingPoint::getDouble(const String& value) throw(InvalidFormat) {
+double FloatingPoint::getDouble(const String& value) {
   // TAG: fixme
   return 0;
 }
 
-long double FloatingPoint::getLongDouble(const String& value) throw(InvalidFormat) {
+long double FloatingPoint::getLongDouble(const String& value) {
   // TAG: fixme
   return 0;
 }

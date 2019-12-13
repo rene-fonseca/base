@@ -22,7 +22,7 @@ const LinkerModule* LinkerModule::getLinkerModule() noexcept
   return linkerModule;
 }
 
-LinkerModule::LinkerModule(const String& i, const String& n, const String& v) throw(SingletonException)
+LinkerModule::LinkerModule(const String& i, const String& n, const String& v)
   : identity(i),
     name(n),
     version(v)

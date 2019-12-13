@@ -38,7 +38,7 @@ String ProcessingInstruction::getData() const noexcept {
 #endif
 }
 
-void ProcessingInstruction::setData(const String& value) throw(DOMException) {
+void ProcessingInstruction::setData(const String& value) {
 #if defined(_COM_AZURE_DEV__BASE__XML_XMLSOFT_ORG)
   xmlNode* node = (xmlNode*)getContext();
   xmlNodeSetContent(node, (const xmlChar*)value.getElements());

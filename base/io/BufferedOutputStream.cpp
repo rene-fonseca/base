@@ -16,14 +16,14 @@
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 BufferedOutputStream::BufferedOutputStream(
-  OutputStream& out, unsigned int size) throw(BindException, MemoryException)
+  OutputStream& out, unsigned int size)
   : FilterOutputStream(out),
     buffer(maximum(size, MINIMUM_BUFFER_SIZE)),
     writeHead(0),
     readHead(0) {
 }
 
-void BufferedOutputStream::flush() throw(IOException) {
+void BufferedOutputStream::flush() {
   auto size = writeHead - readHead;
   if (size > 0) {
     FilterOutputStream::write(buffer.getElements() + readHead, size);
@@ -35,7 +35,7 @@ void BufferedOutputStream::flush() throw(IOException) {
 
 unsigned int BufferedOutputStream::write(const uint8* buffer,
                                          unsigned int size,
-                                         bool nonblocking) throw(IOException)
+                                         bool nonblocking)
 {
   unsigned int bytesWritten = 0; // number of bytes that have been written
   while (true) {
@@ -69,7 +69,7 @@ unsigned int BufferedOutputStream::write(const uint8* buffer,
 
 void BufferedOutputStream::unfoldValue(
   char value,
-  unsigned int size) throw(IOException) {
+  unsigned int size) {
   while (true) {
     unsigned int bytesAvailable =
       minimum<MemorySize>(size, this->buffer.getSize() - writeHead);

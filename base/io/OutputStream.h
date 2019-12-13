@@ -31,7 +31,7 @@ public:
   /**
     Forces any buffered bytes to be written out.
   */
-  virtual void flush() throw(IOException) = 0;
+  virtual void flush() = 0;
 
   /**
     Writes the specified number of bytes in the buffer to the stream. In
@@ -47,7 +47,7 @@ public:
   virtual unsigned int write(
     const uint8* buffer,
     unsigned int size,
-    bool nonblocking) throw(IOException) = 0;
+    bool nonblocking) = 0;
 
   inline ~OutputStream() noexcept(false) { // MSC doesnt inherit noexcept
   }

@@ -126,7 +126,7 @@ public:
     fout << path << ENDL;
   }
   
-  Sum traverse(const String& folderPath) throw(FileSystemException) {
+  Sum traverse(const String& folderPath) {
     FolderInfo folder(folderPath);
     Array<String> entries = folder.getEntries();
     Array<String>::ReadEnumerator enu = entries.getReadEnumerator();

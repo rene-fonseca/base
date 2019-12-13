@@ -64,7 +64,7 @@ public:
     @param service The service (e.g. 'http' or '80').
   */
   InetEndPoint(
-    const InetAddress& address, const String& service) throw(ServiceNotFound);
+    const InetAddress& address, const String& service);
 
   /**
     Initializes end point from string representations of host and service.
@@ -73,7 +73,7 @@ public:
     @param service The service (e.g. 'http' or '80').
   */
   InetEndPoint(
-    const String& host, const String& service) throw(ServiceNotFound);
+    const String& host, const String& service);
 
   /**
     Initialize object from other object.

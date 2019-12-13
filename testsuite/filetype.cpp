@@ -105,7 +105,7 @@ public:
          << ENDL;
   }
 
-  void onEntry(const String& path) throw(FileSystemException) {
+  void onEntry(const String& path) {
     unsigned int type = FileSystem::getType(path);
     
     if ((type & FileSystem::LINK) && followLink) {
@@ -149,7 +149,7 @@ public:
     fout << ENDL;
   }
   
-  void onFolder(const String& folderPath) throw(FileSystemException) {
+  void onFolder(const String& folderPath) {
     FolderInfo folder(folderPath);
     Array<String> entries = folder.getEntries();
     Array<String>::ReadEnumerator enu = entries.getReadEnumerator();

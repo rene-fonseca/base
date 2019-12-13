@@ -437,7 +437,7 @@ public:
     }
 
     /** Returns the value at the given index. */
-    Reference<Value> getAt(MemorySize index) const throw(ObjectModelException);
+    Reference<Value> getAt(MemorySize index) const;
 
     /** Sets the value at the given index. */
     void setAt(MemorySize index, const Reference<Value>& value);
@@ -668,9 +668,9 @@ public:
       @param path The path of the desired value.
       @param forceNull Avoid exception if value doesn't exist. Returns nullptr otherwise.
     */
-    Reference<Value> getPath(const char* path, bool forceNull = false) throw(ObjectModelException);
+    Reference<Value> getPath(const char* path, bool forceNull = false);
     
-    inline Reference<Value> getPath(const base::String& path, bool forceNull = false) throw(ObjectModelException)
+    inline Reference<Value> getPath(const base::String& path, bool forceNull = false)
     {
       return getPath(path.native(), forceNull);
     }
@@ -678,22 +678,22 @@ public:
     // TAG: add full support for String to handle \0 in path
     
     /** Returns the boolean for the given path. Returns the default value if doesn't exist. Raises exception if value isn't a boolean. */
-    bool getBoolean(const char* path, bool defaultValue) throw(ObjectModelException);
+    bool getBoolean(const char* path, bool defaultValue);
 
     /** Returns the integer for the given path. Returns the default value if doesn't exist. Raises exception if value isn't an integer. */
-    int64 getInteger(const char* path, int64 defaultValue) throw(ObjectModelException);
+    int64 getInteger(const char* path, int64 defaultValue);
 
     /** Returns the float for the given path. Returns the default value if doesn't exist. Raises exception if value isn't a float. */
-    double getFloat(const char* path, double defaultValue) throw(ObjectModelException);
+    double getFloat(const char* path, double defaultValue);
 
     /** Returns the string for the given path. Returns the default value if doesn't exist. Raises exception if value isn't a string. */
-    base::String getString(const char* path, const base::String& defaultValue) throw(ObjectModelException);
+    base::String getString(const char* path, const base::String& defaultValue);
 
     /** Returns the array for the given path. Returns the default value if doesn't exist. Raises exception if value isn't an array. */
-    Reference<Array> getArray(const char* path) throw(ObjectModelException);
+    Reference<Array> getArray(const char* path);
 
     /** Returns the object for the given path. Returns the default value if doesn't exist. Raises exception if value isn't an object. */
-    Reference<Object> getObject(const char* path) throw(ObjectModelException);
+    Reference<Object> getObject(const char* path);
   };
 private:
   
@@ -816,7 +816,7 @@ inline bool operator==(const Reference<ObjectModel::Value>& a, const String& b)
   return _a && (_a->value == b);
 }
 
-inline Reference<ObjectModel::Value> set(const Reference<ObjectModel::Value>& v, bool b) throw(ObjectModelException)
+inline Reference<ObjectModel::Value> set(const Reference<ObjectModel::Value>& v, bool b)
 {
   auto _v = v.cast<ObjectModel::Boolean>();
   if (!_v) {

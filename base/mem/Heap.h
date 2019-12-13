@@ -187,7 +187,7 @@ protected:
 
     @param size The desired size of the memory block in number of bytes.
   */
-  static void* allocate(MemorySize size) throw(MemoryException);
+  static void* allocate(MemorySize size);
 
   /**
     Resizes the specified memory block. Raises MemoryException if unable
@@ -197,7 +197,7 @@ protected:
     @param heap The memory block.
     @param size The desired size of the memory block in number of bytes.
   */
-  static void* resize(void* heap, MemorySize size) throw(MemoryException);
+  static void* resize(void* heap, MemorySize size);
   
   /**
     Tries to resize the specified memory block without movement. Raises
@@ -207,7 +207,7 @@ protected:
     @param size The desired size of the memory block in number of bytes.
     @return nullptr if unable to resize memory block or size was 0.
   */
-  static void* tryResize(void* heap, MemorySize size) throw(MemoryException);
+  static void* tryResize(void* heap, MemorySize size);
 
   /**
     Frees the specified memory block previously allocated by 'allocate' or
@@ -215,7 +215,7 @@ protected:
 
     @param heap The memory block.
   */
-  static void release(void* heap) throw(MemoryException);
+  static void release(void* heap);
 
   /** Returns the minimum block size. */
   static MemorySize getMinimumSize() noexcept;
@@ -260,7 +260,7 @@ public:
     @param size The desired size of the memory block in number of elements.
   */
   template<class TYPE>
-  inline static TYPE* allocate(MemorySize size) throw(MemoryException)
+  inline static TYPE* allocate(MemorySize size)
   {
     return static_cast<TYPE*>(HeapImpl::allocate(size * sizeof(TYPE)));
   }
@@ -273,7 +273,7 @@ public:
     @param size The desired size of the memory block in number of elements.
   */
   template<class TYPE>
-  inline static TYPE* resize(TYPE* heap, MemorySize size) throw(MemoryException)
+  inline static TYPE* resize(TYPE* heap, MemorySize size)
   {
     return static_cast<TYPE*>(HeapImpl::resize(heap, size * sizeof(TYPE)));
   }
@@ -297,7 +297,7 @@ public:
     @return nullptr if unable to resize memory block or size was 0.
   */
   template<class TYPE>
-  inline static TYPE* tryResize(void* heap, MemorySize size) throw(MemoryException)
+  inline static TYPE* tryResize(void* heap, MemorySize size)
   {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
     return static_cast<TYPE*>(HeapImpl::tryResize(heap, size * sizeof(TYPE)));
@@ -313,7 +313,7 @@ public:
     @param heap The memory block.
   */
   template<class TYPE>
-  inline static void release(TYPE* heap) throw(MemoryException)
+  inline static void release(TYPE* heap)
   {
     HeapImpl::release(heap);
   }

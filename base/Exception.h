@@ -142,7 +142,7 @@ public:
     Initializes the exception object.
 
     @code
-    void myMethod() throw(Exception)
+    void myMethod()
     {
       if (!condition) {
         throw Exception("my short message.", this);

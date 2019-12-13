@@ -16,18 +16,18 @@
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
-FormatInputStream::FormatInputStream(InputStream& in) throw(BindException)
+FormatInputStream::FormatInputStream(InputStream& in)
   : FilterInputStream(in),
     buffer(WINDOW_SIZE),
     head(buffer.getBeginIterator()),
     tail(head) {
 }
 
-unsigned int FormatInputStream::available() const throw(IOException) {
+unsigned int FormatInputStream::available() const {
   return (unsigned int)(FilterInputStream::available() + (head - tail));
 }
 
-bool FormatInputStream::overwriteFromSource() throw(IOException) {
+bool FormatInputStream::overwriteFromSource() {
   FilterInputStream::wait(); // blocking wait for more input (or eof)
   unsigned int available = FilterInputStream::available();
   if (available == 0) {
@@ -43,7 +43,7 @@ bool FormatInputStream::overwriteFromSource() throw(IOException) {
   return true;
 }
 
-bool FormatInputStream::appendFromSource() throw(IOException) {
+bool FormatInputStream::appendFromSource() {
   FilterInputStream::wait(); // blocking wait for more input (or eof)
   unsigned int available = FilterInputStream::available();
   if (available == 0) {
@@ -57,7 +57,7 @@ bool FormatInputStream::appendFromSource() throw(IOException) {
   return true;
 }
 
-String FormatInputStream::getWord() throw(IOException) {
+String FormatInputStream::getWord() {
   String result;
   while (true) { // skip prefix spaces
     for (; (tail < head) && (ASCIITraits::isSpace(*tail)); ++tail) {
@@ -94,7 +94,7 @@ String FormatInputStream::getWord() throw(IOException) {
 }
 
 // TAG: need limit arg: unsigned int maximumLength
-String FormatInputStream::getLine() throw(IOException) {
+String FormatInputStream::getLine() {
   line.forceToLength(0);
   while (true) { // find new line (i.e. any of the substrings "\n", "\r", "\n\r", or "\r\n")
     const ReadIterator beginning = tail; // beginning of substring
@@ -152,7 +152,7 @@ String FormatInputStream::getLine() throw(IOException) {
 
 unsigned int FormatInputStream::read(uint8* buffer,
                                      unsigned int size,
-                                     bool nonblocking) throw(IOException)
+                                     bool nonblocking)
 {
   unsigned int bytesRead = 0; // number of bytes that have been copied into external buffer
   while (true) {
@@ -179,18 +179,18 @@ FormatInputStream::~FormatInputStream()
 
 
 FormatInputStream& operator>>(
-  FormatInputStream& stream, char& value) throw(IOException) {
+  FormatInputStream& stream, char& value) {
   value = stream.getCharacter();
   return stream;
 }
 
-FormatInputStream& operator>>(FormatInputStream& stream, String& value) throw(IOException)
+FormatInputStream& operator>>(FormatInputStream& stream, String& value)
 {
   value = stream.getLine();
   return stream;
 }
 
-FormatInputStream& operator>>(FormatInputStream& stream, unsigned int& value) throw(InvalidFormat, IOException)
+FormatInputStream& operator>>(FormatInputStream& stream, unsigned int& value)
 {
   value = 0;
   char ch = 0;

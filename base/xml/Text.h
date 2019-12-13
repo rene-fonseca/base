@@ -48,7 +48,7 @@ protected:
   }
 public:
   
-  inline Text(Node node) throw(CastException)
+  inline Text(Node node)
     : CharacterData(node) {
     NodeType type = node.getType();
     bassert(
@@ -57,7 +57,7 @@ public:
     );
   }
   
-  inline Text(CharacterData node) throw(CastException)
+  inline Text(CharacterData node)
     : CharacterData(node) {
     NodeType type = node.getType();
     bassert(
@@ -77,7 +77,7 @@ public:
     
     @param index The octet index (not character index).
   */
-  Text splitText(unsigned int index) throw(DOMException);
+  Text splitText(unsigned int index);
 };
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

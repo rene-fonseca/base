@@ -47,7 +47,7 @@ void PopUpWindow::destroy() noexcept
   WindowImpl::destroy();
 }
 
-PopUpWindow::PopUpWindow(unsigned int flags) throw(UserInterfaceException)
+PopUpWindow::PopUpWindow(unsigned int flags)
   : GraphicsContext() {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   drawableHandle = ::CreateWindowEx(
@@ -117,7 +117,7 @@ PopUpWindow::PopUpWindow(unsigned int flags) throw(UserInterfaceException)
   update();
 }
 
-PopUpWindow::PopUpWindow(const Position& position, const Dimension& dimension, unsigned int flags) throw(UserInterfaceException)
+PopUpWindow::PopUpWindow(const Position& position, const Dimension& dimension, unsigned int flags)
   : GraphicsContext(position, dimension, flags) {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   RECT rect;

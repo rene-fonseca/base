@@ -65,7 +65,7 @@ public:
   /**
     Sets the word size (1, 2, 4, or 8).
   */
-  inline void setWordSize(unsigned int value) throw(OutOfDomain)
+  inline void setWordSize(unsigned int value)
   {
 //     bassert(
 //       (size % value == 0) && (Cast::getOffset(memory) % value == 0) &&
@@ -79,7 +79,7 @@ public:
   /**
     Sets the global offset.
   */
-  void setOffsetDigits(unsigned int digits) throw(OutOfDomain)
+  void setOffsetDigits(unsigned int digits)
   {
     bassert((digits >= 4) && (digits <= 16), OutOfDomain(this));
     offsetDigits = digits;
@@ -88,7 +88,7 @@ public:
   /**
     Sets the global offset.
   */
-  void setGlobalOffset(uint64 offset) throw(OutOfDomain)
+  void setGlobalOffset(uint64 offset)
   {
     bassert(offset % 16 == 0, OutOfDomain(this));
     this->offset = offset;

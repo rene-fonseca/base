@@ -145,7 +145,7 @@ public:
   /**
     Executes the dialog.
   */
-  bool execute() throw(UserInterfaceException);
+  bool execute();
 
   ~OpenFileDialog() noexcept;
 };

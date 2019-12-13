@@ -78,7 +78,7 @@ public:
   /**
     Initializes multiple socket object.
   */
-  MultipleSockets() throw(MemoryException);
+  MultipleSockets();
   
   /**
     Returns the current number of selected sockets.
@@ -98,14 +98,14 @@ public:
     StreamSocket socket,
     unsigned int events =
       INPUT|PRIORITY_INPUT|HIGH_PRIORITY_INPUT|OUTPUT|PRIORITY_OUTPUT)
-    throw(ConcurrencyException, AlreadyKeyException, MemoryException);
+   ;
   
   /**
     Removes a socket.
     
     @param socket The socket to be removed.
   */
-  void remove(StreamSocket socket) throw(ConcurrencyException, InvalidKey);
+  void remove(StreamSocket socket);
   
   /**
     Returns the events for the specified socket. Raises InvalidKey if socket is
@@ -113,14 +113,14 @@ public:
     set.
   */
   unsigned int getEvents(
-    StreamSocket socket) throw(ConcurrencyException, InvalidKey);
+    StreamSocket socket);
   
   /**
     Returns the currently filtered events (mask of INPUT, PRIORITY_INPUT,
     HIGH_PRIORITY_INPUT, OUTPUT, and PRIORITY_OUTPUT).    
   */
   unsigned int getFilter(
-    StreamSocket socket) const throw(ConcurrencyException, InvalidKey);
+    StreamSocket socket) const;
   
   /**
     Sets the events filter (only INPUT, PRIORITY_INPUT, HIGH_PRIORITY_INPUT,
@@ -128,14 +128,14 @@ public:
   */
   void setFilter(
     StreamSocket socket,
-    unsigned int events) throw(ConcurrencyException, InvalidKey);
+    unsigned int events);
   
   /**
     Waits for an event on one of the sockets.
     
     @return The number of sockets which have changed.
   */
-  unsigned int poll() throw(ConcurrencyException, IOException);
+  unsigned int poll();
   
   /**
     Waits for an event on one of the sockets. The time out period is silently
@@ -146,13 +146,13 @@ public:
     timed out.
   */
   unsigned int poll(
-    unsigned int milliseconds) throw(ConcurrencyException, IOException);
+    unsigned int milliseconds);
   
   /**
     Signals the listener for each selected socket. Resets the number of
     selected sockets.
   */
-  void signal(SocketListener* listener) throw(ConcurrencyException);
+  void signal(SocketListener* listener);
   
   /**
     Destroys the object.

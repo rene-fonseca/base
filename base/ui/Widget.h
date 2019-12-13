@@ -40,7 +40,7 @@ public:
 
     @param owner The owner of the widget.
   */
-  Widget(Window& owner) throw(UserInterfaceException);
+  Widget(Window& owner);
 
   /**
     Destroys the widget.

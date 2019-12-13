@@ -174,7 +174,7 @@ private:
   String value;
 public:
 
-  MessageHeader(const String& line) throw(HTTPException) {
+  MessageHeader(const String& line) {
     String::ReadIterator begin = line.getBeginReadIterator();
     const String::ReadIterator end = line.getEndReadIterator();
     String::ReadIterator i = begin;
@@ -422,7 +422,7 @@ private:
   Allocator<uint8> buffer;
 protected:
 
-  void translateStatus(const String& value) throw(HTTPException) {
+  void translateStatus(const String& value) {
     String::ReadIterator i = value.getBeginReadIterator();
     String::ReadIterator end = value.getEndReadIterator();
 
@@ -483,7 +483,7 @@ protected:
   }
 
   /* See chapter 5 of RFC */
-  String makeRequest(Method method, const String& host, const String& resourceUri) throw(IOException) {
+  String makeRequest(Method method, const String& host, const String& resourceUri) {
     static const Literal AGENT = MESSAGE("http/0.1 (Base Framework)");
     static const Literal methods[] = {
       METHOD_OPTIONS,
@@ -511,7 +511,7 @@ protected:
   }
 
   // See chapter 6 in RFC
-  void getResponse(PushInterface* push) throw(HTTPException) {
+  void getResponse(PushInterface* push) {
     controlConnection.wait();
     
     FormatInputStream instream(controlConnection);
@@ -706,7 +706,7 @@ public:
     retryAttempts = value;
   }
 
-  void connect() throw(HTTPException) {
+  void connect() {
     if (verbosity >= DEBUG_NORMAL) {
       fout << "DEBUG: Establishing control connection to: "
            << "address=" << endPoint.getAddress() << ' '
@@ -716,7 +716,7 @@ public:
     controlConnection.getName();
   }
 
-  void getOptions() throw(HTTPException) {
+  void getOptions() {
     String request = makeRequest(OPTIONS, host, "*");
     FormatOutputStream outstream(controlConnection);
     outstream << request << FLUSH;
@@ -724,7 +724,7 @@ public:
     getResponse(&push);
   }
 
-  void getResource(const String& resource, PushInterface* push) throw(HTTPException) {
+  void getResource(const String& resource, PushInterface* push) {
     if (resource.isProper()) {
       String request = makeRequest(GET, host, resource);
       FormatOutputStream outstream(controlConnection);

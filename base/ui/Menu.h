@@ -138,7 +138,7 @@ public:
   /**
     Creates an empty menu.
   */
-  Menu() throw(MenuException);
+  Menu();
 
   /**
     Initializes menu from other menu.
@@ -174,33 +174,33 @@ public:
   /**
     Returns the number of menu items.
   */
-  unsigned int getNumberOfItems() const throw(MenuException);
+  unsigned int getNumberOfItems() const;
 
   /**
     Returns the identifier of the specified menu item.
     
     @param index The index of the menu item.
   */
-  unsigned int getIdentifier(unsigned int index) const throw(MenuException);
+  unsigned int getIdentifier(unsigned int index) const;
 
   /**
     Returns the index of the specified menu item.
     
     @param identifier The identifier of the menu item.
   */
-  int getIndex(unsigned int identifier) const throw(MenuException);
+  int getIndex(unsigned int identifier) const;
 
   /**
     Returns the flags describing the menu item.
 
     @param index The index of the menu item.
   */
-  unsigned int getFlags(unsigned int index) const throw(MenuException);
+  unsigned int getFlags(unsigned int index) const;
 
   /**
     Returns true if the menu item is a separator.
   */
-  inline bool isSeparator(unsigned int index) const throw(MenuException) {
+  inline bool isSeparator(unsigned int index) const {
     return getFlags(index) & SEPARATOR;
   }
 
@@ -209,7 +209,7 @@ public:
 
     @param index The index of the menu item.    
   */
-  inline bool hasMenu(unsigned int index) const throw(MenuException) {
+  inline bool hasMenu(unsigned int index) const {
     return getFlags(index) & MENU;
   }
   
@@ -218,7 +218,7 @@ public:
 
     @param index The index of the menu item.    
   */
-  inline bool isEnabled(unsigned int identifier) const throw(MenuException) {
+  inline bool isEnabled(unsigned int identifier) const {
     return getFlags(identifier) & ENABLED;
   }
 
@@ -227,7 +227,7 @@ public:
 
     @param index The index of the menu item.    
   */
-  inline bool isChecked(unsigned int identifier) const throw(MenuException) {
+  inline bool isChecked(unsigned int identifier) const {
     return getFlags(identifier) & CHECKED;
   }
 
@@ -236,7 +236,7 @@ public:
 
     @param index The index of the menu item.    
   */
-  inline bool isHighlighted(unsigned int identifier) const throw(MenuException) {
+  inline bool isHighlighted(unsigned int identifier) const {
     return getFlags(identifier) & HIGHLIGHTED;
   }
 
@@ -245,7 +245,7 @@ public:
     
     @param index The index of the menu item.    
   */
-  Menu getMenu(unsigned int index) throw(MenuException);
+  Menu getMenu(unsigned int index);
   
   /**
     Sets the enable flag of the menu item.
@@ -253,7 +253,7 @@ public:
     @param index The index of the menu item.
     @param enabled The value of the flag.
   */
-  void setEnabled(unsigned int index, bool enabled) throw(MenuException);
+  void setEnabled(unsigned int index, bool enabled);
   
   /**
     Sets the checked flag of the menu item.
@@ -261,7 +261,7 @@ public:
     @param index The index of the menu item.
     @param enabled The value of the flag.
   */
-  void setChecked(unsigned int index, bool checked) throw(MenuException);
+  void setChecked(unsigned int index, bool checked);
   
   /**
     Sets the highlighted flag of the menu item.
@@ -269,14 +269,14 @@ public:
     @param index The index of the menu item.
     @param enabled The value of the flag.
   */
-  void setHighlighted(unsigned int index, bool highlighted) throw(MenuException);
+  void setHighlighted(unsigned int index, bool highlighted);
 
   /**
     Enables the menu item.
     
     @param index The index of the menu item.
   */
-  inline void enable(unsigned int index) throw(MenuException) {
+  inline void enable(unsigned int index) {
     setEnabled(index, true);
   }
 
@@ -285,7 +285,7 @@ public:
     
     @param index The index of the menu item.
   */
-  inline void disable(unsigned int index) throw(MenuException) {
+  inline void disable(unsigned int index) {
     setEnabled(index, false);
   }
   
@@ -294,7 +294,7 @@ public:
     
     @param index The index of the menu item.
   */
-  inline void check(unsigned int index) throw(MenuException) {
+  inline void check(unsigned int index) {
     setChecked(index, true);
   }
   
@@ -303,7 +303,7 @@ public:
     
     @param index The index of the menu item.
   */
-  inline void uncheck(unsigned int index) throw(MenuException) {
+  inline void uncheck(unsigned int index) {
     setChecked(index, false);
   }
   
@@ -312,7 +312,7 @@ public:
     
     @param index The index of the menu item.
   */
-  inline void highlight(unsigned int index) throw(MenuException) {
+  inline void highlight(unsigned int index) {
     setHighlighted(index, true);
   }
   
@@ -321,7 +321,7 @@ public:
     
     @param index The index of the menu item.
   */
-  inline void unhighlight(unsigned int index) throw(MenuException) {
+  inline void unhighlight(unsigned int index) {
     setHighlighted(index, false);
   }
 
@@ -331,7 +331,7 @@ public:
     @param index The index of the menu item.
     @param name The new string value of the menu item.
   */
-  void setName(unsigned int index, const String& name) throw(MenuException);
+  void setName(unsigned int index, const String& name);
 
   /**
     Sets the sub menu of the menu item.
@@ -339,19 +339,19 @@ public:
     @param index The index of the menu item.
     @param menu The new sub menu the menu item.
   */
-  void setSubmenu(unsigned int identifier, const Menu& menu) throw(MenuException);
+  void setSubmenu(unsigned int identifier, const Menu& menu);
   
   /**
     Inserts a separator at the specified index.
     
     @param index The index of the menu item.
   */
-  void insertSeparator(unsigned int index) throw(MenuException);
+  void insertSeparator(unsigned int index);
   
   /**
     Appends a separator to the menu.    
   */
-  void appendSeparator() throw(MenuException);
+  void appendSeparator();
 
   /**
     Inserts a menu item at the specified index.
@@ -361,7 +361,7 @@ public:
     @param identifier The identifier of the menu item.
     @param flags The flags of the menu item (a conbination of ENABLED, CHECKED, and HIGHLIGHTED).
   */
-  void insert(unsigned int index, const String& name, unsigned int identifier, unsigned int flags = ENABLED) throw(MenuException);
+  void insert(unsigned int index, const String& name, unsigned int identifier, unsigned int flags = ENABLED);
   
   /**
     Appends a menu item to the menu.
@@ -370,7 +370,7 @@ public:
     @param identifier The identifier of the menu item.
     @param flags The flags of the menu item (a conbination of ENABLED, CHECKED, and HIGHLIGHTED).
   */
-  void append(const String& name, unsigned int identifier, unsigned int flags = ENABLED) throw(MenuException);
+  void append(const String& name, unsigned int identifier, unsigned int flags = ENABLED);
   
   /**
     Appends a sub menu to the menu.
@@ -379,14 +379,14 @@ public:
     @param menu The sub menu.
     @param flags The flags of the menu item (a conbination of ENABLED, CHECKED, and HIGHLIGHTED).
   */
-  void appendMenu(const String& name, const Menu& menu, unsigned int flags = ENABLED) throw(MenuException);
+  void appendMenu(const String& name, const Menu& menu, unsigned int flags = ENABLED);
 
   /**
     Removes the menu item at the specified index from the menu.
      
     @param index The index of the menu item.
   */
-  void remove(unsigned int index) throw(MenuException);
+  void remove(unsigned int index);
 };
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

@@ -16,21 +16,21 @@
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 FilterOutputStream::FilterOutputStream(
-  OutputStream& o) throw(BindException) : out(o) {
+  OutputStream& o) : out(o) {
 }
 
-void FilterOutputStream::close() throw(IOException) {
+void FilterOutputStream::close() {
   out.close();
 }
 
-void FilterOutputStream::flush() throw(IOException) {
+void FilterOutputStream::flush() {
   out.flush();
 }
 
 unsigned int FilterOutputStream::write(
   const uint8* buffer,
   unsigned int size,
-  bool nonblocking) throw(IOException) {
+  bool nonblocking) {
   return out.write(buffer, size, nonblocking);
 }
 

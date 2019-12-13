@@ -39,16 +39,16 @@ public:
   */
   void ensureCapacity(MemorySize capacity);
 
-  void close() throw(IOException);
+  void close();
 
-  void flush() throw(IOException);
+  void flush();
 
   void restart();
 
   unsigned int write(
     const uint8* buffer,
     unsigned int size,
-    bool nonblocking = false) throw(IOException);
+    bool nonblocking = false);
 
 #if 0
   inline unsigned int getGranularity() const noexcept
@@ -108,14 +108,14 @@ public:
   /**
     Initializes string output stream using the default incrementation value (i.e. DEFAULT_GRANULARITY).
   */
-  WideStringOutputStream() throw(BindException);
+  WideStringOutputStream();
 
   /**
     Initializes string output stream.
 
     @param granularity Specifies the default amount of memory by which the capacity of the string is increased.
   */
-  explicit WideStringOutputStream(unsigned int granularity) throw(BindException);
+  explicit WideStringOutputStream(unsigned int granularity);
 
   /**
     Reserves capacity in the internal buffer.

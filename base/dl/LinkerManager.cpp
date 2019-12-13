@@ -30,7 +30,7 @@ LinkerManager* LinkerManager::getManager() noexcept
   return linkerManager;
 }
 
-LinkerManager::LinkerManager() throw(SingletonException)
+LinkerManager::LinkerManager()
   : registratedModule(0)
 {
   bassert(linkerManager == 0, SingletonException(this));
@@ -46,7 +46,7 @@ LinkerModule* LinkerManager::deregistrate() noexcept {
 }
 
 LinkerModule* LinkerManager::load(
-  const String& modulePath) throw(LinkerException) {
+  const String& modulePath) {
   // acquire lock
   BASSERT(!registratedModule);
   DynamicLinker* dl = new DynamicLinker(modulePath, DynamicLinker::LAZY);
@@ -58,7 +58,7 @@ LinkerModule* LinkerManager::load(
 }
 
 void LinkerManager::unload(
-  LinkerModule* module) throw(InvalidKey, LinkerException) {
+  LinkerModule* module) {
   // acquire lock
   BASSERT(!registratedModule);
   DynamicLinker* dl = modules[module];

@@ -34,7 +34,7 @@ public:
   class MyPixmap : public Pixmap {
   public:
 
-    MyPixmap(const Dimension& dimension, unsigned int flags) throw(UserInterfaceException)
+    MyPixmap(const Dimension& dimension, unsigned int flags)
       : Pixmap(dimension, flags) {
     }    
   };

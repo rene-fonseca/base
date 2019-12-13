@@ -42,19 +42,19 @@ public:
 
     @param in Input stream to be filtered.
   */
-  explicit FilterInputStream(InputStream& in) throw(BindException);
+  explicit FilterInputStream(InputStream& in);
 
   /**
     Returns the number of bytes that can be read or skipped over without blocking.
 
     @return Available number of bytes in stream.
   */
-  unsigned int available() const throw(IOException);
+  unsigned int available() const;
 
   /**
     Closes the input stream and releases any system resources associated with the stream.
   */
-  void close() throw(IOException);
+  void close();
 
   /**
     Fills the specified buffer with bytes from the stream. In blocking mode the
@@ -72,7 +72,7 @@ public:
   unsigned int read(
     uint8* buffer,
     unsigned int size,
-    bool nonblocking = false) throw(IOException);
+    bool nonblocking = false);
 
   /**
     Skips a specified number of bytes. Blocks if asked to skip more bytes than
@@ -81,12 +81,12 @@ public:
     @param count The number of bytes to skip.
     @return The actual number of bytes skipped.
   */
-  unsigned int skip(unsigned int count) throw(IOException);
+  unsigned int skip(unsigned int count);
 
   /**
     Blocking wait for input to become available.
   */
-  void wait() const throw(IOException);
+  void wait() const;
 
   /**
     Blocking wait for input to become available.
@@ -94,7 +94,7 @@ public:
     @param timeout The timeout periode in microseconds.
     @return True, if data is available. False, if the timeout periode expired.
   */
-  bool wait(unsigned int timeout) const throw(IOException);
+  bool wait(unsigned int timeout) const;
 };
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

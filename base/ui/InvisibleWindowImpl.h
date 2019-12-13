@@ -301,7 +301,7 @@ public:
   /**
     Initializes a new window with position (0, 0) and dimension (0, 0).
   */
-  WindowImpl() throw(UserInterfaceException);
+  WindowImpl();
   
   /**
     Initializes a new window.
@@ -309,7 +309,7 @@ public:
   WindowImpl(
     const Position& position,
     const Dimension& dimension,
-    unsigned int flags) throw(UserInterfaceException);
+    unsigned int flags);
 
   /**
     Returns the position of the binding point relative to the owner.
@@ -320,31 +320,31 @@ public:
     Flushes the window requests to the server.
   */
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
-  inline void flush() throw(UserInterfaceException) {
+  inline void flush() {
   }
 #else // unix
-  void flush() throw(UserInterfaceException);
+  void flush();
 #endif // flavor
 
   /**
     Asynchronous update request.
   */
-  void invalidate() throw(UserInterfaceException);
+  void invalidate();
   
   /**
     Returns the vendor of the server.
   */
-  String getServerVendor() const throw(UserInterfaceException);
+  String getServerVendor() const;
 
   /**
     Returns the release of the server.
   */
-  unsigned int getServerRelease() const throw(UserInterfaceException);
+  unsigned int getServerRelease() const;
   
   /**
     Returns the window flags.
   */
-  inline unsigned int getFlags() const throw(UserInterfaceException) {
+  inline unsigned int getFlags() const {
     return flags;
   }
   
@@ -354,79 +354,79 @@ public:
     @param position The position.
     @param menu The menu.
   */
-  void displayMenu(const Position& position, const Menu& menu) throw(UserInterfaceException);
+  void displayMenu(const Position& position, const Menu& menu);
 
   /**
     Returns the autorepeat.
   */
-  inline bool getAutorepeat() const throw(UserInterfaceException) {
+  inline bool getAutorepeat() const {
     return autorepeat;
   }
 
   /**
     Sets the autorepeat flag.
   */
-  inline void setAutorepeat(bool autorepeat) throw(UserInterfaceException) {
+  inline void setAutorepeat(bool autorepeat) {
     this->autorepeat = autorepeat;
   }  
   
   /**
     Returns the current title of the window.
   */
-  String getTitle() const throw(UserInterfaceException);
+  String getTitle() const;
   
   /**
     Sets the title of the window.
   */
-  void setTitle(const String& title) throw(UserInterfaceException);
+  void setTitle(const String& title);
 
   /**
     Returns the icon title.
   */
-  String getIconTitle() const throw(UserInterfaceException);
+  String getIconTitle() const;
 
   /**
     Sets the icon title.
   */
-  void setIconTitle(const String& title) throw(UserInterfaceException);
+  void setIconTitle(const String& title);
   
   /**
     Returns the current position of the window.
   */
-  inline Position getPosition() const throw(UserInterfaceException) {
+  inline Position getPosition() const {
     return position;
   }
   
-  void setPosition(const Position& position) throw(UserInterfaceException);
+  void setPosition(const Position& position);
   
   /**
     Returns the size of the window.
   */
-  inline Dimension getDimension() const throw(UserInterfaceException) {
+  inline Dimension getDimension() const {
     return dimension;
   }
   
   /**
     Sets the size of the window.
   */
-  void setDimension(const Dimension& dimension) throw(UserInterfaceException);
+  void setDimension(const Dimension& dimension);
 
   /**
     Sets the position and dimension of the window.
   */
-  void setRegion(const Position& position, const Dimension& dimension) throw(UserInterfaceException);
+  void setRegion(const Position& position, const Dimension& dimension);
   
   /**
     Sets the minimum size of the window.
   */
-  inline void setMinimumSize(const Dimension& dimension) throw(UserInterfaceException) {
+  inline void setMinimumSize(const Dimension& dimension) {
     minimumSize = dimension;
   }
 
   /**
     Sets the maximum size of the window.
   */
-  inline void setMaximumSize(const Dimension& dimension) throw(UserInterfaceException) {
+  inline void setMaximumSize(const Dimension& dimension) {
     maximumSize = dimension;
   }
   
@@ -440,34 +440,34 @@ public:
   /**
     Sets the mouse cursor of the window.
   */
-  void setCursor(Cursor cursor) throw(UserInterfaceException);
+  void setCursor(Cursor cursor);
   
   /**
     Returns the position relative to the root window.
     
     @param position The position relative to this window.
   */
-  Position toGlobalPosition(const Position& position) const throw(UserInterfaceException);
+  Position toGlobalPosition(const Position& position) const;
   
   /**
     Returns the mouse position.
   */
-  Position getCursorPosition() const throw(UserInterfaceException);
+  Position getCursorPosition() const;
 
   /**
     Sets the mouse position.
   */
-  void setCursorPosition(const Position& position) throw(UserInterfaceException);
+  void setCursorPosition(const Position& position);
 
   /**
     Releases the mouse confinement.
   */
-  void releaseCursorConfinement() throw(UserInterfaceException);
+  void releaseCursorConfinement();
 
   /**
     Sets the cursor confinement to the window context.
   */
-  void setCursorConfinement() throw(UserInterfaceException);
+  void setCursorConfinement();
 
   /**
     Sets the cursor confinement to the specified area.
@@ -475,12 +475,12 @@ public:
     @param position The offset of the confinement area.
     @param dimension The dimension of the confinement area.
   */
-  void setCursorConfinement(const Position& position, const Dimension& dimension) throw(UserInterfaceException);
+  void setCursorConfinement(const Position& position, const Dimension& dimension);
 
   /**
     Disable clipping.
   */
-  void disableClipping() throw(UserInterfaceException);
+  void disableClipping();
 
   struct Region {
     // TAG: fixme
@@ -489,55 +489,55 @@ public:
   /**
     Returns the clipping region.
   */
-  Region getClipping() const throw(UserInterfaceException);
+  Region getClipping() const;
   
   /**
     Sets the clipping region.
   */
-  void setClipping(const Position& position, const Dimension& dimension) throw(UserInterfaceException);
+  void setClipping(const Position& position, const Dimension& dimension);
   
   /**
     Closes the window.
   */
-  void close() throw(UserInterfaceException);
+  void close();
   
-  // ViewState getView() throw(UserInterfaceException);
+  // ViewState getView();
 
   /**
     Returns true if this object is a child of the specified object.
   */
-  bool isChildOf(const WindowImpl& object) throw(UserInterfaceException);
+  bool isChildOf(const WindowImpl& object);
   
   /**
     Returns true if this object is the parent of the specified object.
   */
-  bool isParentOf(const WindowImpl& object) throw(UserInterfaceException);
+  bool isParentOf(const WindowImpl& object);
   
   /**
     Returns true if the window is maximized.
   */
-  bool isMaximized() throw(UserInterfaceException); // TAG: replace with inline
+  bool isMaximized(); // TAG: replace with inline
 
   /**
     Returns true if the window is minimized.
   */
-  bool isMinimized() throw(UserInterfaceException); // TAG: replace with inline
+  bool isMinimized(); // TAG: replace with inline
 
   /**
     Maximizes the window.
   */
-  void maximize() throw(UserInterfaceException);
+  void maximize();
 
   /**
     Minimizes the window.
   */
-  void minimize() throw(UserInterfaceException);
+  void minimize();
 
   /**
     Restores the original position and dimension of the window if currently
     minimized or maximized.
   */
-  void normalize() throw(UserInterfaceException);
+  void normalize();
 
   /**
     Returns true if the window is visible.
@@ -553,12 +553,12 @@ public:
   /**
     Shows the window if currently hidden.
   */
-  void show() throw(UserInterfaceException);
+  void show();
 
   /**
     Hides the window.
   */
-  void hide() throw(UserInterfaceException);
+  void hide();
 
   /**
     Returns true if the window is enabled.
@@ -570,54 +570,54 @@ public:
   /**
     Enables the window.
   */
-  void enable() throw(UserInterfaceException);
+  void enable();
 
   /**
     Disable the window.
   */
-  void disable() throw(UserInterfaceException);
+  void disable();
 
   /**
     Raises the window.
   */
-  void raise() throw(UserInterfaceException);
+  void raise();
   
   /**
     Acquire focus for this window.
   */
-  void acquireFocus() throw(UserInterfaceException);
+  void acquireFocus();
 
   /**
     Returns the mouse capture state of the window.
   */
-  bool getCapture() const throw(UserInterfaceException);
+  bool getCapture() const;
 
   /**
     Sets the mouse capture state of the window.
   */
-  void setCapture(bool state) throw(UserInterfaceException);
+  void setCapture(bool state);
 
   /**
     Returns the display mode.
   */
-  inline DisplayMode getDisplayMode() const throw(UserInterfaceException) {
+  inline DisplayMode getDisplayMode() const {
     return displayMode;
   }
 
   /**
     Selects the display mode.
   */
-  void setDisplayMode(DisplayMode displayMode) throw(UserInterfaceException);
+  void setDisplayMode(DisplayMode displayMode);
 
   /**
     Returns the state of the specified key.
   */
-  unsigned int getKeyState(unsigned int code) const throw(UserInterfaceException);
+  unsigned int getKeyState(unsigned int code) const;
   
   /**
     Returns the keyboard modifiers.
   */
-  inline unsigned int getModifiers() const throw(UserInterfaceException) {
+  inline unsigned int getModifiers() const {
     return modifiers;
   }
 
@@ -723,7 +723,7 @@ public:
   /**
     Requests the window to be updated.
   */
-  void update() throw(UserInterfaceException);
+  void update();
   
   /**
     Exit message dispatcher without asking the application to exit.
@@ -733,14 +733,14 @@ public:
   /**
     Waits for a message.
   */
-  void wait() throw(UserInterfaceException);
+  void wait();
 
   /**
     Waits for a message.
 
     @param milliseconds The timeout period.
   */
-  bool wait(unsigned int milliseconds) throw(UserInterfaceException);
+  bool wait(unsigned int milliseconds);
   
   /**
     This method is responsible for dispatching incoming messages to the
@@ -748,13 +748,13 @@ public:
 
     @return False if dispatch got an exit message.
   */
-  bool openDispatch() throw(UserInterfaceException);
+  bool openDispatch();
 
   /**
     This method is responsible for dispatching incoming messages to the
     corresponding message handlers.
   */
-  static void dispatch() throw(UserInterfaceException);
+  static void dispatch();
 
   /**
     Returns true if a mouse is present.
@@ -781,7 +781,7 @@ public:
 
     @param milliseconds The timeout period (silently reduced to 999999999).
   */
-  bool isResponding(unsigned int milliseconds) throw(UserInterfaceException);
+  bool isResponding(unsigned int milliseconds);
   
   /**
     Releases the window.

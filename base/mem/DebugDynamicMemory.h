@@ -71,7 +71,7 @@ public:
     
     @param memory The memory block.
   */
-  static void release(void* memory) throw(MemoryCorruption);
+  static void release(void* memory);
 };
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

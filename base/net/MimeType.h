@@ -55,7 +55,7 @@ public:
   /**
     Initializes the mime type as "application/octet-stream".
   */
-  MimeType() throw(MemoryException);
+  MimeType();
   
   /**
     Initializes the mime object with specified values. Use the isValid() method
@@ -75,7 +75,7 @@ public:
     @param mediaType The media type of the mime object (e.g. VIDEO).
     @param subtype The subtype of the mime object (e.g. mpeg).
   */
-  MimeType(MediaType mediaType, const String& subtype) throw(OutOfDomain, MemoryException);
+  MimeType(MediaType mediaType, const String& subtype);
   
   /**
     Initializes the mime object with specified values. Only raises
@@ -84,7 +84,7 @@ public:
 
     @param value The string representation of the mime object (e.g. "text/html").
   */
-  MimeType(const String& value) throw(InvalidFormat);
+  MimeType(const String& value);
 
   /**
     Assignment of MIME type to MIME type.

@@ -18,7 +18,7 @@ _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 ArgumentParser::Option::Option(
   const String& _name,
-  unsigned int _flags) throw(OutOfDomain)
+  unsigned int _flags)
   : name(_name),
     flags(_flags)
 {
@@ -27,7 +27,7 @@ ArgumentParser::Option::Option(
 ArgumentParser::Option::Option(
   const String& _name,
   char _shortName,
-  unsigned int _flags) throw(OutOfDomain)
+  unsigned int _flags)
   : name(_name),
     shortName(_shortName),
     flags(_flags)
@@ -38,7 +38,7 @@ ArgumentParser::Option::Option(
 }
 
 ArgumentParser::FlagOption::FlagOption(
-  const String& name, unsigned int flags) throw(OutOfDomain)
+  const String& name, unsigned int flags)
   : Option(name, flags)
 {
 }
@@ -46,13 +46,13 @@ ArgumentParser::FlagOption::FlagOption(
 ArgumentParser::FlagOption::FlagOption(
   const String& name,
   char shortName,
-  unsigned int flags) throw(OutOfDomain)
+  unsigned int flags)
   : Option(name, shortName, flags)
 {
 }
 
 ArgumentParser::StringOption::StringOption(
-  const String& name, unsigned int flags) throw(OutOfDomain)
+  const String& name, unsigned int flags)
   : Option(name, flags)
 {
 }
@@ -60,7 +60,7 @@ ArgumentParser::StringOption::StringOption(
 ArgumentParser::StringOption::StringOption(
   const String& name,
   char shortName,
-  unsigned int flags) throw(OutOfDomain)
+  unsigned int flags)
   : Option(name, shortName, flags)
 {
 }
@@ -68,7 +68,7 @@ ArgumentParser::StringOption::StringOption(
 ArgumentParser::RegExpOption::RegExpOption(
   const String& name,
   const String& pattern,
-  unsigned int flags) throw(OutOfDomain)
+  unsigned int flags)
   : Option(name, flags), expression(pattern)
 {
 }
@@ -77,7 +77,7 @@ ArgumentParser::RegExpOption::RegExpOption(
   const String& name,
   char shortName,
   const String& pattern,
-  unsigned int flags) throw(OutOfDomain)
+  unsigned int flags)
   : Option(name, shortName, flags), expression(pattern)
 {
 }
@@ -88,7 +88,7 @@ bool ArgumentParser::RegExpOption::isValid(const String& value) const noexcept
 }
 
 ArgumentParser::BooleanOption::BooleanOption(
-  const String& name, unsigned int flags) throw(OutOfDomain)
+  const String& name, unsigned int flags)
   : Option(name, flags)
 {
 }
@@ -96,13 +96,13 @@ ArgumentParser::BooleanOption::BooleanOption(
 ArgumentParser::BooleanOption::BooleanOption(
   const String& name,
   char shortName,
-  unsigned int flags) throw(OutOfDomain)
+  unsigned int flags)
   : Option(name, shortName, flags)
 {
 }
 
 ArgumentParser::CardinalOption::CardinalOption(
-  const String& name, unsigned int flags) throw(OutOfDomain)
+  const String& name, unsigned int flags)
   : Option(name, flags)
 {
 }
@@ -110,13 +110,13 @@ ArgumentParser::CardinalOption::CardinalOption(
 ArgumentParser::CardinalOption::CardinalOption(
   const String& name,
   char shortName,
-  unsigned int flags) throw(OutOfDomain)
+  unsigned int flags)
   : Option(name, shortName, flags)
 {
 }
 
 ArgumentParser::RealOption::RealOption(
-  const String& name, unsigned int flags) throw(OutOfDomain)
+  const String& name, unsigned int flags)
   : Option(name, flags)
 {
 }
@@ -124,7 +124,7 @@ ArgumentParser::RealOption::RealOption(
 ArgumentParser::RealOption::RealOption(
   const String& name,
   char shortName,
-  unsigned int flags) throw(OutOfDomain)
+  unsigned int flags)
   : Option(name, shortName, flags)
 {
 }
@@ -147,7 +147,7 @@ bool ArgumentParser::RealOption::isValid(const String& value) const noexcept
 }
 
 ArgumentParser::EnumOption::EnumOption(
-  const String& name, unsigned int flags) throw(OutOfDomain)
+  const String& name, unsigned int flags)
   : Option(name, flags)
 {
 }
@@ -155,7 +155,7 @@ ArgumentParser::EnumOption::EnumOption(
 ArgumentParser::EnumOption::EnumOption(
   const String& name,
   char shortName,
-  unsigned int flags) throw(OutOfDomain)
+  unsigned int flags)
   : Option(name, shortName, flags)
 {
 }

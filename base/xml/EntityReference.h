@@ -52,7 +52,7 @@ protected:
   }
 public:
   
-  inline EntityReference(Node node) throw(CastException) : Node(node) {
+  inline EntityReference(Node node) : Node(node) {
     bassert(
       node.isInvalid() || (node.getType() == ENTITY_REFERENCE_NODE),
       CastException(this)

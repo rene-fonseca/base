@@ -158,7 +158,7 @@ public:
     @param path The path.
     @param component The desired component (FOLDER_PATH, NAME, EXTENSION, ...).
   */
-  static String getComponent(const String& path, Component component) throw(FileSystemException);
+  static String getComponent(const String& path, Component component);
 
   /**
     Returns true if the specifies path is an absolute path.
@@ -177,7 +177,7 @@ public:
     @param base The base path.
     @param path The path to be converted.
   */
-  static String toAbsolutePath(const String& base, const String& path) throw(FileSystemException);
+  static String toAbsolutePath(const String& base, const String& path);
 
   /**
     Returns the absolute path of the first file found.
@@ -188,7 +188,7 @@ public:
     
     @return Empty string if not found. The relative path if it is really an absolute path.
   */
-  static String findFile(const Array<String>& searchPaths, const String& relative, unsigned int index = 0) throw(FileSystemException);
+  static String findFile(const Array<String>& searchPaths, const String& relative, unsigned int index = 0);
 
   /**
     Returns a URL from the specified path. The URL has the following format:
@@ -196,57 +196,57 @@ public:
     
     @param path The path to convert to a URL (MUST be absolute).
   */
-  static String toUrl(const String& path) throw(FileSystemException);
+  static String toUrl(const String& path);
   
   /**
     Returns the path of the current folder.
   */
-  static String getCurrentFolder() throw(FileSystemException);
+  static String getCurrentFolder();
   
   /**
     Sets the current folder.
   */
-  static void setCurrentFolder(const String& path) throw(FileSystemException);
+  static void setCurrentFolder(const String& path);
 
   /**
     Returns the file system flags describing the specified entry.
   */
-  static unsigned int getType(const String& path) throw(FileSystemException);
+  static unsigned int getType(const String& path);
 
   /**
     Returns the size of the specified file.
   */
-  static uint64 getSize(const String& path) throw(FileSystemException);
+  static uint64 getSize(const String& path);
   
   /**
     Returns true if the entry exists.
   */
-  static bool entryExists(const String& path) throw(FileSystemException);
+  static bool entryExists(const String& path);
   
   /**
     Returns true if the file exists.
   */
-  static bool fileExists(const String& path) throw(FileSystemException);
+  static bool fileExists(const String& path);
 
   /**
     Returns true if the folder exists.
   */
-  static bool folderExists(const String& path) throw(FileSystemException);
+  static bool folderExists(const String& path);
 
   /**
     Removes the specified file.
   */
-  static void removeFile(const String& path) throw(FileSystemException);
+  static void removeFile(const String& path);
 
   /**
     Removes the specified folder. The folder must be empty.
   */
-  static void removeFolder(const String& path) throw(FileSystemException);
+  static void removeFolder(const String& path);
 
   /**
     Makes a folder.
   */
-  static void makeFolder(const String& path) throw(FileSystemException);
+  static void makeFolder(const String& path);
 
   /**
     Returns true if symbolic links are supported. This method always returns
@@ -260,14 +260,14 @@ public:
     @param target The target of the link.
     @param destination The path of the destination file/folder.
   */
-  static void makeHardLink(const String& target, const String& destination) throw(NotSupported, FileSystemException);
+  static void makeHardLink(const String& target, const String& destination);
   
   /**
     Returns true if the file object specified by the path is a symbolic link.
 
     @return False if the path doesn't point to an object.
   */
-  static bool isLink(const String& path) throw(NotSupported, FileSystemException);
+  static bool isLink(const String& path);
   
   /**
     Creates a symbolic link.
@@ -275,14 +275,14 @@ public:
     @param target The target of the link.
     @param destination The path of the destination file/folder.
   */
-  static void makeLink(const String& target, const String& destination) throw(NotSupported, FileSystemException);
+  static void makeLink(const String& target, const String& destination);
   
   /**
     Returns the target of the symbolic link.
 
     @param path The path of the symbolic link.
   */
-  static String getLink(const String& path) throw(NotSupported, FileSystemException);
+  static String getLink(const String& path);
   
   /**
     Returns the path to the folder intended for temporary files.
@@ -308,7 +308,7 @@ public:
     
     @param options The file options. The default is SECURE.
   */
-  static File getTempFile(unsigned int options = SECURE) throw(IOException);
+  static File getTempFile(unsigned int options = SECURE);
 
   /** File system variables. */
   enum Variable {
@@ -323,7 +323,7 @@ public:
   /**
     Returns the value of the specified file system variable.
   */
-  static unsigned long getVariable(const String& path, Variable variable) throw(NotSupported);
+  static unsigned long getVariable(const String& path, Variable variable);
 
   /** System folders. */
   enum Folder {
@@ -353,7 +353,7 @@ public:
     @param path The path to the device.
     @param trustee The truestee.
   */
-  static Quota getQuota(const String& path, Trustee trustee) throw(FileSystemException);
+  static Quota getQuota(const String& path, Trustee trustee);
 };
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

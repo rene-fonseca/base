@@ -230,11 +230,11 @@ private:
 public:
   
   virtual double onConstant(
-    unsigned int constant) const throw(ExpressionException);
+    unsigned int constant) const;
   
   virtual double onFunction(
     unsigned int function,
-    const double* value) const throw(ExpressionException);
+    const double* value) const;
   
   /**
     Initializes expression evaluator.
@@ -275,7 +275,7 @@ public:
     
     @return The result of the evaluation.
   */
-  double evaluate() const throw(ExpressionException);
+  double evaluate() const;
   
   /**
     Evaluates the formula once.
@@ -284,7 +284,7 @@ public:
     y0, z0).
     @return The result of the evaluation.
   */
-  double evaluate(const double* variables) const throw(ExpressionException);
+  double evaluate(const double* variables) const;
   
   /**
     Evaluates the formula several times.
@@ -298,7 +298,7 @@ public:
   void evaluate(
     const double* variables,
     double* results,
-    unsigned int count) const throw(ExpressionException);
+    unsigned int count) const;
   
   virtual ~ExpressionEvaluator() noexcept;
 };
@@ -340,7 +340,7 @@ public:
   */
   void registerConstant(
     const String& name,
-    unsigned int id) throw(AmbiguousRegistration);
+    unsigned int id);
 
   /**
     Registers an identifier as a variable.
@@ -350,7 +350,7 @@ public:
   */
   void registerVariable(
     const String& name,
-    unsigned int id) throw(AmbiguousRegistration);
+    unsigned int id);
 
   /**
     Registers an identifier as a function.
@@ -362,7 +362,7 @@ public:
   void registerFunction(
     const String& name,
     unsigned int id,
-    unsigned int arguments) throw(AmbiguousRegistration);
+    unsigned int arguments);
 
   /**
     Returns true if the identifier has been registered.
@@ -398,7 +398,7 @@ public:
 
     @param name The identifier to be looked up.
   */
-  ExpressionEvaluator::Node getNode(const String& name) const throw(InvalidKey);
+  ExpressionEvaluator::Node getNode(const String& name) const;
   
   /**
     Destroys the expression provider.
@@ -450,22 +450,22 @@ protected:
   /**
     Pops one operation from the stack.
   */
-  void pop() throw(ExpressionException);
+  void pop();
   
   /**
     Pushed the specified operation onto the stack.
   */
-  void push(Operation operation) throw(ExpressionException);
+  void push(Operation operation);
   
   /**
     Reads an identifier from the representation.
   */
-  void readIdentifier() throw(ExpressionException);
+  void readIdentifier();
   
   /**
     Reads a number from the representation.
   */
-  void readValue() throw(ExpressionException);
+  void readValue();
 public:  
   
   /**
@@ -480,7 +480,7 @@ public:
   /**
     Parses the specified arithmetic expression representation.
   */
-  void parse() throw(ExpressionException);
+  void parse();
   
   /**
     Returns the result of the parser.
@@ -520,7 +520,7 @@ public:
   /**
     Builds string expression from internal representation.
   */
-  String getString() const throw(ExpressionException);
+  String getString() const;
   
   /**
     Destroys the expression parser.

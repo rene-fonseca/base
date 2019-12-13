@@ -97,7 +97,7 @@ public:
     /**
       Sets the value.
     */
-    inline Element& operator=(const Value& value) throw(OutOfRange)
+    inline Element& operator=(const Value& value)
     {
       array.setAt(index, value);
       return *this;
@@ -106,7 +106,7 @@ public:
     /**
       Returns the value.
     */
-    inline operator const Value&() const throw(OutOfRange)
+    inline operator const Value&() const
     {
       return array.getAt(index);
     }
@@ -114,7 +114,7 @@ public:
     /**
       Returns the value.
     */
-    inline operator Value&() throw(OutOfRange)
+    inline operator Value&()
     {
       return array.getAt(index);
     }
@@ -689,7 +689,7 @@ public:
 
     @param index The index of the element.
   */
-  Value& getAt(MemorySize index) throw(OutOfRange)
+  Value& getAt(MemorySize index)
   {
     if (!(index < getSize())) {
       throw OutOfRange(this);
@@ -703,7 +703,7 @@ public:
 
     @param index The index of the element.
   */
-  const Value& getAt(MemorySize index) const throw(OutOfRange)
+  const Value& getAt(MemorySize index) const
   {
     if (!(index < getSize())) {
       throw OutOfRange(this);
@@ -747,7 +747,7 @@ public:
 
     @param index The index of the element.
   */
-  inline TYPE& operator[](MemorySize index) throw(OutOfRange)
+  inline TYPE& operator[](MemorySize index)
   {
     return getAt(index);
   }
@@ -758,7 +758,7 @@ public:
 
     @param index The index of the element.
   */
-  inline const Value& operator[](MemorySize index) const throw(OutOfRange)
+  inline const Value& operator[](MemorySize index) const
   {
     return getAt(index);
   }

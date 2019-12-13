@@ -66,9 +66,9 @@ public:
     @param end The string representation.
     @param accept Specifies the integer bases to accept. Default is ANY.
   */
-  static unsigned long long parse(const char* src, const char* end, unsigned int flags = FLAG_DEFAULT) throw(InvalidFormat);
+  static unsigned long long parse(const char* src, const char* end, unsigned int flags = FLAG_DEFAULT);
 
-  static unsigned long long parse(const String& string, unsigned int flags = FLAG_DEFAULT) throw(InvalidFormat) {
+  static unsigned long long parse(const String& string, unsigned int flags = FLAG_DEFAULT) {
     return parse(string.native(), string.native() + string.getLength(), flags);
   }
 
@@ -147,6 +147,6 @@ inline UnsignedLongInteger::UnsignedLongInteger(unsigned long long _value) noexc
 /**
   Reads an unsigned long long from the specified format input stream.
 */
-_COM_AZURE_DEV__BASE__API FormatInputStream& operator>>(FormatInputStream& stream, unsigned long long& value) throw(InvalidFormat, IOException);
+_COM_AZURE_DEV__BASE__API FormatInputStream& operator>>(FormatInputStream& stream, unsigned long long& value);
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

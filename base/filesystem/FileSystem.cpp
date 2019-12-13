@@ -29,7 +29,7 @@
 
 #if 0
 // TAG: need support for following a specified number of links
-// String FileSystem::getFinalPath(const String& path, unsigned int maximumLinks = 8) throw(FileSystemException);
+// String FileSystem::getFinalPath(const String& path, unsigned int maximumLinks = 8);
 
 // ../../x/y/../z/..
 
@@ -186,7 +186,7 @@ String FileSystem::getPath(const String& base, const String& relative) noexcept 
   return result;
 }
 
-String FileSystem::getComponent(const String& path, Component component) throw(FileSystemException) {
+String FileSystem::getComponent(const String& path, Component component) {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   int forward = path.lastIndexOf('/');
   int backward = path.lastIndexOf('\\');
@@ -250,7 +250,7 @@ bool FileSystem::isFolderPath(const String& path) noexcept {
 #endif // flavor
 }
 
-String FileSystem::toAbsolutePath(const String& base, const String& path) throw(FileSystemException) {
+String FileSystem::toAbsolutePath(const String& base, const String& path) {
   if (!base.isProper() || isAbsolutePath(path)) {
     return path;
   }
@@ -280,7 +280,7 @@ String FileSystem::toAbsolutePath(const String& base, const String& path) throw(
   return result;
 }
 
-String FileSystem::findFile(const Array<String>& searchPaths, const String& relative, unsigned int index) throw(FileSystemException) {
+String FileSystem::findFile(const Array<String>& searchPaths, const String& relative, unsigned int index) {
   if (relative.isProper()) {
     if (isAbsolutePath(relative)) {
       return relative;
@@ -300,7 +300,7 @@ String FileSystem::findFile(const Array<String>& searchPaths, const String& rela
   return String();
 }
 
-String FileSystem::toUrl(const String& path) throw(FileSystemException) {
+String FileSystem::toUrl(const String& path) {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   static const Literal PREFIX = "file:///";
 #else // unix
@@ -337,7 +337,7 @@ String FileSystem::toUrl(const String& path) throw(FileSystemException) {
   return result;
 }
 
-String FileSystem::getCurrentFolder() throw(FileSystemException)
+String FileSystem::getCurrentFolder()
 {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   DWORD length = ::GetCurrentDirectory(0, NULL);
@@ -367,7 +367,7 @@ String FileSystem::getCurrentFolder() throw(FileSystemException)
 #endif // flavor
 }
 
-void FileSystem::setCurrentFolder(const String& path) throw(FileSystemException)
+void FileSystem::setCurrentFolder(const String& path)
 {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   if (!::SetCurrentDirectory(ToWCharString(path))) {
@@ -382,7 +382,7 @@ void FileSystem::setCurrentFolder(const String& path) throw(FileSystemException)
 #endif // flavor
 }
 
-unsigned int FileSystem::getType(const String& path) throw(FileSystemException)
+unsigned int FileSystem::getType(const String& path)
 {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   // TAG: follow link
@@ -521,7 +521,7 @@ unsigned int FileSystem::getType(const String& path) throw(FileSystemException)
 #endif // flavor
 }
 
-uint64 FileSystem::getSize(const String& path) throw(FileSystemException) {
+uint64 FileSystem::getSize(const String& path) {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   WIN32_FIND_DATA information;
   HANDLE handle = ::FindFirstFile(ToWCharString(path), &information);
@@ -544,7 +544,7 @@ uint64 FileSystem::getSize(const String& path) throw(FileSystemException) {
 #endif // flavor
 }
 
-bool FileSystem::entryExists(const String& path) throw(FileSystemException) {
+bool FileSystem::entryExists(const String& path) {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   WIN32_FIND_DATA information;
   HANDLE handle = ::FindFirstFile(ToWCharString(path), &information);
@@ -588,7 +588,7 @@ bool FileSystem::entryExists(const String& path) throw(FileSystemException) {
 #endif // flavor
 }
 
-bool FileSystem::fileExists(const String& path) throw(FileSystemException) {
+bool FileSystem::fileExists(const String& path) {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   DWORD result = ::GetFileAttributes(ToWCharString(path));
   if (result == INVALID_FILE_ATTRIBUTES) {
@@ -629,7 +629,7 @@ bool FileSystem::fileExists(const String& path) throw(FileSystemException) {
 #endif // flavor
 }
 
-bool FileSystem::folderExists(const String& path) throw(FileSystemException) {
+bool FileSystem::folderExists(const String& path) {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   DWORD result = ::GetFileAttributes(ToWCharString(path));
   if (result == INVALID_FILE_ATTRIBUTES) {
@@ -669,7 +669,7 @@ bool FileSystem::folderExists(const String& path) throw(FileSystemException) {
 #endif // flavor
 }
 
-void FileSystem::removeFile(const String& path) throw(FileSystemException)
+void FileSystem::removeFile(const String& path)
 {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
 //  ::SetFileAttributes(file, FILE_ATTRIBUTE_NORMAL);
@@ -683,7 +683,7 @@ void FileSystem::removeFile(const String& path) throw(FileSystemException)
 #endif // flavor
 }
 
-void FileSystem::removeFolder(const String& path) throw(FileSystemException)
+void FileSystem::removeFolder(const String& path)
 {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   DWORD attributes = ::GetFileAttributes(ToWCharString(path));
@@ -757,7 +757,7 @@ void FileSystem::removeFolder(const String& path) throw(FileSystemException)
 #endif // flavor
 }
 
-void FileSystem::makeFolder(const String& path) throw(FileSystemException)
+void FileSystem::makeFolder(const String& path)
 {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   if (!::CreateDirectory(ToWCharString(path), NULL)) { // use default security descriptor
@@ -809,7 +809,7 @@ bool FileSystem::supportsLinks() noexcept {
 //   return flags;
 // }
 
-bool FileSystem::isLink(const String& path) throw(NotSupported, FileSystemException)
+bool FileSystem::isLink(const String& path)
 {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   if (cachedSupportsLinks == -1) {
@@ -964,7 +964,7 @@ public:
 
   // TAG: the link target may not exist
   
-  static String getLinkTarget(const String& path) throw(FileSystemException) {
+  static String getLinkTarget(const String& path) {
 //     if (cachedSupportsLinks == -1) {
 //       supportsLinks();
 //     }
@@ -1153,7 +1153,7 @@ public:
 };
 #endif // flavor
 
-void FileSystem::makeHardLink(const String& target, const String& path) throw(NotSupported, FileSystemException)
+void FileSystem::makeHardLink(const String& target, const String& path)
 {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
 #if (_COM_AZURE_DEV__BASE__OS >= _COM_AZURE_DEV__BASE__W2K)
@@ -1181,7 +1181,7 @@ void FileSystem::makeHardLink(const String& target, const String& path) throw(No
 }
 
 void FileSystem::makeLink(const String& target, const String& path)
-  throw(NotSupported, FileSystemException) {
+  {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   if (cachedSupportsLinks == -1) {
     supportsLinks();
@@ -1310,7 +1310,7 @@ void FileSystem::makeLink(const String& target, const String& path)
 }
 
 // TAG: need option disallow transparent link/strict transparency
-String FileSystem::getLink(const String& path) throw(NotSupported, FileSystemException) {
+String FileSystem::getLink(const String& path) {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   if (cachedSupportsLinks == -1) {
     supportsLinks();
@@ -1706,7 +1706,7 @@ String FileSystem::getTempFileName(unsigned int options) noexcept {
   return stream.getString();
 }
 
-File FileSystem::getTempFile(unsigned int options) throw(IOException) {
+File FileSystem::getTempFile(unsigned int options) {
   throw NotImplemented(Type::getType<FileSystem>());
 /*
   unsigned int attempts = 16;
@@ -1723,7 +1723,7 @@ File FileSystem::getTempFile(unsigned int options) throw(IOException) {
 */
 }
 
-unsigned long FileSystem::getVariable(const String& path, Variable variable) throw(NotSupported) {
+unsigned long FileSystem::getVariable(const String& path, Variable variable) {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   throw NotSupported(Type::getType<FileSystem>());
 #else // unix
@@ -1821,7 +1821,7 @@ String FileSystem::getFolder(Folder folder) noexcept {
 }
 
 FileSystem::Quota FileSystem::getQuota(
-  const String& path, Trustee trustee) throw(FileSystemException) {
+  const String& path, Trustee trustee) {
   Quota result;
 #if ((_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__GNULINUX) || \
      (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__IRIX65))

@@ -137,7 +137,7 @@ public:
     is invalid or the reference cannot be cast to the specified type.
   */
   template<class POLY>
-  inline CheckedPointer<POLY> cast() throw(CastException)
+  inline CheckedPointer<POLY> cast()
   {
     POLY* temp = dynamic_cast<POLY*>(value);
     if (!temp) {
@@ -149,7 +149,7 @@ public:
   /**
     Returns mutable object.
   */
-  inline TYPE& operator*() throw(NullPointer)
+  inline TYPE& operator*()
   {
     if (!value) {
       throw NullPointer(this);
@@ -160,7 +160,7 @@ public:
   /**
     Returns constant object.
   */
-  inline const TYPE& operator*() const throw(NullPointer)
+  inline const TYPE& operator*() const
   {
     if (!value) {
       throw NullPointer(this);
@@ -171,7 +171,7 @@ public:
   /**
     Returns object for modifying access.
   */
-  inline TYPE* operator->() throw(NullPointer)
+  inline TYPE* operator->()
   {
     if (!value) {
       throw NullPointer(this);
@@ -182,7 +182,7 @@ public:
   /**
     Returns object for non-modifying access.
   */
-  inline const TYPE* operator->() const throw(NullPointer)
+  inline const TYPE* operator->() const
   {
     if (!value) {
       throw NullPointer(this);

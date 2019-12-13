@@ -37,12 +37,12 @@ void Transformer::clearParameters() noexcept {
   parameters = HashTable<String, String>();
 }
 
-String Transformer::getParameter(const String& name) throw(InvalidKey) {
+String Transformer::getParameter(const String& name) {
   return parameters[name];
 }
 
 void Transformer::setParameter(
-  const String& name, const String& value) throw(MemoryException) {
+  const String& name, const String& value) {
   parameters.add(name, value);
 }
 
@@ -59,7 +59,7 @@ void Transformer::setParameter(
 // }
 
 Document Transformer::transform(
-  const Document& document) throw(TransformerException) {
+  const Document& document) {
 #if defined(_COM_AZURE_DEV__BASE__XSLT_XMLSOFT_ORG)
   Allocator<const char*> temp(parameters.getSize() * 2 + 1);
   Allocator<const char*>::Iterator i = temp.getBeginIterator();
@@ -85,7 +85,7 @@ Document Transformer::transform(
 #endif
 }
 
-void Transformer::save(const String& filename, const Document& document) throw(DOMException, IOException) {
+void Transformer::save(const String& filename, const Document& document) {
 #if 0 && defined(_COM_AZURE_DEV__BASE__XML_XMLSOFT_ORG)
   xmlDoc* doc = (xmlDoc*)document.getContext();
   int bytesWritten = xsltSaveResultToFilename(
@@ -107,7 +107,7 @@ void Transformer::setStylesheet(Stylesheet stylesheet) noexcept {
 }
 
 bool Transformer::functionAvailable(
-  const String& ns, const String& name) throw(TransformerException) {
+  const String& ns, const String& name) {
 #if defined(_COM_AZURE_DEV__BASE__XSLT_XMLSOFT_ORG)
 //   return xsltXPathFunctionLookup(
 //     0,

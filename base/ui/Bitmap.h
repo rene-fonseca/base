@@ -95,7 +95,7 @@ public:
     const Dimension& dimension,
     Format format,
     Encoding encoding,
-    const void* data) throw(UserInterfaceException);
+    const void* data);
 
   /**
     Initializes bitmap from other bitmap.
@@ -122,20 +122,20 @@ public:
   /**
     Returns the dimension of the bitmap.
   */
-  Dimension getDimension() const throw(UserInterfaceException);
+  Dimension getDimension() const;
 
   /**
     Returns the value of the specified pixel.
   */
   uint32 getPixel(
-    const Position& position) const throw(UserInterfaceException);
+    const Position& position) const;
 
   /**
     Sets the value of the specified pixel.
   */
   void setPixel(
     const Position& position,
-    uint32 value) const throw(UserInterfaceException);
+    uint32 value) const;
 };
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

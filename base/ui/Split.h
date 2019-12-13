@@ -55,7 +55,7 @@ public:
     RELATIVE
   };
   
-  Split(Window& owner) throw(UserInterfaceException);
+  Split(Window& owner);
 
 //   unsigned int getFlags() const noexcept {
 //   }

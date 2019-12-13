@@ -19,7 +19,7 @@
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
-CharacterSet CharacterSet::load(const String& path) throw(FileException, InvalidFormat)
+CharacterSet CharacterSet::load(const String& path)
 {
   try {
     File file(path, File::READ, 0);
@@ -95,7 +95,7 @@ CharacterSet CharacterSet::load(const String& path) throw(FileException, Invalid
 
 CharacterSet CharacterSet::load(
   const Array<String>& searchPaths,
-  const String& path) throw(FileException, InvalidFormat) {
+  const String& path) {
   // TAG: default path "/usr/share/base/charset/" and name "8859-1"
   if (FileSystem::isAbsolutePath(path)) {
     return load(path);
@@ -114,13 +114,13 @@ CharacterSet CharacterSet::load(
   }
 }
 
-CharacterSet::CharacterSet() throw(MemoryException)
+CharacterSet::CharacterSet()
   : characterSet(new CharacterSetImpl(256))
 {
   fill<ucs4>(characterSet->getElements(), characterSet->getSize(), 0);
 }
 
-void CharacterSet::save(const String& path, Architecture::ByteOrder byteOrder) const throw(FileException)
+void CharacterSet::save(const String& path, Architecture::ByteOrder byteOrder) const
 {
   try {
     File file(path, File::WRITE, File::CREATE|File::TRUNCATE|File::EXCLUSIVE);

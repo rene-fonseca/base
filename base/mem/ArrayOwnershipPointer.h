@@ -24,14 +24,14 @@ _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
   'normal' pointer.
   
   @code
-  void MyOtherClass::myOtherMethod(MyResource resource) throw(MyException)
+  void MyOtherClass::myOtherMethod(MyResource resource)
   {
     // ...
     bassert(condition, MyException(this));
     // ...
   }
   
-  void MyClass::myMethod() throw(MemoryException, MyException)
+  void MyClass::myMethod()
   {
     ArrayOwnershipPointer<int> buffer = new int[BUFFER_SIZE];
     MyOtherClass* myOtherObject = getOtherObject();
@@ -153,7 +153,7 @@ public:
   /**
     Returns mutable object.
   */
-  inline TYPE& operator*() throw(NullPointer)
+  inline TYPE& operator*()
   {
     if (!object) {
       throw NullPointer(this);
@@ -164,7 +164,7 @@ public:
   /**
     Returns constant object.
   */
-  inline const TYPE& operator*() const throw(NullPointer)
+  inline const TYPE& operator*() const
   {
     if (!object) {
       throw NullPointer(this);

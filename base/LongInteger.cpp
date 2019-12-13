@@ -16,7 +16,7 @@
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
-long long LongInteger::parse(const char* src, const char* end, unsigned int flags) throw(InvalidFormat)
+long long LongInteger::parse(const char* src, const char* end, unsigned int flags)
 {
   const char* i = src;
 

@@ -54,7 +54,7 @@ public:
     SharedMemoryImpl(
       const File& file,
       const FileRegion& region,
-      unsigned int access) throw(MemoryException);
+      unsigned int access);
     
     inline uint8* getBytes() const noexcept
     {
@@ -86,13 +86,13 @@ public:
       return access;
     }
     
-    void lock() throw(MemoryException);
+    void lock();
     
-    void unlock() throw(MemoryException);
+    void unlock();
     
-    void setProtection(unsigned int access) throw(MemoryException);
+    void setProtection(unsigned int access);
     
-    void synchronize(bool asynchronous) throw(MemoryException);
+    void synchronize(bool asynchronous);
     
     ~SharedMemoryImpl() noexcept;
   };
@@ -133,7 +133,7 @@ public:
     @param access The required access.
     @param options The options.
   */
-  SharedMemory(const String& path, const FileRegion& region, unsigned int access, unsigned int options) throw(FileException, MemoryException);
+  SharedMemory(const String& path, const FileRegion& region, unsigned int access, unsigned int options);
 
   /**
     Initializes object by object.
@@ -183,17 +183,17 @@ public:
   /**
     Locks the memory.
   */
-  void lock() throw(MemoryException);
+  void lock();
   
   /**
     Unlocks the memory.
   */
-  void unlock() throw(MemoryException);
+  void unlock();
   
   /**
     Sets the desired protection of the shared memory.
   */
-  void setProtection(unsigned int access) throw(MemoryException);
+  void setProtection(unsigned int access);
 
   /**
     Synchronize memory with file.
@@ -201,7 +201,7 @@ public:
     @param asynchronous Allows the method to return before all data has been
     written. The default is false.
   */
-  void synchronize(bool asynchronous = false) throw(MemoryException);
+  void synchronize(bool asynchronous = false);
 
   /**
     Fills the memory with zeros.

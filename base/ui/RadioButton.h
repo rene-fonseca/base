@@ -43,7 +43,7 @@ public:
   /**
     Initializes the button widget.
   */
-  Button(Window& owner) throw(UserInterfaceException);
+  Button(Window& owner);
 
   /**
     Returns the background color.
@@ -55,7 +55,7 @@ public:
   /**
     Sets the background color.
   */
-  void setBackground(Color background) throw(UserInterfaceException);
+  void setBackground(Color background);
 
   /**
     Returns the text color.
@@ -67,31 +67,31 @@ public:
   /**
     Sets the color of the button text.
   */
-  void setTextColor(Color textColor) throw(UserInterfaceException);
+  void setTextColor(Color textColor);
 
   /**
     Returns the button text.
   */
-  inline const String& getText() const throw(UserInterfaceException) {
+  inline const String& getText() const {
     return text;
   }
 
   /**
     Sets the button text.
   */
-  void setText(const String& text) throw(UserInterfaceException);
+  void setText(const String& text);
 
 //   /**
 //     Returns the current state of the button.
 //   */
-//   inline State getState() const throw(UserInterfaceException) {
+//   inline State getState() const {
 //     return state;
 //   }
 
 //   /**
 //     Sets the state of the button.
 //   */
-//   void setState(State state) throw(UserInterfaceException);
+//   void setState(State state);
 
   /**
     Invoked when the button is resized.

@@ -36,7 +36,7 @@ Menu::MenuHandle::~MenuHandle() {
   }
 }
 
-Menu::Menu() throw(MenuException)
+Menu::Menu()
   : handle(new MenuHandle()) {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   HMENU handle = ::CreatePopupMenu();
@@ -48,7 +48,7 @@ Menu::Menu() throw(MenuException)
 #endif // flavor
 }
 
-unsigned int Menu::getNumberOfItems() const throw(MenuException) {
+unsigned int Menu::getNumberOfItems() const {
   if (!handle.isValid()) {
     return 0;
   }
@@ -63,7 +63,7 @@ unsigned int Menu::getNumberOfItems() const throw(MenuException) {
 #endif // flavor
 }
 
-unsigned int Menu::getIdentifier(unsigned int index) const throw(MenuException) {
+unsigned int Menu::getIdentifier(unsigned int index) const {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   bassert(index <= PrimitiveTraits<int>::MAXIMUM, MenuException(this));
   HMENU menu = (HMENU)handle->getHandle();
@@ -78,7 +78,7 @@ unsigned int Menu::getIdentifier(unsigned int index) const throw(MenuException) 
 #endif // flavor
 }
 
-int Menu::getIndex(unsigned int identifier) const throw(MenuException) {
+int Menu::getIndex(unsigned int identifier) const {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   HMENU menu = (HMENU)handle->getHandle();
 //   MENUITEMINFO info;
@@ -93,7 +93,7 @@ int Menu::getIndex(unsigned int identifier) const throw(MenuException) {
 #endif // flavor
 }
 
-unsigned int Menu::getFlags(unsigned int index) const throw(MenuException) {
+unsigned int Menu::getFlags(unsigned int index) const {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   HMENU menu = (HMENU)handle->getHandle();
   MENUITEMINFO info;
@@ -114,7 +114,7 @@ unsigned int Menu::getFlags(unsigned int index) const throw(MenuException) {
 #endif // flavor
 }
 
-Menu Menu::getMenu(unsigned int index) throw(MenuException) {
+Menu Menu::getMenu(unsigned int index) {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   HMENU menu = (HMENU)handle->getHandle();
   MENUITEMINFO info;
@@ -131,7 +131,7 @@ Menu Menu::getMenu(unsigned int index) throw(MenuException) {
 #endif // flavor
 }
 
-void Menu::setEnabled(unsigned int index, bool enabled) throw(MenuException) {
+void Menu::setEnabled(unsigned int index, bool enabled) {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   HMENU menu = (HMENU)handle->getHandle();
   MENUITEMINFO info;
@@ -144,7 +144,7 @@ void Menu::setEnabled(unsigned int index, bool enabled) throw(MenuException) {
 #endif // flavor
 }
 
-void Menu::setChecked(unsigned int index, bool checked) throw(MenuException) {
+void Menu::setChecked(unsigned int index, bool checked) {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   HMENU menu = (HMENU)handle->getHandle();
   MENUITEMINFO info;
@@ -157,7 +157,7 @@ void Menu::setChecked(unsigned int index, bool checked) throw(MenuException) {
 #endif // flavor
 }
 
-void Menu::setHighlighted(unsigned int index, bool highlighted) throw(MenuException) {
+void Menu::setHighlighted(unsigned int index, bool highlighted) {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   HMENU menu = (HMENU)handle->getHandle();
   MENUITEMINFO info;
@@ -176,7 +176,7 @@ void Menu::setHighlighted(unsigned int index, bool highlighted) throw(MenuExcept
 
 #endif
 
-void Menu::setName(unsigned int index, const String& name) throw(MenuException) {
+void Menu::setName(unsigned int index, const String& name) {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   HMENU menu = (HMENU)handle->getHandle();
   MENUITEMINFO info;
@@ -191,7 +191,7 @@ void Menu::setName(unsigned int index, const String& name) throw(MenuException) 
 #endif // flavor
 }
 
-void Menu::setSubmenu(unsigned int identifier, const Menu& menu) throw(MenuException) {
+void Menu::setSubmenu(unsigned int identifier, const Menu& menu) {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   HMENU nativeMenu = (HMENU)handle->getHandle();
   MENUITEMINFO info;
@@ -204,7 +204,7 @@ void Menu::setSubmenu(unsigned int identifier, const Menu& menu) throw(MenuExcep
 #endif // flavor
 }
 
-void Menu::insertSeparator(unsigned int index) throw(MenuException) {
+void Menu::insertSeparator(unsigned int index) {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   HMENU menu = (HMENU)handle->getHandle();
   MENUITEMINFO info;
@@ -217,7 +217,7 @@ void Menu::insertSeparator(unsigned int index) throw(MenuException) {
 #endif // flavor
 }
 
-void Menu::appendSeparator() throw(MenuException) {
+void Menu::appendSeparator() {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   HMENU menu = (HMENU)handle->getHandle();
   int index = ::GetMenuItemCount(menu);
@@ -232,7 +232,7 @@ void Menu::appendSeparator() throw(MenuException) {
 #endif // flavor
 }
 
-void Menu::insert(unsigned int index, const String& name, unsigned int identifier, unsigned int flags) throw(MenuException) {
+void Menu::insert(unsigned int index, const String& name, unsigned int identifier, unsigned int flags) {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   bassert(identifier <= PrimitiveTraits<uint16>::MAXIMUM, MenuException(this));
   HMENU menu = (HMENU)handle->getHandle();
@@ -253,7 +253,7 @@ void Menu::insert(unsigned int index, const String& name, unsigned int identifie
 #endif // flavor
 }
 
-void Menu::append(const String& name, unsigned int identifier, unsigned int flags) throw(MenuException) {
+void Menu::append(const String& name, unsigned int identifier, unsigned int flags) {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   bassert(identifier <= PrimitiveTraits<uint16>::MAXIMUM, MenuException(this));
   HMENU menu = (HMENU)handle->getHandle();
@@ -276,7 +276,7 @@ void Menu::append(const String& name, unsigned int identifier, unsigned int flag
 #endif // flavor
 }
 
-void Menu::appendMenu(const String& name, const Menu& menu, unsigned int flags) throw(MenuException) {
+void Menu::appendMenu(const String& name, const Menu& menu, unsigned int flags) {
   // TAG: get lock on menu
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   HMENU nativeMenu = (HMENU)handle->getHandle();
@@ -299,7 +299,7 @@ void Menu::appendMenu(const String& name, const Menu& menu, unsigned int flags) 
 #endif // flavor
 }
 
-void Menu::remove(unsigned int index) throw(MenuException) {
+void Menu::remove(unsigned int index) {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   HMENU menu = (HMENU)handle->getHandle();
   bassert(::DeleteMenu(menu, index, MF_BYPOSITION), MenuException(this));

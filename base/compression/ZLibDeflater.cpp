@@ -77,7 +77,7 @@ namespace internal {
   extern "C" int deflateEnd(ZLibDeflater::Context* stream);
 };
 
-ZLibDeflater::ZLibDeflater() throw(MemoryException)
+ZLibDeflater::ZLibDeflater()
   : buffer(BUFFER_SIZE), availableBytes(0), state(RUNNING)
 {
 #if (defined(_COM_AZURE_DEV__BASE__USE_ZLIB))
@@ -101,7 +101,7 @@ ZLibDeflater::ZLibDeflater() throw(MemoryException)
 #endif
 }
 
-ZLibDeflater::ZLibDeflater(unsigned int compressionLevel) throw(MemoryException)
+ZLibDeflater::ZLibDeflater(unsigned int compressionLevel)
   : buffer(BUFFER_SIZE), availableBytes(0), state(RUNNING)
 {
 #if (defined(_COM_AZURE_DEV__BASE__USE_ZLIB))
@@ -125,7 +125,7 @@ ZLibDeflater::ZLibDeflater(unsigned int compressionLevel) throw(MemoryException)
 #endif
 }
 
-void ZLibDeflater::flush() throw(IOException)
+void ZLibDeflater::flush()
 {
 #if (defined(_COM_AZURE_DEV__BASE__USE_ZLIB))
   bassert(state != ENDED, EndOfFile());
@@ -136,7 +136,7 @@ void ZLibDeflater::flush() throw(IOException)
 #endif
 }
 
-MemorySize ZLibDeflater::push(const uint8* buffer, MemorySize _size) throw(IOException)
+MemorySize ZLibDeflater::push(const uint8* buffer, MemorySize _size)
 {
   if (_size > 0xffffffff) {
     throw IOException(this);
@@ -165,7 +165,7 @@ MemorySize ZLibDeflater::push(const uint8* buffer, MemorySize _size) throw(IOExc
 #endif
 }
 
-void ZLibDeflater::pushEnd() throw(IOException)
+void ZLibDeflater::pushEnd()
 {
 #if (defined(_COM_AZURE_DEV__BASE__USE_ZLIB))
   bassert(state != ENDED, EndOfFile());
@@ -176,7 +176,7 @@ void ZLibDeflater::pushEnd() throw(IOException)
 #endif
 }
 
-MemorySize ZLibDeflater::pull(uint8* buffer, MemorySize _size) throw(IOException)
+MemorySize ZLibDeflater::pull(uint8* buffer, MemorySize _size)
 {
   if (_size > 0xffffffff) {
     throw IOException(this);

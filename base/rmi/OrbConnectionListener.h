@@ -40,7 +40,7 @@ public:
   */
   virtual void onIncomingConnection(
     Reference<ConnectionFactory> connectionFactory,
-    Reference<Connection> connection) throw(OrbException) = 0;
+    Reference<Connection> connection) = 0;
 };
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

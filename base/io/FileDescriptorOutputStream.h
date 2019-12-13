@@ -59,14 +59,14 @@ public:
     Closes the stream and releases any system resources associated with the
     stream.
   */
-  void close() throw(IOException) {
+  void close() {
     FileDescriptor::close();
   }
 
   /**
     Forces any buffered bytes to be written out.
   */
-  void flush() throw(IOException);
+  void flush();
 
   /**
     Writes bytes in buffer to stream.
@@ -78,7 +78,7 @@ public:
   unsigned int write(
     const uint8* buffer,
     unsigned int size,
-    bool nonblocking = false) throw(IOException);
+    bool nonblocking = false);
 
   /**
     Releases the file descriptor.

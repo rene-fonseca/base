@@ -81,7 +81,7 @@ String AttributeDecl::getDefaultValue() const noexcept {
 #endif
 }
 
-Array<String> AttributeDecl::getEnumerationValues() const throw(DOMException) {
+Array<String> AttributeDecl::getEnumerationValues() const {
 #if defined(_COM_AZURE_DEV__BASE__XML_XMLSOFT_ORG)
   xmlAttribute* attribute = (xmlAttribute*)getContext();
   bassert(

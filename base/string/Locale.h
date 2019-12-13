@@ -186,25 +186,25 @@ public:
     return timeSeparator;
   }
 
-  String getShortNameOfWeekday(unsigned int weekday) const throw(OutOfDomain)
+  String getShortNameOfWeekday(unsigned int weekday) const
   {
     bassert(weekday < 7, OutOfDomain(Type::getType<DateFormatSet>()));
     return shortNameOfWeekday[weekday];
   }
   
-  String getLongNameOfWeekday(unsigned int weekday) const throw(OutOfDomain)
+  String getLongNameOfWeekday(unsigned int weekday) const
   {
     bassert(weekday < 7, OutOfDomain(Type::getType<DateFormatSet>()));
     return longNameOfWeekday[weekday];
   }
   
-  String getShortNameOfMonth(unsigned int month) const throw(OutOfDomain)
+  String getShortNameOfMonth(unsigned int month) const
   {
     bassert(month < 12, OutOfDomain(Type::getType<DateFormatSet>()));
     return shortNameOfMonth[month];
   }
   
-  String getLongNameOfMonth(unsigned int month) const throw(OutOfDomain)
+  String getLongNameOfMonth(unsigned int month) const
   {
     bassert(month < 12, OutOfDomain(Type::getType<DateFormatSet>()));
     return longNameOfMonth[month];
@@ -277,7 +277,7 @@ public:
 
   static const Locale POSIX;
 
-  //static void enable() throw(IOException);
+  //static void enable();
   
   Locale() noexcept;
   

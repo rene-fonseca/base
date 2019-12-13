@@ -182,7 +182,7 @@ HashTable<String, unsigned int> InetInterface::getInterfaceNames() noexcept {
   return interfaces;
 }
 
-List<InetInterface> InetInterface::getInterfaces() throw(NetworkException)
+List<InetInterface> InetInterface::getInterfaces()
 {
   List<InetInterface> interfaces;
 #if (0 && defined(_COM_AZURE_DEV__BASE__INET_IPV6)) // currently disabled
@@ -360,7 +360,7 @@ List<InetInterface> InetInterface::getInterfaces() throw(NetworkException)
   return interfaces;
 }
 
-unsigned int InetInterface::getIndexByName(const String& name) throw(NetworkException) {
+unsigned int InetInterface::getIndexByName(const String& name) {
 #if (defined(_COM_AZURE_DEV__BASE__INET_IPV6))
   unsigned int index = if_nametoindex(name.getElements());
   bassert(
@@ -444,7 +444,7 @@ unsigned int InetInterface::getIndexByName(const String& name) throw(NetworkExce
 #endif
 }
 
-unsigned int InetInterface::getIndexByAddress(const InetAddress& address) throw(NetworkException) {
+unsigned int InetInterface::getIndexByAddress(const InetAddress& address) {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   Thread::UseThreadLocalBuffer _buffer;
   Allocator<uint8>& buffer = _buffer;
@@ -549,7 +549,7 @@ unsigned int InetInterface::getIndexByAddress(const InetAddress& address) throw(
 #endif
 }
 
-String InetInterface::getName(unsigned int index) throw(NetworkException) {
+String InetInterface::getName(unsigned int index) {
 #if (defined(_COM_AZURE_DEV__BASE__INET_IPV6))
   char name[IFNAMSIZ];
   bassert(
@@ -661,7 +661,7 @@ String InetInterface::getName(unsigned int index) throw(NetworkException) {
 #endif
 }
 
-InetAddress InetInterface::getAddress(unsigned int index) throw(NetworkException) {
+InetAddress InetInterface::getAddress(unsigned int index) {
 #if (defined(_COM_AZURE_DEV__BASE__INET_IPV6))
   struct ifreq req;
   bassert(
@@ -788,7 +788,7 @@ InetInterface::InetInterface() noexcept
 {
 }
 
-InetInterface::InetInterface(const String& name) throw(NetworkException)
+InetInterface::InetInterface(const String& name)
   : index(0), flags(0), metric(0)
 {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)

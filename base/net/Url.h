@@ -101,17 +101,17 @@ protected:
   /**
     Validates the specified scheme and returns a slightly converted scheme to be used.
   */
-  static String validateScheme(const String& value) throw(UrlException, MemoryException);
+  static String validateScheme(const String& value);
 
   /**
     Validates the specified user and returns it.
   */
-  static String validateUser(const String& str) throw(UrlException);
+  static String validateUser(const String& str);
 
   /**
     Validates the specified password and returns it.
   */
-  static String validatePassword(const String& str) throw(UrlException);
+  static String validatePassword(const String& str);
 
   /**
     Returns true if the string is a valid host specification.
@@ -126,13 +126,13 @@ protected:
   /**
     Parses the string as a url.
   */
-  void parse(const String& url, bool strict) throw(UrlException, MemoryException);
+  void parse(const String& url, bool strict);
 public:
 
   /**
     Initializes an empty url.
   */
-  Url() throw(MemoryException);
+  Url();
 
   /**
     Initializes url from a string representation.
@@ -140,7 +140,7 @@ public:
     @param url The string representation of the url.
     @param strict Specifies that unsafe characters are required to be encoded. Default is true.
   */
-  Url(const String& url, bool strict = true) throw(UrlException, MemoryException);
+  Url(const String& url, bool strict = true);
 
   /**
     Initializes url from separate string representations of relative and base url.
@@ -149,7 +149,7 @@ public:
     @param base The base url.
     @param strict Specifies that unsafe characters are required to be encoded. Default is true.
   */
-  Url(const String& relative, const String& base, bool strict = true) throw(UrlException, MemoryException);
+  Url(const String& relative, const String& base, bool strict = true);
 
   /**
     Initializes url from other url.
@@ -194,12 +194,12 @@ public:
   /**
     Returns the path.
   */
-  virtual String getPath() const throw(MemoryException);
+  virtual String getPath() const;
 
   /**
     Returns the url.
   */
-  String getUrl() const throw(MemoryException);
+  String getUrl() const;
 
   /**
     Sets the scheme (a.k.a. protocol). The scheme is composed of letters
@@ -208,32 +208,32 @@ public:
     into lower case. The exception URLException is raised if the set of allowed
     characters is violated.
   */
-  virtual void setScheme(const String& value) throw(UrlException, MemoryException);
+  virtual void setScheme(const String& value);
 
   /**
     Sets the user.
   */
-  void setUser(const String& value) throw(UrlException, MemoryException);
+  void setUser(const String& value);
 
   /**
     Sets the password.
   */
-  void setPassword(const String& value) throw(UrlException, MemoryException);
+  void setPassword(const String& value);
 
   /**
     Sets the host.
   */
-  void setHost(const String& value) throw(UrlException);
+  void setHost(const String& value);
 
   /**
     Sets the port.
   */
-  void setPort(const String& value) throw(UrlException);
+  void setPort(const String& value);
 
   /**
     Sets the path.
   */
-  virtual void setPath(const String& value) throw(UrlException, MemoryException);
+  virtual void setPath(const String& value);
 
   /**
     Destroys the url.

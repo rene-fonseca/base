@@ -442,7 +442,7 @@ public:
   void resetBus(const EUI64& guid) noexcept {
   }
 
-  unsigned short getNodeId(const String& string) const throw(InvalidFormat)
+  unsigned short getNodeId(const String& string) const
   {
     unsigned int busId = IEEE1394::LOCAL_BUS;
     unsigned int physicalId = 0;

@@ -75,7 +75,7 @@ protected:
 
     @param region The region to be mapped.
   */
-  void requestRegion(const FileRegion& region) throw(IOException);
+  void requestRegion(const FileRegion& region);
 public:
   
   /**
@@ -89,7 +89,7 @@ public:
   FileReader(
     File& file,
     long long position,
-    unsigned int windowSize = DEFAULT_WINDOW_SIZE) throw(IOException);
+    unsigned int windowSize = DEFAULT_WINDOW_SIZE);
   
   /**
     Returns the bytes of the entire window.
@@ -121,7 +121,7 @@ public:
     @param size The number of bytes to peek at.
     @return A ReadIterator to the first element.
   */
-  inline ReadIterator peek(unsigned int size) throw(IOException) {
+  inline ReadIterator peek(unsigned int size) {
     if (current + size > end) { // make sure all bytes are in the current window
       requestRegion(
         FileRegion(mapping.getRegion().getOffset() + (current - begin), size)
@@ -137,7 +137,7 @@ public:
     @param buffer The buffer.
     @param size The number of bytes the copy to the buffer.
   */
-  void read(uint8* buffer, unsigned int size) throw(IOException);
+  void read(uint8* buffer, unsigned int size);
 
   /**
     Sets the current position indexed from the beginning of the file. Used this
@@ -146,7 +146,7 @@ public:
 
     @param position The desired postion.
   */
-  inline void seek(long long position) throw(IOException) {
+  inline void seek(long long position) {
     requestRegion(FileRegion(position, 0));
   }
 
@@ -156,7 +156,7 @@ public:
 
     @param size The number of bytes to skip.
   */
-  inline void skip(unsigned int size) throw(IOException) {
+  inline void skip(unsigned int size) {
     current += size;
     if (current > end) {
       requestRegion(
@@ -182,7 +182,7 @@ public:
 //  /**
 //    @param position The position of the sequence.
 //  */
-//  inline MappedSequence(File& file, long long position, unsigned int size) throw(IOException) {
+//  inline MappedSequence(File& file, long long position, unsigned int size) {
 //    long long granularity = MappedFile::getGranularity();
 //    const unsigned int index = position % granularity; // offset to the sequence within the window
 //    map = MappedFile(file, FileRegion(position/granularity*granularity, size * sizeof(TYPE) + index));
@@ -230,7 +230,7 @@ public:
 //  /**
 //    Sets the region.
 //  */
-//  inline void setRegion(const FileRegion& region) throw(IOException) {
+//  inline void setRegion(const FileRegion& region) {
 //    mapping = MappedFile(file, region);
 //    begin = mapping.getBytes();
 //    end = begin + region.getSize();
@@ -275,7 +275,7 @@ public:
 //  /**
 //    Moves the window to the next region.
 //  */
-//  inline ReadIterator next() throw(IOException) {
+//  inline ReadIterator next() {
 //    const long long totalSize = file.getSize();
 //    const long long offset = getRegion().getOffset() + granularity;
 //    setRegion(FileRegion(offset, minimum<unsigned int>(granularity, totalSize - offset)));
@@ -285,7 +285,7 @@ public:
 //  /**
 //    Moves the window to the previous region.
 //  */
-//  inline ReadIterator previous() throw(IOException) {
+//  inline ReadIterator previous() {
 //    const long long totalSize = file.getSize();
 //    const long long offset = getRegion().getOffset() - granularity;
 //    setRegion(FileRegion(offset, minimum<unsigned int>(granularity, totalSize - offset)));
@@ -297,7 +297,7 @@ public:
 //
 //    @return The index within the mapped window of the specified file position.
 //  */
-//  inline ReadIterator setPosition(long long position) throw(IOException) {
+//  inline ReadIterator setPosition(long long position) {
 //    const long long totalSize = file.getSize();
 //    const long long offset = position & highMask;
 //    setRegion(FileRegion(offset, minimum<unsigned int>(granularity, totalSize - offset)));
@@ -306,7 +306,7 @@ public:
 //
 //  /**
 //  */
-//  ReadIterator ensure(const FileRegion& region) throw(IOException);
+//  ReadIterator ensure(const FileRegion& region);
 //
 //  /**
 //    Ensures that the specified region is in the window. Raises IOException if
@@ -315,7 +315,7 @@ public:
 //
 //    @param region The file region.
 //  */
-//  inline ReadIterator niceEnsure(const FileRegion& region) throw(IOException) {
+//  inline ReadIterator niceEnsure(const FileRegion& region) {
 //    if (mapping.getRegion().isWithin(region)) { // is the region already in the current window
 //      return ReadIterator(begin + (region.getOffset() - mapping.getRegion().getOffset())); // no overflow
 //    } else {
@@ -330,7 +330,7 @@ public:
 //    @param size The number of elements in the sequence.
 //  */
 //  template<class TYPE>
-//  inline MappedSequence<TYPE> getMapping(long long position, unsigned int size) throw(IOException) {
+//  inline MappedSequence<TYPE> getMapping(long long position, unsigned int size) {
 //    const unsigned int index = position & lowMask; // offset to the sequence within the window
 //    return MappedSequence<TYPE>(
 //      MappedFile(file, FileRegion(position & highMask, size * sizeof(TYPE) + index)),

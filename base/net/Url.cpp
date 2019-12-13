@@ -129,17 +129,17 @@ public:
 
 
 
-Url::Url() throw(MemoryException) {
+Url::Url() {
 }
 
-Url::Url(const String& url, bool strict) throw(UrlException, MemoryException) {
+Url::Url(const String& url, bool strict) {
   parse(url, strict);
 }
 
 Url::Url(
   const String& baseUrl,
   const String& relativeUrl,
-  bool strict) throw(UrlException, MemoryException) {
+  bool strict) {
   Url url(relativeUrl);
   if (url.isRelative()) {
     parse(baseUrl + relativeUrl, strict);
@@ -174,7 +174,7 @@ bool Url::isRelative() const noexcept
   return path.isEmpty() || path.startsWith(Literal("/"));
 }
 
-String Url::validateScheme(const String& value) throw(UrlException, MemoryException)
+String Url::validateScheme(const String& value)
 {
   String temp(value.getLength());
   String::ReadIterator end = value.getEndReadIterator();
@@ -194,7 +194,7 @@ String Url::validateScheme(const String& value) throw(UrlException, MemoryExcept
   return temp;
 }
 
-String Url::validateUser(const String& str) throw(UrlException) {
+String Url::validateUser(const String& str) {
   const String::ReadIterator end = str.getEndReadIterator();
   for (String::ReadIterator i = str.getBeginReadIterator(); i < end; ++i) {
     char ch = *i;
@@ -206,7 +206,7 @@ String Url::validateUser(const String& str) throw(UrlException) {
   return str;
 }
 
-String Url::validatePassword(const String& str) throw(UrlException) {
+String Url::validatePassword(const String& str) {
   const String::ReadIterator end = str.getEndReadIterator();
   for (String::ReadIterator i = str.getBeginReadIterator(); i < end; ++i) {
     char ch = *i;
@@ -302,7 +302,7 @@ bool Url::isPort(String::ReadIterator i, const String::ReadIterator& end) noexce
   return true;
 }
 
-void Url::parse(const String& url, bool strict) throw(UrlException, MemoryException) {
+void Url::parse(const String& url, bool strict) {
   // example url: http://username:password@server:80/folder/
 
   MemoryDiff index = 0; // current position in the url
@@ -381,11 +381,11 @@ String Url::getPort() const noexcept {
   return port;
 }
 
-String Url::getPath() const throw(MemoryException) {
+String Url::getPath() const {
   return path;
 }
 
-String Url::getUrl() const throw(MemoryException) {
+String Url::getUrl() const {
   String result;
 
   if (!scheme.isEmpty()) {
@@ -419,19 +419,19 @@ String Url::getUrl() const throw(MemoryException) {
   return result;
 }
 
-void Url::setScheme(const String& value) throw(UrlException, MemoryException) {
+void Url::setScheme(const String& value) {
   scheme = validateScheme(value);
 }
 
-void Url::setUser(const String& value) throw(UrlException, MemoryException) {
+void Url::setUser(const String& value) {
   user = validateUser(value);
 }
 
-void Url::setPassword(const String& value) throw(UrlException, MemoryException) {
+void Url::setPassword(const String& value) {
   password = validatePassword(value);
 }
 
-void Url::setHost(const String& value) throw(UrlException) {
+void Url::setHost(const String& value) {
   bassert(
     isHost(value.getBeginReadIterator(), value.getEndReadIterator()),
     UrlException("Invalid host part", this)
@@ -439,7 +439,7 @@ void Url::setHost(const String& value) throw(UrlException) {
   host = value;
 }
 
-void Url::setPort(const String& value) throw(UrlException)
+void Url::setPort(const String& value)
 {
   bassert(
     isPort(value.getBeginReadIterator(), value.getEndReadIterator()),
@@ -448,7 +448,7 @@ void Url::setPort(const String& value) throw(UrlException)
   port = value;
 }
 
-void Url::setPath(const String& value) throw(UrlException, MemoryException)
+void Url::setPath(const String& value)
 {
   path = value;
 }

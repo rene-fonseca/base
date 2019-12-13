@@ -54,12 +54,12 @@ public:
   /**
     Adds an argument to the argument list.
   */
-  void addArgument(IDLType type) throw(MemoryException);
+  void addArgument(IDLType type);
   
   /**
     Adds an exception to the exception specification.
   */
-  void addException(IDLException exception) throw(MemoryException);
+  void addException(IDLException exception);
   
   /**
     Returns true if the method is static.

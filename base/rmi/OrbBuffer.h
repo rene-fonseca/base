@@ -46,7 +46,7 @@ public:
   /**
     Initializes the buffer with the specified size.
   */
-  OrbBuffer(unsigned int size) throw(MemoryException)
+  OrbBuffer(unsigned int size)
     : buffer(size) {
     next = 0;
     first = buffer.getElements();

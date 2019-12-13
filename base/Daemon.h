@@ -35,7 +35,7 @@ public:
 
     @param runnable The entry function of the daemonized process.
   */
-  Daemon(Runnable* runnable) throw(SingletonException, ResourceException);
+  Daemon(Runnable* runnable);
 
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   static void install();

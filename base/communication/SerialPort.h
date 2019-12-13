@@ -105,7 +105,7 @@ public:
 
     @param name The name of the serial port (e.g. "com1" under Windows).
   */
-  SerialPort(const String& name) throw(CommunicationsException);
+  SerialPort(const String& name);
 
   /**
     Returns the name of the communications port.
@@ -120,27 +120,27 @@ public:
   /**
     Returns the currently configured baud rate.
   */
-  unsigned int getBaudRate() const throw(CommunicationsException);
+  unsigned int getBaudRate() const;
 
   /**
     Returns the currently configured number of data bits.
   */
-  unsigned int getDataBits() const throw(CommunicationsException);
+  unsigned int getDataBits() const;
 
   /**
     Returns the currently configured flow control mode.
   */
-  unsigned int getFlowControlMode() const throw(CommunicationsException);
+  unsigned int getFlowControlMode() const;
 
   /**
     Returns the currently configured parity setting.
   */
-  unsigned int getParity() const throw(CommunicationsException);
+  unsigned int getParity() const;
 
   /**
     Returns the currently configured stop bits.
   */
-  unsigned int getStopBits() const throw(CommunicationsException);
+  unsigned int getStopBits() const;
 
   /**
     Sets the serial port parameters.
@@ -149,143 +149,143 @@ public:
     unsigned int baudRate,
     unsigned int dataBits,
     unsigned int parity,
-    unsigned int stopBits) throw(NotSupported, CommunicationsException);
+    unsigned int stopBits);
 
   /**
     Sets the flow control mode.
   */
   void setFlowControlMode(
-    unsigned int flowMode) throw(CommunicationsException);
+    unsigned int flowMode);
   
   /**
     Returns the state of the CD (Carrier Detect) bit in the UART, if supported
     by the underlying implementation.
   */
-  bool isCD() const throw(CommunicationsException);
+  bool isCD() const;
 
   /**
     Returns the state of the CTS (Clear To Send) bit in the UART, if supported
     by the underlying implementation.
   */
-  bool isCTS() const throw(CommunicationsException);
+  bool isCTS() const;
 
   /**
     Returns the state of the DSR (Data Set Ready) bit in the UART, if supported
     by the underlying implementation.
   */
-  bool isDSR() const throw(CommunicationsException);
+  bool isDSR() const;
 
   /**
     Returns the state of the DTR (Data Terminal Ready) bit in the UART, if
     supported by the underlying implementation.
   */
-  bool isDTR() const throw(CommunicationsException);
+  bool isDTR() const;
 
   /**
     Returns the state of the RI (Ring Indicator) bit in the UART, if supported
     by the underlying implementation.
   */
-  bool isRI() const throw(CommunicationsException);
+  bool isRI() const;
 
   /**
     Returns the state of the RTS (Request To Send) bit in the UART, if
     supported by the underlying implementation.
   */
-  bool isRTS() const throw(CommunicationsException);
+  bool isRTS() const;
 
   /**
     Closes the communications port.
   */
-  void close() throw(CommunicationsException);
+  void close();
 
   /**
     Sends a break of the specified duration.
 
     @param milliseconds The duration of the break in milliseconds.
   */
-  void sendBreak(unsigned int milliseconds) throw(CommunicationsException);
+  void sendBreak(unsigned int milliseconds);
 
   /**
     Sets or clears the Data Terminal Ready (DTR) signal.
   */
-  void setDTR(bool state) throw(CommunicationsException);
+  void setDTR(bool state);
 
   /**
     Sets or clears the Request To Send (RTS) signal.
   */
-  void setRTS(bool state) throw(CommunicationsException);
+  void setRTS(bool state);
 
   /**
     Returns true if read timeout is supported.
   */
-  bool isReadTimeoutSupported() const throw(CommunicationsException);
+  bool isReadTimeoutSupported() const;
 
   /**
     Returns true if write timeout is supported.
   */
-  bool isWriteTimeoutSupported() const throw(CommunicationsException);
+  bool isWriteTimeoutSupported() const;
 
   /**
     Returns the maximum read timeout period.
   */
-  unsigned int getReadTimeout() const throw(CommunicationsException);
+  unsigned int getReadTimeout() const;
 
   /**
     Returns the maximum write timeout period.
   */
-  unsigned int getWriteTimeout() const throw(CommunicationsException);
+  unsigned int getWriteTimeout() const;
 
   /**
     Sets the maximum read timeout period.
   */
-  void setReadTimeout(unsigned int milliseconds) throw(CommunicationsException);
+  void setReadTimeout(unsigned int milliseconds);
 
   /**
     Sets the maximum write timeout period.
   */
-  void setWriteTimeout(unsigned int milliseconds) throw(CommunicationsException);
+  void setWriteTimeout(unsigned int milliseconds);
 
   /**
     Sets the input buffer size.
   */
-  void setInputBufferSize(unsigned int size) throw(CommunicationsException);
+  void setInputBufferSize(unsigned int size);
 
   /**
     Returns the input buffer size.
   */
-  unsigned int getInputBufferSize() const throw(CommunicationsException);
+  unsigned int getInputBufferSize() const;
 
   /**
     Sets the output buffer size.
   */
-  void setOutputBufferSize(unsigned int size) throw(CommunicationsException);
+  void setOutputBufferSize(unsigned int size);
 
   /**
     Returns the output buffer size.
   */
-  unsigned int getOutputBufferSize() const throw(CommunicationsException);
+  unsigned int getOutputBufferSize() const;
   
   unsigned int read(
     uint8* buffer,
     unsigned int bytesToRead,
-    bool nonblocking) throw(IOException);
+    bool nonblocking);
   
   unsigned int write(
     const uint8* buffer,
     unsigned int bytesToWrite,
-    bool nonblocking) throw(IOException);
+    bool nonblocking);
 
-  void asyncCancel() throw(AsynchronousException);
+  void asyncCancel();
   
   AsynchronousReadOperation read(
     uint8* buffer,
     unsigned int bytesToRead,
-    AsynchronousReadEventListener* listener) throw(AsynchronousException);
+    AsynchronousReadEventListener* listener);
 
   AsynchronousWriteOperation write(
     const uint8* buffer,
     unsigned int bytesToWrite,
-    AsynchronousWriteEventListener* listener) throw(AsynchronousException);
+    AsynchronousWriteEventListener* listener);
   
   /**
     Destroys the serial port object.

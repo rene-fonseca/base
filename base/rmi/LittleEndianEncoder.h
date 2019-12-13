@@ -33,7 +33,7 @@ public:
   /**
     Encodes the elements of an array of unsigned int.
   */
-  inline void write(const unsigned int* buffer, unsigned int size) throw(IOException) {
+  inline void write(const unsigned int* buffer, unsigned int size) {
     LittleEndian<uint32> encodedBuffer[BUFFER_SIZE];
     while (size) {
       unsigned int partialSize = minimum<unsigned int>(size, getArraySize(encodedBuffer));
@@ -43,92 +43,92 @@ public:
     }
   }
 
-  inline Stream& operator<<(Stream& stream, const String& value) throw(IOException) {
+  inline Stream& operator<<(Stream& stream, const String& value) {
     LittleEndian<uint32> buffer = value.getLength();
     stream.write(Cast::getCharAddress(buffer), sizeof(buffer));
     return stream;
   }
   
-  inline Stream& operator<<(Stream& stream, const WideString& value) throw(IOException) {
+  inline Stream& operator<<(Stream& stream, const WideString& value) {
     LittleEndian<uint32> buffer = value.getLength();
     // TAG: use buffer if not native byte order
     stream.write(value.getBytes(), sizeof(uint32));
     return stream;
   }
   
-  inline Stream& operator<<(Stream& stream, char value) throw(IOException) {
+  inline Stream& operator<<(Stream& stream, char value) {
     LittleEndian<int8> buffer = value;
     stream.write(Cast::getCharAddress(buffer), sizeof(buffer));
     return stream;
   }
   
-  inline Stream& operator<<(Stream& stream, unsigned short value) throw(IOException) {
+  inline Stream& operator<<(Stream& stream, unsigned short value) {
     LittleEndian<uint16> buffer = value;
     stream.write(Cast::getCharAddress(buffer), sizeof(buffer));
     return stream;
   }
 
-  inline Stream& operator<<(Stream& stream, short value) throw(IOException) {
+  inline Stream& operator<<(Stream& stream, short value) {
     LittleEndian<int16> buffer = value;
     stream.write(Cast::getCharAddress(buffer), sizeof(buffer));
     return stream;
   }
   
-  inline Stream& operator<<(Stream& stream, unsigned short value) throw(IOException) {
+  inline Stream& operator<<(Stream& stream, unsigned short value) {
     LittleEndian<uint16> buffer = value;
     stream.write(Cast::getCharAddress(buffer), sizeof(buffer));
     return stream;
   }
   
-  inline Stream& operator<<(Stream& stream, int value) throw(IOException) {
+  inline Stream& operator<<(Stream& stream, int value) {
     LittleEndian<int32> buffer = value;
     stream.write(Cast::getCharAddress(buffer), sizeof(buffer));
     return stream;
   }
   
-  inline Stream& operator<<(Stream& stream, unsigned int value) throw(IOException) {
+  inline Stream& operator<<(Stream& stream, unsigned int value) {
     LittleEndian<uint32> buffer = value;
     stream.write(Cast::getCharAddress(buffer), sizeof(buffer));
     return stream;
   }
   
-  inline Stream& operator<<(Stream& stream, long value) throw(IOException) {
+  inline Stream& operator<<(Stream& stream, long value) {
     LittleEndian<int32> buffer = value;
     stream.write(Cast::getCharAddress(buffer), sizeof(buffer));
     return stream;
   }
   
-  inline Stream& operator<<(Stream& stream, unsigned long value) throw(IOException) {
+  inline Stream& operator<<(Stream& stream, unsigned long value) {
     LittleEndian<uint32> buffer = value;
     stream.write(Cast::getCharAddress(buffer), sizeof(buffer));
     return stream;
   }
   
-  inline Stream& operator<<(Stream& stream, long long value) throw(IOException) {
+  inline Stream& operator<<(Stream& stream, long long value) {
     LittleEndian<int64> buffer = value;
     stream.write(Cast::getCharAddress(buffer), sizeof(buffer));
     return stream;
   }
   
-  inline Stream& operator<<(Stream& stream, unsigned long long value) throw(IOException) {
+  inline Stream& operator<<(Stream& stream, unsigned long long value) {
     LittleEndian<uint64> buffer = value;
     stream.write(Cast::getCharAddress(buffer), sizeof(buffer));
     return stream;
   }
   
-  inline Stream& operator<<(Stream& stream, float value) throw(IOException) {
+  inline Stream& operator<<(Stream& stream, float value) {
     float buffer = value; // TAG: fixme
     stream.write(Cast::getCharAddress(buffer), sizeof(buffer));
     return stream;
   }
 
-  inline Stream& operator<<(Stream& stream, double value) throw(IOException) {
+  inline Stream& operator<<(Stream& stream, double value) {
     double buffer = value; // TAG: fixme
     stream.write(Cast::getCharAddress(buffer), sizeof(buffer));
     return stream;
   }
   
-  inline Stream& operator<<(Stream& stream, long double value) throw(IOException) {
+  inline Stream& operator<<(Stream& stream, long double value) {
     long double buffer = value; // TAG: fixme
     stream.write(Cast::getCharAddress(buffer), sizeof(buffer));
     return stream;

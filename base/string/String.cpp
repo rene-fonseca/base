@@ -325,7 +325,7 @@ void String::forceToLength(MemorySize length)
   }
 }
 
-char String::getAt(MemorySize index) const throw(OutOfRange)
+char String::getAt(MemorySize index) const
 {
   if (index >= getLength()) {
     throw OutOfRange(this);
@@ -333,7 +333,7 @@ char String::getAt(MemorySize index) const throw(OutOfRange)
   return getBuffer()[index];
 }
 
-void String::setAt(MemorySize index, char value) throw(OutOfRange)
+void String::setAt(MemorySize index, char value)
 {
   if (index >= getLength()) {
     throw OutOfRange(this);
@@ -625,7 +625,7 @@ int String::compareToIgnoreCase(const String& string) const noexcept
   return compareToIgnoreCase(getElements(), string.getElements());
 }
 
-int String::compareToIgnoreCase(const NativeString& string) const throw(StringException)
+int String::compareToIgnoreCase(const NativeString& string) const
 {
   bassert(string.getValue(), StringException(this));
   return compareToIgnoreCase(getElements(), string.getValue());

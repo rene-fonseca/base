@@ -77,7 +77,23 @@ public:
       references(_value ? new Counter(1) : nullptr)
   {
   }
-  
+
+  /**
+    Initializes an automation pointer with the specified pointer value. The
+    automation pointer may be implicitly initialized.
+
+    @code
+    ReferenceCounter<MyClass> object = new MyClass();
+    @endcode
+
+    @param value The desired pointer value.
+    @param references The reference counter.
+  */
+  inline ReferenceCounter(TYPE* _value, Counter* _references) noexcept
+    : value(_value), references(_references)
+  {
+  }
+
   /**
     Initialization of automation pointer from other automation pointer.
   */
@@ -123,7 +139,7 @@ public:
     if (!temp) {
       throw CastException(this);
     }
-    return temp;
+    return ReferenceCounter<POLY>(temp, references);
   }
 
   /**
@@ -132,7 +148,8 @@ public:
   template<class POLY>
   inline ReferenceCounter<POLY> cast() const noexcept
   {
-    return dynamic_cast<POLY*>(value);
+    POLY* temp = dynamic_cast<POLY*>(value);
+    return ReferenceCounter<POLY>(temp, temp ? references : nullptr);
   }
 
   /**

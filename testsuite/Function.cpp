@@ -96,7 +96,7 @@ public:
 
   template<class R>
   class 
-  static Result invoke() /*throw(...)*/ {
+  static Result invoke() {
     return function();
   }
 };
@@ -105,7 +105,8 @@ template<>
 class InvokerN<1> {
 public:
   
-  static Result invoke(A1 a1) /*throw(...)*/ {
+  static Result invoke(A1 a1)
+  {
     return function(a1);
   }
 };
@@ -114,7 +115,8 @@ template<>
 class InvokerN<2> {
 public:
   
-  static Result invoke(A1 a1, A2 a2) /*throw(...)*/ {
+  static Result invoke(A1 a1, A2 a2)
+  {
     return function(a1, a2);
   }
 };
@@ -123,7 +125,8 @@ template<>
 class InvokerN<3> {
 public:
     
-  static Result invoke(A1 a1, A2 a2, A3 a3) /*throw(...)*/ {
+  static Result invoke(A1 a1, A2 a2, A3 a3)
+  {
     return function(a1, a2, a3);
   }
 };
@@ -132,7 +135,8 @@ template<>
 class InvokerN<4> {
 public:
   
-  static Result invoke(A1 a1, A2 a2, A3 a3, A4 a4) /*throw(...)*/ {
+  static Result invoke(A1 a1, A2 a2, A3 a3, A4 a4)
+  {
     return function(a1, a2, a3, a4);
   }
 };
@@ -141,7 +145,8 @@ template<>
 class InvokerN<5> {
 public:
   
-  static Result invoke(A1 a1, A2 a2, A3 a3, A4 a4, A5 a5) /*throw(...)*/ {
+  static Result invoke(A1 a1, A2 a2, A3 a3, A4 a4, A5 a5)
+  {
     return function(a1, a2, a3, a4, a5);
   }
 };
@@ -150,7 +155,8 @@ template<>
 class InvokerN<6> {
 public:
   
-  static Result invoke(A1 a1, A2 a2, A3 a3, A4 a4, A5 a5, A6 a6) /*throw(...)*/ {
+  static Result invoke(A1 a1, A2 a2, A3 a3, A4 a4, A5 a5, A6 a6)
+  {
     return function(a1, a2, a3, a4, a5, a6);
   }
 };
@@ -182,27 +188,32 @@ typedef int (FX)(int);
 typedef void (FY)(void);
 typedef void (FZ)(void);
 
-int FFX(int) {
+int FFX(int)
+{
   return 0;
 }
 
-void FFY(void) {
+void FFY(void)
+{
 }
 
-void FFZ(void) {
+void FFZ(void)
+{
 }
 
 class MyClass {
 public:
 
-  ~MyClass() noexcept {
+  ~MyClass() noexcept
+  {
   }
 };
 
 class MyVirtualClass {
 public:
   
-  virtual ~MyVirtualClass() noexcept {
+  virtual ~MyVirtualClass() noexcept
+  {
   }
 };
 
@@ -216,7 +227,8 @@ private:
 
 template<class R, class A, class B, class C, class D, class E, class F>
 inline FormatOutputStream& operator<<(
-  FormatOutputStream& stream, const Prototype<R, A, B, C, D, E, F>& prototype) {
+  FormatOutputStream& stream, const Prototype<R, A, B, C, D, E, F>& prototype) 
+{
   typedef Prototype<R, A, B, C, D, E, F> P;
   switch (P::NUMBER_OF_ARGUMENTS) {
   case 0:
@@ -285,12 +297,14 @@ class Function {
 public:
   
   template<class R>
-  static inline T<R> getResult(R (*)()) noexcept {
+  static inline T<R> getResult(R (*)()) noexcept
+  {
     return T<R>();
   }
   
   template<class R>
-  static inline Prototype<R> getPrototype(R (*)()) noexcept {
+  static inline Prototype<R> getPrototype(R (*)()) noexcept 
+  {
     return Prototype<R>();
   }
   
@@ -300,57 +314,68 @@ public:
   }
 
   template<class R, class A>
-  static inline Prototype<R, A> getPrototype(R (*)(A)) noexcept {
+  static inline Prototype<R, A> getPrototype(R (*)(A)) noexcept
+  {
     return Prototype<R, A>();
   }
   
   template<class R, class A, class B>
-  static inline T<R> getResult(R (*)(A, B)) noexcept {
+  static inline T<R> getResult(R (*)(A, B)) noexcept
+  {
     return T<R>();
   }
 
   template<class R, class A, class B>
-  static inline Prototype<R, A, B> getPrototype(R (*)(A, B)) noexcept {
+  static inline Prototype<R, A, B> getPrototype(R (*)(A, B)) noexcept
+  {
     return Prototype<R, A, B>();
   }
   
   template<class R, class A, class B, class C>
-  static inline T<R> getResult(R (*)(A, B, C)) noexcept {
+  static inline T<R> getResult(R (*)(A, B, C)) noexcept
+  {
     return T<R>();
   }
   
   template<class R, class A, class B, class C>
-  static inline Prototype<R, A, B, C> getPrototype(R (*)(A, B, C)) noexcept {
+  static inline Prototype<R, A, B, C> getPrototype(R (*)(A, B, C)) noexcept
+  {
     return Prototype<R, A, B, C>();
   }
   
   template<class R, class A, class B, class C, class D>
-  static inline T<R> getResult(R (*)(A, B, C, D)) noexcept {
+  static inline T<R> getResult(R (*)(A, B, C, D)) noexcept 
+  {
     return T<R>();
   }
   
   template<class R, class A, class B, class C, class D>
-  static inline Prototype<R, A, B, C, D> getPrototype(R (*)(A, B, C, D)) noexcept {
+  static inline Prototype<R, A, B, C, D> getPrototype(R (*)(A, B, C, D)) noexcept
+  {
     return Prototype<R, A, B, C, D>();
   }
   
   template<class R, class A, class B, class C, class D, class E>
-  static inline T<R> getResult(R (*)(A, B, C, D, E)) noexcept {
+  static inline T<R> getResult(R (*)(A, B, C, D, E)) noexcept
+  {
     return T<R>();
   }
 
   template<class R, class A, class B, class C, class D, class E>
-  static inline Prototype<R, A, B, C, D, E> getPrototype(R (*)(A, B, C, D, E)) noexcept {
+  static inline Prototype<R, A, B, C, D, E> getPrototype(R (*)(A, B, C, D, E)) noexcept
+  {
     return Prototype<R, A, B, C, D, E>();
   }
   
   template<class R, class A, class B, class C, class D, class E, class F>
-  static inline T<R> getResult(R (*)(A, B, C, D, E, F)) noexcept {
+  static inline T<R> getResult(R (*)(A, B, C, D, E, F)) noexcept 
+  {
     return T<R>();
   }
   
   template<class R, class A, class B, class C, class D, class E, class F>
-  static inline Prototype<R, A, B, C, D, E, F> getPrototype(R (*)(A, B, C, D, E, F)) noexcept {
+  static inline Prototype<R, A, B, C, D, E, F> getPrototype(R (*)(A, B, C, D, E, F)) noexcept
+  {
     return Prototype<R, A, B, C, D, E, F>();
   }
 };
@@ -360,88 +385,105 @@ class Method {
 public:
 
   template<class R>
-  static inline T<R> getResult(R (CLASS::*)() const) noexcept {
+  static inline T<R> getResult(R (CLASS::*)() const) noexcept
+  {
     return T<R>();
   }
   
   template<class R>
-  static inline T<R> getResult(R (CLASS::*)()) noexcept {
+  static inline T<R> getResult(R (CLASS::*)()) noexcept
+  {
     return T<R>();
   }
   
   template<class R, class A>
-  static inline T<R> getResult(R (CLASS::*)(A) const) noexcept {
+  static inline T<R> getResult(R (CLASS::*)(A) const) noexcept
+  {
     return T<R>();
   }
   
   template<class R, class A>
-  static inline T<R> getResult(R (CLASS::*)(A)) noexcept {
+  static inline T<R> getResult(R (CLASS::*)(A)) noexcept
+  {
     return T<R>();
   }
   
   template<class R, class A, class B>
-  static inline T<R> getResult(R (CLASS::*)(A, B) const) noexcept {
+  static inline T<R> getResult(R (CLASS::*)(A, B) const) noexcept
+  {
     return T<R>();
   }
   
   template<class R, class A, class B>
-  static inline T<R> getResult(R (CLASS::*)(A, B)) noexcept {
+  static inline T<R> getResult(R (CLASS::*)(A, B)) noexcept
+  {
     return T<R>();
   }
   
   template<class R, class A, class B, class C>
-  static inline T<R> getResult(R (CLASS::*)(A, B, C) const) noexcept {
+  static inline T<R> getResult(R (CLASS::*)(A, B, C) const) noexcept
+  {
     return T<R>();
   }
   
   template<class R, class A, class B, class C>
-  static inline T<R> getResult(R (CLASS::*)(A, B, C)) noexcept {
+  static inline T<R> getResult(R (CLASS::*)(A, B, C)) noexcept
+  {
     return T<R>();
   }
   
   template<class R, class A, class B, class C, class D>
-  static inline T<R> getResult(R (CLASS::*)(A, B, C, D) const) noexcept {
+  static inline T<R> getResult(R (CLASS::*)(A, B, C, D) const) noexcept
+  {
     return T<R>();
   }
   
   template<class R, class A, class B, class C, class D>
-  static inline T<R> getResult(R (CLASS::*)(A, B, C, D)) noexcept {
+  static inline T<R> getResult(R (CLASS::*)(A, B, C, D)) noexcept
+  {
     return T<R>();
   }
 
   template<class R, class A, class B, class C, class D, class E>
-  static inline T<R> getResult(R (CLASS::*)(A, B, C, D, E) const) noexcept {
+  static inline T<R> getResult(R (CLASS::*)(A, B, C, D, E) const) noexcept
+  {
     return T<R>();
   }
   
   template<class R, class A, class B, class C, class D, class E>
-  static inline T<R> getResult(R (CLASS::*)(A, B, C, D, E)) noexcept {
+  static inline T<R> getResult(R (CLASS::*)(A, B, C, D, E)) noexcept
+  {
     return T<R>();
   }
   
   template<class R, class A, class B, class C, class D, class E, class F>
-  static inline T<R> getResult(R (CLASS::*)(A, B, C, D, E, F) const) noexcept {
+  static inline T<R> getResult(R (CLASS::*)(A, B, C, D, E, F) const) noexcept
+  {
     return T<R>();
   }
   
   template<class R, class A, class B, class C, class D, class E, class F>
-  static inline T<R> getResult(R (CLASS::*)(A, B, C, D, E, F)) noexcept {
+  static inline T<R> getResult(R (CLASS::*)(A, B, C, D, E, F)) noexcept
+  {
     return T<R>();
   }
 };
 
-void* f(char, int, long) {
+void* f(char, int, long)
+{
   return 0;
 }
 
-long long g(long long, int) {
+long long g(long long, int)
+{
   return 0;
 }
 
 class XXX {
 public:
   
-  int* operator()() noexcept {
+  int* operator()() noexcept
+  {
     return 0;
   };
 };

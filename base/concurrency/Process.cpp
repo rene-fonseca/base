@@ -779,12 +779,6 @@ FormatOutputStream& operator<<(FormatOutputStream& stream, const Process::Layout
   CONTEXT context;
   unsigned short ss = 0;
   unsigned int current = 0;
-#if 0 // TAG: FIXME
-  asm (
-    "movl %%ss,%0; \n\t"
-    : "=m" (ss) // output
-  );
-#endif
 
   LDT_ENTRY ldt;
   /* BOOL xxx =*/ ::GetThreadSelectorEntry(::GetCurrentThread(), ss, &ldt);

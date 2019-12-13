@@ -110,24 +110,30 @@ _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE
 
 #if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__WASI)
+#include <stdio.h>
+#include <string.h>
+
 extern "C" void* __cxa_allocate_exception(size_t thrown_size) noexcept
 {
+  printf("!!! __cxa_allocate_exception\n");
   return nullptr;
 }
 
 extern "C" void __cxa_throw(void* thrown_exception, void* /*struct std::type_info **/ tinfo, void (*dest)(void*))
 {
+  printf("!!! __cxa_throw\n");
 }
 
 extern "C" void __cxa_rethrow()
 {
+  printf("!!! __cxa_rethrow\n");
 }
 
 extern "C" int pthread_self()
 {
   return 0;
 }
-#include <string.h>
+
 extern "C" int gethostname(char *name, size_t namelen)
 {
   strncpy(name, "localhost", namelen);

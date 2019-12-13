@@ -13,9 +13,26 @@
 
 #include <base/string/MultibyteException.h>
 
-_COM_AZURE_DEV__BASE__DUMMY_SYMBOL
-
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
+
+MultibyteException::MultibyteException() noexcept
+{
+}
+
+MultibyteException::MultibyteException(const char* message) noexcept
+  : Exception(message)
+{
+}
+
+MultibyteException::MultibyteException(const Type& type) noexcept
+  : Exception(type)
+{
+}
+  
+MultibyteException::MultibyteException(const char* message, const Type& type) noexcept
+  : Exception(message, type)
+{
+}
 
 MultibyteException::MultibyteException(const char* message, const Type& type, unsigned int cause, MemoryDiff octetIndex, MemoryDiff suboctetIndex) noexcept
   : Exception(message, type)

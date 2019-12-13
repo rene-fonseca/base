@@ -56,24 +56,21 @@ public:
   /**
     Initializes the exception object with no message.
   */
-  inline NetworkException() noexcept {
-  }
+  NetworkException() noexcept;
 
   /**
     Initializes the exception object.
 
     @param message The message.
   */
-  inline NetworkException(const char* message) noexcept : IOException(message) {
-  }
+  NetworkException(const char* message) noexcept;
   
   /**
     Initializes the exception object without an associated message.
     
     @param type The identity of the type.
   */
-  inline NetworkException(const Type& type) noexcept : IOException(type) {
-  }
+  NetworkException(const Type& type) noexcept;
   
   /**
     Initializes the exception object.
@@ -81,21 +78,11 @@ public:
     @param message An NULL-terminated string (ASCII).
     @param type The identity of the type.
   */
-  inline NetworkException(const char* message, const Type& type) noexcept
-    : IOException(message, type) {
-  }
+  NetworkException(const char* message, const Type& type) noexcept;
 
-  inline NetworkException(const char* message, const Type& type, unsigned int cause) noexcept
-    : IOException(message, type)
-  {
-    setCause(cause);
-  }
+  NetworkException(const char* message, const Type& type, unsigned int cause) noexcept;
 
-  inline NetworkException(const char* message, const Type& type, unsigned int error, int) noexcept
-    : IOException(message, type)
-  {
-    setError(error);
-  }
+  NetworkException(const char* message, const Type& type, unsigned int error, int) noexcept;
 
   _COM_AZURE_DEV__BASE__EXCEPTION_THIS_TYPE()
 };

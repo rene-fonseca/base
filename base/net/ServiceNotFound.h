@@ -31,25 +31,21 @@ public:
   /**
     Initializes the exception object with no message.
   */
-  inline ServiceNotFound() noexcept {
-  }
+  ServiceNotFound() noexcept;
 
   /**
     Initializes the exception object.
 
     @param message The message.
   */
-  inline ServiceNotFound(const char* message) noexcept
-    : NetworkException(message) {
-  }
+  ServiceNotFound(const char* message) noexcept;
   
   /**
     Initializes the exception object without an associated message.
     
     @param type The identity of the type.
   */
-  inline ServiceNotFound(const Type& type) noexcept : NetworkException(type) {
-  }
+  ServiceNotFound(const Type& type) noexcept;
   
   /**
     Initializes the exception object.
@@ -57,9 +53,7 @@ public:
     @param message An NULL-terminated string (ASCII).
     @param type The identity of the type.
   */
-  inline ServiceNotFound(const char* message, const Type& type) noexcept
-    : NetworkException(message, type) {
-  }
+  ServiceNotFound(const char* message, const Type& type) noexcept;
   
   _COM_AZURE_DEV__BASE__EXCEPTION_THIS_TYPE()
 };

@@ -13,8 +13,25 @@
 
 #include <base/net/HostNotFound.h>
 
-_COM_AZURE_DEV__BASE__DUMMY_SYMBOL
-
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
+
+HostNotFound::HostNotFound() noexcept
+{
+}
+
+HostNotFound::HostNotFound(const char* message) noexcept
+  : NetworkException(message)
+{
+}
+
+HostNotFound::HostNotFound(const Type& type) noexcept
+  : NetworkException(type)
+{
+}
+  
+HostNotFound::HostNotFound(const char* message, const Type& type) noexcept
+  : NetworkException(message, type)
+{
+}
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

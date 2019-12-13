@@ -13,8 +13,25 @@
 
 #include <base/net/ServiceNotFound.h>
 
-_COM_AZURE_DEV__BASE__DUMMY_SYMBOL
-
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
+
+ServiceNotFound::ServiceNotFound() noexcept
+{
+}
+
+ServiceNotFound::ServiceNotFound(const char* message) noexcept
+  : NetworkException(message)
+{
+}
+  
+ServiceNotFound::ServiceNotFound(const Type& type) noexcept
+  : NetworkException(type)
+{
+}
+  
+ServiceNotFound::ServiceNotFound(const char* message, const Type& type) noexcept
+  : NetworkException(message, type)
+{
+}
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

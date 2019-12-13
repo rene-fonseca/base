@@ -16,6 +16,15 @@
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
+ParseException::ParseException() noexcept
+{
+}
+
+ParseException::ParseException(const char* message) noexcept
+  : Exception(message)
+{
+}
+  
 unsigned int Parser::getUCS4Bytes() const noexcept
 {
   ucs4 ch = 0;

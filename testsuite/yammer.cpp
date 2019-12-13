@@ -161,7 +161,8 @@ public:
   /**
     Initializes the exception object with no message.
   */
-  inline ServiceException() noexcept {
+  inline ServiceException() noexcept
+  {
   }
 
   /**
@@ -169,7 +170,9 @@ public:
 
     @param message The message.
   */
-  inline ServiceException(const char* message) noexcept : Exception(message) {
+  inline ServiceException(const char* message) noexcept
+    : Exception(message)
+  {
   }
   
   /**
@@ -177,7 +180,9 @@ public:
     
     @param type The type.
   */
-  inline ServiceException(const Type& type) noexcept : Exception(type) {
+  inline ServiceException(const Type& type) noexcept
+    : Exception(type)
+  {
   }
   
   /**
@@ -197,7 +202,8 @@ public:
   /**
     Initializes the exception object with no message.
   */
-  inline YammerException() noexcept {
+  inline YammerException() noexcept
+  {
   }
 
   /**
@@ -205,7 +211,9 @@ public:
 
     @param message The message.
   */
-  inline YammerException(const char* message) noexcept : ServiceException(message) {
+  inline YammerException(const char* message) noexcept
+    : ServiceException(message)
+  {
   }
   
   /**
@@ -213,7 +221,9 @@ public:
     
     @param type The type.
   */
-  inline YammerException(const Type& type) noexcept : ServiceException(type) {
+  inline YammerException(const Type& type) noexcept
+    : ServiceException(type)
+  {
   }
   
   /**
@@ -223,7 +233,8 @@ public:
     @param type The type.
   */
   inline YammerException(const char* message, const Type& type) noexcept
-    : ServiceException(message, type) {
+    : ServiceException(message, type)
+  {
   }
 };
 

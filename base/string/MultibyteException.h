@@ -46,29 +46,21 @@ public:
   /**
     Initializes the exception object with no message.
   */
-  MultibyteException() noexcept
-  {
-  }
+  MultibyteException() noexcept;
 
   /**
     Initializes the exception object.
 
     @param message The message.
   */
-  MultibyteException(const char* message) noexcept
-    : Exception(message)
-  {
-  }
+  MultibyteException(const char* message) noexcept;
 
   /**
     Initializes the exception object without an associated message.
     
     @param type The identity of the type.
   */
-  MultibyteException(const Type& type) noexcept
-    : Exception(type)
-  {
-  }
+  MultibyteException(const Type& type) noexcept;
   
   /**
     Initializes the exception object.
@@ -76,10 +68,7 @@ public:
     @param message An NULL-terminated string (ASCII).
     @param type The identity of the type.
   */
-  inline MultibyteException(const char* message, const Type& type) noexcept
-    : Exception(message, type)
-  {
-  }
+  MultibyteException(const char* message, const Type& type) noexcept;
   
   MultibyteException(const char* message, const Type& type, unsigned int cause, MemoryDiff octetIndex, MemoryDiff suboctetIndex) noexcept;
 

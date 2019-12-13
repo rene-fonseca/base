@@ -24,14 +24,9 @@ _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 class _COM_AZURE_DEV__BASE__API ParseException : public Exception {
 public:
   
-  inline ParseException() noexcept
-  {
-  }
+  ParseException() noexcept;
   
-  inline ParseException(const char* message) noexcept
-    : Exception(message)
-  {
-  }
+  ParseException(const char* message) noexcept;
   
   _COM_AZURE_DEV__BASE__EXCEPTION_THIS_TYPE()
 };

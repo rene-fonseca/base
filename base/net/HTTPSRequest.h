@@ -84,7 +84,7 @@ public:
 private:
   
   /** Request handle. */
-  Reference<ReferenceCountedObject> handle;
+  AnyReference handle;
 public:
   
   /**

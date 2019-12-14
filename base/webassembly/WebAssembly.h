@@ -28,7 +28,7 @@ private:
 
   class Handle;
 
-  Reference<ReferenceCountedObject> handle;
+  AnyReference handle;
 public:
 
   enum Type {

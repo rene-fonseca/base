@@ -26,10 +26,10 @@ namespace {
     Thread thread;
     MutualExclusion lock;
     Event signal;
-    Reference<ReferenceCountedObject> references[4096];
+    AnyReference references[4096];
     MemorySize count = 0;
 
-    inline void release(const Reference<ReferenceCountedObject>& reference)
+    inline void release(const AnyReference& reference)
     {
       if (reference && !stopped) {
         MutualExclusion::Sync _sync(lock);
@@ -41,7 +41,7 @@ namespace {
       }
     }
 
-    inline void release(Reference<ReferenceCountedObject>& reference)
+    inline void release(AnyReference& reference)
     {
       // TAG: atomic allocate write position - swap atomic
       if (reference && !stopped) {
@@ -125,27 +125,25 @@ bool GarbageCollector::start()
   return true;
 }
 
-void GarbageCollector::release(const Reference<ReferenceCountedObject>& reference)
+void GarbageCollector::release(const AnyReference& reference)
 {
   if (reference) {
     collector.release(reference);
   }
 }
 
-void GarbageCollector::release(Reference<ReferenceCountedObject>& reference)
+void GarbageCollector::release(AnyReference& reference)
 {
   if (reference) {
-    auto r = reference;
-    reference = nullptr;
+    auto r = moveObject(reference);
     collector.release(r);
   }
 }
 
-void garbageCollect(Reference<ReferenceCountedObject>& reference)
+void garbageCollect(AnyReference& reference)
 {
   if (reference) {
-    auto r = reference;
-    reference = nullptr;
+    auto r = moveObject(reference);
     collector.release(r);
   }
 }

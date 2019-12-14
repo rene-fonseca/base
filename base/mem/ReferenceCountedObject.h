@@ -120,7 +120,6 @@ public:
     Initializes reference counted object with zero references.
   */
   inline ReferenceCountedObject() noexcept
-    : references(0)
   {
   }
 
@@ -131,7 +130,18 @@ public:
     references.
   */
   inline ReferenceCountedObject(const ReferenceCountedObject& copy) noexcept
-    : references(0) {
+  {
+    // do not copy state
+  }
+
+  /**
+    Initializes object from other reference counted object. The new object
+    is initialized with zero references. This is an unusual behavior for a
+    copy constructor but makes sense since a new object cannot have any
+    references.
+  */
+  inline ReferenceCountedObject(ReferenceCountedObject&&  move) noexcept
+  {
     // do not copy state
   }
 
@@ -142,6 +152,18 @@ public:
     to this object.
   */
   inline ReferenceCountedObject& operator=(const ReferenceCountedObject& copy) noexcept
+  {
+    // do not copy state
+    return *this;
+  }
+
+  /**
+    Assignment of reference counted object does not change this object. This
+    is unusual behavior for the assignment operator but makes sense since
+    the assignment doesn't influence the number of Reference objects that point
+    to this object.
+  */
+  inline ReferenceCountedObject& operator=(ReferenceCountedObject&& move) noexcept
   {
     // do not copy state
     return *this;

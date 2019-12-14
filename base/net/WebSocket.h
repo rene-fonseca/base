@@ -65,7 +65,7 @@ class _COM_AZURE_DEV__BASE__API WebSocket : public Object {
 private:
   
   /** Request handle. */
-  Reference<ReferenceCountedObject> handle;
+  AnyReference handle;
   
   // TAG: Listener* listeners = nullptr;
   // String url;

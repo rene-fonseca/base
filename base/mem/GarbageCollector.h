@@ -39,10 +39,10 @@ public:
     Tells garbage collector to release the given object. The object cannot be destructed until all references are
     removed.
   */
-  static void release(const Reference<ReferenceCountedObject>& reference);
+  static void release(const AnyReference& reference);
 
   /** Tells garbage collector tor release the given object. The reference will be set to nullptr. */
-  static void release(Reference<ReferenceCountedObject>& reference);
+  static void release(AnyReference& reference);
 };
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

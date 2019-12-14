@@ -212,7 +212,7 @@ public:
   /**
     Returns a reference to the socket.
   */
-  inline Reference<ReferenceCountedObject> getReference() noexcept
+  inline AnyReference getReference() noexcept
   {
     return socket;
   }

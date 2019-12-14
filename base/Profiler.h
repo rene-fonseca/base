@@ -46,7 +46,7 @@ public:
   class _COM_AZURE_DEV__BASE__API Event {
   public:
 
-    Reference<ReferenceCountedObject> data; // meta info
+    AnyReference data; // meta info
     const char* cat = nullptr;
     const char* name = nullptr;
     Timer::XTime ts; // timestamp

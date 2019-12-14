@@ -105,7 +105,7 @@ public:
   
   void throwNullPointer() noexcept
   {
-    Reference<ReferenceCountedObject> dummy;
+    AnyReference dummy;
     dummy->getNumberOfReferences_INTERNAL(); // triggers std::terminate() due to noexcept
   }
   

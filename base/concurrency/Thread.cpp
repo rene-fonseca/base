@@ -246,12 +246,6 @@ Thread::UseThreadLocalBuffer::~UseThreadLocalBuffer()
   }
 }
 
-#if 0
-// TAG: add helper function for ensuring thread local buffer of the right size and automatic clear big buffers?
-static uint8* getStorage(MemorySize size) noexcept;
-static void garbageCollect() noexcept;
-#endif
-
 void Thread::nanosleep(unsigned int nanoseconds)
 {
   Profiler::WaitTask profile("sleep");

@@ -38,7 +38,14 @@ private:
 public:
 
   /**
-    Initializes an association with the specified key and uninitalized value.
+    Default initializes association.
+  */
+  Association()
+  {
+  }
+
+  /**
+    Initializes association with the specified key and uninitalized value.
 
     @param key The key.
   */
@@ -66,7 +73,7 @@ public:
   }
 
   /**
-    Initializes an association with the specified key and value.
+    Initializes association with the specified key and value.
 
     @param key The key.
     @param value The value of the association.
@@ -78,7 +85,7 @@ public:
   }
 
   /**
-    Initializes an association with the specified key and value.
+    Initializes association with the specified key and value.
 
     @param key The key.
     @param value The value of the association.
@@ -90,7 +97,7 @@ public:
   }
 
   /**
-    Initializes an association with the specified key and value.
+    Initializes association with the specified key and value.
 
     @param key The key.
     @param value The value of the association.
@@ -197,11 +204,27 @@ public:
   }
 
   /**
-    Returns true if this association is not less than the specified association.
+    Returns true if this association is less than or equal to the specified association.
+  */
+  inline bool operator<=(const Association& compare) const
+  {
+    return key <= compare.key;
+  }
+
+  /**
+    Returns true if this association is greater than or equal to the specified association.
   */
   inline bool operator>=(const Association& compare) const
   {
     return !(operator<(compare));
+  }
+
+  /**
+    Returns true if this association is greater that the specified association.
+  */
+  inline bool operator>(const Association& compare) const
+  {
+    return !(operator<=(compare));
   }
 
   /**
@@ -229,11 +252,27 @@ public:
   }
 
   /**
-    Returns true if this association is not less than the specified association.
+    Returns true if this association is less than or equal to the specified association.
+  */
+  inline bool operator<=(const KEY& compare) const
+  {
+    return key <= compare;
+  }
+
+  /**
+    Returns true if this association is less than or equal to the specified association.
   */
   inline bool operator>=(const KEY& compare) const
   {
     return !(operator<(compare));
+  }
+
+  /**
+    Returns true if this association is greater than the specified association.
+  */
+  inline bool operator>(const KEY& compare) const
+  {
+    return !(operator<=(compare));
   }
 
   /**

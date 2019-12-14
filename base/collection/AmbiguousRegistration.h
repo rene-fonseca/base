@@ -32,29 +32,21 @@ public:
   /**
     Initializes the exception with no message.
   */
-  inline AmbiguousRegistration() noexcept
-  {
-  }
+  AmbiguousRegistration() noexcept;
 
   /**
     Initializes the exception with the specified message.
 
     @param message The message.
   */
-  inline AmbiguousRegistration(const char* message) noexcept
-    : Exception(message)
-  {
-  }
+  AmbiguousRegistration(const char* message) noexcept;
   
   /**
     Initializes the exception object without an associated message.
     
     @param type The identity of the type.
   */
-  inline AmbiguousRegistration(const Type& type) noexcept
-    : Exception(type)
-  {
-  }
+  AmbiguousRegistration(const Type& type) noexcept;
   
   /**
     Initializes the exception object.
@@ -62,10 +54,7 @@ public:
     @param message An NULL-terminated string (ASCII).
     @param type The identity of the type.
   */
-  inline AmbiguousRegistration(const char* message, const Type& type) noexcept
-    : Exception(message, type)
-  {
-  }
+  AmbiguousRegistration(const char* message, const Type& type) noexcept;
   
   _COM_AZURE_DEV__BASE__EXCEPTION_THIS_TYPE()
 };

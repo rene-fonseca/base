@@ -13,8 +13,25 @@
 
 #include <base/collection/AmbiguousRegistration.h>
 
-_COM_AZURE_DEV__BASE__DUMMY_SYMBOL
-
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
+
+AmbiguousRegistration::AmbiguousRegistration() noexcept
+{
+}
+
+AmbiguousRegistration::AmbiguousRegistration(const char* message) noexcept
+  : Exception(message)
+{
+}
+
+AmbiguousRegistration::AmbiguousRegistration(const Type& type) noexcept
+  : Exception(type)
+{
+}
+
+AmbiguousRegistration::AmbiguousRegistration(const char* message, const Type& type) noexcept
+  : Exception(message, type)
+{
+}
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

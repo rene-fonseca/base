@@ -28,6 +28,7 @@ protected:
 
   typedef const utf16* Pointer;
   typedef MemoryDiff Distance;
+  typedef ForwardIterator Category;
 
   /** The position of the iterator. */
   Pointer element = nullptr;

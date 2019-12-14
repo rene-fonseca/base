@@ -28,6 +28,7 @@ protected:
 
   typedef const uint8* Pointer;
   typedef MemoryDiff Distance;
+  typedef ForwardIterator Category;
 
   /** The position of the iterator. */
   Pointer element = nullptr;

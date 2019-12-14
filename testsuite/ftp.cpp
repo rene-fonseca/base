@@ -232,7 +232,7 @@ protected:
         instream >> ch;
         bassert(
           String::Traits::isASCII(ch),
-          FTPException("Reply contains invalid character")
+          FTPException("Reply contains invalid character.")
         );
         // read until new line "\n" and remove "\r" and other annoying chars
         if (ch == '\n') {
@@ -683,7 +683,7 @@ public:
     --i; // possible last digit
     bassert(
       (response[i] >= '0') && (response[i] <= '9'),
-      FTPException("Invalid reply")
+      FTPException("Invalid reply.")
     );
     while ((response[i] >= '0') && (response[i] <= '9')) { // find first digit
       --i;

@@ -606,7 +606,7 @@ void XMLDefaultReader::parse(
   long long size = file.getSize();
   bassert(
     size >= 4,
-    bindCause(SAXParseException("Document not well-formed", this), SAXParseException::NOT_WELL_FORMED)
+    bindCause(SAXParseException("Document not well-formed.", this), SAXParseException::NOT_WELL_FORMED)
   );
   FileReader reader(file, 0);
   reader.peek(4); // minimum number of bytes
@@ -641,7 +641,7 @@ void XMLDefaultReader::parse(
   } else {
     bassert(
       result == 0,
-      bindCause(SAXParseException("Document not well-formed", this), SAXParseException::NOT_WELL_FORMED)
+      bindCause(SAXParseException("Document not well-formed.", this), SAXParseException::NOT_WELL_FORMED)
     );
   }
 #else // no xml support
@@ -674,7 +674,7 @@ void XMLDefaultReader::parse(
   } else {
     bassert(
       result == 0,
-      bindCause(SAXParseException("Document not well-formed", this), SAXParseException::NOT_WELL_FORMED)
+      bindCause(SAXParseException("Document not well-formed.", this), SAXParseException::NOT_WELL_FORMED)
     );
   }
 #else // no xml support
@@ -759,7 +759,7 @@ void XMLDefaultReader::parse(const String& systemId) {
   } else {
     bassert(
       result == 0,
-      bindCause(SAXParseException("Document not well-formed", this), SAXParseException::NOT_WELL_FORMED)
+      bindCause(SAXParseException("Document not well-formed.", this), SAXParseException::NOT_WELL_FORMED)
     );
   }
 #else // no xml support
@@ -770,7 +770,7 @@ void XMLDefaultReader::parse(const String& systemId) {
 void XMLDefaultReader::terminate() noexcept {
 #if defined(_COM_AZURE_DEV__BASE__XML_XMLSOFT_ORG)
 // int result = xmlParseChunk(static_cast<xmlParserCtxtPtr>(context), 0, 0, 1);
-// bassert(result == 0, SAXException("Unable to terminate parsing"));
+// bassert(result == 0, SAXException("Unable to terminate parsing."));
 #else // no xml support
   throw SAXNotSupportedException(this);
 #endif

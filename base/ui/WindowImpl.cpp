@@ -904,7 +904,7 @@ WindowImpl::WindowImpl()
   fill<uint8>(keyboardState, getArraySize(keyboardState), 0);
   bassert(
     loadModule(true),
-    UserInterfaceException("Unable to load module", this)
+    UserInterfaceException("Unable to load module.", this)
   );
 }
 
@@ -937,7 +937,7 @@ WindowImpl::WindowImpl(
     Position(PrimitiveTraits<int>::MINIMUM, PrimitiveTraits<int>::MINIMUM);
   bassert(
     loadModule(true),
-    UserInterfaceException("Unable to load module", this)
+    UserInterfaceException("Unable to load module.", this)
   );
 }
 

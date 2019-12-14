@@ -127,7 +127,7 @@ User::User(const String& name)
                              0,
                              0,
                              &sidType) != 0,
-         UserException("Unable to lookup name", this)
+         UserException("Unable to lookup name.", this)
   );
   bassert(sidType == SidTypeUser, UserException("Not a user.", this));
   id = new ReferenceCountedAllocator<uint8>(size);
@@ -281,7 +281,7 @@ Array<String> User::getGroups() {
                              domainName,
                              &domainNameSize,
                              &sidType) == 0,
-         UserException("Unable to lookup name", this)
+         UserException("Unable to lookup name.", this)
   );
   
   GROUP_USERS_INFO_0* buffer = nullptr;

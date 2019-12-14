@@ -243,7 +243,7 @@ void OpenGLContextImpl::swap()
   native::GDI::wglSwapBuffers((HDC)graphicsContextHandle); // ignore errors
 //   bassert(
 //     native::GDI::wglSwapBuffers((HDC)graphicsContextHandle),
-//     OpenGLException("Unable to swap buffers", this)
+//     OpenGLException("Unable to swap buffers.", this)
 //   );
 #else // unix
   native::GLX::glXSwapBuffers(
@@ -299,7 +299,7 @@ void OpenGLContextImpl::swap(int plane)
       (HDC)graphicsContextHandle,
       NATIVE_PLANES[plane + 15]
     ),
-    OpenGLException("Unable to swap plane", this)
+    OpenGLException("Unable to swap plane.", this)
   );
 #else // unix
   // TAG: fixme

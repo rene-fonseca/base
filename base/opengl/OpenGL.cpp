@@ -662,7 +662,7 @@ OpenGL::OpenGL(unsigned int latest) {
   );
   bassert(
     opengl::dynamicLinker,
-    OpenGLException("Unable to load OpenGL module", this)
+    OpenGLException("Unable to load OpenGL module.", this)
   );
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   opengl::getFunction =

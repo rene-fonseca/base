@@ -513,7 +513,7 @@ void Uri::setHost(const String& value)
 {
   bassert(
     isHost(value.getBeginReadIterator(), value.getEndReadIterator()),
-    UriException("Invalid host part")
+    UriException("Invalid host part.")
   );
   host = value;
 }
@@ -522,7 +522,7 @@ void Uri::setPort(const String& value)
 {
   bassert(
     isPort(value.getBeginReadIterator(), value.getEndReadIterator()),
-    UriException("Invalid port part")
+    UriException("Invalid port part.")
   );
   port = value;
 }

@@ -203,7 +203,7 @@ public:
       }
       bassert(
         (i == --endValue) && (*i++ == '"'),
-        HTTPException("Invalid message header")
+        HTTPException("Invalid message header.")
       );
     }
     this->value = line.substring(value - begin, endValue - begin);

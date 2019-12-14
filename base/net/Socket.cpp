@@ -619,7 +619,7 @@ void Socket::create(Kind kind, Domain domain)
   static const int SOCKET_KINDS[] = {SOCK_STREAM, SOCK_DGRAM, SOCK_RAW};
   bassert(
     !socket->isValid(),
-    NetworkException("Unable to create socket", this)
+    NetworkException("Unable to create socket.", this)
   );
 #if (defined(_COM_AZURE_DEV__BASE__INET_IPV6))
   OperatingSystem::Handle handle = (OperatingSystem::Handle)::socket(
@@ -629,7 +629,7 @@ void Socket::create(Kind kind, Domain domain)
   );
   bassert(
     handle != OperatingSystem::INVALID_HANDLE,
-    NetworkException("Unable to create socket", this)
+    NetworkException("Unable to create socket.", this)
   );
   socket = new SocketImpl(
     handle,
@@ -639,7 +639,7 @@ void Socket::create(Kind kind, Domain domain)
 #else
   bassert(
     (domain == Socket::IPV4) || (domain == Socket::DEFAULT_DOMAIN),
-    NetworkException("Domain not supported")
+    NetworkException("Domain not supported.")
   );
   OperatingSystem::Handle handle = (OperatingSystem::Handle)::socket(
     PF_INET,
@@ -648,7 +648,7 @@ void Socket::create(Kind kind, Domain domain)
   );
   bassert(
     handle != OperatingSystem::INVALID_HANDLE,
-    NetworkException("Unable to create socket", this)
+    NetworkException("Unable to create socket.", this)
   );
   socket = new SocketImpl(handle, Socket::IPV4, kind);
 #endif
@@ -1480,7 +1480,7 @@ void Socket::joinGroup(const InetAddress& interface, const InetAddress& group)
       }
       bassert(
         mreq.ipv6mr_interface > 0,
-        NetworkException("Unable to resolve interface", this)
+        NetworkException("Unable to resolve interface.", this)
       );
     }
     copy<uint8>(

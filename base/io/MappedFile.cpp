@@ -65,7 +65,7 @@ MappedFile::MappedFileImpl::MappedFileImpl(const File& _file, const FileRegion& 
   #else
     bassert(
       (region.getOffset() >= 0) && (region.getOffset() <= PrimitiveTraits<int>::MAXIMUM),
-      FileException("Unable to map file region", this)
+      FileException("Unable to map file region.", this)
     );
     address = ::mmap(0, region.getSize(), writeable ? (PROT_READ | PROT_WRITE) : PROT_READ, MAP_SHARED, getHandle(file), region.getOffset());
   #endif

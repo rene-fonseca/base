@@ -503,7 +503,7 @@ String InetInterface::getName(unsigned int index)
   char name[IFNAMSIZ];
   bassert(
     if_indextoname(index, name) != 0,
-    NetworkException("Unable to resolve interface", Type::getType<InetInterface>())
+    NetworkException("Unable to resolve interface.", Type::getType<InetInterface>())
   );
   return String(name, IFNAMSIZ);
 #elif (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
@@ -530,7 +530,7 @@ String InetInterface::getName(unsigned int index)
   const unsigned int numberOfInterfaces = bytesReturned/sizeof(*current);
   bassert(
     index < numberOfInterfaces,
-    NetworkException("Unable to resolve interface", Type::getType<InetInterface>())
+    NetworkException("Unable to resolve interface.", Type::getType<InetInterface>())
   );
   StringOutputStream stream;
   stream << index << FLUSH;
@@ -626,7 +626,7 @@ InetAddress InetInterface::getAddress(unsigned int index)
   const unsigned int numberOfInterfaces = bytesReturned/sizeof(*current);
   bassert(
     index < numberOfInterfaces,
-    NetworkException("Unable to resolve interface", Type::getType<InetInterface>())
+    NetworkException("Unable to resolve interface.", Type::getType<InetInterface>())
   );
   return internal::InetInterface::getAddress(*Cast::pointer<struct sockaddr*>(&current[index].iiAddress));
 #else

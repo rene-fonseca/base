@@ -804,13 +804,13 @@ int WideString::compareTo(const WideLiteral& literal) const noexcept
       ucs4 value = *right;
       bassert(
         !((value >= 0xdc00) && (value <= 0xdfff)),
-        StringException("Reserved code")
+        StringException("Reserved code.")
       );
       if ((value >= 0xd800) && (value <= 0xdbff)) {
         const ucs4 lowSurrogate = *right++;
         bassert(
           (lowSurrogate >= 0xdc00) && (lowSurrogate <= 0xdfff),
-          StringException("Invalid sequence")
+          StringException("Invalid sequence.")
         );
         value = 0x00010000U + (value - 0xd800) * 0x0400 + (lowSurrogate - 0xdc00);
       }
@@ -866,13 +866,13 @@ int WideString::compareTo(const wchar* string) const noexcept
       ucs4 value = *right;
       bassert(
         !((value >= 0xdc00) && (value <= 0xdfff)),
-        StringException("Reserved code")
+        StringException("Reserved code.")
       );
       if ((value >= 0xd800) && (value <= 0xdbff)) {
         const ucs4 lowSurrogate = *right++;
         bassert(
           (lowSurrogate >= 0xdc00) && (lowSurrogate <= 0xdfff),
-          StringException("Invalid sequence")
+          StringException("Invalid sequence.")
         );
         value = 0x00010000U + (value - 0xd800) * 0x0400 + (lowSurrogate - 0xdc00);
       }
@@ -957,13 +957,13 @@ bool WideString::startsWith(const WideLiteral& prefix) const noexcept
       ucs4 value = *right;
       bassert(
         !((value >= 0xdc00) && (value <= 0xdfff)),
-        StringException("Reserved code")
+        StringException("Reserved code.")
       );
       if ((value >= 0xd800) && (value <= 0xdbff)) {
         const ucs4 lowSurrogate = *right++;
         bassert(
           (lowSurrogate >= 0xdc00) && (lowSurrogate <= 0xdfff),
-          StringException("Invalid sequence")
+          StringException("Invalid sequence.")
         );
         value =
           0x00010000U + (value - 0xd800) * 0x0400 + (lowSurrogate - 0xdc00);
@@ -1016,13 +1016,13 @@ bool WideString::endsWith(const WideLiteral& suffix) const noexcept
       ucs4 value = *right;
       bassert(
         !((value >= 0xdc00) && (value <= 0xdfff)),
-        StringException("Reserved code")
+        StringException("Reserved code.")
       );
       if ((value >= 0xd800) && (value <= 0xdbff)) {
         const ucs4 lowSurrogate = *right++;
         bassert(
           (lowSurrogate >= 0xdc00) && (lowSurrogate <= 0xdfff),
-          StringException("Invalid sequence")
+          StringException("Invalid sequence.")
         );
         value =
           0x00010000U + (value - 0xd800) * 0x0400 + (lowSurrogate - 0xdc00);

@@ -162,7 +162,7 @@ String Group::getName() const
       &domainNameSize,
       &sidType
     ) != 0,
-    GroupException("Unable to lookup name", this)
+    GroupException("Unable to lookup name.", this)
   );
   if (domainName[0] != L'\0') {
     return String(domainName) + MESSAGE("\\") + String(name);
@@ -213,7 +213,7 @@ Array<String> Group::getMembers() const {
       &domainNameSize,
       &sidType
     ) != 0,
-    GroupException("Unable to lookup name", this)
+    GroupException("Unable to lookup name.", this)
   );
   
   GROUP_USERS_INFO_0* buffer = nullptr;
@@ -231,7 +231,7 @@ Array<String> Group::getMembers() const {
   );
   bassert(
     (status == NERR_Success) || (status == ERROR_MORE_DATA),
-    GroupException("Unable to get members", this)
+    GroupException("Unable to get members.", this)
   );
   if (buffer != 0) {
     const GROUP_USERS_INFO_0* p = buffer;

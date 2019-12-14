@@ -400,11 +400,11 @@ public:
     if (parent) {
       bassert(
         parent->children,
-        DOMException("Link to first child of parent not set")
+        DOMException("Link to first child of parent not set.")
       );
       bassert(
         parent->last,
-        DOMException("Link to last child of parent not set")
+        DOMException("Link to last child of parent not set.")
       );
       const xmlNode* temp = nullptr;
       for (xmlNode* child = parent->children; child; child = child->next) {
@@ -414,7 +414,7 @@ public:
       }
       bassert(
         temp,
-        DOMException("Link to node missing from children of parent")
+        DOMException("Link to node missing from children of parent.")
       );
     }
     
@@ -422,12 +422,12 @@ public:
     if (node->prev) {
       bassert(
         node->prev->next == node,
-        DOMException("Link from previous sibling to node is invalid")
+        DOMException("Link from previous sibling to node is invalid.")
       );
     } else {
       bassert(
         !parent || (parent->children == node),
-        DOMException("Link from first child of parent to node is invalid")
+        DOMException("Link from first child of parent to node is invalid.")
       );
     }
     
@@ -435,12 +435,12 @@ public:
     if (node->next) {
       bassert(
         node->next->prev == node,
-        DOMException("Link from next sibling to node is invalid")
+        DOMException("Link from next sibling to node is invalid.")
       );
     } else {
       bassert(
         !parent || (parent->last == node),
-        DOMException("Link from last child of parent to node is invalid")
+        DOMException("Link from last child of parent to node is invalid.")
       );
     }
     
@@ -449,21 +449,21 @@ public:
       for (const xmlNode* child = node->children; child; child = child->next) {
         bassert(
           child->parent == node,
-          DOMException("Link from child to node is invalid")
+          DOMException("Link from child to node is invalid.")
         );
       }
       bassert(
         node->children->prev == 0,
-        DOMException("First child has invalid link to previous sibling")
+        DOMException("First child has invalid link to previous sibling.")
       );
       bassert(
         node->last->next == 0,
-        DOMException("Last child has invalid link to next sibling")
+        DOMException("Last child has invalid link to next sibling.")
       );
     } else { // no children
       bassert(
         node->last == 0,
-        DOMException("Last child is not 0")
+        DOMException("Last child is not 0.")
       );
     }
   }

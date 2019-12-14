@@ -150,7 +150,7 @@ Trustee::Trustee(const String& name)
                              0,
                              0,
                              &sidType) != 0,
-         TrusteeException("Unable to lookup name", this)
+         TrusteeException("Unable to lookup name.", this)
   );
   bassert(sidType != SidTypeInvalid, TrusteeException("Not a trustee.", this));
   unsigned int sidSize = ::GetLengthSid((PSID)sid);
@@ -231,7 +231,7 @@ Trustee::TrusteeType Trustee::getType() const
                               0,
                               &domainNameSize,
                               &sidType) == ERROR_INSUFFICIENT_BUFFER,
-           TrusteeException("Unable to lookup name", this)
+           TrusteeException("Unable to lookup name.", this)
     );
     type = ((sidType == SidTypeGroup) || (sidType == SidTypeWellKnownGroup)) ? Trustee::GROUP : Trustee::USER;
   }
@@ -292,7 +292,7 @@ String Trustee::getName() const
                             name, &nameSize,
                             domainName, &domainNameSize,
                             &sidType) != 0,
-         TrusteeException("Unable to lookup name", this)
+         TrusteeException("Unable to lookup name.", this)
   );
   if (domainName[0] != 0) {
     return String(domainName) + MESSAGE("\\") + String(name);

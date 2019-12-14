@@ -45,7 +45,7 @@ SharedMemory::SharedMemoryImpl::SharedMemoryImpl(
   );
   bassert(
     handle != OperatingSystem::INVALID_HANDLE,
-    MemoryException("Unable to open shared memory", this)
+    MemoryException("Unable to open shared memory.", this)
   );
 
   address = (uint8*)::MapViewOfFile(
@@ -92,7 +92,7 @@ SharedMemory::SharedMemoryImpl::SharedMemoryImpl(
     bassert(
       (region.getOffset() >= 0) &&
       (region.getOffset() <= PrimitiveTraits<int>::MAXIMUM),
-      MemoryException("Unable to open shared memory", this)
+      MemoryException("Unable to open shared memory.", this)
     );
     address = (uint8*)::mmap(
       0,
@@ -105,7 +105,7 @@ SharedMemory::SharedMemoryImpl::SharedMemoryImpl(
   #endif
   bassert(
     address !=  MAP_FAILED,
-    MemoryException("Unable to open shared memory", this)
+    MemoryException("Unable to open shared memory.", this)
   );
 #endif // flavor
 }
@@ -115,7 +115,7 @@ void SharedMemory::SharedMemoryImpl::lock()
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   bassert(
     ::VirtualLock(address, region.getSize()),
-    MemoryException("Unable to lock process memory", this)
+    MemoryException("Unable to lock process memory.", this)
   );
 #else // unix
   #if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__CYGWIN)
@@ -123,7 +123,7 @@ void SharedMemory::SharedMemoryImpl::lock()
   #else
     bassert(
       ::mlock(address, region.getSize()) == 0,
-      MemoryException("Unable to lock memory", this)
+      MemoryException("Unable to lock memory.", this)
     );
   #endif
 #endif // flavor
@@ -134,7 +134,7 @@ void SharedMemory::SharedMemoryImpl::unlock()
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   bassert(
     ::VirtualUnlock(address, region.getSize()),
-    MemoryException("Unable to unlock process memory", this)
+    MemoryException("Unable to unlock process memory.", this)
   );
 #else // unix
   #if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__CYGWIN)
@@ -142,7 +142,7 @@ void SharedMemory::SharedMemoryImpl::unlock()
   #else  
     bassert(
       ::munlock(address, region.getSize()) == 0,
-      MemoryException("Unable to unlock process memory", this)
+      MemoryException("Unable to unlock process memory.", this)
     );
   #endif
 #endif // flavor

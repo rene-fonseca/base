@@ -132,7 +132,7 @@ Attribute Document::createAttributeNS(
       (((prefix != "xmlns") || (qualifiedName != "xmlns")) &&
        (namespaceURI == "http://www.w3.org/2000/xmlns")) &&
       (localName.indexOf(":") < 0),
-      bindCause(DOMException("Malformed qualified name", this), DOMException::NAMESPACE_ERROR)
+      bindCause(DOMException("Malformed qualified name.", this), DOMException::NAMESPACE_ERROR)
     );
     
     ns = xmlNewNs( // TAG: destroy if exception is raised
@@ -145,7 +145,7 @@ Attribute Document::createAttributeNS(
     localName = qualifiedName;
     bassert(
       localName.isProper() && !namespaceURI.isProper(),
-      bindCause(DOMException("Malformed qualified name", this), DOMException::NAMESPACE_ERROR)
+      bindCause(DOMException("Malformed qualified name.", this), DOMException::NAMESPACE_ERROR)
     );
   }
 
@@ -268,13 +268,13 @@ Element Document::createElementNS(
       ((prefix != "xml") ||
        (namespaceURI == "http://www.w3.org/XML/1998/namespace")) &&
         (localName.indexOf(":") < 0),
-      bindCause(DOMException("Malformed qualified name", this), DOMException::NAMESPACE_ERROR)
+      bindCause(DOMException("Malformed qualified name.", this), DOMException::NAMESPACE_ERROR)
     );
   } else {
     localName = qualifiedName;
     bassert(
       localName.isProper(),
-      bindCause(DOMException("Malformed qualified name", this), DOMException::NAMESPACE_ERROR)
+      bindCause(DOMException("Malformed qualified name.", this), DOMException::NAMESPACE_ERROR)
     );
   }
   

@@ -713,7 +713,7 @@ InetAddress InetInterface::getAddress(unsigned int index)
   const unsigned int numberOfInterfaces = bytesReturned/sizeof(*current);
   bassert(
     index < numberOfInterfaces,
-    NetworkException("Unable to resolve interface", Type::getType<InetInterface>())
+    NetworkException("Unable to resolve interface.", Type::getType<InetInterface>())
   );
   return internal::InetInterface::getAddress(*Cast::pointer<struct sockaddr*>(&current[index].iiAddress));
 #elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__WASI)

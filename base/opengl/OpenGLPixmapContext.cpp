@@ -113,7 +113,7 @@ nothing OpenGLPixmapContext::initialize(const Dimension& dimension, unsigned int
   bassert(
     (pfd.dwFlags & PFD_DRAW_TO_BITMAP) &&
     (pfd.dwFlags & PFD_SUPPORT_OPENGL),
-    OpenGLException("Format not supported", this)
+    OpenGLException("Format not supported.", this)
   );
   
   redBits = pfd.cRedBits;

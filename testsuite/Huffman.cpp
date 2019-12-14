@@ -51,7 +51,7 @@ public:
     unsigned long long size = sourceFile.getSize();
     bassert(
       size <= PrimitiveTraits<unsigned int>::MAXIMUM,
-      IOException("File is too big for me", this)
+      IOException("File is too big for me.", this)
     );
 
     Allocator<uint8> buffer(size);
@@ -75,7 +75,7 @@ public:
     unsigned long long size = sourceFile.getSize();
     bassert(
       size <= PrimitiveTraits<unsigned int>::MAXIMUM,
-      IOException("File is too big for me", this)
+      IOException("File is too big for me.", this)
     );
     
     Allocator<uint8> buffer(size);

@@ -65,7 +65,7 @@ Bitmap::Bitmap(
   HDC deviceContextHandle = ::CreateCompatibleDC(h);
   bassert(
     deviceContextHandle,
-    UserInterfaceException("Unable to create bitmap", this)
+    UserInterfaceException("Unable to create bitmap.", this)
   );
   HBITMAP bitmapHandle = ::CreateCompatibleBitmap(
     (HDC)h,

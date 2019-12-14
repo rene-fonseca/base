@@ -286,7 +286,7 @@ void LinuxRawIEEE1394::open(const EUI64& adapter) {
   const unsigned char* id = adapter.getBytes();
   bassert(
     (id[0] == 0xff) && (id[1] == 0xff) && (id[2] == 0xff) && (id[3] == 0x00),
-    IEEE1394Exception("Adapter not present", this)
+    IEEE1394Exception("Adapter not present.", this)
   );
   
   LinuxRawIEEE1394Impl::Request request;
@@ -298,11 +298,11 @@ void LinuxRawIEEE1394::open(const EUI64& adapter) {
   // TAG: must be atomic
   bassert(
     ::write(handle, &request, sizeof(request)) == sizeof(request),
-    IEEE1394Exception("Unable to queue request", this)
+    IEEE1394Exception("Unable to queue request.", this)
   );
   bassert(
     ::read(handle, &request, sizeof(request)) == sizeof(request),
-    IEEE1394Exception("Unable to dequeue response", this)
+    IEEE1394Exception("Unable to dequeue response.", this)
   );
   // TAG: dequeue until generation? while (request.generation < generation);
  
@@ -465,7 +465,7 @@ void LinuxRawIEEE1394::read(
       request.generation = generation;
       bassert(
         ::write(handle, &request, sizeof(request)) == sizeof(request),
-        IEEE1394Exception("Unable to request read", this)
+        IEEE1394Exception("Unable to request read.", this)
       );
       while (!requestContext.dequeued) { // wait for completion
         dequeueResponse();
@@ -514,7 +514,7 @@ void LinuxRawIEEE1394::write(
   request.sendBuffer = Cast::getOffset(buffer);
   bassert(
     ::write(handle, &request, sizeof(request)) == sizeof(request),
-    IEEE1394Exception("Unable to request write", this)
+    IEEE1394Exception("Unable to request write.", this)
   );
   
   // wait for completion
@@ -551,7 +551,7 @@ unsigned int LinuxRawIEEE1394::read(unsigned short node, uint64 address, uint32*
       
       bassert(
         ::write(handle, &request, sizeof(request)) == sizeof(request),
-        IEEE1394Exception("Unable to request read", this)
+        IEEE1394Exception("Unable to request read.", this)
       );
       while (!requestContext.dequeued) { // wait for completion
         dequeueResponse();
@@ -578,7 +578,12 @@ unsigned int LinuxRawIEEE1394::read(unsigned short node, uint64 address, uint32*
   return hits;
 }
 
-uint32 LinuxRawIEEE1394::lock(unsigned short node, uint64 address, LockInstruction instruction, uint32 argument, uint32 data) {
+uint32 LinuxRawIEEE1394::lock(unsigned short node,
+                              uint64 address,
+                              LockInstruction instruction,
+                              uint32 argument,
+                              uint32 data)
+{
   bassert((getPhysicalId(node) < IEEE1394Impl::BROADCAST) && (address % sizeof(Quadlet) == 0), IEEE1394Exception(this));
 
   LinuxRawIEEE1394Impl::RequestContext requestContext;
@@ -679,7 +684,7 @@ void LinuxRawIEEE1394::registerFCPListener(FunctionControlProtocolListener* list
   request.receiveBuffer = Cast::getOffset(fcpBuffer);
   bassert(
     ::write(handle, &request, sizeof(request)) == sizeof(request),
-    IEEE1394Exception("Unable to regiser FCP listener", this)
+    IEEE1394Exception("Unable to regiser FCP listener.", this)
   );
   
   while (!requestContext.dequeued) { // TAG: need time out support
@@ -702,7 +707,7 @@ void LinuxRawIEEE1394::unregisterFCPListener() {
   request.tag = Cast::getOffset(&requestContext);
   bassert(
     ::write(handle, &request, sizeof(request)) == sizeof(request),
-    IEEE1394Exception("Unable to unregister FCP listener", this)
+    IEEE1394Exception("Unable to unregister FCP listener.", this)
   );
   
   while (!requestContext.dequeued) { // wait for completion
@@ -736,7 +741,7 @@ void LinuxRawIEEE1394::readIsochronous(unsigned int channel, unsigned int maximu
   request.receiveBuffer = Cast::getOffset(isochronousChannels[channel].buffer.getElements());
   bassert(
     ::write(handle, &request, sizeof(request)) == sizeof(request),
-    IEEE1394Exception("Unable to enable isochronous channel listener", this)
+    IEEE1394Exception("Unable to enable isochronous channel listener.", this)
   );
 
   while (!requestContext.dequeued) { // TAG: need time out support
@@ -744,7 +749,7 @@ void LinuxRawIEEE1394::readIsochronous(unsigned int channel, unsigned int maximu
   }
   bassert(
     requestContext.status == IEEE1394Impl::STATUS_OK,
-    IEEE1394Exception("Unable to enable isochronous channel listener", this)
+    IEEE1394Exception("Unable to enable isochronous channel listener.", this)
   );
 
   // listen for incoming packets
@@ -767,7 +772,7 @@ void LinuxRawIEEE1394::readIsochronous(unsigned int channel, unsigned int maximu
   request.tag = Cast::getOffset(&requestContext);
   bassert(
     ::write(handle, &request, sizeof(request)) == sizeof(request),
-    IEEE1394Exception("Unable to disable isochronous channel listener", this)
+    IEEE1394Exception("Unable to disable isochronous channel listener.", this)
   );
   
   while (!requestContext.dequeued) { // wait for completion
@@ -776,7 +781,7 @@ void LinuxRawIEEE1394::readIsochronous(unsigned int channel, unsigned int maximu
   status = isochronousChannels[channel].status;
   bassert(
     requestContext.status == IEEE1394Impl::STATUS_OK,
-    IEEE1394Exception("Unable to disable isochronous channel listener", this)
+    IEEE1394Exception("Unable to disable isochronous channel listener.", this)
   );
   
   // do not release on failure to disable listener
@@ -819,7 +824,7 @@ void LinuxRawIEEE1394::writeIsochronous(const uint8* buffer, unsigned int size, 
   request.sendBuffer = Cast::getOffset(buffer);
   bassert(
     ::write(handle, &request, sizeof(request)) == sizeof(request),
-    IEEE1394Exception("Unable to request isochronous write", this)
+    IEEE1394Exception("Unable to request isochronous write.", this)
   );
   while (!requestContext.dequeued) { // wait for completion
     dequeueResponse();

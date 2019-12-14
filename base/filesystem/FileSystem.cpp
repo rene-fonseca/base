@@ -527,7 +527,7 @@ uint64 FileSystem::getSize(const String& path) {
   HANDLE handle = ::FindFirstFile(ToWCharString(path), &information);
   bassert(
     handle != INVALID_HANDLE_VALUE,
-    FileSystemException("Unable to get size of file", Type::getType<FileSystem>())
+    FileSystemException("Unable to get size of file.", Type::getType<FileSystem>())
   );
   ::FindClose(handle);
   return static_cast<uint64>(information.nFileSizeHigh) | information.nFileSizeLow;
@@ -551,7 +551,7 @@ bool FileSystem::entryExists(const String& path) {
   if (handle == INVALID_HANDLE_VALUE) {
     bassert(
       ::GetLastError() == ERROR_FILE_NOT_FOUND,
-      FileSystemException("Unable to examine if entry exists", Type::getType<FileSystem>())
+      FileSystemException("Unable to examine if entry exists.", Type::getType<FileSystem>())
     );
     return false;
   }
@@ -1158,7 +1158,7 @@ void FileSystem::makeHardLink(const String& target, const String& path)
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
 #if (_COM_AZURE_DEV__BASE__OS >= _COM_AZURE_DEV__BASE__W2K)
   bassert(::CreateHardLink(ToWCharString(path), ToWCharString(target), NULL) != 0,
-         FileSystemException("Unable to make hard link", Type::getType<FileSystem>()));
+         FileSystemException("Unable to make hard link.", Type::getType<FileSystem>()));
 #else
   typedef BOOL (*PCreateHardLink)(LPCSTR, LPCSTR, LPSECURITY_ATTRIBUTES);
   static PCreateHardLink CreateHardLink = 0;
@@ -1307,7 +1307,7 @@ void FileSystem::makeLink(const String& target, const String& path)
 #else // unix
   bassert(
     !::symlink(target.getElements(), path.getElements()),
-    FileSystemException("Unable to make link", Type::getType<FileSystem>())
+    FileSystemException("Unable to make link.", Type::getType<FileSystem>())
   );
 #endif // flavor
 }

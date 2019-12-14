@@ -150,7 +150,7 @@ namespace extension {
                             0,   // reserved
                             access, // security access mask
                             &regKey // handle to new key
-             ) == ERROR_SUCCESS, RegistryException("Unable to open key", this));
+             ) == ERROR_SUCCESS, RegistryException("Unable to open key.", this));
       
       key = new RegistryKey::Handle((OperatingSystem::Handle)regKey);
     }
@@ -175,7 +175,7 @@ namespace extension {
                             0,   // reserved
                             regAccess, // security access mask
                             &regKey // handle to new key
-             ) == ERROR_SUCCESS, RegistryException("Unable to open key", this));
+             ) == ERROR_SUCCESS, RegistryException("Unable to open key.", this));
 
       RegistryKey result;
       result.key = new RegistryKey::Handle((OperatingSystem::Handle)regKey);
@@ -194,7 +194,7 @@ namespace extension {
                               0, // inheritance
                               &regKey, // key handle
                               &disposition // disposition value buffer
-      ) == ERROR_SUCCESS, RegistryException("Unable to open key", this));
+      ) == ERROR_SUCCESS, RegistryException("Unable to open key.", this));
 
       RegistryKey result;
       result.key = new RegistryKey::Handle((OperatingSystem::Handle)regKey);
@@ -449,7 +449,7 @@ namespace extension {
                                (BYTE*)&buffer, // data buffer
                                &size // size of data buffer
             ) == ERROR_SUCCESS) && (type == secondType),
-            RegistryException("Unable to get value", this)
+            RegistryException("Unable to get value.", this)
           );
           switch (type) {
           case REG_DWORD:
@@ -480,7 +480,7 @@ namespace extension {
                              (BYTE*)&buffer, // data buffer
                              &size // size of data buffer
           ) == ERROR_SUCCESS) && (type == secondType),
-          RegistryException("Unable to get value", this)
+          RegistryException("Unable to get value.", this)
         );
         return buffer;
       }
@@ -568,7 +568,7 @@ namespace extension {
                              REG_DWORD, // value type
                              buffer, // value data
                              size // size of value data
-      ) == ERROR_SUCCESS, RegistryException("Unable to set value", this));
+      ) == ERROR_SUCCESS, RegistryException("Unable to set value.", this));
     }
 
     uint32 RegistryKey::getInteger(const String& name) const {
@@ -638,7 +638,7 @@ namespace extension {
                              REG_BINARY, // value type
                              (BYTE*)buffer, // value data
                              size // size of value data
-      ) == ERROR_SUCCESS, RegistryException("Unable to set value", this));
+      ) == ERROR_SUCCESS, RegistryException("Unable to set value.", this));
     }
 
     String RegistryKey::getString(const String& name) const {
@@ -676,7 +676,7 @@ namespace extension {
                              REG_SZ, // value type
                              (BYTE*)value.getElements(), // value data
                              value.getLength() + 1 // size of value data
-      ) == ERROR_SUCCESS, RegistryException("Unable to set value", this));
+      ) == ERROR_SUCCESS, RegistryException("Unable to set value.", this));
     }
 
     Array<String> RegistryKey::getStringSequence(const String& name) const {
@@ -747,13 +747,13 @@ namespace extension {
                              REG_MULTI_SZ, // value type
                              (BYTE*)buffer.getElements(), // value data
                              size // size of value data
-             ) == ERROR_SUCCESS, RegistryException("Unable to set value", this));
+             ) == ERROR_SUCCESS, RegistryException("Unable to set value.", this));
     }
     
     void RegistryKey::flush() {
       bassert(
         ::RegFlushKey((HKEY)key->getHandle()) == ERROR_SUCCESS,
-        RegistryException("Unable to remove key", this)
+        RegistryException("Unable to remove key.", this)
       );
     }
 
@@ -829,7 +829,7 @@ namespace extension {
     bool RegistryKey::removeValue(const String& name) {
       bassert(
         ::RegDeleteValue((HKEY)key->getHandle(), name.getElements()) == ERROR_SUCCESS,
-        RegistryException("Unable to remove value", this)
+        RegistryException("Unable to remove value.", this)
       );
     }
     
@@ -843,7 +843,7 @@ namespace extension {
                           0, // data buffer
                           0 // size of data buffer
         ) == ERROR_SUCCESS,
-        RegistryException("Unable to query value", this)
+        RegistryException("Unable to query value.", this)
       );
       switch (type) {
       case REG_BINARY:
@@ -879,7 +879,7 @@ namespace extension {
                                0, // type buffer
                                0, // data buffer
                                &size // size of data buffer
-      ) == ERROR_SUCCESS, RegistryException("Unable to query value", this));
+      ) == ERROR_SUCCESS, RegistryException("Unable to query value.", this));
       return size;
     }
 

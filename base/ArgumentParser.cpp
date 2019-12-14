@@ -176,7 +176,7 @@ void ArgumentParser::addOption(const Reference<Option>& option)
 {
   bassert(
     !names.hasKey(option->getName()),
-    AlreadyKeyException("name already registered", this)
+    AlreadyKeyException("Name already registered.", this)
   );
   names.add(option->getName(), options.getSize());
   if (option->hasShortName()) {
@@ -184,7 +184,7 @@ void ArgumentParser::addOption(const Reference<Option>& option)
     const uint8 shortNameIndex = getIndexOfShortName(option->getShortName());
     bassert(
       lookup[shortNameIndex] == PrimitiveTraits<unsigned int>::MAXIMUM,
-      AlreadyKeyException("short name already registered", this)
+      AlreadyKeyException("Short name already registered.", this)
     );
     lookup[shortNameIndex] = options.getSize();
   }

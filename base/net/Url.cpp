@@ -81,7 +81,7 @@ public:
       char ch = *i;
       bassert(
         ASCIITraits::isASCII(ch),
-        Url::UrlException("Invalid character", Type::getType<UrlImpl>())
+        Url::UrlException("Invalid character.", Type::getType<UrlImpl>())
       );
       if (encoding(ch) != NEVER) {
         temp += '%';
@@ -105,20 +105,20 @@ public:
       if (ch == '%') {
         bassert(
           end - i >= 2,
-          Url::UrlException("Invalid encoding", Type::getType<UrlImpl>())
+          Url::UrlException("Invalid encoding.", Type::getType<UrlImpl>())
         ); // need two digits
         char high = *++i;
         char low = *++i;
         bassert(
           ASCIITraits::isHexDigit(high) && ASCIITraits::isHexDigit(low),
-          Url::UrlException("Invalid encoding", Type::getType<UrlImpl>())
+          Url::UrlException("Invalid encoding.", Type::getType<UrlImpl>())
         );
         ch = (ASCIITraits::digitToValue(high) << 4) + ASCIITraits::digitToValue(low); // replace with decoded char
       } else {
         Encode encode = encoding(ch);
         bassert(
           strict ? (encode == NEVER) : (encode <= RELAXED),
-          Url::UrlException("Part contains unencoded character", Type::getType<UrlImpl>())
+          Url::UrlException("Part contains unencoded character.", Type::getType<UrlImpl>())
         );
       }
       temp += ch;
@@ -212,7 +212,7 @@ String Url::validatePassword(const String& str) {
     char ch = *i;
     bassert(
       ASCIITraits::isASCII(ch),
-      UrlException("Invalid character", Type::getType<Url>())
+      UrlException("Invalid character.", Type::getType<Url>())
     );
   }
   return str;
@@ -434,7 +434,7 @@ void Url::setPassword(const String& value) {
 void Url::setHost(const String& value) {
   bassert(
     isHost(value.getBeginReadIterator(), value.getEndReadIterator()),
-    UrlException("Invalid host part", this)
+    UrlException("Invalid host part.", this)
   );
   host = value;
 }
@@ -443,7 +443,7 @@ void Url::setPort(const String& value)
 {
   bassert(
     isPort(value.getBeginReadIterator(), value.getEndReadIterator()),
-    UrlException("Invalid port part", this)
+    UrlException("Invalid port part.", this)
   );
   port = value;
 }

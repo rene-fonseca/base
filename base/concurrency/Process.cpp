@@ -220,7 +220,7 @@ void Process::setPriority(int priority)
     #warning Process::setPriority() is not supported
   #else
     if (::setpriority(PRIO_PROCESS, ::getpid(), priority)) {
-      ProcessException("Unable to set priority", Type::getType<Process>());
+      ProcessException("Unable to set priority.", Type::getType<Process>());
     }
   #endif
 #endif // flavor
@@ -273,7 +273,7 @@ Process Process::execute(const String& command)
                     &startInfo, // STARTUPINFO
                     &processInformation // receives PROCESS_INFORMATION
     ) != 0,
-    bindCause(ProcessException("Unable to execute command", Type::getType<Process>()), ::GetLastError())
+    bindCause(ProcessException("Unable to execute command.", Type::getType<Process>()), ::GetLastError())
   );
   
   ::CloseHandle(processInformation.hThread);

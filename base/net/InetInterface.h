@@ -14,12 +14,12 @@
 #pragma once
 
 #include <base/Object.h>
-#include <base/string/String.h>
 #include <base/collection/List.h>
+#include <base/collection/Array.h>
+#include <base/collection/Association.h>
 #include <base/net/NetworkException.h>
 #include <base/net/InetAddress.h>
 #include <base/communication/EUI64.h>
-#include <base/collection/HashTable.h>
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 

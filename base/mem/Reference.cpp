@@ -23,6 +23,25 @@
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
+bool garbageCollectOptional(ReferenceCountedObject* object) noexcept
+{
+  if (INLINE_ASSERT(object)) {
+    if (object->useGarbageCollector()) {
+      AnyReference r(object);
+      garbageCollect(r);
+      return true;
+    }
+  }
+  return false;
+}
+
+void destroyReference(ReferenceCountedObject* object)
+{
+  if (!garbageCollectOptional(object)) {
+    delete object;
+  }
+}
+
 #if defined(_COM_AZURE_DEV__BASE__TESTS)
 
 class MyObject;
@@ -98,7 +117,7 @@ public:
     Reference<MyOtherObject> nr;
 #endif
 
-    TEST_ASSERT(IsRelocateable<Reference<ReferenceCountedObject> >());
+    TEST_ASSERT(IsRelocateable<AnyReference>());
 
     Reference<MyOtherObject> myOtherObject = new MyOtherObject();
     // myOtherObject = myOtherObject; // self assignment

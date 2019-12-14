@@ -24,7 +24,21 @@ _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 template<class TYPE> class Reference;
 
-_COM_AZURE_DEV__BASE__API void garbageCollect(Reference<ReferenceCountedObject>& reference);
+/** Type that supports all references. */
+typedef Reference<ReferenceCountedObject> AnyReference;
+
+/** Registers the given object for async garbage collection. */
+_COM_AZURE_DEV__BASE__API void garbageCollect(AnyReference& reference);
+
+/**
+  Registers the given object for async garbage collection. Returns false if the object must be explicitly destructed.
+*/
+_COM_AZURE_DEV__BASE__API bool garbageCollectOptional(ReferenceCountedObject* object) noexcept;
+
+/**
+  Registers the given object for async garbage collection or destroys the object. Type MUST have virtual destructor.
+*/
+_COM_AZURE_DEV__BASE__API void destroyReference(ReferenceCountedObject* object);
 
 /**
   Automation pointer for reference counting objects. This class is responsible
@@ -35,10 +49,13 @@ _COM_AZURE_DEV__BASE__API void garbageCollect(Reference<ReferenceCountedObject>&
   The Reference class is relocateable.
  
   Note that is it safe to convert this pointer back to a Reference pointer.
+
+  This is the recommended automation pointer. Only use other automation classes when needed.
  
-  void MyClass::doit() {
-   Reference<MyClass> myObject = this;
-   useIt(myObject);
+  void MyClass::doit()
+  {
+    Reference<MyClass> myObject = this;
+    useIt(myObject);
   }
  
   @short Automation pointer that counts the number of references to an object.
@@ -249,16 +266,13 @@ public:
     value = _value;
     if (oldValue) { // skip if pointer is invalid
       if (ReferenceCountedObject::ReferenceImpl(*oldValue).removeReference()) {
-#if 1
-        if (oldValue->useGarbageCollector()) {
-          Reference<ReferenceCountedObject> r(oldValue); // TAG: move to CPP
-          base::garbageCollect(r);
+        if (std::has_virtual_destructor<TYPE>()) {
+          destroyReference(oldValue); // could throw
         } else {
-          delete oldValue; // could throw
+          if (!garbageCollectOptional(oldValue)) {
+            delete oldValue; // could throw
+          }
         }
-#else
-        delete oldValue; // could throw
-#endif
       }
     }
   }
@@ -404,10 +418,10 @@ inline void swapper(Reference<TYPE>& a, Reference<TYPE>& b)
 class GarbageCollect {
 private:
 
-  Reference<ReferenceCountedObject> object;
+  AnyReference object;
 public:
   
-  GarbageCollect(Reference<ReferenceCountedObject> _object) noexcept
+  GarbageCollect(AnyReference _object) noexcept
     : object(_object) {
   }
 
@@ -419,14 +433,11 @@ public:
   }
 };
 
-/** Type that supports all references. */
-typedef Reference<ReferenceCountedObject> AnyReference;
-
 template<class TYPE>
 class IsRelocateable<Reference<TYPE> > : public IsRelocateable<TYPE*> {
 };
 
-// static_assert(IsRelocateable<Reference<ReferenceCountedObject> >());
+// static_assert(IsRelocateable<AnyReference>());
 
 template<class TYPE>
 class Hash<Reference<TYPE> > {

@@ -82,7 +82,7 @@ Trustee::Trustee(TrusteeType type, const void* _id) {
     return;
   }
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
-  bassert(::IsValidSid((PSID)_id) != 0, OutOfDomain("Invalid trustee", this));
+  bassert(::IsValidSid((PSID)_id) != 0, OutOfDomain("Invalid trustee.", this));
   unsigned int size = ::GetLengthSid((PSID)_id);
   integralId = 0;
   id = new ReferenceCountedAllocator<uint8>(size);
@@ -152,7 +152,7 @@ Trustee::Trustee(const String& name)
                              &sidType) != 0,
          TrusteeException("Unable to lookup name", this)
   );
-  bassert(sidType != SidTypeInvalid, TrusteeException("Not a trustee", this));
+  bassert(sidType != SidTypeInvalid, TrusteeException("Not a trustee.", this));
   unsigned int sidSize = ::GetLengthSid((PSID)sid);
   integralId = INVALID;
   id = new ReferenceCountedAllocator<uint8>(sidSize);
@@ -207,7 +207,8 @@ Trustee::Trustee(const String& name)
 #endif // flavor
 }
 
-bool Trustee::isInitialized() const noexcept {
+bool Trustee::isInitialized() const noexcept
+{
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   return id.isValid();
 #else // unix
@@ -215,9 +216,10 @@ bool Trustee::isInitialized() const noexcept {
 #endif // flavor
 }
 
-Trustee::TrusteeType Trustee::getType() const {
+Trustee::TrusteeType Trustee::getType() const
+{
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
-  bassert(id.isValid(), TrusteeException("Invalid", this));
+  bassert(id.isValid(), TrusteeException("Invalid id.", this));
   if (type == UNSPECIFIED) {
     DWORD nameSize = 0;
     DWORD domainNameSize = 0;
@@ -339,7 +341,7 @@ String Trustee::getName() const
         buffer.getSize()/sizeof(char),
         &entry
       );
-      bassert(result == 0, TrusteeException("Unable to lookup name", this));
+      bassert(result == 0, TrusteeException("Unable to lookup name.", this));
       return String(entry->pw_name);
     }
   case Trustee::EVERYONE:

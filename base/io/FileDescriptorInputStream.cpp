@@ -100,7 +100,7 @@ unsigned int FileDescriptorInputStream::available() const
     struct stat status;
     int result = ::fstat(fd->getHandle(), &status);
   #endif // LFS
-    bassert(result == 0, IOException("Unable to get available bytes", this));
+    bassert(result == 0, IOException("Unable to get available bytes.", this));
     return (unsigned int)status.st_size;
 #endif // flavor
 }

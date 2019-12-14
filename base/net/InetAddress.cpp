@@ -458,7 +458,7 @@ InetAddress::InetAddress(const uint8* address, Family family) noexcept
 
 InetAddress::InetAddress(const String& address)
 {
-  bassert(parse(address), InvalidFormat("Not an Internet address", this));
+  bassert(parse(address), InvalidFormat("Not an Internet address.", this));
 }
 
 InetAddress::InetAddress(const String& address, Family family) {
@@ -529,7 +529,7 @@ String InetAddress::getHostName(bool fullyQualified) const
       sizeof(address.words[3]),
       AF_INET
     ); // MT-safe
-    bassert(hp, HostNotFound("Unable to resolve IP address", this));
+    bassert(hp, HostNotFound("Unable to resolve IP address.", this));
 #  elif ((_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__IRIX65) || \
          (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__SOLARIS))
     struct hostent result;
@@ -544,7 +544,7 @@ String InetAddress::getHostName(bool fullyQualified) const
       sizeof(buffer),
       &error
     );
-    bassert(hp, HostNotFound("Unable to resolve IP address", this));
+    bassert(hp, HostNotFound("Unable to resolve IP address.", this));
 #  elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__GNULINUX)
     struct hostent result;
     char buffer[1024]; // how big should this buffer be

@@ -501,7 +501,7 @@ template<class TYPE>
 Matrix<TYPE> Matrix<TYPE>::solve(const Matrix<TYPE>& value) const {
   // back substitution would be more efficient
 
-  bassert(isSquare() && (columns == value.rows), IncompatibleOperands("Unable to solve matrix equations"));
+  bassert(isSquare() && (columns == value.rows), IncompatibleOperands("Unable to solve matrix equations."));
 
   Matrix temp(*this); // make copy of this matrix
   Matrix result(value);

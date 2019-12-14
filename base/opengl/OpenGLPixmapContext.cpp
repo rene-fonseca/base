@@ -46,7 +46,7 @@ nothing OpenGLPixmapContext::initialize(const Dimension& dimension, unsigned int
     (HINSTANCE)::GetModuleHandle(0), // the instance that owns the window (ignored on NT)
     0 // application window data structure
   );
-  bassert(drawableHandle, OpenGLException("Unable to create pixmap", this));
+  bassert(drawableHandle, OpenGLException("Unable to create pixmap.", this));
   
   if (!(graphicsContextHandle = ::GetDC((HWND)drawableHandle))) {
     ::DestroyWindow((HWND)drawableHandle);
@@ -158,7 +158,7 @@ nothing OpenGLPixmapContext::initialize(const Dimension& dimension, unsigned int
 #else // unix  
   int screenId = ::XDefaultScreen((Display*)Backend<WindowImpl>::getDisplay());
   screenHandle = ::XScreenOfDisplay((Display*)Backend<WindowImpl>::getDisplay(), screenId);
-  bassert(screenHandle, UserInterfaceException("Unable to open screen", this));
+  bassert(screenHandle, UserInterfaceException("Unable to open screen.", this));
 
   XVisualInfo* visualInfo = nullptr;
   {
@@ -231,7 +231,7 @@ nothing OpenGLPixmapContext::initialize(const Dimension& dimension, unsigned int
       attributes
     );
     // TAG: screenHandle = 0
-    bassert(visualInfo, OpenGLException("Format not supported", this));
+    bassert(visualInfo, OpenGLException("Format not supported.", this));
     
     static const unsigned int ATTRIBUTES[] = {
       native::GLX::USE_GL,

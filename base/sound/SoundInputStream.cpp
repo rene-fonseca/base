@@ -69,7 +69,7 @@ SoundInputStream::SoundInputStream(unsigned int samplingRate, unsigned int chann
   format.nAvgBytesPerSec = samplingRate * format.nBlockAlign;
 
   unsigned int result = ::waveInOpen((HWAVEIN*)&handle, WAVE_MAPPER, &format, (DWORD_PTR)event.getHandle(), 0, CALLBACK_EVENT);
-  bassert(result == MMSYSERR_NOERROR, NotSupported("Cannot open device"));
+  bassert(result == MMSYSERR_NOERROR, NotSupported("Cannot open device."));
   event.reset();
 #else
   SoundDevice::soundDevice.acquireReadAccess();

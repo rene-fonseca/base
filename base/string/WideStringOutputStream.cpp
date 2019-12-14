@@ -22,13 +22,13 @@ void WideStringOutputStreamWrapper::ensureCapacity(MemorySize capacity)
 
 void WideStringOutputStreamWrapper::close()
 {
-  bassert(!closed, IOException("Output stream is closed", this));
+  bassert(!closed, IOException("Output stream is closed.", this));
   closed = true;
 }
 
 void WideStringOutputStreamWrapper::flush()
 {
-  bassert(!closed, IOException("Output stream is closed", this));
+  bassert(!closed, IOException("Output stream is closed.", this));
 }
 
 void WideStringOutputStreamWrapper::restart()
@@ -42,7 +42,7 @@ unsigned int WideStringOutputStreamWrapper::write(
   unsigned int size,
   bool nonblocking)
 {
-  bassert(!closed, IOException("Output stream is closed", this));
+  bassert(!closed, IOException("Output stream is closed.", this));
   if (size > 0) {
 // TAG:    string.append(MemorySpan(buffer, size));
   }

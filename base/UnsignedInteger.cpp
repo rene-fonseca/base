@@ -110,7 +110,7 @@ unsigned int UnsignedInteger::parse(const char* src, const char* end, unsigned i
     }
   }
   
-  bassert(src == end, InvalidFormat("Not an integer", Type::getType<UnsignedInteger>()));
+  bassert(src == end, InvalidFormat("Not an integer.", Type::getType<UnsignedInteger>()));
   
   return temp;
 }

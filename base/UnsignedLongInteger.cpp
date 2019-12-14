@@ -110,7 +110,7 @@ unsigned long long UnsignedLongInteger::parse(const char* src, const char* end, 
     }
   }
   
-  bassert(src == end, InvalidFormat("Not a digit", Type::getType<UnsignedLongInteger>()));
+  bassert(src == end, InvalidFormat("Not a digit.", Type::getType<UnsignedLongInteger>()));
   
   return temp;
 }

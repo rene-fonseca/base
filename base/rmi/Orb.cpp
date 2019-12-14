@@ -150,8 +150,8 @@ void Orb::openFactory(const String& identifier)
 //   }
 // };
 
-Orb::OrbConnectionReference Orb::getConnectionReference(
-  const String& identifier) {
+Orb::OrbConnectionReference Orb::getConnectionReference(const String& identifier)
+{
   fout << "DEBUG: " << "Orb::getConnectionReference(\""
        << identifier << "\")" << ENDL;
 
@@ -174,7 +174,7 @@ Orb::OrbConnectionReference Orb::getConnectionReference(
   Reference<OrbScheme> scheme = schemeIds[schemeId];
   
   int slash = identifier.indexOf('/', colon + Literal("://").getLength());
-  bassert(slash >= 0, InvalidFormat("Missing ", this));
+  bassert(slash >= 0, InvalidFormat("Missing.", this));
   String endPoint = identifier.substring(
     colon + Literal("://").getLength(),
     slash

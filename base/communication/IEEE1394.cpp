@@ -171,7 +171,7 @@ void IEEE1394::IsochronousWriteRequestImpl::setBuffer(
   const uint8* buffer,
   unsigned int size,
   unsigned int numberOfPackets) {
-  bassert(getStatus() == READY, bindCause(IEEE1394Exception("Request not ready", this), IEEE1394::REQUEST_NOT_READY));
+  bassert(getStatus() == READY, bindCause(IEEE1394Exception("Request not ready.", this), IEEE1394::REQUEST_NOT_READY));
   this->buffer = buffer;
   this->bufferSize = size;
   this->numberOfPackets = numberOfPackets;
@@ -627,7 +627,7 @@ void IEEE1394::reload()
     
     numberOfNodes = ieee1394impl->getNumberOfNodes();
     localId = ieee1394impl->getLocalId();
-    bassert((numberOfNodes > 0) && (attempts > 0), IEEE1394Exception("Unable to query local bus", this));
+    bassert((numberOfNodes > 0) && (attempts > 0), IEEE1394Exception("Unable to query local bus.", this));
     
     // TAG: could check topology map of local node if present
     
@@ -747,7 +747,7 @@ void IEEE1394::loadTopologyMap()
   
   // get crc
   uint32 quadlet = getQuadlet(node, IEEE1394::TOPOLOGY_MAP); 
-  bassert(quadlet == crc, IEEE1394Exception("Unable to load topology map", this));
+  bassert(quadlet == crc, IEEE1394Exception("Unable to load topology map.", this));
   
   // copy to internal representation
   unsigned int physicalId = 0; // the current physical id
@@ -905,7 +905,7 @@ void IEEE1394::loadSpeedMap() {
   
   // get crc
   uint32 quadlet = getQuadlet(node, IEEE1394::SPEED_MAP);
-  bassert(quadlet == crc, IEEE1394Exception("Unable to load speed map", this));
+  bassert(quadlet == crc, IEEE1394Exception("Unable to load speed map.", this));
   
   static const unsigned int SHIFTS[4] = {24, 16, 8, 0};
 

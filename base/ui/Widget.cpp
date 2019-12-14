@@ -78,7 +78,7 @@ Widget::Widget(Window& owner)
 #elif defined(_COM_AZURE_DEV__BASE__USE_X11)
   int screenId = ::XDefaultScreen((Display*)displayHandle);
   screenHandle = ::XScreenOfDisplay((Display*)displayHandle, screenId);
-  bassert(screenHandle, UserInterfaceException("Unable to open screen", this));
+  bassert(screenHandle, UserInterfaceException("Unable to open screen.", this));
   
   int blackPixel = ::XBlackPixelOfScreen((Screen*)screenHandle);
   int whitePixel = ::XWhitePixelOfScreen((Screen*)screenHandle);

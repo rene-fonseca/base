@@ -523,7 +523,7 @@ public:
           command = COMMAND_ISOCHRONOUS;
           guid = arguments[1];
           channel = UnsignedInteger::parse(arguments[2]);
-          bassert(channel <= 63, Exception("Invalid isochronous channel", this));
+          bassert(channel <= 63, Exception("Invalid isochronous channel.", this));
         } else if (arguments[0] == "--registers") {
           command = COMMAND_REGISTER_SPACE;
         

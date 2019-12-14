@@ -356,7 +356,7 @@ unsigned int InetInterface::getIndexByName(const String& name)
 {
 #if defined(_COM_AZURE_DEV__BASE__INET_IPV6)
   unsigned int index = if_nametoindex(name.getElements());
-  bassert(index > 0, NetworkException("Unable to resolve interface", Type::getType<InetInterface>()));
+  bassert(index > 0, NetworkException("Unable to resolve interface.", Type::getType<InetInterface>()));
   return index;
 #elif (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   // TAG: fixme

@@ -617,7 +617,7 @@ void XMLDefaultReader::parse(
     reader.getSize(),
     uri.isProper() ? uri.getElements() : 0
   );
-  bassert(context, SAXException("Unable to initialize parsing context", this));
+  bassert(context, SAXException("Unable to initialize parsing context.", this));
   reader.skip(reader.getSize());
   int result = 0;
   long long position = 0;
@@ -637,7 +637,7 @@ void XMLDefaultReader::parse(
   bool wellFormed = context->wellFormed;
   xmlFreeParserCtxt(context);
   if (wellFormed) {
-    bassert(result == 0, SAXException("Unable to parse buffer", this));
+    bassert(result == 0, SAXException("Unable to parse buffer.", this));
   } else {
     bassert(
       result == 0,
@@ -665,12 +665,12 @@ void XMLDefaultReader::parse(
     size, // minimum 4 bytes
     uri.isProper() ? uri.getElements() : 0
   );
-  bassert(context, SAXException("Unable to initialize parsing context", this));
+  bassert(context, SAXException("Unable to initialize parsing context.", this));
   int result = xmlParseChunk(context, 0, 0, 1); // terminate
   bool wellFormed = context->wellFormed;
   xmlFreeParserCtxt(context);
   if (wellFormed) {
-    bassert(result == 0, SAXParseException("Unable to parse buffer", this));
+    bassert(result == 0, SAXParseException("Unable to parse buffer.", this));
   } else {
     bassert(
       result == 0,
@@ -740,7 +740,7 @@ void XMLDefaultReader::parse(const String& systemId) {
     (flags & DOMImplementation::PEDANTIC) ? 1 : 0;
   
   xmlParserCtxt* context = xmlCreateFileParserCtxt(systemId.getElements());
-  bassert(context, SAXException("Unable to initialize parsing context", this));
+  bassert(context, SAXException("Unable to initialize parsing context.", this));
   context->sax = &XMLDefaultReaderImpl::SAX_HANDLER;
 
   XMLDefaultReaderImpl::UserData userData = {this, context};
@@ -755,7 +755,7 @@ void XMLDefaultReader::parse(const String& systemId) {
   
   xmlFreeParserCtxt(context);
   if (wellFormed) {
-    bassert(result == 0, SAXParseException("Unable to parse buffer", this));
+    bassert(result == 0, SAXParseException("Unable to parse buffer.", this));
   } else {
     bassert(
       result == 0,

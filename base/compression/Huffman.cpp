@@ -496,9 +496,9 @@ public:
     const uint8* end = src + size;
     totalNumberOfSymbols = 0;
     
-    bassert(src < end, InvalidFormat("Invalid header", this));
+    bassert(src < end, InvalidFormat("Invalid header.", this));
     minimumLength = *src++;
-    bassert(src < end, InvalidFormat("Invalid header", this));
+    bassert(src < end, InvalidFormat("Invalid header.", this));
     maximumLength = *src++;
     bassert(
       (minimumLength <= maximumLength) &&
@@ -507,18 +507,18 @@ public:
     );
 
     for (unsigned int length = minimumLength; length <= maximumLength; ++length) {
-      bassert(src < end, InvalidFormat("Invalid header", this));
+      bassert(src < end, InvalidFormat("Invalid header.", this));
       numberOfSymbols[length] = *src++;
-      bassert((src + numberOfSymbols[length]) < end, InvalidFormat("Invalid header", this));
+      bassert((src + numberOfSymbols[length]) < end, InvalidFormat("Invalid header.", this));
       totalNumberOfSymbols += numberOfSymbols[length];
       for (unsigned int i = numberOfSymbols[length]; i > 0; --i) {
         unsigned int symbol = *src++;
-        bassert(symbols[symbol].length == 0, InvalidFormat("Invalid header", this)); // is symbol already read
+        bassert(symbols[symbol].length == 0, InvalidFormat("Invalid header.", this)); // is symbol already read
         symbols[symbol].length = length;
       }
     }
 
-    bassert(src < end, InvalidFormat("Invalid header", this));
+    bassert(src < end, InvalidFormat("Invalid header.", this));
     garbageBits = *src++;
     
     // reduce code length range if stupid
@@ -595,7 +595,7 @@ public:
           if ((src == end) && (count == length)) {
             return; // we are done
           }
-          bassert(src < end, InvalidFormat("Invalid Huffman code", this));
+          bassert(src < end, InvalidFormat("Invalid Huffman code.", this));
           while (src < end) {
             bitBuffer <<= 8;
             bitBuffer |= *src++;
@@ -603,7 +603,7 @@ public:
           }
           bitBuffer >>= garbageBits;
           availableBits -= garbageBits;
-          bassert(availableBits >= count, InvalidFormat("Invalid Huffman code", this));
+          bassert(availableBits >= count, InvalidFormat("Invalid Huffman code.", this));
         } else {
           for (unsigned int i = sizeof(bitBuffer); i > 0; --i) { // fill buffer
             bitBuffer <<= 8;
@@ -624,7 +624,7 @@ public:
         
         if (availableBits == 0) { // do we need to fill the bit buffer
           if (src >= wordEnd) {
-            bassert(src < end, InvalidFormat("Invalid Huffman code", this));
+            bassert(src < end, InvalidFormat("Invalid Huffman code.", this));
             while (src < end) {
               bitBuffer <<= 8;
               bitBuffer |= *src++;
@@ -632,7 +632,7 @@ public:
             }
             bitBuffer >>= garbageBits;
             availableBits -= garbageBits;
-            bassert(availableBits, InvalidFormat("Invalid Huffman code", this));
+            bassert(availableBits, InvalidFormat("Invalid Huffman code.", this));
           } else {
             for (unsigned int i = sizeof(bitBuffer); i > 0; --i) {
               bitBuffer <<= 8;
@@ -645,14 +645,15 @@ public:
         code = (code << 1) | ((bitBuffer >> availableBits) & 1); // get one bit
         
         ++length;
-        bassert(length <= maximumLength, InvalidFormat("Invalid Huffman code", this));
+        bassert(length <= maximumLength, InvalidFormat("Invalid Huffman code.", this));
       }
     }
   }
   
 };
 
-void Huffman::decode(OutputStream& stream, const uint8* buffer, unsigned int size) {
+void Huffman::decode(OutputStream& stream, const uint8* buffer, unsigned int size)
+{
   Decoder decoder(stream, buffer, size);
 }
 

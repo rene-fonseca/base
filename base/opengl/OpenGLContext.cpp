@@ -207,7 +207,7 @@ nothing OpenGLContext::initialize(const Format& format) {
     (HINSTANCE)::GetModuleHandle(0), // the instance that owns the window (ignored on NT)
     0 // application window data structure
   );
-  bassert(drawableHandle, UserInterfaceException("Unable to create window", this));
+  bassert(drawableHandle, UserInterfaceException("Unable to create window.", this));
   
   if (!(WindowImpl::graphicsContextHandle = ::GetDC((HWND)drawableHandle))) {
     ::DestroyWindow((HWND)drawableHandle);
@@ -261,7 +261,7 @@ nothing OpenGLContext::initialize(const Format& format) {
       break;
     }
   }
-  bassert(formatId != 0, OpenGLException("Requested format not supported", this));
+  bassert(formatId != 0, OpenGLException("Requested format not supported.", this));
   
   OpenGLContextImpl::flags = 0;
   OpenGLContextImpl::flags |= (pfd.iPixelType == PFD_TYPE_COLORINDEX) ? OpenGLContext::COLOR_INDEXED : 0;
@@ -310,7 +310,7 @@ nothing OpenGLContext::initialize(const Format& format) {
   
   int screenId = ::XDefaultScreen((Display*)displayHandle);
   screenHandle = ::XScreenOfDisplay((Display*)displayHandle, screenId);
-  bassert(screenHandle, UserInterfaceException("Unable to open screen", this));
+  bassert(screenHandle, UserInterfaceException("Unable to open screen.", this));
   
 //   {
 //     // GLX 1.3
@@ -423,7 +423,7 @@ nothing OpenGLContext::initialize(const Format& format) {
       attributeList // attributes
     );
     // TAG: screenHandle = 0
-    bassert(visualInfo, OpenGLException("Format not supported", this));
+    bassert(visualInfo, OpenGLException("Format not supported.", this));
 
     renderingContextHandle = native::GLX::glXCreateContext(
     (Display*)displayHandle,

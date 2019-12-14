@@ -67,8 +67,8 @@ Pair<Pipe, Pipe> Pipe::make() {
     0
   );
   // FIXME: remember to close before raising an exception
-  bassert(ihandle != OperatingSystem::INVALID_HANDLE, IOException("Unable to make pipes", Type::getType<Pipe>()));
-  bassert(ohandle != OperatingSystem::INVALID_HANDLE, IOException("Unable to make pipes", Type::getType<Pipe>()));
+  bassert(ihandle != OperatingSystem::INVALID_HANDLE, IOException("Unable to make pipes.", Type::getType<Pipe>()));
+  bassert(ohandle != OperatingSystem::INVALID_HANDLE, IOException("Unable to make pipes.", Type::getType<Pipe>()));
   Pipe p;
   Pipe q;
   p.fd = new PipeHandle(ihandle);

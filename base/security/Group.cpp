@@ -54,7 +54,7 @@ Group::Group(const void* _id)
     integralId = INVALID;
     return;
   }
-  bassert(::IsValidSid((PSID)_id) != 0, OutOfDomain("Invalid group id", this));
+  bassert(::IsValidSid((PSID)_id) != 0, OutOfDomain("Invalid group.", this));
   unsigned int size = ::GetLengthSid((PSID)_id);
   id = new ReferenceCountedAllocator<uint8>(size);
   copy(id->getElements(), Cast::pointer<const uint8*>(_id), size);

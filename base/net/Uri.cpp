@@ -153,12 +153,13 @@ public:
     return ((ch == ':') || (ch == '@') || (ch == '/')) ? ALWAYS : defaultEncoding(ch);
   }
 
-  static inline String encode(const String& str, Encoding encoding = defaultEncoding) {
+  static inline String encode(const String& str, Encoding encoding = defaultEncoding)
+  {
     String temp(str.getLength());
     const String::ReadIterator end = str.getEndReadIterator();
     for (String::ReadIterator i = str.getBeginReadIterator(); i < end;) {
       char ch = *i++;
-      bassert(String::Traits::isASCII(ch), UriException("Invalid character"));
+      bassert(String::Traits::isASCII(ch), UriException("Invalid character."));
       if (encoding(ch) != NEVER) {
         temp += '%';
         temp += ASCIITraits::valueToDigit(ch >> 4);
@@ -177,14 +178,20 @@ public:
     for (String::ReadIterator i = str.getBeginReadIterator(); i < end;) {
       char ch = *i++;
       if (ch == '%') {
-        bassert(end - i >= 2, UriException("Invalid encoding")); // need two digits
+        bassert(end - i >= 2, UriException("Invalid encoding.")); // need two digits
         char highDigit = *i++;
         char lowDigit = *i++;
-        bassert(ASCIITraits::isDigit(highDigit) && ASCIITraits::isDigit(lowDigit), UriException("Invalid encoding")); // need two digits
+        bassert(
+          ASCIITraits::isDigit(highDigit) && ASCIITraits::isDigit(lowDigit),
+          UriException("Invalid encoding.")
+        ); // need two digits
         ch = (static_cast<unsigned int>(highDigit - '0') << 4) + static_cast<unsigned int>(lowDigit - '0'); // replace with decoded char
       } else {
         Encode encode = encoding(ch);
-        bassert(strict ? (encode == NEVER) : (encode <= RELAXED), UriException("Part contains unencoded character"));
+        bassert(
+          strict ? (encode == NEVER) : (encode <= RELAXED),
+          UriException("Part contains unencoded character.")
+        );
       }
       temp += ch;
     }
@@ -266,7 +273,7 @@ String Uri::validateUser(const String& str)
   const String::ReadIterator end = str.getEndReadIterator();
   for (String::ReadIterator i = str.getBeginReadIterator(); i < end;) {
     char ch = *i++;
-    bassert(String::Traits::isASCII(ch), UriException("Invalid character"));
+    bassert(String::Traits::isASCII(ch), UriException("Invalid character."));
   }
   return str;
 }
@@ -276,7 +283,7 @@ String Uri::validatePassword(const String& str)
   const String::ReadIterator end = str.getEndReadIterator();
   for (String::ReadIterator i = str.getBeginReadIterator(); i < end;) {
     char ch = *i++;
-    bassert(String::Traits::isASCII(ch), UriException("Invalid character"));
+    bassert(String::Traits::isASCII(ch), UriException("Invalid character."));
   }
   return str;
 }

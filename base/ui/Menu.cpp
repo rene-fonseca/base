@@ -56,18 +56,20 @@ Menu::MenuHandle::~MenuHandle() {
 }
 
 Menu::Menu()
-  : handle(new MenuHandle()) {
+  : handle(new MenuHandle())
+{
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   HMENU handle = ::CreatePopupMenu();
-  bassert(handle != 0, MenuException("Unable to create menu", this));
+  bassert(handle != 0, MenuException("Unable to create menu.", this));
   this->handle = new MenuHandle((OperatingSystem::Handle)handle); // TAG: could raise exception
-  bassert(this->handle.isValid(), MenuException("Unable to create menu", this));
+  bassert(this->handle.isValid(), MenuException("Unable to create menu.", this));
 #else // unix
   // TAG: fixme
 #endif // flavor
 }
 
-unsigned int Menu::getNumberOfItems() const {
+unsigned int Menu::getNumberOfItems() const
+{
   if (!handle.isValid()) {
     return 0;
   }

@@ -120,7 +120,7 @@ SerialPort::SerialPort(const String& _name)
                                FILE_FLAG_OVERLAPPED, // overlapped I/O
                                0 // must be 0 for comm devices
   );
-  bassert(handle != OperatingSystem::INVALID_HANDLE, CommunicationsException("Unable to open serial port", this));
+  bassert(handle != OperatingSystem::INVALID_HANDLE, CommunicationsException("Unable to open serial port.", this));
   this->handle = new Handle(handle);
 #endif // flavor
 }

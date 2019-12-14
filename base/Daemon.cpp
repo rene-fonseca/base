@@ -185,12 +185,12 @@ namespace win32 {
 
 Daemon::Daemon(Runnable* runnable) {
   static unsigned int singleton = 0;
-  bassert(singleton == 0, SingletonException("Daemon has been instantiated"));
+  bassert(singleton == 0, SingletonException("Daemon has been instantiated."));
   ++singleton;
   if (!runnable) {
     throw OutOfDomain();
   }
-  bassert(Application::getApplication(), Exception("Application has not been institiated"));
+  bassert(Application::getApplication(), Exception("Application has not been institiated."));
   DaemonImpl::runnable = runnable;
   DaemonImpl::parentThread = Thread::getThread();
 
@@ -294,12 +294,12 @@ void Daemon::install() {
 Daemon::Daemon(Runnable* runnable)
 {
   static unsigned int singleton = 0;
-  bassert(singleton == 0, SingletonException("Daemon has been instantiated"));
+  bassert(singleton == 0, SingletonException("Daemon has been instantiated."));
   ++singleton;
   if (!runnable) {
     throw OutOfDomain();
   }
-  bassert(Application::getApplication(), Exception("Application has not been institiated"));
+  bassert(Application::getApplication(), Exception("Application has not been institiated."));
 
 #if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__WASI)
   throw ResourceException("Unable to daemonize process.");

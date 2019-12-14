@@ -476,7 +476,7 @@ unsigned int FileSystem::getType(const String& path)
   struct stat status;
   int result = stat(path.getElements(), &status);
 #endif
-  bassert(result == 0, FileSystemException("Unable to query entry", Type::getType<FileSystem>()));
+  bassert(result == 0, FileSystemException("Unable to query entry.", Type::getType<FileSystem>()));
   unsigned int flags = 0;
   if (S_ISBLK(status.st_mode)) {
     flags |= FileSystem::BLOCK;
@@ -539,7 +539,7 @@ uint64 FileSystem::getSize(const String& path) {
   struct stat status;
   int result = stat(path.getElements(), &status);
 #endif
-  bassert(result == 0, FileSystemException("Unable to get size of file", Type::getType<FileSystem>()));
+  bassert(result == 0, FileSystemException("Unable to get size of file.", Type::getType<FileSystem>()));
   return status.st_size;
 #endif // flavor
 }
@@ -1173,10 +1173,13 @@ void FileSystem::makeHardLink(const String& target, const String& path)
   } else {
     error = !FileSystemImpl::makeHardLink(target, path);
   }
-  bassert(!error, FileSystemException("Unable to make hard link", Type::getType<FileSystem>()));
+  bassert(!error, FileSystemException("Unable to make hard link.", Type::getType<FileSystem>()));
 #endif // w2k or later
 #else // unix
-  bassert(::link(target.getElements(), path.getElements()) == 0, FileSystemException("Unable to make hard link", Type::getType<FileSystem>()));
+  bassert(
+    ::link(target.getElements(), path.getElements()) == 0,
+    FileSystemException("Unable to make hard link.", Type::getType<FileSystem>())
+  );
 #endif // flavor
 }
 
@@ -1300,7 +1303,7 @@ void FileSystem::makeLink(const String& target, const String& path)
       ::DeleteFile(ToWCharString(path)); // clean up // TAG: can we use FILE_FLAG_DELETE_ON_CLOSE
     }
   }
-  bassert(!error, FileSystemException("Unable to make link", Type::getType<FileSystem>()));
+  bassert(!error, FileSystemException("Unable to make link.", Type::getType<FileSystem>()));
 #else // unix
   bassert(
     !::symlink(target.getElements(), path.getElements()),
@@ -1315,7 +1318,7 @@ String FileSystem::getLink(const String& path) {
   if (cachedSupportsLinks == -1) {
     supportsLinks();
   }
-  bassert(cachedSupportsLinks == 1, NotSupported("Symbolic link", Type::getType<FileSystem>()));
+  bassert(cachedSupportsLinks == 1, NotSupported("Symbolic link.", Type::getType<FileSystem>()));
   
   HANDLE link = ::CreateFile(
     ToWCharString(path),

@@ -181,9 +181,9 @@ public:
     String::ReadIterator name = i;
     for (; (i < end) && HTTPTraits::isToken(*i); ++i) { // skip name
     }
-    bassert(name < i, HTTPException("Invalid message header"));
+    bassert(name < i, HTTPException("Invalid message header."));
     this->name = line.substring(name - begin, i - begin);
-    bassert(*i++ == ':', HTTPException("Invalid message header"));
+    bassert(*i++ == ':', HTTPException("Invalid message header."));
     for (; (i < end) && HTTPTraits::isLWS(*i); ++i) { // skip LWS
     }
     String::ReadIterator value = i;
@@ -479,7 +479,7 @@ protected:
       }
     }
 
-    bassert(valid && validVersion && validCode && validPhrase, HTTPException("Invalid response"));
+    bassert(valid && validVersion && validCode && validPhrase, HTTPException("Invalid response."));
   }
 
   /* See chapter 5 of RFC */
@@ -496,7 +496,7 @@ protected:
       METHOD_CONNECT
     };
 
-    bassert(resourceUri != "", HTTPException("Empty resourceUri"));
+    bassert(resourceUri != "", HTTPException("Empty resourceUri."));
     
     StringOutputStream stream;
     stream << methods[method] << Traits::SP << resourceUri << Traits::SP

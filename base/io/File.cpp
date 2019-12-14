@@ -297,7 +297,7 @@ unsigned int File::getMode() const {
                                  OWNER_SECURITY_INFORMATION|GROUP_SECURITY_INFORMATION|DACL_SECURITY_INFORMATION,
                                  &ownerSID, &groupSID, &acl, 0,
                                  &securityDescriptor) != ERROR_SUCCESS;
-  bassert(!error, FileException("Not a file", this));
+  bassert(!error, FileException("Not a file.", this));
   
   const DWORD ownerSize = ::GetLengthSid((PSID)ownerSID);
   const DWORD groupSize = ::GetLengthSid((PSID)groupSID);
@@ -628,7 +628,7 @@ AccessControlList File::getACL() const {
 #elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__SOLARIS)
   aclent_t entries[MAX_ACL_ENTRIES];
   int numberOfEntries = ::facl(fd->getHandle(), GETACL, MAX_ACL_ENTRIES, entries);
-  bassert(numberOfEntries >= 0, FileException("Unable to get ACL", this));
+  bassert(numberOfEntries >= 0, FileException("Unable to get ACL.", this));
   
   for (int i = 0; i < numberOfEntries; ++i) {
     const unsigned int mode = ((entries[i].a_perm & S_IRGRP) ? AccessControlEntry::READ : 0) |
@@ -776,7 +776,7 @@ long long File::getSize() const {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   #if (_COM_AZURE_DEV__BASE__OS >= _COM_AZURE_DEV__BASE__W2K)
     LARGE_INTEGER size; // TAG: unresolved possible byte order problem for big endian architectures
-    bassert(::GetFileSizeEx(fd->getHandle(), &size), FileException("Unable to get file size", this));
+    bassert(::GetFileSizeEx(fd->getHandle(), &size), FileException("Unable to get file size.", this));
   #else
     ULARGE_INTEGER size;
     size.LowPart = ::GetFileSize(fd->getHandle(), &size.HighPart);
@@ -793,7 +793,7 @@ long long File::getSize() const {
     struct stat status;
     int result = ::fstat(fd->getHandle(), &status);
   #endif // LFS
-    bassert(result == 0, FileException("Unable to get file size", this));
+    bassert(result == 0, FileException("Unable to get file size.", this));
     return status.st_size;
 #endif
 }
@@ -837,7 +837,7 @@ void File::setPosition(long long position, Whence whence)
   #if defined(_COM_AZURE_DEV__BASE__LARGE_FILE_SYSTEM)
     ::lseek64(fd->getHandle(), position, relativeTo[whence]); // should never fail
   #else
-    bassert(position <= PrimitiveTraits<int>::MAXIMUM, FileException("Unable to set position", this));
+    bassert(position <= PrimitiveTraits<int>::MAXIMUM, FileException("Unable to set position.", this));
     ::lseek(fd->getHandle(), position, relativeTo[whence]); // should never fail
   #endif
 #endif
@@ -856,7 +856,10 @@ void File::truncate(long long size) {
       throw FileException("Unable to truncate.", this);
     }
   #else
-    bassert((size >= 0) && (size <= PrimitiveTraits<int>::MAXIMUM), FileException("Unable to truncate", this));
+    bassert(
+      (size >= 0) && (size <= PrimitiveTraits<int>::MAXIMUM),
+      FileException("Unable to truncate.", this)
+    );
     if (::ftruncate(fd->getHandle(), size)) {
       throw FileException("Unable to truncate.", this);
     }
@@ -1068,7 +1071,10 @@ void File::unlock(const FileRegion& region)
   BASSERT(!"Not supported.");
 #else // unix
   #if defined(_COM_AZURE_DEV__BASE__LARGE_FILE_SYSTEM)
-    bassert((region.getOffset() >= 0) && (region.getSize() >= 0), FileException("Unable to unlock region", this));
+    bassert(
+      (region.getOffset() >= 0) && (region.getSize() >= 0),
+      FileException("Unable to unlock region.", this)
+    );
     struct flock64 lock;
     lock.l_type = F_UNLCK;
     lock.l_whence = SEEK_SET; // offset from beginning of file
@@ -1124,7 +1130,7 @@ Date File::getLastModification()
     struct stat status;
     int result = ::fstat(fd->getHandle(), &status);
   #endif // LFS
-    bassert(result == 0, FileException("Unable to get status", this));
+    bassert(result == 0, FileException("Unable to get status.", this));
     return Date(status.st_mtime);
 #endif
 }

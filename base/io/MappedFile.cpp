@@ -42,10 +42,10 @@ _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 MappedFile::MappedFileImpl::MappedFileImpl(const File& _file, const FileRegion& _region, bool _writeable)
   : file(_file), region(_region), writeable(_writeable)
 {
-  bassert(region.getOffset() >= 0, FileException("Unable to map file region", this));
+  bassert(region.getOffset() >= 0, FileException("Unable to map file region.", this));
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   HANDLE handle = ::CreateFileMapping((HANDLE)getHandle(file), 0, writeable ? PAGE_READWRITE : PAGE_READONLY, 0, 0, 0);
-  bassert(handle, FileException("Unable to map file region", this));
+  bassert(handle, FileException("Unable to map file region.", this));
   LARGE_INTEGER offset;
   offset.QuadPart = region.getOffset();
 
@@ -63,10 +63,13 @@ MappedFile::MappedFileImpl::MappedFileImpl(const File& _file, const FileRegion& 
   #if defined(_COM_AZURE_DEV__BASE__LARGE_FILE_SYSTEM)
     address = ::mmap64(0, region.getSize(), writeable ? (PROT_READ | PROT_WRITE) : PROT_READ, MAP_SHARED, getHandle(file), region.getOffset());
   #else
-    bassert((region.getOffset() >= 0) && (region.getOffset() <= PrimitiveTraits<int>::MAXIMUM), FileException("Unable to map file region", this));
+    bassert(
+      (region.getOffset() >= 0) && (region.getOffset() <= PrimitiveTraits<int>::MAXIMUM),
+      FileException("Unable to map file region", this)
+    );
     address = ::mmap(0, region.getSize(), writeable ? (PROT_READ | PROT_WRITE) : PROT_READ, MAP_SHARED, getHandle(file), region.getOffset());
   #endif
-  bassert(address != (void*)-1, FileException("Unable to map file region", this));
+  bassert(address != (void*)-1, FileException("Unable to map file region.", this));
 #endif // flavor
   bytes = address;
 }
@@ -128,7 +131,7 @@ MappedFile::MappedFile(const File& file, const FileRegion& region, bool writeabl
   : map(0)
 {
   map = new MappedFileImpl(file, region, writeable);
-//  bassert(r.getOffset() >= 0, FileException("Unable to map file", this));
+//  bassert(r.getOffset() >= 0, FileException("Unable to map file.", this));
 //#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
 //  HANDLE handle = ::CreateFileMapping((HANDLE)f.fd->getHandle(), 0, writeable ? PAGE_READWRITE : PAGE_READONLY, 0, 0, 0);
 //  if (handle) {
@@ -151,7 +154,7 @@ MappedFile::MappedFile(const File& file, const FileRegion& region, bool writeabl
 //#if defined(_COM_AZURE_DEV__BASE__LARGE_FILE_SYSTEM)
 //  address = mmap64(0, r.getSize(), writeable ? (PROT_READ | PROT_WRITE) : PROT_READ, MAP_SHARED, f.fd->getHandle(), r.getOffset());
 //#else
-//  bassert((r.getOffset() >= 0) && (r.getOffset() <= PrimitiveTraits<int>::MAXIMUM), FileException("Unable to map file", this));
+//  bassert((r.getOffset() >= 0) && (r.getOffset() <= PrimitiveTraits<int>::MAXIMUM), FileException("Unable to map file.", this));
 //  address = mmap(0, r.getSize(), writeable ? (PROT_READ | PROT_WRITE) : PROT_READ, MAP_SHARED, f.fd->getHandle(), r.getOffset());
 //#endif
 //  if (address == (void*)-1) {

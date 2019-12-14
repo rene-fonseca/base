@@ -167,7 +167,7 @@ LinuxRawIEEE1394::LinuxRawIEEE1394() {
     ).getElements(),
     O_RDWR
   );
-  bassert(handle >= 0, IEEE1394Exception("Unable to open device", this));
+  bassert(handle >= 0, IEEE1394Exception("Unable to open device.", this));
   
   LinuxRawIEEE1394Impl::Request request;
   clear(request);
@@ -222,7 +222,7 @@ void LinuxRawIEEE1394::resetBus() {
   clear(request);
   request.type = LinuxRawIEEE1394::REQUEST_RESET_BUS;
   request.generation = generation;
-  bassert(::write(handle, &request, sizeof(request)) >= 0, IEEE1394Exception("Unable to reset bus", this));
+  bassert(::write(handle, &request, sizeof(request)) >= 0, IEEE1394Exception("Unable to reset bus.", this));
   // dequeue
   // TAG: read new node ids
 }
@@ -394,7 +394,7 @@ void LinuxRawIEEE1394::dequeueResponse() {
     }
     break;
   case LinuxRawIEEE1394::EVENT_FCP_REQUEST:
-    bassert(fcpListener, UnexpectedFailure("Invalid FCP response", this)); // TAG: is this ok
+    bassert(fcpListener, UnexpectedFailure("Invalid FCP response.", this)); // TAG: is this ok
     if (fcpListener) {
       unsigned short nodeId = request.misc & 0xffff;
       bool response = (request.misc >> 16) != 0;
@@ -418,7 +418,7 @@ void LinuxRawIEEE1394::dequeueResponse() {
     // TAG: possibly ignore response?
     LinuxRawIEEE1394Impl::RequestContext* requestContext =
       Cast::getPointer<LinuxRawIEEE1394Impl::RequestContext*>(request.tag);
-    bassert(requestContext, UnexpectedFailure("Invalid response", this));
+    bassert(requestContext, UnexpectedFailure("Invalid response.", this));
     switch (requestContext->type) {
     case LinuxRawIEEE1394::REQUEST_ASYNC_READ:
     case LinuxRawIEEE1394::REQUEST_ASYNC_WRITE:
@@ -715,7 +715,7 @@ void LinuxRawIEEE1394::readIsochronous(unsigned int channel, unsigned int maximu
   bassert(listener, OutOfDomain(this)); // TAG: NullPointer
   bassert((maximumPayload > 0) && ((maximumPayload % sizeof(Quadlet)) == 0), OutOfDomain(this));
   bassert(channel < IEEE1394Impl::ISOCHRONOUS_CHANNELS, OutOfDomain(this));
-  bassert(!isochronousChannels[channel].busy, IEEE1394Exception("Isochronous channel conflict", this));
+  bassert(!isochronousChannels[channel].busy, IEEE1394Exception("Isochronous channel conflict.", this));
   
   // TAG: need lock for isochronousChannels[channel]
   isochronousChannels[channel].busy = true;

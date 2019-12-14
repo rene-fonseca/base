@@ -72,19 +72,20 @@ User::User(unsigned long _id) : integralId(_id) {
 #endif
 }
 
-User::User(const void* _id) {
+User::User(const void* _id)
+{
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   if (_id == 0) {
     integralId = INVALID;
     return;
   }
-  bassert(::IsValidSid((PSID)_id) != 0, OutOfDomain("Invalid user id", this));
+  bassert(::IsValidSid((PSID)_id) != 0, OutOfDomain("Invalid user.", this));
   unsigned int size = ::GetLengthSid((PSID)_id);
   id = new ReferenceCountedAllocator<uint8>(size);
   copy(id->getElements(), Cast::pointer<const uint8*>(_id), size);
   integralId = 0;
 #else // unix
-  throw OutOfDomain("Invalid user id.", this);
+  throw OutOfDomain("Invalid user.", this);
 #endif // flavor
 }
 
@@ -128,7 +129,7 @@ User::User(const String& name)
                              &sidType) != 0,
          UserException("Unable to lookup name", this)
   );
-  bassert(sidType == SidTypeUser, UserException("Not a user", this));
+  bassert(sidType == SidTypeUser, UserException("Not a user.", this));
   id = new ReferenceCountedAllocator<uint8>(size);
   copy(id->getElements(), sid, size);
   integralId = 0;
@@ -172,7 +173,7 @@ String User::getName(bool fallback) const
         &domainNameSize,
         &sidType) == 0
   ) {
-    bassert(fallback, UserException("Unable to lookup name", this));
+    bassert(fallback, UserException("Unable to lookup name.", this));
     StringOutputStream s;
     s << *this << FLUSH;
     return s.getString();
@@ -197,7 +198,7 @@ String User::getName(bool fallback) const
     &entry
   );
   if (result != 0) {
-    bassert(fallback, UserException("Unable to lookup name", this));
+    bassert(fallback, UserException("Unable to lookup name.", this));
     StringOutputStream s;
     s << *this << FLUSH;
     return s.getString();

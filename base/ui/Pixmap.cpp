@@ -53,7 +53,7 @@ void Pixmap::destroy() noexcept
 Pixmap::Pixmap(const Dimension& dimension, unsigned int flags) {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   HDC pixmap = ::CreateCompatibleDC(0 /*::GetDCEx(0, 0, 0)*/);
-  bassert(pixmap, UserInterfaceException("Unable to create pixmap", this));
+  bassert(pixmap, UserInterfaceException("Unable to create pixmap.", this));
   HBITMAP bitmap = ::CreateCompatibleBitmap((HDC)pixmap, dimension.getWidth(), dimension.getHeight());
   if (!bitmap) {
     ::DeleteDC((HDC)pixmap);

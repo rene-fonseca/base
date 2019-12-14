@@ -31,7 +31,8 @@ namespace extension {
 
     Reference<RegistryKey::Handle> RegistryKey::invalid;
     
-    RegistryKey::Handle::~Handle() {
+    RegistryKey::Handle::~Handle()
+    {
       if (handle) {
         bassert(
           ::RegCloseKey((HKEY)handle) == ERROR_SUCCESS,
@@ -43,22 +44,26 @@ namespace extension {
     
     
     
-    RegistryKey RegistryKey::getMachine() {
+    RegistryKey RegistryKey::getMachine()
+    {
       return RegistryKey::RegistryKey(RegistryKey::MACHINE, MESSAGE(""), RegistryKey::READWRITE);
     }
 
-    RegistryKey RegistryKey::getUser() {
+    RegistryKey RegistryKey::getUser()
+    {
       return RegistryKey::RegistryKey(RegistryKey::USER, MESSAGE(""), RegistryKey::READWRITE);
     }
 
-    RegistryKey::RegistryKey() noexcept {
+    RegistryKey::RegistryKey() noexcept
+    {
       if (!invalid.isValid()) {
         invalid = new RegistryKey::Handle(OperatingSystem::INVALID_HANDLE);
       }
       key = invalid;
     }
     
-    RegistryKey::RegistryKey(const String& machine, Root root, const String& path, Access access) {
+    RegistryKey::RegistryKey(const String& machine, Root root, const String& path, Access access)
+    {
       HKEY rootKey;
       
       HKEY regRoot;
@@ -70,12 +75,12 @@ namespace extension {
         regRoot = HKEY_USERS;
         break;
       default:
-        throw RegistryException("Invalid root", this);
+        throw RegistryException("Invalid root.", this);
       }
       
       bassert(
         ::RegConnectRegistry(machine.getElements(), regRoot, &rootKey) == ERROR_SUCCESS,
-        RegistryException("Unable to connect to Registry", this)
+        RegistryException("Unable to connect to Registry.", this)
       );
       
       REGSAM regAccess = 0;
@@ -101,7 +106,7 @@ namespace extension {
         );
         if (error != ERROR_SUCCESS) {
           ::RegCloseKey(rootKey);
-          throw RegistryException("Unable to open key", this);
+          throw RegistryException("Unable to open key.", this);
         }
       } else {
         regKey = rootKey;
@@ -110,7 +115,8 @@ namespace extension {
       this->key = new RegistryKey::Handle((OperatingSystem::Handle)regKey);
     }
     
-    RegistryKey::RegistryKey(Root root, const String& path, Access access) {
+    RegistryKey::RegistryKey(Root root, const String& path, Access access)
+    {
       REGSAM regAccess = 0;
       switch (access) {
       case RegistryKey::READ:
@@ -420,7 +426,7 @@ namespace extension {
       case REG_SZ:
         return RegistryKey::STRING_VALUE;
       default:
-        throw RegistryException("Unsupported value", this);
+        throw RegistryException("Unsupported value.", this);
       }
 
       DWORD secondType;
@@ -582,7 +588,7 @@ namespace extension {
       case REG_DWORD_BIG_ENDIAN:
         return ByteOrder::fromBigEndian<uint32>(buffer); // TAG: fixme
       default:
-        throw RegistryException("Invalid value", this);
+        throw RegistryException("Invalid value.", this);
       }
     }
     
@@ -594,7 +600,7 @@ namespace extension {
                              REG_DWORD, // value type
                              (BYTE*)&buffer, // value data
                              sizeof(buffer) // size of value data
-      ) == ERROR_SUCCESS, RegistryException("Unable to set value", this));
+      ) == ERROR_SUCCESS, RegistryException("Unable to set value.", this));
     }
 
     String RegistryKey::getBinary(const String& name) const {

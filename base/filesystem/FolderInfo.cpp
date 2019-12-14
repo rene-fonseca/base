@@ -99,7 +99,7 @@ FolderInfo::FolderInfo(const String& _path)
                                FILE_FLAG_OPEN_REPARSE_POINT|FILE_FLAG_BACKUP_SEMANTICS, // file attributes
                                0 // handle to template file
     );
-    bassert(link != INVALID_HANDLE_VALUE, FileSystemException("Not a folder", this));
+    bassert(link != INVALID_HANDLE_VALUE, FileSystemException("Not a folder.", this));
     
     // TAG: fix buffer size (protect against buffer overflow)
     char* buffer[17000]; // need alternative - first attempt to get length first failed
@@ -167,7 +167,7 @@ FolderInfo::FolderInfo(const String& _path)
                              0,
                              &securityDescriptor) != ERROR_SUCCESS;
   ::CloseHandle(folder);
-  bassert(!error, FileSystemException("Not a folder", this));
+  bassert(!error, FileSystemException("Not a folder.", this));
 
   owner = User((const void*)ownerSID);
   const DWORD ownerSize = ::GetLengthSid((PSID)ownerSID);

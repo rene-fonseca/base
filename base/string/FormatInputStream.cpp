@@ -199,7 +199,7 @@ FormatInputStream& operator>>(FormatInputStream& stream, unsigned int& value)
   } while (ASCIITraits::isSpace(ch));
 
   do {
-    bassert(ASCIITraits::isDigit(ch), InvalidFormat("Not an unsigned int"));
+    bassert(ASCIITraits::isDigit(ch), InvalidFormat("Not an unsigned int."));
     unsigned char temp = ASCIITraits::digitToValue(ch);
     if ((value < PrimitiveTraits<unsigned int>::MAXIMUM/10) ||
         ((value == PrimitiveTraits<unsigned int>::MAXIMUM/10) &&

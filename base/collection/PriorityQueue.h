@@ -119,7 +119,7 @@ public:
   Value pop()
   {
     Value result;
-    bassert(size, InvalidNode("Priority queue is empty", this));
+    bassert(size, InvalidNode("Priority queue is empty.", this));
 
     auto node = elements.getLast();
     bool removeQueue = false;

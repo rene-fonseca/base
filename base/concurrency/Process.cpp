@@ -330,7 +330,7 @@ bool Process::isAlive() const
   // use SYNCHRONIZE
   DWORD exitCode = 0;
   HANDLE handle = ::OpenProcess(PROCESS_QUERY_INFORMATION, FALSE, static_cast<DWORD>(id));
-  bassert(handle != 0, ProcessException("Unable to query process", this));
+  bassert(handle != 0, ProcessException("Unable to query process.", this));
   BOOL result = ::GetExitCodeProcess(handle, &exitCode);
   ::CloseHandle(handle);
   if (result != 0) {
@@ -351,7 +351,7 @@ bool Process::isAlive() const
     
     For some reason this exception cannot be caught
     
-    bassert(result >= 0, ProcessException("Unable to query process", this));
+    bassert(result >= 0, ProcessException("Unable to query process.", this));
   */
   if (result == (pid_t)id) {
     return false;
@@ -459,7 +459,7 @@ void Process::lock()
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   if (!handle->isValid()) {
     HANDLE result = ::OpenProcess(SYNCHRONIZE, FALSE, static_cast<DWORD>(id));
-    bassert(result != 0, ProcessException("Unable to acquire lock", this));
+    bassert(result != 0, ProcessException("Unable to acquire lock.", this));
     handle = new ProcessHandle(result);
   }
 #else // unix
@@ -605,7 +605,7 @@ bool Process::terminate(bool force)
   if (force) {
     // TAG: ask nicely first
     HANDLE handle = ::OpenProcess(PROCESS_TERMINATE, FALSE, static_cast<DWORD>(id));
-    bassert(handle != 0, ProcessException("Unable to terminate process", this));
+    bassert(handle != 0, ProcessException("Unable to terminate process.", this));
     ::TerminateProcess(handle, Application::EXIT_CODE_EXTERNAL);
     ::CloseHandle(handle);
     return true;
@@ -613,7 +613,7 @@ bool Process::terminate(bool force)
     // TAG: if service then ask to stop
 
     HANDLE handle = ::OpenProcess(SYNCHRONIZE, FALSE, static_cast<DWORD>(id));
-    bassert(handle != 0, ProcessException("Unable to terminate process", this));
+    bassert(handle != 0, ProcessException("Unable to terminate process.", this));
     KillImpl kill(id);
     kill.signal();
     ::CloseHandle(handle);

@@ -89,6 +89,9 @@ private:
 
     /** Invalid socket. */
     static SocketImpl* invalid;
+
+    /** Returns invalid socket. */
+    static SocketImpl* getInvalid() noexcept;
     
     /** Initializes the socket with the specified handle. */
     SocketImpl(

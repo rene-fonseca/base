@@ -55,7 +55,8 @@ namespace internal {
     };
 #endif
 
-    static inline InetAddress getAddress(const struct sockaddr& address) noexcept {
+    static inline InetAddress getAddress(const struct sockaddr& address) noexcept
+    {
 #if defined(_COM_AZURE_DEV__BASE__INET_IPV6)
       switch (address.sa_family) {
       case AF_INET:
@@ -91,7 +92,8 @@ namespace internal {
   };
 }; // end of namespace internal
 
-HashTable<String, unsigned int> InetInterface::getInterfaceNames() noexcept {
+HashTable<String, unsigned int> InetInterface::getInterfaceNames() noexcept
+{
   HashTable<String, unsigned int> interfaces;
 #if 0 && defined(_COM_AZURE_DEV__BASE__INET_IPV6)
   struct if_nameindex* ni = nullptr;
@@ -180,7 +182,8 @@ HashTable<String, unsigned int> InetInterface::getInterfaceNames() noexcept {
   return interfaces;
 }
 
-List<InetInterface> InetInterface::getInterfaces() {
+List<InetInterface> InetInterface::getInterfaces()
+{
   List<InetInterface> interfaces;
 #if 0 && defined(_COM_AZURE_DEV__BASE__INET_IPV6)
   struct if_nameindex* ni = nullptr;
@@ -349,7 +352,8 @@ List<InetInterface> InetInterface::getInterfaces() {
   return interfaces;
 }
 
-unsigned int InetInterface::getIndexByName(const String& name) {
+unsigned int InetInterface::getIndexByName(const String& name)
+{
 #if defined(_COM_AZURE_DEV__BASE__INET_IPV6)
   unsigned int index = if_nametoindex(name.getElements());
   bassert(index > 0, NetworkException("Unable to resolve interface", Type::getType<InetInterface>()));
@@ -493,7 +497,8 @@ unsigned int InetInterface::getIndexByAddress(const InetAddress& address)
 #endif
 }
 
-String InetInterface::getName(unsigned int index) {
+String InetInterface::getName(unsigned int index)
+{
 #if defined(_COM_AZURE_DEV__BASE__INET_IPV6)
   char name[IFNAMSIZ];
   bassert(
@@ -576,7 +581,8 @@ String InetInterface::getName(unsigned int index) {
 #endif
 }
 
-InetAddress InetInterface::getAddress(unsigned int index) {
+InetAddress InetInterface::getAddress(unsigned int index)
+{
 #if defined(_COM_AZURE_DEV__BASE__INET_IPV6)
   struct ifreq req;
   bassert(
@@ -674,11 +680,13 @@ InetAddress InetInterface::getAddress(unsigned int index) {
 }
 
 InetInterface::InetInterface() noexcept
-  : index(0), flags(0), metric(0) {
+  : index(0), flags(0), metric(0)
+{
 }
 
 InetInterface::InetInterface(const String& name)
-  : index(0), flags(0), metric(0) {
+  : index(0), flags(0), metric(0)
+{
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   int handle = socket(PF_INET, SOCK_STREAM, 0);
   DWORD bytesReturned = 0;
@@ -812,7 +820,8 @@ InetInterface::InetInterface(const InetInterface& copy) noexcept
     broadcast(copy.broadcast),
     destination(copy.destination),
     metric(copy.metric),
-    ethernet(copy.ethernet) {
+    ethernet(copy.ethernet)
+{
 }
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

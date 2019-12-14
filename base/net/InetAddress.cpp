@@ -40,7 +40,8 @@
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 #if 0
-String InetAddress::getLocalDomainName() {
+String InetAddress::getLocalDomainName()
+{
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
 #else // unix
 #endif
@@ -71,7 +72,8 @@ String InetAddress::getLocalHost()
   return NativeString(name);
 }
 
-List<InetAddress> InetAddress::getAddressesByName(const String& name) {
+List<InetAddress> InetAddress::getAddressesByName(const String& name)
+{
   List<InetAddress> result;
   
 #if (defined(_COM_AZURE_DEV__BASE__INET_IPV6))
@@ -152,7 +154,8 @@ List<InetAddress> InetAddress::getAddressesByName(const String& name) {
   return result;
 }
 
-InetAddress InetAddress::getAddressByName(const String& name) {
+InetAddress InetAddress::getAddressByName(const String& name)
+{
 #if (defined(_COM_AZURE_DEV__BASE__INET_IPV6))
   struct addrinfo hint;
   fill<uint8>(Cast::getAddress(hint), sizeof(hint), 0);
@@ -215,7 +218,8 @@ InetAddress InetAddress::getAddressByName(const String& name) {
   throw HostNotFound("Unable to lookup host by name.", Type::getType<InetAddress>());
 }
 
-bool InetAddress::isIPv4(const String::ReadIterator begin, const String::ReadIterator end) noexcept {
+bool InetAddress::isIPv4(const String::ReadIterator begin, const String::ReadIterator end) noexcept
+{
   String::ReadIterator i = begin;
   unsigned int words = 0; // get 4 decimal values
   while ((words < 4) && (i != end) && ASCIITraits::isDigit(*i)) {
@@ -243,7 +247,8 @@ bool InetAddress::isIPv4(const String::ReadIterator begin, const String::ReadIte
   return i == end;
 }
 
-bool InetAddress::isIPv6(const String::ReadIterator begin, const String::ReadIterator end) noexcept {
+bool InetAddress::isIPv6(const String::ReadIterator begin, const String::ReadIterator end) noexcept
+{
   String::ReadIterator i = begin;
   String::ReadIterator j = i;
   String::ReadIterator endIPv6 = i; // end of address excluding IPv4 suffix
@@ -334,7 +339,8 @@ bool InetAddress::isIPv6(const String::ReadIterator begin, const String::ReadIte
   return i == end;
 }
 
-bool InetAddress::parse(const String& address) noexcept {
+bool InetAddress::parse(const String& address) noexcept
+{
   String::ReadIterator i = address.getBeginReadIterator();
   const String::ReadIterator end = address.getEndReadIterator();
 
@@ -432,7 +438,8 @@ bool InetAddress::parse(const String& address) noexcept {
   return i == end;
 }
 
-InetAddress::InetAddress() noexcept {
+InetAddress::InetAddress() noexcept
+{
 #if (defined(_COM_AZURE_DEV__BASE__INET_IPV6))
   family = IP_VERSION_6;
 #else
@@ -444,11 +451,13 @@ InetAddress::InetAddress() noexcept {
   address.words[3] = 0;
 }
 
-InetAddress::InetAddress(const uint8* address, Family family) noexcept {
+InetAddress::InetAddress(const uint8* address, Family family) noexcept
+{
   setAddress(address, family);
 }
 
-InetAddress::InetAddress(const String& address) {
+InetAddress::InetAddress(const String& address)
+{
   bassert(parse(address), InvalidFormat("Not an Internet address", this));
 }
 
@@ -465,7 +474,8 @@ InetAddress::InetAddress(const InetAddress& copy) noexcept
 {
 }
 
-InetAddress& InetAddress::operator=(const InetAddress& assign) noexcept {
+InetAddress& InetAddress::operator=(const InetAddress& assign) noexcept
+{
   if (&assign != this) {
     family = assign.family;
     address = assign.address;
@@ -473,7 +483,8 @@ InetAddress& InetAddress::operator=(const InetAddress& assign) noexcept {
   return *this;
 }
 
-String InetAddress::getHostName(bool fullyQualified) const {
+String InetAddress::getHostName(bool fullyQualified) const
+{
 #if (defined(_COM_AZURE_DEV__BASE__INET_IPV6))
   struct sockaddr_in6 addr;
   clear(addr);
@@ -606,7 +617,8 @@ bool InetAddress::isSynonymous(const InetAddress& eq) const noexcept
   }
 }
 
-bool InetAddress::isUnspecified() const noexcept {
+bool InetAddress::isUnspecified() const noexcept
+{
   // ok for both IPv4 and IPv6
   return (address.words[0] == 0) &&
     (address.words[1] == 0) &&
@@ -614,7 +626,8 @@ bool InetAddress::isUnspecified() const noexcept {
     (address.words[3] == 0);
 }
 
-bool InetAddress::isLoopback() const noexcept {
+bool InetAddress::isLoopback() const noexcept
+{
   if (family == IP_VERSION_6) {
     return (address.words[0] == 0) && (address.words[1] == 0) && (address.words[2] == 0) &&
       (address.words[3] == ByteOrder::toBigEndian<uint32>(0x00000001U));
@@ -623,12 +636,14 @@ bool InetAddress::isLoopback() const noexcept {
   }
 }
 
-bool InetAddress::isMulticast() const noexcept {
+bool InetAddress::isMulticast() const noexcept
+{
   return ((family == IP_VERSION_6) && (address.octets[0] == 0xff)) ||
     ((family == IP_VERSION_4) && ((address.octets[12] & 0xf0) == 0xe0)); // class d
 }
 
-bool InetAddress::isLinkLocal() const noexcept {
+bool InetAddress::isLinkLocal() const noexcept
+{
   if (family == IP_VERSION_6) {
     return (address.words[0] & ByteOrder::toBigEndian<uint32>(0xffc00000U)) ==
       ByteOrder::toBigEndian<uint32>(0xfe800000U);
@@ -637,13 +652,15 @@ bool InetAddress::isLinkLocal() const noexcept {
   }
 }
 
-bool InetAddress::isSiteLocal() const noexcept {
+bool InetAddress::isSiteLocal() const noexcept
+{
   return (family == IP_VERSION_6) &&
     ((address.words[0] & ByteOrder::toBigEndian<uint32>(0xffc00000U)) ==
      ByteOrder::toBigEndian<uint32>(0xfec00000U));
 }
 
-bool InetAddress::isIPv4Mapped() const noexcept {
+bool InetAddress::isIPv4Mapped() const noexcept
+{
   return (family == IP_VERSION_6) &&
     (address.words[0] == 0) &&
     (address.words[1] == 0) &&
@@ -651,7 +668,8 @@ bool InetAddress::isIPv4Mapped() const noexcept {
     (address.words[3] != 0);
 }
 
-bool InetAddress::isIPv4Compatible() const noexcept {
+bool InetAddress::isIPv4Compatible() const noexcept
+{
   // ok for both IPv4 and IPv6
   return (address.words[0] == 0) &&
     (address.words[1] == 0) &&
@@ -659,7 +677,8 @@ bool InetAddress::isIPv4Compatible() const noexcept {
     (address.words[3] != 0);
 }
 
-unsigned int InetAddress::getType() const noexcept {
+unsigned int InetAddress::getType() const noexcept
+{
   unsigned int result = (family == IP_VERSION_4) ? IPV4 : IPV6;
   if (family == IP_VERSION_4) {
     if (address.words[3] == 0) {
@@ -704,7 +723,8 @@ unsigned int InetAddress::getType() const noexcept {
   return result;
 }
 
-bool InetAddress::convertToIPv6() noexcept {
+bool InetAddress::convertToIPv6() noexcept
+{
   if (family == IP_VERSION_4) {
     family = IP_VERSION_6;
     if (!isUnspecified()) { // leave unspecified
@@ -714,7 +734,8 @@ bool InetAddress::convertToIPv6() noexcept {
   return true; // cannot fail
 }
 
-bool InetAddress::convertToIPv4() noexcept {
+bool InetAddress::convertToIPv4() noexcept
+{
   if (family == IP_VERSION_6) {
     if (isIPv4Mapped()) {
       family = IP_VERSION_4;
@@ -728,7 +749,8 @@ bool InetAddress::convertToIPv4() noexcept {
   return true; // now IPv4 address
 }
 
-void InetAddress::setAddress(const uint8* address, Family family) noexcept {
+void InetAddress::setAddress(const uint8* address, Family family) noexcept
+{
   this->family = family;
   switch (family) {
   case IP_VERSION_4:
@@ -749,9 +771,8 @@ void InetAddress::setAddress(const uint8* address, Family family) noexcept {
 FormatOutputStream& operator<<(FormatOutputStream& stream, const InetAddress& value)
 {
   // char buffer[sizeof("ffff:ffff:ffff:ffff:ffff:ffff:123.123.123.123")];
-  // TAG: do not write directly to stream: use internal stream first
   if (value.family == InetAddress::IP_VERSION_6) {
-    unsigned int type = value.getType();
+    const unsigned int type = value.getType();
     if (type & InetAddress::IPV4_MAPPED) { // ::ffff:255.255.255.255
       stream << "::ffff:"; // write IPv4 address after this
     } else if ((type & (InetAddress::IPV4_COMPATIBLE|InetAddress::LOOPBACK)) == InetAddress::IPV4_COMPATIBLE) { // ::255.255.255.255

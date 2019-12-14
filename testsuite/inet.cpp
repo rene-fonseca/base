@@ -41,23 +41,39 @@ public:
     int numberOfArguments,
     const char* arguments[],
     const char* environment[])
-    : Application("inet", numberOfArguments, arguments, environment) {
+    : Application("inet", numberOfArguments, arguments, environment)
+  {
   }
   
-  void onTermination() noexcept {
+  void onTermination() noexcept
+  {
   }
   
-  void inet() {
+  void inet()
+  {
     try {
       if (false) {
-        HashTable<String, unsigned int> names =
-          InetInterface::getInterfaceNames();
-        HashTable<String, unsigned int>::ReadEnumerator enu =
-          names.getReadEnumerator();
-        fout << "Interfaces:" << ENDL;
+        Map<String, unsigned int> names;
+        /*
+        for (auto i : InetInterface::getInterfaceNames()) {
+          names.add(i);
+        }
+        */
+
+        HashTable<String, unsigned int> names2 = InetInterface::getInterfaceNames();
+        HashTable<String, unsigned int>::ReadEnumerator enu = names2.getReadEnumerator();
         while (enu.hasNext()) {
-          const HashTable<String, unsigned int>::HashTableAssociation* node = enu.next();
-          fout << indent(2) << node->getKey() << ' ' << node->getValue() << EOL;
+          names.add(*enu.next());
+        }
+        
+        fout << "Interfaces:" << ENDL;
+        for (auto node : names) {
+          fout << indent(2) << node.getKey() << " index=" << node.getValue() << EOL;
+          try {
+            auto addr = InetInterface::getAddress(node.getValue());
+            fout << indent(4) << "inet " << addr << ENDL;
+          } catch (...) {
+          }
         }
       }
       
@@ -65,6 +81,7 @@ public:
       List<InetInterface>::ReadEnumerator enu = interfaces.getReadEnumerator();
       while (enu.hasNext()) {
         InetInterface interface = *enu.next();
+        try {
 
         unsigned int flags = interface.getFlags();
         String temp;
@@ -87,7 +104,7 @@ public:
           temp += MESSAGE(" DYNAMIC");
         }
         
-        fout << interface.getName() << ' ' << interface.getIndex() << EOL
+        fout << interface.getName() << " index=" << interface.getIndex() << EOL
              << indent(2) << "flags:" << temp << EOL
              << indent(2) << "address: " << interface.getAddress() << EOL
              << indent(2) << "netmask: " << interface.getNetmask() << EOL
@@ -96,6 +113,8 @@ public:
              << indent(2) << "metric: " << interface.getMetric() << EOL
              << indent(2) << "ethernet (EUI-64): " << interface.getEthernetAddress() << EOL
              << ENDL;
+        } catch (...) {
+        }
       }
     } catch (...) {
       setExitCode(EXIT_CODE_ERROR);

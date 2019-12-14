@@ -84,27 +84,33 @@ typedef int SOCKET;
 #  undef sendto
 #  undef socket
 
-  inline int bind(int s, const struct sockaddr* name, int namelen) {
+  inline int bind(int s, const struct sockaddr* name, int namelen)
+  {
     return _COM_AZURE_DEV__BASE__SOCKET_BIND(s, name, namelen);
   }
 
-  inline int connect(int s, const struct sockaddr* name, int namelen) {
+  inline int connect(int s, const struct sockaddr* name, int namelen)
+  {
     return _COM_AZURE_DEV__BASE__SOCKET_CONNECT(s, name, namelen);
   }
 
-  inline ssize_t recvmsg(int s, struct msghdr* msg, int flags) {
+  inline ssize_t recvmsg(int s, struct msghdr* msg, int flags)
+  {
     return _COM_AZURE_DEV__BASE__SOCKET_RECVMSG(s, msg, flags);
   }
 
-  inline ssize_t sendmsg(int s, const struct msghdr* msg, int flags) {
+  inline ssize_t sendmsg(int s, const struct msghdr* msg, int flags)
+  {
     return _COM_AZURE_DEV__BASE__SOCKET_SENDMSG(s, msg, flags);
   }
 
-  inline ssize_t sendto(int s, const void* msg, size_t len, int flags, const struct sockaddr* to, int tolen) {
+  inline ssize_t sendto(int s, const void* msg, size_t len, int flags, const struct sockaddr* to, int tolen)
+  {
     return _COM_AZURE_DEV__BASE__SOCKET_SENDTO(s, msg, len, flags, to, tolen);
   }
 
-  inline int socket(int domain, int type, int protocol) {
+  inline int socket(int domain, int type, int protocol)
+  {
     return _COM_AZURE_DEV__BASE__SOCKET_SOCKET(domain, type, protocol);
   }
 #endif
@@ -148,7 +154,8 @@ public:
   SocketAddress(
     const InetAddress& address,
     unsigned short port,
-    Socket::Domain domain) {
+    Socket::Domain domain)
+  {
     clear(sa);
 #  if (defined(_COM_AZURE_DEV__BASE__INET_IPV6))
     if (domain == Socket::IPV6) {
@@ -224,7 +231,7 @@ public:
   /** Returns the size of the socket address structure. */
   inline unsigned int getSize() const noexcept
   {
-#  if (defined(_COM_AZURE_DEV__BASE__INET_IPV6))
+#if (defined(_COM_AZURE_DEV__BASE__INET_IPV6))
     return (sa.sa_family == AF_INET6) ? sizeof(ipv6) : sizeof(ipv4);
 #else
     return sizeof(ipv4);
@@ -233,7 +240,7 @@ public:
   
   inline Socket::Domain getDomain() const noexcept
   {
-#  if (defined(_COM_AZURE_DEV__BASE__INET_IPV6))
+#if (defined(_COM_AZURE_DEV__BASE__INET_IPV6))
     return (sa.sa_family == AF_INET6) ? Socket::IPV6 : Socket::IPV4;
 #else
     return Socket::IPV4;
@@ -255,7 +262,7 @@ public:
         Cast::getAddress(ipv4.sin_addr),
         InetAddress::IP_VERSION_4
       );
-#  if (defined(_COM_AZURE_DEV__BASE__INET_IPV6))
+#if (defined(_COM_AZURE_DEV__BASE__INET_IPV6))
     case AF_INET6:
       return InetAddress(
         Cast::getAddress(ipv6.sin6_addr),
@@ -273,10 +280,10 @@ public:
     switch (sa.sa_family) {
     case AF_INET:
       return ByteOrder::fromBigEndian<unsigned short>(ipv4.sin_port);
-#  if (defined(_COM_AZURE_DEV__BASE__INET_IPV6))
+#if (defined(_COM_AZURE_DEV__BASE__INET_IPV6))
     case AF_INET6:
       return ByteOrder::fromBigEndian<unsigned short>(ipv6.sin6_port);
-#  endif
+#endif
     default: // not possible
       return 0; // TAG: or should we raise an exception
     }
@@ -297,7 +304,7 @@ namespace internal {
 
   class SocketImpl {
   public:
-
+    
     static inline int getNativeError() noexcept
     {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
@@ -469,10 +476,12 @@ Socket::SocketImpl::SocketImpl(
     domain(_domain),
     kind(_kind),
     remotePort(0),
-    localPort(0) {
+    localPort(0)
+{
 }
 
-Socket::SocketImpl::~SocketImpl() {
+Socket::SocketImpl::~SocketImpl()
+{
   if (isValid()) {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
     if (::closesocket((SOCKET)getHandle())) {
@@ -492,9 +501,14 @@ Socket::SocketImpl::~SocketImpl() {
   }
 }
 
+Socket::SocketImpl* Socket::SocketImpl::getInvalid() noexcept
+{
+  return invalid;
+}
 
-
-Socket::Socket() noexcept : socket(SocketImpl::invalid) {
+Socket::Socket() noexcept
+  : socket(SocketImpl::invalid)
+{
 }
 
 bool Socket::accept(Socket& socket)
@@ -661,23 +675,28 @@ void Socket::getName() noexcept
   socket->setLocalPort(sa.getPort());
 }
 
-const InetAddress& Socket::getAddress() const noexcept {
+const InetAddress& Socket::getAddress() const noexcept
+{
   return socket->getRemoteAddress();
 }
 
-unsigned short Socket::getPort() const noexcept {
+unsigned short Socket::getPort() const noexcept
+{
   return socket->getRemotePort();
 }
 
-const InetAddress& Socket::getLocalAddress() const noexcept {
+const InetAddress& Socket::getLocalAddress() const noexcept
+{
   return socket->getLocalAddress();
 }
 
-unsigned short Socket::getLocalPort() const noexcept {
+unsigned short Socket::getLocalPort() const noexcept
+{
   return socket->getLocalPort();
 }
 
-void Socket::shutdownInputStream() {
+void Socket::shutdownInputStream()
+{
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   if (::shutdown((SOCKET)socket->getHandle(), 0 /*SD_RECEIVE*/)) { // disallow further receives
     internal::SocketImpl::raiseNetwork("Unable to shutdown socket for reading");
@@ -1082,7 +1101,8 @@ unsigned int Socket::getTimeToLive() const {
   return buffer != 0;
 }
 
-void Socket::setTimeToLive(unsigned int value) {
+void Socket::setTimeToLive(unsigned int value)
+{
   int buffer = value;
   internal::SocketImpl::setOption(
     (SOCKET)socket->getHandle(),
@@ -1093,7 +1113,8 @@ void Socket::setTimeToLive(unsigned int value) {
   );
 }
 
-uint8 Socket::getMulticastHops() const {
+uint8 Socket::getMulticastHops() const
+{
 #if (defined(_COM_AZURE_DEV__BASE__INET_IPV6))
   if (socket->getDomain() == Socket::IPV6) {
     unsigned int buffer = 0;
@@ -1123,7 +1144,8 @@ uint8 Socket::getMulticastHops() const {
 #endif
 }
 
-void Socket::setMulticastHops(uint8 value) {
+void Socket::setMulticastHops(uint8 value)
+{
 #if (defined(_COM_AZURE_DEV__BASE__INET_IPV6))
   if (socket->getDomain() == Socket::IPV6) {
     unsigned int buffer = value;
@@ -1149,7 +1171,8 @@ void Socket::setMulticastHops(uint8 value) {
 #endif
 }
 
-bool Socket::getMulticastLoopback() const {
+bool Socket::getMulticastLoopback() const
+{
 #if (defined(_COM_AZURE_DEV__BASE__INET_IPV6))
   if (socket->getDomain() == Socket::IPV6) {
     u_char buffer;
@@ -1179,7 +1202,8 @@ bool Socket::getMulticastLoopback() const {
 #endif
 }
 
-void Socket::setMulticastLoopback(bool value) {
+void Socket::setMulticastLoopback(bool value)
+{
 #if (defined(_COM_AZURE_DEV__BASE__INET_IPV6))
   if (socket->getDomain() == Socket::IPV6) {
     unsigned int buffer = value;
@@ -1205,7 +1229,8 @@ void Socket::setMulticastLoopback(bool value) {
 #endif
 }
 
-InetAddress Socket::getMulticastInterface() const {
+InetAddress Socket::getMulticastInterface() const
+{
 #if (defined(_COM_AZURE_DEV__BASE__INET_IPV6))
   if (socket->getDomain() == Socket::IPV6) {
     unsigned int buffer = 0;
@@ -1245,7 +1270,8 @@ InetAddress Socket::getMulticastInterface() const {
 #endif
 }
 
-void Socket::setMulticastInterface(const InetAddress& interface) {
+void Socket::setMulticastInterface(const InetAddress& interface)
+{
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
 #else // unix
   InetAddress i = interface;
@@ -1263,7 +1289,8 @@ void Socket::setMulticastInterface(const InetAddress& interface) {
 #endif
 }
 
-uint8 Socket::getUnicastHops() const {
+uint8 Socket::getUnicastHops() const
+{
 #if (defined(_COM_AZURE_DEV__BASE__INET_IPV6))
   if (socket->getDomain() == Socket::IPV6) {
     int buffer = 0;
@@ -1284,7 +1311,8 @@ uint8 Socket::getUnicastHops() const {
 #endif
 }
 
-void Socket::setUnicastHops(uint8 value) {
+void Socket::setUnicastHops(uint8 value)
+{
 #if (defined(_COM_AZURE_DEV__BASE__INET_IPV6))
   if (socket->getDomain() == Socket::IPV6) {
     int buffer = 0;
@@ -1516,7 +1544,8 @@ void Socket::joinGroup(const InetAddress& interface, const InetAddress& group)
 #endif // flavor
 }
 
-void Socket::leaveGroup(const InetAddress& interface, const InetAddress& group) {
+void Socket::leaveGroup(const InetAddress& interface, const InetAddress& group)
+{
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   InetAddress i = interface;
   InetAddress g = group;
@@ -1610,7 +1639,8 @@ void Socket::leaveGroup(const InetAddress& interface, const InetAddress& group) 
 #endif // flavor
 }
 
-bool Socket::getIPv6Restriction() const {
+bool Socket::getIPv6Restriction() const
+{
 #if (defined(_COM_AZURE_DEV__BASE__INET_IPV6) && defined(IPV6_V6ONLY))
   if (socket->getDomain() == Socket::IPV6) {
     int buffer = 0;
@@ -1632,7 +1662,8 @@ bool Socket::getIPv6Restriction() const {
 #endif
 }
 
-void Socket::setIPv6Restriction(bool value) {
+void Socket::setIPv6Restriction(bool value)
+{
 #if (defined(_COM_AZURE_DEV__BASE__INET_IPV6) && defined(IPV6_V6ONLY))
   if (socket->getDomain() == Socket::IPV6) {
     int buffer = 0;
@@ -1651,7 +1682,8 @@ void Socket::setIPv6Restriction(bool value) {
 #endif
 }
 
-void Socket::setNonBlocking(bool value) {
+void Socket::setNonBlocking(bool value)
+{
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   unsigned int buffer = value; // set to zero to disable nonblocking
   if (ioctlsocket((SOCKET)socket->getHandle(), FIONBIO, Cast::pointer<u_long*>(&buffer))) {
@@ -1681,7 +1713,8 @@ void Socket::setNonBlocking(bool value) {
 }
 
 #if 0
-bool Socket::getAsynchronous() {
+bool Socket::getAsynchronous()
+{
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
 //   unsigned int buffer = value; // set to zero to disable nonblocking
 //   if (ioctlsocket((SOCKET)socket->getHandle(), FIONBIO, Cast::pointer<u_long*>(&buffer))) {
@@ -1696,7 +1729,8 @@ bool Socket::getAsynchronous() {
 #endif // flavor
 }
 
-void Socket::setAsynchronous(bool value) {
+void Socket::setAsynchronous(bool value)
+{
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
 //   unsigned int buffer = value; // set to zero to disable nonblocking
 //   if (ioctlsocket((SOCKET)socket->getHandle(), FIONBIO, Cast::pointer<u_long*>(&buffer))) {
@@ -1726,7 +1760,8 @@ void Socket::setAsynchronous(bool value) {
 }
 #endif
 
-unsigned int Socket::available() const {
+unsigned int Socket::available() const
+{
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   unsigned int result = 0;
   if (ioctlsocket((SOCKET)socket->getHandle(), FIONREAD, Cast::pointer<u_long*>(&result))) {
@@ -1744,7 +1779,8 @@ unsigned int Socket::available() const {
 }
 
 #if 0
-unsigned int Socket::pending() const {
+unsigned int Socket::pending() const
+{
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   unsigned int result = 0;
 //   if (ioctlsocket((SOCKET)socket->getHandle(), FIONREAD, Cast::pointer<u_long*>(&result))) {
@@ -1762,13 +1798,15 @@ unsigned int Socket::pending() const {
 }
 #endif
 
-void Socket::flush() {
+void Socket::flush()
+{
 }
 
 unsigned int Socket::read(
   uint8* buffer,
   unsigned int bytesToRead,
-  bool nonblocking) {
+  bool nonblocking)
+{
   unsigned int bytesRead = 0;
   while (bytesToRead > 0) {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
@@ -1825,7 +1863,8 @@ unsigned int Socket::read(
 unsigned int Socket::write(
   const uint8* buffer,
   unsigned int bytesToWrite,
-  bool nonblocking) {
+  bool nonblocking)
+{
   unsigned int bytesWritten = 0;
   while (bytesToWrite > 0) {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
@@ -1932,7 +1971,8 @@ unsigned int Socket::sendTo(
 #endif
 }
 
-void Socket::asyncCancel() {
+void Socket::asyncCancel()
+{
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   ::CancelIo(socket->getHandle());
 #else // unix
@@ -1942,7 +1982,8 @@ void Socket::asyncCancel() {
 AsynchronousReadOperation Socket::read(
   uint8* buffer,
   unsigned int bytesToRead,
-  AsynchronousReadEventListener* listener) {
+  AsynchronousReadEventListener* listener)
+{
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   bassert(listener, AsynchronousException()); // FIXME
   return new win32::AsyncReadStreamContext(
@@ -1959,7 +2000,8 @@ AsynchronousReadOperation Socket::read(
 AsynchronousWriteOperation Socket::write(
   const uint8* buffer,
   unsigned int bytesToWrite,
-  AsynchronousWriteEventListener* listener) {
+  AsynchronousWriteEventListener* listener)
+{
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   bassert(listener, AsynchronousException()); // FIXME
   return new win32::AsyncWriteStreamContext(
@@ -2031,7 +2073,8 @@ bool Socket::wait(unsigned int microseconds) const
 #endif // flavor
 }
 
-Socket::~Socket() {
+Socket::~Socket()
+{
 }
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

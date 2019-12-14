@@ -196,7 +196,7 @@ void SharedMemory::SharedMemoryImpl::setProtection(
   bassert(
     ::mprotect(address, region.getSize(), protection) == 0,
     MemoryException(
-      "Unable to unlock process memory",
+      "Unable to unlock process memory.",
       Type::getType<SharedMemory>()
     )
   );
@@ -211,7 +211,7 @@ void SharedMemory::SharedMemoryImpl::synchronize(
   bassert(
     status != 0,
     MemoryException(
-      "Unable to synchronize memory",
+      "Unable to synchronize memory.",
       Type::getType<SharedMemory>())
   );
 #else // unix
@@ -219,7 +219,7 @@ void SharedMemory::SharedMemoryImpl::synchronize(
   bassert(
     ::msync(address, region.getSize(), flags) == 0,
     MemoryException(
-      "Unable to synchronize memory",
+      "Unable to synchronize memory.",
       Type::getType<SharedMemory>()
     )
   );

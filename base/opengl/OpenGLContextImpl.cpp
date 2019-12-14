@@ -33,7 +33,7 @@ void OpenGLContextImpl::loadModule()
   bassert(
     Backend<WindowImpl>::loadModule(true),
     OpenGLException(
-      "Unable to load module",
+      "Unable to load module.",
       Type::getType<OpenGLContextImpl>()
     )
   );
@@ -48,7 +48,7 @@ void OpenGLContextImpl::loadModule()
   bassert(
     success,
     OpenGLException(
-      "Unable to load module",
+      "Unable to load module.",
       Type::getType<OpenGLContextImpl>()
     )
   );

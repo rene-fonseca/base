@@ -359,7 +359,7 @@ String FileSystem::getCurrentFolder()
   BASSERT(buffer.getSize() > PATH_MAX);
   if (::getcwd((char*)buffer.getElements(), buffer.getSize()/sizeof(char))) {
     throw FileSystemException(
-      "Unable to get current folder",
+      "Unable to get current folder.",
       Type::getType<FileSystem>()
     );
   }

@@ -99,7 +99,7 @@ HashTable<String, unsigned int> InetInterface::getInterfaceNames() noexcept
   struct if_nameindex* ni = nullptr;
   if ((ni = if_nameindex()) == 0) { // MT-safe
     throw NetworkException(
-      "Unable to get interfaces",
+      "Unable to get interfaces.",
       Type::getType<InetInterface>()
     );
   }
@@ -124,7 +124,7 @@ HashTable<String, unsigned int> InetInterface::getInterfaceNames() noexcept
         0)) {
     closesocket(handle);
     throw NetworkException(
-      "Unable to get interfaces",
+      "Unable to get interfaces.",
       Type::getType<InetInterface>()
     );
   }
@@ -151,7 +151,7 @@ HashTable<String, unsigned int> InetInterface::getInterfaceNames() noexcept
     if (ioctl(handle, SIOCGIFCONF, &ifc)) {
       close(handle);
       throw NetworkException(
-        "Unable to get interfaces",
+        "Unable to get interfaces.",
         Type::getType<InetInterface>()
       );
     }
@@ -189,7 +189,7 @@ List<InetInterface> InetInterface::getInterfaces()
   struct if_nameindex* ni = nullptr;
   if ((ni = if_nameindex()) == 0) { // MT-safe
     throw NetworkException(
-      "Unable to get interfaces",
+      "Unable to get interfaces.",
       Type::getType<InetInterface>()
     );
   }
@@ -216,7 +216,7 @@ List<InetInterface> InetInterface::getInterfaces()
         0)) {
     closesocket(handle);
     throw NetworkException(
-      "Unable to get interfaces",
+      "Unable to get interfaces.",
       Type::getType<InetInterface>()
     );
   }
@@ -261,7 +261,7 @@ List<InetInterface> InetInterface::getInterfaces()
 //   if (ioctl(handle, command, &numberOfInterfaces) != 0) {
 //     close(handle);
 //     throw NetworkException(
-//       "Unable to get interfaces",
+//       "Unable to get interfaces.",
 //       Type::getType<InetInterface>()
 //     );
 //   }
@@ -272,7 +272,7 @@ List<InetInterface> InetInterface::getInterfaces()
     if (ioctl(handle, SIOCGIFCONF, &ifc)) {
       close(handle);
       throw NetworkException(
-        "Unable to get interfaces",
+        "Unable to get interfaces.",
         Type::getType<InetInterface>()
       );
     }
@@ -372,7 +372,7 @@ unsigned int InetInterface::getIndexByName(const String& name)
 //   if (ioctl(handle, command, &numberOfInterfaces) != 0) {
 //     close(handle);
 //     throw NetworkException(
-//       "Unable to resolve interface",
+//       "Unable to resolve interface.",
 //       Type::getType<InetInterface>()
 //     );
 //   }
@@ -382,7 +382,7 @@ unsigned int InetInterface::getIndexByName(const String& name)
   if (ioctl(handle, SIOCGIFCONF, &ifc)) {
     close(handle);
     throw NetworkException(
-      "Unable to resolve interface",
+      "Unable to resolve interface.",
       Type::getType<InetInterface>()
     );
   }
@@ -405,7 +405,7 @@ unsigned int InetInterface::getIndexByName(const String& name)
   }
   close(handle);
   throw NetworkException(
-    "Unable to resolve interface",
+    "Unable to resolve interface.",
     Type::getType<InetInterface>()
   );
 #endif
@@ -456,7 +456,7 @@ unsigned int InetInterface::getIndexByAddress(const InetAddress& address)
 //   if (ioctl(handle, command, &numberOfInterfaces) != 0) {
 //     close(handle);
 //     throw NetworkException(
-//       "Unable to resolve interface",
+//       "Unable to resolve interface.",
 //       Type::getType<InetInterface>()
 //     );
 //   }
@@ -466,7 +466,7 @@ unsigned int InetInterface::getIndexByAddress(const InetAddress& address)
   if (ioctl(handle, SIOCGIFCONF, &ifc)) {
     close(handle);
     throw NetworkException(
-      "Unable to resolve interface",
+      "Unable to resolve interface.",
       Type::getType<InetInterface>()
     );
   }
@@ -491,7 +491,7 @@ unsigned int InetInterface::getIndexByAddress(const InetAddress& address)
   }
   close(handle);
   throw NetworkException(
-    "Unable to resolve interface",
+    "Unable to resolve interface.",
     Type::getType<InetInterface>()
   );
 #endif
@@ -521,7 +521,7 @@ String InetInterface::getName(unsigned int index)
         0)) {
     closesocket(handle);
     throw NetworkException(
-      "Unable to resolve interface",
+      "Unable to resolve interface.",
       Type::getType<InetInterface>()
     );
   }
@@ -546,7 +546,7 @@ String InetInterface::getName(unsigned int index)
 //   if (ioctl(handle, command, &numberOfInterfaces) != 0) {
 //     close(handle);
 //     throw NetworkException(
-//       "Unable to resolve interface",
+//       "Unable to resolve interface.",
 //       Type::getType<InetInterface>()
 //     );
 //   }
@@ -556,7 +556,7 @@ String InetInterface::getName(unsigned int index)
   if (ioctl(handle, SIOCGIFCONF, &ifc)) {
     close(handle);
     throw NetworkException(
-      "Unable to resolve interface",
+      "Unable to resolve interface.",
       Type::getType<InetInterface>()
     );
   }
@@ -588,7 +588,7 @@ InetAddress InetInterface::getAddress(unsigned int index)
   bassert(
     if_indextoname(index, req.ifr_name) != 0,
     NetworkException(
-      "Unable to resolve interface",
+      "Unable to resolve interface.",
       Type::getType<InetInterface>()
     )
   );
@@ -596,7 +596,7 @@ InetAddress InetInterface::getAddress(unsigned int index)
   if (ioctl(handle, SIOCGIFADDR, &req) != 0) {
     close(handle);
     throw NetworkException(
-      "Unable to resolve interface",
+      "Unable to resolve interface.",
       Type::getType<InetInterface>()
     );
   }
@@ -617,7 +617,7 @@ InetAddress InetInterface::getAddress(unsigned int index)
         0)) {
     closesocket(handle);
     throw NetworkException(
-      "Unable to resolve interface",
+      "Unable to resolve interface.",
       Type::getType<InetInterface>()
     );
   }
@@ -641,7 +641,7 @@ InetAddress InetInterface::getAddress(unsigned int index)
 //   if (ioctl(handle, command, &numberOfInterfaces) != 0) {
 //     close(handle);
 //     throw NetworkException(
-//       "Unable to resolve interface",
+//       "Unable to resolve interface.",
 //       Type::getType<InetInterface>()
 //     );
 //   }
@@ -651,7 +651,7 @@ InetAddress InetInterface::getAddress(unsigned int index)
   if (ioctl(handle, SIOCGIFCONF, &ifc)) {
     close(handle);
     throw NetworkException(
-      "Unable to resolve interface",
+      "Unable to resolve interface.",
       Type::getType<InetInterface>()
     );
   }
@@ -673,7 +673,7 @@ InetAddress InetInterface::getAddress(unsigned int index)
   }
   close(handle);
   throw NetworkException(
-    "Unable to resolve interface",
+    "Unable to resolve interface.",
     Type::getType<InetInterface>()
   );
 #endif
@@ -702,7 +702,7 @@ InetInterface::InetInterface(const String& name)
         0)) {
     closesocket(handle);
     throw NetworkException(
-      "Unable to get interfaces",
+      "Unable to get interfaces.",
       Type::getType<InetInterface>()
     );
   }

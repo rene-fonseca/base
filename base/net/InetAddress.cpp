@@ -84,7 +84,7 @@ List<InetAddress> InetAddress::getAddressesByName(const String& name)
   struct addrinfo* ai = nullptr;
   if (getaddrinfo(name.getElements(), 0, &hint, &ai) != 0) { // MT-level is safe
     throw HostNotFound(
-      "Unable to lookup host by name",
+      "Unable to lookup host by name.",
       Type::getType<InetAddress>()
     );
   }
@@ -118,7 +118,7 @@ List<InetAddress> InetAddress::getAddressesByName(const String& name)
 #  if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
     if (!(hp = gethostbyname(name.getElements()))) { // MT-safe
       throw HostNotFound(
-        "Unable to lookup host by name",
+        "Unable to lookup host by name.",
         Type::getType<InetAddress>()
       );
     }
@@ -129,7 +129,7 @@ List<InetAddress> InetAddress::getAddressesByName(const String& name)
     int error = 0;
     if (!(hp = gethostbyname_r(name.getElements(), &h, buffer, sizeof(buffer), &error))) {
       throw HostNotFound(
-        "Unable to lookup host by name",
+        "Unable to lookup host by name.",
         Type::getType<InetAddress>()
       );
     }

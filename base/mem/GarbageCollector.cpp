@@ -49,8 +49,7 @@ namespace {
         if (count == getArraySize(references)) {
           // TAG: need to wait
         }
-        references[count++] = reference;
-        reference = nullptr;
+        references[count++] = moveObject(reference);
         signal.signal();
       }
     }

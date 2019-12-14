@@ -102,7 +102,14 @@ public:
   }
 };
 
-/** Producer for n number of random numbers. */
+/**
+  Producer for n random numbers.
+  
+  @code
+  for (auto r : RandomNumbers<int>(10)) {
+  }
+  @endcode
+*/
 template<class TYPE>
 class RandomNumbers {
 private:

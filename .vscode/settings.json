@@ -1,6 +1,7 @@
 {
     "files.associations": {
         "atomic": "cpp",
-        "__string": "cpp"
+        "__string": "cpp",
+        "type_traits": "cpp"
     }
 }

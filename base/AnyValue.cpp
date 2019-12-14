@@ -282,13 +282,13 @@ AnyValue::AnyValue(AnyValue&& move) noexcept
     ld = move.ld;
     break;
   case STRING:
-    string = std::move(move.string);
+    string = moveObject(move.string);
     break;
   case WIDE_STRING:
-    wideString = std::move(move.wideString);
+    wideString = moveObject(move.wideString);
     break;
   case REFERENCE:
-    reference = std::move(move.reference);
+    reference = moveObject(move.reference);
     break;
   default:
     INVALID_CONTROL_FLOW();
@@ -424,13 +424,13 @@ AnyValue& AnyValue::operator=(AnyValue&& move) noexcept
       ld = move.ld;
       break;
     case STRING:
-      string = std::move(move.string);
+      string = moveObject(move.string);
       break;
     case WIDE_STRING:
-      wideString = std::move(move.wideString);
+      wideString = moveObject(move.wideString);
       break;
     case REFERENCE:
-      reference = std::move(move.reference);
+      reference = moveObject(move.reference);
       break;
     default:
       INVALID_CONTROL_FLOW();

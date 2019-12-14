@@ -273,7 +273,7 @@ template<class EXCEPTION>
 inline EXCEPTION&& bindCause(EXCEPTION&& e, unsigned int cause) noexcept
 {
   e.setCause(cause);
-  return std::move(e);
+  return moveObject(e);
 }
 
 /**
@@ -283,7 +283,7 @@ template<class EXCEPTION>
 inline EXCEPTION&& bindError(EXCEPTION&& e, unsigned int error) noexcept
 {
   e.setError(error);
-  return std::move(e);
+  return moveObject(e);
 }
 
 /**
@@ -293,7 +293,7 @@ template<class EXCEPTION>
 inline EXCEPTION&& bindMessage(EXCEPTION&& e, const char* message) noexcept
 {
   e.setMessage(message);
-  return std::move(e);
+  return moveObject(e);
 }
 
 /**
@@ -303,7 +303,7 @@ template<class EXCEPTION>
 inline EXCEPTION&& bindType(EXCEPTION&& e, const Type& type) noexcept
 {
   e.setType(type);
-  return std::move(e);
+  return moveObject(e);
 }
 
 template<class EXCEPTION>
@@ -311,7 +311,7 @@ inline EXCEPTION&& bindException(EXCEPTION&& e, const char* message, const Type&
 {
   e.setMessage(message);
   e.setType(type);
-  return std::move(e);
+  return moveObject(e);
 }
 
 template<class EXCEPTION>
@@ -319,7 +319,7 @@ inline EXCEPTION&& bindException(EXCEPTION&& e, const char* message, unsigned in
 {
   e.setMessage(message);
   e.setCause(cause);
-  return std::move(e);
+  return moveObject(e);
 }
 
 /** Helper to hook throw. */
@@ -328,7 +328,7 @@ inline TYPE&& operator*(const Exception::Hook&& hook, TYPE&& exception)
 {
   static_assert(std::is_base_of<Exception, TYPE>(), "Only Exception derived types may be thrown.");
   Exception::onThrow(exception);
-  return std::move(exception);
+  return moveObject(exception);
 }
 
 /** Throws the given exception but requires function call style. */
@@ -337,7 +337,7 @@ inline void throwthis(EXCEPTION&& e)
 {
   static_assert(std::is_base_of<Exception, EXCEPTION>(), "Only Exception derived types may be thrown.");
   Exception::onThrow(e); // does not throw
-  throw std::move(e); // throw std::forward(e);
+  throw moveObject(e); // throw std::forward(e);
 }
 
 /** Throws exception. throwit MyException(). */

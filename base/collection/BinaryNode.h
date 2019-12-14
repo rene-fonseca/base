@@ -62,7 +62,7 @@ public:
   */
   inline BinaryNode(BinaryNode* _parent, NullPtr left, NullPtr right, TYPE&& _value)
     : parent(_parent),
-      value(std::move(_value))
+      value(moveObject(_value))
   {
   }
 
@@ -94,7 +94,7 @@ public:
     : parent(_parent),
       left(_left),
       right(_right),
-      value(std::move(_value))
+      value(moveObject(_value))
   {
   }
 
@@ -175,7 +175,7 @@ public:
   */
   inline void setValue(TYPE&& value)
   {
-    this->value = std::move(value);
+    this->value = moveObject(value);
   }
 };
 

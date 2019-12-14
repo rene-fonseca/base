@@ -134,7 +134,7 @@ private:
     Value* end = src + count;
     if (!std::is_fundamental<TYPE>() && std::is_move_assignable<TYPE>()) {
       for (; end != begin; --end) {
-        end[0] = std::move(end[-1]); // move forward
+        end[0] = moveObject(end[-1]); // move forward
       }
     } else  {
       for (; end != begin; --end) {
@@ -153,7 +153,7 @@ private:
     Value* end = src + count;
     if (!std::is_fundamental<TYPE>() && std::is_move_assignable<TYPE>()) {
       for (; end != begin; --end) {
-        end[offset - 1] = std::move(end[-1]); // move forward
+        end[offset - 1] = moveObject(end[-1]); // move forward
       }
     } else  {
       for (; end != begin; --end) {
@@ -171,7 +171,7 @@ private:
     const Value* end = src + count;
     if (!std::is_fundamental<TYPE>() && std::is_move_assignable<TYPE>()) {
       for (; src != end; ++src) {
-        src[0] = std::move(src[1]); // move down
+        src[0] = moveObject(src[1]); // move down
       }
     } else  {
       for (; src != end; ++src) {
@@ -190,7 +190,7 @@ private:
     const Value* end = src + count;
     if (!std::is_fundamental<TYPE>() && std::is_move_assignable<TYPE>()) {
       for (; src != end; ++src) {
-        src[0] = std::move(src[offset]); // move down
+        src[0] = moveObject(src[offset]); // move down
       }
     } else  {
       for (; src != end; ++src) {
@@ -315,7 +315,7 @@ public:
 
   Array(Array&& move) noexcept
   {
-    elements = std::move(move.elements);
+    elements = moveObject(move.elements);
   }
 
   /**
@@ -329,7 +329,7 @@ public:
 
   Array& operator=(Array&& move) noexcept
   {
-    elements = std::move(move.elements);
+    elements = moveObject(move.elements);
     return *this;
   }
 
@@ -488,7 +488,7 @@ public:
   {
     const auto size = getSize();
     setSize(size + 1); // requires default constructor
-    getElements()[size] = std::move(value);
+    getElements()[size] = moveObject(value);
   }
 
   /**
@@ -529,7 +529,7 @@ public:
     setSize(size + 1); // better to prepend in allocator
     auto dest = getElements(); // size must be set before
     moveUp(dest, size);
-    dest[0] = std::move(value);
+    dest[0] = moveObject(value);
   }
 
   /**
@@ -581,7 +581,7 @@ public:
     setSize(size + 1); // better to prepend in allocator
     auto dest = getElements(); // size must be set before
     moveUp(dest, size - index);
-    dest[index] = std::move(value);
+    dest[index] = moveObject(value);
   }
 
   void insert(const Iterator& it, const Value& value)
@@ -591,7 +591,7 @@ public:
 
   void insert(const Iterator& it, Value&& value)
   {
-    insert(it - begin(), std::move(value));
+    insert(it - begin(), moveObject(value));
   }
 
   /**
@@ -738,7 +738,7 @@ public:
     if (!(index < getSize())) {
       throw OutOfRange(this);
     }
-    getElements()[index] = std::move(value);
+    getElements()[index] = moveObject(value);
   }
 
   /**

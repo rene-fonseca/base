@@ -60,8 +60,8 @@ public:
     Initializes association from other association.
   */
   Association(Association&& move)
-    : key(std::move(move.key)),
-      value(std::move(move.value))
+    : key(moveObject(move.key)),
+      value(moveObject(move.value))
   {
   }
 
@@ -85,7 +85,7 @@ public:
   */
   Association(const KEY& _key, VALUE&& _value)
     : key(_key),
-      value(std::move(_value))
+      value(moveObject(_value))
   {
   }
 
@@ -96,8 +96,8 @@ public:
     @param value The value of the association.
   */
   Association(KEY&& _key, VALUE&& _value)
-    : key(std::move(_key)),
-      value(std::move(_value))
+    : key(moveObject(_key)),
+      value(moveObject(_value))
   {
   }
 
@@ -114,7 +114,7 @@ public:
   Association& operator=(Association&& assign)
   {
     BASSERT(key == assign.key);
-    value = std::move(assign.value);
+    value = moveObject(assign.value);
     return *this;
   }
 
@@ -169,7 +169,7 @@ public:
   */
   inline void setValue(VALUE&& value)
   {
-    this->value = std::move(value);
+    this->value = moveObject(value);
   }
 
   /**

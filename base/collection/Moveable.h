@@ -92,7 +92,7 @@ public:
   }
 
   Moveable(Moveable&& move)
-    : stats(std::move(move.stats))
+    : stats(moveObject(move.stats))
   {
     move.moved = true; // makes it explicitly that object got moved - we need access to stats
     ++(stats->constructs);
@@ -112,7 +112,7 @@ public:
   Moveable& operator=(Moveable&& move)
   {
     if (&move != this) {
-      stats = std::move(move.stats);
+      stats = moveObject(move.stats);
       move.moved = true; // makes it explicitly that object got moved - we need access to stats
     }
     ++(stats->moves);

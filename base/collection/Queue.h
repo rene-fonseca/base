@@ -84,9 +84,9 @@ protected:
       Initializes queue from other queue.
     */
     QueueImpl(QueueImpl&& move) noexcept
-      : first(std::move(move.first)),
-        last(std::move(move.last)),
-        size(std::move(move.size))
+      : first(moveObject(move.first)),
+        last(moveObject(move.last)),
+        size(moveObject(move.size))
     {
     }
 
@@ -179,7 +179,7 @@ public:
     Initializes queue from other queue.
   */
   inline Queue(Queue&& move) noexcept
-    : elements(std::move(move.elements))
+    : elements(moveObject(move.elements))
   {
   }
 

@@ -65,7 +65,7 @@ public:
     Initializes object by other object.
   */
   inline ValidifiedResult(ValidifiedResult&& move)
-    : value(std::move(move.value)), valid(move.valid)
+    : value(moveObject(move.value)), valid(move.valid)
   {
   }
   

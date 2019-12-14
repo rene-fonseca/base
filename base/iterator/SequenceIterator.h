@@ -68,7 +68,7 @@ public:
     Initializes iterator from other iterator.
   */
   inline SequenceIterator(SequenceIterator&& move) noexcept
-    : element(std::move(move.element))
+    : element(moveObject(move.element))
   {
   }
 
@@ -95,7 +95,7 @@ public:
   */
   inline SequenceIterator& operator=(SequenceIterator&& assign) noexcept
   {
-    element = std::move(assign.element);
+    element = moveObject(assign.element);
     return *this;
   }
 

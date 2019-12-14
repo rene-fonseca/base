@@ -51,7 +51,7 @@ public:
     Initializes a linked node with no previous and next node.
   */
   inline DoubleLinkedNode(NullPtr, NullPtr, TYPE&& _value)
-    : value(std::move(_value))
+    : value(moveObject(_value))
   {
   }
 
@@ -91,7 +91,7 @@ public:
   inline DoubleLinkedNode(DoubleLinkedNode* _next, DoubleLinkedNode* _previous, TYPE&& _value)
     : next(_next),
       previous(_previous),
-      value(std::move(_value))
+      value(moveObject(_value))
   {
   }
 
@@ -694,7 +694,7 @@ public:
   // requires move constructible
   static inline DoubleLinkedNode<TYPE>* createNode(DoubleLinkedNode<TYPE>* next, DoubleLinkedNode<TYPE>* previous, TYPE&& value)
   {
-    return new DoubleLinkedNode<TYPE>(next, previous, std::move(value)); // move construction
+    return new DoubleLinkedNode<TYPE>(next, previous, moveObject(value)); // move construction
   }
 };
 
@@ -706,7 +706,7 @@ public:
   static inline DoubleLinkedNode<TYPE>* createNode(DoubleLinkedNode<TYPE>* next, DoubleLinkedNode<TYPE>* previous, TYPE&& value)
   {
     auto temp = new DoubleLinkedNode<TYPE>(next, previous); // default initialization
-    temp->getValue() = std::move(value);
+    temp->getValue() = moveObject(value);
     return temp;
   }
 };

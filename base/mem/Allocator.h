@@ -275,13 +275,13 @@ public:
     // TAG: IsRelocateable<TYPE>() - we can copy memory directly
 
     while (src != end) {
-      new(dest++) TYPE(std::move(*src++)); // move objects - less likely to throw than destroy but we really dont know
+      new(dest++) TYPE(moveObject(*src++)); // move objects - less likely to throw than destroy but we really dont know
     }
     // src still valid object so do NOT fill
 #if 0
     if (std::is_copy_constructible<TYPE>() || std::is_move_constructible<TYPE>()) {
       while (src != end) {
-        new(dest++) TYPE(std::move(*src++)); // move objects - less likely to throw than destroy but we really dont know
+        new(dest++) TYPE(moveObject(*src++)); // move objects - less likely to throw than destroy but we really dont know
       }
       // src still valid object so do NOT fill
     } else if (std::is_trivially_constructible<TYPE>() && std::is_copy_assignable<TYPE>()) {
@@ -293,7 +293,7 @@ public:
     } else if (std::is_default_constructible<TYPE>() && (std::is_copy_assignable<TYPE>() || std::is_move_assignable<TYPE>())) {
       while (src != end) {
         new(dest) TYPE();
-        *dest++ = std::move(*src++); // move objects - less likely to throw than destroy but we really dont know
+        *dest++ = moveObject(*src++); // move objects - less likely to throw than destroy but we really dont know
       }
       // src still valid object so do NOT fill
     }

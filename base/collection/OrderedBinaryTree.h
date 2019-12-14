@@ -381,7 +381,7 @@ public:
     Node* node = getRoot();
 
     if (!node) {
-      auto node = new Node(nullptr, nullptr, nullptr, std::move(value));
+      auto node = new Node(nullptr, nullptr, nullptr, moveObject(value));
       this->elements = new typename BinaryTree<Value>::BinaryTreeImpl(node); // attach root node
       return Pair<Node*, bool>(node, true);
     }
@@ -392,7 +392,7 @@ public:
         if (auto left = node->getLeft()) {
           node = left;
         } else { // attach left child node
-          Node* newNode = new Node(node, nullptr, nullptr, std::move(value));
+          Node* newNode = new Node(node, nullptr, nullptr, moveObject(value));
           node->setLeft(newNode);
           rebalance(node, false);
           return Pair<Node*, bool>(newNode, true);
@@ -401,14 +401,14 @@ public:
         if (auto right = node->getRight()) {
           node = right;
         } else { // attach right child node
-          Node* newNode = new Node(node, nullptr, nullptr, std::move(value));
+          Node* newNode = new Node(node, nullptr, nullptr, moveObject(value));
           node->setRight(newNode);
           rebalance(node, true);
           return Pair<Node*, bool>(newNode, true);
         }
       } else {
         if (!std::is_same<Value, Key>()) {
-          node->getValue() = std::move(value); // force assignment
+          node->getValue() = moveObject(value); // force assignment
         }
         return Pair<Node*, bool>(node, false); // node with this value already exists
       }
@@ -423,7 +423,7 @@ public:
   */
   Value* add2(Value&& value)
   {
-    Pair<Node*, bool> result = add(std::move(value));
+    Pair<Node*, bool> result = add(moveObject(value));
     return !result.getSecond() ? &(result.getFirst()->getValue()) : nullptr;
   }
   

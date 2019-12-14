@@ -81,7 +81,7 @@ public:
     as.setSize(10, "reduce");
     as.shuffle();
     std::reverse(as.begin(), as.end());
-    std::move(as.begin(), as.end(), as.begin());
+    // std::move(as.begin(), as.end(), as.begin());
     as.remove(2, 4);
     as.removeAll();
     TEST_ASSERT(!as);

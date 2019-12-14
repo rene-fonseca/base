@@ -70,7 +70,7 @@ namespace {
         onException(std::current_exception());
       }
       if ((i + 1) < count) {
-        r = std::move(references[count - 1]);
+        r = moveObject(references[count - 1]);
       }
       --count;
 

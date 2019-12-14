@@ -513,14 +513,14 @@ public:
 
   /** Copy of pointer value! */
   inline HeapBlockOwned(Base&& move) noexcept
-    : Base(std::move(move))
+    : Base(moveObject(move))
   {
   }
 
   /** Assignment of pointer value! */
   inline HeapBlockOwned& operator=(HeapBlockOwned&& assign) noexcept
   {
-    HeapBlock<TYPE>::operator=(std::move(assign));
+    HeapBlock<TYPE>::operator=(moveObject(assign));
     return *this;
   }
 

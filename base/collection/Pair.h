@@ -67,8 +67,8 @@ public:
     Initializes a pair from other pair.
   */
   Pair(Pair&& move)
-    : first(std::move(move.first)),
-      second(std::move(move.second))
+    : first(moveObject(move.first)),
+      second(moveObject(move.second))
   {
   }
 
@@ -90,8 +90,8 @@ public:
   Pair& operator=(Pair&& assign)
   {
     if (&assign != this) { // protect against self assignment
-      first = std::move(assign.first);
-      second = std::move(assign.second);
+      first = moveObject(assign.first);
+      second = moveObject(assign.second);
     }
     return *this;
   }
@@ -125,7 +125,7 @@ public:
   */
   void setFirst(First&& value)
   {
-    first = std::move(value);
+    first = moveObject(value);
   }
 
   /**
@@ -141,7 +141,7 @@ public:
   */
   void setSecond(Second&& value)
   {
-    second = std::move(value);
+    second = moveObject(value);
   }
 
   /**

@@ -43,9 +43,9 @@ public:
 
   static inline void swapper(TYPE& a, TYPE& b)
   {
-    TYPE temp(std::move(a));
-    a = std::move(b);
-    b = std::move(temp);
+    TYPE temp(moveObject(a));
+    a = moveObject(b);
+    b = moveObject(temp);
   }
 };
 

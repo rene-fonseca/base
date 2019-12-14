@@ -38,7 +38,7 @@ public:
 
 /** Used to indicate intent to move object. */
 template<typename TYPE>
-inline constexpr typename RemoveReference<TYPE>::Type&& moveobj(TYPE&& value) noexcept
+inline constexpr typename RemoveReference<TYPE>::Type&& moveObject(TYPE&& value) noexcept
 {
   return static_cast<typename RemoveReference<TYPE>::Type&&>(value);
 }
@@ -175,9 +175,9 @@ template<class TYPE>
 inline void swapper(TYPE& a, TYPE& b)
 {
   // TAG: call swapper for TYPE if available to avoid intermediate?
-  TYPE temp(std::move(a));
-  a = std::move(b);
-  b = std::move(temp);
+  TYPE temp(moveObject(a));
+  a = moveObject(b);
+  b = moveObject(temp);
 }
 
 /**

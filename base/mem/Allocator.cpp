@@ -43,7 +43,7 @@ public:
     TEST_ASSERT(a1.getElements() != a2.getElements());
     Allocator<uint8> a3(a2);
 
-    a1 = std::move(a3);
+    a1 = moveObject(a3);
     TEST_ASSERT(a1.getElements() != a3.getElements());
 
     a2.getBeginIterator()[1023 - 1] = 0x07;

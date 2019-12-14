@@ -167,8 +167,8 @@ public:
     Initializes map from other map.
   */
   Map(Map&& move)
-    : elements(std::move(move.elements)),
-      size(std::move(move.size))
+    : elements(moveObject(move.elements)),
+      size(moveObject(move.size))
   {
   }
 
@@ -190,8 +190,8 @@ public:
   Map& operator=(Map&& move)
   {
     if (this != &move) {
-      elements = std::move(move.elements);
-      size = std::move(move.size);
+      elements = moveObject(move.elements);
+      size = moveObject(move.size);
       move.size = 0;
     }
     return *this;
@@ -355,15 +355,15 @@ public:
   */
   bool add(const Key& key, Value&& value)
   {
-    // auto result = elements.add(Node(key, std::move(value)));
+    // auto result = elements.add(Node(key, moveObject(value)));
     typename Tree::Node* node = elements.find(key);
     if (node) { // key already exists
       Node& association = node->getValue();
-      association.setValue(std::move(value)); // set the new value
+      association.setValue(moveObject(value)); // set the new value
       return false;
     } else { // key does not exist
       // annoying to search tree twice
-      auto result = elements.add(Node(key, std::move(value)));
+      auto result = elements.add(Node(key, moveObject(value)));
       ++size;
       return true;
     }

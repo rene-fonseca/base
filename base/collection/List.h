@@ -257,7 +257,7 @@ protected:
     {
       // if node is nullptr then we insert at end
       Node* previous = !node ? last : node->getPrevious();
-      Node* newNode = CreateDoubleLinkedNode<TYPE, GetDoubleLinkedNodeConstruction<TYPE>::HOW>::createNode(node, previous, std::move(value));
+      Node* newNode = CreateDoubleLinkedNode<TYPE, GetDoubleLinkedNodeConstruction<TYPE>::HOW>::createNode(node, previous, moveObject(value));
       if (node) {
         node->setPrevious(newNode);
       }
@@ -305,7 +305,7 @@ protected:
     */
     void append(TYPE&& value)
     {
-      Node* node = CreateDoubleLinkedNode<TYPE, GetDoubleLinkedNodeConstruction<TYPE>::HOW>::createNode(nullptr, last, std::move(value));
+      Node* node = CreateDoubleLinkedNode<TYPE, GetDoubleLinkedNodeConstruction<TYPE>::HOW>::createNode(nullptr, last, moveObject(value));
       if (last) { // list is not empty
         last->setNext(node);
       } else { // list is empty
@@ -335,7 +335,7 @@ protected:
     */
     void prepend(TYPE&& value)
     {
-      Node* node = CreateDoubleLinkedNode<TYPE, GetDoubleLinkedNodeConstruction<TYPE>::HOW>::createNode(first, nullptr, std::move(value));
+      Node* node = CreateDoubleLinkedNode<TYPE, GetDoubleLinkedNodeConstruction<TYPE>::HOW>::createNode(first, nullptr, moveObject(value));
       if (first) { // list is not empty
         first->setPrevious(node);
       } else { // list is empty
@@ -652,7 +652,7 @@ public:
   void append(TYPE&& value)
   {
     elements.copyOnWrite();
-    elements->append(std::move(value));
+    elements->append(moveObject(value));
   }
 
   /**
@@ -674,7 +674,7 @@ public:
   void add(TYPE&& value) // alias to allow switch between container types
   {
     elements.copyOnWrite();
-    elements->append(std::move(value));
+    elements->append(moveObject(value));
   }
 
   /**
@@ -696,7 +696,7 @@ public:
   void prepend(TYPE&& value)
   {
     elements.copyOnWrite();
-    elements->prepend(std::move(value));
+    elements->prepend(moveObject(value));
   }
 
   /**
@@ -730,7 +730,7 @@ public:
     }
     // elements.copyOnWrite(); // would invalidate iterator
     auto node = it.getNode();
-    elements->insert(node, std::move(value));
+    elements->insert(node, moveObject(value));
   }
 
   /**

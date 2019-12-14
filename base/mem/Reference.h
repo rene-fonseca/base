@@ -97,7 +97,7 @@ public:
     Move initialization of automation pointer from other automation pointer.
   */
   inline Reference(Reference&& move)
-    : value(std::move(move.value))
+    : value(moveObject(move.value))
   {
 #if 0
     if (value) {

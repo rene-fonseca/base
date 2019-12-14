@@ -479,7 +479,7 @@ LargeInteger::LargeInteger(const LargeInteger& copy, MemorySize extend)
 }
 
 LargeInteger::LargeInteger(LargeInteger&& move)
-  : value(std::move(move.value))
+  : value(moveObject(move.value))
 {
 }
 
@@ -498,7 +498,7 @@ LargeInteger& LargeInteger::operator=(Word assign)
 
 LargeInteger& LargeInteger::operator=(LargeInteger&& assign)
 {
-  value = std::move(assign.value);
+  value = moveObject(assign.value);
   return *this;
 }
 

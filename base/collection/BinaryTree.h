@@ -834,7 +834,7 @@ public:
     */
     static Node* makeLeft(Node* node, TYPE&& value)
     {
-      Node* child = new Node(node, nullptr, nullptr, std::move(value));
+      Node* child = new Node(node, nullptr, nullptr, moveObject(value));
       node->setLeft(child);
       return child;
     }
@@ -858,7 +858,7 @@ public:
     */
     static Node* makeRight(Node* node, TYPE&& value)
     {
-      Node* child = new Node(node, nullptr, nullptr, std::move(value));
+      Node* child = new Node(node, nullptr, nullptr, moveObject(value));
       node->setRight(child);
       return child;
     }

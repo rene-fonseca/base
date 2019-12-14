@@ -68,8 +68,8 @@ public:
     Initializes a priority queue from other priority queue.
   */
   PriorityQueue(PriorityQueue&& move) noexcept
-    : elements(std::move(move.elements)),
-      size(std::move(move.size))
+    : elements(moveObject(move.elements)),
+      size(moveObject(move.size))
   {
   }
 

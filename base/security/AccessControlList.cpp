@@ -98,7 +98,7 @@ const AccessControlEntry& AccessControlList::getACE(const Trustee& trustee) cons
 }
 
 // need exception to indicate that isMemberOf failed
-AccessControlList::Permissions AccessControlList::getEffectiveAccess(const Trustee& trustee) const noexcept // TAG: fix exception
+AccessControlList::Permissions AccessControlList::getEffectiveAccess(const Trustee& trustee) const noexcept
 {
   Permissions effective;
   effective.allowed = 0;

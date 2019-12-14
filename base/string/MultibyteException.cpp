@@ -34,7 +34,11 @@ MultibyteException::MultibyteException(const char* message, const Type& type) no
 {
 }
 
-MultibyteException::MultibyteException(const char* message, const Type& type, unsigned int cause, MemoryDiff octetIndex, MemoryDiff suboctetIndex) noexcept
+MultibyteException::MultibyteException(const char* message,
+                                       const Type& type,
+                                       unsigned int cause,
+                                       MemoryDiff octetIndex,
+                                       MemoryDiff suboctetIndex) noexcept
   : Exception(message, type)
 {
   setCause(cause);

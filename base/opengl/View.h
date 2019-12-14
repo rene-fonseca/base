@@ -114,7 +114,8 @@ inline Region::Region(const Point2D& _offset, const Dimension& _dimension) noexc
 }
 
 template<>
-class IsUninitializeable<Region> : public BooleanConstant<IsUninitializeable<Point2D>() && IsUninitializeable<Dimension>()> {
+class IsUninitializeable<Region> :
+  public BooleanConstant<IsUninitializeable<Point2D>() && IsUninitializeable<Dimension>()> {
 };
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

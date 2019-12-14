@@ -116,7 +116,11 @@ private:
   StreamSocket streamSocket;
 public:
 
-  IntercomServlet(unsigned int channels, unsigned int sampleRate, bool loopback, bool isServer, const InetEndPoint& endPoint) noexcept
+  IntercomServlet(unsigned int channels,
+                  unsigned int sampleRate,
+                  bool loopback,
+                  bool isServer,
+                  const InetEndPoint& endPoint) noexcept
     : recorder(this),
       player(this),
       reader(this),

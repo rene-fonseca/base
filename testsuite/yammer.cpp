@@ -132,12 +132,14 @@ public:
       fout << "Read=" << bytesWritten
            << "  Progress=" << base::FIXED << (bytesWritten*1000/totalSize)/10.0 << '%'
            << "  Time=" << base::FIXED << timer.getLiveMicroseconds()/100000/10.0 << " s"
-           << "  Rate=" << base::FIXED << setPrecision(1) << (1000000./1024 * static_cast<double>(bytesWritten)/timer.getLiveMicroseconds())
+           << "  Rate=" << base::FIXED << setPrecision(1)
+           << (1000000./1024 * static_cast<double>(bytesWritten)/timer.getLiveMicroseconds())
            << " kb/s          \r" << FLUSH;
     } else {
       fout << "Read=" << bytesWritten // TAG: show in kb/Mb/Gb/...
            << "  Time=" << base::FIXED << timer.getLiveMicroseconds()/100000/10.0 << " s" // use HH:MM:SS format
-           << "  Rate=" << base::FIXED << setPrecision(1) << (1000000./1024 * static_cast<double>(bytesWritten)/timer.getLiveMicroseconds())
+           << "  Rate=" << base::FIXED << setPrecision(1)
+           << (1000000./1024 * static_cast<double>(bytesWritten)/timer.getLiveMicroseconds())
            << " kb/s          \r" << FLUSH;
     }
     // Thread::microsleep(125*1000); // TAG: temp test

@@ -70,7 +70,11 @@ public:
   */
   MultibyteException(const char* message, const Type& type) noexcept;
   
-  MultibyteException(const char* message, const Type& type, unsigned int cause, MemoryDiff octetIndex, MemoryDiff suboctetIndex) noexcept;
+  MultibyteException(const char* message,
+                     const Type& type,
+                     unsigned int cause,
+                     MemoryDiff octetIndex,
+                     MemoryDiff suboctetIndex) noexcept;
 
   /**
     Returns the index of the first invalid character.

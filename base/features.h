@@ -106,7 +106,8 @@ namespace com {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
 #  define _COM_AZURE_DEV__BASE__DUMMY_SYMBOL
 #elif (_COM_AZURE_DEV__BASE__COMPILER == _COM_AZURE_DEV__BASE__COMPILER_LLVM)
-#  define _COM_AZURE_DEV__BASE__DUMMY_SYMBOL namespace { int _DUMMY_SYMBOL = 0; base::DummySymbol _dummySymbol(&_DUMMY_SYMBOL); }
+#  define _COM_AZURE_DEV__BASE__DUMMY_SYMBOL \
+  namespace { int _DUMMY_SYMBOL = 0; base::DummySymbol _dummySymbol(&_DUMMY_SYMBOL); }
 #else
 #  define _COM_AZURE_DEV__BASE__DUMMY_SYMBOL extern int _DUMMY_SYMBOL;
 #endif

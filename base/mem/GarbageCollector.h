@@ -35,7 +35,10 @@ public:
   /** Starts the garbage collector. */
   static bool start();
 
-  /** Tells garbage collector tor release the given object. The object cannot be destructed until all references are removed. */
+  /**
+    Tells garbage collector to release the given object. The object cannot be destructed until all references are
+    removed.
+  */
   static void release(const Reference<ReferenceCountedObject>& reference);
 
   /** Tells garbage collector tor release the given object. The reference will be set to nullptr. */

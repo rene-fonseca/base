@@ -26,7 +26,10 @@
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
-/** Shuffles elements for the given iterators. See https://en.wikipedia.org/wiki/Fisher%E2%80%93Yates_shuffle#Modern_method. */
+/**
+  Shuffles elements for the given iterators.
+  See https://en.wikipedia.org/wiki/Fisher%E2%80%93Yates_shuffle#Modern_method.
+*/
 template<class ITERATOR>
 void shuffle(const ITERATOR& begin, const ITERATOR& end)
 {

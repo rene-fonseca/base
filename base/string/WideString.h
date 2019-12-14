@@ -1137,7 +1137,8 @@ inline WideString operator+(const WideString& left, const WideString& right)
 }
 
 /**
-  String reduction. Removes suffix from string if and only if it ends with the suffix (e.g. ("presuf"-"suf") results in a new string "pre" whereas ("pre"-"suf") results in "pre").
+  String reduction. Removes suffix from string if and only if it ends with the suffix (e.g. ("presuf"-"suf") results in
+  a new string "pre" whereas ("pre"-"suf") results in "pre").
 */
 inline WideString operator-(const WideString& left, const WideString& right)
 {

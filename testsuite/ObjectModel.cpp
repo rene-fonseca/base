@@ -54,10 +54,12 @@ public:
     (*o)["hasCat"] = true;
 
     Reference<ObjectModel::Value> age = (*o)[objectModel.createString("age")];
-    fout << ((age == 25) ? MESSAGE("age has expected value.") : MESSAGE("age doesn't have expected value.")) << ENDL;
+    fout << ((age == 25) ? MESSAGE("age has expected value.") :
+      MESSAGE("age doesn't have expected value.")) << ENDL;
 
     Reference<ObjectModel::Value> hasCat = (*o)[objectModel.createString("hasCat")];
-    fout << ((hasCat == true) ? MESSAGE("hasCat has expected value.") : MESSAGE("hasCat doesn't have expected value.")) << ENDL;
+    fout << ((hasCat == true) ? MESSAGE("hasCat has expected value.") :
+      MESSAGE("hasCat doesn't have expected value.")) << ENDL;
     
     auto a1 = objectModel.createArray(); // TAG: initializer list
     for (unsigned int i = 0; i < 10; ++i) {

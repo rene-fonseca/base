@@ -651,12 +651,18 @@ uint32 LinuxRawIEEE1394::lock(unsigned short node,
   return result;
 }
  
-IEEE1394Common::IsochronousReadChannel LinuxRawIEEE1394::getReadChannel(unsigned int maxPacketsPerRequest, uint64 subchannels) {
-  throw IEEE1394Exception("getReadChannel is not impl.", this);
+IEEE1394Common::IsochronousReadChannel LinuxRawIEEE1394::getReadChannel(
+  unsigned int maxPacketsPerRequest,
+  uint64 subchannels)
+{
+  throw IEEE1394Exception("LinuxRawIEEE1394::getReadChannel is not implemented.", this);
 }
 
-IEEE1394Common::IsochronousWriteChannel LinuxRawIEEE1394::getWriteChannel(unsigned int maxPacketsPerRequest, uint64 subchannels) {
-  throw IEEE1394Exception("getWriteChannel is not impl.", this);
+IEEE1394Common::IsochronousWriteChannel LinuxRawIEEE1394::getWriteChannel(
+  unsigned int maxPacketsPerRequest,
+  uint64 subchannels)
+{
+  throw IEEE1394Exception("LinuxRawIEEE1394::getWriteChannel is not implemented.", this);
 }
 
 LinuxRawIEEE1394::~LinuxRawIEEE1394() {

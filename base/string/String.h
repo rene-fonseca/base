@@ -281,7 +281,8 @@ public:
   String(StringOutputStream& stream);
 
   /**
-    Initializes string from string output stream via FormatOutputStream. Forces flush(). Throws exception is not a StringOutputStream.
+    Initializes string from string output stream via FormatOutputStream. Forces flush(). Throws exception if not a
+    StringOutputStream.
   */
   String(FormatOutputStream& stream);
 

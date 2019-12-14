@@ -55,7 +55,8 @@ private:
   TYPE* value = nullptr;
 public:
 
-  // we need to ignore if type is forward declared static_assert(std::is_base_of<ReferenceCountedObject, TYPE>(), "Reference must be used with ReferenceCountedObject.");
+  // we need to ignore if type is forward declared
+  // static_assert(std::is_base_of<ReferenceCountedObject, TYPE>(), "Reference must be used with ReferenceCountedObject.");
 
   /**
     Initializes an automation pointer as invalid (i.e. nullptr).

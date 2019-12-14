@@ -900,7 +900,8 @@ public:
 
   inline RangeIterator& operator++() noexcept
   {
-    // TAG: for float we would need to keep the steps so far and do value+steps*step - but then it is recommanded that you do this calculation inside the loop
+    // TAG: for float we would need to keep the steps so far and do value+steps*step
+    // but then it is recommended that you do this calculation inside the loop
     value += step;
     return *this;
   }

@@ -88,7 +88,8 @@ private:
   /** Container for wide string. */
   WideString wideString;
   /** Reference counted object. */
-  AnyReference reference; // it would be ok to use native pointer in this case - could be shared with string types potentially
+  AnyReference reference; // it would be ok to use native pointer in this case
+                          // could be shared with string types potentially
 
   /** Release all non-primitive types. */
   inline void reset() {

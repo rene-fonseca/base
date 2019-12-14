@@ -36,13 +36,16 @@ public:
   ~Posix();
   
   /** Returns true on success. Use for fast string to double conversion. */
-  bool getSeries(const char* src, const char* end, float& d) noexcept; // will be deprecated once fully implemented
+  // will be deprecated once fully implemented
+  bool getSeries(const char* src, const char* end, float& d) noexcept;
 
   /** Returns true on success. Use for fast string to double conversion. */
-  bool getSeries(const char* src, const char* end, double& d) noexcept; // will be deprecated once fully implemented
+  // will be deprecated once fully implemented
+  bool getSeries(const char* src, const char* end, double& d) noexcept;
 
   /** Returns true on success. Use for fast string to double conversion. */
-  bool getSeries(const char* src, const char* end, long double& d) noexcept; // will be deprecated once fully implemented
+  // will be deprecated once fully implemented
+  bool getSeries(const char* src, const char* end, long double& d) noexcept;
 
   /** Returns true on success. */
   static bool toFloat(const char* src, const char* end, float& d) noexcept;

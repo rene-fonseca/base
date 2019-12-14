@@ -681,7 +681,9 @@ template<class TYPE, int>
 class CreateDoubleLinkedNode {
 public:
 
-  static inline DoubleLinkedNode<TYPE>* createNode(DoubleLinkedNode<TYPE>* next, DoubleLinkedNode<TYPE>* previous, TYPE&& value)
+  static inline DoubleLinkedNode<TYPE>* createNode(DoubleLinkedNode<TYPE>* next,
+                                                   DoubleLinkedNode<TYPE>* previous,
+                                                   TYPE&& value)
   {
     return new DoubleLinkedNode<TYPE>(next, previous, value); // copy by default
   }
@@ -692,7 +694,9 @@ class CreateDoubleLinkedNode<TYPE, CREATE_DOUBLE_LINKED_NODE_BY_MOVE_CONSTRUCT> 
 public:
 
   // requires move constructible
-  static inline DoubleLinkedNode<TYPE>* createNode(DoubleLinkedNode<TYPE>* next, DoubleLinkedNode<TYPE>* previous, TYPE&& value)
+  static inline DoubleLinkedNode<TYPE>* createNode(DoubleLinkedNode<TYPE>* next,
+                                                   DoubleLinkedNode<TYPE>* previous,
+                                                   TYPE&& value)
   {
     return new DoubleLinkedNode<TYPE>(next, previous, moveObject(value)); // move construction
   }
@@ -703,7 +707,9 @@ class CreateDoubleLinkedNode<TYPE, CREATE_DOUBLE_LINKED_NODE_BY_MOVE_ASSIGN> {
 public:
 
   // requires default construction and move assignable
-  static inline DoubleLinkedNode<TYPE>* createNode(DoubleLinkedNode<TYPE>* next, DoubleLinkedNode<TYPE>* previous, TYPE&& value)
+  static inline DoubleLinkedNode<TYPE>* createNode(DoubleLinkedNode<TYPE>* next,
+                                                   DoubleLinkedNode<TYPE>* previous,
+                                                   TYPE&& value)
   {
     auto temp = new DoubleLinkedNode<TYPE>(next, previous); // default initialization
     temp->getValue() = moveObject(value);

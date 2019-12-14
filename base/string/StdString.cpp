@@ -71,7 +71,8 @@ std::wstring StdString::toWide(const String& s)
   if (s.isEmpty()) {
     return result;
   }
-  const MemoryDiff length = Unicode::UTF8ToWChar(nullptr, reinterpret_cast<const uint8*>(s.getElements()), s.getLength());
+  const MemoryDiff length = Unicode::UTF8ToWChar(
+    nullptr, reinterpret_cast<const uint8*>(s.getElements()), s.getLength());
   if (length < 0) {
     BASSERT(!"Invalid UTF-8 string.");
     return result; // throw

@@ -705,7 +705,8 @@ public:
   }
 
   /**
-    Releases unused memory. Requested capacity is ignored. Any object must not have a cached pointer/iterator to the elements!
+    Releases unused memory. Requested capacity is ignored. Any object must not have a cached pointer/iterator to the
+    elements!
    
     @return Returns the bytes released.
   */

@@ -56,7 +56,10 @@ private:
   /** The associated system error code. */
   unsigned int error = 0;
 #if defined(_COM_AZURE_DEV__BASE__DEBUG)
-  /** The number of times the exception got copy constructed. This can indicate catch without reference. Try to keep to 0. */
+  /**
+    The number of times the exception got copy constructed. This can indicate catch-statement without reference.
+    Try to keep to 0.
+  */
   unsigned int copies = 0;
 #endif
 public:
@@ -66,7 +69,7 @@ public:
   /** Called on throw. */
   static void onThrow(Exception& exception) noexcept;
 
-  /** Rethrows exception. Throws Exception is not current exception. */
+  /** Rethrows exception. Throws Exception is no current exception. */
   static void rethrow();
 
   /** Returns true if stack traces for new exceptions are printed. */
@@ -145,7 +148,7 @@ public:
     void myMethod()
     {
       if (!condition) {
-        throw Exception("my short message.", this);
+        throw Exception("My short message.", this);
       }
       ...
     }
@@ -240,9 +243,9 @@ public:
   }
   
   /**
-    Returns true if exception is generally an externally triggered exception that can be suppressed and handled directly.
-    Internal exceptions like NullPointer should not be handled which is the default behavior. E.g. out of resource, EOF,
-    parsing issues, and similar.
+    Returns true if exception is generally an externally triggered exception that can be suppressed and handled
+    directly. Internal exceptions like NullPointer should not be handled which is the default behavior. E.g. out of
+    resource, EOF, parsing issues, and similar.
   */
   virtual bool isCommonException() const noexcept;
 
@@ -254,7 +257,8 @@ public:
   };
 
   /**
-    Returns the stack trace for the last constructed exception. Avoid constructing exception that are not thrown as these will hide the true exception.
+    Returns the stack trace for the last constructed exception. Avoid constructing exception that are not thrown as
+    these will hide the true exception.
 
     @return Can return nullptr if exception is unknown. Do NOT keep the pointers outside scope.
   */
@@ -358,7 +362,10 @@ inline void rethrow()
     return Type::getType(*this); \
   }
 
-/** Helper class for detecting unwinding during destruction. See http://www.open-std.org/jtc1/sc22/wg21/docs/papers/2014/n4152.pdf. */
+/**
+  Helper class for detecting unwinding during destruction.
+  See http://www.open-std.org/jtc1/sc22/wg21/docs/papers/2014/n4152.pdf.
+*/
 class NewException {
 private:
 

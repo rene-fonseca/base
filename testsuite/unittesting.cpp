@@ -177,7 +177,8 @@ public:
       StringOutputStream stream;
       auto i = id.lastIndexOf('/');
       if (i >= 0) {
-        stream << bold() << id.substring(0, i + 1) << setForeground(ANSIEscapeSequence::BLUE) << id.substring(i + 1) << normal() << FLUSH;
+        stream << bold() << id.substring(0, i + 1)
+               << setForeground(ANSIEscapeSequence::BLUE) << id.substring(i + 1) << normal() << FLUSH;
       } else {
         stream << bold() << setForeground(ANSIEscapeSequence::BLUE) << id << normal() << FLUSH;
       }

@@ -667,7 +667,10 @@ public:
     @param button The button that changed state.
     @param event The mouse button event.
   */
-  virtual void onMouseButton(const Position& position, Mouse::Button button, Mouse::Event event, unsigned int state) noexcept;
+  virtual void onMouseButton(const Position& position,
+                             Mouse::Button button,
+                             Mouse::Event event,
+                             unsigned int state) noexcept;
 
   /**
     Invoked when the mouse wheel state changes.

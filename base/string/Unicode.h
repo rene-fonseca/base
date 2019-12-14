@@ -191,7 +191,10 @@ public:
     return 0;
   }
 
-  /** Converts UCS4 to UTF-8. Returns 0 is invalid ucs4 character. Buffer must have room for minimum 4 bytes for Unicode code. */
+  /**
+    Converts UCS4 to UTF-8. Returns 0 if invalid UCS4 character. Buffer must have room for minimum 4 bytes for Unicode
+    code.
+  */
   static inline MemorySize writeUTF8(uint8* dest, ucs4 ch) noexcept
   {
     if (ch <= 0x7f) { // 7 bit
@@ -400,7 +403,10 @@ public:
 
     @return The number of characters in the UCS-4 encoded string.
   */
-  static inline MemoryDiff UTF8ToUCS4(ucs4* dest, const char* src, MemorySize size, unsigned int flags = EAT_BOM) noexcept
+  static inline MemoryDiff UTF8ToUCS4(ucs4* dest,
+                                      const char* src,
+                                      MemorySize size,
+                                      unsigned int flags = EAT_BOM) noexcept
   {
     return UTF8ToUCS4(dest, reinterpret_cast<const uint8*>(src), size, flags);
   }
@@ -489,7 +495,11 @@ public:
   static MemoryDiff UTF16ToUCS4(ucs4* dest, const utf16* src, MemorySize size, unsigned int flags = 0) noexcept;
 
   /** Convert in-memory (no BOM) UTF-16 to UCS-4. */
-  static inline MemoryDiff UTF16ToUCS4(ucs4* dest, const char16_t* src, MemorySize size, unsigned int flags = 0) noexcept {
+  static inline MemoryDiff UTF16ToUCS4(ucs4* dest,
+                                       const char16_t* src,
+                                       MemorySize size,
+                                       unsigned int flags = 0) noexcept
+  {
     return UTF16ToUCS4(dest, reinterpret_cast<const utf16*>(src), size, flags);
   }
 
@@ -497,7 +507,11 @@ public:
   static MemoryDiff UCS4ToUTF16(utf16* dest, const ucs4* src, MemorySize size, unsigned int flags = 0) noexcept;
 
   /** Convert in-memory (no BOM) UCS-4 to UTF-16. */
-  static inline MemoryDiff UCS4ToUTF16(char16_t* dest, const ucs4* src, MemorySize size, unsigned int flags = 0) noexcept {
+  static inline MemoryDiff UCS4ToUTF16(char16_t* dest,
+                                       const ucs4* src,
+                                       MemorySize size,
+                                       unsigned int flags = 0) noexcept
+  {
     return UCS4ToUTF16(reinterpret_cast<utf16*>(dest), src, size, flags);
   }
 

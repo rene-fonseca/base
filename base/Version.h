@@ -84,13 +84,18 @@ public:
   /** Returns the size of DynamicObject. */
   static MemorySize getDynamicObjectSize() noexcept;
 
-  /** Returns true if _COM_AZURE_DEV__BASE__DEBUG was defined for the Base Framework. _COM_AZURE_DEV__BASE__DEBUG influences class state and must be set identical for dependent projects. */
+  /**
+    Returns true if _COM_AZURE_DEV__BASE__DEBUG was defined for the Base Framework.
+    _COM_AZURE_DEV__BASE__DEBUG influences class state and must be set identical for dependent projects.
+  */
   static bool getDefine_COM_AZURE_DEV__BASE__DEBUG() noexcept;
 
   /** Returns true if DEBUG, _DEBUG, or _COM_AZURE_DEV__BASE__DEBUG were defined for the Base Framework. */
   static bool getDefine_DEBUG() noexcept;
 
-  /** Returns true if the project is built with the correct defines as the Base Framework. Raises exception on conflict. */
+  /**
+    Returns true if the project is built with the correct defines as the Base Framework. Raises exception on conflict.
+  */
   static inline bool isBuildCompatible()
   {
 #if defined(_COM_AZURE_DEV__BASE__DEBUG)

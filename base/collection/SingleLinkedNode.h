@@ -198,8 +198,7 @@ public:
       while (distance++) {
         --(*this);
       }
-    }
-    else {
+    } else {
       while (distance--) {
         ++(*this);
       }
@@ -216,8 +215,7 @@ public:
       while (distance++) {
         ++(*this);
       }
-    }
-    else {
+    } else {
       while (distance--) {
         --(*this);
       }
@@ -368,8 +366,7 @@ public:
       while (distance++) {
         --(*this);
       }
-    }
-    else {
+    } else {
       while (distance--) {
         ++(*this);
       }
@@ -386,8 +383,7 @@ public:
       while (distance++) {
         ++(*this);
       }
-    }
-    else {
+    } else {
       while (distance--) {
         --(*this);
       }

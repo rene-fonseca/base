@@ -90,7 +90,7 @@ Array<Association<String, unsigned int> > InetInterface::getInterfaceNames() noe
   try {
     const struct if_nameindex* current = ni;
     while (current->if_index) {
-      interfaces.add(Association<String, unsigned int>(String(current->if_name), current->if_index));
+      interfaces.append(Association<String, unsigned int>(String(current->if_name), current->if_index));
       ++current;
     }
   } catch (...) {
@@ -126,9 +126,7 @@ Array<Association<String, unsigned int> > InetInterface::getInterfaceNames() noe
     if (Cast::pointer<struct sockaddr*>(&current->iiAddress)->sa_family != AF_INET) { // TAG: AF_INET6
       continue;
     }
-    StringOutputStream stream;
-    stream << index << FLUSH;
-    interfaces.add(Association<String, unsigned int>(stream.getString(), index));
+    interfaces.append(Association<String, unsigned int>(StringOutputStream() << index, index));
     ++current;
   }
 #elif ((_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__GNULINUX) || \

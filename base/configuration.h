@@ -54,6 +54,8 @@
 #  define _COM_AZURE_DEV__BASE__OS _COM_AZURE_DEV__BASE__OPENBSD
 #elif defined(__wasi__)
 #  define _COM_AZURE_DEV__BASE__OS _COM_AZURE_DEV__BASE__WASI
+#elif defined(__EMSCRIPTEN__)
+#  define _COM_AZURE_DEV__BASE__OS _COM_AZURE_DEV__BASE__EMCC
 #else
 #  error Unsupported OS.
 #endif
@@ -84,7 +86,9 @@
 #elif defined(__i386__)
 #  define _COM_AZURE_DEV__BASE__ARCH _COM_AZURE_DEV__BASE__X86
 #elif defined(__wasi__)
-#  define _COM_AZURE_DEV__BASE__ARCH _COM_AZURE_DEV__BASE__WASI
+#  define _COM_AZURE_DEV__BASE__ARCH _COM_AZURE_DEV__BASE__WASM32
+#elif defined(__EMSCRIPTEN__)
+#  define _COM_AZURE_DEV__BASE__ARCH _COM_AZURE_DEV__BASE__WASM32
 #else
 #  error Unsupported arch.
 #endif

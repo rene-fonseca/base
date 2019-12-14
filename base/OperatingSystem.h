@@ -18,7 +18,8 @@
 #include <base/OutOfRange.h>
 #include <base/Literal.h>
 
-#if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__WASI)
+#if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__WASI) || \
+    (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__EMCC)
 #undef PAGE_SIZE
 #endif
 

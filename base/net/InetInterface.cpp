@@ -412,7 +412,8 @@ unsigned int InetInterface::getIndexByName(const String& name)
     if (String(current->ifr_name, IFNAMSIZ) == name) {
       if (ioctl(handle, SIOCGIFINDEX, current) == 0) {
         close(handle);
-#  if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__GNULINUX)
+#  if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__GNULINUX) || \
+      (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__EMCC)
         return current->ifr_ifindex;
 #  else
         return current->ifr_index;
@@ -518,7 +519,8 @@ unsigned int InetInterface::getIndexByAddress(const InetAddress& address)
       if (internal::InetInterface::getAddress(current->ifr_addr) == address) {
         if (ioctl(handle, SIOCGIFINDEX, current) == 0) {
           close(handle);
-#  if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__GNULINUX)
+#  if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__GNULINUX) || \
+      (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__EMCC)
           return current->ifr_ifindex;
 #  else
           return current->ifr_index;
@@ -631,7 +633,8 @@ String InetInterface::getName(unsigned int index)
 #if (defined(SIOCGIFINDEX))
   while (offset < ifc.ifc_len) {
     if (ioctl(handle, SIOCGIFINDEX, current) == 0) {
-#  if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__GNULINUX)
+#  if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__GNULINUX) || \
+      (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__EMCC)
       if (current->ifr_ifindex == index)
 #  else
       if (current->ifr_index == index)
@@ -753,7 +756,8 @@ InetAddress InetInterface::getAddress(unsigned int index)
   while (offset < ifc.ifc_len) {
     // TAG: fixme - invoke SIOCGIFINDEX first
     if (ioctl(handle, SIOCGIFADDR, current) == 0) {
-#  if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__GNULINUX)
+#  if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__GNULINUX) || \
+      (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__EMCC)
       if (current->ifr_ifindex == index) {
 #  else
       if (current->ifr_index == index) {
@@ -889,7 +893,8 @@ InetInterface::InetInterface(const String& name)
   }
 #if (defined(SIOCGIFINDEX))
   if (ioctl(handle, SIOCGIFINDEX, &req) == 0) {
-#  if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__GNULINUX)
+#  if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__GNULINUX) || \
+      (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__EMCC)
     index = req.ifr_ifindex;
 #  else
     index = req.ifr_index;
@@ -936,7 +941,8 @@ InetInterface::InetInterface(const String& name)
   }
 #endif
 
-#elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__WASI)
+#elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__WASI) || \
+      (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__EMCC)
 #elif ((_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__GNULINUX) || \
        (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__CYGWIN))
   if (ioctl(handle, SIOCGIFHWADDR, &req) == 0) {

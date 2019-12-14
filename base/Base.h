@@ -18,6 +18,31 @@
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
+template<typename TYPE> class RemoveReference {
+public:
+
+  typedef TYPE Type;
+};
+
+template<typename TYPE> class RemoveReference<TYPE&> {
+public:
+
+  typedef TYPE Type;
+};
+
+template<typename TYPE> class RemoveReference<TYPE&&> {
+public:
+
+  typedef TYPE Type;
+};
+
+/** Used to indicate intent to move object. */
+template<typename TYPE>
+inline constexpr typename RemoveReference<TYPE>::Type&& moveobj(TYPE&& value) noexcept
+{
+  return static_cast<typename RemoveReference<TYPE>::Type&&>(value);
+}
+
 template<class TYPE> class ConstPointerHelper {
 public:
   

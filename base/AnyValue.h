@@ -92,7 +92,8 @@ private:
                           // could be shared with string types potentially
 
   /** Release all non-primitive types. */
-  inline void reset() {
+  inline void reset()
+  {
     switch (representation) {
     case STRING:
       string = String();

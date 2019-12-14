@@ -15,6 +15,8 @@
 #include <base/ByteOrder.h>
 #include <base/Functor.h>
 #include <base/io/EndOfFile.h>
+#include <base/io/AccessDenied.h>
+#include <base/io/TimedOut.h>
 #include <base/io/BrokenStream.h>
 #include <base/net/Socket.h>
 #include <base/concurrency/Thread.h>

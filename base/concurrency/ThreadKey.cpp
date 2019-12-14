@@ -123,6 +123,26 @@ ThreadKeyImpl::~ThreadKeyImpl()
 #endif // flavor
 }
 
+
+ThreadKeyImpl::ThreadKeyException::ThreadKeyException() noexcept
+{
+}
+
+ThreadKeyImpl::ThreadKeyException::ThreadKeyException(const char* message) noexcept
+  : Exception(message)
+{
+}
+
+ThreadKeyImpl::ThreadKeyException::ThreadKeyException(const Type& type) noexcept
+  : Exception(type)
+{
+}
+
+ThreadKeyImpl::ThreadKeyException::ThreadKeyException(const char* message, const Type& type) noexcept
+  : Exception(message, type)
+{
+}
+
 #if defined(_COM_AZURE_DEV__BASE__TESTS)
 
 class TEST_CLASS(ThreadKey);

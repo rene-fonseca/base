@@ -48,24 +48,13 @@ public:
   class ThreadKeyException : public Exception {
   public:
     
-    inline ThreadKeyException() noexcept
-    {
-    }
+    ThreadKeyException() noexcept;
     
-    inline ThreadKeyException(const char* message) noexcept
-      : Exception(message)
-    {
-    }
+    ThreadKeyException(const char* message) noexcept;
     
-    inline ThreadKeyException(const Type& type) noexcept
-      : Exception(type)
-    {
-    }
+    ThreadKeyException(const Type& type) noexcept;
     
-    inline ThreadKeyException(const char* message, const Type& type) noexcept
-      : Exception(message, type)
-    {
-    }
+    ThreadKeyException(const char* message, const Type& type) noexcept;
     
     _COM_AZURE_DEV__BASE__EXCEPTION_THIS_TYPE()
   };

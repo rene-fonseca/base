@@ -101,3 +101,36 @@ public:
 };
 
 APPLICATION_STUB(ArrayApplication);
+
+
+
+#if 0 // simple test for WASI
+#include <stdio.h>
+#include <base/math/Vector3D.h>
+#include <base/string/StringOutputStream.h>
+
+// this causes base library to be included in wasm
+#if 0
+void doit()
+{
+  Array<int64> a;
+  a.append(4);
+  a.append(2);
+  a.append(6);
+  a.append(8);
+}
+#endif
+
+int main(int argc, const char* argv[])
+{
+  printf("BEGIN!\n");
+  dvector3 result(0,0,1);
+  result += dvector3(2,3,4);
+  double m = result.getModulus();
+  printf("MATH %f\n", m);
+  // String hello = "Hello123";
+  // printf("TEST %s!\n", hello.native());
+  printf("DONE!\n");
+  return 1;
+}
+#endif

@@ -81,7 +81,7 @@ List<String> SerialPort::getPorts() noexcept
     } else {
       failures = 0;
       ::CloseHandle(handle);
-      result.append(stream.getString()); // add to list
+      result.append(id); // add to list
     }
   }
   #if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__GNULINUX)

@@ -332,7 +332,7 @@ public:
   {
     // C++ extension: alias _a.value a; or using _a.value a;
     const auto& a = _a.value;
-    const bool carry = a.low < a.low; // TAG: FIXME
+    const bool carry = value.low > (PrimitiveTraits<uint64>::MAXIMUM - a.low);
     value.high += a.high;
     value.low += a.low;
     if (carry) {

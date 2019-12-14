@@ -29,7 +29,8 @@
 #  if (_COM_AZURE_DEV__BASE__ARCH == _COM_AZURE_DEV__BASE__S390)
 #    define __thread // TAG: temp. fix for s390-ibm-linux-gnu
 #  endif
-#  if (_COM_AZURE_DEV__BASE__OS != _COM_AZURE_DEV__BASE__WASI)
+#  if (_COM_AZURE_DEV__BASE__OS != _COM_AZURE_DEV__BASE__WASI) && \
+      (_COM_AZURE_DEV__BASE__OS != _COM_AZURE_DEV__BASE__EMCC)
 #  include <sys/signal.h> // defines SIG_ERR on IRIX65
 #  endif
 #  include <signal.h>

@@ -33,7 +33,8 @@
      (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__FREEBSD) || \
      (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__OPENBSD) || \
      (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__WEBASSEMBLY) || \
-     (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__WASI))
+     (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__WASI) || \
+     (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__EMCC))
 #else
 #  error Invalid operating system (OS) specification
 #endif

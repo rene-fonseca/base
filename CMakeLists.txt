@@ -15,6 +15,10 @@ if (MSVC)
   add_definitions(-D_UNICODE)
 endif ()
 
+if (CMAKE_CXX_COMPILER MATCHES "/em\\+\\+(-[a-zA-Z0-9.])?$")
+  set (CMAKE_CXX_COMPILER_ID "Emscripten")
+endif ()
+
 message("System: ${CMAKE_SYSTEM_NAME}")
 message("Compiler: ${CMAKE_CXX_COMPILER_ID}")
 
@@ -45,7 +49,8 @@ else ()
 
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
 
-if (("${CMAKE_CXX_COMPILER_ID}" STREQUAL "AppleClang") OR ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang"))
+if (("${CMAKE_CXX_COMPILER_ID}" STREQUAL "AppleClang") OR ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang") OR
+    ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Emscripten"))
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-unused-variable") # ignore unused variables
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-unused-private-field") # ignore unused field
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-exceptions")
@@ -88,7 +93,7 @@ endif ()
 
 set (USE_SHARED 1)
 # TAG: need a way to detect WASM and skip shared
-if ("${CMAKE_SYSTEM_NAME}" STREQUAL "Generic") # WASI
+if (("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Emscripten") OR ("${CMAKE_SYSTEM_NAME}" STREQUAL "Generic")) # WASI
   set (USE_SHARED 0)
 endif ()
 

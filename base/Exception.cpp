@@ -304,7 +304,8 @@ public:
       throw bindException(bindType(MyException(), Type::getType<MyExceptionContext>()), "My message.", 1);
       TEST_NOT_HERE(B);
     } catch (MyException& e) {
-      TEST_ASSERT(e.getMessage() == "My message."); // compare pointers!
+      const char* text = "My message.";
+      TEST_ASSERT(e.getMessage() == text); // compare pointers!
       TEST_ASSERT(e.getCause() == 1);
       TEST_ASSERT(e.getType() == Type::getType<MyExceptionContext>());
       TEST_HERE(A);

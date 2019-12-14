@@ -76,7 +76,7 @@ public:
     Returns a random real number in the range [0;1].
   */
   static inline float getFloat() noexcept {
-    return (1.0f/0xffffffff) * getInteger();
+    return static_cast<float>((1.0/0xffffffff) * getInteger());
   }
 
   /**

@@ -98,30 +98,22 @@ void ANSIEscapeSequence::setBackground(Color color)
 
 String ANSIEscapeSequence::color(uint8 red, uint8 green, uint8 blue)
 {
-  StringOutputStream sos;
-  sos << "\033[38;2;" << red << ";" << green << ";" << blue << "m";
-  return sos.toString();
+  return StringOutputStream() << "\033[38;2;" << red << ";" << green << ";" << blue << "m";
 }
 
 String ANSIEscapeSequence::color(uint8 index)
 {
-  StringOutputStream sos;
-  sos << "\033[38;5;" << index << "m";
-  return sos.toString();
+  return StringOutputStream() << "\033[38;5;" << index << "m";
 }
 
 String ANSIEscapeSequence::backgroundColor(uint8 red, uint8 green, uint8 blue)
 {
-  StringOutputStream sos;
-  sos << "\033[48;2;" << red << ";" << green << ";" << blue << "m";
-  return sos.toString();
+  return StringOutputStream() << "\033[48;2;" << red << ";" << green << ";" << blue << "m";
 }
 
 String ANSIEscapeSequence::backgroundColor(uint8 index)
 {
-  StringOutputStream sos;
-  sos << "\033[48;5;" << index << "m";
-  return sos.toString();
+  return StringOutputStream() << "\033[48;5;" << index << "m";
 }
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

@@ -65,9 +65,8 @@ List<String> SerialPort::getPorts() noexcept
   // FIXME: use registry to determine the available ports
   unsigned int failures = 0;
   for (unsigned int i = 1; i <= 256; ++i) { // only the first 256 ports
-    StringOutputStream stream;
-    stream << "com" << i << FLUSH;
-    HANDLE handle = ::CreateFile(ToWCharString(stream.getString()),
+    String id = StringOutputStream() << "com" << i;
+    HANDLE handle = ::CreateFile(ToWCharString(id),
                                  0, // query only
                                  0, // comm devices must be opened w/exclusive-access
                                  0, // no security attributes

@@ -76,9 +76,9 @@ namespace internal {
   };
 }; // end of namespace internal
 
-HashTable<String, unsigned int> InetInterface::getInterfaceNames() noexcept
+Array<Association<String, unsigned int> > InetInterface::getInterfaceNames() noexcept
 {
-  HashTable<String, unsigned int> interfaces;
+  Array<Association<String, unsigned int> > interfaces;
 #if (defined(_COM_AZURE_DEV__BASE__INET_IPV6))
   struct if_nameindex* ni = nullptr;
   if ((ni = if_nameindex()) == 0) { // MT-safe
@@ -90,7 +90,7 @@ HashTable<String, unsigned int> InetInterface::getInterfaceNames() noexcept
   try {
     const struct if_nameindex* current = ni;
     while (current->if_index) {
-      interfaces.add(String(current->if_name), current->if_index);
+      interfaces.add(Association<String, unsigned int>(String(current->if_name), current->if_index));
       ++current;
     }
   } catch (...) {
@@ -115,7 +115,7 @@ HashTable<String, unsigned int> InetInterface::getInterfaceNames() noexcept
         0)) {
     closesocket(handle);
     throw NetworkException(
-      "Unable to get interfaces",
+      "Unable to get interfaces.",
       Type::getType<InetInterface>()
     );
   }
@@ -128,7 +128,7 @@ HashTable<String, unsigned int> InetInterface::getInterfaceNames() noexcept
     }
     StringOutputStream stream;
     stream << index << FLUSH;
-    interfaces.add(stream.getString(), index);
+    interfaces.add(Association<String, unsigned int>(stream.getString(), index));
     ++current;
   }
 #elif ((_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__GNULINUX) || \
@@ -151,14 +151,14 @@ HashTable<String, unsigned int> InetInterface::getInterfaceNames() noexcept
     int offset = 0;
     while (offset < ifc.ifc_len) {
       if (ioctl(handle, SIOCGIFINDEX, current) == 0) {
-        interfaces.add(
+        interfaces.append(Association<String, unsigned int>(
           String(current->ifr_name, IFNAMSIZ),
 #    if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__GNULINUX)
           current->ifr_ifindex
 #    else
           current->ifr_index
 #    endif
-        );
+        ));
       }
       ++current;
       offset += sizeof(struct ifreq);
@@ -168,7 +168,7 @@ HashTable<String, unsigned int> InetInterface::getInterfaceNames() noexcept
     int offset = 0;
     int index = 1;
     while (offset < ifc.ifc_len) {
-      interfaces.add(String(current->ifr_name, IFNAMSIZ), index++);
+      interfaces.add(Association<String, unsigned int>(String(current->ifr_name, IFNAMSIZ), index++));
       ++current;
       offset += sizeof(struct ifreq);
     }
@@ -226,7 +226,7 @@ List<InetInterface> InetInterface::getInterfaces()
         0)) {
     closesocket(handle);
     throw NetworkException(
-      "Unable to get interfaces",
+      "Unable to get interfaces.",
       Type::getType<InetInterface>()
     );
   }
@@ -393,7 +393,7 @@ unsigned int InetInterface::getIndexByName(const String& name)
 //   if (ioctl(handle, command, &numberOfInterfaces) != 0) {
 //     close(handle);
 //     throw NetworkException(
-//       "Unable to resolve interface",
+//       "Unable to resolve interface.",
 //       Type::getType<InetInterface>()
 //     );
 //   }
@@ -498,7 +498,7 @@ unsigned int InetInterface::getIndexByAddress(const InetAddress& address)
 //   if (ioctl(handle, command, &numberOfInterfaces) != 0) {
 //     close(handle);
 //     throw NetworkException(
-//       "Unable to resolve interface",
+//       "Unable to resolve interface.",
 //       Type::getType<InetInterface>()
 //     );
 //   }
@@ -508,7 +508,7 @@ unsigned int InetInterface::getIndexByAddress(const InetAddress& address)
   if (ioctl(handle, SIOCGIFCONF, &ifc)) {
     close(handle);
     throw NetworkException(
-      "Unable to resolve interface",
+      "Unable to resolve interface.",
       Type::getType<InetInterface>()
     );
   }
@@ -614,7 +614,7 @@ String InetInterface::getName(unsigned int index)
 //   if (ioctl(handle, command, &numberOfInterfaces) != 0) {
 //     close(handle);
 //     throw NetworkException(
-//       "Unable to resolve interface",
+//       "Unable to resolve interface.",
 //       Type::getType<InetInterface>()
 //     );
 //   }
@@ -704,7 +704,7 @@ InetAddress InetInterface::getAddress(unsigned int index)
         0)) {
     closesocket(handle);
     throw NetworkException(
-      "Unable to resolve interface",
+      "Unable to resolve interface.",
       Type::getType<InetInterface>()
     );
   }
@@ -745,7 +745,7 @@ InetAddress InetInterface::getAddress(unsigned int index)
   if (ioctl(handle, SIOCGIFCONF, &ifc)) {
     close(handle);
     throw NetworkException(
-      "Unable to resolve interface",
+      "Unable to resolve interface.",
       Type::getType<InetInterface>()
     );
   }
@@ -814,7 +814,7 @@ InetInterface::InetInterface(const String& name)
         0)) {
     closesocket(handle);
     throw NetworkException(
-      "Unable to get interfaces",
+      "Unable to get interfaces.",
       Type::getType<InetInterface>()
     );
   }

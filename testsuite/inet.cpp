@@ -53,19 +53,18 @@ public:
   {
     try {
       if (false) {
-        Map<String, unsigned int> names;
-        /*
-        for (auto i : InetInterface::getInterfaceNames()) {
-          names.add(i);
-        }
-        */
+        auto names = InetInterface::getInterfaceNames();
+        // bubbleSort(names.begin(), names.end());
 
-        HashTable<String, unsigned int> names2 = InetInterface::getInterfaceNames();
-        HashTable<String, unsigned int>::ReadEnumerator enu = names2.getReadEnumerator();
+#if 0
+        Map<String, unsigned int> names;
+        auto names2 = InetInterface::getInterfaceNames();
+        auto enu = names2.getReadEnumerator();
         while (enu.hasNext()) {
           names.add(*enu.next());
         }
-        
+#endif
+
         fout << "Interfaces:" << ENDL;
         for (auto node : names) {
           fout << indent(2) << node.getKey() << " index=" << node.getValue() << EOL;

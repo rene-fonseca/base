@@ -224,7 +224,7 @@ void mergeSort(const ITERATOR& begin, const ITERATOR& end)
   Allocator<TYPE> sorted(size);
   {
     TYPE* dest = sorted.getElements();
-    for (typename ITERATOR src = begin; src != end; ++src, ++dest) {
+    for (ITERATOR src = begin; src != end; ++src, ++dest) {
       *dest = moveObject(*src);
     }
   }
@@ -246,7 +246,7 @@ void mergeSort(const ITERATOR& begin, const ITERATOR& end)
     }
     swapper(dest, src);
   }
-  for (typename ITERATOR dest = begin; dest != end; ++src, ++dest) {
+  for (ITERATOR dest = begin; dest != end; ++src, ++dest) {
     *dest = moveObject(*src);
   }
 }
@@ -273,7 +273,7 @@ void mergeSort(const ITERATOR& begin, const ITERATOR& end, PREDICATE predicate)
   Allocator<TYPE> sorted(size);
   {
     TYPE* dest = sorted.getElements();
-    for (typename ITERATOR src = begin; src != end; ++src, ++dest) {
+    for (ITERATOR src = begin; src != end; ++src, ++dest) {
       *dest = moveObject(*src);
     }
   }
@@ -295,7 +295,7 @@ void mergeSort(const ITERATOR& begin, const ITERATOR& end, PREDICATE predicate)
     }
     swapper(dest, src);
   }
-  for (typename ITERATOR dest = begin; dest != end; ++src, ++dest) {
+  for (ITERATOR dest = begin; dest != end; ++src, ++dest) {
     *dest = moveObject(*src);
   }
 }

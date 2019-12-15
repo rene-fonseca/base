@@ -55,4 +55,40 @@ void bubbleSort(const ITERATOR& _begin, const ITERATOR& _end)
 
 // TAG: add merge sort
 
+/** Binary search. Compare operator must be <. Assume value is equal when !(a<b) && !(b<a). */
+template<class ITERATOR, class TYPE, class COMPARE>
+ITERATOR binarySearch(const ITERATOR& begin, const ITERATOR& end, const TYPE& find, COMPARE compare)
+{
+  const ForwardIterator* ensureForwardIterator = static_cast<const typename ITERATOR::Category*>(nullptr);
+  // requires random access iterator
+  if (begin == end) {
+    return end; // not found
+  }
+  ITERATOR low = begin;
+  ITERATOR high = end - 1; // last item // TAG: not desired for forward
+  while (true) {
+    const ITERATOR n = low + (high - low)/2; // mid - expensive for non-random iterator
+    if (compare(find, *n)) { // find < *n - assumed expensive check
+      if (n == low) { // assumed quick check
+        return end; // not found
+      }
+      high = n - 1; // TAG: not desired for forward - we would need to cache from earlier distance iteration
+    } else if (compare(*n, find)) { // *n < find - assumed expensive check
+      if (n == high) { // assumed quick check
+        return end; // not found
+      }
+      low = n + 1;
+    } else {
+      return n; // found
+    }
+  }
+}
+
+/** Binary search. Uses operator< only. Assume value is equal when !(a<b) && !(b<a). */
+template<class ITERATOR, class TYPE>
+ITERATOR binarySearch(const ITERATOR& begin, const ITERATOR& end, const TYPE& find)
+{
+  return binarySearch(begin, end, find, std::less<TYPE>());
+}
+
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

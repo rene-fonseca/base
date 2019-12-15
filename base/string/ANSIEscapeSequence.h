@@ -214,162 +214,193 @@ public:
 };
 
 /** Moves the cursor to the home position. */
-inline ANSIEscapeSequence::Escape home() noexcept {
+inline ANSIEscapeSequence::Escape home() noexcept
+{
   return ANSIEscapeSequence::Escape(Literal("ESC[H"));
 }
 
 /** Set the cursor position. */
 inline ANSIEscapeSequence::SetCursor setCursor(
-  unsigned int line, unsigned int column) noexcept {
+  unsigned int line, unsigned int column) noexcept
+{
   return ANSIEscapeSequence::SetCursor(line, column);
 }
 
 /** Moves the cursor up by the specified number of lines. The default is 1. */
-inline ANSIEscapeSequence::MoveCursor up(unsigned int count = 1) noexcept {
+inline ANSIEscapeSequence::MoveCursor up(unsigned int count = 1) noexcept
+{
   return ANSIEscapeSequence::MoveCursor(&ANSIEscapeSequence::up, count);
 }
 
 /** Moves the cursor down by the specified number of lines. The default is 1. */
-inline ANSIEscapeSequence::MoveCursor down(unsigned int count = 1) noexcept {
+inline ANSIEscapeSequence::MoveCursor down(unsigned int count = 1) noexcept
+{
   return ANSIEscapeSequence::MoveCursor(&ANSIEscapeSequence::down, count);
 }
 
 /**
   Moves the cursor forward by the specified number of columns. The default is 1.
 */
-inline ANSIEscapeSequence::MoveCursor forward(unsigned int count = 1) noexcept {
+inline ANSIEscapeSequence::MoveCursor forward(unsigned int count = 1) noexcept
+{
   return ANSIEscapeSequence::MoveCursor(&ANSIEscapeSequence::forward, count);
 }
 
 /**
   Moves the cursor backward by the specified number of columns. The default is 1.
 */
-inline ANSIEscapeSequence::MoveCursor backward(unsigned int count = 1) noexcept {
+inline ANSIEscapeSequence::MoveCursor backward(unsigned int count = 1) noexcept
+{
   return ANSIEscapeSequence::MoveCursor(&ANSIEscapeSequence::backward, count);
 }
 
 /** Saves the position. */
-inline ANSIEscapeSequence::Escape savePosition() noexcept {
+inline ANSIEscapeSequence::Escape savePosition() noexcept
+{
   return ANSIEscapeSequence::Escape(Literal("\033[s"));
 }
 
 /** Restores the position. */
-inline ANSIEscapeSequence::Escape restorePosition() noexcept {
+inline ANSIEscapeSequence::Escape restorePosition() noexcept
+{
   return ANSIEscapeSequence::Escape(Literal("\033[u"));
 }
 
 /** Erases the display. */
-inline ANSIEscapeSequence::Escape clearDisplay() noexcept {
+inline ANSIEscapeSequence::Escape clearDisplay() noexcept
+{
   return ANSIEscapeSequence::Escape(Literal("\033[2J"));
 }
 
 /** Erases the current line. */
-inline ANSIEscapeSequence::Escape clearLine() noexcept {
+inline ANSIEscapeSequence::Escape clearLine() noexcept
+{
   return ANSIEscapeSequence::Escape(Literal("\033[K"));
 }
 
 /** Enables wrapping. */
-inline ANSIEscapeSequence::Escape wrap() noexcept {
+inline ANSIEscapeSequence::Escape wrap() noexcept
+{
   return ANSIEscapeSequence::Escape(Literal("\033[=7h"));
 }
 
 /** Disables wrapping. */
-inline ANSIEscapeSequence::Escape nowrap() noexcept {
+inline ANSIEscapeSequence::Escape nowrap() noexcept
+{
   return ANSIEscapeSequence::Escape(Literal("\033[=7l"));
 }
 
 /** Deactivates all the text attributes. */
-inline ANSIEscapeSequence::Escape normal() noexcept {
+inline ANSIEscapeSequence::Escape normal() noexcept
+{
   return ANSIEscapeSequence::Escape(Literal("\033[0m"));
 }
 
 /** Activates the bold attribute. */
-inline ANSIEscapeSequence::Escape bold() noexcept {
+inline ANSIEscapeSequence::Escape bold() noexcept
+{
   return ANSIEscapeSequence::Escape(Literal("\033[1m"));
 }
 
 /** Deactivates the bold attribute. */
-inline ANSIEscapeSequence::Escape nobold() noexcept {
+inline ANSIEscapeSequence::Escape nobold() noexcept
+{
   return ANSIEscapeSequence::Escape(Literal("\033[22m"));
 }
 
 /** Activates the dim attribute. ATTENTION: This code is NOT generally supported. */
-inline ANSIEscapeSequence::Escape dim() noexcept {
+inline ANSIEscapeSequence::Escape dim() noexcept
+{
   return ANSIEscapeSequence::Escape(Literal("\033[2m"));
 }
 
 /** Deactivates the dim attribute. ATTENTION: This code is NOT generally supported. */
-inline ANSIEscapeSequence::Escape nodim() noexcept {
+inline ANSIEscapeSequence::Escape nodim() noexcept
+{
   return ANSIEscapeSequence::Escape(Literal("\033[22m"));
 }
 
 /** Activates the italic attribute. ATTENTION: This code is NOT generally supported. */
-inline ANSIEscapeSequence::Escape italic() noexcept {
+inline ANSIEscapeSequence::Escape italic() noexcept
+{
   return ANSIEscapeSequence::Escape(Literal("\033[3m"));
 }
 
 /** Deactivates the italic attribute. ATTENTION: This code is NOT generally supported. */
-inline ANSIEscapeSequence::Escape noitalic() noexcept {
+inline ANSIEscapeSequence::Escape noitalic() noexcept
+{
   return ANSIEscapeSequence::Escape(Literal("\033[23m"));
 }
 
 /** Activates the strike-through attribute. ATTENTION: This code is NOT generally supported. */
-inline ANSIEscapeSequence::Escape strikethrough() noexcept {
+inline ANSIEscapeSequence::Escape strikethrough() noexcept
+{
   return ANSIEscapeSequence::Escape(Literal("\033[9m"));
 }
 
 /** Deactivates the strike-through attribute. ATTENTION: This code is NOT generally supported. */
-inline ANSIEscapeSequence::Escape nostrikethrough() noexcept {
+inline ANSIEscapeSequence::Escape nostrikethrough() noexcept
+{
   return ANSIEscapeSequence::Escape(Literal("\033[29m"));
 }
 
 /** Activates the underscore attribute. */
-inline ANSIEscapeSequence::Escape underscore() noexcept {
+inline ANSIEscapeSequence::Escape underscore() noexcept
+{
   return ANSIEscapeSequence::Escape(Literal("\033[4m"));
 }
 
 /** Deactivates the underscore attribute. */
-inline ANSIEscapeSequence::Escape nounderscore() noexcept {
+inline ANSIEscapeSequence::Escape nounderscore() noexcept
+{
   return ANSIEscapeSequence::Escape(Literal("\033[24m"));
 }
 
 /** Activates the overline attribute. ATTENTION: This code is NOT generally supported. */
-inline ANSIEscapeSequence::Escape overline() noexcept {
+inline ANSIEscapeSequence::Escape overline() noexcept
+{
   return ANSIEscapeSequence::Escape(Literal("\033[53m"));
 }
 
 /** Deactivates the overline attribute. ATTENTION: This code is NOT generally supported. */
-inline ANSIEscapeSequence::Escape nooverline() noexcept {
+inline ANSIEscapeSequence::Escape nooverline() noexcept
+{
   return ANSIEscapeSequence::Escape(Literal("\033[55m"));
 }
 
 /** Activates the blink attribute. */
-inline ANSIEscapeSequence::Escape blink() noexcept {
+inline ANSIEscapeSequence::Escape blink() noexcept
+{
   return ANSIEscapeSequence::Escape(Literal("\033[5m"));
 }
 
 /** Deactivates the blink attribute. */
-inline ANSIEscapeSequence::Escape noblink() noexcept {
+inline ANSIEscapeSequence::Escape noblink() noexcept
+{
   return ANSIEscapeSequence::Escape(Literal("\033[25m"));
 }
 
 /** Activates the reverse attribute. */
-inline ANSIEscapeSequence::Escape reverse() noexcept {
+inline ANSIEscapeSequence::Escape reverse() noexcept
+{
   return ANSIEscapeSequence::Escape(Literal("\033[7m"));
 }
 
 /** Deactivates the reverse attribute. */
-inline ANSIEscapeSequence::Escape noreverse() noexcept {
+inline ANSIEscapeSequence::Escape noreverse() noexcept
+{
   return ANSIEscapeSequence::Escape(Literal("\033[27m"));
 }
 
 /** Activates the conceal attribute. */
-inline ANSIEscapeSequence::Escape conceal() noexcept {
+inline ANSIEscapeSequence::Escape conceal() noexcept
+{
   return ANSIEscapeSequence::Escape(Literal("\033[8m"));
 }
 
 /** Dectivates the conceal attribute. */
-inline ANSIEscapeSequence::Escape noconceal() noexcept {
+inline ANSIEscapeSequence::Escape noconceal() noexcept
+{
   return ANSIEscapeSequence::Escape(Literal("\033[28m"));
 }
 

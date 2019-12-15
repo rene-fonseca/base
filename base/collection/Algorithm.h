@@ -14,6 +14,7 @@
 #pragma once
 
 #include <base/ForwardIterator.h>
+#include <base/Random.h>
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
@@ -346,6 +347,37 @@ template<class ITERATOR, class TYPE>
 ITERATOR binarySearch(const ITERATOR& begin, const ITERATOR& end, const TYPE& find)
 {
   return binarySearch(begin, end, find, std::less<TYPE>());
+}
+
+/**
+  Shuffles elements for the given iterators.
+  See https://en.wikipedia.org/wiki/Fisher%E2%80%93Yates_shuffle#Modern_method.
+*/
+template<class ITERATOR>
+void shuffle(const ITERATOR& begin, const ITERATOR& end)
+{
+  const RandomAccessIterator* ensureIterator = static_cast<const typename ITERATOR::Category*>(nullptr);
+  auto n = end - begin;
+  while (n > 1) {
+    MemorySize i = Random::random<MemorySize>() % n;
+    --n;
+    swapper(begin[i], begin[n]); // move to last
+  }
+}
+
+/**
+  Shuffles elements for the given iterators.
+  See https://en.wikipedia.org/wiki/Fisher%E2%80%93Yates_shuffle#Modern_method.
+*/
+template<class TYPE>
+void shuffle(TYPE* begin, TYPE* end)
+{
+  auto n = end - begin;
+  while (n > 1) {
+    MemorySize i = Random::random<MemorySize>() % n;
+    --n;
+    swapper(begin[i], begin[n]); // move to last
+  }
 }
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

@@ -246,11 +246,13 @@ public:
 
   inline Iterator begin() noexcept
   {
+    // elements.copyOnWrite();
     return Iterator(elements.getRoot());
   }
 
   inline Iterator end() noexcept
   {
+    // elements.copyOnWrite();
     return Iterator();
   }
 

@@ -446,6 +446,7 @@ public:
   */
   inline Iterator begin() noexcept
   {
+    elements.copyOnWrite();
     return getBeginIterator();
   }
 
@@ -454,6 +455,7 @@ public:
   */
   inline Iterator end() noexcept
   {
+    elements.copyOnWrite();
     return getEndIterator();
   }
 

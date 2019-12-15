@@ -419,11 +419,13 @@ public:
 
   Iterator begin() noexcept
   {
+    elements.copyOnWrite();
     return Iterator(elements->getTop());
   }
 
   Iterator end() noexcept
   {
+    elements.copyOnWrite();
     return Iterator(nullptr);
   }
 

@@ -183,21 +183,6 @@ inline void mergeSortMerge(TYPE* a, const TYPE* aEnd, TYPE* b, const TYPE* bEnd,
   }
 }
 
-#if 0
-template<class TYPE>
-void mergeSort(TYPE* begin, const MemorySize size, TYPE* dest)
-{
-  if (size <= 8) { // TAG: what is the proper limit?
-    mergeSortTiny(dest, size);
-    return; // sorted
-  }
-  const auto m = size / 2;
-  mergeSort(dest, m, begin);
-  mergeSort(dest + m, size - m, begin + m);
-  mergeSortMerge(begin, begin + m, begin + m, begin + size, dest);
-}
-#endif
-
 /**
   Merge sort. O(n log(n)). Random access iterator required. operator<= used for comparison of values.
 
@@ -229,7 +214,7 @@ void mergeSort(const ITERATOR& begin, const ITERATOR& end)
       *dest = moveObject(*src);
     }
   }
-  // TAG: for concurrency split in n equal blocks
+  // TAG: for concurrency split in n equal blocks >= 8*1024
   TYPE* src = sorted.getElements();
   TYPE* dest = temp.getElements();
 

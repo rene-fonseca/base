@@ -767,11 +767,11 @@ public:
   /** Returns true if less than. */
   bool operator<(const Array& compare) const
   {
-    // TAG: use algorihm implementation to reuse
     auto a = cbegin();
     auto b = compare.cbegin();
-    if (getSize() < compare.getSize()) {
-      const auto aEnd = cend();
+    const auto aEnd = cend();
+    const auto bEnd = compare.cend();
+    if (getSize() <= compare.getSize()) {
       for (; a != aEnd; ++a, ++b) {
         if (*a < *b) {
           return true;
@@ -780,8 +780,8 @@ public:
         }
         return false;
       }
+      return b != bEnd;
     } else {
-      const auto bEnd = compare.cend();
       for (; b != bEnd; ++a, ++b) {
         if (*a < *b) {
           return true;
@@ -790,10 +790,15 @@ public:
         }
         return false;
       }
+      return false;
     }
-    return false;
   }
-
+  
+  inline bool operator>=(const Array& compare) const
+  {
+    return !operator<(compare);
+  }
+  
   /** Returns true if not empty. */
   inline operator bool() const noexcept
   {

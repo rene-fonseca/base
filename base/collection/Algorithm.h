@@ -380,4 +380,18 @@ void shuffle(TYPE* begin, TYPE* end)
   }
 }
 
+template<class ITERATOR>
+bool lessThan(ITERATOR a, const ITERATOR aEnd, ITERATOR b, const ITERATOR bEnd)
+{
+  while ((a != aEnd) && (b != bEnd)) {
+    if (*a < *b) {
+      return true;
+    } else if (*a == *b) {
+      continue;
+    }
+    return false;
+  }
+  return (b != bEnd);
+}
+
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

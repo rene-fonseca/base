@@ -523,6 +523,15 @@ public:
     elements = copy.elements;
     return *this;
   }
+
+  /**
+    Assignment of list by list.
+  */
+  inline List& operator=(List&& move) noexcept
+  {
+    elements = moveObject(move.elements);
+    return *this;
+  }
   
   // Node read-only
 
@@ -837,6 +846,64 @@ public:
     Uses temporary buffer but avoid copy construction of values.
   */
   void shuffle();
+
+  /** Returns true if equal. */
+  bool operator==(const List& compare) const
+  {
+    if (getSize() != compare.getSize()) {
+      return false;
+    }
+    auto a = cbegin();
+    const auto aEnd = cend();
+    auto b = compare.cbegin();
+    for (; a != aEnd; ++a, ++b) {
+      if (!(*a == *b)) {
+        return false;
+      }
+    }
+    return true;
+  }
+
+  /** Returns true if not equal. */
+  inline bool operator!=(const List& compare) const
+  {
+    return !operator==(compare);
+  }
+
+  /** Returns true if less than. */
+  bool operator<(const List& compare) const
+  {
+    auto a = cbegin();
+    auto b = compare.cbegin();
+    const auto aEnd = cend();
+    const auto bEnd = compare.cend();
+    if (getSize() <= compare.getSize()) {
+      for (; a != aEnd; ++a, ++b) {
+        if (*a < *b) {
+          return true;
+        } else if (*a == *b) {
+          continue;
+        }
+        return false;
+      }
+      return b != bEnd;
+    } else {
+      for (; b != bEnd; ++a, ++b) {
+        if (*a < *b) {
+          return true;
+        } else if (*a == *b) {
+          continue;
+        }
+        return false;
+      }
+      return false;
+    }
+  }
+  
+  inline bool operator>=(const List& compare) const
+  {
+    return !operator<(compare);
+  }
 
   /** Returns true if not empty. */
   inline operator bool() const noexcept

@@ -769,6 +769,59 @@ public:
     return getAt(index);
   }
 
+  /** Returns true if equal. */
+  bool operator==(const Array& compare) const
+  {
+    if (getSize() != compare.getSize()) {
+      return false;
+    }
+    auto a = cbegin();
+    const auto aEnd = cend();
+    auto b = compare.cbegin();
+    for (; a != aEnd; ++a, ++b) {
+      if (!(*a == *b)) {
+        return false;
+      }
+    }
+    return true;
+  }
+
+  /** Returns true if not equal. */
+  inline bool operator!=(const Array& compare) const
+  {
+    return !operator==(compare);
+  }
+
+  /** Returns true if less than. */
+  bool operator<(const Array& compare) const
+  {
+    // TAG: use algorihm implementation to reuse
+    auto a = cbegin();
+    auto b = compare.cbegin();
+    if (getSize() < compare.getSize()) {
+      const auto aEnd = cend();
+      for (; a != aEnd; ++a, ++b) {
+        if (*a < *b) {
+          return true;
+        } else if (*a == *b) {
+          continue;
+        }
+        return false;
+      }
+    } else {
+      const auto bEnd = compare.cend();
+      for (; b != bEnd; ++a, ++b) {
+        if (*a < *b) {
+          return true;
+        } else if (*a == *b) {
+          continue;
+        }
+        return false;
+      }
+    }
+    return false;
+  }
+
   /** Returns true if not empty. */
   inline operator bool() const noexcept
   {

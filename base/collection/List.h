@@ -21,6 +21,7 @@
 #include <base/collection/Array.h>
 #include <base/mem/Reference.h>
 #include <base/string/FormatOutputStream.h>
+#include <base/collection/Algorithm.h>
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
@@ -849,42 +850,6 @@ FormatOutputStream& operator<<(FormatOutputStream& stream, const List<TYPE>& val
   }
   stream << ']';
   return stream;
-}
-
-/** Bubble sort. O(n^2). Only forward iterator required. operator<= used for comparison of values. */
-template<class TYPE>
-void bubbleSort(const TYPE& _begin, const TYPE& _end)
-{
-  // implementation with forward iterator only - bidirectional iterator not required
-  // TAG: we could do a merge sort also - by splitting items in the middle and sorting independently
-
-  // static_assert(std::is_same<ForwardIterator, typename TYPE::Category>::value, "Iterator must be ForwardIterator.");
-  const ForwardIterator* ensureForwardIterator = static_cast<const typename TYPE::Category*>(nullptr);
-
-  TYPE end = _end; // we lower end per loop
-  while (true) { // loop until all items sorted
-    TYPE current = _begin; // restart
-    if (current == end) { // done - no more items to sort
-      break;
-    }
-
-    // move max to end
-    bool swapped = false;
-    TYPE next = current;
-    ++next;
-    while (next != end) {
-      if (!(*current <= *next)) { // dont swap on = but < is the primary comparison operator for algorithms
-        swapper(*current, *next);
-        swapped = true;
-      }
-      ++current;
-      ++next;
-    }
-    if (!swapped) {
-      return; // nothing to do
-    }
-    end = current; // max now at end so no need to look at this again
-  }
 }
 
 template<class TYPE>

@@ -23,6 +23,7 @@
 #include <base/string/FormatOutputStream.h>
 #include <base/Functor.h>
 #include <base/Random.h>
+#include <base/collection/Algorithm.h>
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
@@ -818,6 +819,21 @@ public:
       ++src;
     }
     return nullptr;
+  }
+
+  /** Sorts the array. */
+  void sort()
+  {
+    elements.copyOnWrite();
+    bubbleSort(begin(), end());
+  }
+
+  /** Sorts the array. */
+  template<class PREDICATE>
+  void sort(PREDICATE predicate)
+  {
+    elements.copyOnWrite();
+    bubbleSort(begin(), end(), predicate);
   }
 };
 

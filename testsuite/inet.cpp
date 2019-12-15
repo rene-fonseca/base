@@ -54,16 +54,7 @@ public:
     try {
       if (false) {
         auto names = InetInterface::getInterfaceNames();
-        // bubbleSort(names.begin(), names.end());
-
-#if 0
-        Map<String, unsigned int> names;
-        auto names2 = InetInterface::getInterfaceNames();
-        auto enu = names2.getReadEnumerator();
-        while (enu.hasNext()) {
-          names.add(*enu.next());
-        }
-#endif
+        names.sort();
 
         fout << "Interfaces:" << ENDL;
         for (auto node : names) {

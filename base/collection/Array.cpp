@@ -41,15 +41,43 @@ public:
     as.append("123");
     as.append("up");
     as.append("down");
+    as.append("snake");
+    as.append("giraf");
+    as.append("penguin");
+    as.append("elefant");
+    as.append("bat");
+    as.append("dog");
+    as.append("lion");
+
     // TAG: need UTF-8 comparison for String
 
     TEST_ASSERT(std::find(as.begin(), as.end(), "up") != as.end());
     TEST_ASSERT((std::find(as.begin(), as.end(), "up") - as.begin()) == 2);
     TEST_ASSERT(std::find(as.begin(), as.end(), "left") == as.end());
 
-    std::sort(as.begin(), as.end());
+    as.shuffle();
+    as.sort();
+    // fout << "as: " << as << ENDL;
+
+    auto testMergeSort = as;
+    testMergeSort.shuffle();
+    mergeSort(testMergeSort.begin(), testMergeSort.end());
+    // testMergeSort.sort();
+    TEST_ASSERT(testMergeSort == as);
+    // fout << "testMergeSort: " << testMergeSort << ENDL;
+
+    mergeSort(testMergeSort.begin(), testMergeSort.end(), [](const String& a, const String& b) {return b <= a;});
+    // testMergeSort.sort([](const String& a, const String& b) {return b <= a; }); // reversed
+    // fout << "reversed testMergeSort: " << testMergeSort << ENDL;
+
+    auto testStdSort = as;
+    testStdSort.shuffle();
+    std::sort(testStdSort.begin(), testStdSort.end());
+    TEST_ASSERT(testStdSort == as);
+    // fout << "testStdSort: " << testStdSort << ENDL;
+
     TEST_ASSERT((std::find(as.begin(), as.end(), "123") - as.begin()) == 0);
-    TEST_ASSERT((std::find(as.begin(), as.end(), "up") - as.begin()) == 3);
+    TEST_ASSERT((std::find(as.begin(), as.end(), "up") - as.begin()) == (as.getSize() - 1));
     TEST_ASSERT(as.indexOf("123") == 0);
     TEST_ASSERT(as.lastIndexOf("123") == 0);
     TEST_ASSERT(as.indexOf("left") == -1);

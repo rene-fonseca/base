@@ -827,7 +827,11 @@ public:
   void sort()
   {
     elements.copyOnWrite();
-    bubbleSort(begin(), end());
+    if (getSize() >= 128) {
+      mergeSort(begin(), end());
+    } else {
+      bubbleSort(begin(), end());
+    }
   }
 
   /** Sorts the array. */
@@ -835,7 +839,11 @@ public:
   void sort(PREDICATE predicate)
   {
     elements.copyOnWrite();
-    bubbleSort(begin(), end(), predicate);
+    if (getSize() >= 128) {
+      mergeSort(begin(), end(), predicate);
+    } else {
+      bubbleSort(begin(), end(), predicate);
+    }
   }
 };
 

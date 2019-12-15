@@ -86,9 +86,227 @@ void bubbleSort(const ITERATOR& _begin, const ITERATOR& _end, PREDICATE predicat
   }
 }
 
-// TAG: add merge sort
+template<class TYPE>
+inline void mergeSortTiny(TYPE* begin, const MemorySize size)
+{
+  auto end = begin + size; // we lower end per loop
+  while (true) { // loop until all items sorted
+    auto current = begin; // restart
+    if (current == end) { // done - no more items to sort
+      break;
+    }
 
-/** Binary search. Compare operator must be <. Assume value is equal when !(a<b) && !(b<a). */
+    // move max to end
+    bool swapped = false;
+    auto next = current;
+    ++next;
+    while (next != end) {
+      if (!(*current <= *next)) { // dont swap on = but < is the primary comparison operator for algorithms
+        swapper(*current, *next);
+        swapped = true;
+      }
+      ++current;
+      ++next;
+    }
+    if (!swapped) {
+      return; // nothing to do
+    }
+    end = current; // max now at end so no need to look at this again
+  }
+}
+
+template<class TYPE, class PREDICATE>
+inline void mergeSortTiny(TYPE* begin, const MemorySize size, PREDICATE predicate)
+{
+  auto end = begin + size; // we lower end per loop
+  while (true) { // loop until all items sorted
+    auto current = begin; // restart
+    if (current == end) { // done - no more items to sort
+      break;
+    }
+
+    // move max to end
+    bool swapped = false;
+    auto next = current;
+    ++next;
+    while (next != end) {
+      if (!predicate(*current, *next)) {
+        swapper(*current, *next);
+        swapped = true;
+      }
+      ++current;
+      ++next;
+    }
+    if (!swapped) {
+      return; // nothing to do
+    }
+    end = current; // max now at end so no need to look at this again
+  }
+}
+
+template<class TYPE>
+inline void mergeSortMerge(TYPE* a, const TYPE* aEnd, TYPE* b, const TYPE* bEnd, TYPE* dest)
+{
+  while ((a != aEnd) && (b != bEnd)) {
+    if (*a <= *b) {
+      *dest++ = moveObject(*a++);
+    } else {
+      *dest++ = moveObject(*b++);
+    }
+  }
+  // either a or b remaining
+  while (a != aEnd) {
+    *dest++ = moveObject(*a++);
+  }
+  while (b != bEnd) {
+    *dest++ = moveObject(*b++);
+  }
+}
+
+template<class TYPE, class PREDICATE>
+inline void mergeSortMerge(TYPE* a, const TYPE* aEnd, TYPE* b, const TYPE* bEnd, TYPE* dest, PREDICATE predicate)
+{
+  while ((a != aEnd) && (b != bEnd)) {
+    if (predicate(*a, *b)) {
+      *dest++ = moveObject(*a++);
+    } else {
+      *dest++ = moveObject(*b++);
+    }
+  }
+  // either a or b remaining
+  while (a != aEnd) {
+    *dest++ = moveObject(*a++);
+  }
+  while (b != bEnd) {
+    *dest++ = moveObject(*b++);
+  }
+}
+
+#if 0
+template<class TYPE>
+void mergeSort(TYPE* begin, const MemorySize size, TYPE* dest)
+{
+  if (size <= 8) { // TAG: what is the proper limit?
+    mergeSortTiny(dest, size);
+    return; // sorted
+  }
+  const auto m = size / 2;
+  mergeSort(dest, m, begin);
+  mergeSort(dest + m, size - m, begin + m);
+  mergeSortMerge(begin, begin + m, begin + m, begin + size, dest);
+}
+#endif
+
+/**
+  Merge sort. O(n log(n)). Random access iterator required. operator<= used for comparison of values.
+
+  It is recommended that the Value of the iterator supports move assignment.
+*/
+template<class ITERATOR>
+void mergeSort(const ITERATOR& begin, const ITERATOR& end)
+{
+  // static_assert(std::is_same<RandomIterator, typename ITERATOR::Category>::value, "Iterator must be RandomAccessIterator.");
+  const RandomAccessIterator* ensureRandomAccessIterator =
+    static_cast<const typename ITERATOR::Category*>(nullptr);
+  
+  constexpr MemorySize TINY = 8;
+
+  const MemorySize size = end - begin;
+  if (size <= TINY) {
+    bubbleSort(begin, end);
+    return; // nothing to do
+  }
+
+  // TAG: not optimized - 2 buffers used - need to use indirection for fast move
+  // TAG: do not use indirection if TYPE is primitive/sizeof(TYPE) <= 8
+  typedef typename ITERATOR::Value TYPE;
+  Allocator<TYPE> temp(size);
+  Allocator<TYPE> sorted(size);
+  {
+    TYPE* dest = sorted.getElements();
+    for (typename ITERATOR src = begin; src != end; ++src, ++dest) {
+      *dest = moveObject(*src);
+    }
+  }
+  // TAG: for concurrency split in n equal blocks
+  TYPE* src = sorted.getElements();
+  TYPE* dest = temp.getElements();
+
+  // presort tiny blocks
+  for (MemorySize i = 0; i < size; i += TINY) {
+    mergeSortTiny(src + i, minimum(size - i, TINY));
+  }
+
+  for (MemorySize width = TINY; width < size; width *= 2) {
+    for (MemorySize i = 0; i < size; ) { // merge pair of blocks
+      const MemorySize m = minimum(i + width, size);
+      const MemorySize end = minimum(i + 2 * width, size);
+      mergeSortMerge(src + i, src + m, src + m, src + end, dest + i);
+      i = end;
+    }
+    swapper(dest, src);
+  }
+  for (typename ITERATOR dest = begin; dest != end; ++src, ++dest) {
+    *dest = moveObject(*src);
+  }
+}
+
+template<class ITERATOR, class PREDICATE>
+void mergeSort(const ITERATOR& begin, const ITERATOR& end, PREDICATE predicate)
+{
+  // static_assert(std::is_same<RandomIterator, typename ITERATOR::Category>::value, "Iterator must be RandomAccessIterator.");
+  const RandomAccessIterator* ensureRandomAccessIterator =
+    static_cast<const typename ITERATOR::Category*>(nullptr);
+  
+  constexpr MemorySize TINY = 8;
+
+  const MemorySize size = end - begin;
+  if (size <= TINY) {
+    bubbleSort(begin, end, predicate);
+    return; // nothing to do
+  }
+
+  // TAG: not optimized - 2 buffers used - need to use indirection for fast move
+  // TAG: do not use indirection if TYPE is primitive/sizeof(TYPE) <= 8
+  typedef typename ITERATOR::Value TYPE;
+  Allocator<TYPE> temp(size);
+  Allocator<TYPE> sorted(size);
+  {
+    TYPE* dest = sorted.getElements();
+    for (typename ITERATOR src = begin; src != end; ++src, ++dest) {
+      *dest = moveObject(*src);
+    }
+  }
+  // TAG: for concurrency split in n equal blocks
+  TYPE* src = sorted.getElements();
+  TYPE* dest = temp.getElements();
+
+  // presort tiny blocks
+  for (MemorySize i = 0; i < size; i += TINY) {
+    mergeSortTiny(src + i, minimum(size - i, TINY), predicate);
+  }
+
+  for (MemorySize width = TINY; width < size; width *= 2) {
+    for (MemorySize i = 0; i < size; ) { // merge pair of blocks
+      const MemorySize m = minimum(i + width, size);
+      const MemorySize end = minimum(i + 2 * width, size);
+      mergeSortMerge(src + i, src + m, src + m, src + end, dest + i, predicate);
+      i = end;
+    }
+    swapper(dest, src);
+  }
+  for (typename ITERATOR dest = begin; dest != end; ++src, ++dest) {
+    *dest = moveObject(*src);
+  }
+}
+
+/**
+  Binary search.
+
+  Compare operator must be <. Assume value is equal when !(a<b) && !(b<a).
+
+  Random access iterator is recommended. Although forward iterator will still work.
+*/
 template<class ITERATOR, class TYPE, class COMPARE>
 ITERATOR binarySearch(const ITERATOR& begin, const ITERATOR& end, const TYPE& find, COMPARE compare)
 {
@@ -117,7 +335,13 @@ ITERATOR binarySearch(const ITERATOR& begin, const ITERATOR& end, const TYPE& fi
   }
 }
 
-/** Binary search. Uses operator< only. Assume value is equal when !(a<b) && !(b<a). */
+/**
+  Binary search.
+
+  Compare operator must be <. Assume value is equal when !(a<b) && !(b<a).
+
+  Random access iterator is recommended. Although forward iterator will still work.
+*/
 template<class ITERATOR, class TYPE>
 ITERATOR binarySearch(const ITERATOR& begin, const ITERATOR& end, const TYPE& find)
 {

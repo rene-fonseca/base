@@ -18,7 +18,6 @@
 #include <base/collection/InvalidEnumeration.h>
 #include <base/collection/InvalidNode.h>
 #include <base/collection/EmptyContainer.h>
-#include <base/collection/Array.h>
 #include <base/mem/Reference.h>
 #include <base/string/FormatOutputStream.h>
 #include <base/collection/Algorithm.h>
@@ -816,8 +815,22 @@ public:
   /**
     Sorts the elements of this list. Requires operator<= for TYPE.
   */
-  void sort();
-  
+  void sort()
+  {
+    elements.copyOnWrite();
+    // TAG: swap nodes instead - at least when TYPE doesnt allow move
+    bubbleSort(begin(), end());
+  }
+
+  /** Sorts the array. */
+  template<class PREDICATE>
+  void sort(PREDICATE predicate)
+  {
+    elements.copyOnWrite();
+    // TAG: swap nodes instead - at least when TYPE doesnt allow move
+    bubbleSort(begin(), end(), predicate);
+  }
+
   /**
     Shuffles elements. See https ://en.wikipedia.org/wiki/Fisher%E2%80%93Yates_shuffle#Modern_method.
 
@@ -850,13 +863,6 @@ FormatOutputStream& operator<<(FormatOutputStream& stream, const List<TYPE>& val
   }
   stream << ']';
   return stream;
-}
-
-template<class TYPE>
-void List<TYPE>::sort()
-{
-  elements.copyOnWrite();
-  bubbleSort(begin(), end()); // TAG: swap nodes instead - at least when TYPE doesnt allow move
 }
 
 template<class TYPE>

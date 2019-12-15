@@ -380,10 +380,24 @@ void shuffle(TYPE* begin, TYPE* end)
   }
 }
 
+/** Returns true if equal. */
 template<class ITERATOR>
-bool lessThan(ITERATOR a, const ITERATOR aEnd, ITERATOR b, const ITERATOR bEnd)
+bool equal(ITERATOR a, const ITERATOR& aEnd, ITERATOR b, const ITERATOR& bEnd)
 {
-  while ((a != aEnd) && (b != bEnd)) {
+  // TAG: if random iterator check sizes first
+  for (; (a != aEnd) && (b != bEnd); ++a, ++b) {
+    if (!(*a == *b)) {
+      return false;
+    }
+  }
+  return true;
+}
+
+/** Returns true if less than. */
+template<class ITERATOR>
+bool lessThan(ITERATOR a, const ITERATOR& aEnd, ITERATOR b, const ITERATOR& bEnd)
+{
+  for (; (a != aEnd) && (b != bEnd); ++a, ++b) {
     if (*a < *b) {
       return true;
     } else if (*a == *b) {

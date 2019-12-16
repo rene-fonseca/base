@@ -15,9 +15,7 @@ if (MSVC)
   add_definitions(-D_UNICODE)
 endif ()
 
-if (CMAKE_CXX_COMPILER MATCHES "/em\\+\\+(-[a-zA-Z0-9.])?$")
-  set (CMAKE_CXX_COMPILER_ID "Emscripten")
-elseif (CMAKE_CXX_COMPILER MATCHES "/wasic\\+\\+")
+if (CMAKE_CXX_COMPILER MATCHES "/wasic\\+\\+")
   set (CMAKE_CXX_COMPILER_ID "WASI")
 endif ()
 
@@ -51,8 +49,32 @@ else ()
 
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
 
+  if (EMSCRIPTEN)
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} --bind")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -s WASM=1") # output WASM
+    # set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -s INVOKE_RUN=1") # call main()
+    # set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -s EXIT_RUNTIME=1") # call atexit()
+    # other options: VERBOSE=1, TOTAL_STACK=n, TOTAL_MEMORY=n
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -s ALLOW_MEMORY_GROWTH=1") # allow memory to grow
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -s DISABLE_EXCEPTION_CATCHING=0") # catch exceptions
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -s USE_PTHREADS=1") # allow pthread
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -s WASM_MEM_MAX=1073741824") # allow pthread
+    
+    # set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-warn-absolute-paths")
+    # set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} --memory-init-file 0")
+    set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -s DEMANGLE_SUPPORT=1")
+    # set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -s ASSERTIONS=1")
+    # set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -s SAFE_HEAP=1")
+    # set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -s SAFE_HEAP_LOG=1")
+    set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -s EXCEPTION_DEBUG=1")
+    # set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -s SYSCALL_DEBUG=1")
+    set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -s SOCKET_DEBUG=1")
+    # set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -s PTHREAD_POOL_SIZE=8") # thread pool - 0 is on demand
+    # -s LEGACY_GL_EMULATION=0 -s GL_ASSERTIONS=1
+  endif ()
+  
 if (("${CMAKE_CXX_COMPILER_ID}" STREQUAL "AppleClang") OR ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang") OR
-    ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Emscripten") OR ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "WASI"))
+    EMSCRIPTEN OR ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "WASI"))
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-unused-variable") # ignore unused variables
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-unused-private-field") # ignore unused field
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-exceptions")
@@ -94,7 +116,7 @@ endif()
 endif ()
 
 set (USE_SHARED 1)
-if (("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Emscripten") OR ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "WASI"))
+if (EMSCRIPTEN OR ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "WASI"))
   set (USE_SHARED 0)
 endif ()
 

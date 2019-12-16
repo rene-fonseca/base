@@ -343,9 +343,20 @@ unsigned long Hash<Group>::operator()(const Group& value) noexcept {
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE
 
-#if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__WASI)
-extern "C" int getgrgid_r(gid_t gid, struct group *grp, char *buffer, size_t bufsize, struct group **result)
+#if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__WASI) || \
+    (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__EMCC)
+extern "C" {
+
+int getgrgid_r(gid_t gid, struct group *grp, char *buffer, size_t bufsize, struct group **result)
 {
   return -1;
 }
+
+int getpwuid_r(uid_t uid, struct passwd *pwd, char *buffer, size_t bufsize, struct passwd **result)
+{
+  return -1;
+}
+
+};
+
 #endif

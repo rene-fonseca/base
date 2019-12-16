@@ -862,7 +862,8 @@ void Thread::start()
   identifier = getAsPointer(id);
   ::CloseHandle(handle); // detach
   // TAG: does this always work or must this be postponed until entry function
-#elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__WASI)
+#elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__WASI) || \
+      (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__EMCC)
 #else // pthread
   pthread_attr_t attributes;
   pthread_attr_init(&attributes);

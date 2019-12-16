@@ -21,12 +21,14 @@
 #endif
 
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__UNIX)
+#if defined(_COM_AZURE_DEV__BASE__USE_X11)
 #if defined(__has_include)
 #if __has_include(<X11/Xlib.h>) && __has_include(<X11/Xutil.h>) && __has_include(<X11/Xatom.h>)
 #  include <X11/Xlib.h>
 #  include <X11/Xutil.h>
 #  include <X11/Xatom.h>
 #  define _COM_AZURE_DEV__BASE__USE_X11
+#endif
 #endif
 #endif
 #endif // flavor

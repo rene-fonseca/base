@@ -230,12 +230,12 @@ void UnitTest::Run::onHere(const Here* _here)
   const void* here = static_cast<const void*>(_here);
 
   if (!here) {
-    onFailed("Test failed due to bad here marker");
+    onFailed("Test failed due to bad here marker.");
     return;
   }
   auto found = heres.find(here);
   if (!found) {
-    onFailed("Test failed due to undeclared key");
+    onFailed("Test failed due to undeclared key.");
     return;
   }
   ++(found->count);
@@ -248,12 +248,12 @@ void UnitTest::Run::onNotHere(const NotHere* _here)
   const void* here = static_cast<const void*>(_here);
 
   if (!here) {
-    onFailed("Test failed due to bad here marker");
+    onFailed("Test failed due to bad here marker.");
     return;
   }
   auto found = heres.find(here);
   if (!found) {
-    onFailed("Test failed due to undeclared key");
+    onFailed("Test failed due to undeclared key.");
     return;
   }
   ++(found->count);

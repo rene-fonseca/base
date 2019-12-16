@@ -84,6 +84,13 @@ public:
          << "The Base Framework (Test Suite)" << EOL
          << ENDL;
 
+    fout << "sizeof(float): " << sizeof(float) << EOL;
+    fout << "sizeof(double): " << sizeof(double) << EOL;
+    fout << "sizeof(long double): " << sizeof(long double) << EOL;
+    fout << "sizeof(FloatingPoint::FloatRepresentation): " << sizeof(FloatingPoint::FloatRepresentation) << EOL;
+    fout << "sizeof(FloatingPoint::DoubleRepresentation): " << sizeof(FloatingPoint::DoubleRepresentation) << EOL;
+    fout << "sizeof(FloatingPoint::LongDoubleRepresentation): " << sizeof(FloatingPoint::LongDoubleRepresentation) << EOL;
+    
     fout << "Representation of 'float': "
          << getRepresentationAsString<FloatingPoint::FloatRepresentation>() << EOL
          << "Representation of 'double': "

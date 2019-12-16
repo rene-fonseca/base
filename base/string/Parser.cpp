@@ -13,6 +13,7 @@
 
 #include <base/string/Parser.h>
 #include <base/string/Unicode.h>
+#include <base/UnitTest.h>
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
@@ -71,7 +72,7 @@ ucs4 Parser::readUCS4()
 
 namespace {
 
-  bool doesMatchPatternImpl(Parser pattern, Parser text)
+  bool doesMatchPatternImpl(Parser pattern, Parser text) noexcept
   {
     // a heap stack would be a more reliable choice
     while (pattern.hasMore() || text.hasMore()) {
@@ -111,11 +112,37 @@ namespace {
   }
 }
 
-bool Parser::doesMatchPattern(const String& _pattern, const String& _text)
+bool Parser::doesMatchPattern(const String& _pattern, const String& _text) noexcept
 {
   Parser pattern(_pattern);
   Parser text(_text);
   return doesMatchPatternImpl(pattern, text);
 }
+
+#if defined(_COM_AZURE_DEV__BASE__TESTS)
+
+class TEST_CLASS(Parser) : public UnitTest {
+public:
+
+  TEST_PRIORITY(30);
+  TEST_PROJECT("base/string");
+
+  void run() override
+  {
+    TEST_ASSERT(Parser::doesMatchPattern("*", ""));
+    TEST_ASSERT(Parser::doesMatchPattern("a*", "abc"));
+    TEST_ASSERT(Parser::doesMatchPattern("a*c", "abc"));
+    TEST_ASSERT(!Parser::doesMatchPattern("a*d", "abc"));
+    TEST_ASSERT(Parser::doesMatchPattern("?*f", "abcdef"));
+    TEST_ASSERT(Parser::doesMatchPattern("*c?e*", "abcdef"));
+    TEST_ASSERT(!Parser::doesMatchPattern("?", ""));
+    TEST_ASSERT(Parser::doesMatchPattern("?", "a"));
+    TEST_ASSERT(Parser::doesMatchPattern("?*", "ab"));
+  }
+};
+
+TEST_REGISTER(Parser);
+
+#endif
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

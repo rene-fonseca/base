@@ -1600,7 +1600,7 @@ FormatOutputStream& FormatOutputStream::operator<<(double _value)
 
 FormatOutputStream& FormatOutputStream::operator<<(long double _value)
 {
-#if 0 && (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__GNULINUX)
+#if 0
   return operator<<(static_cast<double>(_value));
 #endif
 
@@ -1614,7 +1614,9 @@ FormatOutputStream& FormatOutputStream::operator<<(long double _value)
   }
 
   unsigned int precision = 0;
-  unsigned int mantissa[(FloatingPoint::LongDoubleRepresentation::SIGNIFICANT + (sizeof(unsigned int) * 8) - 1)/(sizeof(unsigned int) * 8)];
+  unsigned int mantissa[
+    (FloatingPoint::LongDoubleRepresentation::SIGNIFICANT + (sizeof(unsigned int) * 8) - 1)/(sizeof(unsigned int) * 8)
+  ];
   int exponent = 0;
   unsigned int flags = 0;
   analyseFloatingPoint(value.value, precision, mantissa, exponent, flags);

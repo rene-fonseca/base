@@ -36,6 +36,7 @@ public:
     IEEE_754_SINGLE_PRECISION,
     IEEE_754_DOUBLE_PRECISION,
     IEEE_EXTENDED_DOUBLE_PRECISION_96,
+    IEEE_EXTENDED_DOUBLE_PRECISION_96_ALIGN16,
     IEEE_EXTENDED_DOUBLE_PRECISION_128,
     IEEE_QUADRUPLE_PRECISION,
     UNSPECIFIED
@@ -50,6 +51,8 @@ public:
       return IEEE_754_DOUBLE_PRECISION;
     } else if (std::is_same<TYPE, FloatingPoint::Representation::IEEEExtendedDoublePrecision96>()) {
       return IEEE_EXTENDED_DOUBLE_PRECISION_96;
+    } else if (std::is_same<TYPE, FloatingPoint::Representation::IEEEExtendedDoublePrecision96Align16>()) {
+      return IEEE_EXTENDED_DOUBLE_PRECISION_96_ALIGN16;
     } else if (std::is_same<TYPE, FloatingPoint::Representation::IEEEExtendedDoublePrecision128>()) {
       return IEEE_EXTENDED_DOUBLE_PRECISION_128;
     } else if (std::is_same<TYPE, FloatingPoint::Representation::IEEEQuadruplePrecision>()) {
@@ -66,6 +69,7 @@ public:
       MESSAGE("IEEE 754 single precision"),
       MESSAGE("IEEE 754 double precision"),
       MESSAGE("IEEE extended double precision 96 bit"),
+      MESSAGE("IEEE extended double precision 96 bit - align 128 bit"),
       MESSAGE("IEEE extended double precision 128 bit"),
       MESSAGE("IEEE quadruple precision"),
       MESSAGE("Unspecified")

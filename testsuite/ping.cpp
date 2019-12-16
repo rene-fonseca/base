@@ -92,7 +92,7 @@ public:
     try {
       address = InetAddress::getAddressByName(host); // the address of the remote host
     } catch (HostNotFound&) {
-      ferr << "Error: " << "Unable to resolve host" << ENDL;
+      ferr << "Error: " << "Unable to resolve host." << ENDL;
       setExitCode(EXIT_CODE_ERROR);
       return;
     }
@@ -118,7 +118,7 @@ public:
     try {
       socket.connect(endPoint.getAddress(), endPoint.getPort());
     } catch (IOException&) {
-      ferr << "Error: " << "Unable to connect" << ENDL;
+      ferr << "Error: " << "Unable to connect." << ENDL;
       setExitCode(EXIT_CODE_ERROR);
       return;
     }

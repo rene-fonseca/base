@@ -440,7 +440,7 @@ namespace internal {
       unsigned int* length) {
       socklen temp = *length;
       if (::getsockopt(handle, level, option, static_cast<char*>(buffer), &temp)) {
-        raiseNetwork("Unable to get option");
+        raiseNetwork("Unable to get option.");
       }
       *length = temp;
     }
@@ -488,7 +488,7 @@ Socket::SocketImpl::~SocketImpl()
 #else // unix
     if (::close((int)getHandle())) {
 #endif // flavor
-      IOException e("Unable to close socket", this);
+      IOException e("Unable to close socket.", this);
       const unsigned int error = internal::SocketImpl::getNativeError();
       const unsigned int cause = internal::SocketImpl::getCause(error);
       if (cause != PrimitiveTraits<unsigned int>::MAXIMUM) {
@@ -532,7 +532,7 @@ bool Socket::accept(Socket& socket)
     case WSAEWOULDBLOCK:
       return false;
     default:
-      internal::SocketImpl::raiseNetwork("Unable to accept connection");
+      internal::SocketImpl::raiseNetwork("Unable to accept connection.");
     }
   }
 #else // unix
@@ -541,7 +541,7 @@ bool Socket::accept(Socket& socket)
     case EAGAIN: // EWOULDBLOCK
       return false;
     default:
-      internal::SocketImpl::raiseNetwork("Unable to accept connection");
+      internal::SocketImpl::raiseNetwork("Unable to accept connection.");
     }
   }
 #endif // flavor
@@ -559,7 +559,7 @@ void Socket::bind(const InetAddress& address, unsigned short port)
   SocketAddress sa(address, port, socket->getDomain());
   
   if (::bind((SOCKET)socket->getHandle(), sa.getValue(), sa.getSize())) {
-    internal::SocketImpl::raiseNetwork("Unable to assign name to socket");
+    internal::SocketImpl::raiseNetwork("Unable to assign name to socket.");
   }
   if (address.isUnspecified() || (port == 0)) {
     sa.setSocket((SOCKET)socket->getHandle());
@@ -590,7 +590,7 @@ void Socket::connect(const InetAddress& address, unsigned short port)
     case WSAETIMEDOUT:
       throw TimedOut(this);
     default:
-      internal::SocketImpl::raiseNetwork("Unable to connect to socket");
+      internal::SocketImpl::raiseNetwork("Unable to connect to socket.");
     }
 #else // unix
     switch (errno) {
@@ -599,7 +599,7 @@ void Socket::connect(const InetAddress& address, unsigned short port)
     case ETIMEDOUT:
       throw TimedOut(this);
     default:
-      internal::SocketImpl::raiseNetwork("Unable to connect to socket");
+      internal::SocketImpl::raiseNetwork("Unable to connect to socket.");
     }
 #endif // flavor
   }
@@ -662,7 +662,7 @@ void Socket::listen(unsigned int backlog)
   // silently reduce the backlog argument
   backlog = minimum<unsigned int>(backlog, PrimitiveTraits<int>::MAXIMUM);
   if (::listen((SOCKET)socket->getHandle(), backlog)) { // may also silently limit backlog
-    internal::SocketImpl::raiseNetwork("Unable to set queue limit for incoming connections");
+    internal::SocketImpl::raiseNetwork("Unable to set queue limit for incoming connections.");
   }
 #endif
 }
@@ -699,11 +699,11 @@ void Socket::shutdownInputStream()
 {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   if (::shutdown((SOCKET)socket->getHandle(), 0 /*SD_RECEIVE*/)) { // disallow further receives
-    internal::SocketImpl::raiseNetwork("Unable to shutdown socket for reading");
+    internal::SocketImpl::raiseNetwork("Unable to shutdown socket for reading.");
   }
 #else // unix
   if (::shutdown((SOCKET)socket->getHandle(), 0)) { // disallow further receives
-    internal::SocketImpl::raiseNetwork("Unable to shutdown socket for reading");
+    internal::SocketImpl::raiseNetwork("Unable to shutdown socket for reading.");
   }
 #endif // flavor
 }
@@ -712,11 +712,11 @@ void Socket::shutdownOutputStream()
 {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   if (::shutdown((SOCKET)socket->getHandle(), 1 /*SD_SEND*/)) { // disallow further sends
-    internal::SocketImpl::raiseNetwork("Unable to shutdown socket for writing");
+    internal::SocketImpl::raiseNetwork("Unable to shutdown socket for writing.");
   }
 #else // unix
   if (::shutdown((SOCKET)socket->getHandle(), 1)) { // disallow further sends
-    internal::SocketImpl::raiseNetwork("Unable to shutdown socket for writing");
+    internal::SocketImpl::raiseNetwork("Unable to shutdown socket for writing.");
   }
 #endif // flavor
 }
@@ -1442,7 +1442,7 @@ void Socket::joinGroup(const InetAddress& interface, const InetAddress& group)
       ifc.ifc_len = buffer.getSize()/sizeof(char);
       ifc.ifc_buf = (char*)buffer.getElements();
       if (ioctl((SOCKET)socket->getHandle(), SIOCGIFCONF, &ifc)) {
-        internal::SocketImpl::raiseNetwork("Unable to resolve interface");
+        internal::SocketImpl::raiseNetwork("Unable to resolve interface.");
       }
       const struct ifreq* current = ifc.ifc_req;
       int offset = 0;
@@ -1687,25 +1687,25 @@ void Socket::setNonBlocking(bool value)
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   unsigned int buffer = value; // set to zero to disable nonblocking
   if (ioctlsocket((SOCKET)socket->getHandle(), FIONBIO, Cast::pointer<u_long*>(&buffer))) {
-    internal::SocketImpl::raiseNetwork("Unable to set blocking mode");
+    internal::SocketImpl::raiseNetwork("Unable to set blocking mode.");
   }
 #else // unix
   int flags = 0;
   if ((flags = fcntl((SOCKET)socket->getHandle(), F_GETFL)) == -1) {
-    internal::SocketImpl::raiseNetwork("Unable to get flags for socket");
+    internal::SocketImpl::raiseNetwork("Unable to get flags for socket.");
   }
   if (value) {
     if ((flags & O_NONBLOCK) == 0) { // do we need to set flag
       flags |= O_NONBLOCK;
       if (fcntl((SOCKET)socket->getHandle(), F_SETFL, flags) != 0) {
-        internal::SocketImpl::raiseNetwork("Unable to set flags of socket");
+        internal::SocketImpl::raiseNetwork("Unable to set flags of socke.");
       }
     }
   } else {
     if ((flags & O_NONBLOCK) != 0) { // do we need to clear flag
       flags &= ~O_NONBLOCK;
       if (fcntl((SOCKET)socket->getHandle(), F_SETFL, flags) != 0) {
-        internal::SocketImpl::raiseNetwork("Unable to set flags of socket");
+        internal::SocketImpl::raiseNetwork("Unable to set flags of socket.");
       }
     }
   }
@@ -1718,12 +1718,12 @@ bool Socket::getAsynchronous()
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
 //   unsigned int buffer = value; // set to zero to disable nonblocking
 //   if (ioctlsocket((SOCKET)socket->getHandle(), FIONBIO, Cast::pointer<u_long*>(&buffer))) {
-//     internal::SocketImpl::raiseNetwork("Unable to set blocking mode");
+//     internal::SocketImpl::raiseNetwork("Unable to set blocking mode.");
 //   }
 #else // unix
   int flags = 0;
   if ((flags = fcntl((SOCKET)socket->getHandle(), F_GETFL)) == -1) {
-    internal::SocketImpl::raiseNetwork("Unable to get flags for socket");
+    internal::SocketImpl::raiseNetwork("Unable to get flags for socket.");
   }
   return flags & FASYNC;
 #endif // flavor
@@ -1734,25 +1734,25 @@ void Socket::setAsynchronous(bool value)
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
 //   unsigned int buffer = value; // set to zero to disable nonblocking
 //   if (ioctlsocket((SOCKET)socket->getHandle(), FIONBIO, Cast::pointer<u_long*>(&buffer))) {
-//     internal::SocketImpl::raiseNetwork("Unable to set blocking mode");
+//     internal::SocketImpl::raiseNetwork("Unable to set blocking mode.");
 //   }
 #else // unix
   int flags = 0;
   if ((flags = fcntl((SOCKET)socket->getHandle(), F_GETFL)) == -1) {
-    internal::SocketImpl::raiseNetwork("Unable to get flags for socket");
+    internal::SocketImpl::raiseNetwork("Unable to get flags for socket.");
   }
   if (value) {
     if ((flags & FASYNC) == 0) { // do we need to set flag
       flags |= FASYNC;
       if (fcntl((SOCKET)socket->getHandle(), F_SETFL, flags) != 0) {
-        internal::SocketImpl::raiseNetwork("Unable to set flags of socket");
+        internal::SocketImpl::raiseNetwork("Unable to set flags of socket.");
       }
     }
   } else {
     if ((flags & FASYNC) != 0) { // do we need to clear flag
       flags &= ~FASYNC;
       if (fcntl((SOCKET)socket->getHandle(), F_SETFL, flags) != 0) {
-        internal::SocketImpl::raiseNetwork("Unable to set flags of socket");
+        internal::SocketImpl::raiseNetwork("Unable to set flags of socket.");
       }
     }
   }
@@ -1765,14 +1765,14 @@ unsigned int Socket::available() const
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   unsigned int result = 0;
   if (ioctlsocket((SOCKET)socket->getHandle(), FIONREAD, Cast::pointer<u_long*>(&result))) {
-    internal::SocketImpl::raiseNetwork("Unable to determine the amount of data pending in the input buffer");
+    internal::SocketImpl::raiseNetwork("Unable to determine the amount of data pending in the input buffer.");
   }
   return result;
 #else // unix
   // this implementation is not very portable?
   int result = 0;
   if (ioctl((SOCKET)socket->getHandle(), FIONREAD, &result)) {
-    internal::SocketImpl::raiseNetwork("Unable to determine the amount of data pending in the incoming queue");
+    internal::SocketImpl::raiseNetwork("Unable to determine the amount of data pending in the incoming queue.");
   }
   return result;
 #endif // flavor
@@ -1784,14 +1784,14 @@ unsigned int Socket::pending() const
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   unsigned int result = 0;
 //   if (ioctlsocket((SOCKET)socket->getHandle(), FIONREAD, Cast::pointer<u_long*>(&result))) {
-//     internal::SocketImpl::raiseNetwork("Unable to determine the amount of data pending in the input buffer");
+//     internal::SocketImpl::raiseNetwork("Unable to determine the amount of data pending in the input buffer.");
 //   }
   return result;
 #else // unix
   // this implementation is not very portable?
   int result = 0;
   if (ioctl((SOCKET)socket->getHandle(), TIOCOUTQ, &result)) {
-    internal::SocketImpl::raiseNetwork("Unable to determine the amount of data pending in the outgoing queue");
+    internal::SocketImpl::raiseNetwork("Unable to determine the amount of data pending in the outgoing queue.");
   }
   return result;
 #endif // flavor
@@ -1823,7 +1823,7 @@ unsigned int Socket::read(
       case WSAEWOULDBLOCK: // no data available (only in nonblocking mode)
         return bytesRead; // try later
       default:
-        internal::SocketImpl::raiseNetwork("Unable to read from socket");
+        internal::SocketImpl::raiseNetwork("Unable to read from socket.");
       }
     }
 #else // unix
@@ -1840,7 +1840,7 @@ unsigned int Socket::read(
       case EAGAIN: // no data available (only in nonblocking mode)
         return bytesRead; // try later
       default:
-        internal::SocketImpl::raiseNetwork("Unable to read from socket");
+        internal::SocketImpl::raiseNetwork("Unable to read from socket.");
       }
     }
 #endif // flavor
@@ -1883,7 +1883,7 @@ unsigned int Socket::write(
       case WSAESHUTDOWN:
         throw BrokenStream(this);
       default:
-        internal::SocketImpl::raiseNetwork("Unable to write to socket");
+        internal::SocketImpl::raiseNetwork("Unable to write to socket.");
       }
     }
 #else // unix
@@ -1902,7 +1902,7 @@ unsigned int Socket::write(
       case EPIPE:
         throw BrokenStream(this);
       default:
-        internal::SocketImpl::raiseNetwork("Unable to write to socket");
+        internal::SocketImpl::raiseNetwork("Unable to write to socket.");
       }
     }
 #endif // flavor
@@ -1937,7 +1937,7 @@ unsigned int Socket::receiveFrom(
     &sl
   );
   if (result < 0) {
-    internal::SocketImpl::raiseNetwork("Unable to receive from");
+    internal::SocketImpl::raiseNetwork("Unable to receive from.");
   }
   address = sa.getAddress();
   port = sa.getPort();
@@ -2025,7 +2025,7 @@ void Socket::wait() const
   
   int result = ::select((SOCKET)socket->getHandle() + 1, &rfds, 0, 0, 0);
   if (result == SOCKET_ERROR) {
-    internal::SocketImpl::raiseNetwork("Unable to wait for input");
+    internal::SocketImpl::raiseNetwork("Unable to wait for input.");
   }
 #else // unix
   fd_set rfds;
@@ -2034,7 +2034,7 @@ void Socket::wait() const
   
   int result = ::select((SOCKET)socket->getHandle() + 1, &rfds, 0, 0, 0);
   if (result == -1) {
-    internal::SocketImpl::raiseNetwork("Unable to wait for input");
+    internal::SocketImpl::raiseNetwork("Unable to wait for input.");
   }
 #endif // flavor
 }
@@ -2053,7 +2053,7 @@ bool Socket::wait(unsigned int microseconds) const
   
   int result = ::select((SOCKET)socket->getHandle() + 1, &rfds, 0, 0, &tv);
   if (result == SOCKET_ERROR) {
-    internal::SocketImpl::raiseNetwork("Unable to wait for input");
+    internal::SocketImpl::raiseNetwork("Unable to wait for input.");
   }
   return result != 0; // return true if data available
 #else // unix
@@ -2067,7 +2067,7 @@ bool Socket::wait(unsigned int microseconds) const
 
   int result = ::select((SOCKET)socket->getHandle() + 1, &rfds, 0, 0, &tv);
   if (result == -1) {
-    internal::SocketImpl::raiseNetwork("Unable to wait for input");
+    internal::SocketImpl::raiseNetwork("Unable to wait for input.");
   }
   return result != 0; // return true if data available
 #endif // flavor

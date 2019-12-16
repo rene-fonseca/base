@@ -72,7 +72,7 @@ InetService::InetService(
   port = getByName(name, protocol);
   bassert(
     port != 0,
-    ServiceNotFound("Unable to resolve service by name", this)
+    ServiceNotFound("Unable to resolve service by name.", this)
   );
   this->name = name;
   this->protocol = protocol;
@@ -83,7 +83,7 @@ InetService::InetService(
   name = getByPort(port, protocol);
   bassert(
     name.isProper(),
-    ServiceNotFound("Unable to resolve service by port", this)
+    ServiceNotFound("Unable to resolve service by port.", this)
   );
   this->port = port;
   this->protocol = protocol;

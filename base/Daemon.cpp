@@ -94,7 +94,7 @@ namespace win32 {
 
     // report the status of the service to the service control manager.
     if (!(result = ::SetServiceStatus(DaemonImpl::serviceStatusHandle, &DaemonImpl::serviceStatus))) {
-      SystemLogger::write(SystemLogger::ERROR, "Unable to report status of service to the service control manager");
+      SystemLogger::write(SystemLogger::ERROR, "Unable to report status of service to the service control manager.");
     }
     return result;
   }
@@ -285,7 +285,7 @@ void Daemon::install() {
     }
     ::CloseServiceHandle(manager);
   } else {
-    ferr << "Unable to open service control manager" << ENDL;
+    ferr << "Unable to open service control manager." << ENDL;
   }
 }
 

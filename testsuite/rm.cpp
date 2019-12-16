@@ -115,7 +115,7 @@ public:
           recursiveRemove(entry);
         } else {
           if (!silent) {
-            ferr << "unable to remove entry: " << entry << ENDL;
+            ferr << "Unable to remove entry: " << entry << ENDL;
           }
           if (!force) {
             throw FileSystemException("Unable to remove entry.", this);

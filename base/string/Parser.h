@@ -16,7 +16,6 @@
 #include <base/mem/NullPointer.h>
 #include <base/string/String.h>
 #include <base/Primitives.h>
-#include <base/Object.h>
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
@@ -32,7 +31,7 @@ public:
 };
 
 /** Parser. */
-class _COM_AZURE_DEV__BASE__API Parser /*: public Object*/ {
+class _COM_AZURE_DEV__BASE__API Parser {
 protected:
   
   const uint8* src = nullptr;
@@ -129,9 +128,17 @@ public:
 
   /** Returns the next UCS4 char assuming UTF8 encoding. */
   ucs4 readUCS4();
+
+  /** Reads the given char. */
+  inline void read(ucs4 ch)
+  {
+    if (readUCS4() != ch) {
+      throw ParseException("Unexpected char.");
+    }
+  }
   
   /** Skips the next UTF-8 encoded character. */
-  inline void skipUCS4() // TAG: add option to sync to next character
+  inline void skipUCS4()
   {
     readUCS4();
   }
@@ -203,7 +210,7 @@ public:
   }
 
   /** Returns true if the string matches the given pattern (using * and ?). */
-  static bool doesMatchPattern(const String& pattern, const String& text);
+  static bool doesMatchPattern(const String& pattern, const String& text) noexcept;
 };
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

@@ -408,6 +408,12 @@ ITERATOR binarySearch(const ITERATOR& begin, const ITERATOR& end, const TYPE& fi
   return binarySearch(begin, end, find, std::less<TYPE>());
 }
 
+template<class RANDOM_ACCESS_ITERABLE, class TYPE>
+inline typename RANDOM_ACCESS_ITERABLE::Iterator binarySearch(RANDOM_ACCESS_ITERABLE& iterable, const TYPE& find)
+{
+  return binarySearch(iterable.begin(), iterable.end(), find);
+}
+
 /**
   Shuffles elements for the given iterators.
   See https://en.wikipedia.org/wiki/Fisher%E2%80%93Yates_shuffle#Modern_method.
@@ -437,6 +443,12 @@ void shuffle(TYPE* begin, TYPE* end)
     --n;
     swapper(begin[i], begin[n]); // move to last
   }
+}
+
+template<class RANDOM_ACCESS_ITERABLE>
+inline void shuffle(RANDOM_ACCESS_ITERABLE& iterable)
+{
+  shuffle(iterable.begin(), iterable.end());
 }
 
 /** Returns true if equal. */

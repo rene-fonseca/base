@@ -44,19 +44,15 @@ public:
   template<class TYPE>
   static FloatingPointRepresentation getRepresentation()
   {
-    if (Type::getType<TYPE>() == Type::getType<FloatingPoint::IEEE754SinglePrecision>()) {
+    if (std::is_same<TYPE, FloatingPoint::Representation::IEEE754SinglePrecision>()) {
       return IEEE_754_SINGLE_PRECISION;
-    } else
-    if (Type::getType<TYPE>() == Type::getType<FloatingPoint::IEEE754DoublePrecision>()) {
+    } else if (std::is_same<TYPE, FloatingPoint::Representation::IEEE754DoublePrecision>()) {
       return IEEE_754_DOUBLE_PRECISION;
-    } else
-    if (Type::getType<TYPE>() == Type::getType<FloatingPoint::IEEEExtendedDoublePrecision96>()) {
+    } else if (std::is_same<TYPE, FloatingPoint::Representation::IEEEExtendedDoublePrecision96>()) {
       return IEEE_EXTENDED_DOUBLE_PRECISION_96;
-    } else
-    if (Type::getType<TYPE>() == Type::getType<FloatingPoint::IEEEExtendedDoublePrecision128>()) {
+    } else if (std::is_same<TYPE, FloatingPoint::Representation::IEEEExtendedDoublePrecision128>()) {
       return IEEE_EXTENDED_DOUBLE_PRECISION_128;
-    } else
-    if (Type::getType<TYPE>() == Type::getType<FloatingPoint::IEEEQuadruplePrecision>()) {
+    } else if (std::is_same<TYPE, FloatingPoint::Representation::IEEEQuadruplePrecision>()) {
       return IEEE_QUADRUPLE_PRECISION;
     } else {
       return UNSPECIFIED;

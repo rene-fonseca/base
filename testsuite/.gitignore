@@ -1,3 +1,5 @@
+*.js
+*.worker.js
 ArgumentParser
 Array
 BitSet

@@ -430,7 +430,12 @@ public:
     elements.copyOnWrite();
     return getEndIterator();
   }
-
+  
+  inline operator RandomAccessIterable<Iterator>() noexcept
+  {
+    return RandomAccessIterable<Iterator>(begin(), end());
+  }
+  
   /**
     Returns a modifying enumerator of the array.
   */

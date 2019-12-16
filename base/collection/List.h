@@ -639,7 +639,12 @@ public:
   {
     return ReadIterator(nullptr);
   }
-
+  
+  inline operator ForwardIterable<Iterator>() noexcept
+  {
+    return ForwardIterable<Iterator>(begin(), end());
+  }
+  
   // Node manip
 
   /**

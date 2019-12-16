@@ -87,6 +87,68 @@ void bubbleSort(const ITERATOR& _begin, const ITERATOR& _end, PREDICATE predicat
   }
 }
 
+template<class ITERATOR>
+class ForwardIterable {
+private:
+
+  ITERATOR tbegin;
+  ITERATOR tend;
+public:
+  
+  inline ForwardIterable(const ITERATOR _begin, const ITERATOR _end)
+    : tbegin(_begin), tend(_end)
+  {
+    const ForwardIterator* ensure = static_cast<const typename ITERATOR::Category*>(nullptr);
+  }
+  
+  inline ITERATOR begin()
+  {
+    return tbegin;
+  }
+
+  inline ITERATOR end()
+  {
+    return tend;
+  }
+};
+
+template<class FORWARD_ITERABLE>
+inline void bubbleSort(FORWARD_ITERABLE& iterable)
+{
+  bubbleSort(iterable.begin(), iterable.end());
+}
+
+template<class FORWARD_ITERABLE, class PREDICATE>
+inline void bubbleSort(FORWARD_ITERABLE& iterable, PREDICATE predicate)
+{
+  bubbleSort(iterable.begin(), iterable.end(), predicate);
+}
+
+#if 0
+template<class ITERATOR>
+inline void bubbleSort(ForwardIterable<ITERATOR>& iterable)
+{
+  bubbleSort(iterable.begin(), iterable.end());
+}
+
+template<class ITERATOR, class PREDICATE>
+inline void bubbleSort(ForwardIterable<ITERATOR>& iterable, PREDICATE predicate)
+{
+  bubbleSort(iterable.begin(), iterable.end(), predicate);
+}
+#endif
+
+template<class ITERATOR>
+class RandomAccessIterable : public ForwardIterable<ITERATOR> {
+public:
+  
+  inline RandomAccessIterable(const ITERATOR _begin, const ITERATOR _end)
+    : ForwardIterable<ITERATOR>(_begin, _end)
+  {
+    const RandomAccessIterator* ensure = static_cast<const typename ITERATOR::Category*>(nullptr);
+  }
+};
+
 template<class TYPE>
 inline void mergeSortTiny(TYPE* begin, const MemorySize size)
 {
@@ -284,6 +346,18 @@ void mergeSort(const ITERATOR& begin, const ITERATOR& end, PREDICATE predicate)
   for (ITERATOR dest = begin; dest != end; ++src, ++dest) {
     *dest = moveObject(*src);
   }
+}
+
+template<class RANDOM_ACCESS_ITERABLE>
+inline void mergeSort(RANDOM_ACCESS_ITERABLE& iterable)
+{
+  mergeSort(iterable.begin(), iterable.end());
+}
+
+template<class RANDOM_ACCESS_ITERABLE, class PREDICATE>
+inline void mergeSort(RANDOM_ACCESS_ITERABLE& iterable, PREDICATE predicate)
+{
+  mergeSort(iterable.begin(), iterable.end(), predicate);
 }
 
 /**

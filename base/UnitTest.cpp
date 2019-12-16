@@ -769,8 +769,14 @@ bool UnitTestManager::runTests(const String& pattern, bool runDevel)
     // TAG: find by ID
     // TAG: skip if dependent test failed
     
+
     TestingThread thread(test);
+#if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__WASI) || \
+    (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__EMCC)
+    thread.run();
+#else
     thread.start();
+#endif
     bool timedOut = false;
     if (progressMode) {
       do {
@@ -814,10 +820,14 @@ bool UnitTestManager::runTests(const String& pattern, bool runDevel)
       // thread.terminate(); // terminate on exit of loop instead
     }
 
+#if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__WASI) || \
+    (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__EMCC)
+#else
     if (!timedOut) {
       thread.join();
     }
-    
+#endif
+
     #if 0
         if (!progressMode) {
           auto time = thread.times.getTotal();

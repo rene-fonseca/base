@@ -328,6 +328,16 @@ public:
   }
   
   /**
+    Pushes all the values in left-to-right order.
+  */
+  Stack(std::initializer_list<TYPE> values)
+  {
+    for (const auto& value : values) {
+      push(value);
+    }
+  }
+  
+  /**
     Initializes stack from other stack.
   */
   inline Stack(const Stack& copy) noexcept

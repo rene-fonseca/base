@@ -154,6 +154,13 @@ public:
   {
   }
 
+  Map(std::initializer_list<Node> values)
+  {
+    for (const auto& value : values) {
+      add(value);
+    }
+  }
+  
   /**
     Initializes map from other map.
   */

@@ -850,7 +850,15 @@ public:
     : impl(new HashTableImpl(capacity))
   {
   }
-
+  
+  HashTable(std::initializer_list<HashTableAssociation> values)
+    : impl(new HashTableImpl(DEFAULT_CAPACITY))
+  {
+    for (const auto& value : values) {
+      add(value);
+    }
+  }
+  
   /**
     Initializes hash table from other hash table.
   */
@@ -947,6 +955,42 @@ public:
   {
     copyOnWrite();
     impl->add(key, value);
+  }
+
+  /**
+    Adds the key and value to the table.
+  */
+  inline void add(const Key&& key, Value&& value)
+  {
+    copyOnWrite();
+    impl->add(key, moveObject(value));
+  }
+
+  /**
+    Adds the key and value to the table.
+  */
+  inline void add(Key&& key, Value&& value)
+  {
+    copyOnWrite();
+    impl->add(moveObject(key), moveObject(value));
+  }
+  
+  /**
+    Adds the key and value to the table.
+  */
+  inline void add(const HashTableAssociation& node)
+  {
+    copyOnWrite();
+    impl->add(node.getKey(), node.getValue());
+  }
+  
+  /**
+    Adds the key and value to the table.
+  */
+  inline void add(HashTableAssociation&& node)
+  {
+    copyOnWrite();
+    impl->add(node.getKey(), moveObject(node.getValue()));
   }
   
   /**

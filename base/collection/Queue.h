@@ -168,6 +168,17 @@ public:
   }
 
   /**
+    Pushes all the values in left-to-right order.
+  */
+  Queue(std::initializer_list<TYPE> values)
+    : elements(new QueueImpl())
+  {
+    for (const auto& value : values) {
+      push(value);
+    }
+  }
+  
+  /**
     Initializes queue from other queue.
   */
   inline Queue(const Queue& copy) noexcept

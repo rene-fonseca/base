@@ -122,6 +122,10 @@ public:
     List<unsigned int> lui = {0, 1, 3, 5, 7, 9};
     TEST_ASSERT(lui.getSize() == 6);
 
+    List<String> l1{};
+    List<String> l2{"1"};
+    List<String> l3{"1", "2"};
+
     List<String> ls;
     ls.append("abc");
     ls.append("123");

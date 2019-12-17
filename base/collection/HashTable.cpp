@@ -36,6 +36,13 @@ public:
     TEST_ASSERT((std::is_move_constructible<HashTable<String, String> >()));
     TEST_ASSERT((std::is_move_assignable<HashTable<String, String> >()));
 
+    HashTable<String, String> m1{};
+    HashTable<String, String> m2{Association<String, String>("1", "a")};
+    HashTable<String, String> m3{
+      Association<String, String>("1", "a"), Association<String, String>("2", "b")
+    };
+    TEST_ASSERT(m3.hasKey("2"));
+
     HashTable<String, String> c1;
     c1.add("key4", "value4");
     c1.add("key3", "value3");

@@ -142,12 +142,9 @@ endif ()
 
 file(GLOB_RECURSE base_platforms_SRC
   "base/platforms/*.h"
-  "base/platforms/*.cpp"
+  "base/platforms/features.cpp"
+  "base/platforms/specific.cpp"
 )
-
-if (CMAKE_VERSION VERSION_GREATER 3.5.99)
-  list(FILTER base_platforms_SRC EXCLUDE REGEX "^.*\/base\/platforms\/win32\/.+")
-endif ()
 
 # GLOB_RECURSE
 file(GLOB base_SRC

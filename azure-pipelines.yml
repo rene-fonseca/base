@@ -45,7 +45,7 @@ jobs:
       targetPath: 'artifacts'
       path: $(System.DefaultWorkingDirectory)/build/install
 
-- job: ubuntu-18.04
+- job: ubuntu18_04
   pool:
     vmImage: 'ubuntu-18.04'
   steps:
@@ -86,7 +86,7 @@ jobs:
       targetPath: 'artifacts'
       path: $(System.DefaultWorkingDirectory)/build/install
 
-- job: ubuntu-16.04
+- job: ubuntu16_04
   pool:
     vmImage: 'ubuntu-16.04'
   steps:

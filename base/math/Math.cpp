@@ -56,7 +56,7 @@ const uint8 Math::BIT_REVERSAL[] = {
 float Math::frac(float value) noexcept
 {
   float i = 0;
-  return modf(value, &i);
+  return modff(value, &i);
 }
 
 double Math::frac(double value) noexcept
@@ -75,7 +75,7 @@ double Math::frac(double value) noexcept
 long double Math::frac(long double value) noexcept
 {
   long double i = 0;
-  return modf(value, &i);
+  return modfl(value, &i);
 }
 
 bool Math::isFinite(float value) noexcept

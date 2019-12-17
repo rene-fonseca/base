@@ -88,12 +88,12 @@ if (("${CMAKE_CXX_COMPILER_ID}" STREQUAL "AppleClang") OR ("${CMAKE_CXX_COMPILER
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Werror") # no warnings allowed
 elseif ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
   CHECK_CXX_COMPILER_FLAG(-Wno-terminate supportsNoTerminate)
+  CHECK_CXX_COMPILER_FLAG(-Wno-error=terminate supportsNoErrorTerminate)
 
   # can be used to check for exception spec issues -fno-enforce-eh-specs
-  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-deprecated") # exception specifications
+  # set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-deprecated") # exception specifications
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-overflow") # FIXME
-  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wdeprecated-declarations") # FIXME
-  if (supportsNoTerminate)
+  if (supportsNoErrorTerminate AND supportsNoTerminate)
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-error=terminate")
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-terminate") # throw-expression that will call terminate()
   endif ()
@@ -145,7 +145,9 @@ file(GLOB_RECURSE base_platforms_SRC
   "base/platforms/*.cpp"
 )
 
-list(FILTER base_platforms_SRC EXCLUDE REGEX "^.*\/base\/platforms\/win32\/.+")
+if (CMAKE_VERSION VERSION_GREATER 3.5.99)
+  list(FILTER base_platforms_SRC EXCLUDE REGEX "^.*\/base\/platforms\/win32\/.+")
+endif ()
 
 # GLOB_RECURSE
 file(GLOB base_SRC
@@ -220,7 +222,11 @@ execute_process(OUTPUT_VARIABLE GIT_REVISION COMMAND git rev-list HEAD --count)
 string(REGEX REPLACE "\n$" "" GIT_REVISION "${GIT_REVISION}")
 
 string(TIMESTAMP BUILD_DATE "%Y-%m-%d" UTC)
-string(TIMESTAMP BUILD_DATE_SECONDS "%s" UTC)
+if (CMAKE_VERSION VERSION_GREATER 3.5.99)
+  string(TIMESTAMP BUILD_DATE_SECONDS "%s" UTC)
+else ()
+  set(BUILD_DATE_SECONDS "0")
+endif ()
 
 message("Branch: ${GIT_BRANCH}")
 message("Commit: ${GIT_COMMIT}")

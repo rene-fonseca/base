@@ -960,7 +960,7 @@ public:
   /**
     Adds the key and value to the table.
   */
-  inline void add(const Key&& key, Value&& value)
+  inline void add(const Key& key, Value&& value)
   {
     copyOnWrite();
     impl->add(key, moveObject(value));

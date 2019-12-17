@@ -78,7 +78,24 @@ public:
   static String subst(const String& text, const AnyValue& a, const AnyValue& b, const AnyValue& c, const AnyValue& d, const AnyValue& e, const AnyValue& f, const AnyValue& g, const AnyValue& h, const AnyValue& i, const AnyValue& j);
   static String subst(const String& text, const AnyValue& a, const AnyValue& b, const AnyValue& c, const AnyValue& d, const AnyValue& e, const AnyValue& f, const AnyValue& g, const AnyValue& h, const AnyValue& i, const AnyValue& j, const AnyValue& k);
   static String subst(const String& text, const AnyValue& a, const AnyValue& b, const AnyValue& c, const AnyValue& d, const AnyValue& e, const AnyValue& f, const AnyValue& g, const AnyValue& h, const AnyValue& i, const AnyValue& j, const AnyValue& k, const AnyValue& l);
+
+#if 1 // used for older GCC
+  static inline String subst(const char* text)
+  {
+    return subst(String(text));
+  }
+
+  static inline String subst(const char* text, const String& a)
+  {
+    return subst(String(text), a);
+  }
   
+  static inline String subst(const char* text, const String& a, const String& b)
+  {
+    return subst(String(text), a, b);
+  }
+#endif
+
   static String subst(const String& text, std::initializer_list<const char*> list);
   static String subst(const String& text, std::initializer_list<Literal> list);
 

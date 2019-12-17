@@ -30,6 +30,11 @@ public:
 
   void run() override
   {
+    Stack<String> s1{};
+    Stack<String> s2{"1"};
+    Stack<String> s3{"1", "2"};
+    TEST_ASSERT(s3.pop() == "2");
+
     Stack<int> si;
     for (auto i : range(-10, 20)) {
       si.push(i);

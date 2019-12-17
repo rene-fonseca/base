@@ -36,6 +36,10 @@ public:
       ai.append(i);
     }
 
+    Array<String> a1{};
+    Array<String> a2{"1"};
+    Array<String> a3{"1", "2"};
+
     Array<String> as;
     as.append("abc");
     as.append("123");

@@ -84,6 +84,13 @@ public:
   {
   }
 
+  Set(std::initializer_list<KEY> values)
+  {
+    for (const auto& value : values) {
+      add(value);
+    }
+  }
+  
   /**
     Initializes set from other set.
   */

@@ -54,6 +54,13 @@ public:
     TEST_ASSERT((std::is_move_constructible<Map<String, String> >()));
     TEST_ASSERT((std::is_move_assignable<Map<String, String> >()));
 
+    Map<String, String> m1{};
+    Map<String, String> m2{Association<String, String>("1", "a")};
+    Map<String, String> m3{
+      Association<String, String>("1", "a"), Association<String, String>("2", "b")
+    };
+    TEST_ASSERT(m3.hasKey("2"));
+
 #if 0
     Map<NonDefaultConstructible, NonDefaultConstructible> map1;
     map1.add(NonDefaultConstructible(nullptr), NonDefaultConstructible(nullptr));

@@ -601,6 +601,13 @@ public:
   {
   }
   
+  HashSet(std::initializer_list<TYPE> values)
+  {
+    for (const auto& value : values) {
+      add(value);
+    }
+  }
+  
   /**
     Initializes the hash set with the specified initial capacity.
   */

@@ -29,6 +29,11 @@ public:
 
   void run() override
   {
+    HashSet<String> s1{};
+    HashSet<String> s2{"1"};
+    HashSet<String> s3{"1", "2"};
+    TEST_ASSERT(s3.hasKey("2"));
+
     HashSet<int> si;
     for (auto i : range(-10, 20)) {
       si.add(i);

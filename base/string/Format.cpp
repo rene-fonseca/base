@@ -284,6 +284,7 @@ FormatOutputStream& operator<<(FormatOutputStream& stream, const Format::Subst& 
   return subst.operator<<(stream);
 }
 
+#if !defined(__GNUC__) || (__GNUC__ >= 6) // temporary workaround
 #if defined(_COM_AZURE_DEV__BASE__TESTS)
 
 class TEST_CLASS(Format) : public UnitTest {
@@ -345,6 +346,7 @@ public:
 
 TEST_REGISTER(Format);
 
+#endif
 #endif
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

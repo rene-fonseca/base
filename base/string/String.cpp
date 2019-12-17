@@ -1062,4 +1062,29 @@ TEST_REGISTER(String);
 
 #endif
 
+#if 0
+// TAG: can we encode string literal in String - e.g bit 0? or if compiler could generate static struct with compatible storage object
+
+class ConstStringLiteral {
+private:
+
+  const char* text = "";
+public:
+  
+  inline ConstStringLiteral() noexcept
+  {
+  }
+
+  inline ConstStringLiteral(const char* literal) noexcept
+    : text(literal)
+  {
+  }
+  
+  inline operator const char*() const noexcept
+  {
+    return text;
+  }
+};
+#endif
+
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

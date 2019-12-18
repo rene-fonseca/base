@@ -11,8 +11,6 @@
     For the licensing terms refer to the file 'LICENSE'.
  ***************************************************************************/
 
-#pragma once
-
 #include <base/collection/Association.h>
 #include <base/UnitTest.h>
 

@@ -12,6 +12,7 @@
  ***************************************************************************/
 
 #include <base/DynamicObject.h>
+#include <base/UnitTest.h>
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
@@ -24,5 +25,31 @@ bool DynamicObject::isValidObject() const noexcept
   return (_this != nullptr);
 #endif
 }
+
+#if defined(_COM_AZURE_DEV__BASE__TESTS)
+
+class TEST_CLASS(DynamicObject) : public UnitTest {
+public:
+
+  TEST_PRIORITY(1);
+  TEST_PROJECT("base");
+
+  void run() override
+  {
+    DynamicObject o1;
+    TEST_ASSERT(o1.isValidObject());
+#if defined(_COM_AZURE_DEV__BASE__DEBUG)
+    uint8 buffer[sizeof(DynamicObject)];
+    DynamicObject* o2 = new(buffer) DynamicObject();
+    o2->~DynamicObject();
+    TEST_ASSERT(!o2->isValidObject());
+    // skip inplace delete - no heap is leaked
+#endif
+  }
+};
+
+TEST_REGISTER(DynamicObject);
+
+#endif
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

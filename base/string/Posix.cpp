@@ -13,6 +13,7 @@
 
 #include <base/string/Posix.h>
 #include <base/string/ASCIITraits.h>
+#include <base/UnitTest.h>
 #include <sstream> // required until we have proper float to string implementation
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
@@ -469,5 +470,58 @@ bool Posix::toLongDouble(const ucs4* src, const ucs4* end, long double& _value) 
   }
   return toLongDouble(static_cast<const char*>(buffer), dest, _value);
 }
+
+#if defined(_COM_AZURE_DEV__BASE__TESTS)
+
+class TEST_CLASS(Posix) : public UnitTest {
+public:
+
+  TEST_PRIORITY(20);
+  TEST_PROJECT("base/string");
+  TEST_TIMEOUT_MS(30 * 1000);
+
+  void run() override
+  {
+    Posix posix;
+    double d = 0;
+    TEST_ASSERT(posix.toDouble(String("0"), d));
+    TEST_ASSERT(posix.toDouble(String(".0"), d));
+    TEST_ASSERT(posix.toDouble(String("0."), d));
+
+    TEST_ASSERT(posix.toDouble(String("123"), d));
+    TEST_ASSERT(posix.toDouble(String("123."), d));
+    TEST_ASSERT(posix.toDouble(String("123.e1"), d));
+    TEST_ASSERT(posix.toDouble(String("123.e+1"), d));
+    TEST_ASSERT(posix.toDouble(String("123.e-1"), d));
+
+    TEST_ASSERT(posix.toDouble(String("-0"), d));
+    TEST_ASSERT(posix.toDouble(String("-123"), d));
+    TEST_ASSERT(posix.toDouble(String("-123."), d));
+    TEST_ASSERT(posix.toDouble(String("-123.e1"), d));
+    TEST_ASSERT(posix.toDouble(String("-123.e+1"), d));
+    TEST_ASSERT(posix.toDouble(String("-123.e-1"), d));
+
+    TEST_ASSERT(posix.toDouble(String("+0"), d));
+    TEST_ASSERT(posix.toDouble(String("+123"), d));
+    TEST_ASSERT(posix.toDouble(String("+123."), d));
+    TEST_ASSERT(posix.toDouble(String("+123.e1"), d));
+    TEST_ASSERT(posix.toDouble(String("+123.e+1"), d));
+    TEST_ASSERT(posix.toDouble(String("+123.e-1"), d));
+
+    TEST_ASSERT(posix.toDouble(String("123.E1"), d));
+    TEST_ASSERT(posix.toDouble(String("123.E+1"), d));
+    TEST_ASSERT(posix.toDouble(String("123.E-1"), d));
+
+    TEST_ASSERT(!posix.toDouble(String("123e-1 "), d));
+    // TEST_ASSERT(!posix.toDouble(String(" 123e-1"), d)); // should fail
+    TEST_ASSERT(!posix.toDouble(String("123e-1e1"), d));
+    // TEST_ASSERT(!posix.toDouble(String("."), d)); // should fail
+    TEST_ASSERT(!posix.toDouble(String(".0."), d));
+  }
+};
+
+TEST_REGISTER(Posix);
+
+#endif
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

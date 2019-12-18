@@ -278,11 +278,12 @@ bool Posix::getSeries(const char* src, const char* end, float& _value) noexcept
     return false;
   }
 
+  MemoryStreamImpl& ms = *(this->ms);
   float value = 0;
-  ms->reset(src, end);
-  ms->clear();
-  *ms >> value;
-  if (!ms->eof()) {
+  ms.reset(src, end);
+  ms.clear();
+  ms >> value;
+  if (!ms || !ms.eof()) {
     return false;
   }
   _value = value;
@@ -298,11 +299,12 @@ bool Posix::getSeries(const char* src, const char* end, double& _value) noexcept
     return false;
   }
 
+  MemoryStreamImpl& ms = *(this->ms);
   double value = 0;
-  ms->reset(src, end);
-  ms->clear();
-  *ms >> value;
-  if (!ms->eof()) {
+  ms.reset(src, end);
+  ms.clear();
+  ms >> value;
+  if (!ms || !ms.eof()) {
     return false;
   }
   _value = value;
@@ -318,11 +320,12 @@ bool Posix::getSeries(const char* src, const char* end, long double& _value) noe
     return false;
   }
 
+  MemoryStreamImpl& ms = *(this->ms);
   long double value = 0;
-  ms->reset(src, end);
-  ms->clear();
-  *ms >> value;
-  if (!ms->eof()) {
+  ms.reset(src, end);
+  ms.clear();
+  ms >> value;
+  if (!ms || !ms.eof()) {
     return false;
   }
   _value = value;
@@ -342,7 +345,7 @@ bool Posix::toFloat(const char* src, const char* end, float& _value) noexcept
   MemoryStreamImpl ms(src, end);
   ms.setLocale(std::locale::classic()); // c locale
   ms >> value;
-  if (!ms.eof()) {
+  if (!ms || !ms.eof()) {
     return false;
   }
   _value = value;
@@ -366,7 +369,7 @@ bool Posix::toDouble(const char* src, const char* end, double& _value) noexcept
   MemoryStreamImpl ms(src, end);
   ms.setLocale(std::locale::classic()); // c locale
   ms >> value;
-  if (!ms.eof()) {
+  if (!ms || !ms.eof()) {
     return false;
   }
   _value = value;
@@ -386,7 +389,7 @@ bool Posix::toLongDouble(const char* src, const char* end, long double& _value) 
   MemoryStreamImpl ms(src, end);
   ms.setLocale(std::locale::classic()); // c locale
   ms >> value;
-  if (!ms.eof()) {
+  if (!ms || !ms.eof()) {
     return false;
   }
   _value = value;

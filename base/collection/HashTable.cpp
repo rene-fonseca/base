@@ -19,7 +19,6 @@ _COM_AZURE_DEV__BASE__DUMMY_SYMBOL
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
-
 #if defined(_COM_AZURE_DEV__BASE__TESTS)
 
 class TEST_CLASS(HashTable) : public UnitTest {

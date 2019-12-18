@@ -348,6 +348,15 @@ public:
   /** Returns true if value is NaN. */
   static bool isNaN(long double value) noexcept;
 
+  template<typename TYPE>
+  static constexpr TYPE getZero(bool negative) noexcept;
+
+  template<typename TYPE>
+  static constexpr TYPE getInfinity() noexcept;
+
+  template<typename TYPE>
+  static constexpr TYPE getNaN() noexcept;
+
   /**
     Returns the absolute value.
   */
@@ -2169,5 +2178,59 @@ public:
     return borrow;
   }
 };
+
+template<>
+inline constexpr float Math::getZero<float>(bool negative) noexcept
+{
+  return negative ? -0.0f : 0.0f;
+}
+
+template<>
+inline constexpr double Math::getZero<double>(bool negative) noexcept
+{
+  return negative ? -0.0 : 0.0;
+}
+
+template<>
+inline constexpr long double Math::getZero<long double>(bool negative) noexcept
+{
+  return negative ? -0.0l : 0.0l;
+}
+
+template<>
+inline float Math::getInfinity<float>() noexcept
+{
+  return 1/0.f;
+}
+
+template<>
+inline double Math::getInfinity<double>() noexcept
+{
+  return 1/0.;
+}
+
+template<>
+inline long double Math::getInfinity<long double>() noexcept
+{
+  return 1/0.l;
+}
+
+template<>
+inline float Math::getNaN<float>() noexcept
+{
+  return 0/0.f;
+}
+
+template<>
+inline double Math::getNaN<double>() noexcept
+{
+  return 0/0.;
+}
+
+template<>
+inline long double Math::getNaN<long double>() noexcept
+{
+  return 0/0.l;
+}
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

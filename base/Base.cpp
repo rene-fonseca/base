@@ -24,6 +24,7 @@
 #  if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__SOLARIS)
 #    include <unistd.h>
 #  elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__WASI)
+#  elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__IOS)
 #  else
 #    include <sys/ptrace.h>
 #  endif

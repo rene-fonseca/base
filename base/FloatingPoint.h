@@ -397,10 +397,12 @@ _COM_AZURE_DEV__BASE__PACKED__BEGIN
   struct IEEE754SinglePrecision {
     Representation::IEEE754SinglePrecision value;
 
+#if 0
     /** Minimum normalized positive floating-point number (2^(e_min-1)). */
     static constexpr long double MINIMUM = 1.1754943508222875079687365372222456778186655567720875215087517062784172594547271728515625e-38L;
     /** Maximum representable finite floating-point number (2^e_max). */
     static constexpr long double MAXIMUM = 3.40282366920938463463374607431768211456e38L;
+#endif
     /**
       The difference between 1 and the least value greater than 1 that is
       representable in the given floating point type.
@@ -580,11 +582,13 @@ _COM_AZURE_DEV__BASE__PACKED__BEGIN
   struct IEEE754DoublePrecision {
     Representation::IEEE754DoublePrecision value;
 
+#if 0
     /** Minimum normalized positive floating-point number (2^(e_min-1)). */
     static constexpr long double MINIMUM = 2.225073858507201383090232717332404064219215980462331830553327416887204434813918195854283159012511021e-308L;
     /** Maximum representable finite floating-point number (2^e_max). */
     static constexpr long double MAXIMUM = 1.7976931348623158e308L;
     // static constexpr long double MAXIMUM = 1.79769313486231590772930519078902473361797697894230657273430081157732675805500963132708477322407536e308L;
+#endif
     /**
       The difference between 1 and the least value greater than 1 that is
       representable in the given floating point type.
@@ -758,10 +762,12 @@ _COM_AZURE_DEV__BASE__PACKED__BEGIN
   struct IEEEExtendedDoublePrecision96Align16 {
     Representation::IEEEExtendedDoublePrecision96Align16 value;
     
+#if 0
     /** Minimum normalized positive floating-point number (2^(e_min-1)). */
     static constexpr long double MINIMUM = 3.362103143112093506262677817321752602598079344846471240108827229808742699390728967043092706365056223e-4932L;
     /** Maximum representable finite floating-point number (2^e_max). */
     static constexpr long double MAXIMUM = 0; // TAG: cannot set for MSC since long double is the same as double
+#endif
     // TAG: static constexpr long double MAXIMUM = 1.18973149535723176508575932662800713076344468709651023747267482123326135818048368690448859547261204e4932L;
     /**
       The difference between 1 and the least value greater than 1 that is
@@ -977,10 +983,12 @@ _COM_AZURE_DEV__BASE__PACKED__BEGIN
   struct IEEEExtendedDoublePrecision96 {
     Representation::IEEEExtendedDoublePrecision96 value;
     
+#if 0
     /** Minimum normalized positive floating-point number (2^(e_min-1)). */
     static constexpr long double MINIMUM = 3.362103143112093506262677817321752602598079344846471240108827229808742699390728967043092706365056223e-4932L;
     /** Maximum representable finite floating-point number (2^e_max). */
     static constexpr long double MAXIMUM = 0; // TAG: cannot set for MSC since long double is the same as double
+#endif
     // TAG: static constexpr long double MAXIMUM = 1.18973149535723176508575932662800713076344468709651023747267482123326135818048368690448859547261204e4932L;
     /**
       The difference between 1 and the least value greater than 1 that is
@@ -1196,10 +1204,12 @@ _COM_AZURE_DEV__BASE__PACKED__BEGIN
   struct IEEEExtendedDoublePrecision128 {
     Representation::IEEEExtendedDoublePrecision128 value;
 
+#if 0
     /** Minimum normalized positive floating-point number (2^(e_min-1)). */
     static constexpr long double MINIMUM = 3.362103143112093506262677817321752602598079344846471240108827229808742699390728967043092706365056223e-4932L;
     /** Maximum representable finite floating-point number (2^e_max). */
     static constexpr long double MAXIMUM = 0; // TAG: cannot set since long double is the same as double for MSC
+#endif
     // TAG: static constexpr long double MAXIMUM = 1.18973149535723176508575932662800713076344468709651023747267482123326135818048368690448859547261204e4932L;
     /**
       The difference between 1 and the least value greater than 1 that is
@@ -1395,10 +1405,12 @@ _COM_AZURE_DEV__BASE__PACKED__BEGIN
   struct IEEEQuadruplePrecision {
     Representation::IEEEQuadruplePrecision value;
 
+#if 0
     /** Minimum normalized positive floating-point number (2^(e_min-1)). */
     static constexpr long double MINIMUM = 3.362103143112093506262677817321752602598079344846471240108827229808742699390728967043092706365056223e-4932L;
     /** Maximum representable finite floating-point number (2^e_max). */
     static constexpr long double MAXIMUM = 0; // TAG: cannot set since long double is the same as double for MSC
+#endif
     // TAG: FIXME static constexpr long double MAXIMUM = 1.18973149535723176508575932662800713076344468709651023747267482123326135818048368690448859547261204e4932L;
     /**
       The difference between 1 and the least value greater than 1 that is

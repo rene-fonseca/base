@@ -47,7 +47,9 @@ bool Exception::hasPendingException() noexcept
 
 bool Exception::isUnwinding() noexcept
 {
-#if (_COM_AZURE_DEV__BASE__COMPILER == _COM_AZURE_DEV__BASE__COMPILER_GCC)
+#if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__IOS)
+  return false;
+#elif (_COM_AZURE_DEV__BASE__COMPILER == _COM_AZURE_DEV__BASE__COMPILER_GCC)
   return std::uncaught_exception();
 #else
   return std::uncaught_exceptions() > 0;
@@ -56,7 +58,9 @@ bool Exception::isUnwinding() noexcept
 
 unsigned int Exception::getPendingExceptions() noexcept
 {
-#if (_COM_AZURE_DEV__BASE__COMPILER == _COM_AZURE_DEV__BASE__COMPILER_GCC)
+#if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__IOS)
+  return 0;
+#elif (_COM_AZURE_DEV__BASE__COMPILER == _COM_AZURE_DEV__BASE__COMPILER_GCC)
   return std::uncaught_exception() ? 1 : 0;
 #else
   int result = std::uncaught_exceptions();

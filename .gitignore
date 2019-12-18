@@ -22,5 +22,6 @@ include/
 *.wasm
 wasm
 *.dylib
+*.plist
 .DS_Store
 junit.xml

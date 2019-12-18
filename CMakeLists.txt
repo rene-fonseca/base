@@ -130,7 +130,7 @@ if (EMSCRIPTEN OR ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "WASI"))
   set (USE_SHARED 0)
 endif ()
 
-if (USE_SHARED)
+if (USE_SHARED AND NOT IOS)
   if (UNIX)
     find_package(X11)
   endif()

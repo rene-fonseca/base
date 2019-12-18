@@ -29,7 +29,7 @@ class _COM_AZURE_DEV__BASE__API Double : public Object {
 public:
 
   /** Minimum normalized positive floating-point number (2^(e_min-1)). */
-  static constexpr double MINIMUM = FloatingPoint::ToDouble::MINIMUM;
+  static const double MINIMUM; // = FloatingPoint::ToDouble::MINIMUM;
   /** Maximum representable finite floating-point number (2^e_max). */
   static const double MAXIMUM; // TAG: = FloatingPoint::ToDouble::MAXIMUM;
   /**

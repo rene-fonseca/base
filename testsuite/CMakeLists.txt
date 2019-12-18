@@ -60,6 +60,7 @@ foreach(sourcefile ${TEST_SOURCES})
     ARCHIVE DESTINATION "${CMAKE_BINARY_DIR}/install/bin/debug"
     LIBRARY DESTINATION "${CMAKE_BINARY_DIR}/install/bin/debug"
     RUNTIME DESTINATION "${CMAKE_BINARY_DIR}/install/bin/debug"
+    BUNDLE DESTINATION "${CMAKE_BINARY_DIR}/install/bin/debug"
   )
 
   install(TARGETS ${name}
@@ -67,6 +68,7 @@ foreach(sourcefile ${TEST_SOURCES})
     ARCHIVE DESTINATION "${CMAKE_BINARY_DIR}/install/bin/release"
     LIBRARY DESTINATION "${CMAKE_BINARY_DIR}/install/bin/release"
     RUNTIME DESTINATION "${CMAKE_BINARY_DIR}/install/bin/release"
+    BUNDLE DESTINATION "${CMAKE_BINARY_DIR}/install/bin/release"
   )
 
 endforeach()

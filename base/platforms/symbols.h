@@ -128,6 +128,7 @@
 #define _COM_AZURE_DEV__BASE__WEBASSEMBLY 13 // only Unix
 #define _COM_AZURE_DEV__BASE__WASI 14 // only Unix
 #define _COM_AZURE_DEV__BASE__EMCC 15 // only Unix
+#define _COM_AZURE_DEV__BASE__IOS 16 // only Unix
 
 // Major architecture groups
 #define _COM_AZURE_DEV__BASE__X86 1

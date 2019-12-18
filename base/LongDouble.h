@@ -29,9 +29,9 @@ class _COM_AZURE_DEV__BASE__API LongDouble : public Object {
 public:
 
   /** Minimum normalized positive floating-point number (2^(e_min-1)). */
-  static constexpr long double MINIMUM = FloatingPoint::ToLongDouble::MINIMUM;
+  static const long double MINIMUM; // = FloatingPoint::ToLongDouble::MINIMUM;
   /** Maximum representable finite floating-point number (2^e_max). */
-  static constexpr long double MAXIMUM = FloatingPoint::ToLongDouble::MAXIMUM;
+  static const long double MAXIMUM; // = FloatingPoint::ToLongDouble::MAXIMUM;
   /**
     The difference between 1 and the least value greater than 1 that is
     representable in the given floating point type.

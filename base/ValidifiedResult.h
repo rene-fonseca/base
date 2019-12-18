@@ -67,6 +67,7 @@ public:
   inline ValidifiedResult(ValidifiedResult&& move)
     : value(moveObject(move.value)), valid(move.valid)
   {
+    move.valid = false;
   }
   
   /**
@@ -80,7 +81,20 @@ public:
     }
     return *this;
   }
-  
+
+  /**
+    Initializes object by other object.
+  */
+  inline ValidifiedResult& operator=(ValidifiedResult&& move)
+  {
+    if (&move != this) {
+      value = moveObject(move.value);
+      valid = move.valid;
+      move.valid = false;
+    }
+    return *this;
+  }
+
   /**
     Returns the value. Raises InvalidException if result is invalid.
   */
@@ -95,11 +109,11 @@ public:
   /**
     Returns the value if valid and otherwise the given defaultValue.
   */
-  inline const TYPE& getValue(const TYPE& defaultValue) const noexcept
+  inline const TYPE& getValue(const TYPE& defaultValue) const
   {
     return valid ? value : defaultValue;
   }
-    
+  
   /**
     Returns true if the result is valid.
   */
@@ -121,9 +135,21 @@ public:
     if (valid) {
       return stream << static_cast<const TYPE&>(value);
     } else {
-      return stream << "BAD";
+      return stream << "<BAD>";
     }
   }
+
+  inline operator const TYPE&() const noexcept
+  {
+    return getValue();
+  }
+
+#if 0 // conflicts with valid operator
+  inline operator bool() const noexcept
+  {
+    return isValid();
+  }
+#endif
 };
 
 /**

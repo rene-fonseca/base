@@ -70,6 +70,28 @@ public:
   }
 
   /**
+    Initializes a pair with the specified values.
+
+    @param first The first value.
+    @param second The second value.
+  */
+  Pair(const First& _first, Second&& _second)
+    : first(_first), second(moveObject(_second))
+  {
+  }
+
+  /**
+    Initializes a pair with the specified values.
+
+    @param first The first value.
+    @param second The second value.
+  */
+  Pair(First&& _first, const Second& _second)
+    : first(moveObject(_first)), second(_second)
+  {
+  }
+
+  /**
     Initializes a pair from other pair.
   */
   Pair(const Pair& copy)

@@ -55,6 +55,16 @@ public:
   }
 
   /**
+    Initializes association with the specified key and uninitalized value.
+
+    @param key The key.
+  */
+  Association(KEY&& _key)
+    : key(moveObject(_key))
+  {
+  }
+
+  /**
     Initializes association from other association.
   */
   Association(const Association& copy)
@@ -105,6 +115,18 @@ public:
   Association(KEY&& _key, VALUE&& _value)
     : key(moveObject(_key)),
       value(moveObject(_value))
+  {
+  }
+
+  /**
+    Initializes association with the specified key and value.
+
+    @param key The key.
+    @param value The value of the association.
+  */
+  Association(KEY&& _key, const VALUE& _value)
+    : key(moveObject(_key)),
+      value(_value)
   {
   }
 

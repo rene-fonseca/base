@@ -18,6 +18,82 @@
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
+namespace {
+
+  constexpr int64 power10_64(unsigned int exponent) noexcept
+  {
+    return (exponent > 0) ? (static_cast<int64>(10) * power10_64(exponent - 1)) : 1;
+  }
+
+  constexpr int64 power5_64(unsigned int exponent) noexcept
+  {
+    return (exponent > 0) ? (static_cast<int64>(5) * power5_64(exponent - 1)) : 1;
+  }
+
+  constexpr int64 power2_64(unsigned int exponent) noexcept
+  {
+    return (exponent > 0) ? (static_cast<int64>(2) * power2_64(exponent - 1)) : 1;
+  }
+
+  constexpr int32 power10_32(unsigned int exponent) noexcept
+  {
+    return (exponent > 0) ? (static_cast<int32>(10) * power10_32(exponent - 1)) : 1;
+  }
+
+  constexpr int32 power5_32(unsigned int exponent) noexcept
+  {
+    return (exponent > 0) ? (static_cast<int32>(5) * power5_32(exponent - 1)) : 1;
+  }
+
+  constexpr int32 power2_32(unsigned int exponent) noexcept
+  {
+    return (exponent > 0) ? (static_cast<int32>(2) * power2_32(exponent - 1)) : 1;
+  }
+}
+
+// values < 2^63
+const int64 Math::EXPONENTS10_64[19] = { // 64 bit has room for 10 ^ 18 - excluding 1 bit for sign
+  power10_64(0),power10_64(1),power10_64(2),power10_64(3),power10_64(4),power10_64(5),power10_64(6),power10_64(7),
+  power10_64(8),power10_64(9),power10_64(10),power10_64(11),power10_64(12),power10_64(13),power10_64(14),
+  power10_64(15),power10_64(16),power10_64(17),power10_64(18)
+};
+
+const int64 Math::EXPONENTS5_64[28] = { // 64 bit has room for 5 ^ 27 - excluding 1 bit for sign
+  power5_64(0),power5_64(1),power5_64(2),power5_64(3),power5_64(4),power5_64(5),power5_64(6),power5_64(7),
+  power5_64(8),power5_64(9),power5_64(10),power5_64(11),power5_64(12),power5_64(13),power5_64(14),
+  power5_64(15),power5_64(16),power5_64(17),power5_64(18),power5_64(19),power5_64(20),power5_64(21),
+  power5_64(22),power5_64(23),power5_64(24),power5_64(25),power5_64(26),power5_64(27)
+};
+
+const int64 Math::EXPONENTS2_64[63] = { // 64 bit has room for 2 ^ 62 - excluding 1 bit for sign
+  power2_64(0),power2_64(1),power2_64(2),power2_64(3),power2_64(4),power2_64(5),power2_64(6),power2_64(7),
+  power2_64(8),power2_64(9),power2_64(10),power2_64(11),power2_64(12),power2_64(13),power2_64(14),power2_64(15),
+  power2_64(16),power2_64(17),power2_64(18),power2_64(19),power2_64(20),power2_64(21),power2_64(22),power2_64(23),
+  power2_64(24),power2_64(25),power2_64(26),power2_64(27),power2_64(28),power2_64(29),power2_64(30),power2_64(31),
+  power2_64(32),power2_64(33),power2_64(34),power2_64(35),power2_64(36),power2_64(37),power2_64(38),power2_64(39),
+  power2_64(40),power2_64(41),power2_64(42),power2_64(43),power2_64(44),power2_64(45),power2_64(46),power2_64(47),
+  power2_64(48),power2_64(49),power2_64(50),power2_64(51),power2_64(52),power2_64(53),power2_64(54),power2_64(55),
+  power2_64(56),power2_64(57),power2_64(58),power2_64(59),power2_64(60),power2_64(61),power2_64(62)
+};
+
+// values < 2^31
+const int32 Math::EXPONENTS10_32[10] = { // 32 bit has room for 10 ^ 9 - excluding 1 bit for sign
+  power10_32(0),power10_32(1),power10_32(2),power10_32(3),power10_32(4),power10_32(5),power10_32(6),power10_32(7),
+  power10_32(8),power10_32(9)
+};
+
+const int32 Math::EXPONENTS5_32[14] = { // 32 bit has room for 5 ^ 13 - excluding 1 bit for sign
+  power5_32(0),power5_32(1),power5_32(2),power5_32(3),power5_32(4),power5_32(5),power5_32(6),power5_32(7),
+  power5_32(8),power5_32(9),power5_32(10),power5_32(11),power5_32(12),power5_32(13)
+};
+
+const int32 Math::EXPONENTS2_32[31] = { // 32 bit has room for 2 ^ 30 - excluding 1 bit for sign
+  power2_32(0),power2_32(1),power2_32(2),power2_32(3),power2_32(4),power2_32(5),power2_32(6),power2_32(7),
+  power2_32(8),power2_32(9),power2_32(10),power2_32(11),power2_32(12),power2_32(13),power2_32(14),power2_32(15),
+  power2_32(16),power2_32(17),power2_32(18),power2_32(19),power2_32(20),power2_32(21),power2_32(22),power2_32(23),
+  power2_32(24),power2_32(25),power2_32(26),power2_32(27),power2_32(28),power2_32(29),power2_32(30)
+};
+
 const uint8 Math::BIT_REVERSAL[] = {
   0x00, 0x80, 0x40, 0xc0, 0x20, 0xa0, 0x60, 0xe0,
   0x10, 0x90, 0x50, 0xd0, 0x30, 0xb0, 0x70, 0xf0,

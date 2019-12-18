@@ -313,6 +313,20 @@ private:
   static const uint8* getBitReversalData() noexcept;
 public:
   
+  /** Power of 10 exponents in 64-bit. */
+  static const int64 EXPONENTS10_64[19];
+  /** Power of 5 exponents in 64-bit. */
+  static const int64 EXPONENTS5_64[28];
+  /** Power of 2 exponents in 64-bit. */
+  static const int64 EXPONENTS2_64[63];
+
+  /** Power of 10 exponents in 32-bit. */
+  static const int32 EXPONENTS10_32[10];
+  /** Power of 5 exponents in 32-bit. */
+  static const int32 EXPONENTS5_32[14];
+  /** Power of 2 exponents in 32-bit. */
+  static const int32 EXPONENTS2_32[31];
+  
   /** Returns true if value is finite. */
   static bool isFinite(float value) noexcept;
   /** Returns true if value is finite. */

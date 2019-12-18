@@ -67,6 +67,15 @@ String SystemInformation::getOS() noexcept
   case _COM_AZURE_DEV__BASE__WEBASSEMBLY:
     os = "WebAssembly";
     break;
+  case _COM_AZURE_DEV__BASE__WASI:
+    os = "WebAssembly WASI";
+    break;
+  case _COM_AZURE_DEV__BASE__EMCC:
+    os = "WebAssembly Emscripten";
+    break;
+  case _COM_AZURE_DEV__BASE__IOS:
+    os = "iOS";
+    break;
   default:
     ;
   }

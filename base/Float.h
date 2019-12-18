@@ -30,14 +30,14 @@ class _COM_AZURE_DEV__BASE__API Float : public Object {
 public:
 
   /** Minimum normalized positive floating-point number (2^(e_min-1)). */
-  static const float MINIMUM; // = FloatingPoint::ToFloat::MINIMUM;
+  static const float MINIMUM;
   /** Maximum representable finite floating-point number (2^e_max). */
-  static const float MAXIMUM; // TAG: = FloatingPoint::ToFloat::MAXIMUM;
+  static const float MAXIMUM;
   /**
     The difference between 1 and the least value greater than 1 that is
     representable in the given floating point type.
   */
-  static constexpr float EPSILON = FloatingPoint::ToFloat::EPSILON;
+  static const float EPSILON;
 protected:
   
   /** The value. */
@@ -57,14 +57,16 @@ public:
 
     @param value The desired value.
   */
-  inline Float(float _value) noexcept : value(_value)
+  inline Float(float _value) noexcept
+    : value(_value)
   {
   }
   
   /**
     Initializes the value by other value.
   */
-  inline Float(const Float& copy) noexcept : value(copy.value)
+  inline Float(const Float& copy) noexcept
+    : value(copy.value)
   {
   }
 

@@ -16,6 +16,8 @@
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
-const double Double::MAXIMUM = DBL_MAX; // TAG: FloatingPoint::ToDouble::MAXIMUM;
+const double Double::MINIMUM = DBL_MIN;
+const double Double::MAXIMUM = DBL_MAX;
+const double Double::EPSILON = DBL_EPSILON;
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

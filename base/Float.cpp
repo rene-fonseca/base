@@ -16,6 +16,8 @@
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
-const float Float::MAXIMUM = FLT_MAX; // TAG: FloatingPoint::ToFloat::MAXIMUM;
+const float Float::MINIMUM = FLT_MIN;
+const float Float::MAXIMUM = FLT_MAX;
+const float Float::EPSILON = FLT_EPSILON;
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

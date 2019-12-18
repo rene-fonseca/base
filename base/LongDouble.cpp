@@ -12,9 +12,12 @@
  ***************************************************************************/
 
 #include <base/LongDouble.h>
-
-_COM_AZURE_DEV__BASE__DUMMY_SYMBOL
+#include <float.h>
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
+
+const long double LongDouble::MINIMUM = LDBL_MIN;
+const long double LongDouble::MAXIMUM = LDBL_MAX;
+const long double LongDouble::EPSILON = LDBL_EPSILON;
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

@@ -29,14 +29,14 @@ class _COM_AZURE_DEV__BASE__API Double : public Object {
 public:
 
   /** Minimum normalized positive floating-point number (2^(e_min-1)). */
-  static const double MINIMUM; // = FloatingPoint::ToDouble::MINIMUM;
+  static const double MINIMUM;
   /** Maximum representable finite floating-point number (2^e_max). */
-  static const double MAXIMUM; // TAG: = FloatingPoint::ToDouble::MAXIMUM;
+  static const double MAXIMUM;
   /**
     The difference between 1 and the least value greater than 1 that is
     representable in the given floating point type.
   */
-  static constexpr double EPSILON = FloatingPoint::ToDouble::EPSILON;
+  static const double EPSILON;
 protected:
   
   /** The value. */
@@ -56,14 +56,16 @@ public:
     
     @param value The desired value.
   */
-  inline Double(double _value) noexcept : value(_value)
+  inline Double(double _value) noexcept
+    : value(_value)
   {
   }
   
   /**
     Initializes the value by other value.
   */
-  inline Double(const Double& copy) noexcept : value(copy.value)
+  inline Double(const Double& copy) noexcept
+    : value(copy.value)
   {
   }
 

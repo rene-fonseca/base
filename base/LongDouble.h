@@ -29,14 +29,14 @@ class _COM_AZURE_DEV__BASE__API LongDouble : public Object {
 public:
 
   /** Minimum normalized positive floating-point number (2^(e_min-1)). */
-  static const long double MINIMUM; // = FloatingPoint::ToLongDouble::MINIMUM;
+  static const long double MINIMUM;
   /** Maximum representable finite floating-point number (2^e_max). */
-  static const long double MAXIMUM; // = FloatingPoint::ToLongDouble::MAXIMUM;
+  static const long double MAXIMUM;
   /**
     The difference between 1 and the least value greater than 1 that is
     representable in the given floating point type.
   */
-  static constexpr long double EPSILON = FloatingPoint::ToLongDouble::EPSILON;
+  static const long double EPSILON;
 protected:
   
   /** The value. */
@@ -56,14 +56,16 @@ public:
     
     @param value The desired value.
   */
-  inline LongDouble(long double _value) noexcept : value(_value)
+  inline LongDouble(long double _value) noexcept
+    : value(_value)
   {
   }
   
   /**
     Initializes the value by other value.
   */
-  inline LongDouble(const LongDouble& copy) noexcept : value(copy.value)
+  inline LongDouble(const LongDouble& copy) noexcept
+    : value(copy.value)
   {
   }
 

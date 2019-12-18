@@ -81,3 +81,4 @@ RHEL 8             | PowerPC  |         | Pending    |
 SUSE Linux 15      | x86_64   |         | Pending    |
 WebAssembly WASI   | WASM32   | LLVM    | Build      | 14 Dec 2019 - Only builds but does not run
 Emscripten         | WASM32   | LLVM    | Build      | 16 Dec 2019 - Partially runs
+IOS                | ARM64    | Clang   | Build      | 18 Dec 2019 - Not run

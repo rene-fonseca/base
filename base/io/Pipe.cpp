@@ -73,7 +73,7 @@ Pair<Pipe, Pipe> Pipe::make() {
   Pipe q;
   p.fd = new PipeHandle(ihandle);
   q.fd = new PipeHandle(ohandle);
-  return makePair(p, q);
+  return makePair<Pipe, Pipe>(p, q);
 #elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__WASI)
   BASSERT(!"Not supported.");
   return Pair<Pipe, Pipe>();
@@ -86,7 +86,7 @@ Pair<Pipe, Pipe> Pipe::make() {
   Pipe q;
   p.fd = new PipeHandle(handles[0]);
   q.fd = new PipeHandle(handles[1]);
-  return makePair(p, q);
+  return makePair<Pipe, Pipe>(p, q);
 #endif // flavor
 }
 

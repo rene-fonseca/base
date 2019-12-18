@@ -53,7 +53,21 @@ public:
     @param first The first value.
     @param second The second value.
   */
-  Pair(const First& first, const Second& second);
+  Pair(const First& _first, const Second& _second)
+  : first(moveObject(_first)), second(moveObject(_second))
+  {
+  }
+
+  /**
+    Initializes a pair with the specified values.
+
+    @param first The first value.
+    @param second The second value.
+  */
+  Pair(First&& _first, Second&& _second)
+    : first(moveObject(_first)), second(moveObject(_second))
+  {
+  }
 
   /**
     Initializes a pair from other pair.
@@ -185,12 +199,6 @@ public:
 };
 
 template<class FIRST, class SECOND>
-inline Pair<FIRST, SECOND>::Pair(const First& _first, const Second& _second)
-  : first(_first), second(_second)
-{
-}
-
-template<class FIRST, class SECOND>
 inline int compare(const Pair<FIRST, SECOND>& left, const Pair<FIRST, SECOND>& right)
 {
   if (left.first < right.first) {
@@ -219,6 +227,19 @@ template<class FIRST, class SECOND>
 inline Pair<FIRST, SECOND> makePair(const FIRST& first, const SECOND& second)
 {
   return Pair<FIRST, SECOND>(first, second);
+}
+
+/**
+  Makes a pair from the specified values.
+
+  @param first The first value of the pair.
+  @param second The second value of the pair.
+*/
+
+template<class FIRST, class SECOND>
+inline Pair<FIRST, SECOND> makePair(FIRST&& first, SECOND&& second)
+{
+  return Pair<FIRST, SECOND>(moveObject(first), moveObject(second));
 }
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

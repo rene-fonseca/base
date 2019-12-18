@@ -112,7 +112,15 @@ public:
   {
     return FloatingPoint::ToLongDouble(value).isNegative();
   }
-  
+
+  /**
+    Returns the sign.
+  */
+  inline long double getSign() const noexcept
+  {
+    return FloatingPoint::ToLongDouble(value).isNegative() ? -1.0L : 1.0L;
+  }
+
   /**
     Returns true if the value is an ordinary number (not infinity or NaN).
   */

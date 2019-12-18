@@ -112,6 +112,14 @@ public:
   {
     return FloatingPoint::ToDouble(value).isNegative();
   }
+
+  /**
+    Returns the sign.
+  */
+  inline double getSign() const noexcept
+  {
+    return FloatingPoint::ToDouble(value).isNegative() ? -1.0 : 1.0;
+  }
   
   /**
     Returns true if the value is an ordinary number (not infinity or NaN).

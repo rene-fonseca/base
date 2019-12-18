@@ -115,6 +115,14 @@ public:
   }
   
   /**
+    Returns the sign.
+  */
+  inline float getSign() const noexcept
+  {
+    return FloatingPoint::ToFloat(value).isNegative() ? -1.0f : 1.0f;
+  }
+
+  /**
     Returns true if the value is an ordinary number (not infinity or NaN).
   */
   inline bool isOrdinary() const noexcept

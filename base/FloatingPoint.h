@@ -1817,6 +1817,7 @@ inline void analyseFloatingPoint(
   int& exponent,
   unsigned int& flags) noexcept
 {
+  BASSERT(!"Not supported");
 }
 
 template<>

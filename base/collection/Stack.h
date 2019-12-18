@@ -331,6 +331,7 @@ public:
     Pushes all the values in left-to-right order.
   */
   Stack(std::initializer_list<TYPE> values)
+    : elements(new StackImpl())
   {
     for (const auto& value : values) {
       push(value);

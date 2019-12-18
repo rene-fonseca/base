@@ -602,6 +602,7 @@ public:
   }
   
   HashSet(std::initializer_list<TYPE> values)
+    : impl(new HashSetImpl(DEFAULT_CAPACITY))
   {
     for (const auto& value : values) {
       add(value);

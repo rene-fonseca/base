@@ -14,6 +14,7 @@
 #include <base/concurrency/RecursiveSpinLock.h>
 #include <base/concurrency/ExclusiveSynchronize.h>
 #include <base/Profiler.h>
+#include <base/UnitTest.h>
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
@@ -66,5 +67,45 @@ void RecursiveSpinLock::releaseLock() const noexcept
     lock.releaseLock();
   }
 }
+
+#if defined(_COM_AZURE_DEV__BASE__TESTS)
+
+class TEST_CLASS(RecursiveSpinLock) : public UnitTest {
+public:
+
+  TEST_PRIORITY(0);
+  TEST_PROJECT("base/concurrency");
+  TEST_IMPACT(CRITICAL);
+  TEST_TIMEOUT_MS(30 * 1000);
+
+  void run() override
+  {
+    // TAG: add Thread
+
+    TEST_DECLARE_HERE(A);
+    TEST_DECLARE_HERE(B);
+    TEST_DECLARE_HERE(C);
+
+    RecursiveSpinLock lock;
+    if (lock.tryExclusiveLock()) {
+      TEST_HERE(A);
+      if (lock.tryExclusiveLock()) {
+        TEST_HERE(B);
+        lock.releaseLock();
+      }
+      lock.releaseLock();
+    }
+    if (lock.tryExclusiveLock()) {
+      TEST_HERE(C);
+      lock.releaseLock();
+    }
+    lock.exclusiveLock();
+    lock.releaseLock();
+  }
+};
+
+TEST_REGISTER(RecursiveSpinLock);
+
+#endif
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

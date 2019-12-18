@@ -61,7 +61,7 @@ inline bool isConstPointer() noexcept
   return ConstPointerHelper<TYPE>::IS_CONSTANT;
 }
 
-#if 1
+#if 1 // using reference may trigger const symbols to require storage - which can then result in unresolved symbol on linking
 /**
   Returns the minimum value.
 */
@@ -84,7 +84,8 @@ inline TYPE minimum(TYPE a, TYPE b, TYPE c)
   Returns the maximum value.
 */
 template<class TYPE>
-inline TYPE maximum(TYPE a, TYPE b) {
+inline TYPE maximum(TYPE a, TYPE b)
+{
   return (a >= b) ? a : b;
 }
 
@@ -92,7 +93,8 @@ inline TYPE maximum(TYPE a, TYPE b) {
   Returns the maximum value among the 3 values.
 */
 template<class TYPE>
-inline TYPE maximum(TYPE a, TYPE b, TYPE c) {
+inline TYPE maximum(TYPE a, TYPE b, TYPE c)
+{
   return maximum<TYPE>(maximum<TYPE>(a, b), c);
 }
 #else // TAG: need to avoid copy contruction
@@ -118,7 +120,8 @@ inline const TYPE& minimum(const TYPE& a, const TYPE& b, const TYPE& c)
   Returns the maximum value.
 */
 template<class TYPE>
-inline const TYPE& maximum(const TYPE& a, const TYPE& b) {
+inline const TYPE& maximum(const TYPE& a, const TYPE& b)
+{
   return (a >= b) ? a : b;
 }
 
@@ -126,26 +129,45 @@ inline const TYPE& maximum(const TYPE& a, const TYPE& b) {
   Returns the maximum value among the 3 values.
 */
 template<class TYPE>
-inline const TYPE& maximum(const TYPE& a, const TYPE& b, const TYPE& c) {
+inline const TYPE& maximum(const TYPE& a, const TYPE& b, const TYPE& c)
+{
   return maximum<TYPE>(maximum<TYPE>(a, b), c);
 }
 #endif
 
+#if 0
 /**
   Returns the maximum value among the given values.
 */
-#if 0
 template<class TYPE>
-inline TYPE maximum(initializer_list<TYPE> l) {
+inline TYPE minimum(initializer_list<TYPE> l)
+{
   BASSERT(!l.empty());
   auto src = l.begin();
   auto end = l.end();
   TYPE result = *src++;
-  while (begin != end) {
-    if (*src > result) {
+  for (begin != end; ++src) {
+    if (*src < result) {
       result = *src;
     }
-    ++src;
+  }
+  return result;
+}
+
+/**
+  Returns the maximum value among the given values.
+*/
+template<class TYPE>
+inline TYPE maximum(initializer_list<TYPE> l)
+{
+  BASSERT(!l.empty());
+  auto src = l.begin();
+  auto end = l.end();
+  TYPE result = *src++;
+  for (begin != end; ++src) {
+    if (*src > result) { // or alternatively !<= // C++ add support for preferred implementations first > then try <= otherwise fail
+      result = *src;
+    }
   }
   return result;
 }
@@ -286,14 +308,16 @@ class Backend {
 
 /** Destroys a complete object. */
 template<class TYPE>
-inline void deleteComplete(const volatile TYPE* value) {
+inline void deleteComplete(const volatile TYPE* value)
+{
   if (sizeof(TYPE) > 0) {}
   delete value;
 }
 
 /** Destroys a complete array. */
 template<class TYPE>
-inline void deleteCompleteArray(const volatile TYPE* value) {
+inline void deleteCompleteArray(const volatile TYPE* value)
+{
   if (sizeof(TYPE) > 0) {}
   delete[] value;
 }

@@ -32,6 +32,12 @@ public:
   static const double MINIMUM;
   /** Maximum representable finite floating-point number (2^e_max). */
   static const double MAXIMUM;
+  /** Positive infinity. */
+  static const double INFINITY;
+  /** Negative infinity. */
+  static const double MINUS_INFINITY;
+  /** Quiet NaN. */
+  static const double QUIET_NAN;
   /**
     The difference between 1 and the least value greater than 1 that is
     representable in the given floating point type.

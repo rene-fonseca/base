@@ -19,5 +19,8 @@ _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 const double Double::MINIMUM = DBL_MIN;
 const double Double::MAXIMUM = DBL_MAX;
 const double Double::EPSILON = DBL_EPSILON;
+const double Double::INFINITY = 1/0.f;
+const double Double::MINUS_INFINITY = -1/0.f;
+const double Double::QUIET_NAN = 0/0.f;
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

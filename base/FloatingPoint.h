@@ -259,6 +259,8 @@ _COM_AZURE_DEV__BASE__PACKED__END
 _COM_AZURE_DEV__BASE__PACKED__BEGIN
     struct IEEEExtendedDoublePrecision128 {
       static constexpr bool HAS_IMPLIED_ONE = false;
+      static constexpr int MINIMUM_EXPONENT = -16381;
+      static constexpr int MAXIMUM_EXPONENT = 16384;
       static constexpr int ALL_BITS_EXPONENT = (1 << 15) - 1;
       static constexpr int BIAS = 0x3fff;
       static constexpr unsigned int SIGNIFICANT = 64;
@@ -568,7 +570,31 @@ _COM_AZURE_DEV__BASE__PACKED__BEGIN
       return (value.exponent == value.ALL_BITS_EXPONENT) &&
         ((value.mantissa0 & (1 << (23 - 1))) == 0) && (value.mantissa0 != 0); // but not infitity
     }
+
+    /** Returns the exponent. */
+    inline int getExponent() const noexcept
+    {
+      BASSERT(isOrdinary());
+      BASSERT((value.exponent - value.BIAS) <= value.MAXIMUM_EXPONENT);
+      BASSERT((value.exponent - value.BIAS) >= value.MINIMUM_EXPONENT);
+      return value.exponent - value.BIAS;
+    }
+
+    /** Sets the exponent. */
+    inline void setExponent(int exponent) noexcept
+    {
+      BASSERT(exponent <= value.MAXIMUM_EXPONENT);
+      BASSERT(exponent >= value.MINIMUM_EXPONENT);
+      value.exponent = exponent + value.BIAS;
+    }
     
+    /** Returns true if supported exponent. Ignoring denomalized values. */
+    static inline bool isSupportedExponent(int exponent) noexcept
+    {
+      return (exponent >= Representation::IEEE754SinglePrecision::MINIMUM_EXPONENT) &&
+        (exponent <= Representation::IEEE754SinglePrecision::MAXIMUM_EXPONENT);
+    }
+
     operator float() const noexcept;
     
     operator double() const noexcept;
@@ -749,6 +775,30 @@ _COM_AZURE_DEV__BASE__PACKED__BEGIN
         ((value.mantissa1 != 0) || (value.mantissa0 != 0)); // but not infitity
     }
     
+    /** Returns the exponent. */
+    inline int getExponent() const noexcept
+    {
+      BASSERT(isOrdinary());
+      BASSERT((value.exponent - value.BIAS) <= value.MAXIMUM_EXPONENT);
+      BASSERT((value.exponent - value.BIAS) >= value.MINIMUM_EXPONENT);
+      return value.exponent - value.BIAS;
+    }
+
+    /** Sets the exponent. */
+    inline void setExponent(int exponent) noexcept
+    {
+      BASSERT(exponent <= value.MAXIMUM_EXPONENT);
+      BASSERT(exponent >= value.MINIMUM_EXPONENT);
+      value.exponent = exponent + value.BIAS;
+    }
+    
+    /** Returns true if supported exponent. Ignoring denomalized values. */
+    static inline bool isSupportedExponent(int exponent) noexcept
+    {
+      return (exponent >= Representation::IEEE754DoublePrecision::MINIMUM_EXPONENT) &&
+        (exponent <= Representation::IEEE754DoublePrecision::MAXIMUM_EXPONENT);
+    }
+
     operator float() const noexcept;
     
     operator double() const noexcept;
@@ -968,7 +1018,31 @@ _COM_AZURE_DEV__BASE__PACKED__BEGIN
         ((value.mantissa1 != 0) || (value.mantissa0 != 0)); // but not infinity
 #endif
     }
+
+    /** Returns the exponent. */
+    inline int getExponent() const noexcept
+    {
+      BASSERT(isOrdinary());
+      BASSERT((value.exponent - value.BIAS) <= value.MAXIMUM_EXPONENT);
+      BASSERT((value.exponent - value.BIAS) >= value.MINIMUM_EXPONENT);
+      return value.exponent - value.BIAS;
+    }
+
+    /** Sets the exponent. */
+    inline void setExponent(int exponent) noexcept
+    {
+      BASSERT(exponent <= value.MAXIMUM_EXPONENT);
+      BASSERT(exponent >= value.MINIMUM_EXPONENT);
+      value.exponent = exponent + value.BIAS;
+    }
     
+    /** Returns true if supported exponent. Ignoring denomalized values. */
+    static inline bool isSupportedExponent(int exponent) noexcept
+    {
+      return (exponent >= Representation::IEEEExtendedDoublePrecision96Align16::MINIMUM_EXPONENT) &&
+        (exponent <= Representation::IEEEExtendedDoublePrecision96Align16::MAXIMUM_EXPONENT);
+    }
+
     operator float() const noexcept;
     
     operator double() const noexcept;
@@ -1189,6 +1263,30 @@ _COM_AZURE_DEV__BASE__PACKED__BEGIN
 #endif
     }
     
+    /** Returns the exponent. */
+    inline int getExponent() const noexcept
+    {
+      BASSERT(isOrdinary());
+      BASSERT((value.exponent - value.BIAS) <= value.MAXIMUM_EXPONENT);
+      BASSERT((value.exponent - value.BIAS) >= value.MINIMUM_EXPONENT);
+      return value.exponent - value.BIAS;
+    }
+
+    /** Sets the exponent. */
+    inline void setExponent(int exponent) noexcept
+    {
+      BASSERT(exponent <= value.MAXIMUM_EXPONENT);
+      BASSERT(exponent >= value.MINIMUM_EXPONENT);
+      value.exponent = exponent + value.BIAS;
+    }
+    
+    /** Returns true if supported exponent. Ignoring denomalized values. */
+    static inline bool isSupportedExponent(int exponent) noexcept
+    {
+      return (exponent >= Representation::IEEEExtendedDoublePrecision96::MINIMUM_EXPONENT) &&
+        (exponent <= Representation::IEEEExtendedDoublePrecision96::MAXIMUM_EXPONENT);
+    }
+
     operator float() const noexcept;
     
     operator double() const noexcept;
@@ -1388,6 +1486,30 @@ _COM_AZURE_DEV__BASE__PACKED__BEGIN
         ((value.mantissa1 != 0) || (value.mantissa0 != 0)); // but not infitity
     }
     
+    /** Returns the exponent. */
+    inline int getExponent() const noexcept
+    {
+      BASSERT(isOrdinary());
+      BASSERT((value.exponent - value.BIAS) <= value.MAXIMUM_EXPONENT);
+      BASSERT((value.exponent - value.BIAS) >= value.MINIMUM_EXPONENT);
+      return value.exponent - value.BIAS;
+    }
+
+    /** Sets the exponent. */
+    inline void setExponent(int exponent) noexcept
+    {
+      BASSERT(exponent <= value.MAXIMUM_EXPONENT);
+      BASSERT(exponent >= value.MINIMUM_EXPONENT);
+      value.exponent = exponent + value.BIAS;
+    }
+    
+    /** Returns true if supported exponent. Ignoring denomalized values. */
+    static inline bool isSupportedExponent(int exponent) noexcept
+    {
+      return (exponent >= Representation::IEEEExtendedDoublePrecision128::MINIMUM_EXPONENT) &&
+        (exponent <= Representation::IEEEExtendedDoublePrecision128::MAXIMUM_EXPONENT);
+    }
+
     operator float() const noexcept;
     
     operator double() const noexcept;
@@ -1573,7 +1695,31 @@ _COM_AZURE_DEV__BASE__PACKED__BEGIN
         ((value.mantissa3 != 0) || (value.mantissa2 != 0) ||
          (value.mantissa1 != 0) || (value.mantissa0 != 0)); // but not infitity
     }
+
+    /** Returns the exponent. */
+    inline int getExponent() const noexcept
+    {
+      BASSERT(isOrdinary());
+      BASSERT((value.exponent - value.BIAS) <= value.MAXIMUM_EXPONENT);
+      BASSERT((value.exponent - value.BIAS) >= value.MINIMUM_EXPONENT);
+      return value.exponent - value.BIAS;
+    }
+
+    /** Sets the exponent. */
+    inline void setExponent(int exponent) noexcept
+    {
+      BASSERT(exponent <= value.MAXIMUM_EXPONENT);
+      BASSERT(exponent >= value.MINIMUM_EXPONENT);
+      value.exponent = exponent + value.BIAS;
+    }
     
+    /** Returns true if supported exponent. Ignoring denomalized values. */
+    static inline bool isSupportedExponent(int exponent) noexcept
+    {
+      return (exponent >= Representation::IEEEQuadruplePrecision::MINIMUM_EXPONENT) &&
+        (exponent <= Representation::IEEEQuadruplePrecision::MAXIMUM_EXPONENT);
+    }
+
     operator float() const noexcept;
     
     operator double() const noexcept;
@@ -1629,6 +1775,30 @@ _COM_AZURE_DEV__BASE__PACKED__END
 #else
 #  error Invalid floating-point representation of type long double
 #endif
+  
+  template<class TYPE>
+  class ToFloatPrimitive {};
+  
+  template<>
+  class ToFloatPrimitive<float> {
+  public:
+    
+    typedef FloatingPoint::ToFloat Type;
+  };
+
+  template<>
+  class ToFloatPrimitive<double> {
+  public:
+    
+    typedef FloatingPoint::ToDouble Type;
+  };
+
+  template<>
+  class ToFloatPrimitive<long double> {
+  public:
+    
+    typedef FloatingPoint::ToLongDouble Type;
+  };
 };
 
 inline FloatingPoint::IEEE754SinglePrecision::operator float() const noexcept

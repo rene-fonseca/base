@@ -13,6 +13,7 @@
 
 #include <base/string/Posix.h>
 #include <base/string/ASCIITraits.h>
+#include <base/FloatingPoint.h>
 #include <base/UnitTest.h>
 #include <sstream> // required until we have proper float to string implementation
 
@@ -61,6 +62,8 @@ void MemoryStreamImpl::setLocale(const std::locale& _Loc)
 }
 
 namespace {
+
+  // TAG: [+-]?0[xX]([0-9a-fA-F]+)?(.?[0-9a-fA-F]+)([pP][+-]?[0-9a-fA-F]+)?
 
   template<typename TYPE>
   inline int convertImpl(const char* src, const char* end, TYPE& _value) noexcept
@@ -196,12 +199,12 @@ namespace {
             gotExponentDigit = true;
             ++src;
           }
-          if (gotExponentDigit && (src == end)) {
-            k = 1;
-          }
           while ((src != end) && (k < MAXIMUM_EXPONENT_DIGITS) && ASCIITraits::isDigit(*src)) {
             exponent = (exponent * 10) + ASCIITraits::digitToValue(*src++);
             ++k;
+          }
+          if (gotExponentDigit && (k == 0)) {
+            k = 1;
           }
 
           // we still validate format - even if we do not convert to value now
@@ -251,7 +254,7 @@ namespace {
         if (negative) {
           temp = -temp;
         }
-        TYPE value = static_cast<TYPE>(temp);
+        TYPE value = static_cast<TYPE>(temp); // TAG: not rounding
         if (exponent > 0) {
           if (negativeExponent) {
             value /= Math::EXPONENTS10_64[exponent];
@@ -265,25 +268,47 @@ namespace {
         if (negative) {
           temp = -temp;
         }
+
         TYPE value = static_cast<TYPE>(temp);
+#if 0
+        // TAG: fit bits in mantissa
+        typename FloatingPoint::ToFloatPrimitive<TYPE>::Type f1(value);
+        ++f1.value.mantissa0;
+        TYPE valuePlus = static_cast<TYPE>(f1);
+#endif
+        
         if (exponent > 0) {
           if (negativeExponent) {
             value /= Math::EXPONENTS5_64[exponent]; // no exponent overflow for 64 bit int
-            value /= Math::EXPONENTS2_64[exponent]; // power 2 math is exact
-            // f.setBase2Exponent(f.getBase2Exponent() - Math::EXPONENTS2_64[exponent]);
-            // TAG: need to update exponent directly to guarantee exact
+            typename FloatingPoint::ToFloatPrimitive<TYPE>::Type scale(value);
+            const int _exponent = scale.getExponent() - exponent;
+            if (!scale.isSupportedExponent(_exponent)) {
+              BASSERT(!"We cannot hit exponent underflow for 64-bit.");
+              _value = 0; // denorm
+              return 1;
+            }
+            scale.setExponent(_exponent); // power of 2 exponent!
+            value = scale;
           } else {
             value *= Math::EXPONENTS5_64[exponent]; // no exponent overflow for 64 bit int
-            value *= Math::EXPONENTS2_64[exponent]; // power 2 math is exact
-            // TAG: need to update exponent directly to guarantee exact
+            typename FloatingPoint::ToFloatPrimitive<TYPE>::Type scale(value);
+            const int _exponent = scale.getExponent() + exponent;
+            if (!scale.isSupportedExponent(_exponent)) {
+              BASSERT(!"We cannot hit exponent overflow for 64-bit.");
+              // we get issues regardsless if we se max value or infinity - but infinity is more visible
+              _value = negative ? -Math::getInfinity<TYPE>() : Math::getInfinity<TYPE>(); // overflow
+              return 1;
+            }
+            scale.setExponent(_exponent); // power of 2 exponent!
+            value = scale;
           }
         }
         _value = value;
         return 1;
+      } else {
+        return 0; // unhandled exponent
       }
     }
-    
-    // TAG: handle exponent overflow - use max/min/inf?
     
     BASSERT(skipped);
     return 0;
@@ -315,9 +340,14 @@ bool Posix::getSeries(const char* src, const char* end, float& _value) noexcept
   ms.reset(src, end);
   ms.clear();
   ms >> value;
+#if 0 // format is validated by convertImpl - we cannot differentiate underflow/overflow
   if (!ms || !ms.eof()) {
+    if (value != 0) {
+      return true; // overflow // seen for macos
+    }
     return false;
   }
+#endif
   _value = value;
   return true;
 }
@@ -336,9 +366,14 @@ bool Posix::getSeries(const char* src, const char* end, double& _value) noexcept
   ms.reset(src, end);
   ms.clear();
   ms >> value;
+#if 0 // format is validated by convertImpl - we cannot differentiate underflow/overflow
   if (!ms || !ms.eof()) {
+    if (value != 0) {
+      return true; // overflow // seen for macos
+    }
     return false;
   }
+#endif
   _value = value;
   return true;
 }
@@ -357,9 +392,14 @@ bool Posix::getSeries(const char* src, const char* end, long double& _value) noe
   ms.reset(src, end);
   ms.clear();
   ms >> value;
+#if 0 // format is validated by convertImpl - we cannot differentiate underflow/overflow
   if (!ms || !ms.eof()) {
+    if (value != 0) {
+      return true; // overflow // seen for macos
+    }
     return false;
   }
+#endif
   _value = value;
   return true;
 }
@@ -377,9 +417,14 @@ bool Posix::toFloat(const char* src, const char* end, float& _value) noexcept
   MemoryStreamImpl ms(src, end);
   ms.setLocale(std::locale::classic()); // c locale
   ms >> value;
+#if 0 // format is validated by convertImpl - we cannot differentiate underflow/overflow
   if (!ms || !ms.eof()) {
+    if (value != 0) {
+      return true; // overflow // seen for macos
+    }
     return false;
   }
+#endif
   _value = value;
   return true;
 }
@@ -393,17 +438,18 @@ bool Posix::toDouble(const char* src, const char* end, double& _value) noexcept
     return false;
   }
   
-  // TAG: allow separate keywords for nan,snan,-inf,inf
-  // TAG: handle +-nan, and +-inf, +-infinity, +-nan.* // ignore case
-  // TAG: handle [+-]?0[xX]([0-9a-fA-F]+)?(.?[0-9a-fA-F]+)([pP][+-]?[0-9a-fA-F]+)?
-
   double value = 0;
   MemoryStreamImpl ms(src, end);
   ms.setLocale(std::locale::classic()); // c locale
   ms >> value;
+#if 0 // format is validated by convertImpl - we cannot differentiate underflow/overflow
   if (!ms || !ms.eof()) {
+    if (value != 0) {
+      return true; // overflow // seen for macos
+    }
     return false;
   }
+#endif
   _value = value;
   return true;
 }
@@ -421,9 +467,14 @@ bool Posix::toLongDouble(const char* src, const char* end, long double& _value) 
   MemoryStreamImpl ms(src, end);
   ms.setLocale(std::locale::classic()); // c locale
   ms >> value;
+#if 0 // format is validated by convertImpl - we cannot differentiate underflow/overflow
   if (!ms || !ms.eof()) {
+    if (value != 0) {
+      return true; // overflow // seen for macos
+    }
     return false;
   }
+#endif
   _value = value;
   return true;
 }
@@ -557,19 +608,47 @@ public:
     TEST_ASSERT(!posix.toDouble(String(".0."), d));
 
     TEST_ASSERT(posix.toDouble(String("inf"), d));
+    TEST_ASSERT(Math::isInfinity(d));
     TEST_ASSERT(posix.toDouble(String("infinity"), d));
+    TEST_ASSERT(Math::isInfinity(d));
     TEST_ASSERT(posix.toDouble(String("+inf"), d));
+    TEST_ASSERT(Math::isInfinity(d));
     TEST_ASSERT(posix.toDouble(String("+infinity"), d));
+    TEST_ASSERT(Math::isInfinity(d));
     TEST_ASSERT(posix.toDouble(String("-inf"), d));
+    TEST_ASSERT(Math::isInfinity(d));
     TEST_ASSERT(posix.toDouble(String("-infinity"), d));
+    TEST_ASSERT(Math::isInfinity(d));
     TEST_ASSERT(!posix.toDouble(String("-infi"), d));
+    TEST_ASSERT(Math::isInfinity(d));
     TEST_ASSERT(!posix.toDouble(String("infinity "), d));
+    TEST_ASSERT(Math::isInfinity(d));
     TEST_ASSERT(posix.toDouble(String("nan"), d));
+    TEST_ASSERT(Math::isNaN(d));
     TEST_ASSERT(posix.toDouble(String("NAN"), d));
+    TEST_ASSERT(Math::isNaN(d));
     TEST_ASSERT(posix.toDouble(String("+nan"), d));
+    TEST_ASSERT(Math::isNaN(d));
     TEST_ASSERT(posix.toDouble(String("+NAN"), d));
+    TEST_ASSERT(Math::isNaN(d));
     TEST_ASSERT(posix.toDouble(String("-nan"), d));
+    TEST_ASSERT(Math::isNaN(d));
     TEST_ASSERT(posix.toDouble(String("-NAN"), d));
+    TEST_ASSERT(Math::isNaN(d));
+
+    TEST_ASSERT(posix.toDouble(String("123456789.123456789123456789"), d));
+    TEST_ASSERT(posix.toDouble(String("123456789.123456789"), d));
+    TEST_ASSERT(posix.toDouble(String("123456789.123456789e1"), d));
+    TEST_ASSERT(posix.toDouble(String("123456789.123456789e10"), d));
+    TEST_ASSERT(posix.toDouble(String("123456789.123456789e100"), d));
+    TEST_ASSERT(posix.toDouble(String("123456789.123456789e1000"), d)); // likely overflow => inf
+    TEST_ASSERT(posix.toDouble(String("-123456789.123456789e1000"), d)); // likely overflow => -inf
+    TEST_ASSERT(posix.toDouble(String("123456789.123456789e-1"), d)); // for double precision 12345678.91234568
+    // TAG: need proper rounding - getting 12345678.912345678
+    
+    TEST_ASSERT(posix.toDouble(String("123456789.123456789e-10"), d));
+    TEST_ASSERT(posix.toDouble(String("123456789.123456789e-100"), d));
+    TEST_ASSERT(posix.toDouble(String("123456789.123456789e-1000"), d)); // likely underflow => 0
   }
 };
 

@@ -50,8 +50,8 @@ jobs:
     displayName: 'Config'
     inputs:
       script: |
-      source ~/emsdk/emsdk_env.sh
-      emcmake cmake ..
+        source ~/emsdk/emsdk_env.sh
+        emcmake cmake ..
       workingDirectory: $(System.DefaultWorkingDirectory)/build
 #  - task: CMake@1
 #    displayName: 'Config'

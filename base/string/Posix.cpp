@@ -295,7 +295,6 @@ namespace {
             const int _exponent = scale.getExponent() + exponent;
             if (!scale.isSupportedExponent(_exponent)) {
               BASSERT(!"We cannot hit exponent overflow for 64-bit.");
-              // we get issues regardsless if we se max value or infinity - but infinity is more visible
               _value = negative ? -Math::getInfinity<TYPE>() : Math::getInfinity<TYPE>(); // overflow
               return 1;
             }
@@ -306,6 +305,7 @@ namespace {
         _value = value;
         return 1;
       } else {
+        // TAG: do large int math and adjust to power of 2 exponent
         return 0; // unhandled exponent
       }
     }

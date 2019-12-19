@@ -26,29 +26,43 @@ _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 */
 
 class _COM_AZURE_DEV__BASE__API Double : public Object {
-public:
-
-  /** Minimum normalized positive floating-point number (2^(e_min-1)). */
-  static const double MINIMUM;
-  /** Maximum representable finite floating-point number (2^e_max). */
-  static const double MAXIMUM;
-  /** Positive infinity. */
-  static const double INFINITY;
-  /** Negative infinity. */
-  static const double MINUS_INFINITY;
-  /** Quiet NaN. */
-  static const double QUIET_NAN;
-  /**
-    The difference between 1 and the least value greater than 1 that is
-    representable in the given floating point type.
-  */
-  static const double EPSILON;
 protected:
   
   /** The value. */
   double value = 0;
 public:
   
+  /** Minimum normalized positive floating-point number (2^(e_min-1)). */
+  static double getMinimum() noexcept;
+
+  /** Maximum representable finite floating-point number (2^e_max). */
+  static double getMaximum() noexcept;
+
+  /**
+    The difference between 1 and the least value greater than 1 that is
+    representable in the given floating point type.
+  */
+  static double getEpsilon() noexcept;
+
+  static constexpr double getInfinity() noexcept
+  {
+#if (_COM_AZURE_DEV__BASE__COMPILER == _COM_AZURE_DEV__BASE__COMPILER_MSC)
+    return __builtin_huge_val();
+#else
+    return 1 / 0.;
+#endif
+  }
+
+  /** Returns quiet NaN. Signaling NaN should be avoided due to platform inconsistencies. */
+  static constexpr double getNaN() noexcept
+  {
+#if (_COM_AZURE_DEV__BASE__COMPILER == _COM_AZURE_DEV__BASE__COMPILER_MSC)
+    return __builtin_nan("0");
+#else
+    return 0 / 0.;
+#endif
+  }
+
   /**
     Initializes the value as zero.
   */

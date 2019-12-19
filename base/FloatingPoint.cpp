@@ -1326,6 +1326,11 @@ _COM_AZURE_DEV__BASE__PACKED__END
     TEST_ASSERT(ld_n1div0.isInfinity());
     TEST_ASSERT((-1.0l / zero) < 0);
 
+    // infinity * 0 => nan
+    TEST_ASSERT(FloatingPoint::ToFloat(Math::getInfinity<float>() * 0).isQuiteNaN());
+    TEST_ASSERT(FloatingPoint::ToDouble(Math::getInfinity<double>() * 0).isQuiteNaN());
+    TEST_ASSERT(FloatingPoint::ToLongDouble(Math::getInfinity<long double>() * 0).isQuiteNaN());
+
     FloatingPoint::ToFloat f_nan(nanf(""));
     TEST_ASSERT(f_nan.isNaN());
     TEST_ASSERT(f_nan.isQuiteNaN());

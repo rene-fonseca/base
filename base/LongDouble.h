@@ -26,29 +26,43 @@ _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 */
 
 class _COM_AZURE_DEV__BASE__API LongDouble : public Object {
-public:
-
-  /** Minimum normalized positive floating-point number (2^(e_min-1)). */
-  static const long double MINIMUM;
-  /** Maximum representable finite floating-point number (2^e_max). */
-  static const long double MAXIMUM;
-  /** Positive infinity. */
-  static const long double INFINITY;
-  /** Negative infinity. */
-  static const long double MINUS_INFINITY;
-  /** Quiet NaN. */
-  static const long double QUIET_NAN;
-  /**
-    The difference between 1 and the least value greater than 1 that is
-    representable in the given floating point type.
-  */
-  static const long double EPSILON;
 protected:
   
   /** The value. */
   long double value = 0;
 public:
-  
+
+  /** Minimum normalized positive floating-point number (2^(e_min-1)). */
+  static long double getMinimum() noexcept;
+
+  /** Maximum representable finite floating-point number (2^e_max). */
+  static long double getMaximum() noexcept;
+
+  /**
+    The difference between 1 and the least value greater than 1 that is
+    representable in the given floating point type.
+  */
+  static long double getEpsilon() noexcept;
+
+  static constexpr long double getInfinity() noexcept
+  {
+#if (_COM_AZURE_DEV__BASE__COMPILER == _COM_AZURE_DEV__BASE__COMPILER_MSC)
+    return __builtin_huge_val(); // double same as long double
+#else
+    return 1 / 0.l;
+#endif
+  }
+
+  /** Returns quiet NaN. Signaling NaN should be avoided due to platform inconsistencies. */
+  static constexpr long double getNaN() noexcept
+  {
+#if (_COM_AZURE_DEV__BASE__COMPILER == _COM_AZURE_DEV__BASE__COMPILER_MSC)
+    return __builtin_nan("0"); // double same as long double
+#else
+    return 0 / 0.l;
+#endif
+  }
+
   /**
     Initializes the value as zero.
   */

@@ -16,11 +16,19 @@
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
-const float Float::MINIMUM = FLT_MIN;
-const float Float::MAXIMUM = FLT_MAX;
-const float Float::EPSILON = FLT_EPSILON;
-const float Float::INFINITY = 1.f/0.f;
-const float Float::MINUS_INFINITY = -1.f/0.f;
-const float Float::QUIET_NAN = 0.f/0.f;
+float Float::getMinimum() noexcept
+{
+  return FLT_MIN;
+}
+
+float Float::getMaximum() noexcept
+{
+  return FLT_MAX;
+}
+
+float Float::getEpsilon() noexcept
+{
+  return FLT_EPSILON;
+}
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

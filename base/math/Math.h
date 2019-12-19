@@ -348,12 +348,15 @@ public:
   /** Returns true if value is NaN. */
   static bool isNaN(long double value) noexcept;
 
+  /** Returns signed zero. */
   template<typename TYPE>
   static constexpr TYPE getZero(bool negative) noexcept;
 
+  /** Returns infinity. You get negative infinity by using - operator. */
   template<typename TYPE>
   static constexpr TYPE getInfinity() noexcept;
 
+  /** Returns quiet NaN. Signaling NaN should be avoided due to platform inconsistencies. */
   template<typename TYPE>
   static constexpr TYPE getNaN() noexcept;
 
@@ -2198,39 +2201,63 @@ inline constexpr long double Math::getZero<long double>(bool negative) noexcept
 }
 
 template<>
-inline float Math::getInfinity<float>() noexcept
+inline constexpr float Math::getInfinity<float>() noexcept
 {
+#if (_COM_AZURE_DEV__BASE__COMPILER == _COM_AZURE_DEV__BASE__COMPILER_MSC)
+  return __builtin_huge_valf();
+#else
   return 1/0.f;
+#endif
 }
 
 template<>
-inline double Math::getInfinity<double>() noexcept
+inline constexpr double Math::getInfinity<double>() noexcept
 {
+#if (_COM_AZURE_DEV__BASE__COMPILER == _COM_AZURE_DEV__BASE__COMPILER_MSC)
+  return __builtin_huge_val();
+#else
   return 1/0.;
+#endif
 }
 
 template<>
-inline long double Math::getInfinity<long double>() noexcept
+inline constexpr long double Math::getInfinity<long double>() noexcept
 {
+#if (_COM_AZURE_DEV__BASE__COMPILER == _COM_AZURE_DEV__BASE__COMPILER_MSC)
+  return __builtin_huge_val(); // double same as long double
+#else
   return 1/0.l;
+#endif
 }
 
 template<>
-inline float Math::getNaN<float>() noexcept
+inline constexpr float Math::getNaN<float>() noexcept
 {
+#if (_COM_AZURE_DEV__BASE__COMPILER == _COM_AZURE_DEV__BASE__COMPILER_MSC)
+  return __builtin_nanf("0");
+#else
   return 0/0.f;
+#endif
 }
 
 template<>
-inline double Math::getNaN<double>() noexcept
+inline constexpr double Math::getNaN<double>() noexcept
 {
+#if (_COM_AZURE_DEV__BASE__COMPILER == _COM_AZURE_DEV__BASE__COMPILER_MSC)
+  return __builtin_nan("0");
+#else
   return 0/0.;
+#endif
 }
 
 template<>
-inline long double Math::getNaN<long double>() noexcept
+inline constexpr long double Math::getNaN<long double>() noexcept
 {
+#if (_COM_AZURE_DEV__BASE__COMPILER == _COM_AZURE_DEV__BASE__COMPILER_MSC)
+  return __builtin_nan("0"); // double same as long double
+#else
   return 0/0.l;
+#endif
 }
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

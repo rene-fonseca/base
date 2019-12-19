@@ -1776,29 +1776,30 @@ _COM_AZURE_DEV__BASE__PACKED__END
 #  error Invalid floating-point representation of type long double
 #endif
   
+  /** Converts float primitive to representation type. */
   template<class TYPE>
   class ToFloatPrimitive {};
+};
+
+template<>
+class FloatingPoint::ToFloatPrimitive<float> {
+public:
   
-  template<>
-  class ToFloatPrimitive<float> {
-  public:
-    
-    typedef FloatingPoint::ToFloat Type;
-  };
+  typedef FloatingPoint::ToFloat Type;
+};
 
-  template<>
-  class ToFloatPrimitive<double> {
-  public:
-    
-    typedef FloatingPoint::ToDouble Type;
-  };
+template<>
+class FloatingPoint::ToFloatPrimitive<double> {
+public:
+  
+  typedef FloatingPoint::ToDouble Type;
+};
 
-  template<>
-  class ToFloatPrimitive<long double> {
-  public:
-    
-    typedef FloatingPoint::ToLongDouble Type;
-  };
+template<>
+class FloatingPoint::ToFloatPrimitive<long double> {
+public:
+  
+  typedef FloatingPoint::ToLongDouble Type;
 };
 
 inline FloatingPoint::IEEE754SinglePrecision::operator float() const noexcept

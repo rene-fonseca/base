@@ -168,7 +168,7 @@ jobs:
       targetPath: 'artifacts'
       path: $(System.DefaultWorkingDirectory)/build/install
 
-- job: macos-self
+- job: macos_self
   pool:
     name: Default
     demands: agent.os -equals Darwin

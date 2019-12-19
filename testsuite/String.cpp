@@ -14,7 +14,6 @@
 #include <base/Application.h>
 #include <base/mem/Allocator.h>
 #include <base/mem/ReferenceCountedAllocator.h>
-#include <base/mem/CapacityAllocator.h>
 #include <base/string/Format.h>
 #include <base/collection/Functor.h>
 #include <base/ValidifiedResult.h>
@@ -109,21 +108,6 @@ public:
 
     ValidifiedResult<uint64> test1(12345678);
     fout << "ValidifiedResult<uint64> " << test1 << ENDL;
-
-    CapacityAllocator<char> b(1234, 256);
-    fout << "CapacityAllocator<char>::getSize(): " << b.getSize() << ENDL;
-    // fout << "CapacityAllocator<char>::getGranularity(): " << b.getGranularity() << ENDL;
-    fout << "CapacityAllocator<char>::getCapacity(): " << b.getCapacity() << ENDL;
-    CapacityAllocator<char>::ReadEnumerator enub = b.getReadEnumerator();
-    unsigned int countb = 0;
-    while (enub.hasNext()) {
-      enub.next();
-      ++countb;
-    }
-    fout << "Counted number of elements in (b): " << countb << ENDL;
-    b.garbageCollect();
-    fout << "CapacityAllocator<char>::getCapacity(): " << b.getCapacity() << ENDL;
-    fout << ENDL;
 
     ReferenceCountedAllocator<char> rb(1234/*, 256*/);
     fout << "ReferenceCountedAllocator<char>::getSize(): "

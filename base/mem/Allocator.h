@@ -29,7 +29,7 @@ _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
   @short Allocator.
   @ingroup memory
-  @see ReferenceCountedAllocator CapacityAllocator
+  @see ReferenceCountedAllocator
   @version 1.2
 */
 

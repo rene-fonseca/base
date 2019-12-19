@@ -2201,7 +2201,7 @@ inline constexpr long double Math::getZero<long double>(bool negative) noexcept
 }
 
 template<>
-inline constexpr float Math::getInfinity<float>() noexcept
+inline /*constexpr*/ float Math::getInfinity<float>() noexcept
 {
 #if (_COM_AZURE_DEV__BASE__COMPILER == _COM_AZURE_DEV__BASE__COMPILER_MSC)
   return __builtin_huge_valf();
@@ -2211,7 +2211,7 @@ inline constexpr float Math::getInfinity<float>() noexcept
 }
 
 template<>
-inline constexpr double Math::getInfinity<double>() noexcept
+inline /*constexpr*/ double Math::getInfinity<double>() noexcept
 {
 #if (_COM_AZURE_DEV__BASE__COMPILER == _COM_AZURE_DEV__BASE__COMPILER_MSC)
   return __builtin_huge_val();
@@ -2221,7 +2221,7 @@ inline constexpr double Math::getInfinity<double>() noexcept
 }
 
 template<>
-inline constexpr long double Math::getInfinity<long double>() noexcept
+inline /*constexpr*/ long double Math::getInfinity<long double>() noexcept
 {
 #if (_COM_AZURE_DEV__BASE__COMPILER == _COM_AZURE_DEV__BASE__COMPILER_MSC)
   return __builtin_huge_val(); // double same as long double
@@ -2231,7 +2231,7 @@ inline constexpr long double Math::getInfinity<long double>() noexcept
 }
 
 template<>
-inline constexpr float Math::getNaN<float>() noexcept
+inline /*constexpr*/ float Math::getNaN<float>() noexcept
 {
 #if (_COM_AZURE_DEV__BASE__COMPILER == _COM_AZURE_DEV__BASE__COMPILER_MSC)
   return __builtin_nanf("0");
@@ -2241,7 +2241,7 @@ inline constexpr float Math::getNaN<float>() noexcept
 }
 
 template<>
-inline constexpr double Math::getNaN<double>() noexcept
+inline /*constexpr*/ double Math::getNaN<double>() noexcept
 {
 #if (_COM_AZURE_DEV__BASE__COMPILER == _COM_AZURE_DEV__BASE__COMPILER_MSC)
   return __builtin_nan("0");
@@ -2251,7 +2251,7 @@ inline constexpr double Math::getNaN<double>() noexcept
 }
 
 template<>
-inline constexpr long double Math::getNaN<long double>() noexcept
+inline /*constexpr*/ long double Math::getNaN<long double>() noexcept
 {
 #if (_COM_AZURE_DEV__BASE__COMPILER == _COM_AZURE_DEV__BASE__COMPILER_MSC)
   return __builtin_nan("0"); // double same as long double

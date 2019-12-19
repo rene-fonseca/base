@@ -45,7 +45,7 @@ public:
   */
   static float getEpsilon() noexcept;
 
-  static constexpr float getInfinity() noexcept
+  static /*constexpr*/ float getInfinity() noexcept
   {
 #if (_COM_AZURE_DEV__BASE__COMPILER == _COM_AZURE_DEV__BASE__COMPILER_MSC)
     return __builtin_huge_valf();
@@ -55,7 +55,7 @@ public:
   }
 
   /** Returns quiet NaN. Signaling NaN should be avoided due to platform inconsistencies. */
-  static constexpr float getNaN() noexcept
+  static /*constexpr*/ float getNaN() noexcept
   {
 #if (_COM_AZURE_DEV__BASE__COMPILER == _COM_AZURE_DEV__BASE__COMPILER_MSC)
     return __builtin_nanf("0");

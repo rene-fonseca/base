@@ -44,7 +44,7 @@ public:
   */
   static double getEpsilon() noexcept;
 
-  static constexpr double getInfinity() noexcept
+  static /*constexpr*/ double getInfinity() noexcept
   {
 #if (_COM_AZURE_DEV__BASE__COMPILER == _COM_AZURE_DEV__BASE__COMPILER_MSC)
     return __builtin_huge_val();
@@ -54,7 +54,7 @@ public:
   }
 
   /** Returns quiet NaN. Signaling NaN should be avoided due to platform inconsistencies. */
-  static constexpr double getNaN() noexcept
+  static /*constexpr*/ double getNaN() noexcept
   {
 #if (_COM_AZURE_DEV__BASE__COMPILER == _COM_AZURE_DEV__BASE__COMPILER_MSC)
     return __builtin_nan("0");

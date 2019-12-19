@@ -50,9 +50,11 @@ jobs:
     displayName: 'Config'
     inputs:
       script: |
+        mkdir -p emscripten
+        cd emscripten
         source ~/emsdk/emsdk_env.sh
         emcmake cmake ..
-      workingDirectory: $(System.DefaultWorkingDirectory)/build
+      workingDirectory: $(System.DefaultWorkingDirectory)
 #  - task: CMake@1
 #    displayName: 'Config'
 #    inputs:
@@ -62,6 +64,7 @@ jobs:
     displayName: 'Build'
     inputs:
       cmakeArgs: '--build . --config Debug --target install -- -j 4'
+      workingDirectory: $(System.DefaultWorkingDirectory)/emscripten
 
 #   - task: CmdLine@2
 #    displayName: 'Run tests'
@@ -70,7 +73,7 @@ jobs:
 #      script: |
 #        $(System.DefaultWorkingDirectory)/build/testsuite/unittesting --junit $(System.DefaultWorkingDirectory)/build/junit.xml
 #        ctest -T Test
-#      workingDirectory: $(System.DefaultWorkingDirectory)/build
+#      workingDirectory: $(System.DefaultWorkingDirectory)/emscripten
 
 #  - task: PublishTestResults@2
 #    inputs:

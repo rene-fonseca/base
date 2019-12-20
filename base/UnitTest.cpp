@@ -271,16 +271,16 @@ Reference<ObjectModel::Object> UnitTest::Run::getReport() const
 
   for (auto result : results) {
     auto item = o.createObject();
-    item->setValue(o.createString("what"), o.createString(result.what));
+    item->setValue("what", result.what);
     switch (result.event) {
     case FAILED:
-      item->setValue(o.createString("event"), o.createString("failed"));
+      item->setValue("event", "failed");
       break;
     case PASSED:
-      item->setValue(o.createString("event"), o.createString("passed"));
+      item->setValue("event", "passed");
       break;
     case PRINT:
-      item->setValue(o.createString("event"), o.createString("print"));
+      item->setValue("event", "print");
       break;
     }
     a->append(item);
@@ -429,9 +429,9 @@ Reference<UnitTest::Run> UnitTest::runImpl()
     // TAG: add heres
     ObjectModel o;
     auto report = r->getReport();
-    report->setValue(o.createString("test"), o.createString(getName()));
-    report->setValue(o.createString("description"), o.createString(getDescription()));
-    report->setValue(o.createString("source"), o.createString(getSource()));
+    report->setValue("test", getName());
+    report->setValue("description", getDescription());
+    report->setValue("source", getSource());
     
     const auto delta = processTimes2 - processTimes;
     const double time = delta.getTotal()/1000.0;

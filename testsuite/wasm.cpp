@@ -18,6 +18,7 @@
 #include <base/string/Parser.h>
 #include <base/LongInteger.h>
 #include <base/objectmodel/JSON.h>
+#include <base/Timer.h>
 
 using namespace com::azure::dev::base;
 

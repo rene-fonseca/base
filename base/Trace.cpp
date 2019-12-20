@@ -45,11 +45,6 @@ void Trace::message(const char* message) noexcept
     throw NullPointer(Type::getType<Trace>());
   }
   
-  static bool useBreakpoint = true;
-  if (useBreakpoint) {
-    Debug::breakpoint();
-  }
-  
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   ::OutputDebugString(ToWCharString(message));
 #elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__CYGWIN) // special case

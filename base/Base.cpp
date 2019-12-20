@@ -46,6 +46,22 @@ namespace {
   }
 }
 
+namespace {
+
+  bool writeAssertsToErrorStream = true;
+  bool writeStackTraceForAsserts = true;
+}
+
+void Assert::setWriteAssertsToErrorStream(bool useErrorStream) noexcept
+{
+  writeAssertsToErrorStream = useErrorStream;
+}
+
+void Assert::setWriteStackTraceForAsserts(bool writeStackTrace) noexcept
+{
+  writeStackTraceForAsserts = writeStackTrace;
+}
+
 bool Assert::handle(const char* message)
 {
   // do not use high level features for string conversion to avoid recursive asserts
@@ -82,25 +98,20 @@ bool Assert::handle(const char* message)
   
   Trace::message(buffer);
 
-  static bool useStackTrace = true; // TAG: look up application option
-  if (useStackTrace) {
-    StackFrame::dump();
-  }
-
-  static bool useBreakpoint = true; // TAG: look up application option
-  if (useBreakpoint) {
-    Debug::breakpoint();
-  }
-
-  static bool writeToStdout = false; // TAG: look up application option
-  if (writeToStdout && Runtime::isGlobalStateInGoodCondition()) {
+  if (writeAssertsToErrorStream && Runtime::isGlobalStateInGoodCondition()) {
     // TAG: we should suppress recursive assert
+    auto& ferr = StackFrame::getErrorStream();
     try {
-      fout << buffer << ENDL;
+      ferr << buffer << ENDL;
     } catch (...) { // ignore
     }
   }
 
+  if (writeStackTraceForAsserts) {
+    StackFrame::dump();
+  }
+
+  Debug::breakpoint();
   return false;
 }
 

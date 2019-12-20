@@ -72,6 +72,12 @@ namespace base {
   class _COM_AZURE_DEV__BASE__API Assert {
   public:
 
+    /** Print assert to error stream. */
+    static void setWriteAssertsToErrorStream(bool useErrorStream) noexcept;
+    
+    /** Print stack trace on assert. */
+    static void setWriteStackTraceForAsserts(bool writeStackTrace) noexcept;
+
     /** Handle assertion. */
     static bool handle(const char* message);
 

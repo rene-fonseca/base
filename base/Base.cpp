@@ -266,6 +266,8 @@ bool Debug::isDebuggerAttached() noexcept
     return false;
   }
   return ((info.kp_proc.p_flag & P_TRACED) != 0);
+#else
+  return false;
 #endif
 }
 

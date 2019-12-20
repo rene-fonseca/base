@@ -575,8 +575,8 @@ _COM_AZURE_DEV__BASE__PACKED__BEGIN
     inline int getExponent() const noexcept
     {
       BASSERT(isOrdinary());
-      BASSERT((value.exponent - value.BIAS) <= value.MAXIMUM_EXPONENT);
-      BASSERT((value.exponent - value.BIAS) >= value.MINIMUM_EXPONENT);
+      BASSERT(static_cast<int>(value.exponent - value.BIAS) <= value.MAXIMUM_EXPONENT);
+      BASSERT(static_cast<int>(value.exponent - value.BIAS) >= value.MINIMUM_EXPONENT);
       return value.exponent - value.BIAS;
     }
 
@@ -779,8 +779,8 @@ _COM_AZURE_DEV__BASE__PACKED__BEGIN
     inline int getExponent() const noexcept
     {
       BASSERT(isOrdinary());
-      BASSERT((value.exponent - value.BIAS) <= value.MAXIMUM_EXPONENT);
-      BASSERT((value.exponent - value.BIAS) >= value.MINIMUM_EXPONENT);
+      BASSERT(static_cast<int>(value.exponent - value.BIAS) <= value.MAXIMUM_EXPONENT);
+      BASSERT(static_cast<int>(value.exponent - value.BIAS) >= value.MINIMUM_EXPONENT);
       return value.exponent - value.BIAS;
     }
 
@@ -1023,8 +1023,8 @@ _COM_AZURE_DEV__BASE__PACKED__BEGIN
     inline int getExponent() const noexcept
     {
       BASSERT(isOrdinary());
-      BASSERT((value.exponent - value.BIAS) <= value.MAXIMUM_EXPONENT);
-      BASSERT((value.exponent - value.BIAS) >= value.MINIMUM_EXPONENT);
+      BASSERT(static_cast<int>(value.exponent - value.BIAS) <= value.MAXIMUM_EXPONENT);
+      BASSERT(static_cast<int>(value.exponent - value.BIAS) >= value.MINIMUM_EXPONENT);
       return value.exponent - value.BIAS;
     }
 
@@ -1267,8 +1267,8 @@ _COM_AZURE_DEV__BASE__PACKED__BEGIN
     inline int getExponent() const noexcept
     {
       BASSERT(isOrdinary());
-      BASSERT((value.exponent - value.BIAS) <= value.MAXIMUM_EXPONENT);
-      BASSERT((value.exponent - value.BIAS) >= value.MINIMUM_EXPONENT);
+      BASSERT(static_cast<int>(value.exponent - value.BIAS) <= value.MAXIMUM_EXPONENT);
+      BASSERT(static_cast<int>(value.exponent - value.BIAS) >= value.MINIMUM_EXPONENT);
       return value.exponent - value.BIAS;
     }
 
@@ -1490,8 +1490,8 @@ _COM_AZURE_DEV__BASE__PACKED__BEGIN
     inline int getExponent() const noexcept
     {
       BASSERT(isOrdinary());
-      BASSERT((value.exponent - value.BIAS) <= value.MAXIMUM_EXPONENT);
-      BASSERT((value.exponent - value.BIAS) >= value.MINIMUM_EXPONENT);
+      BASSERT(static_cast<int>(value.exponent - value.BIAS) <= value.MAXIMUM_EXPONENT);
+      BASSERT(static_cast<int>(value.exponent - value.BIAS) >= value.MINIMUM_EXPONENT);
       return value.exponent - value.BIAS;
     }
 
@@ -1700,8 +1700,8 @@ _COM_AZURE_DEV__BASE__PACKED__BEGIN
     inline int getExponent() const noexcept
     {
       BASSERT(isOrdinary());
-      BASSERT((value.exponent - value.BIAS) <= value.MAXIMUM_EXPONENT);
-      BASSERT((value.exponent - value.BIAS) >= value.MINIMUM_EXPONENT);
+      BASSERT(static_cast<int>(value.exponent - value.BIAS) <= value.MAXIMUM_EXPONENT);
+      BASSERT(static_cast<int>(value.exponent - value.BIAS) >= value.MINIMUM_EXPONENT);
       return value.exponent - value.BIAS;
     }
 

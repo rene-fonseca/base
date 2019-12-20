@@ -19,7 +19,7 @@ jobs:
     continueOnError: true
     inputs:
       script: |
-        $(System.DefaultWorkingDirectory)/build/testsuite/unittesting --junit $(System.DefaultWorkingDirectory)/build/junit.xml
+        ./testsuite/unittesting --color --junit junit.xml
         ctest -T Test
       workingDirectory: $(System.DefaultWorkingDirectory)/build
 

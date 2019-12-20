@@ -198,7 +198,8 @@ public:
   public:
     
     inline Manipulator(Method _method, unsigned int _value) noexcept
-      : method(_method), value(_value) {
+      : method(_method), value(_value)
+    {
     }
     
     inline FormatOutputStream& operator()(FormatOutputStream& stream) const
@@ -218,10 +219,12 @@ public:
   public:
     
     inline StringManipulator(Method _method, const String& _value) noexcept
-      : method(_method), value(_value) {
+      : method(_method), value(_value)
+    {
     }
     
-    inline FormatOutputStream& operator()(FormatOutputStream& stream) const {
+    inline FormatOutputStream& operator()(FormatOutputStream& stream) const
+    {
       return (stream.*method)(value);
     }
   };
@@ -232,7 +235,9 @@ public:
     Context& context;
   public:
     
-    inline GetContext(Context& _context) noexcept : context(_context) {
+    inline GetContext(Context& _context) noexcept
+      : context(_context)
+    {
     }
     
     inline FormatOutputStream& operator()(FormatOutputStream& stream) const noexcept
@@ -271,7 +276,9 @@ public:
       int y = 0;
     public:
 
-      Composite(int _x, int _y) noexcept : x(_x), y(_y) {
+      Composite(int _x, int _y) noexcept
+        : x(_x), y(_y)
+      {
       }
 
       friend FormatOutputStream& operator<<(FormatOutputStream& stream, const Composite& value);
@@ -328,7 +335,8 @@ public:
   public:
     
     inline SourceCodeLocation(const Literal& _location) noexcept
-      : count(allocateCount()), location(_location) {
+      : count(allocateCount()), location(_location)
+    {
     }
     
     inline const Literal& getLocation() const noexcept

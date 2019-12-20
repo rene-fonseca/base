@@ -10,7 +10,7 @@ jobs:
   - task: CMake@1
     displayName: 'Config'
     inputs:
-      cmakeArgs: '..'
+      cmakeArgs: '.. -DCOLOR=1'
 
   - task: CMake@1
     displayName: 'Build'
@@ -22,7 +22,7 @@ jobs:
     continueOnError: true
     inputs:
       script: |
-        ./testsuite/unittesting --junit junit.xml
+        ./testsuite/unittesting --color --junit junit.xml
         ctest -T Test
       workingDirectory: $(System.DefaultWorkingDirectory)/build
 
@@ -56,7 +56,7 @@ jobs:
         mkdir -p emscripten
         cd emscripten
         source ~/emsdk/emsdk_env.sh
-        emcmake cmake ..
+        emcmake cmake .. -DCOLOR=1
       workingDirectory: $(System.DefaultWorkingDirectory)
 #  - task: CMake@1
 #    displayName: 'Config'
@@ -75,7 +75,7 @@ jobs:
     inputs:
       script: |
         source ~/emsdk/emsdk_env.sh
-        node --experimental-wasm-threads --experimental-wasm-bulk-memory testsuite/unittesting.js --junit junit.xml
+        node --experimental-wasm-threads --experimental-wasm-bulk-memory testsuite/unittesting.js --color --junit junit.xml
         ctest -T Test
       workingDirectory: $(System.DefaultWorkingDirectory)/emscripten
 

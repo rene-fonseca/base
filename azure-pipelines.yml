@@ -12,8 +12,8 @@ jobs:
   - task: CMake@1
     displayName: 'Config'
     inputs:
-      cmakeArgs: '..'
-
+      cmakeArgs: '.. -DCOLOR=1'
+  
   - task: CMake@1
     displayName: 'Build'
     inputs:
@@ -25,7 +25,7 @@ jobs:
     inputs:
       script: |
         set PATH=%PATH%;$(System.DefaultWorkingDirectory)/build/Debug
-        ./testsuite/Debug/unittesting --junit junit.xml
+        ./testsuite/Debug/unittesting --color --junit junit.xml
         ctest -T Test -C Debug
       workingDirectory: $(System.DefaultWorkingDirectory)/build
 
@@ -54,8 +54,8 @@ jobs:
   - task: CMake@1
     displayName: 'Config'
     inputs:
-      cmakeArgs: '..'
-
+      cmakeArgs: '.. -DCOLOR=1'
+  
   - task: CMake@1
     displayName: 'Build'
     inputs:
@@ -66,7 +66,7 @@ jobs:
     continueOnError: true
     inputs:
       script: |
-        ./testsuite/unittesting --junit junit.xml
+        ./testsuite/unittesting --color --junit junit.xml
         ctest -T Test
       workingDirectory: $(System.DefaultWorkingDirectory)/build
 
@@ -95,8 +95,8 @@ jobs:
   - task: CMake@1
     displayName: 'Config'
     inputs:
-      cmakeArgs: '..'
-
+      cmakeArgs: '.. -DCOLOR=1'
+  
   - task: CMake@1
     displayName: 'Build'
     inputs:
@@ -107,7 +107,7 @@ jobs:
     continueOnError: true
     inputs:
       script: |
-        ./testsuite/unittesting --junit junit.xml
+        ./testsuite/unittesting --color --junit junit.xml
         ctest -T Test
       workingDirectory: $(System.DefaultWorkingDirectory)/build
 
@@ -136,7 +136,7 @@ jobs:
   - task: CMake@1
     displayName: 'Config'
     inputs:
-      cmakeArgs: '..'
+      cmakeArgs: '.. -DCOLOR=1'
 
   - task: CMake@1
     displayName: 'Build'
@@ -148,7 +148,7 @@ jobs:
     continueOnError: true
     inputs:
       script: |
-        ./testsuite/unittesting --junit junit.xml
+        ./testsuite/unittesting --color --junit junit.xml
         ctest -T Test
       workingDirectory: $(System.DefaultWorkingDirectory)/build
 

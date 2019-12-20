@@ -139,15 +139,15 @@ namespace com {
 
 /** Assert. */
 #define _COM_AZURE_DEV__BASE__ASSERT(expression) \
-  {if (!(expression)) {Assert::handle("Assertion for expression (" #expression ") failed at " _COM_AZURE_DEV__BASE__SOURCE_FILE ":" _COM_AZURE_DEV__BASE__INDIRECT_STRINGIFY(__LINE__));}}
+  {if (!(expression)) {Assert::handle(#expression, _COM_AZURE_DEV__BASE__SOURCE_FILE, _COM_AZURE_DEV__BASE__INDIRECT_STRINGIFY(__LINE__));}}
 
 /** Assert within an expression. */
 #define _COM_AZURE_DEV__BASE__INLINE_ASSERT(expression) \
-  ((!(expression) ? Assert::handle("Assertion for expression (" #expression ") failed at " _COM_AZURE_DEV__BASE__SOURCE_FILE ":" _COM_AZURE_DEV__BASE__INDIRECT_STRINGIFY(__LINE__)) : false), (expression))
+  ((!(expression) ? Assert::handle(#expression, _COM_AZURE_DEV__BASE__SOURCE_FILE, _COM_AZURE_DEV__BASE__INDIRECT_STRINGIFY(__LINE__)) : false), (expression))
 
 /** Assert during initialization. */
 #define _COM_AZURE_DEV__BASE__ASSERTION(expression) \
-  namespace {Assertion _COM_AZURE_DEV__BASE__MAKE_IDENTIFIER(assertion)(expression, "Assert for expression (" #expression ") failed at " _COM_AZURE_DEV__BASE__SOURCE_FILE ":" _COM_AZURE_DEV__BASE__INDIRECT_STRINGIFY(__LINE__));}
+  namespace {Assertion _COM_AZURE_DEV__BASE__MAKE_IDENTIFIER(assertion)(expression, #expression, _COM_AZURE_DEV__BASE__SOURCE_FILE, _COM_AZURE_DEV__BASE__INDIRECT_STRINGIFY(__LINE__));}
 
 // allow shorthand macros to be overridden
 #if defined(_COM_AZURE_DEV__BASE__ANY_DEBUG)

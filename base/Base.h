@@ -248,7 +248,14 @@ public:
   inline Assertion(bool assertion, const char* message) noexcept
   {
     if (!assertion) {
-      Trace::message(message);
+      Assert::handle(message);
+    }
+  }
+
+  inline Assertion(bool assertion, const char* expression, const char* filename, const char* line) noexcept
+  {
+    if (!assertion) {
+      Assert::handle(expression, filename, line);
     }
   }
 };

@@ -14,7 +14,9 @@
 #include <base/Base.h>
 #include <base/concurrency/AtomicCounter.h>
 #include <base/string/FormatOutputStream.h>
+#include <base/string/ANSIEscapeSequence.h>
 #include <base/StackFrame.h>
+#include <base/io/FileDescriptor.h>
 
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
 #  include <windows.h>
@@ -43,6 +45,19 @@ namespace {
       *dest++ = *src++;
     }
     return dest;
+  }
+
+  char* writeColor(char* dest, const char* end, ANSIEscapeSequence::Color color) noexcept
+  {
+    char buffer[sizeof("\033[3xm") + 1];
+    char* d = buffer;
+    *d++ = '\033';
+    *d++ = '[';
+    *d++ = '3';
+    *d++ = color + '0';
+    *d++ = 'm';
+    *d = 0;
+    return concat(dest, end, buffer);
   }
 }
 
@@ -123,17 +138,30 @@ bool Assert::handle(const char* expression, const char* filename, const char* li
   }
   
   char buffer[1024];
+  const bool useANSI = FileDescriptor::getStandardError().isANSITerminal();
   
   char* dest = buffer;
   const char* end = buffer + (sizeof(buffer) - 3 - 1); // keep room for terminator and ellipsis
   dest = concat(dest, end, "Assert for expression (");
+  if (useANSI) {
+    dest = writeColor(dest, end, ANSIEscapeSequence::RED);
+  }
   dest = concat(dest, end, expression);
+  if (useANSI) {
+    dest = concat(dest, end, "\033[0m"); // normal code
+  }
   dest = concat(dest, end, ")");
   if (filename && line) {
     dest = concat(dest, end, " failed at ");
+    if (useANSI) {
+      dest = writeColor(dest, end, ANSIEscapeSequence::YELLOW);
+    }
     dest = concat(dest, end, filename);
     dest = concat(dest, end, ":");
     dest = concat(dest, end, line);
+    if (useANSI) {
+      dest = concat(dest, end, "\033[0m"); // normal code
+    }
   }
   if (dest == end) { // indicate missing info with ellipsis
     dest = concat(dest, end + 3, "...");

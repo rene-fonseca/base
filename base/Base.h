@@ -350,6 +350,9 @@ public:
   /** Disables/enables breakpoint. */
   static void setUseBreakpoint(bool useBreakpoint) noexcept;
 
+  /** Returns true if debugger is attached. */
+  static bool isDebuggerAttached() noexcept;
+
   /** Breakpoint. */
   static void breakpoint() noexcept;
 

@@ -31,6 +31,10 @@
 #  else
 #    include <sys/ptrace.h>
 #  endif
+#  if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__MACOS)
+#    include <sys/sysctl.h>
+#    include <unistd.h>
+#  endif
 #endif // flavor
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
@@ -236,19 +240,47 @@ void Debug::setUseBreakpoint(bool _useBreakpoint) noexcept
   useBreakpoint = _useBreakpoint;
 }
 
+bool Debug::isDebuggerAttached() noexcept
+{
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
+  return IsDebuggerPresent();
+#elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__GNULINUX)
+  return ptrace(PTRACE_TRACEME, 0, NULL, 0) == -1; // detect debugger - need a better way
+#elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__MACOS)
+  // Initialize the flags so that, if sysctl fails for some bizarre
+  // reason, we get a predictable result.
+  struct kinfo_proc info;
+  info.kp_proc.p_flag = 0;
+
+  // Initialize mib, which tells sysctl the info we want, in this case
+  // we're looking for information about a specific process ID.
+  int mib[4] = {0};
+  mib[0] = CTL_KERN;
+  mib[1] = KERN_PROC;
+  mib[2] = KERN_PROC_PID;
+  mib[3] = getpid();
+
+  size_t size = size = sizeof(info);
+  int status = sysctl(mib, sizeof(mib) / sizeof(*mib), &info, &size, NULL, 0);
+  if (status != 0) {
+    return false;
+  }
+  return ((info.kp_proc.p_flag & P_TRACED) != 0);
+#endif
+}
+
 void Debug::breakpoint() noexcept
 {
   if (useBreakpoint) {
-#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
-    if (IsDebuggerPresent()) {
-      DebugBreak();
+    if (!isDebuggerAttached()) {
+      return;
     }
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
+    DebugBreak();
 #elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__WASI)
 #else
 #if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__GNULINUX)
-    if (ptrace(PTRACE_TRACEME, 0, NULL, 0) == -1) { // detect debugger - need a better way
-      std::raise(SIGINT);
-    }
+    std::raise(SIGINT);
 #else
     std::raise(SIGINT);
 #endif

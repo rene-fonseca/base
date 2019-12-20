@@ -30,7 +30,7 @@ Make sure GIT, cmake, make, and compiler (e.g. g++) are installed.
 
 Debug build
 -----------
-git clone https://renefonseca@dev.azure.com/renefonseca/base/_git/base
+git clone https://dev.azure.com/renefonseca/base/_git/base
 cd base
 cmake . -DCMAKE_BUILD_TYPE=Debug
 make
@@ -39,7 +39,7 @@ ctest . -C Debug
 
 Release build
 -------------
-git clone https://renefonseca@dev.azure.com/renefonseca/base/_git/base
+git clone https://dev.azure.com/renefonseca/base/_git/base
 cd base
 cmake . -DCMAKE_BUILD_TYPE=Release
 make

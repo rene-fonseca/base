@@ -266,7 +266,7 @@ if (MSVC)
 endif ()
 
 if (NOT USE_SHARED)
-  add_library(base STATIC ${CMAKE_SOURCE_DIR}/base/dummy.cpp)
+  add_library(base STATIC ${CMAKE_SOURCE_DIR}/base/platforms/dummy.cpp)
 else ()
   add_library(base SHARED ${base_SRC} ${base_ADDITIONAL} ${CMAKE_CURRENT_BINARY_DIR}/generated/base/config.h)
   target_compile_definitions(base PRIVATE _COM_AZURE_DEV__BASE__SHARED_LIBRARY_BUILD)

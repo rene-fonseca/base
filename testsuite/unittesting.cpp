@@ -201,7 +201,7 @@ public:
       auto& manager = UnitTestManager::getManager();
       manager.loadTests();
       auto tests = manager.getTests();
-      std::sort(tests.begin(), tests.end(), UnitTestManager::SortTests());
+      tests.sort(UnitTestManager::SortTests());
 
       for (auto test : tests) {
         const String id = test->getId();

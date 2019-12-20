@@ -732,7 +732,7 @@ bool UnitTestManager::runTests(const String& pattern, bool runDevel)
   if (randomize) {
     tests.shuffle();
   } else {
-    std::sort(tests.begin(), tests.end(), SortTests());
+    tests.sort(SortTests());
     
     // TAG: handle dependencies - reorder - handle cyclic dependencies
   }

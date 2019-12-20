@@ -139,7 +139,7 @@ jobs:
   - task: CMake@1
     displayName: 'Config'
     inputs:
-      cmakeArgs: '.. -A ARM32 -DCOLOR=1'
+      cmakeArgs: '.. -A ARM -DCOLOR=1'
   
   - task: CMake@1
     displayName: 'Build'

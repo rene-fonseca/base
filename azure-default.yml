@@ -66,23 +66,23 @@ jobs:
       cmakeArgs: '--build . --config Debug --target install -- -j 4'
       workingDirectory: $(System.DefaultWorkingDirectory)/emscripten
 
-#   - task: CmdLine@2
-#    displayName: 'Run tests'
-#    continueOnError: true
-#    inputs:
-#      script: |
-#        $(System.DefaultWorkingDirectory)/build/testsuite/unittesting --junit $(System.DefaultWorkingDirectory)/build/junit.xml
-#        ctest -T Test
-#      workingDirectory: $(System.DefaultWorkingDirectory)/emscripten
+   - task: CmdLine@2
+    displayName: 'Run tests'
+    continueOnError: true
+    inputs:
+      script: |
+        $(System.DefaultWorkingDirectory)/build/testsuite/unittesting --junit $(System.DefaultWorkingDirectory)/build/junit.xml
+        ctest -T Test
+      workingDirectory: $(System.DefaultWorkingDirectory)/emscripten
 
-#  - task: PublishTestResults@2
-#    inputs:
-#      testResultsFormat: 'JUnit'
-#      testResultsFiles: '**/junit.xml'
-#      testRunTitle: 'Unittest results'
+  - task: PublishTestResults@2
+    inputs:
+      testResultsFormat: 'JUnit'
+      testResultsFiles: '**/junit.xml'
+      testRunTitle: 'Unittest results'
 
-#  - task: PublishTestResults@2
-#    inputs:
-#      testResultsFormat: 'cTest'
-#      testResultsFiles: '**/Test.xml'
-#      testRunTitle: 'Test results for CTest'
+  - task: PublishTestResults@2
+    inputs:
+      testResultsFormat: 'cTest'
+      testResultsFiles: '**/Test.xml'
+      testRunTitle: 'Test results for CTest'

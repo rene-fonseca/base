@@ -19,6 +19,7 @@
 #include <base/Guid.h>
 #include <base/io/FileDescriptor.h>
 #include <base/filesystem/FolderInfo.h>
+#include <base/io/File.h>
 
 using namespace com::azure::dev::base;
 

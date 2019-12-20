@@ -25,7 +25,7 @@ jobs:
     inputs:
       script: |
         set PATH=%PATH%;$(System.DefaultWorkingDirectory)/build/Debug
-        ./testsuite/Debug/unittesting --color --junit junit.xml
+        ./testsuite/Debug/unittesting --junit junit.xml
         ctest -T Test -C Debug
       workingDirectory: $(System.DefaultWorkingDirectory)/build
 
@@ -66,7 +66,7 @@ jobs:
     continueOnError: true
     inputs:
       script: |
-        ./testsuite/unittesting --color --junit junit.xml
+        ./testsuite/unittesting --junit junit.xml
         ctest -T Test
       workingDirectory: $(System.DefaultWorkingDirectory)/build
 
@@ -107,7 +107,7 @@ jobs:
     continueOnError: true
     inputs:
       script: |
-        ./testsuite/unittesting --color --junit junit.xml
+        ./testsuite/unittesting --junit junit.xml
         ctest -T Test
       workingDirectory: $(System.DefaultWorkingDirectory)/build
 
@@ -148,7 +148,7 @@ jobs:
     continueOnError: true
     inputs:
       script: |
-        ./testsuite/unittesting --color --junit junit.xml
+        ./testsuite/unittesting --junit junit.xml
         ctest -T Test
       workingDirectory: $(System.DefaultWorkingDirectory)/build
 

@@ -75,7 +75,7 @@ jobs:
     inputs:
       script: |
         source ~/emsdk/emsdk_env.sh
-        node --experimental-wasm-threads --experimental-wasm-bulk-memory testsuite/unittesting.js --color --junit junit.xml
+        node --experimental-wasm-threads --experimental-wasm-bulk-memory testsuite/unittesting.js --junit junit.xml
         ctest -T Test
       workingDirectory: $(System.DefaultWorkingDirectory)/emscripten
 

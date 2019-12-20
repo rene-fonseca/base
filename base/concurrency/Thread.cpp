@@ -20,6 +20,12 @@
 #include <base/Profiler.h>
 #include <base/UnitTest.h>
 
+#if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__EMCC)
+#  if !defined(__EMSCRIPTEN_PTHREADS__)
+#    error USE_PTHREADS is not enabled for Emscripten
+#  endif
+#endif
+
 #if defined(_COM_AZURE_DEV__BASE__EXCEPTION_V3MV)
 #  include <base/platforms/compiler/v3mv/exception.h> // includes private features
 #endif
@@ -155,6 +161,9 @@ void Thread::setThreadName(const char* name)
 
 void* Thread::entry(Thread* thread) noexcept
 {
+  if (!thread) {
+    return nullptr;
+  }
 #if defined(_COM_AZURE_DEV__BASE__EXCEPTION_V3MV) && !defined(_COM_AZURE_DEV__BASE__EXCEPTION_V3MV_TRANSPARENT)
   const abi::__cxa_eh_globals* abi::__cxa_get_globals(); // this allows us to use __cxa_get_globals_fast
 #endif
@@ -164,12 +173,18 @@ void* Thread::entry(Thread* thread) noexcept
     try {
       // Thread::setThreadName("Unnamed");
       Profiler::WaitTask profile("Thread::entry()"); // TAG: include name of thread
+      if (!(thread->getRunnable())) {
+        return nullptr;
+      }
       thread->getRunnable()->run();
       thread->state = TERMINATED;
-      Thread* parent = thread->getParent();
-      bassert(parent, ThreadException(Type::getType<Thread>()));
-      parent->onChildTermination(thread); // signal parent
-      // TAG: problem if parent is destroyed before child
+      if (Thread* parent = thread->getParent()) { // TAG: parent missing for global thread
+        if (!parent) {
+          throw ThreadException(Type::getType<Thread>());
+        }
+        parent->onChildTermination(thread); // signal parent
+        // TAG: problem if parent is destroyed before child
+      }
     } catch (Exception& e) {
       Application::getApplication()->exceptionHandler(e);
     } catch (...) {
@@ -182,7 +197,7 @@ void* Thread::entry(Thread* thread) noexcept
   } catch (...) {
     thread->state = INTERNAL; // hopefully we will never end up here
   }
-  return 0;
+  return nullptr;
 }
 
 void Thread::exit() noexcept
@@ -862,8 +877,7 @@ void Thread::start()
   identifier = getAsPointer(id);
   ::CloseHandle(handle); // detach
   // TAG: does this always work or must this be postponed until entry function
-#elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__WASI) || \
-      (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__EMCC)
+#elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__WASI)
 #else // pthread
   pthread_attr_t attributes;
   pthread_attr_init(&attributes);

@@ -20,7 +20,6 @@
 #include <base/SingletonException.h>
 #include <base/concurrency/MutualExclusion.h>
 #include <base/Version.h>
-#include <base/Profiler.h>
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
@@ -115,11 +114,15 @@ public:
   /** Returns the application lock. Do NOT abuse. */
   static MutualExclusion& getLock() noexcept;
   
+private:
+
+  static int start(Application* application);
+public:
+
+  /** Application stub. */
   template<class APPLICATION>
   static inline int stub(int numberOfArguments, const char* arguments[], const char* environment[]) noexcept
   {
-    Profiler::Task profile("Application::main()");
-
     try {
       // ensure required linker symbols are available
       _COM_AZURE_DEV__BASE__CHECK_SHARED_STATIC(); // ensure linking against correct shared vs static library
@@ -132,14 +135,7 @@ public:
       BASSERT(!Runtime::isGlobalInitialization() || !"Global initialization not allowed for Application.");
 
       APPLICATION application(numberOfArguments, arguments, environment);
-      try {
-        application.main();
-      } catch (Exception& e) {
-        return Application::getApplication()->exceptionHandler(e);
-      } catch (...) {
-        return Application::getApplication()->exceptionHandler();
-      }
-      return Application::getApplication()->getExitCode();
+      return start(&application);
     } catch (...) {
       return Application::EXIT_CODE_INITIALIZATION;
     }
@@ -254,6 +250,11 @@ public:
     default (i.e. does not return).
   */
   virtual void onTermination() noexcept;
+
+  /**
+    Entry function for application.
+  */
+  virtual void main() = 0;
 
   /**
     Destroys the application object.

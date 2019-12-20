@@ -20,7 +20,11 @@
 #include <base/UnexpectedFailure.h>
 #include <base/string/WideString.h>
 #include <base/io/FileDescriptor.h>
+#include <base/Profiler.h>
 #include <stdlib.h>
+#if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__EMCC)
+#  include <emscripten.h>
+#endif
 
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
 #  include <windows.h>
@@ -955,6 +959,61 @@ Application::~Application() noexcept {
   std::set_terminate(internal::terminationExceptionHandler);
   std::set_unexpected(internal::unexpectedExceptionHandler);
   application = 0;
+}
+
+#if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__EMCC)
+namespace {
+
+  class ForkMainThread : public Thread {
+  public:
+
+    void run()
+    {
+      Profiler::Task profile("Application::main()");
+      Application::getApplication()->main();
+      // emscripten_cancel_main_loop(); // skipped on exception
+      emscripten_force_exit(0);
+    }
+  };
+
+  ForkMainThread forkMainThread;
+
+  void mainHandler()
+  {
+    if (forkMainThread.getState() > Thread::ALIVE) {
+      emscripten_cancel_main_loop();
+      // emscripten_set_main_loop(mainHandler, 0, 0);
+      // emscripten_cancel_main_loop();
+      emscripten_force_exit(0);
+      // exit(0);
+    }
+  }
+}
+#endif
+
+int Application::start(Application* application)
+{
+  if (!application) {
+    return Application::EXIT_CODE_INITIALIZATION;
+  }
+  try {
+#if (_COM_AZURE_DEV__BASE__OS != _COM_AZURE_DEV__BASE__EMCC)
+    Profiler::Task profile("Application::main()");
+    application->main();
+#else
+    // main thread must NOT be blocked
+    forkMainThread.start(); // do NOT wait for thread to complete
+    // https://emscripten.org/docs/porting/asyncify.html
+    emscripten_set_main_loop(mainHandler, 5, 1);
+    // emscripten_set_main_loop(mainHandler, 0, 0);
+    // TAG: need proper way to return so we clean up state
+#endif
+    return application->getExitCode();
+  } catch (Exception& e) {
+    return application->exceptionHandler(e);
+  } catch (...) {
+    return application->exceptionHandler();
+  }
 }
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

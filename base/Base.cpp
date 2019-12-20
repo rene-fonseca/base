@@ -132,9 +132,18 @@ bool Assert::handle(const char* expression, const char* filename, const char* li
   return handle(buffer);
 }
 
+namespace {
+
+  bool useBreakpoint = true;
+}
+
+void Debug::setUseBreakpoint(bool _useBreakpoint) noexcept
+{
+  useBreakpoint = _useBreakpoint;
+}
+
 void Debug::breakpoint() noexcept
 {
-  static bool useBreakpoint = true;
   if (useBreakpoint) {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
     if (IsDebuggerPresent()) {

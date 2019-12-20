@@ -339,7 +339,10 @@ public:
 /** Debug helper functions. */
 class _COM_AZURE_DEV__BASE__API Debug {
 public:
-  
+
+  /** Disables/enables breakpoint. */
+  static void setUseBreakpoint(bool useBreakpoint) noexcept;
+
   /** Breakpoint. */
   static void breakpoint() noexcept;
 

@@ -267,6 +267,7 @@ public:
       }
     } else if (command == COMMAND_RUN) {
       StackFrame::setUseStandardOut(true); // avoid stream sync issues
+      Debug::setUseBreakpoint(false); // make sure we do not call breakpoint // TAG: make option?
 
       auto& manager = UnitTestManager::getManager();
 

@@ -132,6 +132,26 @@ jobs:
       targetPath: 'artifacts'
       path: $(System.DefaultWorkingDirectory)/build/install
 
+- job: windows_arm32
+  pool:
+    vmImage: 'windows-latest'
+  steps:
+  - task: CMake@1
+    displayName: 'Config'
+    inputs:
+      cmakeArgs: '.. -A ARM32 -DCOLOR=1'
+  
+  - task: CMake@1
+    displayName: 'Build'
+    inputs:
+      cmakeArgs: '--build . --config Debug --target install'
+
+  - task: PublishPipelineArtifact@1
+    inputs:
+      artifactName: 'base-windows-arm32'
+      targetPath: 'artifacts'
+      path: $(System.DefaultWorkingDirectory)/build/install
+
 - job: ubuntu18_04
   pool:
     vmImage: 'ubuntu-18.04'

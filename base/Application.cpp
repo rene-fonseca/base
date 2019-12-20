@@ -64,6 +64,7 @@ _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
         tls->stackTrace = StackFrame::getStack(1, 64); // TAG: can we skip stack so we only get the first exception constructor?
         // TAG: only if dumping and if exception isnt silenced
         if (Exception::getDumpExceptions()) {
+          auto& ferr = StackFrame::getErrorStream();
           ferr << "EXCEPTION CONSTRUCTED BY: " << ENDL;
           StackFrame::toStream(
             ferr, tls->stackTrace.getTrace(),
@@ -97,6 +98,7 @@ public:
 #endif
 
       if (!stackTrace.isEmpty()) {
+        auto& ferr = StackFrame::getErrorStream();
         StackFrame::toStream(
           ferr, stackTrace.getTrace(),
           StackFrame::FLAG_COMPACT | StackFrame::FLAG_DEFAULT |
@@ -161,6 +163,8 @@ public:
     } else {
       stream << "Internal error: No exception detected so must be explicit termination by throw; or std::terminate()." << FLUSH;
     }
+
+    auto& ferr = StackFrame::getErrorStream();
     ferr << stream.getString() << ENDL; // TAG: use appropriate error stream
     
     if (auto tls = Thread::getLocalContext()) {
@@ -286,6 +290,7 @@ public:
 
 #if 0 // not useful for Win32
           StackFrame stackTrace = StackFrame::getStack(0);
+          auto& ferr = StackFrame::getErrorStream();
           StackFrame::toStream(
             ferr, stackTrace.getTrace(), stackTrace.getSize(),
             StackFrame::FLAG_DEFAULT |
@@ -852,6 +857,7 @@ Application::Application(
 
 int Application::exceptionHandler(const Exception& e) noexcept
 {
+  auto& ferr = StackFrame::getErrorStream();
   ferr << e << ENDL;
 
   if (auto tls = Thread::getLocalContext()) {
@@ -874,7 +880,8 @@ int Application::exceptionHandler() noexcept
   setExitCode(Application::EXIT_CODE_ERROR);
   // TAG: if UI app - show dialog
   // TAG: show thread info
-  
+  auto& ferr = StackFrame::getErrorStream();
+
   try {
     throw;
   } catch (Exception& e) {

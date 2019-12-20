@@ -266,6 +266,8 @@ public:
         fout << FLUSH;
       }
     } else if (command == COMMAND_RUN) {
+      StackFrame::setUseStandardOut(true); // avoid stream sync issues
+
       auto& manager = UnitTestManager::getManager();
 
       switch (verbosity) {

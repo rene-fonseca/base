@@ -288,6 +288,24 @@ namespace {
       state ^= (state << 27) ^ (state >> 27);
     }
   }
+
+  bool useStandardOut = false;
+}
+
+bool StackFrame::getUseStandardOut() noexcept
+{
+  return useStandardOut;
+}
+
+void StackFrame::setUseStandardOut(bool _useStandardOut) noexcept
+{
+  useStandardOut = _useStandardOut;
+}
+
+// TAG: move to better class
+FormatOutputStream& StackFrame::getErrorStream() noexcept
+{
+  return StackFrame::getUseStandardOut() ? fout : ferr;
 }
 
 unsigned long StackFrame::getHash(const ConstSpan<const void*>& trace) noexcept
@@ -732,7 +750,7 @@ void StackFrame::dump(unsigned int skip, unsigned int levels)
     break;
   }
 
-  toStream(ferr, ConstSpan<const void*>(buffer, count), flags);
+  toStream(*(useStandardOut ? &fout : &ferr), ConstSpan<const void*>(buffer, count), flags);
   ferr << FLUSH;
 }
 

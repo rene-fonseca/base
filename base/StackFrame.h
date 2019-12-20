@@ -27,7 +27,16 @@ private:
   
   Allocator<const void*> frames; // we use void* over MemorySize since debugger can show symbols
 public:
-  
+
+  /** Print stack trace to standard out instead of standard error. */
+  static bool getUseStandardOut() noexcept;
+
+  /** Print stack trace to standard out instead of standard error. */
+  static void setUseStandardOut(bool useStandardOut) noexcept;
+
+  /** Returns the preferred output stream. */
+  static FormatOutputStream& getErrorStream() noexcept;
+
   StackFrame();
 
   StackFrame(const ConstSpan<const void*>& stackTrace);

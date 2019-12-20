@@ -17,6 +17,7 @@
 #include <base/string/ANSIEscapeSequence.h>
 #include <base/StackFrame.h>
 #include <base/io/FileDescriptor.h>
+#include <base/UnitTest.h>
 
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
 #  include <windows.h>
@@ -117,7 +118,7 @@ bool Assert::handle(const char* message)
     // TAG: we should suppress recursive assert
     auto& ferr = StackFrame::getErrorStream();
     try {
-      ferr << buffer << ENDL;
+      ferr << static_cast<const char*>(buffer) << ENDL;
     } catch (...) { // ignore
     }
   }
@@ -136,39 +137,93 @@ bool Assert::handle(const char* expression, const char* filename, const char* li
   if (!expression) {
     expression = "<UNKNOWN>";
   }
-  
+
+  MemorySize count = ++assertCounter;;
+  char digitBuffer[32]; // enough for digits - reverse order
+  char* digit = digitBuffer;
+  if (count == 0) {
+    *digit++ = '0';
+  }
+  while (count != 0) {
+    *digit++ = static_cast<char>((count % 10) + '0');
+    count /= 10;
+  }
+
   char buffer[1024];
-  const bool useANSI = FileDescriptor::getStandardError().isANSITerminal();
   
-  char* dest = buffer;
-  const char* end = buffer + (sizeof(buffer) - 3 - 1); // keep room for terminator and ellipsis
-  dest = concat(dest, end, "Assert for expression (");
-  if (useANSI) {
-    dest = writeColor(dest, end, ANSIEscapeSequence::RED);
-  }
-  dest = concat(dest, end, expression);
-  if (useANSI) {
-    dest = concat(dest, end, "\033[0m"); // normal code
-  }
-  dest = concat(dest, end, ")");
-  if (filename && line) {
-    dest = concat(dest, end, " failed at ");
+  for (int i = 0; i < (writeAssertsToErrorStream ? 2 : 1); ++i) {
+    const bool useANSI = (i > 0) && FileDescriptor::getStandardError().isANSITerminal();
+    char* dest = buffer;
+    const char* end = buffer + (sizeof(buffer) - 3 - 1); // keep room for terminator and ellipsis
     if (useANSI) {
-      dest = writeColor(dest, end, ANSIEscapeSequence::YELLOW);
+      dest = writeColor(dest, end, ANSIEscapeSequence::RED);
     }
-    dest = concat(dest, end, filename);
-    dest = concat(dest, end, ":");
-    dest = concat(dest, end, line);
+    dest = concat(dest, end, "Assert for expression (");
+    if (useANSI) {
+      dest = writeColor(dest, end, ANSIEscapeSequence::BLUE);
+      dest = concat(dest, end, "\033[1m"); // bold code
+    }
+    dest = concat(dest, end, expression);
+    if (useANSI) {
+      dest = writeColor(dest, end, ANSIEscapeSequence::RED);
+      dest = concat(dest, end, "\033[22m"); // unbold code
+    }
+    dest = concat(dest, end, ")");
+    if (filename && line && *line) {
+      filename = UnitTestManager::trimPath(filename);
+      if (*filename) {
+        dest = concat(dest, end, " failed at ");
+        if (useANSI) {
+          dest = writeColor(dest, end, ANSIEscapeSequence::YELLOW);
+          dest = concat(dest, end, "\033[1m"); // bold code
+        }
+        dest = concat(dest, end, filename);
+        dest = concat(dest, end, ":");
+        dest = concat(dest, end, line);
+        if (useANSI) {
+          dest = concat(dest, end, "\033[22m"); // unbold code
+          dest = writeColor(dest, end, ANSIEscapeSequence::RED);
+        }
+      }
+    }
+    
+    dest = concat(dest, end, " [");
+    char* _digit = digit;
+    while ((_digit != digitBuffer) && (dest != end)) {
+      *dest++ = *--_digit;
+    }
+    dest = concat(dest, end, "]");
+
     if (useANSI) {
       dest = concat(dest, end, "\033[0m"); // normal code
     }
-  }
-  if (dest == end) { // indicate missing info with ellipsis
-    dest = concat(dest, end + 3, "...");
-  }
-  *dest++ = '\0'; // always room for terminator
 
-  return handle(buffer);
+    if (dest == end) { // indicate missing info with ellipsis
+      dest = concat(dest, end + 3, "...");
+    }
+    *dest++ = '\0'; // always room for terminator
+
+    if (i == 0) {
+      Trace::message(buffer);
+      continue;
+    }
+    
+    if (writeAssertsToErrorStream && Runtime::isGlobalStateInGoodCondition()) {
+      // TAG: we should suppress recursive assert
+      auto& ferr = StackFrame::getErrorStream();
+      try {
+        ferr << static_cast<const char*>(buffer) << ENDL;
+      } catch (...) { // ignore
+      }
+    }
+    break;
+  }
+
+  if (writeStackTraceForAsserts) {
+    StackFrame::dump();
+  }
+  Debug::breakpoint();
+  return false;
 }
 
 namespace {

@@ -47,6 +47,49 @@ jobs:
       targetPath: 'artifacts'
       path: $(System.DefaultWorkingDirectory)/build/install
 
+- job: windows_arm64
+  pool:
+    vmImage: 'windows-latest'
+  steps:
+  - task: CMake@1
+    displayName: 'Config'
+    inputs:
+      cmakeArgs: '.. -A ARM64 -DCOLOR=1'
+  
+  - task: CMake@1
+    displayName: 'Build'
+    inputs:
+      cmakeArgs: '--build . --config Debug --target install'
+
+# TAG: need arm64 simulator for this to work or arm64 host
+#  - task: CmdLine@2
+#    displayName: 'Run tests'
+#    continueOnError: true
+#    inputs:
+#      script: |
+#        set PATH=%PATH%;$(System.DefaultWorkingDirectory)/build/Debug
+#        testsuite/Debug/unittesting --junit junit.xml
+#        ctest -T Test -C Debug
+#      workingDirectory: $(System.DefaultWorkingDirectory)/build
+
+#  - task: PublishTestResults@2
+#    inputs:
+#      testResultsFormat: 'JUnit'
+#      testResultsFiles: '**/junit.xml'
+#      testRunTitle: 'Unittest results'
+
+#  - task: PublishTestResults@2
+#    inputs:
+#      testResultsFormat: 'cTest'
+#      testResultsFiles: '**/Test.xml'
+#      testRunTitle: 'Test results for CTest'
+
+  - task: PublishPipelineArtifact@1
+    inputs:
+      artifactName: 'base-windows-arm64'
+      targetPath: 'artifacts'
+      path: $(System.DefaultWorkingDirectory)/build/install
+
 - job: ubuntu18_04
   pool:
     vmImage: 'ubuntu-18.04'

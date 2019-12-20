@@ -15,7 +15,6 @@
 #include <base/string/FormatOutputStream.h>
 #include <base/concurrency/Thread.h>
 #include <base/concurrency/ExclusiveSynchronize.h>
-#include <base/string/String.h>
 
 using namespace com::azure::dev::base;
 
@@ -85,7 +84,6 @@ public:
     myContextA.join();
     myContextB.join();
   }
-
 };
 
 APPLICATION_STUB(ThreadApplication);

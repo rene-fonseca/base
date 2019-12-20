@@ -92,7 +92,7 @@ if (("${CMAKE_CXX_COMPILER_ID}" STREQUAL "AppleClang") OR ("${CMAKE_CXX_COMPILER
   endif ()
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Werror") # no warnings allowed
 
-  if ($ENV{CLICOLOR_FORCE} STREQUAL "1")
+  if ("$ENV{CLICOLOR_FORCE}" STREQUAL "1")
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fcolor-diagnostics -fansi-escape-codes") # ansi colors
   endif ()
 elseif ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
@@ -114,7 +114,7 @@ elseif ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-psabi") # parameter passing for argument of changed
   endif ()
 
-  if ($ENV{CLICOLOR_FORCE} STREQUAL "1")
+  if ("$ENV{CLICOLOR_FORCE}" STREQUAL "1")
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fdiagnostics-color") # ansi colors
   endif ()
 endif ()

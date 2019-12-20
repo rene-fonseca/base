@@ -66,7 +66,7 @@ jobs:
       cmakeArgs: '--build . --config Debug --target install -- -j 4'
       workingDirectory: $(System.DefaultWorkingDirectory)/emscripten
 
-   - task: CmdLine@2
+  - task: CmdLine@2
     displayName: 'Run tests'
     continueOnError: true
     inputs:

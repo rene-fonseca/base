@@ -6,6 +6,10 @@ cmake_minimum_required(VERSION 3.1)
 
 project(base)
 
+if (COLOR)
+  set (ENV{CLICOLOR_FORCE} 1)
+endif ()
+
 set(base_VERSION_MAJOR 0)
 set(base_VERSION_MINOR 9)
 set(base_VERSION_MICRO 0)
@@ -80,7 +84,6 @@ else ()
 if (("${CMAKE_CXX_COMPILER_ID}" STREQUAL "AppleClang") OR ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang") OR
     EMSCRIPTEN OR ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "WASI"))
   CHECK_CXX_COMPILER_FLAG(-Wno-shorten-64-to-32 supportsNoShorten64To32)
-
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-unused-variable") # ignore unused variables
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-unused-private-field") # ignore unused field
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-exceptions")
@@ -88,6 +91,10 @@ if (("${CMAKE_CXX_COMPILER_ID}" STREQUAL "AppleClang") OR ("${CMAKE_CXX_COMPILER
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-shorten-64-to-32")
   endif ()
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Werror") # no warnings allowed
+
+  if ($ENV{CLICOLOR_FORCE} STREQUAL "1")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fcolor-diagnostics -fansi-escape-codes") # ansi colors
+  endif ()
 elseif ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
   CHECK_CXX_COMPILER_FLAG(-Wno-terminate supportsNoTerminate)
   CHECK_CXX_COMPILER_FLAG(-Wno-error=terminate supportsNoErrorTerminate)
@@ -105,6 +112,10 @@ elseif ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
 
   if ("${OS_RELEASE_ID}" STREQUAL "raspbian")
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-psabi") # parameter passing for argument of changed
+  endif ()
+
+  if ($ENV{CLICOLOR_FORCE} STREQUAL "1")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fdiagnostics-color") # ansi colors
   endif ()
 endif ()
 

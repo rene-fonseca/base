@@ -1,6 +1,9 @@
 trigger:
 - master
 
+variables:
+  CLICOLORS_FORCE: 1 # used by Base tools
+
 jobs:
 - job: windows
   pool:
@@ -22,8 +25,7 @@ jobs:
     inputs:
       script: |
         set PATH=%PATH%;$(System.DefaultWorkingDirectory)/build/Debug
-        $(System.DefaultWorkingDirectory)/build/testsuite/Debug/unittesting --junit $(System.DefaultWorkingDirectory)/build/junit.xml
-        rem $(System.DefaultWorkingDirectory)/testsuite/Debug/unittesting --junit $(System.DefaultWorkingDirectory)/junit.xml
+        ./testsuite/Debug/unittesting --junit junit.xml
         ctest -T Test -C Debug
       workingDirectory: $(System.DefaultWorkingDirectory)/build
 
@@ -64,7 +66,7 @@ jobs:
     continueOnError: true
     inputs:
       script: |
-        $(System.DefaultWorkingDirectory)/build/testsuite/unittesting --junit $(System.DefaultWorkingDirectory)/build/junit.xml
+        ./testsuite/unittesting --junit junit.xml
         ctest -T Test
       workingDirectory: $(System.DefaultWorkingDirectory)/build
 
@@ -105,7 +107,7 @@ jobs:
     continueOnError: true
     inputs:
       script: |
-        $(System.DefaultWorkingDirectory)/build/testsuite/unittesting --junit $(System.DefaultWorkingDirectory)/build/junit.xml
+        ./testsuite/unittesting --junit junit.xml
         ctest -T Test
       workingDirectory: $(System.DefaultWorkingDirectory)/build
 
@@ -146,7 +148,7 @@ jobs:
     continueOnError: true
     inputs:
       script: |
-        $(System.DefaultWorkingDirectory)/build/testsuite/unittesting --junit $(System.DefaultWorkingDirectory)/build/junit.xml
+        ./testsuite/unittesting --junit junit.xml
         ctest -T Test
       workingDirectory: $(System.DefaultWorkingDirectory)/build
 

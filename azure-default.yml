@@ -1,3 +1,6 @@
+variables:
+  CLICOLORS_FORCE: 1 # used by Base tools
+
 jobs:
 - job: macos_self
   pool:
@@ -19,7 +22,7 @@ jobs:
     continueOnError: true
     inputs:
       script: |
-        ./testsuite/unittesting --color --junit junit.xml
+        ./testsuite/unittesting --junit junit.xml
         ctest -T Test
       workingDirectory: $(System.DefaultWorkingDirectory)/build
 

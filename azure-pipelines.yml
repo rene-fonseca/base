@@ -2,7 +2,7 @@ trigger:
 - master
 
 variables:
-  CLICOLORS_FORCE: 1 # used by Base tools
+  CLICOLOR_FORCE: 1 # used by Base tools
 
 jobs:
 - job: windows

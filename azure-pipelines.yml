@@ -25,7 +25,7 @@ jobs:
     inputs:
       script: |
         set PATH=%PATH%;$(System.DefaultWorkingDirectory)/build/Debug
-        $(System.DefaultWorkingDirectory)/build/testsuite/Debug/unittesting --junit $(System.DefaultWorkingDirectory)/build/junit.xml
+        $(System.DefaultWorkingDirectory)/build/testsuite/Debug/unittesting --compact --junit $(System.DefaultWorkingDirectory)/build/junit.xml
         ctest -T Test -C Debug
       workingDirectory: $(System.DefaultWorkingDirectory)/build
 
@@ -67,7 +67,7 @@ jobs:
     inputs:
       script: |
         set PATH=%PATH%;$(System.DefaultWorkingDirectory)/build/Debug
-        $(System.DefaultWorkingDirectory)/build/testsuite/Debug/unittesting --junit $(System.DefaultWorkingDirectory)/build/junit.xml
+        $(System.DefaultWorkingDirectory)/build/testsuite/Debug/unittesting --compact --junit $(System.DefaultWorkingDirectory)/build/junit.xml
         ctest -T Test -C Debug
       workingDirectory: $(System.DefaultWorkingDirectory)/build
 
@@ -110,7 +110,7 @@ jobs:
 #    inputs:
 #      script: |
 #        set PATH=%PATH%;$(System.DefaultWorkingDirectory)/build/Debug
-#        $(System.DefaultWorkingDirectory)/build/testsuite/Debug/unittesting --junit $(System.DefaultWorkingDirectory)/build/junit.xml
+#        $(System.DefaultWorkingDirectory)/build/testsuite/Debug/unittesting --compact --junit $(System.DefaultWorkingDirectory)/build/junit.xml
 #        ctest -T Test -C Debug
 #      workingDirectory: $(System.DefaultWorkingDirectory)/build
 
@@ -171,7 +171,7 @@ jobs:
     continueOnError: true
     inputs:
       script: |
-        ./testsuite/unittesting --junit junit.xml
+        ./testsuite/unittesting --compact --junit junit.xml
         ctest -T Test
       workingDirectory: $(System.DefaultWorkingDirectory)/build
 
@@ -212,7 +212,7 @@ jobs:
     continueOnError: true
     inputs:
       script: |
-        ./testsuite/unittesting --junit junit.xml
+        ./testsuite/unittesting --compact --junit junit.xml
         ctest -T Test
       workingDirectory: $(System.DefaultWorkingDirectory)/build
 
@@ -253,7 +253,7 @@ jobs:
     continueOnError: true
     inputs:
       script: |
-        ./testsuite/unittesting --junit junit.xml
+        ./testsuite/unittesting --compact --junit junit.xml
         ctest -T Test
       workingDirectory: $(System.DefaultWorkingDirectory)/build
 

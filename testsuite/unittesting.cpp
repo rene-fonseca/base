@@ -61,11 +61,8 @@ private:
   bool profile = false;
 public:
 
-  TestApplication(
-    int numberOfArguments,
-    const char* arguments[],
-    const char* environment[])
-    : Application("unittesting", numberOfArguments, arguments, environment)
+  TestApplication()
+    : Application("unittesting")
   {
     useANSIColors = FileDescriptor::getStandardOutput().isANSITerminal();
   }

@@ -90,11 +90,9 @@ _COM_AZURE_DEV__BASE__PACKED__END
   
 public:
   
-  ElfInfoApplication(
-    int numberOfArguments,
-    const char* arguments[],
-    const char* environment[]) noexcept
-    : Application("elfinfo", numberOfArguments, arguments, environment) {
+  ElfInfoApplication()
+    : Application("elfinfo")
+  {
     command = COMMAND_ERROR;
   }
   

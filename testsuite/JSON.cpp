@@ -100,11 +100,8 @@ public:
     fout << "LOOP 2: " << timer << ENDL;
   }
 
-  JSONApplication(
-    int numberOfArguments,
-    const char* arguments[],
-    const char* environment[])
-    : Application("JSON", numberOfArguments, arguments, environment)
+  JSONApplication()
+    : Application("JSON")
   {
   }
 

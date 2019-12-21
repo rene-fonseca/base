@@ -27,15 +27,9 @@ private:
   static const unsigned int FIELD_WIDTH = 4;
 public:
   
-  CalendarApplication(
-    int numberOfArguments,
-    const char* arguments[],
-    const char* environment[])
-    : Application(
-        "calendar",
-        numberOfArguments,
-        arguments,
-        environment) {
+  CalendarApplication()
+    : Application("calendar")
+  {
   }
   
   inline int getSucceedingDayOfWeek(int day)

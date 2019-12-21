@@ -816,18 +816,8 @@ Application::Application(const String& _formalName)
   application = this;
 }
 
-Application::Application(
-  const String& _formalName,
-  int numberOfArguments,
-  const char* arguments[],
-  const char* environment[])
-  : formalName(_formalName),
-    exitCode(EXIT_CODE_NORMAL),
-    terminated(false),
-    hangingup(false)
+void Application::setArgumentsAndEnvironment(int numberOfArguments, const char* arguments[], const char* environment[])
 {
-  initialize();
-  
   if (!((numberOfArguments > 0) && arguments)) {
     throw OutOfDomain(this);
   }
@@ -839,13 +829,17 @@ Application::Application(
     path = String(buffer, length);
   }
 #else
-  path = arguments[0]; // TAG: fixme
+  path = arguments[0];
 #endif
+
+  this->arguments = Array<String>();
   for (int i = 1; i < numberOfArguments; ++i) {
     this->arguments.append(arguments[i]);
   }
 
+  this->environment = Map<String, String>();
   if (environment) {
+    // TAG: fallback to char** _environ;
     for (; *environment != nullptr; ++environment) {
       const String temp(*environment);
       const MemoryDiff index = temp.indexOf('=');
@@ -854,8 +848,6 @@ Application::Application(
       }
     }
   }
-
-  application = this;
 }
 
 int Application::exceptionHandler(const Exception& e) noexcept

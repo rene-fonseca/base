@@ -75,11 +75,9 @@ private:
   static const unsigned int MINOR_VERSION = 0;
 public:
 
-  ExceptionApplication(
-    int numberOfArguments,
-    const char* arguments[],
-    const char* environment[])
-    : Application("Exception", numberOfArguments, arguments, environment) {
+  ExceptionApplication()
+    : Application("Exception")
+  {
   }
 
   void myInnerFunction() {

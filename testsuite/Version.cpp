@@ -24,11 +24,9 @@ private:
   static const unsigned int MINOR_VERSION = 0;
 public:
 
-  VersionApplication(
-    int numberOfArguments,
-    const char* arguments[],
-    const char* environment[]) noexcept
-    : Application("Version", numberOfArguments, arguments, environment) {
+  VersionApplication()
+    : Application("Version")
+  {
   }
 
   void main()

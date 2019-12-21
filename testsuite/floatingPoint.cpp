@@ -24,11 +24,8 @@ private:
   static const unsigned int MINOR_VERSION = 0;
 public:
 
-  FloatingPointApplication(
-    int numberOfArguments,
-    const char* arguments[],
-    const char* environment[])
-    : Application("floatingPoint", numberOfArguments, arguments, environment)
+  FloatingPointApplication()
+    : Application("floatingPoint")
   {
   }
 

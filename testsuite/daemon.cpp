@@ -49,8 +49,9 @@ private:
   static const unsigned int MINOR_VERSION = 0;
 public:
 
-  DaemonApplication(int argc, const char* argv[], const char* env[])
-    : Application(MESSAGE("daemon"), argc, argv, env) {
+  DaemonApplication()
+    : Application(MESSAGE("daemon"))
+  {
   }
   
   void main() {

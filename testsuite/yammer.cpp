@@ -454,11 +454,8 @@ private:
   bool post = false;
 public:
   
-  YammerApplication(
-    int numberOfArguments,
-    const char* arguments[],
-    const char* environment[])
-    : Application("yammer", numberOfArguments, arguments, environment)
+  YammerApplication()
+    : Application("yammer")
   {
   }
   

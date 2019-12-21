@@ -37,11 +37,8 @@ private:
   Array<String> paths;
 public:
   
-  RemoveApplication(
-    int numberOfArguments,
-    const char* arguments[],
-    const char* environment[])
-    : Application("rm", numberOfArguments, arguments, environment)
+  RemoveApplication()
+    : Application("rm")
   {
   }
   

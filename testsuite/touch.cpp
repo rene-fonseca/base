@@ -24,11 +24,9 @@ public:
   static const unsigned int MAJOR_VERSION = 1;
   static const unsigned int MINOR_VERSION = 0;
   
-  TouchApplication(
-    int numberOfArguments,
-    const char* arguments[],
-    const char* environment[])
-    : Application("touch", numberOfArguments, arguments, environment) {
+  TouchApplication()
+    : Application("touch")
+  {
   }
 
   void main() {

@@ -33,11 +33,8 @@ private:
   String otherYearFormat;
 public:
 
-  FileSystemApplication(
-    int numberOfArguments,
-    const char* arguments[],
-    const char* environment[])
-    : Application("filesystem", numberOfArguments, arguments, environment)
+  FileSystemApplication()
+    : Application("filesystem")
   {
     currentYear = Date::getNow().getYear();
     thisYearFormat = "%b %#d %H:%M";

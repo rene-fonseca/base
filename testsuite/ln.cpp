@@ -24,11 +24,8 @@ private:
   static const unsigned int MINOR_VERSION = 1;  
 public:
   
-  LinkApplication(
-    int numberOfArguments,
-    const char* arguments[],
-    const char* environment[]) noexcept
-    : Application("ln", numberOfArguments, arguments, environment)
+  LinkApplication()
+    : Application("ln")
   {
   }
   

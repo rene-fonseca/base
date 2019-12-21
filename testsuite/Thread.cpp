@@ -59,8 +59,9 @@ private:
   static const unsigned int MINOR_VERSION = 0;
 public:
 
-  ThreadApplication(int numberOfArguments, const char* arguments[], const char* environment[])
-    : Application(MESSAGE("Thread"), numberOfArguments, arguments, environment) {
+  ThreadApplication()
+    : Application(MESSAGE("Thread"))
+  {
   }
 
   void main()

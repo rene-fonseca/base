@@ -23,11 +23,8 @@ private:
   static const unsigned int MINOR_VERSION = 0;
 public:
   
-  DebugApplication(
-    int numberOfArguments,
-    const char* arguments[],
-    const char* environment[])
-    : Application("debug", numberOfArguments, arguments, environment) {
+  DebugApplication()
+    : Application("debug") {
   }
 
   void level3(unsigned int value) {

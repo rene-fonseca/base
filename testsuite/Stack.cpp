@@ -23,8 +23,8 @@ private:
   static const unsigned int MINOR_VERSION = 0;
 public:
 
-  StackApplication(int argc, const char* argv[], const char* env[]) noexcept
-    : Application("Stack", argc, argv, env)
+  StackApplication()
+    : Application("Stack")
   {
   }
   

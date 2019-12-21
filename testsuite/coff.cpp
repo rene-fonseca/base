@@ -373,11 +373,9 @@ public:
     COMMAND_DUMP_SECTION_DATA
   };
   
-  COFFApplication(
-    int numberOfArguments,
-    const char* arguments[],
-    const char* environment[]) noexcept 
-    : Application("coff", numberOfArguments, arguments, environment) {
+  COFFApplication()
+    : Application("coff")
+  {
   }
 
   // TAG: need function to check alignment

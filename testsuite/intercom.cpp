@@ -408,11 +408,9 @@ public:
   static const unsigned int DEFAULT_CHANNELS = 1;
   static const unsigned int DEFAULT_SAMPLE_RATE = 44100;
   
-  IntercomApplication(
-    int numberOfArguments,
-    const char* arguments[],
-    const char* environment[]) noexcept
-    : Application("intercom", numberOfArguments, arguments, environment) {
+  IntercomApplication()
+    : Application("intercom")
+  {
     loopback = false;
     isServer = true;
     port = DEFAULT_PORT;

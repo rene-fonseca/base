@@ -59,11 +59,9 @@ private:
   String destinationFile;
 public:
   
-  CompressApplication(
-    int numberOfArguments,
-    const char* arguments[],
-    const char* environment[])
-    : Application("compress", numberOfArguments, arguments, environment) {
+  CompressApplication()
+    : Application("compress")
+  {
     debug = false;
     command = COMMAND_ERROR;
     method = METHOD_BZIP2;

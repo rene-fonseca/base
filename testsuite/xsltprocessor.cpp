@@ -29,14 +29,9 @@ private:
   static const unsigned int MINOR_VERSION = 0;
 public:
 
-  XSLTProcessorApplication(
-    int numberOfArguments,
-    const char* arguments[],
-    const char* environment[]) noexcept
-    : Application("xsltprocessor",
-      numberOfArguments,
-      arguments,
-      environment) {
+  XSLTProcessorApplication()
+    : Application("xsltprocessor")
+  {
   }
 
   void main()

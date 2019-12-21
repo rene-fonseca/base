@@ -53,11 +53,8 @@ private:
   bool useThread = false;
 public:
   
-  FailApplication(
-    int numberOfArguments,
-    const char* arguments[],
-    const char* environment[])
-    : Application("fail", numberOfArguments, arguments, environment)
+  FailApplication()
+    : Application("fail")
   {
   }
   

@@ -442,11 +442,8 @@ private:
   bool rtm = false;
 public:
   
-  SlackApplication(
-    int numberOfArguments,
-    const char* arguments[],
-    const char* environment[])
-    : Application("slack", numberOfArguments, arguments, environment)
+  SlackApplication()
+    : Application("slack")
   {
   }
   

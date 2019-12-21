@@ -111,11 +111,8 @@ public:
     unsigned int index; // index of the first code
   };
 
-  UnicodeApplication(
-    int numberOfArguments,
-    const char* arguments[],
-    const char* environment[])
-    : Application("Unicode", numberOfArguments, arguments, environment)
+  UnicodeApplication()
+    : Application("Unicode")
   {
   }
 

@@ -53,11 +53,8 @@ private:
   String path;
 public:
   
-  ListApplication(
-    int numberOfArguments,
-    const char* arguments[],
-    const char* environment[])
-    : Application("ls", numberOfArguments, arguments, environment)
+  ListApplication()
+    : Application("ls")
   {
     currentYear = Date::getNow().getYear();
     thisYearFormat = MESSAGE("%b %#d %H:%M");

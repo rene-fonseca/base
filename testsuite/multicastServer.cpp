@@ -32,18 +32,13 @@ private:
   InetAddress group;
 public:
   
-  MulticastServerApplication(
-    int numberOfArguments,
-    const char* arguments[],
-    const char* environment[])
-    : Application(
-      "multicastServer",
-      numberOfArguments,
-      arguments,
-      environment) {
+  MulticastServerApplication()
+    : Application("multicastServer")
+  {
   }
 
-  void server(const String& servicename) {
+  void server(const String& servicename)
+  {
     fout << "Hostname: " << InetAddress::getLocalHost() << ENDL;
 
     unsigned short port = 0; // the port to bind the server socket to

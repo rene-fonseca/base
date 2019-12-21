@@ -31,11 +31,9 @@ private:
   static const unsigned int MINOR_VERSION = 0;
 public:
 
-  WindowApplication(
-    int numberOfArguments,
-    const char* arguments[],
-    const char* environment[]) noexcept
-    : Application("Window", numberOfArguments, arguments, environment) {
+  WindowApplication()
+    : Application("Window")
+  {
   }
 
   class MyOpenGLWidget : public OpenGLWidget {
@@ -44,10 +42,12 @@ public:
     MyOpenGLWidget(
       Window& owner,
       const Format& format)
-      : OpenGLWidget(owner, format) {
+      : OpenGLWidget(owner, format)
+    {
     }
     
-    void onDisplay() noexcept {
+    void onDisplay() noexcept
+    {
       static uint8 gray = 0;
       openGL.glClearColor(gray++/255.0, 0.0, 0.0, 1.0);
       openGL.glClear(OpenGL::COLOR_BUFFER_BIT);
@@ -55,7 +55,8 @@ public:
       swap();
     }
     
-    ~MyOpenGLWidget() noexcept {
+    ~MyOpenGLWidget() noexcept
+    {
     }
   };
   

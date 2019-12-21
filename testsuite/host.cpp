@@ -32,11 +32,8 @@ private:
   Array<String> hosts;
 public:
   
-  HostApplication(
-    int numberOfArguments,
-    const char* arguments[],
-    const char* environment[])
-    : Application("host", numberOfArguments, arguments, environment)
+  HostApplication()
+    : Application("host")
   {
   }
   

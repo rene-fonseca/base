@@ -34,11 +34,9 @@ private:
   static const unsigned int BLOCK_SIZE = 4096 * 4;
 public:
   
-  FileInputApplication(
-    int numberOfArguments,
-    const char* arguments[],
-    const char* environment[])
-    : Application("fileInput", numberOfArguments, arguments, environment) {
+  FileInputApplication()
+    : Application("fileInput")
+  {
   }
 
   class Job {

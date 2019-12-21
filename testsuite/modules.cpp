@@ -24,11 +24,8 @@ private:
   static const unsigned int MINOR_VERSION = 0;
 public:
 
-  ModulesApplication(
-    int numberOfArguments,
-    const char* arguments[],
-    const char* environment[]) noexcept
-    : Application("modules", numberOfArguments, arguments, environment)
+  ModulesApplication()
+    : Application("modules")
   {
   }
 

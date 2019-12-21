@@ -22,11 +22,9 @@ public:
   static const unsigned int MAJOR_VERSION = 1;
   static const unsigned int MINOR_VERSION = 0;
   
-  AesApplication(
-    int numberOfArguments,
-    const char* arguments[],
-    const char* environment[])
-    : Application("aes", numberOfArguments, arguments, environment) {
+  AesApplication()
+    : Application("aes")
+  {
   }
 
   void main() {

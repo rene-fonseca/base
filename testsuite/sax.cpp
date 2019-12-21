@@ -1129,11 +1129,8 @@ private:
   bool debug = false;
 public:
 
-  SAXApplication(
-    int numberOfArguments,
-    const char* arguments[],
-    const char* environment[]) noexcept
-    : Application("sax", numberOfArguments, arguments, environment)
+  SAXApplication()
+    : Application("sax")
   {
   }
 

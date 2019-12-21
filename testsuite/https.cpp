@@ -181,11 +181,8 @@ private:
   bool showHeader = false;
 public:
   
-  HTTPSApplication(
-    int numberOfArguments,
-    const char* arguments[],
-    const char* environment[])
-    : Application("https", numberOfArguments, arguments, environment)
+  HTTPSApplication()
+    : Application("https")
   {
   }
   

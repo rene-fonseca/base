@@ -27,11 +27,8 @@ private:
   Array<String> hosts;
 public:
   
-  DateApplication(
-    int numberOfArguments,
-    const char* arguments[],
-    const char* environment[])
-    : Application("Date", numberOfArguments, arguments, environment)
+  DateApplication()
+    : Application("Date")
   {
   }
   

@@ -26,11 +26,8 @@ private:
   static const unsigned int MINOR_VERSION = 0;
 public:
 
-  ArrayApplication(
-    int numberOfArguments,
-    const char* arguments[],
-    const char* environment[])
-    : Application("Array", numberOfArguments, arguments, environment)
+  ArrayApplication()
+    : Application("Array")
   {
   }
   

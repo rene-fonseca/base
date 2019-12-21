@@ -31,11 +31,8 @@ private:
   String destPath;
 public:
 
-  CPPApplication(
-    int numberOfArguments,
-    const char* arguments[],
-    const char* environment[]) noexcept
-    : Application("cpp", numberOfArguments, arguments, environment)
+  CPPApplication()
+    : Application("cpp")
   {
   }
 

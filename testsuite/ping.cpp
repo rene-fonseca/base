@@ -47,11 +47,9 @@ private:
   };
 public:
   
-  PingApplication(
-    int numberOfArguments,
-    const char* arguments[],
-    const char* environment[]) noexcept
-    : Application("ping", numberOfArguments, arguments, environment) {
+  PingApplication()
+    : Application("ping")
+  {
     port = ECHO_SERVICE_PORT;
     dataSize = 32;
     timeout = 1000000;

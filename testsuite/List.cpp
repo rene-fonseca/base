@@ -25,8 +25,8 @@ private:
   static const unsigned int MINOR_VERSION = 0;
 public:
 
-  ListApplication(int argc, const char* argv[], const char* env[])
-    : Application("List", argc, argv, env)
+  ListApplication()
+    : Application("List")
   {
   }
   

@@ -49,11 +49,8 @@ private:
   static const unsigned int MINOR_VERSION = 0;
 public:
   
-  IOApplication(
-    int numberOfArguments,
-    const char* arguments[],
-    const char* environment[])
-    : Application("io", numberOfArguments, arguments, environment)
+  IOApplication()
+    : Application("io")
   {
   }
   

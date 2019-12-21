@@ -497,7 +497,7 @@ void move(TYPE* dest, const TYPE* src, MemorySize count)
   }
 }
 
-#if defined(_COM_AZURE_DEV__BASE__HAVE_MEMCPY)
+#if defined(_COM_AZURE_DEV__BASE__HAVE_MEMMOVE)
 template<>
 inline void move<char>(char* dest, const char* src, MemorySize count)
 {

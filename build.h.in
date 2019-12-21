@@ -30,12 +30,13 @@
 #  error Unsupported compiler.
 #endif
 
+#if 0 // set in configuration.h
 #define _COM_AZURE_DEV__BASE__HAVE_MEMSET
 #define _COM_AZURE_DEV__BASE__HAVE_MEMCPY
 #define _COM_AZURE_DEV__BASE__HAVE_MEMCMP
 #define _COM_AZURE_DEV__BASE__HAVE_MEMMOVE
 #define _COM_AZURE_DEV__BASE__HAVE_MEMCHR
-#define _COM_AZURE_DEV__BASE__HAVE_MEMSET
+#endif
 
 #if (_COM_AZURE_DEV__BASE__FLAVOR != _COM_AZURE_DEV__BASE__WIN32) && \
     (_COM_AZURE_DEV__BASE__OS != _COM_AZURE_DEV__BASE__WASI) && \

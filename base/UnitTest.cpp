@@ -956,21 +956,7 @@ UnitTestManager::DependencyEntry::~DependencyEntry()
 
 const char* UnitTestManager::trimPath(const char* src) noexcept
 {
-  // const char* PATH = _COM_AZURE_DEV__BASE__SOURCE_FILE; // trim UnitTest.cpp - this will give the base path - but we need to support any source
-  
-  if (!src) {
-    return nullptr;
-  }
-  const char* last = src;
-  while (*src) {
-    if ((*src == '/') || (*src == '\\')) {
-      ++src;
-      last = src;
-      continue;
-    }
-    ++src;
-  }
-  return last;
+  return Debug::getRelativePath(src);
 }
 
 String UnitTestManager::getJUnit(const String& uuid, const String& name) const

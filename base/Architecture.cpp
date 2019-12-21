@@ -62,14 +62,4 @@ Architecture::Minor Architecture::getMinorArchitecture() noexcept
   return result;
 }
 
-// TAG: need support for multiple processors (and hyper-threading)
-// struct ProcessorInformation {major, minor, #logical processors, technologies};
-
-// Array is no good in Architecture header
-// Array<Architecture::Minor> Architecture::getProcessors() noexcept
-// {
-//   Array<Minor> result;
-//   return result;
-// }
-
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

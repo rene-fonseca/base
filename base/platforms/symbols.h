@@ -146,19 +146,6 @@
 #define _COM_AZURE_DEV__BASE__WASM32 13
 #define _COM_AZURE_DEV__BASE__WASM64 14
 
-// Architectures (minor)
-#define _COM_AZURE_DEV__BASE__486 1 // only with X86
-#define _COM_AZURE_DEV__BASE__586 2 // only with X86
-#define _COM_AZURE_DEV__BASE__686 3 // only with X86
-#define _COM_AZURE_DEV__BASE__MIPSI 1
-#define _COM_AZURE_DEV__BASE__MIPSII 2
-#define _COM_AZURE_DEV__BASE__MIPSIII 3
-#define _COM_AZURE_DEV__BASE__SPARC_V7 1
-#define _COM_AZURE_DEV__BASE__SPARC_V8 2
-#define _COM_AZURE_DEV__BASE__SPARC_SPARCLITE 3
-#define _COM_AZURE_DEV__BASE__SPARC_SPARCLET 4
-#define _COM_AZURE_DEV__BASE__SPARC_V9 5
-
 // Supported byte orders
 #define _COM_AZURE_DEV__BASE__BIG_ENDIAN 1
 #define _COM_AZURE_DEV__BASE__LITTLE_ENDIAN 2

@@ -64,7 +64,7 @@ public:
     RS, /**< RS. */
     SPARC, /**< Sparc. */
     S390, /**< S390. */
-    ARM, /**< ARM. */
+    ARM32, /**< ARM 32-bit. */
     ARM64, /**< ARM 64-bit. */
     WASM32, /**< WebAssembly 32-bit. */
     WASM64 /**< WebAssembly 64-bit. */

@@ -22,6 +22,7 @@
 #include <base/Functor.h>
 #include <base/NotImplemented.h>
 #include <base/security/User.h>
+#include <base/build.h>
 
 #if defined(_COM_AZURE_DEV__BASE__LARGE_FILE_SYSTEM)
 #  define _LARGEFILE64_SOURCE 1

@@ -19,10 +19,6 @@
 #include <base/Profiler.h>
 #include <base/build.h>
 
-#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__UNIX)
-#  define _COM_AZURE_DEV__BASE__HAVE_POLL2 // TAG: fixme
-#endif
-
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
 #  include <winsock2.h>
 #  undef ERROR
@@ -54,14 +50,13 @@ namespace internal {
   };
 };
 
-MultipleSockets::MultipleSockets() {
+MultipleSockets::MultipleSockets()
+{
   numberOfSelected = 0;
 }
 
-void MultipleSockets::add(
-  StreamSocket socket,
-  unsigned int events)
-  {
+void MultipleSockets::add(StreamSocket socket, unsigned int events)
+{
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   typedef internal::MultipleSockets::pollfd pollfd;
 
@@ -396,7 +391,8 @@ void MultipleSockets::setFilter(
 #endif
 }
 
-unsigned int MultipleSockets::poll() {
+unsigned int MultipleSockets::poll()
+{
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   typedef internal::MultipleSockets::pollfd pollfd;
   

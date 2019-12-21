@@ -24,6 +24,7 @@
 #include <base/net/InetAddress.h>
 #include <base/Random.h>
 #include <base/ByteOrder.h>
+#include <base/build.h>
 
 // TAG: need method to traverse links for win32 platforms
 

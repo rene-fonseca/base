@@ -22,6 +22,7 @@
 #include <base/concurrency/Thread.h>
 #include <base/NotImplemented.h>
 #include <base/Profiler.h>
+#include <base/build.h>
 
 // TAG: profile socket for entire use
 
@@ -137,7 +138,7 @@ private:
   union {
     struct sockaddr sa;
     struct sockaddr_in ipv4;
-#if (defined(_COM_AZURE_DEV__BASE__INET_IPV6))
+#if (defined(_COM_AZURE_DEV__BASE__HAVE_INET_IPV6))
     struct sockaddr_in6 ipv6;
     struct sockaddr_storage storage;
 #else
@@ -157,7 +158,7 @@ public:
     Socket::Domain domain)
   {
     clear(sa);
-#  if (defined(_COM_AZURE_DEV__BASE__INET_IPV6))
+#  if (defined(_COM_AZURE_DEV__BASE__HAVE_INET_IPV6))
     if (domain == Socket::IPV6) {
 #    if (defined(SIN6_LEN))
       ipv6.sin6_len = sizeof(ipv6);
@@ -213,7 +214,7 @@ public:
       address.getIPv4Address(),
       sizeof(struct in_addr)
     );
-#  endif // _COM_AZURE_DEV__BASE__INET_IPV6
+#  endif // _COM_AZURE_DEV__BASE__HAVE_INET_IPV6
   }
 
   /** Returns pointer to socket address. */
@@ -231,7 +232,7 @@ public:
   /** Returns the size of the socket address structure. */
   inline unsigned int getSize() const noexcept
   {
-#if (defined(_COM_AZURE_DEV__BASE__INET_IPV6))
+#if (defined(_COM_AZURE_DEV__BASE__HAVE_INET_IPV6))
     return (sa.sa_family == AF_INET6) ? sizeof(ipv6) : sizeof(ipv4);
 #else
     return sizeof(ipv4);
@@ -240,7 +241,7 @@ public:
   
   inline Socket::Domain getDomain() const noexcept
   {
-#if (defined(_COM_AZURE_DEV__BASE__INET_IPV6))
+#if (defined(_COM_AZURE_DEV__BASE__HAVE_INET_IPV6))
     return (sa.sa_family == AF_INET6) ? Socket::IPV6 : Socket::IPV4;
 #else
     return Socket::IPV4;
@@ -262,7 +263,7 @@ public:
         Cast::getAddress(ipv4.sin_addr),
         InetAddress::IP_VERSION_4
       );
-#if (defined(_COM_AZURE_DEV__BASE__INET_IPV6))
+#if (defined(_COM_AZURE_DEV__BASE__HAVE_INET_IPV6))
     case AF_INET6:
       return InetAddress(
         Cast::getAddress(ipv6.sin6_addr),
@@ -280,7 +281,7 @@ public:
     switch (sa.sa_family) {
     case AF_INET:
       return ByteOrder::fromBigEndian<unsigned short>(ipv4.sin_port);
-#if (defined(_COM_AZURE_DEV__BASE__INET_IPV6))
+#if (defined(_COM_AZURE_DEV__BASE__HAVE_INET_IPV6))
     case AF_INET6:
       return ByteOrder::fromBigEndian<unsigned short>(ipv6.sin6_port);
 #endif
@@ -621,7 +622,7 @@ void Socket::create(Kind kind, Domain domain)
     !socket->isValid(),
     NetworkException("Unable to create socket.", this)
   );
-#if (defined(_COM_AZURE_DEV__BASE__INET_IPV6))
+#if (defined(_COM_AZURE_DEV__BASE__HAVE_INET_IPV6))
   OperatingSystem::Handle handle = (OperatingSystem::Handle)::socket(
     (domain != Socket::IPV4) ? PF_INET6 : PF_INET,
     SOCKET_KINDS[kind],
@@ -1115,7 +1116,7 @@ void Socket::setTimeToLive(unsigned int value)
 
 uint8 Socket::getMulticastHops() const
 {
-#if (defined(_COM_AZURE_DEV__BASE__INET_IPV6))
+#if (defined(_COM_AZURE_DEV__BASE__HAVE_INET_IPV6))
   if (socket->getDomain() == Socket::IPV6) {
     unsigned int buffer = 0;
     unsigned int length = sizeof(buffer);
@@ -1139,14 +1140,14 @@ uint8 Socket::getMulticastHops() const
       &length
     );
     return buffer;
-#if (defined(_COM_AZURE_DEV__BASE__INET_IPV6))
+#if (defined(_COM_AZURE_DEV__BASE__HAVE_INET_IPV6))
   }
 #endif
 }
 
 void Socket::setMulticastHops(uint8 value)
 {
-#if (defined(_COM_AZURE_DEV__BASE__INET_IPV6))
+#if (defined(_COM_AZURE_DEV__BASE__HAVE_INET_IPV6))
   if (socket->getDomain() == Socket::IPV6) {
     unsigned int buffer = value;
     internal::SocketImpl::setOption(
@@ -1166,14 +1167,14 @@ void Socket::setMulticastHops(uint8 value)
       &buffer,
       sizeof(buffer)
     );
-#if (defined(_COM_AZURE_DEV__BASE__INET_IPV6))
+#if (defined(_COM_AZURE_DEV__BASE__HAVE_INET_IPV6))
   }
 #endif
 }
 
 bool Socket::getMulticastLoopback() const
 {
-#if (defined(_COM_AZURE_DEV__BASE__INET_IPV6))
+#if (defined(_COM_AZURE_DEV__BASE__HAVE_INET_IPV6))
   if (socket->getDomain() == Socket::IPV6) {
     u_char buffer;
     unsigned int length = sizeof(buffer);
@@ -1197,14 +1198,14 @@ bool Socket::getMulticastLoopback() const
       &length
     );
     return buffer != 0;
-#if (defined(_COM_AZURE_DEV__BASE__INET_IPV6))
+#if (defined(_COM_AZURE_DEV__BASE__HAVE_INET_IPV6))
   }
 #endif
 }
 
 void Socket::setMulticastLoopback(bool value)
 {
-#if (defined(_COM_AZURE_DEV__BASE__INET_IPV6))
+#if (defined(_COM_AZURE_DEV__BASE__HAVE_INET_IPV6))
   if (socket->getDomain() == Socket::IPV6) {
     unsigned int buffer = value;
     internal::SocketImpl::setOption(
@@ -1224,14 +1225,14 @@ void Socket::setMulticastLoopback(bool value)
       &buffer,
       sizeof(buffer)
     );
-#if (defined(_COM_AZURE_DEV__BASE__INET_IPV6))
+#if (defined(_COM_AZURE_DEV__BASE__HAVE_INET_IPV6))
   }
 #endif
 }
 
 InetAddress Socket::getMulticastInterface() const
 {
-#if (defined(_COM_AZURE_DEV__BASE__INET_IPV6))
+#if (defined(_COM_AZURE_DEV__BASE__HAVE_INET_IPV6))
   if (socket->getDomain() == Socket::IPV6) {
     unsigned int buffer = 0;
     unsigned int length = sizeof(buffer);
@@ -1291,7 +1292,7 @@ void Socket::setMulticastInterface(const InetAddress& interface)
 
 uint8 Socket::getUnicastHops() const
 {
-#if (defined(_COM_AZURE_DEV__BASE__INET_IPV6))
+#if (defined(_COM_AZURE_DEV__BASE__HAVE_INET_IPV6))
   if (socket->getDomain() == Socket::IPV6) {
     int buffer = 0;
     unsigned int length = sizeof(buffer);
@@ -1306,14 +1307,14 @@ uint8 Socket::getUnicastHops() const
   } else {
 #endif
     throw bindCause(NetworkException(this), NetworkException::OPERATION_NOT_SUPPORTED);
-#if (defined(_COM_AZURE_DEV__BASE__INET_IPV6))
+#if (defined(_COM_AZURE_DEV__BASE__HAVE_INET_IPV6))
   }
 #endif
 }
 
 void Socket::setUnicastHops(uint8 value)
 {
-#if (defined(_COM_AZURE_DEV__BASE__INET_IPV6))
+#if (defined(_COM_AZURE_DEV__BASE__HAVE_INET_IPV6))
   if (socket->getDomain() == Socket::IPV6) {
     int buffer = 0;
     internal::SocketImpl::setOption(
@@ -1326,7 +1327,7 @@ void Socket::setUnicastHops(uint8 value)
   } else {
 #endif
     throw bindCause(NetworkException(this), NetworkException::OPERATION_NOT_SUPPORTED);
-#if (defined(_COM_AZURE_DEV__BASE__INET_IPV6))
+#if (defined(_COM_AZURE_DEV__BASE__HAVE_INET_IPV6))
   }
 #endif
 }
@@ -1351,7 +1352,7 @@ void Socket::joinGroup(const InetAddress& group)
     sizeof(mreq)
   );
 #else // unix
-#  if (defined(_COM_AZURE_DEV__BASE__INET_IPV6))
+#  if (defined(_COM_AZURE_DEV__BASE__HAVE_INET_IPV6))
   if (socket->getDomain() == Socket::IPV6) {
     struct ipv6_mreq mreq;
     mreq.ipv6mr_interface = 0; // use default interface
@@ -1431,7 +1432,7 @@ void Socket::joinGroup(const InetAddress& interface, const InetAddress& group)
     sizeof(mreq)
   );
 #else // unix
-#  if (defined(_COM_AZURE_DEV__BASE__INET_IPV6))
+#  if (defined(_COM_AZURE_DEV__BASE__HAVE_INET_IPV6))
   if (socket->getDomain() == Socket::IPV6) {
     struct ipv6_mreq mreq;
     mreq.ipv6mr_interface = 0;
@@ -1569,7 +1570,7 @@ void Socket::leaveGroup(const InetAddress& interface, const InetAddress& group)
     sizeof(mreq)
   );
 #else // unix
-#  if (defined(_COM_AZURE_DEV__BASE__INET_IPV6))
+#  if (defined(_COM_AZURE_DEV__BASE__HAVE_INET_IPV6))
   if (socket->getDomain() == Socket::IPV6) {
     InetAddress i = interface;
     InetAddress g = group;
@@ -1641,7 +1642,7 @@ void Socket::leaveGroup(const InetAddress& interface, const InetAddress& group)
 
 bool Socket::getIPv6Restriction() const
 {
-#if (defined(_COM_AZURE_DEV__BASE__INET_IPV6) && defined(IPV6_V6ONLY))
+#if (defined(_COM_AZURE_DEV__BASE__HAVE_INET_IPV6) && defined(IPV6_V6ONLY))
   if (socket->getDomain() == Socket::IPV6) {
     int buffer = 0;
     unsigned int length = sizeof(buffer);
@@ -1657,14 +1658,14 @@ bool Socket::getIPv6Restriction() const
 #endif
     // IPv6 restriction is not possible if only IPv4 is supported
     return false;
-#if (defined(_COM_AZURE_DEV__BASE__INET_IPV6) && defined(IPV6_V6ONLY))
+#if (defined(_COM_AZURE_DEV__BASE__HAVE_INET_IPV6) && defined(IPV6_V6ONLY))
   }
 #endif
 }
 
 void Socket::setIPv6Restriction(bool value)
 {
-#if (defined(_COM_AZURE_DEV__BASE__INET_IPV6) && defined(IPV6_V6ONLY))
+#if (defined(_COM_AZURE_DEV__BASE__HAVE_INET_IPV6) && defined(IPV6_V6ONLY))
   if (socket->getDomain() == Socket::IPV6) {
     int buffer = 0;
     internal::SocketImpl::setOption(
@@ -1677,7 +1678,7 @@ void Socket::setIPv6Restriction(bool value)
   } else {
 #endif
     throw bindCause(NetworkException(this), NetworkException::OPERATION_NOT_SUPPORTED);
-#if (defined(_COM_AZURE_DEV__BASE__INET_IPV6) && defined(IPV6_V6ONLY))
+#if (defined(_COM_AZURE_DEV__BASE__HAVE_INET_IPV6) && defined(IPV6_V6ONLY))
   }
 #endif
 }

@@ -17,6 +17,7 @@
 #include <base/string/ASCIITraits.h>
 #include <base/collection/Array.h>
 #include <base/string/StringOutputStream.h>
+#include <base/build.h>
 #include <stdlib.h>
 
 #if (_COM_AZURE_DEV__BASE__DEMANGLE == _COM_AZURE_DEV__BASE__DEMANGLE_GCCV3)

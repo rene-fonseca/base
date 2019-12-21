@@ -35,7 +35,7 @@
 #  include <intrin.h> // header approved
 #if ((_COM_AZURE_DEV__BASE__ARCH == _COM_AZURE_DEV__BASE__X86) || \
      (_COM_AZURE_DEV__BASE__ARCH == _COM_AZURE_DEV__BASE__X86_64) || \
-     (_COM_AZURE_DEV__BASE__ARCH == _COM_AZURE_DEV__BASE__ARM) || \
+     (_COM_AZURE_DEV__BASE__ARCH == _COM_AZURE_DEV__BASE__ARM32) || \
      (_COM_AZURE_DEV__BASE__ARCH == _COM_AZURE_DEV__BASE__ARM64))
 #  define _COM_AZURE_DEV__BASE__USE_WIN32_INTRINSIC
 #else
@@ -197,7 +197,7 @@ public:
     _InterlockedCompareExchange(&dummy, 0, 0);
     _ReadWriteBarrier();
 #elif (_COM_AZURE_DEV__BASE__COMPILER == _COM_AZURE_DEV__BASE__COMPILER_MSC) && \
-      ((_COM_AZURE_DEV__BASE__ARCH == _COM_AZURE_DEV__BASE__ARM) || \
+      ((_COM_AZURE_DEV__BASE__ARCH == _COM_AZURE_DEV__BASE__ARM32) || \
        (_COM_AZURE_DEV__BASE__ARCH == _COM_AZURE_DEV__BASE__ARM64))
     __dmb(0xb); // inner shared data memory barrier
 #else

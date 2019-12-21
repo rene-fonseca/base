@@ -15,6 +15,7 @@
 #include <base/net/InetInterface.h>
 #include <base/concurrency/Thread.h>
 #include <base/string/StringOutputStream.h>
+#include <base/build.h>
 
 // TAG: remove index attribute/support only rely on name of interface
 
@@ -53,7 +54,7 @@ namespace internal {
     static inline InetAddress getAddress(const struct sockaddr& address) noexcept
     {
       switch (address.sa_family) {
-#if (defined(_COM_AZURE_DEV__BASE__INET_IPV6))
+#if (defined(_COM_AZURE_DEV__BASE__HAVE_INET_IPV6))
       case AF_INET6:
         return InetAddress(
           Cast::getAddress(
@@ -79,7 +80,7 @@ namespace internal {
 Array<Association<String, unsigned int> > InetInterface::getInterfaceNames() noexcept
 {
   Array<Association<String, unsigned int> > interfaces;
-#if (defined(_COM_AZURE_DEV__BASE__INET_IPV6))
+#if (defined(_COM_AZURE_DEV__BASE__HAVE_INET_IPV6))
   struct if_nameindex* ni = nullptr;
   if ((ni = if_nameindex()) == 0) { // MT-safe
     throw NetworkException(
@@ -185,7 +186,7 @@ Array<Association<String, unsigned int> > InetInterface::getInterfaceNames() noe
 List<InetInterface> InetInterface::getInterfaces()
 {
   List<InetInterface> interfaces;
-#if (defined(_COM_AZURE_DEV__BASE__INET_IPV6))
+#if (defined(_COM_AZURE_DEV__BASE__HAVE_INET_IPV6))
   struct if_nameindex* ni = nullptr;
   if ((ni = if_nameindex()) == 0) { // MT-safe
     throw NetworkException(
@@ -362,7 +363,7 @@ List<InetInterface> InetInterface::getInterfaces()
 
 unsigned int InetInterface::getIndexByName(const String& name)
 {
-#if (defined(_COM_AZURE_DEV__BASE__INET_IPV6))
+#if (defined(_COM_AZURE_DEV__BASE__HAVE_INET_IPV6))
   unsigned int index = if_nametoindex(name.getElements());
   bassert(
     index > 0,
@@ -555,7 +556,7 @@ unsigned int InetInterface::getIndexByAddress(const InetAddress& address)
 
 String InetInterface::getName(unsigned int index)
 {
-#if (defined(_COM_AZURE_DEV__BASE__INET_IPV6))
+#if (defined(_COM_AZURE_DEV__BASE__HAVE_INET_IPV6))
   char name[IFNAMSIZ];
   bassert(
     if_indextoname(index, name) != 0,
@@ -669,7 +670,7 @@ String InetInterface::getName(unsigned int index)
 
 InetAddress InetInterface::getAddress(unsigned int index)
 {
-#if (defined(_COM_AZURE_DEV__BASE__INET_IPV6))
+#if (defined(_COM_AZURE_DEV__BASE__HAVE_INET_IPV6))
   struct ifreq req;
   bassert(
     if_indextoname(index, req.ifr_name) != 0,

@@ -23,9 +23,9 @@
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32) // temporary solution until arch independant types have been defined
 #  include <winsock2.h>
 #  include <ws2tcpip.h>
-#  if (!defined(_COM_AZURE_DEV__BASE__INET_IPV6) && \
+#  if (!defined(_COM_AZURE_DEV__BASE__HAVE_INET_IPV6) && \
        (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__WXP))
-#    define _COM_AZURE_DEV__BASE__INET_IPV6
+#    define _COM_AZURE_DEV__BASE__HAVE_INET_IPV6
 #  endif
 #else // unix
 #  include <sys/types.h>
@@ -76,7 +76,7 @@ List<InetAddress> InetAddress::getAddressesByName(const String& name)
 {
   List<InetAddress> result;
   
-#if (defined(_COM_AZURE_DEV__BASE__INET_IPV6))
+#if (defined(_COM_AZURE_DEV__BASE__HAVE_INET_IPV6))
   struct addrinfo hint;
   fill<uint8>(Cast::getAddress(hint), sizeof(hint), 0);
   hint.ai_family = PF_UNSPEC;
@@ -150,13 +150,13 @@ List<InetAddress> InetAddress::getAddressesByName(const String& name)
   for (char** p = hp->h_addr_list; *p != 0; p++) {
     result.append(InetAddress(Cast::pointer<const uint8*>(*p), IP_VERSION_4));
   }
-#endif // _COM_AZURE_DEV__BASE__INET_IPV6
+#endif // _COM_AZURE_DEV__BASE__HAVE_INET_IPV6
   return result;
 }
 
 InetAddress InetAddress::getAddressByName(const String& name)
 {
-#if (defined(_COM_AZURE_DEV__BASE__INET_IPV6))
+#if (defined(_COM_AZURE_DEV__BASE__HAVE_INET_IPV6))
   struct addrinfo hint;
   fill<uint8>(Cast::getAddress(hint), sizeof(hint), 0);
   hint.ai_family = PF_UNSPEC;
@@ -214,7 +214,7 @@ InetAddress InetAddress::getAddressByName(const String& name)
   while (*p) { // for (char** p = hp->h_addr_list; *p; p++) {
     return InetAddress(Cast::pointer<const uint8*>(*p), IP_VERSION_4);
   }
-#endif // _COM_AZURE_DEV__BASE__INET_IPV6
+#endif // _COM_AZURE_DEV__BASE__HAVE_INET_IPV6
   throw HostNotFound("Unable to lookup host by name.", Type::getType<InetAddress>());
 }
 
@@ -440,7 +440,7 @@ bool InetAddress::parse(const String& address) noexcept
 
 InetAddress::InetAddress() noexcept
 {
-#if (defined(_COM_AZURE_DEV__BASE__INET_IPV6))
+#if (defined(_COM_AZURE_DEV__BASE__HAVE_INET_IPV6))
   family = IP_VERSION_6;
 #else
   family = IP_VERSION_4;
@@ -485,7 +485,7 @@ InetAddress& InetAddress::operator=(const InetAddress& assign) noexcept
 
 String InetAddress::getHostName(bool fullyQualified) const
 {
-#if (defined(_COM_AZURE_DEV__BASE__INET_IPV6))
+#if (defined(_COM_AZURE_DEV__BASE__HAVE_INET_IPV6))
   struct sockaddr_in6 addr;
   clear(addr);
 #if (defined(SIN6_LEN))
@@ -568,7 +568,7 @@ String InetAddress::getHostName(bool fullyQualified) const
 #  endif
 
   return NativeString(hp->h_name);
-#endif // _COM_AZURE_DEV__BASE__INET_IPV6
+#endif // _COM_AZURE_DEV__BASE__HAVE_INET_IPV6
 }
 
 bool InetAddress::operator==(const InetAddress& compare) const noexcept

@@ -15,6 +15,7 @@
 #include <base/filesystem/FolderInfo.h>
 #include <base/filesystem/FileSystemException.h>
 #include <base/concurrency/Thread.h>
+#include <base/build.h>
 
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
 #  define _WIN32_WINNT _WIN32_WINNT_WINXP

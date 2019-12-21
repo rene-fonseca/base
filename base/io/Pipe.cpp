@@ -19,6 +19,7 @@
 #include <base/concurrency/Thread.h>
 #include <base/string/String.h>
 #include <base/Profiler.h>
+#include <base/build.h>
 
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
 #  include <windows.h>

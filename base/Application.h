@@ -135,8 +135,8 @@ public:
 
       BASSERT(!Runtime::isGlobalInitialization() || !"Global initialization not allowed for Application.");
 
+      Application::setArgumentsAndEnvironment(numberOfArguments, arguments, environment);
       APPLICATION application;
-      application.setArgumentsAndEnvironment(numberOfArguments, arguments, environment);
       return start(&application);
     } catch (...) {
       return Application::EXIT_CODE_INITIALIZATION;
@@ -153,7 +153,7 @@ public:
   /**
     Sets arguments and environment.
   */
-  void setArgumentsAndEnvironment(int numberOfArguments, const char* arguments[], const char* environment[] = nullptr);
+  static void setArgumentsAndEnvironment(int numberOfArguments, const char* arguments[], const char* environment[] = nullptr);
 
   /**
     Returns the formal name of the application.

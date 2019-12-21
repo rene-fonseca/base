@@ -700,7 +700,42 @@ public:
 
 
 
-void Application::initialize() noexcept
+Application* Application::getApplication() noexcept
+{
+  return application;
+}
+
+MutualExclusion& Application::getLock() noexcept
+{
+  return lock;
+}
+
+namespace internal
+{
+  
+  int numberOfArguments = 0;
+  const char** arguments = nullptr;
+  const char** environment = nullptr;
+  // Map<String, String> environment;
+}
+
+void Application::setArgumentsAndEnvironment(int _numberOfArguments, const char* _arguments[], const char* _environment[])
+{
+  if (!((_numberOfArguments > 0) && _arguments)) {
+    throw OutOfDomain();
+  }
+
+  internal::numberOfArguments = _numberOfArguments;
+  internal::arguments = _arguments;
+  internal::environment = _environment;
+  // TAG: allow initialization for shared library also - move to static data
+}
+
+Application::Application(const String& _formalName)
+  : formalName(_formalName),
+    exitCode(EXIT_CODE_NORMAL),
+    terminated(false),
+    hangingup(false)
 {
   static unsigned int singleton = 0;
   if (singleton != 0) {
@@ -794,59 +829,43 @@ void Application::initialize() noexcept
   // install exception handlers
   std::set_terminate(ApplicationImpl::terminationExceptionHandler);
   std::set_unexpected(ApplicationImpl::unexpectedExceptionHandler);
-}
 
-Application* Application::getApplication() noexcept
-{
-  return application;
-}
-
-MutualExclusion& Application::getLock() noexcept
-{
-  return lock;
-}
-
-Application::Application(const String& _formalName)
-  : formalName(_formalName),
-    exitCode(EXIT_CODE_NORMAL),
-    terminated(false),
-    hangingup(false)
-{
-  initialize();
-  application = this;
-}
-
-void Application::setArgumentsAndEnvironment(int numberOfArguments, const char* arguments[], const char* environment[])
-{
-  if (!((numberOfArguments > 0) && arguments)) {
-    throw OutOfDomain(this);
-  }
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
-  wchar buffer[MAX_PATH + 1]; // what if path starts with "\\?\"
-  DWORD length = ::GetModuleFileName(0, buffer, MAX_PATH /*lengthOf(buffer)*/);
-  if (INLINE_ASSERT(length > 0)) {
-    path = String(buffer, length);
+  {
+    wchar buffer[MAX_PATH + 1]; // what if path starts with "\\?\"
+    DWORD length = ::GetModuleFileName(0, buffer, MAX_PATH /*lengthOf(buffer)*/);
+    if (INLINE_ASSERT(length > 0)) {
+      path = String(buffer, length);
+    }
   }
 #else
-  path = arguments[0];
-#endif
-
-  this->arguments = Array<String>();
-  for (int i = 1; i < numberOfArguments; ++i) {
-    this->arguments.append(arguments[i]);
+  if (internal::arguments) {
+    path = internal::arguments[0];
   }
-
-  this->environment = Map<String, String>();
-  if (environment) {
+#endif
+  
+  if (internal::arguments) {
+    for (int i = 1; i < internal::numberOfArguments; ++i) {
+      this->arguments.append(internal::arguments[i]);
+    }
+  }
+  
+  if (internal::environment) {
     // TAG: fallback to char** _environ;
-    for (; *environment != nullptr; ++environment) {
-      const String temp(*environment);
+    for (; *internal::environment != nullptr; ++internal::environment) {
+      const String temp(*internal::environment);
       const MemoryDiff index = temp.indexOf('=');
       if (index != -1) { // ignore the environment string if it doesn't contain '='
         this->environment.add(temp.substring(0, index), temp.substring(index + 1));
       }
     }
   }
+
+  internal::numberOfArguments = 0;
+  internal::arguments = nullptr;
+  internal::environment = nullptr;
+
+  application = this;
 }
 
 int Application::exceptionHandler(const Exception& e) noexcept

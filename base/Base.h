@@ -349,7 +349,13 @@ public:
 
   /** Disables/enables breakpoint. */
   static void setUseBreakpoint(bool useBreakpoint) noexcept;
-
+  
+  /** Returns the root path for the Base Framework includes. */
+  static const char* getRootPath() noexcept;
+  
+  /** Returns the relative path to the root path for the Base Framework includes. */
+  static const char* getRelativePath(const char* path) noexcept;
+  
   /** Returns true if debugger is attached. */
   static bool isDebuggerAttached() noexcept;
 

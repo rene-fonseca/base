@@ -142,6 +142,8 @@ bool Assert::handle(const char* expression, const char* filename, const char* li
     expression = "<UNKNOWN>";
   }
 
+  filename = Debug::getRelativePath(filename);
+
   MemorySize count = ++assertCounter;;
   char digitBuffer[32]; // enough for digits - reverse order
   char* digit = digitBuffer;
@@ -173,21 +175,18 @@ bool Assert::handle(const char* expression, const char* filename, const char* li
       dest = concat(dest, end, "\033[22m"); // unbold code
     }
     dest = concat(dest, end, ")");
-    if (filename && line && *line) {
-      filename = UnitTestManager::trimPath(filename);
-      if (*filename) {
-        dest = concat(dest, end, " failed at ");
-        if (useANSI) {
-          dest = writeColor(dest, end, ANSIEscapeSequence::YELLOW);
-          dest = concat(dest, end, "\033[1m"); // bold code
-        }
-        dest = concat(dest, end, filename);
-        dest = concat(dest, end, ":");
-        dest = concat(dest, end, line);
-        if (useANSI) {
-          dest = concat(dest, end, "\033[22m"); // unbold code
-          dest = writeColor(dest, end, ANSIEscapeSequence::RED);
-        }
+    if (filename && *filename && line && *line) {
+      dest = concat(dest, end, " failed at ");
+      if (useANSI) {
+        dest = writeColor(dest, end, ANSIEscapeSequence::YELLOW);
+        dest = concat(dest, end, "\033[1m"); // bold code
+      }
+      dest = concat(dest, end, filename);
+      dest = concat(dest, end, ":");
+      dest = concat(dest, end, line);
+      if (useANSI) {
+        dest = concat(dest, end, "\033[22m"); // unbold code
+        dest = writeColor(dest, end, ANSIEscapeSequence::RED);
       }
     }
     
@@ -238,6 +237,54 @@ namespace {
 void Debug::setUseBreakpoint(bool _useBreakpoint) noexcept
 {
   useBreakpoint = _useBreakpoint;
+}
+
+namespace {
+
+  String getRootPathImpl() noexcept
+  {
+    String result;
+    const char* path = _COM_AZURE_DEV__BASE__SOURCE_FILE;
+    const char* end = path;
+    for (; *end; ++end) {
+    }
+    unsigned int count = 0;
+    while (end != path) {
+      --end;
+      if ((*end == '/') || (*end == '\\')) {
+        ++count;
+        if (count > 1) {
+          ++end;
+          break;
+        }
+      }
+    }
+    return String(path, end - path);
+  }
+}
+
+const char* Debug::getRootPath() noexcept
+{
+  static String root = getRootPathImpl();
+  return root.native();
+}
+
+const char* Debug::getRelativePath(const char* path) noexcept
+{
+  if (!path) {
+    return nullptr;
+  }
+  const char* root = getRootPath();
+  while (*path) {
+    bool s1 = (*path == '/') || (*path == '\\');
+    bool s2 = (*root == '/') || (*root == '\\');
+    if ((s1 != s2) || (*path != *root)) {
+      return path;
+    }
+    ++path;
+    ++root;
+  }
+  return path;
 }
 
 bool Debug::isDebuggerAttached() noexcept

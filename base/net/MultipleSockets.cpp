@@ -28,7 +28,7 @@
 #else // unix
 #  include <errno.h>
 #if (defined(_COM_AZURE_DEV__BASE__HAVE_POLL))
-#  include <sys/poll.h>
+#  include <poll.h>
 #else
 #  include <sys/select.h>
 #  include <sys/time.h>

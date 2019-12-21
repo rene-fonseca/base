@@ -23,8 +23,8 @@ private:
   static const unsigned int MINOR_VERSION = 0;
 public:
 
-  HashTableApplication(int argc, const char* argv[], const char* env[])
-    : Application("HashTable", argc, argv, env)
+  HashTableApplication()
+    : Application("HashTable")
   {
   }
   

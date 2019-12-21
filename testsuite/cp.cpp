@@ -45,11 +45,8 @@ private:
   String destination;
 public:
   
-  CopyApplication(
-    int numberOfArguments,
-    const char* arguments[],
-    const char* environment[])
-    : Application("cp", numberOfArguments, arguments, environment)
+  CopyApplication()
+    : Application("cp")
   {
   }
   

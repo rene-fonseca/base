@@ -257,11 +257,9 @@ private:
   };
 public:
   
-  EvaluateApplication(
-    int numberOfArguments,
-    const char* arguments[],
-    const char* environment[])
-    : Application("eval", numberOfArguments, arguments, environment) {
+  EvaluateApplication()
+    : Application("eval")
+  {
     simple = false;
     parsed = false;
   }

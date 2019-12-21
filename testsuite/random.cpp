@@ -30,11 +30,8 @@ private:
   };
 public:
   
-  RandomApplication(
-    int numberOfArguments,
-    const char* arguments[],
-    const char* environment[])
-    : Application("random", numberOfArguments, arguments, environment)
+  RandomApplication()
+    : Application("random")
   {
   }
 

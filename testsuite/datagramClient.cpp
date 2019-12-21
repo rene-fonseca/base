@@ -30,16 +30,9 @@ private:
   static const unsigned int MINOR_VERSION = 0;
 public:
 
-  DatagramClientApplication(
-    int numberOfArguments,
-    const char* arguments[],
-    const char* environment[])
-    : Application(
-        "datagramClient",
-        numberOfArguments,
-        arguments,
-        environment
-    ) {
+  DatagramClientApplication()
+    : Application("datagramClient")
+  {
   }
 
   void client(String host, String service) {

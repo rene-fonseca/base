@@ -23,11 +23,8 @@ private:
   static const unsigned int MINOR_VERSION = 0;
 public:
 
-  ArgumentApplication(
-    int numberOfArguments,
-    const char* arguments[],
-    const char* environment[])
-    : Application("Argument", numberOfArguments, arguments, environment)
+  ArgumentApplication()
+    : Application("Argument")
   {
   }
   

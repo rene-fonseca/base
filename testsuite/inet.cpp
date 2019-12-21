@@ -37,11 +37,8 @@ private:
   };
 public:
   
-  InetApplication(
-    int numberOfArguments,
-    const char* arguments[],
-    const char* environment[])
-    : Application("inet", numberOfArguments, arguments, environment)
+  InetApplication()
+    : Application("inet")
   {
   }
   

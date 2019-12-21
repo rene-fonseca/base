@@ -26,11 +26,9 @@ private:
   static const unsigned int MINOR_VERSION = 0;
 public:
   
-  TimeApplication(
-    int numberOfArguments,
-    const char* arguments[],
-    const char* environment[]) noexcept
-    : Application("time", numberOfArguments, arguments, environment) {
+  TimeApplication()
+    : Application("time")
+  {
   }
 
   static String getTimeAsString(uint64 nanoseconds) noexcept

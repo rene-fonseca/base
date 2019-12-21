@@ -24,11 +24,9 @@ private:
   static const unsigned int MINOR_VERSION = 0;
 public:
   
-  DumpApplication(
-    int numberOfArguments,
-    const char* arguments[],
-    const char* environment[])
-    : Application("dump", numberOfArguments, arguments, environment) {
+  DumpApplication()
+    : Application("dump")
+  {
   }
 
   void main() {

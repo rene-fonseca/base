@@ -32,15 +32,9 @@ private:
   uint8 buffer[BLOCK_SIZE];
 public:
   
-  CipherApplication(
-    int numberOfArguments,
-    const char* arguments[],
-    const char* environment[])
-    : Application(
-        "cipher",
-        numberOfArguments,
-        arguments,
-        environment) {
+  CipherApplication()
+    : Application("cipher")
+  {
   }
 
   void testAes128() {

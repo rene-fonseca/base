@@ -39,11 +39,8 @@ private:
   Array<String> paths;
 public:
   
-  SpaceApplication(
-    int numberOfArguments,
-    const char* arguments[],
-    const char* environment[])
-    : Application("du", numberOfArguments, arguments, environment)
+  SpaceApplication()
+    : Application("du")
   {
   }
   

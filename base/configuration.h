@@ -174,7 +174,7 @@
 #else
 #if (_COM_AZURE_DEV__BASE__COMPILER == _COM_AZURE_DEV__BASE__COMPILER_GCC)
 #if defined(_COM_AZURE_DEV__BASE__SHARED_LIBRARY_BUILD)
-#  define _COM_AZURE_DEV__BASE__API __attribute__((visibility("default")))
+// #  define _COM_AZURE_DEV__BASE__API __attribute__((visibility("default")))
 #  define _COM_AZURE_DEV__BASE__PRIVATE_API __attribute__((visibility("hidden")))
 #elif defined(_COM_AZURE_DEV__BASE__SHARED_LIBRARY)
 #  define _COM_AZURE_DEV__BASE__API

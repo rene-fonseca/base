@@ -36,11 +36,8 @@ private:
   };
 public:
   
-  WASMApplication(
-    int numberOfArguments,
-    const char* arguments[],
-    const char* environment[])
-    : Application("wasm", numberOfArguments, arguments, environment)
+  WASMApplication()
+    : Application("wasm")
   {
   }
 

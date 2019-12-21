@@ -24,11 +24,9 @@ private:
   static const unsigned int MINOR_VERSION = 0;
 public:
 
-  PixmapApplication(
-    int numberOfArguments,
-    const char* arguments[],
-    const char* environment[])
-    : Application("Pixmap", numberOfArguments, arguments, environment) {
+  PixmapApplication()
+    : Application("Pixmap")
+  {
   }
 
   class MyPixmap : public Pixmap {

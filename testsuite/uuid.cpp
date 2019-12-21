@@ -30,11 +30,8 @@ private:
   };
 public:
   
-  UUIDApplication(
-    int numberOfArguments,
-    const char* arguments[],
-    const char* environment[])
-    : Application("uuid", numberOfArguments, arguments, environment)
+  UUIDApplication()
+    : Application("uuid")
   {
   }
 

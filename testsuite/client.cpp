@@ -30,11 +30,9 @@ private:
   static const unsigned int MINOR_VERSION = 0;
 public:
 
-  ClientApplication(
-    int numberOfArguments,
-    const char* arguments[],
-    const char* environment[])
-    : Application("client", numberOfArguments, arguments, environment) {
+  ClientApplication()
+    : Application("client")
+  {
   }
 
   void client(String host, String service) {

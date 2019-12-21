@@ -24,14 +24,9 @@ private:
   static const unsigned int MINOR_VERSION = 0;
 public:
 
-  ValidateApplication(
-    int numberOfArguments,
-    const char* arguments[],
-    const char* environment[]) noexcept
-    : Application("validate",
-      numberOfArguments,
-      arguments,
-      environment) {
+  ValidateApplication()
+    : Application("validate")
+  {
   }
 
   void main()

@@ -30,11 +30,9 @@ private:
   static const unsigned int MINOR_VERSION = 0;
 public:
 
-  DOMApplication(
-    int numberOfArguments,
-    const char* arguments[],
-    const char* environment[])
-    : Application("dom", numberOfArguments, arguments, environment) {
+  DOMApplication()
+    : Application("dom")
+  {
   }
   
   void dumpTree(const Node& node) {

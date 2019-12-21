@@ -73,11 +73,9 @@ private:
   static const unsigned int MINOR_VERSION = 0;
 public:
 
-  DemangleApplication(
-    int numberOfArguments,
-    const char* arguments[],
-    const char* environment[])
-    : Application("demangle", numberOfArguments, arguments, environment) {
+  DemangleApplication()
+    : Application("demangle")
+  {
   }
 
   void testDemangling(

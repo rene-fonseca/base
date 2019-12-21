@@ -277,11 +277,9 @@ private:
   static const unsigned int MINOR_VERSION = 0;
 public:
   
-  OpenGLApplication(
-    int numberOfArguments,
-    const char* arguments[],
-    const char* environment[]) noexcept
-    : Application("opengl", numberOfArguments, arguments, environment) {
+  OpenGLApplication()
+    : Application("opengl")
+  {
   }
   
   class MyOpenGLContext : public OpenGLContext {

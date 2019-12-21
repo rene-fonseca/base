@@ -73,8 +73,9 @@ private:
   static const unsigned int MINOR_VERSION = 0;
 public:
 
-  StringApplication(int argc, const char* argv[], const char* env[])
-    : Application("String", argc, argv, env) {
+  StringApplication()
+    : Application("String")
+  {
   }
   
   void main()

@@ -25,11 +25,9 @@ private:
   static const unsigned int MINOR_VERSION = 0;
 public:
 
-  ProcessApplication(
-    int numberOfArguments,
-    const char* arguments[],
-    const char* environment[])
-    : Application("Process", numberOfArguments, arguments, environment) {
+  ProcessApplication()
+    : Application("Process")
+  {
   }
 
   void dumpLimit(

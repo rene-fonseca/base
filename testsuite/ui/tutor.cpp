@@ -7,11 +7,9 @@ using namespace com::azure::dev::base;
 class TorusApplication : public Application {
 public:
   
-  TorusApplication(
-    int numberOfArguments,
-    const char* arguments[],
-    const char* environment[]) noexcept
-    : Application("torus", numberOfArguments, arguments, environment) {
+  TorusApplication()
+    : Application("torus")
+  {
   }
   
   class MyOpenGLContext : public OpenGLContext {

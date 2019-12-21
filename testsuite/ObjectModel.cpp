@@ -25,11 +25,8 @@ private:
   static const unsigned int MINOR_VERSION = 0;
 public:
 
-  ObjectModelApplication(
-    int numberOfArguments,
-    const char* arguments[],
-    const char* environment[])
-    : Application("ObjectModel", numberOfArguments, arguments, environment)
+  ObjectModelApplication()
+    : Application("ObjectModel")
   {
   }
   

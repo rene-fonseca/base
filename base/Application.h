@@ -32,8 +32,8 @@ _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
   class MyApplication : public Application {
   public:
   
-    MyApplication(int numberOfArguments, const char* arguments[], const char* environment[]) noexcept
-      : Application("MyApplication", numberOfArguments, arguments, environment)
+    MyApplication()
+      : Application("MyApplication")
     {
     }
 
@@ -43,7 +43,7 @@ _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
     }
   };
 
-  STUB(MyApplication);
+  APPLICATION_STUB(MyApplication);
   @endcode
   
   @short Application.
@@ -116,6 +116,7 @@ public:
   
 private:
 
+  /** Start application. */
   static int start(Application* application);
 public:
 
@@ -134,7 +135,8 @@ public:
 
       BASSERT(!Runtime::isGlobalInitialization() || !"Global initialization not allowed for Application.");
 
-      APPLICATION application(numberOfArguments, arguments, environment);
+      APPLICATION application;
+      application.setArgumentsAndEnvironment(numberOfArguments, arguments, environment);
       return start(&application);
     } catch (...) {
       return Application::EXIT_CODE_INITIALIZATION;
@@ -149,15 +151,9 @@ public:
   Application(const String& name);
 
   /**
-    Initializes application.
-
-    @param name The formal name.
-    @param numberOfArguments The "argc" argument of the entry function main.
-    @param arguments The "argv" argument of the entry function main.
-    @param environment The "env" argument of the entry function main. This
-    argument is not required.
+    Sets arguments and environment.
   */
-  Application(const String& name, int numberOfArguments, const char* arguments[], const char* environment[] = 0);
+  void setArgumentsAndEnvironment(int numberOfArguments, const char* arguments[], const char* environment[] = nullptr);
 
   /**
     Returns the formal name of the application.
@@ -265,13 +261,15 @@ public:
 /** Make stub for exe entry point. */
 #if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__WASI)
 #define _COM_AZURE_DEV__BASE__APPLICATION_STUB(APPLICATION) \
-int main(int argc, const char* argv[]) noexcept { \
+int main(int argc, const char* argv[]) noexcept \
+{ \
   Application::Stub stub; \
   return com::azure::dev::base::Application::stub<APPLICATION>(argc, argv, nullptr); \
 }
 #else
 #define _COM_AZURE_DEV__BASE__APPLICATION_STUB(APPLICATION) \
-int main(int argc, const char* argv[], const char* env[]) noexcept { \
+int main(int argc, const char* argv[], const char* env[]) noexcept \
+{ \
   Application::Stub stub; \
   return com::azure::dev::base::Application::stub<APPLICATION>(argc, argv, env); \
 }

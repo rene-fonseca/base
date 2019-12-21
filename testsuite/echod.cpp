@@ -121,8 +121,8 @@ private:
   };
 public:
   
-  EchoServiceApplication(int numberOfArguments, const char* arguments[], const char* environment[])
-    : Application("echod", numberOfArguments, arguments, environment)
+  EchoServiceApplication()
+    : Application("echod")
   {
   }
   

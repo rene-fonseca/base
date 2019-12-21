@@ -48,11 +48,9 @@ public:
     COMMAND_ERROR
   };
   
-  IEEE1394Application(
-    int numberOfArguments,
-    const char* arguments[],
-    const char* environment[]) noexcept
-    : Application("IEEE1394", numberOfArguments, arguments, environment) {
+  IEEE1394Application()
+    : Application("IEEE1394")
+  {
   }
 
   void dumpAdapters() noexcept {

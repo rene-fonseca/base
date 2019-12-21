@@ -26,11 +26,8 @@ private:
   static const unsigned int MINOR_VERSION = 0;
 public:
   
-  BitSetApplication(
-    int numberOfArguments,
-    const char* arguments[],
-    const char* environment[])
-    : Application("BitSet", numberOfArguments, arguments, environment)
+  BitSetApplication()
+    : Application("BitSet")
   {
   }
   

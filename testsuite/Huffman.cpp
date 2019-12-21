@@ -37,11 +37,9 @@ public:
     COMMAND_RANDOM
   };
   
-  HuffmanApplication(
-    int numberOfArguments,
-    const char* arguments[],
-    const char* environment[])
-    : Application("Huffman", numberOfArguments, arguments, environment) {
+  HuffmanApplication()
+    : Application("Huffman")
+  {
   }
 
   void compress(

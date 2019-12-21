@@ -24,11 +24,9 @@ private:
   static const unsigned int MINOR_VERSION = 0;
 public:
 
-  WindowApplication(
-    int numberOfArguments,
-    const char* arguments[],
-    const char* environment[]) noexcept
-    : Application("simple", numberOfArguments, arguments, environment) {
+  WindowApplication()
+    : Application("simple")
+  {
   }
   
   class MyWindow : public Window {

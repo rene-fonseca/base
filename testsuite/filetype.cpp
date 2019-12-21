@@ -42,11 +42,8 @@ private:
   Array<String> paths;
 public:
   
-  FileTypeApplication(
-    int numberOfArguments,
-    const char* arguments[],
-    const char* environment[])
-    : Application("filetype", numberOfArguments, arguments, environment)
+  FileTypeApplication()
+    : Application("filetype")
   {
   }
   

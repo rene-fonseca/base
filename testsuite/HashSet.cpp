@@ -25,8 +25,8 @@ private:
   static const unsigned int MINOR_VERSION = 0;
 public:
 
-  HashSetApplication(int argc, const char* argv[], const char* env[])
-    : Application("HashSet", argc, argv, env)
+  HashSetApplication()
+    : Application("HashSet")
   {
   }
   

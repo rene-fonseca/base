@@ -32,7 +32,7 @@ class Group;
 */
 
 class _COM_AZURE_DEV__BASE__API User : public Object {
-  friend class _COM_AZURE_DEV__BASE__API Hash<User>;
+  friend class Hash<User>;
   friend class Trustee;
 private:
   

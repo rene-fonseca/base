@@ -24,11 +24,9 @@ private:
   static const unsigned int MINOR_VERSION = 0;
 public:
   
-  SerialPortApplication(
-    int numberOfArguments,
-    const char* arguments[],
-    const char* environment[])
-    : Application("SerialPort", numberOfArguments, arguments, environment) {
+  SerialPortApplication()
+    : Application("SerialPort")
+  {
   }
   
   void onTermination() noexcept

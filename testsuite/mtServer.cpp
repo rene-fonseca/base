@@ -131,8 +131,9 @@ private:
   static const unsigned int MINOR_VERSION = 0;
 public:
 
-  MTServerApplication(int argc, const char* argv[], const char* env[])
-    : Application("mtServer", argc, argv, env) {
+  MTServerApplication()
+    : Application("mtServer")
+  {
   }
   
   void server(String desiredAddress, String desiredService) {

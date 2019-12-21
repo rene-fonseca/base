@@ -25,8 +25,8 @@ private:
   static const unsigned int MINOR_VERSION = 0;
 public:
 
-  QueueApplication(int argc, const char* argv[], const char* env[])
-    : Application("Queue", argc, argv, env) {
+  QueueApplication()
+    : Application("Queue") {
   }
   
   void main() {

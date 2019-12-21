@@ -63,16 +63,8 @@ private:
   static const unsigned int MINOR_VERSION = 0;
 public:
 
-  ReferenceCountingApplication(
-    int numberOfArguments,
-    const char* arguments[],
-    const char* environment[]) noexcept
-    : Application(
-        "referenceCounting",
-        numberOfArguments,
-        arguments,
-        environment
-    )
+  ReferenceCountingApplication()
+    : Application("referenceCounting")
   {
   }
 

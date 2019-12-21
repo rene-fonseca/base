@@ -187,11 +187,9 @@ private:
   static const unsigned int MINOR_VERSION = 0;
 public:
   
-  FileApplication(
-    int numberOfArguments,
-    const char* arguments[],
-    const char* environment[]) 
-    : Application("File", numberOfArguments, arguments, environment) {
+  FileApplication()
+    : Application("File")
+  {
   }
   
   void main() {

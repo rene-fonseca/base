@@ -824,8 +824,7 @@ void Application::setArgumentsAndEnvironment(int numberOfArguments, const char* 
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   wchar buffer[MAX_PATH + 1]; // what if path starts with "\\?\"
   DWORD length = ::GetModuleFileName(0, buffer, MAX_PATH /*lengthOf(buffer)*/);
-  BASSERT(length > 0);
-  if (length > 0) { // TAG: need inline assert
+  if (INLINE_ASSERT(length > 0)) {
     path = String(buffer, length);
   }
 #else

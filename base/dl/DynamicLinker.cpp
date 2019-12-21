@@ -704,6 +704,8 @@ public:
 
   void run() override
   {
+#if (_COM_AZURE_DEV__BASE__OS != _COM_AZURE_DEV__BASE__WASI) && \
+    (_COM_AZURE_DEV__BASE__OS != _COM_AZURE_DEV__BASE__EMCC)
     // TEST_ASSERT(DynamicLinker::getProcessImage());
     TEST_ASSERT(DynamicLinker::getBaseFrameworkImage());
     TEST_ASSERT(DynamicLinker::getImageAddress((void*)&DynamicLinker::getProcessImage));
@@ -711,6 +713,7 @@ public:
     TEST_ASSERT(info.address);
     TEST_ASSERT(info.imageAddress);
     TEST_ASSERT(info.name);
+#endif
   }
 };
 

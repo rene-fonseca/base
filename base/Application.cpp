@@ -21,6 +21,8 @@
 #include <base/string/WideString.h>
 #include <base/io/FileDescriptor.h>
 #include <base/Profiler.h>
+#include <base/build.h>
+
 #include <stdlib.h>
 #if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__EMCC)
 #  include <emscripten.h>
@@ -40,7 +42,6 @@
 #  include <signal.h>
 
 #  if (defined(_COM_AZURE_DEV__BASE__HAVE_SIGACTION))
-#    include <ucontext.h> // TAG: is this required
 #    if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__SOLARIS)
 #      include <sys/frame.h>
 #    endif
@@ -338,12 +339,14 @@ public:
 #else // unix
 
 #  if (defined(_COM_AZURE_DEV__BASE__HAVE_SIGACTION))
-  static void actionHandler(
-    int signal, siginfo_t* info, void* opaque) noexcept {
+  static void actionHandler(int signal, siginfo_t* info, void* opaque) noexcept
+  {
     const char* error = nullptr;
-
+    
+#if 0
     const ucontext_t* context = Cast::pointer<const ucontext_t*>(opaque);
     const mcontext_t* m = &context->uc_mcontext;
+#endif
 
     const void* instructionAddress = nullptr;
 #if ((_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__SOLARIS) && \

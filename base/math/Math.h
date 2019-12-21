@@ -18,12 +18,17 @@
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32) || \
+    (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__EMCC)
+
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
 namespace internal { // do NOT use namespace directly
 
   extern "C" float _hypotf(float, float);
 }
 #  define _COM_AZURE_DEV__BASE__REDIR_ISOC_HYPOTF(x, y) internal::_hypotf(x, y)
+#endif
+
 #  define _COM_AZURE_DEV__BASE__REDIR_ISOC_FABSF(x) static_cast<float>(isoc::fabs(static_cast<double>(x)))
 #  define _COM_AZURE_DEV__BASE__REDIR_ISOC_FABSL(x) static_cast<long double>(isoc::fabs(static_cast<double>(x)))
 #  define _COM_AZURE_DEV__BASE__REDIR_ISOC_CEILL(x) static_cast<long double>(isoc::ceil(static_cast<double>(x)))
@@ -389,7 +394,9 @@ public:
   */
   static inline long double abs(long double value) noexcept
   {
-    #if defined(_COM_AZURE_DEV__BASE__REDIR_ISOC_FABSL)
+    #if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__EMCC)
+      return (value >= 0) ? value : -value;
+    #elif defined(_COM_AZURE_DEV__BASE__REDIR_ISOC_FABSL)
       return _COM_AZURE_DEV__BASE__REDIR_ISOC_FABSL(value);
     #else
       return isoc::fabsl(value);

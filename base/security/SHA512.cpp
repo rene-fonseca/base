@@ -199,7 +199,8 @@ public:
   }
 };
 
-TEST_REGISTER(SHA512);
+TEST_REGISTER(SHA512); // Emscripten - not registering many tests
+// TAG: need to force primary objects to have highest init priority
 
 #endif
 

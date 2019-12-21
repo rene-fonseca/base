@@ -19,6 +19,7 @@
 #include <base/string/WideString.h>
 #include <base/Profiler.h>
 #include <base/UnitTest.h>
+#include <base/build.h>
 
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
 #  include <windows.h>
@@ -827,7 +828,10 @@ public:
     // TEST_ASSERT(p.getPriority() != 0);
     auto name = p.getName();
     // fout << "Process path: " << name << ENDL;
-    TEST_ASSERT(name);
+#if (_COM_AZURE_DEV__BASE__OS != _COM_AZURE_DEV__BASE__WASI) && \
+    (_COM_AZURE_DEV__BASE__OS != _COM_AZURE_DEV__BASE__EMCC)
+    TEST_ASSERT(name); // not supported by all platforms
+#endif
     auto times = p.getTimes();
     TEST_ASSERT(times.getTotal() > 0);
     // TEST_ASSERT(p.isAlive());

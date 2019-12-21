@@ -17,6 +17,7 @@
 #include <base/string/StringOutputStream.h>
 #include <base/string/WideString.h>
 #include <base/NotImplemented.h>
+#include <base/build.h>
 
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
 #  include <windows.h>

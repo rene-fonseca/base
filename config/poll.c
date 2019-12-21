@@ -17,7 +17,7 @@
 
 #define _XOPEN_SOURCE 600
 
-#include <sys/poll.h>
+#include <poll.h>
 
 int main() {
   int result;

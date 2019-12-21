@@ -20,6 +20,16 @@
 #cmakedefine _COM_AZURE_DEV__BASE__USE_X11
 #cmakedefine _COM_AZURE_DEV__BASE__USE_WASMTIME
 
+#if defined(__clang__)
+#  define _COM_AZURE_DEV__BASE__DEMANGLE _COM_AZURE_DEV__BASE__DEMANGLE_LLVM
+#elif defined(_MSC_VER)
+#  define _COM_AZURE_DEV__BASE__DEMANGLE _COM_AZURE_DEV__BASE__DEMANGLE_MSC
+#elif defined(__GNUG__)
+#  define _COM_AZURE_DEV__BASE__DEMANGLE _COM_AZURE_DEV__BASE__DEMANGLE_GCCV3
+#else
+#  error Unsupported compiler.
+#endif
+
 #define _COM_AZURE_DEV__BASE__HAVE_MEMSET
 #define _COM_AZURE_DEV__BASE__HAVE_MEMCPY
 #define _COM_AZURE_DEV__BASE__HAVE_MEMCMP

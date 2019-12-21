@@ -17,6 +17,7 @@
 #include <base/concurrency/SingleExclusiveSynchronize.h>
 #include <base/NotImplemented.h>
 #include <base/Profiler.h>
+#include <base/build.h>
 
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__UNIX)
 #  define _COM_AZURE_DEV__BASE__HAVE_POLL2 // TAG: fixme

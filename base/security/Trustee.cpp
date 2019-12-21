@@ -16,6 +16,7 @@
 #include <base/concurrency/Thread.h>
 #include <base/string/StringOutputStream.h>
 #include <base/NotImplemented.h>
+#include <base/build.h>
 
 // TAG: need static method to set id space
 // TAG: space is used for mapping id's into short/local integral id's

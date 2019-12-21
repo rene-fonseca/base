@@ -343,7 +343,7 @@ public:
     Math::atan2(1.0, 1.0);
     Math::atan2(1.0L, 1.0L);
 
-    // Emscripten issue: ::ceill works fine
+    // Emscripten issue: direct call to ::ceill works fine
 
     TEST_ASSERT(Math::ceil(constant::E_F) > constant::E_F);
     TEST_ASSERT(Math::ceil(constant::E) > constant::E);

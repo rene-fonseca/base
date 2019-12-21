@@ -274,25 +274,6 @@ namespace internal {
       }
       ferr << ENDL;
       
-      // TAG: dump stack frames
-//       ferr << "stack frames:" << EOL;
-//       void** frame = (void**)context->Ebp;
-//       // TAG: save entry method in thread local storage - Thread::entry
-//       void* entry = (void*)&main; // should be init with current frame in entry
-//       ferr << "entry: " << entry << ENDL;
-//       void* invoker = nullptr;
-//       unsigned int i = 0;
-//       while (invoker != entry) {
-//         invoker = *((void**)frame + 1);
-//         void** parentFrame = (void**)*frame;
-//         ferr << "i:" << i++ << FLUSH
-//              << indent(2) << "frame:" << (void*)frame << FLUSH
-//              << indent(2) << "invoker:" << invoker << FLUSH
-//              << indent(2) << "data:" << ((parentFrame-frame)-sizeof(invoker))
-//              << ENDL;
-//         frame = parentFrame;
-//       }
-      
       // assembly:
       // TAG: write current fucntion/method symbol
 #endif

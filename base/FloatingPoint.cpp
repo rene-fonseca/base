@@ -1366,7 +1366,8 @@ _COM_AZURE_DEV__BASE__PACKED__END
     TEST_ASSERT(f_qNaN.isQuiteNaN());
     TEST_ASSERT(!f_qNaN.isSignalingNaN());
     
-#if !(_COM_AZURE_DEV__BASE__COMPILER == _COM_AZURE_DEV__BASE__COMPILER_MSC)
+#if !(_COM_AZURE_DEV__BASE__COMPILER == _COM_AZURE_DEV__BASE__COMPILER_MSC) && \
+    (_COM_AZURE_DEV__BASE__OS != _COM_AZURE_DEV__BASE__EMCC) // Emscripten bug
     FloatingPoint::ToFloat f_sNaN(std::numeric_limits<float>::signaling_NaN()); // MSC bug - returns qNaN / VS 16.3.8
     TEST_ASSERT(f_sNaN.isNaN());
     TEST_ASSERT(!f_sNaN.isQuiteNaN());

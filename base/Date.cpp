@@ -35,6 +35,8 @@
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
+_COM_AZURE_DEV__BASE__GLOBAL_PRINT();
+
 namespace internal {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   inline int64 nativeToDate(const FILETIME& time) noexcept
@@ -342,7 +344,7 @@ int64 Date::getBias() noexcept
   return information.Bias * 60000000LL; // TAG: what about the other bias'
 #else // unix
 #if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__WASI)
-  throw NotSupported();
+  //throw NotSupported();
   return 0;
 #else
   tzset(); // update variables

@@ -33,13 +33,13 @@
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
+_COM_AZURE_DEV__BASE__GLOBAL_PRINT();
+
 namespace internal {
   
   namespace specific {
     
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
-
-    extern "C" int main();
     
     // handle to the global process heap
     OperatingSystem::Handle processHeap = nullptr;
@@ -274,25 +274,6 @@ namespace internal {
       }
       ferr << ENDL;
       
-      // TAG: dump stack frames
-//       ferr << "stack frames:" << EOL;
-//       void** frame = (void**)context->Ebp;
-//       // TAG: save entry method in thread local storage - Thread::entry
-//       void* entry = (void*)&main; // should be init with current frame in entry
-//       ferr << "entry: " << entry << ENDL;
-//       void* invoker = nullptr;
-//       unsigned int i = 0;
-//       while (invoker != entry) {
-//         invoker = *((void**)frame + 1);
-//         void** parentFrame = (void**)*frame;
-//         ferr << "i:" << i++ << FLUSH
-//              << indent(2) << "frame:" << (void*)frame << FLUSH
-//              << indent(2) << "invoker:" << invoker << FLUSH
-//              << indent(2) << "data:" << ((parentFrame-frame)-sizeof(invoker))
-//              << ENDL;
-//         frame = parentFrame;
-//       }
-      
       // assembly:
       // TAG: write current fucntion/method symbol
 #endif
@@ -377,16 +358,8 @@ ProcessPreinitialization::~ProcessPreinitialization() noexcept
 }
 
 #else // unix
-
 ProcessPreinitialization::ProcessPreinitialization() noexcept
 {
-  // pthread_t is an arithmetic type according to The Single UNIX Specification, Version 2
-  if (!((sizeof(Thread::Identifier) >= sizeof(pthread_t)) && // Thread (pthread support)
-        (sizeof(long) >= sizeof(time_t)) && // Date
-        (sizeof(unsigned long) >= sizeof(pid_t)))) { // Process
-    Trace::message("Type mismatch detected."); // no stream initialized at this point
-    exit(Application::EXIT_CODE_INITIALIZATION); // TAG: segfaults for sparcv9
-  }
 }
 
 ProcessPreinitialization::~ProcessPreinitialization() noexcept

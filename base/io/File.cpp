@@ -105,6 +105,8 @@ enum {
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
+_COM_AZURE_DEV__BASE__GLOBAL_PRINT();
+
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   inline Date FileTimeToDate(const FILETIME& time) {
     return Date((Cast::impersonate<int64>(time) - 116444736000000000LL)/10000000);

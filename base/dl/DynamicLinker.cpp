@@ -18,6 +18,8 @@
 #include <base/string/Parser.h>
 #include <base/UnitTest.h>
 
+_COM_AZURE_DEV__BASE__GLOBAL_PRINT();
+
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
 #  include <windows.h>
 #  include <dbghelp.h>
@@ -261,7 +263,12 @@ DynamicLinker::~DynamicLinker()
 // move to initialize
 namespace {
 
+#if (_COM_AZURE_DEV__BASE__OS != _COM_AZURE_DEV__BASE__WASI)
+  // causes recursive static initialization for LLVM
   void* frameworkImage = DynamicLinker::getImageAddress((const void*)&DynamicLinker::getBaseFrameworkImage);
+#else
+  void* frameworkImage = nullptr;
+#endif
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   void* processImage = ::GetModuleHandle(NULL);
 #else

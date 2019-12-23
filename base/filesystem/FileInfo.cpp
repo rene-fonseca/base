@@ -62,6 +62,8 @@ typedef struct _REPARSE_DATA_BUFFER {
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
+_COM_AZURE_DEV__BASE__GLOBAL_PRINT();
+
 FileInfo::FileInfo(const String& _path)
   : path(_path)
 {

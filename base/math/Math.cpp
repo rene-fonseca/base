@@ -18,6 +18,8 @@
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
+_COM_AZURE_DEV__BASE__GLOBAL_PRINT();
+
 namespace {
 
   constexpr int64 power10_64(unsigned int exponent) noexcept

@@ -23,7 +23,7 @@ void* DebugDynamicMemory::allocate(MemorySize size) noexcept
 {
   MemorySize newSize = sizeof(Descriptor) + sizeof(unsigned int) * ((size+sizeof(unsigned int)-1)/sizeof(unsigned int) + PREFIX_WORDS + SUFFIX_WORDS);
   if (newSize > PrimitiveTraits<unsigned int>::MAXIMUM) {
-    return 0;
+    return nullptr;
   }
 
   uint8* result = Heap::allocateNoThrow<uint8>(newSize);

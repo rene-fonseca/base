@@ -370,15 +370,17 @@ public:
   */
   PopUpMenu(const Position& position, unsigned int flags);
   
-  void track(const Position& position) {
+  void track(const Position& position)
+  {
     // translate mouse position to window position
   }
   
   // TAG: the position of the
-  void onChange() noexcept {
+  void onChange() noexcept
+  {
     Array<MenuItemReference>::ReadEnumerator enu = items.getReadEnumerator();
     const Dimension screenSize; // TAG: getScreen...
-    Dimension xxxSize; // TAG: size
+    Dimension size;
     Dimension preferredSize;
     Dimension minimumSize;
     Dimension desiredSize;

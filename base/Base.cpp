@@ -274,15 +274,26 @@ const char* Debug::getRelativePath(const char* path) noexcept
   if (!path) {
     return nullptr;
   }
+  auto isSeparator = [](char ch) {return (ch == '/') || (ch == '\\');};
+  
   const char* root = getRootPath();
-  while (*path) {
-    bool s1 = (*path == '/') || (*path == '\\');
-    bool s2 = (*root == '/') || (*root == '\\');
-    if ((s1 != s2) || (*path != *root)) {
+  while (*path && *root) {
+    const char* end = root;
+    for (; *end && !isSeparator(*end); ++end) {
+    }
+    const char* src = path;
+    for (; *root && (root != end) && (*src == *root); ++src, ++root) {
+    }
+    if (root != end) {
       return path;
     }
-    ++path;
-    ++root;
+    path = src;
+    if (*path) {
+      ++path;
+    }
+    if (*root) {
+      ++root;
+    }
   }
   return path;
 }

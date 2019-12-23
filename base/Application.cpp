@@ -350,7 +350,7 @@ public:
 
     const void* instructionAddress = nullptr;
 #if ((_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__SOLARIS) && \
-     (_COM_AZURE_DEV__BASE__ARCH == _COM_AZURE_DEV__BASE__SPARC))
+     (_COM_AZURE_DEV__BASE__ARCH == _COM_AZURE_DEV__BASE__SPARC32))
     instructionAddress = (void*)(m->gregs[REG_PC]);
 #endif
     
@@ -474,7 +474,7 @@ public:
     }
     
 #if ((_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__SOLARIS) && \
-     (_COM_AZURE_DEV__BASE__ARCH == _COM_AZURE_DEV__BASE__SPARC))
+     (_COM_AZURE_DEV__BASE__ARCH == _COM_AZURE_DEV__BASE__SPARC32))
     
     static const Literal REG_NAMES[8 + 8 + 8 + 8 + 8 + 32] = {
       Literal("g0"), Literal("g1"), Literal("g2"), Literal("g3"),
@@ -593,10 +593,7 @@ public:
         ferr << indent(4);
       }
     }
-    
-#if (_COM_AZURE_DEV__BASE__ARCH_MINOR == _COM_AZURE_DEV__BASE__SPARCV9)
-#endif // SPARCV9
-    
+        
     ferr << EOL << "stack frames:" << EOL;
 
     const struct frame* f = (const struct frame*)(framePointer);

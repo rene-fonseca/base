@@ -60,9 +60,11 @@ public:
     ITANIUM, /**< Itanium. */
     MIPS, /**< MIPS. */
     MIPS64, /**< MIPS 64-bit. */
-    POWER_PC, /**< Power PC. */
+    POWER_PC_32, /**< Power PC 32-bit. */
+    POWER_PC_64, /**< Power PC 64-bit. */
     RS, /**< RS. */
-    SPARC, /**< Sparc. */
+    SPARC32, /**< Sparc 32-bit. */
+    SPARC64, /**< Sparc 64-bit. */
     S390, /**< S390. */
     ARM32, /**< ARM 32-bit. */
     ARM64, /**< ARM 64-bit. */

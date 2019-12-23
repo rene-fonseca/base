@@ -77,8 +77,10 @@
 #  define _COM_AZURE_DEV__BASE__ARCH _COM_AZURE_DEV__BASE__ARM64
 #elif defined(__arm__)
 #  define _COM_AZURE_DEV__BASE__ARCH _COM_AZURE_DEV__BASE__ARM32
-#elif defined(__powerpc__) || defined(__powerpc64__)
-#  define _COM_AZURE_DEV__BASE__ARCH _COM_AZURE_DEV__BASE__PPC
+#elif defined(__powerpc__)
+#  define _COM_AZURE_DEV__BASE__ARCH _COM_AZURE_DEV__BASE__POWERPC32
+#elif defined(__powerpc64__)
+#  define _COM_AZURE_DEV__BASE__ARCH _COM_AZURE_DEV__BASE__POWERPC64
 #elif defined(__mips__)
 #  define _COM_AZURE_DEV__BASE__ARCH _COM_AZURE_DEV__BASE__MIPS
 #elif defined(__amd64__)

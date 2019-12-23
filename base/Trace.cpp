@@ -50,6 +50,7 @@ void Trace::message(const char* message) noexcept
 #elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__CYGWIN) // special case
   win32::OutputDebugString(message);
 #elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__WASI)
+  printf("Trace: %s\n", message);
 #else // unix
   // const char* ident = nullptr;
   openlog("TRACE", LOG_PID, 0); // TAG: fixme - do not reopen
@@ -80,6 +81,7 @@ void Trace::member(const void* pointer, const char* message) noexcept
 #elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__CYGWIN) // special case
   win32::OutputDebugString(buffer);
 #elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__WASI)
+  printf("Trace: %s\n", static_cast<const char*>(buffer));
 #else // unix
   openlog("TRACE", LOG_PID, 0); // TAG: fixme - do not reopen
 #if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__MACOS)

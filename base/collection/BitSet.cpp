@@ -13,6 +13,7 @@
 
 #include <base/collection/BitSet.h>
 #include <base/string/StringOutputStream.h>
+#include <base/UnitTest.h>
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
@@ -36,7 +37,8 @@ void BitSet::zeroExtend(MemorySize size)
 }
 
 BitSet::BitSet()
-  : elements(new ReferenceCountedAllocator<unsigned long>()), size(0)
+  : elements(new ReferenceCountedAllocator<unsigned long>()),
+    size(0)
 {
 }
 
@@ -251,5 +253,43 @@ FormatOutputStream& operator<<(FormatOutputStream& stream, const BitSet& value)
   }
   return stream << buffer.getString();
 }
+
+#if defined(_COM_AZURE_DEV__BASE__TESTS)
+
+class TEST_CLASS(BitSet) : public UnitTest {
+public:
+
+  TEST_PRIORITY(20);
+  TEST_PROJECT("base/collection");
+
+  void run() override
+  {
+    BitSet b1{};
+    BitSet b2 = b1;
+    TEST_ASSERT(b1.isEmpty());
+    TEST_ASSERT(!b1);
+    BitSet b3(128, false);
+    b3.flip(21);
+    b3.reset(33);
+    b3.set(77);
+    auto b4 = b3;
+    b4 >>= 1;
+    b4 <<= 3;
+    b3 ^= b4;
+    b3 |= b4;
+    b3 &= b4;
+    
+    auto e = b3.getEnumerator();
+    while (e.hasNext()) {
+      e.next();
+    }
+    
+    // fout << b3 << ENDL;
+  }
+};
+
+TEST_REGISTER(BitSet);
+
+#endif
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

@@ -715,6 +715,12 @@ public:
   */
   void removeAll() noexcept;
 
+  /** Returns true if bitset is non-empty. */
+  inline operator bool() noexcept
+  {
+    return size != 0;
+  }
+
   friend FormatOutputStream& operator<<(FormatOutputStream& stream, const BitSet& value);
 };
 

@@ -147,6 +147,7 @@
 #define _COM_AZURE_DEV__BASE__WASM64 14
 #define _COM_AZURE_DEV__BASE__POWERPC64 15
 #define _COM_AZURE_DEV__BASE__SPARC64 16
+#define _COM_AZURE_DEV__BASE__S390X 17
 
 // Supported byte orders
 #define _COM_AZURE_DEV__BASE__BIG_ENDIAN 1

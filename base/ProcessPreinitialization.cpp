@@ -33,13 +33,13 @@
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
+_COM_AZURE_DEV__BASE__GLOBAL_PRINT();
+
 namespace internal {
   
   namespace specific {
     
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
-
-    extern "C" int main();
     
     // handle to the global process heap
     OperatingSystem::Handle processHeap = nullptr;
@@ -377,16 +377,8 @@ ProcessPreinitialization::~ProcessPreinitialization() noexcept
 }
 
 #else // unix
-
 ProcessPreinitialization::ProcessPreinitialization() noexcept
 {
-  // pthread_t is an arithmetic type according to The Single UNIX Specification, Version 2
-  if (!((sizeof(Thread::Identifier) >= sizeof(pthread_t)) && // Thread (pthread support)
-        (sizeof(long) >= sizeof(time_t)) && // Date
-        (sizeof(unsigned long) >= sizeof(pid_t)))) { // Process
-    Trace::message("Type mismatch detected."); // no stream initialized at this point
-    exit(Application::EXIT_CODE_INITIALIZATION); // TAG: segfaults for sparcv9
-  }
 }
 
 ProcessPreinitialization::~ProcessPreinitialization() noexcept

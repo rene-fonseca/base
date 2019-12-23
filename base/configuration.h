@@ -77,6 +77,10 @@
 #  define _COM_AZURE_DEV__BASE__ARCH _COM_AZURE_DEV__BASE__ARM64
 #elif defined(__arm__)
 #  define _COM_AZURE_DEV__BASE__ARCH _COM_AZURE_DEV__BASE__ARM32
+#elif defined(__sparc__) && defined(__arch64__)
+#  define _COM_AZURE_DEV__BASE__ARCH _COM_AZURE_DEV__BASE__SPARC64
+#elif defined(__sparc__)
+#  define _COM_AZURE_DEV__BASE__ARCH _COM_AZURE_DEV__BASE__SPARC32
 #elif defined(__powerpc__)
 #  define _COM_AZURE_DEV__BASE__ARCH _COM_AZURE_DEV__BASE__POWERPC32
 #elif defined(__powerpc64__)
@@ -96,6 +100,8 @@
 #endif
 
 #if (_COM_AZURE_DEV__BASE__ARCH != _COM_AZURE_DEV__BASE__X86) && \
+    (_COM_AZURE_DEV__BASE__ARCH != _COM_AZURE_DEV__BASE__SPARC32) && \
+    (_COM_AZURE_DEV__BASE__ARCH != _COM_AZURE_DEV__BASE__POWERPC32) && \
     (_COM_AZURE_DEV__BASE__ARCH != _COM_AZURE_DEV__BASE__MIPS) && \
     (_COM_AZURE_DEV__BASE__ARCH != _COM_AZURE_DEV__BASE__ARM32) && \
     (_COM_AZURE_DEV__BASE__ARCH != _COM_AZURE_DEV__BASE__WASM32) && \

@@ -85,3 +85,5 @@ RHEL 8             | PowerPC  |         | Pending    |
 SUSE Linux 15      | x86_64   |         | Pending    |
 WebAssembly WASI   | WASM32   | LLVM    | Build      | 14 Dec 2019 - Only builds but does not run
 IOS                | ARM64    | Clang   | Build      | 18 Dec 2019 - Not run
+GNU/Linux          | PowerPC  | GCC     | Build      | 23 Dec 2019 - Not run
+GNU/Linux          | sparc64  | GCC     | Build      | 23 Dec 2019 - Not run

@@ -87,3 +87,5 @@ WebAssembly WASI   | WASM32   | LLVM    | Build      | 14 Dec 2019 - Only builds
 IOS                | ARM64    | Clang   | Build      | 18 Dec 2019 - Not run
 GNU/Linux          | PowerPC  | GCC     | Build      | 23 Dec 2019 - Not run
 GNU/Linux          | sparc64  | GCC     | Build      | 23 Dec 2019 - Not run
+GNU/Linux          | s390x    | GCC     | Build      | 23 Dec 2019 - Not run
+GNU/Linux          | ARM64    | GCC     | Build      | 23 Dec 2019 - Not run

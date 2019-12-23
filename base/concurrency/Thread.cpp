@@ -54,6 +54,8 @@
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
+_COM_AZURE_DEV__BASE__GLOBAL_PRINT();
+
 Thread::ThreadLocal::ThreadLocal(Thread* _thread)
 {
   if (!INLINE_ASSERT(_thread)) {
@@ -953,6 +955,11 @@ public:
   
   void run() override
   {
+#if defined(_COM_AZURE_DEV__BASE__PTHREAD)
+    // pthread_t is an arithmetic type according to The Single UNIX Specification, Version 2
+    TEST_ASSERT(sizeof(Thread::Identifier) >= sizeof(pthread_t)); // (pthread support)
+#endif
+
     lock.exclusiveLock();
 
     MyThread thread1(this);

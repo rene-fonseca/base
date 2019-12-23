@@ -39,6 +39,8 @@
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
+_COM_AZURE_DEV__BASE__GLOBAL_PRINT();
+
 namespace internal {
   
   class InetInterface {

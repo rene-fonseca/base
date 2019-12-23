@@ -167,6 +167,8 @@ typedef struct _REPARSE_DATA_BUFFER {
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
+_COM_AZURE_DEV__BASE__GLOBAL_PRINT();
+
 unsigned int FileSystem::counter = 0;
 int FileSystem::cachedSupportsLinks = -1; // -1 not cached, 0 false, and 1 true
 

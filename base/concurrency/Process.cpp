@@ -49,6 +49,8 @@
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
+_COM_AZURE_DEV__BASE__GLOBAL_PRINT();
+
 #if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__WINNT4) || (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__W2K)
 namespace ntapi {
   
@@ -231,7 +233,6 @@ void Process::setPriority(int priority)
 // need mapping from error code to base error codes: ::GetLastError ... but also for unix
 
 // need garbage collector for DLL attach/detach - TerminateThread does not call
-// TAG: !!! Exit of process
 BOOL GetExitCodeProcess(
   HANDLE hProcess,     // handle to the process
   LPDWORD lpExitCode   // termination status
@@ -682,8 +683,6 @@ Process::Times Process::getTimes() noexcept
 #endif // flavor
 }
 
-extern "C" int main();
-
 // TAG: need method to dump stack trace and registers of context
 // class Context (architure)
 
@@ -821,6 +820,10 @@ public:
 
   void run() override
   {
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__UNIX)
+    TEST_ASSERT(sizeof(unsigned long) >= sizeof(pid_t));
+#endif
+
     Process p = Process::getProcess();
     TEST_ASSERT(p.getId() != 0);
     auto parent = p.getParentProcess();

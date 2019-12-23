@@ -387,3 +387,49 @@ void _COM_AZURE_DEV__BASE__BUILD_STATIC() noexcept
 #endif
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE
+
+#if 0 && (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__WASI)
+// TAG: temporary hooks to find WASI issues
+
+typedef uint64_t guard_type;
+
+void abort()
+{
+  printf("Error: abort() called\n");
+  exit(1);
+}
+
+extern "C" bool is_initialized(guard_type* guard_object)
+{
+  printf("is_initialized %p\n", guard_object);
+  char* initialized = (char*)guard_object;
+  return *initialized;
+}
+
+extern "C" void set_initialized(guard_type* guard_object)
+{
+  printf("set_initialized %p\n", guard_object);
+  char* initialized = (char*)guard_object;
+  *initialized = 1;
+}
+
+extern "C" int __cxa_guard_acquire(guard_type *guard_object)
+{
+  //set_initialized(guard_object);
+  printf("__cxa_guard_acquire %p %d\n", guard_object, is_initialized(guard_object));
+  return !is_initialized(guard_object);
+}
+
+extern "C"  void __cxa_guard_release(guard_type *guard_object)
+{
+  printf("__cxa_guard_release %p\n", guard_object);
+  *guard_object = 0;
+  set_initialized(guard_object);
+}
+
+extern "C" void __cxa_guard_abort(guard_type *guard_object)
+{
+  printf("__cxa_guard_abort %p\n", guard_object);
+  *guard_object = 0;
+}
+#endif

@@ -201,3 +201,26 @@ namespace com {
 #if (!defined(WRITE_SOURCE_LOCATION))
 #  define WRITE_SOURCE_LOCATION() {fout << GET_SOURCE_LOCATION() << ENDL;}
 #endif
+
+_COM_AZURE_DEV__BASE__ENTER_NAMESPACE
+
+/** Used for debugging global initialization issues. */
+class GlobalPrint {
+private:
+
+  const char* text = nullptr;
+public:
+
+  GlobalPrint(const char* _text) noexcept;
+
+  ~GlobalPrint() noexcept;
+};
+
+#if 0
+#  define _COM_AZURE_DEV__BASE__GLOBAL_PRINT() \
+  namespace {base::GlobalPrint _COM_AZURE_DEV__BASE__MAKE_IDENTIFIER(globalPrint)(__FILE__);}
+#else
+#  define _COM_AZURE_DEV__BASE__GLOBAL_PRINT() namespace {}
+#endif
+
+_COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

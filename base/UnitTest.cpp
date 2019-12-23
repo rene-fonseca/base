@@ -30,6 +30,8 @@
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
+_COM_AZURE_DEV__BASE__GLOBAL_PRINT();
+
 UnitTestManager::RegisterEntry::EntryNode* UnitTestManager::RegisterEntry::nodes = nullptr;
 UnitTestManager::DependencyEntry::DependencyNode* UnitTestManager::DependencyEntry::nodes = nullptr;
 

@@ -36,8 +36,22 @@
 #    include <unistd.h>
 #  endif
 #endif // flavor
+#include <stdio.h>
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
+
+GlobalPrint::GlobalPrint(const char* _text) noexcept
+  : text(_text)
+{
+  printf("GLOBAL CONSTRUCT %s\n", text);
+}
+
+GlobalPrint::~GlobalPrint() noexcept
+{
+  printf("GLOBAL DESTRUCT %s\n", text);
+}
+
+_COM_AZURE_DEV__BASE__GLOBAL_PRINT();
 
 namespace {
 

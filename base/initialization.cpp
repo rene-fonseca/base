@@ -50,21 +50,7 @@
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
-#if 0
-// used for runtime behavior control via Application
-/** Simple key/value registry. */
-class KeyValueRegistry {
-public:
-
-  KeyValueRegistry();
-
-  bool hasKey(const String& key);
-
-  String getValue();
-
-  void setValue(const String& key, const String& value);
-};
-#endif
+_COM_AZURE_DEV__BASE__GLOBAL_PRINT();
 
 namespace _impl {
 
@@ -149,10 +135,11 @@ namespace internal {
     ProcessPreinitialization processPreinitialization;
   public:
     
-    ProcessInitialization() noexcept {
+    ProcessInitialization()
+    {
     }
   };
-  
+
   ProcessInitialization processInitialization;
 }; // end of namespace - internal
 

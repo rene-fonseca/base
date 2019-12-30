@@ -1,64 +1,66 @@
-The Base Framework
-==================
+# The Base Framework
 
 A framework for developing platform independent applications in C++.
 
-Copyright (C) 2000-2019 by René Møller Fonseca <rene.m.fonseca@gmail.com>
+Copyright (C) 2000-2019 by René Møller Fonseca <rene.m.fonseca+base@gmail.com>
 
-https://dev.azure.com/renefonseca/base
+Primary hosting at https://dev.azure.com/renefonseca/base
 
 
 
-Dependencies
-============
+## Dependencies
 
 ZLib, BZip2, OpenGL, and X11 are optional packages. For Ubuntu install:
 
-  sudo apt-get install zlib1g-dev
-  sudo apt-get install libbz2-dev
-  sudo apt-get install libx11-dev
+> sudo apt-get install zlib1g-dev
+> sudo apt-get install libbz2-dev
+> sudo apt-get install libx11-dev
 
 Other optional dependencies:
   Wasmtime-C-API
 
 
 
-Build
-=====
+## Build
 
 Make sure GIT, cmake, make, and compiler (e.g. g++) are installed.
 
-Debug build
------------
+### Debug build
+
+```shell
 git clone https://dev.azure.com/renefonseca/base/_git/base
 cd base
 cmake . -DCMAKE_BUILD_TYPE=Debug
 make
 ./testing/unittesting
 ctest . -C Debug
+```
 
-Release build
--------------
+### Release build
+
+```shell
 git clone https://dev.azure.com/renefonseca/base/_git/base
 cd base
 cmake . -DCMAKE_BUILD_TYPE=Release
 make
 ./testing/unittesting
 ctest . -C Release
+```
 
 
+## Platforms
 
-Platforms
-=========
+List of platforms tested.
 
-Windows            | x86_64   | MSC     | Runs continuously on pipeline
-Windows            | x86      | MSC     | Runs continuously on pipeline
-Windows            | ARM32    | MSC     | Runs continuously on pipeline but no testing
-Windows            | ARM64    | MSC     | Runs continuously on pipeline but no testing
-Ubuntu 18.04       | x86_64   | GCC     | Runs continuously on pipeline
-Ubuntu 16.04       | x86_64   | GCC     | Runs continuously on pipeline
-macOS              | x86_64   | Clang   | Runs continuously on pipeline
-
+OS                 | Arch     | Compiler| Status     | Comment
+------------------ | -------- | ------- | ---------- | -------
+Windows            | x86_64   | MSC     | Ok         | Runs continuously on pipeline
+Windows            | x86      | MSC     | Ok         | Runs continuously on pipeline
+Windows            | ARM32    | MSC     | Ok         | Runs continuously on pipeline but no testing
+Windows            | ARM64    | MSC     | Ok         | Runs continuously on pipeline but no testing
+Ubuntu 18.04       | x86_64   | GCC     | Ok         | Runs continuously on pipeline
+Ubuntu 16.04       | x86_64   | GCC     | Ok         | Runs continuously on pipeline
+macOS              | x86_64   | Clang   | Ok         | Runs continuously on pipeline
 Windows            | x86      | MSC     | Ok         | 8 Dec 2019
 Windows            | ARM32    | MSC     | Ok         | 8 Dec 2019
 Windows            | ARM64    | MSC     | Ok         | 8 Dec 2019

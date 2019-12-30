@@ -61,6 +61,11 @@ String Version::getVersion() const noexcept
 
 String Version::getCommit() const noexcept
 {
+  return Literal(_COM_AZURE_DEV__BASE__GIT_COMMIT);
+}
+
+String Version::getCommitShort() const noexcept
+{
   return Literal(_COM_AZURE_DEV__BASE__GIT_COMMIT_SHORT);
 }
 

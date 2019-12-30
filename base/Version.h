@@ -67,9 +67,14 @@ public:
   virtual String getVersion() const noexcept;
 
   /**
-    Returns the short commit id.
+    Returns the full commit id.
   */
   virtual String getCommit() const noexcept;
+
+  /**
+    Returns the short commit id.
+  */
+  virtual String getCommitShort() const noexcept;
 
   /*
     Returns the build date in seconds since epoch.

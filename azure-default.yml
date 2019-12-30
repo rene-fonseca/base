@@ -22,7 +22,7 @@ jobs:
     continueOnError: true
     inputs:
       script: |
-        ./testsuite/unittesting --compact --junit junit.xml
+        ./testsuite/unittesting --junit junit.xml
         ctest -T Test
       workingDirectory: $(System.DefaultWorkingDirectory)/build
 
@@ -75,7 +75,7 @@ jobs:
     inputs:
       script: |
         source ~/emsdk/emsdk_env.sh
-        node --experimental-wasm-threads --experimental-wasm-bulk-memory testsuite/unittesting.js --compact --junit junit.xml
+        node --experimental-wasm-threads --experimental-wasm-bulk-memory testsuite/unittesting.js --junit junit.xml
         ctest -T Test
       workingDirectory: $(System.DefaultWorkingDirectory)/emscripten
 

@@ -178,7 +178,8 @@ const unsigned int FileSystem::MAXIMUM_PATH_LENGTH = MAX_PATH;
 const unsigned int FileSystem::MAXIMUM_PATH_LENGTH = PATH_MAX;
 #endif // flavor
 
-String FileSystem::getPath(const String& base, const String& relative) noexcept {
+String FileSystem::getPath(const String& base, const String& relative) noexcept
+{
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   String result(base.getLength() + sizeof("\\") + relative.getLength());
   result.append(base).append("\\").append(relative);
@@ -189,7 +190,8 @@ String FileSystem::getPath(const String& base, const String& relative) noexcept 
   return result;
 }
 
-String FileSystem::getComponent(const String& path, Component component) {
+String FileSystem::getComponent(const String& path, Component component)
+{
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   int forward = path.lastIndexOf('/');
   int backward = path.lastIndexOf('\\');
@@ -230,7 +232,8 @@ String FileSystem::getComponent(const String& path, Component component) {
   return String();
 }
 
-bool FileSystem::isAbsolutePath(const String& path) noexcept {
+bool FileSystem::isAbsolutePath(const String& path) noexcept
+{
   String::ReadIterator i = path.getBeginReadIterator();
   String::ReadIterator end = path.getEndReadIterator();
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
@@ -240,7 +243,8 @@ bool FileSystem::isAbsolutePath(const String& path) noexcept {
 #endif // flavor
 }
 
-bool FileSystem::isFolderPath(const String& path) noexcept {
+bool FileSystem::isFolderPath(const String& path) noexcept
+{
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   unsigned int length = path.getLength();
   if (length == 0) {
@@ -253,7 +257,8 @@ bool FileSystem::isFolderPath(const String& path) noexcept {
 #endif // flavor
 }
 
-String FileSystem::toAbsolutePath(const String& base, const String& path) {
+String FileSystem::toAbsolutePath(const String& base, const String& path)
+{
   if (!base.isProper() || isAbsolutePath(path)) {
     return path;
   }
@@ -283,7 +288,8 @@ String FileSystem::toAbsolutePath(const String& base, const String& path) {
   return result;
 }
 
-String FileSystem::findFile(const Array<String>& searchPaths, const String& relative, unsigned int index) {
+String FileSystem::findFile(const Array<String>& searchPaths, const String& relative, unsigned int index)
+{
   if (relative.isProper()) {
     if (isAbsolutePath(relative)) {
       return relative;
@@ -303,7 +309,8 @@ String FileSystem::findFile(const Array<String>& searchPaths, const String& rela
   return String();
 }
 
-String FileSystem::toUrl(const String& path) {
+String FileSystem::toUrl(const String& path)
+{
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   static const Literal PREFIX = "file:///";
 #else // unix

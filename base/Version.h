@@ -77,6 +77,16 @@ public:
   virtual int64 getBuildDate() const noexcept;
 
   /**
+    Returns the source control branch.
+  */
+  virtual String getBranch() const noexcept;
+
+  /**
+    Returns the source control remote url.
+  */
+  virtual String getRemoteUrl() const noexcept;
+
+  /**
     Returns a short banner (multiple lines) describing the framework.
   */
   virtual String getBanner() const noexcept;

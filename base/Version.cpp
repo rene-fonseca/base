@@ -27,7 +27,7 @@ const char Version::banner[] =
 "but WITHOUT ANY WARRANTY; without even the implied warranty of\n"
 "MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.\n"
 "Please report bugs to https://dev.azure.com/renefonseca/base.\n\n"
-"build data: " _COM_AZURE_DEV__BASE__BUILD_DATE "\n";
+"Build data: " _COM_AZURE_DEV__BASE__BUILD_DATE "\n";
 
 unsigned int Version::getMajorVersion() const noexcept
 {
@@ -41,7 +41,7 @@ unsigned int Version::getMinorVersion() const noexcept
 
 unsigned int Version::getMicroVersion() const noexcept
 {
-  return _COM_AZURE_DEV__BASE__GIT_REVISION; // TAG: FIXME
+  return _COM_AZURE_DEV__BASE__GIT_REVISION;
 }
 
 unsigned int Version::getRevision() const noexcept
@@ -67,6 +67,16 @@ String Version::getCommit() const noexcept
 int64 Version::getBuildDate() const noexcept
 {
   return _COM_AZURE_DEV__BASE__BUILD_DATE_SECONDS;
+}
+
+String Version::getBranch() const noexcept
+{
+  return Literal(_COM_AZURE_DEV__BASE__GIT_BRANCH);
+}
+
+String Version::getRemoteUrl() const noexcept
+{
+  return Literal(_COM_AZURE_DEV__BASE__GIT_REMOTE_URL);
 }
 
 String Version::getBanner() const noexcept

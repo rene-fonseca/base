@@ -222,6 +222,9 @@ foreach(source IN ITEMS ${base_SRC})
   #message("${group_path} -> ${source}")
 endforeach()
 
+# Alternatively use Azure variables like Build.Repository.Uri
+execute_process(OUTPUT_VARIABLE GIT_REMOTE_URL COMMAND git remote get-url origin)
+string(REGEX REPLACE "\n$" "" GIT_REMOTE_URL "${GIT_REMOTE_URL}")
 execute_process(OUTPUT_VARIABLE GIT_BRANCH COMMAND git symbolic-ref --short HEAD)
 string(REGEX REPLACE "\n$" "" GIT_BRANCH "${GIT_BRANCH}")
 execute_process(OUTPUT_VARIABLE GIT_COMMIT COMMAND git rev-parse HEAD)
@@ -238,6 +241,7 @@ else ()
   set(BUILD_DATE_SECONDS "0")
 endif ()
 
+message("Remote: ${GIT_REMOTE_URL}")
 message("Branch: ${GIT_BRANCH}")
 message("Commit: ${GIT_COMMIT}")
 message("Revision: ${GIT_REVISION}")

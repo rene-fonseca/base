@@ -154,6 +154,8 @@ private:
   String description;
   /** Source file. */
   String source;
+  /** Source file line. */
+  unsigned int line = 0;
   /** Class type. */
   Type type;
 
@@ -204,7 +206,7 @@ public:
   void setDescription(const String& description);
   
   /** Sets the source file of the test. */
-  void setSource(const String& source);
+  void setSource(const String& source, unsigned int line = 0);
 
   /** Sets the type (from class) of the test. */
   void setType(const Type& type);
@@ -228,6 +230,12 @@ public:
   inline const String& getSource() const noexcept
   {
     return source;
+  }
+
+  /** Returns the source line of the test. */
+  inline unsigned int getLine() const noexcept
+  {
+    return line;
   }
 
   /** Returns the type (from class) of the test. */
@@ -383,6 +391,7 @@ private:
   bool progressMode = false;
   bool showStackTrace = false;
   bool traceExceptions = false;
+  bool useUrlAsSource = false;
   unsigned int passed = 0;
   unsigned int failed = 0;
   Timer timer;
@@ -415,13 +424,13 @@ public:
 
   /** Create test instance and adds it. */
   template<class TYPE>
-  inline void registerTest(const String& name, const String& source = String(), const String& description = String())
+  inline void registerTest(const String& name, const String& source = String(), unsigned int line = 0, const String& description = String())
   {
     auto test = new TYPE();
     test->setName(name);
     test->setType(Type::getType<TYPE>()); // we cannot get type of original type since it may be a template
     test->setDescription(description);
-    test->setSource(source);
+    test->setSource(source, line);
     addTest(test);
   }
 
@@ -455,6 +464,18 @@ public:
   inline void setUseANSIColors(bool _useANSIColors) noexcept
   {
     useANSIColors = _useANSIColors;
+  }
+  
+  /** Returns true if source shold be shown as GIT repo url. */
+  inline bool getUseUrlAsSource() const noexcept
+  {
+    return useUrlAsSource;
+  }
+
+  /** Sets if source shold be shown as GIT repo url. */
+  inline void setUseUrlAsSource(bool _useUrlAsSource) noexcept
+  {
+    useUrlAsSource = _useUrlAsSource;
   }
 
   /** Sets randomization mode. */
@@ -576,7 +597,7 @@ public:
 
 #define TEST_REGISTER_IMPL(ID, TYPE) \
   namespace { namespace ID { \
-    void _entry() { base::UnitTestManager::getManager().registerTest<TEST_CLASS(TYPE)>(#TYPE, UnitTestManager::trimPath(_COM_AZURE_DEV__BASE__SOURCE_FILE), String()); } \
+    void _entry() { base::UnitTestManager::getManager().registerTest<TEST_CLASS(TYPE)>(#TYPE, UnitTestManager::trimPath(_COM_AZURE_DEV__BASE__SOURCE_FILE), __LINE__, String()); } \
     base::UnitTestManager::RegisterEntry::EntryNode _storage = {#TYPE, _entry, nullptr, false}; \
     base::UnitTestManager::RegisterEntry _register(&_storage); \
   } }

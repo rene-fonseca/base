@@ -23,6 +23,9 @@
 #include <base/TypeInfo.h>
 #include <base/Date.h>
 #include <base/io/FileDescriptor.h>
+#include <base/filesystem/FileSystem.h>
+#include <base/net/Url.h>
+#include <base/Version.h>
 #include <algorithm>
 #include <memory>
 
@@ -78,9 +81,10 @@ void UnitTest::setDescription(const String& _description)
   description = _description;
 }
 
-void UnitTest::setSource(const String& _source)
+void UnitTest::setSource(const String& _source, unsigned int _line)
 {
   source = _source;
+  line = _line;
 }
 
 void UnitTest::setType(const Type& _type)
@@ -760,7 +764,43 @@ bool UnitTestManager::runTests(const String& pattern, bool runDevel)
       }
       if (verbosity > COMPACT) {
         if (!test->getSource().isEmpty()) {
-          fout << "  Source: " << test->getSource() << ENDL;
+          auto source = test->getSource();
+          if (UnitTestManager::getManager().getUseUrlAsSource()) {
+            Version version;
+            auto remoteUrl = version.getRemoteUrl();
+            if (!FileSystem::isAbsolutePath(source) && remoteUrl) {
+              Url url(remoteUrl);
+              url.setUser(String());
+              url.setPassword(String());
+              remoteUrl = url.getUrl();
+              source.replaceAll("\\", "/");
+              if (remoteUrl.startsWith("https://dev.azure.com/")) {
+                source = "/" + source;
+                source.replaceAll("/", "%2F");
+                remoteUrl += "?version=GC" + version.getCommit();
+                remoteUrl += "&path=" + source;
+                if (auto line = test->getLine()) {
+                  remoteUrl += Format::subst("&line=%1&lineEnd=%2&lineStartColumn=1&lineEndColumn=1&lineStyle=plain", line, line + 1);
+                }
+                source = remoteUrl;
+              } else if (remoteUrl.startsWith("https://github.com/")) {
+                if (!remoteUrl.endsWith("/")) {
+                  remoteUrl += "/";
+                }
+                source = remoteUrl + "blob/" + version.getCommit() + "/" + source;
+                if (auto line = test->getLine()) {
+                  source += "#L" + (StringOutputStream() << line);
+                }
+              }
+              // TAG: need Url::escape
+            }
+          }
+
+          // Azure: use ANSI code hyperlink when supported for Azure pipeline // printf '\e]8;;http://example.com\e\\This is a link\e]8;;\e\\\n'
+          // Azure: alternatively pipeline can substitute internal links and show short path instead of full url
+          // source = "\033]8;;URL\033\\TITLE\033]8;;\033]\\";
+
+          fout << "  Source: " << source << ENDL;
         }
         if (!test->getDescription().isEmpty()) {
           fout << "  Description: " << test->getDescription() << ENDL;

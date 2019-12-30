@@ -47,6 +47,7 @@ private:
   Command command = COMMAND_RUN;
   Verbosity verbosity = NORMAL;
   bool useANSIColors = false;
+  bool useUrlAsSource = false;
   bool randomize = false;
   bool stopOnFailure = false;
   bool showStackTrace = false;
@@ -65,6 +66,12 @@ public:
     : Application("unittesting")
   {
     useANSIColors = FileDescriptor::getStandardOutput().isANSITerminal();
+    
+    // TAG: also enable by default for macOS terminal and other terminals
+    const Map<String, String>& environment = Application::getApplication()->getEnvironment();
+    if (const auto found = environment.find(MESSAGE("AGENT_BUILDDIRECTORY"))) { // detect Azure pipeline agent
+      useUrlAsSource = true;
+    }
   }
   
   bool parseArguments()
@@ -93,6 +100,8 @@ public:
         useANSIColors = true;
       } else if (argument == "--nocolor") {
         useANSIColors = false;
+      } else if (argument == "--urlAsSource") {
+        useUrlAsSource = false;
       } else if (argument == "--json") {
         reportJSON = true;
       } else if (argument == "--devel") {
@@ -287,6 +296,7 @@ public:
       }
       
       manager.setUseANSIColors(useANSIColors);
+      manager.setUseUrlAsSource(useUrlAsSource);
       manager.setRandomize(randomize);
       manager.setStopOnFailure(stopOnFailure);
       manager.setShowStackTrace(showStackTrace);

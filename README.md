@@ -12,9 +12,11 @@ Primary hosting at https://dev.azure.com/renefonseca/base
 
 ZLib, BZip2, OpenGL, and X11 are optional packages. For Ubuntu install:
 
-> sudo apt-get install zlib1g-dev
-> sudo apt-get install libbz2-dev
-> sudo apt-get install libx11-dev
+```shell
+sudo apt-get install zlib1g-dev
+sudo apt-get install libbz2-dev
+sudo apt-get install libx11-dev
+```
 
 Other optional dependencies:
   Wasmtime-C-API

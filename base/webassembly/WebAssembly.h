@@ -96,7 +96,10 @@ public:
   class _COM_AZURE_DEV__BASE__API WebAssemblyException : public Exception {
   public:
   };
+  
+  // CompileError, LinkError, RuntimeError
 
+  // add directory access by paths
   // callbacks
   // register host functions - need to parse and build this automatically
   // consider ioctl/syskern appoach for all resource access - need security layer

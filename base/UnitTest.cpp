@@ -440,7 +440,7 @@ Reference<UnitTest::Run> UnitTest::runImpl()
       );
     }
     
-    String text = Format::subst("  PASSED:%1 FAILED:%2 HERE:%3/%4 NOT_HERE:%5/%6", r->passed, r->failed, pointsReached, pointsReach, pointsNotReached, pointsNotReach);
+    String text = Format::subst("  PASSED:%1 FAILED:%2 FLOW:%3/%4", r->passed, r->failed, pointsReached+pointsNotReached, pointsReach+pointsNotReach);
     if (manager.getVerbosity() >= UnitTestManager::COMPACT) {
       text += Format::subst(" ELAPSED:%1ms", (r->endTime - r->startTime) / 1000.0); // r->endTime/1000.0
     }

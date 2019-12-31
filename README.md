@@ -10,13 +10,13 @@ Primary hosting at https://dev.azure.com/renefonseca/base
 
 ## Status
 
-[![Windows x64](https://dev.azure.com/renefonseca/base/_apis/build/status/rene-fonseca.base?branchName=master&jobName=windows)](https://dev.azure.com/renefonseca/base/_build/latest?definitionId=5&branchName=master)
-[![Windows x86](https://dev.azure.com/renefonseca/base/_apis/build/status/rene-fonseca.base?branchName=master&jobName=windows_x86)](https://dev.azure.com/renefonseca/base/_build/latest?definitionId=5&branchName=master)
-[![Windows ARM64](https://dev.azure.com/renefonseca/base/_apis/build/status/rene-fonseca.base?branchName=master&jobName=windows_arm64)](https://dev.azure.com/renefonseca/base/_build/latest?definitionId=5&branchName=master)
-[![Windows ARM32](https://dev.azure.com/renefonseca/base/_apis/build/status/rene-fonseca.base?branchName=master&jobName=windows_arm32)](https://dev.azure.com/renefonseca/base/_build/latest?definitionId=5&branchName=master)
-[![Ubuntu 18.04](https://dev.azure.com/renefonseca/base/_apis/build/status/rene-fonseca.base?branchName=master&jobName=ubuntu18_04)](https://dev.azure.com/renefonseca/base/_build/latest?definitionId=5&branchName=master)
-[![Ubuntu 16.04](https://dev.azure.com/renefonseca/base/_apis/build/status/rene-fonseca.base?branchName=master&jobName=ubuntu16_04)](https://dev.azure.com/renefonseca/base/_build/latest?definitionId=5&branchName=master)
-[![macOS](https://dev.azure.com/renefonseca/base/_apis/build/status/rene-fonseca.base?branchName=master&jobName=macos)](https://dev.azure.com/renefonseca/base/_build/latest?definitionId=5&branchName=master)
+[![Windows x64](https://dev.azure.com/renefonseca/base/_apis/build/status/rene-fonseca.base?branchName=master&jobName=windows&label=Windows%20x64)](https://dev.azure.com/renefonseca/base/_build/latest?definitionId=5&branchName=master)
+[![Windows x86](https://dev.azure.com/renefonseca/base/_apis/build/status/rene-fonseca.base?branchName=master&jobName=windows_x86&label=Windows%20x86)](https://dev.azure.com/renefonseca/base/_build/latest?definitionId=5&branchName=master)
+[![Windows ARM64](https://dev.azure.com/renefonseca/base/_apis/build/status/rene-fonseca.base?branchName=master&jobName=windows_arm64&label=Windows%20ARM64)](https://dev.azure.com/renefonseca/base/_build/latest?definitionId=5&branchName=master)
+[![Windows ARM32](https://dev.azure.com/renefonseca/base/_apis/build/status/rene-fonseca.base?branchName=master&jobName=windows_arm32&label=Windows%20ARM32)](https://dev.azure.com/renefonseca/base/_build/latest?definitionId=5&branchName=master)
+[![Ubuntu 18.04](https://dev.azure.com/renefonseca/base/_apis/build/status/rene-fonseca.base?branchName=master&jobName=ubuntu18_04&label=Ubuntu%2018.04)](https://dev.azure.com/renefonseca/base/_build/latest?definitionId=5&branchName=master)
+[![Ubuntu 16.04](https://dev.azure.com/renefonseca/base/_apis/build/status/rene-fonseca.base?branchName=master&jobName=ubuntu16_04&label=Ubuntu%2016.04)](https://dev.azure.com/renefonseca/base/_build/latest?definitionId=5&branchName=master)
+[![macOS](https://dev.azure.com/renefonseca/base/_apis/build/status/rene-fonseca.base?branchName=master&jobName=macos&label=macOS)](https://dev.azure.com/renefonseca/base/_build/latest?definitionId=5&branchName=master)
 
 
 

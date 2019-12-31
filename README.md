@@ -32,7 +32,9 @@ Make sure GIT, cmake, make, and compiler (e.g. g++) are installed.
 ```shell
 git clone https://dev.azure.com/renefonseca/base/_git/base
 cd base
-cmake . -DCMAKE_BUILD_TYPE=Debug
+mkdir build
+cd build
+cmake .. -DCMAKE_BUILD_TYPE=Debug
 make
 ./testing/unittesting
 ctest . -C Debug
@@ -43,7 +45,9 @@ ctest . -C Debug
 ```shell
 git clone https://dev.azure.com/renefonseca/base/_git/base
 cd base
-cmake . -DCMAKE_BUILD_TYPE=Release
+mkdir build
+cd build
+cmake .. -DCMAKE_BUILD_TYPE=Release
 make
 ./testing/unittesting
 ctest . -C Release

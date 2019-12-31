@@ -125,15 +125,23 @@ class IsUninitializeable : public BooleanConstant<Uninitializeable<TYPE>::IS_UNI
 
 /**
   Check if TYPE incomplete - ie. only forward declared. https://en.cppreference.com/w/cpp/language/sfinae check.
+ 
+  ATTENTION: SFINAE works ok except for cases where classes are forward declared! So common case of testing if method is available
+  could be due to forward declaration. Since results of templates are cached by compiler this will cause wrong results for a SFINAE test of a
+  complete class if first tested with the incomplete class. IsComplete can be used to ensure sfinae is used with a complete type but uses
+  sfinae itself. So IsComplete uses a secondary template argument to force a unique type and hence avoid any caching of the resulting instance.
 
   Use second template to force reevaluation of IsComplete. You must use a unique ID for or the previous "cached" result will be used.
 
+  @code
   class MyClass;
   static_assert(!IsComplete<MyClass>(), "MyClass is not undefined.");
   class MyClass {};
   static_assert(IsComplete<MyClass, 1>(), "MyClass is undefined.");
+  // static_assert(IsComplete<MyClass, 0>(), "MyClass is undefined."); // not working due to cached first template instance
+  @endcode
 */
-template<typename TYPE, int = 0> // TAG: template<typename TYPE, int = std::unique<int>()> C++ extension - std::unique<int> is a constexpr which starts at 0 and is incremented by 1 for each unique type use. ID generated at use by the compliler not processor
+template<typename TYPE, int = 0> // TAG: C++: template<typename TYPE, int = std::unique<int>()> C++ extension - std::unique<int> is a constexpr which starts at 0 and is incremented by 1 for each unique type use. Overflow of counter would cause compiler error. ID generated at use by the compliler not processor
 class IsComplete {
 private:
 

@@ -167,6 +167,8 @@ Exception::StackTrace Exception::getStackTrace()
   return result;
 }
 
+// TAG: can we hook and detect throw of non-base exception: void __cxa_throw (void *thrown_exception, std::type_info *tinfo, void (*dest) (void *));
+
 // C++: it would be preferred to have handler for throw like std::set_terminate() but not a full handler just a hook
 // to allow strack trace tracking for easy debugging - the hook would also handle rethrows
 // It would be nice if we could do a dynamic cast to the type of the thrown exception to be able to add some
@@ -183,12 +185,27 @@ void Exception::onThrow(Exception& exception) noexcept
 void Exception::rethrow()
 {
   if (exceptionHandler) { // not installed for release builds - but can be installed at runtime
+    // C++: provide throw_cast to avoid rethrow for casting to given type
+    // see https://itanium-cxx-abi.github.io/cxx-abi/abi-eh.html#base-throw
+    // std::type_info* currentType = __cxa_current_exception_type();
+    // auto type = &typeid(Exception);
+    // FYI dynamic_cast<void*>(object) returns most derived type
+    // typeid(*src) - may return most derived type - need to confirm
+    // TAG: alternatively just traverse all approved/registered exceptions
+    // std::type_info* currentType = __cxa_current_exception_type();
     try {
       throw; // calls std::terminate() if no exception
     } catch (Exception& e) {
       exceptionHandler(&e);
       throw;
+#if 0 && defined(_COM_AZURE_DEV__BASE__ANY_DEBUG)
+    } catch (std::exception& e) {
+      throw;
+    } catch (...) {
+      BASSERT(!"Invalid exception.");
+#endif
     }
+    // TAG: detect if std::exception or base::Exception
 #if 0
     auto exception = std::current_exception(); // C++: would be nice to be able to dynamic cast to type
     if (INLINE_ASSERT(exception)) {

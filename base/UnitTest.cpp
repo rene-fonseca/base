@@ -54,6 +54,42 @@ namespace {
       currentTest->onException(exception);
     }
   }
+
+  String getRepoUrl(String source, unsigned int line)
+  {
+    if (!source) {
+      return source;
+    }
+    Version version;
+    auto remoteUrl = version.getRemoteUrl();
+    if (!FileSystem::isAbsolutePath(source) && remoteUrl) {
+      Url url(remoteUrl);
+      url.setUser(String());
+      url.setPassword(String());
+      remoteUrl = url.getUrl();
+      source.replaceAll("\\", "/");
+      if (remoteUrl.startsWith("https://dev.azure.com/")) {
+        source = "/" + source;
+        source.replaceAll("/", "%2F");
+        remoteUrl += "?version=GC" + version.getCommit();
+        remoteUrl += "&path=" + source;
+        if (line) {
+          remoteUrl += Format::subst("&line=%1&lineEnd=%2&lineStartColumn=1&lineEndColumn=1&lineStyle=plain", line, line + 1);
+        }
+        source = remoteUrl;
+      } else if (remoteUrl.startsWith("https://github.com/")) {
+        if (!remoteUrl.endsWith("/")) {
+          remoteUrl += "/";
+        }
+        source = remoteUrl + "blob/" + version.getCommit() + "/" + source;
+        if (line) {
+          source += "#L" + (StringOutputStream() << line);
+        }
+      }
+      // TAG: need Url::escape
+    }
+    return source;
+  }
 }
 
 UnitTest::UnitTest()
@@ -201,6 +237,15 @@ void UnitTest::Run::onFailed(const String& what, unsigned int line)
       fout << "  FAILED: '" << what << "' at line " << line << ENDL;
     } else {
       fout << "  FAILED: '" << what << "'" << ENDL;
+    }
+    if (UnitTestManager::getManager().getUseUrlAsSource()) {
+      if (String url = getRepoUrl(currentTest->getSource(), line)) {
+        if (UnitTestManager::getManager().getUseANSIColors()) {
+          fout << "  SOURCE: " << underscore() << url << nounderscore() << ENDL; // TAG: we want escaped hyperlink once supported by Azure pipeline
+        } else {
+          fout << "  SOURCE: " << url << ENDL; // TAG: we want escaped hyperlink once supported by Azure pipeline
+        }
+      }
     }
     if (UnitTestManager::getManager().getUseANSIColors()) {
       fout << normal();
@@ -766,33 +811,11 @@ bool UnitTestManager::runTests(const String& pattern, bool runDevel)
         if (!test->getSource().isEmpty()) {
           auto source = test->getSource();
           if (UnitTestManager::getManager().getUseUrlAsSource()) {
-            Version version;
-            auto remoteUrl = version.getRemoteUrl();
-            if (!FileSystem::isAbsolutePath(source) && remoteUrl) {
-              Url url(remoteUrl);
-              url.setUser(String());
-              url.setPassword(String());
-              remoteUrl = url.getUrl();
-              source.replaceAll("\\", "/");
-              if (remoteUrl.startsWith("https://dev.azure.com/")) {
-                source = "/" + source;
-                source.replaceAll("/", "%2F");
-                remoteUrl += "?version=GC" + version.getCommit();
-                remoteUrl += "&path=" + source;
-                if (auto line = test->getLine()) {
-                  remoteUrl += Format::subst("&line=%1&lineEnd=%2&lineStartColumn=1&lineEndColumn=1&lineStyle=plain", line, line + 1);
-                }
-                source = remoteUrl;
-              } else if (remoteUrl.startsWith("https://github.com/")) {
-                if (!remoteUrl.endsWith("/")) {
-                  remoteUrl += "/";
-                }
-                source = remoteUrl + "blob/" + version.getCommit() + "/" + source;
-                if (auto line = test->getLine()) {
-                  source += "#L" + (StringOutputStream() << line);
-                }
-              }
-              // TAG: need Url::escape
+            source = getRepoUrl(source, test->getLine());
+            if (UnitTestManager::getManager().getUseANSIColors()) {
+              StringOutputStream sos;
+              sos << setForeground(ANSIEscapeSequence::MAGENTA) << underscore() << source << nounderscore() << normal();
+              source = sos;
             }
           }
 

@@ -439,8 +439,13 @@ Reference<UnitTest::Run> UnitTest::runImpl()
         (r->failed || (pointsReached != pointsReach) || (pointsNotReached != pointsNotReach)) ? ANSIEscapeSequence::RED : ANSIEscapeSequence::GREEN
       );
     }
-    
-    String text = Format::subst("  PASSED:%1 FAILED:%2 FLOW:%3/%4", r->passed, r->failed, pointsReached+pointsNotReached, pointsReach+pointsNotReach);
+
+    String text;
+    if ((manager.getVerbosity() > UnitTestManager::VERBOSE) || (pointsReach > 0) || (pointsNotReach > 0)) {
+      text = Format::subst("  PASSED:%1 FAILED:%2 FLOW:%3/%4", r->passed, r->failed, pointsReached+pointsNotReached, pointsReach+pointsNotReach);
+    } else {
+      text = Format::subst("  PASSED:%1 FAILED:%2", r->passed, r->failed);
+    }
     if (manager.getVerbosity() >= UnitTestManager::COMPACT) {
       text += Format::subst(" ELAPSED:%1ms", (r->endTime - r->startTime) / 1000.0); // r->endTime/1000.0
     }

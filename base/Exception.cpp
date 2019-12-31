@@ -168,6 +168,9 @@ Exception::StackTrace Exception::getStackTrace()
 }
 
 // C++: it would be preferred to have handler for throw like std::set_terminate() but not a full handler just a hook
+// to allow strack trace tracking for easy debugging - the hook would also handle rethrows
+// It would be nice if we could do a dynamic cast to the type of the thrown exception to be able to add some
+// meta info (counter stats, stack trace, ...) to it before unwinding gets initiated
 // throw_handler* std::set_throw_handler(throw_handler*) noexcept;
 // throw_handler* std::get_throw_handler() noexcept;
 void Exception::onThrow(Exception& exception) noexcept

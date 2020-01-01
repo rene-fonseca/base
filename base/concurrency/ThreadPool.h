@@ -59,18 +59,23 @@ public:
   class _COM_AZURE_DEV__BASE__API ThreadPoolException : public Exception {
   public:
     
-    inline ThreadPoolException() noexcept {
+    inline ThreadPoolException() noexcept
+    {
     }
     
     inline ThreadPoolException(const char* message) noexcept
-      : Exception(message) {
+      : Exception(message)
+    {
     }
     
-    inline ThreadPoolException(const Type& type) noexcept : Exception(type) {
+    inline ThreadPoolException(const Type& type) noexcept
+      : Exception(type)
+    {
     }
     
     inline ThreadPoolException(const char* message, const Type& type) noexcept
-      : Exception(message, type) {
+      : Exception(message, type)
+    {
     }
     
     _COM_AZURE_DEV__BASE__EXCEPTION_THIS_TYPE()

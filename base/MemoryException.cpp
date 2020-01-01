@@ -20,7 +20,8 @@ MemoryException::MemoryException() noexcept
 }
 
 MemoryException::MemoryException(const char* message) noexcept
-  : ResourceException(message) {
+  : ResourceException(message)
+{
 }
 
 MemoryException::MemoryException(const Type& type) noexcept

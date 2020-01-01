@@ -48,7 +48,8 @@ public:
   /**
     Initializes the exception object with no message.
   */
-  inline OrbException() noexcept {
+  inline OrbException() noexcept
+  {
   }
   
   /**
@@ -56,7 +57,9 @@ public:
 
     @param message The message.
   */
-  inline OrbException(const char* message) noexcept : RMIException(message) {
+  inline OrbException(const char* message) noexcept
+    : RMIException(message)
+  {
   }
   
   /**
@@ -64,7 +67,9 @@ public:
     
     @param type The identity of the type.
   */
-  inline OrbException(const Type& type) noexcept : RMIException(type) {
+  inline OrbException(const Type& type) noexcept
+    : RMIException(type)
+  {
   }
   
   /**
@@ -74,7 +79,8 @@ public:
     @param type The identity of the type.
   */
   inline OrbException(const char* message, const Type& type) noexcept
-    : RMIException(message, type) {
+    : RMIException(message, type)
+  {
   }
   
   _COM_AZURE_DEV__BASE__EXCEPTION_THIS_TYPE()

@@ -32,7 +32,8 @@ public:
   /**
     Initializes the exception object with no message.
   */
-  inline IncompatibleOperands() noexcept {
+  inline IncompatibleOperands() noexcept
+  {
   }
   
   /**
@@ -41,7 +42,8 @@ public:
     @param message The message.
   */
   inline IncompatibleOperands(const char* message) noexcept
-    : Exception(message) {
+    : Exception(message)
+  {
   }
   
   /**
@@ -49,7 +51,9 @@ public:
     
     @param type The identity of the type.
   */
-  inline IncompatibleOperands(const Type& type) noexcept : Exception(type) {
+  inline IncompatibleOperands(const Type& type) noexcept
+    : Exception(type)
+  {
   }
   
   /**
@@ -59,7 +63,8 @@ public:
     @param type The identity of the type.
   */
   inline IncompatibleOperands(const char* message, const Type& type) noexcept
-    : Exception(message, type) {
+    : Exception(message, type)
+  {
   }
   
   _COM_AZURE_DEV__BASE__EXCEPTION_THIS_TYPE()

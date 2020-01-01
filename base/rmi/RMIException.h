@@ -31,7 +31,8 @@ public:
   /**
     Initializes the exception object with no message.
   */
-  inline RMIException() noexcept {
+  inline RMIException() noexcept
+  {
   }
   
   /**
@@ -39,7 +40,9 @@ public:
 
     @param message The message.
   */
-  inline RMIException(const char* message) noexcept : Exception(message) {
+  inline RMIException(const char* message) noexcept
+    : Exception(message)
+  {
   }
   
   /**
@@ -47,7 +50,9 @@ public:
     
     @param type The identity of the type.
   */
-  inline RMIException(const Type& type) noexcept : Exception(type) {
+  inline RMIException(const Type& type) noexcept
+    : Exception(type)
+  {
   }
   
   /**
@@ -57,7 +62,8 @@ public:
     @param type The identity of the type.
   */
   inline RMIException(const char* message, const Type& type) noexcept
-    : Exception(message, type){
+    : Exception(message, type)
+  {
   }
   
   _COM_AZURE_DEV__BASE__EXCEPTION_THIS_TYPE()

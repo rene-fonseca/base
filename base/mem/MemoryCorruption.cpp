@@ -20,7 +20,8 @@ MemoryCorruption::MemoryCorruption() noexcept
 }
 
 MemoryCorruption::MemoryCorruption(const char* message) noexcept
-  : MemoryException(message) {
+  : MemoryException(message)
+{
 }
 
 MemoryCorruption::MemoryCorruption(const Type& type) noexcept

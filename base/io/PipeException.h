@@ -31,7 +31,8 @@ public:
   /**
     Initializes the exception object with no message.
   */
-  inline PipeException() noexcept {
+  inline PipeException() noexcept
+  {
   }
 
   /**
@@ -39,7 +40,9 @@ public:
 
     @param message The message.
   */
-  inline PipeException(const char* message) noexcept : IOException(message) {
+  inline PipeException(const char* message) noexcept
+    : IOException(message)
+  {
   }
   
   /**
@@ -47,7 +50,9 @@ public:
     
     @param type The identity of the type.
   */
-  inline PipeException(const Type& type) noexcept : IOException(type) {
+  inline PipeException(const Type& type) noexcept
+    : IOException(type)
+  {
   }
   
   /**
@@ -57,7 +62,8 @@ public:
     @param type The identity of the type.
   */
   inline PipeException(const char* message, const Type& type) noexcept
-    : IOException(message, type) {
+    : IOException(message, type)
+  {
   }
   
   _COM_AZURE_DEV__BASE__EXCEPTION_THIS_TYPE()

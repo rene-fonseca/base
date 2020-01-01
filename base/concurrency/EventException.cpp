@@ -20,7 +20,8 @@ EventException::EventException() noexcept
 }
 
 EventException::EventException(const char* message) noexcept
-  : LockException(message) {
+  : LockException(message)
+{
 }
 
 EventException::EventException(const Type& type) noexcept

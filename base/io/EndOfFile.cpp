@@ -20,7 +20,8 @@ EndOfFile::EndOfFile() noexcept
 }
 
 EndOfFile::EndOfFile(const char* message) noexcept
-  : IOException(message) {
+  : IOException(message)
+{
 }
 
 EndOfFile::EndOfFile(const Type& type) noexcept

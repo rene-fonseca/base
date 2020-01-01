@@ -67,7 +67,8 @@ public:
     /**
       Initializes the exception object with no message.
     */
-    inline TrusteeException() noexcept {
+    inline TrusteeException() noexcept
+    {
     }
 
     /**
@@ -75,7 +76,9 @@ public:
 
       @param message The message.
     */
-    inline TrusteeException(const char* message) noexcept : Exception(message) {
+    inline TrusteeException(const char* message) noexcept
+      : Exception(message)
+    {
     }
 
     /**
@@ -83,7 +86,9 @@ public:
 
       @param type The identity of the type.
     */
-    inline TrusteeException(const Type& type) noexcept : Exception(type) {
+    inline TrusteeException(const Type& type) noexcept
+      : Exception(type)
+    {
     }
 
     /**
@@ -93,7 +98,8 @@ public:
       @param type The identity of the type.
     */
     inline TrusteeException(const char* message, const Type& type) noexcept
-      : Exception(message, type) {
+      : Exception(message, type)
+    {
     }
     
     _COM_AZURE_DEV__BASE__EXCEPTION_THIS_TYPE()

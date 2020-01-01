@@ -57,7 +57,8 @@ public:
     /**
       Initializes the exception object with no message.
     */
-    inline UserException() noexcept {
+    inline UserException() noexcept
+    {
     }
 
     /**
@@ -65,7 +66,9 @@ public:
 
       @param message The message.
     */
-    inline UserException(const char* message) noexcept : Exception(message) {
+    inline UserException(const char* message) noexcept
+      : Exception(message)
+    {
     }
 
     /**
@@ -73,7 +76,9 @@ public:
 
       @param type The identity of the type.
     */
-    inline UserException(const Type& type) noexcept : Exception(type) {
+    inline UserException(const Type& type) noexcept
+      : Exception(type)
+    {
     }
 
     /**
@@ -83,7 +88,8 @@ public:
       @param type The identity of the type.
     */
     inline UserException(const char* message, const Type& type) noexcept
-      : Exception(message, type) {
+      : Exception(message, type)
+    {
     }
     
     _COM_AZURE_DEV__BASE__EXCEPTION_THIS_TYPE()

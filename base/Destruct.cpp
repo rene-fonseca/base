@@ -15,10 +15,13 @@
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
-Destruct::Destruct() noexcept {
+Destruct::Destruct() noexcept
+{
 }
 
-Destruct::Destruct(const char* message) noexcept : Exception(message) {
+Destruct::Destruct(const char* message) noexcept
+  : Exception(message)
+{
 }
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

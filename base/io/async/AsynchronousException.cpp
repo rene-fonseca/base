@@ -15,11 +15,14 @@
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
-AsynchronousException::AsynchronousException() noexcept : IOException() {
+AsynchronousException::AsynchronousException() noexcept
+  : IOException()
+{
 }
 
 AsynchronousException::AsynchronousException(const char* message) noexcept
-  : IOException(message) {
+  : IOException(message)
+{
 }
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

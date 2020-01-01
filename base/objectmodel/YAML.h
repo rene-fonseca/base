@@ -24,21 +24,27 @@ private:
   LineColumn position;
 public:
   
-  inline YAMLException() : Exception() {
+  inline YAMLException()
+  {
   }
 
-  inline YAMLException(const char* message) : Exception(message) {
+  inline YAMLException(const char* message)
+    : Exception(message)
+  {
   }
 
   inline YAMLException(const char* message, const LineColumn& _position)
-    : Exception(message), position(_position) {
+    : Exception(message), position(_position)
+  {
   }
 
-  inline const LineColumn& getPosition() const noexcept {
+  inline const LineColumn& getPosition() const noexcept
+  {
     return position;
   }
 
-  inline void setPosition(const LineColumn& _position) noexcept {
+  inline void setPosition(const LineColumn& _position) noexcept
+  {
     position = _position;
   }
 

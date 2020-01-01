@@ -20,7 +20,8 @@ NullPointer::NullPointer() noexcept
 }
 
 NullPointer::NullPointer(const char* message) noexcept
-  : MemoryException(message) {
+  : MemoryException(message)
+{
 }
 
 NullPointer::NullPointer(const Type& type) noexcept

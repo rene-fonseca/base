@@ -26,7 +26,8 @@ public:
   /**
     Initializes the exception object with no message.
   */
-  inline WebSocketException() noexcept {
+  inline WebSocketException() noexcept
+  {
   }
 
   /**
@@ -34,7 +35,9 @@ public:
 
     @param message The message.
   */
-  inline WebSocketException(const char* message) noexcept : NetworkException(message) {
+  inline WebSocketException(const char* message) noexcept
+    : NetworkException(message)
+  {
   }
 
   /**
@@ -42,7 +45,9 @@ public:
     
     @param type The identity of the type.
   */
-  inline WebSocketException(const Type& type) noexcept : NetworkException(type) {
+  inline WebSocketException(const Type& type) noexcept
+    : NetworkException(type)
+  {
   }
   
   /**
@@ -52,7 +57,8 @@ public:
     @param type The identity of the type.
   */
   inline WebSocketException(const char* message, const Type& type) noexcept
-    : NetworkException(message, type) {
+    : NetworkException(message, type)
+  {
   }
   
   _COM_AZURE_DEV__BASE__EXCEPTION_THIS_TYPE()

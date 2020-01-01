@@ -20,7 +20,8 @@ CastException::CastException() noexcept
 }
 
 CastException::CastException(const char* message) noexcept
-  : Exception(message) {
+  : Exception(message)
+{
 }
 
 CastException::CastException(const Type& type) noexcept

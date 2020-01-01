@@ -42,7 +42,9 @@ public:
 
     @param message The message.
   */
-  inline SingletonException(const char* message) noexcept : Exception(message) {
+  inline SingletonException(const char* message) noexcept
+    : Exception(message)
+  {
   }
 
   /**
@@ -50,7 +52,8 @@ public:
     
     @param type The identity of the type.
   */
-  inline SingletonException(const Type& type) noexcept : Exception(type)
+  inline SingletonException(const Type& type) noexcept
+    : Exception(type)
   {
   }  
   

@@ -20,7 +20,8 @@ DateException::DateException() noexcept
 }
 
 DateException::DateException(const char* message) noexcept
-  : Exception(message) {
+  : Exception(message)
+{
 }
 
 DateException::DateException(const Type& type) noexcept

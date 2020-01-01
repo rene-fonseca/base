@@ -33,14 +33,19 @@ public:
   /**
     Initializes the exception object with no message.
   */
-  inline UriException() {}
+  inline UriException()
+  {
+  }
 
   /**
     Initializes the exception object.
 
     @param message The message.
   */
-  inline UriException(const char* message) : InvalidFormat(message) {}
+  inline UriException(const char* message)
+    : InvalidFormat(message)
+  {
+  }
 };
 
 

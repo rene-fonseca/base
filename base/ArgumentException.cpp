@@ -20,7 +20,8 @@ ArgumentException::ArgumentException() noexcept
 }
 
 ArgumentException::ArgumentException(const char* message) noexcept
-  : Exception(message) {
+  : Exception(message)
+{
 }
 
 ArgumentException::ArgumentException(const Type& type) noexcept

@@ -36,7 +36,8 @@ public:
   /**
     Initializes the exception object with no message.
   */
-  inline ObjectModelException() noexcept {
+  inline ObjectModelException() noexcept
+  {
   }
 
   /**
@@ -44,7 +45,9 @@ public:
 
     @param message The message.
   */
-  inline ObjectModelException(const char* message) noexcept : Exception(message) {
+  inline ObjectModelException(const char* message) noexcept
+    : Exception(message)
+  {
   }
   
   _COM_AZURE_DEV__BASE__EXCEPTION_THIS_TYPE()

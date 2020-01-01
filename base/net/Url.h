@@ -67,7 +67,8 @@ public:
     /**
       Initializes the exception object with no message.
     */
-    inline UrlException() noexcept {
+    inline UrlException() noexcept
+    {
     }
 
     /**
@@ -75,7 +76,9 @@ public:
       
       @param message The message.
     */
-    inline UrlException(const char* message) noexcept : InvalidFormat(message) {
+    inline UrlException(const char* message) noexcept
+      : InvalidFormat(message)
+    {
     }
 
     /**
@@ -83,7 +86,9 @@ public:
       
       @param type The identity of the type.
     */
-    inline UrlException(const Type& type) noexcept : InvalidFormat(type) {
+    inline UrlException(const Type& type) noexcept
+      : InvalidFormat(type)
+    {
     }
 
     /**
@@ -93,7 +98,8 @@ public:
       @param type The identity of the type.
     */
     inline UrlException(const char* message, const Type& type) noexcept
-      : InvalidFormat(message, type) {
+      : InvalidFormat(message, type)
+    {
     }
   };
 protected:

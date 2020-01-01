@@ -44,7 +44,9 @@ public:
 
     @param message The message.
   */
-  inline HTTPException(const char* message) noexcept : NetworkException(message) {
+  inline HTTPException(const char* message) noexcept
+    : NetworkException(message)
+  {
   }
 
   /**

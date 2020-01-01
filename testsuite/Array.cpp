@@ -106,18 +106,6 @@ APPLICATION_STUB(ArrayApplication);
 #include <base/math/Vector3D.h>
 #include <base/string/StringOutputStream.h>
 
-// this causes base library to be included in wasm
-#if 0
-void doit()
-{
-  Array<int64> a;
-  a.append(4);
-  a.append(2);
-  a.append(6);
-  a.append(8);
-}
-#endif
-
 int main(int argc, const char* argv[])
 {
   printf("BEGIN!\n");
@@ -127,6 +115,14 @@ int main(int argc, const char* argv[])
   printf("MATH %f\n", m);
   // String hello = "Hello123";
   // printf("TEST %s!\n", hello.native());
+#if 0
+  Array<int64> a;
+  a.append(4);
+  a.append(2);
+  a.append(6);
+  a.append(8);
+  fout << a << ENDL;
+#endif
   printf("DONE!\n");
   return 1;
 }

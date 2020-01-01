@@ -15,14 +15,14 @@
 
 #include <base/platforms/symbols.h>
 
-#if defined(__clang__)
+#if defined(__doxygen__)
+#  define _COM_AZURE_DEV__BASE__COMPILER _COM_AZURE_DEV__BASE__COMPILER_DOXYGEN
+#elif defined(__clang__)
 #  define _COM_AZURE_DEV__BASE__COMPILER _COM_AZURE_DEV__BASE__COMPILER_LLVM
 #elif defined(_MSC_VER)
 #  define _COM_AZURE_DEV__BASE__COMPILER _COM_AZURE_DEV__BASE__COMPILER_MSC
 #elif defined(__GNUG__)
 #  define _COM_AZURE_DEV__BASE__COMPILER _COM_AZURE_DEV__BASE__COMPILER_GCC
-#elif defined(__doxygen__)
-#  define _COM_AZURE_DEV__BASE__COMPILER _COM_AZURE_DEV__BASE__COMPILER_DOXYGEN
 #else
 #  error Unsupported compiler.
 #endif

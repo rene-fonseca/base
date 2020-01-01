@@ -115,6 +115,7 @@ public:
 #endif
 
 /** Override memory allocation for a class. */
+#if (_COM_AZURE_DEV__BASE__COMPILER != _COM_AZURE_DEV__BASE__COMPILER_DOXYGEN)
 #if !defined(_COM_AZURE_DEV__BASE__NO_ARRAY_ALLOCATION)
 #define _COM_AZURE_DEV__BASE__OVERRIDE_ALLOC() \
   static inline void* operator new(MemorySize size, void* place) noexcept \
@@ -147,6 +148,9 @@ public:
     {base::DynamicMemory::operator delete(memory);} \
   static void* operator new[](MemorySize size) = delete; \
   static void operator delete[](void* memory) = delete;
+#endif
+#else
+#define _COM_AZURE_DEV__BASE__OVERRIDE_ALLOC()
 #endif
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

@@ -282,11 +282,4 @@ int main(int argc, const char* argv[], const char* env[]) noexcept \
 
 #define _COM_AZURE_DEV__BASE__ALLOW_DEPRECATED // TAG: move to config
 
-#if defined(_COM_AZURE_DEV__BASE__ALLOW_DEPRECATED)
-#if (!defined(STUB)) // legacy - remove when ready
-/** Make stub for exe entry point. */
-#  define STUB(APPLICATION) _COM_AZURE_DEV__BASE__APPLICATION_STUB(APPLICATION)
-#endif
-#endif
-
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

@@ -1,6 +1,9 @@
 trigger:
 - master
 
+pr:
+- master
+
 variables:
   CLICOLOR_FORCE: 1 # used by Base tools
 

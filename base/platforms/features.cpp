@@ -115,23 +115,59 @@ _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE
 
 #if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__WASI)
-#include <stdio.h>
 #include <string.h>
+
+void dumpMemory(size_t offset, size_t size)
+{
+  const auto end = offset + size;
+  char* src = 0;
+  for (auto i = offset/64; i < end/64; ++i) {
+    _COM_AZURE_DEV__BASE__PRINT("%6lx: ", i * 64);
+    for (unsigned int j = 0; j < 64; ++j) {
+      char ch = src[i * 64 + j];
+      if (ch < 0x20) {
+        ch = '.';
+      } else if (ch >= 0x7f) {
+        ch = '.';
+      }
+      _COM_AZURE_DEV__BASE__PRINT("%c", ch);
+    }
+    _COM_AZURE_DEV__BASE__PRINT("\n");
+  }
+}
+
+void recurse(unsigned int count)
+{
+  if (count == 0) {
+    return;
+  }
+  unsigned int a = (count & 1) ? 0x32323232 : 0x42424242;
+  //void* p = (void*)&recurse;
+  unsigned int q = (count & 1) ? 0x31313131 : 0x41414141;
+  _COM_AZURE_DEV__BASE__PRINT("!!! recurse1 stack=%p count=%d func=%p\n", (void*)&recurse, count, (void*)&recurse);
+  unsigned int* src = (unsigned int*)&a;
+  for (unsigned int i = 0; i < 16; ++i) {
+    _COM_AZURE_DEV__BASE__PRINT("  frame %2d = %08x = %d\n", i, ((unsigned int*)&a)[i], ((unsigned int*)&a)[i]);
+  }
+  recurse(count - 1);
+}
 
 extern "C" void* __cxa_allocate_exception(size_t thrown_size) noexcept
 {
-  printf("!!! __cxa_allocate_exception\n");
-  return nullptr;
+  _COM_AZURE_DEV__BASE__PRINT("__cxa_allocate_exception %ld\n", thrown_size);
+  recurse(10);
+  dumpMemory(1024, 1024);
+  return malloc(thrown_size);
 }
 
 extern "C" void __cxa_throw(void* thrown_exception, void* /*struct std::type_info **/ tinfo, void (*dest)(void*))
 {
-  printf("!!! __cxa_throw\n");
+  _COM_AZURE_DEV__BASE__PRINT("__cxa_throw\n");
 }
 
 extern "C" void __cxa_rethrow()
 {
-  printf("!!! __cxa_rethrow\n");
+  _COM_AZURE_DEV__BASE__PRINT("__cxa_rethrow\n");
 }
 
 extern "C" int pthread_self()
@@ -158,9 +194,16 @@ extern "C" void* dlopen(const char* path, int mode)
 extern "C" void* dlsym(void* handle, const char* symbol)
 {
   return 0;
-}    
+}
 
-extern "C" void * mmap(void *addr, size_t len, int prot, int flags, int fd, off_t offset) {return nullptr;}
-extern "C" int munmap(void *addr, size_t len) {return -1;}
+extern "C" void * mmap(void *addr, size_t len, int prot, int flags, int fd, off_t offset)
+{
+  return nullptr;
+}
+
+extern "C" int munmap(void *addr, size_t len)
+{
+  return -1;
+}
 
 #endif

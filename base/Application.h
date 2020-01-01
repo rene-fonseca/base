@@ -280,6 +280,4 @@ int main(int argc, const char* argv[], const char* env[]) noexcept \
 #  define APPLICATION_STUB(APPLICATION) _COM_AZURE_DEV__BASE__APPLICATION_STUB(APPLICATION)
 #endif
 
-#define _COM_AZURE_DEV__BASE__ALLOW_DEPRECATED // TAG: move to config
-
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

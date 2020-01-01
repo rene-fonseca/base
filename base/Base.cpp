@@ -50,6 +50,28 @@ void ThrowException::onException(const char* who, const char* file, unsigned int
   printf("THROW AT %s %s:%d\n", who, file, line);
 }
 
+void GlobalPrint::printf(const char* text, ...) noexcept
+{
+  char buffer[1024+1];
+  va_list args;
+  va_start(args, text);
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wformat-security"
+  int result = vsnprintf(buffer, getArraySize(buffer), text, args);
+#pragma GCC diagnostic pop
+  va_end (args);
+  if (INLINE_ASSERT(result >= 0)) {
+    return;
+  }
+  if (result < getArraySize(buffer)) {
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
+    _write(1, buffer, result);
+#else
+    write(1, buffer, result);
+#endif
+  }
+}
+
 GlobalPrint::GlobalPrint(const char* _text) noexcept
   : text(Debug::getRelativePath(_text))
 {

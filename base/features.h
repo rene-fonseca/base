@@ -211,7 +211,10 @@ private:
   const char* text = nullptr;
 public:
 
-  GlobalPrint(const char* _text) noexcept;
+  /** Print to stdout. */
+  static void printf(const char* text, ...) noexcept;
+
+  GlobalPrint(const char* text) noexcept;
 
   ~GlobalPrint() noexcept;
 };
@@ -219,9 +222,13 @@ public:
 #if 0
 #  define _COM_AZURE_DEV__BASE__GLOBAL_PRINT() \
   namespace {base::GlobalPrint _COM_AZURE_DEV__BASE__MAKE_IDENTIFIER(globalPrint)(__FILE__);}
+
+#  define _COM_AZURE_DEV__BASE__PRINT(message, ...) GlobalPrint::printf(message, __VA_ARGS__)
 #else
 #  define _COM_AZURE_DEV__BASE__GLOBAL_PRINT() namespace {}
+#  define _COM_AZURE_DEV__BASE__PRINT(message, ...)
 #endif
+
 
 /** Helper class for tracking throws. */
 class ThrowException {

@@ -56,14 +56,16 @@ public:
   /**
     Initializes the exception with no message.
   */
-  inline SAXParseException() noexcept {
+  inline SAXParseException() noexcept
+  {
   }
 
   /**
     Initializes the exception with the specified message.
   */
   inline SAXParseException(const char* message) noexcept
-    : SAXException(message) {
+    : SAXException(message)
+  {
   }
   
   /**
@@ -72,7 +74,8 @@ public:
     @param type The identity of the type.
   */
   inline SAXParseException(const Type& type) noexcept
-    : SAXException(type) {
+    : SAXException(type)
+  {
   }
   
   /**
@@ -82,7 +85,8 @@ public:
     @param type The identity of the type.
   */
   inline SAXParseException(const char* message, const Type& type) noexcept
-    : SAXException(message, type) {
+    : SAXException(message, type)
+  {
   }
   
   /**

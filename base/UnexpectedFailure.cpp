@@ -20,7 +20,8 @@ UnexpectedFailure::UnexpectedFailure() noexcept
 }
 
 UnexpectedFailure::UnexpectedFailure(const char* message) noexcept
-  : Exception(message) {
+  : Exception(message)
+{
 }
 
 UnexpectedFailure::UnexpectedFailure(const Type& type) noexcept

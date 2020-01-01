@@ -84,7 +84,8 @@ public:
   /**
     Initializes the exception object with no message.
   */
-  inline FTPException() {
+  inline FTPException()
+  {
   }
 
   /**
@@ -92,7 +93,9 @@ public:
 
     @param message The message.
   */
-  inline FTPException(const char* message) : IOException(message) {
+  inline FTPException(const char* message)
+    : IOException(message)
+  {
   }
 };
 

@@ -34,14 +34,16 @@ public:
   /**
     Initializes the exception with no message.
   */
-  inline SAXNotSupportedException() noexcept {
+  inline SAXNotSupportedException() noexcept
+  {
   }
 
   /**
     Initializes the exception with the specified message.
   */
   inline SAXNotSupportedException(const char* message) noexcept
-    : SAXException(message) {
+    : SAXException(message)
+  {
   }
   
   /**

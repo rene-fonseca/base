@@ -160,7 +160,8 @@ public:
   /**
     Initializes the exception object with no message.
   */
-  inline ServiceException() noexcept {
+  inline ServiceException() noexcept
+  {
   }
 
   /**
@@ -168,7 +169,9 @@ public:
 
     @param message The message.
   */
-  inline ServiceException(const char* message) noexcept : Exception(message) {
+  inline ServiceException(const char* message) noexcept
+    : Exception(message)
+  {
   }
   
   /**
@@ -176,7 +179,9 @@ public:
     
     @param type The type.
   */
-  inline ServiceException(const Type& type) noexcept : Exception(type) {
+  inline ServiceException(const Type& type) noexcept
+    : Exception(type)
+  {
   }
   
   /**
@@ -186,7 +191,8 @@ public:
     @param type The type.
   */
   inline ServiceException(const char* message, const Type& type) noexcept
-    : Exception(message, type) {
+    : Exception(message, type)
+  {
   }
 };
 
@@ -196,7 +202,8 @@ public:
   /**
     Initializes the exception object with no message.
   */
-  inline SlackException() noexcept {
+  inline SlackException() noexcept
+  {
   }
 
   /**
@@ -204,7 +211,9 @@ public:
 
     @param message The message.
   */
-  inline SlackException(const char* message) noexcept : ServiceException(message) {
+  inline SlackException(const char* message) noexcept
+    : ServiceException(message)
+  {
   }
   
   /**
@@ -212,7 +221,9 @@ public:
     
     @param type The type.
   */
-  inline SlackException(const Type& type) noexcept : ServiceException(type) {
+  inline SlackException(const Type& type) noexcept
+    : ServiceException(type)
+  {
   }
   
   /**

@@ -66,7 +66,8 @@ public:
   }
 
   inline JSONException(const char* message)
-    : Exception(message) {
+    : Exception(message)
+  {
   }
 
   inline JSONException(const char* message, const LineColumn& _position)

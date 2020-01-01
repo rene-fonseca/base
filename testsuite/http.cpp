@@ -78,7 +78,8 @@ public:
   /**
     Initializes the exception object with no message.
   */
-  inline HTTPException() {
+  inline HTTPException()
+  {
   }
   
   /**
@@ -86,10 +87,13 @@ public:
 
     @param message The message.
   */
-  inline HTTPException(const char* message) : IOException(message) {
+  inline HTTPException(const char* message)
+    : IOException(message)
+  {
   }
   
-  inline bool isPermanent() {
+  inline bool isPermanent() const noexcept
+  {
     return permanent;
   }
 };
@@ -369,7 +373,9 @@ public:
     /**
       Initializes the exception object with no message.
     */
-    inline InvalidResponse() : HTTPException() {
+    inline InvalidResponse()
+      : HTTPException()
+    {
     }
     
     /**
@@ -377,7 +383,9 @@ public:
 
       @param message The message.
     */
-    inline InvalidResponse(const char* message) : HTTPException(message) {
+    inline InvalidResponse(const char* message)
+      : HTTPException(message)
+    {
     }
   };
 

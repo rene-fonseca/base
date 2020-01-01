@@ -50,13 +50,16 @@ public:
   /**
     Initializes the exception with no message.
   */
-  inline DOMException() noexcept {
+  inline DOMException() noexcept
+  {
   }
 
   /**
     Initializes the exception with the specified message.
   */
-  inline DOMException(const char* message) noexcept : Exception(message) {
+  inline DOMException(const char* message) noexcept
+    : Exception(message)
+  {
   }
   
   /**
@@ -64,7 +67,9 @@ public:
     
     @param type The identity of the type.
   */
-  inline DOMException(const Type& type) noexcept : Exception(type) {
+  inline DOMException(const Type& type) noexcept
+    : Exception(type)
+  {
   }
   
   /**
@@ -74,7 +79,8 @@ public:
     @param type The identity of the type.
   */
   inline DOMException(const char* message, const Type& type) noexcept
-    : Exception(message, type) {
+    : Exception(message, type)
+  {
   }
   
   _COM_AZURE_DEV__BASE__EXCEPTION_THIS_TYPE()

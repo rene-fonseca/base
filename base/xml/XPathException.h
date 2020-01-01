@@ -31,14 +31,16 @@ public:
   /**
     Initializes the exception with no message.
   */
-  inline XPathException() noexcept {
+  inline XPathException() noexcept
+  {
   }
 
   /**
     Initializes the exception with the specified message.
   */
   inline XPathException(const char* message) noexcept
-    : TransformerException(message) {
+    : TransformerException(message)
+  {
   }
   
   /**
@@ -46,7 +48,9 @@ public:
     
     @param type The identity of the type.
   */
-  inline XPathException(const Type& type) noexcept : TransformerException(type) {
+  inline XPathException(const Type& type) noexcept
+    : TransformerException(type)
+  {
   }
   
   /**
@@ -56,7 +60,8 @@ public:
     @param type The identity of the type.
   */
   inline XPathException(const char* message, const Type& type) noexcept
-    : TransformerException(message, type) {
+    : TransformerException(message, type)
+  {
   }
   
   _COM_AZURE_DEV__BASE__EXCEPTION_THIS_TYPE()

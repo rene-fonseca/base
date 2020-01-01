@@ -20,7 +20,8 @@ Underflow::Underflow() noexcept
 }
 
 Underflow::Underflow(const char* message) noexcept
-  : Exception(message) {
+  : Exception(message)
+{
 }
 
 Underflow::Underflow(const Type& type) noexcept

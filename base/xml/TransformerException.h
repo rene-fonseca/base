@@ -32,14 +32,16 @@ public:
   /**
     Initializes the exception with no message.
   */
-  inline TransformerException() noexcept {
+  inline TransformerException() noexcept
+  {
   }
 
   /**
     Initializes the exception with the specified message.
   */
   inline TransformerException(const char* message) noexcept
-    : Exception(message) {
+    : Exception(message)
+  {
   }
   
   /**
@@ -47,7 +49,9 @@ public:
     
     @param type The identity of the type.
   */
-  inline TransformerException(const Type& type) noexcept : Exception(type) {
+  inline TransformerException(const Type& type) noexcept
+    : Exception(type)
+  {
   }
   
   /**
@@ -57,7 +61,8 @@ public:
     @param type The identity of the type.
   */
   inline TransformerException(const char* message, const Type& type) noexcept
-    : Exception(message, type) {
+    : Exception(message, type)
+  {
   }
   
   _COM_AZURE_DEV__BASE__EXCEPTION_THIS_TYPE()

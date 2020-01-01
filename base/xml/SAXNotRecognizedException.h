@@ -33,14 +33,16 @@ public:
   /**
     Initializes the exception with no message.
   */
-  inline SAXNotRecognizedException() noexcept {
+  inline SAXNotRecognizedException() noexcept
+  {
   }
 
   /**
     Initializes the exception with the specified message.
   */
   inline SAXNotRecognizedException(const char* message) noexcept
-    : SAXException(message) {
+    : SAXException(message)
+  {
   }
   
   /**
@@ -49,7 +51,8 @@ public:
     @param type The identity of the type.
   */
   inline SAXNotRecognizedException(const Type& type) noexcept
-    : SAXException(type) {
+    : SAXException(type)
+  {
   }
   
   /**
@@ -59,7 +62,8 @@ public:
     @param type The identity of the type.
   */
   inline SAXNotRecognizedException(const char* message, const Type& type) noexcept
-    : SAXException(message, type) {
+    : SAXException(message, type)
+  {
   }
   
   _COM_AZURE_DEV__BASE__EXCEPTION_THIS_TYPE()

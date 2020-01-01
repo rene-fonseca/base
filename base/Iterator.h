@@ -226,6 +226,7 @@ public:
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE
 
+#if (_COM_AZURE_DEV__BASE__COMPILER != _COM_AZURE_DEV__BASE__COMPILER_DOXYGEN)
 /** Add std iterator traits for given base iterator. */
 #define _COM_AZURE_DEV__BASE__STD_ITERATOR_TRAITS(ITERATOR) \
 namespace std {\
@@ -239,6 +240,9 @@ namespace std {\
     typedef typename base::GetStdIteratorCategory<typename ITERATOR<TYPE>::Category>::iterator_category iterator_category; \
   }; \
 }
+#else
+#define _COM_AZURE_DEV__BASE__STD_ITERATOR_TRAITS(ITERATOR)
+#endif
 
 namespace std {
 

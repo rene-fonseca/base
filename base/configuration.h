@@ -21,6 +21,8 @@
 #  define _COM_AZURE_DEV__BASE__COMPILER _COM_AZURE_DEV__BASE__COMPILER_MSC
 #elif defined(__GNUG__)
 #  define _COM_AZURE_DEV__BASE__COMPILER _COM_AZURE_DEV__BASE__COMPILER_GCC
+#elif defined(__doxygen__)
+#  define _COM_AZURE_DEV__BASE__COMPILER _COM_AZURE_DEV__BASE__COMPILER_DOXYGEN
 #else
 #  error Unsupported compiler.
 #endif

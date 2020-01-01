@@ -40,8 +40,18 @@
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
+ThrowException::ThrowException(const char* who, const char* file, unsigned int line) noexcept
+{
+  printf("THROW AT %s %s:%d\n", who, file, line);
+}
+
+void ThrowException::onException(const char* who, const char* file, unsigned int line) noexcept
+{
+  printf("THROW AT %s %s:%d\n", who, file, line);
+}
+
 GlobalPrint::GlobalPrint(const char* _text) noexcept
-  : text(_text)
+  : text(Debug::getRelativePath(_text))
 {
   printf("GLOBAL CONSTRUCT %s\n", text);
 }
@@ -426,7 +436,7 @@ extern "C" void set_initialized(guard_type* guard_object)
 
 extern "C" int __cxa_guard_acquire(guard_type *guard_object)
 {
-  //set_initialized(guard_object);
+  set_initialized(guard_object);
   printf("__cxa_guard_acquire %p %d\n", guard_object, is_initialized(guard_object));
   return !is_initialized(guard_object);
 }

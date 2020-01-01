@@ -70,3 +70,7 @@
     (_COM_AZURE_DEV__BASE__OS != _COM_AZURE_DEV__BASE__WASI)
 #  define _COM_AZURE_DEV__BASE__LARGE_FILE_SYSTEM
 #endif
+
+#if 0
+#  define throw throw base::ThrowException(__func__, __FILE__, __LINE__) * 
+#endif

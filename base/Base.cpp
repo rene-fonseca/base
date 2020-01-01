@@ -38,7 +38,9 @@
 #endif // flavor
 #include <stdio.h>
 #include <stdarg.h>
-#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__UNIX)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
+#  include<io.h>
+#else
 #  include <unistd.h>
 #endif
 
@@ -56,6 +58,7 @@ void ThrowException::onException(const char* who, const char* file, unsigned int
 
 void GlobalPrint::printf(const char* text, ...) noexcept
 {
+#if (_COM_AZURE_DEV__BASE__FLAVOR != _COM_AZURE_DEV__BASE__WIN32)
   char buffer[1024+1];
   va_list args;
   va_start(args, text);
@@ -74,6 +77,7 @@ void GlobalPrint::printf(const char* text, ...) noexcept
     write(1, buffer, result);
 #endif
   }
+#endif
 }
 
 GlobalPrint::GlobalPrint(const char* _text) noexcept

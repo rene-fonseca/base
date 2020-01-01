@@ -37,6 +37,10 @@
 #  endif
 #endif // flavor
 #include <stdio.h>
+#include <stdarg.h>
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__UNIX)
+#  include <unistd.h>
+#endif
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 

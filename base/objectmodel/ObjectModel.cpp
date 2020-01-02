@@ -223,7 +223,7 @@ MemorySize ObjectModel::Array::getSize() const noexcept
 Reference<ObjectModel::Value> ObjectModel::Array::getAt(MemorySize index) const
 {
   if (index >= values.getSize()) {
-    throw OutOfRange();
+    _throw OutOfRange();
   }
   return values[index];
 }
@@ -231,7 +231,7 @@ Reference<ObjectModel::Value> ObjectModel::Array::getAt(MemorySize index) const
 void ObjectModel::Array::setAt(MemorySize index, const Reference<Value>& value)
 {
   if (index >= values.getSize()) {
-    throw OutOfRange();
+    _throw OutOfRange();
   }
   values[index] = value;
 }
@@ -308,7 +308,7 @@ base::Array<bool> ObjectModel::Array::getAs<bool>() const
   for (const auto& v : values) {
     auto _v = v.cast<Boolean>();
     if (!_v) {
-      throw ObjectModelException("Expected boolean array.");
+      _throw ObjectModelException("Expected boolean array.");
     }
     *dest++ = _v->value;
   }
@@ -324,7 +324,7 @@ base::Array<int> ObjectModel::Array::getAs<int>() const
   for (const auto& v : values) {
     auto _v = v.cast<Boolean>();
     if (!_v) {
-      throw ObjectModelException("Expected integer array.");
+      _throw ObjectModelException("Expected integer array.");
     }
     *dest++ = _v->value;
   }
@@ -340,7 +340,7 @@ base::Array<double> ObjectModel::Array::getAs<double>() const
   for (const auto& v : values) {
     auto _v = v.cast<Float>();
     if (!_v) {
-      throw ObjectModelException("Expected float array.");
+      _throw ObjectModelException("Expected float array.");
     }
     *dest++ = _v->value;
   }
@@ -356,7 +356,7 @@ base::Array<base::String> ObjectModel::Array::getAs<base::String>() const
   for (const auto& v : values) {
     auto _v = v.cast<String>();
     if (!_v) {
-      throw ObjectModelException("Expected string array.");
+      _throw ObjectModelException("Expected string array.");
     }
     *dest++ = _v->value;
   }
@@ -506,7 +506,7 @@ Reference<ObjectModel::Value> ObjectModel::Object::getValue(const char* _key) co
 void ObjectModel::Object::setValue(const Reference<String>& key, const Reference<Value>& value)
 {
   if (!key) {
-    throw NullPointer("Key is null.");
+    _throw NullPointer("Key is null.");
   }
   for (auto& v : values) {
     if (!INLINE_ASSERT(v.getFirst())) {
@@ -523,7 +523,7 @@ void ObjectModel::Object::setValue(const Reference<String>& key, const Reference
 void ObjectModel::Object::setValue(const Reference<String>& key, const base::String& value)
 {
   if (!key) {
-    throw NullPointer("Key is null.");
+    _throw NullPointer("Key is null.");
   }
   auto _value = globalObjectModel.createString(value);
   for (auto& v : values) {
@@ -625,7 +625,7 @@ void ObjectModel::Object::setValue(const base::String& key, const base::String& 
 void ObjectModel::Object::setValue(const char* key, const char* value)
 {
   if (!key) {
-    throw NullPointer("Key is null.");
+    _throw NullPointer("Key is null.");
   }
   if (!value) {
     setValue(base::String(key), nullptr);
@@ -649,7 +649,7 @@ Reference<ObjectModel::Value> ObjectModel::Object::getPath(const char* path, boo
   Reference<Value> current = this;
   while (*path) {
     if (*path != '/') {
-      throw ObjectModelException("Invalid path.");
+      _throw ObjectModelException("Invalid path.");
     }
     ++path;
     
@@ -667,7 +667,7 @@ Reference<ObjectModel::Value> ObjectModel::Object::getPath(const char* path, boo
         if (forceNull) {
           return nullptr;
         }
-        throw ObjectModelException("Path not found.");
+        _throw ObjectModelException("Path not found.");
       }
       current = result;
 
@@ -682,28 +682,28 @@ Reference<ObjectModel::Value> ObjectModel::Object::getPath(const char* path, boo
         }
       }
       if (path == ibegin) {
-        throw ObjectModelException("Invalid array index.");
+        _throw ObjectModelException("Invalid array index.");
       }
       long long arrayIndex = LongInteger::parse(ibegin, path, 0);
       if (arrayIndex < 0) {
-        throw ObjectModelException("Invalid array index.");
+        _throw ObjectModelException("Invalid array index.");
       }
       if (arrayIndex > PrimitiveTraits<MemorySize>::MAXIMUM) {
-        throw ObjectModelException("Invalid array index.");
+        _throw ObjectModelException("Invalid array index.");
       }
       
       if (!((arrayIndex >= 0) && (static_cast<MemorySize>(arrayIndex) < a->values.getSize()))) {
         if (forceNull) {
           return nullptr;
         }
-        throw ObjectModelException("Array index out of range.");
+        _throw ObjectModelException("Array index out of range.");
       }
       current = a->values[arrayIndex];
     } else {
       if (forceNull) {
         return nullptr;
       }
-      throw ObjectModelException("Path not found.");
+      _throw ObjectModelException("Path not found.");
     }
   }
   BASSERT(!*path);
@@ -718,7 +718,7 @@ bool ObjectModel::Object::getBoolean(const char* path, bool defaultValue)
   }
   Reference<Boolean> b = v.cast<Boolean>();
   if (!b) {
-    throw ObjectModelException("Not a boolean.");
+    _throw ObjectModelException("Not a boolean.");
   }
   return b->value;
 }
@@ -731,7 +731,7 @@ int64 ObjectModel::Object::getInteger(const char* path, int64 defaultValue)
   }
   Reference<Integer> i = v.cast<Integer>();
   if (!i) {
-    throw ObjectModelException("Not an integer.");
+    _throw ObjectModelException("Not an integer.");
   }
   return i->value;
 }
@@ -743,7 +743,7 @@ double ObjectModel::Object::getFloat(const char* path, double defaultValue) {
   }
   Reference<Float> d = v.cast<Float>();
   if (!d) {
-    throw ObjectModelException("Not a float.");
+    _throw ObjectModelException("Not a float.");
   }
   return d->value;
 }
@@ -756,7 +756,7 @@ base::String ObjectModel::Object::getString(const char* path, const base::String
   }
   Reference<String> s = v.cast<String>();
   if (!s) {
-    throw ObjectModelException("Not a string.");
+    _throw ObjectModelException("Not a string.");
   }
   return s->value;
 }
@@ -769,7 +769,7 @@ Reference<ObjectModel::Array> ObjectModel::Object::getArray(const char* path)
   }
   Reference<Array> a = v.cast<Array>();
   if (!a) {
-    throw ObjectModelException("Not an array.");
+    _throw ObjectModelException("Not an array.");
   }
   return a;
 }
@@ -782,7 +782,7 @@ Reference<ObjectModel::Object> ObjectModel::Object::getObject(const char* path)
   }
   Reference<Object> o = v.cast<Object>();
   if (!o) {
-    throw ObjectModelException("Not an object.");
+    _throw ObjectModelException("Not an object.");
   }
   return o;
 }
@@ -813,7 +813,7 @@ FormatOutputStream& operator<<(FormatOutputStream& stream, const Reference<Objec
   case ObjectModel::Value::TYPE_OBJECT:
     return stream << value.cast<ObjectModel::Object>();
   default:
-    throw ObjectModelException("Invalid type.");
+    _throw ObjectModelException("Invalid type.");
   }
 }
 
@@ -871,7 +871,7 @@ ObjectModel::NiceFormat& operator<<(ObjectModel::NiceFormat& stream, const Refer
   case ObjectModel::Value::TYPE_BINARY:
     return stream << value.cast<ObjectModel::Binary>();
   default:
-    throw ObjectModelException("Invalid type.");
+    _throw ObjectModelException("Invalid type.");
   }
 }
 
@@ -1396,7 +1396,7 @@ void getStatsImpl(ObjectModel::Stats& stats, const Reference<ObjectModel::Value>
     stats.numberOfBinaries++;
     break;
   default:
-    throw ObjectModelException("Invalid type.");
+    _throw ObjectModelException("Invalid type.");
   }
 }
 

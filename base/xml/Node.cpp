@@ -70,7 +70,7 @@ String Node::getName() const noexcept {
     // TAG: is this ok
     return NativeString((const char*)((const xmlEntity*)(node->name))->name);
   default:
-    throw UnexpectedFailure(this);
+    _throw UnexpectedFailure(this);
   }
 #else
   return String();
@@ -99,7 +99,7 @@ String Node::getValue() const {
   case XML_ENTITY_NODE:
     return String();
   default:
-    throw UnexpectedFailure(this);
+    _throw UnexpectedFailure(this);
   }
 #else
   return String();
@@ -154,10 +154,10 @@ void Node::setValue(const String& value) {
   case XML_ENTITY_NODE:
     break; // ignore according to recommendation
   default:
-    throw UnexpectedFailure(this);
+    _throw UnexpectedFailure(this);
   }
 #else
-  throw DOMException(this); // TAG: cause
+  _throw DOMException(this); // TAG: cause
 #endif
 }
 
@@ -196,10 +196,10 @@ Node::NodeType Node::getType() const noexcept {
   case XML_ENTITY_DECL:
     return Node::ENTITY_DECL_NODE;
   default:
-    throw UnexpectedFailure(this);
+    _throw UnexpectedFailure(this);
   }
 #else
-  throw DOMException(this);
+  _throw DOMException(this);
 #endif
 }
 
@@ -220,7 +220,7 @@ Node Node::getParent() const noexcept {
     return 0;
   }
 #else
-  throw DOMException(this);
+  _throw DOMException(this);
 #endif
 }
 
@@ -234,7 +234,7 @@ Node Node::getPreviousSibling() const noexcept {
     return node->prev;
   }
 #else
-  throw DOMException(this);
+  _throw DOMException(this);
 #endif
 }
 
@@ -248,7 +248,7 @@ Node Node::getNextSibling() const noexcept {
     return node->next;
   }
 #else
-  throw DOMException(this);
+  _throw DOMException(this);
 #endif
 }
 
@@ -272,10 +272,10 @@ Node Node::getFirstChild() const noexcept {
   case XML_NOTATION_NODE:
     return 0;
   default:
-    throw UnexpectedFailure(this);
+    _throw UnexpectedFailure(this);
   }
 #else
-  throw DOMException(this);
+  _throw DOMException(this);
 #endif
 }
 
@@ -299,10 +299,10 @@ Node Node::getLastChild() const noexcept {
   case XML_NOTATION_NODE:
     return 0;
   default:
-    throw UnexpectedFailure(this);
+    _throw UnexpectedFailure(this);
   }
 #else
-  throw DOMException(this);
+  _throw DOMException(this);
 #endif
 }
 
@@ -315,7 +315,7 @@ Node::ShadowDocument Node::getOwnerDocument() noexcept {
     return node->doc;
   }
 #else
-  throw DOMException(this);
+  _throw DOMException(this);
 #endif
 }
 
@@ -379,7 +379,7 @@ public:
       }
       break;
     default:
-      throw UnexpectedFailure(Type::getType<NodeImpl>());
+      _throw UnexpectedFailure(Type::getType<NodeImpl>());
     }
     
 		while (node) {
@@ -549,7 +549,7 @@ Node Node::appendChild(Node _child) {
   
   return child;
 #else
-  throw DOMException(this);
+  _throw DOMException(this);
 #endif
 }
 
@@ -612,7 +612,7 @@ Node Node::insertBefore(Node _newChild, Node _refChild) {
   
   return newChild;
 #else
-  throw DOMException(this);
+  _throw DOMException(this);
 #endif
 }
 
@@ -624,7 +624,7 @@ Node Node::removeChild(Node _oldChild) {
   NodeImpl::unlink(oldChild);
   return oldChild;
 #else
-  throw DOMException(this);
+  _throw DOMException(this);
 #endif
 }
 
@@ -654,10 +654,10 @@ bool Node::hasChildNodes() const noexcept {
   case XML_NOTATION_NODE:
     return false;
   default:
-    throw UnexpectedFailure(this);
+    _throw UnexpectedFailure(this);
   }
 #else
-  throw DOMException(this);
+  _throw DOMException(this);
 #endif
 }
 
@@ -672,7 +672,7 @@ String Node::getNamespaceURI() const noexcept {
     return String();
   }
 #else
-  throw DOMException(this);
+  _throw DOMException(this);
 #endif
 }
 
@@ -688,7 +688,7 @@ String Node::getPrefix() const {
     return String();
   }
 #else
-  throw DOMException(this);
+  _throw DOMException(this);
 #endif
 }
 
@@ -716,7 +716,7 @@ void Node::setPrefix(const String& prefix) {
     node->ns = ns;
 	}
 #else
-  throw DOMException(this);
+  _throw DOMException(this);
 #endif
 }
 
@@ -731,7 +731,7 @@ String Node::getLocalName() const noexcept {
     return String();
   }
 #else
-  throw DOMException(this);
+  _throw DOMException(this);
 #endif
 }
 
@@ -740,7 +740,7 @@ bool Node::hasAttributes() const noexcept {
   xmlNode* node = (xmlNode*)context;
   return (node->type == XML_ELEMENT_NODE) && (node->properties != 0);
 #else
-  throw DOMException(this);
+  _throw DOMException(this);
 #endif
 }
 
@@ -751,7 +751,7 @@ bool Node::isUnlinked() const noexcept {
 #if defined(_COM_AZURE_DEV__BASE__XML_XMLSOFT_ORG)
   return NodeImpl::isUnlinked(*this);
 #else
-  throw DOMException(this);
+  _throw DOMException(this);
 #endif
 }
 
@@ -761,7 +761,7 @@ bool Node::hasSameOwner(const Node& _node) const noexcept {
   const xmlNode* b = (const xmlNode*)_node.getContext();
   return a->doc == b->doc;
 #else
-  throw DOMException(this);
+  _throw DOMException(this);
 #endif
 }
 
@@ -803,14 +803,14 @@ Node Node::cloneNode(bool deep) {
   case XML_ENTITY_DECL: // not XML_ENTITY_NODE
   case XML_NOTATION_NODE:
   case XML_DTD_NODE: // not XML_DOCUMENT_TYPE_NODE
-    throw bindCause(DOMException(this), DOMException::NOT_SUPPORTED);
+    _throw bindCause(DOMException(this), DOMException::NOT_SUPPORTED);
 	default:
     xmlNode* result = xmlDocCopyNode(node, node->doc, deep ? 1 : 0);
     bassert(result, DOMException(this));
     return result;
   }
 #else
-  throw DOMException(this);
+  _throw DOMException(this);
 #endif
 }
 
@@ -867,7 +867,7 @@ Node::~Node() noexcept {
       xmlFreeNode(node);
       break;
     default:
-      throw UnexpectedFailure(this);
+      _throw UnexpectedFailure(this);
     }
   }
 #endif

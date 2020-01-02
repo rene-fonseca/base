@@ -43,7 +43,7 @@ Reference<ObjectModel::Boolean> YAML::parseBoolean(YAMLParser& parser)
     parser.read("true");
     return objectModel.createBoolean(true);
   }
-  throw YAMLException("Expected boolean.", parser.getPosition());
+  _throw YAMLException("Expected boolean.", parser.getPosition());
 }
 
 bool YAML::parseIntegerImpl(YAMLParser& parser, int64& j)
@@ -102,7 +102,7 @@ Reference<ObjectModel::Integer> YAML::parseInteger(YAMLParser& parser)
   skipSpaces(parser);
   int64 i = 0;
   if (!parseIntegerImpl(parser, i)) {
-    throw YAMLException("Expected integer.", parser.getPosition());
+    _throw YAMLException("Expected integer.", parser.getPosition());
   }
   return objectModel.createInteger(i);
 }
@@ -153,7 +153,7 @@ Reference<ObjectModel::Float> YAML::parseFloat(YAMLParser& parser)
 
   double d = 0;
   if (!posix.getSeries(b, e, d)) {
-    throw YAMLException("Malformed float.", parser.getPosition());
+    _throw YAMLException("Malformed float.", parser.getPosition());
   }
   
   return objectModel.createFloat(d);
@@ -229,7 +229,7 @@ namespace {
       const uint16 value = (d0 << 12) | (d1 << 8) | (d2 << 4) | (d3 << 0);
       return value;
     }
-    throw JSONException("Malformed UTF-16 word for string literal.", parser.getPosition());
+    _throw JSONException("Malformed UTF-16 word for string literal.", parser.getPosition());
   }
 }
 
@@ -237,7 +237,7 @@ Reference<ObjectModel::String> YAML::parseString(YAMLParser& parser)
 {
   skipSpaces(parser);
   if (!parser.peek('"')) {
-    throw YAMLException("Expected string.", parser.getPosition());
+    _throw YAMLException("Expected string.", parser.getPosition());
   }
 
   BufferWrapper buffer(this->buffer);
@@ -278,19 +278,19 @@ Reference<ObjectModel::String> YAML::parseString(YAMLParser& parser)
           const uint16 value = readUTF16Word(parser);
           if ((value >= 0xd800) && (value <= 0xdfff)) { // surrogate words
             if (value >= 0xdc00) {
-              throw JSONException("Unexpected UTF-16 low surrogate.", parser.getPosition());
+              _throw JSONException("Unexpected UTF-16 low surrogate.", parser.getPosition());
             }
             if (parser.peek() != '\\') {
-              throw JSONException("Missing UTF-16 low surrogate.", parser.getPosition());
+              _throw JSONException("Missing UTF-16 low surrogate.", parser.getPosition());
             }
             parser.skip();
             if (parser.peek() != 'u') {
-              throw JSONException("Missing UTF-16 low surrogate.", parser.getPosition());
+              _throw JSONException("Missing UTF-16 low surrogate.", parser.getPosition());
             }
             parser.skip();
             const uint16 value2 = readUTF16Word(parser);
             if (!((value2 >= 0xdc00) && (value2 <= 0xdfff))) { // surrogate word
-              throw JSONException("Expected UTF-16 low surrogate.", parser.getPosition());
+              _throw JSONException("Expected UTF-16 low surrogate.", parser.getPosition());
             }
             const uint32 high = value - 0xd800; // leading
             const uint32 low = value2 - 0xdc00; // trailing
@@ -310,11 +310,11 @@ Reference<ObjectModel::String> YAML::parseString(YAMLParser& parser)
         }
         break;
       default:
-        throw YAMLException("Malformed string literal.", parser.getPosition());
+        _throw YAMLException("Malformed string literal.", parser.getPosition());
       }
     } else {
       if (static_cast<uint8>(ch) < 0x20) {
-        throw YAMLException("Malformed string literal.", parser.getPosition());
+        _throw YAMLException("Malformed string literal.", parser.getPosition());
       }
       if (static_cast<uint8>(ch) < 0x80) {
         buffer.push(ch);
@@ -326,7 +326,7 @@ Reference<ObjectModel::String> YAML::parseString(YAMLParser& parser)
       const auto begin = parser.getCurrent();
       const ucs4 uch = parser.readUCS4(); // TAG: handle UTF-8/16/32
       if (uch > 0x10ffff) {
-        throw YAMLException("Bad UTF8 string literal.", parser.getPosition());
+        _throw YAMLException("Bad UTF8 string literal.", parser.getPosition());
       }
       const MemoryDiff bytesRead = parser.getCurrent() - begin;
       for (MemoryDiff i = 0; i < bytesRead; ++i) {
@@ -342,7 +342,7 @@ Reference<ObjectModel::Array> YAML::parseArray(YAMLParser& parser)
 {
   skipSpaces(parser);
   if (!parser.peek('[')) {
-    throw YAMLException("Expected array.", parser.getPosition());
+    _throw YAMLException("Expected array.", parser.getPosition());
   }
   parser.skip();
   skipSpaces(parser);
@@ -366,7 +366,7 @@ Reference<ObjectModel::Array> YAML::parseArray(YAMLParser& parser)
         return result;
       }
     default:
-      throw YAMLException("Malformed array.", parser.getPosition());
+      _throw YAMLException("Malformed array.", parser.getPosition());
     }
   }
   return nullptr;
@@ -376,7 +376,7 @@ Reference<ObjectModel::Object> YAML::parseObject(YAMLParser& parser)
 {
   skipSpaces(parser);
   if (!parser.peek('{')) {
-    throw YAMLException("Expected object.", parser.getPosition());
+    _throw YAMLException("Expected object.", parser.getPosition());
   }
   parser.skip();
   Reference<ObjectModel::Object> result = objectModel.createObject();
@@ -402,7 +402,7 @@ Reference<ObjectModel::Object> YAML::parseObject(YAMLParser& parser)
       parser.skip();
       return result;
     default:
-      throw YAMLException("Malformed object.", parser.getPosition());
+      _throw YAMLException("Malformed object.", parser.getPosition());
     }
   }
   return nullptr;
@@ -453,7 +453,7 @@ Reference<ObjectModel::Value> YAML::parse(const uint8* src, const uint8* end)
   Reference<ObjectModel::Value> result = YAML::parseValue(parser);
   skipSpaces(parser);
   if (parser.hasMore()) {
-    throw YAMLException("Unexpected content after object.", parser.getPosition());
+    _throw YAMLException("Unexpected content after object.", parser.getPosition());
   }
   return result;
 }
@@ -682,7 +682,7 @@ void toStringYAML(YAMLOutputStream& stream, const Reference<ObjectModel::Value>&
     toStringYAML(stream, value.cast<ObjectModel::Object>());
     break;
   default:
-    throw ObjectModelException("Invalid type.");
+    _throw ObjectModelException("Invalid type.");
   }
 }
 
@@ -699,7 +699,7 @@ void toStringYAMLDocument(YAMLOutputStream& stream, Reference<ObjectModel::Value
 String YAML::getYAML(Reference<ObjectModel::Value> value)
 {
   if (!value) {
-    throw NullPointer();
+    _throw NullPointer();
   }
   YAMLOutputStream stream;
   toStringYAMLDocument(stream, value);

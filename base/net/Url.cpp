@@ -187,7 +187,7 @@ String Url::validateScheme(const String& value)
     } else if (ch == '.') {
     } else if (ch == '-') {
     } else {
-      throw UrlException("Invalid scheme.", Type::getType<Url>());
+      _throw UrlException("Invalid scheme.", Type::getType<Url>());
     }
     temp += ch;
   }

@@ -99,7 +99,7 @@ public:
         break;
       case XML_EXTERNAL_GENERAL_UNPARSED_ENTITY:
         // TAG: is this case possible
-        throw SAXException();
+        _throw SAXException();
         break;
       case XML_INTERNAL_PARAMETER_ENTITY:
         // TAG: use % prefix or other method
@@ -188,7 +188,7 @@ public:
         valueType = AttributeDecl::NOTATION;
         break;
       default:
-        throw SAXException();
+        _throw SAXException();
       }
 
       AttributeDecl::DefaultType defaultType;
@@ -206,7 +206,7 @@ public:
         defaultType = AttributeDecl::FIXED;
         break;
       default:
-        throw SAXException();
+        _throw SAXException();
       }
       
       Array<String> enumeration;
@@ -251,7 +251,7 @@ public:
         valueType = ElementDecl::ELEMENT;
         break;
       default:
-        throw SAXException();
+        _throw SAXException();
       }
       
       p->reader->dtdHandler->elementDecl(
@@ -529,7 +529,7 @@ XMLDefaultReader::XMLDefaultReader() noexcept
     standalone(false) {
 #if defined(_COM_AZURE_DEV__BASE__XML_XMLSOFT_ORG)
 #else // no xml support
-  throw SAXNotSupportedException(this); // prevent construction
+  _throw SAXNotSupportedException(this); // prevent construction
 #endif
 }
 
@@ -546,13 +546,13 @@ bool XMLDefaultReader::getFeature(const String& name) const
     bassert(parsing, SAXNotSupportedException(this));
     return standalone;
   } else {
-    throw SAXNotRecognizedException(this);
+    _throw SAXNotRecognizedException(this);
   }
   
   // http://xml.org/sax/features/external-general-entities
   // http://xml.org/sax/features/external-parameter-entities
 #else // no xml support
-  throw SAXNotSupportedException(this);
+  _throw SAXNotSupportedException(this);
 #endif
 }
 
@@ -564,14 +564,14 @@ void XMLDefaultReader::setFeature(const String& name, bool value)
   if (name == "http://xml.org/sax/features/validation") {
     validate = value;
   } else if (name == "http://xml.org/sax/features/namespaces") {
-    throw SAXNotSupportedException(this);
+    _throw SAXNotSupportedException(this);
   } else if (name == "http://xml.org/sax/features/namespaces-prefixes") {
-    throw SAXNotSupportedException(this);
+    _throw SAXNotSupportedException(this);
   } else {
-    throw SAXNotRecognizedException(this);
+    _throw SAXNotRecognizedException(this);
   }
 #else // no xml support
-  throw SAXNotSupportedException(this);
+  _throw SAXNotSupportedException(this);
 #endif
 }
 
@@ -645,7 +645,7 @@ void XMLDefaultReader::parse(
     );
   }
 #else // no xml support
-  throw SAXNotSupportedException(this);
+  _throw SAXNotSupportedException(this);
 #endif
 }
 
@@ -678,7 +678,7 @@ void XMLDefaultReader::parse(
     );
   }
 #else // no xml support
-  throw SAXNotSupportedException(this);
+  _throw SAXNotSupportedException(this);
 #endif
 }
 
@@ -763,7 +763,7 @@ void XMLDefaultReader::parse(const String& systemId) {
     );
   }
 #else // no xml support
-  throw SAXNotSupportedException(this);
+  _throw SAXNotSupportedException(this);
 #endif
 }
 
@@ -772,7 +772,7 @@ void XMLDefaultReader::terminate() noexcept {
 // int result = xmlParseChunk(static_cast<xmlParserCtxtPtr>(context), 0, 0, 1);
 // bassert(result == 0, SAXException("Unable to terminate parsing."));
 #else // no xml support
-  throw SAXNotSupportedException(this);
+  _throw SAXNotSupportedException(this);
 #endif
 }
 

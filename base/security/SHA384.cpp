@@ -97,7 +97,7 @@ void SHA384::pushBlock(const uint8* block) noexcept {
 MemorySize SHA384::push(const uint8* buffer, MemorySize size)
 {
   if (size > (MAXIMUM_SIZE - totalSize)) {
-    throw OutOfRange();
+    _throw OutOfRange();
   }
   MemorySize result = size;
   totalSize += size;
@@ -165,7 +165,7 @@ uint8 SHA384::getDigest(MemorySize index) const
 {
   MemorySize size = (getArraySize(messageDigest) - 2) * sizeof(uint64);
   if (index >= size) {
-    throw OutOfRange();
+    _throw OutOfRange();
   }
   const uint64 word = messageDigest[index/sizeof(uint64)];
   const uint64 shift = 8 * (index % sizeof(uint64));

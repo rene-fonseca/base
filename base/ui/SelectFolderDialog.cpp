@@ -63,7 +63,7 @@ bool SelectFolderDialog::execute()
   }
   return result != 0;
 #else // unix
-  throw NotImplemented(this);
+  _throw NotImplemented(this);
 #endif // flavor
 }
 

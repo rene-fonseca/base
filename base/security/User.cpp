@@ -63,7 +63,7 @@ User User::getCurrentUser() {
 
 User::User(unsigned long _id) : integralId(_id) {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
-  throw OutOfDomain("Invalid user id.", this);
+  _throw OutOfDomain("Invalid user id.", this);
 #else
 //   bassert(
 //     integralId <= PrimitiveTraits<uid_t>::MAXIMUM,
@@ -85,7 +85,7 @@ User::User(const void* _id)
   copy(id->getElements(), Cast::pointer<const uint8*>(_id), size);
   integralId = 0;
 #else // unix
-  throw OutOfDomain("Invalid user.", this);
+  _throw OutOfDomain("Invalid user.", this);
 #endif // flavor
 }
 
@@ -217,9 +217,9 @@ String User::getHomeFolder() const
 //     LPTSTR lpProfileDir,
 //     LPDWORD lpcchSize
 //   );
-  throw NotImplemented(this);
+  _throw NotImplemented(this);
 #elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__WASI)
-  throw NotImplemented(this);
+  _throw NotImplemented(this);
 #else // unix  
   Thread::UseThreadLocalBuffer _buffer;
   Allocator<uint8>& buffer = _buffer;
@@ -259,9 +259,9 @@ bool User::isAdmin() const {
 
 bool User::isMemberOf(const Group& group) {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
-  throw NotImplemented(this);
+  _throw NotImplemented(this);
 #else // unix
-  throw NotImplemented(this);
+  _throw NotImplemented(this);
 #endif // flavor
 }
 
@@ -306,7 +306,7 @@ Array<String> User::getGroups() {
   }
 #else // unix
   bassert(isValid(), UserException(this));
-  throw NotImplemented(this);
+  _throw NotImplemented(this);
 #endif // flavor
   return result;
 }

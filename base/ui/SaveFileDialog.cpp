@@ -60,10 +60,10 @@ bool SaveFileDialog::execute()
     const Map<String, String>::Node* node = enu.next();
     // terminator not allowed in value and key
     if (node->getValue().indexOf('\0') >= 0) {
-      throw UserInterfaceException();
+      _throw UserInterfaceException();
     }
     if (node->getKey().indexOf('\0') >= 0) {
-      throw UserInterfaceException();
+      _throw UserInterfaceException();
     }
     temp += node->getValue();
     temp += '\0';
@@ -103,7 +103,7 @@ bool SaveFileDialog::execute()
   }
   return result != 0;
 #else // unix
-  throw NotImplemented(this);
+  _throw NotImplemented(this);
 #endif // flavor
 }
 

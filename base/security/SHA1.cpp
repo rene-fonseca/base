@@ -136,7 +136,7 @@ void SHA1::pushBlock(const uint8* block) noexcept {
 MemorySize SHA1::push(const uint8* buffer, MemorySize size)
 {
   if (size > (MAXIMUM_SIZE - totalSize)) {
-    throw OutOfRange();
+    _throw OutOfRange();
   }
   const MemorySize result = size;
   totalSize += size;

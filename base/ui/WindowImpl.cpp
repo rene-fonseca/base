@@ -1034,7 +1034,7 @@ void WindowImpl::displayMenu(
     UserInterfaceException(this)
   );
 #else // unix
-  throw NotImplemented(this);
+  _throw NotImplemented(this);
 #endif // flavor
 }
 
@@ -1417,7 +1417,7 @@ void WindowImpl::setCursorConfinement(
   rect.bottom = rect.top + dimension.getHeight() - 1;
   ::ClipCursor(&rect);
 #else // unix
-  throw NotImplemented(this);
+  _throw NotImplemented(this);
 #endif // flavor
 }
 
@@ -1509,7 +1509,7 @@ bool WindowImpl::isMinimized()
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   return ::IsIconic((HWND)drawableHandle) == TRUE;
 #else // unix
-  throw NotImplemented(this);
+  _throw NotImplemented(this);
 #endif // flavor
 }
 
@@ -1663,7 +1663,7 @@ bool WindowImpl::getCapture() const
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   return ::GetCapture() == (HWND)drawableHandle;
 #else // unix
-  throw NotImplemented(this);
+  _throw NotImplemented(this);
 #endif // flavor
 }
 
@@ -1713,7 +1713,7 @@ void WindowImpl::setDisplayMode(DisplayMode displayMode) {
         mode.dmPelsWidth = 0;
         mode.dmPelsHeight = 0;
         if (::ChangeDisplaySettings(&mode, CDS_FULLSCREEN)) {
-          throw UserInterfaceException("Unable to enter full screen mode.", this);
+          _throw UserInterfaceException("Unable to enter full screen mode.", this);
         }
         // ::EnumDisplaySettings();
       }
@@ -1722,7 +1722,7 @@ void WindowImpl::setDisplayMode(DisplayMode displayMode) {
     this->displayMode = displayMode;
   }
 #else // unix
-  throw NotImplemented(this);
+  _throw NotImplemented(this);
 #endif // flavor
 }
 
@@ -1787,7 +1787,7 @@ unsigned int WindowImpl::getKeyState(unsigned int code) const {
   state |= (nativeState & 0x01) ? Key::TOGGLED : 0;
   return state;
 #else // unix
-  throw NotImplemented(this);
+  _throw NotImplemented(this);
 #endif // flavor
 }
 

@@ -34,7 +34,7 @@ DocumentType Document::getDocumentType() noexcept {
   xmlDtd* documentType = doc->intSubset;
   return documentType;
 #else
-  throw DOMException(this);
+  _throw DOMException(this);
 #endif
 }
 
@@ -48,7 +48,7 @@ Element Document::getDocumentElement() noexcept {
   xmlNode* node = xmlDocGetRootElement(doc);
   return node;
 #else
-  throw DOMException(this);
+  _throw DOMException(this);
 #endif
 }
 
@@ -73,7 +73,7 @@ DocumentType Document::createAndSetDocumentType(
   bassert(dtd, DOMException(this));
   return dtd;
 #else
-  throw DOMException(this);
+  _throw DOMException(this);
 #endif
 }
 
@@ -88,7 +88,7 @@ Attribute Document::createAttribute(const String& name) {
   bassert(node, DOMException(this));
   return node;
 #else
-  throw DOMException(this);
+  _throw DOMException(this);
 #endif
 }
 
@@ -105,7 +105,7 @@ Attribute Document::createAttribute(
   bassert(node, DOMException(this));
   return node;
 #else
-  throw DOMException(this);
+  _throw DOMException(this);
 #endif
 }
 
@@ -161,7 +161,7 @@ Attribute Document::createAttributeNS(
   }
   return attribute;
 #else
-  throw DOMException(this);
+  _throw DOMException(this);
 #endif
 }
 
@@ -181,7 +181,7 @@ AttributeDecl Document::createAttributeDecl(
   bassert(node, DOMException(this));
   return node;
 #else
-  throw DOMException(this);
+  _throw DOMException(this);
 #endif
 }
 
@@ -208,7 +208,7 @@ ElementDecl Document::createElementDecl(
   bassert(element, DOMException(this));
   return element;
 #else
-  throw DOMException(this);
+  _throw DOMException(this);
 #endif
 }
 
@@ -228,7 +228,7 @@ Notation Document::createNotation(
   bassert(notation, DOMException(this));
   return notation;
 #else
-  throw DOMException(this);
+  _throw DOMException(this);
 #endif
 }
 #endif
@@ -245,7 +245,7 @@ Element Document::createElement(const String& name) {
   bassert(node, DOMException(this));
   return node;
 #else
-  throw DOMException(this);
+  _throw DOMException(this);
 #endif
 }
 
@@ -296,7 +296,7 @@ Element Document::createElementNS(
   bassert(node, DOMException(this));  
   return node;
 #else
-  throw DOMException(this);
+  _throw DOMException(this);
 #endif
 }
 
@@ -307,7 +307,7 @@ DocumentFragment Document::createDocumentFragment() {
   bassert(node, DOMException(this));
   return node;
 #else
-  throw DOMException(this);
+  _throw DOMException(this);
 #endif
 }
 
@@ -321,7 +321,7 @@ Text Document::createText(const String& data) {
   bassert(node, DOMException(this));
   return node;
 #else
-  throw DOMException(this);
+  _throw DOMException(this);
 #endif
 }
 
@@ -335,7 +335,7 @@ Comment Document::createComment(const String& data) {
   node->doc = doc;
   return node;
 #else
-  throw DOMException(this);
+  _throw DOMException(this);
 #endif
 }
 
@@ -353,7 +353,7 @@ CDATASection Document::createCDATASection(
   node->doc = doc;
   return node;
 #else
-  throw DOMException(this);
+  _throw DOMException(this);
 #endif
 }
 
@@ -370,7 +370,7 @@ ProcessingInstruction Document::createProcessingInstruction(
   node->doc = doc;
   return node;
 #else
-  throw DOMException(this);
+  _throw DOMException(this);
 #endif
 }
 
@@ -385,7 +385,7 @@ EntityReference Document::createEntityReference(
   bassert(node, DOMException(this));
   return node;
 #else
-  throw DOMException(this);
+  _throw DOMException(this);
 #endif
 }
 
@@ -399,7 +399,7 @@ Element Document::getElementById(const String& elementId) noexcept {
   );
   return node;
 #else
-  throw DOMException(this);
+  _throw DOMException(this);
 #endif
 }
 
@@ -425,7 +425,7 @@ Node Document::importNode(Node importedNode, bool deep) {
   case XML_ATTRIBUTE_NODE:
     {
       if (doc->doc != doc) { // at root
-        throw bindCause(DOMException(this), DOMException::NOT_SUPPORTED);
+        _throw bindCause(DOMException(this), DOMException::NOT_SUPPORTED);
       }
       xmlNode* result = (xmlNode*)xmlCopyProp((xmlNode*)doc, (xmlAttr*)node);
       result->parent = 0;
@@ -436,7 +436,7 @@ Node Document::importNode(Node importedNode, bool deep) {
 		throw bindCause(DOMException(this), DOMException::NOT_SUPPORTED);
   }
 #else
-  throw DOMException(this);
+  _throw DOMException(this);
 #endif
 }
 
@@ -447,7 +447,7 @@ void Document::doXIncludeSubstitution() {
   );
   bassert(code >= 0, DOMException(this));
 #else
-  throw DOMException(this);
+  _throw DOMException(this);
 #endif
 }
 
@@ -459,7 +459,7 @@ void Document::save(const String& filename) {
   );
   bassert(bytesWritten >= 0, Exception(this));
 #else
-  throw DOMException(this);
+  _throw DOMException(this);
 #endif
 }
 
@@ -474,7 +474,7 @@ bool Document::validate() const {
     (xmlDoc*)getContext()
   ) == 1;
 #else
-  throw DOMException(this);
+  _throw DOMException(this);
 #endif
 }
 
@@ -490,7 +490,7 @@ bool Document::validate(Node node) const {
     (xmlNode*)node.getContext()
   ) == 1;
 #else
-  throw DOMException(this);
+  _throw DOMException(this);
 #endif
 }
 
@@ -502,7 +502,7 @@ void Document::destroy() {
     context = 0;
   }
 #else
-  throw DOMException(this);
+  _throw DOMException(this);
 #endif
 }
 

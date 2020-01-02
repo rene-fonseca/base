@@ -192,11 +192,11 @@ MemorySize MD5Sum::push(const uint8* buffer, MemorySize size)
     return 0;
   }
   if (closed) {
-    throw OutOfRange("MD5Sum has been closed.");
+    _throw OutOfRange("MD5Sum has been closed.");
   }
 
   if (size > (MAXIMUM_SIZE - totalSize)) {
-    throw OutOfRange();
+    _throw OutOfRange();
   }
   const MemorySize result = size;
   totalSize += size;
@@ -224,7 +224,7 @@ MemorySize MD5Sum::push(const uint8* buffer, MemorySize size)
 void MD5Sum::pushEnd()
 {
   if (closed) {
-    throw OutOfRange("MD5Sum has been closed.");
+    _throw OutOfRange("MD5Sum has been closed.");
   }
   closed = true;
 

@@ -40,12 +40,12 @@ ucs4 Parser::peekUCS4() const
   if (status <= 0) {
     switch (status) {
     case Unicode::ERROR_EMPTY:
-      throw ParseException("Unexpected end reached.");
+      _throw ParseException("Unexpected end reached.");
     case Unicode::ERROR_INCOMPLETE:
-      throw ParseException("Incomplete UTF-8 character encoding.");
+      _throw ParseException("Incomplete UTF-8 character encoding.");
     case Unicode::ERROR_BAD_ENCODING:
     default:
-      throw ParseException("Bad UTF-8 character encoding.");
+      _throw ParseException("Bad UTF-8 character encoding.");
     }
   }
   return ch;
@@ -58,12 +58,12 @@ ucs4 Parser::readUCS4()
   if (status <= 0) {
     switch (status) {
     case Unicode::ERROR_EMPTY:
-      throw ParseException("Unexpected end reached.");
+      _throw ParseException("Unexpected end reached.");
     case Unicode::ERROR_INCOMPLETE:
-      throw ParseException("Incomplete UTF-8 character encoding.");
+      _throw ParseException("Incomplete UTF-8 character encoding.");
     case Unicode::ERROR_BAD_ENCODING:
     default:
-      throw ParseException("Bad UTF-8 character encoding.");
+      _throw ParseException("Bad UTF-8 character encoding.");
     }
   }
   src += status;

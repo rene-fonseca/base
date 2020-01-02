@@ -25,7 +25,7 @@ DocumentType Declaration::getDocumentType() noexcept {
   xmlNode* decl = (xmlNode*)getContext();
   return decl->parent;
 #else
-  throw DOMException(this);
+  _throw DOMException(this);
 #endif
 }
 

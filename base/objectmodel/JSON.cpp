@@ -48,7 +48,7 @@ Reference<ObjectModel::Boolean> JSON::parseBoolean(JSONParser& parser)
     parser.read("true");
     return objectModel.createBoolean(true);
   }
-  throw JSONException("Expected boolean.", parser.getPosition());
+  _throw JSONException("Expected boolean.", parser.getPosition());
 }
 
 bool JSON::parseIntegerImpl(JSONParser& parser, int64& j)
@@ -109,7 +109,7 @@ Reference<ObjectModel::Integer> JSON::parseInteger(JSONParser& parser)
   skipSpaces(parser);
   int64 i = 0;
   if (!parseIntegerImpl(parser, i)) {
-    throw JSONException("Expected integer.", parser.getPosition());
+    _throw JSONException("Expected integer.", parser.getPosition());
   }
   return objectModel.createInteger(i);
 }
@@ -160,7 +160,7 @@ Reference<ObjectModel::Float> JSON::parseFloat(JSONParser& parser)
 
   double d = 0;
   if (!posix.getSeries(b, e, d)) {
-    throw JSONException("Malformed float.", parser.getPosition());
+    _throw JSONException("Malformed float.", parser.getPosition());
   }
   
   return objectModel.createFloat(d);
@@ -236,7 +236,7 @@ namespace {
       const uint16 value = (d0 << 12) | (d1 << 8) | (d2 << 4) | (d3 << 0);
       return value;
     }
-    throw JSONException("Malformed UTF-16 word for string literal.", parser.getPosition());
+    _throw JSONException("Malformed UTF-16 word for string literal.", parser.getPosition());
   }
 }
 
@@ -244,7 +244,7 @@ Reference<ObjectModel::String> JSON::parseString(JSONParser& parser)
 {
   skipSpaces(parser);
   if (!parser.peek('"')) {
-    throw JSONException("Expected string.", parser.getPosition());
+    _throw JSONException("Expected string.", parser.getPosition());
   }
 
   BufferWrapper buffer(this->buffer);
@@ -285,19 +285,19 @@ Reference<ObjectModel::String> JSON::parseString(JSONParser& parser)
           const uint16 value = readUTF16Word(parser);
           if ((value >= 0xd800) && (value <= 0xdfff)) { // surrogate words
             if (value >= 0xdc00) {
-              throw JSONException("Unexpected UTF-16 low surrogate.", parser.getPosition());
+              _throw JSONException("Unexpected UTF-16 low surrogate.", parser.getPosition());
             }
             if (parser.peek() != '\\') {
-              throw JSONException("Missing UTF-16 low surrogate.", parser.getPosition());
+              _throw JSONException("Missing UTF-16 low surrogate.", parser.getPosition());
             }
             parser.skip();
             if (parser.peek() != 'u') {
-              throw JSONException("Missing UTF-16 low surrogate.", parser.getPosition());
+              _throw JSONException("Missing UTF-16 low surrogate.", parser.getPosition());
             }
             parser.skip();
             const uint16 value2 = readUTF16Word(parser);
             if (!((value2 >= 0xdc00) && (value2 <= 0xdfff))) { // surrogate word
-              throw JSONException("Expected UTF-16 low surrogate.", parser.getPosition());
+              _throw JSONException("Expected UTF-16 low surrogate.", parser.getPosition());
             }
             const uint32 high = value - 0xd800; // leading
             const uint32 low = value2 - 0xdc00; // trailing
@@ -317,11 +317,11 @@ Reference<ObjectModel::String> JSON::parseString(JSONParser& parser)
         }
         break;
       default:
-        throw JSONException("Malformed string literal.", parser.getPosition());
+        _throw JSONException("Malformed string literal.", parser.getPosition());
       }
     } else {
       if (static_cast<uint8>(ch) < 0x20) {
-        throw JSONException("Malformed string literal.", parser.getPosition());
+        _throw JSONException("Malformed string literal.", parser.getPosition());
       }
       if (static_cast<uint8>(ch) < 0x80) {
         buffer.push(ch);
@@ -333,7 +333,7 @@ Reference<ObjectModel::String> JSON::parseString(JSONParser& parser)
       const auto begin = parser.getCurrent();
       const ucs4 uch = parser.readUCS4(); // TAG: handle UTF-8/16/32
       if (uch > 0x10ffff) {
-        throw JSONException("Bad UTF8 string literal.", parser.getPosition());
+        _throw JSONException("Bad UTF8 string literal.", parser.getPosition());
       }
       const MemoryDiff bytesRead = parser.getCurrent() - begin;
       for (MemoryDiff i = 0; i < bytesRead; ++i) {
@@ -360,7 +360,7 @@ Reference<ObjectModel::Array> JSON::parseArray(JSONParser& parser)
 {
   skipSpaces(parser);
   if (!parser.peek('[')) {
-    throw JSONException("Expected array.", parser.getPosition());
+    _throw JSONException("Expected array.", parser.getPosition());
   }
   parser.skip();
   skipSpaces(parser);
@@ -384,7 +384,7 @@ Reference<ObjectModel::Array> JSON::parseArray(JSONParser& parser)
         return result;
       }
     default:
-      throw JSONException("Malformed array.", parser.getPosition());
+      _throw JSONException("Malformed array.", parser.getPosition());
     }
   }
   return nullptr;
@@ -394,7 +394,7 @@ Reference<ObjectModel::Object> JSON::parseObject(JSONParser& parser)
 {
   skipSpaces(parser);
   if (!parser.peek('{')) {
-    throw JSONException("Expected object.", parser.getPosition());
+    _throw JSONException("Expected object.", parser.getPosition());
   }
   parser.skip();
   Reference<ObjectModel::Object> result = objectModel.createObject();
@@ -420,7 +420,7 @@ Reference<ObjectModel::Object> JSON::parseObject(JSONParser& parser)
       parser.skip();
       return result;
     default:
-      throw JSONException("Malformed object.", parser.getPosition());
+      _throw JSONException("Malformed object.", parser.getPosition());
     }
   }
   return nullptr;
@@ -471,7 +471,7 @@ Reference<ObjectModel::Value> JSON::parse(const uint8* src, const uint8* end)
   Reference<ObjectModel::Value> result = JSON::parseValue(parser);
   skipSpaces(parser);
   if (parser.hasMore()) {
-    throw JSONException("Unexpected content after object.", parser.getPosition());
+    _throw JSONException("Unexpected content after object.", parser.getPosition());
   }
   return result;
 }
@@ -501,7 +501,7 @@ Reference<ObjectModel::Value> JSON::parseFile(const String& path)
 String JSON::getJSON(Reference<ObjectModel::Value> value, unsigned int flags)
 {
   if (!value) {
-    throw NullPointer();
+    _throw NullPointer();
   }
   return value->toString(flags);
 }

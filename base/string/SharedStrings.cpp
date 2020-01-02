@@ -52,7 +52,7 @@ public:
     inline ReadIterator& operator++()
     {
       if (!value) {
-        throw EndOfEnumeration();
+        _throw EndOfEnumeration();
       }
       if (enumerator.hasNext()) {
         value = enumerator.next();

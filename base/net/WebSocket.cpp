@@ -159,7 +159,7 @@ bool WebSocket::open(const String& _url, const String& _protocols)
 {
   Reference<WebSocketHandle> _handle = handle.cast<WebSocketHandle>();
   if (_handle) {
-    throw WebSocketException("WebSocket is already open.");
+    _throw WebSocketException("WebSocket is already open.");
   }
 
   Url url(_url);
@@ -168,14 +168,14 @@ bool WebSocket::open(const String& _url, const String& _protocols)
   if (scheme == "wss") {
   } else if (scheme == "ws") {
     } else {
-    throw WebSocketException("Failed to open WebSocket due to unsupported protocol.");
+    _throw WebSocketException("Failed to open WebSocket due to unsupported protocol.");
   }
 
   if (url.getPort()) {
     try {
       const unsigned int port = UnsignedInteger::parse(url.getPort(), UnsignedInteger::DEC);
     } catch (InvalidFormat&) {
-      throw WebSocketException("Failed to open WebSocket due to invalid port.");
+      _throw WebSocketException("Failed to open WebSocket due to invalid port.");
     }
   }
 
@@ -228,7 +228,7 @@ void WebSocket::send(const String& _body)
 {
   Reference<WebSocketHandle> _handle = handle.cast<WebSocketHandle>();
   if (!_handle) {
-    throw WebSocketException("WebSocket is not open.");
+    _throw WebSocketException("WebSocket is not open.");
   }
 
   _handle->sent = true;
@@ -244,7 +244,7 @@ void WebSocket::send(const String& _body)
   HRESULT result = WebSocketSend(_handle->handle, WEB_SOCKET_UTF8_MESSAGE_BUFFER_TYPE, &buffer, _handle.getValue());
   if (SUCCEEDED(result)) {
     DWORD error = GetLastError();
-    throw WebSocketException("Failed to send WebSocket.");
+    _throw WebSocketException("Failed to send WebSocket.");
   }
 
   MemorySize bytesTransferred = 0;
@@ -335,7 +335,7 @@ void WebSocket::send(const String& _body)
     // now what
   }
   if (!stream) {
-    throw WebSocketException("Failed to send WebSocket.");
+    _throw WebSocketException("Failed to send WebSocket.");
   }
   _handle->stream = stream;
 
@@ -352,7 +352,7 @@ void WebSocket::send(const String& _body)
   if (!response) {
     CFRelease(stream);
     stream = nullptr;
-    throw WebSocketException("Failed to send WebSocket.");
+    _throw WebSocketException("Failed to send WebSocket.");
   }
 #pragma clang diagnostic pop
 
@@ -374,11 +374,11 @@ WebSocket::ReadyState WebSocket::getReadyState()
 {
   Reference<WebSocketHandle> _handle = handle.cast<WebSocketHandle>();
   if (!_handle) {
-    throw WebSocketException("WebSocket is not open.");
+    _throw WebSocketException("WebSocket is not open.");
   }
 
   if (!_handle->sent) {
-    throw WebSocketException("WebSocket has not been sent.");
+    _throw WebSocketException("WebSocket has not been sent.");
   }
 
   return CONNECTING;
@@ -392,7 +392,7 @@ void WebSocket::close()
   
   Reference<WebSocketHandle> _handle = handle.cast<WebSocketHandle>();
   if (!_handle) {
-    throw WebSocketException("WebSocket is not open.");
+    _throw WebSocketException("WebSocket is not open.");
   }
 
   _handle->close();

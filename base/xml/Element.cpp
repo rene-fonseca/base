@@ -30,7 +30,7 @@ String Element::getTagName() const noexcept {
     return NativeString((const char*)node->name);
   }
 #else
-  throw DOMException(this);
+  _throw DOMException(this);
 #endif
 }
 
@@ -39,7 +39,7 @@ bool Element::hasAttributes() const noexcept {
   xmlNode* node = (xmlNode*)getContext();
   return node->properties;
 #else
-  throw DOMException(this);
+  _throw DOMException(this);
 #endif
 }
 
@@ -61,7 +61,7 @@ bool Element::hasAttribute(const char* name) const noexcept {
   );
   return attribute != 0;
 #else
-  throw DOMException(this);
+  _throw DOMException(this);
 #endif
 }
 
@@ -74,7 +74,7 @@ String Element::getAttribute(const char* name) const {
   xmlFree(value);
   return result;
 #else
-  throw DOMException(this);
+  _throw DOMException(this);
 #endif
 }
 
@@ -89,7 +89,7 @@ void Element::setAttribute(
   );
   bassert(attribute, DOMException(this));
 #else
-  throw DOMException(this);
+  _throw DOMException(this);
 #endif
 }
 
@@ -102,27 +102,27 @@ void Element::removeAttribute(const char* name) {
   );
   bassert(result == 0, DOMException(this));
 #else
-  throw DOMException(this);
+  _throw DOMException(this);
 #endif
 }
 
 Attribute Element::getAttributeNode(const char* name) {
-  throw DOMException(this);
+  _throw DOMException(this);
 }
 
 Attribute Element::setAttributeNode(Attribute attribute) {
-  throw DOMException(this);
+  _throw DOMException(this);
 }
 
 Attribute Element::removeAttributeNode(Attribute attribute) {
-  throw DOMException(this);
+  _throw DOMException(this);
 }
 
 Attribute Element::getAttributeNodeNS(
   const char* namespaceURI,
   const char* localName) {
 #if defined(_COM_AZURE_DEV__BASE__XML_XMLSOFT_ORG)
-  throw DOMException(this);
+  _throw DOMException(this);
 //   xmlNode* node = (xmlNode*)getContext();
 //   char* value = (char*)xmlGetNsProp(
 //     node,
@@ -134,7 +134,7 @@ Attribute Element::getAttributeNodeNS(
 //   xmlFree(value);
 //   return result;
 #else
-  throw DOMException(this);
+  _throw DOMException(this);
 #endif
 }
 
@@ -150,7 +150,7 @@ String Element::getAttributeNS(
     )
   );
 #else
-  throw DOMException(this);
+  _throw DOMException(this);
 #endif
 }
 
@@ -172,13 +172,13 @@ void Element::removeAttributeNS(
   );
   bassert(result, DOMException(this));
 #else
-  throw DOMException(this);
+  _throw DOMException(this);
 #endif
 }
 
 Attribute Element::setAttributeNodeNS(
   Attribute attribute) {
-  throw DOMException(this);
+  _throw DOMException(this);
 }
 
 bool Element::hasAttributeNS(
@@ -192,7 +192,7 @@ bool Element::hasAttributeNS(
   );
   return attribute != 0;
 #else
-  throw DOMException(this);
+  _throw DOMException(this);
 #endif
 }
 

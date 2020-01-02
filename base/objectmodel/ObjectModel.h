@@ -823,7 +823,7 @@ inline Reference<ObjectModel::Value> set(const Reference<ObjectModel::Value>& v,
 {
   auto _v = v.cast<ObjectModel::Boolean>();
   if (!_v) {
-    throw ObjectModelException("Value is not a boolean.");
+    _throw ObjectModelException("Value is not a boolean.");
   }
   _v->value = b;
   return v;

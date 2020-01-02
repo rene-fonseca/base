@@ -79,7 +79,7 @@ public:
   inline uint8 peekByte() const
   {
     if (src == end) {
-      throw ParseException("Unexpected end reached.");
+      _throw ParseException("Unexpected end reached.");
     }
     return *src;
   }
@@ -88,7 +88,7 @@ public:
   inline char peek() const
   {
     if (src == end) {
-      throw ParseException("Unexpected end reached.");
+      _throw ParseException("Unexpected end reached.");
     }
     return *src;
   }
@@ -104,7 +104,7 @@ public:
   {
 #if 0
     if (src == begin) {
-      throw ParseException("Unexpected beginning reached.");
+      _throw ParseException("Unexpected beginning reached.");
     }
 #endif
     --src;
@@ -114,7 +114,7 @@ public:
   inline void skip()
   {
     if (src == end) {
-      throw ParseException("Unexpected end reached.");
+      _throw ParseException("Unexpected end reached.");
     }
     char result = *src;
     ++src;
@@ -133,7 +133,7 @@ public:
   inline void read(ucs4 ch)
   {
     if (readUCS4() != ch) {
-      throw ParseException("Unexpected char.");
+      _throw ParseException("Unexpected char.");
     }
   }
   
@@ -147,7 +147,7 @@ public:
   inline char read()
   {
     if (src == end) {
-      throw ParseException("Unexpected end reached.");
+      _throw ParseException("Unexpected end reached.");
     }
     const char result = *src;
     ++src;
@@ -158,7 +158,7 @@ public:
   inline void read(char ch)
   {
     if (read() != ch) {
-      throw ParseException("Unexpected char.");
+      _throw ParseException("Unexpected char.");
     }
   }
 
@@ -166,7 +166,7 @@ public:
   inline void read(const char* text)
   {
     if (!text) {
-      throw NullPointer();
+      _throw NullPointer();
     }
     while (*text) {
       read(*text++);

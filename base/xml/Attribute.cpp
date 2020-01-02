@@ -31,7 +31,7 @@ String Attribute::getName() const noexcept {
     return NativeString((const char*)attribute->name);
   }
 #else
-  throw DOMException(this);
+  _throw DOMException(this);
 #endif
 }
 
@@ -43,7 +43,7 @@ String Attribute::getValue() const noexcept {
   xmlFree(content);
   return result;
 #else
-  throw DOMException(this);
+  _throw DOMException(this);
 #endif
 }
 
@@ -72,7 +72,7 @@ void Attribute::setValue(const String& value) {
   }
   xmlFree(encoded);
 #else
-  throw DOMException(this);
+  _throw DOMException(this);
 #endif
 }
 
@@ -81,7 +81,7 @@ bool Attribute::isSpecified() const noexcept {
   xmlAttr* attribute = (xmlAttr*)getContext();
   return true; // TAG: fixme
 #else
-  throw DOMException(this);
+  _throw DOMException(this);
 #endif
 }
 
@@ -90,7 +90,7 @@ Node::ShadowElement Attribute::getOwnerElement() noexcept {
   xmlAttr* attribute = (xmlAttr*)getContext();
   return Node::ShadowElement(attribute->parent);
 #else
-  throw DOMException(this);
+  _throw DOMException(this);
 #endif
 }
 

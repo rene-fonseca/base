@@ -40,7 +40,7 @@ InetEndPoint::InetEndPoint(
   try {
     Integer integer(service);
     if ((integer < 0) || (integer > 0xffff)) {
-      throw ServiceNotFound("Port is out of range.", this);
+      _throw ServiceNotFound("Port is out of range.", this);
     }
     port = integer;
   } catch (InvalidFormat&) {
@@ -55,7 +55,7 @@ InetEndPoint::InetEndPoint(
   try {
     Integer integer(service);
     if ((integer < 0) || (integer > 0xffff)) {
-      throw ServiceNotFound("Port is out of range.", this);
+      _throw ServiceNotFound("Port is out of range.", this);
     }
     port = integer;
   } catch (InvalidFormat&) {

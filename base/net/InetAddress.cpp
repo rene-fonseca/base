@@ -58,7 +58,7 @@ String InetAddress::getLocalHost()
   BASSERT(buffer.getSize()/sizeof(char) > 200);
   char* name = (char*)buffer.getElements();
   if (gethostname(name, buffer.getSize()/sizeof(char))) {
-    throw NetworkException(
+    _throw NetworkException(
       "Unable to get local host name.",
       Type::getType<InetAddress>()
     );
@@ -66,7 +66,7 @@ String InetAddress::getLocalHost()
 #else // unix
   char name[MAXHOSTNAMELEN + 1]; // does MAXHOSTNAMELEN include terminator
   if (gethostname(name, sizeof(name))) {
-    throw NetworkException("Unable to get local host name.", Type::getType<InetAddress>());
+    _throw NetworkException("Unable to get local host name.", Type::getType<InetAddress>());
   }
 #endif // flavor
   return NativeString(name);
@@ -83,7 +83,7 @@ List<InetAddress> InetAddress::getAddressesByName(const String& name)
 
   struct addrinfo* ai = nullptr;
   if (getaddrinfo(name.getElements(), 0, &hint, &ai) != 0) { // MT-level is safe
-    throw HostNotFound(
+    _throw HostNotFound(
       "Unable to lookup host by name.",
       Type::getType<InetAddress>()
     );
@@ -117,7 +117,7 @@ List<InetAddress> InetAddress::getAddressesByName(const String& name)
 
 #  if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
     if (!(hp = gethostbyname(name.getElements()))) { // MT-safe
-      throw HostNotFound(
+      _throw HostNotFound(
         "Unable to lookup host by name.",
         Type::getType<InetAddress>()
       );
@@ -128,7 +128,7 @@ List<InetAddress> InetAddress::getAddressesByName(const String& name)
     char buffer[1024]; // how big should this buffer be
     int error = 0;
     if (!(hp = gethostbyname_r(name.getElements(), &h, buffer, sizeof(buffer), &error))) {
-      throw HostNotFound(
+      _throw HostNotFound(
         "Unable to lookup host by name.",
         Type::getType<InetAddress>()
       );
@@ -138,12 +138,12 @@ List<InetAddress> InetAddress::getAddressesByName(const String& name)
     char buffer[1024]; // how big should this buffer be
     int error = 0;
     if (gethostbyname_r(name.getElements(), &h, buffer, sizeof(buffer), &hp, &error)) {
-      throw HostNotFound("Unable to lookup host by name.", Type::getType<InetAddress>());
+      _throw HostNotFound("Unable to lookup host by name.", Type::getType<InetAddress>());
     }
 #  else
 //    #warning gethostbyname is not MT-safe
     if (!(hp = gethostbyname(name.getElements()))) {
-      throw HostNotFound("Unable to lookup host by name.", Type::getType<InetAddress>());
+      _throw HostNotFound("Unable to lookup host by name.", Type::getType<InetAddress>());
     }
 #  endif
     
@@ -163,7 +163,7 @@ InetAddress InetAddress::getAddressByName(const String& name)
 
   struct addrinfo* ai = nullptr;
   if (getaddrinfo(name.getElements(), 0, &hint, &ai) != 0) { // MT-level is safe
-    throw HostNotFound("Unable to lookup host by name.", Type::getType<InetAddress>());
+    _throw HostNotFound("Unable to lookup host by name.", Type::getType<InetAddress>());
   }
   
   struct addrinfo* i = ai;
@@ -186,7 +186,7 @@ InetAddress InetAddress::getAddressByName(const String& name)
 
 #  if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
     if (!(hp = gethostbyname(name.getElements()))) { // MT-safe
-      throw HostNotFound("Unable to lookup host by name.", Type::getType<InetAddress>());
+      _throw HostNotFound("Unable to lookup host by name.", Type::getType<InetAddress>());
     }
 #  elif ((_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__IRIX65) || \
          (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__SOLARIS))
@@ -194,19 +194,19 @@ InetAddress InetAddress::getAddressByName(const String& name)
     char buffer[1024]; // how big should this buffer be
     int error = 0;
     if (!(hp = gethostbyname_r(name.getElements(), &h, buffer, sizeof(buffer), &error))) {
-      throw HostNotFound("Unable to lookup host by name.", Type::getType<InetAddress>());
+      _throw HostNotFound("Unable to lookup host by name.", Type::getType<InetAddress>());
     }
 #  elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__GNULINUX)
     struct hostent h;
     char buffer[1024]; // how big should this buffer be
     int error = 0;
     if (gethostbyname_r(name.getElements(), &h, buffer, sizeof(buffer), &hp, &error)) {
-      throw HostNotFound("Unable to lookup host by name.", Type::getType<InetAddress>());
+      _throw HostNotFound("Unable to lookup host by name.", Type::getType<InetAddress>());
     }
 #  else
 //    #warning gethostbyname is not MT-safe
     if (!(hp = gethostbyname(name.getElements()))) {
-      throw HostNotFound("Unable to lookup host by name.", Type::getType<InetAddress>());
+      _throw HostNotFound("Unable to lookup host by name.", Type::getType<InetAddress>());
     }
 #  endif
   
@@ -215,7 +215,7 @@ InetAddress InetAddress::getAddressByName(const String& name)
     return InetAddress(Cast::pointer<const uint8*>(*p), IP_VERSION_4);
   }
 #endif // _COM_AZURE_DEV__BASE__HAVE_INET_IPV6
-  throw HostNotFound("Unable to lookup host by name.", Type::getType<InetAddress>());
+  _throw HostNotFound("Unable to lookup host by name.", Type::getType<InetAddress>());
 }
 
 bool InetAddress::isIPv4(const String::ReadIterator begin, const String::ReadIterator end) noexcept
@@ -508,7 +508,7 @@ String InetAddress::getHostName(bool fullyQualified) const
         0,
         NI_NAMEREQD | (fullyQualified ? 0 : NI_NOFQDN)
       ) != 0) {
-    throw HostNotFound("Unable to resolve IP address.", this);
+    _throw HostNotFound("Unable to resolve IP address.", this);
   }
 
   return NativeString(hostname);
@@ -520,7 +520,7 @@ String InetAddress::getHostName(bool fullyQualified) const
        (address.words[1] != 0) ||
        ((address.words[2] != ByteOrder::toBigEndian<uint32>(0xffffU)) &&
         (address.words[3] != 0)))) {
-    throw HostNotFound("Unable to resolve IP address.", this);
+    _throw HostNotFound("Unable to resolve IP address.", this);
   }
   
 #  if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
@@ -558,12 +558,12 @@ String InetAddress::getHostName(bool fullyQualified) const
           sizeof(buffer),
           &hp,
           &error)) {
-      throw HostNotFound("Unable to resolve IP address.", this);
+      _throw HostNotFound("Unable to resolve IP address.", this);
     }
 #  else
 //    #warning gethostbyaddr is not MT-safe
     if (!(hp = gethostbyaddr(Cast::getCharAddress(address.words[3]), sizeof(address.words[3]), AF_INET))) {
-      throw HostNotFound("Unable to resolve IP address.", this);
+      _throw HostNotFound("Unable to resolve IP address.", this);
     }
 #  endif
 

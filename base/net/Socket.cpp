@@ -427,9 +427,9 @@ namespace internal {
       const unsigned int error = getNativeError();
       const unsigned int cause = getCause(error);
       if (cause != PrimitiveTraits<unsigned int>::MAXIMUM) {
-        throw NetworkException(message, Type::getType<Socket>(), cause);
+        _throw NetworkException(message, Type::getType<Socket>(), cause);
       } else {
-        throw NetworkException(message, Type::getType<Socket>(), error, 0);
+        _throw NetworkException(message, Type::getType<Socket>(), error, 0);
       }
     }
     
@@ -587,18 +587,18 @@ void Socket::connect(const InetAddress& address, unsigned short port)
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
     switch (::WSAGetLastError()) {
     case WSAECONNREFUSED:
-      throw AccessDenied(this);
+      _throw AccessDenied(this);
     case WSAETIMEDOUT:
-      throw TimedOut(this);
+      _throw TimedOut(this);
     default:
       internal::SocketImpl::raiseNetwork("Unable to connect to socket.");
     }
 #else // unix
     switch (errno) {
     case ECONNREFUSED:
-      throw AccessDenied(this);
+      _throw AccessDenied(this);
     case ETIMEDOUT:
-      throw TimedOut(this);
+      _throw TimedOut(this);
     default:
       internal::SocketImpl::raiseNetwork("Unable to connect to socket.");
     }
@@ -1070,7 +1070,7 @@ uint64 Socket::getTcpDeferAccept() const
   );
   return buffer;
 #else
-  throw NotSupported(this); // TAG: fixme
+  _throw NotSupported(this); // TAG: fixme
 #endif
 }
 
@@ -1085,7 +1085,7 @@ void Socket::setTcpDeferAccept(uint64 value) {
     sizeof(buffer)
   );
 #else
-  throw NotSupported(this); // TAG: fixme
+  _throw NotSupported(this); // TAG: fixme
 #endif
 }
  
@@ -1306,7 +1306,7 @@ uint8 Socket::getUnicastHops() const
     return buffer;
   } else {
 #endif
-    throw bindCause(NetworkException(this), NetworkException::OPERATION_NOT_SUPPORTED);
+    _throw bindCause(NetworkException(this), NetworkException::OPERATION_NOT_SUPPORTED);
 #if (defined(_COM_AZURE_DEV__BASE__HAVE_INET_IPV6))
   }
 #endif
@@ -1326,7 +1326,7 @@ void Socket::setUnicastHops(uint8 value)
     );
   } else {
 #endif
-    throw bindCause(NetworkException(this), NetworkException::OPERATION_NOT_SUPPORTED);
+    _throw bindCause(NetworkException(this), NetworkException::OPERATION_NOT_SUPPORTED);
 #if (defined(_COM_AZURE_DEV__BASE__HAVE_INET_IPV6))
   }
 #endif
@@ -1677,7 +1677,7 @@ void Socket::setIPv6Restriction(bool value)
     );
   } else {
 #endif
-    throw bindCause(NetworkException(this), NetworkException::OPERATION_NOT_SUPPORTED);
+    _throw bindCause(NetworkException(this), NetworkException::OPERATION_NOT_SUPPORTED);
 #if (defined(_COM_AZURE_DEV__BASE__HAVE_INET_IPV6) && defined(IPV6_V6ONLY))
   }
 #endif
@@ -1855,7 +1855,7 @@ unsigned int Socket::read(
       if (bytesRead) {
         break;
       }
-      throw EndOfFile(this); // attempt to read beyond end of stream
+      _throw EndOfFile(this); // attempt to read beyond end of stream
     }
   }
   return bytesRead;
@@ -1882,7 +1882,7 @@ unsigned int Socket::write(
       case WSAEWOULDBLOCK: // no data could be written without blocking (only in nonblocking mode)
         return bytesWritten; // try later
       case WSAESHUTDOWN:
-        throw BrokenStream(this);
+        _throw BrokenStream(this);
       default:
         internal::SocketImpl::raiseNetwork("Unable to write to socket.");
       }
@@ -1901,7 +1901,7 @@ unsigned int Socket::write(
       case EAGAIN: // no data could be written without blocking (only in nonblocking mode)
         return bytesWritten; // try later
       case EPIPE:
-        throw BrokenStream(this);
+        _throw BrokenStream(this);
       default:
         internal::SocketImpl::raiseNetwork("Unable to write to socket.");
       }
@@ -1994,7 +1994,7 @@ AsynchronousReadOperation Socket::read(
     listener
   );
 #else // unix
-  throw NotImplemented(this);
+  _throw NotImplemented(this);
 #endif // flavor
 }
 
@@ -2012,7 +2012,7 @@ AsynchronousWriteOperation Socket::write(
     listener
   );
 #else // unix
-  throw NotImplemented(this);
+  _throw NotImplemented(this);
 #endif // flavor
 }
 

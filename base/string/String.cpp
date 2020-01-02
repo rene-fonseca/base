@@ -79,7 +79,7 @@ void String::initialize(const ucs4* src, MemorySize _length)
   // TAG: add method to validate WideString codes also
   const MemoryDiff length = Unicode::UCS4ToUTF8(nullptr, src, _length);
   if (length < 0) {
-    throw StringException("Invalid UCS4 string.");
+    _throw StringException("Invalid UCS4 string.");
   }
 
   auto e = new ReferenceCountedAllocator<char>(length + 1);
@@ -328,7 +328,7 @@ void String::forceToLength(MemorySize length)
 char String::getAt(MemorySize index) const
 {
   if (index >= getLength()) {
-    throw OutOfRange(this);
+    _throw OutOfRange(this);
   }
   return getBuffer()[index];
 }
@@ -336,7 +336,7 @@ char String::getAt(MemorySize index) const
 void String::setAt(MemorySize index, char value)
 {
   if (index >= getLength()) {
-    throw OutOfRange(this);
+    _throw OutOfRange(this);
   }
   getBuffer()[index] = value; // allow terminated within string
 }

@@ -25,7 +25,7 @@ String CharacterData::getData() const {
   xmlNodePtr node = (xmlNodePtr)getContext();
   return NativeString((const char*)node->content);
 #else
-  throw DOMException(this);
+  _throw DOMException(this);
 #endif
 }
 
@@ -34,7 +34,7 @@ void CharacterData::setData(const String& data) {
   xmlNodePtr node = (xmlNodePtr)getContext();
 	xmlNodeSetContent(node, (const xmlChar*)data.getElements());
 #else
-  throw DOMException(this);
+  _throw DOMException(this);
 #endif
 }
 
@@ -49,7 +49,7 @@ unsigned int CharacterData::getLength() const noexcept {
   );
   return terminator ? (terminator - content) : String::MAXIMUM_LENGTH;
 #else
-  throw DOMException(this);
+  _throw DOMException(this);
 #endif
 }
 
@@ -68,7 +68,7 @@ String CharacterData::substringData(
   }
   return String(content + offset, count);
 #else
-  throw DOMException(this);
+  _throw DOMException(this);
 #endif
 }
 
@@ -78,7 +78,7 @@ void CharacterData::appendData(const String& value) {
   xmlNodeAddContent(node, (const xmlChar*)value.getElements());
   // TAG: how to detect failure
 #else
-  throw DOMException(this);
+  _throw DOMException(this);
 #endif
 }
 
@@ -90,7 +90,7 @@ void CharacterData::insertData(
   temp.insert(offset, value);
 	xmlNodeSetContent(node, (const xmlChar*)temp.getElements());
 #else
-  throw DOMException(this);
+  _throw DOMException(this);
 #endif
 }
 
@@ -102,7 +102,7 @@ void CharacterData::deleteData(
   temp.remove(offset, offset + count); // TAG: overflow problem
 	xmlNodeSetContent(node, (const xmlChar*)temp.getElements());
 #else
-  throw DOMException(this);
+  _throw DOMException(this);
 #endif
 }
 
@@ -116,7 +116,7 @@ void CharacterData::replaceData(
   temp.replace(offset, offset + count, value); // TAG: overflow problem
 	xmlNodeSetContent(node, (const xmlChar*)temp.getElements());
 #else
-  throw DOMException(this);
+  _throw DOMException(this);
 #endif
 }
 

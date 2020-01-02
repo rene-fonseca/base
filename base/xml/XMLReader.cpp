@@ -80,32 +80,35 @@ void XMLReader::DTDHandler::externalEntityDecl(
 void XMLReader::DTDHandler::notationDecl(
   const String& name,
   const String& publicId,
-  const String& systemId) noexcept {
+  const String& systemId) noexcept
+{
 }
 
 void XMLReader::DTDHandler::unparsedEntityDecl(
   const String& name,
   const String& publicId,
   const String& systemId,
-  const String& notationName) noexcept {
+  const String& notationName) noexcept
+{
 }
 
-void XMLReader::ErrorHandler::error(
-  const SAXParseException& exception) {
-  throw exception;
+void XMLReader::ErrorHandler::error(const SAXParseException& exception)
+{
+  _throw exception;
 }
 
-void XMLReader::ErrorHandler::fatalError(
-  const SAXParseException& exception) {
-  throw exception;
+void XMLReader::ErrorHandler::fatalError(const SAXParseException& exception)
+{
+  _throw exception;
 }
 
-void XMLReader::ErrorHandler::warning(
-  const SAXParseException& exception) {
-  throw exception;
+void XMLReader::ErrorHandler::warning(const SAXParseException& exception)
+{
+  _throw exception;
 }
 
-void XMLReader::ContentHandler::startDocument() noexcept {
+void XMLReader::ContentHandler::startDocument() noexcept
+{
 }
 
 void XMLReader::ContentHandler::endDocument() noexcept {

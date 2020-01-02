@@ -173,7 +173,7 @@ String Format::subst(const String& text, std::initializer_list<const char*> list
 {
   MemorySpan spans[MAX_ARGS];
   if (!INLINE_ASSERT(list.size() <= getArraySize(spans))) {
-    throw OutOfRange();
+    _throw OutOfRange();
   }
   MemorySize j = 0;
   for (auto i = list.begin(); i != list.end(); ++i) {
@@ -186,7 +186,7 @@ String Format::subst(const String& text, std::initializer_list<Literal> list)
 {
   MemorySpan spans[MAX_ARGS];
   if (!INLINE_ASSERT(list.size() <= getArraySize(spans))) {
-    throw OutOfRange();
+    _throw OutOfRange();
   }
   MemorySize j = 0;
   for (auto i = list.begin(); i != list.end(); ++i) {

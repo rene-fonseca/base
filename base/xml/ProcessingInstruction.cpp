@@ -25,7 +25,7 @@ String ProcessingInstruction::getTarget() const noexcept {
   const xmlNode* node = (const xmlNode*)getContext();
   return NativeString((const char*)node->name);
 #else
-  throw DOMException(this);
+  _throw DOMException(this);
 #endif
 }
 
@@ -34,7 +34,7 @@ String ProcessingInstruction::getData() const noexcept {
   const xmlNode* node = (const xmlNode*)getContext();
   return NativeString((const char*)node->content);
 #else
-  throw DOMException(this);
+  _throw DOMException(this);
 #endif
 }
 
@@ -43,7 +43,7 @@ void ProcessingInstruction::setData(const String& value) {
   xmlNode* node = (xmlNode*)getContext();
   xmlNodeSetContent(node, (const xmlChar*)value.getElements());
 #else
-  throw DOMException(this);
+  _throw DOMException(this);
 #endif
 }
 

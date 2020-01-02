@@ -72,7 +72,7 @@ void MultipleSockets::add(StreamSocket socket, unsigned int events)
       const pollfd* const end = fd + streamSockets.getSize();
       while (fd != end) {
         if (fd->fd == entry.fd) {
-          throw AlreadyKeyException(this);
+          _throw AlreadyKeyException(this);
         }
         ++fd;
       };
@@ -105,7 +105,7 @@ void MultipleSockets::add(StreamSocket socket, unsigned int events)
       const struct pollfd* const end = fd + streamSockets.getSize();
       while (fd != end) {
         if (fd->fd == socket.getHandle()) {
-          throw AlreadyKeyException(this);
+          _throw AlreadyKeyException(this);
         }
         ++fd;
       };
@@ -134,7 +134,7 @@ void MultipleSockets::add(StreamSocket socket, unsigned int events)
       const pollfd* const end = fd + streamSockets.getSize();
       while (fd != end) {
         if (fd->fd == entry.fd) {
-          throw AlreadyKeyException(this);
+          _throw AlreadyKeyException(this);
         }
         ++fd;
       };
@@ -173,7 +173,7 @@ void MultipleSockets::remove(
       return;
     }
   };
-  throw InvalidKey(this);
+  _throw InvalidKey(this);
 #elif (defined(_COM_AZURE_DEV__BASE__HAVE_POLL)) // unix (poll)
   SingleExclusiveSynchronize<Guard> _guard(guard);
   struct pollfd* fds = Cast::pointer<struct pollfd*>(context.getElements());
@@ -192,7 +192,7 @@ void MultipleSockets::remove(
       return;
     }
   };
-  throw InvalidKey(this);
+  _throw InvalidKey(this);
 #else // unix (select)
   typedef internal::MultipleSockets::pollfd pollfd;
   
@@ -213,7 +213,7 @@ void MultipleSockets::remove(
       return;
     }
   };
-  throw InvalidKey(this);
+  _throw InvalidKey(this);
 #endif
 }
 
@@ -236,7 +236,7 @@ unsigned int MultipleSockets::getEvents(
     }
     ++fd;
   }
-  throw InvalidKey(this);
+  _throw InvalidKey(this);
 #elif (defined(_COM_AZURE_DEV__BASE__HAVE_POLL)) // unix (poll)
   bassert(socket.isValid(), InvalidKey(this));
   SingleExclusiveSynchronize<Guard> _guard(guard);
@@ -266,7 +266,7 @@ unsigned int MultipleSockets::getEvents(
     }
     ++fd;
   }
-  throw InvalidKey(this);
+  _throw InvalidKey(this);
 #else // unix (select)
   typedef internal::MultipleSockets::pollfd pollfd;
   
@@ -284,7 +284,7 @@ unsigned int MultipleSockets::getEvents(
     }
     ++fd;
   }
-  throw InvalidKey(this);
+  _throw InvalidKey(this);
 #endif
 }
 
@@ -301,7 +301,7 @@ unsigned int MultipleSockets::getFilter(
     }
     ++fd;
   }
-  throw InvalidKey(this);
+  _throw InvalidKey(this);
 #elif (defined(_COM_AZURE_DEV__BASE__HAVE_POLL)) // unix (poll)
   ExclusiveSynchronize<Guard> _guard(guard);
   struct pollfd* fd = Cast::pointer<struct pollfd*>(context.getElements());
@@ -322,7 +322,7 @@ unsigned int MultipleSockets::getFilter(
     }
     ++fd;
   }
-  throw InvalidKey(this);
+  _throw InvalidKey(this);
 #else // unix (select)
   typedef internal::MultipleSockets::pollfd pollfd;
   
@@ -334,7 +334,7 @@ unsigned int MultipleSockets::getFilter(
     }
     ++fd;
   }
-  throw InvalidKey(this);
+  _throw InvalidKey(this);
 #endif
 }
 
@@ -353,7 +353,7 @@ void MultipleSockets::setFilter(
     }
     ++fd;
   }
-  throw InvalidKey(this);
+  _throw InvalidKey(this);
 #elif (defined(_COM_AZURE_DEV__BASE__HAVE_POLL)) // unix (poll)
   SingleExclusiveSynchronize<Guard> _guard(guard);
   struct pollfd* fd = Cast::pointer<struct pollfd*>(context.getElements());
@@ -374,7 +374,7 @@ void MultipleSockets::setFilter(
     }
     ++fd;
   }
-  throw InvalidKey(this);
+  _throw InvalidKey(this);
 #else // unix (select)
   typedef internal::MultipleSockets::pollfd pollfd;
   
@@ -387,7 +387,7 @@ void MultipleSockets::setFilter(
     }
     ++fd;
   }
-  throw InvalidKey(this);
+  _throw InvalidKey(this);
 #endif
 }
 
@@ -427,7 +427,7 @@ unsigned int MultipleSockets::poll()
     if (::WSAGetLastError() == WSAEINTR) {
       return 0;
     }
-    throw IOException(this);
+    _throw IOException(this);
   }
   
   pollfd* fd = Cast::pointer<pollfd*>(context.getElements());
@@ -453,7 +453,7 @@ unsigned int MultipleSockets::poll()
     if ((errno == EINTR) || (errno == EAGAIN)) {
       return 0;
     }
-    throw IOException(this);
+    _throw IOException(this);
   }
   return result;
 #else // unix (select)
@@ -492,7 +492,7 @@ unsigned int MultipleSockets::poll()
     if (errno == EINTR) {
       return 0;
     }
-    throw IOException(this);
+    _throw IOException(this);
   }
   
   pollfd* fd = Cast::pointer<pollfd*>(context.getElements());
@@ -554,7 +554,7 @@ unsigned int MultipleSockets::poll(
     if (::WSAGetLastError() == WSAEINTR) {
       return 0;
     }
-    throw IOException(this);
+    _throw IOException(this);
   }
   
   pollfd* fd = Cast::pointer<pollfd*>(context.getElements());
@@ -580,7 +580,7 @@ unsigned int MultipleSockets::poll(
     if ((errno == EINTR) || (errno == EAGAIN)) {
       return 0;
     }
-    throw IOException(this);
+    _throw IOException(this);
   }
   return result;
 #else // unix (select)
@@ -623,7 +623,7 @@ unsigned int MultipleSockets::poll(
     if (errno == EINTR) {
       return 0;
     }
-    throw IOException(this);
+    _throw IOException(this);
   }
   
   pollfd* fd = Cast::pointer<pollfd*>(context.getElements());

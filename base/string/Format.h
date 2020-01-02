@@ -118,7 +118,7 @@ public:
     inline const MemorySpan& getArg(MemorySize i) const
     {
       if (!INLINE_ASSERT(i < numberOfArgs)) {
-        throw OutOfRange();
+        _throw OutOfRange();
       }
       return args[i];
     }

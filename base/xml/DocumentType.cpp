@@ -25,7 +25,7 @@ String DocumentType::getName() const noexcept {
   xmlDtd* documentType = (xmlDtd*)getContext();
   return NativeString((const char*)documentType->name);
 #else
-  throw DOMException(this);
+  _throw DOMException(this);
 #endif
 }
 
@@ -34,7 +34,7 @@ NamedNodeMap DocumentType::getEntities() const noexcept {
   xmlDtd* documentType = (xmlDtd*)getContext();
   return documentType->entities;
 #else
-  throw DOMException(this);
+  _throw DOMException(this);
 #endif
 }
 
@@ -43,7 +43,7 @@ NamedNodeMap DocumentType::getNotations() const noexcept {
   xmlDtd* documentType = (xmlDtd*)getContext();
   return documentType->notations;
 #else
-  throw DOMException(this);
+  _throw DOMException(this);
 #endif
 }
 
@@ -52,7 +52,7 @@ String DocumentType::getPublicId() const noexcept {
   xmlDtd* documentType = (xmlDtd*)getContext();
   return NativeString((const char*)documentType->ExternalID);
 #else
-  throw DOMException(this);
+  _throw DOMException(this);
 #endif
 }
 
@@ -61,7 +61,7 @@ String DocumentType::getSystemId() const noexcept {
   xmlDtd* documentType = (xmlDtd*)getContext();
   return NativeString((const char*)documentType->SystemID);
 #else
-  throw DOMException(this);
+  _throw DOMException(this);
 #endif
 }
 
@@ -77,7 +77,7 @@ String DocumentType::getInternalSubset() const noexcept {
  	xmlOutputBufferClose(buffer);
   return result;
 #else
-  throw DOMException(this);
+  _throw DOMException(this);
 #endif
 }
 

@@ -962,13 +962,13 @@ Bitmap GraphicsContext::getBitmap(
   );
   if (!bitmap) {
     ::DeleteDC((HDC)deviceContext);
-    throw UserInterfaceException(this);
+    _throw UserInterfaceException(this);
   }
   HGDIOBJ previous = ::SelectObject((HDC)deviceContext, (HGDIOBJ)bitmap);
   if (!previous) {
     ::DeleteObject(bitmap);
     ::DeleteDC(deviceContext);
-    throw UserInterfaceException(this);    
+    _throw UserInterfaceException(this);    
   } else {
     ::DeleteObject(previous); // TAG: is this required
   }

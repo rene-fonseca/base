@@ -77,11 +77,11 @@ bool MessageDialog::execute()
     answer = MessageDialog::YES;
     break;
   default:
-    throw UserInterfaceException(this);
+    _throw UserInterfaceException(this);
   }
   return answer == MessageDialog::CANCEL;
 #else // unix
-  throw NotImplemented(this);
+  _throw NotImplemented(this);
 #endif // flavor
 }
 

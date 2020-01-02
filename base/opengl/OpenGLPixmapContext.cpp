@@ -51,7 +51,7 @@ nothing OpenGLPixmapContext::initialize(const Dimension& dimension, unsigned int
   if (!(graphicsContextHandle = ::GetDC((HWND)drawableHandle))) {
     ::DestroyWindow((HWND)drawableHandle);
     drawableHandle = 0;
-    throw OpenGLException("Unable to create pixmap.", this);
+    _throw OpenGLException("Unable to create pixmap.", this);
   }
   
   PIXELFORMATDESCRIPTOR pfd = {
@@ -99,7 +99,7 @@ nothing OpenGLPixmapContext::initialize(const Dimension& dimension, unsigned int
   
   int index = 0;
   if (!(index = ::ChoosePixelFormat((HDC)graphicsContextHandle, &pfd))) {
-    throw OpenGLException("Format not supported.", this);
+    _throw OpenGLException("Format not supported.", this);
   }
 
   ::DescribePixelFormat(
@@ -139,21 +139,21 @@ nothing OpenGLPixmapContext::initialize(const Dimension& dimension, unsigned int
   if (!::SetPixelFormat((HDC)graphicsContextHandle, index, &pfd)) {
     ::DestroyWindow((HWND)drawableHandle);
     drawableHandle = 0;
-    throw OpenGLException("Unable to set format.", this);
+    _throw OpenGLException("Unable to set format.", this);
   }
   if (!(renderingContextHandle = native::GDI::wglCreateContext((HDC)graphicsContextHandle))) {
     ::DeleteDC((HDC)graphicsContextHandle);
     graphicsContextHandle = 0;
     ::DestroyWindow((HWND)drawableHandle);
     drawableHandle = 0;
-    throw OpenGLException("Unable to create rendering context.", this);
+    _throw OpenGLException("Unable to create rendering context.", this);
   }
   if (!native::GDI::wglMakeCurrent((HDC)graphicsContextHandle, (HGLRC)renderingContextHandle)) {
     ::DeleteDC((HDC)graphicsContextHandle);
     graphicsContextHandle = 0;
     ::DestroyWindow((HWND)drawableHandle);
     drawableHandle = 0;
-    throw OpenGLException("Invalid rendering context.", this);
+    _throw OpenGLException("Invalid rendering context.", this);
   }
 #else // unix  
   int screenId = ::XDefaultScreen((Display*)Backend<WindowImpl>::getDisplay());
@@ -290,7 +290,7 @@ nothing OpenGLPixmapContext::initialize(const Dimension& dimension, unsigned int
     ::XFreePixmap((Display*)Backend<WindowImpl>::getDisplay(), (Pixmap)drawableHandle);
     drawableHandle = 0;
     screenHandle = 0;
-    throw OpenGLException("Unable to create rendering context.", this);
+    _throw OpenGLException("Unable to create rendering context.", this);
   }
 #endif // flavor
   makeCurrent();

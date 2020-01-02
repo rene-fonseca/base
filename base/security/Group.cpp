@@ -39,7 +39,7 @@ _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 Group::Group(unsigned long _id) : integralId(_id) {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
-  throw OutOfDomain("Invalid user id.", this);
+  _throw OutOfDomain("Invalid user id.", this);
 #else // unix
 //   bassert(
 //     static_cast<gid_t>(integralId) <= PrimitiveTraits<gid_t>::MAXIMUM,
@@ -61,7 +61,7 @@ Group::Group(const void* _id)
   copy(id->getElements(), Cast::pointer<const uint8*>(_id), size);
   integralId = 0;
 #else // unix
-  throw OutOfDomain("Invalid group id.", this);
+  _throw OutOfDomain("Invalid group id.", this);
 #endif // flavor
 }
 
@@ -93,7 +93,7 @@ bool Group::operator==(const Group& compare) const noexcept
 Group::Group(const String& name)
 {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
-  throw NotImplemented(this);
+  _throw NotImplemented(this);
 #else // unix
   #if defined(_COM_AZURE_DEV__BASE__HAVE_GETGRNAM_R)
     //long sysconf(_SC_GETGR_R_SIZE_MAX);
@@ -122,9 +122,9 @@ Group::Group(const String& name)
 
 Group::Group(const User& user) {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
-  throw NotImplemented(this);
+  _throw NotImplemented(this);
 #elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__WASI)
-  throw NotImplemented(this);
+  _throw NotImplemented(this);
 #else // unix
   Thread::UseThreadLocalBuffer _buffer;
   Allocator<uint8>& buffer = _buffer;

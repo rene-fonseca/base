@@ -81,7 +81,7 @@ Document Transformer::transform(
   bassert(doc, TransformerException(this));
   return doc;
 #else
-  throw TransformerException(this);
+  _throw TransformerException(this);
 #endif
 }
 

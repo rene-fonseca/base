@@ -261,7 +261,7 @@ String Uri::validateScheme(const String& value)
     } else if ((ch >= 'A') && (ch <= 'Z')) {
       ch += 'a' - 'A'; // convert to lower case (ASCII)
     } else {
-      throw UriException("Invalid scheme.");
+      _throw UriException("Invalid scheme.");
     }
     temp += ch;
   }

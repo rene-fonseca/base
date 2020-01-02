@@ -93,7 +93,7 @@ MimeType::MimeType(MediaType _mediaType, const String& _subtype) {
   case EXTENSION:
   case UNINITIALIZED:
   default:
-    throw OutOfDomain(this);
+    _throw OutOfDomain(this);
   }
   this->mediaType = _mediaType;  
   this->subtype = _subtype;

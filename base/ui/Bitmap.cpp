@@ -74,7 +74,7 @@ Bitmap::Bitmap(
   );
   if (!bitmapHandle) {
     ::DeleteDC((HDC)deviceContextHandle);
-    throw UserInterfaceException("Unable to create bitmap.", this);
+    _throw UserInterfaceException("Unable to create bitmap.", this);
   }
   HGDIOBJ previous = ::SelectObject(
     (HDC)deviceContextHandle,
@@ -83,7 +83,7 @@ Bitmap::Bitmap(
   if (!previous) {
     ::DeleteObject(bitmapHandle);
     ::DeleteDC(deviceContextHandle);
-    throw UserInterfaceException("Unable to create bitmap.", this);    
+    _throw UserInterfaceException("Unable to create bitmap.", this);    
   } else {
     ::DeleteObject(previous); // TAG: is this required
   }
@@ -171,7 +171,7 @@ void Bitmap::encode(Format format, Encoding encoding, void* data) noexcept {
 uint32 Bitmap::getPixel(const Position& position) const
 {
   if (!handle.isValid()) {
-    throw NullPointer(this);
+    _throw NullPointer(this);
   }
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   return 0; // TAG: fixme
@@ -193,7 +193,7 @@ void Bitmap::setPixel(
   uint32 value) const
 {
   if (!handle.isValid()) {
-    throw NullPointer(this);
+    _throw NullPointer(this);
   }
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   // TAG: fixme

@@ -45,10 +45,10 @@ AttributeDecl::ValueType AttributeDecl::getValueType() const noexcept {
   case XML_ATTRIBUTE_NOTATION:
     return AttributeDecl::NOTATION;
   default:
-    throw DOMException(this);
+    _throw DOMException(this);
   }
 #else
-  throw DOMException(this);
+  _throw DOMException(this);
 #endif
 }
 
@@ -65,10 +65,10 @@ AttributeDecl::DefaultType AttributeDecl::getDefaultValueType() const noexcept {
   case XML_ATTRIBUTE_FIXED:
     return AttributeDecl::FIXED;
   default:
-    throw DOMException(this);
+    _throw DOMException(this);
   }
 #else
-  throw DOMException(this);
+  _throw DOMException(this);
 #endif
 }
 
@@ -77,7 +77,7 @@ String AttributeDecl::getDefaultValue() const noexcept {
   xmlAttribute* attribute = (xmlAttribute*)getContext();
   return NativeString((const char*)attribute->defaultValue);
 #else
-  throw DOMException(this);
+  _throw DOMException(this);
 #endif
 }
 
@@ -96,7 +96,7 @@ Array<String> AttributeDecl::getEnumerationValues() const {
   }
   return result;
 #else
-  throw DOMException(this);
+  _throw DOMException(this);
 #endif
 }
 

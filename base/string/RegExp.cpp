@@ -124,10 +124,10 @@ bool RegExp::isRegularExpression(const String& pattern, bool caseSensitive) noex
 bool RegExp::doesMatch(const String& value, MemorySize start) const
 {
   if (!compiled) {
-    throw RegExpException("Regular expression is invalid.", this);
+    _throw RegExpException("Regular expression is invalid.", this);
   }
   if (start > value.getLength()) {
-    throw OutOfRange(this);
+    _throw OutOfRange(this);
   }
   #if defined(_COM_AZURE_DEV__BASE__REGEXP_POSIX)
     regmatch_t pmatch[1];
@@ -143,7 +143,7 @@ bool RegExp::doesMatch(const String& value, MemorySize start) const
     } else if (code == REG_NOMATCH) {
       return false;
     } else {
-      throw RegExpException(this); // should never happen
+      _throw RegExpException(this); // should never happen
     }
   #elif defined(_COM_AZURE_DEV__BASE__REGEXP_PCRE)
     int offsets[3]; // yes 3 is correct - pcre_exec uses offsets[2] for temp. storage
@@ -152,9 +152,9 @@ bool RegExp::doesMatch(const String& value, MemorySize start) const
       if (code == PCRE_ERROR_NOMATCH) {
         return false;
       } else if (code == PCRE_ERROR_NOMEMORY) {
-        throw MemoryException(this);
+        _throw MemoryException(this);
       } else {
-        throw RegExpException(this); // should never happen
+        _throw RegExpException(this); // should never happen
       }
     }
     return true;
@@ -168,10 +168,10 @@ RegExp::Substring RegExp::match(
   MemorySize start) const
 {
   if (!compiled) {
-    throw RegExpException("Regular expression is invalid.", this);
+    _throw RegExpException("Regular expression is invalid.", this);
   }
   if (start > value.getLength()) {
-    throw OutOfRange(this);
+    _throw OutOfRange(this);
   }
   #if defined(_COM_AZURE_DEV__BASE__REGEXP_POSIX)
     regmatch_t pmatch[1];
@@ -187,7 +187,7 @@ RegExp::Substring RegExp::match(
     } else if (code == REG_NOMATCH) {
       return Substring();
     } else {
-      throw RegExpException(this); // should never happen
+      _throw RegExpException(this); // should never happen
     }
   #elif defined(_COM_AZURE_DEV__BASE__REGEXP_PCRE)
     int offsets[3]; // yes 3 is correct - pcre_exec uses offsets[2] for temp. storage
@@ -196,9 +196,9 @@ RegExp::Substring RegExp::match(
       if (code == PCRE_ERROR_NOMATCH) {
         return Substring();
       } else if (code == PCRE_ERROR_NOMEMORY) {
-        throw MemoryException(this);
+        _throw MemoryException(this);
       } else {
-        throw RegExpException(this); // should never happen
+        _throw RegExpException(this); // should never happen
       }
     }
     return Substring(offsets[0], offsets[1]);
@@ -213,10 +213,10 @@ RegExp::Substring RegExp::match(
   MemorySize start) const
 {
   if (!compiled) {
-    throw RegExpException("Regular expression is invalid.", this);
+    _throw RegExpException("Regular expression is invalid.", this);
   }
   if (start > value.getLength()) {
-    throw OutOfRange(this);
+    _throw OutOfRange(this);
   }
   #if defined(_COM_AZURE_DEV__BASE__REGEXP_POSIX)
     regmatch_t pmatch[result.getSize()];
@@ -235,7 +235,7 @@ RegExp::Substring RegExp::match(
     } else if (code == REG_NOMATCH) {
       return Substring();
     } else {
-      throw RegExpException(this); // should never happen
+      _throw RegExpException(this); // should never happen
     }
   #elif defined(_COM_AZURE_DEV__BASE__REGEXP_PCRE)
     unsigned int size = result.getSize() * 3;
@@ -254,9 +254,9 @@ RegExp::Substring RegExp::match(
       if (code == PCRE_ERROR_NOMATCH) {
         return Substring();
       } else if (code == PCRE_ERROR_NOMEMORY) {
-        throw MemoryException(this);
+        _throw MemoryException(this);
       } else {
-        throw RegExpException(this); // should never happen
+        _throw RegExpException(this); // should never happen
       }
     }
     for (int i = 1; i < code; ++i) {

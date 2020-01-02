@@ -1451,14 +1451,14 @@ public:
   {
     String result;
     if (!INLINE_ASSERT((text.getLength() % 2) == 0)) {
-      throw Exception("Expected equal hex digit.");
+      _throw Exception("Expected equal hex digit.");
     }
     if (text) {
       auto src = text.begin();
       auto end = text.end();
       while (src != end) {
         if (!ASCIITraits::isHexDigit(src[0]) || !ASCIITraits::isHexDigit(src[1])) {
-          throw Exception("Expected hex digits.");
+          _throw Exception("Expected hex digits.");
         }
         char value = (ASCIITraits::digitToValue(src[0]) << 4) | ASCIITraits::digitToValue(src[1]);
         result.append(value);
@@ -1493,7 +1493,7 @@ public:
     } else if (key.getLength() == (256/8)) {
       aes(buffer, reinterpret_cast<const uint8*>(key.native()), reinterpret_cast<const uint8*>(text.native()), text.getLength(), AdvancedEncryptionStandard::CIPHER_256);
     } else {
-      throw Exception("Invalid key.");
+      _throw Exception("Invalid key.");
     }
     return convert(buffer, buffer.size());
   }

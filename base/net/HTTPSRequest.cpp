@@ -159,7 +159,7 @@ bool HTTPSRequest::open(const String& _method, const String& _url, const String&
   
   Reference<HTTPRequestHandle> _handle = handle.cast<HTTPRequestHandle>();
   if (_handle) {
-    throw HTTPException("HTTP request is already open.");
+    _throw HTTPException("HTTP request is already open.");
   }
 
   Url url(_url);
@@ -170,14 +170,14 @@ bool HTTPSRequest::open(const String& _method, const String& _url, const String&
   } else if (scheme == "http") {
     port = 80;
   } else {
-    throw HTTPException("Failed to open HTTP request due to unsupported protocol.");
+    _throw HTTPException("Failed to open HTTP request due to unsupported protocol.");
   }
 
   if (url.getPort()) {
     try {
       const unsigned int port = UnsignedInteger::parse(url.getPort(), UnsignedInteger::DEC);
     } catch (InvalidFormat&) {
-      throw HTTPException("Failed to open HTTP request due to invalid port.");
+      _throw HTTPException("Failed to open HTTP request due to invalid port.");
     }
   }
 
@@ -277,11 +277,11 @@ void HTTPSRequest::setRequestHeader(const String& name, const String& value)
 {
   Reference<HTTPRequestHandle> _handle = handle.cast<HTTPRequestHandle>();
   if (!_handle) {
-    throw HTTPException("HTTP request is not open.");
+    _throw HTTPException("HTTP request is not open.");
   }
 
   if (!name.isASCII() || !value.isASCII()) {
-    throw HTTPException("Header must use ASCII only.");
+    _throw HTTPException("Header must use ASCII only.");
   }
 
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
@@ -303,7 +303,7 @@ void HTTPSRequest::send(const String& _body)
 {
   Reference<HTTPRequestHandle> _handle = handle.cast<HTTPRequestHandle>();
   if (!_handle) {
-    throw HTTPException("HTTP request is not open.");
+    _throw HTTPException("HTTP request is not open.");
   }
 
   _handle->sent = true;
@@ -313,7 +313,7 @@ void HTTPSRequest::send(const String& _body)
   BOOL requestSent = HttpSendRequestW(_handle->hRequest, NULL, 0, const_cast<char*>(_body.native()), _body.getLength());
   if (!requestSent) {
     DWORD error = GetLastError();
-    throw HTTPException("Failed to send HTTP request.");
+    _throw HTTPException("Failed to send HTTP request.");
   }
 
   DWORD word = 0;
@@ -379,7 +379,7 @@ void HTTPSRequest::send(const String& _body)
     // now what
   }
   if (!stream) {
-    throw HTTPException("Failed to send HTTP request.");
+    _throw HTTPException("Failed to send HTTP request.");
   }
   _handle->stream = stream;
 
@@ -396,7 +396,7 @@ void HTTPSRequest::send(const String& _body)
   if (!response) {
     CFRelease(stream);
     stream = nullptr;
-    throw HTTPException("Failed to send HTTP request.");
+    _throw HTTPException("Failed to send HTTP request.");
   }
 #pragma clang diagnostic pop
 
@@ -452,11 +452,11 @@ unsigned int HTTPSRequest::getStatus()
 {
   Reference<HTTPRequestHandle> _handle = handle.cast<HTTPRequestHandle>();
   if (!_handle) {
-    throw HTTPException("HTTP request is not open.");
+    _throw HTTPException("HTTP request is not open.");
   }
 
   if (!_handle->sent) {
-    throw HTTPException("HTTP request has not been sent.");
+    _throw HTTPException("HTTP request has not been sent.");
   }
 
   return _handle->status;
@@ -466,11 +466,11 @@ String HTTPSRequest::getStatusText()
 {
   Reference<HTTPRequestHandle> _handle = handle.cast<HTTPRequestHandle>();
   if (!_handle) {
-    throw HTTPException("HTTP request is not open.");
+    _throw HTTPException("HTTP request is not open.");
   }
 
   if (!_handle->sent) {
-    throw HTTPException("HTTP request has not been sent.");
+    _throw HTTPException("HTTP request has not been sent.");
   }
 
   return _handle->statusText;
@@ -528,7 +528,7 @@ String HTTPSRequest::getResponse()
 void HTTPSRequest::getResponse(OutputStream* os)
 {
   if (!os) {
-    throw HTTPException("Output stream not set.");
+    _throw HTTPException("Output stream not set.");
   }
 
   PushToOutputStream push;
@@ -541,20 +541,20 @@ void HTTPSRequest::getResponse(PushInterface* pi)
   Profiler::HTTPSTask profile("HTTPSRequest::getResponse()");
 
   if (!pi) {
-    throw HTTPException("Output stream not set.");
+    _throw HTTPException("Output stream not set.");
   }
 
   Reference<HTTPRequestHandle> _handle = handle.cast<HTTPRequestHandle>();
   if (!_handle) {
-    throw HTTPException("HTTP request is not open.");
+    _throw HTTPException("HTTP request is not open.");
   }
 
   if (!_handle->sent) {
-    throw HTTPException("HTTP request has not been sent.");
+    _throw HTTPException("HTTP request has not been sent.");
   }
 
   if (_handle->read) {
-    throw HTTPException("HTTP response has already been read.");
+    _throw HTTPException("HTTP response has already been read.");
   }
   _handle->read = true;
   
@@ -575,7 +575,7 @@ void HTTPSRequest::getResponse(PushInterface* pi)
       break;
     }
     if (!status) {
-      throw IOException("Failed to read response.");
+      _throw IOException("Failed to read response.");
     }
     pi->push(static_cast<const uint8*>(buffer), bytesRead);
   }
@@ -593,7 +593,7 @@ void HTTPSRequest::getResponse(PushInterface* pi)
     if (bytesRead < 0) {
       CFStreamStatus status = CFReadStreamGetStatus(_handle->stream);
       CFReadStreamClose(_handle->stream);
-      throw IOException("Failed to read response.");
+      _throw IOException("Failed to read response.");
     }
     const bool done = bytesRead == 0;
     bytesRead += offset;
@@ -623,11 +623,11 @@ uint64 HTTPSRequest::getContentLength()
 
   Reference<HTTPRequestHandle> _handle = handle.cast<HTTPRequestHandle>();
   if (!_handle) {
-    throw HTTPException("HTTP request is not open.");
+    _throw HTTPException("HTTP request is not open.");
   }
 
   if (!_handle->sent) {
-    throw HTTPException("HTTP request has not been sent.");
+    _throw HTTPException("HTTP request has not been sent.");
   }
 
   return _handle->contentLength;
@@ -643,11 +643,11 @@ String HTTPSRequest::getResponseHeader(const String& name)
 
   Reference<HTTPRequestHandle> _handle = handle.cast<HTTPRequestHandle>();
   if (!_handle) {
-    throw HTTPException("HTTP request is not open.");
+    _throw HTTPException("HTTP request is not open.");
   }
 
   if (!_handle->sent) {
-    throw HTTPException("HTTP request has not been sent.");
+    _throw HTTPException("HTTP request has not been sent.");
   }
 
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
@@ -699,7 +699,7 @@ String HTTPSRequest::getResponseHeader()
 
   Reference<HTTPRequestHandle> _handle = handle.cast<HTTPRequestHandle>();
   if (!_handle) {
-    throw HTTPException("HTTP request is not open.");
+    _throw HTTPException("HTTP request is not open.");
   }
 
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
@@ -717,7 +717,7 @@ String HTTPSRequest::getResponseHeader()
         size = buffer.size() * sizeof(wchar);
         continue;
       }
-      throw HTTPException("Failed to read HTTP response header.");
+      _throw HTTPException("Failed to read HTTP response header.");
     }
 
     result = String(buffer, size/sizeof(wchar));
@@ -763,7 +763,7 @@ void HTTPSRequest::close()
   
   Reference<HTTPRequestHandle> _handle = handle.cast<HTTPRequestHandle>();
   if (!_handle) {
-    throw HTTPException("HTTP request is not open.");
+    _throw HTTPException("HTTP request is not open.");
   }
 
   _handle->close();

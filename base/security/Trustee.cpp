@@ -201,7 +201,7 @@ Trustee::Trustee(const String& name)
         type = Trustee::EVERYONE;
         integralId = 0;
       } else {
-        throw TrusteeException("Not a trustee.", this);
+        _throw TrusteeException("Not a trustee.", this);
       }
     }
   }

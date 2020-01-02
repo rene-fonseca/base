@@ -58,7 +58,7 @@ SharedMemory::SharedMemoryImpl::SharedMemoryImpl(
   );
   if (access == 0) {
     ::CloseHandle(handle);
-    throw MemoryException("Unable to open shared memory.", this);
+    _throw MemoryException("Unable to open shared memory.", this);
   }
 #else // unix
   handle = OperatingSystem::INVALID_HANDLE;
@@ -120,7 +120,7 @@ void SharedMemory::SharedMemoryImpl::lock()
   );
 #else // unix
   #if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__CYGWIN)
-    throw NotSupported(this);
+    _throw NotSupported(this);
   #else
     bassert(
       ::mlock(address, region.getSize()) == 0,
@@ -139,7 +139,7 @@ void SharedMemory::SharedMemoryImpl::unlock()
   );
 #else // unix
   #if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__CYGWIN)
-    throw NotSupported(this);
+    _throw NotSupported(this);
   #else  
     bassert(
       ::munlock(address, region.getSize()) == 0,

@@ -407,7 +407,7 @@ WideString::WideString(const NativeWideString& string)
 WideString::WideString(const NativeWideString& string, MemorySize maximum)
 {
   if (maximum >= MAXIMUM_LENGTH) {
-    throw OutOfDomain(this);
+    _throw OutOfDomain(this);
   }
   const MemorySize nativeLength = getNullTerminatedLength(string.getValue(), maximum);
   initialize(string, nativeLength);
@@ -460,7 +460,7 @@ WideString::WideString(const NativeString& string)
 WideString::WideString(const NativeString& string, MemorySize maximum)
 {
   if (maximum >= MAXIMUM_LENGTH) {
-    throw OutOfDomain(this);
+    _throw OutOfDomain(this);
   }
   
   if (!string.getValue()) { // is string null
@@ -552,7 +552,7 @@ void WideString::garbageCollect()
 ucs4 WideString::getAt(MemorySize index) const
 {
   if (index >= getLength()) {
-    throw OutOfRange(this);
+    _throw OutOfRange(this);
   }
   return getBuffer()[index];
 }
@@ -560,7 +560,7 @@ ucs4 WideString::getAt(MemorySize index) const
 void WideString::setAt(MemorySize index, ucs4 value)
 {
   if (index >= getLength()) {
-    throw OutOfRange(this);
+    _throw OutOfRange(this);
   }
   if (value != Traits::TERMINATOR) {
     getBuffer()[index] = value;
@@ -847,7 +847,7 @@ int WideString::compareTo(const WideLiteral& literal) const noexcept
       return 0; // equal
     }
   } else {
-    throw UnexpectedFailure(
+    _throw UnexpectedFailure(
       "Unsupported native wide character representation",
       this
     );
@@ -909,7 +909,7 @@ int WideString::compareTo(const wchar* string) const noexcept
       return 0; // equal
     }
   } else {
-    throw UnexpectedFailure("Unsupported native wide character representation.", this);
+    _throw UnexpectedFailure("Unsupported native wide character representation.", this);
   }
 }
 
@@ -987,7 +987,7 @@ bool WideString::startsWith(const WideLiteral& prefix) const noexcept
         ) == 0
       );
   } else {
-    throw UnexpectedFailure(
+    _throw UnexpectedFailure(
       "Unsupported native wide character representation",
       this
     );
@@ -1045,7 +1045,7 @@ bool WideString::endsWith(const WideLiteral& suffix) const noexcept
         ) == 0
       );
   } else {
-    throw UnexpectedFailure(
+    _throw UnexpectedFailure(
       "Unsupported native wide character representation",
       this
     );

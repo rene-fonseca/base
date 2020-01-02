@@ -33,10 +33,10 @@ ElementDecl::ValueType ElementDecl::getValueType() const noexcept {
   case XML_ELEMENT_TYPE_ELEMENT:
     return ElementDecl::ELEMENT;
   default:
-    throw DOMException(this);
+    _throw DOMException(this);
   }
 #else
-  throw DOMException(this);
+  _throw DOMException(this);
 #endif
 }
 
@@ -45,7 +45,7 @@ bool ElementDecl::hasAttributes() const noexcept {
   xmlElement* element = (xmlElement*)getContext();
   return element->attributes;
 #else
-  throw DOMException(this);
+  _throw DOMException(this);
 #endif
 }
 
@@ -54,7 +54,7 @@ AttributeDecl ElementDecl::getFirstAttribute() noexcept {
   xmlElement* element = (xmlElement*)getContext();
   return element->attributes;
 #else
-  throw DOMException(this);
+  _throw DOMException(this);
 #endif
 }
 

@@ -86,7 +86,7 @@ Document DOMImplementation::createDocument(
   bassert(doc, DOMException(this));
   return doc;
 #else
-  throw DOMException(this);
+  _throw DOMException(this);
 #endif
 }
 
@@ -116,7 +116,7 @@ Document DOMImplementation::createDocument(
   
   return doc;
 #else
-  throw DOMException(this);
+  _throw DOMException(this);
 #endif
 }
 
@@ -156,7 +156,7 @@ Document DOMImplementation::createDocument(
   }
   return document;
 #else
-  throw DOMException(this);
+  _throw DOMException(this);
 #endif
 }
   
@@ -191,7 +191,7 @@ Document DOMImplementation::createFromURI(
   bassert(doc, DOMException(this)); // TAG: use errorMessage
   return doc;
 #else
-  throw DOMException(this);
+  _throw DOMException(this);
 #endif
 }
 
@@ -228,7 +228,7 @@ Document DOMImplementation::createDocumentFromString(
   bassert(result, DOMException(this));
   return result;
 #else
-  throw DOMException(this);
+  _throw DOMException(this);
 #endif
 }
 
@@ -246,7 +246,7 @@ DocumentType DOMImplementation::createDocumentType(
   bassert(node, DOMException(this));
   return node;
 #else
-  throw DOMException(this);
+  _throw DOMException(this);
 #endif
 }
 
@@ -258,7 +258,7 @@ void DOMImplementation::saveDocument(
     xmlSaveFormatFile(filename.getElements(), doc, indent ? 1 : 0);
   bassert(bytesWritten >= 0, DOMException(this));
 #else
-  throw DOMException(this);
+  _throw DOMException(this);
 #endif
 }
 
@@ -277,7 +277,7 @@ void DOMImplementation::saveDocument(
   );
   bassert(bytesWritten >= 0, DOMException(this));
 #else
-  throw DOMException(this);
+  _throw DOMException(this);
 #endif
 }
 
@@ -294,7 +294,7 @@ String DOMImplementation::saveDocumentToMemory(
   xmlFree(buffer);
   return result;
 #else
-  throw DOMException(this);
+  _throw DOMException(this);
 #endif
 }
 
@@ -317,7 +317,7 @@ String DOMImplementation::saveDocumentToMemory(
   xmlFree(buffer);
   return result;
 #else
-  throw DOMException(this);
+  _throw DOMException(this);
 #endif
 }
 

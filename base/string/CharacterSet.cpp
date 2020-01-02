@@ -55,7 +55,7 @@ CharacterSet CharacterSet::load(const String& path)
     } else if ((data[0] == (BOM >> 24)) && (data[1] == (BOM >> 16)) && (data[2] == (BOM >> 8)) && (data[3] == (BOM >> 0))) {
       byteOrder = Architecture::BE;
     } else {
-      throw InvalidFormat(Type::getType<CharacterSet>());
+      _throw InvalidFormat(Type::getType<CharacterSet>());
     }
     
     if (byteOrder == Architecture::LE) {
@@ -89,7 +89,7 @@ CharacterSet CharacterSet::load(const String& path)
     
     return characterSet;
   } catch (IOException&) {
-    throw FileException(Type::getType<CharacterSet>());
+    _throw FileException(Type::getType<CharacterSet>());
   }
 }
 
@@ -110,7 +110,7 @@ CharacterSet CharacterSet::load(
         }
       }
     }
-    throw FileException(Type::getType<CharacterSet>());
+    _throw FileException(Type::getType<CharacterSet>());
   }
 }
 
@@ -165,7 +165,7 @@ void CharacterSet::save(const String& path, Architecture::ByteOrder byteOrder) c
     }
     file.write(buffer, sizeof(buffer));
   } catch (IOException&) {
-    throw FileException(Type::getType<CharacterSet>());
+    _throw FileException(Type::getType<CharacterSet>());
   }
 }
 

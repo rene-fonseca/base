@@ -117,7 +117,7 @@ Urn::Urn(const String& urn) {
       (ASCIITraits::toLower(i[1]) == 'r') &&
       (ASCIITraits::toLower(i[2]) == 'n') &&
       (i[3] == ':')) {
-    throw InvalidFormat(this);
+    _throw InvalidFormat(this);
   }
   bassert(
     (i != end) && (ASCIITraits::isAlphaNum(*i++)),
@@ -169,7 +169,7 @@ Urn::Urn(const String& urn) {
       ++i;
       break;
     default:
-      throw InvalidFormat(this);
+      _throw InvalidFormat(this);
     }
   };
   bassert(i != j, InvalidFormat(this));
@@ -256,7 +256,7 @@ void Urn::setNID(const String& value) {
       (ASCIITraits::toLower(i[1]) == 'r') &&
       (ASCIITraits::toLower(i[2]) == 'n')
   ) {
-    throw InvalidFormat(this);
+    _throw InvalidFormat(this);
   }
   bassert(
     (i != end) && (ASCIITraits::isAlphaNum(*i++)),
@@ -310,7 +310,7 @@ void Urn::setNSS(const String& value) {
       ++i;
       break;
     default:
-      throw InvalidFormat(this);
+      _throw InvalidFormat(this);
     }
   };
   this->nss = value;

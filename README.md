@@ -6,6 +6,7 @@ Copyright (C) 2000-2020 by René Møller Fonseca <rene.m.fonseca+base@gmail.com>
 
 Primary hosting at https://dev.azure.com/renefonseca/base
 
+Reference API documentation is hosted at https://rene-fonseca.github.io/base-api
 
 
 ## Status

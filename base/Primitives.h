@@ -617,7 +617,7 @@ public:
   
 #if (_COM_AZURE_DEV__BASE__SHORT_SIZE == 2)
   static constexpr short MAXIMUM = 32767;
-#elif (_COM_AZURE_DEV__BASE__SHORT_SIZE = 4)
+#elif (_COM_AZURE_DEV__BASE__SHORT_SIZE == 4)
   static constexpr short MAXIMUM = 2147483647;
 #endif
   static constexpr short MINIMUM = -MAXIMUM - 1;
@@ -632,7 +632,7 @@ public:
   
 #if (_COM_AZURE_DEV__BASE__SHORT_SIZE == 2)
   static constexpr unsigned short MAXIMUM = 65535U;
-#elif (_COM_AZURE_DEV__BASE__SHORT_SIZE = 4)
+#elif (_COM_AZURE_DEV__BASE__SHORT_SIZE == 4)
   static constexpr unsigned short MAXIMUM = 4294967295U;
 #endif
   static constexpr unsigned short MINIMUM = 0;

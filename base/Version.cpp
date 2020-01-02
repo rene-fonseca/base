@@ -22,7 +22,7 @@ _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 const char Version::banner[] =
 "The Base Framework release " _COM_AZURE_DEV__BASE__RELEASE "\n"
 "A framework for developing platform independent applications\n"
-"Copyright (C) 2000-2019 by Rene Moeller Fonseca\n\n"
+"Copyright (C) 2000-2020 by Rene Moeller Fonseca\n\n"
 "This framework is distributed in the hope that it will be useful,\n"
 "but WITHOUT ANY WARRANTY; without even the implied warranty of\n"
 "MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.\n"

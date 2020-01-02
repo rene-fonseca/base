@@ -2,7 +2,7 @@
 
 A framework for developing platform independent applications in C++.
 
-Copyright (C) 2000-2019 by René Møller Fonseca <rene.m.fonseca+base@gmail.com>
+Copyright (C) 2000-2020 by René Møller Fonseca <rene.m.fonseca+base@gmail.com>
 
 Primary hosting at https://dev.azure.com/renefonseca/base
 

@@ -394,7 +394,7 @@ inline const EXCEPTION& operator*(ThrowException&& t, const EXCEPTION& exception
 #define _rethrow base::ThrowException::onException(_COM_AZURE_DEV__BASE__PRETTY_FUNCTION, __FILE__, __LINE__); Exception::rethrow() // fake keyword
 #else
 /** Throws exception. _throw MyException(). */
-#define _throw Exception::Hook() * // fake keyword
+#define _throw throw Exception::Hook() * // fake keyword
 
 /** Rethrows exception. */
 #define _rethrow Exception::rethrow() // fake keyword

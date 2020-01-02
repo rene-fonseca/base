@@ -391,5 +391,3 @@ namespace extension {
 }; // end of namespace extension
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE
-
-#endif

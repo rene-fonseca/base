@@ -172,7 +172,7 @@ public:
         
         ferr << entry << ": " << e << ENDL;
         setExitCode(EXIT_CODE_ERROR);
-        throw;
+        _rethrow;
       }
     }
   }

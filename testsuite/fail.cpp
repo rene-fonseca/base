@@ -82,7 +82,7 @@ public:
 
   void throwOutOfRange()
   {
-    throwit OutOfRange("Testing throw of out of range exception which must get caught by application stub.");
+    _throw OutOfRange("Testing throw of out of range exception which must get caught by application stub.");
   }
 
   void rethrowOutOfRange()
@@ -91,13 +91,13 @@ public:
       throwOutOfRange();
     } catch (Exception&) {
       fout << "RETHROW" << ENDL;
-      throw;
+      _rethrow;
     }
   }
   
   void throwNothing()
   {
-    rethrowit; // TAG: this calls UnhandledException for win32 - add win32 handler
+    _rethrow; // TAG: this calls UnhandledException for win32 - add win32 handler
   }
   
   void throwNullPointer() noexcept
@@ -166,7 +166,7 @@ public:
     {
       fout << this << " " << "TestExceptionThrow()" << ENDL;
       TestExceptionObject<2> o2;
-      throw Exception("Constructor exception.");
+      _throw Exception("Constructor exception.");
     }
 
     ~TestExceptionThrow()
@@ -191,7 +191,7 @@ public:
     {
       fout << this << " " << "~TestExceptionDestructThrow(): " << (Exception::isUnwinding() ? "Unwind" : "Normal") << ENDL;
       TestExceptionObject<2> o2;
-      throw Exception("Destructor exception.");
+      _throw Exception("Destructor exception.");
     }
   };
   
@@ -208,7 +208,7 @@ public:
     ~TestExceptionDestructThrow2() noexcept(false)
     {
       fout << this << " " << "~TestExceptionDestructThrow2(): " << (Exception::isUnwinding() ? "Unwind" : "Normal") << ENDL;
-      throw Exception("Destructor exception.");
+      _throw Exception("Destructor exception.");
     }
   };
   
@@ -227,28 +227,28 @@ public:
       static unsigned int count = 0;
       id = count++;
       if ((id == triggerId) && (cause == "init")) {
-        throw Exception("Throw on init.");
+        _throw Exception("Throw on init.");
       }
     }
 
     MyClass(const MyClass& copy)
     {
       if ((id == triggerId) && (cause == "copy")) {
-        throw Exception("Throw on copy construct.");
+        _throw Exception("Throw on copy construct.");
       }
     }
 
     MyClass(MyClass&& move)
     {
       if ((id == triggerId) && (cause == "move")) {
-        throw Exception("Throw on move construct.");
+        _throw Exception("Throw on move construct.");
       }
     }
 
     MyClass& operator=(const MyClass& assign)
     {
       if ((id == triggerId) && (cause == "copyassign")) {
-        throw Exception("Throw on copy assign.");
+        _throw Exception("Throw on copy assign.");
       }
       return *this;
     }
@@ -256,7 +256,7 @@ public:
     MyClass& operator=(MyClass&& assign)
     {
       if ((id == triggerId) && (cause == "moveassign")) {
-        throw Exception("Throw on move assign.");
+        _throw Exception("Throw on move assign.");
       }
       return *this;
     }
@@ -264,7 +264,7 @@ public:
     ~MyClass()
     {
       if ((id == triggerId) && (cause == "destroy")) {
-        throw Exception("Throw on destroy.");
+        _throw Exception("Throw on destroy.");
       }
     }
   };

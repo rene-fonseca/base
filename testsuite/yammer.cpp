@@ -362,7 +362,7 @@ public:
   Reference<ObjectModel::Object> getMessages()
   {
     if (!token) {
-      throw YammerException("No token.");
+      _throw YammerException("No token.");
     }
     
     const String url = "https://www.yammer.com/api/v1/messages.json";
@@ -377,7 +377,7 @@ public:
   String postMessage(const String& _group, const String& text)
   {
     if (!token) {
-      throw YammerException("No token.");
+      _throw YammerException("No token.");
     }
     
     const String url = "https://www.yammer.com/api/v1/messages.json";
@@ -410,7 +410,7 @@ public:
   bool getThreadInfo(const String& threadId)
   {
     if (!token) {
-      throw YammerException("No token.");
+      _throw YammerException("No token.");
     }
 
     const String url = format() << "get/threads/" << threadId << ".json";
@@ -427,7 +427,7 @@ public:
   bool removeMessage(const unsigned int messageId)
   {
     if (!token) {
-      throw YammerException("No token.");
+      _throw YammerException("No token.");
     }
 
     const String url = format() << "https://www.yammer.com/api/v1/messages/" << messageId;

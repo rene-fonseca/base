@@ -158,7 +158,7 @@ private:
         return value[0] * value[0];
       case FUNCTION_SQRT:
         if (value[0] < 0) {
-          throw ExpressionException("Out of domain.", this);
+          _throw ExpressionException("Out of domain.", this);
         }
         return Math::sqrt(value[0]);
       case FUNCTION_EXP:
@@ -245,7 +245,7 @@ private:
         return (value[0] >= value[1]) ? value[0] : value[1];
       case FUNCTION_LOGN:
         if ((value[0] <= 0) || (value[1] == 0)) {
-          throw ExpressionException("Out of domain.", this);
+          _throw ExpressionException("Out of domain.", this);
         }
         return Math::logn(value[0], value[1]);
       case FUNCTION_ATAN2:

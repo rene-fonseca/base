@@ -81,11 +81,11 @@ public:
   }
 
   void myInnerFunction() {
-    throw OutOfRange("This is a message.", this);
+    _throw OutOfRange("This is a message.", this);
   }
 
   void myOuterFunction() {
-//    throw 4;
+//    _throw 4;
     if (true) {
       myInnerFunction();
       // "unexpected" exception expected

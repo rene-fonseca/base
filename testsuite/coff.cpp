@@ -442,7 +442,7 @@ _COM_AZURE_DEV__BASE__PACKED__END
     const unsigned int rawSize)
   {
     if ((virtualAddress & 3) != 0) {
-      throw OutOfDomain(this);
+      _throw OutOfDomain(this);
     }
     
     Allocator<uint8> buffer(rawSize);
@@ -453,7 +453,7 @@ _COM_AZURE_DEV__BASE__PACKED__END
       file.read(buffer.getElements(), buffer.getSize());
     } catch (IOException&) {
       file.setPosition(originalPosition);
-      throw;
+      _rethrow;
     }
     file.setPosition(originalPosition);
     // TAG: zero pad buffer
@@ -559,7 +559,7 @@ _COM_AZURE_DEV__BASE__PACKED__END
     const unsigned int rawSize)
   {
     if ((virtualAddress & 3) != 0) {
-      throw OutOfDomain(this);
+      _throw OutOfDomain(this);
     }
     
     Allocator<uint8> buffer(rawSize);
@@ -570,7 +570,7 @@ _COM_AZURE_DEV__BASE__PACKED__END
       file.read(buffer.getElements(), buffer.getSize());
     } catch (IOException&) {
       file.setPosition(originalPosition);
-      throw;
+      _rethrow;
     }
     file.setPosition(originalPosition);
     // TAG: zero pad buffer
@@ -658,7 +658,7 @@ _COM_AZURE_DEV__BASE__PACKED__END
     const unsigned int rawSize)
   {
     if ((virtualAddress & 3) != 0) {
-      throw OutOfDomain(this);
+      _throw OutOfDomain(this);
     }
     
     Allocator<uint8> buffer(rawSize);
@@ -669,7 +669,7 @@ _COM_AZURE_DEV__BASE__PACKED__END
       file.read(buffer.getElements(), buffer.getSize());
     } catch (IOException&) {
       file.setPosition(originalPosition);
-      throw;
+      _rethrow;
     }
     file.setPosition(originalPosition);
     // TAG: zero pad buffer

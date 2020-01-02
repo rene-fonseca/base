@@ -269,7 +269,7 @@ protected:
           }
         }
       } else if (!multipleLines) {
-        throw FTPException("Invalid reply.");
+        _throw FTPException("Invalid reply.");
       }
     }
     responsePending = false;
@@ -643,13 +643,13 @@ public:
     case POSITIVE_INTERMEDIATE:
       break;
     default:
-      throw FTPException("Unable to login.");
+      _throw FTPException("Unable to login.");
     }
     switch (sendPassword(password)) {
     case POSITIVE:
       break;
     default:
-      throw FTPException("Unable to login.");
+      _throw FTPException("Unable to login.");
     }
   }
 

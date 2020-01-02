@@ -76,7 +76,7 @@ public:
       }
       break;
     case Node::ATTRIBUTE_NODE:
-      throw DOMException(this);
+      _throw DOMException(this);
     case Node::TEXT_NODE:
       fout << Text(node).getData();
       break;

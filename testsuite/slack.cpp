@@ -329,7 +329,7 @@ public:
   String rtm_connect()
   {
     if (!token) {
-      throw SlackException("No token.");
+      _throw SlackException("No token.");
     }
 
     // TAG: JSON color should highlight url strings
@@ -352,7 +352,7 @@ public:
   String chat_postMessage(const String& channel, const String& text, const String& thread = String())
   {
     if (!token) {
-      throw SlackException("No token.");
+      _throw SlackException("No token.");
     }
     
     // TAG: check webhook API
@@ -381,7 +381,7 @@ public:
   String chat_update(const String& channel, const String& text, const String& thread)
   {
     if (!token) {
-      throw SlackException("No token.");
+      _throw SlackException("No token.");
     }
 
     const String url = "https://slack.com/api/chat.update";
@@ -408,7 +408,7 @@ public:
   bool channels_info(const String& channel)
   {
     if (!token) {
-      throw SlackException("No token.");
+      _throw SlackException("No token.");
     }
 
     const String url = "https://slack.com/api/channels.info?channel=" + channel;

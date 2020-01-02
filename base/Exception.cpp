@@ -15,6 +15,9 @@
 #include <base/concurrency/ThreadLocalContext.h>
 #include <base/Exception.h>
 #include <base/UnitTest.h>
+#include <base/string/ANSIEscapeSequence.h>
+#include <base/StackFrame.h>
+#include <base/io/FileDescriptor.h>
 #include <memory>
 #include <system_error>
 
@@ -306,6 +309,54 @@ bool Exception::isCommonException() const noexcept
 
 Exception::~Exception() noexcept
 {
+}
+
+void ThrowException::onException(const char* who, const char* file, unsigned int line) noexcept
+{
+  file = Debug::getRelativePath(file);
+#if 0
+  printf("THROW in %s at %s:%d\n", who, file, line);
+#else
+  auto& stream = fout;
+
+  const bool colors = FileDescriptor::getStandardOutput().isANSITerminal();
+  String _who = who;
+  stream << "THROW in ";
+  if (colors) {
+    auto index = _who.indexOf('(');
+    if (index >= 0) {
+      auto index2 = _who.indexOf(')', index + 1);
+      if (index2 < 0) {
+        index2 = _who.getLength();
+      }
+      stream << setForeground(ANSIEscapeSequence::BLUE) << bold() << _who.substring(0, index) << normal()
+             << setForeground(ANSIEscapeSequence::BLUE) << italic() << _who.substring(index, index2 + 1)
+             << setForeground(ANSIEscapeSequence::BLUE) << bold() << _who.substring(index2 + 1);
+    } else {
+      stream << setForeground(ANSIEscapeSequence::BLUE) << bold() << _who;
+    }
+    stream << normal();
+  } else {
+    stream << who;
+  }
+  stream << " at ";
+  if (colors) {
+    stream << setForeground(ANSIEscapeSequence::WHITE) << bold();
+  }
+  stream << file << ":" << line;
+  if (colors) {
+    stream << normal() << ENDL;
+  }
+  
+  static bool showStackTrace = true;
+  if (showStackTrace) {
+    StackFrame::toStream(
+      stream, StackFrame::getStack().getTrace(),
+      StackFrame::FLAG_DEFAULT |
+      (colors ? StackFrame::FLAG_USE_COLORS : 0)
+    );
+  }
+#endif
 }
 
 #if defined(_COM_AZURE_DEV__BASE__TESTS)

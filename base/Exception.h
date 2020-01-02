@@ -69,8 +69,8 @@ public:
   /** Called on throw. */
   static void onThrow(const Exception& exception) noexcept;
 
-  /** Rethrows exception. Throws Exception is no current exception. */
-  static void rethrow();
+  /** Rethrows exception. Throws Exception if there is no current exception. */
+  [[noreturn]] static void rethrow();
 
   /** Returns true if stack traces for new exceptions are printed. */
   static inline bool getDumpExceptions() noexcept
@@ -352,13 +352,18 @@ inline void throwthis(EXCEPTION&& e)
   throw moveObject(e); // throw std::forward(e);
 }
 
-/** Helper class for tracking throws. */
-class ThrowException {
+/**
+ Helper class for dumping throw information to stdout.
+*/
+class _COM_AZURE_DEV__BASE__API ThrowException {
 public:
 
-  ThrowException(const char* who, const char* file, unsigned int line) noexcept;
-
   static void onException(const char* who, const char* file, unsigned int line) noexcept;
+
+  inline ThrowException(const char* who, const char* file, unsigned int line) noexcept
+  {
+    onException(who, file, line);
+  }
 };
 
 template<class EXCEPTION>
@@ -388,10 +393,14 @@ inline const EXCEPTION& operator*(ThrowException&& t, const EXCEPTION& exception
 #endif
 
 /** Throws exception. _throw MyException(). */
-#define _throw base::ThrowException::onException(_COM_AZURE_DEV__BASE__PRETTY_FUNCTION, __FILE__, __LINE__); throw Exception::Hook() * // fake keyword
+#define _throw \
+  base::ThrowException::onException(_COM_AZURE_DEV__BASE__PRETTY_FUNCTION, __FILE__, __LINE__); \
+  throw Exception::Hook() * // fake keyword
 
 /** Rethrows exception. */
-#define _rethrow base::ThrowException::onException(_COM_AZURE_DEV__BASE__PRETTY_FUNCTION, __FILE__, __LINE__); Exception::rethrow() // fake keyword
+#define _rethrow \
+  base::ThrowException::onException(_COM_AZURE_DEV__BASE__PRETTY_FUNCTION, __FILE__, __LINE__); \
+  Exception::rethrow() // fake keyword
 #else
 /** Throws exception. _throw MyException(). */
 #define _throw throw Exception::Hook() * // fake keyword
@@ -410,7 +419,7 @@ inline const EXCEPTION& operator*(ThrowException&& t, const EXCEPTION& exception
   Helper class for detecting unwinding during destruction.
   See http://www.open-std.org/jtc1/sc22/wg21/docs/papers/2014/n4152.pdf.
 */
-class NewException {
+class _COM_AZURE_DEV__BASE__API NewException {
 private:
 
   const unsigned int pendingExceptions = Exception::getPendingExceptions();
@@ -424,7 +433,7 @@ public:
 };
 
 /** Causes stack dump on exception during destruction. */
-class DumpStackOnException {
+class _COM_AZURE_DEV__BASE__API DumpStackOnException {
 public:
 
   ~DumpStackOnException() noexcept;

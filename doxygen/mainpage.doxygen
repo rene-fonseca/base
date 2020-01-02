@@ -1,7 +1,7 @@
 /** \mainpage The Base Framework
 
 \section legal Legal Notice
-Copyright &copy; 2000-2003, 2019-2020 by Ren&eacute; Moeller Fonseca
+Copyright &copy; 2000-2003, 2019-2020 by René Møller Fonseca <rene.m.fonseca+base@gmail.com>
 
 Warning and Disclaimer: Every effort has been made to make this documentation
 as complete and accurate as possible, but no warranty or fitness is implied.
@@ -15,4 +15,5 @@ the use of any software that may accompany it.
 This is the API documentation of <strong>The Base Framework</strong>. A
 framework for developing platform independent applications in C++. The home of
 this project is <a href="https://dev.azure.com/renefonseca/base">https://dev.azure.com/renefonseca/base</a>.
+The project is mirrored at <a href="https://github.com/rene-fonseca/base">https://github.com/rene-fonseca/base</a>.
 */

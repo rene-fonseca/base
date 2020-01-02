@@ -117,7 +117,7 @@ public:
     String exceptionType;
 
     /** Called on exception. */
-    void onException(Exception* exception);
+    void onException(const Exception* exception);
 
     /** Called on explicit print request. */
     void onPrint(const String& what, unsigned int line = 0);
@@ -168,7 +168,7 @@ private:
 public:
 
   /** Called on exception. */
-  void onException(Exception* exception);
+  void onException(const Exception* exception);
 protected:
 
   /** Called on explicit print request. */
@@ -652,18 +652,18 @@ public:
     stream << "Expecting exception '" << Type::getType<EXCEPTION>() << "' for '" << _COM_AZURE_DEV__BASE__STRINGIFY(EXPRESSION) \
            << "' but got " << e.getThisType() << " with message '" << e.getMessage() << "'." << FLUSH; \
     base::UnitTest::onPrint(stream.getString(), __LINE__); \
-    throw; \
+    _rethrow; \
   } catch (std::exception& e) { \
     StringOutputStream stream; \
     stream << "Expecting exception '" << Type::getType<EXCEPTION>() << "' for '" << _COM_AZURE_DEV__BASE__STRINGIFY(EXPRESSION) \
            << "' but got " << Exception::getStdExceptionName(e) << " with message '" << e.what() << "'." << FLUSH; \
     base::UnitTest::onPrint(stream.getString(), __LINE__); \
-    throw; \
+    _rethrow; \
   } catch (...) { \
     StringOutputStream stream; \
     stream << "Expecting exception '" << Type::getType<EXCEPTION>() << "' for '" << _COM_AZURE_DEV__BASE__STRINGIFY(EXPRESSION) << "' but got unknown exception." << FLUSH; \
     base::UnitTest::onPrint(stream.getString(), __LINE__); \
-    throw; \
+    _rethrow; \
   }
 
 /** Assert within an expression. */

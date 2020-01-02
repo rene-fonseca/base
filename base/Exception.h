@@ -40,7 +40,7 @@ class _COM_AZURE_DEV__BASE__API Exception {
 public:
 
   /** Callback for exception. */
-  typedef void (*ExceptionHandler)(Exception* exception);
+  typedef void (*ExceptionHandler)(const Exception* exception);
 private:
 
   /** When enabled, all exceptions are printed to stderr. */
@@ -67,7 +67,7 @@ public:
   class Hook {};
 
   /** Called on throw. */
-  static void onThrow(Exception& exception) noexcept;
+  static void onThrow(const Exception& exception) noexcept;
 
   /** Rethrows exception. Throws Exception is no current exception. */
   static void rethrow();
@@ -148,7 +148,7 @@ public:
     void myMethod()
     {
       if (!condition) {
-        throw Exception("My short message.", this);
+        _throw Exception("My short message.", this);
       }
       ...
     }
@@ -327,12 +327,20 @@ inline EXCEPTION&& bindException(EXCEPTION&& e, const char* message, unsigned in
 }
 
 /** Helper to hook throw. */
-template<class TYPE>
-inline TYPE&& operator*(const Exception::Hook&& hook, TYPE&& exception)
+template<class EXCEPTION>
+inline EXCEPTION&& operator*(const Exception::Hook&& hook, EXCEPTION&& exception)
 {
-  static_assert(std::is_base_of<Exception, TYPE>(), "Only Exception derived types may be thrown.");
+  static_assert(std::is_base_of<Exception, EXCEPTION>(), "Only Exception derived types may be thrown.");
   Exception::onThrow(exception);
   return moveObject(exception);
+}
+
+template<class EXCEPTION>
+inline const EXCEPTION& operator*(const Exception::Hook&& hook, const EXCEPTION& exception)
+{
+  static_assert(std::is_base_of<Exception, EXCEPTION>(), "Only Exception derived types may be thrown.");
+  Exception::onThrow(exception);
+  return exception;
 }
 
 /** Throws the given exception but requires function call style. */
@@ -344,17 +352,53 @@ inline void throwthis(EXCEPTION&& e)
   throw moveObject(e); // throw std::forward(e);
 }
 
-/** Throws exception. throwit MyException(). */
-#define throwit Exception::Hook() * // fake keyword
+/** Helper class for tracking throws. */
+class ThrowException {
+public:
 
-/** Rethrows current exception if any. */
-inline void rethrow()
+  ThrowException(const char* who, const char* file, unsigned int line) noexcept;
+
+  static void onException(const char* who, const char* file, unsigned int line) noexcept;
+};
+
+template<class EXCEPTION>
+inline EXCEPTION& operator*(ThrowException&& t, EXCEPTION&& exception)
 {
-  Exception::rethrow(); // does throw
-  // throw; // throwing in handler
+  static_assert(std::is_base_of<Exception, EXCEPTION>(), "Only Exception derived types may be thrown.");
+  Exception::onThrow(exception);
+  return moveObject(exception);
 }
 
-#define rethrowit Exception::rethrow() // fake keyword
+template<class EXCEPTION>
+inline const EXCEPTION& operator*(ThrowException&& t, const EXCEPTION& exception)
+{
+  static_assert(std::is_base_of<Exception, EXCEPTION>(), "Only Exception derived types may be thrown.");
+  Exception::onThrow(exception);
+  return exception;
+}
+
+#if defined(_COM_AZURE_DEV__BASE__ANY_DEBUG)
+
+#if (_COM_AZURE_DEV__BASE__COMPILER == _COM_AZURE_DEV__BASE__COMPILER_LLVM)
+#  define _COM_AZURE_DEV__BASE__PRETTY_FUNCTION __PRETTY_FUNCTION__
+#elif (_COM_AZURE_DEV__BASE__COMPILER == _COM_AZURE_DEV__BASE__COMPILER_MSC)
+#  define _COM_AZURE_DEV__BASE__PRETTY_FUNCTION __FUNCSIG__
+#else
+#  define _COM_AZURE_DEV__BASE__PRETTY_FUNCTION __func__
+#endif
+
+/** Throws exception. _throw MyException(). */
+#define _throw base::ThrowException::onException(_COM_AZURE_DEV__BASE__PRETTY_FUNCTION, __FILE__, __LINE__); throw Exception::Hook() * // fake keyword
+
+/** Rethrows exception. */
+#define _rethrow base::ThrowException::onException(_COM_AZURE_DEV__BASE__PRETTY_FUNCTION, __FILE__, __LINE__); Exception::rethrow() // fake keyword
+#else
+/** Throws exception. _throw MyException(). */
+#define _throw Exception::Hook() * // fake keyword
+
+/** Rethrows exception. */
+#define _rethrow Exception::rethrow() // fake keyword
+#endif
 
 #define _COM_AZURE_DEV__BASE__EXCEPTION_THIS_TYPE() \
   Type getThisType() const noexcept override \

@@ -144,7 +144,7 @@ Type Exception::getExceptionType() noexcept
 #endif
 }
 
-extern void defaultExceptionHandler(Exception* exception) noexcept;
+extern void defaultExceptionHandler(const Exception* exception) noexcept;
 
 bool Exception::dumpExceptions = false;
 
@@ -175,7 +175,7 @@ Exception::StackTrace Exception::getStackTrace()
 // meta info (counter stats, stack trace, ...) to it before unwinding gets initiated
 // throw_handler* std::set_throw_handler(throw_handler*) noexcept;
 // throw_handler* std::get_throw_handler() noexcept;
-void Exception::onThrow(Exception& exception) noexcept
+void Exception::onThrow(const Exception& exception) noexcept
 {
   if (exceptionHandler) { // not installed for release builds - but can be installed at runtime
     exceptionHandler(&exception);
@@ -329,7 +329,7 @@ public:
     TEST_DECLARE_HERE(C);
 
     try {
-      throw bindException(bindType(MyException(), Type::getType<MyExceptionContext>()), "My message.", 1);
+      _throw bindException(bindType(MyException(), Type::getType<MyExceptionContext>()), "My message.", 1);
       TEST_NOT_HERE(B);
     } catch (MyException& e) {
       const char* text = "My message.";
@@ -340,7 +340,7 @@ public:
     }
 
     try {
-      throw Exception("Message.");
+      _throw Exception("Message.");
     } catch (const Exception& e) {
       TEST_HERE(C);
       TEST_ASSERT(String(e.getMessage()) == String("Message."));

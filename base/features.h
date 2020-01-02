@@ -229,20 +229,4 @@ public:
 #  define _COM_AZURE_DEV__BASE__PRINT(message, ...)
 #endif
 
-
-/** Helper class for tracking throws. */
-class ThrowException {
-public:
-
-  ThrowException(const char* who, const char* file, unsigned int line) noexcept;
-
-  static void onException(const char* who, const char* file, unsigned int line) noexcept;
-};
-
-template<class EXCEPTION>
-inline EXCEPTION&& operator*(ThrowException&& t, EXCEPTION&& e)
-{
-  return moveObject(e);
-}
-
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

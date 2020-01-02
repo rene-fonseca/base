@@ -51,7 +51,7 @@
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
   // TAG: TODO we cannot get access to true exception type - best to hook throw after exception has been created
-  void defaultExceptionHandler(Exception* exception) noexcept
+  void defaultExceptionHandler(const Exception* exception) noexcept
   {
     // would be best to hook __cxa_throw to get stack trace at throw only
     if (exception) {
@@ -300,7 +300,7 @@ public:
           ferr << FLUSH;
 #endif
 
-          // throwit(AbortException("Aborted by user."));
+          // _throw AbortException("Aborted by user.");
         }
       }
       SystemLogger::write(SystemLogger::INFORMATION, "Terminate signal.");
@@ -650,17 +650,17 @@ public:
       break;
     case SIGSEGV:
       SystemLogger::write(SystemLogger::INFORMATION, "Segmentation fault.");
-      throw MemoryException("Invalid memory access."); // TAG: remove
+      _throw MemoryException("Invalid memory access."); // TAG: remove
       // abort();
     case SIGILL:
       SystemLogger::write(SystemLogger::INFORMATION, "Invalid instruction.");
-      throw Exception("Invalid instruction.");
+      _throw Exception("Invalid instruction.");
     case SIGFPE:
       SystemLogger::write(
         SystemLogger::INFORMATION,
         "Floating point exception."
       );
-      throw Exception("Floating point exception.");
+      _throw Exception("Floating point exception.");
     case SIGABRT: // abort
       if (Thread::getThread()->isMainThread()) {
         SystemLogger::write(SystemLogger::INFORMATION, "Abort signal.");
@@ -719,7 +719,7 @@ namespace internal
 void Application::setArgumentsAndEnvironment(int _numberOfArguments, const char* _arguments[], const char* _environment[])
 {
   if (!((_numberOfArguments > 0) && _arguments)) {
-    throw OutOfDomain();
+    _throw OutOfDomain();
   }
 
   internal::numberOfArguments = _numberOfArguments;
@@ -736,14 +736,14 @@ Application::Application(const String& _formalName)
 {
   static unsigned int singleton = 0;
   if (singleton != 0) {
-    throw SingletonException("Application has been initialized.", this);
+    _throw SingletonException("Application has been initialized.", this);
   }
   ++singleton;
 
   // install signal handler
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   if (!::SetConsoleCtrlHandler((PHANDLER_ROUTINE)ApplicationImpl::signalHandler, TRUE)) {
-    throw UnexpectedFailure("Unable to install signal handler.", this);
+    _throw UnexpectedFailure("Unable to install signal handler.", this);
   }
 
   WNDCLASSEX windowClass;
@@ -791,7 +791,7 @@ Application::Application(const String& _formalName)
   action.sa_sigaction = ApplicationImpl::actionHandler;
   for (unsigned int i = 0; i < getArraySize(SIGNALS); ++i) {
     if (sigaction(SIGNALS[i], &action, 0) != 0) {
-      throw UnexpectedFailure("Unable to register signal handler.", this);
+      _throw UnexpectedFailure("Unable to register signal handler.", this);
     }
   }
 #  elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__IRIX65)
@@ -805,7 +805,7 @@ Application::Application(const String& _formalName)
           (bsd_signal(SIGILL, ApplicationImpl::signalHandler) != SIG_ERR) &&
           (bsd_signal(SIGFPE, ApplicationImpl::signalHandler) != SIG_ERR) &&
           (bsd_signal(SIGABRT, ApplicationImpl::signalHandler) != SIG_ERR))) {
-      throw UnexpectedFailure("Unable to register signal handler.", this);
+      _throw UnexpectedFailure("Unable to register signal handler.", this);
     }
 #  else
     if (!((signal(SIGHUP, ApplicationImpl::signalHandler) != SIG_ERR) &&
@@ -818,7 +818,7 @@ Application::Application(const String& _formalName)
           (signal(SIGILL, ApplicationImpl::signalHandler) != SIG_ERR) &&
           (signal(SIGFPE, ApplicationImpl::signalHandler) != SIG_ERR) &&
           (signal(SIGABRT, ApplicationImpl::signalHandler) != SIG_ERR))) {
-      throw UnexpectedFailure("Unable to register signal handler.", this);
+      _throw UnexpectedFailure("Unable to register signal handler.", this);
     }
 #  endif
 #endif

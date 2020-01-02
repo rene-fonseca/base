@@ -44,7 +44,7 @@ namespace {
   Reference<UnitTest> currentTest; // would need to be thread local for concurrent tests
 
   /** Exception construction hook. */
-  void testExceptionHandler(Exception* exception) noexcept
+  void testExceptionHandler(const Exception* exception) noexcept
   {
     // we want to skip a stack trace level - we skip on output
     if (oldExceptionHandler) {
@@ -128,7 +128,7 @@ void UnitTest::setType(const Type& _type)
   type = _type;
 }
 
-void UnitTest::onException(Exception* exception)
+void UnitTest::onException(const Exception* exception)
 {
   if (INLINE_ASSERT(exception && currentRun)) {
     // TAG: some exceptions should be ignored - eof/parsing - get type from exception
@@ -136,7 +136,7 @@ void UnitTest::onException(Exception* exception)
   }
 }
 
-void UnitTest::Run::onException(Exception* exception)
+void UnitTest::Run::onException(const Exception* exception)
 {
   StringOutputStream sos;
 

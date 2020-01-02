@@ -48,12 +48,50 @@ _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 ThrowException::ThrowException(const char* who, const char* file, unsigned int line) noexcept
 {
-  printf("THROW AT %s %s:%d\n", who, file, line);
+  onException(who, file, line);
 }
 
 void ThrowException::onException(const char* who, const char* file, unsigned int line) noexcept
 {
-  printf("THROW AT %s %s:%d\n", who, file, line);
+  file = Debug::getRelativePath(file);
+#if 0
+  printf("THROW in %s at %s:%d\n", who, file, line);
+#else
+  const bool colors = FileDescriptor::getStandardOutput().isANSITerminal();
+  String _who = who;
+  fout << "THROW in ";
+  if (colors) {
+    auto index = _who.indexOf('(');
+    if (index >= 0) {
+      auto index2 = _who.indexOf(')', index + 1);
+      if (index2 < 0) {
+        index2 = _who.getLength();
+      }
+      fout << setForeground(ANSIEscapeSequence::BLUE) << bold() << _who.substring(0, index) << normal()
+           << setForeground(ANSIEscapeSequence::BLUE) << italic() << _who.substring(index, index2 + 1)
+      << setForeground(ANSIEscapeSequence::BLUE) << bold() << _who.substring(index2 + 1);
+    } else {
+      fout << setForeground(ANSIEscapeSequence::BLUE) << bold() << _who;
+    }
+    fout << normal();
+  } else {
+    fout << who;
+  }
+  fout << " at ";
+  if (colors) {
+    fout << setForeground(ANSIEscapeSequence::WHITE) << bold();
+  }
+  fout << file << ":" << line;
+  if (colors) {
+    fout << normal() << ENDL;
+  }
+  
+  StackFrame::toStream(
+    fout, StackFrame::getStack().getTrace(),
+    StackFrame::FLAG_DEFAULT |
+    (colors ? StackFrame::FLAG_USE_COLORS : 0)
+  );
+#endif
 }
 
 void GlobalPrint::printf(const char* text, ...) noexcept

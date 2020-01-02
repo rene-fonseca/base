@@ -219,7 +219,7 @@ template<class EXCEPTION>
 inline void bassert(bool assertion, const EXCEPTION& exception)
 {
   if (!assertion) {
-    throw exception;
+    _throw exception;
   }
 }
 #endif
@@ -227,7 +227,7 @@ inline void bassert(bool assertion, const EXCEPTION& exception)
 // TAG: temporary workaround to avoid construction of exception
 #define bassert(expression, exception) \
   if (!static_cast<bool>(expression)) { \
-    throw exception; \
+    _throw exception; \
   }
 
 /**

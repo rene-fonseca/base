@@ -43,7 +43,7 @@ public:
   inline Lifetime(TYPE* _object) : object(_object)
   {
     if (!object) {
-      throw NullPointer(this);
+      _throw NullPointer(this);
     }
   }
   

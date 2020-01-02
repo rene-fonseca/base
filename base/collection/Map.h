@@ -298,7 +298,7 @@ public:
   {
     typename Tree::Node* node = elements.find(key);
     if (!node) {
-      throw InvalidKey();
+      _throw InvalidKey();
     }
     Node& association = node->getValue();
     return association.getValue();
@@ -314,7 +314,7 @@ public:
   {
     const typename Tree::Node* node = elements.find(key);
     if (!node) {
-      throw InvalidKey();
+      _throw InvalidKey();
     }
     const Node& association = node->getValue();
     return association.getValue();
@@ -400,7 +400,7 @@ public:
   {
     typename Tree::Node* node = elements.find(key);
     if (!node) {
-      throw InvalidKey();
+      _throw InvalidKey();
     }
     elements.remove(node);
     --size; // never ends up here if the key doesn't exist

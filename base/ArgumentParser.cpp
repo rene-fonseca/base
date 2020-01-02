@@ -33,7 +33,7 @@ ArgumentParser::Option::Option(
     flags(_flags)
 {
   if (!ASCIITraits::isAlphaNum(shortName)) {
-    throw OutOfDomain(this);
+    _throw OutOfDomain(this);
   }
 }
 
@@ -200,7 +200,7 @@ ArgumentParser::Argument* ArgumentParser::getArgument(
     argument = new NamedArgument(option->getName(), occured ? Argument::EARLIER : 0);
   } else { // options which take a value
     if (option->getFlags() & Option::EXPLICIT) {
-      throw bindCause(ArgumentException(this), ArgumentException::VALUE_MISSING);
+      _throw bindCause(ArgumentException(this), ArgumentException::VALUE_MISSING);
     }
     if (option.isType<BooleanOption>()) {
       argument = new NamedArgument(
@@ -239,7 +239,7 @@ ArgumentParser::Argument* ArgumentParser::getArgument(
 {
   Argument* argument = nullptr;
   if (option.isType<FlagOption>()) {
-    throw bindCause(ArgumentException(this), ArgumentException::VALUE_PRESENT);
+    _throw bindCause(ArgumentException(this), ArgumentException::VALUE_PRESENT);
   } else { // options which take a value
     if (option.isType<BooleanOption>()) {
       Reference<BooleanOption> temp = option.cast<BooleanOption>();
@@ -411,7 +411,7 @@ Array<ArgumentParser::Argument*> ArgumentParser::operator()(
         // value only allowed if one short option
       } else {
         // TAG: handle standalone "-"
-        throw ArgumentException(this);
+        _throw ArgumentException(this);
       }
       
     } else {

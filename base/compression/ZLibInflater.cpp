@@ -91,19 +91,19 @@ ZLibInflater::ZLibInflater()
   case internal::ZLibInflater::OK:
     break;
   case internal::ZLibInflater::VERSION_ERROR:
-    throw NotSupported(this);
+    _throw NotSupported(this);
   default:
-    throw MemoryException(this);
+    _throw MemoryException(this);
   }
 #else
-  throw NotSupported(this);
+  _throw NotSupported(this);
 #endif
 }
 
 MemorySize ZLibInflater::push(const uint8* buffer, MemorySize _size)
 {
   if (_size > 0xffffffff) {
-    throw IOException(this);
+    _throw IOException(this);
   }
   unsigned int size = static_cast<unsigned int>(_size);
   
@@ -126,12 +126,12 @@ MemorySize ZLibInflater::push(const uint8* buffer, MemorySize _size)
   } else if (code == internal::ZLibInflater::STREAM_END) {
     state = FINISHED; // stream may containg garbage data after eof (e.g. padding)
   } else {
-    throw IOException(this);
+    _throw IOException(this);
   }
   availableBytes = static_cast<unsigned int>(this->buffer.getSize()) - context->bytesToRead;
   return context->totalInput;
 #else
-  throw IOException(this);
+  _throw IOException(this);
 #endif
 }
 
@@ -143,14 +143,14 @@ void ZLibInflater::pushEnd()
     state = FINISHING;
   }
 #else
-  throw IOException(this);
+  _throw IOException(this);
 #endif
 }
 
 MemorySize ZLibInflater::pull(uint8* buffer, MemorySize _size)
 {
   if (_size > 0xffffffff) {
-    throw IOException(this);
+    _throw IOException(this);
   }
   unsigned int size = static_cast<unsigned int>(_size);
   
@@ -200,7 +200,7 @@ MemorySize ZLibInflater::pull(uint8* buffer, MemorySize _size)
       } else if (code == internal::ZLibInflater::STREAM_END) { // TAG: is this possible
         state = FINISHED; // done flushing
       } else {
-        throw IOException(this);
+        _throw IOException(this);
       }
       return bytesRead + size - context->bytesToRead;
     }
@@ -220,7 +220,7 @@ MemorySize ZLibInflater::pull(uint8* buffer, MemorySize _size)
       } else if (code == internal::ZLibInflater::STREAM_END) {
         state = ENDED; // availableBytes = 0 thus we skip FINISHED
       } else {
-        throw IOException(this);
+        _throw IOException(this);
       }
       return bytesRead + size - context->bytesToRead;
     }
@@ -232,7 +232,7 @@ MemorySize ZLibInflater::pull(uint8* buffer, MemorySize _size)
   }
   return bytesRead;
 #else
-  throw IOException(this);
+  _throw IOException(this);
 #endif
 }
 

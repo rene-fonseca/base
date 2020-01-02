@@ -42,11 +42,11 @@ protected:
     } else {
       switch (status) {
       case Unicode::ERROR_INCOMPLETE:
-        throw MultibyteException(MultibyteException::INCOMPLETE_CHARACTER_CODE);
+        _throw MultibyteException(MultibyteException::INCOMPLETE_CHARACTER_CODE);
       case Unicode::ERROR_BAD_ENCODING:
-        throw MultibyteException(MultibyteException::INVALID_CHARACTER_CODE);
+        _throw MultibyteException(MultibyteException::INVALID_CHARACTER_CODE);
       default:
-        throw MultibyteException();
+        _throw MultibyteException();
       }
     }
     return src;

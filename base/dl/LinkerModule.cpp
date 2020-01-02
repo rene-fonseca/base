@@ -29,7 +29,7 @@ LinkerModule::LinkerModule(const String& i, const String& n, const String& v)
 {
   static unsigned int singleton = 0;
   if (singleton != 0) {
-    throw SingletonException("LinkerModule has been instantiated.", this);
+    _throw SingletonException("LinkerModule has been instantiated.", this);
   }
   ++singleton;
   linkerModule = this;

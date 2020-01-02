@@ -151,18 +151,18 @@ ReadWriteLock::ReadWriteLock()
   pthread_rwlockattr_t attributes;
   if (pthread_rwlockattr_init(&attributes) != 0) {
     delete[] static_cast<pthread_rwlock_t*>(representation);
-    throw ResourceException(this);
+    _throw ResourceException(this);
   }
   if (pthread_rwlockattr_setpshared(&attributes, PTHREAD_PROCESS_PRIVATE) != 0) {
     // TAG: does this also work in a multiprocessor environment (still within the same process)?
     pthread_rwlockattr_destroy(&attributes); // should never fail
     delete[] static_cast<pthread_rwlock_t*>(representation);
-    throw ResourceException(this);
+    _throw ResourceException(this);
   }
   if (pthread_rwlock_init(static_cast<pthread_rwlock_t*>(representation), &attributes) != 0) {
     pthread_rwlockattr_destroy(&attributes); // should never fail
     delete[] static_cast<pthread_rwlock_t*>(representation);
-    throw ResourceException(this);
+    _throw ResourceException(this);
   }
   pthread_rwlockattr_destroy(&attributes); // should never fail
 #elif defined(_COM_AZURE_DEV__BASE__PTHREAD)
@@ -170,7 +170,7 @@ ReadWriteLock::ReadWriteLock()
   pthread_mutexattr_t attributes;
   if (pthread_mutexattr_init(&attributes) != 0) {
     delete[] static_cast<pthread_mutex_t*>(representation);
-    throw ResourceException(this);
+    _throw ResourceException(this);
   }
 #if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__CYGWIN)
    #warning disabled selection of mutex type due to CYGWIN bug
@@ -178,13 +178,13 @@ ReadWriteLock::ReadWriteLock()
   if (pthread_mutexattr_settype(&attributes, PTHREAD_MUTEX_ERRORCHECK) != 0) {
     pthread_mutexattr_destroy(&attributes); // should never fail
     delete[] static_cast<pthread_mutex_t*>(representation);
-    throw ResourceException(this);
+    _throw ResourceException(this);
   }
 #endif // cygwin temporary bug fix
   if (pthread_mutex_init(static_cast<pthread_mutex_t*>(representation), &attributes) != 0) {
     pthread_mutexattr_destroy(&attributes); // should never fail
     delete[] static_cast<pthread_mutex_t*>(representation);
-    throw ResourceException(this);
+    _throw ResourceException(this);
   }
   pthread_mutexattr_destroy(&attributes); // should never fail
 #else
@@ -200,7 +200,7 @@ void ReadWriteLock::exclusiveLock() const
   static_cast<ReadWriteLockImpl*>(representation)->exclusiveLock();
 #elif defined(_COM_AZURE_DEV__BASE__PTHREAD_RWLOCK)
   if (pthread_rwlock_wrlock(static_cast<pthread_rwlock_t*>(representation))) {
-    throw ReadWriteLockException(this);
+    _throw ReadWriteLockException(this);
   }
 #elif defined(_COM_AZURE_DEV__BASE__PTHREAD)
   int result = pthread_mutex_lock(static_cast<pthread_mutex_t*>(representation));
@@ -209,7 +209,7 @@ void ReadWriteLock::exclusiveLock() const
   } else if (result == EDEADLK) {
     return;
   } else {
-    throw ReadWriteLockException(this);
+    _throw ReadWriteLockException(this);
   }
 #else
   BASSERT(!"Not supported.");
@@ -229,7 +229,7 @@ bool ReadWriteLock::tryExclusiveLock() const
   } else if (result == EBUSY) {
     return false;
   } else {
-    throw ReadWriteLockException(this);
+    _throw ReadWriteLockException(this);
   }
 #elif defined(_COM_AZURE_DEV__BASE__PTHREAD)
   int result = pthread_mutex_trylock(static_cast<pthread_mutex_t*>(representation));
@@ -238,7 +238,7 @@ bool ReadWriteLock::tryExclusiveLock() const
   } else if (result == EBUSY) {
     return false;
   } else {
-    throw ReadWriteLockException(this);
+    _throw ReadWriteLockException(this);
   }
 #else
   BASSERT(!"Not supported.");
@@ -254,7 +254,7 @@ void ReadWriteLock::sharedLock() const
   static_cast<ReadWriteLockImpl*>(representation)->sharedLock();
 #elif defined(_COM_AZURE_DEV__BASE__PTHREAD_RWLOCK)
   if (pthread_rwlock_rdlock(static_cast<pthread_rwlock_t*>(representation))) {
-    throw ReadWriteLockException(this);
+    _throw ReadWriteLockException(this);
   }
 #elif defined(_COM_AZURE_DEV__BASE__PTHREAD)
   int result = pthread_mutex_lock(static_cast<pthread_mutex_t*>(representation));
@@ -263,7 +263,7 @@ void ReadWriteLock::sharedLock() const
   } else if (result == EDEADLK) {
     return;
   } else {
-    throw ReadWriteLockException(this);
+    _throw ReadWriteLockException(this);
   }
 #else
   BASSERT(!"Not supported.");
@@ -283,7 +283,7 @@ bool ReadWriteLock::trySharedLock() const
   } else if (result == EBUSY) {
     return false;
   } else {
-    throw ReadWriteLockException(this);
+    _throw ReadWriteLockException(this);
   }
 #elif defined(_COM_AZURE_DEV__BASE__PTHREAD)
   int result = pthread_mutex_trylock(static_cast<pthread_mutex_t*>(representation));
@@ -292,7 +292,7 @@ bool ReadWriteLock::trySharedLock() const
   } else if (result == EBUSY) {
     return false;
   } else {
-    throw ReadWriteLockException(this);
+    _throw ReadWriteLockException(this);
   }
 #else
   BASSERT(!"Not supported.");
@@ -308,11 +308,11 @@ void ReadWriteLock::releaseLock() const
   static_cast<ReadWriteLockImpl*>(representation)->releaseLock();
 #elif defined(_COM_AZURE_DEV__BASE__PTHREAD_RWLOCK)
   if (pthread_rwlock_unlock(static_cast<pthread_rwlock_t*>(representation))) {
-    throw ReadWriteLockException(this);
+    _throw ReadWriteLockException(this);
   }
 #elif defined(_COM_AZURE_DEV__BASE__PTHREAD)
   if (pthread_mutex_unlock(static_cast<pthread_mutex_t*>(representation))) {
-    throw ReadWriteLockException(this);
+    _throw ReadWriteLockException(this);
   }
 #else
   BASSERT(!"Not supported.");
@@ -325,12 +325,12 @@ ReadWriteLock::~ReadWriteLock()
   delete static_cast<ReadWriteLockImpl*>(representation);
 #elif defined(_COM_AZURE_DEV__BASE__PTHREAD_RWLOCK)
   if (pthread_rwlock_destroy(static_cast<pthread_rwlock_t*>(representation))) {
-    throw ReadWriteLockException(this);
+    _throw ReadWriteLockException(this);
   }
   delete[] static_cast<pthread_rwlock_t*>(representation);
 #elif defined(_COM_AZURE_DEV__BASE__PTHREAD)
   if (pthread_mutex_destroy(static_cast<pthread_mutex_t*>(representation))) {
-    throw ReadWriteLockException(this);
+    _throw ReadWriteLockException(this);
   }
   delete[] static_cast<pthread_mutex_t*>(representation);
 #else

@@ -241,7 +241,7 @@ public:
   {
     auto node = elements.find(key);
     if (!node) {
-      throw InvalidKey();
+      _throw InvalidKey();
     }
     return node->getValue();
   }

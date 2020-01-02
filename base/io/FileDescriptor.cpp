@@ -40,11 +40,11 @@ FileDescriptor::Descriptor::~Descriptor()
   if (isValid()) {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
     if (!::CloseHandle(getHandle())) {
-      throw IOException("Unable to close file descriptor.", this);
+      _throw IOException("Unable to close file descriptor.", this);
     }
 #else // unix
     if (::close(getHandle()) != 0) {
-      throw IOException("Unable to close file descriptor.", this);
+      _throw IOException("Unable to close file descriptor.", this);
     }
 #endif // flavor
   }
@@ -155,7 +155,7 @@ int FileDescriptor::getFlags() const
 #else // unix
   int result = 0;
   if ((result = ::fcntl(fd->getHandle(), F_GETFL)) < 0) {
-    throw IOException("Unable to get flags of file descriptor.", this);
+    _throw IOException("Unable to get flags of file descriptor.", this);
   }
   return result;
 #endif // flavor
@@ -166,7 +166,7 @@ void FileDescriptor::setFlags(int flags)
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
 #else // unix
   if (::fcntl(fd->getHandle(), F_SETFL, flags) != 0) {
-    throw IOException("Unable to set flags of file descriptor.", this);
+    _throw IOException("Unable to set flags of file descriptor.", this);
   }
 #endif // flavor
 }

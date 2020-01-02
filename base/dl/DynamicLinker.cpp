@@ -115,7 +115,7 @@ void* DynamicLinker::getGlobalSymbolImpl(const String& symbol)
   // GetModuleHandle does not increment reference count
   void* result = (void*)(::GetProcAddress(::GetModuleHandle(0), symbol.getElements()));
   if (!result) {
-    throw LinkerException("Unable to resolve symbol.");
+    _throw LinkerException("Unable to resolve symbol.");
   }
   return result;
 #else // unix
@@ -125,11 +125,11 @@ void* DynamicLinker::getGlobalSymbolImpl(const String& symbol)
     void* handle = ::dlopen(nullptr, 0); // use unspecified linking
   #endif
   if (handle == 0) {
-    throw LinkerException("Unable to open module.");
+    _throw LinkerException("Unable to open module.");
   }
   void* result = ::dlsym(handle, symbol.getElements());
   if (dlerror() != 0) {
-    throw LinkerException("Unable to resolve symbol.");
+    _throw LinkerException("Unable to resolve symbol.");
   }
   ::dlclose(handle); // is this required
   return result;
@@ -150,7 +150,7 @@ void* DynamicLinker::getGlobalSymbolImpl(const String& symbol)
 //                   MAX_PATH
 //  );
 //  if (length == 0) {
-//    throw LinkerException(this);
+//    _throw LinkerException(this);
 //  }
 //  path.setLength(length);
 //  return path;
@@ -163,7 +163,7 @@ DynamicLinker::DynamicLinker(const String& path, unsigned int options)
 {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   if ((handle = ::LoadLibraryEx(ToWCharString(path), 0, 0)) == nullptr) {
-    throw LinkerException("Unable to open module.", this);
+    _throw LinkerException("Unable to open module.", this);
   }
 #else // unix
   #if defined(RTLD_LAZY)
@@ -177,7 +177,7 @@ DynamicLinker::DynamicLinker(const String& path, unsigned int options)
     flags |= RTLD_GLOBAL;
   #endif
   if ((handle = ::dlopen(path.getElements(), flags)) == 0) {
-    throw LinkerException("Unable to open module.", this);
+    _throw LinkerException("Unable to open module.", this);
   }
 #endif // flavor
 }

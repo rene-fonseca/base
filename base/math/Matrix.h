@@ -225,7 +225,7 @@ protected:
     unsigned int column) const
   {
     if ((row >= rows) || (column >= columns)) {
-      throw OutOfRange();
+      _throw OutOfRange();
     }
   }
 
@@ -234,7 +234,7 @@ protected:
   */
   inline void validateRow(unsigned int row) const {
     if (row >= rows) {
-      throw OutOfRange();
+      _throw OutOfRange();
     }
   }
 
@@ -243,7 +243,7 @@ protected:
   */
   inline void validateColumn(unsigned int column) const {
     if (column >= columns) {
-      throw OutOfRange();
+      _throw OutOfRange();
     }
   }
   

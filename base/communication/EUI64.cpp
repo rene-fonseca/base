@@ -88,7 +88,7 @@ unsigned int EUI64::getCompanyId() const noexcept
 void EUI64::setCompanyId(unsigned int companyId)
 {
   if (!(companyId <= 0xffffff)) {
-    throw OutOfDomain(this);
+    _throw OutOfDomain(this);
   }
   id[0] = companyId >> 16;
   id[1] = companyId >> 8;
@@ -103,7 +103,7 @@ uint64 EUI64::getExtensionId() const noexcept
 void EUI64::setExtensionId(uint64 extensionId)
 {
   if (!(extensionId <= 0xffffffff)) {
-    throw OutOfDomain(this);
+    _throw OutOfDomain(this);
   }
   id[3] = extensionId >> 32;
   id[4] = extensionId >> 24;

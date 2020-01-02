@@ -91,7 +91,7 @@ protected:
     Pointer next()
     {
       if (!current) {
-        throw EndOfEnumeration();
+        _throw EndOfEnumeration();
       }
       auto temp = current;
       current = current->getNext();
@@ -196,7 +196,7 @@ protected:
     const TYPE& peek(MemorySize index = 0) const
     {
       if (index >= getSize()) {
-        throw OutOfRange(this);
+        _throw OutOfRange(this);
       }
       const StackNode* node = top;
       while (index) {
@@ -234,7 +234,7 @@ protected:
     TYPE pop()
     {
       if (isEmpty()) {
-        throw OutOfRange(this);
+        _throw OutOfRange(this);
       }
       StackNode* temp = top;
       top = top->getNext();
@@ -258,7 +258,7 @@ protected:
     void pop(MemorySize count)
     {
       if (count > getSize()) {
-        throw OutOfRange(this);
+        _throw OutOfRange(this);
       }
       while (count) {
         StackNode* temp = top;

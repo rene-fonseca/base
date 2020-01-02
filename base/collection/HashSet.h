@@ -457,7 +457,7 @@ public:
       Node** bucket = getBuckets() + (hash & mask);
       Node* child = *bucket;
       if (!child) {
-        throw InvalidNode(this);
+        _throw InvalidNode(this);
       }
       if ((child->getHash() == hash) && (child->getValue() == value)) {
         *bucket = child->getNext(); // unlink first node (next could be 0)
@@ -469,7 +469,7 @@ public:
           child = child->getNext();
         }
         if (!child) {
-          throw InvalidNode(this);
+          _throw InvalidNode(this);
         }
         parent->setNext(child->getNext()); // unlink node from linked list
       }
@@ -555,7 +555,7 @@ public:
     Pointer next()
     {
       if (!numberOfElements) {
-        throw EndOfEnumeration(this);
+        _throw EndOfEnumeration(this);
       }
       while (!node) {
         ++bucket;

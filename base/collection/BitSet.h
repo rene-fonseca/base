@@ -283,7 +283,7 @@ public:
     inline Pointer next()
     {
       if (count == 0) {
-        throw EndOfEnumeration();
+        _throw EndOfEnumeration();
       }
       if (count % (sizeof(unsigned long) * 8) == 0) {
         --word;
@@ -375,7 +375,7 @@ public:
     inline Pointer next()
     {
       if (count == 0) {
-        throw EndOfEnumeration();
+        _throw EndOfEnumeration();
       }
       if (count % (sizeof(unsigned long) * 8) == 0) {
         --word;

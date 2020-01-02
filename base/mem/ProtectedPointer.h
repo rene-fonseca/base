@@ -45,7 +45,7 @@ public:
     : value(_value)
   {
     if (!value) {
-      throw NullPointer(this);
+      _throw NullPointer(this);
     }
   }
   

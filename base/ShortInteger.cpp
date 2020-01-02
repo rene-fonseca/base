@@ -25,7 +25,7 @@ short ShortInteger::parse(const char* src, const char* end, unsigned int flags)
   }
 
   if (src == end) {
-    throw InvalidFormat(Type::getType<ShortInteger>());
+    _throw InvalidFormat(Type::getType<ShortInteger>());
   }
   
   int value = 0;

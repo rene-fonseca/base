@@ -70,7 +70,7 @@ unsigned int FileDescriptorInputStream::available() const
   switch (::GetFileType(fd->getHandle())) {
   case FILE_TYPE_PIPE:
     if (!::PeekNamedPipe((HANDLE)fd->getHandle(), 0, 0, 0, &bytesAvailable, 0)) {
-      throw IOException(this);
+      _throw IOException(this);
     }
     break;
   case FILE_TYPE_DISK:
@@ -81,7 +81,7 @@ unsigned int FileDescriptorInputStream::available() const
       position.QuadPart = 0;
       position.LowPart = ::SetFilePointer((HANDLE)fd->getHandle(), 0, &position.HighPart, FILE_CURRENT);
       if ((position.LowPart == INVALID_SET_FILE_POINTER) && (::GetLastError() != NO_ERROR)) {
-        throw IOException(this);
+        _throw IOException(this);
       }
       bytesAvailable = minimum<long long>(size - position.QuadPart, PrimitiveTraits<unsigned int>::MAXIMUM);
     }
@@ -90,7 +90,7 @@ unsigned int FileDescriptorInputStream::available() const
     bytesAvailable = 1; // TAG: fixme
     break;
   default:
-    throw IOException(this);
+    _throw IOException(this);
   }
   return bytesAvailable;
 #else // unix
@@ -127,7 +127,7 @@ unsigned int FileDescriptorInputStream::read(
       if (::GetLastError() == ERROR_BROKEN_PIPE) {
         result = 0;
       } else {
-        throw IOException("Unable to read from object.", this);
+        _throw IOException("Unable to read from object.", this);
       }
     }
 #else // unix
@@ -143,14 +143,14 @@ unsigned int FileDescriptorInputStream::read(
       case EAGAIN: // no data available (only in non-blocking mode)
 //        return bytesRead; // try later
       default:
-        throw IOException("Unable to read from object.", this);
+        _throw IOException("Unable to read from object.", this);
       }
     }
 #endif // flavor
     if (result == 0) { // has end been reached
       end = true;
       if (bytesToRead > 0) {
-        throw EndOfFile(this); // attempt to read beyond end of stream
+        _throw EndOfFile(this); // attempt to read beyond end of stream
       }
     }
     bytesRead += result;
@@ -199,7 +199,7 @@ void FileDescriptorInputStream::wait() const {
 
   int result = ::select(fd->getHandle() + 1, &rfds, 0, 0, 0);
   if (result == -1) {
-    throw IOException("Unable to wait for input.", this);
+    _throw IOException("Unable to wait for input.", this);
   }
 #endif // flavor
 }
@@ -223,7 +223,7 @@ bool FileDescriptorInputStream::wait(
 
   int result = ::select(fd->getHandle() + 1, &rfds, 0, 0, &tv);
   if (result == -1) {
-    throw IOException("Unable to wait for input.", this);
+    _throw IOException("Unable to wait for input.", this);
   }
   return result; // return true if data available
 #endif // flavor

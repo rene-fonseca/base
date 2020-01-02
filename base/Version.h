@@ -126,13 +126,13 @@ public:
 #endif
     
     if (getDefine_COM_AZURE_DEV__BASE__DEBUG() != define_COM_AZURE_DEV__BASE__DEBUG) {
-      throw Exception("_COM_AZURE_DEV__BASE__DEBUG symbol mismatch detected for Base Framework.");
+      _throw Exception("_COM_AZURE_DEV__BASE__DEBUG symbol mismatch detected for Base Framework.");
     }
     if (getDefine_DEBUG() != define_DEBUG) {
-      throw Exception("DEBUG, _DEBUG, or _COM_AZURE_DEV__BASE__DEBUG symbol mismatch detected for Base Framework.");
+      _throw Exception("DEBUG, _DEBUG, or _COM_AZURE_DEV__BASE__DEBUG symbol mismatch detected for Base Framework.");
     }
     if (getDynamicObjectSize() != sizeof(DynamicObject)) {
-      throw Exception("DynamicObject mismatch detected for Base Framework.");
+      _throw Exception("DynamicObject mismatch detected for Base Framework.");
     }
 
     return true;

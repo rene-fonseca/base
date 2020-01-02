@@ -351,7 +351,7 @@ protected:
     void removeFirst()
     {
       if (!first) {
-        throw EmptyContainer();
+        _throw EmptyContainer();
       }
       Node* node = first;
       first = first->getNext();
@@ -367,7 +367,7 @@ protected:
     void removeLast()
     {
       if (!last) {
-        throw EmptyContainer();
+        _throw EmptyContainer();
       }
       Node* node = last;
       last = last->getPrevious();
@@ -556,7 +556,7 @@ public:
   {
     auto node = getFirstNode();
     if (!node) {
-      throw EmptyContainer();
+      _throw EmptyContainer();
     }
     return node->getValue();
   }
@@ -566,7 +566,7 @@ public:
   {
     auto node = getFirstNode();
     if (!node) {
-      throw EmptyContainer();
+      _throw EmptyContainer();
     }
     return node->getValue();
   }
@@ -576,7 +576,7 @@ public:
   {
     auto node = getLastNode();
     if (!node) {
-      throw EmptyContainer();
+      _throw EmptyContainer();
     }
     return node->getValue();
   }
@@ -586,7 +586,7 @@ public:
   {
     auto node = getLastNode();
     if (!node) {
-      throw EmptyContainer();
+      _throw EmptyContainer();
     }
     return node->getValue();
   }
@@ -723,7 +723,7 @@ public:
   {
     _COM_AZURE_DEV__BASE__PROTECT_ITERATORS_COMPATIBLE(it, begin());
     if (elements.isMultiReferenced()) {
-      throw IteratorException("Iterator used for multi-referenced container.");
+      _throw IteratorException("Iterator used for multi-referenced container.");
     }
     // elements.copyOnWrite(); // would invalidate iterator
     auto node = it.getNode();
@@ -740,7 +740,7 @@ public:
   {
     _COM_AZURE_DEV__BASE__PROTECT_ITERATORS_COMPATIBLE(it, begin());
     if (elements.isMultiReferenced()) {
-      throw IteratorException("Iterator used for multi-referenced container.");
+      _throw IteratorException("Iterator used for multi-referenced container.");
     }
     // elements.copyOnWrite(); // would invalidate iterator
     auto node = it.getNode();
@@ -756,12 +756,12 @@ public:
   {
     _COM_AZURE_DEV__BASE__PROTECT_ITERATORS_COMPATIBLE(it, begin());
     if (elements.isMultiReferenced()) {
-      throw IteratorException("Iterator used for multi-referenced container.");
+      _throw IteratorException("Iterator used for multi-referenced container.");
     }
     // elements.copyOnWrite(); // would invalidate iterator
     auto node = it.getNode();
     if (!node) {
-      throw IteratorException();
+      _throw IteratorException();
     }
     elements->remove(node);
   }
@@ -773,12 +773,12 @@ public:
   {
     _COM_AZURE_DEV__BASE__PROTECT_ITERATORS_COMPATIBLE(it, begin());
     if (elements.isMultiReferenced()) {
-      throw IteratorException("Iterator used for multi-referenced container.");
+      _throw IteratorException("Iterator used for multi-referenced container.");
     }
     // elements.copyOnWrite(); // would invalidate iterator
     auto node = it.getNode();
     if (!node) {
-      throw IteratorException();
+      _throw IteratorException();
     }
     elements->moveToFront(node);
   }
@@ -790,12 +790,12 @@ public:
   {
     _COM_AZURE_DEV__BASE__PROTECT_ITERATORS_COMPATIBLE(it, begin());
     if (elements.isMultiReferenced()) {
-      throw IteratorException("Iterator used for multi-referenced container.");
+      _throw IteratorException("Iterator used for multi-referenced container.");
     }
     // elements.copyOnWrite(); // would invalidate iterator
     auto node = it.getNode();
     if (!node) {
-      throw IteratorException();
+      _throw IteratorException();
     }
     elements->moveToBack(node);
   }

@@ -569,7 +569,7 @@ template<class TYPE>
 Matrix<TYPE>& Matrix<TYPE>::clip(unsigned int rows, unsigned int columns)
 {
   if (!((rows <= this->rows) && (columns <= this->columns))) {
-    throw OutOfRange();
+    _throw OutOfRange();
   }
   
   TYPE* elements = getMutableElements();

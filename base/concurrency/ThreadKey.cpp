@@ -39,7 +39,7 @@ ThreadKeyImpl::ThreadKeyImpl()
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   DWORD key = 0;
   if ((key = ::TlsAlloc()) == TLS_OUT_OF_INDEXES) {
-    throw ResourceException(this);
+    _throw ResourceException(this);
   }
   this->key.pointer = reinterpret_cast<void*>(static_cast<MemorySize>(key));
 #elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__WASI)
@@ -47,13 +47,13 @@ ThreadKeyImpl::ThreadKeyImpl()
   if (sizeof(pthread_key_t) <= sizeof(Key)) {
     pthread_key_t* internalKey = Cast::pointer<pthread_key_t*>(&key);
     if (pthread_key_create(internalKey, 0)) {
-      throw ResourceException(this);
+      _throw ResourceException(this);
     }
   } else {
     pthread_key_t* internalKey = new pthread_key_t[1];
     if (pthread_key_create(internalKey, 0)) {
       delete[] internalKey;
-      throw ResourceException(this);
+      _throw ResourceException(this);
     }
     key.pointer = internalKey;
   }
@@ -65,7 +65,7 @@ void* ThreadKeyImpl::getKey() const
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   void* result = ::TlsGetValue(Cast::extract<DWORD>(key));
   if (!result && (::GetLastError() != NO_ERROR)) {
-    throw ThreadKeyException(this);
+    _throw ThreadKeyException(this);
   }
   return result;
 #elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__WASI)
@@ -85,7 +85,7 @@ void ThreadKeyImpl::setKey(void* value)
 {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   if (!::TlsSetValue(Cast::extract<DWORD>(key), value)) {
-    throw ThreadKeyException(this);
+    _throw ThreadKeyException(this);
   }
 #elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__WASI)
   global = value;
@@ -97,7 +97,7 @@ void ThreadKeyImpl::setKey(void* value)
     internalKey = Cast::pointer<pthread_key_t*>(key.pointer);
   }
   if (pthread_setspecific(*internalKey, value)) {
-    throw ThreadKeyException(this);
+    _throw ThreadKeyException(this);
   }
 #endif // flavor
 }
@@ -106,20 +106,20 @@ ThreadKeyImpl::~ThreadKeyImpl()
 {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   if (!::TlsFree(Cast::extract<DWORD>(key))) {
-    throw ThreadKeyException(this);
+    _throw ThreadKeyException(this);
   }
 #elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__WASI)
 #else
   if (sizeof(pthread_key_t) <= sizeof(Key)) {
     pthread_key_t* internalKey = Cast::pointer<pthread_key_t*>(&key);
     if (pthread_key_delete(*internalKey)) { // key should always be valid at this point
-      throw ThreadKeyException(this);
+      _throw ThreadKeyException(this);
     }
   } else {
     pthread_key_t* internalKey = Cast::pointer<pthread_key_t*>(key.pointer);
     if (pthread_key_delete(*internalKey)) { // key should always be valid at this point
       delete[] internalKey;
-      throw ThreadKeyException(this);
+      _throw ThreadKeyException(this);
     }
   }
 #endif // flavor

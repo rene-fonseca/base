@@ -93,7 +93,7 @@ BZip2Deflater::BZip2Deflater()
     MemoryException(this)
   );
 #else
-  throw NotSupported(this);
+  _throw NotSupported(this);
 #endif
 }
 
@@ -113,7 +113,7 @@ BZip2Deflater::BZip2Deflater(unsigned int compressionLevel)
     MemoryException(this)
   );
 #else
-  throw NotSupported(this);
+  _throw NotSupported(this);
 #endif
 }
 
@@ -124,7 +124,7 @@ void BZip2Deflater::flush()
   bassert(state == RUNNING, IOException(this));
   state = FLUSHING;
 #else
-  throw IOException(this);
+  _throw IOException(this);
 #endif
 }
 
@@ -149,7 +149,7 @@ MemorySize BZip2Deflater::push(const uint8* buffer, MemorySize size)
   availableBytes = this->buffer.getSize() - context->bytesToRead;
   return context->totalInputLow;
 #else
-  throw IOException(this);
+  _throw IOException(this);
 #endif
 }
 
@@ -160,7 +160,7 @@ void BZip2Deflater::pushEnd()
   bassert(state == RUNNING, IOException(this));
   state = FINISHING;
 #else
-  throw IOException(this);
+  _throw IOException(this);
 #endif
 }
 
@@ -209,7 +209,7 @@ MemorySize BZip2Deflater::pull(uint8* buffer, MemorySize size)
       } else if (code == internal::BZip2Deflater::RUN_OK) {
         state = RUNNING;
       } else {
-        throw IOException(this);
+        _throw IOException(this);
       }
       return bytesRead + size - context->bytesToRead;
     }
@@ -229,7 +229,7 @@ MemorySize BZip2Deflater::pull(uint8* buffer, MemorySize size)
       } else if (code == internal::BZip2Deflater::STREAM_END) {
         state = ENDED; // availableBytes = 0 (no need for FINISHED)
       } else {
-        throw IOException(this);
+        _throw IOException(this);
       }
       return bytesRead + size - context->bytesToRead;
     }
@@ -241,7 +241,7 @@ MemorySize BZip2Deflater::pull(uint8* buffer, MemorySize size)
   }
   return bytesRead;
 #else
-  throw IOException(this);
+  _throw IOException(this);
 #endif
 }
 

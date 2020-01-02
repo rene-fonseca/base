@@ -139,7 +139,7 @@ public:
   {
     const POLY* result = dynamic_cast<const POLY*>(value);
     if (!result) {
-      throw CastException(this);
+      _throw CastException(this);
     }
     return result;
   }
@@ -166,7 +166,7 @@ public:
   inline TYPE* const operator->()
   {
     if (!value) {
-      throw NullPointer(this);
+      _throw NullPointer(this);
     }
     return value;
   }
@@ -177,7 +177,7 @@ public:
   inline const TYPE* const operator->() const noexcept
   {
     if (!value) {
-      throw NullPointer(this);
+      _throw NullPointer(this);
     }
     return value;
   }

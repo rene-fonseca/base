@@ -60,7 +60,7 @@ public:
   inline TYPE& operator*()
   {
     if (!object) {
-      throw NullPointer(this);
+      _throw NullPointer(this);
     }
     return *object;
   }

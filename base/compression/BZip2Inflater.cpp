@@ -85,7 +85,7 @@ BZip2Inflater::BZip2Inflater()
     MemoryException(this)
   );
 #else
-  throw NotSupported(this);
+  _throw NotSupported(this);
 #endif
 }
 
@@ -111,12 +111,12 @@ MemorySize BZip2Inflater::push(const uint8* buffer, MemorySize size)
   } else if (code == internal::BZip2Inflater::STREAM_END) {
     state = FINISHED; // stream may containg garbage data after eof (e.g. padding)
   } else {
-    throw IOException(this);
+    _throw IOException(this);
   }
   availableBytes = this->buffer.getSize() - context->bytesToRead;
   return context->totalInputLow;
 #else
-  throw IOException(this);
+  _throw IOException(this);
 #endif
 }
 
@@ -127,7 +127,7 @@ void BZip2Inflater::pushEnd() {
     state = FINISHING;
   }
 #else
-  throw IOException(this);
+  _throw IOException(this);
 #endif
 }
 
@@ -178,7 +178,7 @@ MemorySize BZip2Inflater::pull(uint8* buffer, MemorySize size)
       } else if (code == internal::BZip2Inflater::STREAM_END) {
         state = ENDED; // availableBytes = 0 thus we skip FINISHED
       } else {
-        throw IOException(this);
+        _throw IOException(this);
       }
       return bytesRead + size - context->bytesToRead;
     }
@@ -190,7 +190,7 @@ MemorySize BZip2Inflater::pull(uint8* buffer, MemorySize size)
   }
   return bytesRead;
 #else
-  throw IOException(this);
+  _throw IOException(this);
 #endif
 }
 

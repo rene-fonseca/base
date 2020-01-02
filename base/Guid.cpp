@@ -38,7 +38,7 @@ namespace {
   uint8 getGuidByte(const uint8* src)
   {
     if (!ASCIITraits::isHexDigit(src[0]) || !ASCIITraits::isHexDigit(src[1])) {
-      throw InvalidFormat("Invalid guid.");
+      _throw InvalidFormat("Invalid guid.");
     }
     return (ASCIITraits::digitToValue(src[0]) << 4) | ASCIITraits::digitToValue(src[1]);
   }
@@ -49,11 +49,11 @@ Guid Guid::getGuid(const char* text)
   Guid guid;
   // {B429A864-CDFC-4044-BCC1-BDDE18EAF8DE}
   if (NativeString(text).getLength() != 38) { // handles nullptr
-    throw InvalidFormat("Invalid guid.");
+    _throw InvalidFormat("Invalid guid.");
   }
   if ((text[0] != '{') || (text[37] != '}') ||
       (text[9] != '-') || (text[14] != '-') || (text[19] != '-') || (text[24] != '-')) {
-    throw InvalidFormat("Invalid guid.");
+    _throw InvalidFormat("Invalid guid.");
   }
 
   static const uint8 OFFSETS[16] = {1, 3, 5, 7, 10, 12, 15, 17, 20, 22, 25, 27, 29, 31, 33, 35};

@@ -44,7 +44,7 @@ public:
   inline StrictPointer(TYPE* _value) : value(_value)
   {
     if (!value) {
-      throw NullPointer(this);
+      _throw NullPointer(this);
     }
   }
   

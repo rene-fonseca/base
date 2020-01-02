@@ -187,7 +187,7 @@ public:
   void ensureUnmodified() const
   {
     if (owner && (modificationId != owner->iteratorModificationId)) {
-      throw IteratorException("Iterator used after owner modification.");
+      _throw IteratorException("Iterator used after owner modification.");
     }
   }
 
@@ -197,7 +197,7 @@ public:
     b.ensureUnmodified();
     // nullptr allowed
     if (a.owner != b.owner) {
-      throw IteratorException("Comparison of iterators belonging to different owners.");
+      _throw IteratorException("Comparison of iterators belonging to different owners.");
     }
   }
 

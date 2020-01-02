@@ -436,7 +436,7 @@ public:
   void remove(Node* node)
   {
     if (!node) {
-      throw InvalidNode();
+      _throw InvalidNode();
     }
 
     this->elements.copyOnWrite();
@@ -533,11 +533,11 @@ public:
   {
     const NodeIterator& _it = it;
     if (!it) {
-      throw InvalidNode();
+      _throw InvalidNode();
     }
 #if 0
     if (it.getRoot() != getRoot()) {
-      throw InvalidContainer();
+      _throw InvalidContainer();
     }
 #endif
     Iterator result(it);

@@ -384,7 +384,7 @@ Date Date::getTime(int second, int minute, int hour, bool local)
   struct tm temp = {second, minute, hour, 0, 0, 0, 0, 0, 0};
   time_t time = mktime(&temp);
   if (time == ((time_t)-1)) {
-    throw DateException("Unable to represent date.", Type::getType<Date>());
+    _throw DateException("Unable to represent date.", Type::getType<Date>());
   }
   int64 result = internal::nativeToDate(time);
   if (!local) {
@@ -423,7 +423,7 @@ Date Date::getDate(
   struct tm temp = {0, 0, 0, day, month, year - 1900, 0, 0, 0};
   time_t time = mktime(&temp);
   if (time == ((time_t)-1)) {
-    throw DateException("Unable to represent date.", Type::getType<Date>());
+    _throw DateException("Unable to represent date.", Type::getType<Date>());
   }
   int64 result = internal::nativeToDate(time);
   if (!local) {
@@ -471,7 +471,7 @@ Date Date::getDate(
   struct tm temp = {second, minute, hour, day, month, year - 1900, 0, 0, 0};
   time_t time = mktime(&temp);
   if (time == ((time_t)-1)) {
-    throw DateException("Unable to represent date.", Type::getType<Date>());
+    _throw DateException("Unable to represent date.", Type::getType<Date>());
   }
   int64 result = internal::nativeToDate(time);
   if (!local) {
@@ -1209,7 +1209,7 @@ String Date::format(
         stream << dateTime.millisecond;
         break;
       default:
-        throw InvalidFormat(this);
+        _throw InvalidFormat(this);
       }
     } else {
       stream << *i;

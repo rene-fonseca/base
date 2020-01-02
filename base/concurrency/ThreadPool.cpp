@@ -105,7 +105,7 @@ void ThreadPool::setThreads(unsigned int value)
   ExclusiveSynchronize<Guard> _guard(guard);
 
   if (terminated) {
-    throw ThreadPoolException("Thread pool has been terminated.", this);
+    _throw ThreadPoolException("Thread pool has been terminated.", this);
   }
 
   if (value != desiredThreads) {

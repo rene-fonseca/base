@@ -543,7 +543,7 @@ public:
         }
       }
       if (!child) {
-        throw InvalidKey(this);
+        _throw InvalidKey(this);
       }
       return *child->getValue();
     }
@@ -561,7 +561,7 @@ public:
         child = child->getNext();
       }
       if (!child) {
-        throw InvalidKey(this);
+        _throw InvalidKey(this);
       }
       return child->getValue();
     }
@@ -628,7 +628,7 @@ public:
       Node** bucket = getBuckets() + (hash & mask);
       Node* child = *bucket;
       if (!child) {
-        throw InvalidKey(this);
+        _throw InvalidKey(this);
       }
       if ((child->getHash() == hash) && (child->getKey() == key)) {
         *bucket = child->getNext(); // unlink first node (next could be 0)
@@ -640,7 +640,7 @@ public:
           child = child->getNext();
         }
         if (!child) {
-          throw InvalidKey(this);
+          _throw InvalidKey(this);
         }
         parent->setNext(child->getNext()); // unlink node from linked list
       }
@@ -725,7 +725,7 @@ public:
     Pointer next()
     {
       if (!numberOfElements) {
-        throw EndOfEnumeration(this);
+        _throw EndOfEnumeration(this);
       }
       while (!node) {
         ++bucket;
@@ -795,7 +795,7 @@ public:
     Pointer next()
     {
       if (!numberOfElements) {
-        throw EndOfEnumeration(this);
+        _throw EndOfEnumeration(this);
       }
       while (!node) {
         ++bucket;

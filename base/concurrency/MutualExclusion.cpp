@@ -41,19 +41,19 @@ MutualExclusion::MutualExclusion()
   mutex = new pthread_mutex_t[1];
   pthread_mutexattr_t attributes;
   if (pthread_mutexattr_init(&attributes) != 0) {
-    throw ResourceException(this);
+    _throw ResourceException(this);
   }
 #if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__CYGWIN)
    #warning disabled selection of mutex type due to CYGWIN bug
 #else
   if (pthread_mutexattr_settype(&attributes, PTHREAD_MUTEX_ERRORCHECK) != 0) {
     pthread_mutexattr_destroy(&attributes); // should never fail
-    throw ResourceException(this);
+    _throw ResourceException(this);
   }
 #endif // cygwin temporary bug fix
   if (pthread_mutex_init((pthread_mutex_t*)mutex, &attributes) != 0) {
     pthread_mutexattr_destroy(&attributes); // should never fail
-    throw ResourceException(this);
+    _throw ResourceException(this);
   }
   pthread_mutexattr_destroy(&attributes); // should never fail
 #else
@@ -73,7 +73,7 @@ void MutualExclusion::exclusiveLock() const
   } else if (result == EDEADLK) {
     return;
   } else {
-    throw MutualExclusionException(this);
+    _throw MutualExclusionException(this);
   }
 #else
   BASSERT(!"Not supported.");
@@ -95,7 +95,7 @@ bool MutualExclusion::tryExclusiveLock() const
   } else if (result == EBUSY) {
     return false;
   } else {
-    throw MutualExclusionException(this);
+    _throw MutualExclusionException(this);
   }
 #else
   BASSERT(!"Not supported.");
@@ -111,7 +111,7 @@ void MutualExclusion::releaseLock() const
   ::LeaveCriticalSection((CRITICAL_SECTION*)mutex);
 #elif defined(_COM_AZURE_DEV__BASE__PTHREAD)
   if (pthread_mutex_unlock((pthread_mutex_t*)mutex)) {
-    throw MutualExclusionException(this);
+    _throw MutualExclusionException(this);
   }
 #else
   BASSERT(!"Not supported.");
@@ -125,7 +125,7 @@ MutualExclusion::~MutualExclusion()
   delete[] (CRITICAL_SECTION*)mutex;
 #elif defined(_COM_AZURE_DEV__BASE__PTHREAD)
   if (pthread_mutex_destroy((pthread_mutex_t*)mutex)) {
-    throw MutualExclusionException(this);
+    _throw MutualExclusionException(this);
   }
   delete[] (pthread_mutex_t*)mutex;
 #else

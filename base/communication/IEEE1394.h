@@ -742,7 +742,7 @@ public:
     unsigned int physicalId) const
   {
     if (!(physicalId < numberOfNodes)) {
-      throw OutOfDomain(this);
+      _throw OutOfDomain(this);
     }
     return nodes[physicalId].link;
   }
@@ -763,7 +763,7 @@ public:
   inline bool isContender(unsigned int physicalId) const
   {
     if (!(physicalId < numberOfNodes)) {
-      throw OutOfDomain(this);
+      _throw OutOfDomain(this);
     }
     return nodes[physicalId].contender;
   }
@@ -776,7 +776,7 @@ public:
   inline bool isTransactionCapable(unsigned int physicalId) const noexcept
   {
     if (!(physicalId < numberOfNodes)) {
-      throw OutOfDomain(this);
+      _throw OutOfDomain(this);
     }
     return nodes[physicalId].link;
   }
@@ -789,7 +789,7 @@ public:
   inline unsigned int getGapCount(unsigned int physicalId) const
   {
     if (!(physicalId < numberOfNodes)) {
-      throw OutOfDomain(this);
+      _throw OutOfDomain(this);
     }
     return nodes[physicalId].gapCount;
   }
@@ -802,7 +802,7 @@ public:
   inline unsigned int getNumberOfPorts(unsigned int physicalId) const
   {
     if (!(physicalId < numberOfNodes)) {
-      throw OutOfDomain(this);
+      _throw OutOfDomain(this);
     }
     return nodes[physicalId].numberOfPorts;
   }
@@ -830,7 +830,7 @@ public:
   inline unsigned int getLocalMaximumPayload(unsigned int physicalId) const
   {
     if (!(physicalId < numberOfNodes)) {
-      throw OutOfDomain(this);
+      _throw OutOfDomain(this);
     }
     return nodes[physicalId].maximumPayload;
   }
@@ -843,7 +843,7 @@ public:
   inline PowerClass getPowerClass(unsigned int physicalId) const
   {
     if (!(physicalId < numberOfNodes)) {
-      throw OutOfDomain(this);
+      _throw OutOfDomain(this);
     }
     return nodes[physicalId].powerClass;
   }

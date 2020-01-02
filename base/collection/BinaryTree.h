@@ -64,7 +64,7 @@ public:
   inline PrefixOrderIterator& operator++()
   {
     if (!node) {
-      throw EndOfEnumeration();
+      _throw EndOfEnumeration();
     }
 
     if (auto left = node->getLeft()) { // traverse left subtree
@@ -137,7 +137,7 @@ private:
   Pointer next()
   {
     if (!node) {
-      throw EndOfEnumeration();
+      _throw EndOfEnumeration();
     }
 
     while (true) { // keep looking until we know if end has been reached
@@ -272,7 +272,7 @@ private:
   Pointer next()
   {
     if (!node) {
-      throw EndOfEnumeration();
+      _throw EndOfEnumeration();
     }
 
     Pointer result = nullptr; // indicate no result
@@ -411,7 +411,7 @@ public:
   Pointer next()
   {
     if (!node) {
-      throw EndOfEnumeration();
+      _throw EndOfEnumeration();
     }
 
     Pointer result = node;
@@ -492,7 +492,7 @@ public:
   Pointer next()
   {
     if (!node) {
-      throw EndOfEnumeration();
+      _throw EndOfEnumeration();
     }
 
     Pointer result = nullptr; // indicate no result
@@ -578,7 +578,7 @@ public:
   Pointer next()
   {
     if (!node) {
-      throw EndOfEnumeration();
+      _throw EndOfEnumeration();
     }
 
     Pointer result = nullptr;
@@ -874,7 +874,7 @@ public:
     static Node* rotateLeft(Node* node)
     {
       if (!node || !node->getRight()) {
-        throw InvalidNode();
+        _throw InvalidNode();
       }
       Node* parent = node->getParent();
 
@@ -910,7 +910,7 @@ public:
     static Node* rotateRight(Node* node)
     {
       if (!node || !node->getLeft()) {
-        throw InvalidNode();
+        _throw InvalidNode();
       }
       Node* parent = node->getParent();
 

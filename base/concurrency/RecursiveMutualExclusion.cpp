@@ -79,7 +79,7 @@ RecursiveMutualExclusion::~RecursiveMutualExclusion()
 {
 #if 0
   if (!guard.tryExclusiveLock() || !lock.tryExclusiveLock()) {
-    throw MutualExclusionException(this);
+    _throw MutualExclusionException(this);
   }
 #endif
 }

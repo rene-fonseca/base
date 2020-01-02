@@ -106,22 +106,22 @@ unsigned int Semaphore::getMaximum() noexcept
 Semaphore::Semaphore(unsigned int value)
 {
   if (!(value <= SemaphoreImpl::MAXIMUM)) {
-    throw OutOfDomain(this);
+    _throw OutOfDomain(this);
   }
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   if (!(semaphore = (SemaphoreImpl::Semaphore)::CreateSemaphore(0, value, SemaphoreImpl::MAXIMUM, 0))) {
-    throw SemaphoreException(this);
+    _throw SemaphoreException(this);
   }
 #elif defined(_COM_AZURE_DEV__BASE__PTHREAD_SEMAPHORE)
   if (sizeof(sem_t) <= sizeof(void*)) {
     if (sem_init((sem_t*)&semaphore, 0, value)) {
-      throw SemaphoreException(this);
+      _throw SemaphoreException(this);
     }
   } else {
     semaphore = new sem_t[1];
     if (sem_init((sem_t*)semaphore, 0, value)) {
       delete[] (sem_t*)semaphore;
-      throw SemaphoreException(this);
+      _throw SemaphoreException(this);
     }
   }
 #elif defined(_COM_AZURE_DEV__BASE__PTHREAD)
@@ -131,24 +131,24 @@ Semaphore::Semaphore(unsigned int value)
   pthread_mutexattr_t attributes;
   if (pthread_mutexattr_init(&attributes)) {
     delete[] semaphore;
-    throw SemaphoreException(this);
+    _throw SemaphoreException(this);
   }
   if (pthread_mutexattr_settype(&attributes, PTHREAD_MUTEX_ERRORCHECK)) {
     pthread_mutexattr_destroy(&attributes); // should never fail
     delete[] semaphore;
-    throw SemaphoreException(this);
+    _throw SemaphoreException(this);
   }
   if (pthread_mutex_init(&semaphore->mutex, &attributes)) {
     pthread_mutexattr_destroy(&attributes); // should never fail
     delete[] semaphore;
-    throw SemaphoreException(this);
+    _throw SemaphoreException(this);
   }
   pthread_mutexattr_destroy(&attributes); // should never fail
 
   if (pthread_cond_init(&(semaphore->condition), 0)) {
     pthread_mutex_destroy(&(semaphore->mutex)); // lets just hope that this doesn't fail
     delete[] semaphore;
-    throw SemaphoreException(this);
+    _throw SemaphoreException(this);
   }
   this->semaphore = semaphore;
 #else
@@ -187,18 +187,18 @@ int Semaphore::getValue() const
   int value = 0;
   sem_t* sem = (sizeof(sem_t) <= sizeof(void*)) ? (sem_t*)&semaphore : (sem_t*)semaphore;
   if (::sem_getvalue(sem, &value)) { // value is not negative
-    throw SemaphoreException(this);
+    _throw SemaphoreException(this);
   }
   return value;
 #elif defined(_COM_AZURE_DEV__BASE__PTHREAD)
   SemaphoreImpl::Semaphore* sem = (SemaphoreImpl::Semaphore*)semaphore;
   unsigned int result = 0;
   if (pthread_mutex_lock(&(sem->mutex))) {
-    throw SemaphoreException(this);
+    _throw SemaphoreException(this);
   }
   result = sem->value;
   if (pthread_mutex_unlock(&(sem->mutex))) {
-    throw SemaphoreException(this);
+    _throw SemaphoreException(this);
   }
   return result;
 #else
@@ -211,27 +211,27 @@ void Semaphore::post()
 {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   if (!::ReleaseSemaphore((HANDLE)semaphore, 1, 0)) {
-    throw SemaphoreException(this);
+    _throw SemaphoreException(this);
   }
 #elif defined(_COM_AZURE_DEV__BASE__PTHREAD_SEMAPHORE)
   sem_t* sem = (sizeof(sem_t) <= sizeof(void*)) ? (sem_t*)&semaphore : (sem_t*)semaphore;
   if (::sem_post(sem) == ERANGE) { // otherwise sem_post returns successfully
-    throw Overflow(this);
+    _throw Overflow(this);
   }
 #elif defined(_COM_AZURE_DEV__BASE__PTHREAD)
   SemaphoreImpl::Semaphore* sem = (SemaphoreImpl::Semaphore*)semaphore;
   if (pthread_mutex_lock(&(sem->mutex))) {
-    throw SemaphoreException(this);
+    _throw SemaphoreException(this);
   }
   if ((unsigned int)sem->value == SemaphoreImpl::MAXIMUM) {
     if (pthread_mutex_unlock(&(sem->mutex))) {
-      throw SemaphoreException(this);
+      _throw SemaphoreException(this);
     }
-    throw Overflow(this);
+    _throw Overflow(this);
   }
   sem->value++;
   if (pthread_mutex_unlock(&(sem->mutex))) {
-    throw SemaphoreException(this);
+    _throw SemaphoreException(this);
   }
   pthread_cond_signal(&(sem->condition)); // we only need to signal one thread
 #else
@@ -245,24 +245,24 @@ void Semaphore::wait() const
   
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   if (::WaitForSingleObject((HANDLE)semaphore, INFINITE) != WAIT_OBJECT_0) {
-    throw SemaphoreException(this);
+    _throw SemaphoreException(this);
   }
 #elif defined(_COM_AZURE_DEV__BASE__PTHREAD_SEMAPHORE)
   sem_t* sem = (sizeof(sem_t) <= sizeof(void*)) ? (sem_t*)&semaphore : (sem_t*)semaphore;
   if (::sem_wait(sem)) {
-    throw SemaphoreException(this);
+    _throw SemaphoreException(this);
   }
 #elif defined(_COM_AZURE_DEV__BASE__PTHREAD)
   SemaphoreImpl::Semaphore* sem = (SemaphoreImpl::Semaphore*)semaphore;
   if (pthread_mutex_lock(&(sem->mutex))) {
-    throw SemaphoreException(this);
+    _throw SemaphoreException(this);
   }
   while (sem->value == 0) { // wait for resource to become available
     pthread_cond_wait(&(sem->condition), &(sem->mutex));
   }
   sem->value--;
   if (pthread_mutex_unlock(&sem->mutex)) {
-    throw SemaphoreException(this);
+    _throw SemaphoreException(this);
   }
 #else
   BASSERT(!"Not supported.");
@@ -279,14 +279,14 @@ bool Semaphore::tryWait() const
 #elif defined(_COM_AZURE_DEV__BASE__PTHREAD)
   SemaphoreImpl::Semaphore* sem = (SemaphoreImpl::Semaphore*)semaphore;
   if (pthread_mutex_lock(&(sem->mutex))) {
-    throw SemaphoreException(this);
+    _throw SemaphoreException(this);
   }
   bool result = sem->value > 0;
   if (result) {
     sem->value--;
   }
   if (pthread_mutex_unlock(&(sem->mutex))) {
-    throw SemaphoreException(this);
+    _throw SemaphoreException(this);
   }
   return result;
 #else
@@ -299,22 +299,22 @@ Semaphore::~Semaphore()
 {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   if (!::CloseHandle((HANDLE)semaphore)) {
-    throw SemaphoreException(this);
+    _throw SemaphoreException(this);
   }
 #elif defined(_COM_AZURE_DEV__BASE__PTHREAD_SEMAPHORE)
   if (sizeof(sem_t) <= sizeof(semaphore)) {
     if (sem_destroy((sem_t*)&semaphore) != 0) {
-      throw SemaphoreException(this);
+      _throw SemaphoreException(this);
     }
   } else {
     if (sem_destroy((sem_t*)semaphore) != 0) {
-      throw SemaphoreException(this);
+      _throw SemaphoreException(this);
     }
     delete[] (SemaphoreImpl::Semaphore*)semaphore;
   }
 #elif defined(_COM_AZURE_DEV__BASE__PTHREAD)
   if (pthread_cond_destroy(&((SemaphoreImpl::Semaphore*)semaphore)->condition)) {
-    throw SemaphoreException(this);
+    _throw SemaphoreException(this);
   }
   pthread_mutex_destroy(&((SemaphoreImpl::Semaphore*)semaphore)->mutex); // lets just hope that this doesn't fail
   delete[] (SemaphoreImpl::Semaphore*)semaphore;

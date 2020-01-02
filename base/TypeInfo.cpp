@@ -159,7 +159,7 @@ public:
     } else if (specialName()) {
     } else if (type()) { // TAG: not validated
     } else {
-      throw InvalidFormat(this);
+      _throw InvalidFormat(this);
     }
   }
 
@@ -294,7 +294,7 @@ public:
           } else if (operatorName()) {
           } else if (constructorAndDestructorName()) {
           } else {
-            throw InvalidFormat(this);
+            _throw InvalidFormat(this);
           }
         }
         delimiterPending = true;

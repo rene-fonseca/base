@@ -137,13 +137,13 @@ Process Process::getParentProcess() noexcept
 Process Process::fork()
 {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
-  throw NotSupported(Type::getType<Process>());
+  _throw NotSupported(Type::getType<Process>());
 #elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__WASI)
-  throw NotSupported(Type::getType<Process>());
+  _throw NotSupported(Type::getType<Process>());
 #else // unix
   pid_t result = ::fork(); // should we use fork1 on solaris
   if (result == (pid_t)-1) {
-    throw ProcessException("Unable to fork process.", Type::getType<Process>());
+    _throw ProcessException("Unable to fork process.", Type::getType<Process>());
   }
   return Process(result);
 #endif // flavor
@@ -163,7 +163,7 @@ int Process::getPriority()
   DWORD priority = ::GetPriorityClass(::GetCurrentProcess());
   switch (priority) {
   case 0:
-    throw ProcessException("Unable to get priority of process.", Type::getType<Process>());
+    _throw ProcessException("Unable to get priority of process.", Type::getType<Process>());
   case REALTIME_PRIORITY_CLASS:
     return 7 - 24;
   case HIGH_PRIORITY_CLASS:
@@ -189,7 +189,7 @@ int Process::getPriority()
     errno = 0;
     int priority = ::getpriority(PRIO_PROCESS, getpid());
     if ((priority == -1) && (errno != 0)) {
-      throw ProcessException("Unable to get priority of process.", Type::getType<Process>());
+      _throw ProcessException("Unable to get priority of process.", Type::getType<Process>());
     }
     return priority;
   #endif
@@ -214,7 +214,7 @@ void Process::setPriority(int priority)
     priorityClass = IDLE_PRIORITY_CLASS;
   }
   if (!::SetPriorityClass(::GetCurrentProcess(), priorityClass)) {
-    throw ProcessException("Unable to set priority of process.", Type::getType<Process>());
+    _throw ProcessException("Unable to set priority of process.", Type::getType<Process>());
   }
 #elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__WASI)
   BASSERT(!"Not supported.")
@@ -292,7 +292,7 @@ Process Process::execute(const String& command)
 
   pid = ::fork();
   if (pid == -1) {
-    throw ProcessException("Unable to execute command.", Type::getType<Process>());
+    _throw ProcessException("Unable to execute command.", Type::getType<Process>());
   }
   if (pid == 0) { // is this the child
     // setup arguments list
@@ -338,7 +338,7 @@ bool Process::isAlive() const
   if (result != 0) {
     return exitCode == STILL_ACTIVE;
   } else {
-    throw ProcessException(this); 
+    _throw ProcessException(this); 
   }
 #elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__WASI)
   return false;
@@ -360,7 +360,7 @@ bool Process::isAlive() const
   } else if (result == 0) {
     return true;
   }
-  throw ProcessException("Unable to query process.", this);
+  _throw ProcessException("Unable to query process.", this);
   
   /*
     GCC 3.0.4 bug here which results in "Abort" when the exception is raised below.
@@ -374,7 +374,7 @@ bool Process::isAlive() const
     } else if (result == 0) {
       return true;
     }
-    throw ProcessException("Unable to query process.", this); // Aborts here
+    _throw ProcessException("Unable to query process.", this); // Aborts here
   */
 
   // TAG: need to protect against EINTR
@@ -507,7 +507,7 @@ int Process::wait()
     if (errno == EINTR) {
       return Application::EXIT_CODE_INVALID;
     } else {
-      throw ProcessException("Unable to wait for process.", this);
+      _throw ProcessException("Unable to wait for process.", this);
     }
   }
   if (WIFEXITED(status)) {
@@ -637,7 +637,7 @@ bool Process::terminate(bool force)
       // throw Permission(this);
     case ESRCH:
     default:
-      throw ProcessException(this);
+      _throw ProcessException(this);
     }
   }
   return result == 0;

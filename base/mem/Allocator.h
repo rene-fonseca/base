@@ -390,7 +390,7 @@ public:
               release(original.buffer, original.size);
               leaky.clear();
             }
-            throw;
+            _rethrow;
           }
         }
         auto buffer = resize(original.buffer, copy.size, original.size);
@@ -614,7 +614,7 @@ public:
             } catch (...) {
               attach(original); // not modified
               leaky.clear();
-              throw;
+              _rethrow;
             }
           }
           initializeByMove(temp, original.buffer, original.buffer + size); // we still need to destroy
@@ -683,7 +683,7 @@ public:
             release(original.buffer, original.size); // could throw - but would indicate heap corruption
             leaky.clear();
           }
-          throw;
+          _rethrow;
         }
       }
       release(original.buffer, original.size); // could throw - but would indicate heap corruption

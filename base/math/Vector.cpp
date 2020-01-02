@@ -27,7 +27,7 @@ template<class TYPE>
 Vector<TYPE>::Vector(unsigned int size)
 {
   if (size < 1) {
-    throw OutOfDomain(this);
+    _throw OutOfDomain(this);
   }
   setSize(size);
 }
@@ -37,7 +37,7 @@ Vector<TYPE>::Vector(
   const TYPE elements[], unsigned int size)
 {
   if (size < 1) {
-    throw OutOfDomain(this);
+    _throw OutOfDomain(this);
   }
   setSize(size);
   copy<TYPE>(getElements(), elements, getSize());
@@ -56,7 +56,7 @@ template<class TYPE>
 const TYPE& Vector<TYPE>::getAt(unsigned int index) const
 {
   if (index >= getSize()) {
-    throw OutOfRange(this);
+    _throw OutOfRange(this);
   }
   return getReadOnlyElements()[index];
 }
@@ -65,7 +65,7 @@ template<class TYPE>
 void Vector<TYPE>::setAt(unsigned int index, const TYPE& value)
 {
   if (index >= getSize()) {
-    throw OutOfRange(this);
+    _throw OutOfRange(this);
   }
   getElements()[index] = value;
 }
@@ -99,7 +99,7 @@ template<class TYPE>
 Vector<TYPE>& Vector<TYPE>::add(const Vector<TYPE>& value)
 {
   if (value.getSize() != getSize()) {
-    throw IncompatibleVectors(this);
+    _throw IncompatibleVectors(this);
   }
   transformByBinary<TYPE>(getElements(), value.getReadOnlyElements(), getSize(), Add<TYPE>());
   return *this;
@@ -109,7 +109,7 @@ template<class TYPE>
 Vector<TYPE>& Vector<TYPE>::subtract(const Vector<TYPE>& value)
 {
   if (value.getSize() != getSize()) {
-    throw IncompatibleVectors(this);
+    _throw IncompatibleVectors(this);
   }
   transformByBinary<TYPE>(getElements(), value.getReadOnlyElements(), getSize(), Subtract<TYPE>());
   return *this;
@@ -156,7 +156,7 @@ template<class TYPE>
 bool Vector<TYPE>::operator==(const Vector& value) const
 {
   if (value.getSize() != getSize()) {
-    throw IncompatibleVectors(this);
+    _throw IncompatibleVectors(this);
   }
   return equal(getReadOnlyElements(), value.getReadOnlyElements(), getSize());
 }
@@ -183,7 +183,7 @@ template<class TYPE>
 TYPE dot(const Vector<TYPE>& left, const Vector<TYPE>& right) noexcept
 {
   if (left.getSize() != right.getSize()) {
-    throw Vector<TYPE>::IncompatibleVectors();
+    _throw Vector<TYPE>::IncompatibleVectors();
   }
   DotProduct<TYPE> dotProduct;
   forEach(left.getReadOnlyElements(), right.getReadOnlyElements(), left.getSize(), dotProduct);

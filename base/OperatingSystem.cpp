@@ -248,7 +248,7 @@ long OperatingSystem::getVariable(Variable variable) {
   case SUPPORTS_PROCESS_SHARED_SYNCHRONIZATION:
     return 1;
   }
-  throw NotSupported(
+  _throw NotSupported(
     "System variable not supported",
     Type::getType<OperatingSystem>()
   );
@@ -351,7 +351,7 @@ long OperatingSystem::getVariable(Variable variable) {
   case SUPPORTS_PROCESS_SHARED_SYNCHRONIZATION:
     return 0; // TAG: what about this
   }
-  throw NotSupported(
+  _throw NotSupported(
     "System variable not supported",
     Type::getType<OperatingSystem>()
   );
@@ -406,9 +406,9 @@ int64 OperatingSystem::getResourceLimit(
 
 void OperatingSystem::setResourceLimit(Resource resource, int64 limit, LimitType type) {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
-  throw NotSupported(Type::getType<OperatingSystem>());
+  _throw NotSupported(Type::getType<OperatingSystem>());
 #elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__WASI)
-  throw NotSupported(Type::getType<OperatingSystem>());
+  _throw NotSupported(Type::getType<OperatingSystem>());
 #else // unix
 #if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__GNULINUX)
   static const __rlimit_resource_t RESOURCES[] =

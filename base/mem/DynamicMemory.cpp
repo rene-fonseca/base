@@ -44,7 +44,7 @@ void* DynamicMemory::operator new(MemorySize size)
 {
   void* result = Heap::allocateNoThrow<uint8>(size);
   if (!result) {
-    throw MemoryException();
+    _throw MemoryException();
   }
   return result;
 }
@@ -58,7 +58,7 @@ void* DynamicMemory::operator new[](MemorySize size)
 {
   void* result = Heap::allocateNoThrow<uint8>(size);
   if (!result) {
-    throw MemoryException();
+    _throw MemoryException();
   }
   return result;
 }

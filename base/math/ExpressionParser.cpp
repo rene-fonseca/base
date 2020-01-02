@@ -27,14 +27,14 @@ ExpressionEvaluator::ExpressionEvaluator() noexcept
 double ExpressionEvaluator::onConstant(
   unsigned int constant) const
 {
-  throw ExpressionException("Invalid constant.", this);
+  _throw ExpressionException("Invalid constant.", this);
 }
 
 double ExpressionEvaluator::onFunction(
   unsigned int function,
   const double* value) const
 {
-  throw ExpressionException("Invalid function.", this);
+  _throw ExpressionException("Invalid function.", this);
 }
 
 double ExpressionEvaluator::evaluate() const
@@ -49,7 +49,7 @@ double ExpressionEvaluator::evaluate() const
       stack[++index] = node.value;
       break;
     case ExpressionEvaluator::VARIABLE:
-      throw ExpressionException("Variable in constant expression.", this);
+      _throw ExpressionException("Variable in constant expression.", this);
       // stack[++index] = lookup node.variable;
     case ExpressionEvaluator::CONSTANT:
       stack[++index] = onConstant(node.constant);
@@ -76,7 +76,7 @@ double ExpressionEvaluator::evaluate() const
         break;
       case DIVIDE:
         if (stack[index] == 0) {
-          throw ExpressionException("Division by zero.", this);
+          _throw ExpressionException("Division by zero.", this);
         }
         stack[index - 1] /= stack[index];
         --index;
@@ -88,7 +88,7 @@ double ExpressionEvaluator::evaluate() const
       case PARENTHESIS:
         break;
       default:
-        throw ExpressionException("Invalid built-in operator.", this);
+        _throw ExpressionException("Invalid built-in operator.", this);
       }
       break;
     case ExpressionEvaluator::FUNCTION:
@@ -96,14 +96,14 @@ double ExpressionEvaluator::evaluate() const
         stack[++index] = onFunction(node.function.id, 0);
       } else {
         if (static_cast<unsigned int>(index + 1) < node.function.arguments) {
-          throw ExpressionException("Arguments exhausted.", this);
+          _throw ExpressionException("Arguments exhausted.", this);
         }
         index -= node.function.arguments - 1;
         stack[index] = onFunction(node.function.id, &stack[index]);
       }
       break;
     case ExpressionEvaluator::UNKNOWN:
-      throw ExpressionException("Unknown.", this);
+      _throw ExpressionException("Unknown.", this);
     }
   }
   return stack[0];
@@ -148,7 +148,7 @@ double ExpressionEvaluator::evaluate(const double* variables) const
         break;
       case DIVIDE:
         if (stack[index] == 0) {
-          throw ExpressionException("Division by zero.", this);
+          _throw ExpressionException("Division by zero.", this);
         }
         stack[index - 1] /= stack[index];
         --index;
@@ -160,7 +160,7 @@ double ExpressionEvaluator::evaluate(const double* variables) const
       case PARENTHESIS:
         break;
       default:
-        throw ExpressionException("Invalid built-in operator.", this);
+        _throw ExpressionException("Invalid built-in operator.", this);
       }
       break;
     case ExpressionEvaluator::FUNCTION:
@@ -168,14 +168,14 @@ double ExpressionEvaluator::evaluate(const double* variables) const
         stack[++index] = onFunction(node.function.id, 0);
       } else {
         if (static_cast<unsigned int>(index + 1) < node.function.arguments) {
-          throw ExpressionException("Arguments exhausted.", this);
+          _throw ExpressionException("Arguments exhausted.", this);
         }
         index -= node.function.arguments - 1;
         stack[index] = onFunction(node.function.id, &stack[index]);
       }
       break;
     case ExpressionEvaluator::UNKNOWN:
-      throw ExpressionException("Unknown.", this);
+      _throw ExpressionException("Unknown.", this);
     }
   }
   return stack[0];
@@ -221,7 +221,7 @@ void ExpressionEvaluator::evaluate(const double* variables, double* results, uns
           break;
         case DIVIDE:
           if (stack[index] == 0) {
-            throw ExpressionException("Division by zero.", this);
+            _throw ExpressionException("Division by zero.", this);
           }
           stack[index - 1] /= stack[index];
           --index;
@@ -233,7 +233,7 @@ void ExpressionEvaluator::evaluate(const double* variables, double* results, uns
         case PARENTHESIS:
           break;
         default:
-          throw ExpressionException("Invalid built-in operator.", this);
+          _throw ExpressionException("Invalid built-in operator.", this);
         }
         break;
       case ExpressionEvaluator::FUNCTION:
@@ -241,14 +241,14 @@ void ExpressionEvaluator::evaluate(const double* variables, double* results, uns
           stack[++index] = onFunction(node.function.id, nullptr);
         } else {
           if (static_cast<unsigned int>(index + 1) < node.function.arguments) {
-            throw ExpressionException("Arguments exhausted.", this);
+            _throw ExpressionException("Arguments exhausted.", this);
           }
           index -= node.function.arguments - 1;
           stack[index] = onFunction(node.function.id, &stack[index]);
         }
         break;
       case ExpressionEvaluator::UNKNOWN:
-        throw ExpressionException("Unknown.", this);
+        _throw ExpressionException("Unknown.", this);
       }
     }
     *results++ = stack[0];
@@ -268,7 +268,7 @@ void ExpressionProvider::registerConstant(
   unsigned int id)
 {
   if (identifiers.hasKey(name)) {
-    throw AmbiguousRegistration(this);
+    _throw AmbiguousRegistration(this);
   }
   identifiers[name] = ExpressionEvaluator::makeConstantNode(id);
   constants[id] = name;
@@ -279,7 +279,7 @@ void ExpressionProvider::registerVariable(
   unsigned int id)
 {
   if (identifiers.hasKey(name)) {
-    throw AmbiguousRegistration(this);
+    _throw AmbiguousRegistration(this);
   }
   identifiers[name] = ExpressionEvaluator::makeVariableNode(id);
   variables[id] = name;
@@ -291,7 +291,7 @@ void ExpressionProvider::registerFunction(
   unsigned int arguments)
 {
   if (identifiers.hasKey(name)) {
-    throw AmbiguousRegistration(this);
+    _throw AmbiguousRegistration(this);
   }
   identifiers[name] = ExpressionEvaluator::makeFunctionNode(id, arguments);
   functions[id] = name;
@@ -323,7 +323,7 @@ ExpressionParser::ExpressionParser(
 void ExpressionParser::pop() {
   Operation operation = stack.pop();
   if (operands < operation.getArguments()) {
-    throw ExpressionException(index, "Operand expected.");
+    _throw ExpressionException(index, "Operand expected.");
   }
   nodes.append(ExpressionEvaluator::makeNodeFromOperation(operation));
   operands = operands - operation.getArguments() + 1;
@@ -366,7 +366,7 @@ void ExpressionParser::readIdentifier() {
   
   if (!provider.isIdentifier(identifier)) {
     if (!autoRegister) {
-      throw ExpressionException(begin, "Identifier not recognized.");
+      _throw ExpressionException(begin, "Identifier not recognized.");
     }
     if (unknowns.hasKey(identifier)) {
       nodes.append(unknowns[identifier]);
@@ -400,7 +400,7 @@ void ExpressionParser::readIdentifier() {
     break;
   default:
     // internal knowledge - not returned by ExpressionProvider
-    throw ExpressionException(
+    _throw ExpressionException(
       index,
       "Identifier registered as unsupported type."
     );
@@ -442,7 +442,7 @@ void ExpressionParser::readValue() {
   }
 
   if (!digits) {
-    throw ExpressionException(begin, "Not a number.");
+    _throw ExpressionException(begin, "Not a number.");
   }
 
   // read exponent if present
@@ -464,7 +464,7 @@ void ExpressionParser::readValue() {
         ++index;
       }
     } else {
-      throw ExpressionException(begin, "Not a number.");
+      _throw ExpressionException(begin, "Not a number.");
     }
   }
   
@@ -473,7 +473,7 @@ void ExpressionParser::readValue() {
   // TAG: not the best solution - but it works for now
   double value = strtod(buffer.getElements(), &end);
   if ((end != &buffer.getElements()[index - begin]) || (errno == ERANGE)) {
-    throw ExpressionException(begin, "Not a number.");
+    _throw ExpressionException(begin, "Not a number.");
   }
   nodes.append(ExpressionEvaluator::makeValueNode(value));
   ++operands;
@@ -568,7 +568,7 @@ void ExpressionParser::parse() {
       break;
     case '*':
       if (unary) {
-        throw ExpressionException(
+        _throw ExpressionException(
           index,
           "Left operand expected by multiplication operator"
         );
@@ -579,7 +579,7 @@ void ExpressionParser::parse() {
       break;
     case '/':
       if (unary) {
-        throw ExpressionException(
+        _throw ExpressionException(
           index,
           "Left operand expected by division operator"
         );
@@ -590,7 +590,7 @@ void ExpressionParser::parse() {
       break;
     case '^':
       if (unary) {
-        throw ExpressionException(
+        _throw ExpressionException(
           index,
           "Left operand expected by power operator"
         );
@@ -603,7 +603,7 @@ void ExpressionParser::parse() {
       if (unary) {
         push(parenthesis);
       } else {
-        throw ExpressionException(
+        _throw ExpressionException(
           index,
           "Operator expected instead of opening parenthesis"
         );
@@ -612,7 +612,7 @@ void ExpressionParser::parse() {
       break;
     case ')':
       if (unary) {
-        throw ExpressionException(
+        _throw ExpressionException(
           index,
           "Operand expected before closing parenthesis"
         );
@@ -621,7 +621,7 @@ void ExpressionParser::parse() {
           pop();
         }
         if (stack.isEmpty() || (stack.peek().getId() != ExpressionEvaluator::PARENTHESIS)) {
-          throw ExpressionException(
+          _throw ExpressionException(
             index,
             "Closing parenthesis has no matching opening parenthesis"
           );
@@ -630,7 +630,7 @@ void ExpressionParser::parse() {
         if (!stack.isEmpty() && stack.peek().isFunction()) {
           Operation operation = stack.pop();
           if (operands < operation.getArguments()) {
-            throw ExpressionException(
+            _throw ExpressionException(
               index,
               "Operand(s) missing from subexpression"
             );
@@ -643,7 +643,7 @@ void ExpressionParser::parse() {
       break;
     case ';':
       if (unary) {
-        throw ExpressionException(
+        _throw ExpressionException(
           index,
           "Operand expected before argument separator"
         );
@@ -652,26 +652,26 @@ void ExpressionParser::parse() {
           pop();
         }
         if (stack.isEmpty() || (stack.peek().getId() != ExpressionEvaluator::PARENTHESIS)) {
-          throw ExpressionException(
+          _throw ExpressionException(
             index,
             "Argument separator outside of argument list"
           );
         }
         stack.pop(); // eat parenthesis
         if (stack.isEmpty() || !stack.peek().isFunction()) {
-          throw ExpressionException(
+          _throw ExpressionException(
             index,
             "Argument separator outside of argument list"
           );
         }
         Operation operation = stack.peek(); // do not remove from stack
         if (operation.getArguments() == 0) {
-          throw ExpressionException(
+          _throw ExpressionException(
             index,
             "Function does not take any arguments"
           );
         } else if (operation.getArguments() == 1) {
-          throw ExpressionException(
+          _throw ExpressionException(
             index,
             "Function only takes one argument"
           );
@@ -687,7 +687,7 @@ void ExpressionParser::parse() {
         if (unary) {
           readIdentifier();
         } else {
-          throw ExpressionException(
+          _throw ExpressionException(
             index,
             "Binary operator expected instead of operand/unary operation"
           );
@@ -696,13 +696,13 @@ void ExpressionParser::parse() {
         if (unary) {
           readValue();
         } else {
-          throw ExpressionException(
+          _throw ExpressionException(
             index,
             "Binary operator expected instead of operand/unary operation"
           );
         }
       } else {
-        throw ExpressionException(index, "Invalid symbol.");
+        _throw ExpressionException(index, "Invalid symbol.");
       }
     }
   }
@@ -712,7 +712,7 @@ void ExpressionParser::parse() {
   }
   
   if (!stack.isEmpty() || (operands != 1)) {
-    throw ExpressionException(index, "Unexpected end of expression.");
+    _throw ExpressionException(index, "Unexpected end of expression.");
   }
 }
 
@@ -795,13 +795,13 @@ String ExpressionParser::getString() const {
       case ExpressionEvaluator::PARENTHESIS:
         break;
       default:
-        throw ExpressionException("Invalid built-in operator.", this);
+        _throw ExpressionException("Invalid built-in operator.", this);
       }
       break;
     case ExpressionEvaluator::FUNCTION:
       {
         if (static_cast<unsigned int>(index + 1) < node.function.arguments) {
-          throw ExpressionException("Arguments exhausted.", this);
+          _throw ExpressionException("Arguments exhausted.", this);
         }
         String arguments;
         if (node.function.arguments > 0) {

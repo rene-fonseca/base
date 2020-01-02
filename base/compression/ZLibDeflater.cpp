@@ -92,12 +92,12 @@ ZLibDeflater::ZLibDeflater()
   case internal::ZLibDeflater::OK:
     break;
   case internal::ZLibDeflater::VERSION_ERROR:
-    throw NotSupported(this);
+    _throw NotSupported(this);
   default:
-    throw MemoryException(this);
+    _throw MemoryException(this);
   }
 #else
-  throw NotSupported(this);
+  _throw NotSupported(this);
 #endif
 }
 
@@ -116,12 +116,12 @@ ZLibDeflater::ZLibDeflater(unsigned int compressionLevel)
   case internal::ZLibDeflater::OK:
     break;
   case internal::ZLibDeflater::VERSION_ERROR:
-    throw NotSupported(this);
+    _throw NotSupported(this);
   default:
-    throw MemoryException(this);
+    _throw MemoryException(this);
   }
 #else
-  throw NotSupported(this);
+  _throw NotSupported(this);
 #endif
 }
 
@@ -132,14 +132,14 @@ void ZLibDeflater::flush()
   bassert(state == RUNNING, IOException(this)); // TAG: should we accept FLUSHING
   state = FLUSHING;
 #else
-  throw IOException(this);
+  _throw IOException(this);
 #endif
 }
 
 MemorySize ZLibDeflater::push(const uint8* buffer, MemorySize _size)
 {
   if (_size > 0xffffffff) {
-    throw IOException(this);
+    _throw IOException(this);
   }
   unsigned int size = static_cast<unsigned int>(_size);
   
@@ -161,7 +161,7 @@ MemorySize ZLibDeflater::push(const uint8* buffer, MemorySize _size)
   availableBytes = static_cast<unsigned int>(this->buffer.getSize()) - context->bytesToRead;
   return context->totalInput;
 #else
-  throw IOException(this);
+  _throw IOException(this);
 #endif
 }
 
@@ -172,14 +172,14 @@ void ZLibDeflater::pushEnd()
   bassert(state == RUNNING, IOException(this));
   state = FINISHING;
 #else
-  throw IOException(this);
+  _throw IOException(this);
 #endif
 }
 
 MemorySize ZLibDeflater::pull(uint8* buffer, MemorySize _size)
 {
   if (_size > 0xffffffff) {
-    throw IOException(this);
+    _throw IOException(this);
   }
   unsigned int size = static_cast<unsigned int>(_size);
   
@@ -225,7 +225,7 @@ MemorySize ZLibDeflater::pull(uint8* buffer, MemorySize _size)
           state = RUNNING;
         }
       } else {
-        throw IOException(this);
+        _throw IOException(this);
       }
       return bytesRead + size - context->bytesToRead;
     }
@@ -244,7 +244,7 @@ MemorySize ZLibDeflater::pull(uint8* buffer, MemorySize _size)
       } else if (code == internal::ZLibDeflater::STREAM_END) {
         state = ENDED; // availableBytes = 0
       } else {
-        throw IOException(this);
+        _throw IOException(this);
       }
       return bytesRead + size - context->bytesToRead;
     }
@@ -256,7 +256,7 @@ MemorySize ZLibDeflater::pull(uint8* buffer, MemorySize _size)
   }
   return bytesRead;
 #else
-  throw IOException(this);
+  _throw IOException(this);
 #endif
 }
 

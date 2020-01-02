@@ -67,7 +67,7 @@ public:
     : value(_value)
   {
     if (!value) {
-      throw NullPointer(this);
+      _throw NullPointer(this);
     }
     ReferenceCountedObject::ReferenceImpl(*value).addReference();
   }
@@ -100,7 +100,7 @@ public:
   {
     POLY* result = dynamic_cast<POLY*>(value);
     if (!result) {
-      throw CastException(this);
+      _throw CastException(this);
     }
     return result;
   }
@@ -113,7 +113,7 @@ public:
   {
     const POLY* result = dynamic_cast<const POLY*>(value);
     if (!result) {
-      throw CastException(this);
+      _throw CastException(this);
     }
     return result;
   }

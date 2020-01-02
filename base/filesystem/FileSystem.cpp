@@ -317,7 +317,7 @@ String FileSystem::toUrl(const String& path)
   static const Literal PREFIX = "file://";
 #endif // flavor
   if (isAbsolutePath(path)) {
-    throw FileSystemException(Type::getType<FileSystem>());
+    _throw FileSystemException(Type::getType<FileSystem>());
   }
   String result = PREFIX + path; // e.g. "file:///C:/"
   if (SEPARATOR != '/') {
@@ -352,12 +352,12 @@ String FileSystem::getCurrentFolder()
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   DWORD length = ::GetCurrentDirectory(0, NULL);
   if (length == 0) {
-    throw FileSystemException("Unable to get current folder.", Type::getType<FileSystem>());
+    _throw FileSystemException("Unable to get current folder.", Type::getType<FileSystem>());
   }
   PrimitiveStackArray<wchar> buffer(length);
   length = ::GetCurrentDirectory(length, buffer);
   if (length == 0) {
-    throw FileSystemException("Unable to get current folder.", Type::getType<FileSystem>());
+    _throw FileSystemException("Unable to get current folder.", Type::getType<FileSystem>());
   }
   return String(buffer, length);
 #elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__WASI)
@@ -368,7 +368,7 @@ String FileSystem::getCurrentFolder()
   Allocator<uint8>& buffer = _buffer;
   BASSERT(buffer.getSize() > PATH_MAX);
   if (::getcwd((char*)buffer.getElements(), buffer.getSize()/sizeof(char))) {
-    throw FileSystemException(
+    _throw FileSystemException(
       "Unable to get current folder.",
       Type::getType<FileSystem>()
     );
@@ -381,13 +381,13 @@ void FileSystem::setCurrentFolder(const String& path)
 {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   if (!::SetCurrentDirectory(ToWCharString(path))) {
-   throw FileSystemException("Unable to set current folder.", Type::getType<FileSystem>());
+   _throw FileSystemException("Unable to set current folder.", Type::getType<FileSystem>());
   }
 #elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__WASI)
   BASSERT(!"Not supported.");
 #else // unix
   if (::chdir(path.getElements())) {
-    throw FileSystemException("Unable to set current folder.", Type::getType<FileSystem>());
+    _throw FileSystemException("Unable to set current folder.", Type::getType<FileSystem>());
   }
 #endif // flavor
 }
@@ -411,7 +411,7 @@ unsigned int FileSystem::getType(const String& path)
 //     case ERROR_ACCESS_DENIED:
 //     case ERROR_SHARING_VIOLATION: // possible with page file
 //     case ERROR_LOCK_VIOLATION: // TAG: is this ok
-//       throw FileSystemException(Type::getType<FileSystem>());
+//       _throw FileSystemException(Type::getType<FileSystem>());
 //     }
     
     WIN32_FIND_DATA information;
@@ -578,7 +578,7 @@ bool FileSystem::entryExists(const String& path) {
     case ENOENT:
       return false;
     default:
-      throw FileSystemException("Unable to examine if entry exists.", Type::getType<FileSystem>());
+      _throw FileSystemException("Unable to examine if entry exists.", Type::getType<FileSystem>());
     }
   }
 #  else
@@ -591,7 +591,7 @@ bool FileSystem::entryExists(const String& path) {
     case ENOENT:
       return false;
     default:
-      throw FileSystemException("Unable to examine if entry exists.", Type::getType<FileSystem>());
+      _throw FileSystemException("Unable to examine if entry exists.", Type::getType<FileSystem>());
     }
   }
 #  endif
@@ -619,7 +619,7 @@ bool FileSystem::fileExists(const String& path) {
     case ENOENT:
       return false;
     default:
-      throw FileSystemException("Unable to examine if file exists.", Type::getType<FileSystem>());
+      _throw FileSystemException("Unable to examine if file exists.", Type::getType<FileSystem>());
     }
   }
 #  else
@@ -632,7 +632,7 @@ bool FileSystem::fileExists(const String& path) {
     case ENOENT:
       return false;
     default:
-      throw FileSystemException("Unable to examine if file exists.", Type::getType<FileSystem>());
+      _throw FileSystemException("Unable to examine if file exists.", Type::getType<FileSystem>());
     }
   }
 #  endif
@@ -659,7 +659,7 @@ bool FileSystem::folderExists(const String& path) {
     case ENOENT:
       return false;
     default:
-      throw FileSystemException("Unable to examine if folder exists.", Type::getType<FileSystem>());
+      _throw FileSystemException("Unable to examine if folder exists.", Type::getType<FileSystem>());
     }
   }
 #  else
@@ -672,7 +672,7 @@ bool FileSystem::folderExists(const String& path) {
     case ENOENT:
       return false;
     default:
-      throw FileSystemException("Unable to examine if folder exists.", Type::getType<FileSystem>());
+      _throw FileSystemException("Unable to examine if folder exists.", Type::getType<FileSystem>());
     }
   }
 #  endif
@@ -684,11 +684,11 @@ void FileSystem::removeFile(const String& path)
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
 //  ::SetFileAttributes(file, FILE_ATTRIBUTE_NORMAL);
   if (!::DeleteFile(ToWCharString(path))) {
-    throw FileSystemException("Unable to remove file.", Type::getType<FileSystem>());
+    _throw FileSystemException("Unable to remove file.", Type::getType<FileSystem>());
   }
 #else // unix
   if (unlink(path.getElements())) {
-    throw FileSystemException("Unable to remove file.", Type::getType<FileSystem>());
+    _throw FileSystemException("Unable to remove file.", Type::getType<FileSystem>());
   }
 #endif // flavor
 }
@@ -708,7 +708,7 @@ void FileSystem::removeFolder(const String& path)
       0
     );
     if (link == INVALID_HANDLE_VALUE) {
-      throw FileSystemException("Unable to remove folder.", Type::getType<FileSystem>());
+      _throw FileSystemException("Unable to remove folder.", Type::getType<FileSystem>());
     }
     uint8 buffer[REPARSE_GUID_DATA_BUFFER_HEADER_SIZE + 256]; // TAG: doc missing for min. size
     REPARSE_GUID_DATA_BUFFER* reparseHeader = (REPARSE_GUID_DATA_BUFFER*)buffer;
@@ -725,7 +725,7 @@ void FileSystem::removeFolder(const String& path)
         ) == 0) {
       if (::GetLastError() != ERROR_MORE_DATA) {
         ::CloseHandle(link);
-        throw FileSystemException("Unable to remove folder.", Type::getType<FileSystem>());
+        _throw FileSystemException("Unable to remove folder.", Type::getType<FileSystem>());
       }
     }
     if (reparseHeader->ReparseTag == IO_REPARSE_TAG_MOUNT_POINT) {
@@ -743,26 +743,26 @@ void FileSystem::removeFolder(const String& path)
           ) == 0) {
         fout << "12345: " << ::GetLastError() << ENDL;
         ::CloseHandle(link);
-        throw FileSystemException("Unable to remove folder.", Type::getType<FileSystem>());
+        _throw FileSystemException("Unable to remove folder.", Type::getType<FileSystem>());
       }
       ::CloseHandle(link);
       if (!::RemoveDirectory(ToWCharString(path))) {
-        throw FileSystemException("Unable to remove folder.", Type::getType<FileSystem>());
+        _throw FileSystemException("Unable to remove folder.", Type::getType<FileSystem>());
       }
       // } else if (reparseHeader->ReparseTag == 0x80000000|IO_REPARSE_TAG_SYMBOLIC_LINK) {
       // TAG: need support for symbolic link to folder
     } else {
       ::CloseHandle(link);
-      throw FileSystemException("Unable to remove folder.", Type::getType<FileSystem>());
+      _throw FileSystemException("Unable to remove folder.", Type::getType<FileSystem>());
     }
   } else {
     if (!::RemoveDirectory(ToWCharString(path))) {
-      throw FileSystemException("Unable to remove folder.", Type::getType<FileSystem>());
+      _throw FileSystemException("Unable to remove folder.", Type::getType<FileSystem>());
     }
   }
 #else // unix
   if (rmdir(path.getElements())) {
-    throw FileSystemException("Unable to remove folder.", Type::getType<FileSystem>());
+    _throw FileSystemException("Unable to remove folder.", Type::getType<FileSystem>());
   }
 #endif // flavor
 }
@@ -771,11 +771,11 @@ void FileSystem::makeFolder(const String& path)
 {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   if (!::CreateDirectory(ToWCharString(path), NULL)) { // use default security descriptor
-    throw FileSystemException("Unable to make folder.", Type::getType<FileSystem>());
+    _throw FileSystemException("Unable to make folder.", Type::getType<FileSystem>());
   }
 #else // unix
   if (mkdir(path.getElements(), 0)) {
-    throw FileSystemException("Unable to make folder.", Type::getType<FileSystem>());
+    _throw FileSystemException("Unable to make folder.", Type::getType<FileSystem>());
   }
 #endif // flavor
 }
@@ -853,7 +853,7 @@ bool FileSystem::isLink(const String& path)
       case ERROR_LOCK_VIOLATION: // TAG: is this ok
         return false;
       default:
-        throw FileSystemException(Type::getType<FileSystem>());
+        _throw FileSystemException(Type::getType<FileSystem>());
       }
     }
     
@@ -962,7 +962,7 @@ _COM_AZURE_DEV__BASE__PACKED__END
     case ENOENT:
       return false;
     default:
-      throw FileSystemException(Type::getType<FileSystem>());
+      _throw FileSystemException(Type::getType<FileSystem>());
     }
   }
 #endif
@@ -997,7 +997,7 @@ public:
       case ERROR_ACCESS_DENIED:
       case ERROR_SHARING_VIOLATION: // possible with page file
       case ERROR_LOCK_VIOLATION:
-        throw FileSystemException("Not a link.", Type::getType<FileSystem>());
+        _throw FileSystemException("Not a link.", Type::getType<FileSystem>());
       }
     }
     while (link != INVALID_HANDLE_VALUE) {
@@ -1019,7 +1019,7 @@ public:
         // bool reparse = ::GetLastError() != 4390; // ERROR_NOT_A_REPARSE_POINT
         ::CloseHandle(link);
         // if (reparse) { // no need to check for shell link
-        //   throw FileSystemException("Not a link.", Type::getType<FileSystem>());
+        //   _throw FileSystemException("Not a link.", Type::getType<FileSystem>());
         // }
         break;
       }
@@ -1344,7 +1344,7 @@ String FileSystem::getLink(const String& path) {
     case ERROR_ACCESS_DENIED:
     case ERROR_SHARING_VIOLATION: // possible with page file
     case ERROR_LOCK_VIOLATION:
-      throw FileSystemException("Not a link.", Type::getType<FileSystem>());
+      _throw FileSystemException("Not a link.", Type::getType<FileSystem>());
     }
   }
   while (link != INVALID_HANDLE_VALUE) {
@@ -1366,7 +1366,7 @@ String FileSystem::getLink(const String& path) {
       // bool reparse = ::GetLastError() != 4390; // ERROR_NOT_A_REPARSE_POINT
       ::CloseHandle(link);
       // if (reparse) { // no need to check for shell link
-      //   throw FileSystemException("Not a link.", Type::getType<FileSystem>());
+      //   _throw FileSystemException("Not a link.", Type::getType<FileSystem>());
       // }
       break;
     }
@@ -1617,7 +1617,7 @@ _COM_AZURE_DEV__BASE__PACKED__END
 
     break; // exit while loop
   }
-  throw FileSystemException("Not a link.", Type::getType<FileSystem>());
+  _throw FileSystemException("Not a link.", Type::getType<FileSystem>());
 #else // unix
   char buffer[PATH_MAX + 1];
   ssize_t length = ::readlink(path.getElements(), buffer, sizeof(buffer));
@@ -1720,7 +1720,7 @@ String FileSystem::getTempFileName(unsigned int options) noexcept {
 }
 
 File FileSystem::getTempFile(unsigned int options) {
-  throw NotImplemented(Type::getType<FileSystem>());
+  _throw NotImplemented(Type::getType<FileSystem>());
 /*
   unsigned int attempts = 16;
   while (attempts--) {
@@ -1738,7 +1738,7 @@ File FileSystem::getTempFile(unsigned int options) {
 
 unsigned long FileSystem::getVariable(const String& path, Variable variable) {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
-  throw NotSupported(Type::getType<FileSystem>());
+  _throw NotSupported(Type::getType<FileSystem>());
 #else // unix
 #  if (!(defined(_PC_FILESIZEBITS)))
 #    define _PC_FILESIZEBITS -1
@@ -1778,7 +1778,7 @@ unsigned long FileSystem::getVariable(const String& path, Variable variable) {
   }
 
   // TAG: add POSIX values here?
-  throw NotSupported(Type::getType<FileSystem>());
+  _throw NotSupported(Type::getType<FileSystem>());
 #endif // flavor
 }
 
@@ -1847,7 +1847,7 @@ FileSystem::Quota FileSystem::getQuota(
     id = trustee.getIntegralId();
     break;
   default:
-    throw FileSystemException(Type::getType<FileSystem>());
+    _throw FileSystemException(Type::getType<FileSystem>());
   }
   
   struct dqblk temp;
@@ -1874,7 +1874,7 @@ FileSystem::Quota FileSystem::getQuota(
       result.currentUsage = 0;
       return result;
     }
-    throw FileSystemException(Type::getType<FileSystem>());
+    _throw FileSystemException(Type::getType<FileSystem>());
   }
 #if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__IRIX65)
   result.hardLimit = temp.dqb_bhardlimit;
@@ -1897,7 +1897,7 @@ FileSystem::Quota FileSystem::getQuota(
     operation.uid = trustee.getIntegralId();
     break;
   default:
-    throw FileSystemException(Type::getType<FileSystem>());
+    _throw FileSystemException(Type::getType<FileSystem>());
   }
   
   int fd = ::open(path.getElements(), O_RDONLY, 0);
@@ -1911,7 +1911,7 @@ FileSystem::Quota FileSystem::getQuota(
     }
     ::close(fd);
   }
-  throw bindError(FileSystemException(Type::getType<FileSystem>()), errno);
+  _throw bindError(FileSystemException(Type::getType<FileSystem>()), errno);
 #else
   result.hardLimit = 0;
   result.softLimit = 0;

@@ -27,7 +27,7 @@ inline int parseInteger(const TYPE* src, const TYPE* end, unsigned int flags)
   }
   
   if (src == end) {
-    throw InvalidFormat(Type::getType<Integer>());
+    _throw InvalidFormat(Type::getType<Integer>());
   }
   
   BASSERT(sizeof(int) > sizeof(long long));
@@ -40,12 +40,12 @@ inline int parseInteger(const TYPE* src, const TYPE* end, unsigned int flags)
         break;
       }
       if (temp > PrimitiveTraits<unsigned int>::MAXIMUM/10) {
-        throw InvalidFormat(Type::getType<Integer>());
+        _throw InvalidFormat(Type::getType<Integer>());
       }
       temp *= 10;
       const unsigned int value = ASCIITraits::digitToValue(ch);
       if (temp > (PrimitiveTraits<unsigned int>::MAXIMUM - value)) {
-        throw InvalidFormat(Type::getType<Integer>());
+        _throw InvalidFormat(Type::getType<Integer>());
       }
       temp += value;
     }
@@ -68,7 +68,7 @@ inline int parseInteger(const TYPE* src, const TYPE* end, unsigned int flags)
         }
         value = value * 10 - ASCIITraits::digitToValue(ch);
         if (value < Integer::MINIMUM) {
-          throw InvalidFormat(Type::getType<Integer>());
+          _throw InvalidFormat(Type::getType<Integer>());
         }
       }
     } else {
@@ -79,7 +79,7 @@ inline int parseInteger(const TYPE* src, const TYPE* end, unsigned int flags)
         }
         value = value * 10 + ASCIITraits::digitToValue(ch);
         if (value > Integer::MAXIMUM) {
-          throw InvalidFormat(Type::getType<Integer>());
+          _throw InvalidFormat(Type::getType<Integer>());
         }
       }
     }
@@ -92,7 +92,7 @@ inline int parseInteger(const TYPE* src, const TYPE* end, unsigned int flags)
   }
   
   if (src != end) {
-    throw InvalidFormat(Type::getType<Integer>());
+    _throw InvalidFormat(Type::getType<Integer>());
   }
   return static_cast<int>(value);
 }

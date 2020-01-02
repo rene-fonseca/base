@@ -85,7 +85,7 @@ void DebugDynamicMemory::release(void* memory)
     const unsigned int* end = src + PREFIX_WORDS;
     for (; src < end; ++src) {
       if (*src != (Cast::getOffset(src))) {
-        throw MemoryCorruption(Type::getType<DebugDynamicMemory>());
+        _throw MemoryCorruption(Type::getType<DebugDynamicMemory>());
       }
     }
   }
@@ -124,7 +124,7 @@ void DebugDynamicMemory::release(void* memory)
     const unsigned int* end = src + SUFFIX_WORDS;
     for (; src < end; ++src) {
       if (*src != Cast::getOffset(src)) {
-        throw MemoryCorruption(Type::getType<DebugDynamicMemory>());
+        _throw MemoryCorruption(Type::getType<DebugDynamicMemory>());
       }
     }
   }

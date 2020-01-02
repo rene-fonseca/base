@@ -101,7 +101,7 @@ public:
   inline const TYPE& getValue() const
   {
     if (!valid) {
-      throw InvalidException(this);
+      _throw InvalidException(this);
     }
     return value;
   }

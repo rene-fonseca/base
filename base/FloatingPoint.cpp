@@ -52,7 +52,7 @@ float FloatingPoint::getFloatAsHex(const String& value)
     } else if (value == "-infinity") {
       return 0; // TAG: fixme
     } else {
-      throw InvalidFormat("Not a number.", Type::getType<FloatingPoint>());
+      _throw InvalidFormat("Not a number.", Type::getType<FloatingPoint>());
     }
   }
   
@@ -62,10 +62,10 @@ float FloatingPoint::getFloatAsHex(const String& value)
     if ((i != end) && ((*i == 'x') || (*i == 'X'))) {
       ++i;
     } else {
-      throw InvalidFormat("Not a number.", Type::getType<FloatingPoint>());
+      _throw InvalidFormat("Not a number.", Type::getType<FloatingPoint>());
     }
   } else {
-    throw InvalidFormat("Not a number.", Type::getType<FloatingPoint>());
+    _throw InvalidFormat("Not a number.", Type::getType<FloatingPoint>());
   }
   
   // read sign if present // TAG: what order of prefix and sign
@@ -114,7 +114,7 @@ float FloatingPoint::getFloatAsHex(const String& value)
   }
   
   if ((numberOfDigits == 0) && (scale == 0)) {
-    throw InvalidFormat("Not a number.", Type::getType<FloatingPoint>());
+    _throw InvalidFormat("Not a number.", Type::getType<FloatingPoint>());
   }
   
   int exponent = 0;
@@ -172,7 +172,7 @@ float FloatingPoint::getFloatAsHex(const String& value)
   }
   
   if (i != end) {
-    throw InvalidFormat("Not a number.");
+    _throw InvalidFormat("Not a number.");
   }
 
   if (numberOfDigits == 0) {
@@ -238,7 +238,7 @@ FloatingPoint::IEEE754SinglePrecision::IEEE754SinglePrecision(
     mantissa0 >>= shift; // denormalize
     exponent += shift;
   } else if (exponent > value.MAXIMUM_EXPONENT) {
-    throw InvalidFormat("Overflow.", Type::getType<FloatingPoint>());
+    _throw InvalidFormat("Overflow.", Type::getType<FloatingPoint>());
   }
   value.mantissa0 = mantissa0;
   value.exponent = exponent + value.BIAS;
@@ -297,7 +297,7 @@ float FloatingPoint::getFloat(const String& value)
   }
 
   if (!digits) {
-    throw InvalidFormat("Not a number.");
+    _throw InvalidFormat("Not a number.");
   }
 
   // read exponent if present
@@ -319,18 +319,18 @@ float FloatingPoint::getFloat(const String& value)
         ++i;
       }
     } else {
-      throw InvalidFormat("Not a number.");
+      _throw InvalidFormat("Not a number.");
     }
   }
   
   // TAG: skip spaces?
   
   if (i != end) {
-    throw InvalidFormat("Not a number.");
+    _throw InvalidFormat("Not a number.");
   }
   
   // TAG: fixme
-  throw InvalidFormat("Not a number.");
+  _throw InvalidFormat("Not a number.");
   return 0;
 }
 

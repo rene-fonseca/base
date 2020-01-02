@@ -141,7 +141,7 @@ public:
   {
     POLY* temp = dynamic_cast<POLY*>(value);
     if (!temp) {
-      throw CastException(this);
+      _throw CastException(this);
     }
     return temp;
   }
@@ -152,7 +152,7 @@ public:
   inline TYPE& operator*()
   {
     if (!value) {
-      throw NullPointer(this);
+      _throw NullPointer(this);
     }
     return *value;
   }
@@ -163,7 +163,7 @@ public:
   inline const TYPE& operator*() const
   {
     if (!value) {
-      throw NullPointer(this);
+      _throw NullPointer(this);
     }
     return *value;
   }
@@ -174,7 +174,7 @@ public:
   inline TYPE* operator->()
   {
     if (!value) {
-      throw NullPointer(this);
+      _throw NullPointer(this);
     }
     return value;
   }
@@ -185,7 +185,7 @@ public:
   inline const TYPE* operator->() const
   {
     if (!value) {
-      throw NullPointer(this);
+      _throw NullPointer(this);
     }
     return value;
   }

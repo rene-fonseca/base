@@ -2030,7 +2030,7 @@ public:
       : readChannel(_readChannel)
     {
       if (!_readChannel) {
-        throw NullPointer(this);
+        _throw NullPointer(this);
       }
     }
     
@@ -2192,7 +2192,7 @@ public:
       : writeChannel(_writeChannel)
     {
       if (!_writeChannel) {
-        throw NullPointer(this);
+        _throw NullPointer(this);
       }
     }
 

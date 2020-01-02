@@ -190,7 +190,7 @@ Daemon::Daemon(Runnable* runnable) {
   bassert(singleton == 0, SingletonException("Daemon has been instantiated."));
   ++singleton;
   if (!runnable) {
-    throw OutOfDomain();
+    _throw OutOfDomain();
   }
   bassert(Application::getApplication(), Exception("Application has not been institiated."));
   DaemonImpl::runnable = runnable;
@@ -299,12 +299,12 @@ Daemon::Daemon(Runnable* runnable)
   bassert(singleton == 0, SingletonException("Daemon has been instantiated."));
   ++singleton;
   if (!runnable) {
-    throw OutOfDomain();
+    _throw OutOfDomain();
   }
   bassert(Application::getApplication(), Exception("Application has not been institiated."));
 
 #if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__WASI)
-  throw ResourceException("Unable to daemonize process.");
+  _throw ResourceException("Unable to daemonize process.");
 #else
   switch (fork()) {
   case 0:
@@ -313,7 +313,7 @@ Daemon::Daemon(Runnable* runnable)
     break;
   case -1:
     SystemLogger::write(SystemLogger::ERROR, "Unable to daemonize process.");
-    throw ResourceException("Unable to daemonize process.");
+    _throw ResourceException("Unable to daemonize process.");
     break;
   }
 #endif

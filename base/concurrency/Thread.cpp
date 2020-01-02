@@ -183,7 +183,7 @@ void* Thread::entry(Thread* thread) noexcept
       thread->state = TERMINATED;
       if (Thread* parent = thread->getParent()) { // TAG: parent missing for global thread
         if (!parent) {
-          throw ThreadException(Type::getType<Thread>());
+          _throw ThreadException(Type::getType<Thread>());
         }
         parent->onChildTermination(thread); // signal parent
         // TAG: problem if parent is destroyed before child
@@ -269,7 +269,7 @@ void Thread::nanosleep(unsigned int nanoseconds)
   Profiler::WaitTask profile("sleep");
   
   if (nanoseconds >= 1000000000) {
-    throw OutOfDomain(Type::getType<Thread>());
+    _throw OutOfDomain(Type::getType<Thread>());
   }
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   // TAG: use select (but test if better)
@@ -322,7 +322,7 @@ void Thread::microsleep(unsigned int microseconds)
   Profiler::WaitTask profile("sleep");
 
   if (microseconds >= 1000000000) {
-    throw OutOfDomain(Type::getType<Thread>());
+    _throw OutOfDomain(Type::getType<Thread>());
   }
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   ::Sleep((microseconds+999)/1000); // round up
@@ -365,7 +365,7 @@ void Thread::millisleep(unsigned int milliseconds)
   Profiler::WaitTask profile("sleep");
 
   if (milliseconds >= 1000000000) {
-    throw OutOfDomain(Type::getType<Thread>());
+    _throw OutOfDomain(Type::getType<Thread>());
   }
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   ::Sleep(milliseconds);
@@ -408,7 +408,7 @@ void Thread::sleep(unsigned int seconds)
   Profiler::WaitTask profile("sleep");
 
   if (seconds >= 1000000) {
-    throw OutOfDomain(Type::getType<Thread>());
+    _throw OutOfDomain(Type::getType<Thread>());
   }
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   ::Sleep(seconds * 1000);
@@ -565,7 +565,7 @@ Thread::Thread(Runnable* _runnable)
     identifier(nullptr)
 {
   if (!runnable) {
-    throw NullPointer(this);
+    _throw NullPointer(this);
   }
   parent = Thread::getThread();
   BASSERT(parent); // a parent must always exist
@@ -710,7 +710,7 @@ int Thread::getPriority()
   DWORD priorityClass = ::GetPriorityClass(::GetCurrentProcess());
   int priority = ::GetThreadPriority(::GetCurrentThread());
   if ((priorityClass == 0) || (priority == THREAD_PRIORITY_ERROR_RETURN)) {
-    throw ThreadException("Unable to get priority of thread.", Type::getType<Thread>());
+    _throw ThreadException("Unable to get priority of thread.", Type::getType<Thread>());
   }
   
   // named thread priorities
@@ -889,7 +889,7 @@ void Thread::start()
   pthread_t id;
   if (pthread_create(&id, &attributes, (void*(*)(void*))&entry, (void*)this)) {
     pthread_attr_destroy(&attributes);
-    throw ResourceException("Unable to create thread.", this);
+    _throw ResourceException("Unable to create thread.", this);
   }
   identifier = getAsPointer(id);
   pthread_attr_destroy(&attributes);

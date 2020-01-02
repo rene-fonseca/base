@@ -61,14 +61,14 @@ void FileDescriptorOutputStream::flush()
   // TAG: handle may or may not be flushable
   // handle to a console output cannot be flushed 'cause it isn't buffered, aarrgh
 //  if (!isValid()) {
-//    throw IOException("Unable to flush file descriptor.");
+//    _throw IOException("Unable to flush file descriptor.");
 //  }
 //  ::FlushFileBuffers((HANDLE)fd->getHandle()); // yes ignore any error
 // #elif defined(_COM_AZURE_DEV__BASE__USE_FLUSH)
 #else // unix
 //  ::fsync(fd->getHandle()); // TAG: this is a bug
 //  if (ioctl(fd->getHandle(), I_FLUSH, FLUSHRW) != 0) {
-//    throw IOException("Unable to flush stream.");
+//    _throw IOException("Unable to flush stream.");
 //  }
 #endif // flavor
 }
@@ -90,7 +90,7 @@ unsigned int FileDescriptorOutputStream::write(
       0
     );
     if (!success) {
-      throw IOException("Unable to write to object.");
+      _throw IOException("Unable to write to object.");
     }
 #else // unix
     int result = (int)::write(fd->getHandle(), buffer, minimum<size_t>(bytesToWrite, SSIZE_MAX));
@@ -101,7 +101,7 @@ unsigned int FileDescriptorOutputStream::write(
       case EAGAIN: // no data could be written without blocking (only in non-blocking mode)
 //      return 0; // try later
       default:
-        throw IOException("Unable to write to object.");
+        _throw IOException("Unable to write to object.");
       }
     }
 #endif // flavor

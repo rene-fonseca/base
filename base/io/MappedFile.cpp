@@ -78,16 +78,16 @@ MappedFile::MappedFileImpl::MappedFileImpl(const File& _file, const FileRegion& 
 void MappedFile::MappedFileImpl::synchronize() {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   if (!::FlushViewOfFile(bytes, 0)) {
-    throw FileException("Unable to flush.", this);
+    _throw FileException("Unable to flush.", this);
   }
 #else // unix
   #if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__CYGWIN)
     if (::msync((caddr_t)bytes, region.getSize(), MS_SYNC)) {
-      throw FileException("Unable to flush.", this);
+      _throw FileException("Unable to flush.", this);
     }
   #else
     if (::msync(bytes, region.getSize(), MS_SYNC)) {
-      throw FileException("Unable to flush.", this);
+      _throw FileException("Unable to flush.", this);
     }
   #endif
 #endif // flavor
@@ -96,16 +96,16 @@ void MappedFile::MappedFileImpl::synchronize() {
 MappedFile::MappedFileImpl::~MappedFileImpl() {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   if (!::UnmapViewOfFile(bytes)) {
-    throw FileException("Unable to unmap file.", this);
+    _throw FileException("Unable to unmap file.", this);
   }
 #else // unix
   #if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__CYGWIN)
     if (::munmap((caddr_t)bytes, region.getSize())) {
-      throw FileException("Unable to unmap file.", this);
+      _throw FileException("Unable to unmap file.", this);
     }
   #else
     if (::munmap(bytes, region.getSize())) {
-      throw FileException("Unable to unmap file.", this);
+      _throw FileException("Unable to unmap file.", this);
     }
   #endif
 #endif // flavor
@@ -136,7 +136,7 @@ MappedFile::MappedFile(const File& file, const FileRegion& region, bool writeabl
 //#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
 //  HANDLE handle = ::CreateFileMapping((HANDLE)f.fd->getHandle(), 0, writeable ? PAGE_READWRITE : PAGE_READONLY, 0, 0, 0);
 //  if (handle) {
-//    throw FileException("Unable to map file.", this);
+//    _throw FileException("Unable to map file.", this);
 //  }
 //
 //  void* address = ::MapViewOfFile(
@@ -159,7 +159,7 @@ MappedFile::MappedFile(const File& file, const FileRegion& region, bool writeabl
 //  address = mmap(0, r.getSize(), writeable ? (PROT_READ | PROT_WRITE) : PROT_READ, MAP_SHARED, f.fd->getHandle(), r.getOffset());
 //#endif
 //  if (address == (void*)-1) {
-//    throw FileException("Unable to map file.", this);
+//    _throw FileException("Unable to map file.", this);
 //  }
 //  map = new MappedFileImpl(f, address, r);
 //#endif // flavor

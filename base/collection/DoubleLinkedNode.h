@@ -573,7 +573,7 @@ public:
   Pointer next()
   {
     if (!current) {
-      throw EndOfEnumeration();
+      _throw EndOfEnumeration();
     }
     auto temp = current;
     current = current->getNext();
@@ -646,7 +646,7 @@ public:
   Pointer next()
   {
     if (!current) {
-      throw EndOfEnumeration();
+      _throw EndOfEnumeration();
     }
     auto temp = current;
     current = current->getNext();

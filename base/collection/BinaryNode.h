@@ -240,7 +240,7 @@ public:
 //  inline Reference operator*()
 //  {
 //    if (!ptr) {
-//      throw NullPointer();
+//      _throw NullPointer();
 //    }
 //    return *ptr->getValue();
 //  }
@@ -251,7 +251,7 @@ public:
 //  inline const Reference operator*() const
 //  {
 //    if (!ptr) {
-//      throw NullPointer();
+//      _throw NullPointer();
 //    }
 //    return *ptr->getValue();
 //  }

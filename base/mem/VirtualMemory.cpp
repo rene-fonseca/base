@@ -32,7 +32,7 @@ String VirtualMemory::Module::getPath() const noexcept {
   buffer[length] = 0;
   return String(buffer, length);
 #else // unix
-  throw NotImplemented(this);
+  _throw NotImplemented(this);
 #endif // flavor
 }
 
@@ -40,7 +40,7 @@ VirtualMemory::Module VirtualMemory::Module::getProcessModule() noexcept {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   return Module((HMODULE)::GetModuleHandle(nullptr));
 #else // unix
-  throw NotImplemented(Type::getType<VirtualMemory>());
+  _throw NotImplemented(Type::getType<VirtualMemory>());
 #endif // flavor
 }
 
@@ -50,7 +50,7 @@ bool VirtualMemory::Module::isModule() const noexcept {
   unsigned int length = ::GetModuleFileName((HMODULE)context, buffer, sizeof(buffer));
   return length > 0;
 #else // unix
-  throw NotImplemented(this);
+  _throw NotImplemented(this);
 #endif // flavor
 }
 
@@ -74,7 +74,7 @@ MemorySize VirtualMemory::Module::getSize() const noexcept {
   }
   return address - Cast::pointer<const uint8*>(context);
 #else // unix
-  throw NotImplemented(this);
+  _throw NotImplemented(this);
 #endif // flavor
 }
 
@@ -102,17 +102,17 @@ Array<VirtualMemory::Module> VirtualMemory::getModules() noexcept {
   }
   return result;
 #else // unix
-  throw NotImplemented(Type::getType<VirtualMemory>());
+  _throw NotImplemented(Type::getType<VirtualMemory>());
 #endif // flavor
 }
 
 void VirtualMemory::query(const void* address) noexcept
 {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
-  throw NotImplemented(Type::getType<VirtualMemory>());
+  _throw NotImplemented(Type::getType<VirtualMemory>());
   // DWORD result = ::VirtualQuery(address, &info, sizeof(info));
 #else // unix
-  throw NotImplemented(Type::getType<VirtualMemory>());
+  _throw NotImplemented(Type::getType<VirtualMemory>());
 #endif // flavor
 }
 
@@ -170,7 +170,7 @@ void VirtualMemory::dump() noexcept
  
   fout << FLUSH;
 #else // unix
-  throw NotImplemented(Type::getType<VirtualMemory>());
+  _throw NotImplemented(Type::getType<VirtualMemory>());
 #endif // flavor
 }
 

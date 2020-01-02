@@ -81,7 +81,7 @@ Pair<Pipe, Pipe> Pipe::make() {
 #else // unix
   OperatingSystem::Handle handles[2];
   if (::pipe(handles)) {
-    throw PipeException("Unable to create pipe.", Type::getType<Pipe>());
+    _throw PipeException("Unable to create pipe.", Type::getType<Pipe>());
   }
   Pipe p;
   Pipe q;
@@ -97,13 +97,13 @@ Pipe::PipeHandle::~PipeHandle() {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   if (isValid()) {
     if (::CloseHandle(getHandle())) {
-      throw PipeException("Unable to close pipe.", this);
+      _throw PipeException("Unable to close pipe.", this);
     }
   }
 #else // unix
   if (isValid()) {
     if (::close(getHandle())) {
-      throw PipeException("Unable to close pipe.", this);
+      _throw PipeException("Unable to close pipe.", this);
     }
   }
 #endif
@@ -142,7 +142,7 @@ unsigned int Pipe::available() const
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   DWORD bytesAvailable = 0;
   if (!::PeekNamedPipe(fd->getHandle(), 0, 0, 0, &bytesAvailable, 0)) {
-    throw PipeException("Unable to get available bytes.", this);
+    _throw PipeException("Unable to get available bytes.", this);
   }
   return bytesAvailable;
 #else // unix
@@ -173,7 +173,7 @@ unsigned int Pipe::skip(unsigned int count)
 void Pipe::flush() {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   if (!::FlushFileBuffers(fd->getHandle())) {
-    throw PipeException("Unable to flush pipe.", this);
+    _throw PipeException("Unable to flush pipe.", this);
   }
 #else // unix
   #if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__MACOS) || (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__CYGWIN)
@@ -181,7 +181,7 @@ void Pipe::flush() {
   #elif defined(_COM_AZURE_DEV__BASE__USE_FLUSH)
     int command = FLUSHW;
     if (::ioctl(fd->getHandle(), I_FLUSH, &command)) {
-      throw PipeException("Unable to flush pipe.", this);
+      _throw PipeException("Unable to flush pipe.", this);
     }
   #endif
 #endif
@@ -212,7 +212,7 @@ unsigned int Pipe::read(
       } else if (error == ERROR_NO_DATA) { // no data available (only in non-blocking mode)
         return bytesRead;
       } else {
-        throw PipeException("Unable to read from pipe.", this);
+        _throw PipeException("Unable to read from pipe.", this);
       }
     }
 #else // unix
@@ -228,14 +228,14 @@ unsigned int Pipe::read(
       case EAGAIN: // no data available (only in non-blocking mode)
 //        return bytesRead; // try later
       default:
-        throw PipeException("Unable to read from pipe.", this);
+        _throw PipeException("Unable to read from pipe.", this);
       }
     }
 #endif
     if (result == 0) { // has end been reached
       end = true;
       if (bytesToRead > 0) {
-        throw EndOfFile(this); // attempt to read beyond end of stream
+        _throw EndOfFile(this); // attempt to read beyond end of stream
       }
     }
     bytesRead += result;
@@ -262,7 +262,7 @@ unsigned int Pipe::write(
       0
     );
     if (!success) {
-      throw PipeException("Unable to write to pipe.", this);
+      _throw PipeException("Unable to write to pipe.", this);
     }
 #else // unix
     int result = (int)::write(fd->getHandle(), buffer, minimum<size_t>(bytesToWrite, SSIZE_MAX));
@@ -273,9 +273,9 @@ unsigned int Pipe::write(
       case EAGAIN: // no data could be written without blocking (only in non-blocking mode)
 //      return 0; // try later
       case EPIPE:
-        throw EndOfFile(this);
+        _throw EndOfFile(this);
       default:
-        throw PipeException("Unable to write to pipe.", this);
+        _throw PipeException("Unable to write to pipe.", this);
       }
     }
 #endif
@@ -299,7 +299,7 @@ void Pipe::wait() const
 
   int result = ::select(fd->getHandle() + 1, &rfds, 0, 0, 0);
   if (result == -1) {
-    throw PipeException("Unable to wait for input.", this);
+    _throw PipeException("Unable to wait for input.", this);
   }
 #endif
 }
@@ -321,7 +321,7 @@ bool Pipe::wait(unsigned int timeout) const
 
   int result = ::select(fd->getHandle() + 1, &rfds, 0, 0, &tv);
   if (result == -1) {
-    throw PipeException("Unable to wait for input.", this);
+    _throw PipeException("Unable to wait for input.", this);
   }
   return result; // return true if data available
 #endif

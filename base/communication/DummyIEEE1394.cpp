@@ -30,7 +30,7 @@ void DummyIEEE1394::acknowledgeReset() noexcept
 
 void DummyIEEE1394::resetBus()
 {
-  throw IEEE1394Exception("Unable to reset bus.", this);
+  _throw IEEE1394Exception("Unable to reset bus.", this);
 }
 
 Array<EUI64> DummyIEEE1394::getAdapters()
@@ -40,12 +40,12 @@ Array<EUI64> DummyIEEE1394::getAdapters()
 
 void DummyIEEE1394::open()
 {
-  throw IEEE1394Exception(this);
+  _throw IEEE1394Exception(this);
 }
 
 void DummyIEEE1394::open(const EUI64& adapter)
 {
-  throw IEEE1394Exception(this);
+  _throw IEEE1394Exception(this);
 }
 
 void DummyIEEE1394::close()
@@ -54,22 +54,22 @@ void DummyIEEE1394::close()
 
 unsigned int DummyIEEE1394::getLocalId() const noexcept
 {
-  throw IEEE1394Exception(this);
+  _throw IEEE1394Exception(this);
 }
 
 unsigned int DummyIEEE1394::getNumberOfNodes() const noexcept
 {
-  throw IEEE1394Exception(this);
+  _throw IEEE1394Exception(this);
 }
 
 unsigned int DummyIEEE1394::getStatus() const
 {
-  throw IEEE1394Exception(this);
+  _throw IEEE1394Exception(this);
 }
 
 unsigned int DummyIEEE1394::getFIFOSize() const
 {
-  throw IEEE1394Exception(this);
+  _throw IEEE1394Exception(this);
 }
 
 void DummyIEEE1394::read(
@@ -77,7 +77,7 @@ void DummyIEEE1394::read(
   uint64 address, uint8* buffer,
   unsigned int size)
 {
-  throw IEEE1394Exception(this);
+  _throw IEEE1394Exception(this);
 }
 
 void DummyIEEE1394::write(
@@ -86,7 +86,7 @@ void DummyIEEE1394::write(
   const uint8* buffer,
   unsigned int size)
 {
-  throw IEEE1394Exception(this);
+  _throw IEEE1394Exception(this);
 }
 
 unsigned int DummyIEEE1394::read(
@@ -95,21 +95,21 @@ unsigned int DummyIEEE1394::read(
   uint32* buffer,
   unsigned int size,
   uint32 value) {
-  throw IEEE1394Exception(this);
+  _throw IEEE1394Exception(this);
 }
 
 IEEE1394Common::IsochronousReadChannel DummyIEEE1394::getReadChannel(
   unsigned int maxPacketsPerRequest,
   uint64 subchannels)
 {
-  throw IEEE1394Exception(this);
+  _throw IEEE1394Exception(this);
 }
 
 IEEE1394Common::IsochronousWriteChannel DummyIEEE1394::getWriteChannel(
   unsigned int maxPacketsPerRequest,
   uint64 subchannels)
 {
-  throw IEEE1394Exception(this);
+  _throw IEEE1394Exception(this);
 }
 
 void DummyIEEE1394::readIsochronous(
@@ -117,29 +117,29 @@ void DummyIEEE1394::readIsochronous(
   unsigned int maximumPayload,
   IsochronousChannelListener* listener)
 {
-  throw IEEE1394Exception(this);
+  _throw IEEE1394Exception(this);
 }
 
 bool DummyIEEE1394::wait(
   unsigned int milliseconds)
 {
-  throw IEEE1394Exception(this);
+  _throw IEEE1394Exception(this);
 }
 
 void DummyIEEE1394::dequeue()
 {
-  throw IEEE1394Exception(this);
+  _throw IEEE1394Exception(this);
 }
   
 void DummyIEEE1394::registerFCPListener(
   FunctionControlProtocolListener* listener)
 {
-  throw IEEE1394Exception(this);
+  _throw IEEE1394Exception(this);
 }
 
 void DummyIEEE1394::unregisterFCPListener()
 {
-  throw IEEE1394Exception(this);
+  _throw IEEE1394Exception(this);
 }
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

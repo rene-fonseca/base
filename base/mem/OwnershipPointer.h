@@ -154,7 +154,7 @@ public:
   inline TYPE& operator*()
   {
     if (!object) {
-      throw NullPointer(this);
+      _throw NullPointer(this);
     }
     return *object;
   }
@@ -165,7 +165,7 @@ public:
   inline const TYPE& operator*() const
   {
     if (!object) {
-      throw NullPointer(this);
+      _throw NullPointer(this);
     }
     return *object;
   }
@@ -176,7 +176,7 @@ public:
   inline TYPE* operator->()
   {
     if (!object) {
-      throw NullPointer(this);
+      _throw NullPointer(this);
     }
     return object;
   }
@@ -187,7 +187,7 @@ public:
   inline const TYPE* operator->() const
   {
     if (!object) {
-      throw NullPointer(this);
+      _throw NullPointer(this);
     }
     return object;
   }

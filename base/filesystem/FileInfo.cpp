@@ -130,7 +130,7 @@ FileInfo::FileInfo(const String& _path)
       substLength = reparseHeader->MountPointReparseBuffer.SubstituteNameLength/2; // keep prefix "\??\"
       break;
     default:
-      throw FileSystemException("Unsupported link.", this);
+      _throw FileSystemException("Unsupported link.", this);
     }
     substPath[1] = '\\'; // convert '\??\' to '\\?\'
     substPath[substLength] = 0; // add terminator
@@ -147,9 +147,9 @@ FileInfo::FileInfo(const String& _path)
   }
   if (file == INVALID_HANDLE_VALUE) {
     if (linkLevel > maximumLinkLevel) {
-      throw FileSystemException("Too many levels of symbolic links.", this);
+      _throw FileSystemException("Too many levels of symbolic links.", this);
     } else {
-      throw FileSystemException("Not a file.", this);
+      _throw FileSystemException("Not a file.", this);
     }
   }
   
@@ -206,7 +206,7 @@ FileInfo::FileInfo(const String& _path)
   ACL_SIZE_INFORMATION aclInfo;
   if (::GetAclInformation(acl, &aclInfo, sizeof(aclInfo), AclSizeInformation) == 0) {
     ::LocalFree(securityDescriptor);
-    throw FileSystemException("Unable to get ACL.", this);
+    _throw FileSystemException("Unable to get ACL.", this);
   }
   
   // avoid GetEffectiveRightsFromAcl: get groups of owner and implement required functionality
@@ -297,12 +297,12 @@ FileInfo::FileInfo(const String& _path)
   #if defined(_COM_AZURE_DEV__BASE__LARGE_FILE_SYSTEM)
     struct stat64 status;
     if (::stat64(path.getElements(), &status) || (!S_ISREG(status.st_mode))) {
-      throw FileSystemException("Not a file.", this);
+      _throw FileSystemException("Not a file.", this);
     }
   #else
     struct stat status;
     if (::stat(path.getElements(), &status) || (!S_ISREG(status.st_mode))) {
-      throw FileSystemException("Not a file.", this);
+      _throw FileSystemException("Not a file.", this);
     }
   #endif
 

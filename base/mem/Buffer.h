@@ -104,7 +104,7 @@ public:
   inline uint8 operator[](MemorySize i) const
   {
     if (i >= size) {
-      throw OutOfRange();
+      _throw OutOfRange();
     }
     return static_cast<const uint8*>(heap)[i];
   }
@@ -115,7 +115,7 @@ public:
   inline uint8& operator[](MemorySize i)
   {
     if (i >= size) {
-      throw OutOfRange();
+      _throw OutOfRange();
     }
     return static_cast<uint8*>(heap)[i];
   }

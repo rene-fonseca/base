@@ -106,7 +106,7 @@ jobs:
   - task: CMake@1
     displayName: 'Config'
     inputs:
-      cmakeArgs: '.. -DCOLOR=1 -DCMAKE_BUILD_TYPE=Debug -DCMAKE_TOOLCHAIN_FILE=~/.wasmtime/wasi-sdk/share/cmake/wasi-sdk.cmake -DWASI_SDK_PREFIX=~/.wasmtime/wasi-sdk
+      cmakeArgs: '.. -DCOLOR=1 -DCMAKE_BUILD_TYPE=Debug -DCMAKE_TOOLCHAIN_FILE=~/.wasmtime/wasi-sdk/share/cmake/wasi-sdk.cmake -DWASI_SDK_PREFIX=~/.wasmtime/wasi-sdk'
 
   - task: CMake@1
     displayName: 'Build'

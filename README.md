@@ -94,6 +94,7 @@ Raspbian 10        | ARM32    | GCC     | Ok         | 9 Dec 2019
 openSUSE 15        | x86_64   | GCC     | Ok         | 9 Dec 2019
 Amazon Linux 2     | x86_64   | GCC     | Ok         | 17 Dec 2019 - Requires cmake build
 Emscripten         | WASM32   | LLVM    | Ok         | 20 Dec 2019
+WebAssembly WASI8  | WASM32   | LLVM    | Ok         | 3 Dec 2019 - Exceptions cause abort()
 OpenSolaris 11     | x86_64   | GCC     | Ok         | 6 Dec 2019
 OpenSolaris 11     | x86_64   | LLVM    | Pending    |
 OpenSolaris 11     | x86_64   | Studio  | Pending    |
@@ -104,7 +105,6 @@ HP-UX 11i v2       |          |         | Pending    |
 AIX 7.2            | PowerPC  |         | Pending    |
 RHEL 8             | PowerPC  |         | Pending    |
 SUSE Linux 15      | x86_64   |         | Pending    |
-WebAssembly WASI   | WASM32   | LLVM    | Build      | 14 Dec 2019 - Only builds but does not run
 IOS                | ARM64    | Clang   | Build      | 18 Dec 2019 - Not run
 GNU/Linux          | PowerPC  | GCC     | Build      | 23 Dec 2019 - Not run
 GNU/Linux          | sparc64  | GCC     | Build      | 23 Dec 2019 - Not run

@@ -59,7 +59,9 @@ public:
 
     fout << "Pop on empty stack (exception OutOfRange expected)" << ENDL;
     try {
+#if (_COM_AZURE_DEV__BASE__OS != _COM_AZURE_DEV__BASE__WASI)
       stack.pop();
+#endif
     } catch (OutOfRange& e) {
       fout << "Exception caught: " << e << ENDL;
     }

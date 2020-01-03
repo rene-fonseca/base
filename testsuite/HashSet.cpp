@@ -101,7 +101,9 @@ public:
     fout << "Removing non-existing value (exception InvalidNode expected)"
          << ENDL;
     try {
+#if (_COM_AZURE_DEV__BASE__OS != _COM_AZURE_DEV__BASE__WASI)
       hashSet.remove(MESSAGE("other"));
+#endif
     } catch (InvalidNode& e) {
       fout << e << ENDL;
     }

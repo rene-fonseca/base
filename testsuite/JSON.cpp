@@ -322,6 +322,7 @@ public:
     // fout << "Example1:" << EOL << example1 << EOL << ENDL;
     fout << "Example1:" << EOL << JSON::getJSONNoFormatting(example1) << ENDL;
 
+#if (_COM_AZURE_DEV__BASE__OS != _COM_AZURE_DEV__BASE__WASI)
     try {
       Reference<ObjectModel::Value> example2 = JSON().parse(JSON_EXAMPLE2);
     } catch (JSONException& e) {
@@ -352,6 +353,7 @@ public:
     } catch (ParseException& e) {
       fout << "Example bad string: '" << e.getMessage() << "'" << ENDL;
     }
+#endif
 
     ObjectModel objectModel;
     auto o = objectModel.createObject();

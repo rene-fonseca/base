@@ -84,6 +84,8 @@ set (CTEST_EXE "")
 if (EMSCRIPTEN)
   set (EXTENSION ".js")
   set (CTEST_EXE node --experimental-wasm-threads --experimental-wasm-bulk-memory)
+elseif ("${CMAKE_SYSTEM_NAME}" STREQUAL "Wasm")
+  set (CTEST_EXE wasmtime)
 endif ()
   
   # we run this separately add_test(NAME unittesting COMMAND ${CMAKE_CURRENT_BINARY_DIR}/unittesting)

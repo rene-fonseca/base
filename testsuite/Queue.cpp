@@ -55,7 +55,9 @@ public:
       fout << "pop(): " << qi.pop() << ENDL;
       fout << "pop(): " << qi.pop() << ENDL;
       fout << "pop(): " << qi.pop() << ENDL;
+#if (_COM_AZURE_DEV__BASE__OS != _COM_AZURE_DEV__BASE__WASI)
       fout << "pop(): " << qi.pop() << ENDL;
+#endif
     } catch (Exception& e) {
       ferr << TypeInfo::getTypename(e) << ": " << e.getMessage() << ENDL;
     }

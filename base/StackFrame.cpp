@@ -14,6 +14,7 @@
 #include <base/StackFrame.h>
 #include <base/dl/DynamicLinker.h>
 #include <base/concurrency/Thread.h>
+#include <base/concurrency/ThreadLocalContext.h>
 #include <base/string/FormatOutputStream.h>
 #include <base/filesystem/FileSystem.h>
 #include <base/TypeInfo.h>
@@ -588,11 +589,16 @@ void StackFrame::toStream(FormatOutputStream& stream, const ConstSpan<const void
 #endif
   }
 
+  int threadId = -1;
+  if (auto tlc = Thread::getLocalContext()) {
+    threadId = tlc->simpleId;
+  }
+  
   if (useColors) {
     stream << "Stack trace: THREAD=" << bold() << setForeground(ANSIEscapeSequence::BLUE)
-           << Thread::getThreadName() << normal() << EOL;
+           << Thread::getThreadName() << normal() << " [ID=" << threadId << "]" << EOL;
   } else {
-    stream << "Stack trace: THREAD=" << Thread::getThreadName() << EOL;
+    stream << "Stack trace: THREAD=" << Thread::getThreadName() << " [ID=" << threadId << "]" << EOL;
   }
   if (!trace || (trace.getSize() == 0)) {
     stream << indent(INDENT) << "NO STACK FRAMES" << EOL;

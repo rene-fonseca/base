@@ -50,7 +50,7 @@ namespace internal { // do NOT use namespace directly
 #endif
 
 /**
-  @defgroup mathematics Mathematics
+  @defgroup math Math
 */
 
 namespace isoc { // do NOT use namespace directly
@@ -1965,6 +1965,9 @@ public:
     return (result >= value) ? result : (result << 1);
   }
 
+  /**
+    Returns the bit index of the highest set bit.
+  */
   static inline unsigned int getHighestBit(uint8 value) noexcept
   {
     static const uint8 BITS[16] = {0,1,2,2,3,3,3,3,4,4,4,4,4,4,4,4};
@@ -1974,6 +1977,9 @@ public:
     return BITS[value];
   }
 
+  /**
+    Returns the bit index of the highest set bit.
+  */
   static inline unsigned int getHighestBit(uint16 value) noexcept
   {
     if (auto bits = getHighestBit(static_cast<uint8>(value >> 8))) {
@@ -1982,6 +1988,9 @@ public:
     return getHighestBit(static_cast<uint8>(value));
   }
 
+  /**
+    Returns the bit index of the highest set bit.
+  */
   static inline unsigned int getHighestBit(uint32 value) noexcept
   {
     if (auto bits = getHighestBit(static_cast<uint16>(value >> 16))) {
@@ -1990,6 +1999,9 @@ public:
     return getHighestBit(static_cast<uint16>(value));
   }
 
+  /**
+    Returns the bit index of the highest set bit.
+  */
   static inline unsigned int getHighestBit(uint64 value) noexcept
   {
     if (auto bits = getHighestBit(static_cast<uint32>(value >> 32))) {
@@ -1998,6 +2010,9 @@ public:
     return getHighestBit(static_cast<uint32>(value));
   }
 
+  /**
+    Returns the bit index of the highest set bit.
+  */
   static inline unsigned int getHighestBit(const uint128& value) noexcept
   {
     if (auto bits = getHighestBit(value.high)) {
@@ -2098,6 +2113,9 @@ public:
     return m * (n/gcd(m, n));
   }
   
+  /**
+    Returns value * mul/div while handling overflow.
+  */
   static uint64 muldiv(uint64 value, uint64 mul, uint64 div);
 
   /** Returns the carry for the addition. */
@@ -2189,24 +2207,28 @@ public:
   }
 };
 
+/** Returns +/- 0 for float. */
 template<>
 inline constexpr float Math::getZero<float>(bool negative) noexcept
 {
   return negative ? -0.0f : 0.0f;
 }
 
+/** Returns +/- 0 for double. */
 template<>
 inline constexpr double Math::getZero<double>(bool negative) noexcept
 {
   return negative ? -0.0 : 0.0;
 }
 
+/** Returns +/- 0 for long double. */
 template<>
 inline constexpr long double Math::getZero<long double>(bool negative) noexcept
 {
   return negative ? -0.0l : 0.0l;
 }
 
+/** Returns +infinity for float. */
 template<>
 inline /*constexpr*/ float Math::getInfinity<float>() noexcept
 {
@@ -2217,6 +2239,7 @@ inline /*constexpr*/ float Math::getInfinity<float>() noexcept
 #endif
 }
 
+/** Returns +infinity for double. */
 template<>
 inline /*constexpr*/ double Math::getInfinity<double>() noexcept
 {
@@ -2227,6 +2250,7 @@ inline /*constexpr*/ double Math::getInfinity<double>() noexcept
 #endif
 }
 
+/** Returns +infinity for long double. */
 template<>
 inline /*constexpr*/ long double Math::getInfinity<long double>() noexcept
 {
@@ -2237,6 +2261,7 @@ inline /*constexpr*/ long double Math::getInfinity<long double>() noexcept
 #endif
 }
 
+/** Returns quiet NaN for float. */
 template<>
 inline /*constexpr*/ float Math::getNaN<float>() noexcept
 {
@@ -2247,6 +2272,7 @@ inline /*constexpr*/ float Math::getNaN<float>() noexcept
 #endif
 }
 
+/** Returns quiet NaN for double. */
 template<>
 inline /*constexpr*/ double Math::getNaN<double>() noexcept
 {
@@ -2257,6 +2283,7 @@ inline /*constexpr*/ double Math::getNaN<double>() noexcept
 #endif
 }
 
+/** Returns quiet NaN for long double. */
 template<>
 inline /*constexpr*/ long double Math::getNaN<long double>() noexcept
 {

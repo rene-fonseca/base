@@ -103,15 +103,25 @@ jobs:
     name: Default
     demands: agent.os -equals Darwin
   steps:
+  - task: CmdLine@2
+    displayName: 'Pre-Config'
+    inputs:
+      script: |
+        mkdir -p wasi
+        cd wasi
+      workingDirectory: $(System.DefaultWorkingDirectory)
+
   - task: CMake@1
     displayName: 'Config'
     inputs:
       cmakeArgs: '.. -DCOLOR=1 -DCMAKE_BUILD_TYPE=Debug -DCMAKE_TOOLCHAIN_FILE=~/.wasmtime/wasi-sdk/share/cmake/wasi-sdk.cmake -DWASI_SDK_PREFIX=~/.wasmtime/wasi-sdk'
+      workingDirectory: $(System.DefaultWorkingDirectory)/wasi
 
   - task: CMake@1
     displayName: 'Build'
     inputs:
       cmakeArgs: '--build . --config Debug --target install -- -j 4'
+      workingDirectory: $(System.DefaultWorkingDirectory)/wasi
 
   - task: CmdLine@2
     displayName: 'Run tests'
@@ -120,6 +130,7 @@ jobs:
       script: |
         # ./testsuite/unittesting.js --junit junit.xml
         ctest -T Test
+      workingDirectory: $(System.DefaultWorkingDirectory)/wasi
 
 #  - task: PublishTestResults@2
 #    inputs:
@@ -137,4 +148,4 @@ jobs:
     inputs:
       artifactName: 'base-wasi'
       targetPath: 'artifacts'
-      path: $(System.DefaultWorkingDirectory)/build/install
+      path: $(System.DefaultWorkingDirectory)/wasi/install

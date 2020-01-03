@@ -96,3 +96,45 @@ jobs:
       testResultsFormat: 'cTest'
       testResultsFiles: '**/Test.xml'
       testRunTitle: 'Test results for CTest'
+
+
+- job: macos_wasi_self
+  pool:
+    name: Default
+    demands: agent.os -equals Darwin
+  steps:
+  - task: CMake@1
+    displayName: 'Config'
+    inputs:
+      cmakeArgs: '.. -DCOLOR=1 -DCMAKE_BUILD_TYPE=Debug -DCMAKE_TOOLCHAIN_FILE=~/.wasmtime/wasi-sdk/share/cmake/wasi-sdk.cmake -DWASI_SDK_PREFIX=~/.wasmtime/wasi-sdk
+
+  - task: CMake@1
+    displayName: 'Build'
+    inputs:
+      cmakeArgs: '--build . --config Debug --target install -- -j 4'
+
+  - task: CmdLine@2
+    displayName: 'Run tests'
+    continueOnError: true
+    inputs:
+      script: |
+        # ./testsuite/unittesting.js --junit junit.xml
+        ctest -T Test
+
+#  - task: PublishTestResults@2
+#    inputs:
+#      testResultsFormat: 'JUnit'
+#      testResultsFiles: '**/junit.xml'
+#      testRunTitle: 'Unittest results'
+
+  - task: PublishTestResults@2
+    inputs:
+      testResultsFormat: 'cTest'
+      testResultsFiles: '**/Test.xml'
+      testRunTitle: 'Test results for CTest'
+
+  - task: PublishPipelineArtifact@1
+    inputs:
+      artifactName: 'base-wasi'
+      targetPath: 'artifacts'
+      path: $(System.DefaultWorkingDirectory)/build/install

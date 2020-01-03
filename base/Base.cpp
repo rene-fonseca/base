@@ -48,9 +48,6 @@ _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 void GlobalPrint::printf(const char* text, ...) noexcept
 {
-  printf("!!! HERE\n");
-  return;
-
 #if (_COM_AZURE_DEV__BASE__FLAVOR != _COM_AZURE_DEV__BASE__WIN32)
   char buffer[1024+1];
   va_list args;

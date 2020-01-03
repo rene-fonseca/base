@@ -27,7 +27,9 @@
 #else // unix
 #  define __thread // TAG: temp. fix for s390-ibm-linux-gnu
 #  include <sys/types.h>
+#if (_COM_AZURE_DEV__BASE__OS != _COM_AZURE_DEV__BASE__WASI)
 #  include <sys/wait.h>
+#endif
 #  include <sys/time.h>
 #  include <sys/resource.h> // getpriority, getrusage
 #  include <unistd.h>
@@ -94,6 +96,8 @@ Process Process::getProcess() noexcept
 {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   return Process(::GetCurrentProcessId());
+#elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__WASI)
+  return Process(); // WASI-SDK 8
 #else // unix
   return Process(::getpid());
 #endif // flavor

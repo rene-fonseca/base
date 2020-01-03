@@ -40,7 +40,9 @@
 #  include <sys/socket.h>
 #  include <netinet/in.h> // defines ntohs...
 #  include <netinet/tcp.h> // options
+#if (_COM_AZURE_DEV__BASE__OS != _COM_AZURE_DEV__BASE__WASI)
 #  include <net/if.h>
+#endif
 #  include <unistd.h>
 #  include <fcntl.h>
 #  include <errno.h>

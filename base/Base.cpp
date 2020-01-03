@@ -432,45 +432,59 @@ _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE
 #if 0 && (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__WASI)
 // TAG: temporary hooks to find WASI issues
 
-typedef uint64_t guard_type;
-
-void abort()
+extern "C" void abort()
 {
   printf("Error: abort() called\n");
-  exit(1);
+  while (1);
+  //exit(1);
 }
 
+#if 0
+typedef uint64_t guard_type;
 extern "C" bool is_initialized(guard_type* guard_object)
 {
-  printf("is_initialized %p\n", guard_object);
   char* initialized = (char*)guard_object;
-  return *initialized;
+  printf("is_initialized %p INIT=%d\n", guard_object, *initialized != 0);
+  return *initialized != 0;
 }
 
 extern "C" void set_initialized(guard_type* guard_object)
 {
-  printf("set_initialized %p\n", guard_object);
   char* initialized = (char*)guard_object;
+  printf("set_initialized %p init=%d\n", guard_object, *initialized != 0);
   *initialized = 1;
 }
 
+#if 0
+// https://libcxxabi.llvm.org/spec.html
 extern "C" int __cxa_guard_acquire(guard_type *guard_object)
 {
-  set_initialized(guard_object);
-  printf("__cxa_guard_acquire %p %d\n", guard_object, is_initialized(guard_object));
-  return !is_initialized(guard_object);
+  char* bytes = (char*)guard_object;
+  bool init = is_initialized(guard_object);
+  printf("__cxa_guard_acquire %p init=%d use=%d\n", guard_object, init, bytes[1] != 0);
+  if (init) {
+    return 0;
+  }
+  if (bytes[1] != 0) { // in use
+    //abort();
+  }
+  bytes[1] = 1; // in use
+  return 1;
 }
 
 extern "C"  void __cxa_guard_release(guard_type *guard_object)
 {
-  printf("__cxa_guard_release %p\n", guard_object);
+  printf("__cxa_guard_release %p init=%d\n", guard_object, is_initialized(guard_object));
   *guard_object = 0;
   set_initialized(guard_object);
 }
 
 extern "C" void __cxa_guard_abort(guard_type *guard_object)
 {
+  char* bytes = (char*)guard_object;
   printf("__cxa_guard_abort %p\n", guard_object);
-  *guard_object = 0;
+  bytes[1] = 0; // not in use
 }
+#endif
+#endif
 #endif

@@ -223,7 +223,7 @@ public:
 #  define _COM_AZURE_DEV__BASE__GLOBAL_PRINT() \
   namespace {base::GlobalPrint _COM_AZURE_DEV__BASE__MAKE_IDENTIFIER(globalPrint)(__FILE__);}
 
-#  define _COM_AZURE_DEV__BASE__PRINT(message, ...) GlobalPrint::printf(message, __VA_ARGS__)
+#  define _COM_AZURE_DEV__BASE__PRINT(...) base::GlobalPrint::printf(__VA_ARGS__)
 #else
 #  define _COM_AZURE_DEV__BASE__GLOBAL_PRINT() namespace {}
 #  define _COM_AZURE_DEV__BASE__PRINT(message, ...)

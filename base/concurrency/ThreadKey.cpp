@@ -18,7 +18,7 @@
 
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
 #  include <windows.h>
-#else // unix
+#elif (_COM_AZURE_DEV__BASE__OS != _COM_AZURE_DEV__BASE__WASI) // unix
 #  define __thread // TAG: temp. fix for s390-ibm-linux-gnu
 #  include <pthread.h>
 #endif // flavor

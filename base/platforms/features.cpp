@@ -116,6 +116,7 @@ _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE
 
 #if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__WASI)
 #include <string.h>
+#include <stdlib.h>
 
 void dumpMemory(size_t offset, size_t size)
 {
@@ -168,42 +169,6 @@ extern "C" void __cxa_throw(void* thrown_exception, void* /*struct std::type_inf
 extern "C" void __cxa_rethrow()
 {
   _COM_AZURE_DEV__BASE__PRINT("__cxa_rethrow\n");
-}
-
-extern "C" int pthread_self()
-{
-  return 0;
-}
-
-extern "C" int gethostname(char *name, size_t namelen)
-{
-  strncpy(name, "localhost", namelen);
-  return 0;
-}
-
-extern "C" struct hostent * gethostbyname(const char *name)
-{
-  return nullptr;
-}
-
-extern "C" void* dlopen(const char* path, int mode)
-{
-  return 0;
-}
-
-extern "C" void* dlsym(void* handle, const char* symbol)
-{
-  return 0;
-}
-
-extern "C" void * mmap(void *addr, size_t len, int prot, int flags, int fd, off_t offset)
-{
-  return nullptr;
-}
-
-extern "C" int munmap(void *addr, size_t len)
-{
-  return -1;
 }
 
 #endif

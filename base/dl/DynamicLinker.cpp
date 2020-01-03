@@ -23,6 +23,7 @@ _COM_AZURE_DEV__BASE__GLOBAL_PRINT();
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
 #  include <windows.h>
 #  include <dbghelp.h>
+#elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__WASI)
 #else // unix
 #  include <dlfcn.h>
 #if 0
@@ -118,6 +119,8 @@ void* DynamicLinker::getGlobalSymbolImpl(const String& symbol)
     _throw LinkerException("Unable to resolve symbol.");
   }
   return result;
+#elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__WASI)
+  return nullptr;
 #else // unix
   #if defined(RTLD_LAZY)
     void* handle = ::dlopen(nullptr, RTLD_LAZY);
@@ -165,6 +168,8 @@ DynamicLinker::DynamicLinker(const String& path, unsigned int options)
   if ((handle = ::LoadLibraryEx(ToWCharString(path), 0, 0)) == nullptr) {
     _throw LinkerException("Unable to open module.", this);
   }
+#elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__WASI)
+  BASSERT(!"Not supported.");
 #else // unix
   #if defined(RTLD_LAZY)
     int flags = (options & LAZY) ? RTLD_LAZY : RTLD_NOW;
@@ -188,6 +193,8 @@ void* DynamicLinker::getSymbol(const Literal& symbol) const
   void* result = (void*)(::GetProcAddress((HMODULE)handle, symbol.getValue()));
   bassert(result != nullptr, LinkerException("Unable to resolve symbol.", this));
   return result;
+#elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__WASI)
+  return nullptr;
 #else // unix
   void* result = ::dlsym(handle, symbol.getValue());
   bassert(dlerror() == 0, LinkerException("Unable to resolve symbol.", this));
@@ -201,6 +208,8 @@ void* DynamicLinker::getSymbol(const String& symbol) const
   void* result = (void*)(::GetProcAddress((HMODULE)handle, symbol.getElements()));
   bassert(result != 0, LinkerException("Unable to resolve symbol.", this));
   return result;
+#elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__WASI)
+  return nullptr;
 #else // unix
   void* result = ::dlsym(handle, symbol.getElements());
   bassert(dlerror() == 0, LinkerException("Unable to resolve symbol.", this));
@@ -212,6 +221,8 @@ void* DynamicLinker::getUncertainSymbol(const Literal& symbol) const noexcept
 {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   return (void*)(::GetProcAddress((HMODULE)handle, symbol.getValue()));
+#elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__WASI)
+  return nullptr;
 #else // unix
   return ::dlsym(handle, symbol.getValue());
 #endif // flavor
@@ -221,6 +232,8 @@ void* DynamicLinker::getUncertainSymbol(const String& symbol) const noexcept
 {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   return (void*)(::GetProcAddress((HMODULE)handle, symbol.getElements()));
+#elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__WASI)
+  return nullptr;
 #else // unix
   return ::dlsym(handle, symbol.getElements());
 #endif // flavor
@@ -252,6 +265,7 @@ DynamicLinker::~DynamicLinker()
     ::FreeLibrary((HMODULE)handle),
     LinkerException("Unable to close module.", this)
   );
+#elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__WASI)
 #else // unix
   bassert(
     ::dlclose(handle) == 0,

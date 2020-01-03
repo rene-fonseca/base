@@ -32,7 +32,9 @@
 #  include <sys/socket.h>
 #  include <sys/param.h> // may define MAXHOSTNAMELEN (linux, irix)
 #  include <netinet/in.h> // define IP address
+#if (_COM_AZURE_DEV__BASE__OS != _COM_AZURE_DEV__BASE__WASI)
 #  include <netdb.h> // gethostbyname, may define MAXHOSTNAMELEN (solaris)
+#endif
 #  include <arpa/inet.h> // defines inet_ntop...
 #  include <unistd.h> // defines gethostname
 #endif // flavor
@@ -63,6 +65,8 @@ String InetAddress::getLocalHost()
       Type::getType<InetAddress>()
     );
   }
+#elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__WASI)
+  const char* name = "localhost";
 #else // unix
   char name[MAXHOSTNAMELEN + 1]; // does MAXHOSTNAMELEN include terminator
   if (gethostname(name, sizeof(name))) {
@@ -112,6 +116,8 @@ List<InetAddress> InetAddress::getAddressesByName(const String& name)
   }
 
   freeaddrinfo(ai); // release resources - MT-level is safe
+#  elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__WASI)
+  BASSERT(!"Not supported.");
 #else // use ordinary BSD sockets - IPv4
   struct hostent* hp = nullptr;
 
@@ -181,6 +187,8 @@ InetAddress InetAddress::getAddressByName(const String& name)
   }
   
   freeaddrinfo(ai); // release resources - MT-level is safe
+#  elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__WASI)
+  BASSERT(!"Not supported.");
 #else // use ordinary BSD sockets - IPv4
   struct hostent* hp;
 
@@ -512,6 +520,8 @@ String InetAddress::getHostName(bool fullyQualified) const
   }
 
   return NativeString(hostname);
+#  elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__WASI)
+  return "localhost";
 #else // use ordinary BSD sockets - IPv4
   struct hostent* hp = nullptr;
 

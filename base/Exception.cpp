@@ -313,10 +313,10 @@ Exception::~Exception() noexcept
 
 void ThrowException::onException(const char* who, const char* file, unsigned int line) noexcept
 {
-  file = Debug::getRelativePath(file);
-#if 0
+#if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__WASI)
   printf("THROW in %s at %s:%d\n", who, file, line);
 #else
+  file = Debug::getRelativePath(file);
   auto& stream = fout;
 
   const bool colors = FileDescriptor::getStandardOutput().isANSITerminal();

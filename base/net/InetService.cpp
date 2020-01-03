@@ -18,7 +18,9 @@
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
 #  include <winsock2.h>
 #else // unix
+#if (_COM_AZURE_DEV__BASE__OS != _COM_AZURE_DEV__BASE__WASI)
 #  include <netdb.h>
+#endif
 #  include <netinet/in.h>
 #endif // flavor
 
@@ -26,6 +28,7 @@ _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 unsigned short InetService::getByName(const String& name, const String& protocol) noexcept
 {
+#if (_COM_AZURE_DEV__BASE__OS != _COM_AZURE_DEV__BASE__WASI)
   struct servent* sp = nullptr;
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   sp = getservbyname(name.getElements(), protocol.getElements()); // MT-safe
@@ -43,10 +46,15 @@ unsigned short InetService::getByName(const String& name, const String& protocol
   sp = getservbyname(name.getElements(), protocol.getElements());
 #endif
   return sp ? ByteOrder::fromBigEndian<unsigned short>(sp->s_port) : 0;
+#else
+  BASSERT(!"Not supported.");
+  return 0;
+#endif
 }
 
-String InetService::getByPort(
-  unsigned short port, const String& protocol) noexcept {
+String InetService::getByPort(unsigned short port, const String& protocol) noexcept
+{
+#if (_COM_AZURE_DEV__BASE__OS != _COM_AZURE_DEV__BASE__WASI)
   struct servent* sp = nullptr;
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   sp = getservbyport(ByteOrder::toBigEndian<unsigned short>(port), protocol.getElements()); // MT-safe
@@ -64,6 +72,10 @@ String InetService::getByPort(
   sp = getservbyport(ByteOrder::toBigEndian<unsigned short>(port), protocol.getElements());
 #endif
   return sp ? String(sp->s_name) : String();
+#else
+  BASSERT(!"Not supported.");
+  return String();
+#endif
 }
 
 InetService::InetService(

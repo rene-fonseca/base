@@ -86,7 +86,9 @@ typedef struct _REPARSE_DATA_BUFFER {
 #  include <errno.h>
 #  include <limits.h>
 #  include <string.h> // required by FD_SET on solaris
+#if (_COM_AZURE_DEV__BASE__OS != _COM_AZURE_DEV__BASE__WASI)
 #  include <sys/mman.h>
+#endif
 
 #  if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__SOLARIS)
 #    include <sys/acl.h> // solaris and irix

@@ -24,8 +24,10 @@
 #  include <lm.h>
 #else // unix
 #  include <sys/types.h>
+#if (_COM_AZURE_DEV__BASE__OS != _COM_AZURE_DEV__BASE__WASI)
 #  include <grp.h>
 #  include <pwd.h>
+#endif
 #  include <unistd.h>
 #endif // flavor
 
@@ -93,6 +95,8 @@ bool Group::operator==(const Group& compare) const noexcept
 Group::Group(const String& name)
 {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
+  _throw NotImplemented(this);
+#elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__WASI)
   _throw NotImplemented(this);
 #else // unix
   #if defined(_COM_AZURE_DEV__BASE__HAVE_GETGRNAM_R)
@@ -170,6 +174,8 @@ String Group::getName() const
   } else {
     return String(static_cast<const wchar*>(name)); // TAG: does nameSize hold length of name
   }
+#elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__WASI)
+  return String();
 #else // unix
   #if defined(_COM_AZURE_DEV__BASE__HAVE_GETGRNAM_R)
     //long sysconf(_SC_GETGR_R_SIZE_MAX);
@@ -195,7 +201,8 @@ String Group::getName() const
 #endif // flavor
 }
 
-Array<String> Group::getMembers() const {
+Array<String> Group::getMembers() const
+{
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   Array<String> result;
 
@@ -244,6 +251,8 @@ Array<String> Group::getMembers() const {
     ::NetApiBufferFree(buffer);
   }
   return result;
+#elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__WASI)
+  return Array<String>();
 #else // unix
   #if defined(_COM_AZURE_DEV__BASE__HAVE_GETGRGID_R)
     //long sysconf(_SC_GETGR_R_SIZE_MAX);

@@ -36,7 +36,7 @@
 #  include <windows.h>
 #else // pthread
 #  define __thread // TAG: temp. fix for s390-ibm-linux-gnu
-#if 1 || (_COM_AZURE_DEV__BASE__OS != _COM_AZURE_DEV__BASE__WASI)
+#if (_COM_AZURE_DEV__BASE__OS != _COM_AZURE_DEV__BASE__WASI)
 #  include <pthread.h>
 #  define _COM_AZURE_DEV__BASE__PTHREAD
 #endif
@@ -209,8 +209,11 @@ void Thread::exit() noexcept
   getThread()->state = EXIT;
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   ::ExitThread(0); // will properly create resource leaks
-#else // pthread
+#elif defined(_COM_AZURE_DEV__BASE__PTHREAD)
   pthread_exit(0); // will properly create resource leaks
+#else
+  BASSERT(!"Not supported.");
+  // _COM_AZURE_DEV__BASE_NOT_SUPPORTED(); // throw NotSupported();
 #endif // flavor
 }
 
@@ -452,6 +455,7 @@ void Thread::yield() noexcept
   ::SwitchToThread(); // no errors
 #elif defined(_COM_AZURE_DEV__BASE__PTHREAD_YIELD)
   pthread_yield(); // ignore errors
+#elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__WASI)
 #else // unix
   sched_yield(); // ignore errors
 #endif
@@ -543,8 +547,10 @@ Thread::Thread(Thread* _parent) noexcept
 #endif
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   identifier = getAsPointer(::GetCurrentThreadId());
-#else // pthread
+#elif defined(_COM_AZURE_DEV__BASE__PTHREAD)
   identifier = getAsPointer(::pthread_self());
+#else
+  identifier = 0;
 #endif
 }
 
@@ -623,8 +629,10 @@ bool Thread::isSelf() const noexcept
 {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   return ::GetCurrentThreadId() == getAddressOf(identifier);
-#else // pthread
+#elif defined(_COM_AZURE_DEV__BASE__PTHREAD)
   return ::pthread_self() == Cast::extract<pthread_t>(identifier);
+#else
+  return true;
 #endif
 }
 
@@ -690,8 +698,10 @@ Thread::Identifier Thread::getIdentifier() noexcept
   // pointer to thread local storage: fs:[0x2c]
   // process id: fs:[0x20]
   // thread id: fs:[0x24]
-#else // pthread
+#elif defined(_COM_AZURE_DEV__BASE__PTHREAD)
   return getAsPointer(::pthread_self());
+#else
+  return nullptr;
 #endif
 }
 

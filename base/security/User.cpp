@@ -31,7 +31,9 @@
 #  endif
 #else // unix
 #  include <sys/types.h>
+#if (_COM_AZURE_DEV__BASE__OS != _COM_AZURE_DEV__BASE__WASI)
 #  include <pwd.h>
+#endif
 #  include <unistd.h>
 #endif // flavor
 
@@ -56,6 +58,8 @@ User User::getCurrentUser() {
   User result = User(ownerSID);
   ::LocalFree(securityDescriptor);
   return result;
+#elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__WASI)
+  return User();
 #else // unix
   return User(static_cast<unsigned long>(::getuid()));
 #endif // flavor

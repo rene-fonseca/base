@@ -48,6 +48,11 @@ _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 void GlobalPrint::printf(const char* text, ...) noexcept
 {
+#if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__WASI)
+  puts(text);
+  return;
+#endif
+
 #if (_COM_AZURE_DEV__BASE__FLAVOR != _COM_AZURE_DEV__BASE__WIN32)
   char buffer[1024+1];
   va_list args;
@@ -254,7 +259,7 @@ bool Assert::handle(const char* expression, const char* filename, const char* li
       Trace::message(buffer);
       continue;
     }
-    
+
     if (writeAssertsToErrorStream && Runtime::isGlobalStateInGoodCondition()) {
       // TAG: we should suppress recursive assert
       auto& ferr = StackFrame::getErrorStream();

@@ -550,7 +550,6 @@ Thread::Thread(Thread* _parent) noexcept
 #elif defined(_COM_AZURE_DEV__BASE__PTHREAD)
   identifier = getAsPointer(::pthread_self());
 #else
-  identifier = 0;
 #endif
 }
 

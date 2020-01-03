@@ -106,8 +106,32 @@ APPLICATION_STUB(ArrayApplication);
 #include <base/math/Vector3D.h>
 #include <base/string/StringOutputStream.h>
 
+class MyClass {
+private:
+
+  char buffer[1024*1024];
+public:
+
+  MyClass(unsigned int id = 0)
+  {
+    memset(buffer, 0, 1024*1024);
+    printf("MyClass id=%d\n", id);
+  }
+};
+
+#define STATIC_OBJ() static MyClass* _COM_AZURE_DEV__BASE__MAKE_IDENTIFIER(o) = new MyClass(__COUNTER__)
+
+// _COM_AZURE_DEV__BASE__GLOBAL_PRINT();
+
 int main(int argc, const char* argv[])
 {
+  STATIC_OBJ();
+  STATIC_OBJ();
+  STATIC_OBJ();
+  STATIC_OBJ();
+  STATIC_OBJ();
+  STATIC_OBJ();
+
   printf("BEGIN!\n");
   dvector3 result(0,0,1);
   result += dvector3(2,3,4);

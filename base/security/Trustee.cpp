@@ -38,8 +38,10 @@
 #  endif
 #else // unix
 #  include <sys/types.h>
+#if (_COM_AZURE_DEV__BASE__OS != _COM_AZURE_DEV__BASE__WASI)
 #  include <grp.h>
 #  include <pwd.h>
+#endif
 #  include <unistd.h>
 #endif // flavor
 

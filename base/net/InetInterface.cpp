@@ -31,7 +31,9 @@
 #  endif
 #  include <sys/types.h>
 #  include <sys/socket.h>
+#if (_COM_AZURE_DEV__BASE__OS != _COM_AZURE_DEV__BASE__WASI)
 #  include <net/if.h>
+#endif
 #  include <netinet/in.h>
 #  include <sys/ioctl.h>
 #  include <unistd.h>

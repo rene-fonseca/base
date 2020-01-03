@@ -433,9 +433,10 @@ Array<String> FolderInfo::getEntries() const
     if (::closedir(directory) != 0) {
       _throw FileSystemException("Unable to close folder.", this);
     }
-  #elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__CYGWIN)
+  #elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__WASI) || \
+        (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__CYGWIN)
     // TAG: should detect is readdir_r is available (_COM_AZURE_DEV__BASE__READDIR_R)
-    #warning using non-reentrant api - readdir
+    // #warning using non-reentrant api - readdir
     DIR* directory = nullptr;
     if ((directory = ::opendir(path.getElements())) == 0) {
       _throw FileSystemException("Unable to read entries of folder.", this);

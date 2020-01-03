@@ -80,8 +80,14 @@ void FileDescriptor::close()
 
 bool FileDescriptor::isANSITerminal() const noexcept
 {
+  auto app = Application::getApplication();
+  // TAG: make environment static so we can get it without application
+  if (!app) {
+    return false;
+  }
+
   // https://bixense.com/clicolors/
-  const auto& env = Application::getApplication()->getEnvironment();
+  const auto& env = app->getEnvironment();
   if (auto value = env.find("CLICOLOR_FORCE")) { // defaults to disabled
     if (*value != "0") {
       return true;

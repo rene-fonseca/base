@@ -47,8 +47,21 @@
 #include <base/UnitTest.h>
 #include <base/Module.h>
 #include <stdlib.h>
+#include <stdio.h>
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
+
+#if 0
+class Print {
+public:
+  
+  Print(const char* text)
+  {
+    puts(text);
+  }
+};
+Print _COM_AZURE_DEV__BASE__MAKE_IDENTIFIER(print)("PRINT: HERE " __FILE__ ":" _COM_AZURE_DEV__BASE__INDIRECT_STRINGIFY(__LINE__));
+#endif
 
 _COM_AZURE_DEV__BASE__GLOBAL_PRINT();
 
@@ -237,7 +250,7 @@ namespace internal {
     ferr << stream.getString() << ENDL;
     exit(Application::EXIT_CODE_INITIALIZATION);
   }
-  
+
   class ExceptionHandlers {
   public:
     

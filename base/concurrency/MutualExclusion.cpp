@@ -57,7 +57,7 @@ MutualExclusion::MutualExclusion()
   }
   pthread_mutexattr_destroy(&attributes); // should never fail
 #else
-  BASSERT(!"Not supported.");
+  // DO NOT ASSERT SINCE MUTEX IS USED BASSERT(!"Not supported.");
 #endif
 }
 

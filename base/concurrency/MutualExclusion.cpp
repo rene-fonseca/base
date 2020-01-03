@@ -129,7 +129,7 @@ MutualExclusion::~MutualExclusion()
   }
   delete[] (pthread_mutex_t*)mutex;
 #else
-  BASSERT(!"Not supported.");
+  // BASSERT(!"Not supported.");
 #endif
 }
 

@@ -334,7 +334,7 @@ ReadWriteLock::~ReadWriteLock()
   }
   delete[] static_cast<pthread_mutex_t*>(representation);
 #else
-  BASSERT(!"Not supported.");
+  // BASSERT(!"Not supported.");
 #endif
 }
 

@@ -409,7 +409,8 @@ void* StackFrame::getStackFrame() noexcept
     : "=m" (frame) // output
   );
 #else
-  BASSERT(!"Not implemented");
+  // do not use assert due to recursion BASSERT(!"Not implemented");
+  return nullptr;
 #endif
   if (frame) {
     frame = reinterpret_cast<void**>(*frame); // get parent frame

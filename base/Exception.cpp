@@ -313,10 +313,10 @@ Exception::~Exception() noexcept
 
 void ThrowException::onException(const char* who, const char* file, unsigned int line) noexcept
 {
-#if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__WASI)
+  file = Debug::getRelativePath(file);
+#if 0 && (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__WASI)
   printf("THROW in %s at %s:%d\n", who, file, line);
 #else
-  file = Debug::getRelativePath(file);
   auto& stream = fout;
 
   const bool colors = FileDescriptor::getStandardOutput().isANSITerminal();
@@ -348,6 +348,7 @@ void ThrowException::onException(const char* who, const char* file, unsigned int
     stream << normal() << ENDL;
   }
   
+#if (_COM_AZURE_DEV__BASE__OS != _COM_AZURE_DEV__BASE__WASI)
   static bool showStackTrace = true;
   if (showStackTrace) {
     StackFrame::toStream(
@@ -356,6 +357,7 @@ void ThrowException::onException(const char* who, const char* file, unsigned int
       (colors ? StackFrame::FLAG_USE_COLORS : 0)
     );
   }
+#endif
 #endif
 }
 

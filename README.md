@@ -94,7 +94,7 @@ Raspbian 10        | ARM32    | GCC     | Ok         | 9 Dec 2019
 openSUSE 15        | x86_64   | GCC     | Ok         | 9 Dec 2019
 Amazon Linux 2     | x86_64   | GCC     | Ok         | 17 Dec 2019 - Requires cmake build
 Emscripten         | WASM32   | LLVM    | Ok         | 20 Dec 2019
-WebAssembly WASI8  | WASM32   | LLVM    | Ok         | 3 Dec 2019 - Exceptions cause abort()
+WebAssembly WASI8  | WASM32   | LLVM    | Ok         | 3 Jan 2020 - Exceptions cause abort()
 OpenSolaris 11     | x86_64   | GCC     | Ok         | 6 Dec 2019
 OpenSolaris 11     | x86_64   | LLVM    | Pending    |
 OpenSolaris 11     | x86_64   | Studio  | Pending    |

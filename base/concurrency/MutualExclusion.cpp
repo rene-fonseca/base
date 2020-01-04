@@ -58,6 +58,7 @@ MutualExclusion::MutualExclusion()
   pthread_mutexattr_destroy(&attributes); // should never fail
 #else
   // assume single threaded
+  mutex = new int(0);
 #endif
 }
 
@@ -77,10 +78,11 @@ void MutualExclusion::exclusiveLock() const
   }
 #else
   // assume single threaded
-  while (!mutex) {
+  int* handle = reinterpret_cast<int*>(mutex);
+  while (*handle) {
     Thread::microsleep(1000);
   }
-  mutex = &exclusiveLock;
+  *handle = 1;
 #endif
 }
 
@@ -103,10 +105,11 @@ bool MutualExclusion::tryExclusiveLock() const
   }
 #else
   // assume single threaded
-  if (!mutex) {
+  int* handle = reinterpret_cast<int*>(mutex);
+  if (*handle) {
     return false;
   }
-  mutex = &tryExclusiveLock;
+  *handle = 1;
   return true;
 #endif
 }
@@ -122,7 +125,11 @@ void MutualExclusion::releaseLock() const
     _throw MutualExclusionException(this);
   }
 #else
-  mutex = nullptr;
+  int* handle = reinterpret_cast<int*>(mutex);
+  if (!*handle) {
+    _throw MutualExclusionException(this);
+  }
+  *handle = 0;
 #endif
 }
 
@@ -137,7 +144,8 @@ MutualExclusion::~MutualExclusion()
   }
   delete[] (pthread_mutex_t*)mutex;
 #else
-  mutex = nullptr;
+  int* handle = reinterpret_cast<int*>(mutex);
+  delete handle;
 #endif
 }
 

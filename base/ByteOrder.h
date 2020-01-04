@@ -30,12 +30,14 @@ namespace ByteOrder {
 
 #if (_COM_AZURE_DEV__BASE__BYTE_ORDER == _COM_AZURE_DEV__BASE__BIG_ENDIAN)
 
+  /** Convert value from big endian. */
   template<class TYPE>
   inline TYPE fromBigEndian(TYPE value) noexcept
   {
     return value;
   }
 
+  /** Convert value to big endian. */
   template<class TYPE>
   inline TYPE toBigEndian(TYPE value) noexcept
   {
@@ -44,24 +46,28 @@ namespace ByteOrder {
 
 #elif (_COM_AZURE_DEV__BASE__BYTE_ORDER == _COM_AZURE_DEV__BASE__LITTLE_ENDIAN)
 
+  /** Convert value from big endian. */
   template<class TYPE>
   inline TYPE fromBigEndian(TYPE value) noexcept
   {
     return value;
   }
 
+  /** Convert value from big endian. */
   template<>
   inline uint16 fromBigEndian<uint16>(uint16 value) noexcept
   {
     return (value >> 8) | (value << 8);
   }
 
+  /** Convert value from big endian. */
   template<>
   inline uint32 fromBigEndian<uint32>(uint32 value) noexcept
   {
     return (value >> 24) | ((value & 0xff0000) >> 8) | ((value & 0xff00) << 8) | (value << 24);
   }
 
+  /** Convert value from big endian. */
   template<>
   inline uint64 fromBigEndian<uint64>(uint64 value) noexcept
   {
@@ -69,24 +75,28 @@ namespace ByteOrder {
       static_cast<uint64>(fromBigEndian<uint32>(static_cast<uint32>(value))) << 32;
   }
 
+  /** Convert value to big endian. */
   template<class TYPE>
   inline TYPE toBigEndian(TYPE value) noexcept
   {
     return value;
   }
 
+  /** Convert value to big endian. */
   template<>
   inline uint16 toBigEndian<uint16>(uint16 value) noexcept
   {
     return (value >> 8) | (value << 8);
   }
 
+  /** Convert value to big endian. */
   template<>
   inline uint32 toBigEndian<uint32>(uint32 value) noexcept
   {
     return (value >> 24) | ((value & 0xff0000) >> 8) | ((value & 0xff00) << 8) | (value << 24);
   }
 
+  /** Convert value to big endian. */
   template<>
   inline uint64 toBigEndian<uint64>(uint64 value) noexcept
   {

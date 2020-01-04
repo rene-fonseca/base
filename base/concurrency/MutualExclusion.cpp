@@ -57,7 +57,7 @@ MutualExclusion::MutualExclusion()
   }
   pthread_mutexattr_destroy(&attributes); // should never fail
 #else
-  // DO NOT ASSERT SINCE MUTEX IS USED BASSERT(!"Not supported.");
+  // assume single threaded
 #endif
 }
 
@@ -76,7 +76,11 @@ void MutualExclusion::exclusiveLock() const
     _throw MutualExclusionException(this);
   }
 #else
-  BASSERT(!"Not supported.");
+  // assume single threaded
+  while (!mutex) {
+    Thread::microsleep(1000);
+  }
+  mutex = &exclusiveLock;
 #endif
 }
 
@@ -98,8 +102,12 @@ bool MutualExclusion::tryExclusiveLock() const
     _throw MutualExclusionException(this);
   }
 #else
-  BASSERT(!"Not supported.");
-  return false;
+  // assume single threaded
+  if (!mutex) {
+    return false;
+  }
+  mutex = &tryExclusiveLock;
+  return true;
 #endif
 }
 
@@ -114,7 +122,7 @@ void MutualExclusion::releaseLock() const
     _throw MutualExclusionException(this);
   }
 #else
-  BASSERT(!"Not supported.");
+  mutex = nullptr;
 #endif
 }
 
@@ -129,7 +137,7 @@ MutualExclusion::~MutualExclusion()
   }
   delete[] (pthread_mutex_t*)mutex;
 #else
-  // BASSERT(!"Not supported.");
+  mutex = nullptr;
 #endif
 }
 

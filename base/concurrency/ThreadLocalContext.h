@@ -20,7 +20,7 @@
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
-/** State for all threads. Do NOT access directly from external modules. Context may changes at any time. */
+/** State for all threads. Do NOT access directly from external modules. Context may change at any time. */
 class _COM_AZURE_DEV__BASE__API ThreadLocalContext : public DynamicObject {
 public:
 
@@ -46,6 +46,9 @@ public:
   RandomInputStream randomInputStream;
   /** Last known stack trace for exception. */
   StackFrame stackTrace;
+  /** Number of exceptions thrown by thread. */
+  unsigned int numberOfExceptions = 0;
+  // resource counters: IO, network, ...
 
   ThreadLocalContext();
 };

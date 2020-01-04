@@ -97,11 +97,11 @@ public:
   }
 
   enum {
-    ERROR_EMPTY = 0,
-    ERROR_INCOMPLETE = -1,
-    ERROR_BAD_ENCODING = -2,
-    INVALID_UCS4_CHARACTER = -3,
-    INVALID_UCS2_CHARACTER = -4
+    ERROR_EMPTY = 0, /** No codes to read. */
+    ERROR_INCOMPLETE = -1, /** Missing code for character. */
+    ERROR_BAD_ENCODING = -2, /** Invalid encoding. */
+    INVALID_UCS4_CHARACTER = -3, /** Invalid UCS2 character. */
+    INVALID_UCS2_CHARACTER = -4 /** Invalid UCS2 character. */
   };
 
   /**
@@ -277,8 +277,8 @@ public:
     (size + 1) * getMaximumNumberOfMultibytes(UTF8)).
 
     @param dest The destination buffer (may be nullptr).
-    @param src The UCS-2 encoded string.
-    @param size The number of characters in the UCS-2 encoded string.
+    @param src The UTF16 encoded string.
+    @param size The number of characters in the UTF16 encoded string.
     @param flags The encoding flags. The default is 0.
 
     @return The number of bytes occupied by the UTF-8 encoded string.
@@ -289,6 +289,19 @@ public:
     MemorySize size,
     unsigned int flags = 0) noexcept;
 
+  /**
+    Low-level method which converts an UTF16 encoded string to UTF-8. A
+    null-terminator is NOT appended to the string. The destination buffer must
+    have room for enough bytes (guaranteed to not exceed
+    (size + 1) * getMaximumNumberOfMultibytes(UTF8)).
+
+    @param dest The destination buffer (may be nullptr).
+    @param src The UTF16 encoded string.
+    @param size The number of characters in the UTF16 encoded string.
+    @param flags The encoding flags. The default is 0.
+
+    @return The number of bytes occupied by the UTF-8 encoded string.
+  */
   static inline MemoryDiff UTF16ToUTF8(
     uint8* dest,
     const char16_t* src,
@@ -346,6 +359,19 @@ public:
     MemorySize size,
     unsigned int flags = 0) noexcept;
 
+  /**
+    Low-level method which converts an UCS-4 encoded string to UTF-8. A
+    null-terminator is NOT appended to the string. The destination buffer must
+    have room for enough bytes (guaranteed to not exceed
+    (size + 1) * getMaximumNumberOfMultibytes(UTF8)).
+    
+    @param dest The destination buffer (may be nullptr).
+    @param src The UCS-4 encoded string.
+    @param size The number of characters in the UCS-4 encoded string.
+    @param flags The encoding flags. The default is 0.
+
+    @return The number of bytes occupied by the UTF-8 encoded string.
+  */
   static inline MemoryDiff UTF32ToUTF8(
     uint8* dest,
     const char32_t* src,

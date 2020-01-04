@@ -141,6 +141,7 @@ void GarbageCollector::release(AnyReference& reference)
   }
 }
 
+/** Garbage collect given object. */
 void garbageCollect(AnyReference& reference)
 {
   if (reference) {

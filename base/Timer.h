@@ -327,29 +327,34 @@ _COM_AZURE_DEV__BASE__API FormatOutputStream& operator<<(
   FormatOutputStream& stream, const Timer& value);
 
 
-
+/** Time a scope. For DEBUGGING only. */
 class _COM_AZURE_DEV__BASE__API TimeScope : public Object {
 private:
 
   Timer timer;
 public:
 
+  /** Start timer. */
   inline TimeScope() noexcept
   {
   }
 
+  /** Start timer. */
   inline void start() noexcept
   {
     timer.start();
   }
 
+  /** Stop timer. */
   inline void stop() noexcept
   {
     timer.stop();
   }
 
+  /** Show timer. */
   void dump() const;
 
+  /** Stop and show timer. */
   inline ~TimeScope()
   {
     stop();

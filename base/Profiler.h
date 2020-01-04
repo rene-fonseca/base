@@ -370,6 +370,7 @@ public:
     static void pushTask(unsigned int taskId) noexcept;
   public:
     
+    /** Task start. */
     inline Task(const char* _name, const char* _cat = nullptr) noexcept
     {
       if (enabled) { // doesnt matter if we do this for scope disabled case - we check this in destructor
@@ -377,7 +378,8 @@ public:
       }
     }
 
-    inline ~Task() noexcept // we must not allow exception for profiling since it changes exception handling otherwise
+    /** Task comple. */
+    inline ~Task() noexcept // we must not allow exception for profiling since it changes execution flow
     {
       if (taskId != BAD) {
         pushTask(taskId);
@@ -389,6 +391,7 @@ public:
   class _COM_AZURE_DEV__BASE__API WaitTask : public Task {
   public:
 
+    /** Wait task start. */
     inline WaitTask(const char* name) : Task(name, CAT_WAIT)
     {
     }
@@ -398,6 +401,7 @@ public:
   class _COM_AZURE_DEV__BASE__API IOTask : public Task {
   public:
     
+    /** IO task start. */
     inline IOTask(const char* name) : Task(name, CAT_IO)
     {
     }
@@ -407,11 +411,13 @@ public:
   class _COM_AZURE_DEV__BASE__API HTTPSTask : public IOTask {
   public:
     
+    /** HTTPS task start. */
     inline HTTPSTask(const char* name) : IOTask(name)
     {
     }
   };
   
+  /** Push object creation. */
   static inline void pushObjectCreate(MemorySize id, MemorySize size)
   {
     if (!enabled) {
@@ -420,6 +426,7 @@ public:
     pushObjectCreateImpl(id, size);
   }
 
+  /** Push object creation. */
   static inline void pushObjectCreate(MemorySize id)
   {
     if (!enabled) {
@@ -428,6 +435,7 @@ public:
     pushObjectCreateImpl(id);
   }
 
+  /** Push object destruction. */
   static inline void pushObjectDestroy(MemorySize id, MemorySize size)
   {
     if (!enabled) {
@@ -436,6 +444,7 @@ public:
     pushObjectDestroyImpl(id, size);
   }
 
+  /** Push object destruction. */
   static inline void pushObjectDestroy(MemorySize id)
   {
     if (!enabled) {
@@ -444,6 +453,7 @@ public:
     pushObjectDestroyImpl(id);
   }
 
+  /** Push exception. */
   static inline void pushException(const char* type)
   {
     if (!enabled) {
@@ -452,6 +462,7 @@ public:
     pushExceptionImpl(type);
   }
 
+  /** Push signal. */
   static inline void pushSignal(const char* name)
   {
     if (!enabled) {
@@ -460,6 +471,7 @@ public:
     pushSignalImpl(name);
   }
 
+  /** Push thread start. */
   static inline void pushThreadStart(const char* name, unsigned int parentId)
   {
     if (!enabled) {
@@ -468,6 +480,7 @@ public:
     pushThreadStartImpl(name, parentId);
   }
 
+  /** Push process info. */
   static inline void pushProcessMeta(ReferenceCountedObject* name)
   {
     if (!enabled) {
@@ -476,6 +489,7 @@ public:
     pushProcessMetaImpl(name);
   }
 
+  /** Push thread info. */
   static inline void pushThreadMeta(ReferenceCountedObject* name/*, unsigned int parentId*/)
   {
     if (!enabled) {
@@ -484,6 +498,7 @@ public:
     pushThreadMetaImpl(name);
   }
 
+  /** Push counters. */
   static inline void pushCounters()
   {
     if (!enabled) {
@@ -514,6 +529,7 @@ public:
   // static Stats& getThreadStats();
 };
 
+/** Write symbol and parent. */
 inline FormatOutputStream& operator<<(FormatOutputStream& stream, const Profiler::ProfilerImpl::SymbolAndParent& sp)
 {
   return stream << sp.symbol << "/" << sp.parent;

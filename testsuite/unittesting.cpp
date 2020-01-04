@@ -326,12 +326,18 @@ public:
 
       if (reportJUnit) {
         String xml = manager.getJUnit(testsuiteUUID);
-        try {
-          FileOutputStream fos(junitPath);
-          fos.write(reinterpret_cast<const uint8*>(xml.getElements()), xml.getLength());
-        } catch (...) {
-          ferr << "Error: Failed to write JUnit file." << ENDL;
-          setExitCode(1);
+        if (junitPath == "stdout") {
+          fout << xml << ENDL;
+        } else if (junitPath == "stderr") {
+          ferr << xml << ENDL;
+        } else {
+          try {
+            FileOutputStream fos(junitPath);
+            fos.write(reinterpret_cast<const uint8*>(xml.getElements()), xml.getLength());
+          } catch (...) {
+            ferr << "Error: Failed to write JUnit file." << ENDL;
+            setExitCode(1);
+          }
         }
       }
 

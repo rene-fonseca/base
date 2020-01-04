@@ -73,14 +73,16 @@ public:
   /**
     Returns a random real number in the range [0;1].
   */
-  inline double getDouble() noexcept {
+  inline double getDouble() noexcept
+  {
     return (1.0/0xffffffff) * getInteger();
   }
   
   /**
     Returns a random real number in the range [0;1].
   */
-  inline long double getLongDouble() noexcept {
+  inline long double getLongDouble() noexcept
+  {
     return (1.0L/0xffffffff) * getInteger();
   }
 };

@@ -21,7 +21,8 @@
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
-bool AsynchronousStream::asyncTest() noexcept {
+bool AsynchronousStream::asyncTest() noexcept
+{
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   return ::SleepEx(0, TRUE) == WAIT_IO_COMPLETION;
 #else // unix
@@ -29,7 +30,8 @@ bool AsynchronousStream::asyncTest() noexcept {
 #endif // flavor
 }
 
-AsynchronousStream::~AsynchronousStream() noexcept(false) {
+AsynchronousStream::~AsynchronousStream() noexcept(false)
+{
 }
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

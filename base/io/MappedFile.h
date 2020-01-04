@@ -78,7 +78,8 @@ protected:
   /**
     Returns the handle of the specified file.
   */
-  inline static OperatingSystem::Handle getHandle(File& file) noexcept {
+  inline static OperatingSystem::Handle getHandle(File& file) noexcept
+  {
     return file.fd->getHandle();
   }
 public:

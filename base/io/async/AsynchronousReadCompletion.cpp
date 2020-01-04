@@ -25,7 +25,8 @@ AsynchronousReadCompletion::AsynchronousReadCompletion(
 }
 
 AsynchronousReadCompletion& AsynchronousReadCompletion::operator=(
-  const AsynchronousReadCompletion& assign) noexcept {
+  const AsynchronousReadCompletion& assign) noexcept
+{
   // no need to protect against self-assignment
   buffer = assign.buffer;
   bytesToRead = assign.bytesToRead;

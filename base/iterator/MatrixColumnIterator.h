@@ -47,7 +47,8 @@ public:
   /**
     Prefix increment.
   */
-  inline MatrixColumnIterator& operator++() noexcept {
+  inline MatrixColumnIterator& operator++() noexcept
+  {
     ++this->element;
     return *this;
   }
@@ -55,7 +56,8 @@ public:
   /**
     Postfix decrement.
   */
-  inline MatrixColumnIterator operator++(int) noexcept {
+  inline MatrixColumnIterator operator++(int) noexcept
+  {
     MatrixColumnIterator result(*this);
     ++this->element;
     return result;
@@ -64,7 +66,8 @@ public:
   /**
     Prefix decrement.
   */
-  inline MatrixColumnIterator& operator--() noexcept {
+  inline MatrixColumnIterator& operator--() noexcept
+  {
     --this->element;
     return *this;
   }
@@ -72,7 +75,8 @@ public:
   /**
     Postfix decrement.
   */
-  inline MatrixColumnIterator operator--(int) noexcept {
+  inline MatrixColumnIterator operator--(int) noexcept
+  {
     MatrixColumnIterator result(*this);
     --this->element;
     return result;
@@ -81,7 +85,8 @@ public:
   /**
     Move the specified distance forward.
   */
-  inline MatrixColumnIterator& operator+=(Distance distance) noexcept {
+  inline MatrixColumnIterator& operator+=(Distance distance) noexcept
+  {
     this->element += distance;
     return *this;
   }
@@ -89,32 +94,38 @@ public:
   /**
     Move the specified distance backwards.
   */
-  inline MatrixColumnIterator& operator-=(Distance distance) noexcept {
+  inline MatrixColumnIterator& operator-=(Distance distance) noexcept
+  {
     this->element -= distance;
     return *this;
   }
 
-  inline ElementIterator getFirst() const noexcept {
+  inline ElementIterator getFirst() const noexcept
+  {
     return ElementIterator(this->element, dimension.getWidth());
   }
 
-  inline ElementIterator getEnd() const noexcept {
+  inline ElementIterator getEnd() const noexcept
+  {
     return ElementIterator(this->element + dimension.getSize(), dimension.getWidth());
   }
 
-  inline ElementIterator operator[](unsigned int index) const noexcept {
+  inline ElementIterator operator[](unsigned int index) const noexcept
+  {
     return ElementIterator(this->element + this->columns * index, dimension.getWidth());
   }
 };
 
 template<class TRAITS>
-inline MatrixColumnIterator<TRAITS> operator+(const MatrixColumnIterator<TRAITS>& left, int right) noexcept {
+inline MatrixColumnIterator<TRAITS> operator+(const MatrixColumnIterator<TRAITS>& left, int right) noexcept
+{
   MatrixColumnIterator<TRAITS> result(left);
   return result += right;
 }
 
 template<class TRAITS>
-inline MatrixColumnIterator<TRAITS> operator-(const MatrixColumnIterator<TRAITS>& left, int right) noexcept {
+inline MatrixColumnIterator<TRAITS> operator-(const MatrixColumnIterator<TRAITS>& left, int right) noexcept
+{
   MatrixColumnIterator<TRAITS> result(left);
   return result -= right;
 }

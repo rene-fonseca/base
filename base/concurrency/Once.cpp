@@ -17,10 +17,12 @@
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
-Once::Once() noexcept {
+Once::Once() noexcept
+{
 }
 
-bool Once::getTokenImpl() {
+bool Once::getTokenImpl()
+{
   {
     ExclusiveSynchronize<Guard> _guard(guard);
     if (waiting++ == 0) {
@@ -45,7 +47,8 @@ bool Once::getTokenImpl() {
   return false;
 }
 
-void Once::relinquishToken() noexcept {
+void Once::relinquishToken() noexcept
+{
   ExclusiveSynchronize<Guard> _guard(guard);
   waiting--;
   mask = false;

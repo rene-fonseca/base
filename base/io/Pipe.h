@@ -76,7 +76,8 @@ public:
   /**
     Assignment of pipe to pipe.
   */
-  inline Pipe& operator=(const Pipe& assign) noexcept {
+  inline Pipe& operator=(const Pipe& assign) noexcept
+  {
     // no need to protect against self assignment
     fd = assign.fd;
     end = assign.end;

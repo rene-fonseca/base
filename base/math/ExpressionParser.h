@@ -108,31 +108,38 @@ public:
         function(_function) {
     }
     
-    inline unsigned int getArguments() const noexcept {
+    inline unsigned int getArguments() const noexcept
+    {
       return arguments;
     }
     
-    inline unsigned int getPrecedence() const noexcept {
+    inline unsigned int getPrecedence() const noexcept
+    {
       return precedence;
     }
     
-    inline Glue getGlue() const noexcept {
+    inline Glue getGlue() const noexcept
+    {
       return glue;
     }
     
-    inline bool isBuiltin() const noexcept {
+    inline bool isBuiltin() const noexcept
+    {
       return builtin;
     }
     
-    inline bool isPopable() const noexcept {
+    inline bool isPopable() const noexcept
+    {
       return popable;
     }
 
-    inline bool isFunction() const noexcept {
+    inline bool isFunction() const noexcept
+    {
       return function;
     }
 
-    inline unsigned int getId() const noexcept {
+    inline unsigned int getId() const noexcept
+    {
       return id;
     }
   };
@@ -146,7 +153,8 @@ public:
       unsigned int precedence,
       Glue glue,
       bool popable) noexcept
-      : Operation(id, 1, precedence, glue, true, popable, false) {
+      : Operation(id, 1, precedence, glue, true, popable, false)
+    {
     }
   };
   
@@ -159,7 +167,8 @@ public:
       unsigned int precedence,
       Glue glue,
       bool popable) noexcept
-      : Operation(id, 2, precedence, glue, true, popable, false) {
+      : Operation(id, 2, precedence, glue, true, popable, false)
+    {
     }
   };
   
@@ -168,32 +177,37 @@ public:
   public:
     
     inline Function(unsigned int id, unsigned int arguments) noexcept
-      : Operation(id, arguments, 100, RIGHT, false, false, true) {
+      : Operation(id, arguments, 100, RIGHT, false, false, true)
+    {
     }
   };
   
-  static inline Node makeValueNode(double value) noexcept {
+  static inline Node makeValueNode(double value) noexcept
+  {
     Node result;
     result.type = VALUE;
     result.value = value;
     return result;
   }
   
-  static inline Node makeConstantNode(unsigned int id) noexcept {
+  static inline Node makeConstantNode(unsigned int id) noexcept
+  {
     Node result;
     result.type = CONSTANT;
     result.constant = id;
     return result;
   }
   
-  static inline Node makeVariableNode(unsigned int id) noexcept {
+  static inline Node makeVariableNode(unsigned int id) noexcept
+  {
     Node result;
     result.type = VARIABLE;
     result.variable = id;
     return result;
   }  
  
-  static inline Node makeFunctionNode(unsigned int id, unsigned int arguments) noexcept {
+  static inline Node makeFunctionNode(unsigned int id, unsigned int arguments) noexcept
+  {
     Node result;
     result.type = FUNCTION;
     result.function.id = id;
@@ -201,14 +215,16 @@ public:
     return result;
   }
   
-  static inline Node makeUnknownNode(unsigned int id) noexcept {
+  static inline Node makeUnknownNode(unsigned int id) noexcept
+  {
     Node result;
     result.type = UNKNOWN;
     result.unknown = id;
     return result;
   }
   
-  static inline Node makeNodeFromOperation(Operation operation) noexcept {
+  static inline Node makeNodeFromOperation(Operation operation) noexcept
+  {
     Node result;
     // must not be parenthesis
     if (operation.isBuiltin()) {
@@ -244,14 +260,16 @@ public:
   /**
     Returns the expression.
   */
-  inline const List<Node>& getExpression() const noexcept {
+  inline const List<Node>& getExpression() const noexcept
+  {
     return nodes;
   }
 
   /**
     Sets the expression.
   */
-  inline void setExpression(const List<Node>& nodes) noexcept {
+  inline void setExpression(const List<Node>& nodes) noexcept
+  {
     this->nodes = nodes;
   }
 
@@ -259,14 +277,16 @@ public:
     Returns the names of variables of the formula in the order expected by the
     evaluate methods.
   */
-  inline const List<String>& getVariables() const noexcept {
+  inline const List<String>& getVariables() const noexcept
+  {
     return variables;
   }
   
   /**
     Sets the variables.
   */
-  inline void setVariables(const List<String>& variables) noexcept {
+  inline void setVariables(const List<String>& variables) noexcept
+  {
     this->variables = variables;
   }
   
@@ -367,28 +387,32 @@ public:
   /**
     Returns true if the identifier has been registered.
   */
-  inline bool isIdentifier(const String& name) const noexcept {
+  inline bool isIdentifier(const String& name) const noexcept
+  {
     return identifiers.hasKey(name);
   }
 
   /**
     Returns the name of the constant with the given id.
   */
-  inline String getConstant(unsigned int id) const noexcept {
+  inline const String& getConstant(unsigned int id) const noexcept
+  {
     return constants[id];
   }
   
   /**
     Returns the name of the variable with the given id.
   */
-  inline String getVariable(unsigned int id) const noexcept {
+  inline const String& getVariable(unsigned int id) const noexcept
+  {
     return variables[id];
   }
   
   /**
     Returns the name of the function with the given id.
   */
-  inline String getFunction(unsigned int id) const noexcept {
+  inline const String& getFunction(unsigned int id) const noexcept
+  {
     return functions[id];
   }
   
@@ -485,35 +509,40 @@ public:
   /**
     Returns the result of the parser.
   */
-  inline const List<Node>& getExpression() const noexcept {
+  inline const List<Node>& getExpression() const noexcept
+  {
     return nodes;
   }
   
   /**
     Returns the auto-register mode.
   */
-  inline bool getAutoRegister() const noexcept {
+  inline bool getAutoRegister() const noexcept
+  {
     return autoRegister;
   }
   
   /**
     Sets the auto-register mode.
   */
-  inline void setAutoRegister(bool value) noexcept {
+  inline void setAutoRegister(bool value) noexcept
+  {
     autoRegister = value;
   }
   
   /**
     Returns the unknowns.
   */
-  inline HashTable<String, Node> getUnknowns() const noexcept {
+  inline const HashTable<String, Node>& getUnknowns() const noexcept
+  {
     return unknowns;
   }
   
   /**
     Returns true if the expression contains unknowns.
   */
-  inline bool hasUnknowns() const noexcept {
+  inline bool hasUnknowns() const noexcept
+  {
     return unknowns.getSize();
   }
   

@@ -23,7 +23,8 @@ _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
   Once implementation with delayed resource allocation.
   
   @code
-  void myMethod() noexcept {
+  void myMethod() noexcept
+  {
     static Once once;
     if (once.getToken()) {
       // ...

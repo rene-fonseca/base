@@ -276,7 +276,8 @@ File::File(const String& path, Access access, unsigned int options)
   }
 }
 
-File& File::operator=(const File& assign) noexcept {
+File& File::operator=(const File& assign) noexcept
+{
   fd = assign.fd; // no need to protect against self-assignment
   return *this;
 }
@@ -285,7 +286,8 @@ void File::close() {
   fd = FileHandle::invalid; // invalidate
 }
 
-bool File::isClosed() const noexcept {
+bool File::isClosed() const noexcept
+{
   return !fd->isValid();
 }
 

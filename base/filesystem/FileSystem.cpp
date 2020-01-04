@@ -39,19 +39,23 @@
 // duplicate separators are redundant: "//"
 
 // return true if the path is valid (syntax)
-bool FileSystem::isValid(const String& name) noexcept {
+bool FileSystem::isValid(const String& name) noexcept
+{
   // level "." or ".." or ? separated with "/" or "\\"
 }
 
-String FileSystem::urlToPath(Url url) noexcept {
+String FileSystem::urlToPath(Url url) noexcept
+{
 }
 
 // returns true if the path is a ...
-bool FileSystem::isForwardPath(const String& path) noexcept {
+bool FileSystem::isForwardPath(const String& path) noexcept
+{
   return false;
 }
 
-bool FileSystem::optimizePath(const String& name) noexcept {
+bool FileSystem::optimizePath(const String& name) noexcept
+{
   String result;
   String::ReadIterator i = path.getBeginReadIterator();
   String::ReadIterator end = path.getEndReadIterator();
@@ -90,7 +94,8 @@ bool FileSystem::isName(const String& name) noexcept {
 }
 
 // returns true if the specified path is a subpath of the root path
-bool FileSystem::isSubPathOf(const String& root, const String& path) noexcept {
+bool FileSystem::isSubPathOf(const String& root, const String& path) noexcept
+{
   if (isAbsolutePath(path)) {
     return path.startsWith(root);
   } else {

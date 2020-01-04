@@ -75,7 +75,8 @@ public:
   /**
     Returns the index of the error in the expression representation.
   */
-  inline unsigned int getIndex() const noexcept {
+  inline unsigned int getIndex() const noexcept
+  {
     return index;
   }
   

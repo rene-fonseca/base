@@ -17,7 +17,8 @@
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
-bool Urn::isUrn(const String& urn) noexcept {
+bool Urn::isUrn(const String& urn) noexcept
+{
   String::ReadIterator i = urn.getBeginReadIterator();
   String::ReadIterator end = urn.getEndReadIterator();
   
@@ -94,7 +95,8 @@ bool Urn::isUrn(const String& urn) noexcept {
   return i != j;
 }
 
-Urn::Urn() noexcept {
+Urn::Urn() noexcept
+{
 }
 
 Urn::Urn(const String& urn) {

@@ -94,7 +94,8 @@ public:
   /**
     Returns the bytes of the entire window.
   */
-  inline const uint8* getBytes() const noexcept {
+  inline const uint8* getBytes() const noexcept
+  {
     return begin;
   }
   
@@ -109,7 +110,8 @@ public:
   /**
     Returns the current position indexed from the beginning of the file.
   */
-  inline long long getPosition() const noexcept {
+  inline long long getPosition() const noexcept
+  {
     return mapping.getRegion().getOffset() + (current - begin);
   }
 
@@ -121,7 +123,8 @@ public:
     @param size The number of bytes to peek at.
     @return A ReadIterator to the first element.
   */
-  inline ReadIterator peek(unsigned int size) {
+  inline ReadIterator peek(unsigned int size)
+  {
     if (current + size > end) { // make sure all bytes are in the current window
       requestRegion(
         FileRegion(mapping.getRegion().getOffset() + (current - begin), size)
@@ -146,7 +149,8 @@ public:
 
     @param position The desired postion.
   */
-  inline void seek(long long position) {
+  inline void seek(long long position)
+  {
     requestRegion(FileRegion(position, 0));
   }
 
@@ -156,7 +160,8 @@ public:
 
     @param size The number of bytes to skip.
   */
-  inline void skip(unsigned int size) {
+  inline void skip(unsigned int size)
+  {
     current += size;
     if (current > end) {
       requestRegion(

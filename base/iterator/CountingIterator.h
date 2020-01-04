@@ -25,7 +25,8 @@ private:
   MemorySize value = 0;
 public:
 
-  inline CountingIterator() noexcept {
+  inline CountingIterator() noexcept
+  {
   }
 
   inline CountingIterator(MemorySize _value) noexcept

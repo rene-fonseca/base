@@ -50,7 +50,8 @@ public:
   /**
     Returns the locked file region.
   */
-  inline const FileRegion& getRegion() const noexcept {
+  inline const FileRegion& getRegion() const noexcept
+  {
     return region;
   }
 

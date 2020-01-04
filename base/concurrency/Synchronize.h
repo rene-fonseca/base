@@ -82,12 +82,14 @@ _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
   public:
     typedef DefaultLock LOCK;
 
-    void myFirstMethod() const noexcept {
+    void myFirstMethod() const noexcept
+    {
       SynchronizeShared();
       // do something as long as it doesn't modify the object
     }
 
-    void mySecondMethod() noexcept {
+    void mySecondMethod() noexcept
+    {
       SynchronizeExclusive();
       // do modification of object
     }
@@ -121,7 +123,8 @@ public:
   */
   inline explicit Synchronize(
     const Synchronizeable<LOCK>& _object, bool exclusive = true) noexcept
-    : object(_object) {
+    : object(_object)
+  {
     if (exclusive) {
       object.exclusiveLock();
     } else {
@@ -132,7 +135,8 @@ public:
   /**
     Forces the lock to be released.
   */
-//    inline void release() noexcept {
+//    inline void release() noexcept
+//    {
 //      object.releaseLock();
 //    }
 
@@ -140,7 +144,8 @@ public:
     Releases the lock if not already released and destroys the synchronization
     object.
   */
-  inline ~Synchronize() noexcept {
+  inline ~Synchronize() noexcept
+  {
     object.releaseLock();
   }
 };
@@ -176,14 +181,16 @@ public:
   /**
     Forces the lock to be released.
   */
-  inline void release() noexcept {
+  inline void release() noexcept
+  {
   }
 
   /**
     Releases the lock if not already released and destroys the synchronization
     object.
   */
-  inline ~Synchronize() noexcept {
+  inline ~Synchronize() noexcept
+  {
   }
 };
 

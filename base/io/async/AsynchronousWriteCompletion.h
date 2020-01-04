@@ -74,35 +74,43 @@ public:
   */
   AsynchronousWriteCompletion& operator=(const AsynchronousWriteCompletion& assign) noexcept;
 
-  inline bool successful() const noexcept {
+  inline bool successful() const noexcept
+  {
     return (flags & SUCCESSFUL) != 0;
   }
 
-  inline bool hasCompleted() const noexcept {
+  inline bool hasCompleted() const noexcept
+  {
     return (flags & COMPLETED) != 0;
   }
   
-  inline bool isPending() const noexcept {
+  inline bool isPending() const noexcept
+  {
     return (flags & COMPLETED) == 0;
   }
 
-  inline bool wasAborted() const noexcept {
+  inline bool wasAborted() const noexcept
+  {
     return (flags & ABORTED) != 0;
   }
 
-  inline const uint8* getBuffer() const noexcept {
+  inline const uint8* getBuffer() const noexcept
+  {
     return buffer;
   }
   
-  inline unsigned int getBytesToWrite() const noexcept {
+  inline unsigned int getBytesToWrite() const noexcept
+  {
     return bytesToWrite;
   }
   
-  inline unsigned long long getOffset() const noexcept {
+  inline unsigned long long getOffset() const noexcept
+  {
     return offset;
   }
   
-  inline unsigned int getBytesWritten() const noexcept {
+  inline unsigned int getBytesWritten() const noexcept
+  {
     return bytesWritten;
   }
 };

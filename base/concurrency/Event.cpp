@@ -99,12 +99,14 @@ private:
 public:
   
   template<typename POLY>
-  inline POLY* cast() noexcept {
+  inline POLY* cast() noexcept
+  {
     return p;
   }
 
   template<typename POLY>
-  inline const POLY* cast() const noexcept {
+  inline const POLY* cast() const noexcept
+  {
     return p;
   }
   

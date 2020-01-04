@@ -62,7 +62,8 @@ public:
     pushEnd() has been invoked if the compressed data has been padded with
     garbage.
   */
-  inline bool atEnd() const noexcept {
+  inline bool atEnd() const noexcept
+  {
     return state == ENDED;
   }
   

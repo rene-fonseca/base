@@ -91,7 +91,8 @@ public:
     /** The system mode time in nanoseconds. */
     uint64 system = 0;
 
-    inline Times() noexcept {
+    inline Times() noexcept
+    {
     }
 
     inline Times(uint64 _user, uint64 _system) noexcept
@@ -202,7 +203,8 @@ public:
   class _COM_AZURE_DEV__BASE__API Self : public ThreadException {
   public:
 
-    inline Self() noexcept {
+    inline Self() noexcept
+    {
     }
     
     inline Self(const char* message) noexcept

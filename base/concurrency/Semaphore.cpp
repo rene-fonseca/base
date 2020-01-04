@@ -31,7 +31,8 @@ namespace ntapi {
     return status >= 0;
   }
 
-  inline bool failed(long status) noexcept {
+  inline bool failed(long status) noexcept
+  {
     return status < 0;
   }
   

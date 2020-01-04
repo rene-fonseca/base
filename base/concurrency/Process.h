@@ -45,7 +45,8 @@ public:
     /** The system mode time in nanoseconds. */
     uint64 system = 0;
 
-    inline Times() noexcept {
+    inline Times() noexcept
+    {
     }
 
     inline Times(uint64 _user, uint64 _system) noexcept
@@ -153,7 +154,8 @@ public:
   /**
     Returns true if the system supports job control.
   */
-  static inline bool supportsJobControl() noexcept {
+  static inline bool supportsJobControl() noexcept
+  {
     return OperatingSystem::getVariable(OperatingSystem::SUPPORTS_JOB_CONTROL) != 0;
   }
   

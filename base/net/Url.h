@@ -244,7 +244,8 @@ public:
   /**
     Destroys the url.
   */
-  inline virtual ~Url() noexcept {
+  inline virtual ~Url() noexcept
+  {
   }
 };
 

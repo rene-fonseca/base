@@ -110,7 +110,8 @@ public:
     @param guard The synchronize able object to be synchronized.
   */
   template<class POLY>
-  inline explicit ExclusiveSynchronize(const POLY& guard) noexcept {
+  inline explicit ExclusiveSynchronize(const POLY& guard) noexcept
+  {
   }
 };
 

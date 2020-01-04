@@ -40,7 +40,8 @@ bool FileOutputStream::open(
   return true;
 }
 
-FileOutputStream& FileOutputStream::operator=(const FileOutputStream& assign) noexcept {
+FileOutputStream& FileOutputStream::operator=(const FileOutputStream& assign) noexcept
+{
   file = assign.file;
   return *this;
 }
@@ -50,7 +51,8 @@ bool FileOutputStream::isOpen() const noexcept
   return !file.isClosed();
 }
 
-void FileOutputStream::close() {
+void FileOutputStream::close()
+{
   file.close();
 }
 

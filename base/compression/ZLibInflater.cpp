@@ -236,7 +236,8 @@ MemorySize ZLibInflater::pull(uint8* buffer, MemorySize _size)
 #endif
 }
 
-ZLibInflater::~ZLibInflater() noexcept {
+ZLibInflater::~ZLibInflater() noexcept
+{
 #if (defined(_COM_AZURE_DEV__BASE__USE_ZLIB))
   internal::ZLibInflater::Context* context =
     Cast::pointer<internal::ZLibInflater::Context*>(this->context);

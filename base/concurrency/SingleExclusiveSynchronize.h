@@ -57,7 +57,8 @@ public:
     Releases the lock if not already released and destroys the synchronization
     object.
   */
-  inline ~SingleExclusiveSynchronize() noexcept {
+  inline ~SingleExclusiveSynchronize() noexcept
+  {
     guard.releaseLock();
   }
 };
@@ -86,7 +87,8 @@ public:
     @param guard The synchronize able object to be synchronized.
   */
   template<class POLY>
-  inline explicit SingleExclusiveSynchronize(const POLY& guard) noexcept {
+  inline explicit SingleExclusiveSynchronize(const POLY& guard) noexcept
+  {
   }
 };
 

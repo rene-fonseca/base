@@ -1052,7 +1052,8 @@ public:
   /**
     Returns the tangent.
   */
-  static inline double tan(double value) noexcept {
+  static inline double tan(double value) noexcept
+  {
     return isoc::tan(value);
   }
 
@@ -2101,7 +2102,8 @@ public:
   /**
     Returns the least common multiple.
   */
-  static inline int lcm(int m, int n) noexcept {
+  static inline int lcm(int m, int n) noexcept
+  {
     return m * (n/gcd(m, n));
   }
   

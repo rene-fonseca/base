@@ -160,8 +160,20 @@ protected:
     Initializes string.
   */
   void initialize(const char* string, MemorySize length);
+
+  /**
+    Initializes string.
+  */
   void initialize(const wchar* string, MemorySize length);
+
+  /**
+    Initializes string.
+  */
   void initialize(const char16_t* string, MemorySize length);
+
+  /**
+    Initializes string.
+  */
   void initialize(const ucs4* string, MemorySize length);
 
   /**
@@ -951,10 +963,15 @@ public:
   */
   bool startsWith(const Literal& prefix) const noexcept;
 
+  /**
+    Returns true if this string starts with prefix.
+
+    @param prefix The string to compare start of this string with.
+  */
   template<MemorySize SIZE>
-  inline bool startsWith(const char (&literal)[SIZE]) const noexcept
+  inline bool startsWith(const char (&prefix)[SIZE]) const noexcept
   {
-    return startsWith(Literal(literal));
+    return startsWith(Literal(prefix));
   }
   
   /**
@@ -971,10 +988,15 @@ public:
   */
   bool endsWith(const Literal& suffix) const noexcept;
 
+  /**
+    Returns true if this string ends with prefix.
+
+    @param suffix The string to compare end of this string with.
+  */
   template<MemorySize SIZE>
-  inline bool endsWith(const char (&literal)[SIZE]) const noexcept
+  inline bool endsWith(const char (&suffix)[SIZE]) const noexcept
   {
-    return endsWith(Literal(literal));
+    return endsWith(Literal(suffix));
   }
   
   /**
@@ -1166,6 +1188,12 @@ public:
   */
   MemoryDiff lastIndexOf(char ch, MemorySize start) const noexcept;
   
+  /**
+    Returns the index of the last character that matches the specified character.
+
+    @param ch The character to find.
+    @return Index of the last match if any otherwise -1.
+  */
   inline MemoryDiff lastIndexOf(char ch) const noexcept
   {
     return lastIndexOf(ch, getLength());

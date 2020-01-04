@@ -74,6 +74,7 @@ public:
     return Type(_type);
   }
 
+  /** Returns Type. */
   template<class TYPE>
   static inline Type getTypeImpl() noexcept
   {

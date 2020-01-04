@@ -128,7 +128,7 @@ jobs:
     continueOnError: true
     inputs:
       script: |
-        wasmtime ./testsuite/unittesting # NOT SUPPORTED -- --junit junit.xml
+        wasmtime ./testsuite/unittesting -- --junit stderr 2> junit.xml
         ctest -T Test
       workingDirectory: $(System.DefaultWorkingDirectory)/wasi
 

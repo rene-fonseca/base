@@ -545,8 +545,20 @@ public:
     Writes the specifies number of characters to the stream.
   */
   void addCharacterField(const char* buffer, MemorySize size);
+
+  /**
+    Writes the specifies number of characters to the stream.
+  */
   void addCharacterField(const wchar* buffer, MemorySize size);
+
+  /**
+    Writes the specifies number of characters to the stream.
+  */
   void addCharacterField(const char16_t* buffer, MemorySize size);
+
+  /**
+    Writes the specifies number of characters to the stream.
+  */
   void addCharacterField(const char32_t* buffer, MemorySize size);
   
   /**
@@ -611,48 +623,67 @@ public:
     return *this;
   }
 
+  /** Write value to stream. */
   FormatOutputStream& operator<<(short int value);
+  /** Write value to stream. */
   FormatOutputStream& operator<<(unsigned short int value);
+  /** Write value to stream. */
   FormatOutputStream& operator<<(int value);
+  /** Write value to stream. */
   FormatOutputStream& operator<<(unsigned int value);
+  /** Write value to stream. */
   FormatOutputStream& operator<<(long value);
+  /** Write value to stream. */
   FormatOutputStream& operator<<(unsigned long value);
+  /** Write value to stream. */
   FormatOutputStream& operator<<(long long value);
+  /** Write value to stream. */
   FormatOutputStream& operator<<(unsigned long long value);
+  /** Write value to stream. */
   FormatOutputStream& operator<<(int128 value);
+  /** Write value to stream. */
   FormatOutputStream& operator<<(uint128 value);
+  /** Write value to stream. */
   FormatOutputStream& operator<<(float value);
+  /** Write value to stream. */
   FormatOutputStream& operator<<(double value);
+  /** Write value to stream. */
   FormatOutputStream& operator<<(long double value);
 
+  /** Write value to stream. */
   inline FormatOutputStream& operator<<(const NativeString& value)
   {
     addCharacterField(value.getValue(), value.getLength());
     return *this;
   }
 
+  /** Write value to stream. */
   inline FormatOutputStream& operator<<(const NativeWideString& value)
   {
     addCharacterField(value.getValue(), value.getLength());
     return *this;
   }
 
+  /** Write value to stream. */
   inline FormatOutputStream& operator<<(const char* value)
   {
     return *this << NativeString(value);
   }
 
+  /** Write value to stream. */
   inline FormatOutputStream& operator<<(const wchar* value)
   {
     return *this << NativeWideString(value);
   }
 
+  /** Write value to stream. */
   inline FormatOutputStream& operator<<(const char16_t* value)
   {
     addCharacterField(value, getNullTerminatedLength(value));
     return *this;
   }
 
+  /** Write value to stream. */
   inline FormatOutputStream& operator<<(const char32_t* value)
   {
     addCharacterField(value, getNullTerminatedLength(value));
@@ -681,8 +712,7 @@ public:
     Writes a reference to a format output stream.
   */
   template<class TYPE>
-  inline FormatOutputStream& operator<<(
-    Reference<TYPE> value)
+  inline FormatOutputStream& operator<<(Reference<TYPE> value)
   {
     return *this << value.getValue();
   }
@@ -690,15 +720,13 @@ public:
   /**
     Writes a string literal to a format output stream.
   */
-  inline FormatOutputStream& operator<<(
-    const Literal& literal)
+  inline FormatOutputStream& operator<<(const Literal& literal)
   {
     addCharacterField(literal.getValue(), literal.getLength());
     return *this;
   }
 
-  inline FormatOutputStream& operator<<(
-    const WideLiteral& literal)
+  inline FormatOutputStream& operator<<(const WideLiteral& literal)
   {
     addCharacterField(literal.getValue(), literal.getLength());
     return *this;
@@ -724,13 +752,13 @@ public:
 
 /**
   Format output stream linked to the standard output stream. This variable
-  corresponds to 'cout' from the Standard Template Library.
+  corresponds to 'cout' from the Standard C++ Library.
 */
 extern _COM_AZURE_DEV__BASE__API FormatOutputStream fout;
 
 /**
   Format output stream linked to the standard error stream. This variable
-  corresponds to 'cerr' from the Standard Template Library.
+  corresponds to 'cerr' from the Standard C++ Library.
 */
 extern _COM_AZURE_DEV__BASE__API FormatOutputStream ferr;
 

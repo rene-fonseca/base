@@ -122,7 +122,7 @@ public:
 
 /**
   Format input stream linked to the standard input stream. This variable
-  corresponds to 'cin' from the Standard Template Library.
+  corresponds to 'cin' from the Standard C++ Library.
 */
 extern _COM_AZURE_DEV__BASE__API FormatInputStream fin;
 

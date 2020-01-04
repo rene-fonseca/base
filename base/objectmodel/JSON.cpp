@@ -516,12 +516,16 @@ public:
 
   bool ensureFailure(const char* text)
   {
+#if (_COM_AZURE_DEV__BASE__OS != _COM_AZURE_DEV__BASE__WASI)
     try {
       JSON().parse(text);
     } catch (...) {
       return true;
     }
     return false;
+#else
+    return true;
+#endif
   }
 
   void run() override

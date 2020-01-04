@@ -985,7 +985,9 @@ void MyThread::run()
   parent->runFromThread();
 }
 
+#if (_COM_AZURE_DEV__BASE__OS != _COM_AZURE_DEV__BASE__WASI)
 TEST_REGISTER(Thread);
+#endif
 
 #endif
 

@@ -81,7 +81,9 @@ public:
 
   void run() override
   {
+#if (_COM_AZURE_DEV__BASE__OS != _COM_AZURE_DEV__BASE__WASI)
     TEST_DECLARE_HERE(A);
+#endif
 
 #if 0 // for testing natvis
     String s("Hi there!");
@@ -153,11 +155,13 @@ public:
     myOtherObject3.invalidate();
     TEST_ASSERT(myOtherObject3 == nullptr);
 
+#if (_COM_AZURE_DEV__BASE__OS != _COM_AZURE_DEV__BASE__WASI)
     try {
       auto& TEST_UNIQUE_ID(id) = *myOtherObject3;
     } catch (NullPointer&) {
       TEST_HERE(A);
     }
+#endif
 
     myObject = nullptr;
   }

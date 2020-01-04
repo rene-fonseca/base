@@ -642,6 +642,7 @@ public:
   }
 
 /** Require expression to throw given exception. */
+#if (_COM_AZURE_DEV__BASE__OS != _COM_AZURE_DEV__BASE__WASI)
 #define TEST_EXCEPTION(EXPRESSION, EXCEPTION) \
   try { \
     EXPRESSION; \
@@ -665,6 +666,9 @@ public:
     base::UnitTest::onPrint(stream.getString(), __LINE__); \
     _rethrow; \
   }
+#else
+#define TEST_EXCEPTION(EXPRESSION, EXCEPTION) while (false)
+#endif
 
 /** Assert within an expression. */
 #define TEST_INLINE_ASSERT(EXPRESSION) \

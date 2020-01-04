@@ -188,7 +188,7 @@ ReadWriteLock::ReadWriteLock()
   }
   pthread_mutexattr_destroy(&attributes); // should never fail
 #else
-  BASSERT(!"Not supported.");
+  representation = new int(0);
 #endif
 }
 
@@ -212,7 +212,12 @@ void ReadWriteLock::exclusiveLock() const
     _throw ReadWriteLockException(this);
   }
 #else
-  BASSERT(!"Not supported.");
+  // assume single threaded
+  int* handle = reinterpret_cast<int*>(representation);
+  while (*handle) {
+    Thread::microsleep(1000);
+  }
+  *handle = 1;
 #endif
 }
 
@@ -241,8 +246,13 @@ bool ReadWriteLock::tryExclusiveLock() const
     _throw ReadWriteLockException(this);
   }
 #else
-  BASSERT(!"Not supported.");
-  return false;
+  // assume single threaded
+  int* handle = reinterpret_cast<int*>(representation);
+  if (*handle) {
+    return false;
+  }
+  *handle = 1;
+  return true;
 #endif
 }
 
@@ -266,7 +276,7 @@ void ReadWriteLock::sharedLock() const
     _throw ReadWriteLockException(this);
   }
 #else
-  BASSERT(!"Not supported.");
+  exclusiveLock();
 #endif
 }
 
@@ -295,8 +305,7 @@ bool ReadWriteLock::trySharedLock() const
     _throw ReadWriteLockException(this);
   }
 #else
-  BASSERT(!"Not supported.");
-  return false;
+  return tryExclusiveLock();
 #endif
 }
 
@@ -315,7 +324,11 @@ void ReadWriteLock::releaseLock() const
     _throw ReadWriteLockException(this);
   }
 #else
-  BASSERT(!"Not supported.");
+  int* handle = reinterpret_cast<int*>(representation);
+  if (!*handle) {
+    _throw ReadWriteLockException(this);
+  }
+  *handle = 0;
 #endif
 }
 
@@ -334,7 +347,8 @@ ReadWriteLock::~ReadWriteLock()
   }
   delete[] static_cast<pthread_mutex_t*>(representation);
 #else
-  // BASSERT(!"Not supported.");
+  int* handle = reinterpret_cast<int*>(representation);
+  delete handle;
 #endif
 }
 

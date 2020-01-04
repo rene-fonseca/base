@@ -170,7 +170,7 @@ Event::Event()
   }
   this->context = context;
 #else
-  BASSERT(!"Not supported.");
+  context = new int(0);
 #endif
 }
 
@@ -189,7 +189,8 @@ bool Event::isSignaled() const
   }
   return result;
 #else
-  return false;
+  int* handle = reinterpret_cast<int*>(context);
+  return *handle != 0;
 #endif
 }
 
@@ -208,7 +209,8 @@ void Event::reset()
     _throw EventException("Unable to reset event.", this);
   }
 #else
-  BASSERT(!"Not supported.");
+  int* handle = reinterpret_cast<int*>(context);
+  *handle = 0;
 #endif
 }
 
@@ -232,7 +234,8 @@ void Event::signal()
     _throw EventException("Unable to signal event.", this);
   }
 #else
-  BASSERT(!"Not supported.");
+  int* handle = reinterpret_cast<int*>(context);
+  *handle = 1;
 #endif
 }
 
@@ -260,7 +263,10 @@ void Event::wait() const
     _throw EventException("Unable to wait for event.", this);
   }
 #else
-  BASSERT(!"Not supported.");
+  int* handle = reinterpret_cast<int*>(context);
+  while (!*handle) {
+    Thread::microsleep(1000);
+  }
 #endif
 }
 
@@ -311,7 +317,11 @@ bool Event::wait(unsigned int microseconds) const
 
   return result;
 #else
-  return false;
+  int* handle = reinterpret_cast<int*>(context);
+  if (!*handle) {
+    Thread::microsleep(microseconds);
+  }
+  return *handle != 0;
 #endif
 }
 
@@ -330,6 +340,9 @@ Event::~Event()
   }
   pthread_mutex_destroy(&p->mutex); // lets just hope that this doesn't fail
   delete[] p;
+#else
+  int* handle = reinterpret_cast<int*>(context);
+  delete handle;
 #endif
 }
 

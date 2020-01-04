@@ -115,7 +115,8 @@ _COM_AZURE_DEV__BASE__GLOBAL_PRINT();
   }
 #endif // flavor
 
-File::FileHandle::~FileHandle() {
+File::FileHandle::~FileHandle()
+{
   // TAG: throw exception if region of file is still locked
   if (isValid()) { // dont try to close if handle is invalidated
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
@@ -130,11 +131,14 @@ File::FileHandle::~FileHandle() {
   }
 }
 
-File::File() noexcept : fd(File::FileHandle::invalid) {
+File::File() noexcept
+  : fd(File::FileHandle::invalid)
+{
 }
 
 File::File(const String& path, Access access, unsigned int options)
-  : fd(File::FileHandle::invalid) {
+  : fd(File::FileHandle::invalid)
+{
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   DWORD creationFlags = 0;
   switch (options & (CREATE | TRUNCATE)) {
@@ -266,6 +270,7 @@ File::File(const String& path, Access access, unsigned int options)
     if (errno == EACCES) {
       _throw AccessDenied(this);
     } else {
+      // WASI: ENOTCAPABLE
       _throw FileNotFound("Unable to open file.", this);
     }
   }
@@ -282,7 +287,8 @@ File& File::operator=(const File& assign) noexcept
   return *this;
 }
 
-void File::close() {
+void File::close()
+{
   fd = FileHandle::invalid; // invalidate
 }
 
@@ -293,7 +299,8 @@ bool File::isClosed() const noexcept
 
 // TAG: need methods get owner, get group...
 
-unsigned int File::getMode() const {
+unsigned int File::getMode() const
+{
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   PSECURITY_DESCRIPTOR securityDescriptor = nullptr;
   PSID ownerSID = nullptr;
@@ -482,7 +489,8 @@ unsigned int File::getMode() const {
 #endif // flavor
 }
 
-AccessControlList File::getACL() const {
+AccessControlList File::getACL() const
+{
   AccessControlList result;
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   PSECURITY_DESCRIPTOR securityDescriptor = nullptr;
@@ -689,7 +697,8 @@ AccessControlList File::getACL() const {
   return result;
 }
 
-Trustee File::getOwner() const {
+Trustee File::getOwner() const
+{
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   PSECURITY_DESCRIPTOR securityDescriptor = nullptr;
   PSID ownerSID = nullptr;
@@ -717,7 +726,8 @@ Trustee File::getOwner() const {
 #endif // flavor
 }
 
-void File::changeOwner(const String& path, const Trustee& owner, const Trustee& group, bool followLink) {
+void File::changeOwner(const String& path, const Trustee& owner, const Trustee& group, bool followLink)
+{
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   _throw NotImplemented(Type::getType<File>()); // TAG: fixme
 
@@ -751,7 +761,8 @@ void File::changeOwner(const String& path, const Trustee& owner, const Trustee& 
 #endif // flavor
 }
 
-Trustee File::getGroup() const {
+Trustee File::getGroup() const
+{
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   PSECURITY_DESCRIPTOR securityDescriptor = nullptr;
   PSID groupSID = nullptr;
@@ -779,7 +790,8 @@ Trustee File::getGroup() const {
 #endif // flavor
 }
 
-long long File::getSize() const {
+long long File::getSize() const
+{
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   #if (_COM_AZURE_DEV__BASE__OS >= _COM_AZURE_DEV__BASE__W2K)
     LARGE_INTEGER size; // TAG: unresolved possible byte order problem for big endian architectures
@@ -805,7 +817,8 @@ long long File::getSize() const {
 #endif
 }
 
-long long File::getPosition() const {
+long long File::getPosition() const
+{
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   LARGE_INTEGER position;
   position.QuadPart = 0;
@@ -850,7 +863,8 @@ void File::setPosition(long long position, Whence whence)
 #endif
 }
 
-void File::truncate(long long size) {
+void File::truncate(long long size)
+{
   long long oldSize = File::getSize();
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   setPosition(size);
@@ -890,7 +904,8 @@ void File::truncate(long long size) {
   }
 }
 
-void File::flush() {
+void File::flush()
+{
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   if (!::FlushFileBuffers(fd->getHandle())) {
     _throw FileException("Unable to flush.", this);
@@ -1142,7 +1157,8 @@ Date File::getLastModification()
 #endif
 }
 
-Date File::getLastAccess() {
+Date File::getLastAccess()
+{
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   FILETIME time;
   if (::GetFileTime(fd->getHandle(), 0, &time, 0)) {
@@ -1162,7 +1178,8 @@ Date File::getLastAccess() {
 #endif
 }
 
-Date File::getLastChange() {
+Date File::getLastChange()
+{
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   FILETIME time;
   if (::GetFileTime(fd->getHandle(), &time, 0, 0)) {
@@ -1182,7 +1199,8 @@ Date File::getLastChange() {
 #endif
 }
 
-unsigned long File::getVariable(Variable variable) {
+unsigned long File::getVariable(Variable variable)
+{
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   _throw NotSupported(this);
 #else // unix
@@ -1380,7 +1398,8 @@ unsigned int File::write(
   return bytesWritten;
 }
 
-void File::asyncCancel() {
+void File::asyncCancel()
+{
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   ::CancelIo(getHandle());
 #else // unix

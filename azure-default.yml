@@ -128,7 +128,7 @@ jobs:
     continueOnError: true
     inputs:
       script: |
-        # ./testsuite/unittesting.js --junit junit.xml
+        ./testsuite/unittesting # NOT SUPPORTED -- --junit junit.xml
         ctest -T Test
       workingDirectory: $(System.DefaultWorkingDirectory)/wasi
 

@@ -1368,11 +1368,13 @@ _COM_AZURE_DEV__BASE__PACKED__END
     
 #if (_COM_AZURE_DEV__BASE__COMPILER != _COM_AZURE_DEV__BASE__COMPILER_MSC) && \
     (_COM_AZURE_DEV__BASE__OS != _COM_AZURE_DEV__BASE__WASI) && \
-    (_COM_AZURE_DEV__BASE__OS != _COM_AZURE_DEV__BASE__EMCC) // Emscripten bug
-    FloatingPoint::ToFloat f_sNaN(std::numeric_limits<float>::signaling_NaN()); // MSC bug - returns qNaN / VS 16.3.8
-    TEST_ASSERT(f_sNaN.isNaN());
-    TEST_ASSERT(!f_sNaN.isQuiteNaN());
-    TEST_ASSERT(f_sNaN.isSignalingNaN());
+    (_COM_AZURE_DEV__BASE__OS != _COM_AZURE_DEV__BASE__EMCC) // WASI SDK and Emscripten bug
+    if (std::numeric_limits<float>::has_signaling_NaN) {
+      FloatingPoint::ToFloat f_sNaN(std::numeric_limits<float>::signaling_NaN()); // MSC bug - returns qNaN / VS 16.3.8
+      TEST_ASSERT(f_sNaN.isNaN());
+      TEST_ASSERT(!f_sNaN.isQuiteNaN());
+      TEST_ASSERT(f_sNaN.isSignalingNaN());
+    }
 #endif
 
     FloatingPoint::ToDouble d_qNaN(std::numeric_limits<double>::quiet_NaN());
@@ -1380,24 +1382,28 @@ _COM_AZURE_DEV__BASE__PACKED__END
     TEST_ASSERT(d_qNaN.isQuiteNaN());
     TEST_ASSERT(!d_qNaN.isSignalingNaN());
 
-    FloatingPoint::ToDouble d_sNaN(std::numeric_limits<double>::signaling_NaN());
-    TEST_ASSERT(d_sNaN.isNaN());
+    if (std::numeric_limits<double>::has_signaling_NaN) {
+      FloatingPoint::ToDouble d_sNaN(std::numeric_limits<double>::signaling_NaN());
+      TEST_ASSERT(d_sNaN.isNaN());
 #if !(_COM_AZURE_DEV__BASE__COMPILER == _COM_AZURE_DEV__BASE__COMPILER_MSC) // MSC bug - returns qNaN for x86 / VS 16.3.8
-    TEST_ASSERT(!d_sNaN.isQuiteNaN());
-    TEST_ASSERT(d_sNaN.isSignalingNaN());
+      TEST_ASSERT(!d_sNaN.isQuiteNaN());
+      TEST_ASSERT(d_sNaN.isSignalingNaN());
 #endif
+    }
 
     FloatingPoint::ToLongDouble ld_qNaN(std::numeric_limits<long double>::quiet_NaN());
     TEST_ASSERT(ld_qNaN.isNaN());
     TEST_ASSERT(ld_qNaN.isQuiteNaN());
     TEST_ASSERT(!ld_qNaN.isSignalingNaN());
 
-    FloatingPoint::ToLongDouble ld_sNaN(std::numeric_limits<long double>::signaling_NaN());
-    TEST_ASSERT(ld_sNaN.isNaN());
+    if (std::numeric_limits<long double>::has_signaling_NaN) {
+      FloatingPoint::ToLongDouble ld_sNaN(std::numeric_limits<long double>::signaling_NaN());
+      TEST_ASSERT(ld_sNaN.isNaN());
 #if !(_COM_AZURE_DEV__BASE__COMPILER == _COM_AZURE_DEV__BASE__COMPILER_MSC) // MSC bug - returns qNaN for x86 / VS 16.3.8
-    TEST_ASSERT(!ld_sNaN.isQuiteNaN());
-    TEST_ASSERT(ld_sNaN.isSignalingNaN());
+      TEST_ASSERT(!ld_sNaN.isQuiteNaN());
+      TEST_ASSERT(ld_sNaN.isSignalingNaN());
 #endif
+    }
 
     FloatingPoint::ToFloat f_sqrt(Math::sqrt(-1.0f));
     TEST_ASSERT(f_sqrt.isQuiteNaN());

@@ -132,7 +132,6 @@ Process Process::getParentProcess() noexcept
     return Process(Process::INVALID); // win32 doesn't support this (WINNT 4)
   #endif
 #elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__WASI)
-  BASSERT(!"Not supported.");
   return Process();
 #else // unix
   return Process(::getppid());
@@ -831,8 +830,10 @@ public:
 
     Process p = Process::getProcess();
     TEST_ASSERT(p.getId() != 0);
+#if (_COM_AZURE_DEV__BASE__OS != _COM_AZURE_DEV__BASE__WASI)
     auto parent = p.getParentProcess();
     TEST_ASSERT(parent.getId() != 0);
+#endif
     // TEST_ASSERT(p.getPriority() != 0);
     auto name = p.getName();
     // fout << "Process path: " << name << ENDL;

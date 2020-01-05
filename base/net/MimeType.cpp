@@ -118,7 +118,8 @@ MimeType& MimeType::operator=(const MimeType& copy) noexcept
   return *this;
 }
 
-bool MimeType::isValid() const noexcept {
+bool MimeType::isValid() const noexcept
+{
   // for grammar see RFC 2045
 
   {
@@ -132,14 +133,16 @@ bool MimeType::isValid() const noexcept {
     while (i < end) {
       char ch = *i++;
       
-      bassert(!ASCIITraits::isControl(ch), InvalidFormat(this));
+      if (ASCIITraits::isControl(ch)) {
+        return false;
+      }
       switch (ch) {
       case ' ':
 	// tspecials
       case '(': case ')': case '<': case '>': case '@':
       case ',': case ';': case ':': case '\\': case '"':
       case '/': case '[': case ']': case '?': case '=':
-	return false;
+        return false;
       }
     }
   }
@@ -155,14 +158,16 @@ bool MimeType::isValid() const noexcept {
     while (i < end) {
       char ch = *i++;
       
-      bassert(!ASCIITraits::isControl(ch), InvalidFormat(this));
+      if (ASCIITraits::isControl(ch)) {
+        return false;
+      }
       switch (ch) {
       case ' ':
 	// tspecials
       case '(': case ')': case '<': case '>': case '@':
       case ',': case ';': case ':': case '\\': case '"':
       case '/': case '[': case ']': case '?': case '=':
-	return false;
+        return false;
       }    
     }
   }

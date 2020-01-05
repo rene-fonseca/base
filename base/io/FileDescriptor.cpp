@@ -78,6 +78,17 @@ void FileDescriptor::close()
   fd = Descriptor::invalid;
 }
 
+#if 0 && (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
+// we could enable ANSI support automatically
+void enableANSITerminal() noexcept
+{
+  HANDLE hStdout = GetStdHandle(STD_OUTPUT_HANDLE);
+  DWORD mode = 0;
+  GetConsoleMode(hStdout, &mode)
+  SetConsoleMode(hStdout, mode | ENABLE_VIRTUAL_TERMINAL_PROCESSING | DISABLE_NEWLINE_AUTO_RETURN);
+}
+#endif
+
 bool FileDescriptor::isANSITerminal() const noexcept
 {
   auto app = Application::getApplication();

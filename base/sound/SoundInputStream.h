@@ -96,7 +96,7 @@ public:
     @param size The size of the buffer.
     @return The actual number of bytes read from the stream.
   */
-  unsigned int read(void* buffer, unsigned int size) noexcept;
+  unsigned int read(void* buffer, unsigned int size);
 
   /**
     Destructs the stream object.

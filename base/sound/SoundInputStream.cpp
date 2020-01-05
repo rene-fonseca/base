@@ -214,7 +214,8 @@ void SoundInputStream::resume() noexcept {
 #endif // flavor
 }
 
-void SoundInputStream::pause() noexcept {
+void SoundInputStream::pause() noexcept
+{
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   ::waveInStop((HWAVEIN)handle);
   event.reset();
@@ -232,7 +233,8 @@ void SoundInputStream::pause() noexcept {
 #endif // flavor
 }
 
-void SoundInputStream::reset() noexcept {
+void SoundInputStream::reset() noexcept
+{
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   ::waveInReset((HWAVEIN)handle);
 #else
@@ -250,7 +252,8 @@ void SoundInputStream::reset() noexcept {
 #endif // flavor
 }
 
-unsigned int SoundInputStream::read(void* buffer, unsigned int size) noexcept {
+unsigned int SoundInputStream::read(void* buffer, unsigned int size)
+{
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   WAVEHDR header;
   clear(header);

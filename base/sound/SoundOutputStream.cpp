@@ -208,7 +208,8 @@ void SoundOutputStream::reset() noexcept {
 #endif // flavor
 }
 
-void SoundOutputStream::wait() noexcept {
+void SoundOutputStream::wait() noexcept
+{
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   WAVEHDR header;
   clear(header);
@@ -238,7 +239,7 @@ void SoundOutputStream::wait() noexcept {
 #endif // flavor
 }
 
-unsigned int SoundOutputStream::write(const void* buffer, unsigned int size) noexcept
+unsigned int SoundOutputStream::write(const void* buffer, unsigned int size)
 {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   WAVEHDR header;

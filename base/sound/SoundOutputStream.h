@@ -92,7 +92,7 @@ public:
     @param size The number of bytes to be written.
     @return The actual number of bytes written.
   */
-  unsigned int write(const void* buffer, unsigned int size) noexcept;
+  unsigned int write(const void* buffer, unsigned int size);
 
   /**
     Destructs the stream object.

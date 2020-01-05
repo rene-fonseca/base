@@ -642,25 +642,30 @@ public:
       break;
     case SIGINT: // interrrupt from keyboard
       if (Thread::getThread()->isMainThread()) {
-        SystemLogger::write(SystemLogger::INFORMATION, "Interrupt signal.");
+        SystemLogger::write(SystemLogger::ERROR, "Interrupt signal.");
         if (Application::application) {
           Application::application->terminate();
         }
       }
       break;
     case SIGSEGV:
-      SystemLogger::write(SystemLogger::INFORMATION, "Segmentation fault.");
-      _throw MemoryException("Invalid memory access."); // TAG: remove
-      // abort();
+      SystemLogger::write(SystemLogger::ERROR, "Segmentation fault.");
+      if (FileDescriptor::getStandardError().isTerminal()) {
+        ferr << "Error: Segmentation fault." << ENDL;
+      }
+      abort();
     case SIGILL:
-      SystemLogger::write(SystemLogger::INFORMATION, "Invalid instruction.");
-      _throw Exception("Invalid instruction.");
+      SystemLogger::write(SystemLogger::ERROR, "Invalid instruction.");
+      if (FileDescriptor::getStandardError().isTerminal()) {
+        ferr << "Error: Invalid instruction." << ENDL;
+      }
+      abort();
     case SIGFPE:
-      SystemLogger::write(
-        SystemLogger::INFORMATION,
-        "Floating point exception."
-      );
-      _throw Exception("Floating point exception.");
+      SystemLogger::write(SystemLogger::ERROR, "Floating point exception.");
+      if (FileDescriptor::getStandardError().isTerminal()) {
+        ferr << "Error: Floating point exception." << ENDL;
+      }
+      abort();
     case SIGABRT: // abort
       if (Thread::getThread()->isMainThread()) {
         SystemLogger::write(SystemLogger::INFORMATION, "Abort signal.");

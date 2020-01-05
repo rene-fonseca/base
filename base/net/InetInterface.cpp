@@ -81,7 +81,7 @@ namespace internal {
   };
 }; // end of namespace internal
 
-Array<Association<String, unsigned int> > InetInterface::getInterfaceNames() noexcept
+Array<Association<String, unsigned int> > InetInterface::getInterfaceNames()
 {
   Array<Association<String, unsigned int> > interfaces;
 #if (defined(_COM_AZURE_DEV__BASE__HAVE_INET_IPV6))

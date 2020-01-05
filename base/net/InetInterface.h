@@ -66,7 +66,7 @@ public:
   /**
     Returns the names and indices of the available interfaces.
   */
-  static Array<Association<String, unsigned int> > getInterfaceNames() noexcept;
+  static Array<Association<String, unsigned int> > getInterfaceNames();
   
   /**
     Returns all of the Internet Protocol network interfaces of the host.

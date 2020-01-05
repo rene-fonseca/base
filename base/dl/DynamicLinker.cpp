@@ -258,7 +258,7 @@ bool DynamicLinker::import(
   return result;
 }
 
-DynamicLinker::~DynamicLinker()
+DynamicLinker::~DynamicLinker() noexcept(false)
 {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   bassert(

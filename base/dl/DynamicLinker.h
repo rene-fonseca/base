@@ -159,7 +159,7 @@ public:
   /**
     Closes the module.
   */
-  ~DynamicLinker();
+  ~DynamicLinker() noexcept(false);
 };
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

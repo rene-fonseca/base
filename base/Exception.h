@@ -383,30 +383,21 @@ inline const EXCEPTION& operator*(ThrowException&& t, const EXCEPTION& exception
 }
 
 #if defined(_COM_AZURE_DEV__BASE__ANY_DEBUG)
-
-#if (_COM_AZURE_DEV__BASE__COMPILER == _COM_AZURE_DEV__BASE__COMPILER_LLVM)
-#  define _COM_AZURE_DEV__BASE__PRETTY_FUNCTION __PRETTY_FUNCTION__
-#elif (_COM_AZURE_DEV__BASE__COMPILER == _COM_AZURE_DEV__BASE__COMPILER_MSC)
-#  define _COM_AZURE_DEV__BASE__PRETTY_FUNCTION __FUNCSIG__
-#else
-#  define _COM_AZURE_DEV__BASE__PRETTY_FUNCTION __func__
-#endif
-
-/** Throws exception. _throw MyException(). */
-#define _throw \
+/** Throws exception. _throw MyException(). _throw allows tracking on exceptions. Use _rethrow when retrowing. */
+#  define _throw \
   base::ThrowException::onException(_COM_AZURE_DEV__BASE__PRETTY_FUNCTION, __FILE__, __LINE__); \
   throw Exception::Hook() * // fake keyword
 
-/** Rethrows exception. */
-#define _rethrow \
+/** Rethrows exception. _rethrow allows tracking on exceptions. */
+#  define _rethrow \
   base::ThrowException::onException(_COM_AZURE_DEV__BASE__PRETTY_FUNCTION, __FILE__, __LINE__); \
   Exception::rethrow() // fake keyword
 #else
 /** Throws exception. _throw MyException(). */
-#define _throw throw Exception::Hook() * // fake keyword
+#  define _throw throw Exception::Hook() * // fake keyword
 
 /** Rethrows exception. */
-#define _rethrow Exception::rethrow() // fake keyword
+#  define _rethrow Exception::rethrow() // fake keyword
 #endif
 
 #define _COM_AZURE_DEV__BASE__EXCEPTION_THIS_TYPE() \

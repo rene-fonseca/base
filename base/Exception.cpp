@@ -151,7 +151,7 @@ extern void defaultExceptionHandler(const Exception* exception) noexcept;
 
 bool Exception::dumpExceptions = false;
 
-#if 1 || defined(_COM_AZURE_DEV__BASE__ANY_DEBUG)
+#if 1 || defined(_COM_AZURE_DEV__BASE__ANY_DEBUG) // enabled for release builds also for now
 Exception::ExceptionHandler Exception::exceptionHandler = &defaultExceptionHandler;
 #else
 Exception::ExceptionHandler Exception::exceptionHandler = nullptr;
@@ -313,6 +313,10 @@ Exception::~Exception() noexcept
 
 void ThrowException::onException(const char* who, const char* file, unsigned int line) noexcept
 {
+  if (!Exception::getDumpExceptions()) {
+    return;
+  }
+  
   file = Debug::getRelativePath(file);
 #if 0 && (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__WASI)
   printf("THROW in %s at %s:%d\n", who, file, line);

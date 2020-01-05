@@ -18,18 +18,21 @@
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
+/** Returns type without reference &. */
 template<typename TYPE> class RemoveReference {
 public:
 
   typedef TYPE Type;
 };
 
+/** Returns type without reference &. */
 template<typename TYPE> class RemoveReference<TYPE&> {
 public:
 
   typedef TYPE Type;
 };
 
+/** Returns type without reference &. */
 template<typename TYPE> class RemoveReference<TYPE&&> {
 public:
 

@@ -41,7 +41,8 @@ private:
     FINAL,
     COMPACT,
     NORMAL,
-    VERBOSE
+    VERBOSE,
+    VERY_VERBOSE
   };
 
   Command command = COMMAND_RUN;
@@ -96,6 +97,8 @@ public:
         verbosity = COMPACT;
       } else if (argument == "--verbose") {
         verbosity = VERBOSE;
+      } else if (argument == "--veryVerbose") {
+        verbosity = VERY_VERBOSE;
       } else if (argument == "--color") {
         useANSIColors = true;
       } else if (argument == "--nocolor") {
@@ -291,7 +294,9 @@ public:
         manager.setVerbosity(UnitTestManager::NORMAL);
         break;
       case VERBOSE:
+      case VERY_VERBOSE:
         manager.setVerbosity(UnitTestManager::VERBOSE);
+        Exception::setDumpExceptions(true);
         break;
       }
       

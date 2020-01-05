@@ -265,12 +265,14 @@ public:
     fout << "Reading thread terminating" << ENDL;
   }
 
-  bool hostAllowed(const InetAddress& host) noexcept {
+  bool hostAllowed(const InetAddress& host) noexcept
+  {
     // check address 172.30.* (mask then check if equal)
     return true;
   }
 
-  void server() noexcept {
+  void server()
+  {
     fout << "Initializing server socket: " << endPoint << ENDL;
     ServerSocket serverSocket(endPoint.getAddress(), endPoint.getPort(), 1);
 
@@ -279,10 +281,13 @@ public:
     fout << "Connection from: "
          << InetEndPoint(streamSocket.getAddress(), streamSocket.getPort())
          << ENDL;
-    bassert(hostAllowed(streamSocket.getAddress()), OutOfDomain());
+    if (!hostAllowed(streamSocket.getAddress())) {
+      throw OutOfDomain();
+    }
   }
 
-  void client() noexcept {
+  void client() noexcept
+  {
     fout << "Connecting to server: " << endPoint << ENDL;
     streamSocket.connect(endPoint.getAddress(), endPoint.getPort());
     fout << "Connected to: "

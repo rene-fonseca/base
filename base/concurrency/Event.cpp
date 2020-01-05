@@ -329,14 +329,14 @@ Event::~Event()
 {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   if (::CloseHandle(context) == 0) {
-    _throw EventException("Unable to destroy event.", this);
+    Runtime::corruption(_COM_AZURE_DEV__BASE__PRETTY_FUNCTION);
   }
 #elif defined(_COM_AZURE_DEV__BASE__PTHREAD)
   EventImpl::Context* p = Cast::pointer<EventImpl::Context*>(context);
   if (pthread_cond_destroy(&p->condition)) {
     pthread_mutex_destroy(&p->mutex); // lets just hope that this doesn't fail
     delete[] p;
-    _throw EventException("Unable to destroy event.", this);
+    Runtime::corruption(_COM_AZURE_DEV__BASE__PRETTY_FUNCTION);
   }
   pthread_mutex_destroy(&p->mutex); // lets just hope that this doesn't fail
   delete[] p;

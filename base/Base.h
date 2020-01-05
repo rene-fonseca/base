@@ -350,6 +350,9 @@ public:
 
   /** Triggers failure due to unsupported method/feature. */
   [[noreturn]] static void notSupported(const char* who);
+
+  /** Triggers failure due to corruption. */
+  [[noreturn]] static void corruption(const char* who);
 };
 
 /** Debug helper functions. */

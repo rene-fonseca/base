@@ -100,19 +100,19 @@ ThreadKeyImpl::~ThreadKeyImpl()
 {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   if (!::TlsFree(Cast::extract<DWORD>(key))) {
-    _throw ThreadKeyException(this);
+    Runtime::corruption(_COM_AZURE_DEV__BASE__PRETTY_FUNCTION);
   }
 #elif (_COM_AZURE_DEV__BASE__OS != _COM_AZURE_DEV__BASE__WASI)
   if (sizeof(pthread_key_t) <= sizeof(Key)) {
     pthread_key_t* internalKey = Cast::pointer<pthread_key_t*>(&key);
     if (pthread_key_delete(*internalKey)) { // key should always be valid at this point
-      _throw ThreadKeyException(this);
+      Runtime::corruption(_COM_AZURE_DEV__BASE__PRETTY_FUNCTION);
     }
   } else {
     pthread_key_t* internalKey = Cast::pointer<pthread_key_t*>(key.pointer);
     if (pthread_key_delete(*internalKey)) { // key should always be valid at this point
       delete[] internalKey;
-      _throw ThreadKeyException(this);
+      Runtime::corruption(_COM_AZURE_DEV__BASE__PRETTY_FUNCTION);
     }
   }
 #else

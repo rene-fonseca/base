@@ -140,7 +140,7 @@ MutualExclusion::~MutualExclusion()
   delete[] (CRITICAL_SECTION*)mutex;
 #elif defined(_COM_AZURE_DEV__BASE__PTHREAD)
   if (pthread_mutex_destroy((pthread_mutex_t*)mutex)) {
-    _throw MutualExclusionException(this);
+    Runtime::corruption(_COM_AZURE_DEV__BASE__PRETTY_FUNCTION);
   }
   delete[] (pthread_mutex_t*)mutex;
 #else

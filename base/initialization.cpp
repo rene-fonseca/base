@@ -371,6 +371,11 @@ void Runtime::notSupported(const char* who)
   _throw NotSupported(who);
 }
 
+void Runtime::corruption(const char* who)
+{
+  _throw MemoryCorruption(who);
+}
+
 void moduleEntry()
 {
 }

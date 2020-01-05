@@ -300,22 +300,22 @@ Semaphore::~Semaphore()
 {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   if (!::CloseHandle((HANDLE)semaphore)) {
-    _throw SemaphoreException(this);
+    Runtime::corruption(_COM_AZURE_DEV__BASE__PRETTY_FUNCTION);
   }
 #elif defined(_COM_AZURE_DEV__BASE__PTHREAD_SEMAPHORE)
   if (sizeof(sem_t) <= sizeof(semaphore)) {
     if (sem_destroy((sem_t*)&semaphore) != 0) {
-      _throw SemaphoreException(this);
+      Runtime::corruption(_COM_AZURE_DEV__BASE__PRETTY_FUNCTION);
     }
   } else {
     if (sem_destroy((sem_t*)semaphore) != 0) {
-      _throw SemaphoreException(this);
+      Runtime::corruption(_COM_AZURE_DEV__BASE__PRETTY_FUNCTION);
     }
     delete[] (SemaphoreImpl::Semaphore*)semaphore;
   }
 #elif defined(_COM_AZURE_DEV__BASE__PTHREAD)
   if (pthread_cond_destroy(&((SemaphoreImpl::Semaphore*)semaphore)->condition)) {
-    _throw SemaphoreException(this);
+    Runtime::corruption(_COM_AZURE_DEV__BASE__PRETTY_FUNCTION);
   }
   pthread_mutex_destroy(&((SemaphoreImpl::Semaphore*)semaphore)->mutex); // lets just hope that this doesn't fail
   delete[] (SemaphoreImpl::Semaphore*)semaphore;

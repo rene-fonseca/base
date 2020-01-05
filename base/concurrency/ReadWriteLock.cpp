@@ -338,12 +338,12 @@ ReadWriteLock::~ReadWriteLock()
   delete static_cast<ReadWriteLockImpl*>(representation);
 #elif defined(_COM_AZURE_DEV__BASE__PTHREAD_RWLOCK)
   if (pthread_rwlock_destroy(static_cast<pthread_rwlock_t*>(representation))) {
-    _throw ReadWriteLockException(this);
+    Runtime::corruption(_COM_AZURE_DEV__BASE__PRETTY_FUNCTION);
   }
   delete[] static_cast<pthread_rwlock_t*>(representation);
 #elif defined(_COM_AZURE_DEV__BASE__PTHREAD)
   if (pthread_mutex_destroy(static_cast<pthread_mutex_t*>(representation))) {
-    _throw ReadWriteLockException(this);
+    Runtime::corruption(_COM_AZURE_DEV__BASE__PRETTY_FUNCTION);
   }
   delete[] static_cast<pthread_mutex_t*>(representation);
 #else

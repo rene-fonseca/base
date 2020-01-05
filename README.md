@@ -48,7 +48,7 @@ cd base
 mkdir build
 cd build
 cmake .. -DCMAKE_BUILD_TYPE=Debug
-make
+cmake --build .. --config Debug --target install -- -j 4
 ./testing/unittesting
 ctest . -C Debug
 ```
@@ -61,7 +61,7 @@ cd base
 mkdir build
 cd build
 cmake .. -DCMAKE_BUILD_TYPE=Release
-make
+cmake --build .. --config Release --target install -- -j 4
 ./testing/unittesting
 ctest . -C Release
 ```

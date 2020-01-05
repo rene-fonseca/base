@@ -294,6 +294,8 @@ public:
         manager.setVerbosity(UnitTestManager::NORMAL);
         break;
       case VERBOSE:
+        manager.setVerbosity(UnitTestManager::VERBOSE);
+        break;
       case VERY_VERBOSE:
         manager.setVerbosity(UnitTestManager::VERBOSE);
         Exception::setDumpExceptions(true);

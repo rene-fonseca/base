@@ -1645,6 +1645,7 @@ String FileSystem::getTempFolder(TemporaryFolder folder) noexcept
         return *found;
       }
     }
+    // fallthrough
   case FileSystem::MACHINE_NONPERSISTENT:
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
     return Literal("C:\\temp"); // TAG: fixme - use same drive as windows directory

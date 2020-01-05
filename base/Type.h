@@ -100,6 +100,15 @@ public:
   }
 
   /**
+    Returns the type object for the type of the specified object.
+  */
+  template<class TYPE>
+  static inline Type getType(const TYPE* object) noexcept
+  {
+    return GetType<TYPE>()(object);
+  }
+
+  /**
     Initializes type object in an uninitialized state.
   */
   inline Type() noexcept

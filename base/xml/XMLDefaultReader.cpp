@@ -526,15 +526,16 @@ XMLDefaultReader::XMLDefaultReader() noexcept
     validate(true),
     terminated(false),
     parsing(false),
-    standalone(false) {
+    standalone(false)
+{
 #if defined(_COM_AZURE_DEV__BASE__XML_XMLSOFT_ORG)
 #else // no xml support
-  _throw SAXNotSupportedException(this); // prevent construction
+  _COM_AZURE_DEV__BASE__NOT_IMPLEMENTED();
 #endif
 }
 
 bool XMLDefaultReader::getFeature(const String& name) const
-  {
+{
 #if defined(_COM_AZURE_DEV__BASE__XML_XMLSOFT_ORG)
   if (name == "http://xml.org/sax/features/validation") {
     return validate;
@@ -552,12 +553,12 @@ bool XMLDefaultReader::getFeature(const String& name) const
   // http://xml.org/sax/features/external-general-entities
   // http://xml.org/sax/features/external-parameter-entities
 #else // no xml support
-  _throw SAXNotSupportedException(this);
+  _COM_AZURE_DEV__BASE__NOT_IMPLEMENTED();
 #endif
 }
 
 void XMLDefaultReader::setFeature(const String& name, bool value)
-  {
+{
 #if defined(_COM_AZURE_DEV__BASE__XML_XMLSOFT_ORG)
   
   // TAG: what about recovering
@@ -571,12 +572,12 @@ void XMLDefaultReader::setFeature(const String& name, bool value)
     _throw SAXNotRecognizedException(this);
   }
 #else // no xml support
-  _throw SAXNotSupportedException(this);
+  _COM_AZURE_DEV__BASE__NOT_IMPLEMENTED();
 #endif
 }
 
-void XMLDefaultReader::parse(
-  File file, const String& uri) {
+void XMLDefaultReader::parse(File file, const String& uri)
+{
 #if defined(_COM_AZURE_DEV__BASE__XML_XMLSOFT_ORG)
   bassert(!parsing, SAXException(this));
   parsing = true;
@@ -645,14 +646,15 @@ void XMLDefaultReader::parse(
     );
   }
 #else // no xml support
-  _throw SAXNotSupportedException(this);
+  _COM_AZURE_DEV__BASE__NOT_IMPLEMENTED();
 #endif
 }
 
 void XMLDefaultReader::parse(
   const char* buffer,
   unsigned int size,
-  const String& uri) {
+  const String& uri)
+{
 #if defined(_COM_AZURE_DEV__BASE__XML_XMLSOFT_ORG)
   bassert(!parsing, SAXException(this));
   parsing = true;
@@ -678,7 +680,7 @@ void XMLDefaultReader::parse(
     );
   }
 #else // no xml support
-  _throw SAXNotSupportedException(this);
+  _COM_AZURE_DEV__BASE__NOT_IMPLEMENTED();
 #endif
 }
 
@@ -711,7 +713,8 @@ public:
   }
 };
 
-void XMLDefaultReader::parse(const String& systemId) {
+void XMLDefaultReader::parse(const String& systemId)
+{
 #if defined(_COM_AZURE_DEV__BASE__XML_XMLSOFT_ORG)
   bassert(!parsing, SAXException(this));
   parsing = true;
@@ -763,20 +766,22 @@ void XMLDefaultReader::parse(const String& systemId) {
     );
   }
 #else // no xml support
-  _throw SAXNotSupportedException(this);
+  _COM_AZURE_DEV__BASE__NOT_IMPLEMENTED();
 #endif
 }
 
-void XMLDefaultReader::terminate() noexcept {
+void XMLDefaultReader::terminate() noexcept
+{
 #if defined(_COM_AZURE_DEV__BASE__XML_XMLSOFT_ORG)
 // int result = xmlParseChunk(static_cast<xmlParserCtxtPtr>(context), 0, 0, 1);
 // bassert(result == 0, SAXException("Unable to terminate parsing."));
 #else // no xml support
-  _throw SAXNotSupportedException(this);
+  _COM_AZURE_DEV__BASE__NOT_IMPLEMENTED();
 #endif
 }
 
-XMLDefaultReader::~XMLDefaultReader() noexcept {
+XMLDefaultReader::~XMLDefaultReader() noexcept
+{
 }
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

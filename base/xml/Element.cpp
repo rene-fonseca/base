@@ -20,7 +20,8 @@
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
-String Element::getTagName() const noexcept {
+String Element::getTagName() const noexcept
+{
 #if defined(_COM_AZURE_DEV__BASE__XML_XMLSOFT_ORG)
   xmlNode* node = (xmlNode*)getContext();
   if (node->ns && node->ns->prefix) {
@@ -30,20 +31,22 @@ String Element::getTagName() const noexcept {
     return NativeString((const char*)node->name);
   }
 #else
-  _throw DOMException(this);
+  _COM_AZURE_DEV__BASE__NOT_IMPLEMENTED();
 #endif
 }
 
-bool Element::hasAttributes() const noexcept {
+bool Element::hasAttributes() const noexcept
+{
 #if defined(_COM_AZURE_DEV__BASE__XML_XMLSOFT_ORG)
   xmlNode* node = (xmlNode*)getContext();
   return node->properties;
 #else
-  _throw DOMException(this);
+  _COM_AZURE_DEV__BASE__NOT_IMPLEMENTED();
 #endif
 }
 
-Attribute Element::getFirstAttribute() noexcept {
+Attribute Element::getFirstAttribute() noexcept
+{
 #if defined(_COM_AZURE_DEV__BASE__XML_XMLSOFT_ORG)
   xmlNode* node = (xmlNode*)getContext();
   return node->properties;
@@ -52,7 +55,8 @@ Attribute Element::getFirstAttribute() noexcept {
 #endif
 }
 
-bool Element::hasAttribute(const char* name) const noexcept {
+bool Element::hasAttribute(const char* name) const noexcept
+{
 #if defined(_COM_AZURE_DEV__BASE__XML_XMLSOFT_ORG)
   xmlNode* node = (xmlNode*)getContext();
   xmlAttr* attribute = xmlHasProp(
@@ -61,7 +65,7 @@ bool Element::hasAttribute(const char* name) const noexcept {
   );
   return attribute != 0;
 #else
-  _throw DOMException(this);
+  _COM_AZURE_DEV__BASE__NOT_IMPLEMENTED();
 #endif
 }
 
@@ -172,17 +176,19 @@ void Element::removeAttributeNS(
   );
   bassert(result, DOMException(this));
 #else
-  _throw DOMException(this);
+  _COM_AZURE_DEV__BASE__NOT_IMPLEMENTED();
 #endif
 }
 
 Attribute Element::setAttributeNodeNS(
-  Attribute attribute) {
-  _throw DOMException(this);
+  Attribute attribute)
+{
+  _COM_AZURE_DEV__BASE__NOT_IMPLEMENTED();
 }
 
 bool Element::hasAttributeNS(
-  const char* namespaceURI, const char* localName) const noexcept {
+  const char* namespaceURI, const char* localName) const noexcept
+{
 #if defined(_COM_AZURE_DEV__BASE__XML_XMLSOFT_ORG)
   xmlNode* node = (xmlNode*)getContext();
   xmlAttr* attribute = xmlHasNsProp(
@@ -192,7 +198,7 @@ bool Element::hasAttributeNS(
   );
   return attribute != 0;
 #else
-  _throw DOMException(this);
+  _COM_AZURE_DEV__BASE__NOT_IMPLEMENTED();
 #endif
 }
 

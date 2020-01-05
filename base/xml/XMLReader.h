@@ -15,7 +15,6 @@
 
 #include <base/Polymorphic.h>
 #include <base/xml/SAXNotRecognizedException.h>
-#include <base/xml/SAXNotSupportedException.h>
 #include <base/xml/SAXParseException.h>
 #include <base/xml/Attributes.h>
 #include <base/xml/AttributeDecl.h>

@@ -25,12 +25,14 @@ _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 bool Node::isSupported(
     const String& feature,
-    const String& version) const noexcept {
+    const String& version) const noexcept
+{
   // TAG: fixme
   return false;
 }
 
-String Node::getName() const noexcept {
+String Node::getName() const noexcept
+{
 #if defined(_COM_AZURE_DEV__BASE__XML_XMLSOFT_ORG)
   xmlNode* node = (xmlNode*)context;
   switch (node->type) {
@@ -77,7 +79,8 @@ String Node::getName() const noexcept {
 #endif
 }
 
-String Node::getValue() const {
+String Node::getValue() const
+{
 #if defined(_COM_AZURE_DEV__BASE__XML_XMLSOFT_ORG)
   xmlNode* node = (xmlNode*)context;
   switch (node->type) {
@@ -157,11 +160,12 @@ void Node::setValue(const String& value) {
     _throw UnexpectedFailure(this);
   }
 #else
-  _throw DOMException(this); // TAG: cause
+  _COM_AZURE_DEV__BASE__NOT_IMPLEMENTED();
 #endif
 }
 
-Node::NodeType Node::getType() const noexcept {
+Node::NodeType Node::getType() const noexcept
+{
 #if defined(_COM_AZURE_DEV__BASE__XML_XMLSOFT_ORG)
   xmlNode* node = (xmlNode*)context;
   switch (node->type) {
@@ -199,11 +203,12 @@ Node::NodeType Node::getType() const noexcept {
     _throw UnexpectedFailure(this);
   }
 #else
-  _throw DOMException(this);
+  _COM_AZURE_DEV__BASE__NOT_IMPLEMENTED();
 #endif
 }
 
-Node Node::getParent() const noexcept {
+Node Node::getParent() const noexcept
+{
 #if defined(_COM_AZURE_DEV__BASE__XML_XMLSOFT_ORG)
   xmlNode* node = (xmlNode*)context;
   
@@ -220,11 +225,12 @@ Node Node::getParent() const noexcept {
     return 0;
   }
 #else
-  _throw DOMException(this);
+  _COM_AZURE_DEV__BASE__NOT_IMPLEMENTED();
 #endif
 }
 
-Node Node::getPreviousSibling() const noexcept {
+Node Node::getPreviousSibling() const noexcept
+{
 #if defined(_COM_AZURE_DEV__BASE__XML_XMLSOFT_ORG)
   xmlNode* node = (xmlNode*)context;
   switch (node->type) {
@@ -234,11 +240,12 @@ Node Node::getPreviousSibling() const noexcept {
     return node->prev;
   }
 #else
-  _throw DOMException(this);
+  _COM_AZURE_DEV__BASE__NOT_IMPLEMENTED();
 #endif
 }
 
-Node Node::getNextSibling() const noexcept {
+Node Node::getNextSibling() const noexcept
+{
 #if defined(_COM_AZURE_DEV__BASE__XML_XMLSOFT_ORG)
   xmlNode* node = (xmlNode*)context;
   switch (node->type) {
@@ -248,11 +255,12 @@ Node Node::getNextSibling() const noexcept {
     return node->next;
   }
 #else
-  _throw DOMException(this);
+  _COM_AZURE_DEV__BASE__NOT_IMPLEMENTED();
 #endif
 }
 
-Node Node::getFirstChild() const noexcept {
+Node Node::getFirstChild() const noexcept
+{
 #if defined(_COM_AZURE_DEV__BASE__XML_XMLSOFT_ORG)
   xmlNode* node = (xmlNode*)context;
   
@@ -275,11 +283,12 @@ Node Node::getFirstChild() const noexcept {
     _throw UnexpectedFailure(this);
   }
 #else
-  _throw DOMException(this);
+  _COM_AZURE_DEV__BASE__NOT_IMPLEMENTED();
 #endif
 }
 
-Node Node::getLastChild() const noexcept {
+Node Node::getLastChild() const noexcept
+{
 #if defined(_COM_AZURE_DEV__BASE__XML_XMLSOFT_ORG)
   xmlNode* node = (xmlNode*)context;
   
@@ -302,11 +311,12 @@ Node Node::getLastChild() const noexcept {
     _throw UnexpectedFailure(this);
   }
 #else
-  _throw DOMException(this);
+  _COM_AZURE_DEV__BASE__NOT_IMPLEMENTED();
 #endif
 }
 
-Node::ShadowDocument Node::getOwnerDocument() noexcept {
+Node::ShadowDocument Node::getOwnerDocument() noexcept
+{
 #if defined(_COM_AZURE_DEV__BASE__XML_XMLSOFT_ORG)
   xmlNode* node = (xmlNode*)context;
   if (node->type == XML_DOCUMENT_NODE) {
@@ -315,7 +325,7 @@ Node::ShadowDocument Node::getOwnerDocument() noexcept {
     return node->doc;
   }
 #else
-  _throw DOMException(this);
+  _COM_AZURE_DEV__BASE__NOT_IMPLEMENTED();
 #endif
 }
 
@@ -498,7 +508,8 @@ public:
 };
 #endif
 
-Node Node::appendChild(Node _child) {
+Node Node::appendChild(Node _child)
+{
 #if defined(_COM_AZURE_DEV__BASE__XML_XMLSOFT_ORG)
   xmlNode* node = (xmlNode*)context;
   xmlNode* child = (xmlNode*)_child.context;
@@ -549,11 +560,12 @@ Node Node::appendChild(Node _child) {
   
   return child;
 #else
-  _throw DOMException(this);
+  _COM_AZURE_DEV__BASE__NOT_IMPLEMENTED();
 #endif
 }
 
-Node Node::insertBefore(Node _newChild, Node _refChild) {
+Node Node::insertBefore(Node _newChild, Node _refChild)
+{
 #if defined(_COM_AZURE_DEV__BASE__XML_XMLSOFT_ORG)
 	xmlNode* node = (xmlNode*)context;
 	xmlNode* newChild = (xmlNode*)_newChild.context;
@@ -612,11 +624,12 @@ Node Node::insertBefore(Node _newChild, Node _refChild) {
   
   return newChild;
 #else
-  _throw DOMException(this);
+  _COM_AZURE_DEV__BASE__NOT_IMPLEMENTED();
 #endif
 }
 
-Node Node::removeChild(Node _oldChild) {
+Node Node::removeChild(Node _oldChild)
+{
 #if defined(_COM_AZURE_DEV__BASE__XML_XMLSOFT_ORG)
   xmlNode* node = (xmlNode*)context;
   xmlNode* oldChild = (xmlNode*)_oldChild.context;
@@ -624,17 +637,19 @@ Node Node::removeChild(Node _oldChild) {
   NodeImpl::unlink(oldChild);
   return oldChild;
 #else
-  _throw DOMException(this);
+  _COM_AZURE_DEV__BASE__NOT_IMPLEMENTED();
 #endif
 }
 
-Node Node::replaceChild(Node newChild, Node oldChild) {
+Node Node::replaceChild(Node newChild, Node oldChild)
+{
   insertBefore(newChild, oldChild);
 	removeChild(oldChild);
   return oldChild;
 }
 
-bool Node::hasChildNodes() const noexcept {
+bool Node::hasChildNodes() const noexcept
+{
 #if defined(_COM_AZURE_DEV__BASE__XML_XMLSOFT_ORG)
   const xmlNode* node = (const xmlNode*)context;
   
@@ -657,11 +672,12 @@ bool Node::hasChildNodes() const noexcept {
     _throw UnexpectedFailure(this);
   }
 #else
-  _throw DOMException(this);
+  _COM_AZURE_DEV__BASE__NOT_IMPLEMENTED();
 #endif
 }
 
-String Node::getNamespaceURI() const noexcept {
+String Node::getNamespaceURI() const noexcept
+{
 #if defined(_COM_AZURE_DEV__BASE__XML_XMLSOFT_ORG)
   xmlNode* node = (xmlNode*)context;
   if (node->ns &&
@@ -672,11 +688,12 @@ String Node::getNamespaceURI() const noexcept {
     return String();
   }
 #else
-  _throw DOMException(this);
+  _COM_AZURE_DEV__BASE__NOT_IMPLEMENTED();
 #endif
 }
 
-String Node::getPrefix() const {
+String Node::getPrefix() const
+{
 #if defined(_COM_AZURE_DEV__BASE__XML_XMLSOFT_ORG)
   xmlNode* node = (xmlNode*)context;
   return NativeString((const char*)node->ns->prefix);
@@ -688,11 +705,12 @@ String Node::getPrefix() const {
     return String();
   }
 #else
-  _throw DOMException(this);
+  _COM_AZURE_DEV__BASE__NOT_IMPLEMENTED();
 #endif
 }
 
-void Node::setPrefix(const String& prefix) {
+void Node::setPrefix(const String& prefix)
+{
 #if defined(_COM_AZURE_DEV__BASE__XML_XMLSOFT_ORG)
   xmlNode* node = (xmlNode*)context;
 
@@ -716,11 +734,12 @@ void Node::setPrefix(const String& prefix) {
     node->ns = ns;
 	}
 #else
-  _throw DOMException(this);
+  _COM_AZURE_DEV__BASE__NOT_IMPLEMENTED();
 #endif
 }
 
-String Node::getLocalName() const noexcept {
+String Node::getLocalName() const noexcept
+{
 #if defined(_COM_AZURE_DEV__BASE__XML_XMLSOFT_ORG)
   xmlNode* node = (xmlNode*)context;
   if (/*node->ns &&*/ // TAG: should ns be ignored
@@ -731,41 +750,45 @@ String Node::getLocalName() const noexcept {
     return String();
   }
 #else
-  _throw DOMException(this);
+  _COM_AZURE_DEV__BASE__NOT_IMPLEMENTED();
 #endif
 }
 
-bool Node::hasAttributes() const noexcept {
+bool Node::hasAttributes() const noexcept
+{
 #if defined(_COM_AZURE_DEV__BASE__XML_XMLSOFT_ORG)
   xmlNode* node = (xmlNode*)context;
   return (node->type == XML_ELEMENT_NODE) && (node->properties != 0);
 #else
-  _throw DOMException(this);
+  _COM_AZURE_DEV__BASE__NOT_IMPLEMENTED();
 #endif
 }
 
 // remove()???
 // unlink()???
 
-bool Node::isUnlinked() const noexcept {
+bool Node::isUnlinked() const noexcept
+{
 #if defined(_COM_AZURE_DEV__BASE__XML_XMLSOFT_ORG)
   return NodeImpl::isUnlinked(*this);
 #else
-  _throw DOMException(this);
+  _COM_AZURE_DEV__BASE__NOT_IMPLEMENTED();
 #endif
 }
 
-bool Node::hasSameOwner(const Node& _node) const noexcept {
+bool Node::hasSameOwner(const Node& _node) const noexcept
+{
 #if defined(_COM_AZURE_DEV__BASE__XML_XMLSOFT_ORG)
   const xmlNode* a = (const xmlNode*)getContext();
   const xmlNode* b = (const xmlNode*)_node.getContext();
   return a->doc == b->doc;
 #else
-  _throw DOMException(this);
+  _COM_AZURE_DEV__BASE__NOT_IMPLEMENTED();
 #endif
 }
 
-bool Node::isAncestor(const Node& _child) const noexcept {
+bool Node::isAncestor(const Node& _child) const noexcept
+{
 #if defined(_COM_AZURE_DEV__BASE__XML_XMLSOFT_ORG)
   const xmlNode* node = (const xmlNode*)getContext();
   const xmlNode* child  = (const xmlNode*)_child.getContext();
@@ -783,7 +806,8 @@ bool Node::isAncestor(const Node& _child) const noexcept {
 }
 
 // TAG: should cloneNode() be const?
-Node Node::cloneNode(bool deep) {
+Node Node::cloneNode(bool deep)
+{
 #if defined(_COM_AZURE_DEV__BASE__XML_XMLSOFT_ORG)
   xmlNode* node = (xmlNode*)getContext();
   
@@ -810,11 +834,12 @@ Node Node::cloneNode(bool deep) {
     return result;
   }
 #else
-  _throw DOMException(this);
+  _COM_AZURE_DEV__BASE__NOT_IMPLEMENTED();
 #endif
 }
 
-Node::~Node() noexcept {
+Node::~Node() noexcept
+{
 #if defined(_COM_AZURE_DEV__BASE__XML_XMLSOFT_ORG)
   // TAG: need reference counting!
 #if 0

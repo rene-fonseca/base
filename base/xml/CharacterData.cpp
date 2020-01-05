@@ -29,16 +29,18 @@ String CharacterData::getData() const {
 #endif
 }
 
-void CharacterData::setData(const String& data) {
+void CharacterData::setData(const String& data)
+{
 #if defined(_COM_AZURE_DEV__BASE__XML_XMLSOFT_ORG)
   xmlNodePtr node = (xmlNodePtr)getContext();
 	xmlNodeSetContent(node, (const xmlChar*)data.getElements());
 #else
-  _throw DOMException(this);
+  _COM_AZURE_DEV__BASE__NOT_IMPLEMENTED();
 #endif
 }
 
-unsigned int CharacterData::getLength() const noexcept {
+unsigned int CharacterData::getLength() const noexcept
+{
 #if defined(_COM_AZURE_DEV__BASE__XML_XMLSOFT_ORG)
   xmlNodePtr node = (xmlNodePtr)getContext();
   const char* content = (const char*)node->content;
@@ -49,12 +51,12 @@ unsigned int CharacterData::getLength() const noexcept {
   );
   return terminator ? (terminator - content) : String::MAXIMUM_LENGTH;
 #else
-  _throw DOMException(this);
+  _COM_AZURE_DEV__BASE__NOT_IMPLEMENTED();
 #endif
 }
 
-String CharacterData::substringData(
-  unsigned int offset, unsigned int count) {
+String CharacterData::substringData(unsigned int offset, unsigned int count)
+{
 #if defined(_COM_AZURE_DEV__BASE__XML_XMLSOFT_ORG)
   xmlNodePtr node = (xmlNodePtr)getContext();
   const char* content = (const char*)node->content;
@@ -68,55 +70,57 @@ String CharacterData::substringData(
   }
   return String(content + offset, count);
 #else
-  _throw DOMException(this);
+  _COM_AZURE_DEV__BASE__NOT_IMPLEMENTED();
 #endif
 }
 
-void CharacterData::appendData(const String& value) {
+void CharacterData::appendData(const String& value)
+{
 #if defined(_COM_AZURE_DEV__BASE__XML_XMLSOFT_ORG)
   xmlNodePtr node = (xmlNodePtr)getContext();
   xmlNodeAddContent(node, (const xmlChar*)value.getElements());
   // TAG: how to detect failure
 #else
-  _throw DOMException(this);
+  _COM_AZURE_DEV__BASE__NOT_IMPLEMENTED();
 #endif
 }
 
-void CharacterData::insertData(
-  unsigned int offset, const String& value) {
+void CharacterData::insertData(unsigned int offset, const String& value)
+{
 #if defined(_COM_AZURE_DEV__BASE__XML_XMLSOFT_ORG)
   xmlNodePtr node = (xmlNodePtr)getContext();
   String temp((const char*)node->content);
   temp.insert(offset, value);
 	xmlNodeSetContent(node, (const xmlChar*)temp.getElements());
 #else
-  _throw DOMException(this);
+  _COM_AZURE_DEV__BASE__NOT_IMPLEMENTED();
 #endif
 }
 
-void CharacterData::deleteData(
-  unsigned int offset, unsigned int count) {
+void CharacterData::deleteData(unsigned int offset, unsigned int count)
+{
 #if defined(_COM_AZURE_DEV__BASE__XML_XMLSOFT_ORG)
   xmlNodePtr node = (xmlNodePtr)getContext();
   String temp((const char*)node->content);
   temp.remove(offset, offset + count); // TAG: overflow problem
 	xmlNodeSetContent(node, (const xmlChar*)temp.getElements());
 #else
-  _throw DOMException(this);
+  _COM_AZURE_DEV__BASE__NOT_IMPLEMENTED();
 #endif
 }
 
 void CharacterData::replaceData(
   unsigned int offset,
   unsigned int count,
-  const String& value) {
+  const String& value)
+{
 #if defined(_COM_AZURE_DEV__BASE__XML_XMLSOFT_ORG)
   xmlNodePtr node = (xmlNodePtr)getContext();
   String temp((const char*)node->content);
   temp.replace(offset, offset + count, value); // TAG: overflow problem
 	xmlNodeSetContent(node, (const xmlChar*)temp.getElements());
 #else
-  _throw DOMException(this);
+  _COM_AZURE_DEV__BASE__NOT_IMPLEMENTED();
 #endif
 }
 

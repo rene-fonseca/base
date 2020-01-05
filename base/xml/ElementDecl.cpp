@@ -20,7 +20,8 @@
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
-ElementDecl::ValueType ElementDecl::getValueType() const noexcept {
+ElementDecl::ValueType ElementDecl::getValueType() const noexcept
+{
 #if defined(_COM_AZURE_DEV__BASE__XML_XMLSOFT_ORG)
   xmlElement* element = (xmlElement*)getContext();
   switch (element->etype) {
@@ -36,25 +37,27 @@ ElementDecl::ValueType ElementDecl::getValueType() const noexcept {
     _throw DOMException(this);
   }
 #else
-  _throw DOMException(this);
+  _COM_AZURE_DEV__BASE__NOT_IMPLEMENTED();
 #endif
 }
 
-bool ElementDecl::hasAttributes() const noexcept {
+bool ElementDecl::hasAttributes() const noexcept
+{
 #if defined(_COM_AZURE_DEV__BASE__XML_XMLSOFT_ORG)
   xmlElement* element = (xmlElement*)getContext();
   return element->attributes;
 #else
-  _throw DOMException(this);
+  _COM_AZURE_DEV__BASE__NOT_IMPLEMENTED();
 #endif
 }
 
-AttributeDecl ElementDecl::getFirstAttribute() noexcept {
+AttributeDecl ElementDecl::getFirstAttribute() noexcept
+{
 #if defined(_COM_AZURE_DEV__BASE__XML_XMLSOFT_ORG)
   xmlElement* element = (xmlElement*)getContext();
   return element->attributes;
 #else
-  _throw DOMException(this);
+  _COM_AZURE_DEV__BASE__NOT_IMPLEMENTED();
 #endif
 }
 

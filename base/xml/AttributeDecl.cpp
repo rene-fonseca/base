@@ -20,7 +20,8 @@
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
-AttributeDecl::ValueType AttributeDecl::getValueType() const noexcept {
+AttributeDecl::ValueType AttributeDecl::getValueType() const noexcept
+{
 #if defined(_COM_AZURE_DEV__BASE__XML_XMLSOFT_ORG)
   xmlAttribute* attribute = (xmlAttribute*)getContext();
   switch (attribute->atype) {
@@ -48,11 +49,12 @@ AttributeDecl::ValueType AttributeDecl::getValueType() const noexcept {
     _throw DOMException(this);
   }
 #else
-  _throw DOMException(this);
+  _COM_AZURE_DEV__BASE__NOT_IMPLEMENTED();
 #endif
 }
 
-AttributeDecl::DefaultType AttributeDecl::getDefaultValueType() const noexcept {
+AttributeDecl::DefaultType AttributeDecl::getDefaultValueType() const noexcept
+{
 #if defined(_COM_AZURE_DEV__BASE__XML_XMLSOFT_ORG)
   xmlAttribute* attribute = (xmlAttribute*)getContext();
   switch (attribute->atype) {
@@ -68,20 +70,22 @@ AttributeDecl::DefaultType AttributeDecl::getDefaultValueType() const noexcept {
     _throw DOMException(this);
   }
 #else
-  _throw DOMException(this);
+  _COM_AZURE_DEV__BASE__NOT_IMPLEMENTED();
 #endif
 }
 
-String AttributeDecl::getDefaultValue() const noexcept {
+String AttributeDecl::getDefaultValue() const noexcept
+{
 #if defined(_COM_AZURE_DEV__BASE__XML_XMLSOFT_ORG)
   xmlAttribute* attribute = (xmlAttribute*)getContext();
   return NativeString((const char*)attribute->defaultValue);
 #else
-  _throw DOMException(this);
+  _COM_AZURE_DEV__BASE__NOT_IMPLEMENTED();
 #endif
 }
 
-Array<String> AttributeDecl::getEnumerationValues() const {
+Array<String> AttributeDecl::getEnumerationValues() const
+{
 #if defined(_COM_AZURE_DEV__BASE__XML_XMLSOFT_ORG)
   xmlAttribute* attribute = (xmlAttribute*)getContext();
   bassert(
@@ -96,7 +100,7 @@ Array<String> AttributeDecl::getEnumerationValues() const {
   }
   return result;
 #else
-  _throw DOMException(this);
+  _COM_AZURE_DEV__BASE__NOT_IMPLEMENTED();
 #endif
 }
 

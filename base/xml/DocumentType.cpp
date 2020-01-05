@@ -20,52 +20,58 @@
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
-String DocumentType::getName() const noexcept {
+String DocumentType::getName() const noexcept
+{
 #if defined(_COM_AZURE_DEV__BASE__XML_XMLSOFT_ORG)
   xmlDtd* documentType = (xmlDtd*)getContext();
   return NativeString((const char*)documentType->name);
 #else
-  _throw DOMException(this);
+  _COM_AZURE_DEV__BASE__NOT_IMPLEMENTED();
 #endif
 }
 
-NamedNodeMap DocumentType::getEntities() const noexcept {
+NamedNodeMap DocumentType::getEntities() const noexcept
+{
 #if defined(_COM_AZURE_DEV__BASE__XML_XMLSOFT_ORG)
   xmlDtd* documentType = (xmlDtd*)getContext();
   return documentType->entities;
 #else
-  _throw DOMException(this);
+  _COM_AZURE_DEV__BASE__NOT_IMPLEMENTED();
 #endif
 }
 
-NamedNodeMap DocumentType::getNotations() const noexcept {
+NamedNodeMap DocumentType::getNotations() const noexcept
+{
 #if defined(_COM_AZURE_DEV__BASE__XML_XMLSOFT_ORG)
   xmlDtd* documentType = (xmlDtd*)getContext();
   return documentType->notations;
 #else
-  _throw DOMException(this);
+  _COM_AZURE_DEV__BASE__NOT_IMPLEMENTED();
 #endif
 }
 
-String DocumentType::getPublicId() const noexcept {
+String DocumentType::getPublicId() const noexcept
+{
 #if defined(_COM_AZURE_DEV__BASE__XML_XMLSOFT_ORG)
   xmlDtd* documentType = (xmlDtd*)getContext();
   return NativeString((const char*)documentType->ExternalID);
 #else
-  _throw DOMException(this);
+  _COM_AZURE_DEV__BASE__NOT_IMPLEMENTED();
 #endif
 }
 
-String DocumentType::getSystemId() const noexcept {
+String DocumentType::getSystemId() const noexcept
+{
 #if defined(_COM_AZURE_DEV__BASE__XML_XMLSOFT_ORG)
   xmlDtd* documentType = (xmlDtd*)getContext();
   return NativeString((const char*)documentType->SystemID);
 #else
-  _throw DOMException(this);
+  _COM_AZURE_DEV__BASE__NOT_IMPLEMENTED();
 #endif
 }
 
-String DocumentType::getInternalSubset() const noexcept {
+String DocumentType::getInternalSubset() const noexcept
+{
 #if defined(_COM_AZURE_DEV__BASE__XML_XMLSOFT_ORG)
   xmlDtd* documentType = (xmlDtd*)getContext();
   documentType = documentType->doc->intSubset;
@@ -77,7 +83,7 @@ String DocumentType::getInternalSubset() const noexcept {
  	xmlOutputBufferClose(buffer);
   return result;
 #else
-  _throw DOMException(this);
+  _COM_AZURE_DEV__BASE__NOT_IMPLEMENTED();
 #endif
 }
 

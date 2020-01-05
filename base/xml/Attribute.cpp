@@ -20,7 +20,8 @@
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
-String Attribute::getName() const noexcept {
+String Attribute::getName() const noexcept
+{
 #if defined(_COM_AZURE_DEV__BASE__XML_XMLSOFT_ORG)
   xmlAttr* attribute = (xmlAttr*)getContext();
   if (attribute->ns && attribute->ns->prefix) {
@@ -31,11 +32,12 @@ String Attribute::getName() const noexcept {
     return NativeString((const char*)attribute->name);
   }
 #else
-  _throw DOMException(this);
+  _COM_AZURE_DEV__BASE__NOT_IMPLEMENTED();
 #endif
 }
 
-String Attribute::getValue() const noexcept {
+String Attribute::getValue() const noexcept
+{
 #if defined(_COM_AZURE_DEV__BASE__XML_XMLSOFT_ORG)
   xmlAttr* attribute = (xmlAttr*)getContext();
   xmlChar* content = xmlNodeGetContent((xmlNode*)attribute);
@@ -43,11 +45,12 @@ String Attribute::getValue() const noexcept {
   xmlFree(content);
   return result;
 #else
-  _throw DOMException(this);
+  _COM_AZURE_DEV__BASE__NOT_IMPLEMENTED();
 #endif
 }
 
-void Attribute::setValue(const String& value) {
+void Attribute::setValue(const String& value)
+{
 #if defined(_COM_AZURE_DEV__BASE__XML_XMLSOFT_ORG)
   xmlAttr* attribute = (xmlAttr*)getContext();
   if (attribute->children) {
@@ -72,25 +75,27 @@ void Attribute::setValue(const String& value) {
   }
   xmlFree(encoded);
 #else
-  _throw DOMException(this);
+  _COM_AZURE_DEV__BASE__NOT_IMPLEMENTED();
 #endif
 }
 
-bool Attribute::isSpecified() const noexcept {
+bool Attribute::isSpecified() const noexcept
+{
 #if defined(_COM_AZURE_DEV__BASE__XML_XMLSOFT_ORG)
   xmlAttr* attribute = (xmlAttr*)getContext();
   return true; // TAG: fixme
 #else
-  _throw DOMException(this);
+  _COM_AZURE_DEV__BASE__NOT_IMPLEMENTED();
 #endif
 }
 
-Node::ShadowElement Attribute::getOwnerElement() noexcept {
+Node::ShadowElement Attribute::getOwnerElement() noexcept
+{
 #if defined(_COM_AZURE_DEV__BASE__XML_XMLSOFT_ORG)
   xmlAttr* attribute = (xmlAttr*)getContext();
   return Node::ShadowElement(attribute->parent);
 #else
-  _throw DOMException(this);
+  _COM_AZURE_DEV__BASE__NOT_IMPLEMENTED();
 #endif
 }
 

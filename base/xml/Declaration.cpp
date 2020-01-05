@@ -20,12 +20,13 @@
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
-DocumentType Declaration::getDocumentType() noexcept {
+DocumentType Declaration::getDocumentType() noexcept
+{
 #if defined(_COM_AZURE_DEV__BASE__XML_XMLSOFT_ORG)
   xmlNode* decl = (xmlNode*)getContext();
   return decl->parent;
 #else
-  _throw DOMException(this);
+  _COM_AZURE_DEV__BASE__NOT_IMPLEMENTED();
 #endif
 }
 

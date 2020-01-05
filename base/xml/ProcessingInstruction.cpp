@@ -20,30 +20,33 @@
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
-String ProcessingInstruction::getTarget() const noexcept {
+String ProcessingInstruction::getTarget() const noexcept
+{
 #if defined(_COM_AZURE_DEV__BASE__XML_XMLSOFT_ORG)
   const xmlNode* node = (const xmlNode*)getContext();
   return NativeString((const char*)node->name);
 #else
-  _throw DOMException(this);
+  _COM_AZURE_DEV__BASE__NOT_IMPLEMENTED();
 #endif
 }
 
-String ProcessingInstruction::getData() const noexcept {
+String ProcessingInstruction::getData() const noexcept
+{
 #if defined(_COM_AZURE_DEV__BASE__XML_XMLSOFT_ORG)
   const xmlNode* node = (const xmlNode*)getContext();
   return NativeString((const char*)node->content);
 #else
-  _throw DOMException(this);
+  _COM_AZURE_DEV__BASE__NOT_IMPLEMENTED();
 #endif
 }
 
-void ProcessingInstruction::setData(const String& value) {
+void ProcessingInstruction::setData(const String& value)
+{
 #if defined(_COM_AZURE_DEV__BASE__XML_XMLSOFT_ORG)
   xmlNode* node = (xmlNode*)getContext();
   xmlNodeSetContent(node, (const xmlChar*)value.getElements());
 #else
-  _throw DOMException(this);
+  _COM_AZURE_DEV__BASE__NOT_IMPLEMENTED();
 #endif
 }
 

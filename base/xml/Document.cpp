@@ -25,37 +25,42 @@
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
-Document::Document() {
+Document::Document()
+{
 }
 
-DocumentType Document::getDocumentType() noexcept {
+DocumentType Document::getDocumentType() noexcept
+{
 #if defined(_COM_AZURE_DEV__BASE__XML_XMLSOFT_ORG)
   xmlDoc* doc = (xmlDoc*)getContext();
   xmlDtd* documentType = doc->intSubset;
   return documentType;
 #else
-  _throw DOMException(this);
+  _COM_AZURE_DEV__BASE__NOT_IMPLEMENTED();
 #endif
 }
 
-DOMImplementation Document::getImplementation() noexcept {
+DOMImplementation Document::getImplementation() noexcept
+{
   return DOMImplementation();
 }
 
-Element Document::getDocumentElement() noexcept {
+Element Document::getDocumentElement() noexcept
+{
 #if defined(_COM_AZURE_DEV__BASE__XML_XMLSOFT_ORG)
   xmlDoc* doc = (xmlDoc*)getContext();
   xmlNode* node = xmlDocGetRootElement(doc);
   return node;
 #else
-  _throw DOMException(this);
+  _COM_AZURE_DEV__BASE__NOT_IMPLEMENTED();
 #endif
 }
 
 DocumentType Document::createAndSetDocumentType(
   const String& qualifiedName,
   const String& publicId,
-  const String& systemId) {
+  const String& systemId)
+{
 #if defined(_COM_AZURE_DEV__BASE__XML_XMLSOFT_ORG)
   xmlDoc* doc = (xmlDoc*)getContext();
   
@@ -73,11 +78,12 @@ DocumentType Document::createAndSetDocumentType(
   bassert(dtd, DOMException(this));
   return dtd;
 #else
-  _throw DOMException(this);
+  _COM_AZURE_DEV__BASE__NOT_IMPLEMENTED();
 #endif
 }
 
-Attribute Document::createAttribute(const String& name) {
+Attribute Document::createAttribute(const String& name)
+{
 #if defined(_COM_AZURE_DEV__BASE__XML_XMLSOFT_ORG)
   xmlDoc* doc = (xmlDoc*)getContext();
   xmlAttr* node = xmlNewDocProp(
@@ -88,12 +94,12 @@ Attribute Document::createAttribute(const String& name) {
   bassert(node, DOMException(this));
   return node;
 #else
-  _throw DOMException(this);
+  _COM_AZURE_DEV__BASE__NOT_IMPLEMENTED();
 #endif
 }
 
-Attribute Document::createAttribute(
-  const String& name, const String& value) {
+Attribute Document::createAttribute(const String& name, const String& value)
+{
 #if defined(_COM_AZURE_DEV__BASE__XML_XMLSOFT_ORG)
   xmlDoc* doc = (xmlDoc*)getContext();
   bassert(doc, DOMException(this));
@@ -105,13 +111,14 @@ Attribute Document::createAttribute(
   bassert(node, DOMException(this));
   return node;
 #else
-  _throw DOMException(this);
+  _COM_AZURE_DEV__BASE__NOT_IMPLEMENTED();
 #endif
 }
 
 Attribute Document::createAttributeNS(
   const String& namespaceURI,
-  const String& qualifiedName) {
+  const String& qualifiedName)
+{
 #if defined(_COM_AZURE_DEV__BASE__XML_XMLSOFT_ORG)
   xmlDoc* doc = (xmlDoc*)getContext();
   
@@ -161,7 +168,7 @@ Attribute Document::createAttributeNS(
   }
   return attribute;
 #else
-  _throw DOMException(this);
+  _COM_AZURE_DEV__BASE__NOT_IMPLEMENTED();
 #endif
 }
 
@@ -169,7 +176,8 @@ Attribute Document::createAttributeNS(
 AttributeDecl Document::createAttributeDecl(
   const String& name,
   const String& element,
-  AttributeDecl::ValueType valueType) {
+  AttributeDecl::ValueType valueType)
+{
 #if defined(_COM_AZURE_DEV__BASE__XML_XMLSOFT_ORG)
   xmlDoc* doc = (xmlDoc*)getContext();
   xmlNode* node = xmlNewDocNode(
@@ -181,14 +189,15 @@ AttributeDecl Document::createAttributeDecl(
   bassert(node, DOMException(this));
   return node;
 #else
-  _throw DOMException(this);
+  _COM_AZURE_DEV__BASE__NOT_IMPLEMENTED();
 #endif
 }
 
 ElementDecl Document::createElementDecl(
   const String& name,
   const String& element,
-  ElementDecl::ValueType valueType) {
+  ElementDecl::ValueType valueType)
+{
 #if defined(_COM_AZURE_DEV__BASE__XML_XMLSOFT_ORG)
   static const xmlElementTypeVal
     VALUE_TYPES[ElementDecl::ELEMENT - ElementDecl::EMPTY + 1] = {
@@ -208,14 +217,15 @@ ElementDecl Document::createElementDecl(
   bassert(element, DOMException(this));
   return element;
 #else
-  _throw DOMException(this);
+  _COM_AZURE_DEV__BASE__NOT_IMPLEMENTED();
 #endif
 }
 
 Notation Document::createNotation(
   const String& name,
   const String& publicId,
-  const String& systemId) {
+  const String& systemId)
+{
 #if defined(_COM_AZURE_DEV__BASE__XML_XMLSOFT_ORG)
   xmlDoc* doc = (xmlDoc*)getContext();
   xmlNotation* notation = xmlAddNotationDecl(
@@ -228,12 +238,13 @@ Notation Document::createNotation(
   bassert(notation, DOMException(this));
   return notation;
 #else
-  _throw DOMException(this);
+  _COM_AZURE_DEV__BASE__NOT_IMPLEMENTED();
 #endif
 }
 #endif
 
-Element Document::createElement(const String& name) {
+Element Document::createElement(const String& name)
+{
 #if defined(_COM_AZURE_DEV__BASE__XML_XMLSOFT_ORG)
   xmlDoc* doc = (xmlDoc*)getContext();
   xmlNode* node = xmlNewDocNode(
@@ -245,13 +256,14 @@ Element Document::createElement(const String& name) {
   bassert(node, DOMException(this));
   return node;
 #else
-  _throw DOMException(this);
+  _COM_AZURE_DEV__BASE__NOT_IMPLEMENTED();
 #endif
 }
 
 Element Document::createElementNS(
   const String& namespaceURI,
-  const String& qualifiedName) {
+  const String& qualifiedName)
+{
 #if defined(_COM_AZURE_DEV__BASE__XML_XMLSOFT_ORG)
   xmlDoc* doc = (xmlDoc*)getContext();
 
@@ -296,22 +308,24 @@ Element Document::createElementNS(
   bassert(node, DOMException(this));  
   return node;
 #else
-  _throw DOMException(this);
+  _COM_AZURE_DEV__BASE__NOT_IMPLEMENTED();
 #endif
 }
 
-DocumentFragment Document::createDocumentFragment() {
+DocumentFragment Document::createDocumentFragment()
+{
 #if defined(_COM_AZURE_DEV__BASE__XML_XMLSOFT_ORG)
   xmlDoc* doc = (xmlDoc*)getContext();
   xmlNode* node = xmlNewDocFragment(doc);
   bassert(node, DOMException(this));
   return node;
 #else
-  _throw DOMException(this);
+  _COM_AZURE_DEV__BASE__NOT_IMPLEMENTED();
 #endif
 }
 
-Text Document::createText(const String& data) {
+Text Document::createText(const String& data)
+{
 #if defined(_COM_AZURE_DEV__BASE__XML_XMLSOFT_ORG)
   xmlDoc* doc = (xmlDoc*)getContext();
   xmlNode* node = xmlNewDocText(
@@ -321,11 +335,12 @@ Text Document::createText(const String& data) {
   bassert(node, DOMException(this));
   return node;
 #else
-  _throw DOMException(this);
+  _COM_AZURE_DEV__BASE__NOT_IMPLEMENTED();
 #endif
 }
 
-Comment Document::createComment(const String& data) {
+Comment Document::createComment(const String& data)
+{
 #if defined(_COM_AZURE_DEV__BASE__XML_XMLSOFT_ORG)
   xmlDoc* doc = (xmlDoc*)getContext();
   xmlNode* node = xmlNewComment(
@@ -335,12 +350,13 @@ Comment Document::createComment(const String& data) {
   node->doc = doc;
   return node;
 #else
-  _throw DOMException(this);
+  _COM_AZURE_DEV__BASE__NOT_IMPLEMENTED();
 #endif
 }
 
 CDATASection Document::createCDATASection(
-  const String& data) {
+  const String& data)
+{
 #if defined(_COM_AZURE_DEV__BASE__XML_XMLSOFT_ORG)
   xmlDoc* doc = (xmlDoc*)getContext();
   bassert(doc, DOMException(this));
@@ -353,13 +369,14 @@ CDATASection Document::createCDATASection(
   node->doc = doc;
   return node;
 #else
-  _throw DOMException(this);
+  _COM_AZURE_DEV__BASE__NOT_IMPLEMENTED();
 #endif
 }
 
 ProcessingInstruction Document::createProcessingInstruction(
   const String& target,
-  const String& data) {
+  const String& data)
+{
 #if defined(_COM_AZURE_DEV__BASE__XML_XMLSOFT_ORG)
   xmlDoc* doc = (xmlDoc*)getContext();
   xmlNode* node = xmlNewPI(
@@ -370,12 +387,12 @@ ProcessingInstruction Document::createProcessingInstruction(
   node->doc = doc;
   return node;
 #else
-  _throw DOMException(this);
+  _COM_AZURE_DEV__BASE__NOT_IMPLEMENTED();
 #endif
 }
 
-EntityReference Document::createEntityReference(
-  const String& name) {
+EntityReference Document::createEntityReference(const String& name)
+{
 #if defined(_COM_AZURE_DEV__BASE__XML_XMLSOFT_ORG)
   xmlDoc* doc = (xmlDoc*)getContext();
   xmlNode* node = xmlNewReference(
@@ -385,11 +402,12 @@ EntityReference Document::createEntityReference(
   bassert(node, DOMException(this));
   return node;
 #else
-  _throw DOMException(this);
+  _COM_AZURE_DEV__BASE__NOT_IMPLEMENTED();
 #endif
 }
 
-Element Document::getElementById(const String& elementId) noexcept {
+Element Document::getElementById(const String& elementId) noexcept
+{
 #if defined(_COM_AZURE_DEV__BASE__XML_XMLSOFT_ORG)
   xmlDoc* doc = (xmlDoc*)getContext();
   bassert(doc, DOMException(this));
@@ -399,7 +417,7 @@ Element Document::getElementById(const String& elementId) noexcept {
   );
   return node;
 #else
-  _throw DOMException(this);
+  _COM_AZURE_DEV__BASE__NOT_IMPLEMENTED();
 #endif
 }
 

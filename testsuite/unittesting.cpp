@@ -69,7 +69,7 @@ public:
     useANSIColors = FileDescriptor::getStandardOutput().isANSITerminal();
     
     // TAG: also enable by default for macOS terminal and other terminals
-    const Map<String, String>& environment = Application::getApplication()->getEnvironment();
+    const Map<String, String>& environment = getEnvironment();
     if (const auto found = environment.find(MESSAGE("AGENT_BUILDDIRECTORY"))) { // detect Azure pipeline agent
       useUrlAsSource = true;
     }

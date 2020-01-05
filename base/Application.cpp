@@ -725,6 +725,27 @@ void Application::setArgumentsAndEnvironment(int _numberOfArguments, const char*
   internal::numberOfArguments = _numberOfArguments;
   internal::arguments = _arguments;
   internal::environment = _environment;
+
+#if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__WASI)
+  size_t count = 0;
+  size_t size = 0;
+  __wasi_errno_t e = __wasi_environ_sizes_get(&count, &size);
+  if ((e == 0) && (count > 0) && (size > 0)) {
+    char* buffer = new char[size]; // leak for now
+    char** environ = new char*[count]; // leak for now
+    e = __wasi_environ_get(environ, buffer);
+    if (e == 0) {
+/*
+      for (size_t i = 0; i < count; ++i) {
+        printf("ENVIRONMENT VARIABLE: %s\n", environ[i]);    
+      }
+*/
+      if (!internal::environment) {
+        internal::environment = (const char**)environ;
+      }
+    }
+  }
+#endif
   // TAG: allow initialization for shared library also - move to static data
 }
 

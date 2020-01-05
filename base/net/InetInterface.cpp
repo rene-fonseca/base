@@ -100,7 +100,7 @@ Array<Association<String, unsigned int> > InetInterface::getInterfaceNames()
     }
   } catch (...) {
     if_freenameindex(ni); // MT-safe
-    throw;
+    _rethrow;
   }
   if_freenameindex(ni); // MT-safe
 #elif (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
@@ -178,7 +178,7 @@ Array<Association<String, unsigned int> > InetInterface::getInterfaceNames()
 #  endif
   } catch (...) {
     close(handle);
-    throw;
+    _rethrow;
   }
   close(handle);
 #else
@@ -209,7 +209,7 @@ List<InetInterface> InetInterface::getInterfaces()
     }
   } catch (...) {
     if_freenameindex(ni); // MT-safe
-    throw;
+    _rethrow;
   }
   if_freenameindex(ni); // MT-safe
 #elif (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
@@ -356,7 +356,7 @@ List<InetInterface> InetInterface::getInterfaces()
     }
   } catch (...) {
     close(handle);
-    throw;
+    _rethrow;
   }
   close(handle);
 #else

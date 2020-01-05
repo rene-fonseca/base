@@ -26,7 +26,7 @@ void OrbSkeletonManager::add(Reference<OrbSkeleton> skeleton) {
     skeletons.add(reference, skeleton);
   } catch (...) {
     skeletons.remove(reference);
-    throw;
+    _rethrow;
   }
 }
   

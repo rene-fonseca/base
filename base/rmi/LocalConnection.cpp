@@ -51,7 +51,7 @@ OrbReference LocalConnection::getReference(const String& identifier) noexcept {
     encoder->release();
   } catch (OrbException&) {
     encoder->release();
-    throw;
+    _rethrow;
   }
   
   OrbReference result(0);

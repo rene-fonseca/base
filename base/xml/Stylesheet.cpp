@@ -50,7 +50,7 @@ Stylesheet::Stylesheet() noexcept {
     stylesheet = new StylesheetImpl(temp);
   } catch (...) {
     ::xsltFreeStylesheet(temp);
-    throw;
+    _rethrow;
   }
 #endif
 }
@@ -68,7 +68,7 @@ Stylesheet::Stylesheet(const String& filename) noexcept {
     stylesheet = new StylesheetImpl(temp);
   } catch (...) {
     ::xsltFreeStylesheet(temp);
-    throw;
+    _rethrow;
   }
 #endif
 }
@@ -88,7 +88,7 @@ Stylesheet::Stylesheet(const Document& document) noexcept {
     stylesheet = new StylesheetImpl(temp);
   } catch (...) {
     ::xsltFreeStylesheet(temp);
-    throw;
+    _rethrow;
   }
 #endif
 }

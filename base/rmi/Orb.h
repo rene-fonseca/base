@@ -127,7 +127,7 @@ private:
 //       // scheme.open(connection->getEndPoint());
 //       // negotiate
 //       // push
-//       throw; // TAG: temp fix
+//       _rethrow; // TAG: temp fix
 //     }
   }
 

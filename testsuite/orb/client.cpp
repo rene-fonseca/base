@@ -80,7 +80,7 @@ public:
         reference.getId()
       );
       if (!skeleton) {
-        throw NullPointer(this);
+        _throw NullPointer(this);
       }
       // bassert(skeleton, CastException(this));
       return skeleton->getDate();

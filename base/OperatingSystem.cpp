@@ -362,7 +362,7 @@ int64 OperatingSystem::getResourceLimit(
   Resource resource, LimitType type) noexcept {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   return 0;
-  // throw NotSupported(Type::getType<OperatingSystem>());
+  // _throw NotSupported(Type::getType<OperatingSystem>());
 #elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__WASI)
   return 0;
 #else // unix

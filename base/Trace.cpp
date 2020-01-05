@@ -42,7 +42,8 @@ namespace win32 {
 void Trace::message(const char* message) noexcept
 {
   if (!message) {
-    _throw NullPointer(Type::getType<Trace>());
+    BASSERT(!"Calling Trace::message() with nullptr.");
+    return;
   }
   
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
@@ -66,7 +67,8 @@ void Trace::message(const char* message) noexcept
 void Trace::member(const void* pointer, const char* message) noexcept
 {
   if (!message) {
-    _throw NullPointer(Type::getType<Trace>());
+    BASSERT(!"Calling Trace::message() with nullptr.");
+    return;
   }
   
   const MemorySize length = getNullTerminatedLength(message);

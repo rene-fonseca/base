@@ -74,12 +74,12 @@ public:
   /**
     Returns the physical id of the adapter.
   */
-  unsigned int getLocalId() const noexcept;
+  unsigned int getLocalId() const;
 
   /**
     Returns the number of nodes on the local bus.
   */
-  unsigned int getNumberOfNodes() const noexcept;
+  unsigned int getNumberOfNodes() const;
 
   /**
     Returns the current error status.

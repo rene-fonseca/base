@@ -1877,51 +1877,43 @@ public:
     /**
       Returns a write packet request object (WRITE_PACKETS_REQUEST).
     */    
-    virtual IsochronousWritePacketsRequest
-      getWritePacketsRequest() const;
+    virtual IsochronousWritePacketsRequest getWritePacketsRequest() const;
     
     /**
       Returns a write fixed packet request object
       (WRITE_FIXED_PACKETS_REQUEST).
     */
-    virtual IsochronousWriteFixedPacketsRequest
-      getWriteFixedPacketsRequest() const;
+    virtual IsochronousWriteFixedPacketsRequest getWriteFixedPacketsRequest() const;
     
     /**
       Returns a write data request object (WRITE_DATA_REQUEST).
     */
-    virtual IsochronousWriteDataRequest
-      getWriteDataRequest() const;
+    virtual IsochronousWriteDataRequest getWriteDataRequest() const;
     
     /**
       Queues the specified write request.
     */
-    virtual void queue(
-      IsochronousWriteRequest& request);
+    virtual void queue(IsochronousWriteRequest& request);
 
     /**
       Queues the specified write request.
     */
-    virtual void queue(
-      IsochronousWritePacketsRequest& request);
+    virtual void queue(IsochronousWritePacketsRequest& request);
 
     /**
       Queues the specified write request.
     */
-    virtual void queue(
-      IsochronousWriteFixedPacketsRequest& request);
+    virtual void queue(IsochronousWriteFixedPacketsRequest& request);
 
     /**
       Queues the specified write request.
     */
-    virtual void queue(
-      IsochronousWriteDataRequest& request);
+    virtual void queue(IsochronousWriteDataRequest& request);
 
     /**
       Queues the specified write requests.
     */
-    virtual void queue(
-      Allocator<IsochronousWriteRequest>& request);
+    virtual void queue(Allocator<IsochronousWriteRequest>& request);
 
     /**
       Returns the next completed request.
@@ -1938,8 +1930,7 @@ public:
       @return True if event occured within the specified timeout period and
       otherwise false.
     */
-    virtual bool wait(
-      unsigned int microseconds);
+    virtual bool wait(unsigned int microseconds);
   };
 protected:
   
@@ -1947,7 +1938,8 @@ protected:
     Returns the context.
   */
   static inline Reference<IsochronousReadPacketsRequestImpl>
-  getContext(IsochronousReadPacketsRequest& request) noexcept {
+    getContext(IsochronousReadPacketsRequest& request) noexcept
+  {
     return request.context;
   }
   
@@ -1955,7 +1947,8 @@ protected:
     Returns the context.
   */
   static inline Reference<IsochronousReadFixedPacketsRequestImpl>
-  getContext(IsochronousReadFixedPacketsRequest& request) noexcept {
+    getContext(IsochronousReadFixedPacketsRequest& request) noexcept
+  {
     return request.context;
   }
   
@@ -1963,7 +1956,8 @@ protected:
     Returns the context.
   */
   static inline Reference<IsochronousReadFixedDataRequestImpl>
-  getContext(IsochronousReadFixedDataRequest& request) noexcept {
+    getContext(IsochronousReadFixedDataRequest& request) noexcept
+  {
     return request.context;
   }
   
@@ -1971,7 +1965,8 @@ protected:
     Returns the context.
   */
   static inline Reference<IsochronousReadRequestImpl>
-  getContext(IsochronousReadRequest& request) noexcept {
+    getContext(IsochronousReadRequest& request) noexcept
+  {
     return request.context;
   }
   
@@ -1979,7 +1974,8 @@ protected:
     Returns the context.
   */
   static inline Reference<IsochronousWritePacketsRequestImpl>
-  getContext(IsochronousWritePacketsRequest& request) noexcept {
+    getContext(IsochronousWritePacketsRequest& request) noexcept
+  {
     return request.context;
   }
   
@@ -1987,7 +1983,8 @@ protected:
     Returns the context.
   */
   static inline Reference<IsochronousWriteFixedPacketsRequestImpl>
-  getContext(IsochronousWriteFixedPacketsRequest& request) noexcept {
+    getContext(IsochronousWriteFixedPacketsRequest& request) noexcept
+  {
     return request.context;
   }
   
@@ -1995,7 +1992,7 @@ protected:
     Returns the context.
   */
   static inline Reference<IsochronousWriteDataRequestImpl>
-  getContext(IsochronousWriteDataRequest& request) noexcept {
+    getContext(IsochronousWriteDataRequest& request) noexcept {
     return request.context;
   }
   
@@ -2003,7 +2000,8 @@ protected:
     Returns the context.
   */
   static inline Reference<IsochronousWriteRequestImpl>
-  getContext(IsochronousWriteRequest& request) noexcept {
+    getContext(IsochronousWriteRequest& request) noexcept
+  {
     return request.context;
   }
 public:
@@ -2019,14 +2017,14 @@ public:
       Initialize channel as closed.
     */
     inline IsochronousReadChannel() noexcept
-      : readChannel(new IsochronousReadChannelImpl()) {
+      : readChannel(new IsochronousReadChannelImpl())
+    {
     }
     
     /**
       Initializes read channel.
     */
-    inline IsochronousReadChannel(
-      IsochronousReadChannelImpl* _readChannel) noexcept
+    inline IsochronousReadChannel(IsochronousReadChannelImpl* _readChannel)
       : readChannel(_readChannel)
     {
       if (!_readChannel) {
@@ -2038,13 +2036,15 @@ public:
       Initialize channel from other channel.
     */
     inline IsochronousReadChannel(const IsochronousReadChannel& copy) noexcept
-      : readChannel(copy.readChannel) {
+      : readChannel(copy.readChannel)
+    {
     }
 
     /**
       Assignment of channel by channel.
     */
-    inline IsochronousReadChannel& operator=(const IsochronousReadChannel& assign) noexcept {
+    inline IsochronousReadChannel& operator=(const IsochronousReadChannel& assign) noexcept
+    {
       readChannel = assign.readChannel;
       return *this;
     }
@@ -2052,85 +2052,88 @@ public:
     /**
       Returns the reserved subchannels.
     */
-    inline uint64 getSubchannels() {
+    inline uint64 getSubchannels()
+    {
       return readChannel->getSubchannels();
     }
     
     /**
       Cancels all pending requests.
     */
-    inline void cancel() {
+    inline void cancel()
+    {
       readChannel->cancel();
     }
     
     /**
       Closes the channel.
     */
-    inline void close() {
+    inline void close()
+    {
       readChannel = new IsochronousReadChannelImpl();
     }
 
     /**
       Returns a read packet request object (READ_PACKETS_REQUEST).
     */    
-    inline IsochronousReadPacketsRequest
-      getReadPacketsRequest() const noexcept {
+    inline IsochronousReadPacketsRequest getReadPacketsRequest() const noexcept
+    {
       return readChannel->getReadPacketsRequest();
     }
     
     /**
       Returns a read fixed packet request object (READ_FIXED_PACKETS_REQUEST).
     */    
-    inline IsochronousReadFixedPacketsRequest
-      getReadFixedPacketsRequest() const noexcept {
+    inline IsochronousReadFixedPacketsRequest getReadFixedPacketsRequest() const noexcept
+    {
       return readChannel->getReadFixedPacketsRequest();
     }
     
     /**
       Returns a read fixed data request object (READ_FIXED_DATA_REQUEST).
     */    
-    inline IsochronousReadFixedDataRequest
-      getReadFixedDataRequest() const noexcept {
+    inline IsochronousReadFixedDataRequest getReadFixedDataRequest() const noexcept
+    {
       return readChannel->getReadFixedDataRequest();
     }
 
     /**
       Queues the specified read request.
     */
-    inline void queue(
-      IsochronousReadRequest& request) {
+    inline void queue(IsochronousReadRequest& request)
+    {
       readChannel->queue(request);
     }
     
     /**
       Queues the specified read request.
     */
-    inline void queue(
-      IsochronousReadPacketsRequest& request) {
+    inline void queue(IsochronousReadPacketsRequest& request)
+    {
       readChannel->queue(request);
     }
     
     /**
       Queues the specified read request.
     */
-    inline void queue(
-      IsochronousReadFixedPacketsRequest& request) {
+    inline void queue(IsochronousReadFixedPacketsRequest& request)
+    {
       readChannel->queue(request);
     }
     
     /**
       Queues the specified read request.
     */
-    inline void queue(
-      IsochronousReadFixedDataRequest& request) {
+    inline void queue(IsochronousReadFixedDataRequest& request)
+    {
       readChannel->queue(request);
     }
     
     /**
       Queues the specified read requests.
     */
-    inline void queue(
-      Allocator<IsochronousReadRequest>& request) {
+    inline void queue(Allocator<IsochronousReadRequest>& request)
+    {
       readChannel->queue(request);
     }
     
@@ -2139,7 +2142,8 @@ public:
 
       @return NOT_A_REQUEST if no request is available in the completion queue.
     */
-    inline IsochronousReadRequest dequeue() {
+    inline IsochronousReadRequest dequeue()
+    {
       return readChannel->dequeue();
     }
     
@@ -2153,7 +2157,8 @@ public:
     */
     inline unsigned int dequeue(
       unsigned int requests,
-      unsigned int microseconds) {
+      unsigned int microseconds)
+    {
       return readChannel->dequeue(requests, microseconds);
     }
     
@@ -2181,14 +2186,14 @@ public:
       Initializes channel as closed.
     */
     inline IsochronousWriteChannel() noexcept
-      : writeChannel(new IsochronousWriteChannelImpl()) {
+      : writeChannel(new IsochronousWriteChannelImpl())
+    {
     }
 
     /**
       Initializes write channel.
     */
-    inline IsochronousWriteChannel(
-      IsochronousWriteChannelImpl* _writeChannel) noexcept
+    inline IsochronousWriteChannel(IsochronousWriteChannelImpl* _writeChannel)
       : writeChannel(_writeChannel)
     {
       if (!_writeChannel) {
@@ -2200,7 +2205,8 @@ public:
       Initializes channel from other channel.
     */
     inline IsochronousWriteChannel(const IsochronousWriteChannel& copy) noexcept
-      : writeChannel(copy.writeChannel) {
+      : writeChannel(copy.writeChannel)
+    {
     }
 
     /**

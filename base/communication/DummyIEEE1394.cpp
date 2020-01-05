@@ -52,12 +52,12 @@ void DummyIEEE1394::close()
 {
 }
 
-unsigned int DummyIEEE1394::getLocalId() const noexcept
+unsigned int DummyIEEE1394::getLocalId() const
 {
   _throw IEEE1394Exception(this);
 }
 
-unsigned int DummyIEEE1394::getNumberOfNodes() const noexcept
+unsigned int DummyIEEE1394::getNumberOfNodes() const
 {
   _throw IEEE1394Exception(this);
 }

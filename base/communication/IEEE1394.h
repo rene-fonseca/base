@@ -773,7 +773,7 @@ public:
 
     @param physicalId The physical id the node.    
   */
-  inline bool isTransactionCapable(unsigned int physicalId) const noexcept
+  inline bool isTransactionCapable(unsigned int physicalId) const
   {
     if (!(physicalId < numberOfNodes)) {
       _throw OutOfDomain(this);

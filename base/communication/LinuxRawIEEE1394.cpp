@@ -840,31 +840,38 @@ void LinuxRawIEEE1394::writeIsochronous(const uint8* buffer, unsigned int size, 
 
 #else
 
-void LinuxRawIEEE1394::resetBus() {
+void LinuxRawIEEE1394::resetBus()
+{
   _throw NotSupported();
 }
 
-LinuxRawIEEE1394::LinuxRawIEEE1394() {
+LinuxRawIEEE1394::LinuxRawIEEE1394()
+{
   _throw NotSupported();
 }
 
-bool LinuxRawIEEE1394::hasBeenReset() const noexcept {
+bool LinuxRawIEEE1394::hasBeenReset() const
+{
   _throw NotSupported();
 }
 
-void LinuxRawIEEE1394::acknowledgeReset() noexcept {
+void LinuxRawIEEE1394::acknowledgeReset()
+{
   _throw NotSupported();
 }
 
-Array<EUI64> LinuxRawIEEE1394::getAdapters() {
+Array<EUI64> LinuxRawIEEE1394::getAdapters()
+{
   _throw NotSupported();
 }
 
-void LinuxRawIEEE1394::open() {
+void LinuxRawIEEE1394::open()
+{
   _throw NotSupported();
 }
 
-void LinuxRawIEEE1394::open(const EUI64& adapter) {
+void LinuxRawIEEE1394::open(const EUI64& adapter)
+{
   _throw NotSupported();
 }
 
@@ -873,12 +880,12 @@ void LinuxRawIEEE1394::close()
   _throw NotSupported();
 }
 
-unsigned int LinuxRawIEEE1394::getLocalId() const noexcept
+unsigned int LinuxRawIEEE1394::getLocalId() const
 {
   _throw NotSupported();
 }
 
-unsigned int LinuxRawIEEE1394::getNumberOfNodes() const noexcept
+unsigned int LinuxRawIEEE1394::getNumberOfNodes() const
 {
   _throw NotSupported();
 }

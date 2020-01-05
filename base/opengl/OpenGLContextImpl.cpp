@@ -217,14 +217,13 @@ void OpenGLContextImpl::deselect() noexcept
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)  
   native::GDI::wglMakeCurrent(0, 0);
 #else // unix
-  bassert(
-    native::GLX::glXMakeCurrent(
+  if (native::GLX::glXMakeCurrent(
       (Display*)Backend<WindowImpl>::getDisplay(),
       (native::GLX::GLXDrawable)None,
       (native::GLX::GLXContext)0
-    ) == True,
-    OpenGLException(this)
-  );
+    ) == True) {
+    BASSERT(!"OpenGLContextImpl::deselect() failed.");
+  }
 // GLX 1.3
 //   Bool result = native::GLX::glXMakeContextCurrent(
 //     (Display*)Backend<WindowImpl>::getDisplay(),

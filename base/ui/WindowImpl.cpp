@@ -13,7 +13,6 @@
 
 #include <base/ui/WindowImpl.h>
 #include <base/dl/DynamicLinker.h>
-#include <base/NotImplemented.h>
 #include <base/platforms/backend/WindowImpl.h>
  // #include <base/Profiler.h>
 #include <base/build.h>
@@ -1034,7 +1033,7 @@ void WindowImpl::displayMenu(
     UserInterfaceException(this)
   );
 #else // unix
-  _throw NotImplemented(this);
+  _COM_AZURE_DEV__BASE__NOT_IMPLEMENTED();
 #endif // flavor
 }
 
@@ -1417,7 +1416,7 @@ void WindowImpl::setCursorConfinement(
   rect.bottom = rect.top + dimension.getHeight() - 1;
   ::ClipCursor(&rect);
 #else // unix
-  _throw NotImplemented(this);
+  _COM_AZURE_DEV__BASE__NOT_IMPLEMENTED();
 #endif // flavor
 }
 
@@ -1509,7 +1508,7 @@ bool WindowImpl::isMinimized()
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   return ::IsIconic((HWND)drawableHandle) == TRUE;
 #else // unix
-  _throw NotImplemented(this);
+  _COM_AZURE_DEV__BASE__NOT_IMPLEMENTED();
 #endif // flavor
 }
 
@@ -1663,7 +1662,7 @@ bool WindowImpl::getCapture() const
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   return ::GetCapture() == (HWND)drawableHandle;
 #else // unix
-  _throw NotImplemented(this);
+  _COM_AZURE_DEV__BASE__NOT_IMPLEMENTED();
 #endif // flavor
 }
 
@@ -1722,7 +1721,7 @@ void WindowImpl::setDisplayMode(DisplayMode displayMode) {
     this->displayMode = displayMode;
   }
 #else // unix
-  _throw NotImplemented(this);
+  _COM_AZURE_DEV__BASE__NOT_IMPLEMENTED();
 #endif // flavor
 }
 
@@ -1787,7 +1786,7 @@ unsigned int WindowImpl::getKeyState(unsigned int code) const {
   state |= (nativeState & 0x01) ? Key::TOGGLED : 0;
   return state;
 #else // unix
-  _throw NotImplemented(this);
+  _COM_AZURE_DEV__BASE__NOT_IMPLEMENTED();
 #endif // flavor
 }
 

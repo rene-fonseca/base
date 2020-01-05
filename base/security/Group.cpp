@@ -16,7 +16,6 @@
 #include <base/concurrency/Thread.h>
 #include <base/string/StringOutputStream.h>
 #include <base/string/WideString.h>
-#include <base/NotImplemented.h>
 #include <base/build.h>
 
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
@@ -95,9 +94,9 @@ bool Group::operator==(const Group& compare) const noexcept
 Group::Group(const String& name)
 {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
-  _throw NotImplemented(this);
+  _COM_AZURE_DEV__BASE__NOT_IMPLEMENTED();
 #elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__WASI)
-  _throw NotImplemented(this);
+  _COM_AZURE_DEV__BASE__NOT_IMPLEMENTED();
 #else // unix
   #if defined(_COM_AZURE_DEV__BASE__HAVE_GETGRNAM_R)
     //long sysconf(_SC_GETGR_R_SIZE_MAX);
@@ -124,11 +123,12 @@ Group::Group(const String& name)
 #endif // flavor
 }
 
-Group::Group(const User& user) {
+Group::Group(const User& user)
+{
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
-  _throw NotImplemented(this);
+  _COM_AZURE_DEV__BASE__NOT_IMPLEMENTED();
 #elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__WASI)
-  _throw NotImplemented(this);
+  _COM_AZURE_DEV__BASE__NOT_IMPLEMENTED();
 #else // unix
   Thread::UseThreadLocalBuffer _buffer;
   Allocator<uint8>& buffer = _buffer;

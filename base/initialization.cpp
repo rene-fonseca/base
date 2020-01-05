@@ -46,6 +46,8 @@
 #include <base/Profiler.h>
 #include <base/UnitTest.h>
 #include <base/Module.h>
+#include <base/NotImplemented.h>
+#include <base/NotSupported.h>
 #include <stdlib.h>
 #include <stdio.h>
 
@@ -357,6 +359,16 @@ bool Runtime::isGlobalDestruction() noexcept
 bool Runtime::isGlobalStateInGoodCondition() noexcept
 {
   return !Runtime::isGlobalInitialization() && !Runtime::isGlobalDestruction();
+}
+
+void Runtime::notImplemented(const char* who)
+{
+  _throw NotImplemented(who);
+}
+
+void Runtime::notSupported(const char* who)
+{
+  _throw NotSupported(who);
 }
 
 void moduleEntry()

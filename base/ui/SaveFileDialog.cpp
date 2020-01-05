@@ -14,7 +14,6 @@
 #include <base/ui/SaveFileDialog.h>
 #include <base/concurrency/Thread.h>
 #include <base/UnexpectedFailure.h>
-#include <base/NotImplemented.h>
 #include <base/dl/DynamicLinker.h>
 
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
@@ -103,7 +102,7 @@ bool SaveFileDialog::execute()
   }
   return result != 0;
 #else // unix
-  _throw NotImplemented(this);
+  _COM_AZURE_DEV__BASE__NOT_IMPLEMENTED();
 #endif // flavor
 }
 

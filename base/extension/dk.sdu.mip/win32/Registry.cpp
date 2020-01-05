@@ -13,7 +13,6 @@
 
 #include <base/extension/dk.sdu.mip/win32/Registry.h>
 #include <base/ByteOrder.h>
-#include <base/NotImplemented.h>
 
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
 #  include <windows.h>

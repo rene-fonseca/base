@@ -15,7 +15,6 @@
 #include <base/security/Trustee.h>
 #include <base/concurrency/Thread.h>
 #include <base/string/StringOutputStream.h>
-#include <base/NotImplemented.h>
 #include <base/build.h>
 
 // TAG: need static method to set id space

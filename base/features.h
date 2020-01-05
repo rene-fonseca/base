@@ -229,4 +229,12 @@ public:
 #  define _COM_AZURE_DEV__BASE__PRINT(message, ...)
 #endif
 
+/** Specified that the method is not implemented but could potentially be so. */
+#define _COM_AZURE_DEV__BASE__NOT_IMPLEMENTED() \
+  Runtime::notImplemented(_COM_AZURE_DEV__BASE__PRETTY_FUNCTION)
+
+/** Specified that the method is not supported. */
+#define _COM_AZURE_DEV__BASE__NOT_SUPPORTED() \
+  Runtime::notSupported(_COM_AZURE_DEV__BASE__PRETTY_FUNCTION)
+
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

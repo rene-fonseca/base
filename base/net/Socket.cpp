@@ -20,7 +20,6 @@
 #include <base/io/BrokenStream.h>
 #include <base/net/Socket.h>
 #include <base/concurrency/Thread.h>
-#include <base/NotImplemented.h>
 #include <base/Profiler.h>
 #include <base/build.h>
 
@@ -1996,7 +1995,7 @@ AsynchronousReadOperation Socket::read(
     listener
   );
 #else // unix
-  _throw NotImplemented(this);
+  _COM_AZURE_DEV__BASE__NOT_IMPLEMENTED();
 #endif // flavor
 }
 
@@ -2014,7 +2013,7 @@ AsynchronousWriteOperation Socket::write(
     listener
   );
 #else // unix
-  _throw NotImplemented(this);
+  _COM_AZURE_DEV__BASE__NOT_IMPLEMENTED();
 #endif // flavor
 }
 

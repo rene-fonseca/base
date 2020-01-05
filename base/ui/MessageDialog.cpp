@@ -14,7 +14,6 @@
 #include <base/ui/MessageDialog.h>
 #include <base/concurrency/Thread.h>
 #include <base/UnexpectedFailure.h>
-#include <base/NotImplemented.h>
 
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
 #  define WINVER 0x0500
@@ -81,7 +80,7 @@ bool MessageDialog::execute()
   }
   return answer == MessageDialog::CANCEL;
 #else // unix
-  _throw NotImplemented(this);
+  _COM_AZURE_DEV__BASE__NOT_IMPLEMENTED();
 #endif // flavor
 }
 

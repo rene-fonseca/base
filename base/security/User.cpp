@@ -16,7 +16,6 @@
 #include <base/concurrency/Thread.h>
 #include <base/string/StringOutputStream.h>
 #include <base/string/WideString.h>
-#include <base/NotImplemented.h>
 
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
 #  include <windows.h>
@@ -221,9 +220,9 @@ String User::getHomeFolder() const
 //     LPTSTR lpProfileDir,
 //     LPDWORD lpcchSize
 //   );
-  _throw NotImplemented(this);
+  _COM_AZURE_DEV__BASE__NOT_IMPLEMENTED();
 #elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__WASI)
-  _throw NotImplemented(this);
+  _COM_AZURE_DEV__BASE__NOT_IMPLEMENTED();
 #else // unix  
   Thread::UseThreadLocalBuffer _buffer;
   Allocator<uint8>& buffer = _buffer;
@@ -261,11 +260,12 @@ bool User::isAdmin() const {
 #endif // flavor
 }
 
-bool User::isMemberOf(const Group& group) {
+bool User::isMemberOf(const Group& group)
+{
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
-  _throw NotImplemented(this);
+  _COM_AZURE_DEV__BASE__NOT_IMPLEMENTED();
 #else // unix
-  _throw NotImplemented(this);
+  _COM_AZURE_DEV__BASE__NOT_IMPLEMENTED();
 #endif // flavor
 }
 
@@ -310,7 +310,7 @@ Array<String> User::getGroups() {
   }
 #else // unix
   bassert(isValid(), UserException(this));
-  _throw NotImplemented(this);
+  _COM_AZURE_DEV__BASE__NOT_IMPLEMENTED();
 #endif // flavor
   return result;
 }

@@ -14,7 +14,6 @@
 #include <base/platforms/features.h>
 #include <base/mem/VirtualMemory.h>
 #include <base/string/FormatOutputStream.h>
-#include <base/NotImplemented.h>
 #include <base/string/WideString.h>
 
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
@@ -25,36 +24,40 @@
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
-String VirtualMemory::Module::getPath() const noexcept {
+String VirtualMemory::Module::getPath() const noexcept
+{
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   wchar buffer[4096]; // TAG: limit
   unsigned int length = ::GetModuleFileName((HMODULE)context, buffer, sizeof(buffer));
   buffer[length] = 0;
   return String(buffer, length);
 #else // unix
-  _throw NotImplemented(this);
+  _COM_AZURE_DEV__BASE__NOT_IMPLEMENTED();
 #endif // flavor
 }
 
-VirtualMemory::Module VirtualMemory::Module::getProcessModule() noexcept {
+VirtualMemory::Module VirtualMemory::Module::getProcessModule() noexcept
+{
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   return Module((HMODULE)::GetModuleHandle(nullptr));
 #else // unix
-  _throw NotImplemented(Type::getType<VirtualMemory>());
+  _COM_AZURE_DEV__BASE__NOT_IMPLEMENTED();
 #endif // flavor
 }
 
-bool VirtualMemory::Module::isModule() const noexcept {
+bool VirtualMemory::Module::isModule() const noexcept
+{
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   wchar buffer[1];
   unsigned int length = ::GetModuleFileName((HMODULE)context, buffer, sizeof(buffer));
   return length > 0;
 #else // unix
-  _throw NotImplemented(this);
+  _COM_AZURE_DEV__BASE__NOT_IMPLEMENTED();
 #endif // flavor
 }
 
-MemorySize VirtualMemory::Module::getSize() const noexcept {
+MemorySize VirtualMemory::Module::getSize() const noexcept
+{
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   SYSTEM_INFO systemInformation;
   ::GetSystemInfo(&systemInformation);
@@ -74,11 +77,12 @@ MemorySize VirtualMemory::Module::getSize() const noexcept {
   }
   return address - Cast::pointer<const uint8*>(context);
 #else // unix
-  _throw NotImplemented(this);
+  _COM_AZURE_DEV__BASE__NOT_IMPLEMENTED();
 #endif // flavor
 }
 
-Array<VirtualMemory::Module> VirtualMemory::getModules() noexcept {
+Array<VirtualMemory::Module> VirtualMemory::getModules() noexcept
+{
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   Array<Module> result;
   SYSTEM_INFO systemInformation;
@@ -102,17 +106,17 @@ Array<VirtualMemory::Module> VirtualMemory::getModules() noexcept {
   }
   return result;
 #else // unix
-  _throw NotImplemented(Type::getType<VirtualMemory>());
+  _COM_AZURE_DEV__BASE__NOT_IMPLEMENTED();
 #endif // flavor
 }
 
 void VirtualMemory::query(const void* address) noexcept
 {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
-  _throw NotImplemented(Type::getType<VirtualMemory>());
+  _COM_AZURE_DEV__BASE__NOT_IMPLEMENTED();
   // DWORD result = ::VirtualQuery(address, &info, sizeof(info));
 #else // unix
-  _throw NotImplemented(Type::getType<VirtualMemory>());
+  _COM_AZURE_DEV__BASE__NOT_IMPLEMENTED();
 #endif // flavor
 }
 
@@ -124,7 +128,7 @@ void* VirtualMemory::getBase(const void* address) noexcept
     return mbi.AllocationBase;
   }
 #else
-  BASSERT(!"Not implemented.");
+  _COM_AZURE_DEV__BASE__NOT_IMPLEMENTED();
 #endif
   return nullptr;
 }
@@ -170,7 +174,7 @@ void VirtualMemory::dump() noexcept
  
   fout << FLUSH;
 #else // unix
-  _throw NotImplemented(Type::getType<VirtualMemory>());
+  _COM_AZURE_DEV__BASE__NOT_IMPLEMENTED();
 #endif // flavor
 }
 

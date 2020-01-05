@@ -20,7 +20,6 @@
 #include <base/concurrency/Thread.h>
 #include <base/Base.h>
 #include <base/Functor.h>
-#include <base/NotImplemented.h>
 #include <base/security/User.h>
 #include <base/build.h>
 
@@ -665,7 +664,7 @@ AccessControlList File::getACL() const
     }
   }
 #elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__IRIX65)
-  _throw NotImplemented(this);
+  _COM_AZURE_DEV__BASE__NOT_IMPLEMENTED();
 #else // unix
   #if defined(_COM_AZURE_DEV__BASE__LARGE_FILE_SYSTEM)
     struct stat64 status;
@@ -729,7 +728,7 @@ Trustee File::getOwner() const
 void File::changeOwner(const String& path, const Trustee& owner, const Trustee& group, bool followLink)
 {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
-  _throw NotImplemented(Type::getType<File>()); // TAG: fixme
+  _COM_AZURE_DEV__BASE__NOT_IMPLEMENTED();
 
   //Privilege::askFor(Privilege::CHANGE_OWNER|Privilege::RESTORE|Privilege::BACKUP|Privilege::CHANGE_NOTIFY);
 

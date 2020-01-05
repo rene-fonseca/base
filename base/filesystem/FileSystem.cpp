@@ -14,7 +14,6 @@
 #include <base/platforms/features.h>
 #include <base/filesystem/FileSystem.h>
 #include <base/concurrency/Thread.h>
-#include <base/NotImplemented.h>
 #include <base/Type.h>
 #include <base/collection/Map.h>
 #include <base/Application.h>
@@ -1725,8 +1724,9 @@ String FileSystem::getTempFileName(unsigned int options) noexcept {
   return stream.getString();
 }
 
-File FileSystem::getTempFile(unsigned int options) {
-  _throw NotImplemented(Type::getType<FileSystem>());
+File FileSystem::getTempFile(unsigned int options)
+{
+  _COM_AZURE_DEV__BASE__NOT_IMPLEMENTED();
 /*
   unsigned int attempts = 16;
   while (attempts--) {

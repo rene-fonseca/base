@@ -344,6 +344,12 @@ public:
 
   /** Returns true if global initialization or destruction is in progress. */
   static bool isGlobalStateInGoodCondition() noexcept;
+
+  /** Triggers failure due to unimplemented method/feature. */
+  [[noreturn]] static void notImplemented(const char* who);
+
+  /** Triggers failure due to unsupported method/feature. */
+  [[noreturn]] static void notSupported(const char* who);
 };
 
 /** Debug helper functions. */

@@ -35,11 +35,8 @@ private:
   Orb orb;
 public:
 
-  ClientApplication(
-    int numberOfArguments,
-    const char* arguments[],
-    const char* environment[]) noexcept
-    : Application("client", numberOfArguments, arguments, environment) {
+  ClientApplication() noexcept
+    : Application("client") {
   }
 
   class DateInterface {

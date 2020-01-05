@@ -23,11 +23,8 @@ private:
   static const unsigned int MINOR_VERSION = 0;
 public:
 
-  OpenCLApplication(
-    int numberOfArguments,
-    const char* arguments[],
-    const char* environment[]) noexcept
-    : Application("OpenCL", numberOfArguments, arguments, environment)
+  OpenCLApplication() noexcept
+    : Application("OpenCL")
   {
   }
   

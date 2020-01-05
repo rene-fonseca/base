@@ -28,11 +28,8 @@ private:
   static const unsigned int MINOR_VERSION = 0;
 public:
 
-  ServerApplication(
-    int numberOfArguments,
-    const char* arguments[],
-    const char* environment[]) noexcept
-    : Application("server", numberOfArguments, arguments, environment)
+  ServerApplication() noexcept
+    : Application("server")
   {
   }
 

@@ -15,7 +15,7 @@ jobs:
   - task: CMake@1
     displayName: 'Config'
     inputs:
-      cmakeArgs: '.. -DCOLOR=1'
+      cmakeArgs: '.. -DCOLOR=1 -DCMAKE_INSTALL_PREFIX=install'
   
   - task: CMake@1
     displayName: 'Build'
@@ -57,7 +57,7 @@ jobs:
   - task: CMake@1
     displayName: 'Config'
     inputs:
-      cmakeArgs: '.. -A Win32 -DCOLOR=1'
+      cmakeArgs: '.. -A Win32 -DCOLOR=1 -DCMAKE_INSTALL_PREFIX=install'
   
   - task: CMake@1
     displayName: 'Build'
@@ -99,7 +99,7 @@ jobs:
   - task: CMake@1
     displayName: 'Config'
     inputs:
-      cmakeArgs: '.. -A ARM64 -DCOLOR=1'
+      cmakeArgs: '.. -A ARM64 -DCOLOR=1 -DCMAKE_INSTALL_PREFIX=install'
   
   - task: CMake@1
     displayName: 'Build'
@@ -142,7 +142,7 @@ jobs:
   - task: CMake@1
     displayName: 'Config'
     inputs:
-      cmakeArgs: '.. -A ARM -DCOLOR=1'
+      cmakeArgs: '.. -A ARM -DCOLOR=1 -DCMAKE_INSTALL_PREFIX=install'
   
   - task: CMake@1
     displayName: 'Build'
@@ -162,7 +162,7 @@ jobs:
   - task: CMake@1
     displayName: 'Config'
     inputs:
-      cmakeArgs: '.. -DCOLOR=1'
+      cmakeArgs: '.. -DCOLOR=1 -DCMAKE_INSTALL_PREFIX=install'
   
   - task: CMake@1
     displayName: 'Build'
@@ -203,7 +203,7 @@ jobs:
   - task: CMake@1
     displayName: 'Config'
     inputs:
-      cmakeArgs: '.. -DCOLOR=1'
+      cmakeArgs: '.. -DCOLOR=1 -DCMAKE_INSTALL_PREFIX=install'
   
   - task: CMake@1
     displayName: 'Build'
@@ -244,7 +244,7 @@ jobs:
   - task: CMake@1
     displayName: 'Config'
     inputs:
-      cmakeArgs: '.. -DCOLOR=1'
+      cmakeArgs: '.. -DCOLOR=1 -DCMAKE_INSTALL_PREFIX=install'
 
   - task: CMake@1
     displayName: 'Build'

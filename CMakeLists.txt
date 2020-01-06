@@ -338,16 +338,23 @@ file(GLOB_RECURSE base_HEADERS
 
 set_target_properties(base PROPERTIES PUBLIC_HEADER "") # ${base_HEADERS}
 
+# INSTALL_PREFIX must be empty string or we get abosulute paths in exported cmake files
+set (INSTALL_PREFIX "")
+if (("${CMAKE_SYSTEM_NAME}" STREQUAL "Wasm") OR ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "WASI"))
+  # however, for WASI we do not want to install in sysroot so we override install prefix - ending / is required!
+  set (INSTALL_PREFIX "${CMAKE_INSTALL_PREFIX}/")
+endif ()
+
 if (1)
 # preserve folder structure
 install(
   DIRECTORY "${CMAKE_SOURCE_DIR}/base" # source directory
-  DESTINATION "${CMAKE_INSTALL_PREFIX}/include" # target directory
+  DESTINATION "${INSTALL_PREFIX}include" # target directory
   FILES_MATCHING PATTERN "*.h" # select header files
 )
 install(
   DIRECTORY "${CMAKE_BINARY_DIR}/generated/base" # source directory
-  DESTINATION "${CMAKE_INSTALL_PREFIX}/include" # target directory
+  DESTINATION "${INSTALL_PREFIX}include" # target directory
   FILES_MATCHING PATTERN "*.h" # select header files
 )
 endif ()
@@ -357,19 +364,19 @@ endif ()
 install(TARGETS base base_STATIC
   CONFIGURATIONS Debug
   EXPORT baseConfigDebug
-  PUBLIC_HEADER DESTINATION "${CMAKE_INSTALL_PREFIX}/include/base"
-  ARCHIVE DESTINATION "${CMAKE_INSTALL_PREFIX}/lib/debug"
-  LIBRARY DESTINATION "${CMAKE_INSTALL_PREFIX}/lib/debug"
-  RUNTIME DESTINATION "${CMAKE_INSTALL_PREFIX}/bin/debug"
+  PUBLIC_HEADER DESTINATION "${INSTALL_PREFIX}include/base"
+  ARCHIVE DESTINATION "${INSTALL_PREFIX}lib/debug"
+  LIBRARY DESTINATION "${INSTALL_PREFIX}lib/debug"
+  RUNTIME DESTINATION "${INSTALL_PREFIX}bin/debug"
 )
 
 install(TARGETS base base_STATIC
   CONFIGURATIONS Release
   EXPORT baseConfigRelease
-  PUBLIC_HEADER DESTINATION "${CMAKE_INSTALL_PREFIX}/include/base"
-  ARCHIVE DESTINATION "${CMAKE_INSTALL_PREFIX}/lib/release"
-  LIBRARY DESTINATION "${CMAKE_INSTALL_PREFIX}/lib/release"
-  RUNTIME DESTINATION "${CMAKE_INSTALL_PREFIX}/bin/release"
+  PUBLIC_HEADER DESTINATION "${INSTALL_PREFIX}include/base"
+  ARCHIVE DESTINATION "${INSTALL_PREFIX}lib/release"
+  LIBRARY DESTINATION "${INSTALL_PREFIX}lib/release"
+  RUNTIME DESTINATION "${INSTALL_PREFIX}bin/release"
 )
 
 if (NOT "${CMAKE_BUILD_TYPE}" STREQUAL "")
@@ -385,13 +392,13 @@ export(TARGETS base base_STATIC
 )
 
 install(EXPORT baseConfigDebug
-  DESTINATION "${CMAKE_INSTALL_PREFIX}/lib/cmake/base"
+  DESTINATION "${INSTALL_PREFIX}lib/cmake/base"
   CONFIGURATIONS Debug
 ##  NAMESPACE base::
   FILE baseConfig.cmake
 )
 install(EXPORT baseConfigRelease
-  DESTINATION "${CMAKE_INSTALL_PREFIX}/lib/cmake/base"
+  DESTINATION "${INSTALL_PREFIX}lib/cmake/base"
   CONFIGURATIONS Release
 ##  NAMESPACE base::
   FILE baseConfig.cmake
@@ -402,12 +409,12 @@ if (MSVC)
 install(
   FILES "${CMAKE_BINARY_DIR}/Debug/base.pdb" "${CMAKE_BINARY_DIR}/Debug/base_static.pdb"
   CONFIGURATIONS Debug
-  DESTINATION "${CMAKE_INSTALL_PREFIX}/lib/debug"
+  DESTINATION "${INSTALL_PREFIX}lib/debug"
 )
 install(
   FILES "${CMAKE_BINARY_DIR}/Release/base.pdb" "${CMAKE_BINARY_DIR}/Release/base_static.pdb"
   CONFIGURATIONS Release
-  DESTINATION "${CMAKE_INSTALL_PREFIX}/lib/release"
+  DESTINATION "${INSTALL_PREFIX}lib/release"
 )
 endif ()
 
@@ -436,7 +443,7 @@ if (CMAKE_VERSION VERSION_GREATER 3.7.8)
 
      install(
        FILES "${CMAKE_CURRENT_SOURCE_DIR}/base.natvis"
-       DESTINATION "${CMAKE_INSTALL_PREFIX}/share" # target directory
+       DESTINATION "${INSTALL_PREFIX}share" # target directory
      )
   endif()
 endif()

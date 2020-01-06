@@ -421,8 +421,19 @@ if (CMAKE_VERSION VERSION_GREATER 3.7.8)
     set(VS_ADD_NATIVE_VISUALIZERS FALSE CACHE INTERNAL "Native visualizers are Visual Studio extension" FORCE)
   endif()
   if (VS_ADD_NATIVE_VISUALIZERS)
-     target_sources(base INTERFACE ${CMAKE_CURRENT_SOURCE_DIR}/base.natvis)
-     target_sources(base_STATIC INTERFACE ${CMAKE_CURRENT_SOURCE_DIR}/base.natvis)
+     target_sources(base INTERFACE
+	   "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/base.natvis>"
+	   "$<INSTALL_INTERFACE:share/base.natvis>" # <prefix>/share
+	 )
+     target_sources(base_STATIC INTERFACE
+	   "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/base.natvis>"
+	   "$<INSTALL_INTERFACE:share/base.natvis>" # <prefix>/share
+	 )
+
+	 install(
+       FILES "${CMAKE_CURRENT_SOURCE_DIR}/base.natvis"
+       DESTINATION "share" # target directory
+     )
   endif()
 endif()
 

@@ -131,7 +131,7 @@ else (OPENGL_FOUND)
   message(FATAL_ERROR "OpenGL for macOS not found")
 endif()
 
-#target_link_libraries(targets
+#target_link_libraries(targets PRIVATE
 #  ${OPENGL_gl_LIBRARY}
 #  ${OPENGL_glu_LIBRARY}
 #)
@@ -278,37 +278,37 @@ endif ()
 if (1)
 target_include_directories(base PUBLIC
   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
-  $<INSTALL_INTERFACE:include/base> # <prefix>/include
+  $<INSTALL_INTERFACE:include> # <prefix>/include
 )
 target_include_directories(base PUBLIC
   $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}/generated>
-  $<INSTALL_INTERFACE:include/base> # <prefix>/include
+  $<INSTALL_INTERFACE:include> # <prefix>/include
 )
 endif ()
 
 if (MSVC)
-  target_link_libraries(base Ws2_32 Netapi32 Winmm Wininet Ole32 Gdi32 Advapi32)
+  target_link_libraries(base PRIVATE Ws2_32 Netapi32 Winmm Wininet Ole32 Gdi32 Advapi32)
 elseif (APPLE)
   find_library(corefoundation CoreFoundation)
   find_library(cfnetwork CFNetwork)
-  target_link_libraries(base ${cfnetwork} ${corefoundation})
+  target_link_libraries(base PRIVATE ${cfnetwork} ${corefoundation})
 elseif (UNIX)
-  target_link_libraries(base pthread)
+  target_link_libraries(base PRIVATE pthread)
   if (NOT "${CMAKE_SYSTEM_NAME}" STREQUAL "OpenBSD")
-    target_link_libraries(base dl)
+    target_link_libraries(base PRIVATE dl)
   endif ()
   if (X11_FOUND)
-    target_link_libraries(base ${X11_X11_LIB})
+    target_link_libraries(base PRIVATE ${X11_X11_LIB})
   endif ()
 # elseif (APPLE)
-#  target_link_libraries(base pthread ${OpenCL_LIBRARY})
+#  target_link_libraries(base PRIVATE pthread ${OpenCL_LIBRARY})
 endif ()
 
 if (ZLIB_FOUND)
-  target_link_libraries(base ${ZLIB_LIBRARIES})
+  target_link_libraries(base PRIVATE ${ZLIB_LIBRARIES})
 endif ()
 if (BZIP2_FOUND)
-  target_link_libraries(base ${BZIP2_LIBRARIES})
+  target_link_libraries(base PRIVATE ${BZIP2_LIBRARIES})
 endif ()
 
 
@@ -324,11 +324,11 @@ set_target_properties(base_STATIC PROPERTIES OUTPUT_NAME base_static)
 if (1)
 target_include_directories(base_STATIC PUBLIC
   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
-  $<INSTALL_INTERFACE:include/base> # <prefix>/include
+  $<INSTALL_INTERFACE:include> # <prefix>/include
 )
 target_include_directories(base_STATIC PUBLIC
   $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}/generated>
-  $<INSTALL_INTERFACE:include/base> # <prefix>/include
+  $<INSTALL_INTERFACE:include> # <prefix>/include
 )
 endif ()
 
@@ -336,65 +336,65 @@ file(GLOB_RECURSE base_HEADERS
   "base/*.h"
 )
 
-set_target_properties(base PROPERTIES PUBLIC_HEADER "${base_HEADERS}")
+set_target_properties(base PROPERTIES PUBLIC_HEADER "") # ${base_HEADERS}
 
 if (1)
 # preserve folder structure
 install(
   DIRECTORY "${CMAKE_SOURCE_DIR}/base" # source directory
-  DESTINATION "${CMAKE_BINARY_DIR}/install/include" # target directory
+  DESTINATION "include" # target directory
   FILES_MATCHING PATTERN "*.h" # select header files
 )
 install(
   DIRECTORY "${CMAKE_BINARY_DIR}/generated/base" # source directory
-  DESTINATION "${CMAKE_BINARY_DIR}/install/include" # target directory
+  DESTINATION "include" # target directory
   FILES_MATCHING PATTERN "*.h" # select header files
 )
 endif ()
 
-# install(FILES ${base_HEADERS} DESTINATION include/base)
-
 # set(CMAKE_DEBUG_POSTFIX "-debug")
-### install(TARGETS base base_STATIC
-###   EXPORT baseConfig
-###   PUBLIC_HEADER DESTINATION "${CMAKE_BINARY_DIR}/install/include/base"
-### )
 
 install(TARGETS base base_STATIC
   CONFIGURATIONS Debug
   EXPORT baseConfigDebug
-  PUBLIC_HEADER DESTINATION "${CMAKE_BINARY_DIR}/install/include/base"
-  ARCHIVE DESTINATION "${CMAKE_BINARY_DIR}/install/lib/debug"
-  LIBRARY DESTINATION "${CMAKE_BINARY_DIR}/install/lib/debug"
-  RUNTIME DESTINATION "${CMAKE_BINARY_DIR}/install/bin/debug"
+  PUBLIC_HEADER DESTINATION "include/base"
+  ARCHIVE DESTINATION "lib/debug"
+  LIBRARY DESTINATION "lib/debug"
+  RUNTIME DESTINATION "bin/debug"
 )
 
 install(TARGETS base base_STATIC
   CONFIGURATIONS Release
-  EXPORT baseConfig
-  PUBLIC_HEADER DESTINATION "${CMAKE_BINARY_DIR}/install/include/base"
-  ARCHIVE DESTINATION "${CMAKE_BINARY_DIR}/install/lib/release"
-  LIBRARY DESTINATION "${CMAKE_BINARY_DIR}/install/lib/release"
-  RUNTIME DESTINATION "${CMAKE_BINARY_DIR}/install/bin/release"
+  EXPORT baseConfigRelease
+  PUBLIC_HEADER DESTINATION "include/base"
+  ARCHIVE DESTINATION "lib/release"
+  LIBRARY DESTINATION "lib/release"
+  RUNTIME DESTINATION "bin/release"
 )
 
 if (NOT "${CMAKE_BUILD_TYPE}" STREQUAL "")
   list(APPEND CMAKE_PROGRAM_PATH "${PROJECT_BINARY_DIR}/${CMAKE_BUILD_TYPE}")
 endif ()
 
-if (0) # TAG: not working yet
+if (1)
+# https://cmake.org/cmake/help/v3.8/command/install.html#installing-exports
+
 export(TARGETS base base_STATIC
-  NAMESPACE base::
+##  NAMESPACE base::
   FILE "${CMAKE_CURRENT_BINARY_DIR}/baseConfig.cmake"
 )
 
 install(EXPORT baseConfigDebug
-  DESTINATION "${CMAKE_BINARY_DIR}/install/lib/cmake/base"
-  NAMESPACE base::
+  DESTINATION "lib/cmake/base"
+  CONFIGURATIONS Debug
+##  NAMESPACE base::
+  FILE baseConfig.cmake
 )
-install(EXPORT baseConfig
-  DESTINATION "${CMAKE_BINARY_DIR}/install/lib/cmake/base"
-  NAMESPACE base::
+install(EXPORT baseConfigRelease
+  DESTINATION "lib/cmake/base"
+  CONFIGURATIONS Release
+##  NAMESPACE base::
+  FILE baseConfig.cmake
 )
 endif ()
 
@@ -405,6 +405,9 @@ endif ()
 #  FILES_MATCHING
 #  PATTERN *.pdb
 #)
+
+# TAG: add libraries for static build with PUBLIC?
+# TAG: install natvis
 
 add_subdirectory("testsuite")
 
@@ -422,3 +425,6 @@ if (CMAKE_VERSION VERSION_GREATER 3.7.8)
      target_sources(base_STATIC INTERFACE ${CMAKE_CURRENT_SOURCE_DIR}/base.natvis)
   endif()
 endif()
+
+include(CPack)
+

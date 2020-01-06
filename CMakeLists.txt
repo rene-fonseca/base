@@ -400,16 +400,14 @@ endif ()
 
 if (MSVC)
 install(
-  DIRECTORY "${CMAKE_BINARY_DIR}/Debug"
+  FILES "${CMAKE_BINARY_DIR}/Debug/base.pdb" "${CMAKE_BINARY_DIR}/Debug/base_static.pdb"
   CONFIGURATIONS Debug
   DESTINATION "${CMAKE_INSTALL_PREFIX}/lib/debug"
-  FILES_MATCHING PATTERN *.pdb
 )
 install(
-  DIRECTORY "${CMAKE_BINARY_DIR}/Release"
+  FILES "${CMAKE_BINARY_DIR}/Release/base.pdb" "${CMAKE_BINARY_DIR}/Release/base_static.pdb"
   CONFIGURATIONS Release
   DESTINATION "${CMAKE_INSTALL_PREFIX}/lib/release"
-  FILES_MATCHING PATTERN *.pdb
 )
 endif ()
 

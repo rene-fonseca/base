@@ -272,6 +272,20 @@ public:
   {
     return ReadIterator();
   }
+
+  /** Adds value. */
+  inline Set& operator<<(const KEY& key)
+  {
+    add(key);
+    return *this;
+  }
+
+  /** Adds value. */
+  inline Set& operator<<(KEY&& key)
+  {
+    add(moveObject(key));
+    return *this;
+  }
 };
 
 /**

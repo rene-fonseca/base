@@ -722,6 +722,20 @@ public:
   {
     return impl->getSize() != 0;
   }
+  
+  /** Adds value. */
+  inline HashSet& operator<<(const Value& key)
+  {
+    add(key);
+    return *this;
+  }
+
+  /** Adds value. */
+  inline HashSet& operator<<(Value&& key)
+  {
+    add(moveObject(key));
+    return *this;
+  }
 };
 
 /**

@@ -915,6 +915,20 @@ public:
   {
     return !isEmpty();
   }
+  
+  /** Appends value. */
+  inline List& operator<<(const TYPE& value)
+  {
+    append(value);
+    return *this;
+  }
+
+  /** Appends value. */
+  inline List& operator<<(TYPE&& value)
+  {
+    append(moveObject(value));
+    return *this;
+  }
 };
 
 /**

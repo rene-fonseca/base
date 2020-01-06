@@ -880,6 +880,20 @@ public:
       bubbleSort(begin(), end(), predicate);
     }
   }
+
+  /** Appends value. */
+  inline Array& operator<<(const TYPE& value)
+  {
+    append(value);
+    return *this;
+  }
+
+  /** Appends value. */
+  inline Array& operator<<(TYPE&& value)
+  {
+    append(moveObject(value));
+    return *this;
+  }
 };
 
 template<class TYPE>

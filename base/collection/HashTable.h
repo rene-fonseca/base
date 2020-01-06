@@ -1057,6 +1057,20 @@ public:
   {
     return impl->getSize() != 0;
   }
+  
+  /** Adds value. */
+  inline HashTable& operator<<(const HashTableAssociation& value)
+  {
+    add(value);
+    return *this;
+  }
+  
+  /** Adds value. */
+  inline HashTable& operator<<(HashTableAssociation&& value)
+  {
+    add(moveObject(value));
+    return *this;
+  }
 };
 
 /**

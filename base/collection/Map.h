@@ -499,6 +499,20 @@ public:
   {
     return ReadIterator();
   }
+  
+  /** Adds value. */
+  inline Map& operator<<(const Node& value)
+  {
+    add(value);
+    return *this;
+  }
+
+  /** Adds value. */
+  inline Map& operator<<(Node&& value)
+  {
+    add(moveObject(value));
+    return *this;
+  }
 };
 
 /**

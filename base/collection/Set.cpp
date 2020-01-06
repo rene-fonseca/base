@@ -80,6 +80,9 @@ public:
     TEST_ASSERT(*std::find(ss.begin(), ss.end(), "up") == "up");
     TEST_ASSERT(std::find(ss.begin(), ss.end(), "left") == ss.end());
 #endif
+    
+    Set<int> s;
+    s << 1 << 2 << 3 << 11;
   }
 };
 

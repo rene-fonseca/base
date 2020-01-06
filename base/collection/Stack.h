@@ -457,6 +457,20 @@ public:
   {
     elements = new StackImpl(); // no need to copy
   }
+  
+  /** Pushes value. */
+  inline Stack& operator<<(const TYPE& value)
+  {
+    push(value);
+    return *this;
+  }
+
+  /** Pushes value. */
+  inline Stack& operator<<(TYPE&& value)
+  {
+    push(moveObject(value));
+    return *this;
+  }
 };
 
 /**

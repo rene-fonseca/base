@@ -693,7 +693,7 @@ Process::Times Process::getTimes() noexcept
 #if (0 && (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32))
 void dumpDebugInfo(const BYTE* caller, void* instance) noexcept
 {
-  const char* name = ::GetModuleFilename(module) ;
+  const char* name = ::GetModuleFilename(module);
   
   // offset 0 is DOS header
   PIMAGE_DOS_HEADER fileBase =  ::MapFileInMemory(name);
@@ -704,11 +704,11 @@ void dumpDebugInfo(const BYTE* caller, void* instance) noexcept
   // Get debug header
   // Borland:
   PIMAGE_SECTION_HEADER debugHeader =
-    SectionHeaderFromName( ".debug" ) ;
+    SectionHeaderFromName( ".debug" );
   PIMAGE_DEBUG_DIRECTORY debugDir =
     fileBase + debugHeader->PointerToRawData ;
   // Microsoft
-  debugHeader = SectionHeaderFromName( ".rdata" ) ;
+  debugHeader = SectionHeaderFromName( ".rdata" );
   debugDir = fileBase + 
     debugHeader->PointerToRawData + 
     debugDirRVA - debugHeader->VirtualAddress ;

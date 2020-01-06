@@ -110,10 +110,6 @@ public:
   static void operator delete[](void* memory);
 };
 
-#if defined(_COM_AZURE_DEV__BASE__SHARED_LIBRARY_BUILD) // should also be set when building static
-#  define _COM_AZURE_DEV__BASE__NO_ARRAY_ALLOCATION
-#endif
-
 /** Override memory allocation for a class. */
 #if (_COM_AZURE_DEV__BASE__COMPILER != _COM_AZURE_DEV__BASE__COMPILER_DOXYGEN)
 #if !defined(_COM_AZURE_DEV__BASE__NO_ARRAY_ALLOCATION)

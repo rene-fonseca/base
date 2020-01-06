@@ -132,11 +132,11 @@ jobs:
         ctest -T Test
       workingDirectory: $(System.DefaultWorkingDirectory)/wasi
 
-#  - task: PublishTestResults@2
-#    inputs:
-#      testResultsFormat: 'JUnit'
-#      testResultsFiles: '**/junit.xml'
-#      testRunTitle: 'Unittest results'
+  - task: PublishTestResults@2
+    inputs:
+      testResultsFormat: 'JUnit'
+      testResultsFiles: '**/junit.xml'
+      testRunTitle: 'Unittest results'
 
   - task: PublishTestResults@2
     inputs:
@@ -144,8 +144,8 @@ jobs:
       testResultsFiles: '**/Test.xml'
       testRunTitle: 'Test results for CTest'
 
-#  - task: PublishPipelineArtifact@1
-#    inputs:
-#      artifactName: 'base-wasi'
-#      targetPath: 'artifacts'
-#      path: $(System.DefaultWorkingDirectory)/wasi/install
+  - task: PublishPipelineArtifact@1
+    inputs:
+      artifactName: 'base-wasi'
+      targetPath: 'artifacts'
+      path: $(System.DefaultWorkingDirectory)/wasi/install

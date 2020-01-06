@@ -2,9 +2,13 @@ generated/
 build/
 Debug/
 Release/
+install/
 base.build/
 *.xcodeproj/
 *.code-workspace
+*.sln
+*.vcxproj
+*.vcxproj.filters
 CMakeFiles/
 CMakeScripts/
 CMakeCache.txt

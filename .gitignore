@@ -9,6 +9,9 @@ CMakeFiles/
 CMakeScripts/
 CMakeCache.txt
 DartConfiguration.tcl
+baseConfig.cmake
+base-*.sh
+base-*.tar.gz
 Testing/
 *.cmake
 install_manifest.txt

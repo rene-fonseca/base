@@ -342,12 +342,12 @@ if (1)
 # preserve folder structure
 install(
   DIRECTORY "${CMAKE_SOURCE_DIR}/base" # source directory
-  DESTINATION "include" # target directory
+  DESTINATION "${CMAKE_INSTALL_PREFIX}/include" # target directory
   FILES_MATCHING PATTERN "*.h" # select header files
 )
 install(
   DIRECTORY "${CMAKE_BINARY_DIR}/generated/base" # source directory
-  DESTINATION "include" # target directory
+  DESTINATION "${CMAKE_INSTALL_PREFIX}/include" # target directory
   FILES_MATCHING PATTERN "*.h" # select header files
 )
 endif ()
@@ -357,19 +357,19 @@ endif ()
 install(TARGETS base base_STATIC
   CONFIGURATIONS Debug
   EXPORT baseConfigDebug
-  PUBLIC_HEADER DESTINATION "include/base"
-  ARCHIVE DESTINATION "lib/debug"
-  LIBRARY DESTINATION "lib/debug"
-  RUNTIME DESTINATION "bin/debug"
+  PUBLIC_HEADER DESTINATION "${CMAKE_INSTALL_PREFIX}/include/base"
+  ARCHIVE DESTINATION "${CMAKE_INSTALL_PREFIX}/lib/debug"
+  LIBRARY DESTINATION "${CMAKE_INSTALL_PREFIX}/lib/debug"
+  RUNTIME DESTINATION "${CMAKE_INSTALL_PREFIX}/bin/debug"
 )
 
 install(TARGETS base base_STATIC
   CONFIGURATIONS Release
   EXPORT baseConfigRelease
-  PUBLIC_HEADER DESTINATION "include/base"
-  ARCHIVE DESTINATION "lib/release"
-  LIBRARY DESTINATION "lib/release"
-  RUNTIME DESTINATION "bin/release"
+  PUBLIC_HEADER DESTINATION "${CMAKE_INSTALL_PREFIX}/include/base"
+  ARCHIVE DESTINATION "${CMAKE_INSTALL_PREFIX}/lib/release"
+  LIBRARY DESTINATION "${CMAKE_INSTALL_PREFIX}/lib/release"
+  RUNTIME DESTINATION "${CMAKE_INSTALL_PREFIX}/bin/release"
 )
 
 if (NOT "${CMAKE_BUILD_TYPE}" STREQUAL "")
@@ -385,29 +385,35 @@ export(TARGETS base base_STATIC
 )
 
 install(EXPORT baseConfigDebug
-  DESTINATION "lib/cmake/base"
+  DESTINATION "${CMAKE_INSTALL_PREFIX}/lib/cmake/base"
   CONFIGURATIONS Debug
 ##  NAMESPACE base::
   FILE baseConfig.cmake
 )
 install(EXPORT baseConfigRelease
-  DESTINATION "lib/cmake/base"
+  DESTINATION "${CMAKE_INSTALL_PREFIX}/lib/cmake/base"
   CONFIGURATIONS Release
 ##  NAMESPACE base::
   FILE baseConfig.cmake
 )
 endif ()
 
-#install(
-#  DIRECTORY "${CMAKE_BINARY_DIR}/Release"
-#  CONFIGURATIONS Release
-#  DESTINATION "${CMAKE_BINARY_DIR}/bin/release"
-#  FILES_MATCHING
-#  PATTERN *.pdb
-#)
+if (MSVC)
+install(
+  DIRECTORY "${CMAKE_BINARY_DIR}/Debug"
+  CONFIGURATIONS Debug
+  DESTINATION "${CMAKE_INSTALL_PREFIX}/lib/debug"
+  FILES_MATCHING PATTERN *.pdb
+)
+install(
+  DIRECTORY "${CMAKE_BINARY_DIR}/Release"
+  CONFIGURATIONS Release
+  DESTINATION "${CMAKE_INSTALL_PREFIX}/lib/release"
+  FILES_MATCHING PATTERN *.pdb
+)
+endif ()
 
 # TAG: add libraries for static build with PUBLIC?
-# TAG: install natvis
 
 add_subdirectory("testsuite")
 
@@ -430,9 +436,9 @@ if (CMAKE_VERSION VERSION_GREATER 3.7.8)
 	   "$<INSTALL_INTERFACE:share/base.natvis>" # <prefix>/share
 	 )
 
-	 install(
+     install(
        FILES "${CMAKE_CURRENT_SOURCE_DIR}/base.natvis"
-       DESTINATION "share" # target directory
+       DESTINATION "${CMAKE_INSTALL_PREFIX}/share" # target directory
      )
   endif()
 endif()

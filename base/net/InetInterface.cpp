@@ -81,9 +81,9 @@ namespace internal {
   };
 }; // end of namespace internal
 
-Array<Association<String, unsigned int> > InetInterface::getInterfaceNames()
+ArrayMap<String, unsigned int> InetInterface::getInterfaceNames()
 {
-  Array<Association<String, unsigned int> > interfaces;
+  ArrayMap<String, unsigned int> interfaces;
 #if (defined(_COM_AZURE_DEV__BASE__HAVE_INET_IPV6))
   struct if_nameindex* ni = nullptr;
   if ((ni = if_nameindex()) == 0) { // MT-safe

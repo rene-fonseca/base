@@ -15,8 +15,7 @@
 
 #include <base/Object.h>
 #include <base/collection/List.h>
-#include <base/collection/Array.h>
-#include <base/collection/Association.h>
+#include <base/collection/ArrayMap.h>
 #include <base/net/NetworkException.h>
 #include <base/net/InetAddress.h>
 #include <base/communication/EUI64.h>
@@ -66,7 +65,7 @@ public:
   /**
     Returns the names and indices of the available interfaces.
   */
-  static Array<Association<String, unsigned int> > getInterfaceNames();
+  static ArrayMap<String, unsigned int> getInterfaceNames();
   
   /**
     Returns all of the Internet Protocol network interfaces of the host.

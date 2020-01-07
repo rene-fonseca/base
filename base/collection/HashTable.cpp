@@ -76,6 +76,12 @@ public:
 
     c1.removeAll();
     TEST_ASSERT(!c1);
+    
+    HashTable<String, int> ht1 = {};
+    HashTable<String, int> ht2 = {{"123", 3}};
+    TEST_ASSERT(ht2.getSize() == 1);
+    HashTable<String, int> ht3 = {{"123", 3}, {"abc", 12}};
+    TEST_ASSERT(ht3.getSize() == 2);
   }
 };
 

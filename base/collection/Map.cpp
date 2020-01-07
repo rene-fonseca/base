@@ -61,6 +61,12 @@ public:
     };
     TEST_ASSERT(m3.hasKey("2"));
 
+    Map<String, int> m4 = {};
+    Map<String, int> m5 = {{"123", 3}};
+    TEST_ASSERT(m5.getSize() == 1);
+    Map<String, int> m6 = {{"123", 3}, {"abc", 12}};
+    TEST_ASSERT(m6.getSize() == 2);
+
 #if 0
     Map<NonDefaultConstructible, NonDefaultConstructible> map1;
     map1.add(NonDefaultConstructible(nullptr), NonDefaultConstructible(nullptr));

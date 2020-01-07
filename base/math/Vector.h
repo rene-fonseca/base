@@ -144,6 +144,18 @@ public:
   Vector(const TYPE elements[], unsigned int size);
 
   /**
+    Initializes vector from initializer list.
+  */
+  Vector(std::initializer_list<TYPE> l)
+  {
+    setSize(l.size());
+    auto dest = getElements();
+    for (auto i = l.begin(); i != l.end(); ++i) {
+      *dest++ = *i;
+    }
+  }
+  
+  /**
     Initializes vector from other vector.
 
     @param copy The vector to be copied.

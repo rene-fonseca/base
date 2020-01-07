@@ -40,7 +40,7 @@ public:
   enum Representation {
     VOID, /**< Void. */
     TYPE, /**< Type. */
-    POINTER, /** Pointer. */
+    POINTER, /**< Pointer. */
     CHARACTER, /**< Character primitive. */
     WIDE_CHARACTER, /**< Wide character primitive. */
     BOOLEAN, /**< Boolean primitive. */
@@ -52,9 +52,9 @@ public:
     UNSIGNED_LONG_INTEGER, /**< Unsigned long integer primitive. */
     LONG_LONG_INTEGER, /**< Long long integer primitive. */
     UNSIGNED_LONG_LONG_INTEGER, /**< Unsigned long long integer primitive. */
-    FLOAT, /** Float primitive. */
-    DOUBLE, /** Double primitive. */
-    LONG_DOUBLE, /** Long double primitive. */
+    FLOAT, /**< Float primitive. */
+    DOUBLE, /**< Double primitive. */
+    LONG_DOUBLE, /**< Long double primitive. */
     STRING, /**< Sting. */
     WIDE_STRING, /**< Wide string. */
     REFERENCE /** Reference counted object. */

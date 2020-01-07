@@ -34,6 +34,7 @@ class ArrayMap : public Array<Association<KEY, VALUE> > {
 public:
 
   typedef Association<KEY, VALUE> Node;
+  typedef Array<Association<KEY, VALUE> > Base;
 
   /**
     Initializes an empty map.
@@ -47,9 +48,9 @@ public:
   */
   ArrayMap(std::initializer_list<Node> values)
   {
-    ensureCapacity(values.size());
+    Base::ensureCapacity(values.size());
     for (auto& value : values) {
-      append(value); // C++: https://isocpp.org/files/papers/N4166.pdf
+      Base::append(value); // C++: https://isocpp.org/files/papers/N4166.pdf
     }
   }
   
@@ -57,7 +58,7 @@ public:
     Initializes map from other map.
   */
   inline ArrayMap(const ArrayMap& copy)
-    : Array<Node>(copy)
+    : Base(copy)
   {
   }
 
@@ -65,7 +66,7 @@ public:
     Initializes map from other map.
   */
   inline ArrayMap(ArrayMap&& move)
-    : Array<Node>(moveObject(move))
+    : Base(moveObject(move))
   {
   }
 
@@ -74,7 +75,7 @@ public:
   */
   inline ArrayMap& operator=(const ArrayMap& assign)
   {
-    Array<Node>::operator=(assign);
+    Base::operator=(assign);
     return *this;
   }
 
@@ -83,15 +84,15 @@ public:
   */
   inline ArrayMap& operator=(ArrayMap&& assign)
   {
-    Array<Node>::operator=(moveObject(assign));
+    Base::operator=(moveObject(assign));
     return *this;
   }
 
   /** Returns reference to the item if found by the given value. */
   Node* find(const KEY& key)
   {
-    const auto _end = Array<Node>::end();
-    for (auto  src = Array<Node>::begin(); src != _end; ++src) {
+    const auto _end = Base::end();
+    for (auto src = Base::begin(); src != _end; ++src) {
       if (*src == key) {
         return &*src;
       }
@@ -102,8 +103,8 @@ public:
   /** Returns reference to the item if found by the given value. */
   const Node* find(const KEY& key) const
   {
-    const auto _end = Array<Node>::cend();
-    for (auto src = Array<Node>::cbegin(); src != _end; ++src) {
+    const auto _end = Base::cend();
+    for (auto src = Base::cbegin(); src != _end; ++src) {
       if (*src == key) {
         return &*src;
       }
@@ -159,7 +160,7 @@ public:
       node->setValue(value);
       return false;
     }
-    setSize(Array<Node>::getSize() + 1, Node(key, value));
+    Base::setSize(Base::getSize() + 1, Node(key, value));
     return true;
   }
 
@@ -170,11 +171,10 @@ public:
   */
   void remove(const KEY& key)
   {
-    Iterator _begin = begin();
-    const Iterator _end = end();
-    for (Iterator src = _begin; src != _end; ++src) {
+    const auto _end = Base::end();
+    for (auto src = Base::begin(); src != _end; ++src) {
       if (*src == key) {
-        Array::remove(src - _begin);
+        Base::remove(src - _begin);
         return;
       }
     }

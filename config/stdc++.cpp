@@ -12,7 +12,7 @@
  ***************************************************************************/
 
 /*
-  Runs if the Standard Template Library is available.
+  Runs if the Standard C++ Library is available.
 */
 
 #include <iostream>

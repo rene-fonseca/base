@@ -317,7 +317,7 @@ public:
     Adds a value to the binary tree.
 
     @param value The value to be added.
-    @return The node and boolean which is true if value already exists.
+    @return The node and boolean which is true if node was added.
   */
   Pair<Node*, bool> add(const Value& value)
   {
@@ -374,7 +374,7 @@ public:
     Adds a value to the binary tree.
 
     @param value The value to be added.
-    @return The node and boolean which is true if value already exists.
+    @return The node and boolean which is true if node was added.
   */
   Pair<Node*, bool> add(Value&& value)
   {

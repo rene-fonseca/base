@@ -154,6 +154,9 @@ public:
   {
   }
 
+  /**
+    Initializes map with given values.
+  */
   Map(std::initializer_list<Node> values)
   {
     for (const auto& value : values) {
@@ -217,7 +220,7 @@ public:
   */
   inline bool isEmpty() const noexcept
   {
-    return size == 0;
+    return elements.getRoot() == nullptr;
   }
 
   /**
@@ -225,7 +228,7 @@ public:
   */
   inline operator bool() const noexcept
   {
-    return size != 0;
+    return elements.getRoot();
   }
 
   /**
@@ -338,7 +341,7 @@ public:
   {
     // TAG: rotate when new node is added? but we need to know length of chains
     Pair<typename Tree::Node*, bool> result = elements.add(Node(key, value));
-    if (result.getSecond()) {
+    if (!result.getSecond()) {
       // key already exists
       typename Tree::Node* node = result.getFirst();
       Node& association = node->getValue();
@@ -379,7 +382,7 @@ public:
   bool add(const Node& value)
   {
     Pair<typename Tree::Node*, bool> result = elements.add(value);
-    if (result.getSecond()) {
+    if (!result.getSecond()) {
       // key already exists
       typename Tree::Node* node = result.getFirst();
       Node& association = node->getValue();

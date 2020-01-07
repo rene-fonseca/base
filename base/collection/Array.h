@@ -277,8 +277,12 @@ public:
     Initializes array from initializer list.
   */
   Array(std::initializer_list<Value> l)
+    : elements(new ReferenceCountedAllocator<Value>())
   {
-    append(l);
+    ensureCapacity(l.size());
+    for (auto value : l) {
+      append(value);
+    }
   }
 
   /**

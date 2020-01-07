@@ -57,7 +57,7 @@ public:
     Initializes map from other map.
   */
   inline ArrayMap(const ArrayMap& copy)
-    : Array(copy)
+    : Array<Node>(copy)
   {
   }
 
@@ -65,7 +65,7 @@ public:
     Initializes map from other map.
   */
   inline ArrayMap(ArrayMap&& move)
-    : Array(moveObject(move))
+    : Array<Node>(moveObject(move))
   {
   }
 
@@ -74,24 +74,24 @@ public:
   */
   inline ArrayMap& operator=(const ArrayMap& assign)
   {
-    Array::operator=(assign);
+    Array<Node>::operator=(assign);
     return *this;
   }
 
   /**
     Assign map.
   */
-  inline ArrayMap& operator=(ArrayMap&& move)
+  inline ArrayMap& operator=(ArrayMap&& assign)
   {
-    Array::operator=(moveObject(assign));
+    Array<Node>::operator=(moveObject(assign));
     return *this;
   }
 
   /** Returns reference to the item if found by the given value. */
   Node* find(const KEY& key)
   {
-    const Iterator _end = end();
-    for (Iterator src = begin(); src != _end; ++src) {
+    const auto _end = Array<Node>::end();
+    for (auto  src = Array<Node>::begin(); src != _end; ++src) {
       if (*src == key) {
         return &*src;
       }
@@ -102,8 +102,8 @@ public:
   /** Returns reference to the item if found by the given value. */
   const Node* find(const KEY& key) const
   {
-    const ReadIterator _end = cend();
-    for (ReadIterator src = cbegin(); src != _end; ++src) {
+    const auto _end = Array<Node>::cend();
+    for (auto src = Array<Node>::cbegin(); src != _end; ++src) {
       if (*src == key) {
         return &*src;
       }
@@ -159,7 +159,7 @@ public:
       node->setValue(value);
       return false;
     }
-    setSize(getSize() + 1, Node(key, value));
+    setSize(Array<Node>::getSize() + 1, Node(key, value));
     return true;
   }
 

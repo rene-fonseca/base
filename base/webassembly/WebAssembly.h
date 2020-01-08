@@ -31,6 +31,30 @@ private:
   AnyReference handle;
 public:
 
+  /** File for virtual file system. */
+  class _COM_AZURE_DEV__BASE__API VirtualFile {
+  public:
+
+    virtual unsigned int read(uint8* buffer, unsigned int offset, unsigned int size) = 0;
+
+    virtual unsigned int write(const uint8* buffer, unsigned int offset, unsigned int size) = 0;
+
+    virtual void close() = 0;
+  };
+
+  /** Virtual file system. */
+  class _COM_AZURE_DEV__BASE__API VirtualFileSystem {
+  public:
+    
+    virtual Array<String> getEntries(const String& path) = 0;
+
+    virtual void makeFolder(const String& path) = 0;
+
+    virtual void remove(const String& path) = 0;
+
+    virtual VirtualFile open(const String& path) = 0;
+  };
+
   enum Type {
     TYPE_UNSPECIFIED,
     TYPE_FUNCTION,
@@ -153,6 +177,9 @@ public:
   // TAG: call async to start thread
   // TAG: add template for automatic conversion
 
+  // Array<VirtualFileSystem*> getMounts();
+  // void mountFileSystem(const String& path);
+  
   ~WebAssembly();
 };
 

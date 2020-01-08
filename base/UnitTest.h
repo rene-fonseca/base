@@ -285,6 +285,12 @@ public:
   {
     return DEFAULT_TIMEOUT;
   }
+  
+  /** Use TEST_EXTERNAL to tag test as having external dependencies. */
+  virtual bool hasExternalDependency() const noexcept
+  {
+    return false;
+  }
 
   /** Use TEST_REPEATS to set number of repeats. */
   virtual unsigned int getRepeats() const noexcept
@@ -734,6 +740,9 @@ public:
 
 /** Sets the timeout for the test in milliseconds. */
 #define TEST_LIMIT_MEMORY(kbytes) uint64 getLimitMemory() const noexcept override {return static_cast<uint64>(kbytes);}
+
+/** Marks test as having external dependencies. */
+#define TEST_EXTERNAL() bool hasExternalDependency() const noexcept override {return true;}
 
 /**
   Declares a test for a given type.

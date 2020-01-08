@@ -2088,7 +2088,7 @@ public:
   TEST_PRIORITY(500);
   TEST_PROJECT("base/net");
   TEST_IMPACT(NORMAL);
-  // TAG: TEST_EXTERNAL(); // skip externals by default
+  TEST_EXTERNAL();
 
   void run() override
   {

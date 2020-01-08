@@ -14,6 +14,7 @@
 #include <base/platforms/features.h>
 #include <base/xml/Document.h>
 #include <base/Cast.h>
+#include <base/Module.h>
 #include <base/build.h>
 
 #if defined(_COM_AZURE_DEV__BASE__USE_XMLSOFT_XML)
@@ -25,6 +26,10 @@
 #endif
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
+
+#if defined(_COM_AZURE_DEV__BASE__USE_XMLSOFT_XML)
+MODULE_REGISTER_EXPLICIT(_COM_AZURE_DEV__BASE__THIS_MODULE, "org.xmlsoft", "libxml2", LIBXML_DOTTED_VERSION, "http://www.xmlsoft.org/XMLinfo.html");
+#endif
 
 Document::Document()
 {
@@ -524,7 +529,5 @@ void Document::destroy() {
   _throw DOMException(this);
 #endif
 }
-
-// TAG: register module
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

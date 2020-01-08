@@ -24,6 +24,8 @@
 #define _COM_AZURE_DEV__BASE__MICRO_VERSION 1
 #define _COM_AZURE_DEV__BASE__VERSION "0.9.1"
 
+#define _COM_AZURE_DEV__BASE__THIS_MODULE "com.azure.dev:renefonseca_base"
+
 #define _COM_AZURE_DEV__BASE__REQUIRE(major, minor, micro) \
   ((major <= _COM_AZURE_DEV__BASE__MAJOR_VERSION) && \
   (minor <= _COM_AZURE_DEV__BASE__MINOR_VERSION) && \

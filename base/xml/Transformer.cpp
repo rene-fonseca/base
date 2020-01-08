@@ -13,6 +13,7 @@
 
 #include <base/platforms/features.h>
 #include <base/xml/Transformer.h>
+#include <base/Module.h>
 #include <base/build.h>
 
 #if defined(_COM_AZURE_DEV__BASE__USE_XMLSOFT_XSLT)
@@ -29,6 +30,10 @@
 #endif
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
+
+#if defined(_COM_AZURE_DEV__BASE__USE_XMLSOFT_XSLT)
+MODULE_REGISTER_EXPLICIT(_COM_AZURE_DEV__BASE__THIS_MODULE, "org.xmlsoft", "libxslt", XSLT_DEFAULT_VERSION, XSLT_DEFAULT_URL);
+#endif
 
 Transformer::Transformer() noexcept
 {

@@ -14,10 +14,6 @@
 # Problems:
 #   The library will use the demangling scheme associated with the compiler
 #   used to build the package.
-#
-# TODO:
-#   use libsupc++ with GCC 3.0 (static 'cause no package for RedHat 7.2)
-#   use libstdc++ with GCC 2.95
 
 Name: base-framework
 Version: 0.9.1

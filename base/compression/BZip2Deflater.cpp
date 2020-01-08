@@ -18,27 +18,16 @@
 #include <base/NotSupported.h>
 #include <base/build.h>
 
+#if defined(_COM_AZURE_DEV__BASE__USE_BZIP2)
+#  include <bzlib.h>
+#endif
+
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 namespace internal {
   
   class BZip2Deflater {
   public:
-    
-    struct Context {
-      const uint8* nextInput;
-      unsigned int bytesToWrite;
-      unsigned int totalInputLow;
-      unsigned int totalInputHigh;
-      uint8* nextOutput;
-      unsigned int bytesToRead;
-      unsigned int totalOutputLow;
-      unsigned int totalOutputHigh;
-      void* state;
-      void* (*allocate)(void*, int, int) noexcept;
-      void (*release)(void*, void*) noexcept;
-      void* opaque;
-    };
     
     static void* allocate(void*, int n, int m) noexcept
     {
@@ -70,30 +59,26 @@ namespace internal {
       ERROR_PARAM = -2
     };
   };
-
-  // TAG: dll support
-  extern "C" int BZ2_bzCompressInit(BZip2Deflater::Context* stream, int blockSize, int verbosity, int workFactor);
-  extern "C" int BZ2_bzCompress(BZip2Deflater::Context* stream, int action);
-  extern "C" int BZ2_bzCompressEnd(BZip2Deflater::Context* stream);
 };
 
 BZip2Deflater::BZip2Deflater()
   : buffer(BUFFER_SIZE), availableBytes(0), state(RUNNING)
 {
 #if (defined(_COM_AZURE_DEV__BASE__USE_BZIP2))
-  internal::BZip2Deflater::Context* context = new internal::BZip2Deflater::Context;
+  bz_stream* context = new bz_stream;
   this->context = context;
   clear(*context);
-  context->allocate = internal::BZip2Deflater::allocate;
-  context->release = internal::BZip2Deflater::release;
+  context->bzalloc = internal::BZip2Deflater::allocate;
+  context->bzfree = internal::BZip2Deflater::release;
+  context->opaque = nullptr;
   unsigned int compressionLevel = minimum(maximum(DEFAULT_COMPRESSION_LEVEL, 1U), 9U);
-  int code = internal::BZ2_bzCompressInit(context, compressionLevel, 0, 30);
+  int code = BZ2_bzCompressInit(context, compressionLevel, 0, 30);
   bassert(
     code == internal::BZip2Deflater::OK,
     MemoryException(this)
   );
 #else
-  _throw NotSupported(this);
+  _COM_AZURE_DEV__BASE__NOT_SUPPORTED();
 #endif
 }
 
@@ -101,19 +86,20 @@ BZip2Deflater::BZip2Deflater(unsigned int compressionLevel)
   : buffer(BUFFER_SIZE), availableBytes(0), state(RUNNING)
 {
 #if (defined(_COM_AZURE_DEV__BASE__USE_BZIP2))
-  internal::BZip2Deflater::Context* context = new internal::BZip2Deflater::Context;
+  bz_stream* context = new bz_stream;
   this->context = context;
   clear(*context);
-  context->allocate = internal::BZip2Deflater::allocate;
-  context->release = internal::BZip2Deflater::release;
+  context->bzalloc = internal::BZip2Deflater::allocate;
+  context->bzfree = internal::BZip2Deflater::release;
+  context->opaque = nullptr;
   compressionLevel = minimum(maximum(compressionLevel, 1U), 9U);
-  int code = internal::BZ2_bzCompressInit(context, compressionLevel, 0, 30);
+  int code = BZ2_bzCompressInit(context, compressionLevel, 0, 30);
   bassert(
     code == internal::BZip2Deflater::OK,
     MemoryException(this)
   );
 #else
-  _throw NotSupported(this);
+  _COM_AZURE_DEV__BASE__NOT_SUPPORTED();
 #endif
 }
 
@@ -124,7 +110,7 @@ void BZip2Deflater::flush()
   bassert(state == RUNNING, IOException(this));
   state = FLUSHING;
 #else
-  _throw IOException(this);
+  _COM_AZURE_DEV__BASE__NOT_SUPPORTED();
 #endif
 }
 
@@ -136,20 +122,19 @@ MemorySize BZip2Deflater::push(const uint8* buffer, MemorySize size)
   if (availableBytes == this->buffer.getSize()) {
     return 0; // no storage available
   }
-  internal::BZip2Deflater::Context* context =
-    Cast::pointer<internal::BZip2Deflater::Context*>(this->context);
-  context->nextInput = buffer;
-  context->bytesToWrite = size;
-  context->totalInputLow = 0;
-  context->totalInputHigh = 0;
-  context->nextOutput = this->buffer.getElements() + availableBytes;
-  context->bytesToRead = this->buffer.getSize() - availableBytes;
-  int code = internal::BZ2_bzCompress(context, internal::BZip2Deflater::RUN);
+  bz_stream* context = Cast::pointer<bz_stream*>(this->context);
+  context->next_in = (char*)static_cast<const uint8*>(buffer);
+  context->avail_in = size;
+  context->total_in_lo32 = 0;
+  context->total_in_hi32 = 0;
+  context->next_out = (char*)(this->buffer.getElements() + availableBytes);
+  context->avail_out = this->buffer.getSize() - availableBytes;
+  int code = BZ2_bzCompress(context, internal::BZip2Deflater::RUN);
   bassert(code == internal::BZip2Deflater::RUN_OK, IOException(this));
-  availableBytes = this->buffer.getSize() - context->bytesToRead;
-  return context->totalInputLow;
+  availableBytes = this->buffer.getSize() - context->avail_out;
+  return context->total_in_lo32;
 #else
-  _throw IOException(this);
+  _COM_AZURE_DEV__BASE__NOT_SUPPORTED();
 #endif
 }
 
@@ -160,7 +145,7 @@ void BZip2Deflater::pushEnd()
   bassert(state == RUNNING, IOException(this));
   state = FINISHING;
 #else
-  _throw IOException(this);
+  _COM_AZURE_DEV__BASE__NOT_SUPPORTED();
 #endif
 }
 
@@ -195,15 +180,14 @@ MemorySize BZip2Deflater::pull(uint8* buffer, MemorySize size)
     break;
   case FLUSHING:
     {
-      internal::BZip2Deflater::Context* context =
-        Cast::pointer<internal::BZip2Deflater::Context*>(this->context);
-      context->nextInput = 0;
-      context->bytesToWrite = 0;
-      context->totalInputLow = 0;
-      // context->totalInputHigh = 0; // TAG: not required
-      context->nextOutput = buffer;
-      context->bytesToRead = size;
-      int code = internal::BZ2_bzCompress(context, internal::BZip2Deflater::FLUSH);
+      bz_stream* context = Cast::pointer<bz_stream*>(this->context);
+      context->next_in = 0;
+      context->avail_in = 0;
+      context->total_in_lo32 = 0;
+      // context->total_in_hi32 = 0; // TAG: not required
+      context->next_out = (char*)static_cast<uint8*>(buffer);
+      context->avail_out = size;
+      int code = BZ2_bzCompress(context, internal::BZip2Deflater::FLUSH);
       if (code == internal::BZip2Deflater::FLUSH_OK) {
         // continue flushing
       } else if (code == internal::BZip2Deflater::RUN_OK) {
@@ -211,19 +195,18 @@ MemorySize BZip2Deflater::pull(uint8* buffer, MemorySize size)
       } else {
         _throw IOException(this);
       }
-      return bytesRead + size - context->bytesToRead;
+      return bytesRead + size - context->avail_out;
     }
   case FINISHING:
     {
-      internal::BZip2Deflater::Context* context =
-        Cast::pointer<internal::BZip2Deflater::Context*>(this->context);
-      context->nextInput = 0;
-      context->bytesToWrite = 0;
-      context->totalInputLow = 0;
-      // context->totalInputHigh = 0; // TAG: not required
-      context->nextOutput = buffer;
-      context->bytesToRead = size;
-      int code = internal::BZ2_bzCompress(context, internal::BZip2Deflater::FINISH);
+      bz_stream* context = Cast::pointer<bz_stream*>(this->context);
+      context->next_in = 0;
+      context->avail_in = 0;
+      context->total_in_lo32 = 0;
+      // context->total_in_hi32 = 0; // TAG: not required
+      context->next_out = (char*)static_cast<uint8*>(buffer);
+      context->avail_out = size;
+      int code = BZ2_bzCompress(context, internal::BZip2Deflater::FINISH);
       if (code == internal::BZip2Deflater::FINISH_OK) {
         // continue finishing
       } else if (code == internal::BZip2Deflater::STREAM_END) {
@@ -231,7 +214,7 @@ MemorySize BZip2Deflater::pull(uint8* buffer, MemorySize size)
       } else {
         _throw IOException(this);
       }
-      return bytesRead + size - context->bytesToRead;
+      return bytesRead + size - context->avail_out;
     }
   case FINISHED: // not possible
     state = ENDED; // availableBytes = 0 and FINISHED => end
@@ -241,16 +224,15 @@ MemorySize BZip2Deflater::pull(uint8* buffer, MemorySize size)
   }
   return bytesRead;
 #else
-  _throw IOException(this);
+  _COM_AZURE_DEV__BASE__NOT_SUPPORTED();
 #endif
 }
 
 BZip2Deflater::~BZip2Deflater()
 {
 #if (defined(_COM_AZURE_DEV__BASE__USE_BZIP2))
-  internal::BZip2Deflater::Context* context =
-    Cast::pointer<internal::BZip2Deflater::Context*>(this->context);
-  internal::BZ2_bzCompressEnd(context);
+  bz_stream* context = Cast::pointer<bz_stream*>(this->context);
+  BZ2_bzCompressEnd(context);
   delete context;
 #endif
 }

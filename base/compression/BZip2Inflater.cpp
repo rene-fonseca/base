@@ -16,7 +16,12 @@
 #include <base/io/EndOfFile.h>
 #include <base/string/FormatOutputStream.h>
 #include <base/NotSupported.h>
+#include <base/Module.h>
 #include <base/build.h>
+
+#if defined(_COM_AZURE_DEV__BASE__USE_BZIP2)
+#  include <bzlib.h>
+#endif
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
@@ -24,21 +29,6 @@ namespace internal {
   
   class BZip2Inflater {
   public:
-    
-    struct Context { // TAG: what if 64 bit architecture
-      const uint8* nextInput;
-      unsigned int bytesToWrite;
-      unsigned int totalInputLow;
-      unsigned int totalInputHigh;
-      uint8* nextOutput;
-      unsigned int bytesToRead;
-      unsigned int totalOutputLow;
-      unsigned int totalOutputHigh;
-      void* state;
-      void* (*allocate)(void*, int, int) noexcept;
-      void (*release)(void*, void*) noexcept;
-      void* opaque;
-    };
     
     static void* allocate(void*, int n, int m) noexcept
     {
@@ -64,28 +54,28 @@ namespace internal {
       ERROR_PARAM = -2
     };
   };
-
-  // TAG: dll support
-  extern "C" int BZ2_bzDecompressInit(BZip2Inflater::Context* stream, int verbosity, int small);
-  extern "C" int BZ2_bzDecompress(BZip2Inflater::Context* stream);
-  extern "C" int BZ2_bzDecompressEnd(BZip2Inflater::Context* stream);
 };
+
+#if defined(_COM_AZURE_DEV__BASE__USE_BZIP2)
+MODULE_REGISTER_EXPLICIT(_COM_AZURE_DEV__BASE__THIS_MODULE, "org.sourceware.bzip2", "libbzip2", "", "https://www.sourceware.org/bzip2/");
+#endif
 
 BZip2Inflater::BZip2Inflater()
   : buffer(BUFFER_SIZE), availableBytes(0), state(RUNNING)
 {
 #if (defined(_COM_AZURE_DEV__BASE__USE_BZIP2))
-  internal::BZip2Inflater::Context* context = new internal::BZip2Inflater::Context;
+  bz_stream* context = new bz_stream;
   this->context = context;
   clear(*context);
-  context->allocate = internal::BZip2Inflater::allocate;
-  context->release = internal::BZip2Inflater::release;
+  context->bzalloc = internal::BZip2Inflater::allocate;
+  context->bzfree = internal::BZip2Inflater::release;
+  context->opaque = nullptr;
   bassert(
-    internal::BZ2_bzDecompressInit(context, 0, 0) == internal::BZip2Inflater::OK,
+    BZ2_bzDecompressInit(context, 0, 0) == internal::BZip2Inflater::OK,
     MemoryException(this)
   );
 #else
-  _throw NotSupported(this);
+  _COM_AZURE_DEV__BASE__NOT_SUPPORTED();
 #endif
 }
 
@@ -97,15 +87,14 @@ MemorySize BZip2Inflater::push(const uint8* buffer, MemorySize size)
   if (availableBytes == this->buffer.getSize()) {
     return 0; // no storage available
   }
-  internal::BZip2Inflater::Context* context =
-    Cast::pointer<internal::BZip2Inflater::Context*>(this->context);
-  context->nextInput = buffer;
-  context->bytesToWrite = size;
-  context->totalInputLow = 0;
-  context->totalInputHigh = 0;
-  context->nextOutput = this->buffer.getElements() + availableBytes;
-  context->bytesToRead = this->buffer.getSize() - availableBytes;
-  int code = internal::BZ2_bzDecompress(context);
+  bz_stream* context = Cast::pointer<bz_stream*>(this->context);
+  context->next_in = (char*)static_cast<const uint8*>(buffer);
+  context->avail_in = size;
+  context->total_in_lo32 = 0;
+  context->total_in_hi32 = 0;
+  context->next_out = (char*)(this->buffer.getElements() + availableBytes);
+  context->avail_out = this->buffer.getSize() - availableBytes;
+  int code = BZ2_bzDecompress(context);
   if (code == internal::BZip2Inflater::OK) {
     // continue pushing
   } else if (code == internal::BZip2Inflater::STREAM_END) {
@@ -113,21 +102,22 @@ MemorySize BZip2Inflater::push(const uint8* buffer, MemorySize size)
   } else {
     _throw IOException(this);
   }
-  availableBytes = this->buffer.getSize() - context->bytesToRead;
-  return context->totalInputLow;
+  availableBytes = this->buffer.getSize() - context->avail_out;
+  return context->total_in_lo32;
 #else
-  _throw IOException(this);
+  _COM_AZURE_DEV__BASE__NOT_SUPPORTED();
 #endif
 }
 
-void BZip2Inflater::pushEnd() {
+void BZip2Inflater::pushEnd()
+{
 #if (defined(_COM_AZURE_DEV__BASE__USE_BZIP2))
   if (state != ENDED) {
     bassert(state == RUNNING, IOException(this));
     state = FINISHING;
   }
 #else
-  _throw IOException(this);
+  _COM_AZURE_DEV__BASE__NOT_SUPPORTED();
 #endif
 }
 
@@ -164,15 +154,14 @@ MemorySize BZip2Inflater::pull(uint8* buffer, MemorySize size)
     break;
   case FINISHING:
     {
-      internal::BZip2Inflater::Context* context =
-        Cast::pointer<internal::BZip2Inflater::Context*>(this->context);
-      context->nextInput = 0;
-      context->bytesToWrite = 0;
-      context->totalInputLow = 0;
-      context->totalInputHigh = 0;
-      context->nextOutput = buffer;
-      context->bytesToRead = size;
-      int code = internal::BZ2_bzDecompress(context);
+      bz_stream* context = Cast::pointer<bz_stream*>(this->context);
+      context->next_in = 0;
+      context->avail_in = 0;
+      context->total_in_lo32 = 0;
+      context->total_in_hi32 = 0;
+      context->next_out = (char*)static_cast<uint8*>(buffer);
+      context->avail_out = size;
+      int code = BZ2_bzDecompress(context);
       if (code == internal::BZip2Inflater::OK) {
         // continue finishing
       } else if (code == internal::BZip2Inflater::STREAM_END) {
@@ -180,7 +169,7 @@ MemorySize BZip2Inflater::pull(uint8* buffer, MemorySize size)
       } else {
         _throw IOException(this);
       }
-      return bytesRead + size - context->bytesToRead;
+      return bytesRead + size - context->avail_out;
     }
   case FINISHED:
     state = ENDED; // availableBytes == 0 and FINISHED => end
@@ -190,16 +179,15 @@ MemorySize BZip2Inflater::pull(uint8* buffer, MemorySize size)
   }
   return bytesRead;
 #else
-  _throw IOException(this);
+  _COM_AZURE_DEV__BASE__NOT_SUPPORTED();
 #endif
 }
 
 BZip2Inflater::~BZip2Inflater() noexcept
 {
 #if (defined(_COM_AZURE_DEV__BASE__USE_BZIP2))
-  internal::BZip2Inflater::Context* context =
-    Cast::pointer<internal::BZip2Inflater::Context*>(this->context);
-  internal::BZ2_bzDecompressEnd(context);
+  bz_stream* context = Cast::pointer<bz_stream*>(this->context);
+  BZ2_bzDecompressEnd(context);
   delete context;
 #endif
 }

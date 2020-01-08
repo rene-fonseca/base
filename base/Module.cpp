@@ -488,9 +488,6 @@ ModuleManager::RegisterEntry::~RegisterEntry()
 // #define _ZLIB_MODULE_INFO {"PREFIX=net.zlib", "NAME=zlib", "VERSION=1.2.11", "URL=https://zlib.net/"}
 // MODULE_REGISTER(_COM_AZURE_DEV__BASE__THIS_MODULE, _ZLIB_MODULE_INFO);
 
-#if defined(_COM_AZURE_DEV__BASE__USE_BZIP2)
-MODULE_REGISTER_EXPLICIT(_COM_AZURE_DEV__BASE__THIS_MODULE, "org.sourceware.bzip2", "libbzip2", "", "https://www.sourceware.org/bzip2/");
-#endif
 #if defined(_COM_AZURE_DEV__BASE__USE_OPENSSL)
 MODULE_REGISTER_EXPLICIT(_COM_AZURE_DEV__BASE__THIS_MODULE, "org.openssl", "OpenSSL", "", "https://www.openssl.org/");
 #endif

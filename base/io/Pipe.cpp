@@ -19,6 +19,7 @@
 #include <base/concurrency/Thread.h>
 #include <base/string/String.h>
 #include <base/Profiler.h>
+#include <base/UnitTest.h>
 #include <base/build.h>
 
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
@@ -332,5 +333,25 @@ Pipe::~Pipe()
 {
   flush();
 }
+
+#if 0 && defined(_COM_AZURE_DEV__BASE__TESTS)
+
+class TEST_CLASS(Pipe) : public UnitTest {
+public:
+
+  TEST_PRIORITY(500);
+  TEST_PROJECT("base/io");
+  TEST_IMPACT(NORMAL);
+  TEST_EXTERNAL();
+
+  void run() override
+  {
+    Pipe p1;
+  }
+};
+
+TEST_REGISTER(Pipe);
+
+#endif
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

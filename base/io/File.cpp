@@ -21,6 +21,7 @@
 #include <base/Base.h>
 #include <base/Functor.h>
 #include <base/security/User.h>
+#include <base/UnitTest.h>
 #include <base/build.h>
 
 #if defined(_COM_AZURE_DEV__BASE__LARGE_FILE_SYSTEM)
@@ -1434,5 +1435,26 @@ AsynchronousWriteOperation File::write(
 
 File::~File() {
 }
+
+#if 0 && defined(_COM_AZURE_DEV__BASE__TESTS)
+
+class TEST_CLASS(File) : public UnitTest {
+public:
+
+  TEST_PRIORITY(500);
+  TEST_PROJECT("base/io");
+  TEST_IMPACT(NORMAL);
+  TEST_EXTERNAL();
+
+  void run() override
+  {
+    File f1("123.txt", File::READ, 0);
+    f1.close();
+  }
+};
+
+TEST_REGISTER(File);
+
+#endif
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

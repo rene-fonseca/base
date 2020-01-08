@@ -148,7 +148,7 @@ bool Module::isFullyQualifiedId(const String& id) noexcept
   if (!isValidName(words[1])) {
     return false;
   }
-  if (!isValidVersion(words[2])) {
+  if (words[2] && !isValidVersion(words[2])) { // allow empty version
     return false;
   }
   return true;

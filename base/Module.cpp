@@ -17,6 +17,7 @@
 #include <base/Guid.h>
 #include <base/UnitTest.h>
 #include <base/UnsignedInteger.h>
+#include <base/build.h>
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
@@ -381,6 +382,7 @@ bool ModuleManager::traverseModules(const String& pattern)
     auto version = (subs.getSize() >= 3) ? subs[2] : String();
     auto consumer = _module->getConsumer();
     auto url = _module->getUrl();
+    String license = ""; // TAG: _module->getLicense();
 
     fout << "MODULE: " << ENDL;
     fout << "  Prefix: " << presentString(prefix);
@@ -393,28 +395,28 @@ bool ModuleManager::traverseModules(const String& pattern)
       fout << " <BAD NAME>";
     }
     fout << EOL;
-    fout << "  Version: " << presentString(version);
-    if (!Module::isValidVersion(version)) {
+    fout << "  Version: " << (version ? presentString(version) : String("<UNKNOWN>"));
+    if (version && !Module::isValidVersion(version)) {
       fout << " <BAD VERSION>";
     }
     fout << EOL;
-    fout << "  Consumer: " << (!consumer.isEmpty() ? presentString(consumer) : String("<UNKNOWN>"));
-    if (!consumer.isEmpty() && !Module::isValidConsumer(consumer)) {
+    fout << "  Consumer: " << (consumer ? presentString(consumer) : String("<UNKNOWN>"));
+    if (consumer && !Module::isValidConsumer(consumer)) {
       fout << " <BAD CONSUMER>";
     }
     fout << EOL;
-    if (!url.isEmpty()) {
-      fout << "  Url: " << url << ENDL;
+    if (url) {
+      fout << "  Url: " << url << EOL;
     }
+    fout << "  License: " << (license ? presentString(license) : String("<UNKNOWN>")) << EOL;
 
-    String license = "MIT"; // TAG: define
     auto item = o.createObject();
-    item->setValue(o.createString("prefix"), o.createString(prefix));
-    item->setValue(o.createString("name"), o.createString(name));
-    item->setValue(o.createString("version"), o.createString(version));
-    item->setValue(o.createString("url"), o.createString(url));
-    item->setValue(o.createString("consumer"), o.createString(consumer));
-    item->setValue(o.createString("license"), o.createString(license));
+    item->setValue("prefix", prefix);
+    item->setValue("name", name);
+    item->setValue("version", version);
+    item->setValue("url", url);
+    item->setValue("consumer", consumer);
+    item->setValue("license", license);
     a->append(item);
 
     // TAG: connect to services to check for recalls - show reason/impact
@@ -469,8 +471,6 @@ ModuleManager::RegisterEntry::~RegisterEntry()
   MODULE_REGISTER(THIS_MODULE, PREFIX_MODULE);
 */
 
-#define _ZLIB_MODULE_INFO {"PREFIX=net.zlib", "NAME=zlib", "VERSION=1.2.11", "URL=https://zlib.net/"}
-
 // define a valid version [0-9][1-9]*(\.[0-9][1-9]*(\.[0-9][1-9]*[a-zA-Z]*)?)?
 #define MODULE_MAKE_VERSION(MAJOR, MINOR, MICRO, BUILD) "" MAJOR "." MINOR "." MICRO "/" BUILD // TAG: how should we handle extra version into like build
 
@@ -483,12 +483,17 @@ ModuleManager::RegisterEntry::~RegisterEntry()
 // TAG: handle static/shared linking of modules - more if module is distributed with this module
 // TAG: how do we handle aliases for modules - prefix changes
 
-#define THIS_MODULE "com.azure.dev:base" // TAG: can we auto fill consumer module - use guid
 // #define THIS_MODULE "{47FA285A-3C7F-410C-9261-5E95202628DD}:base"
 
-MODULE_REGISTER(THIS_MODULE, _ZLIB_MODULE_INFO);
-MODULE_REGISTER_EXPLICIT(THIS_MODULE, "net.zlib", "zlib", "1.2.11", "https://zlib.net/");
-MODULE_REGISTER_EXPLICIT(THIS_MODULE, "org.openssl", "OpenSSL", "1.1.1", "https://www.openssl.org/");
+// #define _ZLIB_MODULE_INFO {"PREFIX=net.zlib", "NAME=zlib", "VERSION=1.2.11", "URL=https://zlib.net/"}
+// MODULE_REGISTER(_COM_AZURE_DEV__BASE__THIS_MODULE, _ZLIB_MODULE_INFO);
+
+#if defined(_COM_AZURE_DEV__BASE__USE_BZIP2)
+MODULE_REGISTER_EXPLICIT(_COM_AZURE_DEV__BASE__THIS_MODULE, "org.sourceware.bzip2", "libbzip2", "", "https://www.sourceware.org/bzip2/");
+#endif
+#if defined(_COM_AZURE_DEV__BASE__USE_OPENSSL)
+MODULE_REGISTER_EXPLICIT(_COM_AZURE_DEV__BASE__THIS_MODULE, "org.openssl", "OpenSSL", "", "https://www.openssl.org/");
+#endif
 
 // TAG: detect c/c++ library - in particular if static build
 #if (_COM_AZURE_DEV__BASE__COMPILER == _COM_AZURE_DEV__BASE__COMPILER_MSC)

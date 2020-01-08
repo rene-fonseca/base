@@ -290,7 +290,18 @@ target_include_directories(base PUBLIC
   $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}/generated>
   $<INSTALL_INTERFACE:include> # <prefix>/include
 )
-target_include_directories(base PRIVATE ${ZLIB_INCLUDE_DIRS} ${BZIP2_INCLUDE_DIRS} ${LIBXML2_INCLUDE_DIRS} ${LIBXSLT_INCLUDE_DIRS})
+if (ZLIB_FOUND)
+  target_include_directories(base PRIVATE ${ZLIB_INCLUDE_DIRS})
+endif ()
+if (BZIP2_FOUND)
+  target_include_directories(base PRIVATE ${BZIP2_INCLUDE_DIRS})
+endif ()
+if (LIBXML2_FOUND)
+  target_include_directories(base PRIVATE ${LIBXML2_INCLUDE_DIRS})
+endif ()
+if (LIBXSLT_FOUND)
+  target_include_directories(base PRIVATE ${LIBXSLT_INCLUDE_DIRS})
+endif ()
 endif ()
 
 if (MSVC)
@@ -344,7 +355,18 @@ target_include_directories(base_STATIC PUBLIC
 )
 endif ()
 
-target_include_directories(base_STATIC PRIVATE ${ZLIB_INCLUDE_DIRS} ${BZIP2_INCLUDE_DIRS} ${LIBXML2_INCLUDE_DIRS} ${LIBXSLT_INCLUDE_DIRS})
+if (ZLIB_FOUND)
+  target_include_directories(base_STATIC PRIVATE ${ZLIB_INCLUDE_DIRS})
+endif ()
+if (BZIP2_FOUND)
+  target_include_directories(base_STATIC PRIVATE ${BZIP2_INCLUDE_DIRS})
+endif ()
+if (LIBXML2_FOUND)
+  target_include_directories(base_STATIC PRIVATE ${LIBXML2_INCLUDE_DIRS})
+endif ()
+if (LIBXSLT_FOUND)
+  target_include_directories(base_STATIC PRIVATE ${LIBXSLT_INCLUDE_DIRS})
+endif ()
 
 file(GLOB_RECURSE base_HEADERS
   "base/*.h"

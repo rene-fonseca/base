@@ -151,6 +151,7 @@ if (USE_SHARED AND NOT IOS)
   find_package(BZip2)
   find_package(LibXml2)
   find_package(LibXslt)
+  find_package(OpenSSL)
   # find_package(OpenCL REQUIRED)
 endif ()
 
@@ -262,6 +263,9 @@ endif ()
 if (LIBXSLT_FOUND)
   option(_COM_AZURE_DEV__BASE__USE_XMLSOFT_XSLT "Enable XSLT XMLSOFT" ON)
 endif ()
+if (OPENSSL_FOUND)
+  option(_COM_AZURE_DEV__BASE__USE_OPENSSL "Enable OpenSSL" ON)
+endif ()
 
 option(_COM_AZURE_DEV__BASE__USE_X11 "Enable X11" X11_FOUND)
 option(_COM_AZURE_DEV__BASE__USE_WASM "Enable WASMTIME" WASMTIME_FOUND)
@@ -302,6 +306,9 @@ endif ()
 if (LIBXSLT_FOUND)
   target_include_directories(base PRIVATE ${LIBXSLT_INCLUDE_DIRS})
 endif ()
+#if (OPENSSL_FOUND)
+#  target_include_directories(base PRIVATE ${OPENSSL_INCLUDE_DIRS})
+#endif ()
 endif ()
 
 if (MSVC)
@@ -334,6 +341,9 @@ endif ()
 if (LIBXSLT_FOUND)
   target_link_libraries(base PRIVATE ${LIBXSLT_LIBRARIES})
 endif ()
+#if (OPENSSL_FOUND)
+#  target_link_libraries(base PRIVATE ${OPENSSL_LIBRARIES})
+#endif ()
 
 # macOS requires all values to be less than 1024
 set_target_properties(base
@@ -367,6 +377,9 @@ endif ()
 if (LIBXSLT_FOUND)
   target_include_directories(base_STATIC PRIVATE ${LIBXSLT_INCLUDE_DIRS})
 endif ()
+#if (OPENSSL_FOUND)
+#  target_include_directories(base_STATIC PRIVATE ${OPENSSL_INCLUDE_DIRS})
+#endif ()
 
 file(GLOB_RECURSE base_HEADERS
   "base/*.h"

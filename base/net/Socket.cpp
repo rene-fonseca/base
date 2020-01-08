@@ -21,6 +21,7 @@
 #include <base/net/Socket.h>
 #include <base/concurrency/Thread.h>
 #include <base/Profiler.h>
+#include <base/UnitTest.h>
 #include <base/build.h>
 
 // TAG: profile socket for entire use
@@ -2079,4 +2080,37 @@ Socket::~Socket()
 {
 }
 
+#if 0 && defined(_COM_AZURE_DEV__BASE__TESTS)
+
+class TEST_CLASS(Socket) : public UnitTest {
+public:
+
+  TEST_PRIORITY(500);
+  TEST_PROJECT("base/net");
+  TEST_IMPACT(NORMAL);
+  // TAG: TEST_EXTERNAL(); // skip externals by default
+
+  void run() override
+  {
+    String host = "google.com";
+    InetAddress address;
+    try {
+      address = InetAddress::getAddressByName(host); // the address of the remote host
+    } catch (HostNotFound&) {
+      return;
+    }
+
+    Socket s1;
+    s1.connect(address, 7);
+    InetAddress localAddress = s1.getLocalAddress();
+    unsigned short localPort = s1.getLocalPort();
+    fout << localAddress << ":" << localPort << ENDL;
+    s1.close();
+  }
+};
+
+TEST_REGISTER(Socket);
+
+#endif
+  
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

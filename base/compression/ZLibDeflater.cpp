@@ -24,6 +24,7 @@
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
+#if defined(_COM_AZURE_DEV__BASE__USE_ZLIB)
 namespace internal {
   
   class ZLibDeflater {
@@ -58,6 +59,7 @@ namespace internal {
     };
   };
 };
+#endif
 
 ZLibDeflater::ZLibDeflater()
   : buffer(BUFFER_SIZE), availableBytes(0), state(RUNNING)

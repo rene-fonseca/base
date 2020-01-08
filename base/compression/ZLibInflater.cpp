@@ -25,6 +25,7 @@
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
+#if defined(_COM_AZURE_DEV__BASE__USE_ZLIB)
 namespace internal {
   
   class ZLibInflater {
@@ -59,6 +60,7 @@ namespace internal {
     };
   };
 };
+#endif
 
 #if defined(_COM_AZURE_DEV__BASE__USE_ZLIB)
 MODULE_REGISTER_EXPLICIT(_COM_AZURE_DEV__BASE__THIS_MODULE, "net.zlib", "libzlib", ZLIB_VERSION, "https://zlib.net/");

@@ -25,6 +25,7 @@
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
+#if defined(_COM_AZURE_DEV__BASE__USE_BZIP2)
 namespace internal {
   
   class BZip2Inflater {
@@ -55,6 +56,7 @@ namespace internal {
     };
   };
 };
+#endif
 
 #if defined(_COM_AZURE_DEV__BASE__USE_BZIP2)
 MODULE_REGISTER_EXPLICIT(_COM_AZURE_DEV__BASE__THIS_MODULE, "org.sourceware.bzip2", "libbzip2", "", "https://www.sourceware.org/bzip2/");

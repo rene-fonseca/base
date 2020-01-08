@@ -16,6 +16,7 @@
 #include <base/Primitives.h>
 #include <base/UnsignedInteger.h>
 #include <base/Profiler.h>
+#include <base/UnitTest.h>
 
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
 #  include <Windows.h>
@@ -774,5 +775,36 @@ HTTPSRequest::~HTTPSRequest()
 {
   close();
 }
+
+#if 0 && defined(_COM_AZURE_DEV__BASE__TESTS)
+
+class TEST_CLASS(HTTPSRequest) : public UnitTest {
+public:
+
+  TEST_PRIORITY(500);
+  TEST_PROJECT("base/net");
+  TEST_IMPACT(NORMAL);
+  TEST_EXTERNAL();
+
+  void run() override
+  {
+    String url = "https://google.com";
+    String response;
+    HTTPSRequest request;
+    try {
+      if (request.open(HTTPSRequest::METHOD_GET, url)) {
+        request.send();
+        response = request.getResponse();
+        request.close();
+      }
+    } catch (...) {
+    }
+    TEST_ASSERT(response.startsWith("<!doctype html>"));
+  }
+};
+
+TEST_REGISTER(HTTPSRequest);
+
+#endif
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

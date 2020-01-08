@@ -24,7 +24,16 @@
 #define _COM_AZURE_DEV__BASE__MICRO_VERSION 1
 #define _COM_AZURE_DEV__BASE__VERSION "0.9.1"
 
+/** The ID of this module. Use for consumer when registering dependencies. */
 #define _COM_AZURE_DEV__BASE__THIS_MODULE "com.azure.dev:renefonseca_base"
+
+/** MODULE_REGISTER("your.module.id", _COM_AZURE_DEV__BASE__MODULE_INFO). See <base/Module.h>. */
+#define _COM_AZURE_DEV__BASE__MODULE_INFO \
+  {"PREFIX=com.azure.dev", \
+   "NAME=base", \
+   "VERSION=" _COM_AZURE_DEV__BASE__VERSION, \
+   "URL=https://dev.azure.com/renefonseca/base/" \
+   "LICENSE=GPL-2.0"}
 
 #define _COM_AZURE_DEV__BASE__REQUIRE(major, minor, micro) \
   ((major <= _COM_AZURE_DEV__BASE__MAJOR_VERSION) && \

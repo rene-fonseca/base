@@ -485,9 +485,6 @@ ModuleManager::RegisterEntry::~RegisterEntry()
 
 // #define THIS_MODULE "{47FA285A-3C7F-410C-9261-5E95202628DD}:base"
 
-// #define _ZLIB_MODULE_INFO {"PREFIX=net.zlib", "NAME=zlib", "VERSION=1.2.11", "URL=https://zlib.net/"}
-// MODULE_REGISTER(_COM_AZURE_DEV__BASE__THIS_MODULE, _ZLIB_MODULE_INFO);
-
 #if defined(_COM_AZURE_DEV__BASE__USE_OPENSSL)
 MODULE_REGISTER_EXPLICIT(_COM_AZURE_DEV__BASE__THIS_MODULE, "org.openssl", "OpenSSL", "", "https://www.openssl.org/");
 #endif
@@ -502,7 +499,7 @@ MODULE_REGISTER_EXPLICIT(_COM_AZURE_DEV__BASE__THIS_MODULE, "org.openssl", "Open
 #define CPP_RUNTIME_VERSION "14"
 #endif
 #if defined(CPP_RUNTIME_VERSION)
-  MODULE_REGISTER_EXPLICIT(THIS_MODULE, "com.microsoft.visualstudio", "CPPRuntime", CPP_RUNTIME_VERSION, "https://visualstudio.microsoft.com/");
+  MODULE_REGISTER_EXPLICIT(_COM_AZURE_DEV__BASE__THIS_MODULE, "com.microsoft.visualstudio", "CPPRuntime", CPP_RUNTIME_VERSION, "https://visualstudio.microsoft.com/");
 #endif
 #endif
 

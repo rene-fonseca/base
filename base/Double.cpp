@@ -12,7 +12,7 @@
  ***************************************************************************/
 
 #include <base/Double.h>
-#include <float.h>
+#include <cfloat>
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 

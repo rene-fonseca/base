@@ -13,15 +13,16 @@
 
 #include <base/platforms/features.h>
 #include <base/xml/Text.h>
+#include <base/build.h>
 
-#if defined(_COM_AZURE_DEV__BASE__XML_XMLSOFT_ORG)
-#  include <libxml2/libxml/tree.h>
+#if defined(_COM_AZURE_DEV__BASE__USE_XMLSOFT_XML)
+#  include <libxml/tree.h>
 #endif
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 Text Text::splitText(unsigned int index) {
-#if defined(_COM_AZURE_DEV__BASE__XML_XMLSOFT_ORG)
+#if defined(_COM_AZURE_DEV__BASE__USE_XMLSOFT_XML)
   xmlNode* node = (xmlNode*)getContext();
   
   String content((const char*)node->content);

@@ -211,12 +211,12 @@ public:
   /**
     Returns the name of the node.
   */
-  String getName() const noexcept;
+  String getName() const;
   
   /**
     Returns the type of the node.
   */
-  NodeType getType() const noexcept;
+  NodeType getType() const;
   
   /**
     Returns the value of the node.
@@ -257,12 +257,12 @@ public:
   /**
     Returns the first child node.
   */
-  Node getFirstChild() const noexcept;
+  Node getFirstChild() const;
   
   /**
     Returns the last child node.
   */
-  Node getLastChild() const noexcept;
+  Node getLastChild() const;
   
   /**
     Returns whether this node (if it is an element) has any attributes.
@@ -272,7 +272,7 @@ public:
   /**
     Returns whether this node has any children.
   */
-  bool hasChildNodes() const noexcept;
+  bool hasChildNodes() const;
   
   /**
     Tests whether the DOM implementation implements a specific feature and that

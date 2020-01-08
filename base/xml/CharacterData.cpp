@@ -13,15 +13,16 @@
 
 #include <base/platforms/features.h>
 #include <base/xml/CharacterData.h>
+#include <base/build.h>
 
-#if defined(_COM_AZURE_DEV__BASE__XML_XMLSOFT_ORG)
-#  include <libxml2/libxml/tree.h>
+#if defined(_COM_AZURE_DEV__BASE__USE_XMLSOFT_XML)
+#  include <libxml/tree.h>
 #endif
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 String CharacterData::getData() const {
-#if defined(_COM_AZURE_DEV__BASE__XML_XMLSOFT_ORG)
+#if defined(_COM_AZURE_DEV__BASE__USE_XMLSOFT_XML)
   xmlNodePtr node = (xmlNodePtr)getContext();
   return NativeString((const char*)node->content);
 #else
@@ -31,7 +32,7 @@ String CharacterData::getData() const {
 
 void CharacterData::setData(const String& data)
 {
-#if defined(_COM_AZURE_DEV__BASE__XML_XMLSOFT_ORG)
+#if defined(_COM_AZURE_DEV__BASE__USE_XMLSOFT_XML)
   xmlNodePtr node = (xmlNodePtr)getContext();
 	xmlNodeSetContent(node, (const xmlChar*)data.getElements());
 #else
@@ -41,7 +42,7 @@ void CharacterData::setData(const String& data)
 
 unsigned int CharacterData::getLength() const noexcept
 {
-#if defined(_COM_AZURE_DEV__BASE__XML_XMLSOFT_ORG)
+#if defined(_COM_AZURE_DEV__BASE__USE_XMLSOFT_XML)
   xmlNodePtr node = (xmlNodePtr)getContext();
   const char* content = (const char*)node->content;
   const char* terminator = find<char>(
@@ -57,12 +58,12 @@ unsigned int CharacterData::getLength() const noexcept
 
 String CharacterData::substringData(unsigned int offset, unsigned int count)
 {
-#if defined(_COM_AZURE_DEV__BASE__XML_XMLSOFT_ORG)
+#if defined(_COM_AZURE_DEV__BASE__USE_XMLSOFT_XML)
   xmlNodePtr node = (xmlNodePtr)getContext();
   const char* content = (const char*)node->content;
   const char* terminator = find<char>(
     content,
-    minimum(offset, String::MAXIMUM_LENGTH),
+    minimum<unsigned int>(offset, String::MAXIMUM_LENGTH),
     0
   );
   if (terminator == 0) {
@@ -76,7 +77,7 @@ String CharacterData::substringData(unsigned int offset, unsigned int count)
 
 void CharacterData::appendData(const String& value)
 {
-#if defined(_COM_AZURE_DEV__BASE__XML_XMLSOFT_ORG)
+#if defined(_COM_AZURE_DEV__BASE__USE_XMLSOFT_XML)
   xmlNodePtr node = (xmlNodePtr)getContext();
   xmlNodeAddContent(node, (const xmlChar*)value.getElements());
   // TAG: how to detect failure
@@ -87,7 +88,7 @@ void CharacterData::appendData(const String& value)
 
 void CharacterData::insertData(unsigned int offset, const String& value)
 {
-#if defined(_COM_AZURE_DEV__BASE__XML_XMLSOFT_ORG)
+#if defined(_COM_AZURE_DEV__BASE__USE_XMLSOFT_XML)
   xmlNodePtr node = (xmlNodePtr)getContext();
   String temp((const char*)node->content);
   temp.insert(offset, value);
@@ -99,7 +100,7 @@ void CharacterData::insertData(unsigned int offset, const String& value)
 
 void CharacterData::deleteData(unsigned int offset, unsigned int count)
 {
-#if defined(_COM_AZURE_DEV__BASE__XML_XMLSOFT_ORG)
+#if defined(_COM_AZURE_DEV__BASE__USE_XMLSOFT_XML)
   xmlNodePtr node = (xmlNodePtr)getContext();
   String temp((const char*)node->content);
   temp.remove(offset, offset + count); // TAG: overflow problem
@@ -114,7 +115,7 @@ void CharacterData::replaceData(
   unsigned int count,
   const String& value)
 {
-#if defined(_COM_AZURE_DEV__BASE__XML_XMLSOFT_ORG)
+#if defined(_COM_AZURE_DEV__BASE__USE_XMLSOFT_XML)
   xmlNodePtr node = (xmlNodePtr)getContext();
   String temp((const char*)node->content);
   temp.replace(offset, offset + count, value); // TAG: overflow problem

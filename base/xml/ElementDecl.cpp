@@ -13,16 +13,17 @@
 
 #include <base/platforms/features.h>
 #include <base/xml/ElementDecl.h>
+#include <base/build.h>
 
-#if defined(_COM_AZURE_DEV__BASE__XML_XMLSOFT_ORG)
-#  include <libxml2/libxml/tree.h>
+#if defined(_COM_AZURE_DEV__BASE__USE_XMLSOFT_XML)
+#  include <libxml/tree.h>
 #endif
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
-ElementDecl::ValueType ElementDecl::getValueType() const noexcept
+ElementDecl::ValueType ElementDecl::getValueType() const
 {
-#if defined(_COM_AZURE_DEV__BASE__XML_XMLSOFT_ORG)
+#if defined(_COM_AZURE_DEV__BASE__USE_XMLSOFT_XML)
   xmlElement* element = (xmlElement*)getContext();
   switch (element->etype) {
   case XML_ELEMENT_TYPE_EMPTY:
@@ -43,7 +44,7 @@ ElementDecl::ValueType ElementDecl::getValueType() const noexcept
 
 bool ElementDecl::hasAttributes() const noexcept
 {
-#if defined(_COM_AZURE_DEV__BASE__XML_XMLSOFT_ORG)
+#if defined(_COM_AZURE_DEV__BASE__USE_XMLSOFT_XML)
   xmlElement* element = (xmlElement*)getContext();
   return element->attributes;
 #else
@@ -53,7 +54,7 @@ bool ElementDecl::hasAttributes() const noexcept
 
 AttributeDecl ElementDecl::getFirstAttribute() noexcept
 {
-#if defined(_COM_AZURE_DEV__BASE__XML_XMLSOFT_ORG)
+#if defined(_COM_AZURE_DEV__BASE__USE_XMLSOFT_XML)
   xmlElement* element = (xmlElement*)getContext();
   return element->attributes;
 #else

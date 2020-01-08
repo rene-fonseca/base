@@ -14,15 +14,16 @@
 #include <base/platforms/features.h>
 #include <base/xml/DOMImplementation.h>
 #include <base/xml/XMLReader.h>
+#include <base/build.h>
 
-#if defined(_COM_AZURE_DEV__BASE__XML_XMLSOFT_ORG)
-#  include <libxml2/libxml/tree.h>
+#if defined(_COM_AZURE_DEV__BASE__USE_XMLSOFT_XML)
+#  include <libxml/tree.h>
 #  include <stdarg.h>
 #endif
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
-#if defined(_COM_AZURE_DEV__BASE__XML_XMLSOFT_ORG)
+#if defined(_COM_AZURE_DEV__BASE__USE_XMLSOFT_XML)
 class DOMImplementationImpl {
 public:
   
@@ -79,7 +80,7 @@ bool DOMImplementation::hasFeature(
 
 Document DOMImplementation::createDocument(
   const String& version) {
-#if defined(_COM_AZURE_DEV__BASE__XML_XMLSOFT_ORG)
+#if defined(_COM_AZURE_DEV__BASE__USE_XMLSOFT_XML)
   xmlDoc* doc = xmlNewDoc(
     Cast::pointer<const xmlChar*>(version.getElements())
   );
@@ -93,7 +94,7 @@ Document DOMImplementation::createDocument(
 Document DOMImplementation::createDocument(
   DocumentType doctype,
   const String& version) {
-#if defined(_COM_AZURE_DEV__BASE__XML_XMLSOFT_ORG)
+#if defined(_COM_AZURE_DEV__BASE__USE_XMLSOFT_XML)
   bassert(
     Document(doctype.getOwnerDocument()).isInvalid(),
     bindCause(DOMException(this), DOMException::WRONG_DOCUMENT)
@@ -125,7 +126,7 @@ Document DOMImplementation::createDocument(
   const String& qualifiedName,
   DocumentType doctype,
   const String& version) {
-#if defined(_COM_AZURE_DEV__BASE__XML_XMLSOFT_ORG)
+#if defined(_COM_AZURE_DEV__BASE__USE_XMLSOFT_XML)
   bassert(
     Document(doctype.getOwnerDocument()).isInvalid(),
     bindCause(DOMException(this), DOMException::WRONG_DOCUMENT)
@@ -162,7 +163,7 @@ Document DOMImplementation::createDocument(
   
 Document DOMImplementation::createFromURI(
   const String& systemId, Mode mode, unsigned int flags) {
-#if defined(_COM_AZURE_DEV__BASE__XML_XMLSOFT_ORG)
+#if defined(_COM_AZURE_DEV__BASE__USE_XMLSOFT_XML)
   
   xmlDoValidityCheckingDefaultValue =
     (mode == DOMImplementation::VALIDATING) ? 1 : 0;
@@ -197,7 +198,7 @@ Document DOMImplementation::createFromURI(
 
 Document DOMImplementation::createDocumentFromString(
   const String& value, Mode mode, unsigned int flags) {
-#if defined(_COM_AZURE_DEV__BASE__XML_XMLSOFT_ORG)
+#if defined(_COM_AZURE_DEV__BASE__USE_XMLSOFT_XML)
   xmlSubstituteEntitiesDefault(
     (flags & DOMImplementation::SUBSTITUTE_ENTITIES) ? 1 : 0
   );
@@ -236,7 +237,7 @@ DocumentType DOMImplementation::createDocumentType(
   const String& qualifiedName,
   const String& publicId,
   const String& systemId) {
-#if defined(_COM_AZURE_DEV__BASE__XML_XMLSOFT_ORG)
+#if defined(_COM_AZURE_DEV__BASE__USE_XMLSOFT_XML)
   xmlDtd* node = xmlCreateIntSubset(
     0,
     Cast::pointer<const xmlChar*>(qualifiedName.getElements()),
@@ -252,7 +253,7 @@ DocumentType DOMImplementation::createDocumentType(
 
 void DOMImplementation::saveDocument(
   Document document, const String& filename, bool indent) {
-#if defined(_COM_AZURE_DEV__BASE__XML_XMLSOFT_ORG)
+#if defined(_COM_AZURE_DEV__BASE__USE_XMLSOFT_XML)
   xmlDoc* doc = (xmlDoc*)document.getContext();
 	int bytesWritten =
     xmlSaveFormatFile(filename.getElements(), doc, indent ? 1 : 0);
@@ -267,7 +268,7 @@ void DOMImplementation::saveDocument(
   const String& filename,
   const String& encoding,
   bool indent) {
-#if defined(_COM_AZURE_DEV__BASE__XML_XMLSOFT_ORG)
+#if defined(_COM_AZURE_DEV__BASE__USE_XMLSOFT_XML)
   xmlDoc* doc = (xmlDoc*)document.getContext();
 	int bytesWritten = xmlSaveFormatFileEnc(
     filename.getElements(),
@@ -283,7 +284,7 @@ void DOMImplementation::saveDocument(
 
 String DOMImplementation::saveDocumentToMemory(
   Document document, bool spaces) {
-#if defined(_COM_AZURE_DEV__BASE__XML_XMLSOFT_ORG)
+#if defined(_COM_AZURE_DEV__BASE__USE_XMLSOFT_XML)
   // TAG: fixme - xmlIndentTreeOutput = 1 or xmlKeepBlanksDefault(0)
   xmlDoc* doc = (xmlDoc*)document.getContext();
 	int size = 0;
@@ -300,7 +301,7 @@ String DOMImplementation::saveDocumentToMemory(
 
 String DOMImplementation::saveDocumentToMemory(
   Document document, const String& encoding, bool spaces) {
-#if defined(_COM_AZURE_DEV__BASE__XML_XMLSOFT_ORG)
+#if defined(_COM_AZURE_DEV__BASE__USE_XMLSOFT_XML)
   // TAG: fixme - xmlIndentTreeOutput = 1 or xmlKeepBlanksDefault(0)
   xmlDoc* doc = (xmlDoc*)document.getContext();
 	int size = 0;

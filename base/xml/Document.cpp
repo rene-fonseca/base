@@ -14,13 +14,14 @@
 #include <base/platforms/features.h>
 #include <base/xml/Document.h>
 #include <base/Cast.h>
+#include <base/build.h>
 
-#if defined(_COM_AZURE_DEV__BASE__XML_XMLSOFT_ORG)
-#  include <libxml2/libxml/xmlmemory.h>
-#  include <libxml2/libxml/xmlIO.h>
-#  include <libxml2/libxml/xinclude.h>
-#  include <libxml2/libxml/tree.h>
-#  include <libxml2/libxml/hash.h>
+#if defined(_COM_AZURE_DEV__BASE__USE_XMLSOFT_XML)
+#  include <libxml/xmlmemory.h>
+#  include <libxml/xmlIO.h>
+#  include <libxml/xinclude.h>
+#  include <libxml/tree.h>
+#  include <libxml/hash.h>
 #endif
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
@@ -31,7 +32,7 @@ Document::Document()
 
 DocumentType Document::getDocumentType() noexcept
 {
-#if defined(_COM_AZURE_DEV__BASE__XML_XMLSOFT_ORG)
+#if defined(_COM_AZURE_DEV__BASE__USE_XMLSOFT_XML)
   xmlDoc* doc = (xmlDoc*)getContext();
   xmlDtd* documentType = doc->intSubset;
   return documentType;
@@ -47,7 +48,7 @@ DOMImplementation Document::getImplementation() noexcept
 
 Element Document::getDocumentElement() noexcept
 {
-#if defined(_COM_AZURE_DEV__BASE__XML_XMLSOFT_ORG)
+#if defined(_COM_AZURE_DEV__BASE__USE_XMLSOFT_XML)
   xmlDoc* doc = (xmlDoc*)getContext();
   xmlNode* node = xmlDocGetRootElement(doc);
   return node;
@@ -61,7 +62,7 @@ DocumentType Document::createAndSetDocumentType(
   const String& publicId,
   const String& systemId)
 {
-#if defined(_COM_AZURE_DEV__BASE__XML_XMLSOFT_ORG)
+#if defined(_COM_AZURE_DEV__BASE__USE_XMLSOFT_XML)
   xmlDoc* doc = (xmlDoc*)getContext();
   
   bassert(
@@ -84,7 +85,7 @@ DocumentType Document::createAndSetDocumentType(
 
 Attribute Document::createAttribute(const String& name)
 {
-#if defined(_COM_AZURE_DEV__BASE__XML_XMLSOFT_ORG)
+#if defined(_COM_AZURE_DEV__BASE__USE_XMLSOFT_XML)
   xmlDoc* doc = (xmlDoc*)getContext();
   xmlAttr* node = xmlNewDocProp(
     doc,
@@ -100,7 +101,7 @@ Attribute Document::createAttribute(const String& name)
 
 Attribute Document::createAttribute(const String& name, const String& value)
 {
-#if defined(_COM_AZURE_DEV__BASE__XML_XMLSOFT_ORG)
+#if defined(_COM_AZURE_DEV__BASE__USE_XMLSOFT_XML)
   xmlDoc* doc = (xmlDoc*)getContext();
   bassert(doc, DOMException(this));
   xmlAttr* node = xmlNewDocProp(
@@ -119,7 +120,7 @@ Attribute Document::createAttributeNS(
   const String& namespaceURI,
   const String& qualifiedName)
 {
-#if defined(_COM_AZURE_DEV__BASE__XML_XMLSOFT_ORG)
+#if defined(_COM_AZURE_DEV__BASE__USE_XMLSOFT_XML)
   xmlDoc* doc = (xmlDoc*)getContext();
   
   String prefix;
@@ -178,7 +179,7 @@ AttributeDecl Document::createAttributeDecl(
   const String& element,
   AttributeDecl::ValueType valueType)
 {
-#if defined(_COM_AZURE_DEV__BASE__XML_XMLSOFT_ORG)
+#if defined(_COM_AZURE_DEV__BASE__USE_XMLSOFT_XML)
   xmlDoc* doc = (xmlDoc*)getContext();
   xmlNode* node = xmlNewDocNode(
     doc,
@@ -198,7 +199,7 @@ ElementDecl Document::createElementDecl(
   const String& element,
   ElementDecl::ValueType valueType)
 {
-#if defined(_COM_AZURE_DEV__BASE__XML_XMLSOFT_ORG)
+#if defined(_COM_AZURE_DEV__BASE__USE_XMLSOFT_XML)
   static const xmlElementTypeVal
     VALUE_TYPES[ElementDecl::ELEMENT - ElementDecl::EMPTY + 1] = {
       XML_ELEMENT_TYPE_EMPTY, // ElementDecl::EMPTY
@@ -226,7 +227,7 @@ Notation Document::createNotation(
   const String& publicId,
   const String& systemId)
 {
-#if defined(_COM_AZURE_DEV__BASE__XML_XMLSOFT_ORG)
+#if defined(_COM_AZURE_DEV__BASE__USE_XMLSOFT_XML)
   xmlDoc* doc = (xmlDoc*)getContext();
   xmlNotation* notation = xmlAddNotationDecl(
     0, // xmlValidCtxt* context
@@ -245,7 +246,7 @@ Notation Document::createNotation(
 
 Element Document::createElement(const String& name)
 {
-#if defined(_COM_AZURE_DEV__BASE__XML_XMLSOFT_ORG)
+#if defined(_COM_AZURE_DEV__BASE__USE_XMLSOFT_XML)
   xmlDoc* doc = (xmlDoc*)getContext();
   xmlNode* node = xmlNewDocNode(
     doc,
@@ -264,7 +265,7 @@ Element Document::createElementNS(
   const String& namespaceURI,
   const String& qualifiedName)
 {
-#if defined(_COM_AZURE_DEV__BASE__XML_XMLSOFT_ORG)
+#if defined(_COM_AZURE_DEV__BASE__USE_XMLSOFT_XML)
   xmlDoc* doc = (xmlDoc*)getContext();
 
   String prefix;
@@ -314,7 +315,7 @@ Element Document::createElementNS(
 
 DocumentFragment Document::createDocumentFragment()
 {
-#if defined(_COM_AZURE_DEV__BASE__XML_XMLSOFT_ORG)
+#if defined(_COM_AZURE_DEV__BASE__USE_XMLSOFT_XML)
   xmlDoc* doc = (xmlDoc*)getContext();
   xmlNode* node = xmlNewDocFragment(doc);
   bassert(node, DOMException(this));
@@ -326,7 +327,7 @@ DocumentFragment Document::createDocumentFragment()
 
 Text Document::createText(const String& data)
 {
-#if defined(_COM_AZURE_DEV__BASE__XML_XMLSOFT_ORG)
+#if defined(_COM_AZURE_DEV__BASE__USE_XMLSOFT_XML)
   xmlDoc* doc = (xmlDoc*)getContext();
   xmlNode* node = xmlNewDocText(
     doc,
@@ -341,7 +342,7 @@ Text Document::createText(const String& data)
 
 Comment Document::createComment(const String& data)
 {
-#if defined(_COM_AZURE_DEV__BASE__XML_XMLSOFT_ORG)
+#if defined(_COM_AZURE_DEV__BASE__USE_XMLSOFT_XML)
   xmlDoc* doc = (xmlDoc*)getContext();
   xmlNode* node = xmlNewComment(
     Cast::pointer<const xmlChar*>(data.getElements())
@@ -357,7 +358,7 @@ Comment Document::createComment(const String& data)
 CDATASection Document::createCDATASection(
   const String& data)
 {
-#if defined(_COM_AZURE_DEV__BASE__XML_XMLSOFT_ORG)
+#if defined(_COM_AZURE_DEV__BASE__USE_XMLSOFT_XML)
   xmlDoc* doc = (xmlDoc*)getContext();
   bassert(doc, DOMException(this));
   xmlNode* node = xmlNewCDataBlock(
@@ -377,7 +378,7 @@ ProcessingInstruction Document::createProcessingInstruction(
   const String& target,
   const String& data)
 {
-#if defined(_COM_AZURE_DEV__BASE__XML_XMLSOFT_ORG)
+#if defined(_COM_AZURE_DEV__BASE__USE_XMLSOFT_XML)
   xmlDoc* doc = (xmlDoc*)getContext();
   xmlNode* node = xmlNewPI(
     Cast::pointer<const xmlChar*>(target.getElements()),
@@ -393,7 +394,7 @@ ProcessingInstruction Document::createProcessingInstruction(
 
 EntityReference Document::createEntityReference(const String& name)
 {
-#if defined(_COM_AZURE_DEV__BASE__XML_XMLSOFT_ORG)
+#if defined(_COM_AZURE_DEV__BASE__USE_XMLSOFT_XML)
   xmlDoc* doc = (xmlDoc*)getContext();
   xmlNode* node = xmlNewReference(
     doc,
@@ -406,9 +407,9 @@ EntityReference Document::createEntityReference(const String& name)
 #endif
 }
 
-Element Document::getElementById(const String& elementId) noexcept
+Element Document::getElementById(const String& elementId)
 {
-#if defined(_COM_AZURE_DEV__BASE__XML_XMLSOFT_ORG)
+#if defined(_COM_AZURE_DEV__BASE__USE_XMLSOFT_XML)
   xmlDoc* doc = (xmlDoc*)getContext();
   bassert(doc, DOMException(this));
   void* node = xmlHashLookup(
@@ -422,7 +423,7 @@ Element Document::getElementById(const String& elementId) noexcept
 }
 
 Node Document::importNode(Node importedNode, bool deep) {
-#if defined(_COM_AZURE_DEV__BASE__XML_XMLSOFT_ORG)
+#if defined(_COM_AZURE_DEV__BASE__USE_XMLSOFT_XML)
   xmlDoc* doc = (xmlDoc*)getContext();
   bassert(doc, DOMException(this));
   xmlNode* node = (xmlNode*)importedNode.context;
@@ -459,7 +460,7 @@ Node Document::importNode(Node importedNode, bool deep) {
 }
 
 void Document::doXIncludeSubstitution() {
-#if defined(_COM_AZURE_DEV__BASE__XML_XMLSOFT_ORG)
+#if defined(_COM_AZURE_DEV__BASE__USE_XMLSOFT_XML)
   int code = xmlXIncludeProcess(
     Cast::pointer<xmlDoc*>(getContext())
   );
@@ -470,7 +471,7 @@ void Document::doXIncludeSubstitution() {
 }
 
 void Document::save(const String& filename) {
-#if defined(_COM_AZURE_DEV__BASE__XML_XMLSOFT_ORG)
+#if defined(_COM_AZURE_DEV__BASE__USE_XMLSOFT_XML)
   int bytesWritten = xmlSaveFile(
     filename.getElements(),
     Cast::pointer<xmlDocPtr>(getContext())
@@ -482,7 +483,7 @@ void Document::save(const String& filename) {
 }
 
 bool Document::validate() const {
-#if defined(_COM_AZURE_DEV__BASE__XML_XMLSOFT_ORG)
+#if defined(_COM_AZURE_DEV__BASE__USE_XMLSOFT_XML)
   xmlValidCtxt validateContext;
 	validateContext.userData = 0;
 	validateContext.error = 0;
@@ -497,7 +498,7 @@ bool Document::validate() const {
 }
 
 bool Document::validate(Node node) const {
-#if defined(_COM_AZURE_DEV__BASE__XML_XMLSOFT_ORG)
+#if defined(_COM_AZURE_DEV__BASE__USE_XMLSOFT_XML)
   xmlValidCtxt validateContext;
 	validateContext.userData = 0;
 	validateContext.error = 0;
@@ -513,7 +514,7 @@ bool Document::validate(Node node) const {
 }
 
 void Document::destroy() {
-#if defined(_COM_AZURE_DEV__BASE__XML_XMLSOFT_ORG)
+#if defined(_COM_AZURE_DEV__BASE__USE_XMLSOFT_XML)
   xmlDoc* document = (xmlDoc*)getContext();
   if (document) {
     xmlFreeDoc(document);
@@ -523,5 +524,7 @@ void Document::destroy() {
   _throw DOMException(this);
 #endif
 }
+
+__building_module
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

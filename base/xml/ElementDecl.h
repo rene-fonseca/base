@@ -80,7 +80,7 @@ public:
   /**
     Returns the type of the element.
   */
-  ValueType getValueType() const noexcept;
+  ValueType getValueType() const;
 
   /**
     Returns true if the element declaration has any attribute declarations.

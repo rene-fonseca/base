@@ -13,16 +13,17 @@
 
 #include <base/platforms/features.h>
 #include <base/xml/ProcessingInstruction.h>
+#include <base/build.h>
 
-#if defined(_COM_AZURE_DEV__BASE__XML_XMLSOFT_ORG)
-#  include <libxml2/libxml/tree.h>
+#if defined(_COM_AZURE_DEV__BASE__USE_XMLSOFT_XML)
+#  include <libxml/tree.h>
 #endif
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 String ProcessingInstruction::getTarget() const noexcept
 {
-#if defined(_COM_AZURE_DEV__BASE__XML_XMLSOFT_ORG)
+#if defined(_COM_AZURE_DEV__BASE__USE_XMLSOFT_XML)
   const xmlNode* node = (const xmlNode*)getContext();
   return NativeString((const char*)node->name);
 #else
@@ -32,7 +33,7 @@ String ProcessingInstruction::getTarget() const noexcept
 
 String ProcessingInstruction::getData() const noexcept
 {
-#if defined(_COM_AZURE_DEV__BASE__XML_XMLSOFT_ORG)
+#if defined(_COM_AZURE_DEV__BASE__USE_XMLSOFT_XML)
   const xmlNode* node = (const xmlNode*)getContext();
   return NativeString((const char*)node->content);
 #else
@@ -42,7 +43,7 @@ String ProcessingInstruction::getData() const noexcept
 
 void ProcessingInstruction::setData(const String& value)
 {
-#if defined(_COM_AZURE_DEV__BASE__XML_XMLSOFT_ORG)
+#if defined(_COM_AZURE_DEV__BASE__USE_XMLSOFT_XML)
   xmlNode* node = (xmlNode*)getContext();
   xmlNodeSetContent(node, (const xmlChar*)value.getElements());
 #else

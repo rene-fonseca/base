@@ -13,14 +13,15 @@
 
 #include <base/platforms/features.h>
 #include <base/xml/Transformer.h>
+#include <base/build.h>
 
 #if defined(_COM_AZURE_DEV__BASE__XSLT_XMLSOFT_ORG)
-#  include <libxml2/libxml/xmlmemory.h>
-#  include <libxml2/libxml/xmlIO.h>
-#  include <libxml2/libxml/DOCBparser.h>
-#  include <libxml2/libxml/xinclude.h>
-#  include <libxml2/libxml/catalog.h>
-#  include <libxml2/libxml/tree.h>
+#  include <libxml/xmlmemory.h>
+#  include <libxml/xmlIO.h>
+#  include <libxml/DOCBparser.h>
+#  include <libxml/xinclude.h>
+#  include <libxml/catalog.h>
+#  include <libxml/tree.h>
 #  include <libxslt/xslt.h>
 #  include <libxslt/xsltInternals.h>
 #  include <libxslt/functions.h>
@@ -86,7 +87,7 @@ Document Transformer::transform(
 }
 
 void Transformer::save(const String& filename, const Document& document) {
-#if 0 && defined(_COM_AZURE_DEV__BASE__XML_XMLSOFT_ORG)
+#if 0 && defined(_COM_AZURE_DEV__BASE__USE_XMLSOFT_XML)
   xmlDoc* doc = (xmlDoc*)document.getContext();
   int bytesWritten = xsltSaveResultToFilename(
     filename.getElements(),

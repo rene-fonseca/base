@@ -145,19 +145,17 @@ public:
   /**
     Creates an EntityReference node.
   */
-  EntityReference createEntityReference(
-    const String& name);
+  EntityReference createEntityReference(const String& name);
   
   /**
     Returns the Element whose ID is given by elementId.
   */
-  Element getElementById(const String& elementId) noexcept;
+  Element getElementById(const String& elementId);
   
   /**
     Creates a new attribute.
   */
-  Attribute createAttribute(
-    const String& name, const String& value);
+  Attribute createAttribute(const String& name, const String& value);
 
   /**
     Imports a node from another document to this document. The returned node

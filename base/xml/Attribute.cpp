@@ -13,21 +13,21 @@
 
 #include <base/platforms/features.h>
 #include <base/xml/Attribute.h>
+#include <base/build.h>
 
-#if defined(_COM_AZURE_DEV__BASE__XML_XMLSOFT_ORG)
-#  include <libxml2/libxml/tree.h>
+#if defined(_COM_AZURE_DEV__BASE__USE_XMLSOFT_XML)
+#  include <libxml/tree.h>
 #endif
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 String Attribute::getName() const noexcept
 {
-#if defined(_COM_AZURE_DEV__BASE__XML_XMLSOFT_ORG)
+#if defined(_COM_AZURE_DEV__BASE__USE_XMLSOFT_XML)
   xmlAttr* attribute = (xmlAttr*)getContext();
   if (attribute->ns && attribute->ns->prefix) {
-    return String(NativeString((const char*)attribute->ns->prefix)) +
-      MESSAGE(":") +
-      NativeString((const char*)attribute->name);
+    return String((const char*)attribute->ns->prefix) +
+      MESSAGE(":") + ((const char*)attribute->name);
   } else {
     return NativeString((const char*)attribute->name);
   }
@@ -38,7 +38,7 @@ String Attribute::getName() const noexcept
 
 String Attribute::getValue() const noexcept
 {
-#if defined(_COM_AZURE_DEV__BASE__XML_XMLSOFT_ORG)
+#if defined(_COM_AZURE_DEV__BASE__USE_XMLSOFT_XML)
   xmlAttr* attribute = (xmlAttr*)getContext();
   xmlChar* content = xmlNodeGetContent((xmlNode*)attribute);
   String result((const char*)content);
@@ -51,7 +51,7 @@ String Attribute::getValue() const noexcept
 
 void Attribute::setValue(const String& value)
 {
-#if defined(_COM_AZURE_DEV__BASE__XML_XMLSOFT_ORG)
+#if defined(_COM_AZURE_DEV__BASE__USE_XMLSOFT_XML)
   xmlAttr* attribute = (xmlAttr*)getContext();
   if (attribute->children) {
     xmlFreeNodeList(attribute->children);
@@ -81,7 +81,7 @@ void Attribute::setValue(const String& value)
 
 bool Attribute::isSpecified() const noexcept
 {
-#if defined(_COM_AZURE_DEV__BASE__XML_XMLSOFT_ORG)
+#if defined(_COM_AZURE_DEV__BASE__USE_XMLSOFT_XML)
   xmlAttr* attribute = (xmlAttr*)getContext();
   return true; // TAG: fixme
 #else
@@ -91,7 +91,7 @@ bool Attribute::isSpecified() const noexcept
 
 Node::ShadowElement Attribute::getOwnerElement() noexcept
 {
-#if defined(_COM_AZURE_DEV__BASE__XML_XMLSOFT_ORG)
+#if defined(_COM_AZURE_DEV__BASE__USE_XMLSOFT_XML)
   xmlAttr* attribute = (xmlAttr*)getContext();
   return Node::ShadowElement(attribute->parent);
 #else

@@ -13,16 +13,17 @@
 
 #include <base/platforms/features.h>
 #include <base/xml/DocumentType.h>
+#include <base/build.h>
 
-#if defined(_COM_AZURE_DEV__BASE__XML_XMLSOFT_ORG)
-#  include <libxml2/libxml/tree.h>
+#if defined(_COM_AZURE_DEV__BASE__USE_XMLSOFT_XML)
+#  include <libxml/tree.h>
 #endif
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 String DocumentType::getName() const noexcept
 {
-#if defined(_COM_AZURE_DEV__BASE__XML_XMLSOFT_ORG)
+#if defined(_COM_AZURE_DEV__BASE__USE_XMLSOFT_XML)
   xmlDtd* documentType = (xmlDtd*)getContext();
   return NativeString((const char*)documentType->name);
 #else
@@ -32,7 +33,7 @@ String DocumentType::getName() const noexcept
 
 NamedNodeMap DocumentType::getEntities() const noexcept
 {
-#if defined(_COM_AZURE_DEV__BASE__XML_XMLSOFT_ORG)
+#if defined(_COM_AZURE_DEV__BASE__USE_XMLSOFT_XML)
   xmlDtd* documentType = (xmlDtd*)getContext();
   return documentType->entities;
 #else
@@ -42,7 +43,7 @@ NamedNodeMap DocumentType::getEntities() const noexcept
 
 NamedNodeMap DocumentType::getNotations() const noexcept
 {
-#if defined(_COM_AZURE_DEV__BASE__XML_XMLSOFT_ORG)
+#if defined(_COM_AZURE_DEV__BASE__USE_XMLSOFT_XML)
   xmlDtd* documentType = (xmlDtd*)getContext();
   return documentType->notations;
 #else
@@ -52,7 +53,7 @@ NamedNodeMap DocumentType::getNotations() const noexcept
 
 String DocumentType::getPublicId() const noexcept
 {
-#if defined(_COM_AZURE_DEV__BASE__XML_XMLSOFT_ORG)
+#if defined(_COM_AZURE_DEV__BASE__USE_XMLSOFT_XML)
   xmlDtd* documentType = (xmlDtd*)getContext();
   return NativeString((const char*)documentType->ExternalID);
 #else
@@ -62,7 +63,7 @@ String DocumentType::getPublicId() const noexcept
 
 String DocumentType::getSystemId() const noexcept
 {
-#if defined(_COM_AZURE_DEV__BASE__XML_XMLSOFT_ORG)
+#if defined(_COM_AZURE_DEV__BASE__USE_XMLSOFT_XML)
   xmlDtd* documentType = (xmlDtd*)getContext();
   return NativeString((const char*)documentType->SystemID);
 #else
@@ -70,16 +71,18 @@ String DocumentType::getSystemId() const noexcept
 #endif
 }
 
-String DocumentType::getInternalSubset() const noexcept
+String DocumentType::getInternalSubset() const
 {
-#if defined(_COM_AZURE_DEV__BASE__XML_XMLSOFT_ORG)
+#if defined(_COM_AZURE_DEV__BASE__USE_XMLSOFT_XML)
   xmlDtd* documentType = (xmlDtd*)getContext();
   documentType = documentType->doc->intSubset;
   xmlOutputBuffer* buffer = xmlAllocOutputBuffer(0);
- 	assert(buffer, DOMException(this));
+ 	bassert(buffer, DOMException(this));
  	xmlNodeDumpOutput(buffer, 0, (xmlNode*)documentType, 0, 0, 0);
  	xmlOutputBufferFlush(buffer);
- 	String result((const char*)buffer->buffer->content, buffer->buffer->use);
+ 	// TAG: String result((const char*)buffer->buffer->content, buffer->buffer->use);
+  String result;
+  _COM_AZURE_DEV__BASE__NOT_IMPLEMENTED();
  	xmlOutputBufferClose(buffer);
   return result;
 #else

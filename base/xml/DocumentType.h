@@ -85,7 +85,7 @@ public:
   /**
     Returns the internal subset.
   */
-  String getInternalSubset() const noexcept;
+  String getInternalSubset() const;
 };
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

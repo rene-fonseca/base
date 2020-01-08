@@ -13,15 +13,16 @@
 
 #include <base/platforms/features.h>
 #include <base/xml/Notation.h>
+#include <base/build.h>
 
-#if defined(_COM_AZURE_DEV__BASE__XML_XMLSOFT_ORG)
-#  include <libxml2/libxml/tree.h>
+#if defined(_COM_AZURE_DEV__BASE__USE_XMLSOFT_XML)
+#  include <libxml/tree.h>
 #endif
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 String Notation::getPublicId() const noexcept {
-#if defined(_COM_AZURE_DEV__BASE__XML_XMLSOFT_ORG)
+#if defined(_COM_AZURE_DEV__BASE__USE_XMLSOFT_XML)
   const xmlNode* node = (const xmlNode*)getContext();
   const xmlNotation* notation = (const xmlNotation*)node->name;
   return NativeString((const char*)notation->PublicID);
@@ -31,7 +32,7 @@ String Notation::getPublicId() const noexcept {
 }
   
 String Notation::getSystemId() const noexcept {
-#if defined(_COM_AZURE_DEV__BASE__XML_XMLSOFT_ORG)
+#if defined(_COM_AZURE_DEV__BASE__USE_XMLSOFT_XML)
   const xmlNode* node = (const xmlNode*)getContext();
   const xmlNotation* notation = (const xmlNotation*)node->name;
   return NativeString((const char*)notation->SystemID);

@@ -14,11 +14,13 @@
 #include <base/platforms/features.h>
 #include <base/xml/XMLDefaultReader.h>
 #include <base/xml/DOMImplementation.h>
+#include <base/xml/SAXNotSupportedException.h>
 #include <base/io/FileReader.h>
+#include <base/build.h>
 
-#if defined(_COM_AZURE_DEV__BASE__XML_XMLSOFT_ORG)
-#  include <libxml2/libxml/parser.h>
-#  include <libxml2/libxml/parserInternals.h>
+#if defined(_COM_AZURE_DEV__BASE__USE_XMLSOFT_XML)
+#  include <libxml/parser.h>
+#  include <libxml/parserInternals.h>
 #  include <stdarg.h>
 #endif
 
@@ -33,7 +35,7 @@ public:
     void* context;
   };
   
-#if defined(_COM_AZURE_DEV__BASE__XML_XMLSOFT_ORG)
+#if defined(_COM_AZURE_DEV__BASE__USE_XMLSOFT_XML)
   static xmlEntityPtr getEntity(void* parser, const xmlChar* name) {
     return xmlGetPredefinedEntity(name);
   }
@@ -58,7 +60,8 @@ public:
   static xmlParserInput* resolveEntity(
     void* parser,
     const xmlChar* publicId,
-    const xmlChar* systemId) noexcept {
+    const xmlChar* systemId)
+  {
     fout << "resolveEntity:" << EOL
          << "publicId:" << String((const char*)publicId)
          << "systemId:" << String((const char*)systemId) << ENDL;
@@ -78,7 +81,8 @@ public:
     int type,
     const xmlChar* publicId,
     const xmlChar* systemId,
-    xmlChar* content) noexcept {
+    xmlChar* content)
+  {
     
     UserData* p = static_cast<UserData*>(parser);
     if (p->reader->dtdHandler) {
@@ -150,7 +154,8 @@ public:
     int type,
     int def,
     const xmlChar* defaultValue,
-    xmlEnumeration* tree) noexcept {
+    xmlEnumeration* tree)
+  {
     
     UserData* p = static_cast<UserData*>(parser);
     if (p->reader->dtdHandler) {
@@ -231,7 +236,8 @@ public:
     void* parser,
     const xmlChar* name,
     int type,
-    xmlElementContent* content) noexcept {
+    xmlElementContent* content)
+  {
     
     UserData* p = static_cast<UserData*>(parser);
     if (p->reader->dtdHandler) {
@@ -304,11 +310,11 @@ public:
           ++count;
         }
         Array<Attributes::Attribute> attributes;
-        for (const xmlChar** current = atts; *current;) {
+        for (const xmlChar** current = atts; *current; current += 2) {
           attributes.append(
             Attributes::Attribute(
-              NativeString(Cast::pointer<const char*>(*current++)),
-              NativeString(Cast::pointer<const char*>(*current++))
+              NativeString(Cast::pointer<const char*>(current[0])),
+              NativeString(Cast::pointer<const char*>(current[1]))
             )
           );
         }
@@ -483,7 +489,7 @@ public:
 #endif
 };
 
-#if defined(_COM_AZURE_DEV__BASE__XML_XMLSOFT_ORG)
+#if defined(_COM_AZURE_DEV__BASE__USE_XMLSOFT_XML)
 xmlSAXHandler XMLDefaultReaderImpl::SAX_HANDLER = {
   XMLDefaultReaderImpl::internalSubset, // internalSubset
   0, // isStandalone
@@ -528,7 +534,7 @@ XMLDefaultReader::XMLDefaultReader() noexcept
     parsing(false),
     standalone(false)
 {
-#if defined(_COM_AZURE_DEV__BASE__XML_XMLSOFT_ORG)
+#if defined(_COM_AZURE_DEV__BASE__USE_XMLSOFT_XML)
 #else // no xml support
   _COM_AZURE_DEV__BASE__NOT_IMPLEMENTED();
 #endif
@@ -536,7 +542,7 @@ XMLDefaultReader::XMLDefaultReader() noexcept
 
 bool XMLDefaultReader::getFeature(const String& name) const
 {
-#if defined(_COM_AZURE_DEV__BASE__XML_XMLSOFT_ORG)
+#if defined(_COM_AZURE_DEV__BASE__USE_XMLSOFT_XML)
   if (name == "http://xml.org/sax/features/validation") {
     return validate;
   } else if (name == "http://xml.org/sax/features/namespaces") {
@@ -559,7 +565,7 @@ bool XMLDefaultReader::getFeature(const String& name) const
 
 void XMLDefaultReader::setFeature(const String& name, bool value)
 {
-#if defined(_COM_AZURE_DEV__BASE__XML_XMLSOFT_ORG)
+#if defined(_COM_AZURE_DEV__BASE__USE_XMLSOFT_XML)
   
   // TAG: what about recovering
   if (name == "http://xml.org/sax/features/validation") {
@@ -578,7 +584,7 @@ void XMLDefaultReader::setFeature(const String& name, bool value)
 
 void XMLDefaultReader::parse(File file, const String& uri)
 {
-#if defined(_COM_AZURE_DEV__BASE__XML_XMLSOFT_ORG)
+#if defined(_COM_AZURE_DEV__BASE__USE_XMLSOFT_XML)
   bassert(!parsing, SAXException(this));
   parsing = true;
   
@@ -655,7 +661,7 @@ void XMLDefaultReader::parse(
   unsigned int size,
   const String& uri)
 {
-#if defined(_COM_AZURE_DEV__BASE__XML_XMLSOFT_ORG)
+#if defined(_COM_AZURE_DEV__BASE__USE_XMLSOFT_XML)
   bassert(!parsing, SAXException(this));
   parsing = true;
   
@@ -715,7 +721,7 @@ public:
 
 void XMLDefaultReader::parse(const String& systemId)
 {
-#if defined(_COM_AZURE_DEV__BASE__XML_XMLSOFT_ORG)
+#if defined(_COM_AZURE_DEV__BASE__USE_XMLSOFT_XML)
   bassert(!parsing, SAXException(this));
   parsing = true;
   FinalValue<bool> finalValue(parsing, false);
@@ -772,7 +778,7 @@ void XMLDefaultReader::parse(const String& systemId)
 
 void XMLDefaultReader::terminate() noexcept
 {
-#if defined(_COM_AZURE_DEV__BASE__XML_XMLSOFT_ORG)
+#if defined(_COM_AZURE_DEV__BASE__USE_XMLSOFT_XML)
 // int result = xmlParseChunk(static_cast<xmlParserCtxtPtr>(context), 0, 0, 1);
 // bassert(result == 0, SAXException("Unable to terminate parsing."));
 #else // no xml support

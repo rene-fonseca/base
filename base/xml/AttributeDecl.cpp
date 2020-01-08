@@ -13,16 +13,17 @@
 
 #include <base/platforms/features.h>
 #include <base/xml/AttributeDecl.h>
+#include <base/build.h>
 
-#if defined(_COM_AZURE_DEV__BASE__XML_XMLSOFT_ORG)
-#  include <libxml2/libxml/tree.h>
+#if defined(_COM_AZURE_DEV__BASE__USE_XMLSOFT_XML)
+#  include <libxml/tree.h>
 #endif
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 AttributeDecl::ValueType AttributeDecl::getValueType() const noexcept
 {
-#if defined(_COM_AZURE_DEV__BASE__XML_XMLSOFT_ORG)
+#if defined(_COM_AZURE_DEV__BASE__USE_XMLSOFT_XML)
   xmlAttribute* attribute = (xmlAttribute*)getContext();
   switch (attribute->atype) {
   case XML_ATTRIBUTE_CDATA:
@@ -53,11 +54,11 @@ AttributeDecl::ValueType AttributeDecl::getValueType() const noexcept
 #endif
 }
 
-AttributeDecl::DefaultType AttributeDecl::getDefaultValueType() const noexcept
+AttributeDecl::DefaultType AttributeDecl::getDefaultValueType() const
 {
-#if defined(_COM_AZURE_DEV__BASE__XML_XMLSOFT_ORG)
+#if defined(_COM_AZURE_DEV__BASE__USE_XMLSOFT_XML)
   xmlAttribute* attribute = (xmlAttribute*)getContext();
-  switch (attribute->atype) {
+  switch (attribute->def) {
   case XML_ATTRIBUTE_NONE:
     return AttributeDecl::NONE;
   case XML_ATTRIBUTE_REQUIRED:
@@ -76,7 +77,7 @@ AttributeDecl::DefaultType AttributeDecl::getDefaultValueType() const noexcept
 
 String AttributeDecl::getDefaultValue() const noexcept
 {
-#if defined(_COM_AZURE_DEV__BASE__XML_XMLSOFT_ORG)
+#if defined(_COM_AZURE_DEV__BASE__USE_XMLSOFT_XML)
   xmlAttribute* attribute = (xmlAttribute*)getContext();
   return NativeString((const char*)attribute->defaultValue);
 #else
@@ -86,7 +87,7 @@ String AttributeDecl::getDefaultValue() const noexcept
 
 Array<String> AttributeDecl::getEnumerationValues() const
 {
-#if defined(_COM_AZURE_DEV__BASE__XML_XMLSOFT_ORG)
+#if defined(_COM_AZURE_DEV__BASE__USE_XMLSOFT_XML)
   xmlAttribute* attribute = (xmlAttribute*)getContext();
   bassert(
     attribute->atype == XML_ATTRIBUTE_ENUMERATION,

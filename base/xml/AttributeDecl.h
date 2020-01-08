@@ -83,7 +83,7 @@ public:
   /**
     Returns the default value constraint.
   */
-  DefaultType getDefaultValueType() const noexcept;
+  DefaultType getDefaultValueType() const;
   
   /**
     Returns the default value.

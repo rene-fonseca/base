@@ -149,6 +149,7 @@ if (USE_SHARED AND NOT IOS)
 
   find_package(ZLIB)
   find_package(BZip2)
+  find_package(LibXml2)
   # find_package(OpenCL REQUIRED)
 endif ()
 
@@ -249,17 +250,18 @@ message("Revision: ${GIT_REVISION}")
 configure_file(${CMAKE_SOURCE_DIR}/config.h.in ${CMAKE_BINARY_DIR}/generated/base/config.h)
 
 if (ZLIB_FOUND)
-option(_COM_AZURE_DEV__BASE__USE_ZLIB "Enable ZLib" ON)
+  option(_COM_AZURE_DEV__BASE__USE_ZLIB "Enable ZLib" ON)
 endif ()
 if (BZIP2_FOUND)
-option(_COM_AZURE_DEV__BASE__USE_BZIP2 "Enable BZip2" ON)
+  option(_COM_AZURE_DEV__BASE__USE_BZIP2 "Enable BZip2" ON)
+endif ()
+if (LibXml2_FOUND)
+  option(_COM_AZURE_DEV__BASE__USE_XMLSOFT_XML "Enable XML XMLSOFT" ON)
 endif ()
 
 option(_COM_AZURE_DEV__BASE__USE_X11 "Enable X11" X11_FOUND)
 option(_COM_AZURE_DEV__BASE__USE_WASM "Enable WASMTIME" WASMTIME_FOUND)
 configure_file(${CMAKE_SOURCE_DIR}/build.h.in ${CMAKE_BINARY_DIR}/generated/base/build.h)
-# generate header with include of ZLIB_INCLUDE_DIRS
-# generate header with include of BZIP2_INCLUDE_DIR
 # e.g. #include <relativepath/xxx.h> ${CMAKE_BINARY_DIR}/generated/base/bzip2.h)
 
 set(base_ADDITIONAL "")
@@ -284,6 +286,7 @@ target_include_directories(base PUBLIC
   $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}/generated>
   $<INSTALL_INTERFACE:include> # <prefix>/include
 )
+target_include_directories(base PRIVATE ${ZLIB_INCLUDE_DIRS} ${BZIP2_INCLUDE_DIRS} ${LIBXML2_INCLUDE_DIRS})
 endif ()
 
 if (MSVC)
@@ -310,7 +313,9 @@ endif ()
 if (BZIP2_FOUND)
   target_link_libraries(base PRIVATE ${BZIP2_LIBRARIES})
 endif ()
-
+if (LIBXML2_FOUND)
+  target_link_libraries(base PRIVATE ${LIBXML2_LIBRARIES})
+endif ()
 
 # macOS requires all values to be less than 1024
 set_target_properties(base
@@ -331,6 +336,8 @@ target_include_directories(base_STATIC PUBLIC
   $<INSTALL_INTERFACE:include> # <prefix>/include
 )
 endif ()
+
+target_include_directories(base_STATIC PRIVATE ${ZLIB_INCLUDE_DIRS} ${BZIP2_INCLUDE_DIRS} ${LIBXML2_INCLUDE_DIRS})
 
 file(GLOB_RECURSE base_HEADERS
   "base/*.h"

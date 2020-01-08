@@ -525,6 +525,6 @@ void Document::destroy() {
 #endif
 }
 
-__building_module
+// TAG: register module
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

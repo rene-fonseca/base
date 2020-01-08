@@ -44,6 +44,16 @@ void Module::setConsumer(const String& _consumer)
   consumer = _consumer;
 }
 
+void Module::setLicense(const String& _license)
+{
+  license = _license;
+}
+
+void Module::setDescription(const String& _description)
+{
+  description = _description;
+}
+
 ModuleManager::ModuleManager()
 {
 }
@@ -64,6 +74,8 @@ void ModuleManager::registerModule(const std::initializer_list<const char*>& inf
   String name;
   String version;
   String url;
+  String license;
+  String description;
 
   for (auto e : info) {
     String text(e);
@@ -72,27 +84,37 @@ void ModuleManager::registerModule(const std::initializer_list<const char*>& inf
       const auto _v = text.substring(index + 1);
       if (_n == "PREFIX") {
         prefix = _v;
-      } if (_n == "NAME") {
+      } else if (_n == "NAME") {
         name = _v;
-      } if (_n == "VERSION") {
+      } else if (_n == "VERSION") {
         version = _v;
-      } if (_n == "URL") {
+      } else if (_n == "URL") {
         url = _v;
+      } else if (_n == "LICENSE") {
+        license = _v;
+      } else if (_n == "DESCRIPTION") {
+        description = _v;
       } else {
         // ignore unknown names
       }
     }
   }
 
-  registerModule(prefix + ":" + name + ":" + version, consumer, url);
+  registerModule(prefix + ":" + name + ":" + version, consumer, url, license, description);
 }
 
-void ModuleManager::registerModule(const String& id, const String& consumer, const String& url)
+void ModuleManager::registerModule(const String& id,
+  const String& consumer,
+  const String& url,
+  const String& license,
+  const String& description)
 {
   auto _module = new Module();
   _module->setId(id);
   _module->setUrl(url);
   _module->setConsumer(consumer);
+  _module->setLicense(license);
+  _module->setDescription(description);
   addModule(_module);
 }
 
@@ -382,7 +404,8 @@ bool ModuleManager::traverseModules(const String& pattern)
     auto version = (subs.getSize() >= 3) ? subs[2] : String();
     auto consumer = _module->getConsumer();
     auto url = _module->getUrl();
-    String license = ""; // TAG: _module->getLicense();
+    auto license = _module->getLicense();
+    auto description = _module->getDescription();
 
     fout << "MODULE: " << ENDL;
     fout << "  Prefix: " << presentString(prefix);
@@ -409,6 +432,9 @@ bool ModuleManager::traverseModules(const String& pattern)
       fout << "  Url: " << url << EOL;
     }
     fout << "  License: " << (license ? presentString(license) : String("<UNKNOWN>")) << EOL;
+    if (description) {
+      fout << "  Description: " << presentString(description) << EOL;
+    }
 
     auto item = o.createObject();
     item->setValue("prefix", prefix);
@@ -417,6 +443,7 @@ bool ModuleManager::traverseModules(const String& pattern)
     item->setValue("url", url);
     item->setValue("consumer", consumer);
     item->setValue("license", license);
+    item->setValue("description", description);
     a->append(item);
 
     // TAG: connect to services to check for recalls - show reason/impact

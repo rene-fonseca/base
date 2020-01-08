@@ -41,6 +41,10 @@ private:
   String url;
   /** Consumer. */
   String consumer;
+  /** License. */
+  String license;
+  /** Description. */
+  String description;
 public:
 
   /** Returns true if the name is valid ID => (PREFIX:NAME:VERSION). */
@@ -73,6 +77,12 @@ public:
   /** Sets the consumer file of the module. */
   void setConsumer(const String& consumer);
 
+  /** Sets the license of the module. */
+  void setLicense(const String& license);
+
+  /** Sets the description of the module. */
+  void setDescription(const String& description);
+
   /** Returns the fully qualified id (PREFIX:NAME:VERSION) of the module. */
   inline const String& getId() const noexcept
   {
@@ -89,6 +99,18 @@ public:
   inline const String& getConsumer() const noexcept
   {
     return consumer;
+  }
+
+  /** Returns the license of the module. */
+  inline const String& getLicense() const noexcept
+  {
+    return license;
+  }
+
+  /** Returns the description of the module. */
+  inline const String& getDescription() const noexcept
+  {
+    return description;
   }
 };
 
@@ -113,7 +135,11 @@ public:
   void registerModule(const std::initializer_list<const char*>& info, const String& consumer = String());
 
   /** Create module instance and adds it. */
-  void registerModule(const String& id, const String& consumer = String(), const String& url = String());
+  void registerModule(const String& id,
+                      const String& consumer = String(),
+                      const String& url = String(),
+                      const String& license = String(),
+                      const String& description = String());
 
   /** Loads the registered modules. */
   void loadModules();

@@ -13,8 +13,9 @@
 
 #include <base/platforms/features.h>
 #include <base/xml/Stylesheet.h>
+#include <base/build.h>
 
-#if defined(_COM_AZURE_DEV__BASE__XSLT_XMLSOFT_ORG)
+#if defined(_COM_AZURE_DEV__BASE__USE_XMLSOFT_XSLT)
 //#  include <libxml/xmlmemory.h>
 //#  include <libxml/xmlIO.h>
 //#  include <libxml/xinclude.h>
@@ -28,22 +29,23 @@
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
-Stylesheet::StylesheetImpl::StylesheetImpl(void* context) noexcept {
+Stylesheet::StylesheetImpl::StylesheetImpl(void* context) noexcept
+{
   this->context = context;
 }
 
-Stylesheet::StylesheetImpl::~StylesheetImpl() noexcept {
-#if defined(_COM_AZURE_DEV__BASE__XSLT_XMLSOFT_ORG)
+Stylesheet::StylesheetImpl::~StylesheetImpl() noexcept
+{
+#if defined(_COM_AZURE_DEV__BASE__USE_XMLSOFT_XSLT)
   if (context) {
-    fout << __func__ << ENDL;
     ::xsltFreeStylesheet((xsltStylesheetPtr)context);
-    fout << __func__ << ENDL;
   }
 #endif
 }
 
-Stylesheet::Stylesheet() noexcept {
-#if defined(_COM_AZURE_DEV__BASE__XSLT_XMLSOFT_ORG)
+Stylesheet::Stylesheet()
+{
+#if defined(_COM_AZURE_DEV__BASE__USE_XMLSOFT_XSLT)
   xsltStylesheetPtr temp = ::xsltNewStylesheet();
   bassert(temp, Exception(this)); // FIXME
   try {
@@ -55,8 +57,9 @@ Stylesheet::Stylesheet() noexcept {
 #endif
 }
 
-Stylesheet::Stylesheet(const String& filename) noexcept {
-#if defined(_COM_AZURE_DEV__BASE__XSLT_XMLSOFT_ORG)
+Stylesheet::Stylesheet(const String& filename)
+{
+#if defined(_COM_AZURE_DEV__BASE__USE_XMLSOFT_XSLT)
   ::xmlSubstituteEntitiesDefault(1); // FIXME
   xmlLoadExtDtdDefaultValue = 1; // FIXME
   
@@ -73,8 +76,9 @@ Stylesheet::Stylesheet(const String& filename) noexcept {
 #endif
 }
 
-Stylesheet::Stylesheet(const Document& document) noexcept {
-#if defined(_COM_AZURE_DEV__BASE__XSLT_XMLSOFT_ORG)
+Stylesheet::Stylesheet(const Document& document)
+{
+#if defined(_COM_AZURE_DEV__BASE__USE_XMLSOFT_XSLT)
   ::xmlSubstituteEntitiesDefault(1); // FIXME
   xmlLoadExtDtdDefaultValue = 1; // FIXME
 
@@ -93,8 +97,9 @@ Stylesheet::Stylesheet(const Document& document) noexcept {
 #endif
 }
 
-String Stylesheet::getOutputMethod() const noexcept {
-#if defined(_COM_AZURE_DEV__BASE__XSLT_XMLSOFT_ORG)
+String Stylesheet::getOutputMethod() const
+{
+#if defined(_COM_AZURE_DEV__BASE__USE_XMLSOFT_XSLT)
   xsltStylesheetPtr temp =
     Cast::pointer<xsltStylesheetPtr>(stylesheet->getContext());
   bassert(temp, Exception(this));
@@ -104,8 +109,9 @@ String Stylesheet::getOutputMethod() const noexcept {
 #endif
 }
 
-String Stylesheet::getNamespace() const noexcept {
-#if defined(_COM_AZURE_DEV__BASE__XSLT_XMLSOFT_ORG)
+String Stylesheet::getNamespace() const
+{
+#if defined(_COM_AZURE_DEV__BASE__USE_XMLSOFT_XSLT)
   xsltStylesheetPtr temp =
     Cast::pointer<xsltStylesheetPtr>(stylesheet->getContext());
   bassert(temp, Exception(this));
@@ -115,8 +121,9 @@ String Stylesheet::getNamespace() const noexcept {
 #endif
 }
 
-String Stylesheet::getVersion() const noexcept {
-#if defined(_COM_AZURE_DEV__BASE__XSLT_XMLSOFT_ORG)
+String Stylesheet::getVersion() const
+{
+#if defined(_COM_AZURE_DEV__BASE__USE_XMLSOFT_XSLT)
   xsltStylesheetPtr temp =
     Cast::pointer<xsltStylesheetPtr>(stylesheet->getContext());
   bassert(temp, Exception(this));
@@ -126,8 +133,9 @@ String Stylesheet::getVersion() const noexcept {
 #endif
 }
 
-String Stylesheet::getEncoding() const noexcept {
-#if defined(_COM_AZURE_DEV__BASE__XSLT_XMLSOFT_ORG)
+String Stylesheet::getEncoding() const
+{
+#if defined(_COM_AZURE_DEV__BASE__USE_XMLSOFT_XSLT)
   xsltStylesheetPtr temp =
     Cast::pointer<xsltStylesheetPtr>(stylesheet->getContext());
   bassert(temp, Exception(this));
@@ -137,8 +145,9 @@ String Stylesheet::getEncoding() const noexcept {
 #endif
 }
 
-bool Stylesheet::omitXmlDeclaration() const noexcept {
-#if defined(_COM_AZURE_DEV__BASE__XSLT_XMLSOFT_ORG)
+bool Stylesheet::omitXmlDeclaration() const
+{
+#if defined(_COM_AZURE_DEV__BASE__USE_XMLSOFT_XSLT)
   xsltStylesheetPtr temp =
     Cast::pointer<xsltStylesheetPtr>(stylesheet->getContext());
   bassert(temp, Exception(this));
@@ -148,8 +157,9 @@ bool Stylesheet::omitXmlDeclaration() const noexcept {
 #endif
 }
 
-String Stylesheet::getPublicId() const noexcept {
-#if defined(_COM_AZURE_DEV__BASE__XSLT_XMLSOFT_ORG)
+String Stylesheet::getPublicId() const
+{
+#if defined(_COM_AZURE_DEV__BASE__USE_XMLSOFT_XSLT)
   xsltStylesheetPtr temp =
     Cast::pointer<xsltStylesheetPtr>(stylesheet->getContext());
   bassert(temp, Exception(this));
@@ -159,8 +169,9 @@ String Stylesheet::getPublicId() const noexcept {
 #endif
 }
 
-String Stylesheet::getSystemId() const noexcept {
-#if defined(_COM_AZURE_DEV__BASE__XSLT_XMLSOFT_ORG)
+String Stylesheet::getSystemId() const
+{
+#if defined(_COM_AZURE_DEV__BASE__USE_XMLSOFT_XSLT)
   xsltStylesheetPtr temp =
     Cast::pointer<xsltStylesheetPtr>(stylesheet->getContext());
   bassert(temp, Exception(this));
@@ -170,8 +181,9 @@ String Stylesheet::getSystemId() const noexcept {
 #endif
 }
 
-String Stylesheet::getMediaType() const noexcept {
-#if defined(_COM_AZURE_DEV__BASE__XSLT_XMLSOFT_ORG)
+String Stylesheet::getMediaType() const
+{
+#if defined(_COM_AZURE_DEV__BASE__USE_XMLSOFT_XSLT)
   xsltStylesheetPtr temp =
     Cast::pointer<xsltStylesheetPtr>(stylesheet->getContext());
   bassert(temp, Exception(this));
@@ -181,8 +193,9 @@ String Stylesheet::getMediaType() const noexcept {
 #endif
 }
 
-bool Stylesheet::isStandalone() const noexcept {
-#if defined(_COM_AZURE_DEV__BASE__XSLT_XMLSOFT_ORG)
+bool Stylesheet::isStandalone() const
+{
+#if defined(_COM_AZURE_DEV__BASE__USE_XMLSOFT_XSLT)
   xsltStylesheetPtr temp =
     Cast::pointer<xsltStylesheetPtr>(stylesheet->getContext());
   bassert(temp, Exception(this));
@@ -192,8 +205,9 @@ bool Stylesheet::isStandalone() const noexcept {
 #endif
 }
 
-// bool Stylesheet::stripAllSpaces() const noexcept {
-// #if defined(_COM_AZURE_DEV__BASE__XSLT_XMLSOFT_ORG)
+// bool Stylesheet::stripAllSpaces() const
+// {
+// #if defined(_COM_AZURE_DEV__BASE__USE_XMLSOFT_XSLT)
 //   xsltStylesheetPtr temp =
 //     Cast::pointer<xsltStylesheetPtr>(stylesheet->getContext());
 //   bassert(temp, Exception(this));
@@ -203,8 +217,9 @@ bool Stylesheet::isStandalone() const noexcept {
 // #endif
 // }
 
-bool Stylesheet::indent() const noexcept {
-#if defined(_COM_AZURE_DEV__BASE__XSLT_XMLSOFT_ORG)
+bool Stylesheet::indent() const
+{
+#if defined(_COM_AZURE_DEV__BASE__USE_XMLSOFT_XSLT)
   xsltStylesheetPtr temp =
     Cast::pointer<xsltStylesheetPtr>(stylesheet->getContext());
   bassert(temp, Exception(this));
@@ -214,8 +229,9 @@ bool Stylesheet::indent() const noexcept {
 #endif
 }
 
-Array<String> Stylesheet::getExcludedPrefixes() const noexcept {
-#if defined(_COM_AZURE_DEV__BASE__XSLT_XMLSOFT_ORG)
+Array<String> Stylesheet::getExcludedPrefixes() const
+{
+#if defined(_COM_AZURE_DEV__BASE__USE_XMLSOFT_XSLT)
   xsltStylesheetPtr temp =
     Cast::pointer<xsltStylesheetPtr>(stylesheet->getContext());
   bassert(temp, Exception(this));
@@ -232,7 +248,8 @@ Array<String> Stylesheet::getExcludedPrefixes() const noexcept {
 }
 
 #if 0
-Array<String> Stylesheet::getExtensions() const noexcept {
+Array<String> Stylesheet::getExtensions() const noexcept
+{
   Array<String> result;
   return result;
 }

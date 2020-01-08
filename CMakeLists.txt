@@ -150,6 +150,7 @@ if (USE_SHARED AND NOT IOS)
   find_package(ZLIB)
   find_package(BZip2)
   find_package(LibXml2)
+  find_package(LibXslt)
   # find_package(OpenCL REQUIRED)
 endif ()
 
@@ -255,8 +256,11 @@ endif ()
 if (BZIP2_FOUND)
   option(_COM_AZURE_DEV__BASE__USE_BZIP2 "Enable BZip2" ON)
 endif ()
-if (LibXml2_FOUND)
+if (LIBXML2_FOUND)
   option(_COM_AZURE_DEV__BASE__USE_XMLSOFT_XML "Enable XML XMLSOFT" ON)
+endif ()
+if (LIBXSLT_FOUND)
+  option(_COM_AZURE_DEV__BASE__USE_XMLSOFT_XSLT "Enable XSLT XMLSOFT" ON)
 endif ()
 
 option(_COM_AZURE_DEV__BASE__USE_X11 "Enable X11" X11_FOUND)
@@ -286,7 +290,7 @@ target_include_directories(base PUBLIC
   $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}/generated>
   $<INSTALL_INTERFACE:include> # <prefix>/include
 )
-target_include_directories(base PRIVATE ${ZLIB_INCLUDE_DIRS} ${BZIP2_INCLUDE_DIRS} ${LIBXML2_INCLUDE_DIRS})
+target_include_directories(base PRIVATE ${ZLIB_INCLUDE_DIRS} ${BZIP2_INCLUDE_DIRS} ${LIBXML2_INCLUDE_DIRS} ${LIBXSLT_INCLUDE_DIRS})
 endif ()
 
 if (MSVC)
@@ -316,6 +320,9 @@ endif ()
 if (LIBXML2_FOUND)
   target_link_libraries(base PRIVATE ${LIBXML2_LIBRARIES})
 endif ()
+if (LIBXSLT_FOUND)
+  target_link_libraries(base PRIVATE ${LIBXSLT_LIBRARIES})
+endif ()
 
 # macOS requires all values to be less than 1024
 set_target_properties(base
@@ -337,7 +344,7 @@ target_include_directories(base_STATIC PUBLIC
 )
 endif ()
 
-target_include_directories(base_STATIC PRIVATE ${ZLIB_INCLUDE_DIRS} ${BZIP2_INCLUDE_DIRS} ${LIBXML2_INCLUDE_DIRS})
+target_include_directories(base_STATIC PRIVATE ${ZLIB_INCLUDE_DIRS} ${BZIP2_INCLUDE_DIRS} ${LIBXML2_INCLUDE_DIRS} ${LIBXSLT_INCLUDE_DIRS})
 
 file(GLOB_RECURSE base_HEADERS
   "base/*.h"

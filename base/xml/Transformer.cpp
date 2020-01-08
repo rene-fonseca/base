@@ -15,10 +15,9 @@
 #include <base/xml/Transformer.h>
 #include <base/build.h>
 
-#if defined(_COM_AZURE_DEV__BASE__XSLT_XMLSOFT_ORG)
+#if defined(_COM_AZURE_DEV__BASE__USE_XMLSOFT_XSLT)
 #  include <libxml/xmlmemory.h>
 #  include <libxml/xmlIO.h>
-#  include <libxml/DOCBparser.h>
 #  include <libxml/xinclude.h>
 #  include <libxml/catalog.h>
 #  include <libxml/tree.h>
@@ -31,37 +30,40 @@
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
-Transformer::Transformer() noexcept {
+Transformer::Transformer() noexcept
+{
 }
 
-void Transformer::clearParameters() noexcept {
+void Transformer::clearParameters() noexcept
+{
   parameters = HashTable<String, String>();
 }
 
-String Transformer::getParameter(const String& name) {
+String Transformer::getParameter(const String& name)
+{
   return parameters[name];
 }
 
-void Transformer::setParameter(
-  const String& name, const String& value) {
+void Transformer::setParameter(const String& name, const String& value)
+{
   parameters.add(name, value);
 }
 
 // bool Transformer::getXInclude() const noexcept {
-// #if defined(_COM_AZURE_DEV__BASE__XSLT_XMLSOFT_ORG)
+// #if defined(_COM_AZURE_DEV__BASE__USE_XMLSOFT_XSLT)
 //   return xsltGetXIncludeDefault() != 0;
 // #endif
 // }
 
 // void Transformer::setXInclude(bool value) noexcept {
-// #if defined(_COM_AZURE_DEV__BASE__XSLT_XMLSOFT_ORG)
+// #if defined(_COM_AZURE_DEV__BASE__USE_XMLSOFT_XSLT)
 //   return xsltSetXIncludeDefault(value ? 1 : 0);
 // #endif
 // }
 
-Document Transformer::transform(
-  const Document& document) {
-#if defined(_COM_AZURE_DEV__BASE__XSLT_XMLSOFT_ORG)
+Document Transformer::transform(const Document& document)
+{
+#if defined(_COM_AZURE_DEV__BASE__USE_XMLSOFT_XSLT)
   Allocator<const char*> temp(parameters.getSize() * 2 + 1);
   Allocator<const char*>::Iterator i = temp.getBeginIterator();
   
@@ -69,8 +71,8 @@ Document Transformer::transform(
     parameters.getReadEnumerator();
   while (enu.hasNext()) {
     const HashTable<String, String>::HashTableAssociation* node = enu.next();
-    *i++ = node->getKey()->getElements();
-    *i++ = node->getValue()->getElements();
+    *i++ = node->getKey().getElements();
+    *i++ = node->getValue().getElements();
   }
   *i++ = 0; // terminate
   
@@ -86,7 +88,8 @@ Document Transformer::transform(
 #endif
 }
 
-void Transformer::save(const String& filename, const Document& document) {
+void Transformer::save(const String& filename, const Document& document)
+{
 #if 0 && defined(_COM_AZURE_DEV__BASE__USE_XMLSOFT_XML)
   xmlDoc* doc = (xmlDoc*)document.getContext();
   int bytesWritten = xsltSaveResultToFilename(
@@ -99,17 +102,19 @@ void Transformer::save(const String& filename, const Document& document) {
 #endif
 }
 
-Stylesheet Transformer::getStylesheet() noexcept {
+Stylesheet Transformer::getStylesheet() noexcept
+{
   return stylesheet;
 }
 
-void Transformer::setStylesheet(Stylesheet stylesheet) noexcept {
+void Transformer::setStylesheet(Stylesheet stylesheet) noexcept
+{
   this->stylesheet = stylesheet;
 }
 
-bool Transformer::functionAvailable(
-  const String& ns, const String& name) {
-#if defined(_COM_AZURE_DEV__BASE__XSLT_XMLSOFT_ORG)
+bool Transformer::functionAvailable(const String& ns, const String& name)
+{
+#if defined(_COM_AZURE_DEV__BASE__USE_XMLSOFT_XSLT)
 //   return xsltXPathFunctionLookup(
 //     0,
 //     name.getElements(),
@@ -121,8 +126,9 @@ bool Transformer::functionAvailable(
 #endif
 }
 
-Transformer::~Transformer() noexcept {
-#if defined(_COM_AZURE_DEV__BASE__XSLT_XMLSOFT_ORG)
+Transformer::~Transformer() noexcept
+{
+#if defined(_COM_AZURE_DEV__BASE__USE_XMLSOFT_XSLT)
 #endif
 }
 

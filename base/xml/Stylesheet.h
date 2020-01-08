@@ -46,7 +46,8 @@ private:
     /**
       Returns the context.
     */
-    inline void* getContext() const noexcept {
+    inline void* getContext() const noexcept
+    {
       return context;
     }
 
@@ -72,57 +73,59 @@ public:
   /**
     Initializes stylesheet.
   */
-  Stylesheet() noexcept;
+  Stylesheet();
   
   /**
     Initializes the stylesheet.
 
     @param filename The name of the file.
   */
-  Stylesheet(const String& filename) noexcept;
+  Stylesheet(const String& filename);
   
   /**
     Initializes the stylesheet.
 
     @param document The XML document.
   */
-  Stylesheet(const Document& document) noexcept;
+  Stylesheet(const Document& document);
 
   /**
     Initializes stylesheet from other stylesheet.
   */
   inline Stylesheet(const Stylesheet& copy) noexcept
-    : stylesheet(copy.stylesheet) {
+    : stylesheet(copy.stylesheet)
+  {
   }
   
   /**
     Assignment of stylesheet by stylesheet.
   */
-  inline Stylesheet& operator=(const Stylesheet& assign) noexcept {
+  inline Stylesheet& operator=(const Stylesheet& assign) noexcept
+  {
     stylesheet = assign.stylesheet;
     return *this;
   }
 
-  //OutputType getOutputType() const noexcept;
+  //OutputType getOutputType() const;
   
-  String getOutputMethod() const noexcept;
-  String getNamespace() const noexcept;
-  String getVersion() const noexcept;
-  String getEncoding() const noexcept;
-  bool omitXmlDeclaration() const noexcept;
+  String getOutputMethod() const;
+  String getNamespace() const;
+  String getVersion() const;
+  String getEncoding() const;
+  bool omitXmlDeclaration() const;
   
-  String getPublicId() const noexcept;
-  String getSystemId() const noexcept;
-  String getMediaType() const noexcept;
-  bool isStandalone() const noexcept;
-  bool indent() const noexcept;
+  String getPublicId() const;
+  String getSystemId() const;
+  String getMediaType() const;
+  bool isStandalone() const;
+  bool indent() const;
 
-  Array<String> getExcludedPrefixes() const noexcept;
+  Array<String> getExcludedPrefixes() const;
   
-  //bool isOutputMethodSet() const noexcept;
-  //Array<String> getExtensions() const noexcept;
+  //bool isOutputMethodSet() const;
+  //Array<String> getExtensions() const;
   
-  // Array<?> getStylesheetPIs(const Document& document) noexcept;
+  // Array<?> getStylesheetPIs(const Document& document);
 };
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

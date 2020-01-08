@@ -32,7 +32,7 @@
   {"PREFIX=com.azure.dev", \
    "NAME=base", \
    "VERSION=" _COM_AZURE_DEV__BASE__VERSION, \
-   "URL=https://dev.azure.com/renefonseca/base/" \
+   "URL=https://dev.azure.com/renefonseca/base/", \
    "LICENSE=GPL-2.0"}
 
 #define _COM_AZURE_DEV__BASE__REQUIRE(major, minor, micro) \

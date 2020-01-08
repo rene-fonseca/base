@@ -31,6 +31,7 @@ private:
   AnyReference handle;
 public:
 
+#if 0
   /** File for virtual file system. */
   class _COM_AZURE_DEV__BASE__API VirtualFile {
   public:
@@ -52,9 +53,10 @@ public:
 
     virtual void remove(const String& path) = 0;
 
-    virtual VirtualFile open(const String& path) = 0;
+    virtual VirtualFile* open(const String& path) = 0;
   };
-
+#endif
+  
   enum Type {
     TYPE_UNSPECIFIED,
     TYPE_FUNCTION,

@@ -18,6 +18,10 @@
 #include <base/NotSupported.h>
 #include <base/build.h>
 
+#if defined(_COM_AZURE_DEV__BASE__USE_ZLIB)
+#  include <zlib.h>
+#endif
+
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 namespace internal {
@@ -25,24 +29,7 @@ namespace internal {
   class ZLibDeflater {
   public:
     
-    struct Context {
-      const uint8* nextInput;
-      unsigned int bytesToWrite;
-      unsigned long totalInput;
-      uint8* nextOutput;
-      unsigned int bytesToRead;
-      unsigned long totalOutput;
-      char* message;
-      void* state;
-      void* (*allocate)(void*, int, int) noexcept;
-      void (*release)(void*, void*) noexcept;
-      void* opaque;
-      int dataType;
-      unsigned long adler;
-      unsigned long reserved;
-    };
-    
-    static void* allocate(void*, int n, int m) noexcept
+    static void* allocate(void* opaque, uInt n, uInt m) noexcept
     {
       MemorySize size = static_cast<MemorySize>(n) * m;
       if ((size < 0) || (size > PrimitiveTraits<unsigned int>::MAXIMUM))  {
@@ -51,7 +38,7 @@ namespace internal {
       return Heap::allocateNoThrow<uint8>(size);
     }
     
-    static void release(void*, void* memory) noexcept
+    static void release(void* opaque, void* memory) noexcept
     {
       Heap::release<uint8>(static_cast<uint8*>(memory));
     }
@@ -70,24 +57,20 @@ namespace internal {
       VERSION_ERROR = -6
     };
   };
-  
-  // TAG: dll support
-  extern "C" int deflateInit_(ZLibDeflater::Context* stream, int level, const char* version, int size);
-  extern "C" int deflate(ZLibDeflater::Context* stream, int flush);
-  extern "C" int deflateEnd(ZLibDeflater::Context* stream);
 };
 
 ZLibDeflater::ZLibDeflater()
   : buffer(BUFFER_SIZE), availableBytes(0), state(RUNNING)
 {
 #if (defined(_COM_AZURE_DEV__BASE__USE_ZLIB))
-  internal::ZLibDeflater::Context* context = new internal::ZLibDeflater::Context;
+  z_stream* context = new z_stream;
   this->context = context;
   clear(*context);
-  context->allocate = internal::ZLibDeflater::allocate;
-  context->release = internal::ZLibDeflater::release;
+  context->zalloc = internal::ZLibDeflater::allocate;
+  context->zfree = internal::ZLibDeflater::release;
+  context->opaque = nullptr;
   unsigned int compressionLevel = minimum(maximum(DEFAULT_COMPRESSION_LEVEL, 1U), 9U);
-  int code = internal::deflateInit_(context, compressionLevel, "1.1.4", sizeof(*context));
+  int code = deflateInit_(context, compressionLevel, ZLIB_VERSION, sizeof(*context));
   switch (code) {
   case internal::ZLibDeflater::OK:
     break;
@@ -97,7 +80,7 @@ ZLibDeflater::ZLibDeflater()
     _throw MemoryException(this);
   }
 #else
-  _throw NotSupported(this);
+  _COM_AZURE_DEV__BASE__NOT_SUPPORTED();
 #endif
 }
 
@@ -105,13 +88,14 @@ ZLibDeflater::ZLibDeflater(unsigned int compressionLevel)
   : buffer(BUFFER_SIZE), availableBytes(0), state(RUNNING)
 {
 #if (defined(_COM_AZURE_DEV__BASE__USE_ZLIB))
-  internal::ZLibDeflater::Context* context = new internal::ZLibDeflater::Context;
+  z_stream* context = new z_stream;
   this->context = context;
   clear(*context);
-  context->allocate = internal::ZLibDeflater::allocate;
-  context->release = internal::ZLibDeflater::release;
+  context->zalloc = internal::ZLibDeflater::allocate;
+  context->zfree = internal::ZLibDeflater::release;
+  context->opaque = nullptr;
   compressionLevel = minimum(maximum(compressionLevel, 1U), 9U);
-  int code = internal::deflateInit_(context, compressionLevel, "1.1.4", sizeof(*context));
+  int code = deflateInit_(context, compressionLevel, ZLIB_VERSION, sizeof(*context));
   switch (code) {
   case internal::ZLibDeflater::OK:
     break;
@@ -121,7 +105,7 @@ ZLibDeflater::ZLibDeflater(unsigned int compressionLevel)
     _throw MemoryException(this);
   }
 #else
-  _throw NotSupported(this);
+  _COM_AZURE_DEV__BASE__NOT_SUPPORTED();
 #endif
 }
 
@@ -132,7 +116,7 @@ void ZLibDeflater::flush()
   bassert(state == RUNNING, IOException(this)); // TAG: should we accept FLUSHING
   state = FLUSHING;
 #else
-  _throw IOException(this);
+  _COM_AZURE_DEV__BASE__NOT_SUPPORTED();
 #endif
 }
 
@@ -149,19 +133,18 @@ MemorySize ZLibDeflater::push(const uint8* buffer, MemorySize _size)
   if (availableBytes == this->buffer.getSize()) {
     return 0; // no storage available
   }
-  internal::ZLibDeflater::Context* context =
-    Cast::pointer<internal::ZLibDeflater::Context*>(this->context);
-  context->nextInput = buffer;
-  context->bytesToWrite = size;
-  context->totalInput = 0;
-  context->nextOutput = this->buffer.getElements() + availableBytes;
-  context->bytesToRead = static_cast<unsigned int>(this->buffer.getSize()) - availableBytes;
-  int code = internal::deflate(context, internal::ZLibDeflater::NO_FLUSH);
+  z_stream* context = Cast::pointer<z_stream*>(this->context);
+  context->next_in = (Bytef*)static_cast<const uint8*>(buffer);
+  context->avail_in = size;
+  context->total_in = 0;
+  context->next_out = this->buffer.getElements() + availableBytes;
+  context->avail_out = static_cast<unsigned int>(this->buffer.getSize()) - availableBytes;
+  int code = deflate(context, internal::ZLibDeflater::NO_FLUSH);
   bassert(code == internal::ZLibDeflater::OK, IOException(this));
-  availableBytes = static_cast<unsigned int>(this->buffer.getSize()) - context->bytesToRead;
-  return context->totalInput;
+  availableBytes = static_cast<unsigned int>(this->buffer.getSize()) - context->avail_out;
+  return context->total_out;
 #else
-  _throw IOException(this);
+  _COM_AZURE_DEV__BASE__NOT_SUPPORTED();
 #endif
 }
 
@@ -172,7 +155,7 @@ void ZLibDeflater::pushEnd()
   bassert(state == RUNNING, IOException(this));
   state = FINISHING;
 #else
-  _throw IOException(this);
+  _COM_AZURE_DEV__BASE__NOT_SUPPORTED();
 #endif
 }
 
@@ -212,33 +195,31 @@ MemorySize ZLibDeflater::pull(uint8* buffer, MemorySize _size)
     break;
   case FLUSHING:
     {
-      internal::ZLibDeflater::Context* context =
-        Cast::pointer<internal::ZLibDeflater::Context*>(this->context);
-      context->nextInput = 0;
-      context->bytesToWrite = 0;
-      context->totalInput = 0;
-      context->nextOutput = buffer;
-      context->bytesToRead = size;
-      int code = internal::deflate(context, internal::ZLibDeflater::SYNC_FLUSH);
+      z_stream* context = Cast::pointer<z_stream*>(this->context);
+      context->next_in = 0;
+      context->avail_in = 0;
+      context->total_in = 0;
+      context->next_out = buffer;
+      context->avail_out = size;
+      int code = deflate(context, internal::ZLibDeflater::SYNC_FLUSH);
       if (code == internal::ZLibDeflater::OK) {
-        if (context->bytesToRead != 0) { // done flushing
+        if (context->avail_out != 0) { // done flushing
           state = RUNNING;
         }
       } else {
         _throw IOException(this);
       }
-      return bytesRead + size - context->bytesToRead;
+      return bytesRead + size - context->avail_out;
     }
   case FINISHING:
     {
-      internal::ZLibDeflater::Context* context =
-        Cast::pointer<internal::ZLibDeflater::Context*>(this->context);
-      context->nextInput = 0;
-      context->bytesToWrite = 0;
-      context->totalInput = 0;
-      context->nextOutput = buffer;
-      context->bytesToRead = size;
-      int code = internal::deflate(context, internal::ZLibDeflater::FINISH);
+      z_stream* context = Cast::pointer<z_stream*>(this->context);
+      context->next_in = 0;
+      context->avail_in = 0;
+      context->total_in = 0;
+      context->next_out = buffer;
+      context->avail_out = size;
+      int code = deflate(context, internal::ZLibDeflater::FINISH);
       if (code == internal::ZLibDeflater::OK) {
         // continue finishing
       } else if (code == internal::ZLibDeflater::STREAM_END) {
@@ -246,7 +227,7 @@ MemorySize ZLibDeflater::pull(uint8* buffer, MemorySize _size)
       } else {
         _throw IOException(this);
       }
-      return bytesRead + size - context->bytesToRead;
+      return bytesRead + size - context->avail_out;
     }
   case FINISHED: // not possible
     state = ENDED; // availableBytes = 0 and FINISHED => end
@@ -256,16 +237,15 @@ MemorySize ZLibDeflater::pull(uint8* buffer, MemorySize _size)
   }
   return bytesRead;
 #else
-  _throw IOException(this);
+  _COM_AZURE_DEV__BASE__NOT_SUPPORTED();
 #endif
 }
 
 ZLibDeflater::~ZLibDeflater() noexcept
 {
 #if (defined(_COM_AZURE_DEV__BASE__USE_ZLIB))
-  internal::ZLibDeflater::Context* context =
-    Cast::pointer<internal::ZLibDeflater::Context*>(this->context);
-  internal::deflateEnd(context);
+  z_stream* context = Cast::pointer<z_stream*>(this->context);
+  deflateEnd(context);
   delete context;
 #endif
 }

@@ -16,7 +16,12 @@
 #include <base/io/EndOfFile.h>
 #include <base/string/FormatOutputStream.h>
 #include <base/NotSupported.h>
+#include <base/Module.h>
 #include <base/build.h>
+
+#if defined(_COM_AZURE_DEV__BASE__USE_ZLIB)
+#  include <zlib.h>
+#endif
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
@@ -25,24 +30,7 @@ namespace internal {
   class ZLibInflater {
   public:
     
-    struct Context {
-      const uint8* nextInput;
-      unsigned int bytesToWrite;
-      unsigned long totalInput;
-      uint8* nextOutput;
-      unsigned int bytesToRead;
-      unsigned long totalOutput;
-      char* message;
-      void* state;
-      void* (*allocate)(void*, int, int) noexcept;
-      void (*release)(void*, void*) noexcept;
-      void* opaque;
-      int dataType;
-      unsigned long adler;
-      unsigned long reserved;
-    };
-    
-    static void* allocate(void*, int n, int m) noexcept
+    static void* allocate(void* opaque, uInt n, uInt m) noexcept
     {
       MemorySize size = static_cast<MemorySize>(n) * m;
       if ((size < 0) || (size > PrimitiveTraits<unsigned int>::MAXIMUM))  {
@@ -51,7 +39,7 @@ namespace internal {
       return Heap::allocateNoThrow<uint8>(size);
     }
     
-    static void release(void*, void* memory) noexcept
+    static void release(void* opaque, void* memory) noexcept
     {
       Heap::release<uint8>(static_cast<uint8*>(memory));
     }
@@ -70,23 +58,23 @@ namespace internal {
       VERSION_ERROR = -6
     };
   };
-  
-  // TAG: dll support
-  extern "C" int inflateInit_(ZLibInflater::Context* stream, const char* version, int size);
-  extern "C" int inflate(ZLibInflater::Context* stream, int flush);
-  extern "C" int inflateEnd(ZLibInflater::Context* stream);
 };
+
+#if defined(_COM_AZURE_DEV__BASE__USE_ZLIB)
+MODULE_REGISTER_EXPLICIT(_COM_AZURE_DEV__BASE__THIS_MODULE, "net.zlib", "libzlib", ZLIB_VERSION, "https://zlib.net/");
+#endif
 
 ZLibInflater::ZLibInflater()
   : buffer(BUFFER_SIZE), availableBytes(0), state(RUNNING)
 {
 #if (defined(_COM_AZURE_DEV__BASE__USE_ZLIB))
-  internal::ZLibInflater::Context* context = new internal::ZLibInflater::Context;
+  z_stream* context = new z_stream;
   this->context = context;
   clear(*context);
-  context->allocate = internal::ZLibInflater::allocate;
-  context->release = internal::ZLibInflater::release;
-  int code = internal::inflateInit_(context, "1.1.4", sizeof(*context));
+  context->zalloc = internal::ZLibInflater::allocate;
+  context->zfree = internal::ZLibInflater::release;
+  context->opaque = nullptr;
+  int code = inflateInit_(context, ZLIB_VERSION, sizeof(*context));
   switch (code) {
   case internal::ZLibInflater::OK:
     break;
@@ -96,7 +84,7 @@ ZLibInflater::ZLibInflater()
     _throw MemoryException(this);
   }
 #else
-  _throw NotSupported(this);
+  _COM_AZURE_DEV__BASE__NOT_SUPPORTED();
 #endif
 }
 
@@ -113,14 +101,13 @@ MemorySize ZLibInflater::push(const uint8* buffer, MemorySize _size)
   if (availableBytes == this->buffer.getSize()) {
     return 0; // no storage available
   }
-  internal::ZLibInflater::Context* context =
-    Cast::pointer<internal::ZLibInflater::Context*>(this->context);
-  context->nextInput = buffer;
-  context->bytesToWrite = size;
-  context->totalInput = 0;
-  context->nextOutput = this->buffer.getElements() + availableBytes;
-  context->bytesToRead = static_cast<unsigned int>(this->buffer.getSize()) - availableBytes;
-  int code = internal::inflate(context, internal::ZLibInflater::NO_FLUSH);
+  z_stream* context = Cast::pointer<z_stream*>(this->context);
+  context->next_in = (Bytef*)static_cast<const uint8*>(buffer);
+  context->avail_in = size;
+  context->total_in = 0;
+  context->next_out = this->buffer.getElements() + availableBytes;
+  context->avail_out = static_cast<unsigned int>(this->buffer.getSize()) - availableBytes;
+  int code = inflate(context, internal::ZLibInflater::NO_FLUSH);
   if (code == internal::ZLibInflater::OK) {
     // continue pushing
   } else if (code == internal::ZLibInflater::STREAM_END) {
@@ -128,10 +115,10 @@ MemorySize ZLibInflater::push(const uint8* buffer, MemorySize _size)
   } else {
     _throw IOException(this);
   }
-  availableBytes = static_cast<unsigned int>(this->buffer.getSize()) - context->bytesToRead;
-  return context->totalInput;
+  availableBytes = static_cast<unsigned int>(this->buffer.getSize()) - context->avail_out;
+  return context->total_in;
 #else
-  _throw IOException(this);
+  _COM_AZURE_DEV__BASE__NOT_SUPPORTED();
 #endif
 }
 
@@ -143,7 +130,7 @@ void ZLibInflater::pushEnd()
     state = FINISHING;
   }
 #else
-  _throw IOException(this);
+  _COM_AZURE_DEV__BASE__NOT_SUPPORTED();
 #endif
 }
 
@@ -185,16 +172,15 @@ MemorySize ZLibInflater::pull(uint8* buffer, MemorySize _size)
     break;
 #if 0
     {
-      internal::ZLibInflater::Context* context =
-        Cast::pointer<internal::ZLibInflater::Context*>(this->context);
-      context->nextInput = 0;
-      context->bytesToWrite = 0;
-      context->totalInput = 0;
-      context->nextOutput = buffer;
-      context->bytesToRead = size;
-      int code = internal::inflate(context, internal::ZLibInflater::SYNC_FLUSH);
+      z_stream* context = Cast::pointer<z_stream*>(this->context);
+      context->next_in = 0;
+      context->avail_in = 0;
+      context->total_in = 0;
+      context->next_out = buffer;
+      context->avail_out = size;
+      int code = inflate(context, internal::ZLibInflater::SYNC_FLUSH);
       if (code == internal::ZLibInflater::OK) {
-        if (context->bytesToRead != 0) { // done flushing
+        if (context->avail_out != 0) { // done flushing
           state = RUNNING;
         }
       } else if (code == internal::ZLibInflater::STREAM_END) { // TAG: is this possible
@@ -202,19 +188,18 @@ MemorySize ZLibInflater::pull(uint8* buffer, MemorySize _size)
       } else {
         _throw IOException(this);
       }
-      return bytesRead + size - context->bytesToRead;
+      return bytesRead + size - context->avail_out;
     }
 #endif
   case FINISHING:
     {
-      internal::ZLibInflater::Context* context =
-        Cast::pointer<internal::ZLibInflater::Context*>(this->context);
-      context->nextInput = 0;
-      context->bytesToWrite = 0;
-      context->totalInput = 0;
-      context->nextOutput = buffer;
-      context->bytesToRead = size;
-      int code = internal::inflate(context, internal::ZLibInflater::SYNC_FLUSH); // TAG: do not use FINISH here
+      z_stream* context = Cast::pointer<z_stream*>(this->context);
+      context->next_in = 0;
+      context->avail_in = 0;
+      context->total_in = 0;
+      context->next_out = buffer;
+      context->avail_out = size;
+      int code = inflate(context, internal::ZLibInflater::SYNC_FLUSH); // TAG: do not use FINISH here
       if (code == internal::ZLibInflater::OK) {
         // continue finishing
       } else if (code == internal::ZLibInflater::STREAM_END) {
@@ -222,7 +207,7 @@ MemorySize ZLibInflater::pull(uint8* buffer, MemorySize _size)
       } else {
         _throw IOException(this);
       }
-      return bytesRead + size - context->bytesToRead;
+      return bytesRead + size - context->avail_out;
     }
   case FINISHED:
     state = ENDED; // availableBytes = 0 and FINISHED => end
@@ -232,16 +217,15 @@ MemorySize ZLibInflater::pull(uint8* buffer, MemorySize _size)
   }
   return bytesRead;
 #else
-  _throw IOException(this);
+  _COM_AZURE_DEV__BASE__NOT_SUPPORTED();
 #endif
 }
 
 ZLibInflater::~ZLibInflater() noexcept
 {
 #if (defined(_COM_AZURE_DEV__BASE__USE_ZLIB))
-  internal::ZLibInflater::Context* context =
-    Cast::pointer<internal::ZLibInflater::Context*>(this->context);
-  internal::inflateEnd(context);
+  z_stream* context = Cast::pointer<z_stream*>(this->context);
+  inflateEnd(context);
   delete context;
 #endif
 }

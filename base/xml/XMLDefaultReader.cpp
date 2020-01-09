@@ -20,6 +20,7 @@
 
 #if defined(_COM_AZURE_DEV__BASE__USE_XMLSOFT_XML)
 #  define LIBXML_LEGACY_ENABLED
+#  include <libxml/SAX.h>
 #  include <libxml/parser.h>
 #  include <libxml/parserInternals.h>
 #  include <stdarg.h>

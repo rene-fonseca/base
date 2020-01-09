@@ -1,0 +1,2 @@
+FROM centos:8
+RUN yum install -y git cmake make gcc gcc-c++

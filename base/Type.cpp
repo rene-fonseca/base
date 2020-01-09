@@ -29,7 +29,19 @@ const std::type_info* Type::getUninitialized() noexcept
 
 const char* Type::getLocalName() const noexcept
 {
-  return type->name();
+  const char* name = type->name();
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
+  if (name) { // remove annoying class prefix - safe since this is still static data
+    const char* prefix = "class ";
+    const char* src = name;
+    for (; *src == *prefix; ++src, ++prefix) {
+    }
+    if (!*prefix) {
+      name = src;
+    }
+  }
+#endif
+  return name;
 }
 
 #if defined(_COM_AZURE_DEV__BASE__TESTS)

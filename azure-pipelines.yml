@@ -206,6 +206,10 @@ jobs:
     vmImage: 'ubuntu-18.04'
   container: centos
   steps:
+  - script: $(Build.SourcesDirectory)/ci/config.sh
+    displayName: 'Config'
+    workingDirectory: $(Build.BinariesDirectory)
+
   - script: $(Build.SourcesDirectory)/ci/build.sh
     displayName: 'Build'
     workingDirectory: $(Build.BinariesDirectory)

@@ -53,13 +53,9 @@ _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
   // TAG: TODO we cannot get access to true exception type - best to hook throw after exception has been created
   void defaultExceptionHandler(const Exception* exception) noexcept
   {
-    // would be best to hook __cxa_throw to get stack trace at throw only
+    // C++: would be best to hook __cxa_throw to get stack trace at throw only
     if (exception) {
-      const char* name = nullptr;
-      if (Profiler::isEnabled()) {
-        name = exception->getThisType().getLocalName();
-      }
-      Profiler::pushException(name); // TAG: get exception info
+      Profiler::pushException(*exception); // TAG: get type directly from throw hook
 
       if (auto tls = Thread::getLocalContext()) {
         tls->stackTrace = StackFrame::getStack(1, 64); // TAG: can we skip stack so we only get the first exception constructor?

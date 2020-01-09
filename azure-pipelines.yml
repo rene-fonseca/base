@@ -240,7 +240,7 @@ jobs:
 
 - job: fedora_x64
   pool:
-    vmImage: 'macOS-latest'
+    vmImage: 'ubuntu-18.04'
   container: fedora
   steps:
   - script: $(Build.SourcesDirectory)/ci/config.sh

@@ -224,14 +224,14 @@ jobs:
       testResultsFormat: 'JUnit'
       testResultsFiles: '**/junit.xml'
       testRunTitle: 'Unittest results'
-    workingDirectory: $(Build.BinariesDirectory)
+      workingDirectory: $(Build.BinariesDirectory)
 
   - task: PublishTestResults@2
     inputs:
       testResultsFormat: 'cTest'
       testResultsFiles: '**/Test.xml'
       testRunTitle: 'Test results for CTest'
-    workingDirectory: $(Build.BinariesDirectory)
+      workingDirectory: $(Build.BinariesDirectory)
 
 - job: ubuntu16_04
   pool:

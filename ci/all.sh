@@ -1,0 +1,5 @@
+#!/bin/bash
+
+$BUILD_SOURCESDIRECTORY/ci/config.sh
+$BUILD_SOURCESDIRECTORY/ci/build.sh
+$BUILD_SOURCESDIRECTORY/ci/test.sh

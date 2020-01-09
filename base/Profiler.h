@@ -218,6 +218,7 @@ private:
   static void pushObjectDestroyImpl(MemorySize id, MemorySize size);
   static void pushObjectDestroyImpl(MemorySize id);
   static void pushExceptionImpl(const char* type);
+  static void pushExceptionImpl(const Exception& exception, const Type* type);
   static void pushSignalImpl(const char* name);
   static void pushThreadStartImpl(const char* name, unsigned int parentId);
   static void pushProcessMetaImpl(ReferenceCountedObject* name);
@@ -460,6 +461,15 @@ public:
       return;
     }
     pushExceptionImpl(type);
+  }
+
+  /** Push exception. */
+  static inline void pushException(const Exception& exception, const Type* type = nullptr)
+  {
+    if (!enabled) {
+      return;
+    }
+    pushExceptionImpl(exception, type);
   }
 
   /** Push signal. */

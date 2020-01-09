@@ -539,6 +539,29 @@ void Profiler::pushExceptionImpl(const char* type)
   pushEvent(e);
 }
 
+void Profiler::pushExceptionImpl(const Exception& exception, const Type* type)
+{
+  if (!isEnabledScope()) {
+    return;
+  }
+  const char* name = (type ? *type : exception.getThisType()).getLocalName();
+
+  Event e;
+  initEvent(e);
+  e.ph = EVENT_INSTANT;
+  if (name) {
+    String description = TypeInfo::demangleName(name);
+    if (const char* message = exception.getMessage()) {
+      description += " with message '";
+      description += message;
+      description += "'";
+    }
+    e.data = new ReferenceString(description);
+  }
+  e.cat = CAT_EXCEPTION;
+  pushEvent(e);
+}
+
 void Profiler::pushSignalImpl(const char* name)
 {
   if (!isEnabledScope()) {

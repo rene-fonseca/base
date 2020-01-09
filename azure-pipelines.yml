@@ -14,8 +14,8 @@ resources:
   containers:
   - container: centos
     image: renefonseca/base-centos8:latest
-  - container: raspberrypi4
-    image: renefonseca/base-raspberrypi4-64-debian:latest
+  - container: fedora
+    image: renefonseca/base-fedora:latest
 
 jobs:
 - job: windows
@@ -238,11 +238,10 @@ jobs:
       testRunTitle: 'Test results for CTest'
       workingDirectory: $(Build.BinariesDirectory)
 
-- job: debian_arm64
-  condition: eq(1,2)
+- job: fedora-x64
   pool:
-    vmImage: 'ubuntu-18.04'
-  container: raspberrypi4
+    vmImage: 'macOS-latest'
+  container: fedora
   steps:
   - script: $(Build.SourcesDirectory)/ci/config.sh
     displayName: 'Config'

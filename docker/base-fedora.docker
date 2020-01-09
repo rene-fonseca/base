@@ -1,0 +1,7 @@
+FROM fedora:latest
+
+# tools
+RUN yum install -y git cmake make gcc gcc-c++
+
+# libs
+RUN yum install -y zlib-devel bzip2-devel libxml2-devel libxslt-devel openssl-devel libcurl-devel

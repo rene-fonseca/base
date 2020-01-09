@@ -10,7 +10,7 @@ variables:
 resources:
   containers:
   - container: centos
-    image: renefonseca:base-centos8:latest
+    image: renefonseca/base-centos8:latest
 
 jobs:
 - job: windows

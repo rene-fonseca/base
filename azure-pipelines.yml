@@ -238,7 +238,7 @@ jobs:
       testRunTitle: 'Test results for CTest'
       workingDirectory: $(Build.BinariesDirectory)
 
-- job: fedora-x64
+- job: fedora_x64
   pool:
     vmImage: 'macOS-latest'
   container: fedora

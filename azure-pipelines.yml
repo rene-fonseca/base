@@ -7,6 +7,11 @@ pr:
 variables:
   CLICOLOR_FORCE: 1 # used by Base tools
 
+resources:
+  containers:
+  - container: centos
+    image: renefonseca:base-centos8:latest
+
 jobs:
 - job: windows
   pool:
@@ -195,6 +200,32 @@ jobs:
       artifactName: 'base-ubuntu18'
       targetPath: 'artifacts'
       path: $(System.DefaultWorkingDirectory)/build/install
+
+- job: centos8
+  pool:
+    vmImage: 'ubuntu-18.04'
+  container: centos
+  steps:
+  - script: $(Build.SourcesDirectory)/ci/build.sh
+    displayName: 'Build'
+    workingDirectory: $(System.DefaultWorkingDirectory)/build
+
+  - script: $(Build.SourcesDirectory)/ci/test.sh
+    displayName: 'Run tests'
+    continueOnError: true
+    workingDirectory: $(Build.BinariesDirectory)
+
+  - task: PublishTestResults@2
+    inputs:
+      testResultsFormat: 'JUnit'
+      testResultsFiles: '**/junit.xml'
+      testRunTitle: 'Unittest results'
+
+  - task: PublishTestResults@2
+    inputs:
+      testResultsFormat: 'cTest'
+      testResultsFiles: '**/Test.xml'
+      testRunTitle: 'Test results for CTest'
 
 - job: ubuntu16_04
   pool:

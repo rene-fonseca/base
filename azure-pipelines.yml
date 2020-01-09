@@ -208,7 +208,7 @@ jobs:
   steps:
   - script: $(Build.SourcesDirectory)/ci/build.sh
     displayName: 'Build'
-    workingDirectory: $(System.DefaultWorkingDirectory)/build
+    workingDirectory: $(Build.BinariesDirectory)
 
   - script: $(Build.SourcesDirectory)/ci/test.sh
     displayName: 'Run tests'

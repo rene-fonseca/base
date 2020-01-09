@@ -193,6 +193,33 @@ void UnitTest::Run::onPrint(const String& what, unsigned int line)
   // results.append(result);
 }
 
+void UnitTest::Run::onPrintIssue(const String& what, unsigned int line)
+{
+  ExclusiveSynchronize<MutualExclusion> _guard(UnitTestManager::getManager().getLock());
+
+  /*
+  TestResult result;
+  result.passed = xxx;
+  result.what = what;
+  result.line = line;
+  */
+
+  if (UnitTestManager::getManager().getVerbosity() >= UnitTestManager::NORMAL) {
+    if (UnitTestManager::getManager().getUseANSIColors()) {
+      fout << setForeground(ANSIEscapeSequence::RED);
+    }
+    if (line > 0) {
+      fout << "  PRINT: '" << what << "' at line " << line << ENDL;
+    } else {
+      fout << "  PRINT: '" << what << "'" << ENDL;
+    }
+    if (UnitTestManager::getManager().getUseANSIColors()) {
+      fout << normal();
+    }
+  }
+  // results.append(result);
+}
+
 void UnitTest::Run::onPassed(const String& what, unsigned int line)
 {
   ExclusiveSynchronize<MutualExclusion> _guard(UnitTestManager::getManager().getLock());
@@ -1199,6 +1226,11 @@ UnitTest::AddDependency::AddDependency(UnitTest* test, const char* id)
 void UnitTest::onPrint(const String& what, unsigned int line)
 {
   currentRun->onPrint(what, line);
+}
+
+void UnitTest::onPrintIssue(const String& what, unsigned int line)
+{
+  currentRun->onPrintIssue(what, line);
 }
 
 void UnitTest::onPassed(const String& what, unsigned int line)

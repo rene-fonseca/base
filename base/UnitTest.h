@@ -122,6 +122,9 @@ public:
     /** Called on explicit print request. */
     void onPrint(const String& what, unsigned int line = 0);
 
+    /** Called on explicit print request. */
+    void onPrintIssue(const String& what, unsigned int line = 0);
+
     /** Called when subtest passed. */
     void onPassed(const String& what, unsigned int line = 0);
 
@@ -173,7 +176,10 @@ protected:
 
   /** Called on explicit print request. */
   void onPrint(const String& what, unsigned int line = 0);
-  
+
+  /** Called on explicit print request. */
+  void onPrintIssue(const String& what, unsigned int line = 0);
+
   /** Called when subtest passed. */
   void onPassed(const String& what, unsigned int line = 0);
   
@@ -650,7 +656,7 @@ public:
     if (!equal) { \
       StringOutputStream stream; \
       stream << "Expecting value '" << COMPERAND << "' for '" << _COM_AZURE_DEV__BASE__STRINGIFY(EXPRESSION) << "'. But got '" << result << "'." << FLUSH; \
-      base::UnitTest::onPrint(stream.getString(), __LINE__); \
+      base::UnitTest::onPrintIssue(stream.getString(), __LINE__); \
     } \
   }
 
@@ -665,18 +671,18 @@ public:
     StringOutputStream stream; \
     stream << "Expecting exception '" << Type::getType<EXCEPTION>() << "' for '" << _COM_AZURE_DEV__BASE__STRINGIFY(EXPRESSION) \
            << "' but got " << e.getThisType() << " with message '" << e.getMessage() << "'." << FLUSH; \
-    base::UnitTest::onPrint(stream.getString(), __LINE__); \
+    base::UnitTest::onPrintIssue(stream.getString(), __LINE__); \
     _rethrow; \
   } catch (std::exception& e) { \
     StringOutputStream stream; \
     stream << "Expecting exception '" << Type::getType<EXCEPTION>() << "' for '" << _COM_AZURE_DEV__BASE__STRINGIFY(EXPRESSION) \
            << "' but got " << Exception::getStdExceptionName(e) << " with message '" << e.what() << "'." << FLUSH; \
-    base::UnitTest::onPrint(stream.getString(), __LINE__); \
+    base::UnitTest::onPrintIssue(stream.getString(), __LINE__); \
     _rethrow; \
   } catch (...) { \
     StringOutputStream stream; \
     stream << "Expecting exception '" << Type::getType<EXCEPTION>() << "' for '" << _COM_AZURE_DEV__BASE__STRINGIFY(EXPRESSION) << "' but got unknown exception." << FLUSH; \
-    base::UnitTest::onPrint(stream.getString(), __LINE__); \
+    base::UnitTest::onPrintIssue(stream.getString(), __LINE__); \
     _rethrow; \
   }
 #else

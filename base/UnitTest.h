@@ -394,6 +394,7 @@ private:
   bool useANSIColors = false;
   bool randomize = false;
   bool stopOnFailure = false;
+  bool runWithExternalDependencies = false;
   bool progressMode = false;
   bool showStackTrace = false;
   bool traceExceptions = false;
@@ -494,6 +495,12 @@ public:
   inline void setStopOnFailure(bool _stopOnFailure) noexcept
   {
     stopOnFailure = _stopOnFailure;
+  }
+
+  /** Sets whether to run tests with external dependencies. */
+  inline void setRunWithExternalDependencies(bool _runWithExternalDependencies) noexcept
+  {
+    runWithExternalDependencies = _runWithExternalDependencies;
   }
 
   /** Returns true if stack traces are enabled. */

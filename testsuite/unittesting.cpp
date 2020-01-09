@@ -51,6 +51,7 @@ private:
   bool useUrlAsSource = false;
   bool randomize = false;
   bool stopOnFailure = false;
+  bool runWithExternals = false;
   bool showStackTrace = false;
   bool progressMode = false;
   bool reportJSON = false;
@@ -130,6 +131,8 @@ public:
         randomize = true;
       } else if (argument == "--stopOnFailure") {
         stopOnFailure = true;
+      } else if (argument == "--externals") {
+        runWithExternals = true;
       } else if (argument == "--stackTrace") {
         showStackTrace = true;
       } else if (argument == "--progress") {
@@ -175,6 +178,7 @@ public:
       << "--uuid           UUID for testsuite." << EOL
       << "--randomize      Run tests in random order." << EOL
       << "--stopOnFailure  Stop on first failure." << EOL
+      << "--externals      Run tests with external dependencies." << EOL
       << "--stackTrace     Show stack trace on assert." << EOL
       << ENDL;
   }
@@ -235,10 +239,15 @@ public:
           fout << "  OWNER=" << owner << EOL;
         }
         fout << "  PRIORITY=" << test->getPriority() << EOL;
+        if (test->hasExternalDependency()) {
+          fout << "  EXTERNAL=" << "YES" << EOL;
+        }
         if (test->isInDevelopment()) {
           fout << "  DEVELOPMENT=" << test->isInDevelopment() << EOL;
         }
         
+        // TAG: can we use PrimitiveArray template to automatically check of overrun - avoid copy of data
+        // template<typename TYPE> class FixedArray {};
         static const char* IMPACTS[] = { "PRIVACY", "SECURITY", "CRITICAL", "IMPORTANT", "NORMAL", "LOW", "IGNORE" };
         BASSERT(static_cast<MemorySize>(test->getImpact()) < getArraySize(IMPACTS));
         fout << "  IMPACT=" << IMPACTS[test->getImpact()] << EOL;
@@ -306,6 +315,7 @@ public:
       manager.setUseUrlAsSource(useUrlAsSource);
       manager.setRandomize(randomize);
       manager.setStopOnFailure(stopOnFailure);
+      manager.setRunWithExternalDependencies(runWithExternals);
       manager.setShowStackTrace(showStackTrace);
       manager.setProgressMode(progressMode);
       manager.setTraceExceptions(traceExceptions);

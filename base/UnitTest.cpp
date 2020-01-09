@@ -778,6 +778,10 @@ bool UnitTestManager::runTests(const String& pattern, bool runDevel)
       continue;
     }
 
+    if (!runWithExternalDependencies && test->hasExternalDependency()) {
+      continue;
+    }
+
     if (!runDevel && test->isInDevelopment()) {
       continue; // skip
     }
@@ -973,12 +977,15 @@ Reference<UnitTest> UnitTestManager::getTest(const String& id) const noexcept
 Array<Reference<UnitTest> > UnitTestManager::getTestByPattern(const String& pattern) const noexcept
 {
   Array<Reference<UnitTest> > result;
+  // C++: could this be avoided by 'yield value;' since we know return type
+  // [[yield]] void append(const TYPE& value)/[[yield]] void append(TYPE&& value)
+  // would need to tell Array to map yield to append()
   for (auto test : tests) {
     if (Parser::doesMatchPattern(pattern, test->getId())) {
-      result.append(test);
+      result.append(test); // yield test; - still need to allow early return
     }
   }
-  return result;
+  return result; // C++: return would need to be implicit somehow though - what if mixed yield and explicit return
 }
 
 UnitTestManager::RegisterEntry::RegisterEntry(EntryNode* _node)

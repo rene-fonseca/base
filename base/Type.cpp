@@ -34,7 +34,7 @@ const char* Type::getLocalName() const noexcept
   if (name) { // remove annoying class prefix - safe since this is still static data
     const char* prefix = "class ";
     const char* src = name;
-    for (; *src == *prefix; ++src, ++prefix) {
+    for (; *src == *prefix; ++src, ++prefix) { // we cannot remove 'class' inside name unless we return String
     }
     if (!*prefix) {
       name = src;

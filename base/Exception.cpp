@@ -225,31 +225,37 @@ void Exception::rethrow()
 Exception::Exception() noexcept
   : cause(PrimitiveTraits<unsigned int>::MAXIMUM)
 {
+#if 0
   _COM_AZURE_DEV__BASE__PRINT("Exception::Exception()\n");
   // we cannot use 'this'
   if (exceptionHandler) { // not installed for release builds - but can be installed at runtime
     exceptionHandler(this);
   }
+#endif
 }
 
 Exception::Exception(const char* _message) noexcept
   : message(_message),
     cause(PrimitiveTraits<unsigned int>::MAXIMUM)
 {
+#if 0
   _COM_AZURE_DEV__BASE__PRINT("Exception::Exception(%s)\n", _message);
   if (exceptionHandler) { // not installed for release builds - but can be installed at runtime
     exceptionHandler(this);
   }
+#endif
 }
 
 Exception::Exception(const Type& _type) noexcept
   : type(_type),
     cause(PrimitiveTraits<unsigned int>::MAXIMUM)
 {
+#if 0
   _COM_AZURE_DEV__BASE__PRINT("Exception::Exception(type=%s)\n", type.getLocalName());
   if (exceptionHandler) { // not installed for release builds - but can be installed at runtime
     exceptionHandler(this);
   }
+#endif
 }
 
 Exception::Exception(const char* _message, const Type& _type) noexcept
@@ -257,10 +263,12 @@ Exception::Exception(const char* _message, const Type& _type) noexcept
     type(_type),
     cause(PrimitiveTraits<unsigned int>::MAXIMUM)
 {
+#if 0
   _COM_AZURE_DEV__BASE__PRINT("Exception::Exception(%s, type=%s)\n", _message, type.getLocalName());
   if (exceptionHandler) { // not installed for release builds - but can be installed at runtime
     exceptionHandler(this);
   }
+#endif
 }
 
 Exception::Exception(const Exception& copy) noexcept
@@ -294,6 +302,7 @@ Exception::Exception(Exception&& move) noexcept
   // undesired case for exception handler
 #if defined(_COM_AZURE_DEV__BASE__ANY_DEBUG)
   copies = move.copies;
+  move.copies = 0;
 #endif
 }
 

@@ -17,7 +17,7 @@ Reference API documentation is hosted at https://rene-fonseca.github.io/base-api
 [![Windows ARM32](https://dev.azure.com/renefonseca/base/_apis/build/status/rene-fonseca.base?branchName=master&jobName=windows_arm32&label=Windows%20ARM32)](https://dev.azure.com/renefonseca/base/_build/latest?definitionId=5&branchName=master)
 [![Ubuntu 18.04](https://dev.azure.com/renefonseca/base/_apis/build/status/rene-fonseca.base?branchName=master&jobName=ubuntu18_04&label=Ubuntu%2018.04)](https://dev.azure.com/renefonseca/base/_build/latest?definitionId=5&branchName=master)
 [![Ubuntu 16.04](https://dev.azure.com/renefonseca/base/_apis/build/status/rene-fonseca.base?branchName=master&jobName=ubuntu16_04&label=Ubuntu%2016.04)](https://dev.azure.com/renefonseca/base/_build/latest?definitionId=5&branchName=master)
-[![Centos 8](https://dev.azure.com/renefonseca/base/_apis/build/status/rene-fonseca.base?branchName=master&jobName=centos8&label=Centos%208)](https://dev.azure.com/renefonseca/base/_build/latest?definitionId=5&branchName=master)
+[![CentOS 8](https://dev.azure.com/renefonseca/base/_apis/build/status/rene-fonseca.base?branchName=master&jobName=centos8&label=CentOS%208)](https://dev.azure.com/renefonseca/base/_build/latest?definitionId=5&branchName=master)
 [![macOS](https://dev.azure.com/renefonseca/base/_apis/build/status/rene-fonseca.base?branchName=master&jobName=macos&label=macOS)](https://dev.azure.com/renefonseca/base/_build/latest?definitionId=5&branchName=master)
 
 
@@ -84,6 +84,7 @@ Windows            | ARM32    | MSC     | Ok         | Runs continuously on pipe
 Windows            | ARM64    | MSC     | Ok         | Runs continuously on pipeline but no testing
 Ubuntu 18.04       | x86_64   | GCC     | Ok         | Runs continuously on pipeline
 Ubuntu 16.04       | x86_64   | GCC     | Ok         | Runs continuously on pipeline
+CentOS 8           | x86_64   | GCC     | Ok         | Runs continuously on pipeline
 macOS              | x86_64   | Clang   | Ok         | Runs continuously on pipeline
 Windows            | x86      | MSC     | Ok         | 8 Dec 2019
 Windows            | ARM32    | MSC     | Ok         | 8 Dec 2019
@@ -92,7 +93,6 @@ Debian 10          | x86_64   | GCC     | Ok         | 5 Dec 2019
 Ubuntu 19.04       | x86_64   | GCC     | Ok         | 5 Dec 2019
 Fedora 31          | x86_64   | GCC     | Ok         | 5 Dec 2019
 RedHat 8.1         | x86_64   | GCC     | Ok         | 7 Dec 2019
-CentOS 8           | x86_64   | GCC     | Ok         | 6 Dec 2019
 FreeBSD 12.1       | x86_64   | Clang   | Ok         | 7 Dec 2019
 OpenBSD 66         | x86_64   | GCC     | Ok         | 9 Dec 2019
 Raspbian 10        | ARM32    | GCC     | Ok         | 9 Dec 2019

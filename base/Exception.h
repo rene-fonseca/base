@@ -328,7 +328,7 @@ inline EXCEPTION&& bindException(EXCEPTION&& e, const char* message, unsigned in
 
 /** Helper to hook throw. */
 template<class EXCEPTION>
-inline EXCEPTION&& operator*(const Exception::Hook&& hook, EXCEPTION&& exception)
+inline EXCEPTION&& operator*(Exception::Hook&& hook, EXCEPTION&& exception)
 {
   static_assert(std::is_base_of<Exception, EXCEPTION>(), "Only Exception derived types may be thrown.");
   Exception::onThrow(exception);
@@ -336,7 +336,7 @@ inline EXCEPTION&& operator*(const Exception::Hook&& hook, EXCEPTION&& exception
 }
 
 template<class EXCEPTION>
-inline const EXCEPTION& operator*(const Exception::Hook&& hook, const EXCEPTION& exception)
+inline const EXCEPTION& operator*(Exception::Hook&& hook, const EXCEPTION& exception)
 {
   static_assert(std::is_base_of<Exception, EXCEPTION>(), "Only Exception derived types may be thrown.");
   Exception::onThrow(exception);

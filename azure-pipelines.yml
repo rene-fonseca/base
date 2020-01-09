@@ -1,5 +1,8 @@
 trigger:
-- master
+  batch: true
+  branches:
+    include:
+    - master
 
 pr:
 - master
@@ -11,6 +14,8 @@ resources:
   containers:
   - container: centos
     image: renefonseca/base-centos8:latest
+  - container: raspberrypi4
+    image: renefonseca/base-raspberrypi4-64-debian:latest
 
 jobs:
 - job: windows
@@ -205,6 +210,39 @@ jobs:
   pool:
     vmImage: 'ubuntu-18.04'
   container: centos
+  steps:
+  - script: $(Build.SourcesDirectory)/ci/config.sh
+    displayName: 'Config'
+    workingDirectory: $(Build.BinariesDirectory)
+
+  - script: $(Build.SourcesDirectory)/ci/build.sh
+    displayName: 'Build'
+    workingDirectory: $(Build.BinariesDirectory)
+
+  - script: $(Build.SourcesDirectory)/ci/test.sh
+    displayName: 'Run tests'
+    continueOnError: true
+    workingDirectory: $(Build.BinariesDirectory)
+
+  - task: PublishTestResults@2
+    inputs:
+      testResultsFormat: 'JUnit'
+      testResultsFiles: '**/junit.xml'
+      testRunTitle: 'Unittest results'
+      workingDirectory: $(Build.BinariesDirectory)
+
+  - task: PublishTestResults@2
+    inputs:
+      testResultsFormat: 'cTest'
+      testResultsFiles: '**/Test.xml'
+      testRunTitle: 'Test results for CTest'
+      workingDirectory: $(Build.BinariesDirectory)
+
+- job: debian_arm64
+  condition: eq(1,2)
+  pool:
+    vmImage: 'ubuntu-18.04'
+  container: raspberrypi4
   steps:
   - script: $(Build.SourcesDirectory)/ci/config.sh
     displayName: 'Config'

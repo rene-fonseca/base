@@ -28,6 +28,7 @@ public:
 
   TEST_PRIORITY(10);
   TEST_PROJECT("base/collection");
+  // TAG: need something like this TEST_REPO_URL(_COM_AZURE_DEV__BASE__REPO_GET) or get when registering
 
   void run() override
   {

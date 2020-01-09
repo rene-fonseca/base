@@ -60,7 +60,7 @@ namespace {
     if (!source) {
       return source;
     }
-    Version version;
+    Version version; // TAG: get from test
     auto remoteUrl = version.getRemoteUrl();
     if (!FileSystem::isAbsolutePath(source) && remoteUrl) {
       Url url(remoteUrl);

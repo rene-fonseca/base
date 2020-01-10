@@ -25,6 +25,7 @@
 #include <base/io/FileDescriptor.h>
 #include <base/filesystem/FileSystem.h>
 #include <base/net/Url.h>
+#include <base/SystemInformation.h>
 #include <base/Version.h>
 #include <algorithm>
 #include <memory>
@@ -1181,14 +1182,15 @@ String UnitTestManager::getJUnit(const String& uuid, const String& name) const
     Guid::createGuidAsString(), name ? name : "BASE" /*, 1, failed ? 1 : 0, totalTime/1000000.0*/
   );
   
-  String hostname = "localhost";
-#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
-  hostname = "windows";
-#elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__GNULINUX)
-  hostname = "gnulinux";
-#elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__MACOS)
-  hostname = "macos";
-#endif
+  String hostname;
+  for (auto ch : SystemInformation::getOS().toLowerCase()) {
+    if (((ch >= 'a') && (ch <= 'z')) || ((ch >= '0') && (ch <= '9'))) {
+      hostname += ch;
+    }
+  }
+  if (!hostname) {
+    hostname = "localhost";
+  }
 
 #if (_COM_AZURE_DEV__BASE__DEBUG)
   const String configuration("Debug");

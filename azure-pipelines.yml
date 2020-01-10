@@ -229,7 +229,7 @@ jobs:
   - task: PublishTestResults@2
     inputs:
       testResultsFormat: 'JUnit'
-      testResultsFiles: '(junit.xml|**/junit.xml)'
+      testResultsFiles: 'junit.xml'
       testRunTitle: 'Unittest results'
       workingDirectory: $(Build.BinariesDirectory)
 
@@ -239,6 +239,12 @@ jobs:
       testResultsFiles: '**/Test.xml'
       testRunTitle: 'Test results for CTest'
       workingDirectory: $(Build.BinariesDirectory)
+
+  - task: PublishPipelineArtifact@1
+    inputs:
+      artifactName: 'base-centos8'
+      targetPath: 'artifacts'
+      path: $(Build.BinariesDirectory)/install
 
 - job: fedora_x64
   pool:
@@ -261,7 +267,7 @@ jobs:
   - task: PublishTestResults@2
     inputs:
       testResultsFormat: 'JUnit'
-      testResultsFiles: '(junit.xml|**/junit.xml)'
+      testResultsFiles: 'junit.xml'
       testRunTitle: 'Unittest results'
       workingDirectory: $(Build.BinariesDirectory)
 
@@ -271,6 +277,12 @@ jobs:
       testResultsFiles: '**/Test.xml'
       testRunTitle: 'Test results for CTest'
       workingDirectory: $(Build.BinariesDirectory)
+
+  - task: PublishPipelineArtifact@1
+    inputs:
+      artifactName: 'base-fedora'
+      targetPath: 'artifacts'
+      path: $(Build.BinariesDirectory)/install
 
 - job: wasm32
   pool:
@@ -289,7 +301,6 @@ jobs:
       PATH=$PATH:/wasmtime
       wasmtime ./testsuite/unittesting --env=CLICOLOR_FORCE=1 --env=AGENT_BUILDDIRECTORY= -- --junit stderr 2> junit.xml
       ctest -T Test
-      find . | grep xml
     displayName: 'Run tests'
     continueOnError: true
     workingDirectory: $(Build.BinariesDirectory)
@@ -297,16 +308,20 @@ jobs:
   - task: PublishTestResults@2
     inputs:
       testResultsFormat: 'JUnit'
-      testResultsFiles: '(junit.xml|**/junit.xml)'
+      testResultsFiles: '**/junit.xml'
       testRunTitle: 'Unittest results'
-      workingDirectory: $(Build.BinariesDirectory)
 
   - task: PublishTestResults@2
     inputs:
       testResultsFormat: 'cTest'
       testResultsFiles: '**/Test.xml'
       testRunTitle: 'Test results for CTest'
-      workingDirectory: $(Build.BinariesDirectory)
+
+  - task: PublishPipelineArtifact@1
+    inputs:
+      artifactName: 'base-wasi'
+      targetPath: 'artifacts'
+      path: $(Build.BinariesDirectory)/install
 
 - job: ubuntu16_04
   pool:

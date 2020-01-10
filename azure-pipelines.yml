@@ -58,7 +58,7 @@ jobs:
 
   - task: PublishPipelineArtifact@1
     inputs:
-      artifactName: 'base-windows'
+      artifactName: 'base-windows-x64'
       targetPath: 'artifacts'
       path: $(System.DefaultWorkingDirectory)/build/install
 

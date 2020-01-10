@@ -1188,7 +1188,8 @@ String UnitTestManager::getJUnit(const String& uuid, const String& name) const
   );
   
   String hostname;
-  for (auto ch : SystemInformation::getOS().toLowerCase()) {
+  const String os = SystemInformation::getOS().toLowerCase();
+  for (auto ch : os) {
     if (((ch >= 'a') && (ch <= 'z')) || ((ch >= '0') && (ch <= '9'))) {
       hostname += ch;
     }

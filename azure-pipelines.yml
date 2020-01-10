@@ -16,6 +16,8 @@ resources:
     image: renefonseca/base-centos8:latest
   - container: fedora
     image: renefonseca/base-fedora:latest
+  - container: wasi
+    image: renefonseca/base-wasi:latest
 
 jobs:
 - job: windows
@@ -227,7 +229,7 @@ jobs:
   - task: PublishTestResults@2
     inputs:
       testResultsFormat: 'JUnit'
-      testResultsFiles: '**/junit.xml'
+      testResultsFiles: '(junit.xml|**/junit.xml)'
       testRunTitle: 'Unittest results'
       workingDirectory: $(Build.BinariesDirectory)
 
@@ -259,7 +261,43 @@ jobs:
   - task: PublishTestResults@2
     inputs:
       testResultsFormat: 'JUnit'
-      testResultsFiles: '**/junit.xml'
+      testResultsFiles: '(junit.xml|**/junit.xml)'
+      testRunTitle: 'Unittest results'
+      workingDirectory: $(Build.BinariesDirectory)
+
+  - task: PublishTestResults@2
+    inputs:
+      testResultsFormat: 'cTest'
+      testResultsFiles: '**/Test.xml'
+      testRunTitle: 'Test results for CTest'
+      workingDirectory: $(Build.BinariesDirectory)
+
+- job: wasm32
+  pool:
+    vmImage: 'ubuntu-18.04'
+  container: wasi
+  steps:
+  - script: cmake $(Build.SourcesDirectory) -DCOLOR=1 -DCMAKE_BUILD_TYPE=Debug -DCMAKE_INSTALL_PREFIX=install -DCMAKE_TOOLCHAIN_FILE=/wasi-sdk-8.0/share/cmake/wasi-sdk.cmake -DWASI_SDK_PREFIX=/wasi-sdk-8.0
+    displayName: 'Config'
+    workingDirectory: $(Build.BinariesDirectory)
+
+  - script: cmake --build . --config Debug --target install -- -j 4
+    displayName: 'Build'
+    workingDirectory: $(Build.BinariesDirectory)
+
+  - script: |
+      PATH=$PATH:/wasmtime
+      wasmtime ./testsuite/unittesting --env=CLICOLOR_FORCE=1 --env=AGENT_BUILDDIRECTORY= -- --junit stderr 2> junit.xml
+      ctest -T Test
+      find . | grep xml
+    displayName: 'Run tests'
+    continueOnError: true
+    workingDirectory: $(Build.BinariesDirectory)
+
+  - task: PublishTestResults@2
+    inputs:
+      testResultsFormat: 'JUnit'
+      testResultsFiles: '(junit.xml|**/junit.xml)'
       testRunTitle: 'Unittest results'
       workingDirectory: $(Build.BinariesDirectory)
 

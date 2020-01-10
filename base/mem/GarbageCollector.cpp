@@ -141,8 +141,25 @@ void GarbageCollector::release(AnyReference& reference)
   }
 }
 
+void GarbageCollector::release(AnyReference&& reference)
+{
+  if (reference) {
+    auto r = moveObject(reference);
+    collector.release(r);
+  }
+}
+
 /** Garbage collect given object. */
 void garbageCollect(AnyReference& reference)
+{
+  if (reference) {
+    auto r = moveObject(reference);
+    collector.release(r);
+  }
+}
+
+/** Garbage collect given object. */
+void garbageCollect(AnyReference&& reference)
 {
   if (reference) {
     auto r = moveObject(reference);

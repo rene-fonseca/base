@@ -43,6 +43,9 @@ public:
 
   /** Tells garbage collector tor release the given object. The reference will be set to nullptr. */
   static void release(AnyReference& reference);
+
+  /** Tells garbage collector tor release the given object. The reference will be set to nullptr. */
+  static void release(AnyReference&& reference);
 };
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

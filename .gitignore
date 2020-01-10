@@ -32,3 +32,5 @@ wasm
 *.plist
 .DS_Store
 junit.xml
+*.tar.gz
+

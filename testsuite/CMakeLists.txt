@@ -55,8 +55,8 @@ foreach(sourcefile ${TEST_SOURCES})
 
   set_target_properties(${name} PROPERTIES FOLDER testsuite)
 
-# do NOT install tests for webassembly platforms due to size
-if (NOT (EMSCRIPTEN OR ("${CMAKE_SYSTEM_NAME}" STREQUAL "Wasm") OR ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "WASI")))
+# do NOT install all tests for WebAssembly platforms due to size
+if (("${name}" STREQUAL "unittesting") OR NOT (EMSCRIPTEN OR ("${CMAKE_SYSTEM_NAME}" STREQUAL "Wasm") OR ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "WASI")))
   install(TARGETS ${name}
     CONFIGURATIONS Debug
     ARCHIVE DESTINATION "${CMAKE_INSTALL_PREFIX}/bin/debug"

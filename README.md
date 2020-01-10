@@ -20,7 +20,7 @@ Reference API documentation is hosted at https://rene-fonseca.github.io/base-api
 [![CentOS 8](https://dev.azure.com/renefonseca/base/_apis/build/status/rene-fonseca.base?branchName=master&jobName=centos8&label=CentOS%208)](https://dev.azure.com/renefonseca/base/_build/latest?definitionId=5&branchName=master)
 [![Fedora x64](https://dev.azure.com/renefonseca/base/_apis/build/status/rene-fonseca.base?branchName=master&jobName=fedora_x64&label=Fedora%20x64)](https://dev.azure.com/renefonseca/base/_build/latest?definitionId=5&branchName=master)
 [![macOS](https://dev.azure.com/renefonseca/base/_apis/build/status/rene-fonseca.base?branchName=master&jobName=macos&label=macOS)](https://dev.azure.com/renefonseca/base/_build/latest?definitionId=5&branchName=master)
-
+[![wasm32](https://dev.azure.com/renefonseca/base/_apis/build/status/rene-fonseca.base?branchName=master&jobName=wasm32&label=WebAssembly%2032)](https://dev.azure.com/renefonseca/base/_build/latest?definitionId=5&branchName=master)
 
 
 ## Dependencies
@@ -86,13 +86,14 @@ Windows            | ARM64    | MSC     | Ok         | Runs continuously on pipe
 Ubuntu 18.04       | x86_64   | GCC     | Ok         | Runs continuously on pipeline
 Ubuntu 16.04       | x86_64   | GCC     | Ok         | Runs continuously on pipeline
 CentOS 8           | x86_64   | GCC     | Ok         | Runs continuously on pipeline
+Fedora             | x86_64   | GCC     | Ok         | Runs continuously on pipeline
 macOS              | x86_64   | Clang   | Ok         | Runs continuously on pipeline
+WebAssembly WASI   | WASM32   | LLVM    | Ok         | Runs continuously on pipeline - Exceptions cause abort()
 Windows            | x86      | MSC     | Ok         | 8 Dec 2019
 Windows            | ARM32    | MSC     | Ok         | 8 Dec 2019
 Windows            | ARM64    | MSC     | Ok         | 8 Dec 2019
 Debian 10          | x86_64   | GCC     | Ok         | 5 Dec 2019
 Ubuntu 19.04       | x86_64   | GCC     | Ok         | 5 Dec 2019
-Fedora 31          | x86_64   | GCC     | Ok         | 5 Dec 2019
 RedHat 8.1         | x86_64   | GCC     | Ok         | 7 Dec 2019
 FreeBSD 12.1       | x86_64   | Clang   | Ok         | 7 Dec 2019
 OpenBSD 66         | x86_64   | GCC     | Ok         | 9 Dec 2019
@@ -100,7 +101,6 @@ Raspbian 10        | ARM32    | GCC     | Ok         | 9 Dec 2019
 openSUSE 15        | x86_64   | GCC     | Ok         | 9 Dec 2019
 Amazon Linux 2     | x86_64   | GCC     | Ok         | 17 Dec 2019 - Requires cmake build
 Emscripten         | WASM32   | LLVM    | Ok         | 20 Dec 2019
-WebAssembly WASI8  | WASM32   | LLVM    | Ok         | 3 Jan 2020 - Exceptions cause abort()
 OpenSolaris 11     | x86_64   | GCC     | Ok         | 6 Dec 2019
 OpenSolaris 11     | x86_64   | LLVM    | Pending    |
 OpenSolaris 11     | x86_64   | Studio  | Pending    |

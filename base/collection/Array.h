@@ -191,6 +191,9 @@ public:
     }
   }
   
+  /**
+    Sets the size of the array by filling with the given value.
+  */
   void setSize(MemorySize size, const TYPE& value)
   {
     if (!elements || (size != elements->getSize())) {
@@ -293,6 +296,9 @@ public:
   {
   }
 
+  /**
+    Initializes array from other array.
+  */
   Array(Array&& move) noexcept
   {
     elements = moveObject(move.elements);
@@ -307,6 +313,9 @@ public:
     return *this;
   }
 
+  /**
+    Assignment of array to array.
+  */
   Array& operator=(Array&& move) noexcept
   {
     elements = moveObject(move.elements);
@@ -435,6 +444,9 @@ public:
     return getEndIterator();
   }
   
+  /**
+    Returns random access iterators.
+  */
   inline operator RandomAccessIterable<Iterator>() noexcept
   {
     return RandomAccessIterable<Iterator>(begin(), end());
@@ -571,11 +583,13 @@ public:
     dest[index] = moveObject(value);
   }
 
+  /** Inserts values at the given position. */
   void insert(const Iterator& it, const Value& value)
   {
     insert(it - begin(), value);
   }
 
+  /** Inserts values at the given position. */
   void insert(const Iterator& it, Value&& value)
   {
     insert(it - begin(), moveObject(value));
@@ -803,6 +817,7 @@ public:
     }
   }
   
+  /** Returns true if greater than or equal. */
   inline bool operator>=(const Array& compare) const
   {
     return !operator<(compare);

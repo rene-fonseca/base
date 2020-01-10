@@ -499,6 +499,7 @@ public:
   {
   }
 
+  /** Initializes list from initializer list. */
   List(std::initializer_list<TYPE> values)
     : elements(new ListImpl())
   {
@@ -608,33 +609,39 @@ public:
     return ReadEnumerator(getFirstNode());
   }
 
+  /** Returns begin iterator. */
   Iterator begin()
   {
     elements.copyOnWrite();
     return Iterator(getFirstNode());
   }
 
+  /** Returns end iterator. */
   Iterator end()
   {
     elements.copyOnWrite();
     return Iterator(nullptr);
   }
 
+  /** Returns begin iterator. */
   ReadIterator begin() const noexcept
   {
     return ReadIterator(getFirstNode());
   }
 
+  /** Returns end iterator. */
   ReadIterator end() const noexcept
   {
     return ReadIterator(nullptr);
   }
 
+  /** Returns begin iterator. */
   ReadIterator cbegin() const noexcept
   {
     return ReadIterator(getFirstNode());
   }
 
+  /** Returns end iterator. */
   ReadIterator cend() const noexcept
   {
     return ReadIterator(nullptr);
@@ -905,6 +912,7 @@ public:
     }
   }
   
+  /** Returns true if greater than or equal. */
   inline bool operator>=(const List& compare) const
   {
     return !operator<(compare);

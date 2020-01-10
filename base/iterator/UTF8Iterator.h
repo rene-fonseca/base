@@ -137,20 +137,25 @@ public:
     return element < compare.element;
   }
 
+  /**
+    Returns true if this iterator is less than or equal to the specified iterator.
+  */
   inline bool operator<=(const UTF8Iterator& compare) const noexcept
   {
     return element <= compare.element;
   }
   
   /**
-    Returns true if this iterator is greater than or equal to the specified
-    iterator.
+    Returns true if this iterator is greater than or equal to the specified iterator.
   */
   inline bool operator>=(const UTF8Iterator& compare) const noexcept
   {
     return element >= compare.element;
   }
 
+  /**
+    Returns true if this iterator is greater than the specified iterator.
+  */
   inline bool operator>(const UTF8Iterator& compare) const noexcept
   {
     return element > compare.element;
@@ -203,20 +208,24 @@ private:
   UTF8Iterator end = nullptr;
 public:
 
+  /** Initializes enumerator. */
   inline UTF8Enumerator() noexcept
   {
   }
 
+  /** Initializes enumerator. */
   inline UTF8Enumerator(const UTF8Iterator& _begin, const UTF8Iterator& _end) noexcept
     : src(_begin), end(_end)
   {
   }
 
+  /** Returns true if more items. */
   inline bool hasNext() const noexcept
   {
     return src != end;
   }
 
+  /** Advances to the next item. */
   inline ucs4 next()
   {
     return *src++;

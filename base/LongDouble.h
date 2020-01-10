@@ -44,6 +44,7 @@ public:
   */
   static long double getEpsilon() noexcept;
 
+  /** Returns infinity. */
   static /*constexpr*/ long double getInfinity() noexcept
   {
 #if (_COM_AZURE_DEV__BASE__COMPILER == _COM_AZURE_DEV__BASE__COMPILER_MSC)

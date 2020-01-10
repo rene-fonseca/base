@@ -231,14 +231,14 @@ jobs:
       testResultsFormat: 'JUnit'
       testResultsFiles: 'junit.xml'
       testRunTitle: 'Unittest results'
-      workingDirectory: $(Build.BinariesDirectory)
+      searchFolder: '$(Build.BinariesDirectory)'
 
   - task: PublishTestResults@2
     inputs:
       testResultsFormat: 'cTest'
       testResultsFiles: '**/Test.xml'
       testRunTitle: 'Test results for CTest'
-      workingDirectory: $(Build.BinariesDirectory)
+      searchFolder: '$(Build.BinariesDirectory)'
 
   - task: PublishPipelineArtifact@1
     inputs:
@@ -269,14 +269,12 @@ jobs:
       testResultsFormat: 'JUnit'
       testResultsFiles: 'junit.xml'
       testRunTitle: 'Unittest results'
-      workingDirectory: $(Build.BinariesDirectory)
 
   - task: PublishTestResults@2
     inputs:
       testResultsFormat: 'cTest'
       testResultsFiles: '**/Test.xml'
       testRunTitle: 'Test results for CTest'
-      workingDirectory: $(Build.BinariesDirectory)
 
   - task: PublishPipelineArtifact@1
     inputs:
@@ -310,12 +308,14 @@ jobs:
       testResultsFormat: 'JUnit'
       testResultsFiles: '**/junit.xml'
       testRunTitle: 'Unittest results'
+      searchFolder: '$(Build.BinariesDirectory)'
 
   - task: PublishTestResults@2
     inputs:
       testResultsFormat: 'cTest'
       testResultsFiles: '**/Test.xml'
       testRunTitle: 'Test results for CTest'
+      searchFolder: '$(System.DefaultWorkingDirectory)'
 
   - task: PublishPipelineArtifact@1
     inputs:

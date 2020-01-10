@@ -613,6 +613,11 @@ String UnitTest::getJUnit() const
         xml += result.what + "\n";
         xml += Format::subst("File: %1\n", getSource());
         xml += Format::subst("Line: %1\n", result.line);
+        if (UnitTestManager::getManager().getUseUrlAsSource()) { // JUnit: add support for failed subtest link to repo
+          if (String url = getRepoUrl(getSource(), result.line)) {
+            xml += Format::subst("Source: %1\n", url);
+          }
+        }
         xml += "]]>";
         xml += "</failure>";
       }

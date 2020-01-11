@@ -41,7 +41,7 @@ void RegExp::compile()
     options |= REG_ICASE;
   }
   regex_t* preq = new regex_t;
-  int result = regcomp(&preq, pattern.getElements(), options);
+  int result = regcomp(preq, pattern.getElements(), options);
   if (result == 0) { // succesful
     compiled = preq;
   } else {

@@ -153,7 +153,7 @@ Semaphore::Semaphore(unsigned int value)
   }
   this->semaphore = semaphore;
 #else
-  BASSERT(!"Not supported.");
+  semaphore = new int(0);
 #endif
 }
 
@@ -203,8 +203,8 @@ int Semaphore::getValue() const
   }
   return result;
 #else
-  BASSERT(!"Not supported.");
-  return false;
+  int* handle = reinterpret_cast<int*>(semaphore);
+  return *handle;
 #endif
 }
 
@@ -236,7 +236,8 @@ void Semaphore::post()
   }
   pthread_cond_signal(&(sem->condition)); // we only need to signal one thread
 #else
-  BASSERT(!"Not supported.");
+  int* handle = reinterpret_cast<int*>(semaphore);
+  ++*handle;
 #endif
 }
 
@@ -266,7 +267,10 @@ void Semaphore::wait() const
     _throw SemaphoreException(this);
   }
 #else
-  BASSERT(!"Not supported.");
+  int* handle = reinterpret_cast<int*>(semaphore);
+  while (!*handle) {
+  }
+  --*handle;
 #endif
 }
 
@@ -291,7 +295,11 @@ bool Semaphore::tryWait() const
   }
   return result;
 #else
-  BASSERT(!"Not supported.");
+  int* handle = reinterpret_cast<int*>(semaphore);
+  if (*handle) {
+    --*handle;
+    return true;
+  }
   return false;
 #endif
 }
@@ -320,7 +328,8 @@ Semaphore::~Semaphore()
   pthread_mutex_destroy(&((SemaphoreImpl::Semaphore*)semaphore)->mutex); // lets just hope that this doesn't fail
   delete[] (SemaphoreImpl::Semaphore*)semaphore;
 #else
-  BASSERT(!"Not supported.");
+  int* handle = reinterpret_cast<int*>(semaphore);
+  delete handle;
 #endif
 }
 

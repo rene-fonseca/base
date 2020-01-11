@@ -1202,7 +1202,7 @@ Date File::getLastChange()
 unsigned long File::getVariable(Variable variable)
 {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
-  _throw NotSupported(this);
+  _COM_AZURE_DEV__BASE__NOT_SUPPORTED();
 #else // unix
 #  if (!(defined(_PC_FILESIZEBITS)))
 #    define _PC_FILESIZEBITS -1
@@ -1244,8 +1244,9 @@ unsigned long File::getVariable(Variable variable)
     _throw FileException("Unable to get variable.", this);
   }
   // TAG: add POSIX values here?
-  _throw NotSupported(this);
+  _COM_AZURE_DEV__BASE__NOT_SUPPORTED();
 #endif // flavor
+  return 0;
 }
 
 unsigned int File::read(

@@ -404,11 +404,12 @@ int64 OperatingSystem::getResourceLimit(
 #endif // flavor
 }
 
-void OperatingSystem::setResourceLimit(Resource resource, int64 limit, LimitType type) {
+void OperatingSystem::setResourceLimit(Resource resource, int64 limit, LimitType type)
+{
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
-  _throw NotSupported(Type::getType<OperatingSystem>());
+  _COM_AZURE_DEV__BASE__NOT_SUPPORTED();
 #elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__WASI)
-  _throw NotSupported(Type::getType<OperatingSystem>());
+  _COM_AZURE_DEV__BASE__NOT_SUPPORTED();
 #else // unix
 #if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__GNULINUX)
   static const __rlimit_resource_t RESOURCES[] =

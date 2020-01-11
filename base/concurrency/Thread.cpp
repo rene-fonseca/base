@@ -213,7 +213,7 @@ void Thread::exit() noexcept
   pthread_exit(0); // will properly create resource leaks
 #else
   BASSERT(!"Not supported.");
-  // _COM_AZURE_DEV__BASE_NOT_SUPPORTED(); // throw NotSupported();
+  // _COM_AZURE_DEV__BASE__NOT_SUPPORTED();
 #endif // flavor
 }
 
@@ -987,6 +987,8 @@ void MyThread::run()
 
 #if (_COM_AZURE_DEV__BASE__OS != _COM_AZURE_DEV__BASE__WASI)
 TEST_REGISTER(Thread);
+#else
+_COM_AZURE_DEV__BASE__DEFINE_DEPENDENCY(Thread);
 #endif
 
 #endif

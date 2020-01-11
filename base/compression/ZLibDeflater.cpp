@@ -77,7 +77,7 @@ ZLibDeflater::ZLibDeflater()
   case internal::ZLibDeflater::OK:
     break;
   case internal::ZLibDeflater::VERSION_ERROR:
-    _throw NotSupported(this);
+    _COM_AZURE_DEV__BASE__NOT_SUPPORTED();
   default:
     _throw MemoryException(this);
   }
@@ -102,7 +102,7 @@ ZLibDeflater::ZLibDeflater(unsigned int compressionLevel)
   case internal::ZLibDeflater::OK:
     break;
   case internal::ZLibDeflater::VERSION_ERROR:
-    _throw NotSupported(this);
+    _COM_AZURE_DEV__BASE__NOT_SUPPORTED();
   default:
     _throw MemoryException(this);
   }

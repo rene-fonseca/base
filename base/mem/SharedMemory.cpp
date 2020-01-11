@@ -126,7 +126,7 @@ void SharedMemory::SharedMemoryImpl::lock()
   );
 #else // unix
   #if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__CYGWIN)
-    _throw NotSupported(this);
+    _COM_AZURE_DEV__BASE__NOT_SUPPORTED();
   #elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__WASI)
     BASSERT(!"Not supported.");
   #else
@@ -147,7 +147,7 @@ void SharedMemory::SharedMemoryImpl::unlock()
   );
 #else // unix
   #if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__CYGWIN)
-    _throw NotSupported(this);
+    _COM_AZURE_DEV__BASE__NOT_SUPPORTED();
   #elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__WASI)
     BASSERT(!"Not supported.");
   #else  

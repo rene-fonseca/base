@@ -141,9 +141,9 @@ Process Process::getParentProcess() noexcept
 Process Process::fork()
 {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
-  _throw NotSupported(Type::getType<Process>());
+  _COM_AZURE_DEV__BASE__NOT_SUPPORTED();
 #elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__WASI)
-  _throw NotSupported(Type::getType<Process>());
+  _COM_AZURE_DEV__BASE__NOT_SUPPORTED();
 #else // unix
   pid_t result = ::fork(); // should we use fork1 on solaris
   if (result == (pid_t)-1) {

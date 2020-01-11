@@ -81,7 +81,7 @@ ZLibInflater::ZLibInflater()
   case internal::ZLibInflater::OK:
     break;
   case internal::ZLibInflater::VERSION_ERROR:
-    _throw NotSupported(this);
+    _COM_AZURE_DEV__BASE__NOT_SUPPORTED();
   default:
     _throw MemoryException(this);
   }

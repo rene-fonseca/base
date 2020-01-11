@@ -1072,7 +1072,7 @@ uint64 Socket::getTcpDeferAccept() const
   );
   return buffer;
 #else
-  _throw NotSupported(this); // TAG: fixme
+  _COM_AZURE_DEV__BASE__NOT_SUPPORTED(); // TAG: fixme
 #endif
 }
 
@@ -1087,7 +1087,7 @@ void Socket::setTcpDeferAccept(uint64 value) {
     sizeof(buffer)
   );
 #else
-  _throw NotSupported(this); // TAG: fixme
+  _COM_AZURE_DEV__BASE__NOT_SUPPORTED(); // TAG: fixme
 #endif
 }
  

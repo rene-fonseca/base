@@ -842,62 +842,62 @@ void LinuxRawIEEE1394::writeIsochronous(const uint8* buffer, unsigned int size, 
 
 void LinuxRawIEEE1394::resetBus()
 {
-  _throw NotSupported();
+  _COM_AZURE_DEV__BASE__NOT_SUPPORTED();
 }
 
 LinuxRawIEEE1394::LinuxRawIEEE1394()
 {
-  _throw NotSupported();
+  _COM_AZURE_DEV__BASE__NOT_SUPPORTED();
 }
 
 bool LinuxRawIEEE1394::hasBeenReset() const
 {
-  _throw NotSupported();
+  _COM_AZURE_DEV__BASE__NOT_SUPPORTED();
 }
 
 void LinuxRawIEEE1394::acknowledgeReset()
 {
-  _throw NotSupported();
+  _COM_AZURE_DEV__BASE__NOT_SUPPORTED();
 }
 
 Array<EUI64> LinuxRawIEEE1394::getAdapters()
 {
-  _throw NotSupported();
+  _COM_AZURE_DEV__BASE__NOT_SUPPORTED();
 }
 
 void LinuxRawIEEE1394::open()
 {
-  _throw NotSupported();
+  _COM_AZURE_DEV__BASE__NOT_SUPPORTED();
 }
 
 void LinuxRawIEEE1394::open(const EUI64& adapter)
 {
-  _throw NotSupported();
+  _COM_AZURE_DEV__BASE__NOT_SUPPORTED();
 }
 
 void LinuxRawIEEE1394::close()
 {
-  _throw NotSupported();
+  _COM_AZURE_DEV__BASE__NOT_SUPPORTED();
 }
 
 unsigned int LinuxRawIEEE1394::getLocalId() const
 {
-  _throw NotSupported();
+  _COM_AZURE_DEV__BASE__NOT_SUPPORTED();
 }
 
 unsigned int LinuxRawIEEE1394::getNumberOfNodes() const
 {
-  _throw NotSupported();
+  _COM_AZURE_DEV__BASE__NOT_SUPPORTED();
 }
 
 unsigned int LinuxRawIEEE1394::getStatus() const
 {
-  _throw NotSupported();
+  _COM_AZURE_DEV__BASE__NOT_SUPPORTED();
 }
 
 unsigned int LinuxRawIEEE1394::getFIFOSize() const
 {
-  _throw NotSupported();
+  _COM_AZURE_DEV__BASE__NOT_SUPPORTED();
 }
 
 void LinuxRawIEEE1394::read(
@@ -906,7 +906,7 @@ void LinuxRawIEEE1394::read(
   uint8* buffer,
   unsigned int size)
 {
-  _throw NotSupported();
+  _COM_AZURE_DEV__BASE__NOT_SUPPORTED();
 }
 
 void LinuxRawIEEE1394::write(
@@ -915,7 +915,7 @@ void LinuxRawIEEE1394::write(
   const uint8* buffer,
   unsigned int size)
 {
-  _throw NotSupported();
+  _COM_AZURE_DEV__BASE__NOT_SUPPORTED();
 }
 
 unsigned int LinuxRawIEEE1394::read(
@@ -924,7 +924,7 @@ unsigned int LinuxRawIEEE1394::read(
   uint32* buffer,
   unsigned int size,
   uint32 value) {
-  _throw NotSupported();
+  _COM_AZURE_DEV__BASE__NOT_SUPPORTED();
 }
 
 uint32 LinuxRawIEEE1394::lock(
@@ -934,21 +934,21 @@ uint32 LinuxRawIEEE1394::lock(
   uint32 argument,
   uint32 data)
 {
-  _throw NotSupported();
+  _COM_AZURE_DEV__BASE__NOT_SUPPORTED();
 }
 
 LinuxRawIEEE1394::IsochronousReadChannel LinuxRawIEEE1394::getReadChannel(
   unsigned int maxPacketsPerRequest,
   uint64 subchannels)
 {
-  _throw NotSupported();
+  _COM_AZURE_DEV__BASE__NOT_SUPPORTED();
 }
 
 LinuxRawIEEE1394::IsochronousWriteChannel LinuxRawIEEE1394::getWriteChannel(
   unsigned int maxPacketsPerRequest,
   uint64 subchannels)
 {
-  _throw NotSupported();
+  _COM_AZURE_DEV__BASE__NOT_SUPPORTED();
 }
 
 LinuxRawIEEE1394::~LinuxRawIEEE1394() {
@@ -956,37 +956,37 @@ LinuxRawIEEE1394::~LinuxRawIEEE1394() {
 
 bool LinuxRawIEEE1394::wait(unsigned int milliseconds)
 {
-  _throw NotSupported();
+  _COM_AZURE_DEV__BASE__NOT_SUPPORTED();
 }
 
 void LinuxRawIEEE1394::dequeueResponse()
 {
-  _throw NotSupported();
+  _COM_AZURE_DEV__BASE__NOT_SUPPORTED();
 }
 
 void LinuxRawIEEE1394::dequeue()
 {
-  _throw NotSupported();
+  _COM_AZURE_DEV__BASE__NOT_SUPPORTED();
 }
 
 void LinuxRawIEEE1394::registerFCPListener(FunctionControlProtocolListener* listener)
 {
-  _throw NotSupported();
+  _COM_AZURE_DEV__BASE__NOT_SUPPORTED();
 }
 
 void LinuxRawIEEE1394::unregisterFCPListener()
 {
-  _throw NotSupported();
+  _COM_AZURE_DEV__BASE__NOT_SUPPORTED();
 }
 
 void LinuxRawIEEE1394::readIsochronous(unsigned int channel, unsigned int maximumPayload, IsochronousChannelListener* listener)
 {
-  _throw NotSupported();
+  _COM_AZURE_DEV__BASE__NOT_SUPPORTED();
 }
 
 void LinuxRawIEEE1394::writeIsochronous(const uint8* buffer, unsigned int size, unsigned int channel, unsigned int tag, unsigned int sy, Speed speed)
 {
-  _throw NotSupported();
+  _COM_AZURE_DEV__BASE__NOT_SUPPORTED();
 }
 
 #endif

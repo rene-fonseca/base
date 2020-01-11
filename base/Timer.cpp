@@ -311,6 +311,8 @@ public:
 
 #if (_COM_AZURE_DEV__BASE__OS != _COM_AZURE_DEV__BASE__WASI)
 TEST_REGISTER(Timer);
+#else
+_COM_AZURE_DEV__BASE__DEFINE_DEPENDENCY(Timer);
 #endif
 
 #endif

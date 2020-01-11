@@ -1744,7 +1744,7 @@ File FileSystem::getTempFile(unsigned int options)
 
 unsigned long FileSystem::getVariable(const String& path, Variable variable) {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
-  _throw NotSupported(Type::getType<FileSystem>());
+  _COM_AZURE_DEV__BASE__NOT_SUPPORTED();
 #else // unix
 #  if (!(defined(_PC_FILESIZEBITS)))
 #    define _PC_FILESIZEBITS -1
@@ -1784,7 +1784,7 @@ unsigned long FileSystem::getVariable(const String& path, Variable variable) {
   }
 
   // TAG: add POSIX values here?
-  _throw NotSupported(Type::getType<FileSystem>());
+  _COM_AZURE_DEV__BASE__NOT_SUPPORTED();
 #endif // flavor
 }
 

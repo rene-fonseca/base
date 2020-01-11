@@ -201,6 +201,8 @@ void MyThreadKey::run()
 
 #if (_COM_AZURE_DEV__BASE__OS != _COM_AZURE_DEV__BASE__WASI)
 TEST_REGISTER(ThreadKey);
+#else
+_COM_AZURE_DEV__BASE__DEFINE_DEPENDENCY(ThreadKey);
 #endif
 
 #endif

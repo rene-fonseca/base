@@ -344,7 +344,7 @@ int64 Date::getBias() noexcept
   return information.Bias * 60000000LL; // TAG: what about the other bias'
 #else // unix
 #if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__WASI)
-  //throw NotSupported();
+  // _COM_AZURE_DEV__BASE__NOT_SUPPORTED();
   return 0;
 #else
   tzset(); // update variables

@@ -126,7 +126,12 @@ void MutualExclusion::releaseLock() const
   ::LeaveCriticalSection((CRITICAL_SECTION*)mutex);
 #elif defined(_COM_AZURE_DEV__BASE__PTHREAD)
   auto _mutex = reinterpret_cast<pthread_mutex_t*>(mutex);
-  if (pthread_mutex_unlock(_mutex)) {
+  int result = pthread_mutex_unlock(_mutex);
+  if (result == 0) {
+    return;
+  } else if (result == EPERM) {
+    _throw MutualExclusionException("Thread does not own mutex.", this);
+  } else {
     _throw MutualExclusionException(this);
   }
 #else

@@ -294,6 +294,7 @@ public:
   void run() override
   {
     auto start = Timer::getNow();
+#if (_COM_AZURE_DEV__BASE__OS != _COM_AZURE_DEV__BASE__WASI)
     TEST_ASSERT(start > 0);
     Timer t1;
     Thread::nanosleep(100 * 1000);
@@ -306,14 +307,11 @@ public:
     TEST_ASSERT(frequency > 0);
     auto elapsed2 = t1.getMicroseconds();
     TEST_ASSERT(elapsed2 > 0);
+#endif
   }
 };
 
-#if (_COM_AZURE_DEV__BASE__OS != _COM_AZURE_DEV__BASE__WASI)
 TEST_REGISTER(Timer);
-#else
-_COM_AZURE_DEV__BASE__DEFINE_DEPENDENCY(Timer);
-#endif
 
 #endif
 

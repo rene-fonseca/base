@@ -971,11 +971,15 @@ public:
 
     lock.exclusiveLock();
 
+#if (_COM_AZURE_DEV__BASE__OS != _COM_AZURE_DEV__BASE__WASI)
     MyThread thread1(this);
     thread1.start();
+#endif
     Thread::nanosleep(1000 * 1000);
     lock.releaseLock();
+#if (_COM_AZURE_DEV__BASE__OS != _COM_AZURE_DEV__BASE__WASI)
     thread1.join();
+#endif
   }
 };
 
@@ -985,11 +989,7 @@ void MyThread::run()
   parent->runFromThread();
 }
 
-#if (_COM_AZURE_DEV__BASE__OS != _COM_AZURE_DEV__BASE__WASI)
 TEST_REGISTER(Thread);
-#else
-_COM_AZURE_DEV__BASE__DEFINE_DEPENDENCY(Thread);
-#endif
 
 #endif
 

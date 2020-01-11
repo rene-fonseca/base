@@ -182,10 +182,12 @@ public:
     key.setKey(&local);
     TEST_ASSERT(key.getKey() == &local);
 
+#if (_COM_AZURE_DEV__BASE__OS != _COM_AZURE_DEV__BASE__WASI)
     MyThreadKey thread1(this);
     thread1.start();
     Thread::nanosleep(1000 * 1000);
     thread1.join();
+#endif
 
     TEST_ASSERT(key.getKey() == &local);
     key.setKey(nullptr);
@@ -199,11 +201,7 @@ void MyThreadKey::run()
   parent->runFromThread();
 }
 
-#if (_COM_AZURE_DEV__BASE__OS != _COM_AZURE_DEV__BASE__WASI)
 TEST_REGISTER(ThreadKey);
-#else
-_COM_AZURE_DEV__BASE__DEFINE_DEPENDENCY(ThreadKey);
-#endif
 
 #endif
 

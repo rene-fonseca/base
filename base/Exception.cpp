@@ -390,10 +390,15 @@ public:
 
   void run() override
   {
+    Exception e1;
+    Exception e2("123");
+    Exception e3("123", Type::getType<Exception>());
+
+#if (_COM_AZURE_DEV__BASE__OS != _COM_AZURE_DEV__BASE__WASI)
     TEST_DECLARE_HERE(A);
     TEST_DECLARE_NOT_HERE(B);
     TEST_DECLARE_HERE(C);
-
+    
     try {
       _throw bindException(bindType(MyException(), Type::getType<MyExceptionContext>()), "My message.", 1);
       TEST_NOT_HERE(B);
@@ -413,14 +418,11 @@ public:
     }
     
     // TAG: test constructor and destructor exception
+#endif
   }
 };
 
-#if (_COM_AZURE_DEV__BASE__OS != _COM_AZURE_DEV__BASE__WASI)
 TEST_REGISTER(Exception);
-#else
-_COM_AZURE_DEV__BASE__DEFINE_DEPENDENCY(Exception);
-#endif
 
 #endif
 

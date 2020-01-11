@@ -32,13 +32,13 @@ _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 MutualExclusion::MutualExclusion()
 {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
-  mutex = new CRITICAL_SECTION[1];
+  mutex = new CRITICAL_SECTION;
   ::InitializeCriticalSection((CRITICAL_SECTION*)mutex);
   // TAG: could raise STATUS_INVALID_HANDLE
   ::EnterCriticalSection((CRITICAL_SECTION*)mutex); // force allocation of event (non-paged memory)
   ::LeaveCriticalSection((CRITICAL_SECTION*)mutex);
 #elif defined(_COM_AZURE_DEV__BASE__PTHREAD)
-  mutex = new pthread_mutex_t[1];
+  mutex = new pthread_mutex_t;
   pthread_mutexattr_t attributes;
   if (pthread_mutexattr_init(&attributes) != 0) {
     _throw ResourceException(this);
@@ -51,7 +51,8 @@ MutualExclusion::MutualExclusion()
     _throw ResourceException(this);
   }
 #endif // cygwin temporary bug fix
-  if (pthread_mutex_init((pthread_mutex_t*)mutex, &attributes) != 0) {
+  auto _mutex = reinterpret_cast<pthread_mutex_t*>(mutex);
+  if (pthread_mutex_init(_mutex, &attributes) != 0) {
     pthread_mutexattr_destroy(&attributes); // should never fail
     _throw ResourceException(this);
   }
@@ -68,7 +69,8 @@ void MutualExclusion::exclusiveLock() const
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   ::EnterCriticalSection((CRITICAL_SECTION*)mutex);
 #elif defined(_COM_AZURE_DEV__BASE__PTHREAD)
-  int result = pthread_mutex_lock((pthread_mutex_t*)mutex);
+  auto _mutex = reinterpret_cast<pthread_mutex_t*>(mutex);
+  int result = pthread_mutex_lock(_mutex);
   if (result == 0) {
     return;
   } else if (result == EDEADLK) {
@@ -95,7 +97,8 @@ bool MutualExclusion::tryExclusiveLock() const
   result = ::TryEnterCriticalSection((CRITICAL_SECTION*)mutex);
   return result;
 #elif defined(_COM_AZURE_DEV__BASE__PTHREAD)
-  int result = pthread_mutex_trylock((pthread_mutex_t*)mutex);
+  auto _mutex = reinterpret_cast<pthread_mutex_t*>(mutex);
+  int result = pthread_mutex_trylock(_mutex);
   if (result == 0) {
     return true;
   } else if (result == EBUSY) {
@@ -121,7 +124,8 @@ void MutualExclusion::releaseLock() const
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   ::LeaveCriticalSection((CRITICAL_SECTION*)mutex);
 #elif defined(_COM_AZURE_DEV__BASE__PTHREAD)
-  if (pthread_mutex_unlock((pthread_mutex_t*)mutex)) {
+  auto _mutex = reinterpret_cast<pthread_mutex_t*>(mutex);
+  if (pthread_mutex_unlock(_mutex)) {
     _throw MutualExclusionException(this);
   }
 #else
@@ -137,12 +141,13 @@ MutualExclusion::~MutualExclusion()
 {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   ::DeleteCriticalSection((CRITICAL_SECTION*)mutex);
-  delete[] (CRITICAL_SECTION*)mutex;
+  delete (CRITICAL_SECTION*)mutex;
 #elif defined(_COM_AZURE_DEV__BASE__PTHREAD)
-  if (pthread_mutex_destroy((pthread_mutex_t*)mutex)) {
+  auto _mutex = reinterpret_cast<pthread_mutex_t*>(mutex);
+  if (pthread_mutex_destroy(_mutex)) {
     Runtime::corruption(_COM_AZURE_DEV__BASE__PRETTY_FUNCTION);
   }
-  delete[] (pthread_mutex_t*)mutex;
+  delete _mutex;
 #else
   int* handle = reinterpret_cast<int*>(mutex);
   delete handle;

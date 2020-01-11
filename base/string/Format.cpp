@@ -284,7 +284,7 @@ FormatOutputStream& operator<<(FormatOutputStream& stream, const Format::Subst& 
   return subst.operator<<(stream);
 }
 
-#if !defined(__GNUC__) || (__GNUC__ >= 6) // temporary workaround
+#if 1 || !defined(__GNUC__) || (__GNUC__ >= 6) // temporary workaround
 #if defined(_COM_AZURE_DEV__BASE__TESTS)
 
 class TEST_CLASS(Format) : public UnitTest {

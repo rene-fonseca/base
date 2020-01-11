@@ -612,11 +612,14 @@ public:
   };
 };
 
-
-
 #define TEST_REGISTER_IMPL(ID, TYPE) \
+  _COM_AZURE_DEV__BASE__DEFINE_DEPENDENCY(TYPE); \
   namespace { namespace ID { \
-    void _entry() { base::UnitTestManager::getManager().registerTest<TEST_CLASS(TYPE)>(#TYPE, UnitTestManager::trimPath(_COM_AZURE_DEV__BASE__SOURCE_FILE), __LINE__, String()); } \
+    void _entry() { \
+      base::UnitTestManager::getManager().registerTest<TEST_CLASS(TYPE)>( \
+        #TYPE, UnitTestManager::trimPath(_COM_AZURE_DEV__BASE__SOURCE_FILE), __LINE__, String() \
+      ); \
+    } \
     base::UnitTestManager::RegisterEntry::EntryNode _storage = {#TYPE, _entry, nullptr, false}; \
     base::UnitTestManager::RegisterEntry _register(&_storage); \
   } }

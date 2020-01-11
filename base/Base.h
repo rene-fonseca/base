@@ -378,6 +378,16 @@ public:
   static decltype(sizeof(void*)) allocateUniqueId() noexcept;
 };
 
+/** Defines a global variable that other translation units can add a dependency on. */
+#define  _COM_AZURE_DEV__BASE__DEFINE_DEPENDENCY(ID) \
+  volatile bool _COM_AZURE_DEV__BASE__CONCATENATE(_COM_AZURE_DEV__BASE__DEPENDENCY_, ID) = false
+
+/** Adds dependency on translation unit set with _COM_AZURE_DEV__BASE__DEFINE_DEPENDENCY. */
+#define  _COM_AZURE_DEV__BASE__ADD_DEPENDENCY(ID) \
+  extern volatile bool _COM_AZURE_DEV__BASE__CONCATENATE(_COM_AZURE_DEV__BASE__DEPENDENCY_, ID); \
+  volatile bool _COM_AZURE_DEV__BASE__CONCATENATE(_COM_AZURE_DEV__BASE__DEPENDENCY_CONSUME_, ID) = \
+    _COM_AZURE_DEV__BASE__CONCATENATE(_COM_AZURE_DEV__BASE__DEPENDENCY_, ID)
+
 _COM_AZURE_DEV__BASE__API void _COM_AZURE_DEV__BASE__CONCATENATE(_COM_AZURE_DEV__BASE__VERSION_, _COM_AZURE_DEV__BASE__MAJOR_VERSION)() noexcept;
 
 // Consume symbols to cause linker failure on mismatching shared/static builds

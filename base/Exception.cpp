@@ -418,6 +418,8 @@ public:
 
 #if (_COM_AZURE_DEV__BASE__OS != _COM_AZURE_DEV__BASE__WASI)
 TEST_REGISTER(Exception);
+#else
+_COM_AZURE_DEV__BASE__DEFINE_DEPENDENCY(Exception);
 #endif
 
 #endif

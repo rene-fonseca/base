@@ -53,6 +53,76 @@
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
+#if defined(_COM_AZURE_DEV__BASE__TESTS)
+#define DEPENDENCY(ID) _COM_AZURE_DEV__BASE__ADD_DEPENDENCY(ID);
+
+// ./testsuite/Debug/unittesting | grep TEST | sed -e "s/TEST [^ ]*\//DEPENDENCY(/g" | sed -e "s/ .*/);/g"
+DEPENDENCY(Allocator);
+DEPENDENCY(AtomicCounter);
+DEPENDENCY(CPP);
+DEPENDENCY(Event);
+DEPENDENCY(Heap);
+DEPENDENCY(MutualExclusion);
+DEPENDENCY(Once);
+//DEPENDENCY(RecursiveMutualExclusion);
+DEPENDENCY(RecursiveSpinLock);
+DEPENDENCY(Reference);
+DEPENDENCY(Semaphore);
+DEPENDENCY(SpinLock);
+DEPENDENCY(DynamicObject);
+DEPENDENCY(LargeInteger);
+DEPENDENCY(String);
+DEPENDENCY(WideString);
+DEPENDENCY(Array);
+DEPENDENCY(Buffer);
+DEPENDENCY(Exception);
+DEPENDENCY(FloatingPoint);
+DEPENDENCY(HashSet);
+DEPENDENCY(HashTable);
+DEPENDENCY(List);
+DEPENDENCY(Map);
+DEPENDENCY(Set);
+DEPENDENCY(Stack);
+DEPENDENCY(Thread);
+DEPENDENCY(ThreadKey);
+DEPENDENCY(Type);
+DEPENDENCY(BitSet);
+DEPENDENCY(Posix);
+DEPENDENCY(ReferenceCounter);
+DEPENDENCY(ArrayMap);
+DEPENDENCY(Association);
+DEPENDENCY(Pair);
+DEPENDENCY(Parser);
+DEPENDENCY(Math);
+DEPENDENCY(FormatOutputStream);
+DEPENDENCY(Unicode);
+DEPENDENCY(Adler32);
+DEPENDENCY(AdvancedEncryptionStandard);
+DEPENDENCY(Base64);
+DEPENDENCY(CRC32);
+DEPENDENCY(MD5Sum);
+DEPENDENCY(SHA1);
+DEPENDENCY(SHA256);
+DEPENDENCY(SHA384);
+DEPENDENCY(SHA512);
+DEPENDENCY(Process);
+DEPENDENCY(InstanceCounter);
+DEPENDENCY(Timer);
+DEPENDENCY(DynamicLinker);
+DEPENDENCY(RegExp);
+DEPENDENCY(InetAddress);
+DEPENDENCY(Random);
+DEPENDENCY(Url);
+DEPENDENCY(AnyValue);
+DEPENDENCY(Guid);
+DEPENDENCY(Vector2D);
+DEPENDENCY(Vector3D);
+DEPENDENCY(Complex);
+DEPENDENCY(JSON);
+DEPENDENCY(ObjectModel);
+DEPENDENCY(YAML);
+#endif
+
 #if 0
 class Print {
 public:

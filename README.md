@@ -89,7 +89,7 @@ Ubuntu 16.04       | x86_64   | GCC     | Ok         | Runs continuously on pipe
 CentOS 8           | x86_64   | GCC     | Ok         | Runs continuously on pipeline
 Fedora             | x86_64   | GCC     | Ok         | Runs continuously on pipeline
 macOS              | x86_64   | Clang   | Ok         | Runs continuously on pipeline
-IOS                | ARM64    | Clang   | Ok         | Runs continuously on pipeline but no testing
+iOS                | ARM64    | Clang   | Ok         | Runs continuously on pipeline but no testing
 WebAssembly WASI   | WASM32   | LLVM    | Ok         | Runs continuously on pipeline - Exceptions cause abort()
 Windows            | x86      | MSC     | Ok         | 8 Dec 2019
 Windows            | ARM32    | MSC     | Ok         | 8 Dec 2019

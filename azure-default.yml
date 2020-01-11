@@ -10,8 +10,47 @@ pr:
 variables:
   CLICOLOR_FORCE: 1 # used by Base tools
 
+resources:
+  containers:
+  - container: raspberrypi4
+    image: renefonseca/base-raspberrypi4-64-debian:latest
+
 jobs:
+- job: debian_arm64
+  pool:
+    name: Default
+    demands: agent.os -equals Darwin
+  container: raspberrypi4
+  steps:
+  - script: $(Build.SourcesDirectory)/ci/config.sh
+    displayName: 'Config'
+    workingDirectory: $(Build.BinariesDirectory)
+
+  - script: $(Build.SourcesDirectory)/ci/build.sh
+    displayName: 'Build'
+    workingDirectory: $(Build.BinariesDirectory)
+
+  - script: $(Build.SourcesDirectory)/ci/test.sh
+    displayName: 'Run tests'
+    continueOnError: true
+    workingDirectory: $(Build.BinariesDirectory)
+
+  - task: PublishTestResults@2
+    inputs:
+      testResultsFormat: 'JUnit'
+      testResultsFiles: '**/junit.xml'
+      testRunTitle: 'Unittest results'
+      workingDirectory: $(Build.BinariesDirectory)
+
+  - task: PublishTestResults@2
+    inputs:
+      testResultsFormat: 'cTest'
+      testResultsFiles: '**/Test.xml'
+      testRunTitle: 'Test results for CTest'
+      workingDirectory: $(Build.BinariesDirectory)
+
 - job: macos_self
+  condition: eq(1, 2)
   pool:
     name: Default
     demands: agent.os -equals Darwin
@@ -54,6 +93,7 @@ jobs:
 #      path: $(System.DefaultWorkingDirectory)/build/install
 
 - job: macos_emscripten_self
+  condition: eq(1, 2)
   pool:
     name: Default
     demands: agent.os -equals Darwin
@@ -100,8 +140,8 @@ jobs:
       testResultsFiles: '**/Test.xml'
       testRunTitle: 'Test results for CTest'
 
-
 - job: macos_wasi_self
+  condition: eq(1, 2)
   pool:
     name: Default
     demands: agent.os -equals Darwin

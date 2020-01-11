@@ -20,8 +20,11 @@ if (MSVC)
 endif ()
 
 if (IOS)
+set(CMAKE_XCODE_ATTRIBUTE_ENABLE_BITCODE "YES")
 set(CMAKE_XCODE_ATTRIBUTE_CODE_SIGNING_REQUIRED "NO")
-set(CMAKE_XCODE_ATTRIBUTE_CODE_SIGN_IDENTITY "")
+set(CMAKE_XCODE_ATTRIBUTE_CODE_SIGN_IDENTITY "") # "-" or "iPhone Developer" # security find-identity -v -p codesigning
+#set(CMAKE_XCODE_ATTRIBUTE_DEVELOPMENT_TEAM "base")
+#set(MACOSX_BUNDLE_GUI_IDENTIFIER "com.example")
 endif ()
 
 if (CMAKE_CXX_COMPILER MATCHES "/wasic\\+\\+")
@@ -90,13 +93,14 @@ if (("${CMAKE_CXX_COMPILER_ID}" STREQUAL "AppleClang") OR ("${CMAKE_CXX_COMPILER
     EMSCRIPTEN OR ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "WASI"))
   if (IOS)
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-shorten-64-to-32")
+  else ()
+    CHECK_CXX_COMPILER_FLAG(-Wno-shorten-64-to-32 supportsNoShorten64To32)
+    if (supportsNoShorten64To32)
+      set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-shorten-64-to-32")
+    endif ()
   endif ()
-  CHECK_CXX_COMPILER_FLAG(-Wno-shorten-64-to-32 supportsNoShorten64To32)
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-unused-variable") # ignore unused variables
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-unused-private-field") # ignore unused field
-  if (supportsNoShorten64To32)
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-shorten-64-to-32")
-  endif ()
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Werror") # no warnings allowed
 
   if (COLOR OR ("$ENV{CLICOLOR_FORCE}" STREQUAL "1"))

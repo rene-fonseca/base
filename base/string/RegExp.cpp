@@ -17,7 +17,8 @@
 #include <base/UnitTest.h>
 
 #if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__GNULINUX) || \
-    (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__MACOS)
+    (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__MACOS)|| \
+    (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__IOS)
 #  define _COM_AZURE_DEV__BASE__REGEXP_POSIX
 #endif
 

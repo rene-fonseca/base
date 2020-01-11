@@ -147,29 +147,29 @@ ReadWriteLock::ReadWriteLock()
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   representation = new ReadWriteLockImpl();
 #elif defined(_COM_AZURE_DEV__BASE__PTHREAD_RWLOCK)
-  representation = new pthread_rwlock_t[1]; // TAG: needs automatic deletion on exception
+  representation = new pthread_rwlock_t; // TAG: needs automatic deletion on exception
   pthread_rwlockattr_t attributes;
   if (pthread_rwlockattr_init(&attributes) != 0) {
-    delete[] static_cast<pthread_rwlock_t*>(representation);
+    delete static_cast<pthread_rwlock_t*>(representation);
     _throw ResourceException(this);
   }
   if (pthread_rwlockattr_setpshared(&attributes, PTHREAD_PROCESS_PRIVATE) != 0) {
     // TAG: does this also work in a multiprocessor environment (still within the same process)?
     pthread_rwlockattr_destroy(&attributes); // should never fail
-    delete[] static_cast<pthread_rwlock_t*>(representation);
+    delete static_cast<pthread_rwlock_t*>(representation);
     _throw ResourceException(this);
   }
   if (pthread_rwlock_init(static_cast<pthread_rwlock_t*>(representation), &attributes) != 0) {
     pthread_rwlockattr_destroy(&attributes); // should never fail
-    delete[] static_cast<pthread_rwlock_t*>(representation);
+    delete static_cast<pthread_rwlock_t*>(representation);
     _throw ResourceException(this);
   }
   pthread_rwlockattr_destroy(&attributes); // should never fail
 #elif defined(_COM_AZURE_DEV__BASE__PTHREAD)
-  representation = new pthread_mutex_t[1]; // TAG: needs automatic deletion on exception
+  representation = new pthread_mutex_t; // TAG: needs automatic deletion on exception
   pthread_mutexattr_t attributes;
   if (pthread_mutexattr_init(&attributes) != 0) {
-    delete[] static_cast<pthread_mutex_t*>(representation);
+    delete static_cast<pthread_mutex_t*>(representation);
     _throw ResourceException(this);
   }
 #if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__CYGWIN)
@@ -177,13 +177,13 @@ ReadWriteLock::ReadWriteLock()
 #else
   if (pthread_mutexattr_settype(&attributes, PTHREAD_MUTEX_ERRORCHECK) != 0) {
     pthread_mutexattr_destroy(&attributes); // should never fail
-    delete[] static_cast<pthread_mutex_t*>(representation);
+    delete static_cast<pthread_mutex_t*>(representation);
     _throw ResourceException(this);
   }
 #endif // cygwin temporary bug fix
   if (pthread_mutex_init(static_cast<pthread_mutex_t*>(representation), &attributes) != 0) {
     pthread_mutexattr_destroy(&attributes); // should never fail
-    delete[] static_cast<pthread_mutex_t*>(representation);
+    delete static_cast<pthread_mutex_t*>(representation);
     _throw ResourceException(this);
   }
   pthread_mutexattr_destroy(&attributes); // should never fail
@@ -340,12 +340,12 @@ ReadWriteLock::~ReadWriteLock()
   if (pthread_rwlock_destroy(static_cast<pthread_rwlock_t*>(representation))) {
     Runtime::corruption(_COM_AZURE_DEV__BASE__PRETTY_FUNCTION);
   }
-  delete[] static_cast<pthread_rwlock_t*>(representation);
+  delete static_cast<pthread_rwlock_t*>(representation);
 #elif defined(_COM_AZURE_DEV__BASE__PTHREAD)
   if (pthread_mutex_destroy(static_cast<pthread_mutex_t*>(representation))) {
     Runtime::corruption(_COM_AZURE_DEV__BASE__PRETTY_FUNCTION);
   }
-  delete[] static_cast<pthread_mutex_t*>(representation);
+  delete static_cast<pthread_mutex_t*>(representation);
 #else
   int* handle = reinterpret_cast<int*>(representation);
   delete handle;

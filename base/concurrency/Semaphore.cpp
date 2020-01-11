@@ -119,36 +119,36 @@ Semaphore::Semaphore(unsigned int value)
       _throw SemaphoreException(this);
     }
   } else {
-    semaphore = new sem_t[1];
+    semaphore = new sem_t;
     if (sem_init((sem_t*)semaphore, 0, value)) {
-      delete[] (sem_t*)semaphore;
+      delete (sem_t*)semaphore;
       _throw SemaphoreException(this);
     }
   }
 #elif defined(_COM_AZURE_DEV__BASE__PTHREAD)
-  SemaphoreImpl::Semaphore* semaphore = new SemaphoreImpl::Semaphore[1];
+  SemaphoreImpl::Semaphore* semaphore = new SemaphoreImpl::Semaphore;
   semaphore->value = value;
   
   pthread_mutexattr_t attributes;
   if (pthread_mutexattr_init(&attributes)) {
-    delete[] semaphore;
+    delete semaphore;
     _throw SemaphoreException(this);
   }
   if (pthread_mutexattr_settype(&attributes, PTHREAD_MUTEX_ERRORCHECK)) {
     pthread_mutexattr_destroy(&attributes); // should never fail
-    delete[] semaphore;
+    delete semaphore;
     _throw SemaphoreException(this);
   }
   if (pthread_mutex_init(&semaphore->mutex, &attributes)) {
     pthread_mutexattr_destroy(&attributes); // should never fail
-    delete[] semaphore;
+    delete semaphore;
     _throw SemaphoreException(this);
   }
   pthread_mutexattr_destroy(&attributes); // should never fail
 
   if (pthread_cond_init(&(semaphore->condition), 0)) {
     pthread_mutex_destroy(&(semaphore->mutex)); // lets just hope that this doesn't fail
-    delete[] semaphore;
+    delete semaphore;
     _throw SemaphoreException(this);
   }
   this->semaphore = semaphore;
@@ -319,14 +319,14 @@ Semaphore::~Semaphore()
     if (sem_destroy((sem_t*)semaphore) != 0) {
       Runtime::corruption(_COM_AZURE_DEV__BASE__PRETTY_FUNCTION);
     }
-    delete[] (SemaphoreImpl::Semaphore*)semaphore;
+    delete (SemaphoreImpl::Semaphore*)semaphore;
   }
 #elif defined(_COM_AZURE_DEV__BASE__PTHREAD)
   if (pthread_cond_destroy(&((SemaphoreImpl::Semaphore*)semaphore)->condition)) {
     Runtime::corruption(_COM_AZURE_DEV__BASE__PRETTY_FUNCTION);
   }
   pthread_mutex_destroy(&((SemaphoreImpl::Semaphore*)semaphore)->mutex); // lets just hope that this doesn't fail
-  delete[] (SemaphoreImpl::Semaphore*)semaphore;
+  delete (SemaphoreImpl::Semaphore*)semaphore;
 #else
   int* handle = reinterpret_cast<int*>(semaphore);
   delete handle;

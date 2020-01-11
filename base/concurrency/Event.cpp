@@ -43,7 +43,7 @@ private:
 public:
   
   inline HandlePointer()
-    : p(new TYPE[1])
+    : p(new TYPE)
   {
   }
 
@@ -86,7 +86,7 @@ public:
   inline ~HandlePointer()
   {
     if (p) {
-      delete[] p;
+      delete p;
     }
   }
 };
@@ -139,12 +139,12 @@ Event::Event()
     _throw ResourceException("Unable to initialize event.", this);
   }
 #elif defined(_COM_AZURE_DEV__BASE__PTHREAD)
-  EventImpl::Context* context = new EventImpl::Context[1];
+  EventImpl::Context* context = new EventImpl::Context;
   context->signaled = false;
 
   pthread_mutexattr_t attributes;
   if (pthread_mutexattr_init(&attributes)) {
-    delete[] context;
+    delete context;
     _throw ResourceException(this);
   }
 #if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__CYGWIN)
@@ -152,20 +152,20 @@ Event::Event()
 #else
   if (pthread_mutexattr_settype(&attributes, PTHREAD_MUTEX_ERRORCHECK)) {
     pthread_mutexattr_destroy(&attributes); // should never fail
-    delete[] context;
+    delete context;
     _throw ResourceException(this);
   }
 #endif // TAG: cygwin temporary bug fix
   if (pthread_mutex_init(&Cast::pointer<EventImpl::Context*>(context)->mutex, &attributes)) {
     pthread_mutexattr_destroy(&attributes); // should never fail
-    delete[] context;
+    delete context;
     _throw ResourceException(this);
   }
   pthread_mutexattr_destroy(&attributes); // should never fail
 
   if (pthread_cond_init(&Cast::pointer<EventImpl::Context*>(context)->condition, 0)) {
     pthread_mutex_destroy(&Cast::pointer<EventImpl::Context*>(context)->mutex);
-    delete[] context;
+    delete context;
     _throw ResourceException(this);
   }
   this->context = context;
@@ -335,11 +335,11 @@ Event::~Event()
   EventImpl::Context* p = Cast::pointer<EventImpl::Context*>(context);
   if (pthread_cond_destroy(&p->condition)) {
     pthread_mutex_destroy(&p->mutex); // lets just hope that this doesn't fail
-    delete[] p;
+    delete p;
     Runtime::corruption(_COM_AZURE_DEV__BASE__PRETTY_FUNCTION);
   }
   pthread_mutex_destroy(&p->mutex); // lets just hope that this doesn't fail
-  delete[] p;
+  delete p;
 #else
   int* handle = reinterpret_cast<int*>(context);
   delete handle;

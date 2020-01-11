@@ -42,9 +42,9 @@ ThreadKeyImpl::ThreadKeyImpl()
       _throw ResourceException(this);
     }
   } else {
-    pthread_key_t* internalKey = new pthread_key_t[1];
+    pthread_key_t* internalKey = new pthread_key_t;
     if (pthread_key_create(internalKey, 0)) {
-      delete[] internalKey;
+      delete internalKey;
       _throw ResourceException(this);
     }
     key.pointer = internalKey;
@@ -111,7 +111,7 @@ ThreadKeyImpl::~ThreadKeyImpl()
   } else {
     pthread_key_t* internalKey = Cast::pointer<pthread_key_t*>(key.pointer);
     if (pthread_key_delete(*internalKey)) { // key should always be valid at this point
-      delete[] internalKey;
+      delete internalKey;
       Runtime::corruption(_COM_AZURE_DEV__BASE__PRETTY_FUNCTION);
     }
   }

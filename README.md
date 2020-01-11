@@ -20,6 +20,7 @@ Reference API documentation is hosted at https://rene-fonseca.github.io/base-api
 [![CentOS 8](https://dev.azure.com/renefonseca/base/_apis/build/status/rene-fonseca.base?branchName=master&jobName=centos8&label=CentOS%208)](https://dev.azure.com/renefonseca/base/_build/latest?definitionId=5&branchName=master)
 [![Fedora x64](https://dev.azure.com/renefonseca/base/_apis/build/status/rene-fonseca.base?branchName=master&jobName=fedora_x64&label=Fedora%20x64)](https://dev.azure.com/renefonseca/base/_build/latest?definitionId=5&branchName=master)
 [![macOS](https://dev.azure.com/renefonseca/base/_apis/build/status/rene-fonseca.base?branchName=master&jobName=macos&label=macOS)](https://dev.azure.com/renefonseca/base/_build/latest?definitionId=5&branchName=master)
+[![iOS](https://dev.azure.com/renefonseca/base/_apis/build/status/rene-fonseca.base?branchName=master&jobName=ios&label=iOS)](https://dev.azure.com/renefonseca/base/_build/latest?definitionId=5&branchName=master)
 [![wasm32](https://dev.azure.com/renefonseca/base/_apis/build/status/rene-fonseca.base?branchName=master&jobName=wasm32&label=WebAssembly%2032)](https://dev.azure.com/renefonseca/base/_build/latest?definitionId=5&branchName=master)
 
 

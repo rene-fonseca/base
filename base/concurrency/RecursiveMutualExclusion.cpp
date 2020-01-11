@@ -78,7 +78,7 @@ void RecursiveMutualExclusion::exclusiveLock() const
   if (result == 0) {
     return;
   } else if (result == EDEADLK) {
-    return;
+    _throw MutualExclusionException("Dead lock detected.", this); // TAG: add deadlock exception?
   } else {
     _throw MutualExclusionException(this);
   }

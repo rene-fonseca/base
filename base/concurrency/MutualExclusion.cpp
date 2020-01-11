@@ -74,6 +74,7 @@ void MutualExclusion::exclusiveLock() const
   if (result == 0) {
     return;
   } else if (result == EDEADLK) {
+    _throw MutualExclusionException("Dead lock detected.", this); // TAG: add deadlock exception?
     return;
   } else {
     _throw MutualExclusionException(this);

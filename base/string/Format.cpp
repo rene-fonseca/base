@@ -284,7 +284,6 @@ FormatOutputStream& operator<<(FormatOutputStream& stream, const Format::Subst& 
   return subst.operator<<(stream);
 }
 
-#if 1 || !defined(__GNUC__) || (__GNUC__ >= 6) // temporary workaround
 #if defined(_COM_AZURE_DEV__BASE__TESTS)
 
 class TEST_CLASS(Format) : public UnitTest {
@@ -298,8 +297,13 @@ public:
     TEST_EQUAL(Format::subst("My name is %1 and I'm %2 years old.", "John", 18), "My name is John and I'm 18 years old.");
     TEST_EQUAL(Format::subst("Current percent is %1%%.", 45), "Current percent is 45%.");
 
+#if defined(__GNUC__) && (__GNUC__ < 6) // temporary workaround // Ubuntu 16.04
+    TEST_EQUAL(Format::subst("%1", AnyValue(false)), "false");
+    TEST_EQUAL(Format::subst("%1", AnyValue(true)), "true");
+#else
     TEST_EQUAL(Format::subst("%1", false), "false");
     TEST_EQUAL(Format::subst("%1", true), "true");
+#endif
     TEST_EQUAL(Format::subst("%1", '!'), "!");
     TEST_EQUAL(Format::subst("%1", L'!'), "!");
     TEST_EQUAL(Format::subst("%1", -123), "-123");
@@ -346,7 +350,6 @@ public:
 
 TEST_REGISTER(Format);
 
-#endif
 #endif
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

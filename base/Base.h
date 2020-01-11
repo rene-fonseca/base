@@ -316,22 +316,6 @@ class Backend {
 
 
 
-/** Destroys a complete object. */
-template<class TYPE>
-inline void deleteComplete(const volatile TYPE* value)
-{
-  if (sizeof(TYPE) > 0) {}
-  delete value;
-}
-
-/** Destroys a complete array. */
-template<class TYPE>
-inline void deleteCompleteArray(const volatile TYPE* value)
-{
-  if (sizeof(TYPE) > 0) {}
-  delete[] value;
-}
-
 /** Runtime helper functions. */
 class _COM_AZURE_DEV__BASE__API Runtime {
 public:

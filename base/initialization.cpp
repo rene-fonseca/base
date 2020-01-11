@@ -94,6 +94,7 @@ DEPENDENCY(Association);
 DEPENDENCY(Pair);
 DEPENDENCY(Parser);
 DEPENDENCY(Math);
+DEPENDENCY(Format);
 DEPENDENCY(FormatOutputStream);
 DEPENDENCY(Unicode);
 DEPENDENCY(Adler32);

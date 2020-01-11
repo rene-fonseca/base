@@ -41,7 +41,6 @@ _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
   
   @short Ownership automation pointer.
   @ingroup memory
-  @see ArrayOwnershipPointer
   @version 1.0
 */
 

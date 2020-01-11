@@ -35,41 +35,39 @@ _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 void RegExp::compile()
 {
-  #if defined(_COM_AZURE_DEV__BASE__REGEXP_POSIX)
-    int options = REG_EXTENDED;
-    if (!caseSensitive) {
-      options |= REG_ICASE;
-    }
-    regex_t preq;
-    int result = regcomp(&preq, pattern.getElements(), options);
-    if (result == 0) { // succesful
-      compiled = new char[sizeof(regex_t)];
-      copy<char>(
-        Cast::pointer<char*>(compiled),
-        Cast::pointer<const char*>(&preq),
-        sizeof(regex_t)
-      );
-    }
-  #elif defined(_COM_AZURE_DEV__BASE__REGEXP_PCRE)
-    int errorOffset = 0;
-    int options = 0;
-    if (!caseSensitive) {
-      options |= PCRE_CASELESS;
-    }
-    compiled = pcre_compile(pattern.getElements(), options, 0, &errorOffset, 0);
-  #else // no regexp support
-  #endif
+#if defined(_COM_AZURE_DEV__BASE__REGEXP_POSIX)
+  int options = REG_EXTENDED;
+  if (!caseSensitive) {
+    options |= REG_ICASE;
+  }
+  regex_t* preq = new regex_t;
+  int result = regcomp(&preq, pattern.getElements(), options);
+  if (result == 0) { // succesful
+    compiled = preq;
+  } else {
+    delete preq;
+  }
+#elif defined(_COM_AZURE_DEV__BASE__REGEXP_PCRE)
+  int errorOffset = 0;
+  int options = 0;
+  if (!caseSensitive) {
+    options |= PCRE_CASELESS;
+  }
+  compiled = pcre_compile(pattern.getElements(), options, 0, &errorOffset, 0);
+#else // no regexp support
+#endif
 }
 
 void RegExp::release() noexcept
 {
   if (compiled) {
-  #if defined(_COM_AZURE_DEV__BASE__REGEXP_POSIX)
-    regfree(static_cast<regex_t*>(compiled));
-    delete[] Cast::pointer<char*>(compiled);
-  #elif defined(_COM_AZURE_DEV__BASE__REGEXP_PCRE)
+#if defined(_COM_AZURE_DEV__BASE__REGEXP_POSIX)
+    regex_t* _compiled = reinterpret_cast<regex_t*>(compiled);
+    regfree(_compiled);
+    delete _compiled;
+#elif defined(_COM_AZURE_DEV__BASE__REGEXP_PCRE)
     pcre_free(compiled);
-  #endif
+#endif
     compiled = nullptr;
   }
 }

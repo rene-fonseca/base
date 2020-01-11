@@ -16,74 +16,151 @@
 #include <base/Profiler.h>
 #include <base/UnitTest.h>
 
-_COM_AZURE_DEV__BASE__ENTER_NAMESPACE
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
+#  include <windows.h>
+#else // unix
+#  define __thread // TAG: temp. fix for s390-ibm-linux-gnu
+#if (_COM_AZURE_DEV__BASE__OS != _COM_AZURE_DEV__BASE__WASI)
+#  include <pthread.h>
+#  define _COM_AZURE_DEV__BASE__PTHREAD
+#endif
+#  include <errno.h>
+#endif // flavor
 
-// TAG: reimplement using OS mutex
+_COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 RecursiveMutualExclusion::RecursiveMutualExclusion()
 {
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
+  mutex = new CRITICAL_SECTION;
+  ::InitializeCriticalSection((CRITICAL_SECTION*)mutex);
+  // TAG: could raise STATUS_INVALID_HANDLE
+  ::EnterCriticalSection((CRITICAL_SECTION*)mutex); // force allocation of event (non-paged memory)
+  ::LeaveCriticalSection((CRITICAL_SECTION*)mutex);
+#elif defined(_COM_AZURE_DEV__BASE__PTHREAD)
+  mutex = new pthread_mutex_t;
+  pthread_mutexattr_t attributes;
+  if (pthread_mutexattr_init(&attributes) != 0) {
+    _throw ResourceException(this);
+  }
+  if (pthread_mutexattr_settype(&attributes, PTHREAD_MUTEX_RECURSIVE) != 0) {
+    pthread_mutexattr_destroy(&attributes); // should never fail
+    _throw ResourceException(this);
+  }
+#if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__CYGWIN)
+   #warning disabled selection of mutex type due to CYGWIN bug
+#else
+  if (pthread_mutexattr_settype(&attributes, PTHREAD_MUTEX_ERRORCHECK) != 0) {
+    pthread_mutexattr_destroy(&attributes); // should never fail
+    _throw ResourceException(this);
+  }
+#endif // cygwin temporary bug fix
+  auto _mutex = reinterpret_cast<pthread_mutex_t*>(mutex);
+  if (pthread_mutex_init(_mutex, &attributes) != 0) {
+    pthread_mutexattr_destroy(&attributes); // should never fail
+    _throw ResourceException(this);
+  }
+  pthread_mutexattr_destroy(&attributes); // should never fail
+#else
+  // assume single threaded
+  mutex = new int(0);
+#endif
 }
 
 void RecursiveMutualExclusion::exclusiveLock() const
 {
   Profiler::WaitTask profile("RecursiveMutualExclusion::exclusiveLock()");
-  
-  const Thread::Identifier id = Thread::getIdentifier();
-  if (owner != 0) {
-    ExclusiveSynchronize<Guard> _guard(guard);
-    if (owner == id) {
-      ++numberOfLocks;
-      return;
-    }
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
+  ::EnterCriticalSection((CRITICAL_SECTION*)mutex);
+#elif defined(_COM_AZURE_DEV__BASE__PTHREAD)
+  auto _mutex = reinterpret_cast<pthread_mutex_t*>(mutex);
+  int result = pthread_mutex_lock(_mutex);
+  if (result == 0) {
+    return;
+  } else if (result == EDEADLK) {
+    return;
+  } else {
+    _throw MutualExclusionException(this);
   }
-  lock.exclusiveLock(); // block
-  {
-    ExclusiveSynchronize<Guard> _guard(guard);
-    numberOfLocks = 1;
-    owner = id;
+#else
+  // assume single threaded
+  int* handle = reinterpret_cast<int*>(mutex);
+  /*
+  while (*handle) {
+    Thread::microsleep(1000);
   }
+  */
+  ++*handle;
+#endif
 }
 
 bool RecursiveMutualExclusion::tryExclusiveLock() const
 {
   Profiler::WaitTask profile("RecursiveMutualExclusion::tryExclusiveLock()");
   
-  const Thread::Identifier id = Thread::getIdentifier();
-  ExclusiveSynchronize<Guard> _guard(guard);
-  if (owner == id) {
-    ++numberOfLocks;
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
+  BOOL result = TRUE;
+  result = ::TryEnterCriticalSection((CRITICAL_SECTION*)mutex);
+  return result;
+#elif defined(_COM_AZURE_DEV__BASE__PTHREAD)
+  auto _mutex = reinterpret_cast<pthread_mutex_t*>(mutex);
+  int result = pthread_mutex_trylock(_mutex);
+  if (result == 0) {
     return true;
-  } else if (numberOfLocks == 0) {
-    if (lock.tryExclusiveLock()) {
-      numberOfLocks = 1;
-      owner = id;
-      return true;
-    }
+  } else if (result == EBUSY) {
+    return false;
+  } else {
+    _throw MutualExclusionException(this);
   }
-  return false;
+#else
+  // assume single threaded
+  int* handle = reinterpret_cast<int*>(mutex);
+  /*
+  if (*handle) {
+    return false;
+  }
+  */
+  ++*handle;
+  return true;
+#endif
 }
 
 void RecursiveMutualExclusion::releaseLock() const
 {
   Profiler::pushSignal("RecursiveMutualExclusion::releaseLock()");
-  // Thread::Identifier id = Thread::getIdentifier();
-  ExclusiveSynchronize<Guard> _guard(guard);
-  // bassert(owner == id, ConcurrencyException(this));
-  if (--numberOfLocks == 0) {
-    owner = 0; // relinquish ownership
-    lock.releaseLock();
+
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
+  ::LeaveCriticalSection((CRITICAL_SECTION*)mutex);
+#elif defined(_COM_AZURE_DEV__BASE__PTHREAD)
+  auto _mutex = reinterpret_cast<pthread_mutex_t*>(mutex);
+  if (pthread_mutex_unlock(_mutex)) {
+    _throw MutualExclusionException(this);
   }
+#else
+  int* handle = reinterpret_cast<int*>(mutex);
+  if (!*handle) {
+    _throw MutualExclusionException(this);
+  }
+  --*handle;
+#endif
 }
 
 RecursiveMutualExclusion::~RecursiveMutualExclusion()
 {
-#if 0
-  if (!guard.tryExclusiveLock() || !lock.tryExclusiveLock()) {
-    _throw MutualExclusionException(this);
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
+  ::DeleteCriticalSection((CRITICAL_SECTION*)mutex);
+  delete (CRITICAL_SECTION*)mutex;
+#elif defined(_COM_AZURE_DEV__BASE__PTHREAD)
+  auto _mutex = reinterpret_cast<pthread_mutex_t*>(mutex);
+  if (pthread_mutex_destroy(_mutex)) {
+    Runtime::corruption(_COM_AZURE_DEV__BASE__PRETTY_FUNCTION);
   }
+  delete _mutex;
+#else
+  int* handle = reinterpret_cast<int*>(mutex);
+  delete handle;
 #endif
 }
-
 
 #if defined(_COM_AZURE_DEV__BASE__TESTS)
 
@@ -101,6 +178,7 @@ public:
     
     TEST_DECLARE_HERE(A);
     TEST_DECLARE_HERE(B);
+    TEST_DECLARE_HERE(C);
 
     RecursiveMutualExclusion lock;
     if (lock.tryExclusiveLock()) {
@@ -109,6 +187,10 @@ public:
     }
     if (lock.tryExclusiveLock()) {
       TEST_HERE(B);
+      if (lock.tryExclusiveLock()) {
+        TEST_HERE(C);
+        lock.releaseLock();
+      }
       lock.releaseLock();
     }
     lock.exclusiveLock();

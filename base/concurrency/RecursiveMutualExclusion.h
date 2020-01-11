@@ -13,8 +13,9 @@
 
 #pragma once
 
-#include <base/concurrency/MutualExclusion.h>
-#include <base/concurrency/Thread.h>
+#include <base/ResourceException.h>
+#include <base/concurrency/Lock.h>
+#include <base/concurrency/MutualExclusionException.h>
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
@@ -29,17 +30,9 @@ _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 class _COM_AZURE_DEV__BASE__API RecursiveMutualExclusion : public Lock {
 private:
-  
-  typedef SpinLock Guard;
-  typedef MutualExclusion Lock;
-  /** Guard. */
-  Guard guard;
-  /** Lock. */
-  Lock lock;
-  /** The current owner. */
-  mutable Thread::Identifier owner = 0;
-  /** The number of locks held by the owner. */
-  mutable unsigned int numberOfLocks = 0;
+
+  /** Internal representation of mutex. */
+  void* mutex = nullptr;
 public:
   
   typedef ExclusiveSynchronize<RecursiveMutualExclusion> Sync;

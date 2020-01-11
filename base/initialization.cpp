@@ -64,7 +64,7 @@ DEPENDENCY(Event);
 DEPENDENCY(Heap);
 DEPENDENCY(MutualExclusion);
 DEPENDENCY(Once);
-//DEPENDENCY(RecursiveMutualExclusion);
+DEPENDENCY(RecursiveMutualExclusion);
 DEPENDENCY(RecursiveSpinLock);
 DEPENDENCY(Reference);
 DEPENDENCY(Semaphore);

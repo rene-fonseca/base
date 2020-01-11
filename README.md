@@ -20,6 +20,7 @@ Reference API documentation is hosted at https://rene-fonseca.github.io/base-api
 [![CentOS 8](https://dev.azure.com/renefonseca/base/_apis/build/status/rene-fonseca.base?branchName=master&jobName=centos8&label=CentOS%208)](https://dev.azure.com/renefonseca/base/_build/latest?definitionId=5&branchName=master)
 [![Fedora x64](https://dev.azure.com/renefonseca/base/_apis/build/status/rene-fonseca.base?branchName=master&jobName=fedora_x64&label=Fedora%20x64)](https://dev.azure.com/renefonseca/base/_build/latest?definitionId=5&branchName=master)
 [![macOS](https://dev.azure.com/renefonseca/base/_apis/build/status/rene-fonseca.base?branchName=master&jobName=macos&label=macOS)](https://dev.azure.com/renefonseca/base/_build/latest?definitionId=5&branchName=master)
+[![iOS](https://dev.azure.com/renefonseca/base/_apis/build/status/rene-fonseca.base?branchName=master&jobName=ios&label=iOS)](https://dev.azure.com/renefonseca/base/_build/latest?definitionId=5&branchName=master)
 [![wasm32](https://dev.azure.com/renefonseca/base/_apis/build/status/rene-fonseca.base?branchName=master&jobName=wasm32&label=WebAssembly%2032)](https://dev.azure.com/renefonseca/base/_build/latest?definitionId=5&branchName=master)
 
 
@@ -88,6 +89,7 @@ Ubuntu 16.04       | x86_64   | GCC     | Ok         | Runs continuously on pipe
 CentOS 8           | x86_64   | GCC     | Ok         | Runs continuously on pipeline
 Fedora             | x86_64   | GCC     | Ok         | Runs continuously on pipeline
 macOS              | x86_64   | Clang   | Ok         | Runs continuously on pipeline
+IOS                | ARM64    | Clang   | Ok         | Runs continuously on pipeline but no testing
 WebAssembly WASI   | WASM32   | LLVM    | Ok         | Runs continuously on pipeline - Exceptions cause abort()
 Windows            | x86      | MSC     | Ok         | 8 Dec 2019
 Windows            | ARM32    | MSC     | Ok         | 8 Dec 2019
@@ -111,7 +113,6 @@ HP-UX 11i v2       |          |         | Pending    |
 AIX 7.2            | PowerPC  |         | Pending    |
 RHEL 8             | PowerPC  |         | Pending    |
 SUSE Linux 15      | x86_64   |         | Pending    |
-IOS                | ARM64    | Clang   | Build      | 18 Dec 2019 - Not run
 GNU/Linux          | PowerPC  | GCC     | Build      | 23 Dec 2019 - Not run
 GNU/Linux          | sparc64  | GCC     | Build      | 23 Dec 2019 - Not run
 GNU/Linux          | s390x    | GCC     | Build      | 23 Dec 2019 - Not run

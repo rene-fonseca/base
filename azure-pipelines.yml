@@ -406,3 +406,23 @@ jobs:
       artifactName: 'base-macos'
       targetPath: 'artifacts'
       path: $(System.DefaultWorkingDirectory)/build/install
+
+- job: ios
+  pool:
+    vmImage: 'macOS-latest'
+  steps:
+  - task: CMake@1
+    displayName: 'Config'
+    inputs:
+      cmakeArgs: '.. -DCOLOR=1 -DCMAKE_BUILD_TYPE=Debug -G Xcode -DCMAKE_SYSTEM_NAME=iOS "-DCMAKE_OSX_ARCHITECTURES=arm64" -DCMAKE_INSTALL_PREFIX=install -DCMAKE_XCODE_ATTRIBUTE_ONLY_ACTIVE_ARCH=NO -DCMAKE_IOS_INSTALL_COMBINED=NO -DCMAKE_OSX_DEPLOYMENT_TARGET=10'
+
+  - task: CMake@1
+    displayName: 'Build'
+    inputs:
+      cmakeArgs: '--build . --config Debug --target install'
+
+  - task: PublishPipelineArtifact@1
+    inputs:
+      artifactName: 'base-ios'
+      targetPath: 'artifacts'
+      path: $(System.DefaultWorkingDirectory)/build/install

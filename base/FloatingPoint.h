@@ -2050,7 +2050,7 @@ inline FloatingPoint::IEEEQuadruplePrecision::operator long double() const noexc
 }
 
 /**
-  Analyses the specified floating point number of a given representation.
+  Analyzes the specified floating point number of a given representation.
   
   @param value The floating point number.
   @param significant The number of significant digits in the mantissa (OUT).
@@ -2060,7 +2060,7 @@ inline FloatingPoint::IEEEQuadruplePrecision::operator long double() const noexc
   @param flags Flags specifying the number type (OUT).
 */
 template<typename TYPE>
-inline void analyseFloatingPoint(
+inline void analyzeFloatingPoint(
   const TYPE& value,
   unsigned int& precision,
   unsigned int* mantissa,
@@ -2071,7 +2071,7 @@ inline void analyseFloatingPoint(
 }
 
 template<>
-void analyseFloatingPoint<FloatingPoint::Representation::IEEE754SinglePrecision>(
+void analyzeFloatingPoint<FloatingPoint::Representation::IEEE754SinglePrecision>(
   const FloatingPoint::Representation::IEEE754SinglePrecision& value,
   unsigned int& precision,
   unsigned int* mantissa,
@@ -2079,7 +2079,7 @@ void analyseFloatingPoint<FloatingPoint::Representation::IEEE754SinglePrecision>
   unsigned int& flags) noexcept;
 
 template<>
-void analyseFloatingPoint<FloatingPoint::Representation::IEEE754DoublePrecision>(
+void analyzeFloatingPoint<FloatingPoint::Representation::IEEE754DoublePrecision>(
   const FloatingPoint::Representation::IEEE754DoublePrecision& value,
   unsigned int& precision,
   unsigned int* mantissa,
@@ -2087,7 +2087,7 @@ void analyseFloatingPoint<FloatingPoint::Representation::IEEE754DoublePrecision>
   unsigned int& flags) noexcept;
 
 template<>
-void analyseFloatingPoint<FloatingPoint::Representation::IEEEExtendedDoublePrecision96>(
+void analyzeFloatingPoint<FloatingPoint::Representation::IEEEExtendedDoublePrecision96>(
   const FloatingPoint::Representation::IEEEExtendedDoublePrecision96& value,
   unsigned int& precision,
   unsigned int* mantissa,
@@ -2095,7 +2095,7 @@ void analyseFloatingPoint<FloatingPoint::Representation::IEEEExtendedDoublePreci
   unsigned int& flags) noexcept;
 
 template<>
-void analyseFloatingPoint<FloatingPoint::Representation::IEEEExtendedDoublePrecision96Align16>(
+void analyzeFloatingPoint<FloatingPoint::Representation::IEEEExtendedDoublePrecision96Align16>(
   const FloatingPoint::Representation::IEEEExtendedDoublePrecision96Align16& value,
   unsigned int& precision,
   unsigned int* mantissa,
@@ -2103,7 +2103,7 @@ void analyseFloatingPoint<FloatingPoint::Representation::IEEEExtendedDoublePreci
   unsigned int& flags) noexcept;
 
 template<>
-void analyseFloatingPoint<FloatingPoint::Representation::IEEEExtendedDoublePrecision128>(
+void analyzeFloatingPoint<FloatingPoint::Representation::IEEEExtendedDoublePrecision128>(
   const FloatingPoint::Representation::IEEEExtendedDoublePrecision128& value,
   unsigned int& precision,
   unsigned int* mantissa,
@@ -2111,7 +2111,7 @@ void analyseFloatingPoint<FloatingPoint::Representation::IEEEExtendedDoublePreci
   unsigned int& flags) noexcept;
 
 template<>
-void analyseFloatingPoint<FloatingPoint::Representation::IEEEQuadruplePrecision>(
+void analyzeFloatingPoint<FloatingPoint::Representation::IEEEQuadruplePrecision>(
   const FloatingPoint::Representation::IEEEQuadruplePrecision& value,
   unsigned int& precision,
   unsigned int* mantissa,

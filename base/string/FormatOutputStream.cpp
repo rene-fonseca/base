@@ -1563,7 +1563,7 @@ FormatOutputStream& FormatOutputStream::operator<<(float _value)
   unsigned int mantissa[(FloatingPoint::FloatRepresentation::SIGNIFICANT + (sizeof(unsigned int) * 8) - 1)/(sizeof(unsigned int) * 8)];
   int exponent = 0;
   unsigned int flags = 0;
-  analyseFloatingPoint(value.value, precision, mantissa, exponent, flags);
+  analyzeFloatingPoint(value.value, precision, mantissa, exponent, flags);
   writeFloatingPointType(
     precision,
     mantissa,
@@ -1589,7 +1589,7 @@ FormatOutputStream& FormatOutputStream::operator<<(double _value)
   unsigned int mantissa[(FloatingPoint::DoubleRepresentation::SIGNIFICANT + (sizeof(unsigned int) * 8) - 1)/(sizeof(unsigned int) * 8)];
   int exponent = 0;
   unsigned int flags = 0;
-  analyseFloatingPoint(value.value, precision, mantissa, exponent, flags);
+  analyzeFloatingPoint(value.value, precision, mantissa, exponent, flags);
   writeFloatingPointType(
     precision,
     mantissa,
@@ -1621,7 +1621,7 @@ FormatOutputStream& FormatOutputStream::operator<<(long double _value)
   ];
   int exponent = 0;
   unsigned int flags = 0;
-  analyseFloatingPoint(value.value, precision, mantissa, exponent, flags);
+  analyzeFloatingPoint(value.value, precision, mantissa, exponent, flags);
   writeFloatingPointType(
     precision,
     mantissa,
@@ -1653,7 +1653,7 @@ FormatOutputStream& FormatOutputStream::operator<<(float128 _value)
   ];
   int exponent = 0;
   unsigned int flags = 0;
-  analyseFloatingPoint(value.value, precision, mantissa, exponent, flags);
+  analyzeFloatingPoint(value.value, precision, mantissa, exponent, flags);
   writeFloatingPointType(
     precision,
     mantissa,

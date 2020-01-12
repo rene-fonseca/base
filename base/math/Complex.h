@@ -21,6 +21,10 @@
 #  define _COM_AZURE_DEV__BASE__COMPLEX_ISOC
 #endif
 
+#if defined(I)
+#  error I defined
+#endif
+
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 #if defined(_COM_AZURE_DEV__BASE__COMPLEX_ISOC)
@@ -122,7 +126,13 @@ public:
   typedef TYPE Type;
 
   /** Imaginary tag. */
-  class Imaginary {};
+  class Imaginary {
+  public:
+
+    inline Imaginary() noexcept
+    {
+    }
+  };
   /** Imaginary symbol. Use for faster math operations. */
   static const Imaginary I;
 
@@ -275,7 +285,7 @@ public:
     return getComplex(isoc::csin(x.getNative()));
 #else
     // handle inf/nan
-    return (_ONE / 2) * (exp(I * x) - exp(-x * I))/I;
+    return (_ONE / 2) * (exp(Imaginary() * x) - exp(-x * Imaginary()))/Imaginary();
 #endif
   }
 
@@ -285,7 +295,7 @@ public:
     return getComplex(isoc::casin(x.getNative()));
 #else
     // handle inf/nan
-    return -(I * ln(I * x + sqrt(_ONE - x * x)));
+    return -(Imaginary() * ln(Imaginary() * x + sqrt(_ONE - x * x)));
 #endif
   }
 
@@ -295,7 +305,7 @@ public:
     return getComplex(isoc::ccos(x.getNative()));
 #else
     // handle inf/nan
-    return (_ONE / 2) * (exp(I * x) + exp(-(I * x)));
+    return (_ONE / 2) * (exp(Imaginary() * x) + exp(-(Imaginary() * x)));
 #endif
   }
 
@@ -305,7 +315,7 @@ public:
     return getComplex(isoc::cacos(x.getNative()));
 #else
     // handle inf/nan
-    return -(I * ln(x + I * sqrt(_ONE - x * x)));
+    return -(Imaginary() * ln(x + Imaginary() * sqrt(_ONE - x * x)));
 #endif
   }
 
@@ -315,9 +325,9 @@ public:
     return getComplex(isoc::ctan(x.getNative()));
 #else
     // handle inf/nan
-    auto a = exp(I * x);
-    auto b = exp(-(I * x));
-    return (a - b)/(I * (a + b));
+    auto a = exp(Imaginary() * x);
+    auto b = exp(-(Imaginary() * x));
+    return (a - b)/(Imaginary() * (a + b));
 #endif
   }
 
@@ -327,7 +337,7 @@ public:
     return getComplex(isoc::catan(x.getNative()));
 #else
     // handle inf/nan
-    return Complex(0, _ONE / 2) + ln((I + x)/(I - x));
+    return Complex(0, _ONE / 2) + ln((Imaginary() + x)/(Imaginary() - x));
 #endif
   }
 
@@ -434,7 +444,7 @@ public:
   {
     return real * real + imaginary * imaginary;
   }
-    
+  
   inline Polar getPolar() const noexcept
   {
     Polar result;

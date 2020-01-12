@@ -248,16 +248,16 @@
 #endif
 #endif
 
-#if defined(__SIZEOF_INT128__)
-#  if (__SIZEOF_INT128__ == 4)
+#if defined(__SIZEOF_FLOAT128__)
+#  if (__SIZEOF_FLOAT128__ == 4)
 #    if defined(__FLT128_MANT_LDIG__) && (__FLT128_MANT_LDIG__ == 24)
 #      define _COM_AZURE_DEV__BASE__FLOAT128 _COM_AZURE_DEV__BASE__IEEE_754_SINGLE_PRECISION
 #    endif
-#  elif (__SIZEOF_INT128__ == 8)
+#  elif (__SIZEOF_FLOAT128__ == 8)
 #    if defined(__FLT128_MANT_DIG__) && (__FLT128_MANT_DIG__ == 53)
 #      define _COM_AZURE_DEV__BASE__FLOAT128 _COM_AZURE_DEV__BASE__IEEE_754_DOUBLE_PRECISION
 #    endif
-#  elif (__SIZEOF_INT128__ == 16) // HP-UX+Solaris sparc
+#  elif (__SIZEOF_FLOAT128__ == 16) // HP-UX+Solaris sparc
 #    if defined(__FLT128_MANT_DIG__) && (__FLT128_MANT_DIG__ == 113)
 #      define _COM_AZURE_DEV__BASE__FLOAT128 _COM_AZURE_DEV__BASE__IEEE_QUADRUPLE_PRECISION
 #    elif defined(__FLT128_MANT_DIG__) && (__FLT128_MANT_DIG__ == 106)

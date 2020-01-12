@@ -386,8 +386,8 @@ public:
 };
 
 template<class TYPE>
-inline Vector3D<TYPE>::Vector3D(
-  const TYPE& _x, const TYPE& _y, const TYPE& _z) noexcept : x(_x), y(_y), z(_z)
+inline Vector3D<TYPE>::Vector3D(const TYPE& _x, const TYPE& _y, const TYPE& _z) noexcept
+  : x(_x), y(_y), z(_z)
 {
 }
 
@@ -397,8 +397,7 @@ inline Vector3D<TYPE>::Vector3D(
   @relates Vector3D
 */
 template<class TYPE>
-inline Vector3D<TYPE> operator+(
-  const Vector3D<TYPE>& left, const Vector3D<TYPE>& right) noexcept
+inline Vector3D<TYPE> operator+(const Vector3D<TYPE>& left, const Vector3D<TYPE>& right) noexcept
 {
   return Vector3D<TYPE>(left).add(right);
 }
@@ -409,8 +408,7 @@ inline Vector3D<TYPE> operator+(
   @relates Vector3D
 */
 template<class TYPE>
-inline Vector3D<TYPE> operator-(
-  const Vector3D<TYPE>& left, const Vector3D<TYPE>& right) noexcept
+inline Vector3D<TYPE> operator-(const Vector3D<TYPE>& left, const Vector3D<TYPE>& right) noexcept
 {
   return Vector3D<TYPE>(left).subtract(right);
 }
@@ -421,8 +419,7 @@ inline Vector3D<TYPE> operator-(
   @relates Vector3D
 */
 template<class TYPE>
-inline Vector3D<TYPE> operator*(
-  const Vector3D<TYPE>& left, const TYPE& right) noexcept
+inline Vector3D<TYPE> operator*(const Vector3D<TYPE>& left, const TYPE& right) noexcept
 {
   return Vector3D<TYPE>(left).multiply(right);
 }
@@ -433,8 +430,7 @@ inline Vector3D<TYPE> operator*(
   @relates Vector3D
 */
 template<class TYPE>
-inline Vector3D<TYPE> operator*(
-  const TYPE& left, const Vector3D<TYPE>& right) noexcept
+inline Vector3D<TYPE> operator*(const TYPE& left, const Vector3D<TYPE>& right) noexcept
 {
   return Vector3D<TYPE>(right).multiply(left);
 }
@@ -445,8 +441,7 @@ inline Vector3D<TYPE> operator*(
   @relates Vector3D
 */
 template<class TYPE>
-inline Vector3D<TYPE> operator/(
-  const Vector3D<TYPE>& left, const TYPE& right) noexcept
+inline Vector3D<TYPE> operator/(const Vector3D<TYPE>& left, const TYPE& right) noexcept
 {
   return Vector3D<TYPE>(left).divide(right);
 }
@@ -468,8 +463,7 @@ inline TYPE dot(const Vector3D<TYPE>& left, const Vector3D<TYPE>& right) noexcep
   @relates Vector3D
 */
 template<class TYPE>
-inline Vector3D<TYPE> cross(
-  const Vector3D<TYPE>& left, const Vector3D<TYPE>& right) noexcept
+inline Vector3D<TYPE> cross(const Vector3D<TYPE>& left, const Vector3D<TYPE>& right) noexcept
 {
   return left.cross(right);
 }

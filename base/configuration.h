@@ -167,8 +167,10 @@
 #  elif (__SIZEOF_FLOAT__ == 16)
 #   if defined(__FLT_MANT_DIG__) && (__FLT_MANT_DIG__ == 113)
 #     define _COM_AZURE_DEV__BASE__FLOAT _COM_AZURE_DEV__BASE__IEEE_QUADRUPLE_PRECISION
-#   elif defined(__FLT_MANT_DIG__) && (__FLT_MANT_DIG__ == 53)
+#   elif defined(__LDBL_MANT_DIG__) && (__LDBL_MANT_DIG__ == 64)
 #     define _COM_AZURE_DEV__BASE__FLOAT _COM_AZURE_DEV__BASE__IEEE_EXTENDED_DOUBLE_PRECISION_96_ALIGN16
+#   elif defined(__LDBL_MANT_DIG__) && (__LDBL_MANT_DIG__ == 53)
+#     define _COM_AZURE_DEV__BASE__FLOAT _COM_AZURE_DEV__BASE__IEEE_754_DOUBLE_PRECISION
 #   else
 #     error Unsupported float type
 #   endif
@@ -192,8 +194,10 @@
 #  elif (__SIZEOF_DOUBLE__ == 16)
 #   if defined(__DBL_MANT_DIG__) && (__DBL_MANT_DIG__ == 113)
 #     define _COM_AZURE_DEV__BASE__DOUBLE _COM_AZURE_DEV__BASE__IEEE_QUADRUPLE_PRECISION
-#   elif defined(__DBL_MANT_DIG__) && (__DBL_MANT_DIG__ == 53)
+#   elif defined(__LDBL_MANT_DIG__) && (__LDBL_MANT_DIG__ == 64)
 #     define _COM_AZURE_DEV__BASE__DOUBLE _COM_AZURE_DEV__BASE__IEEE_EXTENDED_DOUBLE_PRECISION_96_ALIGN16
+#   elif defined(__LDBL_MANT_DIG__) && (__LDBL_MANT_DIG__ == 53)
+#     define _COM_AZURE_DEV__BASE__DOUBLE _COM_AZURE_DEV__BASE__IEEE_754_DOUBLE_PRECISION
 #   else
 #     error Unsupported double type
 #   endif
@@ -217,8 +221,10 @@
 #  elif (__SIZEOF_LONG_DOUBLE__ == 16) // HP-UX+Solaris sparc
 #    if defined(__LDBL_MANT_DIG__) && (__LDBL_MANT_DIG__ == 113)
 #      define _COM_AZURE_DEV__BASE__LONG_DOUBLE _COM_AZURE_DEV__BASE__IEEE_QUADRUPLE_PRECISION
-#    elif defined(__LDBL_MANT_DIG__) && (__LDBL_MANT_DIG__ == 53)
+#    elif defined(__LDBL_MANT_DIG__) && (__LDBL_MANT_DIG__ == 64)
 #      define _COM_AZURE_DEV__BASE__LONG_DOUBLE _COM_AZURE_DEV__BASE__IEEE_EXTENDED_DOUBLE_PRECISION_96_ALIGN16
+#    elif defined(__LDBL_MANT_DIG__) && (__LDBL_MANT_DIG__ == 53)
+#      define _COM_AZURE_DEV__BASE__LONG_DOUBLE _COM_AZURE_DEV__BASE__IEEE_754_DOUBLE_PRECISION
 #    else
 #      error Unsupported long double type
 #    endif

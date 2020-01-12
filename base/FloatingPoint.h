@@ -1848,6 +1848,8 @@ _COM_AZURE_DEV__BASE__PACKED__END
   typedef IEEEExtendedDoublePrecision128 ToFloat;
 #elif (_COM_AZURE_DEV__BASE__FLOAT == _COM_AZURE_DEV__BASE__IEEE_QUADRUPLE_PRECISION)
   typedef IEEEQuadruplePrecision ToFloat;
+#elif (_COM_AZURE_DEV__BASE__FLOAT == _COM_AZURE_DEV__BASE__IBM_EXTENDED_PRECISION)
+  typedef IEEEQuadruplePrecision ToFloat;
 #else
 #  error Invalid floating-point representation of type float
 #endif
@@ -1864,6 +1866,8 @@ _COM_AZURE_DEV__BASE__PACKED__END
   typedef IEEEExtendedDoublePrecision128 ToDouble;
 #elif (_COM_AZURE_DEV__BASE__DOUBLE == _COM_AZURE_DEV__BASE__IEEE_QUADRUPLE_PRECISION)
   typedef IEEEQuadruplePrecision ToDouble;
+#elif (_COM_AZURE_DEV__BASE__DOUBLE == _COM_AZURE_DEV__BASE__IBM_EXTENDED_PRECISION)
+  typedef IEEEQuadruplePrecision ToDouble; // TAG: FIXME
 #else
 #  error Invalid floating-point representation of type double
 #endif
@@ -1880,6 +1884,8 @@ _COM_AZURE_DEV__BASE__PACKED__END
   typedef IEEEExtendedDoublePrecision128 ToLongDouble;
 #elif (_COM_AZURE_DEV__BASE__LONG_DOUBLE == _COM_AZURE_DEV__BASE__IEEE_QUADRUPLE_PRECISION)
   typedef IEEEQuadruplePrecision ToLongDouble;
+#elif (_COM_AZURE_DEV__BASE__LONG_DOUBLE == _COM_AZURE_DEV__BASE__IBM_EXTENDED_PRECISION)
+  typedef IEEEQuadruplePrecision ToLongDouble; // TAG: FIXME
 #else
 #  error Invalid floating-point representation of type long double
 #endif
@@ -1896,6 +1902,8 @@ _COM_AZURE_DEV__BASE__PACKED__END
   typedef IEEEExtendedDoublePrecision128 ToFloat128;
 #elif (_COM_AZURE_DEV__BASE__FLOAT128 == _COM_AZURE_DEV__BASE__IEEE_QUADRUPLE_PRECISION)
   typedef IEEEQuadruplePrecision ToFloat128;
+#elif (_COM_AZURE_DEV__BASE__FLOAT128 == _COM_AZURE_DEV__BASE__IBM_EXTENDED_PRECISION)
+  typedef IEEEQuadruplePrecision ToFloat128; // TAG: FIXME
 #else
 #  error Invalid floating-point representation of type float128
 #endif
@@ -2165,6 +2173,14 @@ void analyzeFloatingPoint<FloatingPoint::Representation::IEEEExtendedDoublePreci
 template<>
 void analyzeFloatingPoint<FloatingPoint::Representation::IEEEQuadruplePrecision>(
   const FloatingPoint::Representation::IEEEQuadruplePrecision& value,
+  unsigned int& precision,
+  unsigned int* mantissa,
+  int& exponent,
+  unsigned int& flags) noexcept;
+
+template<>
+void analyzeFloatingPoint<FloatingPoint::Representation::IBMExtendedPrecision>(
+  const FloatingPoint::Representation::IBMExtendedPrecision& value,
   unsigned int& precision,
   unsigned int* mantissa,
   int& exponent,

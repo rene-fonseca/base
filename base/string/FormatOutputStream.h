@@ -649,6 +649,8 @@ public:
   FormatOutputStream& operator<<(double value);
   /** Write value to stream. */
   FormatOutputStream& operator<<(long double value);
+  /** Write value to stream. */
+  FormatOutputStream& operator<<(float128 value);
 
   /** Write value to stream. */
   inline FormatOutputStream& operator<<(const NativeString& value)

@@ -57,17 +57,51 @@ _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 #endif
 #endif
 
-/* 128 bit signed integer. */
+/** 128 bit signed integer. */
 struct int128 {
   uint64 low;
   uint64 high;
 };
 
-/* 128 bit unsigned integer. */
+/** 128 bit unsigned integer. */
 struct uint128 {
   uint64 low;
   uint64 high;
 };
+
+/** 128 bit (expected to be quadruple precision) floating point. */
+#if defined(__float128)
+typedef __float128 float128;
+#define _COM_AZURE_DEV__BASE__MAKE_FLOAT128(VALUE) (VALUE ## Q)
+#define _COM_AZURE_DEV__BASE__HAS_FLOAT128 1
+#else
+class Float128 {
+public:
+
+  union {
+    uint128 reversed;
+    double value = 0;
+  };
+
+  inline Float128() noexcept
+  {
+  }
+
+  inline Float128(double _value) noexcept
+    : value(_value)
+  {
+  }
+
+  inline operator double() const noexcept
+  {
+    return value;
+  }
+};
+
+typedef Float128 float128;
+#define _COM_AZURE_DEV__BASE__MAKE_FLOAT128(VALUE) (VALUE ## L)
+#define _COM_AZURE_DEV__BASE__HAS_FLOAT128 0
+#endif
 
 /** A native wide character. */
 typedef wchar_t wchar;

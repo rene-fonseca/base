@@ -1632,6 +1632,38 @@ FormatOutputStream& FormatOutputStream::operator<<(long double _value)
   return *this;
 }
 
+FormatOutputStream& FormatOutputStream::operator<<(float128 _value)
+{
+#if 0
+  return operator<<(static_cast<double>(_value));
+#endif
+
+  BASSERT(sizeof(float128) == sizeof(FloatingPoint::Float128Representation));
+  const FloatingPoint::ToFloat128 value(_value);
+
+  if (value.isNaN()) {
+    return *this << MESSAGE("nan");
+  } else if (value.isInfinity()) {
+    return *this << (!value.isNegative() ? MESSAGE("inf") : MESSAGE("-inf"));
+  }
+
+  unsigned int precision = 0;
+  unsigned int mantissa[
+    (FloatingPoint::Float128Representation::SIGNIFICANT + (sizeof(unsigned int) * 8) - 1)/(sizeof(unsigned int) * 8)
+  ];
+  int exponent = 0;
+  unsigned int flags = 0;
+  analyseFloatingPoint(value.value, precision, mantissa, exponent, flags);
+  writeFloatingPointType(
+    precision,
+    mantissa,
+    (FloatingPoint::Float128Representation::SIGNIFICANT + (sizeof(unsigned int) * 8) - 1)/(sizeof(unsigned int) * 8),
+    exponent,
+    flags
+  );
+  return *this;
+}
+
 FormatOutputStream& FormatOutputStream::operator<<(const void* value)
 {
   return *this << HEX << PREFIX << ZEROPAD << Cast::getOffset(value);

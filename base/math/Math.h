@@ -338,6 +338,10 @@ public:
   static bool isFinite(double value) noexcept;
   /** Returns true if value is finite. */
   static bool isFinite(long double value) noexcept;
+#if (_COM_AZURE_DEV__BASE__HAS_FLOAT128)
+  /** Returns true if value is finite. */
+  static bool isFinite(float128 value) noexcept;
+#endif
 
   /** Returns true if value is infinity. */
   static bool isInfinity(float value) noexcept;
@@ -345,6 +349,10 @@ public:
   static bool isInfinity(double value) noexcept;
   /** Returns true if value is infinity. */
   static bool isInfinity(long double value) noexcept;
+#if (_COM_AZURE_DEV__BASE__HAS_FLOAT128)
+  /** Returns true if value is infinity. */
+  static bool isInfinity(float128 value) noexcept;
+#endif
 
   /** Returns true if value is NaN. */
   static bool isNaN(float value) noexcept;
@@ -352,6 +360,10 @@ public:
   static bool isNaN(double value) noexcept;
   /** Returns true if value is NaN. */
   static bool isNaN(long double value) noexcept;
+#if (_COM_AZURE_DEV__BASE__HAS_FLOAT128)
+  /** Returns true if value is NaN. */
+  static bool isNaN(float128 value) noexcept;
+#endif
 
   /** Returns signed zero. */
   template<typename TYPE>
@@ -2230,6 +2242,15 @@ inline constexpr long double Math::getZero<long double>(bool negative) noexcept
   return negative ? -0.0l : 0.0l;
 }
 
+#if (_COM_AZURE_DEV__BASE__HAS_FLOAT128)
+/** Returns +/- 0 for float128. */
+template<>
+inline constexpr float128 Math::getZero<float128>(bool negative) noexcept
+{
+  return negative ? -0.0q : 0.0q;
+}
+#endif
+
 /** Returns +infinity for float. */
 template<>
 inline /*constexpr*/ float Math::getInfinity<float>() noexcept
@@ -2263,6 +2284,19 @@ inline /*constexpr*/ long double Math::getInfinity<long double>() noexcept
 #endif
 }
 
+#if (_COM_AZURE_DEV__BASE__HAS_FLOAT128)
+/** Returns +infinity for float128. */
+template<>
+inline /*constexpr*/ float128 Math::getInfinity<float128>() noexcept
+{
+#if (_COM_AZURE_DEV__BASE__COMPILER == _COM_AZURE_DEV__BASE__COMPILER_MSC)
+  return __builtin_huge_val(); // double same as long double
+#else
+  return 1 / 0.q;
+#endif
+}
+#endif
+
 /** Returns quiet NaN for float. */
 template<>
 inline /*constexpr*/ float Math::getNaN<float>() noexcept
@@ -2295,5 +2329,18 @@ inline /*constexpr*/ long double Math::getNaN<long double>() noexcept
   return 0/0.l;
 #endif
 }
+
+#if (_COM_AZURE_DEV__BASE__HAS_FLOAT128)
+/** Returns quiet NaN for float128. */
+template<>
+inline /*constexpr*/ float128 Math::getNaN<float128>() noexcept
+{
+#if (_COM_AZURE_DEV__BASE__COMPILER == _COM_AZURE_DEV__BASE__COMPILER_MSC)
+  return __builtin_nan("0"); // double same as long double
+#else
+  return 0 / 0.q;
+#endif
+}
+#endif
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

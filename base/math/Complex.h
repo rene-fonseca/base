@@ -136,10 +136,8 @@ public:
   static const Complex II;
 
   static constexpr Type _ONE = 1;
-  static constexpr Type _HALF = _ONE/2;
-private:
 public:
-
+  
   /** The real part of the complex number. */
   Type real = 0;
   /** The imaginary part the complex number. */
@@ -277,7 +275,7 @@ public:
     return getComplex(isoc::csin(x.getNative()));
 #else
     // handle inf/nan
-    return _HALF * (exp(I * x) - exp(-x * I))/I;
+    return (_ONE / 2) * (exp(I * x) - exp(-x * I))/I;
 #endif
   }
 
@@ -297,7 +295,7 @@ public:
     return getComplex(isoc::ccos(x.getNative()));
 #else
     // handle inf/nan
-    return _HALF * (exp(I * x) + exp(-(I * x)));
+    return (_ONE / 2) * (exp(I * x) + exp(-(I * x)));
 #endif
   }
 
@@ -329,7 +327,7 @@ public:
     return getComplex(isoc::catan(x.getNative()));
 #else
     // handle inf/nan
-    return Complex(0, _HALF) + ln((I + x)/(I - x));
+    return Complex(0, _ONE / 2) + ln((I + x)/(I - x));
 #endif
   }
 
@@ -340,7 +338,7 @@ public:
     return getComplex(isoc::csinh(x.getNative()));
 #else
     // handle inf/nan
-    return _HALF * (exp(x) - exp(-x));
+    return (_ONE / 2) * (exp(x) - exp(-x));
 #endif
   }
 
@@ -360,7 +358,7 @@ public:
     return getComplex(isoc::ccosh(x.getNative()));
 #else
     // handle inf/nan
-    return _HALF * (exp(x) + exp(-x));
+    return (_ONE / 2) * (exp(x) + exp(-x));
 #endif
   }
 
@@ -392,7 +390,7 @@ public:
     return getComplex(isoc::catanh(x.getNative()));
 #else
     // handle inf/nan
-    return ln((_ONE + x)/(_ONE - x)) * _HALF;
+    return ln((_ONE + x)/(_ONE - x)) * (_ONE/2);
 #endif
   }
 

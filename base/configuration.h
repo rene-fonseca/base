@@ -167,9 +167,9 @@
 #  elif (__SIZEOF_FLOAT__ == 16)
 #   if defined(__FLT_MANT_DIG__) && (__FLT_MANT_DIG__ == 113)
 #     define _COM_AZURE_DEV__BASE__FLOAT _COM_AZURE_DEV__BASE__IEEE_QUADRUPLE_PRECISION
-#   elif defined(__LDBL_MANT_DIG__) && (__LDBL_MANT_DIG__ == 64)
+#   elif defined(__FLT_MANT_DIG__) && (__FLT_MANT_DIG__ == 64)
 #     define _COM_AZURE_DEV__BASE__FLOAT _COM_AZURE_DEV__BASE__IEEE_EXTENDED_DOUBLE_PRECISION_96_ALIGN16
-#   elif defined(__LDBL_MANT_DIG__) && (__LDBL_MANT_DIG__ == 53)
+#   elif defined(__FLT_MANT_DIG__) && (__FLT_MANT_DIG__ == 53)
 #     define _COM_AZURE_DEV__BASE__FLOAT _COM_AZURE_DEV__BASE__IEEE_754_DOUBLE_PRECISION
 #   else
 #     error Unsupported float type
@@ -194,9 +194,9 @@
 #  elif (__SIZEOF_DOUBLE__ == 16)
 #   if defined(__DBL_MANT_DIG__) && (__DBL_MANT_DIG__ == 113)
 #     define _COM_AZURE_DEV__BASE__DOUBLE _COM_AZURE_DEV__BASE__IEEE_QUADRUPLE_PRECISION
-#   elif defined(__LDBL_MANT_DIG__) && (__LDBL_MANT_DIG__ == 64)
+#   elif defined(__DBL_MANT_DIG__) && (__DBL_MANT_DIG__ == 64)
 #     define _COM_AZURE_DEV__BASE__DOUBLE _COM_AZURE_DEV__BASE__IEEE_EXTENDED_DOUBLE_PRECISION_96_ALIGN16
-#   elif defined(__LDBL_MANT_DIG__) && (__LDBL_MANT_DIG__ == 53)
+#   elif defined(__DBL_MANT_DIG__) && (__DBL_MANT_DIG__ == 53)
 #     define _COM_AZURE_DEV__BASE__DOUBLE _COM_AZURE_DEV__BASE__IEEE_754_DOUBLE_PRECISION
 #   else
 #     error Unsupported double type
@@ -246,6 +246,36 @@
 #else
 #  define _COM_AZURE_DEV__BASE__LONG_DOUBLE _COM_AZURE_DEV__BASE__IEEE_EXTENDED_DOUBLE_PRECISION_96_ALIGN16
 #endif
+#endif
+
+#if defined(__SIZEOF_INT128__)
+#  if (__SIZEOF_INT128__ == 4)
+#    if defined(__FLT128_MANT_LDIG__) && (__FLT128_MANT_LDIG__ == 24)
+#      define _COM_AZURE_DEV__BASE__FLOAT128 _COM_AZURE_DEV__BASE__IEEE_754_SINGLE_PRECISION
+#    endif
+#  elif (__SIZEOF_INT128__ == 8)
+#    if defined(__FLT128_MANT_DIG__) && (__FLT128_MANT_DIG__ == 53)
+#      define _COM_AZURE_DEV__BASE__FLOAT128 _COM_AZURE_DEV__BASE__IEEE_754_DOUBLE_PRECISION
+#    endif
+#  elif (__SIZEOF_INT128__ == 16) // HP-UX+Solaris sparc
+#    if defined(__FLT128_MANT_DIG__) && (__FLT128_MANT_DIG__ == 113)
+#      define _COM_AZURE_DEV__BASE__FLOAT128 _COM_AZURE_DEV__BASE__IEEE_QUADRUPLE_PRECISION
+#    elif defined(__FLT128_MANT_DIG__) && (__FLT128_MANT_DIG__ == 106)
+// TAG: wrong format add support for IBM format
+#      define _COM_AZURE_DEV__BASE__FLOAT128 _COM_AZURE_DEV__BASE__IEEE_QUADRUPLE_PRECISION
+#    elif defined(__FLT128_MANT_DIG__) && (__FLT128_MANT_DIG__ == 64)
+#      define _COM_AZURE_DEV__BASE__FLOAT128 _COM_AZURE_DEV__BASE__IEEE_EXTENDED_DOUBLE_PRECISION_96_ALIGN16
+#    elif defined(__FLT128_MANT_DIG__) && (__FLT128_MANT_DIG__ == 53)
+#      define _COM_AZURE_DEV__BASE__FLOAT128 _COM_AZURE_DEV__BASE__IEEE_754_DOUBLE_PRECISION
+#    else
+#      error Unsupported float128 type
+#    endif
+#  else
+#    error Unsupported float128 type
+#  endif
+#endif
+#if !defined(_COM_AZURE_DEV__BASE__FLOAT128)
+#  define _COM_AZURE_DEV__BASE__FLOAT128 _COM_AZURE_DEV__BASE__IEEE_QUADRUPLE_PRECISION
 #endif
 
 #define _COM_AZURE_DEV__BASE__HAVE_MEMCHR

@@ -393,7 +393,23 @@ _COM_AZURE_DEV__BASE__PACKED__END
 #else
 #  error Invalid floating-point representation of type long double
 #endif
-  
+
+#if (_COM_AZURE_DEV__BASE__FLOAT128 == _COM_AZURE_DEV__BASE__IEEE_754_SINGLE_PRECISION)
+  typedef Representation::IEEE754SinglePrecision Float128Representation;
+#elif (_COM_AZURE_DEV__BASE__FLOAT128 == _COM_AZURE_DEV__BASE__IEEE_754_DOUBLE_PRECISION)
+  typedef Representation::IEEE754DoublePrecision Float128Representation;
+#elif (_COM_AZURE_DEV__BASE__FLOAT128 == _COM_AZURE_DEV__BASE__IEEE_EXTENDED_DOUBLE_PRECISION_96)
+  typedef Representation::IEEEExtendedDoublePrecision96 Float128Representation;
+#elif (_COM_AZURE_DEV__BASE__FLOAT128 == _COM_AZURE_DEV__BASE__IEEE_EXTENDED_DOUBLE_PRECISION_96_ALIGN16)
+  typedef Representation::IEEEExtendedDoublePrecision96Align16 Float128Representation;
+#elif (_COM_AZURE_DEV__BASE__FLOAT128 == _COM_AZURE_DEV__BASE__IEEE_EXTENDED_DOUBLE_PRECISION_128)
+  typedef Representation::IEEEExtendedDoublePrecision128 Float128Representation;
+#elif (_COM_AZURE_DEV__BASE__FLOAT128 == _COM_AZURE_DEV__BASE__IEEE_QUADRUPLE_PRECISION)
+  typedef Representation::IEEEQuadruplePrecision Float128Representation;
+#else
+#  error Invalid floating-point representation of type float128
+#endif
+
   /** @short IEEE 754 single precision conversion support. */
 _COM_AZURE_DEV__BASE__PACKED__BEGIN
   struct IEEE754SinglePrecision {
@@ -457,7 +473,12 @@ _COM_AZURE_DEV__BASE__PACKED__BEGIN
     {
       setValue(*reinterpret_cast<const LongDoubleRepresentation*>(&value));
     }
-    
+
+    inline void setValue(float128 value) noexcept
+    {
+      setValue(*reinterpret_cast<const Float128Representation*>(&value));
+    }
+
     inline IEEE754SinglePrecision() noexcept
     {
     }
@@ -516,7 +537,12 @@ _COM_AZURE_DEV__BASE__PACKED__BEGIN
     {
       setValue(*reinterpret_cast<const LongDoubleRepresentation*>(&value));
     }
-    
+
+    inline IEEE754SinglePrecision(float128 value) noexcept
+    {
+      setValue(*reinterpret_cast<const Float128Representation*>(&value));
+    }
+
     /**
       Returns true if the value is negative.
     */
@@ -668,7 +694,12 @@ _COM_AZURE_DEV__BASE__PACKED__BEGIN
     {
       setValue(*reinterpret_cast<const LongDoubleRepresentation*>(&value));
     }
-    
+
+    inline void setValue(float128 value) noexcept
+    {
+      setValue(*reinterpret_cast<const Float128Representation*>(&value));
+    }
+
     inline IEEE754DoublePrecision() noexcept
     {
     }
@@ -716,6 +747,11 @@ _COM_AZURE_DEV__BASE__PACKED__BEGIN
     inline IEEE754DoublePrecision(long double value) noexcept
     {
       setValue(*reinterpret_cast<const LongDoubleRepresentation*>(&value));
+    }
+
+    inline IEEE754DoublePrecision(float128 value) noexcept
+    {
+      setValue(*reinterpret_cast<const Float128Representation*>(&value));
     }
 
     /**
@@ -891,7 +927,12 @@ _COM_AZURE_DEV__BASE__PACKED__BEGIN
     {
       setValue(*reinterpret_cast<const LongDoubleRepresentation*>(&value));
     }
-    
+
+    inline void setValue(float128 value) noexcept
+    {
+      setValue(*reinterpret_cast<const Float128Representation*>(&value));
+    }
+
     inline IEEEExtendedDoublePrecision96Align16() noexcept
     {
     }
@@ -1135,7 +1176,12 @@ _COM_AZURE_DEV__BASE__PACKED__BEGIN
     {
       setValue(*reinterpret_cast<const LongDoubleRepresentation*>(&value));
     }
-    
+
+    inline void setValue(float128 value) noexcept
+    {
+      setValue(*reinterpret_cast<const Float128Representation*>(&value));
+    }
+
     inline IEEEExtendedDoublePrecision96() noexcept
     {
     }
@@ -1379,7 +1425,12 @@ _COM_AZURE_DEV__BASE__PACKED__BEGIN
     {
       setValue(*reinterpret_cast<const LongDoubleRepresentation*>(&value));
     }
-    
+
+    inline void setValue(float128 value) noexcept
+    {
+      setValue(*reinterpret_cast<const Float128Representation*>(&value));
+    }
+
     inline IEEEExtendedDoublePrecision128() noexcept
     {
     }
@@ -1586,7 +1637,12 @@ _COM_AZURE_DEV__BASE__PACKED__BEGIN
     {
       setValue(*reinterpret_cast<const LongDoubleRepresentation*>(&value));
     }
-    
+
+    inline void setValue(float128 value) noexcept
+    {
+      setValue(*reinterpret_cast<const Float128Representation*>(&value));
+    }
+
     inline IEEEQuadruplePrecision() noexcept
     {
     }
@@ -1775,7 +1831,23 @@ _COM_AZURE_DEV__BASE__PACKED__END
 #else
 #  error Invalid floating-point representation of type long double
 #endif
-  
+
+#if (_COM_AZURE_DEV__BASE__FLOAT128 == _COM_AZURE_DEV__BASE__IEEE_754_SINGLE_PRECISION)
+  typedef IEEE754SinglePrecision ToFloat128;
+#elif (_COM_AZURE_DEV__BASE__FLOAT128 == _COM_AZURE_DEV__BASE__IEEE_754_DOUBLE_PRECISION)
+  typedef IEEE754DoublePrecision ToFloat128;
+#elif (_COM_AZURE_DEV__BASE__FLOAT128 == _COM_AZURE_DEV__BASE__IEEE_EXTENDED_DOUBLE_PRECISION_96)
+  typedef IEEEExtendedDoublePrecision96 ToFloat128;
+#elif (_COM_AZURE_DEV__BASE__FLOAT128 == _COM_AZURE_DEV__BASE__IEEE_EXTENDED_DOUBLE_PRECISION_96_ALIGN16)
+  typedef IEEEExtendedDoublePrecision96Align16 ToFloat128;
+#elif (_COM_AZURE_DEV__BASE__FLOAT128 == _COM_AZURE_DEV__BASE__IEEE_EXTENDED_DOUBLE_PRECISION_128)
+  typedef IEEEExtendedDoublePrecision128 ToFloat128;
+#elif (_COM_AZURE_DEV__BASE__FLOAT128 == _COM_AZURE_DEV__BASE__IEEE_QUADRUPLE_PRECISION)
+  typedef IEEEQuadruplePrecision ToFloat128;
+#else
+#  error Invalid floating-point representation of type float128
+#endif
+
   /** Converts float primitive to representation type. */
   template<class TYPE>
   class ToFloatPrimitive {};
@@ -1800,6 +1872,13 @@ class FloatingPoint::ToFloatPrimitive<long double> {
 public:
   
   typedef FloatingPoint::ToLongDouble Type;
+};
+
+template<>
+class FloatingPoint::ToFloatPrimitive<float128> {
+public:
+
+  typedef FloatingPoint::ToFloat128 Type;
 };
 
 inline FloatingPoint::IEEE754SinglePrecision::operator float() const noexcept

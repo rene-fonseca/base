@@ -19,6 +19,9 @@ _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 template _COM_AZURE_DEV__BASE__API class Complex<float>;
 template _COM_AZURE_DEV__BASE__API class Complex<double>;
 template _COM_AZURE_DEV__BASE__API class Complex<long double>;
+#if (_COM_AZURE_DEV__BASE__HAS_FLOAT128)
+template _COM_AZURE_DEV__BASE__API class Complex<float128>;
+#endif
 
 const Complex<float>::Imaginary Complex<float>::I;
 const Complex<float> Complex<float>::ZERO(0, 0);
@@ -38,6 +41,14 @@ const Complex<long double> Complex<long double>::ONE(1, 0);
 const Complex<long double> Complex<long double>::MINUS_ONE(-1, 0);
 const Complex<long double> Complex<long double>::II(0, 1);
 
+#if (_COM_AZURE_DEV__BASE__HAS_FLOAT128)
+const Complex<float128>::Imaginary Complex<float128>::I;
+const Complex<float128> Complex<float128>::ZERO(0, 0);
+const Complex<float128> Complex<float128>::ONE(1, 0);
+const Complex<float128> Complex<float128>::MINUS_ONE(-1, 0);
+const Complex<float128> Complex<float128>::II(0, 1);
+#endif
+
 FormatOutputStream& operator<<(FormatOutputStream& stream, const Complex<float>& value)
 {
   FormatOutputStream::PushContext push(stream);
@@ -55,6 +66,14 @@ FormatOutputStream& operator<<(FormatOutputStream& stream, const Complex<long do
   FormatOutputStream::PushContext push(stream);
   return stream << '(' << value.getReal() << FPLUS << value.getImaginary() << "i)";
 }
+
+#if (_COM_AZURE_DEV__BASE__HAS_FLOAT128)
+FormatOutputStream& operator<<(FormatOutputStream& stream, const Complex<float128>& value)
+{
+  FormatOutputStream::PushContext push(stream);
+  return stream << '(' << value.getReal() << FPLUS << value.getImaginary() << "i)";
+}
+#endif
 
 #if defined(_COM_AZURE_DEV__BASE__TESTS)
 

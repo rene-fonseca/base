@@ -221,6 +221,9 @@
 #  elif (__SIZEOF_LONG_DOUBLE__ == 16) // HP-UX+Solaris sparc
 #    if defined(__LDBL_MANT_DIG__) && (__LDBL_MANT_DIG__ == 113)
 #      define _COM_AZURE_DEV__BASE__LONG_DOUBLE _COM_AZURE_DEV__BASE__IEEE_QUADRUPLE_PRECISION
+#    elif defined(__LDBL_MANT_DIG__) && (__LDBL_MANT_DIG__ == 106)
+// TAG: wrong format add support for IBM format
+#      define _COM_AZURE_DEV__BASE__LONG_DOUBLE _COM_AZURE_DEV__BASE__IEEE_QUADRUPLE_PRECISION
 #    elif defined(__LDBL_MANT_DIG__) && (__LDBL_MANT_DIG__ == 64)
 #      define _COM_AZURE_DEV__BASE__LONG_DOUBLE _COM_AZURE_DEV__BASE__IEEE_EXTENDED_DOUBLE_PRECISION_96_ALIGN16
 #    elif defined(__LDBL_MANT_DIG__) && (__LDBL_MANT_DIG__ == 53)

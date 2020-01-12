@@ -16,18 +16,45 @@
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
-const Complex::Imaginary Complex::I;
-const Complex Complex::ZERO(0, 0);
-const Complex Complex::ONE(1, 0);
-const Complex Complex::MINUS_ONE(-1, 0);
-const Complex Complex::II(0, 1);
+template _COM_AZURE_DEV__BASE__API class Complex<float>;
+template _COM_AZURE_DEV__BASE__API class Complex<double>;
+template _COM_AZURE_DEV__BASE__API class Complex<long double>;
 
-FormatOutputStream& operator<<(FormatOutputStream& stream, const Complex& value)
+const Complex<float>::Imaginary Complex<float>::I;
+const Complex<float> Complex<float>::ZERO(0, 0);
+const Complex<float> Complex<float>::ONE(1, 0);
+const Complex<float> Complex<float>::MINUS_ONE(-1, 0);
+const Complex<float> Complex<float>::II(0, 1);
+
+const Complex<double>::Imaginary Complex<double>::I;
+const Complex<double> Complex<double>::ZERO(0, 0);
+const Complex<double> Complex<double>::ONE(1, 0);
+const Complex<double> Complex<double>::MINUS_ONE(-1, 0);
+const Complex<double> Complex<double>::II(0, 1);
+
+const Complex<long double>::Imaginary Complex<long double>::I;
+const Complex<long double> Complex<long double>::ZERO(0, 0);
+const Complex<long double> Complex<long double>::ONE(1, 0);
+const Complex<long double> Complex<long double>::MINUS_ONE(-1, 0);
+const Complex<long double> Complex<long double>::II(0, 1);
+
+FormatOutputStream& operator<<(FormatOutputStream& stream, const Complex<float>& value)
 {
   FormatOutputStream::PushContext push(stream);
   return stream << '(' << value.getReal() << FPLUS << value.getImaginary() << "i)";
 }
 
+FormatOutputStream& operator<<(FormatOutputStream& stream, const Complex<double>& value)
+{
+  FormatOutputStream::PushContext push(stream);
+  return stream << '(' << value.getReal() << FPLUS << value.getImaginary() << "i)";
+}
+
+FormatOutputStream& operator<<(FormatOutputStream& stream, const Complex<long double>& value)
+{
+  FormatOutputStream::PushContext push(stream);
+  return stream << '(' << value.getReal() << FPLUS << value.getImaginary() << "i)";
+}
 
 #if defined(_COM_AZURE_DEV__BASE__TESTS)
 
@@ -41,8 +68,8 @@ public:
 
   void run() override
   {
-    Complex a(0, 1);
-    Complex b(1, 1);
+    Complex<double> a(0, 1);
+    Complex<double> b(1, 1);
     auto c = a + b;
     c = a - b;
     c = a * b;

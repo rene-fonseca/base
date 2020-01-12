@@ -109,16 +109,17 @@ namespace isoc {
 #endif
 
 /**
-  Complex number represented by real and imaginary parts. double used. template class is not available.
+  Complex number represented by real and imaginary parts.
 
   @short Complex number.
   @ingroup math
 */
 
+template<typename TYPE>
 class _COM_AZURE_DEV__BASE__API Complex {
 public:
 
-  typedef double Type;
+  typedef TYPE Type;
 
   /** Imaginary tag. */
   class Imaginary {};
@@ -133,12 +134,16 @@ public:
   static const Complex MINUS_ONE;
   /** Complex number 1i. */
   static const Complex II;
+
+  static constexpr Type _ONE = 1;
+  static constexpr Type _HALF = _ONE/2;
 private:
+public:
 
   /** The real part of the complex number. */
-  double real = 0;
+  Type real = 0;
   /** The imaginary part the complex number. */
-  double imaginary = 0;
+  TYPE imaginary = 0;
 
 #if defined(_COM_AZURE_DEV__BASE__COMPLEX_ISOC)
   inline _Dcomplex getNative() const noexcept
@@ -158,8 +163,8 @@ public:
   class Polar {
   public:
     
-    double r = 0;
-    double a = 0;
+    Type r = 0;
+    Type a = 0;
   };
 
   /**
@@ -175,7 +180,7 @@ public:
 
     @param real The real part.
   */
-  Complex(double real) noexcept;
+  Complex(Type real) noexcept;
 
 #if 0 // C++: does it make sense to disambiguate functions by setting priority e.g. [[prefer]]
   /** Initialize as imaginary. */
@@ -190,7 +195,7 @@ public:
     @param real The desired real part.
     @param imaginary The desired imaginary part.
   */
-  Complex(double real, double imaginary) noexcept;
+  Complex(Type real, Type imaginary) noexcept;
 
   inline Complex(const Polar& polar) noexcept
   {
@@ -219,7 +224,7 @@ public:
   /**
     Assignment of complex number by real number.
   */
-  inline Complex& operator=(double real) noexcept
+  inline Complex& operator=(Type real) noexcept
   {
     this->real = real; // no need to protect against self-assignment
     imaginary = 0;
@@ -231,7 +236,7 @@ public:
 #if defined(_COM_AZURE_DEV__BASE__COMPLEX_ISOC)
     return getComplex(isoc::csqrt(x.getNative()));
 #else
-    double r = x.getModulus();
+    Type r = x.getModulus();
     return Math::sqrt(r) * (x + r)/(x + r).getModulus(); // principal root
 #endif
   }
@@ -241,7 +246,7 @@ public:
 #if defined(_COM_AZURE_DEV__BASE__COMPLEX_ISOC)
     return getComplex(isoc::cexp(x.getNative()));
 #else
-    double r = Math::exp(x.real);
+    Type r = Math::exp(x.real);
     return Complex(r * Math::cos(x.imaginary), r * Math::sin(x.imaginary));
 #endif
   }
@@ -256,7 +261,7 @@ public:
 #endif
   }
 
-  static inline Complex pow(const double x, const Complex& y) noexcept
+  static inline Complex pow(const Type x, const Complex& y) noexcept
   {
 #if defined(_COM_AZURE_DEV__BASE__COMPLEX_ISOC)
     return getComplex(isoc::cpow(x, y.getNative()));
@@ -272,7 +277,7 @@ public:
     return getComplex(isoc::csin(x.getNative()));
 #else
     // handle inf/nan
-    return 0.5 * (exp(I * x) - exp(-x * I))/I;
+    return _HALF * (exp(I * x) - exp(-x * I))/I;
 #endif
   }
 
@@ -282,7 +287,7 @@ public:
     return getComplex(isoc::casin(x.getNative()));
 #else
     // handle inf/nan
-    return -(I * ln(I * x + sqrt(1 - x * x)));
+    return -(I * ln(I * x + sqrt(_ONE - x * x)));
 #endif
   }
 
@@ -292,7 +297,7 @@ public:
     return getComplex(isoc::ccos(x.getNative()));
 #else
     // handle inf/nan
-    return 0.5 * (exp(I * x) + exp(-(I * x)));
+    return _HALF * (exp(I * x) + exp(-(I * x)));
 #endif
   }
 
@@ -302,7 +307,7 @@ public:
     return getComplex(isoc::cacos(x.getNative()));
 #else
     // handle inf/nan
-    return -(I * ln(x + I * sqrt(1 - x * x)));
+    return -(I * ln(x + I * sqrt(_ONE - x * x)));
 #endif
   }
 
@@ -324,7 +329,7 @@ public:
     return getComplex(isoc::catan(x.getNative()));
 #else
     // handle inf/nan
-    return I * 0.5 + ln((I + x)/(I - x));
+    return Complex(0, _HALF) + ln((I + x)/(I - x));
 #endif
   }
 
@@ -335,7 +340,7 @@ public:
     return getComplex(isoc::csinh(x.getNative()));
 #else
     // handle inf/nan
-    return 0.5 * (exp(x) - exp(-x));
+    return _HALF * (exp(x) - exp(-x));
 #endif
   }
 
@@ -345,7 +350,7 @@ public:
     return getComplex(isoc::casinh(x.getNative()));
 #else
     // handle inf/nan
-    return ln(x + sqrt(x * x + 1));
+    return ln(x + sqrt(x * x + _ONE));
 #endif
   }
 
@@ -355,7 +360,7 @@ public:
     return getComplex(isoc::ccosh(x.getNative()));
 #else
     // handle inf/nan
-    return 0.5 * (exp(x) + exp(-x));
+    return _HALF * (exp(x) + exp(-x));
 #endif
   }
 
@@ -366,7 +371,7 @@ public:
     return getComplex(isoc::cacosh(getNative()));
 #else
     // handle inf/nan
-    return ln(x + sqrt(x * x - 1));
+    return ln(x + sqrt(x * x - _ONE));
 #endif
   }
 
@@ -377,7 +382,7 @@ public:
 #else
     // handle inf/nan
     auto temp = exp(2 * x);
-    return (temp - 1)/(temp + 1);
+    return (temp - _ONE)/(temp + _ONE);
 #endif
   }
 
@@ -387,7 +392,7 @@ public:
     return getComplex(isoc::catanh(x.getNative()));
 #else
     // handle inf/nan
-    return ln((1 + x)/(1 - x)) * 0.5;
+    return ln((_ONE + x)/(_ONE - x)) * _HALF;
 #endif
   }
 
@@ -396,7 +401,7 @@ public:
   /**
     Returns the real part of the complex number.
   */
-  inline double getReal() const noexcept
+  inline Type getReal() const noexcept
   {
     return real;
   }
@@ -404,7 +409,7 @@ public:
   /**
     Returns the imaginary part of the complex number.
   */
-  inline double getImaginary() const noexcept
+  inline Type getImaginary() const noexcept
   {
     return imaginary;
   }
@@ -412,7 +417,7 @@ public:
   /**
     Sets the real part of the complex number.
   */
-  inline void setReal(const double value) noexcept
+  inline void setReal(const Type value) noexcept
   {
     real = value;
   }
@@ -420,7 +425,7 @@ public:
   /**
     Sets the imaginary part of the complex number.
   */
-  inline void setImaginary(const double value) noexcept
+  inline void setImaginary(const Type value) noexcept
   {
     imaginary = value;
   }
@@ -428,7 +433,7 @@ public:
   /**
     Returns the square of the modulus of the complex number.
   */
-  inline double getSqrModulus() const noexcept
+  inline Type getSqrModulus() const noexcept
   {
     return real * real + imaginary * imaginary;
   }
@@ -444,7 +449,7 @@ public:
   /**
     Returns the modulus of the complex number.
   */
-  inline double getModulus() const noexcept
+  inline Type getModulus() const noexcept
   {
     return Math::hypot(real, imaginary);
   }
@@ -452,7 +457,7 @@ public:
   /**
     Returns the angle of the complex number.
   */
-  inline double getAngle() const noexcept
+  inline Type getAngle() const noexcept
   {
     return Math::atan2(imaginary, real);
   }
@@ -495,7 +500,7 @@ public:
   inline Complex invert() const noexcept
   {
     // 1/complex <=> conjugate/(complex * conjugate)
-    double r = real * real + imaginary * imaginary; // -1 * -1 = 1
+    Type r = real * real + imaginary * imaginary; // -1 * -1 = 1
     return Complex(real/r, -imaginary/r);
   }
 
@@ -571,7 +576,7 @@ public:
   */
   inline Complex& operator*=(const Complex& value) noexcept
   {
-    double temp = (real * value.real - imaginary * value.imaginary);
+    Type temp = (real * value.real - imaginary * value.imaginary);
     imaginary = (real * value.imaginary + imaginary * value.real);
     real = temp;
     return *this;
@@ -582,7 +587,7 @@ public:
 
     @param value The multiplicator.
   */
-  inline Complex& operator*=(double value) noexcept
+  inline Complex& operator*=(Type value) noexcept
   {
     real *= value;
     imaginary *= value;
@@ -596,7 +601,7 @@ public:
   */
   inline Complex& operator*=(const Imaginary) noexcept
   {
-    double temp = (real * 0 - imaginary * 1);
+    Type temp = (real * 0 - imaginary * 1);
     imaginary = (real * 1 + imaginary * 0);
     real = temp;
     return *this;
@@ -607,7 +612,7 @@ public:
 
     @param value The divisor.
   */
-  inline Complex& operator/=(double divisor) noexcept
+  inline Complex& operator/=(Type divisor) noexcept
   {
     real /= divisor;
     imaginary /= divisor;
@@ -623,7 +628,7 @@ public:
   {
     const Complex c = divisor.conjugate();
     *this *= c;
-    double r = divisor.real * divisor.real + divisor.imaginary * divisor.imaginary; // -1 * -1 = 1
+    Type r = divisor.real * divisor.real + divisor.imaginary * divisor.imaginary; // -1 * -1 = 1
     real /= r;
     imaginary /= r;
     return *this;
@@ -631,7 +636,7 @@ public:
 
   inline Complex& operator/=(const Imaginary) noexcept
   {
-    double temp = (/*real * 0*/ - imaginary * -1);
+    Type temp = (/*real * 0*/ - imaginary * -1);
     imaginary = (real * -1 /*+ imaginary * 0*/);
     real = temp;
     return *this;
@@ -653,136 +658,194 @@ public:
     return Complex(-real, -imaginary);
   }
 
-  friend Complex operator+(const double left, const Complex& right) noexcept;
+#if 0
+  friend Complex operator+(const Type left, const Complex& right) noexcept;
   friend Complex operator+(const Imaginary, const Complex& right) noexcept;
   friend Complex operator+(const Complex& left, const Imaginary) noexcept;
-  friend Complex operator+(const Complex& left, const double right) noexcept;
+  friend Complex operator+(const Complex& left, const Type right) noexcept;
   friend Complex operator+(const Complex& left, const Complex& right) noexcept;
-  friend Complex operator-(const double left, const Complex& right) noexcept;
+  friend Complex operator-(const Type left, const Complex& right) noexcept;
   friend Complex operator-(const Imaginary, const Complex& right) noexcept;
   friend Complex operator-(const Complex& left, const Imaginary) noexcept;
-  friend Complex operator-(const Complex& left, const double right) noexcept;
+  friend Complex operator-(const Complex& left, const Type right) noexcept;
   friend Complex operator-(const Complex& left, const Complex& right) noexcept;
   friend Complex operator*(const Complex& left, const Complex& right) noexcept;
   friend Complex operator*(const Imaginary, const Complex& right) noexcept;
   friend Complex operator*(const Complex& left, const Imaginary) noexcept;
-  friend Complex operator*(const Complex& left, double right) noexcept;
-  friend Complex operator*(double left, const Complex& right) noexcept;
-  friend Complex operator/(const Complex& left, double right) noexcept;
+  friend Complex operator*(const Complex& left, Type right) noexcept;
+  friend Complex operator*(Type left, const Complex& right) noexcept;
+  friend Complex operator/(const Complex& left, Type right) noexcept;
   friend Complex operator/(const Complex& left, const Complex& right) noexcept;
   friend Complex operator/(const Complex& left, const Imaginary) noexcept;
+#endif
 };
 
-inline Complex::Complex(double _real) noexcept
+template<typename TYPE>
+inline Complex<TYPE>::Complex(TYPE _real) noexcept
   : real(_real)
 {
 }
 
-inline Complex::Complex(double _real, double _imaginary) noexcept
+template<typename TYPE>
+inline Complex<TYPE>::Complex(TYPE _real, TYPE _imaginary) noexcept
   : real(_real), imaginary(_imaginary)
 {
 }
 
-inline Complex operator+(const double left, const Complex& right) noexcept
+template<typename TYPE>
+inline Complex<TYPE> operator+(const TYPE left, const Complex<TYPE>& right) noexcept
 {
-  return Complex(left + right.real, right.imaginary);
+  return Complex<TYPE>(left + right.real, right.imaginary);
 }
 
-inline Complex operator+(const Complex& left, const double right) noexcept
+template<typename TYPE>
+inline Complex<TYPE> operator+(const int left, const Complex<TYPE>& right) noexcept
 {
-  return Complex(left.real + right, left.imaginary);
+  return Complex<TYPE>(left + right.real, right.imaginary);
 }
 
-inline Complex operator+(const Complex::Imaginary, const Complex& right) noexcept
+template<typename TYPE>
+inline Complex<TYPE> operator+(const Complex<TYPE>& left, const TYPE right) noexcept
 {
-  return Complex(right.real, 1 + right.imaginary);
+  return Complex<TYPE>(left.real + right, left.imaginary);
 }
 
-inline Complex operator+(const Complex& left, const Complex::Imaginary) noexcept
+template<typename TYPE>
+inline Complex<TYPE> operator+(const Complex<TYPE>& left, const int right) noexcept
 {
-  return Complex(left.real, left.imaginary + 1);
+  return Complex<TYPE>(left.real + right, left.imaginary);
 }
 
-inline Complex operator+(const Complex& left, const Complex& right) noexcept
+template<typename TYPE>
+inline Complex<TYPE> operator+(const typename Complex<TYPE>::Imaginary, const Complex<TYPE>& right) noexcept
 {
-  return Complex(left.real + right.real, left.imaginary + right.imaginary);
+  return Complex<TYPE>(right.real, 1 + right.imaginary);
 }
 
-inline Complex operator-(const double left, const Complex& right) noexcept
+template<typename TYPE>
+inline Complex<TYPE> operator+(const Complex<TYPE>& left, const typename Complex<TYPE>::Imaginary) noexcept
 {
-  return Complex(left - right.real, -right.imaginary);
+  return Complex<TYPE>(left.real, left.imaginary + 1);
 }
 
-inline Complex operator-(const Complex& left, const double right) noexcept
+template<typename TYPE>
+inline Complex<TYPE> operator+(const Complex<TYPE>& left, const Complex<TYPE>& right) noexcept
 {
-  return Complex(left.real - right, left.imaginary);
+  return Complex<TYPE>(left.real + right.real, left.imaginary + right.imaginary);
 }
 
-inline Complex operator-(const Complex::Imaginary, const Complex& right) noexcept
+template<typename TYPE>
+inline Complex<TYPE> operator-(const TYPE left, const Complex<TYPE>& right) noexcept
 {
-  return Complex(-right.real, 1 - right.imaginary);
+  return Complex<TYPE>(left - right.real, -right.imaginary);
 }
 
-inline Complex operator-(const Complex& left, const Complex::Imaginary) noexcept
+template<typename TYPE>
+inline Complex<TYPE> operator-(const Complex<TYPE>& left, const TYPE right) noexcept
 {
-  return Complex(left.real, left.imaginary - 1);
+  return Complex<TYPE>(left.real - right, left.imaginary);
 }
 
-inline Complex operator-(const Complex& left, const Complex& right) noexcept
+template<typename TYPE>
+inline Complex<TYPE> operator-(const Complex<TYPE>& left, const int right) noexcept
 {
-  return Complex(left.real - right.real, left.imaginary - right.imaginary);
+  return Complex<TYPE>(left.real - right, left.imaginary);
 }
 
-inline Complex operator*(const Complex& left, const Complex& right) noexcept
+template<typename TYPE>
+inline Complex<TYPE> operator-(const typename Complex<TYPE>::Imaginary, const Complex<TYPE>& right) noexcept
 {
-  return Complex(
+  return Complex<TYPE>(-right.real, 1 - right.imaginary);
+}
+
+template<typename TYPE>
+inline Complex<TYPE> operator-(const Complex<TYPE>& left, const typename Complex<TYPE>::Imaginary) noexcept
+{
+  return Complex<TYPE>(left.real, left.imaginary - 1);
+}
+
+template<typename TYPE>
+inline Complex<TYPE> operator-(const Complex<TYPE>& left, const Complex<TYPE>& right) noexcept
+{
+  return Complex<TYPE>(left.real - right.real, left.imaginary - right.imaginary);
+}
+
+template<typename TYPE>
+inline Complex<TYPE> operator*(const Complex<TYPE>& left, const Complex<TYPE>& right) noexcept
+{
+  return Complex<TYPE>(
     left.real * right.real - left.imaginary * right.imaginary,
     left.real * right.imaginary + left.imaginary * right.real
   );
 }
 
-inline Complex operator*(const Complex::Imaginary, const Complex& right) noexcept
+template<typename TYPE>
+Complex<TYPE> operator*(const typename Complex<TYPE>::Imaginary, const Complex<TYPE>& right) noexcept
 {
-  return Complex(
+  return Complex<TYPE>(
     /*0 * right.real*/ - 1 * right.imaginary,
     /*0 * right.imaginary*/ + 1 * right.real
   );
 }
 
-inline Complex operator*(const Complex& left, const Complex::Imaginary) noexcept
+template<typename TYPE>
+inline Complex<TYPE> operator*(const Complex<TYPE>& left, const typename Complex<TYPE>::Imaginary) noexcept
 {
-  return Complex(
+  return Complex<TYPE>(
     /*left.real * 0*/ - left.imaginary * 1,
     left.real * 1 /*+ left.imaginary * 0*/
   );
 }
 
-inline Complex operator*(const Complex& left, double right) noexcept
+template<typename TYPE>
+inline Complex<TYPE> operator*(const Complex<TYPE>& left, TYPE right) noexcept
 {
-  return Complex(left.real * right, left.imaginary * right);
+  return Complex<TYPE>(left.real * right, left.imaginary * right);
 }
 
-inline Complex operator*(double left, const Complex& right) noexcept
+template<typename TYPE>
+inline Complex<TYPE> operator*(const Complex<TYPE>& left, int right) noexcept
 {
-  return Complex(right.real * left, right.imaginary * left);
+  return Complex<TYPE>(left.real * right, left.imaginary * right);
 }
 
-inline Complex operator/(const Complex& left, double right) noexcept
+template<typename TYPE>
+inline Complex<TYPE> operator*(TYPE left, const Complex<TYPE>& right) noexcept
 {
-  return Complex(left.real/right, left.imaginary/right);
+  return Complex<TYPE>(right.real * left, right.imaginary * left);
 }
 
-inline Complex operator/(const Complex& left, const Complex& right) noexcept
+template<typename TYPE>
+inline Complex<TYPE> operator*(int left, const Complex<TYPE>& right) noexcept
 {
-  Complex result(left);
+  return Complex<TYPE>(right.real * left, right.imaginary * left);
+}
+
+template<typename TYPE>
+inline Complex<TYPE> operator/(const Complex<TYPE>& left, TYPE right) noexcept
+{
+  return Complex<TYPE>(left.real/right, left.imaginary/right);
+}
+
+template<typename TYPE>
+inline Complex<TYPE> operator/(const Complex<TYPE>& left, int right) noexcept
+{
+  return Complex<TYPE>(left.real / right, left.imaginary / right);
+}
+
+template<typename TYPE>
+inline Complex<TYPE> operator/(const Complex<TYPE>& left, const Complex<TYPE>& right) noexcept
+{
+  Complex<TYPE> result(left);
   result /= right;
   return result;
 }
 
-inline Complex operator/(const Complex& left, const Complex::Imaginary) noexcept
+template<typename TYPE>
+inline Complex<TYPE> operator/(const Complex<TYPE>& left, const typename Complex<TYPE>::Imaginary) noexcept
 {
-  Complex result(left);
-  result /= Complex::I;
+  Complex<TYPE> result(left);
+  result /= Complex<TYPE>::I;
   return result;
 }
 
@@ -792,10 +855,11 @@ inline Complex operator/(const Complex& left, const Complex::Imaginary) noexcept
 
   @relates Complex
 */
-FormatOutputStream& operator<<(FormatOutputStream& stream, const Complex& value);
+template<typename TYPE>
+_COM_AZURE_DEV__BASE__API FormatOutputStream& operator<<(FormatOutputStream& stream, const Complex<TYPE>& value);
 
-template<>
-class IsUninitializeable<Complex> : public IsUninitializeable<double> {
+template<typename TYPE>
+class IsUninitializeable<Complex<TYPE> > : public IsUninitializeable<TYPE> {
 };
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

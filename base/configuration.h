@@ -248,7 +248,7 @@
 #endif
 #endif
 
-#if defined(__SIZEOF_FLOAT128__)
+#if (defined(__SIZEOF_FLOAT128__) && defined(__FLT128_MANT_DIG__)) // old GCC only defines __SIZEOF_FLOAT128__
 #  if (__SIZEOF_FLOAT128__ == 4)
 #    if defined(__FLT128_MANT_LDIG__) && (__FLT128_MANT_LDIG__ == 24)
 #      define _COM_AZURE_DEV__BASE__FLOAT128 _COM_AZURE_DEV__BASE__IEEE_754_SINGLE_PRECISION

@@ -165,15 +165,17 @@
 #      define _COM_AZURE_DEV__BASE__FLOAT _COM_AZURE_DEV__BASE__IEEE_754_DOUBLE_PRECISION
 #    endif
 #  elif (__SIZEOF_FLOAT__ == 16)
-#   if defined(__FLT_MANT_DIG__) && (__FLT_MANT_DIG__ == 113)
-#     define _COM_AZURE_DEV__BASE__FLOAT _COM_AZURE_DEV__BASE__IEEE_QUADRUPLE_PRECISION
-#   elif defined(__FLT_MANT_DIG__) && (__FLT_MANT_DIG__ == 64)
-#     define _COM_AZURE_DEV__BASE__FLOAT _COM_AZURE_DEV__BASE__IEEE_EXTENDED_DOUBLE_PRECISION_96_ALIGN16
-#   elif defined(__FLT_MANT_DIG__) && (__FLT_MANT_DIG__ == 53)
-#     define _COM_AZURE_DEV__BASE__FLOAT _COM_AZURE_DEV__BASE__IEEE_754_DOUBLE_PRECISION
-#   else
-#     error Unsupported float type
-#   endif
+#    if defined(__FLT_MANT_DIG__) && (__FLT_MANT_DIG__ == 113)
+#      define _COM_AZURE_DEV__BASE__FLOAT _COM_AZURE_DEV__BASE__IEEE_QUADRUPLE_PRECISION
+#    elif defined(__FLT_MANT_DIG__) && (__FLT_MANT_DIG__ == 106)
+#      define _COM_AZURE_DEV__BASE__FLOAT _COM_AZURE_DEV__BASE__IBM_EXTENDED_PRECISION
+#    elif defined(__FLT_MANT_DIG__) && (__FLT_MANT_DIG__ == 64)
+#      define _COM_AZURE_DEV__BASE__FLOAT _COM_AZURE_DEV__BASE__IEEE_EXTENDED_DOUBLE_PRECISION_96_ALIGN16
+#    elif defined(__FLT_MANT_DIG__) && (__FLT_MANT_DIG__ == 53)
+#      define _COM_AZURE_DEV__BASE__FLOAT _COM_AZURE_DEV__BASE__IEEE_754_DOUBLE_PRECISION
+#    else
+#      error Unsupported float type
+#    endif
 #  else
 #    error Unsupported float type
 #  endif
@@ -192,15 +194,17 @@
 #      define _COM_AZURE_DEV__BASE__DOUBLE _COM_AZURE_DEV__BASE__IEEE_754_DOUBLE_PRECISION
 #    endif
 #  elif (__SIZEOF_DOUBLE__ == 16)
-#   if defined(__DBL_MANT_DIG__) && (__DBL_MANT_DIG__ == 113)
-#     define _COM_AZURE_DEV__BASE__DOUBLE _COM_AZURE_DEV__BASE__IEEE_QUADRUPLE_PRECISION
-#   elif defined(__DBL_MANT_DIG__) && (__DBL_MANT_DIG__ == 64)
-#     define _COM_AZURE_DEV__BASE__DOUBLE _COM_AZURE_DEV__BASE__IEEE_EXTENDED_DOUBLE_PRECISION_96_ALIGN16
-#   elif defined(__DBL_MANT_DIG__) && (__DBL_MANT_DIG__ == 53)
-#     define _COM_AZURE_DEV__BASE__DOUBLE _COM_AZURE_DEV__BASE__IEEE_754_DOUBLE_PRECISION
-#   else
-#     error Unsupported double type
-#   endif
+#    if defined(__DBL_MANT_DIG__) && (__DBL_MANT_DIG__ == 113)
+#      define _COM_AZURE_DEV__BASE__DOUBLE _COM_AZURE_DEV__BASE__IEEE_QUADRUPLE_PRECISION
+#    elif defined(__DBL_MANT_DIG__) && (__DBL_MANT_DIG__ == 106)
+#      define _COM_AZURE_DEV__BASE__DOUBLE _COM_AZURE_DEV__BASE__IBM_EXTENDED_PRECISION
+#    elif defined(__DBL_MANT_DIG__) && (__DBL_MANT_DIG__ == 64)
+#      define _COM_AZURE_DEV__BASE__DOUBLE _COM_AZURE_DEV__BASE__IEEE_EXTENDED_DOUBLE_PRECISION_96_ALIGN16
+#    elif defined(__DBL_MANT_DIG__) && (__DBL_MANT_DIG__ == 53)
+#      define _COM_AZURE_DEV__BASE__DOUBLE _COM_AZURE_DEV__BASE__IEEE_754_DOUBLE_PRECISION
+#    else
+#      error Unsupported double type
+#    endif
 #  else
 #    error Unsupported double type
 #  endif
@@ -222,8 +226,7 @@
 #    if defined(__LDBL_MANT_DIG__) && (__LDBL_MANT_DIG__ == 113)
 #      define _COM_AZURE_DEV__BASE__LONG_DOUBLE _COM_AZURE_DEV__BASE__IEEE_QUADRUPLE_PRECISION
 #    elif defined(__LDBL_MANT_DIG__) && (__LDBL_MANT_DIG__ == 106)
-// TAG: wrong format add support for IBM format
-#      define _COM_AZURE_DEV__BASE__LONG_DOUBLE _COM_AZURE_DEV__BASE__IEEE_QUADRUPLE_PRECISION
+#      define _COM_AZURE_DEV__BASE__LONG_DOUBLE _COM_AZURE_DEV__BASE__IBM_EXTENDED_PRECISION
 #    elif defined(__LDBL_MANT_DIG__) && (__LDBL_MANT_DIG__ == 64)
 #      define _COM_AZURE_DEV__BASE__LONG_DOUBLE _COM_AZURE_DEV__BASE__IEEE_EXTENDED_DOUBLE_PRECISION_96_ALIGN16
 #    elif defined(__LDBL_MANT_DIG__) && (__LDBL_MANT_DIG__ == 53)
@@ -261,8 +264,7 @@
 #    if defined(__FLT128_MANT_DIG__) && (__FLT128_MANT_DIG__ == 113)
 #      define _COM_AZURE_DEV__BASE__FLOAT128 _COM_AZURE_DEV__BASE__IEEE_QUADRUPLE_PRECISION
 #    elif defined(__FLT128_MANT_DIG__) && (__FLT128_MANT_DIG__ == 106)
-// TAG: wrong format add support for IBM format
-#      define _COM_AZURE_DEV__BASE__FLOAT128 _COM_AZURE_DEV__BASE__IEEE_QUADRUPLE_PRECISION
+#      define _COM_AZURE_DEV__BASE__FLOAT128 _COM_AZURE_DEV__BASE__IBM_EXTENDED_PRECISION
 #    elif defined(__FLT128_MANT_DIG__) && (__FLT128_MANT_DIG__ == 64)
 #      define _COM_AZURE_DEV__BASE__FLOAT128 _COM_AZURE_DEV__BASE__IEEE_EXTENDED_DOUBLE_PRECISION_96_ALIGN16
 #    elif defined(__FLT128_MANT_DIG__) && (__FLT128_MANT_DIG__ == 53)

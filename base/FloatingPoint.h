@@ -344,6 +344,30 @@ _COM_AZURE_DEV__BASE__PACKED__BEGIN
 #endif // bit allocation
     } _COM_AZURE_DEV__BASE__PACKED;
 _COM_AZURE_DEV__BASE__PACKED__END
+
+    /* Representation of IBM extended precision (128-bit) floating point type. */
+_COM_AZURE_DEV__BASE__PACKED__BEGIN
+    struct IBMExtendedPrecision { // see https://gcc.gnu.org/wiki/Ieee128PowerPC // ATTENTION: there are different IBM formats!
+      static constexpr bool HAS_IMPLIED_ONE = false; // FIXME
+      static constexpr int MINIMUM_EXPONENT = -111; // FIXME
+      static constexpr int MAXIMUM_EXPONENT = 111; // FIXME
+      static constexpr int ALL_BITS_EXPONENT = (1 << 10) - 1;
+      static constexpr int BIAS = (1 << 9) - 1;
+      static constexpr unsigned int SIGNIFICANT = 53 * 2;
+#if ((_COM_AZURE_DEV__BASE__BYTE_ORDER == _COM_AZURE_DEV__BASE__LITTLE_ENDIAN) && \
+     (_COM_AZURE_DEV__BASE__FLOAT_WORD_ORDER == _COM_AZURE_DEV__BASE__LITTLE_ENDIAN))
+      uint32 mantissa0 : 32;
+      uint32 mantissa1 : 53 - 32;
+      uint32 empty0 : 64 - 53;
+      uint32 mantissa2 : 32;
+      uint32 mantissa3 : 53 - 32;
+      uint32 exponent : 10;
+      uint32 negative : 1;
+#else
+#  error Unsupported IBM extended precision
+#endif // bit allocation
+    } _COM_AZURE_DEV__BASE__PACKED;
+_COM_AZURE_DEV__BASE__PACKED__END
   };
 
 #if (_COM_AZURE_DEV__BASE__FLOAT == _COM_AZURE_DEV__BASE__IEEE_754_SINGLE_PRECISION)
@@ -357,6 +381,8 @@ _COM_AZURE_DEV__BASE__PACKED__END
 #elif (_COM_AZURE_DEV__BASE__FLOAT == _COM_AZURE_DEV__BASE__IEEE_EXTENDED_DOUBLE_PRECISION_128)
   typedef Representation::IEEEExtendedDoublePrecision128 FloatRepresentation;
 #elif (_COM_AZURE_DEV__BASE__FLOAT == _COM_AZURE_DEV__BASE__IEEE_QUADRUPLE_PRECISION)
+  typedef Representation::IEEEQuadruplePrecision FloatRepresentation;
+#elif (_COM_AZURE_DEV__BASE__FLOAT == _COM_AZURE_DEV__BASE__IBM_EXTENDED_PRECISION)
   typedef Representation::IEEEQuadruplePrecision FloatRepresentation;
 #else
 #  error Invalid floating-point representation of type float
@@ -374,6 +400,8 @@ _COM_AZURE_DEV__BASE__PACKED__END
   typedef Representation::IEEEExtendedDoublePrecision128 DoubleRepresentation;
 #elif (_COM_AZURE_DEV__BASE__DOUBLE == _COM_AZURE_DEV__BASE__IEEE_QUADRUPLE_PRECISION)
   typedef Representation::IEEEQuadruplePrecision DoubleRepresentation;
+#elif (_COM_AZURE_DEV__BASE__DOUBLE == _COM_AZURE_DEV__BASE__IBM_EXTENDED_PRECISION)
+  typedef Representation::IEEEQuadruplePrecision DoubleRepresentation;
 #else
 #  error Invalid floating-point representation of type double
 #endif
@@ -390,6 +418,8 @@ _COM_AZURE_DEV__BASE__PACKED__END
   typedef Representation::IEEEExtendedDoublePrecision128 LongDoubleRepresentation;
 #elif (_COM_AZURE_DEV__BASE__LONG_DOUBLE == _COM_AZURE_DEV__BASE__IEEE_QUADRUPLE_PRECISION)
   typedef Representation::IEEEQuadruplePrecision LongDoubleRepresentation;
+#elif (_COM_AZURE_DEV__BASE__LONG_DOUBLE == _COM_AZURE_DEV__BASE__IBM_EXTENDED_PRECISION)
+  typedef Representation::IEEEQuadruplePrecision LongDoubleRepresentation;
 #else
 #  error Invalid floating-point representation of type long double
 #endif
@@ -405,6 +435,8 @@ _COM_AZURE_DEV__BASE__PACKED__END
 #elif (_COM_AZURE_DEV__BASE__FLOAT128 == _COM_AZURE_DEV__BASE__IEEE_EXTENDED_DOUBLE_PRECISION_128)
   typedef Representation::IEEEExtendedDoublePrecision128 Float128Representation;
 #elif (_COM_AZURE_DEV__BASE__FLOAT128 == _COM_AZURE_DEV__BASE__IEEE_QUADRUPLE_PRECISION)
+  typedef Representation::IEEEQuadruplePrecision Float128Representation;
+#elif (_COM_AZURE_DEV__BASE__FLOAT128 == _COM_AZURE_DEV__BASE__IBM_EXTENDED_PRECISION)
   typedef Representation::IEEEQuadruplePrecision Float128Representation;
 #else
 #  error Invalid floating-point representation of type float128

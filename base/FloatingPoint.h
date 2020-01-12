@@ -982,6 +982,11 @@ _COM_AZURE_DEV__BASE__PACKED__BEGIN
       setValue(value);
     }
 
+    inline IEEEExtendedDoublePrecision96Align16(float128 value) noexcept
+    {
+      setValue(value);
+    }
+
     /**
       Returns true if the value is negative.
     */
@@ -1227,6 +1232,11 @@ _COM_AZURE_DEV__BASE__PACKED__BEGIN
     }
     
     inline IEEEExtendedDoublePrecision96(long double value) noexcept
+    {
+      setValue(value);
+    }
+
+    inline IEEEExtendedDoublePrecision96(float128 value) noexcept
     {
       setValue(value);
     }
@@ -1480,6 +1490,11 @@ _COM_AZURE_DEV__BASE__PACKED__BEGIN
       setValue(value);
     }
 
+    inline IEEEExtendedDoublePrecision128(float128 value) noexcept
+    {
+      setValue(value);
+    }
+
     /**
       Returns true if the value is negative.
     */
@@ -1688,6 +1703,11 @@ _COM_AZURE_DEV__BASE__PACKED__BEGIN
     }
     
     inline IEEEQuadruplePrecision(long double value) noexcept
+    {
+      setValue(value);
+    }
+
+    inline IEEEQuadruplePrecision(float128 value) noexcept
     {
       setValue(value);
     }

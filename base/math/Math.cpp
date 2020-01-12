@@ -171,7 +171,7 @@ bool Math::isFinite(long double value) noexcept
   return isfinite(value);
 }
 
-#if (_COM_AZURE_DEV__BASE__HAS_FLOAT128)
+#if 0 && (_COM_AZURE_DEV__BASE__HAS_FLOAT128)
 bool Math::isFinite(float128 value) noexcept
 {
   return isfinite(value);
@@ -193,7 +193,7 @@ bool Math::isInfinity(long double value) noexcept
   return isinf(value);
 }
 
-#if (_COM_AZURE_DEV__BASE__HAS_FLOAT128)
+#if 0 && (_COM_AZURE_DEV__BASE__HAS_FLOAT128)
 bool Math::isInfinity(float128 value) noexcept
 {
   return isinf(value);
@@ -215,7 +215,7 @@ bool Math::isNaN(long double value) noexcept
   return isnan(value);
 }
 
-#if (_COM_AZURE_DEV__BASE__HAS_FLOAT128)
+#if 0 && (_COM_AZURE_DEV__BASE__HAS_FLOAT128)
 bool Math::isNaN(float128 value) noexcept
 {
   return isnan(value);

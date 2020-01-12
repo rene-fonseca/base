@@ -70,9 +70,10 @@ struct uint128 {
 };
 
 /** 128 bit (expected to be quadruple precision) floating point. */
-#if defined(__float128)
+#if defined(__SIZEOF_FLOAT128__)
 typedef __float128 float128;
-#define _COM_AZURE_DEV__BASE__MAKE_FLOAT128(VALUE) (VALUE ## Q)
+#define _COM_AZURE_DEV__BASE__MAKE_FLOAT128(VALUE) (VALUE##L)
+// #define _COM_AZURE_DEV__BASE__MAKE_FLOAT128(VALUE) (VALUE##Q) // Q requires compiler extension
 #define _COM_AZURE_DEV__BASE__HAS_FLOAT128 1
 #else
 class Float128 {
@@ -99,7 +100,7 @@ public:
 };
 
 typedef Float128 float128;
-#define _COM_AZURE_DEV__BASE__MAKE_FLOAT128(VALUE) (VALUE ## L)
+#define _COM_AZURE_DEV__BASE__MAKE_FLOAT128(VALUE) (VALUE##L)
 #define _COM_AZURE_DEV__BASE__HAS_FLOAT128 0
 #endif
 

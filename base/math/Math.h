@@ -2247,7 +2247,7 @@ inline constexpr long double Math::getZero<long double>(bool negative) noexcept
 template<>
 inline constexpr float128 Math::getZero<float128>(bool negative) noexcept
 {
-  return negative ? -0.0q : 0.0q;
+  return negative ? _COM_AZURE_DEV__BASE__MAKE_FLOAT128(-0.0) : _COM_AZURE_DEV__BASE__MAKE_FLOAT128(0.0);
 }
 #endif
 
@@ -2292,7 +2292,7 @@ inline /*constexpr*/ float128 Math::getInfinity<float128>() noexcept
 #if (_COM_AZURE_DEV__BASE__COMPILER == _COM_AZURE_DEV__BASE__COMPILER_MSC)
   return __builtin_huge_val(); // double same as long double
 #else
-  return 1 / 0.q;
+  return 1 / _COM_AZURE_DEV__BASE__MAKE_FLOAT128(0.);
 #endif
 }
 #endif
@@ -2338,7 +2338,7 @@ inline /*constexpr*/ float128 Math::getNaN<float128>() noexcept
 #if (_COM_AZURE_DEV__BASE__COMPILER == _COM_AZURE_DEV__BASE__COMPILER_MSC)
   return __builtin_nan("0"); // double same as long double
 #else
-  return 0 / 0.q;
+  return 0 / _COM_AZURE_DEV__BASE__MAKE_FLOAT128(0.);
 #endif
 }
 #endif

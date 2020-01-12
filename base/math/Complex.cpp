@@ -23,30 +23,31 @@ template _COM_AZURE_DEV__BASE__API class Complex<long double>;
 template _COM_AZURE_DEV__BASE__API class Complex<float128>;
 #endif
 
-const Complex<float>::Imaginary Complex<float>::I;
-const Complex<float> Complex<float>::ZERO(0, 0);
-const Complex<float> Complex<float>::ONE(1, 0);
-const Complex<float> Complex<float>::MINUS_ONE(-1, 0);
-const Complex<float> Complex<float>::II(0, 1);
+template<> const Complex<float>::Imaginary Complex<float>::I;
+template<> const Complex<float> Complex<float>::ZERO(0, 0);
+template<> const Complex<float> Complex<float>::ONE(1, 0);
+template<> const Complex<float> Complex<float>::MINUS_ONE(-1, 0);
+template<> const Complex<float> Complex<float>::II(0, 1);
 
-const Complex<double>::Imaginary Complex<double>::I;
-const Complex<double> Complex<double>::ZERO(0, 0);
-const Complex<double> Complex<double>::ONE(1, 0);
-const Complex<double> Complex<double>::MINUS_ONE(-1, 0);
-const Complex<double> Complex<double>::II(0, 1);
+template<> const Complex<double>::Imaginary Complex<double>::I;
+template<> const Complex<double> Complex<double>::ZERO(0, 0);
+template<> const Complex<double> Complex<double>::ONE(1, 0);
+template<> const Complex<double> Complex<double>::MINUS_ONE(-1, 0);
+template<> const Complex<double> Complex<double>::II(0, 1);
 
-const Complex<long double>::Imaginary Complex<long double>::I;
-const Complex<long double> Complex<long double>::ZERO(0, 0);
-const Complex<long double> Complex<long double>::ONE(1, 0);
-const Complex<long double> Complex<long double>::MINUS_ONE(-1, 0);
-const Complex<long double> Complex<long double>::II(0, 1);
+template<> const Complex<long double>::Imaginary Complex<long double>::I;
+template<> const Complex<long double> Complex<long double>::ZERO(0, 0);
+template<> const Complex<long double> Complex<long double>::ONE(1, 0);
+template<> const Complex<long double> Complex<long double>::MINUS_ONE(-1, 0);
+template<> const Complex<long double> Complex<long double>::II(0, 1);
 
 #if (_COM_AZURE_DEV__BASE__HAS_FLOAT128)
-const Complex<float128>::Imaginary Complex<float128>::I;
-const Complex<float128> Complex<float128>::ZERO(0, 0);
-const Complex<float128> Complex<float128>::ONE(1, 0);
-const Complex<float128> Complex<float128>::MINUS_ONE(-1, 0);
-const Complex<float128> Complex<float128>::II(0, 1);
+#error 123
+template<> const Complex<float128>::Imaginary Complex<float128>::I;
+template<> const Complex<float128> Complex<float128>::ZERO(0, 0);
+template<> const Complex<float128> Complex<float128>::ONE(1, 0);
+template<> const Complex<float128> Complex<float128>::MINUS_ONE(-1, 0);
+template<> const Complex<float128> Complex<float128>::II(0, 1);
 #endif
 
 FormatOutputStream& operator<<(FormatOutputStream& stream, const Complex<float>& value)

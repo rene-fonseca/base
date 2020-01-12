@@ -362,7 +362,6 @@ public:
 #endif
   }
 
-  //
   static inline Complex acosh(const Complex& x) noexcept
   {
 #if defined(_COM_AZURE_DEV__BASE__COMPLEX_ISOC)

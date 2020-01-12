@@ -100,8 +100,6 @@ macOS              | x86_64   | Clang   | Ok         | Runs continuously on pipe
 iOS                | ARM64    | Clang   | Ok         | Runs continuously on pipeline but no testing
 WebAssembly WASI   | WASM32   | LLVM    | Ok         | Runs continuously on pipeline - Exceptions cause abort()
 Windows            | x86      | MSC     | Ok         | 8 Dec 2019
-Windows            | ARM32    | MSC     | Ok         | 8 Dec 2019
-Windows            | ARM64    | MSC     | Ok         | 8 Dec 2019
 Debian 10          | x86_64   | GCC     | Ok         | 5 Dec 2019
 Ubuntu 19.04       | x86_64   | GCC     | Ok         | 5 Dec 2019
 RedHat 8.1         | x86_64   | GCC     | Ok         | 7 Dec 2019

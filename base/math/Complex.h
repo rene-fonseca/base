@@ -188,12 +188,13 @@ public:
 
     @param real The real part.
   */
-  Complex(Type real) noexcept;
+  inline Complex(Type real) noexcept;
 
 #if 0 // C++: does it make sense to disambiguate functions by setting priority e.g. [[prefer]]
   /** Initialize as imaginary. */
   Complex(const Imaginary) noexcept
-    : imaginary(1) {
+    : imaginary(1)
+  {
   }
 #endif
   
@@ -203,7 +204,7 @@ public:
     @param real The desired real part.
     @param imaginary The desired imaginary part.
   */
-  Complex(Type real, Type imaginary) noexcept;
+  inline Complex(Type real, Type imaginary) noexcept;
 
   inline Complex(const Polar& polar) noexcept
   {

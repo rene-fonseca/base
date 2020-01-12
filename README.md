@@ -90,6 +90,10 @@ Windows            | ARM32    | MSC     | Ok         | Runs continuously on pipe
 Windows            | ARM64    | MSC     | Ok         | Runs continuously on pipeline but no testing
 Ubuntu 18.04       | x86_64   | GCC     | Ok         | Runs continuously on pipeline
 Ubuntu 16.04       | x86_64   | GCC     | Ok         | Runs continuously on pipeline
+Ubuntu             | ARM64    | GCC     | Ok         | Runs continuously on pipeline but no testing
+Ubuntu             | PowerPC  | GCC     | Ok         | Runs continuously on pipeline but no testing
+Ubuntu             | s390x    | GCC     | Ok         | Runs continuously on pipeline but no testing
+Ubuntu             | sparc64  | GCC     | Ok         | Runs continuously on pipeline but no testing
 CentOS 8           | x86_64   | GCC     | Ok         | Runs continuously on pipeline
 Fedora             | x86_64   | GCC     | Ok         | Runs continuously on pipeline
 macOS              | x86_64   | Clang   | Ok         | Runs continuously on pipeline
@@ -117,7 +121,3 @@ HP-UX 11i v2       |          |         | Pending    |
 AIX 7.2            | PowerPC  |         | Pending    |
 RHEL 8             | PowerPC  |         | Pending    |
 SUSE Linux 15      | x86_64   |         | Pending    |
-GNU/Linux          | PowerPC  | GCC     | Build      | 23 Dec 2019 - Not run
-GNU/Linux          | sparc64  | GCC     | Build      | 23 Dec 2019 - Not run
-GNU/Linux          | s390x    | GCC     | Build      | 23 Dec 2019 - Not run
-GNU/Linux          | ARM64    | GCC     | Build      | 23 Dec 2019 - Not run

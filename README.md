@@ -21,6 +21,10 @@ Reference API documentation is hosted at https://rene-fonseca.github.io/base-api
 [![Fedora x64](https://dev.azure.com/renefonseca/base/_apis/build/status/rene-fonseca.base?branchName=master&jobName=fedora_x64&label=Fedora%20x64)](https://dev.azure.com/renefonseca/base/_build/latest?definitionId=5&branchName=master)
 [![macOS](https://dev.azure.com/renefonseca/base/_apis/build/status/rene-fonseca.base?branchName=master&jobName=macos&label=macOS)](https://dev.azure.com/renefonseca/base/_build/latest?definitionId=5&branchName=master)
 [![iOS](https://dev.azure.com/renefonseca/base/_apis/build/status/rene-fonseca.base?branchName=master&jobName=ios&label=iOS)](https://dev.azure.com/renefonseca/base/_build/latest?definitionId=5&branchName=master)
+[![Ubuntu ARM64](https://dev.azure.com/renefonseca/base/_apis/build/status/rene-fonseca.base?branchName=master&jobName=ubuntu_aarch64&label=Ubuntu%20ARM64)](https://dev.azure.com/renefonseca/base/_build/latest?definitionId=5&branchName=master)
+[![Ubuntu PowerPC64LE](https://dev.azure.com/renefonseca/base/_apis/build/status/rene-fonseca.base?branchName=master&jobName=ubuntu_powerpc64le&label=Ubuntu%20PowerPC64LE)](https://dev.azure.com/renefonseca/base/_build/latest?definitionId=5&branchName=master)
+[![Ubuntu S390x](https://dev.azure.com/renefonseca/base/_apis/build/status/rene-fonseca.base?branchName=master&jobName=ubuntu_s390x&label=Ubuntu%20S390x)](https://dev.azure.com/renefonseca/base/_build/latest?definitionId=5&branchName=master)
+[![Ubuntu Sparc64](https://dev.azure.com/renefonseca/base/_apis/build/status/rene-fonseca.base?branchName=master&jobName=ubuntu_sparc64&label=Ubuntu%20Sparc64)](https://dev.azure.com/renefonseca/base/_build/latest?definitionId=5&branchName=master)
 [![wasm32](https://dev.azure.com/renefonseca/base/_apis/build/status/rene-fonseca.base?branchName=master&jobName=wasm32&label=WebAssembly%2032)](https://dev.azure.com/renefonseca/base/_build/latest?definitionId=5&branchName=master)
 
 

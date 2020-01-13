@@ -1,0 +1,10 @@
+FROM amazonlinux
+
+# tools
+RUN yum install -y git make gcc gcc-c++ wget tar
+
+# libs
+RUN yum install -y zlib-devel bzip2-devel libxml2-devel libxslt-devel openssl-devel libcurl-devel
+
+RUN wget https://github.com/Kitware/CMake/releases/download/v3.16.2/cmake-3.16.2.tar.gz && tar -xvzf cmake-3.16.2.tar.gz && cd cmake-3.16.2 && ./bootstrap && make && make install
+

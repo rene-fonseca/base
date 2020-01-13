@@ -18,6 +18,94 @@
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
+bool Url::isReserved(ucs4 ch)
+{
+  // https://tools.ietf.org/html/rfc3986#section-2.3
+  switch (ch) {
+  // gen-delims
+  case ':': case '/': case '?': case '#': case '[': case ']': case '@':
+  // sub-delims
+  case '!': case '$': case '&': case '\'': case '(': case ')': case '*': case '+': case ',': case ';': case '=':
+    return true;
+  }
+  return false;
+}
+
+bool Url::isUnreserved(ucs4 ch)
+{
+  // https://tools.ietf.org/html/rfc3986#section-2.3
+  // unreserved = ALPHA / DIGIT / "-" / "." / "_" / "~"
+  return ((ch >= 'a') && (ch <= 'z')) || ((ch >= 'A') && (ch <= 'Z')) ||
+    ((ch >= '0') && (ch <= '9')) || (ch == '-') || (ch == '.') || (ch == '_') || (ch == '~');
+}
+
+String Url::encodeURIComponent(const String& component)
+{
+  String result;
+  result.ensureCapacity(component.getLength() * 2);
+  const uint8* src = component.getBytes();
+  const uint8* end = src + component.getLength();
+  while (src != end) {
+    ucs4 ch = 0;
+    int bytes = Unicode::readUCS4(src, end, ch);
+    if ((bytes <= 0) || (ch > Unicode::MAX)) {
+      _throw Url::UrlException("Unsupported Unicode character.");
+    }
+    bool keep = ((ch >= 'a') && (ch <= 'z')) || ((ch >= 'A') && (ch <= 'Z')) ||
+      ((ch >= '0') && (ch <= '9')) || (ch == '-') || (ch == '.') || (ch == '_') || (ch == '~') ||
+      (ch == '!') || (ch == '*') || (ch == '\'') || (ch == '(') || (ch == ')');
+    if (keep) {
+      result += ch;
+    } else {
+      uint8 buffer[6];
+      const MemorySize size = Unicode::UCS4ToUTF8(buffer, &ch, 1);
+      for (MemorySize i = 0; i < size; ++i) {
+        result += "%";
+        result += ASCIITraits::valueToDigit(buffer[i] >> 4, true);
+        result += ASCIITraits::valueToDigit(buffer[i] & 0x0f, true);
+        // result << HEX << UPPER << buffer[i];
+      }
+    }
+    src += bytes;
+  }
+  return result;
+}
+
+String Url::decodeURIComponent(const String& component)
+{
+  String result;
+  result.ensureCapacity(component.getLength());
+  bool gotEncoded = false;
+  const char* src = component.getElements();
+  const char* end = src + component.getLength();
+  while (src != end) {
+    const char ch = *src;
+    if (ch != '%') {
+      result += ch;
+    } else {
+      ++src; // skip %
+      if (src == end) {
+        _throw Url::UrlException("Missing code after %.");
+      }
+      uint8 high = ASCIITraits::digitToValue(*src);
+      ++src;
+      if (src == end) {
+        _throw Url::UrlException("Missing code after %.");
+      }
+      uint8 low = ASCIITraits::digitToValue(*src);
+      result += (high << 4) | low;
+    }
+    ++src;
+  }
+  MemoryDiff status = Unicode::UTF8ToUCS4(nullptr, result.getElements(), result.getLength());
+  if (status < 0) { // TAG: only allow Unicode::MAX
+    _throw Url::UrlException("Unsupported Unicode character.");
+  }
+  return result;
+}
+
+// TAG: encodeURI()/decodeURI
+
 class UrlImpl {
 public:
 
@@ -487,6 +575,14 @@ public:
     TEST_ASSERT(url5.getPath() == "sub1/sub2");
     TEST_ASSERT(!url5.isRelative());
     // TEST_ASSERT(url6.isRelative());
+
+    TEST_EQUAL(Url::encodeURIComponent(";,/?:@&=+$#"), "%3B%2C%2F%3F%3A%40%26%3D%2B%24%23");
+    TEST_EQUAL(Url::encodeURIComponent("-_.!~*'()"), "-_.!~*'()");
+    TEST_EQUAL(Url::encodeURIComponent("ABC abc 123"), "ABC%20abc%20123");
+
+    TEST_EQUAL(Url::decodeURIComponent("%3B%2C%2F%3F%3A%40%26%3D%2B%24%23"), ";,/?:@&=+$#");
+    TEST_EQUAL(Url::decodeURIComponent("-_.!~*'()"), "-_.!~*'()");
+    TEST_EQUAL(Url::decodeURIComponent("ABC%20abc%20123"), "ABC abc 123");
   }
 };
 

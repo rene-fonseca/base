@@ -38,6 +38,7 @@ _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 class _COM_AZURE_DEV__BASE__API Url : public Object {
 private:
 
+
   /** The protocol. */
   String scheme;
   /** The user. */
@@ -51,7 +52,19 @@ private:
   /** The path. */
   String path;
 public:
+
+  /** Returns true if character is reserved per RFC3986. */
+  static bool isReserved(ucs4 ch);
+
+  /** Returns true if character is unreserved per RFC3986. */
+  static bool isUnreserved(ucs4 ch);
+
+  /** Returns the encoded URI component. */
+  static String encodeURIComponent(const String& component);
   
+  /** Returns the decoded URI component. */
+  static String decodeURIComponent(const String& component);
+
   /**
     This exception is raised by the Url class on violations of the RFC 1738
     standard.

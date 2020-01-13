@@ -15,6 +15,8 @@ Reference API documentation is hosted at https://rene-fonseca.github.io/base-api
 [![Windows x86](https://dev.azure.com/renefonseca/base/_apis/build/status/rene-fonseca.base?branchName=master&jobName=windows_x86&label=Windows%20x86)](https://dev.azure.com/renefonseca/base/_build/latest?definitionId=5&branchName=master)
 [![Windows ARM64](https://dev.azure.com/renefonseca/base/_apis/build/status/rene-fonseca.base?branchName=master&jobName=windows_arm64&label=Windows%20ARM64)](https://dev.azure.com/renefonseca/base/_build/latest?definitionId=5&branchName=master)
 [![Windows ARM32](https://dev.azure.com/renefonseca/base/_apis/build/status/rene-fonseca.base?branchName=master&jobName=windows_arm32&label=Windows%20ARM32)](https://dev.azure.com/renefonseca/base/_build/latest?definitionId=5&branchName=master)
+[![Debian](https://dev.azure.com/renefonseca/base/_apis/build/status/base%20daily?branchName=master&jobName=debian_x64&label=Debian)](https://dev.azure.com/renefonseca/base/_build/latest?definitionId=7&branchName=master)
+[![Ubuntu 19.04](https://dev.azure.com/renefonseca/base/_apis/build/status/base%20daily?branchName=master&jobName=ubuntu19_04_x64&label=Ubuntu%2019.04)](https://dev.azure.com/renefonseca/base/_build/latest?definitionId=7&branchName=master)
 [![Ubuntu 18.04](https://dev.azure.com/renefonseca/base/_apis/build/status/rene-fonseca.base?branchName=master&jobName=ubuntu18_04&label=Ubuntu%2018.04)](https://dev.azure.com/renefonseca/base/_build/latest?definitionId=5&branchName=master)
 [![Ubuntu 16.04](https://dev.azure.com/renefonseca/base/_apis/build/status/rene-fonseca.base?branchName=master&jobName=ubuntu16_04&label=Ubuntu%2016.04)](https://dev.azure.com/renefonseca/base/_build/latest?definitionId=5&branchName=master)
 [![CentOS 8](https://dev.azure.com/renefonseca/base/_apis/build/status/rene-fonseca.base?branchName=master&jobName=centos8&label=CentOS%208)](https://dev.azure.com/renefonseca/base/_build/latest?definitionId=5&branchName=master)
@@ -25,6 +27,7 @@ Reference API documentation is hosted at https://rene-fonseca.github.io/base-api
 [![Ubuntu PowerPC64LE](https://dev.azure.com/renefonseca/base/_apis/build/status/rene-fonseca.base?branchName=master&jobName=ubuntu_powerpc64le&label=Ubuntu%20PowerPC64LE)](https://dev.azure.com/renefonseca/base/_build/latest?definitionId=5&branchName=master)
 [![Ubuntu S390x](https://dev.azure.com/renefonseca/base/_apis/build/status/rene-fonseca.base?branchName=master&jobName=ubuntu_s390x&label=Ubuntu%20S390x)](https://dev.azure.com/renefonseca/base/_build/latest?definitionId=5&branchName=master)
 [![Ubuntu Sparc64](https://dev.azure.com/renefonseca/base/_apis/build/status/rene-fonseca.base?branchName=master&jobName=ubuntu_sparc64&label=Ubuntu%20Sparc64)](https://dev.azure.com/renefonseca/base/_build/latest?definitionId=5&branchName=master)
+[![Amazon Linux](https://dev.azure.com/renefonseca/base/_apis/build/status/base%20daily?branchName=master&jobName=amazonlinux_x64&label=Amazon%20Linux)](https://dev.azure.com/renefonseca/base/_build/latest?definitionId=7&branchName=master)
 [![wasm32](https://dev.azure.com/renefonseca/base/_apis/build/status/rene-fonseca.base?branchName=master&jobName=wasm32&label=WebAssembly%2032)](https://dev.azure.com/renefonseca/base/_build/latest?definitionId=5&branchName=master)
 
 
@@ -101,7 +104,7 @@ iOS                | ARM64    | Clang   | Ok         | Runs continuously on pipe
 WebAssembly WASI   | WASM32   | LLVM    | Ok         | Runs continuously on pipeline - Exceptions cause abort()
 Debian 10          | x86_64   | GCC     | Ok         | Runs daily on pipeline
 Ubuntu 19.04       | x86_64   | GCC     | Ok         | Runs daily on pipeline
-Amazon Linux 2     | x86_64   | GCC     | Ok         | Runs daily on pipeline - Requires cmake build
+Amazon Linux 2     | x86_64   | GCC     | Ok         | Runs daily on pipeline - using newer cmake build
 RedHat 8.1         | x86_64   | GCC     | Ok         | 7 Dec 2019
 FreeBSD 12.1       | x86_64   | Clang   | Ok         | 7 Dec 2019
 OpenBSD 66         | x86_64   | GCC     | Ok         | 9 Dec 2019
@@ -116,3 +119,5 @@ HP-UX 11i v2       |          |         | Pending    |
 AIX 7.2            | PowerPC  |         | Pending    |
 RHEL 8             | PowerPC  |         | Pending    |
 SUSE Linux 15      | x86_64   |         | Pending    |
+
+Docker images are available at: https://hub.docker.com/repository/docker/renefonseca/

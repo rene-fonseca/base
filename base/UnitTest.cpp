@@ -71,9 +71,8 @@ namespace {
       source.replaceAll("\\", "/");
       if (remoteUrl.startsWith("https://dev.azure.com/")) {
         source = "/" + source;
-        source.replaceAll("/", "%2F");
         remoteUrl += "?version=GC" + version.getCommit();
-        remoteUrl += "&path=" + source;
+        remoteUrl += "&path=" + Url::encodeURIComponent(source);
         if (line) {
           remoteUrl += Format::subst("&line=%1&lineEnd=%2&lineStartColumn=1&lineEndColumn=1&lineStyle=plain", line, line + 1);
         }
@@ -87,7 +86,6 @@ namespace {
           source += "#L" + (StringOutputStream() << line);
         }
       }
-      // TAG: need Url::escape
     }
     return source;
   }

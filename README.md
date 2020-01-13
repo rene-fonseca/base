@@ -99,15 +99,14 @@ Fedora             | x86_64   | GCC     | Ok         | Runs continuously on pipe
 macOS              | x86_64   | Clang   | Ok         | Runs continuously on pipeline
 iOS                | ARM64    | Clang   | Ok         | Runs continuously on pipeline but no testing
 WebAssembly WASI   | WASM32   | LLVM    | Ok         | Runs continuously on pipeline - Exceptions cause abort()
-Windows            | x86      | MSC     | Ok         | 8 Dec 2019
-Debian 10          | x86_64   | GCC     | Ok         | 5 Dec 2019
-Ubuntu 19.04       | x86_64   | GCC     | Ok         | 5 Dec 2019
+Debian 10          | x86_64   | GCC     | Ok         | Runs daily on pipeline
+Ubuntu 19.04       | x86_64   | GCC     | Ok         | Runs daily on pipeline
+Amazon Linux 2     | x86_64   | GCC     | Ok         | Runs daily on pipeline - Requires cmake build
 RedHat 8.1         | x86_64   | GCC     | Ok         | 7 Dec 2019
 FreeBSD 12.1       | x86_64   | Clang   | Ok         | 7 Dec 2019
 OpenBSD 66         | x86_64   | GCC     | Ok         | 9 Dec 2019
 Raspbian 10        | ARM32    | GCC     | Ok         | 9 Dec 2019
 openSUSE 15        | x86_64   | GCC     | Ok         | 9 Dec 2019
-Amazon Linux 2     | x86_64   | GCC     | Ok         | 17 Dec 2019 - Requires cmake build
 Emscripten         | WASM32   | LLVM    | Ok         | 20 Dec 2019
 OpenSolaris 11     | x86_64   | GCC     | Ok         | 6 Dec 2019
 OpenSolaris 11     | x86_64   | LLVM    | Pending    |

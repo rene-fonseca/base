@@ -1,25 +1,31 @@
 #trigger: none
-trigger:
-  batch: true
-  branches:
-    include:
-    - master
+#trigger:
+#  batch: true
+#  branches:
+#    include:
+#    - master
 
 #pr:
 #- master
 
-#schedules:
-#- cron: "0 0 * * *"
-#  displayName: Daily build
-#  branches:
-#    include:
-#    - master
+schedules:
+- cron: "0 0 * * *"
+  displayName: Daily build
+  branches:
+    include:
+    - master
 
 variables:
   CLICOLOR_FORCE: 1 # used by Base tools
 
 resources:
   containers:
+  - container: ubuntu19_04
+    image: renefonseca/base-ubuntu:19.04
+  - container: debian
+    image: renefonseca/base-debian:latest
+  - container: amazonlinux
+    image: renefonseca/base-amazonlinux:latest
   - container: centos
     image: renefonseca/base-centos8:latest
   - container: raspberrypi4
@@ -27,6 +33,7 @@ resources:
 
 jobs:
 - job: centos8
+  condition: eq(1, 2)
   pool:
     vmImage: 'ubuntu-18.04'
   container: centos
@@ -59,6 +66,7 @@ jobs:
       workingDirectory: $(Build.BinariesDirectory)
 
 - job: debian_arm64
+  condition: eq(1, 2)
   pool:
     vmImage: 'ubuntu-18.04'
   container: raspberrypi4
@@ -89,3 +97,123 @@ jobs:
       testResultsFiles: '**/Test.xml'
       testRunTitle: 'Test results for CTest'
       workingDirectory: $(Build.BinariesDirectory)
+
+- job: ubuntu19_04_x64
+  pool:
+    vmImage: 'ubuntu-18.04'
+  container: ubuntu19_04
+  steps:
+  - script: cmake $(Build.SourcesDirectory) -DCOLOR=1 -DCMAKE_BUILD_TYPE=Debug -DCMAKE_INSTALL_PREFIX=install
+    displayName: 'Config'
+    workingDirectory: $(Build.BinariesDirectory)
+
+  - script: cmake --build . --config Debug --target install -- -j 4
+    displayName: 'Build'
+    workingDirectory: $(Build.BinariesDirectory)
+  
+  - script: |
+      ./testsuite/unittesting --junit junit.xml
+      ctest -T Test
+    displayName: 'Run tests'
+    continueOnError: true
+    workingDirectory: $(Build.BinariesDirectory)
+
+  - task: PublishTestResults@2
+    inputs:
+      testResultsFormat: 'JUnit'
+      testResultsFiles: '**/junit.xml'
+      testRunTitle: 'Unittest results'
+      searchFolder: '$(Build.BinariesDirectory)'
+
+  - task: PublishTestResults@2
+    inputs:
+      testResultsFormat: 'cTest'
+      testResultsFiles: '**/Test.xml'
+      testRunTitle: 'Test results for CTest'
+      searchFolder: '$(Build.BinariesDirectory)'
+
+  - task: PublishPipelineArtifact@1
+    inputs:
+      artifactName: 'base-ubuntu19-x64'
+      targetPath: 'artifacts'
+      path: $(Build.BinariesDirectory)/install
+
+- job: debian_x64
+  pool:
+    vmImage: 'ubuntu-18.04'
+  container: debian
+  steps:
+  - script: cmake $(Build.SourcesDirectory) -DCOLOR=1 -DCMAKE_BUILD_TYPE=Debug -DCMAKE_INSTALL_PREFIX=install
+    displayName: 'Config'
+    workingDirectory: $(Build.BinariesDirectory)
+
+  - script: cmake --build . --config Debug --target install -- -j 4
+    displayName: 'Build'
+    workingDirectory: $(Build.BinariesDirectory)
+  
+  - script: |
+      ./testsuite/unittesting --junit junit.xml
+      ctest -T Test
+    displayName: 'Run tests'
+    continueOnError: true
+    workingDirectory: $(Build.BinariesDirectory)
+
+  - task: PublishTestResults@2
+    inputs:
+      testResultsFormat: 'JUnit'
+      testResultsFiles: '**/junit.xml'
+      testRunTitle: 'Unittest results'
+      searchFolder: '$(Build.BinariesDirectory)'
+
+  - task: PublishTestResults@2
+    inputs:
+      testResultsFormat: 'cTest'
+      testResultsFiles: '**/Test.xml'
+      testRunTitle: 'Test results for CTest'
+      searchFolder: '$(Build.BinariesDirectory)'
+
+  - task: PublishPipelineArtifact@1
+    inputs:
+      artifactName: 'base-debian-x64'
+      targetPath: 'artifacts'
+      path: $(Build.BinariesDirectory)/install
+
+- job: amazonlinux_x64
+  pool:
+    vmImage: 'ubuntu-18.04'
+  container: amazonlinux
+  steps:
+  - script: cmake $(Build.SourcesDirectory) -DCOLOR=1 -DCMAKE_BUILD_TYPE=Debug -DCMAKE_INSTALL_PREFIX=install
+    displayName: 'Config'
+    workingDirectory: $(Build.BinariesDirectory)
+
+  - script: cmake --build . --config Debug --target install -- -j 4
+    displayName: 'Build'
+    workingDirectory: $(Build.BinariesDirectory)
+  
+  - script: |
+      ./testsuite/unittesting --junit junit.xml
+      ctest -T Test
+    displayName: 'Run tests'
+    continueOnError: true
+    workingDirectory: $(Build.BinariesDirectory)
+
+  - task: PublishTestResults@2
+    inputs:
+      testResultsFormat: 'JUnit'
+      testResultsFiles: '**/junit.xml'
+      testRunTitle: 'Unittest results'
+      searchFolder: '$(Build.BinariesDirectory)'
+
+  - task: PublishTestResults@2
+    inputs:
+      testResultsFormat: 'cTest'
+      testResultsFiles: '**/Test.xml'
+      testRunTitle: 'Test results for CTest'
+      searchFolder: '$(Build.BinariesDirectory)'
+
+  - task: PublishPipelineArtifact@1
+    inputs:
+      artifactName: 'base-amazonlinux-x64'
+      targetPath: 'artifacts'
+      path: $(Build.BinariesDirectory)/install

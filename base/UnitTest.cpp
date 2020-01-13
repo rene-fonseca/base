@@ -531,6 +531,48 @@ Reference<UnitTest::Run> UnitTest::runImpl()
   return r;
 }
 
+String encodeXML(const String& text)
+{
+  String result;
+  result.ensureCapacity(text * 2);
+  const uint8* src = text.getBytes();
+  const uint8* end = src + text.getLength();
+  while (src != end) {
+    const char ch = *src++;
+    switch (ch) {
+    case '&':
+      result += MESSAGE("&amp;");
+      break;
+    case '>':
+      result += MESSAGE("&gt;");
+      break;
+    case '<':
+      result += MESSAGE("&lt;");
+      break;
+    case '"':
+      result += MESSAGE("&quot;");
+      break;
+    case '\'':
+      result += MESSAGE("&apos;");
+      break;
+    default:
+      result += ch;
+    }
+  }
+  return result;
+}
+
+String getCData(const String& text)
+{
+  if (text.indexOf("]]>") >= 0) {
+    String result(text);
+    result.replaceAll("]]>", "]]&gt;");
+    return "<![CDATA[" + result + "]]>";
+  } else {
+    return "<![CDATA[" + text + "]]>";
+  }
+}
+
 String UnitTest::getJUnit() const
 {
   String xml;
@@ -558,8 +600,7 @@ String UnitTest::getJUnit() const
 
 #if 0
   if (String description = getDescription()) {
-    description.replaceAll("]]>", "]]&gt;");
-    xml += "<base:description><![CDATA[" + description + "]]></base:description>";
+    xml += "<base:description>" + encodeXML(description) + "</base:description>";
   }
 #endif
 
@@ -607,16 +648,16 @@ String UnitTest::getJUnit() const
       if (result.event == FAILED) {
         // type: WARNING
         xml += Format::subst("<failure message=\"%1\" type=\"%2\">", Format::subst("%1:%2 ", getSource(), result.line) + result.what, "ERROR");
-        xml += "<![CDATA[";
-        xml += result.what + "\n";
-        xml += Format::subst("File: %1\n", getSource());
-        xml += Format::subst("Line: %1\n", result.line);
+        String temp;
+        temp += result.what + "\n";
+        temp += Format::subst("File: %1\n", getSource());
+        temp += Format::subst("Line: %1\n", result.line);
         if (UnitTestManager::getManager().getUseUrlAsSource()) { // JUnit: add support for failed subtest link to repo
           if (String url = getRepoUrl(getSource(), result.line)) {
-            xml += Format::subst("Source: %1\n", url);
+            temp += Format::subst("Source: %1\n", url);
           }
         }
-        xml += "]]>";
+        xml += getCData(temp);
         xml += "</failure>";
       }
       switch (result.event) {
@@ -633,16 +674,10 @@ String UnitTest::getJUnit() const
     }
   }
   if (!output.isEmpty()) {
-    xml += "<system-out><![CDATA[";
-    output.replaceAll("]]>", "]]&gt;");
-    xml += output;
-    xml += "]]></system-out>";
+    xml += "<system-out>" + getCData(output) + "</system-out>";
   }
   if (!error.isEmpty()) {
-    xml += "<system-err><![CDATA[";
-    error.replaceAll("]]>", "]]&gt;");
-    xml += error;
-    xml += "]]></system-err>";
+    xml += "<system-err>" + getCData(error) + "</system-err>";
   }
   xml += "</testcase>";
   return xml;

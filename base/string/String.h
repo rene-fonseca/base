@@ -1284,14 +1284,8 @@ public:
   */
   inline const char* getElements() const noexcept
   {
-    const MemorySize length = getLength();
     const char* result = elements->getElements();
-    BASSERT(result[length] == Traits::TERMINATOR);
-    if (result[length] != Traits::TERMINATOR) { // TAG: remove when ready
-      const MemorySize likelyLength = getNullTerminatedLength(result);
-      const MemorySize lengthAgain = getLength();
-      const_cast<char*>(result)[length] = Traits::TERMINATOR;
-    }
+    BASSERT(result[getLength()] == Traits::TERMINATOR);
     return result;
   }
 
@@ -1306,18 +1300,15 @@ public:
     return result + length;
   }
 
-  // TAG: we can return both being and end with one method MemorySpan<char> getMemorySpan() const;
-  
-  // TAG: remove getBytes()
   /**
-    Returns the characters of the string for non-modifying access.
+    Returns NULL-terminated string as bytes.
   */
-  inline const char* getBytes() const noexcept
+  inline const uint8* getBytes() const noexcept
   {
-    const char* result = elements->getElements();
-    BASSERT(result[getLength()] == Traits::TERMINATOR);
-    return result;
+    return reinterpret_cast<const uint8*>(getElements());
   }
+  
+  // TAG: we can return both being and end with one method MemorySpan<char> getMemorySpan() const;
 
   /**
     Returns the characters of the string for non-modifying access.

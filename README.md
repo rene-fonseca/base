@@ -101,7 +101,7 @@ iOS                | ARM64    | Clang   | Ok         | Runs continuously on pipe
 WebAssembly WASI   | WASM32   | LLVM    | Ok         | Runs continuously on pipeline - Exceptions cause abort()
 Debian 10          | x86_64   | GCC     | Ok         | Runs daily on pipeline
 Ubuntu 19.04       | x86_64   | GCC     | Ok         | Runs daily on pipeline
-Amazon Linux 2     | x86_64   | GCC     | Ok         | Runs daily on pipeline - Requires cmake build
+Amazon Linux 2     | x86_64   | GCC     | Ok         | Runs daily on pipeline - using newer cmake build
 RedHat 8.1         | x86_64   | GCC     | Ok         | 7 Dec 2019
 FreeBSD 12.1       | x86_64   | Clang   | Ok         | 7 Dec 2019
 OpenBSD 66         | x86_64   | GCC     | Ok         | 9 Dec 2019
@@ -116,3 +116,5 @@ HP-UX 11i v2       |          |         | Pending    |
 AIX 7.2            | PowerPC  |         | Pending    |
 RHEL 8             | PowerPC  |         | Pending    |
 SUSE Linux 15      | x86_64   |         | Pending    |
+
+Docker images are available at: https://hub.docker.com/repository/docker/renefonseca/

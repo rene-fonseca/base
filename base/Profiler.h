@@ -408,6 +408,42 @@ public:
     }
   };
 
+  /** IO read task. */
+  class _COM_AZURE_DEV__BASE__API IOReadTask : public IOTask {
+  private:
+
+    unsigned int bytesRead = 0;
+  public:
+
+    /** IO read task start. */
+    inline IOReadTask(const char* name) : IOTask(name)
+    {
+    }
+
+    inline void setBytesRead(unsigned int _bytesRead) noexcept
+    {
+      bytesRead = _bytesRead;
+    }
+  };
+
+  /** IO write task. */
+  class _COM_AZURE_DEV__BASE__API IOWriteTask : public IOTask {
+  private:
+  
+    unsigned int bytesWritten = 0;
+  public:
+
+    /** IO read task start. */
+    inline IOWriteTask(const char* name) : IOTask(name)
+    {
+    }
+
+    inline void setBytesWritten(unsigned int _bytesWritten) noexcept
+    {
+      bytesWritten = _bytesWritten;
+    }
+  };
+
   /** HTTPS/Websocket task. */
   class _COM_AZURE_DEV__BASE__API HTTPSTask : public IOTask {
   public:

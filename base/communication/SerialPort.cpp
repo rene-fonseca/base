@@ -445,7 +445,7 @@ unsigned int SerialPort::read(
   unsigned int bytesToRead,
   bool nonblocking)
 {
-  Profiler::IOTask profile("SerialPort::read()");
+  Profiler::IOReadTask profile("SerialPort::read()");
 
   unsigned int bytesRead = 0;
   while (bytesToRead > 0) {
@@ -477,6 +477,7 @@ unsigned int SerialPort::read(
         _throw EndOfFile(this); // attempt to read beyond end of stream
       }
     }
+    profile.onBytesRead(result);
     bytesRead += result;
     buffer += result;
     bytesToRead -= result;

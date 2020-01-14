@@ -1810,7 +1810,7 @@ unsigned int Socket::read(
   unsigned int bytesToRead,
   bool nonblocking)
 {
-  Profiler::IOTask profile("Socket::read()");
+  Profiler::IOReadTask profile("Socket::read()");
 
   unsigned int bytesRead = 0;
   while (bytesToRead > 0) {
@@ -1849,6 +1849,7 @@ unsigned int Socket::read(
       }
     }
 #endif // flavor
+    profile.onBytesRead(result);
     bytesRead += result;
     buffer += result;
     bytesToRead -= result;
@@ -1928,7 +1929,7 @@ unsigned int Socket::receiveFrom(
   InetAddress& address,
   unsigned short& port)
 {
-  Profiler::IOTask profile("Socket::receiveFrom()");
+  Profiler::IOReadTask profile("Socket::receiveFrom()");
 
 #if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__WASI)
   return 0;
@@ -1949,6 +1950,7 @@ unsigned int Socket::receiveFrom(
   }
   address = sa.getAddress();
   port = sa.getPort();
+  profile.onBytesRead(result);
   return result;
 #endif
 }

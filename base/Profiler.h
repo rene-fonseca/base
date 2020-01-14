@@ -420,9 +420,16 @@ public:
     {
     }
 
-    inline void setBytesRead(unsigned int _bytesRead) noexcept
+    /** Update bytes read. */
+    inline void onBytesRead(unsigned int _bytesRead) noexcept
     {
-      bytesRead = _bytesRead;
+      bytesRead += _bytesRead;
+    }
+
+    /** Returns the bytes read. */
+    inline unsigned int getBytesRead() const noexcept
+    {
+      return bytesRead;
     }
   };
 
@@ -438,9 +445,16 @@ public:
     {
     }
 
-    inline void setBytesWritten(unsigned int _bytesWritten) noexcept
+    /** Update bytes written. */
+    inline void onBytesWritten(unsigned int _bytesWritten) noexcept
     {
-      bytesWritten = _bytesWritten;
+      bytesWritten += _bytesWritten;
+    }
+
+    /** Returns the bytes written. */
+    inline unsigned int getBytesWritten() const noexcept
+    {
+      return bytesWritten;
     }
   };
 

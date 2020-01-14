@@ -1255,7 +1255,7 @@ unsigned int File::read(
   unsigned int bytesToRead,
   bool nonblocking)
 {
-  Profiler::IOTask profile("File::read()");
+  Profiler::IOReadTask profile("File::read()");
 
   unsigned int bytesRead = 0;
   while (bytesToRead > 0) {
@@ -1314,6 +1314,7 @@ unsigned int File::read(
       }
     } while (result < 0);
 #endif
+    profile.onBytesRead(bytesRead);
     bytesRead += result;
     buffer += result;
     bytesToRead -= result;

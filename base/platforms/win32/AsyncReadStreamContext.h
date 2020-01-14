@@ -44,10 +44,11 @@ namespace win32 {
     unsigned int bytesToRead = 0;
     unsigned int bytesRead = 0;
     unsigned int flags = 0;
-    Profiler::IOTask profile = "AsyncReadStreamContext::AsyncReadStreamContext()";
+    Profiler::IOReadTask profile = "AsyncReadStreamContext::AsyncReadStreamContext()";
     
     inline void notifyAsynchronousCompletionListener() noexcept
     {
+      profile.onBytesRead(bytesRead);
       listener->asynchronousCompletion(
         AsynchronousReadCompletion(buffer, bytesToRead, 0, bytesRead, flags)
       );

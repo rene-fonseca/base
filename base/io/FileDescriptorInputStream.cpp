@@ -112,7 +112,7 @@ unsigned int FileDescriptorInputStream::read(
   unsigned int bytesToRead,
   bool nonblocking)
 {
-  Profiler::IOTask profile("FileDescriptorInputStream::read()");
+  Profiler::IOReadTask profile("FileDescriptorInputStream::read()");
 
   // TAG: currently always blocks
   bassert(!end, EndOfFile(this));
@@ -157,6 +157,7 @@ unsigned int FileDescriptorInputStream::read(
         _throw EndOfFile(this); // attempt to read beyond end of stream
       }
     }
+    profile.onBytesRead(result);
     bytesRead += result;
     buffer += result;
     bytesToRead -= result;

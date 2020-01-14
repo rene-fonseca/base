@@ -194,7 +194,7 @@ unsigned int Pipe::read(
   unsigned int bytesToRead,
   bool nonblocking)
 {
-  Profiler::IOTask profile("Pipe::read()");
+  Profiler::IOReadTask profile("Pipe::read()");
 
   // TAG: currently always blocks
   // select wait mode with SetNamedPipeHandleState for win32
@@ -243,6 +243,7 @@ unsigned int Pipe::read(
         _throw EndOfFile(this); // attempt to read beyond end of stream
       }
     }
+    profile.onBytesRead(result);
     bytesRead += result;
     buffer += result;
     bytesToRead -= result;

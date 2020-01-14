@@ -46,10 +46,11 @@ namespace win32 {
     unsigned long long offset = 0;
     unsigned int bytesRead = 0;
     unsigned int flags = 0;
-    Profiler::IOTask profile = "AsyncReadFileContext::AsyncReadFileContext()";
+    Profiler::IOReadTask profile = "AsyncReadFileContext::AsyncReadFileContext()";
     
     inline void notifyAsynchronousCompletionListener() noexcept
     {
+      profile.onBytesRead(bytesRead);
       listener->asynchronousCompletion(
         AsynchronousReadCompletion(
           buffer,

@@ -19,15 +19,49 @@
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
+/**
+  This exception is raised by the OpenCL class.
+  
+  @short OpenCL exception
+  @ingroup exceptions
+  @version 1.0
+*/
+
 class _COM_AZURE_DEV__BASE__API OpenCLException : public Exception {
 public:
 
-  inline OpenCLException() : Exception() {
-  }
+  /**
+    Initializes the exception object with no message.
+  */
+  OpenCLException() noexcept;
+
+  /**
+    Initializes the exception object.
+
+    @param message The message.
+  */
+  OpenCLException(const char* message) noexcept;
+
+  /**
+    Initializes the exception object without an associated message.
+
+    @param type The identity of the type.
+  */
+  OpenCLException(const Type& type) noexcept;
+
+  /**
+    Initializes the exception object.
+
+    @param message An NULL-terminated string.
+    @param type The identity of the type.
+  */
+  OpenCLException(const char* message, const Type& type) noexcept;
+
+  _COM_AZURE_DEV__BASE__EXCEPTION_THIS_TYPE()
 };
 
 /**
-  OpenCL rendering context.
+  OpenCL context.
 
   @short OpenCL.
   @version 1.0
@@ -39,7 +73,7 @@ private:
   void* context = nullptr;
 public:
 
-  class HandleImpl : public ReferenceCountedObject {
+  class _COM_AZURE_DEV__BASE__API HandleImpl : public ReferenceCountedObject {
   public:
 
     void* handle = nullptr;
@@ -52,7 +86,8 @@ public:
     TYPE_GPU
   };
 
-  class Queue {
+  /** Queue. */
+  class _COM_AZURE_DEV__BASE__API Queue {
     friend class OpenCL;
   private:
 
@@ -65,7 +100,8 @@ public:
     Queue();
   };
 
-  class Kernel {
+  /** Kernel. */
+  class _COM_AZURE_DEV__BASE__API Kernel {
     friend class OpenCL;
   private:
 
@@ -81,7 +117,8 @@ public:
     ~Kernel();
   };
 
-  class Program {
+  /** Program. */
+  class _COM_AZURE_DEV__BASE__API Program {
     friend class OpenCL;
   private:
 
@@ -105,11 +142,23 @@ public:
   /** Returns the number of devices. */
   static unsigned int getNumberOfDevices();
 
+  enum {
+    FLAG_CPU = 1,
+    FLAG_GPU = 2,
+    FLAG_ANY = FLAG_CPU | FLAG_GPU
+  };
+
   /** Returns the available devices. */
-  static Array<DeviceId> getDevices();
+  static Array<DeviceId> getDevices(unsigned int flags = FLAG_ANY);
 
   /** Returns the name of the given device. */
   static String getDeviceName(DeviceId device);
+
+  /** Returns uint value of the given device. */
+  static uint32 getDeviceInfoUInt(DeviceId device);
+  
+  /** Returns bool value of the given device. */
+  static bool getDeviceInfoBool(DeviceId device);
 
   OpenCL();
 
@@ -118,7 +167,8 @@ public:
   bool createContext(DeviceId device);
 
   /** Returns true if context is valid. */
-  inline bool isValid() const {
+  inline bool isValid() const noexcept
+  {
     return context != nullptr;
   }
 

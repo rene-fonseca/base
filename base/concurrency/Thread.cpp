@@ -229,6 +229,17 @@ ThreadLocalContext* Thread::getLocalContext() noexcept
   return tlc;
 }
 
+Thread::PerformanceCounters Thread::getPerformanceCounters() noexcept
+{
+  Thread::PerformanceCounters result;
+  if (auto tlc = getLocalContext()) {
+    result.waiting = tlc->waiting;
+    result.bytesRead = tlc->bytesRead;
+    result.bytesWritten = tlc->bytesWritten;
+  }
+  return result;
+}
+
 Thread* Thread::getThread() noexcept
 {
   auto tlc = threadLocalContext.getKey();

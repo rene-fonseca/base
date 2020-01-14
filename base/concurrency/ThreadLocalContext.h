@@ -48,7 +48,12 @@ public:
   StackFrame stackTrace;
   /** Number of exceptions thrown by thread. */
   unsigned int numberOfExceptions = 0;
-  // resource counters: IO, network, ...
+  /** Total microseconds spend waiting. */
+  uint64 waiting = 0;
+  /** Bytes read. */
+  uint64 bytesRead = 0;
+  /** Bytes written. */
+  uint64 bytesWritten = 0;
 
   ThreadLocalContext();
 };

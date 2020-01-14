@@ -296,6 +296,23 @@ public:
   */
   static ThreadLocalContext* getLocalContext() noexcept;
 
+  /** Performance counters. */
+  class PerformanceCounters {
+  public:
+
+    /** Microseconds spend waiting (blocking). */
+    uint64 waiting = 0;
+    /** Bytes read. */
+    uint64 bytesRead = 0;
+    /** Bytes written. */
+    uint64 bytesWritten = 0;
+  };
+
+  /**
+    Returns the thread performance counters. Requires Profiler to be enabled.
+  */
+  static PerformanceCounters getPerformanceCounters() noexcept;
+
   /**
     Returns the thread object associated with the executing thread.
   */

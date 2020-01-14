@@ -443,6 +443,12 @@ void Profiler::Task::pushTask(unsigned int taskId) noexcept
   e.ph = EVENT_COMPLETE;
   const uint64 start = Timer::toTimeUS(e.ts) + Timer::toTimeUS(e.dur);
   auto dur = now - start;
+  if (e.cat == CAT_WAIT) {
+    tlc->waiting += dur;
+  } else if (e.cat == CAT_IO) {
+    // tlc->bytesRead += 0;
+    // tlc->bytesWritten += 0;
+  }
   if (dur < profiler.minimumWaitTime) {
     return;
   }

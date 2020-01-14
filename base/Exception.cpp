@@ -325,6 +325,10 @@ void ThrowException::onException(const char* who, const char* file, unsigned int
   if (!Exception::getDumpExceptions()) {
     return;
   }
+
+  if (auto tlc = Thread::getLocalContext()) {
+    tlc->numberOfExceptions += 1;
+  }
   
   file = Debug::getRelativePath(file);
 #if 0 && (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__WASI)

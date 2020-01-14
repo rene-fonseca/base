@@ -45,11 +45,12 @@ namespace win32 {
     unsigned long long offset = 0;
     unsigned int bytesWritten = 0;
     unsigned int flags = 0;
-    Profiler::IOTask profile = "AsyncWriteFileContext::AsyncWriteFileContext()";
+    Profiler::IOWriteTask profile = "AsyncWriteFileContext::AsyncWriteFileContext()";
   public:
     
     inline void notifyAsynchronousCompletionListener() noexcept
     {
+      profile.onBytesWritten(bytesWritten);
       listener->asynchronousCompletion(
         AsynchronousWriteCompletion(
           buffer,

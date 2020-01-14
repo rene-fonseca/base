@@ -490,7 +490,7 @@ unsigned int SerialPort::write(
   unsigned int bytesToWrite,
   bool nonblocking)
 {
-  Profiler::IOTask profile("SerialPort::write()");
+  Profiler::IOWriteTask profile("SerialPort::write()");
 
   // TAG: currently always blocks
   unsigned int bytesWritten = 0;
@@ -514,6 +514,7 @@ unsigned int SerialPort::write(
       }
     }
 #endif // flavor
+    profile.onBytesWritten(result);
     bytesWritten += result;
     buffer += result;
     bytesToWrite -= result;

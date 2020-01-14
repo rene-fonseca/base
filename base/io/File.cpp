@@ -1333,7 +1333,7 @@ unsigned int File::write(
   unsigned int bytesToWrite,
   bool nonblocking)
 {
-  Profiler::IOTask profile("File::write()");
+  Profiler::IOWriteTask profile("File::write()");
 
   unsigned int bytesWritten = 0;
   while (bytesToWrite > 0) {
@@ -1399,6 +1399,7 @@ unsigned int File::write(
         _throw FileException("Unable to write to file.", this);
       }
     }
+    profile.onBytesWritten(result);
     bytesWritten += result;
     buffer += result;
     bytesToWrite -= result;

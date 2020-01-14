@@ -256,7 +256,7 @@ unsigned int Pipe::write(
   unsigned int bytesToWrite,
   bool nonblocking)
 {
-  Profiler::IOTask profile("Pipe::write()");
+  Profiler::IOWriteTask profile("Pipe::write()");
 
   // TAG: currently always blocks
   unsigned int bytesWritten = 0;
@@ -288,6 +288,7 @@ unsigned int Pipe::write(
       }
     }
 #endif
+    profile.onBytesWritten(result);
     bytesWritten += result;
     buffer += result;
     bytesToWrite -= result;

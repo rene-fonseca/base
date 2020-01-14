@@ -445,8 +445,9 @@ void Profiler::Task::pushTask(unsigned int taskId) noexcept
   auto dur = now - start;
   if (e.cat == CAT_WAIT) {
     tlc->waiting += dur;
-  } else if (e.cat == CAT_IO) {
+  } else if (e.cat == CAT_IO_READ) {
     tlc->bytesRead += 0;
+  } else if (e.cat == CAT_IO_WRITE) {
     tlc->bytesWritten += 0;
   }
   if (dur < profiler.minimumWaitTime) {

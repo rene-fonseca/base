@@ -383,10 +383,13 @@ public:
 
     static constexpr unsigned int BAD = static_cast<unsigned int>(0) - 1;
 
+    /** The ID of the task. */
     unsigned int taskId = BAD;
 
+    /** Allocates new task. */
     static unsigned int getTask(const char* name, const char* cat) noexcept;
 
+    /** Pushes task. */
     static void pushTask(unsigned int taskId) noexcept;
   public:
     
@@ -398,7 +401,7 @@ public:
       }
     }
 
-    /** Task comple. */
+    /** Task complete. */
     inline ~Task() noexcept // we must not allow exception for profiling since it changes execution flow
     {
       if (taskId != BAD) {

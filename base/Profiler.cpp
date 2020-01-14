@@ -412,6 +412,45 @@ unsigned int Profiler::Task::getTask(const char* name, const char* cat) noexcept
   return BAD; // e.g. before thread local has been constructed
 }
 
+#if 0
+Profiler::Event* Profiler::Task::getEvent() noexcept
+{
+  return nullptr;
+}
+#endif
+
+void Profiler::Task::setTaskBytesRead(unsigned int bytesRead) noexcept
+{
+  if (taskId == BAD) {
+    return;
+  }
+  if (!enabled) {
+    return;
+  }
+  auto tlc = Thread::getLocalContext();
+  Event& e = tlc->profiling.events.getElements()[taskId];
+  if (e.cat == CAT_IO_READ) {
+    e.data = new ReferenceValue(bytesRead);
+    tlc->bytesRead += bytesRead;
+  }
+}
+
+void Profiler::Task::setTaskBytesWritten(unsigned int bytesWritten) noexcept
+{
+  if (taskId == BAD) {
+    return;
+  }
+  if (!enabled) {
+    return;
+  }
+  auto tlc = Thread::getLocalContext();
+  Event& e = tlc->profiling.events.getElements()[taskId];
+  if (e.cat == CAT_IO_WRITE) {
+    e.data = new ReferenceValue(bytesWritten);
+    tlc->bytesRead += bytesWritten;
+  }
+}
+
 /*
 Timer::XTime operator-(Timer::XTime left, Timer::XTime right) noexcept
 {
@@ -445,10 +484,6 @@ void Profiler::Task::pushTask(unsigned int taskId) noexcept
   auto dur = now - start;
   if (e.cat == CAT_WAIT) {
     tlc->waiting += dur;
-  } else if (e.cat == CAT_IO_READ) {
-    tlc->bytesRead += 0;
-  } else if (e.cat == CAT_IO_WRITE) {
-    tlc->bytesWritten += 0;
   }
   if (dur < profiler.minimumWaitTime) {
     return;
@@ -692,6 +727,9 @@ void Profiler::ProfilerImpl::close()
   auto ID = o.createString("id");
   auto CNAME = o.createString("cname");
 
+  auto BYTES_READ = o.createString("read");
+  auto BYTES_WRITTEN = o.createString("written");
+
   auto PH_B = o.createString("B");
   auto PH_E = o.createString("E");
   auto PH_b = o.createString("b");
@@ -824,6 +862,21 @@ void Profiler::ProfilerImpl::close()
 #endif
           // item->setValue(TDUR, o.createInteger(e.tdur));
           // item->setValue(TTS, o.createInteger(e.tts));
+
+          if (e.cat == CAT_IO_READ) {
+            if (auto r = e.data.cast<ReferenceValue>()) {
+              auto args = o.createObject();
+              item->setValue(ARGS, args);
+              args->setValue(BYTES_READ, o.createInteger(r->value));
+            }
+          } else if (e.cat == CAT_IO_WRITE) {
+            if (auto r = e.data.cast<ReferenceValue>()) {
+              auto args = o.createObject();
+              item->setValue(ARGS, args);
+              args->setValue(BYTES_WRITTEN, o.createInteger(r->value));
+            }
+          }
+
           break;
         case EVENT_META:
           if (auto r = e.data.cast<ReferenceString>()) {

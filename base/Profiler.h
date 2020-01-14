@@ -337,6 +337,21 @@ public:
     }
   };
 
+  /** A reference counted value. */
+  class _COM_AZURE_DEV__BASE__API ReferenceValue : public ReferenceCountedObject {
+  public:
+
+    unsigned int value = 0;
+
+    inline ReferenceValue() noexcept
+    {
+    }
+
+    inline ReferenceValue(unsigned int _value) noexcept : value(_value)
+    {
+    }
+  };
+
   /** A reference counted string. */
   class _COM_AZURE_DEV__BASE__API ReferenceCounters : public ReferenceCountedObject {
   public:
@@ -391,6 +406,13 @@ public:
 
     /** Pushes task. */
     static void pushTask(unsigned int taskId) noexcept;
+  protected:
+
+    /** Sets bytes read for task. */
+    void setTaskBytesRead(unsigned int bytesRead) noexcept;
+
+    /** Sets bytes written for task. */
+    void setTaskBytesWritten(unsigned int bytesWritten) noexcept;
   public:
     
     /** Task start. */
@@ -434,6 +456,7 @@ public:
   class _COM_AZURE_DEV__BASE__API IOReadTask : public IOTask {
   private:
 
+    /** Total bytes read for task. */
     unsigned int bytesRead = 0;
   public:
 
@@ -453,12 +476,19 @@ public:
     {
       return bytesRead;
     }
+
+    /** Task complete. */
+    inline ~IOReadTask() noexcept
+    {
+      setTaskBytesRead(bytesRead);
+    }
   };
 
   /** IO write task. */
   class _COM_AZURE_DEV__BASE__API IOWriteTask : public IOTask {
   private:
   
+    /** Total bytes written for task. */
     unsigned int bytesWritten = 0;
   public:
 
@@ -477,6 +507,12 @@ public:
     inline unsigned int getBytesWritten() const noexcept
     {
       return bytesWritten;
+    }
+
+    /** Task complete. */
+    inline ~IOWriteTask() noexcept
+    {
+      setTaskBytesWritten(bytesWritten);
     }
   };
 

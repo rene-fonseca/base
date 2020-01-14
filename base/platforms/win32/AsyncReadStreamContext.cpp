@@ -25,7 +25,8 @@ _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 namespace win32 {
   
-  void CALLBACK asyncReadStreamCallback(DWORD errorCode, DWORD bytesRead, OVERLAPPED* overlapped) {
+  void CALLBACK asyncReadStreamCallback(DWORD errorCode, DWORD bytesRead, OVERLAPPED* overlapped)
+  {
     AsyncReadStreamContext* context = Cast::pointer<AsyncReadStreamContext::CallbackInfo*>(overlapped)->context;
     unsigned int flags = context->flags | AsynchronousReadCompletion::COMPLETED;
     if (errorCode == 0) {
@@ -50,7 +51,8 @@ namespace win32 {
       buffer(_buffer),
       bytesToRead(_bytesToRead),
       bytesRead(0),
-      flags(0) {
+      flags(0)
+  {
     clear(callbackInfo.overlapped);
     callbackInfo.context = this;
     
@@ -74,7 +76,8 @@ namespace win32 {
     }
   }
 
-  AsyncReadStreamContext::~AsyncReadStreamContext() {
+  AsyncReadStreamContext::~AsyncReadStreamContext()
+  {
     bassert(
       (flags & AsynchronousReadCompletion::COMPLETED) != 0,
       AsynchronousException(this)

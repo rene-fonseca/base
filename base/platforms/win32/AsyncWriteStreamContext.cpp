@@ -25,7 +25,8 @@ _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 namespace win32 {
   
-  void CALLBACK asyncWriteStreamCallback(DWORD errorCode, DWORD bytesWritten, OVERLAPPED* overlapped) {
+  void CALLBACK asyncWriteStreamCallback(DWORD errorCode, DWORD bytesWritten, OVERLAPPED* overlapped)
+  {
     AsyncWriteStreamContext* context = Cast::pointer<AsyncWriteStreamContext::CallbackInfo*>(overlapped)->context;
     unsigned int flags = context->flags | AsynchronousWriteCompletion::COMPLETED;
     if (errorCode == 0) {
@@ -48,7 +49,8 @@ namespace win32 {
       buffer(_buffer),
       bytesToWrite(_bytesToWrite),
       bytesWritten(0),
-      flags(0) {
+      flags(0)
+  {
     clear(callbackInfo.overlapped);
     callbackInfo.context = this;
     
@@ -66,7 +68,8 @@ namespace win32 {
     }
   }
 
-  AsyncWriteStreamContext::~AsyncWriteStreamContext() {
+  AsyncWriteStreamContext::~AsyncWriteStreamContext()
+  {
     bassert(
       (flags & AsynchronousWriteCompletion::COMPLETED) != 0,
       AsynchronousException(this)

@@ -192,7 +192,10 @@ void Pipe::flush() {
 unsigned int Pipe::read(
   uint8* buffer,
   unsigned int bytesToRead,
-  bool nonblocking) {
+  bool nonblocking)
+{
+  Profiler::IOTask profile("Pipe::read()");
+
   // TAG: currently always blocks
   // select wait mode with SetNamedPipeHandleState for win32
   bassert(!end, EndOfFile(this));
@@ -250,7 +253,10 @@ unsigned int Pipe::read(
 unsigned int Pipe::write(
   const uint8* buffer,
   unsigned int bytesToWrite,
-  bool nonblocking) {
+  bool nonblocking)
+{
+  Profiler::IOTask profile("Pipe::write()");
+
   // TAG: currently always blocks
   unsigned int bytesWritten = 0;
   while (bytesToWrite) {

@@ -15,6 +15,7 @@
 #include <base/io/FileDescriptorOutputStream.h>
 #include <base/io/EndOfFile.h>
 #include <base/Trace.h>
+#include <base/Profiler.h>
 
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
 #  include <windows.h>
@@ -76,7 +77,10 @@ void FileDescriptorOutputStream::flush()
 unsigned int FileDescriptorOutputStream::write(
   const uint8* buffer,
   unsigned int bytesToWrite,
-  bool nonblocking) {
+  bool nonblocking)
+{
+  Profiler::IOTask profile("FileDescriptorOutputStream::write()");
+
   // TAG: currently always blocks
   unsigned int bytesWritten = 0;
   while (bytesToWrite) {

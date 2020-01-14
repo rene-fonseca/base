@@ -22,6 +22,7 @@
 #include <base/Functor.h>
 #include <base/security/User.h>
 #include <base/UnitTest.h>
+#include <base/Profiler.h>
 #include <base/build.h>
 
 #if defined(_COM_AZURE_DEV__BASE__LARGE_FILE_SYSTEM)
@@ -1254,6 +1255,8 @@ unsigned int File::read(
   unsigned int bytesToRead,
   bool nonblocking)
 {
+  Profiler::IOTask profile("File::read()");
+
   unsigned int bytesRead = 0;
   while (bytesToRead > 0) {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
@@ -1327,7 +1330,10 @@ unsigned int File::read(
 unsigned int File::write(
   const uint8* buffer,
   unsigned int bytesToWrite,
-  bool nonblocking) {
+  bool nonblocking)
+{
+  Profiler::IOTask profile("File::write()");
+
   unsigned int bytesWritten = 0;
   while (bytesToWrite > 0) {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
@@ -1412,7 +1418,8 @@ AsynchronousReadOperation File::read(
   uint8* buffer,
   unsigned int bytesToRead,
   unsigned long long offset,
-  AsynchronousReadEventListener* listener) {
+  AsynchronousReadEventListener* listener)
+{
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   bassert(listener, AsynchronousException(this)); // TAG: fixme
   return new win32::AsyncReadFileContext(getHandle(), buffer, bytesToRead, offset, listener);
@@ -1425,7 +1432,8 @@ AsynchronousWriteOperation File::write(
   const uint8* buffer,
   unsigned int bytesToWrite,
   unsigned long long offset,
-  AsynchronousWriteEventListener* listener) {
+  AsynchronousWriteEventListener* listener)
+{
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   bassert(listener, AsynchronousException(this)); // TAG: fixme
   return new win32::AsyncWriteFileContext(getHandle(), buffer, bytesToWrite, offset, listener);

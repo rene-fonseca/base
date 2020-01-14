@@ -1810,6 +1810,8 @@ unsigned int Socket::read(
   unsigned int bytesToRead,
   bool nonblocking)
 {
+  Profiler::IOTask profile("Socket::read()");
+
   unsigned int bytesRead = 0;
   while (bytesToRead > 0) {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
@@ -1868,6 +1870,7 @@ unsigned int Socket::write(
   unsigned int bytesToWrite,
   bool nonblocking)
 {
+  Profiler::IOTask profile("Socket::write()");
   unsigned int bytesWritten = 0;
   while (bytesToWrite > 0) {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
@@ -1925,6 +1928,8 @@ unsigned int Socket::receiveFrom(
   InetAddress& address,
   unsigned short& port)
 {
+  Profiler::IOTask profile("Socket::receiveFrom()");
+
 #if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__WASI)
   return 0;
 #else
@@ -1954,6 +1959,8 @@ unsigned int Socket::sendTo(
   const InetAddress& address,
   unsigned short port)
 {
+  Profiler::IOTask profile("Socket::sendTo()");
+
 #if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__WASI)
   return 0;
 #else

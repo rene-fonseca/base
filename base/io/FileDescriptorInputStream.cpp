@@ -16,6 +16,7 @@
 #include <base/io/EndOfFile.h>
 #include <base/concurrency/Thread.h>
 #include <base/Trace.h>
+#include <base/Profiler.h>
 #include <base/build.h>
 
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
@@ -109,7 +110,10 @@ unsigned int FileDescriptorInputStream::available() const
 unsigned int FileDescriptorInputStream::read(
   uint8* buffer,
   unsigned int bytesToRead,
-  bool nonblocking) {
+  bool nonblocking)
+{
+  Profiler::IOTask profile("FileDescriptorInputStream::read()");
+
   // TAG: currently always blocks
   bassert(!end, EndOfFile(this));
   unsigned int bytesRead = 0;

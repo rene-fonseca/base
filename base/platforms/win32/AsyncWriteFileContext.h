@@ -45,9 +45,11 @@ namespace win32 {
     unsigned long long offset = 0;
     unsigned int bytesWritten = 0;
     unsigned int flags = 0;
+    Profiler::IOTask profile = "AsyncWriteFileContext::AsyncWriteFileContext()";
   public:
     
-    inline void notifyAsynchronousCompletionListener() noexcept {
+    inline void notifyAsynchronousCompletionListener() noexcept
+    {
       listener->asynchronousCompletion(
         AsynchronousWriteCompletion(
           buffer,
@@ -67,7 +69,8 @@ namespace win32 {
       AsynchronousWriteEventListener* listener);
   public:
 
-    AsynchronousWriteCompletion getCompletion() const noexcept {
+    AsynchronousWriteCompletion getCompletion() const noexcept
+    {
       return AsynchronousWriteCompletion(buffer, bytesToWrite, offset, bytesWritten, flags);
     }
 

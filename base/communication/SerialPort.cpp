@@ -18,6 +18,7 @@
 #include <base/string/WideString.h>
 #include <base/UnexpectedFailure.h>
 #include <base/io/EndOfFile.h>
+#include <base/Profiler.h>
 
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
 #  include <base/platforms/win32/AsyncReadStreamContext.h> // platform specific
@@ -444,6 +445,8 @@ unsigned int SerialPort::read(
   unsigned int bytesToRead,
   bool nonblocking)
 {
+  Profiler::IOTask profile("SerialPort::read()");
+
   unsigned int bytesRead = 0;
   while (bytesToRead > 0) {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
@@ -486,6 +489,8 @@ unsigned int SerialPort::write(
   unsigned int bytesToWrite,
   bool nonblocking)
 {
+  Profiler::IOTask profile("SerialPort::write()");
+
   // TAG: currently always blocks
   unsigned int bytesWritten = 0;
   while (bytesToWrite) {

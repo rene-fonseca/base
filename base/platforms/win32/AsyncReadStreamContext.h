@@ -20,6 +20,7 @@
 #include <base/io/async/AsynchronousReadContext.h>
 #include <base/io/IOException.h>
 #include <base/OperatingSystem.h>
+#include <base/Profiler.h>
 
 #include <windows.h>
 
@@ -43,8 +44,10 @@ namespace win32 {
     unsigned int bytesToRead = 0;
     unsigned int bytesRead = 0;
     unsigned int flags = 0;
+    Profiler::IOTask profile = "AsyncReadStreamContext::AsyncReadStreamContext()";
     
-    inline void notifyAsynchronousCompletionListener() noexcept {
+    inline void notifyAsynchronousCompletionListener() noexcept
+    {
       listener->asynchronousCompletion(
         AsynchronousReadCompletion(buffer, bytesToRead, 0, bytesRead, flags)
       );
@@ -58,7 +61,8 @@ namespace win32 {
       AsynchronousReadEventListener* listener);
   public:
 
-    AsynchronousReadCompletion getCompletion() const noexcept {
+    AsynchronousReadCompletion getCompletion() const noexcept
+    {
       return AsynchronousReadCompletion(buffer, bytesToRead, 0, bytesRead, flags);
     }
 

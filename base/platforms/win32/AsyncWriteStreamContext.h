@@ -20,6 +20,7 @@
 #include <base/io/async/AsynchronousWriteContext.h>
 #include <base/io/IOException.h>
 #include <base/OperatingSystem.h>
+#include <base/Profiler.h>
 
 #include <windows.h>
 
@@ -43,8 +44,10 @@ namespace win32 {
     unsigned int bytesToWrite = 0;
     unsigned int bytesWritten = 0;
     unsigned int flags = 0;
-    
-    inline void notifyAsynchronousCompletionListener() noexcept {
+    Profiler::IOTask profile = "AsyncWriteStreamContext::AsyncWriteStreamContext()";
+
+    inline void notifyAsynchronousCompletionListener() noexcept
+    {
       listener->asynchronousCompletion(
         AsynchronousWriteCompletion(
           buffer,
@@ -64,7 +67,8 @@ namespace win32 {
       AsynchronousWriteEventListener* listener);
   public:
 
-    AsynchronousWriteCompletion getCompletion() const noexcept {
+    AsynchronousWriteCompletion getCompletion() const noexcept
+    {
       return AsynchronousWriteCompletion(
         buffer,
         bytesToWrite,

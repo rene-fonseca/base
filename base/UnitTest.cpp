@@ -595,7 +595,12 @@ String UnitTest::getJUnit() const
   const String owner = getOwner(); // responsible entity
   xml += Format::subst(
     "<testcase id=\"%1\" name=\"%2\" classname=\"%3\" time=\"%4\" owner=\"%5\" priority=\"%6\">",
-    id, getName(), getName(), time/1000000.0, owner, getPriority()
+    encodeXML(id),
+    encodeXML(getName()),
+    encodeXML(getName()),
+    time/1000000.0,
+    encodeXML(owner),
+    getPriority()
   );
 
 #if 0
@@ -610,7 +615,8 @@ String UnitTest::getJUnit() const
     xml += "<skipped/>";
   } else {
     if (run && !run->exceptionFailure.isEmpty()) {
-      xml += Format::subst("<error message=\"%1\" type=\"%2\"/>", run->exceptionFailure, run->exceptionType);
+      xml += Format::subst("<error message=\"%1\" type=\"%2\"/>",
+        encodeXML(run->exceptionFailure), encodeXML(run->exceptionType));
     }
 
     // additional info
@@ -647,7 +653,8 @@ String UnitTest::getJUnit() const
     for (auto result : run->results) {
       if (result.event == FAILED) {
         // type: WARNING
-        xml += Format::subst("<failure message=\"%1\" type=\"%2\">", Format::subst("%1:%2 ", getSource(), result.line) + result.what, "ERROR");
+        xml += Format::subst("<failure message=\"%1\" type=\"%2\">",
+          encodeXML(Format::subst("%1:%2 ", getSource(), result.line) + result.what), "ERROR");
         String temp;
         temp += result.what + "\n";
         temp += Format::subst("File: %1\n", getSource());
@@ -1217,7 +1224,8 @@ String UnitTestManager::getJUnit(const String& uuid, const String& name) const
   // attributes: disabled, errors
   xml += Format::subst(
     "<testsuites id=\"%1\" name=\"%2\">\n", // tests = \"%3\" failures=\"%4\" time=\"%5\"
-    Guid::createGuidAsString(), name ? name : "BASE" /*, 1, failed ? 1 : 0, totalTime/1000000.0*/
+    encodeXML(Guid::createGuidAsString()),
+    encodeXML(name ? name : "BASE") /*, 1, failed ? 1 : 0, totalTime/1000000.0*/
   );
   
   String hostname;
@@ -1242,11 +1250,13 @@ String UnitTestManager::getJUnit(const String& uuid, const String& name) const
   // other attributes: errors, disabled, skipped, package
   xml += Format::subst(
     "<testsuite id=\"%1\" name=\"%2\" hostname=\"%3\" tests=\"%4\" failures=\"%5\" time=\"%6\" timestamp=\"%7\">\n",
-    uuid ? uuid : Guid::createGuidAsString(), name ? name : "BASE", hostname, tests.getSize(), failed, totalTime/1000000.0, timestamp
+    encodeXML(uuid ? uuid : Guid::createGuidAsString()),
+    encodeXML(name ? name : "BASE"),
+    encodeXML(hostname), tests.getSize(), failed, totalTime/1000000.0, timestamp
   );
 
   xml += "<properties>\n";
-  xml += Format::subst("<property name=\"%1\" value=\"%2\"/>\n", "configuration", configuration);
+  xml += Format::subst("<property name=\"%1\" value=\"%2\"/>\n", "configuration", encodeXML(configuration));
   xml += "</properties>\n";
 
   for (auto test : tests) {

@@ -234,10 +234,29 @@ public:
   static void setMinimumHeapSize(unsigned int minimumHeapSize) noexcept;
   /** Sets the stack frame pattern. */
   static void setStackPattern(const String& stackPattern) noexcept;
-  
+
+#if 0
+  enum {
+    CAT_MEMORY = 1,
+    CAT_OBJECT = 2,
+    CAT_IO = 3,
+    CAT_IO_READ = 4,
+    CAT_IO_WRITE = 5,
+    CAT_NETWORK = 6,
+    CAT_WAIT = 7,
+    CAT_EXCEPTION = 8,
+    CAT_SIGNAL = 9,
+    CAT_RENDERER = 10
+  };
+  // use macro to encode/decode in char*
+#endif
+
+  // ATTENTION: cannot be shared across shared library boundaries - use enum instead
   static constexpr const char* CAT_MEMORY = "MEMORY";
   static constexpr const char* CAT_OBJECT = "OBJECT";
   static constexpr const char* CAT_IO = "IO";
+  static constexpr const char* CAT_IO_READ = "IOREAD";
+  static constexpr const char* CAT_IO_WRITE = "IOWRITE";
   static constexpr const char* CAT_NETWORK = "NET";
   static constexpr const char* CAT_WAIT = "WAIT";
   static constexpr const char* CAT_EXCEPTION = "EXCEPTION";
@@ -403,7 +422,7 @@ public:
   public:
     
     /** IO task start. */
-    inline IOTask(const char* name) : Task(name, CAT_IO)
+    inline IOTask(const char* name, const char* cat = CAT_IO) : Task(name, cat)
     {
     }
   };
@@ -416,7 +435,7 @@ public:
   public:
 
     /** IO read task start. */
-    inline IOReadTask(const char* name) : IOTask(name)
+    inline IOReadTask(const char* name) : IOTask(name, CAT_IO_READ)
     {
     }
 
@@ -441,7 +460,7 @@ public:
   public:
 
     /** IO read task start. */
-    inline IOWriteTask(const char* name) : IOTask(name)
+    inline IOWriteTask(const char* name) : IOTask(name, CAT_IO_WRITE)
     {
     }
 

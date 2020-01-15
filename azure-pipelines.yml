@@ -441,7 +441,7 @@ jobs:
   container: ubuntu_aarch64
   steps:
   - script: |
-      echo "qemu-aarch64 -L /usr/aarch64-linux-gnu/ \"$@\"" > run.sh
+      echo "qemu-aarch64 -L /usr/aarch64-linux-gnu/ \"\$@\"" > run.sh
       chmod +x run.sh
       cmake $(Build.SourcesDirectory) -DCOLOR=1 -DCMAKE_BUILD_TYPE=Debug -DCMAKE_INSTALL_PREFIX=install -DCMAKE_CXX_COMPILER=/usr/bin/aarch64-linux-gnu-g++-8 -DCMAKE_C_COMPILER=/usr/bin/aarch64-linux-gnu-gcc-8 -DCTEST_INTERPRETER=$(Build.BinariesDirectory)/run.sh
     displayName: 'Config'
@@ -456,13 +456,12 @@ jobs:
     continueOnError: true
     inputs:
       script: |
-        echo "pwd:"
-        pwd
-        echo "ls:"
-        ls -l
         echo "cat:"
         cat ./run.sh
+        echo "run:"
         ./run.sh ./testsuite/unittesting --junit junit.xml
+        ls -l *.xml
+        echo "run done:"
         ctest -T Test -VV
       workingDirectory: $(Build.BinariesDirectory)
 
@@ -490,7 +489,7 @@ jobs:
   container: ubuntu_powerpc64le
   steps:
   - script: |
-      echo "qemu-ppc64le -L /usr/powerpc64le-linux-gnu/ \"$@\"" > run.sh
+      echo "qemu-ppc64le -L /usr/powerpc64le-linux-gnu/ \"\$@\"" > run.sh
       chmod +x run.sh
       cmake $(Build.SourcesDirectory) -DCOLOR=1 -DCMAKE_BUILD_TYPE=Debug -DCMAKE_INSTALL_PREFIX=install -DCMAKE_CXX_COMPILER=/usr/bin/powerpc64le-linux-gnu-g++-8 -DCMAKE_C_COMPILER=/usr/bin/powerpc64le-linux-gnu-gcc-8 -DCTEST_INTERPRETER=$(Build.BinariesDirectory)/run.sh
     displayName: 'Config'
@@ -533,7 +532,7 @@ jobs:
   container: ubuntu_s390x
   steps:
   - script: |
-      echo "qemu-s390x -L /usr/s390x-linux-gnu/ \"$@\"" > run.sh
+      echo "qemu-s390x -L /usr/s390x-linux-gnu/ \"\$@\"" > run.sh
       chmod +x run.sh
       cmake $(Build.SourcesDirectory) -DCOLOR=1 -DCMAKE_BUILD_TYPE=Debug -DCMAKE_INSTALL_PREFIX=install -DCMAKE_CXX_COMPILER=/usr/bin/s390x-linux-gnu-g++-8 -DCMAKE_C_COMPILER=/usr/bin/s390x-linux-gnu-gcc-8 -DCTEST_INTERPRETER=$(Build.BinariesDirectory)/run.sh
     displayName: 'Config'
@@ -576,7 +575,7 @@ jobs:
   container: ubuntu_sparc64
   steps:
   - script: |
-      echo "qemu-sparc64 -L /usr/sparc64-linux-gnu/ \"$@\"" > run.sh
+      echo "qemu-sparc64 -L /usr/sparc64-linux-gnu/ \"\$@\"" > run.sh
       chmod +x run.sh
       cmake $(Build.SourcesDirectory) -DCOLOR=1 -DCMAKE_BUILD_TYPE=Debug -DCMAKE_INSTALL_PREFIX=install -DCMAKE_CXX_COMPILER=/usr/bin/sparc64-linux-gnu-g++-8 -DCMAKE_C_COMPILER=/usr/bin/sparc64-linux-gnu-gcc-8 -DCTEST_INTERPRETER=$(Build.BinariesDirectory)/run.sh
     displayName: 'Config'

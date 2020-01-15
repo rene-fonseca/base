@@ -456,13 +456,8 @@ jobs:
     continueOnError: true
     inputs:
       script: |
-        echo "cat:"
-        cat ./run.sh
-        echo "run:"
         ./run.sh ./testsuite/unittesting --junit junit.xml
-        ls -l *.xml
-        echo "run done:"
-        ctest -T Test -VV
+        ctest -T Test
       workingDirectory: $(Build.BinariesDirectory)
 
   - task: PublishTestResults@2
@@ -470,12 +465,14 @@ jobs:
       testResultsFormat: 'JUnit'
       testResultsFiles: '**/junit.xml'
       testRunTitle: 'Unittest results'
+      searchFolder: '$(Build.BinariesDirectory)'
 
   - task: PublishTestResults@2
     inputs:
       testResultsFormat: 'cTest'
       testResultsFiles: '**/Test.xml'
       testRunTitle: 'Test results for CTest'
+      searchFolder: '$(Build.BinariesDirectory)'
 
   - task: PublishPipelineArtifact@1
     inputs:
@@ -513,12 +510,14 @@ jobs:
       testResultsFormat: 'JUnit'
       testResultsFiles: '**/junit.xml'
       testRunTitle: 'Unittest results'
+      searchFolder: '$(Build.BinariesDirectory)'
 
   - task: PublishTestResults@2
     inputs:
       testResultsFormat: 'cTest'
       testResultsFiles: '**/Test.xml'
       testRunTitle: 'Test results for CTest'
+      searchFolder: '$(Build.BinariesDirectory)'
 
   - task: PublishPipelineArtifact@1
     inputs:
@@ -556,12 +555,14 @@ jobs:
       testResultsFormat: 'JUnit'
       testResultsFiles: '**/junit.xml'
       testRunTitle: 'Unittest results'
+      searchFolder: '$(Build.BinariesDirectory)'
 
   - task: PublishTestResults@2
     inputs:
       testResultsFormat: 'cTest'
       testResultsFiles: '**/Test.xml'
       testRunTitle: 'Test results for CTest'
+      searchFolder: '$(Build.BinariesDirectory)'
 
   - task: PublishPipelineArtifact@1
     inputs:
@@ -599,12 +600,14 @@ jobs:
       testResultsFormat: 'JUnit'
       testResultsFiles: '**/junit.xml'
       testRunTitle: 'Unittest results'
+      searchFolder: '$(Build.BinariesDirectory)'
 
   - task: PublishTestResults@2
     inputs:
       testResultsFormat: 'cTest'
       testResultsFiles: '**/Test.xml'
       testRunTitle: 'Test results for CTest'
+      searchFolder: '$(Build.BinariesDirectory)'
 
   - task: PublishPipelineArtifact@1
     inputs:

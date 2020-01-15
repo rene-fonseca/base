@@ -1355,9 +1355,6 @@ void convertFloatingPoint(
   int& exponent) noexcept
 {
   // TAG: there is plenty room for optimization
-  static const unsigned int power[] = {
-    1, 10, 100, 1000, 10000, 100000, 1000000, 10000000, 100000000, 1000000000
-  };
 
   numberOfDigits = 0;
   exponent = 0;
@@ -1422,7 +1419,7 @@ void convertFloatingPoint(
   while (alpha > 0) {
     unsigned int n = minimum<int>(alpha, 9);
     alpha -= n;
-    LargeIntegerImpl::multiply(Mminus, integerSize, power[n]); // M- = M- * B^n
+    LargeIntegerImpl::multiply(Mminus, integerSize, Math::EXPONENTS10_32[n]); // M- = M- * B^n
   }
 
   unsigned int* Mplus = Mminus;
@@ -1479,14 +1476,14 @@ void convertFloatingPoint(
           while (alpha > 0) {
             unsigned int n = minimum<int>(alpha, 9);
             alpha -= n;
-            LargeIntegerImpl::multiply(temp, integerSize, power[n]); // y = y * B^n
+            LargeIntegerImpl::multiply(temp, integerSize, Math::EXPONENTS10_32[n]); // y = y * B^n
           }
         } else {
           while (alpha < 0) {
             unsigned int n = minimum<int>(-alpha, 9);
             alpha += n;
-            LargeIntegerImpl::add(temp, integerSize, power[n] - 1);
-            LargeIntegerImpl::divide(temp, integerSize, power[n]); // y = ceil(y/B^n)
+            LargeIntegerImpl::add(temp, integerSize, Math::EXPONENTS10_32[n] - 1);
+            LargeIntegerImpl::divide(temp, integerSize, Math::EXPONENTS10_32[n]); // y = ceil(y/B^n)
           }
         }
 

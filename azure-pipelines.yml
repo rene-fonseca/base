@@ -443,7 +443,7 @@ jobs:
   - script: |
       echo "qemu-aarch64 -L /usr/aarch64-linux-gnu/" > run.sh
       chmod +x run.sh
-      cmake $(Build.SourcesDirectory) -DCOLOR=1 -DCMAKE_BUILD_TYPE=Debug -DCMAKE_INSTALL_PREFIX=install -DCMAKE_CXX_COMPILER=/usr/bin/aarch64-linux-gnu-g++-8 -DCMAKE_C_COMPILER=/usr/bin/aarch64-linux-gnu-gcc-8 -DCTEST_INTERPRETER=/build/run.sh
+      cmake $(Build.SourcesDirectory) -DCOLOR=1 -DCMAKE_BUILD_TYPE=Debug -DCMAKE_INSTALL_PREFIX=install -DCMAKE_CXX_COMPILER=/usr/bin/aarch64-linux-gnu-g++-8 -DCMAKE_C_COMPILER=/usr/bin/aarch64-linux-gnu-gcc-8 -DCTEST_INTERPRETER=$(System.DefaultWorkingDirectory)/run.sh
     displayName: 'Config'
     workingDirectory: $(Build.BinariesDirectory)
 

@@ -502,7 +502,7 @@ jobs:
     inputs:
       script: |
         ./run.sh ./testsuite/unittesting --junit junit.xml
-        ctest -T Test -VV
+        ctest -T Test
       workingDirectory: $(Build.BinariesDirectory)
 
   - task: PublishTestResults@2
@@ -547,7 +547,7 @@ jobs:
     inputs:
       script: |
         ./run.sh ./testsuite/unittesting --junit junit.xml
-        ctest -T Test -VV
+        ctest -T Test
       workingDirectory: $(Build.BinariesDirectory)
 
   - task: PublishTestResults@2
@@ -592,7 +592,7 @@ jobs:
     inputs:
       script: |
         ./run.sh ./testsuite/unittesting --junit junit.xml
-        ctest -T Test -VV
+        ctest -T Test
       workingDirectory: $(Build.BinariesDirectory)
 
   - task: PublishTestResults@2

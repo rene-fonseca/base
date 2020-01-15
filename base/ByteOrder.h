@@ -197,7 +197,10 @@ _COM_AZURE_DEV__BASE__PACKED__BEGIN
     }
     
     inline LittleEndian(int32 value) noexcept
-      : a(value), b(value >> 8), c(value >> 16), d(value >> 24)
+      : a(static_cast<uint8>(value & 0xff)),
+        b(static_cast<uint8>((value >> 8) & 0xff)),
+        c(static_cast<uint8>((value >> 16) & 0xff)),
+        d(static_cast<uint8>((value >> 24) & 0xff))
     {
     }
     
@@ -383,12 +386,6 @@ _COM_AZURE_DEV__BASE__PACKED__BEGIN
   } _COM_AZURE_DEV__BASE__PACKED;
 _COM_AZURE_DEV__BASE__PACKED__END
   
-  template<class TYPE>
-  inline FormatOutputStream& operator<<(FormatOutputStream& stream, const LittleEndian<TYPE>& value)
-  {
-    return stream << static_cast<TYPE>(value);
-  }
-
   /**
     This class is used to store primitives in big endian byte order
     independently of the native byte order of the platform.
@@ -589,12 +586,18 @@ _COM_AZURE_DEV__BASE__PACKED__BEGIN
   } _COM_AZURE_DEV__BASE__PACKED;
 _COM_AZURE_DEV__BASE__PACKED__END
   
-  template<class TYPE>
-  inline FormatOutputStream& operator<<(FormatOutputStream& stream, const BigEndian<TYPE>& value)
-  {
-    return stream << static_cast<TYPE>(value);
-  }
-
 #endif // little endian
+
+template<class TYPE>
+inline FormatOutputStream& operator<<(FormatOutputStream& stream, const LittleEndian<TYPE>& value)
+{
+  return stream << static_cast<TYPE>(value);
+}
+
+template<class TYPE>
+inline FormatOutputStream& operator<<(FormatOutputStream& stream, const BigEndian<TYPE>& value)
+{
+  return stream << static_cast<TYPE>(value);
+}
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

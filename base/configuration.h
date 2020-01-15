@@ -152,8 +152,31 @@
 #  define _COM_AZURE_DEV__BASE__WCHAR_SIZE 4
 #endif
 
-#define _COM_AZURE_DEV__BASE__BYTE_ORDER _COM_AZURE_DEV__BASE__LITTLE_ENDIAN
-#define _COM_AZURE_DEV__BASE__FLOAT_WORD_ORDER _COM_AZURE_DEV__BASE__LITTLE_ENDIAN
+#if defined(__BYTE_ORDER__)
+#if (__BYTE_ORDER__ == 1234)
+#  define _COM_AZURE_DEV__BASE__BYTE_ORDER _COM_AZURE_DEV__BASE__LITTLE_ENDIAN
+#elif (__BYTE_ORDER__ == 4321)
+#  define _COM_AZURE_DEV__BASE__BYTE_ORDER _COM_AZURE_DEV__BASE__BIG_ENDIAN
+#else
+#  error Unsupported byte order
+#endif
+#endif
+#if (!defined(_COM_AZURE_DEV__BASE__BYTE_ORDER))
+#  define _COM_AZURE_DEV__BASE__BYTE_ORDER _COM_AZURE_DEV__BASE__LITTLE_ENDIAN
+#endif
+
+#if defined(__FLOAT_WORD_ORDER__)
+#if (__FLOAT_WORD_ORDER__ == 1234)
+#  define _COM_AZURE_DEV__BASE__FLOAT_WORD_ORDER _COM_AZURE_DEV__BASE__LITTLE_ENDIAN
+#elif (__FLOAT_WORD_ORDER__ == 4321)
+#  define _COM_AZURE_DEV__BASE__FLOAT_WORD_ORDER _COM_AZURE_DEV__BASE__BIG_ENDIAN
+#else
+#  error Unsupported floating point word order
+#endif
+#endif
+#if (!defined(_COM_AZURE_DEV__BASE__FLOAT_WORD_ORDER))
+#  define _COM_AZURE_DEV__BASE__FLOAT_WORD_ORDER _COM_AZURE_DEV__BASE__BYTE_ORDER
+#endif
 
 #if defined(__SIZEOF_FLOAT__)
 #  if (__SIZEOF_FLOAT__ == 4)

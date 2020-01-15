@@ -354,7 +354,9 @@ _COM_AZURE_DEV__BASE__PACKED__BEGIN
       static constexpr int ALL_BITS_EXPONENT = (1 << 10) - 1;
       static constexpr int BIAS = (1 << 9) - 1;
       static constexpr unsigned int SIGNIFICANT = 53 * 2;
-#if ((_COM_AZURE_DEV__BASE__BYTE_ORDER == _COM_AZURE_DEV__BASE__LITTLE_ENDIAN) && \
+// TAG: add support for all order combinations
+#if (1 || \
+     (_COM_AZURE_DEV__BASE__BYTE_ORDER == _COM_AZURE_DEV__BASE__LITTLE_ENDIAN) && \
      (_COM_AZURE_DEV__BASE__FLOAT_WORD_ORDER == _COM_AZURE_DEV__BASE__LITTLE_ENDIAN))
       uint32 mantissa0 : 32;
       uint32 mantissa1 : 53 - 32;

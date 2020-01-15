@@ -47,10 +47,10 @@ jobs:
     continueOnError: true
     inputs:
       script: |
-        set PATH=%PATH%;$(System.DefaultWorkingDirectory)/build/Debug
-        $(System.DefaultWorkingDirectory)/build/testsuite/Debug/unittesting --junit $(System.DefaultWorkingDirectory)/build/junit.xml
+        set PATH=%PATH%;$(Build.BinariesDirectory)/Debug
+        $(Build.BinariesDirectory)/testsuite/Debug/unittesting --junit $(Build.BinariesDirectory)/junit.xml
         ctest -T Test -C Debug
-      workingDirectory: $(System.DefaultWorkingDirectory)/build
+      workingDirectory: $(Build.BinariesDirectory)
 
   - task: PublishTestResults@2
     inputs:
@@ -68,7 +68,7 @@ jobs:
     inputs:
       artifactName: 'base-windows-x64'
       targetPath: 'artifacts'
-      path: $(System.DefaultWorkingDirectory)/build/install
+      path: $(Build.BinariesDirectory)/install
 
 - job: windows_x86
   pool:
@@ -89,10 +89,10 @@ jobs:
     continueOnError: true
     inputs:
       script: |
-        set PATH=%PATH%;$(System.DefaultWorkingDirectory)/build/Debug
-        $(System.DefaultWorkingDirectory)/build/testsuite/Debug/unittesting --junit $(System.DefaultWorkingDirectory)/build/junit.xml
+        set PATH=%PATH%;$(Build.BinariesDirectory)/Debug
+        $(Build.BinariesDirectory)/testsuite/Debug/unittesting --junit $(Build.BinariesDirectory)/junit.xml
         ctest -T Test -C Debug
-      workingDirectory: $(System.DefaultWorkingDirectory)/build
+      workingDirectory: $(Build.BinariesDirectory)
 
   - task: PublishTestResults@2
     inputs:
@@ -110,7 +110,7 @@ jobs:
     inputs:
       artifactName: 'base-windows-x86'
       targetPath: 'artifacts'
-      path: $(System.DefaultWorkingDirectory)/build/install
+      path: $(Build.BinariesDirectory)/install
 
 - job: windows_arm64
   pool:
@@ -132,10 +132,10 @@ jobs:
 #    continueOnError: true
 #    inputs:
 #      script: |
-#        set PATH=%PATH%;$(System.DefaultWorkingDirectory)/build/Debug
-#        $(System.DefaultWorkingDirectory)/build/testsuite/Debug/unittesting --junit $(System.DefaultWorkingDirectory)/build/junit.xml
+#        set PATH=%PATH%;$(Build.BinariesDirectory)/Debug
+#        $(Build.BinariesDirectory)/testsuite/Debug/unittesting --junit $(Build.BinariesDirectory)/junit.xml
 #        ctest -T Test -C Debug
-#      workingDirectory: $(System.DefaultWorkingDirectory)/build
+#      workingDirectory: $(Build.BinariesDirectory)
 
 #  - task: PublishTestResults@2
 #    inputs:
@@ -153,7 +153,7 @@ jobs:
     inputs:
       artifactName: 'base-windows-arm64'
       targetPath: 'artifacts'
-      path: $(System.DefaultWorkingDirectory)/build/install
+      path: $(Build.BinariesDirectory)/install
 
 - job: windows_arm32
   pool:
@@ -173,7 +173,7 @@ jobs:
     inputs:
       artifactName: 'base-windows-arm32'
       targetPath: 'artifacts'
-      path: $(System.DefaultWorkingDirectory)/build/install
+      path: $(Build.BinariesDirectory)/install
 
 - job: ubuntu18_04
   pool:
@@ -196,7 +196,7 @@ jobs:
       script: |
         ./testsuite/unittesting --junit junit.xml
         ctest -T Test
-      workingDirectory: $(System.DefaultWorkingDirectory)/build
+      workingDirectory: $(Build.BinariesDirectory)
 
   - task: PublishTestResults@2
     inputs:
@@ -214,7 +214,7 @@ jobs:
     inputs:
       artifactName: 'base-ubuntu18'
       targetPath: 'artifacts'
-      path: $(System.DefaultWorkingDirectory)/build/install
+      path: $(Build.BinariesDirectory)/install
 
 - job: centos8
   pool:
@@ -354,7 +354,7 @@ jobs:
       script: |
         ./testsuite/unittesting --junit junit.xml
         ctest -T Test
-      workingDirectory: $(System.DefaultWorkingDirectory)/build
+      workingDirectory: $(Build.BinariesDirectory)
 
   - task: PublishTestResults@2
     inputs:
@@ -372,7 +372,7 @@ jobs:
     inputs:
       artifactName: 'base-ubuntu16'
       targetPath: 'artifacts'
-      path: $(System.DefaultWorkingDirectory)/build/install
+      path: $(Build.BinariesDirectory)/install
 
 - job: macos
   pool:
@@ -395,7 +395,7 @@ jobs:
       script: |
         ./testsuite/unittesting --junit junit.xml
         ctest -T Test
-      workingDirectory: $(System.DefaultWorkingDirectory)/build
+      workingDirectory: $(Build.BinariesDirectory)
 
   - task: PublishTestResults@2
     inputs:
@@ -413,7 +413,7 @@ jobs:
     inputs:
       artifactName: 'base-macos'
       targetPath: 'artifacts'
-      path: $(System.DefaultWorkingDirectory)/build/install
+      path: $(Build.BinariesDirectory)/install
 
 - job: ios
   pool:
@@ -433,7 +433,7 @@ jobs:
     inputs:
       artifactName: 'base-ios'
       targetPath: 'artifacts'
-      path: $(System.DefaultWorkingDirectory)/build/install
+      path: $(Build.BinariesDirectory)/install
 
 - job: ubuntu_aarch64
   pool:
@@ -456,9 +456,9 @@ jobs:
     continueOnError: true
     inputs:
       script: |
-        $(Build.BinariesDirectory)/run.sh ./testsuite/unittesting --junit junit.xml
+        ./run.sh ./testsuite/unittesting --junit junit.xml
         ctest -T Test
-      workingDirectory: $(System.DefaultWorkingDirectory)/build
+      workingDirectory: $(Build.BinariesDirectory)
 
   - task: PublishTestResults@2
     inputs:
@@ -499,9 +499,9 @@ jobs:
     continueOnError: true
     inputs:
       script: |
-        $(Build.BinariesDirectory)/run.sh ./testsuite/unittesting --junit junit.xml
+        ./run.sh ./testsuite/unittesting --junit junit.xml
         ctest -T Test
-      workingDirectory: $(System.DefaultWorkingDirectory)/build
+      workingDirectory: $(Build.BinariesDirectory)
 
   - task: PublishTestResults@2
     inputs:
@@ -542,9 +542,9 @@ jobs:
     continueOnError: true
     inputs:
       script: |
-        $(Build.BinariesDirectory)/run.sh ./testsuite/unittesting --junit junit.xml
+        ./run.sh ./testsuite/unittesting --junit junit.xml
         ctest -T Test
-      workingDirectory: $(System.DefaultWorkingDirectory)/build
+      workingDirectory: $(Build.BinariesDirectory)
 
   - task: PublishTestResults@2
     inputs:
@@ -585,9 +585,9 @@ jobs:
     continueOnError: true
     inputs:
       script: |
-        $(Build.BinariesDirectory)/run.sh ./testsuite/unittesting --junit junit.xml
+        ./run.sh ./testsuite/unittesting --junit junit.xml
         ctest -T Test
-      workingDirectory: $(System.DefaultWorkingDirectory)/build
+      workingDirectory: $(Build.BinariesDirectory)
 
   - task: PublishTestResults@2
     inputs:

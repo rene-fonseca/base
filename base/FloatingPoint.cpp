@@ -884,13 +884,6 @@ void FloatingPoint::IBMExtendedPrecision::setValue(const FloatingPoint::Represen
   _COM_AZURE_DEV__BASE__NOT_IMPLEMENTED();
 }
 
-FloatingPoint::IBMExtendedPrecision::operator float128() const noexcept
-{
-  _COM_AZURE_DEV__BASE__NOT_IMPLEMENTED();
-  float128 result;
-  return result;
-}
-
 template<>
 void analyzeFloatingPoint<FloatingPoint::Representation::IEEE754SinglePrecision>(
   const FloatingPoint::Representation::IEEE754SinglePrecision& value,

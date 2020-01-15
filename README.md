@@ -27,7 +27,9 @@ Reference API documentation is hosted at https://rene-fonseca.github.io/base-api
 [![Ubuntu PowerPC64LE](https://dev.azure.com/renefonseca/base/_apis/build/status/rene-fonseca.base?branchName=master&jobName=ubuntu_powerpc64le&label=Ubuntu%20PowerPC64LE)](https://dev.azure.com/renefonseca/base/_build/latest?definitionId=5&branchName=master)
 [![Ubuntu S390x](https://dev.azure.com/renefonseca/base/_apis/build/status/rene-fonseca.base?branchName=master&jobName=ubuntu_s390x&label=Ubuntu%20S390x)](https://dev.azure.com/renefonseca/base/_build/latest?definitionId=5&branchName=master)
 [![Ubuntu Sparc64](https://dev.azure.com/renefonseca/base/_apis/build/status/rene-fonseca.base?branchName=master&jobName=ubuntu_sparc64&label=Ubuntu%20Sparc64)](https://dev.azure.com/renefonseca/base/_build/latest?definitionId=5&branchName=master)
+[![openSUSE](https://dev.azure.com/renefonseca/base/_apis/build/status/base%20daily?branchName=master&jobName=opensuse_x64&label=openSUSE)](https://dev.azure.com/renefonseca/base/_build/latest?definitionId=7&branchName=master)
 [![Amazon Linux](https://dev.azure.com/renefonseca/base/_apis/build/status/base%20daily?branchName=master&jobName=amazonlinux_x64&label=Amazon%20Linux)](https://dev.azure.com/renefonseca/base/_build/latest?definitionId=7&branchName=master)
+[![GCC 9](https://dev.azure.com/renefonseca/base/_apis/build/status/base%20daily?branchName=master&jobName=gcc9&label=GCC%209)](https://dev.azure.com/renefonseca/base/_build/latest?definitionId=7&branchName=master)
 [![wasm32](https://dev.azure.com/renefonseca/base/_apis/build/status/rene-fonseca.base?branchName=master&jobName=wasm32&label=WebAssembly%2032)](https://dev.azure.com/renefonseca/base/_build/latest?definitionId=5&branchName=master)
 
 
@@ -104,12 +106,13 @@ iOS                | ARM64    | Clang   | Ok         | Runs continuously on pipe
 WebAssembly WASI   | WASM32   | LLVM    | Ok         | Runs continuously on pipeline - Exceptions cause abort()
 Debian 10          | x86_64   | GCC     | Ok         | Runs daily on pipeline
 Ubuntu 19.04       | x86_64   | GCC     | Ok         | Runs daily on pipeline
+openSUSE           | x86_64   | GCC     | Ok         | Runs daily on pipeline
 Amazon Linux 2     | x86_64   | GCC     | Ok         | Runs daily on pipeline - using newer cmake build
+GCC 9              | x86_64   | GCC     | Ok         | Runs daily on pipeline
 RedHat 8.1         | x86_64   | GCC     | Ok         | 7 Dec 2019
 FreeBSD 12.1       | x86_64   | Clang   | Ok         | 7 Dec 2019
 OpenBSD 66         | x86_64   | GCC     | Ok         | 9 Dec 2019
 Raspbian 10        | ARM32    | GCC     | Ok         | 9 Dec 2019
-openSUSE 15        | x86_64   | GCC     | Ok         | 9 Dec 2019
 Emscripten         | WASM32   | LLVM    | Ok         | 20 Dec 2019
 OpenSolaris 11     | x86_64   | GCC     | Ok         | 6 Dec 2019
 OpenSolaris 11     | x86_64   | LLVM    | Pending    |
@@ -118,6 +121,5 @@ OpenSolaris 11     | sparc    |         | Pending    |
 HP-UX 11i v2       |          |         | Pending    |
 AIX 7.2            | PowerPC  |         | Pending    |
 RHEL 8             | PowerPC  |         | Pending    |
-SUSE Linux 15      | x86_64   |         | Pending    |
 
 Docker images are available at: https://hub.docker.com/repository/docker/renefonseca/

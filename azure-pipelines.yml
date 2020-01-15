@@ -483,13 +483,37 @@ jobs:
     vmImage: 'ubuntu-18.04'
   container: ubuntu_powerpc64le
   steps:
-  - script: cmake $(Build.SourcesDirectory) -DCOLOR=1 -DCMAKE_BUILD_TYPE=Debug -DCMAKE_INSTALL_PREFIX=install -DCMAKE_CXX_COMPILER=/usr/bin/powerpc64le-linux-gnu-g++-8 -DCMAKE_C_COMPILER=/usr/bin/powerpc64le-linux-gnu-gcc-8
+  - script: |
+      echo "qemu-powerpc64le -L /usr/powerpc64le-linux-gnu/" > run.sh
+      chmod +x run.sh
+      cmake $(Build.SourcesDirectory) -DCOLOR=1 -DCMAKE_BUILD_TYPE=Debug -DCMAKE_INSTALL_PREFIX=install -DCMAKE_CXX_COMPILER=/usr/bin/powerpc64le-linux-gnu-g++-8 -DCMAKE_C_COMPILER=/usr/bin/powerpc64le-linux-gnu-gcc-8 -DCTEST_INTERPRETER=$(System.DefaultWorkingDirectory)/run.sh
     displayName: 'Config'
     workingDirectory: $(Build.BinariesDirectory)
 
   - script: cmake --build . --config Debug --target install -- -j 4
     displayName: 'Build'
     workingDirectory: $(Build.BinariesDirectory)
+
+  - task: CmdLine@2
+    displayName: 'Run tests'
+    continueOnError: true
+    inputs:
+      script: |
+        ./run.sh ./testsuite/unittesting --junit junit.xml
+        ctest -T Test
+      workingDirectory: $(System.DefaultWorkingDirectory)/build
+
+  - task: PublishTestResults@2
+    inputs:
+      testResultsFormat: 'JUnit'
+      testResultsFiles: '**/junit.xml'
+      testRunTitle: 'Unittest results'
+
+  - task: PublishTestResults@2
+    inputs:
+      testResultsFormat: 'cTest'
+      testResultsFiles: '**/Test.xml'
+      testRunTitle: 'Test results for CTest'
 
   - task: PublishPipelineArtifact@1
     inputs:
@@ -502,13 +526,37 @@ jobs:
     vmImage: 'ubuntu-18.04'
   container: ubuntu_s390x
   steps:
-  - script: cmake $(Build.SourcesDirectory) -DCOLOR=1 -DCMAKE_BUILD_TYPE=Debug -DCMAKE_INSTALL_PREFIX=install -DCMAKE_CXX_COMPILER=/usr/bin/s390x-linux-gnu-g++-8 -DCMAKE_C_COMPILER=/usr/bin/s390x-linux-gnu-gcc-8
+  - script: |
+      echo "qemu-s390x -L /usr/s390x-linux-gnu/" > run.sh
+      chmod +x run.sh
+      cmake $(Build.SourcesDirectory) -DCOLOR=1 -DCMAKE_BUILD_TYPE=Debug -DCMAKE_INSTALL_PREFIX=install -DCMAKE_CXX_COMPILER=/usr/bin/s390x-linux-gnu-g++-8 -DCMAKE_C_COMPILER=/usr/bin/s390x-linux-gnu-gcc-8 -DCTEST_INTERPRETER=$(System.DefaultWorkingDirectory)/run.sh
     displayName: 'Config'
     workingDirectory: $(Build.BinariesDirectory)
 
   - script: cmake --build . --config Debug --target install -- -j 4
     displayName: 'Build'
     workingDirectory: $(Build.BinariesDirectory)
+
+  - task: CmdLine@2
+    displayName: 'Run tests'
+    continueOnError: true
+    inputs:
+      script: |
+        ./run.sh ./testsuite/unittesting --junit junit.xml
+        ctest -T Test
+      workingDirectory: $(System.DefaultWorkingDirectory)/build
+
+  - task: PublishTestResults@2
+    inputs:
+      testResultsFormat: 'JUnit'
+      testResultsFiles: '**/junit.xml'
+      testRunTitle: 'Unittest results'
+
+  - task: PublishTestResults@2
+    inputs:
+      testResultsFormat: 'cTest'
+      testResultsFiles: '**/Test.xml'
+      testRunTitle: 'Test results for CTest'
 
   - task: PublishPipelineArtifact@1
     inputs:
@@ -521,13 +569,41 @@ jobs:
     vmImage: 'ubuntu-18.04'
   container: ubuntu_sparc64
   steps:
-  - script: cmake $(Build.SourcesDirectory) -DCOLOR=1 -DCMAKE_BUILD_TYPE=Debug -DCMAKE_INSTALL_PREFIX=install -DCMAKE_CXX_COMPILER=/usr/bin/sparc64-linux-gnu-g++-8 -DCMAKE_C_COMPILER=/usr/bin/sparc64-linux-gnu-gcc-8
+  - script: |
+      echo "qemu-sparc64 -L /usr/sparc64-linux-gnu/" > run.sh
+      chmod +x run.sh
+      pwd
+      ls -l
+      echo $(System.DefaultWorkingDirectory)/run.sh
+      $(System.DefaultWorkingDirectory)/run.sh
+      cmake $(Build.SourcesDirectory) -DCOLOR=1 -DCMAKE_BUILD_TYPE=Debug -DCMAKE_INSTALL_PREFIX=install -DCMAKE_CXX_COMPILER=/usr/bin/sparc64-linux-gnu-g++-8 -DCMAKE_C_COMPILER=/usr/bin/sparc64-linux-gnu-gcc-8 -DCTEST_INTERPRETER=$(System.DefaultWorkingDirectory)/run.sh
     displayName: 'Config'
     workingDirectory: $(Build.BinariesDirectory)
 
   - script: cmake --build . --config Debug --target install -- -j 4
     displayName: 'Build'
     workingDirectory: $(Build.BinariesDirectory)
+
+  - task: CmdLine@2
+    displayName: 'Run tests'
+    continueOnError: true
+    inputs:
+      script: |
+        ./run.sh ./testsuite/unittesting --junit junit.xml
+        ctest -T Test
+      workingDirectory: $(System.DefaultWorkingDirectory)/build
+
+  - task: PublishTestResults@2
+    inputs:
+      testResultsFormat: 'JUnit'
+      testResultsFiles: '**/junit.xml'
+      testRunTitle: 'Unittest results'
+
+  - task: PublishTestResults@2
+    inputs:
+      testResultsFormat: 'cTest'
+      testResultsFiles: '**/Test.xml'
+      testRunTitle: 'Test results for CTest'
 
   - task: PublishPipelineArtifact@1
     inputs:

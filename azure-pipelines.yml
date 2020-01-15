@@ -440,13 +440,37 @@ jobs:
     vmImage: 'ubuntu-18.04'
   container: ubuntu_aarch64
   steps:
-  - script: cmake $(Build.SourcesDirectory) -DCOLOR=1 -DCMAKE_BUILD_TYPE=Debug -DCMAKE_INSTALL_PREFIX=install -DCMAKE_CXX_COMPILER=/usr/bin/aarch64-linux-gnu-g++-8 -DCMAKE_C_COMPILER=/usr/bin/aarch64-linux-gnu-gcc-8
+  - script: |
+      echo "qemu-aarch64 -L /usr/aarch64-linux-gnu/" > run.sh
+      chmod +x run.sh
+      cmake $(Build.SourcesDirectory) -DCOLOR=1 -DCMAKE_BUILD_TYPE=Debug -DCMAKE_INSTALL_PREFIX=install -DCMAKE_CXX_COMPILER=/usr/bin/aarch64-linux-gnu-g++-8 -DCMAKE_C_COMPILER=/usr/bin/aarch64-linux-gnu-gcc-8 -DCTEST_INTERPRETER=/build/run.sh
     displayName: 'Config'
     workingDirectory: $(Build.BinariesDirectory)
 
   - script: cmake --build . --config Debug --target install -- -j 4
     displayName: 'Build'
     workingDirectory: $(Build.BinariesDirectory)
+
+  - task: CmdLine@2
+    displayName: 'Run tests'
+    continueOnError: true
+    inputs:
+      script: |
+        ./run.sh ./testsuite/unittesting --junit junit.xml
+        ctest -T Test
+      workingDirectory: $(System.DefaultWorkingDirectory)/build
+
+  - task: PublishTestResults@2
+    inputs:
+      testResultsFormat: 'JUnit'
+      testResultsFiles: '**/junit.xml'
+      testRunTitle: 'Unittest results'
+
+  - task: PublishTestResults@2
+    inputs:
+      testResultsFormat: 'cTest'
+      testResultsFiles: '**/Test.xml'
+      testRunTitle: 'Test results for CTest'
 
   - task: PublishPipelineArtifact@1
     inputs:

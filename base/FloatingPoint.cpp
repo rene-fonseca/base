@@ -874,6 +874,23 @@ void FloatingPoint::IEEEQuadruplePrecision::setValue(const FloatingPoint::Repres
   }
 }
 
+void FloatingPoint::IEEEQuadruplePrecision::setValue(const FloatingPoint::Representation::IBMExtendedPrecision& _value) noexcept
+{
+  _COM_AZURE_DEV__BASE__NOT_IMPLEMENTED();
+}
+
+void FloatingPoint::IBMExtendedPrecision::setValue(const FloatingPoint::Representation::IEEEQuadruplePrecision& _value) noexcept
+{
+  _COM_AZURE_DEV__BASE__NOT_IMPLEMENTED();
+}
+
+FloatingPoint::IBMExtendedPrecision::operator float128() const noexcept
+{
+  _COM_AZURE_DEV__BASE__NOT_IMPLEMENTED();
+  float128 result;
+  return result;
+}
+
 template<>
 void analyzeFloatingPoint<FloatingPoint::Representation::IEEE754SinglePrecision>(
   const FloatingPoint::Representation::IEEE754SinglePrecision& value,
@@ -1127,6 +1144,58 @@ void analyzeFloatingPoint<FloatingPoint::Representation::IEEEQuadruplePrecision>
   unsigned int& flags) noexcept
 {
   typedef FloatingPoint::Representation::IEEEQuadruplePrecision Representation;
+  
+  unsigned int fieldExponent = value.exponent;
+  mantissa[0] = value.mantissa0;
+  mantissa[1] = value.mantissa1;
+  mantissa[2] = value.mantissa2;
+  mantissa[3] = value.mantissa3;
+  flags = value.negative ? FloatingPoint::FP_NEGATIVE : 0;
+  if (~fieldExponent == 0) {
+    if ((mantissa[3] == 0) && (mantissa[2] == 0) && (mantissa[1] == 0) && (mantissa[0] == 0)) { // check for infinity
+      flags |= FloatingPoint::FP_INFINITY;
+    } else {
+      flags &= ~FloatingPoint::FP_NEGATIVE;
+      flags |= FloatingPoint::FP_ANY_NAN;
+    }
+    precision = 0;
+    exponent = 0;
+  } else {
+    flags |= FloatingPoint::FP_VALUE; // ordinary value
+    if ((fieldExponent == 0) &&
+        (mantissa[3] == 0) && (mantissa[2] == 0) && (mantissa[1] == 0) && (mantissa[0] == 0)) { // check for zero
+      flags |= FloatingPoint::FP_ANY_ZERO;
+      exponent = 0;
+      precision = Representation::SIGNIFICANT;
+    } else {
+      if (fieldExponent == 0) { // denormalized value (does not have implied one)
+        flags |= FloatingPoint::FP_DENORMALIZED;
+      }
+
+      if (Representation::HAS_IMPLIED_ONE) {
+        if (flags & FloatingPoint::FP_DENORMALIZED) {
+          precision = Representation::SIGNIFICANT - 1;
+        } else {
+          precision = Representation::SIGNIFICANT;
+          mantissa[(Representation::SIGNIFICANT - 1)/32] |= 1 << ((Representation::SIGNIFICANT - 1)%32);
+        }
+      } else {
+        precision = Representation::SIGNIFICANT;
+      }
+      exponent = fieldExponent - Representation::BIAS;
+    }
+  }
+}
+
+template<>
+void analyzeFloatingPoint<FloatingPoint::Representation::IBMExtendedPrecision>(
+  const FloatingPoint::Representation::IBMExtendedPrecision& value,
+  unsigned int& precision,
+  unsigned int* mantissa,
+  int& exponent,
+  unsigned int& flags) noexcept
+{
+  typedef FloatingPoint::Representation::IBMExtendedPrecision Representation;
   
   unsigned int fieldExponent = value.exponent;
   mantissa[0] = value.mantissa0;

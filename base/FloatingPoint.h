@@ -385,7 +385,7 @@ _COM_AZURE_DEV__BASE__PACKED__END
 #elif (_COM_AZURE_DEV__BASE__FLOAT == _COM_AZURE_DEV__BASE__IEEE_QUADRUPLE_PRECISION)
   typedef Representation::IEEEQuadruplePrecision FloatRepresentation;
 #elif (_COM_AZURE_DEV__BASE__FLOAT == _COM_AZURE_DEV__BASE__IBM_EXTENDED_PRECISION)
-  typedef Representation::IEEEQuadruplePrecision FloatRepresentation;
+  typedef Representation::IBMExtendedPrecision FloatRepresentation;
 #else
 #  error Invalid floating-point representation of type float
 #endif
@@ -403,7 +403,7 @@ _COM_AZURE_DEV__BASE__PACKED__END
 #elif (_COM_AZURE_DEV__BASE__DOUBLE == _COM_AZURE_DEV__BASE__IEEE_QUADRUPLE_PRECISION)
   typedef Representation::IEEEQuadruplePrecision DoubleRepresentation;
 #elif (_COM_AZURE_DEV__BASE__DOUBLE == _COM_AZURE_DEV__BASE__IBM_EXTENDED_PRECISION)
-  typedef Representation::IEEEQuadruplePrecision DoubleRepresentation;
+  typedef Representation::IBMExtendedPrecision DoubleRepresentation;
 #else
 #  error Invalid floating-point representation of type double
 #endif
@@ -421,7 +421,7 @@ _COM_AZURE_DEV__BASE__PACKED__END
 #elif (_COM_AZURE_DEV__BASE__LONG_DOUBLE == _COM_AZURE_DEV__BASE__IEEE_QUADRUPLE_PRECISION)
   typedef Representation::IEEEQuadruplePrecision LongDoubleRepresentation;
 #elif (_COM_AZURE_DEV__BASE__LONG_DOUBLE == _COM_AZURE_DEV__BASE__IBM_EXTENDED_PRECISION)
-  typedef Representation::IEEEQuadruplePrecision LongDoubleRepresentation;
+  typedef Representation::IBMExtendedPrecision LongDoubleRepresentation;
 #else
 #  error Invalid floating-point representation of type long double
 #endif
@@ -439,7 +439,7 @@ _COM_AZURE_DEV__BASE__PACKED__END
 #elif (_COM_AZURE_DEV__BASE__FLOAT128 == _COM_AZURE_DEV__BASE__IEEE_QUADRUPLE_PRECISION)
   typedef Representation::IEEEQuadruplePrecision Float128Representation;
 #elif (_COM_AZURE_DEV__BASE__FLOAT128 == _COM_AZURE_DEV__BASE__IBM_EXTENDED_PRECISION)
-  typedef Representation::IEEEQuadruplePrecision Float128Representation;
+  typedef Representation::IBMExtendedPrecision Float128Representation;
 #else
 #  error Invalid floating-point representation of type float128
 #endif
@@ -493,6 +493,8 @@ _COM_AZURE_DEV__BASE__PACKED__BEGIN
         (_value.mantissa2 >> (32 - 23 + 16 + 1));
     }
     
+    void setValue(const Representation::IBMExtendedPrecision& value) noexcept;
+
     inline void setValue(float value) noexcept
     {
       setValue(*reinterpret_cast<const FloatRepresentation*>(&value));
@@ -553,6 +555,11 @@ _COM_AZURE_DEV__BASE__PACKED__BEGIN
     }
     
     inline IEEE754SinglePrecision(const Representation::IEEEQuadruplePrecision& value) noexcept
+    {
+      setValue(value);
+    }
+
+    inline IEEE754SinglePrecision(const Representation::IBMExtendedPrecision& value) noexcept
     {
       setValue(value);
     }
@@ -660,6 +667,8 @@ _COM_AZURE_DEV__BASE__PACKED__BEGIN
     operator double() const noexcept;
     
     operator long double() const noexcept;
+
+    operator float128() const noexcept;
   } _COM_AZURE_DEV__BASE__PACKED;
 _COM_AZURE_DEV__BASE__PACKED__END
 
@@ -713,6 +722,8 @@ _COM_AZURE_DEV__BASE__PACKED__BEGIN
       value.mantissa0 = (static_cast<uint32>(_value.mantissa2) << (32 - (20 - 16))) |
         (_value.mantissa1 >> (32 - (20 - 16)));
     }
+
+    void setValue(const Representation::IBMExtendedPrecision& value) noexcept;
 
     inline void setValue(float value) noexcept
     {
@@ -768,6 +779,11 @@ _COM_AZURE_DEV__BASE__PACKED__BEGIN
       setValue(value);
     }
     
+    inline IEEE754DoublePrecision(const Representation::IBMExtendedPrecision& value) noexcept
+    {
+      setValue(value);
+    }
+
     inline IEEE754DoublePrecision(float value) noexcept
     {
       setValue(*reinterpret_cast<const FloatRepresentation*>(&value));
@@ -874,6 +890,8 @@ _COM_AZURE_DEV__BASE__PACKED__BEGIN
     operator double() const noexcept;
     
     operator long double() const noexcept;
+
+    operator float128() const noexcept;
   } _COM_AZURE_DEV__BASE__PACKED;
 _COM_AZURE_DEV__BASE__PACKED__END
 
@@ -946,7 +964,9 @@ _COM_AZURE_DEV__BASE__PACKED__BEGIN
       value.mantissa0 = (static_cast<uint32>(_value.mantissa2) << (32 - (32 - 16 - 1))) |
         (_value.mantissa1 >> (32 - (32 - 16 - 1)));
     }
-    
+
+    void setValue(const Representation::IBMExtendedPrecision& value) noexcept;
+
     inline void setValue(float value) noexcept
     {
       setValue(*reinterpret_cast<const FloatRepresentation*>(&value));
@@ -1001,6 +1021,11 @@ _COM_AZURE_DEV__BASE__PACKED__BEGIN
       setValue(value);
     }
     
+    inline IEEEExtendedDoublePrecision96Align16(const Representation::IBMExtendedPrecision& value) noexcept
+    {
+      setValue(value);
+    }
+
     inline IEEEExtendedDoublePrecision96Align16(float value) noexcept
     {
       setValue(value);
@@ -1128,6 +1153,8 @@ _COM_AZURE_DEV__BASE__PACKED__BEGIN
     operator double() const noexcept;
     
     operator long double() const noexcept;
+
+    operator float128() const noexcept;
   } _COM_AZURE_DEV__BASE__PACKED;
 _COM_AZURE_DEV__BASE__PACKED__END
 
@@ -1200,7 +1227,9 @@ _COM_AZURE_DEV__BASE__PACKED__BEGIN
       value.mantissa0 = (static_cast<uint32>(_value.mantissa2) << (32 - (32 - 16 - 1))) |
         (_value.mantissa1 >> (32 - (32 - 16 - 1)));
     }
-    
+
+    void setValue(const Representation::IBMExtendedPrecision& value) noexcept;
+
     inline void setValue(float value) noexcept
     {
       setValue(*reinterpret_cast<const FloatRepresentation*>(&value));
@@ -1254,7 +1283,12 @@ _COM_AZURE_DEV__BASE__PACKED__BEGIN
     {
       setValue(value);
     }
-    
+
+    inline IEEEExtendedDoublePrecision96(const Representation::IBMExtendedPrecision& value) noexcept
+    {
+      setValue(value);
+    }
+
     inline IEEEExtendedDoublePrecision96(float value) noexcept
     {
       setValue(value);
@@ -1382,6 +1416,8 @@ _COM_AZURE_DEV__BASE__PACKED__BEGIN
     operator double() const noexcept;
     
     operator long double() const noexcept;
+
+    operator float128() const noexcept;
   } _COM_AZURE_DEV__BASE__PACKED;
 _COM_AZURE_DEV__BASE__PACKED__END
 
@@ -1455,6 +1491,8 @@ _COM_AZURE_DEV__BASE__PACKED__BEGIN
         (_value.mantissa1 >> (32 - (32 - 16 - 1)));
     }
     
+    void setValue(const Representation::IBMExtendedPrecision& value) noexcept;
+
     inline void setValue(float value) noexcept
     {
       setValue(*reinterpret_cast<const FloatRepresentation*>(&value));
@@ -1505,6 +1543,11 @@ _COM_AZURE_DEV__BASE__PACKED__BEGIN
     }
     
     inline IEEEExtendedDoublePrecision128(const Representation::IEEEQuadruplePrecision& value) noexcept
+    {
+      setValue(value);
+    }
+    
+    inline IEEEExtendedDoublePrecision128(const Representation::IBMExtendedPrecision& value) noexcept
     {
       setValue(value);
     }
@@ -1615,6 +1658,8 @@ _COM_AZURE_DEV__BASE__PACKED__BEGIN
     operator double() const noexcept;
     
     operator long double() const noexcept;
+
+    operator float128() const noexcept;
   } _COM_AZURE_DEV__BASE__PACKED;
 _COM_AZURE_DEV__BASE__PACKED__END
 
@@ -1671,7 +1716,9 @@ _COM_AZURE_DEV__BASE__PACKED__BEGIN
     {
       this->value = value;
     }
-    
+
+    void setValue(const Representation::IBMExtendedPrecision& value) noexcept;
+
     inline void setValue(float value) noexcept
     {
       setValue(*reinterpret_cast<const FloatRepresentation*>(&value));
@@ -1725,7 +1772,12 @@ _COM_AZURE_DEV__BASE__PACKED__BEGIN
     {
       setValue(value);
     }
-    
+
+    inline IEEEQuadruplePrecision(const Representation::IBMExtendedPrecision& value) noexcept
+    {
+      setValue(value);
+    }
+
     inline IEEEQuadruplePrecision(float value) noexcept
     {
       setValue(value);
@@ -1835,6 +1887,236 @@ _COM_AZURE_DEV__BASE__PACKED__BEGIN
     operator double() const noexcept;
     
     operator long double() const noexcept;
+
+    operator float128() const noexcept;
+  } _COM_AZURE_DEV__BASE__PACKED;
+_COM_AZURE_DEV__BASE__PACKED__END
+
+  /** @short IBM extended precision conversion support. */
+_COM_AZURE_DEV__BASE__PACKED__BEGIN
+  struct IBMExtendedPrecision {
+    Representation::IBMExtendedPrecision value;
+
+#if 0
+    /** Minimum normalized positive floating-point number (2^(e_min-1)). */
+    static constexpr long double MINIMUM = 3.362103143112093506262677817321752602598079344846471240108827229808742699390728967043092706365056223e-4932L;
+    /** Maximum representable finite floating-point number (2^e_max). */
+    static constexpr long double MAXIMUM = 1.18973149535723176508575932662800713076344468709651023747267482123326135818048368690448859547261204e4932L;
+#endif
+    /**
+      The difference between 1 and the least value greater than 1 that is
+      representable in the given floating point type.
+    */
+    static constexpr long double EPSILON = 1.925929944387235853055977942584927318538101648215388195239938795566558837890625e-34L;
+    
+    inline void setValue(const Representation::IEEE754SinglePrecision& _value) noexcept
+    {
+      value.negative = _value.negative;
+      int exponent = _value.exponent - _value.BIAS + value.BIAS;
+      value.exponent = exponent; // possible overflow and underflow
+      // both representations have implied one
+      value.mantissa3 = _value.mantissa0 >> (23 - 16);
+      value.mantissa2 = static_cast<uint32>(_value.mantissa0) << (32 - (23 - 16));
+      value.mantissa1 = 0;
+      value.mantissa0 = 0;
+    }
+    
+    inline void setValue(const Representation::IEEE754DoublePrecision& _value) noexcept
+    {
+      value.negative = _value.negative;
+      int exponent = _value.exponent - _value.BIAS + value.BIAS;
+      value.exponent = exponent; // possible overflow and underflow
+      // both representations have implied one
+      value.mantissa3 = _value.mantissa1 >> (20 - 16);
+      value.mantissa2 = static_cast<uint32>(_value.mantissa1) << (32 - (20 - 16)) |
+        (_value.mantissa0 >> (32 - 20));
+      value.mantissa1 = 0;
+      value.mantissa0 = 0;
+    }
+    
+    void setValue(const Representation::IEEEExtendedDoublePrecision96& value) noexcept;
+
+    void setValue(const Representation::IEEEExtendedDoublePrecision96Align16& value) noexcept;
+
+    void setValue(const Representation::IEEEExtendedDoublePrecision128& value) noexcept;
+
+    void setValue(const Representation::IEEEQuadruplePrecision& value) noexcept;
+
+    inline void setValue(const Representation::IBMExtendedPrecision& value) noexcept
+    {
+      this->value = value;
+    }
+    
+    inline void setValue(float value) noexcept
+    {
+      setValue(*reinterpret_cast<const FloatRepresentation*>(&value));
+    }
+    
+    inline void setValue(double value) noexcept
+    {
+      setValue(*reinterpret_cast<const DoubleRepresentation*>(&value));
+    }
+    
+    inline void setValue(long double value) noexcept
+    {
+      setValue(*reinterpret_cast<const LongDoubleRepresentation*>(&value));
+    }
+
+    inline void setValue(float128 value) noexcept
+    {
+      setValue(*reinterpret_cast<const Float128Representation*>(&value));
+    }
+
+    inline IBMExtendedPrecision() noexcept
+    {
+    }
+    
+    inline IBMExtendedPrecision(const Representation::IEEE754SinglePrecision& value) noexcept
+    {
+      setValue(value);
+    }
+    
+    inline IBMExtendedPrecision(const Representation::IEEE754DoublePrecision& value) noexcept
+    {
+      setValue(value);
+    }
+    
+    inline IBMExtendedPrecision(const Representation::IEEEExtendedDoublePrecision96& value) noexcept
+    {
+      setValue(value);
+    }
+    
+    inline IBMExtendedPrecision(const Representation::IEEEExtendedDoublePrecision96Align16& value) noexcept
+    {
+      setValue(value);
+    }
+    
+    inline IBMExtendedPrecision(const Representation::IEEEExtendedDoublePrecision128& value) noexcept
+    {
+      setValue(value);
+    }
+    
+    inline IBMExtendedPrecision(const Representation::IEEEQuadruplePrecision& value) noexcept
+    {
+      setValue(value);
+    }
+    
+    inline IBMExtendedPrecision(const Representation::IBMExtendedPrecision& value) noexcept
+    {
+      setValue(value);
+    }
+
+    inline IBMExtendedPrecision(float value) noexcept
+    {
+      setValue(value);
+    }
+    
+    inline IBMExtendedPrecision(double value) noexcept
+    {
+      setValue(value);
+    }
+    
+    inline IBMExtendedPrecision(long double value) noexcept
+    {
+      setValue(value);
+    }
+
+    inline IBMExtendedPrecision(float128 value) noexcept
+    {
+      setValue(value);
+    }
+
+    /**
+      Returns true if the value is negative.
+    */
+    inline bool isNegative() const noexcept
+    {
+      return value.negative != 0;
+    }
+    
+    /**
+      Returns true if the value is an ordinary number (not infinity or NaN).
+    */
+    inline bool isOrdinary() const noexcept
+    {
+      return value.exponent != value.ALL_BITS_EXPONENT;
+    }
+    
+    /**
+      Returns true if the value is either +INFINITY or -INFINITY.
+    */
+    inline bool isInfinity() const noexcept
+    {
+      return (value.exponent == value.ALL_BITS_EXPONENT) && (value.mantissa3 == 0) &&
+        (value.mantissa2 == 0) && (value.mantissa1 == 0) &&
+        (value.mantissa0 == 0);
+    }
+    
+    /**
+      Returns true if the value is Not-a-Number (NaN).
+    */
+    inline bool isNaN() const noexcept
+    {
+      return (value.exponent == value.ALL_BITS_EXPONENT) &&
+        ((value.mantissa3 != 0) || (value.mantissa2 != 0) ||
+         (value.mantissa1 != 0) || (value.mantissa0 != 0));
+    }
+    
+    /**
+      Returns true if the value is a quite NaN. A NaN that behaves predictably
+      and does not raise exceptions in arithmetic operations is called a quiet
+      NaN.
+    */
+    inline bool isQuiteNaN() const noexcept
+    {
+      return (value.exponent == value.ALL_BITS_EXPONENT) &&
+        ((value.mantissa3 & (1 << (16 - 1))) != 0);
+    }
+    
+    /**
+      Returns true if the value is a signaling NaN. A NaN that generally raises
+      an exception when encountered as an operand of arithmetic operations is
+      called a signaling NaN.
+    */
+    inline bool isSignalingNaN() const noexcept
+    {
+      return (value.exponent == value.ALL_BITS_EXPONENT) &&
+        ((value.mantissa3 & (1 << (16 - 1))) == 0) &&
+        ((value.mantissa3 != 0) || (value.mantissa2 != 0) ||
+         (value.mantissa1 != 0) || (value.mantissa0 != 0)); // but not infitity
+    }
+
+    /** Returns the exponent. */
+    inline int getExponent() const noexcept
+    {
+      BASSERT(isOrdinary());
+      BASSERT(static_cast<int>(value.exponent - value.BIAS) <= value.MAXIMUM_EXPONENT);
+      BASSERT(static_cast<int>(value.exponent - value.BIAS) >= value.MINIMUM_EXPONENT);
+      return value.exponent - value.BIAS;
+    }
+
+    /** Sets the exponent. */
+    inline void setExponent(int exponent) noexcept
+    {
+      BASSERT(exponent <= value.MAXIMUM_EXPONENT);
+      BASSERT(exponent >= value.MINIMUM_EXPONENT);
+      value.exponent = exponent + value.BIAS;
+    }
+    
+    /** Returns true if supported exponent. Ignoring denomalized values. */
+    static inline bool isSupportedExponent(int exponent) noexcept
+    {
+      return (exponent >= Representation::IBMExtendedPrecision::MINIMUM_EXPONENT) &&
+        (exponent <= Representation::IBMExtendedPrecision::MAXIMUM_EXPONENT);
+    }
+
+    operator float() const noexcept;
+    
+    operator double() const noexcept;
+    
+    operator long double() const noexcept;
+
+    operator float128() const noexcept;
   } _COM_AZURE_DEV__BASE__PACKED;
 _COM_AZURE_DEV__BASE__PACKED__END
 
@@ -1851,7 +2133,7 @@ _COM_AZURE_DEV__BASE__PACKED__END
 #elif (_COM_AZURE_DEV__BASE__FLOAT == _COM_AZURE_DEV__BASE__IEEE_QUADRUPLE_PRECISION)
   typedef IEEEQuadruplePrecision ToFloat;
 #elif (_COM_AZURE_DEV__BASE__FLOAT == _COM_AZURE_DEV__BASE__IBM_EXTENDED_PRECISION)
-  typedef IEEEQuadruplePrecision ToFloat;
+  typedef IBMExtendedPrecision ToFloat;
 #else
 #  error Invalid floating-point representation of type float
 #endif
@@ -1869,7 +2151,7 @@ _COM_AZURE_DEV__BASE__PACKED__END
 #elif (_COM_AZURE_DEV__BASE__DOUBLE == _COM_AZURE_DEV__BASE__IEEE_QUADRUPLE_PRECISION)
   typedef IEEEQuadruplePrecision ToDouble;
 #elif (_COM_AZURE_DEV__BASE__DOUBLE == _COM_AZURE_DEV__BASE__IBM_EXTENDED_PRECISION)
-  typedef IEEEQuadruplePrecision ToDouble; // TAG: FIXME
+  typedef IBMExtendedPrecision ToDouble;
 #else
 #  error Invalid floating-point representation of type double
 #endif
@@ -1887,7 +2169,7 @@ _COM_AZURE_DEV__BASE__PACKED__END
 #elif (_COM_AZURE_DEV__BASE__LONG_DOUBLE == _COM_AZURE_DEV__BASE__IEEE_QUADRUPLE_PRECISION)
   typedef IEEEQuadruplePrecision ToLongDouble;
 #elif (_COM_AZURE_DEV__BASE__LONG_DOUBLE == _COM_AZURE_DEV__BASE__IBM_EXTENDED_PRECISION)
-  typedef IEEEQuadruplePrecision ToLongDouble; // TAG: FIXME
+  typedef IBMExtendedPrecision ToLongDouble;
 #else
 #  error Invalid floating-point representation of type long double
 #endif
@@ -1905,7 +2187,7 @@ _COM_AZURE_DEV__BASE__PACKED__END
 #elif (_COM_AZURE_DEV__BASE__FLOAT128 == _COM_AZURE_DEV__BASE__IEEE_QUADRUPLE_PRECISION)
   typedef IEEEQuadruplePrecision ToFloat128;
 #elif (_COM_AZURE_DEV__BASE__FLOAT128 == _COM_AZURE_DEV__BASE__IBM_EXTENDED_PRECISION)
-  typedef IEEEQuadruplePrecision ToFloat128; // TAG: FIXME
+  typedef IBMExtendedPrecision ToFloat128;
 #else
 #  error Invalid floating-point representation of type float128
 #endif

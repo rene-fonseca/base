@@ -150,8 +150,8 @@
 #define _COM_AZURE_DEV__BASE__S390X 17
 
 // Supported byte orders
-#define _COM_AZURE_DEV__BASE__BIG_ENDIAN 1
-#define _COM_AZURE_DEV__BASE__LITTLE_ENDIAN 2
+#define _COM_AZURE_DEV__BASE__BIG_ENDIAN 4321
+#define _COM_AZURE_DEV__BASE__LITTLE_ENDIAN 1234
 
 // Supported floating-point representations
 #define _COM_AZURE_DEV__BASE__IEEE_754_SINGLE_PRECISION 1

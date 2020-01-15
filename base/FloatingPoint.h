@@ -448,12 +448,6 @@ _COM_AZURE_DEV__BASE__PACKED__END
 _COM_AZURE_DEV__BASE__PACKED__BEGIN
   struct IEEE754SinglePrecision {
     Representation::IEEE754SinglePrecision value;
-
-    /**
-      The difference between 1 and the least value greater than 1 that is
-      representable in the given floating point type.
-    */
-    static constexpr long double EPSILON = 1.1920928955078125e-7L;
     
     inline void setValue(const Representation::IEEE754SinglePrecision& value) noexcept
     {
@@ -671,12 +665,6 @@ _COM_AZURE_DEV__BASE__PACKED__BEGIN
   struct IEEE754DoublePrecision {
     Representation::IEEE754DoublePrecision value;
 
-    /**
-      The difference between 1 and the least value greater than 1 that is
-      representable in the given floating point type.
-    */
-    static constexpr long double EPSILON = 1.1102230246251565404236316680908203125e-16L;
-    
     inline void setValue(const Representation::IEEE754SinglePrecision& _value) noexcept
     {
       value.negative = _value.negative;
@@ -886,13 +874,7 @@ _COM_AZURE_DEV__BASE__PACKED__END
 _COM_AZURE_DEV__BASE__PACKED__BEGIN
   struct IEEEExtendedDoublePrecision96Align16 {
     Representation::IEEEExtendedDoublePrecision96Align16 value;
-    
-    /**
-      The difference between 1 and the least value greater than 1 that is
-      representable in the given floating point type.
-    */
-    static constexpr long double EPSILON = 1.08420217248550443400745280086994171142578125e-19L;
-    
+
     inline void setValue(const Representation::IEEE754SinglePrecision& _value) noexcept
     {
       value.negative = _value.negative;
@@ -1143,12 +1125,6 @@ _COM_AZURE_DEV__BASE__PACKED__END
 _COM_AZURE_DEV__BASE__PACKED__BEGIN
   struct IEEEExtendedDoublePrecision96 {
     Representation::IEEEExtendedDoublePrecision96 value;
-    
-    /**
-      The difference between 1 and the least value greater than 1 that is
-      representable in the given floating point type.
-    */
-    static constexpr long double EPSILON = 1.08420217248550443400745280086994171142578125e-19L;
     
     inline void setValue(const Representation::IEEE754SinglePrecision& _value) noexcept
     {
@@ -1401,12 +1377,6 @@ _COM_AZURE_DEV__BASE__PACKED__BEGIN
   struct IEEEExtendedDoublePrecision128 {
     Representation::IEEEExtendedDoublePrecision128 value;
 
-    /**
-      The difference between 1 and the least value greater than 1 that is
-      representable in the given floating point type.
-    */
-    static constexpr long double EPSILON = 1.08420217248550443400745280086994171142578125e-19L;
-    
     inline void setValue(const Representation::IEEE754SinglePrecision& _value) noexcept
     {
       value.negative = _value.negative;
@@ -1637,12 +1607,6 @@ _COM_AZURE_DEV__BASE__PACKED__BEGIN
   struct IEEEQuadruplePrecision {
     Representation::IEEEQuadruplePrecision value;
 
-    /**
-      The difference between 1 and the least value greater than 1 that is
-      representable in the given floating point type.
-    */
-    static constexpr long double EPSILON = 1.925929944387235853055977942584927318538101648215388195239938795566558837890625e-34L;
-    
     inline void setValue(const Representation::IEEE754SinglePrecision& _value) noexcept
     {
       value.negative = _value.negative;
@@ -1859,12 +1823,6 @@ _COM_AZURE_DEV__BASE__PACKED__END
 _COM_AZURE_DEV__BASE__PACKED__BEGIN
   struct IBMExtendedPrecision {
     Representation::IBMExtendedPrecision value;
-
-    /**
-      The difference between 1 and the least value greater than 1 that is
-      representable in the given floating point type.
-    */
-    static constexpr long double EPSILON = 1.925929944387235853055977942584927318538101648215388195239938795566558837890625e-34L;
     
     inline void setValue(const Representation::IEEE754SinglePrecision& _value) noexcept
     {

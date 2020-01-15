@@ -121,6 +121,5 @@ OpenSolaris 11     | sparc    |         | Pending    |
 HP-UX 11i v2       |          |         | Pending    |
 AIX 7.2            | PowerPC  |         | Pending    |
 RHEL 8             | PowerPC  |         | Pending    |
-SUSE Linux 15      | x86_64   |         | Pending    |
 
 Docker images are available at: https://hub.docker.com/repository/docker/renefonseca/

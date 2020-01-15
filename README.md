@@ -113,7 +113,6 @@ RedHat 8.1         | x86_64   | GCC     | Ok         | 7 Dec 2019
 FreeBSD 12.1       | x86_64   | Clang   | Ok         | 7 Dec 2019
 OpenBSD 66         | x86_64   | GCC     | Ok         | 9 Dec 2019
 Raspbian 10        | ARM32    | GCC     | Ok         | 9 Dec 2019
-openSUSE 15        | x86_64   | GCC     | Ok         | 9 Dec 2019
 Emscripten         | WASM32   | LLVM    | Ok         | 20 Dec 2019
 OpenSolaris 11     | x86_64   | GCC     | Ok         | 6 Dec 2019
 OpenSolaris 11     | x86_64   | LLVM    | Pending    |

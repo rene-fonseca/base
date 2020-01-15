@@ -1,0 +1,7 @@
+FROM gcc:latest
+
+# tools
+RUN apt-get update && apt-get -y install git cmake make
+
+# libs
+RUN apt-get -y install zlib1g-dev libbz2-dev libxml2-dev libxslt-dev libssl-dev libcurl4-openssl-dev

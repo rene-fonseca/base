@@ -1,0 +1,7 @@
+FROM opensuse/tumbleweed
+
+# tools
+RUN zypper --non-interactive install git cmake make gcc gcc-c++
+
+# libs
+RUN zypper --non-interactive install zlib-devel libbz2-devel libxml2-devel libxslt-devel openssl-devel libcurl-devel

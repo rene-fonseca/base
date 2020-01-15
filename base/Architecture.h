@@ -32,11 +32,18 @@ public:
     BE = 0, /**< Big endian. */
     LE = 1, /**< Little endian. */
 #if (_COM_AZURE_DEV__BASE__BYTE_ORDER == _COM_AZURE_DEV__BASE__BIG_ENDIAN)
-    NATIVE = BE /**< Native byte order. */
+    NATIVE = BE, /**< Native byte order. */
 #elif (_COM_AZURE_DEV__BASE__BYTE_ORDER == _COM_AZURE_DEV__BASE__LITTLE_ENDIAN)
-    NATIVE = LE /**< Native byte order. */
+    NATIVE = LE, /**< Native byte order. */
 #else
-    NATIVE = 0 /**< Native byte order. */
+    NATIVE = 0, /**< Native byte order. */
+#endif
+#if (_COM_AZURE_DEV__BASE__FLOAT_WORD_ORDER == _COM_AZURE_DEV__BASE__BIG_ENDIAN)
+    FLOAT_NATIVE = BE /**< Native floating-point byte order. */
+#elif (_COM_AZURE_DEV__BASE__FLOAT_WORD_ORDER == _COM_AZURE_DEV__BASE__LITTLE_ENDIAN)
+    FLOAT_NATIVE = LE /**< Native floating-point byte order. */
+#else
+    FLOAT_NATIVE = 0 /**< Native floating-point byte order. */
 #endif
   };
 

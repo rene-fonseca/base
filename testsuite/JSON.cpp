@@ -322,7 +322,9 @@ public:
     // fout << "Example1:" << EOL << example1 << EOL << ENDL;
     fout << "Example1:" << EOL << JSON::getJSONNoFormatting(example1) << ENDL;
 
-#if (_COM_AZURE_DEV__BASE__OS != _COM_AZURE_DEV__BASE__WASI)
+#if (_COM_AZURE_DEV__BASE__OS != _COM_AZURE_DEV__BASE__WASI) && \
+    (_COM_AZURE_DEV__BASE__ARCH != _COM_AZURE_DEV__BASE__SPARC64) && \
+    (_COM_AZURE_DEV__BASE__ARCH != _COM_AZURE_DEV__BASE__S390X)
     try {
       Reference<ObjectModel::Value> example2 = JSON().parse(JSON_EXAMPLE2);
     } catch (JSONException& e) {

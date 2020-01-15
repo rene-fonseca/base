@@ -398,7 +398,9 @@ public:
     Exception e2("123");
     Exception e3("123", Type::getType<Exception>());
 
-#if (_COM_AZURE_DEV__BASE__OS != _COM_AZURE_DEV__BASE__WASI)
+#if (_COM_AZURE_DEV__BASE__OS != _COM_AZURE_DEV__BASE__WASI) && \
+    (_COM_AZURE_DEV__BASE__ARCH != _COM_AZURE_DEV__BASE__SPARC64) && \
+    (_COM_AZURE_DEV__BASE__ARCH != _COM_AZURE_DEV__BASE__S390X)
     TEST_DECLARE_HERE(A);
     TEST_DECLARE_NOT_HERE(B);
     TEST_DECLARE_HERE(C);

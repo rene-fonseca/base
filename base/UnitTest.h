@@ -664,7 +664,9 @@ public:
   }
 
 /** Require expression to throw given exception. */
-#if (_COM_AZURE_DEV__BASE__OS != _COM_AZURE_DEV__BASE__WASI)
+#if (_COM_AZURE_DEV__BASE__OS != _COM_AZURE_DEV__BASE__WASI) && \
+    (_COM_AZURE_DEV__BASE__ARCH != _COM_AZURE_DEV__BASE__SPARC64) && \
+    (_COM_AZURE_DEV__BASE__ARCH != _COM_AZURE_DEV__BASE__S390X)
 #define TEST_EXCEPTION(EXPRESSION, EXCEPTION) \
   try { \
     EXPRESSION; \

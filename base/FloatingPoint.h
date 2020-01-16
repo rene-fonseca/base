@@ -348,22 +348,22 @@ _COM_AZURE_DEV__BASE__PACKED__END
     /* Representation of IBM extended precision (128-bit) floating point type. */
 _COM_AZURE_DEV__BASE__PACKED__BEGIN
     struct IBMExtendedPrecision { // see https://gcc.gnu.org/wiki/Ieee128PowerPC // ATTENTION: there are different IBM formats!
-      static constexpr bool HAS_IMPLIED_ONE = false; // FIXME
-      static constexpr int MINIMUM_EXPONENT = -111; // FIXME
-      static constexpr int MAXIMUM_EXPONENT = 111; // FIXME
-      static constexpr int ALL_BITS_EXPONENT = (1 << 10) - 1;
-      static constexpr int BIAS = (1 << 9) - 1;
+      static constexpr bool HAS_IMPLIED_ONE = true;
+      static constexpr int MINIMUM_EXPONENT = -1021;
+      static constexpr int MAXIMUM_EXPONENT = 1024;
+      static constexpr int ALL_BITS_EXPONENT = (1 << 11) - 1;
+      static constexpr int BIAS = (1 << 10) - 1;
       static constexpr unsigned int SIGNIFICANT = 53 * 2;
 // TAG: add support for all order combinations
 #if (1 || \
      (_COM_AZURE_DEV__BASE__BYTE_ORDER == _COM_AZURE_DEV__BASE__LITTLE_ENDIAN) && \
      (_COM_AZURE_DEV__BASE__FLOAT_WORD_ORDER == _COM_AZURE_DEV__BASE__LITTLE_ENDIAN))
       uint32 mantissa0 : 32;
-      uint32 mantissa1 : 53 - 32;
-      uint32 empty0 : 64 - 53;
+      uint32 mantissa1 : 20;
+      uint32 empty0 : 12;
       uint32 mantissa2 : 32;
-      uint32 mantissa3 : 53 - 32;
-      uint32 exponent : 10;
+      uint32 mantissa3 : 20;
+      uint32 exponent : 11;
       uint32 negative : 1;
 #else
 #  error Unsupported IBM extended precision

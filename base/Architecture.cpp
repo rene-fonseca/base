@@ -62,6 +62,15 @@ Architecture::Major Architecture::getArchitecture() noexcept
 #endif
 }
 
+String Architecture::getArchitectureAsString() noexcept
+{
+  static const char* IDS[] = {
+    "Alpha", "x86", "x64", "Itanium", "MIPS", "MIPS64", "PowerPC32", "PowerPC64",
+    "S390x", "RS", "Sparc32", "Sparc64", "S390", "ARM32", "ARM64", "WASM32", "WASM64"
+  };
+  return IDS[getArchitecture()];
+}
+
 Architecture::Minor Architecture::getMinorArchitecture() noexcept
 {
   Architecture::Minor result = GENERIC;

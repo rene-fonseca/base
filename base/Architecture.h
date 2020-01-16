@@ -13,7 +13,7 @@
 
 #pragma once
 
-#include <base/features.h>
+#include <base/string/String.h>
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
@@ -39,11 +39,11 @@ public:
     NATIVE = 0, /**< Native byte order. */
 #endif
 #if (_COM_AZURE_DEV__BASE__FLOAT_WORD_ORDER == _COM_AZURE_DEV__BASE__BIG_ENDIAN)
-    FLOAT_NATIVE = BE /**< Native floating-point byte order. */
+    FLOAT_NATIVE = BE /**< Native floating-point word order. */
 #elif (_COM_AZURE_DEV__BASE__FLOAT_WORD_ORDER == _COM_AZURE_DEV__BASE__LITTLE_ENDIAN)
-    FLOAT_NATIVE = LE /**< Native floating-point byte order. */
+    FLOAT_NATIVE = LE /**< Native floating-point word order. */
 #else
-    FLOAT_NATIVE = 0 /**< Native floating-point byte order. */
+    FLOAT_NATIVE = 0 /**< Native floating-point word order. */
 #endif
   };
 
@@ -102,6 +102,22 @@ public:
   }
 
   /**
+    Returns true if the native word order is big endian.
+  */
+  static bool isFloatWordBigEndian() noexcept
+  {
+    return FLOAT_NATIVE == BE;
+  }
+
+  /**
+    Returns true if the native word order is little endian.
+  */
+  static bool isFloatWordLittleEndian() noexcept
+  {
+    return FLOAT_NATIVE == LE;
+  }
+
+  /**
     Returns the supported technologies.
   */
   static unsigned int getTechonologies() noexcept;
@@ -111,6 +127,11 @@ public:
   */
   static Major getArchitecture() noexcept;
   
+  /**
+    Returns the major architecture as a string.
+  */
+  static String getArchitectureAsString() noexcept;
+
   /**
     Returns the processor (lowest common denominator is multiple are present).
   */

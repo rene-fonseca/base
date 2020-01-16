@@ -27,6 +27,7 @@
 #include <base/net/Url.h>
 #include <base/SystemInformation.h>
 #include <base/Version.h>
+#include <base/Architecture.h>
 #include <algorithm>
 #include <memory>
 
@@ -1235,6 +1236,13 @@ String UnitTestManager::getJUnit(const String& uuid, const String& name) const
       hostname += ch;
     }
   }
+  const String arch = Architecture::getArchitectureAsString();
+  hostname += "_";
+  for (auto ch : os) {
+    if (((ch >= 'a') && (ch <= 'z')) || ((ch >= '0') && (ch <= '9'))) {
+      hostname += ch;
+    }
+  }
   if (!hostname) {
     hostname = "localhost";
   }
@@ -1256,6 +1264,8 @@ String UnitTestManager::getJUnit(const String& uuid, const String& name) const
   );
 
   xml += "<properties>\n";
+  xml += Format::subst("<property name=\"%1\" value=\"%2\"/>\n", "os", encodeXML(SystemInformation::getOS()));
+  xml += Format::subst("<property name=\"%1\" value=\"%2\"/>\n", "architecture", encodeXML(Architecture::getArchitectureAsString()));
   xml += Format::subst("<property name=\"%1\" value=\"%2\"/>\n", "configuration", encodeXML(configuration));
   xml += "</properties>\n";
 

@@ -904,6 +904,13 @@ void FloatingPoint::IEEEQuadruplePrecision::setValue(const FloatingPoint::Repres
 }
 
 #if 0
+void FloatingPoint::IEEEDoublePrecision::setValue(const FloatingPoint::Representation::IBMExtendedPrecision& _value) noexcept
+{
+  const FloatingPoint::Representation::IEEEDoublePrecision* dd =
+    reinterpret_cast<FloatingPoint::Representation::IEEEDoublePrecision*>(&_value);
+  // if (dd[0] == -0.0) && (dd[1] == 0.0) then return -0.0 else return d1 + d2
+}
+
 void FloatingPoint::IBMExtendedPrecision::setValue(const FloatingPoint::Representation::IEEEDoublePrecision& _value) noexcept
 {
   FloatingPoint::Representation::IEEEDoublePrecision* dd = reinterpret_cast<FloatingPoint::Representation::IEEEDoublePrecision*>(&value);

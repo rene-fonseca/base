@@ -388,11 +388,8 @@ void Debug::breakpoint() noexcept
     DebugBreak();
 #elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__WASI)
 #else
-#if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__GNULINUX)
+    // TAG: skip for qemu
     std::raise(SIGINT);
-#else
-    std::raise(SIGINT);
-#endif
 #endif
   }
 }

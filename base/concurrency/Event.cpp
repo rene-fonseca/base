@@ -302,6 +302,7 @@ bool Event::wait(unsigned int microseconds) const
 
   while (!Cast::pointer<EventImpl::Context*>(context)->signaled) { // wait for signal
     // concurrent envocations of signal() does not matter
+    // TAG: fails for sparc64 - setup_rt_frame: not implemented
     if (pthread_cond_timedwait(
           &Cast::pointer<EventImpl::Context*>(context)->condition,
           &Cast::pointer<EventImpl::Context*>(context)->mutex, &absoluteTime
@@ -365,7 +366,9 @@ public:
     TEST_ASSERT(e.wait(1000000));
     e.reset();
     TEST_ASSERT(!e.isSignaled());
+#if (_COM_AZURE_DEV__BASE__ARCH != _COM_AZURE_DEV__BASE__SPARC64)
     TEST_ASSERT(!e.wait(1000));
+#endif
   }
 };
 

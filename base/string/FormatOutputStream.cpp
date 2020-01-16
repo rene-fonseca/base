@@ -1599,7 +1599,7 @@ FormatOutputStream& FormatOutputStream::operator<<(double _value)
 
 FormatOutputStream& FormatOutputStream::operator<<(long double _value)
 {
-#if 0
+#if (_COM_AZURE_DEV__BASE__LONG_DOUBLE == _COM_AZURE_DEV__BASE__IBM_EXTENDED_PRECISION) // use until working
   return operator<<(static_cast<double>(_value));
 #endif
 

@@ -182,7 +182,8 @@ public:
     key.setKey(&local);
     TEST_ASSERT(key.getKey() == &local);
 
-#if (_COM_AZURE_DEV__BASE__OS != _COM_AZURE_DEV__BASE__WASI)
+#if (_COM_AZURE_DEV__BASE__OS != _COM_AZURE_DEV__BASE__WASI) && \
+    (_COM_AZURE_DEV__BASE__ARCH != _COM_AZURE_DEV__BASE__SPARC64)
     MyThreadKey thread1(this);
     thread1.start();
     Thread::nanosleep(1000 * 1000);

@@ -920,7 +920,8 @@ bool UnitTestManager::runTests(const String& pattern, bool runDevel)
 
     TestingThread thread(test);
 #if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__WASI) || \
-    (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__EMCC)
+    (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__EMCC) || \
+    (_COM_AZURE_DEV__BASE__ARCH == _COM_AZURE_DEV__BASE__SPARC64)
     thread.run();
 #else
     thread.start();

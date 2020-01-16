@@ -99,7 +99,8 @@ Urn::Urn() noexcept
 {
 }
 
-Urn::Urn(const String& urn) {
+Urn::Urn(const String& urn)
+{
   String::ReadIterator i = urn.getBeginReadIterator();
   String::ReadIterator end = urn.getEndReadIterator();
   
@@ -249,7 +250,8 @@ String Urn::getUnescapedNSS() const
   return result;
 }
 
-void Urn::setNID(const String& value) {
+void Urn::setNID(const String& value)
+{
   String::ReadIterator i = value.getBeginReadIterator();
   const String::ReadIterator end = value.getEndReadIterator();
   
@@ -273,7 +275,8 @@ void Urn::setNID(const String& value) {
   this->nid = value;
 }
 
-void Urn::setNSS(const String& value) {
+void Urn::setNSS(const String& value)
+{
   String::ReadIterator i = value.getBeginReadIterator();
   const String::ReadIterator end = value.getEndReadIterator();
   
@@ -318,11 +321,12 @@ void Urn::setNSS(const String& value) {
   this->nss = value;
 }
 
-String Urn::getUrn() const {
+String Urn::getUrn() const
+{
   return Literal("urn:") + nid + Literal(":") + nss;
 }
 
-#if 0 && defined(_COM_AZURE_DEV__BASE__TESTS) // TAG: not implemented fully
+#if defined(_COM_AZURE_DEV__BASE__TESTS) // TAG: not implemented fully
 
 class TEST_CLASS(Urn) : public UnitTest {
 public:
@@ -338,9 +342,18 @@ public:
     Urn urn2("urn:isan:0000-0000-2CEA-0000-1-0000-0000-Y");
     Urn urn3("urn:uuid:6e8bc430-9c3a-11d9-9669-0800200c9a66");
 
+    TEST_ASSERT(Urn::isUrn("urn:isbn:0451450523"));
+    TEST_ASSERT(Urn::isUrn("urn:isan:0000-0000-2CEA-0000-1-0000-0000-Y"));
+    TEST_ASSERT(Urn::isUrn("urn:uuid:6e8bc430-9c3a-11d9-9669-0800200c9a66"));
+
+#if 0
+    fout << "NID: " << urn1.getNID() << ENDL;
+    fout << "NSS: " << urn2.getNSS() << ENDL;
+    fout << "NSS: " << urn3.getNSS() << ENDL;
     TEST_ASSERT(urn1.getNID() == "isbn");
     TEST_ASSERT(urn2.getNSS() == "0000-0000-2CEA-0000-1-0000-0000-Y");
     TEST_ASSERT(urn3.getNSS() == "6e8bc430-9c3a-11d9-9669-0800200c9a66");
+#endif
   }
 };
 

@@ -855,6 +855,8 @@ public:
     TEST_ASSERT(a5.isLoopback());
     TEST_ASSERT(a2.convertToIPv6());
     TEST_ASSERT(a3.convertToIPv4());
+    
+    auto hostname = a1.getHostName();
   }
 };
 

@@ -842,7 +842,9 @@ public:
     TEST_ASSERT(name); // not supported by all platforms
 #endif
     auto times = p.getTimes();
+#if (_COM_AZURE_DEV__BASE__ARCH != _COM_AZURE_DEV__BASE__SPARC64)
     TEST_ASSERT(times.getTotal() > 0);
+#endif
     // TEST_ASSERT(p.isAlive());
     // TEST_ASSERT(parent.isAlive());
   }

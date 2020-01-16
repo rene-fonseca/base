@@ -354,17 +354,17 @@ _COM_AZURE_DEV__BASE__PACKED__BEGIN
       static constexpr int ALL_BITS_EXPONENT = (1 << 11) - 1;
       static constexpr int BIAS = (1 << 10) - 1;
       static constexpr unsigned int SIGNIFICANT = 53 * 2;
-// TAG: add support for all order combinations
 #if (1 || \
      (_COM_AZURE_DEV__BASE__BYTE_ORDER == _COM_AZURE_DEV__BASE__LITTLE_ENDIAN) && \
      (_COM_AZURE_DEV__BASE__FLOAT_WORD_ORDER == _COM_AZURE_DEV__BASE__LITTLE_ENDIAN))
       uint32 mantissa0 : 32;
       uint32 mantissa1 : 20;
-      uint32 empty0 : 12;
-      uint32 mantissa2 : 32;
-      uint32 mantissa3 : 20;
       uint32 exponent : 11;
       uint32 negative : 1;
+      uint32 mantissa2_0 : 32;
+      uint32 mantissa2_1 : 20;
+      uint32 exponent2 : 11;
+      uint32 negative2 : 1;
 #else
 #  error Unsupported IBM extended precision
 #endif // bit allocation
@@ -1826,27 +1826,16 @@ _COM_AZURE_DEV__BASE__PACKED__BEGIN
     
     inline void setValue(const Representation::IEEE754SinglePrecision& _value) noexcept
     {
-      value.negative = _value.negative;
-      int exponent = _value.exponent - _value.BIAS + value.BIAS;
-      value.exponent = exponent; // possible overflow and underflow
-      // both representations have implied one
-      value.mantissa3 = _value.mantissa0 >> (23 - 16);
-      value.mantissa2 = static_cast<uint32>(_value.mantissa0) << (32 - (23 - 16));
-      value.mantissa1 = 0;
-      value.mantissa0 = 0;
+      IEEE754DoublePrecision temp(_value);
+      setValue(temp.value);
     }
     
     inline void setValue(const Representation::IEEE754DoublePrecision& _value) noexcept
     {
-      value.negative = _value.negative;
-      int exponent = _value.exponent - _value.BIAS + value.BIAS;
-      value.exponent = exponent; // possible overflow and underflow
-      // both representations have implied one
-      value.mantissa3 = _value.mantissa1 >> (20 - 16);
-      value.mantissa2 = static_cast<uint32>(_value.mantissa1) << (32 - (20 - 16)) |
-        (_value.mantissa0 >> (32 - 20));
-      value.mantissa1 = 0;
-      value.mantissa0 = 0;
+      Representation::IEEE754DoublePrecision* dd =
+        reinterpret_cast<Representation::IEEE754DoublePrecision*>(&value);
+      dd[0] = _value;
+      clear(dd[1]);
     }
     
     void setValue(const Representation::IEEEExtendedDoublePrecision96& value) noexcept;
@@ -1962,9 +1951,7 @@ _COM_AZURE_DEV__BASE__PACKED__BEGIN
     */
     inline bool isInfinity() const noexcept
     {
-      return (value.exponent == value.ALL_BITS_EXPONENT) && (value.mantissa3 == 0) &&
-        (value.mantissa2 == 0) && (value.mantissa1 == 0) &&
-        (value.mantissa0 == 0);
+      return reinterpret_cast<const IEEE754DoublePrecision&>(value).isInfinity();
     }
     
     /**
@@ -1972,9 +1959,7 @@ _COM_AZURE_DEV__BASE__PACKED__BEGIN
     */
     inline bool isNaN() const noexcept
     {
-      return (value.exponent == value.ALL_BITS_EXPONENT) &&
-        ((value.mantissa3 != 0) || (value.mantissa2 != 0) ||
-         (value.mantissa1 != 0) || (value.mantissa0 != 0));
+      return reinterpret_cast<const IEEE754DoublePrecision&>(value).isNaN();
     }
     
     /**
@@ -1984,8 +1969,7 @@ _COM_AZURE_DEV__BASE__PACKED__BEGIN
     */
     inline bool isQuiteNaN() const noexcept
     {
-      return (value.exponent == value.ALL_BITS_EXPONENT) &&
-        ((value.mantissa3 & (1 << (16 - 1))) != 0);
+      return reinterpret_cast<const IEEE754DoublePrecision&>(value).isQuiteNaN();
     }
     
     /**
@@ -1995,10 +1979,7 @@ _COM_AZURE_DEV__BASE__PACKED__BEGIN
     */
     inline bool isSignalingNaN() const noexcept
     {
-      return (value.exponent == value.ALL_BITS_EXPONENT) &&
-        ((value.mantissa3 & (1 << (16 - 1))) == 0) &&
-        ((value.mantissa3 != 0) || (value.mantissa2 != 0) ||
-         (value.mantissa1 != 0) || (value.mantissa0 != 0)); // but not infitity
+      return reinterpret_cast<const IEEE754DoublePrecision&>(value).isSignalingNaN();
     }
 
     /** Returns the exponent. */

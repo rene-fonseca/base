@@ -15,6 +15,7 @@
 #include <base/string/ASCIITraits.h>
 #include <base/math/Math.h>
 #include <base/UnitTest.h>
+#include <base/mem/MemoryDump.h>
 #include <limits>
 #include <math.h>
 
@@ -23,6 +24,29 @@ _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 // TAG: locale specific
 // TAG: support hex format
 // TAG: support grouping of digits
+
+FormatOutputStream& operator<<(FormatOutputStream& stream, const FloatingPoint::Representation::IEEE754SinglePrecision& v)
+{
+  return stream << "{M0=" << HEX << v.mantissa0
+                << " EXTENSION=" << HEX << v.exponent
+                << " NEG=" << v.negative << "}";
+}
+
+FormatOutputStream& operator<<(FormatOutputStream& stream, const FloatingPoint::Representation::IEEE754DoublePrecision& v)
+{
+  return stream << "{M0=" << HEX << v.mantissa0
+                << " M1=" << HEX << v.mantissa1
+                << " EXTENSION=" << HEX << v.exponent
+                << " NEG=" << v.negative << "}";
+}
+
+FormatOutputStream& operator<<(FormatOutputStream& stream, const FloatingPoint::Representation::IBMExtendedPrecision& v)
+{
+  return stream << "{M0=" << HEX << v.mantissa0
+                << " M1=" << HEX << v.mantissa1
+                << " EXTENSION=" << HEX << v.exponent
+                << " NEG=" << v.negative << "}";
+}
 
 float FloatingPoint::getFloatAsHex(const String& value)
 {
@@ -879,6 +903,15 @@ void FloatingPoint::IEEEQuadruplePrecision::setValue(const FloatingPoint::Repres
   _COM_AZURE_DEV__BASE__NOT_IMPLEMENTED();
 }
 
+#if 0
+void FloatingPoint::IBMExtendedPrecision::setValue(const FloatingPoint::Representation::IEEEDoublePrecision& _value) noexcept
+{
+  FloatingPoint::Representation::IEEEDoublePrecision* dd = reinterpret_cast<FloatingPoint::Representation::IEEEDoublePrecision*>(&value);
+  dd[0] = _value;
+  clear(dd[1]);
+}
+#endif
+
 void FloatingPoint::IBMExtendedPrecision::setValue(const FloatingPoint::Representation::IEEEQuadruplePrecision& _value) noexcept
 {
   _COM_AZURE_DEV__BASE__NOT_IMPLEMENTED();
@@ -1188,8 +1221,35 @@ void analyzeFloatingPoint<FloatingPoint::Representation::IBMExtendedPrecision>(
   int& exponent,
   unsigned int& flags) noexcept
 {
+  const FloatingPoint::Representation::IEEE754DoublePrecision* dd =
+    reinterpret_cast<const FloatingPoint::Representation::IEEE754DoublePrecision*>(&value);
+  analyzeFloatingPoint<FloatingPoint::Representation::IEEE754DoublePrecision>(
+    dd[0],
+    precision,
+    mantissa,
+    exponent,
+    flags
+  );
+
+#if 0
+  unsigned int precision2 = 0;
+  unsigned int mantissa2[2] = {0, 0};
+  int exponent2 = 0;
+  unsigned int flags2 = 0;
+  analyzeFloatingPoint<FloatingPoint::Representation::IEEE754DoublePrecision>(
+    dd[1],
+    precision,
+    mantissa,
+    exponent2,
+    flags2
+  );
+#endif
+
+  // TAG: add support for double-double
+  // TAG: sum the 2 Doubles - analyze independently
+#if 0
   typedef FloatingPoint::Representation::IBMExtendedPrecision Representation;
-  
+
   unsigned int fieldExponent = value.exponent;
   mantissa[0] = value.mantissa0;
   mantissa[1] = value.mantissa1;
@@ -1230,6 +1290,7 @@ void analyzeFloatingPoint<FloatingPoint::Representation::IBMExtendedPrecision>(
       exponent = fieldExponent - Representation::BIAS;
     }
   }
+#endif
 }
 
 #if defined(_COM_AZURE_DEV__BASE__TESTS)
@@ -1284,7 +1345,7 @@ _COM_AZURE_DEV__BASE__PACKED__END
       TEST_ASSERT(data.words[3] == 0xabcdfedc);
     }
   }
-  
+
   void run() override
   {
     volatile int zero = 0;
@@ -1314,6 +1375,11 @@ _COM_AZURE_DEV__BASE__PACKED__END
     TEST_ASSERT(FloatingPoint::ToFloat(-0.0f).isNegative());
     TEST_ASSERT(FloatingPoint::ToDouble(-0.0).isNegative());
     TEST_ASSERT(FloatingPoint::ToLongDouble(-0.0l).isNegative());
+
+#if 0
+    long double a = -constant::PI_L;
+    fout << "VALUE: " << EOL << MemoryDump((const uint8*)&a, sizeof(a)) << ENDL;
+#endif
 
     TEST_ASSERT(muldiv2(constant::EULER_F, 113) == constant::EULER_F);
     TEST_ASSERT(muldiv2(constant::EULER, 113) == constant::EULER);

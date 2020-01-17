@@ -369,6 +369,10 @@ endif ()
 #  target_link_libraries(base PRIVATE ${OPENSSL_LIBRARIES})
 #endif ()
 
+if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
+  target_link_libraries(base PRIVATE atomic)
+endif ()
+
 # macOS requires all values to be less than 1024
 set_target_properties(base
   PROPERTIES

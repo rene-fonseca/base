@@ -98,7 +98,9 @@ Ubuntu 16.04       | x86_64   | GCC     | Ok         | Runs continuously on pipe
 Ubuntu             | ARM64    | GCC     | Ok         | Runs continuously on pipeline
 Ubuntu             | PowerPC  | GCC     | Ok         | Runs continuously on pipeline
 Ubuntu             | s390x    | GCC     | Ok         | Runs continuously on pipeline
-Ubuntu             | sparc64  | GCC     | Ok         | Runs continuously on pipeline
+Ubuntu             | SPARC64  | GCC     | Ok         | Runs continuously on pipeline
+Ubuntu             | PA-RISC  | GCC     | Ok         | Runs continuously on pipeline
+Ubuntu             | RISC-V64 | GCC     | Ok         | Runs continuously on pipeline
 CentOS 8           | x86_64   | GCC     | Ok         | Runs continuously on pipeline
 Fedora             | x86_64   | GCC     | Ok         | Runs continuously on pipeline
 macOS              | x86_64   | Clang   | Ok         | Runs continuously on pipeline
@@ -117,7 +119,7 @@ Emscripten         | WASM32   | LLVM    | Ok         | 20 Dec 2019
 OpenSolaris 11     | x86_64   | GCC     | Ok         | 6 Dec 2019
 OpenSolaris 11     | x86_64   | LLVM    | Pending    |
 OpenSolaris 11     | x86_64   | Studio  | Pending    |
-OpenSolaris 11     | sparc    |         | Pending    |
+OpenSolaris 11     | SPARC64  |         | Pending    |
 HP-UX 11i v2       |          |         | Pending    |
 AIX 7.2            | PowerPC  |         | Pending    |
 RHEL 8             | PowerPC  |         | Pending    |

@@ -3,3 +3,4 @@ RUN apt-get -y update
 RUN apt-get -y install git cmake make gcc-8-riscv64-linux-gnu g++-8-riscv64-linux-gnu
 RUN apt-get -y install python3 pkg-config libglib2.0-dev libpixman-1-dev
 RUN cd /tmp && git clone https://git.qemu.org/git/qemu.git && cd qemu && ./configure --static --disable-system --target-list=riscv64-linux-user && make -j 8 && make install
+RUN rm -rf /tmp/qemu

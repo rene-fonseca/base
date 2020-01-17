@@ -113,11 +113,11 @@ Ubuntu 19.04       | x86_64   | GCC     | Ok         | Runs daily on pipeline
 openSUSE           | x86_64   | GCC     | Ok         | Runs daily on pipeline
 Amazon Linux 2     | x86_64   | GCC     | Ok         | Runs daily on pipeline - using newer cmake build
 GCC 9              | x86_64   | GCC     | Ok         | Runs daily on pipeline
+Emscripten         | WASM32   | LLVM    | Ok         | Runs daily on pipeline but no testing
 RedHat 8.1         | x86_64   | GCC     | Ok         | 7 Dec 2019
 FreeBSD 12.1       | x86_64   | Clang   | Ok         | 7 Dec 2019
 OpenBSD 66         | x86_64   | GCC     | Ok         | 9 Dec 2019
 Raspbian 10        | ARM32    | GCC     | Ok         | 9 Dec 2019
-Emscripten         | WASM32   | LLVM    | Ok         | 20 Dec 2019
 OpenSolaris 11     | x86_64   | GCC     | Ok         | 6 Dec 2019
 OpenSolaris 11     | x86_64   | LLVM    | Pending    |
 OpenSolaris 11     | x86_64   | Studio  | Pending    |

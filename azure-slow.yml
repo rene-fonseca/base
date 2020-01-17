@@ -304,6 +304,7 @@ jobs:
   container: emcc
   steps:
   - script: |
+      /root/emsdk/emsdk activate latest
       source /root/emsdk/emsdk_env.sh
       echo node --experimental-wasm-threads --experimental-wasm-bulk-memory > run.sh
       chmod +x run.sh

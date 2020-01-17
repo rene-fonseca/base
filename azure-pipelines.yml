@@ -26,6 +26,10 @@ resources:
     image: renefonseca/base-ubuntu-s390x:latest
   - container: ubuntu_sparc64
     image: renefonseca/base-ubuntu-sparc64:latest
+  - container: ubuntu_riscv64
+    image: renefonseca/base-ubuntu-riscv:latest
+  - container: ubuntu_hppa32
+    image: renefonseca/base-ubuntu-hppa:latest
 
 jobs:
 - job: windows
@@ -612,5 +616,95 @@ jobs:
   - task: PublishPipelineArtifact@1
     inputs:
       artifactName: 'base-ubuntu-sparc64'
+      targetPath: 'artifacts'
+      path: $(Build.BinariesDirectory)/install
+
+- job: ubuntu_riscv64
+  pool:
+    vmImage: 'ubuntu-18.04'
+  container: ubuntu_riscv64
+  steps:
+  - script: |
+      echo "qemu-riscv64 -L /usr/riscv64-linux-gnu/ \"\$@\"" > run.sh
+      chmod +x run.sh
+      cmake $(Build.SourcesDirectory) -DCOLOR=1 -DCMAKE_BUILD_TYPE=Debug -DCMAKE_INSTALL_PREFIX=install -DCMAKE_CXX_COMPILER=/usr/bin/riscv64-linux-gnu-g++-8 -DCMAKE_C_COMPILER=/usr/bin/riscv64-linux-gnu-gcc-8 -DCTEST_INTERPRETER=$(Build.BinariesDirectory)/run.sh
+    displayName: 'Config'
+    workingDirectory: $(Build.BinariesDirectory)
+
+  - script: cmake --build . --config Debug --target install -- -j 4
+    displayName: 'Build'
+    workingDirectory: $(Build.BinariesDirectory)
+
+#  - task: CmdLine@2
+#    displayName: 'Run tests'
+#    continueOnError: true
+#    inputs:
+#      script: |
+#        ./run.sh ./testsuite/unittesting --junit junit.xml
+#        ctest -T Test
+#      workingDirectory: $(Build.BinariesDirectory)
+
+#  - task: PublishTestResults@2
+#    inputs:
+#      testResultsFormat: 'JUnit'
+#      testResultsFiles: '**/junit.xml'
+#      testRunTitle: 'Unittest results'
+#      searchFolder: '$(Build.BinariesDirectory)'
+
+#  - task: PublishTestResults@2
+#    inputs:
+#      testResultsFormat: 'cTest'
+#      testResultsFiles: '**/Test.xml'
+#      testRunTitle: 'Test results for CTest'
+#      searchFolder: '$(Build.BinariesDirectory)'
+
+  - task: PublishPipelineArtifact@1
+    inputs:
+      artifactName: 'base-ubuntu-riscv64'
+      targetPath: 'artifacts'
+      path: $(Build.BinariesDirectory)/install
+
+- job: ubuntu_hppa32
+  pool:
+    vmImage: 'ubuntu-18.04'
+  container: ubuntu_hppa32
+  steps:
+  - script: |
+      echo "qemu-hppa -L /usr/hppa-linux-gnu/ \"\$@\"" > run.sh
+      chmod +x run.sh
+      cmake $(Build.SourcesDirectory) -DCOLOR=1 -DCMAKE_BUILD_TYPE=Debug -DCMAKE_INSTALL_PREFIX=install -DCMAKE_CXX_COMPILER=/usr/bin/hppa-linux-gnu-g++-8 -DCMAKE_C_COMPILER=/usr/bin/hppa-linux-gnu-gcc-8 -DCTEST_INTERPRETER=$(Build.BinariesDirectory)/run.sh
+    displayName: 'Config'
+    workingDirectory: $(Build.BinariesDirectory)
+
+  - script: cmake --build . --config Debug --target install -- -j 4
+    displayName: 'Build'
+    workingDirectory: $(Build.BinariesDirectory)
+
+#  - task: CmdLine@2
+#    displayName: 'Run tests'
+#    continueOnError: true
+#    inputs:
+#      script: |
+#        ./run.sh ./testsuite/unittesting --junit junit.xml
+#        ctest -T Test
+#      workingDirectory: $(Build.BinariesDirectory)
+
+#  - task: PublishTestResults@2
+#    inputs:
+#      testResultsFormat: 'JUnit'
+#      testResultsFiles: '**/junit.xml'
+#      testRunTitle: 'Unittest results'
+#      searchFolder: '$(Build.BinariesDirectory)'
+
+#  - task: PublishTestResults@2
+#    inputs:
+#      testResultsFormat: 'cTest'
+#      testResultsFiles: '**/Test.xml'
+#      testRunTitle: 'Test results for CTest'
+#      searchFolder: '$(Build.BinariesDirectory)'
+
+  - task: PublishPipelineArtifact@1
+    inputs:
+      artifactName: 'base-ubuntu-hppa32'
       targetPath: 'artifacts'
       path: $(Build.BinariesDirectory)/install

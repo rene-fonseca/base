@@ -69,13 +69,14 @@ public:
     MIPS64, /**< MIPS 64-bit. */
     POWER_PC_32, /**< Power PC 32-bit. */
     POWER_PC_64, /**< Power PC 64-bit. */
-    S390X, /** IBM subsystem 64-bit. */
+    S390X, /**< IBM subsystem 64-bit. */
     RS, /**< RS. */
     SPARC32, /**< Sparc 32-bit. */
     SPARC64, /**< Sparc 64-bit. */
     S390, /**< S390. */
-    PA_RISC32, /** PA-RISC 32-bit. */
-    PA_RISC64, /** PA-RISC 64-bit. */
+    PA_RISC32, /**< PA-RISC 32-bit. */
+    PA_RISC64, /**< PA-RISC 64-bit. */
+    RISCV, /**< RISC-V. */
     ARM32, /**< ARM 32-bit. */
     ARM64, /**< ARM 64-bit. */
     WASM32, /**< WebAssembly 32-bit. */

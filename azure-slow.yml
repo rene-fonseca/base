@@ -312,11 +312,14 @@ jobs:
     displayName: 'Config'
     workingDirectory: $(Build.BinariesDirectory)
 
-  - script: emmake cmake --build . --config Debug --target install -- -j 4
+  - script: |
+      source /root/emsdk/emsdk_env.sh
+      emmake cmake --build . --config Debug --target install -- -j 4
     displayName: 'Build'
     workingDirectory: $(Build.BinariesDirectory)
 
   - script: |
+      source /root/emsdk/emsdk_env.sh
       ./run.sh ./testsuite/unittesting.js --junit junit.xml
       ctest -T Test
     displayName: 'Run tests'

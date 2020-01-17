@@ -36,6 +36,9 @@ private:
   unsigned short port = 0;
 public:
 
+  /** Returns the end point for the given string. */
+  static InetEndPoint getEndPoint(const String& endpoint);
+  
   /**
     Initializes default end point.
   */
@@ -63,8 +66,7 @@ public:
     @param address The address.
     @param service The service (e.g. 'http' or '80').
   */
-  InetEndPoint(
-    const InetAddress& address, const String& service);
+  InetEndPoint(const InetAddress& address, const String& service);
 
   /**
     Initializes end point from string representations of host and service.
@@ -72,8 +74,7 @@ public:
     @param host The host (e.g. '127.0.0.1' or 'www.google.com').
     @param service The service (e.g. 'http' or '80').
   */
-  InetEndPoint(
-    const String& host, const String& service);
+  InetEndPoint(const String& host, const String& service);
 
   /**
     Initialize object from other object.

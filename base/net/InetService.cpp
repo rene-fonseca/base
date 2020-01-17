@@ -137,4 +137,25 @@ FormatOutputStream& operator<<(FormatOutputStream& stream, const InetService& va
   return stream << value.name << ' ' << value.port << '/' << value.protocol;
 }
 
+#if 0
+#if defined(_COM_AZURE_DEV__BASE__TESTS)
+
+class TEST_CLASS(InetService) : public UnitTest {
+public:
+
+  TEST_PRIORITY(100);
+  TEST_PROJECT("base/net");
+  TEST_IMPACT(PRIVACY);
+
+  void run() override
+  {
+    InetService service1();
+  }
+};
+
+TEST_REGISTER(InetService);
+
+#endif
+#endif
+
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

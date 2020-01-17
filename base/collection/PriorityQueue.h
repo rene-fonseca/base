@@ -56,6 +56,14 @@ public:
   {
   }
 
+  /** Initializes list from initializer list. */
+  PriorityQueue(std::initializer_list<Pair<Priority, Value> > values)
+  {
+    for (const auto& value : values) {
+      push(value.getFirst(), value.getSecond());
+    }
+  }
+
   /**
     Initializes a priority queue from other priority queue.
   */
@@ -71,6 +79,24 @@ public:
     : elements(moveObject(move.elements)),
       size(moveObject(move.size))
   {
+    move.size = 0;
+  }
+
+  /** Assign container. */
+  PriorityQueue& operator=(const PriorityQueue& assign)
+  {
+    elements = assign.elements;
+    size = assign.size;
+    return *this;
+  }
+
+  /** Assign container. */
+  PriorityQueue& operator=(PriorityQueue&& assign)
+  {
+    elements = moveObject(assign.elements);
+    size = assign.size;
+    assign.size = 0;
+    return *this;
   }
 
   /**
@@ -109,8 +135,27 @@ public:
     }
     ++size; // always increment 'cause we always push a value onto some queue
   }
+  
+  /**
+    Pushes the specified value onto the priority queue.
 
-  // TAG: add move
+    @param priority The priority of the value.
+    @param value The value to be added to the queue.
+  */
+  void push(const Priority& priority, Value&& value)
+  {
+    auto node = elements.find(Node(priority));
+    if (node) { // does the priority already exist in the tree
+      auto& nodeValue = node->getValue();
+      Queue<Value>& queue = nodeValue.getValue();
+      queue.push(moveObject(value));
+    } else {
+      Queue<Value> queue;
+      queue.push(moveObject(value));
+      elements.add(Node(priority, queue));
+    }
+    ++size; // always increment 'cause we always push a value onto some queue
+  }
 
   /**
     Removes the element at the front of the priority queue. Raises
@@ -134,6 +179,15 @@ public:
     }
     --size; // always decrement 'cause we always pop a value from some queue
     return result;
+  }
+  
+  /**
+    Removes all the keys from this set.
+  */
+  void removeAll() noexcept
+  {
+    elements.removeAll();
+    size = 0;
   }
 };
 

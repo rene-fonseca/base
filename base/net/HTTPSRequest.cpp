@@ -776,7 +776,7 @@ HTTPSRequest::~HTTPSRequest()
   close();
 }
 
-#if 0 && defined(_COM_AZURE_DEV__BASE__TESTS)
+#if defined(_COM_AZURE_DEV__BASE__TESTS)
 
 class TEST_CLASS(HTTPSRequest) : public UnitTest {
 public:

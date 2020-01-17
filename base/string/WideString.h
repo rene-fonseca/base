@@ -15,11 +15,9 @@
 
 #include <base/Object.h>
 #include <base/OutOfRange.h>
-#include <base/OutOfDomain.h>
 #include <base/mem/Reference.h>
 #include <base/mem/ReferenceCountedAllocator.h>
 #include <base/string/FormatOutputStream.h>
-#include <base/string/MultibyteException.h>
 #include <base/string/StringException.h>
 #include <base/mem/AllocatorEnumeration.h>
 #include <base/Primitives.h>

@@ -17,6 +17,19 @@
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
+InetEndPoint InetEndPoint::getEndPoint(const String& endpoint)
+{
+  auto index = endpoint.indexOf(':');
+  String address = endpoint.substring(0, index);
+  String port = endpoint.substring(index + 1);
+
+  Integer integer(port);
+  if ((integer < 0) || (integer > 0xffff)) {
+    _throw ServiceNotFound("Port is out of range.");
+  }
+  return InetEndPoint(InetAddress(address), integer);
+}
+
 InetEndPoint::InetEndPoint() noexcept
 {
 }
@@ -48,8 +61,7 @@ InetEndPoint::InetEndPoint(
   }
 }
 
-InetEndPoint::InetEndPoint(
-  const String& host, const String& service)
+InetEndPoint::InetEndPoint(const String& host, const String& service)
   : address(host)
 {
   try {
@@ -92,8 +104,7 @@ void InetEndPoint::setPort(unsigned short value) noexcept
   port = value;
 }
 
-FormatOutputStream& operator<<(
-  FormatOutputStream& stream, const InetEndPoint& value)
+FormatOutputStream& operator<<(FormatOutputStream& stream, const InetEndPoint& value)
 {
   FormatOutputStream::PushContext push(stream);
   const InetAddress::Family family = value.getAddress().getFamily();
@@ -108,23 +119,24 @@ FormatOutputStream& operator<<(
   return stream;
 }
 
-#if 0 && defined(_COM_AZURE_DEV__BASE__TESTS)
+#if defined(_COM_AZURE_DEV__BASE__TESTS)
 
-class TEST_CLASS(InetAddress) : public UnitTest {
+class TEST_CLASS(InetEndPoint) : public UnitTest {
 public:
 
   TEST_PRIORITY(100);
   TEST_PROJECT("base/net");
   TEST_IMPACT(PRIVACY);
+  TEST_EXTERNAL();
 
   void run() override
   {
-    InetEndPoint e1("127.0.0.1:80");
-    InetEndPoint e2("127.0.0.1:9999");
+    InetEndPoint e1 = InetEndPoint::getEndPoint("127.0.0.1:80");
+    InetEndPoint e2 = InetEndPoint::getEndPoint("127.0.0.1:9999");
   }
 };
 
-TEST_REGISTER(InetAddress);
+TEST_REGISTER(InetEndPoint);
 
 #endif
 

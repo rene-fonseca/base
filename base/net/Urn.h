@@ -120,6 +120,14 @@ public:
     Returns the URN in escaped format.
   */
   String getUrn() const;
+
+  /**
+    Returns the URN in escaped format.
+  */
+  inline operator String() const
+  {
+    return getUrn();
+  }
 };
 
 /**

@@ -2091,7 +2091,7 @@ Socket::~Socket()
 {
 }
 
-#if 0 && defined(_COM_AZURE_DEV__BASE__TESTS)
+#if defined(_COM_AZURE_DEV__BASE__TESTS)
 
 class TEST_CLASS(Socket) : public UnitTest {
 public:
@@ -2103,7 +2103,7 @@ public:
 
   void run() override
   {
-    String host = "google.com";
+    String host = "www.google.com";
     InetAddress address;
     try {
       address = InetAddress::getAddressByName(host); // the address of the remote host
@@ -2112,10 +2112,12 @@ public:
     }
 
     Socket s1;
-    s1.connect(address, 7);
+#if 0
+    s1.connect(address, 80);
     InetAddress localAddress = s1.getLocalAddress();
     unsigned short localPort = s1.getLocalPort();
-    fout << localAddress << ":" << localPort << ENDL;
+    // fout << localAddress << ":" << localPort << ENDL;
+#endif
     s1.close();
   }
 };

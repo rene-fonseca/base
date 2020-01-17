@@ -1447,7 +1447,7 @@ AsynchronousWriteOperation File::write(
 File::~File() {
 }
 
-#if 0 && defined(_COM_AZURE_DEV__BASE__TESTS)
+#if defined(_COM_AZURE_DEV__BASE__TESTS)
 
 class TEST_CLASS(File) : public UnitTest {
 public:
@@ -1459,8 +1459,18 @@ public:
 
   void run() override
   {
-    File f1("123.txt", File::READ, 0);
+    File f1("test.txt", File::WRITE, File::CREATE);
+    const char* text = "Hello, World!\n";
+    f1.write(reinterpret_cast<const uint8*>(text), getNullTerminatedLength(text));
     f1.close();
+
+#if 0 // TAG: fix end of file handling
+    File f2("test.txt", File::READ, 0);
+    uint8 buffer[128];
+    unsigned int bytesRead = f2.read(buffer, getArraySize(buffer));
+    f2.close();
+    TEST_ASSERT(bytesRead == getNullTerminatedLength(text));
+#endif
   }
 };
 

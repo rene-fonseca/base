@@ -175,7 +175,7 @@ public:
   // String getString(unsigned int address, unsigned int length);
 
   // TAG: handle imports
-  // TAG: get stack trace
+  // TAG: StackTrace getStackTrace()
   // TAG: call async to start thread
   // TAG: add template for automatic conversion
 

@@ -93,8 +93,10 @@
 #  define _COM_AZURE_DEV__BASE__ARCH _COM_AZURE_DEV__BASE__PARISC64
 #elif defined(__hppa__)
 #  define _COM_AZURE_DEV__BASE__ARCH _COM_AZURE_DEV__BASE__PARISC32
+#elif defined(__riscv) && defined(__LP64__)
+#  define _COM_AZURE_DEV__BASE__ARCH _COM_AZURE_DEV__BASE__RISCV64
 #elif defined(__riscv)
-#  define _COM_AZURE_DEV__BASE__ARCH _COM_AZURE_DEV__BASE__RISCV
+#  define _COM_AZURE_DEV__BASE__ARCH _COM_AZURE_DEV__BASE__RISCV32
 #elif defined(__mips__)
 #  define _COM_AZURE_DEV__BASE__ARCH _COM_AZURE_DEV__BASE__MIPS
 #elif defined(__amd64__)

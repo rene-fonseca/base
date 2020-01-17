@@ -47,8 +47,10 @@ Architecture::Major Architecture::getArchitecture() noexcept
   return PA_RISC64;
 #elif (_COM_AZURE_DEV__BASE__ARCH == _COM_AZURE_DEV__BASE__PARISC32)
   return PA_RISC32;
-#elif (_COM_AZURE_DEV__BASE__ARCH == _COM_AZURE_DEV__BASE__RISCV)
-  return RISCV;
+#elif (_COM_AZURE_DEV__BASE__ARCH == _COM_AZURE_DEV__BASE__RISCV64)
+  return RISCV64;
+#elif (_COM_AZURE_DEV__BASE__ARCH == _COM_AZURE_DEV__BASE__RISCV32)
+  return RISCV32;
 #elif (_COM_AZURE_DEV__BASE__ARCH == _COM_AZURE_DEV__BASE__RS)
   return RS;
 #elif (_COM_AZURE_DEV__BASE__ARCH == _COM_AZURE_DEV__BASE__X86_64)
@@ -72,7 +74,7 @@ String Architecture::getArchitectureAsString() noexcept
 {
   static const char* IDS[] = {
     "Alpha", "x86", "x86-64", "Itanium", "MIPS32", "MIPS64", "PowerPC32", "PowerPC64",
-    "S390x", "PA-RISC32", "PA-RISC", "RISC-V", "RS", "SPARC32", "SPARC64", "S390", "ARM32" /*AArch32*/,
+    "S390x", "PA-RISC32", "PA-RISC", "RISC-V32", "RISC-V64", "RS", "SPARC32", "SPARC64", "S390", "ARM32" /*AArch32*/,
     "ARM64" /*AArch64*/, "WASM32", "WASM64"
   };
   return IDS[getArchitecture()];

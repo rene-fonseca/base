@@ -4,3 +4,4 @@ FROM ubuntu:latest
 RUN apt-get update && apt-get -y install git cmake make python
 
 RUN cd && git clone https://github.com/emscripten-core/emsdk.git && cd emsdk && ./emsdk install latest && ./emsdk activate latest
+RUN chmod g+rx /root

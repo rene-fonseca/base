@@ -304,7 +304,7 @@ jobs:
   container: emcc
   steps:
   - script: |
-      source ~/emsdk/emsdk_env.sh
+      source /root/emsdk/emsdk_env.sh
       echo node --experimental-wasm-threads --experimental-wasm-bulk-memory > run.sh
       chmod +x run.sh
       emconfigure cmake $(Build.SourcesDirectory) -DCMAKE_BUILD_TYPE=Debug -DCMAKE_INSTALL_PREFIX=install -DCTEST_INTERPRETER=$(Build.SourcesDirectory)/run.sh

@@ -1,0 +1,5 @@
+FROM ubuntu:latest
+RUN apt-get -y update
+RUN apt-get -y install git cmake make gcc-8-hppa-linux-gnu g++-8-hppa-linux-gnu
+# RUN apt-get -y install zlib1g-dev libbz2-dev libxml2-dev libxslt-dev libssl-dev libcurl4-openssl-dev
+RUN apt-get -y install qemu-user-static qemu-user

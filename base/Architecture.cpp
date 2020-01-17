@@ -43,6 +43,10 @@ Architecture::Major Architecture::getArchitecture() noexcept
   return POWER_PC_64;
 #elif (_COM_AZURE_DEV__BASE__ARCH == _COM_AZURE_DEV__BASE__S390X)
   return S390X;
+#elif (_COM_AZURE_DEV__BASE__ARCH == _COM_AZURE_DEV__BASE__PARISC64)
+  return PA_RISC64;
+#elif (_COM_AZURE_DEV__BASE__ARCH == _COM_AZURE_DEV__BASE__PARISC32)
+  return PA_RISC32;
 #elif (_COM_AZURE_DEV__BASE__ARCH == _COM_AZURE_DEV__BASE__RS)
   return RS;
 #elif (_COM_AZURE_DEV__BASE__ARCH == _COM_AZURE_DEV__BASE__X86_64)

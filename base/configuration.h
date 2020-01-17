@@ -89,6 +89,10 @@
 #  define _COM_AZURE_DEV__BASE__ARCH _COM_AZURE_DEV__BASE__POWERPC32
 #elif defined(__s390x__)
 #  define _COM_AZURE_DEV__BASE__ARCH _COM_AZURE_DEV__BASE__S390X
+#elif defined(__hppa__) && defined(__arch64__)
+#  define _COM_AZURE_DEV__BASE__ARCH _COM_AZURE_DEV__BASE__PARISC64
+#elif defined(__hppa__)
+#  define _COM_AZURE_DEV__BASE__ARCH _COM_AZURE_DEV__BASE__PARISC32
 #elif defined(__mips__)
 #  define _COM_AZURE_DEV__BASE__ARCH _COM_AZURE_DEV__BASE__MIPS
 #elif defined(__amd64__)

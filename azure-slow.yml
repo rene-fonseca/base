@@ -30,6 +30,8 @@ resources:
     image: renefonseca/base-amazonlinux:latest
   - container: gcc
     image: renefonseca/base-gcc:latest
+  - container: emcc
+    image: renefonseca/base-emcc:latest
   - container: centos
     image: renefonseca/base-centos8:latest
   - container: raspberrypi4
@@ -277,6 +279,44 @@ jobs:
 
   - script: |
       ./testsuite/unittesting --junit junit.xml
+      ctest -T Test
+    displayName: 'Run tests'
+    continueOnError: true
+    workingDirectory: $(Build.BinariesDirectory)
+
+  - task: PublishTestResults@2
+    inputs:
+      testResultsFormat: 'JUnit'
+      testResultsFiles: '**/junit.xml'
+      testRunTitle: 'Unittest results'
+      searchFolder: '$(Build.BinariesDirectory)'
+
+  - task: PublishTestResults@2
+    inputs:
+      testResultsFormat: 'cTest'
+      testResultsFiles: '**/Test.xml'
+      testRunTitle: 'Test results for CTest'
+      searchFolder: '$(Build.BinariesDirectory)'
+
+- job: emcc
+  pool:
+    vmImage: 'ubuntu-18.04'
+  container: emcc
+  steps:
+  - script: |
+      source ~/emsdk/emsdk_env.sh
+      echo node --experimental-wasm-threads --experimental-wasm-bulk-memory > run.sh
+      chmod +x run.sh
+      emconfigure cmake $(Build.SourcesDirectory) -DCMAKE_BUILD_TYPE=Debug -DCMAKE_INSTALL_PREFIX=install -DCTEST_INTERPRETER=$(Build.SourcesDirectory)/run.sh
+    displayName: 'Config'
+    workingDirectory: $(Build.BinariesDirectory)
+
+  - script: emmake cmake --build . --config Debug --target install -- -j 4
+    displayName: 'Build'
+    workingDirectory: $(Build.BinariesDirectory)
+
+  - script: |
+      ./run.sh ./testsuite/unittesting.js --junit junit.xml
       ctest -T Test
     displayName: 'Run tests'
     continueOnError: true

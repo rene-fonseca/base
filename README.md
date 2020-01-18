@@ -123,7 +123,7 @@ OpenSolaris 11     | x86_64   | GCC     | Ok         | 6 Dec 2019
 OpenSolaris 11     | x86_64   | LLVM    | Pending    |
 OpenSolaris 11     | x86_64   | Studio  | Pending    |
 OpenSolaris 11     | SPARC64  |         | Pending    |
-HP-UX 11i v2       |          |         | Pending    |
+HP-UX 11i v2       | PA-RISC  |         | Pending    |
 AIX 7.2            | PowerPC  |         | Pending    |
 RHEL 8             | PowerPC  |         | Pending    |
 

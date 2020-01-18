@@ -38,8 +38,9 @@ Reference API documentation is hosted at https://rene-fonseca.github.io/base-api
 
 ## Dependencies
 
-ZLib, BZip2, XMLSOFT XML, XMLSOFT XSLT, OpenSSL, Curl, OpenGL, and X11 are optional packages. For Ubuntu install:
+ZLib, BZip2, XMLSOFT XML, XMLSOFT XSLT, OpenSSL, Curl, OpenGL, and X11 are optional packages.
 
+For Ubuntu install:
 ```shell
 sudo apt-get install zlib1g-dev
 sudo apt-get install libbz2-dev
@@ -48,6 +49,17 @@ sudo apt-get install libxslt-dev
 sudo apt-get install libssl-dev
 sudo apt-get install libcurl4-openssl-dev
 sudo apt-get install libx11-dev
+```
+
+For FreeBSD run:
+```shell
+portsnap fetch
+portsnap extract
+portsnap update
+cd /usr/ports/textproc/libxml2
+make install
+cd /usr/ports/textproc/libxslt
+make install
 ```
 
 Other optional dependencies:

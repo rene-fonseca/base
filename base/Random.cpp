@@ -39,7 +39,7 @@ RandomInputStream& Random::getRandomInputStream() noexcept
 
 void Random::fill(uint8* dest, const uint8* end) noexcept
 {
-  auto size = _impl::getRandomInputStream().read(dest, static_cast<unsigned int>(end - dest), false);
+  _impl::getRandomInputStream().read(dest, static_cast<unsigned int>(end - dest), false);
 }
 
 #define RANDOM_IMPL(TYPE) \
@@ -60,7 +60,7 @@ RANDOM_IMPL(long long);
 template<>
 int128 Random::random<int128>() noexcept {
   int128 result;
-  auto size = _impl::getRandomInputStream().read(reinterpret_cast<uint8*>(&result), sizeof(result), false);
+  _impl::getRandomInputStream().read(reinterpret_cast<uint8*>(&result), sizeof(result), false);
   return result;
 }
 
@@ -74,7 +74,7 @@ RANDOM_IMPL(unsigned long long);
 template<>
 uint128 Random::random<uint128>() noexcept {
   uint128 result;
-  auto size = _impl::getRandomInputStream().read(reinterpret_cast<uint8*>(&result), sizeof(result), false);
+  _impl::getRandomInputStream().read(reinterpret_cast<uint8*>(&result), sizeof(result), false);
   return result;
 }
 

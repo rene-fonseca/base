@@ -318,9 +318,9 @@ jobs:
     displayName: 'Build'
     workingDirectory: $(Build.BinariesDirectory)
 
+#      ./run.sh ./testsuite/unittesting.js --junit junit.xml
   - script: |
       source /root/emsdk/emsdk_env.sh
-#      ./run.sh ./testsuite/unittesting.js --junit junit.xml
       ctest -T Test -VV
     displayName: 'Run tests'
     continueOnError: true

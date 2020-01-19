@@ -57,9 +57,11 @@ portsnap fetch
 portsnap extract
 portsnap update
 cd /usr/ports/textproc/libxml2
-make install
+make install clean
 cd /usr/ports/textproc/libxslt
-make install
+make install clean
+cd /usr/ports/ftp/curl
+make install clean
 ```
 
 Other optional dependencies:

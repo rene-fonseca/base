@@ -28,7 +28,7 @@ _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 FormatOutputStream& operator<<(FormatOutputStream& stream, const FloatingPoint::Representation::IEEE754SinglePrecision& v)
 {
   return stream << "{M0=" << HEX << v.mantissa0
-                << " EXTENSION=" << HEX << v.exponent
+                << " EXPONENT=" << HEX << v.exponent
                 << " NEG=" << v.negative << "}";
 }
 
@@ -36,7 +36,41 @@ FormatOutputStream& operator<<(FormatOutputStream& stream, const FloatingPoint::
 {
   return stream << "{M0=" << HEX << v.mantissa0
                 << " M1=" << HEX << v.mantissa1
-                << " EXTENSION=" << HEX << v.exponent
+                << " EXPONENT=" << HEX << v.exponent
+                << " NEG=" << v.negative << "}";
+}
+
+FormatOutputStream& operator<<(FormatOutputStream& stream, const FloatingPoint::Representation::IEEEExtendedDoublePrecision96& v)
+{
+  return stream << "{M0=" << HEX << v.mantissa0
+                << " M1=" << HEX << v.mantissa1
+                << " EXPONENT=" << HEX << v.exponent
+                << " NEG=" << v.negative << "}";
+}
+
+FormatOutputStream& operator<<(FormatOutputStream& stream, const FloatingPoint::Representation::IEEEExtendedDoublePrecision96Align16& v)
+{
+  return stream << "{M0=" << HEX << v.mantissa0
+                << " M1=" << HEX << v.mantissa1
+                << " EXPONENT=" << HEX << v.exponent
+                << " NEG=" << v.negative << "}";
+}
+
+FormatOutputStream& operator<<(FormatOutputStream& stream, const FloatingPoint::Representation::IEEEExtendedDoublePrecision128& v)
+{
+  return stream << "{M0=" << HEX << v.mantissa0
+                << " M1=" << HEX << v.mantissa1
+                << " EXPONENT=" << HEX << v.exponent
+                << " NEG=" << v.negative << "}";
+}
+
+FormatOutputStream& operator<<(FormatOutputStream& stream, const FloatingPoint::Representation::IEEEQuadruplePrecision& v)
+{
+  return stream << "{M0=" << HEX << v.mantissa0
+                << " M1=" << HEX << v.mantissa1
+                << " M2=" << HEX << v.mantissa2
+                << " M3=" << HEX << v.mantissa3
+                << " EXPONENT=" << HEX << v.exponent
                 << " NEG=" << v.negative << "}";
 }
 
@@ -45,7 +79,11 @@ FormatOutputStream& operator<<(FormatOutputStream& stream, const FloatingPoint::
   return stream << "{M0=" << HEX << v.mantissa0
                 << " M1=" << HEX << v.mantissa1
                 << " EXTENSION=" << HEX << v.exponent
-                << " NEG=" << v.negative << "}";
+                << " NEG=" << v.negative
+                << " M2_0=" << HEX << v.mantissa2_0
+                << " M2_1=" << HEX << v.mantissa2_1
+                << " EXTENSION2=" << HEX << v.exponent2
+                << " NEG2=" << v.negative2 << "}";
 }
 
 float FloatingPoint::getFloatAsHex(const String& value)
@@ -217,7 +255,8 @@ FloatingPoint::IEEE754SinglePrecision::IEEE754SinglePrecision(
   bool negative,
   const uint8* mantissa,
   unsigned int size,
-  int exponent) {
+  int exponent)
+{
   static const int EXPLICIT_SIGNIFICANT =
     value.HAS_IMPLIED_ONE ? (value.SIGNIFICANT - 1) : value.SIGNIFICANT;
   value.negative = negative;

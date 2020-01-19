@@ -467,13 +467,14 @@ void Profiler::Task::pushTask(unsigned int taskId) noexcept
     return;
   }
   auto tlc = Thread::getLocalContext();
-  if (tlc) {
-    BASSERT(taskId < tlc->profiling.tasks);
-    BASSERT(tlc->profiling.tasks > 0);
-    --(tlc->profiling.tasks); // pop stack
-    if (tlc->profiling.suspended != 0) {
-      return;
-    }
+  if (!tlc) {
+    return;
+  }
+  BASSERT(taskId < tlc->profiling.tasks);
+  BASSERT(tlc->profiling.tasks > 0);
+  --(tlc->profiling.tasks); // pop stack
+  if (tlc->profiling.suspended != 0) {
+    return;
   }
 
   // use EVENT_COMPLETE to combine BEGIN and END events

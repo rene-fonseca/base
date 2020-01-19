@@ -827,7 +827,7 @@ public:
 //       }
       
       setCapture((event == Mouse::PRESSED) && (button == Mouse::LEFT));
-      unsigned int modifiers = getModifiers();
+      // unsigned int modifiers = getModifiers();
       switch (button) {
       case Mouse::LEFT:
         mouseLeftButtonPressed = event == Mouse::PRESSED;

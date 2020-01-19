@@ -314,8 +314,12 @@ namespace {
 
 const char* Debug::getRootPath() noexcept
 {
+#if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__EMCC)
+  return "/";
+#else
   static String root = getRootPathImpl();
   return root.native();
+#endif
 }
 
 const char* Debug::getRelativePath(const char* path) noexcept

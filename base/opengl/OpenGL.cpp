@@ -862,7 +862,7 @@ Vector3D<double> OpenGL::project(const Vector3D<double>& object,
                                  const Matrix4x4<double>& projection,
                                  const GLint viewport[4])
 {
-  Quaternion<double> in(object.getX(), object.getY(), object.getZ(), 1);
+  Quaternion<double> in(object, 1);
   Quaternion<double> out = model * in;
   in = projection * out;
   bassert(in.getW() != 0, OpenGLException(Type::getType<OpenGL>()));

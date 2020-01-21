@@ -150,7 +150,7 @@ unsigned int Profiler::ProfilerImpl::buildStackFrame(const uint32 sf)
           stackFrames.ensureCapacity(stackFrames.getSize() * 2);
         }
         stackFrames.append(Frame(demangled, path, parent));
-        auto previous = parent;
+        // auto previous = parent;
         parent = static_cast<unsigned int>(stackFrames.getSize()); // next frame uses this as parent
         stackFramesBySymbol.add(current, parent - 1); // index of frame
 
@@ -662,13 +662,18 @@ void Profiler::pushThreadMetaImpl(ReferenceCountedObject* name/*, unsigned int p
 Profiler::ReferenceCounters::ReferenceCounters() noexcept
 {
 #if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__MACOS)
+  this->memoryUsed = profiler::memoryUsed; // usage.ru_maxrss; // usage.ru_ixrss + usage.ru_idrss + usage.ru_isrss;
+  this->objects = profiler::objects;
+
   // TAG: temp test
   struct rusage usage;
   int status = getrusage(RUSAGE_SELF, &usage);
+  if (status == 0) {
+    this->processingTime = static_cast<uint64>(usage.ru_utime.tv_sec + usage.ru_stime.tv_sec) * 1000000 + static_cast<uint64>(usage.ru_utime.tv_usec + usage.ru_stime.tv_usec); // Process::getCurrentProcess().getTimes();
+  } else {
+    this->processingTime = 0;
+  }
   
-  this->memoryUsed = profiler::memoryUsed; // usage.ru_maxrss; // usage.ru_ixrss + usage.ru_idrss + usage.ru_isrss;
-  this->objects = profiler::objects;
-  this->processingTime = static_cast<uint64>(usage.ru_utime.tv_sec + usage.ru_stime.tv_sec) * 1000000 + static_cast<uint64>(usage.ru_utime.tv_usec + usage.ru_stime.tv_usec); // Process::getCurrentProcess().getTimes();
   // this->io = usage.ru_msgrcv + usage.ru_msgsnd;
   // this->operations = usage.ru_inblock + usage.ru_oublock;
 #endif

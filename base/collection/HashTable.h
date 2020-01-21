@@ -431,7 +431,7 @@ public:
     /**
       Returns true if the specified value is a key in the hash table.
     */
-    inline bool hasKey(const Key& key) noexcept
+    bool hasKey(const Key& key) noexcept
     {
       const unsigned long hash = getHash(key);
       Node** bucket = getBuckets() + (hash & mask);
@@ -463,7 +463,7 @@ public:
     /**
       Returns true if the specified value is a key in the hash table.
     */
-    inline bool hasKey(const Key& key) const noexcept
+    bool hasKey(const Key& key) const noexcept
     {
       const unsigned long hash = getHash(key);
       const Node* const* bucket = getBuckets() + (hash & mask);
@@ -482,7 +482,7 @@ public:
 
       @return nullptr is key doesn't exist.
     */
-    inline Value* find(const Key& key)
+    Value* find(const Key& key)
     {
       const unsigned long hash = getHash(key);
       Node** bucket = getBuckets() + (hash & mask);
@@ -501,7 +501,7 @@ public:
 
       @return nullptr is key doesn't exist.
     */
-    inline const Value* find(const Key& key) const
+    const Value* find(const Key& key) const
     {
       const unsigned long hash = getHash(key);
       const Node* const* bucket = getBuckets() + (hash & mask);
@@ -516,7 +516,7 @@ public:
     /**
       Returns the value associated with the specified key.
     */
-    inline Value& getValue(const Key& key)
+    Value& getValue(const Key& key)
     {
       const unsigned long hash = getHash(key);
       Node** bucket = getBuckets() + (hash & mask);
@@ -551,7 +551,7 @@ public:
     /**
       Returns the value associated with the specified key.
     */
-    inline const Value& getValue(const Key& key) const
+    const Value& getValue(const Key& key) const
     {
       const unsigned long hash = getHash(key);
       const Node* const* bucket = getBuckets() + (hash & mask);
@@ -569,7 +569,7 @@ public:
     /**
       Adds the element to the table.
     */
-    inline void add(const Key& key, const Value& value)
+    void add(const Key& key, const Value& value)
     {
       const unsigned long hash = getHash(key);
       Node** buckets = getBuckets() + (hash & mask);
@@ -580,7 +580,9 @@ public:
           parent = child;
           child = child->getNext();
         }
-        if (!child) { // if value not already in list
+        if (child) { // found key
+          child->getValue() = value;
+        } else { // if value not already in list
           child = new Node(hash, key, value);
           if (parent) {
             parent->setNext(child);
@@ -591,7 +593,7 @@ public:
         *buckets = new Node(hash, key, value);
         ++size;
       }
-      if (size > capacity) { // TAG: find simple rules that works
+      if (size > capacity) { // what is the best criteria
         grow();
       }
     }
@@ -951,7 +953,7 @@ public:
   /**
     Adds the key and value to the table.
   */
-  inline void add(const Key& key, const Value& value)
+  void add(const Key& key, const Value& value)
   {
     copyOnWrite();
     impl->add(key, value);
@@ -960,7 +962,7 @@ public:
   /**
     Adds the key and value to the table.
   */
-  inline void add(const Key& key, Value&& value)
+  void add(const Key& key, Value&& value)
   {
     copyOnWrite();
     impl->add(key, moveObject(value));
@@ -969,7 +971,7 @@ public:
   /**
     Adds the key and value to the table.
   */
-  inline void add(Key&& key, Value&& value)
+  void add(Key&& key, Value&& value)
   {
     copyOnWrite();
     impl->add(moveObject(key), moveObject(value));
@@ -978,7 +980,7 @@ public:
   /**
     Adds the key and value to the table.
   */
-  inline void add(const HashTableAssociation& node)
+  void add(const HashTableAssociation& node)
   {
     copyOnWrite();
     impl->add(node.getKey(), node.getValue());
@@ -987,7 +989,7 @@ public:
   /**
     Adds the key and value to the table.
   */
-  inline void add(HashTableAssociation&& node)
+  void add(HashTableAssociation&& node)
   {
     copyOnWrite();
     impl->add(node.getKey(), moveObject(node.getValue()));
@@ -997,7 +999,7 @@ public:
     Removes the specified key and its associated value from this hash table.
     Raises InvalidKey if the key doesn't exist in this hash table.
   */
-  inline void remove(const Key& key)
+  void remove(const Key& key)
   {
     copyOnWrite();
     impl->remove(key);

@@ -14,6 +14,7 @@
 #pragma once
 
 #include <base/string/FormatOutputStream.h>
+#include <base/math/Vector3D.h>
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
@@ -43,6 +44,17 @@ public:
     Initializes quaternion as origin (0, 0, 0, 0).
   */
   inline Quaternion() noexcept {
+  }
+
+  /**
+    Initializes quaternion from the specified coordinates.
+
+    @param xyz The desired X, Y, Z coordinates.
+    @param w The desired W coordinate.
+  */
+  inline Quaternion(const Vector3D<TYPE>& xyz, const TYPE& _w) noexcept
+    : x(xyz.getX()), y(xyz.getY()), z(xyz.getZ()), w(_w)
+  {
   }
 
   /**

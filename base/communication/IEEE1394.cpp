@@ -54,6 +54,12 @@ String IEEE1394::getAsString(unsigned short nodeId) noexcept
 
 IEEE1394::IEEE1394()
 {
+  for (unsigned int i = 0; i < 63; ++i) {
+    for (unsigned int j = 0; j < 64; ++j) {
+      speedMap[i][j] = S100;
+    }
+  }
+  
   ieee1394impl = IEEE1394Impl::getDefault();
 }
 

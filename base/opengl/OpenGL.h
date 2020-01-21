@@ -3099,11 +3099,17 @@ public:
   */
   void perspective(GLdouble fovy, GLdouble aspectRatio, GLdouble zNear, GLdouble zFar) noexcept;
   
-  Vector3D<double> project(Vector3D<double> object, const Matrix4x4<double> model, const Matrix4x4<double> projection, const GLint viewport[4]);
+  Vector3D<double> project(const Vector3D<double>& object,
+                           const Matrix4x4<double>& model,
+                           const Matrix4x4<double>& projection,
+                           const GLint viewport[4]);
   
   void pickMatrix(GLdouble x, GLdouble y, GLdouble width, GLdouble height, GLint viewport[4]) noexcept;
   
-  Vector3D<double> unProject(const Vector3D<double>& window, const Matrix4x4<double>& model, const Matrix4x4<double>& projection, const GLint viewport[4]);
+  Vector3D<double> unProject(const Vector3D<double>& window,
+                             const Matrix4x4<double>& model,
+                             const Matrix4x4<double>& projection,
+                             const GLint viewport[4]);
 
   /**
     Draws a box.

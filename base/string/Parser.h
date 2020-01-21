@@ -116,7 +116,7 @@ public:
     if (src == end) {
       _throw ParseException("Unexpected end reached.");
     }
-    char result = *src;
+    // char result = *src;
     ++src;
   }
 

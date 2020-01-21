@@ -181,14 +181,14 @@ public:
     socket.close();
     
     unsigned int packetsLost = packetsTransmitted - packetsReceived;
-    double meanTime = totalTime/packetsReceived;
+    double meanTime = (packetsReceived > 0) ? totalTime/packetsReceived : 0;
     
     fout << EOL
          << "--- statistics for " << name << " ---" << EOL
          << "Packets transmitted: " << packetsTransmitted << EOL
          << "Packets received: " << packetsReceived << EOL
          << "Packets lost: " << packetsLost << ' '
-         << '(' << static_cast<int>(100*packetsLost/packetsTransmitted) << '%' << ')' << EOL
+         << '(' << static_cast<int>((packetsTransmitted > 0) ? (100*packetsLost/packetsTransmitted) : 0) << '%' << ')' << EOL
          << "Time minimum/maximum/mean: "
          << getTimeAsString(minimumTime) << '/'
          << getTimeAsString(maximumTime) << '/'

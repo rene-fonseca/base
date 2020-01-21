@@ -1232,24 +1232,24 @@ public:
       const MyOpenGLContext::Format* format = enu.next();
       if (dumpFormats) {
         fout << indent(2) << "Format: " << i << EOL
-             << indent(4) << "color indexed: " << ((format->flags & MyOpenGLContext::COLOR_INDEXED) != 0) << EOL
-             << indent(4) << "rgb: " << ((format->flags & MyOpenGLContext::RGB) != 0) << EOL
-             << indent(4) << "double buffered: " << ((format->flags & MyOpenGLContext::DOUBLE_BUFFERED) != 0) << EOL
-             << indent(4) << "stereoscopic: " << ((format->flags & MyOpenGLContext::STEREO) != 0) << EOL
-             << indent(4) << "generic: " << ((format->flags & MyOpenGLContext::GENERIC) != 0) << EOL
-             << indent(4) << "color bits: " << format->colorBits << EOL
-             << indent(6) << "red bits: " << format->redBits << EOL
-             << indent(6) << "green bits: " << format->greenBits << EOL
-             << indent(6) << "blue bits: " << format->blueBits << EOL
-             << indent(6) << "alpha bits: " << format->alphaBits << EOL
-             << indent(4) << "accumulator bits: " << format->accumulatorBits << EOL
-             << indent(6) << "accumulator red bits: " << format->accumulatorRedBits << EOL
-             << indent(6) << "accumulator green bits: " << format->accumulatorGreenBits << EOL
-             << indent(6) << "accumulator blue bits: " << format->accumulatorBlueBits << EOL
-             << indent(6) << "accumulator alpha bits: " << format->accumulatorAlphaBits << EOL
-             << indent(4) << "depthBits: " << format->depthBits << EOL
-             << indent(4) << "stencilBits: " << format->stencilBits << EOL
-             << indent(4) << "auxBuffers: " << format->auxBuffers << EOL
+             << indent(4) << "Color indexed: " << ((format->flags & MyOpenGLContext::COLOR_INDEXED) != 0) << EOL
+             << indent(4) << "RGB: " << ((format->flags & MyOpenGLContext::RGB) != 0) << EOL
+             << indent(4) << "Double buffered: " << ((format->flags & MyOpenGLContext::DOUBLE_BUFFERED) != 0) << EOL
+             << indent(4) << "Stereoscopic: " << ((format->flags & MyOpenGLContext::STEREO) != 0) << EOL
+             << indent(4) << "Generic: " << ((format->flags & MyOpenGLContext::GENERIC) != 0) << EOL
+             << indent(4) << "Color bits: " << format->colorBits << EOL
+             << indent(6) << "Red bits: " << format->redBits << EOL
+             << indent(6) << "Green bits: " << format->greenBits << EOL
+             << indent(6) << "Blue bits: " << format->blueBits << EOL
+             << indent(6) << "Alpha bits: " << format->alphaBits << EOL
+             << indent(4) << "Accumulator bits: " << format->accumulatorBits << EOL
+             << indent(6) << "Accumulator red bits: " << format->accumulatorRedBits << EOL
+             << indent(6) << "Accumulator green bits: " << format->accumulatorGreenBits << EOL
+             << indent(6) << "Accumulator blue bits: " << format->accumulatorBlueBits << EOL
+             << indent(6) << "Accumulator alpha bits: " << format->accumulatorAlphaBits << EOL
+             << indent(4) << "DepthBits: " << format->depthBits << EOL
+             << indent(4) << "StencilBits: " << format->stencilBits << EOL
+             << indent(4) << "AuxBuffers: " << format->auxBuffers << EOL
              << ENDL;
       }
       if ((formatId == -1) || (format->alphaBits && (!desiredFormat.alphaBits))) {
@@ -1257,12 +1257,12 @@ public:
         desiredFormat = *format;
       }
     }
-    if (dumpFormats && !gotFormat) {
-      fout << indent(2) << "No formats found" << ENDL;
+    if (!gotFormat && dumpFormats) {
+      fout << indent(2) << "No formats found." << ENDL;
     }
 
     if (formatId == -1) {
-      ferr << "Format not available" << ENDL;
+      ferr << "Format not available." << ENDL;
       setExitCode(EXIT_CODE_ERROR);
       return;
     }
@@ -1275,13 +1275,13 @@ public:
     );
 
     fout << "OpenGL context information: " << EOL
-         << indent(2) << "client vendor: " << myOpenGLContext.getGLClientVendor() << EOL
-         << indent(2) << "client release: " << myOpenGLContext.getGLClientRelease() << EOL
-         << indent(2) << "client extensions: " << myOpenGLContext.getGLClientExtensions() << EOL
-         << indent(2) << "server vendor: " << myOpenGLContext.getGLServerVendor() << EOL
-         << indent(2) << "server release: " << myOpenGLContext.getGLServerRelease() << EOL
-         << indent(2) << "server extensions: " << myOpenGLContext.getGLServerExtensions() << EOL
-         << indent(2) << "direct context: " << myOpenGLContext.isDirect() << EOL
+         << indent(2) << "Client vendor: " << myOpenGLContext.getGLClientVendor() << EOL
+         << indent(2) << "Client release: " << myOpenGLContext.getGLClientRelease() << EOL
+         << indent(2) << "Client extensions: " << myOpenGLContext.getGLClientExtensions() << EOL
+         << indent(2) << "Server vendor: " << myOpenGLContext.getGLServerVendor() << EOL
+         << indent(2) << "Server release: " << myOpenGLContext.getGLServerRelease() << EOL
+         << indent(2) << "Server extensions: " << myOpenGLContext.getGLServerExtensions() << EOL
+         << indent(2) << "Direct context: " << myOpenGLContext.isDirect() << EOL
          << ENDL;
 
     myOpenGLContext.show();

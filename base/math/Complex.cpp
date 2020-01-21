@@ -99,7 +99,9 @@ public:
     c = -a;
     c = a.conjugate();
     double modulus = a.getModulus();
+    TEST_ASSERT(modulus >= 0);
     double angle = a.getAngle();
+    TEST_ASSERT(angle < (3 * constant::PI));
     auto p = a.getPolar();
     TEST_ASSERT(!(a == b));
     TEST_ASSERT(a != b);

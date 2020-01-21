@@ -350,7 +350,7 @@ protected:
   /** The physical id of the current cycle master. */
   unsigned int cycleMasterId = 0;
   /** The maximum speeds of the nodes. */
-  Speed speedMap[63][64] = { S100 };
+  Speed speedMap[63][64];
   /** Mask specifying the nodes with the link layer activated. */
   uint64 linkActiveNodes = 0;
   /** Mask specifying the contenders. */

@@ -86,7 +86,7 @@ public:
 
     fout << "Sending datagram..." << ENDL;
     static const Literal sendBuffer = "DATAGRAM FROM CLIENT";
-    unsigned int bytesSent = socket.sendTo(
+    /*unsigned int bytesSent =*/ socket.sendTo(
       Cast::pointer<const uint8*>(sendBuffer.getValue()),
       sendBuffer.getLength(),
       address,

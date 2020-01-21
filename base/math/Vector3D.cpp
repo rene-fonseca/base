@@ -41,8 +41,9 @@ public:
     d.getXYAngle();
     d.negate();
     auto _dot = dot(a, b);
+    TEST_ASSERT(_dot != 0);
     auto e = cross(a, b);
-    a.isZero();
+    TEST_ASSERT(!a.isZero());
     auto f = -a;
   }
 };

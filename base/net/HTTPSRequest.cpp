@@ -32,6 +32,40 @@
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
+#if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__MACOS)
+namespace {
+
+  template<typename TYPE>
+  class CFHandle {
+  private:
+
+    TYPE handle = nullptr;
+  public:
+  
+    inline CFHandle() noexcept
+    {
+    }
+
+    inline CFHandle(TYPE _handle) noexcept
+      : handle(_handle)
+    {
+    }
+  
+    inline operator TYPE() noexcept
+    {
+      return handle;
+    }
+  
+    inline ~CFHandle() noexcept
+    {
+      if (handle) {
+        CFRelease(handle);
+      }
+    }
+  };
+}
+#endif
+
 const char* HTTPSRequest::METHOD_GET = "GET";
 const char* HTTPSRequest::METHOD_POST = "POST";
 const char* HTTPSRequest::METHOD_PUT = "PUT";
@@ -51,9 +85,9 @@ public:
   HINTERNET hConnect = nullptr;
   HINTERNET hRequest = nullptr; // HttpOpenRequest
 #elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__MACOS)
-  CFHTTPMessageRef cfHttpReq = nullptr;
-  CFReadStreamRef stream = nullptr;
-  CFHTTPMessageRef response = nullptr;
+  CFHandle<CFHTTPMessageRef> cfHttpReq;
+  CFHandle<CFReadStreamRef> stream;
+  CFHandle<CFHTTPMessageRef> response;
   uint8 pendingByte = 0;
 #endif
 
@@ -73,18 +107,9 @@ public:
       hInternet = nullptr;
     }
 #elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__MACOS)
-    if (response) {
-      CFRelease(response);
-      response = nullptr;
-    }
-    if (stream) {
-      CFRelease(stream);
-      stream = nullptr;
-    }
-    if (cfHttpReq) {
-      CFRelease(cfHttpReq);
-      cfHttpReq = nullptr;
-    }
+    response = nullptr;
+    stream = nullptr;
+    cfHttpReq = nullptr;
 #endif
   }
 
@@ -100,7 +125,7 @@ namespace {
   class MACString {
   private:
   
-    CFStringRef s = nullptr;
+    CFHandle<CFStringRef> s;
   public:
     
     inline MACString(const String& _s)
@@ -139,12 +164,6 @@ namespace {
       }
       return result;
     }
-    
-    inline ~MACString()
-    {
-      CFRelease(s);
-      s = nullptr;
-    }
   };
 #endif
 }
@@ -176,7 +195,7 @@ bool HTTPSRequest::open(const String& _method, const String& _url, const String&
 
   if (url.getPort()) {
     try {
-      const unsigned int port = UnsignedInteger::parse(url.getPort(), UnsignedInteger::DEC);
+      port = UnsignedInteger::parse(url.getPort(), UnsignedInteger::DEC);
     } catch (InvalidFormat&) {
       _throw HTTPException("Failed to open HTTP request due to invalid port.");
     }
@@ -238,7 +257,7 @@ bool HTTPSRequest::open(const String& _method, const String& _url, const String&
   url.setUser(String());
   url.setPassword(String());
   MACString url2(url.getUrl());
-  CFURLRef cfUrl = CFURLCreateWithString(kCFAllocatorDefault, url2, NULL);
+  CFHandle<CFURLRef> cfUrl = CFURLCreateWithString(kCFAllocatorDefault, url2, NULL);
   MACString requestMethod(_method);
   
   // TAG: need option for version of HTTP
@@ -246,7 +265,6 @@ bool HTTPSRequest::open(const String& _method, const String& _url, const String&
   // kCFHTTPVersion1_1
   // kCFHTTPVersion2_0
   CFHTTPMessageRef cfHttpReq = CFHTTPMessageCreateRequest(kCFAllocatorDefault, requestMethod, cfUrl, kCFHTTPVersion1_1);
-  CFRelease(cfUrl);
   cfUrl = nullptr;
 
   if (!cfHttpReq) {
@@ -362,9 +380,8 @@ void HTTPSRequest::send(const String& _body)
 #elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__MACOS)
   // TAG: for long request body CFReadStreamCreateForStreamedHTTPRequest - use PullInterface
   MACString body(_body);
-  CFDataRef bodyData = CFStringCreateExternalRepresentation(kCFAllocatorDefault, body, kCFStringEncodingUTF8, 0);
+  CFHandle<CFDataRef> bodyData = CFStringCreateExternalRepresentation(kCFAllocatorDefault, body, kCFStringEncodingUTF8, 0);
   CFHTTPMessageSetBody(_handle->cfHttpReq, bodyData);
-  CFRelease(bodyData);
   bodyData = nullptr;
 
 #if 0
@@ -375,7 +392,7 @@ void HTTPSRequest::send(const String& _body)
   
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wdeprecated-declarations"
-  CFReadStreamRef stream = CFReadStreamCreateForHTTPRequest(kCFAllocatorDefault, _handle->cfHttpReq);
+  CFHandle<CFReadStreamRef> stream = CFReadStreamCreateForHTTPRequest(kCFAllocatorDefault, _handle->cfHttpReq);
   if (CFReadStreamSetProperty(stream, kCFStreamPropertyHTTPShouldAutoredirect, kCFBooleanTrue) == false) {
     // now what
   }
@@ -395,8 +412,6 @@ void HTTPSRequest::send(const String& _body)
   // kCFStreamPropertyHTTPResponseHeader is not available until all data has been read
   CFHTTPMessageRef response = (CFHTTPMessageRef)CFReadStreamCopyProperty(stream, kCFStreamPropertyHTTPResponseHeader);
   if (!response) {
-    CFRelease(stream);
-    stream = nullptr;
     _throw HTTPException("Failed to send HTTP request.");
   }
 #pragma clang diagnostic pop
@@ -404,12 +419,9 @@ void HTTPSRequest::send(const String& _body)
   const CFIndex code = CFHTTPMessageGetResponseStatusCode(response);
   _handle->status = static_cast<unsigned int>(code);
   
-  CFStringRef statusLine = CFHTTPMessageCopyResponseStatusLine(response);
+  CFHandle<CFStringRef> statusLine = CFHTTPMessageCopyResponseStatusLine(response);
   _handle->statusText = MACString::getString(statusLine);
-  if (statusLine) {
-    CFRelease(statusLine);
-    statusLine = nullptr;
-  }
+  statusLine = nullptr;
 
   _handle->response = response;
 
@@ -592,7 +604,7 @@ void HTTPSRequest::getResponse(PushInterface* pi)
   while (true) {
     CFIndex bytesRead = CFReadStreamRead(_handle->stream, buffer + offset, buffer.size() - offset);
     if (bytesRead < 0) {
-      CFStreamStatus status = CFReadStreamGetStatus(_handle->stream);
+      /*CFStreamStatus status =*/ CFReadStreamGetStatus(_handle->stream);
       CFReadStreamClose(_handle->stream);
       _throw IOException("Failed to read response.");
     }
@@ -676,13 +688,8 @@ String HTTPSRequest::getResponseHeader(const String& name)
 #elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__MACOS)
   BASSERT(_handle->response);
   MACString _name(name);
-  CFStringRef _text = CFHTTPMessageCopyHeaderFieldValue(_handle->response, _name);
+  CFHandle<CFStringRef> _text = CFHTTPMessageCopyHeaderFieldValue(_handle->response, _name);
   result = MACString::getString(_text);
-  if (_text) {
-    CFRelease(_text);
-    _text = nullptr;
-  }
-  
 #else
   BASSERT(!"Not implemented");
 #endif
@@ -725,9 +732,9 @@ String HTTPSRequest::getResponseHeader()
     break;
   }
 #elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__MACOS)
-
-  CFDataRef data = CFHTTPMessageCopySerializedMessage(_handle->response);
-  CFDictionaryRef _dict = CFHTTPMessageCopyAllHeaderFields(_handle->response);
+  
+  CFHandle<CFDataRef> data = CFHTTPMessageCopySerializedMessage(_handle->response);
+  CFHandle<CFDictionaryRef> _dict = CFHTTPMessageCopyAllHeaderFields(_handle->response);
   auto count = CFDictionaryGetCount(_dict);
   PrimitiveStackArray<CFTypeRef> keys(count);
   PrimitiveStackArray<CFTypeRef> values(count);
@@ -741,11 +748,6 @@ String HTTPSRequest::getResponseHeader()
     String value(value2 ? value2 : "<BAD>");
     result += key + ": " + value + "\r\n";
   }
-  if (_dict) {
-    CFRelease(_dict);
-    _dict = nullptr;
-  }
-  
 #else
   BASSERT(!"Not implemented");
 #endif

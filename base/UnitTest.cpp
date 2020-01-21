@@ -535,7 +535,7 @@ Reference<UnitTest::Run> UnitTest::runImpl()
 String encodeXML(const String& text)
 {
   String result;
-  result.ensureCapacity(text * 2);
+  result.ensureCapacity(text.getLength() * 2);
   const uint8* src = text.getBytes();
   const uint8* end = src + text.getLength();
   while (src != end) {

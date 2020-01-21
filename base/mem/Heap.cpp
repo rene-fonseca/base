@@ -152,7 +152,7 @@ void* HeapImpl::tryResize(void* heap, MemorySize size)
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   if (true) {
     if (size) {
-      const MeorySize heapOffset = reinterpret_cast<MemorySize>(heap);
+      const MemorySize heapOffset = reinterpret_cast<MemorySize>(heap);
       void* result = static_cast<void*>(
         ::HeapReAlloc(internal::specific::processHeap, HEAP_REALLOC_IN_PLACE_ONLY, heap, size));
       if (result) {

@@ -57,7 +57,7 @@ bool SelectFolderDialog::execute()
     // BOOL SHGetPathFromIDList(LPCITEMIDLIST pidl, LPTSTR pszPath);
     folder = buffer;
     LPMALLOC malloc = nullptr;
-    HRESULT r = ::CoGetMalloc(1, &malloc);
+    HRESULT hr = ::CoGetMalloc(1, &malloc);
     if (INLINE_ASSERT(SUCCEEDED(hr))) {
       malloc->Free(result);
     }

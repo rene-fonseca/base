@@ -432,7 +432,9 @@ public:
           parent = child;
           child = child->getNext();
         }
-        if (!child) { // if value not already in list
+        if (child) { // found value
+          child->getValue() = value; // force assignment to allow association
+        } else { // if value not already in list
           child = new Node(hash, value);
           if (parent) {
             parent->setNext(child);
@@ -443,7 +445,7 @@ public:
         *buckets = new Node(hash, value);
         ++size;
       }
-      if (size > capacity) { // TAG: find simple rules that works
+      if (size > capacity) { // what is the best criteria
         grow();
       }
     }

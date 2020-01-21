@@ -173,7 +173,9 @@ namespace native {
         &major,
         &minor
       );
-      version = minimum(major, 255) << 16 | minimum(minor, 255) << 8;
+      if (result == True) {
+        version = minimum(major, 255) << 16 | minimum(minor, 255) << 8;
+      }
 
       if (version >= 0x010100) {
         for (unsigned int i = 0; i < getArraySize(GLX_FUNCTIONS_1_1); ++i) {

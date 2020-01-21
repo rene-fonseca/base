@@ -908,7 +908,7 @@ bool FileSystem::isLink(const String& path)
 _COM_AZURE_DEV__BASE__PACKED__BEGIN
     struct ShortcutHeader {
       LittleEndian<uint32> identifier; // 'L'
-      unsigned char guid[16];
+      unsigned char guid[16] = {0};
       LittleEndian<uint32> flags;
       LittleEndian<uint32> attributes;
       LittleEndian<uint64> time1;
@@ -1807,7 +1807,8 @@ unsigned long FileSystem::getVariable(const String& path, Variable variable) {
     "/dev/tty"
 */
 
-String FileSystem::getFolder(Folder folder) noexcept {
+String FileSystem::getFolder(Folder folder) noexcept
+{
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   switch (folder) {
   case FileSystem::ROOT:
@@ -1816,7 +1817,10 @@ String FileSystem::getFolder(Folder folder) noexcept {
       buffer[0] = L'\0';
       buffer[1] = L'\0';
       buffer[2] = L'\0';
-      ::GetWindowsDirectory(buffer, getArraySize(buffer));
+      UINT length = ::GetWindowsDirectory(buffer, getArraySize(buffer));
+      if (length == 0) {
+        return String();
+      }
       return String(buffer);
     }
   case FileSystem::DEVICES:
@@ -1825,7 +1829,10 @@ String FileSystem::getFolder(Folder folder) noexcept {
   default:
     {
       wchar buffer[MAX_PATH + 1];
-      ::GetWindowsDirectory(buffer, getArraySize(buffer));
+      UINT length = ::GetWindowsDirectory(buffer, getArraySize(buffer));
+      if (length == 0) {
+        return String();
+      }
       return String(buffer) + MESSAGE("\\temp");
     }
   }

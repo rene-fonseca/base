@@ -652,7 +652,8 @@ void OpenGL::fixMissing(Descriptor* descriptor, unsigned int size) noexcept {
   }
 }
 
-OpenGL::OpenGL(unsigned int latest) {
+OpenGL::OpenGL(unsigned int latest)
+{
   // TAG: determine supported
   opengl::spinLock.exclusiveLock();
   specification = 0x000000;

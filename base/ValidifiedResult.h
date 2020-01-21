@@ -33,7 +33,7 @@ class ValidifiedResult : public AutomationObject {
 private:
 
   /** The value. */
-  TYPE value;
+  TYPE value= TYPE();
   /** The validity. */
   bool valid = false;
 public:
@@ -109,7 +109,7 @@ public:
   /**
     Returns the value if valid and otherwise the given defaultValue.
   */
-  inline const TYPE& getValue(const TYPE& defaultValue) const
+  inline const TYPE& getValue(const TYPE& defaultValue) const noexcept
   {
     return valid ? value : defaultValue;
   }

@@ -350,7 +350,7 @@ unsigned int IEEE1394::getVendorId(unsigned short node)
   );
   
   const uint32 rootDirectoryOffset =
-    IEEE1394::CONFIGURATION_ROM + ((crc >> 24) + 1) * sizeof(Quadlet);
+    IEEE1394::CONFIGURATION_ROM + ((crc >> 24) + 1) * static_cast<uint32>(sizeof(Quadlet));
   uint32 quadlet = getQuadlet(node, rootDirectoryOffset);
   unsigned int numberOfEntries = quadlet >> 16;
   for (unsigned int entry = 1; entry <= numberOfEntries; ++entry) { // find mandatory Vendor_ID entry
@@ -390,7 +390,7 @@ String IEEE1394::getDescription(unsigned short node)
     bindCause(IEEE1394Exception("No general configuration ROM.", this), NO_GENERAL_CONFIGURATION_ROM)
   );
   const uint32 rootDirectoryOffset =
-    IEEE1394::CONFIGURATION_ROM + ((crc >> 24) + 1) * sizeof(Quadlet);
+    IEEE1394::CONFIGURATION_ROM + ((crc >> 24) + 1) * static_cast<uint32>(sizeof(Quadlet));
   
   // read root directory entries
   uint32 quadlet = 0;
@@ -438,7 +438,7 @@ String IEEE1394::getKeywords(unsigned short node) {
     bindCause(IEEE1394Exception("No general configuration ROM.", this), NO_GENERAL_CONFIGURATION_ROM)
   );
   const uint32 rootDirectoryOffset =
-    IEEE1394::CONFIGURATION_ROM + ((crc >> 24) + 1) * sizeof(Quadlet);
+    IEEE1394::CONFIGURATION_ROM + ((crc >> 24) + 1) * static_cast<uint32>(sizeof(Quadlet));
   
   // read root directory entries
   uint32 quadlet = 0;

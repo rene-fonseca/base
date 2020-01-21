@@ -635,6 +635,10 @@ public:
   /** Constructs buffer of given size. */
   PrimitiveStackArray(MemorySize size = 0) // we could use STACK_SIZE - but makes it harder to refactor later
   {
+#if defined(_COM_AZURE_DEV__BASE__ANY_DEBUG)
+    // do not initialize buffer for release build
+    clear(buffer);
+#endif
     BASSERT(size <= STACK_SIZE);
     if (size > 0) {
       if (size > STACK_SIZE) {

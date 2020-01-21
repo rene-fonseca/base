@@ -2136,7 +2136,7 @@ public:
   static inline uint8 addCarry(uint8& value, const uint8 addend) noexcept
   {
     // use intrinsic
-    constexpr uint8 MAXIMUM = (static_cast<uint8>(0) - 1);
+    constexpr uint8 MAXIMUM = 0xffU;
     if (value > (MAXIMUM - addend)) {
       value += addend;
       return 1;
@@ -2149,7 +2149,7 @@ public:
   static inline uint16 addCarry(uint16& value, const uint16 addend) noexcept
   {
     // use intrinsic
-    constexpr uint16 MAXIMUM = (static_cast<uint16>(0) - 1);
+    constexpr uint16 MAXIMUM = 0xffffU;
     if (value > (MAXIMUM - addend)) {
       value += addend;
       return 1;
@@ -2162,7 +2162,7 @@ public:
   static inline uint32 addCarry(uint32& value, const uint32 addend) noexcept
   {
     // use intrinsic
-    constexpr uint32 MAXIMUM = (static_cast<uint32>(0) - 1);
+    constexpr uint32 MAXIMUM = 0xffffffffU;
     if (value > (MAXIMUM - addend)) {
       value += addend;
       return 1;

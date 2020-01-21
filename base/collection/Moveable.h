@@ -29,7 +29,7 @@ public:
     MemorySize copies = 0;
     MemorySize moves = 0;
 
-    void reset()
+    void reset() noexcept
     {
       copies = 0;
       moves = 0;
@@ -69,21 +69,21 @@ public:
 
   // no default constructor
 
-  explicit Moveable(Stats& _stats)
+  explicit Moveable(Stats& _stats) noexcept
     : stats(&_stats)
   {
     ++(stats->constructs);
     id = stats->constructs;
   }
 
-  explicit Moveable(Stats* _stats)
+  explicit Moveable(Stats* _stats) noexcept
     : stats(_stats)
   {
     ++(stats->constructs);
     id = stats->constructs;
   }
 
-  Moveable(const Moveable& copy)
+  Moveable(const Moveable& copy) noexcept
     : stats(copy.stats)
   {
     ++(stats->constructs);
@@ -91,7 +91,7 @@ public:
     id = stats->constructs;
   }
 
-  Moveable(Moveable&& move)
+  Moveable(Moveable&& move) noexcept
     : stats(moveObject(move.stats))
   {
     move.moved = true; // makes it explicitly that object got moved - we need access to stats
@@ -100,7 +100,7 @@ public:
     id = stats->constructs;
   }
 
-  Moveable& operator=(const Moveable& copy)
+  Moveable& operator=(const Moveable& copy) noexcept
   {
     if (&copy != this) {
       stats = copy.stats;
@@ -109,7 +109,7 @@ public:
     return *this;
   }
 
-  Moveable& operator=(Moveable&& move)
+  Moveable& operator=(Moveable&& move) noexcept
   {
     if (&move != this) {
       stats = moveObject(move.stats);
@@ -119,7 +119,7 @@ public:
     return *this;
   }
 
-  ~Moveable()
+  ~Moveable() noexcept
   {
     ++(stats->destructs);
   }
@@ -139,15 +139,15 @@ inline Moveable::Stats operator-(const Moveable::Stats& a, const Moveable::Stats
 class _COM_AZURE_DEV__BASE__API NonMoveable {
 public:
 
-  NonMoveable()
+  NonMoveable() noexcept
   {
   }
 
-  NonMoveable(const NonMoveable& copy)
+  NonMoveable(const NonMoveable& copy) noexcept
   {
   }
 
-  NonMoveable& operator=(const NonMoveable& copy)
+  NonMoveable& operator=(const NonMoveable& copy) noexcept
   {
     return *this;
   }
@@ -155,7 +155,7 @@ public:
   NonMoveable(NonMoveable&& move) = delete;
   NonMoveable& operator=(NonMoveable&& move) = delete;
 
-  ~NonMoveable()
+  ~NonMoveable() noexcept
   {
   }
 };
@@ -168,20 +168,20 @@ private:
   NonDefaultConstructible& operator=(NonDefaultConstructible&& move) = delete;
 public:
 
-  explicit NonDefaultConstructible(NullPtr)
+  explicit NonDefaultConstructible(NullPtr) noexcept
   {
   }
 
-  NonDefaultConstructible(const NonDefaultConstructible& copy)
+  NonDefaultConstructible(const NonDefaultConstructible& copy) noexcept
   {
   }
 
-  NonDefaultConstructible& operator=(const NonDefaultConstructible& copy)
+  NonDefaultConstructible& operator=(const NonDefaultConstructible& copy) noexcept
   {
     return *this;
   }
 
-  ~NonDefaultConstructible()
+  ~NonDefaultConstructible() noexcept
   {
   }
 };
@@ -193,25 +193,25 @@ private:
   DefaultAndMoveAssignable(DefaultAndMoveAssignable&& move) = delete;
 public:
 
-  DefaultAndMoveAssignable()
+  DefaultAndMoveAssignable() noexcept
   {
   }
 
-  DefaultAndMoveAssignable(const DefaultAndMoveAssignable& copy)
+  DefaultAndMoveAssignable(const DefaultAndMoveAssignable& copy) noexcept
   {
   }
 
-  DefaultAndMoveAssignable& operator=(const DefaultAndMoveAssignable& copy)
-  {
-    return *this;
-  }
-
-  DefaultAndMoveAssignable& operator=(DefaultAndMoveAssignable&& move)
+  DefaultAndMoveAssignable& operator=(const DefaultAndMoveAssignable& copy) noexcept
   {
     return *this;
   }
 
-  ~DefaultAndMoveAssignable()
+  DefaultAndMoveAssignable& operator=(DefaultAndMoveAssignable&& move) noexcept
+  {
+    return *this;
+  }
+
+  ~DefaultAndMoveAssignable() noexcept
   {
   }
 };

@@ -41,7 +41,9 @@ const uint64 SHA384::K[MESSAGE_SCHEDULE] = {
   0x4cc5d4becb3e42b6, 0x597f299cfc657e2a, 0x5fcb6fab3ad6faec, 0x6c44198c4a475817
 };
 
-SHA384::SHA384() noexcept {
+SHA384::SHA384() noexcept
+{
+  clear(buffer);
   messageDigest[0] = 0xcbbb9d5dc1059ed8; // H0
   messageDigest[1] = 0x629a292a367cd507; // H1
   messageDigest[2] = 0x9159015a3070dd17; // H2
@@ -52,7 +54,8 @@ SHA384::SHA384() noexcept {
   messageDigest[7] = 0x47b5481dbefa4fa4; // H7
 }
 
-void SHA384::pushBlock(const uint8* block) noexcept {
+void SHA384::pushBlock(const uint8* block) noexcept
+{
   uint64 a = messageDigest[0]; // A = H0
   uint64 b = messageDigest[1]; // B = H1
   uint64 c = messageDigest[2]; // C = H2
@@ -121,7 +124,8 @@ MemorySize SHA384::push(const uint8* buffer, MemorySize size)
   return result;
 }
 
-void SHA384::pushEnd() noexcept {
+void SHA384::pushEnd() noexcept
+{
   BASSERT(bytesInBuffer < BLOCK_SIZE);
   buffer[bytesInBuffer++] = 0x80; // append 0b10000000
 

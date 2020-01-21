@@ -61,6 +61,15 @@ public:
     uint16 id = 0xffff; // object id - 0xffff is reserved
     uint8 flags = 0; // flags
     char ph = 0; // event type
+
+    /** Construct event. */
+    inline Event() noexcept
+    {
+      ts.exponent = 0;
+      ts.mantissa = 0;
+      dur.exponent = 0;
+      dur.mantissa = 0;
+    }
   };
 
   /** Single stack frame. */

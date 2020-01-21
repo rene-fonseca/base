@@ -41,7 +41,8 @@ public:
     Returns a homogeneous rotation matrix corresponding to the specified angle of
     rotation (in radians) around the X-axis.
   */
-  static Matrix4x4 getXRotation(TYPE angle) noexcept {
+  static Matrix4x4 getXRotation(TYPE angle) noexcept
+  {
     Matrix4x4 result;
     TYPE* dest = result.getElements();
     const TYPE zero(0);
@@ -75,7 +76,8 @@ public:
     Returns a homogeneous rotation matrix corresponding to the specified angle of
     rotation (in radians) around the Y-axis.
   */
-  static Matrix4x4 getYRotation(TYPE angle) noexcept {
+  static Matrix4x4 getYRotation(TYPE angle) noexcept
+  {
     Matrix4x4 result;
     TYPE* dest = result.getElements();
     const TYPE zero(0);
@@ -109,7 +111,8 @@ public:
     Returns a homogeneous rotation matrix corresponding to the specified angle of
     rotation (in radians) around the Z-axis.
   */
-  static Matrix4x4 getZRotation(TYPE angle) noexcept {
+  static Matrix4x4 getZRotation(TYPE angle) noexcept
+  {
     Matrix4x4 result;
     TYPE* dest = result.getElements();
     const TYPE zero(0);
@@ -143,7 +146,8 @@ public:
     Returns a homogeneous rotation matrix corresponding to the specified Euler
     angles.
   */
-  static Matrix4x4 getXYZRotation(const Vector3D<TYPE> rotation) noexcept {
+  static Matrix4x4 getXYZRotation(const Vector3D<TYPE> rotation) noexcept
+  {
     const TYPE cx = Math::cos(rotation.getX());
     const TYPE sx = Math::sin(rotation.getX());
     const TYPE cy = Math::cos(rotation.getY());
@@ -183,7 +187,8 @@ public:
     Returns a homogeneous rotation matrix corresponding to the specified
     quaternion.
   */
-  static Matrix4x4 getQRotation(const Quaternion<TYPE>& quaternion) noexcept {
+  static Matrix4x4 getQRotation(const Quaternion<TYPE>& quaternion) noexcept
+  {
     const TYPE xx = quaternion.getX() * quaternion.getX();
     const TYPE xy = quaternion.getX() * quaternion.getY();
     const TYPE xz = quaternion.getX() * quaternion.getZ();
@@ -223,13 +228,19 @@ public:
   /**
     Construct an unitialized matrix.
   */
-  inline Matrix4x4() noexcept {
+  inline Matrix4x4() noexcept
+  {
+    TYPE* dest = getElements();
+    for (unsigned int i = 0; i < 4 * 4; ++i) {
+      *dest++ = TYPE(0);
+    }
   }
   
   /**
     Initializes matrix by copying from other matrix.
   */
-  inline Matrix4x4(const Matrix4x4& _copy) noexcept {
+  inline Matrix4x4(const Matrix4x4& _copy) noexcept
+  {
     // no need to protect against self-assignment (possible overlap)
     copy<TYPE>(
       Cast::pointer<TYPE*>(elements),
@@ -241,7 +252,8 @@ public:
   /**
     Assignment of matrix to matrix.
   */
-  inline Matrix4x4& operator=(const Matrix4x4& assign) noexcept {
+  inline Matrix4x4& operator=(const Matrix4x4& assign) noexcept
+  {
     // no need to protect against self-assignment (possible overlap)
     copy<TYPE>(
       Cast::pointer<TYPE*>(elements),
@@ -282,7 +294,8 @@ public:
   /**
     Returns true if the length of this vector is zero.
   */
-  bool isZero() const noexcept {
+  bool isZero() const noexcept
+  {
     return !findPredicate(
       elements,
       4 * 4,
@@ -290,7 +303,8 @@ public:
     );
   }
 
-  bool isDiagonal() const noexcept {
+  bool isDiagonal() const noexcept
+  {
     const TYPE zero(0);
     return (elements[0][1] == zero) && (elements[0][2] == zero) &&
       (elements[0][3] == zero) && (elements[1][0] == zero) &&
@@ -300,7 +314,8 @@ public:
       (elements[3][1] == zero) && (elements[3][2] == zero);
   }
   
-  bool isSymmetric() const noexcept {
+  bool isSymmetric() const noexcept
+  {
     return (elements[0][1] == elements[1][0]) &&
       (elements[0][2] == elements[2][0]) &&
       (elements[0][3] == elements[3][0]) &&
@@ -312,7 +327,8 @@ public:
   /**
     Returns the L1-norm of the matrix.
   */
-  TYPE getL1Norm() const noexcept {
+  TYPE getL1Norm() const noexcept
+  {
     AbsoluteSum<TYPE> absoluteSum;
     forEach(elements, 4 * 4, absoluteSum);
     return absoluteSum.getResult();
@@ -321,7 +337,8 @@ public:
   /**
     Returns the square of the Hilbert-Schmidt norm of the matrix.
   */
-  TYPE getSquareHSNorm() const noexcept {
+  TYPE getSquareHSNorm() const noexcept
+  {
     SquareSum<TYPE> squareSum;
     forEach(elements, 4 * 4, squareSum);
     return squareSum.getResult();
@@ -330,7 +347,8 @@ public:
   /**
     Returns the infinity norm of the matrix.
   */
-  TYPE getInfinityNorm() const noexcept {
+  TYPE getInfinityNorm() const noexcept
+  {
     Maximum<TYPE> maximum;
     forEach(elements, 4 * 4, maximum);
     return maximum.getResult();
@@ -339,7 +357,8 @@ public:
   /**
     Returns the determinant of the matrix.
   */
-  TYPE getDeterminant() const noexcept {
+  TYPE getDeterminant() const noexcept
+  {
     const TYPE* src = elements;
     
     // 2x2 determinants for the last two rows
@@ -363,7 +382,8 @@ public:
   /**
     Inverses the specified matrix.
   */
-  Matrix4x4& inverse(const Matrix4x4& value) noexcept {
+  Matrix4x4& inverse(const Matrix4x4& value) noexcept
+  {
     TYPE* dest = getElements();
     const TYPE* src = value.getElements();
     
@@ -419,7 +439,8 @@ public:
   /**
     Inverses the matrix.
   */
-  Matrix4x4& inverse() noexcept {
+  Matrix4x4& inverse() noexcept
+  {
     Matrix4x4 temp(*this);
     inverse(temp);
     return *this;
@@ -428,21 +449,24 @@ public:
   /**
     Unary plus.
   */
-  Matrix4x4 plus() const noexcept {
+  Matrix4x4 plus() const noexcept
+  {
     return Matrix4x4(*this);
   }
 
   /**
     Unary minus.
   */
-  Matrix4x4 minus() const noexcept {
+  Matrix4x4 minus() const noexcept
+  {
     return Matrix4x4(*this).negate();
   }
 
   /**
     Negates the quaternion.
   */
-  Matrix4x4 negate() noexcept {
+  Matrix4x4 negate() noexcept
+  {
     transform(elements, 4 * 4, Negate<TYPE>());
     return *this;
   }
@@ -450,7 +474,8 @@ public:
   /**
     Adds the specified vector to this vector.
   */
-  Matrix4x4& add(const Matrix4x4& value) noexcept {
+  Matrix4x4& add(const Matrix4x4& value) noexcept
+  {
     transformByBinary(elements, value.getElements(), 4 * 4, Add<TYPE>());
     return *this;
   }
@@ -458,7 +483,8 @@ public:
   /**
     Subtracts the specified vector from this vector.
   */
-  Matrix4x4& subtract(const Matrix4x4& value) noexcept {
+  Matrix4x4& subtract(const Matrix4x4& value) noexcept
+  {
     transformByBinary(elements, value.getElements(), 4 * 4, Subtract<TYPE>());
     return *this;
   }
@@ -466,7 +492,8 @@ public:
   /**
     Multiplies the matrix elements with the specified value.
   */
-  Matrix4x4& multiply(const TYPE& value) noexcept {
+  Matrix4x4& multiply(const TYPE& value) noexcept
+  {
     transform(elements, 4 * 4, bind2Second(Multiply<TYPE>(), value));
     return *this;
   }
@@ -474,7 +501,8 @@ public:
   /**
     Multiplies the matrix with the specified quaternion.
   */
-  Quaternion<TYPE> multiply(const Quaternion<TYPE>& value) noexcept {
+  Quaternion<TYPE> multiply(const Quaternion<TYPE>& value) noexcept
+  {
     return Quaternion<TYPE>(
       elements[0][0] * value.getX() + elements[0][1] * value.getY() +
       elements[0][2] * value.getZ() + elements[0][3] * value.getW(),
@@ -490,7 +518,8 @@ public:
   /**
     Multiplies the matrix elements with the specified matrix.
   */
-  Matrix4x4 multiply(const Matrix4x4& value) noexcept {
+  Matrix4x4 multiply(const Matrix4x4& value) noexcept
+  {
     Matrix4x4 result;
     TYPE* dest = Cast::pointer<TYPE*>(result.elements);
     for (int r = 3; r >= 0; --r) {
@@ -508,7 +537,8 @@ public:
     Returns an estimate for the deviation from the zero matrix. The estimate is
     calculated as the sum of all elements of the L1-norm.
   */
-  TYPE deviationFromZero() const noexcept {
+  TYPE deviationFromZero() const noexcept
+  {
     AbsoluteSum<TYPE> absoluteSum;
     forEach(getElements(), 4 * 4, absoluteSum);
     return absoluteSum.getResult();
@@ -519,7 +549,8 @@ public:
     is calulated as the sum of all elements of the L1-norm of the difference
     between this matrix and the identity matrix.
   */
-  TYPE deviationFromIdentity() const noexcept {
+  TYPE deviationFromIdentity() const noexcept
+  {
     TYPE result = 0;
     const TYPE* src = getElements();
     result += absolute(*src - 1);
@@ -545,7 +576,8 @@ public:
     Fills the last row with the vector [0 0 0 1] and leaves the other elements
     unchanged.
   */
-  void forceHomogeneous() noexcept {
+  void forceHomogeneous() noexcept
+  {
     // TAG: any deviation from 0 0 0 1 should be feed back into the other elements
     elements[3][0] = TYPE(0);
     elements[3][1] = TYPE(0);
@@ -556,12 +588,14 @@ public:
   /**
     Divides this matrix elements with the specified value.
   */
-  Matrix4x4& divide(const TYPE& value) noexcept {
+  Matrix4x4& divide(const TYPE& value) noexcept
+  {
     transform(elements, 4 * 4, bind2Second(Divide<TYPE>(), value));
     return *this;
   }
 
-  Matrix4x4& transpose() noexcept {
+  Matrix4x4& transpose() noexcept
+  {
     swap(elements[0][1], elements[1][0]);
     swap(elements[0][2], elements[2][0]);
     swap(elements[0][3], elements[3][0]);
@@ -570,7 +604,8 @@ public:
     swap(elements[2][3], elements[3][2]);
   }
   
-  Matrix4x4& transpose(const Matrix4x4& value) noexcept {
+  Matrix4x4& transpose(const Matrix4x4& value) noexcept
+  {
     elements[0][0] = value.elements[0][0];
     elements[1][0] = value.elements[0][1];
     elements[2][0] = value.elements[0][2];
@@ -595,7 +630,8 @@ public:
 
     @param vector Vector to be compared.
   */
-  inline bool operator==(const Matrix4x4& value) const noexcept {
+  inline bool operator==(const Matrix4x4& value) const noexcept
+  {
     return isEqual(value);
   }
 
@@ -604,7 +640,8 @@ public:
 
     @param value The value to be added.
   */
-  inline Matrix4x4& operator+=(const Matrix4x4& value) noexcept {
+  inline Matrix4x4& operator+=(const Matrix4x4& value) noexcept
+  {
     return add(value);
   }
 
@@ -613,7 +650,8 @@ public:
 
     @param value The value to be subtracted.
   */
-  inline Matrix4x4& operator-=(const Matrix4x4& value) noexcept {
+  inline Matrix4x4& operator-=(const Matrix4x4& value) noexcept
+  {
     return subtract(value);
   }
 
@@ -622,7 +660,8 @@ public:
 
     @param value The multiplicator.
   */
-  inline Matrix4x4& operator*=(const TYPE& value) noexcept {
+  inline Matrix4x4& operator*=(const TYPE& value) noexcept
+  {
     return multiply(value);
   }
 
@@ -631,21 +670,24 @@ public:
 
     @param value The divisor.
   */
-  inline Matrix4x4& operator/=(const TYPE& value) noexcept {
+  inline Matrix4x4& operator/=(const TYPE& value) noexcept
+  {
     return divide(value);
   }
 
   /**
     Unary plus.
   */
-  inline Matrix4x4 operator+() const noexcept {
+  inline Matrix4x4 operator+() const noexcept
+  {
     return plus();
   }
 
   /**
     Unary minus.
   */
-  inline Matrix4x4 operator-() const noexcept {
+  inline Matrix4x4 operator-() const noexcept
+  {
     return minus();
   }
 };
@@ -657,7 +699,8 @@ public:
 */
 template<class TYPE>
 inline Matrix4x4<TYPE> operator+(
-  const Matrix4x4<TYPE>& left, const Matrix4x4<TYPE>& right) noexcept {
+  const Matrix4x4<TYPE>& left, const Matrix4x4<TYPE>& right) noexcept
+{
   return Matrix4x4<TYPE>(left).add(right);
 }
 
@@ -668,7 +711,8 @@ inline Matrix4x4<TYPE> operator+(
 */
 template<class TYPE>
 inline Matrix4x4<TYPE> operator-(
-  const Matrix4x4<TYPE>& left, const Matrix4x4<TYPE>& right) noexcept {
+  const Matrix4x4<TYPE>& left, const Matrix4x4<TYPE>& right) noexcept
+{
   return Matrix4x4<TYPE>(left).subtract(right);
 }
 
@@ -679,7 +723,8 @@ inline Matrix4x4<TYPE> operator-(
 */
 template<class TYPE>
 inline Matrix4x4<TYPE> operator*(
-  const Matrix4x4<TYPE>& left, const TYPE& right) noexcept {
+  const Matrix4x4<TYPE>& left, const TYPE& right) noexcept
+{
   return Matrix4x4<TYPE>(left).multiply(right);
 }
 
@@ -690,7 +735,8 @@ inline Matrix4x4<TYPE> operator*(
 */
 template<class TYPE>
 inline Matrix4x4<TYPE> operator*(
-  const TYPE& left, const Matrix4x4<TYPE>& right) noexcept {
+  const TYPE& left, const Matrix4x4<TYPE>& right) noexcept
+{
   return Matrix4x4<TYPE>(right).multiply(left);
 }
 
@@ -701,7 +747,8 @@ inline Matrix4x4<TYPE> operator*(
 */
 template<class TYPE>
 inline Matrix4x4<TYPE> operator*(
-  const Matrix4x4<TYPE>& left, const Matrix4x4<TYPE>& right) noexcept {
+  const Matrix4x4<TYPE>& left, const Matrix4x4<TYPE>& right) noexcept
+{
   return Matrix4x4<TYPE>(left).multiply(right);
 }
 
@@ -712,7 +759,8 @@ inline Matrix4x4<TYPE> operator*(
 */
 template<class TYPE>
 inline Matrix4x4<TYPE> operator/(
-  const Matrix4x4<TYPE>& left, const TYPE& right) noexcept {
+  const Matrix4x4<TYPE>& left, const TYPE& right) noexcept
+{
   return Matrix4x4<TYPE>(left).divide(right);
 }
 
@@ -744,7 +792,8 @@ FormatOutputStream& operator<<(FormatOutputStream& stream, const Matrix4x4<TYPE>
 */
 template<class TYPE>
 inline Quaternion<TYPE> operator*(
-  const Matrix4x4<TYPE>& left, const Quaternion<TYPE>& right) noexcept {
+  const Matrix4x4<TYPE>& left, const Quaternion<TYPE>& right) noexcept
+{
   return Matrix4x4<TYPE>(left).multiply(right);
 }
 

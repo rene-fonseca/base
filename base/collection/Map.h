@@ -167,7 +167,7 @@ public:
   /**
     Initializes map from other map.
   */
-  Map(const Map& copy)
+  Map(const Map& copy) noexcept
     : elements(copy.elements),
       size(copy.size)
   {
@@ -176,7 +176,7 @@ public:
   /**
     Initializes map from other map.
   */
-  Map(Map&& move)
+  Map(Map&& move) noexcept
     : elements(moveObject(move.elements)),
       size(moveObject(move.size))
   {

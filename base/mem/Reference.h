@@ -114,7 +114,7 @@ public:
   /**
     Move initialization of automation pointer from other automation pointer.
   */
-  inline Reference(Reference&& move)
+  inline Reference(Reference&& move) noexcept
     : value(moveObject(move.value))
   {
 #if 0

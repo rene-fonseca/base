@@ -54,7 +54,8 @@ public:
       buffer(maximum(size, MINIMUM_BUFFER_SIZE) + headroom),
       begin(buffer.getElements()),
       end(begin + size),
-      writeHead(begin) {
+      writeHead(begin)
+  {
   }
   
   inline void flush()

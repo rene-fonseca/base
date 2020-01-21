@@ -88,6 +88,9 @@ namespace {
     if (!initialized) {
       initialized = true;
       handle = ::LoadLibraryExW(L"dbghelp.dll", 0, 0); // TAG: use DynamicLibrary class
+      if (!handle) {
+        return;
+      }
       symInitialize = (SymInitializeFunc)GetProcAddress(handle, "SymInitialize");
       if (symInitialize) {
         symCleanup = (SymCleanupFunc)GetProcAddress(handle, "SymCleanup");

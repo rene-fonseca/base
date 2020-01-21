@@ -151,6 +151,7 @@ public:
   
   inline SocketAddress() noexcept
   {
+    clear(sa);
   }
   
   /** Initializes socket address. */

@@ -3079,7 +3079,8 @@ public:
   /**
     Defines the 2D orthographic projection matrix.
   */
-  inline void ortho2D(GLdouble left, GLdouble right, GLdouble bottom, GLdouble top) noexcept {
+  inline void ortho2D(GLdouble left, GLdouble right, GLdouble bottom, GLdouble top) noexcept
+  {
     glOrtho(left, right, bottom, top, -1, 1);
   }
 
@@ -3116,7 +3117,8 @@ public:
   
   void cylinder(GLdouble baseRadius, GLdouble topRadius, GLdouble height, unsigned int slices, unsigned int stacks) noexcept;
   
-  inline void cone(GLdouble baseRadius, GLdouble height, unsigned int slices, unsigned int stacks) noexcept {
+  inline void cone(GLdouble baseRadius, GLdouble height, unsigned int slices, unsigned int stacks) noexcept
+  {
     cylinder(baseRadius, 0, height, slices, stacks);
   }
 
@@ -3153,14 +3155,16 @@ public:
   /**
     Returns the OpenGL specification version (0x010100, 0x010200, 0x010201, 0x010300, or 0x010400).
   */
-  inline unsigned int getSpecification() noexcept {
+  inline unsigned int getSpecification() noexcept
+  {
     return specification;
   }
 
   /**
     Returns the vendor.
   */
-  inline String getVendor() noexcept {
+  inline String getVendor() noexcept
+  {
     const GLubyte* vendor = glGetString(OpenGL::VENDOR);
     return NativeString(Cast::pointer<const char*>(vendor));
   }
@@ -3168,7 +3172,8 @@ public:
   /**
     Returns the renderer.
   */
-  inline String getRenderer() noexcept {
+  inline String getRenderer() noexcept
+  {
     const GLubyte* renderer = glGetString(OpenGL::RENDERER);
     return NativeString(Cast::pointer<const char*>(renderer));
   }
@@ -3176,7 +3181,8 @@ public:
   /**
     Returns the version.
   */
-  inline String getVersion() noexcept {
+  inline String getVersion() noexcept
+  {
     const GLubyte* version = glGetString(OpenGL::VERSION);
     return NativeString(Cast::pointer<const char*>(version));
   }
@@ -3184,7 +3190,8 @@ public:
   /**
     Returns the extensions.
   */
-  inline String getExtensions() noexcept {
+  inline String getExtensions() noexcept
+  {
     const GLubyte* extensions = glGetString(OpenGL::EXTENSIONS);
     return NativeString(Cast::pointer<const char*>(extensions));
   }
@@ -3200,11 +3207,14 @@ public:
     OpenGL& openGL;
   public:
     
-    inline Block(OpenGL& _openGL, GLenum mode) noexcept : openGL(_openGL) {
+    inline Block(OpenGL& _openGL, GLenum mode) noexcept
+      : openGL(_openGL)
+    {
       openGL.glBegin(mode);
     }
     
-    inline ~Block() noexcept {
+    inline ~Block() noexcept
+    {
       openGL.glEnd();
     }
   };
@@ -3215,11 +3225,14 @@ public:
     OpenGL& openGL;
   public:
     
-    inline PushPop(OpenGL& _openGL) noexcept : openGL(_openGL) {
+    inline PushPop(OpenGL& _openGL) noexcept
+      : openGL(_openGL)
+    {
       openGL.glPushMatrix();
     }
     
-    inline ~PushPop() noexcept {
+    inline ~PushPop() noexcept
+    {
       openGL.glPopMatrix();
     }
   };
@@ -3231,11 +3244,13 @@ public:
   public:
     
     inline DisplayList(OpenGL& _openGL, GLuint list, GLenum mode = OpenGL::COMPILE) noexcept
-      : openGL(_openGL) {
+      : openGL(_openGL)
+    {
       openGL.glNewList(list, mode);
     }
     
-    inline ~DisplayList() noexcept {
+    inline ~DisplayList() noexcept
+    {
       openGL.glEndList();
     }
   };
@@ -3252,7 +3267,8 @@ public:
     inline ReserveDisplayLists(OpenGL& _openGL, unsigned int _numberOfLists)
       : openGL(_openGL),
         numberOfLists(_numberOfLists),
-        objects(_numberOfLists) {
+        objects(_numberOfLists)
+    {
       bassert(numberOfLists > 0, OutOfDomain(this));
       offset = openGL.glGenLists(numberOfLists);
       bassert(offset > 0, OpenGLException("Display lists exhausted.", this));
@@ -3263,15 +3279,18 @@ public:
       }
     }
     
-    inline unsigned int getOffset() const noexcept {
+    inline unsigned int getOffset() const noexcept
+    {
       return offset;
     }
     
-    inline void execute() const noexcept {
+    inline void execute() const noexcept
+    {
       openGL.glCallLists(numberOfLists, UNSIGNED_INT, objects.getElements());
     }
     
-    inline ~ReserveDisplayLists() noexcept {
+    inline ~ReserveDisplayLists() noexcept
+    {
       openGL.glDeleteLists(offset, numberOfLists);
     }
   };
@@ -3284,15 +3303,18 @@ public:
   public:
     
     inline ReserveTexture(OpenGL& _openGL)
-      : openGL(_openGL) {
+      : openGL(_openGL)
+    {
       openGL.glGenTextures(1, &name);
     }
     
-    inline unsigned int getName() const noexcept {
+    inline unsigned int getName() const noexcept
+    {
       return name;
     }
     
-    inline ~ReserveTexture() noexcept {
+    inline ~ReserveTexture() noexcept
+    {
       openGL.glDeleteTextures(1, &name);
     }
   };

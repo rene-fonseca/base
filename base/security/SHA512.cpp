@@ -41,7 +41,9 @@ const uint64 SHA512::K[MESSAGE_SCHEDULE] = {
   0x4cc5d4becb3e42b6, 0x597f299cfc657e2a, 0x5fcb6fab3ad6faec, 0x6c44198c4a475817
 };
 
-SHA512::SHA512() noexcept {
+SHA512::SHA512() noexcept
+{
+  clear(buffer);
   messageDigest[0] = 0x6a09e667f3bcc908; // H0
   messageDigest[1] = 0xbb67ae8584caa73b; // H1
   messageDigest[2] = 0x3c6ef372fe94f82b; // H2
@@ -52,7 +54,8 @@ SHA512::SHA512() noexcept {
   messageDigest[7] = 0x5be0cd19137e2179; // H7
 }
 
-void SHA512::pushBlock(const uint8* block) noexcept {
+void SHA512::pushBlock(const uint8* block) noexcept
+{
   uint64 a = messageDigest[0]; // A = H0
   uint64 b = messageDigest[1]; // B = H1
   uint64 c = messageDigest[2]; // C = H2
@@ -121,7 +124,8 @@ MemorySize SHA512::push(const uint8* buffer, MemorySize size)
   return result;
 }
 
-void SHA512::pushEnd() noexcept {
+void SHA512::pushEnd() noexcept
+{
   BASSERT(bytesInBuffer < BLOCK_SIZE);
   buffer[bytesInBuffer++] = 0x80; // append 0b10000000
 

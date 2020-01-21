@@ -370,6 +370,7 @@ unsigned int SerialPort::getInputBufferSize() const
 {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   COMMPROP properties;
+  clear(properties);
   bassert(::GetCommProperties(handle->getHandle(), &properties) != 0, CommunicationsException());
   return properties.dwCurrentRxQueue;
 #else
@@ -381,6 +382,7 @@ void SerialPort::setInputBufferSize(unsigned int size)
 {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   COMMPROP properties;
+  clear(properties);
   bassert((::GetCommProperties(handle->getHandle(), &properties) != 0) &&
          (::SetupComm(handle->getHandle(), size, properties.dwCurrentTxQueue) != 0), CommunicationsException());
 #endif // flavor
@@ -390,6 +392,7 @@ unsigned int SerialPort::getOutputBufferSize() const
 {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   COMMPROP properties;
+  clear(properties);
   bassert(::GetCommProperties(handle->getHandle(), &properties) != 0, CommunicationsException());
   return properties.dwCurrentTxQueue;
 #else
@@ -401,6 +404,7 @@ void SerialPort::setOutputBufferSize(unsigned int size)
 {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   COMMPROP properties;
+  clear(properties);
   bassert((::GetCommProperties(handle->getHandle(), &properties) != 0) &&
          (::SetupComm(handle->getHandle(), properties.dwCurrentRxQueue, size) != 0), CommunicationsException());
 #endif // flavor

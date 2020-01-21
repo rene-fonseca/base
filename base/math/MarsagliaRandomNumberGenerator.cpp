@@ -58,7 +58,8 @@ void MarsagliaRandomNumberGenerator::randomize(uint32 seed) noexcept {
   }
 }
 
-uint32 MarsagliaRandomNumberGenerator::getInteger() noexcept {
+uint32 MarsagliaRandomNumberGenerator::getInteger() noexcept
+{
   uint32 temp1 = 1941 * x1[0] + 1860 * x1[1] + 1812 * x1[2] + 1776 * x1[3] +
     1492 * x1[4] + 1215 * x1[5] + 1066 * x1[6] + 12013 * x1[7] + carry1;
   carry1 = temp1 >> 16;
@@ -67,7 +68,7 @@ uint32 MarsagliaRandomNumberGenerator::getInteger() noexcept {
     5555 * x2[4] + 6666 * x2[5] + 7777 * x2[6] + 9272 * x2[7] + carry2;
   carry2 = temp2 >> 16;
 
-  for (int i = STATE_SIZE - 1; i > 0; ++i) {
+  for (int i = STATE_SIZE - 1; i > 0; --i) {
     x1[i] = x1[i - 1];
     x2[i] = x2[i - 1];
   }

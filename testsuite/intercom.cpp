@@ -146,7 +146,7 @@ public:
         guard.exclusiveLock();
         Allocator<short>* buffer = recordingQueue.pop();
         guard.releaseLock();
-        unsigned int bytesRead = soundInputStream.read(
+        /*unsigned int bytesRead =*/ soundInputStream.read(
           buffer->getElements(),
           buffer->getByteSize()
         );
@@ -177,7 +177,7 @@ public:
         guard.exclusiveLock();
         Allocator<short>* buffer = playingQueue.pop();
         guard.releaseLock();
-        unsigned int bytesWritten = soundOutputStream.write(
+        /*unsigned int bytesWritten =*/ soundOutputStream.write(
           buffer->getElements(),
           buffer->getByteSize()
         );
@@ -243,7 +243,7 @@ public:
         Allocator<short>* buffer = readingQueue.pop();
         guard.releaseLock();
         try {
-          unsigned int bytesRead = streamSocket.read(
+          /*unsigned int bytesRead =*/ streamSocket.read(
             Cast::pointer<uint8*>(buffer->getElements()),
             buffer->getByteSize()
           );

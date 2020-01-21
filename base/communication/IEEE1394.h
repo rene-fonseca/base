@@ -286,7 +286,8 @@ private:
   Reference<IEEE1394Impl> ieee1394impl;
 
   inline IEEE1394(IEEE1394Impl* _ieee1394impl) noexcept
-    : ieee1394impl(_ieee1394impl) {
+    : ieee1394impl(_ieee1394impl)
+  {
   }
 protected:
 
@@ -302,36 +303,36 @@ protected:
   /* This structure describes a node of the IEEE 1394 bus. */
   struct NodeDescriptor {
     /** Specifies that the node is present. */
-    bool present;
+    bool present = false;
     /** Specifies that the node has an active link and transaction layer. */
-    bool link;
+    bool link = false;
     /**
       Specifies that the node is a contender for the bus manager or isochronous
       resource manager.
     */
-    bool contender;
+    bool contender = false;
     /** The gap count. */
-    unsigned int gapCount;
+    unsigned int gapCount = 0;
     /** The physical speed of the node. */
-    Speed speed;
+    Speed speed = S100;
     /** The link speed of the node. */
-    Speed linkSpeed;
+    Speed linkSpeed = S100;
     /** The GUID of the node if available. */
     EUI64 guid;
     /** Capabilities. */
-    unsigned int capabilities;
+    unsigned int capabilities = 0;
     /** The IEEE 1394 specification. */
-    Standard standard;
+    Standard standard = STANDARD_UNSPECIFIED;
     /** The number of ports. */
-    unsigned int numberOfPorts;
+    unsigned int numberOfPorts = 0;
     /** The port connections. */
-    PortState ports[3 + 3 * 8];
+    PortState ports[3 + 3 * 8] = { PORT_NOT_CONNECTED };
     /** Specifies that the node initiated the last reset. */
-    bool initiatedReset;
+    bool initiatedReset = false;
     /** The power class of the node. */
-    PowerClass powerClass;
+    PowerClass powerClass = POWER_NO_REPEAT;
     /** The maximum payload. */
-    unsigned int maximumPayload;
+    unsigned int maximumPayload = 0;
   };
 
   /** Holds the reset generation number. */

@@ -505,6 +505,7 @@ _COM_AZURE_DEV__BASE__PACKED__BEGIN
 
     inline IEEE754SinglePrecision() noexcept
     {
+      clear(value);
     }
 
     /**
@@ -722,6 +723,7 @@ _COM_AZURE_DEV__BASE__PACKED__BEGIN
 
     inline IEEE754DoublePrecision() noexcept
     {
+      clear(value);
     }
     
     inline IEEE754DoublePrecision(const Representation::IEEE754SinglePrecision& value) noexcept
@@ -952,6 +954,7 @@ _COM_AZURE_DEV__BASE__PACKED__BEGIN
 
     inline IEEEExtendedDoublePrecision96Align16() noexcept
     {
+      clear(value);
     }
     
     inline IEEEExtendedDoublePrecision96Align16(const Representation::IEEE754SinglePrecision& value) noexcept
@@ -1203,6 +1206,7 @@ _COM_AZURE_DEV__BASE__PACKED__BEGIN
 
     inline IEEEExtendedDoublePrecision96() noexcept
     {
+      clear(value);
     }
     
     inline IEEEExtendedDoublePrecision96(const Representation::IEEE754SinglePrecision& value) noexcept
@@ -1454,6 +1458,7 @@ _COM_AZURE_DEV__BASE__PACKED__BEGIN
 
     inline IEEEExtendedDoublePrecision128() noexcept
     {
+      clear(value);
     }
     
     inline IEEEExtendedDoublePrecision128(const Representation::IEEE754SinglePrecision& value) noexcept
@@ -1873,6 +1878,7 @@ _COM_AZURE_DEV__BASE__PACKED__BEGIN
 
     inline IBMExtendedPrecision() noexcept
     {
+      clear(value);
     }
     
     inline IBMExtendedPrecision(const Representation::IEEE754SinglePrecision& value) noexcept

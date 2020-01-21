@@ -62,7 +62,7 @@ private:
     IsochronousChannelListener* listener = nullptr;
     bool completed = false;
     bool busy = false;
-    Status status;
+    Status status = STATUS_ERROR;
   };
 
   /** Device handle. */

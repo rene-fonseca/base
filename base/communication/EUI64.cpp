@@ -33,7 +33,8 @@ EUI64::EUI64(const uint8 value[8]) noexcept
   copy<uint8>(id, value, sizeof(id));
 }
 
-EUI64::EUI64(const String& value) {
+EUI64::EUI64(const String& value)
+{
   static const char SEPARATORS[8] = {'x', ':', ':', '-', ':', ':', ':', ':'}; // 'x' value is not used
   String::ReadIterator i = value.getBeginReadIterator();
   const String::ReadIterator end = value.getEndReadIterator();

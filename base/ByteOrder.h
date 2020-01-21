@@ -366,6 +366,7 @@ _COM_AZURE_DEV__BASE__PACKED__BEGIN
     TYPE value;
     
     inline LittleEndian() noexcept
+      : value(0)
     {
     }
     
@@ -406,6 +407,7 @@ _COM_AZURE_DEV__BASE__PACKED__BEGIN
     uint8 a;
     
     inline BigEndian() noexcept
+      : b(0), a(0)
     {
     }
     
@@ -436,6 +438,7 @@ _COM_AZURE_DEV__BASE__PACKED__BEGIN
     uint8 a;
 
     inline BigEndian() noexcept
+      : b(0), a(0)
     {
     }
     
@@ -468,6 +471,7 @@ _COM_AZURE_DEV__BASE__PACKED__BEGIN
     uint8 a;
     
     inline BigEndian() noexcept
+      : d(0), c(0), b(0), a(0)
     {
     }
     
@@ -502,6 +506,7 @@ _COM_AZURE_DEV__BASE__PACKED__BEGIN
     uint8 a;
     
     inline BigEndian() noexcept
+      : d(0), c(0), b(0), a(0)
     {
     }
     
@@ -534,6 +539,7 @@ _COM_AZURE_DEV__BASE__PACKED__BEGIN
     BigEndian<uint32> a;
     
     inline BigEndian() noexcept
+      : b(0), a(0)
     {
     }
   
@@ -564,6 +570,7 @@ _COM_AZURE_DEV__BASE__PACKED__BEGIN
     BigEndian<uint32> a;
     
     inline BigEndian() noexcept
+      : b(0), a(0)
     {
     }
     

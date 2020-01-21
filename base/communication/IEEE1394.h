@@ -350,7 +350,7 @@ protected:
   /** The physical id of the current cycle master. */
   unsigned int cycleMasterId = 0;
   /** The maximum speeds of the nodes. */
-  Speed speedMap[63][64];
+  Speed speedMap[63][64] = { S100 };
   /** Mask specifying the nodes with the link layer activated. */
   uint64 linkActiveNodes = 0;
   /** Mask specifying the contenders. */
@@ -359,7 +359,8 @@ protected:
   /**
     Returns the guid of the specified node.
   */
-  inline EUI64 getEUI64(unsigned short node) {
+  inline EUI64 getEUI64(unsigned short node)
+  {
     Quadlet guid[2];
     ieee1394impl->read(
       node,
@@ -615,7 +616,8 @@ public:
     Closes the handle to the adapter. The adapter is destroyed when all handles
     have been closed.
   */
-  inline void close() {
+  inline void close()
+  {
     ieee1394impl->close();
   }
   
@@ -701,14 +703,16 @@ public:
   /**
     Returns the current error status.
   */
-  inline unsigned int getStatus() const {
+  inline unsigned int getStatus() const
+  {
     return ieee1394impl->getStatus();
   }
   
   /**
     Returns the size of the FIFO.
   */
-  inline unsigned int getFIFOSize() const {
+  inline unsigned int getFIFOSize() const
+  {
     return ieee1394impl->getFIFOSize();
   }
   
@@ -739,8 +743,7 @@ public:
 
     @param physicalId The physical id of the node [0; 63[.
   */
-  inline bool isLinkLayerActive(
-    unsigned int physicalId) const
+  inline bool isLinkLayerActive(unsigned int physicalId) const
   {
     if (!(physicalId < numberOfNodes)) {
       _throw OutOfDomain(this);
@@ -814,8 +817,8 @@ public:
     @param physicalId The physical id of the node.
     @param port The port of the node.
   */
-  inline PortState getPortState(
-    unsigned int physicalId, unsigned int port) const {
+  inline PortState getPortState(unsigned int physicalId, unsigned int port) const
+  {
     bassert(
       (physicalId < numberOfNodes) && (port < nodes[physicalId].numberOfPorts),
       OutOfDomain(this)
@@ -857,8 +860,8 @@ public:
     
     @return The quadlet in native byte order.
   */
-  inline uint32 getQuadlet(
-    unsigned short node, uint32 offset) {
+  inline uint32 getQuadlet(unsigned short node, uint32 offset)
+  {
     Quadlet quadlet;
     ieee1394impl->read(
       node,
@@ -881,7 +884,8 @@ public:
     unsigned short node,
     uint64 address,
     uint8* buffer,
-    unsigned int size) {
+    unsigned int size)
+  {
     ieee1394impl->read(node, address, buffer, size);
   }
 
@@ -897,7 +901,8 @@ public:
     unsigned short node,
     uint64 address,
     const uint8* buffer,
-    unsigned int size) {
+    unsigned int size)
+  {
     ieee1394impl->write(node, address, buffer, size);
   }
 
@@ -920,7 +925,8 @@ public:
     uint64 address,
     uint32* buffer,
     unsigned int size,
-    uint32 value) {
+    uint32 value)
+  {
     return ieee1394impl->read(node, address, buffer, size, value);
   }
   
@@ -933,7 +939,8 @@ public:
   */
   inline IsochronousReadChannel getReadChannel(
     unsigned int maximumPacketsPerRequest,
-    uint64 subchannels) {
+    uint64 subchannels)
+  {
     return ieee1394impl->getReadChannel(maximumPacketsPerRequest, subchannels);
   }
   
@@ -946,32 +953,36 @@ public:
   */
   inline IsochronousWriteChannel getWriteChannel(
     unsigned int maximumPacketsPerRequest,
-    uint64 subchannels) {
+    uint64 subchannels)
+  {
     return ieee1394impl->getWriteChannel(maximumPacketsPerRequest, subchannels);
   }
 
-  inline bool wait(
-    unsigned int milliseconds) {
+  inline bool wait(unsigned int milliseconds)
+  {
     return ieee1394impl->wait(milliseconds);
   }
   
-  inline void dequeue() {
+  inline void dequeue()
+  {
     ieee1394impl->dequeue();
   }
   
-  inline void registerFCPListener(
-    FunctionControlProtocolListener* listener) {
+  inline void registerFCPListener(FunctionControlProtocolListener* listener)
+  {
     ieee1394impl->registerFCPListener(listener);
   }
   
-  inline void unregisterFCPListener() {
+  inline void unregisterFCPListener()
+  {
     ieee1394impl->unregisterFCPListener();
   }
 
   inline void readIsochronous(
     unsigned int channel,
     IsochronousChannelListener* listener
-  ) {
+  )
+  {
     unsigned int maximumPayload = getMaximumIsoPayloadForSpeed(
       getMaximumSpeed(getLocalId())
     ); // in bytes

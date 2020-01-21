@@ -35,21 +35,30 @@ EUI64::EUI64(const uint8 value[8]) noexcept
 
 EUI64::EUI64(const String& value)
 {
+  clear(id);
   static const char SEPARATORS[8] = {'x', ':', ':', '-', ':', ':', ':', ':'}; // 'x' value is not used
   String::ReadIterator i = value.getBeginReadIterator();
   const String::ReadIterator end = value.getEndReadIterator();
   unsigned int index = 0;
-  while (i < end) {
+  while (i != end) {
     char first = *i++;
-    bassert(i < end, InvalidFormat(this));
+    if (i != end) {
+      _throw InvalidFormat(this);
+    }
     char second = *i++;
-    bassert(ASCIITraits::isHexDigit(first) && ASCIITraits::isHexDigit(second), InvalidFormat(this));
+    if (!ASCIITraits::isHexDigit(first) || !ASCIITraits::isHexDigit(second)) {
+      _throw InvalidFormat(this);
+    }
     id[index++] = (ASCIITraits::digitToValue(first) << 4) | ASCIITraits::digitToValue(second);
     if (index < getArraySize(id)) {
-      bassert(*i++ == SEPARATORS[index], InvalidFormat(this));
+      if (*i++ != SEPARATORS[index]) {
+        _throw InvalidFormat(this);
+      }
     }
   }
-  bassert(i == end, InvalidFormat(this));
+  if (i != end) {
+    _throw InvalidFormat(this);
+  }
 }
 
 EUI64::EUI64(const EUI64& _copy) noexcept

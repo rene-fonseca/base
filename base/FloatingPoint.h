@@ -1673,6 +1673,7 @@ _COM_AZURE_DEV__BASE__PACKED__BEGIN
 
     inline IEEEQuadruplePrecision() noexcept
     {
+      clear(value);
     }
     
     inline IEEEQuadruplePrecision(const Representation::IEEE754SinglePrecision& value) noexcept

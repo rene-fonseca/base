@@ -29,9 +29,12 @@ void Pixmap::destroy() noexcept
 {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)  
   if (graphicsContextHandle) {
-    HGDIOBJ bitmap = ::SelectObject((HDC)graphicsContextHandle, (HGDIOBJ)0); // TAG: is this required
-    ::DeleteObject(bitmap); // TAG: is this required
-    ::DeleteDC((HDC)graphicsContextHandle);
+    HDC handle = (HDC)graphicsContextHandle;
+#if 0
+    HGDIOBJ bitmap = ::SelectObject(handle, (HGDIOBJ)0);
+    ::DeleteObject(bitmap);
+#endif
+    ::DeleteDC(handle);
   }
   if (drawableHandle) {
     // nothing to destroy
@@ -50,7 +53,8 @@ void Pixmap::destroy() noexcept
   WindowImpl::destroy();
 }
 
-Pixmap::Pixmap(const Dimension& dimension, unsigned int flags) {
+Pixmap::Pixmap(const Dimension& dimension, unsigned int flags)
+{
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   HDC pixmap = ::CreateCompatibleDC(0 /*::GetDCEx(0, 0, 0)*/);
   bassert(pixmap, UserInterfaceException("Unable to create pixmap.", this));
@@ -65,7 +69,7 @@ Pixmap::Pixmap(const Dimension& dimension, unsigned int flags) {
     ::DeleteDC(pixmap);
     _throw UserInterfaceException("Unable to create pixmap.", this);
   } else {
-    ::DeleteObject(previous); // TAG: is this required
+    ::DeleteObject(previous);
   }
   graphicsContextHandle = (void*)pixmap;
 #else // unix
@@ -73,7 +77,8 @@ Pixmap::Pixmap(const Dimension& dimension, unsigned int flags) {
 #endif // flavor
 }
 
-// Dimension Pixmap::getDimension() {
+// Dimension Pixmap::getDimension()
+// {
 // #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
 //   HGDIOBJ bitmap = ::GetCurrentObject((HDC)drawableHandle, OBJ_BITMAP);
 //   // bitmap
@@ -84,7 +89,8 @@ Pixmap::Pixmap(const Dimension& dimension, unsigned int flags) {
 // #endif // flavor
 // }
 
-void Pixmap::encode(Format format, Encoding encoding, void* data) {
+void Pixmap::encode(Format format, Encoding encoding, void* data)
+{
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   if ((format == Pixmap::RGB) && (encoding == Pixmap::RGB_32)) {
 //     BITMAPINFOHEADER info;
@@ -110,10 +116,12 @@ void Pixmap::encode(Format format, Encoding encoding, void* data) {
 #endif // flavor
 }
 
-// void* Pixmap::getData() noexcept {
+// void* Pixmap::getData() noexcept
+// {
 // }
 
-Pixmap::~Pixmap() noexcept {
+Pixmap::~Pixmap() noexcept
+{
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
 #else // unix
 #endif // flavor

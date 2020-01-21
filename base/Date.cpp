@@ -130,7 +130,7 @@ int Date::normalize(DateTime& dateTime, bool redundancy) noexcept
   }
   BASSERT((month >= 0) && (month < MONTHS_PER_YEAR));
   
-  int64 year = dateTime.year + carrier;
+  int64 year = static_cast<int64>(dateTime.year) + carrier;
 
   carrier = dateTime.millisecond/1000;
   dateTime.millisecond %= 1000;
@@ -485,7 +485,7 @@ Date::Date(const DateTime& dateTime) noexcept
 {
   DateTime dt = dateTime;
   normalize(dt, false);
-  int64 days = dt.day +
+  int64 days = static_cast<int64>(dt.day) +
     (isLeapYear(dt.year) ?
      DAYS_BEFORE_FIRST_OF_MONTH_LEAP_YEAR[dt.month] :
      DAYS_BEFORE_FIRST_OF_MONTH_NONLEAP_YEAR[dt.month]);

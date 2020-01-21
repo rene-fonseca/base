@@ -1193,8 +1193,8 @@ void WindowImpl::setCursor(Cursor cursor) {
 // TOP_RIGHT_CORNER, BOTTOM_RIGHT_CORNER,
 // BOTTOM_LEFT_CORNER, FULL_CROSSHAIR, INHERIT
   static const unsigned int NATIVE_CURSORS[] = {
-    0, // INHERIT // TAG: not what
-    0, // NONE (not used)
+    OCR_NORMAL, // INHERIT
+    OCR_NORMAL, // NONE (not used)
     OCR_APPSTARTING, // WORKING_IN_BACKGROUND
     OCR_NORMAL, // ARROW
     OCR_CROSS, // CROSSHAIR

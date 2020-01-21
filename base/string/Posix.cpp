@@ -54,7 +54,7 @@ MemoryStreamImpl::MemoryStreamImpl(const char* src, const char* end)
   
 void MemoryStreamImpl::setLocale(const std::locale& _Loc)
 {
-  std::locale _Oldlocale = ios_base::imbue(_Loc);
+  /*std::locale _Oldlocale =*/ ios_base::imbue(_Loc);
   const auto _Rdbuf = rdbuf();
   if (_Rdbuf) {
     _Rdbuf->pubimbue(_Loc);

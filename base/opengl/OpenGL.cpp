@@ -58,7 +58,8 @@ OpenGLException::OpenGLException(const char* message, const Type& type) noexcept
   
 // TAG: how should we cast to functions and methods
 template<class RESULT>
-inline RESULT method_cast(void* value) noexcept {
+inline RESULT method_cast(void* value) noexcept
+{
   // sizeof(RESULT) == sizeof(void*)
   // static_cast<bool>(static_cast<RESULT>(0))
 _COM_AZURE_DEV__BASE__PACKED__BEGIN
@@ -606,15 +607,18 @@ namespace opengl {
 
 }; // end of opengl namespace
 
-OpenGL::Function OpenGL::getFunction(const Literal& name) noexcept {
+OpenGL::Function OpenGL::getFunction(const Literal& name) noexcept
+{
   return opengl::getFunction(name.getValue());
 }
 
-OpenGL::Function OpenGL::getFunction(const String& name) noexcept {
+OpenGL::Function OpenGL::getFunction(const String& name) noexcept
+{
   return opengl::getFunction(name.getElements());
 }
 
-void OpenGL::loadFunctions(Descriptor* descriptor, unsigned int size) noexcept {
+void OpenGL::loadFunctions(Descriptor* descriptor, unsigned int size) noexcept
+{
   const Descriptor* end = descriptor + size;
   while (descriptor < end) {
     BASSERT(static_cast<bool>(descriptor->name) && !descriptor->function);
@@ -636,7 +640,8 @@ void OpenGL::loadFunctions(Descriptor* descriptor, unsigned int size) noexcept {
   }
 }
 
-void OpenGL::fixMissing(Descriptor* descriptor, unsigned int size) noexcept {
+void OpenGL::fixMissing(Descriptor* descriptor, unsigned int size) noexcept
+{
   const Descriptor* end = descriptor + size;
   while (descriptor < end) {
     BASSERT(static_cast<bool>(descriptor->name) && !descriptor->function);
@@ -661,10 +666,9 @@ OpenGL::OpenGL(unsigned int latest)
   opengl::dynamicLinker = new DynamicLinker(
     Literal(_COM_AZURE_DEV__BASE__OPENGL_LIBRARY)
   );
-  bassert(
-    opengl::dynamicLinker,
-    OpenGLException("Unable to load OpenGL module.", this)
-  );
+  if (!opengl::dynamicLinker) {
+    _throw OpenGLException("Unable to load OpenGL module.", this);
+  }
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   opengl::getFunction =
     method_cast<opengl::GetFunction>(
@@ -774,7 +778,8 @@ bool OpenGL::isSupported(const String& name) {
 void OpenGL::lookAt(
   const Vector3D<double>& eye,
   const Vector3D<double>& center,
-  const Vector3D<double>& up) noexcept {
+  const Vector3D<double>& up) noexcept
+{
   
   Vector3D<double> sight = eye - center;
   sight /= sight.getModulus();
@@ -815,7 +820,8 @@ void OpenGL::frustum(
   GLdouble bottom,
   GLdouble top,
   GLdouble nearDistance,
-  GLdouble farDistance) noexcept {
+  GLdouble farDistance) noexcept
+{
   
   // see OpenGL specification
   GLdouble matrix[4][4]; // column-major order
@@ -842,7 +848,8 @@ void OpenGL::frustum(
 }
 #endif
 
-void OpenGL::perspective(GLdouble fovy, GLdouble aspectRatio, GLdouble zNear, GLdouble zFar) noexcept {  
+void OpenGL::perspective(GLdouble fovy, GLdouble aspectRatio, GLdouble zNear, GLdouble zFar) noexcept
+{
   GLdouble ymax = zNear * Math::tan(fovy * constant::PI/360.0);
   GLdouble ymin = -ymax;
   GLdouble xmin = ymin * aspectRatio;
@@ -863,7 +870,8 @@ Vector3D<double> OpenGL::project(Vector3D<double> object, const Matrix4x4<double
   );
 }
 
-void OpenGL::pickMatrix(GLdouble x, GLdouble y, GLdouble width, GLdouble height, GLint viewport[4]) noexcept {
+void OpenGL::pickMatrix(GLdouble x, GLdouble y, GLdouble width, GLdouble height, GLint viewport[4]) noexcept
+{
   GLdouble matrix[4][4]; // column-major order
   matrix[0][0] = viewport[2]/width;
   matrix[1][0] = 0;
@@ -919,7 +927,8 @@ void OpenGL::cylinder(
   GLdouble topRadius,
   GLdouble height,
   unsigned int slices,
-  unsigned int stacks) noexcept {
+  unsigned int stacks) noexcept
+{
   
   const GLdouble radiusDelta = (topRadius - baseRadius)/stacks;
   const GLdouble zDelta = height/stacks;
@@ -954,7 +963,8 @@ void OpenGL::torus(
   GLdouble innerRadius,
   GLdouble outerRadius,
   unsigned int numberOfRings,
-  unsigned int numberOfSides) noexcept {
+  unsigned int numberOfSides) noexcept
+{
   
   // see http://mathworld.wolfram.com/Torus.html
   // x = (c + a cos v) cos u
@@ -991,7 +1001,8 @@ void OpenGL::torus(
   }
 }
 
-void OpenGL::disk(double innerRadius, double outerRadius, unsigned int slices, unsigned int loops) noexcept {
+void OpenGL::disk(double innerRadius, double outerRadius, unsigned int slices, unsigned int loops) noexcept
+{
   glNormal3d(0, 0, 1);
   const double deltaAngle = 2 * constant::PI/slices;
   const double deltaRadius = (outerRadius - innerRadius)/loops;
@@ -1014,7 +1025,8 @@ void OpenGL::disk(double innerRadius, double outerRadius, unsigned int slices, u
   }
 }
 
-void OpenGL::partialDisk(GLdouble innerRadius, GLdouble outerRadius, unsigned int slices, unsigned int loops, GLdouble startAngle, GLdouble sweepAngle) noexcept {
+void OpenGL::partialDisk(GLdouble innerRadius, GLdouble outerRadius, unsigned int slices, unsigned int loops, GLdouble startAngle, GLdouble sweepAngle) noexcept
+{
   glNormal3f(0, 0, 1);
   const double deltaRadius = (outerRadius - innerRadius)/loops;
   const double deltaAngle = sweepAngle/slices * constant::PI/180;
@@ -1036,7 +1048,8 @@ void OpenGL::partialDisk(GLdouble innerRadius, GLdouble outerRadius, unsigned in
   }
 }
 
-void OpenGL::sphere(double radius, unsigned int slices, unsigned int stacks) noexcept {
+void OpenGL::sphere(double radius, unsigned int slices, unsigned int stacks) noexcept
+{
   const double deltaRho = constant::PI/stacks;
   const double deltaTheta = 2 * constant::PI/slices;
   
@@ -1101,8 +1114,8 @@ void OpenGL::sphere(double radius, unsigned int slices, unsigned int stacks) noe
 
 // TAG: need Dimension3D
 // TAG: rename to cube?
-void OpenGL::box(
-  double width, double length, double height, unsigned int flags) noexcept {
+void OpenGL::box(double width, double length, double height, unsigned int flags) noexcept
+{
   // OpenGL::Flag POINTS
   // OpenGL::Flag LINES
   // OpenGL::Flag POLYGONS  

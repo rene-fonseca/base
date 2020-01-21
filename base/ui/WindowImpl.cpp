@@ -500,7 +500,11 @@ LRESULT CALLBACK Backend<WindowImpl>::messageHandler(HWND handle, UINT message, 
         flags |= WindowImpl::Key::EXTENDED;
       }
           
-      ::GetKeyboardState(Cast::pointer<BYTE*>(window->keyboardState));
+      BOOL status = ::GetKeyboardState(Cast::pointer<BYTE*>(window->keyboardState));
+      if (!status) {
+        BASSERT(false);
+        return 0;
+      }
       unsigned int modifiers = 0;
       modifiers |= (window->keyboardState[VK_LSHIFT] & 0x80) ? WindowImpl::Key::LEFT_SHIFT : 0;
       modifiers |= (window->keyboardState[VK_RSHIFT] & 0x80) ? WindowImpl::Key::RIGHT_SHIFT : 0;

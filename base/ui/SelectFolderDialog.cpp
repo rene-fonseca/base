@@ -53,12 +53,14 @@ bool SelectFolderDialog::execute()
   browseInfo.ulFlags = BIF_RETURNONLYFSDIRS | BIF_BROWSEFORCOMPUTER | BIF_USENEWUI | BIF_SHAREABLE; // TAG: fixme
   
   LPITEMIDLIST result = SHBrowseForFolderW(&browseInfo);
-  if (result != 0) {
+  if (result != nullptr) {
     // BOOL SHGetPathFromIDList(LPCITEMIDLIST pidl, LPTSTR pszPath);
     folder = buffer;
-    LPMALLOC malloc;
-    /*HRESULT r =*/ ::CoGetMalloc(1, &malloc);
-    malloc->Free(result);
+    LPMALLOC malloc = nullptr;
+    HRESULT r = ::CoGetMalloc(1, &malloc);
+    if (INLINE_ASSERT(SUCCEEDED(hr))) {
+      malloc->Free(result);
+    }
   }
   return result != 0;
 #else // unix

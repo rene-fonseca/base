@@ -267,8 +267,8 @@ nothing OpenGLPixmapContext::initialize(const Dimension& dimension, unsigned int
     }
   }
   
-  int blackPixel = ::XBlackPixelOfScreen((Screen*)screenHandle);
-  int whitePixel = ::XWhitePixelOfScreen((Screen*)screenHandle);
+  // int blackPixel = ::XBlackPixelOfScreen((Screen*)screenHandle);
+  // int whitePixel = ::XWhitePixelOfScreen((Screen*)screenHandle);
 
   // X pixmap
   drawableHandle = (void*)::XCreatePixmap(

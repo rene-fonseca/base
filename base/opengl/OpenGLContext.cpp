@@ -467,7 +467,7 @@ nothing OpenGLContext::initialize(const Format& format) {
   }
   
   int blackPixel = ::XBlackPixelOfScreen((Screen*)screenHandle);
-  int whitePixel = ::XWhitePixelOfScreen((Screen*)screenHandle);
+  // int whitePixel = ::XWhitePixelOfScreen((Screen*)screenHandle);
 
   // GLX 1.3
   // GLXWindow gLXWindow = native::GLX::glXCreateWindow((Display*)displayHandle, GLXFBConfig config, ::Window win, 0);

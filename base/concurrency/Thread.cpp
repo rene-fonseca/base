@@ -621,7 +621,7 @@ bool Thread::isChild() const noexcept
   if (current == this) {
     return false;
   }
-  while (!current) { // stop if main thread
+  while (current) { // stop if main thread
     if (current == this) { // could have checked thread IDs
       return true;
     }

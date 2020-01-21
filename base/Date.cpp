@@ -964,9 +964,8 @@ void Date::split(DateTime& result, bool local) const noexcept
 #endif
 }
 
-String Date::format(
-  const String& format,
-  bool local) const {
+String Date::format(const String& format, bool local) const
+{
   // time zones?
   DateTime dateTime;
   split(dateTime, local);

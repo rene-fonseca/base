@@ -50,7 +50,7 @@ namespace ntapi {
   inline API getAddress(const char* identifier) noexcept
   {
     if (!identifier) {
-      return = nullptr;
+      return nullptr;
     }
     return (API)::GetProcAddress(::GetModuleHandle(L"ntdll"), identifier);
   }

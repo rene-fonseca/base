@@ -152,6 +152,7 @@ void* HeapImpl::tryResize(void* heap, MemorySize size)
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   if (true) {
     if (size) {
+      const MeorySize heapOffset = reinterpret_cast<MemorySize>(heap);
       void* result = static_cast<void*>(
         ::HeapReAlloc(internal::specific::processHeap, HEAP_REALLOC_IN_PLACE_ONLY, heap, size));
       if (result) {
@@ -159,7 +160,7 @@ void* HeapImpl::tryResize(void* heap, MemorySize size)
         totalMemory += size;
         
         if (profile && (size != originalSize)) {
-          Profiler::pushObjectDestroy(reinterpret_cast<MemorySize>(heap), originalSize);
+          Profiler::pushObjectDestroy(heapOffset, originalSize);
           Profiler::pushObjectCreate(reinterpret_cast<MemorySize>(result), size);
         }
       }

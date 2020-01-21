@@ -195,7 +195,7 @@ bool HTTPSRequest::open(const String& _method, const String& _url, const String&
 
   if (url.getPort()) {
     try {
-      const unsigned int port = UnsignedInteger::parse(url.getPort(), UnsignedInteger::DEC);
+      port = UnsignedInteger::parse(url.getPort(), UnsignedInteger::DEC);
     } catch (InvalidFormat&) {
       _throw HTTPException("Failed to open HTTP request due to invalid port.");
     }
@@ -604,7 +604,7 @@ void HTTPSRequest::getResponse(PushInterface* pi)
   while (true) {
     CFIndex bytesRead = CFReadStreamRead(_handle->stream, buffer + offset, buffer.size() - offset);
     if (bytesRead < 0) {
-      CFStreamStatus status = CFReadStreamGetStatus(_handle->stream);
+      /*CFStreamStatus status =*/ CFReadStreamGetStatus(_handle->stream);
       CFReadStreamClose(_handle->stream);
       _throw IOException("Failed to read response.");
     }

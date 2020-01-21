@@ -1340,6 +1340,7 @@ public:
         parser->setDTDHandler(tracer);
         parser->setContentHandler(tracer);
         parser->traverse(document);
+        delete parser;
         delete tracer;
         
 //         SAXDumper* dumper = new SAXDumper(parser);

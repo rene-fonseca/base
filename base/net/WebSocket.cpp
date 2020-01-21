@@ -192,7 +192,7 @@ bool WebSocket::open(const String& _url, const String& _protocols)
 
   if (url.getPort()) {
     try {
-      const unsigned int port = UnsignedInteger::parse(url.getPort(), UnsignedInteger::DEC);
+      port = UnsignedInteger::parse(url.getPort(), UnsignedInteger::DEC);
     } catch (InvalidFormat&) {
       _throw WebSocketException("Failed to open WebSocket due to invalid port.");
     }

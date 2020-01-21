@@ -188,7 +188,7 @@ public:
          << "Packets transmitted: " << packetsTransmitted << EOL
          << "Packets received: " << packetsReceived << EOL
          << "Packets lost: " << packetsLost << ' '
-         << '(' << static_cast<int>(100*packetsLost/packetsTransmitted) << '%' << ')' << EOL
+         << '(' << static_cast<int>((packetsTransmitted > 0) ? (100*packetsLost/packetsTransmitted) : 0) << '%' << ')' << EOL
          << "Time minimum/maximum/mean: "
          << getTimeAsString(minimumTime) << '/'
          << getTimeAsString(maximumTime) << '/'

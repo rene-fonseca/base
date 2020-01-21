@@ -203,7 +203,7 @@ int Date::normalize(DateTime& dateTime, bool redundancy) noexcept
       day += daysInYear; // does not change month
     }
     
-    int daysInMonth = leapYear ? DAYS_PER_MONTH_LEAP_YEAR[month] : DAYS_PER_MONTH_NONLEAP_YEAR[month]; // month is valid
+    // int daysInMonth = leapYear ? DAYS_PER_MONTH_LEAP_YEAR[month] : DAYS_PER_MONTH_NONLEAP_YEAR[month]; // month is valid
     while (day < 0) { // maximum 12 loops
       --month;
       if (month < 0) {
@@ -211,7 +211,7 @@ int Date::normalize(DateTime& dateTime, bool redundancy) noexcept
         leapYear = isLeapYear(static_cast<int>(year));
         month = MONTHS_PER_YEAR - 1;
       }
-      daysInMonth = leapYear ? DAYS_PER_MONTH_LEAP_YEAR[month] : DAYS_PER_MONTH_NONLEAP_YEAR[month]; // month is valid
+      // daysInMonth = leapYear ? DAYS_PER_MONTH_LEAP_YEAR[month] : DAYS_PER_MONTH_NONLEAP_YEAR[month]; // month is valid
       day += daysInMonth;
     }
   }

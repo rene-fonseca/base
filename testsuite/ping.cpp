@@ -181,7 +181,7 @@ public:
     socket.close();
     
     unsigned int packetsLost = packetsTransmitted - packetsReceived;
-    double meanTime = totalTime/packetsReceived;
+    double meanTime = (packetsReceived > 0) ? totalTime/packetsReceived : 0;
     
     fout << EOL
          << "--- statistics for " << name << " ---" << EOL

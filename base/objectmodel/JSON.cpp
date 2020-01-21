@@ -118,7 +118,7 @@ Reference<ObjectModel::Float> JSON::parseFloat(JSONParser& parser)
 {
   skipSpaces(parser);
 
-  const Parser p = parser;
+  const char* b = reinterpret_cast<const char*>(parser.getCurrent());
 
   if (parser.peek() == '-') {
     parser.skip();
@@ -155,7 +155,6 @@ Reference<ObjectModel::Float> JSON::parseFloat(JSONParser& parser)
     }
   }
 
-  const char* b = reinterpret_cast<const char*>(p.getCurrent());
   const char* e = reinterpret_cast<const char*>(parser.getCurrent());
 
   double d = 0;

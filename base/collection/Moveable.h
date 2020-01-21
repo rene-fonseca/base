@@ -91,7 +91,7 @@ public:
     id = stats->constructs;
   }
 
-  Moveable(Moveable&& move)
+  Moveable(Moveable&& move) noexcept
     : stats(moveObject(move.stats))
   {
     move.moved = true; // makes it explicitly that object got moved - we need access to stats

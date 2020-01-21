@@ -44,7 +44,9 @@ const uint32 SHA256::K[SHA256::MESSAGE_SCHEDULE] = {
   0x90befffa, 0xa4506ceb, 0xbef9a3f7, 0xc67178f2
 };
 
-SHA256::SHA256() noexcept {
+SHA256::SHA256() noexcept
+{
+  clear(buffer);
   messageDigest[0] = 0x6a09e667; // H0
   messageDigest[1] = 0xbb67ae85; // H1
   messageDigest[2] = 0x3c6ef372; // H2
@@ -55,7 +57,8 @@ SHA256::SHA256() noexcept {
   messageDigest[7] = 0x5be0cd19; // H7
 }
 
-void SHA256::pushBlock(const uint8* block) noexcept {
+void SHA256::pushBlock(const uint8* block) noexcept
+{
   uint32 a = messageDigest[0]; // A = H0
   uint32 b = messageDigest[1]; // B = H1
   uint32 c = messageDigest[2]; // C = H2
@@ -124,7 +127,8 @@ MemorySize SHA256::push(const uint8* buffer, MemorySize size)
   return result;
 }
 
-void SHA256::pushEnd() noexcept {
+void SHA256::pushEnd() noexcept
+{
   BASSERT(bytesInBuffer < BLOCK_SIZE);
   buffer[bytesInBuffer++] = 0x80; // append 0b10000000
   

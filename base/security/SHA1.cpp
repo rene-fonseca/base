@@ -18,7 +18,9 @@
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
-SHA1::SHA1() noexcept {
+SHA1::SHA1() noexcept
+{
+  clear(buffer);
   messageDigest[0] = 0x67452301; // H0
   messageDigest[1] = 0xefcdab89; // H1
   messageDigest[2] = 0x98badcfe; // H2
@@ -26,7 +28,8 @@ SHA1::SHA1() noexcept {
   messageDigest[4] = 0xc3d2e1f0; // H4
 }
 
-void SHA1::pushBlock(const uint8* block) noexcept {
+void SHA1::pushBlock(const uint8* block) noexcept
+{
   uint32 a = messageDigest[0]; // A = H0
   uint32 b = messageDigest[1]; // B = H1
   uint32 c = messageDigest[2]; // C = H2

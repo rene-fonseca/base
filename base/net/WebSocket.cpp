@@ -33,6 +33,40 @@ _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 #  pragma comment(lib, "websocket.lib") // TAG: use runtime linking instead
 #endif
 
+#if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__MACOS)
+namespace {
+
+  template<typename TYPE>
+  class CFHandle {
+  private:
+
+    TYPE handle = nullptr;
+  public:
+  
+    inline CFHandle() noexcept
+    {
+    }
+
+    inline CFHandle(TYPE _handle) noexcept
+      : handle(_handle)
+    {
+    }
+  
+    inline operator TYPE() noexcept
+    {
+      return handle;
+    }
+  
+    inline ~CFHandle() noexcept
+    {
+      if (handle) {
+        CFRelease(handle);
+      }
+    }
+  };
+}
+#endif
+
 class WebSocketHandle : public ReferenceCountedObject {
 public:
 
@@ -47,9 +81,9 @@ public:
   HINTERNET hConnect = nullptr;
   HINTERNET hRequest = nullptr; // HttpOpenRequest
 #elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__MACOS)
-  CFHTTPMessageRef cfHttpReq = nullptr;
-  CFReadStreamRef stream = nullptr;
-  CFHTTPMessageRef response = nullptr;
+  CFHandle<CFHTTPMessageRef> cfHttpReq;
+  CFHandle<CFReadStreamRef> stream;
+  CFHandle<CFHTTPMessageRef> response;
   uint8 pendingByte = 0;
 #endif
 
@@ -65,18 +99,9 @@ public:
 #if 0 && (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
     WebSocketDeleteHandle(handle);
 #elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__MACOS)
-    if (response) {
-      CFRelease(response);
-      response = nullptr;
-    }
-    if (stream) {
-      CFRelease(stream);
-      stream = nullptr;
-    }
-    if (cfHttpReq) {
-      CFRelease(cfHttpReq);
-      cfHttpReq = nullptr;
-    }
+    response = nullptr;
+    stream = nullptr;
+    cfHttpReq = nullptr;
 #endif
   }
 
@@ -92,7 +117,7 @@ namespace {
   class MACString {
   private:
   
-    CFStringRef s = nullptr;
+    CFHandle<CFStringRef> s;
   public:
     
     inline MACString(const String& _s)
@@ -130,12 +155,6 @@ namespace {
         buffer.resize(buffer.size() * 2);
       }
       return result;
-    }
-    
-    inline ~MACString()
-    {
-      CFRelease(s);
-      s = nullptr;
     }
   };
 #endif
@@ -202,14 +221,13 @@ bool WebSocket::open(const String& _url, const String& _protocols)
 #elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__MACOS)
   // we set auth explicitly
   MACString url2(url.getUrl());
-  CFURLRef cfUrl = CFURLCreateWithString(kCFAllocatorDefault, url2, NULL);
+  CFHandle<CFURLRef> cfUrl = CFURLCreateWithString(kCFAllocatorDefault, url2, NULL);
   
   // TAG: need option for version of HTTP
   // kCFHTTPVersion1_0
   // kCFHTTPVersion1_1
   // kCFHTTPVersion2_0
-  CFHTTPMessageRef cfHttpReq = CFHTTPMessageCreateRequest(kCFAllocatorDefault, CFSTR(""), cfUrl, kCFHTTPVersion1_1);
-  CFRelease(cfUrl);
+  CFHandle<CFHTTPMessageRef> cfHttpReq = CFHTTPMessageCreateRequest(kCFAllocatorDefault, CFSTR(""), cfUrl, kCFHTTPVersion1_1);
   cfUrl = nullptr;
 
   if (!cfHttpReq) {
@@ -323,14 +341,13 @@ void WebSocket::send(const String& _body)
 #elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__MACOS)
   // TAG: for long request body CFReadStreamCreateForStreamedHTTPRequest - use PullInterface
   MACString body(_body);
-  CFDataRef bodyData = CFStringCreateExternalRepresentation(kCFAllocatorDefault, body, kCFStringEncodingUTF8, 0);
+  CFHandle<CFDataRef> bodyData = CFStringCreateExternalRepresentation(kCFAllocatorDefault, body, kCFStringEncodingUTF8, 0);
   CFHTTPMessageSetBody(_handle->cfHttpReq, bodyData);
-  CFRelease(bodyData);
   bodyData = nullptr;
   
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wdeprecated-declarations"
-  CFReadStreamRef stream = CFReadStreamCreateForHTTPRequest(kCFAllocatorDefault, _handle->cfHttpReq);
+  CFHandle<CFReadStreamRef> stream = CFReadStreamCreateForHTTPRequest(kCFAllocatorDefault, _handle->cfHttpReq);
   if (CFReadStreamSetProperty(stream, kCFStreamPropertyHTTPShouldAutoredirect, kCFBooleanTrue) == false) {
     // now what
   }
@@ -350,8 +367,6 @@ void WebSocket::send(const String& _body)
   // kCFStreamPropertyHTTPResponseHeader is not available until all data has been read
   CFHTTPMessageRef response = (CFHTTPMessageRef)CFReadStreamCopyProperty(stream, kCFStreamPropertyHTTPResponseHeader);
   if (!response) {
-    CFRelease(stream);
-    stream = nullptr;
     _throw WebSocketException("Failed to send WebSocket.");
   }
 #pragma clang diagnostic pop
@@ -359,13 +374,9 @@ void WebSocket::send(const String& _body)
   const CFIndex code = CFHTTPMessageGetResponseStatusCode(response);
   _handle->status = static_cast<unsigned int>(code);
   
-  CFStringRef statusLine = CFHTTPMessageCopyResponseStatusLine(response);
+  CFHandle<CFStringRef> statusLine = CFHTTPMessageCopyResponseStatusLine(response);
   _handle->statusText = MACString::getString(statusLine);
-  if (statusLine) {
-    CFRelease(statusLine);
-    statusLine = nullptr;
-  }
-
+  
   _handle->response = response;
 #endif
 }

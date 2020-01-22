@@ -40,7 +40,7 @@ public:
     if (doubleResult) {
     }
     
-    volatile unsigned int* invalid = nullptr;
+    unsigned int* invalid = reinterpret_cast<unsigned int*>(Runtime::getNullPointer());
     unsigned int temp = *invalid; // read
     if (temp) {
     }

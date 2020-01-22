@@ -862,8 +862,8 @@ bool FileSystem::isLink(const String& path)
     }
     
     // TAG: test if partial support works - ERROR_MORE_DATA
-    uint8 buffer[17000]; // TAG: fixme
-    REPARSE_DATA_BUFFER* reparseHeader = (REPARSE_DATA_BUFFER*)buffer;
+    PrimitiveArray<uint8> buffer(17000); // TAG: fixme
+    REPARSE_DATA_BUFFER* reparseHeader = reinterpret_cast<REPARSE_DATA_BUFFER*>(static_cast<uint8*>(buffer));
     DWORD bytesWritten = 0;
     bool error = ::DeviceIoControl(
       link,
@@ -1005,9 +1005,8 @@ public:
       }
     }
     while (link != INVALID_HANDLE_VALUE) {
-      // TAG: fix buffer size
-      uint8 buffer[17000]; // need alternative - first attempt to get length first failed
-      REPARSE_DATA_BUFFER* reparseHeader = (REPARSE_DATA_BUFFER*)buffer;
+      PrimitiveArray<uint8> buffer(17000); // need alternative - first attempt to get length first failed
+      REPARSE_DATA_BUFFER* reparseHeader = reinterpret_cast<REPARSE_DATA_BUFFER*>(static_cast<uint8*>(buffer));
       DWORD bytesWritten = 0;
       bool error = ::DeviceIoControl(
         link,
@@ -1352,9 +1351,8 @@ String FileSystem::getLink(const String& path) {
     }
   }
   while (link != INVALID_HANDLE_VALUE) {
-    // TAG: fix buffer size
-    uint8 buffer[17000]; // need alternative - first attempt to get length first failed
-    REPARSE_DATA_BUFFER* reparseHeader = (REPARSE_DATA_BUFFER*)buffer;
+    PrimitiveArray<uint8> buffer(17000); // need alternative - first attempt to get length first failed
+    REPARSE_DATA_BUFFER* reparseHeader = reinterpret_cast<REPARSE_DATA_BUFFER*>(static_cast<uint8*>(buffer));
     DWORD bytesWritten = 0;
     bool error = ::DeviceIoControl(
       link,

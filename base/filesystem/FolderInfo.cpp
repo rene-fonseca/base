@@ -104,9 +104,8 @@ FolderInfo::FolderInfo(const String& _path)
     );
     bassert(link != INVALID_HANDLE_VALUE, FileSystemException("Not a folder.", this));
     
-    // TAG: fix buffer size (protect against buffer overflow)
-    char* buffer[17000]; // need alternative - first attempt to get length first failed
-    REPARSE_DATA_BUFFER* reparseHeader = (REPARSE_DATA_BUFFER*)&buffer;
+    PrimitiveArray<uint8> buffer(17000); // need alternative - first attempt to get length first failed
+    REPARSE_DATA_BUFFER* reparseHeader = reinterpret_cast<REPARSE_DATA_BUFFER*>(static_cast<uint8*>(buffer));
     DWORD bytesWritten = 0;
 #if 0 // TAG: FIXME
     error |= ::DeviceIoControl(link, FSCTL_GET_REPARSE_POINT, // handle and ctrl

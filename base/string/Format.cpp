@@ -249,7 +249,7 @@ String Format::Subst::format() const
     MemorySize index = 0;
     for (MemoryDiff i = 0; i < (src - digitsBegin); ++i) { // we expect max 2 digits
       index *= 10;
-      index = static_cast<MemorySize>(ASCIITraits::digitToValue(digitsBegin[i]));
+      index = index + static_cast<MemorySize>(ASCIITraits::digitToValue(digitsBegin[i]));
     }
 
     if (index == 0) {

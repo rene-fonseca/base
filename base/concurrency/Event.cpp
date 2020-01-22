@@ -286,6 +286,7 @@ public:
 
   void run() override
   {
+#if !defined(__clang_analyzer__)
     Event e;
     TEST_ASSERT(!e.isSignaled());
     e.signal();
@@ -295,6 +296,7 @@ public:
     TEST_ASSERT(!e.isSignaled());
 #if (_COM_AZURE_DEV__BASE__ARCH != _COM_AZURE_DEV__BASE__SPARC64)
     TEST_ASSERT(!e.wait(1000));
+#endif
 #endif
   }
 };

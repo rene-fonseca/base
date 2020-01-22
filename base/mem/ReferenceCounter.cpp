@@ -48,6 +48,7 @@ public:
 
   void run() override
   {
+#if !defined(__clang_analyzer__)
     ReferenceCounter<MyOtherObject> myOtherObject = new MyOtherObject();
     TEST_ASSERT(myOtherObject.getNumberOfReferences() == 1);
     ReferenceCounter<MyObject> myObject = new MyObject();
@@ -75,6 +76,7 @@ public:
       auto& _COM_AZURE_DEV__BASE__MAKE_IDENTIFIER(id) = *myOtherObject3;
     }
     myObject = nullptr;
+#endif
   }
 };
 

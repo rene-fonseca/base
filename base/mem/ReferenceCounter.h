@@ -60,7 +60,10 @@ private:
   void setValue(TYPE* _value, Counter* _references)
   {
     if (value) {
+      BASSERT(_value != value);
       BASSERT(references);
+#if !defined(__clang_analyzer__)
+      // assert(references);
       if (!--*references) {
         if (_value && !_references) {
           ++*references; // reuse - 1 reference
@@ -76,6 +79,7 @@ private:
         value = nullptr;
         references = nullptr;
       }
+#endif
     }
     
     if (_value) {

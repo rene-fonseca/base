@@ -270,7 +270,7 @@ FloatingPoint::IEEE754SinglePrecision::IEEE754SinglePrecision(
     InvalidFormat("Invalid exponent.", Type::getType<FloatingPoint>())
   );
   
-  while (size && (*mantissa == '0')) { // skip leading zeros
+  while ((size > 1) && (*mantissa == '0')) { // skip leading zeros
     exponent -= 4;
     --size;
     ++mantissa;

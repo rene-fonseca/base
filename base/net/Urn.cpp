@@ -234,13 +234,13 @@ String Urn::getUnescapedNSS() const
     if (ch == '%') {
       bassert(
         end - i >= 2,
-        InvalidFormat("Invalid encoding", this)
+        InvalidFormat("Invalid encoding.", this)
       );
       char high = *++i;
       char low = *++i;
       bassert(
         ASCIITraits::isHexDigit(high) && ASCIITraits::isHexDigit(low),
-        InvalidFormat("Invalid encoding", this)
+        InvalidFormat("Invalid encoding.", this)
       );
       ch = (ASCIITraits::digitToValue(high) << 4) +
         ASCIITraits::digitToValue(low); // replace with decoded char

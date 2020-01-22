@@ -320,7 +320,7 @@ public:
     //Trace::message(stream.getString().getElements());
     switch (message) {
     case WM_QUIT:
-      Trace::message("Quit");
+      Trace::message("Quit.");
       if (Application::application) {
         Application::application->terminate();
       }

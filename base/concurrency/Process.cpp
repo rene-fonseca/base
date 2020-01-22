@@ -577,11 +577,11 @@ public:
       DWORD threadId = ::GetWindowThreadProcessId(window, &processId);
       fout << "threadId=" << threadId << " processId=" << processId << ENDL;
       
-      Trace::message("sending WM_CLOSE now");
+      Trace::message("Sending WM_CLOSE now.");
       LRESULT result = ::SendMessageTimeout(window, WM_CLOSE, 0, 0, SMTO_NORMAL, 3000, &dispatchResult);
-      Trace::message("sending WM_DESTROY now");
+      Trace::message("Sending WM_DESTROY now.");
       result = ::SendMessageTimeout(window, WM_DESTROY, 0, 0, SMTO_NORMAL, 3000, &dispatchResult);
-      Trace::message("sending WM_QUIT now");
+      Trace::message("Sending WM_QUIT now.");
       result = ::SendMessageTimeout(window, WM_QUIT, Application::EXIT_CODE_EXTERNAL, 0, SMTO_NORMAL, 3000, &dispatchResult);
       fout << "result=" << result << ENDL;
       result = 1;

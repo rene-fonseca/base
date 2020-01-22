@@ -96,14 +96,14 @@ Trustee::Trustee(TrusteeType type, const void* _id)
     (type == Trustee::USER) ||
     (type == Trustee::GROUP) ||
     (type == Trustee::EVERYONE),
-    OutOfDomain("Invalid trustee", this)
+    OutOfDomain("Invalid trustee.", this)
   );
 //   bassert(
 //     ((type == Trustee::USER) ||
 //      (type == Trustee::GROUP) ||
 //      (type == Trustee::EVERYONE)) &&
 //     ((unsigned long)_id <= PrimitiveTraits<uid_t>::MAXIMUM),
-//     OutOfDomain("Invalid trustee", this)
+//     OutOfDomain("Invalid trustee.", this)
 //   );
   integralId = (unsigned long)_id;
 #endif // flavor

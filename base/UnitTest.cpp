@@ -374,7 +374,7 @@ bool UnitTest::Run::compare(const Run& a, const Run& b)
 
 void UnitTest::run()
 {
-  onFailed("Test not implemented");
+  onFailed("Test not implemented.");
 }
 
 Reference<UnitTest::Run> UnitTest::runImpl()
@@ -412,9 +412,9 @@ Reference<UnitTest::Run> UnitTest::runImpl()
     currentRun->exceptionType = e.getThisType().getLocalName(); // "base::Exception" - use simple format - skip class prefix
     if (e.getMessage()) {
       currentRun->exceptionFailure = e.getMessage();
-      onFailed(Format::subst("Test failed with exception: '%1' / '%2'", type, e.getMessage()));
+      onFailed(Format::subst("Test failed with exception: '%1' / '%2'.", type, e.getMessage()));
     } else {
-      onFailed(Format::subst("Test failed with exception: '%1'", type));
+      onFailed(Format::subst("Test failed with exception: '%1'.", type));
     }
     currentRun->onException(nullptr);
   } catch (std::exception& e) {
@@ -422,13 +422,13 @@ Reference<UnitTest::Run> UnitTest::runImpl()
     currentRun->exceptionFailure = "Failed with exception.";
     currentRun->exceptionType = Exception::getStdExceptionName(e);
     if (w.isEmpty()) {
-      onFailed("Test failed with std::exception");
+      onFailed("Test failed with std::exception.");
     } else {
       currentRun->exceptionFailure = w;
-      onFailed(Format::subst("Test failed with exception '%1': '%2'", currentRun->exceptionType, w));
+      onFailed(Format::subst("Test failed with exception '%1': '%2'.", currentRun->exceptionType, w));
     }
   } catch (...) {
-    onFailed("Test failed with unknown exception");
+    onFailed("Test failed with unknown exception.");
   }
   r->endTime = manager.timer.getLiveMicroseconds();
   currentRun = nullptr;

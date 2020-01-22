@@ -46,7 +46,7 @@ Group::Group(unsigned long _id)
 #else // unix
 //   bassert(
 //     static_cast<gid_t>(integralId) <= PrimitiveTraits<gid_t>::MAXIMUM,
-//     OutOfDomain("Invalid group id", this)
+//     OutOfDomain("Invalid group id.", this)
 //   );
 #endif // flavor
 }

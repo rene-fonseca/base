@@ -54,9 +54,13 @@ public:
     MemorySize instances = getInstanceCount<MyObject>();
     MyObject o2;
     instances = getInstanceCount<MyObject>();
+    TEST_ASSERT(instances > 0);
     instances = getInstanceDestructionCount<MyObject>();
+    TEST_ASSERT(instances > 0);
     instances = getInstanceCountFor(o2);
+    TEST_ASSERT(instances > 0);
     instances = getInstanceDestructionCountFor(o2);
+    TEST_ASSERT(instances > 0);
   }
 };
 

@@ -268,6 +268,7 @@ public:
   void run() override
   {
     const MemorySize minimumSize = Heap::getMinimumSize();
+    TEST_ASSERT(minimumSize <= 4096);
     double* heap1 = Heap::allocate<double>(1234);
     TEST_ASSERT(heap1);
     heap1 = Heap::resize(heap1, 2345);

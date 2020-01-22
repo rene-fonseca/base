@@ -254,7 +254,11 @@ public:
   inline Iterator begin() noexcept
   {
     // elements.copyOnWrite();
-    return Iterator(elements.getRoot());
+    if (auto root = elements.getRoot()) {
+      return Iterator(root);
+    } else {
+      return Iterator();
+    }
   }
 
   inline Iterator end() noexcept

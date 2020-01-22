@@ -629,17 +629,16 @@ _COM_AZURE_DEV__BASE__PACKED__END
       while (*importLookupTable) {
         if (*importLookupTable & 0x80000000) {
           fout << "import by ordinal" << SP;
-          uint32 ordinal = *importLookupTable & 0x7fffffff;
+          // uint32 ordinal = *importLookupTable & 0x7fffffff;
         } else {
           fout << "import by name" << SP;
           uint32 addressRVA = *importLookupTable & 0x7fffffff;
           bassert((addressRVA & 1) == 0, InvalidFormat(this));
           const void* hintTable =
             buffer.getElements() + addressRVA - virtualAddress;
-          const LittleEndian<uint16>* hint =
-            Cast::pointer<LittleEndian<uint16>*>(hintTable);
+          // const LittleEndian<uint16>* hint = Cast::pointer<LittleEndian<uint16>*>(hintTable);
           const NativeString name(
-            Cast::pointer<const char*>(hintTable) + sizeof(*hint)
+            Cast::pointer<const char*>(hintTable) + sizeof(LittleEndian<uint16>)
           );
           // TAG: must be terminated
           fout << SP << name << SP;
@@ -753,7 +752,7 @@ _COM_AZURE_DEV__BASE__PACKED__END
       symbolTableOffset = header.symbolTable;
       numberOfSymbols = header.numberOfSymbols;
       optionalHeaderAvailable = header.sizeOfOptionalHeader != 0;
-      sizeOfOptionalHeader = header.sizeOfOptionalHeader;
+      // sizeOfOptionalHeader = header.sizeOfOptionalHeader;
       
       bool relocationsStripped =
         header.characteristics & CommonObjectFileFormat::IMAGE_RELOCATIONS_STRIPPED;
@@ -763,10 +762,8 @@ _COM_AZURE_DEV__BASE__PACKED__END
         header.characteristics & CommonObjectFileFormat::IMAGE_LINE_NUMBERS_STRIPPED;
       bool symbolsStripped =
         header.characteristics & CommonObjectFileFormat::IMAGE_LOCAL_SYMBOLS_STRIPPED;
-      bool aggressiveWorkingSet =
-        header.characteristics & CommonObjectFileFormat::IMAGE_AGGRESSIVE_WORKING_SET;
-      bool largeAddress =
-        header.characteristics & CommonObjectFileFormat::IMAGE_LARGE_ADDRESS_AWARE;
+      // bool aggressiveWorkingSet = header.characteristics & CommonObjectFileFormat::IMAGE_AGGRESSIVE_WORKING_SET;
+      // bool largeAddress = header.characteristics & CommonObjectFileFormat::IMAGE_LARGE_ADDRESS_AWARE;
       bool archWord16 =
         header.characteristics & CommonObjectFileFormat::IMAGE_16BIT_MACHINE;
       bool littleEndian =
@@ -781,8 +778,7 @@ _COM_AZURE_DEV__BASE__PACKED__END
         header.characteristics & CommonObjectFileFormat::IMAGE_SYSTEM;
       bool libraryFile =
         header.characteristics & CommonObjectFileFormat::IMAGE_DLL;
-      bool onlyOnUpSystem =
-        header.characteristics & CommonObjectFileFormat::IMAGE_UP_SYSTEM_ONLY;
+      // bool onlyOnUpSystem = header.characteristics & CommonObjectFileFormat::IMAGE_UP_SYSTEM_ONLY;
       bool bigEndian =
         header.characteristics & CommonObjectFileFormat::IMAGE_BIG_ENDIAN;
 

@@ -58,8 +58,7 @@ public:
       )
     );
     
-    ArgumentParser::EnumOption* o =
-      new ArgumentParser::EnumOption("mode", 'm');
+    ArgumentParser::EnumOption* o = new ArgumentParser::EnumOption("mode", 'm');
     o->addValue("compile");
     o->addValue("link");
     o->addValue("install");

@@ -241,12 +241,11 @@ public:
   */
   inline Matrix4x4(const Matrix4x4& _copy) noexcept
   {
-    // no need to protect against self-assignment (possible overlap)
-    copy<TYPE>(
-      Cast::pointer<TYPE*>(elements),
-      Cast::pointer<const TYPE*>(_copy.elements),
-      4 * 4
-    );
+    for (unsigned int i = 0; i < 4; ++i) {
+      for (unsigned int j = 0; j < 4; ++j) {
+        elements[i][j] = _copy.getAt(i, j);
+      }
+    }
   }
   
   /**
@@ -255,24 +254,24 @@ public:
   inline Matrix4x4& operator=(const Matrix4x4& assign) noexcept
   {
     // no need to protect against self-assignment (possible overlap)
-    copy<TYPE>(
-      Cast::pointer<TYPE*>(elements),
-      Cast::pointer<const TYPE*>(assign.elements),
-      4 * 4
-    );
+    for (unsigned int i = 0; i < 4; ++i) {
+      for (unsigned int j = 0; j < 4; ++j) {
+        elements[i][j] = assign.getAt(i, j);
+      }
+    }
     return *this;
   }
 
+  /** Returns the item at the given position. */
   inline TYPE getAt(unsigned int row, unsigned int column) const noexcept
   {
-    // TAG: check row and column
     return elements[row][column];
   }
 
+  /** Sets the items at the given position. */
   inline void setAt(
     unsigned int row, unsigned int column, const TYPE& value) noexcept
   {
-    // TAG: check row and column
     elements[row][column] = value;
   }
   

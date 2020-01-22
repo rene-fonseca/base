@@ -89,7 +89,7 @@ void MultipleSockets::add(StreamSocket socket, unsigned int events)
   struct pollfd fd;
   clear(fd);
   fd.fd = socket.getHandle();
-  fd.events |= (events & MultipleSockets::INPUT) ? POLLRDNORM : 0;
+  fd.events = (events & MultipleSockets::INPUT) ? POLLRDNORM : 0;
   fd.events |= (events & MultipleSockets::PRIORITY_INPUT) ? POLLRDBAND : 0;
   fd.events |= (events & MultipleSockets::HIGH_PRIORITY_INPUT) ? POLLPRI : 0;
   fd.events |= (events & MultipleSockets::OUTPUT) ? POLLWRNORM : 0;

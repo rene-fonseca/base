@@ -269,7 +269,11 @@ public:
 
   inline ReadIterator begin() const noexcept
   {
-    return ReadIterator(elements.getRoot());
+    if (auto root = elements.getRoot()) {
+      return ReadIterator(root);
+    } else {
+      return ReadIterator();
+    }
   }
 
   inline ReadIterator end() const noexcept

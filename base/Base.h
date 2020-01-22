@@ -337,6 +337,9 @@ public:
 
   /** Triggers failure due to corruption. */
   [[noreturn]] static void corruption(const char* who);
+  
+  /** Returns nullptr. */
+  static void* getNullPointer() noexcept;
 };
 
 /** Debug helper functions. */

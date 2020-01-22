@@ -278,6 +278,12 @@ bool Assert::handle(const char* expression, const char* filename, const char* li
   return false;
 }
 
+void* Runtime::getNullPointer() noexcept
+{
+  static void* value = nullptr;
+  return value;
+}
+
 namespace {
 
   bool useBreakpoint = true;

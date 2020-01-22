@@ -32,92 +32,19 @@
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 #if 0
-template<class TYPE>
-class HandlePointer {
-private:
+// TAG: use AnyReference - cast to actual handle use static cast
+namespace {
 
-  TYPE* p = nullptr;
+  class Handle : public ReferenceCountedObject {
+  public:
+  };
 
-  HandlePointer(const HandlePointer&);
-  HandlePointer(HandlePointer&&);
-public:
-  
-  inline HandlePointer()
-    : p(new TYPE)
+  template<typename TYPE>
+  inline TYPE* toHandle(const AnyReference& handle) noexcept
   {
+    return static_cast<TYPE*>(handle.getValue());
   }
-
-  inline TYPE& operator*() noexcept
-  {
-    BASSERT(p);
-    return *p;
-  }
-
-  inline const TYPE& operator*() const noexcept
-  {
-    BASSERT(p);
-    return *p;
-  }
-
-  inline TYPE* operator->() noexcept
-  {
-    return p;
-  }
-
-  inline const TYPE* operator->() const noexcept
-  {
-    return p;
-  }
-
-  template<class POLY>
-  inline const POLY* cast() const noexcept
-  {
-    return reinterpret_cast<POLY>(p);
-  }
-
-  inline TYPE* detach() noexcept
-  {
-    BASSERT(p);
-    TYPE* result = p;
-    p = nullptr;
-    return result;
-  }
-
-  inline ~HandlePointer()
-  {
-    if (p) {
-      delete p;
-    }
-  }
-};
-
-template<>
-class HandlePointer<void> {
-private:
-
-  void* p = nullptr;
-public:
-  
-  template<typename POLY>
-  inline POLY* cast() noexcept
-  {
-    return p;
-  }
-
-  template<typename POLY>
-  inline const POLY* cast() const noexcept
-  {
-    return p;
-  }
-  
-  inline ~HandlePointer()
-  {
-    BASSERT(!p); // prevent destruction
-  }
-};
-
-// need to convert between void* and internal pointer
-// void* cannot be destructed
+}
 #endif
 
 class EventImpl {

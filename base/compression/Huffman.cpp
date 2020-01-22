@@ -295,7 +295,8 @@ public:
 //     fout << ENDL;
   }
   
-  void externalizeSymbolTable() noexcept {
+  void externalizeSymbolTable() noexcept
+  {
     // reduce code length range
     unsigned int minimumLength = 1;
     while (numberOfSymbols[minimumLength] == 0) {
@@ -361,7 +362,8 @@ public:
   }
 
   Encoder(OutputStream& stream, const uint8* buffer, unsigned int size)
-    : os(stream) {
+    : os(stream)
+  {
     
     updateCodeLengths(buffer, size);
     generateCodes();
@@ -393,7 +395,11 @@ public:
             bitBuffer <<= zeroBits;
             availableBits -= zeroBits;
           } else {
-            bitBuffer <<= availableBits;
+            if (availableBits == BUFFER_SIZE) {
+              bitBuffer = 0;
+            } else {
+              bitBuffer <<= availableBits;
+            }
             zeroBits -= availableBits;
             availableBits = 0;
             
@@ -407,7 +413,7 @@ public:
             
             // write remaining zero bits
             bitBuffer = 0;
-            availableBits -= zeroBits%8;
+            availableBits -= zeroBits % 8;
           }
         }
         

@@ -53,6 +53,41 @@ private:
   TYPE* value = nullptr; // protect pointer value from the evil programmers
   /** Holds the total number of references. */
   Counter* references = nullptr;
+  
+  /**
+    Sets the pointer value of this automation pointer.
+  */
+  void setValue(TYPE* _value, Counter* _references)
+  {
+    if (value) {
+      BASSERT(references);
+      if (!--*references) {
+        if (_value && !_references) {
+          ++*references; // reuse - 1 reference
+          value = _value;
+          return;
+        }
+        delete references; // less likely to throw
+        references = nullptr;
+        TYPE* oldValue = value;
+        value = nullptr;
+        delete oldValue; // could throw
+      } else {
+        value = nullptr;
+        references = nullptr;
+      }
+    }
+    
+    if (_value) {
+      if (_references) {
+        references = _references;
+        ++*references; // add reference
+      } else {
+        references = new Counter(1);
+      }
+      value = _value;
+    }
+  }
 public:
 
   /**
@@ -104,6 +139,18 @@ public:
   }
 
   /**
+    Move initialization of automation pointer from other automation pointer.
+  */
+  inline ReferenceCounter(ReferenceCounter&& move) noexcept
+    : value(moveObject(move.value)),
+      references(moveObject(move.references))
+  {
+    // no need to do counting
+    move.value = nullptr;
+    move.references = nullptr;
+  }
+
+  /**
     Initialization of automation pointer from other automation pointer using
     compile time polymorphism.
   */
@@ -115,6 +162,20 @@ public:
     if (value) {
       ++*references;
     }
+  }
+
+  /**
+    Move initialization of automation pointer from other automation pointer using
+    compile time polymorphism.
+  */
+  template<class POLY>
+  inline ReferenceCounter(ReferenceCounter<POLY>&& move) noexcept
+    : value(move.getValue()),
+      references(move.getReferences())
+  {
+    // no need to do counting
+    move.value = nullptr;
+    move.references = nullptr;
   }
 
   /**
@@ -156,21 +217,7 @@ public:
   inline ReferenceCounter& operator=(const ReferenceCounter& assign)
   {
     if (&assign != this) { // protect against self assignment
-      if (value) {
-        TYPE* oldValue = value;
-        value = nullptr;
-        Counter* oldReferences = references;
-        references = nullptr;
-        if (!--*oldReferences) {
-          delete oldReferences; // less likely to throw
-          delete oldValue; // could throw
-        }
-      }
-      if (assign.value) {
-        value = assign.value;
-        references = assign.references;
-        ++*references; // add reference
-      }
+      setValue(assign.value, assign.references);
     }
     return *this;
   }
@@ -183,21 +230,7 @@ public:
   inline ReferenceCounter& operator=(const ReferenceCounter<POLY>& assign)
   {
     if (&assign != this) { // protect against self assignment
-      if (value) {
-        TYPE* oldValue = value;
-        value = nullptr;
-        Counter* oldReferences = references;
-        references = nullptr;
-        if (!--*oldReferences) {
-          delete oldReferences; // less likely to throw
-          delete oldValue; // could throw
-        }
-      }
-      if (assign.value) {
-        value = assign.value;
-        references = assign.references;
-        ++*references; // add reference
-      }
+      setValue(assign.value, assign.references);
     }
     return *this;
   }
@@ -207,7 +240,7 @@ public:
   */
   inline ReferenceCounter& operator=(TYPE* assign)
   {
-    setValue(assign);
+    setValue(assign, nullptr);
     return *this;
   }
 
@@ -245,28 +278,7 @@ public:
   {
     return references;
   }
-
-  /**
-    Sets the pointer value of this automation pointer.
-  */
-  inline void setValue(TYPE* _value)
-  {
-    if (value) {
-      TYPE* oldValue = value;
-      value = nullptr;
-      Counter* oldReferences = references;
-      references = nullptr;
-      if (!--*oldReferences) {
-        delete oldReferences; // less likely to throw
-        delete oldValue; // could throw
-      }
-    }
-    if (_value) {
-      references = new Counter(1); // one reference
-      value = _value;
-    }
-  }
-
+  
   /**
     Returns true if the reference counted object is referenced by more than
     one automation pointer.
@@ -293,7 +305,8 @@ public:
   inline void copyOnWrite()
   {
     if (isMultiReferenced()) { // do we have the object for our self
-      setValue(new TYPE(*value)); // may throw
+      TYPE* _value = new TYPE(*value);
+      setValue(_value, nullptr); // may throw
     }
   }
 
@@ -302,7 +315,7 @@ public:
   */
   inline void invalidate()
   {
-    setValue(nullptr);
+    setValue(nullptr, nullptr);
   }
   
   /**
@@ -370,7 +383,7 @@ public:
   */
   inline ~ReferenceCounter()
   {
-    setValue(nullptr);
+    setValue(nullptr, nullptr);
   }
 };
 

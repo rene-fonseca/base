@@ -191,7 +191,7 @@ public:
         unsigned int flags = 0;
         
         String categoryStr = fields[FIELD_CATEGORY];
-        Category category;
+        Category category = LETTER_UPPER;
         if (categoryStr == "Lu") {
           category = LETTER_UPPER;
           flags = LETTER | UPPER;
@@ -271,6 +271,8 @@ public:
           category =  OTHER_PRIVATE_USE;
         } else { // "Cn"
           category = OTHER;
+        }
+        if (category) {
         }
 
         ucs4 upperCharacter = 0;
@@ -682,7 +684,7 @@ public:
           }
           if (first) {
             fout << ' ' << 0;
-            first = false;
+            // first = false;
           }
           fout << ',' << ' ' << HEX << ite->upper
                << ',' << ' ' << HEX << ite->lower

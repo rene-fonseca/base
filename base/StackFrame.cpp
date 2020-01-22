@@ -456,7 +456,9 @@ namespace {
     if (!initialized) {
       initialized = true;
       handle = ::LoadLibraryExW(L"ntdll.dll", 0, 0);
-      rtlCaptureStackBackTrace = (RtlCaptureStackBackTraceFunc)GetProcAddress(handle, "RtlCaptureStackBackTrace");
+      if (handle) {
+        rtlCaptureStackBackTrace = (RtlCaptureStackBackTraceFunc)GetProcAddress(handle, "RtlCaptureStackBackTrace");
+      }
     }
   }
 }

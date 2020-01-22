@@ -1126,7 +1126,42 @@ MemoryDiff WideString::lastIndexOf(const WideString& string, MemorySize start) c
     start = getLength() - 1;
   }
 
-  // TAG: todo
+  const ucs4* substring = string.getBuffer();
+  const ucs4* buffer = getBuffer();
+  const ucs4* begin = &buffer[start - string.getLength() + 1]; // beginning of current substring
+  const ucs4* last = &buffer[start]; // end of current substring - buffer <= begin <= last
+
+  // calculate hash of strings
+  unsigned int hash = 0;
+  unsigned int mask = 1;
+  unsigned int match = 0;
+  const ucs4* p = substring;
+  const ucs4* q = begin;
+  MemorySize count = string.getLength();
+  while (count--) {
+    hash = (128 * hash + *p++) % 16647143;
+    match = (128 * match + *q++) % 16647143;
+    if (count > 0) {
+      mask = (128 * mask) % 16647143;
+    }
+  }
+
+  // look for substring
+  count = getLength() - string.getLength() + 1; // number of characters left - count >= 1
+  while (true) {
+    if (match == hash) { // possible substring found
+      if (compare(begin, substring, string.getLength()) == 0) {
+        return begin - buffer; // return index of substring
+      }
+    }
+    if (!--count) { // are we done - make sure we check for match for the last char
+      break;
+    }
+    match = (match + 128 * 16647143 - mask * *begin) % 16647143;
+    match = (match * 128 + *last) % 16647143;
+    --begin;
+    --last;
+  }
 
   return -1; // not found
 }

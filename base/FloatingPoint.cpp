@@ -333,7 +333,8 @@ float FloatingPoint::getFloat(const String& value)
       ++i;
     }
   }
-  
+  (void)negative; // dont care about unused
+
   // TAG: check for nan, nan(xxxxxxxxxxxxx), +-inf, +-infinity
   
   // TAG: check for 0x or 0X and read as hexadecimal format if present

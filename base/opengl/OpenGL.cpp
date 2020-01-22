@@ -85,7 +85,8 @@ namespace opengl {
   typedef OpenGL::Function (CALL_OPENGL *GetFunction)(const char* name);
   GetFunction getFunction = 0;  
 
-  void CALL_OPENGL missing() {
+  void CALL_OPENGL missing()
+  {
     // must always raise exception (to work with any calling convention/argument list)
     _throw OpenGLException("Function not supported.", Type::getType<OpenGL>());
   }
@@ -754,7 +755,8 @@ OpenGL::OpenGL(unsigned int latest)
   opengl::spinLock.releaseLock();
 }
 
-bool OpenGL::isSupported(const String& name) {
+bool OpenGL::isSupported(const String& name)
+{
   bassert(
     name.isProper() && (name.indexOf(' ') < 0),
     OpenGLException(Type::getType<OpenGL>())
@@ -906,8 +908,8 @@ Vector3D<double> OpenGL::unProject(
   const Vector3D<double>& window,
   const Matrix4x4<double>& model,
   const Matrix4x4<double>& projection,
-  const GLint viewport[4]) {
-  
+  const GLint viewport[4])
+{
   Matrix4x4<double> A = projection * model;
   Matrix4x4<double> matrix;
   matrix.inverse(A);

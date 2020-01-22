@@ -2220,7 +2220,8 @@ public:
   class ClassWithToString {
   public:
 
-    String toString() const {
+    String toString() const
+    {
       return "Using ClassWithToString::toString().";
     }
   };
@@ -2228,7 +2229,8 @@ public:
   class ClassWithToString2 {
   public:
 
-    const String& toString() const {
+    const String& toString() const
+    {
       static String text = "Using ClassWithToString2::toString().";
       return text;
     }
@@ -2237,11 +2239,13 @@ public:
   class ClassWithToString3 {
   public:
 
-    String toString() const {
+    String toString() const
+    {
       return "Using ClassWithToString3::toString().";
     }
 
-    operator String() const {
+    operator String() const
+    {
       return "Using ClassWithToString3::operator String().";
     }
   };
@@ -2249,7 +2253,8 @@ public:
   class ClassWithMissingConstToString {
   public:
 
-    String toString() { // missing const
+    String toString() // missing const
+    {
       return "Using ClassWithMissingConstToString::toString().";
     }
   };
@@ -2257,7 +2262,8 @@ public:
   class ClassWithStaticToString {
   public:
 
-    static String toString() { // static
+    static String toString() // static
+    {
       return "Using ClassWithStaticToString::toString().";
     }
   };

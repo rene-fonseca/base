@@ -252,11 +252,11 @@ public:
   inline void setValue(TYPE* _value)
   {
     if (value) {
+      TYPE* oldValue = value;
+      value = nullptr;
       Counter* oldReferences = references;
       references = nullptr;
       if (!--*oldReferences) {
-        TYPE* oldValue = value;
-        value = nullptr;
         delete oldReferences; // less likely to throw
         delete oldValue; // could throw
       }

@@ -472,7 +472,7 @@ InetAddress::InetAddress(const String& address)
 InetAddress::InetAddress(const String& address, Family family) {
   bassert(
     parse(address) && (this->family == family),
-    InvalidFormat("Not an Internet address", this)
+    InvalidFormat("Not an Internet address.", this)
   );
 }
 

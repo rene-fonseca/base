@@ -29,7 +29,7 @@ unsigned long long UnsignedLongInteger::parse(const char* src, const char* end, 
   // do not accept empty strings
   bassert(
     src != end,
-    InvalidFormat("String is empty", Type::getType<UnsignedLongInteger>())
+    InvalidFormat("String is empty.", Type::getType<UnsignedLongInteger>())
   );
   
   switch (flags & (BIN|DEC|OCT|HEX)) {
@@ -77,7 +77,7 @@ unsigned long long UnsignedLongInteger::parse(const char* src, const char* end, 
       ((base == 8) && (flags & OCT)) ||
       ((base == 10) && (flags & DEC)) ||
       ((base == 16) && (flags & HEX)),
-      InvalidFormat("Invalid base", Type::getType<UnsignedLongInteger>())
+      InvalidFormat("Invalid base.", Type::getType<UnsignedLongInteger>())
     );
   }
 
@@ -86,7 +86,7 @@ unsigned long long UnsignedLongInteger::parse(const char* src, const char* end, 
   unsigned long long temp = 0;
   bassert( // make sure we have at least one digit
     ASCIITraits::isHexDigit(*src),
-    InvalidFormat("No digits", Type::getType<UnsignedLongInteger>())
+    InvalidFormat("No digits.", Type::getType<UnsignedLongInteger>())
   );
   while (src != end) {
     char ch = *src;
@@ -98,7 +98,7 @@ unsigned long long UnsignedLongInteger::parse(const char* src, const char* end, 
       ASCIITraits::isHexDigit(ch) &&
       (digitValue < base) &&
       ((temp < highLimit) || ((temp == highLimit) && (digitValue <= lowLimit))),
-      InvalidFormat("Out of range", Type::getType<UnsignedLongInteger>())
+      InvalidFormat("Out of range.", Type::getType<UnsignedLongInteger>())
     );
     temp = temp * base + digitValue;
     ++src;

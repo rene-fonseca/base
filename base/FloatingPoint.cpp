@@ -197,7 +197,7 @@ float FloatingPoint::getFloatAsHex(const String& value)
     
     bassert(
       (i != end) && ASCIITraits::isDigit(*i),
-      InvalidFormat("Not a number", Type::getType<FloatingPoint>())
+      InvalidFormat("Not a number.", Type::getType<FloatingPoint>())
     );
     
     // read exponent value
@@ -210,7 +210,7 @@ float FloatingPoint::getFloatAsHex(const String& value)
         exponent = exponent * 10 - ASCIITraits::digitToValue(ch);
         bassert(
           exponent <= MAXIMUM_BINARY_EXPONENT,
-          InvalidFormat("Invalid exponent", Type::getType<FloatingPoint>())
+          InvalidFormat("Invalid exponent.", Type::getType<FloatingPoint>())
         );
       }
     } else {
@@ -222,7 +222,7 @@ float FloatingPoint::getFloatAsHex(const String& value)
         exponent = exponent * 10 + ASCIITraits::digitToValue(ch);
         bassert(
           exponent <= MAXIMUM_BINARY_EXPONENT,
-          InvalidFormat("Invalid exponent", Type::getType<FloatingPoint>())
+          InvalidFormat("Invalid exponent.", Type::getType<FloatingPoint>())
         );
       }
     }
@@ -258,7 +258,7 @@ FloatingPoint::IEEE754SinglePrecision::IEEE754SinglePrecision(
   int exponent)
 {
   if (!mantissa) {
-    throw NullPointer();
+    throw NullPointer(Type::getType<FloatingPoint>());
   }
   
   static const int EXPLICIT_SIGNIFICANT =
@@ -267,7 +267,7 @@ FloatingPoint::IEEE754SinglePrecision::IEEE754SinglePrecision(
   
   bassert(
     (exponent >= -static_cast<int>(MAXIMUM_BINARY_EXPONENT)) && (exponent <= MAXIMUM_BINARY_EXPONENT),
-    InvalidFormat("Invalid exponent", Type::getType<FloatingPoint>())
+    InvalidFormat("Invalid exponent.", Type::getType<FloatingPoint>())
   );
   
   while (size && (*mantissa == '0')) { // skip leading zeros
@@ -300,7 +300,7 @@ FloatingPoint::IEEE754SinglePrecision::IEEE754SinglePrecision(
     // TAG: check flags if we should use zero if shift exceeds EXPLICIT_SIGNIFICANT
     bassert(
       shift <= EXPLICIT_SIGNIFICANT, // cannot shift out implied one
-      InvalidFormat("Underflow", Type::getType<FloatingPoint>())
+      InvalidFormat("Underflow.", Type::getType<FloatingPoint>())
     );
     mantissa0 >>= shift; // denormalize
     exponent += shift;

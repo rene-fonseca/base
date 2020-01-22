@@ -456,7 +456,7 @@ public:
         );
         bassert(
           busId <= IEEE1394::LOCAL_BUS,
-          InvalidFormat("Invalid bus id", this)
+          InvalidFormat("Invalid bus id.", this)
         );
       }
     }
@@ -467,7 +467,7 @@ public:
     }
     bassert(
       physicalId <= IEEE1394::BROADCAST,
-      InvalidFormat("Invalid physical id", this)
+      InvalidFormat("Invalid physical id.", this)
     );
     return IEEE1394::makeNodeId(physicalId, busId);
   }

@@ -28,7 +28,7 @@ unsigned int UnsignedInteger::parse(const char* src, const char* end, unsigned i
   
   bassert(
     src != end,
-    InvalidFormat("Not an integer", Type::getType<UnsignedInteger>())
+    InvalidFormat("Not an integer.", Type::getType<UnsignedInteger>())
   ); // do not accept empty strings
 
   switch (flags & (BIN|DEC|OCT|HEX)) {
@@ -77,7 +77,7 @@ unsigned int UnsignedInteger::parse(const char* src, const char* end, unsigned i
       ((base == 8) && (flags & OCT)) ||
       ((base == 10) && (flags & DEC)) ||
       ((base == 16) && (flags & HEX)),
-      InvalidFormat("Not an integer", Type::getType<UnsignedInteger>())
+      InvalidFormat("Not an integer.", Type::getType<UnsignedInteger>())
     );
   }
 
@@ -86,7 +86,7 @@ unsigned int UnsignedInteger::parse(const char* src, const char* end, unsigned i
   unsigned int temp = 0;
   bassert( // make sure we have at least one digit
     ASCIITraits::isHexDigit(*src),
-    InvalidFormat("Not an integer", Type::getType<UnsignedInteger>())
+    InvalidFormat("Not an integer.", Type::getType<UnsignedInteger>())
   );
   while (src != end) {
     char ch = *src;
@@ -98,7 +98,7 @@ unsigned int UnsignedInteger::parse(const char* src, const char* end, unsigned i
       ASCIITraits::isHexDigit(ch) &&
       (digitValue < base) &&
       ((temp < highLimit) || ((temp == highLimit) && (digitValue <= lowLimit))),
-      InvalidFormat("Not an integer", Type::getType<UnsignedInteger>())
+      InvalidFormat("Not an integer.", Type::getType<UnsignedInteger>())
     );
     temp = temp * base + digitValue;
     ++src;

@@ -28,7 +28,7 @@ long long LongInteger::parse(const char* src, const char* end, unsigned int flag
   
   bassert(
     i < end,
-    InvalidFormat("Not an integer", Type::getType<LongInteger>())
+    InvalidFormat("Not an integer.", Type::getType<LongInteger>())
   ); // do not accept empty strings
   
   long long value = 0;

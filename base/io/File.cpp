@@ -183,9 +183,8 @@ File::File(const String& path, Access access, unsigned int options)
       break;
     }
     
-    // TAG: fix buffer size (protect against buffer overflow)
-    char* buffer[17000]; // need alternative - first attempt to get length first failed
-    REPARSE_DATA_BUFFER* reparseHeader = (REPARSE_DATA_BUFFER*)&buffer;
+    PrimitiveArray<uint8> buffer(17000); // need alternative - first attempt to get length first failed
+    REPARSE_DATA_BUFFER* reparseHeader = reinterpret_cast<REPARSE_DATA_BUFFER*>(static_cast<uint8*>(buffer));
     DWORD bytesWritten = 0;
     error |= ::DeviceIoControl(link, FSCTL_GET_REPARSE_POINT, // handle and ctrl
                                0, 0, // input

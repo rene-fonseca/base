@@ -24,12 +24,14 @@ using namespace com::azure::dev::base;
 
 void moduleEntry()
 {
-  Trace::message("Module entry function");
-  LinkerManager::getManager()->registrate(new MyLinkerModule("https://dev.azure.com/base/MyLinkerModule", "MyLinkerModule", "0.1"));
+  Trace::message("Module entry function.");
+  LinkerManager::getManager()->registrate(
+    new MyLinkerModule("https://dev.azure.com/base/MyLinkerModule", "MyLinkerModule", "0.1")
+  );
 }
 
 void moduleCleanUp()
 {
-  Trace::message("Module clean-up function");
+  Trace::message("Module clean-up function.");
   delete LinkerManager::getManager()->deregistrate();
 }

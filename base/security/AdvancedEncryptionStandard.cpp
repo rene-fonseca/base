@@ -1361,7 +1361,10 @@ AdvancedEncryptionStandard::AdvancedEncryptionStandard(
   const uint8* key, Cipher _cipher, bool _inverse) noexcept
   : cipher(_cipher),
     inverse(_inverse),
-    bytesInBuffer(0) {
+    bytesInBuffer(0)
+{
+  clear(buffer);
+
   switch (cipher) {
   case CIPHER_128:
     AdvancedEncryptionStandardImpl::Cipher128::fillSchedule(schedule, key);

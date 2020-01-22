@@ -208,12 +208,12 @@ Array<String> Group::getMembers() const
 
   SID_NAME_USE sidType;
   WCHAR name[GNLEN+1];
-  DWORD nameSize = sizeof(name);
+  DWORD nameSize = getArraySize(name);
   WCHAR domainName[DNLEN+1];
-  DWORD domainNameSize = sizeof(domainName);
+  DWORD domainNameSize = getArraySize(domainName);
   bassert(
     ::LookupAccountSidW(
-      0,
+      NULL,
       (PSID)id->getElements(),
       name,
       &nameSize,
@@ -228,7 +228,7 @@ Array<String> Group::getMembers() const
   DWORD numberOfEntries = 0;
   DWORD totalEntries = 0;
   NET_API_STATUS status = ::NetGroupGetUsers(
-    0, // use local machine
+    NULL, // use local machine
     name,
     0,
     (LPBYTE*)&buffer,

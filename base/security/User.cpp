@@ -121,14 +121,15 @@ User::User(const String& name)
 {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   SID_NAME_USE sidType;
+  clear(sidType);
   uint8 sid[SECURITY_MAX_SID_SIZE];
-  DWORD size = sizeof(sid);
-  bassert(::LookupAccountName(nullptr,
+  DWORD size = getArraySize(sid);
+  bassert(::LookupAccountName(NULL,
                              ToWCharString(name),
                              &sid,
                              &size,
-                             0,
-                             0,
+                             NULL,
+                             NULL,
                              &sidType) != 0,
          UserException("Unable to lookup name.", this)
   );
@@ -275,10 +276,10 @@ Array<String> User::getGroups() {
   bassert(isValid(), UserException(this));
   SID_NAME_USE sidType;
   WCHAR name[UNLEN+1];
-  DWORD nameSize = sizeof(name);
+  DWORD nameSize = getArraySize(name);
   WCHAR domainName[DNLEN+1];
-  DWORD domainNameSize = sizeof(domainName);
-  bassert(::LookupAccountSidW(0,
+  DWORD domainNameSize = getArraySize(domainName);
+  bassert(::LookupAccountSidW(NULL,
                              (PSID)id->getElements(), // must be valid
                              name,
                              &nameSize,
@@ -291,7 +292,7 @@ Array<String> User::getGroups() {
   GROUP_USERS_INFO_0* buffer = nullptr;
   DWORD numberOfEntries = 0;
   DWORD totalEntries = 0;
-  NET_API_STATUS status = ::NetUserGetGroups(0,
+  NET_API_STATUS status = ::NetUserGetGroups(NULL,
                                              name,
                                              0,
                                              (LPBYTE*)&buffer,

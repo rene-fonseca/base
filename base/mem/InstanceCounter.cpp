@@ -50,17 +50,22 @@ public:
 
   void run() override
   {
-    MyObject o1;
-    MemorySize instances = getInstanceCount<MyObject>();
-    MyObject o2;
-    instances = getInstanceCount<MyObject>();
-    TEST_ASSERT(instances > 0);
-    instances = getInstanceDestructionCount<MyObject>();
-    TEST_ASSERT(instances > 0);
-    instances = getInstanceCountFor(o2);
-    TEST_ASSERT(instances > 0);
-    instances = getInstanceDestructionCountFor(o2);
-    TEST_ASSERT(instances > 0);
+    {
+      MyObject o1;
+      MemorySize instances = getInstanceCount<MyObject>();
+      TEST_ASSERT(instances == 1);
+      MyObject o2;
+      instances = getInstanceCount<MyObject>();
+      TEST_ASSERT(instances == 2);
+      instances = getInstanceDestructionCount<MyObject>();
+      TEST_ASSERT(instances == 0);
+      instances = getInstanceCountFor(o2);
+      TEST_ASSERT(instances == 2);
+      instances = getInstanceDestructionCountFor(o2);
+      TEST_ASSERT(instances == 0);
+    }
+    MemorySize instances = getInstanceDestructionCount<MyObject>();
+    TEST_ASSERT(instances == 2);
   }
 };
 

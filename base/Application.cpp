@@ -320,7 +320,7 @@ public:
     //Trace::message(stream.getString().getElements());
     switch (message) {
     case WM_QUIT:
-      Trace::message("Quit");
+      Trace::message("Quit.");
       if (Application::application) {
         Application::application->terminate();
       }
@@ -851,10 +851,19 @@ Application::Application(const String& _formalName)
 
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   {
-    wchar buffer[MAX_PATH + 1]; // what if path starts with "\\?\"
-    DWORD length = ::GetModuleFileName(0, buffer, MAX_PATH /*lengthOf(buffer)*/);
-    if (INLINE_ASSERT(length > 0)) {
+    // what if path starts with "\\?\"
+    PrimitiveStackArray<wchar> buffer(1024);
+    while (buffer.size() < (64 * 1024)) {
+      DWORD length = GetModuleFileNameW((HMODULE)NULL, buffer, buffer.size());
+      if (length == 0) {
+        if (GetLastError() == ERROR_INSUFFICIENT_BUFFER) {
+          buffer.resize(buffer.size() * 2);
+          continue;
+        }
+        break;
+      }
       path = String(buffer, length);
+      break;
     }
   }
 #else

@@ -110,12 +110,12 @@ namespace win32 {
       reportStatusToControlManager(SERVICE_STOP_PENDING, NO_ERROR, 5000);
       try {
         Application::getApplication()->terminate();
-        Trace::message("Waiting for daemon thread to terminate");
+        Trace::message("Waiting for daemon thread to terminate.");
         DaemonImpl::daemonThread->join();
         reportStatusToControlManager(SERVICE_STOPPED, NO_ERROR, 0);
-        Trace::message("Destroying daemon thread");
+        Trace::message("Destroying daemon thread.");
         delete DaemonImpl::daemonThread;
-        Trace::message("Daemon thread has been destroyed");
+        Trace::message("Daemon thread has been destroyed.");
         reportStatusToControlManager(SERVICE_STOPPED, NO_ERROR, 0);
       } catch (...) {
         reportStatusToControlManager(SERVICE_STOPPED, ERROR_EXCEPTION_IN_SERVICE, 0);
@@ -251,9 +251,10 @@ void Daemon::uninstall() {
 }
 */
 /* Installs service. */
-void Daemon::install() {
+void Daemon::install()
+{
   TCHAR path[512];
-  if (::GetModuleFileName(0, path, 512) == 0) {
+  if (::GetModuleFileName(0, path, getArraySize(path)) == 0) {
     ferr << "Unable to install service as "
          << Application::getApplication()->getFormalName() << ENDL;
     return;

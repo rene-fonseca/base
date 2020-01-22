@@ -865,7 +865,9 @@ Vector3D<double> OpenGL::project(const Vector3D<double>& object,
   Quaternion<double> in(object, 1);
   Quaternion<double> out = model * in;
   in = projection * out;
-  bassert(in.getW() != 0, OpenGLException(Type::getType<OpenGL>()));
+  if (in.getW() == 0) {
+    _throw OpenGLException(Type::getType<OpenGL>());
+  }
   in /= in.getW();
   return Vector3D<double>(
     viewport[0] + (1 + in.getX()) * 0.5 * viewport[2],

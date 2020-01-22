@@ -24,10 +24,12 @@ private:
 public:
   
   DebugApplication()
-    : Application("debug") {
+    : Application("debug")
+  {
   }
 
-  void level3(unsigned int value) {
+  void level3(unsigned int value)
+  {
     volatile long double floating = 1.0;
     if (floating > 100.0) {
       return;
@@ -35,13 +37,18 @@ public:
     
     volatile double zero = 0.0;
     double doubleResult = 1.0/zero;
+    if (doubleResult) {
+    }
     
-    unsigned int* invalid = nullptr;
+    volatile unsigned int* invalid = nullptr;
     unsigned int temp = *invalid; // read
+    if (temp) {
+    }
     *invalid = 0; // write
   }
   
-  void level2(unsigned int value)  {
+  void level2(unsigned int value)
+  {
     if (value) {
       level2(--value);
     } else {

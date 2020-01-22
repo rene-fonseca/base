@@ -71,25 +71,29 @@ public:
     typedef MemoryDiff Distance;
     typedef ForwardIterator Category;
 
+    /** Initialize as end iterator. */
     inline Iterator() noexcept
     {
     }
 
+    /** Initialize by node. */
     inline Iterator(Node* node) noexcept
       : NodeIterator(node)
     {
     }
 
+    /** Dereference. */
     inline Pointer operator->() const noexcept
     {
       Node* p = NodeIterator::operator->();
       return &(p->getValue());
     }
 
+    /** Dereference. */
     inline Reference operator*() const noexcept
     {
-      Node& p = NodeIterator::operator*();
-      return p.getValue();
+      Node* p = NodeIterator::operator->();
+      return p->getValue();
     }
   };
 
@@ -103,25 +107,29 @@ public:
     typedef MemoryDiff Distance;
     typedef ForwardIterator Category;
 
+    /** Initialize as end iterator. */
     inline ReadIterator() noexcept
     {
     }
 
+    /** Initialize by node. */
     inline ReadIterator(const Node* node) noexcept
       : NodeReadIterator(node)
     {
     }
 
+    /** Dereference. */
     inline Pointer operator->() const noexcept
     {
       const Node* p = NodeReadIterator::operator->();
       return &(p->getValue());
     }
 
+    /** Dereference. */
     inline Reference operator*() const noexcept
     {
-      const Node& p = NodeReadIterator::operator*();
-      return p.getValue();
+      const Node* p = NodeReadIterator::operator->();
+      return p->getValue();
     }
   };
 

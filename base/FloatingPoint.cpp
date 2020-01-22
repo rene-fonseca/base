@@ -257,6 +257,10 @@ FloatingPoint::IEEE754SinglePrecision::IEEE754SinglePrecision(
   unsigned int size,
   int exponent)
 {
+  if (!mantissa) {
+    throw NullPointer();
+  }
+  
   static const int EXPLICIT_SIGNIFICANT =
     value.HAS_IMPLIED_ONE ? (value.SIGNIFICANT - 1) : value.SIGNIFICANT;
   value.negative = negative;

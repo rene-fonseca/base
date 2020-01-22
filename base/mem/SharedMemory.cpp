@@ -46,10 +46,12 @@ SharedMemory::SharedMemoryImpl::SharedMemoryImpl(
     region.getSize(), // low word of size
     0 // name of mapping
   );
-  bassert(
-    handle != OperatingSystem::INVALID_HANDLE,
-    MemoryException("Unable to open shared memory.", this)
-  );
+  if (!handle) {
+    _throw MemoryException("Unable to open shared memory.", this);
+  }
+  if (handle == OperatingSystem::INVALID_HANDLE) {
+    _throw MemoryException("Unable to open shared memory.", this);
+  }
 
   address = (uint8*)::MapViewOfFile(
     handle, // handle to file-mapping object
@@ -58,7 +60,7 @@ SharedMemory::SharedMemoryImpl::SharedMemoryImpl(
     getLowWordOf64(region.getOffset()), // low word of offset
     region.getSize() // number of bytes to map
   );
-  if (access == 0) {
+  if (access == NULL) {
     ::CloseHandle(handle);
     _throw MemoryException("Unable to open shared memory.", this);
   }

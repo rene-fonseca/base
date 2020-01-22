@@ -65,7 +65,7 @@ public:
   /**
     Initializes map from other map.
   */
-  inline ArrayMap(ArrayMap&& move)
+  inline ArrayMap(ArrayMap&& move) noexcept
     : Base(moveObject(move))
   {
   }

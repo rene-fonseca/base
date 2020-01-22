@@ -251,9 +251,10 @@ void Daemon::uninstall() {
 }
 */
 /* Installs service. */
-void Daemon::install() {
+void Daemon::install()
+{
   TCHAR path[512];
-  if (::GetModuleFileName(0, path, 512) == 0) {
+  if (::GetModuleFileName(0, path, getArraySize(path)) == 0) {
     ferr << "Unable to install service as "
          << Application::getApplication()->getFormalName() << ENDL;
     return;

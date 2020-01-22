@@ -143,14 +143,15 @@ Trustee::Trustee(const String& name)
 {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   SID_NAME_USE sidType;
+  clear(sidType);
   uint8 sid[SECURITY_MAX_SID_SIZE];
   DWORD size = getArraySize(sid);
-  bassert(::LookupAccountName(0,
+  bassert(::LookupAccountNameW(NULL,
                              ToWCharString(name),
                              &sid,
                              &size,
-                             0,
-                             0,
+                             NULL,
+                             NULL,
                              &sidType) != 0,
          TrusteeException("Unable to lookup name.", this)
   );

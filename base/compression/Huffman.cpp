@@ -395,7 +395,11 @@ public:
             bitBuffer <<= zeroBits;
             availableBits -= zeroBits;
           } else {
-            bitBuffer <<= availableBits;
+            if (availableBits == BUFFER_SIZE) {
+              bitBuffer = 0;
+            } else {
+              bitBuffer <<= availableBits;
+            }
             zeroBits -= availableBits;
             availableBits = 0;
             
@@ -409,7 +413,7 @@ public:
             
             // write remaining zero bits
             bitBuffer = 0;
-            availableBits -= zeroBits%8;
+            availableBits -= zeroBits % 8;
           }
         }
         

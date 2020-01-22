@@ -121,6 +121,7 @@ unsigned int SoundInputStream::available() const noexcept
 #else
   SharedSynchronize<ReadWriteLock> sharedSynchronize(SoundDevice::soundDevice.guard);
   OperatingSystem::Handle handle = SoundDevice::soundDevice.getReadHandle();
+  (void)handle; // dont care about unused
   #if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__GNULINUX)
     return 0;
   #elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__SOLARIS)
@@ -258,6 +259,7 @@ void SoundInputStream::reset() noexcept
 #else
   SharedSynchronize<ReadWriteLock> sharedSynchronize(SoundDevice::soundDevice.guard);
   OperatingSystem::Handle handle = SoundDevice::soundDevice.getReadHandle();
+  (void)handle; // dont care about unused
   #if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__GNULINUX)
     bassert(::ioctl(handle, SNDCTL_DSP_RESET, 0) == 0, UnexpectedFailure());
   #elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__SOLARIS)

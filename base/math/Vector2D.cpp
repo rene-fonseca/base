@@ -40,7 +40,8 @@ public:
     d.getModulus();
     d.negate();
     auto _dot = dot(a, b);
-    a.isZero();
+    TEST_ASSERT(_dot != 0);
+    TEST_ASSERT(!a.isZero());
     auto f = -a;
   }
 };

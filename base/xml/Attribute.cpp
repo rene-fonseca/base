@@ -83,6 +83,8 @@ bool Attribute::isSpecified() const noexcept
 {
 #if defined(_COM_AZURE_DEV__BASE__USE_XMLSOFT_XML)
   xmlAttr* attribute = (xmlAttr*)getContext();
+  if (attribute) {
+  }
   return true; // TAG: fixme
 #else
   _COM_AZURE_DEV__BASE__NOT_IMPLEMENTED();

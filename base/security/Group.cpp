@@ -38,7 +38,9 @@
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
-Group::Group(unsigned long _id) : integralId(_id) {
+Group::Group(unsigned long _id)
+  : integralId(_id)
+{
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   _throw OutOfDomain("Invalid user id.", this);
 #else // unix

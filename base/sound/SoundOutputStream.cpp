@@ -75,7 +75,8 @@ SoundOutputStream::SoundOutputStream(unsigned int samplingRate, unsigned int cha
   SoundDevice::soundDevice.acquireWriteAccess();
   SharedSynchronize<ReadWriteLock> sharedSynchronization(SoundDevice::soundDevice.guard);
   OperatingSystem::Handle handle = SoundDevice::soundDevice.getWriteHandle();
-
+  (void)handle; // dont care about unused
+  
   #if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__GNULINUX)
     int format = AFMT_S16_LE;
     bassert(::ioctl(handle, SNDCTL_DSP_SETFMT, &format) == 0, UnexpectedFailure());
@@ -188,6 +189,7 @@ void SoundOutputStream::resume() noexcept {
 #else
   SharedSynchronize<ReadWriteLock> sharedSynchronization(SoundDevice::soundDevice.guard);
   OperatingSystem::Handle handle = SoundDevice::soundDevice.getWriteHandle();
+  (void)handle; // dont care about unused
   #if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__GNULINUX)
   #elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__SOLARIS)
     bassert(::ioctl(handle, I_FLUSH, FLUSHW) == 0, UnexpectedFailure()); // should never fail
@@ -206,6 +208,7 @@ void SoundOutputStream::reset() noexcept {
 #else
   SharedSynchronize<ReadWriteLock> sharedSynchronization(SoundDevice::soundDevice.guard);
   OperatingSystem::Handle handle = SoundDevice::soundDevice.getWriteHandle();
+  (void)handle; // dont care about unused
   #if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__GNULINUX)
     bassert(::ioctl(handle, SNDCTL_DSP_RESET, 0) == 0, UnexpectedFailure()); // should never fail
   #elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__SOLARIS)
@@ -238,6 +241,7 @@ void SoundOutputStream::wait() noexcept
 #else
   SharedSynchronize<ReadWriteLock> sharedSynchronization(SoundDevice::soundDevice.guard);
   OperatingSystem::Handle handle = SoundDevice::soundDevice.getWriteHandle();
+  (void)handle; // dont care about unused
   #if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__GNULINUX)
     bassert(::ioctl(handle, SNDCTL_DSP_SYNC, 0) == 0, UnexpectedFailure());
   #elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__SOLARIS)

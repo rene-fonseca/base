@@ -634,8 +634,8 @@ void FormatOutputStream::addDateField(const Date& date)
 {
   ExclusiveSynchronize<Guard> _guard(guard);
   const bool localTime = ((context.flags & Symbols::LOCAL_TIME) != 0);
-  const bool posix = ((context.flags & Symbols::POSIX) != 0);
-//  const Locale* locale = posix ? &Locale::POSIX : &locale; // FIXME
+  // const bool posix = ((context.flags & Symbols::POSIX) != 0);
+  // const Locale* locale = posix ? &Locale::POSIX : &locale; // FIXME
   const Locale* locale = &Locale::POSIX;
   String format;
   switch (context.majorDateFormat) {

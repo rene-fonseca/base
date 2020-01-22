@@ -208,7 +208,7 @@ int Date::normalize(DateTime& dateTime, bool redundancy) noexcept
       --month;
       if (month < 0) {
         --year;
-        leapYear = isLeapYear(static_cast<int>(year));
+        // leapYear = isLeapYear(static_cast<int>(year));
         month = MONTHS_PER_YEAR - 1;
       }
       // daysInMonth = leapYear ? DAYS_PER_MONTH_LEAP_YEAR[month] : DAYS_PER_MONTH_NONLEAP_YEAR[month]; // month is valid

@@ -561,7 +561,7 @@ LargeInteger& LargeInteger::add(const LargeInteger& addend)
   bool carry = LargeIntegerImpl::add(toWords(), addend.toWords(), size);
   if (carry) {
     if (getSize() > size) {
-      carry = LargeIntegerImpl::add(toWords() + size, getSize(), 1);
+      /*carry =*/ LargeIntegerImpl::add(toWords() + size, getSize(), 1);
     }
   }
   return *this;
@@ -574,7 +574,7 @@ LargeInteger& LargeInteger::subtract(const LargeInteger& subtrahend)
   bool borrow = LargeIntegerImpl::subtract(toWords(), subtrahend, static_cast<unsigned int>(size));
   if (borrow) {
     if (getSize() > size) {
-      borrow = LargeIntegerImpl::subtract(toWords() + size, getSize(), 1);
+      /*borrow =*/ LargeIntegerImpl::subtract(toWords() + size, getSize(), 1);
     }
   }
   return *this;

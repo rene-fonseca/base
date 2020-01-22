@@ -59,6 +59,7 @@ public:
     counter -= 123;
     TEST_ASSERT(static_cast<MemorySize>(counter) == 0);
     MemorySize value = counter;
+    TEST_ASSERT(value == 0);
     counter = 1234;
     counter.exchange(4321);
     TEST_ASSERT(static_cast<MemorySize>(counter) == 4321);

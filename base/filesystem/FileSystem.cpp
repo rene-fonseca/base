@@ -1711,7 +1711,7 @@ String FileSystem::getTempFileName(unsigned int options) noexcept {
     if (!first) {
       stream << '-';
     }
-    first = false;
+    // first = false;
     unsigned int random = Random::random<unsigned int>();
     stream << HEX << ZEROPAD << random;
   }

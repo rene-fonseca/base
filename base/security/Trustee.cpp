@@ -77,12 +77,14 @@ Trustee::Trustee(Group group) noexcept : type(GROUP) {
 #endif // flavor
 }
 
-Trustee::Trustee(TrusteeType type, const void* _id) {
+Trustee::Trustee(TrusteeType type, const void* _id)
+{
   if (_id == 0) {
-    type = Trustee::UNSPECIFIED;
-    integralId = PrimitiveTraits<unsigned long>::MAXIMUM;
+    this->type = Trustee::UNSPECIFIED;
+    this->integralId = PrimitiveTraits<unsigned long>::MAXIMUM;
     return;
   }
+
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   bassert(::IsValidSid((PSID)_id) != 0, OutOfDomain("Invalid trustee.", this));
   unsigned int size = ::GetLengthSid((PSID)_id);

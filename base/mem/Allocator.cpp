@@ -57,6 +57,7 @@ public:
     auto size = a2.getSize();
     TEST_ASSERT(size == 345);
     auto capacity = a2.getCapacity();
+    TEST_ASSERT(capacity > 0);
     auto garbageBytes = a2.getGarbageByteSize();
     TEST_ASSERT(garbageBytes > 0);
     MemorySize garbage = a2.garbageCollect();

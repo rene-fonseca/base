@@ -199,6 +199,7 @@ bool WebSocket::open(const String& _url, const String& _protocols)
   }
 
   const String path = url.getPath() ? url.getPath() : "/";
+  (void)port; // dont care about unused
 
 #if 0 && (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
 

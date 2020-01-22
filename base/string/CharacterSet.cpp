@@ -33,10 +33,14 @@ CharacterSet CharacterSet::load(const String& path)
     data += 8; // skip id
     
     // check version
-    uint8 majorVersion = *data++;
-    uint8 minorVersion = *data++;
-    uint8 microVersion = *data++;
-    uint8 reserved = *data++;
+    const uint8 majorVersion = *data++;
+    (void)majorVersion; // dont care about unused
+    const uint8 minorVersion = *data++;
+    (void)minorVersion; // dont care about unused
+    const uint8 microVersion = *data++;
+    (void)microVersion; // dont care about unused
+    const uint8 reserved = *data++;
+    (void)reserved; // dont care about unused
     bassert(
       (majorVersion == 1) /* && (minorVersion >= 0) && (microVersion >= 0) && (reserved >= 0) */,
       InvalidFormat(Type::getType<CharacterSet>())

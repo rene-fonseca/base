@@ -41,7 +41,7 @@ void Locale::getLocaleSpecific() noexcept
 {
   // locale name???
   // select locale - lock
-  struct lconv* p = localeconv();
+  // struct lconv* p = localeconv();
   // copy to objects
   // restore locale - unlock
 }

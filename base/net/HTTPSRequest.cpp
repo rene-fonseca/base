@@ -205,6 +205,8 @@ bool HTTPSRequest::open(const String& _method, const String& _url, const String&
   const String password = url.getPassword() ? url.getPassword() : _password;
   const String path = url.getPath() ? url.getPath() : "/";
 
+  (void)port; // dont care about unused
+
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   HINTERNET hInternet = InternetOpenW(L"Mozilla/5.0" /*ToWCharString(agent)*/, INTERNET_OPEN_TYPE_DIRECT, NULL, NULL, 0);
   if (!hInternet) {

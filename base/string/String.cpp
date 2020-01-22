@@ -1048,6 +1048,7 @@ public:
 
     MemorySize count = 0;
     for (auto ch : c) {
+      (void)ch; // dont care about unused
       ++count;
     }
     TEST_ASSERT(count == c.getLength());

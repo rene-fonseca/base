@@ -586,6 +586,8 @@ public:
           child = new Node(hash, key, value);
           if (parent) {
             parent->setNext(child);
+          } else {
+            *buckets = child;
           }
           ++size;
         }

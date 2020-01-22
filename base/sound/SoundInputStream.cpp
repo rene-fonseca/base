@@ -56,7 +56,8 @@ public:
 };
 #endif // win32
 
-SoundInputStream::SoundInputStream(unsigned int samplingRate, unsigned int channels) {
+SoundInputStream::SoundInputStream(unsigned int samplingRate, unsigned int channels)
+{
   bassert(channels > 0, OutOfDomain());
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   WAVEFORMATEX format;
@@ -113,7 +114,8 @@ SoundInputStream::SoundInputStream(unsigned int samplingRate, unsigned int chann
 #endif // flavor
 }
 
-unsigned int SoundInputStream::available() const noexcept {
+unsigned int SoundInputStream::available() const noexcept
+{
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   return 0;
 #else
@@ -132,7 +134,8 @@ unsigned int SoundInputStream::available() const noexcept {
 #endif // flavor
 }
 
-unsigned int SoundInputStream::getChannels() const noexcept {
+unsigned int SoundInputStream::getChannels() const noexcept
+{
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   return 0;
 #else
@@ -147,12 +150,15 @@ unsigned int SoundInputStream::getChannels() const noexcept {
     bassert(::ioctl(handle, AUDIO_GETINFO, &info) == 0, UnexpectedFailure()); // should never fail
     return info.record.channels;
   #else
+    if (handle) {
+    }
     return 0;
   #endif // os
 #endif // flavor
 }
 
-unsigned int SoundInputStream::getRate() const noexcept {
+unsigned int SoundInputStream::getRate() const noexcept
+{
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   return 0;
 #else
@@ -167,12 +173,15 @@ unsigned int SoundInputStream::getRate() const noexcept {
     bassert(::ioctl(handle, AUDIO_GETINFO, &info) == 0, UnexpectedFailure()); // should never fail
     return info.record.sample_rate;
   #else
+    if (handle) {
+    }
     return 0;
   #endif // os
 #endif // flavor
 }
 
-unsigned int SoundInputStream::getPosition() const noexcept {
+unsigned int SoundInputStream::getPosition() const noexcept
+{
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   MMTIME time;
   clear(time);
@@ -190,12 +199,15 @@ unsigned int SoundInputStream::getPosition() const noexcept {
     bassert(::ioctl(handle, AUDIO_GETINFO, &info) == 0, UnexpectedFailure()); // should never fail
     return info.record.samples;
   #else
+    if (handle) {
+    }
     return 0;
   #endif // os
 #endif // flavor
 }
 
-void SoundInputStream::resume() noexcept {
+void SoundInputStream::resume() noexcept
+{
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   ::waveInStart((HWAVEIN)handle);
   event.reset();
@@ -210,6 +222,9 @@ void SoundInputStream::resume() noexcept {
     info.record.pause = 0;
     bassert(::ioctl(handle, AUDIO_SETINFO, &info) == 0, UnexpectedFailure());
     reset();
+  #else
+    if (handle) {
+    }
   #endif // os
 #endif // flavor
 }
@@ -229,6 +244,9 @@ void SoundInputStream::pause() noexcept
     info.record.pause = 1;
     bassert(::ioctl(handle, AUDIO_SETINFO, &info) == 0, UnexpectedFailure());
     bassert(::ioctl(handle, I_FLUSH, FLUSHR) == 0, UnexpectedFailure()); // should never fail
+  #else
+    if (handle) {
+    }
   #endif // os
 #endif // flavor
 }

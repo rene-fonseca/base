@@ -862,7 +862,7 @@ int Date::getJulianDay() const noexcept
 void Date::split(DateTime& result, bool local) const noexcept
 {
 #if 0
-  result.microsecond = date%1000000;
+  result.millisecond = (date + 500)/1000 % 1000;
   int days = date/SECONDS_PER_DAY;
   int seconds = date%SECONDS_PER_DAY;
   if (seconds < 0) {
@@ -874,7 +874,7 @@ void Date::split(DateTime& result, bool local) const noexcept
   result.minute = seconds/SECONDS_PER_MINUTE;
   result.second = seconds%SECONDS_PER_MINUTE;
   
-  int weekday = (EPOCH_WEEKDAY + days)%DAYS_PER_WEEK;
+  int weekday = (EPOCH_WEEKDAY + days) % DAYS_PER_WEEK;
   if (weekday < 0) {
     weekday += DAYS_PER_WEEK;
   }
@@ -941,6 +941,8 @@ void Date::split(DateTime& result, bool local) const noexcept
   result.month = time.wMonth - 1;
   result.day = time.wDay - 1;
   result.weekday = time.wDayOfWeek;
+  result.dayOfYear = 0; // TAG: fixme
+  result.week = 0; // TAG: fixme
   result.hour = time.wHour;
   result.minute = time.wMinute;
   result.second = time.wSecond;
@@ -957,6 +959,8 @@ void Date::split(DateTime& result, bool local) const noexcept
   result.month = time.tm_mon;
   result.day = time.tm_mday - 1;
   result.weekday = time.tm_wday;
+  result.dayOfYear = 0; // TAG: fixme
+  result.week = 0; // TAG: fixme
   result.hour = time.tm_hour;
   result.minute = time.tm_min;
   result.second = time.tm_sec;

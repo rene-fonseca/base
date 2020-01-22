@@ -128,6 +128,8 @@ unsigned int SoundOutputStream::getChannels() const noexcept {
     bassert(::ioctl(handle, AUDIO_GETINFO, &info) == 0, UnexpectedFailure()); // should never fail
     return info.play.channels;
   #else
+    if (handle) {
+    }
     return 0;
   #endif // os
 #endif // flavor
@@ -148,6 +150,8 @@ unsigned int SoundOutputStream::getRate() const noexcept {
     bassert(::ioctl(handle, AUDIO_GETINFO, &info) == 0, UnexpectedFailure()); // should never fail
     return info.play.sample_rate;
   #else
+    if (handle) {
+    }
     return 0;
   #endif // os
 #endif // flavor
@@ -171,6 +175,8 @@ unsigned int SoundOutputStream::getPosition() const noexcept {
     bassert(::ioctl(handle, AUDIO_GETINFO, &info) == 0, UnexpectedFailure()); // should never fail
     return info.play.samples;
   #else
+    if (handle) {
+    }
     return 0;
   #endif // os
 #endif // flavor

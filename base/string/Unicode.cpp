@@ -1,4 +1,4 @@
-﻿/***************************************************************************
+/***************************************************************************
     The Base Framework
     A framework for developing platform independent applications
 
@@ -499,7 +499,7 @@ MemoryDiff Unicode::UTF16ToUTF8(uint8* dest, const utf16* src, MemorySize size, 
             return ERROR_INCOMPLETE;
           }
           const utf16 lowSurrogate = *src++;
-          if (!((code >= 0xdc00) && (code <= 0xdfff))) {
+          if (!((lowSurrogate >= 0xdc00) && (lowSurrogate <= 0xdfff))) {
             return ERROR_BAD_ENCODING;
           }
           length += 4;

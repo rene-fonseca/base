@@ -27,10 +27,19 @@ _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 String VirtualMemory::Module::getPath() const noexcept
 {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
-  wchar buffer[4096]; // TAG: limit
-  unsigned int length = ::GetModuleFileName((HMODULE)context, buffer, sizeof(buffer));
-  buffer[length] = 0;
-  return String(buffer, length);
+  PrimitiveStackArray<wchar> buffer(1024);
+  while (buffer.size() < (64 * 1024)) {
+    DWORD length = GetModuleFileNameW((HMODULE)context, buffer, buffer.size());
+    if (length == 0) {
+      if (GetLastError() == ERROR_INSUFFICIENT_BUFFER) {
+        buffer.resize(buffer.size() * 2);
+        continue;
+      }
+      break;
+    }
+    return String(buffer, length);
+  }
+  return String();
 #else // unix
   _COM_AZURE_DEV__BASE__NOT_IMPLEMENTED();
 #endif // flavor
@@ -49,7 +58,7 @@ bool VirtualMemory::Module::isModule() const noexcept
 {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   wchar buffer[1];
-  unsigned int length = ::GetModuleFileName((HMODULE)context, buffer, sizeof(buffer));
+  unsigned int length = ::GetModuleFileName((HMODULE)context, buffer, getArraySize(buffer));
   return length > 0;
 #else // unix
   _COM_AZURE_DEV__BASE__NOT_IMPLEMENTED();
@@ -97,7 +106,7 @@ Array<VirtualMemory::Module> VirtualMemory::getModules() noexcept
     }
     if (info.Type & MEM_IMAGE) {
       wchar buffer[1];
-      unsigned int length = ::GetModuleFileName((HMODULE)address, buffer, sizeof(buffer));
+      unsigned int length = ::GetModuleFileName((HMODULE)address, buffer, getArraySize(buffer));
       if (length > 0) {
         result.append(Module(address));
       }

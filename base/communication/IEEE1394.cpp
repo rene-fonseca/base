@@ -63,6 +63,16 @@ IEEE1394::IEEE1394()
   ieee1394impl = IEEE1394Impl::getDefault();
 }
 
+IEEE1394::IEEE1394(IEEE1394Impl* _ieee1394impl) noexcept
+  : ieee1394impl(_ieee1394impl)
+{
+  for (unsigned int i = 0; i < 63; ++i) {
+    for (unsigned int j = 0; j < 64; ++j) {
+      speedMap[i][j] = S100;
+    }
+  }
+}
+
 void IEEE1394::IsochronousRequestImpl::setOptions(unsigned int options)
 {
   bassert(
@@ -769,9 +779,9 @@ void IEEE1394::loadTopologyMap()
 
     nodes[physicalId].present = true;
     nodes[physicalId].link = getBits(current, 22, 1);
-    linkActiveNodes |= getBits(current, 22, 1) << physicalId;
+    linkActiveNodes |= static_cast<uint64>(getBits(current, 22, 1)) << physicalId;
     nodes[physicalId].contender = getBits(current, 11, 1);
-    contenderNodes |= getBits(current, 11, 1) << physicalId;
+    contenderNodes |= static_cast<uint64>(getBits(current, 11, 1)) << physicalId;
     nodes[physicalId].gapCount = getBits(current, 16, 6);
     nodes[physicalId].speed = static_cast<Speed>(getBits(current, 14, 2));
 //     selfId.delay = getBits(current, 12, 2);

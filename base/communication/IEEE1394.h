@@ -285,10 +285,7 @@ private:
   /** The IEEE 1394 implementation. */
   Reference<IEEE1394Impl> ieee1394impl;
 
-  inline IEEE1394(IEEE1394Impl* _ieee1394impl) noexcept
-    : ieee1394impl(_ieee1394impl)
-  {
-  }
+  IEEE1394(IEEE1394Impl* _ieee1394impl) noexcept;
 protected:
 
   // TAG: this does not belong here
@@ -550,13 +547,15 @@ public:
     Initializes IEEE 1394 with the default implementation.
   */
   IEEE1394();
-  
+
+#if 0
   /**
     Initializes IEEE 1394 from other IEEE 1394 object.
   */
   inline IEEE1394(const IEEE1394& copy) noexcept
     : ieee1394impl(copy.ieee1394impl)
   {
+    // copy all state
   }
   
   /**
@@ -565,8 +564,10 @@ public:
   inline IEEE1394& operator=(const IEEE1394& assign) noexcept
   {
     ieee1394impl = assign.ieee1394impl;
+    // copy all state
     return *this;
   }
+#endif
 
   /**
     Returns true if the bus has been reset.

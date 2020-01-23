@@ -569,12 +569,12 @@ inline void clear(TYPE& value)
   // TAG: move to cpp?
   // TAG: handle initial alignment
   long* p = Cast::pointer<long*>(&value);
-  const long* end = p + sizeof(value)/sizeof(long);
+  const long* end = p + sizeof(TYPE)/sizeof(long);
   while (p != end) {
     *p++ = 0;
   }
   uint8* q = Cast::pointer<uint8*>(p);
-  MemorySize rest = sizeof(value) % sizeof(long);
+  MemorySize rest = sizeof(TYPE) % sizeof(long);
   if (rest == 0) {
     return;
   }

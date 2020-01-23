@@ -42,7 +42,9 @@ public:
     uint8 buffer[sizeof(DynamicObject)];
     DynamicObject* o2 = new(buffer) DynamicObject();
     o2->~DynamicObject();
+#if !defined(_PREFAST_)
     TEST_ASSERT(!o2->isValidObject());
+#endif
     // skip inplace delete - no heap is leaked
 #endif
   }

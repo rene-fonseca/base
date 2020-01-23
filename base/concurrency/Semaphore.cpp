@@ -52,7 +52,8 @@ namespace ntapi {
     if (!identifier) {
       return nullptr;
     }
-    return (API)::GetProcAddress(::GetModuleHandle(L"ntdll"), identifier);
+    HMODULE handle = ::GetModuleHandle(L"ntdll");
+    return handle ? (API)::GetProcAddress(handle, identifier) : nullptr;
   }
 };
 #endif

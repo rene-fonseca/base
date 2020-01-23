@@ -1364,6 +1364,7 @@ AdvancedEncryptionStandard::AdvancedEncryptionStandard(
     bytesInBuffer(0)
 {
   clear(buffer);
+  clear(schedule);
 
   switch (cipher) {
   case CIPHER_128:

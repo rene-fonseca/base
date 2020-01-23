@@ -115,7 +115,7 @@ private:
   };
   
   /** Cipher. */
-  Cipher cipher;
+  Cipher cipher = CIPHER_256;
   /** Specifies if the inverse cipher should be used. */
   bool inverse = false;
   /** The key schedule. */

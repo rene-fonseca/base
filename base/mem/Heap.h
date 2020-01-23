@@ -637,7 +637,7 @@ public:
   {
 #if defined(_COM_AZURE_DEV__BASE__ANY_DEBUG)
     // do not initialize buffer for release build
-    clear(buffer);
+    clear(stack);
 #endif
     BASSERT(size <= STACK_SIZE);
     if (size > 0) {

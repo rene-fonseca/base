@@ -125,6 +125,7 @@ macOS              | x86_64   | Clang   | Ok         | Runs continuously on pipe
 iOS                | ARM64    | Clang   | Ok         | Runs continuously on pipeline but no testing
 WebAssembly WASI   | WASM32   | LLVM    | Ok         | Runs continuously on pipeline - Exceptions cause abort()
 Debian 10          | x86_64   | GCC     | Ok         | Runs daily on pipeline
+Ubuntu 19.10       | x86_64   | GCC     | Ok         | Runs daily on pipeline
 Ubuntu 19.04       | x86_64   | GCC     | Ok         | Runs daily on pipeline
 openSUSE           | x86_64   | GCC     | Ok         | Runs daily on pipeline
 Amazon Linux 2     | x86_64   | GCC     | Ok         | Runs daily on pipeline - using newer cmake build

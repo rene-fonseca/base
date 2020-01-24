@@ -22,6 +22,8 @@ resources:
   containers:
   - container: ubuntu19_04
     image: renefonseca/base-ubuntu:19.04
+  - container: ubuntu19_10
+    image: renefonseca/base-ubuntu:19.10
   - container: debian
     image: renefonseca/base-debian:latest
   - container: opensuse
@@ -140,7 +142,47 @@ jobs:
 
   - task: PublishPipelineArtifact@1
     inputs:
-      artifactName: 'base-ubuntu19-x64'
+      artifactName: 'base-ubuntu19_04-x64'
+      targetPath: 'artifacts'
+      path: $(Build.BinariesDirectory)/install
+
+- job: ubuntu19_10_x64
+  pool:
+    vmImage: 'ubuntu-18.04'
+  container: ubuntu19_10
+  steps:
+  - script: cmake $(Build.SourcesDirectory) -DCOLOR=1 -DCMAKE_BUILD_TYPE=Debug -DCMAKE_INSTALL_PREFIX=install
+    displayName: 'Config'
+    workingDirectory: $(Build.BinariesDirectory)
+
+  - script: cmake --build . --config Debug --target install -- -j 4
+    displayName: 'Build'
+    workingDirectory: $(Build.BinariesDirectory)
+
+  - script: |
+      ./testsuite/unittesting --junit junit.xml
+      ctest -T Test
+    displayName: 'Run tests'
+    continueOnError: true
+    workingDirectory: $(Build.BinariesDirectory)
+
+  - task: PublishTestResults@2
+    inputs:
+      testResultsFormat: 'JUnit'
+      testResultsFiles: '**/junit.xml'
+      testRunTitle: 'Unittest results'
+      searchFolder: '$(Build.BinariesDirectory)'
+
+  - task: PublishTestResults@2
+    inputs:
+      testResultsFormat: 'cTest'
+      testResultsFiles: '**/Test.xml'
+      testRunTitle: 'Test results for CTest'
+      searchFolder: '$(Build.BinariesDirectory)'
+
+  - task: PublishPipelineArtifact@1
+    inputs:
+      artifactName: 'base-ubuntu19_10-x64'
       targetPath: 'artifacts'
       path: $(Build.BinariesDirectory)/install
 

@@ -36,6 +36,8 @@ resources:
     image: renefonseca/base-emcc:latest
   - container: centos
     image: renefonseca/base-centos8:latest
+  - container: freebsd12
+    image: renefonseca/base-freebsd12:latest
   - container: raspberrypi4
     image: renefonseca/base-raspberrypi4-64-debian:latest
 
@@ -339,6 +341,46 @@ jobs:
       testResultsFiles: '**/Test.xml'
       testRunTitle: 'Test results for CTest'
       searchFolder: '$(Build.BinariesDirectory)'
+
+- job: freebsd_x64
+  pool:
+    vmImage: 'ubuntu-18.04'
+  container: freebsd12
+  steps:
+  - script: cmake $(Build.SourcesDirectory) -DCOLOR=1 -DCMAKE_BUILD_TYPE=Debug -DCMAKE_INSTALL_PREFIX=install -DCMAKE_CXX_COMPILER=/freebsd/bin/x86_64-pc-freebsd12-g++ -DCMAKE_C_COMPILER=/freebsd/bin/x86_64-pc-freebsd12-gcc
+    displayName: 'Config'
+    workingDirectory: $(Build.BinariesDirectory)
+
+  - script: cmake --build . --config Debug --target install -- -j 4
+    displayName: 'Build'
+    workingDirectory: $(Build.BinariesDirectory)
+
+#  - script: |
+#      ./testsuite/unittesting --junit junit.xml
+#      ctest -T Test
+#    displayName: 'Run tests'
+#    continueOnError: true
+#    workingDirectory: $(Build.BinariesDirectory)
+
+#  - task: PublishTestResults@2
+#    inputs:
+#      testResultsFormat: 'JUnit'
+#      testResultsFiles: '**/junit.xml'
+#      testRunTitle: 'Unittest results'
+#      searchFolder: '$(Build.BinariesDirectory)'
+
+#  - task: PublishTestResults@2
+#    inputs:
+#      testResultsFormat: 'cTest'
+#      testResultsFiles: '**/Test.xml'
+#      testRunTitle: 'Test results for CTest'
+#      searchFolder: '$(Build.BinariesDirectory)'
+
+  - task: PublishPipelineArtifact@1
+    inputs:
+      artifactName: 'base-freebsd12-x64'
+      targetPath: 'artifacts'
+      path: $(Build.BinariesDirectory)/install
 
 - job: emcc
   pool:

@@ -893,7 +893,7 @@ public:
 
     @param suffix The string to compare end of this string with.
   */
-  bool endsWith(const WideString& suffix) const noexcept;
+  bool endsWith(const WideString& suffix) const;
 
   /**
     Returns true if this string ends with the specified suffix.

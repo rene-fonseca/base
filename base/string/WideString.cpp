@@ -1002,7 +1002,7 @@ bool WideString::endsWith(const WideString& suffix) const noexcept
     (compare(getBuffer() + length - suffixLength, suffix.getBuffer(), suffixLength) == 0);
 }
 
-bool WideString::endsWith(const WideLiteral& suffix) const noexcept
+bool WideString::endsWith(const WideLiteral& suffix) const
 {
   MemorySize suffixLength = suffix.getLength();
   if (sizeof(wchar) == sizeof(utf16)) {
@@ -1024,8 +1024,7 @@ bool WideString::endsWith(const WideLiteral& suffix) const noexcept
           (lowSurrogate >= 0xdc00) && (lowSurrogate <= 0xdfff),
           StringException("Invalid sequence.")
         );
-        value =
-          0x00010000U + (value - 0xd800) * 0x0400 + (lowSurrogate - 0xdc00);
+        value = 0x00010000U + (value - 0xd800) * 0x0400 + (lowSurrogate - 0xdc00);
       }
       int32 temp = static_cast<int32>(*left) - static_cast<int32>(value);
       if (temp != 0) {
@@ -1046,7 +1045,7 @@ bool WideString::endsWith(const WideLiteral& suffix) const noexcept
       );
   } else {
     _throw UnexpectedFailure(
-      "Unsupported native wide character representation",
+      "Unsupported native wide character representation.",
       this
     );
   }

@@ -25,7 +25,7 @@ _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 #endif
 
 #if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__GNULINUX)
-#  define _COM_AZURE_DEV__BASE__ISOC_NOEXCEPT noexcept
+#  define _COM_AZURE_DEV__BASE__ISOC_NOEXCEPT throw()
 #else
 #  define _COM_AZURE_DEV__BASE__ISOC_NOEXCEPT
 #endif
@@ -76,7 +76,7 @@ namespace isoc { // do NOT use namespace directly
 #if !defined(_COM_AZURE_DEV__BASE__REDIR_ISOC_CEILF)
   extern "C" float _COM_AZURE_DEV__BASE__ISOC_API ceilf(float);
 #endif
-  extern "C" double _COM_AZURE_DEV__BASE__ISOC_API ceil(double);
+  extern "C" double _COM_AZURE_DEV__BASE__ISOC_API ceil(double) _COM_AZURE_DEV__BASE__ISOC_NOEXCEPT;
 #if !defined(_COM_AZURE_DEV__BASE__REDIR_ISOC_CEILL)
   extern "C" long double _COM_AZURE_DEV__BASE__ISOC_API ceill(long double);
 #endif
@@ -84,17 +84,17 @@ namespace isoc { // do NOT use namespace directly
 #if !defined(_COM_AZURE_DEV__BASE__REDIR_ISOC_FLOORF)
   extern "C" float _COM_AZURE_DEV__BASE__ISOC_API floorf(float);
 #endif
-  extern "C" double _COM_AZURE_DEV__BASE__ISOC_API floor(double);
+  extern "C" double _COM_AZURE_DEV__BASE__ISOC_API floor(double) _COM_AZURE_DEV__BASE__ISOC_NOEXCEPT;
 #if !defined(_COM_AZURE_DEV__BASE__REDIR_ISOC_FLOORL)
   extern "C" long double _COM_AZURE_DEV__BASE__ISOC_API floorl(long double);
 #endif
 
   extern "C" float _COM_AZURE_DEV__BASE__ISOC_API roundf(float);
-  extern "C" double _COM_AZURE_DEV__BASE__ISOC_API round(double);
+  extern "C" double _COM_AZURE_DEV__BASE__ISOC_API round(double) _COM_AZURE_DEV__BASE__ISOC_NOEXCEPT;
   extern "C" long double _COM_AZURE_DEV__BASE__ISOC_API roundl(long double);
 
   extern "C" float _COM_AZURE_DEV__BASE__ISOC_API truncf(float);
-  extern "C" double _COM_AZURE_DEV__BASE__ISOC_API trunc(double);
+  extern "C" double _COM_AZURE_DEV__BASE__ISOC_API trunc(double) _COM_AZURE_DEV__BASE__ISOC_NOEXCEPT;
   extern "C" long double _COM_AZURE_DEV__BASE__ISOC_API truncl(long double);
 
 #if !defined(_COM_AZURE_DEV__BASE__REDIR_ISOC_SQRTF)
@@ -103,12 +103,12 @@ namespace isoc { // do NOT use namespace directly
   extern "C" double /*_COM_AZURE_DEV__BASE__ISOC_API*/ sqrt(double) _COM_AZURE_DEV__BASE__ISOC_NOEXCEPT;
 
   extern "C" float _COM_AZURE_DEV__BASE__ISOC_API cbrtf(float);
-  extern "C" double _COM_AZURE_DEV__BASE__ISOC_API cbrt(double);
+  extern "C" double _COM_AZURE_DEV__BASE__ISOC_API cbrt(double) _COM_AZURE_DEV__BASE__ISOC_NOEXCEPT;
 
 #if !defined(_COM_AZURE_DEV__BASE__REDIR_ISOC_HYPOTF)
   extern "C" float _COM_AZURE_DEV__BASE__ISOC_API hypotf(float, float);
 #endif
-  extern "C" double _COM_AZURE_DEV__BASE__ISOC_API hypot(double, double);
+  extern "C" double _COM_AZURE_DEV__BASE__ISOC_API hypot(double, double) _COM_AZURE_DEV__BASE__ISOC_NOEXCEPT;
 
 #if !defined(_COM_AZURE_DEV__BASE__REDIR_ISOC_EXPF)
   extern "C" float _COM_AZURE_DEV__BASE__ISOC_API expf(float);
@@ -130,44 +130,44 @@ namespace isoc { // do NOT use namespace directly
   extern "C" double /*_COM_AZURE_DEV__BASE__ISOC_API*/ pow(double, double) _COM_AZURE_DEV__BASE__ISOC_NOEXCEPT;
 
 #if !defined(_COM_AZURE_DEV__BASE__REDIR_ISOC_SINF)
-  extern "C" float _COM_AZURE_DEV__BASE__ISOC_API sinf(float);
+  extern "C" float _COM_AZURE_DEV__BASE__ISOC_API sinf(float) _COM_AZURE_DEV__BASE__ISOC_NOEXCEPT;
 #endif
   extern "C" double /*_COM_AZURE_DEV__BASE__ISOC_API*/ sin(double) _COM_AZURE_DEV__BASE__ISOC_NOEXCEPT;
 
 #if !defined(_COM_AZURE_DEV__BASE__REDIR_ISOC_COSF)
-  extern "C" float _COM_AZURE_DEV__BASE__ISOC_API cosf(float);
+  extern "C" float _COM_AZURE_DEV__BASE__ISOC_API cosf(float) _COM_AZURE_DEV__BASE__ISOC_NOEXCEPT;
 #endif
   extern "C" double /*_COM_AZURE_DEV__BASE__ISOC_API*/ cos(double) _COM_AZURE_DEV__BASE__ISOC_NOEXCEPT;
 
 #if !defined(_COM_AZURE_DEV__BASE__REDIR_ISOC_ASINF)
-  extern "C" float _COM_AZURE_DEV__BASE__ISOC_API asinf(float);
+  extern "C" float _COM_AZURE_DEV__BASE__ISOC_API asinf(float) _COM_AZURE_DEV__BASE__ISOC_NOEXCEPT;
 #endif
   extern "C" double /*_COM_AZURE_DEV__BASE__ISOC_API*/ asin(double) _COM_AZURE_DEV__BASE__ISOC_NOEXCEPT;
 
 #if !defined(_COM_AZURE_DEV__BASE__REDIR_ISOC_ACOSF)
-  extern "C" float _COM_AZURE_DEV__BASE__ISOC_API acosf(float);
+  extern "C" float _COM_AZURE_DEV__BASE__ISOC_API acosf(float) _COM_AZURE_DEV__BASE__ISOC_NOEXCEPT;
 #endif
   extern "C" double /*_COM_AZURE_DEV__BASE__ISOC_API*/ acos(double) _COM_AZURE_DEV__BASE__ISOC_NOEXCEPT;
 
-  extern "C" float _COM_AZURE_DEV__BASE__ISOC_API sinhf(float);
+  extern "C" float _COM_AZURE_DEV__BASE__ISOC_API sinhf(float) _COM_AZURE_DEV__BASE__ISOC_NOEXCEPT;
   extern "C" double /*_COM_AZURE_DEV__BASE__ISOC_API*/ sinh(double) _COM_AZURE_DEV__BASE__ISOC_NOEXCEPT;
 
-  extern "C" float _COM_AZURE_DEV__BASE__ISOC_API coshf(float);
+  extern "C" float _COM_AZURE_DEV__BASE__ISOC_API coshf(float) _COM_AZURE_DEV__BASE__ISOC_NOEXCEPT;
   extern "C" double /*_COM_AZURE_DEV__BASE__ISOC_API*/ cosh(double) _COM_AZURE_DEV__BASE__ISOC_NOEXCEPT;
 
-  extern "C" float _COM_AZURE_DEV__BASE__ISOC_API asinhf(float);
+  extern "C" float _COM_AZURE_DEV__BASE__ISOC_API asinhf(float) _COM_AZURE_DEV__BASE__ISOC_NOEXCEPT;
   extern "C" double _COM_AZURE_DEV__BASE__ISOC_API asinh(double) _COM_AZURE_DEV__BASE__ISOC_NOEXCEPT;
 
-  extern "C" float _COM_AZURE_DEV__BASE__ISOC_API acoshf(float);
+  extern "C" float _COM_AZURE_DEV__BASE__ISOC_API acoshf(float) _COM_AZURE_DEV__BASE__ISOC_NOEXCEPT;
   extern "C" double _COM_AZURE_DEV__BASE__ISOC_API acosh(double) _COM_AZURE_DEV__BASE__ISOC_NOEXCEPT;
 
 #if !defined(_COM_AZURE_DEV__BASE__REDIR_ISOC_TANF)
-  extern "C" float _COM_AZURE_DEV__BASE__ISOC_API tanf(float);
+  extern "C" float _COM_AZURE_DEV__BASE__ISOC_API tanf(float) _COM_AZURE_DEV__BASE__ISOC_NOEXCEPT;
 #endif
   extern "C" double /*_COM_AZURE_DEV__BASE__ISOC_API*/ tan(double) _COM_AZURE_DEV__BASE__ISOC_NOEXCEPT;
 
 #if !defined(_COM_AZURE_DEV__BASE__REDIR_ISOC_ATANF)
-  extern "C" float _COM_AZURE_DEV__BASE__ISOC_API atanf(float);
+  extern "C" float _COM_AZURE_DEV__BASE__ISOC_API atanf(float) _COM_AZURE_DEV__BASE__ISOC_NOEXCEPT;
 #endif
   extern "C" double /*_COM_AZURE_DEV__BASE__ISOC_API*/ atan(double) _COM_AZURE_DEV__BASE__ISOC_NOEXCEPT;
 
@@ -178,7 +178,7 @@ namespace isoc { // do NOT use namespace directly
   extern "C" double _COM_AZURE_DEV__BASE__ISOC_API atanh(double) _COM_AZURE_DEV__BASE__ISOC_NOEXCEPT;
 
 #if !defined(_COM_AZURE_DEV__BASE__REDIR_ISOC_ATAN2F)
-  extern "C" float _COM_AZURE_DEV__BASE__ISOC_API atan2f(float, float);
+  extern "C" float _COM_AZURE_DEV__BASE__ISOC_API atan2f(float, float) _COM_AZURE_DEV__BASE__ISOC_NOEXCEPT;
 #endif
   extern "C" double /*_COM_AZURE_DEV__BASE__ISOC_API*/ atan2(double, double) _COM_AZURE_DEV__BASE__ISOC_NOEXCEPT;
 

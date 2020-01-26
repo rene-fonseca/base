@@ -67,66 +67,66 @@ namespace internal { // do NOT use namespace directly
 
 namespace isoc { // do NOT use namespace directly
 
-  extern "C" float /*_COM_AZURE_DEV__BASE__ISOC_API*/ fabsf(float);
-  extern "C" double /*_COM_AZURE_DEV__BASE__ISOC_API*/ fabs(double);
+  extern "C" float /*_COM_AZURE_DEV__BASE__ISOC_API*/ fabsf(float) _COM_AZURE_DEV__BASE__ISOC_NOEXCEPT;
+  extern "C" double /*_COM_AZURE_DEV__BASE__ISOC_API*/ fabs(double) _COM_AZURE_DEV__BASE__ISOC_NOEXCEPT;
 #if !defined(_COM_AZURE_DEV__BASE__REDIR_ISOC_FABSL)
-  extern "C" long double _COM_AZURE_DEV__BASE__ISOC_API fabsl(long double);
+  extern "C" long double _COM_AZURE_DEV__BASE__ISOC_API fabsl(long double) _COM_AZURE_DEV__BASE__ISOC_NOEXCEPT;
 #endif
 
 #if !defined(_COM_AZURE_DEV__BASE__REDIR_ISOC_CEILF)
-  extern "C" float _COM_AZURE_DEV__BASE__ISOC_API ceilf(float);
+  extern "C" float _COM_AZURE_DEV__BASE__ISOC_API ceilf(float) _COM_AZURE_DEV__BASE__ISOC_NOEXCEPT;
 #endif
   extern "C" double _COM_AZURE_DEV__BASE__ISOC_API ceil(double) _COM_AZURE_DEV__BASE__ISOC_NOEXCEPT;
 #if !defined(_COM_AZURE_DEV__BASE__REDIR_ISOC_CEILL)
-  extern "C" long double _COM_AZURE_DEV__BASE__ISOC_API ceill(long double);
+  extern "C" long double _COM_AZURE_DEV__BASE__ISOC_API ceill(long double) _COM_AZURE_DEV__BASE__ISOC_NOEXCEPT;
 #endif
 
 #if !defined(_COM_AZURE_DEV__BASE__REDIR_ISOC_FLOORF)
-  extern "C" float _COM_AZURE_DEV__BASE__ISOC_API floorf(float);
+  extern "C" float _COM_AZURE_DEV__BASE__ISOC_API floorf(float) _COM_AZURE_DEV__BASE__ISOC_NOEXCEPT;
 #endif
   extern "C" double _COM_AZURE_DEV__BASE__ISOC_API floor(double) _COM_AZURE_DEV__BASE__ISOC_NOEXCEPT;
 #if !defined(_COM_AZURE_DEV__BASE__REDIR_ISOC_FLOORL)
-  extern "C" long double _COM_AZURE_DEV__BASE__ISOC_API floorl(long double);
+  extern "C" long double _COM_AZURE_DEV__BASE__ISOC_API floorl(long double) _COM_AZURE_DEV__BASE__ISOC_NOEXCEPT;
 #endif
 
-  extern "C" float _COM_AZURE_DEV__BASE__ISOC_API roundf(float);
+  extern "C" float _COM_AZURE_DEV__BASE__ISOC_API roundf(float) _COM_AZURE_DEV__BASE__ISOC_NOEXCEPT;
   extern "C" double _COM_AZURE_DEV__BASE__ISOC_API round(double) _COM_AZURE_DEV__BASE__ISOC_NOEXCEPT;
-  extern "C" long double _COM_AZURE_DEV__BASE__ISOC_API roundl(long double);
+  extern "C" long double _COM_AZURE_DEV__BASE__ISOC_API roundl(long double) _COM_AZURE_DEV__BASE__ISOC_NOEXCEPT;
 
-  extern "C" float _COM_AZURE_DEV__BASE__ISOC_API truncf(float);
+  extern "C" float _COM_AZURE_DEV__BASE__ISOC_API truncf(float) _COM_AZURE_DEV__BASE__ISOC_NOEXCEPT;
   extern "C" double _COM_AZURE_DEV__BASE__ISOC_API trunc(double) _COM_AZURE_DEV__BASE__ISOC_NOEXCEPT;
-  extern "C" long double _COM_AZURE_DEV__BASE__ISOC_API truncl(long double);
+  extern "C" long double _COM_AZURE_DEV__BASE__ISOC_API truncl(long double) _COM_AZURE_DEV__BASE__ISOC_NOEXCEPT;
 
 #if !defined(_COM_AZURE_DEV__BASE__REDIR_ISOC_SQRTF)
-  extern "C" float _COM_AZURE_DEV__BASE__ISOC_API sqrtf(float);
+  extern "C" float _COM_AZURE_DEV__BASE__ISOC_API sqrtf(float) _COM_AZURE_DEV__BASE__ISOC_NOEXCEPT;
 #endif
   extern "C" double /*_COM_AZURE_DEV__BASE__ISOC_API*/ sqrt(double) _COM_AZURE_DEV__BASE__ISOC_NOEXCEPT;
 
-  extern "C" float _COM_AZURE_DEV__BASE__ISOC_API cbrtf(float);
+  extern "C" float _COM_AZURE_DEV__BASE__ISOC_API cbrtf(float) _COM_AZURE_DEV__BASE__ISOC_NOEXCEPT;
   extern "C" double _COM_AZURE_DEV__BASE__ISOC_API cbrt(double) _COM_AZURE_DEV__BASE__ISOC_NOEXCEPT;
 
 #if !defined(_COM_AZURE_DEV__BASE__REDIR_ISOC_HYPOTF)
-  extern "C" float _COM_AZURE_DEV__BASE__ISOC_API hypotf(float, float);
+  extern "C" float _COM_AZURE_DEV__BASE__ISOC_API hypotf(float, float) _COM_AZURE_DEV__BASE__ISOC_NOEXCEPT;
 #endif
   extern "C" double _COM_AZURE_DEV__BASE__ISOC_API hypot(double, double) _COM_AZURE_DEV__BASE__ISOC_NOEXCEPT;
 
 #if !defined(_COM_AZURE_DEV__BASE__REDIR_ISOC_EXPF)
-  extern "C" float _COM_AZURE_DEV__BASE__ISOC_API expf(float);
+  extern "C" float _COM_AZURE_DEV__BASE__ISOC_API expf(float) _COM_AZURE_DEV__BASE__ISOC_NOEXCEPT;
 #endif
   extern "C" double /*_COM_AZURE_DEV__BASE__ISOC_API*/ exp(double) _COM_AZURE_DEV__BASE__ISOC_NOEXCEPT;
 
 #if !defined(_COM_AZURE_DEV__BASE__REDIR_ISOC_LOGF)
-  extern "C" float _COM_AZURE_DEV__BASE__ISOC_API logf(float);
+  extern "C" float _COM_AZURE_DEV__BASE__ISOC_API logf(float) _COM_AZURE_DEV__BASE__ISOC_NOEXCEPT;
 #endif
   extern "C" double /*_COM_AZURE_DEV__BASE__ISOC_API*/ log(double) _COM_AZURE_DEV__BASE__ISOC_NOEXCEPT;
 
-  extern "C" float _COM_AZURE_DEV__BASE__ISOC_API log2f(float);
+  extern "C" float _COM_AZURE_DEV__BASE__ISOC_API log2f(float) _COM_AZURE_DEV__BASE__ISOC_NOEXCEPT;
   extern "C" double _COM_AZURE_DEV__BASE__ISOC_API log2(double) _COM_AZURE_DEV__BASE__ISOC_NOEXCEPT;
 
-  extern "C" float _COM_AZURE_DEV__BASE__ISOC_API log10f(float);
+  extern "C" float _COM_AZURE_DEV__BASE__ISOC_API log10f(float) _COM_AZURE_DEV__BASE__ISOC_NOEXCEPT;
   extern "C" double /*_COM_AZURE_DEV__BASE__ISOC_API*/ log10(double) _COM_AZURE_DEV__BASE__ISOC_NOEXCEPT;
 
-  extern "C" float _COM_AZURE_DEV__BASE__ISOC_API powf(float, float);
+  extern "C" float _COM_AZURE_DEV__BASE__ISOC_API powf(float, float) _COM_AZURE_DEV__BASE__ISOC_NOEXCEPT;
   extern "C" double /*_COM_AZURE_DEV__BASE__ISOC_API*/ pow(double, double) _COM_AZURE_DEV__BASE__ISOC_NOEXCEPT;
 
 #if !defined(_COM_AZURE_DEV__BASE__REDIR_ISOC_SINF)
@@ -171,10 +171,10 @@ namespace isoc { // do NOT use namespace directly
 #endif
   extern "C" double /*_COM_AZURE_DEV__BASE__ISOC_API*/ atan(double) _COM_AZURE_DEV__BASE__ISOC_NOEXCEPT;
 
-  extern "C" float _COM_AZURE_DEV__BASE__ISOC_API tanhf(float);
+  extern "C" float _COM_AZURE_DEV__BASE__ISOC_API tanhf(float) _COM_AZURE_DEV__BASE__ISOC_NOEXCEPT;
   extern "C" double /*_COM_AZURE_DEV__BASE__ISOC_API*/ tanh(double) _COM_AZURE_DEV__BASE__ISOC_NOEXCEPT;
 
-  extern "C" float _COM_AZURE_DEV__BASE__ISOC_API atanhf(float);
+  extern "C" float _COM_AZURE_DEV__BASE__ISOC_API atanhf(float) _COM_AZURE_DEV__BASE__ISOC_NOEXCEPT;
   extern "C" double _COM_AZURE_DEV__BASE__ISOC_API atanh(double) _COM_AZURE_DEV__BASE__ISOC_NOEXCEPT;
 
 #if !defined(_COM_AZURE_DEV__BASE__REDIR_ISOC_ATAN2F)

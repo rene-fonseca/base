@@ -861,7 +861,7 @@ public:
     found, respectively, to be less than, equal to, or greater than the
     specified string.
   */
-  int compareTo(const wchar* string) const noexcept;
+  int compareTo(const wchar* string) const;
 
   /**
     Compares this string with other string ignoring the case of the characters.

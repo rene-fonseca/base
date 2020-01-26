@@ -854,7 +854,7 @@ int WideString::compareTo(const WideLiteral& literal) const
   }
 }
 
-int WideString::compareTo(const wchar* string) const noexcept
+int WideString::compareTo(const wchar* string) const
 {
   if (!string) {
     return false;

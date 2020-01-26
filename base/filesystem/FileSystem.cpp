@@ -951,7 +951,7 @@ _COM_AZURE_DEV__BASE__PACKED__END
     return !error &&
       (header.identifier == static_cast<unsigned int>('L')) &&
       (result == sizeof(header)) &&
-      ((header.flags & POINTS_TO_FILE_OR_FOLDER|HAS_RELATIVE_PATH) == (POINTS_TO_FILE_OR_FOLDER|HAS_RELATIVE_PATH)) &&
+      ((header.flags & (POINTS_TO_FILE_OR_FOLDER|HAS_RELATIVE_PATH)) == (POINTS_TO_FILE_OR_FOLDER|HAS_RELATIVE_PATH)) &&
       (compare(header.guid, GUID, sizeof(GUID)) == 0);
   } else {
     return false;
@@ -978,7 +978,8 @@ public:
 
   // TAG: the link target may not exist
   
-  static String getLinkTarget(const String& path) {
+  static String getLinkTarget(const String& path)
+  {
 //     if (cachedSupportsLinks == -1) {
 //       supportsLinks();
 //     }
@@ -1057,33 +1058,39 @@ public:
         break;
       }
     }
+
+    return String();
   }
   
-  static inline bool enablePrivileges() noexcept {
-    HANDLE token;
+  static bool enablePrivileges() noexcept
+  {
+    HANDLE token = NULL;
+    // ATTENTION: TOKEN_PRIVILEGES includes 1 LUID_AND_ATTRIBUTES!
     char buffer[sizeof(TOKEN_PRIVILEGES) + sizeof(LUID_AND_ATTRIBUTES)]; // make room for backup and restore privileges
-    TOKEN_PRIVILEGES& privileges = *((TOKEN_PRIVILEGES*)buffer);
+    clear(buffer);
+    TOKEN_PRIVILEGES* privileges = (TOKEN_PRIVILEGES*)&buffer;
     if (!::OpenProcessToken(::GetCurrentProcess(), TOKEN_ADJUST_PRIVILEGES | TOKEN_QUERY, &token)) {
       return false;
     }
     
-    privileges.PrivilegeCount = 2;
-    
+    privileges->PrivilegeCount = 2;
+    LUID_AND_ATTRIBUTES* attributes = &privileges->Privileges[0]; // room for 2
+
     // enable SeBackupPrivilege
-    privileges.Privileges[0].Attributes = SE_PRIVILEGE_ENABLED; // ask for privilege
-    if (!::LookupPrivilegeValue(0, SE_BACKUP_NAME, &privileges.Privileges[0].Luid)) {
+    privileges->Privileges[0].Attributes = SE_PRIVILEGE_ENABLED; // ask for privilege
+    if (!::LookupPrivilegeValue(0, SE_BACKUP_NAME, &attributes[0].Luid)) {
       ::CloseHandle(token);
       return false;
     }
     
     // enable SeRestorePrivilege
-    privileges.Privileges[1].Attributes = SE_PRIVILEGE_ENABLED; // ask for privilege
-    if (!::LookupPrivilegeValue(0, SE_RESTORE_NAME, &privileges.Privileges[1].Luid)) {
+    attributes[1].Attributes = SE_PRIVILEGE_ENABLED; // ask for privilege
+    if (!::LookupPrivilegeValue(0, SE_RESTORE_NAME, &attributes[1].Luid)) {
       ::CloseHandle(token);
       return false;
     }
     
-    if (!::AdjustTokenPrivileges(token, FALSE, &privileges, 0, 0, 0)) {
+    if (!::AdjustTokenPrivileges(token, FALSE, privileges, 0, NULL, NULL)) {
       ::CloseHandle(token);
       return false;
     }

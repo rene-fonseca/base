@@ -20,42 +20,42 @@ _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 // instantiate common types
 #define _COM_AZURE_DEV__BASE__INSTANTIATE_CONTAINER_COMMON_TYPE(TYPE) \
-  template _COM_AZURE_DEV__BASE__API class TYPE<bool>; \
-  template _COM_AZURE_DEV__BASE__API class TYPE<short>; \
-  template _COM_AZURE_DEV__BASE__API class TYPE<unsigned short>; \
-  template _COM_AZURE_DEV__BASE__API class TYPE<int>; \
-  template _COM_AZURE_DEV__BASE__API class TYPE<unsigned int>; \
-  template _COM_AZURE_DEV__BASE__API class TYPE<long>; \
-  template _COM_AZURE_DEV__BASE__API class TYPE<unsigned long>; \
-  template _COM_AZURE_DEV__BASE__API class TYPE<char>; \
-  template _COM_AZURE_DEV__BASE__API class TYPE<unsigned char>; \
-  template _COM_AZURE_DEV__BASE__API class TYPE<wchar>; \
-  template _COM_AZURE_DEV__BASE__API class TYPE<void*>; \
-  template _COM_AZURE_DEV__BASE__API class TYPE<float>; \
-  template _COM_AZURE_DEV__BASE__API class TYPE<double>; \
-  template _COM_AZURE_DEV__BASE__API class TYPE<long double>;
+  template class _COM_AZURE_DEV__BASE__API TYPE<bool>; \
+  template class _COM_AZURE_DEV__BASE__API TYPE<short>; \
+  template class _COM_AZURE_DEV__BASE__API TYPE<unsigned short>; \
+  template class _COM_AZURE_DEV__BASE__API TYPE<int>; \
+  template class _COM_AZURE_DEV__BASE__API TYPE<unsigned int>; \
+  template class _COM_AZURE_DEV__BASE__API TYPE<long>; \
+  template class _COM_AZURE_DEV__BASE__API TYPE<unsigned long>; \
+  template class _COM_AZURE_DEV__BASE__API TYPE<char>; \
+  template class _COM_AZURE_DEV__BASE__API TYPE<unsigned char>; \
+  template class _COM_AZURE_DEV__BASE__API TYPE<wchar>; \
+  template class _COM_AZURE_DEV__BASE__API TYPE<void*>; \
+  template class _COM_AZURE_DEV__BASE__API TYPE<float>; \
+  template class _COM_AZURE_DEV__BASE__API TYPE<double>; \
+  template class _COM_AZURE_DEV__BASE__API TYPE<long double>;
 // TAG: add String and WideString also
-//  template _COM_AZURE_DEV__BASE__API class TYPE<int64>; \
-//  template _COM_AZURE_DEV__BASE__API class TYPE<uint64>; \
+//  template class _COM_AZURE_DEV__BASE__API TYPE<int64>; \
+//  template class _COM_AZURE_DEV__BASE__API TYPE<uint64>; \
 
 // temporary limited edition
 #define _COM_AZURE_DEV__BASE__INSTANTIATE_CONTAINER_COMMON_TYPE_LIMITED(TYPE) \
-  template _COM_AZURE_DEV__BASE__API class TYPE<bool>; \
-  template _COM_AZURE_DEV__BASE__API class TYPE<short>; \
-  template _COM_AZURE_DEV__BASE__API class TYPE<unsigned short>; \
-  template _COM_AZURE_DEV__BASE__API class TYPE<int>; \
-  template _COM_AZURE_DEV__BASE__API class TYPE<unsigned int>; \
-  template _COM_AZURE_DEV__BASE__API class TYPE<long>; \
-  template _COM_AZURE_DEV__BASE__API class TYPE<unsigned long>; \
-  template _COM_AZURE_DEV__BASE__API class TYPE<char>; \
-  template _COM_AZURE_DEV__BASE__API class TYPE<unsigned char>; \
-  template _COM_AZURE_DEV__BASE__API class TYPE<wchar>; \
-  template _COM_AZURE_DEV__BASE__API class TYPE<void*>; \
-  template _COM_AZURE_DEV__BASE__API class TYPE<float>; \
-  template _COM_AZURE_DEV__BASE__API class TYPE<double>; \
-  template _COM_AZURE_DEV__BASE__API class TYPE<long double>;
-//  template _COM_AZURE_DEV__BASE__API class TYPE<int64>; \
-//  template _COM_AZURE_DEV__BASE__API class TYPE<uint64>; \
+  template class _COM_AZURE_DEV__BASE__API TYPE<bool>; \
+  template class _COM_AZURE_DEV__BASE__API TYPE<short>; \
+  template class _COM_AZURE_DEV__BASE__API TYPE<unsigned short>; \
+  template class _COM_AZURE_DEV__BASE__API TYPE<int>; \
+  template class _COM_AZURE_DEV__BASE__API TYPE<unsigned int>; \
+  template class _COM_AZURE_DEV__BASE__API TYPE<long>; \
+  template class _COM_AZURE_DEV__BASE__API TYPE<unsigned long>; \
+  template class _COM_AZURE_DEV__BASE__API TYPE<char>; \
+  template class _COM_AZURE_DEV__BASE__API TYPE<unsigned char>; \
+  template class _COM_AZURE_DEV__BASE__API TYPE<wchar>; \
+  template class _COM_AZURE_DEV__BASE__API TYPE<void*>; \
+  template class _COM_AZURE_DEV__BASE__API TYPE<float>; \
+  template class _COM_AZURE_DEV__BASE__API TYPE<double>; \
+  template class _COM_AZURE_DEV__BASE__API TYPE<long double>;
+//  template class _COM_AZURE_DEV__BASE__API TYPE<int64>; \
+//  template class _COM_AZURE_DEV__BASE__API TYPE<uint64>; \
 
 /**
   Defines the types of a modifying (has write access to the elements)

@@ -16,9 +16,9 @@
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
-template _COM_AZURE_DEV__BASE__API class Vector2D<float>;
-template _COM_AZURE_DEV__BASE__API class Vector2D<double>;
-template _COM_AZURE_DEV__BASE__API class Vector2D<long double>;
+template class _COM_AZURE_DEV__BASE__API Vector2D<float>;
+template class _COM_AZURE_DEV__BASE__API Vector2D<double>;
+template class _COM_AZURE_DEV__BASE__API Vector2D<long double>;
 
 
 #if defined(_COM_AZURE_DEV__BASE__TESTS)

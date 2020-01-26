@@ -21,7 +21,7 @@ _COM_AZURE_DEV__BASE__DUMMY_SYMBOL
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 // float, long double
-// template _COM_AZURE_DEV__BASE__API class Vector<double>;
+// template class _COM_AZURE_DEV__BASE__API Vector<double>;
 
 template<class TYPE>
 Vector<TYPE>::Vector(unsigned int size)

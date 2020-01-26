@@ -17,9 +17,9 @@
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
-template _COM_AZURE_DEV__BASE__API class Matrix<float>;
-template _COM_AZURE_DEV__BASE__API class Matrix<double>;
-template _COM_AZURE_DEV__BASE__API class Matrix<long double>;
+template class _COM_AZURE_DEV__BASE__API Matrix<float>;
+template class _COM_AZURE_DEV__BASE__API Matrix<double>;
+template class _COM_AZURE_DEV__BASE__API Matrix<long double>;
 
 template<class TYPE>
 class MultiplySubtract : public BinaryOperation<TYPE, TYPE, TYPE> {

@@ -16,11 +16,11 @@
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
-template _COM_AZURE_DEV__BASE__API class Complex<float>;
-template _COM_AZURE_DEV__BASE__API class Complex<double>;
-template _COM_AZURE_DEV__BASE__API class Complex<long double>;
+template class _COM_AZURE_DEV__BASE__API Complex<float>;
+template class _COM_AZURE_DEV__BASE__API Complex<double>;
+template class _COM_AZURE_DEV__BASE__API Complex<long double>;
 #if 0 && (_COM_AZURE_DEV__BASE__HAS_FLOAT128) // requires Math float128 support
-template _COM_AZURE_DEV__BASE__API class Complex<float128>;
+template class _COM_AZURE_DEV__BASE__API Complex<float128>;
 #endif
 
 template<> const Complex<float>::Imaginary Complex<float>::I;

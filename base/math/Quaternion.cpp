@@ -15,8 +15,8 @@
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
-template _COM_AZURE_DEV__BASE__API class Quaternion<float>;
-template _COM_AZURE_DEV__BASE__API class Quaternion<double>;
-template _COM_AZURE_DEV__BASE__API class Quaternion<long double>;
+template class _COM_AZURE_DEV__BASE__API Quaternion<float>;
+template class _COM_AZURE_DEV__BASE__API Quaternion<double>;
+template class _COM_AZURE_DEV__BASE__API Quaternion<long double>;
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

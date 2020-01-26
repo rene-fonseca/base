@@ -17,19 +17,19 @@
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 #if 1 || defined(_COM_AZURE_DEV__BASE__SHARED_LIBRARY_BUILD)
-template _COM_AZURE_DEV__BASE__API class AtomicCounter<char>;
-template _COM_AZURE_DEV__BASE__API class AtomicCounter<short>;
-template _COM_AZURE_DEV__BASE__API class AtomicCounter<int>;
-// template _COM_AZURE_DEV__BASE__API class AtomicCounter<int64>;
-// template _COM_AZURE_DEV__BASE__API class AtomicCounter<MemoryDiff>;
-// template _COM_AZURE_DEV__BASE__API class AtomicCounter<int128>;
+template class _COM_AZURE_DEV__BASE__API AtomicCounter<char>;
+template class _COM_AZURE_DEV__BASE__API AtomicCounter<short>;
+template class _COM_AZURE_DEV__BASE__API AtomicCounter<int>;
+// template class _COM_AZURE_DEV__BASE__API AtomicCounter<int64>;
+// template class _COM_AZURE_DEV__BASE__API AtomicCounter<MemoryDiff>;
+// template class _COM_AZURE_DEV__BASE__API AtomicCounter<int128>;
 
-template _COM_AZURE_DEV__BASE__API class AtomicCounterU<uint8>;
-template _COM_AZURE_DEV__BASE__API class AtomicCounterU<uint16>;
-template _COM_AZURE_DEV__BASE__API class AtomicCounterU<uint32>;
-// template _COM_AZURE_DEV__BASE__API class AtomicCounterU<uint64>;
-// template _COM_AZURE_DEV__BASE__API class AtomicCounterU<MemorySize>;
-// template _COM_AZURE_DEV__BASE__API class AtomicCounterU<uint128>;
+template class _COM_AZURE_DEV__BASE__API AtomicCounterU<uint8>;
+template class _COM_AZURE_DEV__BASE__API AtomicCounterU<uint16>;
+template class _COM_AZURE_DEV__BASE__API AtomicCounterU<uint32>;
+// template class _COM_AZURE_DEV__BASE__API AtomicCounterU<uint64>;
+// template class _COM_AZURE_DEV__BASE__API AtomicCounterU<MemorySize>;
+// template class _COM_AZURE_DEV__BASE__API AtomicCounterU<uint128>;
 #endif
 
 #if defined(_COM_AZURE_DEV__BASE__TESTS)

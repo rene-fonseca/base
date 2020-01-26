@@ -19,24 +19,24 @@ _COM_AZURE_DEV__BASE__DUMMY_SYMBOL
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
-template _COM_AZURE_DEV__BASE__API class Map<bool, bool>;
-template _COM_AZURE_DEV__BASE__API class Map<short, short>;
-template _COM_AZURE_DEV__BASE__API class Map<unsigned short, unsigned short>;
-template _COM_AZURE_DEV__BASE__API class Map<int, int>;
-template _COM_AZURE_DEV__BASE__API class Map<unsigned int, unsigned int>;
-template _COM_AZURE_DEV__BASE__API class Map<long, long>;
-template _COM_AZURE_DEV__BASE__API class Map<unsigned long, unsigned long>;
+template class _COM_AZURE_DEV__BASE__API Map<bool, bool>;
+template class _COM_AZURE_DEV__BASE__API Map<short, short>;
+template class _COM_AZURE_DEV__BASE__API Map<unsigned short, unsigned short>;
+template class _COM_AZURE_DEV__BASE__API Map<int, int>;
+template class _COM_AZURE_DEV__BASE__API Map<unsigned int, unsigned int>;
+template class _COM_AZURE_DEV__BASE__API Map<long, long>;
+template class _COM_AZURE_DEV__BASE__API Map<unsigned long, unsigned long>;
 #if (_COM_AZURE_DEV__BASE__COMPILER != _COM_AZURE_DEV__BASE__COMPILER_GCC)
-template _COM_AZURE_DEV__BASE__API class Map<int64, int64>;
-template _COM_AZURE_DEV__BASE__API class Map<uint64, uint64>;
+template class _COM_AZURE_DEV__BASE__API Map<int64, int64>;
+template class _COM_AZURE_DEV__BASE__API Map<uint64, uint64>;
 #endif
-template _COM_AZURE_DEV__BASE__API class Map<char, char>;
-template _COM_AZURE_DEV__BASE__API class Map<unsigned char, unsigned char>;
-template _COM_AZURE_DEV__BASE__API class Map<wchar, wchar>;
-template _COM_AZURE_DEV__BASE__API class Map<void*, void*>;
-template _COM_AZURE_DEV__BASE__API class Map<float, float>;
-template _COM_AZURE_DEV__BASE__API class Map<double, double>;
-template _COM_AZURE_DEV__BASE__API class Map<long double, long double>;
+template class _COM_AZURE_DEV__BASE__API Map<char, char>;
+template class _COM_AZURE_DEV__BASE__API Map<unsigned char, unsigned char>;
+template class _COM_AZURE_DEV__BASE__API Map<wchar, wchar>;
+template class _COM_AZURE_DEV__BASE__API Map<void*, void*>;
+template class _COM_AZURE_DEV__BASE__API Map<float, float>;
+template class _COM_AZURE_DEV__BASE__API Map<double, double>;
+template class _COM_AZURE_DEV__BASE__API Map<long double, long double>;
 
 #if defined(_COM_AZURE_DEV__BASE__TESTS)
 

@@ -188,9 +188,9 @@ unsigned int SoundInputStream::getPosition() const noexcept
   clear(time);
   time.wType = TIME_SAMPLES;
   ::waveInGetPosition((HWAVEIN)handle, &time, sizeof(time));
-  // TAG: need Runtime::internalError(_COM_AZURE_DEV__BASE__PRETTY_FUNCTION)
   if (time.wType != TIME_SAMPLES) {
-    return 0; // UnexpectedFailure();
+    Runtime::internalError(_COM_AZURE_DEV__BASE__PRETTY_FUNCTION);
+    return 0;
   }
   return time.u.sample;
 #else

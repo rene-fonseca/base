@@ -21,7 +21,7 @@ _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 #if defined(WIN32)
 #  define _COM_AZURE_DEV__BASE__ISOC_API __declspec(dllimport)
 #else
-#  define _COM_AZURE_DEV__BASE__ISOC_API __declspec(dllimport)
+#  define _COM_AZURE_DEV__BASE__ISOC_API
 #endif
 
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32) || \

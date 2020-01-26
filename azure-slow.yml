@@ -235,6 +235,7 @@ jobs:
 
   # not as nice as container
   - script: |
+      sudo apt-get update -y
       sudo apt-get install -y clang-9
     displayName: 'Install clang'
 

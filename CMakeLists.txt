@@ -14,7 +14,7 @@ set(base_VERSION_MAJOR 0)
 set(base_VERSION_MINOR 9)
 set(base_VERSION_MICRO 0)
 
-if (MSVC)
+if (WIN32)
   add_definitions(-DUNICODE)
   add_definitions(-D_UNICODE)
 endif ()
@@ -294,7 +294,7 @@ configure_file(${CMAKE_SOURCE_DIR}/build.h.in ${CMAKE_BINARY_DIR}/generated/base
 # e.g. #include <relativepath/xxx.h> ${CMAKE_BINARY_DIR}/generated/base/bzip2.h)
 
 set(base_ADDITIONAL "")
-if (MSVC)
+if (WIN32)
   configure_file(${CMAKE_SOURCE_DIR}/base.rc.in ${CMAKE_BINARY_DIR}/generated/base/base.rc)
   set(base_ADDITIONAL ${CMAKE_BINARY_DIR}/generated/base/base.rc)
 endif ()
@@ -335,7 +335,7 @@ endif ()
 #endif ()
 endif ()
 
-if (MSVC)
+if (WIN32)
   target_link_libraries(base PRIVATE Ws2_32 Netapi32 Winmm Wininet Ole32 Gdi32 Advapi32)
 elseif (APPLE)
   find_library(corefoundation CoreFoundation)
@@ -490,7 +490,7 @@ install(EXPORT baseConfigRelease
 )
 endif ()
 
-if (MSVC)
+if (WIN32)
 install(
   FILES "${CMAKE_BINARY_DIR}/Debug/base.pdb" "${CMAKE_BINARY_DIR}/Debug/base_static.pdb"
   CONFIGURATIONS Debug

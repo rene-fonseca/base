@@ -1,5 +1,6 @@
 FROM renefonseca/freebsd12:latest
 
+# --no-install-recommends - cmake fails without GCC
 RUN apt-get -y update && \
     apt-get -y install git cmake make && \
     rm -rf /var/lib/apt/lists/*

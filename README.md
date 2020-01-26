@@ -132,6 +132,7 @@ openSUSE           | x86_64   | GCC     | Ok         | Runs daily on pipeline
 Amazon Linux 2     | x86_64   | GCC     | Ok         | Runs daily on pipeline - using newer cmake build
 GCC 9              | x86_64   | GCC     | Ok         | Runs daily on pipeline
 Emscripten         | WASM32   | LLVM    | Ok         | Runs daily on pipeline but no testing
+FreeBSD 12.1       | x86_64   | GCC     | Ok         | Runs daily on pipeline but no testing
 RedHat 8.1         | x86_64   | GCC     | Ok         | 7 Dec 2019
 FreeBSD 12.1       | x86_64   | Clang   | Ok         | 7 Dec 2019
 OpenBSD 66         | x86_64   | GCC     | Ok         | 9 Dec 2019

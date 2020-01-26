@@ -20,7 +20,8 @@
 #include <base/build.h>
 #include <stdlib.h>
 
-#if (_COM_AZURE_DEV__BASE__DEMANGLE == _COM_AZURE_DEV__BASE__DEMANGLE_GCCV3)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
+#elif (_COM_AZURE_DEV__BASE__DEMANGLE == _COM_AZURE_DEV__BASE__DEMANGLE_GCCV3)
 #  include <cxxabi.h>
 #elif (_COM_AZURE_DEV__BASE__DEMANGLE == _COM_AZURE_DEV__BASE__DEMANGLE_GCCV23)
   extern "C" char* cplus_demangle_new_abi(const char* mangled);
@@ -38,7 +39,14 @@ _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 _COM_AZURE_DEV__BASE__GLOBAL_PRINT();
 
-#if (_COM_AZURE_DEV__BASE__DEMANGLE == _COM_AZURE_DEV__BASE__DEMANGLE_V3MV)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
+
+String TypeInfo::demangleName(const char* mangled)
+{
+  return mangled; // TAG: DynamicLinker::demangle(mangled);
+}
+
+#elif (_COM_AZURE_DEV__BASE__DEMANGLE == _COM_AZURE_DEV__BASE__DEMANGLE_V3MV)
 
 class V3MultiVendorABIDemangler {
 private:
@@ -1063,13 +1071,6 @@ String TypeInfo::demangleName(const char* mangled)
   int result = demangle(mangled, buffer);
   BASSERT(!result);
   return String(buffer);
-}
-
-#elif (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
-
-String TypeInfo::demangleName(const char* mangled)
-{
-  return mangled; // TAG: DynamicLinker::demangle(mangled);
 }
 
 #else // no demangling support

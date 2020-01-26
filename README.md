@@ -33,6 +33,7 @@ Reference API documentation is hosted at https://rene-fonseca.github.io/base-api
 [![openSUSE](https://dev.azure.com/renefonseca/base/_apis/build/status/base%20daily?branchName=master&jobName=opensuse_x64&label=openSUSE)](https://dev.azure.com/renefonseca/base/_build/latest?definitionId=7&branchName=master)
 [![Amazon Linux](https://dev.azure.com/renefonseca/base/_apis/build/status/base%20daily?branchName=master&jobName=amazonlinux_x64&label=Amazon%20Linux)](https://dev.azure.com/renefonseca/base/_build/latest?definitionId=7&branchName=master)
 [![GCC 9](https://dev.azure.com/renefonseca/base/_apis/build/status/base%20daily?branchName=master&jobName=gcc9&label=GCC%209)](https://dev.azure.com/renefonseca/base/_build/latest?definitionId=7&branchName=master)
+[![FreeBSD x64](https://dev.azure.com/renefonseca/base/_apis/build/status/base%20daily?branchName=master&jobName=freebsd_x64&label=FreeBSD%2012.1)](https://dev.azure.com/renefonseca/base/_build/latest?definitionId=7&branchName=master)
 [![Emscripten](https://dev.azure.com/renefonseca/base/_apis/build/status/base%20daily?branchName=master&jobName=emcc&label=Emscripten)](https://dev.azure.com/renefonseca/base/_build/latest?definitionId=7&branchName=master)
 [![wasm32](https://dev.azure.com/renefonseca/base/_apis/build/status/rene-fonseca.base?branchName=master&jobName=wasm32&label=WebAssembly%2032)](https://dev.azure.com/renefonseca/base/_build/latest?definitionId=5&branchName=master)
 

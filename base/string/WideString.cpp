@@ -769,7 +769,7 @@ WideString& WideString::toUpperCase() noexcept
   return *this;
 }
 
-int WideString::compareTo(const WideString& string) const noexcept
+int WideString::compareTo(const WideString& string) const
 {
   // both strings may contain multiple zeros
   MemorySize leftLength = getLength();
@@ -794,7 +794,7 @@ int WideString::compareTo(const WideString& string) const noexcept
   }
 }
 
-int WideString::compareTo(const WideLiteral& literal) const noexcept
+int WideString::compareTo(const WideLiteral& literal) const
 {
   if (sizeof(wchar) == sizeof(utf16)) {
     const ucs4* left = getElements(); // make sure string is terminated
@@ -941,14 +941,14 @@ int WideString::compareToIgnoreCase(const WideString& string) const noexcept
 // TAG: need support for WideLiteral
 // int WideString::compareToIgnoreCase(const WideLiteral& literal) const noexcept;
 
-bool WideString::startsWith(const WideString& prefix) const noexcept
+bool WideString::startsWith(const WideString& prefix) const
 {
   MemorySize prefixLength = prefix.getLength();
   return (prefixLength > 0) && (prefixLength <= getLength()) &&
     (compare(getBuffer(), prefix.getBuffer(), prefixLength) == 0);
 }
 
-bool WideString::startsWith(const WideLiteral& prefix) const noexcept
+bool WideString::startsWith(const WideLiteral& prefix) const
 {
   if (sizeof(wchar) == sizeof(utf16)) {
     const ucs4* left = getElements(); // make sure string is terminated
@@ -994,7 +994,7 @@ bool WideString::startsWith(const WideLiteral& prefix) const noexcept
   }
 }
 
-bool WideString::endsWith(const WideString& suffix) const noexcept
+bool WideString::endsWith(const WideString& suffix) const
 {
   MemorySize length = getLength();
   MemorySize suffixLength = suffix.getLength();

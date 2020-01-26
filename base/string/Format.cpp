@@ -297,7 +297,9 @@ public:
     TEST_EQUAL(Format::subst("My name is %1 and I'm %2 years old.", "John", 18), "My name is John and I'm 18 years old.");
     TEST_EQUAL(Format::subst("Current percent is %1%%.", 45), "Current percent is 45%.");
 
-#if defined(__GNUC__) && (__GNUC__ < 6) // temporary workaround // Ubuntu 16.04
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32) && \
+    (_COM_AZURE_DEV__BASE__COMPILER == _COM_AZURE_DEV__BASE__COMPILER_LLVM) || \
+    defined(__GNUC__) && (__GNUC__ < 6) // temporary workaround // Ubuntu 16.04
     TEST_EQUAL(Format::subst("%1", AnyValue(false)), "false");
     TEST_EQUAL(Format::subst("%1", AnyValue(true)), "true");
 #else

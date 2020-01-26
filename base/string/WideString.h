@@ -839,7 +839,7 @@ public:
     found, respectively, to be less than, equal to, or greater than the
     specified string.
   */
-  int compareTo(const WideString& string) const noexcept;
+  int compareTo(const WideString& string) const;
 
   /**
     Compare this string with a string literal.
@@ -850,7 +850,7 @@ public:
     found, respectively, to be less than, equal to, or greater than the
     specified string.
   */
-  int compareTo(const WideLiteral& string) const noexcept;
+  int compareTo(const WideLiteral& string) const;
   
   /**
     Compare this string with NULL-terminated string.
@@ -879,14 +879,14 @@ public:
 
     @param prefix The string to compare start of this string with.
   */
-  bool startsWith(const WideString& prefix) const noexcept;
+  bool startsWith(const WideString& prefix) const;
 
   /**
     Returns true if this string starts with the specified prefix.
 
     @param prefix The string to compare start of this string with.
   */
-  bool startsWith(const WideLiteral& prefix) const noexcept;
+  bool startsWith(const WideLiteral& prefix) const;
 
   /**
     Returns true if this string ends with the specified suffix.
@@ -900,7 +900,7 @@ public:
 
     @param suffix The string to compare end of this string with.
   */
-  bool endsWith(const WideLiteral& suffix) const noexcept;
+  bool endsWith(const WideLiteral& suffix) const;
 
   /**
     Equality operator.

@@ -356,3 +356,10 @@
 #else
 #  define _COM_AZURE_DEV__BASE__PRETTY_FUNCTION __func__
 #endif
+
+// used for externs that are not hidden in cpp
+#if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__GNULINUX)
+#  define _COM_AZURE_DEV__BASE__ISOC_NOEXCEPT throw()
+#else
+#  define _COM_AZURE_DEV__BASE__ISOC_NOEXCEPT
+#endif

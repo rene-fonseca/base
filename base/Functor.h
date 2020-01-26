@@ -22,27 +22,27 @@ _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 namespace isoc {
 
 #if defined(_COM_AZURE_DEV__BASE__HAVE_MEMCPY)
-  extern "C" void* memcpy(void* restrict, const void* restrict, MemorySize);
+  extern "C" void* memcpy(void* restrict, const void* restrict, MemorySize) _COM_AZURE_DEV__BASE__ISOC_NOEXCEPT;
 #endif
 
 #if defined(_COM_AZURE_DEV__BASE__HAVE_MEMCMP)
-  extern "C" int memcmp(const void*, const void*, MemorySize);
+  extern "C" int memcmp(const void*, const void*, MemorySize) _COM_AZURE_DEV__BASE__ISOC_NOEXCEPT;
 #endif
 
 #if defined(_COM_AZURE_DEV__BASE__HAVE_MEMMOVE)
-  extern "C" void* memmove(void*, const void*, MemorySize);
+  extern "C" void* memmove(void*, const void*, MemorySize) _COM_AZURE_DEV__BASE__ISOC_NOEXCEPT;
 #endif
 
 #if defined(_COM_AZURE_DEV__BASE__HAVE_MEMCHR)
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
-  extern "C" const void* memchr(const void*, int, MemorySize);
+  extern "C" const void* memchr(const void*, int, MemorySize) _COM_AZURE_DEV__BASE__ISOC_NOEXCEPT;
 #else
-  extern "C" void* memchr(const void*, int, MemorySize);
+  extern "C" void* memchr(const void*, int, MemorySize) _COM_AZURE_DEV__BASE__ISOC_NOEXCEPT;
 #endif
 #endif
 
 #if defined(_COM_AZURE_DEV__BASE__HAVE_MEMSET)
-  extern "C" void* memset(void*, int, MemorySize);
+  extern "C" void* memset(void*, int, MemorySize) _COM_AZURE_DEV__BASE__ISOC_NOEXCEPT;
 #endif
 }; // end of namespace isoc
 

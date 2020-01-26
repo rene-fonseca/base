@@ -34,7 +34,11 @@ namespace isoc {
 #endif
 
 #if defined(_COM_AZURE_DEV__BASE__HAVE_MEMCHR)
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   extern "C" const void* memchr(const void*, int, MemorySize);
+#else
+  extern "C" void* memchr(const void*, int, MemorySize);
+#endif
 #endif
 
 #if defined(_COM_AZURE_DEV__BASE__HAVE_MEMSET)

@@ -88,9 +88,9 @@ bool SaveFileDialog::execute()
   saveFile.lpstrFile = buffer;
   saveFile.nMaxFile = buffer.size();
   OSString _folder(folder);
-  saveFile.lpstrInitialDir = !_folder.empty() ? _folder : 0;
+  saveFile.lpstrInitialDir = !_folder.empty() ? _folder : nullptr;
   OSString _title(title);
-  saveFile.lpstrTitle = !_title.empty() ? _title : 0;
+  saveFile.lpstrTitle = !_title.empty() ? _title : nullptr;
   saveFile.Flags |= (flags & SaveFileDialog::ASK_TO_OVERWRITE) ? OFN_OVERWRITEPROMPT : 0;
   saveFile.Flags |= (flags & SaveFileDialog::ASK_TO_CREATE) ? OFN_CREATEPROMPT : 0;
   

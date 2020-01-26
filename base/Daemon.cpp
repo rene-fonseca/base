@@ -199,9 +199,10 @@ Daemon::Daemon(Runnable* runnable) {
   // TAG: need to detect whether the application is started as a service or a normal application
   // TAG: check whether a console is attached
 
+  const wchar* EMPTY = L"";
   SERVICE_TABLE_ENTRY dispatchTable[] = {
-    {L"", &win32::serviceEntry}, // name is ignored 'cause using SERVICE_WIN32_OWN_PROCESS
-    {0, 0} // termination entry
+    {const_cast<wchar*>(EMPTY), &win32::serviceEntry}, // name is ignored 'cause using SERVICE_WIN32_OWN_PROCESS
+    {NULL, NULL} // termination entry
   };
   
   if (!::StartServiceCtrlDispatcher(dispatchTable)) {

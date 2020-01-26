@@ -252,7 +252,8 @@ namespace windowImpl {
 }; // end of windowImpl namespace
 
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
-LRESULT CALLBACK Backend<WindowImpl>::messageHandler(HWND handle, UINT message, WPARAM wParam, LPARAM lParam) noexcept {
+LRESULT CALLBACK Backend<WindowImpl>::messageHandler(HWND handle, UINT message, WPARAM wParam, LPARAM lParam) noexcept
+{
   WindowImpl* window = windowImpl::getWindow(handle); // should be atomic
   if (window == 0) {
     return ::DefWindowProc(handle, message, wParam, lParam);
@@ -435,10 +436,9 @@ LRESULT CALLBACK Backend<WindowImpl>::messageHandler(HWND handle, UINT message, 
         mouseEvent.dwFlags = TME_LEAVE;
         mouseEvent.hwndTrack = (HWND)window->drawableHandle;
         mouseEvent.dwHoverTime = 0;
-        bassert(
-          ::TrackMouseEvent(&mouseEvent),
-          UserInterfaceException(Type::getType<WindowImpl>())
-        );
+        if (!::TrackMouseEvent(&mouseEvent)) {
+          // TAG: not what // UserInterfaceException(Type::getType<WindowImpl>())
+        }
         window->onMouseScope(true);
       }
       unsigned int buttons = 0;

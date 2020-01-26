@@ -34,7 +34,7 @@ namespace isoc {
 #endif
 
 #if defined(_COM_AZURE_DEV__BASE__HAVE_MEMCHR)
-  extern "C" void* memchr(const void*, int, MemorySize);
+  extern "C" const void* memchr(const void*, int, MemorySize);
 #endif
 
 #if defined(_COM_AZURE_DEV__BASE__HAVE_MEMSET)

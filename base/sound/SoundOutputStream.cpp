@@ -56,7 +56,8 @@ public:
 };
 #endif // win32
 
-SoundOutputStream::SoundOutputStream(unsigned int samplingRate, unsigned int channels) {
+SoundOutputStream::SoundOutputStream(unsigned int samplingRate, unsigned int channels)
+{
   bassert(channels > 0, OutOfDomain());
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   WAVEFORMATEX format;
@@ -114,7 +115,8 @@ SoundOutputStream::SoundOutputStream(unsigned int samplingRate, unsigned int cha
 #endif // flavor
 }
 
-unsigned int SoundOutputStream::getChannels() const noexcept {
+unsigned int SoundOutputStream::getChannels() const noexcept
+{
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   return 0;
 #else
@@ -122,11 +124,11 @@ unsigned int SoundOutputStream::getChannels() const noexcept {
   OperatingSystem::Handle handle = SoundDevice::soundDevice.getWriteHandle();
   #if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__GNULINUX)
     int channels = 0;
-    bassert(::ioctl(handle, SOUND_PCM_READ_CHANNELS, &channels) == 0, UnexpectedFailure());
+    binternalerror(::ioctl(handle, SOUND_PCM_READ_CHANNELS, &channels) == 0);
     return channels;
   #elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__SOLARIS)
     audio_info_t info;
-    bassert(::ioctl(handle, AUDIO_GETINFO, &info) == 0, UnexpectedFailure()); // should never fail
+    binternalerror(::ioctl(handle, AUDIO_GETINFO, &info) == 0); // should never fail
     return info.play.channels;
   #else
     if (handle) {
@@ -136,7 +138,8 @@ unsigned int SoundOutputStream::getChannels() const noexcept {
 #endif // flavor
 }
 
-unsigned int SoundOutputStream::getRate() const noexcept {
+unsigned int SoundOutputStream::getRate() const noexcept
+{
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   return 0;
 #else
@@ -144,11 +147,11 @@ unsigned int SoundOutputStream::getRate() const noexcept {
   OperatingSystem::Handle handle = SoundDevice::soundDevice.getWriteHandle();
   #if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__GNULINUX)
     int rate = 0;
-    bassert(::ioctl(handle, SOUND_PCM_READ_RATE, &rate) == 0, UnexpectedFailure());
+    binternalerror(::ioctl(handle, SOUND_PCM_READ_RATE, &rate) == 0);
     return rate;
   #elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__SOLARIS)
     audio_info_t info;
-    bassert(::ioctl(handle, AUDIO_GETINFO, &info) == 0, UnexpectedFailure()); // should never fail
+    binternalerror(::ioctl(handle, AUDIO_GETINFO, &info) == 0); // should never fail
     return info.play.sample_rate;
   #else
     if (handle) {
@@ -176,7 +179,7 @@ unsigned int SoundOutputStream::getPosition() const noexcept
     return 0;
   #elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__SOLARIS)
     audio_info_t info;
-    bassert(::ioctl(handle, AUDIO_GETINFO, &info) == 0, UnexpectedFailure()); // should never fail
+    binternalerror(::ioctl(handle, AUDIO_GETINFO, &info) == 0); // should never fail
     return info.play.samples;
   #else
     if (handle) {
@@ -186,7 +189,8 @@ unsigned int SoundOutputStream::getPosition() const noexcept
 #endif // flavor
 }
 
-void SoundOutputStream::resume() noexcept {
+void SoundOutputStream::resume() noexcept
+{
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   event.reset();
 #else
@@ -195,16 +199,18 @@ void SoundOutputStream::resume() noexcept {
   (void)handle; // dont care about unused
   #if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__GNULINUX)
   #elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__SOLARIS)
-    bassert(::ioctl(handle, I_FLUSH, FLUSHW) == 0, UnexpectedFailure()); // should never fail
+    binternalerror(::ioctl(handle, I_FLUSH, FLUSHW) == 0); // should never fail
   #endif // os
 #endif // flavor
 }
 
-void SoundOutputStream::pause() noexcept {
+void SoundOutputStream::pause() noexcept
+{
   // FIXME
 }
 
-void SoundOutputStream::reset() noexcept {
+void SoundOutputStream::reset() noexcept
+{
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   ::waveOutReset((HWAVEOUT)handle);
   event.reset();
@@ -213,9 +219,9 @@ void SoundOutputStream::reset() noexcept {
   OperatingSystem::Handle handle = SoundDevice::soundDevice.getWriteHandle();
   (void)handle; // dont care about unused
   #if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__GNULINUX)
-    bassert(::ioctl(handle, SNDCTL_DSP_RESET, 0) == 0, UnexpectedFailure()); // should never fail
+    binternalerror(::ioctl(handle, SNDCTL_DSP_RESET, 0) == 0); // should never fail
   #elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__SOLARIS)
-    bassert(::ioctl(handle, I_FLUSH, FLUSHW) == 0, UnexpectedFailure()); // should never fail
+    binternalerror(::ioctl(handle, I_FLUSH, FLUSHW) == 0); // should never fail
   #endif // os
 #endif // flavor
 }
@@ -252,7 +258,7 @@ void SoundOutputStream::wait() noexcept
   OperatingSystem::Handle handle = SoundDevice::soundDevice.getWriteHandle();
   (void)handle; // dont care about unused
   #if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__GNULINUX)
-    bassert(::ioctl(handle, SNDCTL_DSP_SYNC, 0) == 0, UnexpectedFailure());
+    binternalerror(::ioctl(handle, SNDCTL_DSP_SYNC, 0) == 0);
   #elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__SOLARIS)
   #endif // os
 #endif // flavor
@@ -299,7 +305,8 @@ unsigned int SoundOutputStream::write(const void* buffer, unsigned int size)
 #endif // flavor
 }
 
-SoundOutputStream::~SoundOutputStream() noexcept {
+SoundOutputStream::~SoundOutputStream() noexcept
+{
   reset();
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   ::waveOutClose((HWAVEOUT)handle);

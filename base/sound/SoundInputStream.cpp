@@ -144,11 +144,11 @@ unsigned int SoundInputStream::getChannels() const noexcept
   OperatingSystem::Handle handle = SoundDevice::soundDevice.getReadHandle();
   #if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__GNULINUX)
     int channels = 0;
-    bassert(::ioctl(handle, SOUND_PCM_READ_CHANNELS, &channels) == 0, UnexpectedFailure());
+    binternalerror(::ioctl(handle, SOUND_PCM_READ_CHANNELS, &channels) == 0);
     return channels;
   #elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__SOLARIS)
     audio_info_t info;
-    bassert(::ioctl(handle, AUDIO_GETINFO, &info) == 0, UnexpectedFailure()); // should never fail
+    binternalerror(::ioctl(handle, AUDIO_GETINFO, &info) == 0); // should never fail
     return info.record.channels;
   #else
     if (handle) {
@@ -167,11 +167,11 @@ unsigned int SoundInputStream::getRate() const noexcept
   OperatingSystem::Handle handle = SoundDevice::soundDevice.getReadHandle();
   #if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__GNULINUX)
     int rate = 0;
-    bassert(::ioctl(handle, SOUND_PCM_READ_RATE, &rate) == 0, UnexpectedFailure());
+    binternalerror(::ioctl(handle, SOUND_PCM_READ_RATE, &rate) == 0);
     return rate;
   #elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__SOLARIS)
     audio_info_t info;
-    bassert(::ioctl(handle, AUDIO_GETINFO, &info) == 0, UnexpectedFailure()); // should never fail
+    binternalerror(::ioctl(handle, AUDIO_GETINFO, &info) == 0); // should never fail
     return info.record.sample_rate;
   #else
     if (handle) {
@@ -200,7 +200,7 @@ unsigned int SoundInputStream::getPosition() const noexcept
     return 0;
   #elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__SOLARIS)
     audio_info_t info;
-    bassert(::ioctl(handle, AUDIO_GETINFO, &info) == 0, UnexpectedFailure()); // should never fail
+    binternalerror(::ioctl(handle, AUDIO_GETINFO, &info) == 0); // should never fail
     return info.record.samples;
   #else
     if (handle) {
@@ -224,7 +224,7 @@ void SoundInputStream::resume() noexcept
     audio_info_t info;
     AUDIO_INITINFO(&info);
     info.record.pause = 0;
-    bassert(::ioctl(handle, AUDIO_SETINFO, &info) == 0, UnexpectedFailure());
+    binternalerror(::ioctl(handle, AUDIO_SETINFO, &info) == 0);
     reset();
   #else
     if (handle) {
@@ -246,8 +246,8 @@ void SoundInputStream::pause() noexcept
     audio_info_t info;
     AUDIO_INITINFO(&info);
     info.record.pause = 1;
-    bassert(::ioctl(handle, AUDIO_SETINFO, &info) == 0, UnexpectedFailure());
-    bassert(::ioctl(handle, I_FLUSH, FLUSHR) == 0, UnexpectedFailure()); // should never fail
+    binternalerror(::ioctl(handle, AUDIO_SETINFO, &info) == 0);
+    binternalerror(::ioctl(handle, I_FLUSH, FLUSHR) == 0); // should never fail
   #else
     if (handle) {
     }
@@ -264,13 +264,13 @@ void SoundInputStream::reset() noexcept
   OperatingSystem::Handle handle = SoundDevice::soundDevice.getReadHandle();
   (void)handle; // dont care about unused
   #if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__GNULINUX)
-    bassert(::ioctl(handle, SNDCTL_DSP_RESET, 0) == 0, UnexpectedFailure());
+    binternalerror(::ioctl(handle, SNDCTL_DSP_RESET, 0) == 0);
   #elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__SOLARIS)
     audio_info_t info;
     AUDIO_INITINFO(&info);
     info.record.pause = 1;
-    bassert(::ioctl(handle, AUDIO_SETINFO, &info) == 0, UnexpectedFailure());
-    bassert(::ioctl(handle, I_FLUSH, FLUSHR) == 0, UnexpectedFailure()); // should not fail
+    binternalerror(::ioctl(handle, AUDIO_SETINFO, &info) == 0);
+    binternalerror(::ioctl(handle, I_FLUSH, FLUSHR) == 0); // should not fail
   #endif // os
 #endif // flavor
 }

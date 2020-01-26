@@ -35,6 +35,20 @@
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
+/** Triggers internal error due to unexpected result. */
+template<typename TYPE>
+[[noreturn]] static void internalError(const TYPE& exception)
+{
+  // TYPE* _exception = new TYPE(exception);
+  _throw exception;
+}
+
+#undef bassert
+#define bassert(expression, exception) \
+  if (!static_cast<bool>(expression)) { \
+    /*Runtime::*/internalError(exception); \
+  }
+
 _COM_AZURE_DEV__BASE__GLOBAL_PRINT();
 
 namespace internal {

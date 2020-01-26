@@ -16,12 +16,6 @@
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
-namespace {
-
-  class _COM_AZURE_DEV__BASE__API Uninitialized {
-  };
-}
-
 const std::type_info* Type::getUninitialized() noexcept
 {
   return &typeid(Uninitialized);

@@ -30,6 +30,11 @@ _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 class _COM_AZURE_DEV__BASE__API Type {
   friend class Exception;
+public:
+
+  /** Tag returned by getUninitialized(). */
+  class _COM_AZURE_DEV__BASE__API Uninitialized {
+  };
 private:
 
   const std::type_info* type = nullptr;

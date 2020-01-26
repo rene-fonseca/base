@@ -235,7 +235,7 @@ jobs:
 
   # not as nice as container
   - script: |
-      apt-get install -y clang-9
+      sudo apt-get install -y clang-9
     displayName: 'Install clang'
 
   - script: cmake $(Build.SourcesDirectory) -DCOLOR=1 -DCMAKE_BUILD_TYPE=Debug -DCMAKE_INSTALL_PREFIX=install \

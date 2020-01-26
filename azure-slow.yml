@@ -237,10 +237,12 @@ jobs:
   - script: |
       sudo apt-get update -y
       sudo apt-get install -y clang-9
+      which clang-9
+      which clang++-9
     displayName: 'Install clang'
 
-  - script: cmake $(Build.SourcesDirectory) -DCOLOR=1 -DCMAKE_BUILD_TYPE=Debug -DCMAKE_INSTALL_PREFIX=install \
-      -DCMAKE_CXX_COMPILER=clang++-9 -DCMAKE_C_COMPILER=clang-9
+  - script: |
+      cmake $(Build.SourcesDirectory) -DCOLOR=1 -DCMAKE_BUILD_TYPE=Debug -DCMAKE_INSTALL_PREFIX=install -DCMAKE_CXX_COMPILER=`which clang++-9` -DCMAKE_C_COMPILER=`which clang-9`
     displayName: 'Config'
     workingDirectory: $(Build.BinariesDirectory)
 

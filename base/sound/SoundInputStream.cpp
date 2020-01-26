@@ -188,7 +188,10 @@ unsigned int SoundInputStream::getPosition() const noexcept
   clear(time);
   time.wType = TIME_SAMPLES;
   ::waveInGetPosition((HWAVEIN)handle, &time, sizeof(time));
-  bassert(time.wType == TIME_SAMPLES, UnexpectedFailure());
+  // TAG: need Runtime::internalError(_COM_AZURE_DEV__BASE__PRETTY_FUNCTION)
+  if (time.wType != TIME_SAMPLES) {
+    return 0; // UnexpectedFailure();
+  }
   return time.u.sample;
 #else
   SharedSynchronize<ReadWriteLock> sharedSynchronize(SoundDevice::soundDevice.guard);

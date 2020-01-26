@@ -158,13 +158,16 @@ unsigned int SoundOutputStream::getRate() const noexcept {
 #endif // flavor
 }
 
-unsigned int SoundOutputStream::getPosition() const noexcept {
+unsigned int SoundOutputStream::getPosition() const noexcept
+{
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   MMTIME time;
   clear(time);
   time.wType = TIME_SAMPLES;
   ::waveOutGetPosition((HWAVEOUT)handle, &time, sizeof(time));
-  bassert(time.wType == TIME_SAMPLES, UnexpectedFailure());
+  if (time.wType != TIME_SAMPLES) {
+    return 0; // UnexpectedFailure());
+  }
   return time.u.sample;
 #else
   SharedSynchronize<ReadWriteLock> sharedSynchronization(SoundDevice::soundDevice.guard);
@@ -226,10 +229,14 @@ void SoundOutputStream::wait() noexcept
   header.dwBufferLength = 0;
 
   unsigned int result = ::waveOutPrepareHeader((HWAVEOUT)handle, &header, sizeof(header));
-  bassert(result == MMSYSERR_NOERROR, UnexpectedFailure());
+  if (result != MMSYSERR_NOERROR) {
+    return; // UnexpectedFailure();
+  }
 
   result = ::waveOutWrite((HWAVEOUT)handle, &header, sizeof(header));
-  bassert(result == MMSYSERR_NOERROR, UnexpectedFailure());
+  if (result != MMSYSERR_NOERROR) {
+    return; // UnexpectedFailure();
+  }
 
   do {
     event.wait();
@@ -237,7 +244,9 @@ void SoundOutputStream::wait() noexcept
   } while ((header.dwFlags & WHDR_DONE) == 0);
 
   result = ::waveOutUnprepareHeader((HWAVEOUT)handle, &header, sizeof(header));
-  bassert(result == MMSYSERR_NOERROR, UnexpectedFailure());
+  if (result != MMSYSERR_NOERROR) {
+    return; // UnexpectedFailure();
+  }
 #else
   SharedSynchronize<ReadWriteLock> sharedSynchronization(SoundDevice::soundDevice.guard);
   OperatingSystem::Handle handle = SoundDevice::soundDevice.getWriteHandle();

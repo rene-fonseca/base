@@ -233,6 +233,12 @@ inline void bassert(bool assertion, const EXCEPTION& exception)
     _throw exception; \
   }
 
+/** Assert for internal error. */
+#define binternalerror(expression) \
+  if (!static_cast<bool>(expression)) { \
+    Runtime::internalError(_COM_AZURE_DEV__BASE__PRETTY_FUNCTION, nullptr); \
+  }
+
 /**
   This class allows assertions to be specified outside a function body. This
   class may be used to check an assertion during application initialization.
@@ -337,7 +343,19 @@ public:
 
   /** Triggers failure due to corruption. */
   [[noreturn]] static void corruption(const char* who);
-  
+
+#if 0
+  /** Triggers internal error due to unexpected result. */
+  template<typename TYPE>
+  [[noreturn]] static void internalError(TYPE&& exception)
+  {
+    _throw moveObject(exception);
+  }
+#else
+  /** Triggers internal error due to unexpected result. */
+  [[noreturn]] static void internalError(const char* who, const char* message);
+#endif
+
   /** Returns nullptr. */
   static void* getNullPointer() noexcept;
 };

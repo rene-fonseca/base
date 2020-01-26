@@ -35,20 +35,6 @@
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
-/** Triggers internal error due to unexpected result. */
-template<typename TYPE>
-[[noreturn]] static void internalError(const TYPE& exception)
-{
-  // TYPE* _exception = new TYPE(exception);
-  _throw exception;
-}
-
-#undef bassert
-#define bassert(expression, exception) \
-  if (!static_cast<bool>(expression)) { \
-    /*Runtime::*/internalError(exception); \
-  }
-
 _COM_AZURE_DEV__BASE__GLOBAL_PRINT();
 
 namespace internal {
@@ -544,10 +530,9 @@ int Date::getSecond() const noexcept
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   SYSTEMTIME time;
   FILETIME nativeTime = internal::dateToNative(date);
-  bassert(
+  binternalerror(
     (::FileTimeToSystemTime(&nativeTime, &time) != 0) &&
-    (::SystemTimeToTzSpecificLocalTime(0, &time, &time) != 0),
-    DateException(this)
+    (::SystemTimeToTzSpecificLocalTime(0, &time, &time) != 0)
   );
   return time.wSecond;
 #else // unix
@@ -563,10 +548,9 @@ int Date::getMinute() const noexcept
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   SYSTEMTIME time;
   FILETIME nativeTime = internal::dateToNative(date);
-  bassert(
+  binternalerror(
     (::FileTimeToSystemTime(&nativeTime, &time) != 0) &&
-    (::SystemTimeToTzSpecificLocalTime(0, &time, &time) != 0),
-    DateException(this)
+    (::SystemTimeToTzSpecificLocalTime(0, &time, &time) != 0)
   );
   return time.wMinute;
 #else // unix
@@ -582,10 +566,9 @@ int Date::getHour() const noexcept
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   SYSTEMTIME time;
   FILETIME nativeTime = internal::dateToNative(date);
-  bassert(
+  binternalerror(
     (::FileTimeToSystemTime(&nativeTime, &time) != 0) &&
-    (::SystemTimeToTzSpecificLocalTime(0, &time, &time) != 0),
-    DateException(this)
+    (::SystemTimeToTzSpecificLocalTime(0, &time, &time) != 0)
   );
   return time.wHour;
 #else // unix
@@ -601,10 +584,9 @@ int Date::getDay() const noexcept
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   SYSTEMTIME time;
   FILETIME nativeTime = internal::dateToNative(date);
-  bassert(
+  binternalerror(
     (::FileTimeToSystemTime(&nativeTime, &time) != 0) &&
-    (::SystemTimeToTzSpecificLocalTime(0, &time, &time) != 0),
-    DateException(this)
+    (::SystemTimeToTzSpecificLocalTime(0, &time, &time) != 0)
   );
   return time.wDay - 1;
 #else // unix
@@ -620,10 +602,9 @@ int Date::getDayOfWeek() const noexcept
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   SYSTEMTIME time;
   FILETIME nativeTime = internal::dateToNative(date);
-  bassert(
+  binternalerror(
     (::FileTimeToSystemTime(&nativeTime, &time) != 0) &&
-    (::SystemTimeToTzSpecificLocalTime(0, &time, &time) != 0),
-    DateException(this)
+    (::SystemTimeToTzSpecificLocalTime(0, &time, &time) != 0)
   );
   return time.wDayOfWeek;
 #else // unix
@@ -639,10 +620,9 @@ int Date::getDayOfYear() const noexcept
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   SYSTEMTIME time;
   FILETIME nativeTime = internal::dateToNative(date);
-  bassert(
+  binternalerror(
     (::FileTimeToSystemTime(&nativeTime, &time) != 0) &&
-    (::SystemTimeToTzSpecificLocalTime(0, &time, &time) != 0),
-    DateException(this)
+    (::SystemTimeToTzSpecificLocalTime(0, &time, &time) != 0)
   );
   return 0; // TAG: fixme
 #else // unix
@@ -658,10 +638,9 @@ int Date::getMonth() const noexcept
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   SYSTEMTIME time;
   FILETIME nativeTime = internal::dateToNative(date);
-  bassert(
+  binternalerror(
     (::FileTimeToSystemTime(&nativeTime, &time) != 0) &&
-    (::SystemTimeToTzSpecificLocalTime(0, &time, &time) != 0),
-    DateException(this)
+    (::SystemTimeToTzSpecificLocalTime(0, &time, &time) != 0)
   );
   return time.wMonth - 1;
 #else // unix
@@ -677,10 +656,9 @@ int Date::getYear() const noexcept
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   SYSTEMTIME time;
   FILETIME nativeTime = internal::dateToNative(date);
-  bassert(
+  binternalerror(
     (::FileTimeToSystemTime(&nativeTime, &time) != 0) &&
-    (::SystemTimeToTzSpecificLocalTime(0, &time, &time) != 0),
-    DateException(this)
+    (::SystemTimeToTzSpecificLocalTime(0, &time, &time) != 0)
   );
   return time.wYear;
 #else // unix
@@ -696,9 +674,8 @@ int Date::getUTCSecond() const noexcept
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   SYSTEMTIME time;
   FILETIME nativeTime = internal::dateToNative(date);
-  bassert(
-    ::FileTimeToSystemTime(&nativeTime, &time),
-    DateException(this)
+  binternalerror(
+    ::FileTimeToSystemTime(&nativeTime, &time)
   );
   return time.wSecond;
 #else // unix
@@ -714,9 +691,8 @@ int Date::getUTCMinute() const noexcept
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   SYSTEMTIME time;
   FILETIME nativeTime = internal::dateToNative(date);
-  bassert(
-    ::FileTimeToSystemTime(&nativeTime, &time),
-    DateException(this)
+  binternalerror(
+    ::FileTimeToSystemTime(&nativeTime, &time)
   );
   return time.wMinute;
 #else // unix
@@ -732,9 +708,8 @@ int Date::getUTCHour() const noexcept
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   SYSTEMTIME time;
   FILETIME nativeTime = internal::dateToNative(date);
-  bassert(
-    ::FileTimeToSystemTime(&nativeTime, &time),
-    DateException(this)
+  binternalerror(
+    ::FileTimeToSystemTime(&nativeTime, &time)
   );
   return time.wHour;
 #else // unix
@@ -750,9 +725,8 @@ int Date::getUTCDay() const noexcept
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   SYSTEMTIME time;
   FILETIME nativeTime = internal::dateToNative(date);
-  bassert(
-    ::FileTimeToSystemTime(&nativeTime, &time),
-    DateException(this)
+  binternalerror(
+    ::FileTimeToSystemTime(&nativeTime, &time)
   );
   return time.wDay - 1;
 #else // unix
@@ -768,9 +742,8 @@ int Date::getUTCDayOfWeek() const noexcept
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   SYSTEMTIME time;
   FILETIME nativeTime = internal::dateToNative(date);
-  bassert(
-    ::FileTimeToSystemTime(&nativeTime, &time),
-    DateException(this)
+  binternalerror(
+    ::FileTimeToSystemTime(&nativeTime, &time)
   );
   return time.wDayOfWeek;
 #else // unix
@@ -786,10 +759,9 @@ int Date::getUTCDayOfYear() const noexcept
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   SYSTEMTIME time;
   FILETIME nativeTime = internal::dateToNative(date);
-  bassert(
+  binternalerror(
     (::FileTimeToSystemTime(&nativeTime, &time) != 0) &&
-    (::SystemTimeToTzSpecificLocalTime(0, &time, &time) != 0),
-    DateException(this)
+    (::SystemTimeToTzSpecificLocalTime(0, &time, &time) != 0)
   );
   return 0; // TAG: fixme
 #else // unix
@@ -805,9 +777,8 @@ int Date::getUTCMonth() const noexcept
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   SYSTEMTIME time;
   FILETIME nativeTime = internal::dateToNative(date);
-  bassert(
-    ::FileTimeToSystemTime(&nativeTime, &time),
-    DateException(this)
+  binternalerror(
+    ::FileTimeToSystemTime(&nativeTime, &time)
   );
   return time.wMonth - 1;
 #else // unix
@@ -823,9 +794,8 @@ int Date::getUTCYear() const noexcept
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   SYSTEMTIME time;
   FILETIME nativeTime = internal::dateToNative(date);
-  bassert(
-    ::FileTimeToSystemTime(&nativeTime, &time),
-    DateException(this)
+  binternalerror(
+    ::FileTimeToSystemTime(&nativeTime, &time)
   );
   return time.wYear;
 #else // unix
@@ -947,9 +917,8 @@ void Date::split(DateTime& result, bool local) const noexcept
   SYSTEMTIME time;
   FILETIME nativeTime = internal::dateToNative(date);
   // TAG: convert to local time when required
-  bassert(
-    ::FileTimeToSystemTime(&nativeTime, &time),
-    DateException(this)
+  binternalerror(
+    ::FileTimeToSystemTime(&nativeTime, &time)
   );
   result.year = time.wYear;
   result.month = time.wMonth - 1;

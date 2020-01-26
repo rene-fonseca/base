@@ -48,6 +48,7 @@
 #include <base/Module.h>
 #include <base/NotImplemented.h>
 #include <base/NotSupported.h>
+#include <base/UnexpectedFailure.h>
 #include <stdlib.h>
 #include <stdio.h>
 
@@ -445,6 +446,12 @@ void Runtime::notSupported(const char* who)
 void Runtime::corruption(const char* who)
 {
   _throw MemoryCorruption(who);
+}
+
+void Runtime::internalError(const char* who, const char* message)
+{
+  // TAG: add InternalError exception
+  _throw UnexpectedFailure(message ? message : who);
 }
 
 void moduleEntry()

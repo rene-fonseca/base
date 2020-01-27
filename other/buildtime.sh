@@ -1,0 +1,2 @@
+#!/bin/bash
+grep -e 'time(.*)=.*<.*>.*[.*]' build.log | sed -r 's/.*time.*\\([^\.]*).*< +[^0-9]*([0-9]+) +- +[^0-9]*([0-9]+) +> +*BB +\[(.*)\]/\1 \2 \3 \4/g' | awk '{ printf "%-10s %-10s %-15s %-15s %s\n", ($3 - $2)/10000000.0, ($1 == "c1xx") ? "FRONT-END" : "BACK-END", $2, $3, $4 }' | sort -n -k1 > compile.log

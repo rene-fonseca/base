@@ -171,6 +171,7 @@ if (USE_SHARED AND NOT IOS)
     find_package(X11)
   endif()
 
+  if (MSVC OR NOT WIN32) # Azure pipeline finds bads packages for LLVM
   find_package(ZLIB)
   find_package(BZip2)
   find_package(LibXml2)
@@ -178,6 +179,7 @@ if (USE_SHARED AND NOT IOS)
   find_package(OpenSSL)
   if (NOT APPLE AND NOT MSVC) # we use system lib https
     find_package(CURL)
+  endif ()
   endif ()
   # find_package(OpenCL REQUIRED)
 endif ()

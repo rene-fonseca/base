@@ -171,6 +171,7 @@ if (USE_SHARED AND NOT IOS)
     find_package(X11)
   endif()
 
+  if (MSVC OR NOT WIN32) # Azure pipeline finds bads packages for LLVM
   find_package(ZLIB)
   find_package(BZip2)
   find_package(LibXml2)
@@ -178,6 +179,7 @@ if (USE_SHARED AND NOT IOS)
   find_package(OpenSSL)
   if (NOT APPLE AND NOT MSVC) # we use system lib https
     find_package(CURL)
+  endif ()
   endif ()
   # find_package(OpenCL REQUIRED)
 endif ()
@@ -502,7 +504,7 @@ install(EXPORT baseConfigRelease
 )
 endif ()
 
-if (WIN32)
+if (MSVC)
 install(
   FILES "${CMAKE_BINARY_DIR}/Debug/base.pdb" "${CMAKE_BINARY_DIR}/Debug/base_static.pdb"
   CONFIGURATIONS Debug
@@ -510,6 +512,17 @@ install(
 )
 install(
   FILES "${CMAKE_BINARY_DIR}/Release/base.pdb" "${CMAKE_BINARY_DIR}/Release/base_static.pdb"
+  CONFIGURATIONS Release
+  DESTINATION "${INSTALL_PREFIX}lib/release"
+)
+elseif (WIN32) # LLVM
+install(
+  FILES "${CMAKE_BINARY_DIR}/base.pdb"
+  CONFIGURATIONS Debug
+  DESTINATION "${INSTALL_PREFIX}lib/debug"
+)
+install(
+  FILES "${CMAKE_BINARY_DIR}/base.pdb"
   CONFIGURATIONS Release
   DESTINATION "${INSTALL_PREFIX}lib/release"
 )

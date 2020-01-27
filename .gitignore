@@ -1,36 +1,59 @@
+# Build
 generated/
 build/
-Debug/
-Release/
-install/
 base.build/
-*.xcodeproj/
-*.code-workspace
-*.sln
-*.vcxproj
-*.vcxproj.filters
+
+# CMake
 CMakeFiles/
 CMakeScripts/
 CMakeCache.txt
-DartConfiguration.tcl
-baseConfig.cmake
-base-*.sh
-base-*.tar.gz
-Testing/
 *.cmake
-install_manifest.txt
 Makefile
-bin/
-lib/
-include/
+install_manifest.txt
+DartConfiguration.tcl
+
+# Ninja
+.ninja*
+*.ninja
+
+# XCode
+*.xcodeproj/
+*.code-workspace
+
+# MSVC
+Debug/
+Release/
+
+# Windows
+*.sln
+*.vcxproj
+*.vcxproj.filters
+*.exe
+*.lib
+*.pdb
+*.dll
+*.ilk
+*.exp
+
+# Non-Windows
 *.a
 *.so
 *.so.*
-*.wasm
-wasm
+
+# macOS
 *.dylib
 *.plist
 .DS_Store
-junit.xml
-*.tar.gz
 
+# WebAssembly
+*.wasm
+wasm
+
+# Testing
+Testing/
+junit.xml
+
+# Install
+install/
+base-*.sh
+*.tar.*

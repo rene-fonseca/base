@@ -73,7 +73,7 @@
 #elif defined(_M_IX86)
 #  define _COM_AZURE_DEV__BASE__ARCH _COM_AZURE_DEV__BASE__X86
 #else
-#  error Unsupported arch.
+#  define _COM_AZURE_DEV__BASE__ARCH _COM_AZURE_DEV__BASE__UNSPECIFIED
 #endif
 #elif defined(__aarch64__)
 #  define _COM_AZURE_DEV__BASE__ARCH _COM_AZURE_DEV__BASE__ARM64
@@ -108,7 +108,7 @@
 #elif defined(__EMSCRIPTEN__)
 #  define _COM_AZURE_DEV__BASE__ARCH _COM_AZURE_DEV__BASE__WASM32
 #else
-#  error Unsupported arch.
+#  define _COM_AZURE_DEV__BASE__ARCH _COM_AZURE_DEV__BASE__UNSPECIFIED
 #endif
 
 #if (_COM_AZURE_DEV__BASE__ARCH != _COM_AZURE_DEV__BASE__X86) && \

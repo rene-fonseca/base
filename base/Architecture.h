@@ -81,7 +81,9 @@ public:
     ARM32, /**< ARM 32-bit. */
     ARM64, /**< ARM 64-bit. */
     WASM32, /**< WebAssembly 32-bit. */
-    WASM64 /**< WebAssembly 64-bit. */
+    WASM64, /**< WebAssembly 64-bit. */
+    GENERIC32, /**< Generic 32-bit. */
+    GENERIC64 /**< Generic 64-bit. */
   };
   
   /** The minor architecture. */

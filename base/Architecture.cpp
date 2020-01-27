@@ -65,6 +65,12 @@ Architecture::Major Architecture::getArchitecture() noexcept
   return WASM32;
 #elif (_COM_AZURE_DEV__BASE__ARCH == _COM_AZURE_DEV__BASE__WASM64)
   return WASM64;
+#elif (_COM_AZURE_DEV__BASE__ARCH == _COM_AZURE_DEV__BASE__UNSPECIFIED)
+#if _COM_AZURE_DEV__BASE__ARCH_64BIT
+  return GENERIC64;
+#else
+  return GENERIC32;
+#endif
 #else
 #  error Unsupported architecture
 #endif
@@ -75,7 +81,7 @@ String Architecture::getArchitectureAsString() noexcept
   static const char* IDS[] = {
     "Alpha", "x86", "x86-64", "Itanium", "MIPS32", "MIPS64", "PowerPC32", "PowerPC64",
     "S390x", "PA-RISC32", "PA-RISC", "RISC-V32", "RISC-V64", "RS", "SPARC32", "SPARC64", "S390", "ARM32" /*AArch32*/,
-    "ARM64" /*AArch64*/, "WASM32", "WASM64"
+    "ARM64" /*AArch64*/, "WASM32", "WASM64", "GENERIC32", "GENERIC64"
   };
   return IDS[getArchitecture()];
 }

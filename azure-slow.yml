@@ -458,8 +458,8 @@ jobs:
     continueOnError: true
     inputs:
       script: |
-        set PATH=%PATH%;$(System.DefaultWorkingDirectory)/build/Debug
-        $(System.DefaultWorkingDirectory)/build/testsuite/Debug/unittesting --junit $(System.DefaultWorkingDirectory)/build/junit.xml
+        set PATH=$(System.DefaultWorkingDirectory)/build;%PATH%
+        $(System.DefaultWorkingDirectory)/build/testsuite/unittesting --junit $(System.DefaultWorkingDirectory)/build/junit.xml
         ctest -T Test -C Debug
       workingDirectory: $(System.DefaultWorkingDirectory)/build
 

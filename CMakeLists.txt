@@ -19,6 +19,11 @@ if (WIN32)
   add_definitions(-D_UNICODE)
 endif ()
 
+# allow OS to be set on cmake command line
+if (_COM_AZURE_DEV__BASE__OS)
+  add_definitions(-D_COM_AZURE_DEV__BASE__OS=${_COM_AZURE_DEV__BASE__OS})
+endif ()
+
 if (IOS)
 set(CMAKE_XCODE_ATTRIBUTE_ENABLE_BITCODE "YES")
 set(CMAKE_XCODE_ATTRIBUTE_CODE_SIGNING_REQUIRED "NO")

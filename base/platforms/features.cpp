@@ -35,7 +35,8 @@
      (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__WEBASSEMBLY) || \
      (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__WASI) || \
      (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__EMCC) || \
-     (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__IOS))
+     (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__IOS) || \
+     (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__FREERTOS))
 #else
 #  error Invalid operating system (OS) specification
 #endif

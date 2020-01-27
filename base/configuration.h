@@ -35,7 +35,8 @@
 #  define _COM_AZURE_DEV__BASE__FLAVOR _COM_AZURE_DEV__BASE__UNIX
 #endif
 
-#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
+#if defined(_COM_AZURE_DEV__BASE__OS)
+#elif (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
 #  define _COM_AZURE_DEV__BASE__OS _COM_AZURE_DEV__BASE__WXP
 #elif defined(__APPLE__)
 #if __is_target_os(ios)

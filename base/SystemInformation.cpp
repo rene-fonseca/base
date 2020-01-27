@@ -76,6 +76,14 @@ String SystemInformation::getOS() noexcept
   case _COM_AZURE_DEV__BASE__IOS:
     os = "iOS";
     break;
+  case _COM_AZURE_DEV__BASE__FREERTOS:
+    os = "FreeRTOS";
+    break;
+#if 0
+  case _COM_AZURE_DEV__BASE__RIOT:
+    os = "RIOT"; // https://www.riot-os.org/
+    break;
+#endif
   default:
     ;
   }

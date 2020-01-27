@@ -431,6 +431,56 @@ jobs:
       targetPath: 'artifacts'
       path: $(Build.BinariesDirectory)/install
 
+- job: windows_clang
+  pool:
+    vmImage: 'windows-latest'
+  steps:
+  - script: |
+      choco install -y llvm
+      choco install -y ninja
+      set PATH=C:\Program Files\LLVM\bin;%PATH%
+      set PATH=C:\ProgramData\chocolatey\lib\ninja\tools;%PATH%
+      clang++ --version
+    displayName: 'Install tool chain'
+    
+  - task: CMake@1
+    displayName: 'Config'
+    inputs:
+      cmakeArgs: '.. -DCOLOR=1 -G Ninja -DCMAKE_INSTALL_PREFIX=install -DCMAKE_CXX_COMPILER="C:/Program Files/LLVM/bin/clang++.exe" -DCMAKE_C_COMPILER="C:/Program Files/LLVM/bin/clang.exe" -DCMAKE_RC_COMPILER="C:/Program Files/LLVM/bin/llvm-rc.exe"'
+  
+  - task: CMake@1
+    displayName: 'Build'
+    inputs:
+      cmakeArgs: '--build . --target install'
+
+  - task: CmdLine@2
+    displayName: 'Run tests'
+    continueOnError: true
+    inputs:
+      script: |
+        set PATH=%PATH%;$(System.DefaultWorkingDirectory)/build/Debug
+        $(System.DefaultWorkingDirectory)/build/testsuite/Debug/unittesting --junit $(System.DefaultWorkingDirectory)/build/junit.xml
+        ctest -T Test -C Debug
+      workingDirectory: $(System.DefaultWorkingDirectory)/build
+
+  - task: PublishTestResults@2
+    inputs:
+      testResultsFormat: 'JUnit'
+      testResultsFiles: '**/junit.xml'
+      testRunTitle: 'Unittest results'
+
+  - task: PublishTestResults@2
+    inputs:
+      testResultsFormat: 'cTest'
+      testResultsFiles: '**/Test.xml'
+      testRunTitle: 'Test results for CTest'
+
+  - task: PublishPipelineArtifact@1
+    inputs:
+      artifactName: 'base-windows-clang-x64'
+      targetPath: 'artifacts'
+      path: $(System.DefaultWorkingDirectory)/build/install
+
 - job: emcc
   pool:
     vmImage: 'ubuntu-18.04'

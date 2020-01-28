@@ -18,6 +18,7 @@
 
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
 #  include <windows.h>
+#elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__FREERTOS)
 #else
 #  include <sys/utsname.h>
 #endif // flavor
@@ -94,6 +95,8 @@ String SystemInformation::getVendor() noexcept
 {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   return Literal("Microsoft");
+#elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__FREERTOS)
+  return String();
 #else
   struct utsname name;
   int result = ::uname(&name);
@@ -123,6 +126,8 @@ String SystemInformation::getSystem() noexcept
   } else {
     return Literal("Windows later than XP");
   }
+#elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__FREERTOS)
+  return String();
 #else
   struct utsname name;
   int result = ::uname(&name);
@@ -137,6 +142,8 @@ String SystemInformation::getRelease() noexcept
 {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   return Literal("Unspecified");
+#elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__FREERTOS)
+  return String();
 #else
   struct utsname name;
   int result = ::uname(&name);
@@ -151,6 +158,8 @@ String SystemInformation::getVersion() noexcept
 {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   return Literal("Unspecified");
+#elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__FREERTOS)
+  return String();
 #else
   struct utsname name;
   int result = ::uname(&name);
@@ -165,6 +174,8 @@ String SystemInformation::getMachine() noexcept
 {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   return Literal("Unspecified");
+#elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__FREERTOS)
+  return String();
 #else
   struct utsname name;
   int result = ::uname(&name);

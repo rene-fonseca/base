@@ -79,7 +79,7 @@ namespace internal {
 
   inline uint64 getRealImpl() noexcept
   {
-    #if 1
+#if (_COM_AZURE_DEV__BASE__OS != _COM_AZURE_DEV__BASE__FREERTOS)
       // _POSIX_C_SOURCE >= 199309L
       struct timespec time;
       int status = clock_gettime(CLOCK_REALTIME, &time);
@@ -87,11 +87,11 @@ namespace internal {
         return 0;
       }
       return static_cast<uint64>(1000000) * time.tv_sec + (time.tv_nsec + 500)/1000;
-    #else
+#else
       struct timeval temp;
       gettimeofday(&temp, 0);
       return static_cast<uint64>(1000000) * temp.tv_sec + temp.tv_usec;
-    #endif
+#endif
   }
 
   inline uint64 getTicksImpl(bool nano) noexcept
@@ -101,7 +101,7 @@ namespace internal {
       return clock_gettime_nsec_np(CLOCK_MONOTONIC);
     }
 #endif
-#if 1
+#if (_COM_AZURE_DEV__BASE__OS != _COM_AZURE_DEV__BASE__FREERTOS)
     // _POSIX_C_SOURCE >= 199309L
     struct timespec time;
     int status = clock_gettime(CLOCK_MONOTONIC, &time);
@@ -156,7 +156,7 @@ uint64 Timer::getMeasureFrequency() noexcept
   }
   return 0;
 #else // unix
-#if 1
+#if (_COM_AZURE_DEV__BASE__OS != _COM_AZURE_DEV__BASE__FREERTOS)
   // _POSIX_C_SOURCE >= 199309L
   struct timespec time;
   int status = clock_getres(CLOCK_MONOTONIC, &time);

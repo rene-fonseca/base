@@ -26,6 +26,10 @@
 #include <sys/resource.h>
 #endif
 
+#if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__FREERTOS)
+#  include <malloc.h>
+#endif
+
 // ATTENTION: we do not want to record heap/IO for Profile implementation
 // TAG: compact stack trace like utf8
 

@@ -1,6 +1,7 @@
 # Build
 generated/
 build/
+build-*/
 base.build/
 
 # CMake

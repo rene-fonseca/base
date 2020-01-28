@@ -19,7 +19,8 @@
 #  include <windows.h>
 #  undef ERROR // protect against the evil programmers
 #else // unix
-#if (_COM_AZURE_DEV__BASE__OS != _COM_AZURE_DEV__BASE__WASI)
+#if (_COM_AZURE_DEV__BASE__OS != _COM_AZURE_DEV__BASE__FREERTOS) && \
+    (_COM_AZURE_DEV__BASE__OS != _COM_AZURE_DEV__BASE__WASI)
 #  include <syslog.h>
 #endif
 #endif // flavor
@@ -55,7 +56,8 @@ void SystemLogger::write(MessageType type, const String& message) noexcept
     ::ReportEventW(eventSource, messageType[type], 0, 0, 0, 1, 0, strings, 0);
     ::DeregisterEventSource(eventSource);
   }
-#elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__WASI)
+#elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__FREERTOS) || \
+      (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__WASI)
 #else // unix
   // TAG: not MT-safe
   static int messageType[] = { LOG_INFO, LOG_WARNING, LOG_ERR };

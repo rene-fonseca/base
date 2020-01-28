@@ -183,7 +183,8 @@ int Process::getPriority()
   default:
     return 0; // unknown
   }
-#elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__WASI)
+#elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__FREERTOS) || \
+      (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__WASI)
   return 0;
 #else // unix
   #if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__CYGWIN)
@@ -220,7 +221,8 @@ void Process::setPriority(int priority)
   if (!::SetPriorityClass(::GetCurrentProcess(), priorityClass)) {
     _throw ProcessException("Unable to set priority of process.", Type::getType<Process>());
   }
-#elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__WASI)
+#elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__FREERTOS) || \
+      (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__WASI)
   BASSERT(!"Not supported.")
 #else // unix
   #if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__CYGWIN)
@@ -286,7 +288,8 @@ Process Process::execute(const String& command)
   Process result(processInformation.dwProcessId);
   result.handle = new ProcessHandle(processInformation.hProcess); // keep lock on process
   return result;
-#elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__WASI)
+#elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__FREERTOS) || \
+      (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__WASI)
   return Process();
 #else // unix
   // TAG: use spawn if available
@@ -630,7 +633,8 @@ bool Process::terminate(bool force)
     // BASSERT(result != 0);
     // TAG: throw ProcessException(this)
   }
-#elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__WASI)
+#elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__FREERTOS) || \
+      (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__WASI)
   return false;
 #else
   int result = ::kill(pid_t(id), force ? (SIGKILL) : (SIGTERM));

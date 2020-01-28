@@ -68,7 +68,8 @@ namespace internal {
     localtime_r(&now, &result);
     return result.tm_gmtoff * 1000000LL;
   }
-#elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__WASI)
+#elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__FREERTOS) || \
+      (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__WASI)
   inline int64 getTimezone() noexcept
   {
     BASSERT(!"Not supported.");
@@ -343,7 +344,8 @@ int64 Date::getBias() noexcept
   BASSERT(status != TIME_ZONE_ID_INVALID);
   return information.Bias * 60000000LL; // TAG: what about the other bias'
 #else // unix
-#if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__WASI)
+#if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__FREERTOS) || \
+    (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__WASI)
   // _COM_AZURE_DEV__BASE__NOT_SUPPORTED();
   return 0;
 #else

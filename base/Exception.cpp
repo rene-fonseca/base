@@ -52,7 +52,8 @@ bool Exception::isUnwinding() noexcept
 {
 #if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__IOS)
   return false;
-#elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__GNULINUX) || \
+#elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__FREERTOS) || \
+      (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__GNULINUX) || \
       (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__FREEBSD)
   return std::uncaught_exception();
 #else
@@ -64,7 +65,8 @@ unsigned int Exception::getPendingExceptions() noexcept
 {
 #if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__IOS)
   return 0;
-#elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__GNULINUX) || \
+#elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__FREERTOS) || \
+      (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__GNULINUX) || \
       (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__FREEBSD)
   return std::uncaught_exception() ? 1 : 0;
 #else

@@ -37,10 +37,15 @@
 #else // unix
 #  include <sys/types.h>
 #  include <sys/stat.h>
+#if (_COM_AZURE_DEV__BASE__OS != _COM_AZURE_DEV__BASE__FREERTOS)
 #  include <sys/socket.h>
+#endif
+#if (_COM_AZURE_DEV__BASE__OS != _COM_AZURE_DEV__BASE__FREERTOS)
 #  include <netinet/in.h> // defines ntohs...
+#endif
 #  include <netinet/tcp.h> // options
-#if (_COM_AZURE_DEV__BASE__OS != _COM_AZURE_DEV__BASE__WASI)
+#if (_COM_AZURE_DEV__BASE__OS != _COM_AZURE_DEV__BASE__FREERTOS) && \
+    (_COM_AZURE_DEV__BASE__OS != _COM_AZURE_DEV__BASE__WASI)
 #  include <net/if.h>
 #endif
 #  include <unistd.h>

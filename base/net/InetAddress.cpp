@@ -29,10 +29,15 @@
 #  endif
 #else // unix
 #  include <sys/types.h>
+#if (_COM_AZURE_DEV__BASE__OS != _COM_AZURE_DEV__BASE__FREERTOS)
 #  include <sys/socket.h>
+#endif
 #  include <sys/param.h> // may define MAXHOSTNAMELEN (linux, irix)
+#if (_COM_AZURE_DEV__BASE__OS != _COM_AZURE_DEV__BASE__FREERTOS)
 #  include <netinet/in.h> // define IP address
-#if (_COM_AZURE_DEV__BASE__OS != _COM_AZURE_DEV__BASE__WASI)
+#endif
+#if (_COM_AZURE_DEV__BASE__OS != _COM_AZURE_DEV__BASE__FREERTOS) && \
+    (_COM_AZURE_DEV__BASE__OS != _COM_AZURE_DEV__BASE__WASI)
 #  include <netdb.h> // gethostbyname, may define MAXHOSTNAMELEN (solaris)
 #endif
 #  include <arpa/inet.h> // defines inet_ntop...

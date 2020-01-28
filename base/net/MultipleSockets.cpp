@@ -26,7 +26,9 @@
 #if (defined(_COM_AZURE_DEV__BASE__HAVE_POLL))
 #  include <poll.h>
 #else
-#  include <sys/select.h>
+#  if (_COM_AZURE_DEV__BASE__OS != _COM_AZURE_DEV__BASE__FREERTOS)
+#    include <sys/select.h>
+#  endif
 #  include <sys/time.h>
 #  include <string.h> // memset for solaris
 #endif

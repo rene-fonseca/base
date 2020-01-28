@@ -36,14 +36,16 @@
 #  include <errno.h> // errno
 #  include <limits.h> // SSIZE_MAX
 
-#  if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__GNULINUX)
-#  elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__SOLARIS)
-#  endif // os
+#  if !defined(SSIZE_MAX)
+#    define SSIZE_MAX (1024*1024)
+#  endif
+
 #endif // flavor
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
-SerialPort::SerialPortHandle::~SerialPortHandle() {
+SerialPort::SerialPortHandle::~SerialPortHandle()
+{
   if (isValid()) { // dont try to close if handle is invalidated
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
     if (!::CloseHandle(getHandle())) {

@@ -47,6 +47,14 @@
 #  include <errno.h>
 #  if defined(_COM_AZURE_DEV__BASE__HAVE_NANOSLEEP)
 #    include <time.h> // get nanosleep prototype
+#  elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__FREERTOS)
+
+int select(int nfds, fd_set *restrict readfds, fd_set *restrict writefds, fd_set *restrict errorfds,
+         struct timeval *restrict timeout)
+{
+  return EINVAL;
+}
+
 #  else // fall back on pselect and finally select
 #    include <sys/select.h>
 #  endif
@@ -905,7 +913,9 @@ void Thread::start()
   pthread_attr_t attributes;
   pthread_attr_init(&attributes);
   pthread_attr_setdetachstate(&attributes, PTHREAD_CREATE_DETACHED);
+#if (_COM_AZURE_DEV__BASE__OS != _COM_AZURE_DEV__BASE__FREERTOS)
   pthread_attr_setinheritsched(&attributes, PTHREAD_INHERIT_SCHED);
+#endif
   pthread_t id;
   if (pthread_create(&id, &attributes, (void*(*)(void*))&entry, (void*)this)) {
     pthread_attr_destroy(&attributes);

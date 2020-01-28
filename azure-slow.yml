@@ -38,6 +38,8 @@ resources:
     image: renefonseca/base-centos8:latest
   - container: freebsd12
     image: renefonseca/base-freebsd12:latest
+  - container: ubuntu_riscv32
+    image: renefonseca/base-ubuntu-riscv32:latest
   - container: raspberrypi4
     image: renefonseca/base-raspberrypi4-64-debian:latest
 
@@ -480,6 +482,51 @@ jobs:
       artifactName: 'base-windows-clang-x64'
       targetPath: 'artifacts'
       path: $(System.DefaultWorkingDirectory)/build/install
+
+- job: ubuntu_riscv32
+  pool:
+    vmImage: 'ubuntu-18.04'
+  container: ubuntu_riscv32
+  steps:
+  - script: |
+      echo "/riscv32/bin/qemu-riscv32 -L /riscv32/sysroot \"\$@\"" > run.sh
+      chmod +x run.sh
+      cmake $(Build.SourcesDirectory) -DCOLOR=1 -DCMAKE_BUILD_TYPE=Debug -DCMAKE_INSTALL_PREFIX=install -DCMAKE_CXX_COMPILER=/riscv32/bin/riscv32-unknown-linux-gnu-g++ -DCMAKE_C_COMPILER=/riscv32/bin/riscv32-unknown-linux-gnu-gcc -DCTEST_INTERPRETER=$(Build.BinariesDirectory)/run.sh
+    displayName: 'Config'
+    workingDirectory: $(Build.BinariesDirectory)
+
+  - script: cmake --build . --config Debug --target install -- -j 4
+    displayName: 'Build'
+    workingDirectory: $(Build.BinariesDirectory)
+
+  - task: CmdLine@2
+    displayName: 'Run tests'
+    continueOnError: true
+    inputs:
+      script: |
+        ./run.sh ./testsuite/unittesting --junit junit.xml
+        ctest -T Test
+      workingDirectory: $(Build.BinariesDirectory)
+
+  - task: PublishTestResults@2
+    inputs:
+      testResultsFormat: 'JUnit'
+      testResultsFiles: '**/junit.xml'
+      testRunTitle: 'Unittest results'
+      searchFolder: '$(Build.BinariesDirectory)'
+
+  - task: PublishTestResults@2
+    inputs:
+      testResultsFormat: 'cTest'
+      testResultsFiles: '**/Test.xml'
+      testRunTitle: 'Test results for CTest'
+      searchFolder: '$(Build.BinariesDirectory)'
+
+  - task: PublishPipelineArtifact@1
+    inputs:
+      artifactName: 'base-ubuntu-riscv32'
+      targetPath: 'artifacts'
+      path: $(Build.BinariesDirectory)/install
 
 - job: emcc
   pool:

@@ -1,0 +1,4 @@
+FROM renefonseca/riscv32-toolchain
+
+RUN apt-get -y update
+RUN apt-get -y install git cmake make

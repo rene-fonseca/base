@@ -64,7 +64,9 @@
 #  if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__SOLARIS)
 #    define BSD_COMP 1 // request BSD flags - don't known if this is ok to do
 #  endif
+#if (_COM_AZURE_DEV__BASE__OS != _COM_AZURE_DEV__BASE__FREERTOS)
 #  include <sys/ioctl.h> // defines FIONREAD
+#endif
 #endif // flavor
 
 #if (_COM_AZURE_DEV__BASE__FLAVOR != _COM_AZURE_DEV__BASE__WIN32)

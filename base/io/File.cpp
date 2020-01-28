@@ -87,9 +87,14 @@ typedef struct _REPARSE_DATA_BUFFER {
 #  include <errno.h>
 #  include <limits.h>
 #  include <string.h> // required by FD_SET on solaris
-#if (_COM_AZURE_DEV__BASE__OS != _COM_AZURE_DEV__BASE__WASI)
+#if (_COM_AZURE_DEV__BASE__OS != _COM_AZURE_DEV__BASE__FREERTOS) && \
+    (_COM_AZURE_DEV__BASE__OS != _COM_AZURE_DEV__BASE__WASI)
 #  include <sys/mman.h>
 #endif
+
+#  if !defined(SSIZE_MAX)
+#    define SSIZE_MAX (1024*1024)
+#  endif
 
 #  if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__SOLARIS)
 #    include <sys/acl.h> // solaris and irix
@@ -872,7 +877,9 @@ void File::truncate(long long size)
     _throw FileException("Unable to truncate.", this);
   }
 #else // unix
-  #if defined(_COM_AZURE_DEV__BASE__LARGE_FILE_SYSTEM)
+  #if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__FREERTOS)
+    _COM_AZURE_DEV__BASE__NOT_SUPPORTED();
+  #elif defined(_COM_AZURE_DEV__BASE__LARGE_FILE_SYSTEM)
     if (::ftruncate64(fd->getHandle(), size)) {
       _throw FileException("Unable to truncate.", this);
     }

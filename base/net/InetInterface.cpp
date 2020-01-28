@@ -35,7 +35,9 @@
 #  include <net/if.h>
 #endif
 #  include <netinet/in.h>
+#if (_COM_AZURE_DEV__BASE__OS != _COM_AZURE_DEV__BASE__FREERTOS)
 #  include <sys/ioctl.h>
+#endif
 #  include <unistd.h>
 #endif // flavor
 

@@ -33,7 +33,8 @@
 #  include <errno.h>
 #  include <limits.h>
 #  include <string.h> // required by FD_SET on solaris
-#if (_COM_AZURE_DEV__BASE__OS != _COM_AZURE_DEV__BASE__WASI)
+#if (_COM_AZURE_DEV__BASE__OS != _COM_AZURE_DEV__BASE__FREERTOS) && \
+    (_COM_AZURE_DEV__BASE__OS != _COM_AZURE_DEV__BASE__WASI)
 #  include <sys/mman.h>
 #endif
 
@@ -65,7 +66,8 @@ MappedFile::MappedFileImpl::MappedFileImpl(const File& _file, const FileRegion& 
   void* address = nullptr;
   #if defined(_COM_AZURE_DEV__BASE__LARGE_FILE_SYSTEM)
     address = ::mmap64(0, region.getSize(), writeable ? (PROT_READ | PROT_WRITE) : PROT_READ, MAP_SHARED, getHandle(file), region.getOffset());
-  #elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__WASI)
+  #elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__FREERTOS) || \
+        (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__WASI)
     BASSERT(!"Not supported.");
   #else
     bassert(
@@ -89,7 +91,8 @@ void MappedFile::MappedFileImpl::synchronize() {
     if (::msync((caddr_t)bytes, region.getSize(), MS_SYNC)) {
       _throw FileException("Unable to flush.", this);
     }
-  #elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__WASI)
+  #elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__FREERTOS) || \
+        (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__WASI)
     BASSERT(!"Not supported.");
   #else
     if (::msync(bytes, region.getSize(), MS_SYNC)) {
@@ -109,7 +112,8 @@ MappedFile::MappedFileImpl::~MappedFileImpl() {
     if (::munmap((caddr_t)bytes, region.getSize())) {
       _throw FileException("Unable to unmap file.", this);
     }
-  #elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__WASI)
+  #elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__FREERTOS) || \
+        (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__WASI)
     BASSERT(!"Not supported.");
   #else
     if (::munmap(bytes, region.getSize())) {

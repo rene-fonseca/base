@@ -33,6 +33,15 @@
 #  ifndef SSIZE_MAX
 #    define SSIZE_MAX (1024*1024)
 #  endif
+
+#if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__FREERTOS)
+int select(int nfds, fd_set *restrict readfds, fd_set *restrict writefds, fd_set *restrict errorfds,
+         struct timeval *restrict timeout)
+{
+  return EINVAL;
+}
+#endif
+
 #endif // flavor
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
@@ -177,7 +186,8 @@ unsigned int FileDescriptorInputStream::skip(unsigned int count)
   return bytesSkipped;
 }
 
-void FileDescriptorInputStream::setNonBlocking(bool value) {
+void FileDescriptorInputStream::setNonBlocking(bool value)
+{
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
 #else // unix
   int flags = getFlags();
@@ -193,7 +203,8 @@ void FileDescriptorInputStream::setNonBlocking(bool value) {
 #endif // flavor
 }
 
-void FileDescriptorInputStream::wait() const {
+void FileDescriptorInputStream::wait() const
+{
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   DWORD result = ::WaitForSingleObject(fd->getHandle(), INFINITE);
   BASSERT(result == WAIT_OBJECT_0);

@@ -58,7 +58,9 @@ typedef struct _REPARSE_DATA_BUFFER {
 #  include <sys/types.h>
 #  include <sys/stat.h>
 #  include <unistd.h>
+#if (_COM_AZURE_DEV__BASE__OS != _COM_AZURE_DEV__BASE__FREERTOS)
 #  include <dirent.h>
+#endif
 #  include <errno.h>
 #endif // flavor
 
@@ -400,6 +402,8 @@ Array<String> FolderInfo::getEntries() const
       _throw FileSystemException("Unable to close folder.", this);
     }
   }
+#elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__FREERTOS)
+  return result;
 #else // unix
   Thread::UseThreadLocalBuffer _buffer;
   Allocator<uint8>& buffer = _buffer;

@@ -956,6 +956,8 @@ _COM_AZURE_DEV__BASE__PACKED__END
   } else {
     return false;
   }
+#elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__FREERTOS)
+  return false;
 #else
   struct stat status;
   int result = ::lstat(path.getElements(), &status);

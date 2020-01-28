@@ -42,8 +42,8 @@
 #endif
 #if (_COM_AZURE_DEV__BASE__OS != _COM_AZURE_DEV__BASE__FREERTOS)
 #  include <netinet/in.h> // defines ntohs...
-#endif
 #  include <netinet/tcp.h> // options
+#endif
 #if (_COM_AZURE_DEV__BASE__OS != _COM_AZURE_DEV__BASE__FREERTOS) && \
     (_COM_AZURE_DEV__BASE__OS != _COM_AZURE_DEV__BASE__WASI)
 #  include <net/if.h>
@@ -64,7 +64,14 @@
 
 #  include <string.h> // memset (required on solaris)
 #  include <limits.h> // defines SSIZE_MAX
+
+#  if !defined(SSIZE_MAX)
+#    define SSIZE_MAX (1024*1024)
+#  endif
+
+#if (_COM_AZURE_DEV__BASE__OS != _COM_AZURE_DEV__BASE__FREERTOS)
 #  include <arpa/inet.h>
+#endif
 
 #  if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__SOLARIS)
 #    define BSD_COMP 1 // request BSD flags - don't known if this is ok to do
@@ -73,6 +80,14 @@
 #  include <sys/ioctl.h> // defines FIONREAD
 #endif
 #endif // flavor
+
+#if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__FREERTOS)
+int select(int nfds, fd_set *restrict readfds, fd_set *restrict writefds, fd_set *restrict errorfds,
+         struct timeval *restrict timeout)
+{
+  return EINVAL;
+}
+#endif
 
 #if (_COM_AZURE_DEV__BASE__FLAVOR != _COM_AZURE_DEV__BASE__WIN32)
 typedef int SOCKET;
@@ -128,12 +143,15 @@ typedef int SOCKET;
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32) || \
     (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__IRIX65)    
   typedef int socklen;
+#elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__FREERTOS)
+  typedef int socklen;
 #else
   typedef socklen_t socklen;
 #endif
 
-#if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__WASI)
-extern "C" struct hostent* gethostbyaddr(const void *addr, socklen_t len, int type)
+#if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__FREERTOS) || \
+    (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__WASI)
+extern "C" struct hostent* gethostbyaddr(const void *addr, socklen len, int type)
 {
   return nullptr;
 }
@@ -143,6 +161,15 @@ _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 class SocketAddress { // Internet end point
 private:
+
+#if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__FREERTOS)
+  struct sockaddr {
+    int reserved;
+  };
+  struct sockaddr_in {
+    int reserved;
+  };
+#endif
 
   union {
     struct sockaddr sa;
@@ -167,6 +194,9 @@ public:
     unsigned short port,
     Socket::Domain domain)
   {
+#if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__FREERTOS)
+    _COM_AZURE_DEV__BASE__NOT_IMPLEMENTED();
+#else
     clear(sa);
 #  if (defined(_COM_AZURE_DEV__BASE__HAVE_INET_IPV6))
     if (domain == Socket::IPV6) {
@@ -225,6 +255,7 @@ public:
       sizeof(struct in_addr)
     );
 #  endif // _COM_AZURE_DEV__BASE__HAVE_INET_IPV6
+#endif
   }
 
   /** Returns pointer to socket address. */
@@ -242,7 +273,9 @@ public:
   /** Returns the size of the socket address structure. */
   inline unsigned int getSize() const noexcept
   {
-#if (defined(_COM_AZURE_DEV__BASE__HAVE_INET_IPV6))
+#if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__FREERTOS)
+    return 0;
+#elif (defined(_COM_AZURE_DEV__BASE__HAVE_INET_IPV6))
     return (sa.sa_family == AF_INET6) ? sizeof(ipv6) : sizeof(ipv4);
 #else
     return sizeof(ipv4);
@@ -267,6 +300,9 @@ public:
   /** Returns the address. */
   inline InetAddress getAddress() const noexcept
   {
+#if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__FREERTOS)
+    return InetAddress();
+#else
     switch (sa.sa_family) {
     case AF_INET:
       return InetAddress(
@@ -283,11 +319,15 @@ public:
     default: // not possible
       return InetAddress(); // TAG: or should we raise an exception
     }
+#endif
   }
   
   /** Returns the port. */
   inline unsigned short getPort() const noexcept
   {
+#if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__FREERTOS)
+    return 0;
+#else
     switch (sa.sa_family) {
     case AF_INET:
       return ByteOrder::fromBigEndian<unsigned short>(ipv4.sin_port);
@@ -298,12 +338,14 @@ public:
     default: // not possible
       return 0; // TAG: or should we raise an exception
     }
+#endif
   }
 
   /** Sets the socket name from the specified socket. */
   inline void setSocket(int handle) noexcept
   {
-#if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__WASI)
+#if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__FREERTOS) || \
+    (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__WASI)
 #else
     socklen length = getAnySize();
     ::getsockname(handle, getValue(), &length);
@@ -448,12 +490,17 @@ namespace internal {
       int level,
       int option,
       void* buffer,
-      unsigned int* length) {
+      unsigned int* length)
+    {
+#if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__FREERTOS)
+      raiseNetwork("Unable to get option.");
+#else
       socklen temp = *length;
       if (::getsockopt(handle, level, option, static_cast<char*>(buffer), &temp)) {
         raiseNetwork("Unable to get option.");
       }
       *length = temp;
+#endif
     }
     
     static inline void setOption(
@@ -463,7 +510,8 @@ namespace internal {
       const void* buffer,
       unsigned int length)
     {
-#if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__WASI)
+#if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__FREERTOS) || \
+    (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__WASI)
         raiseNetwork("Unable to set option.");
 #else
       if (::setsockopt(handle, level, option, static_cast<const char*>(buffer), length)) {
@@ -524,7 +572,8 @@ Socket::Socket() noexcept
 
 bool Socket::accept(Socket& socket)
 {
-#if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__WASI)
+#if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__FREERTOS) || \
+    (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__WASI)
   return false;
 #else
   // TAG: should return socket (invalid if non available)
@@ -565,7 +614,8 @@ bool Socket::accept(Socket& socket)
 
 void Socket::bind(const InetAddress& address, unsigned short port)
 {
-#if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__WASI)
+#if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__FREERTOS) || \
+    (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__WASI)
 #else
   SocketAddress sa(address, port, socket->getDomain());
   
@@ -590,7 +640,8 @@ void Socket::close()
 
 void Socket::connect(const InetAddress& address, unsigned short port)
 {
-#if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__WASI)
+#if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__FREERTOS) || \
+    (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__WASI)
 #else
   SocketAddress sa(address, port, socket->getDomain());
   if (::connect((SOCKET)socket->getHandle(), sa.getValue(), sa.getSize())) {
@@ -624,7 +675,8 @@ void Socket::connect(const InetAddress& address, unsigned short port)
 
 void Socket::create(Kind kind, Domain domain)
 {
-#if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__WASI)
+#if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__FREERTOS) || \
+    (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__WASI)
 #else
   // TAG: should return new socket not overwrite handle (static method)
   static const int SOCKET_KINDS[] = {SOCK_STREAM, SOCK_DGRAM, SOCK_RAW};
@@ -668,7 +720,8 @@ void Socket::create(Kind kind, Domain domain)
 
 void Socket::listen(unsigned int backlog)
 {
-#if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__WASI)
+#if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__FREERTOS) || \
+    (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__WASI)
 #else
   // silently reduce the backlog argument
   backlog = minimum<unsigned int>(backlog, PrimitiveTraits<int>::MAXIMUM);
@@ -712,6 +765,8 @@ void Socket::shutdownInputStream()
   if (::shutdown((SOCKET)socket->getHandle(), 0 /*SD_RECEIVE*/)) { // disallow further receives
     internal::SocketImpl::raiseNetwork("Unable to shutdown socket for reading.");
   }
+#elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__FREERTOS)
+    _COM_AZURE_DEV__BASE__NOT_SUPPORTED();
 #else // unix
   if (::shutdown((SOCKET)socket->getHandle(), 0)) { // disallow further receives
     internal::SocketImpl::raiseNetwork("Unable to shutdown socket for reading.");
@@ -725,6 +780,8 @@ void Socket::shutdownOutputStream()
   if (::shutdown((SOCKET)socket->getHandle(), 1 /*SD_SEND*/)) { // disallow further sends
     internal::SocketImpl::raiseNetwork("Unable to shutdown socket for writing.");
   }
+#elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__FREERTOS)
+    _COM_AZURE_DEV__BASE__NOT_SUPPORTED();
 #else // unix
   if (::shutdown((SOCKET)socket->getHandle(), 1)) { // disallow further sends
     internal::SocketImpl::raiseNetwork("Unable to shutdown socket for writing.");
@@ -734,6 +791,9 @@ void Socket::shutdownOutputStream()
 
 bool Socket::getBooleanOption(int option) const
 {
+#if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__FREERTOS)
+    _COM_AZURE_DEV__BASE__NOT_SUPPORTED();
+#else
   int buffer = 0;
   unsigned int length = sizeof(buffer);
   internal::SocketImpl::getOption(
@@ -744,10 +804,14 @@ bool Socket::getBooleanOption(int option) const
     &length
   );
   return buffer != 0;
+#endif
 }
 
 void Socket::setBooleanOption(int option, bool value)
 {
+#if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__FREERTOS)
+    _COM_AZURE_DEV__BASE__NOT_SUPPORTED();
+#else
   int buffer = value;
   internal::SocketImpl::setOption(
     (SOCKET)socket->getHandle(),
@@ -756,11 +820,13 @@ void Socket::setBooleanOption(int option, bool value)
     &buffer,
     sizeof(buffer)
   );
+#endif
 }
 
 int Socket::getErrorState() const
 {
-#if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__WASI)
+#if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__FREERTOS) || \
+    (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__WASI)
   return -1;
 #else
   int buffer = 0;
@@ -778,7 +844,8 @@ int Socket::getErrorState() const
 
 bool Socket::getReuseAddress() const
 {
-#if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__WASI)
+#if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__FREERTOS) || \
+    (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__WASI)
   return false;
 #else
   return getBooleanOption(SO_REUSEADDR);
@@ -787,7 +854,8 @@ bool Socket::getReuseAddress() const
 
 void Socket::setReuseAddress(bool value)
 {
-#if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__WASI)
+#if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__FREERTOS) || \
+    (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__WASI)
 #else
   setBooleanOption(SO_REUSEADDR, value);
 #endif
@@ -795,7 +863,8 @@ void Socket::setReuseAddress(bool value)
 
 bool Socket::getKeepAlive() const
 {
-#if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__WASI)
+#if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__FREERTOS) || \
+    (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__WASI)
   return false;
 #else
   return getBooleanOption(SO_KEEPALIVE);
@@ -804,7 +873,8 @@ bool Socket::getKeepAlive() const
 
 void Socket::setKeepAlive(bool value)
 {
-#if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__WASI)
+#if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__FREERTOS) || \
+    (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__WASI)
 #else
   setBooleanOption(SO_KEEPALIVE, value);
 #endif
@@ -812,7 +882,8 @@ void Socket::setKeepAlive(bool value)
 
 bool Socket::getBroadcast() const
 {
-#if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__WASI)
+#if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__FREERTOS) || \
+    (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__WASI)
   return false;
 #else
   return getBooleanOption(SO_BROADCAST);
@@ -821,7 +892,8 @@ bool Socket::getBroadcast() const
 
 void Socket::setBroadcast(bool value)
 {
-#if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__WASI)
+#if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__FREERTOS) || \
+    (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__WASI)
 #else
   setBooleanOption(SO_BROADCAST, value);
 #endif
@@ -829,7 +901,8 @@ void Socket::setBroadcast(bool value)
 
 int Socket::getLinger() const
 {
-#if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__WASI)
+#if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__FREERTOS) || \
+    (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__WASI)
   return -1;
 #else
   struct linger buffer;
@@ -841,7 +914,8 @@ int Socket::getLinger() const
 
 void Socket::setLinger(int seconds)
 {
-#if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__WASI)
+#if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__FREERTOS) || \
+    (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__WASI)
 #else
   struct linger buffer;
   if (seconds < 0) {
@@ -862,7 +936,8 @@ void Socket::setLinger(int seconds)
 
 int Socket::getReceiveBufferSize() const
 {
-#if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__WASI)
+#if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__FREERTOS) || \
+    (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__WASI)
   return -1;
 #else
   int buffer = 0;
@@ -880,7 +955,8 @@ int Socket::getReceiveBufferSize() const
 
 void Socket::setReceiveBufferSize(int size)
 {
-#if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__WASI)
+#if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__FREERTOS) || \
+    (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__WASI)
 #else
   int buffer = size;
   internal::SocketImpl::setOption(
@@ -895,7 +971,8 @@ void Socket::setReceiveBufferSize(int size)
 
 int Socket::getSendBufferSize() const
 {
-#if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__WASI)
+#if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__FREERTOS) || \
+    (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__WASI)
   return 0;
 #else
   int buffer = 0;
@@ -907,7 +984,8 @@ int Socket::getSendBufferSize() const
 
 void Socket::setSendBufferSize(int size)
 {
-#if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__WASI)
+#if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__FREERTOS) || \
+    (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__WASI)
 #else
   int buffer = size;
   internal::SocketImpl::setOption(
@@ -929,7 +1007,8 @@ void Socket::setSendBufferSize(int size)
 
 bool Socket::getDontRoute() const
 {
-#if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__WASI)
+#if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__FREERTOS) || \
+    (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__WASI)
   return false;
 #else
   int buffer = 0;
@@ -947,7 +1026,8 @@ bool Socket::getDontRoute() const
 
 void Socket::setDontRoute(bool value)
 {
-#if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__WASI)
+#if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__FREERTOS) || \
+    (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__WASI)
 #else
   int buffer = value;
   internal::SocketImpl::setOption(
@@ -962,7 +1042,8 @@ void Socket::setDontRoute(bool value)
 
 uint64 Socket::getReceiveTimeout() const
 {
-#if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__WASI)
+#if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__FREERTOS) || \
+    (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__WASI)
   return 0;
 #else
   struct timeval buffer;
@@ -980,7 +1061,8 @@ uint64 Socket::getReceiveTimeout() const
 
 void Socket::setReceiveTimeout(uint64 nanoseconds)
 {
-#if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__WASI)
+#if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__FREERTOS) || \
+    (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__WASI)
 #else
   struct timeval buffer;
   if (nanoseconds <= 60*60*24*1000000000ULL) { // one day
@@ -1002,7 +1084,8 @@ void Socket::setReceiveTimeout(uint64 nanoseconds)
 
 uint64 Socket::getSendTimeout() const
 {
-#if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__WASI)
+#if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__FREERTOS) || \
+    (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__WASI)
   return 0;
 #else
   struct timeval buffer;
@@ -1020,7 +1103,8 @@ uint64 Socket::getSendTimeout() const
 
 void Socket::setSendTimeout(uint64 nanoseconds)
 {
-#if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__WASI)
+#if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__FREERTOS) || \
+    (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__WASI)
 #else
   struct timeval buffer;
   if (nanoseconds <= 60*60*24*1000000000ULL) { // one day
@@ -1042,6 +1126,9 @@ void Socket::setSendTimeout(uint64 nanoseconds)
 
 bool Socket::getTcpNoDelay() const
 {
+#if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__FREERTOS)
+    _COM_AZURE_DEV__BASE__NOT_SUPPORTED();
+#else
   int buffer = 0;
   unsigned int length = sizeof(buffer);
   internal::SocketImpl::getOption(
@@ -1052,10 +1139,14 @@ bool Socket::getTcpNoDelay() const
     &length
   );
   return buffer != 0;
+#endif
 }
 
 void Socket::setTcpNoDelay(bool value)
 {
+#if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__FREERTOS)
+    _COM_AZURE_DEV__BASE__NOT_SUPPORTED();
+#else
   int buffer = value;
   internal::SocketImpl::setOption(
     (SOCKET)socket->getHandle(),
@@ -1064,6 +1155,7 @@ void Socket::setTcpNoDelay(bool value)
     &buffer,
     sizeof(buffer)
   );
+#endif
 }
 
 uint64 Socket::getTcpDeferAccept() const
@@ -1084,7 +1176,8 @@ uint64 Socket::getTcpDeferAccept() const
 #endif
 }
 
-void Socket::setTcpDeferAccept(uint64 value) {
+void Socket::setTcpDeferAccept(uint64 value)
+{
 #if (defined(TCP_DEFER_ACCEPT))
   int buffer = value;
   internal::SocketImpl::setOption(
@@ -1099,7 +1192,11 @@ void Socket::setTcpDeferAccept(uint64 value) {
 #endif
 }
  
-unsigned int Socket::getTimeToLive() const {
+unsigned int Socket::getTimeToLive() const
+{
+#if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__FREERTOS)
+    _COM_AZURE_DEV__BASE__NOT_SUPPORTED();
+#else
   int buffer = 0;
   unsigned int length = sizeof(buffer);
   internal::SocketImpl::getOption(
@@ -1110,10 +1207,14 @@ unsigned int Socket::getTimeToLive() const {
     &length
   );
   return buffer != 0;
+#endif
 }
 
 void Socket::setTimeToLive(unsigned int value)
 {
+#if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__FREERTOS)
+    _COM_AZURE_DEV__BASE__NOT_SUPPORTED();
+#else
   int buffer = value;
   internal::SocketImpl::setOption(
     (SOCKET)socket->getHandle(),
@@ -1122,10 +1223,14 @@ void Socket::setTimeToLive(unsigned int value)
     &buffer,
     sizeof(buffer)
   );
+#endif
 }
 
 uint8 Socket::getMulticastHops() const
 {
+#if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__FREERTOS)
+    _COM_AZURE_DEV__BASE__NOT_SUPPORTED();
+#else
 #if (defined(_COM_AZURE_DEV__BASE__HAVE_INET_IPV6))
   if (socket->getDomain() == Socket::IPV6) {
     unsigned int buffer = 0;
@@ -1153,10 +1258,14 @@ uint8 Socket::getMulticastHops() const
 #if (defined(_COM_AZURE_DEV__BASE__HAVE_INET_IPV6))
   }
 #endif
+#endif
 }
 
 void Socket::setMulticastHops(uint8 value)
 {
+#if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__FREERTOS)
+    _COM_AZURE_DEV__BASE__NOT_SUPPORTED();
+#else
 #if (defined(_COM_AZURE_DEV__BASE__HAVE_INET_IPV6))
   if (socket->getDomain() == Socket::IPV6) {
     unsigned int buffer = value;
@@ -1180,10 +1289,14 @@ void Socket::setMulticastHops(uint8 value)
 #if (defined(_COM_AZURE_DEV__BASE__HAVE_INET_IPV6))
   }
 #endif
+#endif
 }
 
 bool Socket::getMulticastLoopback() const
 {
+#if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__FREERTOS)
+    _COM_AZURE_DEV__BASE__NOT_SUPPORTED();
+#else
 #if (defined(_COM_AZURE_DEV__BASE__HAVE_INET_IPV6))
   if (socket->getDomain() == Socket::IPV6) {
     u_char buffer;
@@ -1211,10 +1324,14 @@ bool Socket::getMulticastLoopback() const
 #if (defined(_COM_AZURE_DEV__BASE__HAVE_INET_IPV6))
   }
 #endif
+#endif
 }
 
 void Socket::setMulticastLoopback(bool value)
 {
+#if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__FREERTOS)
+    _COM_AZURE_DEV__BASE__NOT_SUPPORTED();
+#else
 #if (defined(_COM_AZURE_DEV__BASE__HAVE_INET_IPV6))
   if (socket->getDomain() == Socket::IPV6) {
     unsigned int buffer = value;
@@ -1238,10 +1355,14 @@ void Socket::setMulticastLoopback(bool value)
 #if (defined(_COM_AZURE_DEV__BASE__HAVE_INET_IPV6))
   }
 #endif
+#endif
 }
 
 InetAddress Socket::getMulticastInterface() const
 {
+#if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__FREERTOS)
+    _COM_AZURE_DEV__BASE__NOT_SUPPORTED();
+#else
 #if (defined(_COM_AZURE_DEV__BASE__HAVE_INET_IPV6))
   if (socket->getDomain() == Socket::IPV6) {
     unsigned int buffer = 0;
@@ -1279,11 +1400,14 @@ InetAddress Socket::getMulticastInterface() const
   );
   return InetAddress(Cast::getAddress(buffer), InetAddress::IP_VERSION_4);
 #endif
+#endif
 }
 
 void Socket::setMulticastInterface(const InetAddress& interface)
 {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
+#elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__FREERTOS)
+    _COM_AZURE_DEV__BASE__NOT_SUPPORTED();
 #else // unix
   InetAddress i = interface;
   struct in_addr buffer;
@@ -1396,6 +1520,8 @@ void Socket::joinGroup(const InetAddress& group)
       sizeof(mreq)
     );
   }
+#elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__FREERTOS)
+    _COM_AZURE_DEV__BASE__NOT_SUPPORTED();
 #  else
   InetAddress g = group;
   bassert(g.convertToIPv4(), NetworkException(this));
@@ -1529,6 +1655,8 @@ void Socket::joinGroup(const InetAddress& interface, const InetAddress& group)
       sizeof(mreq)
     );
   }
+#elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__FREERTOS)
+    _COM_AZURE_DEV__BASE__NOT_SUPPORTED();
 #  else
   InetAddress i = interface;
   InetAddress g = group;
@@ -1624,6 +1752,8 @@ void Socket::leaveGroup(const InetAddress& interface, const InetAddress& group)
       sizeof(mreq)
     );
   }
+#elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__FREERTOS)
+    _COM_AZURE_DEV__BASE__NOT_SUPPORTED();
 #  else
   InetAddress i = interface;
   InetAddress g = group;
@@ -1779,6 +1909,8 @@ unsigned int Socket::available() const
     internal::SocketImpl::raiseNetwork("Unable to determine the amount of data pending in the input buffer.");
   }
   return result;
+#elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__FREERTOS)
+    _COM_AZURE_DEV__BASE__NOT_SUPPORTED();
 #else // unix
   // this implementation is not very portable?
   int result = 0;
@@ -1819,7 +1951,9 @@ unsigned int Socket::read(
   bool nonblocking)
 {
   Profiler::IOReadTask profile("Socket::read()");
-
+#if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__FREERTOS)
+  _COM_AZURE_DEV__BASE__NOT_SUPPORTED();
+#else
   unsigned int bytesRead = 0;
   while (bytesToRead > 0) {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
@@ -1872,6 +2006,7 @@ unsigned int Socket::read(
     }
   }
   return bytesRead;
+#endif
 }
 
 unsigned int Socket::write(
@@ -1880,6 +2015,9 @@ unsigned int Socket::write(
   bool nonblocking)
 {
   Profiler::IOWriteTask profile("Socket::write()");
+#if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__FREERTOS)
+  _COM_AZURE_DEV__BASE__NOT_SUPPORTED();
+#else
   unsigned int bytesWritten = 0;
   while (bytesToWrite > 0) {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
@@ -1930,6 +2068,7 @@ unsigned int Socket::write(
     }
   }
   return bytesWritten;
+#endif
 }
 
 unsigned int Socket::receiveFrom(
@@ -1940,7 +2079,8 @@ unsigned int Socket::receiveFrom(
 {
   Profiler::IOReadTask profile("Socket::receiveFrom()");
 
-#if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__WASI)
+#if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__FREERTOS) || \
+    (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__WASI)
   return 0;
 #else
   SocketAddress sa;
@@ -1972,7 +2112,8 @@ unsigned int Socket::sendTo(
 {
   Profiler::IOWriteTask profile("Socket::sendTo()");
 
-#if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__WASI)
+#if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__FREERTOS) || \
+    (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__WASI)
   return 0;
 #else
   const SocketAddress sa(address, port, socket->getDomain());

@@ -48,13 +48,13 @@
 #  if defined(_COM_AZURE_DEV__BASE__HAVE_NANOSLEEP)
 #    include <time.h> // get nanosleep prototype
 #  elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__FREERTOS)
-
-int select(int nfds, fd_set *restrict readfds, fd_set *restrict writefds, fd_set *restrict errorfds,
-         struct timeval *restrict timeout)
-{
-  return EINVAL;
+namespace {
+  int select(int nfds, fd_set *restrict readfds, fd_set *restrict writefds, fd_set *restrict errorfds,
+             struct timeval *restrict timeout)
+  {
+    return EINVAL;
+  }
 }
-
 #  else // fall back on pselect and finally select
 #    include <sys/select.h>
 #  endif

@@ -31,7 +31,8 @@ _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 unsigned short InetService::getByName(const String& name, const String& protocol) noexcept
 {
-#if (_COM_AZURE_DEV__BASE__OS != _COM_AZURE_DEV__BASE__WASI)
+#if (_COM_AZURE_DEV__BASE__OS != _COM_AZURE_DEV__BASE__FREERTOS) && \
+    (_COM_AZURE_DEV__BASE__OS != _COM_AZURE_DEV__BASE__WASI)
   struct servent* sp = nullptr;
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   sp = getservbyname(name.getElements(), protocol.getElements()); // MT-safe
@@ -57,7 +58,8 @@ unsigned short InetService::getByName(const String& name, const String& protocol
 
 String InetService::getByPort(unsigned short port, const String& protocol) noexcept
 {
-#if (_COM_AZURE_DEV__BASE__OS != _COM_AZURE_DEV__BASE__WASI)
+#if (_COM_AZURE_DEV__BASE__OS != _COM_AZURE_DEV__BASE__FREERTOS) && \
+    (_COM_AZURE_DEV__BASE__OS != _COM_AZURE_DEV__BASE__WASI)
   struct servent* sp = nullptr;
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   sp = getservbyport(ByteOrder::toBigEndian<unsigned short>(port), protocol.getElements()); // MT-safe

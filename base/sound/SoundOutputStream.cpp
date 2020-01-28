@@ -33,6 +33,10 @@
 #  include <errno.h> // errno
 #  include <limits.h> // SSIZE_MAX
 
+#  if !defined(SSIZE_MAX)
+#    define SSIZE_MAX (1024*1024)
+#  endif
+
 #  if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__GNULINUX)
 #    include <sys/ioctl.h> // ioctl
 #    include <sys/soundcard.h> // ioctl

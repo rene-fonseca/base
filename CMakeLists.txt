@@ -392,7 +392,7 @@ endif ()
 #endif ()
 
 if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
-  if ("${CMAKE_CXX_COMPILER}" MATCHES ".*\/riscv64.*") # need a better way to detect dest arch
+  if ("${CMAKE_CXX_COMPILER}" MATCHES ".*\/riscv(32|64).*") # need a better way to detect dest arch
     target_link_libraries(base PRIVATE atomic)
   endif ()
 endif ()

@@ -29,6 +29,7 @@ Reference API documentation is hosted at https://rene-fonseca.github.io/base-api
 [![Ubuntu PowerPC64LE](https://dev.azure.com/renefonseca/base/_apis/build/status/rene-fonseca.base?branchName=master&jobName=ubuntu_powerpc64le&label=Ubuntu%20PowerPC64LE)](https://dev.azure.com/renefonseca/base/_build/latest?definitionId=5&branchName=master)
 [![Ubuntu S390x](https://dev.azure.com/renefonseca/base/_apis/build/status/rene-fonseca.base?branchName=master&jobName=ubuntu_s390x&label=Ubuntu%20S390x)](https://dev.azure.com/renefonseca/base/_build/latest?definitionId=5&branchName=master)
 [![Ubuntu SPARC64](https://dev.azure.com/renefonseca/base/_apis/build/status/rene-fonseca.base?branchName=master&jobName=ubuntu_sparc64&label=Ubuntu%20SPARC64)](https://dev.azure.com/renefonseca/base/_build/latest?definitionId=5&branchName=master)
+[![Ubuntu RISC-V32](https://dev.azure.com/renefonseca/base/_apis/build/status/base%20daily?branchName=master&jobName=ubuntu_riscv32&label=Ubuntu%20RISC-V32)](https://dev.azure.com/renefonseca/base/_build/latest?definitionId=7&branchName=master)
 [![Ubuntu RISC-V64](https://dev.azure.com/renefonseca/base/_apis/build/status/rene-fonseca.base?branchName=master&jobName=ubuntu_riscv64&label=Ubuntu%20RISC-V64)](https://dev.azure.com/renefonseca/base/_build/latest?definitionId=5&branchName=master)
 [![Ubuntu PA-RISC](https://dev.azure.com/renefonseca/base/_apis/build/status/rene-fonseca.base?branchName=master&jobName=ubuntu_hppa32&label=Ubuntu%20PA-RISC)](https://dev.azure.com/renefonseca/base/_build/latest?definitionId=5&branchName=master)
 [![openSUSE](https://dev.azure.com/renefonseca/base/_apis/build/status/base%20daily?branchName=master&jobName=opensuse_x64&label=openSUSE)](https://dev.azure.com/renefonseca/base/_build/latest?definitionId=7&branchName=master)
@@ -121,6 +122,7 @@ Ubuntu             | PowerPC  | GCC     | Ok         | Runs continuously on pipe
 Ubuntu             | s390x    | GCC     | Ok         | Runs continuously on pipeline
 Ubuntu             | SPARC64  | GCC     | Ok         | Runs continuously on pipeline
 Ubuntu             | PA-RISC  | GCC     | Ok         | Runs continuously on pipeline
+Ubuntu             | RISC-V32 | GCC     | Ok         | Runs daily on pipeline
 Ubuntu             | RISC-V64 | GCC     | Ok         | Runs continuously on pipeline
 CentOS 8           | x86_64   | GCC     | Ok         | Runs continuously on pipeline
 Fedora             | x86_64   | GCC     | Ok         | Runs continuously on pipeline

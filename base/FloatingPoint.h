@@ -2158,7 +2158,8 @@ inline FloatingPoint::IEEE754SinglePrecision::operator long double() const noexc
 inline FloatingPoint::IEEE754SinglePrecision::operator float128() const noexcept
 {
 #if (_COM_AZURE_DEV__BASE__FLOAT128 == _COM_AZURE_DEV__BASE__IEEE_754_SINGLE_PRECISION)
-  return *reinterpret_cast<const float128*>(&value);
+  const void* temp = &value; // taking address of packed member
+  return *reinterpret_cast<const float128*>(temp);
 #else
   return ToFloat128(value);
 #endif
@@ -2194,7 +2195,8 @@ inline FloatingPoint::IEEE754DoublePrecision::operator long double() const noexc
 inline FloatingPoint::IEEE754DoublePrecision::operator float128() const noexcept
 {
 #if (_COM_AZURE_DEV__BASE__FLOAT128 == _COM_AZURE_DEV__BASE__IEEE_754_DOUBLE_PRECISION)
-  return *reinterpret_cast<const float128*>(&value);
+  const void* temp = &value; // taking address of packed member
+  return *reinterpret_cast<const float128*>(temp);
 #else
   return ToFloat128(value);
 #endif
@@ -2236,7 +2238,8 @@ inline FloatingPoint::IEEEExtendedDoublePrecision96::operator long double() cons
 inline FloatingPoint::IEEEExtendedDoublePrecision96::operator float128() const noexcept
 {
 #if (_COM_AZURE_DEV__BASE__FLOAT128 == _COM_AZURE_DEV__BASE__IEEE_EXTENDED_DOUBLE_PRECISION_96)
-  return *reinterpret_cast<const float128*>(&value);
+  const void* temp = &value; // taking address of packed member
+  return *reinterpret_cast<const float128*>(temp);
 #else
   return ToFloat128(value);
 #endif
@@ -2272,7 +2275,8 @@ inline FloatingPoint::IEEEExtendedDoublePrecision96Align16::operator long double
 inline FloatingPoint::IEEEExtendedDoublePrecision96Align16::operator float128() const noexcept
 {
 #if (_COM_AZURE_DEV__BASE__FLOAT128 == _COM_AZURE_DEV__BASE__IEEE_EXTENDED_DOUBLE_PRECISION_96_ALIGN16)
-  return *reinterpret_cast<const float128*>(&value);
+  const void* temp = &value; // taking address of packed member
+  return *reinterpret_cast<const float128*>(temp);
 #else
   return ToFloat128(value);
 #endif
@@ -2308,7 +2312,8 @@ inline FloatingPoint::IEEEExtendedDoublePrecision128::operator long double() con
 inline FloatingPoint::IEEEExtendedDoublePrecision128::operator float128() const noexcept
 {
 #if (_COM_AZURE_DEV__BASE__FLOAT128 == _COM_AZURE_DEV__BASE__IEEE_EXTENDED_DOUBLE_PRECISION_128)
-  return *reinterpret_cast<const float128*>(&value);
+  void* temp = &value;
+  return *reinterpret_cast<const float128*>(temp);
 #else
   return ToFloat128(value);
 #endif
@@ -2335,7 +2340,8 @@ inline FloatingPoint::IEEEQuadruplePrecision::operator double() const noexcept
 inline FloatingPoint::IEEEQuadruplePrecision::operator long double() const noexcept
 {
 #if (_COM_AZURE_DEV__BASE__LONG_DOUBLE == _COM_AZURE_DEV__BASE__IEEE_QUADRUPLE_PRECISION)
-  return *reinterpret_cast<const long double*>(&value);
+  const void* temp = &value; // taking address of packed member
+  return *reinterpret_cast<const float128*>(temp);
 #else
   return ToLongDouble(value);
 #endif // long double
@@ -2344,7 +2350,8 @@ inline FloatingPoint::IEEEQuadruplePrecision::operator long double() const noexc
 inline FloatingPoint::IEEEQuadruplePrecision::operator float128() const noexcept
 {
 #if (_COM_AZURE_DEV__BASE__FLOAT128 == _COM_AZURE_DEV__BASE__IEEE_QUADRUPLE_PRECISION)
-  return *reinterpret_cast<const float128*>(&value);
+  const void* temp = &value;
+  return *reinterpret_cast<const float128*>(temp);
 #else
   return ToFloat128(value);
 #endif
@@ -2380,7 +2387,8 @@ inline FloatingPoint::IBMExtendedPrecision::operator long double() const noexcep
 inline FloatingPoint::IBMExtendedPrecision::operator float128() const noexcept
 {
 #if (_COM_AZURE_DEV__BASE__FLOAT128 == _COM_AZURE_DEV__BASE__IBM_EXTENDED_PRECISION)
-  return *reinterpret_cast<const float128*>(&value);
+  const void* temp = &value; // taking address of packed member
+  return *reinterpret_cast<const float128*>(temp);
 #else
   return ToFloat128(value);
 #endif

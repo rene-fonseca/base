@@ -240,6 +240,12 @@ private:
   static void pushCountersImpl();
 public:
 
+  /** Returns true if profiler is enabled globally (use isEnabled() instead). */
+  static bool isEnabledDirect() noexcept
+  {
+    return enabled;
+  }
+
   /** Enables stack frames. */
   static void setUseStackFrames(bool useStackFrames) noexcept;
   /** Set the minimum time to wait to record event. */
@@ -468,6 +474,9 @@ public:
     static void pushTask(unsigned int taskId) noexcept;
   protected:
 
+    /** Sets the name of the object. */
+    void setTaskWaitId(const char* id) noexcept;
+
     /** Sets bytes read for task. */
     void setTaskBytesRead(const uint8* buffer, unsigned int bytesRead) noexcept;
 
@@ -497,8 +506,11 @@ public:
   public:
 
     /** Wait task start. */
-    inline WaitTask(const char* name) : Task(name, CAT_WAIT)
+    inline WaitTask(const char* name, const char* id = nullptr) : Task(name, CAT_WAIT)
     {
+      if (id) {
+        setTaskWaitId(id);
+      }
     }
   };
 

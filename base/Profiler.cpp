@@ -439,6 +439,24 @@ Profiler::Event* Profiler::Task::getEvent() noexcept
 }
 #endif
 
+void Profiler::Task::setTaskWaitId(const char* id) noexcept
+{
+  if (taskId == BAD) {
+    return;
+  }
+  if (!enabled) {
+    return;
+  }
+  if (!id) {
+    return;
+  }
+  auto tlc = Thread::getLocalContext();
+  Event& e = tlc->profiling.events.getElements()[taskId];
+  if (e.cat == CAT_WAIT) {
+    e.data = new ReferenceString(id);
+  }
+}
+
 void Profiler::Task::setTaskBytesRead(const uint8* buffer, unsigned int bytesRead) noexcept
 {
   if (taskId == BAD) {
@@ -454,7 +472,7 @@ void Profiler::Task::setTaskBytesRead(const uint8* buffer, unsigned int bytesRea
       String bytes(reinterpret_cast<const char*>(buffer), minimum(bytesRead, tlc->profiling.captureIO));
       e.data = new ReferenceIO(bytesRead, bytes);
     } else {
-      e.data = new ReferenceValue(bytesRead);
+      e.data = new ReferenceIO(bytesRead);
     }
     tlc->bytesRead += bytesRead;
   }
@@ -763,6 +781,7 @@ void Profiler::ProfilerImpl::close()
   auto ID = o.createString("id");
   auto CNAME = o.createString("cname");
 
+  auto WAITING_FOR = o.createString("waiting for");
   auto BYTES_READ = o.createString("read");
   auto BYTES_WRITTEN = o.createString("written");
   auto BUFFER = o.createString("buffer");
@@ -900,7 +919,15 @@ void Profiler::ProfilerImpl::close()
           // item->setValue(TDUR, o.createInteger(e.tdur));
           // item->setValue(TTS, o.createInteger(e.tts));
 
-          if (e.cat == CAT_IO_READ) {
+          if (e.cat == CAT_WAIT) {
+            if (auto r = e.data.cast<ReferenceString>()) {
+              auto args = o.createObject();
+              item->setValue(ARGS, args);
+              if (r->string) {
+                args->setValue(WAITING_FOR, r->string);
+              }
+            }
+          } else if (e.cat == CAT_IO_READ) {
             if (auto r = e.data.cast<ReferenceIO>()) {
               auto args = o.createObject();
               item->setValue(ARGS, args);

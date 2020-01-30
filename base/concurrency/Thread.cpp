@@ -891,7 +891,7 @@ Thread::Times Thread::getTimes() noexcept
 
 bool Thread::join() const
 {
-  // TAG: we need to get the thread name
+  // TAG: we need to get the thread name - use ResourceHandle
   Profiler::WaitTask profile("Thread::join()");
 
   if (state == NOTSTARTED) {

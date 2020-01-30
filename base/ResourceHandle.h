@@ -27,8 +27,8 @@ private:
   static PreferredAtomicCounter id; // TAG: share id with Thread?
 public:
 
-  /** Description for resource. */
-  String name;
+  /** Description for resource - set explicitly. */
+  String description;
   /** Thread created object. */
   unsigned int createdById = 0;
   /** Unique resource id. */
@@ -38,23 +38,21 @@ public:
   inline ResourceHandle() noexcept
   {
     if (Profiler::isEnabledDirect()) {
-      name = Thread::getThreadName(); // TAG: this may change over time - what should we do - can we lookup thread name instead
-      // TAG: manage lot for Thread
       createdById = Thread::getThreadSimpleId();
       resourceId = static_cast<unsigned int>(++id);
     }
+  }
+
+  /** Returns the description of the resource. */
+  inline const String& getDescription() const noexcept
+  {
+    return description;
   }
 
   /** Returns the ID of the thread that created the resource. */
   inline unsigned int getCreatedById() const noexcept
   {
     return createdById;
-  }
-
-  /** Returns the name of the thread that created the resource. */
-  inline const String& getCreateByName() const noexcept
-  {
-    return name;
   }
 
   /** Returns the unique resource ID. */

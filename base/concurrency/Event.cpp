@@ -41,6 +41,30 @@
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
+const String& Resource::getDescription() const
+{
+  Reference<ResourceHandle> handle = this->handle.castChecked<ResourceHandle>();
+  return handle->description;
+}
+
+void Resource::setDescription(const String& description)
+{
+  Reference<ResourceHandle> handle = this->handle.castChecked<ResourceHandle>();
+  handle->description = description;
+}
+
+unsigned int Resource::getResourceId() const
+{
+  Reference<ResourceHandle> handle = this->handle.castChecked<ResourceHandle>();
+  return handle->resourceId;
+}
+
+unsigned int Resource::getCreatedById() const
+{
+  Reference<ResourceHandle> handle = this->handle.castChecked<ResourceHandle>();
+  return handle->createdById;
+}
+
 class EventHandle : public ResourceHandle {
 public:
 

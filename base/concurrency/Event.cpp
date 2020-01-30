@@ -156,7 +156,8 @@ Event::Event()
   }
   this->handle = _handle;
 #else
-  this->handle = new EventHandle();
+  Reference<EventHandle> _handle = new EventHandle();
+  this->handle = _handle;
 #endif
   profile.setHandle(*_handle);
 }

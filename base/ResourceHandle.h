@@ -28,7 +28,7 @@ private:
 public:
 
   /** Description for resource - set explicitly. */
-  String description;
+  Reference<ReferenceCountedAllocator<char> > description; // do NOT use String here to avoid cyclic depends
   /** Thread created object. */
   unsigned int createdById = 0;
   /** Unique resource id. */
@@ -44,7 +44,7 @@ public:
   }
 
   /** Returns the description of the resource. */
-  inline const String& getDescription() const noexcept
+  inline String getDescription() const noexcept
   {
     return description;
   }

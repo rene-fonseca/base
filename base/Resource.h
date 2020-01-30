@@ -29,7 +29,7 @@ protected:
 public:
 
   /** Returns the description of the resource. */
-  const String& getDescription() const;
+  String getDescription() const;
 
   /** Sets the description of the resource. */
   void setDescription(const String& description);

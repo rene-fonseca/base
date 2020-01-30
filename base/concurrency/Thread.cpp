@@ -908,6 +908,8 @@ void Thread::run()
 
 void Thread::start()
 {
+  // TAG: Profiler::ResourceCreateTask profile("Thread::start()");
+
   unsigned int simpleId = 0;
   if (auto tlc = threadLocalContext.getKey()) {
     simpleId = tlc->simpleId;

@@ -502,6 +502,9 @@ public:
     static void pushTask(unsigned int taskId) noexcept;
   protected:
 
+    /** Sets the resource handle for the object. */
+    void setTaskResourceHandle(const ResourceHandle& handle) noexcept;
+
     /** Sets the name of the object. */
     void setTaskWaitId(const char* id) noexcept;
     
@@ -563,6 +566,12 @@ public:
     inline ResourceCreateTask(const char* name, const char* cat = CAT_CREATE_RESOURCE) noexcept
       : Task(name, cat)
     {
+    }
+
+    /** Sets the resource handle. */
+    inline void setHandle(const ResourceHandle& handle)
+    {
+      setTaskResourceHandle(handle);
     }
   };
 

@@ -134,6 +134,7 @@ Event::Event()
 #else
   this->handle = new EventHandle();
 #endif
+  profile.setHandle(*_handle);
 }
 
 OperatingSystem::Handle Event::getHandle() const noexcept

@@ -440,6 +440,22 @@ Profiler::Event* Profiler::Task::getEvent() noexcept
 }
 #endif
 
+void Profiler::Task::setTaskResourceHandle(const ResourceHandle& handle) noexcept
+{
+  if (taskId == BAD) {
+    return;
+  }
+  if (!enabled) {
+    return;
+  }
+  auto tlc = Thread::getLocalContext();
+  Event& e = tlc->profiling.events.getElements()[taskId];
+  if (e.cat == CAT_CREATE_RESOURCE) {
+    // we must copy to avoid resource not lingering
+    e.data = new ReferenceResource(handle.getResourceId()/*, handle.getCreatedById()*/);
+  }
+}
+
 void Profiler::Task::setTaskWaitId(const char* id) noexcept
 {
   if (taskId == BAD) {
@@ -802,6 +818,7 @@ void Profiler::ProfilerImpl::close()
   auto BYTES_READ = o.createString("read");
   auto BYTES_WRITTEN = o.createString("written");
   auto BUFFER = o.createString("buffer");
+  auto THREAD = o.createString("thread");
   auto RESOURCE = o.createString("resource");
 
   auto PH_B = o.createString("B");
@@ -950,6 +967,20 @@ void Profiler::ProfilerImpl::close()
               if (r->string) {
                 args->setValue(WAITING_FOR, r->string);
               }
+            }
+          } else if (e.cat == CAT_CREATE_RESOURCE) {
+            if (auto r = e.data.cast<ReferenceResource>()) {
+              auto args = o.createObject();
+              item->setValue(ARGS, args);
+              if (r->resourceId) {
+                args->setValue(RESOURCE, o.createInteger(r->resourceId));
+              }
+#if 0
+              if (r->createdById) {
+                // TAG: lookup thread name
+                args->setValue(THREAD, o.createInteger(r->createdById));
+              }
+#endif
             }
           } else if (e.cat == CAT_IO_READ) {
             if (auto r = e.data.cast<ReferenceIO>()) {

@@ -41,6 +41,8 @@ namespace {
     return EINVAL;
   }
 }
+#else
+#  include <sys/select.h>
 #endif
 
 #endif // flavor

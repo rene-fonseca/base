@@ -37,14 +37,17 @@
 #else // unix
 #  include <sys/types.h>
 #  include <sys/stat.h>
-#if (_COM_AZURE_DEV__BASE__OS != _COM_AZURE_DEV__BASE__FREERTOS)
+#if (_COM_AZURE_DEV__BASE__OS != _COM_AZURE_DEV__BASE__FREERTOS) && \
+    (_COM_AZURE_DEV__BASE__OS != _COM_AZURE_DEV__BASE__ZEPHYR)
 #  include <sys/socket.h>
 #endif
-#if (_COM_AZURE_DEV__BASE__OS != _COM_AZURE_DEV__BASE__FREERTOS)
+#if (_COM_AZURE_DEV__BASE__OS != _COM_AZURE_DEV__BASE__FREERTOS) && \
+    (_COM_AZURE_DEV__BASE__OS != _COM_AZURE_DEV__BASE__ZEPHYR)
 #  include <netinet/in.h> // defines ntohs...
 #  include <netinet/tcp.h> // options
 #endif
 #if (_COM_AZURE_DEV__BASE__OS != _COM_AZURE_DEV__BASE__FREERTOS) && \
+    (_COM_AZURE_DEV__BASE__OS != _COM_AZURE_DEV__BASE__ZEPHYR) && \
     (_COM_AZURE_DEV__BASE__OS != _COM_AZURE_DEV__BASE__WASI)
 #  include <net/if.h>
 #endif
@@ -69,14 +72,16 @@
 #    define SSIZE_MAX (1024*1024)
 #  endif
 
-#if (_COM_AZURE_DEV__BASE__OS != _COM_AZURE_DEV__BASE__FREERTOS)
+#if (_COM_AZURE_DEV__BASE__OS != _COM_AZURE_DEV__BASE__FREERTOS) && \
+    (_COM_AZURE_DEV__BASE__OS != _COM_AZURE_DEV__BASE__ZEPHYR)
 #  include <arpa/inet.h>
 #endif
 
 #  if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__SOLARIS)
 #    define BSD_COMP 1 // request BSD flags - don't known if this is ok to do
 #  endif
-#if (_COM_AZURE_DEV__BASE__OS != _COM_AZURE_DEV__BASE__FREERTOS)
+#if (_COM_AZURE_DEV__BASE__OS != _COM_AZURE_DEV__BASE__FREERTOS) && \
+    (_COM_AZURE_DEV__BASE__OS != _COM_AZURE_DEV__BASE__ZEPHYR)
 #  include <sys/ioctl.h> // defines FIONREAD
 #endif
 #endif // flavor
@@ -87,6 +92,8 @@ int select(int nfds, fd_set *restrict readfds, fd_set *restrict writefds, fd_set
 {
   return EINVAL;
 }
+#else
+#  include <sys/select.h>
 #endif
 
 #if (_COM_AZURE_DEV__BASE__FLAVOR != _COM_AZURE_DEV__BASE__WIN32)
@@ -143,13 +150,15 @@ typedef int SOCKET;
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32) || \
     (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__IRIX65)    
   typedef int socklen;
-#elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__FREERTOS)
+#elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__FREERTOS) || \
+      (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__ZEPHYR)
   typedef int socklen;
 #else
   typedef socklen_t socklen;
 #endif
 
 #if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__FREERTOS) || \
+    (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__ZEPHYR) || \
     (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__WASI)
 extern "C" struct hostent* gethostbyaddr(const void *addr, socklen len, int type)
 {
@@ -162,7 +171,8 @@ _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 class SocketAddress { // Internet end point
 private:
 
-#if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__FREERTOS)
+#if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__FREERTOS) || \
+    (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__ZEPHYR)
   struct sockaddr {
     int reserved;
   };
@@ -194,7 +204,8 @@ public:
     unsigned short port,
     Socket::Domain domain)
   {
-#if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__FREERTOS)
+#if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__FREERTOS) || \
+    (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__ZEPHYR)
     _COM_AZURE_DEV__BASE__NOT_IMPLEMENTED();
 #else
     clear(sa);
@@ -273,7 +284,8 @@ public:
   /** Returns the size of the socket address structure. */
   inline unsigned int getSize() const noexcept
   {
-#if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__FREERTOS)
+#if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__FREERTOS) || \
+    (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__ZEPHYR)
     return 0;
 #elif (defined(_COM_AZURE_DEV__BASE__HAVE_INET_IPV6))
     return (sa.sa_family == AF_INET6) ? sizeof(ipv6) : sizeof(ipv4);
@@ -300,7 +312,8 @@ public:
   /** Returns the address. */
   inline InetAddress getAddress() const noexcept
   {
-#if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__FREERTOS)
+#if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__FREERTOS) || \
+    (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__ZEPHYR)
     return InetAddress();
 #else
     switch (sa.sa_family) {
@@ -325,7 +338,8 @@ public:
   /** Returns the port. */
   inline unsigned short getPort() const noexcept
   {
-#if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__FREERTOS)
+#if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__FREERTOS) || \
+    (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__ZEPHYR)
     return 0;
 #else
     switch (sa.sa_family) {
@@ -345,6 +359,7 @@ public:
   inline void setSocket(int handle) noexcept
   {
 #if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__FREERTOS) || \
+    (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__ZEPHYR) || \
     (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__WASI)
 #else
     socklen length = getAnySize();
@@ -492,7 +507,8 @@ namespace internal {
       void* buffer,
       unsigned int* length)
     {
-#if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__FREERTOS)
+#if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__FREERTOS) || \
+    (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__ZEPHYR)
       raiseNetwork("Unable to get option.");
 #else
       socklen temp = *length;
@@ -511,6 +527,7 @@ namespace internal {
       unsigned int length)
     {
 #if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__FREERTOS) || \
+    (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__ZEPHYR) || \
     (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__WASI)
         raiseNetwork("Unable to set option.");
 #else
@@ -573,6 +590,7 @@ Socket::Socket() noexcept
 bool Socket::accept(Socket& socket)
 {
 #if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__FREERTOS) || \
+    (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__ZEPHYR) || \
     (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__WASI)
   return false;
 #else
@@ -615,6 +633,7 @@ bool Socket::accept(Socket& socket)
 void Socket::bind(const InetAddress& address, unsigned short port)
 {
 #if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__FREERTOS) || \
+    (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__ZEPHYR) || \
     (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__WASI)
 #else
   SocketAddress sa(address, port, socket->getDomain());
@@ -641,6 +660,7 @@ void Socket::close()
 void Socket::connect(const InetAddress& address, unsigned short port)
 {
 #if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__FREERTOS) || \
+    (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__ZEPHYR) || \
     (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__WASI)
 #else
   SocketAddress sa(address, port, socket->getDomain());
@@ -676,6 +696,7 @@ void Socket::connect(const InetAddress& address, unsigned short port)
 void Socket::create(Kind kind, Domain domain)
 {
 #if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__FREERTOS) || \
+    (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__ZEPHYR) || \
     (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__WASI)
 #else
   // TAG: should return new socket not overwrite handle (static method)
@@ -721,6 +742,7 @@ void Socket::create(Kind kind, Domain domain)
 void Socket::listen(unsigned int backlog)
 {
 #if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__FREERTOS) || \
+    (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__ZEPHYR) || \
     (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__WASI)
 #else
   // silently reduce the backlog argument
@@ -765,7 +787,8 @@ void Socket::shutdownInputStream()
   if (::shutdown((SOCKET)socket->getHandle(), 0 /*SD_RECEIVE*/)) { // disallow further receives
     internal::SocketImpl::raiseNetwork("Unable to shutdown socket for reading.");
   }
-#elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__FREERTOS)
+#elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__FREERTOS) || \
+      (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__ZEPHYR)
     _COM_AZURE_DEV__BASE__NOT_SUPPORTED();
 #else // unix
   if (::shutdown((SOCKET)socket->getHandle(), 0)) { // disallow further receives
@@ -780,7 +803,8 @@ void Socket::shutdownOutputStream()
   if (::shutdown((SOCKET)socket->getHandle(), 1 /*SD_SEND*/)) { // disallow further sends
     internal::SocketImpl::raiseNetwork("Unable to shutdown socket for writing.");
   }
-#elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__FREERTOS)
+#elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__FREERTOS) || \
+      (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__ZEPHYR)
     _COM_AZURE_DEV__BASE__NOT_SUPPORTED();
 #else // unix
   if (::shutdown((SOCKET)socket->getHandle(), 1)) { // disallow further sends
@@ -791,7 +815,8 @@ void Socket::shutdownOutputStream()
 
 bool Socket::getBooleanOption(int option) const
 {
-#if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__FREERTOS)
+#if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__FREERTOS) || \
+    (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__ZEPHYR)
     _COM_AZURE_DEV__BASE__NOT_SUPPORTED();
 #else
   int buffer = 0;
@@ -809,7 +834,8 @@ bool Socket::getBooleanOption(int option) const
 
 void Socket::setBooleanOption(int option, bool value)
 {
-#if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__FREERTOS)
+#if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__FREERTOS) || \
+    (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__ZEPHYR)
     _COM_AZURE_DEV__BASE__NOT_SUPPORTED();
 #else
   int buffer = value;
@@ -826,6 +852,7 @@ void Socket::setBooleanOption(int option, bool value)
 int Socket::getErrorState() const
 {
 #if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__FREERTOS) || \
+    (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__ZEPHYR) || \
     (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__WASI)
   return -1;
 #else
@@ -845,6 +872,7 @@ int Socket::getErrorState() const
 bool Socket::getReuseAddress() const
 {
 #if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__FREERTOS) || \
+    (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__ZEPHYR) || \
     (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__WASI)
   return false;
 #else
@@ -855,6 +883,7 @@ bool Socket::getReuseAddress() const
 void Socket::setReuseAddress(bool value)
 {
 #if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__FREERTOS) || \
+    (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__ZEPHYR) || \
     (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__WASI)
 #else
   setBooleanOption(SO_REUSEADDR, value);
@@ -864,6 +893,7 @@ void Socket::setReuseAddress(bool value)
 bool Socket::getKeepAlive() const
 {
 #if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__FREERTOS) || \
+    (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__ZEPHYR) || \
     (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__WASI)
   return false;
 #else
@@ -874,6 +904,7 @@ bool Socket::getKeepAlive() const
 void Socket::setKeepAlive(bool value)
 {
 #if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__FREERTOS) || \
+    (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__ZEPHYR) || \
     (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__WASI)
 #else
   setBooleanOption(SO_KEEPALIVE, value);
@@ -883,6 +914,7 @@ void Socket::setKeepAlive(bool value)
 bool Socket::getBroadcast() const
 {
 #if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__FREERTOS) || \
+    (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__ZEPHYR) || \
     (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__WASI)
   return false;
 #else
@@ -893,6 +925,7 @@ bool Socket::getBroadcast() const
 void Socket::setBroadcast(bool value)
 {
 #if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__FREERTOS) || \
+    (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__ZEPHYR) || \
     (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__WASI)
 #else
   setBooleanOption(SO_BROADCAST, value);
@@ -902,6 +935,7 @@ void Socket::setBroadcast(bool value)
 int Socket::getLinger() const
 {
 #if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__FREERTOS) || \
+    (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__ZEPHYR) || \
     (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__WASI)
   return -1;
 #else
@@ -915,6 +949,7 @@ int Socket::getLinger() const
 void Socket::setLinger(int seconds)
 {
 #if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__FREERTOS) || \
+    (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__ZEPHYR) || \
     (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__WASI)
 #else
   struct linger buffer;
@@ -937,6 +972,7 @@ void Socket::setLinger(int seconds)
 int Socket::getReceiveBufferSize() const
 {
 #if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__FREERTOS) || \
+    (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__ZEPHYR) || \
     (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__WASI)
   return -1;
 #else
@@ -956,6 +992,7 @@ int Socket::getReceiveBufferSize() const
 void Socket::setReceiveBufferSize(int size)
 {
 #if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__FREERTOS) || \
+    (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__ZEPHYR) || \
     (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__WASI)
 #else
   int buffer = size;
@@ -972,6 +1009,7 @@ void Socket::setReceiveBufferSize(int size)
 int Socket::getSendBufferSize() const
 {
 #if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__FREERTOS) || \
+    (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__ZEPHYR) || \
     (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__WASI)
   return 0;
 #else
@@ -985,6 +1023,7 @@ int Socket::getSendBufferSize() const
 void Socket::setSendBufferSize(int size)
 {
 #if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__FREERTOS) || \
+    (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__ZEPHYR) || \
     (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__WASI)
 #else
   int buffer = size;
@@ -1008,6 +1047,7 @@ void Socket::setSendBufferSize(int size)
 bool Socket::getDontRoute() const
 {
 #if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__FREERTOS) || \
+    (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__ZEPHYR) || \
     (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__WASI)
   return false;
 #else
@@ -1027,6 +1067,7 @@ bool Socket::getDontRoute() const
 void Socket::setDontRoute(bool value)
 {
 #if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__FREERTOS) || \
+    (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__ZEPHYR) || \
     (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__WASI)
 #else
   int buffer = value;
@@ -1043,6 +1084,7 @@ void Socket::setDontRoute(bool value)
 uint64 Socket::getReceiveTimeout() const
 {
 #if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__FREERTOS) || \
+    (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__ZEPHYR) || \
     (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__WASI)
   return 0;
 #else
@@ -1062,6 +1104,7 @@ uint64 Socket::getReceiveTimeout() const
 void Socket::setReceiveTimeout(uint64 nanoseconds)
 {
 #if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__FREERTOS) || \
+    (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__ZEPHYR) || \
     (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__WASI)
 #else
   struct timeval buffer;
@@ -1085,6 +1128,7 @@ void Socket::setReceiveTimeout(uint64 nanoseconds)
 uint64 Socket::getSendTimeout() const
 {
 #if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__FREERTOS) || \
+    (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__ZEPHYR) || \
     (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__WASI)
   return 0;
 #else
@@ -1104,6 +1148,7 @@ uint64 Socket::getSendTimeout() const
 void Socket::setSendTimeout(uint64 nanoseconds)
 {
 #if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__FREERTOS) || \
+    (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__ZEPHYR) || \
     (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__WASI)
 #else
   struct timeval buffer;
@@ -1126,7 +1171,8 @@ void Socket::setSendTimeout(uint64 nanoseconds)
 
 bool Socket::getTcpNoDelay() const
 {
-#if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__FREERTOS)
+#if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__FREERTOS) || \
+    (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__ZEPHYR)
     _COM_AZURE_DEV__BASE__NOT_SUPPORTED();
 #else
   int buffer = 0;
@@ -1144,7 +1190,8 @@ bool Socket::getTcpNoDelay() const
 
 void Socket::setTcpNoDelay(bool value)
 {
-#if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__FREERTOS)
+#if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__FREERTOS) || \
+    (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__ZEPHYR)
     _COM_AZURE_DEV__BASE__NOT_SUPPORTED();
 #else
   int buffer = value;
@@ -1194,7 +1241,8 @@ void Socket::setTcpDeferAccept(uint64 value)
  
 unsigned int Socket::getTimeToLive() const
 {
-#if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__FREERTOS)
+#if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__FREERTOS) || \
+    (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__ZEPHYR)
     _COM_AZURE_DEV__BASE__NOT_SUPPORTED();
 #else
   int buffer = 0;
@@ -1212,7 +1260,8 @@ unsigned int Socket::getTimeToLive() const
 
 void Socket::setTimeToLive(unsigned int value)
 {
-#if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__FREERTOS)
+#if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__FREERTOS) || \
+    (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__ZEPHYR)
     _COM_AZURE_DEV__BASE__NOT_SUPPORTED();
 #else
   int buffer = value;
@@ -1228,7 +1277,8 @@ void Socket::setTimeToLive(unsigned int value)
 
 uint8 Socket::getMulticastHops() const
 {
-#if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__FREERTOS)
+#if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__FREERTOS) || \
+    (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__ZEPHYR)
     _COM_AZURE_DEV__BASE__NOT_SUPPORTED();
 #else
 #if (defined(_COM_AZURE_DEV__BASE__HAVE_INET_IPV6))
@@ -1263,7 +1313,8 @@ uint8 Socket::getMulticastHops() const
 
 void Socket::setMulticastHops(uint8 value)
 {
-#if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__FREERTOS)
+#if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__FREERTOS) || \
+    (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__ZEPHYR)
     _COM_AZURE_DEV__BASE__NOT_SUPPORTED();
 #else
 #if (defined(_COM_AZURE_DEV__BASE__HAVE_INET_IPV6))
@@ -1294,7 +1345,8 @@ void Socket::setMulticastHops(uint8 value)
 
 bool Socket::getMulticastLoopback() const
 {
-#if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__FREERTOS)
+#if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__FREERTOS) || \
+    (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__ZEPHYR)
     _COM_AZURE_DEV__BASE__NOT_SUPPORTED();
 #else
 #if (defined(_COM_AZURE_DEV__BASE__HAVE_INET_IPV6))
@@ -1329,7 +1381,8 @@ bool Socket::getMulticastLoopback() const
 
 void Socket::setMulticastLoopback(bool value)
 {
-#if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__FREERTOS)
+#if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__FREERTOS) || \
+    (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__ZEPHYR)
     _COM_AZURE_DEV__BASE__NOT_SUPPORTED();
 #else
 #if (defined(_COM_AZURE_DEV__BASE__HAVE_INET_IPV6))
@@ -1360,7 +1413,8 @@ void Socket::setMulticastLoopback(bool value)
 
 InetAddress Socket::getMulticastInterface() const
 {
-#if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__FREERTOS)
+#if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__FREERTOS) || \
+    (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__ZEPHYR)
     _COM_AZURE_DEV__BASE__NOT_SUPPORTED();
 #else
 #if (defined(_COM_AZURE_DEV__BASE__HAVE_INET_IPV6))
@@ -1406,7 +1460,8 @@ InetAddress Socket::getMulticastInterface() const
 void Socket::setMulticastInterface(const InetAddress& interface)
 {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
-#elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__FREERTOS)
+#elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__FREERTOS) || \
+      (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__ZEPHYR)
     _COM_AZURE_DEV__BASE__NOT_SUPPORTED();
 #else // unix
   InetAddress i = interface;
@@ -1520,7 +1575,8 @@ void Socket::joinGroup(const InetAddress& group)
       sizeof(mreq)
     );
   }
-#elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__FREERTOS)
+#elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__FREERTOS) || \
+      (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__ZEPHYR)
     _COM_AZURE_DEV__BASE__NOT_SUPPORTED();
 #  else
   InetAddress g = group;
@@ -1655,7 +1711,8 @@ void Socket::joinGroup(const InetAddress& interface, const InetAddress& group)
       sizeof(mreq)
     );
   }
-#elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__FREERTOS)
+#elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__FREERTOS) || \
+      (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__ZEPHYR)
     _COM_AZURE_DEV__BASE__NOT_SUPPORTED();
 #  else
   InetAddress i = interface;
@@ -1752,7 +1809,8 @@ void Socket::leaveGroup(const InetAddress& interface, const InetAddress& group)
       sizeof(mreq)
     );
   }
-#elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__FREERTOS)
+#elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__FREERTOS) || \
+      (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__ZEPHYR)
     _COM_AZURE_DEV__BASE__NOT_SUPPORTED();
 #  else
   InetAddress i = interface;
@@ -1909,7 +1967,8 @@ unsigned int Socket::available() const
     internal::SocketImpl::raiseNetwork("Unable to determine the amount of data pending in the input buffer.");
   }
   return result;
-#elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__FREERTOS)
+#elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__FREERTOS) || \
+      (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__ZEPHYR)
     _COM_AZURE_DEV__BASE__NOT_SUPPORTED();
 #else // unix
   // this implementation is not very portable?
@@ -1951,7 +2010,8 @@ unsigned int Socket::read(
   bool nonblocking)
 {
   Profiler::IOReadTask profile("Socket::read()");
-#if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__FREERTOS)
+#if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__FREERTOS) || \
+    (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__ZEPHYR)
   _COM_AZURE_DEV__BASE__NOT_SUPPORTED();
 #else
   unsigned int bytesRead = 0;
@@ -2015,7 +2075,8 @@ unsigned int Socket::write(
   bool nonblocking)
 {
   Profiler::IOWriteTask profile("Socket::write()");
-#if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__FREERTOS)
+#if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__FREERTOS) || \
+    (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__ZEPHYR)
   _COM_AZURE_DEV__BASE__NOT_SUPPORTED();
 #else
   unsigned int bytesWritten = 0;
@@ -2080,6 +2141,7 @@ unsigned int Socket::receiveFrom(
   Profiler::IOReadTask profile("Socket::receiveFrom()");
 
 #if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__FREERTOS) || \
+    (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__ZEPHYR) || \
     (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__WASI)
   return 0;
 #else
@@ -2113,6 +2175,7 @@ unsigned int Socket::sendTo(
   Profiler::IOWriteTask profile("Socket::sendTo()");
 
 #if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__FREERTOS) || \
+    (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__ZEPHYR) || \
     (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__WASI)
   return 0;
 #else

@@ -88,10 +88,10 @@ class SemaphoreHandle : public ResourceHandle {
 public:
   
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
-  typedef OperatingSystem::Handle Semaphore;
-
   enum {MAXIMUM = PrimitiveTraits<int>::MAXIMUM};
   enum {QUERY_INFORMATION = 0}; // the query type for semaphore
+  
+  HANDLE semaphore = 0;
 #elif defined(_COM_AZURE_DEV__BASE__PTHREAD_SEMAPHORE)
   
   #if defined(SEM_VALUE_MAX)
@@ -174,7 +174,7 @@ Semaphore::Semaphore(unsigned int value)
   Reference<SemaphoreHandle> _handle = new SemaphoreHandle();
 
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
-  if (!(_handle->semaphore = ::CreateSemaphore(0, value, SemaphoreImpl::MAXIMUM, 0))) {
+  if (!(_handle->semaphore = ::CreateSemaphore(0, value, SemaphoreHandle::MAXIMUM, 0))) {
     _throw SemaphoreException(this);
   }
 #elif defined(_COM_AZURE_DEV__BASE__PTHREAD_SEMAPHORE)
@@ -231,7 +231,7 @@ int Semaphore::getValue() const
     }
     if (NtQuerySemaphore) {
       ntapi::SemaphoreInformation information;
-      if (ntapi::succeeded(NtQuerySemaphore((HANDLE)semaphore,
+      if (ntapi::succeeded(NtQuerySemaphore(handle->semaphore,
                                             ntapi::SEMAPHORE_QUERY_INFORMATION_CLASS,
                                             &information,
                                             sizeof(information),

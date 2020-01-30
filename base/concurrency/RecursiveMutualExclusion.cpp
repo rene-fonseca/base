@@ -44,7 +44,7 @@ class RMutexHandle : public ResourceHandle {
 public:
   
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
-  CRITICAL_SECTION handle = 0;
+  CRITICAL_SECTION handle;
 #elif defined(_COM_AZURE_DEV__BASE__PTHREAD)
   pthread_mutex_t mutex;
 
@@ -88,10 +88,10 @@ RecursiveMutualExclusion::RecursiveMutualExclusion()
   Reference<RMutexHandle> _handle = new RMutexHandle();
 
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
-  ::InitializeCriticalSection(&_handle->mutex);
+  ::InitializeCriticalSection(&_handle->handle);
   // TAG: could raise STATUS_INVALID_HANDLE
-  ::EnterCriticalSection(&_handle->mutex); // force allocation of event (non-paged memory)
-  ::LeaveCriticalSection(&_handle->mutex);
+  ::EnterCriticalSection(&_handle->handle); // force allocation of event (non-paged memory)
+  ::LeaveCriticalSection(&_handle->handle);
 #elif defined(_COM_AZURE_DEV__BASE__PTHREAD)
   pthread_mutexattr_t attributes;
   if (pthread_mutexattr_init(&attributes) != 0) {
@@ -124,7 +124,7 @@ void RecursiveMutualExclusion::exclusiveLock() const
   }
 
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
-  ::EnterCriticalSection(&_handle->mutex);
+  ::EnterCriticalSection(&_handle->handle);
 #elif defined(_COM_AZURE_DEV__BASE__PTHREAD)
   int result = pthread_mutex_lock(&handle->mutex);
   if (result == 0) {
@@ -156,7 +156,7 @@ bool RecursiveMutualExclusion::tryExclusiveLock() const
 
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   BOOL result = TRUE;
-  result = ::TryEnterCriticalSection(&handle->mutex);
+  result = ::TryEnterCriticalSection(&handle->handle);
   return result;
 #elif defined(_COM_AZURE_DEV__BASE__PTHREAD)
   int result = pthread_mutex_trylock(&handle->mutex);
@@ -189,7 +189,7 @@ void RecursiveMutualExclusion::releaseLock() const
   }
 
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
-  ::LeaveCriticalSection(&handle->mutex);
+  ::LeaveCriticalSection(&handle->handle);
 #elif defined(_COM_AZURE_DEV__BASE__PTHREAD)
   int result = pthread_mutex_unlock(&handle->mutex);
   if (result == 0) {

@@ -92,7 +92,7 @@ namespace {
 
 Event::Event()
 {
-  // TAG: Profiler::ResourceCreateTask profile("Event::Event()");
+  Profiler::ResourceCreateTask profile("Event::Event()");
 
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   HANDLE context = ::CreateEvent(0, TRUE, FALSE, 0);

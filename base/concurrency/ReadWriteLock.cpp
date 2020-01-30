@@ -153,6 +153,8 @@ public:
 
 ReadWriteLock::ReadWriteLock()
 {
+  Profiler::ResourceCreateTask profile("ReadWriteLock::ReadWriteLock()");
+
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   representation = new ReadWriteLockImpl();
 #elif defined(_COM_AZURE_DEV__BASE__PTHREAD_RWLOCK)

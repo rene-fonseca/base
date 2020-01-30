@@ -20,6 +20,7 @@ _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 Barrier::Barrier()
 {
+  Profiler::ResourceCreateTask profile("Barrier::Barrier()");
 }
 
 unsigned int Barrier::getCount() const

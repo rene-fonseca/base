@@ -121,6 +121,8 @@ unsigned int Semaphore::getMaximum() noexcept
 
 Semaphore::Semaphore(unsigned int value)
 {
+  Profiler::ResourceCreateTask profile("Semaphore::Semaphore()");
+
   if (!(value <= SemaphoreImpl::MAXIMUM)) {
     _throw OutOfDomain(this);
   }

@@ -435,21 +435,25 @@ bool Runtime::isGlobalStateInGoodCondition() noexcept
 
 void Runtime::notImplemented(const char* who)
 {
+  Profiler::pushInstant(who, "NOT_IMPLEMENTED");
   _throw NotImplemented(who);
 }
 
 void Runtime::notSupported(const char* who)
 {
+  Profiler::pushInstant(who, "NOT_SUPPORTED");
   _throw NotSupported(who);
 }
 
 void Runtime::corruption(const char* who)
 {
+  Profiler::pushInstant(who, "CORRUPTION");
   _throw MemoryCorruption(who);
 }
 
 void Runtime::internalError(const char* who, const char* message)
 {
+  Profiler::pushInstant(who, "INTERNAL_ERROR");
   // TAG: add InternalError exception
   _throw UnexpectedFailure(message ? message : who);
 }

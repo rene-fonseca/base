@@ -236,6 +236,7 @@ private:
   static void pushExceptionImpl(const char* type);
   static void pushExceptionImpl(const Exception& exception, const Type* type);
   static void pushSignalImpl(const char* name);
+  static void pushInstantImpl(const char* name, const char* cat);
   static void pushThreadStartImpl(const char* name, unsigned int parentId);
   static void pushProcessMetaImpl(ReferenceCountedObject* name);
   static void pushThreadMetaImpl(ReferenceCountedObject* name/*, unsigned int parentId*/);
@@ -753,6 +754,15 @@ public:
       return;
     }
     pushSignalImpl(name);
+  }
+
+  /** Push instant. */
+  static inline void pushInstant(const char* name, const char* cat)
+  {
+    if (!enabled) {
+      return;
+    }
+    pushInstantImpl(name, cat);
   }
 
   /** Push thread start. */

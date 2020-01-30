@@ -699,6 +699,19 @@ void Profiler::pushSignalImpl(const char* name)
   pushEvent(e);
 }
 
+void Profiler::pushInstantImpl(const char* name, const char* cat)
+{
+  if (!isEnabledScope()) {
+    return;
+  }
+  Event e;
+  initEvent(e);
+  e.ph = EVENT_INSTANT;
+  e.name = name;
+  e.cat = cat;
+  pushEvent(e);
+}
+
 void Profiler::pushThreadStartImpl(const char* name, unsigned int parentId)
 {
   if (!isEnabledScope()) {

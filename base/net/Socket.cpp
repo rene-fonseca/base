@@ -2003,6 +2003,7 @@ unsigned int Socket::pending() const
 
 void Socket::flush()
 {
+  Profiler::IOFlushTask profile("Socket::flush()");
 }
 
 unsigned int Socket::read(

@@ -196,7 +196,10 @@ unsigned int Pipe::skip(unsigned int count)
   return bytesSkipped;
 }
 
-void Pipe::flush() {
+void Pipe::flush()
+{
+  Profiler::IOFlushTask profile("Pipe::flush()");
+
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   if (!::FlushFileBuffers(fd->getHandle())) {
     _throw PipeException("Unable to flush pipe.", this);

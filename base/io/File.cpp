@@ -917,6 +917,8 @@ void File::truncate(long long size)
 
 void File::flush()
 {
+  Profiler::IOFlushTask profile("File::flush()");
+
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   if (!::FlushFileBuffers(fd->getHandle())) {
     _throw FileException("Unable to flush.", this);

@@ -58,6 +58,8 @@ FileDescriptorOutputStream& FileDescriptorOutputStream::operator=(const FileDesc
 
 void FileDescriptorOutputStream::flush()
 {
+  Profiler::IOFlushTask profile("FileDescriptorOutputStream::flush()");
+
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   // TAG: handle may or may not be flushable
   // handle to a console output cannot be flushed 'cause it isn't buffered, aarrgh

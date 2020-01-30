@@ -140,6 +140,8 @@ Process Process::getParentProcess() noexcept
 
 Process Process::fork()
 {
+  Profiler::ResourceCreateTask profile("Process::fork()");
+
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   _COM_AZURE_DEV__BASE__NOT_SUPPORTED();
 #elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__WASI)
@@ -260,6 +262,8 @@ HANDLE CreateRemoteThread(
 
 Process Process::execute(const String& command)
 {
+  Profiler::ResourceCreateTask profile("Process::execute()");
+
   // inherit handles, environment, use current working directory, and allow this app to wait for process to terminate
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   String commandLine = command;

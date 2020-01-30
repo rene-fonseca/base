@@ -69,6 +69,7 @@ namespace internal {
     return result.tm_gmtoff * 1000000LL;
   }
 #elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__FREERTOS) || \
+      (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__ZEPHYR) || \
       (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__WASI)
   inline int64 getTimezone() noexcept
   {
@@ -345,6 +346,7 @@ int64 Date::getBias() noexcept
   return information.Bias * 60000000LL; // TAG: what about the other bias'
 #else // unix
 #if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__FREERTOS) || \
+    (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__ZEPHYR) || \
     (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__WASI)
   // _COM_AZURE_DEV__BASE__NOT_SUPPORTED();
   return 0;

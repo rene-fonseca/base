@@ -79,7 +79,8 @@ namespace internal {
 
   inline uint64 getRealImpl() noexcept
   {
-#if (_COM_AZURE_DEV__BASE__OS != _COM_AZURE_DEV__BASE__FREERTOS)
+#if (_COM_AZURE_DEV__BASE__OS != _COM_AZURE_DEV__BASE__FREERTOS) && \
+    (_COM_AZURE_DEV__BASE__OS != _COM_AZURE_DEV__BASE__ZEPHYR)
       // _POSIX_C_SOURCE >= 199309L
       struct timespec time;
       int status = clock_gettime(CLOCK_REALTIME, &time);
@@ -101,7 +102,8 @@ namespace internal {
       return clock_gettime_nsec_np(CLOCK_MONOTONIC);
     }
 #endif
-#if (_COM_AZURE_DEV__BASE__OS != _COM_AZURE_DEV__BASE__FREERTOS)
+#if (_COM_AZURE_DEV__BASE__OS != _COM_AZURE_DEV__BASE__FREERTOS) && \
+    (_COM_AZURE_DEV__BASE__OS != _COM_AZURE_DEV__BASE__ZEPHYR)
     // _POSIX_C_SOURCE >= 199309L
     struct timespec time;
     int status = clock_gettime(CLOCK_MONOTONIC, &time);
@@ -156,7 +158,8 @@ uint64 Timer::getMeasureFrequency() noexcept
   }
   return 0;
 #else // unix
-#if (_COM_AZURE_DEV__BASE__OS != _COM_AZURE_DEV__BASE__FREERTOS)
+#if (_COM_AZURE_DEV__BASE__OS != _COM_AZURE_DEV__BASE__FREERTOS) && \
+    (_COM_AZURE_DEV__BASE__OS != _COM_AZURE_DEV__BASE__ZEPHYR)
   // _POSIX_C_SOURCE >= 199309L
   struct timespec time;
   int status = clock_getres(CLOCK_MONOTONIC, &time);

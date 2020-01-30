@@ -800,6 +800,7 @@ Application::Application(const String& _formalName)
   
 #else // unix
 #  if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__FREERTOS) || \
+      (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__ZEPHYR) || \
       (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__WASI) || \
       (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__EMCC)
 #  elif (defined(_COM_AZURE_DEV__BASE__HAVE_SIGACTION))

@@ -130,6 +130,7 @@
 #define _COM_AZURE_DEV__BASE__EMCC 15 // only Unix
 #define _COM_AZURE_DEV__BASE__IOS 16 // only Unix
 #define _COM_AZURE_DEV__BASE__FREERTOS 17 // only Unix
+#define _COM_AZURE_DEV__BASE__ZEPHYR 18 // only Unix
 
 // Major architecture groups
 #define _COM_AZURE_DEV__BASE__X86 1

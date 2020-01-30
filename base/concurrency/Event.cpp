@@ -120,17 +120,17 @@ Event::Event()
   }
 #endif // TAG: cygwin temporary bug fix
 
-  if (pthread_mutex_init(&handle->mutex, &attributes)) {
+  if (pthread_mutex_init(&_handle->mutex, &attributes)) {
     pthread_mutexattr_destroy(&attributes); // should never fail
     _throw ResourceException(this);
   }
   pthread_mutexattr_destroy(&attributes); // should never fail
 
-  if (pthread_cond_init(&handle->condition, 0)) {
-    pthread_mutex_destroy(&handle->mutex);
+  if (pthread_cond_init(&_handle->condition, 0)) {
+    pthread_mutex_destroy(&_handle->mutex);
     _throw ResourceException(this);
   }
-  this->handle = handle;
+  this->handle = _handle;
 #else
   this->handle = new EventHandle();
 #endif
@@ -144,7 +144,7 @@ OperatingSystem::Handle Event::getHandle() const noexcept
   }
   return nullptr;
 #else
-  return nullptr;
+  return 0;
 #endif
 }
 

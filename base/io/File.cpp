@@ -146,6 +146,8 @@ File::File() noexcept
 File::File(const String& path, Access access, unsigned int options)
   : fd(File::FileHandle::invalid)
 {
+  Profiler::ResourceCreateTask profile("File::File()");
+
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   DWORD creationFlags = 0;
   switch (options & (CREATE | TRUNCATE)) {

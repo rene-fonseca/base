@@ -113,6 +113,8 @@ List<String> SerialPort::getPorts() noexcept
 SerialPort::SerialPort(const String& _name)
   : name(_name)
 {
+  Profiler::ResourceCreateTask profile("SerialPort::SerialPort()");
+
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   HANDLE handle = ::CreateFileW(ToWCharString(name),
                                GENERIC_READ | GENERIC_WRITE,

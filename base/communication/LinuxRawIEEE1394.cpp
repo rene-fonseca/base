@@ -159,7 +159,10 @@ _COM_AZURE_DEV__BASE__PACKED__END
   
 }; // end of LinuxRawIEEE1394Impl namespace
 
-LinuxRawIEEE1394::LinuxRawIEEE1394() {
+LinuxRawIEEE1394::LinuxRawIEEE1394()
+{
+  Profiler::ResourceCreateTask profile("LinuxRawIEEE1394::LinuxRawIEEE1394()");
+
   handle = ::open(
     FileSystem::toAbsolutePath(
       FileSystem::getFolder(FileSystem::DEVICES),
@@ -277,12 +280,14 @@ Array<EUI64> LinuxRawIEEE1394::getAdapters() {
   }
 }
 
-void LinuxRawIEEE1394::open() {
+void LinuxRawIEEE1394::open()
+{
   unsigned char primaryAdapter[8] = {0xff, 0xff, 0xff, 0x00, 0x00, 0x00, 0x00, 0x01};
   open(EUI64(primaryAdapter));
 }
 
-void LinuxRawIEEE1394::open(const EUI64& adapter) {
+void LinuxRawIEEE1394::open(const EUI64& adapter)
+{
   const unsigned char* id = adapter.getBytes();
   bassert(
     (id[0] == 0xff) && (id[1] == 0xff) && (id[2] == 0xff) && (id[3] == 0x00),

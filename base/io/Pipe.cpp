@@ -69,6 +69,8 @@ _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 Pair<Pipe, Pipe> Pipe::make()
 {
+  Profiler::ResourceCreateTask profile("Pipe::make()");
+
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   // create two named pipes with unique names (one for input and one for output - may be the same handle)
   HANDLE ihandle = ::CreateFile(
@@ -134,10 +136,13 @@ Pipe::PipeHandle::~PipeHandle()
 
 
 
-Pipe::Pipe() noexcept : fd(PipeHandle::invalid), end(false) {
+Pipe::Pipe() noexcept
+  : fd(PipeHandle::invalid), end(false)
+{
 }
 
-void Pipe::close() {
+void Pipe::close()
+{
   fd = PipeHandle::invalid;
   end = true;
 }

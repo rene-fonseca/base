@@ -12,6 +12,7 @@
  ***************************************************************************/
 
 #include <base/ui/PopUpWindow.h>
+#include <base/Profiler.h>
 #include <base/build.h>
 
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
@@ -48,7 +49,10 @@ void PopUpWindow::destroy() noexcept
 }
 
 PopUpWindow::PopUpWindow(unsigned int flags)
-  : GraphicsContext() {
+  : GraphicsContext()
+{
+  Profiler::ResourceCreateTask profile("PopUpWindow::PopUpWindow()");
+
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   drawableHandle = ::CreateWindowEx(
     WS_EX_APPWINDOW | WS_EX_WINDOWEDGE, // extended style
@@ -118,7 +122,10 @@ PopUpWindow::PopUpWindow(unsigned int flags)
 }
 
 PopUpWindow::PopUpWindow(const Position& position, const Dimension& dimension, unsigned int flags)
-  : GraphicsContext(position, dimension, flags) {
+  : GraphicsContext(position, dimension, flags)
+{
+  Profiler::ResourceCreateTask profile("PopUpWindow::PopUpWindow()");
+
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   RECT rect;
   rect.left = position.getX();

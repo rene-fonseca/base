@@ -16,7 +16,8 @@
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
-void FileReader::requestRegion(const FileRegion& region) {
+void FileReader::requestRegion(const FileRegion& region)
+{
   mapping.remap(fixRegion(region));
   begin = mapping.getBytes();
   end = begin + mapping.getRegion().getSize();
@@ -28,14 +29,16 @@ FileReader::FileReader(
   : fileSize(file.getSize()),
     granularity(MappedFile::getGranularity()),
     preferredWindowSize(windowSize),
-    mapping(file, fixRegion(FileRegion(position, 0))) {
+    mapping(file, fixRegion(FileRegion(position, 0)))
+{
   
   begin = mapping.getBytes();
   end = begin + mapping.getRegion().getSize();
   current = begin + (position - mapping.getRegion().getOffset());
 }
 
-void FileReader::read(uint8* buffer, unsigned int size) {
+void FileReader::read(uint8* buffer, unsigned int size)
+{
   peek(size);
   copy(buffer, current, size);
   skip(size);
@@ -57,7 +60,8 @@ void FileReader::read(uint8* buffer, unsigned int size) {
 //  highMask = ~static_cast<unsigned long long>(lowMask);
 //}
 //
-//ReadIterator FileReader::ensure(FileRegion& region) {
+//ReadIterator FileReader::ensure(FileRegion& region)
+//{
 //  const long long offset = region.getOffset() & highMask;
 //  const unsigned int index = region.getOffset() & lowMask;
 //  const long long totalSize = file.getSize();

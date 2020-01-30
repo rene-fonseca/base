@@ -12,6 +12,7 @@
  ***************************************************************************/
 
 #include <base/ui/Widget.h>
+#include <base/Profiler.h>
 #include <base/build.h>
 
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
@@ -52,6 +53,8 @@ void Widget::destroy() noexcept
 
 Widget::Widget(Window& owner)
 {
+  Profiler::ResourceCreateTask profile("Widget::Widget()");
+
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   drawableHandle = ::CreateWindowEx(
     0, // extended style

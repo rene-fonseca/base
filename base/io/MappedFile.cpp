@@ -16,6 +16,7 @@
 #include <base/io/FileException.h>
 #include <base/Base.h>
 #include <base/Functor.h>
+#include <base/Profiler.h>
 #include <base/build.h>
 
 #if defined(_COM_AZURE_DEV__BASE__LARGE_FILE_SYSTEM)
@@ -83,7 +84,8 @@ MappedFile::MappedFileImpl::MappedFileImpl(const File& _file, const FileRegion& 
   bytes = address;
 }
 
-void MappedFile::MappedFileImpl::synchronize() {
+void MappedFile::MappedFileImpl::synchronize()
+{
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   if (!::FlushViewOfFile(bytes, 0)) {
     _throw FileException("Unable to flush.", this);
@@ -105,7 +107,8 @@ void MappedFile::MappedFileImpl::synchronize() {
 #endif // flavor
 }
 
-MappedFile::MappedFileImpl::~MappedFileImpl() {
+MappedFile::MappedFileImpl::~MappedFileImpl()
+{
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   if (!::UnmapViewOfFile(bytes)) {
     _throw FileException("Unable to unmap file.", this);
@@ -147,6 +150,8 @@ unsigned int MappedFile::getGranularity() noexcept
 MappedFile::MappedFile(const File& file, const FileRegion& region, bool writeable)
   : map(0)
 {
+  Profiler::ResourceCreateTask profile("MappedFile::MappedFile()");
+
   map = new MappedFileImpl(file, region, writeable);
 //  bassert(r.getOffset() >= 0, FileException("Unable to map file.", this));
 //#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)

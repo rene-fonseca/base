@@ -12,6 +12,7 @@
  ***************************************************************************/
 
 #include <base/ui/Window.h>
+#include <base/Profiler.h>
 #include <base/build.h>
 
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
@@ -48,7 +49,10 @@ void Window::destroy() noexcept
 }
 
 Window::Window(unsigned int flags)
-  : GraphicsContext() {
+  : GraphicsContext()
+{
+  Profiler::ResourceCreateTask profile("Window::Window()");
+
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   drawableHandle = ::CreateWindowEx(
     WS_EX_APPWINDOW | WS_EX_WINDOWEDGE, // extended style
@@ -131,7 +135,10 @@ Window::Window(
   const Position& position,
   const Dimension& dimension,
   unsigned int flags)
-  : GraphicsContext(position, dimension, flags) {
+  : GraphicsContext(position, dimension, flags)
+{
+  Profiler::ResourceCreateTask profile("Window::Window()");
+
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   RECT rect;
   rect.left = position.getX();

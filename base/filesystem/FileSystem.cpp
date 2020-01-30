@@ -1858,8 +1858,8 @@ String FileSystem::getFolder(Folder folder) noexcept
 #endif // flavor
 }
 
-FileSystem::Quota FileSystem::getQuota(
-  const String& path, Trustee trustee) {
+FileSystem::Quota FileSystem::getQuota(const String& path, Trustee trustee)
+{
   Quota result;
 #if ((_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__GNULINUX) || \
      (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__IRIX65))

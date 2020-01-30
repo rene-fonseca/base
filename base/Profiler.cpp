@@ -20,6 +20,7 @@
 #include <base/Application.h>
 #include <base/SystemInformation.h>
 #include <base/objectmodel/ObjectModel.h>
+#include <base/ResourceHandle.h>
 #include <base/UnitTest.h>
 
 #if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__MACOS)
@@ -457,6 +458,22 @@ void Profiler::Task::setTaskWaitId(const char* id) noexcept
   }
 }
 
+void Profiler::Task::setTaskWaitHandle(const ResourceHandle& handle) noexcept
+{
+  if (taskId == BAD) {
+    return;
+  }
+  if (!enabled) {
+    return;
+  }
+  auto tlc = Thread::getLocalContext();
+  Event& e = tlc->profiling.events.getElements()[taskId];
+  if (e.cat == CAT_WAIT) {
+    // we must copy to avoid resource not lingering
+    e.data = new ReferenceResource(handle.getResourceId()/*, handle.getCreatedById()*/);
+  }
+}
+
 void Profiler::Task::setTaskBytesRead(const uint8* buffer, unsigned int bytesRead) noexcept
 {
   if (taskId == BAD) {
@@ -785,6 +802,7 @@ void Profiler::ProfilerImpl::close()
   auto BYTES_READ = o.createString("read");
   auto BYTES_WRITTEN = o.createString("written");
   auto BUFFER = o.createString("buffer");
+  auto RESOURCE = o.createString("resource");
 
   auto PH_B = o.createString("B");
   auto PH_E = o.createString("E");
@@ -920,7 +938,13 @@ void Profiler::ProfilerImpl::close()
           // item->setValue(TTS, o.createInteger(e.tts));
 
           if (e.cat == CAT_WAIT) {
-            if (auto r = e.data.cast<ReferenceString>()) {
+            if (auto r = e.data.cast<ReferenceResource>()) {
+              auto args = o.createObject();
+              item->setValue(ARGS, args);
+              if (r->resourceId) {
+                args->setValue(RESOURCE, o.createInteger(r->resourceId)); // Trace: would be nice if we could link IDs in visualization to jump automatically between related objects and highlight all instances
+              }
+            } else if (auto r = e.data.cast<ReferenceString>()) {
               auto args = o.createObject();
               item->setValue(ARGS, args);
               if (r->string) {

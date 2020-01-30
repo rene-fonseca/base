@@ -33,6 +33,8 @@
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
+class ResourceHandle;
+
 /**
   Profiler.
  
@@ -398,7 +400,7 @@ public:
     }
   };
 
-  /** A reference counted value. */
+  /** Reference counted IO context. */
   class _COM_AZURE_DEV__BASE__API ReferenceIO : public ReferenceCountedObject {
   public:
 
@@ -419,8 +421,32 @@ public:
     {
     }
   };
-  
-  /** A reference counted string. */
+
+  /** Reference counted resource context. */
+  class _COM_AZURE_DEV__BASE__API ReferenceResource : public ReferenceCountedObject {
+  public:
+
+    unsigned int resourceId = 0;
+    // unsigned int createdById = 0;
+
+    inline ReferenceResource() noexcept
+    {
+    }
+
+    inline ReferenceResource(unsigned int _resourceId) noexcept
+      : resourceId(_resourceId)
+    {
+    }
+
+    /*
+    inline ReferenceResource(unsigned int _resourceId, unsigned int _createdById) noexcept
+      : resourceId(_resourceId), createdById(_createdById)
+    {
+    }
+    */
+  };
+
+  /** Reference counted performance counters. */
   class _COM_AZURE_DEV__BASE__API ReferenceCounters : public ReferenceCountedObject {
   public:
     
@@ -478,6 +504,9 @@ public:
 
     /** Sets the name of the object. */
     void setTaskWaitId(const char* id) noexcept;
+    
+    /** Sets the resource handle for the object. */
+    void setTaskWaitHandle(const ResourceHandle& handle) noexcept;    
 
     /** Sets bytes read for task. */
     void setTaskBytesRead(const uint8* buffer, unsigned int bytesRead) noexcept;
@@ -513,6 +542,15 @@ public:
     {
       if (id) {
         setTaskWaitId(id);
+      }
+    }
+
+    /** Wait task start. */
+    inline WaitTask(const char* name, const ResourceHandle* handle) noexcept
+      : Task(name, CAT_WAIT)
+    {
+      if (handle) {
+        setTaskWaitHandle(*handle);
       }
     }
   };

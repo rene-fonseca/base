@@ -226,9 +226,8 @@ void Event::signal()
 
 void Event::wait() const
 {
-  Profiler::WaitTask profile("Event::wait()");
-  
   EventHandle* handle = toEventHandle(this->handle);
+  Profiler::WaitTask profile("Event::wait()", handle);
   if (!handle) {
     _throw NullPointer(this);
   }
@@ -263,9 +262,8 @@ void Event::wait() const
 
 bool Event::wait(unsigned int microseconds) const
 {
-  Profiler::WaitTask profile("Event::wait()");
-
   EventHandle* handle = toEventHandle(this->handle);
+  Profiler::WaitTask profile("Event::wait()", handle);
   if (!handle) {
     _throw NullPointer(this);
   }

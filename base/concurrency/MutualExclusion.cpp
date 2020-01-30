@@ -88,7 +88,7 @@ MutualExclusion::MutualExclusion()
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   ::InitializeCriticalSection(&_handle->handle);
   // TAG: could raise STATUS_INVALID_HANDLE
-  ::EnterCriticalSection(&_handle->handle; // force allocation of event (non-paged memory)
+  ::EnterCriticalSection(&_handle->handle); // force allocation of event (non-paged memory)
   ::LeaveCriticalSection(&_handle->handle);
 #elif defined(_COM_AZURE_DEV__BASE__PTHREAD)
   pthread_mutexattr_t attributes;

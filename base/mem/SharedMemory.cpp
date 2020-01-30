@@ -343,12 +343,12 @@ SharedMemory& SharedMemory::operator=(const SharedMemory& assign) noexcept
 void SharedMemory::lock()
 {
   Profiler::WaitTask profile("SharedMemory::lock()");
-
   sharedMemory->lock();
 }
 
 void SharedMemory::unlock()
 {
+  Profiler::pushSignal("SharedMemory::unlock()");
   sharedMemory->unlock();
 }
 

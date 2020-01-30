@@ -16,6 +16,7 @@
 #include <base/ResourceException.h>
 #include <base/concurrency/Lock.h>
 #include <base/concurrency/MutualExclusionException.h>
+#include <base/Resource.h>
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
@@ -28,14 +29,10 @@ _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
   @short Mutual exclusion synchronization object
   @ingroup concurrency
   @see Lock
-  @version 1.1
+  @version 1.2
 */
 
-class _COM_AZURE_DEV__BASE__API MutualExclusion : public Lock {
-protected:
-
-  /** Internal representation of mutex. */
-  void* mutex = nullptr;
+class _COM_AZURE_DEV__BASE__API MutualExclusion : public Resource, public Lock {
 public:
   
   typedef ExclusiveSynchronize<MutualExclusion> Sync;

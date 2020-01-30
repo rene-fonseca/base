@@ -19,42 +19,11 @@
 #include <base/ResourceException.h>
 #include <base/OperatingSystem.h>
 #include <base/concurrency/EventException.h>
-#include <base/mem/Reference.h>
+#include <base/Resource.h>
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 class String;
-
-// TAG: move to proper place
-
-/**
-  Base class for resource handles.
-*/
-class _COM_AZURE_DEV__BASE__API Resource : public virtual Object {
-protected:
-
-  /** Internal handle for resource. */
-  AnyReference handle;
-public:
-
-  /** Returns the description of the resource. */
-  const String& getDescription() const;
-
-  /** Sets the description of the resource. */
-  void setDescription(const String& description);
-
-  /** Returns the unique resource ID. */
-  unsigned int getResourceId() const;
-
-  /** Returns the thread that created the resource. */
-  unsigned int getCreatedById() const;
-
-  /** Returns true if handle is set. */
-  inline operator bool() const noexcept
-  {
-    return handle;
-  }
-};
 
 /**
   This class provides support for threads to wait for signals.

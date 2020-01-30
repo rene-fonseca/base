@@ -137,12 +137,13 @@ Amazon Linux 2     | x86_64   | GCC     | Ok         | Runs daily on pipeline - 
 GCC 9              | x86_64   | GCC     | Ok         | Runs daily on pipeline
 Emscripten         | WASM32   | LLVM    | Ok         | Runs daily on pipeline but no testing
 FreeBSD 12.1       | x86_64   | GCC     | Ok         | Runs daily on pipeline but no testing
-RedHat 8.1         | x86_64   | GCC     | Ok         | 7 Dec 2019
-FreeBSD 12.1       | x86_64   | Clang   | Ok         | 7 Dec 2019
-OpenBSD 66         | x86_64   | GCC     | Ok         | 9 Dec 2019
-Raspbian 10        | ARM32    | GCC     | Ok         | 9 Dec 2019
-FreeRTOS           | N/A      | GCC     | Compiles   | 28 Jan 2020
-OpenSolaris 11     | x86_64   | GCC     | Ok         | 6 Dec 2019
+RedHat 8.1         | x86_64   | GCC     | Ok         | Tested on 7 Dec 2019
+FreeBSD 12.1       | x86_64   | Clang   | Ok         | Tested on 7 Dec 2019
+OpenBSD 66         | x86_64   | GCC     | Ok         | Tested on 9 Dec 2019
+Raspbian 10        | ARM32    | GCC     | Ok         | Tested on 9 Dec 2019
+FreeRTOS           | N/A      | GCC     | Compiles   | Tested on 28 Jan 2020 - linking not done yet
+Zephyr             | N/A      | GCC     | Compiles   | Tested on 30 Jan 2020 - linking not done yet
+OpenSolaris 11     | x86_64   | GCC     | Ok         | Tested on 6 Dec 2019
 OpenSolaris 11     | x86_64   | LLVM    | Pending    |
 OpenSolaris 11     | x86_64   | Studio  | Pending    |
 OpenSolaris 11     | SPARC64  |         | Pending    |

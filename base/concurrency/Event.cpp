@@ -19,7 +19,7 @@
 #endif
 
 #include <base/concurrency/Event.h>
-#include <base/Profiler.h>
+#include <base/ResourceHandle.h>
 #include <base/UnitTest.h>
 
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
@@ -41,114 +41,157 @@
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
-#if 0
-// TAG: use AnyReference - cast to actual handle use static cast
+class EventHandle : public ResourceHandle {
+public:
+
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
+  HANDLE handle = 0;
+#elif defined(_COM_AZURE_DEV__BASE__PTHREAD)
+  pthread_cond_t condition;
+  pthread_mutex_t mutex;
+  bool signaled = false;
+
+  inline EventHandle() noexcept
+  {
+    clear(condition);
+    clear(mutex);
+  }
+#else
+  bool signaled = false;
+#endif
+
+  ~EventHandle()
+  {
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
+    if (::CloseHandle(handle) == 0) {
+      Runtime::corruption(_COM_AZURE_DEV__BASE__PRETTY_FUNCTION);
+    }
+    handle = 0;
+#elif defined(_COM_AZURE_DEV__BASE__PTHREAD)
+    if (pthread_cond_destroy(&condition)) {
+      pthread_mutex_destroy(&mutex); // lets just hope that this doesn't fail
+      Runtime::corruption(_COM_AZURE_DEV__BASE__PRETTY_FUNCTION);
+    }
+    pthread_mutex_destroy(&mutex); // lets just hope that this doesn't fail
+#else
+    signaled = false;
+#endif
+  }
+};
+
 namespace {
 
-  class Handle : public ReferenceCountedObject {
-  public:
-  };
-
-  template<typename TYPE>
-  inline TYPE* toHandle(const AnyReference& handle) noexcept
+  inline EventHandle* toEventHandle(const AnyReference& handle)
   {
-    return static_cast<TYPE*>(handle.getValue());
+    if (handle) { // TAG: we do not want a dynamic cast - use static cast
+      return handle.cast<EventHandle>().getValue();
+    }
+    return nullptr;
   }
 }
-#endif
-
-class EventImpl {
-public:
-  
-#if defined(_COM_AZURE_DEV__BASE__PTHREAD)
-  struct Context {
-    bool signaled;
-    pthread_cond_t condition;
-    pthread_mutex_t mutex;
-  };
-#endif
-};
 
 Event::Event()
 {
+  // TAG: Profiler::ResourceCreateTask profile("Event::Event()");
+
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
-  if ((context = Cast::pointer<void*>(::CreateEvent(0, TRUE, FALSE, 0))) == 0) {
+  HANDLE context = ::CreateEvent(0, TRUE, FALSE, 0);
+  if (!context) {
     _throw ResourceException("Unable to initialize event.", this);
   }
+  Reference<EventHandle> _handle = new EventHandle();
+  _handle->handle = context;
+  this->handle = _handle;
 #elif defined(_COM_AZURE_DEV__BASE__PTHREAD)
-  EventImpl::Context* context = new EventImpl::Context;
-  context->signaled = false;
-
   pthread_mutexattr_t attributes;
   if (pthread_mutexattr_init(&attributes)) {
-    delete context;
     _throw ResourceException(this);
   }
+
+  Reference<EventHandle> _handle = new EventHandle();
+
 #if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__CYGWIN)
 #  warning disabled selection of mutex type due to CYGWIN bug
 #elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__ZEPHYR)
 #else
   if (pthread_mutexattr_settype(&attributes, PTHREAD_MUTEX_ERRORCHECK)) {
     pthread_mutexattr_destroy(&attributes); // should never fail
-    delete context;
     _throw ResourceException(this);
   }
 #endif // TAG: cygwin temporary bug fix
-  if (pthread_mutex_init(&Cast::pointer<EventImpl::Context*>(context)->mutex, &attributes)) {
+
+  if (pthread_mutex_init(&handle->mutex, &attributes)) {
     pthread_mutexattr_destroy(&attributes); // should never fail
-    delete context;
     _throw ResourceException(this);
   }
   pthread_mutexattr_destroy(&attributes); // should never fail
 
-  if (pthread_cond_init(&Cast::pointer<EventImpl::Context*>(context)->condition, 0)) {
-    pthread_mutex_destroy(&Cast::pointer<EventImpl::Context*>(context)->mutex);
-    delete context;
+  if (pthread_cond_init(&handle->condition, 0)) {
+    pthread_mutex_destroy(&handle->mutex);
     _throw ResourceException(this);
   }
-  this->context = context;
+  this->handle = handle;
 #else
-  context = new int(0);
+  this->handle = new EventHandle();
+#endif
+}
+
+OperatingSystem::Handle Event::getHandle() const noexcept
+{
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
+  if (EventHandle* handle = toEventHandle(this->handle)) {
+    return handle->handle;
+  }
+  return nullptr;
+#else
+  return nullptr;
 #endif
 }
 
 bool Event::isSignaled() const
 {
+  EventHandle* handle = toEventHandle(this->handle);
+  if (!handle) {
+    _throw NullPointer(this);
+  }
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
-  return ::WaitForSingleObject(context, 0) == WAIT_OBJECT_0; // should never fail
+  return ::WaitForSingleObject(handle->handle, 0) == WAIT_OBJECT_0; // should never fail
 #elif defined(_COM_AZURE_DEV__BASE__PTHREAD)
   bool result = false;
-  if (pthread_mutex_lock(&Cast::pointer<EventImpl::Context*>(context)->mutex)) {
+  if (pthread_mutex_lock(&handle->mutex)) {
     _throw EventException(this);
   }
-  result = Cast::pointer<EventImpl::Context*>(context)->signaled;
-  if (pthread_mutex_unlock(&Cast::pointer<EventImpl::Context*>(context)->mutex)) {
+  result = handle->signaled;
+  if (pthread_mutex_unlock(&handle->mutex)) {
     _throw EventException(this);
   }
   return result;
 #else
-  int* handle = reinterpret_cast<int*>(context);
-  return *handle != 0;
+  return handle->signaled;
 #endif
 }
 
 void Event::reset()
 {
+  EventHandle* handle = toEventHandle(this->handle);
+  if (!handle) {
+    _throw NullPointer(this);
+  }
+
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
-  if (!::ResetEvent(context)) {
+  if (!::ResetEvent(handle->handle)) {
     _throw EventException("Unable to reset event.", this);
   }
 #elif defined(_COM_AZURE_DEV__BASE__PTHREAD)
-  if (pthread_mutex_lock(&Cast::pointer<EventImpl::Context*>(context)->mutex)) {
+  if (pthread_mutex_lock(&handle->mutex)) {
     _throw EventException("Unable to reset event.", this);
   }
-  Cast::pointer<EventImpl::Context*>(context)->signaled = false;
-  if (pthread_mutex_unlock(&Cast::pointer<EventImpl::Context*>(context)->mutex)) {
+  handle->signaled = false;
+  if (pthread_mutex_unlock(&handle->mutex)) {
     _throw EventException("Unable to reset event.", this);
   }
 #else
-  int* handle = reinterpret_cast<int*>(context);
-  *handle = 0;
+  handle->signaled = false;
 #endif
 }
 
@@ -156,24 +199,28 @@ void Event::signal()
 {
   Profiler::pushSignal("Event::wait()");
 
+  EventHandle* handle = toEventHandle(this->handle);
+  if (!handle) {
+    _throw NullPointer(this);
+  }
+
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
-  if (!::SetEvent(context)) {
+  if (!::SetEvent(handle->handle)) {
     _throw EventException("Unable to signal event.", this);
   }
 #elif defined(_COM_AZURE_DEV__BASE__PTHREAD)
-  if (pthread_mutex_lock(&Cast::pointer<EventImpl::Context*>(context)->mutex)) {
+  if (pthread_mutex_lock(&handle->mutex)) {
     _throw EventException("Unable to signal event.", this);
   }
-  Cast::pointer<EventImpl::Context*>(context)->signaled = true;
-  if (pthread_mutex_unlock(&Cast::pointer<EventImpl::Context*>(context)->mutex)) {
+  handle->signaled = true;
+  if (pthread_mutex_unlock(&handle->mutex)) {
     _throw EventException("Unable to signal event.", this);
   }
-  if (pthread_cond_broadcast(&Cast::pointer<EventImpl::Context*>(context)->condition)) { // unblock all blocked threads
+  if (pthread_cond_broadcast(&handle->condition)) { // unblock all blocked threads
     _throw EventException("Unable to signal event.", this);
   }
 #else
-  int* handle = reinterpret_cast<int*>(context);
-  *handle = 1;
+  handle->signaled = true;
 #endif
 }
 
@@ -181,28 +228,34 @@ void Event::wait() const
 {
   Profiler::WaitTask profile("Event::wait()");
   
+  EventHandle* handle = toEventHandle(this->handle);
+  if (!handle) {
+    _throw NullPointer(this);
+  }
+
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
-  if (::WaitForSingleObject(context, INFINITE) != WAIT_OBJECT_0) {
+  if (::WaitForSingleObject(handle->handle, INFINITE) != WAIT_OBJECT_0) {
     _throw EventException("Unable to wait for event.", this);
   }
 #elif defined(_COM_AZURE_DEV__BASE__PTHREAD)
-  if (pthread_mutex_lock(&Cast::pointer<EventImpl::Context*>(context)->mutex)) {
+  if (pthread_mutex_lock(&handle->mutex)) {
     _throw EventException("Unable to wait for event.", this);
   }
 
-  while (!Cast::pointer<EventImpl::Context*>(context)->signaled) { // wait for signal
-    pthread_cond_wait(
-      &Cast::pointer<EventImpl::Context*>(context)->condition,
-      &Cast::pointer<EventImpl::Context*>(context)->mutex
-    );
+  while (!handle->signaled) { // wait for signal
+    int status = pthread_cond_wait(&handle->condition, &handle->mutex);
+    // EINTR not expected
+    if (status != 0) {
+      pthread_mutex_unlock(&handle->mutex);
+      _throw EventException("Unable to wait for event.", this);
+    }
   }
 
-  if (pthread_mutex_unlock(&Cast::pointer<EventImpl::Context*>(context)->mutex)) {
+  if (pthread_mutex_unlock(&handle->mutex)) {
     _throw EventException("Unable to wait for event.", this);
   }
 #else
-  int* handle = reinterpret_cast<int*>(context);
-  while (!*handle) {
+  while (!handle->signaled) {
     Thread::microsleep(1000);
   }
 #endif
@@ -211,12 +264,17 @@ void Event::wait() const
 bool Event::wait(unsigned int microseconds) const
 {
   Profiler::WaitTask profile("Event::wait()");
-  
+
+  EventHandle* handle = toEventHandle(this->handle);
+  if (!handle) {
+    _throw NullPointer(this);
+  }
+
   if (microseconds > 1000000000) {
     _throw OutOfDomain(this);
   }
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
-  switch (::WaitForSingleObject(context, microseconds/1000)) {
+  switch (::WaitForSingleObject(handle->handle, microseconds/1000)) {
   case WAIT_OBJECT_0:
     return true;
   case WAIT_TIMEOUT:
@@ -227,7 +285,7 @@ bool Event::wait(unsigned int microseconds) const
 #elif defined(_COM_AZURE_DEV__BASE__PTHREAD)
   int result = true; // no assignment gives warning
 
-  if (pthread_mutex_lock(&Cast::pointer<EventImpl::Context*>(context)->mutex)) {
+  if (pthread_mutex_lock(&handle->mutex)) {
     _throw EventException("Unable to wait for event.", this);
   }
 
@@ -238,51 +296,33 @@ bool Event::wait(unsigned int microseconds) const
   absoluteTime.tv_sec = now.tv_sec + nanoseconds/1000000000;
   absoluteTime.tv_nsec = nanoseconds % 1000000000;
 
-  while (!Cast::pointer<EventImpl::Context*>(context)->signaled) { // wait for signal
+  while (!handle->signaled) { // wait for signal
     // concurrent envocations of signal() does not matter
     // TAG: fails for sparc64 - setup_rt_frame: not implemented
     if (pthread_cond_timedwait(
-          &Cast::pointer<EventImpl::Context*>(context)->condition,
-          &Cast::pointer<EventImpl::Context*>(context)->mutex, &absoluteTime
+          &handle->condition,
+          &handle->mutex, &absoluteTime
         ) == ETIMEDOUT) {
       result = false;
       break; // timed out
     }
   }
 
-  if (pthread_mutex_unlock(&Cast::pointer<EventImpl::Context*>(context)->mutex)) {
+  if (pthread_mutex_unlock(&handle->mutex)) {
     _throw EventException("Unable to wait for event.", this);
   }
 
   return result;
 #else
-  int* handle = reinterpret_cast<int*>(context);
-  if (!*handle) {
+  if (!handle->signaled) {
     Thread::microsleep(microseconds);
   }
-  return *handle != 0;
+  return handle->signaled;
 #endif
 }
 
 Event::~Event()
 {
-#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
-  if (::CloseHandle(context) == 0) {
-    Runtime::corruption(_COM_AZURE_DEV__BASE__PRETTY_FUNCTION);
-  }
-#elif defined(_COM_AZURE_DEV__BASE__PTHREAD)
-  EventImpl::Context* p = Cast::pointer<EventImpl::Context*>(context);
-  if (pthread_cond_destroy(&p->condition)) {
-    pthread_mutex_destroy(&p->mutex); // lets just hope that this doesn't fail
-    delete p;
-    Runtime::corruption(_COM_AZURE_DEV__BASE__PRETTY_FUNCTION);
-  }
-  pthread_mutex_destroy(&p->mutex); // lets just hope that this doesn't fail
-  delete p;
-#else
-  int* handle = reinterpret_cast<int*>(context);
-  delete handle;
-#endif
 }
 
 #if defined(_COM_AZURE_DEV__BASE__TESTS)

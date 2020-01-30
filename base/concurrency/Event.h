@@ -19,6 +19,7 @@
 #include <base/ResourceException.h>
 #include <base/OperatingSystem.h>
 #include <base/concurrency/EventException.h>
+#include <base/mem/Reference.h>
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
@@ -33,14 +34,21 @@ _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 class _COM_AZURE_DEV__BASE__API Event : public virtual Object {
 private:
 
-  /** Internal data. */
-  void* context = nullptr;
+  /** Internal handle for event. */
+  AnyReference handle;
 public:
 
   /**
     Initializes the event in the non-signaled state.
   */
   explicit Event();
+
+  /**
+    Initializes the event as invalid.
+  */
+  explicit inline Event(NullPtr) noexcept
+  {
+  }
 
   /**
     Returns true if this event is in the signaled state.
@@ -79,14 +87,9 @@ public:
   */
   bool wait(unsigned int microseconds) const;
 
-#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
-  /** Returns the event handle. */
-  inline OperatingSystem::Handle getHandle() const noexcept
-  {
-    return Cast::pointer<OperatingSystem::Handle>(context);
-  }
-#endif
-
+  /** Returns the event handle. Not supported by all platforms in which case nullptr is returned. */
+  OperatingSystem::Handle getHandle() const noexcept;
+  
   /**
     Destroys the event object.
   */

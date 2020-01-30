@@ -236,6 +236,7 @@ public:
   static Identifier getIdentifier() noexcept;
 private:
 
+  // TAG: refactor to use AnyReference instead
   /** The parent thread of the thread. */
   Thread* parent = nullptr;
   /** The runnable object. */
@@ -248,6 +249,8 @@ private:
   Identifier identifier = nullptr;
   /** Termination synchronization object. */
   Event terminationEvent;
+  /** Simple ID assigned  to thread. */
+  unsigned int simpleId = 0;
 
   /** The thread object associated with context. */
   static ThreadKey<ThreadLocalContext> threadLocalContext;
@@ -487,9 +490,14 @@ public:
     Returns the current processing times (both user and system times).
   */
   static Times getTimes() noexcept;
+  
+  /**
+    Returns the simple ID assigned to the thread.
+  */
+  static unsigned int getThreadSimpleId() noexcept;
 
   /** Returns the thread name is available. */
-  static String getThreadName();
+  static String getThreadName() noexcept;
 
   /** Sets thread name. */
   static void setThreadName(const char* name);

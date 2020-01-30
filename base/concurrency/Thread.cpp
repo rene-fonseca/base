@@ -81,9 +81,13 @@ Thread::ThreadLocal::ThreadLocal(Thread* _thread)
   }
   auto tlc = new ThreadLocalContext();
   tlc->thread = _thread;
-  static PreferredAtomicCounter id;
+  static PreferredAtomicCounter id; // TAG: check disassembly here
   tlc->simpleId = static_cast<unsigned int>(++id);
   threadLocalContext.setKey(tlc);
+
+  if (_thread) {
+    _thread->simpleId = tlc->simpleId;
+  }
 }
 
 Thread::ThreadLocal::~ThreadLocal()
@@ -151,7 +155,15 @@ namespace {
 }
 #endif
 
-String Thread::getThreadName()
+unsigned int Thread::getThreadSimpleId() noexcept
+{
+  if (auto tlc = getLocalContext()) {
+    return tlc->simpleId;
+  }
+  return String();
+}
+
+String Thread::getThreadName() noexcept
 {
   if (auto tlc = getLocalContext()) {
     return tlc->name;
@@ -879,6 +891,7 @@ Thread::Times Thread::getTimes() noexcept
 
 bool Thread::join() const
 {
+  // TAG: we need to get the thread name
   Profiler::WaitTask profile("Thread::join()");
 
   if (state == NOTSTARTED) {

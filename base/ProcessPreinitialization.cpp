@@ -12,6 +12,12 @@
  ***************************************************************************/
 
 #include <base/platforms/features.h>
+
+#if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__ZEPHYR) // not desired here
+#  undef _POSIX_C_SOURCE
+#  define _POSIX_C_SOURCE 200809L
+#endif
+
 #include <base/ProcessPreinitialization.h>
 #include <base/Application.h>
 #include <base/OperatingSystem.h>
@@ -26,6 +32,9 @@
 #else
 #  define __thread // TAG: temp. fix for s390-ibm-linux-gnu
 #  include <time.h> // time_t
+#if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__ZEPHYR) // not desired here
+#  define _POSIX_THREADS 1
+#endif
 #if (_COM_AZURE_DEV__BASE__OS != _COM_AZURE_DEV__BASE__WASI)
 #  include <pthread.h> // pthread_t
 #endif

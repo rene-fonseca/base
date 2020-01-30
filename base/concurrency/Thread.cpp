@@ -11,6 +11,13 @@
     For the licensing terms refer to the file 'LICENSE'.
  ***************************************************************************/
 
+#include <base/platforms/features.h>
+
+#if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__ZEPHYR) // not desired here
+#  undef _POSIX_C_SOURCE
+#  define _POSIX_C_SOURCE 200809L
+#endif
+
 #include <base/concurrency/Thread.h>
 #include <base/concurrency/ThreadLocalContext.h>
 #include <base/concurrency/MutualExclusion.h>
@@ -36,6 +43,9 @@
 #  include <windows.h>
 #else // pthread
 #  define __thread // TAG: temp. fix for s390-ibm-linux-gnu
+#if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__ZEPHYR) // not desired here
+#  define _POSIX_THREADS 1
+#endif
 #if (_COM_AZURE_DEV__BASE__OS != _COM_AZURE_DEV__BASE__WASI)
 #  include <pthread.h>
 #  define _COM_AZURE_DEV__BASE__PTHREAD
@@ -913,7 +923,8 @@ void Thread::start()
   pthread_attr_t attributes;
   pthread_attr_init(&attributes);
   pthread_attr_setdetachstate(&attributes, PTHREAD_CREATE_DETACHED);
-#if (_COM_AZURE_DEV__BASE__OS != _COM_AZURE_DEV__BASE__FREERTOS)
+#if (_COM_AZURE_DEV__BASE__OS != _COM_AZURE_DEV__BASE__FREERTOS) && \
+    (_COM_AZURE_DEV__BASE__OS != _COM_AZURE_DEV__BASE__ZEPHYR)
   pthread_attr_setinheritsched(&attributes, PTHREAD_INHERIT_SCHED);
 #endif
   pthread_t id;

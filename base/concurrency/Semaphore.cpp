@@ -12,6 +12,12 @@
  ***************************************************************************/
 
 #include <base/platforms/features.h>
+
+#if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__ZEPHYR) // not desired here
+#  undef _POSIX_C_SOURCE
+#  define _POSIX_C_SOURCE 200809L
+#endif
+
 #include <base/concurrency/Semaphore.h>
 #include <base/Profiler.h>
 #include <base/UnitTest.h>
@@ -65,6 +71,9 @@ namespace ntapi {
 #    include <semaphore.h>
 #    include <limits.h>
 #  elif (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__UNIX)
+#if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__ZEPHYR) // not desired here
+#    define _POSIX_THREADS 1
+#endif
 #  if (_COM_AZURE_DEV__BASE__OS != _COM_AZURE_DEV__BASE__WASI)
 #    include <pthread.h>
 #    define _COM_AZURE_DEV__BASE__PTHREAD
@@ -140,11 +149,13 @@ Semaphore::Semaphore(unsigned int value)
     delete semaphore;
     _throw SemaphoreException(this);
   }
+#if (_COM_AZURE_DEV__BASE__OS != _COM_AZURE_DEV__BASE__ZEPHYR)
   if (pthread_mutexattr_settype(&attributes, PTHREAD_MUTEX_ERRORCHECK)) {
     pthread_mutexattr_destroy(&attributes); // should never fail
     delete semaphore;
     _throw SemaphoreException(this);
   }
+#endif
   if (pthread_mutex_init(&semaphore->mutex, &attributes)) {
     pthread_mutexattr_destroy(&attributes); // should never fail
     delete semaphore;

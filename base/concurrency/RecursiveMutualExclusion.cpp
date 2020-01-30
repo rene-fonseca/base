@@ -11,6 +11,13 @@
     For the licensing terms refer to the file 'LICENSE'.
  ***************************************************************************/
 
+#include <base/platforms/features.h>
+
+#if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__ZEPHYR) // not desired here
+#  undef _POSIX_C_SOURCE
+#  define _POSIX_C_SOURCE 200809L
+#endif
+
 #include <base/concurrency/RecursiveMutualExclusion.h>
 #include <base/concurrency/ExclusiveSynchronize.h>
 #include <base/Profiler.h>
@@ -19,6 +26,9 @@
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
 #  include <windows.h>
 #else // unix
+#if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__ZEPHYR) // not desired here
+#  define _POSIX_THREADS 1
+#endif
 #  define __thread // TAG: temp. fix for s390-ibm-linux-gnu
 #if (_COM_AZURE_DEV__BASE__OS != _COM_AZURE_DEV__BASE__WASI)
 #  include <pthread.h>
@@ -43,10 +53,12 @@ RecursiveMutualExclusion::RecursiveMutualExclusion()
   if (pthread_mutexattr_init(&attributes) != 0) {
     _throw ResourceException(this);
   }
+#if (_COM_AZURE_DEV__BASE__OS != _COM_AZURE_DEV__BASE__ZEPHYR) // TAG: FIXME
   if (pthread_mutexattr_settype(&attributes, PTHREAD_MUTEX_RECURSIVE) != 0) {
     pthread_mutexattr_destroy(&attributes); // should never fail
     _throw ResourceException(this);
   }
+#endif
   auto _mutex = reinterpret_cast<pthread_mutex_t*>(mutex);
   if (pthread_mutex_init(_mutex, &attributes) != 0) {
     pthread_mutexattr_destroy(&attributes); // should never fail

@@ -427,7 +427,7 @@ String Process::getName() const
   DWORD length = ::GetModuleFileNameEx(process, 0, buffer, getArraySize(buffer));
   bassert(length > 0, ProcessException(this));
   ::CloseHandle(process);
-  return String(buffer, length - 1);
+  return String(buffer, length);
 #else // unix
 #if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__MACOS)
   PrimitiveStackArray<char> buffer(PROC_PIDPATHINFO_MAXSIZE);

@@ -84,7 +84,6 @@
     (_COM_AZURE_DEV__BASE__OS != _COM_AZURE_DEV__BASE__ZEPHYR)
 #  include <sys/ioctl.h> // defines FIONREAD
 #endif
-#endif // flavor
 
 #if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__FREERTOS)
 int select(int nfds, fd_set *restrict readfds, fd_set *restrict writefds, fd_set *restrict errorfds,
@@ -95,6 +94,8 @@ int select(int nfds, fd_set *restrict readfds, fd_set *restrict writefds, fd_set
 #else
 #  include <sys/select.h>
 #endif
+
+#endif // flavor
 
 #if (_COM_AZURE_DEV__BASE__FLAVOR != _COM_AZURE_DEV__BASE__WIN32)
 typedef int SOCKET;

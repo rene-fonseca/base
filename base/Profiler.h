@@ -266,10 +266,11 @@ public:
     CAT_IO_READ = 5,
     CAT_IO_WRITE = 6,
     CAT_NETWORK = 7,
-    CAT_WAIT = 8,
-    CAT_EXCEPTION = 9,
-    CAT_SIGNAL = 10,
-    CAT_RENDERER = 11
+    CAT_RESOURCE = 8,
+    CAT_WAIT = 9,
+    CAT_EXCEPTION = 10,
+    CAT_SIGNAL = 11,
+    CAT_RENDERER = 12
   };
   // use macro to encode/decode in char*
 #endif
@@ -277,6 +278,7 @@ public:
   // ATTENTION: cannot be shared across shared library boundaries - use enum instead
   static constexpr const char* CAT_MEMORY = "MEMORY";
   static constexpr const char* CAT_OBJECT = "OBJECT";
+  static constexpr const char* CAT_CREATE_RESOURCE = "RESOURCE";
   static constexpr const char* CAT_IO = "IO";
   static constexpr const char* CAT_IO_FLUSH = "IOFLUSH";
   static constexpr const char* CAT_IO_READ = "IOREAD";
@@ -511,6 +513,16 @@ public:
       if (id) {
         setTaskWaitId(id);
       }
+    }
+  };
+
+  /** Resource create/acquisition task. */
+  class _COM_AZURE_DEV__BASE__API ResourceCreateTask : public Task {
+  public:
+    
+    /** Resource create task start. */
+    inline ResourceCreateTask(const char* name, const char* cat = CAT_CREATE_RESOURCE) : Task(name, cat)
+    {
     }
   };
 

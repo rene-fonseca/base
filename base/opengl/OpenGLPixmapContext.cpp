@@ -13,6 +13,7 @@
 
 #include <base/platforms/features.h>
 #include <base/opengl/OpenGLPixmapContext.h>
+#include <base/Profiler.h>
 #include <base/platforms/backend/WindowImpl.h>
 
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
@@ -23,7 +24,10 @@
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
-nothing OpenGLPixmapContext::initialize(const Dimension& dimension, unsigned int flags) {
+nothing OpenGLPixmapContext::initialize(const Dimension& dimension, unsigned int flags)
+{
+  Profiler::ResourceCreateTask profile("OpenGLPixmapContext::initialize()");
+
   screenHandle = nullptr;
   drawableHandle = nullptr;
   graphicsContextHandle = nullptr;
@@ -299,10 +303,12 @@ nothing OpenGLPixmapContext::initialize(const Dimension& dimension, unsigned int
 
 OpenGLPixmapContext::OpenGLPixmapContext(const Dimension& dimension, unsigned int flags)
   : OpenGLContextImpl(),
-    prefixInitialization(initialize(dimension, flags)) {
+    prefixInitialization(initialize(dimension, flags))
+{
 }
 
-OpenGLPixmapContext::~OpenGLPixmapContext() noexcept {
+OpenGLPixmapContext::~OpenGLPixmapContext() noexcept
+{
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)  
   native::GDI::wglMakeCurrent(0, 0); // deselect current rendering context
   if (renderingContextHandle) {

@@ -13,6 +13,7 @@
 
 #include <base/platforms/features.h>
 #include <base/opengl/OpenGLContext.h>
+#include <base/Profiler.h>
 #include <base/platforms/backend/WindowImpl.h>
 
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
@@ -26,7 +27,8 @@
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
-void OpenGLContext::destroy() noexcept {
+void OpenGLContext::destroy() noexcept
+{
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)  
   native::GDI::wglMakeCurrent(0, 0); // deselect current rendering context
   if (renderingContextHandle) {
@@ -74,7 +76,8 @@ struct MonitorEnumeratorData {
   unsigned int id = 0;
 };
 
-BOOL CALLBACK enumerateMonitor(HMONITOR monitor, HDC hdc, LPRECT rect, LPARAM context) noexcept {
+BOOL CALLBACK enumerateMonitor(HMONITOR monitor, HDC hdc, LPRECT rect, LPARAM context) noexcept
+{
   MonitorEnumeratorData* temp = (MonitorEnumeratorData*)context;
   int numberOfFormats = ::DescribePixelFormat(hdc, 0, 0, 0);
   
@@ -155,7 +158,8 @@ BOOL CALLBACK enumerateMonitor(HMONITOR monitor, HDC hdc, LPRECT rect, LPARAM co
 }
 #endif // flavor
 
-Array<OpenGLContext::Format> OpenGLContext::getFormats(unsigned int flags) {
+Array<OpenGLContext::Format> OpenGLContext::getFormats(unsigned int flags)
+{
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   MonitorEnumeratorData temp;
   temp.flags = flags;
@@ -170,7 +174,10 @@ Array<OpenGLContext::Format> OpenGLContext::getFormats(unsigned int flags) {
 #endif // flavor
 }
 
-nothing OpenGLContext::initialize(const Format& format) {
+nothing OpenGLContext::initialize(const Format& format)
+{
+  Profiler::ResourceCreateTask profile("OpenGLContext::initialize()");
+
   OpenGLContextImpl::loadModule();
   
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
@@ -522,19 +529,22 @@ OpenGLContext::OpenGLContext(
   const Format& format)
   : WindowImpl(position, dimension, 0), // TAG: fix flags
     OpenGLContextImpl(),
-    prefixInitialization(initialize(format)) {
+    prefixInitialization(initialize(format))
+{
   construct();
   invalidate();
 }
 
-void OpenGLContext::onDisplay() noexcept {
+void OpenGLContext::onDisplay() noexcept
+{
   openGL.glClearColor(0.0, 0.0, 0.0, 1.0);
   openGL.glClear(OpenGL::COLOR_BUFFER_BIT);
   openGL.glFlush();
   swap();
 }
 
-void OpenGLContext::onResize(const Dimension& dimension) noexcept {
+void OpenGLContext::onResize(const Dimension& dimension) noexcept
+{
   openGL.glViewport(0, 0, dimension.getWidth(), dimension.getHeight());
   onDisplay();
 }

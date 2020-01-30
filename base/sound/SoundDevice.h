@@ -69,14 +69,16 @@ public:
   /**
     Returns true if the device is readable.
   */
-  inline bool isReadable() const noexcept {
+  inline bool isReadable() const noexcept
+  {
     return (access & READ) != 0;
   }
 
   /**
     Returns true if the device is writeable.
   */
-  inline bool isWriteable() const noexcept {
+  inline bool isWriteable() const noexcept
+  {
     return (access & WRITE) != 0;
   }
 
@@ -104,7 +106,8 @@ public:
     Returns the handle associated with read access from device (may be identical
     to the write handle).
   */
-  inline OperatingSystem::Handle getReadHandle() const noexcept {
+  inline OperatingSystem::Handle getReadHandle() const noexcept
+  {
     return deviceDescriptor.getHandle();
   }
 
@@ -112,7 +115,8 @@ public:
     Returns the handle associated with write access to device (may be identical
     to the read handle).
   */
-  inline OperatingSystem::Handle getWriteHandle() const noexcept {
+  inline OperatingSystem::Handle getWriteHandle() const noexcept
+  {
     return deviceDescriptor.getHandle();
   }
 };

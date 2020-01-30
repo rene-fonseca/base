@@ -45,10 +45,13 @@
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
-SoundDevice::SoundDevice() noexcept : access(0) {
+SoundDevice::SoundDevice() noexcept
+  : access(0)
+{
 }
 
-void SoundDevice::reacquireAccess(unsigned int access) {
+void SoundDevice::reacquireAccess(unsigned int access)
+{
   // guarded externally
   if (this->access != access) {
     this->access = access;
@@ -77,28 +80,32 @@ void SoundDevice::reacquireAccess(unsigned int access) {
   }
 }
 
-void SoundDevice::acquireReadAccess() {
+void SoundDevice::acquireReadAccess()
+{
   ExclusiveSynchronize<ReadWriteLock> _guard(guard);
   if (!isReadable()) {
     reacquireAccess(access | READ);
   }
 }
 
-void SoundDevice::relinquishReadAccess() {
+void SoundDevice::relinquishReadAccess()
+{
   ExclusiveSynchronize<ReadWriteLock> _guard(guard);
   if (isReadable()) {
     reacquireAccess(access & ~READ);
   }
 }
 
-void SoundDevice::acquireWriteAccess() {
+void SoundDevice::acquireWriteAccess()
+{
   ExclusiveSynchronize<ReadWriteLock> _guard(guard);
   if (!isWriteable()) {
     reacquireAccess(access | WRITE);
   }
 }
 
-void SoundDevice::relinquishWriteAccess() {
+void SoundDevice::relinquishWriteAccess()
+{
   ExclusiveSynchronize<ReadWriteLock> _guard(guard);
   if (isWriteable()) {
     reacquireAccess(access & ~WRITE);

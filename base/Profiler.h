@@ -581,14 +581,24 @@ public:
   /** IO write task. */
   class _COM_AZURE_DEV__BASE__API IOWriteTask : public IOTask {
   private:
-  
+
+    /** Write buffer. */
+    const uint8* buffer = nullptr;
     /** Total bytes written for task. */
     unsigned int bytesWritten = 0;
   public:
 
-    /** IO read task start. */
-    inline IOWriteTask(const char* name) : IOTask(name, CAT_IO_WRITE)
+    /** IO write task start. */
+    inline IOWriteTask(const char* name, const uint8* _buffer = nullptr)
+      : IOTask(name, CAT_IO_WRITE), buffer(_buffer)
     {
+    }
+
+    /** Sets the buffer.  */
+    inline void setBuffer(const uint8* _buffer) noexcept
+    {
+      BASSERT(!buffer || (_buffer == buffer));
+      buffer = _buffer;
     }
 
     /** Update bytes written. */
@@ -606,7 +616,7 @@ public:
     /** Task complete. */
     inline ~IOWriteTask() noexcept
     {
-      setTaskBytesWritten(nullptr, bytesWritten);
+      setTaskBytesWritten(buffer, bytesWritten);
     }
   };
 

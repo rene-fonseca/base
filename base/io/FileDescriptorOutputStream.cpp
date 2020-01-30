@@ -81,7 +81,7 @@ unsigned int FileDescriptorOutputStream::write(
   unsigned int bytesToWrite,
   bool nonblocking)
 {
-  Profiler::IOWriteTask profile("FileDescriptorOutputStream::write()");
+  Profiler::IOWriteTask profile("FileDescriptorOutputStream::write()", buffer);
 
   // TAG: currently always blocks
   unsigned int bytesWritten = 0;

@@ -2084,7 +2084,7 @@ unsigned int Socket::write(
   unsigned int bytesToWrite,
   bool nonblocking)
 {
-  Profiler::IOWriteTask profile("Socket::write()");
+  Profiler::IOWriteTask profile("Socket::write()", buffer);
 #if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__FREERTOS) || \
     (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__ZEPHYR)
   _COM_AZURE_DEV__BASE__NOT_SUPPORTED();
@@ -2182,7 +2182,7 @@ unsigned int Socket::sendTo(
   const InetAddress& address,
   unsigned short port)
 {
-  Profiler::IOWriteTask profile("Socket::sendTo()");
+  Profiler::IOWriteTask profile("Socket::sendTo()", buffer);
 
 #if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__FREERTOS) || \
     (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__ZEPHYR) || \

@@ -327,8 +327,11 @@ public:
       if (profile) {
         Profiler::open("profiler.json");
         Profiler::setUseStackFrames(true);
+        Profiler::setCaptureIO(64);
         Profiler::start();
       }
+
+      Profiler::CaptureIO captureIO(64); // enable for main thread
 
       if (!manager.runTests(pattern, runDevel)) {
         if (profile) {

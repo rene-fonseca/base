@@ -44,7 +44,7 @@ namespace win32 {
     unsigned int bytesToWrite = 0;
     unsigned int bytesWritten = 0;
     unsigned int flags = 0;
-    Profiler::IOWriteTask profile = "AsyncWriteStreamContext::AsyncWriteStreamContext()";
+    Profiler::IOWriteTask profile = "AsyncWriteStreamContext::AsyncWriteStreamContext()"; // C++: can initialize with multiple arguments e.g. type member(arg1, arg2);
 
     inline void notifyAsynchronousCompletionListener() noexcept
     {

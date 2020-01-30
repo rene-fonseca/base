@@ -1269,7 +1269,7 @@ unsigned int File::read(
   unsigned int bytesToRead,
   bool nonblocking)
 {
-  Profiler::IOReadTask profile("File::read()");
+  Profiler::IOReadTask profile("File::read()", buffer);
 
   unsigned int bytesRead = 0;
   while (bytesToRead > 0) {

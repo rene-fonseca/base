@@ -50,6 +50,7 @@ namespace win32 {
     
     inline void notifyAsynchronousCompletionListener() noexcept
     {
+      profile.setBuffer(buffer);
       profile.onBytesRead(bytesRead);
       listener->asynchronousCompletion(
         AsynchronousReadCompletion(

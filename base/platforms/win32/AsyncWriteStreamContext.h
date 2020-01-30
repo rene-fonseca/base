@@ -48,6 +48,7 @@ namespace win32 {
 
     inline void notifyAsynchronousCompletionListener() noexcept
     {
+      profile.setBuffer(buffer);
       profile.onBytesWritten(bytesWritten);
       listener->asynchronousCompletion(
         AsynchronousWriteCompletion(

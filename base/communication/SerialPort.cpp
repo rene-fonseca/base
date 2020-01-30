@@ -453,7 +453,7 @@ unsigned int SerialPort::read(
   unsigned int bytesToRead,
   bool nonblocking)
 {
-  Profiler::IOReadTask profile("SerialPort::read()");
+  Profiler::IOReadTask profile("SerialPort::read()", buffer);
 
   unsigned int bytesRead = 0;
   while (bytesToRead > 0) {

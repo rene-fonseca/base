@@ -51,8 +51,6 @@ namespace win32 {
       bytesWritten(0),
       flags(0)
   {
-    profile.setBuffer(buffer);
-
     clear(callbackInfo.overlapped);
     callbackInfo.context = this;
     

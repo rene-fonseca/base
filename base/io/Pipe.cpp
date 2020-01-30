@@ -226,7 +226,7 @@ unsigned int Pipe::read(
   unsigned int bytesToRead,
   bool nonblocking)
 {
-  Profiler::IOReadTask profile("Pipe::read()");
+  Profiler::IOReadTask profile("Pipe::read()", buffer);
 
   // TAG: currently always blocks
   // select wait mode with SetNamedPipeHandleState for win32

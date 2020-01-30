@@ -2019,7 +2019,7 @@ unsigned int Socket::read(
   unsigned int bytesToRead,
   bool nonblocking)
 {
-  Profiler::IOReadTask profile("Socket::read()");
+  Profiler::IOReadTask profile("Socket::read()", buffer);
 #if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__FREERTOS) || \
     (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__ZEPHYR)
   _COM_AZURE_DEV__BASE__NOT_SUPPORTED();
@@ -2148,7 +2148,7 @@ unsigned int Socket::receiveFrom(
   InetAddress& address,
   unsigned short& port)
 {
-  Profiler::IOReadTask profile("Socket::receiveFrom()");
+  Profiler::IOReadTask profile("Socket::receiveFrom()", buffer);
 
 #if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__FREERTOS) || \
     (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__ZEPHYR) || \

@@ -508,7 +508,8 @@ public:
   public:
 
     /** Wait task start. */
-    inline WaitTask(const char* name, const char* id = nullptr) : Task(name, CAT_WAIT)
+    inline WaitTask(const char* name, const char* id = nullptr) noexcept
+      : Task(name, CAT_WAIT)
     {
       if (id) {
         setTaskWaitId(id);
@@ -521,7 +522,8 @@ public:
   public:
     
     /** Resource create task start. */
-    inline ResourceCreateTask(const char* name, const char* cat = CAT_CREATE_RESOURCE) : Task(name, cat)
+    inline ResourceCreateTask(const char* name, const char* cat = CAT_CREATE_RESOURCE) noexcept
+      : Task(name, cat)
     {
     }
   };
@@ -531,7 +533,8 @@ public:
   public:
     
     /** IO task start. */
-    inline IOTask(const char* name, const char* cat = CAT_IO) : Task(name, cat)
+    inline IOTask(const char* name, const char* cat = CAT_IO) noexcept 
+      : Task(name, cat)
     {
     }
   };
@@ -541,7 +544,8 @@ public:
   public:
 
     /** IO flush task start. */
-    inline IOFlushTask(const char* name, const char* cat = CAT_IO_FLUSH) : IOTask(name, cat)
+    inline IOFlushTask(const char* name, const char* cat = CAT_IO_FLUSH) noexcept
+      : IOTask(name, cat)
     {
     }
   };
@@ -550,13 +554,23 @@ public:
   class _COM_AZURE_DEV__BASE__API IOReadTask : public IOTask {
   private:
 
+    /** Read buffer. */
+    const uint8* buffer = nullptr;
     /** Total bytes read for task. */
     unsigned int bytesRead = 0;
   public:
 
     /** IO read task start. */
-    inline IOReadTask(const char* name) : IOTask(name, CAT_IO_READ)
+    inline IOReadTask(const char* name, const uint8* _buffer = nullptr) noexcept
+      : IOTask(name, CAT_IO_READ), buffer(_buffer)
     {
+    }
+
+    /** Sets the buffer.  */
+    inline void setBuffer(const uint8* _buffer) noexcept
+    {
+      BASSERT(!buffer || (_buffer == buffer));
+      buffer = _buffer;
     }
 
     /** Update bytes read. */
@@ -589,7 +603,7 @@ public:
   public:
 
     /** IO write task start. */
-    inline IOWriteTask(const char* name, const uint8* _buffer = nullptr)
+    inline IOWriteTask(const char* name, const uint8* _buffer = nullptr) noexcept
       : IOTask(name, CAT_IO_WRITE), buffer(_buffer)
     {
     }
@@ -625,7 +639,8 @@ public:
   public:
     
     /** HTTPS task start. */
-    inline HTTPSTask(const char* name) : IOTask(name)
+    inline HTTPSTask(const char* name) noexcept
+      : IOTask(name)
     {
     }
   };

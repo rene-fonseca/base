@@ -21,6 +21,7 @@
 #include <base/concurrency/ReadWriteLock.h>
 #include <base/concurrency/SpinLock.h>
 #include <base/Base.h>
+#include <base/ResourceHandle.h>
 #include <base/Profiler.h>
 
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
@@ -39,148 +40,95 @@
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
+class ReadWriteHandle : public ResourceHandle {
+public:
+  
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
-
-class ReadWriteLockImpl {
-private:
-
   unsigned int readers = 0;
   unsigned int writers = 0;
   SpinLock spinLock;
   CRITICAL_SECTION common;
-  HANDLE blockReaders;
-public:
+  HANDLE blockReaders = 0;
+#elif defined(_COM_AZURE_DEV__BASE__PTHREAD_RWLOCK)
+  pthread_rwlock_t lock;
   
-  inline ReadWriteLockImpl()
+  inline ReadWriteHandle() noexcept
   {
-    blockReaders = ::CreateEvent(0, TRUE, TRUE, 0); // allow shared locks initially
-    bassert(blockReaders != 0, ResourceException(this));
-    ::InitializeCriticalSection(&common);
+    clear(lock);
   }
+#elif defined(_COM_AZURE_DEV__BASE__PTHREAD)
+  pthread_mutex_t mutex;
 
-  inline void exclusiveLock() noexcept
+  inline ReadWriteHandle() noexcept
   {
-    spinLock.exclusiveLock();
-    if (writers++ == 0) {
-      ::ResetEvent(blockReaders); // prevent shared locks
-    }
-    spinLock.releaseLock();
-    ::EnterCriticalSection(&common); // wait for exclusive lock
+    clear(mutex);
   }
+#else
+  int count = 0;
+#endif
 
-  inline bool tryExclusiveLock() noexcept
+  ~ReadWriteHandle()
   {
-    // we do not want to relinquish execution context if we not required to do so
-    spinLock.exclusiveLock();
-    bool result = (::TryEnterCriticalSection(&common) != 0); // must not block
-    if (result) {
-      if (writers++ == 0) {
-        ::ResetEvent(blockReaders); // prevent shared locks
-      }
-    }
-    spinLock.releaseLock();
-    return result;
-  }
-  
-  inline void sharedLock() noexcept
-  {
-    // we do not want to relinquish execution context if we not required to do so
-    spinLock.exclusiveLock();
-    while (true) {
-      if (writers == 0) {
-        // no writers are waiting (or have the lock)
-        if (readers++ == 0) {
-          // first reader must get the exclusive lock
-          ::EnterCriticalSection(&common); // must not block
-        }
-        break;
-      }
-      spinLock.releaseLock();
-      ::WaitForSingleObject(blockReaders, INFINITE); // block until all writers have completed
-      spinLock.exclusiveLock();
-      // writers could have reacquired the lock here
-    }
-    spinLock.releaseLock();
-  }
-
-  inline bool trySharedLock() noexcept
-  {
-    // we do not want to relinquish execution context if we not required to do so
-    bool result = false;
-    spinLock.exclusiveLock();
-    // writers have higher priority than readers and readers may already have the lock
-    if (writers == 0) {
-      result = true;
-      if (readers++ == 0) {
-        // first reader must get the exclusive lock
-        ::EnterCriticalSection(&common); // must not block
-      }
-    }    
-    spinLock.releaseLock();
-    return result;
-  }
-
-  inline void releaseLock() noexcept
-  {
-    spinLock.exclusiveLock();
-    if (readers > 0) {
-      // release shared lock
-      if (--readers == 0) {
-        ::LeaveCriticalSection(&common);
-      }
-    } else {
-      // release exclusive lock
-      ::LeaveCriticalSection(&common);
-      BASSERT(writers > 0);
-      if (--writers == 0) {
-        ::SetEvent(blockReaders);
-      }
-    }
-    BASSERT(::WaitForSingleObject(blockReaders, 0) == WAIT_OBJECT_0);
-    spinLock.releaseLock();
-  }
-  
-  inline ~ReadWriteLockImpl() noexcept
-  {
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
     BASSERT(::TryEnterCriticalSection(&common) != 0);
     ::DeleteCriticalSection(&common);
     ::CloseHandle(blockReaders);
     BASSERT((spinLock.tryExclusiveLock()) && (readers == 0) && (writers == 0));
+#elif defined(_COM_AZURE_DEV__BASE__PTHREAD_RWLOCK)
+    if (pthread_rwlock_destroy(&lock)) {
+      Runtime::corruption(_COM_AZURE_DEV__BASE__PRETTY_FUNCTION);
+    }
+#elif defined(_COM_AZURE_DEV__BASE__PTHREAD)
+    if (pthread_mutex_destroy(&mutex)) {
+      Runtime::corruption(_COM_AZURE_DEV__BASE__PRETTY_FUNCTION);
+    }
+#else
+    count = 0;
+#endif
   }
 };
 
-#endif // flavor
+namespace {
+
+  inline ReadWriteHandle* toReadWriteHandle(const AnyReference& handle)
+  {
+    if (handle) { // TAG: we do not want a dynamic cast - use static cast
+      return handle.cast<ReadWriteHandle>().getValue();
+    }
+    return nullptr;
+  }
+}
 
 ReadWriteLock::ReadWriteLock()
 {
   Profiler::ResourceCreateTask profile("ReadWriteLock::ReadWriteLock()");
 
+  Reference<ReadWriteHandle> _handle = new ReadWriteHandle();
+
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
-  representation = new ReadWriteLockImpl();
+  _handle->blockReaders = ::CreateEvent(0, TRUE, TRUE, 0); // allow shared locks initially
+  if (_handle->blockReaders == 0) {
+    _throw ResourceException(this);
+  }
+  ::InitializeCriticalSection(&_handle->common);
 #elif defined(_COM_AZURE_DEV__BASE__PTHREAD_RWLOCK)
-  representation = new pthread_rwlock_t; // TAG: needs automatic deletion on exception
   pthread_rwlockattr_t attributes;
   if (pthread_rwlockattr_init(&attributes) != 0) {
-    delete static_cast<pthread_rwlock_t*>(representation);
     _throw ResourceException(this);
   }
   if (pthread_rwlockattr_setpshared(&attributes, PTHREAD_PROCESS_PRIVATE) != 0) {
     // TAG: does this also work in a multiprocessor environment (still within the same process)?
     pthread_rwlockattr_destroy(&attributes); // should never fail
-    delete static_cast<pthread_rwlock_t*>(representation);
     _throw ResourceException(this);
   }
-  if (pthread_rwlock_init(static_cast<pthread_rwlock_t*>(representation), &attributes) != 0) {
+  if (pthread_rwlock_init(&_handle->lock, &attributes) != 0) {
     pthread_rwlockattr_destroy(&attributes); // should never fail
-    delete static_cast<pthread_rwlock_t*>(representation);
     _throw ResourceException(this);
   }
   pthread_rwlockattr_destroy(&attributes); // should never fail
 #elif defined(_COM_AZURE_DEV__BASE__PTHREAD)
-  representation = new pthread_mutex_t; // TAG: needs automatic deletion on exception
   pthread_mutexattr_t attributes;
   if (pthread_mutexattr_init(&attributes) != 0) {
-    delete static_cast<pthread_mutex_t*>(representation);
     _throw ResourceException(this);
   }
 #if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__CYGWIN)
@@ -189,33 +137,42 @@ ReadWriteLock::ReadWriteLock()
 #else
   if (pthread_mutexattr_settype(&attributes, PTHREAD_MUTEX_ERRORCHECK) != 0) {
     pthread_mutexattr_destroy(&attributes); // should never fail
-    delete static_cast<pthread_mutex_t*>(representation);
     _throw ResourceException(this);
   }
 #endif // cygwin temporary bug fix
-  if (pthread_mutex_init(static_cast<pthread_mutex_t*>(representation), &attributes) != 0) {
+  if (pthread_mutex_init(&_handle->mutex, &attributes) != 0) {
     pthread_mutexattr_destroy(&attributes); // should never fail
-    delete static_cast<pthread_mutex_t*>(representation);
     _throw ResourceException(this);
   }
   pthread_mutexattr_destroy(&attributes); // should never fail
 #else
-  representation = new int(0);
+  // assume single threaded
 #endif
+  this->handle = _handle;
 }
 
 void ReadWriteLock::exclusiveLock() const
 {
   Profiler::WaitTask profile("ReadWriteLock::exclusiveLock()");
   
+  ReadWriteHandle* handle = toReadWriteHandle(this->handle);
+  if (!handle) {
+    _throw NullPointer(this);
+  }
+
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
-  static_cast<ReadWriteLockImpl*>(representation)->exclusiveLock();
+  handle->spinLock.exclusiveLock();
+  if (handle->writers++ == 0) {
+    ::ResetEvent(handle->blockReaders); // prevent shared locks
+  }
+  handle->spinLock.releaseLock();
+  ::EnterCriticalSection(&handle->common); // wait for exclusive lock
 #elif defined(_COM_AZURE_DEV__BASE__PTHREAD_RWLOCK)
-  if (pthread_rwlock_wrlock(static_cast<pthread_rwlock_t*>(representation))) {
+  if (pthread_rwlock_wrlock(&handle->lock)) {
     _throw ReadWriteLockException(this);
   }
 #elif defined(_COM_AZURE_DEV__BASE__PTHREAD)
-  int result = pthread_mutex_lock(static_cast<pthread_mutex_t*>(representation));
+  int result = pthread_mutex_lock(&handle->mutex);
   if (result == 0) {
     return;
   } else if (result == EDEADLK) {
@@ -225,11 +182,10 @@ void ReadWriteLock::exclusiveLock() const
   }
 #else
   // assume single threaded
-  int* handle = reinterpret_cast<int*>(representation);
-  while (*handle) {
+  while (handle->count) {
     Thread::microsleep(1000);
   }
-  *handle = 1;
+  handle->count = 1;
 #endif
 }
 
@@ -237,10 +193,24 @@ bool ReadWriteLock::tryExclusiveLock() const
 {
   Profiler::WaitTask profile("ReadWriteLock::tryExclusiveLock()");
 
+  ReadWriteHandle* handle = toReadWriteHandle(this->handle);
+  if (!handle) {
+    _throw NullPointer(this);
+  }
+
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
-  return static_cast<ReadWriteLockImpl*>(representation)->tryExclusiveLock();
+  // we do not want to relinquish execution context if we not required to do so
+  handle->spinLock.exclusiveLock();
+  bool result = (::TryEnterCriticalSection(&handle->common) != 0); // must not block
+  if (result) {
+    if (handle->writers++ == 0) {
+      ::ResetEvent(handle->blockReaders); // prevent shared locks
+    }
+  }
+  handle->spinLock.releaseLock();
+  return result;
 #elif defined(_COM_AZURE_DEV__BASE__PTHREAD_RWLOCK)
-  int result = pthread_rwlock_trywrlock(static_cast<pthread_rwlock_t*>(representation));
+  int result = pthread_rwlock_trywrlock(&handle->mutex);
   if (result == 0) {
     return true;
   } else if (result == EBUSY) {
@@ -249,7 +219,7 @@ bool ReadWriteLock::tryExclusiveLock() const
     _throw ReadWriteLockException(this);
   }
 #elif defined(_COM_AZURE_DEV__BASE__PTHREAD)
-  int result = pthread_mutex_trylock(static_cast<pthread_mutex_t*>(representation));
+  int result = pthread_mutex_trylock(&handle->mutex);
   if (result == 0) {
     return true;
   } else if (result == EBUSY) {
@@ -259,11 +229,10 @@ bool ReadWriteLock::tryExclusiveLock() const
   }
 #else
   // assume single threaded
-  int* handle = reinterpret_cast<int*>(representation);
-  if (*handle) {
+  if (handle->count) {
     return false;
   }
-  *handle = 1;
+  handle->count = 1;
   return true;
 #endif
 }
@@ -272,14 +241,35 @@ void ReadWriteLock::sharedLock() const
 {
   Profiler::WaitTask profile("ReadWriteLock::sharedLock()");
   
+  ReadWriteHandle* handle = toReadWriteHandle(this->handle);
+  if (!handle) {
+    _throw NullPointer(this);
+  }
+
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
-  static_cast<ReadWriteLockImpl*>(representation)->sharedLock();
+  // we do not want to relinquish execution context if we not required to do so
+  handle->spinLock.exclusiveLock();
+  while (true) {
+    if (handle->writers == 0) {
+      // no writers are waiting (or have the lock)
+      if (handle->readers++ == 0) {
+        // first reader must get the exclusive lock
+        ::EnterCriticalSection(&handle->common); // must not block
+      }
+      break;
+    }
+    handle->spinLock.releaseLock();
+    ::WaitForSingleObject(handle->blockReaders, INFINITE); // block until all writers have completed
+    handle->spinLock.exclusiveLock();
+    // writers could have reacquired the lock here
+  }
+  handle->spinLock.releaseLock();
 #elif defined(_COM_AZURE_DEV__BASE__PTHREAD_RWLOCK)
-  if (pthread_rwlock_rdlock(static_cast<pthread_rwlock_t*>(representation))) {
+  if (pthread_rwlock_rdlock(&handle->lock)) {
     _throw ReadWriteLockException(this);
   }
 #elif defined(_COM_AZURE_DEV__BASE__PTHREAD)
-  int result = pthread_mutex_lock(static_cast<pthread_mutex_t*>(representation));
+  int result = pthread_mutex_lock(&handle->mutex);
   if (result == 0) {
     return;
   } else if (result == EDEADLK) {
@@ -296,10 +286,27 @@ bool ReadWriteLock::trySharedLock() const
 {
   Profiler::WaitTask profile("ReadWriteLock::trySharedLock()");
   
+  ReadWriteHandle* handle = toReadWriteHandle(this->handle);
+  if (!handle) {
+    _throw NullPointer(this);
+  }
+
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
-  return static_cast<ReadWriteLockImpl*>(representation)->trySharedLock();
+  // we do not want to relinquish execution context if we not required to do so
+  bool result = false;
+  handle->spinLock.exclusiveLock();
+  // writers have higher priority than readers and readers may already have the lock
+  if (handle->writers == 0) {
+    result = true;
+    if (handle->readers++ == 0) {
+      // first reader must get the exclusive lock
+      ::EnterCriticalSection(&handle->common); // must not block
+    }
+  }
+  handle->spinLock.releaseLock();
+  return result;
 #elif defined(_COM_AZURE_DEV__BASE__PTHREAD_RWLOCK)
-  int result = pthread_rwlock_tryrdlock(static_cast<pthread_rwlock_t*>(representation));
+  int result = pthread_rwlock_tryrdlock(&handle->lock);
   if (result == 0) {
     return true;
   } else if (result == EBUSY) {
@@ -308,7 +315,7 @@ bool ReadWriteLock::trySharedLock() const
     _throw ReadWriteLockException(this);
   }
 #elif defined(_COM_AZURE_DEV__BASE__PTHREAD)
-  int result = pthread_mutex_trylock(static_cast<pthread_mutex_t*>(representation));
+  int result = pthread_mutex_trylock(&handle->mutex);
   if (result == 0) {
     return true;
   } else if (result == EBUSY) {
@@ -324,44 +331,48 @@ bool ReadWriteLock::trySharedLock() const
 void ReadWriteLock::releaseLock() const
 {
   Profiler::pushSignal("ReadWriteLock::releaseLock()");
+  
+  ReadWriteHandle* handle = toReadWriteHandle(this->handle);
+  if (!handle) {
+    _throw NullPointer(this);
+  }
+
   // must be invoked by a thread which has already has a acquired an exclusive or shared lock!
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
-  static_cast<ReadWriteLockImpl*>(representation)->releaseLock();
+  handle->spinLock.exclusiveLock();
+  if (handle->readers > 0) {
+    // release shared lock
+    if (--handle->readers == 0) {
+      ::LeaveCriticalSection(&handle->common);
+    }
+  } else {
+    // release exclusive lock
+    ::LeaveCriticalSection(&handle->common);
+    BASSERT(handle->writers > 0);
+    if (--handle->writers == 0) {
+      ::SetEvent(handle->blockReaders);
+    }
+  }
+  BASSERT(::WaitForSingleObject(handle->blockReaders, 0) == WAIT_OBJECT_0);
+  handle->spinLock.releaseLock();
 #elif defined(_COM_AZURE_DEV__BASE__PTHREAD_RWLOCK)
-  if (pthread_rwlock_unlock(static_cast<pthread_rwlock_t*>(representation))) {
+  if (pthread_rwlock_unlock(&handle->lock)) {
     _throw ReadWriteLockException(this);
   }
 #elif defined(_COM_AZURE_DEV__BASE__PTHREAD)
-  if (pthread_mutex_unlock(static_cast<pthread_mutex_t*>(representation))) {
+  if (pthread_mutex_unlock(&handle->mutex)) {
     _throw ReadWriteLockException(this);
   }
 #else
-  int* handle = reinterpret_cast<int*>(representation);
-  if (!*handle) {
+  if (!handle->count) {
     _throw ReadWriteLockException(this);
   }
-  *handle = 0;
+  handle->count = 0;
 #endif
 }
 
 ReadWriteLock::~ReadWriteLock()
 {
-#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
-  delete static_cast<ReadWriteLockImpl*>(representation);
-#elif defined(_COM_AZURE_DEV__BASE__PTHREAD_RWLOCK)
-  if (pthread_rwlock_destroy(static_cast<pthread_rwlock_t*>(representation))) {
-    Runtime::corruption(_COM_AZURE_DEV__BASE__PRETTY_FUNCTION);
-  }
-  delete static_cast<pthread_rwlock_t*>(representation);
-#elif defined(_COM_AZURE_DEV__BASE__PTHREAD)
-  if (pthread_mutex_destroy(static_cast<pthread_mutex_t*>(representation))) {
-    Runtime::corruption(_COM_AZURE_DEV__BASE__PRETTY_FUNCTION);
-  }
-  delete static_cast<pthread_mutex_t*>(representation);
-#else
-  int* handle = reinterpret_cast<int*>(representation);
-  delete handle;
-#endif
 }
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

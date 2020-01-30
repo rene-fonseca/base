@@ -16,6 +16,7 @@
 #include <base/ResourceException.h>
 #include <base/concurrency/Lock.h>
 #include <base/concurrency/ReadWriteLockException.h>
+#include <base/Resource.h>
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
@@ -28,14 +29,10 @@ _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
   @short Read-write synchronization object
   @ingroup concurrency
   @see MutualExclusion Lock
-  @version 1.4
+  @version 1.5
 */
 
-class _COM_AZURE_DEV__BASE__API ReadWriteLock : public Lock {
-protected:
-
-  /** Internal representation of object. */
-  void* representation = nullptr;
+class _COM_AZURE_DEV__BASE__API ReadWriteLock : public Resource, public Lock {
 public:
   
   typedef ExclusiveSynchronize<ReadWriteLock> Sync;

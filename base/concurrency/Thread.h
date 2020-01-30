@@ -458,6 +458,14 @@ public:
   }
 
   /**
+    Returns the simple ID assigned to the thread.
+  */
+  inline unsigned int getThreadId() const noexcept
+  {
+    return simpleId;
+  }
+
+  /**
     Returns true if the executing thread is the only thread within the process.
     This method is experimental!
   */

@@ -212,6 +212,14 @@ public:
   */
   String() noexcept;
 
+  inline String(Reference<ReferenceCountedAllocator<char> > string)
+    : elements(string)
+  {
+    BASSERT(string && !string->isEmpty());
+    auto index = elements->getSize() - 1;
+    BASSERT(string->getElements()[index] == 0); // check null terminator
+  }
+
   /**
     Initializes a string with no characters in it and the given initial capacity.
     
@@ -1266,6 +1274,12 @@ public:
 //   END SECTION
 // *************************************************************************
 
+  /** Returns the internal container. */
+  const Reference<ReferenceCountedAllocator<char> >& getContainer() const
+  {
+    return elements;
+  }
+  
   /**
     Returns NULL-terminated string for modifying access.
   */

@@ -137,6 +137,7 @@ User::User(const String& name)
   id = new ReferenceCountedAllocator<uint8>(size);
   copy(id->getElements(), sid, size);
   integralId = 0;
+#elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__ZEPHYR)
 #elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__WASI)
 #else // unix
   // long sysconf(_SC_GETPW_R_SIZE_MAX);
@@ -187,6 +188,8 @@ String User::getName(bool fallback) const
   } else {
     return String(static_cast<const wchar*>(name)); // TAG: does nameSize hold length of name
   }
+#elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__ZEPHYR)
+  return String();
 #elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__WASI)
   return String();
 #else // unix
@@ -221,6 +224,8 @@ String User::getHomeFolder() const
 //     LPTSTR lpProfileDir,
 //     LPDWORD lpcchSize
 //   );
+  _COM_AZURE_DEV__BASE__NOT_IMPLEMENTED();
+#elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__ZEPHYR)
   _COM_AZURE_DEV__BASE__NOT_IMPLEMENTED();
 #elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__WASI)
   _COM_AZURE_DEV__BASE__NOT_IMPLEMENTED();

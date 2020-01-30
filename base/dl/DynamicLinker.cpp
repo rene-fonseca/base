@@ -24,6 +24,7 @@ _COM_AZURE_DEV__BASE__GLOBAL_PRINT();
 #  include <windows.h>
 #  include <dbghelp.h>
 #elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__FREERTOS) || \
+      (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__ZEPHYR) || \
       (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__WASI)
 #else // unix
 #  include <dlfcn.h>
@@ -124,6 +125,7 @@ void* DynamicLinker::getGlobalSymbolImpl(const String& symbol)
   }
   return result;
 #elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__FREERTOS) || \
+      (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__ZEPHYR) || \
       (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__WASI)
   return nullptr;
 #else // unix
@@ -174,6 +176,7 @@ DynamicLinker::DynamicLinker(const String& path, unsigned int options)
     _throw LinkerException("Unable to open module.", this);
   }
 #elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__FREERTOS) || \
+      (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__ZEPHYR) || \
       (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__WASI)
   BASSERT(!"Not supported.");
 #else // unix
@@ -200,6 +203,7 @@ void* DynamicLinker::getSymbol(const Literal& symbol) const
   bassert(result != nullptr, LinkerException("Unable to resolve symbol.", this));
   return result;
 #elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__FREERTOS) || \
+      (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__ZEPHYR) || \
       (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__WASI)
   return nullptr;
 #else // unix
@@ -216,6 +220,7 @@ void* DynamicLinker::getSymbol(const String& symbol) const
   bassert(result != 0, LinkerException("Unable to resolve symbol.", this));
   return result;
 #elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__FREERTOS) || \
+      (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__ZEPHYR) || \
       (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__WASI)
   return nullptr;
 #else // unix
@@ -230,6 +235,7 @@ void* DynamicLinker::getUncertainSymbol(const Literal& symbol) const noexcept
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   return (void*)(::GetProcAddress((HMODULE)handle, symbol.getValue()));
 #elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__FREERTOS) || \
+      (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__ZEPHYR) || \
       (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__WASI)
   return nullptr;
 #else // unix
@@ -242,6 +248,7 @@ void* DynamicLinker::getUncertainSymbol(const String& symbol) const noexcept
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   return (void*)(::GetProcAddress((HMODULE)handle, symbol.getElements()));
 #elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__FREERTOS) || \
+      (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__ZEPHYR) || \
       (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__WASI)
   return nullptr;
 #else // unix
@@ -276,6 +283,7 @@ DynamicLinker::~DynamicLinker() noexcept(false)
     LinkerException("Unable to close module.", this)
   );
 #elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__FREERTOS) || \
+      (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__ZEPHYR) || \
       (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__WASI)
 #else // unix
   bassert(
@@ -289,6 +297,7 @@ DynamicLinker::~DynamicLinker() noexcept(false)
 namespace {
 
 #if (_COM_AZURE_DEV__BASE__OS != _COM_AZURE_DEV__BASE__FREERTOS) && \
+    (_COM_AZURE_DEV__BASE__OS != _COM_AZURE_DEV__BASE__ZEPHYR) && \
     (_COM_AZURE_DEV__BASE__OS != _COM_AZURE_DEV__BASE__WASI)
   // causes recursive static initialization for LLVM
   void* frameworkImage = DynamicLinker::getImageAddress((const void*)&DynamicLinker::getBaseFrameworkImage);
@@ -738,6 +747,7 @@ public:
   void run() override
   {
 #if (_COM_AZURE_DEV__BASE__OS != _COM_AZURE_DEV__BASE__FREERTOS) && \
+    (_COM_AZURE_DEV__BASE__OS != _COM_AZURE_DEV__BASE__ZEPHYR) && \
     (_COM_AZURE_DEV__BASE__OS != _COM_AZURE_DEV__BASE__WASI) && \
     (_COM_AZURE_DEV__BASE__OS != _COM_AZURE_DEV__BASE__EMCC)
     // TEST_ASSERT(DynamicLinker::getProcessImage());

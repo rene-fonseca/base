@@ -29,18 +29,22 @@
 #  endif
 #else // unix
 #  include <sys/types.h>
-#if (_COM_AZURE_DEV__BASE__OS != _COM_AZURE_DEV__BASE__FREERTOS)
+#if (_COM_AZURE_DEV__BASE__OS != _COM_AZURE_DEV__BASE__FREERTOS) && \
+    (_COM_AZURE_DEV__BASE__OS != _COM_AZURE_DEV__BASE__ZEPHYR)
 #  include <sys/socket.h>
 #endif
 #  include <sys/param.h> // may define MAXHOSTNAMELEN (linux, irix)
-#if (_COM_AZURE_DEV__BASE__OS != _COM_AZURE_DEV__BASE__FREERTOS)
+#if (_COM_AZURE_DEV__BASE__OS != _COM_AZURE_DEV__BASE__FREERTOS) && \
+    (_COM_AZURE_DEV__BASE__OS != _COM_AZURE_DEV__BASE__ZEPHYR)
 #  include <netinet/in.h> // define IP address
 #endif
 #if (_COM_AZURE_DEV__BASE__OS != _COM_AZURE_DEV__BASE__FREERTOS) && \
+    (_COM_AZURE_DEV__BASE__OS != _COM_AZURE_DEV__BASE__ZEPHYR) && \
     (_COM_AZURE_DEV__BASE__OS != _COM_AZURE_DEV__BASE__WASI)
 #  include <netdb.h> // gethostbyname, may define MAXHOSTNAMELEN (solaris)
 #endif
-#if (_COM_AZURE_DEV__BASE__OS != _COM_AZURE_DEV__BASE__FREERTOS)
+#if (_COM_AZURE_DEV__BASE__OS != _COM_AZURE_DEV__BASE__FREERTOS) && \
+    (_COM_AZURE_DEV__BASE__OS != _COM_AZURE_DEV__BASE__ZEPHYR)
 #  include <arpa/inet.h> // defines inet_ntop...
 #endif
 #  include <unistd.h> // defines gethostname
@@ -73,6 +77,7 @@ String InetAddress::getLocalHost()
     );
   }
 #elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__FREERTOS) || \
+      (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__ZEPHYR) || \
       (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__WASI)
   const char* name = "localhost";
 #else // unix
@@ -125,6 +130,7 @@ List<InetAddress> InetAddress::getAddressesByName(const String& name)
 
   freeaddrinfo(ai); // release resources - MT-level is safe
 #elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__FREERTOS) || \
+      (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__ZEPHYR) || \
       (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__WASI)
   BASSERT(!"Not supported.");
 #else // use ordinary BSD sockets - IPv4
@@ -197,10 +203,11 @@ InetAddress InetAddress::getAddressByName(const String& name)
   
   freeaddrinfo(ai); // release resources - MT-level is safe
 #elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__FREERTOS) || \
+      (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__ZEPHYR) || \
       (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__WASI)
   BASSERT(!"Not supported.");
 #else // use ordinary BSD sockets - IPv4
-  struct hostent* hp;
+  struct hostent* hp = nullptr;
 
 #  if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
     if (!(hp = gethostbyname(name.getElements()))) { // MT-safe
@@ -531,6 +538,7 @@ String InetAddress::getHostName(bool fullyQualified) const
 
   return NativeString(hostname);
 #elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__FREERTOS) || \
+      (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__ZEPHYR) || \
       (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__WASI)
   return "localhost";
 #else // use ordinary BSD sockets - IPv4

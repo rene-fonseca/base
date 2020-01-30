@@ -138,7 +138,7 @@ elseif ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-deprecated-declarations") # FIXME
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Werror") # no warnings allowed
 
-  if ("${OS_RELEASE_ID}" STREQUAL "raspbian")
+  if (CMAKE_COMPILER_IS_GNUCC AND CMAKE_CXX_COMPILER_VERSION VERSION_GREATER 7.1 AND NOT CMAKE_CXX_COMPILER_VERSION VERSION_GREATER 8.0)
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-psabi") # parameter passing for argument of changed
   endif ()
 
@@ -167,8 +167,14 @@ endif()
 endif ()
 
 set (USE_SHARED 1)
-if (IOS OR EMSCRIPTEN OR ("${CMAKE_SYSTEM_NAME}" STREQUAL "Wasm") OR ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "WASI"))
+if (_COM_AZURE_DEV__BASE__OS OR IOS OR EMSCRIPTEN OR ("${CMAKE_SYSTEM_NAME}" STREQUAL "Wasm") OR ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "WASI"))
   set (USE_SHARED 0)
+endif ()
+
+if (_COM_AZURE_DEV__BASE__OS)
+  # avoid -rdynamic bug for arm-none-eabi
+  set(CMAKE_SHARED_LIBRARY_LINK_C_FLAGS "")
+  set(CMAKE_SHARED_LIBRARY_LINK_CXX_FLAGS "")
 endif ()
 
 if (USE_SHARED AND NOT IOS)
@@ -361,9 +367,11 @@ elseif (APPLE)
   find_library(cfnetwork CFNetwork)
   target_link_libraries(base PRIVATE ${cfnetwork} ${corefoundation})
 elseif (UNIX)
-  target_link_libraries(base PRIVATE pthread)
-  if (NOT "${CMAKE_SYSTEM_NAME}" STREQUAL "OpenBSD")
-    target_link_libraries(base PRIVATE dl)
+  if (NOT _COM_AZURE_DEV__BASE__OS)
+    target_link_libraries(base PRIVATE pthread)
+    if (NOT "${CMAKE_SYSTEM_NAME}" STREQUAL "OpenBSD")
+      target_link_libraries(base PRIVATE dl)
+    endif ()
   endif ()
   if (X11_FOUND)
     target_link_libraries(base PRIVATE ${X11_X11_LIB})

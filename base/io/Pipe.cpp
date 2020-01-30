@@ -28,7 +28,8 @@
 #  include <sys/types.h>
 #  include <sys/time.h> // defines timeval on Linux systems
 #  include <sys/stat.h>
-#if (_COM_AZURE_DEV__BASE__OS != _COM_AZURE_DEV__BASE__FREERTOS)
+#if (_COM_AZURE_DEV__BASE__OS != _COM_AZURE_DEV__BASE__FREERTOS) && \
+    (_COM_AZURE_DEV__BASE__OS != _COM_AZURE_DEV__BASE__ZEPHYR)
 #  include <sys/ioctl.h>
 #endif
 #  include <limits.h> // defines PIPE_BUF...
@@ -58,6 +59,8 @@ namespace {
     return EINVAL;
   }
 }
+#else
+#  include <sys/select.h>
 #endif
 
 #endif
@@ -146,6 +149,7 @@ unsigned int Pipe::getBufferSize() const noexcept
   GetNamedPipeInfo(fd->getHandle(), 0, &result, 0, 0); // TAG: separate input and output buffer sizes
   return result;
 #elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__FREERTOS) || \
+      (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__ZEPHYR) || \
       (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__WASI)
   BASSERT(!"Not supported.");
   return 0;

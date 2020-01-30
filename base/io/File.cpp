@@ -88,6 +88,7 @@ typedef struct _REPARSE_DATA_BUFFER {
 #  include <limits.h>
 #  include <string.h> // required by FD_SET on solaris
 #if (_COM_AZURE_DEV__BASE__OS != _COM_AZURE_DEV__BASE__FREERTOS) && \
+    (_COM_AZURE_DEV__BASE__OS != _COM_AZURE_DEV__BASE__ZEPHYR) && \
     (_COM_AZURE_DEV__BASE__OS != _COM_AZURE_DEV__BASE__WASI)
 #  include <sys/mman.h>
 #endif
@@ -750,6 +751,8 @@ void File::changeOwner(const String& path, const Trustee& owner, const Trustee& 
 
 #elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__WASI)
   BASSERT(!"Not supported.");
+#elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__ZEPHYR)
+  BASSERT(!"Not supported.");
 #else // unix
   bassert((owner.getType() == Trustee::USER) && (group.getType() == Trustee::GROUP), FileException(Type::getType<File>()));
   
@@ -877,7 +880,8 @@ void File::truncate(long long size)
     _throw FileException("Unable to truncate.", this);
   }
 #else // unix
-  #if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__FREERTOS)
+  #if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__FREERTOS) || \
+      (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__ZEPHYR)
     _COM_AZURE_DEV__BASE__NOT_SUPPORTED();
   #elif defined(_COM_AZURE_DEV__BASE__LARGE_FILE_SYSTEM)
     if (::ftruncate64(fd->getHandle(), size)) {

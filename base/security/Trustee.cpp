@@ -162,6 +162,7 @@ Trustee::Trustee(const String& name)
   integralId = INVALID;
   id = new ReferenceCountedAllocator<uint8>(sidSize);
   copy(id->getElements(), Cast::pointer<const uint8*>(sid), sidSize);
+#elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__ZEPHYR)
 #elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__WASI)
 
 #else // unix
@@ -304,6 +305,8 @@ String Trustee::getName() const
   } else {
     return String(name); // TAG: does nameSize hold length of name
   }
+#elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__ZEPHYR)
+  return String();
 #elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__WASI)
   return String();
 #else // unix

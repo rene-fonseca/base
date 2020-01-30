@@ -58,7 +58,8 @@ typedef struct _REPARSE_DATA_BUFFER {
 #  include <sys/types.h>
 #  include <sys/stat.h>
 #  include <unistd.h>
-#if (_COM_AZURE_DEV__BASE__OS != _COM_AZURE_DEV__BASE__FREERTOS)
+#if (_COM_AZURE_DEV__BASE__OS != _COM_AZURE_DEV__BASE__FREERTOS) && \
+    (_COM_AZURE_DEV__BASE__OS != _COM_AZURE_DEV__BASE__ZEPHYR)
 #  include <dirent.h>
 #endif
 #  include <errno.h>
@@ -402,7 +403,8 @@ Array<String> FolderInfo::getEntries() const
       _throw FileSystemException("Unable to close folder.", this);
     }
   }
-#elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__FREERTOS)
+#elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__FREERTOS) || \
+      (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__ZEPHYR)
   return result;
 #else // unix
   Thread::UseThreadLocalBuffer _buffer;

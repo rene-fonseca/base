@@ -30,12 +30,6 @@
 #  include <unistd.h>
 #endif // flavor
 
-#if (_COM_AZURE_DEV__BASE__OS != _COM_AZURE_DEV__BASE__CYGWIN) /*&& \
-    (_COM_AZURE_DEV__BASE__OS != _COM_AZURE_DEV__BASE__WASI)*/
-#  define _COM_AZURE_DEV__BASE__HAVE_GETGRNAM_R
-#  define _COM_AZURE_DEV__BASE__HAVE_GETGRGID_R
-#endif
-
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 Group::Group(unsigned long _id)
@@ -116,7 +110,7 @@ Group::Group(const String& name)
     bassert(result == 0, GroupException(this));
     integralId = static_cast<unsigned long>(entry->gr_gid);
   #else
-    #warning Group::Group(const String& name) uses non-reentrant getgrnam
+    // #warning Group::Group(const String& name) uses non-reentrant getgrnam
     // long sysconf(_SC_GETGR_R_SIZE_MAX);
     struct group* entry = ::getgrnam(name.getElements());
     bassert(entry != 0, GroupException(this));
@@ -128,6 +122,8 @@ Group::Group(const String& name)
 Group::Group(const User& user)
 {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
+  _COM_AZURE_DEV__BASE__NOT_IMPLEMENTED();
+#elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__ZEPHYR)
   _COM_AZURE_DEV__BASE__NOT_IMPLEMENTED();
 #elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__WASI)
   _COM_AZURE_DEV__BASE__NOT_IMPLEMENTED();

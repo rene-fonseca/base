@@ -956,7 +956,8 @@ _COM_AZURE_DEV__BASE__PACKED__END
   } else {
     return false;
   }
-#elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__FREERTOS)
+#elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__FREERTOS) || \
+      (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__ZEPHYR)
   return false;
 #else
   struct stat status;
@@ -1326,6 +1327,8 @@ void FileSystem::makeLink(const String& target, const String& path)
     }
   }
   bassert(!error, FileSystemException("Unable to make link.", Type::getType<FileSystem>()));
+#elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__ZEPHYR)
+  _COM_AZURE_DEV__BASE__NOT_SUPPORTED();
 #else // unix
   bassert(
     !::symlink(target.getElements(), path.getElements()),
@@ -1629,6 +1632,8 @@ _COM_AZURE_DEV__BASE__PACKED__END
     break; // exit while loop
   }
   _throw FileSystemException("Not a link.", Type::getType<FileSystem>());
+#elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__ZEPHYR)
+  _COM_AZURE_DEV__BASE__NOT_SUPPORTED();
 #else // unix
   char buffer[PATH_MAX + 1];
   ssize_t length = ::readlink(path.getElements(), buffer, sizeof(buffer));

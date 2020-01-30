@@ -21,6 +21,7 @@
 #    define _LARGEFILE64_SOURCE 1
 #  endif
 #if (_COM_AZURE_DEV__BASE__OS != _COM_AZURE_DEV__BASE__FREERTOS) && \
+    (_COM_AZURE_DEV__BASE__OS != _COM_AZURE_DEV__BASE__ZEPHYR) && \
     (_COM_AZURE_DEV__BASE__OS != _COM_AZURE_DEV__BASE__WASI)
 #  include <sys/mman.h>
 #endif
@@ -66,6 +67,7 @@ SharedMemory::SharedMemoryImpl::SharedMemoryImpl(
     _throw MemoryException("Unable to open shared memory.", this);
   }
 #elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__FREERTOS) || \
+      (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__ZEPHYR) || \
       (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__WASI)
   BASSERT(!"Not supported.");
 #else // unix
@@ -98,6 +100,7 @@ SharedMemory::SharedMemoryImpl::SharedMemoryImpl(
       region.getOffset()
     );
   #elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__FREERTOS) || \
+        (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__ZEPHYR) || \
         (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__WASI)
     BASSERT(!"Not supported.");
   #else
@@ -133,6 +136,7 @@ void SharedMemory::SharedMemoryImpl::lock()
   #if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__CYGWIN)
     _COM_AZURE_DEV__BASE__NOT_SUPPORTED();
   #elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__FREERTOS) || \
+        (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__ZEPHYR) || \
         (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__WASI)
     BASSERT(!"Not supported.");
   #else
@@ -155,6 +159,7 @@ void SharedMemory::SharedMemoryImpl::unlock()
   #if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__CYGWIN)
     _COM_AZURE_DEV__BASE__NOT_SUPPORTED();
   #elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__FREERTOS) || \
+        (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__ZEPHYR) || \
         (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__WASI)
     BASSERT(!"Not supported.");
   #else  
@@ -195,6 +200,7 @@ void SharedMemory::SharedMemoryImpl::setProtection(
     MemoryException(this)
   );
 #elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__FREERTOS) || \
+      (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__ZEPHYR) || \
       (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__WASI)
   BASSERT(!"Not supported.");
 #else // unix
@@ -236,6 +242,7 @@ void SharedMemory::SharedMemoryImpl::synchronize(
       Type::getType<SharedMemory>())
   );
 #elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__FREERTOS) || \
+      (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__ZEPHYR) || \
       (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__WASI)
   BASSERT(!"Not supported.");
 #else // unix
@@ -257,6 +264,7 @@ SharedMemory::SharedMemoryImpl::~SharedMemoryImpl() noexcept
   BASSERT(status != 0);
   ::CloseHandle(handle);
 #elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__FREERTOS) || \
+      (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__ZEPHYR) || \
       (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__WASI)
   BASSERT(!"Not supported.");
 #else // unix

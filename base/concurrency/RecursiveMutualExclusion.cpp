@@ -125,7 +125,7 @@ void RecursiveMutualExclusion::exclusiveLock() const
   }
 
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
-  ::EnterCriticalSection(&_handle->handle);
+  ::EnterCriticalSection(&handle->handle);
 #elif defined(_COM_AZURE_DEV__BASE__PTHREAD)
   int result = pthread_mutex_lock(&handle->mutex);
   if (result == 0) {

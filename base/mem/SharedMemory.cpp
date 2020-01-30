@@ -12,6 +12,7 @@
  ***************************************************************************/
 
 #include <base/mem/SharedMemory.h>
+#include <base/Profiler.h>
 #include <base/build.h>
 
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
@@ -299,6 +300,8 @@ SharedMemory::SharedMemory(
   unsigned int access,
   unsigned int options)
 {
+  Profiler::ResourceCreateTask profile("SharedMemory::SharedMemory()");
+
   File::Access fileAccess = File::READ;
   if (access & SharedMemory::WRITE) {
     if (access & (SharedMemory::READ|SharedMemory::EXECUTE)) {
@@ -339,6 +342,8 @@ SharedMemory& SharedMemory::operator=(const SharedMemory& assign) noexcept
 
 void SharedMemory::lock()
 {
+  Profiler::WaitTask profile("SharedMemory::lock()");
+
   sharedMemory->lock();
 }
 
@@ -354,6 +359,7 @@ void SharedMemory::setProtection(unsigned int access)
 
 void SharedMemory::synchronize(bool asynchronous)
 {
+  Profiler::IOFlushTask profile("SharedMemory::synchronize()");
   sharedMemory->synchronize(asynchronous);
 }
 

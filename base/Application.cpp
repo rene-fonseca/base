@@ -273,6 +273,8 @@ public:
 
   static BOOL WINAPI signalHandler(DWORD signal) noexcept
   {
+    Profiler::pushSignal("signalHandler()");
+
     switch (signal) {
     case CTRL_LOGOFF_EVENT:
     case CTRL_SHUTDOWN_EVENT:
@@ -312,7 +314,10 @@ public:
     HWND window,
     UINT message,
     WPARAM primaryParameter,
-    LPARAM secondaryParameter) noexcept {
+    LPARAM secondaryParameter) noexcept
+  {
+    Profiler::pushSignal("messageHandler()");
+
     // TAG: we should destroy window in destructor
     //StringOutputStream stream;
     //stream << "messageHandler: message=" << message << " primary="
@@ -337,6 +342,8 @@ public:
 #  if (defined(_COM_AZURE_DEV__BASE__HAVE_SIGACTION))
   static void actionHandler(int signal, siginfo_t* info, void* opaque) noexcept
   {
+    Profiler::pushSignal("actionHandler()");
+
     const char* error = nullptr;
     
 #if 0
@@ -612,6 +619,8 @@ public:
   
   static void signalHandler(int signal) noexcept
   {
+    Profiler::pushSignal("signalHandler()");
+
     switch (signal) {
     case SIGHUP: // hangup
       if (Thread::getThread()->isMainThread()) {

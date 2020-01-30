@@ -25,6 +25,7 @@
 #include <base/io/FileDescriptor.h>
 #include <base/filesystem/FileSystem.h>
 #include <base/net/Url.h>
+#include <base/Profiler.h>
 #include <base/SystemInformation.h>
 #include <base/Version.h>
 #include <base/Architecture.h>
@@ -711,6 +712,8 @@ void UnitTestManager::addTest(Reference<UnitTest> test)
 
 bool UnitTestManager::runTest(Reference<UnitTest> test)
 {
+  Profiler::Task profile("UnitTestManager::runTest()");
+
   auto run = test->runImpl();
   if (!run->failed) {
     ++passed;
@@ -828,6 +831,8 @@ namespace {
 
 bool UnitTestManager::runTests(const String& pattern, bool runDevel)
 {
+  Profiler::Task profile("UnitTestManager::runTests()");
+
   // TAG: allow tests to run concurrently
 
   if (traceExceptions) {

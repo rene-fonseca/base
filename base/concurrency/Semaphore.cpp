@@ -208,6 +208,7 @@ Semaphore::Semaphore(unsigned int value)
   // assume single threaded
 #endif
   this->handle = _handle;
+  profile.setHandle(*_handle);
 }
 
 int Semaphore::getValue() const

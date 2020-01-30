@@ -150,6 +150,7 @@ ReadWriteLock::ReadWriteLock()
   // assume single threaded
 #endif
   this->handle = _handle;
+  profile.setHandle(*_handle);
 }
 
 void ReadWriteLock::exclusiveLock() const

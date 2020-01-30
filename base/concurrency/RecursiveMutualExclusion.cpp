@@ -112,6 +112,7 @@ RecursiveMutualExclusion::RecursiveMutualExclusion()
   // assume single threaded
 #endif
   this->handle = _handle;
+  profile.setHandle(*_handle);
 }
 
 void RecursiveMutualExclusion::exclusiveLock() const

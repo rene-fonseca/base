@@ -65,6 +65,7 @@ DEPENDENCY(Event);
 DEPENDENCY(Heap);
 DEPENDENCY(MutualExclusion);
 DEPENDENCY(Once);
+DEPENDENCY(ReadWriteLock);
 DEPENDENCY(RecursiveMutualExclusion);
 DEPENDENCY(RecursiveSpinLock);
 DEPENDENCY(Reference);

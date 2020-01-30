@@ -23,6 +23,7 @@
 #include <base/Base.h>
 #include <base/ResourceHandle.h>
 #include <base/Profiler.h>
+#include <base/UnitTest.h>
 
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
 #  include <windows.h>
@@ -374,5 +375,53 @@ void ReadWriteLock::releaseLock() const
 ReadWriteLock::~ReadWriteLock()
 {
 }
+
+#if defined(_COM_AZURE_DEV__BASE__TESTS)
+
+class TEST_CLASS(ReadWriteLock) : public UnitTest {
+public:
+
+  TEST_PRIORITY(1);
+  TEST_PROJECT("base/concurrency");
+  TEST_IMPACT(CRITICAL);
+  TEST_TIMEOUT_MS(30 * 1000);
+
+  void run() override
+  {
+    // TAG: add Thread
+
+    TEST_DECLARE_HERE(A);
+    TEST_DECLARE_HERE(B);
+    TEST_DECLARE_HERE(C);
+    TEST_DECLARE_HERE(D);
+
+    ReadWriteLock lock;
+    if (lock.tryExclusiveLock()) {
+      TEST_HERE(A);
+      lock.releaseLock();
+    }
+    if (lock.tryExclusiveLock()) {
+      TEST_HERE(B);
+      lock.releaseLock();
+    }
+    lock.exclusiveLock();
+    lock.releaseLock();
+    
+    if (lock.trySharedLock()) {
+      TEST_HERE(C);
+      lock.releaseLock();
+    }
+    if (lock.trySharedLock()) {
+      TEST_HERE(D);
+      lock.releaseLock();
+    }
+    lock.sharedLock();
+    lock.releaseLock();
+  }
+};
+
+TEST_REGISTER(ReadWriteLock);
+
+#endif
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

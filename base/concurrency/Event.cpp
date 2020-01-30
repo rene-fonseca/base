@@ -197,7 +197,7 @@ void Event::reset()
 
 void Event::signal()
 {
-  Profiler::pushSignal("Event::wait()");
+  Profiler::pushSignal("Event::signal()");
 
   EventHandle* handle = toEventHandle(this->handle);
   if (!handle) {

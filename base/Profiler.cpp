@@ -279,6 +279,11 @@ void Profiler::setMinimumHeapSize(unsigned int _minimumHeapSize) noexcept
   profiler.minimumHeapSize = _minimumHeapSize;
 }
 
+void Profiler::setCaptureIO(unsigned int maximumSize) noexcept
+{
+  profiler.captureIOSize = maximumSize;
+}
+
 void Profiler::setStackPattern(const String& _stackPattern) noexcept
 {
   profiler.stackPattern = _stackPattern;
@@ -311,6 +316,17 @@ void Profiler::SuspendProfiling::suspendAndResume(bool resume) noexcept
       ++profiling.suspended;
     }
   }
+}
+
+unsigned int Profiler::CaptureIO::setCaptureIO(unsigned int size) noexcept
+{
+  if (auto tlc = Thread::getLocalContext()) {
+    auto& profiling = tlc->profiling;
+    const unsigned int captureIO = profiling.captureIO;
+    profiling.captureIO = size;
+    return captureIO;
+  }
+  return 0;
 }
 
 void Profiler::release()
@@ -423,7 +439,7 @@ Profiler::Event* Profiler::Task::getEvent() noexcept
 }
 #endif
 
-void Profiler::Task::setTaskBytesRead(unsigned int bytesRead) noexcept
+void Profiler::Task::setTaskBytesRead(const uint8* buffer, unsigned int bytesRead) noexcept
 {
   if (taskId == BAD) {
     return;
@@ -434,12 +450,17 @@ void Profiler::Task::setTaskBytesRead(unsigned int bytesRead) noexcept
   auto tlc = Thread::getLocalContext();
   Event& e = tlc->profiling.events.getElements()[taskId];
   if (e.cat == CAT_IO_READ) {
-    e.data = new ReferenceValue(bytesRead);
+    if (buffer && (tlc->profiling.captureIO > 0)) {
+      String bytes(reinterpret_cast<const char*>(buffer), minimum(bytesRead, tlc->profiling.captureIO));
+      e.data = new ReferenceIO(bytesRead, bytes);
+    } else {
+      e.data = new ReferenceValue(bytesRead);
+    }
     tlc->bytesRead += bytesRead;
   }
 }
 
-void Profiler::Task::setTaskBytesWritten(unsigned int bytesWritten) noexcept
+void Profiler::Task::setTaskBytesWritten(const uint8* buffer, unsigned int bytesWritten) noexcept
 {
   if (taskId == BAD) {
     return;
@@ -450,7 +471,12 @@ void Profiler::Task::setTaskBytesWritten(unsigned int bytesWritten) noexcept
   auto tlc = Thread::getLocalContext();
   Event& e = tlc->profiling.events.getElements()[taskId];
   if (e.cat == CAT_IO_WRITE) {
-    e.data = new ReferenceValue(bytesWritten);
+    if (buffer && (tlc->profiling.captureIO > 0)) {
+      String bytes(reinterpret_cast<const char*>(buffer), minimum(bytesWritten, tlc->profiling.captureIO));
+      e.data = new ReferenceIO(bytesWritten, bytes);
+    } else {
+      e.data = new ReferenceIO(bytesWritten);
+    }
     tlc->bytesRead += bytesWritten;
   }
 }
@@ -739,6 +765,7 @@ void Profiler::ProfilerImpl::close()
 
   auto BYTES_READ = o.createString("read");
   auto BYTES_WRITTEN = o.createString("written");
+  auto BUFFER = o.createString("buffer");
 
   auto PH_B = o.createString("B");
   auto PH_E = o.createString("E");
@@ -874,16 +901,22 @@ void Profiler::ProfilerImpl::close()
           // item->setValue(TTS, o.createInteger(e.tts));
 
           if (e.cat == CAT_IO_READ) {
-            if (auto r = e.data.cast<ReferenceValue>()) {
+            if (auto r = e.data.cast<ReferenceIO>()) {
               auto args = o.createObject();
               item->setValue(ARGS, args);
-              args->setValue(BYTES_READ, o.createInteger(r->value));
+              args->setValue(BYTES_READ, o.createInteger(r->size));
+              if (r->bytes) {
+                args->setValue(BUFFER, r->bytes);
+              }
             }
           } else if (e.cat == CAT_IO_WRITE) {
-            if (auto r = e.data.cast<ReferenceValue>()) {
+            if (auto r = e.data.cast<ReferenceIO>()) {
               auto args = o.createObject();
               item->setValue(ARGS, args);
-              args->setValue(BYTES_WRITTEN, o.createInteger(r->value));
+              args->setValue(BYTES_WRITTEN, o.createInteger(r->size));
+              if (r->bytes) {
+                args->setValue(BUFFER, r->bytes);
+              }
             }
           }
 

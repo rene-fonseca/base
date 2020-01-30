@@ -35,6 +35,7 @@ public:
   /** Profiling context. */
   struct {
     unsigned int suspended = 0;
+    unsigned int captureIO = 0;
     unsigned int tasks = 0; // number of tasks
     Allocator<Profiler::Event> events; // stack for task events
   } profiling;

@@ -166,16 +166,21 @@ public:
     Array<StackFrame> stackFramesHash; // cached frames (hash table)
     Array<StackFrame> stackFramesUnhash; // cached frames (remaining stack traces)
     String stackPattern; // stack frame pattern
-    Array<Frame> stackFrames; // all frames - index is id for frame
+    Array<Frame> stackFrames; // all frames - index is ID of frame
     Map<SymbolAndParent, unsigned int> stackFramesBySymbol;
     MemorySize rebalanceCount = 0;
     Map<uint32, unsigned int> stackFramesLookup; // lookup for sf to first frame
 
     PreferredAtomicCounter numberOfEvents;
     FileOutputStream fos;
-    bool useStackFrames = false; // include stack frames for events
-    unsigned int minimumWaitTime = 1; // minimum time to wait to record event
-    unsigned int minimumHeapSize = 4096 * 2/2; // minimum heap size to record event
+    /** Include stack frames for events. */
+    bool useStackFrames = false;
+    /** The minimum time to wait to record event. */
+    unsigned int minimumWaitTime = 1;
+    /** The minimum heap size to record event. */
+    unsigned int minimumHeapSize = 4096 * 2 / 2;
+    /** The global IO capture limit. */
+    unsigned int captureIOSize = 0;
 
     static constexpr uint32 SF_HIGH_BIT = 0x80000000U; // differentiates between hashed and unhashed buffers
     
@@ -241,6 +246,8 @@ public:
   static void setMinimumWaitTime(unsigned int minimumWaitTime) noexcept;
   /** Sets the minimum heap size to record event. */
   static void setMinimumHeapSize(unsigned int minimumHeapSize) noexcept;
+  /** Sets the whether to record IO bytes. */
+  static void setCaptureIO(unsigned int maximumSize) noexcept;
   /** Sets the stack frame pattern. */
   static void setStackPattern(const String& stackPattern) noexcept;
 
@@ -249,13 +256,14 @@ public:
     CAT_MEMORY = 1,
     CAT_OBJECT = 2,
     CAT_IO = 3,
-    CAT_IO_READ = 4,
-    CAT_IO_WRITE = 5,
-    CAT_NETWORK = 6,
-    CAT_WAIT = 7,
-    CAT_EXCEPTION = 8,
-    CAT_SIGNAL = 9,
-    CAT_RENDERER = 10
+    CAT_IO_FLUSH = 4,
+    CAT_IO_READ = 5,
+    CAT_IO_WRITE = 6,
+    CAT_NETWORK = 7,
+    CAT_WAIT = 8,
+    CAT_EXCEPTION = 9,
+    CAT_SIGNAL = 10,
+    CAT_RENDERER = 11
   };
   // use macro to encode/decode in char*
 #endif
@@ -264,6 +272,7 @@ public:
   static constexpr const char* CAT_MEMORY = "MEMORY";
   static constexpr const char* CAT_OBJECT = "OBJECT";
   static constexpr const char* CAT_IO = "IO";
+  static constexpr const char* CAT_IO_FLUSH = "IOFLUSH";
   static constexpr const char* CAT_IO_READ = "IOREAD";
   static constexpr const char* CAT_IO_WRITE = "IOWRITE";
   static constexpr const char* CAT_NETWORK = "NET";
@@ -302,6 +311,26 @@ public:
     inline ~SuspendProfiling() noexcept
     {
       suspendAndResume(true);
+    }
+  };
+
+  /** Enables IO Capture for the current scope. ATTENTION: Your profiling data can contain secrets!. */
+  class _COM_AZURE_DEV__BASE__API CaptureIO {
+  private:
+
+    /** Updates the IO capture for the thread and returns the previous capture limit. */
+    static unsigned int setCaptureIO(unsigned int size) noexcept;
+    unsigned int size = 0;
+  public:
+
+    inline CaptureIO(unsigned int _size) noexcept
+    {
+      size = setCaptureIO(_size);
+    }
+
+    inline ~CaptureIO() noexcept
+    {
+      setCaptureIO(size);
     }
   };
 
@@ -361,6 +390,28 @@ public:
     }
   };
 
+  /** A reference counted value. */
+  class _COM_AZURE_DEV__BASE__API ReferenceIO : public ReferenceCountedObject {
+  public:
+
+    unsigned int size = 0;
+    String bytes;
+
+    inline ReferenceIO() noexcept
+    {
+    }
+
+    inline ReferenceIO(unsigned int _size) noexcept
+      : size(_size)
+    {
+    }
+
+    inline ReferenceIO(unsigned int _size, const String& _bytes) noexcept
+      : size(_size), bytes(_bytes)
+    {
+    }
+  };
+  
   /** A reference counted string. */
   class _COM_AZURE_DEV__BASE__API ReferenceCounters : public ReferenceCountedObject {
   public:
@@ -418,10 +469,10 @@ public:
   protected:
 
     /** Sets bytes read for task. */
-    void setTaskBytesRead(unsigned int bytesRead) noexcept;
+    void setTaskBytesRead(const uint8* buffer, unsigned int bytesRead) noexcept;
 
     /** Sets bytes written for task. */
-    void setTaskBytesWritten(unsigned int bytesWritten) noexcept;
+    void setTaskBytesWritten(const uint8* buffer, unsigned int bytesWritten) noexcept;
   public:
     
     /** Task start. */
@@ -461,6 +512,16 @@ public:
     }
   };
 
+  /** IO flush task. */
+  class _COM_AZURE_DEV__BASE__API IOFlushTask : public IOTask {
+  public:
+
+    /** IO flush task start. */
+    inline IOFlushTask(const char* name, const char* cat = CAT_IO_FLUSH) : IOTask(name, cat)
+    {
+    }
+  };
+
   /** IO read task. */
   class _COM_AZURE_DEV__BASE__API IOReadTask : public IOTask {
   private:
@@ -489,7 +550,7 @@ public:
     /** Task complete. */
     inline ~IOReadTask() noexcept
     {
-      setTaskBytesRead(bytesRead);
+      setTaskBytesRead(nullptr, bytesRead);
     }
   };
 
@@ -521,7 +582,7 @@ public:
     /** Task complete. */
     inline ~IOWriteTask() noexcept
     {
-      setTaskBytesWritten(bytesWritten);
+      setTaskBytesWritten(nullptr, bytesWritten);
     }
   };
 

@@ -19,6 +19,7 @@
 #endif
 
 #include <base/concurrency/Semaphore.h>
+#include <base/ResourceHandle.h>
 #include <base/Profiler.h>
 #include <base/UnitTest.h>
 
@@ -83,7 +84,7 @@ namespace ntapi {
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
-class SemaphoreImpl {
+class SemaphoreHandle : public ResourceHandle {
 public:
   
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
@@ -92,7 +93,6 @@ public:
   enum {MAXIMUM = PrimitiveTraits<int>::MAXIMUM};
   enum {QUERY_INFORMATION = 0}; // the query type for semaphore
 #elif defined(_COM_AZURE_DEV__BASE__PTHREAD_SEMAPHORE)
-  typedef sem_t Semaphore;
   
   #if defined(SEM_VALUE_MAX)
     enum {MAXIMUM = SEM_VALUE_MAX};
@@ -101,83 +101,124 @@ public:
   #else
     enum {MAXIMUM = 32767}; // minimum value specified by POSIX standard
   #endif
+  
+  sem_t semaphore;
+  
+  inline SemaphoreHandle() noexcept
+  {
+    clear(semaphore);
+  }
 #elif defined(_COM_AZURE_DEV__BASE__PTHREAD)
-  struct Semaphore {
-    volatile int value;
-    pthread_cond_t condition;
-    pthread_mutex_t mutex;
-  };
+  volatile int value = 0;
+  pthread_cond_t condition;
+  pthread_mutex_t mutex;
+
+  inline SemaphoreHandle() noexcept
+  {
+    clear(condition);
+    clear(mutex);
+  }
 
   enum {MAXIMUM = PrimitiveTraits<int>::MAXIMUM};
 #else
   enum {MAXIMUM = PrimitiveTraits<int>::MAXIMUM};
+
+  int count = 0;
 #endif
+
+  ~SemaphoreHandle()
+  {
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
+    if (!::CloseHandle(semaphore)) {
+      Runtime::corruption(_COM_AZURE_DEV__BASE__PRETTY_FUNCTION);
+    }
+#elif defined(_COM_AZURE_DEV__BASE__PTHREAD_SEMAPHORE)
+    if (sem_destroy(&semaphore) != 0) {
+      Runtime::corruption(_COM_AZURE_DEV__BASE__PRETTY_FUNCTION);
+    }
+#elif defined(_COM_AZURE_DEV__BASE__PTHREAD)
+    if (pthread_cond_destroy(&condition)) {
+      Runtime::corruption(_COM_AZURE_DEV__BASE__PRETTY_FUNCTION);
+    }
+    pthread_mutex_destroy(&mutex); // lets just hope that this doesn't fail
+#else
+    count = 0;
+#endif
+  }
 };
+
+namespace {
+
+  inline SemaphoreHandle* toSemaphoreHandle(const AnyReference& handle)
+  {
+    if (handle) { // TAG: we do not want a dynamic cast - use static cast
+      return handle.cast<SemaphoreHandle>().getValue();
+    }
+    return nullptr;
+  }
+}
 
 unsigned int Semaphore::getMaximum() noexcept
 {
-  return SemaphoreImpl::MAXIMUM;
+  return SemaphoreHandle::MAXIMUM;
 }
 
 Semaphore::Semaphore(unsigned int value)
 {
   Profiler::ResourceCreateTask profile("Semaphore::Semaphore()");
 
-  if (!(value <= SemaphoreImpl::MAXIMUM)) {
+  if (!(value <= SemaphoreHandle::MAXIMUM)) {
     _throw OutOfDomain(this);
   }
+
+  Reference<SemaphoreHandle> _handle = new SemaphoreHandle();
+
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
-  if (!(semaphore = (SemaphoreImpl::Semaphore)::CreateSemaphore(0, value, SemaphoreImpl::MAXIMUM, 0))) {
+  if (!(_handle->semaphore = ::CreateSemaphore(0, value, SemaphoreImpl::MAXIMUM, 0))) {
     _throw SemaphoreException(this);
   }
 #elif defined(_COM_AZURE_DEV__BASE__PTHREAD_SEMAPHORE)
-  if (sizeof(sem_t) <= sizeof(void*)) {
-    if (sem_init((sem_t*)&semaphore, 0, value)) {
-      _throw SemaphoreException(this);
-    }
-  } else {
-    semaphore = new sem_t;
-    if (sem_init((sem_t*)semaphore, 0, value)) {
-      delete (sem_t*)semaphore;
-      _throw SemaphoreException(this);
-    }
+  if (sem_init(&_handle->semaphore, 0, value)) {
+    _throw SemaphoreException(this);
   }
 #elif defined(_COM_AZURE_DEV__BASE__PTHREAD)
-  SemaphoreImpl::Semaphore* semaphore = new SemaphoreImpl::Semaphore;
-  semaphore->value = value;
+  _handle->value = value;
   
   pthread_mutexattr_t attributes;
   if (pthread_mutexattr_init(&attributes)) {
-    delete semaphore;
     _throw SemaphoreException(this);
   }
 #if (_COM_AZURE_DEV__BASE__OS != _COM_AZURE_DEV__BASE__ZEPHYR)
   if (pthread_mutexattr_settype(&attributes, PTHREAD_MUTEX_ERRORCHECK)) {
     pthread_mutexattr_destroy(&attributes); // should never fail
-    delete semaphore;
     _throw SemaphoreException(this);
   }
 #endif
-  if (pthread_mutex_init(&semaphore->mutex, &attributes)) {
+  if (pthread_mutex_init(&_handle->mutex, &attributes)) {
     pthread_mutexattr_destroy(&attributes); // should never fail
-    delete semaphore;
     _throw SemaphoreException(this);
   }
   pthread_mutexattr_destroy(&attributes); // should never fail
 
-  if (pthread_cond_init(&(semaphore->condition), 0)) {
-    pthread_mutex_destroy(&(semaphore->mutex)); // lets just hope that this doesn't fail
-    delete semaphore;
+  if (pthread_cond_init(&_handle->condition, 0)) {
+    pthread_mutex_destroy(&_handle->mutex); // lets just hope that this doesn't fail
     _throw SemaphoreException(this);
   }
-  this->semaphore = semaphore;
 #else
-  semaphore = new int(0);
+  // assume single threaded
 #endif
+  this->handle = _handle;
 }
 
 int Semaphore::getValue() const
 {
+  // TAG: Profiler - add get value info
+  
+  SemaphoreHandle* handle = toSemaphoreHandle(this->handle);
+  if (!handle) {
+    _throw NullPointer(this);
+  }
+
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   #if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__WINNT4) || \
       (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__W2K) || \
@@ -205,58 +246,59 @@ int Semaphore::getValue() const
   #endif
 #elif defined(_COM_AZURE_DEV__BASE__PTHREAD_SEMAPHORE)
   int value = 0;
-  sem_t* sem = (sizeof(sem_t) <= sizeof(void*)) ? (sem_t*)&semaphore : (sem_t*)semaphore;
-  if (::sem_getvalue(sem, &value)) { // value is not negative
+  if (::sem_getvalue(handle->semaphore, &value)) { // value is not negative
     _throw SemaphoreException(this);
   }
   return value;
 #elif defined(_COM_AZURE_DEV__BASE__PTHREAD)
-  SemaphoreImpl::Semaphore* sem = (SemaphoreImpl::Semaphore*)semaphore;
   unsigned int result = 0;
-  if (pthread_mutex_lock(&(sem->mutex))) {
+  if (pthread_mutex_lock(&handle->mutex)) {
     _throw SemaphoreException(this);
   }
-  result = sem->value;
-  if (pthread_mutex_unlock(&(sem->mutex))) {
+  result = handle->value;
+  if (pthread_mutex_unlock(&handle->mutex)) {
     _throw SemaphoreException(this);
   }
   return result;
 #else
-  int* handle = reinterpret_cast<int*>(semaphore);
-  return *handle;
+  return handle->count;
 #endif
 }
 
 void Semaphore::post()
 {
+  Profiler::WaitTask profile("Semaphore::post()");
+
+  SemaphoreHandle* handle = toSemaphoreHandle(this->handle);
+  if (!handle) {
+    _throw NullPointer(this);
+  }
+
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
-  if (!::ReleaseSemaphore((HANDLE)semaphore, 1, 0)) {
+  if (!::ReleaseSemaphore(handle->semaphore, 1, 0)) {
     _throw SemaphoreException(this);
   }
 #elif defined(_COM_AZURE_DEV__BASE__PTHREAD_SEMAPHORE)
-  sem_t* sem = (sizeof(sem_t) <= sizeof(void*)) ? (sem_t*)&semaphore : (sem_t*)semaphore;
-  if (::sem_post(sem) == ERANGE) { // otherwise sem_post returns successfully
+  if (::sem_post(handle->Semaphore) == ERANGE) { // otherwise sem_post returns successfully
     _throw Overflow(this);
   }
 #elif defined(_COM_AZURE_DEV__BASE__PTHREAD)
-  SemaphoreImpl::Semaphore* sem = (SemaphoreImpl::Semaphore*)semaphore;
-  if (pthread_mutex_lock(&(sem->mutex))) {
+  if (pthread_mutex_lock(&handle->mutex)) {
     _throw SemaphoreException(this);
   }
-  if ((unsigned int)sem->value == SemaphoreImpl::MAXIMUM) {
-    if (pthread_mutex_unlock(&(sem->mutex))) {
+  if ((unsigned int)handle->value == SemaphoreHandle::MAXIMUM) {
+    if (pthread_mutex_unlock(&handle->mutex)) {
       _throw SemaphoreException(this);
     }
     _throw Overflow(this);
   }
-  sem->value++;
-  if (pthread_mutex_unlock(&(sem->mutex))) {
+  handle->value++;
+  if (pthread_mutex_unlock(&handle->mutex)) {
     _throw SemaphoreException(this);
   }
-  pthread_cond_signal(&(sem->condition)); // we only need to signal one thread
+  pthread_cond_signal(&handle->condition); // we only need to signal one thread
 #else
-  int* handle = reinterpret_cast<int*>(semaphore);
-  ++*handle;
+  ++handle->count;
 #endif
 }
 
@@ -264,59 +306,65 @@ void Semaphore::wait() const
 {
   Profiler::WaitTask profile("Semaphore::wait()");
   
+  SemaphoreHandle* handle = toSemaphoreHandle(this->handle);
+  if (!handle) {
+    _throw NullPointer(this);
+  }
+  
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
-  if (::WaitForSingleObject((HANDLE)semaphore, INFINITE) != WAIT_OBJECT_0) {
+  if (::WaitForSingleObject(handle->semaphore, INFINITE) != WAIT_OBJECT_0) {
     _throw SemaphoreException(this);
   }
 #elif defined(_COM_AZURE_DEV__BASE__PTHREAD_SEMAPHORE)
-  sem_t* sem = (sizeof(sem_t) <= sizeof(void*)) ? (sem_t*)&semaphore : (sem_t*)semaphore;
-  if (::sem_wait(sem)) {
+  if (::sem_wait(&handle->semaphore)) {
     _throw SemaphoreException(this);
   }
 #elif defined(_COM_AZURE_DEV__BASE__PTHREAD)
-  SemaphoreImpl::Semaphore* sem = (SemaphoreImpl::Semaphore*)semaphore;
-  if (pthread_mutex_lock(&(sem->mutex))) {
+  if (pthread_mutex_lock(&handle->mutex)) {
     _throw SemaphoreException(this);
   }
-  while (sem->value == 0) { // wait for resource to become available
-    pthread_cond_wait(&(sem->condition), &(sem->mutex));
+  while (handle->value == 0) { // wait for resource to become available
+    pthread_cond_wait(&handle->condition, &handle->mutex);
   }
-  sem->value--;
-  if (pthread_mutex_unlock(&sem->mutex)) {
+  handle->value--;
+  if (pthread_mutex_unlock(&handle->mutex)) {
     _throw SemaphoreException(this);
   }
 #else
-  int* handle = reinterpret_cast<int*>(semaphore);
-  while (!*handle) {
+  while (!handle->count) {
   }
-  --*handle;
+  --handle->count;
 #endif
 }
 
 bool Semaphore::tryWait() const
 {
+  Profiler::WaitTask profile("Semaphore::tryWait()");
+
+  SemaphoreHandle* handle = toSemaphoreHandle(this->handle);
+  if (!handle) {
+    _throw NullPointer(this);
+  }
+  
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
-  return ::WaitForSingleObject((HANDLE)semaphore, 0) == WAIT_OBJECT_0;
+  return ::WaitForSingleObject(handle->semaphore, 0) == WAIT_OBJECT_0;
 #elif defined(_COM_AZURE_DEV__BASE__PTHREAD_SEMAPHORE)
-  sem_t* sem = (sizeof(sem_t) <= sizeof(void*)) ? (sem_t*)&semaphore : (sem_t*)semaphore;
-  return ::sem_trywait(sem) == 0; // did we decrement?
+  return ::sem_trywait(handle->semaphore) == 0; // did we decrement?
 #elif defined(_COM_AZURE_DEV__BASE__PTHREAD)
-  SemaphoreImpl::Semaphore* sem = (SemaphoreImpl::Semaphore*)semaphore;
-  if (pthread_mutex_lock(&(sem->mutex))) {
+  if (pthread_mutex_lock(&handle->mutex)) {
     _throw SemaphoreException(this);
   }
-  bool result = sem->value > 0;
+  bool result = handle->value > 0;
   if (result) {
-    sem->value--;
+    handle->value--;
   }
-  if (pthread_mutex_unlock(&(sem->mutex))) {
+  if (pthread_mutex_unlock(&handle->mutex)) {
     _throw SemaphoreException(this);
   }
   return result;
 #else
-  int* handle = reinterpret_cast<int*>(semaphore);
-  if (*handle) {
-    --*handle;
+  if (handle->count) {
+    --handle->count;
     return true;
   }
   return false;
@@ -325,31 +373,6 @@ bool Semaphore::tryWait() const
 
 Semaphore::~Semaphore()
 {
-#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
-  if (!::CloseHandle((HANDLE)semaphore)) {
-    Runtime::corruption(_COM_AZURE_DEV__BASE__PRETTY_FUNCTION);
-  }
-#elif defined(_COM_AZURE_DEV__BASE__PTHREAD_SEMAPHORE)
-  if (sizeof(sem_t) <= sizeof(semaphore)) {
-    if (sem_destroy((sem_t*)&semaphore) != 0) {
-      Runtime::corruption(_COM_AZURE_DEV__BASE__PRETTY_FUNCTION);
-    }
-  } else {
-    if (sem_destroy((sem_t*)semaphore) != 0) {
-      Runtime::corruption(_COM_AZURE_DEV__BASE__PRETTY_FUNCTION);
-    }
-    delete (SemaphoreImpl::Semaphore*)semaphore;
-  }
-#elif defined(_COM_AZURE_DEV__BASE__PTHREAD)
-  if (pthread_cond_destroy(&((SemaphoreImpl::Semaphore*)semaphore)->condition)) {
-    Runtime::corruption(_COM_AZURE_DEV__BASE__PRETTY_FUNCTION);
-  }
-  pthread_mutex_destroy(&((SemaphoreImpl::Semaphore*)semaphore)->mutex); // lets just hope that this doesn't fail
-  delete (SemaphoreImpl::Semaphore*)semaphore;
-#else
-  int* handle = reinterpret_cast<int*>(semaphore);
-  delete handle;
-#endif
 }
 
 #if defined(_COM_AZURE_DEV__BASE__TESTS)

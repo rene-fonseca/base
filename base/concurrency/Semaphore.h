@@ -13,12 +13,12 @@
 
 #pragma once
 
-#include <base/Object.h>
 #include <base/concurrency/SemaphoreException.h>
 #include <base/OutOfDomain.h>
 #include <base/Overflow.h>
 #include <base/Primitives.h>
 #include <base/OperatingSystem.h>
+#include <base/Resource.h>
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
@@ -28,14 +28,10 @@ _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
   
   @short Semaphore synchronization object
   @ingroup concurrency
-  @version 1.1
+  @version 1.2
 */
 
-class _COM_AZURE_DEV__BASE__API Semaphore : public virtual Object {
-private:
-
-  /** Internal semaphore state. */
-  void* semaphore = nullptr;
+class _COM_AZURE_DEV__BASE__API Semaphore : public Resource {
 public:
   
   /**

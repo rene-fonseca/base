@@ -590,6 +590,8 @@ Socket::Socket() noexcept
 
 bool Socket::accept(Socket& socket)
 {
+  Profiler::ResourceCreateTask profile("Socket::accept()");
+
 #if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__FREERTOS) || \
     (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__ZEPHYR) || \
     (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__WASI)
@@ -660,6 +662,8 @@ void Socket::close()
 
 void Socket::connect(const InetAddress& address, unsigned short port)
 {
+  Profiler::WaitTask profile("Socket::connect()");
+
 #if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__FREERTOS) || \
     (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__ZEPHYR) || \
     (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__WASI)
@@ -696,6 +700,8 @@ void Socket::connect(const InetAddress& address, unsigned short port)
 
 void Socket::create(Kind kind, Domain domain)
 {
+  Profiler::ResourceCreateTask profile("Socket::create()");
+
 #if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__FREERTOS) || \
     (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__ZEPHYR) || \
     (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__WASI)
@@ -742,6 +748,8 @@ void Socket::create(Kind kind, Domain domain)
 
 void Socket::listen(unsigned int backlog)
 {
+  Profiler::WaitTask profile("Socket::listen()");
+
 #if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__FREERTOS) || \
     (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__ZEPHYR) || \
     (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__WASI)

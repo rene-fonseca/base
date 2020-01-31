@@ -293,7 +293,8 @@ public:
   static constexpr const char* CAT_SIGNAL = "SIGNAL";
   static constexpr const char* CAT_RENDERER = "RENDERER";
   static constexpr const char* CAT_COMPUTE = "COMPUTE";
-  
+  static constexpr const char* CAT_SECURITY = "SECURITY";
+
   enum {
     EVENT_BEGIN = 'B',
     EVENT_END = 'E',
@@ -329,10 +330,12 @@ public:
 
   /** Enables IO Capture for the current scope. ATTENTION: Your profiling data can contain secrets!. */
   class _COM_AZURE_DEV__BASE__API CaptureIO {
-  private:
+  public:
 
     /** Updates the IO capture for the thread and returns the previous capture limit. */
     static unsigned int setCaptureIO(unsigned int size) noexcept;
+  private:
+
     unsigned int size = 0;
   public:
 
@@ -547,6 +550,31 @@ public:
     inline ComputeTask(const char* name) noexcept
       : Task(name, CAT_COMPUTE)
     {
+    }
+  };
+
+  /** Security task. */
+  class _COM_AZURE_DEV__BASE__API SecurityTask : public Task {
+  private:
+    
+    bool suppress = false;
+    unsigned int captureIO = 0;
+  public:
+
+    /** Security task start. */
+    inline SecurityTask(const char* name, bool suppressIOCapturing) noexcept
+      : Task(name, CAT_SECURITY), suppress(suppressIOCapturing)
+    {
+      if (suppress) {
+        captureIO = CaptureIO::setCaptureIO(0);
+      }
+    }
+    
+    inline ~SecurityTask() noexcept
+    {
+      if (suppress) {
+        CaptureIO::setCaptureIO(captureIO);
+      }
     }
   };
 

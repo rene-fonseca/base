@@ -23,6 +23,13 @@
 #include <base/ResourceHandle.h>
 #include <base/UnitTest.h>
 
+#if 0
+#define _COM_AZURE_DEV__BASE__ALLOW_OPTIMIZATION
+#if defined(_COM_AZURE_DEV__BASE__ALLOW_OPTIMIZATION)
+#  pragma optimize("", on)
+#endif
+#endif
+
 #if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__MACOS)
 #include <sys/resource.h>
 #endif

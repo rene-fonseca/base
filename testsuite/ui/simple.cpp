@@ -37,23 +37,27 @@ public:
       const Position& position,
       const Dimension& dimension,
       unsigned int flags)
-      : Window(position, dimension, flags) {
+      : Window(position, dimension, flags)
+    {
       setTitle(title);
       setIconTitle(title);
     }
     
-    void onDisplay() noexcept {
+    void onDisplay() noexcept
+    {
       // setBrush();
       clear();
       line(Position(10, 60), Position(64, 20));
       flush();
     }
     
-    void onMove(const Position& position) noexcept {
+    void onMove(const Position& position) noexcept
+    {
       fout << "Event: move " << position << ENDL;
     }
     
-    void onResize(const Dimension& dimension) noexcept {
+    void onResize(const Dimension& dimension) noexcept
+    {
       fout << "Event: resize " << dimension << ENDL;
       onDisplay();
     }
@@ -63,7 +67,8 @@ public:
       Literal literal;
     };
     
-    void onMouseMove(const Position& position, unsigned int state) noexcept {
+    void onMouseMove(const Position& position, unsigned int state) noexcept
+    {
       static const Flag STATES[] = {
         {Mouse::LEFT, Literal("LEFT")},
         {Mouse::MIDDLE, Literal("MIDDLE")},
@@ -92,7 +97,8 @@ public:
       fout << ENDL;
     }
 
-    void onMouseScope(bool scope) noexcept {
+    void onMouseScope(bool scope) noexcept
+    {
       fout << "Event: mouse scope "
            << (scope ? Literal("INSIDE SCOPE") : Literal("OUT OF SCOPE")) << ENDL;
     }
@@ -101,7 +107,8 @@ public:
       const Position& position,
       Mouse::Button button,
       Mouse::Event event,
-      unsigned int state) noexcept {
+      unsigned int state) noexcept
+    {
       
       static const Flag STATES[] = {
         {Mouse::LEFT, MESSAGE("LEFT")},
@@ -167,13 +174,13 @@ public:
       }
     }
     
-    void onMouseWheel(
-      const Position& position, int delta, unsigned int buttons) noexcept {
+    void onMouseWheel(const Position& position, int delta, unsigned int buttons) noexcept
+    {
       fout << "Event: mouse wheel " << position << SP << delta << ENDL;
     }
     
-    void onKey(
-      unsigned int key, unsigned int flags, unsigned int modifiers) noexcept {
+    void onKey(unsigned int key, unsigned int flags, unsigned int modifiers) noexcept
+    {
       if (flags & Key::PRESSED) {
         if (flags & Key::DEAD) {
           return;
@@ -195,17 +202,20 @@ public:
       }
     }
 
-    void onDestruction() noexcept {
+    void onDestruction() noexcept
+    {
       fout << "Event: destruction" << ENDL;
       exit();
     }
     
-    bool onClose() noexcept {
+    bool onClose() noexcept
+    {
       fout << "Event: close " << ENDL;
       return true;
     }
     
-    void onVisibility(Visibility visibility) noexcept {
+    void onVisibility(Visibility visibility) noexcept
+    {
       static const Literal VISIBILITY[] = {
         Literal("INVISIBLE"),
         Literal("PARTIALLY VISIBLE"),
@@ -215,17 +225,20 @@ public:
       fout << "Event: visibility " << VISIBILITY[visibility] << ENDL;
     }
     
-    void onFocus(Focus focus) noexcept {
+    void onFocus(Focus focus) noexcept
+    {
       update();
       fout << "Event: focus "
            << ((focus == ACQUIRED_FOCUS) ? Literal("ACQUIRED") : Literal("LOST")) << ENDL;
     }
     
-    void onMenu(unsigned int identifier) noexcept {
+    void onMenu(unsigned int identifier) noexcept
+    {
       fout << "Event: menu " << identifier << ENDL;
     }
     
-    void onCommand(unsigned int identifier) noexcept {
+    void onCommand(unsigned int identifier) noexcept
+    {
       fout << "Event: command " << identifier << ENDL;
     }
   };

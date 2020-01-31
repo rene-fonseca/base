@@ -1670,7 +1670,7 @@ FormatOutputStream& FormatOutputStream::operator<<(const Exception& e)
 {
   StringOutputStream s;
   s << "Exception '"
-    << TypeInfo::getTypename(e) << "' was raised";
+    << TypeInfo::getTypename(e.getThisType()) << "' was raised";
   if (e.getType().isInitialized()) {
     s << " by '" << TypeInfo::getTypename(e.getType()) << '\'';
   }

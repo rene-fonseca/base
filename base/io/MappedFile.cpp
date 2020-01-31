@@ -50,7 +50,7 @@ MappedFile::MappedFileImpl::MappedFileImpl(const File& _file, const FileRegion& 
 {
   bassert(region.getOffset() >= 0, FileException("Unable to map file region.", this));
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
-  HANDLE handle = ::CreateFileMapping((HANDLE)getHandle(file), 0, writeable ? PAGE_READWRITE : PAGE_READONLY, 0, 0, 0);
+  HANDLE handle = ::CreateFileMapping((HANDLE)file.getHandle(), 0, writeable ? PAGE_READWRITE : PAGE_READONLY, 0, 0, 0);
   bassert(handle, FileException("Unable to map file region.", this));
   LARGE_INTEGER offset;
   offset.QuadPart = region.getOffset();
@@ -67,7 +67,7 @@ MappedFile::MappedFileImpl::MappedFileImpl(const File& _file, const FileRegion& 
 #else // unix
   void* address = nullptr;
   #if defined(_COM_AZURE_DEV__BASE__LARGE_FILE_SYSTEM)
-    address = ::mmap64(0, region.getSize(), writeable ? (PROT_READ | PROT_WRITE) : PROT_READ, MAP_SHARED, getHandle(file), region.getOffset());
+    address = ::mmap64(0, region.getSize(), writeable ? (PROT_READ | PROT_WRITE) : PROT_READ, MAP_SHARED, file.getHandle(), region.getOffset());
   #elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__FREERTOS) || \
         (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__ZEPHYR) || \
         (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__WASI)
@@ -77,7 +77,7 @@ MappedFile::MappedFileImpl::MappedFileImpl(const File& _file, const FileRegion& 
       (region.getOffset() >= 0) && (region.getOffset() <= PrimitiveTraits<int>::MAXIMUM),
       FileException("Unable to map file region.", this)
     );
-    address = ::mmap(0, region.getSize(), writeable ? (PROT_READ | PROT_WRITE) : PROT_READ, MAP_SHARED, getHandle(file), region.getOffset());
+    address = ::mmap(0, region.getSize(), writeable ? (PROT_READ | PROT_WRITE) : PROT_READ, MAP_SHARED, file.getHandle(), region.getOffset());
   #endif
   bassert(address != (void*)-1, FileException("Unable to map file region.", this));
 #endif // flavor

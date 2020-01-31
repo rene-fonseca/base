@@ -32,10 +32,6 @@ _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 class _COM_AZURE_DEV__BASE__API SharedMemory : public Object {
 public:
   
-  static inline OperatingSystem::Handle getHandle(const File& file) noexcept {
-    return file.getHandle();
-  }
-  
   class _COM_AZURE_DEV__BASE__API SharedMemoryImpl : public ReferenceCountedObject {
   private:
 

@@ -19,26 +19,21 @@
 #include <base/string/String.h>
 #include <base/Date.h>
 #include <base/Primitives.h>
-#include <base/io/Handle.h>
+#include <base/Resource.h>
 #include <base/io/async/AsynchronousIOStream.h>
 #include <base/security/AccessControlList.h>
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
-
-class MappedFile;
-class SharedMemory;
 
 /**
   A file.
   
   @short File.
   @ingroup io
-  @version 1.0
+  @version 1.1
 */
 
-class _COM_AZURE_DEV__BASE__API File : public Object, public AsynchronousIOStream {
-  friend class MappedFile;
-  friend class SharedMemory;
+class _COM_AZURE_DEV__BASE__API File : public Resource, public AsynchronousIOStream {
 public:
 
   /** File access. */
@@ -98,28 +93,6 @@ public:
     MAX_SIZE_OF_PIPE_BUFFER, /**< Specifies the maximum number bytes that is guaranteed to be atomic when writing to a pipe. */
     MAX_SIZE_OF_SYMLINK /**< Specifies the maximum number of bytes in a symbolic link. */
   };
-  
-  class FileHandle : public Handle {
-    friend class Initialization;
-    friend class File;
-  private:
-
-    /** Invalid handle. */
-    static Handle* invalid;
-    
-    /** Initializes file handle. */
-    inline FileHandle(OperatingSystem::Handle handle) noexcept
-      : Handle(handle)
-    {
-    }
-    
-    /** Releases the resources used by the file. */
-    ~FileHandle();
-  };
-private:
-
-  /** The handle of the file. */
-  Reference<Handle> fd;
 public:
 
   /**
@@ -146,21 +119,6 @@ public:
     @param option Additional options (i.e. CREATE, TRUNCATE, EXCLUSIVE).
   */
   File(const String& path, Access access, unsigned int options);
-
-  /**
-    Initialize a new file object from other file object.
-  */
-  File(const File& copy) noexcept
-    : fd(copy.fd)
-  {
-  }
-
-  /**
-    Assignment of file object.
-  */
-  File& operator=(const File& assign) noexcept;
-
-
 
   /**
     Closes the file.
@@ -209,8 +167,7 @@ public:
     @param whence Specifies the base offset. The default is the beginning of
     the file.
   */
-  void setPosition(
-    long long position, Whence whence = BEGIN);
+  void setPosition(long long position, Whence whence = BEGIN);
 
   /**
     Truncates the file to the specified size. The file must have been opened
@@ -235,8 +192,7 @@ public:
     @param exclusive Specifies that the region should be locked exclusively.
     Default is true.
   */
-  void lock(
-    const FileRegion& region, bool exclusive = true);
+  void lock(const FileRegion& region, bool exclusive = true);
 
   /**
     Tries to lock specified region of the file. Exclusive locks require the
@@ -248,8 +204,7 @@ public:
 
     @return True if the lock was acquired.
   */
-  bool tryLock(
-    const FileRegion& region, bool exclusive = true);
+  bool tryLock(const FileRegion& region, bool exclusive = true);
 
   /**
     Unlocks the specified region of the file.
@@ -280,8 +235,7 @@ public:
   /**
     Returns the value of the specified file system variable.
   */
-  unsigned long getVariable(
-    Variable variable);
+  unsigned long getVariable(Variable variable);
   
 
 
@@ -326,13 +280,11 @@ public:
     const uint8* buffer,
     unsigned int size,
     bool nonblocking = false);
-protected:
-  
-  OperatingSystem::Handle getHandle() const noexcept
-  {
-    return fd->getHandle();
-  }
-public:
+
+  /**
+    Returns the OS handle.
+  */
+  OperatingSystem::Handle getHandle() const noexcept;
 
   /**
     Aborts any pending asynchronous operations (read as well as write).
@@ -370,7 +322,7 @@ public:
     AsynchronousWriteEventListener* listener);
 
   /**
-    Destroys the file handle.
+    Destroys the file.
   */
   ~File();
 };

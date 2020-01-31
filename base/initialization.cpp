@@ -355,7 +355,6 @@ ModuleManager ModuleManager::moduleManager;
 
 Handle* FileDescriptor::Descriptor::invalid = nullptr; // uninitialized
 Handle* Process::ProcessHandle::invalid = nullptr; // uninitialized
-Handle* File::FileHandle::invalid = nullptr; // uninitialized
 Socket::SocketImpl* Socket::SocketImpl::invalid = nullptr; // uninitialized
 
 class Initialization {
@@ -375,7 +374,6 @@ public:
     ReferenceCountedObject::ReferenceImpl(invalidSocket).addReference(); // prevent destruction of object
     FileDescriptor::Descriptor::invalid = &invalidHandle;
     Process::ProcessHandle::invalid = &invalidHandle;
-    File::FileHandle::invalid = &invalidHandle;
     Socket::SocketImpl::invalid = &invalidSocket;
   }
 };

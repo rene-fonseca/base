@@ -22,6 +22,7 @@
 #include <base/Functor.h>
 #include <base/security/User.h>
 #include <base/UnitTest.h>
+#include <base/ResourceHandle.h>
 #include <base/Profiler.h>
 #include <base/build.h>
 
@@ -117,34 +118,73 @@ _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 _COM_AZURE_DEV__BASE__GLOBAL_PRINT();
 
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
-  inline Date FileTimeToDate(const FILETIME& time) {
+  inline Date FileTimeToDate(const FILETIME& time)
+  {
     return Date((Cast::impersonate<int64>(time) - 116444736000000000LL)/10000000);
   }
 #endif // flavor
 
-File::FileHandle::~FileHandle()
-{
-  // TAG: throw exception if region of file is still locked
-  if (isValid()) { // dont try to close if handle is invalidated
+class FileHandle : public ResourceHandle {
+public:
+  
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
-    if (!::CloseHandle(getHandle())) {
-      _throw FileException("Unable to close file.", this);
-    }
+  HANDLE handle = INVALID_HANDLE_VALUE;
+#else
+  int handle = -1;
+#endif
+
+  inline bool isValid() const noexcept
+  {
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
+    return handle != INVALID_HANDLE_VALUE;
 #else // unix
-    if (::close(getHandle())) {
+    return handle >= 0;
+#endif
+  }
+
+  void close()
+  {
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
+    if (handle == INVALID_HANDLE_VALUE) {
+      return;
+    }
+    if (!::CloseHandle(handle)) {
       _throw FileException("Unable to close file.", this);
     }
+    handle = INVALID_HANDLE_VALUE;
+#else // unix
+    if (handle < 0) {
+      return;
+    }
+    if (::close(handle)) {
+      _throw FileException("Unable to close file.", this);
+    }
+    handle = -1;
 #endif // flavor
+  }
+
+  ~FileHandle()
+  {
+    close();
+  }
+};
+
+namespace {
+
+  inline FileHandle* toFileHandle(const AnyReference& handle)
+  {
+    if (handle) { // TAG: we do not want a dynamic cast - use static cast
+      return handle.cast<FileHandle>().getValue();
+    }
+    return nullptr;
   }
 }
 
 File::File() noexcept
-  : fd(File::FileHandle::invalid)
 {
 }
 
 File::File(const String& path, Access access, unsigned int options)
-  : fd(File::FileHandle::invalid)
 {
   Profiler::ResourceCreateTask profile("File::File()");
 
@@ -242,7 +282,8 @@ File::File(const String& path, Access access, unsigned int options)
     }
   }
   
-  fd = new FileHandle(handle);
+  Reference<FileHandle> _handle = new FileHandle();
+  _handle->handle = handle;
 #else // unix
   // TAG: exclusive file locking problem for NFS
 #if defined(_COM_AZURE_DEV__BASE__LARGE_FILE_SYSTEM)
@@ -282,39 +323,57 @@ File::File(const String& path, Access access, unsigned int options)
       _throw FileNotFound("Unable to open file.", this);
     }
   }
-  fd = new FileHandle(handle);
+
+  Reference<FileHandle> _handle = new FileHandle();
+  _handle->handle = handle;
 #endif
   if (options & File::APPEND) {
     setPosition(0, File::END);
   }
+  profile.setHandle(*_handle);
 }
 
-File& File::operator=(const File& assign) noexcept
+OperatingSystem::Handle File::getHandle() const noexcept
 {
-  fd = assign.fd; // no need to protect against self-assignment
-  return *this;
+  if (FileHandle* handle = toFileHandle(this->handle)) {
+    return handle->handle;
+  }
+  return 0;
 }
 
 void File::close()
 {
-  fd = FileHandle::invalid; // invalidate
+  FileHandle* handle = toFileHandle(this->handle);
+  if (!handle) {
+    _throw NullPointer(this);
+  }
+  handle->close();
 }
 
 bool File::isClosed() const noexcept
 {
-  return !fd->isValid();
+  FileHandle* handle = toFileHandle(this->handle);
+  if (!handle) {
+    return true;
+  }
+  return !handle->isValid();
 }
 
 // TAG: need methods get owner, get group...
 
 unsigned int File::getMode() const
 {
+  FileHandle* handle = toFileHandle(this->handle);
+  if (!handle) {
+    _throw NullPointer(this);
+  }
+
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   PSECURITY_DESCRIPTOR securityDescriptor = nullptr;
   PSID ownerSID = nullptr;
   PSID groupSID = nullptr;
   PACL acl = nullptr;
-  bool error = ::GetSecurityInfo(fd->getHandle(),
+  bool error = ::GetSecurityInfo(handle->handle,
                                  SE_FILE_OBJECT,
                                  OWNER_SECURITY_INFORMATION|GROUP_SECURITY_INFORMATION|DACL_SECURITY_INFORMATION,
                                  &ownerSID, &groupSID, &acl, 0,
@@ -432,10 +491,10 @@ unsigned int File::getMode() const
 #else // unix
   #if defined(_COM_AZURE_DEV__BASE__LARGE_FILE_SYSTEM)
     struct stat64 status;
-    int error = ::fstat64(fd->getHandle(), &status);
+    int error = ::fstat64(handle->handle, &status);
   #else
     struct stat status;
-    int error = ::fstat(fd->getHandle(), &status);
+    int error = ::fstat(handle->handle, &status);
   #endif
   bassert(error == 0, FileException(this));
 
@@ -499,11 +558,16 @@ unsigned int File::getMode() const
 
 AccessControlList File::getACL() const
 {
+  FileHandle* handle = toFileHandle(this->handle);
+  if (!handle) {
+    _throw NullPointer(this);
+  }
+
   AccessControlList result;
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   PSECURITY_DESCRIPTOR securityDescriptor = nullptr;
   PACL acl = nullptr;
-  bassert(::GetSecurityInfo(fd->getHandle(), SE_FILE_OBJECT, DACL_SECURITY_INFORMATION,
+  bassert(::GetSecurityInfo(handle->handle, SE_FILE_OBJECT, DACL_SECURITY_INFORMATION,
                            0, 0, &acl, 0, &securityDescriptor) == ERROR_SUCCESS,
      FileException("Unable to get ACL.", this)
   );
@@ -650,7 +714,7 @@ AccessControlList File::getACL() const
   ::LocalFree(securityDescriptor);
 #elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__SOLARIS)
   aclent_t entries[MAX_ACL_ENTRIES];
-  int numberOfEntries = ::facl(fd->getHandle(), GETACL, MAX_ACL_ENTRIES, entries);
+  int numberOfEntries = ::facl(handle->handle, GETACL, MAX_ACL_ENTRIES, entries);
   bassert(numberOfEntries >= 0, FileException("Unable to get ACL.", this));
   
   for (int i = 0; i < numberOfEntries; ++i) {
@@ -677,10 +741,10 @@ AccessControlList File::getACL() const
 #else // unix
   #if defined(_COM_AZURE_DEV__BASE__LARGE_FILE_SYSTEM)
     struct stat64 status;
-    bassert(::fstat64(fd->getHandle(), &status) == 0, FileException(this));
+    bassert(::fstat64(handle->handle, &status) == 0, FileException(this));
   #else
     struct stat status;
-    bassert(::fstat(fd->getHandle(), &status) == 0, FileException(this));
+    bassert(::fstat(handle->handle, &status) == 0, FileException(this));
   #endif
     
 //   const unsigned int ownerMode = ((status.st_mode & S_IRUSR) ? AccessControlEntry::READ : 0) |
@@ -707,10 +771,15 @@ AccessControlList File::getACL() const
 
 Trustee File::getOwner() const
 {
+  FileHandle* handle = toFileHandle(this->handle);
+  if (!handle) {
+    _throw NullPointer(this);
+  }
+
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   PSECURITY_DESCRIPTOR securityDescriptor = nullptr;
   PSID ownerSID = nullptr;
-  bassert(::GetSecurityInfo(fd->getHandle(), SE_FILE_OBJECT,
+  bassert(::GetSecurityInfo(handle->handle, SE_FILE_OBJECT,
                            OWNER_SECURITY_INFORMATION, &ownerSID, 0, 0, 0,
                            &securityDescriptor) == ERROR_SUCCESS,
          FileException(this)
@@ -721,12 +790,12 @@ Trustee File::getOwner() const
 #else // unix
   #if defined(_COM_AZURE_DEV__BASE__LARGE_FILE_SYSTEM)
     struct stat64 status;
-    if (::fstat64(fd->getHandle(), &status) || (!S_ISREG(status.st_mode))) {
+    if (::fstat64(handle->handle, &status) || (!S_ISREG(status.st_mode))) {
       _throw FileException("Not a file.", this);
     }
   #else
     struct stat status;
-    if (::fstat(fd->getHandle(), &status) || (!S_ISREG(status.st_mode))) {
+    if (::fstat(handle->handle, &status) || (!S_ISREG(status.st_mode))) {
       _throw FileException("Not a file.", this);
     }
   #endif
@@ -773,10 +842,15 @@ void File::changeOwner(const String& path, const Trustee& owner, const Trustee& 
 
 Trustee File::getGroup() const
 {
+  FileHandle* handle = toFileHandle(this->handle);
+  if (!handle) {
+    _throw NullPointer(this);
+  }
+
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   PSECURITY_DESCRIPTOR securityDescriptor = nullptr;
   PSID groupSID = nullptr;
-  bassert(::GetSecurityInfo(fd->getHandle(), SE_FILE_OBJECT,
+  bassert(::GetSecurityInfo(handle->handle, SE_FILE_OBJECT,
                            GROUP_SECURITY_INFORMATION, 0, &groupSID, 0, 0,
                            &securityDescriptor) == ERROR_SUCCESS,
          FileException(this)
@@ -787,12 +861,12 @@ Trustee File::getGroup() const
 #else // unix
   #if defined(_COM_AZURE_DEV__BASE__LARGE_FILE_SYSTEM)
     struct stat64 status;
-    if (::fstat64(fd->getHandle(), &status) || (!S_ISREG(status.st_mode))) {
+    if (::fstat64(handle->handle, &status) || (!S_ISREG(status.st_mode))) {
       _throw FileException("Not a file.", this);
     }
   #else
     struct stat status;
-    if (::fstat(fd->getHandle(), &status) || (!S_ISREG(status.st_mode))) {
+    if (::fstat(handle->handle, &status) || (!S_ISREG(status.st_mode))) {
       _throw FileException("Not a file.", this);
     }
   #endif
@@ -802,13 +876,18 @@ Trustee File::getGroup() const
 
 long long File::getSize() const
 {
+  FileHandle* handle = toFileHandle(this->handle);
+  if (!handle) {
+    _throw NullPointer(this);
+  }
+
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   #if (_COM_AZURE_DEV__BASE__OS >= _COM_AZURE_DEV__BASE__W2K)
     LARGE_INTEGER size; // TAG: unresolved possible byte order problem for big endian architectures
-    bassert(::GetFileSizeEx(fd->getHandle(), &size), FileException("Unable to get file size.", this));
+    bassert(::GetFileSizeEx(handle->handle, &size), FileException("Unable to get file size.", this));
   #else
     ULARGE_INTEGER size;
-    size.LowPart = ::GetFileSize(fd->getHandle(), &size.HighPart);
+    size.LowPart = ::GetFileSize(handle->handle, &size.HighPart);
     if ((size.LowPart == INVALID_FILE_SIZE) && (::GetLastError() != NO_ERROR )) {
       _throw FileException("Unable to get file size.", this);
     }
@@ -817,10 +896,10 @@ long long File::getSize() const
 #else // unix
   #if defined(_COM_AZURE_DEV__BASE__LARGE_FILE_SYSTEM)
     struct stat64 status;
-    int result = ::fstat64(fd->getHandle(), &status);
+    int result = ::fstat64(handle->handle, &status);
   #else
     struct stat status;
-    int result = ::fstat(fd->getHandle(), &status);
+    int result = ::fstat(handle->handle, &status);
   #endif // LFS
     bassert(result == 0, FileException("Unable to get file size.", this));
     return status.st_size;
@@ -829,56 +908,71 @@ long long File::getSize() const
 
 long long File::getPosition() const
 {
+  FileHandle* handle = toFileHandle(this->handle);
+  if (!handle) {
+    _throw NullPointer(this);
+  }
+
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   LARGE_INTEGER position;
   position.QuadPart = 0;
-  position.LowPart = ::SetFilePointer(fd->getHandle(), 0, &position.HighPart, FILE_CURRENT);
+  position.LowPart = ::SetFilePointer(handle->handle, 0, &position.HighPart, FILE_CURRENT);
   if ((position.LowPart == INVALID_SET_FILE_POINTER) && (::GetLastError() != NO_ERROR)) {
     _throw FileException("Unable to get file position.", this);
   }
-//  if (!::SetFilePointerEx(fd->getHandle(), 0, &position, FILE_CURRENT)) {
+//  if (!::SetFilePointerEx(handle->handle, 0, &position, FILE_CURRENT)) {
 //    _throw FileException("Unable to get file position.", this);
 //  }
   return position.QuadPart;
 #else // unix
   #if defined(_COM_AZURE_DEV__BASE__LARGE_FILE_SYSTEM)
-    return ::lseek64(fd->getHandle(), 0, SEEK_CUR); // should never fail
+    return ::lseek64(handle->handle, 0, SEEK_CUR); // should never fail
   #else
-    return ::lseek(fd->getHandle(), 0, SEEK_CUR); // should never fail
+    return ::lseek(handle->handle, 0, SEEK_CUR); // should never fail
   #endif
 #endif
 }
 
 void File::setPosition(long long position, Whence whence)
 {
+  FileHandle* handle = toFileHandle(this->handle);
+  if (!handle) {
+    _throw NullPointer(this);
+  }
+
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   static DWORD relativeTo[] = {FILE_BEGIN, FILE_CURRENT, FILE_END};
   LARGE_INTEGER temp;
   temp.QuadPart = position;
-  temp.LowPart = ::SetFilePointer(fd->getHandle(), temp.LowPart, &temp.HighPart, relativeTo[whence]);
+  temp.LowPart = ::SetFilePointer(handle->handle, temp.LowPart, &temp.HighPart, relativeTo[whence]);
   if ((temp.LowPart == INVALID_SET_FILE_POINTER) && (::GetLastError() != NO_ERROR)) {
     _throw FileException("Unable to get file position.", this);
   }
-//  if (!SetFilePointerEx(fd->getHandle(), position, 0, relativeTo[whence])) {
+//  if (!SetFilePointerEx(handle->handle, position, 0, relativeTo[whence])) {
 //    _throw FileException("Unable to set position.", this);
 //  }
 #else // unix
   static int relativeTo[] = {SEEK_SET, SEEK_CUR, SEEK_END};
   #if defined(_COM_AZURE_DEV__BASE__LARGE_FILE_SYSTEM)
-    ::lseek64(fd->getHandle(), position, relativeTo[whence]); // should never fail
+    ::lseek64(handle->handle, position, relativeTo[whence]); // should never fail
   #else
     bassert(position <= PrimitiveTraits<int>::MAXIMUM, FileException("Unable to set position.", this));
-    ::lseek(fd->getHandle(), position, relativeTo[whence]); // should never fail
+    ::lseek(handle->handle, position, relativeTo[whence]); // should never fail
   #endif
 #endif
 }
 
 void File::truncate(long long size)
 {
+  FileHandle* handle = toFileHandle(this->handle);
+  if (!handle) {
+    _throw NullPointer(this);
+  }
+
   long long oldSize = File::getSize();
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   setPosition(size);
-  if (!::SetEndOfFile(fd->getHandle())) {
+  if (!::SetEndOfFile(handle->handle)) {
     _throw FileException("Unable to truncate.", this);
   }
 #else // unix
@@ -886,7 +980,7 @@ void File::truncate(long long size)
       (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__ZEPHYR)
     _COM_AZURE_DEV__BASE__NOT_SUPPORTED();
   #elif defined(_COM_AZURE_DEV__BASE__LARGE_FILE_SYSTEM)
-    if (::ftruncate64(fd->getHandle(), size)) {
+    if (::ftruncate64(handle->handle, size)) {
       _throw FileException("Unable to truncate.", this);
     }
   #else
@@ -894,7 +988,7 @@ void File::truncate(long long size)
       (size >= 0) && (size <= PrimitiveTraits<int>::MAXIMUM),
       FileException("Unable to truncate.", this)
     );
-    if (::ftruncate(fd->getHandle(), size)) {
+    if (::ftruncate(handle->handle, size)) {
       _throw FileException("Unable to truncate.", this);
     }
   #endif
@@ -919,21 +1013,32 @@ void File::truncate(long long size)
 
 void File::flush()
 {
+  FileHandle* handle = toFileHandle(this->handle);
+  if (!handle) {
+    _throw NullPointer(this);
+  }
+
   Profiler::IOFlushTask profile("File::flush()");
 
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
-  if (!::FlushFileBuffers(fd->getHandle())) {
+  if (!::FlushFileBuffers(handle->handle)) {
     _throw FileException("Unable to flush.", this);
   }
 #else // unix
-  if (fsync(fd->getHandle())) {
+  if (fsync(handle->handle)) {
     _throw FileException("Unable to flush.", this);
   }
 #endif
 }
 
-void File::lock(
-  const FileRegion& region, bool exclusive) {
+void File::lock(const FileRegion& region, bool exclusive)
+{
+  FileHandle* handle = toFileHandle(this->handle);
+  if (!handle) {
+    _throw NullPointer(this);
+  }
+  Profiler::WaitTask profile("File::lock()", handle);
+
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   bassert(
     (region.getOffset() >= 0) && (region.getSize() >= 0),
@@ -952,7 +1057,7 @@ void File::lock(
   LARGE_INTEGER size;
   size.QuadPart = region.getSize();
   if (!::LockFileEx(
-    fd->getHandle(),
+    handle->handle,
     exclusive ? LOCKFILE_EXCLUSIVE_LOCK : 0,
     0,
     size.LowPart,
@@ -973,7 +1078,7 @@ void File::lock(
     lock.l_len = region.getSize();
 
     while (true) {
-      if (::fcntl(fd->getHandle(), F_SETLKW64, &lock) < 0) {
+      if (::fcntl(handle->handle, F_SETLKW64, &lock) < 0) {
         if (errno == EINTR) { // interrupted by signal - try again
           continue;
         }
@@ -998,7 +1103,7 @@ void File::lock(
     lock.l_len = region.getSize();
 
     while (true) {
-      if (fcntl(fd->getHandle(), F_SETLKW, &lock) < 0) {
+      if (fcntl(handle->handle, F_SETLKW, &lock) < 0) {
         if (errno == EINTR) { // interrupted by signal - try again
           continue;
         }
@@ -1010,8 +1115,14 @@ void File::lock(
 #endif
 }
 
-bool File::tryLock(
-  const FileRegion& region, bool exclusive) {
+bool File::tryLock(const FileRegion& region, bool exclusive)
+{
+  FileHandle* handle = toFileHandle(this->handle);
+  if (!handle) {
+    _throw NullPointer(this);
+  }
+  Profiler::WaitTask profile("File::tryLock()", handle);
+
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   bassert((region.getOffset() >= 0) && (region.getSize() >= 0), FileException("Unable to lock region.", this));
   LARGE_INTEGER offset;
@@ -1027,7 +1138,7 @@ bool File::tryLock(
   LARGE_INTEGER size;
   size.QuadPart = region.getSize();
   if (!::LockFileEx(
-    fd->getHandle(),
+    handle->handle,
     exclusive ? LOCKFILE_EXCLUSIVE_LOCK : 0,
     0,
     size.LowPart,
@@ -1047,7 +1158,7 @@ bool File::tryLock(
     lock.l_start = region.getOffset();
     lock.l_len = region.getSize();
 
-    if (::fcntl(fd->getHandle(), F_SETLK64, &lock) < 0) {
+    if (::fcntl(handle->handle, F_SETLK64, &lock) < 0) {
       // this function is not interrupted by a signal
       if ((errno == EACCES) || (errno == EAGAIN)) {
         return false;
@@ -1069,7 +1180,7 @@ bool File::tryLock(
     lock.l_start = region.getOffset();
     lock.l_len = region.getSize();
 
-    if (::fcntl(fd->getHandle(), F_SETLK, &lock) < 0) {
+    if (::fcntl(handle->handle, F_SETLK, &lock) < 0) {
       // this function is not interrupted by a signal
       if ((errno == EACCES) || (errno == EAGAIN)) {
         return false;
@@ -1083,6 +1194,12 @@ bool File::tryLock(
 
 void File::unlock(const FileRegion& region)
 {
+  FileHandle* handle = toFileHandle(this->handle);
+  if (!handle) {
+    _throw NullPointer(this);
+  }
+  Profiler::pushSignal("File::unlock()");
+
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   bassert((region.getOffset() >= 0) && (region.getSize() >= 0), FileException("Unable to unlock region.", this));
   LARGE_INTEGER offset;
@@ -1098,7 +1215,7 @@ void File::unlock(const FileRegion& region)
 
   LARGE_INTEGER size;
   size.QuadPart = region.getSize();
-  if (!::UnlockFileEx(fd->getHandle(), 0, size.LowPart, size.HighPart, &overlapped)) {
+  if (!::UnlockFileEx(handle->handle, 0, size.LowPart, size.HighPart, &overlapped)) {
     ::CloseHandle(overlapped.hEvent);
     _throw FileException("Unable to unlock region.", this);
   }
@@ -1119,7 +1236,7 @@ void File::unlock(const FileRegion& region)
     lock.l_len = region.getSize();
 
     while (true) {
-      if (::fcntl(fd->getHandle(), F_SETLKW64, &lock) < 0) {
+      if (::fcntl(handle->handle, F_SETLKW64, &lock) < 0) {
         if (errno == EINTR) { // interrupted by signal - try again
           continue;
         }
@@ -1139,7 +1256,7 @@ void File::unlock(const FileRegion& region)
     lock.l_len = region.getSize();
 
     while (true) {
-      if (::fcntl(fd->getHandle(), F_SETLKW, &lock) < 0) {
+      if (::fcntl(handle->handle, F_SETLKW, &lock) < 0) {
         if (errno == EINTR) { // interrupted by signal - try again
           continue;
         }
@@ -1153,19 +1270,24 @@ void File::unlock(const FileRegion& region)
 
 Date File::getLastModification()
 {
+  FileHandle* handle = toFileHandle(this->handle);
+  if (!handle) {
+    _throw NullPointer(this);
+  }
+
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   FILETIME time;
-  if (::GetFileTime(fd->getHandle(), 0, 0, &time)) {
+  if (::GetFileTime(handle->handle, 0, 0, &time)) {
     _throw FileException("Unable to get file time.", this);
   }
   return FileTimeToDate(time);
 #else // unix
   #if defined(_COM_AZURE_DEV__BASE__LARGE_FILE_SYSTEM)
     struct stat64 status;
-    int result = ::fstat64(fd->getHandle(), &status);
+    int result = ::fstat64(handle->handle, &status);
   #else
     struct stat status;
-    int result = ::fstat(fd->getHandle(), &status);
+    int result = ::fstat(handle->handle, &status);
   #endif // LFS
     bassert(result == 0, FileException("Unable to get status.", this));
     return Date(status.st_mtime);
@@ -1174,19 +1296,24 @@ Date File::getLastModification()
 
 Date File::getLastAccess()
 {
+  FileHandle* handle = toFileHandle(this->handle);
+  if (!handle) {
+    _throw NullPointer(this);
+  }
+
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   FILETIME time;
-  if (::GetFileTime(fd->getHandle(), 0, &time, 0)) {
+  if (::GetFileTime(handle->handle, 0, &time, 0)) {
     _throw FileException("Unable to get file time.", this);
   }
   return FileTimeToDate(time);
 #else // unix
   #if defined(_COM_AZURE_DEV__BASE__LARGE_FILE_SYSTEM)
     struct stat64 status;
-    int result = fstat64(fd->getHandle(), &status);
+    int result = fstat64(handle->handle, &status);
   #else
     struct stat status;
-    int result = ::fstat(fd->getHandle(), &status);
+    int result = ::fstat(handle->handle, &status);
   #endif // LFS
     bassert(result == 0, FileException("Unable to get status.", this));
     return Date(status.st_atime);
@@ -1195,19 +1322,24 @@ Date File::getLastAccess()
 
 Date File::getLastChange()
 {
+  FileHandle* handle = toFileHandle(this->handle);
+  if (!handle) {
+    _throw NullPointer(this);
+  }
+
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   FILETIME time;
-  if (::GetFileTime(fd->getHandle(), &time, 0, 0)) {
+  if (::GetFileTime(handle->handle, &time, 0, 0)) {
     _throw FileException("Unable to get file time.", this);
   }
   return FileTimeToDate(time);
 #else // unix
   #if defined(_COM_AZURE_DEV__BASE__LARGE_FILE_SYSTEM)
     struct stat64 status;
-    int result = fstat64(fd->getHandle(), &status);
+    int result = fstat64(handle->handle, &status);
   #else
     struct stat status;
-    int result = ::fstat(fd->getHandle(), &status);
+    int result = ::fstat(handle->handle, &status);
   #endif // LFS
     bassert(result == 0, FileException("Unable to get status.", this));
     return Date(status.st_ctime);
@@ -1216,6 +1348,11 @@ Date File::getLastChange()
 
 unsigned long File::getVariable(Variable variable)
 {
+  FileHandle* handle = toFileHandle(this->handle);
+  if (!handle) {
+    _throw NullPointer(this);
+  }
+
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   _COM_AZURE_DEV__BASE__NOT_SUPPORTED();
 #else // unix
@@ -1250,7 +1387,7 @@ unsigned long File::getVariable(Variable variable)
   int fileSystemVariable = FILE_SYSTEM_VARIABLES[variable];
   if (fileSystemVariable != -1) {
     errno = 0;
-    long result = ::fpathconf(fd->getHandle(), fileSystemVariable);
+    long result = ::fpathconf(handle->handle, fileSystemVariable);
     if (!((result == -1) && (errno != 0))) {
       return result;
     }
@@ -1269,13 +1406,18 @@ unsigned int File::read(
   unsigned int bytesToRead,
   bool nonblocking)
 {
+  FileHandle* handle = toFileHandle(this->handle);
+  if (!handle) {
+    _throw NullPointer(this);
+  }
+
   Profiler::IOReadTask profile("File::read()", buffer);
 
   unsigned int bytesRead = 0;
   while (bytesToRead > 0) {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
     DWORD result = 0;
-    BOOL success = ::ReadFile(fd->getHandle(), buffer, bytesToRead, &result, 0);
+    BOOL success = ::ReadFile(handle->handle, buffer, bytesToRead, &result, 0);
     if (!success) { // has error occured
       if (::GetLastError() == ERROR_LOCK_VIOLATION) { // TAG: I'm guessing this error code - please confirm
         if (nonblocking) {
@@ -1284,19 +1426,19 @@ unsigned int File::read(
         } else { // do blocking read
           LARGE_INTEGER position;
           position.QuadPart = 0;
-          position.LowPart = ::SetFilePointer(fd->getHandle(), 0, &position.HighPart, FILE_CURRENT);
+          position.LowPart = ::SetFilePointer(handle->handle, 0, &position.HighPart, FILE_CURRENT);
           if (!((position.LowPart == INVALID_SET_FILE_POINTER) && (::GetLastError() != NO_ERROR))) {
-	    // if (SetFilePointerEx(fd->getHandle(), 0, &position, FILE_CURRENT)) { // current position
+	    // if (SetFilePointerEx(handle->handle, 0, &position, FILE_CURRENT)) { // current position
             OVERLAPPED overlapped;
             overlapped.Offset = position.LowPart;
             overlapped.OffsetHigh = position.HighPart;
             overlapped.hEvent = ::CreateEvent(0, FALSE, FALSE, 0); // auto reset event
 
             if (overlapped.hEvent) { // was event created
-              if (::LockFileEx(fd->getHandle(), 0, 0, bytesToRead, 0, &overlapped)) { // acquire shared lock
+              if (::LockFileEx(handle->handle, 0, 0, bytesToRead, 0, &overlapped)) { // acquire shared lock
                 ::WaitForSingleObject(overlapped.hEvent, INFINITE); // blocking wait for lock
-                if (::ReadFile(fd->getHandle(), buffer, bytesToRead, &result, 0)) {
-                  if (::UnlockFileEx(fd->getHandle(), 0, bytesToRead, 0, &overlapped)) { // // release shared lock
+                if (::ReadFile(handle->handle, buffer, bytesToRead, &result, 0)) {
+                  if (::UnlockFileEx(handle->handle, 0, bytesToRead, 0, &overlapped)) { // // release shared lock
                     ::WaitForSingleObject(overlapped.hEvent, INFINITE); // blocking wait for unlock
                     success = true;
                   }
@@ -1314,7 +1456,7 @@ unsigned int File::read(
 #else // unix
     int result = 0;
     do {
-      result = (int)::read(fd->getHandle(), buffer, minimum<size_t>(bytesToRead, SSIZE_MAX));
+      result = (int)::read(handle->handle, buffer, minimum<size_t>(bytesToRead, SSIZE_MAX));
       if (result < 0) { // has an error occured
         switch (errno) { // remember that errno is local to the thread
         case EINTR: // interrupted by signal before any data was read
@@ -1347,13 +1489,18 @@ unsigned int File::write(
   unsigned int bytesToWrite,
   bool nonblocking)
 {
+  FileHandle* handle = toFileHandle(this->handle);
+  if (!handle) {
+    _throw NullPointer(this);
+  }
+
   Profiler::IOWriteTask profile("File::write()", buffer);
 
   unsigned int bytesWritten = 0;
   while (bytesToWrite > 0) {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
     DWORD result = 0;
-    BOOL success = ::WriteFile(fd->getHandle(), buffer, bytesToWrite, &result, 0);
+    BOOL success = ::WriteFile(handle->handle, buffer, bytesToWrite, &result, 0);
     if (!success) {
       if (::GetLastError() == ERROR_LOCK_VIOLATION) { // TAG: I'm guessing this error code - please confirm
         if (nonblocking) {
@@ -1362,19 +1509,19 @@ unsigned int File::write(
         } else { // do blocking write
           LARGE_INTEGER position;
           position.QuadPart = 0;
-          position.LowPart = ::SetFilePointer(fd->getHandle(), 0, &position.HighPart, FILE_CURRENT);
+          position.LowPart = ::SetFilePointer(handle->handle, 0, &position.HighPart, FILE_CURRENT);
           if (!((position.LowPart == INVALID_SET_FILE_POINTER) && (::GetLastError() != NO_ERROR))) {
-	    // if (SetFilePointerEx(fd->getHandle(), 0, &position, FILE_CURRENT)) { // current position
+	    // if (SetFilePointerEx(handle->handle, 0, &position, FILE_CURRENT)) { // current position
             OVERLAPPED overlapped;
             overlapped.Offset = position.LowPart;
             overlapped.OffsetHigh = position.HighPart;
             overlapped.hEvent = ::CreateEvent(0, FALSE, FALSE, 0); // auto reset event
 
             if (overlapped.hEvent) { // was event created
-              if (::LockFileEx(fd->getHandle(), 0, 0, bytesToWrite, 0, &overlapped)) { // acquire shared lock
+              if (::LockFileEx(handle->handle, 0, 0, bytesToWrite, 0, &overlapped)) { // acquire shared lock
                 ::WaitForSingleObject(overlapped.hEvent, INFINITE); // blocking wait for lock
-                if (::WriteFile(fd->getHandle(), buffer, bytesToWrite, &result, 0)) {
-                  if (::UnlockFileEx(fd->getHandle(), 0, bytesToWrite, 0, &overlapped)) { // // release shared lock
+                if (::WriteFile(handle->handle, buffer, bytesToWrite, &result, 0)) {
+                  if (::UnlockFileEx(handle->handle, 0, bytesToWrite, 0, &overlapped)) { // // release shared lock
                     WaitForSingleObject(overlapped.hEvent, INFINITE); // blocking wait for unlock
                     success = true;
                   }
@@ -1392,7 +1539,7 @@ unsigned int File::write(
 #else // unix
     int result = 0;
     do {
-      result = (int)::write(fd->getHandle(), buffer, minimum<size_t>(bytesToWrite, SSIZE_MAX));
+      result = (int)::write(handle->handle, buffer, minimum<size_t>(bytesToWrite, SSIZE_MAX));
       if (result < 0) { // has an error occured
         switch (errno) {
         case EINTR: // interrupted by signal before any data was written
@@ -1423,8 +1570,13 @@ unsigned int File::write(
 
 void File::asyncCancel()
 {
+  FileHandle* handle = toFileHandle(this->handle);
+  if (!handle) {
+    _throw NullPointer(this);
+  }
+
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
-  ::CancelIo(getHandle());
+  ::CancelIo(handle->handle);
 #else // unix
   // TAG: fixme
 #endif // flavor
@@ -1436,6 +1588,11 @@ AsynchronousReadOperation File::read(
   unsigned long long offset,
   AsynchronousReadEventListener* listener)
 {
+  FileHandle* handle = toFileHandle(this->handle);
+  if (!handle) {
+    _throw NullPointer(this);
+  }
+
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   bassert(listener, AsynchronousException(this)); // TAG: fixme
   return new win32::AsyncReadFileContext(getHandle(), buffer, bytesToRead, offset, listener);
@@ -1450,6 +1607,11 @@ AsynchronousWriteOperation File::write(
   unsigned long long offset,
   AsynchronousWriteEventListener* listener)
 {
+  FileHandle* handle = toFileHandle(this->handle);
+  if (!handle) {
+    _throw NullPointer(this);
+  }
+
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   bassert(listener, AsynchronousException(this)); // TAG: fixme
   return new win32::AsyncWriteFileContext(getHandle(), buffer, bytesToWrite, offset, listener);
@@ -1458,7 +1620,8 @@ AsynchronousWriteOperation File::write(
 #endif // flavor
 }
 
-File::~File() {
+File::~File()
+{
 }
 
 #if defined(_COM_AZURE_DEV__BASE__TESTS)

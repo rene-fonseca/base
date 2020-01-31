@@ -42,7 +42,7 @@ SharedMemory::SharedMemoryImpl::SharedMemoryImpl(
   DWORD protection =
     (access & SharedMemory::WRITE) ? PAGE_READWRITE : PAGE_READONLY;
   handle = ::CreateFileMapping(
-    SharedMemory::getHandle(file),
+    file.getHandle(),
     0, // security
     protection, // protection
     0, // high word of size
@@ -97,7 +97,7 @@ SharedMemory::SharedMemoryImpl::SharedMemoryImpl(
       region.getSize(),
       protection,
       MAP_SHARED,
-      getHandle(file),
+      file.getHandle(),
       region.getOffset()
     );
   #elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__FREERTOS) || \
@@ -115,7 +115,7 @@ SharedMemory::SharedMemoryImpl::SharedMemoryImpl(
       region.getSize(),
       protection,
       MAP_SHARED,
-      getHandle(file),
+      file.getHandle(),
       region.getOffset()
     );
   #endif

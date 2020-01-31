@@ -213,11 +213,11 @@ public:
   String() noexcept;
 
   inline String(Reference<ReferenceCountedAllocator<char> > string)
-    : elements(string)
+    : elements(string ? string : DEFAULT_STRING.elements)
   {
-    BASSERT(string && !string->isEmpty());
+    BASSERT(elements && !elements->isEmpty());
     auto index = elements->getSize() - 1;
-    BASSERT(string->getElements()[index] == 0); // check null terminator
+    BASSERT(elements->getElements()[index] == 0); // check null terminator
   }
 
   /**

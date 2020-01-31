@@ -77,7 +77,9 @@ public:
   /**
     Initialization of socket from other socket.
   */
-  inline StreamSocket(const StreamSocket& copy) noexcept : Socket(copy) {
+  inline StreamSocket(const StreamSocket& copy) noexcept
+    : Socket(copy)
+  {
   }
 
   /**
@@ -86,15 +88,16 @@ public:
     @param address The IP address the socket should be bound to.
     @param port The port the socket should be bound to.
   */
-  inline void bind(
-    const InetAddress& address, unsigned short port) {
+  inline void bind(const InetAddress& address, unsigned short port)
+  {
     Socket::bind(address, port);
   }
 
   /**
     Closes this socket.
   */
-  inline void close() {
+  inline void close()
+  {
     Socket::close();
   }
 
@@ -104,8 +107,8 @@ public:
     @param address The IP address to connect to.
     @param port The port to connect to.
   */
-  inline void connect(
-    const InetAddress& address, unsigned short port) {
+  inline void connect(const InetAddress& address, unsigned short port)
+  {
     Socket::connect(address, port);
   }
 
@@ -114,7 +117,8 @@ public:
     function can be used after a succesful connect to determine the locally
     assigned address and port if unspecified.
   */
-  inline void getName() {
+  inline void getName()
+  {
     return Socket::getName();
   }
   
@@ -149,49 +153,56 @@ public:
   /**
     Disables the input stream for this socket.
   */
-  inline void shutdownInputStream() {
+  inline void shutdownInputStream()
+  {
     Socket::shutdownInputStream();
   }
 
   /**
     Disables the output stream for this socket.
   */
-  inline void shutdownOutputStream() {
+  inline void shutdownOutputStream()
+  {
     Socket::shutdownOutputStream();
   }
 
   /**
     Returns the error state of the socket.
   */
-  inline int getErrorState() const {
+  inline int getErrorState() const
+  {
     return Socket::getErrorState();
   }
   
   /**
     Returns true if 'bind' allows local addresses to be reused.
   */
-  inline bool getReuseAddress() const {
+  inline bool getReuseAddress() const
+  {
     return Socket::getReuseAddress();
   }
 
   /**
     Sets the local address reuse flag of this socket.
   */
-  inline void setReuseAddress(bool value) {
+  inline void setReuseAddress(bool value)
+  {
     Socket::setReuseAddress(value);
   }
 
   /**
     Returns true if connection is kept alive.
   */
-  inline bool getKeepAlive() const {
+  inline bool getKeepAlive() const
+  {
     return Socket::getKeepAlive();
   }
 
   /**
     Sets the keep alive flag of this socket.
   */
-  inline void setKeepAlive(bool value) {
+  inline void setKeepAlive(bool value)
+  {
     Socket::setKeepAlive(value);
   }
 
@@ -200,77 +211,88 @@ public:
 
     @return -1 if linger is disabled.
   */
-  inline int getLinger() const {
+  inline int getLinger() const
+  {
     return Socket::getLinger();
   }
 
   /**
     Sets the linger interval. Negative time disables the linger.
   */
-  inline void setLinger(int seconds) {
+  inline void setLinger(int seconds)
+  {
     Socket::setLinger(seconds);
   }
 
   /**
     Gets the size of the receive buffer.
   */
-  inline int getReceiveBufferSize() const {
+  inline int getReceiveBufferSize() const
+  {
     return Socket::getReceiveBufferSize();
   }
 
   /**
     Sets the size of the receive buffer.
   */
-  inline void setReceiveBufferSize(int size) {
+  inline void setReceiveBufferSize(int size)
+  {
     Socket::setReceiveBufferSize(size);
   }
 
   /**
     Gets the size of the send buffer.
   */
-  inline int getSendBufferSize() const {
+  inline int getSendBufferSize() const
+  {
     return Socket::getSendBufferSize();
   }
 
   /**
     Sets the size of the send buffer.
   */
-  inline void setSendBufferSize(int size) {
+  inline void setSendBufferSize(int size)
+  {
     Socket::setSendBufferSize(size);
   }
 
   /**
     Returns true of the Nagle's algorithm is disabled.
   */
-  inline bool getTcpNoDelay() const {
+  inline bool getTcpNoDelay() const
+  {
     return Socket::getTcpNoDelay();
   }
 
   /**
     Disables/enables the Nagle's algorithm.
   */
-  inline void setTcpNoDelay(bool value) {
+  inline void setTcpNoDelay(bool value)
+  {
     Socket::setTcpNoDelay(value);
   }
   
   /**
     Returns the current time to live (TTL) value.
   */
-  inline unsigned int getTimeToLive() const {
+  inline unsigned int getTimeToLive() const
+  {
     return Socket::getTimeToLive();
   }
   
   /**
     Sets the time to live (TTL) value.
   */
-  inline void setTimeToLive(unsigned int value) {
+  inline void setTimeToLive(unsigned int value)
+  {
     Socket::setTimeToLive(value);
   }
   
   /**
     Sets the blocking mode of the socket.
   */
-  inline void setNonBlocking(bool value) {
+  inline void setNonBlocking(bool value)
+  {
     Socket::setNonBlocking(value);
   }
 
@@ -280,7 +302,8 @@ public:
     
     @return Available number of bytes in stream.
   */
-  inline unsigned int available() const {
+  inline unsigned int available() const
+  {
     return Socket::available();
   }
 
@@ -295,7 +318,8 @@ public:
   inline unsigned int read(
     uint8* buffer,
     unsigned int size,
-    bool nonblocking = false) {
+    bool nonblocking = false)
+  {
     return Socket::read(buffer, size, nonblocking);
   }
 
@@ -309,7 +333,8 @@ public:
   inline unsigned int write(
     const uint8* buffer,
     unsigned int size,
-    bool nonblocking = false) {
+    bool nonblocking = false)
+  {
     return Socket::write(buffer, size, nonblocking);
   }
 

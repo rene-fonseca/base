@@ -21,7 +21,7 @@ PreferredAtomicCounter ResourceHandle::total;
 FormatOutputStream& operator<<(FormatOutputStream& stream, const ResourceHandle& handle)
 {
   auto description = handle.getDescription();
-  stream << "Resource: {" << EOL
+  stream << "ResourceHandle: {" << EOL
     << indent(2) << "ID: " << handle.getResourceId() << EOL
     // C++: ?: operator would be convenient value e.g. (getDescription() ?: "<NONE>")
     << indent(2) << "Description: " << (description ? description : "<NONE>") << EOL

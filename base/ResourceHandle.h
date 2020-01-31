@@ -85,7 +85,6 @@ public:
   }
 };
 
-
 /**
   Writes a string representation of the resource handle.
 */

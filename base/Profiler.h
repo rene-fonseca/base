@@ -495,7 +495,7 @@ public:
     /** The ID of the task. */
     unsigned int taskId = BAD;
   public:
-    
+
     /** Allocates new task. */
     static unsigned int getTask(const char* name, const char* cat) noexcept;
 
@@ -508,12 +508,15 @@ public:
 
     /** Sets the security level for the object. */
     void setTaskSecurityLevel(unsigned int securityLevel) noexcept;
-    
+
     /** Sets the name of the object. */
     void setTaskWaitId(const char* id) noexcept;
-    
+
     /** Sets the resource handle for the object. */
-    void setTaskWaitHandle(const ResourceHandle& handle) noexcept;    
+    void setTaskWaitHandle(const Resource& resource) noexcept;
+
+    /** Sets the resource handle for the object. */
+    void setTaskWaitHandle(const ResourceHandle& handle) noexcept;
 
     /** Sets bytes read for task. */
     void setTaskBytesRead(const uint8* buffer, unsigned int bytesRead) noexcept;
@@ -596,6 +599,15 @@ public:
     {
       if (id) {
         setTaskWaitId(id);
+      }
+    }
+
+    /** Wait task start. */
+    inline WaitTask(const char* name, const Resource* resource) noexcept
+      : Task(name, CAT_WAIT)
+    {
+      if (resource) {
+        setTaskWaitHandle(*resource);
       }
     }
 

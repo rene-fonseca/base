@@ -96,13 +96,12 @@ bool FolderMonitor::isSignaled() const
 
 void FolderMonitor::wait() const
 {
-  Profiler::WaitTask profile("FolderMonitor::wait()");
-  
   FolderMonitorHandle* handle = toFolderMonitorHandle(this->handle);
   if (!handle) {
     _throw NullPointer(this);
   }
-  
+  Profiler::WaitTask profile("FolderMonitor::wait()", handle);
+
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   ::WaitForSingleObject(handle->handle, INFINITE);
   ::FindNextChangeNotification(handle->handle); // should never fail
@@ -112,13 +111,12 @@ void FolderMonitor::wait() const
 
 bool FolderMonitor::wait(unsigned int milliseconds) const
 {
-  Profiler::WaitTask profile("FolderMonitor::wait()");
-  
   FolderMonitorHandle* handle = toFolderMonitorHandle(this->handle);
   if (!handle) {
     _throw NullPointer(this);
   }
-  
+  Profiler::WaitTask profile("FolderMonitor::wait()", handle);
+
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   DWORD result = ::WaitForSingleObject(handle->handle, minimum(milliseconds, 999999999U));
   ::FindNextChangeNotification(handle->handle); // should never fail

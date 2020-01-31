@@ -118,12 +118,11 @@ MutualExclusion::MutualExclusion()
 
 void MutualExclusion::exclusiveLock() const
 {
-  Profiler::WaitTask profile("MutualExclusion::exclusiveLock()");
-  
   MutexHandle* handle = toMutexHandle(this->handle);
   if (!handle) {
     _throw NullPointer(this);
   }
+  Profiler::WaitTask profile("MutualExclusion::exclusiveLock()", handle);
 
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   ::EnterCriticalSection(&handle->handle);
@@ -148,12 +147,11 @@ void MutualExclusion::exclusiveLock() const
 
 bool MutualExclusion::tryExclusiveLock() const
 {
-  Profiler::WaitTask profile("MutualExclusion::tryExclusiveLock()");
-  
   MutexHandle* handle = toMutexHandle(this->handle);
   if (!handle) {
     _throw NullPointer(this);
   }
+  Profiler::WaitTask profile("MutualExclusion::tryExclusiveLock()", handle);
 
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   BOOL result = TRUE;

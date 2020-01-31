@@ -155,12 +155,11 @@ ReadWriteLock::ReadWriteLock()
 
 void ReadWriteLock::exclusiveLock() const
 {
-  Profiler::WaitTask profile("ReadWriteLock::exclusiveLock()");
-  
   ReadWriteHandle* handle = toReadWriteHandle(this->handle);
   if (!handle) {
     _throw NullPointer(this);
   }
+  Profiler::WaitTask profile("ReadWriteLock::exclusiveLock()", handle);
 
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   handle->spinLock.exclusiveLock();
@@ -193,12 +192,11 @@ void ReadWriteLock::exclusiveLock() const
 
 bool ReadWriteLock::tryExclusiveLock() const
 {
-  Profiler::WaitTask profile("ReadWriteLock::tryExclusiveLock()");
-
   ReadWriteHandle* handle = toReadWriteHandle(this->handle);
   if (!handle) {
     _throw NullPointer(this);
   }
+  Profiler::WaitTask profile("ReadWriteLock::tryExclusiveLock()", handle);
 
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   // we do not want to relinquish execution context if we not required to do so
@@ -241,12 +239,11 @@ bool ReadWriteLock::tryExclusiveLock() const
 
 void ReadWriteLock::sharedLock() const
 {
-  Profiler::WaitTask profile("ReadWriteLock::sharedLock()");
-  
   ReadWriteHandle* handle = toReadWriteHandle(this->handle);
   if (!handle) {
     _throw NullPointer(this);
   }
+  Profiler::WaitTask profile("ReadWriteLock::sharedLock()", handle);
 
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   // we do not want to relinquish execution context if we not required to do so
@@ -286,12 +283,11 @@ void ReadWriteLock::sharedLock() const
 
 bool ReadWriteLock::trySharedLock() const
 {
-  Profiler::WaitTask profile("ReadWriteLock::trySharedLock()");
-  
   ReadWriteHandle* handle = toReadWriteHandle(this->handle);
   if (!handle) {
     _throw NullPointer(this);
   }
+  Profiler::WaitTask profile("ReadWriteLock::trySharedLock()", handle);
 
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   // we do not want to relinquish execution context if we not required to do so

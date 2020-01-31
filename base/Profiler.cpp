@@ -515,6 +515,13 @@ void Profiler::Task::setTaskWaitId(const char* id) noexcept
   }
 }
 
+void Profiler::Task::setTaskWaitHandle(const Resource& resource) noexcept
+{
+  if (Reference<ResourceHandle> handle = resource.getHandle().castChecked<ResourceHandle>()) {
+    setTaskWaitHandle(*handle);
+  }
+}
+
 void Profiler::Task::setTaskWaitHandle(const ResourceHandle& handle) noexcept
 {
   if (taskId == BAD) {

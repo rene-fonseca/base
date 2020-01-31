@@ -268,12 +268,11 @@ int Semaphore::getValue() const
 
 void Semaphore::post()
 {
-  Profiler::WaitTask profile("Semaphore::post()");
-
   SemaphoreHandle* handle = toSemaphoreHandle(this->handle);
   if (!handle) {
     _throw NullPointer(this);
   }
+  Profiler::WaitTask profile("Semaphore::post()", handle);
 
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   if (!::ReleaseSemaphore(handle->semaphore, 1, 0)) {
@@ -305,13 +304,12 @@ void Semaphore::post()
 
 void Semaphore::wait() const
 {
-  Profiler::WaitTask profile("Semaphore::wait()");
-  
   SemaphoreHandle* handle = toSemaphoreHandle(this->handle);
   if (!handle) {
     _throw NullPointer(this);
   }
-  
+  Profiler::WaitTask profile("Semaphore::wait()", handle);
+
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   if (::WaitForSingleObject(handle->semaphore, INFINITE) != WAIT_OBJECT_0) {
     _throw SemaphoreException(this);
@@ -340,13 +338,12 @@ void Semaphore::wait() const
 
 bool Semaphore::tryWait() const
 {
-  Profiler::WaitTask profile("Semaphore::tryWait()");
-
   SemaphoreHandle* handle = toSemaphoreHandle(this->handle);
   if (!handle) {
     _throw NullPointer(this);
   }
-  
+  Profiler::WaitTask profile("Semaphore::tryWait()", handle);
+
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   return ::WaitForSingleObject(handle->semaphore, 0) == WAIT_OBJECT_0;
 #elif defined(_COM_AZURE_DEV__BASE__PTHREAD_SEMAPHORE)

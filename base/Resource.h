@@ -40,6 +40,12 @@ public:
   /** Returns the thread that created the resource. */
   unsigned int getCreatedById() const;
 
+  /** Returns the handle. */
+  inline AnyReference getHandle() const noexcept
+  {
+    return handle;
+  }
+
   /** Returns true if handle is set. */
   inline operator bool() const noexcept
   {

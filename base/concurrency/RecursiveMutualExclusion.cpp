@@ -117,12 +117,11 @@ RecursiveMutualExclusion::RecursiveMutualExclusion()
 
 void RecursiveMutualExclusion::exclusiveLock() const
 {
-  Profiler::WaitTask profile("RecursiveMutualExclusion::exclusiveLock()");
-  
   RMutexHandle* handle = toMutexHandle(this->handle);
   if (!handle) {
     _throw NullPointer(this);
   }
+  Profiler::WaitTask profile("RecursiveMutualExclusion::exclusiveLock()", handle);
 
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   ::EnterCriticalSection(&handle->handle);
@@ -148,12 +147,11 @@ void RecursiveMutualExclusion::exclusiveLock() const
 
 bool RecursiveMutualExclusion::tryExclusiveLock() const
 {
-  Profiler::WaitTask profile("RecursiveMutualExclusion::tryExclusiveLock()");
-  
   RMutexHandle* handle = toMutexHandle(this->handle);
   if (!handle) {
     _throw NullPointer(this);
   }
+  Profiler::WaitTask profile("RecursiveMutualExclusion::tryExclusiveLock()", handle);
 
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   BOOL result = TRUE;

@@ -670,11 +670,13 @@ IEEE1394Common::IsochronousWriteChannel LinuxRawIEEE1394::getWriteChannel(
   _throw IEEE1394Exception("LinuxRawIEEE1394::getWriteChannel is not implemented.", this);
 }
 
-LinuxRawIEEE1394::~LinuxRawIEEE1394() {
+LinuxRawIEEE1394::~LinuxRawIEEE1394()
+{
   ::close(handle);
 }
 
-void LinuxRawIEEE1394::registerFCPListener(FunctionControlProtocolListener* listener) {
+void LinuxRawIEEE1394::registerFCPListener(FunctionControlProtocolListener* listener)
+{
   if (!listener) {
     _throw NullPointer(this);
   }
@@ -703,7 +705,8 @@ void LinuxRawIEEE1394::registerFCPListener(FunctionControlProtocolListener* list
   }
 }
 
-void LinuxRawIEEE1394::unregisterFCPListener() {
+void LinuxRawIEEE1394::unregisterFCPListener()
+{
   fcpListener = 0;
   
   LinuxRawIEEE1394Impl::RequestContext requestContext;
@@ -727,7 +730,8 @@ void LinuxRawIEEE1394::unregisterFCPListener() {
   status = requestContext.status;
 }
 
-void LinuxRawIEEE1394::readIsochronous(unsigned int channel, unsigned int maximumPayload, IsochronousChannelListener* listener) {
+void LinuxRawIEEE1394::readIsochronous(unsigned int channel, unsigned int maximumPayload, IsochronousChannelListener* listener)
+{
   bassert(listener, OutOfDomain(this)); // TAG: NullPointer
   bassert((maximumPayload > 0) && ((maximumPayload % sizeof(Quadlet)) == 0), OutOfDomain(this));
   bassert(channel < IEEE1394Impl::ISOCHRONOUS_CHANNELS, OutOfDomain(this));
@@ -800,7 +804,9 @@ void LinuxRawIEEE1394::readIsochronous(unsigned int channel, unsigned int maximu
   isochronousChannels[channel].busy = false;
 }
 
-bool LinuxRawIEEE1394::wait(unsigned int milliseconds) {
+bool LinuxRawIEEE1394::wait(unsigned int milliseconds)
+{
+  Profiler::WaitTask profile("LinuxRawIEEE1394::wait()");
   bassert(milliseconds <= 999999999, OutOfDomain(this));
   struct pollfd fd;
   fd.fd = handle;
@@ -813,11 +819,13 @@ bool LinuxRawIEEE1394::wait(unsigned int milliseconds) {
   return result > 0;
 }
 
-void LinuxRawIEEE1394::dequeue() {
+void LinuxRawIEEE1394::dequeue()
+{
   dequeueResponse();
 }
 
-void LinuxRawIEEE1394::writeIsochronous(const uint8* buffer, unsigned int size, unsigned int channel, unsigned int tag, unsigned int sy, Speed speed) {
+void LinuxRawIEEE1394::writeIsochronous(const uint8* buffer, unsigned int size, unsigned int channel, unsigned int tag, unsigned int sy, Speed speed)
+{
   bassert((channel < IEEE1394Impl::ISOCHRONOUS_CHANNELS) && (speed <= IEEE1394Impl::S400), OutOfDomain(this));
   
   LinuxRawIEEE1394Impl::RequestContext requestContext;

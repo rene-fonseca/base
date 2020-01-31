@@ -327,6 +327,7 @@ File::File(const String& path, Access access, unsigned int options)
   Reference<FileHandle> _handle = new FileHandle();
   _handle->handle = handle;
 #endif
+  this->handle = _handle;
   if (options & File::APPEND) {
     setPosition(0, File::END);
   }

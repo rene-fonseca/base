@@ -151,9 +151,10 @@ Pair<Pipe, Pipe> Pipe::make()
   Reference<PipeHandle> _ohandle = new PipeHandle();
   _ihandle->handle = ihandle;
   _ohandle->handle = ohandle;
+  iprofile.setHandle(*_ihandle);
+  oprofile.setHandle(*_ohandle);
 #elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__WASI)
   BASSERT(!"Not supported.");
-  return Pair<Pipe, Pipe>(p, q);
 #else // unix
   OperatingSystem::Handle handles[2];
   if (::pipe(handles)) {
@@ -164,10 +165,10 @@ Pair<Pipe, Pipe> Pipe::make()
   Reference<PipeHandle> _ohandle = new PipeHandle();
   _ihandle->handle = handles[0];
   _ohandle->handle = handles[1];
-#endif // flavor
-
   iprofile.setHandle(*_ihandle);
   oprofile.setHandle(*_ohandle);
+#endif // flavor
+
   return makePair<Pipe, Pipe>(p, q);
 }
 

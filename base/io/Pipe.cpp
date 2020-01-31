@@ -17,7 +17,7 @@
 #include <base/Functor.h>
 #include <base/io/EndOfFile.h>
 #include <base/concurrency/Thread.h>
-#include <base/string/String.h>
+#include <base/ResourceHandle.h>
 #include <base/Profiler.h>
 #include <base/UnitTest.h>
 #include <base/build.h>
@@ -67,9 +67,61 @@ namespace {
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
+class PipeHandle : public ResourceHandle {
+public:
+  
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
+  HANDLE handle = INVALID_HANDLE_VALUE;
+#else
+  int handle = -1;
+#endif
+  /** Specifies that the end has been reached. */
+  bool end = false;
+
+  void close()
+  {
+    if (end) {
+      return;
+    }
+
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
+    if (::CloseHandle(handle)) {
+      _throw PipeException("Unable to close pipe.", this);
+    }
+    handle = INVALID_HANDLE_VALUE;
+#else // unix
+    if (::close(handle)) {
+      _throw PipeException("Unable to close pipe.", this);
+    }
+    handle = -1;
+#endif
+    end = true;
+  }
+
+  ~PipeHandle()
+  {
+    close();
+  }
+};
+
+namespace {
+
+  inline PipeHandle* toPipeHandle(const AnyReference& handle)
+  {
+    if (handle) { // TAG: we do not want a dynamic cast - use static cast
+      return handle.cast<PipeHandle>().getValue();
+    }
+    return nullptr;
+  }
+}
+
 Pair<Pipe, Pipe> Pipe::make()
 {
-  Profiler::ResourceCreateTask profile("Pipe::make()");
+  Pipe p;
+  Pipe q;
+
+  Profiler::ResourceCreateTask iprofile("Pipe::make()");
+  Profiler::ResourceCreateTask oprofile("Pipe::make()");
 
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   // create two named pipes with unique names (one for input and one for output - may be the same handle)
@@ -94,64 +146,56 @@ Pair<Pipe, Pipe> Pipe::make()
   // FIXME: remember to close before raising an exception
   bassert(ihandle != OperatingSystem::INVALID_HANDLE, IOException("Unable to make pipes.", Type::getType<Pipe>()));
   bassert(ohandle != OperatingSystem::INVALID_HANDLE, IOException("Unable to make pipes.", Type::getType<Pipe>()));
-  Pipe p;
-  Pipe q;
-  p.fd = new PipeHandle(ihandle);
-  q.fd = new PipeHandle(ohandle);
-  return makePair<Pipe, Pipe>(p, q);
+
+  Reference<PipeHandle> _ihandle = new PipeHandle();
+  Reference<PipeHandle> _ohandle = new PipeHandle();
+  _ihandle->handle = ihandle;
+  _ohandle->handle = ohandle;
 #elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__WASI)
   BASSERT(!"Not supported.");
-  return Pair<Pipe, Pipe>();
+  return Pair<Pipe, Pipe>(p, q);
 #else // unix
   OperatingSystem::Handle handles[2];
   if (::pipe(handles)) {
     _throw PipeException("Unable to create pipe.", Type::getType<Pipe>());
   }
-  Pipe p;
-  Pipe q;
-  p.fd = new PipeHandle(handles[0]);
-  q.fd = new PipeHandle(handles[1]);
-  return makePair<Pipe, Pipe>(p, q);
+
+  Reference<PipeHandle> _ihandle = new PipeHandle();
+  Reference<PipeHandle> _ohandle = new PipeHandle();
+  _ihandle->handle = handles[0];
+  _ohandle->handle = handles[1];
 #endif // flavor
-}
 
-
-
-Pipe::PipeHandle::~PipeHandle()
-{
-#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
-  if (isValid()) {
-    if (::CloseHandle(getHandle())) {
-      _throw PipeException("Unable to close pipe.", this);
-    }
-  }
-#else // unix
-  if (isValid()) {
-    if (::close(getHandle())) {
-      _throw PipeException("Unable to close pipe.", this);
-    }
-  }
-#endif
+  iprofile.setHandle(*_ihandle);
+  oprofile.setHandle(*_ohandle);
+  return makePair<Pipe, Pipe>(p, q);
 }
 
 
 
 Pipe::Pipe() noexcept
-  : fd(PipeHandle::invalid), end(false)
 {
 }
 
 void Pipe::close()
 {
-  fd = PipeHandle::invalid;
-  end = true;
+  PipeHandle* handle = toPipeHandle(this->handle);
+  if (!handle) {
+    _throw NullPointer(this);
+  }
+  handle->close();
 }
 
-unsigned int Pipe::getBufferSize() const noexcept
+unsigned int Pipe::getBufferSize() const
 {
+  PipeHandle* handle = toPipeHandle(this->handle);
+  if (!handle) {
+    _throw NullPointer(this);
+  }
+
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   DWORD result = 0;
-  GetNamedPipeInfo(fd->getHandle(), 0, &result, 0, 0); // TAG: separate input and output buffer sizes
+  GetNamedPipeInfo(handle->handle, 0, &result, 0, 0); // TAG: separate input and output buffer sizes
   return result;
 #elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__FREERTOS) || \
       (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__ZEPHYR) || \
@@ -165,24 +209,32 @@ unsigned int Pipe::getBufferSize() const noexcept
 
 bool Pipe::atEnd() const
 {
-  return end;
+  PipeHandle* handle = toPipeHandle(this->handle);
+  if (!handle) {
+    _throw NullPointer(this);
+  }
+  return handle->end;
 }
 
 unsigned int Pipe::available() const
 {
+  PipeHandle* handle = toPipeHandle(this->handle);
+  if (!handle) {
+    _throw NullPointer(this);
+  }
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   DWORD bytesAvailable = 0;
-  if (!::PeekNamedPipe(fd->getHandle(), 0, 0, 0, &bytesAvailable, 0)) {
+  if (!::PeekNamedPipe(handle->handle, 0, 0, 0, &bytesAvailable, 0)) {
     _throw PipeException("Unable to get available bytes.", this);
   }
   return bytesAvailable;
 #else // unix
   #if defined(_COM_AZURE_DEV__BASE__LARGE_FILE_SYSTEM)
     struct stat64 status;
-    int result = fstat64(fd->getHandle(), &status);
+    int result = fstat64(handle->handle, &status);
   #else
     struct stat status;
-    int result = ::fstat(fd->getHandle(), &status);
+    int result = ::fstat(handle->handle, &status);
   #endif // LFS
     bassert(result == 0, IOException("Unable to get available bytes.", this));
     return (unsigned int)status.st_size;
@@ -191,6 +243,11 @@ unsigned int Pipe::available() const
 
 unsigned int Pipe::skip(unsigned int count)
 {
+  PipeHandle* handle = toPipeHandle(this->handle);
+  if (!handle) {
+    _throw NullPointer(this);
+  }
+
   Thread::UseThreadLocalBuffer _buffer;
   Allocator<uint8>& buffer = _buffer;
   unsigned int bytesSkipped = 0;
@@ -203,10 +260,15 @@ unsigned int Pipe::skip(unsigned int count)
 
 void Pipe::flush()
 {
+  PipeHandle* handle = toPipeHandle(this->handle);
+  if (!handle) {
+    _throw NullPointer(this);
+  }
+
   Profiler::IOFlushTask profile("Pipe::flush()");
 
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
-  if (!::FlushFileBuffers(fd->getHandle())) {
+  if (!::FlushFileBuffers(handle->handle)) {
     _throw PipeException("Unable to flush pipe.", this);
   }
 #else // unix
@@ -214,7 +276,7 @@ void Pipe::flush()
 //    #warning Pipe::flush() not supported (CYGWIN)
   #elif defined(_COM_AZURE_DEV__BASE__USE_FLUSH)
     int command = FLUSHW;
-    if (::ioctl(fd->getHandle(), I_FLUSH, &command)) {
+    if (::ioctl(handle->handle, I_FLUSH, &command)) {
       _throw PipeException("Unable to flush pipe.", this);
     }
   #endif
@@ -226,17 +288,22 @@ unsigned int Pipe::read(
   unsigned int bytesToRead,
   bool nonblocking)
 {
+  PipeHandle* handle = toPipeHandle(this->handle);
+  if (!handle) {
+    _throw NullPointer(this);
+  }
+
   Profiler::IOReadTask profile("Pipe::read()", buffer);
 
   // TAG: currently always blocks
   // select wait mode with SetNamedPipeHandleState for win32
-  bassert(!end, EndOfFile(this));
+  bassert(!handle->end, EndOfFile(this));
   unsigned int bytesRead = 0;
   while (bytesToRead > 0) {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
     DWORD result = 0;
     BOOL success = ::ReadFile(
-      fd->getHandle(),
+      handle->handle,
       buffer,
       bytesToRead,
       &result,
@@ -254,7 +321,7 @@ unsigned int Pipe::read(
     }
 #else // unix
     int result = (int)::read(
-      fd->getHandle(),
+      handle->handle,
       buffer,
       minimum<size_t>(bytesToRead, SSIZE_MAX)
     );
@@ -270,7 +337,7 @@ unsigned int Pipe::read(
     }
 #endif
     if (result == 0) { // has end been reached
-      end = true;
+      handle->end = true;
       if (bytesToRead > 0) {
         _throw EndOfFile(this); // attempt to read beyond end of stream
       }
@@ -288,6 +355,11 @@ unsigned int Pipe::write(
   unsigned int bytesToWrite,
   bool nonblocking)
 {
+  PipeHandle* handle = toPipeHandle(this->handle);
+  if (!handle) {
+    _throw NullPointer(this);
+  }
+
   Profiler::IOWriteTask profile("Pipe::write()", buffer);
 
   // TAG: currently always blocks
@@ -296,7 +368,7 @@ unsigned int Pipe::write(
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
     DWORD result = 0;
     BOOL success = ::WriteFile(
-      fd->getHandle(),
+      handle->handle,
       buffer,
       bytesToWrite,
       &result,
@@ -306,7 +378,7 @@ unsigned int Pipe::write(
       _throw PipeException("Unable to write to pipe.", this);
     }
 #else // unix
-    int result = (int)::write(fd->getHandle(), buffer, minimum<size_t>(bytesToWrite, SSIZE_MAX));
+    int result = (int)::write(handle->handle, buffer, minimum<size_t>(bytesToWrite, SSIZE_MAX));
     if (result < 0) { // has an error occured
       switch (errno) {
       case EINTR: // interrupted by signal before any data was written
@@ -330,16 +402,21 @@ unsigned int Pipe::write(
 
 void Pipe::wait() const
 {
-  Profiler::WaitTask profilerTask("Pipe::wait()");
+  PipeHandle* handle = toPipeHandle(this->handle);
+  if (!handle) {
+    _throw NullPointer(this);
+  }
+
+  Profiler::WaitTask profilerTask("Pipe::wait()", handle);
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
-  DWORD result = ::WaitForSingleObject(fd->getHandle(), INFINITE);
+  DWORD result = ::WaitForSingleObject(handle->handle, INFINITE);
   BASSERT(result == WAIT_OBJECT_0);
 #else // unix
   fd_set rfds;
   FD_ZERO(&rfds);
-  FD_SET(fd->getHandle(), &rfds);
+  FD_SET(handle->handle, &rfds);
 
-  int result = ::select(fd->getHandle() + 1, &rfds, 0, 0, 0);
+  int result = ::select(handle->handle + 1, &rfds, 0, 0, 0);
   if (result == -1) {
     _throw PipeException("Unable to wait for input.", this);
   }
@@ -348,20 +425,25 @@ void Pipe::wait() const
 
 bool Pipe::wait(unsigned int timeout) const
 {
-  Profiler::WaitTask profile("Pipe::wait()");
+  PipeHandle* handle = toPipeHandle(this->handle);
+  if (!handle) {
+    _throw NullPointer(this);
+  }
+
+  Profiler::WaitTask profile("Pipe::wait()", handle);
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
-  DWORD result = ::WaitForSingleObject(fd->getHandle(), timeout); // FIXME:
+  DWORD result = ::WaitForSingleObject(handle->handle, timeout);
   return result == WAIT_OBJECT_0;
 #else // unix
   fd_set rfds;
   FD_ZERO(&rfds);
-  FD_SET(fd->getHandle(), &rfds);
+  FD_SET(handle->handle, &rfds);
 
   struct timeval tv;
   tv.tv_sec = timeout/1000000;
   tv.tv_usec = timeout % 1000000;
 
-  int result = ::select(fd->getHandle() + 1, &rfds, 0, 0, &tv);
+  int result = ::select(handle->handle + 1, &rfds, 0, 0, &tv);
   if (result == -1) {
     _throw PipeException("Unable to wait for input.", this);
   }

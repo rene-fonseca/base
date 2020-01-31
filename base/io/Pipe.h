@@ -19,6 +19,7 @@
 #include <base/io/OutputStream.h>
 #include <base/mem/Reference.h>
 #include <base/collection/Pair.h>
+#include <base/Resource.h>
 #include <base/io/Handle.h>
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
@@ -31,30 +32,7 @@ _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
   @version 1.2
 */
 
-class _COM_AZURE_DEV__BASE__API Pipe : public virtual Object, public virtual InputStream, public virtual OutputStream {
-public:
-
-  class PipeHandle : public Handle {
-    friend class Initialization;
-    friend class Pipe;
-  private:
-
-    /** Invalid handle. */
-    static Handle* invalid;
-
-    /** Initializes pipe handle. */
-    inline PipeHandle(OperatingSystem::Handle handle) noexcept : Handle(handle) {
-    }
-    
-    /** Releases the resources used by the pipe. */
-    ~PipeHandle();
-  };
-protected:
-
-  /** The internal pipe representation. */
-  Reference<Handle> fd;
-  /** Specifies that the end has been reached. */
-  bool end = false;
+class _COM_AZURE_DEV__BASE__API Pipe : public Resource, public virtual InputStream, public virtual OutputStream {
 public:
 
   /**
@@ -68,23 +46,6 @@ public:
   Pipe() noexcept;
 
   /**
-    Initialization of pipe from other pipe.
-  */
-  inline Pipe(const Pipe& copy) noexcept : fd(copy.fd) {
-  }
-
-  /**
-    Assignment of pipe to pipe.
-  */
-  inline Pipe& operator=(const Pipe& assign) noexcept
-  {
-    // no need to protect against self assignment
-    fd = assign.fd;
-    end = assign.end;
-    return *this;
-  }
-
-  /**
     Closes this pipe.
   */
   void close();
@@ -95,7 +56,7 @@ public:
     To avoid the data being interleaved the packet size must not exceed this
     buffer size.
   */
-  unsigned int getBufferSize() const noexcept;
+  unsigned int getBufferSize() const;
 
   /**
     Returns true if the end of the stream has been reached.

@@ -356,7 +356,6 @@ ModuleManager ModuleManager::moduleManager;
 Handle* FileDescriptor::Descriptor::invalid = nullptr; // uninitialized
 Handle* Process::ProcessHandle::invalid = nullptr; // uninitialized
 Handle* File::FileHandle::invalid = nullptr; // uninitialized
-Handle* Pipe::PipeHandle::invalid = nullptr; // uninitialized
 Socket::SocketImpl* Socket::SocketImpl::invalid = nullptr; // uninitialized
 
 class Initialization {
@@ -377,7 +376,6 @@ public:
     FileDescriptor::Descriptor::invalid = &invalidHandle;
     Process::ProcessHandle::invalid = &invalidHandle;
     File::FileHandle::invalid = &invalidHandle;
-    Pipe::PipeHandle::invalid = &invalidHandle;
     Socket::SocketImpl::invalid = &invalidSocket;
   }
 };

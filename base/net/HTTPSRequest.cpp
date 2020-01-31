@@ -535,9 +535,14 @@ public:
 
 String HTTPSRequest::getResponse()
 {
+  String result;
+  Profiler::IOReadTask profile("HTTPSRequest::getResponse()");
   PushToString push;
   getResponse(&push);
-  return push.text;
+  result = push.text;
+  profile.setBuffer(reinterpret_cast<const uint8*>(result.getElements()));
+  profile.onBytesRead(result.getLength());
+  return result;
 }
 
 void HTTPSRequest::getResponse(OutputStream* os)
@@ -592,6 +597,9 @@ void HTTPSRequest::getResponse(PushInterface* pi)
     if (!status) {
       _throw IOException("Failed to read response.");
     }
+    // dont really want multiple calls for profiling
+    Profiler::IOReadTask profile("HTTPSRequest::getResponse()", buffer);
+    profile.onBytesRead(bytesRead);
     pi->push(static_cast<const uint8*>(buffer), bytesRead);
   }
 
@@ -616,6 +624,9 @@ void HTTPSRequest::getResponse(PushInterface* pi)
     if (bytesRead == 0) {
       break;
     }
+    // dont really want multiple calls for profiling
+    Profiler::IOReadTask profile("HTTPSRequest::getResponse()", buffer);
+    profile.onBytesRead(bytesRead);
     pi->push(static_cast<const uint8*>(buffer), bytesRead);
     if (done) {
       break;

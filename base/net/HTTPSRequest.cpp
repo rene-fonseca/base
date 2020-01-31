@@ -40,6 +40,17 @@ namespace {
   private:
 
     TYPE handle = nullptr;
+    
+    CFHandle(const CFHandle&) = delete;
+    CFHandle& operator=(const CFHandle&) = delete;
+    
+    inline void release() noexcept
+    {
+      if (handle) {
+        CFRelease(handle);
+        handle = nullptr;
+      }
+    }
   public:
   
     inline CFHandle() noexcept
@@ -50,7 +61,23 @@ namespace {
       : handle(_handle)
     {
     }
-  
+
+    inline CFHandle(CFHandle&& move) noexcept
+      : handle(moveObject(move.handle))
+    {
+      move.handle = nullptr;
+    }
+
+    inline CFHandle& operator=(CFHandle&& move) noexcept
+    {
+      if (&move != this) {
+        release();
+        handle = move.handle;
+        move.handle = nullptr;
+      }
+      return *this;
+    }
+
     inline operator TYPE() noexcept
     {
       return handle;
@@ -58,9 +85,7 @@ namespace {
   
     inline ~CFHandle() noexcept
     {
-      if (handle) {
-        CFRelease(handle);
-      }
+      release();
     }
   };
 }
@@ -394,25 +419,24 @@ void HTTPSRequest::send(const String& _body)
   
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wdeprecated-declarations"
-  CFHandle<CFReadStreamRef> stream = CFReadStreamCreateForHTTPRequest(kCFAllocatorDefault, _handle->cfHttpReq);
-  if (CFReadStreamSetProperty(stream, kCFStreamPropertyHTTPShouldAutoredirect, kCFBooleanTrue) == false) {
+  _handle->stream = CFReadStreamCreateForHTTPRequest(kCFAllocatorDefault, _handle->cfHttpReq);
+  if (CFReadStreamSetProperty(_handle->stream, kCFStreamPropertyHTTPShouldAutoredirect, kCFBooleanTrue) == false) {
     // now what
   }
-  if (!stream) {
+  if (!_handle->stream) {
     _throw HTTPException("Failed to send HTTP request.");
   }
-  _handle->stream = stream;
 
   // read 1 byte to force response to become available
   uint8 buffer = 0;
-  CFReadStreamOpen(stream);
-  CFIndex bytesRead = CFReadStreamRead(stream, &buffer, 1); // wait for data to become available
+  CFReadStreamOpen(_handle->stream);
+  CFIndex bytesRead = CFReadStreamRead(_handle->stream, &buffer, 1); // wait for data to become available
   BASSERT(bytesRead == 1);
   _handle->pendingByte = buffer;
   // CFReadStreamClose(stream); // this breaks getResponse()
   
   // kCFStreamPropertyHTTPResponseHeader is not available until all data has been read
-  CFHTTPMessageRef response = (CFHTTPMessageRef)CFReadStreamCopyProperty(stream, kCFStreamPropertyHTTPResponseHeader);
+  CFHTTPMessageRef response = (CFHTTPMessageRef)CFReadStreamCopyProperty(_handle->stream, kCFStreamPropertyHTTPResponseHeader);
   if (!response) {
     _throw HTTPException("Failed to send HTTP request.");
   }

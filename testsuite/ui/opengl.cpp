@@ -650,13 +650,15 @@ public:
       }
     }
     
-    void onMove(const Position& position) noexcept {
+    void onMove(const Position& position) noexcept
+    {
       if (verbosity >= Verbosity::ALL_MOUSE_EVENTS) {
         fout << "Window move event: " << position << ENDL;
       }
     }
     
-    void onResize(const Dimension& dimension) noexcept {
+    void onResize(const Dimension& dimension) noexcept
+    {
       if (verbosity >= Verbosity::ALL_MOUSE_EVENTS) {
         fout << "Resize event: " << dimension << ENDL;
       }
@@ -681,7 +683,8 @@ public:
       Literal literal;
     };
     
-    void onMouseMove(const Position& position, unsigned int state) noexcept {
+    void onMouseMove(const Position& position, unsigned int state) noexcept
+    {
       const Position difference = position - mouseButtonPosition;
       if (verbosity >= Verbosity::ALL_MOUSE_EVENTS) {
         fout << "Mouse motion event: " << position << ENDL;
@@ -737,12 +740,14 @@ public:
 //         }
     }
 
-    void onMouseScope(bool scope) noexcept {
+    void onMouseScope(bool scope) noexcept
+    {
       fout << "Event: mouse scope "
            << (scope ? MESSAGE("INSIDE SCOPE") : MESSAGE("OUT OF SCOPE")) << ENDL;
     }
     
-    void onMouseButton(const Position& position, Mouse::Button button, Mouse::Event event, unsigned int state) noexcept {
+    void onMouseButton(const Position& position, Mouse::Button button, Mouse::Event event, unsigned int state) noexcept
+    {
       static const Flag STATES[] = {
         {Mouse::LEFT, MESSAGE("LEFT")},
         {Mouse::MIDDLE, MESSAGE("MIDDLE")},
@@ -839,7 +844,8 @@ public:
       invalidate();
     }
     
-    void onKey(unsigned int key, unsigned int flags, unsigned int modifiers) noexcept {
+    void onKey(unsigned int key, unsigned int flags, unsigned int modifiers) noexcept
+    {
       if (flags & Key::PRESSED) {
         if (flags & Key::DEAD) {
           return;
@@ -945,11 +951,13 @@ public:
       }
     }
     
-    void onIdle() noexcept {
+    void onIdle() noexcept
+    {
       invalidate();
     }
     
-    bool onClose() noexcept {
+    bool onClose() noexcept
+    {
       fout << "Event: close " << ENDL;
       MessageDialog dialog(MESSAGE("Quit"), MESSAGE("Do you really wan't to quit?"), MessageDialog::QUESTION);
       dialog.execute();
@@ -959,7 +967,8 @@ public:
       return dialog.getAnswer() == MessageDialog::YES;
     }
     
-    void onVisibility(Visibility visibility) noexcept {
+    void onVisibility(Visibility visibility) noexcept
+    {
       if (verbosity >= Verbosity::ACTIVE_MOUSE_EVENTS) {
         fout << "Visibility event: "
              << ((visibility == VISIBLE) ? MESSAGE("VISIBLE") : MESSAGE("INVISIBLE"))
@@ -967,7 +976,8 @@ public:
       }
     }
     
-    void onFocus(Focus focus) noexcept {
+    void onFocus(Focus focus) noexcept
+    {
       if (verbosity >= Verbosity::ACTIVE_MOUSE_EVENTS) {
         fout << "Focus event: "
              << ((focus == ACQUIRED_FOCUS) ? MESSAGE("ACQUIRED FOCUS") : MESSAGE("LOST FOCUS"))
@@ -975,7 +985,8 @@ public:
       }
     }
 
-    void dumpOpenGLInformation() noexcept {
+    void dumpOpenGLInformation() noexcept
+    {
       fout << "Vendor: " << openGL.getVendor() << EOL
            << "Renderer: " << openGL.getRenderer() << EOL
            << "Version: " << openGL.getVersion() << EOL
@@ -1002,13 +1013,15 @@ public:
            << ENDL;
     }
     
-    void dumpCommand(const Literal& description) noexcept {
+    void dumpCommand(const Literal& description) noexcept
+    {
       if (verbosity >= Verbosity::COMMANDS) {
         fout << "Command: " << description << ENDL;
       }
     }
      
-    void onCommand(unsigned int identifier) noexcept {
+    void onCommand(unsigned int identifier) noexcept
+    {
       switch (identifier) {
       case Command::SELECT_VERBOSITY_NO_INFORMATION:
         dumpCommand(MESSAGE("Set verbosity level to NO_INFORMATION"));

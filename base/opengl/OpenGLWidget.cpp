@@ -22,7 +22,8 @@
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
-void OpenGLWidget::destroy() noexcept {
+void OpenGLWidget::destroy() noexcept
+{
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)  
   native::GDI::wglMakeCurrent(0, 0); // deselect current rendering context
   if (renderingContextHandle) {
@@ -63,7 +64,8 @@ void OpenGLWidget::destroy() noexcept {
   WindowImpl::destroy();
 }
 
-nothing OpenGLWidget::initialize(const Format& format) {
+nothing OpenGLWidget::initialize(const Format& format)
+{
   OpenGLContextImpl::loadModule();
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)  
   OpenGLContextImpl::graphicsContextHandle = WindowImpl::graphicsContextHandle; // TAG: fixme
@@ -162,12 +164,14 @@ nothing OpenGLWidget::initialize(const Format& format) {
 OpenGLWidget::OpenGLWidget(Window& owner, const Format& format)
   : Widget(owner),
     OpenGLContextImpl(),
-    prefixInitialization(initialize(format)) {
+    prefixInitialization(initialize(format))
+{
   construct();
   invalidate();
 }
 
-void OpenGLWidget::onDisplay() noexcept {
+void OpenGLWidget::onDisplay() noexcept
+{
   openGL.glClearColor(0.0, 0.0, 0.0, 1.0);
   openGL.glClear(OpenGL::COLOR_BUFFER_BIT);
   openGL.glFlush();

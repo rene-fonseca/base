@@ -275,7 +275,8 @@ public:
     CAT_SIGNAL = 11,
     CAT_RENDERER = 12,
     CAT_COMPUTE = 13,
-    CAT_UI = 14
+    CAT_UI = 14,
+    CAT_RENDERING = 15
   };
   // use macro to encode/decode in char*
 #endif
@@ -296,6 +297,7 @@ public:
   static constexpr const char* CAT_COMPUTE = "COMPUTE";
   static constexpr const char* CAT_SECURITY = "SECURITY";
   static constexpr const char* CAT_UI = "UI";
+  static constexpr const char* CAT_RENDERING = "RENDERING";
 
   enum {
     EVENT_BEGIN = 'B',
@@ -764,6 +766,17 @@ public:
     
     /** UI task start. */
     inline UITask(const char* name, const char* cat = CAT_UI) noexcept
+      : Task(name, cat)
+    {
+    }
+  };
+
+  /** Rendering task. */
+  class _COM_AZURE_DEV__BASE__API RenderingTask : public Task {
+  public:
+    
+    /** Rendering task start. */
+    inline RenderingTask(const char* name, const char* cat = CAT_RENDERING) noexcept
       : Task(name, cat)
     {
     }

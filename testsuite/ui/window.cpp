@@ -70,12 +70,14 @@ public:
         const Position& position,
         const Dimension& dimension,
         unsigned int flags = 0)
-        : PopUpWindow(position, dimension, flags) {
+        : PopUpWindow(position, dimension, flags)
+      {
         setBrush(Color(Color::BEIGE));
         setPen(Pen(Color(0, 0, 0 /*Color::BLACK*/)));
       }
       
-      void onDisplay() noexcept {
+      void onDisplay() noexcept
+      {
         rectangle(Position(0, 0), getDimension());
       }
 
@@ -83,7 +85,8 @@ public:
         const Position& position,
         Mouse::Button button,
         Mouse::Event event,
-        unsigned int state) noexcept {
+        unsigned int state) noexcept
+      {
         return;
         
         if (event == Mouse::PRESSED) {
@@ -108,7 +111,8 @@ public:
     Picture picture;
     // MyOpenGLWidget openGLWidget;
 
-    inline OpenGLWidget::Format makeFormat() noexcept {
+    inline OpenGLWidget::Format makeFormat() noexcept
+    {
       OpenGLWidget::Format format;
       format.id = 1;
       format.flags = OpenGLWidget::RGB|OpenGLWidget::DEPTH;
@@ -141,7 +145,8 @@ public:
         button(*this),
         progressBar(*this),
         picture(*this)/*,
-                        openGLWidget(*this, makeFormat())*/ {
+                        openGLWidget(*this, makeFormat())*/
+    {
       
       setTitle(title);
       setIconTitle(title);
@@ -183,7 +188,8 @@ public:
       // openGLWidget.setDimension(Dimension(128, 128));
     }
     
-    void onDisplay() noexcept {
+    void onDisplay() noexcept
+    {
       // setBrush();
       clear();
       line(Position(10, 60), Position(64, 20));
@@ -192,12 +198,14 @@ public:
       flush();
     }
     
-    void onMove(const Position& position) noexcept {
+    void onMove(const Position& position) noexcept
+    {
       fout << "Event: move " << position << ENDL;
       progressBar.setCurrentValue(position.getX());
     }
     
-    void onResize(const Dimension& dimension) noexcept {
+    void onResize(const Dimension& dimension) noexcept
+    {
       fout << "Event: resize " << dimension << ENDL;
       onDisplay();
     }
@@ -207,7 +215,8 @@ public:
       Literal literal;
     };
     
-    void onMouseMove(const Position& position, unsigned int state) noexcept {
+    void onMouseMove(const Position& position, unsigned int state) noexcept
+    {
       static const Flag STATES[] = {
         {Mouse::LEFT, Literal("LEFT")},
         {Mouse::MIDDLE, Literal("MIDDLE")},
@@ -236,7 +245,8 @@ public:
       fout << ENDL;
     }
 
-    void onMouseScope(bool scope) noexcept {
+    void onMouseScope(bool scope) noexcept
+    {
       fout << "Event: mouse scope "
            << (scope ? Literal("INSIDE SCOPE") : Literal("OUT OF SCOPE")) << ENDL;
     }
@@ -245,7 +255,8 @@ public:
       const Position& position,
       Mouse::Button button,
       Mouse::Event event,
-      unsigned int state) noexcept {
+      unsigned int state) noexcept
+    {
       
       static const Flag STATES[] = {
         {Mouse::LEFT, Literal("LEFT")},
@@ -315,13 +326,13 @@ public:
       }
     }
     
-    void onMouseWheel(
-      const Position& position, int delta, unsigned int buttons) noexcept {
+    void onMouseWheel(const Position& position, int delta, unsigned int buttons) noexcept
+    {
       fout << "Event: mouse wheel " << position << SP << delta << ENDL;
     }
     
-    void onKey(
-      unsigned int key, unsigned int flags, unsigned int modifiers) noexcept {
+    void onKey(unsigned int key, unsigned int flags, unsigned int modifiers) noexcept
+    {
       if (flags & Key::PRESSED) {
         if (flags & Key::DEAD) {
           return;
@@ -343,17 +354,20 @@ public:
       }
     }
 
-    void onDestruction() noexcept {
+    void onDestruction() noexcept
+    {
       fout << "Event: destruction" << ENDL;
       exit();
     }
     
-    bool onClose() noexcept {
+    bool onClose() noexcept
+    {
       fout << "Event: close " << ENDL;
       return true;
     }
     
-    void onVisibility(Visibility visibility) noexcept {
+    void onVisibility(Visibility visibility) noexcept
+    {
       static const Literal VISIBILITY[] = {
         Literal("INVISIBLE"),
         Literal("PARTIALLY VISIBLE"),
@@ -363,17 +377,20 @@ public:
       fout << "Event: visibility " << VISIBILITY[visibility] << ENDL;
     }
     
-    void onFocus(Focus focus) noexcept {
+    void onFocus(Focus focus) noexcept
+    {
       update();
       fout << "Event: focus "
            << ((focus == ACQUIRED_FOCUS) ? Literal("ACQUIRED") : Literal("LOST")) << ENDL;
     }
     
-    void onMenu(unsigned int identifier) noexcept {
+    void onMenu(unsigned int identifier) noexcept
+    {
       fout << "Event: menu " << identifier << ENDL;
     }
     
-    void onCommand(unsigned int identifier) noexcept {
+    void onCommand(unsigned int identifier) noexcept
+    {
       fout << "Event: command " << identifier << ENDL;
     }
   };

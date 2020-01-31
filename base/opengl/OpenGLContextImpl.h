@@ -139,189 +139,216 @@ public:
   /**
     Returns the number of overlay planes.
   */
-  inline unsigned int getNumberOfOverlayPlanes() const {
+  inline unsigned int getNumberOfOverlayPlanes() const
+  {
     return numberOfOverlayPlanes;
   }
 
   /**
     Returns the number of underlay planes.
   */
-  inline unsigned int getNumberOfUnderlayPlanes() const {
+  inline unsigned int getNumberOfUnderlayPlanes() const
+  {
     return numberOfUnderlayPlanes;
   }
 
   /**
     Returns true is the context is double buffered.
   */
-  inline bool isDoubleBuffered() const noexcept {
+  inline bool isDoubleBuffered() const noexcept
+  {
     return flags & DOUBLE_BUFFERED;
   }
 
   /**
     Returns true if the context is color indexed.
   */
-  inline bool isColorIndexed() const noexcept {
+  inline bool isColorIndexed() const noexcept
+  {
     return flags & COLOR_INDEXED;
   }
 
   /**
     Returns true if the context is stereoscopic.
   */
-  inline bool isStereoscopic() const noexcept {
+  inline bool isStereoscopic() const noexcept
+  {
     return flags & STEREO;
   }
   
   /**
     Returns true if the context is direct (accelerated).
   */
-  inline bool isDirect() const noexcept {
+  inline bool isDirect() const noexcept
+  {
     return flags & DIRECT;
   }
   
   /**
     Returns true if the context is the generic implementation.
   */
-  inline bool isGeneric() const noexcept {
+  inline bool isGeneric() const noexcept
+  {
     return flags & GENERIC;
   }
   
   /**
     Returns true if the multi sample.
   */
-  inline bool isMultiSampled() const noexcept {
+  inline bool isMultiSampled() const noexcept
+  {
     return flags & MULTI_SAMPLE;
   }
   
   /**
     Returns true if the layers may be swapped individually.
   */
-  inline bool isSwapLayers() const noexcept {
+  inline bool isSwapLayers() const noexcept
+  {
     return flags & SWAP_LAYER;
   }
   
   /**
     Returns true is alpha buffer is available.
   */
-  inline bool hasAlphaBuffer() const noexcept {
+  inline bool hasAlphaBuffer() const noexcept
+  {
     return alphaBits;
   }  
 
   /**
     Returns the number of color bits (excluding the alpha bits).
   */
-  inline unsigned int getNumberOfColorBits() const noexcept {
+  inline unsigned int getNumberOfColorBits() const noexcept
+  {
     return colorBits;
   }
 
   /**
     Returns the number of red bits.
   */
-  inline unsigned int getNumberOfRedBits() const noexcept {
+  inline unsigned int getNumberOfRedBits() const noexcept
+  {
     return redBits;
   }
   
   /**
     Returns the number of green bits.
   */
-  inline unsigned int getNumberOfGreenBits() const noexcept {
+  inline unsigned int getNumberOfGreenBits() const noexcept
+  {
     return greenBits;
   }
   
   /**
     Returns the number of blue bits.
   */
-  inline unsigned int getNumberOfBlueBits() const noexcept {
+  inline unsigned int getNumberOfBlueBits() const noexcept
+  {
     return blueBits;
   }
 
   /**
     Returns the number of alpha bits.
   */
-  inline unsigned int getNumberOfAlphaBits() const noexcept {
+  inline unsigned int getNumberOfAlphaBits() const noexcept
+  {
     return alphaBits;
   }
 
   /**
     Returns true if an accumulator buffer is available.
   */
-  inline bool hasAccumulatorBuffer() const noexcept {
+  inline bool hasAccumulatorBuffer() const noexcept
+  {
     return accumulatorBits;
   }
 
   /**
     Returns the number of accumulator bits.
   */
-  inline unsigned int getNumberOfAcculumatorBits() const noexcept {
+  inline unsigned int getNumberOfAcculumatorBits() const noexcept
+  {
     return accumulatorBits;
   }
 
   /**
     Returns the number of red bits for the accumulator buffer.
   */
-  inline unsigned int getNumberOfAcculumatorRedBits() const noexcept {
+  inline unsigned int getNumberOfAcculumatorRedBits() const noexcept
+  {
     return accumulatorRedBits;
   }
   
   /**
     Returns the number of green bits for the accumulator buffer.
   */
-  inline unsigned int getNumberOfAcculumatorGreenBits() const noexcept {
+  inline unsigned int getNumberOfAcculumatorGreenBits() const noexcept
+  {
     return accumulatorGreenBits;
   }
   
   /**
     Returns the number of blue bits for the accumulator buffer.
   */
-  inline unsigned int getNumberOfAcculumatorBlueBits() const noexcept {
+  inline unsigned int getNumberOfAcculumatorBlueBits() const noexcept
+  {
     return accumulatorBlueBits;
   }
 
   /**
     Returns the number of alpha bits for the accumulator buffer.
   */
-  inline unsigned int getNumberOfAcculumatorAlphaBits() const noexcept {
+  inline unsigned int getNumberOfAcculumatorAlphaBits() const noexcept
+  {
     return accumulatorAlphaBits;
   }
   
   /**
     Returns true if depth buffer is available.
   */
-  inline bool hasDepthBuffer() const noexcept {
+  inline bool hasDepthBuffer() const noexcept
+  {
     return depthBits;
   }
 
   /**
     Returns the number of depth bits.
   */
-  inline unsigned int getNumberOfDepthBits() const noexcept {
+  inline unsigned int getNumberOfDepthBits() const noexcept
+  {
     return depthBits;
   }
 
   /**
     Returns true if stencil buffer is available.
   */
-  inline bool hasStencilBuffer() const noexcept {
+  inline bool hasStencilBuffer() const noexcept
+  {
     return stencilBits;
   }
 
   /**
     Returns the number of stencil bits.
   */
-  inline bool getNumberOfStencilBits() const noexcept {
+  inline bool getNumberOfStencilBits() const noexcept
+  {
     return stencilBits;
   }
 
   /**
     Returns true if auxiliary buffers are available.
   */
-  inline bool hasAuxBuffers() const noexcept {
+  inline bool hasAuxBuffers() const noexcept
+  {
     return auxBuffers;
   }
   
   /**
     Returns the number of auxiliary buffers.
   */
-  inline unsigned int getNumberOfAuxBuffers() const noexcept {
+  inline unsigned int getNumberOfAuxBuffers() const noexcept
+  {
     return auxBuffers;
   }
   

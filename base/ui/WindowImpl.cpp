@@ -299,8 +299,10 @@ LRESULT CALLBACK Backend<WindowImpl>::messageHandler(HWND handle, UINT message, 
       PAINTSTRUCT ps;
       /*HDC hdc =*/ ::BeginPaint((HWND)window->drawableHandle, &ps);
       // ps.rcPaint;
-      Profiler::UITask profile("Window::onDisplay()");
-      window->onDisplay();
+      {
+        Profiler::RenderingTask profiler("Window::onDisplay()");
+        window->onDisplay();
+      }
       ::EndPaint((HWND)window->drawableHandle, &ps);
       // ::ValidateRect((HWND)window->drawableHandle, 0); // not required with BeginPaint
       return 0;
@@ -2049,7 +2051,7 @@ void WindowImpl::dispatch() {
         const XExposeEvent* specificEvent =
           Cast::pointer<const XExposeEvent*>(&event);
         // Region(Position(specificEvent->x, specificEvent->y), Dimension(specificEvent->width, specificEvent->height));
-        Profiler::UITask profile("Window::onDisplay()");
+        Profiler::RenderingTask profiler("Window::onDisplay()");
         window->onDisplay();
       }
       break;
@@ -2570,6 +2572,7 @@ void WindowImpl::dispatch() {
           Profiler::UITask profile("Window::onVisibility()");
           window->onVisibility(visibility);
         }
+        Profiler::RenderingTask profiler("Window::onDisplay()");
         window->onDisplay();
       }
       break;

@@ -805,6 +805,8 @@ Profiler::ReferenceCounters::ReferenceCounters() noexcept
   // this->io = usage.ru_msgrcv + usage.ru_msgsnd;
   // this->operations = usage.ru_inblock + usage.ru_oublock;
 #endif
+
+  resources = ResourceHandle::getResources();
 }
 
 void Profiler::pushCountersImpl()
@@ -1103,7 +1105,7 @@ void Profiler::ProfilerImpl::close()
             // only supported counters:
             data->setValue("jsHeapSizeUsed", format() << r->memoryUsed);
             data->setValue("documents", format() << r->objects);
-            data->setValue("nodes", format() << r->objects);
+            data->setValue("nodes", format() << r->resources);
             data->setValue("jsEventListeners", format() << r->processingTime);
 
             // need support for more counters:

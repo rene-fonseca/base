@@ -451,6 +451,7 @@ public:
     
     MemorySize memoryUsed = 0; // memory in use
     MemorySize objects = 0; // number of objects
+    MemorySize resources = 0; // number of resources
     uint64 processingTime = 0; // processing time
     uint64 io = 0; // IO transmitted
     uint64 operations = 0; // number of IO operations

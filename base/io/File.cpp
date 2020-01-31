@@ -1015,7 +1015,7 @@ void File::flush()
 {
   FileHandle* handle = toFileHandle(this->handle);
   if (!handle) {
-    _throw NullPointer(this);
+    return;
   }
 
   Profiler::IOFlushTask profile("File::flush()");

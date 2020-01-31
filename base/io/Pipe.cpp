@@ -263,7 +263,7 @@ void Pipe::flush()
 {
   PipeHandle* handle = toPipeHandle(this->handle);
   if (!handle) {
-    _throw NullPointer(this);
+    return;
   }
 
   Profiler::IOFlushTask profile("Pipe::flush()");

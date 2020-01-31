@@ -14,7 +14,7 @@
 #include <base/ui/WindowImpl.h>
 #include <base/dl/DynamicLinker.h>
 #include <base/platforms/backend/WindowImpl.h>
- // #include <base/Profiler.h>
+#include <base/Profiler.h>
 #include <base/build.h>
 
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)

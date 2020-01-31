@@ -698,7 +698,7 @@ public:
     /** Task complete. */
     inline ~IOReadTask() noexcept
     {
-      setTaskBytesRead(nullptr, bytesRead);
+      setTaskBytesRead(buffer, bytesRead);
     }
   };
 

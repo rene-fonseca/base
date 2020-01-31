@@ -19,25 +19,25 @@ _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 String Resource::getDescription() const
 {
   Reference<ResourceHandle> handle = this->handle.castChecked<ResourceHandle>();
-  return handle->description;
+  return handle->getDescription();
 }
 
 void Resource::setDescription(const String& description)
 {
   Reference<ResourceHandle> handle = this->handle.castChecked<ResourceHandle>();
-  handle->description = description.getContainer();
+  handle->setDescription(description);
 }
 
 unsigned int Resource::getResourceId() const
 {
   Reference<ResourceHandle> handle = this->handle.castChecked<ResourceHandle>();
-  return handle->resourceId;
+  return handle->getResourceId();
 }
 
 unsigned int Resource::getCreatedById() const
 {
   Reference<ResourceHandle> handle = this->handle.castChecked<ResourceHandle>();
-  return handle->createdById;
+  return handle->getCreatedById();
 }
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

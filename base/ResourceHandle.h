@@ -24,8 +24,11 @@ _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 class _COM_AZURE_DEV__BASE__API ResourceHandle : public ReferenceCountedObject {
 private:
 
+  /** Unique ID generator. */
   static PreferredAtomicCounter id; // TAG: share id with Thread?
-public:
+  /** Current number of resources. */
+  static PreferredAtomicCounter total;
+private:
 
   /** Description for resource - set explicitly. */
   Reference<ReferenceCountedAllocator<char> > description; // do NOT use String here to avoid cyclic depends
@@ -33,7 +36,15 @@ public:
   unsigned int createdById = 0;
   /** Unique resource id. */
   unsigned int resourceId = 0;
-
+  // could add flag to allow profiling for specific handle
+public:
+  
+  /** Returns the number of open resources. */
+  static inline unsigned int getResources() noexcept
+  {
+    return total;
+  }
+  
   /** Initializes resource meta info. */
   inline ResourceHandle() noexcept
   {
@@ -41,12 +52,19 @@ public:
       createdById = Thread::getThreadSimpleId();
       resourceId = static_cast<unsigned int>(++id);
     }
+    ++total;
   }
 
   /** Returns the description of the resource. */
   inline String getDescription() const noexcept
   {
     return description;
+  }
+
+  /** Sets the description of the resource. */
+  inline void setDescription(const String& _description) noexcept
+  {
+    description = _description.getContainer();
   }
 
   /** Returns the ID of the thread that created the resource. */
@@ -59,6 +77,11 @@ public:
   inline unsigned int getResourceId() const noexcept
   {
     return resourceId;
+  }
+
+  inline ~ResourceHandle() noexcept
+  {
+    --total;
   }
 };
 

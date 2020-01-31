@@ -16,5 +16,6 @@
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 PreferredAtomicCounter ResourceHandle::id; // TAG: share id with Thread?
+PreferredAtomicCounter ResourceHandle::total;
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

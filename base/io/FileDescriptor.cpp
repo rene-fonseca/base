@@ -33,8 +33,6 @@
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
-// Handle* FileDescriptor::Descriptor::invalid = nullptr;
-
 FileDescriptor::Descriptor::~Descriptor()
 {
   if (isValid()) {

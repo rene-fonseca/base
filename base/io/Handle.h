@@ -44,27 +44,31 @@ public:
   /**
     Initializes an invalid handle.
   */
-  inline Handle() noexcept {
+  inline Handle() noexcept
+  {
   }
 
   /**
     Initializes handle using the specified value.
   */
   explicit inline Handle(OperatingSystem::Handle _handle) noexcept
-    : handle(_handle) {
+    : handle(_handle)
+  {
   }
 
   /**
     Returns the handle.
   */
-  inline OperatingSystem::Handle getHandle() const noexcept {
+  inline OperatingSystem::Handle getHandle() const noexcept
+  {
     return handle;
   }
 
   /**
     Returns true if the handle is valid.
   */
-  inline bool isValid() const noexcept {
+  inline bool isValid() const noexcept
+  {
     return handle != OperatingSystem::INVALID_HANDLE;
   }
 

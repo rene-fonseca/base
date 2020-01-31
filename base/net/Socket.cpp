@@ -782,8 +782,10 @@ void Socket::bind(const InetAddress& address, unsigned short port)
 
 void Socket::close()
 {
-  SocketImpl& socket = getInternalHandle<SocketImpl>();
-  socket.close();
+  if (handle) {
+    SocketImpl& socket = getInternalHandle<SocketImpl>();
+    socket.close();
+  }
 }
 
 void Socket::connect(const InetAddress& address, unsigned short port)

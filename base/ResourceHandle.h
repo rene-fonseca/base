@@ -85,4 +85,10 @@ public:
   }
 };
 
+
+/**
+  Writes a string representation of the resource handle.
+*/
+_COM_AZURE_DEV__BASE__API FormatOutputStream& operator<<(FormatOutputStream& stream, const ResourceHandle& value);
+
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

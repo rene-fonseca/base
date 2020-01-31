@@ -546,7 +546,7 @@ namespace internal {
 
 
   class _COM_AZURE_DEV__BASE__API SocketImpl : public ResourceHandle {
-  private:
+  public:
     
     // C++: can we alias namespace from other type - e.g. Socket here
     typedef Socket::Domain Domain;
@@ -555,13 +555,14 @@ namespace internal {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
     typedef SOCKET Handle;
     static constexpr Handle INVALID_HANDLE = INVALID_SOCKET;
-    Handle handle = INVALID_HANDLE;
 #else
     typedef int Handle;
     static constexpr Handle INVALID_HANDLE = -1;
-    Handle handle = INVALID_HANDLE;
 #endif
-    
+  private:
+
+    /** OS handle. */
+    Handle handle = INVALID_HANDLE;
     /** The socket domain. */
     Domain domain = Socket::DEFAULT_DOMAIN;
     /** The socket type. */
@@ -727,8 +728,7 @@ bool Socket::accept(Socket& src)
   SocketAddress sa;
   socklen sl = sa.getAnySize();
   SocketImpl& sourceHandle = src.getInternalHandle<SocketImpl>();
-  OperatingSystem::Handle handle =
-    (OperatingSystem::Handle)::accept(sourceHandle.getHandle(), sa.getValue(), &sl);
+  SocketImpl::Handle handle = ::accept(sourceHandle.getHandle(), sa.getValue(), &sl);
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   if (handle == OperatingSystem::INVALID_HANDLE) {
     switch (::WSAGetLastError()) {
@@ -840,7 +840,7 @@ void Socket::create(Kind kind, Domain domain)
     NetworkException("Unable to create socket.", this)
   );
 #if (defined(_COM_AZURE_DEV__BASE__HAVE_INET_IPV6))
-  OperatingSystem::Handle handle = (OperatingSystem::Handle)::socket(
+  SocketImpl::Handle handle = ::socket(
     (domain != Socket::IPV4) ? PF_INET6 : PF_INET,
     SOCKET_KINDS[kind],
     0
@@ -859,7 +859,7 @@ void Socket::create(Kind kind, Domain domain)
     (domain == Socket::IPV4) || (domain == Socket::DEFAULT_DOMAIN),
     NetworkException("Domain not supported.")
   );
-  OperatingSystem::Handle handle = (OperatingSystem::Handle)::socket(
+  SocketImpl::Handle handle = :socket(
     PF_INET,
     SOCKET_KINDS[kind],
     0
@@ -2078,7 +2078,7 @@ void Socket::setNonBlocking(bool value)
     if ((flags & O_NONBLOCK) == 0) { // do we need to set flag
       flags |= O_NONBLOCK;
       if (fcntl(socket.getHandle(), F_SETFL, flags) != 0) {
-        internal::SocketImpl::raiseNetwork("Unable to set flags of socke.");
+        internal::SocketImpl::raiseNetwork("Unable to set flags of socket.");
       }
     }
   } else {
@@ -2387,10 +2387,13 @@ unsigned int Socket::sendTo(
 void Socket::asyncCancel()
 {
   SocketImpl& socket = getInternalHandle<SocketImpl>();
+#if 0
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   ::CancelIo(socket.getHandle());
 #else // unix
 #endif // flavor
+#endif
+  _COM_AZURE_DEV__BASE__NOT_SUPPORTED();
 }
 
 AsynchronousReadOperation Socket::read(

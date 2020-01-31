@@ -335,21 +335,24 @@ public:
   /**
     Returns true if the socket is valid.
   */
-  inline bool isValid() const noexcept {
-    return Socket::isValid();
+  inline operator bool() const noexcept
+  {
+    return Socket::operator bool();
   }
 
   /**
     Skips the specified number of bytes.
   */
-  inline unsigned int skip(unsigned int count) {
+  inline unsigned int skip(unsigned int count)
+  {
     return 0;
   }
 
   /**
     Forces any buffered bytes to be written out.
   */
-  inline void flush() {
+  inline void flush()
+  {
     Socket::flush();
   }
 };

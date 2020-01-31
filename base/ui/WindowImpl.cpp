@@ -72,14 +72,16 @@ namespace windowImpl {
   // TAG: remember last window object (better when messages come in bursts)
   Entry* windows[257]; // contains zeros initially
   
-  inline unsigned int getHash(void* handle) noexcept {
+  inline unsigned int getHash(void* handle) noexcept
+  {
     const MemorySize offset = Cast::getOffset(handle);
     // TAG: find better shuffle
     return ((offset >> 8) | (offset << ((sizeof(MemorySize) - 1) * 8))) % getArraySize(windows);
   }
 #endif // flavor
   
-  WindowImpl* getWindow(void* handle) noexcept {
+  WindowImpl* getWindow(void* handle) noexcept
+  {
     const unsigned int hash = getHash(handle);
     Entry* entry = windows[hash];
     while (entry) {
@@ -91,7 +93,8 @@ namespace windowImpl {
     return 0;
   }
 
-  void addWindow(WindowImpl* window, void* handle) noexcept {
+  void addWindow(WindowImpl* window, void* handle) noexcept
+  {
     Entry* temp = new Entry;
     temp->next = 0;
     temp->window = window;
@@ -109,7 +112,8 @@ namespace windowImpl {
     }
   }
 
-  void removeWindow(void* handle) noexcept {
+  void removeWindow(void* handle) noexcept
+  {
     const unsigned int hash = getHash(handle);
     Entry* entry = windows[hash];
     BASSERT((entry->window != 0) && (entry->handle != 0));
@@ -275,6 +279,7 @@ LRESULT CALLBACK Backend<WindowImpl>::messageHandler(HWND handle, UINT message, 
     {
       Position position((int16)LOWORD(lParam), (int16)HIWORD(lParam));
       window->position = position;
+      Profiler::UITask profile("Window::onMove()");
       window->onMove(position);
       return 0;
     }
@@ -282,6 +287,7 @@ LRESULT CALLBACK Backend<WindowImpl>::messageHandler(HWND handle, UINT message, 
     {
       Dimension dimension(LOWORD(lParam), HIWORD(lParam));
       window->dimension = dimension;
+      Profiler::UITask profile("Window::onResize()");
       window->onResize(dimension);
       return 0;
     }
@@ -293,6 +299,7 @@ LRESULT CALLBACK Backend<WindowImpl>::messageHandler(HWND handle, UINT message, 
       PAINTSTRUCT ps;
       /*HDC hdc =*/ ::BeginPaint((HWND)window->drawableHandle, &ps);
       // ps.rcPaint;
+      Profiler::UITask profile("Window::onDisplay()");
       window->onDisplay();
       ::EndPaint((HWND)window->drawableHandle, &ps);
       // ::ValidateRect((HWND)window->drawableHandle, 0); // not required with BeginPaint
@@ -325,6 +332,7 @@ LRESULT CALLBACK Backend<WindowImpl>::messageHandler(HWND handle, UINT message, 
       if (wParam & MK_SHIFT) {
         buttons |= WindowImpl::Key::SHIFT;
       }
+      Profiler::UITask profile("Window::onMouseButton()");
       switch (message) {
       case WM_LBUTTONDOWN:
         window->onMouseButton(
@@ -420,11 +428,13 @@ LRESULT CALLBACK Backend<WindowImpl>::messageHandler(HWND handle, UINT message, 
       if (keys & MK_SHIFT) {
         buttons |= WindowImpl::Key::SHIFT;
       }
+      Profiler::UITask profile("Window::onMouseWheel()");
       window->onMouseWheel(Position((int16)LOWORD(lParam), (int16)HIWORD(lParam)), delta, buttons);
       return 0;
     }
   case WM_MOUSELEAVE:
     window->scope = false;
+    Profiler::UITask profile("Window::onMouseScope()");
     window->onMouseScope(false);
     return 0;
   case WM_MOUSEMOVE:
@@ -439,6 +449,7 @@ LRESULT CALLBACK Backend<WindowImpl>::messageHandler(HWND handle, UINT message, 
         if (!::TrackMouseEvent(&mouseEvent)) {
           // TAG: not what // UserInterfaceException(Type::getType<WindowImpl>())
         }
+        Profiler::UITask profile("Window::onMouseScope()");
         window->onMouseScope(true);
       }
       unsigned int buttons = 0;
@@ -457,6 +468,7 @@ LRESULT CALLBACK Backend<WindowImpl>::messageHandler(HWND handle, UINT message, 
       if (wParam & MK_SHIFT) {
         buttons |= WindowImpl::Key::SHIFT;
       }
+      Profiler::UITask profile("Window::onMouseMove()");
       window->onMouseMove(
         Position((int16)LOWORD(lParam), (int16)HIWORD(lParam)),
         buttons
@@ -469,6 +481,7 @@ LRESULT CALLBACK Backend<WindowImpl>::messageHandler(HWND handle, UINT message, 
     case WA_CLICKACTIVE:
       if (!window->active) {
         window->active = true;
+        Profiler::UITask profile("Window::onFocus()");
         window->onFocus(WindowImpl::ACQUIRED_FOCUS);
       }
       break;
@@ -476,6 +489,7 @@ LRESULT CALLBACK Backend<WindowImpl>::messageHandler(HWND handle, UINT message, 
     default:
       if (window->active) {
         window->active = false;
+        Profiler::UITask profile("Window::onFocus()");
         window->onFocus(WindowImpl::LOST_FOCUS);
       }
     }
@@ -683,16 +697,20 @@ LRESULT CALLBACK Backend<WindowImpl>::messageHandler(HWND handle, UINT message, 
 #endif
       }
       if (code) {
+        Profiler::UITask profile("Window::onKey()");
         window->onKey(code, flags, modifiers);
       } else {
         WORD buffer[2];
         // ::ToUnicode(wParam, 0, Cast::pointer<BYTE*>(window->keyboardState), (wchar*)&buffer, sizeof(buffer), 0);
         switch (::ToAscii(wParam, 0, Cast::pointer<BYTE*>(window->keyboardState), buffer, 0)) {
         case 2:
+          Profiler::UITask profile("Window::onKey()");
           window->onKey((uint8)buffer[0], flags|WindowImpl::Key::DEAD|WindowImpl::Key::ASCII, modifiers);
+          Profiler::UITask profile("Window::onKey()");
           window->onKey((uint8)buffer[1], flags|WindowImpl::Key::ASCII, modifiers);
           break;
         case 1:
+          Profiler::UITask profile("Window::onKey()");
           window->onKey((uint8)buffer[0], flags|WindowImpl::Key::ASCII, modifiers);
           break;
         case 0:
@@ -729,8 +747,10 @@ LRESULT CALLBACK Backend<WindowImpl>::messageHandler(HWND handle, UINT message, 
     //         return 0;
   case WM_COMMAND:
     if (HIWORD(wParam) == 0) { // from menu
+      Profiler::UITask profile("Window::onMenu()");
       window->onMenu(LOWORD(wParam));
     } else {
+      Profiler::UITask profile("Window::onCommand()");
       window->onCommand(LOWORD(wParam));
     }
     return 0;
@@ -902,7 +922,8 @@ WindowImpl::WindowImpl()
     minimumSize(0, 0),
     maximumSize(0, 0),
     screenHandle(0),
-    graphicsContextHandle(0) {
+    graphicsContextHandle(0)
+{
   // TAG: keyboard state only for windows which accept focus
   fill<uint8>(keyboardState, getArraySize(keyboardState), 0);
   bassert(
@@ -1800,43 +1821,50 @@ void WindowImpl::onDestruction() noexcept {
 void WindowImpl::onDisplay() noexcept {
 }
 
-void WindowImpl::onMove(const Position& position) noexcept {
+void WindowImpl::onMove(const Position& position) noexcept
+{
 }
 
-void WindowImpl::onResize(const Dimension& dimension) noexcept {
+void WindowImpl::onResize(const Dimension& dimension) noexcept
+{
 }
 
-void WindowImpl::onMouseMove(
-  const Position& position, unsigned int buttons) noexcept {
+void WindowImpl::onMouseMove(const Position& position, unsigned int buttons) noexcept
+{
 }
 
-void WindowImpl::onMouseScope(bool scope) noexcept {
+void WindowImpl::onMouseScope(bool scope) noexcept
+{
 }
 
 void WindowImpl::onMouseButton(
   const Position& position,
   Mouse::Button button,
   Mouse::Event event,
-  unsigned int state) noexcept {
+  unsigned int state) noexcept
+{
 }
 
-void WindowImpl::onMouseWheel(
-  const Position& position, int delta, unsigned int buttons) noexcept {
+void WindowImpl::onMouseWheel(const Position& position, int delta, unsigned int buttons) noexcept
+{
 }
 
-void WindowImpl::onKey(
-  unsigned int key, unsigned int flags, unsigned int modifiers) noexcept {
+void WindowImpl::onKey(unsigned int key, unsigned int flags, unsigned int modifiers) noexcept
+{
 }
 
-void WindowImpl::onIdle() noexcept {
+void WindowImpl::onIdle() noexcept
+{
   wait();
 }
 
-bool WindowImpl::onClose() noexcept {
+bool WindowImpl::onClose() noexcept
+{
   return true; // allow window to be closed
 }
 
-void WindowImpl::onVisibility(Visibility visibility) noexcept {
+void WindowImpl::onVisibility(Visibility visibility) noexcept
+{
 }
 
 void WindowImpl::onFocus(Focus focus) noexcept
@@ -1993,6 +2021,7 @@ void WindowImpl::dispatch() {
     switch (event.type) {
     case ClientMessage:
       if (event.xclient.data.l[0] == windowImpl::atoms[DESTROY_MESSAGE]) {
+        Profiler::UITask profile("Window::onDestruction()");
         window->onDestruction();
         window->destroy();
       }
@@ -2004,11 +2033,13 @@ void WindowImpl::dispatch() {
         const Dimension dimension(specificEvent->width, specificEvent->height);
         if (dimension != window->dimension) {
           window->dimension = dimension;
+          Profiler::UITask profile("Window::onResize()");
           window->onResize(dimension);
         }
         const Position position(specificEvent->x, specificEvent->y);
         if (position != window->position) {
           window->position = position;
+          Profiler::UITask profile("Window::onMove()");
           window->onMove(position);
         }
       }
@@ -2018,20 +2049,22 @@ void WindowImpl::dispatch() {
         const XExposeEvent* specificEvent =
           Cast::pointer<const XExposeEvent*>(&event);
         // Region(Position(specificEvent->x, specificEvent->y), Dimension(specificEvent->width, specificEvent->height));
+        Profiler::UITask profile("Window::onDisplay()");
         window->onDisplay();
       }
       break;
     case FocusIn:
+      Profiler::UITask profile("Window::onFocus()");
       window->onFocus(WindowImpl::ACQUIRED_FOCUS);
       break;
     case FocusOut:
+      Profiler::UITask profile("Window::onFocus()");
       window->onFocus(WindowImpl::LOST_FOCUS);
       break;
     case ButtonPress:
     case ButtonRelease:
       {
-        const XButtonEvent* specificEvent =
-          Cast::pointer<const XButtonEvent*>(&event);
+        const XButtonEvent* specificEvent = Cast::pointer<const XButtonEvent*>(&event);
         const bool pressed = (event.type == ButtonPress);
         unsigned int state = 0;   
         if ((specificEvent->button == Button1) && pressed ||
@@ -2096,6 +2129,7 @@ void WindowImpl::dispatch() {
           button = WindowImpl::Mouse::EXTRA2;
           break;
         }
+        Profiler::UITask profile("Window::onMouseButton()");
         window->onMouseButton(
           Position(specificEvent->x, specificEvent->y),
           button,
@@ -2148,6 +2182,7 @@ void WindowImpl::dispatch() {
         if (specificEvent->state & Mod5Mask) { // TAG: what about this one
         }
         window->lastMousePosition = position;
+        Profiler::UITask profile("Window::onMouseMove()");
         window->onMouseMove(position, state);
       }
       break;
@@ -2192,11 +2227,14 @@ void WindowImpl::dispatch() {
         int numberOfChars = ::XLookupString((XKeyEvent*)&event, buffer,  sizeof(buffer), 0, 0);
         switch (numberOfChars) {
         case 2:
+          Profiler::UITask profile("Window::onKey()");
           window->onKey((uint8)buffer[0], flags|WindowImpl::Key::DEAD|WindowImpl::Key::ASCII, modifiers);
+          Profiler::UITask profile("Window::onKey()");
           window->onKey((uint8)buffer[1], flags|WindowImpl::Key::ASCII, modifiers);
           code = 1; // TAG: clean up
           break;
         case 1:
+          Profiler::UITask profile("Window::onKey()");
           window->onKey((uint8)buffer[0], flags|WindowImpl::Key::ASCII, modifiers);
           code = 1; // TAG: clean up
           break;
@@ -2480,21 +2518,25 @@ void WindowImpl::dispatch() {
           break;
         }
         if (code) {
+          Profiler::UITask profile("Window::onKey()");
           window->onKey(code, flags, modifiers);
         }
       }
       break;
     case EnterNotify:
       window->scope = true;
+      Profiler::UITask profile("Window::onMouseScope()");
       window->onMouseScope(true);
       break;
     case LeaveNotify:
       window->scope = false;
+      Profiler::UITask profile("Window::onMouseScope()");
       window->onMouseScope(false);
       break;
     case MapNotify:
       if (WindowImpl::VISIBLE != window->visibility) {
         window->visibility = WindowImpl::VISIBLE;
+        Profiler::UITask profile("Window::onVisibility()");
         window->onVisibility(WindowImpl::VISIBLE);
       }
       break;
@@ -2502,6 +2544,7 @@ void WindowImpl::dispatch() {
       // TAG: I get no VisibilityNotify after UnmapNotify with X-Win32
       if (WindowImpl::INVISIBLE != window->visibility) {
         window->visibility = WindowImpl::INVISIBLE;
+        Profiler::UITask profile("Window::onVisibility()");
         window->onVisibility(WindowImpl::INVISIBLE);
       }
       break;
@@ -2523,7 +2566,8 @@ void WindowImpl::dispatch() {
           visibility = WindowImpl::VISIBLE;
         }
         if (visibility != window->visibility) {
-          window->visibility = visibility;          
+          window->visibility = visibility;
+          Profiler::UITask profile("Window::onVisibility()");
           window->onVisibility(visibility);
         }
         window->onDisplay();
@@ -2535,6 +2579,7 @@ void WindowImpl::dispatch() {
           Cast::pointer<const XGravityEvent*>(&event);
         Position position(specificEvent->x, specificEvent->y);
         window->position = position;
+        Profiler::UITask profile("Window::onMove()");
         window->onMove(position);
       }
     case DestroyNotify:
@@ -2546,7 +2591,8 @@ void WindowImpl::dispatch() {
 #endif // flavor
 }
 
-bool WindowImpl::hasMouse() noexcept {
+bool WindowImpl::hasMouse() noexcept
+{
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   return ::GetSystemMetrics(SM_MOUSEPRESENT) == TRUE;
 #else // unix
@@ -2554,7 +2600,8 @@ bool WindowImpl::hasMouse() noexcept {
 #endif // flavor
 }
 
-unsigned int WindowImpl::getMouseButtons() noexcept {
+unsigned int WindowImpl::getMouseButtons() noexcept
+{
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   unsigned int result = 0;
   unsigned int temp = ::GetSystemMetrics(SM_CMOUSEBUTTONS);
@@ -2574,7 +2621,8 @@ unsigned int WindowImpl::getMouseButtons() noexcept {
 #endif // flavor
 }
 
-unsigned int WindowImpl::getNumberOfMonitors() noexcept {
+unsigned int WindowImpl::getNumberOfMonitors() noexcept
+{
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   return ::GetSystemMetrics(SM_CMONITORS);
 #else // unix
@@ -2582,7 +2630,8 @@ unsigned int WindowImpl::getNumberOfMonitors() noexcept {
 #endif // flavor
 }
 
-Dimension WindowImpl::getDisplayDimension() noexcept {
+Dimension WindowImpl::getDisplayDimension() noexcept
+{
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   unsigned int width = ::GetSystemMetrics(SM_CXVIRTUALSCREEN);
   unsigned int height = ::GetSystemMetrics(SM_CYVIRTUALSCREEN);
@@ -2596,7 +2645,8 @@ Dimension WindowImpl::getDisplayDimension() noexcept {
 #endif // flavor
 }
 
-unsigned int WindowImpl::getMouseButtonIndex(Mouse::Button button) noexcept {
+unsigned int WindowImpl::getMouseButtonIndex(Mouse::Button button) noexcept
+{
   // keep out to date with WindowImpl::Mouse::Button
   switch (button) {
   case Mouse::MIDDLE:
@@ -2615,7 +2665,8 @@ unsigned int WindowImpl::getMouseButtonIndex(Mouse::Button button) noexcept {
   }
 }
 
-Literal WindowImpl::getMouseButtonName(Mouse::Button button) noexcept {
+Literal WindowImpl::getMouseButtonName(Mouse::Button button) noexcept
+{
   // keep out to date with WindowImpl::Mouse::Button
   switch (button) {
   case Mouse::MIDDLE:

@@ -274,7 +274,8 @@ public:
     CAT_EXCEPTION = 10,
     CAT_SIGNAL = 11,
     CAT_RENDERER = 12,
-    CAT_COMPUTE = 13
+    CAT_COMPUTE = 13,
+    CAT_UI = 14
   };
   // use macro to encode/decode in char*
 #endif
@@ -294,6 +295,7 @@ public:
   static constexpr const char* CAT_RENDERER = "RENDERER";
   static constexpr const char* CAT_COMPUTE = "COMPUTE";
   static constexpr const char* CAT_SECURITY = "SECURITY";
+  static constexpr const char* CAT_UI = "UI";
 
   enum {
     EVENT_BEGIN = 'B',
@@ -756,6 +758,17 @@ public:
     }
   };
   
+  /** UI task. */
+  class _COM_AZURE_DEV__BASE__API UITask : public Task {
+  public:
+    
+    /** UI task start. */
+    inline UITask(const char* name, const char* cat = CAT_UI) noexcept
+      : Task(name, cat)
+    {
+    }
+  };
+
   /** Push object creation. */
   static inline void pushObjectCreate(MemorySize id, MemorySize size)
   {
@@ -826,6 +839,15 @@ public:
       return;
     }
     pushInstantImpl(name, cat);
+  }
+
+  /** Push UI. */
+  static inline void pushUI(const char* name)
+  {
+    if (!enabled) {
+      return;
+    }
+    pushInstantImpl(name, CAT_UI);
   }
 
   /** Push thread start. */

@@ -433,7 +433,7 @@ public:
   public:
 
     unsigned int resourceId = 0;
-    // unsigned int createdById = 0;
+    String description;
 
     inline ReferenceResource() noexcept
     {
@@ -443,13 +443,6 @@ public:
       : resourceId(_resourceId)
     {
     }
-
-    /*
-    inline ReferenceResource(unsigned int _resourceId, unsigned int _createdById) noexcept
-      : resourceId(_resourceId), createdById(_createdById)
-    {
-    }
-    */
   };
 
   /** Reference counted performance counters. */
@@ -746,6 +739,7 @@ public:
     inline HTTPSTask(const char* name) noexcept
       : IOTask(name)
     {
+      // TAG: setTaskHTTPS(_url);
     }
   };
   

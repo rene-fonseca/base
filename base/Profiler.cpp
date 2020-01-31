@@ -467,7 +467,11 @@ void Profiler::Task::setTaskResourceHandle(const ResourceHandle& handle) noexcep
   Event& e = tlc->profiling.events.getElements()[taskId];
   if (e.cat == CAT_CREATE_RESOURCE) {
     // we must copy to avoid resource not lingering
-    e.data = new ReferenceResource(handle.getResourceId()/*, handle.getCreatedById()*/);
+    Reference<ReferenceResource> data = new ReferenceResource(handle.getResourceId());
+    if (handle.getDescription()) {
+      data->description = handle.getDescription();
+    }
+    e.data = data;
   }
 }
 
@@ -864,6 +868,7 @@ void Profiler::ProfilerImpl::close()
   auto SEVERITY = o.createString("severity");
   auto THREAD = o.createString("thread");
   auto RESOURCE = o.createString("resource");
+  auto DESCRIPTION = o.createString("description");
 
   auto PH_B = o.createString("B");
   auto PH_E = o.createString("E");
@@ -1018,6 +1023,9 @@ void Profiler::ProfilerImpl::close()
               item->setValue(ARGS, args);
               if (r->resourceId) {
                 args->setValue(RESOURCE, o.createInteger(r->resourceId));
+              }
+              if (r->description) {
+                args->setValue(DESCRIPTION, r->description);
               }
 #if 0
               if (r->createdById) {

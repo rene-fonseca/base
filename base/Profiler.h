@@ -512,6 +512,9 @@ public:
     /** Sets the resource handle for the object. */
     void setTaskResourceHandle(const ResourceHandle& handle) noexcept;
 
+    /** Sets the security level for the object. */
+    void setTaskSecurityLevel(unsigned int securityLevel) noexcept;
+    
     /** Sets the name of the object. */
     void setTaskWaitId(const char* id) noexcept;
     
@@ -561,10 +564,21 @@ public:
     unsigned int captureIO = 0;
   public:
 
+    /** Potential impact of test. Lower value is worse. */
+    enum SecurityLevel {
+      PRIVACY, ///< Privacy
+      SECURITY, ///< Trust
+      CRITICAL, ///< Corruption
+      IMPORTANT,
+      NORMAL,
+      LOW ///< Less important problem
+    };
+    
     /** Security task start. */
-    inline SecurityTask(const char* name, bool suppressIOCapturing) noexcept
+    inline SecurityTask(const char* name, SecurityLevel securityLevel, bool suppressIOCapturing) noexcept
       : Task(name, CAT_SECURITY), suppress(suppressIOCapturing)
     {
+      setTaskSecurityLevel(securityLevel);
       if (suppress) {
         captureIO = CaptureIO::setCaptureIO(0);
       }

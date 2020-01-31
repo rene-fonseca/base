@@ -471,6 +471,21 @@ void Profiler::Task::setTaskResourceHandle(const ResourceHandle& handle) noexcep
   }
 }
 
+void Profiler::Task::setTaskSecurityLevel(unsigned int securityLevel) noexcept
+{
+  if (taskId == BAD) {
+    return;
+  }
+  if (!enabled) {
+    return;
+  }
+  auto tlc = Thread::getLocalContext();
+  Event& e = tlc->profiling.events.getElements()[taskId];
+  if (e.cat == CAT_SECURITY) {
+    e.data = new ReferenceValue(securityLevel);
+  }
+}
+
 void Profiler::Task::setTaskWaitId(const char* id) noexcept
 {
   if (taskId == BAD) {
@@ -846,6 +861,7 @@ void Profiler::ProfilerImpl::close()
   auto BYTES_READ = o.createString("read");
   auto BYTES_WRITTEN = o.createString("written");
   auto BUFFER = o.createString("buffer");
+  auto SEVERITY = o.createString("severity");
   auto THREAD = o.createString("thread");
   auto RESOURCE = o.createString("resource");
 
@@ -1028,8 +1044,13 @@ void Profiler::ProfilerImpl::close()
                 args->setValue(BUFFER, r->bytes);
               }
             }
+          } else if (e.cat == CAT_SECURITY) {
+            if (auto r = e.data.cast<ReferenceValue>()) {
+              auto args = o.createObject();
+              item->setValue(ARGS, args);
+              args->setValue(SEVERITY, o.createInteger(r->value)); // TAG: convert to string
+            }
           }
-
           break;
         case EVENT_META:
           if (auto r = e.data.cast<ReferenceString>()) {

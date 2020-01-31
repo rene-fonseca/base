@@ -18,10 +18,25 @@
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
+/** Compute task for profiler. */
+class _COM_AZURE_DEV__BASE__API ComputeTask {
+private:
+
+  /** The ID of the task. */
+  unsigned int taskId = static_cast<unsigned int>(-1);
+public:
+  
+  /** Initializes compute task. */
+  ComputeTask(const char* name) noexcept;
+  
+  ~ComputeTask() noexcept;
+};
+
 /** Bubble sort. O(n^2). Only forward iterator required. operator<= used for comparison of values. */
 template<class ITERATOR>
 void bubbleSort(const ITERATOR& _begin, const ITERATOR& _end)
 {
+  ComputeTask profiler("bubbleSort()");
   // implementation with forward iterator only - bidirectional iterator not required
 
   // static_assert(std::is_same<ForwardIterator, typename ITERATOR::Category>::value, "Iterator must be ForwardIterator.");
@@ -56,6 +71,7 @@ void bubbleSort(const ITERATOR& _begin, const ITERATOR& _end)
 template<class ITERATOR, class PREDICATE>
 void bubbleSort(const ITERATOR& _begin, const ITERATOR& _end, PREDICATE predicate)
 {
+  ComputeTask profiler("bubbleSort()");
   // implementation with forward iterator only - bidirectional iterator not required
 
   // static_assert(std::is_same<ForwardIterator, typename ITERATOR::Category>::value, "Iterator must be ForwardIterator.");
@@ -253,6 +269,7 @@ inline void mergeSortMerge(TYPE* a, const TYPE* aEnd, TYPE* b, const TYPE* bEnd,
 template<class ITERATOR>
 void mergeSort(const ITERATOR& begin, const ITERATOR& end)
 {
+  ComputeTask profiler("mergeSort()");
   // static_assert(std::is_same<RandomIterator, typename ITERATOR::Category>::value, "Iterator must be RandomAccessIterator.");
   const RandomAccessIterator* ensureRandomAccessIterator =
     static_cast<const typename ITERATOR::Category*>(nullptr);
@@ -302,6 +319,7 @@ void mergeSort(const ITERATOR& begin, const ITERATOR& end)
 template<class ITERATOR, class PREDICATE>
 void mergeSort(const ITERATOR& begin, const ITERATOR& end, PREDICATE predicate)
 {
+  ComputeTask profiler("mergeSort()");
   // static_assert(std::is_same<RandomIterator, typename ITERATOR::Category>::value, "Iterator must be RandomAccessIterator.");
   const RandomAccessIterator* ensureRandomAccessIterator =
     static_cast<const typename ITERATOR::Category*>(nullptr);

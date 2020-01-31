@@ -838,6 +838,7 @@ public:
   */
   void sort()
   {
+    ComputeTask profiler("List::sort()");
     elements.copyOnWrite();
     // TAG: swap nodes instead - at least when TYPE doesnt allow move
     bubbleSort(begin(), end());
@@ -847,6 +848,7 @@ public:
   template<class PREDICATE>
   void sort(PREDICATE predicate)
   {
+    ComputeTask profiler("List::sort()");
     elements.copyOnWrite();
     // TAG: swap nodes instead - at least when TYPE doesnt allow move
     bubbleSort(begin(), end(), predicate);

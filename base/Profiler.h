@@ -273,7 +273,8 @@ public:
     CAT_WAIT = 9,
     CAT_EXCEPTION = 10,
     CAT_SIGNAL = 11,
-    CAT_RENDERER = 12
+    CAT_RENDERER = 12,
+    CAT_COMPUTE = 13
   };
   // use macro to encode/decode in char*
 #endif
@@ -291,6 +292,7 @@ public:
   static constexpr const char* CAT_EXCEPTION = "EXCEPTION";
   static constexpr const char* CAT_SIGNAL = "SIGNAL";
   static constexpr const char* CAT_RENDERER = "RENDERER";
+  static constexpr const char* CAT_COMPUTE = "COMPUTE";
   
   enum {
     EVENT_BEGIN = 'B',
@@ -495,7 +497,8 @@ public:
 
     /** The ID of the task. */
     unsigned int taskId = BAD;
-
+  public:
+    
     /** Allocates new task. */
     static unsigned int getTask(const char* name, const char* cat) noexcept;
 
@@ -533,6 +536,17 @@ public:
       if (taskId != BAD) {
         pushTask(taskId);
       }
+    }
+  };
+
+  /** Compute task. */
+  class _COM_AZURE_DEV__BASE__API ComputeTask : public Task {
+  public:
+
+    /** Compute task start. */
+    inline ComputeTask(const char* name) noexcept
+      : Task(name, CAT_COMPUTE)
+    {
     }
   };
 

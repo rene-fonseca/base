@@ -36,6 +36,21 @@
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
+// Using this to avoid include of Profiler
+ComputeTask::ComputeTask(const char* name) noexcept
+{
+  if (Profiler::isEnabledDirect()) { // doesnt matter if we do this for scope disabled case - we check this in destructor
+    taskId = Profiler::Task::getTask(name, Profiler::CAT_COMPUTE);
+  }
+}
+
+ComputeTask::~ComputeTask() noexcept
+{
+  if (taskId != static_cast<unsigned int>(-1)) {
+    Profiler::Task::pushTask(taskId);
+  }
+}
+
 _COM_AZURE_DEV__BASE__GLOBAL_PRINT();
 
 namespace profiler {

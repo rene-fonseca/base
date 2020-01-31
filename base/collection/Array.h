@@ -880,6 +880,7 @@ public:
   /** Sorts the array. */
   void sort()
   {
+    ComputeTask profiler("Array::sort()");
     elements.copyOnWrite();
     if (getSize() >= 128) {
       mergeSort(begin(), end());
@@ -892,6 +893,7 @@ public:
   template<class PREDICATE>
   void sort(PREDICATE predicate)
   {
+    ComputeTask profiler("Array::sort()");
     elements.copyOnWrite();
     if (getSize() >= 128) {
       mergeSort(begin(), end(), predicate);

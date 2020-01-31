@@ -16,6 +16,7 @@
 #include <base/mem/VirtualMemory.h>
 #include <base/Application.h>
 #include <base/string/Parser.h>
+#include <base/Profiler.h>
 #include <base/UnitTest.h>
 
 _COM_AZURE_DEV__BASE__GLOBAL_PRINT();
@@ -171,6 +172,9 @@ void* DynamicLinker::getGlobalSymbolImpl(const String& symbol)
 
 DynamicLinker::DynamicLinker(const String& path, unsigned int options)
 {
+  Profiler::ResourceCreateTask profile("DynamicLinker::DynamicLinker()");
+  // TAG: set path for task
+
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   if ((handle = ::LoadLibraryEx(ToWCharString(path), 0, 0)) == nullptr) {
     _throw LinkerException("Unable to open module.", this);

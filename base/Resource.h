@@ -45,6 +45,13 @@ public:
   {
     return handle;
   }
+  
+  /** Returns the handle. */
+  template<class TYPE>
+  inline TYPE& getInternalHandle() const
+  {
+    return *handle.cast<TYPE>(); // throws NullPointer
+  }
 
   /** Returns true if handle is set. */
   inline operator bool() const noexcept

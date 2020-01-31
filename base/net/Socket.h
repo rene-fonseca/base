@@ -20,7 +20,7 @@
 #include <base/io/FileDescriptor.h>
 #include <base/net/InetAddress.h>
 #include <base/string/FormatOutputStream.h>
-#include <base/mem/Reference.h>
+#include <base/Resource.h>
 #include <base/OperatingSystem.h>
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
@@ -41,9 +41,9 @@ class MultipleSockets;
   @version 1.2
 */
 
-class _COM_AZURE_DEV__BASE__API Socket : public virtual Object,
-                                      public virtual AsynchronousInputStream,
-                                      public virtual AsynchronousOutputStream {
+class _COM_AZURE_DEV__BASE__API Socket : public virtual Resource,
+                                         public virtual AsynchronousInputStream,
+                                         public virtual AsynchronousOutputStream {
   friend class Initialization;
   friend class MultipleSockets;
 public:
@@ -62,127 +62,8 @@ public:
     DATAGRAM, /**< Datagram socket. */
     RAW /**< Raw socket. */
   };
-private:
-  
-  class _COM_AZURE_DEV__BASE__API SocketImpl : public Handle {
-  private:
-
-    /** The socket domain. */
-    Domain domain = DEFAULT_DOMAIN;
-    /** The socket type. */
-    Kind kind = STREAM;
-    /** Specifies the remote address to which the socket is connected. */
-    InetAddress remoteAddress;
-    /**
-      Specifies the remote port (in host byte order) to which the socket is
-      connected (unconnected if 0).
-    */
-    unsigned short remotePort = 0;
-    /** Specifies the local address to which the socket is bound. */
-    InetAddress localAddress;
-    /**
-      Specifies the local port (in host byte order) to which the socket is
-      bound (unbound if 0).
-    */
-    unsigned short localPort = 0;
-  public:
-
-    /** Invalid socket. */
-    static SocketImpl* invalid;
-
-    /** Returns invalid socket. */
-    static SocketImpl* getInvalid() noexcept;
-    
-    /** Initializes the socket with the specified handle. */
-    SocketImpl(
-      OperatingSystem::Handle handle, Domain domain, Kind kind) noexcept;
-    
-    /** Returns the protocol. */
-    inline Domain getDomain() const noexcept
-    {
-      return domain;
-    }
-    
-    /** Returns the type. */
-    inline Kind getKindype() const noexcept
-    {
-      return kind;
-    }
-    
-    /** Returns the local address. */
-    inline const InetAddress& getLocalAddress() const noexcept
-    {
-      return localAddress;
-    }
-    
-    /** Sets the local address. */
-    inline void setLocalAddress(const InetAddress& value) noexcept
-    {
-      localAddress = value;
-    }
-    
-    /** Returns the local port. */
-    inline unsigned short getLocalPort() const noexcept
-    {
-      return localPort;
-    }
-    
-    /** Sets the local port. */
-    inline void setLocalPort(unsigned short port) noexcept
-    {
-      localPort = port;
-    }
-    
-    /** Returns the remote address. */
-    inline const InetAddress& getRemoteAddress() const noexcept
-    {
-      return remoteAddress;
-    }
-    
-    /** Sets the remote address. */
-    inline void setRemoteAddress(const InetAddress& value) noexcept
-    {
-      remoteAddress = value;
-    }
-    
-    /** Returns the remote port. */
-    inline unsigned short getRemotePort() const noexcept
-    {
-      return remotePort;
-    }
-    
-    /** Sets the remote port. */
-    inline void setRemotePort(unsigned short port) noexcept
-    {
-      remotePort = port;
-    }
-    
-    /** Returns true if the socket is valid. */
-    inline bool isValid() const noexcept
-    {
-      return getHandle() != OperatingSystem::INVALID_HANDLE;
-    }
-    
-    /** Returns true if socket is connected. */
-    inline bool isConnected() const noexcept
-    {
-      return getRemotePort() != 0;
-    }
-    
-    /** Returns true if socket is bound. */
-    inline bool isBound() const noexcept
-    {
-      return getLocalPort() != 0;
-    }
-    
-    /** Releases the resources use by the socket. */
-    ~SocketImpl();
-  };
 protected:
   
-  /** The internal socket representation. */
-  Reference<SocketImpl> socket;
-
   /** Socket options. */
   enum {
     OPTION_DONT_ROUTE,
@@ -193,10 +74,8 @@ protected:
   /**
     Returns the handle of the socket.
   */
-  inline OperatingSystem::Handle getHandle() const noexcept {
-    return socket->getHandle();
-  }
-  
+  OperatingSystem::Handle getHandle() const noexcept;
+                                        
   /** Get boolean socket option. */
   bool getBooleanOption(int option) const;
 
@@ -208,33 +87,6 @@ public:
     Initializes an invalidated socket object (ie. unconnected and unbound).
   */
   Socket() noexcept;
-
-  /**
-    Returns a reference to the socket.
-  */
-  inline AnyReference getReference() noexcept
-  {
-    return socket;
-  }
-  
-  /**
-    Initialization of socket from other socket.
-  */
-  inline Socket(const Socket& copy) noexcept
-    : socket(copy.socket)
-  {
-  }
-
-  /**
-    Assignment of socket to socket.
-  */
-  inline Socket& operator=(const Socket& assign) noexcept
-                                        {
-    if (&assign != this) { // protect against self assignment
-      socket = assign.socket;
-    }
-    return *this;
-  }
 
   /**
     Accepts the first connection from the queue of pending connections on the
@@ -537,14 +389,6 @@ public:
   */
   unsigned int available() const;
 
-  /**
-    Returns true if the socket is valid.
-  */
-  inline bool isValid() const noexcept
-  {
-    return socket->isValid();
-  }
-  
   /**
     Forces any buffered bytes to be written out.
   */

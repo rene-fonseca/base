@@ -156,7 +156,7 @@ public:
       while (!thread->isTerminated()) {
         if (serverSocket.wait(250)) {
           StreamSocket clientSocket = serverSocket.accept(100);
-          if (clientSocket.isValid()) {
+          if (clientSocket) {
             // TAG: add thread to pool if required?
             InetEndPoint endPoint(
               clientSocket.getAddress(),

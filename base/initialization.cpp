@@ -355,26 +355,21 @@ ModuleManager ModuleManager::moduleManager;
 
 Handle* FileDescriptor::Descriptor::invalid = nullptr; // uninitialized
 Handle* Process::ProcessHandle::invalid = nullptr; // uninitialized
-Socket::SocketImpl* Socket::SocketImpl::invalid = nullptr; // uninitialized
 
 class Initialization {
 private:
 
   Handle invalidHandle;
-  Socket::SocketImpl invalidSocket;
 public:
 
   Initialization() noexcept
-    : invalidSocket(OperatingSystem::INVALID_HANDLE, Socket::IPV4, Socket::STREAM)
   {
     RandomLegacy::randomize(); // randomize global random number generator
 
     // having a global invalid handle safes us from allocating/deallocating many handles
     ReferenceCountedObject::ReferenceImpl(invalidHandle).addReference(); // prevent destruction of object
-    ReferenceCountedObject::ReferenceImpl(invalidSocket).addReference(); // prevent destruction of object
     FileDescriptor::Descriptor::invalid = &invalidHandle;
     Process::ProcessHandle::invalid = &invalidHandle;
-    Socket::SocketImpl::invalid = &invalidSocket;
   }
 };
 

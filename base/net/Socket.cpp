@@ -20,6 +20,7 @@
 #include <base/io/BrokenStream.h>
 #include <base/net/Socket.h>
 #include <base/concurrency/Thread.h>
+#include <base/ResourceHandle.h>
 #include <base/Profiler.h>
 #include <base/UnitTest.h>
 #include <base/build.h>
@@ -544,51 +545,171 @@ namespace internal {
 }; // end of namespace internal
 
 
+  class _COM_AZURE_DEV__BASE__API SocketImpl : public ResourceHandle {
+  private:
+    
+    // C++: can we alias namespace from other type - e.g. Socket here
+    typedef Socket::Domain Domain;
+    typedef Socket::Kind Kind;
 
-Socket::SocketImpl::SocketImpl(
-  OperatingSystem::Handle _handle,
-  Domain _domain,
-  Kind _kind) noexcept
-  : Handle(_handle),
-    domain(_domain),
-    kind(_kind),
-    remotePort(0),
-    localPort(0)
-{
-}
-
-Socket::SocketImpl::~SocketImpl()
-{
-  if (isValid()) {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
-    if (::closesocket((SOCKET)getHandle())) {
-#else // unix
-    if (::close((int)getHandle())) {
-#endif // flavor
-      IOException e("Unable to close socket.", this);
-      const unsigned int error = internal::SocketImpl::getNativeError();
-      const unsigned int cause = internal::SocketImpl::getCause(error);
-      if (cause != PrimitiveTraits<unsigned int>::MAXIMUM) {
-        e.setCause(cause);
-      } else {
-        e.setError(error);
-      }
-      throw e; // will copy
-    }
-  }
-}
+    typedef SOCKET Handle;
+    static constexpr Handle INVALID_HANDLE = INVALID_SOCKET;
+    Handle handle = INVALID_HANDLE;
+#else
+    typedef int Handle;
+    static constexpr Handle INVALID_HANDLE = -1;
+    Handle handle = INVALID_HANDLE;
+#endif
+    
+    /** The socket domain. */
+    Domain domain = Socket::DEFAULT_DOMAIN;
+    /** The socket type. */
+    Kind kind = Socket::STREAM;
+    /** Specifies the remote address to which the socket is connected. */
+    InetAddress remoteAddress;
+    /**
+      Specifies the remote port (in host byte order) to which the socket is
+      connected (unconnected if 0).
+    */
+    unsigned short remotePort = 0;
+    /** Specifies the local address to which the socket is bound. */
+    InetAddress localAddress;
+    /**
+      Specifies the local port (in host byte order) to which the socket is
+      bound (unbound if 0).
+    */
+    unsigned short localPort = 0;
+  public:
 
-Socket::SocketImpl* Socket::SocketImpl::getInvalid() noexcept
-{
-  return invalid;
-}
+    /** Initializes the socket with the specified handle. */
+    SocketImpl(OperatingSystem::Handle _handle, Domain _domain, Kind _kind) noexcept
+      : handle(_handle),
+        domain(_domain),
+        kind(_kind),
+        remotePort(0),
+        localPort(0)
+    {
+    }
+
+    inline Handle getHandle() noexcept
+    {
+      return handle;
+    }
+    
+    /** Returns the protocol. */
+    inline Domain getDomain() const noexcept
+    {
+      return domain;
+    }
+    
+    /** Returns the type. */
+    inline Kind getKindype() const noexcept
+    {
+      return kind;
+    }
+    
+    /** Returns the local address. */
+    inline const InetAddress& getLocalAddress() const noexcept
+    {
+      return localAddress;
+    }
+    
+    /** Sets the local address. */
+    inline void setLocalAddress(const InetAddress& value) noexcept
+    {
+      localAddress = value;
+    }
+    
+    /** Returns the local port. */
+    inline unsigned short getLocalPort() const noexcept
+    {
+      return localPort;
+    }
+    
+    /** Sets the local port. */
+    inline void setLocalPort(unsigned short port) noexcept
+    {
+      localPort = port;
+    }
+    
+    /** Returns the remote address. */
+    inline const InetAddress& getRemoteAddress() const noexcept
+    {
+      return remoteAddress;
+    }
+    
+    /** Sets the remote address. */
+    inline void setRemoteAddress(const InetAddress& value) noexcept
+    {
+      remoteAddress = value;
+    }
+    
+    /** Returns the remote port. */
+    inline unsigned short getRemotePort() const noexcept
+    {
+      return remotePort;
+    }
+    
+    /** Sets the remote port. */
+    inline void setRemotePort(unsigned short port) noexcept
+    {
+      remotePort = port;
+    }
+    
+    /** Returns true if socket is connected. */
+    inline bool isConnected() const noexcept
+    {
+      return getRemotePort() != 0;
+    }
+    
+    /** Returns true if socket is bound. */
+    inline bool isBound() const noexcept
+    {
+      return getLocalPort() != 0;
+    }
+    
+    /** Releases the resources use by the socket. */
+    void close()
+    {
+      if (handle != INVALID_HANDLE) {
+    #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
+        if (::closesocket(handle)) {
+    #else // unix
+        if (::close(handle)) {
+    #endif // flavor
+          IOException e("Unable to close socket.", this);
+          const unsigned int error = internal::SocketImpl::getNativeError();
+          const unsigned int cause = internal::SocketImpl::getCause(error);
+          if (cause != PrimitiveTraits<unsigned int>::MAXIMUM) {
+            e.setCause(cause);
+          } else {
+            e.setError(error);
+          }
+          throw e; // will copy
+        }
+      }
+    }
+      
+    ~SocketImpl()
+    {
+      close();
+    }
+  };
+
 
 Socket::Socket() noexcept
-  : socket(SocketImpl::invalid)
 {
 }
 
-bool Socket::accept(Socket& socket)
+OperatingSystem::Handle Socket::getHandle() const noexcept
+{
+  
+  SocketImpl& socket = getInternalHandle<SocketImpl>();
+  return socket.getHandle();
+}
+  
+bool Socket::accept(Socket& src)
 {
   Profiler::ResourceCreateTask profile("Socket::accept()");
 
@@ -599,14 +720,15 @@ bool Socket::accept(Socket& socket)
 #else
   // TAG: should return socket (invalid if non available)
   
-  if (this->socket->isValid()) {
-    internal::SocketImpl::raiseNetwork("Attempt to overwrite socket");
+  if (handle) {
+    internal::SocketImpl::raiseNetwork("Attempt to overwrite socket.");
   }
 
   SocketAddress sa;
   socklen sl = sa.getAnySize();
+  SocketImpl& sourceHandle = src.getInternalHandle<SocketImpl>();
   OperatingSystem::Handle handle =
-    (OperatingSystem::Handle)::accept((SOCKET)socket.socket->getHandle(), sa.getValue(), &sl);
+    (OperatingSystem::Handle)::accept(sourceHandle.getHandle(), sa.getValue(), &sl);
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   if (handle == OperatingSystem::INVALID_HANDLE) {
     switch (::WSAGetLastError()) {
@@ -626,9 +748,10 @@ bool Socket::accept(Socket& socket)
     }
   }
 #endif // flavor
-  this->socket = new SocketImpl(handle, sa.getDomain(), Socket::STREAM);
-  this->socket->setRemoteAddress(sa.getAddress());
-  this->socket->setRemotePort(sa.getPort());
+  Reference<SocketImpl> socket = new SocketImpl(handle, sa.getDomain(), Socket::STREAM);
+  socket->setRemoteAddress(sa.getAddress());
+  socket->setRemotePort(sa.getPort());
+  this->handle = socket;
   return true;
 #endif
 }
@@ -639,37 +762,41 @@ void Socket::bind(const InetAddress& address, unsigned short port)
     (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__ZEPHYR) || \
     (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__WASI)
 #else
-  SocketAddress sa(address, port, socket->getDomain());
+  SocketImpl& socket = getInternalHandle<SocketImpl>();
+
+  SocketAddress sa(address, port, socket.getDomain());
   
-  if (::bind((SOCKET)socket->getHandle(), sa.getValue(), sa.getSize())) {
+  if (::bind(socket.getHandle(), sa.getValue(), sa.getSize())) {
     internal::SocketImpl::raiseNetwork("Unable to assign name to socket.");
   }
   if (address.isUnspecified() || (port == 0)) {
-    sa.setSocket((SOCKET)socket->getHandle());
-    socket->setLocalAddress(sa.getAddress());
-    socket->setLocalPort(sa.getPort());
+    sa.setSocket(socket.getHandle());
+    socket.setLocalAddress(sa.getAddress());
+    socket.setLocalPort(sa.getPort());
   } else {
-    socket->setLocalAddress(address);
-    socket->setLocalPort(port);
+    socket.setLocalAddress(address);
+    socket.setLocalPort(port);
   }
 #endif
 }
 
 void Socket::close()
 {
-  socket = SocketImpl::invalid;
+  SocketImpl& socket = getInternalHandle<SocketImpl>();
+  socket.close();
 }
 
 void Socket::connect(const InetAddress& address, unsigned short port)
 {
+  SocketImpl& socket = getInternalHandle<SocketImpl>();
   Profiler::WaitTask profile("Socket::connect()");
 
 #if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__FREERTOS) || \
     (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__ZEPHYR) || \
     (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__WASI)
 #else
-  SocketAddress sa(address, port, socket->getDomain());
-  if (::connect((SOCKET)socket->getHandle(), sa.getValue(), sa.getSize())) {
+  SocketAddress sa(address, port, socket.getDomain());
+  if (::connect(socket.getHandle(), sa.getValue(), sa.getSize())) {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
     switch (::WSAGetLastError()) {
     case WSAECONNREFUSED:
@@ -690,11 +817,11 @@ void Socket::connect(const InetAddress& address, unsigned short port)
     }
 #endif // flavor
   }
-//  sa.setSocket((SOCKET)socket->getHandle());
-//  socket->setLocalAddress(sa.getAddress());
-//  socket->setLocalPort(sa.getPort());
-  socket->setRemoteAddress(address);
-  socket->setRemotePort(port);
+//  sa.setSocket(socket.getHandle());
+//  socket.setLocalAddress(sa.getAddress());
+//  socket.setLocalPort(sa.getPort());
+  socket.setRemoteAddress(address);
+  socket.setRemotePort(port);
 #endif
 }
 
@@ -709,7 +836,7 @@ void Socket::create(Kind kind, Domain domain)
   // TAG: should return new socket not overwrite handle (static method)
   static const int SOCKET_KINDS[] = {SOCK_STREAM, SOCK_DGRAM, SOCK_RAW};
   bassert(
-    !socket->isValid(),
+    !handle,
     NetworkException("Unable to create socket.", this)
   );
 #if (defined(_COM_AZURE_DEV__BASE__HAVE_INET_IPV6))
@@ -722,7 +849,7 @@ void Socket::create(Kind kind, Domain domain)
     handle != OperatingSystem::INVALID_HANDLE,
     NetworkException("Unable to create socket.", this)
   );
-  socket = new SocketImpl(
+  Reference<SocketImpl> _handle = new SocketImpl(
     handle,
     (domain != Socket::IPV4) ? Socket::IPV6 : Socket::IPV4,
     kind
@@ -741,13 +868,16 @@ void Socket::create(Kind kind, Domain domain)
     handle != OperatingSystem::INVALID_HANDLE,
     NetworkException("Unable to create socket.", this)
   );
-  socket = new SocketImpl(handle, Socket::IPV4, kind);
+  Reference<SocketImpl> _handle = new SocketImpl(handle, Socket::IPV4, kind);
 #endif
+  this->handle = _handle;
+  profile.setHandle(*_handle);
 #endif
 }
 
 void Socket::listen(unsigned int backlog)
 {
+  SocketImpl& socket = getInternalHandle<SocketImpl>();
   Profiler::WaitTask profile("Socket::listen()");
 
 #if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__FREERTOS) || \
@@ -756,7 +886,7 @@ void Socket::listen(unsigned int backlog)
 #else
   // silently reduce the backlog argument
   backlog = minimum<unsigned int>(backlog, PrimitiveTraits<int>::MAXIMUM);
-  if (::listen((SOCKET)socket->getHandle(), backlog)) { // may also silently limit backlog
+  if (::listen(socket.getHandle(), backlog)) { // may also silently limit backlog
     internal::SocketImpl::raiseNetwork("Unable to set queue limit for incoming connections.");
   }
 #endif
@@ -764,43 +894,49 @@ void Socket::listen(unsigned int backlog)
 
 void Socket::getName() noexcept
 {
+  SocketImpl& socket = getInternalHandle<SocketImpl>();
   SocketAddress sa;
-  sa.setSocket((SOCKET)socket->getHandle());
-  socket->setLocalAddress(sa.getAddress());
-  socket->setLocalPort(sa.getPort());
+  sa.setSocket(socket.getHandle());
+  socket.setLocalAddress(sa.getAddress());
+  socket.setLocalPort(sa.getPort());
 }
 
 const InetAddress& Socket::getAddress() const noexcept
 {
-  return socket->getRemoteAddress();
+  SocketImpl& socket = getInternalHandle<SocketImpl>();
+  return socket.getRemoteAddress();
 }
 
 unsigned short Socket::getPort() const noexcept
 {
-  return socket->getRemotePort();
+  SocketImpl& socket = getInternalHandle<SocketImpl>();
+  return socket.getRemotePort();
 }
 
 const InetAddress& Socket::getLocalAddress() const noexcept
 {
-  return socket->getLocalAddress();
+  SocketImpl& socket = getInternalHandle<SocketImpl>();
+  return socket.getLocalAddress();
 }
 
 unsigned short Socket::getLocalPort() const noexcept
 {
-  return socket->getLocalPort();
+  SocketImpl& socket = getInternalHandle<SocketImpl>();
+  return socket.getLocalPort();
 }
 
 void Socket::shutdownInputStream()
 {
+  SocketImpl& socket = getInternalHandle<SocketImpl>();
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
-  if (::shutdown((SOCKET)socket->getHandle(), 0 /*SD_RECEIVE*/)) { // disallow further receives
+  if (::shutdown(socket.getHandle(), 0 /*SD_RECEIVE*/)) { // disallow further receives
     internal::SocketImpl::raiseNetwork("Unable to shutdown socket for reading.");
   }
 #elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__FREERTOS) || \
       (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__ZEPHYR)
     _COM_AZURE_DEV__BASE__NOT_SUPPORTED();
 #else // unix
-  if (::shutdown((SOCKET)socket->getHandle(), 0)) { // disallow further receives
+  if (::shutdown(socket.getHandle(), 0)) { // disallow further receives
     internal::SocketImpl::raiseNetwork("Unable to shutdown socket for reading.");
   }
 #endif // flavor
@@ -808,15 +944,16 @@ void Socket::shutdownInputStream()
 
 void Socket::shutdownOutputStream()
 {
+  SocketImpl& socket = getInternalHandle<SocketImpl>();
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
-  if (::shutdown((SOCKET)socket->getHandle(), 1 /*SD_SEND*/)) { // disallow further sends
+  if (::shutdown(socket.getHandle(), 1 /*SD_SEND*/)) { // disallow further sends
     internal::SocketImpl::raiseNetwork("Unable to shutdown socket for writing.");
   }
 #elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__FREERTOS) || \
       (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__ZEPHYR)
     _COM_AZURE_DEV__BASE__NOT_SUPPORTED();
 #else // unix
-  if (::shutdown((SOCKET)socket->getHandle(), 1)) { // disallow further sends
+  if (::shutdown(socket.getHandle(), 1)) { // disallow further sends
     internal::SocketImpl::raiseNetwork("Unable to shutdown socket for writing.");
   }
 #endif // flavor
@@ -828,10 +965,11 @@ bool Socket::getBooleanOption(int option) const
     (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__ZEPHYR)
     _COM_AZURE_DEV__BASE__NOT_SUPPORTED();
 #else
+  SocketImpl& socket = getInternalHandle<SocketImpl>();
   int buffer = 0;
   unsigned int length = sizeof(buffer);
   internal::SocketImpl::getOption(
-    (SOCKET)socket->getHandle(),
+    socket.getHandle(),
     SOL_SOCKET,
     option,
     &buffer,
@@ -847,9 +985,10 @@ void Socket::setBooleanOption(int option, bool value)
     (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__ZEPHYR)
     _COM_AZURE_DEV__BASE__NOT_SUPPORTED();
 #else
+  SocketImpl& socket = getInternalHandle<SocketImpl>();
   int buffer = value;
   internal::SocketImpl::setOption(
-    (SOCKET)socket->getHandle(),
+    socket.getHandle(),
     SOL_SOCKET,
     option,
     &buffer,
@@ -865,10 +1004,11 @@ int Socket::getErrorState() const
     (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__WASI)
   return -1;
 #else
+  SocketImpl& socket = getInternalHandle<SocketImpl>();
   int buffer = 0;
   unsigned int length = sizeof(buffer);
   internal::SocketImpl::getOption(
-    (SOCKET)socket->getHandle(),
+    socket.getHandle(),
     SOL_SOCKET,
     SO_ERROR,
     &buffer,
@@ -948,9 +1088,10 @@ int Socket::getLinger() const
     (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__WASI)
   return -1;
 #else
+  SocketImpl& socket = getInternalHandle<SocketImpl>();
   struct linger buffer;
   unsigned int length = sizeof(buffer);
-  internal::SocketImpl::getOption((SOCKET)socket->getHandle(), SOL_SOCKET, SO_LINGER, &buffer, &length);
+  internal::SocketImpl::getOption(socket.getHandle(), SOL_SOCKET, SO_LINGER, &buffer, &length);
   return (buffer.l_onoff != 0) ? buffer.l_linger : -1;
 #endif
 }
@@ -961,6 +1102,7 @@ void Socket::setLinger(int seconds)
     (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__ZEPHYR) || \
     (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__WASI)
 #else
+  SocketImpl& socket = getInternalHandle<SocketImpl>();
   struct linger buffer;
   if (seconds < 0) {
     buffer.l_onoff = 0; // disable linger
@@ -969,7 +1111,7 @@ void Socket::setLinger(int seconds)
     buffer.l_linger = seconds;
   }
   internal::SocketImpl::setOption(
-    (SOCKET)socket->getHandle(),
+    socket.getHandle(),
     SOL_SOCKET,
     SO_LINGER,
     &buffer,
@@ -985,10 +1127,11 @@ int Socket::getReceiveBufferSize() const
     (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__WASI)
   return -1;
 #else
+  SocketImpl& socket = getInternalHandle<SocketImpl>();
   int buffer = 0;
   unsigned int length = sizeof(buffer);
   internal::SocketImpl::getOption(
-    (SOCKET)socket->getHandle(),
+    socket.getHandle(),
     SOL_SOCKET,
     SO_RCVBUF,
     &buffer,
@@ -1004,9 +1147,10 @@ void Socket::setReceiveBufferSize(int size)
     (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__ZEPHYR) || \
     (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__WASI)
 #else
+  SocketImpl& socket = getInternalHandle<SocketImpl>();
   int buffer = size;
   internal::SocketImpl::setOption(
-    (SOCKET)socket->getHandle(),
+    socket.getHandle(),
     SOL_SOCKET,
     SO_RCVBUF,
     &buffer,
@@ -1022,9 +1166,10 @@ int Socket::getSendBufferSize() const
     (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__WASI)
   return 0;
 #else
+  SocketImpl& socket = getInternalHandle<SocketImpl>();
   int buffer = 0;
   unsigned int length = sizeof(buffer);
-  internal::SocketImpl::getOption((SOCKET)socket->getHandle(), SOL_SOCKET, SO_SNDBUF, &buffer, &length);
+  internal::SocketImpl::getOption(socket.getHandle(), SOL_SOCKET, SO_SNDBUF, &buffer, &length);
   return buffer;
 #endif
 }
@@ -1035,9 +1180,10 @@ void Socket::setSendBufferSize(int size)
     (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__ZEPHYR) || \
     (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__WASI)
 #else
+  SocketImpl& socket = getInternalHandle<SocketImpl>();
   int buffer = size;
   internal::SocketImpl::setOption(
-    (SOCKET)socket->getHandle(),
+    socket.getHandle(),
     SOL_SOCKET,
     SO_SNDBUF,
     &buffer,
@@ -1060,10 +1206,11 @@ bool Socket::getDontRoute() const
     (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__WASI)
   return false;
 #else
+  SocketImpl& socket = getInternalHandle<SocketImpl>();
   int buffer = 0;
   unsigned int length = sizeof(buffer);
   internal::SocketImpl::getOption(
-    (SOCKET)socket->getHandle(),
+    socket.getHandle(),
     SOL_SOCKET,
     SO_DONTROUTE,
     &buffer,
@@ -1079,9 +1226,10 @@ void Socket::setDontRoute(bool value)
     (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__ZEPHYR) || \
     (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__WASI)
 #else
+  SocketImpl& socket = getInternalHandle<SocketImpl>();
   int buffer = value;
   internal::SocketImpl::setOption(
-    (SOCKET)socket->getHandle(),
+    socket.getHandle(),
     SOL_SOCKET,
     SO_DONTROUTE,
     &buffer,
@@ -1097,10 +1245,11 @@ uint64 Socket::getReceiveTimeout() const
     (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__WASI)
   return 0;
 #else
+  SocketImpl& socket = getInternalHandle<SocketImpl>();
   struct timeval buffer;
   unsigned int length = sizeof(buffer);
   internal::SocketImpl::getOption(
-    (SOCKET)socket->getHandle(),
+    socket.getHandle(),
     SOL_SOCKET,
     SO_RCVTIMEO,
     &buffer,
@@ -1116,6 +1265,7 @@ void Socket::setReceiveTimeout(uint64 nanoseconds)
     (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__ZEPHYR) || \
     (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__WASI)
 #else
+  SocketImpl& socket = getInternalHandle<SocketImpl>();
   struct timeval buffer;
   if (nanoseconds <= 60*60*24*1000000000ULL) { // one day
     buffer.tv_sec = static_cast<uint32>((nanoseconds + 999)/1000000000);
@@ -1125,7 +1275,7 @@ void Socket::setReceiveTimeout(uint64 nanoseconds)
     buffer.tv_usec = 0;
   }
   internal::SocketImpl::setOption(
-    (SOCKET)socket->getHandle(),
+    socket.getHandle(),
     SOL_SOCKET,
     SO_RCVTIMEO,
     &buffer,
@@ -1141,10 +1291,11 @@ uint64 Socket::getSendTimeout() const
     (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__WASI)
   return 0;
 #else
+  SocketImpl& socket = getInternalHandle<SocketImpl>();
   struct timeval buffer;
   unsigned int length = sizeof(buffer);
   internal::SocketImpl::getOption(
-    (SOCKET)socket->getHandle(),
+    socket.getHandle(),
     SOL_SOCKET,
     SO_SNDTIMEO,
     &buffer,
@@ -1160,6 +1311,7 @@ void Socket::setSendTimeout(uint64 nanoseconds)
     (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__ZEPHYR) || \
     (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__WASI)
 #else
+  SocketImpl& socket = getInternalHandle<SocketImpl>();
   struct timeval buffer;
   if (nanoseconds <= 60*60*24*1000000000ULL) { // one day
     buffer.tv_sec = static_cast<uint32>((nanoseconds + 999)/1000000000);
@@ -1169,7 +1321,7 @@ void Socket::setSendTimeout(uint64 nanoseconds)
     buffer.tv_usec = 0;
   }
   internal::SocketImpl::setOption(
-    (SOCKET)socket->getHandle(),
+    socket.getHandle(),
     SOL_SOCKET,
     SO_SNDTIMEO,
     &buffer,
@@ -1184,10 +1336,11 @@ bool Socket::getTcpNoDelay() const
     (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__ZEPHYR)
     _COM_AZURE_DEV__BASE__NOT_SUPPORTED();
 #else
+  SocketImpl& socket = getInternalHandle<SocketImpl>();
   int buffer = 0;
   unsigned int length = sizeof(buffer);
   internal::SocketImpl::getOption(
-    (SOCKET)socket->getHandle(),
+    socket.getHandle(),
     IPPROTO_TCP,
     TCP_NODELAY,
     &buffer,
@@ -1203,9 +1356,10 @@ void Socket::setTcpNoDelay(bool value)
     (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__ZEPHYR)
     _COM_AZURE_DEV__BASE__NOT_SUPPORTED();
 #else
+  SocketImpl& socket = getInternalHandle<SocketImpl>();
   int buffer = value;
   internal::SocketImpl::setOption(
-    (SOCKET)socket->getHandle(),
+    socket.getHandle(),
     IPPROTO_TCP,
     TCP_NODELAY,
     &buffer,
@@ -1217,10 +1371,11 @@ void Socket::setTcpNoDelay(bool value)
 uint64 Socket::getTcpDeferAccept() const
 {
 #if (defined(TCP_DEFER_ACCEPT))
+  SocketImpl& socket = getInternalHandle<SocketImpl>();
   int buffer = 0;
   unsigned int length = sizeof(buffer);
   internal::SocketImpl::getOption(
-    (SOCKET)socket->getHandle(),
+    socket.getHandle(),
     SOL_TCP,
     TCP_DEFER_ACCEPT,
     &buffer,
@@ -1235,9 +1390,10 @@ uint64 Socket::getTcpDeferAccept() const
 void Socket::setTcpDeferAccept(uint64 value)
 {
 #if (defined(TCP_DEFER_ACCEPT))
+  SocketImpl& socket = getInternalHandle<SocketImpl>();
   int buffer = value;
   internal::SocketImpl::setOption(
-    (SOCKET)socket->getHandle(),
+    socket.getHandle(),
     SOL_TCP,
     TCP_DEFER_ACCEPT,
     &buffer,
@@ -1254,10 +1410,11 @@ unsigned int Socket::getTimeToLive() const
     (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__ZEPHYR)
     _COM_AZURE_DEV__BASE__NOT_SUPPORTED();
 #else
+  SocketImpl& socket = getInternalHandle<SocketImpl>();
   int buffer = 0;
   unsigned int length = sizeof(buffer);
   internal::SocketImpl::getOption(
-    (SOCKET)socket->getHandle(),
+    socket.getHandle(),
     IPPROTO_IP,
     IP_TTL,
     &buffer,
@@ -1273,9 +1430,10 @@ void Socket::setTimeToLive(unsigned int value)
     (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__ZEPHYR)
     _COM_AZURE_DEV__BASE__NOT_SUPPORTED();
 #else
+  SocketImpl& socket = getInternalHandle<SocketImpl>();
   int buffer = value;
   internal::SocketImpl::setOption(
-    (SOCKET)socket->getHandle(),
+    socket.getHandle(),
     IPPROTO_IP,
     IP_TTL,
     &buffer,
@@ -1290,12 +1448,13 @@ uint8 Socket::getMulticastHops() const
     (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__ZEPHYR)
     _COM_AZURE_DEV__BASE__NOT_SUPPORTED();
 #else
+  SocketImpl& socket = getInternalHandle<SocketImpl>();
 #if (defined(_COM_AZURE_DEV__BASE__HAVE_INET_IPV6))
-  if (socket->getDomain() == Socket::IPV6) {
+  if (socket.getDomain() == Socket::IPV6) {
     unsigned int buffer = 0;
     unsigned int length = sizeof(buffer);
     internal::SocketImpl::getOption(
-      (SOCKET)socket->getHandle(),
+      socket.getHandle(),
       IPPROTO_IPV6,
       IPV6_MULTICAST_HOPS,
       &buffer,
@@ -1307,7 +1466,7 @@ uint8 Socket::getMulticastHops() const
     u_char buffer = 0;
     unsigned int length = sizeof(buffer);
     internal::SocketImpl::getOption(
-      (SOCKET)socket->getHandle(),
+      socket.getHandle(),
       IPPROTO_IP,
       IP_MULTICAST_TTL,
       &buffer,
@@ -1326,11 +1485,12 @@ void Socket::setMulticastHops(uint8 value)
     (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__ZEPHYR)
     _COM_AZURE_DEV__BASE__NOT_SUPPORTED();
 #else
+  SocketImpl& socket = getInternalHandle<SocketImpl>();
 #if (defined(_COM_AZURE_DEV__BASE__HAVE_INET_IPV6))
-  if (socket->getDomain() == Socket::IPV6) {
+  if (socket.getDomain() == Socket::IPV6) {
     unsigned int buffer = value;
     internal::SocketImpl::setOption(
-      (SOCKET)socket->getHandle(),
+      socket.getHandle(),
       IPPROTO_IPV6,
       IPV6_MULTICAST_HOPS,
       &buffer,
@@ -1340,7 +1500,7 @@ void Socket::setMulticastHops(uint8 value)
 #endif
     u_char buffer = value;
     internal::SocketImpl::setOption(
-      (SOCKET)socket->getHandle(),
+      socket.getHandle(),
       IPPROTO_IP,
       IP_MULTICAST_TTL,
       &buffer,
@@ -1358,12 +1518,13 @@ bool Socket::getMulticastLoopback() const
     (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__ZEPHYR)
     _COM_AZURE_DEV__BASE__NOT_SUPPORTED();
 #else
+  SocketImpl& socket = getInternalHandle<SocketImpl>();
 #if (defined(_COM_AZURE_DEV__BASE__HAVE_INET_IPV6))
-  if (socket->getDomain() == Socket::IPV6) {
+  if (socket.getDomain() == Socket::IPV6) {
     u_char buffer;
     unsigned int length = sizeof(buffer);
     internal::SocketImpl::getOption(
-      (SOCKET)socket->getHandle(),
+      socket.getHandle(),
       IPPROTO_IPV6,
       IPV6_MULTICAST_LOOP,
       &buffer,
@@ -1375,7 +1536,7 @@ bool Socket::getMulticastLoopback() const
     u_char buffer;
     unsigned int length = sizeof(buffer);
     internal::SocketImpl::getOption(
-      (SOCKET)socket->getHandle(),
+      socket.getHandle(),
       IPPROTO_IP,
       IP_MULTICAST_LOOP,
       &buffer,
@@ -1394,11 +1555,12 @@ void Socket::setMulticastLoopback(bool value)
     (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__ZEPHYR)
     _COM_AZURE_DEV__BASE__NOT_SUPPORTED();
 #else
+  SocketImpl& socket = getInternalHandle<SocketImpl>();
 #if (defined(_COM_AZURE_DEV__BASE__HAVE_INET_IPV6))
-  if (socket->getDomain() == Socket::IPV6) {
+  if (socket.getDomain() == Socket::IPV6) {
     unsigned int buffer = value;
     internal::SocketImpl::setOption(
-      (SOCKET)socket->getHandle(),
+      socket.getHandle(),
       IPPROTO_IPV6,
       IPV6_MULTICAST_LOOP,
       &buffer,
@@ -1408,7 +1570,7 @@ void Socket::setMulticastLoopback(bool value)
 #endif
     u_char buffer = value;
     internal::SocketImpl::setOption(
-      (SOCKET)socket->getHandle(),
+      socket.getHandle(),
       IPPROTO_IP,
       IP_MULTICAST_LOOP,
       &buffer,
@@ -1426,12 +1588,13 @@ InetAddress Socket::getMulticastInterface() const
     (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__ZEPHYR)
     _COM_AZURE_DEV__BASE__NOT_SUPPORTED();
 #else
+  SocketImpl& socket = getInternalHandle<SocketImpl>();
 #if (defined(_COM_AZURE_DEV__BASE__HAVE_INET_IPV6))
-  if (socket->getDomain() == Socket::IPV6) {
+  if (socket.getDomain() == Socket::IPV6) {
     unsigned int buffer = 0;
     unsigned int length = sizeof(buffer);
     internal::SocketImpl::getOption(
-      (SOCKET)socket->getHandle(),
+      socket.getHandle(),
       IPPROTO_IPV6,
       IPV6_MULTICAST_IF,
       &buffer,
@@ -1443,7 +1606,7 @@ InetAddress Socket::getMulticastInterface() const
     int buffer = 0;
     unsigned int length = sizeof(buffer);
     internal::SocketImpl::getOption(
-      (SOCKET)socket->getHandle(),
+      socket.getHandle(),
       IPPROTO_IP,
       IP_MULTICAST_IF,
       &buffer,
@@ -1455,7 +1618,7 @@ InetAddress Socket::getMulticastInterface() const
   u_char buffer;
   unsigned int length = sizeof(buffer);
   internal::SocketImpl::getOption(
-    (SOCKET)socket->getHandle(),
+    socket.getHandle(),
     IPPROTO_IP,
     IP_MULTICAST_IF,
     &buffer,
@@ -1473,12 +1636,13 @@ void Socket::setMulticastInterface(const InetAddress& interface)
       (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__ZEPHYR)
     _COM_AZURE_DEV__BASE__NOT_SUPPORTED();
 #else // unix
+  SocketImpl& socket = getInternalHandle<SocketImpl>();
   InetAddress i = interface;
   struct in_addr buffer;
   bassert(i.convertToIPv4(), NetworkException(this));
   copy<uint8>(Cast::getAddress(buffer), i.getIPv4Address(), sizeof(buffer));
   internal::SocketImpl::setOption(
-    (SOCKET)socket->getHandle(),
+    socket.getHandle(),
     IPPROTO_IP,
     IP_MULTICAST_IF,
     &buffer,
@@ -1491,11 +1655,12 @@ void Socket::setMulticastInterface(const InetAddress& interface)
 uint8 Socket::getUnicastHops() const
 {
 #if (defined(_COM_AZURE_DEV__BASE__HAVE_INET_IPV6))
-  if (socket->getDomain() == Socket::IPV6) {
+  SocketImpl& socket = getInternalHandle<SocketImpl>();
+  if (socket.getDomain() == Socket::IPV6) {
     int buffer = 0;
     unsigned int length = sizeof(buffer);
     internal::SocketImpl::getOption(
-      (SOCKET)socket->getHandle(),
+      socket.getHandle(),
       IPPROTO_IPV6,
       IPV6_UNICAST_HOPS,
       &buffer,
@@ -1513,10 +1678,11 @@ uint8 Socket::getUnicastHops() const
 void Socket::setUnicastHops(uint8 value)
 {
 #if (defined(_COM_AZURE_DEV__BASE__HAVE_INET_IPV6))
-  if (socket->getDomain() == Socket::IPV6) {
+  SocketImpl& socket = getInternalHandle<SocketImpl>();
+  if (socket.getDomain() == Socket::IPV6) {
     int buffer = 0;
     internal::SocketImpl::setOption(
-      (SOCKET)socket->getHandle(),
+      socket.getHandle(),
       IPPROTO_IPV6,
       IPV6_UNICAST_HOPS,
       &buffer,
@@ -1532,6 +1698,7 @@ void Socket::setUnicastHops(uint8 value)
 
 void Socket::joinGroup(const InetAddress& group)
 {
+  SocketImpl& socket = getInternalHandle<SocketImpl>();
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   InetAddress g = group;
   bassert(g.convertToIPv4(), NetworkException(this));
@@ -1543,7 +1710,7 @@ void Socket::joinGroup(const InetAddress& group)
   );
   clear(mreq.imr_interface.s_addr); // unspecified
   internal::SocketImpl::setOption(
-    (SOCKET)socket->getHandle(),
+    socket.getHandle(),
     IPPROTO_IP,
     IP_ADD_MEMBERSHIP,
     &mreq,
@@ -1551,7 +1718,7 @@ void Socket::joinGroup(const InetAddress& group)
   );
 #else // unix
 #  if (defined(_COM_AZURE_DEV__BASE__HAVE_INET_IPV6))
-  if (socket->getDomain() == Socket::IPV6) {
+  if (socket.getDomain() == Socket::IPV6) {
     struct ipv6_mreq mreq;
     mreq.ipv6mr_interface = 0; // use default interface
     copy<uint8>(
@@ -1560,7 +1727,7 @@ void Socket::joinGroup(const InetAddress& group)
       sizeof(mreq.ipv6mr_multiaddr)
     );
     internal::SocketImpl::setOption(
-      (SOCKET)socket->getHandle(),
+      socket.getHandle(),
       IPPROTO_IPV6,
       IPV6_JOIN_GROUP,
       &mreq,
@@ -1577,7 +1744,7 @@ void Socket::joinGroup(const InetAddress& group)
     );
     clear(mreq.imr_interface.s_addr); // unspecified
     internal::SocketImpl::setOption(
-      (SOCKET)socket->getHandle(),
+      socket.getHandle(),
       IPPROTO_IP,
       IP_ADD_MEMBERSHIP,
       &mreq,
@@ -1598,7 +1765,7 @@ void Socket::joinGroup(const InetAddress& group)
   );
   clear(mreq.imr_interface.s_addr); // unspecified
   internal::SocketImpl::setOption(
-    (SOCKET)socket->getHandle(),
+    socket.getHandle(),
     IPPROTO_IP,
     IP_ADD_MEMBERSHIP,
     &mreq,
@@ -1610,6 +1777,7 @@ void Socket::joinGroup(const InetAddress& group)
 
 void Socket::joinGroup(const InetAddress& interface, const InetAddress& group)
 {
+  SocketImpl& socket = getInternalHandle<SocketImpl>();
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   InetAddress i = interface;
   InetAddress g = group;
@@ -1626,7 +1794,7 @@ void Socket::joinGroup(const InetAddress& interface, const InetAddress& group)
     sizeof(mreq.imr_interface.s_addr)
   );
   internal::SocketImpl::setOption(
-    (SOCKET)socket->getHandle(),
+    socket.getHandle(),
     IPPROTO_IP,
     IP_ADD_MEMBERSHIP,
     &mreq,
@@ -1634,7 +1802,7 @@ void Socket::joinGroup(const InetAddress& interface, const InetAddress& group)
   );
 #else // unix
 #  if (defined(_COM_AZURE_DEV__BASE__HAVE_INET_IPV6))
-  if (socket->getDomain() == Socket::IPV6) {
+  if (socket.getDomain() == Socket::IPV6) {
     struct ipv6_mreq mreq;
     mreq.ipv6mr_interface = 0;
     if (!interface.isUnspecified()) {
@@ -1643,13 +1811,13 @@ void Socket::joinGroup(const InetAddress& interface, const InetAddress& group)
       struct ifconf ifc;
       ifc.ifc_len = buffer.getSize()/sizeof(char);
       ifc.ifc_buf = (char*)buffer.getElements();
-      if (ioctl((SOCKET)socket->getHandle(), SIOCGIFCONF, &ifc)) {
+      if (ioctl(socket.getHandle(), SIOCGIFCONF, &ifc)) {
         internal::SocketImpl::raiseNetwork("Unable to resolve interface.");
       }
       const struct ifreq* current = ifc.ifc_req;
       int offset = 0;
       while (offset < ifc.ifc_len) {
-        if (ioctl((SOCKET)socket->getHandle(), SIOCGIFADDR, current) != 0) {
+        if (ioctl(socket.getHandle(), SIOCGIFADDR, current) != 0) {
           continue;
         }
         bool isSynonymous = false;
@@ -1691,7 +1859,7 @@ void Socket::joinGroup(const InetAddress& interface, const InetAddress& group)
       sizeof(mreq.ipv6mr_multiaddr)
     );
     internal::SocketImpl::setOption(
-      (SOCKET)socket->getHandle(),
+      socket.getHandle(),
       IPPROTO_IPV6,
       IPV6_JOIN_GROUP,
       &mreq,
@@ -1713,7 +1881,7 @@ void Socket::joinGroup(const InetAddress& interface, const InetAddress& group)
       sizeof(mreq.imr_interface.s_addr)
     );
     internal::SocketImpl::setOption(
-      (SOCKET)socket->getHandle(),
+      socket.getHandle(),
       IPPROTO_IP,
       IP_ADD_MEMBERSHIP,
       &mreq,
@@ -1739,7 +1907,7 @@ void Socket::joinGroup(const InetAddress& interface, const InetAddress& group)
     sizeof(mreq.imr_interface.s_addr)
   );
   internal::SocketImpl::setOption(
-    (SOCKET)socket->getHandle(),
+    socket.getHandle(),
     IPPROTO_IP,
     IP_ADD_MEMBERSHIP,
     &mreq,
@@ -1751,6 +1919,7 @@ void Socket::joinGroup(const InetAddress& interface, const InetAddress& group)
 
 void Socket::leaveGroup(const InetAddress& interface, const InetAddress& group)
 {
+  SocketImpl& socket = getInternalHandle<SocketImpl>();
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   InetAddress i = interface;
   InetAddress g = group;
@@ -1767,7 +1936,7 @@ void Socket::leaveGroup(const InetAddress& interface, const InetAddress& group)
     sizeof(mreq.imr_interface.s_addr)
   );
   internal::SocketImpl::setOption(
-    (SOCKET)socket->getHandle(),
+    socket.getHandle(),
     IPPROTO_IP,
     IP_ADD_MEMBERSHIP,
     &mreq,
@@ -1775,7 +1944,7 @@ void Socket::leaveGroup(const InetAddress& interface, const InetAddress& group)
   );
 #else // unix
 #  if (defined(_COM_AZURE_DEV__BASE__HAVE_INET_IPV6))
-  if (socket->getDomain() == Socket::IPV6) {
+  if (socket.getDomain() == Socket::IPV6) {
     InetAddress i = interface;
     InetAddress g = group;
     i.convertToIPv6();
@@ -1789,7 +1958,7 @@ void Socket::leaveGroup(const InetAddress& interface, const InetAddress& group)
       sizeof(mreq.ipv6mr_multiaddr)
     );    
     internal::SocketImpl::setOption(
-      (SOCKET)socket->getHandle(),
+      socket.getHandle(),
       IPPROTO_IPV6,
       IPV6_LEAVE_GROUP,
       &mreq,
@@ -1811,7 +1980,7 @@ void Socket::leaveGroup(const InetAddress& interface, const InetAddress& group)
       sizeof(mreq.imr_interface.s_addr)
     );
     internal::SocketImpl::setOption(
-      (SOCKET)socket->getHandle(),
+      socket.getHandle(),
       IPPROTO_IP,
       IP_DROP_MEMBERSHIP,
       &mreq,
@@ -1837,7 +2006,7 @@ void Socket::leaveGroup(const InetAddress& interface, const InetAddress& group)
     sizeof(mreq.imr_interface.s_addr)
   );
   internal::SocketImpl::setOption(
-    (SOCKET)socket->getHandle(),
+    socket.getHandle(),
     IPPROTO_IP,
     IP_DROP_MEMBERSHIP,
     &mreq,
@@ -1849,12 +2018,13 @@ void Socket::leaveGroup(const InetAddress& interface, const InetAddress& group)
 
 bool Socket::getIPv6Restriction() const
 {
+  SocketImpl& socket = getInternalHandle<SocketImpl>();
 #if (defined(_COM_AZURE_DEV__BASE__HAVE_INET_IPV6) && defined(IPV6_V6ONLY))
-  if (socket->getDomain() == Socket::IPV6) {
+  if (socket.getDomain() == Socket::IPV6) {
     int buffer = 0;
     unsigned int length = sizeof(buffer);
     internal::SocketImpl::getOption(
-      (SOCKET)socket->getHandle(),
+      socket.getHandle(),
       IPPROTO_IPV6,
       IPV6_V6ONLY,
       &buffer,
@@ -1872,11 +2042,12 @@ bool Socket::getIPv6Restriction() const
 
 void Socket::setIPv6Restriction(bool value)
 {
+  SocketImpl& socket = getInternalHandle<SocketImpl>();
 #if (defined(_COM_AZURE_DEV__BASE__HAVE_INET_IPV6) && defined(IPV6_V6ONLY))
-  if (socket->getDomain() == Socket::IPV6) {
+  if (socket.getDomain() == Socket::IPV6) {
     int buffer = 0;
     internal::SocketImpl::setOption(
-      (SOCKET)socket->getHandle(),
+      socket.getHandle(),
       IPPROTO_IPV6,
       IPV6_V6ONLY,
       &buffer,
@@ -1892,27 +2063,28 @@ void Socket::setIPv6Restriction(bool value)
 
 void Socket::setNonBlocking(bool value)
 {
+  SocketImpl& socket = getInternalHandle<SocketImpl>();
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   unsigned int buffer = value; // set to zero to disable nonblocking
-  if (ioctlsocket((SOCKET)socket->getHandle(), FIONBIO, Cast::pointer<u_long*>(&buffer))) {
+  if (ioctlsocket(socket.getHandle(), FIONBIO, Cast::pointer<u_long*>(&buffer))) {
     internal::SocketImpl::raiseNetwork("Unable to set blocking mode.");
   }
 #else // unix
   int flags = 0;
-  if ((flags = fcntl((SOCKET)socket->getHandle(), F_GETFL)) == -1) {
+  if ((flags = fcntl(socket.getHandle(), F_GETFL)) == -1) {
     internal::SocketImpl::raiseNetwork("Unable to get flags for socket.");
   }
   if (value) {
     if ((flags & O_NONBLOCK) == 0) { // do we need to set flag
       flags |= O_NONBLOCK;
-      if (fcntl((SOCKET)socket->getHandle(), F_SETFL, flags) != 0) {
+      if (fcntl(socket.getHandle(), F_SETFL, flags) != 0) {
         internal::SocketImpl::raiseNetwork("Unable to set flags of socke.");
       }
     }
   } else {
     if ((flags & O_NONBLOCK) != 0) { // do we need to clear flag
       flags &= ~O_NONBLOCK;
-      if (fcntl((SOCKET)socket->getHandle(), F_SETFL, flags) != 0) {
+      if (fcntl(socket.getHandle(), F_SETFL, flags) != 0) {
         internal::SocketImpl::raiseNetwork("Unable to set flags of socket.");
       }
     }
@@ -1925,12 +2097,12 @@ bool Socket::getAsynchronous()
 {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
 //   unsigned int buffer = value; // set to zero to disable nonblocking
-//   if (ioctlsocket((SOCKET)socket->getHandle(), FIONBIO, Cast::pointer<u_long*>(&buffer))) {
+//   if (ioctlsocket(socket.getHandle(), FIONBIO, Cast::pointer<u_long*>(&buffer))) {
 //     internal::SocketImpl::raiseNetwork("Unable to set blocking mode.");
 //   }
 #else // unix
   int flags = 0;
-  if ((flags = fcntl((SOCKET)socket->getHandle(), F_GETFL)) == -1) {
+  if ((flags = fcntl(socket.getHandle(), F_GETFL)) == -1) {
     internal::SocketImpl::raiseNetwork("Unable to get flags for socket.");
   }
   return flags & FASYNC;
@@ -1941,25 +2113,25 @@ void Socket::setAsynchronous(bool value)
 {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
 //   unsigned int buffer = value; // set to zero to disable nonblocking
-//   if (ioctlsocket((SOCKET)socket->getHandle(), FIONBIO, Cast::pointer<u_long*>(&buffer))) {
+//   if (ioctlsocket(socket.getHandle(), FIONBIO, Cast::pointer<u_long*>(&buffer))) {
 //     internal::SocketImpl::raiseNetwork("Unable to set blocking mode.");
 //   }
 #else // unix
   int flags = 0;
-  if ((flags = fcntl((SOCKET)socket->getHandle(), F_GETFL)) == -1) {
+  if ((flags = fcntl(socket.getHandle(), F_GETFL)) == -1) {
     internal::SocketImpl::raiseNetwork("Unable to get flags for socket.");
   }
   if (value) {
     if ((flags & FASYNC) == 0) { // do we need to set flag
       flags |= FASYNC;
-      if (fcntl((SOCKET)socket->getHandle(), F_SETFL, flags) != 0) {
+      if (fcntl(socket.getHandle(), F_SETFL, flags) != 0) {
         internal::SocketImpl::raiseNetwork("Unable to set flags of socket.");
       }
     }
   } else {
     if ((flags & FASYNC) != 0) { // do we need to clear flag
       flags &= ~FASYNC;
-      if (fcntl((SOCKET)socket->getHandle(), F_SETFL, flags) != 0) {
+      if (fcntl(socket.getHandle(), F_SETFL, flags) != 0) {
         internal::SocketImpl::raiseNetwork("Unable to set flags of socket.");
       }
     }
@@ -1970,9 +2142,10 @@ void Socket::setAsynchronous(bool value)
 
 unsigned int Socket::available() const
 {
+  SocketImpl& socket = getInternalHandle<SocketImpl>();
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   unsigned int result = 0;
-  if (ioctlsocket((SOCKET)socket->getHandle(), FIONREAD, Cast::pointer<u_long*>(&result))) {
+  if (ioctlsocket(socket.getHandle(), FIONREAD, Cast::pointer<u_long*>(&result))) {
     internal::SocketImpl::raiseNetwork("Unable to determine the amount of data pending in the input buffer.");
   }
   return result;
@@ -1982,7 +2155,7 @@ unsigned int Socket::available() const
 #else // unix
   // this implementation is not very portable?
   int result = 0;
-  if (ioctl((SOCKET)socket->getHandle(), FIONREAD, &result)) {
+  if (ioctl(socket.getHandle(), FIONREAD, &result)) {
     internal::SocketImpl::raiseNetwork("Unable to determine the amount of data pending in the incoming queue.");
   }
   return result;
@@ -1994,14 +2167,14 @@ unsigned int Socket::pending() const
 {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   unsigned int result = 0;
-//   if (ioctlsocket((SOCKET)socket->getHandle(), FIONREAD, Cast::pointer<u_long*>(&result))) {
+//   if (ioctlsocket(socket.getHandle(), FIONREAD, Cast::pointer<u_long*>(&result))) {
 //     internal::SocketImpl::raiseNetwork("Unable to determine the amount of data pending in the input buffer.");
 //   }
   return result;
 #else // unix
   // this implementation is not very portable?
   int result = 0;
-  if (ioctl((SOCKET)socket->getHandle(), TIOCOUTQ, &result)) {
+  if (ioctl(socket.getHandle(), TIOCOUTQ, &result)) {
     internal::SocketImpl::raiseNetwork("Unable to determine the amount of data pending in the outgoing queue.");
   }
   return result;
@@ -2019,6 +2192,7 @@ unsigned int Socket::read(
   unsigned int bytesToRead,
   bool nonblocking)
 {
+  SocketImpl& socket = getInternalHandle<SocketImpl>();
   Profiler::IOReadTask profile("Socket::read()", buffer);
 #if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__FREERTOS) || \
     (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__ZEPHYR)
@@ -2028,7 +2202,7 @@ unsigned int Socket::read(
   while (bytesToRead > 0) {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
     int result = ::recv(
-      (SOCKET)socket->getHandle(),
+      socket.getHandle(),
       (char*)buffer,
       minimum<unsigned int>(bytesToRead, PrimitiveTraits<int>::MAXIMUM),
       0
@@ -2045,7 +2219,7 @@ unsigned int Socket::read(
     }
 #else // unix
     int result = (int)::recv(
-      (SOCKET)socket->getHandle(),
+      socket.getHandle(),
       buffer,
       minimum<size_t>(bytesToRead, SSIZE_MAX),
       0
@@ -2084,6 +2258,7 @@ unsigned int Socket::write(
   unsigned int bytesToWrite,
   bool nonblocking)
 {
+  SocketImpl& socket = getInternalHandle<SocketImpl>();
   Profiler::IOWriteTask profile("Socket::write()", buffer);
 #if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__FREERTOS) || \
     (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__ZEPHYR)
@@ -2093,7 +2268,7 @@ unsigned int Socket::write(
   while (bytesToWrite > 0) {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
     int result = ::send(
-      (SOCKET)socket->getHandle(),
+      socket.getHandle(),
       (const char*)buffer,
       minimum<unsigned int>(bytesToWrite, PrimitiveTraits<int>::MAXIMUM),
       0
@@ -2112,7 +2287,7 @@ unsigned int Socket::write(
     }
 #else // unix
     int result = (int)::send(
-      (SOCKET)socket->getHandle(),
+      socket.getHandle(),
       buffer,
       minimum<size_t>(bytesToWrite, SSIZE_MAX),
       0
@@ -2148,6 +2323,7 @@ unsigned int Socket::receiveFrom(
   InetAddress& address,
   unsigned short& port)
 {
+  SocketImpl& socket = getInternalHandle<SocketImpl>();
   Profiler::IOReadTask profile("Socket::receiveFrom()", buffer);
 
 #if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__FREERTOS) || \
@@ -2159,7 +2335,7 @@ unsigned int Socket::receiveFrom(
   socklen sl = sa.getAnySize();
   size = minimum<unsigned int>(size, PrimitiveTraits<int>::MAXIMUM); // silently reduce
   int result = (int)::recvfrom(
-    (SOCKET)socket->getHandle(),
+    socket.getHandle(),
     (char*)buffer,
     size,
     0,
@@ -2182,6 +2358,7 @@ unsigned int Socket::sendTo(
   const InetAddress& address,
   unsigned short port)
 {
+  SocketImpl& socket = getInternalHandle<SocketImpl>();
   Profiler::IOWriteTask profile("Socket::sendTo()", buffer);
 
 #if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__FREERTOS) || \
@@ -2189,10 +2366,10 @@ unsigned int Socket::sendTo(
     (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__WASI)
   return 0;
 #else
-  const SocketAddress sa(address, port, socket->getDomain());
+  const SocketAddress sa(address, port, socket.getDomain());
   size = minimum<unsigned int>(size, PrimitiveTraits<int>::MAXIMUM); // silently reduce
   int result = (int)::sendto(
-    (SOCKET)socket->getHandle(),
+    socket.getHandle(),
     (const char*)buffer,
     size,
     0,
@@ -2209,8 +2386,9 @@ unsigned int Socket::sendTo(
 
 void Socket::asyncCancel()
 {
+  SocketImpl& socket = getInternalHandle<SocketImpl>();
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
-  ::CancelIo(socket->getHandle());
+  ::CancelIo(socket.getHandle());
 #else // unix
 #endif // flavor
 }
@@ -2220,10 +2398,11 @@ AsynchronousReadOperation Socket::read(
   unsigned int bytesToRead,
   AsynchronousReadEventListener* listener)
 {
+  SocketImpl& socket = getInternalHandle<SocketImpl>();
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   bassert(listener, AsynchronousException()); // FIXME
   return new win32::AsyncReadStreamContext(
-    socket->getHandle(),
+    socket.getHandle(),
     buffer,
     bytesToRead,
     listener
@@ -2238,10 +2417,11 @@ AsynchronousWriteOperation Socket::write(
   unsigned int bytesToWrite,
   AsynchronousWriteEventListener* listener)
 {
+  SocketImpl& socket = getInternalHandle<SocketImpl>();
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   bassert(listener, AsynchronousException()); // FIXME
   return new win32::AsyncWriteStreamContext(
-    socket->getHandle(),
+    socket.getHandle(),
     buffer,
     bytesToWrite,
     listener
@@ -2253,22 +2433,23 @@ AsynchronousWriteOperation Socket::write(
 
 void Socket::wait() const
 {
+  SocketImpl& socket = getInternalHandle<SocketImpl>();
   Profiler::WaitTask profile("Socket::wait()");
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   fd_set rfds;
   FD_ZERO(&rfds);
-  FD_SET((SOCKET)socket->getHandle(), &rfds);
+  FD_SET(socket.getHandle(), &rfds);
   
-  int result = ::select((SOCKET)socket->getHandle() + 1, &rfds, 0, 0, 0);
+  int result = ::select(socket.getHandle() + 1, &rfds, 0, 0, 0);
   if (result == SOCKET_ERROR) {
     internal::SocketImpl::raiseNetwork("Unable to wait for input.");
   }
 #else // unix
   fd_set rfds;
   FD_ZERO(&rfds);
-  FD_SET((SOCKET)socket->getHandle(), &rfds);
+  FD_SET(socket.getHandle(), &rfds);
   
-  int result = ::select((SOCKET)socket->getHandle() + 1, &rfds, 0, 0, 0);
+  int result = ::select(socket.getHandle() + 1, &rfds, 0, 0, 0);
   if (result == -1) {
     internal::SocketImpl::raiseNetwork("Unable to wait for input.");
   }
@@ -2277,17 +2458,18 @@ void Socket::wait() const
 
 bool Socket::wait(unsigned int microseconds) const
 {
+  SocketImpl& socket = getInternalHandle<SocketImpl>();
   Profiler::WaitTask profile("Socket::wait()");
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   fd_set rfds;
   FD_ZERO(&rfds);
-  FD_SET((SOCKET)socket->getHandle(), &rfds);
+  FD_SET(socket.getHandle(), &rfds);
   
   struct timeval tv;
   tv.tv_sec = microseconds/1000000;
   tv.tv_usec = microseconds % 1000000;
   
-  int result = ::select((SOCKET)socket->getHandle() + 1, &rfds, 0, 0, &tv);
+  int result = ::select(socket.getHandle() + 1, &rfds, 0, 0, &tv);
   if (result == SOCKET_ERROR) {
     internal::SocketImpl::raiseNetwork("Unable to wait for input.");
   }
@@ -2295,13 +2477,13 @@ bool Socket::wait(unsigned int microseconds) const
 #else // unix
   fd_set rfds;
   FD_ZERO(&rfds);
-  FD_SET((SOCKET)socket->getHandle(), &rfds);
+  FD_SET(socket.getHandle(), &rfds);
 
   struct timeval tv;
   tv.tv_sec = microseconds/1000000;
   tv.tv_usec = microseconds % 1000000;
 
-  int result = ::select((SOCKET)socket->getHandle() + 1, &rfds, 0, 0, &tv);
+  int result = ::select(socket.getHandle() + 1, &rfds, 0, 0, &tv);
   if (result == -1) {
     internal::SocketImpl::raiseNetwork("Unable to wait for input.");
   }

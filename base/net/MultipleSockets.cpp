@@ -231,12 +231,15 @@ void MultipleSockets::remove(
 #endif
 }
 
-unsigned int MultipleSockets::getEvents(
-  StreamSocket socket) {
+unsigned int MultipleSockets::getEvents(StreamSocket socket)
+{
+  if (!socket) {
+    _throw InvalidKey(this);
+  }
+
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   typedef internal::MultipleSockets::pollfd pollfd;
   
-  bassert(socket.isValid(), InvalidKey(this));
   SingleExclusiveSynchronize<Guard> _guard(guard);
   pollfd* fd = Cast::pointer<pollfd*>(context.getElements());
   for (unsigned int i = 0; i < streamSockets.getSize(); ++i) {
@@ -252,7 +255,6 @@ unsigned int MultipleSockets::getEvents(
   }
   _throw InvalidKey(this);
 #elif (defined(_COM_AZURE_DEV__BASE__HAVE_POLL)) // unix (poll)
-  bassert(socket.isValid(), InvalidKey(this));
   SingleExclusiveSynchronize<Guard> _guard(guard);
   struct pollfd* fd = Cast::pointer<struct pollfd*>(context.getElements());
   for (unsigned int i = 0; i < streamSockets.getSize(); ++i) {
@@ -284,7 +286,6 @@ unsigned int MultipleSockets::getEvents(
 #else // unix (select)
   typedef internal::MultipleSockets::pollfd pollfd;
   
-  bassert(socket.isValid(), InvalidKey(this));
   SingleExclusiveSynchronize<Guard> _guard(guard);
   pollfd* fd = Cast::pointer<pollfd*>(context.getElements());
   for (unsigned int i = 0; i < streamSockets.getSize(); ++i) {
@@ -302,8 +303,8 @@ unsigned int MultipleSockets::getEvents(
 #endif
 }
 
-unsigned int MultipleSockets::getFilter(
-  StreamSocket socket) const {
+unsigned int MultipleSockets::getFilter(StreamSocket socket) const
+{
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   typedef internal::MultipleSockets::pollfd pollfd;
   
@@ -407,6 +408,8 @@ void MultipleSockets::setFilter(
 
 unsigned int MultipleSockets::poll()
 {
+  Profiler::WaitTask profile("MultipleSockets::poll()");
+
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   typedef internal::MultipleSockets::pollfd pollfd;
   
@@ -420,8 +423,7 @@ unsigned int MultipleSockets::poll()
   FD_ZERO(&exceptfds);
   
   {
-    const pollfd* fd =
-      Cast::pointer<const pollfd*>(context.getElements());
+    const pollfd* fd = Cast::pointer<const pollfd*>(context.getElements());
     for (unsigned int i = 0; i < streamSockets.getSize(); ++i) {
       if (fd->events & MultipleSockets::INPUT) {
         FD_SET((SOCKET)fd->fd, &readfds);
@@ -527,8 +529,10 @@ unsigned int MultipleSockets::poll()
 #endif // flavor
 }
 
-unsigned int MultipleSockets::poll(
-  unsigned int milliseconds) {
+unsigned int MultipleSockets::poll(unsigned int milliseconds)
+{
+  Profiler::WaitTask profile("MultipleSockets::poll()");
+  
   milliseconds = minimum(milliseconds, 999999999U);
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   typedef internal::MultipleSockets::pollfd pollfd;
@@ -547,8 +551,7 @@ unsigned int MultipleSockets::poll(
   timeout.tv_usec = (milliseconds % 1000) * 1000;
   
   {
-    const pollfd* fd =
-      Cast::pointer<const pollfd*>(context.getElements());
+    const pollfd* fd = Cast::pointer<const pollfd*>(context.getElements());
     for (unsigned int i = 0; i < streamSockets.getSize(); ++i) {
       if (fd->events & MultipleSockets::INPUT) {
         FD_SET((SOCKET)fd->fd, &readfds);

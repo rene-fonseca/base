@@ -209,6 +209,7 @@ void FileDescriptorInputStream::setNonBlocking(bool value)
 
 void FileDescriptorInputStream::wait() const
 {
+  Profiler::WaitTask profilerTask("FileDescriptorInputStream::wait()");
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   DWORD result = ::WaitForSingleObject(fd->getHandle(), INFINITE);
   BASSERT(result == WAIT_OBJECT_0);
@@ -224,8 +225,9 @@ void FileDescriptorInputStream::wait() const
 #endif // flavor
 }
 
-bool FileDescriptorInputStream::wait(
-  unsigned int timeout) const {
+bool FileDescriptorInputStream::wait(unsigned int timeout) const
+{
+  Profiler::WaitTask profilerTask("FileDescriptorInputStream::wait()");
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   DWORD result = ::WaitForSingleObject(
     fd->getHandle(),
@@ -249,7 +251,8 @@ bool FileDescriptorInputStream::wait(
 #endif // flavor
 }
 
-FileDescriptorInputStream::~FileDescriptorInputStream() {
+FileDescriptorInputStream::~FileDescriptorInputStream()
+{
 }
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

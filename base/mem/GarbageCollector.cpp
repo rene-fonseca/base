@@ -14,6 +14,7 @@
 #include <base/mem/GarbageCollector.h>
 #include <base/concurrency/Thread.h>
 #include <base/concurrency/MutualExclusion.h>
+#include <base/Profiler.h>
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
@@ -81,8 +82,21 @@ namespace {
 
     void releaseAll()
     {
+      Profiler::Task profile("GarbageCollectorImpl::releaseAll()", "GC");
       for (MemorySize i = count; i > 0; --i) {
         doRelease(i - 1);
+      }
+    }
+    
+    void garbageCollect()
+    {
+      Profiler::Task profile("GarbageCollectorImpl::garbageCollect()", "GC");
+      MutualExclusion::Sync _sync(lock);
+      for (MemorySize i = 0; i < count; ++i) {
+        auto& r = references[i];
+        if (!r.isMultiReferenced()) {
+          doRelease(i);
+        }
       }
     }
     
@@ -90,13 +104,7 @@ namespace {
     {
       while (!stopped && signal.wait(10)) {
         signal.reset();
-        MutualExclusion::Sync _sync(lock);
-        for (MemorySize i = 0; i < count; ++i) {
-          auto& r = references[i];
-          if (!r.isMultiReferenced()) {
-            doRelease(i);
-          }
-        }
+        garbageCollect();
       }
       
       releaseAll();

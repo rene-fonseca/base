@@ -13,9 +13,8 @@
 
 #pragma once
 
-#include <base/Object.h>
+#include <base/Resource.h>
 #include <base/string/String.h>
-#include <base/OperatingSystem.h>
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
@@ -24,13 +23,10 @@ _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
   
   @short Folder monitor.
   @ingroup filesystem
-  @version 1.0
+  @version 1.1
 */
 
-class _COM_AZURE_DEV__BASE__API FolderMonitor : public Object {
-private:
-
-  OperatingSystem::Handle handle = 0;
+class _COM_AZURE_DEV__BASE__API FolderMonitor : public Resource {
 public:
   
   /**
@@ -43,19 +39,19 @@ public:
   /**
     Returns true if the an event has occured.
   */
-  bool isSignaled() const noexcept;
+  bool isSignaled() const;
 
   /**
     Waits for an event.
   */
-  void wait() const noexcept;
+  void wait() const;
 
   /**
     Waits for an event.
     
     @param milliseconds The timeout period.
   */
-  bool wait(unsigned int milliseconds) const noexcept;
+  bool wait(unsigned int milliseconds) const;
   
   /**
     Destroys the monitor.

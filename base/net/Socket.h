@@ -93,6 +93,16 @@ public:
   Socket() noexcept;
 
   /**
+    Returns the domain.
+  */
+  Domain getDomain() const;
+
+  /**
+    Returns the kind.
+  */
+  Kind getKind() const;
+
+  /**
     Accepts the first connection from the queue of pending connections on the
     specified socket. This function is used with a connection-oriented socket.
 

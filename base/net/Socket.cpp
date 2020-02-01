@@ -715,6 +715,18 @@ Socket::Socket() noexcept
 {
 }
 
+Socket::Domain Socket::getDomain() const
+{
+  SocketImpl& socket = getInternalHandle<SocketImpl>();
+  return socket.getDomain();
+}
+
+Socket::Kind Socket::getKind() const
+{
+  SocketImpl& socket = getInternalHandle<SocketImpl>();
+  return socket.getKindype();
+}
+
 OperatingSystem::Handle Socket::getHandle() const noexcept
 {
   SocketImpl& socket = getInternalHandle<SocketImpl>();
@@ -2525,10 +2537,13 @@ FormatOutputStream& operator<<(FormatOutputStream& stream, const Socket& socket)
   if (socket) {
     return stream << "Socket: {" << EOL
       << static_cast<const Resource&>(socket) << EOL
+      << "Domain: " << Socket::toString(socket.getDomain()) << EOL
+      << "Kind: " << Socket::toString(socket.getKind()) << EOL
       << "Remote end-point: " << socket.getEndPoint() << EOL
       << "Local end-point: " << socket.getLocalEndPoint() << EOL
       << "Receive buffer: " << socket.getReceiveBufferSize() << EOL
       << "Send buffer: " << socket.getSendBufferSize() << EOL
+      << "Keep-alive: " << socket.getKeepAlive() << EOL
       << "}";
   } else {
     return stream << "Socket: {" << "<NULL>" << "}";
@@ -2569,6 +2584,7 @@ public:
     // fout << localAddress << ":" << localPort << ENDL;
     TEST_ASSERT(!localAddress.isUnspecified());
     TEST_ASSERT(localPort);
+    // fout << s1 << ENDL;
     s1.close();
     TEST_ASSERT(!s1);
   }

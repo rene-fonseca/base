@@ -15,6 +15,7 @@
 #include <base/net/Url.h>
 #include <base/Primitives.h>
 #include <base/UnsignedInteger.h>
+#include <base/ResourceHandle.h>
 #include <base/Profiler.h>
 #include <base/UnitTest.h>
 
@@ -96,7 +97,7 @@ const char* HTTPSRequest::METHOD_POST = "POST";
 const char* HTTPSRequest::METHOD_PUT = "PUT";
 const char* HTTPSRequest::METHOD_DELETE = "DELETE";
 
-class HTTPRequestHandle : public ReferenceCountedObject {
+class HTTPRequestHandle : public ResourceHandle {
 public:
 
   bool sent = false;
@@ -199,10 +200,7 @@ HTTPSRequest::HTTPSRequest()
 
 bool HTTPSRequest::open(const String& _method, const String& _url, const String& _user, const String& _password)
 {
-  // TAG: need new task for this
-  Profiler::ResourceCreateTask profile2("HTTPSRequest::open()");
-  String meta = StringOutputStream() << "{METHOD=" << _method << " URL=" << _url << "}" << FLUSH;
-  Profiler::HTTPSTask profile("HTTPSRequest::open()", meta);
+  Profiler::ResourceCreateTask profile("HTTPSRequest::open()");
   
   Reference<HTTPRequestHandle> _handle = handle.cast<HTTPRequestHandle>();
   if (_handle) {
@@ -318,6 +316,8 @@ bool HTTPSRequest::open(const String& _method, const String& _url, const String&
   this->handle = handle;
 #endif
 
+  String meta = StringOutputStream() << "{METHOD=" << _method << " URL=" << _url << "}" << FLUSH;
+  profile.setHandle(*handle, meta);
   return true;
 }
 

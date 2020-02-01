@@ -13,10 +13,9 @@
 
 #pragma once
 
-#include <base/Object.h>
-#include <base/string/String.h>
 #include <base/net/NetworkException.h>
 #include <base/io/OutputStream.h>
+#include <base/Resource.h>
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
@@ -76,7 +75,7 @@ public:
 /**
   HTTPS request.
 */
-class _COM_AZURE_DEV__BASE__API HTTPSRequest : public Object {
+class _COM_AZURE_DEV__BASE__API HTTPSRequest : public Resource {
 public:
 
   static const char* METHOD_GET;

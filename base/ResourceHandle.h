@@ -48,10 +48,10 @@ public:
   /** Initializes resource meta info. */
   inline ResourceHandle() noexcept
   {
-    if (Profiler::isEnabledDirect()) {
-      createdById = Thread::getThreadSimpleId();
-      resourceId = static_cast<unsigned int>(++id);
-    }
+    // if (Profiler::isEnabledDirect()) {
+    createdById = Thread::getThreadSimpleId();
+    resourceId = static_cast<unsigned int>(++id);
+    // }
     ++total;
   }
 

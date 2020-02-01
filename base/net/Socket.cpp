@@ -584,7 +584,7 @@ namespace internal {
   public:
 
     /** Initializes the socket with the specified handle. */
-    SocketImpl(OperatingSystem::Handle _handle, Domain _domain, Kind _kind) noexcept
+    SocketImpl(Handle _handle, Domain _domain, Kind _kind) noexcept
       : handle(_handle),
         domain(_domain),
         kind(_kind),
@@ -716,11 +716,15 @@ Socket::Socket() noexcept
 
 OperatingSystem::Handle Socket::getHandle() const noexcept
 {
-  
   SocketImpl& socket = getInternalHandle<SocketImpl>();
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
+  static_assert(sizeof(HANDLE) == sizeof(SOCKET), "SOCKET type mismatch.");
+  return reinterpret_cast<OperatingSystem::Handle>(socket.getHandle());
+#else
   return socket.getHandle();
+#endif
 }
-  
+
 bool Socket::accept(Socket& src)
 {
   Profiler::ResourceCreateTask profile("Socket::accept()");
@@ -741,7 +745,7 @@ bool Socket::accept(Socket& src)
   SocketImpl& sourceHandle = src.getInternalHandle<SocketImpl>();
   SocketImpl::Handle handle = ::accept(sourceHandle.getHandle(), sa.getValue(), &sl);
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
-  if (handle == OperatingSystem::INVALID_HANDLE) {
+  if (handle == SocketImpl::INVALID_HANDLE) {
     switch (::WSAGetLastError()) {
     case WSAEWOULDBLOCK:
       return false;
@@ -750,7 +754,7 @@ bool Socket::accept(Socket& src)
     }
   }
 #else // unix
-  if (handle == OperatingSystem::INVALID_HANDLE) {
+  if (handle == SocketImpl::INVALID_HANDLE) {
     switch (errno) {
     case EAGAIN: // EWOULDBLOCK
       return false;
@@ -864,7 +868,7 @@ void Socket::create(Kind kind, Domain domain)
     0
   );
   bassert(
-    handle != OperatingSystem::INVALID_HANDLE,
+    handle != SocketImpl::INVALID_HANDLE,
     NetworkException("Unable to create socket.", this)
   );
   Reference<SocketImpl> _handle = new SocketImpl(
@@ -883,7 +887,7 @@ void Socket::create(Kind kind, Domain domain)
     0
   );
   bassert(
-    handle != OperatingSystem::INVALID_HANDLE,
+    handle != SocketImpl::INVALID_HANDLE,
     NetworkException("Unable to create socket.", this)
   );
   Reference<SocketImpl> _handle = new SocketImpl(handle, Socket::IPV4, kind);
@@ -2422,9 +2426,9 @@ AsynchronousReadOperation Socket::read(
 {
   SocketImpl& socket = getInternalHandle<SocketImpl>();
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
-  bassert(listener, AsynchronousException()); // FIXME
+  bassert(listener, AsynchronousException());
   return new win32::AsyncReadStreamContext(
-    socket.getHandle(),
+    reinterpret_cast<OperatingSystem::Handle>(socket.getHandle()),
     buffer,
     bytesToRead,
     listener
@@ -2441,9 +2445,9 @@ AsynchronousWriteOperation Socket::write(
 {
   SocketImpl& socket = getInternalHandle<SocketImpl>();
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
-  bassert(listener, AsynchronousException()); // FIXME
+  bassert(listener, AsynchronousException());
   return new win32::AsyncWriteStreamContext(
-    socket.getHandle(),
+    reinterpret_cast<OperatingSystem::Handle>(socket.getHandle()),
     buffer,
     bytesToWrite,
     listener

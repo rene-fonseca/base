@@ -279,6 +279,9 @@ bool HTTPSRequest::open(const String& _method, const String& _url, const String&
   handle->hRequest = hRequest;
   this->handle = handle;
 
+  String meta = StringOutputStream() << "{METHOD=" << _method << " URL=" << _url << "}" << FLUSH;
+  profile.setHandle(*handle, meta);
+
 #elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__MACOS)
   // we set auth explicitly
   url.setUser(String());
@@ -314,10 +317,11 @@ bool HTTPSRequest::open(const String& _method, const String& _url, const String&
   Reference<HTTPRequestHandle> handle = new HTTPRequestHandle();
   handle->cfHttpReq = cfHttpReq;
   this->handle = handle;
-#endif
 
   String meta = StringOutputStream() << "{METHOD=" << _method << " URL=" << _url << "}" << FLUSH;
   profile.setHandle(*handle, meta);
+#endif
+
   return true;
 }
 

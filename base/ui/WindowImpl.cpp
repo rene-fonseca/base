@@ -435,10 +435,12 @@ LRESULT CALLBACK Backend<WindowImpl>::messageHandler(HWND handle, UINT message, 
       return 0;
     }
   case WM_MOUSELEAVE:
-    window->scope = false;
-    Profiler::UITask profile("Window::onMouseScope()");
-    window->onMouseScope(false);
-    return 0;
+    {
+      window->scope = false;
+      Profiler::UITask profile("Window::onMouseScope()");
+      window->onMouseScope(false);
+      return 0;
+    }
   case WM_MOUSEMOVE:
     {
       if (!window->scope) {
@@ -706,14 +708,18 @@ LRESULT CALLBACK Backend<WindowImpl>::messageHandler(HWND handle, UINT message, 
         // ::ToUnicode(wParam, 0, Cast::pointer<BYTE*>(window->keyboardState), (wchar*)&buffer, sizeof(buffer), 0);
         switch (::ToAscii(wParam, 0, Cast::pointer<BYTE*>(window->keyboardState), buffer, 0)) {
         case 2:
-          Profiler::UITask profile("Window::onKey()");
-          window->onKey((uint8)buffer[0], flags|WindowImpl::Key::DEAD|WindowImpl::Key::ASCII, modifiers);
-          Profiler::UITask profile("Window::onKey()");
-          window->onKey((uint8)buffer[1], flags|WindowImpl::Key::ASCII, modifiers);
+          {
+            Profiler::UITask profile1("Window::onKey()");
+            window->onKey((uint8)buffer[0], flags|WindowImpl::Key::DEAD|WindowImpl::Key::ASCII, modifiers);
+            Profiler::UITask profile2("Window::onKey()");
+            window->onKey((uint8)buffer[1], flags|WindowImpl::Key::ASCII, modifiers);
+          }
           break;
         case 1:
-          Profiler::UITask profile("Window::onKey()");
-          window->onKey((uint8)buffer[0], flags|WindowImpl::Key::ASCII, modifiers);
+          {
+            Profiler::UITask profile("Window::onKey()");
+            window->onKey((uint8)buffer[0], flags|WindowImpl::Key::ASCII, modifiers);
+          }
           break;
         case 0:
           break; // ignore key

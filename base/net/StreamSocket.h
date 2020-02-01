@@ -101,6 +101,16 @@ public:
   }
 
   /**
+    Associates a local name (address and port) with this socket.
+
+    @param endPoint The end point the socket should be bound to.
+  */
+  inline void bind(const InetEndPoint& endPoint)
+  {
+    Socket::bind(endPoint);
+  }
+
+  /**
     Closes this socket.
   */
   inline void close()

@@ -90,7 +90,7 @@ namespace native {
             );
           if (!*FUNCTIONS[i].function) {
             dynamicLinker = nullptr;
-            return false;
+            return nullptr;
           }
         }
       }

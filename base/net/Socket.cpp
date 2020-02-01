@@ -697,7 +697,18 @@ namespace internal {
       close();
     }
   };
+    
+const char* Socket::toString(Domain domain) noexcept
+{
+  static const char* DOMAINS[] = {"IPV4", "IPV6"};
+  return DOMAINS[domain];
+}
 
+const char* Socket::toString(Kind kind) noexcept
+{
+  static const char* KINDS[] = {"STREAM", "DATAGRAM", "RAW"};
+  return KINDS[kind];
+}
 
 Socket::Socket() noexcept
 {
@@ -752,6 +763,9 @@ bool Socket::accept(Socket& src)
   socket->setRemoteAddress(sa.getAddress());
   socket->setRemotePort(sa.getPort());
   this->handle = socket;
+
+  String meta = StringOutputStream() << "{NAME=" << sa.getAddress() << ":" << sa.getPort() << "}";
+  profile.setHandle(*socket, meta);
   return true;
 #endif
 }
@@ -786,13 +800,15 @@ void Socket::close()
     SocketImpl& socket = getInternalHandle<SocketImpl>();
     socket.close();
   }
+  handle.invalidate();
 }
 
 void Socket::connect(const InetAddress& address, unsigned short port)
 {
   SocketImpl& socket = getInternalHandle<SocketImpl>();
-  Profiler::WaitTask profile("Socket::connect()");
-
+  Profiler::WaitTask profile("Socket::connect()", socket);
+  // TAG: add dest info
+  
 #if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__FREERTOS) || \
     (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__ZEPHYR) || \
     (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__WASI)
@@ -858,10 +874,10 @@ void Socket::create(Kind kind, Domain domain)
   );
 #else
   bassert(
-    (domain == Socket::IPV4) || (domain == Socket::DEFAULT_DOMAIN),
+    domain == Socket::IPV4,
     NetworkException("Domain not supported.")
   );
-  SocketImpl::Handle handle = :socket(
+  SocketImpl::Handle handle = ::socket(
     PF_INET,
     SOCKET_KINDS[kind],
     0
@@ -873,14 +889,15 @@ void Socket::create(Kind kind, Domain domain)
   Reference<SocketImpl> _handle = new SocketImpl(handle, Socket::IPV4, kind);
 #endif
   this->handle = _handle;
-  profile.setHandle(*_handle);
+  String meta = StringOutputStream() << "{DOMAIN=" << toString(domain) << " KIND=" << toString(kind) << "}";
+  profile.setHandle(*_handle, meta);
 #endif
 }
 
 void Socket::listen(unsigned int backlog)
 {
   SocketImpl& socket = getInternalHandle<SocketImpl>();
-  Profiler::WaitTask profile("Socket::listen()");
+  Profiler::WaitTask profile("Socket::listen()", socket);
 
 #if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__FREERTOS) || \
     (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__ZEPHYR) || \
@@ -2439,7 +2456,7 @@ AsynchronousWriteOperation Socket::write(
 void Socket::wait() const
 {
   SocketImpl& socket = getInternalHandle<SocketImpl>();
-  Profiler::WaitTask profile("Socket::wait()");
+  Profiler::WaitTask profile("Socket::wait()", socket);
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   fd_set rfds;
   FD_ZERO(&rfds);
@@ -2464,7 +2481,7 @@ void Socket::wait() const
 bool Socket::wait(unsigned int microseconds) const
 {
   SocketImpl& socket = getInternalHandle<SocketImpl>();
-  Profiler::WaitTask profile("Socket::wait()");
+  Profiler::WaitTask profile("Socket::wait()", socket);
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   fd_set rfds;
   FD_ZERO(&rfds);
@@ -2521,13 +2538,21 @@ public:
     }
 
     Socket s1;
-#if 0
+    s1.create(Socket::STREAM, Socket::IPV4);
+    TEST_ASSERT(s1);
     s1.connect(address, 80);
+    s1.getName(); // cache
     InetAddress localAddress = s1.getLocalAddress();
     unsigned short localPort = s1.getLocalPort();
+    // TAG: add getInetEndPoint()
+    // fout << s1.getAddress() << ":" << s1.getPort() << ENDL;
+    TEST_ASSERT(!s1.getAddress().isUnspecified());
+    TEST_ASSERT(s1.getPort() == 80);
     // fout << localAddress << ":" << localPort << ENDL;
-#endif
+    TEST_ASSERT(!localAddress.isUnspecified());
+    TEST_ASSERT(localPort);
     s1.close();
+    TEST_ASSERT(!s1);
   }
 };
 

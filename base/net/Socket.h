@@ -18,7 +18,7 @@
 #include <base/io/async/AsynchronousOutputStream.h>
 #include <base/concurrency/Synchronize.h>
 #include <base/io/FileDescriptor.h>
-#include <base/net/InetAddress.h>
+#include <base/net/InetEndPoint.h>
 #include <base/string/FormatOutputStream.h>
 #include <base/Resource.h>
 #include <base/OperatingSystem.h>
@@ -53,7 +53,7 @@ public:
     // UNIX, /**< UNIX domain. */
     IPV4, /**< IP version 4. */
     IPV6, /**< IP version 6. */
-    DEFAULT_DOMAIN /**< The default domain. */
+    DEFAULT_DOMAIN = IPV4 /**< The default domain. */
   };
   
   /** Socket type. */
@@ -62,6 +62,10 @@ public:
     DATAGRAM, /**< Datagram socket. */
     RAW /**< Raw socket. */
   };
+  
+  static const char* toString(Domain domain) noexcept;
+  
+  static const char* toString(Kind kind) noexcept;
 protected:
   
   /** Socket options. */
@@ -108,9 +112,18 @@ public:
     @param port The port the socket should be bound to. If zero the socket is
     assigned to a unique port.
   */
-  void bind(
-    const InetAddress& address, unsigned short port);
+  void bind(const InetAddress& address, unsigned short port);
 
+  /**
+    Associates a local name (address and port) with this socket.
+
+    @param endPoint The end point.
+  */
+  inline void bind(const InetEndPoint& endPoint)
+  {
+    bind(endPoint.getAddress(), endPoint.getPort());
+  }
+  
   /**
     Closes this socket.
   */
@@ -123,7 +136,17 @@ public:
     @param port The port to connect to.
   */
   void connect(const InetAddress& address, unsigned  short port);
+                                           
+  /**
+    Connects this socket to the specified address and port.
 
+    @param endPoint The end point.
+  */
+  inline void connect(const InetEndPoint& endPoint)
+  {
+    connect(endPoint.getAddress(), endPoint.getPort());
+  }
+  
   /**
     Creates either a stream or a datagram socket.
 
@@ -148,6 +171,14 @@ public:
     Returns the remote port to which the socket is connected.
   */
   unsigned short getPort() const noexcept;
+                                           
+  /**
+    Returns the connected end point.
+  */
+  inline void getEndPoint() const noexcept
+  {
+    return InetEndPoint(getAddress(), getPort());
+  }
 
   /**
     Returns the local IP address to which the socket is bound.
@@ -158,6 +189,14 @@ public:
     Returns the local port to which the socket is bound.
   */
   unsigned short getLocalPort() const noexcept;
+  
+  /**
+    Returns the local end point.
+  */
+  inline void getLocalEndPoint() const noexcept
+  {
+    return InetEndPoint(getLocalAddress(), getLocalPort());
+  }
 
   /**
     This function places the socket in a state where it is listening for
@@ -334,8 +373,7 @@ public:
   /**
     Sets the default interface for outgoing multicast packets.
   */
-  void setMulticastInterface(
-    const InetAddress& interface);
+  void setMulticastInterface(const InetAddress& interface);
 
   /**
     Returns the maximum number of unicast hops (time to live).

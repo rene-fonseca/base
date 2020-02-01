@@ -36,15 +36,18 @@ template<>
 class Backend<WindowImpl> {
 public:
 
-  static inline void destroy(WindowImpl* windowImpl) noexcept {
+  static inline void destroy(WindowImpl* windowImpl) noexcept
+  {
     windowImpl->destroy();
   }
   
-  static inline void* getDisplay() noexcept {
+  static inline void* getDisplay() noexcept
+  {
     return WindowImpl::displayHandle;
   }
   
-  static inline bool loadModule(bool load) noexcept {
+  static inline bool loadModule(bool load) noexcept
+  {
     return WindowImpl::loadModule(load);
   }
 

@@ -160,7 +160,7 @@ unsigned int Thread::getThreadSimpleId() noexcept
   if (auto tlc = getLocalContext()) {
     return tlc->simpleId;
   }
-  return String();
+  return 0;
 }
 
 String Thread::getThreadName() noexcept

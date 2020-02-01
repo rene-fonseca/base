@@ -786,6 +786,7 @@ LRESULT CALLBACK Backend<WindowImpl>::messageHandler(HWND handle, UINT message, 
 
 void WindowImpl::construct() noexcept
 {
+  Profiler::pushUI("WindowImpl::construct()");
   windowImpl::addWindow(this, drawableHandle);
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   TRACKMOUSEEVENT mouseEvent;
@@ -804,7 +805,9 @@ void WindowImpl::construct() noexcept
 #endif // flavor
 }
 
-void WindowImpl::destroy() noexcept {
+void WindowImpl::destroy() noexcept
+{
+  Profiler::pushUI("WindowImpl::destroy()");
   graphicsContextHandle = 0;
   if (drawableHandle) {
     windowImpl::removeWindow(drawableHandle);
@@ -813,7 +816,8 @@ void WindowImpl::destroy() noexcept {
   screenHandle = 0;
 }
 
-bool WindowImpl::loadModule(bool load) noexcept {
+bool WindowImpl::loadModule(bool load) noexcept
+{
   bool success = true;
   spinLock.exclusiveLock();
   if (load) {
@@ -1010,6 +1014,7 @@ Position WindowImpl::getBindingOffset(Binding binding) const noexcept
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__UNIX)
 void WindowImpl::flush()
 {
+  Profiler::IOFlushTask profile("WindowImpl::flush()");
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
 #elif defined(_COM_AZURE_DEV__BASE__USE_X11)
   ::XFlush((Display*)displayHandle);
@@ -1030,7 +1035,7 @@ String WindowImpl::getServerVendor() const
 }
 
 unsigned int WindowImpl::getServerRelease() const
-  {
+{
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   return 0;
 #elif defined(_COM_AZURE_DEV__BASE__USE_X11)
@@ -1040,8 +1045,8 @@ unsigned int WindowImpl::getServerRelease() const
 #endif // flavor
 }
 
-void WindowImpl::displayMenu(
-  const Position& position, const Menu& menu) {
+void WindowImpl::displayMenu(const Position& position, const Menu& menu)
+{
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   ::SetForegroundWindow((HWND)drawableHandle);
   POINT point;
@@ -1092,8 +1097,7 @@ String WindowImpl::getIconTitle() const
   return iconTitle;
 }
 
-void WindowImpl::setIconTitle(
-  const String& iconTitle)
+void WindowImpl::setIconTitle(const String& iconTitle)
 {
   this->iconTitle = iconTitle;
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
@@ -1112,8 +1116,8 @@ void WindowImpl::setIconTitle(
 #endif // flavor
 }
 
-void WindowImpl::setPosition(
-  const Position& position) {
+void WindowImpl::setPosition(const Position& position)
+{
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   if (position != this->position) {
     // TAG: take into account difference between upper left corner of window and client area
@@ -1177,9 +1181,8 @@ void WindowImpl::setDimension(const Dimension& dimension)
 // #endif // flavor
 // }
 
-void WindowImpl::setRegion(
-  const Position& position,
-  const Dimension& dimension) {
+void WindowImpl::setRegion(const Position& position, const Dimension& dimension)
+{
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   bassert(
     ::MoveWindow(
@@ -1207,7 +1210,8 @@ void WindowImpl::setRegion(
 #endif // flavor
 }
 
-void WindowImpl::setCursor(Cursor cursor) {
+void WindowImpl::setCursor(Cursor cursor)
+{
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
 // LEFT_ARROW, RIGHT_ARROW, INFO, DESTROY, HELP,
 // CYCLE, SPRAY, TEXT, UP_DOWN, LEFT_RIGHT,
@@ -1309,8 +1313,8 @@ void WindowImpl::setCursor(Cursor cursor) {
 }
 
 // TAG: display, screen, or other window?
-Position WindowImpl::toGlobalPosition(
-  const Position& position) const {
+Position WindowImpl::toGlobalPosition(const Position& position) const
+{
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   return this->position + position;
 #elif defined(_COM_AZURE_DEV__BASE__USE_X11)
@@ -1334,7 +1338,8 @@ Position WindowImpl::toGlobalPosition(
 }
 
 // TAG: global or window position
-Position WindowImpl::getCursorPosition() const {
+Position WindowImpl::getCursorPosition() const
+{
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   POINT point;
   ::GetCursorPos(&point);
@@ -1434,7 +1439,8 @@ void WindowImpl::setCursorConfinement()
 
 void WindowImpl::setCursorConfinement(
   const Position& position,
-  const Dimension& dimension) {
+  const Dimension& dimension)
+{
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   RECT rect;
   rect.left = position.getX();
@@ -1447,7 +1453,8 @@ void WindowImpl::setCursorConfinement(
 #endif // flavor
 }
 
-void WindowImpl::disableClipping() {
+void WindowImpl::disableClipping()
+{
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   bassert(
     ::SelectClipRgn((HDC)graphicsContextHandle, 0) != ERROR,
@@ -1458,7 +1465,7 @@ void WindowImpl::disableClipping() {
 }
 
 WindowImpl::Region WindowImpl::getClipping() const
-  {
+{
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   return Region(); // TAG: fixme
 #else // unix
@@ -1481,7 +1488,9 @@ void WindowImpl::setClipping(
 #endif // flavor
 }
 
-void WindowImpl::close() {
+void WindowImpl::close()
+{
+  Profiler::pushUI("WindowImpl::close()");
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   if (drawableHandle) {
     bassert(
@@ -1515,13 +1524,14 @@ bool WindowImpl::isChildOf(const WindowImpl& object)
   return false;
 }
 
-bool WindowImpl::isParentOf(
-  const WindowImpl& object) {
+bool WindowImpl::isParentOf(const WindowImpl& object)
+{
   // TAG: fixme
   return false;
 }
 
-bool WindowImpl::isMaximized() {
+bool WindowImpl::isMaximized()
+{
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   return ::IsZoomed((HWND)drawableHandle) == TRUE;
 #else // unix
@@ -1612,6 +1622,7 @@ void WindowImpl::normalize()
 
 void WindowImpl::show()
 {
+  Profiler::pushUI("WindowImpl::show()");
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   ::ShowWindow((HWND)drawableHandle, SW_SHOW);
 #elif defined(_COM_AZURE_DEV__BASE__USE_X11)
@@ -1621,6 +1632,7 @@ void WindowImpl::show()
 
 void WindowImpl::hide()
 {
+  Profiler::pushUI("WindowImpl::hide()");
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   ::ShowWindow((HWND)drawableHandle, SW_HIDE);
 #elif defined(_COM_AZURE_DEV__BASE__USE_X11)
@@ -1656,6 +1668,7 @@ void WindowImpl::disable()
 
 void WindowImpl::raise()
 {
+  Profiler::pushUI("WindowImpl::raise()");
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   bassert(
     ::SetForegroundWindow((HWND)drawableHandle),
@@ -1669,6 +1682,7 @@ void WindowImpl::raise()
 
 void WindowImpl::acquireFocus()
 {
+  Profiler::pushUI("WindowImpl::acquireFocus()");
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   bassert(::SetFocus((HWND)drawableHandle), UserInterfaceException(this));
 #elif defined(_COM_AZURE_DEV__BASE__USE_X11)
@@ -1721,7 +1735,8 @@ void WindowImpl::setCapture(bool state)
 #endif // flavor
 }
 
-void WindowImpl::setDisplayMode(DisplayMode displayMode) {
+void WindowImpl::setDisplayMode(DisplayMode displayMode)
+{
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   if (displayMode != this->displayMode) {
     switch (displayMode) {
@@ -1752,7 +1767,8 @@ void WindowImpl::setDisplayMode(DisplayMode displayMode) {
 #endif // flavor
 }
 
-unsigned int WindowImpl::getKeyState(unsigned int code) const {
+unsigned int WindowImpl::getKeyState(unsigned int code) const
+{
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   static const uint8 KEYS[] = {
     VK_INSERT,
@@ -1817,10 +1833,12 @@ unsigned int WindowImpl::getKeyState(unsigned int code) const {
 #endif // flavor
 }
 
-void WindowImpl::onDestruction() noexcept {
+void WindowImpl::onDestruction() noexcept
+{
 }
 
-void WindowImpl::onDisplay() noexcept {
+void WindowImpl::onDisplay() noexcept
+{
 }
 
 void WindowImpl::onMove(const Position& position) noexcept
@@ -1907,7 +1925,10 @@ void WindowImpl::invalidate()
 #endif // flavor
 }
 
-void WindowImpl::update() {
+void WindowImpl::update()
+{
+  Profiler::pushUI("WindowImpl::update()");
+
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   // TAG: time this implementation and select faster choice (send WM_PAINT directly)
   bassert(
@@ -1922,6 +1943,8 @@ void WindowImpl::update() {
 
 void WindowImpl::exit() noexcept
 {
+  Profiler::pushUI("WindowImpl::exit()");
+
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   ::PostQuitMessage(0);
 #elif defined(_COM_AZURE_DEV__BASE__USE_X11)
@@ -1942,7 +1965,7 @@ void WindowImpl::exit() noexcept
 
 void WindowImpl::wait()
 {
-  // Profiler::WaitTask profile("WindowImpl::wait()");
+  Profiler::WaitTask profile("WindowImpl::wait()");
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   ::WaitMessage();
 #elif defined(_COM_AZURE_DEV__BASE__USE_X11)
@@ -1953,7 +1976,7 @@ void WindowImpl::wait()
 
 bool WindowImpl::wait(unsigned int milliseconds)
 {
-  // Profiler::WaitTask profile("WindowImpl::wait()");
+  Profiler::WaitTask profile("WindowImpl::wait()");
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   if (milliseconds > 999999999) { // TAG: fixme
     milliseconds = 999999999;
@@ -1965,7 +1988,10 @@ bool WindowImpl::wait(unsigned int milliseconds)
 #endif // flavor
 }
 
-bool WindowImpl::openDispatch() {
+bool WindowImpl::openDispatch()
+{
+  Profiler::UITask profile("WindowImpl::openDispatch()");
+
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   MSG msg;
   while (::PeekMessage(&msg, 0, 0, 0, PM_REMOVE)) {
@@ -1984,7 +2010,10 @@ bool WindowImpl::openDispatch() {
 #endif // flavor
 }
 
-void WindowImpl::dispatch() {
+void WindowImpl::dispatch()
+{
+  Profiler::UITask profile("WindowImpl::dispatch()");
+
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   MSG msg;
   while (true) {
@@ -2690,6 +2719,7 @@ Literal WindowImpl::getMouseButtonName(Mouse::Button button) noexcept
 
 bool WindowImpl::isResponding(unsigned int milliseconds)
 {
+  Profiler::WaitTask profile("WindowImpl::isResponding()");
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   DWORD_PTR result = 0;
   LRESULT temp = ::SendMessageTimeout(

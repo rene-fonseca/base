@@ -20,6 +20,10 @@
 #include <base/collection/InvalidKey.h>
 #include <base/security/Trustee.h>
 
+#if defined(SYNCHRONIZE)
+#  error Check that windows headers are included after framework headers
+#endif
+
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
 #  undef READ_ATTRIBUTES
 #  undef SYNCHRONIZE

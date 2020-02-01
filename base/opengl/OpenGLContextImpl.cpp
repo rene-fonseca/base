@@ -13,10 +13,10 @@
 
 #include <base/platforms/features.h>
 #include <base/opengl/OpenGLContextImpl.h>
-#include <base/ui/WindowImpl.h>
-#include <base/platforms/backend/WindowImpl.h>
 #include <base/concurrency/SpinLock.h>
 #include <base/Profiler.h>
+#include <base/ui/WindowImpl.h>
+#include <base/platforms/backend/WindowImpl.h>
 
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
 #  include <base/platforms/win32/GDI.cpp>

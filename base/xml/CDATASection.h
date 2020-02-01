@@ -45,12 +45,15 @@ class _COM_AZURE_DEV__BASE__API CDATASection : public Text {
   friend class Document;
 protected:
 
-  inline CDATASection(void* context) noexcept : Text(context) {
+  inline CDATASection(void* context) noexcept
+    : Text(context)
+  {
   }
 public:
 
   inline CDATASection(Node node)
-    : Text(node) {
+    : Text(node)
+  {
     bassert(
       node.isInvalid() || (node.getType() == CDATA_SECTION_NODE),
       CastException(this)
@@ -58,7 +61,8 @@ public:
   }
   
   inline CDATASection(Text node)
-    : Text(node) {
+    : Text(node)
+  {
     bassert(
       node.isInvalid() || (node.getType() == CDATA_SECTION_NODE),
       CastException(this)

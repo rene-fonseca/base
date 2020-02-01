@@ -32,11 +32,15 @@ protected:
   /**
     Initializes declaration node.
   */
-  inline Declaration(void* context) noexcept : Node(context) {
+  inline Declaration(void* context) noexcept
+    : Node(context)
+  {
   }
 public:
   
-  inline Declaration(Node node) : Node(node) {
+  inline Declaration(Node node)
+    : Node(node)
+  {
     NodeType type = node.getType();
     bassert(
       node.isInvalid() ||

@@ -75,34 +75,42 @@ private:
   Date timeStamp;
 public:
 
-  DOMEvent() noexcept {
+  DOMEvent() noexcept
+  {
   }
 
-  inline const String& getType() const noexcept {
+  inline const String& getType() const noexcept
+  {
     return type;
   }
 
-  inline EventTarget* getTarget() const noexcept {
+  inline EventTarget* getTarget() const noexcept
+  {
     return target;
   }
   
-  inline EventTarget* getCurrentTarget() const noexcept {
+  inline EventTarget* getCurrentTarget() const noexcept
+  {
     return currentTarget;
   }
   
-  inline PhaseType getPhase() const noexcept {
+  inline PhaseType getPhase() const noexcept
+  {
     return phase;
   }
 
-  inline bool getBubbles() const noexcept {
+  inline bool getBubbles() const noexcept
+  {
     return bubbles;
   }
 
-  inline bool isCancelable() const noexcept {
+  inline bool isCancelable() const noexcept
+  {
     return cancelable;
   }
 
-  inline Date getTimeStamp() const noexcept {
+  inline Date getTimeStamp() const noexcept
+  {
     return timeStamp;
   }
 

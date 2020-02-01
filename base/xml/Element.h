@@ -35,14 +35,18 @@ protected:
   /**
     Internal constructor.
   */
-  inline Element(void* context) noexcept : Node(context) {
+  inline Element(void* context) noexcept
+    : Node(context)
+  {
   }
 public:
   
   /**
     Initializes element from node.
   */
-  inline Element(const Node& node) : Node(node) {
+  inline Element(const Node& node)
+    : Node(node)
+  {
     bassert(
       node.isInvalid() || (node.getType() == ELEMENT_NODE),
       CastException(this)
@@ -53,7 +57,8 @@ public:
     Initializes element.
   */
   inline Element(const Node::ShadowElement& element) noexcept
-    : Node(element.getNode()) {
+    : Node(element.getNode())
+  {
   }
   
   /**
@@ -69,7 +74,8 @@ public:
   /**
     Retrieves an attribute value by name.
   */
-  inline String getAttribute(const String& name) const {
+  inline String getAttribute(const String& name) const
+  {
     return getAttribute(name.native());
   }
 
@@ -78,18 +84,18 @@ public:
   /**
     Adds a new attribute.
   */
-  inline void setAttribute(
-    const String& name, const String& value) {
+  inline void setAttribute(const String& name, const String& value)
+  {
     setAttribute(name.native(), value.native());
   }
 
-  void setAttribute(
-    const char* name, const char* value);
+  void setAttribute(const char* name, const char* value);
   
   /**
     Removes an attribute by name.
   */
-  inline void removeAttribute(const String& name) {
+  inline void removeAttribute(const String& name)
+  {
     removeAttribute(name.native());
   }
 
@@ -98,7 +104,8 @@ public:
   /**
     Retrieves an attribute node by name.
   */
-  inline Attribute getAttributeNode(const String& name) {
+  inline Attribute getAttributeNode(const String& name)
+  {
     return getAttributeNode(name.native());
   }
 
@@ -117,21 +124,18 @@ public:
   /**
     Retrieves an Attribute node by local name and namespace URI.
   */
-  inline Attribute getAttributeNodeNS(
-    const String& namespaceURI,
-    const String& localName) {
+  inline Attribute getAttributeNodeNS(const String& namespaceURI, const String& localName)
+  {
     return getAttributeNodeNS(namespaceURI.native(), localName.native());
   }
 
-  Attribute getAttributeNodeNS(
-    const char* namespaceURI,
-    const char* localName);
+  Attribute getAttributeNodeNS(const char* namespaceURI, const char* localName);
   
   /**
     Retrieves an attribute value by local name and namespace URI.
   */
-  inline String getAttributeNS(
-    const String& namespaceURI, const String& localName) {
+  inline String getAttributeNS(const String& namespaceURI, const String& localName)
+  {
     return getAttributeNS(namespaceURI.native(), localName.native());
   }
 
@@ -144,7 +148,8 @@ public:
   inline void setAttributeNS(
     const String& namespaceURI,
     const String& qualifiedName,
-    const String& value) {
+    const String& value)
+  {
     setAttributeNS(namespaceURI.native(), qualifiedName.native(), value.native());
   }
 
@@ -156,15 +161,12 @@ public:
   /**
     Removes an attribute by local name and namespace URI.
   */
-  inline void removeAttributeNS(
-    const String& namespaceURI,
-    const String& localName) {
+  inline void removeAttributeNS(const String& namespaceURI, const String& localName)
+  {
     removeAttributeNS(namespaceURI.native(), localName.native());
   }
 
-  void removeAttributeNS(
-    const char* namespaceURI,
-    const char* localName);
+  void removeAttributeNS(const char* namespaceURI, const char* localName);
   
   /**
     Adds a new attribute.
@@ -182,19 +184,20 @@ public:
     Returns true when an attribute with a given name is specified on this
     element or has a default value, false otherwise.
   */
-  inline bool hasAttribute(const String& name) const noexcept {
+  inline bool hasAttribute(const String& name) const noexcept
+  {
     return hasAttribute(name.native());
   }
 
-  bool hasAttributeNS(
-    const char* namespaceURI, const char* localName) const noexcept;
+  bool hasAttributeNS(const char* namespaceURI, const char* localName) const noexcept;
 
   /**
     Returns true when an attribute with a given local name and namespace URI is
     specified on this element or has a default value, false otherwise.
   */
   inline bool hasAttributeNS(
-    const String& namespaceURI, const String& localName) const noexcept {
+    const String& namespaceURI, const String& localName) const noexcept
+  {
     return hasAttributeNS(namespaceURI.native(), localName.native());
   }
 };

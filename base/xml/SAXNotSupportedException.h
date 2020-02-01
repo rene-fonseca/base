@@ -52,7 +52,8 @@ public:
     @param type The identity of the type.
   */
   inline SAXNotSupportedException(const Type& type) noexcept
-    : SAXException(type) {
+    : SAXException(type)
+  {
   }
   
   /**
@@ -62,7 +63,8 @@ public:
     @param type The identity of the type.
   */
   inline SAXNotSupportedException(const char* message, const Type& type) noexcept
-    : SAXException(message, type) {
+    : SAXException(message, type)
+  {
   }
   
   _COM_AZURE_DEV__BASE__EXCEPTION_THIS_TYPE()

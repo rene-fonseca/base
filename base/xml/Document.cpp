@@ -360,8 +360,7 @@ Comment Document::createComment(const String& data)
 #endif
 }
 
-CDATASection Document::createCDATASection(
-  const String& data)
+CDATASection Document::createCDATASection(const String& data)
 {
 #if defined(_COM_AZURE_DEV__BASE__USE_XMLSOFT_XML)
   xmlDoc* doc = (xmlDoc*)getContext();
@@ -427,7 +426,8 @@ Element Document::getElementById(const String& elementId)
 #endif
 }
 
-Node Document::importNode(Node importedNode, bool deep) {
+Node Document::importNode(Node importedNode, bool deep)
+{
 #if defined(_COM_AZURE_DEV__BASE__USE_XMLSOFT_XML)
   xmlDoc* doc = (xmlDoc*)getContext();
   bassert(doc, DOMException(this));
@@ -464,7 +464,8 @@ Node Document::importNode(Node importedNode, bool deep) {
 #endif
 }
 
-void Document::doXIncludeSubstitution() {
+void Document::doXIncludeSubstitution()
+{
 #if defined(_COM_AZURE_DEV__BASE__USE_XMLSOFT_XML)
   int code = xmlXIncludeProcess(
     Cast::pointer<xmlDoc*>(getContext())
@@ -475,7 +476,8 @@ void Document::doXIncludeSubstitution() {
 #endif
 }
 
-void Document::save(const String& filename) {
+void Document::save(const String& filename)
+{
 #if defined(_COM_AZURE_DEV__BASE__USE_XMLSOFT_XML)
   int bytesWritten = xmlSaveFile(
     filename.getElements(),
@@ -502,7 +504,8 @@ bool Document::validate() const {
 #endif
 }
 
-bool Document::validate(Node node) const {
+bool Document::validate(Node node) const
+{
 #if defined(_COM_AZURE_DEV__BASE__USE_XMLSOFT_XML)
   xmlValidCtxt validateContext;
 	validateContext.userData = 0;
@@ -518,7 +521,8 @@ bool Document::validate(Node node) const {
 #endif
 }
 
-void Document::destroy() {
+void Document::destroy()
+{
 #if defined(_COM_AZURE_DEV__BASE__USE_XMLSOFT_XML)
   xmlDoc* document = (xmlDoc*)getContext();
   if (document) {

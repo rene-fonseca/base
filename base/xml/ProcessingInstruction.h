@@ -34,11 +34,15 @@ class _COM_AZURE_DEV__BASE__API ProcessingInstruction : public Node {
   friend class Document;
 protected:
 
-  inline ProcessingInstruction(void* context) noexcept : Node(context) {
+  inline ProcessingInstruction(void* context) noexcept
+    : Node(context)
+  {
   }
 public:
 
-  inline ProcessingInstruction(Node node) : Node(node) {
+  inline ProcessingInstruction(Node node)
+    : Node(node)
+  {
     bassert(
       node.isInvalid() || (node.getType() == PROCESSING_INSTRUCTION_NODE),
       CastException(this)

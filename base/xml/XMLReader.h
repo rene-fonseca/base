@@ -190,10 +190,12 @@ public:
     void* context = nullptr;
   public:
     
-    inline InputSource() noexcept {
+    inline InputSource() noexcept
+    {
     }
 
-    inline InputSource(void* context) noexcept {
+    inline InputSource(void* context) noexcept
+    {
     }
   };
   
@@ -228,14 +230,12 @@ public:
     /**
       Receives notification of a non-recoverable error.
     */
-    virtual void fatalError(
-      const SAXParseException& exception);
+    virtual void fatalError(const SAXParseException& exception);
 
     /**
       Receives notification of a warning.
     */
-    virtual void warning(
-      const SAXParseException& exception);
+    virtual void warning(const SAXParseException& exception);
   };
 
   class _COM_AZURE_DEV__BASE__API Locator {
@@ -343,14 +343,12 @@ public:
   /**
     Returns the value of the specified feature.
   */
-  virtual bool getFeature(const String& name) const
-    = 0;
+  virtual bool getFeature(const String& name) const = 0;
   
   /**
     Sets the value of the specified feature.
   */
-  virtual void setFeature(const String& name, bool value)
-    = 0;
+  virtual void setFeature(const String& name, bool value) = 0;
   
   /**
     Returns the current content handler.

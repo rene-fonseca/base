@@ -62,7 +62,9 @@ public:
     PLUS /**< One or more. */
   };
   
-  inline ElementDecl(Node node) : Declaration(node) {
+  inline ElementDecl(Node node)
+    : Declaration(node)
+  {
     bassert(
       node.isInvalid() || (node.getType() == ELEMENT_DECL_NODE),
       CastException(this)
@@ -70,7 +72,8 @@ public:
   }
   
   inline ElementDecl(Declaration node)
-    : Declaration(node) {
+    : Declaration(node)
+  {
     bassert(
       node.isInvalid() || (node.getType() == ELEMENT_DECL_NODE),
       CastException(this)

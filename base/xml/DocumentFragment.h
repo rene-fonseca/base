@@ -39,11 +39,15 @@ class _COM_AZURE_DEV__BASE__API DocumentFragment : public Node {
   friend class Document;
 protected:
 
-  inline DocumentFragment(void* context) noexcept : Node(context) {
+  inline DocumentFragment(void* context) noexcept
+    : Node(context)
+  {
   }
 public:
 
-  inline DocumentFragment(Node node) : Node(node) {
+  inline DocumentFragment(Node node)
+    : Node(node)
+  {
     bassert(
       node.isInvalid() || (node.getType() == DOCUMENT_FRAGMENT_NODE),
       CastException(this)

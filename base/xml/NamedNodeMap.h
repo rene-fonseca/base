@@ -50,7 +50,9 @@ private:
   /**
     Initializes the node map.
   */
-  inline NamedNodeMap(void* _context) noexcept : context(_context) {
+  inline NamedNodeMap(void* _context) noexcept
+    : context(_context)
+  {
   }
 public:
   
@@ -58,13 +60,15 @@ public:
     Initializes node map from node map.
   */
   inline NamedNodeMap(const NamedNodeMap& copy) noexcept
-    : context(copy.context) {
+    : context(copy.context)
+  {
   }
   
   /**
     Assignment of node map by node map.
   */
-  inline NamedNodeMap& operator=(const NamedNodeMap& assign) noexcept {
+  inline NamedNodeMap& operator=(const NamedNodeMap& assign) noexcept
+  {
     context = assign.context;
     return *this;
   }
@@ -85,13 +89,11 @@ public:
   */
   ShadowNode getItem(unsigned int index);
   
-  ShadowNode getNamedItemNS(
-    const String& namespaceURI, const String& localName) noexcept;
+  ShadowNode getNamedItemNS(const String& namespaceURI, const String& localName) noexcept;
   
   ShadowNode setNamedItemNS(ShadowNode node);
   
-  ShadowNode removeNamedItemNS(
-    const String& namespaceURI, const String& localName);
+  ShadowNode removeNamedItemNS(const String& namespaceURI, const String& localName);
 };
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

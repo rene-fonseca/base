@@ -32,11 +32,15 @@ protected:
   /**
     Initializes entity declaration.
   */
-  inline EntityDecl(void* context) noexcept : Declaration(context) {
+  inline EntityDecl(void* context) noexcept
+    : Declaration(context)
+  {
   }
 public:
   
-  inline EntityDecl(Node node) : Declaration(node) {
+  inline EntityDecl(Node node)
+    : Declaration(node)
+  {
     bassert(
       node.isInvalid() || (node.getType() == ENTITY_DECL_NODE),
       CastException(this)

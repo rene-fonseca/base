@@ -35,11 +35,15 @@ protected:
   /**
     Initializes attribute.
   */
-  inline Attribute(void* context) noexcept : Node(context) {
+  inline Attribute(void* context) noexcept
+    : Node(context)
+  {
   }
 public:
   
-  inline Attribute(Node node) : Node(node) {
+  inline Attribute(Node node)
+    : Node(node)
+  {
     bassert(
       node.isInvalid() || (node.getType() == ATTRIBUTE_NODE),
       CastException(this)

@@ -44,12 +44,15 @@ class _COM_AZURE_DEV__BASE__API Text : public CharacterData {
   friend class Document;
 protected:
 
-  inline Text(void* context) noexcept : CharacterData(context) {
+  inline Text(void* context) noexcept
+    : CharacterData(context)
+  {
   }
 public:
   
   inline Text(Node node)
-    : CharacterData(node) {
+    : CharacterData(node)
+  {
     NodeType type = node.getType();
     bassert(
       node.isInvalid() || (type == TEXT_NODE) || (type == CDATA_SECTION_NODE),
@@ -58,7 +61,8 @@ public:
   }
   
   inline Text(CharacterData node)
-    : CharacterData(node) {
+    : CharacterData(node)
+  {
     NodeType type = node.getType();
     bassert(
       (type == TEXT_NODE) || (type == CDATA_SECTION_NODE),

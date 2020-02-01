@@ -14,6 +14,7 @@
 #include <base/platforms/features.h>
 #include <base/xml/DOMImplementation.h>
 #include <base/xml/XMLReader.h>
+#include <base/UnitTest.h>
 #include <base/build.h>
 
 #if defined(_COM_AZURE_DEV__BASE__USE_XMLSOFT_XML)
@@ -27,7 +28,8 @@ _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 class DOMImplementationImpl {
 public:
   
-  static void error(void* context, const char* message, ...) noexcept {    
+  static void error(void* context, const char* message, ...) noexcept
+  {
     va_list arg;
     char buffer[4096]; // TAG: possible buffer overrun
     va_start(arg, message);
@@ -78,8 +80,8 @@ bool DOMImplementation::hasFeature(
   return false;
 }
 
-Document DOMImplementation::createDocument(
-  const String& version) {
+Document DOMImplementation::createDocument(const String& version)
+{
 #if defined(_COM_AZURE_DEV__BASE__USE_XMLSOFT_XML)
   xmlDoc* doc = xmlNewDoc(
     Cast::pointer<const xmlChar*>(version.getElements())
@@ -93,7 +95,8 @@ Document DOMImplementation::createDocument(
 
 Document DOMImplementation::createDocument(
   DocumentType doctype,
-  const String& version) {
+  const String& version)
+{
 #if defined(_COM_AZURE_DEV__BASE__USE_XMLSOFT_XML)
   bassert(
     Document(doctype.getOwnerDocument()).isInvalid(),
@@ -125,7 +128,8 @@ Document DOMImplementation::createDocument(
   const String& namespaceURI,
   const String& qualifiedName,
   DocumentType doctype,
-  const String& version) {
+  const String& version)
+{
 #if defined(_COM_AZURE_DEV__BASE__USE_XMLSOFT_XML)
   bassert(
     Document(doctype.getOwnerDocument()).isInvalid(),
@@ -162,7 +166,8 @@ Document DOMImplementation::createDocument(
 }
   
 Document DOMImplementation::createFromURI(
-  const String& systemId, Mode mode, unsigned int flags) {
+  const String& systemId, Mode mode, unsigned int flags)
+{
 #if defined(_COM_AZURE_DEV__BASE__USE_XMLSOFT_XML)
   
   xmlDoValidityCheckingDefaultValue =
@@ -197,7 +202,8 @@ Document DOMImplementation::createFromURI(
 }
 
 Document DOMImplementation::createDocumentFromString(
-  const String& value, Mode mode, unsigned int flags) {
+  const String& value, Mode mode, unsigned int flags)
+{
 #if defined(_COM_AZURE_DEV__BASE__USE_XMLSOFT_XML)
   xmlSubstituteEntitiesDefault(
     (flags & DOMImplementation::SUBSTITUTE_ENTITIES) ? 1 : 0
@@ -236,7 +242,8 @@ Document DOMImplementation::createDocumentFromString(
 DocumentType DOMImplementation::createDocumentType(
   const String& qualifiedName,
   const String& publicId,
-  const String& systemId) {
+  const String& systemId)
+{
 #if defined(_COM_AZURE_DEV__BASE__USE_XMLSOFT_XML)
   xmlDtd* node = xmlCreateIntSubset(
     0,
@@ -252,7 +259,8 @@ DocumentType DOMImplementation::createDocumentType(
 }
 
 void DOMImplementation::saveDocument(
-  Document document, const String& filename, bool indent) {
+  Document document, const String& filename, bool indent)
+{
 #if defined(_COM_AZURE_DEV__BASE__USE_XMLSOFT_XML)
   xmlDoc* doc = (xmlDoc*)document.getContext();
 	int bytesWritten =
@@ -267,7 +275,8 @@ void DOMImplementation::saveDocument(
   Document document,
   const String& filename,
   const String& encoding,
-  bool indent) {
+  bool indent)
+{
 #if defined(_COM_AZURE_DEV__BASE__USE_XMLSOFT_XML)
   xmlDoc* doc = (xmlDoc*)document.getContext();
 	int bytesWritten = xmlSaveFormatFileEnc(
@@ -283,7 +292,8 @@ void DOMImplementation::saveDocument(
 }
 
 String DOMImplementation::saveDocumentToMemory(
-  Document document, bool spaces) {
+  Document document, bool spaces)
+{
 #if defined(_COM_AZURE_DEV__BASE__USE_XMLSOFT_XML)
   // TAG: fixme - xmlIndentTreeOutput = 1 or xmlKeepBlanksDefault(0)
   xmlDoc* doc = (xmlDoc*)document.getContext();
@@ -300,7 +310,8 @@ String DOMImplementation::saveDocumentToMemory(
 }
 
 String DOMImplementation::saveDocumentToMemory(
-  Document document, const String& encoding, bool spaces) {
+  Document document, const String& encoding, bool spaces)
+{
 #if defined(_COM_AZURE_DEV__BASE__USE_XMLSOFT_XML)
   // TAG: fixme - xmlIndentTreeOutput = 1 or xmlKeepBlanksDefault(0)
   xmlDoc* doc = (xmlDoc*)document.getContext();
@@ -321,5 +332,58 @@ String DOMImplementation::saveDocumentToMemory(
   _throw DOMException(this);
 #endif
 }
+
+#if defined(_COM_AZURE_DEV__BASE__TESTS) && defined(_COM_AZURE_DEV__BASE__USE_XMLSOFT_XML)
+
+class TEST_CLASS(DOMImplementation) : public UnitTest {
+public:
+
+  TEST_PRIORITY(200);
+  TEST_PROJECT("base/xml");
+  TEST_TIMEOUT_MS(30 * 1000);
+
+  void run() override
+  {
+    DOMImplementation impl;
+    Document document = impl.createDocument();
+    TEST_ASSERT(document);
+
+    ProcessingInstruction pi = document.createProcessingInstruction("xml-stylesheet href=\"style.css\"", "type=\"text/css\"");
+    TEST_ASSERT(pi.getType() == Node::PROCESSING_INSTRUCTION_NODE);
+    document.appendChild(pi);
+    Element r = document.createElement("root");
+    TEST_ASSERT(!r.getParent());
+    document.appendChild(r);
+    Comment c = document.createComment("This is a comment.");
+    r.appendChild(c);
+    Element p = document.createElement("person");
+    Element n = document.createElement("name");
+    n.setAttribute("first", "John");
+    n.setAttribute("last", "Doe");
+    p.appendChild(n);
+    r.appendChild(p);
+    Text t = document.createText("This is some text.");
+    TEST_ASSERT(t.getType() == Node::TEXT_NODE);
+    p.appendChild(t);
+
+    CDATASection cdata = document.createCDATASection("Some text.");
+    TEST_ASSERT(cdata.getType() == Node::CDATA_SECTION_NODE);
+
+    TEST_ASSERT(r.getName() == "root");
+    TEST_ASSERT(n.hasAttribute("first"));
+    TEST_ASSERT(n.getParent().getName() == "person");
+    TEST_ASSERT(n.getType() == Node::ELEMENT_NODE);
+
+    // TEST_ASSERT(document.validate());
+
+    String xml = impl.saveDocumentToMemory(document, true);
+    TEST_ASSERT(xml);
+    // fout << xml << ENDL;
+  }
+};
+
+TEST_REGISTER(DOMImplementation);
+
+#endif
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

@@ -60,13 +60,15 @@ public:
       Initializes attribute from attribute.
     */
     inline Attribute(const Attribute& copy) noexcept
-      : name(copy.name), value(copy.value) {
+      : name(copy.name), value(copy.value)
+    {
     }
 
     /**
       Assignment of attribute by attribute.
     */
-    inline Attribute& operator=(const Attribute& assign) noexcept {
+    inline Attribute& operator=(const Attribute& assign) noexcept
+    {
       if (&assign != this) {
         name = assign.name;
         value = assign.value;
@@ -77,14 +79,16 @@ public:
     /**
       Returns the name of the attribute.
     */
-    inline const String& getName() const noexcept {
+    inline const String& getName() const noexcept
+    {
       return name;
     }
     
     /**
       Returns the value of the attribute.
     */
-    inline const String& getValue() const noexcept {
+    inline const String& getValue() const noexcept
+    {
       return value;
     }
   };
@@ -97,7 +101,8 @@ public:
   /**
     Initializes the attributes.
   */
-  inline Attributes() noexcept {
+  inline Attributes() noexcept
+  {
   }
   
   /**
@@ -105,20 +110,23 @@ public:
   */
   inline Attributes(
     const Array<Attribute>& _attributes) noexcept
-    : attributes(_attributes) {
+    : attributes(_attributes)
+  {
   }
   
   /**
     Initializes XML attributes from other XML attributes.
   */
   inline Attributes(const Attributes& copy) noexcept
-    : attributes(copy.attributes) {
+    : attributes(copy.attributes)
+  {
   }
   
   /**
     Assignemnt of attributes by attributes.
   */
-  inline Attributes& operator=(const Attributes& assign) noexcept {
+  inline Attributes& operator=(const Attributes& assign) noexcept
+  {
     if (&assign != this) {
       attributes = assign.attributes;
     }
@@ -209,7 +217,8 @@ public:
 //   /**
 //     Look up an attribute's value by XML 1.0 qualified name.
 //   */
-//   String getValue(const String& qName) noexcept {
+//   String getValue(const String& qName) noexcept
+//   {
 //     return byName[index].getValue();
 //     return String();
 //   }

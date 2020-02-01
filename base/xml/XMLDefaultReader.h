@@ -60,40 +60,42 @@ public:
   /**
     Returns the value of the specified feature.
   */
-  bool getFeature(const String& name) const
-   ;
+  bool getFeature(const String& name) const;
   
   /**
     Sets the value of the specified feature.
   */
-  void setFeature(const String& name, bool value)
-   ;
+  void setFeature(const String& name, bool value);
   
   /**
     Returns the current content handler.
   */
-  inline ContentHandler* getContentHandler() const noexcept {
+  inline ContentHandler* getContentHandler() const noexcept
+  {
     return contentHandler;
   }
   
   /**
     Returns the current DTD handler.
   */
-  inline DTDHandler* getDTDHandler() const noexcept {
+  inline DTDHandler* getDTDHandler() const noexcept
+  {
     return dtdHandler;
   }
   
   /**
     Returns the current entity resolver.
   */
-  inline EntityResolver* getEntityResolver() const noexcept {
+  inline EntityResolver* getEntityResolver() const noexcept
+  {
     return entityResolver;
   }
   
   /**
     Returns the current error handler.
   */
-  ErrorHandler* getErrorHandler() const noexcept {
+  ErrorHandler* getErrorHandler() const noexcept
+  {
     return errorHandler;
   }
   
@@ -103,8 +105,7 @@ public:
     @param file The file to be parsed.
     @param uri The uri used to resolve entities. Default is improper string.
   */
-  void parse(
-    File file, const String& uri = String());
+  void parse(File file, const String& uri = String());
   
   /**
     Parses the specified buffer.
@@ -128,49 +129,56 @@ public:
   /**
     Registers a content event handler.
   */
-  inline void setContentHandler(ContentHandler* handler) noexcept {
+  inline void setContentHandler(ContentHandler* handler) noexcept
+  {
     contentHandler = handler;
   }
   
   /**
     Registers a DTD event handler.
   */
-  inline void setDTDHandler(DTDHandler* handler) noexcept {
+  inline void setDTDHandler(DTDHandler* handler) noexcept
+  {
     dtdHandler = handler;
   }
   
   /**
     Registers an entity resolver.
   */
-  inline void setEntityResolver(EntityResolver* _entityResolver) noexcept {
+  inline void setEntityResolver(EntityResolver* _entityResolver) noexcept
+  {
     entityResolver = _entityResolver;
   }
   
   /**
     Registers an error event handler.
   */
-  inline void setErrorHandler(ErrorHandler* handler) noexcept {
+  inline void setErrorHandler(ErrorHandler* handler) noexcept
+  {
     errorHandler = handler;
   }
 
   /**
     Returns the validation flag.
   */
-  inline bool getValidation() const noexcept {
+  inline bool getValidation() const noexcept
+  {
     return validate;
   }
 
   /**
     Sets the validation flag.
   */
-  inline void setVatidation(bool validate) noexcept {
+  inline void setVatidation(bool validate) noexcept
+  {
     this->validate = validate;
   }
 
   /**
     Returns true if the document is a standalone document.
   */
-  inline bool isStandalone() const noexcept {
+  inline bool isStandalone() const noexcept
+  {
     return standalone;
   }
   

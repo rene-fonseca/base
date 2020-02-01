@@ -38,11 +38,15 @@ class _COM_AZURE_DEV__BASE__API Notation : public Node { // TAG: should be Decla
   friend class Document;
 protected:
   
-  inline Notation(void* context) noexcept : Node(context) {
+  inline Notation(void* context) noexcept
+    : Node(context)
+  {
   }
 public:
   
-  inline Notation(Node node) : Node(node) {
+  inline Notation(Node node)
+    : Node(node)
+  {
     bassert(
       node.isInvalid() || (node.getType() == NOTATION_NODE),
       CastException(this)

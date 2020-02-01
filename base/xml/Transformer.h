@@ -55,13 +55,15 @@ public:
     Initializes document from other document.
   */
   inline Transformer(const Transformer& copy) noexcept
-    : transformer(copy.transformer) {
+    : transformer(copy.transformer)
+  {
   }
   
   /**
     Assignment of transformer by transformer.
   */
-  inline Transformer& operator=(const Transformer& assign) noexcept {
+  inline Transformer& operator=(const Transformer& assign) noexcept
+  {
     transformer = assign.transformer;
     return *this;
   }
@@ -113,8 +115,7 @@ public:
   /**
     Returns true is the function is available.
   */
-  bool functionAvailable(
-    const String& ns, const String& name);
+  bool functionAvailable(const String& ns, const String& name);
   
   // URIResolver
   

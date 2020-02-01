@@ -86,13 +86,16 @@ public:
   /**
     Initializes DOM implementation.
   */
-  inline DOMImplementation() noexcept {
+  inline DOMImplementation() noexcept
+  {
   }
   
-  inline DOMImplementation(const DOMImplementation& copy) noexcept {
+  inline DOMImplementation(const DOMImplementation& copy) noexcept
+  {
   }
 
-  inline DOMImplementation& operator=(const DOMImplementation& assign) noexcept {
+  inline DOMImplementation& operator=(const DOMImplementation& assign) noexcept
+  {
     return *this;
   }
   
@@ -106,8 +109,7 @@ public:
     
     @param version The XML version. The default is "1.0".
   */
-  Document createDocument(
-    const String& version = "1.0");
+  Document createDocument(const String& version = "1.0");
   
   /**
     Creates a DOM Document object of the specified type.
@@ -203,8 +205,7 @@ public:
     @param spaces Specifies whether or not formatting spaces should be added.
     The default is false.
   */
-  String saveDocumentToMemory(
-    Document document, bool spaces = false);
+  String saveDocumentToMemory(Document document, bool spaces = false);
 
   /**
     Saves the document to a string.

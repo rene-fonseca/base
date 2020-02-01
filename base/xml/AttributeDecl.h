@@ -35,7 +35,9 @@ protected:
   /**
     Initializes attribute declaration.
   */
-  inline AttributeDecl(void* context) noexcept : Declaration(context) {
+  inline AttributeDecl(void* context) noexcept
+    : Declaration(context)
+  {
   }
 public:
   
@@ -60,7 +62,8 @@ public:
   };
   
   inline AttributeDecl(Node node)
-    : Declaration(node) {
+    : Declaration(node)
+  {
     bassert(
       node.isInvalid() || (node.getType() == ATTRIBUTE_DECL_NODE),
       CastException(this)
@@ -68,7 +71,8 @@ public:
   }
   
   inline AttributeDecl(Declaration node)
-    : Declaration(node) {
+    : Declaration(node)
+  {
     bassert(
       node.isInvalid() || (node.getType() == ATTRIBUTE_DECL_NODE),
       CastException(this)

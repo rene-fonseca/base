@@ -95,19 +95,24 @@ public:
     void* context = nullptr;
   public:
     
-    inline ShadowElement(void* _context) noexcept : context(_context) {
+    inline ShadowElement(void* _context) noexcept
+      : context(_context)
+    {
     }
     
     inline ShadowElement(const ShadowElement& copy) noexcept
-      : context(copy.context) {
+      : context(copy.context)
+    {
     }
     
-    inline ShadowElement& operator=(const ShadowElement& assign) noexcept {
+    inline ShadowElement& operator=(const ShadowElement& assign) noexcept
+    {
       context = assign.context;
       return *this;
     }
     
-    inline Node getNode() const noexcept {
+    inline Node getNode() const noexcept
+    {
       return context;
     }
   };
@@ -122,20 +127,24 @@ protected:
   /**
     Initializes node.
   */
-  inline Node(void* _context) noexcept : context(_context) {
+  inline Node(void* _context) noexcept
+    : context(_context)
+  {
   }
 
   /**
     Returns the context for modifying access.
   */
-  inline void* getContext() noexcept {
+  inline void* getContext() noexcept
+  {
     return context;
   }
   
   /**
     Returns the context for non-modifiable access.
   */
-  inline const void* getContext() const noexcept {
+  inline const void* getContext() const noexcept
+  {
     return context;
   }
 public:
@@ -143,19 +152,23 @@ public:
   /**
     Initializes XML node as invalid.
   */
-  inline Node() noexcept {
+  inline Node() noexcept
+  {
   }
   
   /**
     Initializes XML node from other XML node.
   */
-  inline Node(const Node& copy) noexcept : context(copy.context) {
+  inline Node(const Node& copy) noexcept
+    : context(copy.context)
+  {
   }
   
   /**
     Assignment of node by node.
   */
-  inline Node& operator=(const Node& assign) noexcept {
+  inline Node& operator=(const Node& assign) noexcept
+  {
     if (&assign != this) {
       context = assign.context;
       readonly = assign.readonly;
@@ -297,14 +310,16 @@ public:
   /**
     Returns true if the node has been initialized.
   */
-  inline bool isValid() const noexcept {
+  inline bool isValid() const noexcept
+  {
     return context;
   }
   
   /**
     Returns true if the node has been initialized.
   */
-  inline bool isInvalid() const noexcept {
+  inline bool isInvalid() const noexcept
+  {
     return !context;
   }
 
@@ -316,14 +331,16 @@ public:
   /**
     Returns true if the nodes refer to the the same node.
   */
-  inline bool isSame(const Node& node) const noexcept {
+  inline bool isSame(const Node& node) const noexcept
+  {
     return context == node.context;
   }
   
   /**
     Returns true if the nodes refer to the the same node.
   */
-  inline bool operator==(const Node& node) const noexcept {
+  inline bool operator==(const Node& node) const noexcept
+  {
     return context == node.context;
   }
   
@@ -340,7 +357,8 @@ public:
   /**
     Returns true if the node is valid.
   */
-  inline operator bool() const noexcept {
+  inline operator bool() const noexcept
+  {
     return context;
   }
 

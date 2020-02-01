@@ -34,11 +34,15 @@ class _COM_AZURE_DEV__BASE__API Entity : public Node {
   friend class Document;
 protected:
   
-  inline Entity(void* context) noexcept : Node(context) {
+  inline Entity(void* context) noexcept
+    : Node(context)
+  {
   }
 public:
   
-  inline Entity(Node node) : Node(node) {
+  inline Entity(Node node)
+    : Node(node)
+  {
     bassert(
       node.isInvalid() || (node.getType() == ENTITY_NODE),
       CastException(this)

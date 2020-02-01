@@ -51,7 +51,9 @@ protected:
   /**
     Internal constructor.
   */
-  inline Document(void* context) noexcept : Node(context) {
+  inline Document(void* context) noexcept
+    : Node(context)
+  {
   }
 public:  
   
@@ -63,7 +65,9 @@ public:
   /**
     Initializes the document as invalid.
   */
-  inline Document(ShadowDocument document) noexcept : Node(document.getNode()) {
+  inline Document(ShadowDocument document) noexcept
+    : Node(document.getNode())
+  {
   }
   
   /**

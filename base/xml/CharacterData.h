@@ -31,12 +31,15 @@ class _COM_AZURE_DEV__BASE__API CharacterData : public Node {
   friend class Document;
 protected:
 
-  inline CharacterData(void* context) noexcept : Node(context) {
+  inline CharacterData(void* context) noexcept
+    : Node(context)
+  {
   }
 public:
   
   inline CharacterData(Node node)
-    : Node(node) {
+    : Node(node)
+  {
     NodeType type = node.getType();
     bassert(
       node.isInvalid() || 
@@ -77,8 +80,7 @@ public:
   /**
     Inserts a string at the specified octet offset.
   */
-  void insertData(
-    unsigned int offset, const String& value);
+  void insertData(unsigned int offset, const String& value);
 
   /**
     Remove a range of octets from the node.

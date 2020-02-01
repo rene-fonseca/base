@@ -40,7 +40,8 @@ protected:
 public:
   
   inline Comment(Node node)
-    : CharacterData(node) {
+    : CharacterData(node)
+  {
     bassert(
       node.isInvalid() || (node.getType() == COMMENT_NODE),
       CastException(this)
@@ -48,7 +49,8 @@ public:
   }
   
   inline Comment(CharacterData node)
-    : CharacterData(node) {
+    : CharacterData(node)
+  {
     bassert(
       node.isInvalid() || (node.getType() == COMMENT_NODE),
       CastException(this)

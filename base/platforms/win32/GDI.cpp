@@ -78,27 +78,29 @@ namespace native {
       }
     };
 
-    bool import() noexcept {
+    DynamicLinker* load()
+    {
       // TAG: only load GDI version specific function if available
-      static DynamicLinker* dynamicLinker = 0;
-      if (!dynamicLinker) {
-        // never release
-        dynamicLinker = new DynamicLinker(MESSAGE(_COM_AZURE_DEV__BASE__GDI_LIBRARY));
-        if (!dynamicLinker) {
-          return false;
-        }
+      DynamicLinker* dynamicLinker = new DynamicLinker(MESSAGE(_COM_AZURE_DEV__BASE__GDI_LIBRARY));
+      if (dynamicLinker) {
         for (unsigned int i = 0; i < getArraySize(FUNCTIONS); ++i) {
           *FUNCTIONS[i].function =
             (Function)dynamicLinker->getUncertainSymbol(
               NativeString(FUNCTIONS[i].symbol)
             );
           if (!*FUNCTIONS[i].function) {
-            dynamicLinker = 0;
+            dynamicLinker = nullptr;
             return false;
           }
         }
       }
-      return true;
+      return dynamicLinker;
+    }
+
+    bool import() noexcept
+    {
+      static DynamicLinker* dynamicLinker = load();
+      return dynamicLinker;
     }
   }; // end of GDI namespace
   

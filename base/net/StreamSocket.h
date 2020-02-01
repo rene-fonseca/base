@@ -77,7 +77,7 @@ public:
     unsigned short localPort);
   
   /**
-    Accept connect from
+    Accept connect from server socket.
   */
   StreamSocket(ServerSocket& socket);
 

@@ -175,7 +175,7 @@ public:
   /**
     Returns the connected end point.
   */
-  inline void getEndPoint() const noexcept
+  inline InetEndPoint getEndPoint() const noexcept
   {
     return InetEndPoint(getAddress(), getPort());
   }
@@ -193,7 +193,7 @@ public:
   /**
     Returns the local end point.
   */
-  inline void getLocalEndPoint() const noexcept
+  inline InetEndPoint getLocalEndPoint() const noexcept
   {
     return InetEndPoint(getLocalAddress(), getLocalPort());
   }

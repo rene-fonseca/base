@@ -2411,12 +2411,10 @@ unsigned int Socket::sendTo(
 void Socket::asyncCancel()
 {
   SocketImpl& socket = getInternalHandle<SocketImpl>();
-#if 0
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
-  ::CancelIo(socket.getHandle());
+  ::CancelIo(reinterpret_cast<OperatingSystem::Handle>(socket.getHandle()));
 #else // unix
 #endif // flavor
-#endif
   _COM_AZURE_DEV__BASE__NOT_SUPPORTED();
 }
 

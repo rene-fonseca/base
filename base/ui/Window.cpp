@@ -163,7 +163,7 @@ Window::Window(
   
   drawableHandle = ::CreateWindowEx(
     extendedStyle, // extended style
-    _COM_AZURE_DEV__BASE__ID_PREFIX L"ui/WindowImpl", // class name
+    _COM_AZURE_DEV__BASE__ID_PREFIX L"/ui/WindowImpl", // class name
     L"", // window title
     style | // window style
     WS_CLIPCHILDREN | WS_CLIPSIBLINGS, // required for OpenGL // TAG: what should this be

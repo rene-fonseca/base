@@ -462,6 +462,28 @@ Profiler::Event* Profiler::Task::getEvent() noexcept
 }
 #endif
 
+void Profiler::Task::setTaskPath(const String& path) noexcept
+{
+  if (taskId == BAD) {
+    return;
+  }
+  if (!enabled) {
+    return;
+  }
+  if (path) {
+    auto tlc = Thread::getLocalContext();
+    Event& e = tlc->profiling.events.getElements()[taskId];
+    if (!e.data) {
+      Reference<ReferenceString> data = new ReferenceString(path);
+      e.data = data;
+      return;
+    }
+    if (Reference<ReferenceResource> r = e.data.cast<ReferenceResource>()) {
+      r->path = path;
+    }
+  }
+}
+
 void Profiler::Task::setTaskResourceHandle(const ResourceHandle& handle) noexcept
 {
   if (taskId == BAD) {
@@ -885,6 +907,7 @@ void Profiler::ProfilerImpl::close()
   auto THREAD = o.createString("thread");
   auto RESOURCE = o.createString("resource");
   auto DESCRIPTION = o.createString("description");
+  auto PATH = o.createString("path");
 
   auto PH_B = o.createString("B");
   auto PH_E = o.createString("E");
@@ -1043,6 +1066,9 @@ void Profiler::ProfilerImpl::close()
               if (r->description) {
                 args->setValue(DESCRIPTION, r->description);
               }
+              if (r->path) {
+                args->setValue(PATH, r->path);
+              }
 #if 0
               if (r->createdById) {
                 // TAG: lookup thread name
@@ -1067,6 +1093,12 @@ void Profiler::ProfilerImpl::close()
               if (r->bytes) {
                 args->setValue(BUFFER, r->bytes);
               }
+            }
+          } else if (e.cat == CAT_IO) {
+            if (auto r = e.data.cast<ReferenceString>()) {
+              auto args = o.createObject();
+              item->setValue(ARGS, args);
+              args->setValue(PATH, r->string);
             }
           } else if (e.cat == CAT_SECURITY) {
             if (auto r = e.data.cast<ReferenceValue>()) {

@@ -438,6 +438,7 @@ public:
 
     unsigned int resourceId = 0;
     String description;
+    String path;
 
     inline ReferenceResource() noexcept
     {
@@ -506,6 +507,9 @@ public:
     /** Pushes task. */
     static void pushTask(unsigned int taskId) noexcept;
   protected:
+
+    /** Sets the path for the resource handle for the object. */
+    void setTaskPath(const String& path) noexcept;
 
     /** Sets the resource handle for the object. */
     void setTaskResourceHandle(const ResourceHandle& handle) noexcept;
@@ -623,6 +627,13 @@ public:
         setTaskWaitHandle(*handle);
       }
     }
+
+    /** Wait task start. */
+    inline WaitTask(const char* name, const ResourceHandle& handle) noexcept
+      : Task(name, CAT_WAIT)
+    {
+      setTaskWaitHandle(handle);
+    }
   };
 
   /** Resource create/acquisition task. */
@@ -639,6 +650,12 @@ public:
     inline void setHandle(const ResourceHandle& handle)
     {
       setTaskResourceHandle(handle);
+    }
+    
+    inline void setHandle(const ResourceHandle& handle, const String& path)
+    {
+      setTaskResourceHandle(handle);
+      setTaskPath(path);
     }
   };
 
@@ -751,12 +768,18 @@ public:
   /** HTTPS/Websocket task. */
   class _COM_AZURE_DEV__BASE__API HTTPSTask : public IOTask {
   public:
-    
+
     /** HTTPS task start. */
     inline HTTPSTask(const char* name) noexcept
       : IOTask(name)
     {
-      // TAG: setTaskHTTPS(_url);
+    }
+    
+    /** HTTPS task start. */
+    inline HTTPSTask(const char* name, const String& meta) noexcept
+      : IOTask(name)
+    {
+      setTaskPath(meta);
     }
   };
   

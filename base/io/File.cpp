@@ -331,7 +331,7 @@ File::File(const String& path, Access access, unsigned int options)
   if (options & File::APPEND) {
     setPosition(0, File::END);
   }
-  profile.setHandle(*_handle);
+  profile.setHandle(*_handle, path);
 }
 
 OperatingSystem::Handle File::getHandle() const noexcept

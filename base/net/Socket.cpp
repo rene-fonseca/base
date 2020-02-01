@@ -689,6 +689,7 @@ namespace internal {
           }
           throw e; // will copy
         }
+        handle = INVALID_HANDLE;
       }
     }
       

@@ -580,14 +580,17 @@ void HTTPSRequest::getResponse(OutputStream* os)
     _throw HTTPException("Output stream not set.");
   }
 
+  Profiler::IOReadTask profile("HTTPSRequest::getResponse(OutputStream*)");
   PushToOutputStream push;
   push.os = os;
   getResponse(&push);
+  // profile.setBuffer(reinterpret_cast<const uint8*>(result.getElements()));
+  // profile.onBytesRead(result.getLength());
 }
 
 void HTTPSRequest::getResponse(PushInterface* pi)
 {
-  Profiler::HTTPSTask profile("HTTPSRequest::getResponse()");
+  Profiler::IOReadTask profile("HTTPSRequest::getResponse(PushInterface*)");
 
   if (!pi) {
     _throw HTTPException("Output stream not set.");
@@ -627,7 +630,6 @@ void HTTPSRequest::getResponse(PushInterface* pi)
       _throw IOException("Failed to read response.");
     }
     // dont really want multiple calls for profiling
-    Profiler::IOReadTask profile("HTTPSRequest::getResponse()", buffer);
     profile.onBytesRead(bytesRead);
     pi->push(static_cast<const uint8*>(buffer), bytesRead);
   }
@@ -654,7 +656,6 @@ void HTTPSRequest::getResponse(PushInterface* pi)
       break;
     }
     // dont really want multiple calls for profiling
-    Profiler::IOReadTask profile("HTTPSRequest::getResponse()", buffer);
     profile.onBytesRead(bytesRead);
     pi->push(static_cast<const uint8*>(buffer), bytesRead);
     if (done) {

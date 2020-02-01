@@ -168,7 +168,7 @@ bool MutualExclusion::tryExclusiveLock() const
   }
 #else
   // assume single threaded
-  if (!handle->count) {
+  if (handle->count) {
     return false;
   }
   handle->count = 1;

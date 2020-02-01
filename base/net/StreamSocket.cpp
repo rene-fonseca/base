@@ -12,24 +12,31 @@
  ***************************************************************************/
 
 #include <base/net/StreamSocket.h>
+#include <base/net/ServerSocket.h>
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
-StreamSocket::StreamSocket() {
+StreamSocket::StreamSocket()
+{
   create(STREAM);
 }
 
-StreamSocket::StreamSocket(
-  const InetAddress& address, unsigned short port)
+StreamSocket::StreamSocket(const InetAddress& address, unsigned short port)
 {
   create(STREAM);
   connect(address, port);
 }
 
+StreamSocket::StreamSocket(const InetEndPoint& endPoint)
+{
+  create(STREAM);
+  connect(endPoint);
+}
+
 StreamSocket::StreamSocket(
   const InetAddress& address,
   unsigned short port,
-  InetAddress& localAddress,
+  const InetAddress& localAddress,
   unsigned short localPort)
 {
   create(STREAM);
@@ -39,7 +46,7 @@ StreamSocket::StreamSocket(
 
 StreamSocket::StreamSocket(ServerSocket& socket)
 {
-  accept(*Cast::pointer<Socket*>(&socket));
+  accept(*socket.getSocket());
 }
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

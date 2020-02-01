@@ -50,8 +50,15 @@ public:
     @param address The IP address of the host to connect to.
     @param port The port to connect to on the host.
   */
-  StreamSocket(
-    const InetAddress& address, unsigned short port);
+  StreamSocket(const InetAddress& address, unsigned short port);
+
+  /**
+    Creates a stream socket and connects it to the specified port at the
+    specified IP address.
+
+    @param endPoint The end point to connect to.
+  */
+  StreamSocket(const InetEndPoint& endPoint);
 
   /**
     Creates a stream socket and connects it to the specified port at the
@@ -66,7 +73,7 @@ public:
   StreamSocket(
     const InetAddress& address,
     unsigned short port,
-    InetAddress& localAddress,
+    const InetAddress& localAddress,
     unsigned short localPort);
   
   /**
@@ -113,6 +120,16 @@ public:
   }
 
   /**
+    Connects this socket to the specified address and port.
+
+    @param endPoint The end-point to connect to.
+  */
+  inline void connect(const InetEndPoint& endPoint)
+  {
+    Socket::connect(endPoint);
+  }
+
+  /**
     Caches the locally assigned address and port of the socket. This member
     function can be used after a succesful connect to determine the locally
     assigned address and port if unspecified.
@@ -139,6 +156,14 @@ public:
   }
 
   /**
+    Returns the remote end-point to which the socket is connected.
+  */
+  inline InetEndPoint getEndPoint() const noexcept
+  {
+    return Socket::getEndPoint();
+  }
+
+  /**
     Returns the local IP address to which the socket is bound.
   */
   inline const InetAddress& getLocalAddress() const noexcept
@@ -152,6 +177,14 @@ public:
   inline unsigned short getLocalPort() const noexcept
   {
     return Socket::getLocalPort();
+  }
+
+  /**
+    Returns the local end-point to which the socket is connected.
+  */
+  inline InetEndPoint getLocalEndPoint() const noexcept
+  {
+    return Socket::getLocalEndPoint();
   }
 
   /**

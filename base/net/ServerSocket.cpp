@@ -26,4 +26,12 @@ ServerSocket::ServerSocket(
   getName();
 }
 
+ServerSocket::ServerSocket(const InetEndPoint& endPoint, unsigned int backlog)
+{
+  create(STREAM);
+  bind(endPoint);
+  listen(backlog);
+  getName();
+}
+
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

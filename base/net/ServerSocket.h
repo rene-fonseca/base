@@ -28,6 +28,14 @@ _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 */
 
 class _COM_AZURE_DEV__BASE__API ServerSocket : protected Socket {
+  friend class StreamSocket;
+private:
+
+  /** Returns Socket. */
+  inline Socket* getSocket() noexcept
+  {
+    return this;
+  }
 public:
 
   /**
@@ -46,10 +54,15 @@ public:
     @param port The port to connect to on the host. If zero the socket is bound to a unique port.
     @param backlog The maxium length of the queue.
   */
-  ServerSocket(
-    const InetAddress& address,
-    unsigned short port,
-    unsigned int backlog);
+  ServerSocket(const InetAddress& address, unsigned short port, unsigned int backlog);
+
+  /**
+    Creates a server stream socket and binds it to the specified port and IP address.
+
+    @param endPoint The local end-point to connect to.
+    @param backlog The maxium length of the queue.
+  */
+  ServerSocket(const InetEndPoint& endPoint, unsigned int backlog);
 
   /**
     Accepts the first connection from the queue of pending connections on this
@@ -109,6 +122,14 @@ public:
   inline unsigned short getLocalPort() const noexcept
   {
     return Socket::getLocalPort();
+  }
+
+  /**
+    Returns the local end-point to which the socket is bound.
+  */
+  inline InetEndPoint getLocalEndPoint() const noexcept
+  {
+    return Socket::getLocalEndPoint();
   }
 
   /**

@@ -62,6 +62,7 @@ private:
   bool runDevel = false;
   bool traceExceptions = false;
   bool profile = false;
+  Map<String, String> symbols;
 public:
 
   TestApplication()
@@ -114,16 +115,28 @@ public:
         traceExceptions = true;
       } else if (argument == "--profile") {
         profile = true;
+      } else if (argument == "--define") {
+        if (!enu.hasNext()) {
+          ferr << "Error: Expected variable." << ENDL;
+          return false;
+        }
+        String argument = *enu.next();
+        MemoryDiff index = argument.indexOf("=");
+        if (index >= 0) {
+          symbols.add(argument.substring(0, index), argument.substring(index + 1));
+        } else {
+          symbols.add(argument);
+        }
       } else if (argument == "--junit") {
         reportJUnit = true;
         if (!enu.hasNext()) {
-          ferr << "Expected JUnit path." << ENDL;
+          ferr << "Error: Expected JUnit path." << ENDL;
           return false;
         }
         junitPath = *enu.next();
       } else if (argument == "--uuid") {
         if (!enu.hasNext()) {
-          ferr << "Expected testsuite UUID." << ENDL;
+          ferr << "Error: Expected testsuite UUID." << ENDL;
           return false;
         }
         testsuiteUUID = *enu.next();
@@ -139,7 +152,7 @@ public:
         progressMode = true;
       } else {
         if (argument.startsWith("-")) {
-          ferr << "Unsupported argument." << ENDL;
+          ferr << "Error: Unsupported argument." << ENDL;
           return false;
         }
         pattern = argument;
@@ -319,6 +332,9 @@ public:
       manager.setShowStackTrace(showStackTrace);
       manager.setProgressMode(progressMode);
       manager.setTraceExceptions(traceExceptions);
+      for (auto symbol : symbols) {
+        manager.addSymbol(symbol.getKey(), symbol.getValue());
+      }
 
       if (reportJSON) {
         manager.setUseJSON(true);

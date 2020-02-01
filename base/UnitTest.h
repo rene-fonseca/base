@@ -413,6 +413,8 @@ private:
   Array<Reference<UnitTest> > tests;
   /** States. */
   Map<String, AnyValue> states;
+  /** Symbols. */
+  Map<String, String> symbols;
 
   static UnitTestManager unitTestManager;
 public:
@@ -424,6 +426,18 @@ public:
   /** Adds the given test. */
   void addTest(Reference<UnitTest> test);
   
+  /** Returns true if the symbol is defined. */
+  bool hasSymbol(const String& name) const
+  {
+    return symbols.hasKey(name);
+  }
+
+  /** Adds the given symbol. */
+  void addSymbol(const String& name, const String& value)
+  {
+    symbols.add(name, value);
+  }
+
   /** Only returns the filename after the last / or \. */
   static const char* trimPath(const char*) noexcept;
 
@@ -716,6 +730,10 @@ public:
 /** Declare here point that must NOT be reached during execution. */
 #define TEST_DECLARE_NOT_HERE(IDENTIFIER) \
   TEST_DECLARE_NOT_HERE_IMPL(_COM_AZURE_DEV__BASE__CONCATENATE(_TEST_HERE__, IDENTIFIER), #IDENTIFIER)
+
+/** Returns true if the the symbol is defined. */
+#define TEST_IS_DEFINED(SYMBOL) \
+  base::UnitTestManager::getManager().hasSymbol(SYMBOL))
 
 /** Make a unique identifier. Must be on a separate source line. */
 #define TEST_UNIQUE_ID(PREFIX) _COM_AZURE_DEV__BASE__MAKE_IDENTIFIER(PREFIX)

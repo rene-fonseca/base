@@ -2577,6 +2577,7 @@ public:
     s1.getName(); // cache
     InetAddress localAddress = s1.getLocalAddress();
     unsigned short localPort = s1.getLocalPort();
+    // TEST_IS_DEFINED(SYMBOL)
     // TAG: add getInetEndPoint()
     // fout << s1.getAddress() << ":" << s1.getPort() << ENDL;
     TEST_ASSERT(!s1.getAddress().isUnspecified());

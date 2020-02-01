@@ -200,7 +200,9 @@ HTTPSRequest::HTTPSRequest()
 bool HTTPSRequest::open(const String& _method, const String& _url, const String& _user, const String& _password)
 {
   // TAG: need new task for this
-  Profiler::HTTPSTask profile("HTTPSRequest::open()");
+  Profiler::ResourceCreateTask profile2("HTTPSRequest::open()");
+  String meta = StringOutputStream() << "{METHOD=" << _method << " URL=" << _url << "}" << FLUSH;
+  Profiler::HTTPSTask profile("HTTPSRequest::open()", meta);
   
   Reference<HTTPRequestHandle> _handle = handle.cast<HTTPRequestHandle>();
   if (_handle) {
@@ -351,6 +353,9 @@ void HTTPSRequest::send(const String& _body)
   if (!_handle) {
     _throw HTTPException("HTTP request is not open.");
   }
+
+  Profiler::IOWriteTask profile("HTTPSRequest::send", reinterpret_cast<const uint8*>(_body.native()));
+  profile.onBytesWritten(_body.getLength());
 
   _handle->sent = true;
 
@@ -794,13 +799,12 @@ String HTTPSRequest::getResponseHeader()
 
 void HTTPSRequest::close()
 {
-  // TAG: add end event
-  Profiler::HTTPSTask profile("HTTPSRequest::close()");
-
   if (!handle) {
     return; // ignore
   }
-  
+
+  Profiler::HTTPSTask profile("HTTPSRequest::close()");
+
   Reference<HTTPRequestHandle> _handle = handle.cast<HTTPRequestHandle>();
   if (!_handle) {
     _throw HTTPException("HTTP request is not open.");

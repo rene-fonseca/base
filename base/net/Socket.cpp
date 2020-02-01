@@ -2520,6 +2520,21 @@ Socket::~Socket()
 {
 }
 
+FormatOutputStream& operator<<(FormatOutputStream& stream, const Socket& socket)
+{
+  if (socket) {
+    return stream << "Socket: {" << EOL
+      << static_cast<const Resource&>(socket) << EOL
+      << "Remote end-point: " << socket.getEndPoint() << EOL
+      << "Local end-point: " << socket.getLocalEndPoint() << EOL
+      << "Receive buffer: " << socket.getReceiveBufferSize() << EOL
+      << "Send buffer: " << socket.getSendBufferSize() << EOL
+      << "}";
+  } else {
+    return stream << "Socket: {" << "<NULL>" << "}";
+  }
+}
+
 #if defined(_COM_AZURE_DEV__BASE__TESTS)
 
 class TEST_CLASS(Socket) : public UnitTest {

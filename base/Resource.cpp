@@ -45,12 +45,12 @@ FormatOutputStream& operator<<(FormatOutputStream& stream, const Resource& resou
   if (resource) {
     auto description = resource.getDescription();
     stream << "Resource: {" << EOL
-      << indent(2) << "ID: " << resource.getResourceId() << EOL
-      << indent(2) << "Description: " << (description ? description : "<NONE>") << EOL
-      << indent(2) << "Created by: " << resource.getCreatedById() << EOL
-      << '}';
+      << "ID: " << resource.getResourceId() << EOL
+      << "Description: " << (description ? description : "<NONE>") << EOL
+      << "Created by: " << resource.getCreatedById() << EOL
+      << "}";
   } else {
-    stream << "Resource: {" << "<NULL>" << '}';
+    stream << "Resource: {" << "<NULL>" << "}";
   }
   return stream;
 }

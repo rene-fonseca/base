@@ -524,4 +524,9 @@ public:
   ~Socket();
 };
 
+/**
+  Writes a string representation of the socket.
+*/
+_COM_AZURE_DEV__BASE__API FormatOutputStream& operator<<(FormatOutputStream& stream, const Socket& socket);
+
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

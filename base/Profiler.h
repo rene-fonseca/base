@@ -23,6 +23,11 @@
 #include <base/collection/Map.h>
 #include <base/Performance.h>
 
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
+#  undef EVENT_OBJECT_CREATE
+#  undef EVENT_OBJECT_DESTROY
+#endif
+
 // TAG: add heap ids
 // TAG: support external stack trace
 // TAG: sample memory/objects
@@ -275,8 +280,7 @@ public:
     CAT_SIGNAL = 11,
     CAT_RENDERER = 12,
     CAT_COMPUTE = 13,
-    CAT_UI = 14,
-    CAT_RENDERING = 15
+    CAT_UI = 14
   };
   // use macro to encode/decode in char*
 #endif
@@ -297,7 +301,6 @@ public:
   static constexpr const char* CAT_COMPUTE = "COMPUTE";
   static constexpr const char* CAT_SECURITY = "SECURITY";
   static constexpr const char* CAT_UI = "UI";
-  static constexpr const char* CAT_RENDERING = "RENDERING";
 
   enum {
     EVENT_BEGIN = 'B',
@@ -799,7 +802,7 @@ public:
   public:
     
     /** Rendering task start. */
-    inline RenderingTask(const char* name, const char* cat = CAT_RENDERING) noexcept
+    inline RenderingTask(const char* name, const char* cat = CAT_RENDERER) noexcept
       : Task(name, cat)
     {
     }

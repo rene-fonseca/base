@@ -20,6 +20,11 @@
 #include <base/collection/InvalidKey.h>
 #include <base/security/Trustee.h>
 
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
+#  undef READ_ATTRIBUTES
+#  undef SYNCHRONIZE
+#endif
+
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 /**

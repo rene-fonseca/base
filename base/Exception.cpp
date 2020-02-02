@@ -186,6 +186,9 @@ Exception::StackTrace Exception::getStackTrace()
 // throw_handler* std::get_throw_handler() noexcept;
 void Exception::onThrow(const Exception& exception) noexcept
 {
+#if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__WASI)
+  fout << "Throwing: " << exception << ENDL; // print until supported
+#endif
   if (exceptionHandler) { // not installed for release builds - but can be installed at runtime
     exceptionHandler(&exception);
   }

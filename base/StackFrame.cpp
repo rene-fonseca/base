@@ -747,7 +747,7 @@ void StackFrame::toStream(FormatOutputStream& stream, const ConstSpan<const void
 
 void StackFrame::dump(unsigned int skip, unsigned int levels)
 {
-  if (SUPPORTS_STACK_TRACE) {
+  if (!SUPPORTS_STACK_TRACE) {
     return;
   }
   

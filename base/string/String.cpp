@@ -820,8 +820,7 @@ MemorySize String::count(const String& string, MemorySize start) const noexcept
 
 char* String::getElements()
 {
-  auto result = getBuffer(); // copy on write
-  BASSERT(result[getLength()] == Traits::TERMINATOR);
+  char* result = getBuffer(); // copy on write
   return result;
 }
 

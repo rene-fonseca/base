@@ -1309,7 +1309,6 @@ public:
   inline const char* getElements() const noexcept
   {
     const char* result = elements->getElements();
-    BASSERT(result[getLength()] == Traits::TERMINATOR); // remove
     return result;
   }
 
@@ -1320,7 +1319,6 @@ public:
   {
     const MemorySize length = getLength();
     const char* result = elements->getElements();
-    BASSERT(result[length] == Traits::TERMINATOR);
     return result + length;
   }
 
@@ -1340,7 +1338,6 @@ public:
   inline const char* native() const noexcept
   {
     const char* result = elements->getElements();
-    BASSERT(result[getLength()] == Traits::TERMINATOR); // TAG: remove
     return result;
   }
 };

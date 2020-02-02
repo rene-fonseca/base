@@ -1276,8 +1276,7 @@ MemorySize WideString::count(const WideString& string, MemorySize start) const n
 
 ucs4* WideString::getElements()
 {
-  auto result = getBuffer(); // copy on write
-  BASSERT(result[getLength()] == Traits::TERMINATOR);
+  Char* result = getBuffer(); // copy on write
   return result;
 }
 

@@ -203,6 +203,7 @@ public:
 */
 
 class _COM_AZURE_DEV__BASE__API WideString : public virtual Object {
+  friend void swapper<WideString>(WideString& a, WideString& b);
 public:
 
   /** Character specific properties and manipulators. */
@@ -1367,7 +1368,6 @@ public:
   inline const Char* getElements() const noexcept
   {
     const Char* result = elements->getElements();
-    BASSERT(result[getLength()] == Traits::TERMINATOR); // remove
     return result;
   }
 
@@ -1378,7 +1378,6 @@ public:
   {
     const MemorySize length = getLength();
     const Char* result = elements->getElements();
-    BASSERT(result[length] == Traits::TERMINATOR);
     return result + length;
   }
 
@@ -1390,7 +1389,6 @@ public:
   inline const Char* native() const noexcept
   {
     const Char* result = elements->getElements();
-    BASSERT(result[getLength()] == Traits::TERMINATOR); // TAG: remove
     return result;
   }
 };
@@ -1453,6 +1451,22 @@ inline WideString operator+(const char* left, const WideString& right)
 }
 
 /**
+  Returns a new string that is the concatenation of the two specified strings.
+*/
+inline WideString operator+(const WideString& left, const wchar* right)
+{
+  return left + WideString(right);
+}
+
+/**
+  Returns a new string that is the concatenation of the two specified strings.
+*/
+inline WideString operator+(const wchar* left, const WideString& right)
+{
+  return WideString(left) + right;
+}
+
+/**
   String reduction. Removes suffix from string if and only if it ends with the
   suffix (e.g. ("presuf"-"suf") results in a new string "pre" whereas
   ("pre"-"suf") results in "pre").
@@ -1467,16 +1481,34 @@ inline WideString operator-(const WideString& left, const WideString& right)
 }
 
 /**
+  String reduction. Removes suffix from string if and only if it ends with the
+  suffix (e.g. ("presuf"-"suf") results in a new string "pre" whereas
+  ("pre"-"suf") results in "pre").
+*/
+inline WideString operator-(const WideString& left, const char* right)
+{
+  return left - WideString(right);
+}
+
+/**
+  String reduction. Removes suffix from string if and only if it ends with the
+  suffix (e.g. ("presuf"-"suf") results in a new string "pre" whereas
+  ("pre"-"suf") results in "pre").
+*/
+inline WideString operator-(const WideString& left, const wchar* right)
+{
+  return left - WideString(right);
+}
+
+/**
   Returns a string that is the concatenation of the given string the given number of times.
 */
 _COM_AZURE_DEV__BASE__API WideString operator*(const WideString& src, MemorySize count);
 
-#if 0
 template<>
 inline void swapper<WideString>(WideString& a, WideString& b)
 {
   swapper(a.elements, b.elements); // self swap allowed
 }
-#endif
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

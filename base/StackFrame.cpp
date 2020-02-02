@@ -747,10 +747,10 @@ void StackFrame::toStream(FormatOutputStream& stream, const ConstSpan<const void
 
 void StackFrame::dump(unsigned int skip, unsigned int levels)
 {
-#if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__WASI)
-  return;
-#endif
-
+  if (SUPPORTS_STACK_TRACE) {
+    return;
+  }
+  
   if (levels == 0) {
     return;
   }

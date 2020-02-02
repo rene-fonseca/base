@@ -186,8 +186,9 @@ Exception::StackTrace Exception::getStackTrace()
 // throw_handler* std::get_throw_handler() noexcept;
 void Exception::onThrow(const Exception& exception) noexcept
 {
-  if (!SUPPORTS_EXCEPTIONS) {
+  if (!SUPPORTS_EXCEPTIONS) { // we could allow this to be an option
     fout << "Throwing: " << exception << ENDL; // print until supported
+    // StackFrame::dump();
   }
   if (exceptionHandler) { // not installed for release builds - but can be installed at runtime
     exceptionHandler(&exception);

@@ -1443,6 +1443,43 @@ Array<WideString> WideString::split(Char separator, bool group) const
   return result;
 }
 
+WideString operator+(const WideString& left, const char* right)
+{
+  MemorySize r = getNullTerminatedLength(right);
+  WideString result(left.getLength() + r);
+  return result.append(left).append(right);
+}
+
+WideString operator+(const char* left, const WideString& right)
+{
+  MemorySize l = getNullTerminatedLength(left);
+  WideString result(l + right.getLength());
+  return result.append(left).append(right);
+}
+
+WideString operator+(const WideString& left, const wchar* right)
+{
+  MemorySize r = getNullTerminatedLength(right);
+  WideString result(left.getLength() + r);
+  return result.append(left).append(right);
+}
+
+WideString operator+(const wchar* left, const WideString& right)
+{
+  MemorySize l = getNullTerminatedLength(left);
+  WideString result(l + right.getLength());
+  return result.append(left).append(right);
+}
+
+WideString operator-(const WideString& left, const WideString& right)
+{
+  if (left.endsWith(right)) {
+    return left.substring(0, left.getLength() - right.getLength()); // return copy of left without suffix
+  } else {
+    return WideString(left); // return copy of left
+  }
+}
+
 WideString operator*(const WideString& src, MemorySize count)
 {
   WideString result;

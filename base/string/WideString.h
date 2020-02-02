@@ -801,9 +801,19 @@ public:
 
     @param string The native string to be appended.
   */
+  inline WideString& append(const char* string)
+  {
+    return insert(getLength(), string);
+  }
+  
+  /**
+    Appends the native string to this string.
+
+    @param string The native string to be appended.
+  */
   inline WideString& append(const wchar* string)
   {
-    return append(NativeWideString(string));
+    return insert(getLength(), string);
   }
 
   /**
@@ -892,6 +902,30 @@ public:
     @param string The NULL-terminated string to be inserted.
   */
   WideString& insert(MemorySize index, const NativeWideString& string);
+
+  /**
+    Inserts NULL-terminated string into this string.
+
+    @param index Specifies the position to insert the string. If the index
+    exceeds the end of this string the string is inserted at the end.
+    @param string The NULL-terminated string to be inserted.
+  */
+  inline WideString& insert(MemorySize index, const wchar* string)
+  {
+    return insert(index, NativeWideString(string));
+  }
+
+  /**
+    Inserts NULL-terminated string into this string.
+
+    @param index Specifies the position to insert the string. If the index
+    exceeds the end of this string the string is inserted at the end.
+    @param string The NULL-terminated string to be inserted.
+  */
+  WideString& insert(MemorySize index, const char* string)
+  {
+    return insert(index, WideString(string)); // TAG: avoid temp copy
+  }
 
   /**
     Replaces the characters in a substring of this string with the characters
@@ -1451,48 +1485,29 @@ inline WideString operator+(const String& left, const WideString& right)
 /**
   Returns a new string that is the concatenation of the two specified strings.
 */
-inline WideString operator+(const WideString& left, const char* right)
-{
-  return left + WideString(right);
-}
+_COM_AZURE_DEV__BASE__API WideString operator+(const WideString& left, const char* right);
 
 /**
   Returns a new string that is the concatenation of the two specified strings.
 */
-inline WideString operator+(const char* left, const WideString& right)
-{
-  return WideString(left) + right;
-}
+_COM_AZURE_DEV__BASE__API WideString operator+(const char* left, const WideString& right);
 
 /**
   Returns a new string that is the concatenation of the two specified strings.
 */
-inline WideString operator+(const WideString& left, const wchar* right)
-{
-  return left + WideString(right);
-}
+_COM_AZURE_DEV__BASE__API WideString operator+(const WideString& left, const wchar* right);
 
 /**
   Returns a new string that is the concatenation of the two specified strings.
 */
-inline WideString operator+(const wchar* left, const WideString& right)
-{
-  return WideString(left) + right;
-}
+_COM_AZURE_DEV__BASE__API WideString operator+(const wchar* left, const WideString& right);
 
 /**
   String reduction. Removes suffix from string if and only if it ends with the
   suffix (e.g. ("presuf"-"suf") results in a new string "pre" whereas
   ("pre"-"suf") results in "pre").
 */
-inline WideString operator-(const WideString& left, const WideString& right)
-{
-  if (left.endsWith(right)) {
-    return left.substring(0, left.getLength() - right.getLength()); // return copy of left without suffix
-  } else {
-    return WideString(left); // return copy of left
-  }
-}
+_COM_AZURE_DEV__BASE__API WideString operator-(const WideString& left, const WideString& right);
 
 /**
   String reduction. Removes suffix from string if and only if it ends with the

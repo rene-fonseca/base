@@ -166,14 +166,21 @@ private:
   const char* value = nullptr;
 public:
 
-  inline NativeString(const char* _value) noexcept : value(_value) {
+  /** Initializes the string. */
+  inline NativeString(const char* _value) noexcept
+    : value(_value)
+  {
   }
   
-  inline const char* getValue() const noexcept {
+  /** Returns the string. */
+  inline const char* getValue() const noexcept
+  {
     return value;
   }
 
-  inline operator const char*() const noexcept {
+  /** Returns the string. */
+  inline operator const char*() const noexcept
+  {
     return value;
   }
 
@@ -190,14 +197,21 @@ private:
   const wchar* value = nullptr;
 public:
 
-  inline NativeWideString(const wchar* _value) noexcept : value(_value) {
+  /** Initializes the string. */
+  inline NativeWideString(const wchar* _value) noexcept
+    : value(_value)
+  {
   }
   
-  inline const wchar* getValue() const noexcept {
+  /** Returns the string. */
+  inline const wchar* getValue() const noexcept
+  {
     return value;
   }
 
-  inline operator const wchar*() const noexcept {
+  /** Returns the string. */
+  inline operator const wchar*() const noexcept
+  {
     return value;
   }
 
@@ -211,7 +225,8 @@ public:
   Returns the number of elements in the specified built-in array.
 */
 template<class TYPE, MemorySize SIZE>
-inline constexpr MemorySize getArraySize(const TYPE (&)[SIZE]) noexcept {
+inline constexpr MemorySize getArraySize(const TYPE (&)[SIZE]) noexcept
+{
   return SIZE;
 }
 
@@ -219,14 +234,16 @@ inline constexpr MemorySize getArraySize(const TYPE (&)[SIZE]) noexcept {
   Returns the address of the specified variable.
 */
 template<class TYPE>
-inline MemorySize getAddressOf(const TYPE& value) noexcept {
+inline MemorySize getAddressOf(const TYPE& value) noexcept
+{
   return reinterpret_cast<const char*>(&value) - static_cast<const char*>(nullptr);
 }
 
 /**
   Returns the address of the specified pointer.
 */
-inline MemorySize getAddressOf(const void* value) noexcept {
+inline MemorySize getAddressOf(const void* value) noexcept
+{
   return reinterpret_cast<const char*>(value) - static_cast<const char*>(nullptr);
 }
 
@@ -234,7 +251,8 @@ inline MemorySize getAddressOf(const void* value) noexcept {
   Returns a null pointer of the specified type.
 */
 template<class TYPE>
-inline const TYPE* getNullPointerOf() noexcept {
+inline const TYPE* getNullPointerOf() noexcept
+{
   return static_cast<const TYPE*>(nullptr);
 }
 
@@ -242,7 +260,8 @@ inline const TYPE* getNullPointerOf() noexcept {
   Returns the offset the specified field within the specified structure.
 */
 template<class STRUCT, class FIELD>
-inline unsigned int getFieldOffset(const FIELD STRUCT::* field) noexcept {
+inline unsigned int getFieldOffset(const FIELD STRUCT::* field) noexcept
+{
   return reinterpret_cast<const char*>(&(static_cast<const STRUCT*>(nullptr)->*field))
     - static_cast<const char*>(nullptr);
 }
@@ -260,7 +279,8 @@ inline unsigned int getFieldOffset(const FIELD STRUCT::* field) noexcept {
     };
   };
   
-  void MyClass::myMethod() noexcept {
+  void MyClass::myMethod() noexcept
+  {
     MemorySize offset = OFFSETOF(myNamespace::MyStructure, field.subfield);
     ...
   }
@@ -276,7 +296,8 @@ inline unsigned int getFieldOffset(const FIELD STRUCT::* field) noexcept {
   @param lowWord The low bits.
   @param highWord The high bits.
 */
-inline uint16 merge(uint8 lowWord, uint8 highWord) noexcept {
+inline uint16 merge(uint8 lowWord, uint8 highWord) noexcept
+{
   return (static_cast<uint16>(highWord) << (sizeof(lowWord) * 8)) | lowWord;
 }
 
@@ -286,7 +307,8 @@ inline uint16 merge(uint8 lowWord, uint8 highWord) noexcept {
   @param lowWord The low bits.
   @param highWord The high bits.
 */
-inline uint32 merge(uint16 lowWord, uint16 highWord) noexcept {
+inline uint32 merge(uint16 lowWord, uint16 highWord) noexcept
+{
   return (static_cast<uint32>(highWord) << (sizeof(lowWord) * 8)) | lowWord;
 }
 
@@ -296,7 +318,8 @@ inline uint32 merge(uint16 lowWord, uint16 highWord) noexcept {
   @param lowWord The low bits.
   @param highWord The high bits.
 */
-inline uint64 merge(uint32 lowWord, uint32 highWord) noexcept {
+inline uint64 merge(uint32 lowWord, uint32 highWord) noexcept
+{
   return (static_cast<uint64>(highWord) << (sizeof(lowWord) * 8)) | lowWord;
 }
 
@@ -305,42 +328,48 @@ inline uint64 merge(uint32 lowWord, uint32 highWord) noexcept {
 /**
   Returns the higher half-word of the specified value.
 */
-inline uint8 getHighWordOf16(uint16 value) noexcept {
+inline uint8 getHighWordOf16(uint16 value) noexcept
+{
   return value >> (sizeof(value) * 8/2);
 }
 
 /**
   Returns the lower half-word of the specified value.
 */
-inline uint8 getLowWordOf16(uint16 value) noexcept {
+inline uint8 getLowWordOf16(uint16 value) noexcept
+{
   return static_cast<uint8>(value & 0xff);
 }
 
 /**
   Returns the higher half-word of the specified value.
 */
-inline uint16 getHighWordOf32(uint32 value) noexcept {
+inline uint16 getHighWordOf32(uint32 value) noexcept
+{
   return value >> (sizeof(value) * 8/2);
 }
 
 /**
   Returns the lower half-word of the specified value.
 */
-inline uint16 getLowWordOf32(uint32 value) noexcept {
+inline uint16 getLowWordOf32(uint32 value) noexcept
+{
   return value;
 }
 
 /**
   Returns the higher half-word of the specified value.
 */
-inline uint32 getHighWordOf64(uint64 value) noexcept {
+inline uint32 getHighWordOf64(uint64 value) noexcept
+{
   return value >> (sizeof(value) * 8/2);
 }
 
 /**
   Returns the lower half-word of the specified value.
 */
-inline uint32 getLowWordOf64(uint64 value) noexcept {
+inline uint32 getLowWordOf64(uint64 value) noexcept
+{
   return static_cast<uint32>(value & 0xfffffff);
 }
 
@@ -348,7 +377,8 @@ inline uint32 getLowWordOf64(uint64 value) noexcept {
   Returns true if the primitive variable is aligned properly.
 */
 template<class TYPE>
-inline bool isAligned(const TYPE& value) noexcept {
+inline bool isAligned(const TYPE& value) noexcept
+{
   unsigned int alignment = 0;
   if (sizeof(value) <= sizeof(long)) {
     alignment = sizeof(long);
@@ -369,7 +399,8 @@ inline bool isAligned(const TYPE& value) noexcept {
   @param buffer The buffer.
 */
 template<class TYPE>
-inline TYPE& getAligned(char* buffer) noexcept {
+inline TYPE& getAligned(char* buffer) noexcept
+{
   unsigned int alignment = 0;
   if (sizeof(buffer) <= sizeof(long)) {
     alignment = sizeof(long);
@@ -417,7 +448,8 @@ namespace primitives {
     
     @code
     template<class TYPE>
-    void myFunction(const TYPE& value) noexcept {
+    void myFunction(const TYPE& value) noexcept
+    {
       if (Primitives::Cardinal<TYPE>::IS_CARDINAL) {
         // do something
       } else {
@@ -519,7 +551,8 @@ namespace primitives {
     
     @code
     template<class TYPE>
-    void myFunction(const TYPE& value) noexcept {
+    void myFunction(const TYPE& value) noexcept
+    {
       if (Primitives::FloatingPoint<TYPE>::IS_FLOATING_POINT) {
         // do something
       } else if (Primitives::Cardinal<TYPE>::IS_CARDINAL) {

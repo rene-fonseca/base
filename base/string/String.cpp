@@ -949,6 +949,30 @@ Array<String> String::split(char separator, bool group) const
   return result;
 }
 
+String operator+(const String& left, const char* right)
+{
+  MemorySize r = getNullTerminatedLength(right);
+  String result(left.getLength() + r);
+  return result.append(left).append(right);
+}
+
+String operator+(const char* left, const String& right)
+{
+  MemorySize l = getNullTerminatedLength(left);
+  String result(l + right.getLength());
+  return result.append(left).append(right);
+}
+
+// TAG: use span instead to reuse implementation
+String operator-(const String& left, const String& right)
+{
+  if (left.endsWith(right)) {
+    return left.substring(0, left.getLength() - right.getLength()); // return copy of left without suffix
+  } else {
+    return String(left); // return copy of left
+  }
+}
+
 String operator*(const String& src, MemorySize count)
 {
   String result;

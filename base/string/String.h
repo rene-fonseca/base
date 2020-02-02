@@ -1368,32 +1368,19 @@ inline String operator+(const String& left, const String& right)
 /**
   Returns a new string that is the concatenation of the two specified strings.
 */
-inline String operator+(const String& left, const char* right)
-{
-  return left + String(right);
-}
+_COM_AZURE_DEV__BASE__API String operator+(const String& left, const char* right);
 
 /**
   Returns a new string that is the concatenation of the two specified strings.
 */
-inline String operator+(const char* left, const String& right)
-{
-  return String(left) + right;
-}
+_COM_AZURE_DEV__BASE__API String operator+(const char* left, const String& right);
 
 /**
   String reduction. Removes suffix from string if and only if it ends with the
   suffix (e.g. ("presuf"-"suf") results in a new string "pre" whereas
   ("pre"-"suf") results in "pre").
 */
-inline String operator-(const String& left, const String& right)
-{
-  if (left.endsWith(right)) {
-    return left.substring(0, left.getLength() - right.getLength()); // return copy of left without suffix
-  } else {
-    return String(left); // return copy of left
-  }
-}
+_COM_AZURE_DEV__BASE__API String operator-(const String& left, const String& right);
 
 /**
   Returns a string that is the concatenation of the given string the given number of times.

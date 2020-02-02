@@ -15,6 +15,16 @@
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
+StringOutputStreamWrapper::StringOutputStreamWrapper() noexcept
+{
+  // TAG: we want to reuse the last String for the current Thread - needs testing
+#if 0
+  if (auto tlc = Thread::getLocalContext()) {
+    swapper(string, tlc->string);
+  }
+#endif
+}
+
 void StringOutputStreamWrapper::ensureCapacity(MemorySize capacity)
 {
   string.ensureCapacity(capacity);
@@ -28,6 +38,7 @@ void StringOutputStreamWrapper::close()
 
 void StringOutputStreamWrapper::flush()
 {
+  // should we allow flush for closed
   bassert(!closed, IOException("Output stream is closed.", this));
 }
 
@@ -49,37 +60,35 @@ unsigned int StringOutputStreamWrapper::write(
   return size;
 }
 
+StringOutputStreamWrapper::~StringOutputStreamWrapper()
+{
+  // TAG: store String for reuse
+#if 0
+  if (auto tlc = Thread::getLocalContext()) {
+    string.clear();
+    swapper(string, tlc->string);
+  }
+#endif
+}
+
 
 
 StringOutputStream::StringOutputStream()
   : FormatOutputStream(stream)
 {
-  stream.ensureCapacity(1024);
+  stream.ensureCapacity(DEFAULT_CAPACITY);
 }
 
-StringOutputStream::StringOutputStream(
-  unsigned int granularity)
+StringOutputStream::StringOutputStream(MemorySize capacity)
   : FormatOutputStream(stream)
 {
-  stream.ensureCapacity(1024);
+  stream.ensureCapacity(capacity);
 }
 
 void StringOutputStream::ensureCapacity(MemorySize capacity)
 {
   stream.ensureCapacity(capacity);
 }
-
-#if 0
-unsigned int StringOutputStream::getGranularity() const noexcept
-{
-  return stream.getGranularity();
-}
-
-void StringOutputStream::setGranularity(unsigned int granularity) noexcept
-{
-  stream.setGranularity(granularity);
-}
-#endif
 
 const String& StringOutputStream::getString() const noexcept
 {
@@ -88,7 +97,9 @@ const String& StringOutputStream::getString() const noexcept
 
 String StringOutputStream::toString() noexcept
 {
+  // TAG: it could be useful to NOT copy if temporary string
   flush();
+  // does NOT copy capacity
   String result = stream.getString().copy(); // we want to preserve ownership in stream
   stream.restart();
   return result;

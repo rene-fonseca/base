@@ -20,6 +20,7 @@
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
+/** Internal string output stream. */
 class _COM_AZURE_DEV__BASE__API StringOutputStreamWrapper : public virtual Object,
                                                             public virtual OutputStream {
 private:
@@ -30,46 +31,36 @@ private:
   bool closed = false;
 public:
 
-  inline explicit StringOutputStreamWrapper() noexcept
-  {
-  }
+  /** Initializes buffer. */
+  explicit StringOutputStreamWrapper() noexcept;
 
   /**
     Reserves capacity in the internal buffer.
   */
   void ensureCapacity(MemorySize capacity);
 
+  /** Close stream. */
   void close();
 
+  /** Flush stream. */
   void flush();
 
+  /** Restarts stream. */
   void restart();
 
+  /** Writes to string. */
   unsigned int write(
     const uint8* buffer,
     unsigned int size,
     bool nonblocking = false);
 
-#if 0
-  inline unsigned int getGranularity() const noexcept
-  {
-    return string.getGranularity();
-  }
-
-  inline void setGranularity(unsigned int granularity) noexcept
-  {
-    string.setGranularity(granularity);
-  }
-#endif
-
+  /** Returns string. */
   inline const String& getString() const noexcept
   {
     return string;
   }
   
-  inline ~StringOutputStreamWrapper()
-  {
-  }
+  ~StringOutputStreamWrapper();
 };
 
 
@@ -99,36 +90,26 @@ public:
 class _COM_AZURE_DEV__BASE__API StringOutputStream : protected StringOutputStreamImpl, public FormatOutputStream {
 public:
 
-  /** Specifies the default amount of memory by which the capacity is increased. */
-  static const unsigned int DEFAULT_GRANULARITY = 1024;
+  /** Specifies the default capacity. */
+  static const MemorySize DEFAULT_CAPACITY = 1024;
 public:
 
   /**
-    Initializes string output stream using the default incrementation value (i.e. DEFAULT_GRANULARITY).
+    Initializes string output stream.
   */
   StringOutputStream();
 
   /**
     Initializes string output stream.
 
-    @param granularity Specifies the default amount of memory by which the capacity of the string is increased.
+    @param capacity Specifies the initial capacity.
   */
-  explicit StringOutputStream(unsigned int granularity);
+  explicit StringOutputStream(MemorySize capacity);
 
   /**
     Reserves capacity in the internal buffer.
   */
   void ensureCapacity(MemorySize capacity);
-
-  /**
-    Returns the granularity.
-  */
-  unsigned int getGranularity() const noexcept;
-
-  /**
-    Sets the granularity.
-  */
-  void setGranularity(unsigned int granularity) noexcept;
 
   /**
     Returns the string associated with the stream.

@@ -19,8 +19,10 @@
 #include <base/filesystem/FileSystem.h>
 #include <base/Application.h>
 #include <base/SystemInformation.h>
+#include <base/Architecture.h>
 #include <base/objectmodel/ObjectModel.h>
 #include <base/ResourceHandle.h>
+#include <base/Version.h>
 #include <base/UnitTest.h>
 
 #if 0
@@ -1205,17 +1207,21 @@ void Profiler::ProfilerImpl::close()
         if (auto os = SystemInformation::getOS()) {
           metadata->setValue(o.createString("os-name"), o.createString(os));
         }
+        if (auto arch = Architecture::getArchitectureAsString()) {
+          metadata->setValue(o.createString("os-arch"), o.createString(arch));
+        }
+        Version version;
+        metadata->setValue(o.createString("product-version"), o.createString("BASE " + version.getRelease()));
+        metadata->setValue(o.createString("revision"), o.createInteger(version.getRevision()));
+        metadata->setValue(o.createString("commit"), o.createString(version.getCommit()));
         // metadata->setValue(o.createString("physical-memory"), o.createInteger(...::getMemory()/1024/1024));
 
         // "clock-domain":"LINUX_CLOCK_MONOTONIC"
         // "command_line":STR // do NOT include due to possibility of tokens/passwd
         // "cpu-brand":STR,"cpu-family":INT,"cpu-model":INT,"cpu-stepping":INT
         // "network-type":"WiFi"
-        // "os-arch":"x86_64"
         // "os-version":""
-        // "product-version":"BASE 0.9"
         // metadata->setValue(o.createString("num-cpus"), o.createInteger(0));
-        // metadata->setValue(o.createString("revision"), o.createString("GITID"));
 
         writeString(fos, ",\n\"metadata\": ");
         writeString(fos, JSON::getJSON(metadata));

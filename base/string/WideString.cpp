@@ -1481,6 +1481,75 @@ FormatOutputStream& operator<<(FormatOutputStream& stream, const WideString& val
   return stream;
 }
 
+bool WideString::isValidUnicode(bool iso) const noexcept
+{
+  ReadIterator i = getBeginReadIterator();
+  ReadIterator end = getEndReadIterator();
+  if (iso) {
+    while (i != end) {
+      if (*i > Unicode::MAX_ISO) {
+        return false;
+      }
+      ++i;
+    }
+  } else {
+    while (i != end) {
+      if (*i > Unicode::MAX) {
+        return false;
+      }
+      ++i;
+    }
+  }
+  return true;
+}
+
+WideString WideString::getValidUnicode(bool iso) const
+{
+  ReadIterator i = getBeginReadIterator();
+  ReadIterator end = getEndReadIterator();
+  if (iso) {
+    while (i != end) {
+      if (*i > Unicode::MAX_ISO) {
+        break;
+      }
+      ++i;
+    }
+  } else {
+    while (i != end) {
+      if (*i > Unicode::MAX) {
+        break;
+      }
+      ++i;
+    }
+  }
+  if (i == end) {
+    return *this;
+  }
+ 
+  WideString result(getLength());
+  for (ReadIterator j = getBeginReadIterator(); j != i; ++j) {
+    result.append(*j);
+  }
+  
+  if (iso) {
+    while (i != end) {
+      if (*i <= Unicode::MAX_ISO) {
+        result.append(*i);
+      }
+      ++i;
+    }
+  } else {
+    while (i != end) {
+      if (*i <= Unicode::MAX) {
+        result.append(*i);
+      }
+      ++i;
+    }
+  }
+
+  return result;
+}
+
 #if defined(_COM_AZURE_DEV__BASE__TESTS)
 
 class TEST_CLASS(WideString) : public UnitTest {

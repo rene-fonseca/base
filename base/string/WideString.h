@@ -1391,6 +1391,20 @@ public:
     const Char* result = elements->getElements();
     return result;
   }
+  
+  /**
+    Returns true if the string has valid Unicode codes.
+   
+    @iso Specifies the ISO codes should be allowed.
+  */
+  bool isValidUnicode(bool iso) const noexcept;
+  
+  /**
+    Returns the string with all invalid Unicode codes removed.
+   
+    @iso Specifies the ISO codes should be allowed.
+  */
+  WideString getValidUnicode(bool iso) const;
 };
 
 template<>

@@ -459,10 +459,12 @@ void HTTPSRequest::send(const String& _body)
   statusLine = nullptr;
 
   _handle->response = response;
-
+  // fout << "Header: " << getResponseHeader() << ENDL;
   try {
-    unsigned int contentLength = UnsignedInteger::parse(getResponseHeader("Content-Length"), UnsignedInteger::DEC);
-    _handle->contentLength = contentLength;
+    if (String cl = getResponseHeader("Content-Length")) {
+      unsigned int contentLength = UnsignedInteger::parse(cl, UnsignedInteger::DEC);
+      _handle->contentLength = contentLength;
+    }
   } catch (...) {
   }
   
@@ -836,7 +838,7 @@ public:
 
   void run() override
   {
-    String url = "https://google.com";
+    String url = "https://www.google.com";
     String response;
     HTTPSRequest request;
     try {

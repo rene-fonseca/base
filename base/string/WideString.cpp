@@ -281,63 +281,69 @@ int WideTraits::digitToValue(ucs4 character) noexcept
   return -1;
 }
 
-void WideString::initialize(const char16_t* string, MemorySize nativeLength)
+void WideString::initialize(const char16_t* src, MemorySize _length)
 {
-  if (!nativeLength) {
+  if (_length == 0) {
     elements = DEFAULT_STRING.elements;
     return;
   }
 
-  const MemorySize length = Unicode::UTF16ToUCS4(nullptr, reinterpret_cast<const utf16*>(string), nativeLength);
+  const MemorySize length = Unicode::UTF16ToUCS4(nullptr, reinterpret_cast<const utf16*>(src), _length);
   auto result = new ReferenceCountedAllocator<ucs4>(length + 1);
-  Unicode::UTF16ToUCS4(result->getElements(), reinterpret_cast<const utf16*>(string), nativeLength);
+  Unicode::UTF16ToUCS4(result->getElements(), reinterpret_cast<const utf16*>(src), _length);
   elements = result;
 }
 
-void WideString::initialize(const wchar* string, MemorySize nativeLength)
+void WideString::initialize(const wchar* src, MemorySize _length)
 {
-  if (!nativeLength) {
+  if (!_length) {
     elements = DEFAULT_STRING.elements;
     return;
   }
 
   // worst case length is nativeLength - allocate worst case and then release unused if possible
-  const MemorySize length = Unicode::WCharToUCS4(nullptr, string, nativeLength);
+  const MemorySize length = Unicode::WCharToUCS4(nullptr, src, _length);
   auto result = new ReferenceCountedAllocator<ucs4>(length + 1);
-  Unicode::WCharToUCS4(result->getElements(), string, nativeLength);
+  Unicode::WCharToUCS4(result->getElements(), src, _length);
   elements = result;
 }
 
-void WideString::initialize(const ucs4* string, MemorySize nativeLength)
-{
-  if (!nativeLength) {
-    elements = DEFAULT_STRING.elements;
-    return;
-  }
-  elements = new ReferenceCountedAllocator<ucs4>(nativeLength + 1);
-  copy<ucs4>(elements->getElements(), string, nativeLength); // no overlap
-}
-
-void WideString::initialize(const char* string, MemorySize length)
+void WideString::initialize(const ucs4* src, MemorySize length)
 {
   if (!length) {
     elements = DEFAULT_STRING.elements;
     return;
   }
+  elements = new ReferenceCountedAllocator<ucs4>(length + 1);
+  base::copy<ucs4>(elements->getElements(), src, length); // no overlap
+}
 
-  const MemorySize numberOfCharacters = Unicode::UTF8ToUCS4(nullptr, Cast::pointer<const uint8*>(string), length);
+void WideString::initialize(const char* src, MemorySize _length)
+{
+  if (_length == 0) {
+    elements = DEFAULT_STRING.elements;
+    return;
+  }
+
+  const MemorySize numberOfCharacters = Unicode::UTF8ToUCS4(nullptr, Cast::pointer<const uint8*>(src), _length);
   bassert(numberOfCharacters <= MAXIMUM_LENGTH, MemoryException(this));
   elements = new ReferenceCountedAllocator<ucs4>(numberOfCharacters + 1);
   if (numberOfCharacters) {
     Unicode::UTF8ToUCS4(
       elements->getElements(),
-      reinterpret_cast<const uint8*>(string),
-      length
+      reinterpret_cast<const uint8*>(src),
+      _length
     );
   }
 }
 
-WideString::WideString(String::Default d)
+WideString::WideString() noexcept
+  : elements(DEFAULT_STRING.elements)
+{
+  BASSERT(elements); // we never want a nullptr
+}
+
+WideString::WideString(Default d)
 {
   // force non-nullptr elements
   auto e = new ReferenceCountedAllocator<ucs4>(1);
@@ -345,72 +351,76 @@ WideString::WideString(String::Default d)
   elements = e;
 }
 
-WideString::WideString() noexcept
-  : elements(DEFAULT_STRING.elements)
-{
-}
-
 WideString::WideString(MemorySize capacity)
 {
-  elements = new ReferenceCountedAllocator<ucs4>();
-  elements->ensureCapacity(capacity + 1);
-  elements->setSize(1); // after setting capacity
-  ucs4* result = elements->getElements();
-  result[0] = Traits::TERMINATOR;
+  if (capacity == 0) {
+    elements = DEFAULT_STRING.elements;
+    return;
+  }
+  auto e = new ReferenceCountedAllocator<ucs4>(1, capacity);
+  e->getElements()[0] = Traits::TERMINATOR;
+  elements = e;
 }
 
-WideString::WideString(const char* string)
+#if 0
+WideString::WideString(ucs4 src)
 {
-  initialize(string, getNullTerminatedLength(string));
+  initialize(&src, 1);
 }
+#endif
 
-WideString::WideString(const char16_t* string)
+WideString::WideString(const char* src)
 {
-  initialize(string, getNullTerminatedLength(string));
+  initialize(src, getNullTerminatedLength(src));
 }
 
-WideString::WideString(const wchar* string)
+WideString::WideString(const char16_t* src)
 {
-  initialize(string, getNullTerminatedLength(string));
+  initialize(src, getNullTerminatedLength(src));
 }
 
-WideString::WideString(const wchar* string, MemorySize length)
+WideString::WideString(const wchar* src)
 {
-  initialize(string, length);
+  initialize(src, getNullTerminatedLength(src));
 }
 
-WideString::WideString(const ucs4* string)
+WideString::WideString(const wchar* src, MemorySize length)
 {
-  initialize(string, getNullTerminatedLength(string));
+  initialize(src, length);
 }
 
-WideString::WideString(const ucs4* string, MemorySize length)
+WideString::WideString(const ucs4* src)
 {
-  initialize(string, length);
+  initialize(src, getNullTerminatedLength(src));
 }
 
-WideString::WideString(const Literal& literal)
+WideString::WideString(const ucs4* src, MemorySize length)
 {
-  initialize(literal.getValue(), literal.getLength());
+  initialize(src, length);
 }
 
-WideString::WideString(const WideLiteral& literal)
+WideString::WideString(const Literal& src)
 {
-  initialize(literal.getValue(), literal.getLength());
+  initialize(src.getValue(), src.getLength());
 }
 
-WideString::WideString(const NativeWideString& string)
+WideString::WideString(const WideLiteral& src)
 {
-  initialize(string.getValue(), string.getLength());
+  initialize(src.getValue(), src.getLength());
 }
 
-WideString::WideString(const NativeWideString& string, MemorySize maximum)
+WideString::WideString(const NativeWideString& src)
+{
+  initialize(src.getValue(), src.getLength());
+}
+
+WideString::WideString(const NativeWideString& src, MemorySize maximum)
 {
   if (maximum >= MAXIMUM_LENGTH) {
     _throw OutOfDomain(this);
   }
-  const MemorySize nativeLength = getNullTerminatedLength(string.getValue(), maximum);
-  initialize(string, nativeLength);
+  const MemorySize nativeLength = getNullTerminatedLength(src.getValue(), maximum);
+  initialize(src, nativeLength);
 }
 
 WideString::WideString(const String& string)
@@ -457,33 +467,20 @@ WideString::WideString(const NativeString& string)
   }
 }
 
-WideString::WideString(const NativeString& string, MemorySize maximum)
+WideString::WideString(StringOutputStream& stream)
 {
-  if (maximum >= MAXIMUM_LENGTH) {
-    _throw OutOfDomain(this);
-  }
-  
-  if (!string.getValue()) { // is string null
-    elements = DEFAULT_STRING.elements;
-    return;
-  }
-  
-  const MemorySize multibyteLength = getNullTerminatedLength(string.getValue(), maximum);
-  
-  MemorySize numberOfCharacters = Unicode::UTF8ToUCS4(
-    nullptr,
-    Cast::pointer<const uint8*>(string.getValue()),
-    multibyteLength
-  );
-  bassert(numberOfCharacters <= MAXIMUM_LENGTH, MemoryException(this));
-  elements = new ReferenceCountedAllocator<ucs4>(numberOfCharacters + 1);
-  if (numberOfCharacters) {
-    Unicode::UTF8ToUCS4(
-      elements->getElements(),
-      Cast::pointer<const uint8*>(string.getValue()),
-      multibyteLength
-    );
-  }
+  operator=(stream.toString());
+}
+
+WideString::WideString(FormatOutputStream& stream)
+{
+  operator=(stream.toString());
+}
+
+WideString::WideString(const NativeString& src, MemorySize maximum)
+{
+  bassert(maximum <= MAXIMUM_LENGTH, StringException(this));
+  initialize(src.getValue(), getNullTerminatedLength(src.getValue(), maximum));
 }
 
 WideString& WideString::operator=(const Literal& assign)
@@ -534,9 +531,66 @@ bool WideString::isASCII() const noexcept
   return true;
 }
 
+bool WideString::isMultiReferenced() const noexcept
+{
+  return elements.isMultiReferenced();
+}
+
 void WideString::ensureCapacity(MemorySize capacity)
 {
-  elements->ensureCapacity(capacity); // no need to do copyOnWrite
+  if (!elements.isMultiReferenced()) {
+    elements->ensureCapacity(capacity);
+    return;
+  }
+  
+  MemorySize length = getLength();
+  auto e = new ReferenceCountedAllocator<Char>(length + 1, capacity);
+  base::copy<Char>(e->getElements(), elements->getElements(), length + 1); // no overlap
+  elements = e;
+}
+
+ucs4* WideString::getBuffer()
+{
+  elements.copyOnWrite();
+  return elements->getElements();
+}
+
+ucs4* WideString::getBuffer(MemorySize length)
+{
+  bassert(
+    length <= MAXIMUM_LENGTH,
+    StringException(Type::getType<String>())
+  );
+
+  const MemorySize originalLength = getLength();
+
+  if (!elements.isMultiReferenced()) { // just resize
+    if (length == originalLength) { // nothing to do
+      return elements->getElements();
+    }
+    elements->setSize(length + 1);
+    auto dest = elements->getElements();
+    dest[length] = Traits::TERMINATOR;
+    return dest;
+  }
+  
+  if (length == originalLength) { // just copy
+    elements.copyOnWrite(); // we are about to modify the buffer
+    return elements->getElements();
+  }
+
+  // resize and copy
+  auto e = new ReferenceCountedAllocator<Char>(length + 1); // reset capacity
+  auto dest = e->getElements();
+  if (length < originalLength) {
+    base::copy<Char>(dest, elements->getElements(), length); // no overlap
+  } else {
+    base::copy<Char>(dest, elements->getElements(), originalLength); // no overlap
+  }
+  dest[length] = Traits::TERMINATOR;
+  elements = e;
+
+  return dest;
 }
 
 void WideString::clear()
@@ -544,9 +598,26 @@ void WideString::clear()
   elements = DEFAULT_STRING.elements;
 }
 
+WideString WideString::copy() const
+{
+  WideString result = *this;
+  result.getBuffer();
+  return result;
+}
+
 void WideString::garbageCollect()
 {
   elements->garbageCollect(); // no need to do copyOnWrite
+}
+
+void WideString::forceToLength(MemorySize length)
+{
+  const MemorySize originalLength = getLength();
+  setLength(length);
+  if (originalLength < length) {
+    auto ch = Traits::TERMINATOR;
+    fill(getBuffer() + originalLength, length - originalLength, ch);
+  }
 }
 
 ucs4 WideString::getAt(MemorySize index) const
@@ -562,16 +633,12 @@ void WideString::setAt(MemorySize index, ucs4 value)
   if (index >= getLength()) {
     _throw OutOfRange(this);
   }
-  if (value != Traits::TERMINATOR) {
-    getBuffer()[index] = value;
-  } else {
-    setLength(index);
-  }
+  getBuffer()[index] = value; // allow terminated within string
 }
 
 WideString& WideString::remove(MemorySize start, MemorySize end)
 {
-  MemorySize length = getLength();
+  const MemorySize length = getLength();
   if ((start < end) && (start < length)) { // protect against some cases
     if (end >= length) {
       elements.copyOnWrite(); // we are about to modify the buffer
@@ -582,6 +649,7 @@ WideString& WideString::remove(MemorySize start, MemorySize end)
       move(buffer + start, buffer + end, length - end); // move end of string
       elements->setSize(length - (end - start) + 1); // remember space for terminator
     }
+    elements->getElements()[getLength()] = Traits::TERMINATOR;
   }
   return *this;
 }
@@ -589,8 +657,7 @@ WideString& WideString::remove(MemorySize start, MemorySize end)
 WideString& WideString::removeFrom(MemorySize start)
 {
   if (start < getLength()) { // protect against some cases
-    elements.copyOnWrite(); // we are about to modify the buffer
-    elements->setSize(start + 1); // remove section from end of string
+    getBuffer(start); // just resize
   }
   return *this;
 }
@@ -618,11 +685,11 @@ WideString& WideString::insert(MemorySize index, const WideString& str)
   ucs4* buffer = elements->getElements();
   if (index >= length) {
     // insert section at end of string
-    copy(buffer + length, str.getBuffer(), strlength);
+    base::copy(buffer + length, str.getBuffer(), strlength);
   } else {
     // insert section in middle or beginning of string
     move(buffer + index + strlength, buffer + index, length - index); // move end of string
-    copy(buffer + index, str.getBuffer(), strlength);
+    base::copy(buffer + index, str.getBuffer(), strlength);
   }
   return *this;
 }
@@ -644,6 +711,12 @@ WideString& WideString::insert(MemorySize index, const WideLiteral& literal)
     move<ucs4>(buffer + index + _length, buffer + index, length - index);
     Unicode::WCharToUCS4(buffer + index, literal.getValue(), nativeLength);
   }
+  return *this;
+}
+
+WideString& WideString::insert(MemorySize index, const NativeWideString& src)
+{
+  // return insert(index, MemorySpan(src.getValue(), src.getLength()));
   return *this;
 }
 
@@ -708,9 +781,9 @@ MemorySize WideString::replaceAll(const WideString& fromStr, const WideString& t
 {
   MemorySize count = 0;
   MemorySize start = 0;
-  MemoryDiff found = 0;
+  MemoryDiff found = -1;
   while ((found = indexOf(fromStr, start)) >= 0) { // continue until no more fromStr's
-    replace(found, found + fromStr.getLength() - 1, toStr); // fromStr.getLength() > 0
+    replace(found, found + fromStr.getLength(), toStr); // fromStr.getLength() > 0
     start = found + toStr.getLength(); // skip toStr
   }
   return count;
@@ -718,18 +791,21 @@ MemorySize WideString::replaceAll(const WideString& fromStr, const WideString& t
 
 WideString WideString::substring(MemorySize start, MemorySize end) const
 {
-  MemorySize length = getLength();
-  if ((start < end) && (start < length)) {
+  const MemorySize length = getLength();
+  if ((start == 0) && (end >= length)) {
+    return *this; // quick copy by reference
+  } else if ((start < end) && (start < length)) {
     if (end > length) {
       end = length; // force to end of string
     }
-    // 0 <= start < end <= getLength()
-    MemorySize lengthOfSubstring = end - start;
+    BASSERT((0 <= start) && (start < end) && (end <= getLength()));
+    const MemorySize lengthOfSubstring = end - start;
     WideString result(lengthOfSubstring);
     result.setLength(lengthOfSubstring);
-    copy(result.getBuffer(), getBuffer() + start, lengthOfSubstring); // buffers do not overlap
+    base::copy(result.getBuffer(), getBuffer() + start, lengthOfSubstring); // buffers do not overlap
     return result;
   } else {
+    // C++: could be useful to have a "This/Auto" type to get the class automatically
     return WideString(); // return empty string
   }
 }
@@ -744,9 +820,9 @@ WideString& WideString::operator-=(const WideString& suffix)
 
 WideString& WideString::reverse() noexcept
 {
-  ucs4* p = getBuffer();
-  ucs4* q = &p[getLength() - 1]; // last char - empty string => q < p
-  ucs4 temp;
+  Char* p = getBuffer();
+  Char* q = &p[getLength() - 1]; // last char - empty string => q < p
+  Char temp = 0;
   while (p < q) { // until middle of string has been reached
     temp = *p;
     *p = *q;
@@ -769,14 +845,14 @@ WideString& WideString::toUpperCase() noexcept
   return *this;
 }
 
-int WideString::compareTo(const WideString& string) const
+int WideString::compareTo(const WideString& string) const noexcept
 {
   // both strings may contain multiple zeros
   MemorySize leftLength = getLength();
   MemorySize rightLength = string.getLength();
-  const ucs4* left = getBuffer();
-  const ucs4* right = string.getBuffer();
-  const ucs4* end = left + minimum(leftLength, rightLength);
+  const Char* left = getBuffer();
+  const Char* right = string.getBuffer();
+  const Char* end = left + minimum(leftLength, rightLength);
   while (left < end) {
     int temp = static_cast<int>(*left) - static_cast<int>(*right);
     if (temp != 0) {
@@ -794,7 +870,7 @@ int WideString::compareTo(const WideString& string) const
   }
 }
 
-int WideString::compareTo(const WideLiteral& literal) const
+int WideString::compareTo(const WideLiteral& literal) const noexcept
 {
   if (sizeof(wchar) == sizeof(utf16)) {
     const ucs4* left = getElements(); // make sure string is terminated
@@ -854,7 +930,7 @@ int WideString::compareTo(const WideLiteral& literal) const
   }
 }
 
-int WideString::compareTo(const wchar* string) const
+int WideString::compareTo(const wchar* string) const /*noexcept*/
 {
   if (!string) {
     return false;
@@ -941,14 +1017,14 @@ int WideString::compareToIgnoreCase(const WideString& string) const noexcept
 // TAG: need support for WideLiteral
 // int WideString::compareToIgnoreCase(const WideLiteral& literal) const noexcept;
 
-bool WideString::startsWith(const WideString& prefix) const
+bool WideString::startsWith(const WideString& prefix) const /*noexcept*/
 {
-  MemorySize prefixLength = prefix.getLength();
+  const MemorySize prefixLength = prefix.getLength();
   return (prefixLength > 0) && (prefixLength <= getLength()) &&
     (compare(getBuffer(), prefix.getBuffer(), prefixLength) == 0);
 }
 
-bool WideString::startsWith(const WideLiteral& prefix) const
+bool WideString::startsWith(const WideLiteral& prefix) const /*noexcept*/
 {
   if (sizeof(wchar) == sizeof(utf16)) {
     const ucs4* left = getElements(); // make sure string is terminated
@@ -994,15 +1070,15 @@ bool WideString::startsWith(const WideLiteral& prefix) const
   }
 }
 
-bool WideString::endsWith(const WideString& suffix) const
+bool WideString::endsWith(const WideString& suffix) const /*noexcept*/
 {
-  MemorySize length = getLength();
-  MemorySize suffixLength = suffix.getLength();
+  const MemorySize length = getLength();
+  const MemorySize suffixLength = suffix.getLength();
   return (suffixLength > 0) && (suffixLength <= length) &&
     (compare(getBuffer() + length - suffixLength, suffix.getBuffer(), suffixLength) == 0);
 }
 
-bool WideString::endsWith(const WideLiteral& suffix) const
+bool WideString::endsWith(const WideLiteral& suffix) const /*noexcept*/
 {
   MemorySize suffixLength = suffix.getLength();
   if (sizeof(wchar) == sizeof(utf16)) {
@@ -1051,15 +1127,17 @@ bool WideString::endsWith(const WideLiteral& suffix) const
   }
 }
 
-MemoryDiff WideString::indexOf(ucs4 character, MemorySize start) const noexcept
+MemoryDiff WideString::indexOf(ucs4 ch, MemorySize start) const noexcept
 {
   const MemorySize length = getLength();
   if (start >= length) {
     return -1; // not found
   }
-  
-  const ucs4* buffer = getElements();
-  const ucs4* result = find<ucs4>(buffer + start, length, character);
+
+  const auto buffer = getBuffer();
+  MemorySize count = length - start;
+
+  const Char* result = find(buffer + start, count, ch);
   if (result) { // did we find the value
     return result - buffer; // return index
   } else {
@@ -1069,7 +1147,10 @@ MemoryDiff WideString::indexOf(ucs4 character, MemorySize start) const noexcept
 
 MemoryDiff WideString::indexOf(const WideString& string, MemorySize start) const noexcept
 {
-  if ((start >= getLength()) || (string.getLength() > getLength())) {
+  MemorySize length = getLength();
+  MemorySize sublength = string.getLength();
+
+  if ((start >= length) || (sublength == 0) || (sublength > length)) {
     return -1; // not found
   }
 
@@ -1102,13 +1183,13 @@ MemoryDiff WideString::indexOf(const WideString& string, MemorySize start) const
   return -1; // not found
 }
 
-MemoryDiff WideString::lastIndexOf(ucs4 character, MemorySize start) const noexcept
+MemoryDiff WideString::lastIndexOf(ucs4 ch, MemorySize start) const noexcept
 {
   // examined cases: getLength() = 0, getLength() = 1, getLength() > 1
-  const ucs4* buffer = getBuffer();
-  const ucs4* p = &buffer[(start < getLength()) ? start : getLength() - 1]; // validate start
+  const Char* buffer = getBuffer();
+  const Char* p = &buffer[(start < getLength()) ? start : getLength() - 1]; // validate start
   while (p >= buffer) {
-    if (*p == character) { // do we have a match
+    if (*p == ch) { // do we have a match
       return p - buffer; // char found at index;
     }
     --p;
@@ -1125,17 +1206,17 @@ MemoryDiff WideString::lastIndexOf(const WideString& string, MemorySize start) c
     start = getLength() - 1;
   }
 
-  const ucs4* substring = string.getBuffer();
-  const ucs4* buffer = getBuffer();
-  const ucs4* begin = &buffer[start - string.getLength() + 1]; // beginning of current substring
-  const ucs4* last = &buffer[start]; // end of current substring - buffer <= begin <= last
+  const Char* substring = string.getBuffer();
+  const Char* buffer = getBuffer();
+  const Char* begin = &buffer[start - string.getLength() + 1]; // beginning of current substring
+  const Char* last = &buffer[start]; // end of current substring - buffer <= begin <= last
 
   // calculate hash of strings
   unsigned int hash = 0;
   unsigned int mask = 1;
   unsigned int match = 0;
-  const ucs4* p = substring;
-  const ucs4* q = begin;
+  const Char* p = substring;
+  const Char* q = begin;
   MemorySize count = string.getLength();
   while (count--) {
     hash = (128 * hash + *p++) % 16647143;
@@ -1165,11 +1246,11 @@ MemoryDiff WideString::lastIndexOf(const WideString& string, MemorySize start) c
   return -1; // not found
 }
 
-MemorySize WideString::count(ucs4 character, MemorySize start) const noexcept
+MemorySize WideString::count(ucs4 ch, MemorySize start) const noexcept
 {
   MemoryDiff result = 0;
   MemorySize count = 0;
-  while ((result = indexOf(character, start)) >= 0) { // until not found
+  while ((result = indexOf(ch, start)) >= 0) { // until not found
     ++count;
     start = result + 1;
   }
@@ -1185,6 +1266,49 @@ MemorySize WideString::count(const WideString& string, MemorySize start) const n
     start = result + string.getLength();
   }
   return count;
+}
+
+ucs4* WideString::getElements()
+{
+  auto result = getBuffer(); // copy on write
+  BASSERT(result[getLength()] == Traits::TERMINATOR);
+  return result;
+}
+
+WideString& WideString::trim(ucs4 character)
+{
+  ReadIterator begin = getBeginReadIterator();
+  ReadIterator end = getEndReadIterator();
+  if (begin == end) {
+    return *this; // empty
+  }
+
+  while ((begin != end) && (*begin == character)) {
+    ++begin;
+  }
+  if (begin == end) {
+    clear();
+    return *this;
+  }
+  
+  --end;
+  while ((end != begin) && (*end == character)) {
+    --end;
+  }
+  ++end; // end of trimmed string
+  
+  const MemoryDiff newLength = end - begin;
+  if (newLength == getLength()) {
+    return *this; // nothing to do
+  }
+  
+  if (begin == getBeginReadIterator()) { // nothing trimmed from start
+    getBuffer(newLength); // just discard
+  } else {
+    // TAG: if only one reference then we can avoid new buffer
+    *this = substring(begin - getBeginReadIterator(), end - getBeginReadIterator());
+  }
+  return *this;
 }
 
 bool WideString::isUpperCased() const noexcept
@@ -1223,10 +1347,112 @@ bool WideString::isTitleCased() const noexcept
   return true;
 }
 
+// http://www.cs.utexas.edu/users/moore/best-ideas/string-searching/index.html
+MemoryDiff WideString::search(const WideString& substring, MemorySize start) const noexcept
+{
+  const MemorySize length = substring.getLength();
+  if ((length == 0) || (getLength() < (start + length))) {
+    return -1; // not found
+  }
+
+  _COM_AZURE_DEV__BASE__NOT_IMPLEMENTED(); // TAG: handle any code > 0x255
+  
+  MemorySize skip[256];
+  {
+    for (unsigned int i = 0; i < getArraySize(skip); ++i) {
+      skip[i] = length; // maximum single code skip
+    }
+    ReadIterator i = substring.getBeginReadIterator();
+    MemorySize current = length;
+    while (current) {
+      --current;
+      skip[static_cast<uint8>(*i++)] = current;
+    }
+  }
+  
+  ReadIterator i = getBeginReadIterator() + start;
+  const ReadIterator end = getEndReadIterator();
+  const ReadIterator substringBegin = substring.getBeginReadIterator();
+  ReadIterator j = substring.getEndReadIterator();
+  j -= 1;
+  i += length - 1;
+  while (i < end) {
+    if (*i != *j) { // check end matches
+      i += skip[static_cast<uint8>(*i)]; // could skip pass end
+    } else {
+      ReadIterator k = i - 1;
+      ReadIterator l = j - 1;
+      while ((l > substringBegin) && (*k == *l)) {
+        --k;
+        --l;
+      }
+      if (l == substringBegin) { // have we found the entire substring
+        return k - (getBeginReadIterator() + start);
+      }
+      
+      i = k + skip[static_cast<uint8>(*k)]; // could skip pass end
+      // TAG: need better skip - FIXME
+    }
+  }
+  return -1; // not found
+}
+
+Array<WideString> WideString::split(Char separator, bool group) const
+{
+  Array<WideString> result;
+  
+  const ReadIterator begin = getBeginReadIterator();
+  const ReadIterator end = getEndReadIterator();
+  
+  ReadIterator i = begin;
+  if (group) {
+    while (i != end) {
+      while ((i < end) && (*i == separator)) { // skip group of separators
+        ++i;
+      }
+      if (i == end) {
+        break;
+      }
+      ReadIterator j = i;
+      while ((j < end) && (*j != separator)) {
+        ++j;
+      }
+      result.append(substring(i - begin, j - begin));
+    }
+  } else {
+    while (i != end) {
+      if (*i == separator) {
+        ++i; // skip separator
+      }
+      ReadIterator j = i;
+      while ((j < end) && (*j != separator)) {
+        ++j;
+      }
+      result.append(substring(i - begin, j - begin));
+      if (j == end) {
+        break;
+      }
+      i = j;
+    }
+  }
+  return result;
+}
+
 template<>
 int compare<WideString>(const WideString& left, const WideString& right)
 {
   return left.compareTo(right);
+}
+
+unsigned long Hash<WideString>::operator()(const WideString& value) noexcept
+{
+  const ucs4* src = value.getElements();
+  const ucs4* end = src + value.getLength();
+  unsigned long result = 5381;
+  while (src < end) {
+    result = /*33*/ 31 /*65599*/ * result + static_cast<unsigned int>(*src++);
+  }
+  return result;
 }
 
 FormatOutputStream& operator<<(FormatOutputStream& stream, const WideString& value)
@@ -1285,13 +1511,12 @@ public:
     
     // TEST_ASSERT(c[6] == 'W');
 
-#if 0
     MemorySize count = 0;
     for (auto ch : c) {
+      (void)ch; // dont care about unused
       ++count;
     }
     TEST_ASSERT(count == c.getLength());
-#endif
     
     c.garbageCollect();
     

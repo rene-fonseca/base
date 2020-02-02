@@ -15,17 +15,16 @@
 
 #include <base/Object.h>
 #include <base/OutOfRange.h>
-#include <base/mem/Reference.h>
 #include <base/mem/ReferenceCountedAllocator.h>
 #include <base/string/FormatOutputStream.h>
 #include <base/string/StringException.h>
 #include <base/mem/AllocatorEnumeration.h>
-#include <base/Primitives.h>
+#include <base/collection/Hash.h>
 #include <base/WideLiteral.h>
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
-class FormatOutputStream;
+class StringOutputStream;
 
 /**
   Default wide-character properties and manipulators.
@@ -194,7 +193,7 @@ public:
   currently NOT MT-safe.
 
   @code
-  WideString myString = "Hello, World!";
+  WideString myString = L"Hello, World!";
   WideString myOtherString = myString;
   @endcode
 
@@ -264,11 +263,14 @@ public:
   };
 private:
 
-  /** The default wide string. This is used to avoid multiple allocations of empty string buffers. */
+  /**
+    The default string. This is used to avoid multiple allocations of empty
+    string buffers.
+  */
   static const WideString DEFAULT_STRING;
 
   /*
-    Reference to an element within a wide string.
+    Reference to an element within a string.
   */
   class _COM_AZURE_DEV__BASE__API Element {
     friend class WideString;
@@ -299,9 +301,9 @@ private:
   };
 
   /**
-    Reference counted buffer holding the character sequence (the sequence is not
-    guarantied to be NULL-terminated). However, the attribute is guarantied to
-    point to a valid buffer even for empty strings.
+    Reference counted buffer holding NULL-terminated string. The array is
+    guarantied to be non-empty when the string has been initialized. elements
+    will never be nullptr.
   */
   Reference<ReferenceCountedAllocator<ucs4> > elements;
 
@@ -310,41 +312,50 @@ private:
   */
   static int compareToIgnoreCase(const ucs4* left, const ucs4* right) noexcept;
 protected:
-  
+
   /**
     Initializes string.
   */
   void initialize(const char* string, MemorySize length);
-  void initialize(const wchar* string, MemorySize length);
-  void initialize(const char16_t* string, MemorySize nativeLength);
-  void initialize(const ucs4* string, MemorySize length);
-  
+
   /**
-    Returns a modifiable buffer. Forces the internal buffer to be copied if
-    shared by multiple strings.
+    Initializes string.
   */
-  inline ucs4* getBuffer()
-  {
-    elements.copyOnWrite();
-    return elements->getElements();
-  }
+  void initialize(const wchar* string, MemorySize length);
+
+  /**
+    Initializes string.
+  */
+  void initialize(const char16_t* string, MemorySize length);
+
+  /**
+    Initializes string.
+  */
+  void initialize(const ucs4* string, MemorySize length);
+
+  /**
+    Returns a modifiable buffer. Forces copy of internal buffer if shared by
+    multiple strings.
+  */
+  Char* getBuffer();
+  
+  /** Returns buffer for modification and resizes at the same time. */
+  Char* getBuffer(MemorySize length);
 
   /**
     Returns a non-modifiable buffer.
   */
-  inline const ucs4* getBuffer() const noexcept
+  inline const Char* getBuffer() const noexcept
   {
     return elements->getElements();
   }
-
+  
   /**
     Sets the length of the string.
   */
   inline void setLength(MemorySize length)
   {
-    bassert(length <= MAXIMUM_LENGTH, StringException(this));
-    elements.copyOnWrite(); // we are about to modify the buffer
-    elements->setSize(length + 1);
+    getBuffer(length);
   }
 public:
 
@@ -355,21 +366,30 @@ public:
   /** Specifies the byte order mark. */
   static constexpr ucs4 BOM = 0x0000feff;
 
-  /** Forces a non-null empty string. Avoid this. */
-  WideString(String::Default d);
-
   /**
     Initializes an empty string.
   */
   WideString() noexcept;
 
-  /**
-    Initializes a string with no characters in it, initial capacity and
-    granularity of capacity.
+  inline WideString(Reference<ReferenceCountedAllocator<Char> > string)
+    : elements(string ? string : DEFAULT_STRING.elements)
+  {
+    BASSERT(elements && !elements->isEmpty());
+    auto index = elements->getSize() - 1;
+    BASSERT(elements->getElements()[index] == 0); // check null terminator
+  }
 
-    @param capacity The initial capacity of the internal buffer.
+  /**
+    Initializes a string with no characters in it and the given initial capacity.
+    
+    @param capacity The initial capacity.
   */
   explicit WideString(MemorySize capacity);
+
+  class _COM_AZURE_DEV__BASE__API Default {};
+  
+  /** Forces a non-null empty string. Avoid this. */
+  WideString(Default d);
 
   /**
     Initializes the string from a string literal. The string literal is not
@@ -391,13 +411,13 @@ public:
     Initializes the string from a string literal. Implicit initialization is
     allowed.
     
-    @param string String literal.
+    @param literal String literal.
   */
   template<MemorySize SIZE>
-  inline WideString(const wchar (&string)[SIZE])
+  inline WideString(const wchar (&literal)[SIZE])
   {
     if (Constraint<(SIZE > 0)>::UNSPECIFIED) {}
-    initialize(string, SIZE - 1);
+    initialize(literal, SIZE - 1);
   }
   
   /**
@@ -410,9 +430,10 @@ public:
   
   /**
     Initializes the string from a NULL-terminated string. If the length of the
-    specified string exceeds the maximum length (n) only the first n
-    characters are used.
-
+    specified string (string) exceeds the maximum length (n) only the first n
+    characters are used. Raises StringException is string exceeds the maximum
+    allowed length.
+    
     @param string NULL-terminated string. If NULL, the string is initialized
     with no characters in it.
     @param maximum Specifies the maximum length.
@@ -454,23 +475,52 @@ public:
     : elements(copy.elements)
   {
   }
-  
+
+  /**
+    Initializes string from other string.
+  */
+  WideString(WideString&& move) noexcept
+    : elements(move.elements)
+  {
+    move.elements = DEFAULT_STRING.elements; // make empty so we may avoid future copyOnWrite()
+  }
+
+  /**
+    Initializes string from string output stream. Forces flush().
+  */
+  WideString(StringOutputStream& stream);
+
+  /**
+    Initializes string from string output stream via FormatOutputStream. Forces flush(). Throws exception if not a
+    StringOutputStream.
+  */
+  WideString(FormatOutputStream& stream);
+
   /**
     Initialized wide string from multibyte string.
   */
   WideString(const String& string);
   
   /**
-    Assignment of string with string.
+    Assignment of string to string.
   */
-  WideString& operator=(const WideString& assign) noexcept
+  inline WideString& operator=(const WideString& assign) noexcept
   {
     elements = assign.elements; // self assignment handled by automation pointer
     return *this;
   }
 
+  WideString& operator=(WideString&& move) noexcept
+  {
+    if (this != &move) { // self assigment not allowed
+      elements = moveObject(move.elements);
+      move.elements = DEFAULT_STRING.elements; // make empty so we may avoid future copyOnWrite()
+    }
+    return *this;
+  }
+
   /**
-    Assignment of string to string.
+    Assignment of string literal to string.
   */
   WideString& operator=(const Literal& assign);
   WideString& operator=(const WideLiteral& assign);
@@ -479,16 +529,23 @@ public:
   WideString& operator=(const char16_t* assign);
   WideString& operator=(const char32_t* assign);
 
+  template<MemorySize SIZE>
+  inline WideString& operator=(const Char (&literal)[SIZE])
+  {
+    if (Constraint<(SIZE < (MAXIMUM_LENGTH + 1))>::UNSPECIFIED) {}
+    return operator=(WideLiteral(literal));
+  }
+
   /**
     Returns the number of characters in the string.
   */
   inline MemorySize getLength() const noexcept
   {
-    return elements->getSize() - 1;
+    return elements->getSize() - 1; // exclude null terminator
   }
 
   /**
-    Returns true if the string contains no characters.
+    Returns true if the string does not contain characters.
   */
   inline bool isEmpty() const noexcept
   {
@@ -506,16 +563,21 @@ public:
   /**
     Returns true if the string is an ASCII string.
   */
-  inline bool isASCII() const noexcept;
-  
+  bool isASCII() const noexcept;
+
+  /**
+    Returns true if the string has multiple references.
+  */
+  bool isMultiReferenced() const noexcept;
+
   /**
     Returns the capacity of the string.
   */
   inline MemorySize getCapacity() const noexcept
   {
     return elements->getCapacity();
-  }  
-  
+  }
+
   /**
     Ensures that the capacity of the buffer is at least equal to the specified
     minimum. This applies to all shared strings.
@@ -527,12 +589,20 @@ public:
   /** Clears the string. */
   void clear();
 
+  /** Returns a forced copy of the string. */
+  WideString copy() const;
+
   /**
     Releases any unused capacity of the string. This applies to all shared
     strings.
   */
   void garbageCollect();
-  
+
+  /**
+    Sets the length of the string without initializing the elements.
+  */
+  void forceToLength(MemorySize length);
+
 // *************************************************************************
 //   TRAVERSE SECTION
 // *************************************************************************
@@ -550,7 +620,7 @@ public:
   */
   inline Iterator getEndIterator() noexcept
   {
-    return elements->getEndIterator() - 1;
+    return elements->getEndIterator() - 1; // remember terminator
   }
 
   /**
@@ -566,7 +636,23 @@ public:
   */
   inline ReadIterator getEndReadIterator() const noexcept
   {
-    return elements->getEndReadIterator() - 1;
+    return elements->getEndReadIterator() - 1; // remember terminator
+  }
+
+  /**
+    Returns the first element of the string as a non-modifying iterator.
+  */
+  inline ReadIterator begin() const noexcept
+  {
+    return elements->getBeginReadIterator();
+  }
+
+  /**
+    Returns the end of the string as a non-modifying iterator.
+  */
+  inline ReadIterator end() const noexcept
+  {
+    return elements->getEndReadIterator() - 1; // remember terminator
   }
 
   /**
@@ -585,6 +671,8 @@ public:
     return elements->getReadEnumerator();
   }
 
+  // TAG: add method to check compliance with Unicode and ISO codes
+  
 // *************************************************************************
 //   CHARACTER SECTION
 // *************************************************************************
@@ -610,9 +698,15 @@ public:
     Returns a reference to character at the specified index. Raises
     OutOfRange if index exceeds the length of the string.
   */
-  inline Element operator[](MemorySize index)
+  Element operator[](MemorySize index)
   {
     return Element(*this, index);
+  }
+
+  /** Returns true if non-empty. */
+  inline operator bool() const noexcept
+  {
+    return getLength() != 0;
   }
 
   /**
@@ -674,11 +768,41 @@ public:
   }
 
   /**
+    Appends the string to this string.
+
+    @param string The string to be appended.
+  */
+  inline WideString& append(const String& string)
+  {
+    return insert(getLength(), string.native());
+  }
+
+  /**
     Appends the string literal to this string.
 
     @param string The string to be appended.
   */
   WideString& append(const WideLiteral& string);
+  
+  /**
+    Appends the NULL-terminated string to this string.
+
+    @param string The string to be appended.
+  */
+  inline WideString& append(const NativeWideString& string)
+  {
+    return insert(getLength(), string);
+  }
+
+  /**
+    Appends the native string to this string.
+
+    @param string The native string to be appended.
+  */
+  inline WideString& append(const wchar* string)
+  {
+    return append(NativeWideString(string));
+  }
 
   /**
     Appends the string literal to this string.
@@ -687,6 +811,14 @@ public:
     @param maximum The maximum length of the to be appended string.
   */
   WideString& append(const WideLiteral& string, MemorySize maximum);
+
+  /**
+    Appends the NULL-terminated string to this string.
+
+    @param string The string to be appended.
+    @param maximum The maximum length of the string to be appended.
+  */
+  WideString& append(const NativeWideString& string, MemorySize maximum);
 
   /**
     Appends the NULL-terminated string to this string.
@@ -731,20 +863,33 @@ public:
 
     @param index Specifies the position to insert the string. If the index
     exceeds the end of this string the string is inserted at the end.
-
     @param string The string to be inserted.
   */
   WideString& insert(MemorySize index, const WideString& string);
 
   /**
+    Inserts the string literal into this string.
+
+    @param index Specifies the position to insert the string. If the index
+    exceeds the end of this string the string is inserted at the end.
+    @param string The string literal to be inserted.
+  */
+  WideString& insert(MemorySize index, const WideLiteral& string);
+
+  template<MemorySize SIZE>
+  inline WideString& insert(MemorySize index, const Char (&literal)[SIZE])
+  {
+    return insert(index, WideLiteral(literal));
+  }
+  
+  /**
     Inserts NULL-terminated string into this string.
 
     @param index Specifies the position to insert the string. If the index
     exceeds the end of this string the string is inserted at the end.
-
     @param string The NULL-terminated string to be inserted.
   */
-  WideString& insert(MemorySize index, const WideLiteral& string);
+  WideString& insert(MemorySize index, const NativeWideString& string);
 
   /**
     Replaces the characters in a substring of this string with the characters
@@ -799,6 +944,56 @@ public:
   }
 
   /**
+    Appends the string to this string.
+
+    @param suffix The string to be appended.
+  */
+  inline WideString& operator+=(const String& suffix)
+  {
+    return append(suffix);
+  }
+
+  /**
+    Appends the literal to this string.
+
+    @param suffix The character to be appended.
+  */
+  inline WideString& operator+=(const WideLiteral& suffix)
+  {
+    return append(suffix);
+  }
+
+  /**
+    Appends the string to this string.
+
+    @param suffix The character to be appended.
+  */
+  inline WideString& operator+=(const wchar* suffix)
+  {
+    return append(NativeWideString(suffix));
+  }
+
+  /**
+    Appends the string to this string.
+
+    @param suffix The character to be appended.
+  */
+  inline WideString& operator+=(const NativeWideString& suffix)
+  {
+    return append(suffix);
+  }
+  
+  /**
+    Appends the character to this string.
+
+    @param suffix The character to be appended.
+  */
+  inline WideString& operator+=(Char suffix)
+  {
+    return append(suffix);
+  }
+
+  /**
     WideString reduction operator. Removes suffix from this string if and only if
     it ends with the suffix (e.g. ("presuf"-"suf") results in a new string
     "pre" whereas ("pre"-"suf") results in "pre").
@@ -806,13 +1001,14 @@ public:
     @param suffix The suffix to be removed.
   */
   WideString& operator-=(const WideString& suffix);
-  
+
 // *************************************************************************
 //   UNARY SECTION
 // *************************************************************************
 
   /**
-    The character sequence contained in this string is replaced by the reverse sequence.
+    The character sequence contained in this string is replaced by the reverse
+    sequence.
   */
   WideString& reverse() noexcept;
 
@@ -834,40 +1030,47 @@ public:
     Compare this string with another string.
 
     @param string The string to compare this string with.
-    
     @return Integer less than, equal to, or greater than zero if this string is
     found, respectively, to be less than, equal to, or greater than the
     specified string.
   */
-  int compareTo(const WideString& string) const;
+  int compareTo(const WideString& string) const noexcept;
 
   /**
-    Compare this string with a string literal.
+    Compares this string to with string literal.
 
-    @param string The string literal to compare this string with.
-    
+    @param string The string to compare this string with.
     @return Integer less than, equal to, or greater than zero if this string is
     found, respectively, to be less than, equal to, or greater than the
     specified string.
   */
-  int compareTo(const WideLiteral& string) const;
+  int compareTo(const WideLiteral& string) const noexcept;
   
   /**
-    Compare this string with NULL-terminated string.
+    Compares this string with a NULL-terminated string.
+    
+    @param string The string to compare this string with.
+    @return Integer less than, equal to, or greater than zero if this string is
+    found, respectively, to be less than, equal to, or greater than the
+    specified string. False, if string is 0.
+  */
+  int compareTo(const NativeWideString& string) const noexcept;
+
+  /**
+    Compares this string with NULL-terminated string.
 
     @param string The string to compare this string with.
-    
     @return Integer less than, equal to, or greater than zero if this string is
     found, respectively, to be less than, equal to, or greater than the
     specified string.
   */
-  int compareTo(const wchar* string) const;
+  int compareTo(const wchar* string) const /*noexcept*/;
 
   /**
-    Compares this string with other string ignoring the case of the characters.
+    Compares this string with NULL-terminated string ignoring the case of the
+    characters.
 
     @param string The string to compare this string with.
-    
     @return Integer less than, equal to, or greater than zero if this string is
     found, respectively, to be less than, equal to, or greater than the
     specified string.
@@ -879,41 +1082,55 @@ public:
 
     @param prefix The string to compare start of this string with.
   */
-  bool startsWith(const WideString& prefix) const;
+  bool startsWith(const WideString& prefix) const /*noexcept*/;
 
   /**
     Returns true if this string starts with the specified prefix.
 
     @param prefix The string to compare start of this string with.
   */
-  bool startsWith(const WideLiteral& prefix) const;
+  bool startsWith(const WideLiteral& prefix) const /*noexcept*/;
+
+  /**
+    Returns true if this string starts with the specified prefix.
+
+    @param prefix The string to compare start of this string with.
+  */
+  template<MemorySize SIZE>
+  inline bool startsWith(const Char (&prefix)[SIZE]) const /*noexcept*/
+  {
+    return startsWith(Literal(prefix));
+  }
+  
+  /**
+    Returns true if this string ends with the specified suffix.
+
+    @param suffix The string to compare end of this string with.
+  */
+  bool endsWith(const WideString& suffix) const /*noexcept*/;
 
   /**
     Returns true if this string ends with the specified suffix.
 
     @param suffix The string to compare end of this string with.
   */
-  bool endsWith(const WideString& suffix) const;
+  bool endsWith(const WideLiteral& suffix) const /*noexcept*/;
 
   /**
-    Returns true if this string ends with the specified suffix.
+    Returns true if this string ends with prefix.
 
     @param suffix The string to compare end of this string with.
   */
-  bool endsWith(const WideLiteral& suffix) const;
-
+  template<MemorySize SIZE>
+  inline bool endsWith(const char (&suffix)[SIZE]) const /*noexcept*/
+  {
+    return endsWith(Literal(suffix));
+  }
+  
   /**
     Equality operator.
   */
   inline bool operator==(const WideString& string) const noexcept
-  {
-    return compareTo(string) == 0;
-  }
-
-  /**
-    Equality operator.
-  */
-  inline bool operator==(const WideLiteral& string) const noexcept
   {
     return compareTo(string) == 0;
   }
@@ -925,6 +1142,15 @@ public:
   {
     return compareTo(string) != 0;
   }
+
+  /**
+    Equality operator.
+  */
+  inline bool operator==(const WideLiteral& string) const noexcept
+  {
+    return compareTo(string) == 0;
+  }
+
 
   /**
     Less than operator.
@@ -978,23 +1204,27 @@ public:
 
     @param string The substring to find.
     @param start Specifies the start position of the search. Default is 0.
-    @return Index of the first match if any otherwise -1. Also returns -1 if substring is empty.
+    @return Index of the first match if any otherwise -1. Also returns -1 if
+    substring is empty.
   */
   MemoryDiff indexOf(const WideString& string, MemorySize start = 0) const noexcept;
 
   /**
-    Returns the index of the last character that matches the specified character
-    before the start position.
+    Returns the index of the last character that matches the specified
+    character before the start position.
 
     @param ch The character to find.
-    @param start Specifies the start position of the search. Default is end of string.
+    @param start Specifies the start position of the search. Default is end of
+    string.
     @return Index of the last match if any otherwise -1.
   */
   MemoryDiff lastIndexOf(ucs4 ch, MemorySize start) const noexcept;
 
   /**
-    Returns the index of the last character that matches the specified character
-    starting from the end of the string.
+    Returns the index of the last character that matches the specified character.
+
+    @param ch The character to find.
+    @return Index of the last match if any otherwise -1.
   */
   inline MemoryDiff lastIndexOf(ucs4 ch) const noexcept
   {
@@ -1042,21 +1272,6 @@ public:
   */
   MemorySize count(const WideString& string, MemorySize start = 0) const noexcept;
 
-// *************************************************************************
-//   END SECTION
-// *************************************************************************
-  
-  /**
-    Returns NULL-terminated wide string.
-  */
-  inline const ucs4* getElements() const noexcept
-  {
-    // special case: no need to copy on write 'cause we only add terminator
-    ucs4* result = const_cast<ucs4*>(elements->getElements());
-    result[getLength()] = Traits::TERMINATOR; // remove
-    return result;
-  }
-
   /**
     Returns true if the string is upper cased.
   */
@@ -1071,16 +1286,6 @@ public:
     Returns true if the string is title cased.
   */
   bool isTitleCased() const noexcept;
-
-  /**
-    Returns the characters of the string for non-modifying access.
-  */
-  inline const ucs4* native() const noexcept
-  {
-    const ucs4* result = elements->getElements();
-    BASSERT(result[getLength()] == Traits::TERMINATOR);
-    return result;
-  }
 
 #if 0
   /**
@@ -1101,28 +1306,106 @@ public:
     return Unicode::WCharString(*this);
   }
 #endif
+  
+  /**
+    Trims the string.
 
-  /** Returns true if non-empty. */
-  inline operator bool() const noexcept
-  {
-    return getLength() != 0;
-  }
-
-// *************************************************************************
-//   FRIEND SECTION
-// *************************************************************************
+    @param character The character to remove.
+  */
+  WideString& trim(ucs4 character = ' ');
 
   /**
-    Writes string to format stream.
+    Returns the index of the first substring that matches the specified string
+    after the start position. The implementation is based on the "Boyer-Moore
+    Fast String Searching Algorithm".
+    
+    @see indexOf
+    @param string The substring to find.
+    @param start Specifies the start position of the search. Default is 0.
+    @return Index of the first match if any otherwise -1. Also returns -1 if
+    substring is empty.
   */
-  _COM_AZURE_DEV__BASE__API friend FormatOutputStream& operator<<(FormatOutputStream& stream, const WideString& value);
+  MemoryDiff search(const WideString& substring, MemorySize start = 0) const noexcept;
+
+  /**
+    Returns the substrings between the specified separator.
+
+    @param separator Separator.
+    @param group Group separators. Default is false.
+  */
+  Array<WideString> split(Char separator, bool group = false) const;
+
+  /** Returns the internal container. */
+  const Reference<ReferenceCountedAllocator<Char> >& getContainer() const
+  {
+    return elements;
+  }
+  
+  /**
+    Returns NULL-terminated string for modifying access.
+  */
+  Char* getElements();
+
+  /** Returns true if state is valid. */
+  inline bool invariant() const noexcept
+  {
+    if (!elements) {
+      return false;
+    }
+    const MemorySize length = getLength();
+    if (length == 0) {
+      return false;
+    }
+    const Char* buffer = elements->getElements();
+    return (buffer[length] == Traits::TERMINATOR);
+  }
+  
+  /**
+    Returns NULL-terminated string.
+  */
+  inline const Char* getElements() const noexcept
+  {
+    const Char* result = elements->getElements();
+    BASSERT(result[getLength()] == Traits::TERMINATOR); // remove
+    return result;
+  }
+
+  /**
+    Returns the end of string.
+  */
+  inline const Char* getEnd() const noexcept
+  {
+    const MemorySize length = getLength();
+    const Char* result = elements->getElements();
+    BASSERT(result[length] == Traits::TERMINATOR);
+    return result + length;
+  }
+
+  // we do not support this const uint8* getBytes() const noexcept;
+  
+  /**
+    Returns the characters of the string for non-modifying access.
+  */
+  inline const Char* native() const noexcept
+  {
+    const Char* result = elements->getElements();
+    BASSERT(result[getLength()] == Traits::TERMINATOR); // TAG: remove
+    return result;
+  }
 };
 
 template<>
 int compare<WideString>(const WideString& left, const WideString& right);
 
+template<>
+class _COM_AZURE_DEV__BASE__API Hash<WideString> {
+public:
+
+  unsigned long operator()(const WideString& value) noexcept;
+};
+
 /**
-  Writes wide string to format stream.
+  Writes string to format stream.
 */
 _COM_AZURE_DEV__BASE__API FormatOutputStream& operator<<(FormatOutputStream& stream, const WideString& value);
 
@@ -1134,17 +1417,60 @@ inline WideString operator+(const WideString& left, const WideString& right)
   return WideString(left.getLength() + right.getLength()).append(left).append(right);
 }
 
+#if 0
 /**
-  String reduction. Removes suffix from string if and only if it ends with the suffix (e.g. ("presuf"-"suf") results in
-  a new string "pre" whereas ("pre"-"suf") results in "pre").
+  Returns a new string that is the concatenation of the two specified strings.
+*/
+inline WideString operator+(const WideString& left, const String& right)
+{
+  return WideString(left.getLength() + right.getLength()).append(left).append(right);
+}
+
+/**
+  Returns a new string that is the concatenation of the two specified strings.
+*/
+inline WideString operator+(const String& left, const WideString& right)
+{
+  return WideString(left.getLength() + right.getLength()).append(left).append(right);
+}
+#endif
+
+/**
+  Returns a new string that is the concatenation of the two specified strings.
+*/
+inline WideString operator+(const WideString& left, const char* right)
+{
+  return left + WideString(right);
+}
+
+/**
+  Returns a new string that is the concatenation of the two specified strings.
+*/
+inline WideString operator+(const char* left, const WideString& right)
+{
+  return WideString(left) + right;
+}
+
+/**
+  String reduction. Removes suffix from string if and only if it ends with the
+  suffix (e.g. ("presuf"-"suf") results in a new string "pre" whereas
+  ("pre"-"suf") results in "pre").
 */
 inline WideString operator-(const WideString& left, const WideString& right)
 {
   if (left.endsWith(right)) {
-    return left.substring(0, left.getLength() - right.getLength() - 1); // return copy of left without suffix
+    return left.substring(0, left.getLength() - right.getLength()); // return copy of left without suffix
   } else {
     return WideString(left); // return copy of left
   }
 }
+
+#if 0
+template<>
+inline void swapper<WideString>(WideString& a, WideString& b)
+{
+  swapper(a.elements, b.elements); // self swap allowed
+}
+#endif
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

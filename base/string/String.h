@@ -35,6 +35,7 @@ class WideString;
   Default character manipulators.
 
   @short ASCII character characteristics
+  @ingroup string
   @version 1.0
 */
 class _COM_AZURE_DEV__BASE__API CharTraits {
@@ -85,8 +86,14 @@ public:
 /**
   String class. The first modifing operation on a string may force the internal
   buffer to be duplicated. The implementation is currently NOT MT-safe.
+  
+  @code
+  String myString = "Hello, World!";
+  String myOtherString = myString;
+  @endcode
 
   @short String
+  @ingroup string
   @version 1.0
 */
 
@@ -151,7 +158,8 @@ private:
 
   /**
     Reference counted buffer holding NULL-terminated string. The array is
-    guarantied to be non-empty when the string has been initialized.
+    guarantied to be non-empty when the string has been initialized. elements
+    will never be nullptr.
   */
   Reference<ReferenceCountedAllocator<char> > elements;
 protected:
@@ -309,9 +317,9 @@ public:
   /**
     Assignment of string to string.
   */
-  inline String& operator=(const String& copy) noexcept
+  inline String& operator=(const String& assign) noexcept
   {
-    elements = copy.elements; // self assignment handled by automation pointer
+    elements = assign.elements; // self assignment handled by automation pointer
     return *this;
   }
 
@@ -771,7 +779,6 @@ public:
 
   template<MemorySize SIZE>
   inline String& insert(MemorySize index, const char (&literal)[SIZE])
-   
   {
     return insert(index, Literal(literal));
   }
@@ -901,7 +908,7 @@ public:
 // *************************************************************************
 
   /**
-    Compares this string to another string.
+    Compare this string with another string.
 
     @param string The string to compare this string with.
     @return Integer less than, equal to, or greater than zero if this string is
@@ -909,7 +916,7 @@ public:
     specified string.
   */
   int compareTo(const String& string) const noexcept;
-  
+
   /**
     Compares this string to with string literal.
 
@@ -921,7 +928,7 @@ public:
   int compareTo(const Literal& string) const noexcept;
   
   /**
-    Compares this string to a NULL-terminated string.
+    Compares this string with a NULL-terminated string.
     
     @param string The string to compare this string with.
     @return Integer less than, equal to, or greater than zero if this string is
@@ -958,21 +965,21 @@ public:
   }
   
   /**
-    Returns true if this string starts with prefix.
+    Returns true if this string starts with the specified prefix.
 
     @param prefix The string to compare start of this string with.
   */
   bool startsWith(const String& prefix) const noexcept;
 
   /**
-    Returns true if this string starts with prefix.
+    Returns true if this string starts with the specified prefix.
 
     @param prefix The string to compare start of this string with.
   */
   bool startsWith(const Literal& prefix) const noexcept;
 
   /**
-    Returns true if this string starts with prefix.
+    Returns true if this string starts with the specified prefix.
 
     @param prefix The string to compare start of this string with.
   */
@@ -983,14 +990,14 @@ public:
   }
   
   /**
-    Returns true if this string ends with suffix.
+    Returns true if this string ends with the specified suffix.
 
     @param suffix The string to compare end of this string with.
   */
   bool endsWith(const String& suffix) const noexcept;
 
   /**
-    Returns true if this string ends with suffix.
+    Returns true if this string ends with the specified suffix.
 
     @param suffix The string to compare end of this string with.
   */
@@ -1184,7 +1191,7 @@ public:
     substring is empty.
   */
   MemoryDiff indexOf(const String& string, MemorySize start = 0) const noexcept;
-  
+
   /**
     Returns the index of the last character that matches the specified
     character before the start position.
@@ -1195,7 +1202,7 @@ public:
     @return Index of the last match if any otherwise -1.
   */
   MemoryDiff lastIndexOf(char ch, MemorySize start) const noexcept;
-  
+
   /**
     Returns the index of the last character that matches the specified character.
 
@@ -1261,7 +1268,7 @@ public:
     substring is empty.
   */
   MemoryDiff search(const String& substring, MemorySize start = 0) const noexcept;
-  
+
   /**
     Returns the substrings between the specified separator.
 
@@ -1269,10 +1276,6 @@ public:
     @param group Group separators. Default is false.
   */
   Array<String> split(char separator, bool group = false) const;
-  
-// *************************************************************************
-//   END SECTION
-// *************************************************************************
 
   /** Returns the internal container. */
   const Reference<ReferenceCountedAllocator<char> >& getContainer() const
@@ -1288,7 +1291,13 @@ public:
   /** Returns true if state is valid. */
   inline bool invariant() const noexcept
   {
+    if (!elements) {
+      return false;
+    }
     const MemorySize length = getLength();
+    if (length == 0) {
+      return false;
+    }
     const char* buffer = elements->getElements();
     return (buffer[length] == Traits::TERMINATOR);
   }
@@ -1299,7 +1308,7 @@ public:
   inline const char* getElements() const noexcept
   {
     const char* result = elements->getElements();
-    BASSERT(result[getLength()] == Traits::TERMINATOR);
+    BASSERT(result[getLength()] == Traits::TERMINATOR); // remove
     return result;
   }
 
@@ -1330,7 +1339,7 @@ public:
   inline const char* native() const noexcept
   {
     const char* result = elements->getElements();
-    BASSERT(result[getLength()] == Traits::TERMINATOR);
+    BASSERT(result[getLength()] == Traits::TERMINATOR); // TAG: remove
     return result;
   }
 };

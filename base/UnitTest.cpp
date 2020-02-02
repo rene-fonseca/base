@@ -85,7 +85,7 @@ namespace {
         }
         source = remoteUrl + "blob/" + version.getCommit() + "/" + source;
         if (line) {
-          source += "#L" + (StringOutputStream() << line);
+          source += "#L" + String(StringOutputStream() << line);
         }
       }
     }

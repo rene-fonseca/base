@@ -126,9 +126,9 @@ String::String(const char* src)
   initialize(src, getNullTerminatedLength(src));
 }
 
-String::String(const char* string, MemorySize length)
+String::String(const char* src, MemorySize length)
 {
-  initialize(string, length);
+  initialize(src, length);
 }
 
 String::String(const char16_t* src)
@@ -507,6 +507,7 @@ String String::substring(MemorySize start, MemorySize end) const
     base::copy(result.getBuffer(), getBuffer() + start, lengthOfSubstring); // buffers do not overlap
     return result;
   } else {
+    // C++: could be useful to have a "This/Auto" type to get the class automatically
     return String(); // return empty string
   }
 }
@@ -663,7 +664,7 @@ bool String::endsWith(const Literal& suffix) const noexcept
 
 MemoryDiff String::indexOf(char ch, MemorySize start) const noexcept
 {
-  MemorySize length = getLength();
+  const MemorySize length = getLength();
   if (start >= length) {
     return -1; // not found
   }
@@ -791,7 +792,7 @@ MemoryDiff String::lastIndexOf(const String& string, MemorySize start) const noe
 
 MemorySize String::count(char ch, MemorySize start) const noexcept
 {
-  MemorySize result = 0;
+  MemoryDiff result = 0;
   MemorySize count = 0;
   while ((result = indexOf(ch, start)) >= 0) { // until not found
     ++count;
@@ -802,7 +803,7 @@ MemorySize String::count(char ch, MemorySize start) const noexcept
 
 MemorySize String::count(const String& string, MemorySize start) const noexcept
 {
-  MemorySize result = 0;
+  MemoryDiff result = 0;
   MemorySize count = 0;
   while ((result = indexOf(string, start)) >= 0) { // until not found - works for empty string
     ++count;
@@ -867,7 +868,7 @@ MemoryDiff String::search(const String& substring, MemorySize start) const noexc
     for (unsigned int i = 0; i < getArraySize(skip); ++i) {
       skip[i] = length; // maximum single code skip
     }
-    String::ReadIterator i = substring.getBeginReadIterator();
+    ReadIterator i = substring.getBeginReadIterator();
     MemorySize current = length;
     while (current) {
       --current;
@@ -875,18 +876,18 @@ MemoryDiff String::search(const String& substring, MemorySize start) const noexc
     }
   }
   
-  String::ReadIterator i = getBeginReadIterator() + start;
-  const String::ReadIterator end = getEndReadIterator();
-  const String::ReadIterator substringBegin = substring.getBeginReadIterator();
-  String::ReadIterator j = substring.getEndReadIterator();
+  ReadIterator i = getBeginReadIterator() + start;
+  const ReadIterator end = getEndReadIterator();
+  const ReadIterator substringBegin = substring.getBeginReadIterator();
+  ReadIterator j = substring.getEndReadIterator();
   j -= 1;
   i += length - 1;
   while (i < end) {
     if (*i != *j) { // check end matches
       i += skip[static_cast<uint8>(*i)]; // could skip pass end
     } else {
-      String::ReadIterator k = i - 1;
-      String::ReadIterator l = j - 1;
+      ReadIterator k = i - 1;
+      ReadIterator l = j - 1;
       while ((l > substringBegin) && (*k == *l)) {
         --k;
         --l;
@@ -1024,9 +1025,12 @@ public:
   void run() override
   {
     String a;
+    TEST_ASSERT(!a);
     TEST_ASSERT(a.isEmpty());
     String b("literal");
     a = "qwerty";
+    TEST_ASSERT(a);
+    TEST_ASSERT(!a.isEmpty());
     auto c = a + b;
     TEST_ASSERT(c == "qwertyliteral");
     

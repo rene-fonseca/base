@@ -1444,6 +1444,21 @@ Array<WideString> WideString::split(Char separator, bool group) const
   return result;
 }
 
+WideString operator*(const WideString& src, MemorySize count)
+{
+  WideString result;
+  if (src && count) {
+    if (count == 1) {
+      return src;
+    }
+    result.ensureCapacity(src.getLength() * count);
+    while (count--) {
+      result.append(src);
+    }
+  }
+  return result;
+}
+
 template<>
 int compare<WideString>(const WideString& left, const WideString& right)
 {

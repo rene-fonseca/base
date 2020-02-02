@@ -950,6 +950,21 @@ Array<String> String::split(char separator, bool group) const
   return result;
 }
 
+String operator*(const String& src, MemorySize count)
+{
+  String result;
+  if (src && count) {
+    if (count == 1) {
+      return src;
+    }
+    result.ensureCapacity(src.getLength() * count);
+    while (count--) {
+      result.append(src);
+    }
+  }
+  return result;
+}
+
 template<>
 int compare<String>(const String& left, const String& right)
 {

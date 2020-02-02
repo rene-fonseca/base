@@ -1398,6 +1398,11 @@ inline String operator-(const String& left, const String& right)
   }
 }
 
+/**
+  Returns a string that is the concatenation of the given string the given number of times.
+*/
+_COM_AZURE_DEV__BASE__API String operator*(const String& src, MemorySize count);
+
 template<>
 inline void swapper<String>(String& a, String& b)
 {

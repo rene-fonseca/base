@@ -41,6 +41,12 @@ public:
 
   /** Callback for exception. */
   typedef void (*ExceptionHandler)(const Exception* exception);
+
+#if (defined(_COM_AZURE_DEV__BASE__NO_EXCEPTIONS))
+  static constexpr bool SUPPORTS_EXCEPTIONS = false;
+#else
+  static constexpr bool SUPPORTS_EXCEPTIONS = true;
+#endif
 private:
 
   /** When enabled, all exceptions are printed to stderr. */

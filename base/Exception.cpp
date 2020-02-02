@@ -371,16 +371,16 @@ void ThrowException::onException(const char* who, const char* file, unsigned int
     stream << normal() << ENDL;
   }
   
-#if (_COM_AZURE_DEV__BASE__OS != _COM_AZURE_DEV__BASE__WASI)
-  static bool showStackTrace = true;
-  if (showStackTrace) {
-    StackFrame::toStream(
-      stream, StackFrame::getStack().getTrace(),
-      StackFrame::FLAG_DEFAULT |
-      (colors ? StackFrame::FLAG_USE_COLORS : 0)
-    );
+  if (StackFrame::SUPPORTS_STACK_TRACE) {
+    static bool showStackTrace = true;
+    if (showStackTrace) {
+      StackFrame::toStream(
+        stream, StackFrame::getStack().getTrace(),
+        StackFrame::FLAG_DEFAULT |
+        (colors ? StackFrame::FLAG_USE_COLORS : 0)
+      );
+    }
   }
-#endif
 #endif
 }
 
@@ -404,7 +404,7 @@ public:
     Exception e2("123");
     Exception e3("123", Type::getType<Exception>());
 
-#if (_COM_AZURE_DEV__BASE__OS != _COM_AZURE_DEV__BASE__WASI) && \
+#if (!defined(_COM_AZURE_DEV__BASE__NO_EXCEPTIONS)) && \
     (_COM_AZURE_DEV__BASE__ARCH != _COM_AZURE_DEV__BASE__SPARC64) && \
     (_COM_AZURE_DEV__BASE__ARCH != _COM_AZURE_DEV__BASE__S390X)
     TEST_DECLARE_HERE(A);

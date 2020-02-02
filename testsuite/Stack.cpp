@@ -59,7 +59,7 @@ public:
 
     fout << "Pop on empty stack (exception OutOfRange expected)" << ENDL;
     try {
-#if (_COM_AZURE_DEV__BASE__OS != _COM_AZURE_DEV__BASE__WASI) && \
+#if (!defined(_COM_AZURE_DEV__BASE__NO_EXCEPTIONS)) && \
     (_COM_AZURE_DEV__BASE__ARCH != _COM_AZURE_DEV__BASE__SPARC64) && \
     (_COM_AZURE_DEV__BASE__ARCH != _COM_AZURE_DEV__BASE__POWERPC64) && \
     (_COM_AZURE_DEV__BASE__ARCH != _COM_AZURE_DEV__BASE__S390X)

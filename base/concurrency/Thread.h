@@ -79,6 +79,12 @@ class _COM_AZURE_DEV__BASE__API Thread : public Runnable {
   friend class DaemonImpl;
 public:
 
+#if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__WASI)
+  static constexpr bool SUPPORTS_THREADING = false;
+#else
+  static constexpr bool SUPPORTS_THREADING = true;
+#endif
+
   /** Thread resource identifier type. */
   typedef void* Identifier;
 

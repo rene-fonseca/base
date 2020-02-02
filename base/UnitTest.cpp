@@ -924,13 +924,19 @@ bool UnitTestManager::runTests(const String& pattern, bool runDevel)
     
 
     TestingThread thread(test);
-#if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__WASI) || \
-    (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__EMCC) || \
+    bool doStart = true;
+#if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__EMCC) || \
     (_COM_AZURE_DEV__BASE__ARCH == _COM_AZURE_DEV__BASE__SPARC64)
-    thread.run();
-#else
-    thread.start();
+    doStart = false;
 #endif
+    bool doJoin = false;
+    if (doStart && Thread::SUPPORTS_THREADING) {
+      doJoin = true;
+      thread.start();
+    } else {
+      thread.run();
+    }
+
     bool timedOut = false;
     if (progressMode) {
       do {
@@ -974,13 +980,11 @@ bool UnitTestManager::runTests(const String& pattern, bool runDevel)
       // thread.terminate(); // terminate on exit of loop instead
     }
 
-#if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__WASI) || \
-    (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__EMCC)
-#else
     if (!timedOut) {
-      thread.join();
+      if (doJoin) {
+        thread.join();
+      }
     }
-#endif
 
     #if 0
         if (!progressMode) {

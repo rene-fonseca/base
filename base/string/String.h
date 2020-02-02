@@ -336,12 +336,13 @@ public:
     Assignment of string literal to string.
   */
   String& operator=(const Literal& assign);
-  String& operator=(const NativeString& string);
-  String& operator=(const char* string);
-  String& operator=(const char16_t* string);
-  String& operator=(const char32_t* string);
-  String& operator=(const wchar* string);
-  String& operator=(const WideString& string);
+  String& operator=(const NativeString& assign);
+  String& operator=(const char* assign);
+  String& operator=(const char16_t* assign);
+  String& operator=(const char32_t* assign);
+  String& operator=(const wchar* assign);
+  String& operator=(const WideString& assign);
+  String& operator=(const StringOutputStream& assign);
 
   template<MemorySize SIZE>
   inline String& operator=(const char (&literal)[SIZE])

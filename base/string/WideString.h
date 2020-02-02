@@ -528,6 +528,7 @@ public:
   WideString& operator=(const wchar* assign);
   WideString& operator=(const char16_t* assign);
   WideString& operator=(const char32_t* assign);
+  WideString& operator=(const StringOutputStream& assign);
 
   template<MemorySize SIZE>
   inline WideString& operator=(const Char (&literal)[SIZE])

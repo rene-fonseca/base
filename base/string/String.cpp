@@ -224,6 +224,12 @@ String& String::operator=(const WideString& assign)
   return *this;
 }
 
+String& String::operator=(const StringOutputStream& assign)
+{
+  operator=(assign.getString());
+  return *this;
+}
+
 bool String::isASCII() const noexcept
 {
   const char* i = getBuffer();

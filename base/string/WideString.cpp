@@ -519,6 +519,12 @@ WideString& WideString::operator=(const char32_t* assign)
   return *this;
 }
 
+WideString& WideString::operator=(const StringOutputStream& assign)
+{
+  operator=(assign.getString());
+  return *this;
+}
+
 bool WideString::isASCII() const noexcept
 {
   const ucs4* i = getBuffer();

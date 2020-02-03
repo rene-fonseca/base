@@ -112,13 +112,16 @@ void StringOutputStream::ensureCapacity(MemorySize capacity)
   stream.ensureCapacity(capacity);
 }
 
-const String& StringOutputStream::getString() const noexcept
+const String& StringOutputStream::getString() const
 {
-  // TAG: check where this is used
+  // flush() should be considered cache so constness could still be ok here - yet ugly
+  // what is the alternative - mutable all the way through?
+  (const_cast<StringOutputStream*>(this))->flush();
+  // flush();
   return stream.getString();
 }
 
-String StringOutputStream::toString() noexcept
+String StringOutputStream::toString()
 {
   flush();
   // does NOT copy capacity

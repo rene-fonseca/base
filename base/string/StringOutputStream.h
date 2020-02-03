@@ -108,14 +108,22 @@ public:
   void ensureCapacity(MemorySize capacity);
 
   /**
-    Returns the string associated with the stream.
+    Returns the string associated with the stream. Same as toString() but does NOT restart stream.
   */
-  const String& getString() const noexcept;
+  const String& getString() const;
 
   /**
     Returns the string associated with the stream and restarts the stream.
   */
-  String toString() noexcept;
+  String toString();
+  
+  /**
+    Returns the string associated with the stream. Same as toString() but does NOT restart stream.
+  */
+  inline operator const String&() const
+  {
+    return getString();
+  }
 
   /**
     Destroy stream object.

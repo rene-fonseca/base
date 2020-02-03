@@ -733,7 +733,7 @@ public:
 
 /** Returns true if the the symbol is defined. */
 #define TEST_IS_DEFINED(SYMBOL) \
-  base::UnitTestManager::getManager().hasSymbol(SYMBOL))
+  base::UnitTestManager::getManager().hasSymbol(SYMBOL)
 
 /** Make a unique identifier. Must be on a separate source line. */
 #define TEST_UNIQUE_ID(PREFIX) _COM_AZURE_DEV__BASE__MAKE_IDENTIFIER(PREFIX)

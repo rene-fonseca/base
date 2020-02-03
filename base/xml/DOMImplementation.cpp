@@ -63,8 +63,17 @@ public:
 };
 #endif
 
-bool DOMImplementation::hasFeature(
-  const String& name, const String& version) noexcept {
+bool DOMImplementation::isSupported() noexcept
+{
+#if defined(_COM_AZURE_DEV__BASE__USE_XMLSOFT_XML)
+  return true;
+#else
+  return false;
+#endif
+}
+
+bool DOMImplementation::hasFeature(const String& name, const String& version) noexcept
+{
   if (version.isProper() && (version != "2.0")) {
     return false;
   }

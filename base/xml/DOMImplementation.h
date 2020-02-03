@@ -84,6 +84,11 @@ public:
   };
   
   /**
+    Returns true if XML is supported by the runtime.
+  */
+  static bool isSupported() noexcept;
+
+  /**
     Initializes DOM implementation.
   */
   inline DOMImplementation() noexcept

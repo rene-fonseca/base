@@ -21,6 +21,7 @@
 #include <base/string/StringOutputStream.h>
 #include <base/collection/BinaryNode.h>
 #include <base/collection/HashTable.h>
+#include <base/xml/Document.h>
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
@@ -789,6 +790,17 @@ public:
 
   /** Returns the stats for the given item. */
   static Stats getStats(const Reference<ObjectModel::Value>& value);
+
+  /**
+    Returns XML document for given ObjectModel value.
+
+    @param value The object model value.
+    @param name The root name. Defaults to "root".
+    @param ns The XML namespace. Defaults to none.
+  */
+  static Document getXML(const Reference<ObjectModel::Value>& value,
+                         const String& name = "root",
+                         const String& ns = String());
 };
 
 /** Returns true if the given values are identical. */

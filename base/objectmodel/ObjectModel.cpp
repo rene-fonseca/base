@@ -1416,6 +1416,9 @@ namespace {
     static_assert(std::is_base_of<FormatOutputStream, ObjectModel::NiceFormat>(), "Stream must derive from FormatOutputStream.");
     return stream;
   }
+}
+
+namespace internal {
 
   /** Cast stream to type. */
   template<class TYPE>
@@ -1481,6 +1484,87 @@ ObjectModel::NiceFormat& operator<<(ObjectModel::NiceFormat& stream, const Refer
   return stream;
 }
 
+namespace {
+
+  class XMLContext {
+  private:
+
+    Document& d;
+    String arrayName = "item";
+  public:
+
+    XMLContext(Document& _d, const String& _arrayName)
+      : d(_d), arrayName(_arrayName)
+    {
+    }
+
+    Node getXMLNode(Node& n, const Reference<ObjectModel::Value>& value);
+  };
+
+Node XMLContext::getXMLNode(Node& n, const Reference<ObjectModel::Value>& value)
+{
+  switch (value->getType()) {
+  case ObjectModel::Value::TYPE_BOOLEAN:
+    return d.createText((value.cast<ObjectModel::Boolean>()) ? "true" : "false");
+  case ObjectModel::Value::TYPE_INTEGER:
+    return d.createText(StringOutputStream() << (value.cast<ObjectModel::Integer>())->value);
+  case ObjectModel::Value::TYPE_FLOAT:
+    return d.createText(StringOutputStream() << (value.cast<ObjectModel::Float>())->value);
+  case ObjectModel::Value::TYPE_STRING:
+    return d.createText((value.cast<ObjectModel::String>())->value);
+  case ObjectModel::Value::TYPE_ARRAY:
+    {
+      auto a = value.cast<ObjectModel::Array>();
+      for (auto v : a->values) {
+        Element e = d.createElement(arrayName);
+        e.appendChild(getXMLNode(e, v));
+        n.appendChild(e);
+      }
+      return Node();
+    }
+  case ObjectModel::Value::TYPE_OBJECT:
+    {
+      auto o = value.cast<ObjectModel::Object>();
+      for (auto v : o->values) {
+        Element e = d.createElement(*(v.getFirst()));
+        if (Node sn = getXMLNode(e, v.getSecond())) {
+          e.appendChild(sn);
+        }
+        n.appendChild(e);
+      }
+      return Node();
+    }
+  case ObjectModel::Value::TYPE_VOID:
+    return d.createText("null");
+  case ObjectModel::Value::TYPE_COMMENT:
+    return d.createComment(*(value.cast<ObjectModel::Comment>()));
+  case ObjectModel::Value::TYPE_BINARY:
+    return d.createText((value.cast<ObjectModel::Binary>())->toString()); // TAG: encode as base64?
+  default:
+    ;
+  }
+  _throw ObjectModelException("Invalid type.");
+}
+
+} // namespace
+
+Document ObjectModel::getXML(const Reference<ObjectModel::Value>& value, const String& name, const String& ns)
+{
+  if (!value) {
+    return Document();
+  }
+
+  DOMImplementation dom;
+  Document d = dom.createDocument();
+  Element r = d.createElementNS(ns, name);
+  d.appendChild(r);
+  XMLContext context(d, "item");
+  if (Node n = context.getXMLNode(r, value)) {
+    r.appendChild(n);
+  }
+  return d;
+}
+
 #if defined(_COM_AZURE_DEV__BASE__TESTS)
 
 class TEST_CLASS(ObjectModel) : public UnitTest {
@@ -1529,6 +1613,17 @@ public:
     TEST_ASSERT(!root->getObject("/qwerty"));
     TEST_EQUAL(root->getString("/sub/name", ""), "John Doe");
     TEST_EQUAL(root->getString("/sub/qwerty", ""), "");
+
+    if (DOMImplementation::isSupported()) {
+      Document d = ObjectModel::getXML(root, "root", "ns:json"); // TAG: fix namespace
+      if (d) {
+        base::String xml = DOMImplementation().saveDocumentToMemory(d, true);
+        TEST_ASSERT(xml);
+        if (TEST_IS_DEFINED("writeResults")) {
+          fout << xml << ENDL;
+        }
+      }
+    }
   }
 };
 

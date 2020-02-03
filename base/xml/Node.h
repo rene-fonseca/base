@@ -72,19 +72,23 @@ public:
     void* context = nullptr;
   public:
     
-    inline ShadowDocument(void* _context) noexcept : context(_context) {
+    inline ShadowDocument(void* _context) noexcept
+      : context(_context)
+    {
     }
     
     inline ShadowDocument(const ShadowDocument& copy) noexcept
       : context(copy.context) {
     }
     
-    inline ShadowDocument& operator=(const ShadowDocument& assign) noexcept {
+    inline ShadowDocument& operator=(const ShadowDocument& assign) noexcept
+    {
       context = assign.context;
       return *this;
     }
     
-    inline Node getNode() const noexcept {
+    inline Node getNode() const noexcept
+    {
       return context;
     }
   };

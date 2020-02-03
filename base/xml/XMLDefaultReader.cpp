@@ -276,7 +276,8 @@ public:
     const xmlChar* name,
     const xmlChar* publicId,
     const xmlChar* systemId,
-    const xmlChar* notationName) noexcept {
+    const xmlChar* notationName) noexcept
+  {
     UserData* p = static_cast<UserData*>(parser);
     if (p->reader->dtdHandler) {
       p->reader->dtdHandler->unparsedEntityDecl(
@@ -288,14 +289,16 @@ public:
     }
   }
   
-  static void startDocument(void* parser) noexcept {
+  static void startDocument(void* parser) noexcept
+  {
     UserData* p = static_cast<UserData*>(parser);
     if (p->reader->contentHandler) {
       p->reader->contentHandler->startDocument();
     }
   }
 
-  static void endDocument(void* parser) noexcept {
+  static void endDocument(void* parser) noexcept
+  {
     UserData* p = static_cast<UserData*>(parser);
     if (p->reader->contentHandler) {
       p->reader->contentHandler->endDocument();
@@ -303,7 +306,8 @@ public:
   }
   
   static void startElement(
-    void* parser, const xmlChar* name, const xmlChar** atts) noexcept {
+    void* parser, const xmlChar* name, const xmlChar** atts) noexcept
+  {
     UserData* p = static_cast<UserData*>(parser);
     if (p->reader->contentHandler) {
       if (atts) {
@@ -351,7 +355,8 @@ public:
     }
   }
 
-  static void entityReference(void* parser, const xmlChar* name) noexcept {
+  static void entityReference(void* parser, const xmlChar* name) noexcept
+  {
     UserData* p = static_cast<UserData*>(parser);
     if (p->reader->contentHandler) {
       p->reader->contentHandler->entityReference(
@@ -360,7 +365,8 @@ public:
     }
   }
   
-  static void characters(void* parser, const xmlChar* ch, int length) noexcept {
+  static void characters(void* parser, const xmlChar* ch, int length) noexcept
+  {
     UserData* p = static_cast<UserData*>(parser);
     if (p->reader->contentHandler) {
       p->reader->contentHandler->characters(
@@ -370,7 +376,8 @@ public:
   }
   
   static void ignorableWhitespace(
-    void* parser, const xmlChar* ch, int length) noexcept {
+    void* parser, const xmlChar* ch, int length) noexcept
+  {
     UserData* p = static_cast<UserData*>(parser);
     if (p->reader->contentHandler) {
       p->reader->contentHandler->ignorableWhitespace(
@@ -380,7 +387,8 @@ public:
   }
   
   static void processingInstruction(
-    void* parser, const xmlChar* target, const xmlChar* data) noexcept {
+    void* parser, const xmlChar* target, const xmlChar* data) noexcept
+  {
     UserData* p = static_cast<UserData*>(parser);
     if (p->reader->contentHandler) {
       p->reader->contentHandler->processingInstruction(
@@ -390,7 +398,8 @@ public:
     }
   }
   
-  static void comment(void* parser, const xmlChar* value) noexcept {
+  static void comment(void* parser, const xmlChar* value) noexcept
+  {
     UserData* p = static_cast<UserData*>(parser);
     if (p->reader->contentHandler) {
       p->reader->contentHandler->comment(
@@ -400,7 +409,8 @@ public:
   }
   
   static void cdataBlock(
-    void* parser, const xmlChar* value, int length) noexcept {
+    void* parser, const xmlChar* value, int length) noexcept
+  {
     UserData* p = static_cast<UserData*>(parser);
     if (p->reader->contentHandler) {
       p->reader->contentHandler->cdataBlock(
@@ -409,7 +419,8 @@ public:
     }
   }
 
-  static void warning(void* parser, const char* fmt, ...) noexcept {
+  static void warning(void* parser, const char* fmt, ...) noexcept
+  {
     va_list arg;
     char buffer[4096]; // TAG: possible buffer overrun
     va_start(arg, fmt);
@@ -435,7 +446,8 @@ public:
     }
   }
 
-  static void error(void* parser, const char* fmt, ...) noexcept {
+  static void error(void* parser, const char* fmt, ...) noexcept
+  {
     va_list arg;
     char buffer[4096]; // TAG: possible buffer overrun
     va_start(arg, fmt);
@@ -461,7 +473,8 @@ public:
     }
   }
   
-  static void fatalError(void* parser, const char* fmt, ...) noexcept {
+  static void fatalError(void* parser, const char* fmt, ...) noexcept
+  {
     va_list arg;
     char buffer[4096]; // TAG: possible buffer overrun
     va_start(arg, fmt);
@@ -710,13 +723,15 @@ public:
     @param value The final value.
   */
   inline FinalValue(TYPE& _attribute, TYPE _value)
-    : attribute(_attribute), value(_value) {
+    : attribute(_attribute), value(_value)
+  {
   }
 
   /**
     Destroys the automation object.
   */
-  inline ~FinalValue() {
+  inline ~FinalValue()
+  {
     attribute = value;
   }
 };

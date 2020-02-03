@@ -21,7 +21,8 @@
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
-Text Text::splitText(unsigned int index) {
+Text Text::splitText(unsigned int index)
+{
 #if defined(_COM_AZURE_DEV__BASE__USE_XMLSOFT_XML)
   xmlNode* node = (xmlNode*)getContext();
   

@@ -118,32 +118,37 @@ public:
   /**
     Returns the line number.
   */
-  inline unsigned int getLine() const noexcept {
+  inline unsigned int getLine() const noexcept
+  {
     return line;
   }
 
   /**
     Returns the column number.
   */
-  inline unsigned int getColumn() const noexcept {
+  inline unsigned int getColumn() const noexcept
+  {
     return column;
   }
   
   /**
     Returns the public identifier of the entity where the exception occurred.
   */
-  inline const String& getPublicId() const noexcept {
+  inline const String& getPublicId() const noexcept
+  {
     return publicId;
   }
   
   /**
     Returns the system identifier of the entity where the exception occurred.
   */
-  inline const String& getSystemId() const noexcept {
+  inline const String& getSystemId() const noexcept
+  {
     return systemId;
   }
 
-  inline ~SAXParseException() noexcept {
+  inline ~SAXParseException() noexcept
+  {
   }
   
   _COM_AZURE_DEV__BASE__EXCEPTION_THIS_TYPE()

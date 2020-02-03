@@ -46,14 +46,16 @@ public:
     /**
       Initializes attribute.
     */
-    inline Attribute() noexcept {
+    inline Attribute() noexcept
+    {
     }
     
     /**
       Initializes attribute.
     */
     inline Attribute(const String& _name, const String& _value) noexcept
-      : name(_name), value(_value) {
+      : name(_name), value(_value)
+    {
     }
     
     /**

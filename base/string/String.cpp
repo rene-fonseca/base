@@ -131,14 +131,34 @@ String::String(const char* src, MemorySize length)
   initialize(src, length);
 }
 
+String::String(const wchar* src)
+{
+  initialize(src, getNullTerminatedLength(src));
+}
+
+String::String(const wchar* src, MemorySize length)
+{
+  initialize(src, length);
+}
+
 String::String(const char16_t* src)
 {
   initialize(src, getNullTerminatedLength(src));
 }
 
+String::String(const char16_t* src, MemorySize length)
+{
+  initialize(src, length);
+}
+
 String::String(const char32_t* src)
 {
   initialize(src, getNullTerminatedLength(src));
+}
+
+String::String(const char32_t* src, MemorySize length)
+{
+  initialize(src, length);
 }
 
 String::String(const Literal& src)
@@ -154,16 +174,6 @@ String::String(const NativeString& src)
 String::String(const WideString& src)
 {
   initialize(src.native(), src.getLength());
-}
-
-String::String(const wchar* string)
-{
-  initialize(string, getNullTerminatedLength(string));
-}
-
-String::String(const wchar* string, MemorySize length)
-{
-  initialize(string, length);
 }
 
 String::String(StringOutputStream& stream)
@@ -183,6 +193,12 @@ String::String(const NativeString& src, MemorySize maximum)
 }
 
 String& String::operator=(const Literal& assign)
+{
+  initialize(assign.getValue(), assign.getLength());
+  return *this;
+}
+
+String& String::operator=(const WideLiteral& assign)
 {
   initialize(assign.getValue(), assign.getLength());
   return *this;

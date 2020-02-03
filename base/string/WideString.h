@@ -202,7 +202,7 @@ public:
   @version 1.0
 */
 
-class _COM_AZURE_DEV__BASE__API WideString : public virtual Object {
+class _COM_AZURE_DEV__BASE__API WideString /*: public virtual Object*/ { // string are too common to use Object
   friend void swapper<WideString>(WideString& a, WideString& b);
 public:
 
@@ -307,11 +307,6 @@ private:
     will never be nullptr.
   */
   Reference<ReferenceCountedAllocator<ucs4> > elements;
-
-  /**
-    Compare the NULL-terminated strings ignoring the case.
-  */
-  static int compareToIgnoreCase(const ucs4* left, const ucs4* right) noexcept;
 protected:
 
   /**
@@ -358,6 +353,11 @@ protected:
   {
     getBuffer(length);
   }
+
+  /**
+    Compare the NULL-terminated strings ignoring the case.
+  */
+  static int compareToIgnoreCase(const ucs4* left, const ucs4* right) noexcept;
 public:
 
   /**
@@ -368,7 +368,7 @@ public:
   static constexpr ucs4 BOM = 0x0000feff;
 
   /**
-    Initializes an empty string.
+    Initializes an empty string. No allocation done.
   */
   WideString() noexcept;
 
@@ -396,18 +396,92 @@ public:
     Initializes the string from a string literal. The string literal is not
     copied into internal buffer. Implicit initialization is allowed.
 
-    @param string String literal.
+    @param string The string.
   */
   WideString(const Literal& string);
-  WideString(const WideLiteral& string);
-  WideString(const char* string);
-  WideString(const char16_t* string);
-  // WideString(const char32_t* string);
-  WideString(const wchar* string);
-  WideString(const wchar* string, MemorySize length);
-  WideString(const ucs4* string);
-  WideString(const ucs4* string, MemorySize length);
 
+  /**
+    Initializes the string from a string literal. The string literal is not
+    copied into internal buffer. Implicit initialization is allowed.
+
+    @param string The string.
+  */
+  WideString(const WideLiteral& string);
+
+  /**
+    Initializes the string from a string literal. The string literal is not
+    copied into internal buffer. Implicit initialization is allowed.
+
+    @param string The string.
+  */
+  WideString(const char* string);
+
+  /**
+    Initializes the string from a string literal. The string literal is not
+    copied into internal buffer. Implicit initialization is allowed.
+
+    @param string The string.
+    @param length The length of the string.
+  */
+  WideString(const char* string, MemorySize length);
+
+  /**
+    Initializes the string from a string literal. The string literal is not
+    copied into internal buffer. Implicit initialization is allowed.
+
+    @param string The string.
+  */
+  WideString(const wchar* string);
+
+  /**
+    Initializes the string from a string literal. The string literal is not
+    copied into internal buffer. Implicit initialization is allowed.
+
+    @param string The string.
+    @param length The length of the string.
+  */
+  WideString(const wchar* string, MemorySize length);
+
+  /**
+    Initializes the string from a string literal. The string literal is not
+    copied into internal buffer. Implicit initialization is allowed.
+
+    @param string The string.
+  */
+  WideString(const char16_t* string);
+
+  /**
+    Initializes the string from a string literal. The string literal is not
+    copied into internal buffer. Implicit initialization is allowed.
+
+    @param string The string.
+    @param length The length of the string.
+  */
+  WideString(const char16_t* string, MemorySize length);
+
+  /**
+    Initializes the string from a string literal. The string literal is not
+    copied into internal buffer. Implicit initialization is allowed.
+
+    @param string The string.
+  */
+  WideString(const char32_t* string);
+
+  /**
+    Initializes the string from a string literal. The string literal is not
+    copied into internal buffer. Implicit initialization is allowed.
+
+    @param string The string.
+    @param length The length of the string.
+  */
+  WideString(const char32_t* string, MemorySize length);
+
+  /**
+    Initializes the string from UTF-8 string.
+  */
+  WideString(const String& string);
+
+#if 0 // TAG: bad for now due to match with structs also - or static_cast<const wchar*>() is required
   /**
     Initializes the string from a string literal. Implicit initialization is
     allowed.
@@ -420,6 +494,7 @@ public:
     if (Constraint<(SIZE > 0)>::UNSPECIFIED) {}
     initialize(literal, SIZE - 1);
   }
+#endif
   
   /**
     Initializes the string from a NULL-terminated string.
@@ -498,11 +573,6 @@ public:
   WideString(FormatOutputStream& stream);
 
   /**
-    Initialized wide string from multibyte string.
-  */
-  WideString(const String& string);
-  
-  /**
     Assignment of string to string.
   */
   inline WideString& operator=(const WideString& assign) noexcept
@@ -521,16 +591,48 @@ public:
   }
 
   /**
-    Assignment of string literal to string.
+    Assignment of string to string.
   */
   WideString& operator=(const Literal& assign);
+
+  /**
+    Assignment of string to string.
+  */
   WideString& operator=(const WideLiteral& assign);
+
+  /**
+    Assignment of string to string.
+  */
   WideString& operator=(const char* assign);
+
+  /**
+    Assignment of string to string.
+  */
   WideString& operator=(const wchar* assign);
+
+  /**
+    Assignment of string to string.
+  */
   WideString& operator=(const char16_t* assign);
+
+  /**
+    Assignment of string to string.
+  */
   WideString& operator=(const char32_t* assign);
+
+  /**
+    Assignment of string to string.
+  */
+  WideString& operator=(const String& assign);
+
+  /**
+    Assignment of string to string.
+  */
   WideString& operator=(const StringOutputStream& assign);
 
+  /**
+    Assignment of string to string.
+  */
   template<MemorySize SIZE>
   inline WideString& operator=(const Char (&literal)[SIZE])
   {
@@ -805,7 +907,7 @@ public:
   {
     return insert(getLength(), string);
   }
-  
+
   /**
     Appends the native string to this string.
 
@@ -816,11 +918,26 @@ public:
     return insert(getLength(), string);
   }
 
+#if 0
+  /**
+    Appends the string to this string.
+
+    @param string The string to be appended.
+  */
+  WideString& append(const WideLiteral& string);
+
+  template<MemorySize SIZE>
+  inline WideString& append(const Char (&literal)[SIZE])
+  {
+    return append(WideLiteral(literal));
+  }
+#endif
+
   /**
     Appends the string literal to this string.
 
     @param string The string to be appended.
-    @param maximum The maximum length of the to be appended string.
+    @param maximum The maximum length of the string to be appended.
   */
   WideString& append(const WideLiteral& string, MemorySize maximum);
 
@@ -1030,7 +1147,7 @@ public:
   }
 
   /**
-    WideString reduction operator. Removes suffix from this string if and only if
+    String reduction operator. Removes suffix from this string if and only if
     it ends with the suffix (e.g. ("presuf"-"suf") results in a new string
     "pre" whereas ("pre"-"suf") results in "pre").
 
@@ -1113,6 +1230,12 @@ public:
   */
   int compareToIgnoreCase(const WideString& string) const noexcept;
 
+  template<MemorySize SIZE>
+  inline int compareToIgnoreCase(const Char (&literal)[SIZE]) const noexcept
+  {
+    return compareToIgnoreCase(NativeWideString(literal));
+  }
+  
   /**
     Returns true if this string starts with the specified prefix.
 
@@ -1272,8 +1395,9 @@ public:
     before the start position.
 
     @param string The substring to find.
-    @param start Specifies the start position of the search. Default is end of string.
-    @return Index of the last match if any otherwise -1. Also returns -1 if the substring is empty.
+    @param start Specifies the start position of the search.
+    @return Index of the last match if any otherwise -1. Also returns -1 if
+    substring is empty.
   */
   MemoryDiff lastIndexOf(const WideString& string, MemorySize start) const noexcept;
 
@@ -1431,14 +1555,14 @@ public:
    
     @iso Specifies the ISO codes should be allowed.
   */
-  bool isValidUnicode(bool iso) const noexcept;
+  bool isValidUnicode(bool iso = false) const noexcept;
   
   /**
     Returns the string with all invalid Unicode codes removed.
    
     @iso Specifies the ISO codes should be allowed.
   */
-  WideString getValidUnicode(bool iso) const;
+  WideString getValidUnicode(bool iso = false) const;
 };
 
 template<>

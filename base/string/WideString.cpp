@@ -374,9 +374,19 @@ WideString::WideString(const char* src)
   initialize(src, getNullTerminatedLength(src));
 }
 
+WideString::WideString(const char* src, MemorySize length)
+{
+  initialize(src, length);
+}
+
 WideString::WideString(const char16_t* src)
 {
   initialize(src, getNullTerminatedLength(src));
+}
+
+WideString::WideString(const char16_t* src, MemorySize length)
+{
+  initialize(src, length);
 }
 
 WideString::WideString(const wchar* src)
@@ -516,6 +526,12 @@ WideString& WideString::operator=(const char16_t* assign)
 WideString& WideString::operator=(const char32_t* assign)
 {
   initialize(assign, getNullTerminatedLength(assign));
+  return *this;
+}
+
+WideString& WideString::operator=(const String& assign)
+{
+  initialize(assign.native(), assign.getLength());
   return *this;
 }
 

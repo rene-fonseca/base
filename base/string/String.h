@@ -22,6 +22,7 @@
 #include <base/iterator/UTF8Iterator.h>
 #include <base/collection/Hash.h>
 #include <base/Literal.h>
+#include <base/WideLiteral.h>
 #include <base/string/ASCIITraits.h>
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
@@ -97,7 +98,7 @@ public:
   @version 1.0
 */
 
-class _COM_AZURE_DEV__BASE__API String : public virtual Object {
+class _COM_AZURE_DEV__BASE__API String /*: public virtual Object*/ { // string are too common to use Object
   friend void swapper<String>(String& a, String& b);
 public:
 
@@ -208,15 +209,15 @@ protected:
   {
     getBuffer(length);
   }
-  
+
   /**
-    Compare two NULL-terminated strings.
+    Compare the NULL-terminated strings ignoring the case.
   */
   static int compareToIgnoreCase(const char* left, const char* right) noexcept;
 public:
-  
+
   /**
-    Initializes an empty string.
+    Initializes an empty string. No allocation done.
   */
   String() noexcept;
 
@@ -244,16 +245,89 @@ public:
     Initializes the string from a string literal. The string literal is not
     copied into internal buffer. Implicit initialization is allowed.
 
-    @param string String literal.
+    @param string The string.
   */
   String(const NativeString& string);
+
+  /**
+    Initializes the string from a string literal. The string literal is not
+    copied into internal buffer. Implicit initialization is allowed.
+
+    @param string The string.
+  */
   String(const Literal& string);
+
+  /**
+    Initializes the string from a string literal. The string literal is not
+    copied into internal buffer. Implicit initialization is allowed.
+
+    @param string The string.
+  */
   String(const char* string);
+
+  /**
+    Initializes the string from a string literal. The string literal is not
+    copied into internal buffer. Implicit initialization is allowed.
+
+    @param string The string.
+    @param length The length of the string.
+  */
   String(const char* string, MemorySize length);
-  String(const char16_t* string);
-  String(const char32_t* string);
+
+  /**
+    Initializes the string from a string literal. The string literal is not
+    copied into internal buffer. Implicit initialization is allowed.
+
+    @param string The string.
+  */
   String(const wchar* string);
+
+  /**
+    Initializes the string from a string literal. The string literal is not
+    copied into internal buffer. Implicit initialization is allowed.
+
+    @param string The string.
+    @param length The length of the string.
+  */
   String(const wchar* string, MemorySize length);
+
+  /**
+    Initializes the string from a string literal. The string literal is not
+    copied into internal buffer. Implicit initialization is allowed.
+
+    @param string The string.
+  */
+  String(const char16_t* string);
+
+  /**
+    Initializes the string from a string literal. The string literal is not
+    copied into internal buffer. Implicit initialization is allowed.
+
+    @param string The string.
+    @param length The length of the string.
+  */
+  String(const char16_t* string, MemorySize length);
+
+  /**
+    Initializes the string from a string literal. The string literal is not
+    copied into internal buffer. Implicit initialization is allowed.
+
+    @param string The string.
+  */
+  String(const char32_t* string);
+
+  /**
+    Initializes the string from a string literal. The string literal is not
+    copied into internal buffer. Implicit initialization is allowed.
+
+    @param string The string.
+    @param length The length of the string.
+  */
+  String(const char32_t* string, MemorySize length);
+
+  /**
+    Initializes the string from string.
+  */
   String(const WideString& string);
 
 #if 0 // TAG: bad for now due to match with structs also - or static_cast<const char*>() is required
@@ -333,17 +407,53 @@ public:
   }
 
   /**
-    Assignment of string literal to string.
+    Assignment of string to string.
   */
   String& operator=(const Literal& assign);
+
+  /**
+    Assignment of string to string.
+  */
+  String& operator=(const WideLiteral& assign);
+
+  /**
+    Assignment of string to string.
+  */
   String& operator=(const NativeString& assign);
+
+  /**
+    Assignment of string to string.
+  */
   String& operator=(const char* assign);
-  String& operator=(const char16_t* assign);
-  String& operator=(const char32_t* assign);
+
+  /**
+    Assignment of string to string.
+  */
   String& operator=(const wchar* assign);
+
+  /**
+    Assignment of string to string.
+  */
+  String& operator=(const char16_t* assign);
+
+  /**
+    Assignment of string to string.
+  */
+  String& operator=(const char32_t* assign);
+
+  /**
+    Assignment of string to string.
+  */
   String& operator=(const WideString& assign);
+
+  /**
+    Assignment of string to string.
+  */
   String& operator=(const StringOutputStream& assign);
 
+  /**
+    Assignment of string to string.
+  */
   template<MemorySize SIZE>
   inline String& operator=(const char (&literal)[SIZE])
   {
@@ -677,6 +787,12 @@ public:
     return insert(getLength(), string);
   }
 
+  /** Returns the memory span. */
+  static inline MemorySpan toSpan(const char* string) noexcept
+  {
+    return MemorySpan(string, getNullTerminatedLength(string));
+  }
+
   /**
     Appends the native string to this string.
 
@@ -684,11 +800,11 @@ public:
   */
   inline String& append(const char* string)
   {
-    return append(NativeString(string));
+    return insert(getLength(), toSpan(string));
   }
 
   /**
-    Appends the string literal to this string.
+    Appends the string to this string.
 
     @param string The string to be appended.
   */
@@ -696,11 +812,10 @@ public:
 
   template<MemorySize SIZE>
   inline String& append(const char (&literal)[SIZE])
-   
   {
     return append(Literal(literal));
   }
-  
+
   /**
     Appends the string literal to this string.
 
@@ -958,7 +1073,7 @@ public:
     specified string.
   */
   int compareToIgnoreCase(const NativeString& string) const;
-  
+
   template<MemorySize SIZE>
   inline int compareToIgnoreCase(const char (&literal)[SIZE]) const noexcept
   {
@@ -1022,7 +1137,7 @@ public:
   {
     return compareTo(string) == 0;
   }
-  
+
   /**
     Equality operator.
   */
@@ -1220,13 +1335,20 @@ public:
     before the start position.
 
     @param string The substring to find.
-    @param start Specifies the start position of the search. Default is end of
-    string.
+    @param start Specifies the start position of the search.
     @return Index of the last match if any otherwise -1. Also returns -1 if
     substring is empty.
   */
   MemoryDiff lastIndexOf(const String& string, MemorySize start) const noexcept;
-  
+
+  /**
+    Returns the index of the last string that matches the specified string
+    starting from the end of the string.
+
+    @param string The substring to find.
+
+    @return Index of the last match if any otherwide -1. Also returns -1 if the substring is empty.
+  */
   inline MemoryDiff lastIndexOf(const String& string) const noexcept
   {
     return lastIndexOf(string, getLength());
@@ -1381,6 +1503,26 @@ _COM_AZURE_DEV__BASE__API String operator+(const char* left, const String& right
   ("pre"-"suf") results in "pre").
 */
 _COM_AZURE_DEV__BASE__API String operator-(const String& left, const String& right);
+
+/**
+  String reduction. Removes suffix from string if and only if it ends with the
+  suffix (e.g. ("presuf"-"suf") results in a new string "pre" whereas
+  ("pre"-"suf") results in "pre").
+*/
+inline String operator-(const String& left, const char* right)
+{
+  return left - String(right);
+}
+
+/**
+  String reduction. Removes suffix from string if and only if it ends with the
+  suffix (e.g. ("presuf"-"suf") results in a new string "pre" whereas
+  ("pre"-"suf") results in "pre").
+*/
+inline String operator-(const String& left, const wchar* right)
+{
+  return left - String(right);
+}
 
 /**
   Returns a string that is the concatenation of the given string the given number of times.

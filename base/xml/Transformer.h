@@ -45,7 +45,12 @@ private:
   /** The stylesheet. */
   Stylesheet stylesheet;
 public:
-  
+
+  /**
+    Returns true if XSLT is supported by the runtime.
+  */
+  static bool isSupported() noexcept;
+
   /**
     Initializes XSLT processor.
   */

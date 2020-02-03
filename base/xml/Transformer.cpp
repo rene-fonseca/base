@@ -35,6 +35,15 @@ _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 MODULE_REGISTER_EXPLICIT(_COM_AZURE_DEV__BASE__THIS_MODULE, "org.xmlsoft", "libxslt", XSLT_DEFAULT_VERSION, XSLT_DEFAULT_URL);
 #endif
 
+bool Transformer::isSupported() noexcept
+{
+#if defined(_COM_AZURE_DEV__BASE__USE_XMLSOFT_XSLT)
+  return true;
+#else
+  return false;
+#endif
+}
+
 Transformer::Transformer() noexcept
 {
 }

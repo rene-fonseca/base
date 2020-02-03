@@ -61,6 +61,15 @@ namespace internal {
 };
 #endif
 
+bool ZLibDeflater::isSupported() noexcept
+{
+#if defined(_COM_AZURE_DEV__BASE__USE_ZLIB)
+  return true;
+#else
+  return false;
+#endif
+}
+
 ZLibDeflater::ZLibDeflater()
   : buffer(BUFFER_SIZE), availableBytes(0), state(RUNNING)
 {

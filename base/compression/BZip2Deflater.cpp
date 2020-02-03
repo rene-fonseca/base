@@ -63,6 +63,15 @@ namespace internal {
 };
 #endif
 
+bool BZip2Deflater::isSupported() noexcept
+{
+#if defined(_COM_AZURE_DEV__BASE__USE_BZIP2)
+  return true;
+#else
+  return false;
+#endif
+}
+
 BZip2Deflater::BZip2Deflater()
   : buffer(BUFFER_SIZE), availableBytes(0), state(RUNNING)
 {

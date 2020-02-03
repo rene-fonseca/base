@@ -53,7 +53,12 @@ private:
   /** The current state. */
   State state = RUNNING;
 public:
-  
+
+  /**
+    Returns true if ZLib is supported by the runtime.
+  */
+  static bool isSupported() noexcept;
+
   /**
     Initializes the deflater with the default compression level.
   */

@@ -12,15 +12,25 @@
  ***************************************************************************/
 
 #include <base/string/StringOutputStream.h>
+#include <base/concurrency/ThreadLocalContext.h>
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
+// #define _COM_AZURE_DEV__BASE__REUSE_BUFFER
+
 StringOutputStreamWrapper::StringOutputStreamWrapper() noexcept
 {
-  // TAG: we want to reuse the last String for the current Thread - needs testing
-#if 0
+#if defined(_COM_AZURE_DEV__BASE__REUSE_BUFFER)
   if (auto tlc = Thread::getLocalContext()) {
-    swapper(string, tlc->string);
+    swapper(string, tlc->stringOutputStream);
+    BASSERT(!string);
+#if 0
+    if (string.getCapacity() > 0) {
+      static unsigned int count = 0;
+      ++count;
+      fout << "StringOutputStreamWrapper:: reuse=" << count << ENDL;
+    }
+#endif
   }
 #endif
 }
@@ -45,7 +55,7 @@ void StringOutputStreamWrapper::flush()
 void StringOutputStreamWrapper::restart()
 {
   closed = false;
-  string.clear();
+  string.forceToLength(0); // clear() switches to default empty string!
 }
 
 unsigned int StringOutputStreamWrapper::write(
@@ -62,11 +72,20 @@ unsigned int StringOutputStreamWrapper::write(
 
 StringOutputStreamWrapper::~StringOutputStreamWrapper()
 {
-  // TAG: store String for reuse
+#if defined(_COM_AZURE_DEV__BASE__REUSE_BUFFER)
+  if (!string.isMultiReferenced() &&
+      (string.getLength() < StringOutputStream::DEFAULT_CAPACITY) && // exclude terminator
+      (string.getCapacity() == StringOutputStream::DEFAULT_CAPACITY)) { // avoid any resize
+    if (auto tlc = Thread::getLocalContext()) {
 #if 0
-  if (auto tlc = Thread::getLocalContext()) {
-    string.clear();
-    swapper(string, tlc->string);
+      static unsigned int count = 0;
+      ++count;
+      fout << "StringOutputStreamWrapper(): STORE FOR REUSE:" << count << ENDL;
+#endif
+      string.forceToLength(0); // clear() switches to default empty string!
+      swapper(string, tlc->stringOutputStream);
+      return;
+    }
   }
 #endif
 }
@@ -76,12 +95,15 @@ StringOutputStreamWrapper::~StringOutputStreamWrapper()
 StringOutputStream::StringOutputStream()
   : FormatOutputStream(stream)
 {
-  stream.ensureCapacity(DEFAULT_CAPACITY);
+  stream.ensureCapacity(DEFAULT_CAPACITY); // TAG: what is a good default
 }
 
 StringOutputStream::StringOutputStream(MemorySize capacity)
   : FormatOutputStream(stream)
 {
+  // do not reuse buffer in this case
+  // String buffer(capacity);
+  // stream.setBuffer(buffer);
   stream.ensureCapacity(capacity);
 }
 
@@ -92,6 +114,7 @@ void StringOutputStream::ensureCapacity(MemorySize capacity)
 
 const String& StringOutputStream::getString() const noexcept
 {
+  // TAG: check where this is used
   return stream.getString();
 }
 

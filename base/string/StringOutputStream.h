@@ -60,21 +60,17 @@ public:
     return string;
   }
   
+  /** Destructs buffer. */
   ~StringOutputStreamWrapper();
 };
 
 
 
-// Helper class used by StringOutputStream.
+/** Helper class used by StringOutputStream. */
 class _COM_AZURE_DEV__BASE__API StringOutputStreamImpl {
 protected:
 
   StringOutputStreamWrapper stream;
-public:
-
-  inline StringOutputStreamImpl() noexcept
-  {
-  }
 };
 
 

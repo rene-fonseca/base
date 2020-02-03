@@ -32,6 +32,7 @@ public:
   /** Simple unique id - does NOT relate to system IDs. */
   unsigned int simpleId = 0;
   String name;
+  
   /** Profiling context. */
   struct {
     unsigned int suspended = 0;
@@ -39,14 +40,18 @@ public:
     unsigned int tasks = 0; // number of tasks
     Allocator<Profiler::Event> events; // stack for task events
   } profiling;
+  
   /** Counter for storage usage. */
   FixedResourceManager<STORAGE_BUFFERS> storageManager;
   /** The thread local storage. */
   Allocator<uint8> storage[STORAGE_BUFFERS];
+  /** String output stream - reused buffer. */
+  String stringOutputStream;
   /** Random generator. */
   RandomInputStream randomInputStream;
   /** Last known stack trace for exception. */
   StackFrame stackTrace;
+  
   /** Number of exceptions thrown by thread. */
   unsigned int numberOfExceptions = 0;
   /** Total microseconds spend waiting. */

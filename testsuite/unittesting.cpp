@@ -106,7 +106,7 @@ public:
       } else if (argument == "--nocolor") {
         useANSIColors = false;
       } else if (argument == "--urlAsSource") {
-        useUrlAsSource = false;
+        useUrlAsSource = true;
       } else if (argument == "--json") {
         reportJSON = true;
       } else if (argument == "--devel") {

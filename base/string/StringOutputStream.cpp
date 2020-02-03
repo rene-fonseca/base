@@ -120,7 +120,6 @@ const String& StringOutputStream::getString() const noexcept
 
 String StringOutputStream::toString() noexcept
 {
-  // TAG: it could be useful to NOT copy if temporary string
   flush();
   // does NOT copy capacity
   String result = stream.getString().copy(); // we want to preserve ownership in stream

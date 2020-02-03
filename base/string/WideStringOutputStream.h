@@ -20,70 +20,57 @@
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
+/** Internal string output stream. */
 class _COM_AZURE_DEV__BASE__API WideStringOutputStreamWrapper : public virtual Object,
                                                                 public virtual OutputStream {
 private:
 
   /** The string holding the stream data. */
-  WideString string;
+  String string;
   /** Specifies whether the stream has been closed. */
   bool closed = false;
 public:
 
-  inline explicit WideStringOutputStreamWrapper() noexcept
-  {
-  }
+  /** Initializes buffer. */
+  explicit WideStringOutputStreamWrapper() noexcept;
 
   /**
     Reserves capacity in the internal buffer.
   */
   void ensureCapacity(MemorySize capacity);
 
+  /** Close stream. */
   void close();
 
+  /** Flush stream. */
   void flush();
 
+  /** Restarts stream. */
   void restart();
 
+  /** Writes to string. */
   unsigned int write(
     const uint8* buffer,
     unsigned int size,
     bool nonblocking = false);
 
-#if 0
-  inline unsigned int getGranularity() const noexcept
-  {
-    return string.getGranularity();
-  }
-
-  inline void setGranularity(unsigned int granularity) noexcept
-  {
-    string.setGranularity(granularity);
-  }
-#endif
-
-  inline const WideString& getString() const noexcept
+  /** Returns string. */
+  inline const String& getString() const noexcept
   {
     return string;
   }
   
-  inline ~WideStringOutputStreamWrapper()
-  {
-  }
+  /** Destructs buffer. */
+  ~WideStringOutputStreamWrapper();
 };
 
 
 
-// Helper class used by WideStringOutputStream.
+/** Helper class used by WideStringOutputStream. */
 class _COM_AZURE_DEV__BASE__API WideStringOutputStreamImpl {
 protected:
 
   WideStringOutputStreamWrapper stream;
-public:
-
-  inline WideStringOutputStreamImpl() noexcept
-  {
-  }
 };
 
 
@@ -101,36 +88,26 @@ class _COM_AZURE_DEV__BASE__API WideStringOutputStream
   : protected WideStringOutputStreamImpl, public FormatOutputStream {
 public:
 
-  /** Specifies the default amount of memory by which the capacity is increased. */
-  static const unsigned int DEFAULT_GRANULARITY = 1024;
+  /** Specifies the default capacity. */
+  static const MemorySize DEFAULT_CAPACITY = 1024;
 public:
 
   /**
-    Initializes string output stream using the default incrementation value (i.e. DEFAULT_GRANULARITY).
+    Initializes string output stream.
   */
   WideStringOutputStream();
 
   /**
     Initializes string output stream.
 
-    @param granularity Specifies the default amount of memory by which the capacity of the string is increased.
+    @param capacity Specifies the initial capacity.
   */
-  explicit WideStringOutputStream(unsigned int granularity);
+  explicit WideStringOutputStream(MemorySize capacity);
 
   /**
     Reserves capacity in the internal buffer.
   */
   void ensureCapacity(MemorySize capacity);
-
-  /**
-    Returns the granularity.
-  */
-  unsigned int getGranularity() const noexcept;
-
-  /**
-    Sets the granularity.
-  */
-  void setGranularity(unsigned int granularity) noexcept;
 
   /**
     Returns the string associated with the stream.
@@ -140,7 +117,7 @@ public:
   /**
     Returns the string associated with the stream and restarts the stream.
   */
-  String toString();
+  String toString() noexcept;
 
   /**
     Destroy stream object.

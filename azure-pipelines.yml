@@ -397,7 +397,7 @@ jobs:
     continueOnError: true
     inputs:
       script: |
-        ./testsuite/unittesting --junit junit.xml
+        ./testsuite/unittesting --externals --junit junit.xml
         ctest -T Test
       workingDirectory: $(System.DefaultWorkingDirectory)/build
 

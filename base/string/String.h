@@ -1474,6 +1474,8 @@ public:
   /** Substitutes string using % syntax. */
   String operator()(const String&, const String&, const String&, const String&, const String&) const;
   /** Substitutes string using % syntax. */
+  String operator()(const String&, const String&, const String&, const String&, const String&, const String&) const;
+  /** Substitutes string using % syntax. */
   String operator()(const String&, const String&, const String&, const String&, const String&, const String&,
     const String&) const;
   /** Substitutes string using % syntax. */

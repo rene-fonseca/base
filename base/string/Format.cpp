@@ -23,16 +23,92 @@ namespace {
   {
     return MemorySpan(s.getElements(), s.getLength());
   }
+
+  inline MemorySpan make(const String& s) noexcept
+  {
+    return MemorySpan(s.getElements(), s.getLength());
+  }
 }
 
 #if 0
+String String::operator()() const
+{
+  MemorySpan spans[] = {};
+  return Format::Subst(*this, spans, getArraySize(spans)).format();
+}
+#endif
+
+String String::operator()(const String& a) const
+{
+  MemorySpan spans[] = {make(a)};
+  return Format::Subst(*this, spans, getArraySize(spans)).format();
+}
+
+String String::operator()(const String& a, const String& b) const
+{
+  MemorySpan spans[] = {make(a), make(b)};
+  return Format::Subst(*this, spans, getArraySize(spans)).format();
+}
+
+String String::operator()(const String& a, const String& b, const String& c) const
+{
+  MemorySpan spans[] = {make(a), make(b), make(c)};
+  return Format::Subst(*this, spans, getArraySize(spans)).format();
+}
+
+String String::operator()(const String& a, const String& b, const String& c, const String& d) const
+{
+  MemorySpan spans[] = {make(a), make(b), make(c), make(d)};
+  return Format::Subst(*this, spans, getArraySize(spans)).format();
+}
+
+String String::operator()(const String& a, const String& b, const String& c, const String& d, const String& e) const
+{
+  MemorySpan spans[] = {make(a), make(b), make(c), make(d), make(e)};
+  return Format::Subst(*this, spans, getArraySize(spans)).format();
+}
+
+String String::operator()(const String& a, const String& b, const String& c, const String& d, const String& e,
+   const String& f) const
+{
+  MemorySpan spans[] = {make(a), make(b), make(c), make(d), make(e), make(f)};
+  return Format::Subst(*this, spans, getArraySize(spans)).format();
+}
+
+String String::operator()(const String& a, const String& b, const String& c, const String& d, const String& e,
+   const String& f, const String& g) const
+{
+  MemorySpan spans[] = {make(a), make(b), make(c), make(d), make(e), make(f), make(g)};
+  return Format::Subst(*this, spans, getArraySize(spans)).format();
+}
+
+String String::operator()(const String& a, const String& b, const String& c, const String& d, const String& e,
+   const String& f, const String& g, const String& h) const
+{
+  MemorySpan spans[] = {make(a), make(b), make(c), make(d), make(e), make(f), make(g), make(h)};
+  return Format::Subst(*this, spans, getArraySize(spans)).format();
+}
+
+String String::operator()(const String& a, const String& b, const String& c, const String& d, const String& e,
+   const String& f, const String& g, const String& h, const String& i) const
+{
+  MemorySpan spans[] = {make(a), make(b), make(c), make(d), make(e), make(f), make(g), make(h), make(i)};
+  return Format::Subst(*this, spans, getArraySize(spans)).format();
+}
+
+String String::operator()(const String& a, const String& b, const String& c, const String& d, const String& e,
+   const String& f, const String& g, const String& h, const String& i, const String& j) const
+{
+  MemorySpan spans[] = {make(a), make(b), make(c), make(d), make(e), make(f), make(g), make(h), make(i), make(j)};
+  return Format::Subst(*this, spans, getArraySize(spans)).format();
+}
+
 String String::operator()(const String& a, const String& b, const String& c, const String& d, const String& e,
    const String& f, const String& g, const String& h, const String& i, const String& j, const String& k) const
 {
-  MemorySpan spans[] = {toSpan(a), toSpan(b), toSpan(c), toSpan(d), toSpan(e), toSpan(f), toSpan(g), toSpan(h), toSpan(i)};
-  return Format::Subst(text, spans, getArraySize(spans)).format();
+  MemorySpan spans[] = {make(a), make(b), make(c), make(d), make(e), make(f), make(g), make(h), make(i), make(j), make(k)};
+  return Format::Subst(*this, spans, getArraySize(spans)).format();
 }
-#endif
 
 String Format::subst(const String& text)
 {
@@ -356,10 +432,8 @@ public:
       "The value is 12345 = 0x3039 = 0000012345."
     ); // inline formatting
 
-#if 0
     TEST_EQUAL("My name is %1 %2."_s("John", "Doe"), "My name is John Doe.");
     TEST_EQUAL(String("My name is %1 %2.")("John", "Doe"), "My name is John Doe.");
-#endif
   }
 };
 

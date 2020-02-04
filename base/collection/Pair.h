@@ -48,13 +48,24 @@ public:
   }
 
   /**
+    Initializes a pair with the specified first value.
+
+    @param first The first value.
+    @param second The second value.
+  */
+  Pair(const First& _first)
+    : first(_first)
+  {
+  }
+
+  /**
     Initializes a pair with the specified values.
 
     @param first The first value.
     @param second The second value.
   */
   Pair(const First& _first, const Second& _second)
-  : first(moveObject(_first)), second(moveObject(_second))
+    : first(_first), second(_second)
   {
   }
 

@@ -89,6 +89,11 @@ private:
 public:
   
   /**
+    Returns true if HTTPS is supported by the runtime.
+  */
+  static bool isSupported() noexcept;
+
+  /**
     Initializes the request.
   */
   HTTPSRequest();

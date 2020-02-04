@@ -198,6 +198,16 @@ HTTPSRequest::HTTPSRequest()
 {
 }
 
+bool HTTPSRequest::isSupported() noexcept
+{
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32) || \
+    (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__MACOS)
+  return true;
+#else
+  return false;
+#endif
+}
+
 bool HTTPSRequest::open(const String& _method, const String& _url, const String& _user, const String& _password)
 {
   Profiler::ResourceCreateTask profile("HTTPSRequest::open()");
@@ -838,6 +848,9 @@ public:
 
   void run() override
   {
+    if (!HTTPSRequest::isSupported()) {
+      return;
+    }
     String url = "https://www.google.com";
     String response;
     HTTPSRequest request;

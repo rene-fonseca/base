@@ -14,6 +14,7 @@
 #pragma once
 
 #include <base/collection/Array.h>
+#include <base/objectmodel/ObjectModel.h>
 
 #if defined(MODULE_REGISTER)
 #  error MODULE_REGISTER already defined
@@ -144,8 +145,14 @@ public:
   /** Loads the registered modules. */
   void loadModules();
 
+  /** Runs the modules matching the given pattern as object model. */
+  Reference<ObjectModel::Value> getModules(const String& pattern = "*");
+
+  /** Runs the modules matching the given pattern as CSV. */
+  String getModulesCSV(const String& pattern = "*");
+
   /** Runs the modules matching the given pattern. */
-  bool traverseModules(const String& pattern = "*");
+  bool traverseModules(FormatOutputStream& stream, const String& pattern = "*", bool colors = true);
 
   /** Returns all the registered modules. */
   inline const Array<Reference<Module> >& getModules() const

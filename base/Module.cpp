@@ -378,7 +378,7 @@ namespace {
   }
 }
 
-bool ModuleManager::traverseModules(const String& pattern)
+Reference<ObjectModel::Value> ModuleManager::getModules(const String& pattern)
 {
   loadModules();
 
@@ -391,11 +391,134 @@ bool ModuleManager::traverseModules(const String& pattern)
   auto a = o.createArray();
   report->setValue(o.createString("modules"), a);
 
-  unsigned int count = 0;
-  unsigned int recalled = 0;
+  for (auto _module : modules) {
+    // TAG: check version syntax - regex's
+    auto subs = _module->getId().split(':');
+    auto prefix = (subs.getSize() >= 1) ? subs[0] : String();
+    auto name = (subs.getSize() >= 2) ? subs[1] : String();
+    auto version = (subs.getSize() >= 3) ? subs[2] : String();
+    auto consumer = _module->getConsumer();
+    auto url = _module->getUrl();
+    auto license = _module->getLicense();
+    auto description = _module->getDescription();
+
+    auto item = o.createObject();
+    item->setValue("prefix", prefix);
+    item->setValue("name", name);
+    item->setValue("version", version);
+    item->setValue("url", url);
+    item->setValue("consumer", consumer);
+    item->setValue("license", license);
+    item->setValue("description", description);
+    a->append(item);
+  }
+  return report;
+}
+
+// TAG: add CSV class
+class CSVFormat {
+public:
+
+  static String quote(const String& text)
+  {
+    String result(text.getLength() + 2);
+    result += '\"';
+    for (auto ch : text) {
+      if (ch == '"') {
+        result += '\\';
+      }
+      result += ch;
+    }
+    result += '\"';
+    return result;
+  }
+
+  // TAG: AnyValue support - never quote arith
+  static String join(const Array<String>& items)
+  {
+    MemorySize capacity = 0;
+    for (const auto& item : items) {
+      capacity += item.getLength();
+      capacity += 1 + 2;
+    }
+    String result(capacity);
+    bool first = true;
+    for (const auto& item : items) {
+      // TAG: only quote if required
+      if (!first) {
+        result += ';';
+      }
+      first = false;
+      result += quote(item);
+    }
+    return result;
+  }
+
+  static String join(const std::initializer_list<String>& items)
+  {
+    MemorySize capacity = 0;
+    for (const auto& item : items) {
+      capacity += item.getLength();
+      capacity += 1 + 2;
+    }
+    String result(capacity);
+    bool first = true;
+    for (const auto& item : items) {
+      // TAG: only quote if required
+      if (!first) {
+        result += ';';
+      }
+      first = false;
+      result += quote(item);
+    }
+    return result;
+  }
+
+#if 0
+  static Array<Array<AnyValue> > load(const String& data)
+  {
+    Array<Array<AnyValue> > result;
+    return result;
+  }
+#endif
+};
+
+String ModuleManager::getModulesCSV(const String& pattern)
+{
+  loadModules();
+
+  // TAG: look for modules id matching pattern
+
+  StringOutputStream report;
+  CSVFormat csv;
 
   for (auto _module : modules) {
-    fout << "===============================================================================" << EOL;
+    // TAG: check version syntax - regex's
+    auto subs = _module->getId().split(':');
+    auto prefix = (subs.getSize() >= 1) ? subs[0] : String();
+    auto name = (subs.getSize() >= 2) ? subs[1] : String();
+    auto version = (subs.getSize() >= 3) ? subs[2] : String();
+    auto consumer = _module->getConsumer();
+    auto url = _module->getUrl();
+    auto license = _module->getLicense();
+    auto description = _module->getDescription();
+
+    report << csv.join({prefix, name, version, url, consumer, license, description}) << EOL;
+  }
+  return report;
+}
+
+bool ModuleManager::traverseModules(FormatOutputStream& stream, const String& pattern, bool colors)
+{
+  loadModules();
+
+  // TAG: look for modules id matching pattern
+
+  unsigned int count = 0;
+  // unsigned int recalled = 0;
+
+  for (auto _module : modules) {
+    stream << "===============================================================================" << EOL;
     
     // TAG: check version syntax - regex's
     auto subs = _module->getId().split(':');
@@ -407,57 +530,43 @@ bool ModuleManager::traverseModules(const String& pattern)
     auto license = _module->getLicense();
     auto description = _module->getDescription();
 
-    fout << "MODULE: " << ENDL;
-    fout << "  Prefix: " << presentString(prefix);
+    stream << "MODULE: " << ENDL;
+    stream << "  Prefix: " << presentString(prefix);
     if (!Module::isValidPrefix(prefix)) {
-      fout << " <BAD PREFIX>";
+      stream << " <BAD PREFIX>";
     }
-    fout << EOL;
-    fout << "  Name: " << presentString(name);
+    stream << EOL;
+    stream << "  Name: " << presentString(name);
     if (!Module::isValidName(name)) {
-      fout << " <BAD NAME>";
+      stream << " <BAD NAME>";
     }
-    fout << EOL;
-    fout << "  Version: " << (version ? presentString(version) : String("<UNKNOWN>"));
+    stream << EOL;
+    stream << "  Version: " << (version ? presentString(version) : String("<UNKNOWN>"));
     if (version && !Module::isValidVersion(version)) {
-      fout << " <BAD VERSION>";
+      stream << " <BAD VERSION>";
     }
-    fout << EOL;
-    fout << "  Consumer: " << (consumer ? presentString(consumer) : String("<UNKNOWN>"));
+    stream << EOL;
+    stream << "  Consumer: " << (consumer ? presentString(consumer) : String("<UNKNOWN>"));
     if (consumer && !Module::isValidConsumer(consumer)) {
-      fout << " <BAD CONSUMER>";
+      stream << " <BAD CONSUMER>";
     }
-    fout << EOL;
+    stream << EOL;
     if (url) {
-      fout << "  Url: " << url << EOL;
+      stream << "  Url: " << url << EOL;
     }
-    fout << "  License: " << (license ? presentString(license) : String("<UNKNOWN>")) << EOL;
+    stream << "  License: " << (license ? presentString(license) : String("<UNKNOWN>")) << EOL;
     if (description) {
-      fout << "  Description: " << presentString(description) << EOL;
+      stream << "  Description: " << presentString(description) << EOL;
     }
-
-    auto item = o.createObject();
-    item->setValue("prefix", prefix);
-    item->setValue("name", name);
-    item->setValue("version", version);
-    item->setValue("url", url);
-    item->setValue("consumer", consumer);
-    item->setValue("license", license);
-    item->setValue("description", description);
-    a->append(item);
-
-    // TAG: connect to services to check for recalls - show reason/impact
 
     ++count;
-    ++recalled;
+    // ++recalled;
   }
 
-  fout << EOL << "===============================================================================" << EOL;
-  fout << Format::subst("TOTAL RECALLED: %1/%2", recalled, count) << ENDL;
+  stream << EOL << "===============================================================================" << EOL;
+  // stream << Format::subst("TOTAL RECALLED: %1/%2", recalled, count) << ENDL;
 
-  ferr << EOL << "REPORT: " << EOL << report << ENDL;
-
-  return !recalled;
+  return true; // !recalled;
 }
 
 ModuleManager::RegisterEntry::RegisterEntry(EntryNode* _node)

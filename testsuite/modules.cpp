@@ -39,6 +39,17 @@ public:
     colorize = FileDescriptor::getStandardOutput().isANSITerminal();
   }
 
+  /** Returns name and value for string with = separator. */
+  static Pair<String, String> getNameValue(const String& text, char separator = '=')
+  {
+    auto index = text.indexOf(separator);
+    if (index >= 0) {
+      return Pair<String, String>(text.substring(index), text.substring(index + 1));
+    } else {
+      return Pair<String, String>(text);
+    }
+  }
+
   bool parseArguments()
   {
     Array<String> arguments = getArguments();

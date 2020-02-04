@@ -33,7 +33,17 @@ private:
   /** The length of the literal. */
   const MemorySize length = 0;
 public:
-  
+
+#if 0
+  /**
+    Initializes the literal.
+  */
+  inline Literal(const char* text, MemorySize size) noexcept
+    : literal(text), length(size - 1)
+  {
+  }
+#endif
+
   /**
     Initializes the literal.
   */

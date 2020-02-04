@@ -17,6 +17,8 @@
 #include <base/Guid.h>
 #include <base/UnitTest.h>
 #include <base/UnsignedInteger.h>
+#include <base/SystemInformation.h>
+#include <base/Architecture.h>
 #include <base/build.h>
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
@@ -388,6 +390,8 @@ Reference<ObjectModel::Value> ModuleManager::getModules(const String& pattern)
   auto report = o.createObject();
   report->setValue(o.createString("documentType"), o.createString("modules"));
   report->setValue(o.createString("version"), o.createString("1.0"));
+  report->setValue(o.createString("os"), o.createString(SystemInformation::getOS()));
+  report->setValue(o.createString("architecture"), o.createString(Architecture::getArchitectureAsString()));
   auto a = o.createArray();
   report->setValue(o.createString("modules"), a);
 

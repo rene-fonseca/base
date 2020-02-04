@@ -98,9 +98,11 @@ public:
       if (request.getStatus() != 400) {
       }
       fout << "DEBUG: status=" << request.getStatus() << ENDL;
+      return true;
     } catch (...) {
       Application::error(Format::subst("Failed to submit request to '%1'.", url));
     }
+    return false;
   }
 
   void main()

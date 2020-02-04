@@ -106,7 +106,7 @@ CharacterSet CharacterSet::load(
   } else {
     Array<String>::ReadEnumerator enu = searchPaths.getReadEnumerator();
     while (enu.hasNext()) {
-      String absolutePath = FileSystem::toAbsolutePath(*enu.next(), path);
+      String absolutePath = FileSystem::toAbsolutePath(enu.next(), path);
       if (FileSystem::fileExists(absolutePath)) {
         try {
           return load(absolutePath);

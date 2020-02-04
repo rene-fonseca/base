@@ -46,7 +46,7 @@ public:
 
     fout << "Available serial communications ports:" << EOL;
     while (enu.hasNext()) {
-      fout << *enu.next() << EOL;
+      fout << enu.next() << EOL;
     }
     fout << FLUSH;
   }

@@ -443,7 +443,7 @@ Reference<UnitTest::Run> UnitTest::runImpl()
     auto e = r->heres.getReadEnumerator();
     while (e.hasNext()) {
       auto n = e.next();
-      auto meta = n->getValue();
+      auto meta = n.getValue();
       if (meta.reach) {
         ++pointsReach;
         if (meta.count != 0) {
@@ -496,7 +496,7 @@ Reference<UnitTest::Run> UnitTest::runImpl()
     auto e = r->heres.getReadEnumerator();
     while (e.hasNext()) {
       auto n = e.next();
-      auto meta = n->getValue();
+      auto meta = n.getValue();
       if (meta.reach) {
         if (meta.count == 0) {
           fout << Format::subst("  UNREACHED HERE '%1'", String(meta.description)) << ENDL;

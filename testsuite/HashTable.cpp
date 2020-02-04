@@ -50,7 +50,7 @@ public:
       fout << "Modifying enumeration of values of map (multiply by 3)" << ENDL;
       HashTable<int, int>::ValueEnumerator enu = mii.getValueEnumerator();
       while (enu.hasNext()) {
-        *enu.next() *= 3;
+        enu.next() *= 3;
       }
       fout << "mii: " << mii << ENDL;
     }
@@ -60,7 +60,7 @@ public:
       HashTable<int, int>::ReadEnumerator enu = mii.getReadEnumerator();
       int sum = 0;
       while (enu.hasNext()) {
-        sum += enu.next()->getValue();
+        sum += enu.next().getValue();
       }
       fout << "sum: " << sum << ENDL;
     }

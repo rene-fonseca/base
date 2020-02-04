@@ -72,6 +72,7 @@ public:
   typedef EnumeratorTraits SelfEnumeratorTraits;
 
   typedef VALUE Value;
+  typedef VALUE& Reference;
   typedef VALUE* Pointer;
   typedef MemoryDiff Distance;
 };
@@ -91,6 +92,7 @@ public:
   typedef ReadEnumeratorTraits SelfEnumeratorTraits;
 
   typedef VALUE Value;
+  typedef const VALUE& Reference;
   typedef const VALUE* Pointer;
   typedef MemoryDiff Distance;
 };
@@ -119,6 +121,8 @@ public:
   typedef typename TRAITS::Value Value;
   /** The type of the difference between elements. */
   typedef typename TRAITS::Distance Distance;
+  /** The type of a reference to an element. */
+  typedef typename TRAITS::Reference Reference;
   /** The type of a pointer to an element. */
   typedef typename TRAITS::Pointer Pointer;
 
@@ -130,7 +134,7 @@ public:
   /**
     Returns the next element of the enumerator.
   */
-  virtual Pointer next() = 0;
+  virtual Reference next() = 0;
 
   /**
     Destroys the enumerator.

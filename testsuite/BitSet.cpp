@@ -47,7 +47,7 @@ public:
       BitSet::ReadEnumerator enu = bitSet.getReadEnumerator();
       fout << "Bits: ";
       while (enu.hasNext()) {
-        fout << (*enu.next() ? '1' : '0');
+        fout << (enu.next() ? '1' : '0');
       }
       fout << ENDL;
     }
@@ -61,7 +61,7 @@ public:
       BitSet::Enumerator enu = bitSet.getEnumerator();
       bool value = false;
       while (enu.hasNext()) {
-        *enu.next() ^= value;
+        enu.next() ^= value;
         value = !value;
       }
     }
@@ -70,7 +70,7 @@ public:
       BitSet::ReadEnumerator enu = bitSet.getReadEnumerator();
       fout << "Bits: ";
       while (enu.hasNext()) {
-        fout << (*enu.next() ? '1' : '0');
+        fout << (enu.next() ? '1' : '0');
       }
       fout << ENDL;
     }

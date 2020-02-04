@@ -936,7 +936,7 @@ FormatOutputStream& operator<<(FormatOutputStream& stream, const Array<TYPE>& va
   typename Array<TYPE>::ReadEnumerator enu = value.getReadEnumerator();
   stream << '[';
   while (enu.hasNext()) {
-    stream << *enu.next();
+    stream << enu.next();
     if (enu.hasNext()) {
       stream << ';';
     }

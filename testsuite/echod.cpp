@@ -183,7 +183,7 @@ public:
     }
     List<ContextBinder*>::Enumerator enu = threadPool.getEnumerator();
     while (enu.hasNext()) {
-      delete *enu.next();
+      delete enu.next();
     }
   }
   
@@ -195,11 +195,11 @@ public:
     if (arguments.getSize() > 0) {
       Array<String>::ReadEnumerator enu = arguments.getReadEnumerator();
       while (enu.hasNext()) {
-        String argument = *enu.next();
+        String argument = enu.next();
         if (argument == "--help") {
           command = HELP;
         } else if (argument == "--port") {
-          String temp = *enu.next();
+          String temp = enu.next();
           try {
             UnsignedInteger value(temp);
             if (value > 0xffff) {

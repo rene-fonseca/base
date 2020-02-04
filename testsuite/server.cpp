@@ -42,8 +42,8 @@ public:
       List<InetInterface>::ReadEnumerator enu = interfaces.getReadEnumerator();
       fout << "Available interfaces:" << ENDL;
       while (enu.hasNext()) {
-        const InetInterface* i = enu.next();
-        fout << "  interface: index=" << i->getIndex() << " name=" << i->getName() << ENDL;
+        const InetInterface& i = enu.next();
+        fout << "  interface: index=" << i.getIndex() << " name=" << i.getName() << ENDL;
       }
     }
     
@@ -54,12 +54,12 @@ public:
       List<InetAddress>::ReadEnumerator enu = addresses.getReadEnumerator();
       unsigned int index = 0;
       while (enu.hasNext()) {
-        const InetAddress* temp = enu.next();
+        const InetAddress& temp = enu.next();
         if (index == 0) { // use the first address
-          address = *temp;
-          fout << "  address " << index++ << ": " << *temp << " (USING THIS)" << ENDL;
+          address = temp;
+          fout << "  address " << index++ << ": " << temp << " (USING THIS)" << ENDL;
         } else {
-          fout << "  address " << index++ << ": " << *temp << ENDL;
+          fout << "  address " << index++ << ": " << temp << ENDL;
         }
       }
     } else {

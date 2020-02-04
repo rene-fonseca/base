@@ -16,19 +16,22 @@
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 IDLInterface::IDLInterface(const String& name, unsigned int version) noexcept
-  : IDLNamedType(name) {
+  : IDLNamedType(name)
+{
 }
 
-bool IDLInterface::isCompatible(const IDLInterface& interface) const noexcept {
+bool IDLInterface::isCompatible(const IDLInterface& interface) const noexcept
+{
   Array<IDLMethod>::ReadEnumerator left = attributes.getReadEnumerator();
   Array<IDLMethod>::ReadEnumerator right = interface.attributes.getReadEnumerator();
   while (left.hasNext() && right.hasNext()) {
-    left.next()->isCompatible(*right.next());
+    left.next().isCompatible(right.next());
   }
   return !left.hasNext() && !right.hasNext();
 }
 
-IDLInterface::~IDLInterface() noexcept {
+IDLInterface::~IDLInterface() noexcept
+{
 }
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

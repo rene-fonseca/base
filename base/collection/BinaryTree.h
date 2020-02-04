@@ -29,8 +29,8 @@ class PrefixOrderIterator : public Iterator<TRAITS> {
 public:
 
   typedef typename Iterator<TRAITS>::Value Value;
-  typedef typename Iterator<TRAITS>::Pointer Pointer;
   typedef typename Iterator<TRAITS>::Reference Reference;
+  typedef typename Iterator<TRAITS>::Pointer Pointer;
   typedef typename Iterator<TRAITS>::Distance Distance;
   typedef ForwardIterator Category;
 private:
@@ -117,8 +117,8 @@ class PostfixOrderIterator : public Iterator<TRAITS> {
 public:
 
   typedef typename Iterator<TRAITS>::Value Value;
-  typedef typename Iterator<TRAITS>::Pointer Pointer;
   typedef typename Iterator<TRAITS>::Reference Reference;
+  typedef typename Iterator<TRAITS>::Pointer Pointer;
   typedef typename Iterator<TRAITS>::Distance Distance;
   typedef ForwardIterator Category;
 private:
@@ -252,8 +252,8 @@ class InfixOrderIterator : public Iterator<TRAITS> {
 public:
 
   typedef typename Iterator<TRAITS>::Value Value;
-  typedef typename Iterator<TRAITS>::Pointer Pointer;
   typedef typename Iterator<TRAITS>::Reference Reference;
+  typedef typename Iterator<TRAITS>::Pointer Pointer;
   typedef typename Iterator<TRAITS>::Distance Distance;
   typedef ForwardIterator Category;
 private:
@@ -377,8 +377,9 @@ template<class TRAITS>
 class PrefixOrderEnumerator : public Enumerator<TRAITS> {
 private:
 
-  typedef typename Enumerator<TRAITS>::Pointer Pointer;
   typedef typename Enumerator<TRAITS>::Value Value;
+  typedef typename Enumerator<TRAITS>::Reference Reference;
+  typedef typename Enumerator<TRAITS>::Pointer Pointer;
   
   /** The root of the binary tree. */
   Pointer root = nullptr;
@@ -408,7 +409,7 @@ public:
     Returns the current value and increments the position. Raises
     EndOfEnumeration if the end has been reached.
   */
-  Pointer next()
+  Reference next()
   {
     if (!node) {
       _throw EndOfEnumeration();
@@ -450,8 +451,9 @@ template<class TRAITS>
 class InfixOrderEnumerator : public Enumerator<TRAITS> {
 private:
 
-  typedef typename Enumerator<TRAITS>::Pointer Pointer;
   typedef typename Enumerator<TRAITS>::Value Value;
+  typedef typename Enumerator<TRAITS>::Reference Reference;
+  typedef typename Enumerator<TRAITS>::Pointer Pointer;
 
   /** The states of the traversal state machine */
   enum Traverse {TRAVERSE_SUBTREE, RETURN_LEFT, RETURN_RIGHT};
@@ -489,7 +491,7 @@ public:
     Returns the current value and increments the position. Raises
     EndOfEnumeration if the end has been reached.
   */
-  Pointer next()
+  Reference next()
   {
     if (!node) {
       _throw EndOfEnumeration();
@@ -506,7 +508,7 @@ public:
         // [[fallthrough]]
       case RETURN_LEFT:
         if (result) { // stop if we already have found a result
-          return result;
+          return *result;
         }
         result = node; // this node is the next result
         if (auto right = node->getRight()) { // has right node
@@ -521,7 +523,7 @@ public:
         do {
           if (node == root) {
             node = nullptr; // we have reached the end of the enumeration
-            return result;
+            return *result;
           }
           child = node;
           node = node->getParent();
@@ -544,8 +546,9 @@ template<class TRAITS>
 class PostfixOrderEnumerator : public Enumerator<TRAITS> {
 private:
 
-  typedef typename Enumerator<TRAITS>::Pointer Pointer;
   typedef typename Enumerator<TRAITS>::Value Value;
+  typedef typename Enumerator<TRAITS>::Reference Reference;
+  typedef typename Enumerator<TRAITS>::Pointer Pointer;
 
   /** The root of the binary tree. */
   Pointer root = nullptr;
@@ -575,7 +578,7 @@ public:
     Returns the current value and increments the position. Raises
     EndOfEnumeration if the end has been reached.
   */
-  Pointer next()
+  Reference next()
   {
     if (!node) {
       _throw EndOfEnumeration();
@@ -591,12 +594,12 @@ public:
         Pointer child = nullptr;
         do { // return from subtree
           if (result) {
-            return result;
+            return *result;
           }
           result = node;
           if (node == root) {
             node = nullptr;
-            return result;
+            return *result;
           }
           child = node;
           node = node->getParent();
@@ -605,7 +608,7 @@ public:
         node = node->getRight(); // traverse right subtree - which we know exists
       }
     }
-    return result;
+    return *result;
   }
 };
 

@@ -52,6 +52,7 @@ protected:
   public:
     
     typedef typename Enumerator<TRAITS>::Value Value;
+    typedef typename Enumerator<TRAITS>::Reference Reference;
     typedef typename Enumerator<TRAITS>::Pointer Pointer;
   private:
     
@@ -88,14 +89,14 @@ protected:
     /**
       Returns the next element and advances the position of this enumeration.
     */
-    Pointer next()
+    Reference next()
     {
       if (!current) {
         _throw EndOfEnumeration();
       }
       auto temp = current;
       current = current->getNext();
-      return &(temp->getValue());
+      return temp->getValue();
     }
     
     /**
@@ -487,7 +488,7 @@ FormatOutputStream& operator<<(
   typename Stack<TYPE>::ReadEnumerator enu = value.getReadEnumerator();
   stream << '{';
   while (enu.hasNext()) {
-    stream << *enu.next();
+    stream << enu.next();
     if (enu.hasNext()) {
       stream << ';';
     }

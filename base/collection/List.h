@@ -952,7 +952,7 @@ FormatOutputStream& operator<<(FormatOutputStream& stream, const List<TYPE>& val
   typename List<TYPE>::ReadEnumerator enu = value.getReadEnumerator();
   stream << '[';
   while (enu.hasNext()) {
-    stream << *enu.next();
+    stream << enu.next();
     if (enu.hasNext()) {
       stream << ';';
     }

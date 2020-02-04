@@ -57,7 +57,7 @@ public:
     Array<String>::ReadEnumerator enu = hosts.getReadEnumerator();
     
     while (enu.hasNext()) {
-      String host = *enu.next();
+      String host = enu.next();
       try {
         
         InetAddress address;
@@ -80,7 +80,7 @@ public:
         
         fout << name << EOL;
         while (enu.hasNext()) {
-          fout << indent(2) << *enu.next() << EOL;
+          fout << indent(2) << enu.next() << EOL;
         }
         fout << EOL << FLUSH;
       } catch (...) {
@@ -96,7 +96,7 @@ public:
     const Array<String> arguments = getArguments();
     Array<String>::ReadEnumerator enu = arguments.getReadEnumerator();
     while (enu.hasNext()) {
-      String argument = *enu.next();
+      String argument = enu.next();
       if (argument == "--help") {
         command = COMMAND_HELP;
       } else if (argument == "--version") {

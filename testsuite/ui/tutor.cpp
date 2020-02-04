@@ -156,7 +156,8 @@ public:
     }
   };
   
-  void main() {
+  void main()
+  {
     MyOpenGLContext::Format desiredFormat;
     int formatId = -1;
     
@@ -170,11 +171,11 @@ public:
     Array<MyOpenGLContext::Format>::ReadEnumerator enu =
       formats.getReadEnumerator();
     for (unsigned int i = 0; enu.hasNext(); ++i) {
-      const MyOpenGLContext::Format* format = enu.next();
+      const MyOpenGLContext::Format& format = enu.next();
       if ((formatId == -1) ||
-          (format->alphaBits && (!desiredFormat.alphaBits))) {
+          (format.alphaBits && (!desiredFormat.alphaBits))) {
         formatId = i;
-        desiredFormat = *format;
+        desiredFormat = format;
       }
     }
     

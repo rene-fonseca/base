@@ -1242,32 +1242,32 @@ public:
     bool gotFormat = false;
     for (unsigned int i = 0; enu.hasNext(); ++i) {
       gotFormat = true;
-      const MyOpenGLContext::Format* format = enu.next();
+      const MyOpenGLContext::Format& format = enu.next();
       if (dumpFormats) {
         fout << indent(2) << "Format: " << i << EOL
-             << indent(4) << "Color indexed: " << ((format->flags & MyOpenGLContext::COLOR_INDEXED) != 0) << EOL
-             << indent(4) << "RGB: " << ((format->flags & MyOpenGLContext::RGB) != 0) << EOL
-             << indent(4) << "Double buffered: " << ((format->flags & MyOpenGLContext::DOUBLE_BUFFERED) != 0) << EOL
-             << indent(4) << "Stereoscopic: " << ((format->flags & MyOpenGLContext::STEREO) != 0) << EOL
-             << indent(4) << "Generic: " << ((format->flags & MyOpenGLContext::GENERIC) != 0) << EOL
-             << indent(4) << "Color bits: " << format->colorBits << EOL
-             << indent(6) << "Red bits: " << format->redBits << EOL
-             << indent(6) << "Green bits: " << format->greenBits << EOL
-             << indent(6) << "Blue bits: " << format->blueBits << EOL
-             << indent(6) << "Alpha bits: " << format->alphaBits << EOL
-             << indent(4) << "Accumulator bits: " << format->accumulatorBits << EOL
-             << indent(6) << "Accumulator red bits: " << format->accumulatorRedBits << EOL
-             << indent(6) << "Accumulator green bits: " << format->accumulatorGreenBits << EOL
-             << indent(6) << "Accumulator blue bits: " << format->accumulatorBlueBits << EOL
-             << indent(6) << "Accumulator alpha bits: " << format->accumulatorAlphaBits << EOL
-             << indent(4) << "DepthBits: " << format->depthBits << EOL
-             << indent(4) << "StencilBits: " << format->stencilBits << EOL
-             << indent(4) << "AuxBuffers: " << format->auxBuffers << EOL
+             << indent(4) << "Color indexed: " << ((format.flags & MyOpenGLContext::COLOR_INDEXED) != 0) << EOL
+             << indent(4) << "RGB: " << ((format.flags & MyOpenGLContext::RGB) != 0) << EOL
+             << indent(4) << "Double buffered: " << ((format.flags & MyOpenGLContext::DOUBLE_BUFFERED) != 0) << EOL
+             << indent(4) << "Stereoscopic: " << ((format.flags & MyOpenGLContext::STEREO) != 0) << EOL
+             << indent(4) << "Generic: " << ((format.flags & MyOpenGLContext::GENERIC) != 0) << EOL
+             << indent(4) << "Color bits: " << format.colorBits << EOL
+             << indent(6) << "Red bits: " << format.redBits << EOL
+             << indent(6) << "Green bits: " << format.greenBits << EOL
+             << indent(6) << "Blue bits: " << format.blueBits << EOL
+             << indent(6) << "Alpha bits: " << format.alphaBits << EOL
+             << indent(4) << "Accumulator bits: " << format.accumulatorBits << EOL
+             << indent(6) << "Accumulator red bits: " << format.accumulatorRedBits << EOL
+             << indent(6) << "Accumulator green bits: " << format.accumulatorGreenBits << EOL
+             << indent(6) << "Accumulator blue bits: " << format.accumulatorBlueBits << EOL
+             << indent(6) << "Accumulator alpha bits: " << format.accumulatorAlphaBits << EOL
+             << indent(4) << "DepthBits: " << format.depthBits << EOL
+             << indent(4) << "StencilBits: " << format.stencilBits << EOL
+             << indent(4) << "AuxBuffers: " << format.auxBuffers << EOL
              << ENDL;
       }
-      if ((formatId == -1) || (format->alphaBits && (!desiredFormat.alphaBits))) {
+      if ((formatId == -1) || (format.alphaBits && (!desiredFormat.alphaBits))) {
         formatId = i;
-        desiredFormat = *format;
+        desiredFormat = format;
       }
     }
     if (!gotFormat && dumpFormats) {

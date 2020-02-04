@@ -67,7 +67,7 @@ public:
       List<InetInterface> interfaces = InetInterface::getInterfaces();
       List<InetInterface>::ReadEnumerator enu = interfaces.getReadEnumerator();
       while (enu.hasNext()) {
-        InetInterface interface = *enu.next();
+        InetInterface interface = enu.next();
         try {
 
         unsigned int flags = interface.getFlags();
@@ -125,7 +125,7 @@ public:
     if (arguments.getSize() > 0) {
       Array<String>::ReadEnumerator enu = arguments.getReadEnumerator();
       while (enu.hasNext()) {
-        String argument = *enu.next();
+        String argument = enu.next();
         if (argument == "--help") {
           command = HELP;
         }

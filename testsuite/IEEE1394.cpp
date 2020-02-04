@@ -53,7 +53,8 @@ public:
   {
   }
 
-  void dumpAdapters() noexcept {
+  void dumpAdapters() noexcept
+  {
     try {
       IEEE1394 ieee1394;
       Array<EUI64> adapters = ieee1394.getAdapters();
@@ -63,7 +64,7 @@ public:
         Array<EUI64>::ReadEnumerator enu = adapters.getReadEnumerator();
         fout << "IEEE 1394 adapters:" << EOL;
         while (enu.hasNext()) {
-          fout << indent(2) << *enu.next() << EOL;
+          fout << indent(2) << enu.next() << EOL;
         }
         fout << FLUSH;
       }
@@ -76,7 +77,8 @@ public:
     }
   }
 
-  void openAdapter(IEEE1394& ieee1394, const EUI64& id) noexcept {
+  void openAdapter(IEEE1394& ieee1394, const EUI64& id) noexcept
+  {
     fout << "Opening IEEE 1394 adapter (" << id << ')' << ENDL;
     ieee1394.open(id);
   }

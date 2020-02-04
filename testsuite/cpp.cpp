@@ -41,13 +41,13 @@ public:
     Array<String> arguments = getArguments();
     Array<String>::ReadEnumerator enu = arguments.getReadEnumerator();
     while (enu.hasNext()) {
-      String argument = *enu.next();
+      String argument = enu.next();
       if (argument == "--identifier") {
         if (!enu.hasNext()) {
           ferr << "Error: Expected identifier of struct." << ENDL;
           return false;
         }
-        identifier = *enu.next();
+        identifier = enu.next();
       } else if (argument == "--random") {
         srcPath.clear();
         if (!enu.hasNext()) {
@@ -55,7 +55,7 @@ public:
           return false;
         }
         try {
-          randomize = UnsignedInteger::parse(*enu.next());
+          randomize = UnsignedInteger::parse(enu.next());
         } catch (...) {
           ferr << "Error: Expected random size." << ENDL;
           return false;

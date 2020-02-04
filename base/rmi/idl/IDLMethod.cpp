@@ -34,11 +34,12 @@ bool IDLMethod::raises(const IDLException& exception) const {
   return exceptions.isKey(exception.getName());
 }
 
-bool IDLMethod::isCompatible(const IDLMethod& method) const noexcept {
+bool IDLMethod::isCompatible(const IDLMethod& method) const noexcept
+{
 //   Array<IDL>::ReadEnumerator left = attributes.getReadEnumerator();
 //   Array<IDLMethod>::ReadEnumerator right = interface.attributes.getReadEnumerator();
 //   while (left.hasNext() && right.hasNext()) {
-//     left.next()->isCompatible(*right.next());
+//     left.next().isCompatible(right.next());
 //   }
 //   return !left.hasNext() && !right.hasNext();
   // check result type
@@ -49,7 +50,7 @@ bool IDLMethod::isCompatible(const IDLMethod& method) const noexcept {
   // check raised exceptions
   Array<IDLException>::ReadEnumerator enu = exception.getReadEnumerator();
   while (enu.hasNext()) {
-    if (!method.exceptions.isKey(*enu.next())) {
+    if (!method.exceptions.isKey(enu.next())) {
       return false;
     }
   }

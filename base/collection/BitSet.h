@@ -57,6 +57,10 @@ public:
     }
   public:
     
+    inline BitReference() noexcept
+    {
+    }
+    
     inline BitReference(const BitReference& copy) noexcept
       : word(copy.word), mask(copy.mask)
     {
@@ -145,6 +149,10 @@ public:
     }
   public:
     
+    inline BitReadReference() noexcept
+    {
+    }
+
     inline BitReadReference(const BitReadReference& copy) noexcept
       : word(copy.word), mask(copy.mask)
     {
@@ -224,9 +232,9 @@ public:
     
     typedef EnumeratorTraits SelfEnumeratorTraits;
       
-    typedef bool Value;
-    typedef const BitReference Reference;
-    typedef const BitPointer Pointer;
+    typedef BitReference Value;
+    typedef BitReference Reference;
+    typedef BitPointer Pointer;
     typedef MemoryDiff Distance;
   };
 
@@ -241,12 +249,15 @@ public:
   protected:
     
     typedef Enumerator<EnumeratorTraits>::Value Value;
+    typedef Enumerator<EnumeratorTraits>::Reference EnumReference;
     typedef Enumerator<EnumeratorTraits>::Pointer Pointer;
     
     /** The current position in the enumeration. */
     unsigned long* word = nullptr;
     /** The number of bits left. */
     unsigned int count = 0;
+    /** Current position. */
+    EnumReference current;
     
     /**
       Initializes an enumeration of all the elements of a bit set.
@@ -280,7 +291,7 @@ public:
     /**
       Returns the next element and advances the position of this enumeration.
     */
-    inline Pointer next()
+    inline EnumReference next()
     {
       if (count == 0) {
         _throw EndOfEnumeration();
@@ -289,9 +300,10 @@ public:
         --word;
       }
       --count;
-      return BitPointer(
-        BitReference(word, 1UL << (count % (sizeof(unsigned long) * 8)))
-      );
+
+      // update current so we can return by reference
+      current = BitReference(word, 1UL << (count % (sizeof(unsigned long) * 8)));
+      return current;
     }
     
     /**
@@ -333,12 +345,15 @@ public:
   protected:
     
     typedef Enumerator<ReadEnumeratorTraits>::Value Value;
+    typedef Enumerator<ReadEnumeratorTraits>::Reference EnumReference;
     typedef Enumerator<ReadEnumeratorTraits>::Pointer Pointer;
     
     /** The current position in the enumeration. */
     const unsigned long* word = nullptr;
     /** The number of bits left. */
     MemorySize count = 0;
+    /** Current position. */
+    EnumReference current;
     
     /**
       Initializes an enumeration of all the elements of a bit set.
@@ -372,7 +387,7 @@ public:
     /**
       Returns the next element and advances the position of this enumeration.
     */
-    inline Pointer next()
+    inline EnumReference next()
     {
       if (count == 0) {
         _throw EndOfEnumeration();
@@ -381,9 +396,8 @@ public:
         --word;
       }
       --count;
-      return BitReadPointer(
-        BitReadReference(word, 1UL << (count % (sizeof(unsigned long) * 8)))
-      );
+      current = BitReadReference(word, 1UL << (count % (sizeof(unsigned long) * 8)));
+      return current;
     }
     
     /**

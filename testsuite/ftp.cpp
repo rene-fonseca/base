@@ -848,12 +848,12 @@ void ftpclient(const String& resource, const String& file) {
     List<InetAddress>::ReadEnumerator enu = addresses.getReadEnumerator();
     unsigned int index = 0;
     while (enu.hasNext()) {
-      const InetAddress* temp = enu.next();
+      const InetAddress& temp = enu.next();
       if (index == 0) { // use the first address
-        address = *temp;
-        fout << "  address " << index++ << ": " << *temp << " (USING THIS)" << ENDL;
+        address = temp;
+        fout << "  address " << index++ << ": " << temp << " (USING THIS)" << ENDL;
       } else {
-        fout << "  address " << index++ << ": " << *temp << ENDL;
+        fout << "  address " << index++ << ": " << temp << ENDL;
       }
     }
   }

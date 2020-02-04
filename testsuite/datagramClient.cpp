@@ -45,12 +45,12 @@ public:
       List<InetAddress>::ReadEnumerator enu = addresses.getReadEnumerator();
       unsigned int index = 0;
       while (enu.hasNext()) {
-        const InetAddress* temp = enu.next();
+        const InetAddress temp = enu.next();
         if (index == 0) { // use the first address
-          address = *temp;
-          fout << indent(2) << "address " << index++ << ": " << *temp << " (USING THIS)" << ENDL;
+          address = temp;
+          fout << indent(2) << "address " << index++ << ": " << temp << " (USING THIS)" << ENDL;
         } else {
-          fout << indent(2) << "address " << index++ << ": " << *temp << ENDL;
+          fout << indent(2) << "address " << index++ << ": " << temp << ENDL;
         }
       }
     }

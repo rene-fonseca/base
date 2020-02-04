@@ -29,10 +29,11 @@ _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
   operation).
 */
 template<class COLLECTION, class UNOPR>
-void forEach(COLLECTION collection, UNOPR function) {
+void forEach(COLLECTION collection, UNOPR function)
+{
   typename COLLECTION::ReadEnumerator enu = collection.getReadEnumerator();
   while (enu.hasNext()) {
-    function(*enu.next());
+    function(enu.next());
   }
 }
 
@@ -51,8 +52,8 @@ inline void transform(COLLECTION& collection, UNOPR function) noexcept
 {
   typename COLLECTION::Enumerator enu = collection.getEnumerator();
   while (enu.hasNext()) {
-    typename COLLECTION::Enumerator::Pointer value = enu.next();
-    *value = function(*value);
+    typename COLLECTION::Enumerator::Value& value = enu.next();
+    value = function(value);
   }
 }
 

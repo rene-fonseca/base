@@ -1197,17 +1197,7 @@ public:
     found, respectively, to be less than, equal to, or greater than the
     specified string.
   */
-  int compareTo(const WideLiteral& string) const noexcept;
-  
-  /**
-    Compares this string with a NULL-terminated string.
-    
-    @param string The string to compare this string with.
-    @return Integer less than, equal to, or greater than zero if this string is
-    found, respectively, to be less than, equal to, or greater than the
-    specified string. False, if string is 0.
-  */
-  int compareTo(const NativeWideString& string) const noexcept;
+  int compareTo(const WideLiteral& string) const /*noexcept*/;
 
   /**
     Compares this string with NULL-terminated string.
@@ -1218,6 +1208,19 @@ public:
     specified string.
   */
   int compareTo(const wchar* string) const /*noexcept*/;
+
+  /**
+    Compares this string with a NULL-terminated string.
+    
+    @param string The string to compare this string with.
+    @return Integer less than, equal to, or greater than zero if this string is
+    found, respectively, to be less than, equal to, or greater than the
+    specified string. False, if string is 0.
+  */
+  int compareTo(const NativeWideString& string) const /*noexcept*/
+  {
+    return compareTo(string);
+  }
 
   /**
     Compares this string with NULL-terminated string ignoring the case of the

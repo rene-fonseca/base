@@ -892,7 +892,7 @@ int WideString::compareTo(const WideString& string) const noexcept
   }
 }
 
-int WideString::compareTo(const WideLiteral& literal) const noexcept
+int WideString::compareTo(const WideLiteral& literal) const /*noexcept*/
 {
   if (sizeof(wchar) == sizeof(utf16)) {
     const ucs4* left = getElements(); // make sure string is terminated

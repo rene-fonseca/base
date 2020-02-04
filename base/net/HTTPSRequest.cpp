@@ -18,6 +18,8 @@
 #include <base/ResourceHandle.h>
 #include <base/Profiler.h>
 #include <base/UnitTest.h>
+#include <base/Module.h>
+#include <base/build.h>
 
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
 #  include <Windows.h>
@@ -27,6 +29,9 @@
 #  include <CFNetwork/CFNetwork.h>
 #  include <CFNetwork/CFHTTPStream.h>
 #else
+#if defined(_COM_AZURE_DEV__BASE__USE_CURL)
+#  include <curl/curl.h>
+#endif
 #endif
 
 // see https://developer.apple.com/library/archive/documentation/Networking/Conceptual/CFNetwork/CFHTTPTasks/CFHTTPTasks.html#//apple_ref/doc/uid/TP30001132-CH5-SW2
@@ -201,7 +206,8 @@ HTTPSRequest::HTTPSRequest()
 bool HTTPSRequest::isSupported() noexcept
 {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32) || \
-    (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__MACOS)
+    (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__MACOS) || \
+    defined(_COM_AZURE_DEV__BASE__USE_CURL)
   return true;
 #else
   return false;
@@ -868,6 +874,15 @@ public:
 
 TEST_REGISTER(HTTPSRequest);
 
+#endif
+
+#if (_COM_AZURE_DEV__BASE__FLAVOR != _COM_AZURE_DEV__BASE__WIN32) && \
+    (_COM_AZURE_DEV__BASE__OS != _COM_AZURE_DEV__BASE__MACOS) && \
+    defined(_COM_AZURE_DEV__BASE__USE_CURL)
+MODULE_REGISTER_EXPLICIT( \
+  _COM_AZURE_DEV__BASE__THIS_MODULE, "se.haxx.curl", "libcurl", _COM_AZURE_DEV__BASE__STRINGIFY(CURLVERSION_NOW), \
+  "https://curl.haxx.se/libcurl/c/" \
+);
 #endif
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

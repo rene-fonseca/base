@@ -1462,6 +1462,32 @@ public:
     const char* result = elements->getElements();
     return result;
   }
+
+  /** Substitutes string using % syntax. */
+  String operator()(const String&) const;
+  /** Substitutes string using % syntax. */
+  String operator()(const String&, const String&) const;
+  /** Substitutes string using % syntax. */
+  String operator()(const String&, const String&, const String&) const;
+  /** Substitutes string using % syntax. */
+  String operator()(const String&, const String&, const String&, const String&) const;
+  /** Substitutes string using % syntax. */
+  String operator()(const String&, const String&, const String&, const String&, const String&) const;
+  /** Substitutes string using % syntax. */
+  String operator()(const String&, const String&, const String&, const String&, const String&, const String&,
+    const String&) const;
+  /** Substitutes string using % syntax. */
+  String operator()(const String&, const String&, const String&, const String&, const String&, const String&,
+    const String&, const String&) const;
+  /** Substitutes string using % syntax. */
+  String operator()(const String&, const String&, const String&, const String&, const String&, const String&,
+    const String&, const String&, const String&) const;
+  /** Substitutes string using % syntax. */
+  String operator()(const String&, const String&, const String&, const String&, const String&, const String&,
+    const String&, const String&, const String&, const String&) const;
+  /** Substitutes string using % syntax. */
+  String operator()(const String&, const String&, const String&, const String&, const String&, const String&,
+    const String&, const String&, const String&, const String&, const String&) const;
 };
 
 template<>
@@ -1533,6 +1559,18 @@ template<>
 inline void swapper<String>(String& a, String& b)
 {
   swapper(a.elements, b.elements); // self swap allowed
+}
+
+/** Creates String. */
+inline String operator "" _s(const char* text, size_t length)
+{
+  return String(text, length);
+}
+
+/** Creates String. */
+inline String operator "" _s(const wchar* text, size_t length)
+{
+  return String(text, length);
 }
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

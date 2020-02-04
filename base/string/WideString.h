@@ -1667,4 +1667,16 @@ inline void swapper<WideString>(WideString& a, WideString& b)
   swapper(a.elements, b.elements); // self swap allowed
 }
 
+/** Creates String. */
+inline WideString operator "" _ws(const char* text, size_t length)
+{
+  return WideString(text, length);
+}
+
+/** Creates String. */
+inline WideString operator "" _ws(const wchar* text, size_t length)
+{
+  return WideString(text, length);
+}
+
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

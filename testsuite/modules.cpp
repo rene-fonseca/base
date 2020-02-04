@@ -50,22 +50,54 @@ public:
     }
   }
 
+  /** Returns name and value for string with = separator. */
+  static Pair<String, String> getNameValue(const String& text, const String& _default, char separator = '=')
+  {
+    auto index = text.indexOf(separator);
+    if (index >= 0) {
+      return Pair<String, String>(text.substring(index), text.substring(index + 1));
+    } else {
+      return Pair<String, String>(text, _default);
+    }
+  }
+
+  bool validateValues(const String& value, const std::initializer_list<String>& accepted)
+  {
+    for (auto a : accepted) {
+      if (value == a) {
+        return true;
+      }
+    }
+    return false;
+  }
+
   bool parseArguments()
   {
     Array<String> arguments = getArguments();
     Array<String>::ReadEnumerator enu = arguments.getReadEnumerator();
     while (enu.hasNext()) {
       String argument = enu.next();
-      // TAG: need for split only first argument.split("=");
+      String value;
       if (argument.startsWith("--")) {
-        // Pair<String, String> option = argument.split("=");
+        Pair<String, String> option = getNameValue(argument);
+        argument = option.getFirst();
+        value = option.getSecond();
       }
       
-      if (argument == "--color") { // TAG: add support for =always,auto,never
+      if (argument == "--color") {
+        // validateValues(value, {"always", "auto", "never"}, "auto");
         colorize = true;
       } else if (argument == "--nocolor") {
         colorize = false;
-      } else if (argument == "--format") { // TAG: switch for = syntax?
+      } else if (argument == "--format") {
+#if 0
+        if (!value) {
+          Application::error("Expected value for --format.", EXIT_CODE_ERROR);
+          return false;
+        }
+        // validateValues(value, {"text", "json", "xml","csv"}, "text"); // text is default
+#endif
+
         if (!enu.hasNext()) {
           Application::error("Expected format [text,json,xml,csv].", EXIT_CODE_ERROR);
           return false;

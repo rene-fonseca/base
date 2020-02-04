@@ -75,42 +75,51 @@ public:
 
     unsigned int level = 0;
     unsigned int maximumLineLength = 80;
-    unsigned int flags = 0; // see FormattingFlags
+    unsigned int flags = DEFAULT_FORMATTING; // see FormattingFlags
     unsigned int indent = 2; // for nice formatting
   public:
 
-    inline NiceFormat() : StringOutputStream() {
+    inline NiceFormat()
+    {
     }
 
-    inline unsigned int getNiceFlags() const noexcept {
+    inline unsigned int getNiceFlags() const noexcept
+    {
       return flags;
     }
 
-    inline void setNiceFlags(unsigned int flags) noexcept {
+    inline void setNiceFlags(unsigned int flags) noexcept
+    {
       this->flags = flags;
     }
 
-    inline unsigned int getIndent() const noexcept {
+    inline unsigned int getIndent() const noexcept
+    {
       return indent;
     }
 
-    inline void setIndent(unsigned int indent) noexcept {
+    inline void setIndent(unsigned int indent) noexcept
+    {
       this->indent = indent;
     }
 
-    inline unsigned int getMaximumLineLength() const noexcept {
+    inline unsigned int getMaximumLineLength() const noexcept
+    {
       return maximumLineLength;
     }
 
-    inline void setMaximumLineLength(unsigned int maximumLineLength) noexcept {
+    inline void setMaximumLineLength(unsigned int maximumLineLength) noexcept
+    {
       this->maximumLineLength = maximumLineLength;
     }
 
-    inline unsigned int enter() noexcept {
+    inline unsigned int enter() noexcept
+    {
       return ++level;
     }
 
-    inline void exit() noexcept {
+    inline void exit() noexcept
+    {
       --level;
     }
 

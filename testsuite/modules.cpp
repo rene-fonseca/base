@@ -16,6 +16,7 @@
 #include <base/string/Format.h>
 #include <base/io/FileDescriptor.h>
 #include <base/net/HTTPSRequest.h>
+#include <base/objectmodel/JSON.h>
 #include <base/Module.h>
 
 using namespace com::azure::dev::base;
@@ -80,17 +81,25 @@ public:
   }
 
   /** Submits JSON to given url. */
-  bool submit(const String& url, const String& payload)
+  bool submit(const String& url, const Reference<ObjectModel::Value>& o, const String& token = String())
   {
     if (!HTTPSRequest::isSupported()) {
-      Application::error("Runtime does not supported HTTPS.");
+      Application::error("Runtime does not supported HTTPS.", EXIT_CODE_ERROR);
       return false;
     }
+
+    const String body = JSON::getJSONNoFormatting(o);
+
     String response;
     HTTPSRequest request;
     try {
       if (request.open(HTTPSRequest::METHOD_GET, url)) {
-        request.send(payload);
+        if (token) {
+          request.setRequestHeader("Authorization", "Bearer " + token);
+        }
+        request.setRequestHeader("Content-Type", "application/json; charset=utf-8");
+
+        request.send(body);
         response = request.getResponse();
         request.close();
       }
@@ -159,7 +168,7 @@ public:
         setExitCode(1);
         return;
       }
-      if (!submit(url, StringOutputStream() << om)) {
+      if (!submit(url, om, token)) {
         setExitCode(1);
       }
     }

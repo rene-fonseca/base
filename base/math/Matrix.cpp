@@ -58,20 +58,22 @@ Matrix<TYPE>::Matrix(const Dimension& dimension) {
 }
 
 template<class TYPE>
-Matrix<TYPE>::Matrix(const TYPE elements[], const Dimension& dimension) {
+Matrix<TYPE>::Matrix(const TYPE elements[], const Dimension& dimension)
+{
   bassert(dimension.isProper(), OutOfDomain());
   setSize(dimension.getHeight(), dimension.getWidth());
   copy<TYPE>(getMutableElements(), elements, getSize());
 }
 
 template<class TYPE>
-Matrix<TYPE>::Matrix(Enumerator<ReadEnumeratorTraits<TYPE> >& diagonal, const Dimension& dimension) {
+Matrix<TYPE>::Matrix(Enumerator<ReadEnumeratorTraits<TYPE> >& diagonal, const Dimension& dimension)
+{
   bassert(dimension.isProper(), OutOfDomain());
   setSize(dimension.getHeight(), dimension.getWidth());
   identity();
   unsigned int i = 0;
   while (diagonal.hasNext()) {
-    setAt(i, i, *diagonal.next());
+    setAt(i, i, diagonal.next());
     ++i;
   }
 }
@@ -79,13 +81,15 @@ Matrix<TYPE>::Matrix(Enumerator<ReadEnumeratorTraits<TYPE> >& diagonal, const Di
 
 
 template<class TYPE>
-const TYPE& Matrix<TYPE>::getAt(unsigned int row, unsigned int column) const {
+const TYPE& Matrix<TYPE>::getAt(unsigned int row, unsigned int column) const
+{
   validateElement(row, column);
   return getReadOnlyElements()[row * getColumns() + column];
 }
 
 template<class TYPE>
-void Matrix<TYPE>::setAt(unsigned int row, unsigned int column, const TYPE& value) {
+void Matrix<TYPE>::setAt(unsigned int row, unsigned int column, const TYPE& value)
+{
   validateElement(row, column);
   getMutableElements()[row * getColumns() + column] = value;
 }

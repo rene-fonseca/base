@@ -56,6 +56,8 @@ public:
   class ReadEnumerator : public Enumerator<ReadEnumeratorTraits<Node> > {
   private:
 
+    typedef typename Enumerator<ReadEnumeratorTraits<Node> >::Value Value;
+    typedef typename Enumerator<ReadEnumeratorTraits<Node> >::Reference Reference;
     typedef typename Enumerator<ReadEnumeratorTraits<Node> >::Pointer Pointer;
     typename Tree::ReadEnumerator enu;
   public:
@@ -70,9 +72,9 @@ public:
       return enu.hasNext();
     }
 
-    inline Pointer next()
+    inline Reference next()
     {
-      return &(enu.next()->getValue());
+      return enu.next().getValue();
     }
   };
 
@@ -83,8 +85,9 @@ public:
   class ValueEnumerator : public Enumerator<EnumeratorTraits<Value> > {
   private:
 
+    typedef typename ValueEnumerator::Value Value;
+    typedef typename ValueEnumerator::Reference Reference;
     typedef typename ValueEnumerator::Pointer Pointer;
-    // typedef typename ValueEnumerator::Reference Reference;
     typename Tree::Enumerator enu;
   public:
 
@@ -98,10 +101,9 @@ public:
       return enu.hasNext();
     }
 
-    // TAG: return by value instead
-    inline Pointer next()
+    inline Reference next()
     {
-      return &(enu.next()->getValue().getValue());
+      return enu.next().getValue().getValue();
     }
   };
 
@@ -529,7 +531,7 @@ FormatOutputStream& operator<<(FormatOutputStream& stream, const Map<KEY, VALUE>
   typename Map<KEY, VALUE>::ReadEnumerator enu = value.getReadEnumerator();
   stream << '{';
   while (enu.hasNext()) {
-    stream << *enu.next();
+    stream << enu.next();
     if (enu.hasNext()) {
       stream << ';';
     }

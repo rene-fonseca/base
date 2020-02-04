@@ -220,7 +220,7 @@ public:
     if (arguments.getSize() > 0) {
       Array<String>::ReadEnumerator enu = arguments.getReadEnumerator();
       while (enu.hasNext()) {
-        String argument = *enu.next();
+        String argument = enu.next();
         if (argument == "--help") {
           command = COMMAND_HELP;
           break;
@@ -228,7 +228,7 @@ public:
           command = COMMAND_VERSION;
           break;
         } else if (argument == "--port") {
-          String temp = *enu.next();
+          String temp = enu.next();
           try {
             UnsignedInteger value(temp);
             if (value > 0xffff) {

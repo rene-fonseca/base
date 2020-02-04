@@ -29,8 +29,8 @@ class SequenceIterator : public Iterator<TRAITS> {
 public:
 
   typedef typename Iterator<TRAITS>::Value Value;
-  typedef typename Iterator<TRAITS>::Pointer Pointer;
   typedef typename Iterator<TRAITS>::Reference Reference;
+  typedef typename Iterator<TRAITS>::Pointer Pointer;
   typedef typename Iterator<TRAITS>::Distance Distance;
   typedef typename Iterator<TRAITS>::Category Category;
 protected:

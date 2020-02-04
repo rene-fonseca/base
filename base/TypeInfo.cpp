@@ -102,9 +102,9 @@ public:
     unsigned int length = range.end - range.begin;
     Array<CandidateRange>::ReadEnumerator enu = templateCandidates.getReadEnumerator();
     while (enu.hasNext()) {
-      const CandidateRange* candidate = enu.next();
-      if ((candidate->end - candidate->begin) == length) {
-        if (compare<char>(demangled.getElements() + candidate->begin, demangled.getElements() + begin, length) == 0) {
+      const CandidateRange& candidate = enu.next();
+      if ((candidate.end - candidate.begin) == length) {
+        if (compare<char>(demangled.getElements() + candidate.begin, demangled.getElements() + begin, length) == 0) {
           return; // candidate already in dictionary
         }
       }
@@ -139,16 +139,16 @@ public:
           Array<CandidateRange>::Enumerator enu =
             candidates.getEnumerator(); // remap candidates
           while (enu.hasNext()) {
-            CandidateRange* range(enu.next());
-            range->begin += returnTypeString.getLength();
-            range->end += returnTypeString.getLength();
+            CandidateRange& range(enu.next());
+            range.begin += returnTypeString.getLength();
+            range.end += returnTypeString.getLength();
           }
           Array<CandidateRange>::Enumerator enuTemplateCandidate =
             templateCandidates.getEnumerator(); // remap candidates
           while (enuTemplateCandidate.hasNext()) {
-            CandidateRange* range(enuTemplateCandidate.next());
-            range->begin += returnTypeString.getLength();
-            range->end += returnTypeString.getLength();
+            CandidateRange& range(enuTemplateCandidate.next());
+            range.begin += returnTypeString.getLength();
+            range.end += returnTypeString.getLength();
           }
         }
         dump(MESSAGE("("));
@@ -498,27 +498,27 @@ public:
 
           Array<CandidateRange>::Enumerator enu = candidates.getEnumerator();
           while (enu.hasNext()) {
-            CandidateRange* range(enu.next());
-            if (range->begin >= beginType) { // is range within type
-              range->begin -= lengthOfName;
-              range->end -= lengthOfName;
-            } else if ((range->begin >= beginName) &&
-                       (range->end < beginType)) { // is range within name
-              range->begin += lengthOfType;
-              range->end += lengthOfType;
+            CandidateRange& range(enu.next());
+            if (range.begin >= beginType) { // is range within type
+              range.begin -= lengthOfName;
+              range.end -= lengthOfName;
+            } else if ((range.begin >= beginName) &&
+                       (range.end < beginType)) { // is range within name
+              range.begin += lengthOfType;
+              range.end += lengthOfType;
             }
           }
           Array<CandidateRange>::Enumerator enuTemplateCandidate =
             templateCandidates.getEnumerator(); // remap candidates
           while (enuTemplateCandidate.hasNext()) {
-            CandidateRange* range(enuTemplateCandidate.next());
-            if (range->begin >= beginType) { // is range within type
-              range->begin -= lengthOfName;
-              range->end -= lengthOfName;
-            } else if ((range->begin >= beginName) &&
-                       (range->end < beginType)) { // is range within name
-              range->begin += lengthOfType;
-              range->end += lengthOfType;
+            CandidateRange& range(enuTemplateCandidate.next());
+            if (range.begin >= beginType) { // is range within type
+              range.begin -= lengthOfName;
+              range.end -= lengthOfName;
+            } else if ((range.begin >= beginName) &&
+                       (range.end < beginType)) { // is range within name
+              range.begin += lengthOfType;
+              range.end += lengthOfType;
             }
           }
 
@@ -544,14 +544,14 @@ public:
 
           Array<CandidateRange>::Enumerator enu = candidates.getEnumerator();
           while (enu.hasNext()) {
-            CandidateRange* range(enu.next());
-            if (range->begin >= beginType) { // is range within type
-              range->begin -= lengthOfName;
-              range->end -= lengthOfName;
-            } else if ((range->begin >= beginName) &&
-                       (range->end < beginType)) { // is range within name
-              range->begin += lengthOfType;
-              range->end += lengthOfType;
+            CandidateRange& range(enu.next());
+            if (range.begin >= beginType) { // is range within type
+              range.begin -= lengthOfName;
+              range.end -= lengthOfName;
+            } else if ((range.begin >= beginName) &&
+                       (range.end < beginType)) { // is range within name
+              range.begin += lengthOfType;
+              range.end += lengthOfType;
             }
           }
 

@@ -71,7 +71,7 @@ public:
     HashSet<String>::ReadEnumerator enu = factories.getReadEnumerator();
     fout << "Active factories:" << EOL;
     while (enu.hasNext()) {
-      fout << indent(2) << *enu.next() << EOL;
+      fout << indent(2) << enu.next() << EOL;
     }
     fout << ENDL;
     

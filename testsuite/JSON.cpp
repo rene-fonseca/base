@@ -252,7 +252,7 @@ public:
     Array<String> arguments = getArguments();
     Array<String>::ReadEnumerator enu = arguments.getReadEnumerator();
     while (enu.hasNext()) {
-      const String argument = *enu.next();
+      const String argument = enu.next();
       if (argument == "--performance") {
         command = COMMAND_PERFORMANCE;
       } else if (argument == "--test") {

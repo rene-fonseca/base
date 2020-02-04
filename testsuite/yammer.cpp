@@ -464,31 +464,31 @@ public:
     Array<String> arguments = getArguments();
     Array<String>::ReadEnumerator enu = arguments.getReadEnumerator();
     while (enu.hasNext()) {
-      const String argument = *enu.next();
+      const String argument = enu.next();
       if (argument == "--token") {
         if (!enu.hasNext()) {
           ferr << "Expected token." << ENDL;
           return false;
         }
-        token = *enu.next();
+        token = enu.next();
       } else if (argument == "--group") {
         if (!enu.hasNext()) {
           ferr << "Expected group." << ENDL;
           return false;
         }
-        group = *enu.next();
+        group = enu.next();
       } else if (argument == "--threadId") {
         if (!enu.hasNext()) {
           ferr << "Expected channel." << ENDL;
           return false;
         }
-        threadId = *enu.next();
+        threadId = enu.next();
       } else if (argument == "--post") {
         if (!enu.hasNext()) {
           ferr << "Expected text." << ENDL;
           return false;
         }
-        text = *enu.next();
+        text = enu.next();
         post = true;
       } else {
         if (!token) {

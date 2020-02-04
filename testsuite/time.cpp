@@ -64,7 +64,7 @@ public:
     // merge arguments
     Array<String>::ReadEnumerator enu = arguments.getReadEnumerator();
 
-    String module = *enu.next();
+    String module = enu.next();
     if (module.indexOf(' ') > 0) {
       command = "\"" + module + "\"";
     } else {
@@ -73,7 +73,7 @@ public:
     
     while (enu.hasNext()) {
       command += ' ';
-      command += *enu.next();
+      command += enu.next();
     }
     
     Timer timer;

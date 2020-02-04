@@ -43,7 +43,7 @@ double ExpressionEvaluator::evaluate() const
   PrimitiveStackArray<double> stack(nodes.getSize());
   MemoryDiff index = -1;
   while (enu.hasNext()) {
-    Node node = *enu.next();
+    Node node = enu.next();
     switch (node.type) {
     case ExpressionEvaluator::VALUE:
       stack[++index] = node.value;
@@ -115,7 +115,7 @@ double ExpressionEvaluator::evaluate(const double* variables) const
   PrimitiveStackArray<double> stack(nodes.getSize());
   MemoryDiff index = -1;
   while (enu.hasNext()) {
-    Node node = *enu.next();
+    Node node = enu.next();
     switch (node.type) {
     case ExpressionEvaluator::VALUE:
       stack[++index] = node.value;
@@ -188,7 +188,7 @@ void ExpressionEvaluator::evaluate(const double* variables, double* results, uns
     List<Node>::ReadEnumerator enu = nodes.getReadEnumerator();
     MemoryDiff index = -1;
     while (enu.hasNext()) {
-      Node node = *enu.next();
+      Node node = enu.next();
       switch (node.type) {
       case ExpressionEvaluator::VALUE:
         stack[++index] = node.value;
@@ -720,7 +720,7 @@ String ExpressionParser::getString() const {
   List<Node>::ReadEnumerator enu = nodes.getReadEnumerator();
   Stack<String> stack;
   while (enu.hasNext()) {
-    Node node = *enu.next();
+    Node node = enu.next();
     switch (node.type) {
     case ExpressionEvaluator::VALUE:
       {

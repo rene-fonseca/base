@@ -70,19 +70,19 @@ public:
       result.getReadEnumerator();
 
     while (enu.hasNext()) {
-      ArgumentParser::Argument* argument = *enu.next();
-      if (dynamic_cast<ArgumentParser::NamedArgument*>(argument)) {
+      const ArgumentParser::Argument* argument = enu.next();
+      if (dynamic_cast<const ArgumentParser::NamedArgument*>(argument)) {
         const ArgumentParser::NamedArgument* a =
-          dynamic_cast<ArgumentParser::NamedArgument*>(argument);
+          dynamic_cast<const ArgumentParser::NamedArgument*>(argument);
         fout << "NamedArgument: " << a->getName() << SP << HEX << a->getFlags()
              << ENDL;
-      } else if (dynamic_cast<ArgumentParser::OrphanArgument*>(argument)) {
+      } else if (dynamic_cast<const ArgumentParser::OrphanArgument*>(argument)) {
         const ArgumentParser::OrphanArgument* a =
-          dynamic_cast<ArgumentParser::OrphanArgument*>(argument);
+          dynamic_cast<const ArgumentParser::OrphanArgument*>(argument);
         fout << "OrphanArgument: " << a->getValue() << ENDL;
-      } else if (dynamic_cast<ArgumentParser::StringArgument*>(argument)) {
+      } else if (dynamic_cast<const ArgumentParser::StringArgument*>(argument)) {
         const ArgumentParser::StringArgument* a =
-          dynamic_cast<ArgumentParser::StringArgument*>(argument);
+          dynamic_cast<const ArgumentParser::StringArgument*>(argument);
         fout << "StringArgument: " << a->getName() << "=" << a->getValue()
              << ENDL;
       }

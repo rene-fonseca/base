@@ -235,7 +235,7 @@ public:
 //          << "enumeration={";
 //     Array<String>::ReadEnumerator enu = enumeration.getReadEnumerator();
 //     while (enu.hasNext()) {
-//       fout << quote(*enu.next());
+//       fout << quote(enu.next());
 //       if (enu.hasNext()) {
 //         fout << ',';
 //       }
@@ -479,7 +479,7 @@ public:
          << "enumeration={";
     Array<String>::ReadEnumerator enu = enumeration.getReadEnumerator();
     while (enu.hasNext()) {
-      fout << quote(*enu.next());
+      fout << quote(enu.next());
       if (enu.hasNext()) {
         fout << ',';
       }
@@ -692,7 +692,7 @@ public:
          << "enumeration={";
     Array<String>::ReadEnumerator enu = enumeration.getReadEnumerator();
     while (enu.hasNext()) {
-      fout << *enu.next();
+      fout << enu.next();
       if (enu.hasNext()) {
         fout << ',';
       }

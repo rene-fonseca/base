@@ -687,11 +687,12 @@ public:
     friend class HashTableImpl;
   private:
     
-    typedef typename Enumerator<TRAITS>::Pointer Pointer;
     typedef typename Enumerator<TRAITS>::Value Value;
+    typedef typename Enumerator<TRAITS>::Reference Reference;
+    typedef typename Enumerator<TRAITS>::Pointer Pointer;
     
     /** The hash set implementation. */
-    Reference<HashTableImpl> impl;
+    R<HashTableImpl> impl;
     /** The current bucket. */
     Node** bucket = nullptr;
     /** The current position of the enumeration. */
@@ -706,7 +707,7 @@ public:
       @param hashTable The hash table.
     */
     inline HashTableEnumerator(
-      Reference<HashTableImpl> _impl) noexcept
+      R<HashTableImpl> _impl) noexcept
       : impl(_impl),
         bucket(impl->getBuckets()),
         node(*bucket),
@@ -726,7 +727,7 @@ public:
       Returns the current value and increments the position. Raises
       EndOfEnumeration if the end has been reached.
     */
-    Pointer next()
+    Reference next()
     {
       if (!numberOfElements) {
         _throw EndOfEnumeration(this);
@@ -735,10 +736,10 @@ public:
         ++bucket;
         node = *bucket;
       }
-      const Value& result = node->getKeyValue();
+      Reference result = node->getKeyValue();
       node = node->getNext();
       --numberOfElements;
-      return &result; // TAG: change type
+      return result;
     }
 
     inline ~HashTableEnumerator() noexcept
@@ -758,11 +759,12 @@ public:
     friend class HashTableImpl;
   private:
     
-    typedef typename Enumerator<TRAITS>::Pointer Pointer;
     typedef typename Enumerator<TRAITS>::Value Value;
+    typedef typename Enumerator<TRAITS>::Reference Reference;
+    typedef typename Enumerator<TRAITS>::Pointer Pointer;
     
     /** The hash set implementation. */
-    Reference<HashTableImpl> impl;
+    R<HashTableImpl> impl;
     /** The current bucket. */
     Node** bucket = nullptr;
     /** The current position of the enumeration. */
@@ -776,7 +778,7 @@ public:
       
       @param hashTable The hash table.
     */
-    inline HashTableValueEnumerator(Reference<HashTableImpl> _impl) noexcept
+    inline HashTableValueEnumerator(R<HashTableImpl> _impl) noexcept
       : impl(_impl),
         bucket(impl->getBuckets()),
         node(*bucket),
@@ -796,7 +798,7 @@ public:
       Returns the current value and increments the position. Raises
       EndOfEnumeration if the end has been reached.
     */
-    Pointer next()
+    Reference next()
     {
       if (!numberOfElements) {
         _throw EndOfEnumeration(this);
@@ -805,10 +807,10 @@ public:
         ++bucket;
         node = *bucket;
       }
-      Value& result = node->getValue();
+      Reference result = node->getValue();
       node = node->getNext();
       --numberOfElements;
-      return &result; // TAG: change result type
+      return result;
     }
     
     inline ~HashTableValueEnumerator() noexcept
@@ -1087,7 +1089,7 @@ FormatOutputStream& operator<<(
   typename HashTable<KEY, VALUE>::ReadEnumerator enu = value.getReadEnumerator();
   stream << '{';
   while (enu.hasNext()) {
-    stream << *enu.next();
+    stream << enu.next();
     if (enu.hasNext()) {
       stream << ';';
     }

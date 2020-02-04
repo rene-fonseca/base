@@ -435,35 +435,35 @@ public:
     // connect to host:port or server using port
     
     while (enu.hasNext()) {
-      const String* argument = enu.next();
-      if (*argument == "--help") {
-      } else if (*argument == "--loopback") {
+      const String argument = enu.next();
+      if (argument == "--help") {
+      } else if (argument == "--loopback") {
         bassert(!loopbackSpecified && !hostSpecified && !portSpecified, OutOfDomain());
         loopbackSpecified = true;
         loopback = true;
-      } else if (*argument == "--stereo") {
+      } else if (argument == "--stereo") {
         bassert(!stereoSpecified, OutOfDomain());
         stereoSpecified = true;
         channels = 2;
-      } else if (*argument == "--host") {
+      } else if (argument == "--host") {
         bassert(!hostSpecified && !loopbackSpecified, OutOfDomain("Already specified."));
         bassert(enu.hasNext(), OutOfDomain("Host value missing."));
-        host = *enu.next();
+        host = enu.next();
         hostSpecified = true;
         isServer = false;
-      } else if (*argument == "--port") {
+      } else if (argument == "--port") {
         bassert(!portSpecified && !loopbackSpecified, OutOfDomain());
         bassert(enu.hasNext(), OutOfDomain("Port value missing."));
-        const String* rateString = enu.next();
-        unsigned int temp = UnsignedInteger(*rateString).getValue();
+        const String& rateString = enu.next();
+        unsigned int temp = UnsignedInteger(rateString).getValue();
         bassert((temp > 0) && (temp <= 0xffff), OutOfDomain("Port is invalid."));
         portSpecified = true;
         port = temp;
-      } else if (*argument == "--rate") {
+      } else if (argument == "--rate") {
         bassert(!rateSpecified, OutOfDomain());
         bassert(enu.hasNext(), OutOfDomain("Rate value missing."));
-        const String* rateString = enu.next();
-        unsigned int temp = UnsignedInteger(*rateString).getValue();
+        const String& rateString = enu.next();
+        unsigned int temp = UnsignedInteger(rateString).getValue();
         bassert((temp >= 1000) && (temp <= 44100), OutOfDomain("Sampling rate is invalid."));
         rateSpecified = true;
         samplingRate = temp;
@@ -510,7 +510,7 @@ public:
     } else {
       List<InetAddress>::ReadEnumerator enu =
         InetAddress::getAddressesByName(host).getReadEnumerator();
-      endPoint.setAddress(*enu.next());
+      endPoint.setAddress(enu.next());
       endPoint.setPort(port);
     }
     IntercomServlet(channels, samplingRate, loopback, isServer, endPoint).run();

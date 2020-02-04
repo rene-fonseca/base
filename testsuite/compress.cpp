@@ -87,7 +87,7 @@ public:
     Array<String> arguments = getArguments();
     Array<String>::ReadEnumerator enu = arguments.getReadEnumerator();
     while (enu.hasNext()) {
-      String argument = *enu.next();
+      String argument = enu.next();
       if (argument == "--help") {
         command = COMMAND_HELP;
         return;
@@ -110,7 +110,7 @@ public:
           return;
         }
         try {
-          level = UnsignedInteger::parse(*enu.next(), UnsignedInteger::DEC);
+          level = UnsignedInteger::parse(enu.next(), UnsignedInteger::DEC);
         } catch (InvalidFormat&) {
           level = 0; // force error
         }
@@ -123,7 +123,7 @@ public:
           error("Compression method is missing");
           return;
         }
-        String argument = *enu.next();
+        String argument = enu.next();
         if (argument == "BZIP2") {
           method = METHOD_BZIP2;
         } else if (argument == "ZLIB") {

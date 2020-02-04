@@ -89,9 +89,9 @@ const AccessControlEntry& AccessControlList::getACE(const Trustee& trustee) cons
 {
   Array<AccessControlEntry>::ReadEnumerator enu = acl.getReadEnumerator();
   while (enu.hasNext()) {
-    const AccessControlEntry* ace = enu.next();
-    if (ace->getTrustee() == trustee) {
-      return *ace;
+    const AccessControlEntry& ace = enu.next();
+    if (ace.getTrustee() == trustee) {
+      return ace;
     }
   }
   _throw InvalidKey("Trustee not in ACL.", this);
@@ -107,11 +107,11 @@ AccessControlList::Permissions AccessControlList::getEffectiveAccess(const Trust
   // TAG: what is the right way to determine the effective rights
   Array<AccessControlEntry>::ReadEnumerator enu = acl.getReadEnumerator();
   while (enu.hasNext()) {
-    const AccessControlEntry* ace = enu.next();
-    if ((ace->getTrustee() == trustee) ||
-        (ace->getTrustee().isMemberOf(trustee))) { // returns false if trustee is not a group
-      effective.allowed |= ace->getPermissions().allowed;
-      effective.denied |= ace->getPermissions().denied;
+    const AccessControlEntry& ace = enu.next();
+    if ((ace.getTrustee() == trustee) ||
+        (ace.getTrustee().isMemberOf(trustee))) { // returns false if trustee is not a group
+      effective.allowed |= ace.getPermissions().allowed;
+      effective.denied |= ace.getPermissions().denied;
     }
   }
   effective.allowed &= ~effective.denied; // denied permissions take precedence
@@ -130,7 +130,7 @@ FormatOutputStream& operator<<(FormatOutputStream& stream, const AccessControlLi
   // acl.getEffectiveAccess(acl.getOwner())
   // acl.getEffectiveAccess(acl.getGroup())
   while (enu.hasNext()) {
-    s << *enu.next() << EOL;
+    s << enu.next() << EOL;
   }
   s << FLUSH;
   return stream << s.getString();

@@ -80,7 +80,7 @@ public:
     Array<String> arguments = getArguments();
     Array<String>::ReadEnumerator enu = arguments.getReadEnumerator();
     while (enu.hasNext()) {
-      String argument = *enu.next();
+      String argument = enu.next();
       if (argument == "--help") {
         command = COMMAND_HELP;
         return;
@@ -148,7 +148,7 @@ public:
     
     Array<String>::ReadEnumerator enu = entries.getReadEnumerator();
     while (enu.hasNext()) {
-      const String entry = *enu.next();
+      const String entry = enu.next();
       try {
         unsigned int type = FileSystem::getType(entry);
         

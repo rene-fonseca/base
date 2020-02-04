@@ -463,19 +463,19 @@ public:
     Array<String> arguments = getArguments();
     Array<String>::ReadEnumerator enu = arguments.getReadEnumerator();
     while (enu.hasNext()) {
-      const String argument = *enu.next();
+      const String argument = enu.next();
       if (argument == "--token") {
         if (!enu.hasNext()) {
           ferr << "Expected token." << ENDL;
           return false;
         }
-        token = *enu.next();
+        token = enu.next();
       } else if (argument == "--channel") {
         if (!enu.hasNext()) {
           ferr << "Expected channel." << ENDL;
           return false;
         }
-        channel = *enu.next();
+        channel = enu.next();
       } else if (argument == "--rtm") {
         post = false;
         update = false;
@@ -485,7 +485,7 @@ public:
           ferr << "Expected text." << ENDL;
           return false;
         }
-        text = *enu.next();
+        text = enu.next();
         post = true;
         update = false;
         rtm = false;
@@ -494,7 +494,7 @@ public:
           ferr << "Expected text." << ENDL;
           return false;
         }
-        text = *enu.next();
+        text = enu.next();
         post = false;
         update = true;
         rtm = false;
@@ -503,7 +503,7 @@ public:
           ferr << "Expected thread ts." << ENDL;
           return false;
         }
-        thread = *enu.next();
+        thread = enu.next();
       } else {
         if (!token) {
           token = argument;

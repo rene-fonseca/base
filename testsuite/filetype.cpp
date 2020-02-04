@@ -52,7 +52,7 @@ public:
     Array<String> arguments = getArguments();
     Array<String>::ReadEnumerator enu = arguments.getReadEnumerator();
     while (enu.hasNext()) {
-      String argument = *enu.next();
+      String argument = enu.next();
       if (argument == "--help") {
         command = COMMAND_HELP;
         return;
@@ -151,7 +151,7 @@ public:
     Array<String> entries = folder.getEntries();
     Array<String>::ReadEnumerator enu = entries.getReadEnumerator();
     while (enu.hasNext()) {
-      const String entry = *enu.next();
+      const String entry = enu.next();
       if ((entry == ".") || (entry == "..")) {
         continue;
       }
@@ -181,7 +181,7 @@ public:
     Array<String>::ReadEnumerator enu = paths.getReadEnumerator();
     
     while (enu.hasNext()) {
-      String path = *enu.next();
+      String path = enu.next();
       
       if (!FileSystem::entryExists(path)) {
         if (force) {

@@ -197,7 +197,7 @@ public:
       
       Array<String>::ReadEnumerator enu = entries.getReadEnumerator();
       while (enu.hasNext()) {
-        const String entry = *enu.next();
+        const String entry = enu.next();
         try {
           unsigned int type = FileSystem::getType(entry);
           if (type & FileSystem::REGULAR) {

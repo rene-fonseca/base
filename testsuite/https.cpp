@@ -191,18 +191,18 @@ public:
     Array<String> arguments = getArguments();
     Array<String>::ReadEnumerator enu = arguments.getReadEnumerator();
     while (enu.hasNext()) {
-      const String argument = *enu.next();
+      const String argument = enu.next();
       if (argument == "--field") {
         if (!enu.hasNext()) {
           ferr << "Expected header field name." << ENDL;
           return false;
         }
-        auto name = *enu.next();
+        auto name = enu.next();
         if (!enu.hasNext()) {
           ferr << "Expected header field value." << ENDL;
           return false;
         }
-        auto value = *enu.next();
+        auto value = enu.next();
         fields.add(name, value);
       } else if (argument == "--header") {
         showHeader = true;
@@ -244,7 +244,7 @@ public:
       auto enu = fields.getReadEnumerator();
       while (enu.hasNext()) {
         auto nv = enu.next();
-        request.setRequestHeader(nv->getKey(), nv->getValue());
+        request.setRequestHeader(nv.getKey(), nv.getValue());
       }
       
       // request.setRequestHeader("Keep-Alive", "30");

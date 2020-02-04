@@ -32,13 +32,15 @@ template<class TRAITS>
 class AllocatorEnumerator : public Enumerator<TRAITS> {
 public:
 
+  typedef typename Enumerator<TRAITS>::Value Value;
+  typedef typename Enumerator<TRAITS>::Reference Reference;
   typedef typename Enumerator<TRAITS>::Pointer Pointer;
 private:
   
   /** The current position in the enumeration. */
-  Pointer current;
+  Pointer current = nullptr;
   /** The end of the enumeration. */
-  Pointer end;
+  Pointer end = nullptr;
 public:
 
   /**
@@ -71,10 +73,10 @@ public:
   /**
     Returns the next element and advances the position of this enumeration.
   */
-  inline Pointer next()
+  inline Reference next()
   {
     bassert(current != end, EndOfEnumeration(this));
-    return current++;
+    return *current++;
   }
 
   /**

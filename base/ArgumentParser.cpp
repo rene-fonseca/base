@@ -428,7 +428,7 @@ Array<ArgumentParser::Argument*> ArgumentParser::operator()(
       Array<Reference<Option> >::ReadEnumerator enu =
         options.getReadEnumerator();
       while (enu.hasNext()) {
-        Reference<Option> option = *enu.next();
+        Reference<Option> option = enu.next();
         if (option->getFlags() & Option::MANDATORY) {
           bassert(
             occured.hasValue(option->getName()),

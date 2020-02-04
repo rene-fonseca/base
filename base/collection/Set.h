@@ -46,8 +46,9 @@ public:
   class SetEnumerator : public base::Enumerator<TRAITS> {
   public:
 
-    typedef typename Enumerator<TRAITS>::Pointer Pointer;
     typedef typename Enumerator<TRAITS>::Value Value;
+    typedef typename Enumerator<TRAITS>::Reference Reference;
+    typedef typename Enumerator<TRAITS>::Pointer Pointer;
   private:
 
     ENU enu;
@@ -63,9 +64,9 @@ public:
       return enu.hasNext();
     }
     
-    inline Pointer next()
+    inline Reference next()
     {
-      return &(enu.next()->getValue());
+      return enu.next().getValue();
     }
   };
 
@@ -307,7 +308,7 @@ FormatOutputStream& operator<<(FormatOutputStream& stream, const Set<TYPE>& valu
   typename Set<TYPE>::ReadEnumerator enu = value.getReadEnumerator();
   stream << '{';
   while (enu.hasNext()) {
-    stream << *enu.next();
+    stream << enu.next();
     if (enu.hasNext()) {
       stream << ';';
     }

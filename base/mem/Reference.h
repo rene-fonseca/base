@@ -408,6 +408,10 @@ public:
   }
 };
 
+/** Shorthand for Reference. */
+template<class TYPE>
+using R = Reference<TYPE>;
+
 template<class TYPE>
 inline void swapper(Reference<TYPE>& a, Reference<TYPE>& b)
 {

@@ -534,6 +534,7 @@ class DoubleLinkedNodeEnumerator : public Enumerator<TRAITS> {
 public:
 
   typedef typename Enumerator<TRAITS>::Value Value;
+  typedef typename Enumerator<TRAITS>::Reference Reference;
   typedef typename Enumerator<TRAITS>::Pointer Pointer;
 protected:
 
@@ -570,14 +571,14 @@ public:
   /**
     Returns the next element and advances the position of this enumeration.
   */
-  Pointer next()
+  Reference next()
   {
     if (!current) {
       _throw EndOfEnumeration();
     }
     auto temp = current;
     current = current->getNext();
-    return &(temp->getValue());
+    return temp->getValue();
   }
 
   /**
@@ -607,6 +608,7 @@ class DoubleLinkedNodeReadEnumerator : public Enumerator<TRAITS> {
 public:
 
   typedef typename Enumerator<TRAITS>::Value Value;
+  typedef typename Enumerator<TRAITS>::Reference Reference;
   typedef typename Enumerator<TRAITS>::Pointer Pointer;
 protected:
 
@@ -643,14 +645,14 @@ public:
   /**
     Returns the next element and advances the position of this enumeration.
   */
-  Pointer next()
+  Reference next()
   {
     if (!current) {
       _throw EndOfEnumeration();
     }
     auto temp = current;
     current = current->getNext();
-    return &(temp->getValue());
+    return temp->getValue();
   }
 
   /**

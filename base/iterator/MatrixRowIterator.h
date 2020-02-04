@@ -30,6 +30,7 @@ class MatrixRowIterator : public InterleavedIterator<TRAITS> {
 public:
 
   typedef typename InterleavedIterator<TRAITS>::Distance Distance;
+  typedef typename InterleavedIterator<TRAITS>::Reference Reference;
   typedef typename InterleavedIterator<TRAITS>::Pointer Pointer;
   typedef SequenceIterator<TRAITS> ElementIterator;
   

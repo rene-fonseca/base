@@ -56,17 +56,17 @@ bool SaveFileDialog::execute()
   String temp;
   Map<String, String>::ReadEnumerator enu = this->filters.getReadEnumerator();
   while (enu.hasNext()) {
-    const Map<String, String>::Node* node = enu.next();
+    const Map<String, String>::Node& node = enu.next();
     // terminator not allowed in value and key
-    if (node->getValue().indexOf('\0') >= 0) {
+    if (node.getValue().indexOf('\0') >= 0) {
       _throw UserInterfaceException();
     }
-    if (node->getKey().indexOf('\0') >= 0) {
+    if (node.getKey().indexOf('\0') >= 0) {
       _throw UserInterfaceException();
     }
-    temp += node->getValue();
+    temp += node.getValue();
     temp += '\0';
-    temp += node->getKey();
+    temp += node.getKey();
     temp += '\0';
   }
   temp += '\0'; // final termination

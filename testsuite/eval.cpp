@@ -358,7 +358,7 @@ public:
         unknowns.getReadEnumerator();
       fout << "The expression contains the following unknowns:";
       while (enu.hasNext()) {
-        fout << ' ' << enu.next()->getKey();
+        fout << ' ' << enu.next().getKey();
       }
       fout << ENDL;
     } else {
@@ -400,7 +400,7 @@ public:
     const Array<String> arguments = getArguments();
     Array<String>::ReadEnumerator enu = arguments.getReadEnumerator();
     while (enu.hasNext()) {
-      String argument = *enu.next();
+      String argument = enu.next();
       if (argument == "--help") {
         command = COMMAND_HELP;
       } else if (argument == "--version") {

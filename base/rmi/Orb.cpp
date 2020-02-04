@@ -40,40 +40,45 @@ unsigned int Orb::getNumberOfStubs() const noexcept {
   return 0; // TAG: fixme - stubs.getSize();
 }
 
-unsigned int Orb::getNumberOfSkeletons() const noexcept {
+unsigned int Orb::getNumberOfSkeletons() const noexcept
+{
   return skeletons.getNumberOfSkeletons();
 }
 
-unsigned int Orb::getNumberOfConnections() const noexcept {
+unsigned int Orb::getNumberOfConnections() const noexcept
+{
   return 0; // TAG: fixme
 }
  
-HashSet<String> Orb::getEncodings() const {
+HashSet<String> Orb::getEncodings() const
+{
   HashSet<String> result;
   HashTable<String, Reference<OrbEncoding> >::ReadEnumerator enu =
     encodings.getReadEnumerator();
   while (enu.hasNext()) {
-    result.add(*enu.next()->getKey());
+    result.add(enu.next()->getKey());
   }
   return result;
 }
 
-HashSet<String> Orb::getSchemes() const {
+HashSet<String> Orb::getSchemes() const
+{
   HashSet<String> result;
   HashTable<String, Reference<OrbScheme> >::ReadEnumerator enu =
     schemes.getReadEnumerator();
   while (enu.hasNext()) {
-    result.add(*enu.next()->getKey());
+    result.add(enu.next().getKey());
   }
   return result;
 }
 
-HashSet<String> Orb::getFactories() const {
+HashSet<String> Orb::getFactories() const
+{
   HashSet<String> result;
   HashSet<Reference<OrbConnectionFactory> >::ReadEnumerator enu =
     factories.getReadEnumerator();
   while (enu.hasNext()) {
-    Reference<OrbConnectionFactory> factory = *enu.next();
+    Reference<OrbConnectionFactory> factory = enu.next();
     result.add(factory->getEndPoint());
   }
   return result;
@@ -343,7 +348,7 @@ void Orb::run() {
   {
     fout << "DEBUG: " << "Starting factory threads" << ENDL;
     while (enu.hasNext()) {
-      Reference<OrbConnectionFactory> factory = *enu.next();
+      Reference<OrbConnectionFactory> factory = enu.next();
       OrbFactoryDispatcher dispatcher(this, factory);
       Thread* thread = new Thread(&dispatcher);
       threads.append(thread);
@@ -361,7 +366,7 @@ void Orb::run() {
     fout << "DEBUG: " << "Terminating factories" << ENDL;
     Array<Thread*>::Enumerator enu = threads.getEnumerator();
     while (enu.hasNext()) {
-      (*enu.next())->terminate();
+      enu.next()->terminate();
     }
   }
   
@@ -370,7 +375,7 @@ void Orb::run() {
     fout << "DEBUG: " << "Waiting for factories to complete" << ENDL;
     Array<Thread*>::Enumerator enu = threads.getEnumerator();
     while (enu.hasNext()) {
-      (*enu.next())->join();
+      enu.next()->join();
     }
   }
 }

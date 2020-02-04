@@ -84,9 +84,9 @@ Document Transformer::transform(const Document& document)
   HashTable<String, String>::ReadEnumerator enu =
     parameters.getReadEnumerator();
   while (enu.hasNext()) {
-    const HashTable<String, String>::HashTableAssociation* node = enu.next();
-    *i++ = node->getKey().getElements();
-    *i++ = node->getValue().getElements();
+    const HashTable<String, String>::HashTableAssociation& node = enu.next();
+    *i++ = node.getKey().getElements();
+    *i++ = node.getValue().getElements();
   }
   *i++ = 0; // terminate
   

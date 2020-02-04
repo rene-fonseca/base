@@ -385,7 +385,7 @@ public:
     Dimension minimumSize;
     Dimension desiredSize;
     while (enu.hasNext()) {
-      MenuItemReference item = *enu.next();
+      MenuItemReference item = enu.next();
       preferredSize.expand(item.getPreferredSize());
       minimumSize.expand(item.getMinimumSize());
       // vertical

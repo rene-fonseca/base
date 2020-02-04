@@ -49,7 +49,7 @@ public:
     Array<String> arguments = getArguments();
     Array<String>::ReadEnumerator enu = arguments.getReadEnumerator();
     while (enu.hasNext()) {
-      String argument = *enu.next();
+      String argument = enu.next();
       if (argument == "--help") {
         command = COMMAND_HELP;
         return;
@@ -136,7 +136,7 @@ public:
     result.totalNumberOfFolders = 0;
     
     while (enu.hasNext()) {
-      const String entry = *enu.next();
+      const String entry = enu.next();
       if ((entry == ".") || (entry == "..")) {
         continue;
       }
@@ -174,7 +174,7 @@ public:
     Array<String>::ReadEnumerator enu = paths.getReadEnumerator();
     
     while (enu.hasNext()) {
-      String path = *enu.next();
+      String path = enu.next();
       
       if (!FileSystem::folderExists(path)) {
         ferr << "Error: " << "Not a folder: " << path << ENDL;

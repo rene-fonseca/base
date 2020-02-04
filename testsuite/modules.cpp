@@ -44,7 +44,7 @@ public:
     Array<String> arguments = getArguments();
     Array<String>::ReadEnumerator enu = arguments.getReadEnumerator();
     while (enu.hasNext()) {
-      String argument = *enu.next();
+      String argument = enu.next();
       // TAG: need for split only first argument.split("=");
       if (argument.startsWith("--")) {
         // Pair<String, String> option = argument.split("=");
@@ -59,19 +59,19 @@ public:
           Application::error("Expected format [text,json,xml,csv].", EXIT_CODE_ERROR);
           return false;
         }
-        format = *enu.next();
+        format = enu.next();
       } else if (argument == "--token") {
         if (!enu.hasNext()) {
           Application::error("Expected token.", EXIT_CODE_ERROR);
           return false;
         }
-        token = *enu.next();
+        token = enu.next();
       } else if (argument == "--submit") {
         if (!enu.hasNext()) {
           Application::error("Expected URL.", EXIT_CODE_ERROR);
           return false;
         }
-        url = *enu.next();
+        url = enu.next();
       } else {
         Application::error("Invalid argument.", EXIT_CODE_ERROR);
         return false;

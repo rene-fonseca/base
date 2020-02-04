@@ -44,7 +44,7 @@ public:
     
     Array<String>::ReadEnumerator enu = arguments.getReadEnumerator();
 
-    String module = *enu.next();
+    String module = enu.next();
     // -a --access
     // -m --modification
     // -c --no-create

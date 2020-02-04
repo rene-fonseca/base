@@ -36,8 +36,8 @@ private:
 public:
 
   typedef typename SequenceIterator<TRAITS>::Distance Distance;
-  typedef typename SequenceIterator<TRAITS>::Pointer Pointer;
   typedef typename SequenceIterator<TRAITS>::Reference Reference;
+  typedef typename SequenceIterator<TRAITS>::Pointer Pointer;
   typedef InterleavedIterator<TRAITS> ElementIterator;
 
   inline MatrixColumnIterator(Pointer value, const Dimension& _dimension) noexcept

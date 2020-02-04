@@ -82,7 +82,7 @@ public:
     Array<String> arguments = getArguments();
     Array<String>::ReadEnumerator enu = arguments.getReadEnumerator();
     while (enu.hasNext()) {
-      String argument = *enu.next();
+      String argument = enu.next();
       if (argument == "--help") {
         command = COMMAND_HELP;
       } else if (argument == "--version") {
@@ -120,7 +120,7 @@ public:
           ferr << "Error: Expected variable." << ENDL;
           return false;
         }
-        String argument = *enu.next();
+        String argument = enu.next();
         MemoryDiff index = argument.indexOf("=");
         if (index >= 0) {
           symbols.add(argument.substring(0, index), argument.substring(index + 1));
@@ -133,13 +133,13 @@ public:
           ferr << "Error: Expected JUnit path." << ENDL;
           return false;
         }
-        junitPath = *enu.next();
+        junitPath = enu.next();
       } else if (argument == "--uuid") {
         if (!enu.hasNext()) {
           ferr << "Error: Expected testsuite UUID." << ENDL;
           return false;
         }
-        testsuiteUUID = *enu.next();
+        testsuiteUUID = enu.next();
       } else if (argument == "--randomize") {
         randomize = true;
       } else if (argument == "--stopOnFailure") {

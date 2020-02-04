@@ -181,7 +181,7 @@ public:
         Array<String> fields = line.split(';');
         Array<String>::ReadEnumerator enu = fields.getReadEnumerator();
         
-        uint32 code = UnsignedInteger::parse(*enu.next(), UnsignedInteger::HEX);
+        uint32 code = UnsignedInteger::parse(enu.next(), UnsignedInteger::HEX);
         if (code > 0x10ffff) {
           ferr << "Error: Invalid character code" << ENDL;
           setExitCode(EXIT_CODE_ERROR);
@@ -318,7 +318,7 @@ public:
           descriptors.append(descriptor);
         }
         
-//         String mapping = *enu.next();
+//         String mapping = enu.next();
 //         mapping.trim();
 //         Array<String> mappings = mapping.split(' '); //, true);
         
@@ -328,7 +328,7 @@ public:
 //         {
 //           Array<String>::ReadEnumerator enu = mappings.getReadEnumerator();
 //           while (enu.hasNext()) {    
-//             uint32 code = UnsignedInteger(*enu.next(), UnsignedInteger::HEX);
+//             uint32 code = UnsignedInteger(enu.next(), UnsignedInteger::HEX);
 //             if (code > 0x10ffff) {
 //               ferr << "Error: Invalid character code" << ENDL;
 //               setExitCode(EXIT_CODE_ERROR);

@@ -519,11 +519,11 @@ public:
   private:
     
     typedef typename Enumerator<TRAITS>::Value Value;
-    typedef typename Enumerator<TRAITS>::Reference EnumReference;
+    typedef typename Enumerator<TRAITS>::Reference Reference;
     typedef typename Enumerator<TRAITS>::Pointer Pointer;
     
     /** The hash set implementation. */
-    Reference<HashSetImpl> impl;
+    R<HashSetImpl> impl;
     /** The current bucket. */
     Node** bucket = nullptr;
     /** The current position of the enumeration. */
@@ -537,7 +537,7 @@ public:
       
       @param hashSet The hash set.
     */
-    inline HashSetEnumerator(Reference<HashSetImpl> _impl) noexcept
+    inline HashSetEnumerator(R<HashSetImpl> _impl) noexcept
       : impl(_impl),
         bucket(impl->getBuckets()),
         node(*bucket),
@@ -557,7 +557,7 @@ public:
       Returns the current value and increments the position. Raises
       EndOfEnumeration if the end has been reached.
     */
-    EnumReference next()
+    Reference next()
     {
       if (!numberOfElements) {
         _throw EndOfEnumeration(this);
@@ -566,7 +566,7 @@ public:
         ++bucket;
         node = *bucket;
       }
-      EnumReference result = node->getValue();
+      Reference result = node->getValue();
       node = node->getNext();
       --numberOfElements;
       return result;

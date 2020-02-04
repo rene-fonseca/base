@@ -249,7 +249,7 @@ public:
   protected:
     
     typedef Enumerator<EnumeratorTraits>::Value Value;
-    typedef Enumerator<EnumeratorTraits>::Reference EnumReference;
+    typedef Enumerator<EnumeratorTraits>::Reference Reference;
     typedef Enumerator<EnumeratorTraits>::Pointer Pointer;
     
     /** The current position in the enumeration. */
@@ -257,7 +257,7 @@ public:
     /** The number of bits left. */
     unsigned int count = 0;
     /** Current position. */
-    EnumReference current;
+    Reference current;
     
     /**
       Initializes an enumeration of all the elements of a bit set.
@@ -291,7 +291,7 @@ public:
     /**
       Returns the next element and advances the position of this enumeration.
     */
-    inline EnumReference next()
+    inline Reference next()
     {
       if (count == 0) {
         _throw EndOfEnumeration();

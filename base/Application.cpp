@@ -972,6 +972,15 @@ int Application::exceptionHandler() noexcept
   return Application::EXIT_CODE_ERROR;
 }
 
+void Application::error(const String& text, int exitCode)
+{
+  // use color?
+  ferr << "Error: " << text << ENDL;
+  if (exitCode != EXIT_CODE_INVALID) {
+    setExitCode(exitCode);
+  }
+}
+
 void Application::hangup() noexcept
 {
   MutualExclusion::Sync _guard(lock);

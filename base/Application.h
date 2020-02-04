@@ -232,6 +232,14 @@ public:
   {
     exitCode = value;
   }
+
+  /**
+    Writes error to stderr. Only intended for console apps. Only sets exit code is not equal to EXIT_CODE_INVALID.
+
+    @param text The error message.
+    @param exitCode The exit code. Not set by default.
+  */
+  void error(const String& text, int exitCode = EXIT_CODE_INVALID);
   
   /**
     Returns true if the application has been signaled to terminate.

@@ -778,7 +778,7 @@ void FileSystem::makeFolder(const String& path)
     _throw FileSystemException("Unable to make folder.", Type::getType<FileSystem>());
   }
 #else // unix
-  if (mkdir(path.getElements(), 0)) {
+  if (mkdir(path.getElements(), 0770)) { // TAG: need a way to control access
     _throw FileSystemException("Unable to make folder.", Type::getType<FileSystem>());
   }
 #endif // flavor

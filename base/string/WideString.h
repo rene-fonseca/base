@@ -1219,7 +1219,7 @@ public:
   */
   int compareTo(const NativeWideString& string) const /*noexcept*/
   {
-    return compareTo(string);
+    return compareTo(string.getValue());
   }
 
   /**

@@ -648,7 +648,8 @@ public:
   TEST_DEPENDENCY_ON.
 */
 #define TEST_DEPENDENCY(DEPENDENCY) \
-  base::UnitTest::AddDependency _COM_AZURE_DEV__BASE__MAKE_IDENTIFIER(_dependency) = base::UnitTest::AddDependency(this, DEPENDENCY);
+  base::UnitTest::AddDependency _COM_AZURE_DEV__BASE__MAKE_IDENTIFIER(_dependency) = \
+    base::UnitTest::AddDependency(this, DEPENDENCY);
 
 /** Sets dependency on other test. If required test failed this test is skipped. DEPENDENCY may be a pattern. */
 #define TEST_DEPENDENCY_ON(TYPE, DEPENDENCY) \
@@ -664,7 +665,10 @@ public:
 #define TEST_ASSERT(EXPRESSION) \
   base::UnitTest::onAssert((EXPRESSION), _COM_AZURE_DEV__BASE__STRINGIFY(EXPRESSION), __LINE__)
 
-/** Require expression to be equal to the given comperand. operator==() must be supported. Expression and comperand must have output rule to FormatOutputStream. */
+/**
+  Require expression to be equal to the given comperand. operator==() must be supported. Expression and comperand must
+  have output rule to FormatOutputStream.
+*/
 #define TEST_EQUAL(EXPRESSION, COMPERAND) \
   { \
     const auto result = (EXPRESSION); \
@@ -672,7 +676,8 @@ public:
     base::UnitTest::onAssert(equal, _COM_AZURE_DEV__BASE__STRINGIFY((EXPRESSION) == COMPERAND), __LINE__); \
     if (!equal) { \
       StringOutputStream stream; \
-      stream << "Expecting value '" << COMPERAND << "' for '" << _COM_AZURE_DEV__BASE__STRINGIFY(EXPRESSION) << "'. But got '" << result << "'." << FLUSH; \
+      stream << "Expecting value '" << COMPERAND << "' for '" << _COM_AZURE_DEV__BASE__STRINGIFY(EXPRESSION) \
+             << "'. But got '" << result << "'." << FLUSH; \
       base::UnitTest::onPrintIssue(stream.getString(), __LINE__); \
     } \
   }
@@ -688,19 +693,22 @@ public:
   } catch (EXCEPTION&) { \
   } catch (Exception& e) { \
     StringOutputStream stream; \
-    stream << "Expecting exception '" << Type::getType<EXCEPTION>() << "' for '" << _COM_AZURE_DEV__BASE__STRINGIFY(EXPRESSION) \
+    stream << "Expecting exception '" << Type::getType<EXCEPTION>() << "' for '" \
+           << _COM_AZURE_DEV__BASE__STRINGIFY(EXPRESSION) \
            << "' but got " << e.getThisType() << " with message '" << e.getMessage() << "'." << FLUSH; \
     base::UnitTest::onPrintIssue(stream.getString(), __LINE__); \
     _rethrow; \
   } catch (std::exception& e) { \
     StringOutputStream stream; \
-    stream << "Expecting exception '" << Type::getType<EXCEPTION>() << "' for '" << _COM_AZURE_DEV__BASE__STRINGIFY(EXPRESSION) \
+    stream << "Expecting exception '" << Type::getType<EXCEPTION>() << "' for '" \
+           << _COM_AZURE_DEV__BASE__STRINGIFY(EXPRESSION) \
            << "' but got " << Exception::getStdExceptionName(e) << " with message '" << e.what() << "'." << FLUSH; \
     base::UnitTest::onPrintIssue(stream.getString(), __LINE__); \
     _rethrow; \
   } catch (...) { \
     StringOutputStream stream; \
-    stream << "Expecting exception '" << Type::getType<EXCEPTION>() << "' for '" << _COM_AZURE_DEV__BASE__STRINGIFY(EXPRESSION) << "' but got unknown exception." << FLUSH; \
+    stream << "Expecting exception '" << Type::getType<EXCEPTION>() << "' for '" \
+           << _COM_AZURE_DEV__BASE__STRINGIFY(EXPRESSION) << "' but got unknown exception." << FLUSH; \
     base::UnitTest::onPrintIssue(stream.getString(), __LINE__); \
     _rethrow; \
   }

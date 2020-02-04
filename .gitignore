@@ -53,6 +53,7 @@ wasm
 # Testing
 Testing/
 junit.xml
+testdata/
 
 # Install
 install/

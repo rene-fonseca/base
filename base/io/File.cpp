@@ -17,6 +17,7 @@
 #include <base/io/EndOfFile.h>
 #include <base/io/FileException.h>
 #include <base/io/FileNotFound.h>
+#include <base/filesystem/FileSystem.h>
 #include <base/concurrency/Thread.h>
 #include <base/Base.h>
 #include <base/Functor.h>
@@ -1637,13 +1638,18 @@ public:
 
   void run() override
   {
-    File f1("test.txt", File::WRITE, File::CREATE);
+    try {
+      FileSystem::makeFolder("testdata");
+    } catch (...) {
+    }
+
+    File f1("testdata/test.txt", File::WRITE, File::CREATE);
     const char* text = "Hello, World!\n";
     f1.write(reinterpret_cast<const uint8*>(text), getNullTerminatedLength(text));
     f1.close();
 
 #if 0 // TAG: fix end of file handling
-    File f2("test.txt", File::READ, 0);
+    File f2("testdata/test.txt", File::READ, 0);
     uint8 buffer[128];
     unsigned int bytesRead = f2.read(buffer, getArraySize(buffer));
     f2.close();

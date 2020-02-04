@@ -25,6 +25,15 @@ namespace {
   }
 }
 
+#if 0
+String String::operator()(const String& a, const String& b, const String& c, const String& d, const String& e,
+   const String& f, const String& g, const String& h, const String& i, const String& j, const String& k) const
+{
+  MemorySpan spans[] = {toSpan(a), toSpan(b), toSpan(c), toSpan(d), toSpan(e), toSpan(f), toSpan(g), toSpan(h), toSpan(i)};
+  return Format::Subst(text, spans, getArraySize(spans)).format();
+}
+#endif
+
 String Format::subst(const String& text)
 {
   return Subst(text, nullptr, 0).format();
@@ -347,6 +356,10 @@ public:
       "The value is 12345 = 0x3039 = 0000012345."
     ); // inline formatting
 
+#if 0
+    TEST_EQUAL("My name is %1 %2."_s("John", "Doe"), "My name is John Doe.");
+    TEST_EQUAL(String("My name is %1 %2.")("John", "Doe"), "My name is John Doe.");
+#endif
   }
 };
 

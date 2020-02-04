@@ -128,7 +128,10 @@ public:
       }
 
       if (format == "json") {
-        fout << report << ENDL;
+        ObjectModel::NiceFormat niceFormat;
+        niceFormat.setNiceFlags(ObjectModel::DEFAULT_FORMATTING | (colorize ? ObjectModel::FLAG_COLOR : 0));
+        niceFormat << report << FLUSH;
+        fout << niceFormat.getString() << ENDL;
       } else {
         DOMImplementation impl;
         String xml = impl.saveDocumentToMemory(ObjectModel::getXML(report, "modules"), true);

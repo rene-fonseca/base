@@ -879,8 +879,10 @@ TEST_REGISTER(HTTPSRequest);
 #if (_COM_AZURE_DEV__BASE__FLAVOR != _COM_AZURE_DEV__BASE__WIN32) && \
     (_COM_AZURE_DEV__BASE__OS != _COM_AZURE_DEV__BASE__MACOS) && \
     defined(_COM_AZURE_DEV__BASE__USE_CURL)
+// can we convert CURLVERSION_NOW to version literal
 MODULE_REGISTER_EXPLICIT( \
-  _COM_AZURE_DEV__BASE__THIS_MODULE, "se.haxx.curl", "libcurl", _COM_AZURE_DEV__BASE__STRINGIFY(CURLVERSION_NOW), \
+  _COM_AZURE_DEV__BASE__THIS_MODULE, "se.haxx.curl", "libcurl", \
+  "", \
   "https://curl.haxx.se/libcurl/c/" \
 );
 #endif

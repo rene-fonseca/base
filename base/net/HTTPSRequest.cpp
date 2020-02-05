@@ -16,9 +16,13 @@
 #include <base/Primitives.h>
 #include <base/UnsignedInteger.h>
 #include <base/ResourceHandle.h>
+#include <base/collection/ArrayMap.h>
 #include <base/Profiler.h>
 #include <base/UnitTest.h>
 #include <base/Module.h>
+#include <base/io/InputStream.h>
+#include <base/io/OutputStream.h>
+#include <base/io/EndOfFile.h>
 #include <base/build.h>
 
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
@@ -37,6 +41,123 @@
 // see https://developer.apple.com/library/archive/documentation/Networking/Conceptual/CFNetwork/CFHTTPTasks/CFHTTPTasks.html#//apple_ref/doc/uid/TP30001132-CH5-SW2
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
+
+// TAG: add ProfilerInputStream also to capture all info
+// TAG: move to proper place
+
+  class MemoryOutputStream : public OutputStream {
+  private:
+
+    // TAG: list of buffers is better unless a single buffer is requested
+    Allocator<uint8> buffer;
+    MemorySize bytesRead = 0;
+    bool closed = false;
+  public:
+
+    MemoryOutputStream(MemorySize capacity = 16 * 1024)
+      : buffer(capacity)
+    {
+    }
+  
+    void swap(Allocator<uint8>& buffer)
+    {
+      swapper(this->buffer, buffer);
+    }
+
+    void flush() override
+    {
+      if (closed) {
+        _throw IOException("Stream is closed.");
+      }
+    }
+
+    unsigned int write(const uint8* src, unsigned int size, bool nonblocking)
+    {
+      if (closed) {
+        _throw IOException("Stream is closed.");
+      }
+      if (buffer.getSize() < (bytesRead + size)) {
+        static constexpr MemorySize GRANULARITY = 16 * 1024;
+        buffer.ensureCapacity(
+          maximum(buffer.getSize() * 2, ((bytesRead + size) + GRANULARITY - 1)/GRANULARITY * GRANULARITY)
+        );
+      }
+      buffer.setSize(bytesRead + size);
+      uint8* dest = buffer.getElements();
+      copy(dest + bytesRead, src, size);
+      bytesRead += size;
+      return size;
+    }
+
+    void close()
+    {
+      closed = true;
+    }
+  };
+
+  class MemoryInputStream : public InputStream {
+  private:
+
+    const uint8* src = nullptr;
+    const uint8* end = nullptr;
+  public:
+
+    MemoryInputStream()
+    {
+    }
+
+    MemoryInputStream(const uint8* _src, const uint8* _end)
+      : src(_src), end(_end)
+    {
+    }
+
+    MemoryInputStream(const String& text)
+    {
+      src = text.getBytes();
+      end = src + text.getLength();
+    }
+
+    unsigned int available() const noexcept
+    {
+      return end - src;
+    }
+  
+    unsigned int read(uint8* dest, unsigned int size, bool nonblocking)
+    {
+      if (!dest) {
+        return 0;
+      }
+      if (!src) {
+        _throw IOException("Reading beyond eof.");
+      }
+      unsigned int count = minimum<unsigned int>(size, end - src);
+      copy(dest, src, count);
+      src += count;
+    }
+
+    unsigned int skip(unsigned int count)
+    {
+      if ((src + count) > end) {
+        _throw IOException("Reading beyond eof.");
+      }
+      src += count;
+    }
+
+    void close()
+    {
+      src = nullptr;
+      end = nullptr;
+    }
+
+    void wait() const
+    {
+    }
+
+    bool wait(unsigned int timeout) const
+    {
+      return true;
+    }
+  };
 
 #if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__MACOS)
 namespace {
@@ -95,6 +216,23 @@ namespace {
     }
   };
 }
+#elif defined(_COM_AZURE_DEV__BASE__USE_CURL)
+namespace {
+
+  class CurlInitialization {
+  public:
+
+    CurlInitialization()
+    {
+      curl_global_init(CURL_GLOBAL_DEFAULT);
+    }
+    
+    ~CurlInitialization()
+    {
+      curl_global_cleanup();
+    }
+  };
+}
 #endif
 
 const char* HTTPSRequest::METHOD_GET = "GET";
@@ -120,6 +258,27 @@ public:
   CFHandle<CFReadStreamRef> stream;
   CFHandle<CFHTTPMessageRef> response;
   uint8 pendingByte = 0;
+#elif defined(_COM_AZURE_DEV__BASE__USE_CURL)
+  CURL* curl = nullptr;
+  ArrayMap<String, String> headers;
+  Allocator<uint8> response; // TAG: not desired - we need to stream this instead
+#endif
+
+#if defined(_COM_AZURE_DEV__BASE__USE_CURL)
+  void addHeader(const String& header)
+  {
+    auto index = header.indexOf(':');
+    if (index >= 0) {
+      String name = header.substring(0, index);
+      ++index; // skip :
+      if ((index < header.getLength()) && (header[index] == ' ')) {
+        ++index; // skip first space
+      }
+      headers.add(name, header.substring(index));
+    } else {
+      headers.add(header, String());
+    }
+  }
 #endif
 
   void close()
@@ -141,6 +300,11 @@ public:
     response = nullptr;
     stream = nullptr;
     cfHttpReq = nullptr;
+#elif defined(_COM_AZURE_DEV__BASE__USE_CURL)
+    curl_easy_cleanup(curl);
+    curl = nullptr;
+#else
+    _COM_AZURE_DEV__BASE__NOT_IMPLEMENTED();
 #endif
   }
 
@@ -213,6 +377,72 @@ bool HTTPSRequest::isSupported() noexcept
   return false;
 #endif
 }
+
+// TAG: add support for setting certificate for server
+
+#if defined(_COM_AZURE_DEV__BASE__USE_CURL)
+namespace {
+
+  size_t onResponseHeader(char* buffer, size_t size, size_t nitems, void* userdata)
+  {
+    // fdebug << "onResponseHeader(): buffer=" << buffer << " size=" << size << " items=" << nitems << " context="  << userdata << ENDL;
+    if (!INLINE_ASSERT(buffer && (size == 1) && userdata)) {
+      return nitems * size;
+    }
+    HTTPRequestHandle& handle = *reinterpret_cast<HTTPRequestHandle*>(userdata);
+    String header;
+    if (nitems >= 2) {
+      if ((buffer[nitems - 2] == '\r') && (buffer[nitems - 1] == '\n')) {
+        header = String(buffer, nitems - 2);
+      } else {
+        header = String(buffer, nitems);
+      }
+    } else {
+      header = String(buffer, nitems);
+    }
+    if (header) {
+      handle.addHeader(header);
+    }
+    return nitems * size;
+  }
+
+  size_t onReadData(char* buffer, size_t size, size_t nitems, void* userdata)
+  {
+    // fout << "onReadData(): buffer=" << buffer << " size=" << size << " items=" << nitems << " context="  << userdata << ENDL;
+    if (!INLINE_ASSERT(buffer && userdata)) {
+      return 0;
+    }
+    InputStream* is = reinterpret_cast<InputStream*>(userdata);
+    if (!is) {
+      return 0;
+    }
+    try {
+      size_t bytesRead = is->read(reinterpret_cast<uint8*>(buffer), size * nitems, false);
+      return bytesRead;
+    } catch (EndOfFile&) {
+      return 0;
+    }
+  }
+
+  size_t onWriteData(char* buffer, size_t size, size_t nitems, void* userdata)
+  {
+    // fout << "onWriteData(): buffer=" << buffer << " size=" << size << " items=" << nitems << " context="  << userdata << ENDL;
+    if (!INLINE_ASSERT(buffer && userdata)) {
+      return 0;
+    }
+    OutputStream* os = reinterpret_cast<OutputStream*>(userdata);
+    if (!os) {
+      return 0;
+    }
+    try {
+      size_t bytesWritten = os->write(reinterpret_cast<const uint8*>(buffer), size * nitems, false);
+      return bytesWritten;
+    } catch (EndOfFile&) {
+      return 0;
+    }
+  }
+}
+#endif
 
 bool HTTPSRequest::open(const String& _method, const String& _url, const String& _user, const String& _password)
 {
@@ -336,6 +566,77 @@ bool HTTPSRequest::open(const String& _method, const String& _url, const String&
 
   String meta = StringOutputStream() << "{METHOD=" << _method << " URL=" << _url << "}" << FLUSH;
   profile.setHandle(*handle, meta);
+#elif defined(_COM_AZURE_DEV__BASE__USE_CURL)
+  
+  static CurlInitialization initialize;
+
+  Reference<HTTPRequestHandle> handle = new HTTPRequestHandle();
+  handle->curl = curl_easy_init();
+  if (!handle->curl) {
+    return false;
+  }
+
+  url.setUser(String());
+  url.setPassword(String());
+
+  if (curl_easy_setopt(handle->curl, CURLOPT_URL, url.getUrl().native()) != CURLE_OK) {
+    return false;
+  }
+
+  // verbose mode
+  // curl_easy_setopt(handle->curl, CURLOPT_VERBOSE, 1L);
+
+  // CONNECT, DELETE, GET, HEAD, OPTIONS, PATCH, POST, PUT, TRACE
+  if (_method == "GET") {
+    curl_easy_setopt(handle->curl, CURLOPT_HTTPGET, 1L);
+  } else if (_method == "POST") {
+    curl_easy_setopt(handle->curl, CURLOPT_POST, 1L);
+  } else if (_method == "PUT") {
+    curl_easy_setopt(handle->curl, CURLOPT_PUT, 1L);
+  } else {
+    curl_easy_setopt(handle->curl, CURLOPT_CUSTOMREQUEST, _method.native());
+    // TAG: add support for Runtime messages that can be listened too
+  }
+
+#if 0
+  if (false) {
+    if (curl_easy_setopt(handle->curl, CURLOPT_USERAGENT, agent.native()) != CURLE_OK) {
+      return false;
+    }
+  }
+#endif
+  if (user) {
+    if (curl_easy_setopt(handle->curl, CURLOPT_USERNAME, user.native()) != CURLE_OK) {
+      return false;
+    }
+  }
+  if (password) {
+    if (curl_easy_setopt(handle->curl, CURLOPT_USERPWD, password.native()) != CURLE_OK) {
+      return false;
+    }
+  }
+#if 0
+  if (curl_easy_setopt(handle->curl, CURLOPT_SSL_VERIFYHOST, 2L) != CURLE_OK) {
+    return false;
+  }
+#endif
+
+  // hook headers
+  CURLcode status = curl_easy_setopt(handle->curl, CURLOPT_HEADERFUNCTION, onResponseHeader);
+  if (status != CURLE_OK) {
+    BASSERT(!"Failed to get response headers.");
+  }
+  status = curl_easy_setopt(handle->curl, CURLOPT_HEADERDATA, handle.getValue());
+  if (status != CURLE_OK) {
+    BASSERT(!"Failed to get response headers.");
+  }
+
+  this->handle = handle;
+
+  String meta = StringOutputStream() << "{METHOD=" << _method << " URL=" << _url << "}" << FLUSH;
+  profile.setHandle(*handle, meta);
+#else
+  _COM_AZURE_DEV__BASE__NOT_IMPLEMENTED();
 #endif
 
   return true;
@@ -362,8 +663,18 @@ void HTTPSRequest::setRequestHeader(const String& name, const String& value)
   MACString headerFieldName(name);
   MACString headerFieldValue(value);
   CFHTTPMessageSetHeaderFieldValue(_handle->cfHttpReq, headerFieldName, headerFieldValue);
+#elif defined(_COM_AZURE_DEV__BASE__USE_CURL)
+  String entry = name + ": " + value; // headers included in the linked list must not be CRLF-terminated
+  struct curl_slist* chunk = nullptr;
+  chunk = curl_slist_append(chunk, entry.native());
+  if (!INLINE_ASSERT(chunk)) {
+    return;
+  }
+  if (!INLINE_ASSERT(curl_easy_setopt(_handle->curl, CURLOPT_HTTPHEADER, chunk) == CURLE_OK)) {
+  }
+  curl_slist_free_all(chunk);
 #else
-  BASSERT(!"Not implemented");
+  _COM_AZURE_DEV__BASE__NOT_IMPLEMENTED();
 #endif
 }
 
@@ -377,6 +688,9 @@ void HTTPSRequest::send(const String& _body)
   Profiler::IOWriteTask profile("HTTPSRequest::send", reinterpret_cast<const uint8*>(_body.native()));
   profile.onBytesWritten(_body.getLength());
 
+  if (_handle->sent) {
+    _throw HTTPException("HTTP request has already been sent.");
+  }
   _handle->sent = true;
 
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
@@ -510,7 +824,38 @@ void HTTPSRequest::send(const String& _body)
       ++retries;
     }
   #endif
+#elif defined(_COM_AZURE_DEV__BASE__USE_CURL)
+  MemoryInputStream mis(_body);
+  if (!INLINE_ASSERT(curl_easy_setopt(_handle->curl, CURLOPT_READDATA, &mis) == CURLE_OK)) {
+    _throw HTTPException("Failed to send HTTP request.");
+  }
+  if (!INLINE_ASSERT(curl_easy_setopt(_handle->curl, CURLOPT_READFUNCTION, onReadData) == CURLE_OK)) {
+    _throw HTTPException("Failed to send HTTP request.");
+  }
 
+  MemoryOutputStream mos;
+  if (!INLINE_ASSERT(curl_easy_setopt(_handle->curl, CURLOPT_WRITEDATA, &mos) == CURLE_OK)) {
+    _throw HTTPException("Failed to send HTTP request.");
+  }
+  if (!INLINE_ASSERT(curl_easy_setopt(_handle->curl, CURLOPT_WRITEFUNCTION, onWriteData) == CURLE_OK)) {
+    _throw HTTPException("Failed to send HTTP request.");
+  }
+
+  CURLcode status = curl_easy_perform(_handle->curl);
+  if (status != CURLE_OK) {
+    ferr << "CURL ERROR: " << curl_easy_strerror(status) << ENDL;
+  }
+
+  long responseCode = 0;
+  curl_easy_getinfo(_handle->curl, CURLINFO_RESPONSE_CODE, &responseCode);
+  _handle->status = responseCode;
+  // _handle->statusText = StringOutputStream() << responseCode; // TAG: add support for status text
+  curl_off_t contentLength = 0;
+  curl_easy_getinfo(_handle->curl, CURLINFO_CONTENT_LENGTH_DOWNLOAD_T, &contentLength);
+  _handle->contentLength = contentLength;
+  mos.swap(_handle->response);
+#else
+  _COM_AZURE_DEV__BASE__NOT_IMPLEMENTED();
 #endif
 }
 
@@ -685,9 +1030,12 @@ void HTTPSRequest::getResponse(PushInterface* pi)
     }
   }
   CFReadStreamClose(_handle->stream);
-
+#elif defined(_COM_AZURE_DEV__BASE__USE_CURL)
+  BASSERT(_handle->contentLength == _handle->response.getSize());
+  profile.onBytesRead(_handle->response.getSize());
+  pi->push(_handle->response.getElements(), _handle->response.getSize());
 #else
-  BASSERT(!"Not implemented");
+  _COM_AZURE_DEV__BASE__NOT_IMPLEMENTED();
 #endif
 
   pi->pushEnd();
@@ -755,8 +1103,12 @@ String HTTPSRequest::getResponseHeader(const String& name)
   MACString _name(name);
   CFHandle<CFStringRef> _text = CFHTTPMessageCopyHeaderFieldValue(_handle->response, _name);
   result = MACString::getString(_text);
+#elif defined(_COM_AZURE_DEV__BASE__USE_CURL)
+  if (auto node = _handle->headers.find(name)) {
+    return node->getValue();
+  }
 #else
-  BASSERT(!"Not implemented");
+  _COM_AZURE_DEV__BASE__NOT_IMPLEMENTED();
 #endif
 
   return result;
@@ -813,8 +1165,15 @@ String HTTPSRequest::getResponseHeader()
     String value(value2 ? value2 : "<BAD>");
     result += key + ": " + value + "\r\n";
   }
+#elif defined(_COM_AZURE_DEV__BASE__USE_CURL)
+  for (auto nv : _handle->headers) {
+    result += nv.getKey();
+    result += ": ";
+    result += nv.getValue();
+    result += "\r\n";
+  }
 #else
-  BASSERT(!"Not implemented");
+  _COM_AZURE_DEV__BASE__NOT_IMPLEMENTED();
 #endif
 
   return result;

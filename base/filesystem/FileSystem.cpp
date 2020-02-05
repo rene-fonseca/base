@@ -2110,6 +2110,9 @@ public:
     TEST_ASSERT(!FileSystem::folderExists("testdata/a/b/c"));
 
     // TAG: add support for removing all files/subfolders
+
+    path = Path("a") / "b" / "c";
+    TEST_ASSERT(path);
   }
 };
 

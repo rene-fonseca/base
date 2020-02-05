@@ -361,4 +361,31 @@ public:
   static Quota getQuota(const String& path, Trustee trustee);
 };
 
+/** File system path. Used for concatenation. */
+class _COM_AZURE_DEV__BASE__API Path : public Object {
+private:
+
+  String path;
+public:
+
+  /** Initializes path. */
+  inline Path(const String& _path)
+     : path(_path)
+  {
+  }
+
+  /** Concats path. */
+  inline Path& operator/(const String& _path)
+  {
+    path = FileSystem::getPath(path, _path);
+    return *this;
+  }
+
+  /** Returns the path. */
+  inline operator const String&() const noexcept
+  {
+    return path;
+  }
+};
+
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

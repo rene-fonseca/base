@@ -31,12 +31,14 @@ private:
   static const unsigned int MINOR_VERSION = 1;
   static const unsigned int MAXIMUM_TRUSTEE_LENGTH = 10;
   
-  static const ANSIEscapeSequence::Color COLOR_FOLDER =
+  static constexpr ANSIEscapeSequence::Color COLOR_FOLDER =
     ANSIEscapeSequence::BLUE;
-  static const ANSIEscapeSequence::Color COLOR_EXECUTABLE =
+  static constexpr ANSIEscapeSequence::Color COLOR_EXECUTABLE =
     ANSIEscapeSequence::YELLOW;
-  static const ANSIEscapeSequence::Color COLOR_LINK =
+  static constexpr ANSIEscapeSequence::Color COLOR_LINK =
     ANSIEscapeSequence::WHITE;
+  static constexpr ANSIEscapeSequence::Color COLOR_DEAD_LINK =
+    ANSIEscapeSequence::RED;
 
   enum Command {
     COMMAND_HELP,
@@ -154,11 +156,13 @@ public:
         
         bool link = false;
         bool linkTarget = false;
+        bool deadLink = false;
         String target;
         try {
           if (FileSystem::isLink(entry)) {
             link = true;
             target = FileSystem::getLink(entry);
+            deadLink = FileSystem::getType(target) == 0;
             linkTarget = true;
           }
         } catch (Exception& e) {
@@ -259,7 +263,12 @@ public:
               } else {
                 fout << entry;
               }
-              fout << " -> " << target;
+              fout << " -> ";
+              if (deadLink) {
+                fout << setForeground(COLOR_DEAD_LINK) << target << normal();
+              } else {
+                fout << target;
+              }
             } else {
               if (colorize && (mode & FileInfo::XUSR)) {
                 fout << setForeground(COLOR_EXECUTABLE) << entry << normal();
@@ -358,8 +367,12 @@ public:
               } else {
                 fout << entry;
               }
-              fout << " -> " << target;
-              // TAG: colorize target: folder, link, or other?
+              fout << " -> ";
+              if (deadLink) {
+                fout << setForeground(COLOR_DEAD_LINK) << target << normal();
+              } else {
+                fout << target;
+              }
             } else {
               if (colorize) {
                 fout << setForeground(COLOR_FOLDER) << entry << normal();
@@ -381,8 +394,12 @@ public:
               } else {
                 fout << entry;
               }
-              fout << " -> " << target;
-              // TAG: colorize target: folder, link, or other?
+              fout << " -> ";
+              if (deadLink) {
+                fout << setForeground(COLOR_DEAD_LINK) << target << normal();
+              } else {
+                fout << target;
+              }
             } else {
               fout <<  entry;
             }

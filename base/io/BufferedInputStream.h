@@ -48,21 +48,29 @@ public:
 
   /**
     Initializes the buffered input stream.
+  */
+  BufferedInputStream();
+
+  /**
+    Initializes the buffered input stream.
 
     @param in The input stream.
-    @param size The size of the buffer. Default is given by
-    DEFAULT_BUFFER_SIZE. The size cannot...
+    @param size The size of the buffer. Default is given by DEFAULT_BUFFER_SIZE.
   */
   BufferedInputStream(
     InputStream& in,
     unsigned int size = DEFAULT_BUFFER_SIZE
   );
 
+  /** Requests buffer to be filled. */
+  void fill();
+
   /**
     Returns the unread bytes of the internal buffer as sequence. The size of
     the sequence is returned by getNumberOfBytes() or peek().
   */
-  inline const uint8* getElements() const noexcept {
+  inline const uint8* getElements() const noexcept
+  {
     return buffer.getElements() + position;
   }
 
@@ -71,14 +79,16 @@ public:
     This is not the same as available() which also includes buffered bytes of
     the linked input stream.
   */
-  inline unsigned int getNumberOfBytes() const noexcept {
+  inline unsigned int getNumberOfBytes() const noexcept
+  {
     return count - position;
   }
 
   /**
     Returns true if the internal buffer is empty.
   */
-  inline bool isEmpty() const noexcept {
+  inline bool isEmpty() const noexcept
+  {
     return position >= count;
   }
 

@@ -280,7 +280,8 @@ public:
     CAT_SIGNAL = 11,
     CAT_RENDERER = 12,
     CAT_COMPUTE = 13,
-    CAT_UI = 14
+    CAT_UI = 14,
+    CAT_DEBUG = 15
   };
   // use macro to encode/decode in char*
 #endif
@@ -301,6 +302,7 @@ public:
   static constexpr const char* CAT_COMPUTE = "COMPUTE";
   static constexpr const char* CAT_SECURITY = "SECURITY";
   static constexpr const char* CAT_UI = "UI";
+  static constexpr const char* CAT_DEBUG = "DEBUG";
 
   enum {
     EVENT_BEGIN = 'B',
@@ -878,6 +880,15 @@ public:
       return;
     }
     pushInstantImpl(name, cat);
+  }
+
+  /** Push debug message. */
+  static inline void pushDebug(const char* name)
+  {
+    if (!enabled) {
+      return;
+    }
+    pushInstantImpl(name, CAT_DEBUG);
   }
 
   /** Push UI. */

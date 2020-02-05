@@ -249,6 +249,11 @@ public:
   static void makeFolder(const String& path);
 
   /**
+    Makes a folder.
+  */
+  static void makeFolderRecursive(const String& path);
+
+  /**
     Returns true if symbolic links are supported. This method always returns
     true for Unices.
   */

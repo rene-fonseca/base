@@ -23,6 +23,7 @@
 #include <base/net/InetAddress.h>
 #include <base/Random.h>
 #include <base/ByteOrder.h>
+#include <base/UnitTest.h>
 #include <base/build.h>
 
 // TAG: need method to traverse links for win32 platforms
@@ -41,10 +42,12 @@
 bool FileSystem::isValid(const String& name) noexcept
 {
   // level "." or ".." or ? separated with "/" or "\\"
+  return false;
 }
 
 String FileSystem::urlToPath(Url url) noexcept
 {
+  return String();
 }
 
 // returns true if the path is a ...
@@ -84,7 +87,8 @@ bool FileSystem::optimizePath(const String& name) noexcept
   }
 }
 
-bool FileSystem::isName(const String& name) noexcept {
+bool FileSystem::isName(const String& name) noexcept
+{
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   return (name.indexOf(SEPARATOR) < 0) && (name.indexOf('\\') < 0); // TAG: "C:" drive path
 #else
@@ -371,13 +375,14 @@ String FileSystem::getCurrentFolder()
   Thread::UseThreadLocalBuffer _buffer;
   Allocator<uint8>& buffer = _buffer;
   BASSERT(buffer.getSize() > PATH_MAX);
-  if (::getcwd((char*)buffer.getElements(), buffer.getSize()/sizeof(char))) {
+  char* path = ::getcwd((char*)buffer.getElements(), buffer.getSize());
+  if (!INLINE_ASSERT(path)) {
     _throw FileSystemException(
       "Unable to get current folder.",
       Type::getType<FileSystem>()
     );
   }
-  return String((const char*)buffer.getElements());
+  return String(path);
 #endif // flavor
 }
 
@@ -490,7 +495,10 @@ unsigned int FileSystem::getType(const String& path)
   struct stat status;
   int result = stat(path.getElements(), &status);
 #endif
-  bassert(result == 0, FileSystemException("Unable to query entry.", Type::getType<FileSystem>()));
+  if (result != 0) {
+    return 0; // symbolic link might point to file that no longer exists
+  }
+  // bassert(result == 0, FileSystemException("Unable to query entry.", Type::getType<FileSystem>()));
   unsigned int flags = 0;
   if (S_ISBLK(status.st_mode)) {
     flags |= FileSystem::BLOCK;
@@ -535,7 +543,8 @@ unsigned int FileSystem::getType(const String& path)
 #endif // flavor
 }
 
-uint64 FileSystem::getSize(const String& path) {
+uint64 FileSystem::getSize(const String& path)
+{
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   WIN32_FIND_DATA information;
   HANDLE handle = ::FindFirstFile(ToWCharString(path), &information);
@@ -558,7 +567,8 @@ uint64 FileSystem::getSize(const String& path) {
 #endif // flavor
 }
 
-bool FileSystem::entryExists(const String& path) {
+bool FileSystem::entryExists(const String& path)
+{
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   WIN32_FIND_DATA information;
   HANDLE handle = ::FindFirstFile(ToWCharString(path), &information);
@@ -602,7 +612,8 @@ bool FileSystem::entryExists(const String& path) {
 #endif // flavor
 }
 
-bool FileSystem::fileExists(const String& path) {
+bool FileSystem::fileExists(const String& path)
+{
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   DWORD result = ::GetFileAttributes(ToWCharString(path));
   if (result == INVALID_FILE_ATTRIBUTES) {
@@ -643,7 +654,8 @@ bool FileSystem::fileExists(const String& path) {
 #endif // flavor
 }
 
-bool FileSystem::folderExists(const String& path) {
+bool FileSystem::folderExists(const String& path)
+{
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   DWORD result = ::GetFileAttributes(ToWCharString(path));
   if (result == INVALID_FILE_ATTRIBUTES) {
@@ -745,7 +757,6 @@ void FileSystem::removeFolder(const String& path)
             &bytesWritten,
             0
           ) == 0) {
-        fout << "12345: " << ::GetLastError() << ENDL;
         ::CloseHandle(link);
         _throw FileSystemException("Unable to remove folder.", Type::getType<FileSystem>());
       }
@@ -784,7 +795,62 @@ void FileSystem::makeFolder(const String& path)
 #endif // flavor
 }
 
-bool FileSystem::supportsLinks() noexcept {
+#if 0
+String FileSystem::join(const Array<String>& paths);
+Array<String> FileSystem::split(const String& path);
+#endif
+
+namespace {
+
+  inline bool isSeparator(char ch) noexcept
+  {
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
+    return (ch == '/') || (ch == '\\');
+#else
+    return (ch == '/');
+#endif
+  }
+
+  MemoryDiff findSeparator(const String& path, MemorySize start)
+  {
+    if (start >= path.getLength()) {
+      return -1;
+    }
+    auto i = path.getBeginReadIterator() + start;
+    const auto end = path.getEndReadIterator();
+    while (i != end) {
+      if (isSeparator(*i)) {
+        return i - path.getBeginReadIterator();
+      }
+      ++i;
+    }
+    return -1;
+  }
+}
+
+void FileSystem::makeFolderRecursive(const String& path)
+{
+  MemoryDiff i = 0;
+  while (i >= 0) {
+    i = findSeparator(path, i);
+    String sub;
+    if (i >= 0) {
+      sub = path.substring(0, i);
+      ++i; // skip separator
+    } else {
+      sub = path;
+    }
+    if (!sub) {
+      continue;
+    }
+    if (!folderExists(sub)) {
+      makeFolder(sub);
+    }
+  }
+}
+
+bool FileSystem::supportsLinks() noexcept
+{
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   if (cachedSupportsLinks == -1) {
     OSVERSIONINFO versionInfo;
@@ -1944,5 +2010,111 @@ FileSystem::Quota FileSystem::getQuota(const String& path, Trustee trustee)
   return result;
 #endif
 }
+
+#if defined(_COM_AZURE_DEV__BASE__TESTS)
+
+class TEST_CLASS(FileSystem) : public UnitTest {
+public:
+
+  TEST_PRIORITY(500);
+  TEST_PROJECT("base/filesystem");
+  TEST_IMPACT(NORMAL);
+  TEST_EXTERNAL();
+
+  void run() override
+  {
+    String path = FileSystem::getFolder(FileSystem::TEMP);
+    TEST_ASSERT(FileSystem::isAbsolutePath(path));
+    TEST_ASSERT(path);
+    path = FileSystem::getFolder(FileSystem::ROOT);
+    TEST_ASSERT(FileSystem::isAbsolutePath(path));
+    TEST_ASSERT(path);
+    path = FileSystem::getTempFileName();
+    TEST_ASSERT(path);
+
+    path = FileSystem::getCurrentFolder();
+    TEST_ASSERT(path);
+
+    // TAG: add subfolder with name of test
+    try {
+      FileSystem::makeFolder("testdata");
+    } catch (...) {
+    }
+    TEST_ASSERT(FileSystem::entryExists("testdata"));
+    TEST_ASSERT(FileSystem::folderExists("testdata"));
+    TEST_ASSERT(!FileSystem::isAbsolutePath("testdata"));
+
+    {
+      File file("testdata/remove.txt", File::WRITE, File::CREATE);
+      const char* text = "Hello, World!\n";
+      file.write(reinterpret_cast<const uint8*>(text), getNullTerminatedLength(text));
+    }
+    TEST_ASSERT(!FileSystem::fileExists("testdata"));
+    TEST_ASSERT(FileSystem::folderExists("testdata"));
+    TEST_ASSERT(FileSystem::getSize("testdata/remove.txt") == 14);
+    TEST_ASSERT(!FileSystem::isLink("testdata/remove.txt"));
+
+    unsigned int type = FileSystem::getType("testdata/remove.txt");
+    TEST_ASSERT((type & FileSystem::LINK) == 0);
+    TEST_ASSERT((type & FileSystem::REGULAR) != 0);
+    TEST_ASSERT((type & FileSystem::FOLDER) == 0);
+
+    type = FileSystem::getType("testdata");
+    TEST_ASSERT((type & FileSystem::FOLDER) != 0);
+
+    if (FileSystem::supportsLinks()) {
+      if (FileSystem::fileExists("testdata/hardlink.txt")) {
+        FileSystem::removeFile("testdata/hardlink.txt");
+      }
+
+      TEST_ASSERT(!FileSystem::entryExists("testdata/hardlink.txt"));
+      try {
+        FileSystem::makeHardLink("testdata/remove.txt", "testdata/hardlink.txt");
+      } catch (...) {
+        TEST_ASSERT(!"Failed to make hard link.");
+      }
+
+      if (FileSystem::isLink("testdata/symlink.txt")) {
+        FileSystem::removeFile("testdata/symlink.txt"); // TAG: fixme
+      }
+
+      TEST_ASSERT(FileSystem::entryExists("testdata/remove.txt"));
+      TEST_ASSERT(!FileSystem::isLink("testdata/symlink.txt"));
+      try {
+        FileSystem::makeLink("testdata/remove.txt", "testdata/symlink.txt");
+      } catch (...) {
+        TEST_ASSERT(!"Failed to make symbolic link.");
+      }
+      TEST_ASSERT(FileSystem::isLink("testdata/symlink.txt"));
+      unsigned int type = FileSystem::getType("testdata/symlink.txt"); // follows link
+      TEST_ASSERT((type & FileSystem::LINK) == 0);
+    }
+
+    try {
+      FileSystem::removeFile("testdata/remove.txt");
+    } catch (...) {
+      TEST_ASSERT(!"Failed to remove file.");
+    }
+
+    try {
+      FileSystem::makeFolderRecursive("testdata/a/b/c");
+    } catch (...) {
+      TEST_ASSERT(!"Failed to create folders.");
+    }
+
+    try {
+      FileSystem::removeFolder("testdata/a/b/c");
+    } catch (...) {
+      TEST_ASSERT(!"Failed to remove folder.");
+    }
+    TEST_ASSERT(!FileSystem::folderExists("testdata/a/b/c"));
+
+    // TAG: add support for removing all files/subfolders
+  }
+};
+
+TEST_REGISTER(FileSystem);
+
+#endif
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

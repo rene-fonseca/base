@@ -215,6 +215,8 @@ file(GLOB base_SRC
   "base/communication/*.cpp"
   "base/compression/*.h"
   "base/compression/*.cpp"
+  "base/data/*.h"
+  "base/data/*.cpp"
   "base/dl/*.h"
   "base/dl/*.cpp"
   "base/filesystem/*.h"

@@ -19,6 +19,7 @@
 #include <base/UnsignedInteger.h>
 #include <base/SystemInformation.h>
 #include <base/Architecture.h>
+#include <base/data/CSVFormat.h>
 #include <base/build.h>
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
@@ -419,74 +420,6 @@ Reference<ObjectModel::Value> ModuleManager::getModules(const String& pattern)
   return report;
 }
 
-// TAG: add CSV class
-class CSVFormat {
-public:
-
-  static String quote(const String& text)
-  {
-    String result(text.getLength() + 2);
-    result += '\"';
-    for (auto ch : text) {
-      if (ch == '"') {
-        result += '\\';
-      }
-      result += ch;
-    }
-    result += '\"';
-    return result;
-  }
-
-  // TAG: AnyValue support - never quote arith
-  static String join(const Array<String>& items)
-  {
-    MemorySize capacity = 0;
-    for (const auto& item : items) {
-      capacity += item.getLength();
-      capacity += 1 + 2;
-    }
-    String result(capacity);
-    bool first = true;
-    for (const auto& item : items) {
-      // TAG: only quote if required
-      if (!first) {
-        result += ';';
-      }
-      first = false;
-      result += quote(item);
-    }
-    return result;
-  }
-
-  static String join(const std::initializer_list<String>& items)
-  {
-    MemorySize capacity = 0;
-    for (const auto& item : items) {
-      capacity += item.getLength();
-      capacity += 1 + 2;
-    }
-    String result(capacity);
-    bool first = true;
-    for (const auto& item : items) {
-      // TAG: only quote if required
-      if (!first) {
-        result += ';';
-      }
-      first = false;
-      result += quote(item);
-    }
-    return result;
-  }
-
-#if 0
-  static Array<Array<AnyValue> > load(const String& data)
-  {
-    Array<Array<AnyValue> > result;
-    return result;
-  }
-#endif
-};
-
 String ModuleManager::getModulesCSV(const String& pattern)
 {
   loadModules();
@@ -494,8 +427,6 @@ String ModuleManager::getModulesCSV(const String& pattern)
   // TAG: look for modules id matching pattern
 
   StringOutputStream report;
-  CSVFormat csv;
-
   for (auto _module : modules) {
     // TAG: check version syntax - regex's
     auto subs = _module->getId().split(':');
@@ -507,7 +438,7 @@ String ModuleManager::getModulesCSV(const String& pattern)
     auto license = _module->getLicense();
     auto description = _module->getDescription();
 
-    report << csv.join({prefix, name, version, url, consumer, license, description}) << EOL;
+    report << CSVFormat::join({prefix, name, version, url, consumer, license, description}) << EOL;
   }
   return report;
 }

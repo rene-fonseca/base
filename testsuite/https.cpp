@@ -16,6 +16,7 @@
 #include <base/Primitives.h>
 #include <base/UnsignedInteger.h>
 #include <base/io/FileOutputStream.h>
+#include <base/io/FileDescriptor.h>
 #include <base/concurrency/Thread.h>
 #include <base/net/HTTPSRequest.h>
 #include <base/net/Url.h>
@@ -179,6 +180,7 @@ private:
   String url;
   String filepath;
   bool showHeader = false;
+  bool showJSON = false;
 public:
   
   HTTPSApplication()
@@ -206,6 +208,8 @@ public:
         fields.add(name, value);
       } else if (argument == "--header") {
         showHeader = true;
+      } else if (argument == "--json") {
+        showJSON = true;
       } else {
         if (!url) {
           url = argument;
@@ -270,9 +274,20 @@ public:
         PushToFile push(File(filepath, File::WRITE, File::CREATE | File::TRUNCATE));
         request.getResponse(&push);
       } else {
-        // TAG: if JSON to show nicely
-        PushToStandardOutput push;
-        request.getResponse(&push);
+        if (showJSON) {
+          String response = request.getResponse();
+          auto r = JSON().parse(response).cast<ObjectModel::Object>(); // TAG: do this via Value class
+          if (!r) {
+            error("Response is not valid JSON.", Application::EXIT_CODE_ERROR);
+            return;
+          }
+          auto data = JSON::getJSON(r, ObjectModel::DEFAULT_FORMATTING |
+            (FileDescriptor::getStandardOutput().isANSITerminal() ? ObjectModel::FLAG_COLOR : 0));
+          fout << data << ENDL;
+        } else {
+          PushToStandardOutput push;
+          request.getResponse(&push);
+        }
       }
 
       request.close();

@@ -71,7 +71,7 @@ _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
       }
     }
 
-    unsigned int write(const uint8* src, unsigned int size, bool nonblocking)
+    unsigned int write(const uint8* src, unsigned int size, bool nonblocking) override
     {
       if (closed) {
         _throw IOException("Stream is closed.");
@@ -89,7 +89,7 @@ _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
       return size;
     }
 
-    void close()
+    void close() override
     {
       closed = true;
     }
@@ -133,14 +133,14 @@ _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
       unsigned int count = minimum<unsigned int>(size, end - src);
       copy(dest, src, count);
       src += count;
+      return count;
     }
 
     unsigned int skip(unsigned int count)
     {
-      if ((src + count) > end) {
-        _throw IOException("Reading beyond eof.");
-      }
+      count = minimum<unsigned int>(count, end - src);
       src += count;
+      return count;
     }
 
     void close()

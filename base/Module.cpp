@@ -426,6 +426,7 @@ String ModuleManager::getModulesCSV(const String& pattern)
 
   // TAG: look for modules id matching pattern
 
+  CSVFormat csv;
   StringOutputStream report;
   for (auto _module : modules) {
     // TAG: check version syntax - regex's
@@ -438,7 +439,7 @@ String ModuleManager::getModulesCSV(const String& pattern)
     auto license = _module->getLicense();
     auto description = _module->getDescription();
 
-    report << CSVFormat::join({prefix, name, version, url, consumer, license, description}) << EOL;
+    report << csv.join({prefix, name, version, url, consumer, license, description}) << CRLF;
   }
   return report;
 }

@@ -20,30 +20,36 @@
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
-/** CSV format. */
+/** CSV format. See https://tools.ietf.org/html/rfc4180. */
 class _COM_AZURE_DEV__BASE__API CSVFormat {
+private:
+
+  ucs4 separator = ';';
 public:
 
   /** Quote string. */
   static String quote(const String& text);
 
-  /** Joing items into row. */
-  static String join(const Array<String>& items);
+  /** Initializes CSV format. */
+  CSVFormat(ucs4 separator = ';') noexcept;
 
   /** Joing items into row. */
-  static String join(const Array<AnyValue>& items);
+  String join(const Array<String>& items);
 
   /** Joing items into row. */
-  static String join(const std::initializer_list<String>& items);
+  String join(const Array<AnyValue>& items);
+
+  /** Joing items into row. */
+  String join(const std::initializer_list<String>& items);
 
   /** Parses line. */
-  static Array<String> parse(const String& line);
+  Array<String> parse(const String& line);
 
   /** Loads CSV data. */
-  static Array<Array<AnyValue> > load(InputStream* is);
+  Array<Array<String> > load(InputStream* is);
 
   /** Loads CSV data. */
-  static Array<Array<AnyValue> > load(const String& path);
+  Array<Array<String> > load(const String& path);
 };
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

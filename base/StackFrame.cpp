@@ -409,7 +409,7 @@ void* StackFrame::getStackFrame() noexcept
     : "=m" (frame) // output
   );
 #else
-  // do not use assert due to recursion BASSERT(!"Not implemented");
+  // do NOT use assert due to recursion
   return nullptr;
 #endif
   if (frame) {

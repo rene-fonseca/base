@@ -277,7 +277,7 @@ public:
 
       request.close();
     } catch (...) {
-      ferr << "Failed to read response." << ENDL;
+      ferr << "Error: " << "Failed to read response." << ENDL;
       setExitCode(Application::EXIT_CODE_ERROR);
       return;
     }

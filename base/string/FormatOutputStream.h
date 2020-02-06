@@ -378,7 +378,10 @@ public:
   FormatOutputStream(OutputStream& out, unsigned int size = DEFAULT_BUFFER_SIZE);
   
   FormatOutputStream(const FormatOutputStream& copy) = delete;
-  
+
+  /** Returns true if the stream is connected to an ANSI terminal. */
+  bool isANSITerminal();
+
   /**
     Sets the desired position of the decimal-point within the field. Please
     note that the position is only advisory. Please note that this method sets

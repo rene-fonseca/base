@@ -59,7 +59,8 @@ public:
     Closes the stream and releases any system resources associated with the
     stream.
   */
-  void close() {
+  inline void close()
+  {
     FileDescriptor::close();
   }
 

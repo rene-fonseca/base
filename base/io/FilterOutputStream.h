@@ -43,6 +43,12 @@ public:
   */
   explicit FilterOutputStream(OutputStream& out);
 
+  /** Returns the output stream. */
+  inline OutputStream& getOutputStream() noexcept
+  {
+    return out;
+  }
+
   /**
     Closes the output stream and releases any system resources associated with the stream.
   */

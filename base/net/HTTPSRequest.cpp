@@ -260,6 +260,7 @@ public:
   uint8 pendingByte = 0;
 #elif defined(_COM_AZURE_DEV__BASE__USE_CURL)
   CURL* curl = nullptr;
+  struct curl_slist* requestHeaders = nullptr;
   ArrayMap<String, String> headers;
   Allocator<uint8> response; // TAG: not desired - we need to stream this instead
 #endif
@@ -308,8 +309,14 @@ public:
       cfHttpReq = nullptr;
     }
 #elif defined(_COM_AZURE_DEV__BASE__USE_CURL)
-    if (curl) {
+    if (curl || requestHeaders) {
       Profiler::HTTPSTask profile("HTTPSRequest::close()");
+
+      if (requestHeaders) {
+        curl_slist_free_all(requestHeaders);
+        requestHeaders = nullptr;
+      }
+
       curl_easy_cleanup(curl);
       curl = nullptr;
     }
@@ -652,8 +659,76 @@ bool HTTPSRequest::open(const String& _method, const String& _url, const String&
   return true;
 }
 
+#if 1 // omve to proper place
+// TAG: should we fallback to StringOutputStream
+#if 0
+template<class TYPE>
+inline String& operator<<(String& string, const TYPE& value)
+{
+  return string.append(StringOutputStream() << value);
+}
+#endif
+
+/** Appends value to string. */
+template<class TYPE>
+inline String& operator<<(String& string, const TYPE& value)
+{
+  return string.append(value);
+}
+
+/** Returns a JSON escaped string for the given UTF-8 encoded string. Convenient for debugging string which can contain special codes. */
+String escape(const String& s)
+{
+  String stream(s.getLength() + 128);
+  auto i = s.getUTF8BeginReadIterator();
+  auto end = s.getUTF8EndReadIterator();
+  stream << '"';
+  for (; i < end; ++i) {
+    const ucs4 ch = *i;
+    if (ch < ' ') {
+      stream << '\\';
+      switch (ch) {
+      case '\b':
+        stream << 'b';
+        break;
+      case '\f':
+        stream << 'f';
+        break;
+      case '\n':
+        stream << 'n';
+        break;
+      case '\r':
+        stream << 'r';
+        break;
+      case '\t':
+        stream << 't';
+        break;
+      default:
+        stream << 'u';
+        stream << ASCIITraits::valueToDigit(0);
+        stream << ASCIITraits::valueToDigit(0);
+        stream << ASCIITraits::valueToDigit((ch >> 4) & 0xf);
+        stream << ASCIITraits::valueToDigit((ch >> 0) & 0xf);
+      }
+    } else if (ch == '\\') {
+      stream << '\\';
+      stream << '\\';
+    } else if (ch == '"') {
+      stream << '\\';
+      stream << '"';
+    } else {
+      stream << ch;
+    }
+  }
+  stream << '"';
+  return stream;
+}
+#endif
+
 void HTTPSRequest::setRequestHeader(const String& name, const String& value)
 {
+  // fout << "HTTPSRequest::setRequestHeader(): " << escape(name) << " " << escape(value) << ENDL;
+
   Reference<HTTPRequestHandle> _handle = handle.cast<HTTPRequestHandle>();
   if (!_handle) {
     _throw HTTPException("HTTP request is not open.");
@@ -675,14 +750,12 @@ void HTTPSRequest::setRequestHeader(const String& name, const String& value)
   CFHTTPMessageSetHeaderFieldValue(_handle->cfHttpReq, headerFieldName, headerFieldValue);
 #elif defined(_COM_AZURE_DEV__BASE__USE_CURL)
   String entry = name + ": " + value; // headers included in the linked list must not be CRLF-terminated
-  struct curl_slist* chunk = nullptr;
-  chunk = curl_slist_append(chunk, entry.native());
-  if (!INLINE_ASSERT(chunk)) {
-    return;
+  // TAG: are we changing all headers - that would not be desired - we just want to add/replace
+  _handle->requestHeaders = curl_slist_append(_handle->requestHeaders, entry.native());
+  if (INLINE_ASSERT(_handle->requestHeaders)) {
+    if (!INLINE_ASSERT(curl_easy_setopt(_handle->curl, CURLOPT_HTTPHEADER, _handle->requestHeaders) == CURLE_OK)) {
+    }
   }
-  if (!INLINE_ASSERT(curl_easy_setopt(_handle->curl, CURLOPT_HTTPHEADER, chunk) == CURLE_OK)) {
-  }
-  curl_slist_free_all(chunk);
 #else
   _COM_AZURE_DEV__BASE__NOT_IMPLEMENTED();
 #endif

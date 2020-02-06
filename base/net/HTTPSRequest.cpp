@@ -20,8 +20,8 @@
 #include <base/Profiler.h>
 #include <base/UnitTest.h>
 #include <base/Module.h>
-#include <base/io/InputStream.h>
-#include <base/io/OutputStream.h>
+#include <base/io/MemoryInputStream.h>
+#include <base/io/MemoryOutputStream.h>
 #include <base/io/EndOfFile.h>
 #include <base/build.h>
 
@@ -43,121 +43,6 @@
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 // TAG: add ProfilerInputStream also to capture all info
-// TAG: move to proper place
-
-  class MemoryOutputStream : public OutputStream {
-  private:
-
-    // TAG: list of buffers is better unless a single buffer is requested
-    Allocator<uint8> buffer;
-    MemorySize bytesRead = 0;
-    bool closed = false;
-  public:
-
-    MemoryOutputStream(MemorySize capacity = 16 * 1024)
-      : buffer(capacity)
-    {
-    }
-  
-    void swap(Allocator<uint8>& buffer)
-    {
-      swapper(this->buffer, buffer);
-    }
-
-    void flush() override
-    {
-      if (closed) {
-        _throw IOException("Stream is closed.");
-      }
-    }
-
-    unsigned int write(const uint8* src, unsigned int size, bool nonblocking) override
-    {
-      if (closed) {
-        _throw IOException("Stream is closed.");
-      }
-      if (buffer.getSize() < (bytesRead + size)) {
-        static constexpr MemorySize GRANULARITY = 16 * 1024;
-        buffer.ensureCapacity(
-          maximum(buffer.getSize() * 2, ((bytesRead + size) + GRANULARITY - 1)/GRANULARITY * GRANULARITY)
-        );
-      }
-      buffer.setSize(bytesRead + size);
-      uint8* dest = buffer.getElements();
-      copy(dest + bytesRead, src, size);
-      bytesRead += size;
-      return size;
-    }
-
-    void close() override
-    {
-      closed = true;
-    }
-  };
-
-  class MemoryInputStream : public InputStream {
-  private:
-
-    const uint8* src = nullptr;
-    const uint8* end = nullptr;
-  public:
-
-    MemoryInputStream()
-    {
-    }
-
-    MemoryInputStream(const uint8* _src, const uint8* _end)
-      : src(_src), end(_end)
-    {
-    }
-
-    MemoryInputStream(const String& text)
-    {
-      src = text.getBytes();
-      end = src + text.getLength();
-    }
-
-    unsigned int available() const noexcept
-    {
-      return end - src;
-    }
-  
-    unsigned int read(uint8* dest, unsigned int size, bool nonblocking)
-    {
-      if (!dest) {
-        return 0;
-      }
-      if (!src) {
-        _throw IOException("Reading beyond eof.");
-      }
-      unsigned int count = minimum<unsigned int>(size, end - src);
-      copy(dest, src, count);
-      src += count;
-      return count;
-    }
-
-    unsigned int skip(unsigned int count)
-    {
-      count = minimum<unsigned int>(count, end - src);
-      src += count;
-      return count;
-    }
-
-    void close()
-    {
-      src = nullptr;
-      end = nullptr;
-    }
-
-    void wait() const
-    {
-    }
-
-    bool wait(unsigned int timeout) const
-    {
-      return true;
-    }
-  };
 
 #if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__MACOS)
 namespace {
@@ -842,6 +727,9 @@ void HTTPSRequest::send(const String& _body)
     }
   #endif
 #elif defined(_COM_AZURE_DEV__BASE__USE_CURL)
+
+  addRequestHeader("Content-Length", format() << _body.getLength());
+
   MemoryInputStream mis(_body);
   if (!INLINE_ASSERT(curl_easy_setopt(_handle->curl, CURLOPT_READDATA, &mis) == CURLE_OK)) {
     _throw HTTPException("Failed to send HTTP request.");

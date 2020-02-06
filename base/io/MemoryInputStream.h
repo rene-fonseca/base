@@ -51,7 +51,7 @@ public:
     return end - src;
   }
   
-  unsigned int read(uint8* dest, unsigned int size, bool nonblocking) noexcept;
+  unsigned int read(uint8* dest, unsigned int size, bool nonblocking);
 
   inline unsigned int skip(unsigned int count) noexcept
   {

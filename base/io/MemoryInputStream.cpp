@@ -15,7 +15,7 @@
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
-unsigned int MemoryInputStream::read(uint8* dest, unsigned int size, bool nonblocking) noexcept
+unsigned int MemoryInputStream::read(uint8* dest, unsigned int size, bool nonblocking)
 {
   if (!dest) {
     return 0;

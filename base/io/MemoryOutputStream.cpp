@@ -15,7 +15,7 @@
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
-unsigned int MemoryOutputStream::write(const uint8* src, unsigned int size, bool nonblocking) override
+unsigned int MemoryOutputStream::write(const uint8* src, unsigned int size, bool nonblocking)
 {
   if (closed) {
     _throw IOException("Stream is closed.");

@@ -1072,6 +1072,53 @@ String String::getValidUTF8() const
   return result;
 }
 
+String escape(const String& s)
+{
+  String stream(s.getLength() + 128);
+  auto i = s.getUTF8BeginReadIterator();
+  auto end = s.getUTF8EndReadIterator();
+  stream << '"';
+  for (; i < end; ++i) {
+    const ucs4 ch = *i;
+    if (ch < ' ') {
+      stream << '\\';
+      switch (ch) {
+      case '\b':
+        stream << 'b';
+        break;
+      case '\f':
+        stream << 'f';
+        break;
+      case '\n':
+        stream << 'n';
+        break;
+      case '\r':
+        stream << 'r';
+        break;
+      case '\t':
+        stream << 't';
+        break;
+      default:
+        stream << 'u';
+        stream << ASCIITraits::valueToDigit(0);
+        stream << ASCIITraits::valueToDigit(0);
+        stream << ASCIITraits::valueToDigit((ch >> 4) & 0xf);
+        stream << ASCIITraits::valueToDigit((ch >> 0) & 0xf);
+      }
+    } else if (ch == '\\') {
+      stream << '\\';
+      stream << '\\';
+    } else if (ch == '"') {
+      stream << '\\';
+      stream << '"';
+    } else {
+      stream << ch;
+    }
+  }
+  stream << '"';
+  return stream;
+}
+
 #if defined(_COM_AZURE_DEV__BASE__TESTS)
 
 class TEST_CLASS(String) : public UnitTest {

@@ -1557,6 +1557,20 @@ inline String operator-(const String& left, const wchar* right)
 */
 _COM_AZURE_DEV__BASE__API String operator*(const String& src, MemorySize count);
 
+
+/** Appends value to string. This allows use of String as if StringOutputStream for string types. */
+template<class TYPE>
+inline String& operator<<(String& string, const TYPE& value)
+{
+  return string.append(value);
+}
+
+/**
+  Returns a JSON escaped string for the given UTF-8 encoded string. Convenient for debugging
+  string which can contain special codes.
+*/
+_COM_AZURE_DEV__BASE__API String escape(const String& string);
+
 template<>
 inline void swapper<String>(String& a, String& b)
 {

@@ -318,53 +318,6 @@ int Module::compareVersions(const String& a, const String& b) noexcept
 
 namespace {
 
-  // TAG: move to JSON class
-  String escape(const String& text)
-  {
-    String result;
-    result.ensureCapacity(text.getLength() + 16 + 2);
-    result += '"';
-    for (char ch : text) { // TAG: need to read as UTF-8?
-      // TAG: read ucs4
-      BASSERT(ch <= 0x7f); // TAG: add support
-      if (ch < ' ') {
-        result += '\\';
-        switch (ch) {
-        case '\b':
-          result += 'b';
-          break;
-        case '\f':
-          result += 'f';
-          break;
-        case '\n':
-          result += 'n';
-          break;
-        case '\r':
-          result += 'r';
-          break;
-        case '\t':
-          result += 't';
-          break;
-        default:
-          result += 'u';
-          result += ASCIITraits::valueToDigit(0);
-          result += ASCIITraits::valueToDigit(0);
-          result += ASCIITraits::valueToDigit((ch >> 4) & 0xf);
-          result += ASCIITraits::valueToDigit((ch >> 0) & 0xf);
-        }
-      } else if (ch == '\\') {
-        result += '\\';
-        result += '\\';
-      } else if (ch == '"') {
-        result += '\\';
-        result += '"';
-      } else {
-        result += ch;
-      }
-    }
-    return result += '"';
-  }
-
   String presentString(const String& text)
   {
     bool simple = true;

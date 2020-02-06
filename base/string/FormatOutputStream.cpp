@@ -2185,6 +2185,18 @@ FormatOutputStream& operator<<(FormatOutputStream& stream, const TYPE& object) /
   return stream;
 }
 
+// C++: compile time introspection would be nice to make it easy to debug code by printing the arguments
+// getArguments() would return an object which know how to get the arguments and a tuple - and then there would be a
+// corresponding FormatOutputStream& operator<<(FormatOutputStream& stream, tuple values);
+// the tuple would work as std::initializer_list to iterator over arguments but with automatic perfect forwarding and
+// preserved types. This would also be very nice for automatic mangling for RMI/ORB/IDL support
+/*
+void myFunction(MyClass, String&, int, double, R<MyRef>)
+{
+  fout << getArguments() << ENDL;
+}
+*/
+
 template<class TYPE>
 class DumpTypeInfo {
 public:

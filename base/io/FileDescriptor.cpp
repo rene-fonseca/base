@@ -103,7 +103,7 @@ bool FileDescriptor::isANSITerminal() const noexcept
     }
   }
 
-  bool atty = FileDescriptor::getStandardOutput().isTerminal();
+  bool atty = /*FileDescriptor::getStandardOutput().*/isTerminal();
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   {
     DWORD mode = 0;

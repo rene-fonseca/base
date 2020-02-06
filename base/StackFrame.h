@@ -28,11 +28,15 @@ private:
   Allocator<const void*> frames; // we use void* over MemorySize since debugger can show symbols
 public:
 
+  /** Returns true if stack trace is supported. */
+  static inline constexpr bool doesSupportStackTrace() noexcept
+  {
 #if (defined(_COM_AZURE_DEV__BASE__NO_STACK_TRACE))
-  static constexpr bool SUPPORTS_STACK_TRACE = false;
+    return false;
 #else
-  static constexpr bool SUPPORTS_STACK_TRACE = true;
+    return true;
 #endif
+  }
 
   /** Print stack trace to standard out instead of standard error. */
   static bool getUseStandardOut() noexcept;

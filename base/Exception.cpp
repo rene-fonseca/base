@@ -375,14 +375,11 @@ void ThrowException::onException(const char* who, const char* file, unsigned int
     stream << normal() << ENDL;
   }
   
-  if (StackFrame::SUPPORTS_STACK_TRACE) {
+  if (StackTrace::doesSupportStackTrace()) {
     static bool showStackTrace = true;
     if (showStackTrace) {
-      StackFrame::toStream(
-        stream, StackFrame::getStack().getTrace(),
-        StackFrame::FLAG_DEFAULT |
-        (colors ? StackFrame::FLAG_USE_COLORS : 0)
-      );
+      stream << FormattedStackTrace(StackTrace::getStack(), StackTrace::FLAG_DEFAULT |
+        (colors ? StackTrace::FLAG_USE_COLORS : 0));
     }
   }
 #endif

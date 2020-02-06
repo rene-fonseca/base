@@ -750,7 +750,7 @@ FormatOutputStream& StackFrame::toStream(FormatOutputStream& stream,
 
 void StackFrame::dump(unsigned int skip, unsigned int levels)
 {
-  if (!SUPPORTS_STACK_TRACE) {
+  if (!doesSupportStackTrace()) {
     return;
   }
   

@@ -477,7 +477,7 @@ public:
       exit(Application::EXIT_CODE_INTERNAL_ERROR); // TAG: need other function?
     }
 
-    if (StackFrame::SUPPORTS_STACK_TRACE) {
+    if (StackFrame::doesSupportStackTrace()) {
       ferr << FormattedStackTrace(StackFrame::getStack(1), StackTrace::FLAG_DEFAULT | StackTrace::FLAG_COMPACT |
         (FileDescriptor::getStandardError().isANSITerminal() ? StackTrace::FLAG_USE_COLORS : 0)) << ENDL;
       // TAG: need a way to check handle from stream ferr.getHandle().isANSITerminal() or isTerminal(ferr)

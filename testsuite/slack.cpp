@@ -23,7 +23,6 @@
 #include <base/string/FormatOutputStream.h>
 #include <base/string/StringOutputStream.h>
 #include <base/objectmodel/JSON.h>
-#include <base/io/FileDescriptor.h>
 
 using namespace com::azure::dev::base;
 
@@ -275,7 +274,7 @@ public:
 
     if (verbose) {
       auto data = JSON::getJSON(r, ObjectModel::DEFAULT_FORMATTING |
-        (FileDescriptor::getStandardOutput().isANSITerminal() ? ObjectModel::FLAG_COLOR : 0));
+        (fout.isANSITerminal() ? ObjectModel::FLAG_COLOR : 0));
       fout << data << ENDL;
     }
     

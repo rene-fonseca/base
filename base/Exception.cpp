@@ -17,7 +17,6 @@
 #include <base/UnitTest.h>
 #include <base/string/ANSIEscapeSequence.h>
 #include <base/StackFrame.h>
-#include <base/io/FileDescriptor.h>
 #include <memory>
 #include <system_error>
 
@@ -346,7 +345,7 @@ void ThrowException::onException(const char* who, const char* file, unsigned int
 #else
   auto& stream = fout;
 
-  const bool colors = FileDescriptor::getStandardOutput().isANSITerminal();
+  const bool colors = stream.isANSITerminal();
   String _who = who;
   stream << "THROW in ";
   if (colors) {

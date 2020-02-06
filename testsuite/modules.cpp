@@ -14,7 +14,6 @@
 #include <base/Application.h>
 #include <base/string/FormatOutputStream.h>
 #include <base/string/Format.h>
-#include <base/io/FileDescriptor.h>
 #include <base/net/HTTPSRequest.h>
 #include <base/objectmodel/JSON.h>
 #include <base/Module.h>
@@ -36,7 +35,7 @@ public:
   ModulesApplication()
     : Application("modules")
   {
-    colorize = FileDescriptor::getStandardOutput().isANSITerminal();
+    colorize = fout.isANSITerminal();
   }
 
   /** Returns name and value for string with = separator. */

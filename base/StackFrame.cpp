@@ -19,7 +19,6 @@
 #include <base/filesystem/FileSystem.h>
 #include <base/TypeInfo.h>
 #include <base/string/ANSIEscapeSequence.h>
-#include <base/io/FileDescriptor.h>
 #include <base/Application.h>
 #include <base/string/Format.h>
 
@@ -757,7 +756,7 @@ void StackFrame::dump(unsigned int skip, unsigned int levels)
   if (levels == 0) {
     return;
   }
-  const bool colors = FileDescriptor::getStandardError().isANSITerminal(); // use ferr
+  const bool colors = ferr.isANSITerminal();
   
   ++skip;
   const unsigned int flags = StackFrame::FLAG_SHOW_ADDRESS | StackFrame::FLAG_SHOW_MODULE | StackFrame::FLAG_INDENT |
@@ -778,11 +777,9 @@ void StackFrame::dump(unsigned int skip, unsigned int levels)
   ferr << FLUSH;
 }
 
-FormatOutputStream& operator<<(
-  FormatOutputStream& stream,
-  const StackFrame& value)
+FormatOutputStream& operator<<(FormatOutputStream& stream, const StackFrame& value)
 {
-  const bool colors = false; // FileDescriptor::getStandardError().isANSITerminal(); // stream may not be stderr
+  const bool colors = stream.isANSITerminal();
   StackFrame::toStream(
     stream, value.getTrace(),
     StackFrame::FLAG_DEFAULT | (colors ? StackFrame::FLAG_USE_COLORS : 0)

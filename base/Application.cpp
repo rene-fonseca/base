@@ -65,7 +65,7 @@ _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
           ferr << "EXCEPTION CONSTRUCTED BY: " << ENDL;
           ferr << FormattedStackTrace(tls->stackTrace,
             StackTrace::FLAG_DEFAULT |
-            (FileDescriptor::getStandardError().isANSITerminal() ? StackTrace::FLAG_USE_COLORS : 0)
+            (ferr.isANSITerminal() ? StackTrace::FLAG_USE_COLORS : 0)
           ) << FLUSH;
         }
       }
@@ -96,7 +96,7 @@ public:
         auto& ferr = StackTrace::getErrorStream();
         ferr << FormattedStackTrace(stackTrace,
           StackTrace::FLAG_COMPACT | StackTrace::FLAG_DEFAULT |
-          (FileDescriptor::getStandardError().isANSITerminal() ? StackTrace::FLAG_USE_COLORS : 0)
+          (ferr.isANSITerminal() ? StackTrace::FLAG_USE_COLORS : 0)
         ) << FLUSH;
       }
     }
@@ -164,7 +164,7 @@ public:
       if (!tls->stackTrace.isEmpty()) {
         ferr << FormattedStackTrace(tls->stackTrace,
           StackTrace::FLAG_DEFAULT |
-          (FileDescriptor::getStandardError().isANSITerminal() ? StackTrace::FLAG_USE_COLORS : 0)
+          (ferr.isANSITerminal() ? StackTrace::FLAG_USE_COLORS : 0)
         ) << FLUSH;
       }
     }
@@ -286,7 +286,7 @@ public:
           auto& ferr = StackTrace::getErrorStream();
           ferr << FormattedStackTrace(stackTrace,
             StackTrace::FLAG_DEFAULT |
-            (FileDescriptor::getStandardError().isANSITerminal() ? StackTrace::FLAG_USE_COLORS : 0)
+            (ferr.isANSITerminal() ? StackTrace::FLAG_USE_COLORS : 0)
           ) << FLUSH;
 #endif
 
@@ -476,9 +476,7 @@ public:
 
     if (StackTrace::doesSupportStackTrace()) {
       ferr << FormattedStackTrace(StackTrace::getStack(1), StackTrace::FLAG_DEFAULT | StackTrace::FLAG_COMPACT |
-        (FileDescriptor::getStandardError().isANSITerminal() ? StackTrace::FLAG_USE_COLORS : 0)) << ENDL;
-      // TAG: need a way to check handle from stream ferr.getHandle().isANSITerminal() or isTerminal(ferr)
-      ferr << FLUSH;
+        (ferr.isANSITerminal() ? StackTrace::FLAG_USE_COLORS : 0)) << ENDL;
     }
     
 #if ((_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__SOLARIS) && \
@@ -921,7 +919,7 @@ int Application::exceptionHandler(const Exception& e) noexcept
     if (!tls->stackTrace.isEmpty()) {
       ferr << FormattedStackTrace(tls->stackTrace,
         StackTrace::FLAG_DEFAULT |
-        (FileDescriptor::getStandardError().isANSITerminal() ? StackTrace::FLAG_USE_COLORS : 0)
+        (ferr.isANSITerminal() ? StackTrace::FLAG_USE_COLORS : 0)
       ) << FLUSH;
     }
   }
@@ -965,7 +963,7 @@ int Application::exceptionHandler() noexcept
     if (!tls->stackTrace.isEmpty()) {
       ferr << FormattedStackTrace(tls->stackTrace,
         StackTrace::FLAG_DEFAULT |
-        (FileDescriptor::getStandardError().isANSITerminal() ? StackTrace::FLAG_USE_COLORS : 0)
+        (ferr.isANSITerminal() ? StackTrace::FLAG_USE_COLORS : 0)
       ) << FLUSH;
     }
   }

@@ -16,7 +16,6 @@
 #include <base/string/FormatOutputStream.h>
 #include <base/string/ANSIEscapeSequence.h>
 #include <base/StackFrame.h>
-#include <base/io/FileDescriptor.h>
 #include <base/UnitTest.h>
 
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
@@ -207,9 +206,10 @@ bool Assert::handle(const char* expression, const char* filename, const char* li
   }
 
   char buffer[1024];
-  
+  auto& ferr = StackTrace::getErrorStream(); // only used if writeAssertsToErrorStream
+
   for (int i = 0; i < (writeAssertsToErrorStream ? 2 : 1); ++i) {
-    const bool useANSI = (i > 0) && FileDescriptor::getStandardError().isANSITerminal();
+    const bool useANSI = (i > 0) && ferr.isANSITerminal();
     char* dest = buffer;
     const char* end = buffer + (sizeof(buffer) - 3 - 1); // keep room for terminator and ellipsis
     if (useANSI) {
@@ -264,7 +264,6 @@ bool Assert::handle(const char* expression, const char* filename, const char* li
 
     if (writeAssertsToErrorStream && Runtime::isGlobalStateInGoodCondition()) {
       // TAG: we should suppress recursive assert
-      auto& ferr = StackTrace::getErrorStream();
       try {
         ferr << static_cast<const char*>(buffer) << ENDL;
       } catch (...) { // ignore

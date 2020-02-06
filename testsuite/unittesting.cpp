@@ -17,7 +17,6 @@
 #include <base/string/ANSIEscapeSequence.h>
 #include <base/UnitTest.h>
 #include <base/io/FileOutputStream.h>
-#include <base/io/FileDescriptor.h>
 #include <base/Profiler.h>
 #include <algorithm>
 
@@ -68,7 +67,7 @@ public:
   TestApplication()
     : Application("unittesting")
   {
-    useANSIColors = FileDescriptor::getStandardOutput().isANSITerminal();
+    useANSIColors = fout.isANSITerminal();
     
     // TAG: also enable by default for macOS terminal and other terminals
     const Map<String, String>& environment = getEnvironment();

@@ -16,7 +16,6 @@
 #include <base/Primitives.h>
 #include <base/UnsignedInteger.h>
 #include <base/io/FileOutputStream.h>
-#include <base/io/FileDescriptor.h>
 #include <base/concurrency/Thread.h>
 #include <base/net/HTTPSRequest.h>
 #include <base/net/Url.h>
@@ -291,7 +290,7 @@ public:
             return;
           }
           auto data = JSON::getJSON(r, ObjectModel::DEFAULT_FORMATTING |
-            (FileDescriptor::getStandardOutput().isANSITerminal() ? ObjectModel::FLAG_COLOR : 0));
+            (fout.isANSITerminal() ? ObjectModel::FLAG_COLOR : 0));
           fout << data << ENDL;
         } else {
           PushToStandardOutput push;

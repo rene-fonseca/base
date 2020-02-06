@@ -20,7 +20,6 @@
 #include <base/string/StringOutputStream.h>
 #include <base/collection/HashTable.h>
 #include <base/string/ANSIEscapeSequence.h>
-#include <base/io/FileDescriptor.h>
 
 using namespace com::azure::dev::base;
 
@@ -62,7 +61,7 @@ public:
     thisYearFormat = MESSAGE("%b %#d %H:%M");
     otherYearFormat = MESSAGE("%b %#d  %Y");
     limitTrustees = false;
-    colorize = FileDescriptor::getStandardOutput().isANSITerminal();
+    colorize = fout.isANSITerminal();
     command = COMMAND_LIST;
     path = MESSAGE(".");
   }

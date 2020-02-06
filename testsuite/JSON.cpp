@@ -17,7 +17,6 @@
 #include <base/Timer.h>
 #include <base/Random.h>
 #include <base/Guid.h>
-#include <base/io/FileDescriptor.h>
 #include <base/filesystem/FolderInfo.h>
 #include <base/io/File.h>
 
@@ -207,7 +206,7 @@ public:
     String nice = JSON::getJSON(root);
     fout << JSON::getJSON(
       root,
-      ObjectModel::DEFAULT_FORMATTING | (FileDescriptor::getStandardOutput().isANSITerminal() ? ObjectModel::FLAG_COLOR : 0)
+      ObjectModel::DEFAULT_FORMATTING | (fout.isANSITerminal() ? ObjectModel::FLAG_COLOR : 0)
     ) << ENDL;
   }
   
@@ -412,7 +411,7 @@ public:
     fout << text << ENDL;
 
     fout << ">>>" << ENDL;
-    fout << JSON::getJSON(o, ObjectModel::DEFAULT_FORMATTING | (FileDescriptor::getStandardOutput().isANSITerminal() ? ObjectModel::FLAG_COLOR : 0)) << ENDL;
+    fout << JSON::getJSON(o, ObjectModel::DEFAULT_FORMATTING | (fout.isANSITerminal() ? ObjectModel::FLAG_COLOR : 0)) << ENDL;
 
     fout << ENDL;
    

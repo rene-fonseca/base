@@ -415,6 +415,13 @@ Reference<ObjectModel::Value> ModuleManager::getModules(const String& pattern)
     item->setValue("consumer", consumer);
     item->setValue("license", license);
     item->setValue("description", description);
+
+#if 0
+    if (auto remoteUrl = remoteUrl...) { // TAG: how can we fill out this automatically - should be link to source
+      item->setValue("repo", remoteUrl);
+    }
+#endif
+
     a->append(item);
   }
   return report;

@@ -728,7 +728,7 @@ void HTTPSRequest::send(const String& _body)
   #endif
 #elif defined(_COM_AZURE_DEV__BASE__USE_CURL)
 
-  addRequestHeader("Content-Length", format() << _body.getLength());
+  setRequestHeader("Content-Length", format() << _body.getLength());
 
   MemoryInputStream mis(_body);
   if (!INLINE_ASSERT(curl_easy_setopt(_handle->curl, CURLOPT_READDATA, &mis) == CURLE_OK)) {

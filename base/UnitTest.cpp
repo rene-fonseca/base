@@ -154,14 +154,14 @@ void UnitTest::Run::onException(const Exception* exception)
     if (stackTrace.begin != stackTrace.end) {
       ConstSpan<const void*> trace(stackTrace.begin, stackTrace.end - stackTrace.begin);
       if (UnitTestManager::getManager().getVerbosity() < UnitTestManager::VERBOSE) {
-        StackFrame::toStream(
+        StackTrace::toStream(
           fout, trace,
-          StackFrame::FLAG_DEFAULT | (UnitTestManager::getManager().getUseANSIColors() ? StackFrame::FLAG_USE_COLORS : 0)
+          StackTrace::FLAG_DEFAULT | (UnitTestManager::getManager().getUseANSIColors() ? StackTrace::FLAG_USE_COLORS : 0)
         );
       }
-      StackFrame::toStream(
+      StackTrace::toStream(
         sos, trace,
-        StackFrame::FLAG_DEFAULT | (UnitTestManager::getManager().getUseANSIColors() ? StackFrame::FLAG_USE_COLORS : 0)
+        StackTrace::FLAG_DEFAULT | (UnitTestManager::getManager().getUseANSIColors() ? StackTrace::FLAG_USE_COLORS : 0)
       );
       for (const auto& line : sos.toString().split('\n')) {
         if (line) {
@@ -400,7 +400,7 @@ Reference<UnitTest::Run> UnitTest::runImpl()
     run();
   } catch (Exception& e) {
 
-    // stack trace here is not useful ferr << StackFrame::getStack(0, 64) << ENDL;
+    // stack trace here is not useful ferr << StackTrace::getStack(0, 64) << ENDL;
 
     const char* _type = e.getThisType().getLocalName();
 #if (_COM_AZURE_DEV__BASE__COMPILER != _COM_AZURE_DEV__BASE__COMPILER_MSC)
@@ -1321,10 +1321,9 @@ void UnitTest::onAssert(bool passed, const String& what, unsigned int line)
   } else {
     currentRun->onFailed(what, line);
     if (UnitTestManager::getManager().getShowStackTrace()) {
-      StackFrame stackTrace = StackFrame::getStack();
-      StackFrame::toStream(
-        fout, stackTrace.getTrace(),
-        StackFrame::FLAG_DEFAULT | (UnitTestManager::getManager().getUseANSIColors() ? StackFrame::FLAG_USE_COLORS : 0)
+      fout << FormattedStackTrace(
+        StackTrace::getStack(),
+        StackTrace::FLAG_DEFAULT | (UnitTestManager::getManager().getUseANSIColors() ? StackTrace::FLAG_USE_COLORS : 0)
       );
     }
   }

@@ -58,15 +58,14 @@ _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
       Profiler::pushException(*exception); // TAG: get type directly from throw hook
 
       if (auto tls = Thread::getLocalContext()) {
-        tls->stackTrace = StackFrame::getStack(1, 64); // TAG: can we skip stack so we only get the first exception constructor?
+        tls->stackTrace = StackTrace::getStack(1, 64); // TAG: can we skip stack so we only get the first exception constructor?
         // TAG: only if dumping and if exception isnt silenced
         if (Exception::getDumpExceptions()) {
-          auto& ferr = StackFrame::getErrorStream();
+          auto& ferr = StackTrace::getErrorStream();
           ferr << "EXCEPTION CONSTRUCTED BY: " << ENDL;
-          StackFrame::toStream(
-            ferr, tls->stackTrace.getTrace(),
-            StackFrame::FLAG_DEFAULT |
-            (FileDescriptor::getStandardError().isANSITerminal() ? StackFrame::FLAG_USE_COLORS : 0)
+          ferr << FormattedStackTrace(tls->stackTrace,
+            StackTrace::FLAG_DEFAULT |
+            (FileDescriptor::getStandardError().isANSITerminal() ? StackTrace::FLAG_USE_COLORS : 0)
           );
           ferr << FLUSH;
         }
@@ -79,12 +78,12 @@ _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 class ApplicationImpl {
 public:
 
-  static void exceptionHandler(StackFrame* _stackTrace) noexcept
+  static void exceptionHandler(StackTrace* _stackTrace) noexcept
   {
     static bool firstTime = true;
 
     if (firstTime && _stackTrace) {
-      StackFrame& stackTrace = *_stackTrace;
+      StackTrace& stackTrace = *_stackTrace;
 #if (_COM_AZURE_DEV__BASE__COMPILER == _COM_AZURE_DEV__BASE__COMPILER_GCC) // not in stack trace for LLVM
       // info before initial __cxa_throw is not useful
       void* address = (void*)&__cxa_throw;
@@ -95,13 +94,11 @@ public:
 #endif
 
       if (!stackTrace.isEmpty()) {
-        auto& ferr = StackFrame::getErrorStream();
-        StackFrame::toStream(
-          ferr, stackTrace.getTrace(),
-          StackFrame::FLAG_COMPACT | StackFrame::FLAG_DEFAULT |
-          (FileDescriptor::getStandardError().isANSITerminal() ? StackFrame::FLAG_USE_COLORS : 0)
-        );
-        ferr << FLUSH;
+        auto& ferr = StackTrace::getErrorStream();
+        ferr << FormattedStackTrace(stackTrace,
+          StackTrace::FLAG_COMPACT | StackTrace::FLAG_DEFAULT |
+          (FileDescriptor::getStandardError().isANSITerminal() ? StackTrace::FLAG_USE_COLORS : 0)
+        ) << FLUSH;
       }
     }
 
@@ -161,17 +158,15 @@ public:
       stream << "Internal error: No exception detected so must be explicit termination by throw; or std::terminate()." << FLUSH;
     }
 
-    auto& ferr = StackFrame::getErrorStream();
+    auto& ferr = StackTrace::getErrorStream();
     ferr << stream.getString() << ENDL; // TAG: use appropriate error stream
     
     if (auto tls = Thread::getLocalContext()) {
       if (!tls->stackTrace.isEmpty()) {
-        StackFrame::toStream(
-          ferr, tls->stackTrace.getTrace(),
-          StackFrame::FLAG_DEFAULT |
-          (FileDescriptor::getStandardError().isANSITerminal() ? StackFrame::FLAG_USE_COLORS : 0)
-        );
-        ferr << FLUSH;
+        ferr << FormattedStackTrace(tls->stackTrace,
+          StackTrace::FLAG_DEFAULT |
+          (FileDescriptor::getStandardError().isANSITerminal() ? StackTrace::FLAG_USE_COLORS : 0)
+        ) << FLUSH;
       }
     }
     
@@ -188,7 +183,7 @@ public:
     if (firstTime) {
       firstTime = false;
       ferr << "Internal error: Application will be terminated." << ENDL;
-      auto stackTrace = StackFrame::getStack(2);
+      auto stackTrace = StackTrace::getStack(2);
       exceptionHandler(&stackTrace);
     } else {
       exceptionHandler(nullptr);
@@ -201,7 +196,7 @@ public:
     if (firstTime) {
       firstTime = false;
       ferr << "Internal error: Unexpected exception." << ENDL;
-      auto stackTrace = StackFrame::getStack(2);
+      auto stackTrace = StackTrace::getStack(2);
       exceptionHandler(&stackTrace);
     } else {
       exceptionHandler(nullptr);
@@ -288,14 +283,12 @@ public:
           ferr << "Aborted by user." << ENDL;
 
 #if 0 // not useful for Win32
-          StackFrame stackTrace = StackFrame::getStack(0);
-          auto& ferr = StackFrame::getErrorStream();
-          StackFrame::toStream(
-            ferr, stackTrace.getTrace(), stackTrace.getSize(),
-            StackFrame::FLAG_DEFAULT |
-            (FileDescriptor::getStandardError().isANSITerminal() ? StackFrame::FLAG_USE_COLORS : 0)
-          );
-          ferr << FLUSH;
+          StackTrace stackTrace = StackTrace::getStack(0);
+          auto& ferr = StackTrace::getErrorStream();
+          ferr << FormattedStackTrace(stackTrace,
+            StackTrace::FLAG_DEFAULT |
+            (FileDescriptor::getStandardError().isANSITerminal() ? StackTrace::FLAG_USE_COLORS : 0)
+          ) << FLUSH;
 #endif
 
           // _throw AbortException("Aborted by user.");
@@ -345,7 +338,7 @@ public:
     Profiler::pushSignal("actionHandler()");
 
     const char* error = nullptr;
-    auto& ferr = StackFrame::getErrorStream();
+    auto& ferr = StackTrace::getErrorStream();
     
 #if 0
     const ucontext_t* context = Cast::pointer<const ucontext_t*>(opaque);
@@ -477,8 +470,8 @@ public:
       exit(Application::EXIT_CODE_INTERNAL_ERROR); // TAG: need other function?
     }
 
-    if (StackFrame::doesSupportStackTrace()) {
-      ferr << FormattedStackTrace(StackFrame::getStack(1), StackTrace::FLAG_DEFAULT | StackTrace::FLAG_COMPACT |
+    if (StackTrace::doesSupportStackTrace()) {
+      ferr << FormattedStackTrace(StackTrace::getStack(1), StackTrace::FLAG_DEFAULT | StackTrace::FLAG_COMPACT |
         (FileDescriptor::getStandardError().isANSITerminal() ? StackTrace::FLAG_USE_COLORS : 0)) << ENDL;
       // TAG: need a way to check handle from stream ferr.getHandle().isANSITerminal() or isTerminal(ferr)
       ferr << FLUSH;
@@ -917,17 +910,15 @@ Application::Application(const String& _formalName)
 
 int Application::exceptionHandler(const Exception& e) noexcept
 {
-  auto& ferr = StackFrame::getErrorStream();
+  auto& ferr = StackTrace::getErrorStream();
   ferr << e << ENDL;
 
   if (auto tls = Thread::getLocalContext()) {
     if (!tls->stackTrace.isEmpty()) {
-      StackFrame::toStream(
-        ferr, tls->stackTrace.getTrace(),
-        StackFrame::FLAG_DEFAULT |
-        (FileDescriptor::getStandardError().isANSITerminal() ? StackFrame::FLAG_USE_COLORS : 0)
-      );
-      ferr << FLUSH;
+      ferr << FormattedStackTrace(tls->stackTrace,
+        StackTrace::FLAG_DEFAULT |
+        (FileDescriptor::getStandardError().isANSITerminal() ? StackTrace::FLAG_USE_COLORS : 0)
+      ) << FLUSH;
     }
   }
 
@@ -940,7 +931,7 @@ int Application::exceptionHandler() noexcept
   setExitCode(Application::EXIT_CODE_ERROR);
   // TAG: if UI app - show dialog
   // TAG: show thread info
-  auto& ferr = StackFrame::getErrorStream();
+  auto& ferr = StackTrace::getErrorStream();
 
   try {
     throw;
@@ -968,12 +959,10 @@ int Application::exceptionHandler() noexcept
 
   if (auto tls = Thread::getLocalContext()) { // this is not relevant since we didnt get here by throwing base::Exception
     if (!tls->stackTrace.isEmpty()) {
-      StackFrame::toStream(
-        ferr, tls->stackTrace.getTrace(),
-        StackFrame::FLAG_DEFAULT |
-        (FileDescriptor::getStandardError().isANSITerminal() ? StackFrame::FLAG_USE_COLORS : 0)
-      );
-      ferr << FLUSH;
+      ferr << FormattedStackTrace(tls->stackTrace,
+        StackTrace::FLAG_DEFAULT |
+        (FileDescriptor::getStandardError().isANSITerminal() ? StackTrace::FLAG_USE_COLORS : 0)
+      ) << FLUSH;
     }
   }
 

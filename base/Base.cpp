@@ -171,7 +171,7 @@ bool Assert::handle(const char* message)
 
   if (writeAssertsToErrorStream && Runtime::isGlobalStateInGoodCondition()) {
     // TAG: we should suppress recursive assert
-    auto& ferr = StackFrame::getErrorStream();
+    auto& ferr = StackTrace::getErrorStream();
     try {
       ferr << static_cast<const char*>(buffer) << ENDL;
     } catch (...) { // ignore
@@ -179,7 +179,7 @@ bool Assert::handle(const char* message)
   }
 
   if (writeStackTraceForAsserts) {
-    StackFrame::dump();
+    StackTrace::dump();
   }
 
   Debug::breakpoint();
@@ -264,7 +264,7 @@ bool Assert::handle(const char* expression, const char* filename, const char* li
 
     if (writeAssertsToErrorStream && Runtime::isGlobalStateInGoodCondition()) {
       // TAG: we should suppress recursive assert
-      auto& ferr = StackFrame::getErrorStream();
+      auto& ferr = StackTrace::getErrorStream();
       try {
         ferr << static_cast<const char*>(buffer) << ENDL;
       } catch (...) { // ignore
@@ -274,7 +274,7 @@ bool Assert::handle(const char* expression, const char* filename, const char* li
   }
 
   if (writeStackTraceForAsserts) {
-    StackFrame::dump();
+    StackTrace::dump();
   }
   Debug::breakpoint();
   return false;

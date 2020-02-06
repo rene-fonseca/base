@@ -2112,6 +2112,10 @@ public:
     // TAG: add support for removing all files/subfolders
 
     path = Path("a") / "b" / "c";
+    path = Path("a") / L"b" / String("c");
+    path = "a" / Path(L"b") / String("c");
+    path = "a" / Path(WideString(L"b")) / WideString("c");
+
     TEST_ASSERT(path);
   }
 };

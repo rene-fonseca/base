@@ -374,18 +374,29 @@ public:
   {
   }
 
-  /** Concats path. */
-  inline Path& operator/(const String& _path)
-  {
-    path = FileSystem::getPath(path, _path);
-    return *this;
-  }
-
   /** Returns the path. */
   inline operator const String&() const noexcept
   {
     return path;
   }
 };
+
+/** Concats paths. */
+inline Path operator/(const String& a, const Path& b)
+{
+  return FileSystem::getPath(a, b);
+}
+
+/** Concats paths. */
+inline Path operator/(const Path& a, const String& b)
+{
+  return FileSystem::getPath(a, b);
+}
+
+/** Concats paths. */
+inline Path operator/(const Path& a, const Path& b)
+{
+  return FileSystem::getPath(a, b);
+}
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

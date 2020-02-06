@@ -457,6 +457,11 @@ public:
              << instructionAddress << '.' << ENDL;
         break;
       default:
+        /*
+        if ((info->si_addr == nullptr) && (instructionAddress == nullptr)) {
+          // this would normally be dereference of nullptr - what should we write
+        }
+        */
         ferr << "Internal error: Segmentation fault for memory reference "
              << setWidth(2 + 2 * sizeof(void*)) << info->si_addr
              << " at address " << setWidth(2 + 2 * sizeof(void*))

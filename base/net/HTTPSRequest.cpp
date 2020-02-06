@@ -284,25 +284,35 @@ public:
   void close()
   {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
-    if (hRequest) {
-      INLINE_ASSERT(InternetCloseHandle(hRequest));
-      hRequest = nullptr;
-    }
-    if (hConnect) {
-      INLINE_ASSERT(InternetCloseHandle(hConnect));
-      hConnect = nullptr;
-    }
-    if (hInternet) {
-      INLINE_ASSERT(InternetCloseHandle(hInternet));
-      hInternet = nullptr;
+    if (hRequest || hConnect || hInternet) {
+      Profiler::HTTPSTask profile("HTTPSRequest::close()");
+
+      if (hRequest) {
+        INLINE_ASSERT(InternetCloseHandle(hRequest));
+        hRequest = nullptr;
+      }
+      if (hConnect) {
+        INLINE_ASSERT(InternetCloseHandle(hConnect));
+        hConnect = nullptr;
+      }
+      if (hInternet) {
+        INLINE_ASSERT(InternetCloseHandle(hInternet));
+        hInternet = nullptr;
+      }
     }
 #elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__MACOS)
-    response = nullptr;
-    stream = nullptr;
-    cfHttpReq = nullptr;
+    if (response || stream || cfHttpReq) {
+      Profiler::HTTPSTask profile("HTTPSRequest::close()");
+      response = nullptr;
+      stream = nullptr;
+      cfHttpReq = nullptr;
+    }
 #elif defined(_COM_AZURE_DEV__BASE__USE_CURL)
-    curl_easy_cleanup(curl);
-    curl = nullptr;
+    if (curl) {
+      Profiler::HTTPSTask profile("HTTPSRequest::close()");
+      curl_easy_cleanup(curl);
+      curl = nullptr;
+    }
 #else
     _COM_AZURE_DEV__BASE__NOT_IMPLEMENTED();
 #endif
@@ -1198,7 +1208,6 @@ void HTTPSRequest::close()
 
 HTTPSRequest::~HTTPSRequest()
 {
-  close();
 }
 
 #if defined(_COM_AZURE_DEV__BASE__TESTS)

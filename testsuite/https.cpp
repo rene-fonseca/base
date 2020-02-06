@@ -181,6 +181,8 @@ private:
   String filepath;
   bool showHeader = false;
   bool showJSON = false;
+  bool post = false;
+  String body;
 public:
   
   HTTPSApplication()
@@ -194,7 +196,9 @@ public:
     Array<String>::ReadEnumerator enu = arguments.getReadEnumerator();
     while (enu.hasNext()) {
       const String argument = enu.next();
-      if (argument == "--field") {
+      if (argument == "--post") {
+        post = true;
+      } else if (argument == "--field") {
         if (!enu.hasNext()) {
           ferr << "Expected header field name." << ENDL;
           return false;
@@ -206,6 +210,12 @@ public:
         }
         auto value = enu.next();
         fields.add(name, value);
+      } else if (argument == "--body") {
+        if (!enu.hasNext()) {
+          ferr << "Expected body." << ENDL;
+          return false;
+        }
+        body = enu.next();
       } else if (argument == "--header") {
         showHeader = true;
       } else if (argument == "--json") {
@@ -240,7 +250,7 @@ public:
 
     try {
       HTTPSRequest request;
-      if (!request.open(HTTPSRequest::METHOD_GET, url)) {
+      if (!request.open(post ? HTTPSRequest::METHOD_POST : HTTPSRequest::METHOD_GET, url)) {
         setExitCode(Application::EXIT_CODE_ERROR);
         return;
       }
@@ -254,7 +264,6 @@ public:
       // request.setRequestHeader("Keep-Alive", "30");
       // TAG: allow form data - get from options
 
-      String body;
       request.send(body);
       // TAG: read from stdin/file with progress
 

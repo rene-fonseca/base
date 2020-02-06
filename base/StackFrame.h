@@ -198,7 +198,9 @@ public:
   /**
     Format stack trace to stream.
   */
-  static void toStream(FormatOutputStream& stream, const ConstSpan<const void*>& stackTrace, unsigned int flags = FLAG_DEFAULT);
+  static FormatOutputStream& toStream(FormatOutputStream& stream,
+                                      const ConstSpan<const void*>& stackTrace,
+                                      unsigned int flags = FLAG_DEFAULT);
 };
 
 _COM_AZURE_DEV__BASE__API FormatOutputStream& operator<<(FormatOutputStream& stream, const StackFrame& value);
@@ -212,5 +214,41 @@ public:
     return value.getHash();
   }
 };
+
+// TAG: refactor to use StackTrace 
+typedef StackFrame StackTrace;
+
+/** Combines formatting with stack trace. */
+class _COM_AZURE_DEV__BASE__API FormattedStackTrace {
+private:
+
+  const StackTrace& stackTrace;
+  unsigned int flags = 0;
+public:
+
+  /** Initializes formatting. */
+  inline FormattedStackTrace(const StackTrace& _stackTrace, unsigned int _flags = StackTrace::FLAG_DEFAULT) noexcept
+    : stackTrace(_stackTrace), flags(_flags)
+  {
+  }
+
+  /** Returns the flags. */
+  inline unsigned int getFlags() const noexcept
+  {
+    return flags;
+  }
+
+  /** Returns the stack trace. */
+  inline operator const StackTrace&() const noexcept
+  {
+    return stackTrace;
+  }
+};
+
+/** Writes stack trace to stream with formatting flags. */
+inline FormatOutputStream& operator<<(FormatOutputStream& stream, const FormattedStackTrace& stackTrace)
+{
+  return StackTrace::toStream(stream, static_cast<const StackTrace&>(stackTrace).getTrace(), stackTrace.getFlags());
+}
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

@@ -571,7 +571,8 @@ StackFrame StackFrame::getStack(unsigned int skip, unsigned int levels, bool tri
   return frames;
 }
 
-void StackFrame::toStream(FormatOutputStream& stream, const ConstSpan<const void*>& _trace, unsigned int flags)
+FormatOutputStream& StackFrame::toStream(FormatOutputStream& stream,
+                                         const ConstSpan<const void*>& _trace, unsigned int flags)
 {
   const bool showAddress = (flags & FLAG_SHOW_ADDRESS) != 0;
   const bool useColors = (flags & FLAG_USE_COLORS) != 0;
@@ -605,7 +606,7 @@ void StackFrame::toStream(FormatOutputStream& stream, const ConstSpan<const void
   }
   if (!trace || (trace.getSize() == 0)) {
     stream << indent(INDENT) << "NO STACK FRAMES" << EOL;
-    return;
+    return stream;
   }
 
   unsigned int field1 = 1;
@@ -743,6 +744,8 @@ void StackFrame::toStream(FormatOutputStream& stream, const ConstSpan<const void
     }
     ++count;
   }
+
+  return stream;
 }
 
 void StackFrame::dump(unsigned int skip, unsigned int levels)

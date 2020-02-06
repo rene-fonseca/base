@@ -345,6 +345,7 @@ public:
     Profiler::pushSignal("actionHandler()");
 
     const char* error = nullptr;
+    auto& ferr = StackFrame::getErrorStream();
     
 #if 0
     const ucontext_t* context = Cast::pointer<const ucontext_t*>(opaque);
@@ -474,6 +475,13 @@ public:
     default:
       ferr << "Internal error: System exception " << signal << '.' << ENDL;
       exit(Application::EXIT_CODE_INTERNAL_ERROR); // TAG: need other function?
+    }
+
+    if (StackFrame::SUPPORTS_STACK_TRACE) {
+      ferr << FormattedStackTrace(StackFrame::getStack(1), StackTrace::FLAG_DEFAULT | StackTrace::FLAG_COMPACT |
+        (FileDescriptor::getStandardError().isANSITerminal() ? StackTrace::FLAG_USE_COLORS : 0)) << ENDL;
+      // TAG: need a way to check handle from stream ferr.getHandle().isANSITerminal() or isTerminal(ferr)
+      ferr << FLUSH;
     }
     
 #if ((_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__SOLARIS) && \

@@ -66,8 +66,7 @@ _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
           ferr << FormattedStackTrace(tls->stackTrace,
             StackTrace::FLAG_DEFAULT |
             (FileDescriptor::getStandardError().isANSITerminal() ? StackTrace::FLAG_USE_COLORS : 0)
-          );
-          ferr << FLUSH;
+          ) << FLUSH;
         }
       }
     }

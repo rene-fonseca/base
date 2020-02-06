@@ -369,7 +369,7 @@ Handle* Process::ProcessHandle::invalid = nullptr; // uninitialized
 class Initialization {
 private:
 
-  Handle invalidHandle;
+  R<Handle> invalidHandle;
 public:
 
   Initialization() noexcept
@@ -377,9 +377,15 @@ public:
     RandomLegacy::randomize(); // randomize global random number generator
 
     // having a global invalid handle safes us from allocating/deallocating many handles
-    ReferenceCountedObject::ReferenceImpl(invalidHandle).addReference(); // prevent destruction of object
-    FileDescriptor::Descriptor::invalid = &invalidHandle;
-    Process::ProcessHandle::invalid = &invalidHandle;
+    invalidHandle = new Handle();
+    FileDescriptor::Descriptor::invalid = invalidHandle.getValue();
+    Process::ProcessHandle::invalid = invalidHandle.getValue();
+  }
+
+  ~Initialization()
+  {
+    FileDescriptor::Descriptor::invalid = nullptr;
+    Process::ProcessHandle::invalid = nullptr;
   }
 };
 

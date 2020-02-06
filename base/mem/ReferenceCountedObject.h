@@ -190,4 +190,26 @@ public:
   }
 };
 
+/**
+  Automation object to prevent destruction of reference counted objects when these are constructed on the stack
+  instead of the heap.
+*/
+class ReferencePreventDestruction {
+private:
+
+  ReferenceCountedObject& object;
+public:
+
+  inline ReferencePreventDestruction(ReferenceCountedObject& _object) noexcept
+    : object(_object)
+  {
+    ReferenceCountedObject::ReferenceImpl(object).addReference();
+  }
+
+  inline ~ReferencePreventDestruction() noexcept
+  {
+    INLINE_ASSERT(ReferenceCountedObject::ReferenceImpl(object).removeReference());
+  }
+};
+
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

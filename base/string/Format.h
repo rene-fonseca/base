@@ -96,8 +96,12 @@ public:
   }
 #endif
 
-  static String subst(const String& text, std::initializer_list<const char*> list);
-  static String subst(const String& text, std::initializer_list<Literal> list);
+  /** String substitution. */
+  static String subst(const String& text, const std::initializer_list<const char*>& list);
+  /** String substitution. */
+  static String subst(const String& text, const std::initializer_list<Literal>& list);
+  /** String substitution. */
+  static String subst(const String& text, const std::initializer_list<String>& list);
 
   /** String substitution implementation. */
   class _COM_AZURE_DEV__BASE__API Subst {

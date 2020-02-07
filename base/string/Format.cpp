@@ -254,7 +254,7 @@ String Format::subst(const String& text, const AnyValue& a, const AnyValue& b, c
   return subst(text, a.getString(), b.getString(), c.getString(), d.getString(), e.getString(), f.getString(), g.getString(), h.getString(), h.getString(), i.getString(), j.getString(), k.getString());
 }
 
-String Format::subst(const String& text, std::initializer_list<const char*> list)
+String Format::subst(const String& text, const std::initializer_list<const char*>& list)
 {
   MemorySpan spans[MAX_ARGS];
   if (!INLINE_ASSERT(list.size() <= getArraySize(spans))) {
@@ -267,7 +267,7 @@ String Format::subst(const String& text, std::initializer_list<const char*> list
   return Subst(text, spans, j).format();
 }
 
-String Format::subst(const String& text, std::initializer_list<Literal> list)
+String Format::subst(const String& text, const std::initializer_list<Literal>& list)
 {
   MemorySpan spans[MAX_ARGS];
   if (!INLINE_ASSERT(list.size() <= getArraySize(spans))) {
@@ -276,6 +276,19 @@ String Format::subst(const String& text, std::initializer_list<Literal> list)
   MemorySize j = 0;
   for (auto i = list.begin(); i != list.end(); ++i) {
     spans[j++] = MemorySpan(i->getValue(), i->getLength());
+  }
+  return Subst(text, spans, j).format();
+}
+
+String Format::subst(const String& text, const std::initializer_list<String>& list)
+{
+  MemorySpan spans[MAX_ARGS];
+  if (!INLINE_ASSERT(list.size() <= getArraySize(spans))) {
+    _throw OutOfRange();
+  }
+  MemorySize j = 0;
+  for (auto i = list.begin(); i != list.end(); ++i) {
+    spans[j++] = MemorySpan(i->getBytes(), i->getLength());
   }
   return Subst(text, spans, j).format();
 }

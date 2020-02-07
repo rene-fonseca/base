@@ -29,6 +29,7 @@ _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 class _COM_AZURE_DEV__BASE__API AutomationObject {
 private:
 
+#if 0 // disabled for now due to XML classes
   /** Prevent dynamic construction. */
   static void* operator new(MemorySize) noexcept /*final*/;
   /** Prevent dynamic destruction. */
@@ -41,12 +42,7 @@ private:
   AutomationObject(const AutomationObject& copy) noexcept /*final*/;
   /** Prevent default assignment. */
   AutomationObject& operator=(const AutomationObject& assign) noexcept /*final*/;
-protected:
-  
-  /** Default initialization. */
-  inline AutomationObject() noexcept
-  {
-  }
+#endif
 };
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

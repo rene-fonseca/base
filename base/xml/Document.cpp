@@ -13,6 +13,7 @@
 
 #include <base/platforms/features.h>
 #include <base/xml/Document.h>
+#include <base/xml/XPathException.h>
 #include <base/Cast.h>
 #include <base/Module.h>
 #include <base/build.h>
@@ -23,6 +24,8 @@
 #  include <libxml/xinclude.h>
 #  include <libxml/tree.h>
 #  include <libxml/hash.h>
+#  include <libxml/xpath.h>
+#  include <libxml/xpathInternals.h>
 #endif
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
@@ -421,6 +424,76 @@ Element Document::getElementById(const String& elementId)
     (const xmlChar*)elementId.getElements()
   );
   return node;
+#else
+  _COM_AZURE_DEV__BASE__NOT_IMPLEMENTED();
+#endif
+}
+
+Node Document::selectSingleNode(const String& xpath, const Array<Pair<String, String> >& namespaces)
+{
+#if defined(_COM_AZURE_DEV__BASE__USE_XMLSOFT_XML)
+  xmlDoc* doc = (xmlDoc*)getContext();
+  bassert(doc, DOMException(this));
+  
+  xmlXPathContextPtr context = xmlXPathNewContext(doc);
+  
+  for (const auto& ns : namespaces) {
+    if (xmlXPathRegisterNs(context,
+                           (const xmlChar*)ns.getFirst().native(),
+                           (const xmlChar*)ns.getSecond().native()) != 0) {
+      _throw XPathException("Failed to register namespace.", this);
+    }
+  }
+  
+  xmlXPathObjectPtr result = xmlXPathEvalExpression((xmlChar*)xpath.native(), context);
+  bassert(result, XPathException(this));
+  if (xmlXPathNodeSetIsEmpty(result->nodesetval)) {
+    xmlXPathFreeObject(result);
+    return Node();
+  }
+  auto set = result->nodesetval;
+  if (set->nodeNr > 0) {
+    return Node(set->nodeTab[0]);
+  }
+  return Node();
+#else
+  _COM_AZURE_DEV__BASE__NOT_IMPLEMENTED();
+#endif
+}
+
+Array<Node*> Document::getXPath(const String& xpath, const Array<Pair<String, String> >& namespaces)
+{
+#if defined(_COM_AZURE_DEV__BASE__USE_XMLSOFT_XML)
+  xmlDoc* doc = (xmlDoc*)getContext();
+  bassert(doc, DOMException(this));
+  
+  xmlXPathContextPtr context = xmlXPathNewContext(doc);
+  
+  for (const auto& ns : namespaces) {
+    if (xmlXPathRegisterNs(context,
+                           (const xmlChar*)ns.getFirst().native(),
+                           (const xmlChar*)ns.getSecond().native()) != 0) {
+      _throw XPathException("Failed to register namespace.", this);
+    }
+  }
+  
+  xmlXPathObjectPtr result = xmlXPathEvalExpression((const xmlChar*)xpath.native(), context);
+  bassert(result, XPathException(this));
+  if (xmlXPathNodeSetIsEmpty(result->nodesetval)) {
+    xmlXPathFreeObject(result);
+    return Array<Node*>();
+  }
+  
+  // TAG: change classes to use reference counting
+  
+  auto set = result->nodesetval;
+  Array<Node*> nodes;
+  nodes.ensureCapacity(set->nodeNr);
+  for (int i = 0; i < set->nodeNr; ++i) {
+    Node* n = new Node(set->nodeTab[i]); // set->nodeTab[i]->xmlChildrenNode
+    nodes.append(n);
+  }
+  return nodes;
 #else
   _COM_AZURE_DEV__BASE__NOT_IMPLEMENTED();
 #endif

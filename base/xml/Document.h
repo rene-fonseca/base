@@ -27,6 +27,8 @@
 #include <base/xml/Text.h>
 #include <base/mem/Reference.h>
 #include <base/string/String.h>
+#include <base/collection/Array.h>
+#include <base/collection/Pair.h>
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
@@ -155,7 +157,19 @@ public:
     Returns the Element whose ID is given by elementId.
   */
   Element getElementById(const String& elementId);
+
+  typedef Array<Pair<String, String> > PrefixNamespace;
   
+  /**
+    Returns the first node for the given XPath expression.
+  */
+  Node selectSingleNode(const String& xpath, const PrefixNamespace& namespaces = PrefixNamespace());
+
+  /**
+    Returns the result for the given XPath expression.
+  */
+  Array<Node*> getXPath(const String& xpath, const PrefixNamespace& namespaces = PrefixNamespace());
+
   /**
     Creates a new attribute.
   */

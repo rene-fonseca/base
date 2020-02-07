@@ -180,7 +180,7 @@ private:
   String filepath;
   bool showHeader = false;
   bool showJSON = false;
-  bool post = false;
+  String method = "GET";
   String body;
 public:
   
@@ -196,7 +196,14 @@ public:
     while (enu.hasNext()) {
       const String argument = enu.next();
       if (argument == "--post") {
-        post = true;
+        method = "POST";
+      } else if (argument == "--method") {
+        if (!enu.hasNext()) {
+          ferr << "Expected method." << ENDL;
+          return false;
+        }
+        method = enu.next();
+        // TAG: change to name and value in 1 argument
       } else if (argument == "--field") {
         if (!enu.hasNext()) {
           ferr << "Expected header field name." << ENDL;
@@ -249,7 +256,7 @@ public:
 
     try {
       HTTPSRequest request;
-      if (!request.open(post ? HTTPSRequest::METHOD_POST : HTTPSRequest::METHOD_GET, url)) {
+      if (!request.open(method, url)) {
         setExitCode(Application::EXIT_CODE_ERROR);
         return;
       }

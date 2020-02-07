@@ -243,7 +243,8 @@ static inline FormatOutputStream& operator<<(FormatOutputStream& stream, const R
   // TAG: cache search result - remember expression with sha256
   String org;
   String project;
-
+  String destPath;
+  
   bool parseArguments()
   {
     Array<String> arguments = getArguments();
@@ -254,14 +255,31 @@ static inline FormatOutputStream& operator<<(FormatOutputStream& stream, const R
         path = enu.next();
         command = COMMAND_SEARCH;
       } else if (argument == "--label") {
+        if (!enu.hasNext()) {
+          error("Expected label.");
+          return false;
+        }
         label = enu.next();
       } else if (argument == "--org") {
+        if (!enu.hasNext()) {
+          error("Expected organization.");
+          return false;
+        }
         org = enu.next();
       } else if (argument == "--project") {
+        if (!enu.hasNext()) {
+          error("Expected project.");
+          return false;
+        }
         project = enu.next();
       } else {
         if (!expression) {
           expression = argument;
+        } else if (destPath) {
+          destPath = argument;
+        } else {
+          error("Invalid argument.");
+          return false;
         }
       }
       // TAG: need project path also
@@ -296,7 +314,12 @@ static inline FormatOutputStream& operator<<(FormatOutputStream& stream, const R
           root = JSON::parseFile(path);
         }
         String xml = search(root, label);
-        fout << xml << ENDL;
+        
+        if (destPath) {
+          saveSVG(destPath, xml);
+        } else {
+          fout << xml << ENDL;
+        }
       }
       return;
     default:

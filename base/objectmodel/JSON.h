@@ -242,7 +242,8 @@ public:
   static String getJSON(Reference<ObjectModel::Value> value, unsigned int flags = ObjectModel::DEFAULT_FORMATTING);
 
   /** Converts given ObjectModel to JSON. */
-  static inline String getJSONNoFormatting(Reference<ObjectModel::Value> value) {
+  static inline String getJSONNoFormatting(Reference<ObjectModel::Value> value)
+  {
     return getJSON(value, 0);
   }
 

@@ -43,8 +43,12 @@ public:
   /** Save SVG. */
   void saveSVG(const String& path, const String& svg)
   {
-    FileOutputStream fos(path);
-    fos.write(svg.getBytes(), svg.getLength());
+    try {
+      FileOutputStream fos(path);
+      fos.write(svg.getBytes(), svg.getLength());
+    } catch (...) {
+      error("Failed to save SVG.");
+    }
   }
   
   /** Gets search result from Azure DevOps. */
@@ -309,6 +313,13 @@ static inline FormatOutputStream& operator<<(FormatOutputStream& stream, const R
             error("Failed to get search result from Azure DevOps.", EXIT_CODE_ERROR);
             return;
           }
+
+          try {
+            FileOutputStream fos("codesearch.json");
+            fos.write(result.getBytes(), result.getLength());
+          } catch (...) {
+          }
+          
           root = JSON::parse(result);
         } else {
           root = JSON::parseFile(path);

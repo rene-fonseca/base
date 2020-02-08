@@ -1052,7 +1052,7 @@ bool String::UTF8String::isValidUTF8() const noexcept
 String String::getValidUTF8() const
 {
   String result(getLength());
-  const uint8* src = reinterpret_cast<const uint8*>(getElements());
+  const uint8* src = getBytes();
   while (*src) {
     ucs4 ch = 0;
     auto bytes = Unicode::readUCS4(src, ch);

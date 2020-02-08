@@ -368,7 +368,7 @@ public:
         } else {
           try {
             FileOutputStream fos(junitPath);
-            fos.write(reinterpret_cast<const uint8*>(xml.getElements()), xml.getLength());
+            fos.write(xml.getBytes(), xml.getLength());
           } catch (...) {
             ferr << "Error: Failed to write JUnit file." << ENDL;
             setExitCode(1);

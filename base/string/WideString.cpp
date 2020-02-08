@@ -436,19 +436,11 @@ WideString::WideString(const NativeWideString& src, MemorySize maximum)
 WideString::WideString(const String& string)
 {
   MemorySize multibyteLength = string.getLength();
-  MemorySize numberOfCharacters = Unicode::UTF8ToUCS4(
-    nullptr,
-    reinterpret_cast<const uint8*>(string.getElements()),
-    multibyteLength
-  );
+  MemorySize numberOfCharacters = Unicode::UTF8ToUCS4(nullptr, string.getBytes(), multibyteLength);
   bassert(numberOfCharacters <= MAXIMUM_LENGTH, MemoryException(this));
   elements = new ReferenceCountedAllocator<ucs4>(numberOfCharacters + 1);
   if (numberOfCharacters) {
-    Unicode::UTF8ToUCS4(
-      elements->getElements(),
-      reinterpret_cast<const uint8*>(string.getElements()),
-      multibyteLength
-    );
+    Unicode::UTF8ToUCS4(elements->getElements(), string.getBytes(), multibyteLength);
   }
 }
 

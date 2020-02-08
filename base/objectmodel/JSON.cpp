@@ -478,10 +478,7 @@ Reference<ObjectModel::Value> JSON::parse(const uint8* src, const uint8* end)
 Reference<ObjectModel::Value> JSON::parse(const String& text)
 {
   JSON json;
-  return json.parse(
-    reinterpret_cast<const uint8*>(text.getElements()),
-    reinterpret_cast<const uint8*>(text.getElements()) + text.getLength()
-  );
+  return json.parse(text.getBytes(), text.getBytes() + text.getLength());
 }
 
 Reference<ObjectModel::Value> JSON::parseFile(const String& path)

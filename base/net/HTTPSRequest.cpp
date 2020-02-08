@@ -841,7 +841,7 @@ String HTTPSRequest::getResponse()
   PushToString push;
   getResponse(&push);
   result = push.text;
-  profile.setBuffer(reinterpret_cast<const uint8*>(result.getElements()));
+  profile.setBuffer(result.getBytes());
   profile.onBytesRead(result.getLength());
   return result;
 }
@@ -856,7 +856,7 @@ void HTTPSRequest::getResponse(OutputStream* os)
   PushToOutputStream push;
   push.os = os;
   getResponse(&push);
-  // profile.setBuffer(reinterpret_cast<const uint8*>(result.getElements()));
+  // profile.setBuffer(result.getBytes()));
   // profile.onBytesRead(result.getLength());
 }
 

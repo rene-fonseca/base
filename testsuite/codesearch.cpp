@@ -150,7 +150,7 @@ static inline FormatOutputStream& operator<<(FormatOutputStream& stream, const R
     Document d = dom.createDocumentFromString(xml);
     // fout << dom.saveDocumentToMemory(d) << ENDL;
     
-    Document::PrefixNamespace ns{Pair<String, String>("svg", "http://www.w3.org/2000/svg")};
+    Document::PrefixNamespace ns{ {"svg", "http://www.w3.org/2000/svg"} };
     Node svg = d.selectSingleNode("//svg:svg", ns);
     if (!INLINE_ASSERT(svg)) {
       return String();

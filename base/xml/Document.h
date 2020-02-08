@@ -158,6 +158,7 @@ public:
   */
   Element getElementById(const String& elementId);
 
+  /** Prefix and namespace pair. */
   typedef Array<Pair<String, String> > PrefixNamespace;
   
   /**

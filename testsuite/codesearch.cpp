@@ -248,6 +248,7 @@ static inline FormatOutputStream& operator<<(FormatOutputStream& stream, const R
   String org;
   String project;
   String destPath;
+  bool gist = false;
   
   bool parseArguments()
   {
@@ -276,6 +277,8 @@ static inline FormatOutputStream& operator<<(FormatOutputStream& stream, const R
           return false;
         }
         project = enu.next();
+      } else if (argument == "--gist") {
+        gist = true;
       } else {
         if (!expression) {
           expression = argument;
@@ -326,7 +329,12 @@ static inline FormatOutputStream& operator<<(FormatOutputStream& stream, const R
         }
         String xml = search(root, label);
         
-        if (destPath) {
+        if (gist) {
+          ObjectModel o;
+          auto root = o.createString(xml);
+          String json = JSON::getJSONNoFormatting(root);
+          fout << json << ENDL;
+        } else if (destPath) {
           saveSVG(destPath, xml);
         } else {
           fout << xml << ENDL;

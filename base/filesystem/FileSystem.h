@@ -35,16 +35,32 @@ _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 */
 
 class _COM_AZURE_DEV__BASE__API FileSystem : public Object {
-private:
-
-  /** Internal attribute specifying whether or not file system links are supported by the platform. */
-  static int cachedSupportsLinks;
-  /** Counter used for generating temporary file names. */
-  static unsigned int counter;
 public:
 
-  /** Specifies the folder level separator. */
-  static const char SEPARATOR = '/'; // TAG: fixme
+  /** Returns true if char is a separator. For Windows both \ and / are separator. */
+  static inline bool isSeparator(ucs4 ch) noexcept
+  {
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
+    return (ch == '/') || (ch == '\\');
+#else
+    return (ch == '/');
+#endif
+  }
+
+  /**
+    Returns the index of the first separator. For Windows both \ and / are separator.
+
+    Returns -1 is not found.
+  */
+  static MemoryDiff findSeparator(const String& path, MemorySize start);
+  
+  /**
+    Returns the index of the last separator. For Windows both \ and / are separator.
+    
+    Returns -1 is not found.
+  */
+  static MemoryDiff findLastSeparator(const String& path);
+
   /** Specifies the maximum length of a path. */
   static const unsigned int MAXIMUM_PATH_LENGTH;
 
@@ -62,15 +78,6 @@ public:
     SEMPAHORE = 256, /**< Semaphore. */
     SHARED_MEMORY = 512 /**< Shared memory. */
   };
-
-// TAG: other attributes
-// ARCHIVE
-// COMPRESSED
-// ENCRYPTED
-// HIDDEN
-// SPARSE
-// SYSTEM
-// TEMPORARY
 
   /** The temporary folder. */
   enum TemporaryFolder {
@@ -257,7 +264,7 @@ public:
     Returns true if symbolic links are supported. This method always returns
     true for Unices.
   */
-  static bool supportsLinks() noexcept;
+  static bool doesSupportLinks() noexcept;
   
   /**
     Creates a hard link.
@@ -287,7 +294,7 @@ public:
 
     @param path The path of the symbolic link.
   */
-  static String getLink(const String& path);
+  static String getLinkTarget(const String& path);
   
   /**
     Returns the path to the folder intended for temporary files.
@@ -351,7 +358,31 @@ public:
     Returns the path to the specified folder.
   */
   static String getFolder(Folder folder) noexcept;
-  
+
+  /**
+    Returns the relative path to the given folder.
+
+    getRelativePath("a/b/c/d/e/f", "a/b/c/g/h/i") returns "../../g/h/i".
+  */
+  static String getRelativePath(const String& folder, const String& path);
+
+  /**
+    Returns the parent folder.
+  */
+  static String getParent(const String& path);
+
+  /**
+    Returns the path split into sections.
+    
+    Separators are not included in result except the first item it is is to indicate root.
+  */
+  static Array<String> split(const String path);
+
+  /**
+    Joins the paths.
+  */
+  static String join(const Array<String>& paths);
+
   /**
     Returns the quota.
 

@@ -460,10 +460,7 @@ Reference<ObjectModel::Value> YAML::parse(const uint8* src, const uint8* end)
 Reference<ObjectModel::Value> YAML::parse(const String& text)
 {
   YAML yaml;
-  return yaml.parse(
-    reinterpret_cast<const uint8*>(text.getElements()),
-    reinterpret_cast<const uint8*>(text.getElements()) + text.getLength()
-  );
+  return yaml.parse(text.getBytes(), text.getBytes() + text.getLength());
 }
 
 Reference<ObjectModel::Value> YAML::parseFile(const String& path)

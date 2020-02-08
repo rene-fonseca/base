@@ -14,6 +14,7 @@
 #pragma once
 
 #include <base/Base.h>
+#include <base/string/FormatOutputStream.h>
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
@@ -191,6 +192,7 @@ public:
     second = moveObject(value);
   }
 
+#if 0
   /**
     Returns -1, 0, or 1 if this pair is less than, equal to, or greater than
     the specified pair.
@@ -200,6 +202,7 @@ public:
     int result = compareTo(first, compare.first);
     return (result != 0) ? result : compareTo(second, compare.second);
   }
+#endif
 
   /**
     Returns true if this pair is equal to the specified pair.
@@ -274,5 +277,20 @@ inline Pair<FIRST, SECOND> makePair(FIRST&& first, SECOND&& second)
 {
   return Pair<FIRST, SECOND>(moveObject(first), moveObject(second));
 }
+
+/**
+  Writes pair to format stream.
+*/
+template<class FIRST, class SECOND>
+FormatOutputStream& operator<<(FormatOutputStream& stream, const Pair<FIRST, SECOND>& value)
+{
+  return stream << '[' << value.getFirst() << ';' << value.getSecond() << ']';
+}
+
+/** Shorthand for Pair<String, String>. */
+typedef Pair<String, String> StringPair;
+
+/** Shorthand for Pair<WideString, WideString>. */
+typedef Pair<WideString, WideString> WideStringPair;
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

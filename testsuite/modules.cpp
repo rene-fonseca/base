@@ -39,24 +39,24 @@ public:
   }
 
   /** Returns name and value for string with = separator. */
-  static Pair<String, String> getNameValue(const String& text, char separator = '=')
+  static StringPair getNameValue(const String& text, char separator = '=')
   {
     auto index = text.indexOf(separator);
     if (index >= 0) {
-      return Pair<String, String>(text.substring(index), text.substring(index + 1));
+      return StringPair(text.substring(index), text.substring(index + 1));
     } else {
-      return Pair<String, String>(text);
+      return StringPair(text);
     }
   }
 
   /** Returns name and value for string with = separator. */
-  static Pair<String, String> getNameValue(const String& text, const String& _default, char separator = '=')
+  static StringPair getNameValue(const String& text, const String& _default, char separator = '=')
   {
     auto index = text.indexOf(separator);
     if (index >= 0) {
-      return Pair<String, String>(text.substring(index), text.substring(index + 1));
+      return StringPair(text.substring(index), text.substring(index + 1));
     } else {
-      return Pair<String, String>(text, _default);
+      return StringPair(text, _default);
     }
   }
 
@@ -78,7 +78,7 @@ public:
       String argument = enu.next();
       String value;
       if (argument.startsWith("--")) {
-        Pair<String, String> option = getNameValue(argument);
+        StringPair option = getNameValue(argument);
         argument = option.getFirst();
         value = option.getSecond();
       }

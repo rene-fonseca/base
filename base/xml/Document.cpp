@@ -429,7 +429,7 @@ Element Document::getElementById(const String& elementId)
 #endif
 }
 
-Node Document::selectSingleNode(const String& xpath, const Array<Pair<String, String> >& namespaces)
+Node Document::selectSingleNode(const String& xpath, const Array<StringPair>& namespaces)
 {
 #if defined(_COM_AZURE_DEV__BASE__USE_XMLSOFT_XML)
   xmlDoc* doc = (xmlDoc*)getContext();
@@ -461,7 +461,7 @@ Node Document::selectSingleNode(const String& xpath, const Array<Pair<String, St
 #endif
 }
 
-Array<Node*> Document::getXPath(const String& xpath, const Array<Pair<String, String> >& namespaces)
+Array<Node*> Document::getXPath(const String& xpath, const Array<StringPair>& namespaces)
 {
 #if defined(_COM_AZURE_DEV__BASE__USE_XMLSOFT_XML)
   xmlDoc* doc = (xmlDoc*)getContext();

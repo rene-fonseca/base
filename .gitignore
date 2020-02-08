@@ -26,6 +26,7 @@ Debug/
 Release/
 
 # Windows
+.vs/
 *.sln
 *.vcxproj
 *.vcxproj.filters
@@ -35,6 +36,7 @@ Release/
 *.dll
 *.ilk
 *.exp
+*.user
 
 # Non-Windows
 *.a

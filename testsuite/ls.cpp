@@ -160,7 +160,7 @@ public:
         try {
           if (FileSystem::isLink(entry)) {
             link = true;
-            target = FileSystem::getLink(entry);
+            target = FileSystem::getLinkTarget(entry);
             deadLink = FileSystem::getType(target) == 0;
             linkTarget = true;
           }

@@ -1472,7 +1472,7 @@ unsigned int File::read(
       }
     } while (result < 0);
 #endif
-    profile.onBytesRead(bytesRead);
+    profile.onBytesRead(result);
     bytesRead += result;
     buffer += result;
     bytesToRead -= result;

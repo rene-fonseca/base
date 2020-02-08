@@ -71,14 +71,13 @@ std::wstring StdString::toWide(const String& s)
   if (s.isEmpty()) {
     return result;
   }
-  const MemoryDiff length = Unicode::UTF8ToWChar(
-    nullptr, reinterpret_cast<const uint8*>(s.getElements()), s.getLength());
+  const MemoryDiff length = Unicode::UTF8ToWChar(nullptr, s.getBytes(), s.getLength());
   if (length < 0) {
     BASSERT(!"Invalid UTF-8 string.");
     return result; // throw
   }
   result.resize(length);
-  Unicode::UTF8ToWChar(&result[0], reinterpret_cast<const uint8*>(s.getElements()), s.getLength());
+  Unicode::UTF8ToWChar(&result[0], s.getBytes(), s.getLength());
   return result;
 #else
   std::wstring_convert<std::codecvt_utf8<wchar_t>, wchar_t> convert;

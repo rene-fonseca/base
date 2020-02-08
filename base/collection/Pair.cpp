@@ -12,11 +12,13 @@
  ***************************************************************************/
 
 #include <base/collection/Pair.h>
+#include <base/string/WideString.h>
 #include <base/UnitTest.h>
 
-_COM_AZURE_DEV__BASE__DUMMY_SYMBOL
-
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
+
+template class Pair<String, String>;
+template class Pair<WideString, WideString>;
 
 #if defined(_COM_AZURE_DEV__BASE__TESTS)
 

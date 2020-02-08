@@ -56,7 +56,7 @@ public:
       return;
     }
     
-    if (!FileSystem::supportsLinks()) {
+    if (!FileSystem::doesSupportLinks()) {
       ferr << "Error: " << "Symbolic links not supported." << ENDL;
       setExitCode(EXIT_CODE_ERROR);
       return;

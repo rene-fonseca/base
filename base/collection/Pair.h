@@ -14,6 +14,7 @@
 #pragma once
 
 #include <base/Base.h>
+#include <base/string/FormatOutputStream.h>
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
@@ -276,5 +277,20 @@ inline Pair<FIRST, SECOND> makePair(FIRST&& first, SECOND&& second)
 {
   return Pair<FIRST, SECOND>(moveObject(first), moveObject(second));
 }
+
+/**
+  Writes pair to format stream.
+*/
+template<class FIRST, class SECOND>
+FormatOutputStream& operator<<(FormatOutputStream& stream, const Pair<FIRST, SECOND>& value)
+{
+  return stream << '[' << value.getFirst() << value.getSecond() << ']';
+}
+
+/** Shorthand for Pair<String, String>. */
+typedef Pair<String, String> StringPair;
+
+/** Shorthand for Pair<WideString, WideString>. */
+typedef Pair<WideString, WideString> WideStringPair;
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

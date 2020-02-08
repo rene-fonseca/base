@@ -106,7 +106,7 @@ public:
     unsigned int type = FileSystem::getType(path);
     
     if ((type & FileSystem::LINK) && followLink) {
-      type = FileSystem::getType(FileSystem::getLink(path));
+      type = FileSystem::getType(FileSystem::getLinkTarget(path));
     }
     
     fout << path << ':' << ' ';

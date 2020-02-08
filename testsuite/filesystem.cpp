@@ -75,7 +75,7 @@ public:
          << "Entries: " << entries << EOL
          << EOL;
     
-    fout << "Support for symbolic links: " << FileSystem::supportsLinks() << EOL
+    fout << "Support for symbolic links: " << FileSystem::doesSupportLinks() << EOL
          << EOL;
     
     FileSystem::setCurrentFolder(path);
@@ -95,7 +95,7 @@ public:
         try {
           if (FileSystem::isLink(entry)) {
             link = true;
-            target = FileSystem::getLink(entry);
+            target = FileSystem::getLinkTarget(entry);
             linkTarget = true;
           }
         } catch (Exception& e) {

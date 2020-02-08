@@ -13,6 +13,7 @@
 
 #include <base/platforms/features.h>
 #include <base/filesystem/FileSystem.h>
+#include <base/concurrency/AtomicCounter.h>
 #include <base/concurrency/Thread.h>
 #include <base/Type.h>
 #include <base/collection/Map.h>
@@ -113,7 +114,8 @@ bool FileSystem::isSubPathOf(const String& root, const String& path) noexcept
 
 
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
-#  define _WIN32_WINNT _WIN32_WINNT_WINXP
+// #  define _WIN32_WINNT _WIN32_WINNT_WINXP
+#  define _WIN32_WINNT _WIN32_WINNT_VISTA
 #  include <windows.h>
 #  include <winioctl.h>
 
@@ -177,8 +179,16 @@ _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 _COM_AZURE_DEV__BASE__GLOBAL_PRINT();
 
-unsigned int FileSystem::counter = 0;
-int FileSystem::cachedSupportsLinks = -1; // -1 not cached, 0 false, and 1 true
+namespace {
+
+  /** Internal attribute specifying whether or not file system links are supported by the platform. */
+  int cachedSupportsLinks = -1; // -1 not cached, 0 false, and 1 true
+    /** Counter used for generating temporary file names. */
+  PreferredAtomicCounter tempfileCounter;
+
+  /** Specifies the folder level separator. */
+  constexpr char SEPARATOR = '/';
+}
 
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
 const unsigned int FileSystem::MAXIMUM_PATH_LENGTH = MAX_PATH;
@@ -188,6 +198,10 @@ const unsigned int FileSystem::MAXIMUM_PATH_LENGTH = PATH_MAX;
 
 String FileSystem::getPath(const String& base, const String& relative) noexcept
 {
+  if (isAbsolutePath(relative)) {
+    return relative;
+  }
+
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   String result(base.getLength() + sizeof("\\") + relative.getLength());
   result.append(base).append("\\").append(relative);
@@ -245,7 +259,12 @@ bool FileSystem::isAbsolutePath(const String& path) noexcept
   String::ReadIterator i = path.getBeginReadIterator();
   String::ReadIterator end = path.getEndReadIterator();
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
-  return ((i < end) && ASCIITraits::isAlpha(*i++) && (i < end) && (*i++ == ':') && (i < end) && (*i == SEPARATOR));
+  if ((i < end) && ASCIITraits::isAlpha(*i++)) {
+    if ((i < end) && (*i++ == ':')) {
+      return (i < end) && (isSeparator(*i));
+    }
+  }
+  return false;
 #else // unix
   return (i < end) && (*i == SEPARATOR);
 #endif // flavor
@@ -263,6 +282,18 @@ bool FileSystem::isFolderPath(const String& path) noexcept
 #else // unix
   return path.endsWith("/");
 #endif // flavor
+}
+
+String FileSystem::getParent(const String& path) 
+{
+  if (!path) {
+    return String();
+  }
+  MemoryDiff index = findLastSeparator(path);
+  if (index < 0) {
+    return String();
+  }
+  return path.substring(0, index);
 }
 
 String FileSystem::toAbsolutePath(const String& base, const String& path)
@@ -389,7 +420,8 @@ String FileSystem::getCurrentFolder()
 void FileSystem::setCurrentFolder(const String& path)
 {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
-  if (!::SetCurrentDirectory(ToWCharString(path))) {
+  ToWCharString nativePath(path);
+  if (!::SetCurrentDirectory(nativePath)) {
    _throw FileSystemException("Unable to set current folder.", Type::getType<FileSystem>());
   }
 #elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__WASI)
@@ -404,15 +436,15 @@ void FileSystem::setCurrentFolder(const String& path)
 unsigned int FileSystem::getType(const String& path)
 {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
-  // TAG: follow link
+  ToWCharString nativePath(path);
   unsigned int flags = 0;
   HANDLE file = ::CreateFile(
-    ToWCharString(path), // file name
+    nativePath, // file name
     FILE_READ_ATTRIBUTES | FILE_READ_EA /*| READ_CONTROL*/, // access mode
     FILE_SHARE_READ | FILE_SHARE_WRITE, // share mode
     0, // security descriptor
     OPEN_EXISTING, // how to create
-    FILE_FLAG_BACKUP_SEMANTICS | FILE_FLAG_OPEN_REPARSE_POINT, // file attributes
+    FILE_FLAG_BACKUP_SEMANTICS /*| FILE_FLAG_OPEN_REPARSE_POINT*/, // file attributes // follow link
     0
   ); // handle to template file
   if (file == INVALID_HANDLE_VALUE) {
@@ -425,14 +457,16 @@ unsigned int FileSystem::getType(const String& path)
     
     WIN32_FIND_DATA information;
     HANDLE find = ::FindFirstFileEx(
-      ToWCharString(path),
+      nativePath,
       FindExInfoStandard,
       &information,
       FindExSearchNameMatch,
       0,
       0
     );
-    bassert(find != INVALID_HANDLE_VALUE, FileSystemException(Type::getType<FileSystem>()));
+    if (find == INVALID_HANDLE_VALUE) {
+      return 0;
+    }
     ::FindClose(find);
     if (information.dwFileAttributes & FILE_ATTRIBUTE_DEVICE) {
       flags |= FileSystem::DEVICE;
@@ -546,8 +580,9 @@ unsigned int FileSystem::getType(const String& path)
 uint64 FileSystem::getSize(const String& path)
 {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
+  ToWCharString nativePath(path);
   WIN32_FIND_DATA information;
-  HANDLE handle = ::FindFirstFile(ToWCharString(path), &information);
+  HANDLE handle = ::FindFirstFile(nativePath, &information);
   bassert(
     handle != INVALID_HANDLE_VALUE,
     FileSystemException("Unable to get size of file.", Type::getType<FileSystem>())
@@ -570,8 +605,9 @@ uint64 FileSystem::getSize(const String& path)
 bool FileSystem::entryExists(const String& path)
 {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
+  ToWCharString nativePath(path);
   WIN32_FIND_DATA information;
-  HANDLE handle = ::FindFirstFile(ToWCharString(path), &information);
+  HANDLE handle = ::FindFirstFile(nativePath, &information);
   if (handle == INVALID_HANDLE_VALUE) {
     bassert(
       ::GetLastError() == ERROR_FILE_NOT_FOUND,
@@ -615,7 +651,8 @@ bool FileSystem::entryExists(const String& path)
 bool FileSystem::fileExists(const String& path)
 {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
-  DWORD result = ::GetFileAttributes(ToWCharString(path));
+  ToWCharString nativePath(path);
+  DWORD result = ::GetFileAttributes(nativePath);
   if (result == INVALID_FILE_ATTRIBUTES) {
     // TAG: need support for no access
     return false;
@@ -657,7 +694,8 @@ bool FileSystem::fileExists(const String& path)
 bool FileSystem::folderExists(const String& path)
 {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
-  DWORD result = ::GetFileAttributes(ToWCharString(path));
+  ToWCharString nativePath(path);
+  DWORD result = ::GetFileAttributes(nativePath);
   if (result == INVALID_FILE_ATTRIBUTES) {
     // TAG: need support for no access
     return false;
@@ -699,7 +737,8 @@ void FileSystem::removeFile(const String& path)
 {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
 //  ::SetFileAttributes(file, FILE_ATTRIBUTE_NORMAL);
-  if (!::DeleteFile(ToWCharString(path))) {
+  ToWCharString nativePath(path);
+  if (!::DeleteFile(nativePath)) {
     _throw FileSystemException("Unable to remove file.", Type::getType<FileSystem>());
   }
 #else // unix
@@ -712,10 +751,11 @@ void FileSystem::removeFile(const String& path)
 void FileSystem::removeFolder(const String& path)
 {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
-  DWORD attributes = ::GetFileAttributes(ToWCharString(path));
+  ToWCharString _path(path);
+  DWORD attributes = ::GetFileAttributes(_path);
   if ((attributes != INVALID_FILE_ATTRIBUTES) && (attributes & FILE_ATTRIBUTE_REPARSE_POINT)) {
     HANDLE link = ::CreateFile(
-      ToWCharString(path),
+      _path,
       FILE_ALL_ACCESS,
       0,
       0,
@@ -761,7 +801,7 @@ void FileSystem::removeFolder(const String& path)
         _throw FileSystemException("Unable to remove folder.", Type::getType<FileSystem>());
       }
       ::CloseHandle(link);
-      if (!::RemoveDirectory(ToWCharString(path))) {
+      if (!::RemoveDirectory(_path)) {
         _throw FileSystemException("Unable to remove folder.", Type::getType<FileSystem>());
       }
       // } else if (reparseHeader->ReparseTag == 0x80000000|IO_REPARSE_TAG_SYMBOLIC_LINK) {
@@ -771,7 +811,7 @@ void FileSystem::removeFolder(const String& path)
       _throw FileSystemException("Unable to remove folder.", Type::getType<FileSystem>());
     }
   } else {
-    if (!::RemoveDirectory(ToWCharString(path))) {
+    if (!::RemoveDirectory(_path)) {
       _throw FileSystemException("Unable to remove folder.", Type::getType<FileSystem>());
     }
   }
@@ -785,7 +825,8 @@ void FileSystem::removeFolder(const String& path)
 void FileSystem::makeFolder(const String& path)
 {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
-  if (!::CreateDirectory(ToWCharString(path), NULL)) { // use default security descriptor
+  ToWCharString nativePath(path);
+  if (!::CreateDirectory(nativePath, NULL)) { // use default security descriptor
     _throw FileSystemException("Unable to make folder.", Type::getType<FileSystem>());
   }
 #else // unix
@@ -800,32 +841,33 @@ String FileSystem::join(const Array<String>& paths);
 Array<String> FileSystem::split(const String& path);
 #endif
 
-namespace {
-
-  inline bool isSeparator(char ch) noexcept
-  {
-#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
-    return (ch == '/') || (ch == '\\');
-#else
-    return (ch == '/');
-#endif
-  }
-
-  MemoryDiff findSeparator(const String& path, MemorySize start)
-  {
-    if (start >= path.getLength()) {
-      return -1;
-    }
-    auto i = path.getBeginReadIterator() + start;
-    const auto end = path.getEndReadIterator();
-    while (i != end) {
-      if (isSeparator(*i)) {
-        return i - path.getBeginReadIterator();
-      }
-      ++i;
-    }
+MemoryDiff FileSystem::findSeparator(const String& path, MemorySize start)
+{
+  if (start >= path.getLength()) {
     return -1;
   }
+  auto i = path.getBeginReadIterator() + start;
+  const auto end = path.getEndReadIterator();
+  while (i != end) {
+    if (FileSystem::isSeparator(*i)) {
+      return i - path.getBeginReadIterator();
+    }
+    ++i;
+  }
+  return -1;
+}
+
+MemoryDiff FileSystem::findLastSeparator(const String& path)
+{
+  auto begin = path.getBeginReadIterator();
+  auto i = path.getEndReadIterator();
+  while (i != begin) {
+    --i;
+    if (FileSystem::isSeparator(*i)) {
+      return i - begin;
+    }
+  }
+  return -1;
 }
 
 void FileSystem::makeFolderRecursive(const String& path)
@@ -849,9 +891,11 @@ void FileSystem::makeFolderRecursive(const String& path)
   }
 }
 
-bool FileSystem::supportsLinks() noexcept
+bool FileSystem::doesSupportLinks() noexcept
 {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
+  return true; // since Vista - but use dynamic linking to check
+
   if (cachedSupportsLinks == -1) {
     OSVERSIONINFO versionInfo;
     versionInfo.dwOSVersionInfoSize = sizeof(versionInfo);
@@ -892,8 +936,16 @@ bool FileSystem::supportsLinks() noexcept
 bool FileSystem::isLink(const String& path)
 {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
+  ToWCharString nativePath(path);
+  DWORD attributes = GetFileAttributesW(nativePath);
+  if (attributes == INVALID_FILE_ATTRIBUTES) {
+    return false;
+  }
+  return attributes & FILE_ATTRIBUTE_REPARSE_POINT;
+
+#if 0
   if (cachedSupportsLinks == -1) {
-    supportsLinks();
+    doesSupportLinks();
   }
   bassert(cachedSupportsLinks == 1, NotSupported(Type::getType<FileSystem>()));
 
@@ -1022,6 +1074,8 @@ _COM_AZURE_DEV__BASE__PACKED__END
   } else {
     return false;
   }
+#endif
+
 #elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__FREERTOS) || \
       (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__ZEPHYR)
   return false;
@@ -1050,7 +1104,7 @@ public:
   static String getLinkTarget(const String& path)
   {
 //     if (cachedSupportsLinks == -1) {
-//       supportsLinks();
+//       doesSupportLinks();
 //     }
 //     bassert(
 //       cachedSupportsLinks == 1,
@@ -1246,7 +1300,9 @@ void FileSystem::makeHardLink(const String& target, const String& path)
 {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
 #if (_COM_AZURE_DEV__BASE__OS >= _COM_AZURE_DEV__BASE__W2K)
-  bassert(::CreateHardLink(ToWCharString(path), ToWCharString(target), NULL) != 0,
+  ToWCharString nativePath(path);
+  ToWCharString nativeTarget(target);
+  bassert(::CreateHardLink(nativePath, nativeTarget, NULL) != 0,
          FileSystemException("Unable to make hard link.", Type::getType<FileSystem>()));
 #else
   typedef BOOL (*PCreateHardLink)(LPCSTR, LPCSTR, LPSECURITY_ATTRIBUTES);
@@ -1273,10 +1329,23 @@ void FileSystem::makeHardLink(const String& target, const String& path)
 }
 
 void FileSystem::makeLink(const String& target, const String& path)
-  {
+{
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
+  const bool folder = folderExists(path);
+  BOOLEAN status = ::CreateSymbolicLinkW(
+    ToWCharString(path.getElements()),
+    ToWCharString(target.getElements()),
+    (folder ? SYMBOLIC_LINK_FLAG_DIRECTORY : 0) | SYMBOLIC_LINK_FLAG_ALLOW_UNPRIVILEGED_CREATE
+  );
+  // DWORD error = ::GetLastError();
+  bassert(
+    status,
+    FileSystemException("Unable to make link.", Type::getType<FileSystem>())
+  );
+
+#if 0
   if (cachedSupportsLinks == -1) {
-    supportsLinks();
+    doesSupportLinks();
   }
   bassert(cachedSupportsLinks == 1, NotSupported(Type::getType<FileSystem>()));
   
@@ -1393,6 +1462,8 @@ void FileSystem::makeLink(const String& target, const String& path)
     }
   }
   bassert(!error, FileSystemException("Unable to make link.", Type::getType<FileSystem>()));
+#endif
+
 #elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__ZEPHYR)
   _COM_AZURE_DEV__BASE__NOT_SUPPORTED();
 #else // unix
@@ -1403,16 +1474,180 @@ void FileSystem::makeLink(const String& target, const String& path)
 #endif // flavor
 }
 
+#if 0
+class NativeHandle {
+public:
+
+  HANDLE handle = INVALID_HANDLE_VALUE;
+
+  inline NativeHandle()
+  {
+  }
+
+  inline NativeHandle(HANDLE _handle)
+    handle(_handle)
+  {
+  }
+
+  inline operator HANDLE()
+  {
+    return handle;
+  }
+
+  inline ~NativeHandle()
+  {
+    ::CloseHandle(handle);
+  }
+};
+#endif
+
+Array<String> FileSystem::split(const String path)
+{
+  _COM_AZURE_DEV__BASE__NOT_IMPLEMENTED();
+  Array<String> result;
+  MemorySize current = 0;
+  MemorySize start = 0;
+  while (true) {
+    MemoryDiff index = FileSystem::findSeparator(path, current);
+    if (index < 0) {
+      break;
+    }
+    result.append(path.substring(current, start));
+  }
+  result.append(path.substring(start + 1));
+  return result;
+}
+
+String FileSystem::join(const Array<String>& paths)
+{
+  if (!paths) {
+    return String();
+  }
+  MemorySize size = 0;
+  for (const String& path : paths) {
+    size += path.getLength() + 1;
+  }
+  String result(size);
+  for (const String& path : paths) {
+    if (result) {
+      result.append(getPath(result, path));
+    } else {
+      result.append(path);
+    }
+  }
+  return result;
+}
+
+String FileSystem::getRelativePath(const String& _folder, const String& _path)
+{
+  _COM_AZURE_DEV__BASE__NOT_IMPLEMENTED();
+  const String current = getCurrentFolder();
+  const String folder = toAbsolutePath(current, _folder);
+  const String path = toAbsolutePath(current, _path);
+  Array<String> a = split(folder);
+  Array<String> b = split(path);
+
+  MemorySize i = 0;
+  // skip common folders
+  while ((i < a.getSize()) && (i < b.getSize())) {
+    if (a[i] != b[i]) {
+      break;
+    }
+  }
+
+  // TAG: add .. if required parent
+  return join(b);
+}
+
 // TAG: need option disallow transparent link/strict transparency
-String FileSystem::getLink(const String& path) {
+String FileSystem::getLinkTarget(const String& path)
+{
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
+  ToWCharString nativePath(path);
+
+  DWORD attributes = GetFileAttributesW(nativePath);
+  if (attributes == INVALID_FILE_ATTRIBUTES) {
+    return String();
+  }
+  if (attributes & (FILE_ATTRIBUTE_REPARSE_POINT == 0)) {
+    return String();
+  }
+
+  // TAG: how can we get target even if target doesn't exist
+
+  HANDLE file = ::CreateFile(
+    nativePath, // file name
+    FILE_READ_ATTRIBUTES | FILE_READ_EA /*| READ_CONTROL*/, // access mode
+    FILE_SHARE_READ | FILE_SHARE_WRITE, // share mode
+    0, // security descriptor
+    OPEN_EXISTING, // how to create
+    FILE_FLAG_BACKUP_SEMANTICS /*| FILE_FLAG_OPEN_REPARSE_POINT*/, // file attributes // do follow link
+    0
+  ); // handle to template file
+  if (file == INVALID_HANDLE_VALUE) {
+    return String();
+  }
+
+  String result;
+  PrimitiveStackArray<wchar> buffer(1024);
+  while (buffer.size() < (64 * 1024)) {
+    DWORD length = GetFinalPathNameByHandleW(file, buffer, buffer.size(), FILE_NAME_NORMALIZED /*FILE_NAME_OPENED*/);
+    if (length == 0) {
+      if (GetLastError() == ERROR_INSUFFICIENT_BUFFER) {
+        buffer.resize(buffer.size() * 2);
+        continue;
+      }
+      break;
+    }
+    result = String(buffer, length);
+    break;
+  }
+  ::CloseHandle(file); // TAG: handle to use automation object
+
+  file = ::CreateFile(
+    nativePath, // file name
+    FILE_READ_ATTRIBUTES | FILE_READ_EA /*| READ_CONTROL*/, // access mode
+    FILE_SHARE_READ | FILE_SHARE_WRITE, // share mode
+    0, // security descriptor
+    OPEN_EXISTING, // how to create
+    FILE_FLAG_BACKUP_SEMANTICS | FILE_FLAG_OPEN_REPARSE_POINT, // file attributes // do NOT follow link
+    0
+  ); // handle to template file
+  if (file == INVALID_HANDLE_VALUE) {
+    return String();
+  }
+
+  String source;
+  while (buffer.size() < (64 * 1024)) {
+    DWORD length = GetFinalPathNameByHandleW(file, buffer, buffer.size(), FILE_NAME_NORMALIZED /*FILE_NAME_OPENED*/);
+    if (length == 0) {
+      if (GetLastError() == ERROR_INSUFFICIENT_BUFFER) {
+        buffer.resize(buffer.size() * 2);
+        continue;
+      }
+      break;
+    }
+    source = String(buffer, length);
+    break;
+  }
+
+  BY_HANDLE_FILE_INFORMATION information;
+  ::GetFileInformationByHandle(file, &information);
+  const bool folder = (information.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY);
+  ::CloseHandle(file); // TAG: handle to use automation object
+
+  const String root = folder ? source : FileSystem::getParent(source);
+  return getRelativePath(root, result);
+
+#if 0
   if (cachedSupportsLinks == -1) {
-    supportsLinks();
+    doesSupportLinks();
   }
   bassert(cachedSupportsLinks == 1, NotSupported("Symbolic link.", Type::getType<FileSystem>()));
   
+  ToWCharString nativePath(path);
   HANDLE link = ::CreateFile(
-    ToWCharString(path),
+    nativePath,
     0,
     FILE_SHARE_READ | FILE_SHARE_WRITE,
     0,
@@ -1549,7 +1784,7 @@ _COM_AZURE_DEV__BASE__PACKED__END
   };
   
   while (true) {
-    link = ::CreateFile(ToWCharString(path),
+    link = ::CreateFile(nativePath,
                         GENERIC_READ, FILE_SHARE_READ | FILE_SHARE_WRITE,
                         0, OPEN_EXISTING, 0, 0);
     if (link == INVALID_HANDLE_VALUE) { // fails if directory
@@ -1698,6 +1933,8 @@ _COM_AZURE_DEV__BASE__PACKED__END
     break; // exit while loop
   }
   _throw FileSystemException("Not a link.", Type::getType<FileSystem>());
+#endif
+
 #elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__ZEPHYR)
   _COM_AZURE_DEV__BASE__NOT_SUPPORTED();
 #else // unix
@@ -1778,7 +2015,7 @@ String FileSystem::getTempFileName(unsigned int options) noexcept {
       stream << '-';
     }
     first = false;
-    stream << HEX << ZEROPAD << counter++;
+    stream << HEX << ZEROPAD << tempfileCounter++;
   }
   if (options & TIME) {
     if (!first) {
@@ -1891,15 +2128,16 @@ String FileSystem::getFolder(Folder folder) noexcept
   switch (folder) {
   case FileSystem::ROOT:
     {
-      wchar buffer[2 + 1]; // large enough for "C:\0"
-      buffer[0] = L'\0';
-      buffer[1] = L'\0';
-      buffer[2] = L'\0';
-      UINT length = ::GetWindowsDirectory(buffer, getArraySize(buffer));
+      wchar buffer[MAX_PATH + 1];
+      UINT length = ::GetWindowsDirectoryW(buffer, getArraySize(buffer));
       if (length == 0) {
         return String();
       }
-      return String(buffer);
+      const wchar* end = find(buffer, length, L'\\');
+      if (!end) {
+        return String();
+      }
+      return String(buffer, end - buffer + 1);
     }
   case FileSystem::DEVICES:
     return Literal("\\\\.");
@@ -1907,7 +2145,7 @@ String FileSystem::getFolder(Folder folder) noexcept
   default:
     {
       wchar buffer[MAX_PATH + 1];
-      UINT length = ::GetWindowsDirectory(buffer, getArraySize(buffer));
+      UINT length = ::GetWindowsDirectoryW(buffer, getArraySize(buffer));
       if (length == 0) {
         return String();
       }
@@ -2021,8 +2259,70 @@ public:
   TEST_IMPACT(NORMAL);
   TEST_EXTERNAL();
 
+  /**
+    Creates a file from the given string. Saves the raw bytes.
+
+    @return Returns true on success.
+  */
+  static bool createFile(const String& path, const String& text)
+  {
+    try {
+      File file(path, File::WRITE, File::CREATE);
+      file.write(text.getBytes(), text.getLength());
+      return true;
+    } catch (...) {
+    }
+    return false;
+  }
+
+  /**
+    Creates a file from the given string. Saves the raw bytes.
+
+    @return Returns true on success.
+  */
+  static bool createFile(const String& path, const uint8* buffer, MemorySize size)
+  {
+    try {
+      File file(path, File::WRITE, File::CREATE);
+      file.write(buffer, size);
+      return true;
+    } catch (...) {
+    }
+    return false;
+  }
+
+  /**
+    Reads raw bytes from file to string. Do NOT assume UTF-8.
+  */
+  static String readFile(const String& path/*, Encoding encoding*/) // TAG: enforce encoding, RAW, ASCII/UTF-8 Unicode, UTF-8 ISO
+  {
+    String result;
+    try {
+      File file(path, File::READ, 0);
+      result.forceToLength(file.getSize());
+      uint8* buffer = reinterpret_cast<uint8*>(result.getElements());
+      unsigned int bytesRead = file.read(buffer, result.getLength());
+      BASSERT(bytesRead == result.getLength());
+    } catch (...) {
+      return String();
+    }
+    return result;
+  }
+
   void run() override
   {
+#if 0 // add support in UnitTest
+    // TAG: add support for clean up?
+    String root;
+    if (!FileSystem::folderExists("FileSystem"))
+      root = FileSystem::makeFolder("FileSystem");
+    }
+#endif
+
+    String relativePath = FileSystem::getRelativePath("a/b/c/d/e/f", "a/b/c/g/h/i");
+    String relativePath2 = FileSystem::join({"..", "..", "g", "h", "i"});
+    TEST_ASSERT(relativePath == relativePath2);
+
     String path = FileSystem::getFolder(FileSystem::TEMP);
     TEST_ASSERT(FileSystem::isAbsolutePath(path));
     TEST_ASSERT(path);
@@ -2044,11 +2344,8 @@ public:
     TEST_ASSERT(FileSystem::folderExists("testdata"));
     TEST_ASSERT(!FileSystem::isAbsolutePath("testdata"));
 
-    {
-      File file("testdata/remove.txt", File::WRITE, File::CREATE);
-      const char* text = "Hello, World!\n";
-      file.write(reinterpret_cast<const uint8*>(text), getNullTerminatedLength(text));
-    }
+    const String exampleText = "Hello, World!\n";
+    TEST_ASSERT(createFile("testdata/remove.txt", exampleText));
     TEST_ASSERT(!FileSystem::fileExists("testdata"));
     TEST_ASSERT(FileSystem::folderExists("testdata"));
     TEST_ASSERT(FileSystem::getSize("testdata/remove.txt") == 14);
@@ -2062,7 +2359,7 @@ public:
     type = FileSystem::getType("testdata");
     TEST_ASSERT((type & FileSystem::FOLDER) != 0);
 
-    if (FileSystem::supportsLinks()) {
+    if (FileSystem::doesSupportLinks()) {
       if (FileSystem::fileExists("testdata/hardlink.txt")) {
         FileSystem::removeFile("testdata/hardlink.txt");
       }
@@ -2075,19 +2372,34 @@ public:
       }
 
       if (FileSystem::isLink("testdata/symlink.txt")) {
-        FileSystem::removeFile("testdata/symlink.txt"); // TAG: fixme
+        FileSystem::removeFile("testdata/symlink.txt");
       }
 
       TEST_ASSERT(FileSystem::entryExists("testdata/remove.txt"));
       TEST_ASSERT(!FileSystem::isLink("testdata/symlink.txt"));
       try {
-        FileSystem::makeLink("testdata/remove.txt", "testdata/symlink.txt");
+        FileSystem::makeLink("remove.txt", "testdata/symlink.txt");
       } catch (...) {
         TEST_ASSERT(!"Failed to make symbolic link.");
       }
       TEST_ASSERT(FileSystem::isLink("testdata/symlink.txt"));
       unsigned int type = FileSystem::getType("testdata/symlink.txt"); // follows link
       TEST_ASSERT((type & FileSystem::LINK) == 0);
+
+      try { // make sure we read target file
+        File file("testdata/symlink.txt", File::READ, 0);
+        uint8 buffer[4096];
+        TEST_ASSERT(file.getSize() == exampleText.getLength());
+        unsigned int bytesRead = file.read(buffer, exampleText.getLength());
+        TEST_ASSERT(bytesRead == exampleText.getLength());
+        String s(reinterpret_cast<const char*>(buffer), bytesRead);
+        TEST_ASSERT(s == exampleText);
+      } catch (...) {
+        TEST_ASSERT(!"Failed to open target for symbolic link.");
+      }
+
+      String target = FileSystem::getLinkTarget("testdata/symlink.txt");
+      TEST_EQUAL(target, "remove.txt");
     }
 
     try {

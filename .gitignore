@@ -36,6 +36,7 @@ Release/
 *.dll
 *.ilk
 *.exp
+*.user
 
 # Non-Windows
 *.a

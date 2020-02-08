@@ -191,6 +191,7 @@ public:
     second = moveObject(value);
   }
 
+#if 0
   /**
     Returns -1, 0, or 1 if this pair is less than, equal to, or greater than
     the specified pair.
@@ -200,6 +201,7 @@ public:
     int result = compareTo(first, compare.first);
     return (result != 0) ? result : compareTo(second, compare.second);
   }
+#endif
 
   /**
     Returns true if this pair is equal to the specified pair.

@@ -284,7 +284,7 @@ inline Pair<FIRST, SECOND> makePair(FIRST&& first, SECOND&& second)
 template<class FIRST, class SECOND>
 FormatOutputStream& operator<<(FormatOutputStream& stream, const Pair<FIRST, SECOND>& value)
 {
-  return stream << '[' << value.getFirst() << value.getSecond() << ']';
+  return stream << '[' << value.getFirst() << ';' << value.getSecond() << ']';
 }
 
 /** Shorthand for Pair<String, String>. */

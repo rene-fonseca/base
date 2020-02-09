@@ -757,8 +757,11 @@ void HTTPSRequest::send(const String& _body)
   // _handle->statusText = StringOutputStream() << responseCode; // TAG: add support for status text
   curl_off_t contentLength = 0;
   curl_easy_getinfo(_handle->curl, CURLINFO_CONTENT_LENGTH_DOWNLOAD_T, &contentLength);
-  _handle->contentLength = contentLength;
+  if (contentLength >= 0) { // Content-Length may not be available
+    _handle->contentLength = contentLength;
+  }
   mos.swap(_handle->response);
+  _handle->contentLength = _handle->response.getSize();
 #else
   _COM_AZURE_DEV__BASE__NOT_IMPLEMENTED();
 #endif
@@ -936,7 +939,6 @@ void HTTPSRequest::getResponse(PushInterface* pi)
   }
   CFReadStreamClose(_handle->stream);
 #elif defined(_COM_AZURE_DEV__BASE__USE_CURL)
-  BASSERT(_handle->contentLength == _handle->response.getSize());
   profile.onBytesRead(_handle->response.getSize());
   pi->push(_handle->response.getElements(), _handle->response.getSize());
 #else

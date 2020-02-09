@@ -161,12 +161,15 @@ public:
           if (FileSystem::isLink(entry)) {
             link = true;
             target = FileSystem::getLinkTarget(entry);
+            if (!target) {
+              target = "<UNKNOWN>";
+            }
             deadLink = FileSystem::getType(target) == 0;
             linkTarget = true;
           }
         } catch (Exception& e) {
           if (link && !linkTarget) {
-            target = MESSAGE("<unknown>");
+            target = MESSAGE("<UNKNOWN>");
           }
           ferr << entry << ": " << e << ENDL; // ignore exception
         }
@@ -275,7 +278,7 @@ public:
                 fout << entry;
               }
             }
-            fout << EOL;    
+            fout << EOL;
           } else if (type & FileSystem::FOLDER) {
             FolderInfo info(entry);
             
@@ -429,7 +432,8 @@ public:
     }
   }
   
-  ~ListApplication() {
+  ~ListApplication()
+  {
   }
 };
 

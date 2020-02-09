@@ -517,10 +517,6 @@ ModuleManager::RegisterEntry::~RegisterEntry()
 
 // #define THIS_MODULE "{47FA285A-3C7F-410C-9261-5E95202628DD}:base"
 
-#if defined(_COM_AZURE_DEV__BASE__USE_OPENSSL)
-MODULE_REGISTER_EXPLICIT(_COM_AZURE_DEV__BASE__THIS_MODULE, "org.openssl", "OpenSSL", "", "https://www.openssl.org/");
-#endif
-
 // TAG: detect c/c++ library - in particular if static build
 #if (_COM_AZURE_DEV__BASE__COMPILER == _COM_AZURE_DEV__BASE__COMPILER_MSC)
 #if (_COM_AZURE_DEV__BASE__COMPILER_VERSION >= 1920)

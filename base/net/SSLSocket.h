@@ -13,9 +13,10 @@
 
 #pragma once
 
-#include <base/net/Socket.h>
+#include <base/net/StreamSocket.h>
 #include <base/io/InputStream.h>
 #include <base/io/OutputStream.h>
+#include <base/Resource.h>
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
@@ -23,10 +24,17 @@ _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
   SSL Socket.
 */
 
-class SSLSocket : public Socket {
+class SSLSocket : public Resource {
+private:
+
+  StreamSocket socket;
 public:
 
   SSLSocket();
+
+  // void connnect(StreamSocket socket);
+  
+  ~SSLSocket();
 };
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

@@ -155,12 +155,14 @@ void UnitTest::Run::onException(const Exception* exception)
       if (UnitTestManager::getManager().getVerbosity() < UnitTestManager::VERBOSE) {
         StackTrace::toStream(
           fout, trace,
-          StackTrace::FLAG_DEFAULT | (UnitTestManager::getManager().getUseANSIColors() ? StackTrace::FLAG_USE_COLORS : 0)
+          StackTrace::FLAG_DEFAULT |
+            (UnitTestManager::getManager().getUseANSIColors() ? StackTrace::FLAG_USE_COLORS : 0)
         );
       }
       StackTrace::toStream(
         sos, trace,
-        StackTrace::FLAG_DEFAULT | (UnitTestManager::getManager().getUseANSIColors() ? StackTrace::FLAG_USE_COLORS : 0)
+        StackTrace::FLAG_DEFAULT |
+          (UnitTestManager::getManager().getUseANSIColors() ? StackTrace::FLAG_USE_COLORS : 0)
       );
       for (const auto& line : sos.toString().split('\n')) {
         if (line) {

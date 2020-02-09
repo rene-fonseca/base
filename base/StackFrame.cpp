@@ -752,15 +752,14 @@ void StackFrame::dump(unsigned int skip, unsigned int levels)
   if (!doesSupportStackTrace()) {
     return;
   }
-  
+
   if (levels == 0) {
     return;
   }
   const bool colors = ferr.isANSITerminal();
   
   ++skip;
-  const unsigned int flags = StackFrame::FLAG_SHOW_ADDRESS | StackFrame::FLAG_SHOW_MODULE | StackFrame::FLAG_INDENT |
-    (colors ? StackFrame::FLAG_USE_COLORS : 0);
+  const unsigned int flags = StackFrame::FLAG_DEFAULT | (colors ? StackFrame::FLAG_USE_COLORS : 0);
 
   PrimitiveStackArray<const void*> buffer(256);
   MemorySize count = 0;
@@ -773,8 +772,9 @@ void StackFrame::dump(unsigned int skip, unsigned int levels)
     break;
   }
 
-  toStream(*(useStandardOut ? &fout : &ferr), ConstSpan<const void*>(buffer, count), flags);
-  ferr << FLUSH;
+  auto& stream = (useStandardOut ? fout : ferr);
+  toStream(stream, ConstSpan<const void*>(buffer, count), flags);
+  stream << FLUSH;
 }
 
 FormatOutputStream& operator<<(FormatOutputStream& stream, const StackFrame& value)

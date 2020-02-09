@@ -188,14 +188,14 @@ public:
   static void dump(unsigned int skip = 1, unsigned int levels = 32);
   
   enum {
-    FLAG_SHOW_ADDRESS = 1 << 0,
-    FLAG_SHOW_MODULE = 1 << 1,
-    FLAG_INDENT = 1 << 2,
-    FLAG_COMPACT = 1 << 3,
-    FLAG_FULL_PATH = 1 << 4,
-    FLAG_USE_COLORS = 1 << 5,
-    FLAG_STRIP_NAMESPACE = 1 << 6,
-    FLAG_TRIM_SYSTEM = 1 << 7,
+    FLAG_SHOW_ADDRESS = 1 << 0, // Show address.
+    FLAG_SHOW_MODULE = 1 << 1, // Show module.
+    FLAG_INDENT = 1 << 2, //< Indent.
+    FLAG_COMPACT = 1 << 3, //< Only show.
+    FLAG_FULL_PATH = 1 << 4, //< Show full path for module.
+    FLAG_USE_COLORS = 1 << 5, //< Use ANSI colors.
+    FLAG_STRIP_NAMESPACE = 1 << 6, //< base namespace.
+    FLAG_TRIM_SYSTEM = 1 << 7, // Skip system functions.
     FLAG_DEFAULT = FLAG_COMPACT | FLAG_SHOW_ADDRESS | FLAG_SHOW_MODULE | FLAG_INDENT | FLAG_TRIM_SYSTEM
   };
   

@@ -940,7 +940,7 @@ void File::truncate(long long size)
       (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__ZEPHYR)
     _COM_AZURE_DEV__BASE__NOT_SUPPORTED();
   #elif defined(_COM_AZURE_DEV__BASE__LARGE_FILE_SYSTEM)
-    if (::ftruncate64(handle->handle, size)) {
+    if (::ftruncate64(handle->handle, size) != 0) {
       _throw FileException("Unable to truncate.", this);
     }
   #else
@@ -948,7 +948,8 @@ void File::truncate(long long size)
       (size >= 0) && (size <= PrimitiveTraits<int>::MAXIMUM),
       FileException("Unable to truncate.", this)
     );
-    if (::ftruncate(handle->handle, size)) {
+    if (::ftruncate(handle->handle, size) != 0) {
+      auto e = errno;
       _throw FileException("Unable to truncate.", this);
     }
   #endif
@@ -1694,8 +1695,15 @@ public:
     uint8 buffer[128];
     unsigned int bytesRead = f2.read(buffer, f2.getSize());
     TEST_ASSERT(bytesRead == text.getLength());
-
+    TEST_ASSERT(f2.getPosition() == text.getLength());
+    f2.setPosition(10);
+    TEST_ASSERT(f2.getPosition() == 10);
+    TEST_ASSERT(!f2.isClosed());
+    // f2.truncate(5);
+    // TEST_ASSERT(f2.getSize() == 5);
     f2.close();
+    TEST_ASSERT(f2.isClosed());
+    
   }
 };
 

@@ -19,6 +19,7 @@
 #include <base/UnexpectedFailure.h>
 #include <base/io/EndOfFile.h>
 #include <base/Profiler.h>
+#include <base/UnitTest.h>
 
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
 #  include <base/platforms/win32/AsyncReadStreamContext.h> // platform specific
@@ -534,5 +535,31 @@ SerialPort::~SerialPort()
 {
   close();
 }
+
+
+#if defined(_COM_AZURE_DEV__BASE__TESTS)
+
+class TEST_CLASS(SerialPort) : public UnitTest {
+public:
+
+  TEST_PRIORITY(700);
+  TEST_PROJECT("base/communication");
+  TEST_IMPACT(NORMAL);
+  TEST_EXTERNAL();
+
+  void run() override
+  {
+    // SerialPort serialPort();
+    List<String> ports = SerialPort::getPorts();
+    // fout << ports << ENDL;
+    for (const auto& name : ports) {
+      TEST_ASSERT(name);
+    }
+  }
+};
+
+TEST_REGISTER(SerialPort);
+
+#endif
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

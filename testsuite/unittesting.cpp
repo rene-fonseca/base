@@ -58,6 +58,7 @@ private:
   String junitPath;
   String testsuiteUUID;
   String pattern = "*";
+  String testFolder;
   bool runDevel = false;
   bool traceExceptions = false;
   bool profile = false;
@@ -139,6 +140,12 @@ public:
           return false;
         }
         testsuiteUUID = enu.next();
+      } else if (argument == "--testFolder") {
+        if (!enu.hasNext()) {
+          ferr << "Error: Expected test folder." << ENDL;
+          return false;
+        }
+        testFolder = enu.next();
       } else if (argument == "--randomize") {
         randomize = true;
       } else if (argument == "--stopOnFailure") {
@@ -323,6 +330,9 @@ public:
         break;
       }
       
+      if (testFolder) {
+        manager.setTestFolder(testFolder);
+      }
       manager.setUseANSIColors(useANSIColors);
       manager.setUseUrlAsSource(useUrlAsSource);
       manager.setRandomize(randomize);

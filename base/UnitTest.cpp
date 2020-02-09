@@ -372,6 +372,16 @@ bool UnitTest::Run::compare(const Run& a, const Run& b)
   return false;
 }
 
+String UnitTest::makeFolder()
+{
+  auto& manager = UnitTestManager::getManager();
+  const String path = FileSystem::join(manager.getTestFolder(), getName());
+  if (!FileSystem::folderExists(path)) {
+    FileSystem::makeFolderRecursive(path);
+  }
+  return path;
+}
+
 void UnitTest::run()
 {
   onFailed("Test not implemented.");

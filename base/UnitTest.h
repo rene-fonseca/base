@@ -339,6 +339,11 @@ public:
   {
     dependencies.append(id);
   }
+  
+  /**
+    Creates a folder for the test and returns the path.
+  */
+  String makeFolder();
 
   /** Runs the test. */
   virtual void run();
@@ -407,6 +412,7 @@ private:
   bool useUrlAsSource = false;
   unsigned int passed = 0;
   unsigned int failed = 0;
+  String testFolder = "unittests";
   Timer timer;
   MutualExclusion lock;
   /** All tests. */
@@ -497,6 +503,18 @@ public:
   inline bool getUseUrlAsSource() const noexcept
   {
     return useUrlAsSource;
+  }
+  
+  /** Returns the tet folder. */
+  inline const String& getTestFolder() const noexcept
+  {
+    return testFolder;
+  }
+  
+  /** Sets the test folder. */
+  inline void setTestFolder(const String& path) noexcept
+  {
+    testFolder = path;
   }
 
   /** Sets if source shold be shown as GIT repo url. */

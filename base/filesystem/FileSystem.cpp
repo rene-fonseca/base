@@ -827,7 +827,20 @@ void FileSystem::removeFolder(const String& path)
   }
 
 #else // unix
-  if (rmdir(path.getElements())) {
+  if (rmdir(path.getElements()) != 0) {
+    if (errno == ENOTDIR) {
+      struct stat status;
+      int result = ::lstat(path.getElements(), &status);
+      if ((result == 0) && S_ISLNK(status.st_mode)) {
+        result = ::stat(path.getElements(), &status);
+        if ((result == 0) && S_ISDIR(status.st_mode)) {
+          result = unlink(path.getElements());
+          if (result == 0) {
+            return;
+          }
+        }
+      }
+    }
     _throw FileSystemException("Unable to remove folder.", Type::getType<FileSystem>());
   }
 #endif // flavor

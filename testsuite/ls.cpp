@@ -35,7 +35,7 @@ private:
   static constexpr ANSIEscapeSequence::Color COLOR_EXECUTABLE =
     ANSIEscapeSequence::YELLOW;
   static constexpr ANSIEscapeSequence::Color COLOR_LINK =
-    ANSIEscapeSequence::WHITE;
+    ANSIEscapeSequence::GREEN;
   static constexpr ANSIEscapeSequence::Color COLOR_DEAD_LINK =
     ANSIEscapeSequence::RED;
 
@@ -261,14 +261,17 @@ public:
                  << setWidth(8) << info.getSize() << ' '
                  << getTime(info.getLastModification()) << ' ';
             if (link) {
+              // TAG: add method to handle colorize
               if (colorize) {
                 fout << setForeground(COLOR_LINK) << entry << normal();
               } else {
                 fout << entry;
               }
               fout << " -> ";
-              if (deadLink) {
+              if (deadLink && colorize) {
                 fout << setForeground(COLOR_DEAD_LINK) << target << normal();
+              } else if (colorize && (mode & FileInfo::XUSR)) {
+                fout << setForeground(COLOR_EXECUTABLE) << target << normal();
               } else {
                 fout << target;
               }
@@ -371,8 +374,10 @@ public:
                 fout << entry;
               }
               fout << " -> ";
-              if (deadLink) {
+              if (deadLink && colorize) {
                 fout << setForeground(COLOR_DEAD_LINK) << target << normal();
+              } else if (colorize) {
+                fout << setForeground(COLOR_FOLDER) << target << normal();
               } else {
                 fout << target;
               }
@@ -385,7 +390,12 @@ public:
             }
             fout << EOL;
           } else { // unknown entry type
-            fout << "----------" << ' '
+
+            char flags[10];
+            fill(flags, getArraySize(flags), '-');
+            flags[0] = (link) ? 'l' : '-';
+
+            fout << Sequence<char>(flags, sizeof(flags)) << ' '
                  << setWidth(4) << ' ' << ' '
                  << setWidth(MAXIMUM_TRUSTEE_LENGTH) << ' ' << ' '
                  << setWidth(MAXIMUM_TRUSTEE_LENGTH) << ' ' << ' '
@@ -398,7 +408,7 @@ public:
                 fout << entry;
               }
               fout << " -> ";
-              if (deadLink) {
+              if (deadLink && colorize) {
                 fout << setForeground(COLOR_DEAD_LINK) << target << normal();
               } else {
                 fout << target;

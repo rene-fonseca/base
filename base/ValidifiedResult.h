@@ -44,6 +44,13 @@ public:
   inline ValidifiedResult()
   {
   }
+
+  /**
+    Initializes object as invalid.
+  */
+  inline ValidifiedResult(Unspecified)
+  {
+  }
   
   /**
     Initializes object as valid.
@@ -156,11 +163,13 @@ public:
   Writes the specified ValidifiedResult to the format output stream.
 */
 template<class TYPE>
-inline FormatOutputStream& operator<<(
-  FormatOutputStream& stream,
-  const ValidifiedResult<TYPE>& value)
+inline FormatOutputStream& operator<<(FormatOutputStream& stream, const ValidifiedResult<TYPE>& value)
 {
   return value.operator<<(stream);
 }
+
+// rename ValidifiedResult to Validified
+template<class TYPE>
+using Validified = ValidifiedResult<TYPE>;
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

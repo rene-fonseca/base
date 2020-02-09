@@ -1414,6 +1414,7 @@ Array<String> FileSystem::split(const String& path)
       }
     } else if (length >= 1) {
       absolute = isSeparator(path[0]); // this makes path absolute
+      current = absolute ? 1 : 0;
     }
   } else if (length >= 1) {
     absolute = isSeparator(path[0]);

@@ -139,6 +139,7 @@ public:
   */
   static StackFrame getStack(unsigned int skip = 1, unsigned int levels = 32, bool trim = true);
 
+  /** Returns true if stack traces are equal. */
   bool operator==(const StackFrame& compare) const noexcept
   {
     if (frames.getSize() != compare.getSize()) {
@@ -152,11 +153,13 @@ public:
     return true;
   }
 
+  /** Returns true if stack traces are non-equal. */
   inline bool operator!=(const StackFrame& compare) const noexcept
   {
     return !(operator==(compare));
   }
 
+  /** Returns true if stack traces are equal. */
   bool operator==(const ConstSpan<const void*>& compare) const noexcept
   {
     if (frames.getSize() != compare.getSize()) {
@@ -170,11 +173,13 @@ public:
     return true;
   }
 
+  /** Returns true if stack traces are non-equal. */
   inline bool operator!=(const ConstSpan<const void*>& compare) const noexcept
   {
     return !(operator==(compare));
   }
 
+  /** Returns true if stack trace is empty. */
   inline operator bool() const noexcept
   {
     return !frames.isEmpty();
@@ -194,8 +199,9 @@ public:
     FLAG_COMPACT = 1 << 3, //< Only show.
     FLAG_FULL_PATH = 1 << 4, //< Show full path for module.
     FLAG_USE_COLORS = 1 << 5, //< Use ANSI colors.
-    FLAG_STRIP_NAMESPACE = 1 << 6, //< base namespace.
-    FLAG_TRIM_SYSTEM = 1 << 7, // Skip system functions.
+    FLAG_USE_COLORS_IF_ANSI_TERMINAL = 1 << 6, //< Use ANSI colors if supported by stream.
+    FLAG_STRIP_NAMESPACE = 1 << 7, //< base namespace.
+    FLAG_TRIM_SYSTEM = 1 << 8, // Skip system functions.
     FLAG_DEFAULT = FLAG_COMPACT | FLAG_SHOW_ADDRESS | FLAG_SHOW_MODULE | FLAG_INDENT | FLAG_TRIM_SYSTEM
   };
   

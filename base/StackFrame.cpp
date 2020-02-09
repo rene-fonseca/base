@@ -573,6 +573,11 @@ StackFrame StackFrame::getStack(unsigned int skip, unsigned int levels, bool tri
 FormatOutputStream& StackFrame::toStream(FormatOutputStream& stream,
                                          const ConstSpan<const void*>& _trace, unsigned int flags)
 {
+  if (flags & StackFrame::FLAG_USE_COLORS_IF_ANSI_TERMINAL) {
+    const bool colors = stream.isANSITerminal();
+    flags |= (colors ? StackFrame::FLAG_USE_COLORS : 0);
+  }
+
   const bool showAddress = (flags & FLAG_SHOW_ADDRESS) != 0;
   const bool useColors = (flags & FLAG_USE_COLORS) != 0;
   const unsigned int INDENT = ((flags & FLAG_INDENT) != 0) ? 2 : 0;
@@ -756,10 +761,8 @@ void StackFrame::dump(unsigned int skip, unsigned int levels)
   if (levels == 0) {
     return;
   }
-  const bool colors = ferr.isANSITerminal();
   
   ++skip;
-  const unsigned int flags = StackFrame::FLAG_DEFAULT | (colors ? StackFrame::FLAG_USE_COLORS : 0);
 
   PrimitiveStackArray<const void*> buffer(256);
   MemorySize count = 0;
@@ -773,6 +776,8 @@ void StackFrame::dump(unsigned int skip, unsigned int levels)
   }
 
   auto& stream = (useStandardOut ? fout : ferr);
+  const bool colors = stream.isANSITerminal();
+  const unsigned int flags = StackFrame::FLAG_DEFAULT | (colors ? StackFrame::FLAG_USE_COLORS : 0);
   toStream(stream, ConstSpan<const void*>(buffer, count), flags);
   stream << FLUSH;
 }

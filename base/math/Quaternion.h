@@ -408,6 +408,18 @@ inline Quaternion<TYPE> operator/(const Quaternion<TYPE>& left, const TYPE& righ
 }
 
 /**
+  Returns the dot product of the two quaternions.
+
+  @relates Quaternion
+*/
+template<class TYPE>
+inline TYPE dot(const Quaternion<TYPE>& left, const Quaternion<TYPE>& right) noexcept
+{
+  return left.getX() * right.getX() + left.getY() * right.getY() + left.getZ() * right.getZ() +
+    left.getW() * right.getW();
+}
+
+/**
   Writes a string representation of a Quaternion object to a format stream. The
   format is "(x; y; z; w)".
 

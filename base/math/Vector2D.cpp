@@ -20,7 +20,6 @@ template class _COM_AZURE_DEV__BASE__API Vector2D<float>;
 template class _COM_AZURE_DEV__BASE__API Vector2D<double>;
 template class _COM_AZURE_DEV__BASE__API Vector2D<long double>;
 
-
 #if defined(_COM_AZURE_DEV__BASE__TESTS)
 
 class TEST_CLASS(Vector2D) : public UnitTest {

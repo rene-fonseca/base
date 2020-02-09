@@ -13,6 +13,7 @@
 
 #include <base/net/SSLSocket.h>
 #include <base/ResourceHandle.h>
+#include <base/Module.h>
 #include <base/build.h>
 
 #if defined(_COM_AZURE_DEV__BASE__USE_OPENSSL)

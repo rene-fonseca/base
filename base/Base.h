@@ -281,6 +281,9 @@ public:
   };
 };
 
+/** Unspecified value. */
+static constexpr Unspecified UNSPECIFIED;
+
 /**
   Use this class to force an error at compile-time if the given expression
   evaluates to false.

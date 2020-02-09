@@ -203,6 +203,7 @@ public:
             }
 
             // TAG: need upper limit on number of elements to cache
+            // TAG: get max length of names to align fields
             User owner = info.getOwner();
             String ownerName;
             if (owners.hasKey(owner)) {
@@ -211,9 +212,7 @@ public:
               try {
                 ownerName = owner.getName();
               } catch (User::UserException&) {
-                StringOutputStream stream;
-                stream << owner << FLUSH;
-                ownerName = stream.getString();
+                ownerName = StringOutputStream() << owner;
               }
               owners.add(owner, ownerName);
             }
@@ -226,9 +225,7 @@ public:
               try {
                 groupName = group.getName();
               } catch (Group::GroupException&) {
-                StringOutputStream stream;
-                stream << group << FLUSH;
-                groupName = stream.getString();
+                groupName = StringOutputStream() << group;
               }
               groups.add(group, groupName);
             }
@@ -315,9 +312,7 @@ public:
               try {
                 ownerName = owner.getName();
               } catch (User::UserException&) {
-                StringOutputStream stream;
-                stream << owner << FLUSH;
-                ownerName = stream.getString();
+                ownerName = StringOutputStream() << owner;
               }
               owners.add(owner, ownerName);
             }
@@ -330,9 +325,7 @@ public:
               try {
                 groupName = group.getName();
               } catch (Group::GroupException&) {
-                StringOutputStream stream;
-                stream << group << FLUSH;
-                groupName = stream.getString();
+                groupName = StringOutputStream() << group;
               }
               groups.add(group, groupName);
             }

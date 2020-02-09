@@ -212,7 +212,9 @@ public:
               try {
                 ownerName = owner.getName();
               } catch (User::UserException&) {
-                ownerName = StringOutputStream() << owner;
+                StringOutputStream sos;
+                const String name = sos << owner;
+                ownerName = name;
               }
               owners.add(owner, ownerName);
             }
@@ -225,7 +227,9 @@ public:
               try {
                 groupName = group.getName();
               } catch (Group::GroupException&) {
-                groupName = StringOutputStream() << group;
+                StringOutputStream sos;
+                const String name = sos << group;
+                groupName = name;
               }
               groups.add(group, groupName);
             }
@@ -312,7 +316,9 @@ public:
               try {
                 ownerName = owner.getName();
               } catch (User::UserException&) {
-                ownerName = StringOutputStream() << owner;
+                StringOutputStream sos;
+                const String name = sos << owner;
+                ownerName = name;
               }
               owners.add(owner, ownerName);
             }
@@ -325,7 +331,9 @@ public:
               try {
                 groupName = group.getName();
               } catch (Group::GroupException&) {
-                groupName = StringOutputStream() << group;
+                StringOutputStream sos;
+                const String name = sos << group;
+                groupName = name;
               }
               groups.add(group, groupName);
             }

@@ -754,7 +754,7 @@ public:
   */
   inline String& removeAt(MemorySize index)
   {
-    return remove(index, index);
+    return remove(index, index + 1);
   }
 
   /**

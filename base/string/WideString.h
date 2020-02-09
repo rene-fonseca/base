@@ -848,7 +848,7 @@ public:
   */
   inline WideString& removeAt(MemorySize index)
   {
-    return remove(index, index);
+    return remove(index, index + 1);
   }
 
   /**

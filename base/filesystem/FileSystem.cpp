@@ -2291,6 +2291,9 @@ public:
         TEST_ASSERT(!"Failed to make symbolic folder link.");
       }
       TEST_ASSERT(FileSystem::folderExists(symlinkFolder));
+      type = FileSystem::getType(symlinkFolder); // follows link
+      TEST_ASSERT((type & FileSystem::LINK) == 0);
+      TEST_ASSERT((type & FileSystem::FOLDER) != 0);
 
       String s = File::readFile(symlink);
       TEST_ASSERT(s == exampleText);

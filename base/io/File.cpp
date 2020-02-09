@@ -40,37 +40,7 @@
 #  include <windows.h>
 #  include <aclapi.h>
 #  include <winioctl.h>
-
-// #  include <ntifs.h>
-typedef struct _REPARSE_DATA_BUFFER {
-  ULONG  ReparseTag;
-  USHORT ReparseDataLength;
-  USHORT Reserved;
-  union {
-    struct {
-      USHORT SubstituteNameOffset;
-      USHORT SubstituteNameLength;
-      USHORT PrintNameOffset;
-      USHORT PrintNameLength;
-      ULONG  Flags;
-      WCHAR  PathBuffer[1];
-    } SymbolicLinkReparseBuffer;
-    struct {
-      USHORT SubstituteNameOffset;
-      USHORT SubstituteNameLength;
-      USHORT PrintNameOffset;
-      USHORT PrintNameLength;
-      WCHAR  PathBuffer[1];
-    } MountPointReparseBuffer;
-    struct {
-      UCHAR DataBuffer[1];
-    } GenericReparseBuffer;
-  } DUMMYUNIONNAME;
-} REPARSE_DATA_BUFFER, *PREPARSE_DATA_BUFFER;
-
-#if !defined(IO_REPARSE_TAG_SYMBOLIC_LINK)
-#  define IO_REPARSE_TAG_SYMBOLIC_LINK 0
-#endif
+#  include <base/platforms/win32/Reparse.h>
 
 #if defined(READ_ATTRIBUTES)
 #  undef READ_ATTRIBUTES
@@ -217,6 +187,8 @@ File::File(const String& path, Access access, unsigned int options)
     0 // handle to template file
   );
   const DWORD originalError = GetLastError();
+
+#if 0
   unsigned int linkLevel = 0;
   const unsigned int maximumLinkLevel = 16;
   while ((handle == OperatingSystem::INVALID_HANDLE) && (++linkLevel <= maximumLinkLevel)) {    
@@ -232,39 +204,16 @@ File::File(const String& path, Access access, unsigned int options)
       break;
     }
     
-    PrimitiveArray<uint8> buffer(17000); // need alternative - first attempt to get length first failed
-    REPARSE_DATA_BUFFER* reparseHeader = reinterpret_cast<REPARSE_DATA_BUFFER*>(static_cast<uint8*>(buffer));
-    DWORD bytesWritten = 0;
-    error |= ::DeviceIoControl(link, FSCTL_GET_REPARSE_POINT, // handle and ctrl
-                               0, 0, // input
-                               reparseHeader, sizeof(buffer), // output
-                               &bytesWritten, 0) == 0;
+    bool reparsePoint = false;
+    String substPath = native::getTargetPath(link, reparsePoint);
     ::CloseHandle(link);
-    if (error) {
+    link = INVALID_HANDLE_VALUE;
+    if (!reparsePoint) {
       break;
     }
-    
-    wchar* substPath = nullptr;
-    unsigned int substLength = 0;
-    switch (reparseHeader->ReparseTag) {
-    case 0x80000000|IO_REPARSE_TAG_SYMBOLIC_LINK:
-      substPath = reparseHeader->SymbolicLinkReparseBuffer.PathBuffer + reparseHeader->SymbolicLinkReparseBuffer.SubstituteNameOffset;
-      BASSERT(reparseHeader->SymbolicLinkReparseBuffer.SubstituteNameLength % 2 == 0);
-      substLength = reparseHeader->SymbolicLinkReparseBuffer.SubstituteNameLength/2;
-      break;
-    case IO_REPARSE_TAG_MOUNT_POINT:
-      substPath = reparseHeader->MountPointReparseBuffer.PathBuffer + reparseHeader->MountPointReparseBuffer.SubstituteNameOffset;
-      BASSERT(reparseHeader->MountPointReparseBuffer.SubstituteNameLength % 2 == 0);
-      substLength = reparseHeader->MountPointReparseBuffer.SubstituteNameLength/2; // keep prefix "\??\"
-      break;
-    default:
-      _throw FileNotFound("Unsupported link.", this);
-    }
-    substPath[1] = '\\'; // convert '\??\' to '\\?\'
-    substPath[substLength] = 0; // add terminator
     
     handle = ::CreateFileW( // TAG: check out FILE_FLAG_POSIX_SEMANTICS
-      substPath, // file name
+      ToWCharString(substPath), // file name
       (access == READ) ? GENERIC_READ : ((access == WRITE) ? GENERIC_WRITE : (GENERIC_READ | GENERIC_WRITE)), // access mode
       (options & EXCLUSIVE) ? 0 : (FILE_SHARE_READ | FILE_SHARE_WRITE), // share mode
       0, // security descriptor
@@ -273,10 +222,19 @@ File::File(const String& path, Access access, unsigned int options)
       0 // handle to template file
     );
   }
+#endif
+
   if (handle == OperatingSystem::INVALID_HANDLE) {
+#if 0
     if (linkLevel > maximumLinkLevel) {
       _throw FileNotFound("Too many levels of symbolic links.", this);
     } else if (originalError == ERROR_ACCESS_DENIED) {
+      _throw AccessDenied(this);
+    } else {
+      _throw FileNotFound("Unable to open file.", this);
+    }
+#endif
+    if (originalError == ERROR_ACCESS_DENIED) {
       _throw AccessDenied(this);
     } else {
       _throw FileNotFound("Unable to open file.", this);
@@ -458,7 +416,7 @@ unsigned int File::getMode() const
     if (ownerAccessMask & (FILE_READ_DATA|FILE_READ_ATTRIBUTES|FILE_READ_EA|READ_CONTROL)) { // READ_CONTROL should not be required
       mode |= File::RUSR;
     }
-    if (ownerAccessMask & (FILE_WRITE_DATA|FILE_APPEND_DATA|FILE_WRITE_ATTRIBUTES|FILE_WRITE_EA|FILE_DELETE_CHILD|WRITE_DAC|DELETE|WRITE_OWNER)) {
+    if (ownerAccessMask & (FILE_WRITE_DATA|FILE_APPEND_DATA|FILE_WRITE_ATTRIBUTES|FILE_WRITE_EA|FILE_DELETE_CHILD|WRITE_DAC|WIN32_DELETE|WRITE_OWNER)) {
       mode |= File::WUSR;
     }
     if (ownerAccessMask & FILE_EXECUTE) {
@@ -470,7 +428,7 @@ unsigned int File::getMode() const
     if (groupAccessMask & (FILE_READ_DATA|FILE_READ_ATTRIBUTES|FILE_READ_EA|READ_CONTROL)) { // READ_CONTROL should not be required
       mode |= File::RGRP;
     }
-    if (groupAccessMask & (FILE_WRITE_DATA|FILE_APPEND_DATA|FILE_WRITE_ATTRIBUTES|FILE_WRITE_EA|FILE_DELETE_CHILD|WRITE_DAC|DELETE|WRITE_OWNER)) {
+    if (groupAccessMask & (FILE_WRITE_DATA|FILE_APPEND_DATA|FILE_WRITE_ATTRIBUTES|FILE_WRITE_EA|FILE_DELETE_CHILD|WRITE_DAC|WIN32_DELETE|WRITE_OWNER)) {
       mode |= File::WGRP;
     }
     if (groupAccessMask & FILE_EXECUTE) {
@@ -482,7 +440,7 @@ unsigned int File::getMode() const
     if (everyoneAccessMask & (FILE_READ_DATA|FILE_READ_ATTRIBUTES|FILE_READ_EA|READ_CONTROL)) { // READ_CONTROL should not be required
       mode |= File::ROTH;
     }
-    if (everyoneAccessMask & (FILE_WRITE_DATA|FILE_APPEND_DATA|FILE_WRITE_ATTRIBUTES|FILE_WRITE_EA|FILE_DELETE_CHILD|WRITE_DAC|DELETE|WRITE_OWNER)) {
+    if (everyoneAccessMask & (FILE_WRITE_DATA|FILE_APPEND_DATA|FILE_WRITE_ATTRIBUTES|FILE_WRITE_EA|FILE_DELETE_CHILD|WRITE_DAC|WIN32_DELETE|WRITE_OWNER)) {
       mode |= File::WOTH;
     }
     if (everyoneAccessMask & FILE_EXECUTE) {
@@ -685,13 +643,13 @@ AccessControlList File::getACL() const
     if (mask & WRITE_OWNER) {
       accessMask |= AccessControlEntry::CHANGE_OWNER;
     }
-    if (mask & DELETE) {
+    if (mask & WIN32_DELETE) {
       accessMask |= AccessControlEntry::REMOVE;
     }
     if (mask & FILE_DELETE_CHILD) {
       accessMask |= AccessControlEntry::REMOVE_COMPONENT;
     }
-    if (mask & SYNCHRONIZE) {
+    if (mask & WIN32_SYNCHRONIZE) {
       accessMask |= AccessControlEntry::SYNCHRONIZE;
     }
     

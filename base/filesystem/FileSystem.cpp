@@ -119,41 +119,7 @@ bool FileSystem::isSubPathOf(const String& root, const String& path) noexcept
 #  define _WIN32_WINNT _WIN32_WINNT_VISTA
 #  include <windows.h>
 #  include <winioctl.h>
-
-// #  include <ntifs.h>
-typedef struct _REPARSE_DATA_BUFFER {
-  ULONG  ReparseTag;
-  USHORT ReparseDataLength;
-  USHORT Reserved;
-  union {
-    struct {
-      USHORT SubstituteNameOffset;
-      USHORT SubstituteNameLength;
-      USHORT PrintNameOffset;
-      USHORT PrintNameLength;
-      ULONG  Flags;
-      WCHAR  PathBuffer[1];
-    } SymbolicLinkReparseBuffer;
-    struct {
-      USHORT SubstituteNameOffset;
-      USHORT SubstituteNameLength;
-      USHORT PrintNameOffset;
-      USHORT PrintNameLength;
-      WCHAR  PathBuffer[1];
-    } MountPointReparseBuffer;
-    struct {
-      UCHAR DataBuffer[1];
-    } GenericReparseBuffer;
-  } DUMMYUNIONNAME;
-} REPARSE_DATA_BUFFER, * PREPARSE_DATA_BUFFER;
-
-#if !defined(REPARSE_DATA_BUFFER_HEADER_SIZE)
-#  define REPARSE_DATA_BUFFER_HEADER_SIZE FIELD_OFFSET(REPARSE_DATA_BUFFER, GenericReparseBuffer)
-#endif
-
-#if !defined(IO_REPARSE_TAG_SYMBOLIC_LINK)
-#  define IO_REPARSE_TAG_SYMBOLIC_LINK 0
-#endif
+#  include <base/platforms/win32/Reparse.h>
 
 #else // unix
 #  include <sys/types.h>
@@ -840,7 +806,7 @@ void FileSystem::removeFolder(const String& path)
       if (!::RemoveDirectory(_path)) {
         _throw FileSystemException("Unable to remove folder.", Type::getType<FileSystem>());
       }
-      // } else if (reparseHeader->ReparseTag == 0x80000000|IO_REPARSE_TAG_SYMBOLIC_LINK) {
+      // } else if (reparseHeader->ReparseTag == IO_REPARSE_TAG_SYMBOLIC_LINK) {
       // TAG: need support for symbolic link to folder
     } else {
       ::CloseHandle(link);
@@ -925,6 +891,7 @@ void FileSystem::makeFolderRecursive(const String& path)
 bool FileSystem::doesSupportLinks() noexcept
 {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
+  cachedSupportsLinks = 1;
   return true; // since Vista - but use dynamic linking to check
 
   if (cachedSupportsLinks == -1) {
@@ -1010,44 +977,11 @@ bool FileSystem::isLink(const String& path)
       }
     }
     
-    // TAG: test if partial support works - ERROR_MORE_DATA
-    PrimitiveArray<uint8> buffer(17000); // TAG: fixme
-    REPARSE_DATA_BUFFER* reparseHeader = reinterpret_cast<REPARSE_DATA_BUFFER*>(static_cast<uint8*>(buffer));
-    DWORD bytesWritten = 0;
-    bool error = ::DeviceIoControl(
-      link,
-      FSCTL_GET_REPARSE_POINT,
-      0,
-      0, // input
-      reparseHeader,
-      sizeof(buffer), // output
-      &bytesWritten,
-      0
-    ) == 0;
-    bool isLink = false;
-    if (!error) {
-      if (IsReparseTagMicrosoft(reparseHeader->ReparseTag)) {
-        switch (reparseHeader->ReparseTag) {
-        case 0x80000000|IO_REPARSE_TAG_SYMBOLIC_LINK:
-        case IO_REPARSE_TAG_MOUNT_POINT:
-          isLink = true;
-        }
-      }
-    } else {
-      if (::GetLastError() == ERROR_MORE_DATA) {
-        BASSERT(bytesWritten >= REPARSE_DATA_BUFFER_HEADER_SIZE);
-        if (IsReparseTagMicrosoft(reparseHeader->ReparseTag)) {
-          switch (reparseHeader->ReparseTag) {
-          case 0x80000000|IO_REPARSE_TAG_SYMBOLIC_LINK:
-          case IO_REPARSE_TAG_MOUNT_POINT:
-            isLink = true;
-          }
-        }
-        error = false;
-      }
-    }
+    bool reparsePoint = false;
+    String substPath = native::getTargetPath(link, reparsePoint);
     ::CloseHandle(link);
-    return isLink;
+    link = INVALID_HANDLE_VALUE;
+    return reparsePoint;
   } else if ((attributes & FILE_ATTRIBUTE_DIRECTORY) == 0) {
     // check if shell symbolic link
     static const unsigned char GUID[16] = {
@@ -1129,92 +1063,6 @@ _COM_AZURE_DEV__BASE__PACKED__END
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
 class FileSystemImpl {
 public:
-
-  // TAG: the link target may not exist
-  
-  static String getLinkTarget(const String& path)
-  {
-//     if (cachedSupportsLinks == -1) {
-//       doesSupportLinks();
-//     }
-//     bassert(
-//       cachedSupportsLinks == 1,
-//       NotSupported("Symbolic link", Type::getType<FileSystem>())
-//     );
-    
-    HANDLE link = ::CreateFile(
-      ToWCharString(path),
-      0,
-      FILE_SHARE_READ | FILE_SHARE_WRITE,
-      0,
-      OPEN_EXISTING,
-      FILE_FLAG_BACKUP_SEMANTICS | FILE_FLAG_OPEN_REPARSE_POINT,
-      0
-    );
-    if (link == INVALID_HANDLE_VALUE) {
-      switch (::GetLastError()) {
-      case ERROR_ACCESS_DENIED:
-      case ERROR_SHARING_VIOLATION: // possible with page file
-      case ERROR_LOCK_VIOLATION:
-        _throw FileSystemException("Not a link.", Type::getType<FileSystem>());
-      }
-    }
-    while (link != INVALID_HANDLE_VALUE) {
-      PrimitiveArray<uint8> buffer(17000); // need alternative - first attempt to get length first failed
-      REPARSE_DATA_BUFFER* reparseHeader = reinterpret_cast<REPARSE_DATA_BUFFER*>(static_cast<uint8*>(buffer));
-      DWORD bytesWritten = 0;
-      bool error = ::DeviceIoControl(
-        link,
-        FSCTL_GET_REPARSE_POINT,
-        0,
-        0,
-        reparseHeader,
-        sizeof(buffer),
-        &bytesWritten,
-        0
-      ) == 0;
-      if (error) {
-        // bool reparse = ::GetLastError() != 4390; // ERROR_NOT_A_REPARSE_POINT
-        ::CloseHandle(link);
-        // if (reparse) { // no need to check for shell link
-        //   _throw FileSystemException("Not a link.", Type::getType<FileSystem>());
-        // }
-        break;
-      }
-      
-      switch (reparseHeader->ReparseTag) {
-      case 0x80000000|IO_REPARSE_TAG_SYMBOLIC_LINK:
-        {
-          BASSERT((reparseHeader->MountPointReparseBuffer.SubstituteNameLength % sizeof(wchar) == 0) &&
-                 (reparseHeader->MountPointReparseBuffer.SubstituteNameLength/sizeof(wchar) > 4));
-          wchar* substPath = reparseHeader->SymbolicLinkReparseBuffer.PathBuffer +
-            reparseHeader->SymbolicLinkReparseBuffer.SubstituteNameOffset + 4;
-          // skip prefix "\??\"
-          unsigned int substLength = reparseHeader->SymbolicLinkReparseBuffer.SubstituteNameLength/2 - 4;
-          substPath[substLength] = 0; // add terminator
-          return String(substPath, substLength);
-        }
-      case IO_REPARSE_TAG_MOUNT_POINT:
-        {
-          BASSERT((reparseHeader->MountPointReparseBuffer.SubstituteNameLength % sizeof(wchar) == 0) &&
-                 (reparseHeader->MountPointReparseBuffer.SubstituteNameLength/sizeof(wchar) > 4));
-          wchar* substPath = reparseHeader->MountPointReparseBuffer.PathBuffer +
-            reparseHeader->MountPointReparseBuffer.SubstituteNameOffset + 4;
-          // skip prefix "\??\"
-          unsigned int substLength = reparseHeader->MountPointReparseBuffer.SubstituteNameLength/2 - 4;
-          substPath[substLength] = 0; // add terminator
-          return String(substPath, substLength);
-        }
-      default:
-        error = true;
-      }
-      if (error) {
-        break;
-      }
-    }
-
-    return String();
-  }
   
   static bool enablePrivileges() noexcept
   {
@@ -1456,7 +1304,7 @@ void FileSystem::makeLink(const String& target, const String& path)
   if (isDirectory) {
     reparseInfo->ReparseTag = IO_REPARSE_TAG_MOUNT_POINT;
   } else {
-    reparseInfo->ReparseTag = 0x80000000|IO_REPARSE_TAG_SYMBOLIC_LINK;
+    reparseInfo->ReparseTag = IO_REPARSE_TAG_SYMBOLIC_LINK;
   }
   
   reparseInfo->ReparseDataLength = nativePath.getLength() * sizeof(WCHAR) + 12;
@@ -1684,6 +1532,7 @@ String FileSystem::getLinkTarget(const String& path)
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   ToWCharString nativePath(path);
 
+if (false) {
   DWORD attributes = GetFileAttributesW(nativePath);
   if (attributes == INVALID_FILE_ATTRIBUTES) {
     return String();
@@ -1736,6 +1585,7 @@ String FileSystem::getLinkTarget(const String& path)
     return String();
   }
 
+  // TAG: not desired since there can be nested symbolic links
   String source;
   while (buffer.size() < (64 * 1024)) {
     DWORD length = GetFinalPathNameByHandleW(file, buffer, buffer.size(), FILE_NAME_NORMALIZED /*FILE_NAME_OPENED*/);
@@ -1757,14 +1607,14 @@ String FileSystem::getLinkTarget(const String& path)
 
   const String root = folder ? source : FileSystem::getParent(source);
   return getRelativePath(root, result);
+}
 
-#if 0
+#if 1
   if (cachedSupportsLinks == -1) {
     doesSupportLinks();
   }
   bassert(cachedSupportsLinks == 1, NotSupported("Symbolic link.", Type::getType<FileSystem>()));
   
-  ToWCharString nativePath(path);
   HANDLE link = ::CreateFile(
     nativePath,
     0,
@@ -1783,58 +1633,14 @@ String FileSystem::getLinkTarget(const String& path)
     }
   }
   while (link != INVALID_HANDLE_VALUE) {
-    PrimitiveArray<uint8> buffer(17000); // need alternative - first attempt to get length first failed
-    REPARSE_DATA_BUFFER* reparseHeader = reinterpret_cast<REPARSE_DATA_BUFFER*>(static_cast<uint8*>(buffer));
-    DWORD bytesWritten = 0;
-    bool error = ::DeviceIoControl(
-      link,
-      FSCTL_GET_REPARSE_POINT,
-      0,
-      0,
-      reparseHeader,
-      sizeof(buffer),
-      &bytesWritten,
-      0
-    ) == 0;
-    if (error) {
-      // bool reparse = ::GetLastError() != 4390; // ERROR_NOT_A_REPARSE_POINT
-      ::CloseHandle(link);
-      // if (reparse) { // no need to check for shell link
-      //   _throw FileSystemException("Not a link.", Type::getType<FileSystem>());
-      // }
+    bool reparsePoint = false;
+    String substPath = native::getTargetPath(link, reparsePoint);
+    ::CloseHandle(link);
+    link = INVALID_HANDLE_VALUE;
+    if (!reparsePoint) {
       break;
     }
-    
-    switch (reparseHeader->ReparseTag) {
-    case 0x80000000|IO_REPARSE_TAG_SYMBOLIC_LINK:
-      {
-        BASSERT((reparseHeader->MountPointReparseBuffer.SubstituteNameLength % 2 == 0) &&
-          (reparseHeader->MountPointReparseBuffer.SubstituteNameLength/2 > 4));
-        wchar* substPath = reparseHeader->SymbolicLinkReparseBuffer.PathBuffer +
-          reparseHeader->SymbolicLinkReparseBuffer.SubstituteNameOffset + 4;
-        // skip prefix "\??\"
-        unsigned int substLength = reparseHeader->SymbolicLinkReparseBuffer.SubstituteNameLength/2 - 4;
-        substPath[substLength] = 0; // add terminator
-        return String(substPath, substLength);
-      }
-    case IO_REPARSE_TAG_MOUNT_POINT:
-      {
-        BASSERT((reparseHeader->MountPointReparseBuffer.SubstituteNameLength % 2 == 0) &&
-               (reparseHeader->MountPointReparseBuffer.SubstituteNameLength/2 > 4));
-        wchar* substPath = reparseHeader->MountPointReparseBuffer.PathBuffer +
-          reparseHeader->MountPointReparseBuffer.SubstituteNameOffset + 4;
-        // skip prefix "\??\"
-        unsigned int substLength = reparseHeader->MountPointReparseBuffer.SubstituteNameLength/2 - 4;
-        substPath[substLength] = 0; // add terminator
-        return String(substPath, substLength);
-      }
-    default:
-      error = true;
-    }
-    
-    if (error) {
-      break;
-    }
+    return substPath;
   }
   
   // TAG: need variable to disable/enable this symbolic link

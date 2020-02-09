@@ -22,37 +22,7 @@
 #  include <windows.h>
 #  include <aclapi.h>
 // #  include <winioctl.h>
-
- // #  include <ntifs.h>
-typedef struct _REPARSE_DATA_BUFFER {
-  ULONG  ReparseTag;
-  USHORT ReparseDataLength;
-  USHORT Reserved;
-  union {
-    struct {
-      USHORT SubstituteNameOffset;
-      USHORT SubstituteNameLength;
-      USHORT PrintNameOffset;
-      USHORT PrintNameLength;
-      ULONG  Flags;
-      WCHAR  PathBuffer[1];
-    } SymbolicLinkReparseBuffer;
-    struct {
-      USHORT SubstituteNameOffset;
-      USHORT SubstituteNameLength;
-      USHORT PrintNameOffset;
-      USHORT PrintNameLength;
-      WCHAR  PathBuffer[1];
-    } MountPointReparseBuffer;
-    struct {
-      UCHAR DataBuffer[1];
-    } GenericReparseBuffer;
-  } DUMMYUNIONNAME;
-} REPARSE_DATA_BUFFER, * PREPARSE_DATA_BUFFER;
-
-#if !defined(IO_REPARSE_TAG_SYMBOLIC_LINK)
-#  define IO_REPARSE_TAG_SYMBOLIC_LINK 0
-#endif
+#  include <base/platforms/win32/Reparse.h>
 
 #else // unix
 #  include <sys/types.h>
@@ -85,6 +55,8 @@ FileInfo::FileInfo(const String& _path)
       return;
     }
   }
+
+#if 0
   unsigned int linkLevel = 0;
   const unsigned int maximumLinkLevel = 16;
   while ((file == INVALID_HANDLE_VALUE) && (++linkLevel <= maximumLinkLevel)) {    
@@ -98,44 +70,15 @@ FileInfo::FileInfo(const String& _path)
     );
     bassert(link != INVALID_HANDLE_VALUE, FileSystemException("Not a file.", this));
     
-    // TAG: fix buffer size (protect against buffer overflow)
-    PrimitiveArray<uint8> buffer(17000); // need alternative - first attempt to get length first failed
-    REPARSE_DATA_BUFFER* reparseHeader = reinterpret_cast<REPARSE_DATA_BUFFER*>(static_cast<uint8*>(buffer));
-    DWORD bytesWritten = 0;
-    error |= ::DeviceIoControl(link, FSCTL_GET_REPARSE_POINT, // handle and ctrl
-                               0, 0, // input
-                               reparseHeader, sizeof(buffer), // output
-                               &bytesWritten, 0) == 0;
+    bool reparsePoint = false;
+    String substPath = native::getTargetPath(link, reparsePoint);
     ::CloseHandle(link);
-    bassert(!error, FileSystemException(this));
-    
-    wchar* substPath = nullptr;
-    unsigned int substLength = 0;
-    switch (reparseHeader->ReparseTag) {
-    case 0x80000000|IO_REPARSE_TAG_SYMBOLIC_LINK:
-      substPath = reparseHeader->SymbolicLinkReparseBuffer.PathBuffer +
-        reparseHeader->SymbolicLinkReparseBuffer.SubstituteNameOffset;
-      BASSERT(
-        reparseHeader->SymbolicLinkReparseBuffer.SubstituteNameLength % 2 == 0
-      );
-      substLength =
-        reparseHeader->SymbolicLinkReparseBuffer.SubstituteNameLength/2;
-      break;
-    case IO_REPARSE_TAG_MOUNT_POINT:
-      substPath = reparseHeader->MountPointReparseBuffer.PathBuffer +
-        reparseHeader->MountPointReparseBuffer.SubstituteNameOffset;
-      BASSERT(
-        reparseHeader->MountPointReparseBuffer.SubstituteNameLength % 2 == 0
-      );
-      substLength = reparseHeader->MountPointReparseBuffer.SubstituteNameLength/2; // keep prefix "\??\"
-      break;
-    default:
-      _throw FileSystemException("Unsupported link.", this);
+    link = INVALID_HANDLE_VALUE;
+    if (!reparsePoint) {
+      _throw FileSystemException("Not a link.", this);
     }
-    substPath[1] = '\\'; // convert '\??\' to '\\?\'
-    substPath[substLength] = 0; // add terminator
-    
-    file = ::CreateFileW(substPath, // file name
+
+    file = ::CreateFileW(ToWCharString(substPath), // file name
                          0 | READ_CONTROL, // access mode
                          FILE_SHARE_READ | FILE_SHARE_WRITE, // share mode
                          0, // security descriptor
@@ -143,14 +86,18 @@ FileInfo::FileInfo(const String& _path)
                          0, // file attributes
                          0 // handle to template file
     );
-    // TAG: try software link if INVALID_HANDLE_VALUE
   }
+#endif
+
   if (file == INVALID_HANDLE_VALUE) {
+#if 0
     if (linkLevel > maximumLinkLevel) {
       _throw FileSystemException("Too many levels of symbolic links.", this);
     } else {
       _throw FileSystemException("Not a file.", this);
     }
+#endif
+    _throw FileSystemException("Not a file.", this);
   }
   
   BY_HANDLE_FILE_INFORMATION information;
@@ -251,7 +198,7 @@ FileInfo::FileInfo(const String& _path)
     if (ownerAccessMask & (FILE_READ_DATA|FILE_READ_ATTRIBUTES|FILE_READ_EA|READ_CONTROL)) { // READ_CONTROL should not be required
       mode |= FileInfo::RUSR;
     }
-    if (ownerAccessMask & (FILE_WRITE_DATA|FILE_APPEND_DATA|FILE_WRITE_ATTRIBUTES|FILE_WRITE_EA|FILE_DELETE_CHILD|WRITE_DAC|DELETE|WRITE_OWNER)) {
+    if (ownerAccessMask & (FILE_WRITE_DATA|FILE_APPEND_DATA|FILE_WRITE_ATTRIBUTES|FILE_WRITE_EA|FILE_DELETE_CHILD|WRITE_DAC|WIN32_DELETE|WRITE_OWNER)) {
       mode |= FileInfo::WUSR;
     }
     if (ownerAccessMask & FILE_EXECUTE) {
@@ -263,7 +210,7 @@ FileInfo::FileInfo(const String& _path)
     if (groupAccessMask & (FILE_READ_DATA|FILE_READ_ATTRIBUTES|FILE_READ_EA|READ_CONTROL)) { // READ_CONTROL should not be required
       mode |= FileInfo::RGRP;
     }
-    if (groupAccessMask & (FILE_WRITE_DATA|FILE_APPEND_DATA|FILE_WRITE_ATTRIBUTES|FILE_WRITE_EA|FILE_DELETE_CHILD|WRITE_DAC|DELETE|WRITE_OWNER)) {
+    if (groupAccessMask & (FILE_WRITE_DATA|FILE_APPEND_DATA|FILE_WRITE_ATTRIBUTES|FILE_WRITE_EA|FILE_DELETE_CHILD|WRITE_DAC|WIN32_DELETE|WRITE_OWNER)) {
       mode |= FileInfo::WGRP;
     }
     if (groupAccessMask & FILE_EXECUTE) {
@@ -275,7 +222,7 @@ FileInfo::FileInfo(const String& _path)
     if (everyoneAccessMask & (FILE_READ_DATA|FILE_READ_ATTRIBUTES|FILE_READ_EA|READ_CONTROL)) { // READ_CONTROL should not be required
       mode |= FileInfo::ROTH;
     }
-    if (everyoneAccessMask & (FILE_WRITE_DATA|FILE_APPEND_DATA|FILE_WRITE_ATTRIBUTES|FILE_WRITE_EA|FILE_DELETE_CHILD|WRITE_DAC|DELETE|WRITE_OWNER)) {
+    if (everyoneAccessMask & (FILE_WRITE_DATA|FILE_APPEND_DATA|FILE_WRITE_ATTRIBUTES|FILE_WRITE_EA|FILE_DELETE_CHILD|WRITE_DAC|WIN32_DELETE|WRITE_OWNER)) {
       mode |= FileInfo::WOTH;
     }
     if (everyoneAccessMask & FILE_EXECUTE) {

@@ -754,6 +754,8 @@ void FileSystem::removeFolder(const String& path)
 {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   ToWCharString _path(path);
+
+#if 0
   DWORD attributes = ::GetFileAttributes(_path);
   if ((attributes != INVALID_FILE_ATTRIBUTES) && (attributes & FILE_ATTRIBUTE_REPARSE_POINT)) {
     HANDLE link = ::CreateFile(
@@ -803,7 +805,7 @@ void FileSystem::removeFolder(const String& path)
         _throw FileSystemException("Unable to remove folder.", Type::getType<FileSystem>());
       }
       ::CloseHandle(link);
-      if (!::RemoveDirectory(_path)) {
+      if (!::RemoveDirectoryW(_path)) {
         _throw FileSystemException("Unable to remove folder.", Type::getType<FileSystem>());
       }
       // } else if (reparseHeader->ReparseTag == IO_REPARSE_TAG_SYMBOLIC_LINK) {
@@ -813,10 +815,17 @@ void FileSystem::removeFolder(const String& path)
       _throw FileSystemException("Unable to remove folder.", Type::getType<FileSystem>());
     }
   } else {
-    if (!::RemoveDirectory(_path)) {
+    if (!::RemoveDirectoryW(_path)) {
       _throw FileSystemException("Unable to remove folder.", Type::getType<FileSystem>());
     }
   }
+#endif
+
+  if (!::RemoveDirectoryW(_path)) {
+    DWORD error = GetLastError(); // getting for symbolic link ERROR_DIRECTORY
+    _throw FileSystemException("Unable to remove folder.", Type::getType<FileSystem>());
+  }
+
 #else // unix
   if (rmdir(path.getElements())) {
     _throw FileSystemException("Unable to remove folder.", Type::getType<FileSystem>());
@@ -1210,10 +1219,13 @@ void FileSystem::makeHardLink(const String& target, const String& path)
 void FileSystem::makeLink(const String& target, const String& path)
 {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
-  const bool folder = folderExists(path);
+  ToWCharString _path(path.getElements());
+  ToWCharString _target(target.getElements());
+  DWORD result = ::GetFileAttributes(_target);
+  bool folder = (result != INVALID_FILE_ATTRIBUTES) && ((result & FILE_ATTRIBUTE_DIRECTORY) != 0);
   BOOLEAN status = ::CreateSymbolicLinkW(
-    ToWCharString(path.getElements()),
-    ToWCharString(target.getElements()),
+    _path,
+    _target,
     (folder ? SYMBOLIC_LINK_FLAG_DIRECTORY : 0) | SYMBOLIC_LINK_FLAG_ALLOW_UNPRIVILEGED_CREATE
   );
   // DWORD error = ::GetLastError();
@@ -1334,7 +1346,7 @@ void FileSystem::makeLink(const String& target, const String& path)
   if (error) {
     if (isDirectory) {
       if (directoryCreated) {
-        ::RemoveDirectory(ToWCharString(path)); // clean up
+        ::RemoveDirectoryW(ToWCharString(path)); // clean up
       }
     } else {
       ::DeleteFile(ToWCharString(path)); // clean up // TAG: can we use FILE_FLAG_DELETE_ON_CLOSE
@@ -2267,6 +2279,17 @@ public:
       TEST_ASSERT(FileSystem::isLink(symlink));
       unsigned int type = FileSystem::getType(symlink); // follows link
       TEST_ASSERT((type & FileSystem::LINK) == 0);
+
+      const String symlinkFolder = testFolder / "folder";
+      if (FileSystem::isLink(symlinkFolder)) {
+        FileSystem::removeFolder(symlinkFolder);
+      }
+      try {
+        FileSystem::makeLink("..", symlinkFolder);
+      } catch (...) {
+        TEST_ASSERT(!"Failed to make symbolic folder link.");
+      }
+      TEST_ASSERT(FileSystem::folderExists(symlinkFolder));
 
       String s = File::readFile(symlink);
       TEST_ASSERT(s == exampleText);

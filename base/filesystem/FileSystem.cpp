@@ -27,6 +27,7 @@
 #include <base/UnitTest.h>
 #include <base/build.h>
 
+// TAG: add method to normalize . and .. for path and multiple //
 // TAG: need method to traverse links for win32 platforms
 
 #if 0
@@ -181,6 +182,9 @@ _COM_AZURE_DEV__BASE__GLOBAL_PRINT();
 
 namespace {
 
+  const String currentFolder(".");
+  const String parentFolder("..");
+
   /** Internal attribute specifying whether or not file system links are supported by the platform. */
   int cachedSupportsLinks = -1; // -1 not cached, 0 false, and 1 true
     /** Counter used for generating temporary file names. */
@@ -188,6 +192,25 @@ namespace {
 
   /** Specifies the folder level separator. */
   constexpr char SEPARATOR = '/';
+
+  void normalizeSplit(Array<String>& paths)
+  {
+    // TAG: handle device item for win32
+    paths.ensureCapacity(paths.getSize());
+    MemorySize i = 0;
+    while (i < paths.getSize()) {
+      const String& p = paths[i];
+      if (p == currentFolder) {
+        paths.remove(i);
+      } else if ((i > 0) && (p == parentFolder) && (paths[i] != parentFolder)) {
+        paths.remove(i);
+        paths.remove(i - 1);
+        --i;
+      } else {
+        ++i;
+      }
+    }
+  }
 }
 
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
@@ -204,10 +227,20 @@ String FileSystem::getPath(const String& base, const String& relative) noexcept
 
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   String result(base.getLength() + sizeof("\\") + relative.getLength());
-  result.append(base).append("\\").append(relative);
+  result.append(base);
+  while (result && isSeparator(result.getAt(result.getLength() - 1))) {
+    result.removeAt(result.getLength() - 1);
+  }
+  result.append(SEPARATOR);
+  result.append(relative); // cant start with separator
 #else // unix
   String result(base.getLength() + sizeof("/") + relative.getLength());
-  result.append(base).append("/").append(relative);
+  result.append(base);
+  while (result && isSeparator(result.getAt(result.getLength() - 1))) {
+    result.removeAt(result.getLength() - 1);
+  }
+  result.append(SEPARATOR);
+  result.append(relative); // cant start with separator
 #endif // flavor
   return result;
 }
@@ -259,26 +292,29 @@ bool FileSystem::isAbsolutePath(const String& path) noexcept
   String::ReadIterator i = path.getBeginReadIterator();
   String::ReadIterator end = path.getEndReadIterator();
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
-  if ((i < end) && ASCIITraits::isAlpha(*i++)) {
-    if ((i < end) && (*i++ == ':')) {
-      return (i < end) && (isSeparator(*i));
+  if ((end - i) >= 2) {
+    if ((i[0] == '\\') && (i[1] == '\\')) { // UNC path
+      ++i;
+      ++i;
+      return true;
+    } else if (ASCIITraits::isAlpha(i[0]) && (i[1] == ':')) { // check for device like C:
+      ++i;
+      ++i;
     }
   }
-  return false;
-#else // unix
-  return (i < end) && (*i == SEPARATOR);
-#endif // flavor
+#endif
+  return (i < end) && isSeparator(*i);
 }
 
 bool FileSystem::isFolderPath(const String& path) noexcept
 {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
-  unsigned int length = path.getLength();
+  MemorySize length = path.getLength();
   if (length == 0) {
     return false;
   }
   char lastChar = path[length - 1];
-  return (lastChar == '/') || (lastChar == '\\');
+  return isSeparator(lastChar);
 #else // unix
   return path.endsWith("/");
 #endif // flavor
@@ -835,11 +871,6 @@ void FileSystem::makeFolder(const String& path)
   }
 #endif // flavor
 }
-
-#if 0
-String FileSystem::join(const Array<String>& paths);
-Array<String> FileSystem::split(const String& path);
-#endif
 
 MemoryDiff FileSystem::findSeparator(const String& path, MemorySize start)
 {
@@ -1503,34 +1534,83 @@ public:
 
 Array<String> FileSystem::split(const String path)
 {
-  _COM_AZURE_DEV__BASE__NOT_IMPLEMENTED();
   Array<String> result;
+  result.ensureCapacity(32);
+  
   MemorySize current = 0;
-  MemorySize start = 0;
-  while (true) {
+  const MemorySize length = path.getLength();
+  
+  bool absolute = false;
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
+  if (length >= 2) { // check for device C:
+    if ((path[0] == '\\') && (path[1] == '\\')) { // UNC
+      current = 2;
+      absolute = true;
+    } else if (ASCIITraits::isAlpha(path[0]) && (path[1] == ':')) {
+      current = 2;
+      if (length > current) {
+        absolute = isSeparator(path[2]); // this makes path absolute
+        current = 3;
+      }
+    } else if (length >= 1) {
+      absolute = isSeparator(path[0]); // this makes path absolute
+    }
+  } else if (length >= 1) {
+    absolute = isSeparator(path[0]);
+    current = absolute ? 1 : 0;
+  }
+#else
+  if (length >= 1) {
+    absolute = isSeparator(path[0]);
+    current = absolute ? 1 : 0;
+  }
+#endif
+  
+  // TAG: strip or change separators to use default separator
+  if (current > 0) {
+    result.append(path.substring(0, current));
+  }
+  while (current < length) {
     MemoryDiff index = FileSystem::findSeparator(path, current);
     if (index < 0) {
+      result.append(path.substring(current));
       break;
+    } else if (current < index) {
+      String subpath = path.substring(current, index + 1);
+      result.append(subpath);
+    } else {
+      // skip if empty
     }
-    result.append(path.substring(current, start));
+    current = index + 1;
   }
-  result.append(path.substring(start + 1));
   return result;
 }
 
-String FileSystem::join(const Array<String>& paths)
+String FileSystem::join(const Array<String>& _paths)
 {
+  if (!_paths) {
+    return String();
+  }
+  Array<String> paths = _paths;
+  normalizeSplit(paths);
   if (!paths) {
     return String();
   }
+
+#if 0
   MemorySize size = 0;
   for (const String& path : paths) {
     size += path.getLength() + 1;
   }
   String result(size);
+#endif
+  String result;
   for (const String& path : paths) {
+    if (!path) {
+      continue;
+    }
     if (result) {
-      result.append(getPath(result, path));
+      result = getPath(result, path);
     } else {
       result.append(path);
     }
@@ -1538,25 +1618,49 @@ String FileSystem::join(const Array<String>& paths)
   return result;
 }
 
+String FileSystem::normalize(const String& path)
+{
+  Array<String> paths = split(path);
+  normalizeSplit(paths);
+  return join(paths);
+}
+
 String FileSystem::getRelativePath(const String& _folder, const String& _path)
 {
-  _COM_AZURE_DEV__BASE__NOT_IMPLEMENTED();
   const String current = getCurrentFolder();
   const String folder = toAbsolutePath(current, _folder);
   const String path = toAbsolutePath(current, _path);
   Array<String> a = split(folder);
   Array<String> b = split(path);
-
+  
   MemorySize i = 0;
   // skip common folders
   while ((i < a.getSize()) && (i < b.getSize())) {
     if (a[i] != b[i]) {
       break;
     }
+    ++i;
   }
-
-  // TAG: add .. if required parent
-  return join(b);
+  
+  if (i == 0) {
+    return _path;
+  }
+  
+  // a/b/c/d/e/f
+  // a/b/c/g/h/i
+  // ../../../g/h/i
+  Array<String> result;
+  result.ensureCapacity(a.getSize() + b.getSize());
+  MemorySize j = a.getSize();
+  while (j > i) {
+    --j;
+    result.append(parentFolder);
+  }
+  while (i < b.getSize()) {
+    result.append(b[i]);
+    ++i;
+  }
+  return join(result);
 }
 
 // TAG: need option disallow transparent link/strict transparency
@@ -2259,68 +2363,27 @@ public:
   TEST_IMPACT(NORMAL);
   TEST_EXTERNAL();
 
-  /**
-    Creates a file from the given string. Saves the raw bytes.
-
-    @return Returns true on success.
-  */
-  static bool createFile(const String& path, const String& text)
-  {
-    try {
-      File file(path, File::WRITE, File::CREATE);
-      file.write(text.getBytes(), text.getLength());
-      return true;
-    } catch (...) {
-    }
-    return false;
-  }
-
-  /**
-    Creates a file from the given string. Saves the raw bytes.
-
-    @return Returns true on success.
-  */
-  static bool createFile(const String& path, const uint8* buffer, MemorySize size)
-  {
-    try {
-      File file(path, File::WRITE, File::CREATE);
-      file.write(buffer, size);
-      return true;
-    } catch (...) {
-    }
-    return false;
-  }
-
-  /**
-    Reads raw bytes from file to string. Do NOT assume UTF-8.
-  */
-  static String readFile(const String& path/*, Encoding encoding*/) // TAG: enforce encoding, RAW, ASCII/UTF-8 Unicode, UTF-8 ISO
-  {
-    String result;
-    try {
-      File file(path, File::READ, 0);
-      result.forceToLength(file.getSize());
-      uint8* buffer = reinterpret_cast<uint8*>(result.getElements());
-      unsigned int bytesRead = file.read(buffer, result.getLength());
-      BASSERT(bytesRead == result.getLength());
-    } catch (...) {
-      return String();
-    }
-    return result;
-  }
-
   void run() override
   {
-#if 0 // add support in UnitTest
-    // TAG: add support for clean up?
-    String root;
-    if (!FileSystem::folderExists("FileSystem"))
-      root = FileSystem::makeFolder("FileSystem");
+    const Path testFolder = makeFolder();
+    
+    auto split = FileSystem::split("a/b/c/");
+    if (TEST_IS_DEFINED("writeResults")) {
+      fout << "Split:" << split << ENDL;
     }
-#endif
+    TEST_ASSERT(split == (decltype(split){"a/","b/","c/"}));
+    split = FileSystem::split("/a/b/c/");
+    if (TEST_IS_DEFINED("writeResults")) {
+      fout << "Split:" << split << ENDL;
+    }
+    TEST_ASSERT(split == (decltype(split){"/","a/","b/","c/"}));
 
-    String relativePath = FileSystem::getRelativePath("a/b/c/d/e/f", "a/b/c/g/h/i");
-    String relativePath2 = FileSystem::join({"..", "..", "g", "h", "i"});
+    String relativePath = FileSystem::getRelativePath("a/b/c/", "a/b/c/g/h/i");
+    String relativePath2 = FileSystem::join({"g", "h", "i"});
+    TEST_ASSERT(relativePath == relativePath2);
+
+    relativePath = FileSystem::getRelativePath("a/b/c/d/e/f", "a/b/c/g/h/i");
+    relativePath2 = FileSystem::join({"..", "..", "..", "g", "h", "i"});
     TEST_ASSERT(relativePath == relativePath2);
 
     String path = FileSystem::getFolder(FileSystem::TEMP);
@@ -2335,91 +2398,81 @@ public:
     path = FileSystem::getCurrentFolder();
     TEST_ASSERT(path);
 
-    // TAG: add subfolder with name of test
-    try {
-      FileSystem::makeFolder("testdata");
-    } catch (...) {
-    }
-    TEST_ASSERT(FileSystem::entryExists("testdata"));
-    TEST_ASSERT(FileSystem::folderExists("testdata"));
-    TEST_ASSERT(!FileSystem::isAbsolutePath("testdata"));
+    TEST_ASSERT(FileSystem::entryExists(testFolder));
+    TEST_ASSERT(FileSystem::folderExists(testFolder));
+    TEST_ASSERT(!FileSystem::isAbsolutePath(testFolder));
 
+    String textfile = testFolder / "remove.txt";
     const String exampleText = "Hello, World!\n";
-    TEST_ASSERT(createFile("testdata/remove.txt", exampleText));
-    TEST_ASSERT(!FileSystem::fileExists("testdata"));
-    TEST_ASSERT(FileSystem::folderExists("testdata"));
-    TEST_ASSERT(FileSystem::getSize("testdata/remove.txt") == 14);
-    TEST_ASSERT(!FileSystem::isLink("testdata/remove.txt"));
+    TEST_ASSERT(File::createFile(textfile, exampleText));
+    TEST_ASSERT(!FileSystem::fileExists(testFolder));
+    TEST_ASSERT(FileSystem::folderExists(testFolder));
+    TEST_ASSERT(FileSystem::getSize(textfile) == 14);
+    TEST_ASSERT(!FileSystem::isLink(textfile));
 
-    unsigned int type = FileSystem::getType("testdata/remove.txt");
+    unsigned int type = FileSystem::getType(textfile);
     TEST_ASSERT((type & FileSystem::LINK) == 0);
     TEST_ASSERT((type & FileSystem::REGULAR) != 0);
     TEST_ASSERT((type & FileSystem::FOLDER) == 0);
 
-    type = FileSystem::getType("testdata");
+    type = FileSystem::getType(testFolder);
     TEST_ASSERT((type & FileSystem::FOLDER) != 0);
 
     if (FileSystem::doesSupportLinks()) {
-      if (FileSystem::fileExists("testdata/hardlink.txt")) {
-        FileSystem::removeFile("testdata/hardlink.txt");
+      const String hardlink = testFolder / "hardlink.txt";
+      if (FileSystem::fileExists(hardlink)) {
+        FileSystem::removeFile(hardlink);
       }
 
-      TEST_ASSERT(!FileSystem::entryExists("testdata/hardlink.txt"));
+      TEST_ASSERT(!FileSystem::entryExists(hardlink));
       try {
-        FileSystem::makeHardLink("testdata/remove.txt", "testdata/hardlink.txt");
+        FileSystem::makeHardLink(textfile, hardlink);
       } catch (...) {
         TEST_ASSERT(!"Failed to make hard link.");
       }
 
-      if (FileSystem::isLink("testdata/symlink.txt")) {
-        FileSystem::removeFile("testdata/symlink.txt");
+      const String symlink = testFolder / "symlink.txt";
+      if (FileSystem::isLink(symlink)) {
+        FileSystem::removeFile(symlink);
       }
 
-      TEST_ASSERT(FileSystem::entryExists("testdata/remove.txt"));
-      TEST_ASSERT(!FileSystem::isLink("testdata/symlink.txt"));
+      TEST_ASSERT(FileSystem::entryExists(textfile));
+      TEST_ASSERT(!FileSystem::isLink(symlink));
       try {
-        FileSystem::makeLink("remove.txt", "testdata/symlink.txt");
+        FileSystem::makeLink("remove.txt", symlink);
       } catch (...) {
         TEST_ASSERT(!"Failed to make symbolic link.");
       }
-      TEST_ASSERT(FileSystem::isLink("testdata/symlink.txt"));
-      unsigned int type = FileSystem::getType("testdata/symlink.txt"); // follows link
+      TEST_ASSERT(FileSystem::isLink(symlink));
+      unsigned int type = FileSystem::getType(symlink); // follows link
       TEST_ASSERT((type & FileSystem::LINK) == 0);
 
-      try { // make sure we read target file
-        File file("testdata/symlink.txt", File::READ, 0);
-        uint8 buffer[4096];
-        TEST_ASSERT(file.getSize() == exampleText.getLength());
-        unsigned int bytesRead = file.read(buffer, exampleText.getLength());
-        TEST_ASSERT(bytesRead == exampleText.getLength());
-        String s(reinterpret_cast<const char*>(buffer), bytesRead);
-        TEST_ASSERT(s == exampleText);
-      } catch (...) {
-        TEST_ASSERT(!"Failed to open target for symbolic link.");
-      }
-
-      String target = FileSystem::getLinkTarget("testdata/symlink.txt");
+      String s = File::readFile(symlink);
+      TEST_ASSERT(s == exampleText);
+      
+      String target = FileSystem::getLinkTarget(symlink);
       TEST_EQUAL(target, "remove.txt");
     }
 
     try {
-      FileSystem::removeFile("testdata/remove.txt");
+      FileSystem::removeFile(textfile);
     } catch (...) {
       TEST_ASSERT(!"Failed to remove file.");
     }
 
+    const String abc = testFolder / "a" / "b" / "c";
     try {
-      FileSystem::makeFolderRecursive("testdata/a/b/c");
+      FileSystem::makeFolderRecursive(abc);
     } catch (...) {
       TEST_ASSERT(!"Failed to create folders.");
     }
 
     try {
-      FileSystem::removeFolder("testdata/a/b/c");
+      FileSystem::removeFolder(abc);
     } catch (...) {
       TEST_ASSERT(!"Failed to remove folder.");
     }
-    TEST_ASSERT(!FileSystem::folderExists("testdata/a/b/c"));
+    TEST_ASSERT(!FileSystem::folderExists(abc));
 
     // TAG: add support for removing all files/subfolders
 

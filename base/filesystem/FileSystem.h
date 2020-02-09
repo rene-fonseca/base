@@ -138,7 +138,20 @@ public:
     @return the relative path if base is blank.
   */
   static String getPath(const String& base, const String& relative) noexcept;
-  
+
+  /**
+    Returns the combined path of the specified base and relative path.
+
+    @param base The base path.
+    @param relative The relative path.
+
+    @return the relative path if base is blank.
+  */
+  static inline String join(const String& base, const String& relative) noexcept
+  {
+    return getPath(base, relative);
+  }
+
   enum Component {
     FOLDER_PATH, /**< The folder with an ending separator (i.e. '/' or '\'). */
     FILENAME, /**< The name and extension. */
@@ -384,6 +397,11 @@ public:
   static String join(const Array<String>& paths);
 
   /**
+    Returns the normalized path.
+  */
+  static String normalize(const String& path);
+  
+  /**
     Returns the quota.
 
     @param path The path to the device.
@@ -415,19 +433,19 @@ public:
 /** Concats paths. */
 inline Path operator/(const String& a, const Path& b)
 {
-  return FileSystem::getPath(a, b);
+  return FileSystem::join(a, b);
 }
 
 /** Concats paths. */
 inline Path operator/(const Path& a, const String& b)
 {
-  return FileSystem::getPath(a, b);
+  return FileSystem::join(a, b);
 }
 
 /** Concats paths. */
 inline Path operator/(const Path& a, const Path& b)
 {
-  return FileSystem::getPath(a, b);
+  return FileSystem::join(a, b);
 }
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

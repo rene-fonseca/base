@@ -399,6 +399,22 @@ void FormatOutputStream::addCharacterField(const char* buffer, MemorySize size)
     justification = Symbols::LEFT; // TAG: is this locale specific
   }
 
+#if 0
+  if (true) { // we could add an option to highlight fields
+    static bool flip = false;
+    char buffer[sizeof("\033[4xm")];
+    char* dest = buffer;
+    *dest++ = '\033';
+    *dest++ = '[';
+    *dest++ = '4';
+    *dest++ = flip ? '4' :'0'; // BLUE and BLACK
+    *dest++ = 'm';
+    *dest = 0;
+    flip = !flip;
+    write(Cast::pointer<const uint8*>(buffer), getArraySize(buffer) - 1); // write characters
+  }
+#endif
+
   const MemoryDiff numberOfChars = Unicode::getUTF8StringLength(reinterpret_cast<const uint8*>(buffer), size);
   if (justification == Symbols::LEFT) {
     write(Cast::pointer<const uint8*>(buffer), static_cast<unsigned int>(size)); // write characters

@@ -1532,13 +1532,13 @@ public:
 };
 #endif
 
-Array<String> FileSystem::split(const String path)
+Array<String> FileSystem::split(const String& path)
 {
   Array<String> result;
   result.ensureCapacity(32);
   
-  MemorySize current = 0;
-  const MemorySize length = path.getLength();
+  MemoryDiff current = 0;
+  const MemoryDiff length = path.getLength();
   
   bool absolute = false;
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)

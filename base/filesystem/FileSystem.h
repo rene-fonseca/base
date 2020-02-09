@@ -396,7 +396,7 @@ public:
     
     Separators are not included in result except the first item it is is to indicate root.
   */
-  static Array<String> split(const String path);
+  static Array<String> split(const String& path);
 
   /**
     Joins the paths.

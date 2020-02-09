@@ -1618,6 +1618,21 @@ String FileSystem::join(const Array<String>& _paths)
   return result;
 }
 
+String FileSystem::join(const std::initializer_list<String>& paths) noexcept
+{
+  String result;
+  if (paths.size() == 0) {
+    return result;
+  }
+  auto i = paths.begin();
+  const auto end = paths.end();
+  result = *i++;
+  while (i != end) {
+    result = join(result, *i++);
+  }
+  return result;
+}
+
 String FileSystem::normalize(const String& path)
 {
   Array<String> paths = split(path);

@@ -145,12 +145,19 @@ public:
     @param base The base path.
     @param relative The relative path.
 
-    @return the relative path if base is blank.
+    @return Returns the relative path if base is blank.
   */
   static inline String join(const String& base, const String& relative) noexcept
   {
     return getPath(base, relative);
   }
+
+  /**
+    Returns the combined path of the specified base and relative path.
+
+    @param paths The paths to join.
+  */
+  static String join(const std::initializer_list<String>& paths) noexcept;
 
   enum Component {
     FOLDER_PATH, /**< The folder with an ending separator (i.e. '/' or '\'). */
@@ -161,7 +168,7 @@ public:
   };
   
   /* Quota. */
-  class Quota {
+  class _COM_AZURE_DEV__BASE__API Quota {
   public:
 
     /** Hard limit. */
@@ -375,7 +382,7 @@ public:
   /**
     Returns the relative path to the given folder.
 
-    getRelativePath("a/b/c/d/e/f", "a/b/c/g/h/i") returns "../../g/h/i".
+    getRelativePath("a/b/c/d/e/f", "a/b/c/g/h/i") returns "../../../g/h/i".
   */
   static String getRelativePath(const String& folder, const String& path);
 
@@ -418,11 +425,28 @@ private:
 public:
 
   /** Initializes path. */
-  inline Path(const String& _path)
-     : path(_path)
+  inline Path() noexcept
   {
   }
 
+  /** Initializes path. */
+  inline Path(const String& _path) noexcept
+    : path(_path)
+  {
+  }
+
+  /** Initializes path. */
+  inline Path(String&& _path) noexcept
+    : path(moveObject(_path))
+  {
+  }
+
+  /** Initializes path. */
+  inline Path(const std::initializer_list<String>& paths)
+  {
+    path = FileSystem::join(paths);
+  }
+  
   /** Returns the path. */
   inline operator const String&() const noexcept
   {

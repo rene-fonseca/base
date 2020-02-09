@@ -1626,6 +1626,88 @@ File::~File()
 {
 }
 
+bool File::createFile(const String& path, const String& text)
+{
+  return createFile(path, text.getBytes(), text.getLength());
+}
+
+bool File::createFile(const String& path, const uint8* buffer, MemorySize size)
+{
+  try {
+    File file(path, File::WRITE, File::CREATE);
+    file.write(buffer, size);
+    return true;
+  } catch (...) {
+  }
+  return false;
+}
+
+#if 0
+// could use a separate empty string to differentiate empty from invalid
+const String& getInvalidString()
+{
+  static String s(Default());
+  return s;
+}
+
+bool isInvalidString(const String& string)
+{
+  const String& invalidString = getInvalidString();
+  if (invalidString.getContainer() == string.getContainer()) {
+    return true;
+  }
+  return false;
+}
+#endif
+
+Validified<String> File::readFile(const String& path, Encoding encoding)
+{
+  String result;
+  try {
+    File file(path, File::READ, 0);
+    result.forceToLength(file.getSize());
+    uint8* buffer = reinterpret_cast<uint8*>(result.getElements());
+    unsigned int bytesRead = file.read(buffer, result.getLength());
+    BASSERT(bytesRead == result.getLength());
+  } catch (...) {
+    return UNSPECIFIED;
+  }
+  
+  switch (encoding) {
+  case ENCODING_RAW:
+    break;
+  case ENCODING_ASCII:
+    for (uint8 ch :  result) {
+      if (ch >= 0x80) {
+        return UNSPECIFIED;
+      }
+    }
+    break;
+  case ENCODING_UTF8:
+    {
+      // TAG: need to check for Unicode only
+      MemorySize size = result.getLength();
+      MemoryDiff length = Unicode::getUTF8StringLength(result.getBytes(), result.getBytes() + size);
+      if (length < 0) {
+        return UNSPECIFIED;
+      }
+    }
+    break;
+  case ENCODING_UTF8_ISO:
+    {
+      // TAG: need to check for ISO
+      MemorySize size = result.getLength();
+      MemoryDiff length = Unicode::getUTF8StringLength(result.getBytes(), result.getBytes() + size);
+      if (length < 0) {
+        return UNSPECIFIED;
+      }
+    }
+    break;
+  }
+  
+  return result;
+}
+
 #if defined(_COM_AZURE_DEV__BASE__TESTS)
 
 class TEST_CLASS(File) : public UnitTest {
@@ -1638,18 +1720,15 @@ public:
 
   void run() override
   {
-    try {
-      FileSystem::makeFolder("testdata");
-    } catch (...) {
-    }
+    const Path testFolder = makeFolder();
 
-    File f1("testdata/test.txt", File::WRITE, File::CREATE);
+    File f1(testFolder / "test.txt", File::WRITE, File::CREATE);
     const char* text = "Hello, World!\n";
     f1.write(reinterpret_cast<const uint8*>(text), getNullTerminatedLength(text));
     f1.close();
 
 #if 0 // TAG: fix end of file handling
-    File f2("testdata/test.txt", File::READ, 0);
+    File f2(testFolder / "test.txt", File::READ, 0);
     uint8 buffer[128];
     unsigned int bytesRead = f2.read(buffer, getArraySize(buffer));
     f2.close();

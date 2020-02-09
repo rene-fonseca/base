@@ -22,6 +22,7 @@
 #include <base/Resource.h>
 #include <base/io/async/AsynchronousIOStream.h>
 #include <base/security/AccessControlList.h>
+#include <base/ValidifiedResult.h>
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
@@ -320,7 +321,36 @@ public:
     unsigned int bytesToWrite,
     unsigned long long offset,
     AsynchronousWriteEventListener* listener);
+  
+  /**
+    Creates a file from the given string. Saves the raw bytes.
 
+    @return Returns true on succefss.
+  */
+  static bool createFile(const String& path, const uint8* buffer, MemorySize size);
+
+  /**
+    Creates a file from the given string. Saves the raw bytes.
+
+    @return Returns true on success.
+  */
+  static bool createFile(const String& path, const String& text);
+  
+  enum Encoding {
+    ENCODING_RAW, //< Any bytes
+    ENCODING_ASCII, //< Only ASCII
+    ENCODING_UTF8, //< UTF-8 encoding with Unicode codes
+    ENCODING_UTF8_ISO //< UTF-8 encoding with ISO codes
+  };
+  
+  /**
+    Reads bytes from file to string.
+   
+    @param path The file path.
+    @param encoding The encoding. Defaults to UTF-8 Unicode.
+  */
+  static Validified<String> readFile(const String& path, Encoding encoding = ENCODING_UTF8);
+  
   /**
     Destroys the file.
   */

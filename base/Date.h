@@ -299,6 +299,12 @@ public:
   {
     return date;
   }
+  
+  /** Returns true if date is not epoch. */
+  inline operator bool() const noexcept
+  {
+    return date != 0;
+  }
 
   /**
     Adds a bias (in microseconds) to the date.

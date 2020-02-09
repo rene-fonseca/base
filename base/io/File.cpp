@@ -1681,17 +1681,21 @@ public:
     const Path testFolder = makeFolder();
 
     File f1(testFolder / "test.txt", File::WRITE, File::CREATE);
-    const char* text = "Hello, World!\n";
-    f1.write(reinterpret_cast<const uint8*>(text), getNullTerminatedLength(text));
+    const String text = "Hello, World!\n";
+    f1.write(text.getBytes(), text.getLength());
     f1.close();
-
-#if 0 // TAG: fix end of file handling
+    
     File f2(testFolder / "test.txt", File::READ, 0);
+    TEST_ASSERT(f2.getSize() == text.getLength());
+    TEST_ASSERT(f2.getLastAccess());
+    TEST_ASSERT(f2.getLastChange());
+    TEST_ASSERT(f2.getLastModification());
+    
     uint8 buffer[128];
-    unsigned int bytesRead = f2.read(buffer, getArraySize(buffer));
+    unsigned int bytesRead = f2.read(buffer, f2.getSize());
+    TEST_ASSERT(bytesRead == text.getLength());
+
     f2.close();
-    TEST_ASSERT(bytesRead == getNullTerminatedLength(text));
-#endif
   }
 };
 

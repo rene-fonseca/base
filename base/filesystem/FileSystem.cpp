@@ -441,7 +441,7 @@ String FileSystem::getCurrentFolder()
 #else // unix
   Thread::UseThreadLocalBuffer _buffer;
   Allocator<uint8>& buffer = _buffer;
-  BASSERT(buffer.getSize() > PATH_MAX);
+  BASSERT(buffer.getSize() >= PATH_MAX);
   char* path = ::getcwd((char*)buffer.getElements(), buffer.getSize());
   if (!INLINE_ASSERT(path)) {
     _throw FileSystemException(

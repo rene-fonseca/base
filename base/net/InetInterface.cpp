@@ -15,6 +15,7 @@
 #include <base/net/InetInterface.h>
 #include <base/concurrency/Thread.h>
 #include <base/string/StringOutputStream.h>
+#include <base/UnitTest.h>
 #include <base/build.h>
 
 // TAG: remove index attribute/support only rely on name of interface
@@ -1000,7 +1001,50 @@ InetInterface::InetInterface(const InetInterface& copy) noexcept
     broadcast(copy.broadcast),
     destination(copy.destination),
     metric(copy.metric),
-    ethernet(copy.ethernet) {
+    ethernet(copy.ethernet)
+{
 }
+
+#if defined(_COM_AZURE_DEV__BASE__TESTS)
+
+class TEST_CLASS(InetInterface) : public UnitTest {
+public:
+
+  TEST_PRIORITY(500);
+  TEST_PROJECT("base/net");
+  TEST_IMPACT(NORMAL);
+  TEST_EXTERNAL();
+
+  void run() override
+  {
+    InetInterface inet;
+#if 0
+    ArrayMap<String, unsigned int> is = inet.getInterfaceNames();
+    for (const auto& e : is) {
+      e.getKey();
+    }
+#endif
+    List<InetInterface> interfaces = inet.getInterfaces();
+    // Set<String> names;
+    for (const auto& i : interfaces) {
+      // names.add(i.getName());
+      TEST_ASSERT(i.getName());
+#if 0
+      fout << "NAME=" << i.getName() << ENDL;
+      fout << "INDEX=" << i.getIndex() << ENDL;
+      fout << "ADDRESS=" << i.getAddress() << ENDL;
+      fout << "NETMASK=" << i.getNetmask() << ENDL;
+      fout << "DESTINATION=" << i.getDestination() << ENDL;
+      fout << "BROADCAST=" << i.getBroadcast() << ENDL;
+      fout << "METRIC=" << i.getMetric() << ENDL;
+      // i.getEthernetAddress();
+#endif
+    }
+  }
+};
+
+TEST_REGISTER(InetInterface);
+
+#endif
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

@@ -716,32 +716,21 @@ void ExpressionParser::parse() {
   }
 }
 
-String ExpressionParser::getString() const {
+String ExpressionParser::getString() const
+{
   List<Node>::ReadEnumerator enu = nodes.getReadEnumerator();
   Stack<String> stack;
   while (enu.hasNext()) {
     Node node = enu.next();
     switch (node.type) {
     case ExpressionEvaluator::VALUE:
-      {
-        StringOutputStream stream;
-        stream << node.value << FLUSH;
-        stack.push(stream.getString());
-      }
+      stack.push(StringOutputStream() << node.value);
       break;
     case ExpressionEvaluator::VARIABLE:
-      {
-        StringOutputStream stream;
-        stream << provider.getVariable(node.variable) << FLUSH;
-        stack.push(stream.getString());
-      }
+      stack.push(StringOutputStream() << provider.getVariable(node.variable));
       break;
     case ExpressionEvaluator::CONSTANT:
-      {
-        StringOutputStream stream;
-        stream << provider.getConstant(node.constant) << FLUSH;
-        stack.push(stream.getString());
-      }
+      stack.push(StringOutputStream() << provider.getConstant(node.constant));
       break;
     case ExpressionEvaluator::BUILTIN:
       switch (node.builtin) {

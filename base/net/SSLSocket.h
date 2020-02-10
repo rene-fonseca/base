@@ -32,8 +32,41 @@ public:
 
   SSLSocket();
 
-  // void connnect(StreamSocket socket);
-  
+  /**
+    Creates secure socket.
+  */
+  void createSecure(StreamSocket socket, const String& pem);
+
+  void connect(const InetAddress& address, unsigned short port);
+
+  /**
+    Fills the buffer with bytes from the socket input stream. Blocks if asked
+    to read more bytes than available. Raises EndOfFile if end of stream has
+    been reached.
+    
+    @param buffer The buffer.
+    @param size The size of the buffer.
+    @param nonblocking Select nonblocking mode.
+    @return The actual number of bytes read.
+  */
+  unsigned int read(
+    uint8* buffer,
+    unsigned int size,
+    bool nonblocking = false);
+
+  /**
+    Writes bytes in buffer to stream.
+
+    @param buffer The buffer containing the bytes to be written.
+    @param size The number of bytes to be written.
+    @param nonblocking Select nonblocking mode.
+    @return The actual number of bytes written.
+  */
+  unsigned int write(
+    const uint8* buffer,
+    unsigned int size,
+    bool nonblocking = false);
+
   ~SSLSocket();
 };
 

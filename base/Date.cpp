@@ -21,6 +21,7 @@
 #include <base/concurrency/Thread.h>
 #include <base/string/StringOutputStream.h>
 #include <base/string/Locale.h>
+#include <base/UnitTest.h>
 #include <base/build.h>
 
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
@@ -1269,5 +1270,48 @@ FormatOutputStream& operator<<(
   stream.addDateField(date);
   return stream;
 }
+
+#if defined(_COM_AZURE_DEV__BASE__TESTS)
+
+class TEST_CLASS(Date) : public UnitTest {
+public:
+
+  TEST_PRIORITY(50);
+  TEST_PROJECT("base");
+
+  void run() override
+  {
+    Date now = Date::getNow();
+#if 0
+    // fout << "NOW=" << now << ENDL;
+    TEST_ASSERT(now);
+
+    Date d1 = Date::getTime(1, 0, 0);
+    TEST_ASSERT(!d1);
+    Date d2 = Date::getDate(1, 1, 2020);
+    TEST_ASSERT(d2);
+    Date d3 = Date::getDate(0, 0, 0, 1, 1, 2020);
+    TEST_ASSERT(d3);
+    
+    Date d4(d3.getValue());
+    // fout << d4 << ENDL;
+    
+    Date::DateTime time;
+    d3.split(time);
+    TEST_ASSERT(time.year == 2020);
+    
+    d3.getUTCSecond();
+    d3.getUTCMinute();
+    d3.getUTCHour();
+    d3.getUTCDay();
+    d3.getUTCMonth();
+    d3.getUTCYear();
+#endif
+  }
+};
+
+TEST_REGISTER(Date);
+
+#endif
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

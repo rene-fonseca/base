@@ -208,8 +208,7 @@ public:
     @param local Specifies that the time is given in local time. The default is
     UTC time.
   */
-  static Date getTime(
-    int second, int minute, int hour, bool local = false);
+  static Date getTime(int second, int minute, int hour, bool local = false);
   
   /**
     Returns date object for the specified date. Invalid values will be
@@ -221,8 +220,7 @@ public:
     @param local Specifies that the time is given in local time. The default is
     UTC time.
   */
-  static Date getDate(
-    int day, int month, int year, bool local = false);
+  static Date getDate(int day, int month, int year, bool local = false);
 
   /**
     Returns date object for the specified date and time. Invalid values will be
@@ -420,9 +418,7 @@ public:
     @param local When true, specifies that the time should be presented in
     local time otherwise UTC is assumed. The Default is true (local).
   */
-  String format(
-    const String& format,
-    bool local = true) const;
+  String format(const String& format, bool local = true) const;
   
   /**
     Returns the date/time as a string.
@@ -431,9 +427,7 @@ public:
     @param local When true, specifies that the time should be presented in
     local time otherwise UTC is assumed. The Default is true (local).
   */
-  WideString format(
-    const WideString& format,
-    bool local = true) const;
+  WideString format(const WideString& format, bool local = true) const;
 };
 
 _COM_AZURE_DEV__BASE__API FormatOutputStream& operator<<(

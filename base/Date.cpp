@@ -361,7 +361,6 @@ int64 Date::getBias() noexcept
 Date Date::getTime(int second, int minute, int hour, bool local)
 {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
-  // TAG: normalize input
   FILETIME nativeTime;
   SYSTEMTIME time = {1970, 1, 0, 1, static_cast<WORD>(hour), static_cast<WORD>(minute), static_cast<WORD>(second), 0};
 #if (_COM_AZURE_DEV__BASE__OS >= _COM_AZURE_DEV__BASE__WXP)
@@ -386,7 +385,7 @@ Date Date::getTime(int second, int minute, int hour, bool local)
 #endif
   return internal::nativeToDate(nativeTime);
 #else // unix
-  struct tm temp = {second, minute, hour, 1, 0, 1970, 0, 0, 0};
+  struct tm temp = {second, minute, hour, 1, 0, 70, 0, 0, 0};
   time_t time = mktime(&temp);
   if (time == ((time_t)-1)) {
     _throw DateException("Unable to represent date.", Type::getType<Date>());
@@ -399,13 +398,14 @@ Date Date::getTime(int second, int minute, int hour, bool local)
 #endif
 }
 
-Date Date::getDate(
-  int day, int month, int year, bool local)
+Date Date::getDate(int day, int month, int year, bool local)
 {
+  BASSERT((day >= 1) && (day <= 31));
+  BASSERT((month >= 0) && (month <= 11));
+
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
-  // TAG: normalize
   FILETIME nativeTime;
-  SYSTEMTIME time = {static_cast<WORD>(year), static_cast<WORD>(month), 0, static_cast<WORD>(day), 0, 0, 0, 0};
+  SYSTEMTIME time = {static_cast<WORD>(year), static_cast<WORD>(month) + 1, 0, static_cast<WORD>(day), 0, 0, 0, 0};
 #if (_COM_AZURE_DEV__BASE__OS >= _COM_AZURE_DEV__BASE__WXP)
   if (local) {
     bassert(
@@ -447,10 +447,15 @@ Date Date::getDate(
   int year,
   bool local)
 {
+  BASSERT((day >= 1) && (day <= 31));
+  BASSERT((month >= 0) && (month <= 11));
+  BASSERT(second >= 0);
+  BASSERT(minute >= 0);
+  BASSERT(hour >= 0);
+  
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
-  // TAG: normalize input
   FILETIME nativeTime;
-  SYSTEMTIME time = {static_cast<WORD>(year), static_cast<WORD>(month), 0, static_cast<WORD>(day), static_cast<WORD>(hour), static_cast<WORD>(minute), static_cast<WORD>(second), 0};
+  SYSTEMTIME time = {static_cast<WORD>(year), static_cast<WORD>(month) + 1, 0, static_cast<WORD>(day), static_cast<WORD>(hour), static_cast<WORD>(minute), static_cast<WORD>(second), 0};
 #if (_COM_AZURE_DEV__BASE__OS >= _COM_AZURE_DEV__BASE__WXP)
   if (local) {
     bassert(
@@ -523,6 +528,16 @@ Date::Date(const DateTime& dateTime) noexcept
     (seconds + days * SECONDS_PER_DAY) * 1000000LL;
 }
 
+Date Date::getLocalTime() const noexcept
+{
+  return date; // + bias;
+}
+
+Date Date::getUTCTime() const noexcept
+{
+  return date; // - bias;
+}
+
 // TAG: add getUTCMillisecond
 
 int Date::getMillisecond() const noexcept
@@ -584,26 +599,46 @@ int Date::getHour() const noexcept
 #endif
 }
 
+#if 0
+namespace {
+
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
+  inline void convertToSystemTime(int64 date, SYSTEMTIME& time)
+  {
+    SYSTEMTIME time;
+    FILETIME nativeTime = internal::dateToNative(date);
+    binternalerror(
+      (::FileTimeToSystemTime(&nativeTime, &time) != 0) &&
+      (::SystemTimeToTzSpecificLocalTime(0, &time, &time) != 0)
+    );
+  }
+#endif
+}
+#endif
+
 int Date::getDay() const noexcept
 {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
+  convertToSystemTime(date, time);
   SYSTEMTIME time;
   FILETIME nativeTime = internal::dateToNative(date);
   binternalerror(
     (::FileTimeToSystemTime(&nativeTime, &time) != 0) &&
     (::SystemTimeToTzSpecificLocalTime(0, &time, &time) != 0)
   );
-  return time.wDay - 1;
+  return time.wDay;
 #else // unix
   struct tm result;
   time_t nativeTime = internal::dateToNative(date);
   localtime_r(&nativeTime, &result);
-  return result.tm_mday - 1;
+  return result.tm_mday;
 #endif
 }
 
 int Date::getDayOfWeek() const noexcept
 {
+  // TAG: refactor to not convert implicitly to local time
+  // TAG: add method to convert to UTC/local
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   SYSTEMTIME time;
   FILETIME nativeTime = internal::dateToNative(date);
@@ -629,6 +664,7 @@ int Date::getDayOfYear() const noexcept
     (::FileTimeToSystemTime(&nativeTime, &time) != 0) &&
     (::SystemTimeToTzSpecificLocalTime(0, &time, &time) != 0)
   );
+  _COM_AZURE_DEV__BASE__NOT_IMPLEMENTED();
   return 0; // TAG: fixme
 #else // unix
   struct tm result;
@@ -733,12 +769,12 @@ int Date::getUTCDay() const noexcept
   binternalerror(
     ::FileTimeToSystemTime(&nativeTime, &time)
   );
-  return time.wDay - 1;
+  return time.wDay;
 #else // unix
   struct tm result;
   time_t nativeTime = internal::dateToNative(date);
   gmtime_r(&nativeTime, &result); // MT-safe
-  return result.tm_mday - 1;
+  return result.tm_mday;
 #endif
 }
 
@@ -768,6 +804,7 @@ int Date::getUTCDayOfYear() const noexcept
     (::FileTimeToSystemTime(&nativeTime, &time) != 0) &&
     (::SystemTimeToTzSpecificLocalTime(0, &time, &time) != 0)
   );
+  _COM_AZURE_DEV__BASE__NOT_IMPLEMENTED();
   return 0; // TAG: fixme
 #else // unix
   struct tm result;
@@ -1290,9 +1327,9 @@ public:
 
     Date d1 = Date::getTime(0, 0, 0);
     TEST_ASSERT(!d1);
-    Date d2 = Date::getDate(1, 1, 2020);
+    Date d2 = Date::getDate(1, 0, 2020);
     TEST_ASSERT(d2);
-    Date d3 = Date::getDate(1, 5, 2, 1, 1, 2020); // TAG: normalize values
+    Date d3 = Date::getDate(1, 5, 2, 1, 0, 2020); // TAG: normalize values
     TEST_ASSERT(d3);
     
     Date d4(d3.getValue());
@@ -1303,10 +1340,26 @@ public:
     TEST_ASSERT(time.minute == 5);
     TEST_ASSERT(time.hour == 2);
     TEST_ASSERT(time.day == 0); // TAG: fix inconsistency for 0-based
-    TEST_ASSERT(time.month == 0); // TAG: fix inconsistency for 0-based
+    TEST_ASSERT(time.month == 0);
     TEST_ASSERT(time.year == 2020);
     TEST_ASSERT(time.weekday == 3);
+    // fout << time.weekday << ENDL;
     TEST_ASSERT(time.dayOfYear == 0); // TAG: fix inconsistency for 0-based?
+
+    Date::DateTime dateTime = {
+      4000, // year
+      13, // month
+      31, // day of month
+      123456789, // day of week - dont care
+      123456789, // day of year - dont care
+      123456789, // week of year - dont care
+      24, // hour
+      61, // minute
+      61, // second
+      999 // millisecond
+    };
+    Date::normalize(dateTime);
+    // fout << Date(dateTime) << ENDL;
 
     d3.getUTCSecond();
     d3.getUTCMinute();
@@ -1314,6 +1367,16 @@ public:
     d3.getUTCDay();
     d3.getUTCMonth();
     d3.getUTCYear();
+    
+    static const Literal DAY_NAMES[] = {
+      Literal("Sunday"),
+      Literal("Monday"),
+      Literal("Tuesday"),
+      Literal("Wednesday"),
+      Literal("Thursday"),
+      Literal("Friday"),
+      Literal("Saturday")
+    };
   }
 };
 

@@ -122,13 +122,13 @@ public:
   struct DateTime {
     int year; /**< The year. */
     int month; /**< Operating range is [0;11]. */
-    int day; /**< Operating range is [0;30]. */
-    int weekday; /**< Operating range is [0;6]. */
+    int day; /**< Operating range is [1;31]. */
+    int weekday; /**< Operating range is [0;6]. Sunday is 0. */
     int dayOfYear; /** Operating range is [0;365]. */
     int week; /**< Operating range is [0;53]. */
     int hour; /**< Operating range is [0;23]. */
     int minute; /**< Operating range is [0;59]. */
-    int second; /**< Operating range is [0;59]. */
+    int second; /**< Operating range is [0;61]. */
     int millisecond; /**< Operating range is [0-999]. */
   };
   
@@ -304,6 +304,12 @@ public:
     return date != 0;
   }
 
+  /** Converts from UTC to local time. */
+  Date getLocalTime() const noexcept;
+
+  /** Converts from local to UTC time. */
+  Date getUTCTime() const noexcept;
+  
   /**
     Adds a bias (in microseconds) to the date.
   */
@@ -333,12 +339,12 @@ public:
   int getHour() const noexcept;
 
   /**
-    Returns the day of the month in local time.
+    Returns the day of the month in local time. [1-31].
   */
   int getDay() const noexcept;
 
   /**
-    Returns the day of the week in local time.
+    Returns the day of the week in local time. Week starts at Sunday (0).
   */
   int getDayOfWeek() const noexcept;
 
@@ -348,7 +354,7 @@ public:
   int getDayOfYear() const noexcept;
   
   /**
-    Returns the month in local time.
+    Returns the month in local time. 0-11.
   */
   int getMonth() const noexcept;
   
@@ -378,7 +384,7 @@ public:
   int getUTCDay() const noexcept;
 
   /**
-    Returns the day of the week in UTC.
+    Returns the day of the week in UTC. Week starts at Sunday (0).
   */
   int getUTCDayOfWeek() const noexcept;
 
@@ -388,7 +394,7 @@ public:
   int getUTCDayOfYear() const noexcept;
 
   /**
-    Returns the month in UTC.
+    Returns the month in UTC. [0-11].
   */
   int getUTCMonth() const noexcept;
 

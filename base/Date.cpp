@@ -405,7 +405,7 @@ Date Date::getDate(int day, int month, int year, bool local)
 
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   FILETIME nativeTime;
-  SYSTEMTIME time = {static_cast<WORD>(year), static_cast<WORD>(month) + 1, 0, static_cast<WORD>(day), 0, 0, 0, 0};
+  SYSTEMTIME time = {static_cast<WORD>(year), static_cast<WORD>(month + 1), 0, static_cast<WORD>(day), 0, 0, 0, 0};
 #if (_COM_AZURE_DEV__BASE__OS >= _COM_AZURE_DEV__BASE__WXP)
   if (local) {
     bassert(
@@ -455,7 +455,7 @@ Date Date::getDate(
   
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   FILETIME nativeTime;
-  SYSTEMTIME time = {static_cast<WORD>(year), static_cast<WORD>(month) + 1, 0, static_cast<WORD>(day), static_cast<WORD>(hour), static_cast<WORD>(minute), static_cast<WORD>(second), 0};
+  SYSTEMTIME time = {static_cast<WORD>(year), static_cast<WORD>(month + 1), 0, static_cast<WORD>(day), static_cast<WORD>(hour), static_cast<WORD>(minute), static_cast<WORD>(second), 0};
 #if (_COM_AZURE_DEV__BASE__OS >= _COM_AZURE_DEV__BASE__WXP)
   if (local) {
     bassert(
@@ -528,14 +528,31 @@ Date::Date(const DateTime& dateTime) noexcept
     (seconds + days * SECONDS_PER_DAY) * 1000000LL;
 }
 
+// TAG: write about keep date time in UTC always since timezone may change at any time
 Date Date::getLocalTime() const noexcept
 {
+#if 0 && (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
+  // UTC = local time + bias
+  TIME_ZONE_INFORMATION info;
+  DWORD status = GetTimeZoneInformation(&info);
+  LONG bias = info.Bias * 60 * 1000;
+  return date - bias;
+#else
   return date; // + bias;
+#endif
 }
 
 Date Date::getUTCTime() const noexcept
 {
+#if 0 && (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
+  // UTC = local time + bias
+  TIME_ZONE_INFORMATION info;
+  DWORD status = GetTimeZoneInformation(&info);
+  LONG bias = info.Bias * 60 * 1000;
+  return date + bias;
+#else
   return date; // - bias;
+#endif
 }
 
 // TAG: add getUTCMillisecond

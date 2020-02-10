@@ -409,7 +409,7 @@ public:
     @param time The time structure.
     @param local Specifies whether the time is in local time.
   */
-  void split(DateTime& time, bool local = false) const noexcept;
+  DateTime split(bool local = false) const noexcept;
 
   /**
     Returns the date/time as a string.

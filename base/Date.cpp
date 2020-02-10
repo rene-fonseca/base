@@ -363,7 +363,7 @@ Date Date::getTime(int second, int minute, int hour, bool local)
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   // TAG: normalize input
   FILETIME nativeTime;
-  SYSTEMTIME time = {0, 0, 0, 0, static_cast<WORD>(hour), static_cast<WORD>(minute), static_cast<WORD>(second), 0};
+  SYSTEMTIME time = {1970, 1, 0, 1, static_cast<WORD>(hour), static_cast<WORD>(minute), static_cast<WORD>(second), 0};
 #if (_COM_AZURE_DEV__BASE__OS >= _COM_AZURE_DEV__BASE__WXP)
   if (local) {
     bassert(
@@ -386,7 +386,7 @@ Date Date::getTime(int second, int minute, int hour, bool local)
 #endif
   return internal::nativeToDate(nativeTime);
 #else // unix
-  struct tm temp = {second, minute, hour, 0, 0, 0, 0, 0, 0};
+  struct tm temp = {second, minute, hour, 1, 0, 1970, 0, 0, 0};
   time_t time = mktime(&temp);
   if (time == ((time_t)-1)) {
     _throw DateException("Unable to represent date.", Type::getType<Date>());
@@ -835,8 +835,7 @@ Date Date::getDateByJulianDay(int julianDay) noexcept
 
 int Date::getJulianDay() const noexcept
 {
-  DateTime dt;
-  split(dt);
+  DateTime dt = split();
   // 10 BC => -9
   int a = (14 - (dt.month + 1))/MONTHS_PER_YEAR;
   int y = dt.year + 4800 - a;
@@ -848,7 +847,7 @@ int Date::getJulianDay() const noexcept
   // return (dt.day + 1) + (153 * m + 2)/5 + 365 * y + y/4 - 32083;
 }
 
-void Date::split(DateTime& result, bool local) const noexcept
+Date::DateTime Date::split(bool local) const noexcept
 {
 #if 0
   result.millisecond = (date + 500)/1000 % 1000;
@@ -925,6 +924,7 @@ void Date::split(DateTime& result, bool local) const noexcept
   binternalerror(
     ::FileTimeToSystemTime(&nativeTime, &time)
   );
+  DateTime result;
   result.year = time.wYear;
   result.month = time.wMonth - 1;
   result.day = time.wDay - 1;
@@ -935,6 +935,7 @@ void Date::split(DateTime& result, bool local) const noexcept
   result.minute = time.wMinute;
   result.second = time.wSecond;
   result.millisecond = time.wMilliseconds;
+  return result;
 #else // unix
   struct tm time;
   time_t nativeTime = internal::dateToNative(date);
@@ -943,6 +944,7 @@ void Date::split(DateTime& result, bool local) const noexcept
   } else {
     gmtime_r(&nativeTime, &time); // MT-safe
   }
+  DateTime result;
   result.year = 1900 + time.tm_year;
   result.month = time.tm_mon;
   result.day = time.tm_mday - 1;
@@ -953,14 +955,14 @@ void Date::split(DateTime& result, bool local) const noexcept
   result.minute = time.tm_min;
   result.second = time.tm_sec;
   result.millisecond = 0;
+  return result;
 #endif
 }
 
 String Date::format(const String& format, bool local) const
 {
   // time zones?
-  DateTime dateTime;
-  split(dateTime, local);
+  DateTime dateTime = split(local);
   
   // name of current locale
   // name of time zone abbrev. DK??? se W3C.org - 2 chars
@@ -1282,31 +1284,36 @@ public:
   void run() override
   {
     Date now = Date::getNow();
-#if 0
+
     // fout << "NOW=" << now << ENDL;
     TEST_ASSERT(now);
 
-    Date d1 = Date::getTime(1, 0, 0);
+    Date d1 = Date::getTime(0, 0, 0);
     TEST_ASSERT(!d1);
     Date d2 = Date::getDate(1, 1, 2020);
     TEST_ASSERT(d2);
-    Date d3 = Date::getDate(0, 0, 0, 1, 1, 2020);
+    Date d3 = Date::getDate(1, 5, 2, 1, 1, 2020); // TAG: normalize values
     TEST_ASSERT(d3);
     
     Date d4(d3.getValue());
     // fout << d4 << ENDL;
     
-    Date::DateTime time;
-    d3.split(time);
+    Date::DateTime time = d3.split();
+    TEST_ASSERT(time.second == 1);
+    TEST_ASSERT(time.minute == 5);
+    TEST_ASSERT(time.hour == 2);
+    TEST_ASSERT(time.day == 0); // TAG: fix inconsistency for 0-based
+    TEST_ASSERT(time.month == 0); // TAG: fix inconsistency for 0-based
     TEST_ASSERT(time.year == 2020);
-    
+    TEST_ASSERT(time.weekday == 3);
+    TEST_ASSERT(time.dayOfYear == 0); // TAG: fix inconsistency for 0-based?
+
     d3.getUTCSecond();
     d3.getUTCMinute();
     d3.getUTCHour();
     d3.getUTCDay();
     d3.getUTCMonth();
     d3.getUTCYear();
-#endif
   }
 };
 

@@ -141,7 +141,7 @@ void SSLSocket::createSecure(StreamSocket _socket, const String& pem)
 
   Reference<SSLHandle> handle = new SSLHandle();
   
-#if defined(_COM_AZURE_DEV__BASE__USE_OPENSSL)
+#if 0 && defined(_COM_AZURE_DEV__BASE__USE_OPENSSL)
   handle->sslctx = SSL_CTX_new(SSLv23_server_method());
   SSL_CTX_set_options(handle->sslctx, SSL_OP_SINGLE_DH_USE);
   int use_cert = SSL_CTX_use_certificate_file(handle->sslctx, pem.native(), SSL_FILETYPE_PEM);
@@ -166,7 +166,7 @@ void SSLSocket::connect(const InetAddress& address, unsigned short port)
 
   // Profiler::WaitTask profile("SSLSocket::connect()", socket);
 
-#if defined(_COM_AZURE_DEV__BASE__USE_OPENSSL)
+#if 0 && defined(_COM_AZURE_DEV__BASE__USE_OPENSSL)
   SocketAddress sa(address, port, socket.getDomain());
   if (::SSL_connect(handle->cSSL, sa.getValue(), sa.getSize())) {
     switch (SSL_get_error()) {

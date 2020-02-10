@@ -1238,7 +1238,7 @@ Date File::getLastModification()
 
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   FILETIME time;
-  if (::GetFileTime(handle->handle, 0, 0, &time)) {
+  if (!::GetFileTime(handle->handle, NULL, NULL, &time)) {
     _throw FileException("Unable to get file time.", this);
   }
   return FileTimeToDate(time);
@@ -1264,7 +1264,7 @@ Date File::getLastAccess()
 
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   FILETIME time;
-  if (::GetFileTime(handle->handle, 0, &time, 0)) {
+  if (!::GetFileTime(handle->handle, NULL, &time, NULL)) {
     _throw FileException("Unable to get file time.", this);
   }
   return FileTimeToDate(time);
@@ -1290,7 +1290,7 @@ Date File::getLastChange()
 
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   FILETIME time;
-  if (::GetFileTime(handle->handle, &time, 0, 0)) {
+  if (!::GetFileTime(handle->handle, &time, NULL, NULL)) {
     _throw FileException("Unable to get file time.", this);
   }
   return FileTimeToDate(time);

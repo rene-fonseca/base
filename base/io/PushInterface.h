@@ -34,7 +34,14 @@ public:
     unbuffered streams.
   */
   virtual void flush();
-  
+
+  /**
+    Begins the pushes.
+    
+    @param totalSize The total number of bytes to be pushed.
+  */
+  virtual bool pushBegin(uint64 totalSize);
+
   /**
     Pushes the specified number of bytes onto the stream.
     

@@ -544,6 +544,56 @@ bool HTTPSRequest::open(const String& _method, const String& _url, const String&
   return true;
 }
 
+void HTTPSRequest::setRequestHeader(const String& header)
+{
+  // fout << "HTTPSRequest::setRequestHeader(): " << escape(header) << ENDL;
+
+  Reference<HTTPRequestHandle> _handle = handle.cast<HTTPRequestHandle>();
+  if (!_handle) {
+    _throw HTTPException("HTTP request is not open.");
+  }
+  
+  if (!header) {
+    return;
+  }
+  if (!header.isASCII()) {
+    _throw HTTPException("Header must use ASCII only.");
+  }
+
+#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
+  // ISO-8859 - 1 characters
+  // WideCharToMultiByte() codepage 28591
+  // TAG: HTTP_ADDREQ_FLAG_REPLACE
+  INLINE_ASSERT(HttpAddRequestHeadersW(_handle->hRequest, ToWCharString(header + "\r\n"), (DWORD)-1, HTTP_ADDREQ_FLAG_ADD));
+#elif (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__MACOS)
+  // CFHTTPMessageIsRequest
+  MemoryDiff index = header.indexOf(':');
+  String name;
+  String value;
+  if (index >= 0) {
+    name = header.substring(0, index);
+    value = header.substring(index);
+    if (value.startsWith(" ")) {
+      value.removeAt(0);
+    }
+  } else {
+    name = header;
+  }
+  MACString headerFieldName(name);
+  MACString headerFieldValue(value);
+  CFHTTPMessageSetHeaderFieldValue(_handle->cfHttpReq, headerFieldName, headerFieldValue);
+#elif defined(_COM_AZURE_DEV__BASE__USE_CURL)
+  // TAG: are we changing all headers - that would not be desired - we just want to add/replace
+  _handle->requestHeaders = curl_slist_append(_handle->requestHeaders, header.native());
+  if (INLINE_ASSERT(_handle->requestHeaders)) {
+    if (!INLINE_ASSERT(curl_easy_setopt(_handle->curl, CURLOPT_HTTPHEADER, _handle->requestHeaders) == CURLE_OK)) {
+    }
+  }
+#else
+  _COM_AZURE_DEV__BASE__NOT_IMPLEMENTED();
+#endif
+}
+
 void HTTPSRequest::setRequestHeader(const String& name, const String& value)
 {
   // fout << "HTTPSRequest::setRequestHeader(): " << escape(name) << " " << escape(value) << ENDL;
@@ -800,19 +850,20 @@ public:
   
   String text;
   
-  bool pushBegin(uint64 totalSize)
+  bool pushBegin(uint64 totalSize) override
   {
     text.ensureCapacity(minimum<MemorySize>(totalSize, 4 * 1024 * 1024));
     return true;
   }
   
-  MemorySize push(const uint8* buffer, MemorySize size)
+  MemorySize push(const uint8* buffer, MemorySize size) override
   {
     text.append(MemorySpan(buffer, size));
     return size;
   }
   
-  void pushEnd() {
+  void pushEnd() override
+  {
   }
 };
 
@@ -821,17 +872,17 @@ public:
   
   OutputStream* os = nullptr;
   
-  bool pushBegin(uint64 totalSize)
+  bool pushBegin(uint64 totalSize) override
   {
     return true;
   }
   
-  MemorySize push(const uint8* buffer, MemorySize size)
+  MemorySize push(const uint8* buffer, MemorySize size) override
   {
     return os->write(buffer, static_cast<unsigned int>(size), false);
   }
   
-  void pushEnd()
+  void pushEnd() override
   {
     os->close();
   }

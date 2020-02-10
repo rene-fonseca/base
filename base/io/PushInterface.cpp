@@ -15,10 +15,17 @@
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
-void PushInterface::flush() {
+void PushInterface::flush()
+{
 }
 
-void PushInterface::pushEnd() {
+bool PushInterface::pushBegin(uint64 totalSize)
+{
+  return true;
+}
+
+void PushInterface::pushEnd()
+{
 }
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

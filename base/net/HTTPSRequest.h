@@ -15,18 +15,10 @@
 
 #include <base/net/NetworkException.h>
 #include <base/io/OutputStream.h>
+#include <base/io/PushInterface.h>
 #include <base/Resource.h>
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
-
-// TAG: move to proper place
-class _COM_AZURE_DEV__BASE__API PushInterface {
-public:
-
-  virtual bool pushBegin(uint64 totalSize) = 0;
-  virtual MemorySize push(const uint8* buffer, MemorySize size) = 0;
-  virtual void pushEnd() = 0;
-};
 
 class _COM_AZURE_DEV__BASE__API HTTPException : public NetworkException {
 public:
@@ -105,7 +97,10 @@ public:
     @param url The connection url.
   */
   bool open(const String& method, const String& url, const String& user = String(), const String& password = String());
- 
+
+  /** Sets the request header. Call after open() and before send(). Do NOT include CRLF. */
+  void setRequestHeader(const String& header);
+
   /** Sets the request header. Call after open() and before send(). */
   void setRequestHeader(const String& name, const String& value);
 

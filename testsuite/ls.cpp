@@ -68,9 +68,8 @@ public:
   
   inline String getTime(const Date& date) const
   {
-    return date.format(
-      (date.getYear() == currentYear) ? thisYearFormat : otherYearFormat,
-      true
+    return date.getLocalTime().format(
+      (date.getYear() == currentYear) ? thisYearFormat : otherYearFormat
     );
   }
   

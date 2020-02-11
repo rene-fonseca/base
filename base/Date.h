@@ -25,8 +25,9 @@ _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 class FormatOutputStream;
 
 /**
-  Representation of date/time in Coordinated Universal Time (UTC).
-
+  Representation of date/time in Coordinated Universal Time (UTC). It is recommended that you keep the
+  date/time in UTC and only convert to local time when needed.
+ 
   @short Date and time.
   @version 1.3
 */
@@ -119,31 +120,34 @@ public:
   /** The days before the first of the month for leap years. */
   static const int DAYS_BEFORE_FIRST_OF_MONTH_LEAP_YEAR[MONTHS_PER_YEAR + 1];
   
-  struct DateTime {
-    int year; /**< The year. */
-    int month; /**< Operating range is [0;11]. */
-    int day; /**< Operating range is [1;31]. */
-    int weekday; /**< Operating range is [0;6]. Sunday is 0. */
-    int dayOfYear; /** Operating range is [0;365]. */
-    int week; /**< Operating range is [0;53]. */
-    int hour; /**< Operating range is [0;23]. */
-    int minute; /**< Operating range is [0;59]. */
-    int second; /**< Operating range is [0;61]. */
-    int millisecond; /**< Operating range is [0-999]. */
+  /** Structure used to split date into its common components. */
+  class DateTime {
+  public:
+    
+    int year = 0; /**< The year. */
+    int month = 0; /**< Operating range is [0;11]. */
+    int day = 0; /**< Operating range is [1;31]. */
+    int weekday = 0; /**< Operating range is [0;6]. Sunday is 0. */
+    int dayOfYear = 0; /** Operating range is [0;365]. */
+    int hour = 0; /**< Operating range is [0;23]. */
+    int minute = 0; /**< Operating range is [0;59]. */
+    int second = 0; /**< Operating range is [0;61]. */
+    int millisecond = 0; /**< Operating range is [0-999]. */
   };
   
+  /** Returns the week of the year. */
+  static int getWeek(const DateTime& dt) noexcept;
+
   /**
     Normalizes the specified data/time structure such that the fields are
     brought into their normal operating range.
 
     @param dateTime The structure to normalize.
-    @param redundancy Specifies whether or not to update all fields. The
-    default is to update all fields.
     
     @return The year carrier. Only non-zero if the year falls outside the range
     [-9999;9999].
   */
-  static int normalize(DateTime& dateTime, bool redundancy = true) noexcept;
+  static int normalize(DateTime& dateTime) noexcept;
   
   /**
     Returns true if the year is a leap year.
@@ -167,26 +171,6 @@ public:
   static int getDaysOfMonth(int month, int year);
 
   /**
-    Returns the day of the week (Sunday = 0, Monday = 1, etc.). The result is
-    unspecified for invalid dates.
-  */
-  static int getDayOfWeek(int day, int month, int year) noexcept;
-
-  /**
-    Returns the week of the year.
-  */
-  static int getWeek(int day, int month, int year) noexcept;
-
-  /**
-    Returns the day (in the range [0; 365]) of the year.
-
-    @param day The day of the month [0;30].
-    @param month The month of the year [0;11].
-    @param year The year.
-  */
-  static int getDayOfYear(int day, int month, int year) noexcept;
-
-  /**
     Returns the current time in UTC time.
   */
   static Date getNow();
@@ -194,37 +178,34 @@ public:
   /**
     Returns the bias (in microseconds) for convertion from UTC to local time.
     Bias may change during the lifetime of the process. This method only works
-    on some planet called Earth :-].
+    on some planet called Earth :-]. UTC = local time + bias.
   */
   static int64 getBias() noexcept;
   
   /**
     Returns date object for the specified time. Invalid values will be
     normalized. Raises 'DateException' if the date cannot be represented.
+    The used date is EPOCH.
     
     @param second The second.
     @param minute The minute.
     @param hour The hour.
-    @param local Specifies that the time is given in local time. The default is
-    UTC time.
   */
-  static Date getTime(int second, int minute, int hour, bool local = false);
+  static Date getTime(int second, int minute, int hour);
   
   /**
     Returns date object for the specified date. Invalid values will be
-    normalized. Raises 'SystemException' if the date cannot be represented.
+    normalized. Raises 'DateException' if the date cannot be represented.
 
     @param day The day of the month.
     @param month The month of the year.
     @param year The year.
-    @param local Specifies that the time is given in local time. The default is
-    UTC time.
   */
-  static Date getDate(int day, int month, int year, bool local = false);
+  static Date getDate(int day, int month, int year);
 
   /**
     Returns date object for the specified date and time. Invalid values will be
-    normalized. Raises 'SystemException' if the date cannot be represented.
+    normalized. Raises 'DateException' if the date cannot be represented.
 
     @param second The second.
     @param minute The minute.
@@ -232,8 +213,6 @@ public:
     @param day The day of the month.
     @param month The month of the year.
     @param year The year.
-    @param local Specifies that the time is given in local time. The default is
-    UTC time.
   */
   static Date getDate(
     int second,
@@ -241,8 +220,7 @@ public:
     int hour,
     int day,
     int month,
-    int year,
-    bool local = false);
+    int year);
   
   /**
     Returns the date corresponding to the specified Julian day.
@@ -268,9 +246,12 @@ public:
   }
   
   /**
-    Initializes object from date/time structure.
+    Returns the date/time for the given date/time components.
+
+    @param dateTime The broken out date and time.
+    @param local Specifies that datetime is in local time. UTC by default.
   */
-  Date(const DateTime& dateTime) noexcept;
+  static Date makeDate(const DateTime& dateTime, bool local = false);
   
   /**
     Initialize date from other date.
@@ -305,10 +286,18 @@ public:
   }
 
   /** Converts from UTC to local time. */
-  Date getLocalTime() const noexcept;
+  Date getLocalTime() const noexcept
+  {
+    // UTC = local time + bias
+    return date - Date::getBias();
+  }
 
   /** Converts from local to UTC time. */
-  Date getUTCTime() const noexcept;
+  Date getUTCTime() const noexcept
+  {
+    // UTC = local time + bias
+    return date + Date::getBias();
+  }
   
   /**
     Adds a bias (in microseconds) to the date.
@@ -364,46 +353,6 @@ public:
   int getYear() const noexcept;
   
   /**
-    Returns the second in UTC.
-  */
-  int getUTCSecond() const noexcept;
-  
-  /**
-    Returns the minute in UTC.
-  */
-  int getUTCMinute() const noexcept;
-
-  /**
-    Returns the hour in UTC.
-  */
-  int getUTCHour() const noexcept;
-
-  /**
-    Returns the day of the month in UTC.
-  */
-  int getUTCDay() const noexcept;
-
-  /**
-    Returns the day of the week in UTC. Week starts at Sunday (0).
-  */
-  int getUTCDayOfWeek() const noexcept;
-
-  /**
-    Returns the day of the year in UTC.
-  */
-  int getUTCDayOfYear() const noexcept;
-
-  /**
-    Returns the month in UTC. [0-11].
-  */
-  int getUTCMonth() const noexcept;
-
-  /**
-    Returns the year in UTC.
-  */
-  int getUTCYear() const noexcept;
-
-  /**
     Returns the Julian day.
   */
   int getJulianDay() const noexcept;
@@ -413,7 +362,7 @@ public:
     week, hour, minute, second, and millisecond (if supported).
 
     @param time The time structure.
-    @param local Specifies whether the time is in local time.
+    @param local Specifies that time should be converted to local time from UTC.
   */
   DateTime split(bool local = false) const noexcept;
 
@@ -421,24 +370,18 @@ public:
     Returns the date/time as a string.
 
     @param format The desired format of the resulting string.
-    @param local When true, specifies that the time should be presented in
-    local time otherwise UTC is assumed. The Default is true (local).
   */
-  String format(const String& format, bool local = true) const;
+  String format(const String& format) const;
   
   /**
     Returns the date/time as a string.
 
     @param format The desired format of the resulting string.
-    @param local When true, specifies that the time should be presented in
-    local time otherwise UTC is assumed. The Default is true (local).
   */
-  WideString format(const WideString& format, bool local = true) const;
+  WideString format(const WideString& format) const;
 };
 
-_COM_AZURE_DEV__BASE__API FormatOutputStream& operator<<(
-  FormatOutputStream& stream,
-  const Date& date);
+_COM_AZURE_DEV__BASE__API FormatOutputStream& operator<<(FormatOutputStream& stream, const Date& date);
 
 template<>
 class IsUninitializeable<Date> : public IsUninitializeable<int64> {

@@ -1275,7 +1275,7 @@ String UnitTestManager::getJUnit(const String& uuid, const String& name) const
 #endif
 
   // timestamp - ISO 8601 format (2014-01-21T16:17:18) without timezone!
-  String timestamp = Date::getNow().format(String("%FT%T"), false);
+  String timestamp = Date::getNow().format(String("%FT%T"));
   // other attributes: errors, disabled, skipped, package
   xml += Format::subst(
     "<testsuite id=\"%1\" name=\"%2\" hostname=\"%3\" tests=\"%4\" failures=\"%5\" time=\"%6\" timestamp=\"%7\">\n",

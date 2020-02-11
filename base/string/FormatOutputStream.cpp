@@ -734,7 +734,12 @@ void FormatOutputStream::addDateField(const Date& date)
     format = context.dateFormat;
     break;
   }
-  String field = date.format(format, localTime);
+  String field;
+  if (localTime) {
+    field = date.getLocalTime().format(format);
+  } else {
+    field = date.format(format);
+  }
   
   Symbols::Justification justification;
   switch (context.justification) {

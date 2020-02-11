@@ -47,7 +47,7 @@ public:
     
     Date now = Date::getNow();
     unsigned int month = now.getMonth();
-    Date::DateTime decomposed = now.split(true);
+    Date::DateTime decomposed = now.getLocalTime().split();
     
     // TAG: use locale
     static const Literal MONTH_NAMES[] = {

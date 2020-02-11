@@ -11,6 +11,8 @@
     For the licensing terms refer to the file 'LICENSE'.
  ***************************************************************************/
 
+// TAG: add ISO format method
+
 #include <base/platforms/features.h>
 
 #if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__CYGWIN)
@@ -104,37 +106,17 @@ const int Date::DAYS_PER_MONTH_LEAP_YEAR[Date::MONTHS_PER_YEAR] = {
   31, 29, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31
 };
 
-const int
-  Date::DAYS_BEFORE_FIRST_OF_MONTH_NONLEAP_YEAR[Date::MONTHS_PER_YEAR + 1] = {
+const int Date::DAYS_BEFORE_FIRST_OF_MONTH_NONLEAP_YEAR[Date::MONTHS_PER_YEAR + 1] = {
   0, 31, 59, 90, 120, 151, 181, 212, 243, 273, 304, 334, 365
 };
 
-const int
-  Date::DAYS_BEFORE_FIRST_OF_MONTH_LEAP_YEAR[Date::MONTHS_PER_YEAR + 1] = {
+const int Date::DAYS_BEFORE_FIRST_OF_MONTH_LEAP_YEAR[Date::MONTHS_PER_YEAR + 1] = {
   0, 31, 60, 91, 121, 152, 182, 213, 244, 274, 305, 335, 366
 };
 
-int Date::normalize(DateTime& dateTime, bool redundancy) noexcept
+int Date::normalize(DateTime& dateTime) noexcept
 {
   int carrier = 0; // and borrow
-  
-  int month = dateTime.month;
-  if (month >= MONTHS_PER_YEAR) {
-    carrier += month/MONTHS_PER_YEAR;
-    month %= MONTHS_PER_YEAR;
-  } else if (month < 0) {
-    if ((-month)%MONTHS_PER_YEAR == 0) {
-      carrier += month/MONTHS_PER_YEAR;
-      month = 0;
-    } else {
-      carrier += month/MONTHS_PER_YEAR - 1;
-      month = MONTHS_PER_YEAR - ((-month)%MONTHS_PER_YEAR);
-    }
-  }
-  BASSERT((month >= 0) && (month < MONTHS_PER_YEAR));
-  
-  int64 year = static_cast<int64>(dateTime.year) + carrier;
-
   carrier = dateTime.millisecond/1000;
   dateTime.millisecond %= 1000;
   if (dateTime.millisecond < 0) {
@@ -144,7 +126,7 @@ int Date::normalize(DateTime& dateTime, bool redundancy) noexcept
 
   int64 second = static_cast<int64>(dateTime.second) + carrier;
   carrier = static_cast<int>(second/SECONDS_PER_MINUTE);
-  dateTime.second = second%SECONDS_PER_MINUTE;
+  dateTime.second = second % SECONDS_PER_MINUTE;
   if (second < 0) {
     --carrier; // borrow
     dateTime.second += SECONDS_PER_MINUTE;
@@ -152,7 +134,7 @@ int Date::normalize(DateTime& dateTime, bool redundancy) noexcept
   
   int64 minute = static_cast<int64>(dateTime.minute) + carrier;
   carrier = static_cast<int>(minute/MINUTES_PER_HOUR);
-  dateTime.minute = minute%MINUTES_PER_HOUR;
+  dateTime.minute = minute % MINUTES_PER_HOUR;
   if (minute < 0) {
     --carrier; // borrow
     dateTime.minute += MINUTES_PER_HOUR;
@@ -160,13 +142,30 @@ int Date::normalize(DateTime& dateTime, bool redundancy) noexcept
   
   int64 hour = static_cast<int64>(dateTime.hour) + carrier;
   carrier = static_cast<int>(hour/HOURS_PER_DAY);
-  dateTime.hour = hour%HOURS_PER_DAY;
+  dateTime.hour = hour % HOURS_PER_DAY;
   if (hour < 0) {
     --carrier; // borrow
     dateTime.hour += HOURS_PER_DAY;
   }
 
-  int64 day = static_cast<int64>(dateTime.day) + carrier;
+#if 0
+  // count days from first valid date and then add time delta
+  int month = dateTime.month;
+    if (month >= MONTHS_PER_YEAR) {
+      carrier += month/MONTHS_PER_YEAR;
+      month %= MONTHS_PER_YEAR;
+    } else if (month < 0) {
+      if ((-month)%MONTHS_PER_YEAR == 0) {
+        carrier += month/MONTHS_PER_YEAR;
+        month = 0;
+      } else {
+        carrier += month/MONTHS_PER_YEAR - 1;
+        month = MONTHS_PER_YEAR - ((-month)%MONTHS_PER_YEAR);
+      }
+    }
+    BASSERT((month >= 0) && (month < MONTHS_PER_YEAR));
+    
+    int64 year = static_cast<int64>(dateTime.year) + carrier;
   
   int daysInMonth = isLeapYear(static_cast<int>(year)) ? DAYS_PER_MONTH_LEAP_YEAR[month] : DAYS_PER_MONTH_NONLEAP_YEAR[month];
   if (day >= daysInMonth) { // traverse forward in time
@@ -220,33 +219,18 @@ int Date::normalize(DateTime& dateTime, bool redundancy) noexcept
   }
   
   carrier = static_cast<int>(year/10000);
+#endif
   
-  dateTime.day = static_cast<int>(day);
-  dateTime.month = month;
-  dateTime.year = year%10000;
+  // dateTime.day = static_cast<int>(day + 1);
+  // dateTime.month = month;
+  // dateTime.year = dateTime.year % 10000;
   
-  if (redundancy) {
+  if (true) {
     if (isLeapYear(dateTime.year)) {
-      dateTime.dayOfYear = static_cast<int>(day) + DAYS_BEFORE_FIRST_OF_MONTH_LEAP_YEAR[month];
+      dateTime.dayOfYear = static_cast<int>(dateTime.day - 1) + DAYS_BEFORE_FIRST_OF_MONTH_LEAP_YEAR[dateTime.month];
     } else {
-      dateTime.dayOfYear = static_cast<int>(day) + DAYS_BEFORE_FIRST_OF_MONTH_NONLEAP_YEAR[month];
+      dateTime.dayOfYear = static_cast<int>(dateTime.day - 1) + DAYS_BEFORE_FIRST_OF_MONTH_NONLEAP_YEAR[dateTime.month];
     }
-    
-    int a = (month <= 1) ? 1 : 0; // (14 - month)/MONTHS_PER_YEAR
-    year -= a;
-    // Gregorian calendar
-    dateTime.weekday = (day + year + year/4 - year/100 + year/400 + 31 * (month + 1 + MONTHS_PER_YEAR * a - 2)/MONTHS_PER_YEAR)%7;
-
-    int y = static_cast<int>(year) + 4800; // 'a' is subtracted above
-    int m = month + 1 + MONTHS_PER_YEAR * a - 3;
-    // Gregorian calendar
-    int julianDay =
-      static_cast<int>(day + (153 * m + 2)/5 + 365 * y + y/4 - y/100 + y/400 - 32045);
-
-    int d4 = (julianDay + 31741 - (julianDay % 7)) % 146097 % 36524 % 1461;
-    int L  = d4/1460;
-    int d1 = ((d4 - L) % 365) + L;
-    dateTime.week = d1/7 + 1;
   }
   
   return carrier; // unlikely to be non-zero
@@ -261,70 +245,34 @@ int Date::getDaysOfMonth(int month, int year)
   return isLeapYear(year) ? DAYS_PER_MONTH_LEAP_YEAR[month] : DAYS_PER_MONTH_NONLEAP_YEAR[month];
 }
 
+#if 0
 int Date::getDayOfWeek(int day, int month, int year) noexcept
 {
-  DateTime dt;
-  dt.year = year;
-  dt.month = month;
-  dt.day = day;
-  dt.hour = 0;
-  dt.minute = 0;
-  dt.second = 0;
-  dt.millisecond = 0;
-  normalize(dt, false);
-  
   int a = (14 - (dt.month + 1))/MONTHS_PER_YEAR;
   int y = dt.year - a;
   int m = (dt.month + 1) + MONTHS_PER_YEAR * a - 2;
   // Julian calendar: d = (5 + day + y + y/4 + (31*m)/12) mod 7
   // Gregorian calendar: d = (day + y + y/4 - y/100 + y/400 + (31*m)/12) mod 7
-  return ((dt.day + 1) + y + y/4 - y/100 + y/400 +
+  return (dt.day + y + y/4 - y/100 + y/400 +
     (31 * m)/MONTHS_PER_YEAR)%DAYS_PER_WEEK;
   // TAG: 0 for Sunday but should be 6 according to ISO...
 }
+#endif
 
-int Date::getWeek(int day, int month, int year) noexcept
+int Date::getWeek(const DateTime& dt) noexcept
 {
-  // week number as defined in ISO-8601
-  DateTime dt;
-  dt.year = year;
-  dt.month = month;
-  dt.day = day;
-  dt.hour = 0;
-  dt.minute = 0;
-  dt.second = 0;
-  dt.millisecond = 0;
-  normalize(dt, false);
-  
   int a = (14 - (dt.month + 1))/MONTHS_PER_YEAR;
   int y = dt.year + 4800 - a;
   int m = (dt.month + 1) + MONTHS_PER_YEAR * a - 3;
   // Gregorian calendar
   int julianDay =
-    (dt.day + 1) + (153 * m + 2)/5 + 365 * y + y/4 - y/100 + y/400 - 32045;
+    dt.day + (153 * m + 2)/5 + 365 * y + y/4 - y/100 + y/400 - 32045;
   
   int d4 =
     (julianDay + 31741 - (julianDay % DAYS_PER_WEEK)) % 146097 % 36524 % 1461;
   int L  = d4/1460;
   int d1 = ((d4 - L) % 365) + L;
   return d1/DAYS_PER_WEEK + 1;
-}
-
-int Date::getDayOfYear(int day, int month, int year) noexcept
-{
-  DateTime dt;
-  dt.year = year;
-  dt.month = month;
-  dt.day = day;
-  dt.hour = 0;
-  dt.minute = 0;
-  dt.second = 0;
-  dt.millisecond = 0;
-  normalize(dt, false);
-  return dt.day +
-    (isLeapYear(dt.year) ?
-     DAYS_BEFORE_FIRST_OF_MONTH_LEAP_YEAR[dt.month] :
-     DAYS_BEFORE_FIRST_OF_MONTH_NONLEAP_YEAR[dt.month]);
 }
 
 Date Date::getNow()
@@ -341,10 +289,24 @@ Date Date::getNow()
 int64 Date::getBias() noexcept
 {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
+
+//  #if (_COM_AZURE_DEV__BASE__OS < _COM_AZURE_DEV__BASE__WXP)
+  // UTC = local time + bias
+    FILETIME localTime = 0;
+    FILETIME utcTime = 0;
+    if (::LocalFileTimeToFileTime(&localTime, &utcTime) != 0) {
+      _throw DateException(Type::getType<Date>());
+    }
+    return *reinterpret_cast<const uint64*>(&utcTime)/10; // 100 ns to ms
+//  #endif
+
+#if 0
   TIME_ZONE_INFORMATION information;
   DWORD status = ::GetTimeZoneInformation(&information);
   BASSERT(status != TIME_ZONE_ID_INVALID);
-  return information.Bias * 60000000LL; // TAG: what about the other bias'
+  return information.Bias * 60000000LL;
+#endif
+
 #else // unix
 #if (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__FREERTOS) || \
     (_COM_AZURE_DEV__BASE__OS == _COM_AZURE_DEV__BASE__ZEPHYR) || \
@@ -358,143 +320,78 @@ int64 Date::getBias() noexcept
 #endif // flavor
 }
 
-Date Date::getTime(int second, int minute, int hour, bool local)
+Date Date::getTime(int second, int minute, int hour)
 {
-#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
-  FILETIME nativeTime;
-  SYSTEMTIME time = {1970, 1, 0, 1, static_cast<WORD>(hour), static_cast<WORD>(minute), static_cast<WORD>(second), 0};
-#if (_COM_AZURE_DEV__BASE__OS >= _COM_AZURE_DEV__BASE__WXP)
-  if (local) {
-    bassert(
-      ::TzSpecificLocalTimeToSystemTime(0, &time, &time) != 0,
-      DateException(Type::getType<Date>())
-    );
-  }
-#endif
-  bassert(
-    ::SystemTimeToFileTime(&time, &nativeTime),
-    DateException(Type::getType<Date>())
-  );
-#if (_COM_AZURE_DEV__BASE__OS < _COM_AZURE_DEV__BASE__WXP)
-  if (local) {
-    bassert(
-      ::LocalFileTimeToFileTime(&nativeTime, &nativeTime) != 0,
-      DateException(Type::getType<Date>())
-    );
-  }
-#endif
-  return internal::nativeToDate(nativeTime);
-#else // unix
-  struct tm temp = {second, minute, hour, 1, 0, 70, 0, 0, 0};
-  time_t time = mktime(&temp);
-  if (time == ((time_t)-1)) {
-    _throw DateException("Unable to represent date.", Type::getType<Date>());
-  }
-  int64 result = internal::nativeToDate(time);
-  if (!local) {
-    result -= internal::getTimezone(); // convert to UTC
-  }
-  return Date(result);
-#endif
+  DateTime dt;
+  dt.second = second;
+  dt.minute = minute;
+  dt.hour = hour;
+  dt.day = 1;
+  dt.month = 0;
+  dt.year = 1970;
+  return makeDate(dt);
 }
 
-Date Date::getDate(int day, int month, int year, bool local)
+Date Date::getDate(int day, int month, int year)
 {
-  BASSERT((day >= 1) && (day <= 31));
-  BASSERT((month >= 0) && (month <= 11));
-
-#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
-  FILETIME nativeTime;
-  SYSTEMTIME time = {static_cast<WORD>(year), static_cast<WORD>(month + 1), 0, static_cast<WORD>(day), 0, 0, 0, 0};
-#if (_COM_AZURE_DEV__BASE__OS >= _COM_AZURE_DEV__BASE__WXP)
-  if (local) {
-    bassert(
-      ::TzSpecificLocalTimeToSystemTime(0, &time, &time) != 0,
-      DateException(Type::getType<Date>())
-    );
-  }
-#endif
-  bassert(
-    ::SystemTimeToFileTime(&time, &nativeTime),
-    DateException(Type::getType<Date>())
-  );
-#if (_COM_AZURE_DEV__BASE__OS < _COM_AZURE_DEV__BASE__WXP)
-  if (local) {
-    ::LocalFileTimeToFileTime(&nativeTime, &nativeTime);
-  }
-#endif
-  return internal::nativeToDate(nativeTime);
-#else // unix
-  struct tm temp = {0, 0, 0, day, month, year - 1900, 0, 0, 0};
-  time_t time = mktime(&temp);
-  if (time == ((time_t)-1)) {
-    _throw DateException("Unable to represent date.", Type::getType<Date>());
-  }
-  int64 result = internal::nativeToDate(time);
-  if (!local) {
-    result -= internal::getTimezone(); // convert to UTC
-  }
-  return Date(result);
-#endif
+  DateTime dt;
+  dt.day = day;
+  dt.month = month;
+  dt.year = year;
+  return makeDate(dt);
 }
 
 Date Date::getDate(
-  int second,
-  int minute,
-  int hour,
-  int day,
-  int month,
-  int year,
-  bool local)
+  int second, int minute, int hour,
+  int day, int month, int year)
 {
-  BASSERT((day >= 1) && (day <= 31));
-  BASSERT((month >= 0) && (month <= 11));
-  BASSERT(second >= 0);
-  BASSERT(minute >= 0);
-  BASSERT(hour >= 0);
-  
+  DateTime dt;
+  dt.second = second;
+  dt.minute = minute;
+  dt.hour = hour;
+  dt.day = day;
+  dt.month = month;
+  dt.year = year;
+  return makeDate(dt);
+}
+
+Date Date::makeDate(const DateTime& dt, bool local)
+{
+  BASSERT(dt.millisecond >= 0);
+  BASSERT(dt.second >= 0);
+  BASSERT(dt.minute >= 0);
+  BASSERT(dt.hour >= 0);
+
+  BASSERT((dt.day >= 1) && (dt.day <= 31));
+  BASSERT((dt.month >= 0) && (dt.month <= 11));
+
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   FILETIME nativeTime;
-  SYSTEMTIME time = {static_cast<WORD>(year), static_cast<WORD>(month + 1), 0, static_cast<WORD>(day), static_cast<WORD>(hour), static_cast<WORD>(minute), static_cast<WORD>(second), 0};
-#if (_COM_AZURE_DEV__BASE__OS >= _COM_AZURE_DEV__BASE__WXP)
-  if (local) {
-    bassert(
-      ::TzSpecificLocalTimeToSystemTime(0, &time, &time) != 0,
-      DateException(Type::getType<Date>())
-    );
-  }
-#endif
+  SYSTEMTIME time = {static_cast<WORD>(dt.year), static_cast<WORD>(dt.month + 1), 0, static_cast<WORD>(dt.day), static_cast<WORD>(dt.hour), static_cast<WORD>(dt.minute), static_cast<WORD>(dt.second), dt.millisecond};
   bassert(
     ::SystemTimeToFileTime(&time, &nativeTime),
     DateException(Type::getType<Date>())
   );
-#if (_COM_AZURE_DEV__BASE__OS < _COM_AZURE_DEV__BASE__WXP)
-  if (local) {
-    bassert(
-      ::LocalFileTimeToFileTime(&nativeTime, &nativeTime) != 0,
-      DateException(Type::getType<Date>())
-    );
-  }
-#endif
   return internal::nativeToDate(nativeTime);
 #else // unix
-  struct tm temp = {second, minute, hour, day, month, year - 1900, 0, 0, 0};
-  time_t time = mktime(&temp);
+  struct tm temp = {dt.second, dt.minute, dt.hour, dt.day, dt.month, dt.year - 1900, 0, 0, 0};
+  time_t time = (time_t)-1;
+  if (local) { // use timezone
+    time = mktime(&temp);
+  } else { // no timezone adjustment
+    time = timegm(&temp);
+  }
   if (time == ((time_t)-1)) {
     _throw DateException("Unable to represent date.", Type::getType<Date>());
   }
   int64 result = internal::nativeToDate(time);
-  if (!local) {
-    result -= internal::getTimezone(); // convert to UTC
-  }
   return Date(result);
 #endif
-}
 
-Date::Date(const DateTime& dateTime) noexcept
-{
-  DateTime dt = dateTime;
-  normalize(dt, false);
+
+
+#if 0
+  // TAG: normalize(dt, false);
   int64 days = static_cast<int64>(dt.day) +
     (isLeapYear(dt.year) ?
      DAYS_BEFORE_FIRST_OF_MONTH_LEAP_YEAR[dt.month] :
@@ -526,343 +423,52 @@ Date::Date(const DateTime& dateTime) noexcept
     SECONDS_PER_HOUR * dt.hour;
   date = dt.millisecond * 1000LL +
     (seconds + days * SECONDS_PER_DAY) * 1000000LL;
-}
-
-// TAG: write about keep date time in UTC always since timezone may change at any time
-Date Date::getLocalTime() const noexcept
-{
-#if 0 && (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
-  // UTC = local time + bias
-  TIME_ZONE_INFORMATION info;
-  DWORD status = GetTimeZoneInformation(&info);
-  LONG bias = info.Bias * 60 * 1000;
-  return date - bias;
-#else
-  return date; // + bias;
 #endif
 }
-
-Date Date::getUTCTime() const noexcept
-{
-#if 0 && (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
-  // UTC = local time + bias
-  TIME_ZONE_INFORMATION info;
-  DWORD status = GetTimeZoneInformation(&info);
-  LONG bias = info.Bias * 60 * 1000;
-  return date + bias;
-#else
-  return date; // - bias;
-#endif
-}
-
-// TAG: add getUTCMillisecond
 
 int Date::getMillisecond() const noexcept
 {
-  return (date/1000)%1000; // TAG: fixme UTC to local
+  return (date + 500)/ 1000 % 1000;
 }
 
 int Date::getSecond() const noexcept
 {
-#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
-  SYSTEMTIME time;
-  FILETIME nativeTime = internal::dateToNative(date);
-  binternalerror(
-    (::FileTimeToSystemTime(&nativeTime, &time) != 0) &&
-    (::SystemTimeToTzSpecificLocalTime(0, &time, &time) != 0)
-  );
-  return time.wSecond;
-#else // unix
-  struct tm result;
-  time_t nativeTime = internal::dateToNative(date);
-  localtime_r(&nativeTime, &result);
-  return result.tm_sec;
-#endif
+  return split().second;
 }
 
 int Date::getMinute() const noexcept
 {
-#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
-  SYSTEMTIME time;
-  FILETIME nativeTime = internal::dateToNative(date);
-  binternalerror(
-    (::FileTimeToSystemTime(&nativeTime, &time) != 0) &&
-    (::SystemTimeToTzSpecificLocalTime(0, &time, &time) != 0)
-  );
-  return time.wMinute;
-#else // unix
-  struct tm result;
-  time_t nativeTime = internal::dateToNative(date);
-  localtime_r(&nativeTime, &result);
-  return result.tm_min;
-#endif
+  return split().minute;
 }
 
 int Date::getHour() const noexcept
 {
-#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
-  SYSTEMTIME time;
-  FILETIME nativeTime = internal::dateToNative(date);
-  binternalerror(
-    (::FileTimeToSystemTime(&nativeTime, &time) != 0) &&
-    (::SystemTimeToTzSpecificLocalTime(0, &time, &time) != 0)
-  );
-  return time.wHour;
-#else // unix
-  struct tm result;
-  time_t nativeTime = internal::dateToNative(date);
-  localtime_r(&nativeTime, &result);
-  return result.tm_hour;
-#endif
+  return split().hour;
 }
-
-#if 0
-namespace {
-
-#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
-  inline void convertToSystemTime(int64 date, SYSTEMTIME& time)
-  {
-    SYSTEMTIME time;
-    FILETIME nativeTime = internal::dateToNative(date);
-    binternalerror(
-      (::FileTimeToSystemTime(&nativeTime, &time) != 0) &&
-      (::SystemTimeToTzSpecificLocalTime(0, &time, &time) != 0)
-    );
-  }
-#endif
-}
-#endif
 
 int Date::getDay() const noexcept
 {
-#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
-  convertToSystemTime(date, time);
-  SYSTEMTIME time;
-  FILETIME nativeTime = internal::dateToNative(date);
-  binternalerror(
-    (::FileTimeToSystemTime(&nativeTime, &time) != 0) &&
-    (::SystemTimeToTzSpecificLocalTime(0, &time, &time) != 0)
-  );
-  return time.wDay;
-#else // unix
-  struct tm result;
-  time_t nativeTime = internal::dateToNative(date);
-  localtime_r(&nativeTime, &result);
-  return result.tm_mday;
-#endif
+  return split().day;
 }
 
 int Date::getDayOfWeek() const noexcept
 {
-  // TAG: refactor to not convert implicitly to local time
-  // TAG: add method to convert to UTC/local
-#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
-  SYSTEMTIME time;
-  FILETIME nativeTime = internal::dateToNative(date);
-  binternalerror(
-    (::FileTimeToSystemTime(&nativeTime, &time) != 0) &&
-    (::SystemTimeToTzSpecificLocalTime(0, &time, &time) != 0)
-  );
-  return time.wDayOfWeek;
-#else // unix
-  struct tm result;
-  time_t nativeTime = internal::dateToNative(date);
-  localtime_r(&nativeTime, &result);
-  return result.tm_wday;
-#endif
+  return split().weekday;
 }
 
 int Date::getDayOfYear() const noexcept
 {
-#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
-  SYSTEMTIME time;
-  FILETIME nativeTime = internal::dateToNative(date);
-  binternalerror(
-    (::FileTimeToSystemTime(&nativeTime, &time) != 0) &&
-    (::SystemTimeToTzSpecificLocalTime(0, &time, &time) != 0)
-  );
-  _COM_AZURE_DEV__BASE__NOT_IMPLEMENTED();
-  return 0; // TAG: fixme
-#else // unix
-  struct tm result;
-  time_t nativeTime = internal::dateToNative(date);
-  localtime_r(&nativeTime, &result);
-  return result.tm_yday;
-#endif
+  return split().dayOfYear;
 }
 
 int Date::getMonth() const noexcept
 {
-#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
-  SYSTEMTIME time;
-  FILETIME nativeTime = internal::dateToNative(date);
-  binternalerror(
-    (::FileTimeToSystemTime(&nativeTime, &time) != 0) &&
-    (::SystemTimeToTzSpecificLocalTime(0, &time, &time) != 0)
-  );
-  return time.wMonth - 1;
-#else // unix
-  struct tm result;
-  time_t nativeTime = internal::dateToNative(date);
-  localtime_r(&nativeTime, &result);
-  return result.tm_mon;
-#endif
+  return split().month;
 }
 
 int Date::getYear() const noexcept
 {
-#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
-  SYSTEMTIME time;
-  FILETIME nativeTime = internal::dateToNative(date);
-  binternalerror(
-    (::FileTimeToSystemTime(&nativeTime, &time) != 0) &&
-    (::SystemTimeToTzSpecificLocalTime(0, &time, &time) != 0)
-  );
-  return time.wYear;
-#else // unix
-  struct tm result;
-  time_t nativeTime = internal::dateToNative(date);
-  localtime_r(&nativeTime, &result);
-  return 1900 + result.tm_year;
-#endif
-}
-
-int Date::getUTCSecond() const noexcept
-{
-#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
-  SYSTEMTIME time;
-  FILETIME nativeTime = internal::dateToNative(date);
-  binternalerror(
-    ::FileTimeToSystemTime(&nativeTime, &time)
-  );
-  return time.wSecond;
-#else // unix
-  struct tm result;
-  time_t nativeTime = internal::dateToNative(date);
-  gmtime_r(&nativeTime, &result); // MT-safe
-  return result.tm_sec;
-#endif
-}
-
-int Date::getUTCMinute() const noexcept
-{
-#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
-  SYSTEMTIME time;
-  FILETIME nativeTime = internal::dateToNative(date);
-  binternalerror(
-    ::FileTimeToSystemTime(&nativeTime, &time)
-  );
-  return time.wMinute;
-#else // unix
-  struct tm result;
-  time_t nativeTime = internal::dateToNative(date);
-  gmtime_r(&nativeTime, &result); // MT-safe
-  return result.tm_min;
-#endif
-}
-
-int Date::getUTCHour() const noexcept
-{
-#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
-  SYSTEMTIME time;
-  FILETIME nativeTime = internal::dateToNative(date);
-  binternalerror(
-    ::FileTimeToSystemTime(&nativeTime, &time)
-  );
-  return time.wHour;
-#else // unix
-  struct tm result;
-  time_t nativeTime = internal::dateToNative(date);
-  gmtime_r(&nativeTime, &result); // MT-safe
-  return result.tm_hour;
-#endif
-}
-
-int Date::getUTCDay() const noexcept
-{
-#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
-  SYSTEMTIME time;
-  FILETIME nativeTime = internal::dateToNative(date);
-  binternalerror(
-    ::FileTimeToSystemTime(&nativeTime, &time)
-  );
-  return time.wDay;
-#else // unix
-  struct tm result;
-  time_t nativeTime = internal::dateToNative(date);
-  gmtime_r(&nativeTime, &result); // MT-safe
-  return result.tm_mday;
-#endif
-}
-
-int Date::getUTCDayOfWeek() const noexcept
-{
-#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
-  SYSTEMTIME time;
-  FILETIME nativeTime = internal::dateToNative(date);
-  binternalerror(
-    ::FileTimeToSystemTime(&nativeTime, &time)
-  );
-  return time.wDayOfWeek;
-#else // unix
-  struct tm result;
-  time_t nativeTime = internal::dateToNative(date);
-  gmtime_r(&nativeTime, &result); // MT-safe
-  return result.tm_wday;
-#endif
-}
-
-int Date::getUTCDayOfYear() const noexcept
-{
-#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
-  SYSTEMTIME time;
-  FILETIME nativeTime = internal::dateToNative(date);
-  binternalerror(
-    (::FileTimeToSystemTime(&nativeTime, &time) != 0) &&
-    (::SystemTimeToTzSpecificLocalTime(0, &time, &time) != 0)
-  );
-  _COM_AZURE_DEV__BASE__NOT_IMPLEMENTED();
-  return 0; // TAG: fixme
-#else // unix
-  struct tm result;
-  time_t nativeTime = internal::dateToNative(date);
-  gmtime_r(&nativeTime, &result); // MT-safe
-  return result.tm_yday;
-#endif
-}
-
-int Date::getUTCMonth() const noexcept
-{
-#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
-  SYSTEMTIME time;
-  FILETIME nativeTime = internal::dateToNative(date);
-  binternalerror(
-    ::FileTimeToSystemTime(&nativeTime, &time)
-  );
-  return time.wMonth - 1;
-#else // unix
-  struct tm result;
-  time_t nativeTime = internal::dateToNative(date);
-  gmtime_r(&nativeTime, &result); // MT-safe
-  return result.tm_mon;
-#endif
-}
-
-int Date::getUTCYear() const noexcept
-{
-#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
-  SYSTEMTIME time;
-  FILETIME nativeTime = internal::dateToNative(date);
-  binternalerror(
-    ::FileTimeToSystemTime(&nativeTime, &time)
-  );
-  return time.wYear;
-#else // unix
-  struct tm result;
-  time_t nativeTime = internal::dateToNative(date);
-  gmtime_r(&nativeTime, &result); // MT-safe
-  return 1900 + result.tm_year;
-#endif
+  return split().year;
 }
 
 // http://www.faqs.org/faqs/calendars/faq/part2
@@ -895,10 +501,10 @@ int Date::getJulianDay() const noexcept
   int y = dt.year + 4800 - a;
   int m = (dt.month + 1) + MONTHS_PER_YEAR * a - 3;
   // Gregorian calendar
-  return (dt.day + 1) +
+  return dt.day +
     (153 * m + 2)/5 + 365 * y + y/4 - y/100 + y/400 - 32045;
   // Julian calendar
-  // return (dt.day + 1) + (153 * m + 2)/5 + 365 * y + y/4 - 32083;
+  // return dt.day + (153 * m + 2)/5 + 365 * y + y/4 - 32083;
 }
 
 Date::DateTime Date::split(bool local) const noexcept
@@ -938,7 +544,7 @@ Date::DateTime Date::split(bool local) const noexcept
   
   if (days >= 0) {
     int year = EPOCH_YEAR;
-    while (true) { // TAG: need otimization
+    while (true) { // TAG: need optimization
       bool leapYear = isLeapYear(year);
       int daysInYear = leapYear ? DAYS_PER_LEAP_YEAR : DAYS_PER_NONLEAP_YEAR;
       if (days < daysInYear) {
@@ -948,7 +554,7 @@ Date::DateTime Date::split(bool local) const noexcept
       days -= daysInYear;
     }
   } else {
-    do { // TAG: need otimization
+    do { // TAG: need optimization
       --year;
       bool leapYear = isLeapYear(year);
       int daysInYear = leapYear ? DAYS_PER_LEAP_YEAR : DAYS_PER_NONLEAP_YEAR;
@@ -958,65 +564,72 @@ Date::DateTime Date::split(bool local) const noexcept
   result.year = year;
   result.dayOfYear = days;
 #endif
-    // if local then add timezone bias
-  
-//   bool leapYear = isLeapYear(year);
-//   const int daysBeforeMonth[MONTHS_PER_YEAR] = leapYear ? DAYS_BEFORE_FIRST_OF_MONTH_LEAP_YEAR : DAYS_BEFORE_FIRST_OF_MONTH_NONLEAP_YEAR;
-//   int month = 1;
-//   while (days < daysBeforeMonth[month]) { // remember that index 12 is ok
-//     ++month;
-//   }
-//   --month;
-//   days -= daysBeforeMonth[month];
-//   result.day = days;
 
-  // TAG: need Daylight Saving Time (DST) support + local time support
+  DateTime result;
+
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   SYSTEMTIME time;
   FILETIME nativeTime = internal::dateToNative(date);
-  // TAG: convert to local time when required
+  if (local) {
+    FILETIME utcTime;
+    if (::LocalFileTimeToFileTime(&localTime, &utcTime) != 0) {
+      _throw DateException(Type::getType<Date>());
+    }
+    nativeTime = utcTime;
+  }
   binternalerror(
     ::FileTimeToSystemTime(&nativeTime, &time)
   );
-  DateTime result;
   result.year = time.wYear;
-  result.month = time.wMonth - 1;
-  result.day = time.wDay - 1;
+  result.month = time.wMonth - 1; // 0-indexed
+  result.day = time.wDay; // 1-indexed
   result.weekday = time.wDayOfWeek;
-  result.dayOfYear = 0; // TAG: fixme
-  result.week = 0; // TAG: fixme
   result.hour = time.wHour;
   result.minute = time.wMinute;
   result.second = time.wSecond;
   result.millisecond = time.wMilliseconds;
-  return result;
+  
+  if (true) {
+    const bool leapYear = isLeapYear(result.year);
+    int dayOfYear = result.day - 1 + // 1-indexed
+      (leapYear ?
+       DAYS_BEFORE_FIRST_OF_MONTH_LEAP_YEAR[result.month] :
+       DAYS_BEFORE_FIRST_OF_MONTH_NONLEAP_YEAR[result.month]);
+    result.dayOfYear = dayOfYear;
+  }
 #else // unix
   struct tm time;
   time_t nativeTime = internal::dateToNative(date);
-  if (local) {
-    localtime_r(&nativeTime, &time);
-  } else {
+  if (local) { // timezone adjustment
+    localtime_r(&nativeTime, &time); // MT-safe
+  } else { // no timezone adjustment
     gmtime_r(&nativeTime, &time); // MT-safe
   }
-  DateTime result;
   result.year = 1900 + time.tm_year;
   result.month = time.tm_mon;
-  result.day = time.tm_mday - 1;
+  result.day = time.tm_mday;
   result.weekday = time.tm_wday;
-  result.dayOfYear = 0; // TAG: fixme
-  result.week = 0; // TAG: fixme
+  result.dayOfYear = time.tm_yday;
   result.hour = time.tm_hour;
   result.minute = time.tm_min;
   result.second = time.tm_sec;
-  result.millisecond = 0;
-  return result;
+  result.millisecond = (date + 500)/1000 % 1000;
 #endif
+
+  BASSERT(result.millisecond >= 0);
+  BASSERT(result.second >= 0);
+  BASSERT(result.minute >= 0);
+  BASSERT(result.hour >= 0);
+
+  BASSERT((result.day >= 1) && (result.day <= 31));
+  BASSERT((result.month >= 0) && (result.month <= 11));
+  BASSERT((result.dayOfYear >= 0) && (result.dayOfYear <= 365));
+  return result;
 }
 
-String Date::format(const String& format, bool local) const
+String Date::format(const String& format) const
 {
-  // time zones?
-  DateTime dateTime = split(local);
+  const DateTime dateTime = split();
   
   // name of current locale
   // name of time zone abbrev. DK??? se W3C.org - 2 chars
@@ -1079,7 +692,7 @@ String Date::format(const String& format, bool local) const
       case 'd':
         stream << setWidth(2);
         if (flags & DEFAULT) {stream << ZEROPAD;}
-        stream << dateTime.day + 1;
+        stream << dateTime.day;
         break;
       case 'D':
         stream << setWidth(2);
@@ -1087,13 +700,13 @@ String Date::format(const String& format, bool local) const
         stream << dateTime.month << '/';
         stream << setWidth(2);
         if (flags & DEFAULT) {stream << ZEROPAD;}
-        stream << dateTime.day + 1 << '/';
+        stream << dateTime.day << '/';
         stream << setWidth(2);
         if (flags & DEFAULT) {stream << ZEROPAD;}
         stream << dateTime.year % 100;
         break;
       case 'e':
-        stream << dateTime.day + 1;
+        stream << dateTime.day;
         break;
       case 'F': // ISO 8601:2000 standard date format 2002-00-00
         stream << setWidth(4);
@@ -1104,7 +717,7 @@ String Date::format(const String& format, bool local) const
         stream << dateTime.month << '-';
         stream << setWidth(2);
         if (flags & DEFAULT) {stream << ZEROPAD;}
-        stream << dateTime.day + 1;
+        stream << dateTime.day;
         break;
       case 'g':
         break;
@@ -1191,18 +804,18 @@ String Date::format(const String& format, bool local) const
         stream << dateTime.second;
         break;
       case 'u': // weekday with 1 ~ Monday
-        stream << dateTime.weekday; // fixme
+        stream << dateTime.weekday;
         break;
       case 'U': // First Sunday is the first day of week 1
         stream << setWidth(2);
         if (flags & DEFAULT) {stream << ZEROPAD;}
-        stream << dateTime.week;
+        stream << Date::getWeek(dateTime);
         // week of year with Sunday as first day of week 00-53
         break;
       case 'V': // First Monday is the first day of week 1 - read standard!
         stream << setWidth(2);
         if (flags & DEFAULT) {stream << ZEROPAD;}
-        stream << dateTime.week; // 01-53 // TAG: fixme
+        stream << Date::getWeek(dateTime); // 01-53
         break;
       case 'w': // 0 is Sunday
         stream << setWidth(2);
@@ -1212,7 +825,7 @@ String Date::format(const String& format, bool local) const
       case 'W':
         stream << setWidth(2);
         if (flags & DEFAULT) {stream << ZEROPAD;}
-        stream << dateTime.week; // TAG: fixme
+        stream << Date::getWeek(dateTime);
         // week of year with Monday as first day of week 00-53
         break;
       case 'x': // locales date representation
@@ -1267,61 +880,12 @@ String Date::format(const String& format, bool local) const
   return stream.getString();
 }
 
-WideString Date::format(
-  const WideString& format,
-  bool local) const
+WideString Date::format(const WideString& text) const
 {
-#if defined(_COM_AZURE_DEV__BASE__HAVE_WCSFTIME)
-#if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
-  Thread::UseThreadLocalBuffer _buffer;
-  Allocator<uint8>& buffer = _buffer;
-  time_t nativeTime = (date + 500)/1000; // internal::dateToNative(date);
-  struct tm time;
-  if (local) {
-    localtime_s(&time, &nativeTime);
-  } else {
-    gmtime_s(&time, &nativeTime); // MT-safe
-  }
-  size_t result = wcsftime(
-    Cast::pointer<wchar*>(buffer.getElements()),
-    buffer.getSize()/sizeof(wchar),
-    nullptr, // TAG: FIXME? format.getElements(),
-    &time
-  );
-  return WideString(
-    Cast::pointer<const wchar*>(buffer.getElements()),
-    result
-  );
-#else // unix
-  Thread::UseThreadLocalBuffer _buffer;
-  Allocator<uint8>& buffer = _buffer;
-  time_t nativeTime = internal::dateToNative(date);
-  struct tm time;
-  if (local) {
-    localtime_r(&nativeTime, &time);
-  } else {
-    gmtime_r(&nativeTime, &time); // MT-safe
-  }
-  size_t result = wcsftime(
-    Cast::pointer<wchar*>(buffer.getElements()),
-    buffer.getSize()/sizeof(wchar),
-    nullptr, // TAG: FIXME format.getElements(),
-    &time
-  );
-  return WideString(
-    Cast::pointer<const wchar*>(buffer.getElements()),
-    result
-  );
-#endif
-#else
-#  warning WideString Date::format(const WideString& format, bool local) const not available
-  return WideString();
-#endif
+  return format(String(text));
 }
 
-FormatOutputStream& operator<<(
-  FormatOutputStream& stream,
-  const Date& date)
+FormatOutputStream& operator<<(FormatOutputStream& stream, const Date& date)
 {
   stream.addDateField(date);
   return stream;
@@ -1344,6 +908,7 @@ public:
 
     Date d1 = Date::getTime(0, 0, 0);
     TEST_ASSERT(!d1);
+    // fout << "EPOCH=" << d1 << ENDL;
     Date d2 = Date::getDate(1, 0, 2020);
     TEST_ASSERT(d2);
     Date d3 = Date::getDate(1, 5, 2, 1, 0, 2020); // TAG: normalize values
@@ -1356,35 +921,33 @@ public:
     TEST_ASSERT(time.second == 1);
     TEST_ASSERT(time.minute == 5);
     TEST_ASSERT(time.hour == 2);
-    TEST_ASSERT(time.day == 0); // TAG: fix inconsistency for 0-based
+    TEST_ASSERT(time.day == 1);
     TEST_ASSERT(time.month == 0);
     TEST_ASSERT(time.year == 2020);
     TEST_ASSERT(time.weekday == 3);
     // fout << time.weekday << ENDL;
-    TEST_ASSERT(time.dayOfYear == 0); // TAG: fix inconsistency for 0-based?
+    TEST_ASSERT(time.dayOfYear == 0);
 
-    Date::DateTime dateTime = {
-      4000, // year
-      13, // month
-      31, // day of month
-      123456789, // day of week - dont care
-      123456789, // day of year - dont care
-      123456789, // week of year - dont care
-      24, // hour
-      61, // minute
-      61, // second
-      999 // millisecond
-    };
-    Date::normalize(dateTime);
-    // fout << Date(dateTime) << ENDL;
-
-    d3.getUTCSecond();
-    d3.getUTCMinute();
-    d3.getUTCHour();
-    d3.getUTCDay();
-    d3.getUTCMonth();
-    d3.getUTCYear();
+    TEST_ASSERT(d3.getSecond() == 1);
+    TEST_ASSERT(d3.getMinute() == 5);
+    TEST_ASSERT(d3.getHour() == 2);
+    TEST_ASSERT(d3.getDay() == 1);
+    TEST_ASSERT(d3.getMonth() == 0);
+    TEST_ASSERT(d3.getYear() == 2020);
     
+    Date::DateTime dateTime;
+    dateTime.year = 4000;
+    dateTime.month = 11;
+    dateTime.day = 31;
+    dateTime.hour = 23;
+    dateTime.minute = 1;
+    dateTime.second = 1;
+    dateTime.millisecond = 999;
+    Date::normalize(dateTime);
+    Date d5 = Date::makeDate(dateTime);
+    TEST_ASSERT(d5);
+    // fout << Date::makeDate(dateTime) << ENDL;
+
     static const Literal DAY_NAMES[] = {
       Literal("Sunday"),
       Literal("Monday"),

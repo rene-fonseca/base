@@ -43,7 +43,7 @@ public:
 
   inline String getTime(const Date& date) const
   {
-    return date.format((date.getYear() == currentYear) ? thisYearFormat : otherYearFormat, false);
+    return date.format((date.getYear() == currentYear) ? thisYearFormat : otherYearFormat);
   }
   
   void main()

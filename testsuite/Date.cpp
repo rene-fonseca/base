@@ -41,18 +41,14 @@ public:
 
     Date date = Date::getNow();
     
-    Date::DateTime dateTime = {
-      4000, // year
-      13, // month
-      31, // day of month
-      123456789, // day of week - dont care
-      123456789, // day of year - dont care
-      123456789, // week of year - dont care
-      24, // hour
-      61, // minute
-      61, // second
-      999 // millisecond
-    };
+    Date::DateTime dateTime;
+    dateTime.year = 4000;
+    dateTime.month = 12;
+    dateTime.day = 31;
+    dateTime.hour = 24;
+    dateTime.minute = 1;
+    dateTime.second = 1;
+    dateTime.millisecond = 999;
     Date::normalize(dateTime);
     
 //     fout << dateTime.year << EOL
@@ -78,18 +74,10 @@ public:
          << "Date::getDayOfYear(): " << date.getDayOfYear() << EOL
          << "Date::getMonth(): " << date.getMonth() << EOL
          << "Date::getYear(): " << date.getYear() << EOL
-         << "Date::getUTCSecond(): " << date.getUTCSecond() << EOL
-         << "Date::getUTCMinute(): " << date.getUTCMinute() << EOL
-         << "Date::getUTCHour(): " << date.getUTCHour() << EOL
-         << "Date::getUTCDay(): " << date.getUTCDay() << EOL
-         << "Date::getUTCDayOfWeek(): " << date.getUTCDayOfWeek() << EOL
-         << "Date::getUTCDayOfYear(): " << date.getUTCDayOfYear() << EOL
-         << "Date::getUTCMonth(): " << date.getUTCMonth() << EOL
-         << "Date::getUTCYear(): " << date.getUTCYear() << EOL
          << "Date::getJulianDay(): " << date.getJulianDay() << EOL
          << "Date::isLeapYear(1999): " << Date::isLeapYear(1999) << EOL
          << "Date::isLeapYear(2000): " << Date::isLeapYear(2000) << EOL
-         << "Date::Date(DateTime): " << Date(dateTime) << EOL
+         << "Date::Date(DateTime): " << Date::makeDate(dateTime) << EOL
          << ENDL;
 
     static const Literal DAY_NAMES[] = {

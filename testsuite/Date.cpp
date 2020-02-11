@@ -43,7 +43,7 @@ public:
     
     Date::DateTime dateTime;
     dateTime.year = 4000;
-    dateTime.month = 12;
+    dateTime.month = Date::DECEMBER;
     dateTime.day = 31;
     dateTime.hour = 24;
     dateTime.minute = 1;
@@ -91,7 +91,8 @@ public:
     };
   }
 
-  ~DateApplication() {
+  ~DateApplication()
+  {
   }
 };
 

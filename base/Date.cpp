@@ -428,7 +428,7 @@ Date Date::makeDate(const DateTime& dt, bool local)
 
 int Date::getMillisecond() const noexcept
 {
-  return (date + 500)/ 1000 % 1000;
+  return date/1000 % 1000; // can be negative
 }
 
 int Date::getSecond() const noexcept
@@ -510,7 +510,7 @@ int Date::getJulianDay() const noexcept
 Date::DateTime Date::split(bool local) const noexcept
 {
 #if 0
-  result.millisecond = (date + 500)/1000 % 1000;
+  result.millisecond = date/1000 % 1000;
   int days = date/SECONDS_PER_DAY;
   int seconds = date%SECONDS_PER_DAY;
   if (seconds < 0) {
@@ -613,7 +613,7 @@ Date::DateTime Date::split(bool local) const noexcept
   result.hour = time.tm_hour;
   result.minute = time.tm_min;
   result.second = time.tm_sec;
-  result.millisecond = (date + 500)/1000 % 1000;
+  result.millisecond = date/1000 % 1000;
 #endif
 
   BASSERT(result.millisecond >= 0);
@@ -957,6 +957,10 @@ public:
       Literal("Friday"),
       Literal("Saturday")
     };
+
+    TEST_ASSERT(Date::getDate(2, Date::AUGUST, 1953).split().weekday == Date::SUNDAY);
+    TEST_ASSERT(Date::getDate(13, Date::FEBRUARY, 2053).split().weekday == Date::THURSDAY);
+    TEST_ASSERT(Date::getDate(20, Date::NOVEMBER, 2055).split().weekday == Date::SATURDAY);
   }
 };
 

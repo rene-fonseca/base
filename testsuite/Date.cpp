@@ -89,18 +89,6 @@ public:
       Literal("Friday"),
       Literal("Saturday")
     };
-
-    // Sunday
-    fout << "Date::getDayOfWeek(2-1, Date::AUGUST, 1953): "
-         << DAY_NAMES[Date::getDayOfWeek(2-1, Date::AUGUST, 1953)] << ENDL;
-
-    // Thursday
-    fout << "Date::getDayOfWeek(13-1, Date::FEBRUARY, 2053): "
-         << DAY_NAMES[Date::getDayOfWeek(13-1, Date::FEBRUARY, 2053)] << ENDL;
-
-    // Saturday
-    fout << "Date::getDayOfWeek(20-1, Date::NOVEMBER, 2055): "
-         << DAY_NAMES[Date::getDayOfWeek(20-1, Date::NOVEMBER, 2055)] << ENDL;
   }
 
   ~DateApplication() {

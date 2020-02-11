@@ -14,6 +14,7 @@
 #include <base/Application.h>
 #include <base/string/FormatOutputStream.h>
 #include <base/string/StringOutputStream.h>
+#include <base/string/ANSIEscapeSequence.h>
 #include <base/Date.h>
 #include <base/Literal.h>
 
@@ -45,9 +46,10 @@ public:
          << "The Base Framework (Test Suite)" << EOL
          << ENDL;
     
-    Date now = Date::getNow();
-    unsigned int month = now.getMonth();
+    const Date now = Date::getNow();
+    const Date::DateTime decomposedNow = now.getLocalTime().split();
     Date::DateTime decomposed = now.getLocalTime().split();
+    unsigned int month = decomposed.month;
     
     // TAG: use locale
     static const Literal MONTH_NAMES[] = {
@@ -99,12 +101,18 @@ public:
     
     {
       StringOutputStream stream;
-      stream << MONTH_NAMES[month] << SP
-             << decomposed.year << FLUSH;
+      stream << MONTH_NAMES[month] << SP << decomposed.year << FLUSH;
       String header = stream.getString();
       int headerIndent =
         (6 + FIELD_WIDTH * Date::DAYS_PER_WEEK - header.getLength())/2;
-      fout << indent(maximum(0, headerIndent)) << header << ENDL;
+      
+      fout << indent(maximum(0, headerIndent));
+      if (fout.isANSITerminal()) {
+        fout << bold() << header << normal() << ENDL;
+      } else {
+        fout << header << ENDL;
+      }
+
       int dayOfWeek = firstDayOfWeekOfLocale;
       fout << LEFT << setWidth(6) << "week";
       for (
@@ -118,10 +126,9 @@ public:
       fout << ENDL;
     }
 
-    int firstWeek = Date::getWeek(0, decomposed.month, decomposed.year);
-    
-    int firstDayOfWeek =
-      Date::getDayOfWeek(0, decomposed.month, decomposed.year);
+    Date::DateTime firstDay = Date::getDate(1, decomposed.month, decomposed.year).split();
+    int firstWeek = Date::getWeek(firstDay);
+    int firstDayOfWeek = firstDay.weekday;
     
     fout << LEFT << setWidth(6) << firstWeek;
     int dayOfWeek = firstDayOfWeekOfLocale;
@@ -130,18 +137,25 @@ public:
       fout << indent(FIELD_WIDTH);
     }
     
-    const unsigned int daysOfMonth =
-      Date::getDaysOfMonth(decomposed.month, decomposed.year);
-
-    // TAG: 3 to 6 weeks per month
-    for (int day = 0; day < static_cast<int>(daysOfMonth);) {
-      fout << RIGHT << setWidth(FIELD_WIDTH) << (day + 1);
+    const unsigned int daysOfMonth = Date::getDaysOfMonth(decomposed.month, decomposed.year);
+    int week = firstWeek;
+    for (int day = 1; day <= static_cast<int>(daysOfMonth); ++day) {
+      if (fout.isANSITerminal()) {
+        bool today = (decomposedNow.day == day) &&
+          (decomposedNow.month == decomposed.month) &&
+        (decomposedNow.year == decomposed.year);
+        if (today) {
+          fout << bold();
+        }
+        fout << RIGHT << setForeground(today ? ANSIEscapeSequence::GREEN : ANSIEscapeSequence::BLUE)
+             << setWidth(FIELD_WIDTH) << day << normal();
+      } else {
+        fout << RIGHT << setWidth(FIELD_WIDTH) << day;
+      }
       dayOfWeek = getSucceedingDayOfWeek(dayOfWeek);
-      ++day;
       if (dayOfWeek == firstDayOfWeekOfLocale) {
-        fout << EOL;
-        fout << LEFT << setWidth(6)
-             << Date::getWeek(day, decomposed.month, decomposed.year);
+        ++week;
+        fout << EOL << LEFT << setWidth(6) << week;
       }
     }
     fout << ENDL;

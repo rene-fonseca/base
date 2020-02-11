@@ -44,7 +44,8 @@ namespace internal {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   inline int64 nativeToDate(const FILETIME& time) noexcept
   {
-    return (*(uint64*)(&time) - 116444736000000000LL)/10;
+    int64 temp = (*(int64*)(&time) - 116444736000000000LL)/10;
+    return temp;
   }
   
   inline FILETIME dateToNative(int64 time) noexcept
@@ -292,8 +293,8 @@ int64 Date::getBias() noexcept
 
 //  #if (_COM_AZURE_DEV__BASE__OS < _COM_AZURE_DEV__BASE__WXP)
   // UTC = local time + bias
-    FILETIME localTime = 0;
-    FILETIME utcTime = 0;
+    FILETIME localTime;
+    FILETIME utcTime;
     if (::LocalFileTimeToFileTime(&localTime, &utcTime) != 0) {
       _throw DateException(Type::getType<Date>());
     }
@@ -367,7 +368,9 @@ Date Date::makeDate(const DateTime& dt, bool local)
 
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
   FILETIME nativeTime;
-  SYSTEMTIME time = {static_cast<WORD>(dt.year), static_cast<WORD>(dt.month + 1), 0, static_cast<WORD>(dt.day), static_cast<WORD>(dt.hour), static_cast<WORD>(dt.minute), static_cast<WORD>(dt.second), dt.millisecond};
+  SYSTEMTIME time = {static_cast<WORD>(dt.year), static_cast<WORD>(dt.month + 1), 0, static_cast<WORD>(dt.day),
+    static_cast<WORD>(dt.hour), static_cast<WORD>(dt.minute), static_cast<WORD>(dt.second),
+    static_cast<WORD>(dt.millisecond)};
   bassert(
     ::SystemTimeToFileTime(&time, &nativeTime),
     DateException(Type::getType<Date>())
@@ -572,7 +575,7 @@ Date::DateTime Date::split(bool local) const noexcept
   FILETIME nativeTime = internal::dateToNative(date);
   if (local) {
     FILETIME utcTime;
-    if (::LocalFileTimeToFileTime(&localTime, &utcTime) != 0) {
+    if (::LocalFileTimeToFileTime(&nativeTime, &utcTime) != 0) {
       _throw DateException(Type::getType<Date>());
     }
     nativeTime = utcTime;

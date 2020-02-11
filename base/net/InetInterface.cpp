@@ -258,6 +258,7 @@ List<InetInterface> InetInterface::getInterfaces()
       continue;
     }
     InetInterface interface;
+    interface.name = format() << index;
     
     unsigned int flags = 0;
     flags |= (current->iiFlags & IFF_UP) ? InetInterface::UP : 0;

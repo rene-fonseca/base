@@ -142,6 +142,28 @@ public:
   {
     readUCS4();
   }
+  
+  /** Reads a digit 0-9. */
+  inline unsigned int readDigit()
+  {
+    ucs4 ch = readUCS4();
+    if ((ch >= '0') && (ch <= '9')) {
+      return ch - '0';
+    }
+    _throw ParseException("Unexpected char.");
+  }
+
+  /** Reads n digits (up to 9). */
+  inline unsigned int readDigits(unsigned int count)
+  {
+    BASSERT(count <= 9);
+    unsigned int result = 0;
+    while (count) {
+      uint8 value = readDigit();
+      result = result * 10 + value;
+    }
+    return result;
+  }
 
   /** Returns the next char. */
   inline char read()

@@ -23,6 +23,7 @@
 #include <base/concurrency/Thread.h>
 #include <base/string/StringOutputStream.h>
 #include <base/string/Locale.h>
+#include <base/string/Parser.h>
 #include <base/UnitTest.h>
 #include <base/build.h>
 
@@ -357,6 +358,33 @@ Date Date::getDate(
   return makeDate(dt);
 }
 
+bool Date::isValidDateTime(const DateTime& dt)
+{
+  if (!((dt.year >= -9999) && (dt.year <= 9999))) {
+    return false;
+  }
+  if (!((dt.month >= 0) && (dt.month <= 11))) {
+    return false;
+  }
+  if (!((dt.day >= 1) &&
+       (dt.day <= (isLeapYear(dt.year) ? DAYS_PER_MONTH_LEAP_YEAR[dt.month] : DAYS_PER_MONTH_NONLEAP_YEAR[dt.month])))) {
+    return false;
+  }
+  if (!((dt.hour >= 0) && (dt.hour <= 23))) {
+    return false;
+  }
+  if (!((dt.minute >= 0) && (dt.minute <= 59))) {
+    return false;
+  }
+  if (!((dt.second >= 0) && (dt.second <= 60))) { // leap second
+    return false;
+  }
+  if (!((dt.millisecond >= 0) && (dt.millisecond <= 999))) {
+    return false;
+  }
+  return true;
+}
+
 Date Date::makeDate(const DateTime& dt, bool local)
 {
   BASSERT(dt.millisecond >= 0);
@@ -630,6 +658,131 @@ Date::DateTime Date::split(bool local) const noexcept
   BASSERT((result.month >= 0) && (result.month <= 11));
   BASSERT((result.dayOfYear >= 0) && (result.dayOfYear <= 365));
   return result;
+}
+
+String Date::getISO8601(int offset) const
+{
+  // ISO:8601
+  // https://tools.ietf.org/html/rfc3339
+  // 2020-02-12T18:15:23.6780015Z
+
+  int HH = 0;
+  int MM = 0;
+  int sign = 1;
+  if (offset == 0) {
+  } else {
+    if (offset < 0) {
+      sign = -1;
+      offset = -offset;
+    }
+    int HH = offset/100;
+    int MM = offset % 100;
+    if (HH > 24) {
+      _throw DateException("Invalid timezone offset.");
+    }
+    if (MM >= 60) {
+      _throw DateException("Invalid timezone offset.");
+    }
+  }
+
+  Date temp(date + sign * (HH * 60 + MM) * 60 * 1000000ULL);
+  auto dt = temp.split();
+
+  StringOutputStream sos;
+  sos << setWidth(4) << ZEROPAD << dt.year << '-'
+      << setWidth(2) << ZEROPAD << (dt.month + 1) << '-'
+      << setWidth(2) << ZEROPAD << dt.day
+      << 'T' << setWidth(2) << ZEROPAD << dt.hour << ':'
+      << setWidth(2) << ZEROPAD << dt.minute << ':'
+      << setWidth(2) << ZEROPAD << dt.second;
+
+  if (offset == 0) {
+    sos << 'Z'; // UTC
+  } else {
+    sos << ((sign > 0) ? '+' : '-')
+        << setWidth(2) << ZEROPAD << HH << ':'
+        << setWidth(2) << ZEROPAD << MM;
+  }
+  return sos;
+}
+
+String Date::getISO8601_MS() const
+{
+  // 2020-02-12T18:15:23.678Z
+  auto dt = split();
+  StringOutputStream sos;
+  sos << setWidth(4) << ZEROPAD << dt.year << '-'
+      << setWidth(2) << ZEROPAD << (dt.month + 1) << '-'
+      << setWidth(2) << ZEROPAD << dt.day
+      << 'T' << setWidth(2) << ZEROPAD << dt.hour << ':'
+      << setWidth(2) << ZEROPAD << dt.minute << ':'
+      << setWidth(2) << ZEROPAD << dt.second
+      << '.' << setWidth(6) << ZEROPAD << (date/1000 % 1000)
+      << 'Z'; // UTC
+  return sos;
+}
+
+String Date::getISO8601_US() const
+{
+  // 2020-02-12T18:15:23.678001Z
+  auto dt = split();
+  StringOutputStream sos;
+  sos << setWidth(4) << ZEROPAD << dt.year << '-'
+      << setWidth(2) << ZEROPAD << (dt.month + 1) << '-'
+      << setWidth(2) << ZEROPAD << dt.day
+      << 'T' << setWidth(2) << ZEROPAD << dt.hour << ':'
+      << setWidth(2) << ZEROPAD << dt.minute << ':'
+      << setWidth(2) << ZEROPAD << dt.second
+      << '.' << setWidth(6) << ZEROPAD << (date % 1000000);
+  return sos;
+}
+
+Date Date::parseISO8601(const String& text)
+{
+  DateTime dt;
+  
+  Parser parser(text);
+  dt.year = parser.readDigits(4); // year
+  parser.read('-');
+  dt.month = parser.readDigits(2) - 1; // month
+  parser.read('-');
+  dt.day = parser.readDigits(2); // day
+  parser.read('T');
+  dt.hour = parser.readDigits(2); // hours
+  parser.read(':');
+  dt.minute = parser.readDigits(2); // minutes
+  parser.read(':');
+  dt.second = parser.readDigits(2); // seconds
+  int64 offset = 0;
+  if (parser.peek() == 'Z') {
+    parser.read('Z');
+#if 0
+    // TAG: add support for reading subsec values - any number of digits up to 9
+    if (parser.hasMore()) {
+      parser.read('.');
+      // TAG: parser.readDigits(9);
+    }
+#endif
+  } else {
+    int sign = 1;
+    if (parser.peek() == '+') {
+      parser.read('+');
+    } else {
+      parser.read('-');
+      sign = -1;
+    }
+    unsigned int HH = parser.readDigits(2); // hours
+    parser.read(':');
+    unsigned int MM = parser.readDigits(2); // minutes
+    offset = sign * ((HH * 60 + MM) * 60) * 1000000;
+  }
+  if (parser.hasMore()) {
+    _throw InvalidFormat("Invalid date/time format.");
+  }
+  if (!isValidDateTime(dt)) {
+    _throw InvalidFormat("Invalid date/time.");
+  }
+  return makeDate(dt) - offset;
 }
 
 String Date::format(const String& format) const

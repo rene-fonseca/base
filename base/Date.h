@@ -245,6 +245,9 @@ public:
   {
   }
   
+  /** Returns true if the date/time is within the valid range. */
+  static bool isValidDateTime(const DateTime& dt);
+
   /**
     Returns the date/time for the given date/time components.
 
@@ -365,6 +368,19 @@ public:
     @param local Specifies that time should be converted to local time from UTC.
   */
   DateTime split(bool local = false) const noexcept;
+
+  /** Returns date/time in ISO 8601 format. E.g. 2020-01-31T18:00:00Z. */
+  String getISO8601(int offset = 0) const;
+
+  /** Returns date/time in ISO 8601 format with milliseconds. E.g. 2020-01-31T18:00:00.123Z. */
+  String getISO8601_MS() const;
+
+  /** Returns date/time in ISO 8601 format with microseconds. E.g. 2020-01-31T18:00:00.123456Z. */
+  String getISO8601_US() const;
+
+  // TAG: add support for timezone
+  /** Returns date/time in ISO 8601 format. E.g. 2020-01-31T18:00:00Z. */
+  static Date parseISO8601(const String& text);
 
   /**
     Returns the date/time as a string.

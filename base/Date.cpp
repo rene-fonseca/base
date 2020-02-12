@@ -717,7 +717,7 @@ String Date::getISO8601_MS() const
       << 'T' << setWidth(2) << ZEROPAD << dt.hour << ':'
       << setWidth(2) << ZEROPAD << dt.minute << ':'
       << setWidth(2) << ZEROPAD << dt.second
-      << '.' << setWidth(6) << ZEROPAD << (date/1000 % 1000)
+      << '.' << setWidth(3) << ZEROPAD << (date/1000 % 1000) // ms
       << 'Z'; // UTC
   return sos;
 }
@@ -733,11 +733,12 @@ String Date::getISO8601_US() const
       << 'T' << setWidth(2) << ZEROPAD << dt.hour << ':'
       << setWidth(2) << ZEROPAD << dt.minute << ':'
       << setWidth(2) << ZEROPAD << dt.second
-      << '.' << setWidth(6) << ZEROPAD << (date % 1000000);
+      << '.' << setWidth(6) << ZEROPAD << (date % 1000000) // us
+      << 'Z'; // UTC
   return sos;
 }
 
-Date Date::parseISO8601(const String& text)
+Date Date::parseISO8601(const String& text, bool subsecond)
 {
   DateTime dt;
   
@@ -753,16 +754,27 @@ Date Date::parseISO8601(const String& text)
   dt.minute = parser.readDigits(2); // minutes
   parser.read(':');
   dt.second = parser.readDigits(2); // seconds
+  
+  unsigned int us = 0;
+  if (subsecond) {
+    if (parser.hasMore() && (parser.peek() == '.')) {
+      parser.read('.');
+      unsigned int count = parser.getNumberOfDigits();
+      if (count > 9) {
+        _throw InvalidFormat("Invalid date/time format.");
+      }
+      unsigned int value = parser.readDigits(count);
+      while (count++ < 9) {
+        value *= 10;
+      }
+      value /= 1000;
+      us = value;
+    }
+  }
+  
   int64 offset = 0;
   if (parser.peek() == 'Z') {
     parser.read('Z');
-#if 0
-    // TAG: add support for reading subsec values - any number of digits up to 9
-    if (parser.hasMore()) {
-      parser.read('.');
-      // TAG: parser.readDigits(9);
-    }
-#endif
   } else {
     int sign = 1;
     if (parser.peek() == '+') {
@@ -776,13 +788,21 @@ Date Date::parseISO8601(const String& text)
     unsigned int MM = parser.readDigits(2); // minutes
     offset = sign * ((HH * 60 + MM) * 60) * 1000000;
   }
+  
   if (parser.hasMore()) {
     _throw InvalidFormat("Invalid date/time format.");
   }
   if (!isValidDateTime(dt)) {
     _throw InvalidFormat("Invalid date/time.");
   }
-  return makeDate(dt) - offset;
+  
+  Date result = makeDate(dt) - offset;
+  if (result > 0) {
+    result = result + us;
+  } else {
+    result = result - us;
+  }
+  return result;
 }
 
 String Date::format(const String& format) const
@@ -1119,6 +1139,12 @@ public:
     TEST_ASSERT(Date::getDate(2, Date::AUGUST, 1953).split().weekday == Date::SUNDAY);
     TEST_ASSERT(Date::getDate(13, Date::FEBRUARY, 2053).split().weekday == Date::THURSDAY);
     TEST_ASSERT(Date::getDate(20, Date::NOVEMBER, 2055).split().weekday == Date::SATURDAY);
+    
+    String text = now.getISO8601_US();
+    // fout << text << ENDL;
+    Date now2 = Date::parseISO8601(text, true);
+    String text2 = now.getISO8601_US();
+    TEST_ASSERT(text2 == text); // do not compare date value due to potential subsecond rounding
   }
 };
 

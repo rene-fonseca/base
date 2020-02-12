@@ -158,11 +158,25 @@ public:
   {
     BASSERT(count <= 9);
     unsigned int result = 0;
-    while (count) {
+    while (count--) {
       uint8 value = readDigit();
       result = result * 10 + value;
     }
     return result;
+  }
+
+  /** Returns the number of available digits. */
+  inline unsigned int getNumberOfDigits() const noexcept
+  {
+    const uint8* src = this->src;
+    while (src != end) {
+      uint8 value = *src; // fine without ucs4
+      if (!((value >= '0') && (value <= '9'))) {
+        break;
+      }
+      ++src;
+    }
+    return static_cast<unsigned int>(src - this->src);
   }
 
   /** Returns the next char. */

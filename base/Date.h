@@ -380,7 +380,7 @@ public:
 
   // TAG: add support for timezone
   /** Returns date/time in ISO 8601 format. E.g. 2020-01-31T18:00:00Z. */
-  static Date parseISO8601(const String& text);
+  static Date parseISO8601(const String& text, bool subsecond = false);
 
   /**
     Returns the date/time as a string.

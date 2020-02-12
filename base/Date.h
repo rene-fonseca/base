@@ -281,7 +281,16 @@ public:
   {
     return date;
   }
-  
+
+  /**
+    Returns the number of microseconds elapsed since 00:00:00 on January 1,
+    1970, Coordinated Universal Time (UTC).
+  */
+  inline operator int64() const noexcept
+  {
+    return date;
+  }
+
   /** Returns true if date is not epoch. */
   inline operator bool() const noexcept
   {

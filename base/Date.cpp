@@ -796,11 +796,11 @@ Date Date::parseISO8601(const String& text, bool subsecond)
     _throw InvalidFormat("Invalid date/time.");
   }
   
-  Date result = makeDate(dt) - offset;
+  int64 result = makeDate(dt).getValue() - offset;
   if (result > 0) {
-    result = result + us;
+    result += us;
   } else {
-    result = result - us;
+    result -= us;
   }
   return result;
 }

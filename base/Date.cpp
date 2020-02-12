@@ -287,7 +287,7 @@ Date Date::getNow()
 #endif
 }
 
-int64 Date::getBias() noexcept
+int64 Date::getBias()
 {
 #if (_COM_AZURE_DEV__BASE__FLAVOR == _COM_AZURE_DEV__BASE__WIN32)
 
@@ -577,9 +577,10 @@ Date::DateTime Date::split(bool local) const noexcept
   if (local) {
     FILETIME utcTime;
     if (::LocalFileTimeToFileTime(&nativeTime, &utcTime) != 0) {
-      _throw DateException(Type::getType<Date>());
+      nativeTime = utcTime;
+    } else {
+      // _throw DateException(Type::getType<Date>());
     }
-    nativeTime = utcTime;
   }
   binternalerror(
     ::FileTimeToSystemTime(&nativeTime, &time)

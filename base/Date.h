@@ -180,7 +180,7 @@ public:
     Bias may change during the lifetime of the process. This method only works
     on some planet called Earth :-]. UTC = local time + bias.
   */
-  static int64 getBias() noexcept;
+  static int64 getBias();
   
   /**
     Returns date object for the specified time. Invalid values will be

@@ -170,14 +170,14 @@ public:
 
   String formatRate(uint64 bytes, uint64 microseconds)
   {
-    double rate = (1000000. / 1024 * static_cast<double>(bytesWritten) / microseconds);
+    double rate = (1000000. * static_cast<double>(bytesWritten) / microseconds);
     StringOutputStream sos;
     if (rate > 1024 * 1024 * 1024) {
-      return sos << base::FIXED << setPrecision(1) << rate << " Gb/s";
+      return sos << base::FIXED << setPrecision(1) << rate/(1024*1024*1024) << " Gb/s";
     } else if (rate > 1024 * 1024) {
-      return sos << base::FIXED << setPrecision(1) << rate << " Mb/s";
+      return sos << base::FIXED << setPrecision(1) << rate/(1024*1024) << " Mb/s";
     } else if (rate > 1024) {
-      return sos << base::FIXED << setPrecision(1) << rate << " kb/s";
+      return sos << base::FIXED << setPrecision(1) << rate/1024 << " kb/s";
     } else {
       return sos << base::FIXED << setPrecision(1) << rate << " b/s";
     }

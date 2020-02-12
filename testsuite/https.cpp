@@ -22,6 +22,8 @@
 #include <base/string/FormatInputStream.h>
 #include <base/string/FormatOutputStream.h>
 #include <base/string/StringOutputStream.h>
+#include <base/string/Format.h>
+#include <base/string/ANSIEscapeSequence.h>
 #include <base/objectmodel/JSON.h>
 
 using namespace com::azure::dev::base;
@@ -134,30 +136,92 @@ public:
     timer.start();
     return true;
   }
+
+  static String formatBytes(uint64 bytes)
+  {
+    if (bytes > 5ULL * 1024 * 1024 * 1024) {
+      return format() << bytes*10/1024/1024/10.0 << " Gb";
+    } else if (bytes > 5 * 1024 * 1024) {
+      return format() << bytes * 10 / (1024 * 1024) / 10.0 << " Mb";
+    } else if (bytes > 5 * 1024) {
+      return format() << bytes * 10 / 1024 / 10.0 << " Kb";
+    }
+    return format() << bytes;
+  }
   
+  String formatProgress(uint64 bytes, uint64 total)
+  {
+    return format() << base::FIXED << setPrecision(1) << (bytes * 1000 / total) / 10.0 << '%';
+  }
+
+  String formatTime(uint64 microseconds, bool showMS = false)
+  {
+    // HH:MM / HH:MM:SS / HH:MM:SS.mmm / HH:MM:SS.mmmmmm
+    Timer::ElapsedTime time(microseconds * 1000);
+    StringOutputStream sos;
+    sos << ZEROPAD << time.getHours() << ':'
+      << ZEROPAD << setWidth(2) << time.getNMinutes() << ':'
+      << ZEROPAD << setWidth(2) << time.getNSeconds();
+    if (showMS) {
+      sos << '.' << setWidth(3) << ZEROPAD << time.getNMilliseconds();
+    }
+    return sos;
+  }
+
+  String formatRate(uint64 bytes, uint64 microseconds)
+  {
+    double rate = (1000000. / 1024 * static_cast<double>(bytesWritten) / microseconds);
+    StringOutputStream sos;
+    if (rate > 1024 * 1024 * 1024) {
+      return sos << base::FIXED << setPrecision(1) << rate << " Gb/s";
+    } else if (rate > 1024 * 1024) {
+      return sos << base::FIXED << setPrecision(1) << rate << " Mb/s";
+    } else if (rate > 1024) {
+      return sos << base::FIXED << setPrecision(1) << rate << " kb/s";
+    } else {
+      return sos << base::FIXED << setPrecision(1) << rate << " b/s";
+    }
+  }
+
+  // TAG: aborted by user needs to write on new line or clear current line
+
   MemorySize push(const uint8* buffer, MemorySize size)
   {
     unsigned int result = file.write(buffer, size);
+    // TAG: run download in separate thread
+    // TAG: show time since last byte read when running in separate thread
+    // TAG: ansi color
+    StringOutputStream sos;
+    sos << base::FIXED << setPrecision(1);
+    sos << 123.; // TAG: add test
+    String temp = sos;
+
+    // TAG: 1.0e2 %
+
     BASSERT(result == size);
     bytesWritten += size;
+    const uint64 microseconds = timer.getLiveMicroseconds();
     if (totalSize > 0) {
-      fout << "Read=" << bytesWritten
-           << "  Progress=" << base::FIXED << (bytesWritten*1000/totalSize)/10.0 << '%'
-           << "  Time=" << base::FIXED << timer.getLiveMicroseconds()/100000/10.0 << " s"
-           << "  Rate=" << base::FIXED << setPrecision(1)
-           << (1000000./1024 * static_cast<double>(bytesWritten)/timer.getLiveMicroseconds())
-           << " kb/s          \r" << FLUSH;
+      fout << "Read=" << setForeground(ANSIEscapeSequence::GREEN) << formatBytes(bytesWritten) << normal()
+        << "  Progress=" << setForeground(ANSIEscapeSequence::GREEN) << formatProgress(bytesWritten, totalSize) << normal()
+        << "  Time=" << setForeground(ANSIEscapeSequence::GREEN) << formatTime(microseconds) << normal()
+        << "  ETA=" << setForeground(ANSIEscapeSequence::GREEN) << formatTime((bytesWritten > 0) ? (totalSize - bytesWritten)/bytesWritten*microseconds : 0) << normal()
+        << "  Rate=" << setForeground(ANSIEscapeSequence::GREEN) << formatRate(bytesWritten, microseconds) << normal()
+        << "           \r" << FLUSH;
     } else {
-      fout << "Read=" << bytesWritten // TAG: show in kb/Mb/Gb/...
-           << "  Time=" << base::FIXED << timer.getLiveMicroseconds()/100000/10.0 << " s" // use HH:MM:SS format
-           << "  Rate=" << base::FIXED << setPrecision(1)
-           << (1000000./1024 * static_cast<double>(bytesWritten)/timer.getLiveMicroseconds())
-           << " kb/s          \r" << FLUSH;
+      fout << "Read=" << formatBytes(bytesWritten)
+        << "  Time=" << formatTime(microseconds)
+        << "  Rate=" << formatRate(bytesWritten, microseconds)
+        << "           \r" << FLUSH;
     }
-    // Thread::microsleep(125*1000); // TAG: temp test
+    // Thread::microsleep(125*1000);
     return size;
   }
   
+  // TAG: show SHA256/...
+  // TAG: allow continue from previous download
+  // TAG: autorestart if connection is slow
+
   void pushEnd()
   {
     fout << ENDL;

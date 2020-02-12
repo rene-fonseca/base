@@ -192,6 +192,9 @@ FormatOutputStream& FormatOutputStream::operator<<(Action action)
   case NECESSARY:
     context.flags |= Symbols::NECESSARY;
     break;
+  case FALL:
+    context.flags &= ~Symbols::NECESSARY;
+    break;
   case UPPER:
     context.flags |= Symbols::UPPER;
     break;

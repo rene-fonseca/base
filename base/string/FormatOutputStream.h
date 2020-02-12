@@ -63,6 +63,7 @@ enum Action {
   PREFIX, /**< Enable prefixes for integers. This is the default if the prefix is defined for the field content. */
   NOPREFIX, /**< Disable prefixes for integers. */
   NECESSARY, /**< Specifies that no garbage digits should be output for floating-point numbers. This is the default behavior. */
+  FALL, /**< Specifies that all digits should be output for floating-point numbers. */
   UPPER, /**< Selects capital letters (both integers and real numbers). */
   LOWER, /**< Selects lower case letters (both integers and real numbers). */
   POSIX, /**< Override current locale and use POSIX formatting. */

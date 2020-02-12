@@ -214,7 +214,7 @@ FormatOutputStream& operator<<(FormatOutputStream& stream, const Timer& value)
 
 void TimeScope::dump() const
 {
-  fout << "Elapsed time (H:M:S.microseconds): " << timer << ENDL;
+  fout << "Elapsed time: " << timer << ENDL;
 }
 
 uint64 Timer::toTimeNS(XTime time) noexcept

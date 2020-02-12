@@ -295,10 +295,11 @@ int64 Date::getBias() noexcept
   // UTC = local time + bias
     FILETIME localTime;
     FILETIME utcTime;
-    if (::LocalFileTimeToFileTime(&localTime, &utcTime) != 0) {
+    clear(localTime);
+    if (::LocalFileTimeToFileTime(&localTime, &utcTime) == 0) {
       _throw DateException(Type::getType<Date>());
     }
-    return *reinterpret_cast<const uint64*>(&utcTime)/10; // 100 ns to ms
+    return *reinterpret_cast<const int64*>(&utcTime)/10; // 100 ns to ms
 //  #endif
 
 #if 0

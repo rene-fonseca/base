@@ -19,94 +19,89 @@ _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 namespace {
 
-  inline MemorySpan toSpan(const String& s) noexcept
+  inline ConstSpan<char> make(const String& s) noexcept
   {
-    return MemorySpan(s.getElements(), s.getLength());
-  }
-
-  inline MemorySpan make(const String& s) noexcept
-  {
-    return MemorySpan(s.getElements(), s.getLength());
+    return s.getSpan();
   }
 }
 
 #if 0
 String String::operator()() const
 {
-  MemorySpan spans[] = {};
+  ConstSpan<char> spans[] = {};
   return Format::Subst(*this, spans, getArraySize(spans)).format();
 }
 #endif
 
 String String::operator()(const String& a) const
 {
-  MemorySpan spans[] = {make(a)};
+  ConstSpan<char> spans[] = {make(a)};
   return Format::Subst(*this, spans, getArraySize(spans)).format();
 }
 
 String String::operator()(const String& a, const String& b) const
 {
-  MemorySpan spans[] = {make(a), make(b)};
+  ConstSpan<char> spans[] = {make(a), make(b)};
   return Format::Subst(*this, spans, getArraySize(spans)).format();
 }
 
 String String::operator()(const String& a, const String& b, const String& c) const
 {
-  MemorySpan spans[] = {make(a), make(b), make(c)};
+  ConstSpan<char> spans[] = {make(a), make(b), make(c)};
   return Format::Subst(*this, spans, getArraySize(spans)).format();
 }
 
 String String::operator()(const String& a, const String& b, const String& c, const String& d) const
 {
-  MemorySpan spans[] = {make(a), make(b), make(c), make(d)};
+  ConstSpan<char> spans[] = {make(a), make(b), make(c), make(d)};
   return Format::Subst(*this, spans, getArraySize(spans)).format();
 }
 
 String String::operator()(const String& a, const String& b, const String& c, const String& d, const String& e) const
 {
-  MemorySpan spans[] = {make(a), make(b), make(c), make(d), make(e)};
+  ConstSpan<char> spans[] = {make(a), make(b), make(c), make(d), make(e)};
   return Format::Subst(*this, spans, getArraySize(spans)).format();
 }
 
 String String::operator()(const String& a, const String& b, const String& c, const String& d, const String& e,
    const String& f) const
 {
-  MemorySpan spans[] = {make(a), make(b), make(c), make(d), make(e), make(f)};
+  ConstSpan<char> spans[] = {make(a), make(b), make(c), make(d), make(e), make(f)};
   return Format::Subst(*this, spans, getArraySize(spans)).format();
 }
 
 String String::operator()(const String& a, const String& b, const String& c, const String& d, const String& e,
    const String& f, const String& g) const
 {
-  MemorySpan spans[] = {make(a), make(b), make(c), make(d), make(e), make(f), make(g)};
+  ConstSpan<char> spans[] = {make(a), make(b), make(c), make(d), make(e), make(f), make(g)};
   return Format::Subst(*this, spans, getArraySize(spans)).format();
 }
 
 String String::operator()(const String& a, const String& b, const String& c, const String& d, const String& e,
    const String& f, const String& g, const String& h) const
 {
-  MemorySpan spans[] = {make(a), make(b), make(c), make(d), make(e), make(f), make(g), make(h)};
+  ConstSpan<char> spans[] = {make(a), make(b), make(c), make(d), make(e), make(f), make(g), make(h)};
   return Format::Subst(*this, spans, getArraySize(spans)).format();
 }
 
 String String::operator()(const String& a, const String& b, const String& c, const String& d, const String& e,
    const String& f, const String& g, const String& h, const String& i) const
 {
-  MemorySpan spans[] = {make(a), make(b), make(c), make(d), make(e), make(f), make(g), make(h), make(i)};
+  ConstSpan<char> spans[] = {make(a), make(b), make(c), make(d), make(e), make(f), make(g), make(h), make(i)};
   return Format::Subst(*this, spans, getArraySize(spans)).format();
 }
 
 String String::operator()(const String& a, const String& b, const String& c, const String& d, const String& e,
    const String& f, const String& g, const String& h, const String& i, const String& j) const
 {
-  MemorySpan spans[] = {make(a), make(b), make(c), make(d), make(e), make(f), make(g), make(h), make(i), make(j)};
+  ConstSpan<char> spans[] = {make(a), make(b), make(c), make(d), make(e), make(f), make(g), make(h), make(i), make(j)};
   return Format::Subst(*this, spans, getArraySize(spans)).format();
 }
 
 String String::operator()(const String& a, const String& b, const String& c, const String& d, const String& e,
    const String& f, const String& g, const String& h, const String& i, const String& j, const String& k) const
 {
-  MemorySpan spans[] = {make(a), make(b), make(c), make(d), make(e), make(f), make(g), make(h), make(i), make(j), make(k)};
+  ConstSpan<char> spans[] = {make(a), make(b), make(c), make(d), make(e), make(f), make(g), make(h), make(i), make(j), make(k)};
   return Format::Subst(*this, spans, getArraySize(spans)).format();
 }
 
@@ -117,77 +112,77 @@ String Format::subst(const String& text)
 
 String Format::subst(const String& text, const String& a)
 {
-  MemorySpan spans[] = {toSpan(a)};
+  ConstSpan<char> spans[] = {a.getSpan()};
   return Subst(text, spans, getArraySize(spans)).format();
 }
 
 String Format::subst(const String& text, const String& a, const String& b)
 {
-  MemorySpan spans[] = {toSpan(a), toSpan(b)};
+  ConstSpan<char> spans[] = {make(a), make(b)};
   return Subst(text, spans, getArraySize(spans)).format();
 }
 
 String Format::subst(const String& text, const String& a, const String& b, const String& c)
 {
-  MemorySpan spans[] = {toSpan(a), toSpan(b), toSpan(c)};
+  ConstSpan<char> spans[] = {make(a), make(b), make(c)};
   return Subst(text, spans, getArraySize(spans)).format();
 }
 
 String Format::subst(const String& text, const String& a, const String& b, const String& c, const String& d)
 {
-  MemorySpan spans[] = {toSpan(a), toSpan(b), toSpan(c), toSpan(d)};
+  ConstSpan<char> spans[] = {make(a), make(b), make(c), make(d)};
   return Subst(text, spans, getArraySize(spans)).format();
 }
 
 String Format::subst(const String& text, const String& a, const String& b, const String& c, const String& d, const String& e)
 {
-  MemorySpan spans[] = {toSpan(a), toSpan(b), toSpan(c), toSpan(d), toSpan(e)};
+  ConstSpan<char> spans[] = {make(a), make(b), make(c), make(d), make(e)};
   return Subst(text, spans, getArraySize(spans)).format();
 }
 
 String Format::subst(const String& text, const String& a, const String& b, const String& c, const String& d, const String& e, const String& f)
 {
-  MemorySpan spans[] = {toSpan(a), toSpan(b), toSpan(c), toSpan(d), toSpan(e), toSpan(f)};
+  ConstSpan<char> spans[] = {make(a), make(b), make(c), make(d), make(e), make(f)};
   return Subst(text, spans, getArraySize(spans)).format();
 }
 
 String Format::subst(const String& text, const String& a, const String& b, const String& c, const String& d, const String& e, const String& f, const String& g)
 {
-  MemorySpan spans[] = {toSpan(a), toSpan(b), toSpan(c), toSpan(d), toSpan(e), toSpan(f), toSpan(g)};
+  ConstSpan<char> spans[] = {make(a), make(b), make(c), make(d), make(e), make(f), make(g)};
   return Subst(text, spans, getArraySize(spans)).format();
 }
 
 String Format::subst(const String& text, const String& a, const String& b, const String& c, const String& d, const String& e, const String& f, const String& g, const String& h)
 {
-  MemorySpan spans[] = {toSpan(a), toSpan(b), toSpan(c), toSpan(d), toSpan(e), toSpan(f), toSpan(g), toSpan(h)};
+  ConstSpan<char> spans[] = {make(a), make(b), make(c), make(d), make(e), make(f), make(g), make(h)};
   return Subst(text, spans, getArraySize(spans)).format();
 }
 
 String Format::subst(const String& text, const String& a, const String& b, const String& c, const String& d, const String& e, const String& f, const String& g, const String& h, const String& i)
 {
-  MemorySpan spans[] = {toSpan(a), toSpan(b), toSpan(c), toSpan(d), toSpan(e), toSpan(f), toSpan(g), toSpan(h), toSpan(i)};
+  ConstSpan<char> spans[] = {make(a), make(b), make(c), make(d), make(e), make(f), make(g), make(h), make(i)};
   return Subst(text, spans, getArraySize(spans)).format();
 }
 
 String Format::subst(const String& text, const String& a, const String& b, const String& c, const String& d, const String& e, const String& f, const String& g, const String& h, const String& i, const String& j)
 {
-  MemorySpan spans[] = {toSpan(a), toSpan(b), toSpan(c), toSpan(d), toSpan(e), toSpan(f), toSpan(g), toSpan(h), toSpan(i), toSpan(j)};
+  ConstSpan<char> spans[] = {make(a), make(b), make(c), make(d), make(e), make(f), make(g), make(h), make(i), make(j)};
   return Subst(text, spans, getArraySize(spans)).format();
 }
 
 String Format::subst(const String& text, const String& a, const String& b, const String& c, const String& d, const String& e, const String& f, const String& g, const String& h, const String& i, const String& j, const String& k)
 {
-  MemorySpan spans[] = {toSpan(a), toSpan(b), toSpan(c), toSpan(d), toSpan(e), toSpan(f), toSpan(g), toSpan(h), toSpan(i), toSpan(j), toSpan(k)};
+  ConstSpan<char> spans[] = {make(a), make(b), make(c), make(d), make(e), make(f), make(g), make(h), make(i), make(j), make(k)};
   return Subst(text, spans, getArraySize(spans)).format();
 }
 
 String Format::subst(const String& text, const String& a, const String& b, const String& c, const String& d, const String& e, const String& f, const String& g, const String& h, const String& i, const String& j, const String& k, const String& l)
 {
-  MemorySpan spans[] = {toSpan(a), toSpan(b), toSpan(c), toSpan(d), toSpan(e), toSpan(f), toSpan(g), toSpan(h), toSpan(i), toSpan(j), toSpan(k), toSpan(l)};
+  ConstSpan<char> spans[] = {make(a), make(b), make(c), make(d), make(e), make(f), make(g), make(h), make(i), make(j), make(k), make(l)};
   return Subst(text, spans, getArraySize(spans)).format();
 }
 
-Format::Subst::Subst(const String& _text, const MemorySpan* _args, MemorySize _numberOfArgs)
+Format::Subst::Subst(const String& _text, const ConstSpan<char>* _args, MemorySize _numberOfArgs)
   : text(_text),
     args(_args),
     numberOfArgs(_numberOfArgs)
@@ -256,39 +251,39 @@ String Format::subst(const String& text, const AnyValue& a, const AnyValue& b, c
 
 String Format::subst(const String& text, const std::initializer_list<const char*>& list)
 {
-  MemorySpan spans[MAX_ARGS];
+  ConstSpan<char> spans[MAX_ARGS];
   if (!INLINE_ASSERT(list.size() <= getArraySize(spans))) {
     _throw OutOfRange();
   }
   MemorySize j = 0;
-  for (auto i = list.begin(); i != list.end(); ++i) {
-    spans[j++] = MemorySpan(*i);
+  for (auto i = list.begin(); i != list.end(); ++i, ++j) {
+    spans[j] = ConstSpan<char>(*i, getNullTerminatedLength(*i));
   }
   return Subst(text, spans, j).format();
 }
 
 String Format::subst(const String& text, const std::initializer_list<Literal>& list)
 {
-  MemorySpan spans[MAX_ARGS];
+  ConstSpan<char> spans[MAX_ARGS];
   if (!INLINE_ASSERT(list.size() <= getArraySize(spans))) {
     _throw OutOfRange();
   }
   MemorySize j = 0;
-  for (auto i = list.begin(); i != list.end(); ++i) {
-    spans[j++] = MemorySpan(i->getValue(), i->getLength());
+  for (auto i = list.begin(); i != list.end(); ++i, ++j) {
+    spans[j] = ConstSpan<char>(i->getValue(), i->getLength());
   }
   return Subst(text, spans, j).format();
 }
 
 String Format::subst(const String& text, const std::initializer_list<String>& list)
 {
-  MemorySpan spans[MAX_ARGS];
+  ConstSpan<char> spans[MAX_ARGS];
   if (!INLINE_ASSERT(list.size() <= getArraySize(spans))) {
     _throw OutOfRange();
   }
   MemorySize j = 0;
-  for (auto i = list.begin(); i != list.end(); ++i) {
-    spans[j++] = MemorySpan(i->getBytes(), i->getLength());
+  for (auto i = list.begin(); i != list.end(); ++i, ++j) {
+    spans[j] = i->getSpan();
   }
   return Subst(text, spans, j).format();
 }
@@ -311,7 +306,7 @@ String Format::Subst::format() const
       ++src;
       continue;
     }
-    buffer.append(MemorySpan(segmentBegin, src));
+    buffer.append(ConstSpan<char>(segmentBegin, src));
     ++src; // skip %
     if (src == end) {
       // BASSERT(!"Unexpected end after % for substitution string.");
@@ -366,7 +361,7 @@ String Format::Subst::format() const
     segmentBegin = src;
   }
 
-  buffer.append(MemorySpan(segmentBegin, src));
+  buffer.append(ConstSpan<char>(segmentBegin, src));
   return buffer;
 }
 

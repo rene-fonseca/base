@@ -66,7 +66,7 @@ unsigned int WideStringOutputStreamWrapper::write(
 {
   bassert(!closed, IOException("Output stream is closed.", this));
   if (size > 0) {
-    string.append(MemorySpan(buffer, size));
+    string.append(ConstSpan<char>(reinterpret_cast<const char*>(buffer), size));
   }
   return size;
 }

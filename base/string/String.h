@@ -787,10 +787,10 @@ public:
     return insert(getLength(), string);
   }
 
-  /** Returns the memory span. */
-  static inline MemorySpan toSpan(const char* string) noexcept
+  /** Returns the span. */
+  static inline ConstSpan<char> toSpan(const char* string) noexcept
   {
-    return MemorySpan(string, getNullTerminatedLength(string));
+    return ConstSpan<char>(string, getNullTerminatedLength(string));
   }
 
   /**
@@ -835,7 +835,7 @@ public:
   /**
     Appens memory span. Does nothing is buffer is not proper.
   */
-  String& append(const MemorySpan& buffer);
+  String& append(const ConstSpan<char>& buffer);
 
   /**
     Prepends the character to this string.
@@ -864,7 +864,7 @@ public:
     exceeds the end of this string the character is inserted at the end.
     @param span The characters to be inserted.
   */
-  String& insert(MemorySize index, const MemorySpan& span);
+  String& insert(MemorySize index, const ConstSpan<char>& span);
 
   /**
     Inserts the character into this string.

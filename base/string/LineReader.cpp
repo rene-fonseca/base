@@ -60,14 +60,14 @@ String LineReader::readLine()
         if (!result) {
           return String(reinterpret_cast<const char*>(begin), src - begin); // common case
         } else {
-          result.append(MemorySpan(begin, src));
+          result.append(ConstSpan<char>(reinterpret_cast<const char*>(begin), src - begin));
           return result;
         }
       }
       ++src;
     }
 
-    result.append(MemorySpan(begin, src));
+    result.append(ConstSpan<char>(reinterpret_cast<const char*>(begin), src - begin));
     bis.skip(src - begin);
   }
   return result;

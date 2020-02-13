@@ -858,12 +858,18 @@ public:
   
   MemorySize push(const uint8* buffer, MemorySize size) override
   {
-    text.append(MemorySpan(buffer, size));
+    text.append(ConstSpan<char>(reinterpret_cast<const char*>(buffer), size));
     return size;
   }
   
   void pushEnd() override
   {
+  }
+
+  /** Returns the string. */
+  inline const String& getString() const noexcept
+  {
+    return text;
   }
 };
 

@@ -108,18 +108,21 @@ public:
   private:
 
     const String& text;
-    const MemorySpan* args = nullptr;
+    const ConstSpan<char>* args = nullptr;
     MemorySize numberOfArgs = 0;
   public:
 
-    Subst(const String& text, const MemorySpan* args, MemorySize numberOfArgs);
+    /** Initializes substitution. */
+    Subst(const String& text, const ConstSpan<char>* args, MemorySize numberOfArgs);
 
+    /** Returns the number of arguments. */
     inline MemorySize getNumberOfArgs() const noexcept
     {
       return numberOfArgs;
     }
 
-    inline const MemorySpan& getArg(MemorySize i) const
+    /** Returns the argument. */
+    inline const ConstSpan<char>& getArg(MemorySize i) const
     {
       if (!INLINE_ASSERT(i < numberOfArgs)) {
         _throw OutOfRange();
@@ -135,6 +138,7 @@ public:
   };
 };
 
+/** Write to format stream. */
 FormatOutputStream& operator<<(FormatOutputStream& stream, const Format::Subst& subst);
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

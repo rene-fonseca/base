@@ -404,7 +404,7 @@ String& String::removeFrom(MemorySize start)
 
 String& String::insert(MemorySize index, char ch)
 {
-  return insert(index, MemorySpan(&ch, 1));
+  return insert(index, ConstSpan<char>(&ch, 1));
 }
 
 String& String::insert(MemorySize index, const String& src)
@@ -413,17 +413,17 @@ String& String::insert(MemorySize index, const String& src)
     elements = src.elements; // copy string
     return *this;
   }
-  return insert(index, MemorySpan(src.getElements(), src.getLength()));
+  return insert(index, src.getSpan());
 }
 
-String& String::insert(MemorySize index, const MemorySpan& span)
+String& String::insert(MemorySize index, const ConstSpan<char>& span)
 {
   const MemorySize length = getLength();
   const MemorySize newLength = length + span.getSize();
   auto buffer = getBuffer(newLength);
   if (index >= length) {
     // insert section at end of string
-    span.copyTo(buffer + length);
+    copyTo(buffer + length, span);
   } else {
     // insert section in middle or beginning of string
     move<char>(
@@ -431,7 +431,7 @@ String& String::insert(MemorySize index, const MemorySpan& span)
       buffer + index,
       length - index
     );
-    span.copyTo(buffer + index);
+    copyTo(buffer + index, span);
   }
   buffer[newLength] = Traits::TERMINATOR;
   return *this;
@@ -439,40 +439,40 @@ String& String::insert(MemorySize index, const MemorySpan& span)
 
 String& String::insert(MemorySize index, const Literal& literal)
 {
-  return insert(index, MemorySpan(literal.getValue(), literal.getLength()));
+  return insert(index, ConstSpan<char>(literal.getValue(), literal.getLength()));
 }
 
 String& String::insert(MemorySize index, const NativeString& src)
 {
-  return insert(index, MemorySpan(src.getValue(), src.getLength()));
+  return insert(index, ConstSpan<char>(src.getValue(), src.getLength()));
 }
 
 String& String::append(const Literal& literal)
 {
-  return append(MemorySpan(literal.getValue(), literal.getLength()));
+  return append(ConstSpan<char>(literal.getValue(), literal.getLength()));
 }
 
 String& String::append(const Literal& literal, MemorySize maximum)
 {
   bassert(maximum <= MAXIMUM_LENGTH, StringException(this));
-  return append(MemorySpan(literal.getValue(), minimum(literal.getLength(), maximum)));
+  return append(ConstSpan<char>(literal.getValue(), minimum(literal.getLength(), maximum)));
 }
 
 String& String::append(const NativeString& string, MemorySize maximum)
 {
   bassert(maximum <= MAXIMUM_LENGTH, StringException(this));
-  return append(MemorySpan(string.getValue(), getNullTerminatedLength(string.getValue(), maximum)));
+  return append(ConstSpan<char>(string.getValue(), getNullTerminatedLength(string.getValue(), maximum)));
 }
 
-String& String::append(const MemorySpan& src)
+String& String::append(const ConstSpan<char>& src)
 {
-  if (src.isProper()) {
+  if (src) {
     const MemorySize suffixLength = src.getSize();
     if (suffixLength > 0) {
       const MemorySize length = getLength();
       const MemorySize newLength = length + suffixLength;
       auto buffer = getBuffer(newLength);
-      src.copyTo(reinterpret_cast<uint8*>(buffer) + length);
+      copyTo(buffer + length, src);
       buffer[newLength] = Traits::TERMINATOR;
     }
   }

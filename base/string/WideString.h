@@ -1550,6 +1550,14 @@ public:
   bool hasNull() const noexcept;
 
   /**
+    Returns the internal buffer.
+  */
+  inline ConstSpan<ucs4> getSpan() const noexcept
+  {
+    return ConstSpan<ucs4>(getBuffer(), getLength());
+  }
+
+  /**
     Returns the characters of the string for non-modifying access.
   */
   inline const Char* native() const noexcept

@@ -1457,7 +1457,13 @@ public:
   */
   bool hasNull() const noexcept;
 
-  // TAG: we can return both being and end with one method MemorySpan<char> getMemorySpan() const;
+  /**
+    Returns the internal buffer.
+  */
+  inline ConstSpan<char> getSpan() const noexcept
+  {
+    return ConstSpan<char>(getBuffer(), getLength());
+  }
 
   /**
     Returns the characters of the string for non-modifying access.

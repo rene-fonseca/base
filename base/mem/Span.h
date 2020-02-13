@@ -13,7 +13,7 @@
 
 #pragma once
 
-#include <base/features.h>
+#include <base/Primitives.h>
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 

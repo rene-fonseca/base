@@ -351,6 +351,29 @@ public:
 #endif
     
     switch (signal) {
+    case SIGQUIT: // quit signal from keyboard
+      static bool firstTime = true;
+      if (firstTime) {
+        firstTime = false;
+        if (FileDescriptor::getStandardError().isTerminal()) {
+          ferr << "Aborted by user." << ENDL;
+        }
+      }
+      if (Thread::getThread()->isMainThread()) {
+        SystemLogger::write(SystemLogger::INFORMATION, "Quit signal.");
+        if (Application::application) {
+          Application::application->terminate();
+        }
+      }
+      break;
+    case SIGINT: // interrrupt from keyboard
+      if (Thread::getThread()->isMainThread()) {
+        SystemLogger::write(SystemLogger::ERROR, "Interrupt signal.");
+        if (Application::application) {
+          Application::application->terminate();
+        }
+      }
+      break;
     case SIGFPE:
       switch (info->si_code) {
       case FPE_INTDIV:

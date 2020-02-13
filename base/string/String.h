@@ -457,7 +457,6 @@ public:
   template<MemorySize SIZE>
   inline String& operator=(const char (&literal)[SIZE])
   {
-    if (Constraint<(SIZE < (MAXIMUM_LENGTH + 1))>::UNSPECIFIED) {}
     return operator=(Literal(literal));
   }
 

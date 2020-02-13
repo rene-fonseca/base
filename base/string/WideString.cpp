@@ -326,7 +326,6 @@ void WideString::initialize(const char* src, MemorySize _length)
   }
 
   const MemorySize numberOfCharacters = Unicode::UTF8ToUCS4(nullptr, Cast::pointer<const uint8*>(src), _length);
-  bassert(numberOfCharacters <= MAXIMUM_LENGTH, MemoryException(this));
   elements = new ReferenceCountedAllocator<ucs4>(numberOfCharacters + 1);
   if (numberOfCharacters) {
     Unicode::UTF8ToUCS4(
@@ -426,9 +425,6 @@ WideString::WideString(const NativeWideString& src)
 
 WideString::WideString(const NativeWideString& src, MemorySize maximum)
 {
-  if (maximum >= MAXIMUM_LENGTH) {
-    _throw OutOfDomain(this);
-  }
   const MemorySize nativeLength = getNullTerminatedLength(src.getValue(), maximum);
   initialize(src, nativeLength);
 }
@@ -437,7 +433,6 @@ WideString::WideString(const String& string)
 {
   MemorySize multibyteLength = string.getLength();
   MemorySize numberOfCharacters = Unicode::UTF8ToUCS4(nullptr, string.getBytes(), multibyteLength);
-  bassert(numberOfCharacters <= MAXIMUM_LENGTH, MemoryException(this));
   elements = new ReferenceCountedAllocator<ucs4>(numberOfCharacters + 1);
   if (numberOfCharacters) {
     Unicode::UTF8ToUCS4(elements->getElements(), string.getBytes(), multibyteLength);
@@ -451,14 +446,13 @@ WideString::WideString(const NativeString& string)
     return;
   }
   
-  const MemorySize multibyteLength = getNullTerminatedLength(string.getValue(), MAXIMUM_LENGTH);
+  const MemorySize multibyteLength = getNullTerminatedLength(string.getValue());
 
   MemorySize numberOfCharacters = Unicode::UTF8ToUCS4(
     nullptr,
     Cast::pointer<const uint8*>(string.getValue()),
     multibyteLength
   );
-  bassert(numberOfCharacters <= MAXIMUM_LENGTH, MemoryException(this));
   elements = new ReferenceCountedAllocator<ucs4>(numberOfCharacters + 1);
   if (numberOfCharacters) {
     Unicode::UTF8ToUCS4(
@@ -481,7 +475,6 @@ WideString::WideString(FormatOutputStream& stream)
 
 WideString::WideString(const NativeString& src, MemorySize maximum)
 {
-  bassert(maximum <= MAXIMUM_LENGTH, StringException(this));
   initialize(src.getValue(), getNullTerminatedLength(src.getValue(), maximum));
 }
 
@@ -792,10 +785,6 @@ WideString& WideString::append(const WideLiteral& literal, MemorySize maximum)
 
 WideString& WideString::append(const wchar* string, MemorySize maximum)
 {
-  bassert(
-    maximum <= MAXIMUM_LENGTH,
-    OutOfDomain(this)
-  ); // maximum length exceeded
   bassert(
     string,
     StringException(this)

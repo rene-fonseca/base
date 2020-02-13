@@ -188,7 +188,6 @@ String::String(FormatOutputStream& stream)
 
 String::String(const NativeString& src, MemorySize maximum)
 {
-  bassert(maximum <= MAXIMUM_LENGTH, StringException(this));
   initialize(src.getValue(), getNullTerminatedLength(src.getValue(), maximum));
 }
 
@@ -454,13 +453,11 @@ String& String::append(const Literal& literal)
 
 String& String::append(const Literal& literal, MemorySize maximum)
 {
-  bassert(maximum <= MAXIMUM_LENGTH, StringException(this));
   return append(ConstSpan<char>(literal.getValue(), minimum(literal.getLength(), maximum)));
 }
 
 String& String::append(const NativeString& string, MemorySize maximum)
 {
-  bassert(maximum <= MAXIMUM_LENGTH, StringException(this));
   return append(ConstSpan<char>(string.getValue(), getNullTerminatedLength(string.getValue(), maximum)));
 }
 

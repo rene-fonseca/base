@@ -636,7 +636,6 @@ public:
   template<MemorySize SIZE>
   inline WideString& operator=(const Char (&literal)[SIZE])
   {
-    if (Constraint<(SIZE < (MAXIMUM_LENGTH + 1))>::UNSPECIFIED) {}
     return operator=(WideLiteral(literal));
   }
 

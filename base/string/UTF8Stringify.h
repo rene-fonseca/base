@@ -42,6 +42,9 @@ private:
 public:
 
   /** Initialize buffer. */
+  UTF8Stringify(bool src);
+
+  /** Initialize buffer. */
   UTF8Stringify(char src);
 
   /** Initialize buffer. */

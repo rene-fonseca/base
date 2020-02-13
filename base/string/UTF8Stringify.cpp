@@ -20,6 +20,11 @@
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
+UTF8Stringify::UTF8Stringify(bool src)
+{
+  span = src ? ConstSpan<char>("true", 4) : ConstSpan<char>("false", 5);
+}
+
 UTF8Stringify::UTF8Stringify(char src)
 {
   reserved = 0;

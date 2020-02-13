@@ -130,4 +130,8 @@ String StringOutputStream::toString()
   return result;
 }
 
+StringOutputStream::~StringOutputStream()
+{
+}
+
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

@@ -25,6 +25,7 @@ class String;
 class WideString;
 class AnyValue;
 class FormatOutputStream;
+class StringOutputStream;
 
 /** Avoid common copying to temporary buffer. */
 class _COM_AZURE_DEV__BASE__API UTF8Stringify {
@@ -32,17 +33,25 @@ private:
 
   ConstSpan<char> span;
   Reference<ReferenceCountedAllocator<char> > buffer; // container for String
-  union {
-    char tiny[8];
-    uint64 reserved;
-  };
-
-  void setString(const String& src);
-  void setAnyValue(const AnyValue& src);
+  char tiny[3 * 8] = {0}; // TAG: disable clear for release build
+  
+  void setString(const StringOutputStream& src);
 public:
 
   /** Initialize buffer. */
   UTF8Stringify(bool src);
+
+  /** Initialize buffer. */
+  UTF8Stringify(int value);
+  
+  /** Initialize buffer. */
+  UTF8Stringify(unsigned int value);
+  
+  /** Initialize buffer. */
+  UTF8Stringify(int64 value);
+  
+  /** Initialize buffer. */
+  UTF8Stringify(uint64 value);
 
   /** Initialize buffer. */
   UTF8Stringify(char src);
@@ -80,7 +89,7 @@ public:
   /** Initialize buffer. */
   UTF8Stringify(FormatOutputStream& src);
 
-  /** Initialize buffer. */
+  /** Initialize buffer. Include StringOutputStream to get implementation. */
   template<class TYPE>
   UTF8Stringify(const TYPE& src);
   

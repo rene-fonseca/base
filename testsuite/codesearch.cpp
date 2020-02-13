@@ -56,7 +56,7 @@ public:
     // C++: Would like to do use initializer list on right hand size of %
     // String url = "https://almsearch.dev.azure.com/%1/%2/_apis/search/codeSearchResults?api-version=5.1-preview.1"_s % {org, project};
     String url = Format::subst("https://almsearch.dev.azure.com/%1/%2/_apis/search/codeSearchResults?api-version=5.1-preview.1",
-      {org, project});
+      org, project);
     
     ObjectModel o;
     auto root = o.createObject();

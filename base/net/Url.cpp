@@ -58,7 +58,7 @@ String Url::encodeURIComponent(const String& component)
       result += ch;
     } else {
       uint8 buffer[6];
-      const MemorySize size = Unicode::UCS4ToUTF8(buffer, &ch, 1);
+      const MemorySize size = Unicode::writeUTF8(buffer, ch);
       for (MemorySize i = 0; i < size; ++i) {
         result += "%";
         result += ASCIITraits::valueToDigit(buffer[i] >> 4, true);

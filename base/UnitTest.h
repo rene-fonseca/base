@@ -20,6 +20,7 @@
 #include <base/Timer.h>
 #include <base/concurrency/MutualExclusion.h>
 #include <base/objectmodel/ObjectModel.h>
+#include <base/AnyValue.h>
 
 #if defined(TEST_REGISTER)
 #  error TEST_REGISTER already defined

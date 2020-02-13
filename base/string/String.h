@@ -767,6 +767,23 @@ public:
   }
 
   /**
+    Appends the character to this string.
+
+    @param ch The character to be appended.
+  */
+  inline String& append(uint8 ch)
+  {
+    return insert(getLength(), ch);
+  }
+
+  /**
+    Appends the character to this string.
+
+    @param ch The character to be appended.
+  */
+  String& append(ucs4 ch);
+
+  /**
     Appends the string to this string.
 
     @param string The string to be appended.

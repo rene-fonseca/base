@@ -415,22 +415,22 @@ String& String::insert(MemorySize index, const String& src)
   return insert(index, src.getSpan());
 }
 
-String& String::insert(MemorySize index, const ConstSpan<char>& span)
+String& String::insert(MemorySize index, const ConstSpan<char>& src)
 {
   const MemorySize length = getLength();
-  const MemorySize newLength = length + span.getSize();
+  const MemorySize newLength = length + src.getSize();
   auto buffer = getBuffer(newLength);
   if (index >= length) {
     // insert section at end of string
-    copyTo(buffer + length, span);
+    copyTo(buffer + length, src);
   } else {
     // insert section in middle or beginning of string
     move<char>(
-      buffer + index + span.getSize(),
+      buffer + index + src.getSize(),
       buffer + index,
       length - index
     );
-    copyTo(buffer + index, span);
+    copyTo(buffer + index, src);
   }
   buffer[newLength] = Traits::TERMINATOR;
   return *this;
@@ -459,6 +459,13 @@ String& String::append(const Literal& literal, MemorySize maximum)
 String& String::append(const NativeString& string, MemorySize maximum)
 {
   return append(ConstSpan<char>(string.getValue(), getNullTerminatedLength(string.getValue(), maximum)));
+}
+
+String& String::append(ucs4 ch)
+{
+  uint8 buffer[6];
+  MemoryDiff length = Unicode::UCS4ToUTF8(buffer, &ch, 1);
+  return append(ConstSpan<char>(reinterpret_cast<const char*>(buffer), length));
 }
 
 String& String::append(const ConstSpan<char>& src)

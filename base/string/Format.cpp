@@ -13,293 +13,37 @@
 
 #include <base/string/Format.h>
 #include <base/string/StringOutputStream.h>
+#include <base/AnyValue.h>
 #include <base/UnitTest.h>
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
-namespace {
-
-  inline ConstSpan<char> make(const String& s) noexcept
-  {
-    return s.getSpan();
-  }
-}
-
-#if 0
-String String::operator()() const
+String Format::substImpl(const UTF8Stringify& text, const UTF8Stringify* args, MemorySize numberOfArgs)
 {
-  ConstSpan<char> spans[] = {};
-  return Format::Subst(*this, spans, getArraySize(spans)).format();
-}
-#endif
-
-String String::operator()(const String& a) const
-{
-  ConstSpan<char> spans[] = {make(a)};
-  return Format::Subst(*this, spans, getArraySize(spans)).format();
+  Subst s(text, args, numberOfArgs);
+  return s.format();
 }
 
-String String::operator()(const String& a, const String& b) const
-{
-  ConstSpan<char> spans[] = {make(a), make(b)};
-  return Format::Subst(*this, spans, getArraySize(spans)).format();
-}
-
-String String::operator()(const String& a, const String& b, const String& c) const
-{
-  ConstSpan<char> spans[] = {make(a), make(b), make(c)};
-  return Format::Subst(*this, spans, getArraySize(spans)).format();
-}
-
-String String::operator()(const String& a, const String& b, const String& c, const String& d) const
-{
-  ConstSpan<char> spans[] = {make(a), make(b), make(c), make(d)};
-  return Format::Subst(*this, spans, getArraySize(spans)).format();
-}
-
-String String::operator()(const String& a, const String& b, const String& c, const String& d, const String& e) const
-{
-  ConstSpan<char> spans[] = {make(a), make(b), make(c), make(d), make(e)};
-  return Format::Subst(*this, spans, getArraySize(spans)).format();
-}
-
-String String::operator()(const String& a, const String& b, const String& c, const String& d, const String& e,
-   const String& f) const
-{
-  ConstSpan<char> spans[] = {make(a), make(b), make(c), make(d), make(e), make(f)};
-  return Format::Subst(*this, spans, getArraySize(spans)).format();
-}
-
-String String::operator()(const String& a, const String& b, const String& c, const String& d, const String& e,
-   const String& f, const String& g) const
-{
-  ConstSpan<char> spans[] = {make(a), make(b), make(c), make(d), make(e), make(f), make(g)};
-  return Format::Subst(*this, spans, getArraySize(spans)).format();
-}
-
-String String::operator()(const String& a, const String& b, const String& c, const String& d, const String& e,
-   const String& f, const String& g, const String& h) const
-{
-  ConstSpan<char> spans[] = {make(a), make(b), make(c), make(d), make(e), make(f), make(g), make(h)};
-  return Format::Subst(*this, spans, getArraySize(spans)).format();
-}
-
-String String::operator()(const String& a, const String& b, const String& c, const String& d, const String& e,
-   const String& f, const String& g, const String& h, const String& i) const
-{
-  ConstSpan<char> spans[] = {make(a), make(b), make(c), make(d), make(e), make(f), make(g), make(h), make(i)};
-  return Format::Subst(*this, spans, getArraySize(spans)).format();
-}
-
-String String::operator()(const String& a, const String& b, const String& c, const String& d, const String& e,
-   const String& f, const String& g, const String& h, const String& i, const String& j) const
-{
-  ConstSpan<char> spans[] = {make(a), make(b), make(c), make(d), make(e), make(f), make(g), make(h), make(i), make(j)};
-  return Format::Subst(*this, spans, getArraySize(spans)).format();
-}
-
-String String::operator()(const String& a, const String& b, const String& c, const String& d, const String& e,
-   const String& f, const String& g, const String& h, const String& i, const String& j, const String& k) const
-{
-  ConstSpan<char> spans[] = {make(a), make(b), make(c), make(d), make(e), make(f), make(g), make(h), make(i), make(j), make(k)};
-  return Format::Subst(*this, spans, getArraySize(spans)).format();
-}
-
-String Format::subst(const String& text)
-{
-  return Subst(text, nullptr, 0).format();
-}
-
-String Format::subst(const String& text, const String& a)
-{
-  ConstSpan<char> spans[] = {a.getSpan()};
-  return Subst(text, spans, getArraySize(spans)).format();
-}
-
-String Format::subst(const String& text, const String& a, const String& b)
-{
-  ConstSpan<char> spans[] = {make(a), make(b)};
-  return Subst(text, spans, getArraySize(spans)).format();
-}
-
-String Format::subst(const String& text, const String& a, const String& b, const String& c)
-{
-  ConstSpan<char> spans[] = {make(a), make(b), make(c)};
-  return Subst(text, spans, getArraySize(spans)).format();
-}
-
-String Format::subst(const String& text, const String& a, const String& b, const String& c, const String& d)
-{
-  ConstSpan<char> spans[] = {make(a), make(b), make(c), make(d)};
-  return Subst(text, spans, getArraySize(spans)).format();
-}
-
-String Format::subst(const String& text, const String& a, const String& b, const String& c, const String& d, const String& e)
-{
-  ConstSpan<char> spans[] = {make(a), make(b), make(c), make(d), make(e)};
-  return Subst(text, spans, getArraySize(spans)).format();
-}
-
-String Format::subst(const String& text, const String& a, const String& b, const String& c, const String& d, const String& e, const String& f)
-{
-  ConstSpan<char> spans[] = {make(a), make(b), make(c), make(d), make(e), make(f)};
-  return Subst(text, spans, getArraySize(spans)).format();
-}
-
-String Format::subst(const String& text, const String& a, const String& b, const String& c, const String& d, const String& e, const String& f, const String& g)
-{
-  ConstSpan<char> spans[] = {make(a), make(b), make(c), make(d), make(e), make(f), make(g)};
-  return Subst(text, spans, getArraySize(spans)).format();
-}
-
-String Format::subst(const String& text, const String& a, const String& b, const String& c, const String& d, const String& e, const String& f, const String& g, const String& h)
-{
-  ConstSpan<char> spans[] = {make(a), make(b), make(c), make(d), make(e), make(f), make(g), make(h)};
-  return Subst(text, spans, getArraySize(spans)).format();
-}
-
-String Format::subst(const String& text, const String& a, const String& b, const String& c, const String& d, const String& e, const String& f, const String& g, const String& h, const String& i)
-{
-  ConstSpan<char> spans[] = {make(a), make(b), make(c), make(d), make(e), make(f), make(g), make(h), make(i)};
-  return Subst(text, spans, getArraySize(spans)).format();
-}
-
-String Format::subst(const String& text, const String& a, const String& b, const String& c, const String& d, const String& e, const String& f, const String& g, const String& h, const String& i, const String& j)
-{
-  ConstSpan<char> spans[] = {make(a), make(b), make(c), make(d), make(e), make(f), make(g), make(h), make(i), make(j)};
-  return Subst(text, spans, getArraySize(spans)).format();
-}
-
-String Format::subst(const String& text, const String& a, const String& b, const String& c, const String& d, const String& e, const String& f, const String& g, const String& h, const String& i, const String& j, const String& k)
-{
-  ConstSpan<char> spans[] = {make(a), make(b), make(c), make(d), make(e), make(f), make(g), make(h), make(i), make(j), make(k)};
-  return Subst(text, spans, getArraySize(spans)).format();
-}
-
-String Format::subst(const String& text, const String& a, const String& b, const String& c, const String& d, const String& e, const String& f, const String& g, const String& h, const String& i, const String& j, const String& k, const String& l)
-{
-  ConstSpan<char> spans[] = {make(a), make(b), make(c), make(d), make(e), make(f), make(g), make(h), make(i), make(j), make(k), make(l)};
-  return Subst(text, spans, getArraySize(spans)).format();
-}
-
-Format::Subst::Subst(const String& _text, const ConstSpan<char>* _args, MemorySize _numberOfArgs)
+Format::Subst::Subst(const UTF8Stringify& _text, const UTF8Stringify* _args, MemorySize _numberOfArgs)
   : text(_text),
     args(_args),
     numberOfArgs(_numberOfArgs)
 {
 }
 
-String Format::subst(const String& text, const AnyValue& a)
-{
-  return subst(text, a.getString());
-}
-
-String Format::subst(const String& text, const AnyValue& a, const AnyValue& b)
-{
-  return subst(text, a.getString(), b.getString());
-}
-
-String Format::subst(const String& text, const AnyValue& a, const AnyValue& b, const AnyValue& c)
-{
-  return subst(text, a.getString(), b.getString(), c.getString());
-}
-
-String Format::subst(const String& text, const AnyValue& a, const AnyValue& b, const AnyValue& c, const AnyValue& d)
-{
-  return subst(text, a.getString(), b.getString(), c.getString(), d.getString());
-}
-
-String Format::subst(const String& text, const AnyValue& a, const AnyValue& b, const AnyValue& c, const AnyValue& d, const AnyValue& e)
-{
-  return subst(text, a.getString(), b.getString(), c.getString(), d.getString(), e.getString());
-}
-
-String Format::subst(const String& text, const AnyValue& a, const AnyValue& b, const AnyValue& c, const AnyValue& d, const AnyValue& e, const AnyValue& f)
-{
-  return subst(text, a.getString(), b.getString(), c.getString(), d.getString(), e.getString(), f.getString());
-}
-
-String Format::subst(const String& text, const AnyValue& a, const AnyValue& b, const AnyValue& c, const AnyValue& d, const AnyValue& e, const AnyValue& f, const AnyValue& g)
-{
-  return subst(text, a.getString(), b.getString(), c.getString(), d.getString(), e.getString(), f.getString(), g.getString());
-}
-
-String Format::subst(const String& text, const AnyValue& a, const AnyValue& b, const AnyValue& c, const AnyValue& d, const AnyValue& e, const AnyValue& f, const AnyValue& g, const AnyValue& h)
-{
-  return subst(text, a.getString(), b.getString(), c.getString(), d.getString(), e.getString(), f.getString(), g.getString(), h.getString());
-}
-
-String Format::subst(const String& text, const AnyValue& a, const AnyValue& b, const AnyValue& c, const AnyValue& d, const AnyValue& e, const AnyValue& f, const AnyValue& g, const AnyValue& h, const AnyValue& i, const AnyValue& j, const AnyValue& k, const AnyValue& l)
-{
-  return subst(text, a.getString(), b.getString(), c.getString(), d.getString(), e.getString(), f.getString(), g.getString(), h.getString(), h.getString(), i.getString(), j.getString(), k.getString());
-}
-
-String Format::subst(const String& text, const AnyValue& a, const AnyValue& b, const AnyValue& c, const AnyValue& d, const AnyValue& e, const AnyValue& f, const AnyValue& g, const AnyValue& h, const AnyValue& i)
-{
-  return subst(text, a.getString(), b.getString(), c.getString(), d.getString(), e.getString(), f.getString(), g.getString(), h.getString(), h.getString(), i.getString());
-}
-
-String Format::subst(const String& text, const AnyValue& a, const AnyValue& b, const AnyValue& c, const AnyValue& d, const AnyValue& e, const AnyValue& f, const AnyValue& g, const AnyValue& h, const AnyValue& i, const AnyValue& j)
-{
-  return subst(text, a.getString(), b.getString(), c.getString(), d.getString(), e.getString(), f.getString(), g.getString(), h.getString(), h.getString(), i.getString(), j.getString());
-}
-
-String Format::subst(const String& text, const AnyValue& a, const AnyValue& b, const AnyValue& c, const AnyValue& d, const AnyValue& e, const AnyValue& f, const AnyValue& g, const AnyValue& h, const AnyValue& i, const AnyValue& j, const AnyValue& k)
-{
-  return subst(text, a.getString(), b.getString(), c.getString(), d.getString(), e.getString(), f.getString(), g.getString(), h.getString(), h.getString(), i.getString(), j.getString(), k.getString());
-}
-
-String Format::subst(const String& text, const std::initializer_list<const char*>& list)
-{
-  ConstSpan<char> spans[MAX_ARGS];
-  if (!INLINE_ASSERT(list.size() <= getArraySize(spans))) {
-    _throw OutOfRange();
-  }
-  MemorySize j = 0;
-  for (auto i = list.begin(); i != list.end(); ++i, ++j) {
-    spans[j] = ConstSpan<char>(*i, getNullTerminatedLength(*i));
-  }
-  return Subst(text, spans, j).format();
-}
-
-String Format::subst(const String& text, const std::initializer_list<Literal>& list)
-{
-  ConstSpan<char> spans[MAX_ARGS];
-  if (!INLINE_ASSERT(list.size() <= getArraySize(spans))) {
-    _throw OutOfRange();
-  }
-  MemorySize j = 0;
-  for (auto i = list.begin(); i != list.end(); ++i, ++j) {
-    spans[j] = ConstSpan<char>(i->getValue(), i->getLength());
-  }
-  return Subst(text, spans, j).format();
-}
-
-String Format::subst(const String& text, const std::initializer_list<String>& list)
-{
-  ConstSpan<char> spans[MAX_ARGS];
-  if (!INLINE_ASSERT(list.size() <= getArraySize(spans))) {
-    _throw OutOfRange();
-  }
-  MemorySize j = 0;
-  for (auto i = list.begin(); i != list.end(); ++i, ++j) {
-    spans[j] = i->getSpan();
-  }
-  return Subst(text, spans, j).format();
-}
-
 String Format::Subst::format() const
 {
   String buffer; // we could reuse buffer for thread but may be too weird if copy() is forgotten
 
-  MemorySize capacity = text.getLength();
+  ConstSpan<char> _text = text.getSpan();
+  MemorySize capacity = _text.getSize();
   for (MemorySize i = 0; i < numberOfArgs; ++i) {
     capacity += getArg(i).getSize();
   }
   buffer.ensureCapacity(capacity);
 
-  const char* src = text.getElements();
-  const char* end = text.getEnd();
+  const char* src = _text.begin();
+  const char* end = _text.end();
   const char* segmentBegin = src;
   while (src != end) {
     if (*src != '%') {
@@ -422,15 +166,15 @@ public:
     TEST_EQUAL(Format::subst("%1", String("Hello, World!")), "Hello, World!");
     TEST_EQUAL(Format::subst("%1", String(WideString(L"Hello, World!"))), "Hello, World!");
 
-    TEST_EQUAL(Format::subst(""), "");
+    // TEST_EQUAL(Format::subst(""), "");
     TEST_EQUAL(Format::subst("%1 %2 %3", 1, 2, 3), "1 2 3");
     TEST_EQUAL(Format::subst("%1 %1", 1), "1 1"); // repeat
     TEST_EQUAL(Format::subst("%1 %1", 1, 2), "1 1"); // unused
     TEST_EQUAL(Format::subst("%1 %2 %3 %4", 1, 2, 3), "1 2 3 <NULL>"); // missing
 
-    TEST_EQUAL(Format::subst("%0"), "<NULL>"); // bad index
-    TEST_EQUAL(Format::subst("%99"), "<NULL>"); // bad index
-    TEST_EQUAL(Format::subst("%-"), "%-"); // missing % escape
+    // TEST_EQUAL(Format::subst("%0"), "<NULL>"); // bad index
+    TEST_EQUAL(Format::subst("%99", 0), "<NULL>"); // bad index
+    TEST_EQUAL(Format::subst("%-", 0), "%-"); // missing % escape
 
     TEST_EQUAL(
       Format::subst(
@@ -442,6 +186,8 @@ public:
 
     TEST_EQUAL("My name is %1 %2."_s("John", "Doe"), "My name is John Doe.");
     TEST_EQUAL(String("My name is %1 %2.")("John", "Doe"), "My name is John Doe.");
+
+    fout << Format::subst("Hello %1 %2 %3 %4 %5.", "111", String("21312312"), L"234234", WideString("Hello")) << ENDL;
   }
 };
 

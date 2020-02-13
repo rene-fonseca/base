@@ -13,8 +13,9 @@
 
 #pragma once
 
-#include <base/AnyValue.h>
 #include <base/string/StringOutputStream.h>
+#include <base/string/UTF8Stringify.h>
+#include <base/AnyValue.h>
 
 _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
@@ -45,75 +46,34 @@ typedef StringOutputStream format;
 class _COM_AZURE_DEV__BASE__API Format {
 public:
 
-  /** The maximum supported arguments. */
-  static constexpr unsigned int MAX_ARGS = 16;
-  
+  /**
+    Simple string substitution.
+  */
+  static String substImpl(const UTF8Stringify& text, const UTF8Stringify* args, MemorySize numberOfArgs);
+
   /**
     Simple string substitution.
 
-    String text = Format::subst(MESSAGE("My name is %1 and my last name is %2."), {"John", "Doe"});
+    String text = Format::subst(MESSAGE("My name is %1 and my last name is %2."), "John", "Doe");
   */
-  static String subst(const String& text);
-  static String subst(const String& text, const String& a);
-  static String subst(const String& text, const String& a, const String& b);
-  static String subst(const String& text, const String& a, const String& b, const String& c);
-  static String subst(const String& text, const String& a, const String& b, const String& c, const String& d);
-  static String subst(const String& text, const String& a, const String& b, const String& c, const String& d, const String& e);
-  static String subst(const String& text, const String& a, const String& b, const String& c, const String& d, const String& e, const String& f);
-  static String subst(const String& text, const String& a, const String& b, const String& c, const String& d, const String& e, const String& f, const String& g);
-  static String subst(const String& text, const String& a, const String& b, const String& c, const String& d, const String& e, const String& f, const String& g, const String& h);
-  static String subst(const String& text, const String& a, const String& b, const String& c, const String& d, const String& e, const String& f, const String& g, const String& h, const String& i);
-  static String subst(const String& text, const String& a, const String& b, const String& c, const String& d, const String& e, const String& f, const String& g, const String& h, const String& i, const String& j);
-  static String subst(const String& text, const String& a, const String& b, const String& c, const String& d, const String& e, const String& f, const String& g, const String& h, const String& i, const String& j, const String& k);
-  static String subst(const String& text, const String& a, const String& b, const String& c, const String& d, const String& e, const String& f, const String& g, const String& h, const String& i, const String& j, const String& k, const String& l);
-  static String subst(const String& text, const AnyValue& a);
-  static String subst(const String& text, const AnyValue& a, const AnyValue& b);
-  static String subst(const String& text, const AnyValue& a, const AnyValue& b, const AnyValue& c);
-  static String subst(const String& text, const AnyValue& a, const AnyValue& b, const AnyValue& c, const AnyValue& d);
-  static String subst(const String& text, const AnyValue& a, const AnyValue& b, const AnyValue& c, const AnyValue& d, const AnyValue& e);
-  static String subst(const String& text, const AnyValue& a, const AnyValue& b, const AnyValue& c, const AnyValue& d, const AnyValue& e, const AnyValue& f);
-  static String subst(const String& text, const AnyValue& a, const AnyValue& b, const AnyValue& c, const AnyValue& d, const AnyValue& e, const AnyValue& f, const AnyValue& g);
-  static String subst(const String& text, const AnyValue& a, const AnyValue& b, const AnyValue& c, const AnyValue& d, const AnyValue& e, const AnyValue& f, const AnyValue& g, const AnyValue& h);
-  static String subst(const String& text, const AnyValue& a, const AnyValue& b, const AnyValue& c, const AnyValue& d, const AnyValue& e, const AnyValue& f, const AnyValue& g, const AnyValue& h, const AnyValue& i);
-  static String subst(const String& text, const AnyValue& a, const AnyValue& b, const AnyValue& c, const AnyValue& d, const AnyValue& e, const AnyValue& f, const AnyValue& g, const AnyValue& h, const AnyValue& i, const AnyValue& j);
-  static String subst(const String& text, const AnyValue& a, const AnyValue& b, const AnyValue& c, const AnyValue& d, const AnyValue& e, const AnyValue& f, const AnyValue& g, const AnyValue& h, const AnyValue& i, const AnyValue& j, const AnyValue& k);
-  static String subst(const String& text, const AnyValue& a, const AnyValue& b, const AnyValue& c, const AnyValue& d, const AnyValue& e, const AnyValue& f, const AnyValue& g, const AnyValue& h, const AnyValue& i, const AnyValue& j, const AnyValue& k, const AnyValue& l);
-
-#if 0 // used for older GCC
-  static inline String subst(const char* text)
+  template<typename... ARGS>
+  static String subst(const UTF8Stringify& text, ARGS&&... args)
   {
-    return subst(String(text));
+    const UTF8Stringify strings[] = { UTF8Stringify(std::forward<ARGS>(args))... }; // has use-local on buffer
+    return substImpl(text, strings, getArraySize(strings));
   }
-
-  static inline String subst(const char* text, const String& a)
-  {
-    return subst(String(text), a);
-  }
-  
-  static inline String subst(const char* text, const String& a, const String& b)
-  {
-    return subst(String(text), a, b);
-  }
-#endif
-
-  /** String substitution. */
-  static String subst(const String& text, const std::initializer_list<const char*>& list);
-  /** String substitution. */
-  static String subst(const String& text, const std::initializer_list<Literal>& list);
-  /** String substitution. */
-  static String subst(const String& text, const std::initializer_list<String>& list);
 
   /** String substitution implementation. */
   class _COM_AZURE_DEV__BASE__API Subst {
   private:
 
-    const String& text;
-    const ConstSpan<char>* args = nullptr;
+    const UTF8Stringify& text;
+    const UTF8Stringify* args;
     MemorySize numberOfArgs = 0;
   public:
 
     /** Initializes substitution. */
-    Subst(const String& text, const ConstSpan<char>* args, MemorySize numberOfArgs);
+    Subst(const UTF8Stringify& text, const UTF8Stringify* args, MemorySize numberOfArgs);
 
     /** Returns the number of arguments. */
     inline MemorySize getNumberOfArgs() const noexcept
@@ -122,12 +82,12 @@ public:
     }
 
     /** Returns the argument. */
-    inline const ConstSpan<char>& getArg(MemorySize i) const
+    inline const ConstSpan<char> getArg(MemorySize i) const
     {
       if (!INLINE_ASSERT(i < numberOfArgs)) {
         _throw OutOfRange();
       }
-      return args[i];
+      return args[i].getSpan();
     }
 
     /** Returns the substituted string. */
@@ -139,6 +99,6 @@ public:
 };
 
 /** Write to format stream. */
-FormatOutputStream& operator<<(FormatOutputStream& stream, const Format::Subst& subst);
+_COM_AZURE_DEV__BASE__API FormatOutputStream& operator<<(FormatOutputStream& stream, const Format::Subst& subst);
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

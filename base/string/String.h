@@ -1557,6 +1557,11 @@ inline String operator-(const String& left, const wchar* right)
 */
 _COM_AZURE_DEV__BASE__API String operator*(const String& src, MemorySize count);
 
+inline String operator*(const String& src, unsigned int count)
+{
+  return operator*(src, static_cast<MemorySize>(count));
+}
+
 
 /** Appends value to string. This allows use of String as if StringOutputStream for string types. */
 template<class TYPE>

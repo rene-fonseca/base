@@ -1452,6 +1452,11 @@ public:
     return reinterpret_cast<const uint8*>(getElements());
   }
   
+  /**
+    Returns true if the NULL is used within the string.
+  */
+  bool hasNull() const noexcept;
+
   // TAG: we can return both being and end with one method MemorySpan<char> getMemorySpan() const;
 
   /**
@@ -1555,13 +1560,7 @@ inline String operator-(const String& left, const wchar* right)
 /**
   Returns a string that is the concatenation of the given string the given number of times.
 */
-_COM_AZURE_DEV__BASE__API String operator*(const String& src, MemorySize count);
-
-inline String operator*(const String& src, unsigned int count)
-{
-  return operator*(src, static_cast<MemorySize>(count));
-}
-
+_COM_AZURE_DEV__BASE__API String operator*(const String& src, unsigned int count);
 
 /** Appends value to string. This allows use of String as if StringOutputStream for string types. */
 template<class TYPE>

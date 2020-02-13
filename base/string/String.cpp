@@ -320,6 +320,19 @@ char* String::getBuffer(MemorySize length)
   return dest;
 }
 
+bool String::hasNull() const noexcept
+{
+  const char* i = getBuffer();
+  const char* end = i + getLength();
+  while (i != end) {
+    if (*i == 0) {
+      return true;
+    }
+    ++i;
+  }
+  return false;
+}
+
 void String::clear()
 {
   elements = DEFAULT_STRING.elements;
@@ -989,7 +1002,7 @@ String operator-(const String& left, const String& right)
   }
 }
 
-String operator*(const String& src, MemorySize count)
+String operator*(const String& src, unsigned int count)
 {
   String result;
   if (src && count) {

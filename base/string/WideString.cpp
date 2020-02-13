@@ -607,6 +607,19 @@ ucs4* WideString::getBuffer(MemorySize length)
   return dest;
 }
 
+bool WideString::hasNull() const noexcept
+{
+  const Char* i = getBuffer();
+  const Char* end = i + getLength();
+  while (i != end) {
+    if (*i == 0) {
+      return true;
+    }
+    ++i;
+  }
+  return false;
+}
+
 void WideString::clear()
 {
   elements = DEFAULT_STRING.elements;
@@ -1488,7 +1501,7 @@ WideString operator-(const WideString& left, const WideString& right)
   }
 }
 
-WideString operator*(const WideString& src, MemorySize count)
+WideString operator*(const WideString& src, unsigned int count)
 {
   WideString result;
   if (src && count) {

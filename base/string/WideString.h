@@ -1543,7 +1543,12 @@ public:
   }
 
   // we do not support this const uint8* getBytes() const noexcept;
-  
+
+  /**
+    Returns true if the NULL is used within the string.
+  */
+  bool hasNull() const noexcept;
+
   /**
     Returns the characters of the string for non-modifying access.
   */
@@ -1659,7 +1664,7 @@ inline WideString operator-(const WideString& left, const wchar* right)
 /**
   Returns a string that is the concatenation of the given string the given number of times.
 */
-_COM_AZURE_DEV__BASE__API WideString operator*(const WideString& src, MemorySize count);
+_COM_AZURE_DEV__BASE__API WideString operator*(const WideString& src, unsigned int count);
 
 template<>
 inline void swapper<WideString>(WideString& a, WideString& b)

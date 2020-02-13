@@ -198,6 +198,7 @@ public:
       << "--randomize      Run tests in random order." << EOL
       << "--stopOnFailure  Stop on first failure." << EOL
       << "--externals      Run tests with external dependencies." << EOL
+      << "--testFolder     Sets the test root folder." << EOL
       << "--stackTrace     Show stack trace on assert." << EOL
       << ENDL;
   }

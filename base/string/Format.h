@@ -70,16 +70,18 @@ public:
   class _COM_AZURE_DEV__BASE__API Subst {
   private:
 
-    const ConstSpan<char> text;
-    const ConstSpan<char>* args = nullptr;
+    const UTF8Stringify& text;
+    const UTF8Stringify* args;
+    // const ConstSpan<char> text;
+    // const ConstSpan<char>* args = nullptr;
     MemorySize numberOfArgs = 0;
   public:
 
     /** Initializes substitution. */
-    // Subst(const UTF8Stringify& text, const UTF8Stringify* args, MemorySize numberOfArgs);
+    Subst(const UTF8Stringify& text, const UTF8Stringify* args, MemorySize numberOfArgs);
 
     /** Initializes substitution. */
-    Subst(const ConstSpan<char>& text, const ConstSpan<char>* args, MemorySize numberOfArgs);
+    // Subst(const ConstSpan<char>& text, const ConstSpan<char>* args, MemorySize numberOfArgs);
 
     /** Returns the number of arguments. */
     inline MemorySize getNumberOfArgs() const noexcept
@@ -88,12 +90,12 @@ public:
     }
 
     /** Returns the argument. */
-    inline const ConstSpan<char>& getArg(MemorySize i) const
+    inline const ConstSpan<char> getArg(MemorySize i) const
     {
       if (!INLINE_ASSERT(i < numberOfArgs)) {
         _throw OutOfRange();
       }
-      return args[i];
+      return args[i].getSpan();
     }
 
     /** Returns the substituted string. */

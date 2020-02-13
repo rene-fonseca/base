@@ -20,19 +20,11 @@ _COM_AZURE_DEV__BASE__ENTER_NAMESPACE
 
 String Format::substImpl(const UTF8Stringify& text, const UTF8Stringify* args, MemorySize numberOfArgs)
 {
-  ConstSpan<char> spans[MAX_ARGS];
-  if (numberOfArgs > getArraySize(spans)) {
-    _throw OutOfRange("Too many arguments.");
-  }
-  MemorySize j = 0;
-  for (MemorySize i = 0; i < numberOfArgs; ++i) {
-    spans[j++] = args[i].getSpan();
-  }
-  Subst s(text.getSpan(), spans, numberOfArgs);
+  Subst s(text, args, numberOfArgs);
   return s.format();
 }
 
-Format::Subst::Subst(const ConstSpan<char>& _text, const ConstSpan<char>* _args, MemorySize _numberOfArgs)
+Format::Subst::Subst(const UTF8Stringify& _text, const UTF8Stringify* _args, MemorySize _numberOfArgs)
   : text(_text),
     args(_args),
     numberOfArgs(_numberOfArgs)
@@ -43,15 +35,15 @@ String Format::Subst::format() const
 {
   String buffer; // we could reuse buffer for thread but may be too weird if copy() is forgotten
 
-  // TAG: add support for args from non-char buffers
-  MemorySize capacity = text.getSize();
+  ConstSpan<char> _text = text.getSpan();
+  MemorySize capacity = _text.getSize();
   for (MemorySize i = 0; i < numberOfArgs; ++i) {
     capacity += getArg(i).getSize();
   }
   buffer.ensureCapacity(capacity);
 
-  const char* src = text.begin();
-  const char* end = text.end();
+  const char* src = _text.begin();
+  const char* end = _text.end();
   const char* segmentBegin = src;
   while (src != end) {
     if (*src != '%') {

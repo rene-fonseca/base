@@ -1091,15 +1091,7 @@ String String::getValidUTF8() const
 
 String String::substImpl(const UTF8Stringify& text, const UTF8Stringify* args, MemorySize numberOfArgs)
 {
-  ConstSpan<char> spans[Format::MAX_ARGS];
-  if (numberOfArgs > getArraySize(spans)) {
-    _throw OutOfRange("Too many arguments.");
-  }
-  MemorySize j = 0;
-  for (MemorySize i = 0; i < numberOfArgs; ++i) {
-    spans[j++] = args[i].getSpan();
-  }
-  Format::Subst s(text.getSpan(), spans, numberOfArgs);
+  Format::Subst s(text, args, numberOfArgs);
   return s.format();
 }
 

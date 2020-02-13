@@ -109,18 +109,6 @@ String Format::Subst::format() const
   return buffer;
 }
 
-FormatOutputStream& Format::Subst::operator<<(FormatOutputStream& stream) const
-{
-  // TAG: write directly without buffer?
-  stream << format();
-  return stream;
-}
-
-FormatOutputStream& operator<<(FormatOutputStream& stream, const Format::Subst& subst)
-{
-  return subst.operator<<(stream);
-}
-
 #if defined(_COM_AZURE_DEV__BASE__TESTS)
 
 class TEST_CLASS(Format) : public UnitTest {

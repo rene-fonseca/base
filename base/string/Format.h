@@ -92,13 +92,13 @@ public:
 
     /** Returns the substituted string. */
     String format() const;
-
-    /** Write to stream. */
-    FormatOutputStream& operator<<(FormatOutputStream& stream) const;
   };
 };
 
 /** Write to format stream. */
-_COM_AZURE_DEV__BASE__API FormatOutputStream& operator<<(FormatOutputStream& stream, const Format::Subst& subst);
+inline FormatOutputStream& operator<<(FormatOutputStream& stream, const Format::Subst& subst)
+{
+  return stream << subst.format();
+}
 
 _COM_AZURE_DEV__BASE__LEAVE_NAMESPACE

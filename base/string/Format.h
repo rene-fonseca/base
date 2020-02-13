@@ -63,9 +63,6 @@ public:
     return substImpl(text, strings, getArraySize(strings));
   }
 
-  /** The maximum supported arguments. */
-  static constexpr unsigned int MAX_ARGS = 64;
-
   /** String substitution implementation. */
   class _COM_AZURE_DEV__BASE__API Subst {
   private:
